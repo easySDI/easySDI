@@ -79,7 +79,7 @@ class ADMIN_profile {
 					return;
 				}
 
-				// Récuperer tous les labels et contrôler qu'ils soient saisis
+				// Rï¿½cuperer tous les labels et contrï¿½ler qu'ils soient saisis
 				var labelEmpty = 0;
 				var labels = Array();
 				labels = document.getElementById('labels');
@@ -119,7 +119,7 @@ class ADMIN_profile {
 		$rowProfile = new profile( $database );
 		$rowProfile->load( $id );
 		
-		// Gestion de la page rechargée sur modification de la classe root du profil
+		// Gestion de la page rechargï¿½e sur modification de la classe root du profil
 		$pageReloaded=false;
 		if (array_key_exists('metadataid', $_POST))
 		{
@@ -166,13 +166,13 @@ class ADMIN_profile {
 		}
 		*/
 		
-		// Récupération des types mysql pour les champs
+		// Rï¿½cupï¿½ration des types mysql pour les champs
 		$tableFields = array();
 		$tableFields = $database->getTableFields("#__sdi_profile", false);
 		
 		// Parcours des champs pour extraire les informations utiles:
 		// - le nom du champ
-		// - sa longueur en caractères
+		// - sa longueur en caractï¿½res
 		$fieldsLength = array();
 		foreach($tableFields as $table)
 		{
@@ -186,7 +186,7 @@ class ADMIN_profile {
 			} 
 		}
 		
-		// Langues à gérer
+		// Langues ï¿½ gï¿½rer
 		$languages = array();
 		$database->setQuery( "SELECT l.id, c.code FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY id" );
 		$languages = array_merge( $languages, $database->loadObjectList() );
@@ -224,7 +224,7 @@ class ADMIN_profile {
 		if ($rowProfile->class_id==0)
 			$rowProfile->class_id=null;
 			
-		// Générer un guid
+		// Gï¿½nï¿½rer un guid
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 		if ($rowProfile->guid == null)
 			$rowProfile->guid = helper_easysdi::getUniqueId();
@@ -235,7 +235,7 @@ class ADMIN_profile {
 			exit();
 		}
 		
-		// Langues à gérer
+		// Langues ï¿½ gï¿½rer
 		$languages = array();
 		$database->setQuery( "SELECT l.id, c.code FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY id" );
 		$languages = array_merge( $languages, $database->loadObjectList() );
@@ -251,7 +251,7 @@ class ADMIN_profile {
 			if ($total > 0)
 			{
 				//Update
-				$database->setQuery("UPDATE #__sdi_translation SET label='".helper_easysdi::escapeString($_POST['label_'.$lang->code])."', updated='".$_POST['updated']."', updatedby=".$_POST['updatedby']." WHERE element_guid='".$rowProfile->guid."' AND language_id=".$lang->id);
+				$database->setQuery("UPDATE #__sdi_translation SET label='".addslashes($_POST['label_'.$lang->code])."', updated='".$_POST['updated']."', updatedby=".$_POST['updatedby']." WHERE element_guid='".$rowProfile->guid."' AND language_id=".$lang->id);
 				if (!$database->query())
 					{	
 						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -261,7 +261,7 @@ class ADMIN_profile {
 			else
 			{
 				// Create
-				$database->setQuery("INSERT INTO #__sdi_translation (element_guid, language_id, label, created, createdby) VALUES ('".$rowProfile->guid."', ".$lang->id.", '".helper_easysdi::escapeString($_POST['label_'.$lang->code])."', '".date ("Y-m-d H:i:s")."', ".$user->id.")");
+				$database->setQuery("INSERT INTO #__sdi_translation (element_guid, language_id, label, created, createdby) VALUES ('".$rowProfile->guid."', ".$lang->id.", '".addslashes($_POST['label_'.$lang->code])."', '".date ("Y-m-d H:i:s")."', ".$user->id.")");
 				if (!$database->query())
 				{	
 					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -270,7 +270,7 @@ class ADMIN_profile {
 			}
 		}
 		
-		// Mise à jour des types d'objets
+		// Mise ï¿½ jour des types d'objets
 		/*$query = "update #__sdi_objecttype set profile_id = null  where profile_id=".$rowProfile->id;
 		$database->setQuery( $query);
 		if (!$database->query()) {
@@ -292,12 +292,12 @@ class ADMIN_profile {
 			}
 		}*/
 		
-		// Au cas où on sauve avec Apply, recharger la page 
+		// Au cas oï¿½ on sauve avec Apply, recharger la page 
 		$task = JRequest::getCmd( 'task' );
 		switch ($task)
 		{
 			case 'applyProfile' :
-				// Reprendre en édition l'objet
+				// Reprendre en ï¿½dition l'objet
 				TOOLBAR_profile::_EDIT();
 				ADMIN_profile::editProfile($rowProfile->id,$option);
 				break;

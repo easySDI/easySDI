@@ -53,7 +53,7 @@ class ADMIN_searchcriteria {
 		
 		$orderby 	= ' ORDER BY '. $filter_order .' '. $filter_order_Dir;
 		
-		// Récupérer les critères système ou ceux associés à ce contexte
+		// Rï¿½cupï¿½rer les critï¿½res systï¿½me ou ceux associï¿½s ï¿½ ce contexte
 		$query = "SELECT COUNT(*) FROM #__sdi_searchcriteria sc LEFT OUTER JOIN #__sdi_relation_context rc ON rc.relation_id=sc.relation_id WHERE sc.criteriatype_id=1 OR (sc.criteriatype_id=3 AND sc.context_id =".$context_id.") OR (sc.criteriatype_id=2 AND rc.context_id=".$context_id.")";
 		$db->setQuery( $query );
 		$total = $db->loadResult();
@@ -102,7 +102,7 @@ class ADMIN_searchcriteria {
 					return;
 				}
 		
-				// Récuperer tous les labels et contrôler qu'ils soient saisis
+				// Rï¿½cuperer tous les labels et contrï¿½ler qu'ils soient saisis
 				var labelEmpty = 0;
 				labels = document.getElementById('labels');
 				fields = labels.getElementsByTagName('input');
@@ -113,7 +113,7 @@ class ADMIN_searchcriteria {
 						labelEmpty=1;
 				}
 				
-				// Récuperer tous les champs de tri et contrôler qu'ils soient saisis
+				// Rï¿½cuperer tous les champs de tri et contrï¿½ler qu'ils soient saisis
 				var filterEmpty = 0;
 				filterfields = document.getElementById('filterfields');
 				fields = filterfields.getElementsByTagName('input');
@@ -176,13 +176,13 @@ class ADMIN_searchcriteria {
 
 		$row->checkout($user->get('id'));
 		
-		// Récupération des types mysql pour les champs
+		// Rï¿½cupï¿½ration des types mysql pour les champs
 		$tableFields = array();
 		$tableFields = $database->getTableFields("#__sdi_searchcriteria", false);
 		
 		// Parcours des champs pour extraire les informations utiles:
 		// - le nom du champ
-		// - sa longueur en caractères
+		// - sa longueur en caractï¿½res
 		$fieldsLength = array();
 		foreach($tableFields as $table)
 		{
@@ -196,13 +196,13 @@ class ADMIN_searchcriteria {
 			} 
 		}
 		
-		// Récupération des types mysql pour les champs
+		// Rï¿½cupï¿½ration des types mysql pour les champs
 		$tableFields = array();
 		$tableFields = $database->getTableFields("#__sdi_context_sc_filter", false);
 		
 		// Parcours des champs pour extraire les informations utiles:
 		// - le nom du champ
-		// - sa longueur en caractères
+		// - sa longueur en caractï¿½res
 		foreach($tableFields as $table)
 		{
 			foreach ($table as $field)
@@ -215,7 +215,7 @@ class ADMIN_searchcriteria {
 			} 
 		}
 		
-		// Langues à gérer
+		// Langues ï¿½ gï¿½rer
 		$languages = array();
 		$database->setQuery( "SELECT l.id, c.code FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY id" );
 		$languages = array_merge( $languages, $database->loadObjectList() );
@@ -278,9 +278,9 @@ class ADMIN_searchcriteria {
 		$database->setQuery("SELECT tab_id FROM #__sdi_searchcriteria_tab WHERE searchcriteria_id=".$row->id." AND context_id=".$context_id);
 		$tab_id = $database->loadResult();
 		
-		if ($row->id == 0 or $row->criteriatype_id == 3) // Critère OGC 
+		if ($row->id == 0 or $row->criteriatype_id == 3) // Critï¿½re OGC 
 			HTML_searchcriteria::editOGCSearchCriteria($row, $tab, $selectedTab, $fieldsLength, $languages, $labels, $filterfields, $context_id, $tabList, $tab_id, $rendertypes, $option);
-		else if ($row->criteriatype_id == 1) // Critère system
+		else if ($row->criteriatype_id == 1) // Critï¿½re system
 			HTML_searchcriteria::editSystemSearchCriteria($row, $tab, $selectedTab, $fieldsLength, $languages, $labels, $context_id, $tabList, $tab_id, $option);
 		
 	}
@@ -302,7 +302,7 @@ class ADMIN_searchcriteria {
 			exit();
 		}		
 		
-		// Générer un guid
+		// Gï¿½nï¿½rer un guid
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 		if ($rowSearchCriteria->guid == null)
 			$rowSearchCriteria->guid = helper_easysdi::getUniqueId();
@@ -326,13 +326,13 @@ class ADMIN_searchcriteria {
 		}
 		*/
 			
-		// Si le critère de recherche est de type CSW, indiquer le contexte associé
+		// Si le critï¿½re de recherche est de type CSW, indiquer le contexte associï¿½
 		if ($rowSearchCriteria->criteriatype_id == 3)
 		{
 			$rowSearchCriteria->context_id = $context_id;
 			
 			if ($rowSearchCriteria->rendertype_id == 0)
-				$rowSearchCriteria->rendertype_id = 5; // Rendu textbox par défaut	
+				$rowSearchCriteria->rendertype_id = 5; // Rendu textbox par dï¿½faut	
 		}
 		else
 		{
@@ -346,7 +346,7 @@ class ADMIN_searchcriteria {
 			exit();
 		}
 		
-		// Stocker le tab si on crée le critère
+		// Stocker le tab si on crï¿½e le critï¿½re
 		if ($_POST['id'] == 0)
 		{
 			$tab_id = $_POST['tabList'];
@@ -374,7 +374,7 @@ class ADMIN_searchcriteria {
 			}
 		}		
 		
-		// Langues à gérer
+		// Langues ï¿½ gï¿½rer
 		$languages = array();
 		$database->setQuery( "SELECT l.id, c.code FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY id" );
 		$languages = array_merge( $languages, $database->loadObjectList() );
@@ -388,7 +388,7 @@ class ADMIN_searchcriteria {
 			if ($total > 0)
 			{
 				//Update
-				$database->setQuery("UPDATE #__sdi_translation SET label='".helper_easysdi::escapeString($_POST['label_'.$lang->code])."', updated='".$_POST['updated']."', updatedby=".$_POST['updatedby']." WHERE element_guid='".$rowSearchCriteria->guid."' AND language_id=".$lang->id);
+				$database->setQuery("UPDATE #__sdi_translation SET label='".addslashes($_POST['label_'.$lang->code])."', updated='".$_POST['updated']."', updatedby=".$_POST['updatedby']." WHERE element_guid='".$rowSearchCriteria->guid."' AND language_id=".$lang->id);
 				if (!$database->query())
 					{	
 						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -398,7 +398,7 @@ class ADMIN_searchcriteria {
 			else
 			{
 				// Create
-				$database->setQuery("INSERT INTO #__sdi_translation (element_guid, language_id, label, created, createdby) VALUES ('".$rowSearchCriteria->guid."', ".$lang->id.", '".helper_easysdi::escapeString($_POST['label_'.$lang->code])."', '".date ("Y-m-d H:i:s")."', ".$user->id.")");
+				$database->setQuery("INSERT INTO #__sdi_translation (element_guid, language_id, label, created, createdby) VALUES ('".$rowSearchCriteria->guid."', ".$lang->id.", '".addslashes($_POST['label_'.$lang->code])."', '".date ("Y-m-d H:i:s")."', ".$user->id.")");
 				if (!$database->query())
 				{	
 					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -416,7 +416,7 @@ class ADMIN_searchcriteria {
 			if ($total > 0)
 			{
 				//Update
-				$database->setQuery("UPDATE #__sdi_context_sc_filter SET ogcsearchfilter='".helper_easysdi::escapeString($_POST['filterfield_'.$lang->code])."' WHERE id='".$context_id."' AND searchcriteria_id='".$rowSearchCriteria->id."' AND language_id=".$lang->id);
+				$database->setQuery("UPDATE #__sdi_context_sc_filter SET ogcsearchfilter='".addslashes($_POST['filterfield_'.$lang->code])."' WHERE id='".$context_id."' AND searchcriteria_id='".$rowSearchCriteria->id."' AND language_id=".$lang->id);
 				if (!$database->query())
 					{	
 						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -426,7 +426,7 @@ class ADMIN_searchcriteria {
 			else
 			{
 				// Create
-				$database->setQuery("INSERT INTO #__sdi_context_sc_filter (searchcriteria_id, context_id, language_id, ogcsearchfilter) VALUES ('".$rowSearchCriteria->id."', '".$context_id."', ".$lang->id.", '".helper_easysdi::escapeString($_POST['filterfield_'.$lang->code])."')");
+				$database->setQuery("INSERT INTO #__sdi_context_sc_filter (searchcriteria_id, context_id, language_id, ogcsearchfilter) VALUES ('".$rowSearchCriteria->id."', '".$context_id."', ".$lang->id.", '".addslashes($_POST['filterfield_'.$lang->code])."')");
 				if (!$database->query())
 				{	
 					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -437,12 +437,12 @@ class ADMIN_searchcriteria {
 		
 		$rowSearchCriteria->checkin();
 		
-		// Au cas où on sauve avec Apply, recharger la page 
+		// Au cas oï¿½ on sauve avec Apply, recharger la page 
 		$task = JRequest::getCmd( 'task' );
 		switch ($task)
 		{
 			case 'applySearchCriteria' :
-				// Reprendre en édition l'objet
+				// Reprendre en ï¿½dition l'objet
 				TOOLBAR_searchcriteria::_EDIT();
 				ADMIN_searchcriteria::editSearchCriteria($rowSearchCriteria->id,$option);
 				break;
@@ -479,7 +479,7 @@ class ADMIN_searchcriteria {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
 				
-			// Critère CSW
+			// Critï¿½re CSW
 			if ($rowSearchCriteria->criteriatype_id == 3)
 			{
 				// Supprimer les champs de recherche 
@@ -507,7 +507,7 @@ class ADMIN_searchcriteria {
 			else
 			{
 				$criteriatype = new criteriatype( $database );
-				$criteriatype->load( 3 ); // Critère CSW
+				$criteriatype->load( 3 ); // Critï¿½re CSW
 				$mainframe->enqueueMessage(JText::sprintf("CATALOG_SEARCHCRITERIA_DELETE_ISSYSTEM_MSG", JText::_($criteriatype->label)),"error");
 				$mainframe->redirect("index.php?option=$option&task=listSearchCriteria&context_id=".$context_id );
 				exit();
@@ -546,7 +546,7 @@ class ADMIN_searchcriteria {
 		$database = & JFactory::getDBO();
 		$context_id = JRequest::getVar('context_id',0);
 		
-		// Récupérer les états du listing des objets, pour éviter que les états des versions soient utilisés
+		// Rï¿½cupï¿½rer les ï¿½tats du listing des objets, pour ï¿½viter que les ï¿½tats des versions soient utilisï¿½s
 		// alors qu'on change de contexte
 		JRequest::setVar('filter_order', $mainframe->getUserState($option."listContext.filter_order"));
 		JRequest::setVar('filter_order_Dir', $mainframe->getUserState($option."listContext.filter_order_Dir"));
@@ -693,7 +693,7 @@ class ADMIN_searchcriteria {
 			//$color_tab = 'style="color: red;"';
 			$task_tab = "searchcriteria_tab_advanced";
 			$text_tab = JText::_( $row->tab_label );
-		} else { // tab avancé
+		} else { // tab avancï¿½
 			//$color_tab = 'style="color: black;"';
 			$task_tab = "searchcriteria_tab_none";
 			$text_tab = JText::_( $row->tab_label );

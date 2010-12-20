@@ -161,7 +161,7 @@ foreach ($languages as $lang)
 ?>
 					<tr>
 					<td width=140><?php echo JText::_("CORE_".strtoupper($lang->code)); ?></td>
-					<td><input size="50" type="text" name ="label<?php echo "_".$lang->code;?>" value="<?php if ($pageReloaded) echo $_POST['label_'.$lang->code]; else echo $labels[$lang->id];?>" maxlength="<?php echo $fieldsLength['label'];?>"></td>							
+					<td><input size="50" type="text" name ="label<?php echo "_".$lang->code;?>" value="<?php if ($pageReloaded) echo htmlspecialchars($_POST['label_'.$lang->code]); else echo htmlspecialchars($labels[$lang->id]);?>" maxlength="<?php echo $fieldsLength['label'];?>"></td>							
 					</tr>
 <?php
 }

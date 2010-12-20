@@ -111,7 +111,7 @@ class ADMIN_package {
 		$classes[] = JHTML::_('select.option','0', JText::_("EASYSDI_CHILDCLASSES_LIST") );
 		if ($rowPackage->profile_id<>0)
 		{
-			// Récupérer la classe root du profil sélectionné pour ce package 
+			// Rï¿½cupï¿½rer la classe root du profil sï¿½lectionnï¿½ pour ce package 
 			$database->setQuery( "SELECT c.id FROM #__sdi_class c, #__sdi_profile p WHERE p.class_id=c.id AND p.id=".$rowPackage->profile_id );
 			$rootId = $database->loadResult();
 			//echo $rootId."<br>";
@@ -131,13 +131,13 @@ class ADMIN_package {
 		$database->setQuery( "SELECT p.id as pack, c.id as rootId FROM #__sdi_class c, #__sdi_profile p WHERE p.class_id=c.id");
 		$rootClasses = $database->loadObjectList();
 		
-		// Récupération des types mysql pour les champs
+		// Rï¿½cupï¿½ration des types mysql pour les champs
 		$tableFields = array();
 		$tableFields = $database->getTableFields("#__sdi_package", false);
 		
 		// Parcours des champs pour extraire les informations utiles:
 		// - le nom du champ
-		// - sa longueur en caractères
+		// - sa longueur en caractï¿½res
 		$fieldsLength = array();
 		foreach($tableFields as $table)
 		{
@@ -151,7 +151,7 @@ class ADMIN_package {
 			} 
 		}
 		
-		// Langues à gérer
+		// Langues ï¿½ gï¿½rer
 		$languages = array();
 		$database->setQuery( "SELECT l.id, c.code FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY id" );
 		$languages = array_merge( $languages, $database->loadObjectList() );
@@ -185,7 +185,7 @@ class ADMIN_package {
 			exit();
 		}		
 		
-		// Générer un guid
+		// Gï¿½nï¿½rer un guid
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 		if ($rowPackage->guid == null)
 			$rowPackage->guid = helper_easysdi::getUniqueId();
@@ -196,7 +196,7 @@ class ADMIN_package {
 			exit();
 		}
 		
-		// Langues à gérer
+		// Langues ï¿½ gï¿½rer
 		$languages = array();
 		$database->setQuery( "SELECT l.id, c.code FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY id" );
 		$languages = array_merge( $languages, $database->loadObjectList() );
@@ -212,7 +212,7 @@ class ADMIN_package {
 			if ($total > 0)
 			{
 				//Update
-				$database->setQuery("UPDATE #__sdi_translation SET label='".helper_easysdi::escapeString($_POST['label_'.$lang->code])."', updated='".$_POST['updated']."', updatedby=".$_POST['updatedby']." WHERE element_guid='".$rowPackage->guid."' AND language_id=".$lang->id);
+				$database->setQuery("UPDATE #__sdi_translation SET label='".addslashes($_POST['label_'.$lang->code])."', updated='".$_POST['updated']."', updatedby=".$_POST['updatedby']." WHERE element_guid='".$rowPackage->guid."' AND language_id=".$lang->id);
 				if (!$database->query())
 					{	
 						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -222,7 +222,7 @@ class ADMIN_package {
 			else
 			{
 				// Create
-				$database->setQuery("INSERT INTO #__sdi_translation (element_guid, language_id, label, created, createdby) VALUES ('".$rowPackage->guid."', ".$lang->id.", '".helper_easysdi::escapeString($_POST['label_'.$lang->code])."', '".date ("Y-m-d H:i:s")."', ".$user->id.")");
+				$database->setQuery("INSERT INTO #__sdi_translation (element_guid, language_id, label, created, createdby) VALUES ('".$rowPackage->guid."', ".$lang->id.", '".addslashes($_POST['label_'.$lang->code])."', '".date ("Y-m-d H:i:s")."', ".$user->id.")");
 				if (!$database->query())
 				{	
 					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");

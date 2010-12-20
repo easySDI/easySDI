@@ -176,14 +176,14 @@ class ADMIN_attribute {
 		$database->setQuery( "SELECT id AS value, name AS text FROM #__sdi_list_attributetype ORDER BY name" );
 		$attributetypelist = array_merge( $attributetypelist, $database->loadObjectList() );
 		
-		// Récupération des types mysql pour les champs
+		// Rï¿½cupï¿½ration des types mysql pour les champs
 		$tableFields = array();
 		$tableFields = $database->getTableFields("#__sdi_attribute", false);
 		$tableFields = array_merge( $tableFields, $database->getTableFields("#__sdi_translation", false) );
 		
 		// Parcours des champs pour extraire les informations utiles:
 		// - le nom du champ
-		// - sa longueur en caractères
+		// - sa longueur en caractï¿½res
 		$fieldsLength = array();
 		foreach($tableFields as $table)
 		{
@@ -197,7 +197,7 @@ class ADMIN_attribute {
 			} 
 		}
 		
-		// Liste déroulante pour la saisie de la valeur par défaut
+		// Liste dï¿½roulante pour la saisie de la valeur par dï¿½faut
 		// + Champ de saisie de codeValueList
 		if ($rowAttribute->attributetype_id <> 6)
 			$style = "display:none";
@@ -211,7 +211,7 @@ class ADMIN_attribute {
 			$styleAttributes = "display:inline";
 		
 		
-		// Langues à gérer
+		// Langues ï¿½ gï¿½rer
 		$languages = array();
 		$database->setQuery( "SELECT l.id, c.code FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY id" );
 		$languages = array_merge( $languages, $database->loadObjectList() );
@@ -266,12 +266,12 @@ class ADMIN_attribute {
 		if ($rowAttribute->listnamespace_id == 0)
 			$rowAttribute->listnamespace_id = null;
 		
-		// Générer un guid
+		// Gï¿½nï¿½rer un guid
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 		if ($rowAttribute->guid == null)
 			$rowAttribute->guid = helper_easysdi::getUniqueId();
 		
-		// Enlever les éventuels retours à la ligne dans le pattern
+		// Enlever les ï¿½ventuels retours ï¿½ la ligne dans le pattern
 		$rowAttribute->pattern = str_replace("\r\n", "", $rowAttribute->pattern);
 			
 		if (!$rowAttribute->store(false)) {			
@@ -280,7 +280,7 @@ class ADMIN_attribute {
 			exit();
 		}
 		
-		// Langues à gérer
+		// Langues ï¿½ gï¿½rer
 		$languages = array();
 		$database->setQuery( "SELECT l.id, c.code FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY id" );
 		$languages = array_merge( $languages, $database->loadObjectList() );
@@ -295,7 +295,7 @@ class ADMIN_attribute {
 			if ($total > 0)
 			{
 				//Update
-				$database->setQuery("UPDATE #__sdi_translation SET information='".helper_easysdi::escapeString($_POST['information_'.$lang->code])."' WHERE element_guid='".$rowAttribute->guid."' AND language_id=".$lang->id);
+				$database->setQuery("UPDATE #__sdi_translation SET information='".addslashes($_POST['information_'.$lang->code])."' WHERE element_guid='".$rowAttribute->guid."' AND language_id=".$lang->id);
 				if (!$database->query())
 					{	
 						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -305,7 +305,7 @@ class ADMIN_attribute {
 			else
 			{
 				// Create
-				$database->setQuery("INSERT INTO #__sdi_translation (element_guid, language_id, information) VALUES ('".$rowAttribute->guid."', ".$lang->id.", '".helper_easysdi::escapeString($_POST['information_'.$lang->code])."')");
+				$database->setQuery("INSERT INTO #__sdi_translation (element_guid, language_id, information) VALUES ('".$rowAttribute->guid."', ".$lang->id.", '".addslashes($_POST['information_'.$lang->code])."')");
 				if (!$database->query())
 				{	
 					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -323,7 +323,7 @@ class ADMIN_attribute {
 			if ($total > 0)
 			{
 				//Update
-				$database->setQuery("UPDATE #__sdi_translation SET regexmsg='".helper_easysdi::escapeString($_POST['regexmsg_'.$lang->code])."' WHERE element_guid='".$rowAttribute->guid."' AND language_id=".$lang->id);
+				$database->setQuery("UPDATE #__sdi_translation SET regexmsg='".addslashes($_POST['regexmsg_'.$lang->code])."' WHERE element_guid='".$rowAttribute->guid."' AND language_id=".$lang->id);
 				if (!$database->query())
 					{	
 						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -333,7 +333,7 @@ class ADMIN_attribute {
 			else
 			{
 				// Create
-				$database->setQuery("INSERT INTO #__sdi_translation (element_guid, language_id, regexmsg) VALUES ('".$rowAttribute->guid."', ".$lang->id.", '".helper_easysdi::escapeString($_POST['regexmsg_'.$lang->code])."')");
+				$database->setQuery("INSERT INTO #__sdi_translation (element_guid, language_id, regexmsg) VALUES ('".$rowAttribute->guid."', ".$lang->id.", '".addslashes($_POST['regexmsg_'.$lang->code])."')");
 				if (!$database->query())
 				{	
 					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -344,12 +344,12 @@ class ADMIN_attribute {
 		
 		$rowAttribute->checkin();
 		
-		// Au cas où on sauve avec Apply, recharger la page 
+		// Au cas oï¿½ on sauve avec Apply, recharger la page 
 		$task = JRequest::getCmd( 'task' );
 		switch ($task)
 		{
 			case 'applyAttribute' :
-				// Reprendre en édition l'objet
+				// Reprendre en ï¿½dition l'objet
 				TOOLBAR_attribute::_EDIT();
 				ADMIN_attribute::editAttribute($rowAttribute->id,$option);
 				break;

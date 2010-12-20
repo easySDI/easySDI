@@ -273,7 +273,7 @@ foreach ($languages as $lang)
 ?>
 					<tr>
 					<td width=140><?php echo JText::_("CORE_".strtoupper($lang->code)); ?></td>
-					<td><input size="50" type="text" name ="regexmsg<?php echo "_".$lang->code;?>" value="<?php echo $regexmsgs[$lang->id]?>" maxlength="<?php echo $fieldsLength['regexmsg'];?>"></td>							
+					<td><input size="50" type="text" name ="regexmsg<?php echo "_".$lang->code;?>" value="<?php echo htmlspecialchars($regexmsgs[$lang->id])?>" maxlength="<?php echo $fieldsLength['regexmsg'];?>"></td>							
 					</tr>
 <?php
 }
@@ -304,7 +304,7 @@ foreach ($languages as $lang)
 ?>
 					<tr>
 					<td width=140><?php echo JText::_("CORE_".strtoupper($lang->code)); ?></td>
-					<td><input size="50" type="text" name ="information<?php echo "_".$lang->code;?>" value="<?php echo $informations[$lang->id]?>" maxlength="<?php echo $fieldsLength['information'];?>"></td>							
+					<td><input size="50" type="text" name ="information<?php echo "_".$lang->code;?>" value="<?php echo htmlspecialchars($informations[$lang->id])?>" maxlength="<?php echo $fieldsLength['information'];?>"></td>							
 					</tr>
 <?php
 }

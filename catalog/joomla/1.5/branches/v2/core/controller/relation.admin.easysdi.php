@@ -27,7 +27,7 @@ defined('_JEXEC') or die('Restricted access');
 			return;
 		}
 
-		// Contrôle qu'au moins un profil est marqué
+		// Contrï¿½le qu'au moins un profil est marquï¿½
 		profiles_checked = 0;
 		p = document.getElementsByName('profiles[]');
 		
@@ -37,7 +37,7 @@ defined('_JEXEC') or die('Restricted access');
 				profiles_checked++;
 		}
 		
-		// Récuperer tous les labels et contrôler qu'ils soient saisis
+		// Rï¿½cuperer tous les labels et contrï¿½ler qu'ils soient saisis
 		var labelEmpty = 0;
 		var labels = Array();
 		labels = document.getElementById('labels');
@@ -49,7 +49,7 @@ defined('_JEXEC') or die('Restricted access');
 				labelEmpty=1;
 		}
 
-		// Récuperer tous les champs de tri et contrôler qu'ils soient saisis
+		// Rï¿½cuperer tous les champs de tri et contrï¿½ler qu'ils soient saisis
 		var filterEmpty = 0;
 		filterfields = document.getElementById('filterfields');
 		fields = filterfields.getElementsByTagName('input');
@@ -89,7 +89,7 @@ defined('_JEXEC') or die('Restricted access');
 		{
 			alert( "<?php echo JText::_( 'CATALOG_RELATION_SUBMIT_NOCHILDRELATION', true ); ?>" );
 		}
-		else // Contrôles dépendants du type de relation
+		else // Contrï¿½les dï¿½pendants du type de relation
 		{
 			if (form.type.value == 2) // Vers attribut
 			{
@@ -314,7 +314,7 @@ class ADMIN_relation {
 		$rowRelation = new relation( $database );
 		$rowRelation->load( $id );
 		
-		// Gestion de la page rechargée sur modification de l'attribut enfant de la relation
+		// Gestion de la page rechargï¿½e sur modification de l'attribut enfant de la relation
 		$attributeid = 0;
 		$upper = 0;
 		$pageReloaded=false;
@@ -372,14 +372,14 @@ class ADMIN_relation {
 			$selected_contexts = array_merge( $selected_contexts, $database->loadResultArray() );
 		}*/
 		
-		// Récupération des types mysql pour les champs
+		// Rï¿½cupï¿½ration des types mysql pour les champs
 		$tableFields = array();
 		$tableFields = $database->getTableFields("#__sdi_relation", false);
 		$tableFields = array_merge( $tableFields, $database->getTableFields("#__sdi_translation", false) );
 		
 		// Parcours des champs pour extraire les informations utiles:
 		// - le nom du champ
-		// - sa longueur en caractères
+		// - sa longueur en caractï¿½res
 		$fieldsLength = array();
 		foreach($tableFields as $table)
 		{
@@ -393,14 +393,14 @@ class ADMIN_relation {
 			} 
 		}
 		
-		// Récupération des types mysql pour les champs
+		// Rï¿½cupï¿½ration des types mysql pour les champs
 		$searchCriteriaTableFields = array();
 		$searchCriteriaTableFields = $database->getTableFields("#__sdi_searchcriteria", false);
 		$searchCriteriaTableFields = array_merge( $searchCriteriaTableFields, $database->getTableFields("#__sdi_context_sc_filter", false) );
 		
 		// Parcours des champs pour extraire les informations utiles:
 		// - le nom du champ
-		// - sa longueur en caractères
+		// - sa longueur en caractï¿½res
 		$searchCriteriaFieldsLength = array();
 		foreach($searchCriteriaTableFields as $table)
 		{
@@ -413,7 +413,7 @@ class ADMIN_relation {
 				}
 			} 
 		}
-		// Langues à gérer
+		// Langues ï¿½ gï¿½rer
 		$languages = array();
 		$database->setQuery( "SELECT l.id, c.code FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY id" );
 		$languages = array_merge( $languages, $database->loadObjectList() );
@@ -439,7 +439,7 @@ class ADMIN_relation {
 			$informations[$lang->id] = $information;
 		}
 		
-		//Initialisation de toutes les variables qui vont être passées en paramètre, 
+		//Initialisation de toutes les variables qui vont ï¿½tre passï¿½es en paramï¿½tre, 
 		// pour ne pas avoir d'erreur de code
 		$attributes = array();
 		$objects=array();
@@ -464,7 +464,7 @@ class ADMIN_relation {
 		$boundsStyle = "display:inline";
 		$searchCriteria= new searchCriteriaByRelationId($database);
 		
-		/* Début de la partie spécifique à une relation vers un attribut */
+		/* Dï¿½but de la partie spï¿½cifique ï¿½ une relation vers un attribut */
 		if ($type == 2)
 		{
 			$attributes = array();
@@ -482,13 +482,13 @@ class ADMIN_relation {
 			$database->setQuery( "SELECT id as value, attributetype_id as text FROM #__sdi_attribute ORDER BY id" );
 			$attributetypes = array_merge( $attributetypes, $database->loadObjectList() );
 			
-			// Récupération des types mysql pour les champs
+			// Rï¿½cupï¿½ration des types mysql pour les champs
 			$attributeTableFields = array();
 			$attributeTableFields = $database->getTableFields("#__sdi_attribute", false);
 			
 			// Parcours des champs pour extraire les informations utiles:
 			// - le nom du champ
-			// - sa longueur en caractères
+			// - sa longueur en caractï¿½res
 			$attributeFieldsLength = array();
 			foreach($attributeTableFields as $table)
 			{
@@ -505,7 +505,7 @@ class ADMIN_relation {
 			$defaults = array();
 			$defaultStyle_Date = "display:none";
 			$defaults['style_date'] = "display:none";
-			// Liste déroulante pour la saisie de la valeur par défaut
+			// Liste dï¿½roulante pour la saisie de la valeur par dï¿½faut
 			// + Champ de saisie de codeValueList
 			if ($rowAttribute->attributetype_id <> 6)
 			{
@@ -518,8 +518,8 @@ class ADMIN_relation {
 				$defaults['style'] = "display:inline";
 			}
 	
-			// Textbox simple pour la saisie de la valeur par défaut
-			if ($rowAttribute->attributetype_id == 0 or // Rien de sélectionné
+			// Textbox simple pour la saisie de la valeur par dï¿½faut
+			if ($rowAttribute->attributetype_id == 0 or // Rien de sï¿½lectionnï¿½
 				$rowAttribute->attributetype_id == 1 or // GUID
 				$rowAttribute->attributetype_id == 3 or // Local
 				$rowAttribute->attributetype_id == 5 or // Date
@@ -547,7 +547,7 @@ class ADMIN_relation {
 					$defaults['style_textbox'] = "display:inline";
 				}
 			
-			// Radio button pour la saisie de la valeur par défaut pour la date
+			// Radio button pour la saisie de la valeur par dï¿½faut pour la date
 			if ($rowAttribute->attributetype_id <> 5)
 			{
 				$defaultStyle_Radio = "display:none";
@@ -564,7 +564,7 @@ class ADMIN_relation {
 				}
 			}
 			
-			// Plusieurs textbox pour la saisie de la valeur par défaut pour la locale
+			// Plusieurs textbox pour la saisie de la valeur par dï¿½faut pour la locale
 			if ($rowAttribute->attributetype_id <> 3)
 			{
 				$defaultStyle_Locale_Textbox = "display:none";
@@ -588,7 +588,7 @@ class ADMIN_relation {
 					$defaults['style_locale_textbox'] = "display:inline";
 				}
 			
-			// Liste déroulante choicelist
+			// Liste dï¿½roulante choicelist
 			if ($rowAttribute->attributetype_id <> 9 and $rowAttribute->attributetype_id <> 10)
 			{
 				$defaultStyle_textbox = "display:none";
@@ -648,8 +648,8 @@ class ADMIN_relation {
 				$defaultStyle_Locale_Textarea = "display:none";
 			}
 		}
-		/* Fin de la préparation consacrée à une relation vers un attribut */
-		/* Préparation consacrée à une relation vers une classe */
+		/* Fin de la prï¿½paration consacrï¿½e ï¿½ une relation vers un attribut */
+		/* Prï¿½paration consacrï¿½e ï¿½ une relation vers une classe */
 		else if ($type == 1)
 		{
 			$relationtypes = array();
@@ -661,7 +661,7 @@ class ADMIN_relation {
 			if ($rowRelation->relationtype_id == 5) // Generalization
 				$boundsStyle = "display:none";
 		}
-		/* Préparation consacrée à une relation vers un objet */
+		/* Prï¿½paration consacrï¿½e ï¿½ une relation vers un objet */
 		else if ($type == 3)
 		{
 			$objecttypes = array();
@@ -734,7 +734,7 @@ class ADMIN_relation {
 		$language =& JFactory::getLanguage();
 		$rowAttributeRelation = $rowRelation;
 		
-		// Gestion de la page rechargée sur modification de l'attribut enfant de la relation
+		// Gestion de la page rechargï¿½e sur modification de l'attribut enfant de la relation
 		if ($rowAttributeRelation->id == 0)
 		{
 			$attributeid = 0;
@@ -799,14 +799,14 @@ class ADMIN_relation {
 			$selected_contexts = array_merge( $selected_contexts, $database->loadResultArray() );
 		}
 		
-		// Récupération des types mysql pour les champs
+		// Rï¿½cupï¿½ration des types mysql pour les champs
 		$tableFields = array();
 		$tableFields = $database->getTableFields("#__sdi_relation", false);
 		$tableFields = array_merge( $tableFields, $database->getTableFields("#__sdi_translation", false) );
 		
 		// Parcours des champs pour extraire les informations utiles:
 		// - le nom du champ
-		// - sa longueur en caractères
+		// - sa longueur en caractï¿½res
 		$fieldsLength = array();
 		foreach($tableFields as $table)
 		{
@@ -820,13 +820,13 @@ class ADMIN_relation {
 			} 
 		}
 		
-		// Récupération des types mysql pour les champs
+		// Rï¿½cupï¿½ration des types mysql pour les champs
 		$attributeTableFields = array();
 		$attributeTableFields = $database->getTableFields("#__sdi_attribute", false);
 		
 		// Parcours des champs pour extraire les informations utiles:
 		// - le nom du champ
-		// - sa longueur en caractères
+		// - sa longueur en caractï¿½res
 		$attributeFieldsLength = array();
 		foreach($attributeTableFields as $table)
 		{
@@ -840,7 +840,7 @@ class ADMIN_relation {
 			} 
 		}
 		
-		// Récupération des types mysql pour les champs
+		// Rï¿½cupï¿½ration des types mysql pour les champs
 		$searchCriteriaTableFields = array();
 		$searchCriteriaTableFields = $database->getTableFields("#__sdi_searchcriteria", false);
 		$searchCriteriaTableFields = array_merge( $searchCriteriaTableFields, $database->getTableFields("#__sdi_context_sc_filter", false) );
@@ -848,7 +848,7 @@ class ADMIN_relation {
 		
 		// Parcours des champs pour extraire les informations utiles:
 		// - le nom du champ
-		// - sa longueur en caractères
+		// - sa longueur en caractï¿½res
 		$searchCriteriaFieldsLength = array();
 		foreach($searchCriteriaTableFields as $table)
 		{
@@ -863,7 +863,7 @@ class ADMIN_relation {
 		}
 		
 		$defaultStyle_Date = "display:none";
-		// Liste déroulante pour la saisie de la valeur par défaut
+		// Liste dï¿½roulante pour la saisie de la valeur par dï¿½faut
 		// + Champ de saisie de codeValueList
 		if ($rowAttribute->attributetype_id <> 6)
 			$style = "display:none";
@@ -876,8 +876,8 @@ class ADMIN_relation {
 		else
 			$style_choice = "display:inline";
 
-		// Textbox simple pour la saisie de la valeur par défaut
-		if ($rowAttribute->attributetype_id == 0 or // Rien de sélectionné
+		// Textbox simple pour la saisie de la valeur par dï¿½faut
+		if ($rowAttribute->attributetype_id == 0 or // Rien de sï¿½lectionnï¿½
 			$rowAttribute->attributetype_id == 1 or // GUID
 			$rowAttribute->attributetype_id == 3 or // Local
 			$rowAttribute->attributetype_id == 5 or // Date
@@ -901,7 +901,7 @@ class ADMIN_relation {
 				$defaultStyle_textarea = "display:none";
 			}
 		
-		// Radio button pour la saisie de la valeur par défaut pour la date
+		// Radio button pour la saisie de la valeur par dï¿½faut pour la date
 		if ($rowAttribute->attributetype_id <> 5)
 			$defaultStyle_Radio = "display:none";
 		else
@@ -911,7 +911,7 @@ class ADMIN_relation {
 				$defaultStyle_Date = "display:inline"; // afficher le champ calendrier pour le choix d'une date
 		}
 		
-		// Plusieurs textbox pour la saisie de la valeur par défaut pour la locale
+		// Plusieurs textbox pour la saisie de la valeur par dï¿½faut pour la locale
 		if ($rowAttribute->attributetype_id <> 3)
 		{
 			$defaultStyle_Locale_Textbox = "display:none";
@@ -945,7 +945,7 @@ class ADMIN_relation {
 		$database->setQuery( "SELECT c.*, t.title, t.content FROM #__sdi_attribute a, #__sdi_list_attributetype at,  #__sdi_codevalue c, #__sdi_translation t, #__sdi_language l, #__sdi_list_codelang cl WHERE a.id=c.attribute_id AND a.attributetype_id=at.id AND c.guid=t.element_guid AND t.language_id=l.id AND l.codelang_id=cl.id and cl.code='".$language->_lang."' AND (at.code='textchoice' OR at.code='localechoice') AND attribute_id=".$rowAttribute->id." AND c.published=true ORDER BY c.name" );
 		$tempList = $database->loadObjectList();
 		
-		// Si la première entrée a un titre, construire une liste sur le titre
+		// Si la premiï¿½re entrï¿½e a un titre, construire une liste sur le titre
 		if (count($tempList) > 0 and $tempList[0]->title <> "")
 		{
 			$database->setQuery( "SELECT c.id as value, t.title as text FROM #__sdi_attribute a, #__sdi_list_attributetype at,  #__sdi_codevalue c, #__sdi_translation t, #__sdi_language l, #__sdi_list_codelang cl WHERE a.id=c.attribute_id AND a.attributetype_id=at.id AND c.guid=t.element_guid AND t.language_id=l.id AND l.codelang_id=cl.id and cl.code='".$language->_lang."' AND (at.code='textchoice' OR at.code='localechoice') AND attribute_id=".$rowAttribute->id." AND c.published=true ORDER BY c.name" );
@@ -962,7 +962,7 @@ class ADMIN_relation {
 		$database->setQuery( "SELECT codevalue_id as value FROM #__sdi_defaultvalue WHERE attribute_id=".$rowAttribute->id );
 		$selectedchoicevalues = array_merge( $selectedchoicevalues, $database->loadObjectList() );
 		
-		// Langues à gérer
+		// Langues ï¿½ gï¿½rer
 		$languages = array();
 		$database->setQuery( "SELECT l.id, c.code FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY id" );
 		$languages = array_merge( $languages, $database->loadObjectList() );
@@ -1041,7 +1041,7 @@ class ADMIN_relation {
 		
 		// Parcours des champs pour extraire les informations utiles:
 		// - le nom du champ
-		// - sa longueur en caractères
+		// - sa longueur en caractï¿½res
 		$fieldsLength = array();
 		foreach($tableFields as $table)
 		{
@@ -1095,14 +1095,14 @@ class ADMIN_relation {
 			$selected_contexts = array_merge( $selected_contexts, $database->loadResultArray() );
 		}
 		
-		// Récupération des types mysql pour les champs
+		// Rï¿½cupï¿½ration des types mysql pour les champs
 		$tableFields = array();
 		$tableFields = $database->getTableFields("#__sdi_relation", false);
 		$tableFields = array_merge( $tableFields, $database->getTableFields("#__sdi_translation", false) );
 		
 		// Parcours des champs pour extraire les informations utiles:
 		// - le nom du champ
-		// - sa longueur en caractères
+		// - sa longueur en caractï¿½res
 		$fieldsLength = array();
 		foreach($tableFields as $table)
 		{
@@ -1120,7 +1120,7 @@ class ADMIN_relation {
 		if ($rowClassRelation->relationtype_id == 5) // Generalization
 			$boundsStyle = "display:none";
 		
-		// Langues à gérer
+		// Langues ï¿½ gï¿½rer
 		$languages = array();
 		$database->setQuery( "SELECT l.id, c.code FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY id" );
 		$languages = array_merge( $languages, $database->loadObjectList() );
@@ -1196,14 +1196,14 @@ class ADMIN_relation {
 			$selected_contexts = array_merge( $selected_contexts, $database->loadResultArray() );
 		}
 		
-		// Récupération des types mysql pour les champs
+		// Rï¿½cupï¿½ration des types mysql pour les champs
 		$tableFields = array();
 		$tableFields = $database->getTableFields("#__sdi_relation", false);
 		$tableFields = array_merge( $tableFields, $database->getTableFields("#__sdi_translation", false) );
 		
 		// Parcours des champs pour extraire les informations utiles:
 		// - le nom du champ
-		// - sa longueur en caractères
+		// - sa longueur en caractï¿½res
 		$fieldsLength = array();
 		foreach($tableFields as $table)
 		{
@@ -1221,7 +1221,7 @@ class ADMIN_relation {
 		if ($rowObjectRelation->relationtype_id == 5) // Generalization
 			$boundsStyle = "display:none";
 		
-		// Langues à gérer
+		// Langues ï¿½ gï¿½rer
 		$languages = array();
 		$database->setQuery( "SELECT l.id, c.code FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY id" );
 		$languages = array_merge( $languages, $database->loadObjectList() );
@@ -1285,7 +1285,7 @@ class ADMIN_relation {
 			$rowRelation->classassociation_id=null;
 		}
 		
-		// Générer un guid
+		// Gï¿½nï¿½rer un guid
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 		if ($rowRelation->guid == null)
 			$rowRelation->guid = helper_easysdi::getUniqueId();
@@ -1296,7 +1296,7 @@ class ADMIN_relation {
 			exit();
 		}
 		
-		// Langues à gérer
+		// Langues ï¿½ gï¿½rer
 		$languages = array();
 		$database->setQuery( "SELECT l.id, c.code FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY id" );
 		$languages = array_merge( $languages, $database->loadObjectList() );
@@ -1311,7 +1311,7 @@ class ADMIN_relation {
 			if ($total > 0)
 			{
 				//Update
-				$database->setQuery("UPDATE #__sdi_translation SET label='".helper_easysdi::escapeString($_POST['label_'.$lang->code])."', updated='".$_POST['updated']."', updatedby=".$_POST['updatedby']." WHERE element_guid='".$rowRelation->guid."' AND language_id=".$lang->id);
+				$database->setQuery("UPDATE #__sdi_translation SET label='".addslashes($_POST['label_'.$lang->code])."', updated='".$_POST['updated']."', updatedby=".$_POST['updatedby']." WHERE element_guid='".$rowRelation->guid."' AND language_id=".$lang->id);
 				if (!$database->query())
 					{	
 						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -1321,7 +1321,7 @@ class ADMIN_relation {
 			else
 			{
 				// Create
-				$database->setQuery("INSERT INTO #__sdi_translation (element_guid, language_id, label, created, createdby) VALUES ('".$rowRelation->guid."', ".$lang->id.", '".helper_easysdi::escapeString($_POST['label_'.$lang->code])."', '".date ("Y-m-d H:i:s")."', ".$user->id.")");
+				$database->setQuery("INSERT INTO #__sdi_translation (element_guid, language_id, label, created, createdby) VALUES ('".$rowRelation->guid."', ".$lang->id.", '".addslashes($_POST['label_'.$lang->code])."', '".date ("Y-m-d H:i:s")."', ".$user->id.")");
 				if (!$database->query())
 				{	
 					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -1339,7 +1339,7 @@ class ADMIN_relation {
 			if ($total > 0)
 			{
 				//Update
-				$database->setQuery("UPDATE #__sdi_translation SET information='".helper_easysdi::escapeString($_POST['information_'.$lang->code])."' WHERE element_guid='".$rowRelation->guid."' AND language_id=".$lang->id);
+				$database->setQuery("UPDATE #__sdi_translation SET information='".addslashes($_POST['information_'.$lang->code])."' WHERE element_guid='".$rowRelation->guid."' AND language_id=".$lang->id);
 				if (!$database->query())
 					{	
 						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -1349,7 +1349,7 @@ class ADMIN_relation {
 			else
 			{
 				// Create
-				$database->setQuery("INSERT INTO #__sdi_translation (element_guid, language_id, information) VALUES ('".$rowRelation->guid."', ".$lang->id.", '".helper_easysdi::escapeString($_POST['information_'.$lang->code])."')");
+				$database->setQuery("INSERT INTO #__sdi_translation (element_guid, language_id, information) VALUES ('".$rowRelation->guid."', ".$lang->id.", '".addslashes($_POST['information_'.$lang->code])."')");
 				if (!$database->query())
 				{	
 					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -1358,11 +1358,11 @@ class ADMIN_relation {
 			}
 		}
 		
-		// Sauvegarde des profils liés à la relation
+		// Sauvegarde des profils liï¿½s ï¿½ la relation
 		$profiles = array();
 		$profiles = $_POST['profiles'];
 		
-		// Supprimer tout ce qui avait été créé jusqu'à présent pour cette relation
+		// Supprimer tout ce qui avait ï¿½tï¿½ crï¿½ï¿½ jusqu'ï¿½ prï¿½sent pour cette relation
 		$query = "delete from #__sdi_relation_profile where relation_id=".$rowRelation->id;
 		$database->setQuery( $query);
 		if (!$database->query()) {
@@ -1382,14 +1382,14 @@ class ADMIN_relation {
 			}
 		}
 		
-		// Etapes spécifiques à la relation vers un attribut
+		// Etapes spï¿½cifiques ï¿½ la relation vers un attribut
 		if ($_POST['type'] == 2)
 		{
-			// Sauvegarde de la valeur par défaut de l'attribut
+			// Sauvegarde de la valeur par dï¿½faut de l'attribut
 			$rowAttribute = new attribute( $database );
 			$rowAttribute->load( $rowRelation->attributechild_id );
 					
-			// Valeurs par défaut
+			// Valeurs par dï¿½faut
 			if ($rowAttribute->attributetype_id == 5) // Date
 				$rowAttribute->default = $_POST['defaultDate'];
 			else if ($rowAttribute->attributetype_id == 6) // List
@@ -1453,9 +1453,9 @@ class ADMIN_relation {
 					$total = $database->loadResult();
 					
 					if ($_POST['rendertype_id'] == 1)
-						$default = trim(helper_easysdi::escapeString($_POST['default_ta_'.$lang->code]));
+						$default = trim(addslashes($_POST['default_ta_'.$lang->code]));
 					else
-						$default = trim(helper_easysdi::escapeString($_POST['default_tb_'.$lang->code]));
+						$default = trim(addslashes($_POST['default_tb_'.$lang->code]));
 					
 					if ($total > 0)
 					{
@@ -1493,11 +1493,11 @@ class ADMIN_relation {
 				exit();
 			}
 
-			// Sauvegarde des contextes liés à la relation
+			// Sauvegarde des contextes liï¿½s ï¿½ la relation
 			$contexts = array();
 			$contexts = $_POST['contexts'];
 			
-			// Supprimer tout ce qui avait été créé jusqu'à présent pour cette relation
+			// Supprimer tout ce qui avait ï¿½tï¿½ crï¿½ï¿½ jusqu'ï¿½ prï¿½sent pour cette relation
 			$query = "delete from #__sdi_searchcriteria_tab WHERE searchcriteria_id IN (
 							SELECT id FROM #__sdi_searchcriteria WHERE relation_id = ".$rowRelation->id.")";
 			$database->setQuery( $query);
@@ -1536,7 +1536,7 @@ class ADMIN_relation {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
 			
-			// Ne recréer les liens que si la relation doit être un filtre de recherche
+			// Ne recrï¿½er les liens que si la relation doit ï¿½tre un filtre de recherche
 			if ($rowRelation->issearchfilter)
 			{
 				foreach($contexts as $context)
@@ -1553,7 +1553,7 @@ class ADMIN_relation {
 				}
 			}
 			
-			// Créer un critère de recherche associé
+			// Crï¿½er un critï¿½re de recherche associï¿½
 			$searchCriteria = null;
 			$database->setQuery("SELECT id FROM #__sdi_searchcriteria WHERE code=\"".$rowRelation->name."_".$rowAttribute->isocode."\" AND relation_id=".$rowRelation->id);
 			$searchCriteria = $database->loadResult();
@@ -1562,13 +1562,13 @@ class ADMIN_relation {
 			if (count($searchCriteria) == 1)
 				$rowSearchCriteria->load($searchCriteria);
 			else
-				$rowSearchCriteria->relation_id= $rowRelation->id; // Par défaut tout nouveau critère de recherche est ajouté dans le tab avancé
+				$rowSearchCriteria->relation_id= $rowRelation->id; // Par dï¿½faut tout nouveau critï¿½re de recherche est ajoutï¿½ dans le tab avancï¿½
 			
 			$rowSearchCriteria->name= $rowRelation->name;
 			$rowSearchCriteria->code= $rowRelation->name."_".$rowAttribute->isocode;
-			$rowSearchCriteria->advancedtab= 1; // Par défaut tout nouveau critère de recherche est ajouté dans le tab avancé
+			$rowSearchCriteria->advancedtab= 1; // Par dï¿½faut tout nouveau critï¿½re de recherche est ajoutï¿½ dans le tab avancï¿½
 			//$rowSearchCriteria->ogcsearchfilter= $_POST['ogcsearchfilter'];
-			$rowSearchCriteria->criteriatype_id= 2; // Le critère de recherche sera du type "relation"
+			$rowSearchCriteria->criteriatype_id= 2; // Le critï¿½re de recherche sera du type "relation"
 			
 			
 			if (!$rowSearchCriteria->store()) {	
@@ -1577,10 +1577,10 @@ class ADMIN_relation {
 				exit();
 			}
 			
-			// Par défaut tout nouveau critère de recherche est ajouté dans le tab avancé
+			// Par dï¿½faut tout nouveau critï¿½re de recherche est ajoutï¿½ dans le tab avancï¿½
 			if ($rowRelation->issearchfilter)
 			{
-				// Ajout du critère dans les tabs
+				// Ajout du critï¿½re dans les tabs
 				foreach($contexts as $context)
 				{
 					$database->setQuery("INSERT INTO #__sdi_searchcriteria_tab (searchcriteria_id, context_id, tab_id) 
@@ -1601,7 +1601,7 @@ class ADMIN_relation {
 						if ($total > 0)
 						{
 							//Update
-							$database->setQuery("UPDATE #__sdi_context_sc_filter SET ogcsearchfilter='".helper_easysdi::escapeString($_POST['filterfield_'.$lang->code])."' WHERE id='".$context."' AND searchcriteria_id='".$rowSearchCriteria->id."' AND language_id=".$lang->id);
+							$database->setQuery("UPDATE #__sdi_context_sc_filter SET ogcsearchfilter='".addslashes($_POST['filterfield_'.$lang->code])."' WHERE id='".$context."' AND searchcriteria_id='".$rowSearchCriteria->id."' AND language_id=".$lang->id);
 							if (!$database->query())
 								{	
 									$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -1611,7 +1611,7 @@ class ADMIN_relation {
 						else
 						{
 							// Create
-							$database->setQuery("INSERT INTO #__sdi_context_sc_filter (searchcriteria_id, context_id, language_id, ogcsearchfilter) VALUES ('".$rowSearchCriteria->id."', '".$context."', ".$lang->id.", '".helper_easysdi::escapeString($_POST['filterfield_'.$lang->code])."')");
+							$database->setQuery("INSERT INTO #__sdi_context_sc_filter (searchcriteria_id, context_id, language_id, ogcsearchfilter) VALUES ('".$rowSearchCriteria->id."', '".$context."', ".$lang->id.", '".addslashes($_POST['filterfield_'.$lang->code])."')");
 							if (!$database->query())
 							{	
 								$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -1625,15 +1625,15 @@ class ADMIN_relation {
 				
 		$rowRelation->checkin();
 		
-		// Au cas où on sauve avec Apply, recharger la page 
+		// Au cas oï¿½ on sauve avec Apply, recharger la page 
 		$task = JRequest::getCmd( 'task' );
 		switch ($task)
 		{
 			case 'applyRelation' :
-				// Vider les flags qui permettent de savoir si on est en train de recharger la page en cours d'édition
+				// Vider les flags qui permettent de savoir si on est en train de recharger la page en cours d'ï¿½dition
 				unset($_POST['reload']);
 				unset($_POST['attributechild_id']);
-				// Reprendre en édition l'objet
+				// Reprendre en ï¿½dition l'objet
 				TOOLBAR_relation::_EDIT();
 				ADMIN_relation::editRelation($rowRelation->id,$option);
 				break;
@@ -1660,13 +1660,13 @@ class ADMIN_relation {
 			$rowRelation= new relation( $database );
 			$rowRelation->load( $relation_id );
 			
-			// Supprimer tout ce qui avait été créé jusqu'à présent pour cette relation en relation avec le profile
+			// Supprimer tout ce qui avait ï¿½tï¿½ crï¿½ï¿½ jusqu'ï¿½ prï¿½sent pour cette relation en relation avec le profile
 			$query = "delete from #__sdi_relation_profile where relation_id=".$rowRelation->id;
 			$database->setQuery( $query);
 			if (!$database->query()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
-			// Supprimer tout ce qui avait été créé jusqu'à présent pour cette relation
+			// Supprimer tout ce qui avait ï¿½tï¿½ crï¿½ï¿½ jusqu'ï¿½ prï¿½sent pour cette relation
 			$query = "delete from #__sdi_searchcriteria_tab WHERE searchcriteria_id IN (
 							SELECT id FROM #__sdi_searchcriteria WHERE relation_id = ".$rowRelation->id.")";
 			$database->setQuery( $query);

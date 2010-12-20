@@ -27,7 +27,7 @@ defined('_JEXEC') or die('Restricted access');
 			return;
 		}
 
-		// Récuperer tous les labels et contrôler qu'ils soient saisis
+		// Rï¿½cuperer tous les labels et contrï¿½ler qu'ils soient saisis
 		var labelEmpty = 0;
 		labels = document.getElementById('labels');
 		fields = labels.getElementsByTagName('input');
@@ -38,7 +38,7 @@ defined('_JEXEC') or die('Restricted access');
 				labelEmpty=1;
 		}
 		
-		// Récuperer toutes les coordonnées et contrôler qu'elles soient saisies
+		// Rï¿½cuperer toutes les coordonnï¿½es et contrï¿½ler qu'elles soient saisies
 		var boudaryEmpty = 0;
 		boundaries = document.getElementById('boundaries');
 		fields = boundaries.getElementsByTagName('input');
@@ -155,14 +155,14 @@ class ADMIN_boundary {
 
 		$rowBoundary->checkout($user->get('id'));
 		
-		// Récupération des types mysql pour les champs
+		// Rï¿½cupï¿½ration des types mysql pour les champs
 		$tableFields = array();
 		$tableFields = $database->getTableFields("#__sdi_boundary", false);
 		$tableFields = array_merge( $tableFields, $database->getTableFields("#__sdi_translation", false) );
 		
 		// Parcours des champs pour extraire les informations utiles:
 		// - le nom du champ
-		// - sa longueur en caractères
+		// - sa longueur en caractï¿½res
 		$fieldsLength = array();
 		foreach($tableFields as $table)
 		{
@@ -176,7 +176,7 @@ class ADMIN_boundary {
 			} 
 		}
 		
-		// Langues à gérer
+		// Langues ï¿½ gï¿½rer
 		$languages = array();
 		$database->setQuery( "SELECT l.id, c.code FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY id" );
 		$languages = array_merge( $languages, $database->loadObjectList() );
@@ -211,7 +211,7 @@ class ADMIN_boundary {
 			exit();
 		}		
 		
-		// Générer un guid
+		// Gï¿½nï¿½rer un guid
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 		if ($rowBoundary->guid == null)
 			$rowBoundary->guid = helper_easysdi::getUniqueId();
@@ -222,7 +222,7 @@ class ADMIN_boundary {
 			exit();
 		}
 		
-		// Langues à gérer
+		// Langues ï¿½ gï¿½rer
 		$languages = array();
 		$database->setQuery( "SELECT l.id, c.code FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY id" );
 		$languages = array_merge( $languages, $database->loadObjectList() );
@@ -237,7 +237,7 @@ class ADMIN_boundary {
 			if ($total > 0)
 			{
 				//Update
-				$database->setQuery("UPDATE #__sdi_translation SET label='".helper_easysdi::escapeString($_POST['label_'.$lang->code])."', updated='".$_POST['updated']."', updatedby=".$_POST['updatedby']." WHERE element_guid='".$rowBoundary->guid."' AND language_id=".$lang->id);
+				$database->setQuery("UPDATE #__sdi_translation SET label='".addslashes($_POST['label_'.$lang->code])."', updated='".$_POST['updated']."', updatedby=".$_POST['updatedby']." WHERE element_guid='".$rowBoundary->guid."' AND language_id=".$lang->id);
 				if (!$database->query())
 					{	
 						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -247,7 +247,7 @@ class ADMIN_boundary {
 			else
 			{
 				// Create
-				$database->setQuery("INSERT INTO #__sdi_translation (element_guid, language_id, label, created, createdby) VALUES ('".$rowBoundary->guid."', ".$lang->id.", '".helper_easysdi::escapeString($_POST['label_'.$lang->code])."', '".date ("Y-m-d H:i:s")."', ".$user->id.")");
+				$database->setQuery("INSERT INTO #__sdi_translation (element_guid, language_id, label, created, createdby) VALUES ('".$rowBoundary->guid."', ".$lang->id.", '".addslashes($_POST['label_'.$lang->code])."', '".date ("Y-m-d H:i:s")."', ".$user->id.")");
 				if (!$database->query())
 				{	
 					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -258,12 +258,12 @@ class ADMIN_boundary {
 		
 		$rowBoundary->checkin();
 		
-		// Au cas où on sauve avec Apply, recharger la page 
+		// Au cas oï¿½ on sauve avec Apply, recharger la page 
 		$task = JRequest::getCmd( 'task' );
 		switch ($task)
 		{
 			case 'applyBoundary' :
-				// Reprendre en édition l'objet
+				// Reprendre en ï¿½dition l'objet
 				TOOLBAR_boundary::_EDIT();
 				ADMIN_boundary::editBoundary($rowBoundary->id,$option);
 				break;

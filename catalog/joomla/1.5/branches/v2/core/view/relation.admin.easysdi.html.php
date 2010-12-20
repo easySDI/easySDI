@@ -297,7 +297,7 @@ foreach ($languages as $lang)
 				</tr>
 			</table>
 			<br/><br/>
-<!-- Partie liée à une relation vers un attribut -->
+<!-- Partie liï¿½e ï¿½ une relation vers un attribut -->
 <?php
 if ($type == 2)
 { 
@@ -813,7 +813,7 @@ foreach ($languages as $lang)
 ?>
 					<tr>
 					<td WIDTH=140><?php echo JText::_("CORE_".strtoupper($lang->code)); ?></td>
-					<td><input size="50" type="text" name ="default_tb<?php echo "_".$lang->code;?>" value="<?php if ($pageReloaded and array_key_exists('default_'.$lang->code, $_POST)) echo $_POST['default_'.$lang->code]; else echo $localeDefaults[$lang->id]?>" maxlength="<?php echo $fieldsLength['defaultvalue'];?>"></td>							
+					<td><input size="50" type="text" name ="default_tb<?php echo "_".$lang->code;?>" value="<?php if ($pageReloaded and array_key_exists('default_'.$lang->code, $_POST)) echo htmlspecialchars($_POST['default_'.$lang->code]); else echo htmlspecialchars($localeDefaults[$lang->id])?>" maxlength="<?php echo $fieldsLength['defaultvalue'];?>"></td>							
 					</tr>
 <?php
 }
@@ -838,7 +838,7 @@ foreach ($languages as $lang)
 ?>
 					<tr>
 					<td WIDTH=140><?php echo JText::_("CORE_".strtoupper($lang->code)); ?></td>
-					<td><textarea rows="4" cols="50" name ="default_ta<?php echo "_".$lang->code;?>" onkeypress="javascript:maxlength(this,<?php echo $fieldsLength['defaultvalue'];?>);"><?php if ($pageReloaded and array_key_exists('default_'.$lang->code, $_POST)) echo $_POST['default_'.$lang->code]; else echo $localeDefaults[$lang->id]?></textarea></td>
+					<td><textarea rows="4" cols="50" name ="default_ta<?php echo "_".$lang->code;?>" onkeypress="javascript:maxlength(this,<?php echo $fieldsLength['defaultvalue'];?>);"><?php if ($pageReloaded and array_key_exists('default_'.$lang->code, $_POST)) echo htmlspecialchars($_POST['default_'.$lang->code]); else echo htmlspecialchars($localeDefaults[$lang->id])?></textarea></td>
 					</tr>
 <?php
 }
@@ -862,7 +862,7 @@ foreach ($languages as $lang)
 ?>
 					<tr>
 					<td WIDTH=140><?php echo JText::_("CORE_".strtoupper($lang->code)); ?></td>
-					<td><input size="50" type="text" name ="label<?php echo "_".$lang->code;?>" value="<?php if ($pageReloaded) echo $_POST['label_'.$lang->code]; else echo $labels[$lang->id]?>" maxlength="<?php echo $attributeFieldsLength['label'];?>"></td>							
+					<td><input size="50" type="text" name ="label<?php echo "_".$lang->code;?>" value="<?php if ($pageReloaded) echo htmlspecialchars($_POST['label_'.$lang->code]); else echo htmlspecialchars($labels[$lang->id])?>" maxlength="<?php echo $attributeFieldsLength['label'];?>"></td>							
 					</tr>
 <?php
 }
@@ -882,7 +882,7 @@ foreach ($languages as $lang)
 ?>
 					<tr>
 					<td width=140><?php echo JText::_("CORE_".strtoupper($lang->code)); ?></td>
-					<td><input size="50" type="text" name ="information<?php echo "_".$lang->code;?>" value="<?php echo $informations[$lang->id]?>" maxlength="<?php echo $fieldsLength['information'];?>"></td>							
+					<td><input size="50" type="text" name ="information<?php echo "_".$lang->code;?>" value="<?php echo htmlspecialchars($informations[$lang->id])?>" maxlength="<?php echo $fieldsLength['information'];?>"></td>							
 					</tr>
 <?php
 }
@@ -1000,7 +1000,7 @@ if ($row->updated and $row->updated <> '0000-00-00 00:00:00')
 			?>
 								<tr>
 								<td WIDTH=140><?php echo JText::_("CORE_".strtoupper($lang->code)); ?></td>
-								<td><input size="50" type="text" name ="filterfield<?php echo "_".$lang->code;?>" value="<?php if ($pageReloaded and array_key_exists('filterfield_'.$lang->code, $_POST)) echo $_POST['filterfield_'.$lang->code]; else echo $filterfields[$lang->id]?>" maxlength="<?php echo $searchCriteriaFieldsLength['ogcsearchfilter'];?>"></td>							
+								<td><input size="50" type="text" name ="filterfield<?php echo "_".$lang->code;?>" value="<?php if ($pageReloaded and array_key_exists('filterfield_'.$lang->code, $_POST)) echo htmlspecialchars($_POST['filterfield_'.$lang->code]); else echo htmlspecialchars($filterfields[$lang->id])?>" maxlength="<?php echo $searchCriteriaFieldsLength['ogcsearchfilter'];?>"></td>							
 								</tr>
 			<?php
 			}
@@ -1132,7 +1132,7 @@ foreach ($languages as $lang)
 ?>
 					<tr>
 					<td width=140><?php echo JText::_("CORE_".strtoupper($lang->code)); ?></td>
-					<td><input size="50" type="text" name ="label<?php echo "_".$lang->code;?>" value="<?php echo $labels[$lang->id]?>" maxlength="<?php echo $fieldsLength['label'];?>"></td>							
+					<td><input size="50" type="text" name ="label<?php echo "_".$lang->code;?>" value="<?php echo htmlspecialchars($labels[$lang->id])?>" maxlength="<?php echo $fieldsLength['label'];?>"></td>							
 					</tr>
 <?php
 }
@@ -1152,7 +1152,7 @@ foreach ($languages as $lang)
 ?>
 					<tr>
 					<td width=140><?php echo JText::_("CORE_".strtoupper($lang->code)); ?></td>
-					<td><input size="50" type="text" name ="information<?php echo "_".$lang->code;?>" value="<?php echo $informations[$lang->id]?>" maxlength="<?php echo $fieldsLength['information'];?>"></td>							
+					<td><input size="50" type="text" name ="information<?php echo "_".$lang->code;?>" value="<?php echo htmlspecialchars($informations[$lang->id])?>" maxlength="<?php echo $fieldsLength['information'];?>"></td>							
 					</tr>
 <?php
 }
@@ -1322,7 +1322,7 @@ foreach ($languages as $lang)
 ?>
 					<tr>
 					<td width=140><?php echo JText::_("CORE_".strtoupper($lang->code)); ?></td>
-					<td><input size="50" type="text" name ="label<?php echo "_".$lang->code;?>" value="<?php echo $labels[$lang->id]?>" maxlength="<?php echo $fieldsLength['label'];?>"></td>							
+					<td><input size="50" type="text" name ="label<?php echo "_".$lang->code;?>" value="<?php echo htmlspecialchars($labels[$lang->id])?>" maxlength="<?php echo $fieldsLength['label'];?>"></td>							
 					</tr>
 <?php
 }
@@ -1342,7 +1342,7 @@ foreach ($languages as $lang)
 ?>
 					<tr>
 					<td width=140><?php echo JText::_("CORE_".strtoupper($lang->code)); ?></td>
-					<td><input size="50" type="text" name ="information<?php echo "_".$lang->code;?>" value="<?php echo $informations[$lang->id]?>" maxlength="<?php echo $fieldsLength['information'];?>"></td>							
+					<td><input size="50" type="text" name ="information<?php echo "_".$lang->code;?>" value="<?php echo htmlspecialchars($informations[$lang->id])?>" maxlength="<?php echo $fieldsLength['information'];?>"></td>							
 					</tr>
 <?php
 }

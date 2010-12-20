@@ -281,7 +281,7 @@ class ADMIN_context {
 			if ($total > 0)
 			{
 				//Update
-				$database->setQuery("UPDATE #__sdi_translation SET label='".helper_easysdi::escapeString($_POST['label_'.$lang->code])."', updated='".$_POST['updated']."', updatedby=".$_POST['updatedby']." WHERE element_guid='".$rowContext->guid."' AND language_id=".$lang->id);
+				$database->setQuery("UPDATE #__sdi_translation SET label='".addslashes($_POST['label_'.$lang->code])."', updated='".$_POST['updated']."', updatedby=".$_POST['updatedby']." WHERE element_guid='".$rowContext->guid."' AND language_id=".$lang->id);
 				if (!$database->query())
 					{	
 						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -291,7 +291,7 @@ class ADMIN_context {
 			else
 			{
 				// Create
-				$database->setQuery("INSERT INTO #__sdi_translation (element_guid, language_id, label, created, createdby) VALUES ('".$rowContext->guid."', ".$lang->id.", '".helper_easysdi::escapeString($_POST['label_'.$lang->code])."', '".date ("Y-m-d H:i:s")."', ".$user->id.")");
+				$database->setQuery("INSERT INTO #__sdi_translation (element_guid, language_id, label, created, createdby) VALUES ('".$rowContext->guid."', ".$lang->id.", '".addslashes($_POST['label_'.$lang->code])."', '".date ("Y-m-d H:i:s")."', ".$user->id.")");
 				if (!$database->query())
 				{	
 					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -309,7 +309,7 @@ class ADMIN_context {
 			if ($total > 0)
 			{
 				//Update
-				$database->setQuery("UPDATE #__sdi_context_sort SET ogcsearchsorting='".helper_easysdi::escapeString($_POST['sortfield_'.$lang->code])."' WHERE context_id='".$rowContext->id."' AND language_id=".$lang->id);
+				$database->setQuery("UPDATE #__sdi_context_sort SET ogcsearchsorting='".addslashes($_POST['sortfield_'.$lang->code])."' WHERE context_id='".$rowContext->id."' AND language_id=".$lang->id);
 				if (!$database->query())
 					{	
 						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -319,7 +319,7 @@ class ADMIN_context {
 			else
 			{
 				// Create
-				$database->setQuery("INSERT INTO #__sdi_context_sort (context_id, language_id, ogcsearchsorting) VALUES ('".$rowContext->id."', ".$lang->id.", '".helper_easysdi::escapeString($_POST['sortfield_'.$lang->code])."')");
+				$database->setQuery("INSERT INTO #__sdi_context_sort (context_id, language_id, ogcsearchsorting) VALUES ('".$rowContext->id."', ".$lang->id.", '".addslashes($_POST['sortfield_'.$lang->code])."')");
 				if (!$database->query())
 				{	
 					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");

@@ -146,8 +146,7 @@ function listCodeValue(&$rows, $lists, $page, $option,  $filter_order_Dir, $filt
 	{
 		global  $mainframe;
 		
-		$database =& JFactory::getDBO(); 
-
+		$database =& JFactory::getDBO();
 		?>
 		<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm" onsubmit="PostSelect('adminForm', 'selected_accounts')">
 			<table border="0" cellpadding="3" cellspacing="0">	
@@ -175,10 +174,12 @@ function listCodeValue(&$rows, $lists, $page, $option,  $filter_order_Dir, $filt
 <?php
 foreach ($languages as $lang)
 { 
+	 
+echo $labels[$lang->id];
 ?>
 					<tr>
 					<td width=140><?php echo JText::_("CORE_".strtoupper($lang->code)); ?></td>
-					<td><input size="50" type="text" name ="label<?php echo "_".$lang->code;?>" value="<?php echo $labels[$lang->id]?>" maxlength="<?php echo $fieldsLength['label'];?>"></td>							
+					<td><input size="50" type="text" name ="label<?php echo "_".$lang->code;?>" value="<?php echo htmlspecialchars($labels[$lang->id])?>" maxlength="<?php echo $fieldsLength['label'];?>"></td>							
 					</tr>
 <?php
 }

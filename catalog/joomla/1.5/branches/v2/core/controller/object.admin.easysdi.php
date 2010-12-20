@@ -229,7 +229,7 @@ class ADMIN_object {
 		$rowObject = new object( $database );
 		$rowObject->load( $id );
 
-		// Gestion de la page rechargée sur modification de la classe root du profil
+		// Gestion de la page rechargï¿½e sur modification de la classe root du profil
 		$pageReloaded=false;
 		if (array_key_exists('metadata_guid', $_POST))
 		{
@@ -307,13 +307,13 @@ class ADMIN_object {
 
 		$rowObject->checkout($user->get('id'));
 		
-		// Récupération des types mysql pour les champs
+		// Rï¿½cupï¿½ration des types mysql pour les champs
 		$tableFields = array();
 		$tableFields = $database->getTableFields("#__sdi_object", false);
 		
 		// Parcours des champs pour extraire les informations utiles:
 		// - le nom du champ
-		// - sa longueur en caractères
+		// - sa longueur en caractï¿½res
 		$fieldsLength = array();
 		foreach($tableFields as $table)
 		{
@@ -345,7 +345,7 @@ class ADMIN_object {
 		if ($rowObject->id == 0)
 			$rowMetadata->guid = helper_easysdi::getUniqueId();
 		
-		// Langues à gérer
+		// Langues ï¿½ gï¿½rer
 		$languages = array();
 		$database->setQuery( "SELECT l.id, c.code FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY id" );
 		$languages = array_merge( $languages, $database->loadObjectList() );
@@ -361,7 +361,7 @@ class ADMIN_object {
 		}
 			
 		// Gestionnaires
-		// Comptes racine associés au type d'objet
+		// Comptes racine associï¿½s au type d'objet
 		$selected_managers = array();
 		if (!$pageReloaded)
 		{
@@ -482,27 +482,27 @@ class ADMIN_object {
 			exit();
 		}
 
-		// Générer un guid pour l'objet
+		// Gï¿½nï¿½rer un guid pour l'objet
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 		if ($rowObject->guid == null)
 			$rowObject->guid = helper_easysdi::getUniqueId();
 		
-		// Si l'objet n'existe pas encore, créer une version et une métadonnée
+		// Si l'objet n'existe pas encore, crï¿½er une version et une mï¿½tadonnï¿½e
 		if ($rowObject->id == 0)
 		{
-			// Récupérer l'attribut qui correspond au stockage de l'id
+			// Rï¿½cupï¿½rer l'attribut qui correspond au stockage de l'id
 			$idrow = array();
 			//$database->setQuery("SELECT CONCAT(ns.prefix,':',a.isocode) as attribute_isocode, CONCAT(atns.prefix,':',at.isocode) as type_isocode FROM #__sdi_profile p, #__sdi_objecttype ot, #__sdi_relation rel, #__sdi_list_attributetype as at, #__sdi_attribute a LEFT OUTER JOIN #__sdi_namespace as ns ON a.namespace_id=ns.id LEFT OUTER JOIN #__sdi_namespace as atns ON at.namespace_id=atns.id WHERE p.id=ot.profile_id AND rel.id=p.metadataid AND a.id=rel.attributechild_id AND at.id=a.attributetype_id AND ot.id=".$rowObject->objecttype_id);
 			$database->setQuery("SELECT a.name as name, ns.prefix as ns, CONCAT(ns.prefix, ':', a.isocode) as attribute_isocode, CONCAT(atns.prefix, ':', at.isocode) as type_isocode FROM #__sdi_profile p, #__sdi_objecttype ot, #__sdi_relation rel, #__sdi_attribute a LEFT OUTER JOIN #__sdi_namespace ns ON a.namespace_id=ns.id INNER JOIN #__sdi_list_attributetype as at ON at.id=a.attributetype_id LEFT OUTER JOIN #__sdi_namespace atns ON at.namespace_id=atns.id WHERE p.id=ot.profile_id AND rel.id=p.metadataid AND a.id=rel.attributechild_id AND ot.id=".$rowObject->objecttype_id);
 			$idrow = array_merge( $idrow, $database->loadObjectList() );
 			
-			// Récupérer la classe racine
+			// Rï¿½cupï¿½rer la classe racine
 			$root = array();
 			$database->setQuery("SELECT CONCAT(ns.prefix,':',c.isocode) as isocode FROM #__sdi_profile p, #__sdi_objecttype ot, #__sdi_class c LEFT OUTER JOIN #__sdi_namespace as ns ON c.namespace_id=ns.id WHERE c.id=p.class_id AND p.id=ot.profile_id AND ot.id=".$rowObject->objecttype_id);
 			$root = array_merge( $root, $database->loadObjectList() );
 			
-			// Création de la métadonnée pour le nouveau guid
-			// Insérer dans Geonetwork la nouvelle version de la métadonnée
+			// Crï¿½ation de la mï¿½tadonnï¿½e pour le nouveau guid
+			// Insï¿½rer dans Geonetwork la nouvelle version de la mï¿½tadonnï¿½e
 			$xmlstr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 			<csw:Transaction service=\"CSW\"
 			version=\"2.0.2\"
@@ -542,7 +542,7 @@ class ADMIN_object {
 				exit();
 			}
 		
-			// Créer l'entrée de métadonnée dans la base
+			// Crï¿½er l'entrï¿½e de mï¿½tadonnï¿½e dans la base
 			$rowMetadata = new metadata($database);
 			$rowMetadata->guid = $_POST['metadata_guid'];
 			$rowMetadata->name = $_POST['metadata_guid'];
@@ -563,7 +563,7 @@ class ADMIN_object {
 				$mainframe->redirect("index.php?option=$option&task=listObject" );
 				exit();
 			}
-			// Construire la première version
+			// Construire la premiï¿½re version
 			$rowObjectVersion= new objectversion( $database );
 			$rowObjectVersion->object_id=$rowObject->id;
 			$rowObjectVersion->metadata_id=$rowMetadata->id;
@@ -572,7 +572,7 @@ class ADMIN_object {
 			$rowObjectVersion->created=$_POST['created'];
 			$rowObjectVersion->createdby=$_POST['createdby'];
 			
-			// Générer un guid
+			// Gï¿½nï¿½rer un guid
 			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 			if ($rowObjectVersion->guid == null)
 				$rowObjectVersion->guid = helper_easysdi::getUniqueId();
@@ -592,7 +592,7 @@ class ADMIN_object {
 			}
 		}
 		
-		// Langues à gérer
+		// Langues ï¿½ gï¿½rer
 		$languages = array();
 		$database->setQuery( "SELECT l.id, c.code FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY id" );
 		$languages = array_merge( $languages, $database->loadObjectList() );
@@ -606,7 +606,7 @@ class ADMIN_object {
 			if ($total > 0)
 			{
 				//Update
-				$database->setQuery("UPDATE #__sdi_translation SET label='".helper_easysdi::escapeString($_POST['label_'.$lang->code])."', updated='".$_POST['updated']."', updatedby=".$_POST['updatedby']." WHERE element_guid='".$rowObject->guid."' AND language_id=".$lang->id);
+				$database->setQuery("UPDATE #__sdi_translation SET label='".addslashes($_POST['label_'.$lang->code])."', updated='".$_POST['updated']."', updatedby=".$_POST['updatedby']." WHERE element_guid='".$rowObject->guid."' AND language_id=".$lang->id);
 				if (!$database->query())
 					{	
 						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -616,7 +616,7 @@ class ADMIN_object {
 			else
 			{
 				// Create
-				$database->setQuery("INSERT INTO #__sdi_translation (element_guid, language_id, label, created, createdby) VALUES ('".$rowObject->guid."', ".$lang->id.", '".helper_easysdi::escapeString($_POST['label_'.$lang->code])."', '".date ("Y-m-d H:i:s")."', ".$user->id.")");
+				$database->setQuery("INSERT INTO #__sdi_translation (element_guid, language_id, label, created, createdby) VALUES ('".$rowObject->guid."', ".$lang->id.", '".addslashes($_POST['label_'.$lang->code])."', '".date ("Y-m-d H:i:s")."', ".$user->id.")");
 				if (!$database->query())
 				{	
 					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -625,7 +625,7 @@ class ADMIN_object {
 			}
 		}
 		
-		// Récupérer toutes les relations avec les managers existantes
+		// Rï¿½cupï¿½rer toutes les relations avec les managers existantes
 		$query = "SELECT * FROM #__sdi_manager_object WHERE object_id=".$rowObject->id;
 		$database->setQuery($query);
 		$manager_rows = $database->loadObjectList();
@@ -635,10 +635,10 @@ class ADMIN_object {
 			return false;
 		}
 		
-		// Déstockage des relations avec les managers
+		// Dï¿½stockage des relations avec les managers
 		foreach ($manager_rows as $row)
 		{
-			// Si la clé existante n'est pas dans le tableau des relations, on la supprime
+			// Si la clï¿½ existante n'est pas dans le tableau des relations, on la supprime
 			if (!in_array($row->id, $_POST['selected_manager']))
 			{
 				$rowManagerObject= new manager_object($database);
@@ -656,7 +656,7 @@ class ADMIN_object {
 		{
 			foreach($_POST['selected_manager'] as $selected)
 			{
-				// Si la clé du tableau des relations n'est pas encore dans la base, on l'ajoute
+				// Si la clï¿½ du tableau des relations n'est pas encore dans la base, on l'ajoute
 				if (!in_array($selected, $manager_rows))
 				{
 					$rowManagerObject= new manager_object($database);
@@ -672,7 +672,7 @@ class ADMIN_object {
 			}
 		}
 		
-		// Récupérer toutes les relations avec les editeurs existantes
+		// Rï¿½cupï¿½rer toutes les relations avec les editeurs existantes
 		$query = "SELECT * FROM #__sdi_editor_object WHERE object_id=".$rowObject->id;
 		$database->setQuery($query);
 		$editor_rows = $database->loadObjectList();
@@ -682,10 +682,10 @@ class ADMIN_object {
 			return false;
 		}
 		
-		// Déstockage des relations avec les editeurs
+		// Dï¿½stockage des relations avec les editeurs
 		foreach ($editor_rows as $row)
 		{
-			// Si la clé existante n'est pas dans le tableau des relations, on la supprime
+			// Si la clï¿½ existante n'est pas dans le tableau des relations, on la supprime
 			if (!in_array($row->id, $_POST['selected_editor']))
 			{
 				$rowEditorObject= new editor_object($database);
@@ -704,7 +704,7 @@ class ADMIN_object {
 		{
 			foreach($_POST['selected_editor'] as $selected)
 			{
-				// Si la clé du tableau des relations n'est pas encore dans la base, on l'ajoute
+				// Si la clï¿½ du tableau des relations n'est pas encore dans la base, on l'ajoute
 				if (!in_array($selected, $editor_rows))
 				{
 					$rowEditorObject= new editor_object($database);
@@ -721,14 +721,14 @@ class ADMIN_object {
 		}
 		$rowObject->checkin();
 		
-		// Au cas où on sauve avec Apply, recharger la page 
+		// Au cas oï¿½ on sauve avec Apply, recharger la page 
 		$task = JRequest::getCmd( 'task' );
 		switch ($task)
 		{
 			case 'applyObject' :
-				// Vider le flag qui permet de savoir si on est en train de recharger la page en cours d'édition
+				// Vider le flag qui permet de savoir si on est en train de recharger la page en cours d'ï¿½dition
 				unset($_POST['metadata_guid']);
-				// Reprendre en édition l'objet
+				// Reprendre en ï¿½dition l'objet
 				TOOLBAR_object::_EDIT();
 				ADMIN_object::editObject($rowObject->id,$option);
 				break;
@@ -756,12 +756,12 @@ class ADMIN_object {
 			$object = new object( $database );
 			$object->load( $id );
 
-			// Récupérer toutes les versions
+			// Rï¿½cupï¿½rer toutes les versions
 			$listVersion = array();
 			$database->setQuery( "SELECT * FROM #__sdi_objectversion WHERE object_id=".$object->id." ORDER BY created DESC" );
 			$listVersion = array_merge( $listVersion, $database->loadObjectList() );
 			
-			//S'assurer que toutes les versions sont dans l'état archivé ou en travail
+			//S'assurer que toutes les versions sont dans l'ï¿½tat archivï¿½ ou en travail
 			$total=0;
 			$database->setQuery( "SELECT COUNT(*) FROM #__sdi_objectversion v INNER JOIN #__sdi_metadata m ON m.id=v.metadata_id INNER JOIN #__sdi_list_metadatastate s ON s.id=m.metadatastate_id WHERE v.object_id=".$object->id." AND (s.code = 'unpublished' or s.code = 'archived') ORDER BY v.created DESC" );
 			$total = $database->loadResult();
@@ -773,7 +773,7 @@ class ADMIN_object {
 				exit;
 			}
 			
-			// Si la suppression de l'objet est possible, commencer par supprimer toutes les versions et leur métadonnée
+			// Si la suppression de l'objet est possible, commencer par supprimer toutes les versions et leur mï¿½tadonnï¿½e
 			foreach( $listVersion as $version )
 			{
 				$objectversion = new objectversion($database);
@@ -782,7 +782,7 @@ class ADMIN_object {
 				$metadata = new metadata($database);
 				$metadata->load( $objectversion->metadata_id );
 				
-				// Supprimer de Geonetwork la métadonnée
+				// Supprimer de Geonetwork la mï¿½tadonnï¿½e
 				$xmlstr = '<?xml version="1.0" encoding="UTF-8"?>
 					<csw:Transaction service="CSW" version="2.0.2" xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" xmlns:ogc="http://www.opengis.net/ogc" 
 					    xmlns:apiso="http://www.opengis.net/cat/csw/apiso/1.0">

@@ -218,13 +218,13 @@ class ADMIN_codevalue {
 			$unselected_accounts=array();
 			$unselected_accounts=helper_easysdi::array_obj_diff($accounts, $selected_accounts);
 			
-			// Récupération des types mysql pour les champs
+			// Rï¿½cupï¿½ration des types mysql pour les champs
 			$tableFields = array();
 			$tableFields = $database->getTableFields("#__sdi_codevalue", false);
 			
 			// Parcours des champs pour extraire les informations utiles:
 			// - le nom du champ
-			// - sa longueur en caractères
+			// - sa longueur en caractï¿½res
 			$fieldsLength = array();
 			foreach($tableFields as $table)
 			{
@@ -238,7 +238,7 @@ class ADMIN_codevalue {
 				} 
 			}
 			
-			// Langues à gérer
+			// Langues ï¿½ gï¿½rer
 			$languages = array();
 			$database->setQuery( "SELECT l.id, c.code FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY id" );
 			$languages = array_merge( $languages, $database->loadObjectList() );
@@ -292,13 +292,13 @@ class ADMIN_codevalue {
 		$unselected_accounts=array();
 		$unselected_accounts=helper_easysdi::array_obj_diff($accounts, $selected_accounts);
 		
-		// Récupération des types mysql pour les champs
+		// Rï¿½cupï¿½ration des types mysql pour les champs
 		$tableFields = array();
 		$tableFields = $database->getTableFields("#__sdi_codevalue", false);
 		
 		// Parcours des champs pour extraire les informations utiles:
 		// - le nom du champ
-		// - sa longueur en caractères
+		// - sa longueur en caractï¿½res
 		$fieldsLength = array();
 		foreach($tableFields as $table)
 		{
@@ -312,7 +312,7 @@ class ADMIN_codevalue {
 			} 
 		}
 		
-		// Langues à gérer
+		// Langues ï¿½ gï¿½rer
 		$languages = array();
 		$database->setQuery( "SELECT l.id, c.code FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY id" );
 		$languages = array_merge( $languages, $database->loadObjectList() );
@@ -368,14 +368,14 @@ class ADMIN_codevalue {
 		$unselected_accounts=array();
 		$unselected_accounts=helper_easysdi::array_obj_diff($accounts, $selected_accounts);
 		
-		// Récupération des types mysql pour les champs
+		// Rï¿½cupï¿½ration des types mysql pour les champs
 		$tableFields = array();
 		$tableFields = $database->getTableFields("#__sdi_codevalue", false);
 		$tableFields = array_merge( $tableFields, $database->getTableFields("#__sdi_translation", false));
 		
 		// Parcours des champs pour extraire les informations utiles:
 		// - le nom du champ
-		// - sa longueur en caractères
+		// - sa longueur en caractï¿½res
 		$fieldsLength = array();
 		foreach($tableFields as $table)
 		{
@@ -389,7 +389,7 @@ class ADMIN_codevalue {
 			} 
 		}
 		
-		// Langues à gérer
+		// Langues ï¿½ gï¿½rer
 		$languages = array();
 		$database->setQuery( "SELECT l.id, c.code FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY id" );
 		$languages = array_merge( $languages, $database->loadObjectList() );
@@ -437,14 +437,14 @@ class ADMIN_codevalue {
 		$rowAttribute->load( $_POST['attribute_id'] );
 		
 		
-		// Générer un guid
+		// Gï¿½nï¿½rer un guid
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 		if ($rowCodeValue->guid == null)
 			$rowCodeValue->guid = helper_easysdi::getUniqueId();
 		
 
-		// Stocker la valeur "à la main", puisque le champ dans le formulaire d'édition 
-		// ne porte pas le nom qu'il faut (problème de mots clés)
+		// Stocker la valeur "ï¿½ la main", puisque le champ dans le formulaire d'ï¿½dition 
+		// ne porte pas le nom qu'il faut (problï¿½me de mots clï¿½s)
 		if ($rowAttribute->attributetype_id <> 10)
 			$rowCodeValue->value = trim($_POST['val']);
 
@@ -454,7 +454,7 @@ class ADMIN_codevalue {
 			//exit();
 		}
 		
-		// Langues à gérer
+		// Langues ï¿½ gï¿½rer
 		$languages = array();
 		$database->setQuery( "SELECT l.id, c.code FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY id" );
 		$languages = array_merge( $languages, $database->loadObjectList() );
@@ -471,13 +471,13 @@ class ADMIN_codevalue {
 				if ($total > 0)
 				{
 					//Update
-					$database->setQuery("UPDATE #__sdi_translation SET title='".helper_easysdi::escapeString(trim($_POST['title_'.$lang->code]))."', updated='".$_POST['updated']."', updatedby=".$_POST['updatedby']." WHERE element_guid='".$rowCodeValue->guid."' AND language_id=".$lang->id);
+					$database->setQuery("UPDATE #__sdi_translation SET title='".addslashes($_POST['title_'.$lang->code])."', updated='".$_POST['updated']."', updatedby=".$_POST['updatedby']." WHERE element_guid='".$rowCodeValue->guid."' AND language_id=".$lang->id);
 					if (!$database->query())
 						{	
 							$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 							return false;
 						}
-					$database->setQuery("UPDATE #__sdi_translation SET content='".helper_easysdi::escapeString(trim($_POST['content_'.$lang->code]))."', updated='".$_POST['updated']."', updatedby=".$_POST['updatedby']." WHERE element_guid='".$rowCodeValue->guid."' AND language_id=".$lang->id);
+					$database->setQuery("UPDATE #__sdi_translation SET content='".addslashes($_POST['content_'.$lang->code])."', updated='".$_POST['updated']."', updatedby=".$_POST['updatedby']." WHERE element_guid='".$rowCodeValue->guid."' AND language_id=".$lang->id);
 					if (!$database->query())
 						{	
 							$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -487,7 +487,7 @@ class ADMIN_codevalue {
 				else
 				{
 					// Create
-					$database->setQuery("INSERT INTO #__sdi_translation (element_guid, language_id, title, content, created, createdby) VALUES ('".$rowCodeValue->guid."', ".$lang->id.", '".helper_easysdi::escapeString(trim($_POST['title_'.$lang->code]))."', '".helper_easysdi::escapeString(trim($_POST['content_'.$lang->code]))."', '".date ("Y-m-d H:i:s")."', ".$user->id.")");
+					$database->setQuery("INSERT INTO #__sdi_translation (element_guid, language_id, title, content, created, createdby) VALUES ('".$rowCodeValue->guid."', ".$lang->id.", '".addslashes($_POST['title_'.$lang->code])."', '".addslashes($_POST['content_'.$lang->code])."', '".date ("Y-m-d H:i:s")."', ".$user->id.")");
 					if (!$database->query())
 					{	
 						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -507,7 +507,7 @@ class ADMIN_codevalue {
 				if ($total > 0)
 				{
 					//Update
-					$database->setQuery("UPDATE #__sdi_translation SET label='".helper_easysdi::escapeString($_POST['label_'.$lang->code])."', updated='".$_POST['updated']."', updatedby=".$_POST['updatedby']." WHERE element_guid='".$rowCodeValue->guid."' AND language_id=".$lang->id);
+					$database->setQuery("UPDATE #__sdi_translation SET label='".addslashes($_POST['label_'.$lang->code])."', updated='".$_POST['updated']."', updatedby=".$_POST['updatedby']." WHERE element_guid='".$rowCodeValue->guid."' AND language_id=".$lang->id);
 					if (!$database->query())
 						{	
 							$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -517,7 +517,7 @@ class ADMIN_codevalue {
 				else
 				{
 					// Create
-					$database->setQuery("INSERT INTO #__sdi_translation (element_guid, language_id, label, created, createdby) VALUES ('".$rowCodeValue->guid."', ".$lang->id.", '".helper_easysdi::escapeString($_POST['label_'.$lang->code])."', '".date ("Y-m-d H:i:s")."', ".$user->id.")");
+					$database->setQuery("INSERT INTO #__sdi_translation (element_guid, language_id, label, created, createdby) VALUES ('".$rowCodeValue->guid."', ".$lang->id.", '".addslashes($_POST['label_'.$lang->code])."', '".date ("Y-m-d H:i:s")."', ".$user->id.")");
 					if (!$database->query())
 					{	
 						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -527,7 +527,7 @@ class ADMIN_codevalue {
 			}
 		}
 		
-		// Récupérer toutes les relations avec les utilisateurs existantes
+		// Rï¿½cupï¿½rer toutes les relations avec les utilisateurs existantes
 		$query = "SELECT * FROM #__sdi_account_codevalue WHERE codevalue_id=".$rowCodeValue->id;
 		$database->setQuery($query);
 		$rows = $database->loadObjectList();
@@ -537,10 +537,10 @@ class ADMIN_codevalue {
 			return false;
 		}
 		
-		// Déstockage des relations avec les utilisateurs
+		// Dï¿½stockage des relations avec les utilisateurs
 		foreach ($rows as $row)
 		{
-			// Si la clé existante n'est pas dans le tableau des relations, on la supprime
+			// Si la clï¿½ existante n'est pas dans le tableau des relations, on la supprime
 			if (!in_array($row->id, $_POST['selected']))
 			{
 				$rowAccountCodeValue= new account_codevalue($database);
@@ -559,7 +559,7 @@ class ADMIN_codevalue {
 		{
 			foreach($_POST['selected'] as $selected)
 			{
-				// Si la clé du tableau des relations n'est pas encore dans la base, on l'ajoute
+				// Si la clï¿½ du tableau des relations n'est pas encore dans la base, on l'ajoute
 				if (!in_array($selected, $rows))
 				{
 					$rowAccountCodeValue= new account_codevalue($database);
@@ -577,12 +577,12 @@ class ADMIN_codevalue {
 		
 		$rowCodeValue->checkin();
 		
-		// Au cas où on sauve avec Apply, recharger la page 
+		// Au cas oï¿½ on sauve avec Apply, recharger la page 
 		$task = JRequest::getCmd( 'task' );
 		switch ($task)
 		{
 			case 'applyCodeValue' :
-				// Reprendre en édition l'objet
+				// Reprendre en ï¿½dition l'objet
 				TOOLBAR_codevalue::_EDIT();
 				ADMIN_codevalue::editCodeValue($rowCodeValue->id,$option);
 				break;

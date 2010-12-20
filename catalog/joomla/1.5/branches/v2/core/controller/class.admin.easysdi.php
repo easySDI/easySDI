@@ -153,14 +153,14 @@ class ADMIN_class {
 		$unselected_accounts=array();
 		$unselected_accounts=helper_easysdi::array_obj_diff($accounts, $selected_accounts);
 		
-		// Récupération des types mysql pour les champs
+		// Rï¿½cupï¿½ration des types mysql pour les champs
 		$tableFields = array();
 		$tableFields = $database->getTableFields("#__sdi_class", false);
 		$tableFields = array_merge( $tableFields, $database->getTableFields("#__sdi_translation", false) );
 		
 		// Parcours des champs pour extraire les informations utiles:
 		// - le nom du champ
-		// - sa longueur en caractères
+		// - sa longueur en caractï¿½res
 		$fieldsLength = array();
 		foreach($tableFields as $table)
 		{
@@ -174,7 +174,7 @@ class ADMIN_class {
 			} 
 		}
 		
-		// Langues à gérer
+		// Langues ï¿½ gï¿½rer
 		$languages = array();
 		$database->setQuery( "SELECT l.id, c.code FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY id" );
 		$languages = array_merge( $languages, $database->loadObjectList() );
@@ -213,7 +213,7 @@ class ADMIN_class {
 			exit();
 		}		
 		
-		// Générer un guid
+		// Gï¿½nï¿½rer un guid
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 		if ($rowClass->guid == null)
 			$rowClass->guid = helper_easysdi::getUniqueId();
@@ -224,7 +224,7 @@ class ADMIN_class {
 			exit();
 		}
 
-		// Langues à gérer
+		// Langues ï¿½ gï¿½rer
 		$languages = array();
 		$database->setQuery( "SELECT l.id, c.code FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY id" );
 		$languages = array_merge( $languages, $database->loadObjectList() );
@@ -238,7 +238,7 @@ class ADMIN_class {
 			if ($total > 0)
 			{
 				//Update
-				$database->setQuery("UPDATE #__sdi_translation SET information='".helper_easysdi::escapeString($_POST['information_'.$lang->code])."' WHERE element_guid='".$rowClass->guid."' AND language_id=".$lang->id);
+				$database->setQuery("UPDATE #__sdi_translation SET information='".addslashes($_POST['information_'.$lang->code])."' WHERE element_guid='".$rowClass->guid."' AND language_id=".$lang->id);
 				if (!$database->query())
 					{	
 						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -248,7 +248,7 @@ class ADMIN_class {
 			else
 			{
 				// Create
-				$database->setQuery("INSERT INTO #__sdi_translation (element_guid, language_id, information) VALUES ('".$rowClass->guid."', ".$lang->id.", '".helper_easysdi::escapeString($_POST['information_'.$lang->code])."')");
+				$database->setQuery("INSERT INTO #__sdi_translation (element_guid, language_id, information) VALUES ('".$rowClass->guid."', ".$lang->id.", '".addslashes($_POST['information_'.$lang->code])."')");
 				if (!$database->query())
 				{	
 					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -257,7 +257,7 @@ class ADMIN_class {
 			}
 		}
 		
-		// Récupérer toutes les relations avec les utilisateurs existantes
+		// Rï¿½cupï¿½rer toutes les relations avec les utilisateurs existantes
 		$query = "SELECT * FROM #__sdi_account_class WHERE class_id=".$rowClass->id;
 		$database->setQuery($query);
 		$rows = $database->loadObjectList();
@@ -267,10 +267,10 @@ class ADMIN_class {
 			return false;
 		}
 		
-		// Déstockage des relations avec les utilisateurs
+		// Dï¿½stockage des relations avec les utilisateurs
 		foreach ($rows as $row)
 		{
-			// Si la clé existante n'est pas dans le tableau des relations, on la supprime
+			// Si la clï¿½ existante n'est pas dans le tableau des relations, on la supprime
 			if (!in_array($row->id, $_POST['selected']))
 			{
 				$rowAccountClass= new account_class($database);
@@ -289,7 +289,7 @@ class ADMIN_class {
 			// Stockage des relations avec les utilisateurs
 			foreach($_POST['selected'] as $selected)
 			{
-				// Si la clé du tableau des relations n'est pas encore dans la base, on l'ajoute
+				// Si la clï¿½ du tableau des relations n'est pas encore dans la base, on l'ajoute
 				if (!in_array($selected, $rows))
 				{
 					$rowAccountClass= new account_class($database);
@@ -307,12 +307,12 @@ class ADMIN_class {
 		
 		$rowClass->checkin();
 		
-		// Au cas où on sauve avec Apply, recharger la page 
+		// Au cas oï¿½ on sauve avec Apply, recharger la page 
 		$task = JRequest::getCmd( 'task' );
 		switch ($task)
 		{
 			case 'applyClass' :
-				// Reprendre en édition l'objet
+				// Reprendre en ï¿½dition l'objet
 				TOOLBAR_class::_EDIT();
 				ADMIN_class::editClass($rowClass->id,$option);
 				break;
