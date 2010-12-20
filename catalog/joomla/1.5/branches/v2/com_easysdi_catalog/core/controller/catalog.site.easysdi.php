@@ -734,6 +734,12 @@ class SITE_catalog {
 										echo "</div>";
 									}
 									
+									if(count($list_id) == 0)
+									{
+										$arrObjecttypeMd[] = -1;
+										break;
+									}
+									
 								}
 								else if (!array_key_exists('objecttype_id', $_GET) and !array_key_exists('bboxMinX', $_GET)) // Cas du premier appel. Rechercher sur tous les types
 								{
@@ -1803,6 +1809,11 @@ class SITE_catalog {
 										echo "</div>";
 									}
 									
+									if(count($list_id) == 0)
+									{
+										$arrObjecttypeMd[] = -1;
+										break;
+									}
 								}
 								else if (!array_key_exists('objecttype_id', $_GET) and !array_key_exists('bboxMinX', $_GET)) // Cas du premier appel. Rechercher sur tous les types
 								{
