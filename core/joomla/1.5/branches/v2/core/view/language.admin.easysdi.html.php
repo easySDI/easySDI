@@ -141,7 +141,8 @@ class HTML_language {
 	{
 		global  $mainframe;
 		$database =& JFactory::getDBO(); 
-		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_catalog'.DS.'js'.DS.'catalog.js.php');
+		
+		JHTML::script('core.js', 'administrator/components/com_easysdi_core/js/');
 		
 		?>
 		<form action="index.php" method="post" name="adminForm">
@@ -192,7 +193,7 @@ class HTML_language {
 				</tr>
 				<tr>
 					<td><?php echo JText::_("CORE_DESCRIPTION"); ?> : </td>
-					<td colspan="2"><textarea rows="4" cols="50" name ="description" onkeypress="javascript:maxlength(this,<?php echo $fieldsLength['description'];?>);"><?php echo $row->description?></textarea></td>
+					<td colspan="2"><textarea rows="4" cols="50" name ="description" onkeypress="maxlength(this,<?php echo $fieldsLength['description'];?>);"><?php echo $row->description?></textarea></td>
 				</tr>
 				<tr>
 					<td><?php echo JText::_("CORE_PUBLISHED"); ?> : </td>

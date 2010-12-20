@@ -34,7 +34,7 @@ defined('_JEXEC') or die('Restricted access');
 				 )
 				
 			{
-				alert( "<?php echo JText::_("EASYSDI_CHECK_SUBMIT_FORM");?> ");
+				alert( "<?php echo JText::_("CORE_CHECK_SUBMIT_FORM");?> ");
 			} 
 			else
 			{
@@ -170,5 +170,4 @@ defined('_JEXEC') or die('Restricted access');
 			/*form.elements['sameAddress[]'][target].checked = same;*/
 			changeAddress(same, target);
 		}
-		
 </script>
