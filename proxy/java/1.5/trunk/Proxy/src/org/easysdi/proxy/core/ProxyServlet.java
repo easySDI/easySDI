@@ -651,7 +651,7 @@ public abstract class ProxyServlet extends HttpServlet {
 				if (!urlstr.contains("?"))
 					urlstr = urlstr + "?" + parameters;
 				else
-					urlstr = urlstr + parameters;
+					urlstr = urlstr+ "&" + parameters;
 			}
 			URL url = new URL(urlstr);
 			HttpURLConnection hpcon = null;
@@ -1189,16 +1189,16 @@ public abstract class ProxyServlet extends HttpServlet {
 				return false;
 		}
 		
-		if (policy.getServers().isAll())
-			return true;
+//		if (policy.getServers().isAll())
+//			return true;
 
 		List<Server> serverList = policy.getServers().getServer();
-		boolean isAllFT = false; 
+//		boolean isAllFT = false; 
 		for (int i = 0; i < serverList.size(); i++) {
 			FeatureTypes features = serverList.get(i).getFeatureTypes();
 			if (features != null) {
-				if (features.isAll())
-					isAllFT = true;
+//				if (features.isAll())
+//					isAllFT = true;
 
 				List<FeatureType> ftList = features.getFeatureType();
 				for (int j = 0; j < ftList.size(); j++) {
@@ -1209,8 +1209,8 @@ public abstract class ProxyServlet extends HttpServlet {
 			}
 		}
 		
-		if(isAllFT)
-			return true;
+//		if(isAllFT)
+//			return true;
 		
 		return false;
 	}
@@ -1233,8 +1233,8 @@ public abstract class ProxyServlet extends HttpServlet {
 		}
 
 		//5.09.2010 - HVH 
-		if (policy.getServers().isAll())
-			return true;
+//		if (policy.getServers().isAll())
+//			return true;
 		//--
 //		boolean isServerFound = false;
 		List<Server> serverList = policy.getServers().getServer();
@@ -1246,8 +1246,8 @@ public abstract class ProxyServlet extends HttpServlet {
 				// Are all feature Types Allowed ?
 				FeatureTypes features = serverList.get(i).getFeatureTypes();
 				if (features != null) {
-					if (features.isAll())
-						return true;
+//					if (features.isAll())
+//						return true;
 
 					List<FeatureType> ftList = features.getFeatureType();
 					for (int j = 0; j < ftList.size(); j++) {
@@ -1290,14 +1290,14 @@ public abstract class ProxyServlet extends HttpServlet {
 		}
 		if (layer == null)
 			return false;
-		if (policy.getServers().isAll())
-			return true;
+//		if (policy.getServers().isAll())
+//			return true;
 		
-		boolean isAllLayer = false; 
+//		boolean isAllLayer = false; 
 		List<Server> serverList = policy.getServers().getServer();
 		for (int i = 0; i < serverList.size(); i++) {
-			if (serverList.get(i).getLayers().isAll())
-				isAllLayer = true;
+//			if (serverList.get(i).getLayers().isAll())
+//				isAllLayer = true;
 
 			List<Layer> layerList = serverList.get(i).getLayers().getLayer();
 			for (int j = 0; j < layerList.size(); j++) {
@@ -1307,8 +1307,8 @@ public abstract class ProxyServlet extends HttpServlet {
 			}
 		}
 		
-		if(isAllLayer)
-			return true;
+//		if(isAllLayer)
+//			return true;
 		
 		return false;
 	}
@@ -1333,8 +1333,8 @@ public abstract class ProxyServlet extends HttpServlet {
 			return false;
 
 		//5.09.2010 - HVH 
-		if (policy.getServers().isAll())
-			return true;
+//		if (policy.getServers().isAll())
+//			return true;
 		//--
 //		boolean isServerFound = false;
 		List<Server> serverList = policy.getServers().getServer();
@@ -1344,8 +1344,8 @@ public abstract class ProxyServlet extends HttpServlet {
 			if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
 //				isServerFound = true;
 				// Are all layers Allowed ?
-				if (serverList.get(i).getLayers().isAll())
-					return true;
+//				if (serverList.get(i).getLayers().isAll())
+//					return true;
 
 				List<Layer> layerList = serverList.get(i).getLayers().getLayer();
 				for (int j = 0; j < layerList.size(); j++) {
@@ -1357,12 +1357,12 @@ public abstract class ProxyServlet extends HttpServlet {
 			}
 		}
 		
-		//5.09.2010 - HVH : moved before the loop on the servers
-//		// if the server is not overloaded and if all the servers are allowed
-//		// then
-//		// We can consider that's ok
-//		if (!isServerFound && policy.getServers().isAll())
+		//Debug HVH : 20.12.2010
+		//If server exists and all servers are allowed
+//		if (isServerFound && policy.getServers().isAll())
 //			return true;
+		
+		
 		//--
 		// in any other case the feature type is not allowed
 		return false;

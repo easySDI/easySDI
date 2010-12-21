@@ -2147,6 +2147,7 @@ public class WMSProxyServlet extends ProxyServlet {
 				layerArray = Collections.synchronizedList(new ArrayList<String>());
 			}
 			
+			//Debug HVH 19.12.2010
 			//Vérifie si toutes les layers requêtées existent et sont accessibles sur les serveurs distants
 			for (int k = 0 ; k < layerArray.size() ; k++){
 				if(!isLayerAllowed(layerArray.get(k))){
@@ -2553,6 +2554,7 @@ public class WMSProxyServlet extends ProxyServlet {
 				wmsFilePathList.put(j, filePath);
 				serverUrlPerfilePathList.put(j, getRemoteServerUrl(j));
 				layerFilePathList.put(j, "");
+				writer.dispose();
 			}
 		} catch (Exception e) {
 			resp.setHeader("easysdi-proxy-error-occured", "true");
