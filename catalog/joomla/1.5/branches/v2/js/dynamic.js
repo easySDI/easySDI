@@ -9,7 +9,7 @@
 		// Valeur max = n
 		if (max == 999) max = Number.MAX_VALUE;
 		//collapsible = true;
-		// Cr�er un nouveau fieldset
+		// Créer un nouveau fieldset
 		var f = new Ext.form.FieldSet(
 				{
 					xtype: 'fieldset',
@@ -61,6 +61,7 @@
 		
 		var ta = new Ext.form.TextArea({
 	            id:id,
+	            itemId:id,
 	            xtype: 'textarea',
 				cls: 'easysdi_shop_backend_textarea', 
 	            fieldLabel: label,
@@ -149,12 +150,12 @@
 		if (mandatory)
 			minselect = 1;
 		
-		var ta = new Ext.ux.Multiselect({
+		var ta = new Ext.ux.form.MultiSelect({
 	            id:id,
 	            name: id,
 	            xtype: 'multiselect',
-				cls: 'ux-mselect-fieldset',
-			    fieldLabel: label,
+		     	cls: 'ux-mselect-fieldset',
+		     	fieldLabel: label,
 	            allowBlank: optional,
 	            //minSelections:minselect,
 	            blankText: mandatoryMsg,
@@ -166,8 +167,8 @@
 	            editable:false,
 	            minOccurs:min,
 	            maxOccurs:max,
-	            qTip: tip,
-	            qTipDelay: dismissDelay,
+		     	qTip: tip,
+		     	qTipDelay: dismissDelay,
 	            view: new Ext.ListView({
 	                multiSelect: true,
 	                store: this.store,
@@ -176,8 +177,6 @@
 	            })
 	        });
 		 return ta;
-		 
-		 Ext.util.Observable.capture(Ext.getCmp(id), console.info);
 	}
 	
 	function createChoiceBox(id, label, mandatory, min, max, data, value, defaultVal, dis, tip, dismissDelay, mandatoryMsg, master, clone)
@@ -669,6 +668,7 @@
 	
 	function createSuperBoxSelect(id, label, value, clone, master, min, max, mandatoryMsg)
 	{
+		if (clone) optional=true; // Pas sûr que ce soit juste, il faut peut-être toujours l'avoir à false?
 		if (master) master.clones_count=master.clones_count+1;
 		var clones_count = (master) ? master.clones_count : 1;
 		
@@ -687,7 +687,7 @@
 	            hiddenName:id + '_hidden[]',
 	            xtype:'superboxselect',
 		        fieldLabel: label,
-	            allowBlank: false,
+	            allowBlank: optional,
 	            blankText: mandatoryMsg,
 	            emptyText:'',
 	          	minChars: 1,
@@ -705,16 +705,19 @@
 		        displayField: 'keyword',
 		        displayFieldTpl: '{keyword}',
 		        valueField:'value',
-		        //value:value,
-			 	// Champs sp�cifiques au clonage
+				//value:value,
+			 	// Champs spécifiques au clonage
 		        dynamic:true,
 		        minOccurs:min,
 	            maxOccurs:max,
 	            clone: clone,
 				clones_count: clones_count,
 	            template: master,
-	    		// Ajout des valeurs existantes
+		     	// Ajout des valeurs existantes
 	            listeners: {'afterrender': function (){if (value!= "") this.addItems(value);}}
 		    });
+		//Ext.util.Observable.capture(Ext.getCmp(id), console.info);
+		// Ajout des valeurs existantes
+		//sbs.addItems(value);
 		return sbs;
 	}
