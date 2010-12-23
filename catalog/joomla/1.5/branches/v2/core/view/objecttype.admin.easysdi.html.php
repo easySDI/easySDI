@@ -17,8 +17,8 @@
 
 defined('_JEXEC') or die('Restricted access');
 
-include (JPATH_COMPONENT_ADMINISTRATOR.DS.'js'.DS.'catalog.js.php');
-		
+JHTML::script('catalog.js', 'administrator/components/com_easysdi_catalog/js/');
+				
 		
 class HTML_objecttype {
 	
@@ -149,7 +149,7 @@ class HTML_objecttype {
 	{
 		global  $mainframe;
 		$database =& JFactory::getDBO(); 
-		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_catalog'.DS.'js'.DS.'catalog.js.php');
+		JHTML::script('catalog.js', 'administrator/components/com_easysdi_catalog/js/');
 		
 		?>
 		<form action="index.php" method="POST" name="adminForm" id="adminForm" onsubmit="PostSelect('adminForm', 'selected_accounts')">
@@ -158,6 +158,10 @@ class HTML_objecttype {
 					<td width=150><?php echo JText::_("CORE_NAME"); ?> : </td>
 					<td><input class="inputbox" type="text" size="50" maxlength="<?php echo $fieldsLength['name'];?>" name="name" value="<?php echo $row->name; ?>" /></td>
 				</tr>					
+				<tr>							
+					<td width=150><?php echo JText::_("CORE_CODE"); ?> : </td>
+					<td><input class="inputbox" type="text" size="50" maxlength="<?php echo $fieldsLength['code'];?>" name="code" value="<?php echo $row->code; ?>" /></td>
+				</tr>
 				<tr>
 					<td><?php echo JText::_("CORE_DESCRIPTION"); ?> : </td>
 					<td><textarea rows="4" cols="50" name ="description" onkeypress="javascript:maxlength(this,<?php echo $fieldsLength['description'];?>);"><?php echo $row->description?></textarea></td>
