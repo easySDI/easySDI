@@ -32,7 +32,7 @@ class SITE_metadata {
 		$allow = userManager::isUserAllowed($user,"PRODUCT");
 		if (!$allow)
 		{
-			$mainframe->_messageQueue=array(); // Seul le message lié au droit d'édition sera conservé, s'il y a lieu
+			$mainframe->_messageQueue=array(); // Seul le message liï¿½ au droit d'ï¿½dition sera conservï¿½, s'il y a lieu
 			$allow = userManager::isUserAllowed($user,"METADATA");	
 		}
 		
@@ -80,7 +80,7 @@ class SITE_metadata {
 		$rootAccount = new account($database);
 		$rootAccount->load($account->root_id);		
 		
-		// Si le compte n'a pas de root, c'est qu'il l'est lui-même
+		// Si le compte n'a pas de root, c'est qu'il l'est lui-mï¿½me
 		if (!$rootAccount->id)
 			$rootAccount = $account;
 			
@@ -143,12 +143,15 @@ class SITE_metadata {
 			echo "</div>";
 		}	
 		
-		// Si le nombre de résultats retournés a changé, adapter la page affichée
+		// Si le nombre de rï¿½sultats retournï¿½s a changï¿½, adapter la page affichï¿½e
 		if ($limitstart >= $total)
 		{
 			$limitstart = ( $limit != 0 ? ((floor($total / $limit) * $limit)-1) : 0 );
 			$mainframe->setUserState('limitstart', $limitstart);
 		}	
+		
+		if ($limitstart < 0)
+			$limitstart = 0;
 		
 		jimport('joomla.html.pagination');
 		$pageNav = new JPagination($total,$limitstart,$limit);
@@ -259,14 +262,14 @@ class SITE_metadata {
 			exit;
 		}
 		
-		// Récupérer l'objet lié à cette métadonnée
+		// Rï¿½cupï¿½rer l'objet liï¿½ ï¿½ cette mï¿½tadonnï¿½e
 		$rowObjectVersion = new objectversion( $database );
 		$rowObjectVersion->load( $id );
 		
 		$rowObject = new object( $database );
 		$rowObject->load( $rowObjectVersion->object_id );
 		
-		// Récupérer la métadonnée choisie par l'utilisateur
+		// Rï¿½cupï¿½rer la mï¿½tadonnï¿½e choisie par l'utilisateur
 		$rowMetadata = new metadata( $database );
 		$rowMetadata->load( $rowObjectVersion->metadata_id );
 		
@@ -278,7 +281,7 @@ class SITE_metadata {
 		}
 		
 		/*
-		// Récupérer la métadonnée choisie par l'utilisateur
+		// Rï¿½cupï¿½rer la mï¿½tadonnï¿½e choisie par l'utilisateur
 		if (array_key_exists('version_hidden', $_POST))
 		{
 			$rowVersion = new objectversion($database);
@@ -293,12 +296,12 @@ class SITE_metadata {
 		}
 		else
 		{
-			// Récupérer la seule et unique version de l'objet
+			// Rï¿½cupï¿½rer la seule et unique version de l'objet
 			$lastVersion = array();
 			$database->setQuery( "SELECT * FROM #__sdi_objectversion WHERE object_id=".$id." ORDER BY created DESC" );
 			$lastVersion = array_merge( $lastVersion, $database->loadObjectList() );
 			
-			// Récupérer la métadonnée de la dernière version de l'objet
+			// Rï¿½cupï¿½rer la mï¿½tadonnï¿½e de la derniï¿½re version de l'objet
 			$rowMetadata = new metadata( $database );
 			if (count($lastVersion) > 0)
 				$rowMetadata->load($lastVersion[0]->metadata_id);
@@ -321,7 +324,7 @@ class SITE_metadata {
 		$rowObject->checkout($user->get('id'));
 		
 		
-		// Stocker en mémoire toutes les traductions de label, valeur par défaut et information pour la langue courante
+		// Stocker en mï¿½moire toutes les traductions de label, valeur par dï¿½faut et information pour la langue courante
 		$language =& JFactory::getLanguage();
 		
 		$newTraductions = array();
@@ -356,12 +359,12 @@ class SITE_metadata {
 		$database->setQuery( "SELECT id AS value, name as text FROM #__sdi_list_metadatastate ORDER BY name" );
 		$metadatastates = array_merge( $metadatastates, $database->loadObjectList() );
 		
-		// Récupérer la classe racine du profile du type d'objet
+		// Rï¿½cupï¿½rer la classe racine du profile du type d'objet
 		$query = "SELECT c.name as name, CONCAT(ns.prefix, ':', c.isocode) as isocode, c.label as label, prof.class_id as id FROM #__sdi_profile prof, #__sdi_objecttype ot, #__sdi_object o, #__sdi_class c RIGHT OUTER JOIN #__sdi_namespace ns ON c.namespace_id=ns.id WHERE prof.id=ot.profile_id AND ot.id=o.objecttype_id AND c.id=prof.class_id AND o.id=".$rowObject->id;
 		$database->setQuery( $query );
 		$root = $database->loadObjectList();
 		
-		// Récupérer le profil lié à cet objet
+		// Rï¿½cupï¿½rer le profil liï¿½ ï¿½ cet objet
 		$query = "SELECT profile_id FROM #__sdi_objecttype WHERE id=".$rowObject->objecttype_id;
 		$database->setQuery( $query );
 		$profile_id = $database->loadResult();
@@ -380,25 +383,25 @@ class SITE_metadata {
 		if ($total == 1)
 			$isEditor = true;
 			
-		// Est-ce que la métadonnée est publiée?
+		// Est-ce que la mï¿½tadonnï¿½e est publiï¿½e?
 		$isPublished = false;
 		if ($rowMetadata->metadatastate_id == 1)
 			$isPublished = true;			
 			
-		// Est-ce que la métadonnée est validée?
+		// Est-ce que la mï¿½tadonnï¿½e est validï¿½e?
 		$isValidated = false;
 		if ($rowMetadata->metadatastate_id == 3)
 			$isValidated = true;			
 			
-		// Récupérer les périmètres administratifs
+		// Rï¿½cupï¿½rer les pï¿½rimï¿½tres administratifs
 		$boundaries = array();
 		$database->setQuery( "SELECT name, guid, northbound, southbound, westbound, eastbound FROM #__sdi_boundary") ;
 		$boundaries = array_merge( $boundaries, $database->loadObjectList() );
 		
-		// Récupérer la métadonnée en CSW
+		// Rï¿½cupï¿½rer la mï¿½tadonnï¿½e en CSW
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 		
-		// Type d'attribut pour les périmètres prédéfinis 
+		// Type d'attribut pour les pï¿½rimï¿½tres prï¿½dï¿½finis 
 		//$rowAttributeType = new attributetype($database);
 		//$rowAttributeType->load(config_easysdi::getValue("catalog_boundary_type"));
 		//$type_isocode = $rowAttributeType->isocode;
@@ -423,9 +426,9 @@ class SITE_metadata {
 		
 		//echo "<hr>".htmlspecialchars($xmlBody)."<hr>";break;
 		
-		// Requête de type GET pour le login (conserver le token response)
-		// Stocker dans un cookie le résultat de la requête précédente
-		// Mettre le cookie dans l'en-tête de la requête insert
+		// Requï¿½te de type GET pour le login (conserver le token response)
+		// Stocker dans un cookie le rï¿½sultat de la requï¿½te prï¿½cï¿½dente
+		// Mettre le cookie dans l'en-tï¿½te de la requï¿½te insert
 		//$xmlResponse = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlBody);
 
 		// En POST
@@ -442,7 +445,7 @@ class SITE_metadata {
 		echo var_dump($cswResults)."<br>";
 		*/
 		
-		// Construction du DOMXPath à utiliser pour générer la vue d'édition
+		// Construction du DOMXPath ï¿½ utiliser pour gï¿½nï¿½rer la vue d'ï¿½dition
 		$doc = new DOMDocument('1.0', 'UTF-8');
 		
 		/*if ($cswResults <> false)
@@ -473,7 +476,7 @@ class SITE_metadata {
         $xpathResults->registerNamespace('xlink','http://www.w3.org/1999/xlink');
         $xpathResults->registerNamespace('gts','http://www.isotc211.org/2005/gts');
         
-        // Récupération des namespaces à inclure
+        // Rï¿½cupï¿½ration des namespaces ï¿½ inclure
 		$namespacelist = array();
 		//$namespacelist[] = JHTML::_('select.option','0', JText::_("CATALOG_ATTRIBUTE_NAMESPACE_LIST") );
 		$database->setQuery( "SELECT prefix, uri FROM #__sdi_namespace ORDER BY prefix" );
@@ -525,8 +528,8 @@ class SITE_metadata {
 		$limit		= $mainframe->getUserStateFromRequest($option.'global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
 		$limitstart	= $mainframe->getUserStateFromRequest($context.'limitstart', 'limitstart', 0, 'int');
 		
-		// Problème avec le retour au début ou à la page une, quand limitstart n'est pas présent dans la session.
-		// La mise à zéro ne se fait pas, il faut donc la forcer
+		// Problï¿½me avec le retour au dï¿½but ou ï¿½ la page une, quand limitstart n'est pas prï¿½sent dans la session.
+		// La mise ï¿½ zï¿½ro ne se fait pas, il faut donc la forcer
 		if (! isset($_REQUEST['limitstart']))
 			$limitstart=0;
 		

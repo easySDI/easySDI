@@ -209,7 +209,7 @@ function listAttribute(&$rows, $lists, $page, $option,  $filter_order_Dir, $filt
 	//function editAttribute(&$row, $attributetypelist, $fieldsLength, $languages, $style, $defaultStyle, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale, $codevalues ,$option)
 	function editAttribute(&$row, $attributetypelist, $fieldsLength, $style, $styleAttributes, $languages, $informations, $regexmsgs, $namespacelist, $option)
 	{
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'js'.DS.'catalog.js.php');
+		JHTML::script('catalog.js', 'administrator/components/com_easysdi_catalog/js/');
 		global  $mainframe;
 		
 		$database =& JFactory::getDBO(); 

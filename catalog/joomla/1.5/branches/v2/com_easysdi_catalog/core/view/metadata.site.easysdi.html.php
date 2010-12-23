@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySDI, a solution to implement easily any spatial data infrastructure
- * Copyright (C) 2008 DEPTH SA, Chemin dâ¬"Arche 40b, CH-1870 Monthey, easysdi@depth.ch 
+ * Copyright (C) 2008 DEPTH SA, Chemin dï¿½"Arche 40b, CH-1870 Monthey, easysdi@depth.ch 
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,7 +50,7 @@ class HTML_metadata {
 	var $paths = array();
 	var $boundaries_name = array();
 	var $catalogBoundaryIsocode = "";
-	var $qTipDismissDelay = "5000"; // Durée par défaut de l'affichage du tooltip
+	var $qTipDismissDelay = "5000"; // Durï¿½e par dï¿½faut de l'affichage du tooltip
 	var $parentId_class="";
 	var $parentId_attribute="";
 	var $parentGuid="";
@@ -66,6 +66,17 @@ class HTML_metadata {
 		$router->setVars($_REQUEST);
 		
 		?>
+		<script>
+		function tableOrdering( order, dir, view )
+		{
+			var form = document.getElementById("metadataListForm");
+			
+			form.filter_order.value 	= order;
+			form.filter_order_Dir.value	= dir;
+			form.submit( view );
+		}
+					
+		</script>
 		<div id="page">
 		<h1 class="contentheading"><?php echo JText::_("CATALOG_LIST_METADATA"); ?></h1>
 		<div class="contentin">
@@ -82,7 +93,7 @@ class HTML_metadata {
 			 	<?php echo JHTML::_('select.genericlist',  $listObjectType, 'filter_md_objecttype_id', 'class="inputbox" size="1"', 'value', 'text', $filter_objecttype_id); ?>
 			 </div>
 			 <div class="row">
-				<input type="submit" id="simple_search_button" name="simple_search_button" class="easysdi_search_button submit" value ="<?php echo JText::_("CORE_SEARCH_BUTTON"); ?>" onClick="document.getElementById('task').value='listMetadata';document.getElementById('metadataListForm').submit();"/>
+				<input type="submit" id="simple_search_button" name="simple_search_button" class="easysdi_search_button submit" value ="<?php echo JText::_("CORE_SEARCH_BUTTON"); ?>" onClick="document.getElementById('metadataListForm').task.value='listMetadata';document.getElementById('metadataListForm').submit();"/>
 			</div>	 
 		 </div>
 	<div class="searchresults">
@@ -124,7 +135,7 @@ class HTML_metadata {
 					<?php echo $row->name;  ?>
 				</td>
 				<td >
-					<a class="modal" title="<?php echo helper_easysdi::escapeString(JText::_("CATALOG_VIEW_MD")); ?>" href="./index.php?tmpl=component&option=com_easysdi_catalog&toolbar=1&task=showMetadata&id=<?php echo $row->metadata_guid;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}"> <?php echo $row->version_title ;?></a>
+					<a class="modal" title="<?php echo addslashes(JText::_("CATALOG_VIEW_MD")); ?>" href="./index.php?tmpl=component&option=com_easysdi_catalog&toolbar=1&task=showMetadata&id=<?php echo $row->metadata_guid;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}"> <?php echo $row->version_title ;?></a>
 				</td>
 				<?php
 if ($row->state == "CORE_PUBLISHED" and date('Y-m-d') < date('Y-m-d', strtotime($rowMetadata->published)))
@@ -185,16 +196,16 @@ else
 					
 					$rowMetadata = new metadataByGuid($database);
 					$rowMetadata->load($row->metadata_guid);
-					if ($isManager) // Le rôle de gestionnaire prime sur celui d'éditeur, au cas où l'utilisateur a les deux
+					if ($isManager) // Le rï¿½le de gestionnaire prime sur celui d'ï¿½diteur, au cas oï¿½ l'utilisateur a les deux
 					{
 						if ($rowMetadata->metadatastate_id == 4 // En travail
-							or $rowMetadata->metadatastate_id == 3 // Validé
-							or ($rowMetadata->metadatastate_id == 2 and $rowMetadata->archived >= date('Y-m-d H:i:s'))// Archivé et date du jour <= date d'archivage
-							or ($rowMetadata->metadatastate_id == 1 and $rowMetadata->published <= date('Y-m-d H:i:s') )// Publié et date du jour >= date de publication
+							or $rowMetadata->metadatastate_id == 3 // Validï¿½
+							or ($rowMetadata->metadatastate_id == 2 and $rowMetadata->archived >= date('Y-m-d H:i:s'))// Archivï¿½ et date du jour <= date d'archivage
+							or ($rowMetadata->metadatastate_id == 1 and $rowMetadata->published <= date('Y-m-d H:i:s') )// Publiï¿½ et date du jour >= date de publication
 							)
 						{
 							?>
-								<div class="logo" title="<?php echo helper_easysdi::escapeString(JText::_('CATALOG_EDIT_METADATA_ACTION')); ?>" id="editMetadata" onClick="document.getElementById('task').value='editMetadata';document.getElementById('cid[]').value=<?php echo $row->version_id?>;document.getElementById('metadataListForm').submit(); //window.open('./index.php?option=<?php echo $option;?>&task=editMetadata&cid[]=<?php echo $row->version_id?>', '_self');"></div>
+								<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_EDIT_METADATA_ACTION')); ?>" id="editMetadata" onClick="document.getElementById('metadataListForm').task.value='editMetadata';document.getElementById('cid[]').value=<?php echo $row->version_id?>;document.getElementById('metadataListForm').submit(); //window.open('./index.php?option=<?php echo $option;?>&task=editMetadata&cid[]=<?php echo $row->version_id?>', '_self');"></div>
 							<?php
 						}
 						else
@@ -206,14 +217,14 @@ else
 					}
 					else if ($isEditor)
 					{
-						// L'utilisateur courant, si c'est un éditeur, doit être éditeur de la métadonnée
+						// L'utilisateur courant, si c'est un ï¿½diteur, doit ï¿½tre ï¿½diteur de la mï¿½tadonnï¿½e
 						$rowCurrentUser = new accountByUserId($database);
 						$rowCurrentUser->load($user->get('id'));
 			
-						if ($rowMetadata->metadatastate_id == 4 and $rowMetadata->editor_id == $rowCurrentUser->id) // En travail et tâche d'édition assignée
+						if ($rowMetadata->metadatastate_id == 4 and $rowMetadata->editor_id == $rowCurrentUser->id) // En travail et tï¿½che d'ï¿½dition assignï¿½e
 						{
 							?>
-							<div class="logo" title="<?php echo helper_easysdi::escapeString(JText::_('CATALOG_EDIT_METADATA_ACTION')); ?>" id="editMetadata" onClick="document.getElementById('task').value='editMetadata';document.getElementById('cid[]').value=<?php echo $row->version_id?>;document.getElementById('metadataListForm').submit(); // window.open('./index.php?option=<?php echo $option;?>&task=editMetadata&cid[]=<?php echo $row->version_id?>', '_self'); "></div>
+							<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_EDIT_METADATA_ACTION')); ?>" id="editMetadata" onClick="document.getElementById('metadataListForm').task.value='editMetadata';document.getElementById('cid[]').value=<?php echo $row->version_id?>;document.getElementById('metadataListForm').submit(); // window.open('./index.php?option=<?php echo $option;?>&task=editMetadata&cid[]=<?php echo $row->version_id?>', '_self'); "></div>
 							<?php
 						} 
 						else
@@ -245,13 +256,13 @@ else
 					
 					$rowMetadata = new metadataByGuid($database);
 					$rowMetadata->load($row->metadata_guid);
-					if ($isManager) // Le rôle de gestionnaire prime sur celui d'éditeur, au cas où l'utilisateur a les deux
+					if ($isManager) // Le rï¿½le de gestionnaire prime sur celui d'ï¿½diteur, au cas oï¿½ l'utilisateur a les deux
 					{
-						if (($rowMetadata->metadatastate_id == 1 and date('Y-m-d H:i:s') >= $rowMetadata->published )// Publié et date du jour >= date de publication
+						if (($rowMetadata->metadatastate_id == 1 and date('Y-m-d H:i:s') >= $rowMetadata->published )// Publiï¿½ et date du jour >= date de publication
 							)
 						{
 							?>
-								<div class="logo" title="<?php echo helper_easysdi::escapeString(JText::_('CATALOG_ARCHIVE_METADATA')); ?>" id="archiveMetadata" onClick="document.getElementById('task').value='archiveMetadata';document.getElementById('cid[]').value=<?php echo $rowMetadata->id?>;document.getElementById('metadataListForm').submit();"></div>
+								<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_ARCHIVE_METADATA')); ?>" id="archiveMetadata" onClick="document.getElementById('metadataListForm').task.value='archiveMetadata';document.getElementById('cid[]').value=<?php echo $rowMetadata->id?>;document.getElementById('metadataListForm').submit();"></div>
 							<?php
 						}
 						else
@@ -260,11 +271,11 @@ else
 								<div class="logo" id="emptyPicto"></div>
 							<?php 
 						}
-						if ($rowMetadata->metadatastate_id == 3 or ($rowMetadata->metadatastate_id == 2 ) or  ($rowMetadata->metadatastate_id == 1 and date('Y-m-d H:i:s') >= $rowMetadata->published)// Archivé, Validé ou Publié
+						if ($rowMetadata->metadatastate_id == 3 or ($rowMetadata->metadatastate_id == 2 ) or  ($rowMetadata->metadatastate_id == 1 and date('Y-m-d H:i:s') >= $rowMetadata->published)// Archivï¿½, Validï¿½ ou Publiï¿½
 							)
 						{
 							?>
-								<div class="logo" title="<?php echo helper_easysdi::escapeString(JText::_('CATALOG_INVALIDATE_METADATA')); ?>" id="invalidateMetadata" onClick="document.getElementById('task').value='invalidateMetadata';document.getElementById('cid[]').value=<?php echo $rowMetadata->id?>;document.getElementById('metadataListForm').submit();"></div>
+								<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_INVALIDATE_METADATA')); ?>" id="invalidateMetadata" onClick="document.getElementById('metadataListForm').task.value='invalidateMetadata';document.getElementById('cid[]').value=<?php echo $rowMetadata->id?>;document.getElementById('metadataListForm').submit();"></div>
 							<?php
 						}
 						else
@@ -282,7 +293,7 @@ else
 					}
 				}
 			?>
-				<div class="logo" title="<?php echo helper_easysdi::escapeString(JText::_('CATALOG_HISTORYASSIGN_METADATA')); ?>" id="historyAssignMetadata" onClick="document.getElementById('task').value='historyAssignMetadata';document.getElementById('cid[]').value=<?php echo $rowMetadata->id?>;document.getElementById('metadataListForm').submit();"></div>
+				<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_HISTORYASSIGN_METADATA')); ?>" id="historyAssignMetadata" onClick="document.getElementById('metadataListForm').task.value='historyAssignMetadata';document.getElementById('cid[]').value=<?php echo $rowMetadata->id?>;document.getElementById('metadataListForm').submit();"></div>
 				</td>
 			</tr>
 			
@@ -328,7 +339,7 @@ else
 		$this->mandatoryMsg = html_Metadata::cleanText(JText::_('CATALOG_METADATA_EDIT_MANDATORY_MSG'));
 		$this->regexMsg = html_Metadata::cleanText(JText::_('CATALOG_METADATA_EDIT_REGEX_MSG'));
 	
-		// Récupérer les noms des périmètres
+		// Rï¿½cupï¿½rer les noms des pï¿½rimï¿½tres
 		$this->boundaries[JText::_('CORE_METADATASTATE_LIST')] = array('northbound'=>0, 'southbound'=>0, 'westbound'=>0, 'eastbound'=>0);
 		
 		foreach($boundaries as $boundary)
@@ -347,7 +358,7 @@ else
 		
 		
 		
-		// Récupérer les infos pour la métadonnée parente pour le lien entre les types d'objet où cet objet est l'enfant et la borne parent max est égale à 1
+		// Rï¿½cupï¿½rer les infos pour la mï¿½tadonnï¿½e parente pour le lien entre les types d'objet oï¿½ cet objet est l'enfant et la borne parent max est ï¿½gale ï¿½ 1
 		$database->setQuery( "SELECT otl.class_id, otl.attribute_id, parent_m.guid as parent_guid 
 							  FROM #__sdi_objecttypelink otl
 							  INNER JOIN #__sdi_object child_o ON otl.child_id=child_o.objecttype_id
@@ -407,7 +418,7 @@ else
 		if ($account_id == null)
 			$account_id = $user_id;
 
-		// Langues à gérer
+		// Langues ï¿½ gï¿½rer
 		$this->langList = array();
 		$database->setQuery( "SELECT l.id, l.name, l.label, l.defaultlang, l.code as code, l.isocode, l.gemetlang, c.code as code_easysdi 
 							  FROM #__sdi_language l, #__sdi_list_codelang c 
@@ -427,7 +438,7 @@ else
 		// Premier noeud						
 		$fieldsetName = "fieldset".$root[0]->id."_".str_replace("-", "_", helper_easysdi::getUniqueId());
 		?>
-			<!-- Pour permettre le retour à la liste des produits depuis la toolbar Joomla -->
+			<!-- Pour permettre le retour ï¿½ la liste des produits depuis la toolbar Joomla -->
 			<div id="page">
 		   <h2 class="contentheading"><?php echo JText::sprintf("CATALOG_EDIT_METADATA", $object_name, $version_title) ?></h2>
 		   <div id="contentin" class="contentin easysdi-table">
@@ -454,14 +465,14 @@ else
 						// Message d'attente pendant les chargements
 						var myMask = new Ext.LoadMask(Ext.getBody(), {msg:'Please wait...'});
 
-						// Construction des variables pour les différentes fenêtres qui pourraient être générées
+						// Construction des variables pour les diffï¿½rentes fenï¿½tres qui pourraient ï¿½tre gï¿½nï¿½rï¿½es
 						var win;
     					var winxml;
 						var wincsw;
 						var winrct;
 						var winrst;
     
-						// Outils pour la prévisualisation
+						// Outils pour la prï¿½visualisation
 						SyntaxHighlighter.config.clipboardSwf = 'clipboard.swf';
 														
 						// sets the user interface language
@@ -483,7 +494,7 @@ else
 						HS.Lang['".$userLang."']['NT']='".html_Metadata::cleanText(JText::_('CATALOG_GEMETCOMPONENT_HS_NT'))."';
 						HS.Lang['".$userLang."']['RT']='".html_Metadata::cleanText(JText::_('CATALOG_GEMETCOMPONENT_HS_RT'))."';
 												
-						// Créer le formulaire qui va contenir la structure
+						// Crï¿½er le formulaire qui va contenir la structure
 						var form = new Ext.ux.ExtendedFormPanel({
 								id:'metadataForm',
 								url: 'index.php',
@@ -533,7 +544,7 @@ else
 														xml = xml.split('<br>').join('\\n');
 														var html = '<pre class=\"brush: xml;gutter: false;\">' + xml + '</pre>';
 														
-														// Créer une iframe pour accueillir le preview XML
+														// Crï¿½er une iframe pour accueillir le preview XML
 														mifWin = new Ext.Window({
 						
 														      title         : 'XML Preview',
@@ -586,7 +597,7 @@ else
 				//echo $nodeCount." fois ".$root[0]->isocode;
 				HTML_metadata::buildTree($database, 0, $root[0]->id, $root[0]->id, $fieldsetName, 'form', str_replace(":", "_", $root[0]->isocode), $xpathResults, null, $node->item(0), $queryPath, $root[0]->isocode, $account_id, $profile_id, $option);
 				
-				// Retraverser la structure et autoriser les nulls pour tous les champs cachés
+				// Retraverser la structure et autoriser les nulls pour tous les champs cachï¿½s
 				$this->javascript .="
 					//var hiddenFields= new Array();
 					form.cascade(function(cmp)
@@ -619,7 +630,7 @@ else
 					//console.log(hiddenFields);
 				";								
 
-				// Sauvegarde basique, pas de contrôles ExtJs. Uniquement quand une métadonnée n'est pas publiée.
+				// Sauvegarde basique, pas de contrï¿½les ExtJs. Uniquement quand une mï¿½tadonnï¿½e n'est pas publiï¿½e.
 				if (!$isPublished)
 				{
 					$this->javascript .="
@@ -660,7 +671,7 @@ else
 												clientValidation: false,
 												success: function(form, action) 
 												{
-													// Retour à la page précédente
+													// Retour ï¿½ la page prï¿½cï¿½dente
 													Ext.MessageBox.alert('".JText::_('CATALOG_SAVEMETADATA_MSG_SUCCESS_TITLE')."', 
 							                    						 '".JText::_('CATALOG_SAVEMETADATA_MSG_SUCCESS_TEXT')."',
 							                    						 function () {window.open ('./index.php?option=".$option."&task=cancelMetadata&object_id=".$object_id."','_parent');});
@@ -682,7 +693,7 @@ else
 					form.render();";
 				}
 				
-				// Possibilité de valider lorsqu'on est éditeur. Contrôles ExtJs et passage de l'état "En travail" à "Validé"
+				// Possibilitï¿½ de valider lorsqu'on est ï¿½diteur. Contrï¿½les ExtJs et passage de l'ï¿½tat "En travail" ï¿½ "Validï¿½"
 				if ($isEditor and !$isPublished)
 				{
 					$this->javascript .="
@@ -715,7 +726,7 @@ else
 														}
 													}
 													
-													// countValues doit être égal à zéro ou à countFields. Sinon, lever une erreur
+													// countValues doit ï¿½tre ï¿½gal ï¿½ zï¿½ro ou ï¿½ countFields. Sinon, lever une erreur
 													if (countValues != countFields && countValues != 0)
 													{
 														//console.log(cmp.getId());
@@ -770,7 +781,7 @@ else
 					form.render();";
 				}
 				
-				// Possibilité de publier lorsqu'on est gestionnaire. Contrôles ExtJs et passage de l'état "Validé" à "Publié"
+				// Possibilitï¿½ de publier lorsqu'on est gestionnaire. Contrï¿½les ExtJs et passage de l'ï¿½tat "Validï¿½" ï¿½ "Publiï¿½"
 				if($isManager and $isValidated)
 				{
 					$this->javascript .="
@@ -803,7 +814,7 @@ else
 															}
 														}
 														
-														// countValues doit être égal à zéro ou à countFields. Sinon, lever une erreur
+														// countValues doit ï¿½tre ï¿½gal ï¿½ zï¿½ro ou ï¿½ countFields. Sinon, lever une erreur
 														if (countValues != countFields && countValues != 0)
 														{
 															for (var i=0; i < countFields ; i++)
@@ -832,7 +843,7 @@ else
 														{
 															xml = (action.result.file.xml);
 															xmlfile = xml.split('<br>').join('\\n');
-															// Créer une iframe pour demander à l'utilisateur la date de publication
+															// Crï¿½er une iframe pour demander ï¿½ l'utilisateur la date de publication
 															if (!win)
 																win = new Ext.Window({
 																		                title:'Publication',
@@ -975,7 +986,7 @@ else
 								        );
 						form.render();";
 						
-					// Possibilité de revenir en travail. Contrôles ExtJs et passage à l'état "En travail"
+					// Possibilitï¿½ de revenir en travail. Contrï¿½les ExtJs et passage ï¿½ l'ï¿½tat "En travail"
 					$this->javascript .="
 					form.fbar.add(new Ext.Button({text: '".JText::_('CORE_INVALIDATE')."',
 									handler: function()
@@ -1011,9 +1022,9 @@ else
 					form.render();";
 				}
 				
-				// Ajout du bouton METTRE A JOUR seulement si l'utilisateur courant est gestionnaire de la métadonnée
-				// et que la métadonnée est publiée
-				// Possibilité de mettre à jour lorsqu'on est gestionnaire et que l'état est "Publié". Contrôles ExtJs.
+				// Ajout du bouton METTRE A JOUR seulement si l'utilisateur courant est gestionnaire de la mï¿½tadonnï¿½e
+				// et que la mï¿½tadonnï¿½e est publiï¿½e
+				// Possibilitï¿½ de mettre ï¿½ jour lorsqu'on est gestionnaire et que l'ï¿½tat est "Publiï¿½". Contrï¿½les ExtJs.
 				if($isManager and $isPublished)
 				{
 					$this->javascript .="
@@ -1064,7 +1075,7 @@ else
 					
 				if(!$isPublished and !$isValidated)
 				{
-					// Assignation de métadonnée
+					// Assignation de mï¿½tadonnï¿½e
 					$editors = array();
 					$listEditors = array();
 					$database->setQuery( "	SELECT DISTINCT c.id AS value, b.name AS text 
@@ -1093,7 +1104,7 @@ else
 												clientValidation: false,
 												success: function(form, action) 
 												{*/
-													// Créer une iframe pour demander à l'utilisateur la date de publication
+													// Crï¿½er une iframe pour demander ï¿½ l'utilisateur la date de publication
 													if (!win)
 														win = new Ext.Window({
 														                title:'".addslashes(JText::_('CORE_METADATA_ASSIGN_ALERT'))."',
@@ -1237,7 +1248,7 @@ else
 		    		// Affichage du formulaire
 		    		form.doLayout();";
 
-		// Tout fermer ou tout ouvrir, selon la clé de config METADATA_COLLAPSE 
+		// Tout fermer ou tout ouvrir, selon la clï¿½ de config METADATA_COLLAPSE 
 		if ($metadata_collapse == 'true')
 		{
 			$this->javascript .="
@@ -1277,16 +1288,16 @@ else
 	{
 		//echo $parent." - ".$parentFieldsetName."<br>";
 		//echo "<hr>SCOPE: ".$scope->nodeName."<br>";
-		// On récupère dans des variables le scope respectivement pour le traitement des classes enfant et
+		// On rï¿½cupï¿½re dans des variables le scope respectivement pour le traitement des classes enfant et
 		// pour le traitement des attributs enfants.
-		// Cela permet d'éviter les effets de bord
+		// Cela permet d'ï¿½viter les effets de bord
 		//$classScope = $scope;
 		//$attributScope = $scope;
 						
 		// Stockage du path pour atteindre ce noeud du XML
 		$queryPath = $queryPath."/".$currentIsocode;
 		
-		// Construire la liste déroulante des périmètres prédéfinis si on est au bon endroit
+		// Construire la liste dï¿½roulante des pï¿½rimï¿½tres prï¿½dï¿½finis si on est au bon endroit
 		//echo $this->catalogBoundaryIsocode." == ".$currentIsocode.", ".count($this->boundaries)."<br>";
 		if ($this->catalogBoundaryIsocode == $currentIsocode AND count($this->boundaries_name) > 0)
 		{
@@ -1395,14 +1406,14 @@ else
 				}	
 				//echo " > ".$child->attribute_isocode." - ".$label."<br>";
 				
-				// Le modèle de saisie
+				// Le modï¿½le de saisie
 				//$regex = html_Metadata::cleanText($child->attribute_pattern);
 				$regex = addslashes($child->attribute_pattern);
 				
 				if ($regex == null)
 					$regex = "";
 				
-				// Le message à afficher en cas d'erreur de saisie selon le modèle
+				// Le message ï¿½ afficher en cas d'erreur de saisie selon le modï¿½le
 				$regexmsg = JText::_(strtoupper($child->attribute_guid)."_REGEXMSG");
 				if ($regexmsg == null or substr($regexmsg, -9, 9) == "_REGEXMSG")
 				{
@@ -1411,8 +1422,8 @@ else
 
 				//echo " > ".$child->attribute_isocode." - ".$regex." - ".$regexmsg."<br>";
 				
-				// Mise en place des contrôles
-				// Cas des champs système qui doivent être désactivés
+				// Mise en place des contrï¿½les
+				// Cas des champs systï¿½me qui doivent ï¿½tre dï¿½sactivï¿½s
 				$disabled = "false";
 				if ($child->attribute_system)
 					$disabled = "true";
@@ -1440,7 +1451,7 @@ else
 				//echo "Pardon, ".$attributeCount." fois.<br>";
 				
 				
-				// On n'entre dans cette boucle que si on a trouvé au moins une occurence de l'attribut dans le XML
+				// On n'entre dans cette boucle que si on a trouvï¿½ au moins une occurence de l'attribut dans le XML
 				for ($pos=0; $pos<$attributeCount; $pos++)
 				{
 					/*
@@ -1450,26 +1461,26 @@ else
 					//echo "----------- On traite ".$child->attribute_isocode." -----------<br>";
 				
 					// Construction du master qui permet d'ajouter des occurences de la relation.
-					// Le master contient les données de la première occurence.
+					// Le master contient les donnï¿½es de la premiï¿½re occurence.
 					if ($pos==0)
 					{	
 						//echo $pos.") mainNode: ".$mainNode->nodeName."<br>";
 						$attributeScope = $mainNode->item($pos);
 						//echo "Cas ".$pos."<br>";
 						// Traitement de l'attribut enfant.
-						// Changement du scope pour le noeud correspondant à cette occurence de l'attribut dans le XML
+						// Changement du scope pour le noeud correspondant ï¿½ cette occurence de l'attribut dans le XML
 						//echo $pos.") attributeScope: ".$attributeScope->nodeName."<br>";
-						// Modifier le path d'accès à l'attribut
+						// Modifier le path d'accï¿½s ï¿½ l'attribut
 						// $queryPath = $queryPath."/".$child->attribute_id;
 						
-						// Si on est en train de traiter un attribut de type liste, il faut encore récupérer
-						// Le code ISO de la liste, sinon on récupère le code ISO du type d'attribut
+						// Si on est en train de traiter un attribut de type liste, il faut encore rï¿½cupï¿½rer
+						// Le code ISO de la liste, sinon on rï¿½cupï¿½re le code ISO du type d'attribut
 						if ($child->attribute_type == 6 )
 							$type_isocode = $child->list_isocode;
 						else
 							$type_isocode = $child->t_isocode;
 	
-						// Modifier le path d'accès à l'attribut
+						// Modifier le path d'accï¿½s ï¿½ l'attribut
 						$queryPath = $queryPath."/".$child->attribute_isocode."/".$type_isocode;
 						
 						// Construction du nom de l'attribut
@@ -1479,7 +1490,7 @@ else
 						// Traitement de chaque attribut selon son type
 						switch($child->attribute_type)
 						{
-							// Guid (toujours disabled, donc toujours un champ caché)
+							// Guid (toujours disabled, donc toujours un champ cachï¿½)
 							case 1:
 								// Traitement de la classe enfant
 								//echo "Recherche de ".$type_isocode." dans ".$attributeScope->nodeName."<br>";
@@ -1490,15 +1501,15 @@ else
 								//echo "Trouve ".$nodeValue."<br>";
 								//echo "Valeur en 0: ".$nodeValue."<br>";
 									
-								// Récupération de la valeur par défaut, s'il y a lieu
+								// Rï¿½cupï¿½ration de la valeur par dï¿½faut, s'il y a lieu
 								if ($child->attribute_default <> "" and $nodeValue == "")
 									$nodeValue = html_Metadata::cleanText($child->attribute_default);
 			
-								// Si le xpathParentId est défini, regarder si on est au xpath souhaité.	
+								// Si le xpathParentId est dï¿½fini, regarder si on est au xpath souhaitï¿½.	
 								if ($this->parentId_attribute <> "")
 								{
 									//gmd_MD_Metadata-gmd_parentIdentifier-gco_CharacterString__1
-									// Vérification qu'on est bien dans l'attribut choisi. La classe n'a pas d'utilité
+									// Vï¿½rification qu'on est bien dans l'attribut choisi. La classe n'a pas d'utilitï¿½
 									if ($parentScope <> NULL and $this->parentId_attribute == $child->attribute_id)
 									{
 										// Stocker le guid du parent
@@ -1506,7 +1517,7 @@ else
 									}
 								}
 								
-								// Selon le rendu de l'attribut, on fait des traitements différents
+								// Selon le rendu de l'attribut, on fait des traitements diffï¿½rents
 								switch ($child->rendertype_id)
 								{
 									// Textbox
@@ -1531,7 +1542,7 @@ else
 								//$node = $xpathResults->query($child->attribute_isocode."/".$type_isocode, $attributeScope);
 								$node = $xpathResults->query($type_isocode, $attributeScope);
 											 	
-								// Si le fieldset n'existe pas, inutile de récupérer une valeur
+								// Si le fieldset n'existe pas, inutile de rï¿½cupï¿½rer une valeur
 								if ($parentScope <> NULL and $parentScope->nodeName == $scope->nodeName)
 									$nodeValue = "";
 								else
@@ -1540,11 +1551,11 @@ else
 								//echo "Trouve ".$nodeValue."<br>";
 								//echo "Valeur en 0: ".$nodeValue."<br>";
 									
-								// Récupération de la valeur par défaut, s'il y a lieu
+								// Rï¿½cupï¿½ration de la valeur par dï¿½faut, s'il y a lieu
 								if ($child->attribute_default <> "" and $nodeValue == "")
 									$nodeValue = html_Metadata::cleanText($child->attribute_default);
 			
-								// Selon le rendu de l'attribut, on fait des traitements différents
+								// Selon le rendu de l'attribut, on fait des traitements diffï¿½rents
 								switch ($child->rendertype_id)
 								{
 									// Textarea
@@ -1586,7 +1597,7 @@ else
 								//echo "Trouve ".$nodeValue."<br>";
 								//echo "Valeur en 0: ".$nodeValue."<br>";
 									
-								// Récupération de la valeur par défaut, s'il y a lieu
+								// Rï¿½cupï¿½ration de la valeur par dï¿½faut, s'il y a lieu
 								/*if ($child->attribute_default <> "" and $nodeValue == "")
 									$nodeValue = html_Metadata::cleanText($child->attribute_default);
 								*/
@@ -1595,7 +1606,7 @@ else
 								switch ($child->rendertype_id)
 								{
 									default:
-										/* Traitement spécifique aux langues */
+										/* Traitement spï¿½cifique aux langues */
 										
 										// Stockage du path pour atteindre ce noeud du XML
 										//$queryPath = $child->attribute_isocode."/gmd:LocalisedCharacterString";
@@ -1609,8 +1620,8 @@ else
 											if ($pos==0)
 											{	
 												$currentScope=$listNode->item($pos);
-												// Traitement de la multiplicité
-												// Récupération du path du bloc de champs qui va être créé pour construire le nom
+												// Traitement de la multiplicitï¿½
+												// Rï¿½cupï¿½ration du path du bloc de champs qui va ï¿½tre crï¿½ï¿½ pour construire le nom
 												//$LocName = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__".($pos+1);
 												$LocName = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__1";
 								
@@ -1659,7 +1670,7 @@ else
 													//echo $LocLangName." - ".$child->attribute_id." - ".JText::_($row->name)." - ".$nodeValue."<br>";
 													//echo $child->attribute_id." - ".$LocLangName." - ".$nodeValue."<br>";
 													//echo $LocLangName." - ".$nodeValue."<br>";
-													// Selon le rendu de l'attribut, on fait des traitements différents
+													// Selon le rendu de l'attribut, on fait des traitements diffï¿½rents
 													switch ($child->rendertype_id)
 													{
 														// Textarea
@@ -1693,8 +1704,8 @@ else
 											else
 											{
 												$currentScope=$listNode->item($pos-1);
-												// Traitement de la multiplicité
-												// Récupération du path du bloc de champs qui va être créé pour construire le nom
+												// Traitement de la multiplicitï¿½
+												// Rï¿½cupï¿½ration du path du bloc de champs qui va ï¿½tre crï¿½ï¿½ pour construire le nom
 												$master = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__1";
 												$LocName = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__".($pos+1);
 								
@@ -1779,8 +1790,8 @@ else
 										}
 										if ($listCount==0 and $child->rel_lowerbound>0)
 										{
-											// Traitement de la multiplicité
-											// Récupération du path du bloc de champs qui va être créé pour construire le nom
+											// Traitement de la multiplicitï¿½
+											// Rï¿½cupï¿½ration du path du bloc de champs qui va ï¿½tre crï¿½ï¿½ pour construire le nom
 											$master = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__1";
 											$LocName = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__2";
 							
@@ -1878,11 +1889,11 @@ else
 								//echo "Trouve ".$nodeValue."<br>";
 								//echo "Valeur en 0: ".$nodeValue."<br>";
 									
-								// Récupération de la valeur par défaut, s'il y a lieu
+								// Rï¿½cupï¿½ration de la valeur par dï¿½faut, s'il y a lieu
 								if ($child->attribute_default <> "" and $nodeValue == "")
 									$nodeValue = html_Metadata::cleanText($child->attribute_default);
 			
-								// Selon le rendu de l'attribut, on fait des traitements différents
+								// Selon le rendu de l'attribut, on fait des traitements diffï¿½rents
 								switch ($child->rendertype_id)
 								{
 									// Textarea
@@ -1914,11 +1925,11 @@ else
 								//echo "Trouve ".$nodeValue."<br>";
 								//echo "Valeur en 0: ".$nodeValue."<br>";
 									
-								// Récupération de la valeur par défaut, s'il y a lieu
+								// Rï¿½cupï¿½ration de la valeur par dï¿½faut, s'il y a lieu
 								if ($child->attribute_default <> "" and $nodeValue == "")
 									$nodeValue = html_Metadata::cleanText($child->attribute_default);
 			
-								// Selon le rendu de l'attribut, on fait des traitements différents
+								// Selon le rendu de l'attribut, on fait des traitements diffï¿½rents
 								switch ($child->rendertype_id)
 								{
 									// Textarea
@@ -1952,15 +1963,15 @@ else
 								//echo "Trouve ".$nodeValue."<br>";
 								//echo "Valeur en 0: ".$nodeValue."<br>";
 									
-								// Récupération de la valeur par défaut, s'il y a lieu
+								// Rï¿½cupï¿½ration de la valeur par dï¿½faut, s'il y a lieu
 								if ($child->attribute_default <> "" and $nodeValue == "")
 									$nodeValue = html_Metadata::cleanText($child->attribute_default);
 			
-								// Selon le rendu de l'attribut, on fait des traitements différents
+								// Selon le rendu de l'attribut, on fait des traitements diffï¿½rents
 								switch ($child->rendertype_id)
 								{
 									default:
-										// Traitement spécifique aux listes
+										// Traitement spï¿½cifique aux listes
 										//echo $ancestorFieldsetName." - ".$parentName." - ".$child->attribute_isocode. " (1)<br>";					
 										// Traitement des enfants de type list
 										$content = array();
@@ -1972,8 +1983,8 @@ else
 									 	$dataValues = array();
 									 	$nodeValues = array();
 								
-									 	// Traitement de la multiplicité
-									 	// Récupération du path du bloc de champs qui va être créé pour construire le nom
+									 	// Traitement de la multiplicitï¿½
+									 	// Rï¿½cupï¿½ration du path du bloc de champs qui va ï¿½tre crï¿½ï¿½ pour construire le nom
 									 	$listName = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__1";
 									 	 
 									 	// Construction de la liste
@@ -2009,11 +2020,11 @@ else
 									 	
 									 	//echo "existant: ".count($nodeValues)."<br>";
 									 	
-									 	// S'il n'y a pas de valeurs existantes, récupérer les valeurs par défaut
+									 	// S'il n'y a pas de valeurs existantes, rï¿½cupï¿½rer les valeurs par dï¿½faut
 										$nodeDefaultValues = array();
 										if (count($nodeValues) == 0)
 									 	{
-									 		// Elements sélectionnés par défaut
+									 		// Elements sï¿½lectionnï¿½s par dï¿½faut
 											$query = "SELECT c.* FROM #__sdi_codevalue c, #__sdi_defaultvalue d WHERE c.id=d.codevalue_id AND c.published=true AND d.attribute_id = ".$child->attribute_id;
 											$database->setQuery( $query );
 											//echo $database->getQuery()."<br>";
@@ -2109,11 +2120,11 @@ else
 								//echo "Trouve ".$nodeValue."<br>";
 								//echo "Valeur en 0: ".$nodeValue."<br>";
 									
-								// Récupération de la valeur par défaut, s'il y a lieu
+								// Rï¿½cupï¿½ration de la valeur par dï¿½faut, s'il y a lieu
 								if ($child->attribute_default <> "" and $nodeValue == "")
 									$nodeValue = html_Metadata::cleanText($child->attribute_default);
 			
-								// Selon le rendu de l'attribut, on fait des traitements différents
+								// Selon le rendu de l'attribut, on fait des traitements diffï¿½rents
 								switch ($child->rendertype_id)
 								{
 									// Textarea
@@ -2155,12 +2166,12 @@ else
 								//echo "Trouve ".$nodeValue."<br>";
 								//echo "Valeur en 0: ".$nodeValue."<br>";
 									
-								// Récupération de la valeur par défaut, s'il y a lieu
+								// Rï¿½cupï¿½ration de la valeur par dï¿½faut, s'il y a lieu
 								if ($child->attribute_default <> "" and $nodeValue == "")
 									$nodeValue = html_Metadata::cleanText($child->attribute_default);
 			
 								$nodeValue = substr($nodeValue, 0, 10);
-								// Selon le rendu de l'attribut, on fait des traitements différents
+								// Selon le rendu de l'attribut, on fait des traitements diffï¿½rents
 								switch ($child->rendertype_id)
 								{
 									// Textarea
@@ -2191,15 +2202,15 @@ else
 								//echo "Trouve ".$nodeValue."<br>";
 								//echo "Valeur en 0: ".$nodeValue."<br>";
 									
-								// Récupération de la valeur par défaut, s'il y a lieu
+								// Rï¿½cupï¿½ration de la valeur par dï¿½faut, s'il y a lieu
 								if ($child->attribute_default <> "" and $nodeValue == "")
 									$nodeValue = html_Metadata::cleanText($child->attribute_default);
 			
-								// Selon le rendu de l'attribut, on fait des traitements différents
+								// Selon le rendu de l'attribut, on fait des traitements diffï¿½rents
 								switch ($child->rendertype_id)
 								{
 									default:
-										// Traitement spécifique aux listes
+										// Traitement spï¿½cifique aux listes
 										//echo $ancestorFieldsetName." - ".$parentName." - ".$child->attribute_isocode. " (1)<br>";					
 										// Traitement des enfants de type list
 										$content = array();
@@ -2212,8 +2223,8 @@ else
 									 	$dataValues = array();
 									 	$nodeValues = array();
 								
-									 	// Traitement de la multiplicité
-									 	// Récupération du path du bloc de champs qui va être créé pour construire le nom
+									 	// Traitement de la multiplicitï¿½
+									 	// Rï¿½cupï¿½ration du path du bloc de champs qui va ï¿½tre crï¿½ï¿½ pour construire le nom
 									 	$listName = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__1";
 									 	 
 									 	// Construction de la liste
@@ -2262,7 +2273,7 @@ else
 										//echo $type_isocode."[@locale='".$row->code."']"." dans ".$relNode->item(0)->nodeName."<br>";
 										if ($node->length > 0)
 								 		{
-								 			// Chercher le titre associé au texte localisé souhaité, ou s'il n'y a pas de titre le contenu
+								 			// Chercher le titre associï¿½ au texte localisï¿½ souhaitï¿½, ou s'il n'y a pas de titre le contenu
 											foreach ($content as $cont)
 									 		{
 									 			if ($cont->value == html_Metadata::cleanText($node->item(0)->nodeValue))
@@ -2279,7 +2290,7 @@ else
 										$nodeDefaultValues = array();
 										if (count($nodeValues) == 0)
 									 	{
-										 	// Elements sélectionnés par défaut
+										 	// Elements sï¿½lectionnï¿½s par dï¿½faut
 											$query = "SELECT c.* FROM #__sdi_codevalue c, #__sdi_defaultvalue d WHERE c.id=d.codevalue_id AND c.published=true AND d.attribute_id = ".$child->attribute_id." ORDER BY c.ordering";
 											$database->setQuery( $query );
 											//echo $database->getQuery()."<br>";
@@ -2334,15 +2345,15 @@ else
 								//echo "Trouve ".$nodeValue."<br>";
 								//echo "Valeur en 0: ".$nodeValue."<br>";
 									
-								// Récupération de la valeur par défaut, s'il y a lieu
+								// Rï¿½cupï¿½ration de la valeur par dï¿½faut, s'il y a lieu
 								if ($child->attribute_default <> "" and $nodeValue == "")
 									$nodeValue = html_Metadata::cleanText($child->attribute_default);
 			
-								// Selon le rendu de l'attribut, on fait des traitements différents
+								// Selon le rendu de l'attribut, on fait des traitements diffï¿½rents
 								switch ($child->rendertype_id)
 								{
 									default:
-										// Traitement spécifique aux listes
+										// Traitement spï¿½cifique aux listes
 										//echo $ancestorFieldsetName." - ".$parentName." - ".$child->attribute_isocode. " (1)<br>";					
 										// Traitement des enfants de type list
 										$content = array();
@@ -2354,8 +2365,8 @@ else
 									 	$dataValues = array();
 									 	$nodeValues = array();
 								
-									 	// Traitement de la multiplicité
-									 	// Récupération du path du bloc de champs qui va être créé pour construire le nom
+									 	// Traitement de la multiplicitï¿½
+									 	// Rï¿½cupï¿½ration du path du bloc de champs qui va ï¿½tre crï¿½ï¿½ pour construire le nom
 									 	$listName = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__1";
 									 	 
 									 	// Construction de la liste
@@ -2400,7 +2411,7 @@ else
 									 	//echo "existant: ".count($nodeValues)."<br>";
 									 	$language =& JFactory::getLanguage();
 										
-									 	// Récupérer le texte localisé stocké
+									 	// Rï¿½cupï¿½rer le texte localisï¿½ stockï¿½
 									 	foreach($this->langList as $row)
 										{
 											if ($row->code_easysdi == $language->_lang)
@@ -2414,7 +2425,7 @@ else
 												
 										 		if ($node->length > 0)
 										 		{
-										 			// Chercher le titre associé au texte localisé souhaité, ou s'il n'y a pas de titre le contenu
+										 			// Chercher le titre associï¿½ au texte localisï¿½ souhaitï¿½, ou s'il n'y a pas de titre le contenu
 													$query = "SELECT t.title, t.content, c.guid FROM #__sdi_codevalue c, #__sdi_translation t, #__sdi_language l, #__sdi_list_codelang cl WHERE c.guid=t.element_guid AND t.language_id=l.id AND l.codelang_id=cl.id and cl.code='".$language->_lang."' AND t.content = '".html_Metadata::cleanText($node->item(0)->nodeValue)."'"." ORDER BY c.ordering";
 													$database->setQuery( $query );
 													//echo $database->getQuery()."<br>";
@@ -2422,7 +2433,7 @@ else
 													
 													//$nodeValues[] = $database->loadResult();
 													$result = $database->loadObject();
-													/* Mis en commentaire à cause du bug #3919
+													/* Mis en commentaire ï¿½ cause du bug #3919
 													 * if ($result->title <> "")
 														$nodeValues[] = $result->title;
 													else*/
@@ -2440,7 +2451,7 @@ else
 										$nodeDefaultValues = array();
 										if (count($nodeValues) == 0)
 									 	{
-										 	// Elements sélectionnés par défaut
+										 	// Elements sï¿½lectionnï¿½s par dï¿½faut
 											$query = "SELECT c.* FROM #__sdi_codevalue c, #__sdi_defaultvalue d WHERE c.id=d.codevalue_id AND c.published=true AND d.attribute_id = ".$child->attribute_id." ORDER BY c.ordering";
 											$database->setQuery( $query );
 											//echo $database->getQuery()."<br>";
@@ -2496,7 +2507,7 @@ else
 								$langArray = Array();
 								foreach($this->langList as $row)
 								{									
-									if ($row->defaultlang) // Langue par défaut de la métadonnée
+									if ($row->defaultlang) // Langue par dï¿½faut de la mï¿½tadonnï¿½e
 										$defaultLang = $row->gemetlang;
 									
 									if ($row->code_easysdi == $language->_lang) // Langue courante de l'utilisateur
@@ -2523,7 +2534,7 @@ else
 									{
 									$nodeValue= "";
 									$nodeKeyword= "";
-									// Récupérer le texte localisé stocké
+									// Rï¿½cupï¿½rer le texte localisï¿½ stockï¿½
 									foreach($this->langList as $row)
 									{
 										//echo $row->gemetlang."<br>";
@@ -2559,7 +2570,7 @@ else
 									$value = "[".implode(",",$nodeValues)."]";
 								
 								$this->javascript .="
-								// Créer un bouton pour appeler la fenêtre de choix dans le Thesaurus GEMET
+								// Crï¿½er un bouton pour appeler la fenï¿½tre de choix dans le Thesaurus GEMET
 								var winthge;
 								
 								Ext.BLANK_IMAGE_URL = '".$uri->base(true)."/components/com_easysdi_catalog/ext/resources/images/default/s.gif';
@@ -2584,10 +2595,10 @@ else
 												      		    					
 																      		    var reliableRecord = result.terms[thes.lang];
 																      		    
-																      		    // S'assurer que le mot-clé n'est pas déjà sélectionné
+																      		    // S'assurer que le mot-clï¿½ n'est pas dï¿½jï¿½ sï¿½lectionnï¿½
 																      		    if (!target.usedRecords.containsKey(reliableRecord))
 																				{
-																					// Sauvegarde dans le champs SuperBoxSelect des mots-clés dans toutes les langues de EasySDI
+																					// Sauvegarde dans le champs SuperBoxSelect des mots-clï¿½s dans toutes les langues de EasySDI
 																				    for(l in result.terms) 
 																				    {
 																				    	s += l+': '+result.terms[l]+';';
@@ -2610,7 +2621,7 @@ else
 										text:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_THESAURUSGEMET_BUTTON'))."',
 										handler: function()
 								                {
-								                	// Créer une iframe pour demander à l'utilisateur le type d'import
+								                	// Crï¿½er une iframe pour demander ï¿½ l'utilisateur le type d'import
 													if (!winthge)
 														winthge = new Ext.Window({
 														                id:'".$currentName."_win',
@@ -2641,7 +2652,7 @@ else
 														winthge.show();
 										        	},
 										
-								        // Champs spécifiques au clonage
+								        // Champs spï¿½cifiques au clonage
 								        dynamic:true,
 								        minOccurs:1,
 							            maxOccurs:1,
@@ -2651,7 +2662,7 @@ else
 									})
 								);
 								
-								// Créer le champ qui contiendra les mots-clés du thesaurus choisis
+								// Crï¿½er le champ qui contiendra les mots-clï¿½s du thesaurus choisis
 								".$parentFieldsetName.".add(createSuperBoxSelect('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."', ".$value.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."'));
 								";
 								break;
@@ -2665,11 +2676,11 @@ else
 								//echo "Trouve ".$nodeValue."<br>";
 								//echo "Valeur en 0: ".$nodeValue."<br>";
 									
-								// Récupération de la valeur par défaut, s'il y a lieu
+								// Rï¿½cupï¿½ration de la valeur par dï¿½faut, s'il y a lieu
 								if ($child->attribute_default <> "" and $nodeValue == "")
 									$nodeValue = html_Metadata::cleanText($child->attribute_default);
 			
-								// Selon le rendu de l'attribut, on fait des traitements différents
+								// Selon le rendu de l'attribut, on fait des traitements diffï¿½rents
 								switch ($child->rendertype_id)
 								{
 									default:
@@ -2723,14 +2734,14 @@ else
 							$node = $xpathResults->query($type_isocode, $attributeScope);
 							//echo $node->length." - ".$node->item(0)->nodeName."<br>";
 							
-							// Si le fieldset n'existe pas, inutile de récupérer une valeur
+							// Si le fieldset n'existe pas, inutile de rï¿½cupï¿½rer une valeur
 								if ($parentScope <> NULL and $parentScope->nodeName == $scope->nodeName)
 									$nodeValue = "";
 								else
 									$nodeValue = html_Metadata::cleanText($node->item($pos-1)->nodeValue);
 								
 							
-							// Récupération de la valeur par défaut, s'il y a lieu
+							// Rï¿½cupï¿½ration de la valeur par dï¿½faut, s'il y a lieu
 							if ($child->attribute_default <> "" and $nodeValue == "")
 								$nodeValue = html_Metadata::cleanText($child->attribute_default);
 		
@@ -2745,7 +2756,7 @@ else
 						{
 							// Guid
 							case 1:
-								// Selon le rendu de l'attribut, on fait des traitements différents
+								// Selon le rendu de l'attribut, on fait des traitements diffï¿½rents
 								switch ($child->rendertype_id)
 								{
 									// Textbox
@@ -2765,7 +2776,7 @@ else
 								break;
 							// Text
 							case 2:
-								// Selon le rendu de l'attribut, on fait des traitements différents
+								// Selon le rendu de l'attribut, on fait des traitements diffï¿½rents
 								switch ($child->rendertype_id)
 								{
 									// Textarea
@@ -2799,7 +2810,7 @@ else
 								break;
 							// Number
 							case 4:
-								// Selon le rendu de l'attribut, on fait des traitements différents
+								// Selon le rendu de l'attribut, on fait des traitements diffï¿½rents
 								switch ($child->rendertype_id)
 								{
 									// Textarea
@@ -2821,7 +2832,7 @@ else
 								break;
 							// Date
 							case 5:
-								// Selon le rendu de l'attribut, on fait des traitements différents
+								// Selon le rendu de l'attribut, on fait des traitements diffï¿½rents
 								switch ($child->rendertype_id)
 								{
 									// Textarea
@@ -2847,7 +2858,7 @@ else
 								break;
 							// Link
 							case 7:
-								// Selon le rendu de l'attribut, on fait des traitements différents
+								// Selon le rendu de l'attribut, on fait des traitements diffï¿½rents
 								switch ($child->rendertype_id)
 								{
 									// Textarea
@@ -2877,7 +2888,7 @@ else
 							// DateTime
 							case 8:
 								$nodeValue = substr($nodeValue, 0, 10);
-								// Selon le rendu de l'attribut, on fait des traitements différents
+								// Selon le rendu de l'attribut, on fait des traitements diffï¿½rents
 								switch ($child->rendertype_id)
 								{
 									// Textarea
@@ -2912,15 +2923,15 @@ else
 								//echo "Trouve ".$nodeValue."<br>";
 								//echo "Valeur en 0: ".$nodeValue."<br>";
 									
-								// Récupération de la valeur par défaut, s'il y a lieu
+								// Rï¿½cupï¿½ration de la valeur par dï¿½faut, s'il y a lieu
 								if ($child->attribute_default <> "" and $nodeValue == "")
 									$nodeValue = html_Metadata::cleanText($child->attribute_default);
 			
-								// Selon le rendu de l'attribut, on fait des traitements différents
+								// Selon le rendu de l'attribut, on fait des traitements diffï¿½rents
 								switch ($child->rendertype_id)
 								{
 									default:
-										// Traitement spécifique aux listes
+										// Traitement spï¿½cifique aux listes
 										//echo $ancestorFieldsetName." - ".$parentName." - ".$child->attribute_isocode. " (1)<br>";					
 										// Traitement des enfants de type list
 										$content = array();
@@ -2932,8 +2943,8 @@ else
 									 	$dataValues = array();
 									 	$nodeValues = array();
 								
-									 	// Traitement de la multiplicité
-									 	// Récupération du path du bloc de champs qui va être créé pour construire le nom
+									 	// Traitement de la multiplicitï¿½
+									 	// Rï¿½cupï¿½ration du path du bloc de champs qui va ï¿½tre crï¿½ï¿½ pour construire le nom
 									 	//$listName = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__1";
 									 	$masterlistName = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__1";
 										$listName = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__".($pos+1);
@@ -2985,7 +2996,7 @@ else
 										//echo $type_isocode."[@locale='".$row->code."']"." dans ".$relNode->item(0)->nodeName."<br>";
 										if ($node->length > 0)
 								 		{
-								 			// Chercher le titre associé au texte localisé souhaité et 
+								 			// Chercher le titre associï¿½ au texte localisï¿½ souhaitï¿½ et 
 											foreach ($content as $cont)
 									 		{
 									 			if ($cont->value == html_Metadata::cleanText($node->item(0)->nodeValue))
@@ -3001,7 +3012,7 @@ else
 										$nodeDefaultValues = array();
 										if (count($nodeValues) == 0)
 									 	{
-										 	// Elements sélectionnés par défaut
+										 	// Elements sï¿½lectionnï¿½s par dï¿½faut
 											$query = "SELECT c.* FROM #__sdi_codevalue c, #__sdi_defaultvalue d WHERE c.id=d.codevalue_id AND c.published=true AND d.attribute_id = ".$child->attribute_id." ORDER BY c.ordering";
 											$database->setQuery( $query );
 											//echo $database->getQuery()."<br>";
@@ -3058,15 +3069,15 @@ else
 								//echo "Trouve ".$nodeValue."<br>";
 								//echo "Valeur en 0: ".$nodeValue."<br>";
 									
-								// Récupération de la valeur par défaut, s'il y a lieu
+								// Rï¿½cupï¿½ration de la valeur par dï¿½faut, s'il y a lieu
 								if ($child->attribute_default <> "" and $nodeValue == "")
 									$nodeValue = html_Metadata::cleanText($child->attribute_default);
 			
-								// Selon le rendu de l'attribut, on fait des traitements différents
+								// Selon le rendu de l'attribut, on fait des traitements diffï¿½rents
 								switch ($child->rendertype_id)
 								{
 									default:
-										// Traitement spécifique aux listes
+										// Traitement spï¿½cifique aux listes
 										//echo $ancestorFieldsetName." - ".$parentName." - ".$child->attribute_isocode. " (1)<br>";					
 										// Traitement des enfants de type list
 										$content = array();
@@ -3078,8 +3089,8 @@ else
 									 	$dataValues = array();
 									 	$nodeValues = array();
 								
-									 	// Traitement de la multiplicité
-									 	// Récupération du path du bloc de champs qui va être créé pour construire le nom
+									 	// Traitement de la multiplicitï¿½
+									 	// Rï¿½cupï¿½ration du path du bloc de champs qui va ï¿½tre crï¿½ï¿½ pour construire le nom
 									 	//$listName = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__1";
 									 	$masterlistName = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__1";
 										$listName = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__".($pos+1);
@@ -3126,7 +3137,7 @@ else
 									 	//echo "existant: ".count($nodeValues)."<br>";
 									 	$language =& JFactory::getLanguage();
 										
-									 	// Récupérer le texte localisé stocké
+									 	// Rï¿½cupï¿½rer le texte localisï¿½ stockï¿½
 									 	foreach($this->langList as $row)
 										{
 											if ($row->code_easysdi == $language->_lang)
@@ -3139,7 +3150,7 @@ else
 												//echo $type_isocode."[@locale='".$row->code."']"." dans ".$relNode->item(0)->nodeName."<br>";
 												if ($node->length > 0)
 										 		{
-										 			// Chercher le titre associé au texte localisé souhaité, ou s'il n'y a pas de titre le contenu
+										 			// Chercher le titre associï¿½ au texte localisï¿½ souhaitï¿½, ou s'il n'y a pas de titre le contenu
 													$query = "SELECT t.title, t.content, c.guid FROM #__sdi_codevalue c, #__sdi_translation t, #__sdi_language l, #__sdi_list_codelang cl WHERE c.guid=t.element_guid AND t.language_id=l.id AND l.codelang_id=cl.id and cl.code='".$language->_lang."' AND t.content = '".html_Metadata::cleanText($node->item(0)->nodeValue)."'"." ORDER BY c.ordering";
 													$database->setQuery( $query );
 													//echo $database->getQuery()."<br>";
@@ -3147,7 +3158,7 @@ else
 													
 													//$nodeValues[] = $database->loadResult();
 													$result = $database->loadObject();
-													/* Mis en commentaire à cause du bug #3919
+													/* Mis en commentaire ï¿½ cause du bug #3919
 													 * if ($result->title <> "")
 														$nodeValues[] = $result->title;
 													else*/
@@ -3165,7 +3176,7 @@ else
 										$nodeDefaultValues = array();
 										if (count($nodeValues) == 0)
 									 	{
-										 	// Elements sélectionnés par défaut
+										 	// Elements sï¿½lectionnï¿½s par dï¿½faut
 											$query = "SELECT c.* FROM #__sdi_codevalue c, #__sdi_defaultvalue d WHERE c.id=d.codevalue_id AND c.published=true AND d.attribute_id = ".$child->attribute_id." ORDER BY c.ordering";
 											$database->setQuery( $query );
 											//echo $database->getQuery()."<br>";
@@ -3214,7 +3225,7 @@ else
 								// Le Thesaurus GEMET  n'existe qu'en un exemplaire
 								break;
 							default:
-								// Selon le rendu de l'attribut, on fait des traitements différents
+								// Selon le rendu de l'attribut, on fait des traitements diffï¿½rents
 								switch ($child->rendertype_id)
 								{
 									default:
@@ -3236,7 +3247,7 @@ else
 					
 					
 				// Si le XML ne contient aucune occurence de l'attribut
-				// il faut le créer vide
+				// il faut le crï¿½er vide
 				if ($attributeCount==0)
 				{
 					$nodeValue = "";
@@ -3255,7 +3266,7 @@ else
 					$name = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."-".str_replace(":", "_", $type_isocode);
 					$currentName = $name."__1";
 					
-					// Récupération de la valeur par défaut, s'il y a lieu
+					// Rï¿½cupï¿½ration de la valeur par dï¿½faut, s'il y a lieu
 					if ($child->attribute_default <> "")
 						$nodeValue = html_Metadata::cleanText($child->attribute_default);
 				
@@ -3265,7 +3276,7 @@ else
 					{
 						// Guid
 						case 1:
-							// Selon le rendu de l'attribut, on fait des traitements différents
+							// Selon le rendu de l'attribut, on fait des traitements diffï¿½rents
 							switch ($child->rendertype_id)
 							{
 								// Textbox
@@ -3285,7 +3296,7 @@ else
 							break;
 						// Text
 						case 2:
-							// Selon le rendu de l'attribut, on fait des traitements différents
+							// Selon le rendu de l'attribut, on fait des traitements diffï¿½rents
 							switch ($child->rendertype_id)
 							{
 								// Textarea
@@ -3319,7 +3330,7 @@ else
 							switch ($child->rendertype_id)
 							{
 								default:
-									/* Traitement spécifique aux langues */
+									/* Traitement spï¿½cifique aux langues */
 									
 									// Stockage du path pour atteindre ce noeud du XML
 									//$queryPath = $child->attribute_isocode."/gmd:LocalisedCharacterString";
@@ -3332,8 +3343,8 @@ else
 									{
 										if ($pos==0)
 										{	
-											// Traitement de la multiplicité
-											// Récupération du path du bloc de champs qui va être créé pour construire le nom
+											// Traitement de la multiplicitï¿½
+											// Rï¿½cupï¿½ration du path du bloc de champs qui va ï¿½tre crï¿½ï¿½ pour construire le nom
 											$LocName = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__".($pos+1);
 							
 											//echo $LocName." - ".$child->attribute_id." - ".JText::_($label)." - ".$child->rel_lowerbound." - ".$child->rel_upperbound." - ".$parentFieldsetName."<br>";
@@ -3380,7 +3391,7 @@ else
 												
 												//echo $LocLangName." - ".$child->attribute_id." - ".JText::_($row->name)." - ".$nodeValue."<br>";
 												//echo $child->attribute_id." - ".$LocLangName." - ".$nodeValue."<br>";
-												// Selon le rendu de l'attribut, on fait des traitements différents
+												// Selon le rendu de l'attribut, on fait des traitements diffï¿½rents
 												switch ($child->rendertype_id)
 												{
 													// Textarea
@@ -3411,8 +3422,8 @@ else
 										}
 										else
 										{
-											// Traitement de la multiplicité
-											// Récupération du path du bloc de champs qui va être créé pour construire le nom
+											// Traitement de la multiplicitï¿½
+											// Rï¿½cupï¿½ration du path du bloc de champs qui va ï¿½tre crï¿½ï¿½ pour construire le nom
 											$master = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__1";
 											$LocName = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__".($pos+1);
 							
@@ -3489,8 +3500,8 @@ else
 									}
 									if ($listCount==0 and $child->rel_lowerbound>0)
 									{
-										// Traitement de la multiplicité
-										// Récupération du path du bloc de champs qui va être créé pour construire le nom
+										// Traitement de la multiplicitï¿½
+										// Rï¿½cupï¿½ration du path du bloc de champs qui va ï¿½tre crï¿½ï¿½ pour construire le nom
 										$master = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__1";
 										$LocName = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__2";
 						
@@ -3551,7 +3562,7 @@ else
 							break;
 						// Number
 						case 4:
-							// Selon le rendu de l'attribut, on fait des traitements différents
+							// Selon le rendu de l'attribut, on fait des traitements diffï¿½rents
 							switch ($child->rendertype_id)
 							{
 								// Textarea
@@ -3573,7 +3584,7 @@ else
 							break;
 						// Date
 						case 5:
-							// Selon le rendu de l'attribut, on fait des traitements différents
+							// Selon le rendu de l'attribut, on fait des traitements diffï¿½rents
 							switch ($child->rendertype_id)
 							{
 								// Textarea
@@ -3595,11 +3606,11 @@ else
 							break;
 						// List
 						case 6:
-							// Selon le rendu de l'attribut, on fait des traitements différents
+							// Selon le rendu de l'attribut, on fait des traitements diffï¿½rents
 							switch ($child->rendertype_id)
 							{
 								default:
-									// Traitement spécifique aux listes
+									// Traitement spï¿½cifique aux listes
 									//echo $ancestorFieldsetName." - ".$parentName." - ".$child->attribute_isocode. " (2)<br>";					
 									// Traitement des enfants de type list
 									$content = array();
@@ -3611,8 +3622,8 @@ else
 								 	$dataValues = array();
 								 	$nodeValues = array();
 							
-								 	// Traitement de la multiplicité
-								 	// Récupération du path du bloc de champs qui va être créé pour construire le nom
+								 	// Traitement de la multiplicitï¿½
+								 	// Rï¿½cupï¿½ration du path du bloc de champs qui va ï¿½tre crï¿½ï¿½ pour construire le nom
 								 	$listName = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__1";
 								 	 
 								 	// Construction de la liste
@@ -3645,11 +3656,11 @@ else
 								 	}
 									//echo "existant: ".count($nodeValues)."<br>";
 									
-									// S'il n'y a pas de valeurs existantes, récupérer les valeurs par défaut
+									// S'il n'y a pas de valeurs existantes, rï¿½cupï¿½rer les valeurs par dï¿½faut
 									$nodeDefaultValues = array();
 									if (count($nodeValues) == 0)
 								 	{
-								 		// Elements sélectionnés par défaut
+								 		// Elements sï¿½lectionnï¿½s par dï¿½faut
 										$query = "SELECT c.* FROM #__sdi_codevalue c, #__sdi_defaultvalue d WHERE c.id=d.codevalue_id AND c.published=true AND d.attribute_id = ".$child->attribute_id;
 										$database->setQuery( $query );
 										//echo $database->getQuery()."<br>";
@@ -3735,7 +3746,7 @@ else
 							break;
 						// Link
 						case 7:
-							// Selon le rendu de l'attribut, on fait des traitements différents
+							// Selon le rendu de l'attribut, on fait des traitements diffï¿½rents
 							switch ($child->rendertype_id)
 							{
 								// Textarea
@@ -3765,7 +3776,7 @@ else
 						// DateTime
 						case 8:
 							$nodeValue = substr($nodeValue, 0, 10);
-							// Selon le rendu de l'attribut, on fait des traitements différents
+							// Selon le rendu de l'attribut, on fait des traitements diffï¿½rents
 							switch ($child->rendertype_id)
 							{
 								// Textarea
@@ -3787,11 +3798,11 @@ else
 							break;
 							// TextChoice
 							case 9:
-								// Selon le rendu de l'attribut, on fait des traitements différents
+								// Selon le rendu de l'attribut, on fait des traitements diffï¿½rents
 								switch ($child->rendertype_id)
 								{
 									default:
-										// Traitement spécifique aux listes
+										// Traitement spï¿½cifique aux listes
 										//echo $ancestorFieldsetName." - ".$parentName." - ".$child->attribute_isocode. " (1)<br>";					
 										// Traitement des enfants de type list
 										$content = array();
@@ -3803,8 +3814,8 @@ else
 									 	$dataValues = array();
 									 	$nodeValues = array();
 								
-									 	// Traitement de la multiplicité
-									 	// Récupération du path du bloc de champs qui va être créé pour construire le nom
+									 	// Traitement de la multiplicitï¿½
+									 	// Rï¿½cupï¿½ration du path du bloc de champs qui va ï¿½tre crï¿½ï¿½ pour construire le nom
 									 	$listName = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__1";
 									 	 
 									 	// Construction de la liste
@@ -3832,7 +3843,7 @@ else
 										
 									 	$relNode = $xpathResults->query($child->attribute_isocode, $scope);
 									 	
-										// Elements sélectionnés par défaut
+										// Elements sï¿½lectionnï¿½s par dï¿½faut
 										$nodeDefaultValues = array();
 										$query = "SELECT c.* FROM #__sdi_codevalue c, #__sdi_defaultvalue d WHERE c.id=d.codevalue_id AND c.published=true AND d.attribute_id = ".$child->attribute_id." ORDER BY c.ordering";
 										$database->setQuery( $query );
@@ -3872,11 +3883,11 @@ else
 								break;
 							// LocaleChoice
 							case 10:
-								// Selon le rendu de l'attribut, on fait des traitements différents
+								// Selon le rendu de l'attribut, on fait des traitements diffï¿½rents
 								switch ($child->rendertype_id)
 								{
 									default:
-										// Traitement spécifique aux listes
+										// Traitement spï¿½cifique aux listes
 										//echo $ancestorFieldsetName." - ".$parentName." - ".$child->attribute_isocode. " (1)<br>";					
 										// Traitement des enfants de type list
 										$content = array();
@@ -3888,8 +3899,8 @@ else
 									 	$dataValues = array();
 									 	$nodeValues = array();
 								
-									 	// Traitement de la multiplicité
-									 	// Récupération du path du bloc de champs qui va être créé pour construire le nom
+									 	// Traitement de la multiplicitï¿½
+									 	// Rï¿½cupï¿½ration du path du bloc de champs qui va ï¿½tre crï¿½ï¿½ pour construire le nom
 									 	$listName = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__1";
 									 	 
 									 	// Construction de la liste
@@ -3916,7 +3927,7 @@ else
 										
 									 	$relNode = $xpathResults->query($child->attribute_isocode, $scope);
 									 	
-										// Elements sélectionnés par défaut
+										// Elements sï¿½lectionnï¿½s par dï¿½faut
 										$nodeDefaultValues = array();
 										$query = "SELECT c.* FROM #__sdi_codevalue c, #__sdi_defaultvalue d WHERE c.id=d.codevalue_id AND c.published=true AND d.attribute_id = ".$child->attribute_id." ORDER BY c.ordering";
 										$database->setQuery( $query );
@@ -3968,7 +3979,7 @@ else
 								$langArray = Array();
 								foreach($this->langList as $row)
 								{									
-									if ($row->defaultlang) // Langue par défaut de la métadonnée
+									if ($row->defaultlang) // Langue par dï¿½faut de la mï¿½tadonnï¿½e
 										$defaultLang = $row->gemetlang;
 									
 									if ($row->code_easysdi == $language->_lang) // Langue courante de l'utilisateur
@@ -3982,7 +3993,7 @@ else
 								*/
 													
 								$this->javascript .="
-								// Créer un bouton pour appeler la fenêtre de choix dans le Thesaurus GEMET
+								// Crï¿½er un bouton pour appeler la fenï¿½tre de choix dans le Thesaurus GEMET
 								var winthge;
 								
 								Ext.BLANK_IMAGE_URL = '".$uri->base(true)."/components/com_easysdi_catalog/ext/resources/images/default/s.gif';
@@ -4007,10 +4018,10 @@ else
 																			    
 																      		    var reliableRecord = result.terms[thes.lang];
 																      		    
-																      		    // S'assurer que le mot-clé n'est pas déjà sélectionné
+																      		    // S'assurer que le mot-clï¿½ n'est pas dï¿½jï¿½ sï¿½lectionnï¿½
 																      		    if (!target.usedRecords.containsKey(reliableRecord))
 																				{
-																					// Sauvegarde dans le champs SuperBoxSelect des mots-clés dans toutes les langues de EasySDI
+																					// Sauvegarde dans le champs SuperBoxSelect des mots-clï¿½s dans toutes les langues de EasySDI
 																				    for(l in result.terms) 
 																				    {
 																				    	s += l+': '+result.terms[l]+';';
@@ -4033,7 +4044,7 @@ else
 										text:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_THESAURUSGEMET_BUTTON'))."',
 										handler: function()
 								                {
-								                	// Créer une iframe pour demander à l'utilisateur le type d'import
+								                	// Crï¿½er une iframe pour demander ï¿½ l'utilisateur le type d'import
 													if (!winthge)
 														winthge = new Ext.Window({
 														                id:'".$currentName."_win',
@@ -4064,7 +4075,7 @@ else
 														winthge.show();
 										        	},
 										
-								        // Champs spécifiques au clonage
+								        // Champs spï¿½cifiques au clonage
 								        dynamic:true,
 								        minOccurs:1,
 							            maxOccurs:1,
@@ -4074,13 +4085,13 @@ else
 									})
 								);
 								
-								// Créer le champ qui contiendra les mots-clés du thesaurus choisis
+								// Crï¿½er le champ qui contiendra les mots-clï¿½s du thesaurus choisis
 								".$parentFieldsetName.".add(createSuperBoxSelect('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."', '', false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."'));
 								";
 								
 								break;
 						default:
-							// Selon le rendu de l'attribut, on fait des traitements différents
+							// Selon le rendu de l'attribut, on fait des traitements diffï¿½rents
 							switch ($child->rendertype_id)
 							{
 								default:
@@ -4099,7 +4110,7 @@ else
 					}
 				}
 			}
-		// Récupération des relations de cette classe (parent) vers d'autres classes (enfants)
+		// Rï¿½cupï¿½ration des relations de cette classe (parent) vers d'autres classes (enfants)
 		//$database->setQuery( $query );
 		//$rowClassChilds = array_merge( $rowClassChilds, $database->loadObjectList() );
 		//echo "<br>";
@@ -4154,7 +4165,7 @@ else
 				//if ($parent <> $child->child_id)
 				//{
 					$this->javascript .="
-						// Créer un nouveau fieldset
+						// Crï¿½er un nouveau fieldset
 						//console.log(ancestor.getId());							
 						var ".$fieldsetName." = ".$parentFieldsetName.".duplicates('".$generalizationName."', '".html_Metadata::cleanText($label)."', ".$ancestorFieldsetName."); 
 						//var ".$fieldsetName." = createFieldSet('".$generalizationName."', '".html_Metadata::cleanText($label)."', true, false, false, true, true, null, 0, 1, '".html_Metadata::cleanText(JText::_($tip))."'); 
@@ -4167,7 +4178,7 @@ else
 					";	
 				//}
 				
-				//echo "Appel récursif avec les valeurs suivantes:<br> ";
+				//echo "Appel rï¿½cursif avec les valeurs suivantes:<br> ";
 				//echo "Ancestor Fieldset = ".$ancestorFieldsetName."<br>";
 				//echo "Parent Fieldset = ".$parentFieldsetName."<br>";
 				//echo "Fieldset = ".$fieldsetName."<br>";
@@ -4181,18 +4192,18 @@ else
 			{*/
 						
 			// Traitement de chaque occurence de la relation dans le XML.
-			// Si pas trouvé, on entre une fois dans la boucle pour créer
+			// Si pas trouvï¿½, on entre une fois dans la boucle pour crï¿½er
 			// une seule occurence de saisie (master)
 			for ($pos=0; $pos<=$relCount; $pos++)
 			{
 				/*
 				 * COMPREHENSION DU MODELE
 				 * C'est la relation qui est multiple. De ce fait on a toujours un et un
-				 * seul enfant pour chaque relation trouvée.
+				 * seul enfant pour chaque relation trouvï¿½e.
 				 */  
 				
 				// Construction du master qui permet d'ajouter des occurences de la relation.
-				// Le master doit contenir une structure mais pas de données.
+				// Le master doit contenir une structure mais pas de donnï¿½es.
 				if ($pos==0)
 				{
 					// Traitement de la relation entre la classe parent et la classe enfant
@@ -4208,7 +4219,7 @@ else
 					// Traitement de la classe enfant
 					if ($relCount > 0)
 					{					
-						// Récupération du noeud XML correspondant au code ISO de la relation
+						// Rï¿½cupï¿½ration du noeud XML correspondant au code ISO de la relation
 						//echo "Recherche de ".$child->child_isocode. " dans ".$relScope->nodeName."<br>";
 						$childnode = $xpathResults->query($child->child_isocode, $relScope);
 						//echo "Trouve ".$childnode->length." fois<br>";
@@ -4216,7 +4227,7 @@ else
 						//$childCount = $node->length;
 						//echo "La classe ".$child->child_isocode." existe ".$node->length." fois.<br>";
 			
-						// Si on a trouvé des occurences, on modifie le scope.
+						// Si on a trouvï¿½ des occurences, on modifie le scope.
 						if ($childnode->length > 0)
 							$classScope = $childnode->item(0);
 						else
@@ -4225,23 +4236,23 @@ else
 					else
 						$classScope = $relScope;
 					
-					// Construction du nom du fieldset qui va correspondre à la classe
-					// On n'y met pas la relation qui n'a pas d'intérêt pour l'unicité du nom
-					// On démarre l'indexation à 1
+					// Construction du nom du fieldset qui va correspondre ï¿½ la classe
+					// On n'y met pas la relation qui n'a pas d'intï¿½rï¿½t pour l'unicitï¿½ du nom
+					// On dï¿½marre l'indexation ï¿½ 1
 					$name = $parentName."-".str_replace(":", "_", $child->child_isocode)."__".($pos+1);
 							
 					// Construction du bloc de la classe enfant
-					// Nom du fieldset avec guid pour l'unicité
+					// Nom du fieldset avec guid pour l'unicitï¿½
 					$fieldsetName = "fieldset".$child->child_id."_".str_replace("-", "_", helper_easysdi::getUniqueId());
 					
 					$this->javascript .="
-						// Créer un nouveau fieldset
+						// Crï¿½er un nouveau fieldset
 						var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, false, false, true, true, null, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false); 
 						".$parentFieldsetName.".add(".$fieldsetName.");
 					";
 
 					/*
-					// S'il y a un xlink:title défini, alors afficher une balise pour le saisir
+					// S'il y a un xlink:title dï¿½fini, alors afficher une balise pour le saisir
 					if ($child->has_xlinkTitle)
 					{
 						if ($nodeCount > 0)
@@ -4256,9 +4267,9 @@ else
 
 					// Le code ISO de la classe enfant devient le code ISO du nouveau parent
 					$nextIsocode = $child->child_isocode;
-					// Appel récursif de la fonction pour le traitement du prochain niveau
+					// Appel rï¿½cursif de la fonction pour le traitement du prochain niveau
 					//HTML_metadata::buildTree($prof, $database, $child->classes_to_id, $child->classes_to_id, $name, $xpathResults, $classScope, $queryPath, $nextIsocode, $account_id, $option);
-					//echo "Appel récursif avec les valeurs suivantes:<br> ";
+					//echo "Appel rï¿½cursif avec les valeurs suivantes:<br> ";
 					//echo "Ancetre = ".$ancestor."<br>";
 					//echo "Parent = ".$child->child_id."<br>";
 					//echo "Parent Fieldset = ".$child->child_id."<br>";
@@ -4271,19 +4282,19 @@ else
 					//echo "Account Id = ".$account_id."<br>";
 					//echo "<hr>";
 					
-					// Test pour le cas d'une relation qui boucle une classe sur elle-même
+					// Test pour le cas d'une relation qui boucle une classe sur elle-mï¿½me
 					if ($ancestor <> $parent)					
 						HTML_metadata::buildTree($database, $parent, $child->child_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
 		
 					// Classassociation_id contient une classe
 					if ($child->association_id <>0)
 					{
-						// Appel récursif de la fonction pour le traitement du prochain niveau
+						// Appel rï¿½cursif de la fonction pour le traitement du prochain niveau
 						if ($ancestor <> $parent)
 							HTML_metadata::buildTree($database, $parent, $child->association_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
 					}
 				}
-				// Ici on va traiter toutes les occurences trouvées dans le XML
+				// Ici on va traiter toutes les occurences trouvï¿½es dans le XML
 				else
 				{
 					// Traitement de la relation entre la classe parent et la classe enfant
@@ -4292,7 +4303,7 @@ else
 					// Traitement de la classe enfant
 					if ($relCount > 0)
 					{					
-						// Récupération du noeud XML correspondant au code ISO de la relation
+						// Rï¿½cupï¿½ration du noeud XML correspondant au code ISO de la relation
 						//echo "Recherche de ".$child->child_isocode. " dans ".$relScope->nodeName."<br>";
 						$childnode = $xpathResults->query($child->child_isocode, $relScope);
 						//echo "Trouve ".$node->length." fois<br>";
@@ -4300,7 +4311,7 @@ else
 						//$childCount = $node->length;
 						//echo "La classe ".$child->child_isocode." existe ".$node->length." fois.<br>";
 			
-						// Si on a trouvé des occurences, on modifie le scope.
+						// Si on a trouvï¿½ des occurences, on modifie le scope.
 						if ($childnode->length > 0)
 							$classScope = $childnode->item(0);
 						else
@@ -4309,26 +4320,26 @@ else
 					else
 						$classScope = $relScope;
 					
-					// Construction du nom du fieldset qui va correspondre à la classe
-					// On n'y met pas la relation qui n'a pas d'intérêt pour l'unicité du nom
-					// On récupère le master qui a l'index 1
+					// Construction du nom du fieldset qui va correspondre ï¿½ la classe
+					// On n'y met pas la relation qui n'a pas d'intï¿½rï¿½t pour l'unicitï¿½ du nom
+					// On rï¿½cupï¿½re le master qui a l'index 1
 					$master = $parentName."-".str_replace(":", "_", $child->child_isocode)."__1";
 					// On construit le nom de l'occurence
 					$name = $parentName."-".str_replace(":", "_", $child->child_isocode)."__".($pos+1);
 							
 					// Construction du bloc de la classe enfant
-					// Nom du fieldset avec guid pour l'unicité
+					// Nom du fieldset avec guid pour l'unicitï¿½
 					$fieldsetName = "fieldset".$child->child_id."_".str_replace("-", "_", helper_easysdi::getUniqueId());
 					
 					$this->javascript .="
 						var master = Ext.getCmp('".$master."');							
-						// Créer un nouveau fieldset
+						// Crï¿½er un nouveau fieldset
 						var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, true, true, true, true, master, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false); 
 						".$parentFieldsetName.".add(".$fieldsetName.");
 					";
 					
 					/*
-					// S'il y a un xlink:title défini, alors afficher une balise pour le saisir
+					// S'il y a un xlink:title dï¿½fini, alors afficher une balise pour le saisir
 					if ($child->has_xlinkTitle)
 					{
 						if ($nodeCount > 0)
@@ -4343,10 +4354,10 @@ else
 
 					// Le code ISO de la classe enfant devient le code ISO du nouveau parent
 					$nextIsocode = $child->child_isocode;
-					// Appel récursif de la fonction pour le traitement du prochain niveau
+					// Appel rï¿½cursif de la fonction pour le traitement du prochain niveau
 					//HTML_metadata::buildTree($prof, $database, $child->classes_to_id, $child->classes_to_id, $name, $xpathResults, $classScope, $queryPath, $nextIsocode, $account_id, $option);
 					
-					//echo "Appel récursif avec les valeurs suivantes:<br> ";
+					//echo "Appel rï¿½cursif avec les valeurs suivantes:<br> ";
 					//echo "Parent = ".$child->child_id."<br>";
 					//echo "Parent Fieldset = ".$child->child_id."<br>";
 					//echo "Parent Name = ".$name."<br>";
@@ -4362,26 +4373,26 @@ else
 					// Classassociation_id contient une classe
 					if ($child->association_id <>0)
 					{
-						// Appel récursif de la fonction pour le traitement du prochain niveau
+						// Appel rï¿½cursif de la fonction pour le traitement du prochain niveau
 						if ($ancestor <> $parent)
 							HTML_metadata::buildTree($database, $parent, $child->association_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
 					}
 				}
 			}
 
-			// Si la classe est obligatoire mais qu'elle n'existe pas à l'heure actuelle dans le XML, 
-			// il faut créer en plus du master un bloc de saisie qui ne puisse pas être supprimé par l'utilisateur 
+			// Si la classe est obligatoire mais qu'elle n'existe pas ï¿½ l'heure actuelle dans le XML, 
+			// il faut crï¿½er en plus du master un bloc de saisie qui ne puisse pas ï¿½tre supprimï¿½ par l'utilisateur 
 			if ($relCount==0 and $child->rel_lowerbound>0)
 			{
-				// Construction du nom du fieldset qui va correspondre à la classe
-				// On n'y met pas la relation qui n'a pas d'intérêt pour l'unicité du nom
-				// On récupère le master qui a l'index 1
+				// Construction du nom du fieldset qui va correspondre ï¿½ la classe
+				// On n'y met pas la relation qui n'a pas d'intï¿½rï¿½t pour l'unicitï¿½ du nom
+				// On rï¿½cupï¿½re le master qui a l'index 1
 				$master = $parentName."-".str_replace(":", "_", $child->child_isocode)."__1";
-				// On construit le nom de l'occurence qui a forcément l'index 2
+				// On construit le nom de l'occurence qui a forcï¿½ment l'index 2
 				$name = $parentName."-".str_replace(":", "_", $child->child_isocode)."__2";
 
-				// Le scope reste le même, il n'aura de toute façon plus d'utilité pour les enfants
-				// puisqu'à partir de ce niveau plus rien n'existe dans le XML	
+				// Le scope reste le mï¿½me, il n'aura de toute faï¿½on plus d'utilitï¿½ pour les enfants
+				// puisqu'ï¿½ partir de ce niveau plus rien n'existe dans le XML	
 				$classScope = $scope;
 					
 				// Construction du fieldset
@@ -4389,13 +4400,13 @@ else
 				
 				$this->javascript .="
 					var master = Ext.getCmp('".$master."');							
-					// Créer un nouveau fieldset
+					// Crï¿½er un nouveau fieldset
 					var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, true, true, true, true, master, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false); 
 					".$parentFieldsetName.".add(".$fieldsetName.");
 				";	
 
 				/*	
-				// S'il y a un xlink:title défini, alors afficher une balise pour le saisir
+				// S'il y a un xlink:title dï¿½fini, alors afficher une balise pour le saisir
 				if ($child->has_xlinkTitle)
 				{
 					$xlinkTitleValue = "";
@@ -4409,14 +4420,14 @@ else
 				$nextIsocode = $child->child_isocode;
 				
 				
-				// Appel récursif de la fonction pour le traitement du prochain niveau
+				// Appel rï¿½cursif de la fonction pour le traitement du prochain niveau
 				if ($ancestor <> $parent)
 					HTML_metadata::buildTree($database, $parent, $child->child_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
 					
 				// Classassociation_id contient une classe
 				if ($child->association_id <>0)
 				{
-					// Appel récursif de la fonction pour le traitement du prochain niveau
+					// Appel rï¿½cursif de la fonction pour le traitement du prochain niveau
 					if ($ancestor <> $parent)
 						HTML_metadata::buildTree($database, $parent, $child->association_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
 				}
@@ -4445,13 +4456,13 @@ else
 			
 			//echo $relCount." enregistrements trouves pour ".$child->rel_isocode." dans ".$scope->nodeName."<br>";
 			// Traitement de chaque occurence de la relation dans le XML.
-			// Si pas trouvé, on entre une fois dans la boucle pour créer
+			// Si pas trouvï¿½, on entre une fois dans la boucle pour crï¿½er
 			// une seule occurence de saisie (master)
 			//echo $child->rel_lowerbound. " - ".$child->rel_upperbound."<br>";
 			for ($pos=0; $pos<=$relCount; $pos++)
 			{
 				// Construction du master qui permet d'ajouter des occurences de la relation.
-				// Le master doit contenir une structure mais pas de données.
+				// Le master doit contenir une structure mais pas de donnï¿½es.
 				if ($pos==0)
 				{
 					/*if ($relCount > 0)
@@ -4474,7 +4485,7 @@ else
 				$results = HTML_metadata::array2json($results);
 			//}
 						
-			// On construit le nom de l'occurence qui a forcément l'index 2
+			// On construit le nom de l'occurence qui a forcï¿½ment l'index 2
 					$name = $parentName."-".str_replace(":", "_", $child->rel_isocode)."__1";
 					
 					// Traitement de la relation entre la classe parent et la classe enfant
@@ -4488,7 +4499,7 @@ else
 					// Traitement de la classe enfant
 					if ($relCount > 0)
 					{					
-						// Récupération du noeud XML correspondant au code ISO de la relation
+						// Rï¿½cupï¿½ration du noeud XML correspondant au code ISO de la relation
 						//echo "Recherche de ".$child->child_isocode. " dans ".$relScope->nodeName."<br>";
 						$childnode = $xpathResults->query($child->rel_isocode, $relScope);
 						//echo "Trouve ".$childnode->length." fois<br>";
@@ -4496,7 +4507,7 @@ else
 						//$childCount = $node->length;
 						//echo "La classe ".$child->child_isocode." existe ".$node->length." fois.<br>";
 			
-						// Si on a trouvé des occurences, on modifie le scope.
+						// Si on a trouvï¿½ des occurences, on modifie le scope.
 						if ($childnode->length > 0)
 							$classScope = $childnode->item(0);
 						else
@@ -4512,7 +4523,7 @@ else
 					$searchFieldName = $name."-"."SEARCH__1"; //.($pos+1);
 					
 					$this->javascript .="
-							// Créer un nouveau fieldset
+							// Crï¿½er un nouveau fieldset
 							var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, false, false, true, true, null, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false); 
 								".$parentFieldsetName.".add(".$fieldsetName.");
 							".$fieldsetName.".add(createSearchField('".$searchFieldName."', '".$child->objecttype_id."', '".html_Metadata::cleanText(JText::_('SEARCH'))."',true, false, null, '1', '1', ".$results.", false, 0, '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', ''));
@@ -4522,7 +4533,7 @@ else
 					$nextIsocode = $child->rel_isocode;
 					if ($child->association_id <>0)
 					{
-						// Appel récursif de la fonction pour le traitement du prochain niveau
+						// Appel rï¿½cursif de la fonction pour le traitement du prochain niveau
 						if ($ancestor <> $parent)
 							HTML_metadata::buildTree($database, $parent, $child->association_id, $child->objecttype_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
 					}
@@ -4584,11 +4595,11 @@ else
 					//print_r($results);
 						
 			
-					// Construction du nom du fieldset qui va correspondre à la classe
-					// On n'y met pas la relation qui n'a pas d'intérêt pour l'unicité du nom
-					// On récupère le master qui a l'index 1
+					// Construction du nom du fieldset qui va correspondre ï¿½ la classe
+					// On n'y met pas la relation qui n'a pas d'intï¿½rï¿½t pour l'unicitï¿½ du nom
+					// On rï¿½cupï¿½re le master qui a l'index 1
 					$master = $parentName."-".str_replace(":", "_", $child->rel_isocode)."__1";
-					// On construit le nom de l'occurence qui a forcément l'index 2
+					// On construit le nom de l'occurence qui a forcï¿½ment l'index 2
 					$name = $parentName."-".str_replace(":", "_", $child->rel_isocode)."__".($pos+1);
 				
 					// Traitement de la relation entre la classe parent et la classe enfant
@@ -4597,7 +4608,7 @@ else
 					// Traitement de la classe enfant
 					if ($relCount > 0)
 					{					
-						// Récupération du noeud XML correspondant au code ISO de la relation
+						// Rï¿½cupï¿½ration du noeud XML correspondant au code ISO de la relation
 						//echo "Recherche de ".$child->child_isocode. " dans ".$relScope->nodeName."<br>";
 						$childnode = $xpathResults->query($child->rel_isocode, $relScope);
 						//echo "Trouve ".$childnode->length." fois<br>";
@@ -4605,7 +4616,7 @@ else
 						//$childCount = $node->length;
 						//echo "La classe ".$child->child_isocode." existe ".$node->length." fois.<br>";
 			
-						// Si on a trouvé des occurences, on modifie le scope.
+						// Si on a trouvï¿½ des occurences, on modifie le scope.
 						if ($childnode->length > 0)
 							$classScope = $childnode->item(0);
 						else
@@ -4621,7 +4632,7 @@ else
 					$searchFieldName = $name."-"."SEARCH__1"; //.($pos+1);
 					
 					$this->javascript .="
-						// Créer un nouveau fieldset
+						// Crï¿½er un nouveau fieldset
 						var master = Ext.getCmp('".$master."');							
 						var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, true, true, true, true, master, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false); 
 							".$parentFieldsetName.".add(".$fieldsetName.");
@@ -4632,7 +4643,7 @@ else
 					$nextIsocode = $child->rel_isocode;
 					if ($child->association_id <>0)
 					{
-						// Appel récursif de la fonction pour le traitement du prochain niveau
+						// Appel rï¿½cursif de la fonction pour le traitement du prochain niveau
 						if ($ancestor <> $parent)
 							HTML_metadata::buildTree($database, $parent, $child->association_id, $child->objecttype_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
 					}
@@ -4641,8 +4652,8 @@ else
 			
 			
 			
-			// Si l'objet est obligatoire mais qu'il n'existe pas à l'heure actuelle dans le XML, 
-			// il faut créer en plus du master un bloc de saisie qui ne puisse pas être supprimé par l'utilisateur 
+			// Si l'objet est obligatoire mais qu'il n'existe pas ï¿½ l'heure actuelle dans le XML, 
+			// il faut crï¿½er en plus du master un bloc de saisie qui ne puisse pas ï¿½tre supprimï¿½ par l'utilisateur 
 			if ($relCount==0 and $child->rel_lowerbound>0)
 			{
 				$guid = "";
@@ -4650,15 +4661,15 @@ else
 				$results = array();
 				$results = HTML_metadata::array2json($results);
 			
-				// Construction du nom du fieldset qui va correspondre à la classe
-				// On n'y met pas la relation qui n'a pas d'intérêt pour l'unicité du nom
-				// On récupère le master qui a l'index 1
+				// Construction du nom du fieldset qui va correspondre ï¿½ la classe
+				// On n'y met pas la relation qui n'a pas d'intï¿½rï¿½t pour l'unicitï¿½ du nom
+				// On rï¿½cupï¿½re le master qui a l'index 1
 				$master = $parentName."-".str_replace(":", "_", $child->rel_isocode)."__1";
-				// On construit le nom de l'occurence qui a forcément l'index 2
+				// On construit le nom de l'occurence qui a forcï¿½ment l'index 2
 				$name = $parentName."-".str_replace(":", "_", $child->rel_isocode)."__2";
 			
-				// Le scope reste le même, il n'aura de toute façon plus d'utilité pour les enfants
-				// puisqu'à partir de ce niveau plus rien n'existe dans le XML	
+				// Le scope reste le mï¿½me, il n'aura de toute faï¿½on plus d'utilitï¿½ pour les enfants
+				// puisqu'ï¿½ partir de ce niveau plus rien n'existe dans le XML	
 				$classScope = $scope;
 					
 				// Construction du fieldset
@@ -4666,7 +4677,7 @@ else
 				$searchFieldName = $name."-"."SEARCH__1"; //2";
 				
 				$this->javascript .="
-					// Créer un nouveau fieldset
+					// Crï¿½er un nouveau fieldset
 					var master = Ext.getCmp('".$master."');							
 					var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, true, true, true, true, master, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."'); 
 						".$parentFieldsetName.".add(".$fieldsetName.");
@@ -4677,7 +4688,7 @@ else
 				$nextIsocode = $child->rel_isocode;
 				if ($child->association_id <>0)
 				{
-					// Appel récursif de la fonction pour le traitement du prochain niveau
+					// Appel rï¿½cursif de la fonction pour le traitement du prochain niveau
 					if ($ancestor <> $parent)
 						HTML_metadata::buildTree($database, $parent, $child->association_id, $child->objecttype_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
 				}
@@ -4772,7 +4783,7 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 
 		if ($simple)
 		{
-			// Entrée vide
+			// Entrï¿½e vide
 			$extjsArray .= "['', ''], ";
 		}
 		$id=0;
@@ -4780,7 +4791,7 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 		{
 			$extjsArray .= "[";
 			//$extjsArray .= "'".$id."', ";
-			if ($textlist) // Mettre le titre à vide si on est dans une liste de type texte
+			if ($textlist) // Mettre le titre ï¿½ vide si on est dans une liste de type texte
 			{
 				if (substr($key, -6, 6) == "_TITLE")
 					$extjsArray .= "'', ";
@@ -4901,12 +4912,13 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 		$router->setVars($_REQUEST);
 		
 		?>	
+		
 		<div id="page">
 		<h1 class="contentheading"><?php echo JText::_("CATALOG_HISTORYASSIGN_METADATA"); ?></h1>
 		<div class="contentin">
 		<form action="index.php" method="POST" id="historyassignForm" name="historyassignForm">
 		<div class="row">
-			<input type="submit" id="back_button" name="back_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="document.getElementById('task').value='listMetadata';document.getElementById('historyassignForm').submit();"/>
+			<input type="submit" id="back_button" name="back_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="document.getElementById('historyassignForm').task.value='listMetadata';document.getElementById('historyassignForm').submit();"/>
 		</div>
 	<table id="myHistoryAssign" class="box-table">
 	<thead>
@@ -5037,7 +5049,7 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 					{
 				       $menu .= "handler: function()
 					                {
-					                	// Créer une iframe pour demander à l'utilisateur le type d'import
+					                	// Crï¿½er une iframe pour demander ï¿½ l'utilisateur le type d'import
 										if (!winxml)
 											winxml = new Ext.Window({
 											                title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_IMPORT_XMLFILE_ALERT'))."',
@@ -5153,7 +5165,7 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 					{
 						$menu .= "handler: function()
 					                {
-					                	// Créer une iframe pour demander à l'utilisateur le type d'import
+					                	// Crï¿½er une iframe pour demander ï¿½ l'utilisateur le type d'import
 										if (!wincsw)
 											wincsw = new Ext.Window({
 											                title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_IMPORT_CSW_ALERT'))."',
@@ -5287,12 +5299,12 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 		            }
 				";
 			}
-			// Boutons de réplication
+			// Boutons de rï¿½plication
 			if (!$isPublished)
 			{
 				$replicate_url = 'index.php?option='.$option.'&task=replicateMetadata';
 			
-				// Réplication de métadonnée
+				// Rï¿½plication de mï¿½tadonnï¿½e
 				$objecttypes = array();
 				$listObjecttypes = array();
 				$database->setQuery( "SELECT id as value, name as text FROM #__sdi_objecttype WHERE predefined=0 ORDER BY name" );
@@ -5338,7 +5350,7 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 			            text: '".JText::_('CATALOG_REPLICATE')."',
 						handler: function()
 		                {
-		                	// Créer une iframe pour demander à l'utilisateur le type d'import
+		                	// Crï¿½er une iframe pour demander ï¿½ l'utilisateur le type d'import
 							if (!winrct)
 								winrct = new Ext.Window({
 								                title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_REPLICATE_ALERT'))."',
@@ -5500,7 +5512,7 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 	
 								Ext.getCmp('objectselector').store.load();
 								
-								// Masquer le bouton de rafraîchissement
+								// Masquer le bouton de rafraï¿½chissement
 								Ext.getCmp('objectselector').getBottomToolbar().refresh.hide();
 								winrct.show();
 				        	}
@@ -5516,7 +5528,7 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 					$tbar[] ="{text: '".JText::_('CORE_RESET')."',
 										handler: function()
 						                {
-						                	// Créer une iframe pour confirmer la réinitialisation
+						                	// Crï¿½er une iframe pour confirmer la rï¿½initialisation
 											if (!winrst)
 												winrst = new Ext.Window({
 												                title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_CONFIRM_RESET_ALERT'))."',

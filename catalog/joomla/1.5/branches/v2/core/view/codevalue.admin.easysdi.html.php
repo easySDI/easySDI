@@ -17,8 +17,8 @@
 
 defined('_JEXEC') or die('Restricted access');
 
-include (JPATH_COMPONENT_ADMINISTRATOR.DS.'js'.DS.'catalog.js.php');
-
+JHTML::script('catalog.js', 'administrator/components/com_easysdi_catalog/js/');
+		
 class HTML_codevalue {
 function listCodeValue(&$rows, $lists, $page, $option,  $filter_order_Dir, $filter_order, $attributeid)
 	{

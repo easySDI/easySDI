@@ -3107,7 +3107,7 @@ class ADMIN_metadata {
 		$style->formatOutput = true; 
 		$style->load($xslfile);
 		
-		// XML conforme � la norme ISO
+		// XML conforme à la norme ISO
 		$processor = new xsltProcessor();
 		$processor->importStylesheet($style);
 		$cswResults = $processor->transformToDoc($xml);
@@ -3176,29 +3176,32 @@ class ADMIN_metadata {
 			//$style->load("/home/sites/demo.depth.ch/web/geodbmeta/administrator/components/com_easysdi_core/xsl/XML2XML_merge_ESRI.xsl");
 			$style->load( JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'xsl'.DS.'XML2XML_merge_ESRI.xsl');
 			
-			$xmlmerge= "<?xml version=\"1.0\"?>
-					<merge xmlns=\"http://informatik.hu-berlin.de/merge\">
-					  <file1>".$existingXMLFile."</file1>
-					  <file2>".$ESRIXMLFile."</file2>
+			$xmlmerge= "<?xml version='1.0'?>
+					<merge xmlns='http://informatik.hu-berlin.de/merge'>
+					  <file1>".$ESRIXMLFile."</file1>
+					  <file2>".$existingXMLFile."</file2>
 					</merge>";
 	
+			$merging = new DomDocument();
+			$cswResults = new DomDocument();
 			$merging = DOMDocument::loadXML($xmlmerge);
-			$processor->importStylesheet($style);
-			$cswResults = $processor->transformToDoc($merging);
-			
-			//$mergedXMLFile = JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'xml'.DS.'tmp'.DS.$tmp.'_3.xml';
-			//$cswResults->save($mergedXMLFile);
+			$MergingProcessor = new xsltProcessor();
+			$MergingProcessor->importStylesheet($style);
+			$cswResults = $MergingProcessor->transformToDoc($merging);
+			//print_r($cswResults);
+			$mergedXMLFile = JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'xml'.DS.'tmp'.DS.$tmp.'_3.xml';
+			$cswResults->save($mergedXMLFile);
 			
 			// Suppression des deux fichiers � fusionner
-			unlink($existingXMLFile);
-			unlink($ESRIXMLFile);
+			//unlink($existingXMLFile);
+			//unlink($ESRIXMLFile);
 		}
 		
 		// Construction du DOMXPath � utiliser pour g�n�rer la vue d'�dition
 		$doc = new DOMDocument('1.0', 'UTF-8');
 		//$cswResults->save("C:\\RecorderWebGIS\\cswResult.xml");
 		
-		if ($cswResults <> false and $cswResults->childNodes->item(0)->hasChildNodes())
+		if ($cswResults <> false and $cswResults->childNodes->item(0) and $cswResults->childNodes->item(0)->hasChildNodes())
 			$xpathResults = new DOMXPath($cswResults);
 		else
 		{
@@ -3954,7 +3957,8 @@ class ADMIN_metadata {
 											AND o.objecttype_id=ot.id 
 											AND ot.id=".$objecttype_id."  
 											AND o.name LIKE '%".$searchPattern."%'
-											"
+									ORDER BY CONCAT(o.name, ' [' , ov.title, ']')
+									"
 										//AND o.published=true
 								);
 		}
@@ -3967,7 +3971,8 @@ class ADMIN_metadata {
 											AND o.objecttype_id=ot.id 
 											AND ot.id=".$objecttype_id."  
 											AND o.name LIKE '%".$searchPattern."%'
-											"
+									ORDER BY CONCAT(o.name, ' [' , ov.title, ']')
+									"
 										//AND o.published=true
 								);
 		}

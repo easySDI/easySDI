@@ -167,7 +167,7 @@ function listRelation(&$rows, $lists, $page, $option,  $filter_order_Dir, $filte
 	
 	function newRelation(&$row, &$rowAttribute, $types, $type, $classes, $attributes, $objecttypes, $rendertypes, $relationtypes, $fieldsLength, $attributeFieldsLength, $boundsStyle, $style, $defaultStyle_textbox, $defaultStyle_textarea, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale_Textbox, $defaultStyle_Locale_Textarea, $defaultStyle_Choicelist, $languages, $codevalues, $choicevalues, $selectedcodevalues, $profiles, $selected_profiles, $contexts, $selected_contexts, $attributetypes, $attributeid, $pageReloaded, $localeDefaults, $labels, $filterfields, $informations, $namespacelist, $searchCriteriaFieldsLength, $searchCriteria, $child_attributetype, $option)
 	{
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'js'.DS.'catalog.js.php');
+		JHTML::script('catalog.js', 'administrator/components/com_easysdi_catalog/js/');
 		global  $mainframe;
 		
 		$database =& JFactory::getDBO(); 
@@ -632,7 +632,7 @@ if ($row->updated and $row->updated <> '0000-00-00 00:00:00')
 
 	function editAttributeRelation(&$row, &$rowAttribute, $classes, $attributes, $rendertypes, $fieldsLength, $attributeFieldsLength, $style, $style_choice, $defaultStyle_textbox, $defaultStyle_textarea, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale_Textbox, $defaultStyle_Locale_Textarea, $languages, $codevalues, $selectedcodevalues, $choicevalues, $selectedchoicevalues, $profiles, $selected_profiles, $contexts, $selected_contexts, $attributetypes, $attributeid, $pageReloaded, $localeDefaults, $labels, $filterfields, $informations, $searchCriteriaFieldsLength, $searchCriteria, $boundsStyle, $renderStyle, $child_attributetype, $option)
 	{
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'js'.DS.'catalog.js.php');
+		JHTML::script('catalog.js', 'administrator/components/com_easysdi_catalog/js/');
 		global  $mainframe;
 		
 		$database =& JFactory::getDBO(); 
@@ -1039,7 +1039,7 @@ if ($row->updated and $row->updated <> '0000-00-00 00:00:00')
 	
 	function editClassRelation(&$row, $classes, $relationtypes, $fieldsLength, $boundsStyle, $profiles, $selected_profiles, $contexts, $selected_contexts, $languages, $labels, $informations, $namespacelist, $option)
 	{
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'js'.DS.'catalog.js.php');
+		JHTML::script('catalog.js', 'administrator/components/com_easysdi_catalog/js/');
 		global  $mainframe;
 		
 		$database =& JFactory::getDBO(); 
@@ -1229,7 +1229,7 @@ if ($row->updated and $row->updated <> '0000-00-00 00:00:00')
 	
 	function editObjectRelation(&$row, $classes, $objecttypes, $relationtypes, $fieldsLength, $boundsStyle, $profiles, $selected_profiles, $contexts, $selected_contexts, $languages, $labels, $informations, $namespacelist, $option)
 	{
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'js'.DS.'catalog.js.php');
+		JHTML::script('catalog.js', 'administrator/components/com_easysdi_catalog/js/');
 		global  $mainframe;
 		
 		$database =& JFactory::getDBO(); 

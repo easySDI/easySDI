@@ -40,7 +40,7 @@ class HTML_object {
 			}	
 		*/
 		jimport("joomla.utilities.date");
-		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_catalog'.DS.'js'.DS.'catalog.js.php');
+		JHTML::script('catalog.js', 'administrator/components/com_easysdi_catalog/js/');
 		/*require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_CORE_core'.DS.'common'.DS.'easysdi.config.php');
 		
 		

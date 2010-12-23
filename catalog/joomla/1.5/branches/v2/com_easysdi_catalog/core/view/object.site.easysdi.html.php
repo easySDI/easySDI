@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySDI, a solution to implement easily any spatial data infrastructure
- * Copyright (C) 2008 DEPTH SA, Chemin dâ¬"Arche 40b, CH-1870 Monthey, easysdi@depth.ch 
+ * Copyright (C) 2008 DEPTH SA, Chemin dï¿½"Arche 40b, CH-1870 Monthey, easysdi@depth.ch 
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,8 +37,8 @@ class HTML_object {
 
 		$baseMaplist = array();		
 		jimport("joomla.utilities.date");
-		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_catalog'.DS.'js'.DS.'catalog.js.php');
-
+		JHTML::script('catalog.js', 'administrator/components/com_easysdi_catalog/js/');
+		
 		$user =& JFactory::getUser();
 		$currentAccount = new accountByUserId($database);
 		$currentAccount->load($user->id);
@@ -327,6 +327,17 @@ if ($rowObject->updated)
 		$router->setVars($_REQUEST);
 		
 		?>
+		<script>
+		function tableOrdering( order, dir, view )
+		{
+			var form = document.getElementById("objectListForm");
+			
+			form.filter_order.value 	= order;
+			form.filter_order_Dir.value	= dir;
+			form.submit( view );
+		}
+					
+		</script>
 		<div id="page">
 		<h1 class="contentheading"><?php echo JText::_("CATALOG_FE_LIST_OBJECT"); ?></h1>
 		<div class="contentin">
@@ -343,8 +354,8 @@ if ($rowObject->updated)
 			 	<?php echo JHTML::_('select.genericlist',  $listObjectType, 'filter_objecttype_id', 'class="inputbox full" size="1"', 'value', 'text', $filter_objecttype_id); ?>
 			 </div>
 			 <div class="row">
-				<input type="submit" id="simple_search_button" name="simple_search_button" class="submit" value ="<?php echo JText::_("CORE_SEARCH_BUTTON"); ?>" onClick="document.getElementById('task').value='listObject';document.getElementById('objectListForm').submit();"/>
-				<input type="submit" id="newobject_button" name="newobject_button" class="submit" value ="<?php echo JText::_("CATALOG_NEW_OBJECT"); ?>" onClick="document.getElementById('task').value='newObject';document.getElementById('objectListForm').submit();"/>
+				<input type="submit" id="simple_search_button" name="simple_search_button" class="submit" value ="<?php echo JText::_("CORE_SEARCH_BUTTON"); ?>" onClick="document.getElementById('objectListForm').task.value='listObject';document.getElementById('objectListForm').submit();"/>
+				<input type="submit" id="newobject_button" name="newobject_button" class="submit" value ="<?php echo JText::_("CATALOG_NEW_OBJECT"); ?>" onClick="document.getElementById('objectListForm').task.value='newObject';document.getElementById('objectListForm').submit();"/>
 			</div>	 
 		 </div>
 	<script>
@@ -414,7 +425,7 @@ if ($rowObject->updated)
 				if ($objecttype->hasVersioning)
 				{
 					?>
-					<div class="logo" title="<?php echo helper_easysdi::escapeString(JText::_('CATALOG_OBJECT_MANAGEVERSION')); ?>" id="listObjectVersion" onClick="window.open('<?php echo JRoute::_('index.php?option='.$option.'&task=listObjectVersion&object_id='.$row->id); ?>', '_self');"></div>
+					<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_OBJECT_MANAGEVERSION')); ?>" id="listObjectVersion" onClick="window.open('<?php echo JRoute::_('index.php?option='.$option.'&task=listObjectVersion&object_id='.$row->id); ?>', '_self');"></div>
 					<?php
 				}
 				else
@@ -424,8 +435,8 @@ if ($rowObject->updated)
 					<?php 
 				}
 				?>
-				<div class="logo" title="<?php echo helper_easysdi::escapeString(JText::_('CORE_EDIT_OBJECT')); ?>" id="editObject" onClick="window.open('<?php echo JRoute::_('index.php?option='.$option.'&task=editObject&cid[]='.$row->id); ?>', '_self');"></div>
-				<div class="logo" title="<?php echo helper_easysdi::escapeString(JText::_('CORE_DELETE_OBJECT')); ?>" id="deleteObject" onClick="return suppressObject_click('<?php echo JRoute::_('index.php?option='.$option.'&task=deleteObject&cid[]='.$row->id); ?>');" ></div>
+				<div class="logo" title="<?php echo addslashes(JText::_('CORE_EDIT_OBJECT')); ?>" id="editObject" onClick="window.open('<?php echo JRoute::_('index.php?option='.$option.'&task=editObject&cid[]='.$row->id); ?>', '_self');"></div>
+				<div class="logo" title="<?php echo addslashes(JText::_('CORE_DELETE_OBJECT')); ?>" id="deleteObject" onClick="return suppressObject_click('<?php echo JRoute::_('index.php?option='.$option.'&task=deleteObject&cid[]='.$row->id); ?>');" ></div>
 			<?php 
 			}
 			?>

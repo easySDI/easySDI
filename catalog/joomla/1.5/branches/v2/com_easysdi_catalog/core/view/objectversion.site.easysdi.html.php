@@ -28,6 +28,17 @@ class HTML_objectversion {
 		$router->setVars($_REQUEST);
 		
 		?>	
+		<script>
+		function tableOrdering( order, dir, view )
+		{
+			var form = document.getElementById("objectversionListForm");
+			
+			form.filter_order.value 	= order;
+			form.filter_order_Dir.value	= dir;
+			form.submit( view );
+		}
+					
+		</script>
 		<div id="page">
 		<h1 class="contentheading"><?php echo sprintf(JText::_("CATALOG_FE_LIST_OBJECTVERSION"), $object_name); ?></h1>
 		<div class="contentin">
@@ -35,8 +46,8 @@ class HTML_objectversion {
 		<form action="index.php" method="GET" id="objectversionListForm" name="objectversionListForm">
 		<div class="row">
 			 <div class="row">
-				<input type="submit" id="newobjectversion_button" name="newobjectversion_button" class="submit" value ="<?php echo JText::_("CATALOG_NEW_OBJECTVERSION"); ?>" onClick="document.getElementById('task').value='newObjectVersion';document.getElementById('objectversionListForm').submit();"/>
-				<input type="submit" id="back_button" name="back_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="document.getElementById('task').value='cancelObjectVersion';window.open('<?php echo JRoute::_('index.php?task=cancelObjectVersion&object_id='.$object_id); ?>', '_self')"/>
+				<input type="submit" id="newobjectversion_button" name="newobjectversion_button" class="submit" value ="<?php echo JText::_("CATALOG_NEW_OBJECTVERSION"); ?>" onClick="document.getElementById('objectversionListForm').task.value='newObjectVersion';document.getElementById('objectversionListForm').submit();"/>
+				<input type="submit" id="back_button" name="back_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="document.getElementById('objectversionListForm').task.value='cancelObjectVersion';window.open('<?php echo JRoute::_('index.php?task=cancelObjectVersion&object_id='.$object_id); ?>', '_self')"/>
 			</div>	 
 		 </div>
 	<script>
@@ -68,7 +79,7 @@ class HTML_objectversion {
 			
 			?>		
 			<tr>
-			<td ><a class="modal" title="<?php echo helper_easysdi::escapeString(JText::_("CATALOG_VIEW_MD")); ?>" href="./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=<?php echo $row->metadata_guid;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}"> <?php echo $row->title ;?></a></td>
+			<td ><a class="modal" title="<?php echo addslashes(JText::_("CATALOG_VIEW_MD")); ?>" href="./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=<?php echo $row->metadata_guid;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}"> <?php echo $row->title ;?></a></td>
 			<td ><?php echo $row->description; ?></td>
 			<td class="metadataActions">
 			<?php 
@@ -82,7 +93,7 @@ class HTML_objectversion {
 			else 
 			{
 				?>
-				<div class="logo" title="<?php echo helper_easysdi::escapeString(JText::_('CATALOG_OBJECTVERSION_EDIT')); ?>" id="editObject" onClick="window.open('./index.php?option=com_easysdi_catalog&task=editObjectVersion&object_id=<?php echo $object_id;?>&cid[]=<?php echo $row->id;?>&Itemid=<?php echo JRequest::getVar('Itemid');?>&lang=<?php echo JRequest::getVar('lang');?>', '_self');"></div>
+				<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_OBJECTVERSION_EDIT')); ?>" id="editObject" onClick="window.open('./index.php?option=com_easysdi_catalog&task=editObjectVersion&object_id=<?php echo $object_id;?>&cid[]=<?php echo $row->id;?>&Itemid=<?php echo JRequest::getVar('Itemid');?>&lang=<?php echo JRequest::getVar('lang');?>', '_self');"></div>
 				<?php
 				if (count($rows)>1 and ($row->metadatastate_id == 2 or $row->metadatastate_id == 4)) // Impossible de supprimer si le statut n'est pas "ARCHIVED" ou "UNPUBLISHED"
 				{
@@ -103,13 +114,13 @@ class HTML_objectversion {
 					if ($links > 0)
 					{
 						?> 
-						<div class="logo" title="<?php echo helper_easysdi::escapeString(JText::_('CATALOG_OBJECTVERSION_DELETE')); ?>" id="deleteObject" onClick="return suppressObjectVersion_click('<?php echo JRoute::_("index.php?option=com_easysdi_catalog&task=deleteObjectVersion&object_id=".$object_id."&cid[]=".$row->id); ?>', true)" ></div>
+						<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_OBJECTVERSION_DELETE')); ?>" id="deleteObject" onClick="return suppressObjectVersion_click('<?php echo JRoute::_("index.php?option=com_easysdi_catalog&task=deleteObjectVersion&object_id=".$object_id."&cid[]=".$row->id); ?>', true)" ></div>
 						<?php 
 					}
 					else
 					{
 						?> 
-						<div class="logo" title="<?php echo helper_easysdi::escapeString(JText::_('CATALOG_OBJECTVERSION_DELETE')); ?>" id="deleteObject" onClick="return suppressObjectVersion_click('<?php echo JRoute::_("index.php?option=com_easysdi_catalog&task=deleteObjectVersion&object_id=".$object_id."&cid[]=".$row->id); ?>', false);" ></div>
+						<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_OBJECTVERSION_DELETE')); ?>" id="deleteObject" onClick="return suppressObjectVersion_click('<?php echo JRoute::_("index.php?option=com_easysdi_catalog&task=deleteObjectVersion&object_id=".$object_id."&cid[]=".$row->id); ?>', false);" ></div>
 						<?php
 					}
 				}
@@ -120,8 +131,8 @@ class HTML_objectversion {
 				}
 			}
 			?>
-			<div class="logo" title="<?php echo helper_easysdi::escapeString(JText::_('CATALOG_OBJECTVERSION_VIEWLINK')); ?>" id="viewObjectVersionLink" onClick="window.open('<?php echo JRoute::_("index.php?option=com_easysdi_catalog&task=viewObjectVersionLink&object_id=".$object_id."&cid[]=".$row->id); ?>', '_self');" ></div>
-			<div class="logo" title="<?php echo helper_easysdi::escapeString(JText::_('CATALOG_OBJECTVERSION_MANAGELINK')); ?>" id="manageObjectVersionLink" onClick="window.open('<?php echo JRoute::_("index.php?option=com_easysdi_catalog&task=manageObjectVersionLink&object_id=".$object_id."&cid[]=".$row->id); ?>', '_self');" ></div>
+			<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_OBJECTVERSION_VIEWLINK')); ?>" id="viewObjectVersionLink" onClick="window.open('<?php echo JRoute::_("index.php?option=com_easysdi_catalog&task=viewObjectVersionLink&object_id=".$object_id."&cid[]=".$row->id); ?>', '_self');" ></div>
+			<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_OBJECTVERSION_MANAGELINK')); ?>" id="manageObjectVersionLink" onClick="window.open('<?php echo JRoute::_("index.php?option=com_easysdi_catalog&task=manageObjectVersionLink&object_id=".$object_id."&cid[]=".$row->id); ?>', '_self');" ></div>
 			</td>
 			</tr>
 			<?php		
@@ -329,7 +340,7 @@ else
 							 }
 		    });
 		    
-			// Créer le formulaire qui va contenir la structure
+			// Crï¿½er le formulaire qui va contenir la structure
 			var form = new Ext.form.FormPanel(
 				{
 					id:'linksForm',
@@ -567,7 +578,7 @@ else
 						                	var selected = Ext.getCmp('selected');                
 			 								var records = unselected.selModel.getSelections();
 			 								
-                        					// Traiter chaque objet à ajouter
+                        					// Traiter chaque objet ï¿½ ajouter
 											for (i=0;i<records.length;i++)
 											{
 												//console.log(records[i]);
@@ -590,7 +601,7 @@ else
 							                	var selected = Ext.getCmp('selected');                
 				 								var records = unselected.store.getRange();
 				 								
-                        					// Traiter chaque objet à ajouter
+                        					// Traiter chaque objet ï¿½ ajouter
 											for (i=0;i<records.length;i++)
 											{
 												if (!childbound_upper_reached(records[i]))
@@ -633,7 +644,7 @@ else
 		    var toDate = new Array();
 		    toDate['label'] = '".html_Metadata::cleanText(JText::_('CATALOG_OBJECTVERSIONLINK_TODATE_LABEL'))."';
 			
-		    // Créer le formulaire qui va contenir la structure
+		    // Crï¿½er le formulaire qui va contenir la structure
 			var form = new Ext.form.FormPanel(
 				{
 					id:'linksForm',
@@ -757,7 +768,7 @@ else
 			// Affichage du formulaire
     		form.doLayout();
     		
-    		// Remplir une première fois les valeurs sélectionnées
+    		// Remplir une premiï¿½re fois les valeurs sï¿½lectionnï¿½es
     		var selectedValues = new Array();
  			var grid = Ext.getCmp('selected').store.data;
  			for (var i = 0 ; i < grid.length ;i++) 
@@ -791,12 +802,12 @@ else
 			
 			function childbound_upper_reached(toAddChild)
 			{
-				// Nombre max d'objets autorisés par type
+				// Nombre max d'objets autorisï¿½s par type
 				var objecttypelink;
 				objecttypelink = ".HTML_metadata::array2json($objecttypelink).";
 				//console.log(objecttypelink);
 				
-				// Traiter chaque objet à ajouter
+				// Traiter chaque objet ï¿½ ajouter
 				//var toAddChilds;
 				//toAddChilds = Ext.getCmp('unselected').selModel.getSelections();
 				//console.log(toAddChilds);
@@ -806,8 +817,8 @@ else
 					//var toAddChild = toAddChilds[i];
 					//console.log(toAddChild.get('objecttype_id'));
 					
-					// Parcours des objets déjà sélectionnés et récupérer tous ceux qui sont du même type que 
-					// l'objet qui va être ajouté
+					// Parcours des objets dï¿½jï¿½ sï¿½lectionnï¿½s et rï¿½cupï¿½rer tous ceux qui sont du mï¿½me type que 
+					// l'objet qui va ï¿½tre ajoutï¿½
 					var countSameType = 0;
 					var selectedChilds;
 					selectedChilds = Ext.getCmp('selected').store.data.items;
@@ -820,7 +831,7 @@ else
 					}
 					//console.log(countSameType);
 					
-					// Récupérer le nombre max d'enfants de ce type autorisé
+					// Rï¿½cupï¿½rer le nombre max d'enfants de ce type autorisï¿½
 					var maxBound=0;
 					for(j=0;j<objecttypelink.length;j++)
 					{
@@ -833,8 +844,8 @@ else
 							maxBound = link['childbound_upper'];
 					}
 					
-					// Si le nombre d'objets du même type est supérieur ou égal au nombre d'objets autorisés pour ce type,
-					// empêcher l'ajout
+					// Si le nombre d'objets du mï¿½me type est supï¿½rieur ou ï¿½gal au nombre d'objets autorisï¿½s pour ce type,
+					// empï¿½cher l'ajout
 					//console.log(countSameType + ' - ' + maxBound);	
 					if (countSameType >= maxBound)
 					{
