@@ -2264,7 +2264,7 @@ div#editMetadata{
 	background-position:0 0;
 	background-repeat:no-repeat;
 	height:16px;
-	width:16px;
+	width:16px;	
 	padding-left:2px;
 	padding-right:2px;	
 }
@@ -2441,3 +2441,58 @@ div#viewObjectVersionLink{
 	padding-right: 10px;
 	text-align: right;
 	}
+	
+	
+/* List Product */
+div#editProduct:hover{
+	cursor:pointer;
+}
+
+div#editProduct{
+	background-color:transparent;
+	background-image:url(../icons/silk/pencil.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;	
+	padding-left:2px;
+	padding-right:2px;	
+}
+
+div#editProductCheckedOut:hover{
+	cursor:pointer;
+}
+
+div#editProductCheckedOut{
+	background-color:transparent;
+	background-image:url(../icons/silk/lock_edit.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;	
+	padding-left:2px;
+	padding-right:2px;	
+}
+
+div#deleteProduct:hover{
+	cursor:pointer;
+}
+
+div#deleteProduct{
+	background-color:transparent;
+	background-image:url(../icons/silk/page_delete.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+	padding-left:2px;
+	padding-right:2px;	
+}
+
+.box-table .productActions{
+	width:40px;
+}
+
+.box-table .productActions div{
+	float:left;
+}
