@@ -50,8 +50,8 @@ Ext.override(Ext.Button, {
 			// add clones untill card is reached			
 			for ( var i = cmps.length ; i < card ; i ++ ) {
 
-				// Le nom à construire est celui utilisé pour créer les noms de tous les éléments d'un attribut du stéréotype Thesaurus GEMET
-				// Il faut donc bien retirer le _BUTTON à la fin d'une entrée pour pouvoir gérer les numéros
+				// Le nom Ã  construire est celui utilisÃ© pour crÃ©er les noms de tous les Ã©lÃ©ments d'un attribut du stÃ©rÃ©otype Thesaurus GEMET
+				// Il faut donc bien retirer le _BUTTON Ã  la fin d'une entrÃ©e pour pouvoir gÃ©rer les numÃ©ros
 				var parentName = panel.getId();
 				var name = master.getId();
 				var truncatedName = name.substring(0, name.length-String('_BUTTON').length);
@@ -61,7 +61,7 @@ Ext.override(Ext.Button, {
 				
 				var partOfNameToModify = name.substring(parentName.length);
 				
-				// Retirer la partie _BUTTON du nom à modifier
+				// Retirer la partie _BUTTON du nom Ã  modifier
 				partOfNameToModify = partOfNameToModify.substring(0, partOfNameToModify.length-String('_BUTTON').length);
 				//console.log("partOfNameToModify: "+ partOfNameToModify);
 				
@@ -70,7 +70,7 @@ Ext.override(Ext.Button, {
 				var newName = parentName + partOfNameToModify;
 				//console.log("newName: "+ newName);
 				
-				// L'extension Thesaurus GEMET à dupliquer
+				// L'extension Thesaurus GEMET Ã  dupliquer
 				var thesMaster = Ext.ComponentMgr.get(truncatedName + '_PANEL_THESAURUS');
 				//console.log(thesMaster);
 				
@@ -85,11 +85,11 @@ Ext.override(Ext.Button, {
 					extendedTemplate : master,
 					handler: function()
 	                {
-	                	// Créer une iframe pour demander à l'utilisateur le type d'import
+	                	// CrÃ©er une iframe pour demander Ã  l'utilisateur le type d'import
 						if (!winthge)
 							winthge = new Ext.Window({
 							                id: newName + '_WIN',
-											title: thesMaster.win_title, //Ext.ComponentMgr.get( newName + '_WIN').title,
+									  title: thesMaster.win_title, //Ext.ComponentMgr.get( newName + '_WIN').title,
 							                width:500,
 							                height:500,
 							                closeAction:'hide',
@@ -98,13 +98,13 @@ Ext.override(Ext.Button, {
 										    closable:true, 
 										    renderTo:Ext.getBody(), 
 										    frame:true,
-										    listeners: {
-												'show': function (animateTarget, cb, scope)
-														{
-															this.items.get(0).emptyAll();
-															this.items.get(0).getTopConcepts(this.items.get(0).CONCEPT);
-														}
-												},
+											listeners: {
+														'show': function (animateTarget, cb, scope)
+																{
+																	this.items.get(0).emptyAll();
+																	this.items.get(0).getTopConcepts(this.items.get(0).CONCEPT);
+																}
+														},
 										    items:[new ThesaurusReader({
 												  id:newName + '_PANEL_THESAURUS',
 												  lang: thesMaster.lang,
@@ -115,21 +115,20 @@ Ext.override(Ext.Button, {
 											      returnInspire: true,
 											      width: 300, 
 											      height:400,
-											      layout: 'fit',
 											      win_title: thesMaster.win_title,
+											      layout: 'fit',
 											      targetField: newName,
 											      proxy: thesMaster.proxy,
 											      handler: function(result){
 											      				var target = Ext.ComponentMgr.get(this.targetField);
-															    
 															    var s = '';
 												      		    
 												      		    var reliableRecord = result.terms[this.lang];
 												      		    
-												      		    // S'assurer que le mot-clé n'est pas déjà sélectionné
+												      		    // S'assurer que le mot-clÃ© n'est pas dÃ©jÃ  sÃ©lectionnÃ©
 												      		    if (!target.usedRecords.containsKey(reliableRecord))
 																{
-																	// Sauvegarde dans le champs SuperBoxSelect des mots-clés dans toutes les langues de EasySDI
+																	// Sauvegarde dans le champs SuperBoxSelect des mots-clÃ©s dans toutes les langues de EasySDI
 																    for(l in result.terms) 
 																    {
 																    	s += l+': '+result.terms[l]+';';
@@ -155,12 +154,13 @@ Ext.override(Ext.Button, {
 						winthge.show();
 		        	}																	   
 				});
-				
 				//console.log(clone);
 				
 				panel.add(clone);
 				
 				panel.doLayout();
+
+				
 			}			
 
 			// remove clones untill cardinality is reached
