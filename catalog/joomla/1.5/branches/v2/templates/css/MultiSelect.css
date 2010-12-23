@@ -4,6 +4,16 @@
  * licensing@extjs.com
  * http://www.extjs.com/license
  */
+ 
+/* !
+* .x-view-drag-insert-above { 
+*     border-top:1px dotted #3366cc; 
+* } 
+* .x-view-drag-insert-below { 
+*     border-bottom:1px dotted #3366cc; 
+* } 
+*/
+
 .ux-mselect{
     overflow:auto;
     background:white;
@@ -23,13 +33,6 @@
     background:#DFE8F6;
     cursor:pointer;
 }
-
-.x-view-drag-insert-above { 
-    border-top:1px dotted #3366cc; 
-} 
-.x-view-drag-insert-below { 
-    border-bottom:1px dotted #3366cc; 
-} 
 
 /* invalid fields */
 .ux-mselect-fieldset {
