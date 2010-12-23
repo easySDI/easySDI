@@ -1560,7 +1560,7 @@ function generateWMSHTML($config,$thePolicy){
 	<fieldset class="adminform"><legend><?php echo JText::_( 'PROXY_CONFIG_SERVER_ALL_TITLE'); ?></legend>
 		<table class="admintable">
 			<tr>
-				<td><input type="checkBox" name="AllServers[]" id="AllServers" value="All" onclick="disableServers();" <?php if (strcasecmp($thePolicy->Servers['All'],'True')==0 ) echo 'checked'; ?>><?php echo JText::_( 'PROXY_CONFIG_SERVER_ALL'); ?></td>
+				<td><input type="checkBox" name="AllServers[]" id="AllServers" value="All" onclick="disableServersLayers();" <?php if (strcasecmp($thePolicy->Servers['All'],'True')==0 ) echo 'checked'; ?>><?php echo JText::_( 'PROXY_CONFIG_SERVER_ALL'); ?></td>
 			</tr>
 		</table>
 	</fieldset>
@@ -1604,7 +1604,7 @@ function generateWMSHTML($config,$thePolicy){
 			}
 			?>
 
-	<input type="hidden" name="remoteServer<?php echo $iServer;?>" value="<?php echo $remoteServer->url ?>">
+	<input type="hidden" name="remoteServer<?php echo $iServer;?>" id="remoteServer<?php echo $iServer;?>" value="<?php echo $remoteServer->url ?>">
 	<fieldset class="adminform" id="fsServer<?php echo $iServer;?>" >
 		<legend><?php echo JText::_( 'EASYSDI_WMS_SERVER'); ?> <?php echo $remoteServer->url ?></legend>
 		<table class="admintable">
@@ -1647,7 +1647,7 @@ function generateWMSHTML($config,$thePolicy){
 				<td class="key" >
 					<table width ="100%" height="100%" >
 						<tr valign="top" >
-						<td width="15"><input onClick="activateLayer('<?php echo $iServer ; ?>','<?php echo $layernum; ?>')" <?php if( HTML_proxy::isLayerChecked($theServer,$layer) || strcasecmp($theServer->Layers['All'],'True')==0) echo ' checked';?> <?php if (strcasecmp($theServer->Layers['All'],'True')==0 ) echo ' disabled '; ?> type="checkbox"
+						<td width="15"><input onClick="activateLayer('<?php echo $iServer ; ?>','<?php echo $layernum; ?>')" <?php if( HTML_proxy::isLayerChecked($theServer,$layer) || strcasecmp($theServer->Layers['All'],'True')==0) echo ' checked';?> type="checkbox"
 							id="layer@<?php echo $iServer; ?>@<?php echo $layernum;?>" 
 							name="layer@<?php echo $iServer; ?>@<?php echo $layernum;?>"
 							value="<?php echo $layer->Name;?>"></td>
@@ -1762,7 +1762,7 @@ function generateWMSHTML($config,$thePolicy){
 		<fieldset class="adminform"><legend><?php echo JText::_( 'PROXY_CONFIG_SERVER_ALL_TITLE'); ?></legend>
 			<table class="admintable">
 				<tr>
-					<td><input type="checkBox" name="AllServers[]" id="AllServers" value="All" onclick="disableServers();" <?php if (strcasecmp($thePolicy->Servers['All'],'True')==0 ) echo 'checked'; ?>><?php echo JText::_( 'PROXY_CONFIG_SERVER_ALL'); ?></td>
+					<td><input type="checkBox" name="AllServers[]" id="AllServers" value="All" onclick="disableServersFeatureTypes();" <?php if (strcasecmp($thePolicy->Servers['All'],'True')==0 ) echo 'checked'; ?>><?php echo JText::_( 'PROXY_CONFIG_SERVER_ALL'); ?></td>
 				</tr>
 			</table>
 		</fieldset>
@@ -1957,8 +1957,7 @@ function generateWMSHTML($config,$thePolicy){
 									<input align="left" 
 										   onClick="activateFeatureType('<?php echo $iServer; ?>','<?php echo $ftnum;?>')" 
 										   <?php if( HTML_proxy ::isChecked($theServer,$featureType)) echo 'checked';?> 
-										   type="checkbox" 
-										   <?php if (strcasecmp($theServer->FeatureTypes['All'],'True')==0 ) echo ' disabled '; ?>
+										   type="checkbox"
 										  id="featuretype@<?php echo $iServer; ?>@<?php echo $ftnum; ?>"
 								          name="featuretype@<?php echo $iServer; ?>@<?php echo $ftnum; ?>" 
 								          value="<?php echo $featureType->{'Name'}; ?>"></td>

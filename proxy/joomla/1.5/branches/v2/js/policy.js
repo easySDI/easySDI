@@ -74,6 +74,7 @@ function activateFeatureType(server,featureType){
 	}
 	else
 	{	
+		document.getElementById('AllFeatureTypes@'+nb).checked = false;
 		document.getElementById('LocalFilter@'+server+'@'+featureType).disabled=true;
 		document.getElementById('LocalFilter@'+server+'@'+featureType).value = "";
 		document.getElementById('RemoteFilter@'+server+'@'+featureType).disabled=true;		
@@ -128,7 +129,7 @@ function activateLayer(server,layerName){
 		document.getElementById('LocalFilter@'+server+'@'+layerName).disabled=false;
 		
 	}else{
-	
+		document.getElementById('AllLayers@'+nb).checked = false;
 		document.getElementById('scaleMin@'+server+'@'+layerName).disabled=true;
 		document.getElementById('scaleMin@'+server+'@'+layerName).value ="";
 		document.getElementById('scaleMax@'+server+'@'+layerName).disabled=true;
@@ -157,16 +158,60 @@ function disableOperationCheckBoxes()
 //	document.getElementById('oGetStyles').checked=check;
 //	document.getElementById('oPutStyles').checked=check;
 }
-function disableServers ()
+function disableServersLayers ()
 {
 	var nb = 0;
+	var iLay = 0;
 	var display = "block";
+	var check = document.getElementById('AllServers').checked;
 	if (document.getElementById('AllServers').checked)
+	{
 		display="none";
+	}
 	
 	while (document.getElementById('remoteServerTable@'+nb) != null)
 	{
 		document.getElementById('remoteServerTable@'+nb).style.display=display;
+		document.getElementById('AllLayers@'+nb).checked = check;
+		while (document.getElementById('layer@'+nb+'@'+iLay) != null)
+		{
+			document.getElementById('layer@'+nb+'@'+iLay).checked = check;
+//			document.getElementById('layer@'+nb+'@'+iLay).disabled = check;
+			document.getElementById('scaleMin@'+nb+'@'+iLay).disabled=check;
+			document.getElementById('scaleMax@'+nb+'@'+iLay).disabled=check;
+			document.getElementById('LocalFilter@'+nb+'@'+iLay).disabled=check;
+			iLay ++;
+		}
+		iLay = 0;
+		nb ++;
+	}	
+}
+
+function disableServersFeatureTypes ()
+{
+	var nb = 0;
+	var iFeat = 0;
+	var display = "block";
+	var check = document.getElementById('AllServers').checked;
+	if (document.getElementById('AllServers').checked)
+	{
+		display="none";
+	}
+	
+	while (document.getElementById('remoteServerTable@'+nb) != null)
+	{
+		document.getElementById('remoteServerTable@'+nb).style.display=display;
+		document.getElementById('AllFeatureTypes@'+nb).checked = check;
+		while (document.getElementById('featuretype@'+nb+'@'+iFeat) != null)
+		{
+			document.getElementById('featuretype@'+nb+'@'+iFeat).checked = check;
+			document.getElementById('selectAttribute@'+nb+'@'+iFeat).disabled=check;
+			document.getElementById('AttributeList@'+nb+'@'+iFeat).disabled=check;
+			document.getElementById('RemoteFilter@'+nb+'@'+iFeat).disabled=check;
+			document.getElementById('LocalFilter@'+nb+'@'+iFeat).disabled=check;
+			iFeat ++;
+		}
+		iFeat = 0;
 		nb ++;
 	}	
 }
@@ -178,14 +223,12 @@ function disableLayers(iServ)
 	
 	while (document.getElementById('layer@'+iServ+'@'+iLay) != null)
 	{
-		document.getElementById('layer@'+iServ+'@'+iLay).disabled = check;
+//		document.getElementById('layer@'+iServ+'@'+iLay).disabled = check;
 		document.getElementById('layer@'+iServ+'@'+iLay).checked = check;
-		if(check)
-		{
-			document.getElementById('scaleMin@'+iServ+'@'+iLay).disabled=check;
-			document.getElementById('scaleMax@'+iServ+'@'+iLay).disabled=check;
-			document.getElementById('LocalFilter@'+iServ+'@'+iLay).disabled=check;
-		}
+		document.getElementById('scaleMin@'+iServ+'@'+iLay).disabled=check;
+		document.getElementById('scaleMax@'+iServ+'@'+iLay).disabled=check;
+		document.getElementById('LocalFilter@'+iServ+'@'+iLay).disabled=check;
+		
 		iLay ++;
 	}
 }
@@ -197,15 +240,13 @@ function disableFeatureTypes(iServ)
 	
 	while (document.getElementById('featuretype@'+iServ+'@'+iFeat) != null)
 	{
-		document.getElementById('featuretype@'+iServ+'@'+iFeat).disabled = check;
+//		document.getElementById('featuretype@'+iServ+'@'+iFeat).disabled = check;
 		document.getElementById('featuretype@'+iServ+'@'+iFeat).checked = check;
-		if(check)
-		{
-			document.getElementById('selectAttribute@'+iServ+'@'+iFeat).disabled=check;
-			document.getElementById('AttributeList@'+iServ+'@'+iFeat).disabled=check;
-			document.getElementById('RemoteFilter@'+iServ+'@'+iFeat).disabled=check;
-			document.getElementById('LocalFilter@'+iServ+'@'+iFeat).disabled=check;
-		}
+		document.getElementById('selectAttribute@'+iServ+'@'+iFeat).disabled=check;
+		document.getElementById('AttributeList@'+iServ+'@'+iFeat).disabled=check;
+		document.getElementById('RemoteFilter@'+iServ+'@'+iFeat).disabled=check;
+		document.getElementById('LocalFilter@'+iServ+'@'+iFeat).disabled=check;
+		
 		iFeat ++;
 	}
 }

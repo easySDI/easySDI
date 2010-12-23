@@ -664,6 +664,28 @@ function savePolicy($xml){
 				$serverNamespace = JRequest::getVar("serverNamespace$i","");
 				$theServer->Namespace = $serverNamespace;
 				
+				$theServer->Metadata ="";
+				$theServer->Layers ="";
+				$theServer->FeatureTypes="";
+				
+				while (list($key, $val) = each($params )) 
+				{
+					if (!(strpos($key,"featuretype@$i")===false))
+					{
+							$theServer->FeatureTypes['All']='true';
+							$theFeatureType = $theServer->FeatureTypes->addChild('FeatureType');
+							$theFeatureType->Name=$val;
+							$theFeatureType->Attributes['All']="true";
+					}
+	
+					if (!(strpos($key,"layer@$i")===false))
+					{
+						$theServer->Layers['All']='true';
+						$theLayer = $theServer->Layers->addChild('Layer');
+						$theLayer->Name =$val;
+					}
+				}
+				reset($params);
 			}
 			else
 			{
@@ -721,7 +743,10 @@ function savePolicy($xml){
 						if(strlen($AllFeatureTypes)>0)
 						{
 							//All featuretypes checked
-							$foundFeatureType = false;
+							$foundFeatureType = true;
+							$theServer->FeatureTypes['All']='true';
+							$theFeatureType = $theServer->FeatureTypes->addChild('FeatureType');
+							$theFeatureType->Name=$val;
 						}
 						else
 						{
@@ -778,7 +803,10 @@ function savePolicy($xml){
 						if(strlen($AllLayers)>0)
 						{
 							//All layers checked
-							$foundLayer = false;
+							$foundLayer = true;
+							$theServer->Layers['All']='true';
+							$theLayer = $theServer->Layers->addChild('Layer');
+							$theLayer->Name =$val;
 						}	
 						else
 						{
@@ -827,14 +855,22 @@ function savePolicy($xml){
 					}
 					
 				}
+//				if($foundFeatureType == false && strcasecmp($servletClass, 'org.easysdi.proxy.wfs.WFSProxyServlet') == 0)
+//				{
+//					$theServer->FeatureTypes['All']='true';
+//				}
+//				if($foundLayer == false && strcasecmp($servletClass, 'org.easysdi.proxy.wms.WMSProxyServlet') == 0)
+//				{
+//					$theServer->Layers['All']='true';
+//				}
 				if($foundFeatureType == false && strcasecmp($servletClass, 'org.easysdi.proxy.wfs.WFSProxyServlet') == 0)
 				{
-					$theServer->FeatureTypes['All']='true';
+					$theServer->FeatureTypes['All']='false';
 				}
 				if($foundLayer == false && strcasecmp($servletClass, 'org.easysdi.proxy.wms.WMSProxyServlet') == 0)
 				{
-					$theServer->Layers['All']='true';
-				}
+					$theServer->Layers['All']='false';
+			}
 				if ($foundParamToExclude==false && strcasecmp($servletClass, 'org.easysdi.proxy.csw.CSWProxyServlet') == 0 )
 				{			  
 					$theServer->Metadata['All']='true';
