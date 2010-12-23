@@ -65,10 +65,6 @@ public class CSWProxyMetadataContentManager
 		elementParent.removeAttribute("type", ns);
 		elementParent.removeAttribute("href", ns);
 		
-//		SAXBuilder sxb = new SAXBuilder();
-//		Document documentChild = sxb.build(xmlChild);
-//		Element elementChild = documentChild.getRootElement();
-		
 		if(fragment == null || fragment.equalsIgnoreCase(""))
 		{
 			elementParent.addContent(elementChild.cloneContent());
@@ -115,8 +111,6 @@ public class CSWProxyMetadataContentManager
 				String serverUrl = requestHandler.getServer();
 				String params = requestHandler.getParameters();
 				String fragment = requestHandler.getFragment();
-//				fragment = "bee:contact";
-//				serverUrl = "http://localhost:8070/proxy/ogc/geodbmeta_csw";
 
 				InputStream xmlChild = sendData(serverUrl,params);
 				if(xmlChild == null)

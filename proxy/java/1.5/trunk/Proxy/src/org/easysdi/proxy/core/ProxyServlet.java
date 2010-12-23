@@ -1188,18 +1188,11 @@ public abstract class ProxyServlet extends HttpServlet {
 			if (isDateAvaillable(policy.getAvailabilityPeriod()) == false)
 				return false;
 		}
-		
-//		if (policy.getServers().isAll())
-//			return true;
-
+	
 		List<Server> serverList = policy.getServers().getServer();
-//		boolean isAllFT = false; 
 		for (int i = 0; i < serverList.size(); i++) {
 			FeatureTypes features = serverList.get(i).getFeatureTypes();
 			if (features != null) {
-//				if (features.isAll())
-//					isAllFT = true;
-
 				List<FeatureType> ftList = features.getFeatureType();
 				for (int j = 0; j < ftList.size(); j++) {
 					// Is a specific feature type allowed ?
@@ -1208,9 +1201,6 @@ public abstract class ProxyServlet extends HttpServlet {
 				}
 			}
 		}
-		
-//		if(isAllFT)
-//			return true;
 		
 		return false;
 	}
@@ -1232,6 +1222,12 @@ public abstract class ProxyServlet extends HttpServlet {
 				return false;
 		}
 
+		//Debug HVH 23.12.2010
+		//using policy.getServers().isAll() and features.isAll()
+		//return wrong results.
+		//Policy content was changed to include all the feature types name in case of getServer().isAll()
+		//and features.isAll().
+		//So we do not care anymore about those 2 booleans and we loop on all the feature types in the policy
 		//5.09.2010 - HVH 
 //		if (policy.getServers().isAll())
 //			return true;
@@ -1290,26 +1286,15 @@ public abstract class ProxyServlet extends HttpServlet {
 		}
 		if (layer == null)
 			return false;
-//		if (policy.getServers().isAll())
-//			return true;
-		
-//		boolean isAllLayer = false; 
+ 
 		List<Server> serverList = policy.getServers().getServer();
 		for (int i = 0; i < serverList.size(); i++) {
-//			if (serverList.get(i).getLayers().isAll())
-//				isAllLayer = true;
-
 			List<Layer> layerList = serverList.get(i).getLayers().getLayer();
 			for (int j = 0; j < layerList.size(); j++) {
-				// Is a specific layer allowed ?
 				if (layer.equals(layerList.get(j).getName()))
 					return true;
 			}
 		}
-		
-//		if(isAllLayer)
-//			return true;
-		
 		return false;
 	}
 	/**
@@ -1331,6 +1316,13 @@ public abstract class ProxyServlet extends HttpServlet {
 
 		if (layer == null)
 			return false;
+
+		//Debug HVH 23.12.2010
+		//using policy.getServers().isAll() and serverList.get(i).getLayers().isAll()
+		//return wrong results.
+		//Policy content was changed to include all the layers name in case of getServer().isAll()
+		//and getLayers.isAll().
+		//So we do not care anymore about those 2 booleans and we loop on all the layer in the policy
 
 		//5.09.2010 - HVH 
 //		if (policy.getServers().isAll())

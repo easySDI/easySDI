@@ -962,7 +962,11 @@ public class WMSProxyServlet extends ProxyServlet {
 			//Filtre les fichiers réponses des serveurs :
 			//ajoute les fichiers d'exception dans ogcExceptionFilePathList
 			//les enlève de la collection de résultats wmsFilePathList 
-			filterServersResponsesForOgcServiceExceptionFiles();
+			if(!filterServersResponsesForOgcServiceExceptionFiles())
+			{
+				sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in OGC exception management. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
+				return;
+			}
 			
 			//Si le mode de gestion des exceptions est "restrictif" et si au moins un serveur retourne une exception OGC
 			//Ou
