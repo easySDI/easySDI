@@ -9,7 +9,7 @@
 		// Valeur max = n
 		if (max == 999) max = Number.MAX_VALUE;
 		//collapsible = true;
-		// Créer un nouveau fieldset
+		// Crï¿½er un nouveau fieldset
 		var f = new Ext.form.FieldSet(
 				{
 					xtype: 'fieldset',
@@ -644,7 +644,7 @@
           	typeAhead: false,
 	        loadingText: 'Searching...',
 	        width: 570,
-	        pageSize:10,
+	        pageSize:20,
 	        hideTrigger:true,
 	        tpl: resultTpl,
 	        itemSelector: 'div.search-item',
@@ -706,7 +706,7 @@
 		        displayFieldTpl: '{keyword}',
 		        valueField:'value',
 		        //value:value,
-			 	// Champs spécifiques au clonage
+			 	// Champs spï¿½cifiques au clonage
 		        dynamic:true,
 		        minOccurs:min,
 	            maxOccurs:max,
