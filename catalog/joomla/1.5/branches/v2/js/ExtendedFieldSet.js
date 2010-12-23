@@ -60,23 +60,30 @@ Ext.override(Ext.form.FieldSet, {
 				
 				var parentName = panel.getId();
 				var name = master.getId();
-				//console.log("parentName: " + parentName);
 				//console.log("name: " + name);
-				//console.log("======================================================================");
+				//console.log("parentName: " + parentName);
 				if (isClone)
 				{
 					var masterName = parentName + name.substring(parentName.length);
-					//console.log ("masterName: " + masterName);
 					master = Ext.getCmp(masterName);
 				}
+				//console.log("master: " + master.getId());
+				//console.log("nombre d'enfants clones: " + master.clones_count);
+				//var oldIndexComponent = Ext.ComponentMgr.get(name + '_index');
+				//console.log("Fieldset: "+name + '_index');
 				var partOfNameToModify = name.substring(parentName.length);
+				//var partOfNameToModify = name.substring(name.lastIndexOf('-'));
+				//console.log("partOfNameToModify: " + partOfNameToModify);
+				//console.log("test: " + test);
 				//var partOfNameToModify2 = name.substring(parentName.length,name.length-String(master.clones_count).length);
+				//console.log("partOfNameToModify2: " + partOfNameToModify2 + " - " + name.length + " - " + String(master.clones_count).length );
+				//console.log("partOfNameToModify2: " + partOfNameToModify2);
 				var aName = name.split('__');
 			    //console.log("aName: " + aName);
 			    var partOfNameToModify2 = name.substring(parentName.length,name.length-aName[aName.length - 1].length);
 			    //console.log("partOfNameToModify2: " + partOfNameToModify2);
 			    
-				master.clones_count = master.clones_count+1;
+			    master.clones_count = master.clones_count+1;
 			    //clones_count = master.clones_count;
 				
 			    if (isClone)
@@ -93,7 +100,7 @@ Ext.override(Ext.form.FieldSet, {
 			    	indexComponent.setValue(newVal);
 				}
 */				
-			    var nameEndPart = partOfNameToModify.substring(partOfNameToModify2.length+String(master.clones_count).length);
+				var nameEndPart = partOfNameToModify.substring(partOfNameToModify2.length+String(master.clones_count).length);
 				//console.log("nameEndPart: " + nameEndPart);
 				var newName = parentName + partOfNameToModify2 + clones_count + nameEndPart;
 			    //console.log("newName: " + parentName +" - "+partOfNameToModify2+" - "+clones_count +" - "+ nameEndPart);
@@ -123,8 +130,8 @@ Ext.override(Ext.form.FieldSet, {
 				//console.log(name+" - "+isClone);
 				if (isClone)
 				{
-					// [SGI - 28.10.09] Pourquoi ce calcul pour insérer le clone?
-					// [SGI - 20.01.10] Commenté car je ne comprends pas son utilité et que j'ai un bug avec ce code
+					// [SGI - 28.10.09] Pourquoi ce calcul pour insÃ©rer le clone?
+					// [SGI - 20.01.10] CommentÃ© car je ne comprends pas son utilitÃ© et que j'ai un bug avec ce code
 					//console.log(master.getId() + " - " + panel.items.indexOf(master));
 			   		//if (panel.items.indexOf(master) == 0)
 					//	var idx = panel.items.indexOf(master)+2+i;
@@ -143,13 +150,13 @@ Ext.override(Ext.form.FieldSet, {
 
 				//var lastClone = listOfClones[listOfClones.length-1];									
 						
-						// Permettre les nulls pour les champs cachés
+						// Permettre les nulls pour les champs cachÃ©s
 						var hiddenFields= new Array();
 						clone.cascade(function(cmp)
 						{
 							var newItems = clone.items;
 							//console.log(newItems);
-							// Gestion du cas où aucune relation enfant n'a été publiée
+							// Gestion du cas oÃ¹ aucune relation enfant n'a Ã©tÃ© publiÃ©e
 							newItems_count = 0;
 							if (newItems)
 								newItems_count = newItems.length;
@@ -352,7 +359,7 @@ Ext.override(Ext.form.FieldSet, {
 	{
 		// Tooltips
 		//console.log(component.name + " - " + component.xtype + " - " + component.qTip);
-		var qt = component.qTip;
+		var qt = component.qTip;        
 		var dismissDelay = component.qTipDelay;
 		if(qt){
 			/*Ext.QuickTips.register({
@@ -436,6 +443,7 @@ Ext.override(Ext.form.FieldSet, {
 			
 							firstClone.clone = false;
 							firstClone.template = undefined;
+
 							
 							panel.remove(fieldset, true);
 							firstClone.doLayout();
@@ -450,6 +458,7 @@ Ext.override(Ext.form.FieldSet, {
 						else
 						{
 							var tmpl = fieldset.template;
+
 							panel.remove(fieldset, true);
 							tmpl.manageIcons(tmpl); //mise a jour des boutons
 							
