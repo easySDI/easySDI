@@ -4,7 +4,7 @@ defined('_JEXEC') or die('Restricted access');
 ?>
 <script>
 
-//Transfert toutes les lignes de la liste Origine à la liste Destination
+//Transfert toutes les lignes de la liste Origine Ã  la liste Destination
 function TransfertAll(idOrigine, idDestination)
 {	var objOrigine = document.getElementById(idOrigine);
 	var objDestination = document.getElementById(idDestination);
@@ -27,7 +27,7 @@ function TransfertAll(idOrigine, idDestination)
 	}*/
 }
 
-//Transfert une ligne de la liste Origine à la liste Destination
+//Transfert une ligne de la liste Origine Ã  la liste Destination
 function Transfert(idOrigine, idDestination)
 {	var objOrigine = document.getElementById(idOrigine);
 	var objDestination = document.getElementById(idDestination);
@@ -56,7 +56,7 @@ function Transfert(idOrigine, idDestination)
 	sortArray(idDestination);
 }
 
-//Vérifie la présence de Valeur dans IdListe
+//VÃ©rifie la prÃ©sence de Valeur dans IdListe
 function VerifValeurDansListe(IdListe, Valeur, blnAlerte) 
 {
 	var objListe = document.getElementById(IdListe);
@@ -76,7 +76,7 @@ function PostSelect(form_name, idListe)
     	obj.options[i].selected = true;
   	}
   
-  	// On modifie l'ID  du champ select pour que PHP traite cette dernière comme un array
+  	// On modifie l'ID  du champ select pour que PHP traite cette derniÃ¨re comme un array
   	obj.name = "selected[]";
 	
   	// On soumet le formulaire
@@ -96,7 +96,7 @@ function Pre_Post(form_name, idListe, type)
     	obj.options[i].selected = true;
   	}
   	
-  	// On modifie l'ID  du champ select pour que PHP traite cette dernière comme un array
+  	// On modifie l'ID  du champ select pour que PHP traite cette derniÃ¨re comme un array
   	obj.name = "selected_" + type + "[]";
 }
 
@@ -215,7 +215,7 @@ function changeVisibility(attribute)
      }
 }
 
-// Fonction pour changer la visibilité des champs lors de l'édition d'un attribut
+// Fonction pour changer la visibilitÃ© des champs lors de l'Ã©dition d'un attribut
 function changeAttributeListVisibility(attributeType)
 {
 	// Isocode du type
@@ -226,7 +226,7 @@ function changeAttributeListVisibility(attributeType)
     else 
    		isocodeType.style.display = "none";
 
-	// Champs à masquer pour le Thesaurus GEMET
+	// Champs Ã  masquer pour le Thesaurus GEMET
 	var attributesType = document.getElementById("div_attributes");
 	
 	if(attributeType != 11) 
@@ -447,7 +447,7 @@ function changexpathParentIdVisibility(value)
 }
 
 
-//Fonction pour changer la visibilité des champs lors de l'édition d'un attribut
+//Fonction pour changer la visibilitÃ© des champs lors de l'Ã©dition d'un attribut
 function changeImporttypeVisibility(importType)
 {
 	// Isocode du type
