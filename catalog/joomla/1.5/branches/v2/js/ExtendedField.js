@@ -115,8 +115,7 @@ Ext.override(Ext.form.Field, {
 			    	indexComponent.setValue(newVal);
 				}
 */				
-				
-			    var nameEndPart = partOfNameToModify.substring(partOfNameToModify2.length+String(master.clones_count).length);
+				var nameEndPart = partOfNameToModify.substring(partOfNameToModify2.length+String(master.clones_count).length);
 				//console.log("nameEndPart: "+ nameEndPart);
 				var newName = parentName + partOfNameToModify2 + clones_count + nameEndPart;
 				//console.log("newName: "+ newName);
@@ -169,7 +168,7 @@ Ext.override(Ext.form.Field, {
 					panel.add(clone);
 				}
 				
-				//console.log(clone);
+				
 				//console.log(newName + " - " + clone.xtype);
 				if (clone.xtype!='multiselect' && clone.xtype!='checkboxgroup' && clone.xtype!='radiogroup') 
 				{
@@ -195,7 +194,6 @@ Ext.override(Ext.form.Field, {
 					alert(clone.id + " - " + clone.getValue(clone));
 				*/
 				panel.doLayout();
-				//Ext.util.Observable.capture(clone, console.info);
 			}			
 
 			//
@@ -312,10 +310,11 @@ Ext.override(Ext.form.Field, {
 		    	var cnt = this.clones().length;
 				var item = Ext.get(field.el.findParent('.x-form-item'));
 			    var fieldset = field.ownerCt;
-				//console.log(field);
-		    	// Traitement pour le premier élément de la liste, le master
+				
+		    	// Traitement pour le premier Ã©lÃ©ment de la liste, le master
 		    	if (!field.clone)
 		    	{
+					
 					// Get the first clone af the master
 					var listOfClones = field.clones();
 					var firstClone = listOfClones[0];			
@@ -366,9 +365,8 @@ Ext.override(Ext.form.Field, {
 		
 		// Tooltips
 		//console.log(this.name + " - " + this.xtype + " - " + this.qTip);
-		var qt = this.qTip;   
+		var qt = this.qTip;        
 		var dismissDelay = this.qTipDelay;
-		
 		if(qt){
 			/*Ext.QuickTips.register({
 				target:  this,
