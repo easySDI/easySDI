@@ -359,7 +359,7 @@ class SITE_cpanel {
 			foreach ($rows as $row)
 			{
 				$query = "insert into #__easysdi_order_product_perimeters (perimeter_id, order_id, value, text) ";
-				$query .= "values($row->perimeter_id, $order_copy_id, '$row->value', '$row->text')";
+				$query .= "values($row->perimeter_id, $order_copy_id, '$row->value', '".addslashes($row->text)."')";
 				$database->setQuery($query);
 				if (!$database->query()) {
 					echo "<div class='alert'>";
