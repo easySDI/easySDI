@@ -125,8 +125,6 @@ public class WPSServlet extends HttpServlet {
 
 	}
 
-
-
 	public void doPost(HttpServletRequest req, HttpServletResponse resp){    
 
 		try{
@@ -334,9 +332,6 @@ public class WPSServlet extends HttpServlet {
 
 			er.setProcessOutputs(po);
 
-
-
-
 			Class.forName(getJdbcDriver()).newInstance();
 
 
@@ -344,8 +339,14 @@ public class WPSServlet extends HttpServlet {
 
 			Statement stmt = conn.createStatement();
 
-			ResultSet rs = stmt.executeQuery("SELECT *, osl.code as orderCode FROM "+getJoomlaPrefix()+"easysdi_order o, "+getJoomlaPrefix()+"easysdi_community_partner p, "+getJoomlaPrefix()+"easysdi_order_status_list osl WHERE osl.id=o.status AND osl.code = '"+statusToRead+"' AND o.user_id = p.user_id "+"AND (SELECT COUNT(*) FROM "+getJoomlaPrefix()+"easysdi_order_product_list opl ,  "+getJoomlaPrefix()+"easysdi_product p, "+getJoomlaPrefix()+"easysdi_community_partner part, "+getJoomlaPrefix()+"users u  WHERE opl.order_id = o.order_id AND opl.product_id = p.id AND p.partner_id = part.partner_id AND part.user_id = u.id AND u.username='"+userName+"')   > 0");
-
+			//Causes performance problems
+			//ResultSet rs = stmt.executeQuery("SELECT *, osl.code as orderCode FROM "+getJoomlaPrefix()+"easysdi_order o, "+getJoomlaPrefix()+"easysdi_community_partner p, "+getJoomlaPrefix()+"easysdi_order_status_list osl WHERE osl.id=o.status AND osl.code = '"+statusToRead+"' AND o.user_id = p.user_id "+"AND (SELECT COUNT(*) FROM "+getJoomlaPrefix()+"easysdi_order_product_list opl ,  "+getJoomlaPrefix()+"easysdi_product p, "+getJoomlaPrefix()+"easysdi_community_partner part, "+getJoomlaPrefix()+"users u  WHERE opl.order_id = o.order_id AND opl.product_id = p.id AND p.partner_id = part.partner_id AND part.user_id = u.id AND u.username='"+userName+"')   > 0");
+			ResultSet rs = stmt.executeQuery("SELECT DISTINCT o.order_id, o.name, o.type, o.third_party, p.partner_id, p.root_id, o.buffer, o.remark, o.user_id "+
+			"FROM "+getJoomlaPrefix()+"easysdi_order o, "+getJoomlaPrefix()+"easysdi_community_partner p, "+getJoomlaPrefix()+"easysdi_order_status_list osl, "+getJoomlaPrefix()+"easysdi_order_product_list opl , jos_easysdi_product prod, "+getJoomlaPrefix()+"easysdi_community_partner part, "+getJoomlaPrefix()+"users u "+
+			"WHERE opl.order_id = o.order_id AND osl.id=o.status AND osl.code = 'SENT' AND o.user_id = p.user_id "+
+			"and opl.product_id = prod.id AND prod.partner_id = part.partner_id AND part.user_id = u.id AND u.username='"+userName+"'");
+			
+			
 			StringBuffer res = new StringBuffer();
 			res.append("<easysdi:orders 	xmlns:easysdi=\"http://www.easysdi.org\">");
 			List<String> orderIdList = new Vector<String>();
@@ -353,20 +354,20 @@ public class WPSServlet extends HttpServlet {
 			{
 				String order_id = rs.getString("order_id");
 				orderIdList.add(order_id);
-				String remark = rs.getString("remark");
-				String provider_id = rs.getString("provider_id");
+				//String remark = rs.getString("remark");
+				//String provider_id = rs.getString("provider_id");
 
 				String name = rs.getString("name");
 				int type = rs.getInt("type");
-				String order_update = rs.getString("order_update");
+			        //String order_update = rs.getString("order_update");
 				String third_party = rs.getString("third_party");
 				//String archived = rs.getString("archived");
-				String RESPONSE_DATE = rs.getString("RESPONSE_DATE");
-				String RESPONSE_SEND = rs.getString("RESPONSE_SEND");
+				//String RESPONSE_DATE = rs.getString("RESPONSE_DATE");
+				//String RESPONSE_SEND = rs.getString("RESPONSE_SEND");
 				String user_id = rs.getString("user_id");
 				String partner_id = rs.getString("partner_id");
 				String root_id = rs.getString("root_id");
-				String status = rs.getString("orderCode");
+				//String status = rs.getString("orderCode");
 				int buffer = 0;
 				buffer = rs.getInt("buffer");
 
@@ -420,10 +421,22 @@ public class WPSServlet extends HttpServlet {
 				Statement stmtAdd = conn.createStatement();
 				ResultSet rsAddContact = stmtAdd.executeQuery("SELECT * FROM "+getJoomlaPrefix()+"easysdi_community_address a,"+getJoomlaPrefix()+"easysdi_community_address_type t where a.type_id = t.type_id and t.type_name = 'EASYSDI_TYPE_CONTACT' and a.partner_id = "+partner_id);
 
+				//get the client joomla name
+				String clientJoomlaName = "";
+				Statement stmtClientJoomlaName = conn.createStatement();
+				ResultSet rsClientJoomlaName = stmtClientJoomlaName.executeQuery("SELECT u.name FROM "+getJoomlaPrefix()+"easysdi_community_partner p, "+getJoomlaPrefix()+"users u where p.user_id = u.id and p.partner_id = "+partner_id);
+				while(rsClientJoomlaName.next()){
+					clientJoomlaName = rsClientJoomlaName.getString("name");
+				}
+				rsClientJoomlaName.close();
+				stmtClientJoomlaName.close();
+				
 				while(rsAddContact.next()){
 
 					res.append("<easysdi:CONTACTADDRESS>\n");
-					res.append("<easysdi:NAME1>"+encodeSpecialChars(rsAddContact.getString("address_corporate_name1"))+"</easysdi:NAME1>\n");
+					//@see http://forge.easysdi.org/issues/show/267
+					//res.append("<easysdi:NAME1>"+encodeSpecialChars(rsAddContact.getString("address_corporate_name1"))+"</easysdi:NAME1>\n");
+					res.append("<easysdi:NAME1>"+encodeSpecialChars(clientJoomlaName)+"</easysdi:NAME1>\n");
 					res.append("<easysdi:NAME2>"+encodeSpecialChars(rsAddContact.getString("address_corporate_name2"))+"</easysdi:NAME2>\n");
 					res.append("<easysdi:AGENTFIRSTNAME>"+encodeSpecialChars(rsAddContact.getString("address_agent_firstname"))+"</easysdi:AGENTFIRSTNAME>\n") ;
 					res.append("<easysdi:AGENTLASTNAME>"+encodeSpecialChars(rsAddContact.getString("address_agent_lastname"))+"</easysdi:AGENTLASTNAME>\n") ;		
@@ -485,14 +498,26 @@ public class WPSServlet extends HttpServlet {
 				if (!third_party.equalsIgnoreCase("0")){
 					res.append("<easysdi:TIERCE>\n");
 					res.append("<easysdi:ID>"+encodeSpecialChars(third_party)+"</easysdi:ID>\n");
-					Statement stmtTierce = conn.createStatement();
+					//Statement stmtTierce = conn.createStatement();
 
 					rsAddContact = stmtAdd.executeQuery("SELECT * FROM "+getJoomlaPrefix()+"easysdi_community_address a,"+getJoomlaPrefix()+"easysdi_community_address_type t where a.type_id = t.type_id and t.type_name = 'EASYSDI_TYPE_CONTACT' and a.partner_id = "+third_party);
 
+					//get the tierce Joomla name
+					String tierceJoomlaName = "";
+					Statement stmtTierceJoomlaName = conn.createStatement();
+					ResultSet rsTierceJoomlaName = stmtTierceJoomlaName.executeQuery("SELECT u.name FROM "+getJoomlaPrefix()+"easysdi_community_partner p, "+getJoomlaPrefix()+"users u where p.user_id = u.id and p.partner_id = "+third_party);
+					while(rsTierceJoomlaName.next()){
+						tierceJoomlaName = rsTierceJoomlaName.getString("name");
+					}
+					rsTierceJoomlaName.close();
+					stmtTierceJoomlaName.close();
+					
 					while(rsAddContact.next()){
 
 						res.append("<easysdi:CONTACTADDRESS>\n");
-						res.append("<easysdi:NAME1>"+encodeSpecialChars(rsAddContact.getString("address_corporate_name1"))+"</easysdi:NAME1>\n");
+						//@see http://forge.easysdi.org/issues/show/267
+						//res.append("<easysdi:NAME1>"+encodeSpecialChars(rsAddContact.getString("address_corporate_name1"))+"</easysdi:NAME1>\n");
+						res.append("<easysdi:NAME1>"+encodeSpecialChars(tierceJoomlaName)+"</easysdi:NAME1>\n");
 						res.append("<easysdi:NAME2>"+encodeSpecialChars(rsAddContact.getString("address_corporate_name2"))+"</easysdi:NAME2>\n");
 						res.append("<easysdi:AGENTFIRSTNAME>"+encodeSpecialChars(rsAddContact.getString("address_agent_firstname"))+"</easysdi:AGENTFIRSTNAME>\n") ;
 						res.append("<easysdi:AGENTLASTNAME>"+encodeSpecialChars(rsAddContact.getString("address_agent_lastname"))+"</easysdi:AGENTLASTNAME>\n") ;		
