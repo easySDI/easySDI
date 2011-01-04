@@ -19,7 +19,7 @@
 
 		<init-param>
 			<param-name>connexionString</param-name>
-			<param-value>jdbc:mysql://mysql.valid.asitvd.ch/asitvd5?user=asitvd&amp;password=Vm8ho2yJ&amp;noDatetimeStringSync=true</param-value>
+			<param-value>jdbc:mysql://localhost/asitvd5?user=root&amp;password=&amp;noDatetimeStringSync=true</param-value>
 		</init-param>
 		<init-param>
 			<param-name>joomlaPrefix</param-name>
@@ -59,6 +59,7 @@
 		<resource-env-ref-name>users</resource-env-ref-name>
 		<resource-env-ref-type>org.apache.catalina.UserDatabase</resource-env-ref-type>
 	</resource-env-ref>
+<!-- 	
 	<security-constraint>
 		<web-resource-collection>
 			<web-resource-name>HTMLManger and Manager command</web-resource-name>
@@ -76,4 +77,5 @@
 		<description>The role that is required to log in to the Manager Application</description>
 		<role-name>*</role-name>
 	</security-role>
+-->
 </web-app>
