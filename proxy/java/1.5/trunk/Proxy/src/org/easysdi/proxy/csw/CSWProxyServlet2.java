@@ -225,7 +225,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			FileOutputStream tempFos = null;
 
 			Transformer transformer = null;
-
+			
 			if (currentOperation != null) 
 			{
 
@@ -312,14 +312,23 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			resp.setContentLength((int) tempFile.length());
 			OutputStream os = resp.getOutputStream();
 			InputStream is = new FileInputStream(tempFile);
-
-			int byteRead;
+			
+			//Debug - HVH - 05.01.2011 : writing in outputstream optimized
+//			int byteRead;
 			try 
 			{
-				while ((byteRead = is.read()) != -1) 
-				{
-					os.write(byteRead);
-				}
+				byte[] buffer = new byte[is.available()]; // Adjust if you want
+		        int bytesRead;
+		        while ((bytesRead = is.read(buffer)) != -1)
+		        {
+		            os.write(buffer, 0, bytesRead);
+		        }
+//				while ((byteRead = is.read()) != -1) 
+//				{
+//					os.write(byteRead);
+//					
+//				}
+		      //End Debug - HVH - 05.01.2011
 			} 
 			finally 
 			{
@@ -552,17 +561,33 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			CswRequestHandler rh = new CswRequestHandler();
 			xr.setContentHandler(rh);
 
+			//Debug - HVH - 05.01.2011 : reading of the inputstream optimized
+//			dump("DEBUG","Start old way");
+//			StringBuffer param = new StringBuffer();
+//			String input;
+//			
+//			BufferedReader in = new BufferedReader(new InputStreamReader(req.getInputStream()));
+//			String request = "";
+//			while ((input = in.readLine()) != null) {
+////				dump(input);
+//				request += input;
+//				param.append(input);
+//			}
+//			dump("DEBUG","End old way");
+						
+//			dump("DEBUG","Start new way");
+			BufferedReader r = req.getReader();
 			StringBuffer param = new StringBuffer();
-			String input;
-			BufferedReader in = new BufferedReader(new InputStreamReader(req.getInputStream()));
-			String request = "";
-			while ((input = in.readLine()) != null) {
-				dump(input);
-				request += input;
-				param.append(input);
-			}
+			String rq = "";
+			char[] buf = new char[4 * 1024]; // 4Kchar buffer
+	        int len;
+	        while ((len = r.read(buf, 0, buf.length)) != -1) {
+	        	param.append(buf, 0, len);
+	        }
+//	        dump("DEBUG","End new way");
+	       //End Debug - HVH - 05.01.2011 
 			
-			dump("SYSTEM","Request",request);
+			dump("SYSTEM","Request",param.toString().replace('\n',' ').replace('\r',' '));
 			
 			xr.parse(new InputSource(new InputStreamReader(new ByteArrayInputStream(param.toString().getBytes()))));
 
@@ -660,9 +685,11 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				}
 				dump("INFO","End - Data Accessibility");
 				
+//				dump("INFO","Start - Get response");
 				List<String> filePathList = new Vector<String>();
 				String filePath = sendData("POST", getRemoteServerUrl(0), param.toString());
 				filePathList.add(filePath);
+//				dump("INFO","End - Get response");
 				if( rh.getContent().equalsIgnoreCase("") || rh.getContent().equalsIgnoreCase("complete"))
 				{
 					dump("INFO","Start - Complete metadata");
@@ -696,9 +723,11 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				}
 				dump("INFO","End - Data Accessibility");
 				
+//				dump("INFO","Start - Get response");
 				List<String> filePathList = new Vector<String>();
 				String filePath = sendData("POST", getRemoteServerUrl(0), param.toString());
 				filePathList.add(filePath);
+//				dump("INFO","End - Get response");
 				if( rh.getContent().equalsIgnoreCase("") || rh.getContent().equalsIgnoreCase("complete"))
 				{
 					dump("INFO","Start - Complete metadata");

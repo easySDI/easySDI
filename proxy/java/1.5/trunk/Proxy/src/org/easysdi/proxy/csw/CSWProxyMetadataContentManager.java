@@ -102,7 +102,7 @@ public class CSWProxyMetadataContentManager
 	    	   Element courant = (Element)i.next();
 	    	   elList.add(courant);
 	    	}
-	    	
+//	    	proxy.dump("DEBUG","Start - Loop on metadata");
 	    	//Modification of the selected Elements
 	    	for (int j = 0 ; j < elList.size(); j++)
 	    	{
@@ -112,13 +112,16 @@ public class CSWProxyMetadataContentManager
 				String params = requestHandler.getParameters();
 				String fragment = requestHandler.getFragment();
 
+//				proxy.dump("DEBUG","Get fragment's content - "+params);
 				InputStream xmlChild = sendData(serverUrl,params);
 				if(xmlChild == null)
 				{
 					_lastError = ("Error on : "+URLEncoder.encode(target));
 					return false;
 				}
-				
+//				proxy.dump("DEBUG","End - Get content metadata");
+//				
+//				proxy.dump("DEBUG","Start - Check content metadata");
 				//Check if the response is an Ogc Exception
 				Document documentChild = sxb.build(xmlChild);
 				Element elementChild = documentChild.getRootElement();
@@ -130,7 +133,8 @@ public class CSWProxyMetadataContentManager
 					_lastError = ("OGC Exception returned by : "+target);
 					return false;
 				}
-				
+//				proxy.dump("DEBUG","End - Check content metadata");
+//				proxy.dump("DEBUG","Start - Include content metadata");
 				try
 				{
 					includeFragment(docParent, elList.get(j), elementChild, fragment);
@@ -144,8 +148,9 @@ public class CSWProxyMetadataContentManager
 					_lastError = ("Error on : "+target);
 					return false;
 				}
+//				proxy.dump("DEBUG","End - Include content metadata");
     	   }
-	    	  
+//	    	proxy.dump("DEBUG","End - Loop on metadata");
     	   XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
            sortie.output(docParent, new FileOutputStream(filePath));
            return true;
