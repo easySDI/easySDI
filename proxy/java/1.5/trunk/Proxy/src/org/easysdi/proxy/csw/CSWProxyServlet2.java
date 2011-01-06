@@ -317,7 +317,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 //			int byteRead;
 			try 
 			{
-				byte[] buffer = new byte[is.available()]; // Adjust if you want
+				byte[] buffer = new byte[is.available()]; 
 		        int bytesRead;
 		        while ((bytesRead = is.read(buffer)) != -1)
 		        {
@@ -578,7 +578,6 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 //			dump("DEBUG","Start new way");
 			BufferedReader r = req.getReader();
 			StringBuffer param = new StringBuffer();
-			String rq = "";
 			char[] buf = new char[4 * 1024]; // 4Kchar buffer
 	        int len;
 	        while ((len = r.read(buf, 0, buf.length)) != -1) {

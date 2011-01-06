@@ -703,10 +703,10 @@ public abstract class ProxyServlet extends HttpServlet {
 
 			FileOutputStream tempFos = new FileOutputStream(tempFile);
 
-			byte[] buf = new byte[32768];
+//			byte[] buf = new byte[32768];
+			byte[] buf = new byte[in.available()]; 
 			int nread;
-
-			while ((nread = in.read(buf, 0, buf.length)) >= 0) {
+			while ((nread = in.read(buf)) != -1) {
 				tempFos.write(buf, 0, nread);
 			}
 
