@@ -471,13 +471,13 @@ class ADMIN_codevalue {
 				if ($total > 0)
 				{
 					//Update
-					$database->setQuery("UPDATE #__sdi_translation SET title='".addslashes($_POST['title_'.$lang->code])."', updated='".$_POST['updated']."', updatedby=".$_POST['updatedby']." WHERE element_guid='".$rowCodeValue->guid."' AND language_id=".$lang->id);
+					$database->setQuery("UPDATE #__sdi_translation SET title='".addslashes(trim($_POST['title_'.$lang->code]))."', updated='".$_POST['updated']."', updatedby=".$_POST['updatedby']." WHERE element_guid='".$rowCodeValue->guid."' AND language_id=".$lang->id);
 					if (!$database->query())
 						{	
 							$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 							return false;
 						}
-					$database->setQuery("UPDATE #__sdi_translation SET content='".addslashes($_POST['content_'.$lang->code])."', updated='".$_POST['updated']."', updatedby=".$_POST['updatedby']." WHERE element_guid='".$rowCodeValue->guid."' AND language_id=".$lang->id);
+					$database->setQuery("UPDATE #__sdi_translation SET content='".addslashes(trim($_POST['content_'.$lang->code]))."', updated='".$_POST['updated']."', updatedby=".$_POST['updatedby']." WHERE element_guid='".$rowCodeValue->guid."' AND language_id=".$lang->id);
 					if (!$database->query())
 						{	
 							$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -487,7 +487,7 @@ class ADMIN_codevalue {
 				else
 				{
 					// Create
-					$database->setQuery("INSERT INTO #__sdi_translation (element_guid, language_id, title, content, created, createdby) VALUES ('".$rowCodeValue->guid."', ".$lang->id.", '".addslashes($_POST['title_'.$lang->code])."', '".addslashes($_POST['content_'.$lang->code])."', '".date ("Y-m-d H:i:s")."', ".$user->id.")");
+					$database->setQuery("INSERT INTO #__sdi_translation (element_guid, language_id, title, content, created, createdby) VALUES ('".$rowCodeValue->guid."', ".$lang->id.", '".addslashes(trim($_POST['title_'.$lang->code]))."', '".addslashes(trim($_POST['content_'.$lang->code]))."', '".date ("Y-m-d H:i:s")."', ".$user->id.")");
 					if (!$database->query())
 					{	
 						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");

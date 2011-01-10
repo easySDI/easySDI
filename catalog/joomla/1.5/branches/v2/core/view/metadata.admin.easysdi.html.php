@@ -688,7 +688,7 @@ class HTML_metadata {
 					 * COMPREHENSION DU MODELE
 					 * La relation vers l'attribut n'a jamais de code ISO.
 					 */  
-					//echo "----------- On traite ".$child->attribute_isocode." -----------<br>";
+					//echo "----------- On traite ".$child->attribute_isocode." [".$child->attribute_type."] -----------<br>";
 				
 					// Construction du master qui permet d'ajouter des occurences de la relation.
 					// Le master contient les donn�es de la premi�re occurence.
@@ -820,13 +820,15 @@ class HTML_metadata {
 								//echo "Recherche de gco:CharacterString dans ".$attributeScope->nodeName."<br>";
 								//$node = $xpathResults->query($child->attribute_isocode."/".$type_isocode, $attributeScope);
 								$node = $xpathResults->query("gco:CharacterString", $attributeScope);
+								//echo "Trouve ".$node->length."<br>";
 											 	
 								if ($node->length>0)
 									$nodeValue = html_Metadata::cleanText($node->item($pos)->nodeValue);
 								else
 									$nodeValue="";
 								//echo "Trouve ".$nodeValue."<br>";
-								//echo "Valeur en 0: ".$nodeValue."<br>";
+								//echo "Valeur en 0: ".$node->item($pos)->nodeValue."<br>";
+								//print_r($node->item($pos)->nodeValue); echo "<br>";
 									
 								// R�cup�ration de la valeur par d�faut, s'il y a lieu
 								/*if ($child->attribute_default <> "" and $nodeValue == "")
@@ -870,7 +872,7 @@ class HTML_metadata {
 													if ($row->defaultlang)
 													{
 														$langNode = $xpathResults->query("gco:CharacterString", $currentScope);
-														//echo "2) Il y a ".$langNode->length." occurences de gco:CharacterString dans ".$currentScope->nodeName."<br>";
+														//echo "2a) Il y a ".$langNode->length." occurences de gco:CharacterString dans ".$currentScope->nodeName."<br>";
 														if ($langNode->length > 0)
 															$nodeValue = html_Metadata::cleanText($langNode->item(0)->nodeValue);
 														else
@@ -887,7 +889,7 @@ class HTML_metadata {
 														//echo $row->language."<br>";
 														//$LocLangName = $LocName."-gmd_LocalisedCharacterString-".$row->code_easysdi."__1";
 														$langNode = $xpathResults->query("gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString"."[@locale='#".$row->code."']", $currentScope);
-														//echo "2) Il y a ".$langNode->length." occurences de gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString dans ".$currentScope->nodeName."<br>";
+														//echo "2b) Il y a ".$langNode->length." occurences de gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString dans ".$currentScope->nodeName."<br>";
 														if ($langNode->length > 0)
 															$nodeValue = html_Metadata::cleanText($langNode->item(0)->nodeValue);
 														else
@@ -1661,7 +1663,14 @@ class HTML_metadata {
 										 		if ($node->length > 0)
 										 		{
 										 			// Chercher le titre associ� au texte localis� souhait�, ou s'il n'y a pas de titre le contenu
-													$query = "SELECT t.title, t.content, c.guid FROM #__sdi_codevalue c, #__sdi_translation t, #__sdi_language l, #__sdi_list_codelang cl WHERE c.guid=t.element_guid AND t.language_id=l.id AND l.codelang_id=cl.id and cl.code='".$language->_lang."' AND t.content = '".html_Metadata::cleanText($node->item(0)->nodeValue)."'"." ORDER BY c.ordering";
+													$query = "SELECT t.title, t.content, c.guid 
+															  FROM #__sdi_codevalue c, #__sdi_translation t, #__sdi_language l, #__sdi_list_codelang cl 
+															  WHERE c.guid=t.element_guid 
+															        AND t.language_id=l.id 
+															        AND l.codelang_id=cl.id 
+															        AND cl.code='".$language->_lang."' 
+															        AND t.content = '".html_Metadata::cleanText($node->item(0)->nodeValue)."'"." 
+															        ORDER BY c.ordering";
 													$database->setQuery( $query );
 													//echo $database->getQuery()."<br>";
 													//$cont_guid = $database->loadResult();
@@ -3140,7 +3149,7 @@ class HTML_metadata {
 								switch ($child->rendertype_id)
 								{
 									default:
-										// Traitement sp�cifique aux listes
+										// Traitement spécifique aux listes
 										//echo $ancestorFieldsetName." - ".$parentName." - ".$child->attribute_isocode. " (1)<br>";					
 										// Traitement des enfants de type list
 										$content = array();

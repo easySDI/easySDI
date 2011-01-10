@@ -18,42 +18,45 @@
 defined('_JEXEC') or die('Restricted access');
 
 ?>
-<script type="text/javascript">
-	function submitbutton(pressbutton) 
-	{
-		var form = document.adminForm;
-		if (pressbutton != 'saveApplication' && pressbutton != 'applyApplication') {
-			submitform( pressbutton );
-			return;
-		}
-
-		// do field validation
-		if (form.name.value == "") 
-		{
-			alert( "<?php echo JText::_( 'CATALOG_APPLICATION_SUBMIT_NONAME', true ); ?>" );
-		}
-		else if (form.windowname.value == "") 
-		{
-			alert( "<?php echo JText::_( 'CATALOG_APPLICATION_SUBMIT_NOWINDOWNAME', true ); ?>" );
-		}
-		else if (form.url.value == "") 
-		{
-		alert( "<?php echo JText::_( 'CATALOG_APPLICATION_SUBMIT_NOURL', true ); ?>" );
-		} 
-		else 
-		{
-			submitform( pressbutton );
-		}
-	}
-</script>
-
-<?php 
+		<script type="text/javascript">
+			function submitbutton(pressbutton) 
+			{
+				var form = document.adminForm;
+				if (pressbutton != 'saveApplication' && pressbutton != 'applyApplication') {
+					submitform( pressbutton );
+					return;
+				}
+				console.log(form.name.value);
+				// do field validation
+				if (form.name.value == "") 
+				{
+					alert( "<?php echo JText::_( 'CATALOG_APPLICATION_SUBMIT_NONAME', true ); ?>" );
+				}
+				else if (form.windowname.value == "") 
+				{
+					alert( "<?php echo JText::_( 'CATALOG_APPLICATION_SUBMIT_NOWINDOWNAME', true ); ?>" );
+				}
+				else if (form.url.value == "") 
+				{
+				alert( "<?php echo JText::_( 'CATALOG_APPLICATION_SUBMIT_NOURL', true ); ?>" );
+				} 
+				else 
+				{
+					submitform( pressbutton );
+				}
+			}
+		</script>
+		
+		<?php 
+		
 class ADMIN_application {
 	function listApplication($option)
 	{
 		global  $mainframe;
 		$db =& JFactory::getDBO(); 
 		$filter	= null;
+		
+		$object_id = JRequest::getVar ('object_id');
 		
 		$context	= $option.'.listApplication';
 		$limit		= $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
@@ -89,9 +92,9 @@ class ADMIN_application {
 		$where = array();
 		
 		// Build the where clause of the content record query
-		$where = (count($where) ? ' WHERE '.implode(' AND ', $where) : '');
+		$where = (count($where) ? ' AND '.implode(' AND ', $where) : '');
 		
-		$query = "SELECT COUNT(*) FROM #__sdi_application";					
+		$query = "SELECT COUNT(*) FROM #__sdi_application WHERE object_id=".$object_id;					
 		$query .= $where;
 		$db->setQuery( $query );
 		$total = $db->loadResult();
@@ -101,7 +104,7 @@ class ADMIN_application {
 		$pagination = new JPagination($total, $limitstart, $limit);
 
 		// Recherche des enregistrements selon les limites
-		$query = "SELECT * FROM #__sdi_application";
+		$query = "SELECT * FROM #__sdi_application WHERE object_id=".$object_id;
 		$query .= $where;
 		$query .= $orderby;
 		$db->setQuery( $query, $pagination->limitstart, $pagination->limit);
@@ -112,7 +115,7 @@ class ADMIN_application {
 			return false;
 		}		
 		
-		HTML_application::listApplication(&$rows, $pagination, $option,  $filter_order_Dir, $filter_order);
+		HTML_application::listApplication(&$rows, $pagination, $option,  $filter_order_Dir, $filter_order, $object_id);
 	}
 	
 	function editApplication($id, $option)
@@ -123,6 +126,8 @@ class ADMIN_application {
 		$rowApplication = new application( $database );
 		$rowApplication->load( $id );
 		
+		$object_id = JRequest::getVar ('object_id');
+		
 		/*
 		 * If the item is checked out we cannot edit it... unless it was checked
 		 * out by the current user.
@@ -130,7 +135,7 @@ class ADMIN_application {
 		if ( JTable::isCheckedOut($user->get('id'), $rowApplication->checked_out ))
 		{
 			$msg = JText::sprintf('DESCBEINGEDITTED', JText::_('The item'), $rowApplication->name);
-			$mainframe->redirect("index.php?option=$option&task=listApplication", $msg );
+			$mainframe->redirect("index.php?option=$option&task=listApplication&object_id=".$object_id, $msg );
 		}
 
 		$rowApplication->checkout($user->get('id'));
@@ -155,7 +160,7 @@ class ADMIN_application {
 			} 
 		}
 		
-		HTML_application::editApplication($rowApplication, $fieldsLength, $option);
+		HTML_application::editApplication($rowApplication, $fieldsLength, $object_id, $option);
 	}
 	
 	function saveApplication($option)
@@ -165,12 +170,14 @@ class ADMIN_application {
 		$database=& JFactory::getDBO(); 
 		$user =& JFactory::getUser();
 		
+		$object_id = JRequest::getVar ('object_id');
+		
 		$rowApplication= new application( $database );
 		
 		if (!$rowApplication->bind( $_POST )) {
 		
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");						
-			$mainframe->redirect("index.php?option=$option&task=listApplication" );
+			$mainframe->redirect("index.php?option=$option&task=listApplication&object_id=".$object_id );
 			exit();
 		}		
 		
@@ -181,7 +188,7 @@ class ADMIN_application {
 		
 		if (!$rowApplication->store(false)) {			
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=listApplication" );
+			$mainframe->redirect("index.php?option=$option&task=listApplication&object_id=".$object_id );
 			exit();
 		}
 		
@@ -208,9 +215,11 @@ class ADMIN_application {
 		global $mainframe;
 		$database=& JFactory::getDBO(); 
 
+		$object_id = JRequest::getVar ('object_id');
+		
 		if (!is_array( $id ) || count( $id ) < 1) {
 			$mainframe->enqueueMessage(JText::_('CATALOG_APPLICATION_SUBMIT_NOSELECTEDAPPLICATION'),"error");
-			$mainframe->redirect("index.php?option=$option&task=listApplication" );
+			$mainframe->redirect("index.php?option=$option&task=listApplication&object_id=".$object_id );
 			exit;
 		}
 		foreach( $id as $application_id )
@@ -220,7 +229,7 @@ class ADMIN_application {
 			
 			if (!$rowApplication->delete()) {			
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=listApplication" );
+				$mainframe->redirect("index.php?option=$option&task=listApplication&object_id=".$object_id );
 				exit();
 			}
 		}
@@ -236,12 +245,36 @@ class ADMIN_application {
 		// Initialize variables
 		$database = & JFactory::getDBO();
 
+		$object_id = JRequest::getVar ('object_id');
+		
 		// Check the attribute in if checked out
 		$rowApplication= new application( $database );
 		$rowApplication->bind(JRequest::get('post'));
 		$rowApplication->checkin();
 
-		$mainframe->redirect("index.php?option=$option&task=listApplication" );
+		$mainframe->redirect("index.php?option=$option&task=listApplication&object_id=".$object_id );
+	}
+	
+	/**
+	* Back
+	*/
+	function backApplication($option)
+	{
+		global $mainframe;
+
+		// Initialize variables
+		$database = & JFactory::getDBO();
+		$object_id = JRequest::getVar('object_id',0);
+		
+		// Récupérer les états du listing des objets, pour éviter que les états des applications soient utilisés
+		// alors qu'on change de contexte
+		JRequest::setVar('filter_order', $mainframe->getUserState($option."listObject.filter_order"));
+		JRequest::setVar('filter_order_Dir', $mainframe->getUserState($option."listObject.filter_order_Dir"));
+		
+		// Check the object in if checked out
+		$rowObject = new object( $database );
+		$rowObject->load($object_id);
+		$rowObject->checkin();
 	}
 	
 	function saveOrder($option)
@@ -251,7 +284,9 @@ class ADMIN_application {
 		// Initialize variables
 		$db			= & JFactory::getDBO();
 
-		print_r(JRequest::get());echo "<br>"; 
+		$object_id = JRequest::getVar ('object_id');
+		
+		//print_r(JRequest::get());echo "<br>"; 
 		$cid		= JRequest::getVar( 'cid', array(0));
 		$order		= JRequest::getVar( 'ordering', array (0));
 		$total		= count($cid);
@@ -271,17 +306,35 @@ class ADMIN_application {
 				$row->ordering = $order[$i];
 				if (!$row->store()) {
 					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-					$mainframe->redirect("index.php?option=$option&task=listApplication" );
+					$mainframe->redirect("index.php?option=$option&task=listApplication&object_id=".$object_id );
 					exit();
 				}
+				
+				// remember to updateOrder this group
+				$condition = 'object_id = '.(int) $object_id;
+				$found = false;
+				foreach ($conditions as $cond)
+					if ($cond[1] == $condition) {
+						$found = true;
+						break;
+					}
+				if (!$found)
+					$conditions[] = array ($row->id, $condition);
 			}
+		}
+		
+		// execute updateOrder for each group
+		foreach ($conditions as $cond)
+		{
+			$row->load($cond[0]);
+			$row->reorder($cond[1]);
 		}
 		
 		$cache = & JFactory::getCache('com_easysdi_catalog');
 		$cache->clean();
 
 		$mainframe->enqueueMessage(JText::_('New ordering saved'),"SUCCESS");
-		$mainframe->redirect("index.php?option=$option&task=listApplication" );
+		$mainframe->redirect("index.php?option=$option&task=listApplication&object_id=".$object_id );
 		exit();
 	}
 	
@@ -294,17 +347,19 @@ class ADMIN_application {
 
 		$cid	= JRequest::getVar( 'cid', array());
 
+		$object_id = JRequest::getVar ('object_id');
+		
 		if (isset( $cid[0] ))
 		{
 			$row = new application( $db );
 			$row->load( (int) $cid[0] );
-			$row->move($direction);
-
+			$row->move($direction, 'object_id = '.(int) $object_id);
+			
 			$cache = & JFactory::getCache('com_easysdi_catalog');
 			$cache->clean();
 		}
 
-		$mainframe->redirect("index.php?option=$option&task=listApplication" );
+		$mainframe->redirect("index.php?option=$option&task=listApplication&object_id=".$object_id );
 		exit();
 	}
 }

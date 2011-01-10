@@ -1028,6 +1028,31 @@ function com_install(){
 			return false;
 		}
 		
+		$query="CREATE TABLE IF NOT EXISTS `#__sdi_application` (
+				  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+				  `guid` varchar(36) NOT NULL,
+				  `code` varchar(20) DEFAULT NULL,
+				  `name` varchar(50) NOT NULL,
+				  `description` varchar(100) DEFAULT NULL,
+				  `created` datetime NOT NULL,
+				  `updated` datetime DEFAULT NULL,
+				  `createdby` bigint(20) DEFAULT NULL,
+				  `updatedby` bigint(20) DEFAULT NULL,
+				  `ordering` bigint(20) NOT NULL DEFAULT '0',
+				  `windowname` varchar(50) NOT NULL,
+				  `url` varchar(200) NOT NULL,
+				  `options` varchar(200) NOT NULL,
+				  `object_id` bigint(20) NOT NULL,
+				  `checked_out` bigint(20) NOT NULL DEFAULT '0',
+				  `checked_out_time` datetime DEFAULT NULL,
+				  PRIMARY KEY (`id`),
+				  UNIQUE KEY `guid` (`guid`),
+  				  KEY `object_id` (`object_id`)
+				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
+		$db->setQuery( $query);	
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
 		
 		
 		/*
@@ -1267,6 +1292,15 @@ function com_install(){
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
 		}
+		
+		$query="ALTER TABLE `#__sdi_application`
+  				ADD CONSTRAINT `#__sdi_application_ibfk_1` FOREIGN KEY (`object_id`) REFERENCES `#__sdi_object` (`id`);
+				";
+		$db->setQuery( $query);	
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+		
 		
 		/*
 		$query="ALTER TABLE `#__sdi_history_assign`

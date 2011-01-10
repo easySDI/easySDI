@@ -17,6 +17,39 @@
 
 defined('_JEXEC') or die('Restricted access');
 
+
+?>
+		<script type="text/javascript">
+			function submitbutton(pressbutton) 
+			{
+				var form = document.adminForm;
+				if (pressbutton != 'saveApplication' && pressbutton != 'applyApplication') {
+					submitform( pressbutton );
+					return;
+				}
+				console.log(form.name.value);
+				// do field validation
+				if (form.name.value == "") 
+				{
+					alert( "<?php echo JText::_( 'CATALOG_APPLICATION_SUBMIT_NONAME', true ); ?>" );
+				}
+				else if (form.windowname.value == "") 
+				{
+					alert( "<?php echo JText::_( 'CATALOG_APPLICATION_SUBMIT_NOWINDOWNAME', true ); ?>" );
+				}
+				else if (form.url.value == "") 
+				{
+				alert( "<?php echo JText::_( 'CATALOG_APPLICATION_SUBMIT_NOURL', true ); ?>" );
+				} 
+				else 
+				{
+					submitform( pressbutton );
+				}
+			}
+		</script>
+		
+		<?php 
+		
 class SITE_application 
 {
 	function listApplication($object_id, $option) {
@@ -54,7 +87,6 @@ class SITE_application
 		
 		$query = "	SELECT COUNT(*) 
 					FROM #__sdi_application a 
-					INNER JOIN #__sdi_object o ON o.id=a.object_id 
 					WHERE a.object_id=".$object_id;
 		$db->setQuery( $query );
 		$total = $db->loadResult();
@@ -66,7 +98,6 @@ class SITE_application
 		// Recherche des enregistrements selon les limites
 		$query = "	SELECT 	* 
 					FROM #__sdi_application a 
-					INNER JOIN #__sdi_object o ON o.id=a.object_id 
 					WHERE a.object_id=".$object_id;
 		$query .= $orderby;
 		
@@ -87,16 +118,15 @@ class SITE_application
 		HTML_application::listApplication($pagination, $rows, $object_id, $rowObject->name, $option, $lists);
 	}
 
-	function editApplication( $id, $object_id, $option ) {
-		global  $mainframe;
-		$user = JFactory::getUser();
-		$database =& JFactory::getDBO();
+	function editApplication($id, $option)
+	{
+		$database =& JFactory::getDBO(); 
+		$user = & JFactory::getUser();
 		
-		$rowObject = new object( $database );
-		$rowObject->load( $object_id );
-
-		$rowApplication = new metadata( $database );
+		$rowApplication = new application( $database );
 		$rowApplication->load( $id );
+		
+		$object_id = JRequest::getVar ('object_id');
 		
 		/*
 		 * If the item is checked out we cannot edit it... unless it was checked
@@ -105,8 +135,7 @@ class SITE_application
 		if ( JTable::isCheckedOut($user->get('id'), $rowApplication->checked_out ))
 		{
 			$msg = JText::sprintf('DESCBEINGEDITTED', JText::_('The item'), $rowApplication->name);
-			//$mainframe->redirect("index.php?option=$option&task=listObject", $msg );
-			$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listApplication&object_id='.$object_id, false ), $msg);
+			$mainframe->redirect("index.php?option=$option&task=listApplication&object_id=".$object_id, $msg );
 		}
 
 		$rowApplication->checkout($user->get('id'));
@@ -117,7 +146,7 @@ class SITE_application
 		
 		// Parcours des champs pour extraire les informations utiles:
 		// - le nom du champ
-		// - sa longueur en caractères
+		// - sa longueur en caract�res
 		$fieldsLength = array();
 		foreach($tableFields as $table)
 		{
@@ -131,14 +160,9 @@ class SITE_application
 			} 
 		}
 		
-		// Generate automatic guid for application
-		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
-		if ($rowApplication->id == 0)
-			$rowApplication->guid = helper_easysdi::getUniqueId();
-		
-		HTML_application::editApplication($rowObject, $rowApplication, $id, $object_id, $option );
+		HTML_application::editApplication($rowApplication, $fieldsLength, $object_id, $option);
 	}
-
+	
 	function saveApplication($option){
 		global  $mainframe;
 		$database=& JFactory::getDBO();

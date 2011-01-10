@@ -584,6 +584,7 @@
 	function createSearchField(id, objecttype_id, label, mandatory, clone, master, min, max, value, dis, maxL, tip, dismissDelay, regex, mandatoryMsg, regexMsg)
 	{
 		optional = !mandatory;
+		var size = 20;
 		
 		//if (!clone) optional=true;
 		if (clone) optional=true;
@@ -610,7 +611,7 @@
 	            {name: 'guid', mapping: 'guid'}
 	        ]),
 
-	        baseParams: {limit:20, forumId: 4, objecttype_id: objecttype_id}
+	        baseParams: {limit:size, forumId: 4, objecttype_id: objecttype_id}
 	    });
 	   
 	    var resultTpl = new Ext.XTemplate(
@@ -643,7 +644,8 @@
           	typeAhead: false,
 	        loadingText: 'Searching...',
 	        width: 570,
-	        pageSize:20,
+	        pageSize:size,
+	        mode:'remote',
 	        hideTrigger:true,
 	        tpl: resultTpl,
 	        itemSelector: 'div.search-item',

@@ -42,7 +42,7 @@ class ADMIN_object {
 		$context	= 'listObject';
 		$limit		= $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
 		$limitstart	= $mainframe->getUserStateFromRequest($context.'limitstart', 'limitstart', 0, 'int');
-
+	
 		// In case limit has been changed, adjust limitstart accordingly
 		$limitstart = ( $limit != 0 ? (floor($limitstart / $limit) * $limit) : 0 );
 
@@ -110,9 +110,12 @@ class ADMIN_object {
 		// Build the where clause of the content record query
 		$where = (count($where) ? implode(' AND ', $where) : '');
 		
-		$query = "SELECT COUNT(*) FROM #__sdi_object o INNER JOIN #__sdi_objecttype ot ON o.objecttype_id=ot.id where ot.predefined=false";					
+		$query = "	SELECT COUNT(*) 
+					FROM #__sdi_object o 
+					INNER JOIN #__sdi_objecttype ot ON o.objecttype_id=ot.id
+					WHERE ot.predefined=false ";					
 		if ($where)
-			$query .= " WHERE ".$where;
+			$query .= " AND ".$where;
 		$db->setQuery( $query );
 		$total = $db->loadResult();
 		
@@ -482,12 +485,14 @@ class ADMIN_object {
 			exit();
 		}
 
-		// G�n�rer un guid pour l'objet
+		// Générer un guid pour l'objet
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 		if ($rowObject->guid == null)
+		{
 			$rowObject->guid = helper_easysdi::getUniqueId();
-		
-		// Si l'objet n'existe pas encore, cr�er une version et une m�tadonn�e
+		}
+			
+		// Si l'objet n'existe pas encore, créer une version et une métadonnée
 		if ($rowObject->id == 0)
 		{
 			// R�cup�rer l'attribut qui correspond au stockage de l'id
@@ -537,12 +542,17 @@ class ADMIN_object {
 			
 			if ($inserted <> 1)
 			{
-				$mainframe->enqueueMessage('Error on metadata insert',"ERROR");
+				//$mainframe->enqueueMessage(htmlspecialchars($xmlstr),"INFO");
+				//$mainframe->enqueueMessage($catalogUrlBase,"INFO");
+				//$mainframe->enqueueMessage(uniqid(),"INFO");
+
+				//$mainframe->enqueueMessage(htmlspecialchars($result),"INFO");
+				//$mainframe->enqueueMessage('Error on metadata insert',"ERROR");
 				$mainframe->redirect("index.php?option=$option&task=listObject" );
 				exit();
 			}
 		
-			// Cr�er l'entr�e de m�tadonn�e dans la base
+			// Créer l'entrée de métadonnée dans la base
 			$rowMetadata = new metadata($database);
 			$rowMetadata->guid = $_POST['metadata_guid'];
 			$rowMetadata->name = $_POST['metadata_guid'];

@@ -567,7 +567,91 @@ switch($task){
 			$object_id = JRequest::getVar ('object_id');
 			SITE_objectversion::listObjectVersion($object_id, $option);
 			break;
+
 			
+		// External applications
+		case "listApplication":
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'application.easysdi.class.php');
+			require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'application.site.easysdi.html.php');
+			require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'application.site.easysdi.php');
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'object.easysdi.class.php');
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'metadata.admin.easysdi.html.php');
+			$object_id = JRequest::getVar ('object_id');
+			SITE_application::listApplication($object_id, $option);
+			break;
+		case "newApplication":
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'application.easysdi.class.php');
+			require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'application.site.easysdi.html.php');
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'application.admin.easysdi.php');
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'object.easysdi.class.php');
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'metadata.admin.easysdi.html.php');
+			JHTML::script('catalog.js', 'administrator/components/com_easysdi_catalog/js/');
+			$object_id = JRequest::getVar ('object_id');
+			ADMIN_application::editApplication($cid[0], $option);
+		break;
+		case "editApplication":
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'application.easysdi.class.php');
+			require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'application.site.easysdi.html.php');
+			require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'application.site.easysdi.php');
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'object.easysdi.class.php');
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'metadata.admin.easysdi.html.php');
+			JHTML::script('catalog.js', 'administrator/components/com_easysdi_catalog/js/');
+			$object_id = JRequest::getVar ('object_id');
+			SITE_application::editApplication($cid[0], $option);
+		break;
+		case "saveApplication":
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'application.easysdi.class.php');
+			require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'application.site.easysdi.html.php');
+			require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'application.site.easysdi.php');
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'application.admin.easysdi.php');
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'object.easysdi.class.php');
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'metadata.admin.easysdi.html.php');
+			$object_id = JRequest::getVar ('object_id');
+			ADMIN_application::saveApplication($option);
+			SITE_application::listApplication($object_id, $option);
+			break;
+		case "deleteApplication":
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'application.easysdi.class.php');
+			require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'application.site.easysdi.html.php');
+			require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'application.site.easysdi.php');
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'application.admin.easysdi.php');
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'object.easysdi.class.php');
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'metadata.admin.easysdi.html.php');
+			$object_id = JRequest::getVar ('object_id');
+			ADMIN_application::removeApplication($cid,$option);
+			SITE_application::listApplication($object_id, $option);
+			break;
+		case "cancelApplication":
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'application.easysdi.class.php');
+			require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'application.site.easysdi.html.php');
+			require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'application.site.easysdi.php');
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'object.easysdi.class.php');
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'metadata.admin.easysdi.html.php');
+			$object_id = JRequest::getVar ('object_id');
+			SITE_application::cancelApplication($cid, $option);
+			
+			SITE_application::listApplication($object_id, $option);
+			break;
+		case 'backApplication':
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'application.easysdi.class.php');
+			require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'application.site.easysdi.html.php');
+			require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'application.site.easysdi.php');
+			
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'object.easysdi.class.php');
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'objecttype.easysdi.class.php');
+			require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'object.site.easysdi.html.php');
+			require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'object.site.easysdi.php');
+			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.usermanager.class.php');
+			
+			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'model'.DS.'account.easysdi.class.php');
+			
+			JHTML::script('catalog.js', 'administrator/components/com_easysdi_catalog/js/');
+		
+			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
+			
+			SITE_object::listObject($option);
+			break;
+		
 		default:
 
 		case "listCatalogContent":			

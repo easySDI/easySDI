@@ -133,7 +133,7 @@ function listProfile(&$rows, $page, $option,  $filter_order_Dir, $filter_order)
 					<td><?php echo JHTML::_("select.genericlist",$classes, 'class_id', 'size="1" class="inputbox" onchange="javascript:submitform(\'editProfile\');"', 'value', 'text', $classid ); ?></td>							
 				</tr>
 				<tr>
-					<td><?php echo JText::_("CATALOG_METADATAID"); ?></td>
+					<td><?php echo JText::_("CATALOG_PROFILE_METADATAID"); ?></td>
 					<td><?php echo JHTML::_("select.genericlist",$metadataids, 'metadataid', 'size="1" class="inputbox"', 'value', 'text', $row->metadataid ); ?></td>							
 				</tr>
 				<!-- <tr>

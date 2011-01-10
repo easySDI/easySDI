@@ -19,7 +19,7 @@ defined('_JEXEC') or die('Restricted access');
 
 
 class HTML_application {
-function listApplication(&$rows, $page, $option,  $filter_order_Dir, $filter_order)
+function listApplication(&$rows, $page, $option,  $filter_order_Dir, $filter_order, $object_id)
 	{
 		$database =& JFactory::getDBO();
 		
@@ -84,7 +84,7 @@ function listApplication(&$rows, $page, $option,  $filter_order_Dir, $filter_ord
 					}?>
 					<input type="text" id="or<?php echo $i;?>" name="ordering[]" size="5" <?php echo $disabled; ?> value="<?php echo $row->ordering;?>" class="text_area" style="text-align: center" />
 	            </td>
-				 <?php $link =  "index.php?option=$option&amp;task=editApplication&cid[]=$row->id";?>
+				 <?php $link =  "index.php?option=$option&amp;task=editApplication&cid[]=$row->id&object_id=$object_id";?>
 				<td><a href="<?php echo $link;?>"><?php echo $row->name; ?></a></td>
 				<td><?php echo $row->description; ?></td>
 				<td><?php echo $row->windowname; ?></td>
@@ -99,7 +99,7 @@ function listApplication(&$rows, $page, $option,  $filter_order_Dir, $filter_ord
 		</tbody>
 		<tfoot>
 		<tr>	
-		<td colspan="8"><?php echo $page->getListFooter(); ?></td>
+		<td colspan="9"><?php echo $page->getListFooter(); ?></td>
 		</tr>
 		</tfoot>
 		</table>
@@ -109,11 +109,13 @@ function listApplication(&$rows, $page, $option,  $filter_order_Dir, $filter_ord
 	  	<input type="hidden" name="hidemainmenu" value="0">
 	  	<input type="hidden" name="filter_order_Dir" value="<?php echo $filter_order_Dir; ?>" />
 	  	<input type="hidden" name="filter_order" value="<?php echo $filter_order; ?>" />
+	  	<input type="hidden" name="object_id" value="<?php echo $object_id; ?>" />
+	  	
 	  </form>
 <?php
 	}
 	
-	function editApplication(&$row, $fieldsLength, $languages, $labels, $option)
+	function editApplication(&$row, $fieldsLength, $object_id, $option)
 	{
 		global  $mainframe;
 		
@@ -123,8 +125,8 @@ function listApplication(&$rows, $page, $option,  $filter_order_Dir, $filter_ord
 		<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
 			<table border="0" cellpadding="3" cellspacing="0">	
 				<tr>
-					<td width=150><?php echo JText::_("CORE_NAME"); ?></td>
-					<td><input size="50" type="text" name ="name" value="<?php echo $row->name?>" maxlength="<?php echo $fieldsLength['name'];?>"> </td>							
+					<td width=150><?php echo JText::_("CATALOG_APPLICATION_NAME"); ?></td>
+					<td><input size="50" type="text" name ="name" value="<?php echo htmlspecialchars($row->name)?>" maxlength="<?php echo $fieldsLength['name'];?>"> </td>							
 				</tr>
 				<tr>
 					<td><?php echo JText::_("CORE_DESCRIPTION"); ?></td>
@@ -132,15 +134,15 @@ function listApplication(&$rows, $page, $option,  $filter_order_Dir, $filter_ord
 				</tr>
 				<tr>
 					<td width=150><?php echo JText::_("CATALOG_APPLICATION_WINDOWNAME"); ?></td>
-					<td><input size="50" type="text" name ="windowname" value="<?php echo $row->windowname?>" maxlength="<?php echo $fieldsLength['windowname'];?>"> </td>							
+					<td><input size="50" type="text" name ="windowname" value="<?php echo htmlspecialchars($row->windowname)?>" maxlength="<?php echo $fieldsLength['windowname'];?>"> </td>							
 				</tr>
 				<tr>
 					<td width=150><?php echo JText::_("CATALOG_APPLICATION_URL"); ?></td>
-					<td><input size="200" type="text" name ="url" value="<?php echo $row->url?>" maxlength="<?php echo $fieldsLength['url'];?>"> </td>							
+					<td><input size="200" type="text" name ="url" value="<?php echo htmlspecialchars($row->url)?>" maxlength="<?php echo $fieldsLength['url'];?>"> </td>							
 				</tr>
 				<tr>
 					<td width=150><?php echo JText::_("CATALOG_APPLICATION_OPTIONS"); ?></td>
-					<td><input size="200" type="text" name ="options" value="<?php echo $row->options?>" maxlength="<?php echo $fieldsLength['options'];?>"> </td>							
+					<td><input size="200" type="text" name ="options" value="<?php echo htmlspecialchars($row->options)?>" maxlength="<?php echo $fieldsLength['options'];?>"> </td>							
 				</tr>
 			</table>			
 			<br></br>
@@ -200,6 +202,8 @@ if ($row->updated)
 			<input type="hidden" name="updated" value="<?php echo ($row->created) ? date ("Y-m-d H:i:s") :  ''; ?>" />
 			<input type="hidden" name="updatedby" value="<?php echo ($row->createdby)? $user->id : ''; ?>" /> 
 			
+			<input type="hidden" name="object_id" value="<?php echo $object_id; ?>" />
+
 			<input type="hidden" name="option" value="<?php echo $option; ?>" />
 			<input type="hidden" name="id" value="<?php echo $row->id?>" />
 			<input type="hidden" name="task" value="" />

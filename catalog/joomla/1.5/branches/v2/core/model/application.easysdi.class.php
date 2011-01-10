@@ -33,6 +33,7 @@ class application extends JTable
 	var $windowname=null;
 	var $url=null;
 	var $options=null;
+	var $object_id=0;
 	var $checked_out=null;
 	var $checked_out_time=null;
 	

@@ -415,10 +415,14 @@ if ($rowObject->updated)
 				<div class="logo" id="emptyPicto"></div>
 				<div class="logo" id="emptyPicto"></div>
 				<div class="logo" id="emptyPicto"></div>
+				<div class="logo" id="emptyPicto"></div>
 				<?php 
 			} 
 			else 
 			{
+				?>
+				<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_OBJECT_MANAGEAPPLICATION')); ?>" id="listApplication" onClick="window.open('<?php echo JRoute::_('index.php?option='.$option.'&task=listApplication&object_id='.$row->id); ?>', '_self');"></div>
+				<?php 
 				$objecttype = new objecttype($database);
 				$objecttype->load($row->objecttype_id);
 				

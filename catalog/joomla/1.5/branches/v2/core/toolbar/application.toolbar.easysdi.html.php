@@ -27,7 +27,7 @@ class TOOLBAR_application {
 		JToolBarHelper::deleteList( JText::_( 'CATALOG_APPLICATION_DELETE_CONFIRM_MSG'), 'removeApplication', JText::_( 'DELETE'));		
 		
 		JToolBarHelper::spacer();
-		JToolBarHelper::custom( 'cpanel', 'tool_f2.png', 'tool_f2.png', JTEXT::_("CATALOG_MENU_CPANEL"), false );
+		JToolBarHelper::custom( 'backApplication', 'back.png', 'back.png', JTEXT::_("CATALOG_MENU_BACK"), false );
 	}
 	function _EDIT() {
 		global $mainframe;

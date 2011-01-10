@@ -23,11 +23,11 @@ class reportEngine{
 		$user =& JFactory::getUser();
 		$database=& JFactory::getDBO();
 		
-		/* Début du code de génération du rapport */
+		/* Dï¿½but du code de gï¿½nï¿½ration du rapport */
 		$query="";
 		$results=array();
 		
-		// Récupération des paramètres, en minuscules (sauf metadata_guid[] qu'on ne touche pas)
+		// Rï¿½cupï¿½ration des paramï¿½tres, en minuscules (sauf metadata_guid[] qu'on ne touche pas)
 		$params = array();
 		$objecttype_code = strtolower(JRequest::getVar ('metadatatype', ''));
 		$params['metadatatype'] = $objecttype_code;
@@ -42,11 +42,11 @@ class reportEngine{
 		$lastVersion = strtolower(JRequest::getVar ('lastVersion', ''));
 		$params['lastVersion'] = $lastVersion;
 		
-		// Contrôler la validité de la requête avant de la passer plus loin
+		// Contrï¿½ler la validitï¿½ de la requï¿½te avant de la passer plus loin
 		if (!reportEngine::verifyRequest($params, $user))
 			exit;
 		
-		// Rassembler les guids de métadonnées indiqués en une string de la forme (guid1, guid2, guid3, ..., guidn)
+		// Rassembler les guids de mï¿½tadonnï¿½es indiquï¿½s en une string de la forme (guid1, guid2, guid3, ..., guidn)
 		$guids = "";
 		foreach ($metadata_guid as &$mg)
 		{
@@ -54,7 +54,7 @@ class reportEngine{
 		}
 		$guids = implode(",", $metadata_guid);
 		
-		// Récupérer tous les guids qui sont publics
+		// Rï¿½cupï¿½rer tous les guids qui sont publics
 		$query = "	SELECT m.guid as metadata_guid, o.id as object_id
 					FROM #__sdi_metadata m
 					INNER JOIN #__sdi_objectversion ov ON ov.metadata_id=m.id
@@ -64,21 +64,25 @@ class reportEngine{
 					WHERE v.code='public'
 				";
 
-		// Qui sont indiqués dans le paramètre metadata_guid
-		$query .= " AND m.guid IN (".$guids.")";
+		// Qui sont indiquÃ©s dans le paramÃ¨tre metadata_guid
+		if ($guids <> "")
+			$query .= " AND m.guid IN (-1)";
+		else
+			$query .= " AND m.guid IN (".$guids.")";
 		
-		// Qui sont du type indiqué dans le paramètre metadatatype
+		
+		// Qui sont du type indiquï¿½ dans le paramï¿½tre metadatatype
 		$query .= " AND ot.code = '".$objecttype_code."'";
 		$database->setQuery($query);
 		$results = $database->loadObjectList();
 		//echo $database->getQuery()."<br>";		
 		
-		// Si c'est la dernière version qui est demandée, il faut faire des traitements supplémentaires
+		// Si c'est la derniï¿½re version qui est demandï¿½e, il faut faire des traitements supplï¿½mentaires
 		if ($lastVersion == "yes")
 		{
 			foreach ($results as &$result)
 			{
-				// Pour chaque métadonnée qui a satisfait aux critères précédents, trouver sa dernière version
+				// Pour chaque mï¿½tadonnï¿½e qui a satisfait aux critï¿½res prï¿½cï¿½dents, trouver sa derniï¿½re version
 				$query = "SELECT m.guid as metadata_guid 
 									  FROM #__sdi_objectversion ov 
 									  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
@@ -104,25 +108,25 @@ class reportEngine{
 	
 			$filter = "<ogc:Filter xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:gml=\"http://www.opengis.net/gml\">".$filter."</ogc:Filter>";
 			
-			// Construire une requête Geonetwork GetRecords pour demander les métadonnées choisies pour le rapport
+			// Construire une requï¿½te Geonetwork GetRecords pour demander les mï¿½tadonnï¿½es choisies pour le rapport
 			$xmlBody = SITE_catalog::BuildCSWRequest(10, 1, "datasetcollection dataset application service", "full", "1.1.0", $filter, "title", "ASC");
 			
 			//echo htmlspecialchars($xmlBody);
 
-			// Envoi de la requête
+			// Envoi de la requï¿½te
 			$catalogUrlBase = config_easysdi::getValue("catalog_url");
 			$xmlResponse = ADMIN_metadata::CURLRequest("POST", $catalogUrlBase,$xmlBody);
 			$cswResults = DOMDocument::loadXML($xmlResponse);
 
 			//echo htmlspecialchars($cswResults->saveXML())."<hr>";
 			
-			// Traitement du retour CSW pour générer le rapport
+			// Traitement du retour CSW pour gï¿½nï¿½rer le rapport
 			if ($cswResults !=null and $cswResults !="")
 			{
-				// Contrôler si le XML ne contient pas une erreur
+				// Contrï¿½ler si le XML ne contient pas une erreur
 				if ($cswResults->childNodes->item(0)->nodeName == "ows:ExceptionReport")
 				{
-					// Retourner une erreur au format XML, formatée par un XSl
+					// Retourner une erreur au format XML, formatï¿½e par un XSl
 					$xmlError = new DomDocument();
 					$style = new DomDocument();
 					$xmlError->load(JPATH_COMPONENT_ADMINISTRATOR.DS.'xsl'.DS.'getreport'.DS.'OWSEXCEPTION.xml');
@@ -143,11 +147,11 @@ class reportEngine{
 				{
 					$myDoc= new DomDocument();
 					
-					// Noeud artificiel supérieur pour englober la métadonnée et les paramètres
+					// Noeud artificiel supï¿½rieur pour englober la mï¿½tadonnï¿½e et les paramï¿½tres
 					$XMLNewRoot = $myDoc->createElement("Metadata");
 					$myDoc->appendChild($XMLNewRoot);
 					
-					// Construire les paramètres
+					// Construire les paramï¿½tres
 					$rootList = $cswResults->getElementsByTagName("MD_Metadata");
 					foreach($rootList as $root)
 					{
@@ -158,6 +162,8 @@ class reportEngine{
 						}
 					}
 		
+					//$myDoc = displayManager::constructXML($cswResults, $database, JFactory::getLanguage(), $metadata_guid[0], true, null, null);
+					
 					//echo htmlspecialchars($myDoc->saveXML())."<hr>";
 
 					$style = new DomDocument();
@@ -181,7 +187,7 @@ class reportEngine{
 		}
 		else
 		{
-			// Retourner une erreur au format XML, formatée par un XSl
+			// Retourner une erreur au format XML, formatï¿½e par un XSl
 			$xmlError = new DomDocument();
 			$style = new DomDocument();
 			$xmlError->load(JPATH_COMPONENT_ADMINISTRATOR.DS.'xsl'.DS.'getreport'.DS.'NOMETADATA.xml');
@@ -232,7 +238,7 @@ class reportEngine{
 					//avoid JavaBrigde to fail
 					file_put_contents($fopfotmp, $file);
 					
-					//Génération du document PDF sous forme de fichier
+					//Gï¿½nï¿½ration du document PDF sous forme de fichier
 					$res = "";
 					//Url to the export pdf servlet
 					$url = $exportpdf_url."?cfg=fop.xml&fo=$tmp.fo&pdf=$tmp.pdf";
@@ -267,16 +273,16 @@ class reportEngine{
 	
 	/*
 	 * Nom: verifyRequest
-	 * But: Contrôler que la requête contient bien tous les paramètres requis et qu'ils ont les valeurs attendues
+	 * But: Contrï¿½ler que la requï¿½te contient bien tous les paramï¿½tres requis et qu'ils ont les valeurs attendues
 	 */
 	function verifyRequest($params, $user)
 	{
-		// Contrôler que tous les paramètres sont renseignés
+		// Contrï¿½ler que tous les paramï¿½tres sont renseignï¿½s
 		foreach ($params as $key => $param)
 		{
 			if ($param == '' or count($param) == 0)
 			{
-				// Retourner une erreur au format XML, formatée par un XSl
+				// Retourner une erreur au format XML, formatï¿½e par un XSl
 				$xmlError = new DomDocument();
 				$style = new DomDocument();
 				$xmlError->load(JPATH_COMPONENT_ADMINISTRATOR.DS.'xsl'.DS.'getreport'.DS.'MISSINGPARAMETER.xml');
@@ -293,11 +299,11 @@ class reportEngine{
 			}
 		}
 		
-		// Valeurs autorisées pour format: XML/CSV/RTF/XHTML/PDF
+		// Valeurs autorisï¿½es pour format: XML/CSV/RTF/XHTML/PDF
 		$formatValues = array ('xml', 'csv', 'rtf', 'xhtml', 'pdf');
 		if (array_search($params['format'], $formatValues) === false)
 		{
-			// Retourner une erreur au format XML, formatée par un XSl
+			// Retourner une erreur au format XML, formatï¿½e par un XSl
 			$xmlError = new DomDocument();
 			$style = new DomDocument();
 			$xmlError->load(JPATH_COMPONENT_ADMINISTRATOR.DS.'xsl'.DS.'getreport'.DS.'FORMATINVALID.xml');
@@ -312,11 +318,11 @@ class reportEngine{
 			return false;
 		}
 		
-		// Valeurs autorisées pour lastVersion: yes/no   
+		// Valeurs autorisï¿½es pour lastVersion: yes/no   
 		$lastversionValues = array ('yes', 'no');
 		if (array_search($params['lastVersion'], $lastversionValues) === false)
 		{
-			// Retourner une erreur au format XML, formatée par un XSl
+			// Retourner une erreur au format XML, formatï¿½e par un XSl
 			$xmlError = new DomDocument();
 			$style = new DomDocument();
 			$xmlError->load(JPATH_COMPONENT_ADMINISTRATOR.DS.'xsl'.DS.'getreport'.DS.'LASTVERSIONINVALID.xml');

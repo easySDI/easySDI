@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySDI, a solution to implement easily any spatial data infrastructure
- * Copyright (C) 2008 DEPTH SA, Chemin dâ¬"Arche 40b, CH-1870 Monthey, easysdi@depth.ch 
+ * Copyright (C) 2008 DEPTH SA, Chemin d'Arche 40b, CH-1870 Monthey, easysdi@depth.ch 
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -523,13 +523,14 @@ class SITE_catalog {
 									$cswAccountId="";
 									
 									$defaultLang=false;
+									
 									foreach($this->langList as $lang)
 									{
 										if ($lang->defaultlang)
-											if ($lang->defaultlang == $language->_lang)
-												$defaultLang=true;
+											if ($lang->code_easysdi == $language->_lang)
+												$defaultLang=true;											
 									}
-									
+											
 									foreach ($kwords as $word) 
 									{
 										if ($word <> "")
@@ -1598,13 +1599,15 @@ class SITE_catalog {
 									$cswObjectName="";
 									$cswAccountId="";
 									
-								$defaultLang=false;
+									$defaultLang=false;
+									
 									foreach($this->langList as $lang)
 									{
 										if ($lang->defaultlang)
-											if ($lang->defaultlang == $language->_lang)
-												$defaultLang=true;
+											if ($lang->code_easysdi == $language->_lang)
+												$defaultLang=true;											
 									}
+									
 									
 									foreach ($kwords as $word) 
 									{
@@ -2652,7 +2655,7 @@ class SITE_catalog {
 			fclose($fh);
 			*/
 			
-			//echo "xmlbody:". htmlspecialchars($xmlBody);
+			//echo htmlspecialchars($xmlBody);
 			
 			$xmlResponse = ADMIN_metadata::CURLRequest("POST", $catalogUrlBase,$xmlBody);
 			// SimpleXMLElement

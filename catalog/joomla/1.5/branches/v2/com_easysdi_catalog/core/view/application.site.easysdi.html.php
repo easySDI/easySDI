@@ -93,8 +93,8 @@ class HTML_application {
 			else 
 			{
 				?>
-				<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_APPLICATION_EDIT')); ?>" id="editApplication" onClick="window.open('./index.php?option=com_easysdi_catalog&task=editApplication&object_id=<?php echo $object_id;?>&cid[]=<?php echo $row->id;?>&Itemid=<?php echo JRequest::getVar('Itemid');?>&lang=<?php echo JRequest::getVar('lang');?>', '_self');"></div>
-				<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_APPLICATION_DELETE')); ?>" id="deleteObject" onClick="return suppressObjectVersion_click('<?php echo JRoute::_("index.php?option=com_easysdi_catalog&task=deleteObjectVersion&object_id=".$object_id."&cid[]=".$row->id); ?>', false);" ></div>
+				<div class="logo" title="<?php echo JText::_('CATALOG_APPLICATION_EDIT'); ?>" id="editApplication" onClick="window.open('./index.php?option=com_easysdi_catalog&task=editApplication&object_id=<?php echo $object_id;?>&cid[]=<?php echo $row->id;?>&Itemid=<?php echo JRequest::getVar('Itemid');?>&lang=<?php echo JRequest::getVar('lang');?>', '_self');"></div>
+				<div class="logo" title="<?php echo JText::_('CATALOG_APPLICATION_DELETE'); ?>" id="deleteApplication" onClick="return suppressApplication_click('<?php echo JRoute::_("index.php?option=com_easysdi_catalog&task=deleteApplication&object_id=".$object_id."&cid[]=".$row->id); ?>', false);" ></div>
 				<?php 
 			}
 			?>
@@ -121,7 +121,7 @@ class HTML_application {
 	<?php
 	}
 	
-	function editApplication($row, $object_id, $fieldsLength, $metadata_guid, $option)
+	function editApplication($row, $fieldsLength, $object_id, $option)
 	{
 		global  $mainframe;
 		
@@ -141,13 +141,13 @@ class HTML_application {
 if ($row->id == 0)
 {
 ?>
-			<h1 class="contentheading"><?php echo JText::_( 'CATALOG_NEW_OBJECTVERSION' )." ".$object_name ?></h1>
+			<h1 class="contentheading"><?php echo JText::_( 'CATALOG_NEW_APPLICATION' )." ".$object_name ?></h1>
 <?php 
 }
 else
 {
 ?>
-			<h1 class="contentheading"><?php echo JText::_( 'CATALOG_EDIT_OBJECTVERSION' )." ".$row->title ?></h1>
+			<h1 class="contentheading"><?php echo JText::_( 'CATALOG_EDIT_APPLICATION' )." ".$row->name ?></h1>
 <?php 
 }
 ?>
@@ -155,32 +155,41 @@ else
 		    <form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
 			<div class="row">
 				 <div class="row">
-					<input type="submit" id="simple_search_button" name="simple_search_button" class="submit" value ="<?php echo JText::_("CORE_SAVE"); ?>" onClick="document.getElementById('adminForm').task.value='saveObjectVersion'; document.getElementById('adminForm').submit();"/>
-					<input type="submit" id="back_button" name="back_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="document.getElementById('adminForm').task.value='backObjectVersion';window.open('<?php echo JRoute::_('index.php?task=backObjectVersion&object_id='.$object_id); ?>', '_self')"/>
+					<input type="submit" id="simple_search_button" name="simple_search_button" class="submit" value ="<?php echo JText::_("CORE_SAVE"); ?>" onClick="document.getElementById('adminForm').task.value='saveApplication'; document.getElementById('adminForm').submit();"/>
+					<input type="submit" id="back_button" name="back_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="document.getElementById('adminForm').task.value='cancelApplication';window.open('<?php echo JRoute::_('index.php?task=cancelApplication&object_id='.$object_id); ?>', '_self')"/>
 				</div>	 
 			 </div>
 				<div class="row">	
 					<div class="row">
-						<label for="metadata_guid"><?php echo JText::_("CORE_OBJECT_METADATAID_LABEL"); ?> : </label> 
-						<input class="inputbox text full" type="text" size="50" name="metadata_guid" value="<?php echo $metadata_guid; ?>" disabled="disabled" />								
+						<label for="name"><?php echo JText::_("CATALOG_APPLICATION_NAME"); ?> : </label> 
+						<input class="inputbox text full" type="text" size="50" name="name" value="<?php echo $row->name; ?>"/>								
+					</div>
+					<div class="row">
+						<label for="windowname"><?php echo JText::_("CATALOG_APPLICATION_WINDOWNAME"); ?> : </label> 
+						<input class="inputbox text full" type="text" size="50" name="windowname" value="<?php echo $row->windowname; ?>"/>								
 					</div>
 					<div class="row">
 						<label for="description"><?php echo JText::_("CORE_DESCRIPTION"); ?> : </label> 
 						<textarea rows="4" cols="50" name ="description" class="inputbox text full" onkeypress="javascript:maxlength(this,<?php echo $fieldsLength['description'];?>);"><?php echo $row->description; ?></textarea>								
 					</div>
+					<div class="row">
+						<label for="url"><?php echo JText::_("CATALOG_APPLICATION_URL"); ?> : </label>
+						<input class="inputbox text full" type="text" size="50" name="url" value="<?php echo $row->url; ?>"/>
+					</div>
+					<div class="row">
+						<label for="options"><?php echo JText::_("CATALOG_APPLICATION_OPTIONS"); ?> : </label> 
+						<textarea rows="4" cols="50" name ="options" class="inputbox text full" onkeypress="javascript:maxlength(this,<?php echo $fieldsLength['options'];?>);"><?php echo $row->options; ?></textarea>								
+					</div>
 				</div>
 				
 				<input type="hidden" name="cid[]" value="<?php echo $row->id?>" />
 				<input type="hidden" name="object_id" value="<?php echo $object_id?>" />
-				<input type="hidden" name="objectversion_id" value="<?php echo $row->id?>" />
-				<input type="hidden" name="metadata_guid" value="<?php echo $metadata_guid?>" />
 				
 				<input type="hidden" name="created" value="<?php echo ($row->created)? $row->created : date ('Y-m-d H:i:s');?>" />
 				<input type="hidden" name="createdby" value="<?php echo ($row->createdby)? $row->createdby : $user->id; ?>" /> 
 				<input type="hidden" name="updated" value="<?php echo ($row->created) ? date ("Y-m-d H:i:s") :  ''; ?>" />
 				<input type="hidden" name="updatedby" value="<?php echo ($row->createdby)? $user->id : ''; ?>" /> 
 				
-				<input type="hidden" name="title" value="<?php echo ($row->title)? $row->title : date ('Y-m-d H:i:s');?>" />
 				<input type="hidden" name="id" value="<?php echo $row->id; ?>" />
 				<input type="hidden" name="guid" value="<?php echo $row->guid?>" />
 				<input type="hidden" name="option" value="<?php echo $option; ?>" />

@@ -3193,8 +3193,8 @@ class ADMIN_metadata {
 			$cswResults->save($mergedXMLFile);
 			
 			// Suppression des deux fichiers � fusionner
-			//unlink($existingXMLFile);
-			//unlink($ESRIXMLFile);
+			unlink($existingXMLFile);
+			unlink($ESRIXMLFile);
 		}
 		
 		// Construction du DOMXPath � utiliser pour g�n�rer la vue d'�dition
@@ -3926,9 +3926,11 @@ class ADMIN_metadata {
 	{
 		global  $mainframe;
 		$database =& JFactory::getDBO(); 
-		
+		//print_r($_POST);
 		$searchPattern = $_POST['query'];
 		$objecttype_id = $_POST['objecttype_id'];
+		$start = $_POST['start'];
+		$limit = $_POST['limit'];
 		
 		if (!$searchPattern)
 			$searchPattern = "";
@@ -3958,6 +3960,7 @@ class ADMIN_metadata {
 											AND ot.id=".$objecttype_id."  
 											AND o.name LIKE '%".$searchPattern."%'
 									ORDER BY CONCAT(o.name, ' [' , ov.title, ']')
+									LIMIT $start, $limit
 									"
 										//AND o.published=true
 								);
@@ -3972,14 +3975,15 @@ class ADMIN_metadata {
 											AND ot.id=".$objecttype_id."  
 											AND o.name LIKE '%".$searchPattern."%'
 									ORDER BY CONCAT(o.name, ' [' , ov.title, ']')
+									LIMIT $start, $limit
 									"
 										//AND o.published=true
 								);
 		}
 		$results= array_merge( $results, $database->loadObjectList() );
-		
+		//echo $database->getQuery();
 		// Construire le tableau de r�sultats
-		$return = array ("total"=>count($results), "contacts"=>$results);
+		$return = array ("total"=>$total, "contacts"=>$results);
 		
 		print_r(HTML_metadata::array2json($return));
 		die();
@@ -4084,7 +4088,9 @@ class ADMIN_metadata {
 	{
 		// Ce décode est nécessaire pour arriver à sauver dans un bon encodage le fichier XML.
 		// FIXME: À voir si c'est vraiment la meilleure solution ou s'il y a un problème d'encodage avant
-		$xmlBody = utf8_decode($xmlBody);
+		//echo mb_internal_encoding();
+		//if (mb_detect_encoding($xmlBody)== "UTF-8")
+			$xmlBody = utf8_decode($xmlBody);
 		
 		$database =& JFactory::getDBO(); 
 		

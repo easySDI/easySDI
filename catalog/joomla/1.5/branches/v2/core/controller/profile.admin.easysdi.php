@@ -79,7 +79,7 @@ class ADMIN_profile {
 					return;
 				}
 
-				// R�cuperer tous les labels et contr�ler qu'ils soient saisis
+				// Récuperer tous les labels et contrôler qu'ils soient saisis
 				var labelEmpty = 0;
 				var labels = Array();
 				labels = document.getElementById('labels');
@@ -148,15 +148,26 @@ class ADMIN_profile {
 		{
 			if ($pageReloaded)
 			{
-				$database->setQuery( "SELECT a.id AS value, a.name as text FROM #__sdi_attribute a, #__sdi_relation rel WHERE a.id=rel.attributechild_id AND a.attributetype_id=1 AND rel.parent_id=".$_POST['class_id']." ORDER BY a.name" );
+				$database->setQuery( "	SELECT a.id AS value, a.name as text 
+										FROM #__sdi_attribute a 
+										INNER JOIN #__sdi_relation rel ON a.id=rel.attributechild_id  
+										WHERE a.attributetype_id=1 
+											AND rel.parent_id=".$_POST['class_id']." 
+										ORDER BY a.name" );
 				$metadataids = array_merge( $metadataids, $database->loadObjectList() );
 			}
 			else if ($rowProfile->id <> 0)
 			{
-				$database->setQuery( "SELECT a.id AS value, a.name as text FROM #__sdi_attribute a, #__sdi_relation rel WHERE a.id=rel.attributechild_id AND a.attributetype_id=1 AND rel.parent_id=".$rowProfile->class_id." ORDER BY a.name" );
+				$database->setQuery( "	SELECT a.id AS value, a.name as text 
+										FROM #__sdi_attribute a 
+										INNER JOIN #__sdi_relation rel ON a.id=rel.attributechild_id  
+										WHERE a.attributetype_id=1 
+											AND rel.parent_id=".$rowProfile->class_id." 
+										ORDER BY a.name" );
 				$metadataids = array_merge( $metadataids, $database->loadObjectList() );
 			}
 		}
+		//echo $database->getQuery();
 		/*
 		$selected_objecttypes= array();
 		if ($id <> 0)

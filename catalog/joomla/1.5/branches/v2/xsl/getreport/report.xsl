@@ -74,7 +74,6 @@
 						</fo:flow>
 					</fo:page-sequence>
 				</fo:root>
-
 			</xsl:when>
 			<xsl:otherwise>
 			</xsl:otherwise>

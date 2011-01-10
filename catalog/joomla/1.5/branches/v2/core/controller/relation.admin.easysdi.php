@@ -27,6 +27,9 @@ defined('_JEXEC') or die('Restricted access');
 			return;
 		}
 
+		/*
+		Fonctionnalité désactivée car elle impliquait une référence cyclique. En effet,
+		Lorsqu'EasySDI est vide, on ne pouvait créer de profile sans relation, mais on ne peut créer de relation sans profil!!
 		// Contr�le qu'au moins un profil est marqu�
 		profiles_checked = 0;
 		p = document.getElementsByName('profiles[]');
@@ -36,8 +39,9 @@ defined('_JEXEC') or die('Restricted access');
 			if (p[i].checked==true)
 				profiles_checked++;
 		}
+		*/
 		
-		// R�cuperer tous les labels et contr�ler qu'ils soient saisis
+		// Récuperer tous les labels et contrôler qu'ils soient saisis
 		var labelEmpty = 0;
 		var labels = Array();
 		labels = document.getElementById('labels');
@@ -77,10 +81,10 @@ defined('_JEXEC') or die('Restricted access');
 		{
 			alert( "<?php echo JText::_( 'CATALOG_RELATION_SUBMIT_NOUPPERBOUND', true ); ?>" );
 		} 
-		else if (profiles_checked < 1) 
-		{
-			alert( "<?php echo JText::_( 'CATALOG_RELATION_SUBMIT_NOPROFILE', true ); ?>" );
-		}
+		//else if (profiles_checked < 1) 
+		//{
+		//	alert( "<?php //echo JText::_( 'CATALOG_RELATION_SUBMIT_NOPROFILE', true ); ?>" );
+		//}
 		else if (labelEmpty > 0) 
 		{
 			alert( "<?php echo JText::_( 'CATALOG_PROFILE_SUBMIT_NOLABELS', true ); ?>" );

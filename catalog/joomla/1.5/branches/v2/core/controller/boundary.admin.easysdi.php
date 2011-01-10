@@ -323,7 +323,7 @@ class ADMIN_boundary {
 		// Initialize variables
 		$db			= & JFactory::getDBO();
 
-		print_r(JRequest::get());echo "<br>"; 
+		//print_r(JRequest::get());echo "<br>"; 
 		$cid		= JRequest::getVar( 'cid', array(0));
 		$order		= JRequest::getVar( 'ordering', array (0));
 		$total		= count($cid);

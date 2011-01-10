@@ -359,6 +359,7 @@ if ($rowObject->updated)
 					<?php echo JHTML::_('grid.order',  $rows, 'filesave.png', 'saveOrderObject' ); ?></th>
 					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_NAME"), 'name', @$filter_order_Dir, @$filter_order); ?></th>
 					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CATALOG_OBJECT_MANAGEVERSION"), 'hasVersioning', @$filter_order_Dir, @$filter_order); ?></th>
+					<th class='title'><?php echo JText::_("CATALOG_OBJECT_MANAGEAPPLICATION"); ?></th>
 					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_PUBLISHED"), 'published', @$filter_order_Dir, @$filter_order); ?></th>
 					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_OBJECT_SUPPLIERNAME"), 'account_name', @$filter_order_Dir, @$filter_order); ?></th>
 					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_DESCRIPTION"), 'description', @$filter_order_Dir, @$filter_order); ?></th>
@@ -459,6 +460,25 @@ if ($rowObject->updated)
 							<?php
 						}
 						?>							
+					</td>
+					<td align="center">
+						<?php $link =  "index.php?option=$option&amp;task=listApplication&object_id=$row->id";?>
+						<?php 
+						if (  JTable::isCheckedOut($user->get ('id'), $row->checked_out ) ) 
+						{
+							?>
+							<img src="<?php echo JURI::root(true); ?>/includes/js/ThemeOffice/mainmenu.png" border="0" />
+							<?php
+						} 
+						else 
+						{
+							?>
+							<a href="<?php echo $link; ?>" title="<?php echo JText::_( 'CATALOG_OBJECT_MANAGEAPPLICATION' ); ?>">
+								<img src="<?php echo JURI::root(true); ?>/includes/js/ThemeOffice/mainmenu.png" border="0" />
+							</a>
+							<?php
+						}
+						?>
 					</td>
 					<td> <?php echo JHTML::_('grid.published',$row,$i, 'tick.png', 'publish_x.png', 'object_'); ?></td>
 					<td><?php echo $row->account_name; ?></td>						
