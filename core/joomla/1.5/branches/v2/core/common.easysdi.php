@@ -42,7 +42,7 @@ class helper_easysdi{
 		global  $mainframe;
 		$database =& JFactory::getDBO();
 
-		/* Récupérer les classes enfant de cette classe */
+		/* Rï¿½cupï¿½rer les classes enfant de cette classe */
 		$query = "SELECT a.type as type ,a.id,a.name as name,a.description as description,a.iso_key as iso_key  FROM #__easysdi_metadata_classes a,#__easysdi_metadata_classes_classes b WHERE a.id =b.classes_to_id  and $classId=b.classes_from_id";
 		$database->setQuery($query);
 		$rows = $database->loadObjectList();
@@ -51,7 +51,7 @@ class helper_easysdi{
 		}
 
 		$directinroot=0;
-		//Si il n'y a pas de résultat c'est que la sous classe n'est pas une classe mais un type
+		//Si il n'y a pas de rï¿½sultat c'est que la sous classe n'est pas une classe mais un type
 		if (count ($rows)==0 && $root == 1)
 		{
 			$query = "SELECT a.type as type ,a.id,a.name as name,a.description as description,a.iso_key as iso_key  FROM #__easysdi_metadata_classes a WHERE a.id = $classId";
@@ -73,12 +73,12 @@ class helper_easysdi{
 						$key = $parentkey;
 					}
 
-					/* Trouver le nombre d'occurences de cet élément dans la métadonnée */
+					/* Trouver le nombre d'occurences de cet ï¿½lï¿½ment dans la mï¿½tadonnï¿½e */
 					$count  = $geoMD->isXPathResultCount("//".$key);
 					
-					//echo "Nombre d'occurences dans la métadonnée: ".$count."<br>";
+					//echo "Nombre d'occurences dans la mï¿½tadonnï¿½e: ".$count."<br>";
 		
-					/* S'il n'y en a pas c'est que l'élément n'est pas au premier niveau. Reboucler pour chercher un niveau plus bas */
+					/* S'il n'y en a pas c'est que l'ï¿½lï¿½ment n'est pas au premier niveau. Reboucler pour chercher un niveau plus bas */
 					if ($count == 0) // and $directinroot == 1)
 					{
 						//echo "Bouclage 1<br>";
@@ -159,12 +159,12 @@ class helper_easysdi{
 						$key = $parentkey;
 					}
 				
-					/* Récupérer toutes les langues pour les locfreetext */
+					/* Rï¿½cupï¿½rer toutes les langues pour les locfreetext */
 					$query = "SELECT * FROM #__easysdi_metadata_loc_freetext";
 					$database->setQuery($query);
 					$LangLocfreetext = $database->loadObjectList();
 					
-					/* Récupérer toutes les entrées de langues de ce champ */
+					/* Rï¿½cupï¿½rer toutes les entrï¿½es de langues de ce champ */
 					/*
 					$query = "SELECT *, b.translation as trans FROM #__easysdi_metadata_classes_locfreetext a, #__easysdi_metadata_loc_freetext b WHERE a.classes_id = $row->id and a.loc_freetext_id = b.id";
 					$database->setQuery($query);
@@ -506,12 +506,12 @@ default:
 
 					foreach ($rowsListContent as $rowListContent){
 						// $value = array_pop  ( $_POST["PARAM$row->class_id"] );
-						/* Récupérer les valeurs entrées par l'utilisateur */
+						/* Rï¿½cupï¿½rer les valeurs entrï¿½es par l'utilisateur */
 						$array  = JRequest::getVar("PARAM$row->id");
 						$value = $array [$n];
 						print_r ($array);
 						echo "<br><b>Value ".$n."</b>: ".$value."<br>";
-						/* Créer chaque élément de la valeur */
+						/* Crï¿½er chaque ï¿½lï¿½ment de la valeur */
 						if (strlen  ($value)>0){
 							$doc=$doc."<gco:CharacterString>".htmlspecialchars    (stripslashes($value ))."</gco:CharacterString>";
 						}
@@ -540,12 +540,12 @@ default:
 				break;
 			
 			case "locfreetext":
-				/* Récupérer toutes les langues pour les locfreetext */
+				/* Rï¿½cupï¿½rer toutes les langues pour les locfreetext */
 					$query = "SELECT * FROM #__easysdi_metadata_loc_freetext";
 					$database->setQuery($query);
 					$LangLocfreetext = $database->loadObjectList();
 					
-				/* Récupérer les textes localisés associés à cette métadonnée */
+				/* Rï¿½cupï¿½rer les textes localisï¿½s associï¿½s ï¿½ cette mï¿½tadonnï¿½e */
 				$query = "SELECT * FROM #__easysdi_metadata_classes_locfreetext a, #__easysdi_metadata_loc_freetext b WHERE a.classes_id = $row->class_id and a.loc_freetext_id = b.id";
 				$database->setQuery($query);
 				$rowsFreetext = $database->loadObjectList();
@@ -625,7 +625,7 @@ default:
 		switch($row->type){
 		
 			case "class":
-				/* Récupérer les classes enfants */
+				/* Rï¿½cupï¿½rer les classes enfants */
 				$query = "select classes_to_id from #__easysdi_metadata_classes_classes where classes_from_id = $row->class_id";
 				$database->setQuery($query);
 				$rowsClasses = $database->loadObjectList();
@@ -633,7 +633,7 @@ default:
 						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 				}
 				foreach ($rowsClasses as $rowClasses){
-						/* Récupérer les données de chaque classe enfant */
+						/* Rï¿½cupï¿½rer les donnï¿½es de chaque classe enfant */
 						$query = "SELECT  *,id as class_id from  #__easysdi_metadata_classes  where id = $rowClasses->classes_to_id" ;
 						$database->setQuery($query);
 						$rowsClassesClasses = $database->loadObjectList();
@@ -657,7 +657,16 @@ default:
 	}
 
 	function getUniqueId(){
-		return sprintf( '%04x%04x-%04x-%04x-%04x-%04x%04x%04x', mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0x0fff ) | 0x4000, mt_rand( 0, 0x3fff ) | 0x8000, mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ) );
+		return sprintf( '%04x%04x-%04x-%04x-%04x-%04x%04x%04x', 
+						mt_rand( 0, 0xffff ), 
+						mt_rand( 0, 0xffff ), 
+						mt_rand( 0, 0xffff ), 
+						mt_rand( 0, 0x0fff ) | 0x4000, 
+						mt_rand( 0, 0x3fff ) | 0x8000, 
+						mt_rand( 0, 0xffff ), 
+						mt_rand( 0, 0xffff ), 
+						mt_rand( 0, 0xffff ) 
+					   );
 	}
 
 	function exportPDF( $myHtml) {
