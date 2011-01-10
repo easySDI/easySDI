@@ -155,8 +155,8 @@ else
 		    <form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
 			<div class="row">
 				 <div class="row">
-					<input type="submit" id="simple_search_button" name="simple_search_button" class="submit" value ="<?php echo JText::_("CORE_SAVE"); ?>" onClick="document.getElementById('adminForm').task.value='saveApplication'; document.getElementById('adminForm').submit();"/>
-					<input type="submit" id="back_button" name="back_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="document.getElementById('adminForm').task.value='cancelApplication';window.open('<?php echo JRoute::_('index.php?task=cancelApplication&object_id='.$object_id); ?>', '_self')"/>
+					<input type="button" id="simple_search_button" name="simple_search_button" class="submit" value ="<?php echo JText::_("CORE_SAVE"); ?>" onClick="verify();"/>
+					<input type="button" id="back_button" name="back_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="document.getElementById('adminForm').task.value='cancelApplication';window.open('<?php echo JRoute::_('index.php?task=cancelApplication&object_id='.$object_id); ?>', '_self')"/>
 				</div>	 
 			 </div>
 				<div class="row">	

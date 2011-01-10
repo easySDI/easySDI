@@ -18,38 +18,6 @@
 defined('_JEXEC') or die('Restricted access');
 
 
-?>
-		<script type="text/javascript">
-			function submitbutton(pressbutton) 
-			{
-				var form = document.adminForm;
-				if (pressbutton != 'saveApplication' && pressbutton != 'applyApplication') {
-					submitform( pressbutton );
-					return;
-				}
-				console.log(form.name.value);
-				// do field validation
-				if (form.name.value == "") 
-				{
-					alert( "<?php echo JText::_( 'CATALOG_APPLICATION_SUBMIT_NONAME', true ); ?>" );
-				}
-				else if (form.windowname.value == "") 
-				{
-					alert( "<?php echo JText::_( 'CATALOG_APPLICATION_SUBMIT_NOWINDOWNAME', true ); ?>" );
-				}
-				else if (form.url.value == "") 
-				{
-				alert( "<?php echo JText::_( 'CATALOG_APPLICATION_SUBMIT_NOURL', true ); ?>" );
-				} 
-				else 
-				{
-					submitform( pressbutton );
-				}
-			}
-		</script>
-		
-		<?php 
-		
 class SITE_application 
 {
 	function listApplication($object_id, $option) {
@@ -120,6 +88,35 @@ class SITE_application
 
 	function editApplication($id, $option)
 	{
+		
+?>
+		<script type="text/javascript">
+			function verify() 
+			{
+				var form = document.adminForm;
+				
+				// do field validation
+				if (form.name.value == "") 
+				{
+					alert( "<?php echo JText::_( 'CATALOG_APPLICATION_SUBMIT_NONAME', true ); ?>" );
+				}
+				else if (form.windowname.value == "") 
+				{
+					alert( "<?php echo JText::_( 'CATALOG_APPLICATION_SUBMIT_NOWINDOWNAME', true ); ?>" );
+				}
+				else if (form.url.value == "") 
+				{
+				alert( "<?php echo JText::_( 'CATALOG_APPLICATION_SUBMIT_NOURL', true ); ?>" );
+				} 
+				else 
+				{
+					form.task.value='saveApplication';
+					form.submit();
+				}
+			}
+		</script>
+		
+		<?php 
 		$database =& JFactory::getDBO(); 
 		$user = & JFactory::getUser();
 		

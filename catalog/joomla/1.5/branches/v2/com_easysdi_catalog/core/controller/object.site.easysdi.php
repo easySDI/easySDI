@@ -19,13 +19,13 @@ defined('_JEXEC') or die('Restricted access');
 
 ?>
 <script type="text/javascript">
-	function submitbutton(pressbutton) 
+	function verify() 
 	{
 		var form = document.adminForm;
-		if (pressbutton != 'saveObject' && pressbutton != 'applyObject') {
+		/*if (pressbutton != 'saveObject' && pressbutton != 'applyObject') {
 			submitform( pressbutton );
 			return;
-		}
+		}*/
 		// do field validation
 		if (form.name.value == "") 
 		{
@@ -41,7 +41,9 @@ defined('_JEXEC') or die('Restricted access');
 		}
 		else 
 		{
-			submitform( pressbutton );
+			//submitform( pressbutton );
+			form.task.value='saveObject'; 
+			form.submit()
 		}
 	}
 </script>

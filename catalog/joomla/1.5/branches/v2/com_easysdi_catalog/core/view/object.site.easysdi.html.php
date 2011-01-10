@@ -68,7 +68,7 @@ else
 		 <form action="index.php" method="POST" name="adminForm" id="adminForm" class="adminForm" onsubmit="Pre_Post('adminForm', 'selected_managers', 'manager'); Pre_Post('adminForm', 'selected_editors', 'editor');document.getElementById('adminForm').submit;">
 		<div class="row">
 			 <div class="row">
-				<input type="submit" id="simple_search_button" name="simple_search_button" class="submit" value ="<?php echo JText::_("CORE_SAVE"); ?>" onClick="document.getElementById('adminForm').task.value='saveObject'; Pre_Post('adminForm', 'selected_managers', 'manager'); Pre_Post('adminForm', 'selected_editors', 'editor'); document.getElementById('adminForm').submit();"/>
+				<input type="button" id="simple_search_button" name="simple_search_button" class="submit" value ="<?php echo JText::_("CORE_SAVE"); ?>" onClick="Pre_Post('adminForm', 'selected_managers', 'manager'); Pre_Post('adminForm', 'selected_editors', 'editor'); verify();"/>
 				<input type="submit" id="back_button" name="back_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="document.getElementById('adminForm').task.value='cancelObject';window.open('<?php echo JRoute::_('index.php?task=cancelObject&object_id='.$rowObject->id); ?>', '_self')"/>
 			</div>	 
 		 </div>

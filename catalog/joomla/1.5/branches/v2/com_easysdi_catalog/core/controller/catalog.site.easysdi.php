@@ -2754,7 +2754,7 @@ class SITE_catalog {
 		{
 			$req .= "resultType=\"$resultType\" 
 					outputSchema=\"csw:IsoRecord\" 
-					content=\"COMPLETE\" ";
+					content=\"CORE\" ";
 		}
 
 		// add max records if not 0
