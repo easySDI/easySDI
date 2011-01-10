@@ -2092,7 +2092,7 @@ function DisplayMetadata ($xslStyle, $xml)
 		}
 		$XMLSdi->appendChild($XMLExternalApp);
 		
-		$doc->save("C:\RecorderWebGIS\oto_".$fileIdentifier.".xml");
+		//$doc->save("C:\RecorderWebGIS\oto_".$fileIdentifier.".xml");
 		
 		return $doc;
 	}
