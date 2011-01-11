@@ -29,9 +29,22 @@
 			<folder>views</folder>
 		  <folder>lib</folder>
 		</files>
+		
 		<languages folder="language/admin">
 			<language tag="fr-FR">fr-FR.com_easysdi_monitor.ini</language>
 			<language tag="en-GB">en-GB.com_easysdi_monitor.ini</language>
 		</languages>
 	</administration>
+	<!-- Frontend -->
+	<files folder="com_easysdi_monitor">
+		<filename>easysdi_monitor.php</filename>
+		<filename>controller.php</filename>
+		<folder>views</folder>
+	</files>
+	
+	<languages folder="language/site">
+		<language tag="fr-FR">fr-FR.com_easysdi_monitor.ini</language>
+		<language tag="en-GB">en-GB.com_easysdi_monitor.ini</language>
+	</languages>
+	
 </install>

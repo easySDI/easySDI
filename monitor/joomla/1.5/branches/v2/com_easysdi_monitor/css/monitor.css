@@ -141,22 +141,25 @@ background-repeat:no-repeat;
    background-image: url(../icons/flag_green.png) !important;
    width:16px;
    height:16px;
+   display: inline-block;
 }
 .icon-gridrenderer-unavailable{
    background-image: url(../icons/flag_red.png) !important;
    width:16px;
    height:16px;
+   display: inline-block;
 }
 .icon-gridrenderer-failure{
    background-image: url(../icons/flag_orange.png) !important;
    width:16px;
    height:16px;
+   display: inline-block;
 }
 .icon-gridrenderer-untested{
    background-image: url(../icons/untested.png) !important;
    width:16px;
    height:16px;
+   display: inline-block;
 }
-
 
 
