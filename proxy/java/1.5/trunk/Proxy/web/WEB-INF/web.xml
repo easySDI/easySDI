@@ -3,7 +3,7 @@
 	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
 
  <display-name>EasySDI Proxy V2</display-name>
-    <description>EasySDI Proxy 2.0.5</description>
+    <description>EasySDI Proxy 2.0.6</description>
     
 	<jsp-config>
 		<taglib>
