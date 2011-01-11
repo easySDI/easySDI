@@ -32,7 +32,7 @@ require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'commo
 $monitorUrl = config_easysdi::getValue("MONITOR_URL");
 
 //logger
-$myFile = JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_monitor'.DS.'views'.DS.'proxy'.DS.'tmpl'.DS.'logs'.DS.'log.txt';
+$myFile = JPATH.DS.'components'.DS.'com_easysdi_monitor'.DS.'views'.DS.'proxy'.DS.'tmpl'.DS.'logs'.DS.'log.txt';
 $fh = fopen($myFile, 'w');
  
 //request headers
