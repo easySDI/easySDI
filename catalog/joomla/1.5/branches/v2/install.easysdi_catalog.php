@@ -234,7 +234,7 @@ function com_install(){
 					('".helper_easysdi::getUniqueId()."', 'radiobutton', 'radiobutton', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'radiobutton'),
 					('".helper_easysdi::getUniqueId()."', 'list', 'list', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'list'),
 					('".helper_easysdi::getUniqueId()."', 'textbox', 'textbox', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'textbox'),
-					('".helper_easysdi::getUniqueId()."', 'datetime', 'datetime', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'datetime')";
+					('".helper_easysdi::getUniqueId()."', 'date', 'date', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'date')";
 		$db->setQuery( $query);
 		if (!$db->query())
 		{	
