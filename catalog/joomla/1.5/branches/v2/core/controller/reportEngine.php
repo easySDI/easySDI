@@ -41,6 +41,8 @@ class reportEngine{
 		$params['language'] = $language;
 		$lastVersion = strtolower(JRequest::getVar ('lastVersion', ''));
 		$params['lastVersion'] = $lastVersion;
+		$context = strtolower(JRequest::getVar ('context', ''));
+		$params['context'] = $context;
 		
 		// Contr�ler la validit� de la requ�te avant de la passer plus loin
 		if (!reportEngine::verifyRequest($params, $user))
@@ -65,7 +67,7 @@ class reportEngine{
 				";
 
 		// Qui sont indiqués dans le paramètre metadata_guid
-		if ($guids <> "")
+		if ($guids == "")
 			$query .= " AND m.guid IN (-1)";
 		else
 			$query .= " AND m.guid IN (".$guids.")";
@@ -94,7 +96,7 @@ class reportEngine{
 				$result->metadata_guid = $database->loadResult();
 			}
 		}
-		
+		//print_r($results);
 		// Construction du filtre
 		if (count($results) > 0)
 		{
@@ -108,8 +110,8 @@ class reportEngine{
 	
 			$filter = "<ogc:Filter xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:gml=\"http://www.opengis.net/gml\">".$filter."</ogc:Filter>";
 			
-			// Construire une requ�te Geonetwork GetRecords pour demander les m�tadonn�es choisies pour le rapport
-			$xmlBody = SITE_catalog::BuildCSWRequest(10, 1, "datasetcollection dataset application service", "full", "1.1.0", $filter, "title", "ASC");
+			// Construire une requ�te Geonetwork GetRecords pour demander les métadonnées choisies pour le rapport
+			$xmlBody = SITE_catalog::BuildCSWRequest(10, 1, "results", "gmd:MD_Metadata", "full", "1.1.0", $filter, "title", "ASC");
 			
 			//echo htmlspecialchars($xmlBody);
 
@@ -119,7 +121,7 @@ class reportEngine{
 			$cswResults = DOMDocument::loadXML($xmlResponse);
 
 			//echo htmlspecialchars($cswResults->saveXML())."<hr>";
-			
+
 			// Traitement du retour CSW pour g�n�rer le rapport
 			if ($cswResults !=null and $cswResults !="")
 			{
@@ -145,25 +147,41 @@ class reportEngine{
 				}
 				else
 				{
-					$myDoc= new DomDocument();
+					$myDoc= new DomDocument('1.0', 'UTF-8');
 					
-					// Noeud artificiel sup�rieur pour englober la m�tadonn�e et les param�tres
-					$XMLNewRoot = $myDoc->createElement("Metadata");
+					// Noeud artificiel supérieur pour englober les métadonnées
+					$XMLNewRoot = $myDoc->createElement("MetadataSet");
 					$myDoc->appendChild($XMLNewRoot);
 					
-					// Construire les param�tres
+					// Construire les noeuds avec les balises sdi
 					$rootList = $cswResults->getElementsByTagName("MD_Metadata");
+					
 					foreach($rootList as $root)
 					{
 						if ($root->parentNode->nodeName == "csw:SearchResults")
 						{
-							$importedPart = $myDoc->importNode($root, true);
-							$XMLNewRoot->appendChild($importedPart);
+							// Construire un DomDocument temporaire pour permettre l'utilisation de la fonction displayManager::constructXML
+							$tempDoc = new DomDocument('1.0', 'UTF-8');
+							$tempDocRoot = $tempDoc->createElement("Metadata");
+							$tempDoc->appendChild($tempDocRoot);
+					
+							$tempDocImportedPart = $tempDoc->importNode($root, true);
+							$tempDocRoot->appendChild($tempDocImportedPart);
+							
+							$fileIdNodeList = $tempDoc->getElementsByTagName("fileIdentifier");
+							if ($fileIdNodeList->length <> 0)
+							{
+								$fileId = trim($fileIdNodeList->item(0)->nodeValue);
+								//echo htmlspecialchars($tempDoc->saveXML())."<hr>";
+								$toAdd = displayManager::constructXML($tempDoc, $database, JFactory::getLanguage(), $fileId, true, "complete", $context);
+								//echo htmlspecialchars($toAdd->saveXML())."<hr>";
+								$importedPart = $myDoc->importNode($toAdd->getElementsByTagName("Metadata")->item(0), true);
+								$XMLNewRoot->appendChild($importedPart);
+							}
 						}
 					}
 		
-					//$myDoc = displayManager::constructXML($cswResults, $database, JFactory::getLanguage(), $metadata_guid[0], true, null, null);
-					
+					// Rassembler tous les noeuds et les transmettre au processeur XSLT
 					//echo htmlspecialchars($myDoc->saveXML())."<hr>";
 
 					$style = new DomDocument();
@@ -299,7 +317,7 @@ class reportEngine{
 			}
 		}
 		
-		// Valeurs autoris�es pour format: XML/CSV/RTF/XHTML/PDF
+		// Valeurs autorisées pour format: XML/CSV/RTF/XHTML/PDF
 		$formatValues = array ('xml', 'csv', 'rtf', 'xhtml', 'pdf');
 		if (array_search($params['format'], $formatValues) === false)
 		{
@@ -318,7 +336,7 @@ class reportEngine{
 			return false;
 		}
 		
-		// Valeurs autoris�es pour lastVersion: yes/no   
+		// Valeurs autorisées pour lastVersion: yes/no   
 		$lastversionValues = array ('yes', 'no');
 		if (array_search($params['lastVersion'], $lastversionValues) === false)
 		{

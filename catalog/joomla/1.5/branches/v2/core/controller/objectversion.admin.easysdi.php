@@ -1031,6 +1031,8 @@ class ADMIN_objectversion {
 		
 		$dir = $_POST['dir'];
 		$sort = $_POST['sort'];
+		//$start = $_POST['start'];
+		//$limit = $_POST['limit'];
 		$object_id = $_POST['object_id'];
 		$objectversion_id = $_POST['objectversion_id'];
 		$selectedObjects = $_POST['selectedObjects'];
@@ -1069,10 +1071,11 @@ class ADMIN_objectversion {
 		$rowParentObject = new object($database);
 		$rowParentObject->load($object_id);
 		
-		// R�cup�rer tous les objets du type d'objet s�lectionn�,
-		// qui ne sont ni l'objet courant, ni dans la liste des objets s�lectionn�s,
+		// Récupérer tous les objets du type d'objet sélectionné,
+		// qui ne sont ni l'objet courant, ni dans la liste des objets sélectionnés,
 		// et pour lesquels il existe une relation parent/enfant entre les types d'objets
-		$query = "SELECT DISTINCT ov.id as value, o.objecttype_id as objecttype_id, o.name as object_name, CONCAT(o.name, ' ', ov.title) as name, otl.parentbound_upper 
+		//$query = "SELECT SQL_CALC_FOUND_ROWS DISTINCT ov.id as value, o.objecttype_id as objecttype_id, o.name as object_name, CONCAT(o.name, ' ', ov.title) as name, otl.parentbound_upper 
+		$query = "SELECT DISTINCT ov.id as value, o.objecttype_id as objecttype_id, o.name as object_name, CONCAT(o.name, ' ', ov.title) as name, otl.parentbound_upper
 				  FROM #__sdi_objecttype ot
 				  INNER JOIN #__sdi_object o ON o.objecttype_id=ot.id
 				  INNER JOIN #__sdi_objectversion ov ON ov.object_id=o.id 
@@ -1081,10 +1084,13 @@ class ADMIN_objectversion {
 				  LEFT OUTER JOIN #__sdi_editor_object e ON o.id = e.object_id 
 				  INNER JOIN #__sdi_objecttypelink otl ON otl.child_id = o.objecttype_id
 				  
-				  LEFT OUTER JOIN jos_sdi_objectversionlink ovl ON ovl.child_id=ov.id 
-				  LEFT OUTER JOIN jos_sdi_objectversion parent_ov on ovl.parent_id = parent_ov.id 
-				  LEFT OUTER JOIN jos_sdi_object parent_object on parent_ov.object_id=parent_object.id		
-				  
+				  LEFT OUTER JOIN (
+									SELECT COUNT(*) AS parentCount, parent_object.objecttype_id as objecttype_id, child_id
+									FROM #__sdi_objectversionlink ovl
+									INNER JOIN #__sdi_objectversion parent_ov on ovl.parent_id = parent_ov.id 
+									INNER JOIN #__sdi_object parent_object on parent_ov.object_id=parent_object.id 
+				  ) AS parentCountLink ON (parentCountLink.objecttype_id=".$rowParentObject->objecttype_id." AND parentCountLink.child_id = ov.id AND IFNULL(parentCountLink.parentCount, 0) < otl.parentbound_upper)
+		
 				  WHERE otl.parent_id = ".$rowParentObject->objecttype_id." 
 				        AND ov.id<>".$objectversion_id;
 	
@@ -1110,18 +1116,57 @@ class ADMIN_objectversion {
 		if (strlen($selectedObjects) > 0)
 			$query .= " AND ov.id NOT IN (".$selectedObjects.")";
 			
-		$query .= "	GROUP BY ov.id
-					HAVING COUNT(parent_ov.title) <otl.parentbound_upper 
-					ORDER BY $sort $dir";
+		$query .= "	ORDER BY $sort $dir";
 			
 		$database->setQuery($query);
 		//echo $database->getQuery()."\r\n";
 		$results= $database->loadObjectList();
-		
 		/*
+		// R�cup�rer tous les objets du type d'objet s�lectionn�,
+		// qui ne sont ni l'objet courant, ni dans la liste des objets s�lectionn�s,
+		// et pour lesquels il existe une relation parent/enfant entre les types d'objets
+		$query = "SELECT DISTINCT ov.id as value, o.objecttype_id as objecttype_id, o.name as object_name, CONCAT(o.name, ' ', ov.title) as name, otl.parentbound_upper 
+				  FROM #__sdi_objecttype ot
+				  INNER JOIN #__sdi_object o ON o.objecttype_id=ot.id
+				  INNER JOIN #__sdi_objectversion ov ON ov.object_id=o.id 
+				  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
+				  LEFT OUTER JOIN #__sdi_manager_object ma ON o.id = ma.object_id
+				  LEFT OUTER JOIN #__sdi_editor_object e ON o.id = e.object_id 
+				  INNER JOIN #__sdi_objecttypelink otl ON otl.child_id = o.objecttype_id
+				  WHERE otl.parent_id = ".$rowParentObject->objecttype_id." 
+				        AND ov.id<>".$objectversion_id;
+	
+		// Ajout des filtres
+		if ($objecttype_id)
+			$query .= " AND ot.id=".$objecttype_id;
+		if ($id)
+			$query .= " AND ov.id LIKE '%".$id."%'";
+		if ($name)
+			$query .= " AND (o.name LIKE '%".$name."%' OR ov.name LIKE '%".$name."%')";
+		if ($status)
+			$query .= " AND m.metadatastate_id=".$status;
+		if ($editor)
+			$query .= " AND e.account_id=".$editor;
+		if ($manager)
+			$query .= " AND ma.account_id=".$manager;
+		if ($fromDate)
+			$query .= " AND ov.updated >= '".$fromDate."'";
+		if ($toDate)
+			$query .= " AND ov.updated <= '".$toDate."'";
+		
+		// Suppression des entr�es d�j� s�lectionn�es
+		if (strlen($selectedObjects) > 0)
+			$query .= " AND ov.id NOT IN (".$selectedObjects.")";
+			
+		$query .= "	ORDER BY $sort $dir";
+			
+		$database->setQuery($query);
+		$results2= $database->loadObjectList();
+		
+		
 		// Pour chaque enfant retourn�, v�rifier que le nombre de parents max n'est pas atteint
 		$resultsToSend= array();
-		foreach ($results as $result)
+		foreach ($results2 as $result)
 		{
 			$total_parent=0;
 			// Compter le nombre de parents de l'enfant potentiel
@@ -1136,11 +1181,17 @@ class ADMIN_objectversion {
 		
 			if ($total_parent < $result->parentbound_upper)
 				$resultsToSend[] = $result;
-		}
-		*/
+		}*/
+		
+		/*$database->setQuery("SELECT FOUND_ROWS();");
+		$total = $database->loadResult();*/
+		
 		//echo "<hr>";
-		//print_r($resultsToSend);
+		//print_r(HTML_metadata::array2json(array ("total"=>count($resultsToSend), "links"=>$resultsToSend)));
+		//echo "<hr>";
+		//print_r(HTML_metadata::array2json(array ("total"=>count($results), "links"=>$results)));
 		// Construire le tableau de r�sultats
+		//$return = array ("total"=>$total, "links"=>$results);
 		$return = array ("total"=>count($results), "links"=>$results);
 		
 		print_r(HTML_metadata::array2json($return));

@@ -724,6 +724,7 @@ class SITE_catalog {
 											  WHERE o.objecttype_id IN (".implode(",", $objecttype_id).") "
 											.$mysqlFilter;
 									$database->setQuery( $query);
+									//echo "<br>".$database->getQuery()."<br>";
 									//echo "list_id:".$database->getQuery()."<hr>";
 									$list_id = $database->loadObjectList() ;
 									//echo "list_id:". htmlspecialchars($list_id)."<hr>";
@@ -880,7 +881,7 @@ class SITE_catalog {
 											.$mysqlFilter;
 									$database->setQuery( $query);
 									$objectlist = $database->loadObjectList() ;
-									
+									//print_r($objectlist);
 									// Construire la liste des guid à filtrer
 									$arrVersionMd = array();
 									
@@ -916,6 +917,7 @@ class SITE_catalog {
 									}
 								}
 								
+								//print_r($arrVersionMd);
 								//If no result, give an unexisting id back
 								/*if(count($arrVersionMd)== 0)
 								{
@@ -1254,8 +1256,10 @@ class SITE_catalog {
 									}
 									
 									//If no result, give an unexisting id back
-									/*if(count($accountlist)== 0)
-										$arrAccountsMd[] = -1;*/		
+									if (count($objectlist) == 0)
+									{
+										$arrAccountsMd[] = -1;
+									}		
 								}
 								break;
 							default:
@@ -2327,6 +2331,11 @@ class SITE_catalog {
 											$empty = false;
 										}
 									}
+									//If no result, give an unexisting id back
+									if (count($objectlist) == 0)
+									{
+										$arrAccountsMd[] = -1;
+									}
 								}
 								break;
 							default:
@@ -2655,7 +2664,7 @@ class SITE_catalog {
 			fclose($fh);
 			*/
 			
-			//echo htmlspecialchars($xmlBody);
+			echo htmlspecialchars($xmlBody);
 			
 			$xmlResponse = ADMIN_metadata::CURLRequest("POST", $catalogUrlBase,$xmlBody);
 			// SimpleXMLElement
@@ -2700,7 +2709,7 @@ class SITE_catalog {
 	                	
 					$pageNav = new JPagination($total,$limitstart,$limit);
 					
-					// S?paration en n ?l?ments par page
+					// Séparation en n éléments par page
 					//$xmlBody = SITE_catalog::BuildCSWRequest($limit, $limitstart+1, "datasetcollection dataset application service", "full", "1.1.0", $cswfilter, $ogcsearchsorting, "ASC");
 					//$xmlBody = SITE_catalog::BuildCSWRequest($limit, $limitstart+1, "gmd:MD_Metadata", "results", "full", "1.1.0", $cswfilter, $ogcsearchsorting, "ASC");
 

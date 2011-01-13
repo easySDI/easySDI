@@ -433,12 +433,16 @@ else
 		</div>
 		<?php
 		
+		//$pageSize=10;
+		
 		$javascript .="
 			//var domNode = Ext.DomQuery.selectNode('div#element-box div.m')
 			//Ext.DomHelper.insertHtml('beforeEnd',domNode,'<div id=formContainer></div>');
 			var domNode = Ext.DomQuery.selectNode('div#viewLinksOutput')
 			Ext.DomHelper.insertHtml('afterBegin',domNode,'<div id=formContainer></div>');
 			
+			//var pagesize = ".$pageSize.";
+						
 			// Column Model shortcut array
 			var cols = [
 				{ id : 'value', hidden: true, dataIndex: 'value', menuDisabled: true},
@@ -451,8 +455,8 @@ else
 		        data   : ".HTML_metadata::array2json(array ("total"=>count($objectlinks), "links"=>$objectlinks)).",
 				root   : 'links'
 		    });
-		    
-		    // declare the source Grid
+
+		   // declare the source Grid
 		    var unselectedGrid = new Ext.grid.GridPanel({
 		    	id				 : 'unselected',
 				ddGroup          : 'selectedGridDDGroup',
@@ -466,12 +470,28 @@ else
 		        loadMask		 : true,
 		        frame			 : false,
 				title            : '".html_Metadata::cleanText(JText::_("CATALOG_OBJECTVERSIONLINK_UNSELECTEDGRID_TITLE"))."',
-		        viewConfig: {
+				viewConfig: {
 							 	forceFit: true,
 								scrollOffset:0
 							 }
 		    });
-			    
+
+		    /*
+		    bbar			 : new Ext.PagingToolbar({
+									pageSize: pagesize,
+									store: getObjectList(),
+									listeners: { 
+											        change: function(data) { 
+											          var unselected = Ext.getCmp('unselected');
+											          lastOptions = this.lastOptions;
+													  
+						                			  //unselected.store.reload(lastOptions);
+											        } 
+											      } 							
+									}),
+				
+		    */
+		    
 		    var selectedGridStore = new Ext.data.JsonStore({
 		        fields : [{name: 'value', mapping : 'value'}, {name: 'objecttype_id', mapping : 'objecttype_id'}, {name: 'name', mapping : 'name'}],
 		        data   : ".HTML_metadata::array2json(array ("total"=>count($selected_objectlinks), "links"=>$selected_objectlinks)).",
@@ -744,6 +764,7 @@ else
 				 			unselectedGrid.store.reload({                    
 				 			params: { 
 				 				selectedObjects: selectedValues.join(', ')
+				 				//start: unselectedGrid.bbar.get('start')
 								}                
 							});	
 							
@@ -768,7 +789,7 @@ else
 			// Affichage du formulaire
     		form.doLayout();
     		
-    		// Remplir une premi�re fois les valeurs s�lectionn�es
+    		// Remplir une première fois les valeurs sélectionnées
     		var selectedValues = new Array();
  			var grid = Ext.getCmp('selected').store.data;
  			for (var i = 0 ; i < grid.length ;i++) 
@@ -776,7 +797,8 @@ else
  				selectedValues.push(grid.get(i).get('value'));
 			}
 			
-			unselectedGrid.store.load({params: {selectedObjects: selectedValues.join(', ')}});
+			//unselectedGrid.store.load({params: {selectedObjects: selectedValues.join(', ')}});
+    		//unselectedGrid.getBottomToolbar().bind(unselectedGrid.store);
     		
     		function getObjectList()
 			{
@@ -795,9 +817,11 @@ else
 					        ]),
 					        // turn on remote sorting
 					        remoteSort: true,
-					        baseParams: {limit:100, dir:'ASC', sort:'name', objectversion_id:'".$objectversion_id."', object_id:'".$object_id."'}
+					        baseParams: {dir:'ASC', sort:'name', objectversion_id:'".$objectversion_id."', object_id:'".$object_id."'}
 					    });
 				return ds;
+				
+				// limit:".$pageSize.", start:0, 
 			}
 			
 			function childbound_upper_reached(toAddChild)
@@ -807,7 +831,7 @@ else
 				objecttypelink = ".HTML_metadata::array2json($objecttypelink).";
 				//console.log(objecttypelink);
 				
-				// Traiter chaque objet � ajouter
+				// Traiter chaque objet à ajouter
 				//var toAddChilds;
 				//toAddChilds = Ext.getCmp('unselected').selModel.getSelections();
 				//console.log(toAddChilds);

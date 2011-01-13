@@ -26,7 +26,7 @@ defined('_JEXEC') or die('Restricted access');
 					submitform( pressbutton );
 					return;
 				}
-				console.log(form.name.value);
+				
 				// do field validation
 				if (form.name.value == "") 
 				{

@@ -31,10 +31,6 @@ defined('_JEXEC') or die('Restricted access');
 		{
 			alert( "<?php echo JText::_( 'You must provide a name.', true ); ?>" );
 		}
-		else if (getSelectedValue('adminForm','account_id') < 1) 
-		{
-			alert( "<?php echo JText::_( 'Please select an account.', true ); ?>" );
-		} 
 		else if (getSelectedValue('adminForm','objecttype_id') < 1) 
 		{
 			alert( "<?php echo JText::_( 'Please select an object type.', true ); ?>" );

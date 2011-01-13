@@ -583,7 +583,8 @@
 	
 	function createSearchField(id, objecttype_id, label, mandatory, clone, master, min, max, value, dis, maxL, tip, dismissDelay, regex, mandatoryMsg, regexMsg)
 	{
-		optional = !mandatory;
+		//optional = !mandatory;
+		optional=false;
 		var size = 20;
 		
 		//if (!clone) optional=true;

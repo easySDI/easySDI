@@ -931,6 +931,22 @@ function com_install(){
 			return false;
 		}
 		
+		$query = "INSERT INTO `#__sdi_searchcriteria` (`guid`, `code`, `name`, `label`, `created`, `createdby`, `criteriatype_id`) VALUES 
+				  ('".helper_easysdi::getUniqueId()."', 'fulltext', 'fulltext', 'CATALOG_SEARCHCRITERIA_SYSTEMFIELD_FULLTEXT', '".date('Y-m-d H:i:s')."', ".$user_id.", 1),
+				  ('".helper_easysdi::getUniqueId()."', 'objecttype', 'objecttype', 'CATALOG_SEARCHCRITERIA_SYSTEMFIELD_OBJECTTYPE', '".date('Y-m-d H:i:s')."', ".$user_id.", 1),
+				  ('".helper_easysdi::getUniqueId()."', 'versions', 'versions', 'CATALOG_SEARCHCRITERIA_SYSTEMFIELD_VERSION', '".date('Y-m-d H:i:s')."', ".$user_id.", 1),
+				  ('".helper_easysdi::getUniqueId()."', 'object_name', 'code', 'CATALOG_SEARCHCRITERIA_SYSTEMFIELD_CODE', '".date('Y-m-d H:i:s')."', ".$user_id.", 1),
+				  ('".helper_easysdi::getUniqueId()."', 'metadata_created', 'metadata_created', 'CATALOG_SEARCHCRITERIA_SYSTEMFIELD_METADATACREATED', '".date('Y-m-d H:i:s')."', ".$user_id.", 1),
+				  ('".helper_easysdi::getUniqueId()."', 'metadata_published', 'metadata_published', 'CATALOG_SEARCHCRITERIA_SYSTEMFIELD_METADATAPUBLISHED', '".date('Y-m-d H:i:s')."', ".$user_id.", 1),
+				  ('".helper_easysdi::getUniqueId()."', 'account_id', 'account_id', 'CATALOG_SEARCHCRITERIA_SYSTEMFIELD_ACCOUNTID', '".date('Y-m-d H:i:s')."', ".$user_id.", 1)
+				";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{			
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			return false;
+		}
+		
 		$query="CREATE TABLE IF NOT EXISTS `#__sdi_list_searchtab` (
 					  `id` bigint(20) NOT NULL AUTO_INCREMENT,
 					  `guid` varchar(36) NOT NULL,

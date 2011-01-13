@@ -134,7 +134,7 @@ class HTML_catalog{
 				$db->setQuery( "SELECT c.*, t.title, t.content FROM #__sdi_attribute a, #__sdi_list_attributetype at,  #__sdi_codevalue c, #__sdi_translation t, #__sdi_language l, #__sdi_list_codelang cl WHERE a.id=c.attribute_id AND a.attributetype_id=at.id AND c.guid=t.element_guid AND t.language_id=l.id AND l.codelang_id=cl.id and cl.code='".$language->_lang."' AND (at.code='textchoice' OR at.code='localechoice') AND attribute_id=".$searchFilter->attribute_id." AND c.published=true ORDER BY c.name" );
 				$list = $db->loadObjectList();
 				
-				// Si la première entrée a un titre, construire une liste sur le titre
+				// Si la premiï¿½re entrï¿½e a un titre, construire une liste sur le titre
 				if ($list[0]->title <> "")
 				{
 					$db->setQuery( "SELECT c.id as value, t.title as text FROM #__sdi_attribute a, #__sdi_list_attributetype at,  #__sdi_codevalue c, #__sdi_translation t, #__sdi_language l, #__sdi_list_codelang cl WHERE a.id=c.attribute_id AND a.attributetype_id=at.id AND c.guid=t.element_guid AND t.language_id=l.id AND l.codelang_id=cl.id and cl.code='".$language->_lang."' AND (at.code='textchoice' OR at.code='localechoice') AND attribute_id=".$searchFilter->attribute_id." AND c.published=true ORDER BY c.name" );
@@ -193,7 +193,7 @@ class HTML_catalog{
 				break;
 			case "date":
 			case "datetime":
-				/* Fonctionnement période*/
+				/* Fonctionnement pï¿½riode*/
 				?>
 				<div class="row">
 					<div class="label"><?php echo JText::_($searchFilter->relation_guid."_LABEL");?></div>
@@ -210,8 +210,8 @@ class HTML_catalog{
 				</div>
 				<?php
 				break;
-			case null: // Cas des attributs systèmes, car ils n'ont pas de relation liée
-				if ($searchFilter->criteriatype_id == 1) // Attributs système
+			case null: // Cas des attributs systï¿½mes, car ils n'ont pas de relation liï¿½e
+				if ($searchFilter->criteriatype_id == 1) // Attributs systï¿½me
 				{	
 					switch ($searchFilter->criteria_code)
 					{
@@ -339,7 +339,7 @@ class HTML_catalog{
 							<?php
 							break;
 						case "metadata_created":
-							/* Fonctionnement période*/
+							/* Fonctionnement pï¿½riode*/
 							?>
 							<div class="row">
 								<div class="label"><?php echo JText::_($searchFilter->guid."_LABEL");?></div>
@@ -355,7 +355,7 @@ class HTML_catalog{
 							<?php
 							break;
 						case "metadata_published":
-							/* Fonctionnement période*/
+							/* Fonctionnement pï¿½riode*/
 							?>
 							<div class="row">
 								<div class="label"><?php echo JText::_($searchFilter->guid."_LABEL");?></div>
@@ -375,12 +375,12 @@ class HTML_catalog{
 				}
 				break;
 			}
-			else // Cas des attributs OGC qui ne sont pas liés à une relation
+			else // Cas des attributs OGC qui ne sont pas liï¿½s ï¿½ une relation
 			{
 				switch ($searchFilter->rendertype_code)
 				{
 				case "date":
-					/* Fonctionnement période*/
+					/* Fonctionnement pï¿½riode*/
 					?>
 					<div class="row">
 						<div class="label"><?php echo JText::_($searchFilter->guid."_LABEL");?></div>
@@ -452,7 +452,7 @@ class HTML_catalog{
 				$db->setQuery( "SELECT c.*, t.title, t.content FROM #__sdi_attribute a, #__sdi_list_attributetype at,  #__sdi_codevalue c, #__sdi_translation t, #__sdi_language l, #__sdi_list_codelang cl WHERE a.id=c.attribute_id AND a.attributetype_id=at.id AND c.guid=t.element_guid AND t.language_id=l.id AND l.codelang_id=cl.id and cl.code='".$language->_lang."' AND (at.code='textchoice' OR at.code='localechoice') AND attribute_id=".$searchFilter->attribute_id." AND c.published=true ORDER BY c.name" );
 				$list = $db->loadObjectList();
 				
-				// Si la première entrée a un titre, construire une liste sur le titre
+				// Si la premiï¿½re entrï¿½e a un titre, construire une liste sur le titre
 				if ($list[0]->title <> "")
 				{
 					$db->setQuery( "SELECT c.id as value, t.title as text FROM #__sdi_attribute a, #__sdi_list_attributetype at,  #__sdi_codevalue c, #__sdi_translation t, #__sdi_language l, #__sdi_list_codelang cl WHERE a.id=c.attribute_id AND a.attributetype_id=at.id AND c.guid=t.element_guid AND t.language_id=l.id AND l.codelang_id=cl.id and cl.code='".$language->_lang."' AND (at.code='textchoice' OR at.code='localechoice') AND attribute_id=".$searchFilter->attribute_id." AND c.published=true ORDER BY c.name" );
@@ -511,7 +511,7 @@ class HTML_catalog{
 				break;
 			case "date":
 			case "datetime":
-				/* Fonctionnement période*/
+				/* Fonctionnement pï¿½riode*/
 				?>
 				<div class="row">
 					<div class="label"><?php echo JText::_($searchFilter->relation_guid."_LABEL");?></div>
@@ -526,8 +526,8 @@ class HTML_catalog{
 				</div>
 				<?php
 				break;
-			case null: // Cas des attributs qui ne sont pas liés à une relation
-				if ($searchFilter->criteriatype_id == 1) // Attributs système
+			case null: // Cas des attributs qui ne sont pas liï¿½s ï¿½ une relation
+				if ($searchFilter->criteriatype_id == 1) // Attributs systï¿½me
 				{
 					switch ($searchFilter->criteria_code)
 					{
@@ -654,7 +654,7 @@ class HTML_catalog{
 					<?php
 					break;
 				case "metadata_created":
-					/* Fonctionnement période*/
+					/* Fonctionnement pï¿½riode*/
 					?>
 					<div class="row">
 						<div class="label"><?php echo JText::_($searchFilter->guid."_LABEL");?></div>
@@ -670,7 +670,7 @@ class HTML_catalog{
 					<?php
 					break;
 				case "metadata_published":
-					/* Fonctionnement période*/
+					/* Fonctionnement pï¿½riode*/
 					?>
 					<div class="row">
 						<div class="label"><?php echo JText::_($searchFilter->guid."_LABEL");?></div>
@@ -690,12 +690,12 @@ class HTML_catalog{
 		}
 		break;
 		}
-		else // Cas des attributs OGC qui ne sont pas liés à une relation
+		else // Cas des attributs OGC qui ne sont pas liï¿½s ï¿½ une relation
 		{
 			switch ($searchFilter->rendertype_code)
 			{
 			case "date":
-				/* Fonctionnement période*/
+				/* Fonctionnement pï¿½riode*/
 				?>
 				<div class="row">
 					<div class="label"><?php echo JText::_($searchFilter->guid."_LABEL");?></div>
@@ -742,7 +742,7 @@ default:
 </div>
 <div class="row">
 	<input type="submit" id="simple_search_button" name="simple_search_button" class="easysdi_search_button submit" value ="<?php echo JText::_("CATALOG_SEARCH_SEARCH_BUTTON"); ?>"/>
-	<input type="submit" id="easysdi_clear_button" name="easysdi_clear_button" class="easysdi_clear_button submit" value ="<?php echo JText::_("CATALOG_SEARCH_CLEAR_BUTTON"); ?>"/>
+	<input type="button" id="easysdi_clear_button" name="easysdi_clear_button" class="easysdi_clear_button submit" value ="<?php echo JText::_("CATALOG_SEARCH_CLEAR_BUTTON"); ?>"/>
 </div>
 
 </form>
@@ -767,8 +767,8 @@ if($cswResults)
 	$param = array('size'=>array('x'=>800,'y'=>800) );
 	JHTML::_("behavior.modal","a.modal",$param);
 	
-	// on indique bien qu'on veut les métadonnées retournées, et pas tous les gmd:MD_Metadata qui pourraient se trouver
-	// dans la construction de la métadonnée (notamment les mauvais remplacements de mtadonnées, pour les contacts p.ex.)
+	// on indique bien qu'on veut les mï¿½tadonnï¿½es retournï¿½es, et pas tous les gmd:MD_Metadata qui pourraient se trouver
+	// dans la construction de la mï¿½tadonnï¿½e (notamment les mauvais remplacements de mtadonnï¿½es, pour les contacts p.ex.)
 	$xpath = new DomXPath($cswResults);
 	$xpath->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
 	$xpath->registerNamespace('gmd','http://www.isotc211.org/2005/gmd');
@@ -822,13 +822,13 @@ if($cswResults)
 		$logoWidth = config_easysdi::getValue("logo_width");
 		$logoHeight = config_easysdi::getValue("logo_height");
 	
-		// Créer une entrée pour le logo du compte
+		// Crï¿½er une entrï¿½e pour le logo du compte
 		$XMLALogo = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:account_logo", $account_logo);
 		$XMLALogo->setAttribute('width', $logoWidth);
 		$XMLALogo->setAttribute('height', $logoHeight);
 		$XMLSdi->appendChild($XMLALogo);
 	
-		// Récupérer les informations de base sur l'objet, sa version et sa métadonnée
+		// Rï¿½cupï¿½rer les informations de base sur l'objet, sa version et sa mï¿½tadonnï¿½e
 		$object=array();
 		$queryObject = "	select o.name, ov.title, v.code as metadata_visibility 
 							FROM #__sdi_metadata m
@@ -844,7 +844,7 @@ if($cswResults)
 		$explodeDate = explode(" ", $object->title);
 		$object->title = $explodeDate[0]."T".$explodeDate[1]; 
 		
-		// Créer une entrée pour l'objet
+		// Crï¿½er une entrï¿½e pour l'objet
 		$XMLObject = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:object");
 		if ($object)
 		{
@@ -860,9 +860,9 @@ if($cswResults)
 		}
 		$XMLSdi->appendChild($XMLObject);
 		
-		// Récupérer le type d'objet
+		// Rï¿½cupï¿½rer le type d'objet
 		$objecttype = array();
-		// Récupérer le logo du type d'objet
+		// Rï¿½cupï¿½rer le logo du type d'objet
 		$queryObjecttype = "SELECT ot.code, t.label, ot.logo 
 							FROM #__sdi_objecttype ot
 							INNER JOIN #__sdi_object o ON o.objecttype_id=ot.id
@@ -876,7 +876,7 @@ if($cswResults)
 		$db->setQuery($queryObjecttype);
 		$objecttype = $db->loadObject();
 		
-		// Créer une entrée pour le type d'objet
+		// Crï¿½er une entrï¿½e pour le type d'objet
 		if ($objecttype)
 		{
 			$XMLObjectType = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:objecttype", $objecttype->label);
@@ -895,7 +895,7 @@ if($cswResults)
 		}
 		$XMLSdi->appendChild($XMLObjectType);
 		
-		// Entrées à ajouter si le shop est installé
+		// Entrï¿½es ï¿½ ajouter si le shop est installï¿½
 		$shopExist=0;
 		$query = "	SELECT count(*) 
 					FROM #__sdi_list_module 
@@ -915,7 +915,7 @@ if($cswResults)
 			$db->setQuery($queryProduct);
 			$product = $db->loadObject();
 			
-			// Créer une entrée pour le produit, avec comme attributs la gratuité, la disponibilité et l'état de publication
+			// Crï¿½er une entrï¿½e pour le produit, avec comme attributs la gratuitï¿½, la disponibilitï¿½ et l'ï¿½tat de publication
 			if ($product)
 			{
 				$XMLProduct = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:product", $product->id);
@@ -940,7 +940,7 @@ if($cswResults)
 		//$doc->save("C:\\RecorderWebGIS\\catalog_search\\catalog_search_".$md->getFileIdentifier().".xml");
 		*/
 		
-		// Répertoire des fichiers xsl, s'il y en a un
+		// Rï¿½pertoire des fichiers xsl, s'il y en a un
 		$xslFolder = ""; 
 		
 		if (isset($context))
