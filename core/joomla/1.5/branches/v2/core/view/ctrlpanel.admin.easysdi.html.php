@@ -20,7 +20,7 @@ defined('_JEXEC') or die('Restricted access');
 
 class HTML_ctrlpanel {
 	function ctrlPanelCore($option, $panels){
-			JToolBarHelper::title( JText::_(  'CORE_CPANEL_TITLE' ), 'generic.png' );
+			JToolBarHelper::title( JText::_(  'CORE_CPANEL_TITLE' ), 'easysdi.png' );
 			global $mainframe;
 			$lang		=& JFactory::getLanguage();
 			$template	= $mainframe->getTemplate();
@@ -32,113 +32,41 @@ class HTML_ctrlpanel {
 					<table width=100% border="0">
 						<tr>
 							<td>
-								<div id="cpanel">
-									<h1><?php echo JText::_( 'CORE_CPANEL_CORE_LABEL' );?></h1>
-									<?php
-									$link = "index.php?option=$option&amp;task=ctrlPanelConfig";
-							?>
-									<div style="float:<?php echo ($lang->isRTL()) ? 'right' : 'left'; ?>;">
-										<div class="icon">
-											<a href="<?php echo $link; ?>">
-											
-												<?php 
-												$text = JText::_( 'CORE_CONFIGURATION_PANEL' );
-												echo JHTML::_('image.site',  'icon-48-config.png', '/templates/'. $template .'/images/header/', NULL, NULL, $text); ?>
-												<span><?php echo $text; ?></span></a>
-										</div>
-									</div>
-									
-								<?php	
-									$link = "index.php?option=$option&amp;task=listResources";
-							
-							
-							?>
-									<div style="float:<?php echo ($lang->isRTL()) ? 'right' : 'left'; ?>;">
-										<div class="icon">
-											<a href="<?php echo $link; ?>">
-												<?php 
-													$text = JText::_( 'CORE_RESSOURCES_PANEL' );					
-													echo JHTML::_('image.site',  'icon-48-language.png', '/templates/'. $template .'/images/header/', NULL, NULL, $text ); ?>
-												<span><?php echo $text; ?></span></a>
-										</div>
-									</div>
-								
-								<?php	
-									$link = "index.php?option=$option&amp;task=listLanguage";
-							
-							
-							?>
-									<div style="float:<?php echo ($lang->isRTL()) ? 'right' : 'left'; ?>;">
-										<div class="icon">
-											<a href="<?php echo $link; ?>">
-												<?php 
-													$text = JText::_( 'CORE_LANGUAGE_PANEL' );					
-													echo JHTML::_('image.site',  'icon-48-config.png', '/templates/'. $template .'/images/header/', NULL, NULL, $text ); ?>
-												<span><?php echo $text; ?></span></a>
-										</div>
-									</div>
-								
-									<?php	
-									$link = "index.php?option=$option&amp;task=ctrlPanelAccountManager";
-							
-							
-							?>
-									<div style="float:<?php echo ($lang->isRTL()) ? 'right' : 'left'; ?>;">
-										<div class="icon">
-											<a href="<?php echo $link; ?>">
-												<?php 
-													$text = JText::_( 'CORE_ACCOUNT_PANEL' );					
-													echo JHTML::_('image.site',  'icon-48-user.png', '/templates/'. $template .'/images/header/', NULL, NULL, $text ); ?>
-												<span><?php echo $text; ?></span></a>
-										</div>
-									</div>
-									
-									<?php	
-									$link = "index.php?option=$option&amp;task=listAccountProfile";
-							
-							
-							?>
-									<div style="float:<?php echo ($lang->isRTL()) ? 'right' : 'left'; ?>;">
-										<div class="icon">
-											<a href="<?php echo $link; ?>">
-												<?php 
-													$text = JText::_( 'CORE_ACCOUNTPROFILE_PANEL' );					
-													echo JHTML::_('image.site',  'icon-48-user.png', '/templates/'. $template .'/images/header/', NULL, NULL, $text ); ?>
-												<span><?php echo $text; ?></span></a>
-										</div>
-									</div>
-							
-							
-									
-							<?php	
-									$link = "index.php?option=$option&amp;task=systemAccount&code=service";
-							
-							
-							?>
-									<div style="float:<?php echo ($lang->isRTL()) ? 'right' : 'left'; ?>;">
-										<div class="icon">
-											<a href="<?php echo $link; ?>">
-												<?php 
-													$text = JText::_( 'CORE_SERVICE_ACCOUNT_PANEL' );					
-													echo JHTML::_('image.site',  'icon-48-user.png', '/templates/'. $template .'/images/header/', NULL, NULL, $text ); ?>
-												<span><?php echo $text; ?></span></a>
-										</div>
-									</div>
-							<?php	
-									$link = "index.php?option=$option&amp;task=systemAccount&code=guest";
-							
-							
-							?>
-									<div style="float:<?php echo ($lang->isRTL()) ? 'right' : 'left'; ?>;">
-										<div class="icon">
-											<a href="<?php echo $link; ?>">
-												<?php 
-													$text = JText::_( 'CORE_GUEST_ACCOUNT_PANEL' );					
-													echo JHTML::_('image.site',  'icon-48-user.png', '/templates/'. $template .'/images/header/', NULL, NULL, $text ); ?>
-												<span><?php echo $text; ?></span></a>
-										</div>
-									</div>
-								</div>
+							        <table class="header_sdi_table" width="100%">
+								   <tbody>
+								      <tr>
+								         <td class="header_sdi_comp_title">
+									 <div class="header_sdi icon-48-core"><?php echo JText::_( 'CORE_CPANEL_CORE_LABEL' );?></div>
+									 </td>
+									 <td>&nbsp;</td>
+								      </tr>
+								      <tr>
+								         <td colspan="2">
+									    <table width="100%">
+									      <tr>
+								               <td class="header_sdi_comp_links">&nbsp;</td>
+								               <td class="header_sdi_list">
+									          <ul>
+									             <li><?php printf('<a href="index.php?option=%s&amp;task=ctrlPanelConfig">', $option); echo JText::_( 'CORE_CONFIGURATION_PANEL' ); ?></a></li>
+									             <li><?php printf('<a href="index.php?option=%s&amp;task=listResources">', $option); echo JText::_( 'CORE_RESSOURCES_PANEL' ); ?></a></li>
+									             <li><?php printf('<a href="index.php?option=%s&amp;task=listLanguage">', $option); echo JText::_( 'CORE_LANGUAGE_PANEL' ); ?></a></li>
+									          </ul>
+									       </td>
+									       <td class="header_sdi_list">
+									       <ul >
+									             <li><?php printf('<a href="index.php?option=%s&amp;task=ctrlPanelAccountManager">', $option); echo JText::_( 'CORE_ACCOUNT_PANEL' ); ?></a></li>
+									             <li><?php printf('<a href="index.php?option=%s&amp;task=listAccountProfile">', $option); echo JText::_( 'CORE_ACCOUNTPROFILE_PANEL' ); ?></a></li>
+									             <li><?php printf('<a href="index.php?option=%s&amp;task=systemAccount&code=service">', $option); echo JText::_( 'CORE_SERVICE_ACCOUNT_PANEL' ); ?></a></li>
+									             <li><?php printf('<a href="index.php?option=%s&amp;task=systemAccount&code=guest">', $option); echo JText::_( 'CORE_GUEST_ACCOUNT_PANEL' ); ?></a></li>
+									          </ul>
+									       </td>
+									       <td class="header_sdi_list">&nbsp;</td>
+									       </tr>
+									       </table>
+									 </td>
+								      </tr>
+								    </tbody>
+								 </table>
 							</td>
 						</tr>
 <?php
@@ -155,17 +83,171 @@ class HTML_ctrlpanel {
 					<div id="configuration">
 					<?php 
 					
-						$pane =& JPane::getInstance('sliders', array('allowAllClose' => true));
+						$pane =& JPane::getInstance('sliders', array('startOffset'=>0, 'allowAllClose' => true));
 						echo $pane->startPane("content-pane");
-							
+						
+						//welcome panel
+						echo $pane->startPanel( JText::_('SHOP_CPANEL_WELCOME_TITLE'), 'cpanel-panel-welcome' );
+						?>
+						
+						<h3 class="contrib-sdi"><?php echo JText::_('SHOP_CPANEL_WELCOME_GZ_TITLE'); ?></h3>
+						<p class="contrib-sdi">
+						   <?php echo JText::_('SHOP_CPANEL_WELCOME_GZ_BODY'); ?>
+						</p>
+						
+						<h3 class="contrib-sdi"><?php echo JText::_('SHOP_CPANEL_WELCOME_HELP_TITLE'); ?></h3>
+						<p class="contrib-sdi">
+						   <?php echo JText::_('SHOP_CPANEL_WELCOME_HELP_BODY'); ?>
+						   <a href="http://forge.easysdi.org/projects/show/easysdi" target="_blank"> <?php echo JText::_('SHOP_CPANEL_WELCOME_HELP_MAIN_WIKI_LINK'); ?></a>
+						   <br/>
+						   <?php echo JText::_('SHOP_CPANEL_WELCOME_HELP_FOOTER'); ?>
+						   <a href="http://forge.easysdi.org/projects/easysdi/boards" target="_blank"> <?php echo JText::_('SHOP_CPANEL_WELCOME_HELP_FORUM_LINK'); ?></a>
+						   <?php echo JText::_('SHOP_CPANEL_WELCOME_HELP_FOOTER2'); ?>
+						</p>
+						
+						<h3 class="contrib-sdi"><?php echo JText::_('SHOP_CPANEL_WELCOME_GI_TITLE'); ?></h3>
+						<p class="contrib-sdi">
+						   <?php echo JText::_('SHOP_CPANEL_WELCOME_GI_BODY'); ?>
+						   <a href="http://www.easysdi.org/index.php/en/community/join-us" target="_blank"><?php echo JText::_('SHOP_CPANEL_WELCOME_GI_LINK'); ?></a>
+						</p>
+						
+						<?php
+						echo $pane->endPanel('cpanel-panel-welcome');
+						
+						//contributors panel
+						echo $pane->startPanel( JText::_('SHOP_CPANEL_THANKS_TITLE'), 'cpanel-panel-contrib' );
+						?>
+						<br/>
+						<table width="100%" class="contrib-sdi">
+						   <tr>
+						      <td><?php echo JText::_('SHOP_CPANEL_THANKS_BODY'); ?></td>
+						   </tr>
+						   <tr>
+						      <td>&nbsp;</td>
+						   </tr>
+						   <!-- CORE -->
+						   <tr>
+						      <td class="title"><?php echo JText::_('SHOP_CPANEL_THANKS_CORE'); ?></td>
+						   </tr>
+						   <tr>
+						      <td>
+						          <a href="http://de.siteof.de" target="_blank">Extended Menu for Joomla - version: 1.0.6</a>,&nbsp;
+						          <a href="" target="_blank">dTree 2.05..</a>
+						      </td>
+						   </tr>
+						   <tr>
+						      <td>&nbsp;</td>
+						   </tr>
+						   <!-- CATALOG -->
+						   <tr>
+						      <td class="title"><?php echo JText::_('SHOP_CPANEL_THANKS_CATALOG'); ?></td>
+						   </tr>
+						   <tr>
+						      <td>
+						         <a href="http://www.sencha.com" target="_blank">EXT JS 3.2.1</a>,&nbsp;
+							 <a href="http://dev.bnhelp.cz/trac/gemetclient/wiki" target="_blank">GemetClient</a>
+						      </td>
+						   </tr>
+						   <tr>
+						      <td>&nbsp;</td>
+						   </tr>
+						   <!-- SHOP -->
+						   <tr>
+						      <td class="title"><?php echo JText::_('SHOP_CPANEL_THANKS_SHOP'); ?></td>
+						   </tr>
+						   <tr>
+						      <td>
+						         <a href="http://openlayers.org" target="_blank">Openlayers 2.8</a>,&nbsp;
+							 <a href="http://proj4js.org/" target="_blank">Proj4js</a>
+						      </td>
+						   </tr>
+						   <tr>
+						      <td>&nbsp;</td>
+						   </tr>
+						   <!-- PROXY -->
+						   <tr>
+						      <td class="title"><?php echo JText::_('SHOP_CPANEL_THANKS_PROXY'); ?></td>
+						   </tr>
+						   <tr>
+						      <td>
+						         <a href="http://openlayers.org" target="_blank">Openlayers 2.10</a>,&nbsp;
+							 <a href="http://proj4js.org/" target="_blank">Proj4js</a>,&nbsp;
+							 <a href="http://ehcache.org/" target="_blank">Ehcache 2.0.1</a>,&nbsp;
+							 <a href="http://static.springsource.org/spring-security/site/" target="_blank">Spring Secrurity</a>,&nbsp;
+							 <a href="http://logging.apache.org/log4j/1.2/" target="_blank">Log4j 1.2</a>,&nbsp;
+							 <a href="http://xmlgraphics.apache.org/fop/" target="_blank">FOP 0.95</a>,&nbsp;
+							 <a href="http://www.geotools.org/" target="_blank">GeoTools 2.4.1</a>,&nbsp;
+							 <a href="http://www.geoapi.org/" target="_blank">GeoAPI 2.1</a>,&nbsp;
+							 <a href="http://java.sun.com/javase/technologies/desktop/media/jai/" target="_blank">JAI 1.1.3</a>,&nbsp;
+							 <a href="http://xmlgraphics.apache.org/batik/" target="_blank">Batik 1.7</a>
+						      </td>
+						   </tr>
+						   <tr>
+						      <td>&nbsp;</td>
+						   </tr>
+						   <!-- MONITOR -->
+						   <tr>
+						      <td class="title"><?php echo JText::_('SHOP_CPANEL_THANKS_MONITOR'); ?></td>
+						   </tr>
+						   <tr>
+						      <td>
+						         <a href="http://www.sencha.com/" target="_blank">EXT JS 3.2.1</a>,&nbsp;
+							 <a href="http://jquery.com/" target="_blank">JQuery 1.4.2</a>,&nbsp;
+							 <a href="http://www.highcharts.com/" target="_blank">Highcharts JS v2.0.3</a>,&nbsp;
+							 <a href="http://www.deegree.org" target="_blank">Deegree 2.3 OWSWatch</a>,&nbsp;
+							 <a href="http://static.springsource.org/spring-security/site/" target="_blank">Spring Secrurity</a>
+						      </td>
+						   </tr>
+						   <tr>
+						      <td>&nbsp;</td>
+						   </tr>
+						   <!-- MAP -->
+						   <tr>
+						      <td class="title"><?php echo JText::_('SHOP_CPANEL_THANKS_MAP'); ?></td>
+						   </tr>
+						   <tr>
+						      <td>
+						         <a href="http://www.sencha.com" target="_blank">EXT JS 2.2.1</a>,&nbsp;
+							 <a href="http://www.geoext.org" target="_blank">GeoExt 1.0</a>,&nbsp;
+							 <a href="http://jquery.com" target="_blank">JQuery 1.3.2</a>,&nbsp;
+							 <a href="http://openlayers.org/" target="_blank">Openlayers 2.10</a>
+						      </td>
+						   </tr>
+						   <tr>
+						      <td>&nbsp;</td>
+						   </tr>
+						   <!-- PUBLISH -->
+						   <tr>
+						      <td class="title"><?php echo JText::_('SHOP_CPANEL_THANKS_PUBLISH'); ?></td>
+						   </tr>
+						   <tr>
+						      <td>
+						         <a href="http://www.geoext.org" target="_blank">GeoExt 1.0</a>,&nbsp;
+						         <a href="http://openlayers.org/" target="_blank">Openlayers 2.10</a>,&nbsp;
+							 <a href="http://www.sencha.com/" target="_blank">EXT JS 3.2</a>,&nbsp;
+							 <a href="http://projects.opengeo.org/styler" target="_blank">GeoExt Styler</a>,&nbsp;
+							 <a href="http://www.gdal.org" target="_blank">Gdal - OGR 1.7.2</a>
+						      </td>
+						   </tr>
+						   <tr>
+						      <td>&nbsp;</td>
+						   </tr>
+						</table>
+						
+						
+						<?php
+						echo $pane->endPanel('cpanel-panel-contrib');
+						
+						//licence panel
 						echo $pane->startPanel( JText::_('CORE_CPANEL_LICENSE'), 'cpanel-panel-licence' );
-						?><PRE>
+						?><PRE style="padding-left:10px">
 						<?php 		 
 						$file = file_get_contents (JPATH_COMPONENT_ADMINISTRATOR.DS.'license.txt');
 						echo htmlspecialchars  ($file,ENT_QUOTES);
 						?></PRE>
 						<?php
 						echo $pane->endPanel('cpanel-panel-licence');
+						
 						echo $pane->endPane();
 					?>
 					</div>
