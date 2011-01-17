@@ -15,13 +15,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html. 
  */
+ 
+                //JToolBarHelper::spacer();
+		//JToolBarHelper::custom( 'cancelProperties', 'back.png', 'back.png', JTEXT::_("CORE_MENU_BACK"), false );
+		//JToolBarHelper::custom( 'ctrlPanelShop', 'tool_f2.png', 'tool_f2.png', JTEXT::_("CORE_MENU_CPANEL"), false );
 
 defined('_JEXEC') or die('Restricted access');
 class TOOLBAR_proxy{
 	
 	function editComponentConfig(){
-		JToolBarHelper::save('saveComponentConfig',JText::_( 'EASYSDI_SAVE' ));		
-		JToolBarHelper::cancel('cancelComponentConfig');					
+		JToolBarHelper::save('saveComponentConfig',JText::_( 'EASYSDI_SAVE' ));	
+		JToolBarHelper::spacer();
+		JToolBarHelper::custom( 'cancelComponentConfig', 'back.png', 'back.png', JTEXT::_("CORE_MENU_BACK"), false );
 	}
 	
 	function editConfig(){
@@ -45,8 +50,9 @@ class TOOLBAR_proxy{
 		$serviceType = JRequest::getVar('serviceType');
 		if($serviceType != 'CSW')
 			JToolBarHelper::addNew('addNewServer',JText::_( 'EASYSDI_ADD NEW SERVER'));
-		JToolBarHelper::save('saveConfig',JText::_( 'EASYSDI_SAVE' ));		
-		JToolBarHelper::cancel();					
+		JToolBarHelper::save('saveConfig',JText::_( 'EASYSDI_SAVE' ));	
+		JToolBarHelper::spacer();
+		JToolBarHelper::custom( 'cancelConfig', 'back.png', 'back.png', JTEXT::_("CORE_MENU_BACK"), false );
 	}
 	
 	function editPolicy(){	
@@ -60,9 +66,9 @@ class TOOLBAR_proxy{
 		else // Edit
 			$text = JText::_("CORE_EDIT");
 		JToolBarHelper::title(JText::_( 'EASYSDI_EDIT_POLICY' ).': <small><small>[ '. $text.' ]</small></small>', 'addedit.png');
-		
 		JToolBarHelper::save('savePolicy',JText::_( 'EASYSDI_SAVE POLICY' ));
-		JToolBarHelper::cancel('cancelPolicy');
+		JToolBarHelper::spacer();
+		JToolBarHelper::custom( 'cancelPolicy', 'back.png', 'back.png', JTEXT::_("CORE_MENU_BACK"), false );
 	}
 	
 	function editPolicyList(){
@@ -74,9 +80,8 @@ class TOOLBAR_proxy{
 		JToolBarHelper::custom('copyPolicy','copy.png','copy.png',JText::_( 'EASYSDI_COPY A POLICY' ),true);
 		//JToolBarHelper::deleteList('deletePolicy',JText::_( 'EASYSDI_DELETE POLICY' ));
 		JToolBarHelper::deleteList( JText::_( 'CORE_DELETE_MSG'), 'deletePolicy', JText::_( 'EASYSDI_DELETE POLICY'));		
-		
-		//JToolBarHelper::cancel();
-		JToolBarHelper::custom( 'cancel', 'back.png', 'back.png', JTEXT::_("EASYSDI_MENU_BACK"), false );
+		JToolBarHelper::spacer();
+		JToolBarHelper::custom( 'cancelConfig', 'back.png', 'back.png', JTEXT::_("CORE_MENU_BACK"), false );
 	}
 	
 	
@@ -95,8 +100,8 @@ class TOOLBAR_proxy{
 		JToolBarHelper::deleteList( JText::_( 'CORE_DELETE_MSG'), 'deleteConfig', JText::_( 'EASYSDI_DELETE CONFIG'));		
 		//JToolBarHelper::custom('deleteConfig','delete.png','delete.png',JText::_( 'EASYSDI_DELETE CONFIG' ),true, true);
 		JToolBarHelper::editList('editPolicyList',JText::_( 'EASYSDI_POLICIES LIST' ));
-		//JToolBarHelper::cancel('cancelConfigList');		
-		JToolBarHelper::custom( 'cpanel', 'tool_f2.png', 'tool_f2.png', JTEXT::_("EASYSDI_MENU_CPANEL"), false );
+		JToolBarHelper::spacer();
+		JToolBarHelper::custom( 'cpanel', 'tool_f2.png', 'tool_f2.png', JTEXT::_("CORE_MENU_CPANEL"), false );
 	}
 	
 }
