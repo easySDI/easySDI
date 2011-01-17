@@ -31,7 +31,7 @@ class TOOLBAR_searchcriteria {
 		//JToolBarHelper::addNew('newSearchCriteria');
 		//JToolBarHelper::custom( 'cpanel', 'tool_f2.png', 'tool_f2.png', JTEXT::_("CATALOG_MENU_CPANEL"), false );
 		JToolBarHelper::spacer();
-		JToolBarHelper::custom( 'backSearchCriteria', 'back.png', 'back.png', JTEXT::_("CATALOG_MENU_BACK"), false );
+		JToolBarHelper::custom( 'backSearchCriteria', 'back.png', 'back.png', JTEXT::_("CORE_MENU_BACK"), false );
 	}
 	
 	function _EDIT() {
@@ -46,7 +46,8 @@ class TOOLBAR_searchcriteria {
 		
 		JToolBarHelper::save('saveSearchCriteria');
 		JToolBarHelper::apply('applySearchCriteria');
-		JToolBarHelper::cancel('cancelSearchCriteria');
+		JToolBarHelper::spacer();
+		JToolBarHelper::custom( 'cancelSearchCriteria', 'back.png', 'back.png', JTEXT::_("CORE_MENU_BACK"), false );
 	}
 }
 ?>
