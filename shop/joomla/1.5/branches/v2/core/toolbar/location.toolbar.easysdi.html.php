@@ -30,7 +30,7 @@ class TOOLBAR_location{
 		JToolBarHelper::deleteList('','deleteLocation');
 		JToolBarHelper::custom( 'copyLocation', 'copy.png', 'copy.png', JTEXT::_("SHOP_MENU_COPY_LOCATION"), false );
 		JToolBarHelper::spacer();
-		JToolBarHelper::custom( 'ctrlPanelShop', 'config.png', 'config.png', JTEXT::_("SHOP_MENU_CPANEL"), false );
+		JToolBarHelper::custom( 'ctrlPanelShop', 'tool_f2.png', 'tool_f2.png', JTEXT::_("CORE_MENU_CPANEL"), false );
 	}
 }
 ?>

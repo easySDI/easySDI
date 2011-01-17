@@ -22,7 +22,8 @@ class TOOLBAR_properties{
 	
 	function _EDITPROPERTIES(){
 		JToolBarHelper::save('saveProperties');
-		JToolBarHelper::cancel('cancelProperties');
+		JToolBarHelper::spacer();
+		JToolBarHelper::custom( 'cancelProperties', 'back.png', 'back.png', JTEXT::_("CORE_MENU_BACK"), false );
 	}
 	
 	function _LISTPROPERTIES() {
@@ -31,12 +32,13 @@ class TOOLBAR_properties{
 		JToolBarHelper::deleteList('','deleteProperties');
 		JToolBarHelper::custom( 'listPropertiesValues', 'preview.png', 'preview.png',JTEXT::_("SHOP_MENU_PROPERTIES_VALUES"), false);
 		JToolBarHelper::spacer();
-		JToolBarHelper::custom( 'ctrlPanelShop', 'config.png', 'config.png', JTEXT::_("SHOP_MENU_CPANEL"), false );
+		JToolBarHelper::custom( 'ctrlPanelShop', 'tool_f2.png', 'tool_f2.png', JTEXT::_("CORE_MENU_CPANEL"), false );
 	}
 	
 	function _EDITPROPERTIESVALUES(){
 		JToolBarHelper::save('savePropertiesValues');
-		JToolBarHelper::cancel('cancelPropertiesValues');
+		JToolBarHelper::spacer();
+		JToolBarHelper::custom( 'cancelPropertiesValues', 'back.png', 'back.png', JTEXT::_("CORE_MENU_BACK"), false );
 	}
 	
 	function _LISTPROPERTIESVALUES() {
@@ -44,8 +46,8 @@ class TOOLBAR_properties{
 		JToolBarHelper::editList('editPropertiesValues');
 		JToolBarHelper::deleteList('','deletePropertiesValues');				
 		JToolBarHelper::spacer();
-		JToolBarHelper::custom( 'cancelProperties', 'back.png', 'back.png', JTEXT::_("SHOP_MENU_BACK"), false );
-		JToolBarHelper::custom( 'ctrlPanelShop', 'config.png', 'config.png', JTEXT::_("SHOP_MENU_CPANEL"), false );
+		JToolBarHelper::custom( 'cancelProperties', 'back.png', 'back.png', JTEXT::_("CORE_MENU_BACK"), false );
+		JToolBarHelper::custom( 'ctrlPanelShop', 'tool_f2.png', 'tool_f2.png', JTEXT::_("CORE_MENU_CPANEL"), false );
 	}
 }
 ?>

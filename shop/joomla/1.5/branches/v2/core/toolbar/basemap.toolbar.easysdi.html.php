@@ -21,7 +21,8 @@ class TOOLBAR_basemap{
 		
 	function _EDITBASEMAP(){		
 		JToolBarHelper::save('saveBasemap');
-		JToolBarHelper::cancel('cancelBasemap');		
+		JToolBarHelper::spacer();
+		JToolBarHelper::custom( 'cancelBasemap', 'back.png', 'back.png', JTEXT::_("CORE_MENU_BACK"), false );
 	}
 	
 	function _LISTBASEMAP() {
@@ -31,20 +32,23 @@ class TOOLBAR_basemap{
 		JToolBarHelper::deleteList('','deleteBasemap');
 		JToolBarHelper::spacer();
 		JToolBarHelper::custom( 'listBasemapContent', 'preview.png', 'preview.png', JTEXT::_("SHOP_MENU_LISTBASEMAP_CONTENT"), false );
-		JToolBarHelper::custom( 'ctrlPanelShop', 'config.png', 'tool_f2.png', JTEXT::_("SHOP_MENU_CPANEL"), false );
+		JToolBarHelper::spacer();
+		JToolBarHelper::custom( 'ctrlPanelShop', 'tool_f2.png', 'tool_f2.png', JTEXT::_("CORE_MENU_CPANEL"), false );
 	}
 	
 	function _EDITBASEMAPCONTENT(){
 		JToolBarHelper::save('saveBasemapContent');
-		JToolBarHelper::cancel('cancelBasemapContent');
+		JToolBarHelper::spacer();
+		JToolBarHelper::custom( 'cancelBasemapContent', 'back.png', 'back.png', JTEXT::_("CORE_MENU_BACK"), false );
 	}
 	
 	function _LISTBASEMAPCONTENT($basemap_id) {
 		JToolBarHelper::addNew('newBasemapContent');
 		JToolBarHelper::editList('editBasemapContent');
 		JToolBarHelper::deleteList('','deleteBasemapContent');		
+		JToolBarHelper::spacer();
 		JToolBarHelper::custom( 'cancelBasemap', 'back.png', 'back.png', JTEXT::_("SHOP_MENU_BACK"), false );
-		JToolBarHelper::custom( 'ctrlPanelShop', 'config.png', 'tool_f2.png', JTEXT::_("SHOP_MENU_CPANEL"), false );
+		JToolBarHelper::custom( 'ctrlPanelShop', 'tool_f2.png', 'tool_f2.png', JTEXT::_("CORE_MENU_CPANEL"), false );
 	}
 }
 ?>

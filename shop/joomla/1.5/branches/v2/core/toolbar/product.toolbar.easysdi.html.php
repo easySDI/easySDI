@@ -20,18 +20,21 @@ defined('_JEXEC') or die('Restricted access');
 class TOOLBAR_product{
 	
 	function editComponentConfig(){
-		JToolBarHelper::custom('saveComponentConfig','save.png','save.png',JText::_( 'SHOP_SAVE' ),false);		
-		JToolBarHelper::cancel('cancelComponentConfig');					
+		JToolBarHelper::custom('saveComponentConfig','save.png','save.png',JText::_( 'SHOP_SAVE' ),false);
+                JToolBarHelper::spacer();
+		JToolBarHelper::custom( 'cancelComponentConfig', 'back.png', 'back.png', JTEXT::_("CORE_MENU_BACK"), false );		
 	}
 	
 	function _EDITPRODUCTMETADATA(){
 		JToolBarHelper::save('saveProductMetadata');
+		JToolBarHelper::spacer();
 		JToolBarHelper::cancel('cancelProductMetadata');
 	}
 	
 	function _EDITPRODUCT(){
 		JToolBarHelper::save('saveProduct');
-		JToolBarHelper::cancel('cancelProduct');
+		JToolBarHelper::spacer();
+		JToolBarHelper::custom( 'cancelProduct', 'back.png', 'back.png', JTEXT::_("CORE_MENU_BACK"), false );
 	}
 	
 	function _LISTPRODUCT() {
@@ -39,7 +42,7 @@ class TOOLBAR_product{
 		JToolBarHelper::editList('editProduct');
 		JToolBarHelper::deleteList('','deleteProduct');
 		JToolBarHelper::spacer();
-		JToolBarHelper::custom( 'ctrlPanelShop', 'config.png', 'config.png', JTEXT::_("SHOP_MENU_CPANEL"), false );
+		JToolBarHelper::custom( 'ctrlPanelShop', 'tool_f2.png', 'tool_f2.png', JTEXT::_("CORE_MENU_CPANEL"), false );
 	}
 	
 }
