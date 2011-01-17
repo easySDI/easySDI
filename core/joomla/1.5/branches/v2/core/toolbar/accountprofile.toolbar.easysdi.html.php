@@ -41,7 +41,8 @@ class TOOLBAR_accountprofile {
 		
 		JToolBarHelper::save('saveAccountProfile');
 		JToolBarHelper::apply('applyAccountProfile');
-		JToolBarHelper::cancel('cancelAccountProfile');
+		JToolBarHelper::spacer();
+		JToolBarHelper::custom( 'cancelAccountProfile', 'back.png', 'back.png', JTEXT::_("CORE_MENU_BACK"), false );
 	}
 }
 ?>

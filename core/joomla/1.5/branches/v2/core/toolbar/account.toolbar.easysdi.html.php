@@ -62,7 +62,8 @@ class TOOLBAR_account {
 			}
 		
 		JToolBarHelper::save('saveAccount');
-		JToolBarHelper::cancel('cancelAccount');
+		JToolBarHelper::spacer();
+		JToolBarHelper::custom( 'cancelAccount', 'back.png', 'back.png', JTEXT::_("CORE_MENU_BACK"), false );
 	}
 
 }

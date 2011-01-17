@@ -23,19 +23,22 @@ class TOOLBAR_systemaccount {
 	function _DEFAULT() 
 	{
 		JToolBarHelper::editList('editSystemAccount');
+		JToolBarHelper::spacer();
 		JToolBarHelper::custom( 'rightCtrlPanel', 'back.png', 'back.png', JTEXT::_("EASYSDI_MAP_MENU_BACK"), false );
 	}
 	
 	function _LIST() 
 	{
 		JToolBarHelper::editList('editSystemAccount');
+		JToolBarHelper::spacer();
 		JToolBarHelper::custom( 'rightCtrlPanel', 'back.png', 'back.png', JTEXT::_("EASYSDI_MAP_MENU_BACK"), false );
 	}
 
 	function _EDIT() 
 	{
 		JToolBarHelper::save('saveSystemAccount');
-		JToolBarHelper::cancel('rightCtrlPanel');
+		JToolBarHelper::spacer();
+		JToolBarHelper::custom( 'cpanel', 'tool_f2.png', 'tool_f2.png', JTEXT::_("CORE_MENU_CPANEL"), false );
 	}
 
 }

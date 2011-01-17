@@ -22,7 +22,6 @@ class TOOLBAR_resources {
 		
 		JToolBarHelper::title(JText::_("CORE_RESOURCES_TITLE"));
 		JToolBarHelper::editList('editResource');
-		
 		JToolBarHelper::spacer();
 		JToolBarHelper::custom( 'cpanel', 'tool_f2.png', 'tool_f2.png', JTEXT::_("CORE_MENU_CPANEL"), false );
 	}
@@ -30,7 +29,8 @@ class TOOLBAR_resources {
 		JToolBarHelper::title(JText::_( 'CORE_RESOURCES_TITLE_EDIT' ).': <small><small>[ '. JText::_("CORE_EDIT").' ]</small></small>', 'addedit.png');
 		
 		JToolBarHelper::save('saveResource');
-		JToolBarHelper::cancel('cancelResource');
+		JToolBarHelper::spacer();
+		JToolBarHelper::custom( 'cancelResource', 'back.png', 'back.png', JTEXT::_("CORE_MENU_BACK"), false );
 	}
 }
 

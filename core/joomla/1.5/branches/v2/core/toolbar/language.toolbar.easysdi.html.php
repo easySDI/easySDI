@@ -43,7 +43,9 @@ class TOOLBAR_language {
 		
 		JToolBarHelper::save('saveLanguage');
 		JToolBarHelper::apply('applyLanguage');
-		JToolBarHelper::cancel('cancelLanguage');
+		JToolBarHelper::spacer();
+		JToolBarHelper::custom( 'back', 'back.png', 'back.png', JTEXT::_("CORE_MENU_BACK"), false );
+		//JToolBarHelper::cancel('cancelLanguage');
 	}
 }
 
