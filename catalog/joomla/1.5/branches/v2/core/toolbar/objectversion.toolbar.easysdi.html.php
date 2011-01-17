@@ -31,12 +31,13 @@ class TOOLBAR_objectversion {
 		
 		JToolBarHelper::save('saveObjectVersion');
 		JToolBarHelper::apply('applyObjectVersion');
-		JToolBarHelper::cancel('cancelObjectVersion');
 		if (intval($cid[0]) <> 0) // Edit
 		{
 			JToolBarHelper::spacer();
 			JToolBarHelper::custom('editMetadata', 'preview.png', 'preview.png', JTEXT::_("CORE_OBJECT_MENU_EDITMETADATA"), false );
 		}
+		JToolBarHelper::spacer();
+		JToolBarHelper::custom( 'cancelObjectVersion', 'back.png', 'back.png', JTEXT::_("CORE_MENU_BACK"), false );
 	}
 	
 	function _DEFAULT() {
@@ -65,7 +66,7 @@ class TOOLBAR_objectversion {
 		JToolBarHelper::custom('viewObjectVersionLink', 'tool_f2.png', 'tool_f2.png', JTEXT::_("CORE_OBJECT_MENU_VIEWOBJECTVERSIONLINK"), false );
 		JToolBarHelper::custom('manageObjectVersionLink', 'edit.png', 'edit.png', JTEXT::_("CORE_OBJECT_MENU_MANAGEOBJECTVERSIONLINK"), false );
 		JToolBarHelper::spacer();
-		JToolBarHelper::custom( 'backObjectVersion', 'back.png', 'back.png', JTEXT::_("CATALOG_MENU_BACK"), false );
+		JToolBarHelper::custom( 'backObjectVersion', 'back.png', 'back.png', JTEXT::_("CORE_MENU_BACK"), false );
 	}
 	
 	function _NEW() {
@@ -81,7 +82,8 @@ class TOOLBAR_objectversion {
 		JToolBarHelper::title(JText::_( 'CATALOG_NEW_OBJECTVERSION' )." ".$object_name.': <small><small>[ '.JText::_("CORE_NEW").' ]</small></small>', 'addedit.png');
 		
 		JToolBarHelper::save('saveObjectVersion');
-		JToolBarHelper::cancel('cancelObjectVersion');
+		JToolBarHelper::spacer();
+		JToolBarHelper::custom( 'cancelObjectVersion', 'back.png', 'back.png', JTEXT::_("CORE_MENU_BACK"), false );
 	}
 	
 	function _VIEW() {
@@ -94,8 +96,8 @@ class TOOLBAR_objectversion {
 		
 		$objectversion_name = "\"".$objectversion->title."\"";
 		JToolBarHelper::title(JText::_("CATALOG_VIEW_OBJECTVERSIONLINK")." ".$objectversion_name);
-		
-		JToolBarHelper::custom( 'backObjectVersionLink', 'back.png', 'back.png', JTEXT::_("CATALOG_MENU_BACK"), false );
+		JToolBarHelper::spacer();
+		JToolBarHelper::custom( 'backObjectVersionLink', 'back.png', 'back.png', JTEXT::_("CORE_MENU_BACK"), false );
 	}
 	function _MANAGE() {
 		global $mainframe;
@@ -107,17 +109,16 @@ class TOOLBAR_objectversion {
 		$objectversion->load($objectversion_id);
 		$objectversion_name = "\"".$objectversion->title."\"";
 		JToolBarHelper::title(JText::_("CATALOG_MANAGE_OBJECTVERSIONLINK")." ".$objectversion_name);
-		
-		//JToolBarHelper::save('saveObjectLink');
-		JToolBarHelper::custom( 'backObjectVersionLink', 'back.png', 'back.png', JTEXT::_("CATALOG_MENU_BACK"), false );
+		JToolBarHelper::spacer();
+		JToolBarHelper::custom( 'backObjectVersionLink', 'back.png', 'back.png', JTEXT::_("CORE_MENU_BACK"), false );
 	}
 	
 	function _HISTORY() {
 		global $mainframe;
 		
 		JToolBarHelper::title(JText::_("CATALOG_HISTORYASSIGN_METADATA")); 
-		
-		JToolBarHelper::custom( 'backHistoryAssign', 'back.png', 'back.png', JTEXT::_("CATALOG_MENU_BACK"), false );
+		JToolBarHelper::spacer();
+		JToolBarHelper::custom( 'backHistoryAssign', 'back.png', 'back.png', JTEXT::_("CORE_MENU_BACK"), false );
 	}
 	
 }

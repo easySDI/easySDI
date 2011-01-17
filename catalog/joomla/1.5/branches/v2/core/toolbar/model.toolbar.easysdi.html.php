@@ -25,11 +25,12 @@ class TOOLBAR_model {
 		JToolBarHelper::deleteList('','removeModel');
 		
 		JToolBarHelper::spacer();
-		JToolBarHelper::custom( 'cpanel', 'tool_f2.png', 'tool_f2.png', JTEXT::_("CATALOG_MENU_CPANEL"), false );
+		JToolBarHelper::custom( 'cpanel', 'tool_f2.png', 'tool_f2.png', JTEXT::_("CORE_MENU_CPANEL"), false );
 	}
 	function _EDIT() {
 		JToolBarHelper::save('saveModel');
-		JToolBarHelper::cancel('cancelModel');
+		JToolBarHelper::spacer();
+		JToolBarHelper::custom( 'cancelModel', 'back.png', 'back.png', JTEXT::_("CORE_MENU_BACK"), false );
 	}
 }
 ?>

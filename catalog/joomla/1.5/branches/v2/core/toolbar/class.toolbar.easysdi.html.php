@@ -27,7 +27,7 @@ class TOOLBAR_class {
 		JToolBarHelper::deleteList( JText::_( 'CATALOG_CLASS_DELETE_CONFIRM_MSG'), 'removeClass', JText::_( 'DELETE'));		
 		
 		JToolBarHelper::spacer();
-		JToolBarHelper::custom( 'cpanel', 'tool_f2.png', 'tool_f2.png', JTEXT::_("CATALOG_MENU_CPANEL"), false );
+		JToolBarHelper::custom( 'cpanel', 'tool_f2.png', 'tool_f2.png', JTEXT::_("CORE_MENU_CPANEL"), false );
 	}
 	function _EDIT() {
 		global $mainframe;
@@ -41,7 +41,8 @@ class TOOLBAR_class {
 		
 		JToolBarHelper::save('saveClass');
 		JToolBarHelper::apply('applyClass');
-		JToolBarHelper::cancel('cancelClass');
+		JToolBarHelper::spacer();
+		JToolBarHelper::custom( 'cancelClass', 'back.png', 'back.png', JTEXT::_("CORE_MENU_BACK"), false );
 	}
 }
 ?>

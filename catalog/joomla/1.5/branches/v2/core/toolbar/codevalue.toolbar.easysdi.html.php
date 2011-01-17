@@ -27,8 +27,7 @@ class TOOLBAR_codevalue {
 		JToolBarHelper::deleteList( JText::_( 'CATALOG_CODEVALUE_DELETE_CONFIRM_MSG'), 'removeCodeValue', JText::_( 'DELETE'));		
 		
 		JToolBarHelper::spacer();
-		//JToolBarHelper::back();
-		JToolBarHelper::custom( 'back', 'back.png', 'back.png', JTEXT::_("CATALOG_MENU_BACK"), false );
+		JToolBarHelper::custom( 'cancelCodeValue', 'back.png', 'back.png', JTEXT::_("CORE_MENU_BACK"), false );
 	}
 	function _EDIT() {
 		global $mainframe;
@@ -42,7 +41,8 @@ class TOOLBAR_codevalue {
 		
 		JToolBarHelper::save('saveCodeValue');
 		JToolBarHelper::apply('applyCodeValue');
-		JToolBarHelper::cancel('cancelCodeValue');
+		JToolBarHelper::spacer();
+		JToolBarHelper::custom( 'cancelCodeValue', 'back.png', 'back.png', JTEXT::_("CORE_MENU_BACK"), false );
 	}
 }
 ?>

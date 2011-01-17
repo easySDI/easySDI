@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySDI, a solution to implement easily any spatial data infrastructure
- * Copyright (C) 2008 DEPTH SA, Chemin dâ¬"Arche 40b, CH-1870 Monthey, easysdi@depth.ch 
+ * Copyright (C) 2008 DEPTH SA, Chemin dï¿½"Arche 40b, CH-1870 Monthey, easysdi@depth.ch 
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +34,7 @@ class TOOLBAR_metadata{
 		}
 		else
 		{
-			if ($object_id == 0) // Appel de l'édition depuis l'écran de gestion des objets
+			if ($object_id == 0) // Appel de l'ï¿½dition depuis l'ï¿½cran de gestion des objets
 			{
 				$cid = JRequest::getVar( 'cid');
 				$object_id = $cid[0];
@@ -61,7 +61,8 @@ class TOOLBAR_metadata{
 		//JToolBarHelper::save('saveMetadata');
 		//JToolBarHelper::custom( 'saveMetadata', 'tool_f2.png', 'tool_f2.png', 'SAVE', false );
 		//JToolBarHelper::apply('applyMetadata');
-		JToolBarHelper::cancel('cancelMetadata');						
+		JToolBarHelper::spacer();
+		JToolBarHelper::custom( 'cancelMetadata', 'back.png', 'back.png', JTEXT::_("CORE_MENU_BACK"), false );
 	}
 }
 ?>

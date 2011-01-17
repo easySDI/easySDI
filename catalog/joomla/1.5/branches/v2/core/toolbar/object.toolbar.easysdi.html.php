@@ -19,8 +19,9 @@ defined('_JEXEC') or die('Restricted access');
 class TOOLBAR_object{
 	
 	function editComponentConfig(){
-		JToolBarHelper::custom('saveComponentConfig','save.png','save.png',JText::_( 'CORE_SAVE' ),false);		
-		JToolBarHelper::cancel('cancelComponentConfig');					
+		JToolBarHelper::custom('saveComponentConfig','save.png','save.png',JText::_( 'CORE_SAVE' ),false);
+		JToolBarHelper::spacer();
+		JToolBarHelper::custom( 'cancelComponentConfig', 'back.png', 'back.png', JTEXT::_("CORE_MENU_BACK"), false );
 	}
 	function _EDIT(){
 		global $mainframe;
@@ -34,7 +35,8 @@ class TOOLBAR_object{
 		
 		JToolBarHelper::save('saveObject');
 		JToolBarHelper::apply('applyObject');
-		JToolBarHelper::cancel('cancelObject');
+		JToolBarHelper::spacer();
+                JToolBarHelper::custom( 'cancelObject', 'back.png', 'back.png', JTEXT::_("CORE_MENU_BACK"), false );
 		/*if (intval($cid[0]) <> 0) // Edit
 		{
 			JToolBarHelper::spacer();
