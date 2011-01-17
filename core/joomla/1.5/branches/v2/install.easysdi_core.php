@@ -1120,7 +1120,7 @@ function com_install(){
 					('".helper_easysdi::getUniqueId()."', 'en-GB', 'en-GB - English (United Kingdom)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
 					('".helper_easysdi::getUniqueId()."', 'en-US', 'en-US - English (US)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
 					('".helper_easysdi::getUniqueId()."', 'eo-XX', 'eo-XX - Esperanto', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
-					('".helper_easysdi::getUniqueId()."', 'es-ES', 'es-ES - Spanish (Español internacional)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
+					('".helper_easysdi::getUniqueId()."', 'es-ES', 'es-ES - Spanish (Espaï¿½ol internacional)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
 					('".helper_easysdi::getUniqueId()."', 'et-EE', 'et-EE - Estonian - (Estonia)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
 					('".helper_easysdi::getUniqueId()."', 'eu-ES', 'eu-ES - Basque (Euskara estandarra)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
 					('".helper_easysdi::getUniqueId()."', 'fa-IR', 'fa-IR - Persian', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
@@ -1129,30 +1129,30 @@ function com_install(){
 					('".helper_easysdi::getUniqueId()."', 'gu-IN', 'gu-IN - Gujarati (India)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
 					('".helper_easysdi::getUniqueId()."', 'hr-HR', 'hr-HR - Croatian (HR)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
 					('".helper_easysdi::getUniqueId()."', 'hu-HU', 'hu-HU - Hungarian (Magyar)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
-					('".helper_easysdi::getUniqueId()."', 'is-IS', 'is-IS - Íslenska (Iceland)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
+					('".helper_easysdi::getUniqueId()."', 'is-IS', 'is-IS - ï¿½slenska (Iceland)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
 					('".helper_easysdi::getUniqueId()."', 'it-IT', 'it-IT - Italian (Italy)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
 					('".helper_easysdi::getUniqueId()."', 'ja-JP', 'ja-JP - Japanese(JP)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
 					('".helper_easysdi::getUniqueId()."', 'lo-LA', 'lo-LA - Lao', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
 					('".helper_easysdi::getUniqueId()."', 'lt-LT', 'lt-LT - Lithuanian', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
 					('".helper_easysdi::getUniqueId()."', 'lv-LV', 'lv-LV - Latvian', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
 					('".helper_easysdi::getUniqueId()."', 'mn-MN', 'mn-MN - Mongolian', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
-					('".helper_easysdi::getUniqueId()."', 'nb-BO', 'nb-NO - Norsk bokmål (Norway)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
+					('".helper_easysdi::getUniqueId()."', 'nb-BO', 'nb-NO - Norsk bokmï¿½l (Norway)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
 					('".helper_easysdi::getUniqueId()."', 'nl-NL', 'nl-NL - Nederlands (nl-NL)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
 					('".helper_easysdi::getUniqueId()."', 'pl-PL', 'pl-PL - Polish (Poland)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
-					('".helper_easysdi::getUniqueId()."', 'pt-BR', 'pt-BR - Português (Brasil)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
-					('".helper_easysdi::getUniqueId()."', 'pt-PT', 'pt-PT - Português (pt-PT)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
-					('".helper_easysdi::getUniqueId()."', 'ro-RO', 'ro-RO - Româna (România)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
+					('".helper_easysdi::getUniqueId()."', 'pt-BR', 'pt-BR - Portuguï¿½s (Brasil)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
+					('".helper_easysdi::getUniqueId()."', 'pt-PT', 'pt-PT - Portuguï¿½s (pt-PT)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
+					('".helper_easysdi::getUniqueId()."', 'ro-RO', 'ro-RO - Romï¿½na (Romï¿½nia)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
 					('".helper_easysdi::getUniqueId()."', 'ru-RU', 'ru-RU - Russian (Russian Federation)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
 					('".helper_easysdi::getUniqueId()."', 'sd-PK', 'sd-PK - Sindhi', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
 					('".helper_easysdi::getUniqueId()."', 'si-LK', 'si-LK - Sinhala (Sri Lanka)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
-					('".helper_easysdi::getUniqueId()."', 'sk-SK', 'sk-SK - Slovencina (Slovenská Republika)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
+					('".helper_easysdi::getUniqueId()."', 'sk-SK', 'sk-SK - Slovencina (Slovenskï¿½ Republika)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
 					('".helper_easysdi::getUniqueId()."', 'sr-ME', 'sr-ME - Ijekavski (ME)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
 					('".helper_easysdi::getUniqueId()."', 'sr-RS', 'sr-RS - Serbian (RS)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
 					('".helper_easysdi::getUniqueId()."', 'sv-SE', 'sv-SE - Svenska (Sverige)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
 					('".helper_easysdi::getUniqueId()."', 'sy-IQ', 'sy-IQ - Syriac(Iraq)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
 					('".helper_easysdi::getUniqueId()."', 'ta-LK', 'ta-LK - Tamil (Sri Lanka)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
 					('".helper_easysdi::getUniqueId()."', 'th-TH', 'th-TH - Thai', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
-					('".helper_easysdi::getUniqueId()."', 'tr-TR', 'tr-TR - Türkçe (Türkiye)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
+					('".helper_easysdi::getUniqueId()."', 'tr-TR', 'tr-TR - Tï¿½rkï¿½e (Tï¿½rkiye)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
 					('".helper_easysdi::getUniqueId()."', 'uk-UA', 'uk-UA - Ukrainian (Ukraine)', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
 					('".helper_easysdi::getUniqueId()."', 'ur-PK', 'ur-PK - Urdu Pakistan', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
 					('".helper_easysdi::getUniqueId()."', 'vi-VN', 'vi-VN - Vietnamese', NULL, '".date('Y-m-d H:i:s')."', ".$user_id."),
@@ -1434,7 +1434,7 @@ function com_install(){
 		}
 		
 		$query =  "insert into #__components (name,link,admin_menu_link,admin_menu_alt,`option`,admin_menu_img,params)
-			values('EasySDI','option=com_easysdi_core','option=com_easysdi_core','Easysdi main menu','com_easysdi_core','js/ThemeOffice/component.png','')";
+			values('EasySDI','option=com_easysdi_core','option=com_easysdi_core','Easysdi main menu','com_easysdi_core','components/com_easysdi_core/common/icons/favicon16.ico','')";
 		$db->setQuery( $query);
 		if (!$db->query()) 
 		{
