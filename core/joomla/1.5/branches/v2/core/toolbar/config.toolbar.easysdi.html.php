@@ -36,7 +36,8 @@ class TOOLBAR_config {
 		JToolBarHelper::title( JText::_( 'CORE_CONFIGURATION_TITLE' ), 'config.png' );
 		JToolBarHelper::save('saveShowConfig');
 		JToolBarHelper::apply('applyShowConfig');
-		JToolBarHelper::cancel('cancelConfig', 'Close');
+		JToolBarHelper::spacer();
+		JToolBarHelper::custom( 'cpanel', 'tool_f2.png', 'tool_f2.png', JTEXT::_("CORE_MENU_CPANEL"), false );
 	}
 
 }
