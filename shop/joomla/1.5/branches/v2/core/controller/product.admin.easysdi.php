@@ -201,7 +201,7 @@ class ADMIN_product {
 			$database->setQuery("SELECT id AS value, title AS text 
 							   FROM #__sdi_objectversion
 							   WHERE object_id = $object_id 
-							   ORDER BY name");
+							   ORDER BY title");
 			if ($database->getErrorNum()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}

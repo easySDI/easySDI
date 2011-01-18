@@ -725,7 +725,7 @@ class HTML_product{
 				<?php
 			}
 			?>
-			<div title="<?php echo JText::_('SHOP_ACTION_DELETE_PRODUCT'); ?>" id="deleteProduct" onClick="return suppressProduct_click('<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=suppressProduct&limitstart=<?php echo JRequest::getVar("limitstart"); ?>&limit=<?php echo JRequest::getVar("limit"); ?>&publishedobject=product&cid[]='.$row->id); ?>');" ></div>
+			<div title="<?php echo JText::_('SHOP_ACTION_DELETE_PRODUCT'); ?>" id="deleteProduct" onClick="return suppressProduct_click('<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=suppressProduct&limitstart='.JRequest::getVar("limitstart").'&limit='.JRequest::getVar("limit").'&publishedobject=product&cid[]='.$row->id); ?>');" ></div>
 			</td>
 			</tr>
 			<?php		
