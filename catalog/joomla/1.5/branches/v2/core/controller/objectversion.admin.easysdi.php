@@ -1120,7 +1120,7 @@ class ADMIN_objectversion {
 		$query .= "	ORDER BY $sort $dir";
 			
 		$database->setQuery($query);
-		echo $database->getQuery()."\r\n";
+		//echo $database->getQuery()."\r\n";
 		$results= $database->loadObjectList();
 		/*
 		// R�cup�rer tous les objets du type d'objet s�lectionn�,
