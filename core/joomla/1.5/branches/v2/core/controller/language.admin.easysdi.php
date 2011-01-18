@@ -103,13 +103,13 @@ class ADMIN_language {
 		$rowLanguage= new language( $database );
 		$rowLanguage->load( $id );
 
-		// Récupération des types mysql pour les champs
+		// Rï¿½cupï¿½ration des types mysql pour les champs
 		$tableFields = array();
 		$tableFields = $database->getTableFields("#__sdi_language", false);
 		
 		// Parcours des champs pour extraire les informations utiles:
 		// - le nom du champ
-		// - sa longueur en caractères
+		// - sa longueur en caractï¿½res
 		$fieldsLength = array();
 		foreach($tableFields as $table)
 		{
@@ -148,7 +148,7 @@ class ADMIN_language {
 		}	
 
 		
-		// Générer un guid
+		// Gï¿½nï¿½rer un guid
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 		if ($rowLanguage->guid == null)
 			$rowLanguage->guid = helper_easysdi::getUniqueId();
@@ -160,12 +160,12 @@ class ADMIN_language {
 			exit();
 		}
 		
-		// Au cas où on sauve avec Apply, recharger la page 
+		// Au cas oï¿½ on sauve avec Apply, recharger la page 
 		$task = JRequest::getCmd( 'task' );
 		switch ($task)
 		{
 			case 'applyLanguage' :
-				// Reprendre en édition la langue
+				// Reprendre en ï¿½dition la langue
 				TOOLBAR_language::_EDIT();
 				ADMIN_language::editLanguage($rowLanguage->id,$option);
 				break;
@@ -190,7 +190,7 @@ class ADMIN_language {
 		}
 		foreach( $id as $language_id )
 		{
-			$rowLanguage= new objecttype( $database );
+			$rowLanguage= new language( $database );
 			$rowLanguage->load( $language_id );
 			
 			if (!$rowLanguage->delete()) {			
@@ -210,7 +210,7 @@ class ADMIN_language {
 		$rowLanguage= new language( $database );
 		$rowLanguage->load( $id );
 		
-		// Effacer les autres valeurs par défaut
+		// Effacer les autres valeurs par dï¿½faut
 		$query="UPDATE #__sdi_language SET defaultlang=0"; 
 		$database->setQuery( $query);	
 		if (!$database->query()) 
@@ -218,7 +218,7 @@ class ADMIN_language {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 		}
 			
-		// Mettre la valeur par défaut sur l'entrée sélectionnée
+		// Mettre la valeur par dï¿½faut sur l'entrï¿½e sï¿½lectionnï¿½e
 		$rowLanguage->defaultlang = 1;
 		
 		if (!$rowLanguage->store(false)) {			
