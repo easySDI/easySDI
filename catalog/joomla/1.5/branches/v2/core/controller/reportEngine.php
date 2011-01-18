@@ -360,6 +360,7 @@ class reportEngine{
 	
 	function setResponse($file, $filename, $contenttype, $downloadname)
 	{
+		unlink($filename);
 		error_reporting(0);
 		ini_set('zlib.output_compression', 0);
                         
