@@ -2053,6 +2053,7 @@ function DisplayMetadata ($xslStyle, $xml)
 			$XMLChild->setAttribute('metadata_guid', $c->metadata_guid);
 			$XMLChild->setAttribute('object_name', $c->objectname);
 			$XMLChild->setAttribute('objecttype', $c->objecttype);
+			$XMLLinks->appendChild($XMLChild);
 		}
 
 		foreach ($parents as $p)
