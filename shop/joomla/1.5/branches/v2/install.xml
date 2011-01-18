@@ -1,8 +1,8 @@
 <?xml version="1.0"  ?>
-<install version="1.5" type="component">
+<install version="2.0" type="component">
 	<name>EasySDI_shop</name>
-	<version>1.0</version>
-	<creationDate>July 2008</creationDate>
+	<version>2 Beta</version>
+	<creationDate>January 2011</creationDate>
 	<author>Depth.ch</author>
 	<authorEmail>easysdi@depth.ch</authorEmail>
 	<authorUrl>www.depth.ch</authorUrl>
