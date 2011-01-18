@@ -1,6 +1,5 @@
 @CHARSET "ISO-8859-1";
 
-
 /********************************************************/
 /*** EasySDI Metadata                                 ***/
 /********************************************************/
@@ -1285,6 +1284,10 @@ div#editObject{
 	width:16px;	
 }
 
+div#editObjectCheckedOut:hover{
+	cursor:pointer;
+}
+
 div#editObjectCheckedOut{
 	background-color:transparent;
 	background-image:url(../icons/silk/lock_edit.png);
@@ -1292,6 +1295,10 @@ div#editObjectCheckedOut{
 	background-repeat:no-repeat;
 	height:16px;
 	width:16px;	
+}
+
+div#deleteObject:hover{
+	cursor:pointer;
 }
 
 div#deleteObject{
@@ -1303,6 +1310,10 @@ div#deleteObject{
 	width:16px;
 }
 
+div#listObjectVersion:hover{
+	cursor:pointer;
+}
+
 div#listObjectVersion{
 	background-color:transparent;
 	background-image:url(../icons/silk/page_white_stack.png);
@@ -1311,7 +1322,20 @@ div#listObjectVersion{
 	height:16px;
 	width:16px;	
 }
-	
+
+div#listApplication:hover{
+	cursor:pointer;
+}
+
+div#listApplication{
+	background-color:transparent;
+	background-image:url(../icons/silk/monitor.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;	
+}
+
 div#archiveMetadata:hover{
 	cursor:pointer;
 }
@@ -2368,7 +2392,7 @@ div#deleteObject{
 }
 
 .box-table .objectActions{
-	width:60px;
+	width:80px;
 }
 
 .box-table .objectActions div{
@@ -2442,7 +2466,45 @@ div#viewObjectVersionLink{
 	text-align: right;
 	}
 	
-	
+/* List Application */
+.box-table .applicationActions{
+	width:40px;
+}
+
+.box-table .applicationActions div{
+	float:left;
+}
+
+div#editApplication:hover{
+	cursor:pointer;
+}
+
+div#editApplication{
+	background-color:transparent;
+	background-image:url(../icons/silk/pencil.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;	
+	padding-left:2px;
+	padding-right:2px;	
+}
+
+div#deleteApplication:hover{
+	cursor:pointer;
+}
+
+div#deleteApplication{
+	background-color:transparent;
+	background-image:url(../icons/silk/page_delete.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;	
+	padding-left:2px;
+	padding-right:2px;	
+}
+
 /* List Product */
 div#editProduct:hover{
 	cursor:pointer;

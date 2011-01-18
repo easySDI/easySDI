@@ -3,7 +3,7 @@
 <install version="1.5" type="template">
 		<name>easysdi</name>
 	
-	<creationDate>octobre 08</creationDate>
+	<creationDate>decembre 10</creationDate>
 	<author>depth.ch</author>
 	<authorEmail>easysdi@depth.ch</authorEmail>
 	<authorUrl>http://www.depth.ch</authorUrl>
@@ -21,6 +21,7 @@
 		<folder>css</folder>
 		<folder>html</folder>
 		<folder>images</folder>
+		<folder>media</folder>
 		<folder>icons</folder>
 	</files>
 
