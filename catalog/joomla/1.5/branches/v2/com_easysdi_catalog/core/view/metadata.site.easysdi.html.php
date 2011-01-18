@@ -1440,7 +1440,7 @@ else
 				
 				// On regarde dans le XML s'il contient la balise correspondante au code ISO de l'attribut enfant,
 				// et combien de fois au niveau courant
-				//echo "Le scope pour l'attribut est ".$scope->nodeName." et on recherche ".$child->attribute_isocode."<br>";
+				//echo "Le scope pour l'attribut est <b>".$scope->nodeName."</b> et on recherche <b>".$child->attribute_id.$child->attribute_isocode."</b><br>";
 				$mainNode = $xpathResults->query($child->attribute_isocode, $scope);
 				$attributeCount = $mainNode->length;
 	
@@ -1458,7 +1458,7 @@ else
 					 * COMPREHENSION DU MODELE
 					 * La relation vers l'attribut n'a jamais de code ISO.
 					 */  
-					//echo "----------- On traite ".$child->attribute_isocode." -----------<br>";
+					//echo "----------- On traite ".$child->attribute_isocode." [".$child->attribute_type."] -----------<br>";
 				
 					// Construction du master qui permet d'ajouter des occurences de la relation.
 					// Le master contient les donn�es de la premi�re occurence.
@@ -1538,17 +1538,18 @@ else
 							// Text
 							case 2:
 								// Traitement de la classe enfant
-								//echo "Recherche de ".$type_isocode." dans ".$attributeScope->nodeName."<br>";
+								//echo $currentName."; recherche de ".$type_isocode." dans ".$attributeScope->nodeName.", enfant de ".$attributeScope->parentNode->nodeName;//."<br>";
+								//echo "<br><b>".$parentScope->nodeName." - ".$scope->nodeName."</b><br>";
 								//$node = $xpathResults->query($child->attribute_isocode."/".$type_isocode, $attributeScope);
 								$node = $xpathResults->query($type_isocode, $attributeScope);
 											 	
-								// Si le fieldset n'existe pas, inutile de r�cup�rer une valeur
+								// Cas où le noeud n'existe pas dans le XML. Inutile de rechercher la valeur
 								if ($parentScope <> NULL and $parentScope->nodeName == $scope->nodeName)
 									$nodeValue = "";
 								else
 									$nodeValue = html_Metadata::cleanText($node->item($pos)->nodeValue);
 								
-								//echo "Trouve ".$nodeValue."<br>";
+								//echo "<i>Trouve ".$nodeValue."</i><hr>";
 								//echo "Valeur en 0: ".$nodeValue."<br>";
 									
 								// R�cup�ration de la valeur par d�faut, s'il y a lieu
@@ -1589,13 +1590,15 @@ else
 								//echo "Recherche de gco:CharacterString dans ".$attributeScope->nodeName."<br>";
 								//$node = $xpathResults->query($child->attribute_isocode."/".$type_isocode, $attributeScope);
 								$node = $xpathResults->query("gco:CharacterString", $attributeScope);
+								//echo "Trouve ".$node->length."<br>";
 											 	
 								if ($node->length>0)
 									$nodeValue = html_Metadata::cleanText($node->item($pos)->nodeValue);
 								else
 									$nodeValue="";
 								//echo "Trouve ".$nodeValue."<br>";
-								//echo "Valeur en 0: ".$nodeValue."<br>";
+								//echo "Valeur en 0: ".$node->item($pos)->nodeValue."<br>";
+								//print_r($node->item($pos)->nodeValue); echo "<br>";
 									
 								// R�cup�ration de la valeur par d�faut, s'il y a lieu
 								/*if ($child->attribute_default <> "" and $nodeValue == "")
@@ -1610,7 +1613,7 @@ else
 										
 										// Stockage du path pour atteindre ce noeud du XML
 										//$queryPath = $child->attribute_isocode."/gmd:LocalisedCharacterString";
-										$queryPath = "gmd:LocalisedCharacterString";
+										//$queryPath = "gmd:LocalisedCharacterString";
 											
 										$listNode = $xpathResults->query($child->attribute_isocode, $scope);
 										$listCount = $listNode->length;
@@ -1628,17 +1631,18 @@ else
 												//echo $LocName." - ".$child->attribute_id." - ".JText::_($label)." - ".$child->rel_lowerbound." - ".$child->rel_upperbound." - ".$parentFieldsetName."<br>";
 												$fieldsetName = "fieldset".$child->attribute_id."_".str_replace("-", "_", helper_easysdi::getUniqueId());
 												$this->javascript .="
-												var ".$fieldsetName." = createFieldSet('".$LocName."', '".html_Metadata::cleanText(JText::_($label))."', true, false, false, true, true, null, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', true); 
+													// Créer un nouveau fieldset
+													var ".$fieldsetName." = createFieldSet('".$LocName."', '".html_Metadata::cleanText($label)."', true, false, false, true, true, null, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', true); 
 													".$parentFieldsetName.".add(".$fieldsetName.");
 												";
 
 												foreach($this->langList as $row)
 												{
+													$LocLangName = $LocName."-gmd_LocalisedCharacterString-".$row->code_easysdi."__1";
 													if ($row->defaultlang)
 													{
-														$LocLangName = $LocName."-gmd_LocalisedCharacterString-".$row->code_easysdi."__1";
 														$langNode = $xpathResults->query("gco:CharacterString", $currentScope);
-														//echo "2) Il y a ".$langNode->length." occurences de gco:CharacterString dans ".$currentScope->nodeName."<br>";
+														//echo "2a) Il y a ".$langNode->length." occurences de gco:CharacterString dans ".$currentScope->nodeName."<br>";
 														if ($langNode->length > 0)
 															$nodeValue = html_Metadata::cleanText($langNode->item(0)->nodeValue);
 														else
@@ -1653,9 +1657,9 @@ else
 													{
 														//print_r($row);echo "<br>";
 														//echo $row->language."<br>";
-														$LocLangName = $LocName."-gmd_LocalisedCharacterString-".$row->code_easysdi."__1";
+														//$LocLangName = $LocName."-gmd_LocalisedCharacterString-".$row->code_easysdi."__1";
 														$langNode = $xpathResults->query("gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString"."[@locale='#".$row->code."']", $currentScope);
-														//echo "2) Il y a ".$langNode->length." occurences de gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString dans ".$currentScope->nodeName."<br>";
+														//echo "2b) Il y a ".$langNode->length." occurences de gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString dans ".$currentScope->nodeName."<br>";
 														if ($langNode->length > 0)
 															$nodeValue = html_Metadata::cleanText($langNode->item(0)->nodeValue);
 														else
@@ -1667,6 +1671,8 @@ else
 														}
 													}
 													
+													//$nodeValue = "";
+													
 													//echo $LocLangName." - ".$child->attribute_id." - ".JText::_($row->name)." - ".$nodeValue."<br>";
 													//echo $child->attribute_id." - ".$LocLangName." - ".$nodeValue."<br>";
 													//echo $LocLangName." - ".$nodeValue."<br>";
@@ -1676,19 +1682,19 @@ else
 														// Textarea
 														case 1:
 															$this->javascript .="
-															".$fieldsetName.".add(createTextArea('".$LocLangName."', '".JText::_($row->label)."',".$mandatory.", false, null, '1', '1', '".$nodeValue."', '".$defaultVal."', ".$disabled.", ".$maxLength.", '', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+															".$fieldsetName.".add(createTextArea('".$LocLangName."', '".html_Metadata::cleanText(JText::_($row->label))."',".$mandatory.", false, null, '1', '1', '".$nodeValue."', '".html_Metadata::cleanText($defaultVal)."', ".$disabled.", ".$maxLength.", '', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
 															";
 															break;
 														// Textbox
 														case 5:
 															$this->javascript .="
 															//console.log(".$parentFieldsetName.".getId() + ': ' + ".$parentFieldsetName.".collapsed + '\\n\\r a la creation de ' + '".$currentName."' + '\\n\\r' + ".$parentFieldsetName.".masterflow);
-															".$fieldsetName.".add(createTextField('".$LocLangName."', '".JText::_($row->label)."',".$mandatory.", false, null, '1', '1', '".$nodeValue."', '".$defaultVal."', ".$disabled.", '".$maxLength."', '', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+															".$fieldsetName.".add(createTextField('".$LocLangName."', '".html_Metadata::cleanText(JText::_($row->label))."',".$mandatory.", false, null, '1', '1', '".$nodeValue."', '".html_Metadata::cleanText($defaultVal)."', ".$disabled.", '".$maxLength."', '', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
 															";
 															break;
 														default:
 															$this->javascript .="
-															".$fieldsetName.".add(createTextArea('".$LocLangName."', '".JText::_($row->label)."',".$mandatory.", false, null, '1', '1', '".$nodeValue."', '".$defaultVal."', ".$disabled.", ".$maxLength.", '', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+															".$fieldsetName.".add(createTextArea('".$LocLangName."', '".html_Metadata::cleanText(JText::_($row->label))."',".$mandatory.", false, null, '1', '1', '".$nodeValue."', '".html_Metadata::cleanText($defaultVal)."', ".$disabled.", ".$maxLength.", '', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
 															";
 															break;
 													}
@@ -1696,7 +1702,7 @@ else
 													if ($child->attribute_system)
 													{
 														$this->javascript .="
-														".$fieldsetName.".add(createHidden('".$LocLangName."_hiddenVal', '".$LocLangName."_hiddenVal', '".$nodeValue."'));
+														".$parentFieldsetName.".add(createHidden('".$LocLangName."_hiddenVal', '".$LocLangName."_hiddenVal', '".$nodeValue."'));
 														";
 													}
 												}
@@ -1952,7 +1958,7 @@ else
 							// List
 							case 6:
 								// Traitement de la classe enfant
-								//echo "Recherche de ".$type_isocode." dans ".$attributeScope->nodeName."<br>";
+								//echo "Recherche de <b>".$type_isocode."</b> dans <b>".$attributeScope->nodeName."</b><br>";
 								//$node = $xpathResults->query($child->attribute_isocode."/".$type_isocode, $attributeScope);
 								$node = $xpathResults->query($type_isocode, $attributeScope);
 											 	
@@ -2038,7 +2044,7 @@ else
 									 		}
 										}
 									 	
-										//echo "selectionne par defaut: "; print_r($nodeValues); echo "<hr>";
+										//echo "selectionne par defaut: "; print_r($nodeDefaultValues); echo "<hr>";
 									 	
 										switch ($child->rendertype_id)
 										{
@@ -2216,7 +2222,6 @@ else
 										$content = array();
 										//$query = "SELECT c.*, rel.* FROM #__easysdi_metadata_classes c, #__easysdi_metadata_classes_classes rel WHERE rel.classes_to_id = c.id and c.type='list' and rel.classes_from_id=".$parent." and (c.partner_id=0 or c.partner_id=".$account_id.") ORDER BY c.ordering";
 										$query = "SELECT * FROM #__sdi_codevalue WHERE published=true AND attribute_id = ".$child->attribute_id." ORDER BY ordering";
-										//$query = "SELECT t.title, t.content, c.guid FROM #__sdi_codevalue c, #__sdi_translation t, #__sdi_language l, #__sdi_list_codelang cl WHERE published=true AND attribute_id = ".$child->attribute_id." AND c.guid=t.element_guid AND t.language_id=l.id AND l.codelang_id=cl.id and cl.code='".$language->_lang."' AND t.content = '".html_Metadata::cleanText($node->item(0)->nodeValue)."'"." ORDER BY c.ordering";
 										$database->setQuery( $query );
 										$content = $database->loadObjectList();
 	
@@ -2273,8 +2278,8 @@ else
 										//echo $type_isocode."[@locale='".$row->code."']"." dans ".$relNode->item(0)->nodeName."<br>";
 										if ($node->length > 0)
 								 		{
-								 			// Chercher le titre associ� au texte localis� souhait�, ou s'il n'y a pas de titre le contenu
-											foreach ($content as $cont)
+								 			// Chercher le titre associé au texte localisé souhaité, ou s'il n'y a pas de titre le contenu
+								 			foreach ($content as $cont)
 									 		{
 									 			if ($cont->value == html_Metadata::cleanText($node->item(0)->nodeValue))
 													$nodeValues[] = $cont->guid;
@@ -2425,8 +2430,15 @@ else
 												
 										 		if ($node->length > 0)
 										 		{
-										 			// Chercher le titre associ� au texte localis� souhait�, ou s'il n'y a pas de titre le contenu
-													$query = "SELECT t.title, t.content, c.guid FROM #__sdi_codevalue c, #__sdi_translation t, #__sdi_language l, #__sdi_list_codelang cl WHERE c.guid=t.element_guid AND t.language_id=l.id AND l.codelang_id=cl.id and cl.code='".$language->_lang."' AND t.content = '".html_Metadata::cleanText($node->item(0)->nodeValue)."'"." ORDER BY c.ordering";
+										 			// Chercher le titre associé au texte localisé souhaité, ou s'il n'y a pas de titre le contenu
+										 			$query = "SELECT t.title, t.content, c.guid 
+															  FROM #__sdi_codevalue c, #__sdi_translation t, #__sdi_language l, #__sdi_list_codelang cl 
+															  WHERE c.guid=t.element_guid 
+															        AND t.language_id=l.id 
+															        AND l.codelang_id=cl.id 
+															        AND cl.code='".$language->_lang."' 
+															        AND t.content = '".html_Metadata::cleanText($node->item(0)->nodeValue)."'"." 
+															        ORDER BY c.ordering";
 													$database->setQuery( $query );
 													//echo $database->getQuery()."<br>";
 													//$cont_guid = $database->loadResult();
@@ -2525,11 +2537,11 @@ else
 								$listCount = $listNode->length;		
 								//echo "Il y a ".$listCount." occurences de ".$child->attribute_isocode." dans ".$scope->nodeName."<br>";
 								$nodeValues = array();
-								for($keyPos=0;$keyPos<=$listCount; $keyPos++)
+								for($keyPos=0;$keyPos<$listCount; $keyPos++)
 								{
 									$currentScope=$listNode->item($keyPos);
-									
-
+									//echo "Position ".$keyPos.", ".$currentScope->nodeName." avec ".$currentScope->nodeValue."<br>";
+								
 									if ($currentScope and $currentScope->nodeName <> "")
 									{
 									$nodeValue= "";
@@ -2545,6 +2557,7 @@ else
 											if ($keyNode->length > 0)
 											{
 												$nodeValue .= $row->gemetlang.": ".html_Metadata::cleanText($keyNode->item(0)->nodeValue).";";
+												//$nodeKeyword = html_Metadata::cleanText($keyNode->item(0)->nodeValue);
 											}
 										}
 										else
@@ -2556,11 +2569,12 @@ else
 											
 										}
 										
-										if ($row->gemetlang == $userLang)
+										if ($row->gemetlang == $userLang and $keyNode->item(0))
 											$nodeKeyword = html_Metadata::cleanText($keyNode->item(0)->nodeValue);
 									}
 									}
-									$nodeValues[] = "{keyword:'$nodeKeyword', value: '$nodeValue'}";
+									if ($nodeKeyword <> "")
+										$nodeValues[] = "{keyword:'$nodeKeyword', value: '$nodeValue'}";
 									//echo $nodeValue."<br>";
 									//echo $nodeKeyword."<br>";
 									
@@ -2568,6 +2582,8 @@ else
 
 								if (count($nodeValues)>0)
 									$value = "[".implode(",",$nodeValues)."]";
+								else
+									$value = "[]";
 								
 								$this->javascript .="
 								// Cr�er un bouton pour appeler la fen�tre de choix dans le Thesaurus GEMET
@@ -2580,7 +2596,7 @@ else
 																  lang: '".$userLang."',
 															      outputLangs: ".str_replace('"', "'", HTML_metadata::array2json($langArray)).", //['en', 'cs', 'fr', 'de'] 
 															      separator: ' > ',
-															      appPath: '".$uri->base(true)."/components/com_easysdi_catalog/js/',
+															      appPath: '".$uri->base(true)."/administrator/components/com_easysdi_catalog/js/',
 															      returnPath: false,
 															      returnInspire: true,
 															      width: 300, 
@@ -3063,7 +3079,7 @@ else
 								//echo "Trouve ".$node->length."<br>";
 								
 								if ($node->length >0)
-									$nodeValue = html_Metadata::cleanText($node->item($pos)->nodeValue);
+									$nodeValue = html_Metadata::cleanText($node->item(0)->nodeValue);
 								else
 									$nodeValue = "";
 								//echo "Trouve ".$nodeValue."<br>";
@@ -3143,10 +3159,11 @@ else
 											if ($row->code_easysdi == $language->_lang)
 											{
 												if ($row->defaultlang)
-													$node = $xpathResults->query("gco:CharacterString", $relNode->item(0));
+													$node = $xpathResults->query("gco:CharacterString", $attributeScope);
 												else
-													$node = $xpathResults->query("gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString"."[@locale='#".$row->code."']", $relNode->item(0));
-												
+													$node = $xpathResults->query("gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString"."[@locale='#".$row->code."']", $attributeScope);
+												//$node = $xpathResults->query("gco:CharacterString", $attributeScope);
+										
 												//echo $type_isocode."[@locale='".$row->code."']"." dans ".$relNode->item(0)->nodeName."<br>";
 												if ($node->length > 0)
 										 		{
@@ -4003,7 +4020,7 @@ else
 																  lang: '".$userLang."',
 															      outputLangs: ".str_replace('"', "'", HTML_metadata::array2json($langArray)).", //['en', 'cs', 'fr', 'de'] 
 															      separator: ' > ',
-															      appPath: '".$uri->base(true)."/components/com_easysdi_catalog/js/',
+															      appPath: '".$uri->base(true)."/administrator/components/com_easysdi_catalog/js/',
 															      returnPath: false,
 															      returnInspire: true,
 															      width: 300, 
@@ -4679,7 +4696,7 @@ else
 				$this->javascript .="
 					// Cr�er un nouveau fieldset
 					var master = Ext.getCmp('".$master."');							
-					var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, true, true, true, true, master, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."'); 
+					var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, true, true, true, true, master, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false); 
 						".$parentFieldsetName.".add(".$fieldsetName.");
 					".$fieldsetName.".add(createSearchField('".$searchFieldName."', '".$child->objecttype_id."', '".html_Metadata::cleanText(JText::_('SEARCH'))."',true, false, null, '1', '1', '', false, 0, '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', ''));
 					";

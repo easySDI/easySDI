@@ -2664,7 +2664,7 @@ class SITE_catalog {
 			fclose($fh);
 			*/
 			
-			echo htmlspecialchars($xmlBody);
+			//echo htmlspecialchars($xmlBody);
 			
 			$xmlResponse = ADMIN_metadata::CURLRequest("POST", $catalogUrlBase,$xmlBody);
 			// SimpleXMLElement

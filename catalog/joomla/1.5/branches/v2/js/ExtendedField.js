@@ -387,7 +387,11 @@ Ext.override(Ext.form.Field, {
 					enabled: true
 					});
 			}
-		}		
+		}	
+
+		/* S'assurer que le nouveau champ a bien été validé. Dans certains cas,
+		   on ne sait pourquoi, ce n'est pas fait automatiquement.*/
+		this.isValid(false);
 	}),
 	
 	/**

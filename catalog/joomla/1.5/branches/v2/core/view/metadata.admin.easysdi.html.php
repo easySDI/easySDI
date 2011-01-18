@@ -81,7 +81,7 @@ class HTML_metadata {
 		
 		foreach($boundaries as $boundary)
 		{
-			$this->boundaries_name[] = JText::_($boundary->guid."_LABEL");
+			$this->boundaries_name[] = addslashes(JText::_($boundary->guid."_LABEL"));
 			$this->boundaries[JText::_($boundary->guid."_LABEL")] = array('northbound'=>$boundary->northbound, 'southbound'=>$boundary->southbound, 'westbound'=>$boundary->westbound, 'eastbound'=>$boundary->eastbound);
 		}
 		//print_r($this->boundaries);
@@ -535,7 +535,7 @@ class HTML_metadata {
 								    var boundaries = ".HTML_metadata::array2json($this->boundaries).";
 								    var paths = ".HTML_metadata::array2json($this->paths).";
 								     // La liste
-								     ".$parentFieldsetName.".add(createComboBox_Boundaries('".$parentName."_boundaries', '".html_Metadata::cleanText(JText::_("BOUNDARIES"))."', false, '1', '1', valueList, '', false, '".html_Metadata::cleanText(JText::_("BOUNDARIES_TIP"))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."', boundaries, paths));
+								     ".$parentFieldsetName.".add(createComboBox_Boundaries('".$parentName."_boundaries', '".addslashes(JText::_("BOUNDARIES"))."', false, '1', '1', valueList, '', false, '".html_Metadata::cleanText(JText::_("BOUNDARIES_TIP"))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."', boundaries, paths));
 								    ";
 		}
 		
@@ -773,7 +773,7 @@ class HTML_metadata {
 								//$node = $xpathResults->query($child->attribute_isocode."/".$type_isocode, $attributeScope);
 								$node = $xpathResults->query($type_isocode, $attributeScope);
 											 	
-								// Cas o� le noeud n'existe pas dans le XML. Inutile de rechercher la valeur
+								// Cas où le noeud n'existe pas dans le XML. Inutile de rechercher la valeur
 								if ($parentScope <> NULL and $parentScope->nodeName == $scope->nodeName)
 									$nodeValue="";
 								else
@@ -861,7 +861,7 @@ class HTML_metadata {
 												//echo $LocName." - ".$child->attribute_id." - ".JText::_($label)." - ".$child->rel_lowerbound." - ".$child->rel_upperbound." - ".$parentFieldsetName."<br>";
 												$fieldsetName = "fieldset".$child->attribute_id."_".str_replace("-", "_", helper_easysdi::getUniqueId());
 												$this->javascript .="
-													// Cr�er un nouveau fieldset
+													// Créer un nouveau fieldset
 													var ".$fieldsetName." = createFieldSet('".$LocName."', '".html_Metadata::cleanText($label)."', true, false, false, true, true, null, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', true); 
 													".$parentFieldsetName.".add(".$fieldsetName.");
 												";
@@ -1510,7 +1510,7 @@ class HTML_metadata {
 										//echo $type_isocode."[@locale='".$row->code."']"." dans ".$relNode->item(0)->nodeName."<br>";
 										if ($node->length > 0)
 								 		{
-								 			// Chercher le titre associ� au texte localis� souhait� et 
+								 			// Chercher le titre associé au texte localisé souhaité, ou s'il n'y a pas de titre le contenu
 								 			foreach ($content as $cont)
 									 		{
 									 			if ($cont->value == html_Metadata::cleanText($node->item(0)->nodeValue))
@@ -1662,7 +1662,7 @@ class HTML_metadata {
 												
 										 		if ($node->length > 0)
 										 		{
-										 			// Chercher le titre associ� au texte localis� souhait�, ou s'il n'y a pas de titre le contenu
+										 			// Chercher le titre associé au texte localisé souhaité, ou s'il n'y a pas de titre le contenu
 													$query = "SELECT t.title, t.content, c.guid 
 															  FROM #__sdi_codevalue c, #__sdi_translation t, #__sdi_language l, #__sdi_list_codelang cl 
 															  WHERE c.guid=t.element_guid 
@@ -1723,7 +1723,6 @@ class HTML_metadata {
 								 		$this->javascript .="
 										var valueList = ".HTML_metadata::array2extjs($dataValues, $simple, true, true).";
 									     var selectedValueList = ".HTML_metadata::array2json($nodeValues).";
-									     //console.log(selectedValueList);
 									     var defaultValueList = ".HTML_metadata::array2json($nodeDefaultValues).";
 									     // La liste
 									     ".$parentFieldsetName.".add(createChoiceBox('".$listName."', '".html_Metadata::cleanText(JText::_($label))."', ".$mandatory.", '".$child->rel_lowerbound."', '".$child->rel_upperbound."', valueList, selectedValueList, defaultValueList, ".$disabled.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."'));

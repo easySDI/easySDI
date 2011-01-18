@@ -40,6 +40,7 @@ class ADMIN_objectversion {
 			and $filter_order <> "created" 
 			and $filter_order <> "description" 
 			and $filter_order <> "state"
+			and $filter_order <> "title"
 			and $filter_order <> "updated")
 		{
 			$filter_order		= "id";
@@ -1119,7 +1120,7 @@ class ADMIN_objectversion {
 		$query .= "	ORDER BY $sort $dir";
 			
 		$database->setQuery($query);
-		//echo $database->getQuery()."\r\n";
+		echo $database->getQuery()."\r\n";
 		$results= $database->loadObjectList();
 		/*
 		// R�cup�rer tous les objets du type d'objet s�lectionn�,
