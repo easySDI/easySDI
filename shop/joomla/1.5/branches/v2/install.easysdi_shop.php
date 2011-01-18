@@ -143,8 +143,7 @@ function com_install(){
 							`tempfillcolor`  varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
 							`tempstrkcolor`  varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
 							PRIMARY KEY (`id`),
-							UNIQUE INDEX `guid` USING BTREE (`guid`) ,
-							UNIQUE INDEX `code` USING BTREE (`code`)
+							UNIQUE INDEX `guid` USING BTREE (`guid`) 
 					)
 					ENGINE=InnoDB
 					DEFAULT CHARACTER SET=utf8";
@@ -193,7 +192,6 @@ function com_install(){
 						`account_id`  bigint(20) NULL DEFAULT NULL ,
 						PRIMARY KEY (`id`),
 						UNIQUE INDEX `guid` USING BTREE (`guid`) ,
-						UNIQUE INDEX `code` USING BTREE (`code`),
 						INDEX `id` USING BTREE (`id`, `filterperimeter_id`) ,
 						INDEX `filterperimeter_id` USING BTREE (`filterperimeter_id`) 
 						)
@@ -241,7 +239,6 @@ function com_install(){
 						`account_id`  bigint(20) NULL DEFAULT NULL ,
 						PRIMARY KEY (`id`),
 						UNIQUE INDEX `guid` USING BTREE (`guid`) ,
-						UNIQUE INDEX `code` USING BTREE (`code`),
 						INDEX `id` USING BTREE (`id`, `filterlocation_id`) ,
 						INDEX `filterlocation_id` USING BTREE (`filterlocation_id`) 
 						)
@@ -450,7 +447,7 @@ function com_install(){
 						`id`  bigint(20) NOT NULL AUTO_INCREMENT ,
 						`guid`  varchar(36) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
 						`code`  varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
-						`name`  varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+						`name`  varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
 						`description`  varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
 						`created`  datetime NOT NULL ,
 						`updated`  datetime NULL DEFAULT NULL ,
@@ -466,7 +463,6 @@ function com_install(){
 						`text`  varchar(400) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
 						PRIMARY KEY (`id`),
 						UNIQUE INDEX `guid` USING BTREE (`guid`) ,
-						UNIQUE INDEX `code` USING BTREE (`code`), 
 						FOREIGN KEY (`order_id`) REFERENCES `#__sdi_order` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
 						FOREIGN KEY (`perimeter_id`) REFERENCES `#__sdi_perimeter` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
 						INDEX `fk_oper_peri` USING BTREE (`perimeter_id`) ,
@@ -539,7 +535,7 @@ function com_install(){
 					`id`  bigint(20) NOT NULL AUTO_INCREMENT ,
 					`guid`  varchar(36) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
 					`code`  varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
-					`name`  varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+					`name`  varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
 					`description`  varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
 					`created`  datetime NOT NULL ,
 					`updated`  datetime NULL DEFAULT NULL ,
@@ -554,7 +550,6 @@ function com_install(){
 					`buffer`  tinyint(1) NOT NULL DEFAULT 0 ,
 					PRIMARY KEY (`id`),
 					UNIQUE INDEX `guid` USING BTREE (`guid`) ,
-					UNIQUE INDEX `code` USING BTREE (`code`), 
 					FOREIGN KEY (`perimeter_id`) REFERENCES `#__sdi_perimeter` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
 					FOREIGN KEY (`product_id`) REFERENCES `#__sdi_product` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
 					INDEX `fk_pp_peri` USING BTREE (`perimeter_id`) ,
@@ -616,7 +611,6 @@ function com_install(){
 					`property_id`  bigint(20) NOT NULL ,
 					PRIMARY KEY (`id`),
 					UNIQUE INDEX `guid` USING BTREE (`guid`) ,
-					UNIQUE INDEX `code` USING BTREE (`code`),
 					FOREIGN KEY (`property_id`) REFERENCES `#__sdi_property` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
 					INDEX `fk_pv_property` USING BTREE (`property_id`) 
 					)
@@ -632,7 +626,7 @@ function com_install(){
 					`id`  bigint(20) NOT NULL AUTO_INCREMENT ,
 					`guid`  varchar(36) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
 					`code`  varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
-					`name`  varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+					`name`  varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
 					`description`  varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
 					`created`  datetime NOT NULL ,
 					`updated`  datetime NULL DEFAULT NULL ,
@@ -646,7 +640,6 @@ function com_install(){
 					`propertyvalue_id`  bigint(20) NOT NULL ,
 					PRIMARY KEY (`id`),
 					UNIQUE INDEX `guid` USING BTREE (`guid`) ,
-					UNIQUE INDEX `code` USING BTREE (`code`),
 					FOREIGN KEY (`product_id`) REFERENCES `#__sdi_product` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
 					FOREIGN KEY (`propertyvalue_id`) REFERENCES `#__sdi_propertyvalue` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
 					INDEX `fk_ppv_value` USING BTREE (`propertyvalue_id`) ,
@@ -665,7 +658,7 @@ function com_install(){
 					`id`  bigint(20) NOT NULL AUTO_INCREMENT ,
 					`guid`  varchar(36) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
 					`code`  varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
-					`name`  varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+					`name`  varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
 					`description`  varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
 					`created`  datetime NOT NULL ,
 					`updated`  datetime NULL DEFAULT NULL ,
@@ -682,7 +675,6 @@ function com_install(){
 					`price`  decimal(10,0) NULL DEFAULT NULL ,
 					PRIMARY KEY (`id`),
 					UNIQUE INDEX `guid` USING BTREE (`guid`) ,
-					UNIQUE INDEX `code` USING BTREE (`code`),
 					FOREIGN KEY (`order_id`) REFERENCES `#__sdi_order` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
 					FOREIGN KEY (`product_id`) REFERENCES `#__sdi_product` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
 					FOREIGN KEY (`status_id`) REFERENCES `#__sdi_list_productstatus` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
@@ -703,7 +695,7 @@ function com_install(){
 					`id`  bigint(20) NOT NULL AUTO_INCREMENT ,
 					`guid`  varchar(36) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
 					`code`  varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
-					`name`  varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+					`name`  varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
 					`description`  varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
 					`created`  datetime NOT NULL ,
 					`updated`  datetime NULL DEFAULT NULL ,
@@ -719,7 +711,6 @@ function com_install(){
 					`propertyvalue`  varchar(4000) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
 					PRIMARY KEY (`id`),
 					UNIQUE INDEX `guid` USING BTREE (`guid`) ,
-					UNIQUE INDEX `code` USING BTREE (`code`),
 					FOREIGN KEY (`orderproduct_id`) REFERENCES `#__sdi_order_product` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
 					FOREIGN KEY (`property_id`) REFERENCES `#__sdi_property` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
 					FOREIGN KEY (`propertyvalue_id`) REFERENCES `#__sdi_propertyvalue` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
