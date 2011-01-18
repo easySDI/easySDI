@@ -242,11 +242,7 @@ switch($task){
 	case 'cancelConfigList':
 	case 'cancelComponentConfig':
 	default:
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'proxy.toolbar.easysdi.html.php');
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'proxy.admin.easysdi.html.php');
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'proxy.admin.easysdi.php');
-		
-		HTML_proxy::ctrlPanel();
+		$mainframe->redirect("index.php?option=com_easysdi_proxy&task=showConfigList" );
 		break;
 }
 
