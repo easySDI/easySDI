@@ -20,6 +20,9 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 jimport( 'joomla.plugin.plugin' );
 jimport( 'joomla.application.component.helper' );
 
+$language=&JFactory::getLanguage();
+$lang = $language->load('com_easysdi_monitor', JPATH_SITE);
+
 class plgContentSdiMonitor extends JPlugin
 {	
 	var $_plgMonitorNbr	= 0;
