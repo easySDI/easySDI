@@ -29,6 +29,7 @@ class ADMIN_config {
 		$shopList=array();
 		$proxyList=array();
 		$monitorList=array();
+		$publishList=array();
 		
 		$result=array();
 		$query = "SELECT c.* FROM #__sdi_configuration c, #__sdi_list_module m WHERE c.module_id=m.id AND m.code='CORE'";
@@ -103,6 +104,22 @@ class ADMIN_config {
 			}
 		}
 		
+		$query = "SELECT count(*) FROM #__sdi_configuration c, #__sdi_list_module m WHERE c.module_id=m.id AND m.code='PUBLISH'";
+		$db->setQuery( $query );
+		$publishItem = $db->loadResult();
+
+		if ($publishItem>0)
+		{
+			$result=array();
+			$query = "SELECT c.* FROM #__sdi_configuration c, #__sdi_list_module m WHERE c.module_id=m.id AND m.code='PUBLISH'";
+			$db->setQuery( $query );
+			$result = $db->loadObjectList();
+			foreach($result as $row)
+			{
+				$publishList[$row->code] = $row;
+			}
+		}
+		
 		// Récupération des types mysql pour les champs
 		$tableFields = array();
 		$tableFields = $db->getTableFields("#__sdi_configuration", false);
@@ -130,7 +147,7 @@ class ADMIN_config {
 		$attributetypelist = $db->loadObjectList();
 		
 		
-		HTML_config::showConfig($option, $coreList, $catalogItem, $catalogList, $shopItem, $shopList, $proxyItem, $proxyList,  $monitorItem, $monitorList,$fieldsLength, $attributetypelist );
+		HTML_config::showConfig($option, $coreList, $catalogItem, $catalogList, $shopItem, $shopList, $proxyItem, $proxyList,  $monitorItem, $monitorList,$publishItem, $publishList,$fieldsLength, $attributetypelist );
 	}
 
 	function saveShowConfig($option) {
@@ -274,6 +291,15 @@ class ADMIN_config {
 		if ($_POST['monitor_item'] > 0)
 		{
 			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['monitor_url'])."\" WHERE code = 'MONITOR_URL'");
+			if (!$database->query()) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+		}
+		
+		// Sauvegarde des clés PUBLISH
+		if ($_POST['publish_item'] > 0)
+		{
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['publish_url'])."\" WHERE code = 'WPS_PUBLISHER'");
 			if (!$database->query()) {			
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
