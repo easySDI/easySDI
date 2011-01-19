@@ -145,7 +145,8 @@ class HTML_ctrlpanel {
 						   <tr>
 						      <td>
 						         <a href="http://www.sencha.com" target="_blank">EXT JS 3.2.1</a>,&nbsp;
-							 <a href="http://dev.bnhelp.cz/trac/gemetclient/wiki" target="_blank">GemetClient</a>
+							 <a href="http://dev.bnhelp.cz/trac/gemetclient/wiki" target="_blank">GemetClient</a>,&nbsp;
+							 <a href="http://alexgorbatchev.com/" target="_blank">SyntaxHighlighter 2.1.364</a>
 						      </td>
 						   </tr>
 						   <tr>
@@ -208,9 +209,9 @@ class HTML_ctrlpanel {
 						   <tr>
 						      <td>
 						         <a href="http://www.sencha.com" target="_blank">EXT JS 2.2.1</a>,&nbsp;
-							 <a href="http://www.geoext.org" target="_blank">GeoExt 1.0</a>,&nbsp;
+							 <a href="http://www.geoext.org" target="_blank">GeoExt 0.7</a>,&nbsp;
 							 <a href="http://jquery.com" target="_blank">JQuery 1.3.2</a>,&nbsp;
-							 <a href="http://openlayers.org/" target="_blank">Openlayers 2.10</a>
+							 <a href="http://openlayers.org/" target="_blank">Openlayers 2.8</a>
 						      </td>
 						   </tr>
 						   <tr>
