@@ -372,7 +372,7 @@ class HTML_config {
 <?php
 	}
 */
-	function showConfig($option, $coreList, $catalogItem, $catalogList, $shopItem, $shopList, $proxyItem, $proxyList, $fieldsLength, $attributetypelist )
+	function showConfig($option, $coreList, $catalogItem, $catalogList, $shopItem, $shopList, $proxyItem, $proxyList, $monitorItem, $monitorList, $fieldsLength, $attributetypelist )
 	{
 		global $mainframe;
 
@@ -407,6 +407,11 @@ if ($shopItem > 0){
 if ($proxyItem > 0){
 ?>					
 					<li><a id="proxy"><?php echo JText::_( 'CORE_CONFIGURATION_PROXY_TAB_TITLE' ); ?></a></li>
+<?php
+}
+if ($monitorItem > 0){
+?>					
+					<li><a id="monitor"><?php echo JText::_( 'CORE_CONFIGURATION_MONITOR_TAB_TITLE' ); ?></a></li>
 <?php
 }
 ?>
@@ -831,6 +836,37 @@ if ($proxyItem > 0){
 		</div>
 <?php
 }
+if ($monitorItem > 0){
+?>	
+			<div id="page-monitor">
+				<table class="noshow">
+					<tr>
+						<td width="60%">
+							<fieldset class="adminform">
+								<legend><?php echo JText::_( 'CORE_CONFIGURATION_MONITOR_FIELDSET_TITLE' ); ?></legend>
+								 
+								<table class="admintable" cellspacing="1">
+									<tbody>
+									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'MONITOR_CONFIG' ); ?>">
+												<?php echo JText::_( 'MONITOR_CONFIG' ); ?>
+											</span>
+										</td>
+										<td>
+											<input class="text_area" type="text" size="100" name="monitor_url" value="<?php echo $monitorList['MONITOR_URL']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+										</td>
+									</tr>
+									</tbody>
+								</table>
+							</fieldset>	
+						</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+<?php
+}
 ?>
 		<div class="clr"></div>
 
@@ -840,6 +876,7 @@ if ($proxyItem > 0){
 		<input type="hidden" name="catalog_item" value="<?php echo $catalogItem; ?>" />
 		<input type="hidden" name="shop_item" value="<?php echo $shopItem; ?>" />
 		<input type="hidden" name="proxy_item" value="<?php echo $proxyItem; ?>" />
+		<input type="hidden" name="monitor_item" value="<?php echo $monitorItem; ?>" />
 		<?php echo JHTML::_( 'form.token' ); ?>
 		</form>
 		<?php

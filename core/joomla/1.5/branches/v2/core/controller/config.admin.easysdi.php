@@ -19,111 +19,6 @@ defined('_JEXEC') or die('Restricted access');
 
 class ADMIN_config {
 
-	/*
-	function listConfig($option) {
-		global  $mainframe;
-		$db =& JFactory::getDBO(); 
-		
-		$limit = $mainframe->getUserStateFromRequest( "viewlistlimit", 'limit', 10 );
-		$limitstart = $mainframe->getUserStateFromRequest( "view{$option}limitstart", 'limitstart', 0 );
-		$use_pagination = JRequest::getVar('use_pagination',0);
-/*		$search = $mainframe->getUserStateFromRequest( "search{$option}", 'search', '' );
-		$search = $db->getEscaped( trim( strtolower( $search ) ) );
-
-		$filter = "";
-		if ( $search ) {
-			$filter .= " AND (#__users.name LIKE '%$search%'";
-			$filter .= " OR #__users.username LIKE '%$search%'";		
-			$filter .= " OR #__easysdi_community_partner.partner_acronym LIKE '%$search%'";		
-			$filter .= " OR #__easysdi_community_partner.partner_id LIKE '%$search%'";		
-			$filter .= " OR #__easysdi_community_partner.partner_code LIKE '%$search%')";		
-		}
-	*/
-/*
-		
-		$query = "SELECT COUNT(*) FROM #__sdi_configuration";					
-		$db->setQuery( $query );
-		$total = $db->loadResult();
-		$pageNav = new JPagination($total,$limitstart,$limit);
-	
-		
-		// Recherche des enregistrements selon les limites
-		
-		$query = "SELECT *  FROM #__sdi_configuration ";
-		$query .= " ORDER BY code";
-		if ($use_pagination) {
-		$db->setQuery( $query ,$pageNav->limitstart, $pageNav->limit);	
-		}
-		else{
-			$db->setQuery( $query);
-		}
-		
-		$rows = $db->loadObjectList();
-		if ($db->getErrorNum()) {
-			echo $db->stderr();
-			return false;
-		}		
-	
-		HTML_config::listConfig($use_pagination, $rows, $pageNav,$option);
-	}
-
-	
-	//id = 0 means new Config entry
-	function editConfig( $id, $option ) {
-		$database =& JFactory::getDBO(); 
-		$rowConfig = new config( $database );
-		$rowConfig->load( $id );
-		 
-
-		HTML_config::editConfig( $rowConfig,$option );
-	}
-
-
-	function removeConfig( $cid, $option ) {
-		global $mainframe;
-		$database =& JFactory::getDBO();
-		
-		if (!is_array( $cid ) || count( $cid ) < 1) {
-			$mainframe->enqueueMessage(JText::_("EASYSDI_SELECT_ROW_TO_DELETE"),"error");
-			$mainframe->redirect("index.php?option=$option&task=listConfig" );
-			exit;
-		}
-		foreach( $cid as $config_id )
-		{
-			$config = new config( $database );
-			$config->load( $config_id );
-		
-		
-			if (!$config->delete()) {
-				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=listConfig" );
-			}				
-		}				
-	}
-
-	
-	function saveConfig($option ) {
-		global $mainframe;
-		$database=& JFactory::getDBO(); 
-		
-	
-		$rowConfig= new config( $database );
-		if (!$rowConfig->bind( $_POST )) {
-		
-			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");						
-			$mainframe->redirect("index.php?option=$option&task=listConfig" );
-			exit();
-		}		
-				
-		if (!$rowConfig->store(false)) {			
-			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=listAccount" );
-			exit();
-		}
-	
-		
-	}
-	*/
 	function showConfig($option){
 		
 		global  $mainframe;
@@ -133,6 +28,7 @@ class ADMIN_config {
 		$catalogList=array();
 		$shopList=array();
 		$proxyList=array();
+		$monitorList=array();
 		
 		$result=array();
 		$query = "SELECT c.* FROM #__sdi_configuration c, #__sdi_list_module m WHERE c.module_id=m.id AND m.code='CORE'";
@@ -191,6 +87,22 @@ class ADMIN_config {
 			}
 		}
 		
+		$query = "SELECT count(*) FROM #__sdi_configuration c, #__sdi_list_module m WHERE c.module_id=m.id AND m.code='MONITOR'";
+		$db->setQuery( $query );
+		$monitorItem = $db->loadResult();
+
+		if ($monitorItem>0)
+		{
+			$result=array();
+			$query = "SELECT c.* FROM #__sdi_configuration c, #__sdi_list_module m WHERE c.module_id=m.id AND m.code='MONITOR'";
+			$db->setQuery( $query );
+			$result = $db->loadObjectList();
+			foreach($result as $row)
+			{
+				$monitorList[$row->code] = $row;
+			}
+		}
+		
 		// Récupération des types mysql pour les champs
 		$tableFields = array();
 		$tableFields = $db->getTableFields("#__sdi_configuration", false);
@@ -218,7 +130,7 @@ class ADMIN_config {
 		$attributetypelist = $db->loadObjectList();
 		
 		
-		HTML_config::showConfig($option, $coreList, $catalogItem, $catalogList, $shopItem, $shopList, $proxyItem, $proxyList, $fieldsLength, $attributetypelist );
+		HTML_config::showConfig($option, $coreList, $catalogItem, $catalogList, $shopItem, $shopList, $proxyItem, $proxyList,  $monitorItem, $monitorList,$fieldsLength, $attributetypelist );
 	}
 
 	function saveShowConfig($option) {
@@ -353,6 +265,15 @@ class ADMIN_config {
 		if ($_POST['proxy_item'] > 0)
 		{
 			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['proxy_config'])."\" WHERE code = 'PROXY_CONFIG'");
+			if (!$database->query()) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+		}
+		
+		// Sauvegarde des clés MONITOR
+		if ($_POST['monitor_item'] > 0)
+		{
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['monitor_url'])."\" WHERE code = 'MONITOR_URL'");
 			if (!$database->query()) {			
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
