@@ -129,7 +129,7 @@ class HTML_basemap {
 							<tr>
 							
 								<td class="key"><?php echo JText::_("SHOP_BASEMAP_LAYERS"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="layers" value="<?php echo $rowBasemap->layers; ?>" /></td>							
+								<td><input class="inputbox" type="text" size="50" maxlength="300" name="layers" value="<?php echo $rowBasemap->layers; ?>" /></td>							
 							</tr>
 							
 							<tr>
