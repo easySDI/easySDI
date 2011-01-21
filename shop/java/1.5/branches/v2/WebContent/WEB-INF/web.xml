@@ -19,7 +19,7 @@
 
 		<init-param>
 			<param-name>connexionString</param-name>
-			<param-value>jdbc:mysql://localhost/asitvd5?user=root&amp;password=&amp;noDatetimeStringSync=true</param-value>
+			<param-value>jdbc:mysql://localhost/asitvd6?user=root&amp;password=&amp;noDatetimeStringSync=true</param-value>
 		</init-param>
 		<init-param>
 			<param-name>joomlaPrefix</param-name>
@@ -35,7 +35,7 @@
 		</init-param>
 		<init-param>
 			<param-name>languageFile</param-name>
-			<param-value>/home/sites/joomla.asitvd.ch/web/language/fr-FR/fr-FR.com_easysdi_shop.ini</param-value>
+			<param-value>C:\\wamp\\www\\web2\\language\\fr-FR\\fr-FR.com_easysdi_shop.ini</param-value>
 		</init-param>
 		<init-param>
 			<param-name>sender</param-name>

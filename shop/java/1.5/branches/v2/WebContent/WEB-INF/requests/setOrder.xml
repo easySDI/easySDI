@@ -16,7 +16,7 @@
 			<ows:Identifier>REQUEST_ID</ows:Identifier>
 			<ows:Title>The id of the order</ows:Title>
 			<wps:Data>
-				<wps:LiteralData>3</wps:LiteralData>
+				<wps:LiteralData>125163</wps:LiteralData>
 			</wps:Data>
 		</wps:Input>
 		<wps:Input>
@@ -30,14 +30,14 @@
 			<ows:Identifier>BILL</ows:Identifier>
 			<ows:Title>The price</ows:Title>
 			<wps:Data>
-				<wps:LiteralData>7992.64599609375</wps:LiteralData>
+				<wps:LiteralData>212.50</wps:LiteralData>
 			</wps:Data>
 		</wps:Input>
 		<wps:Input>
 			<ows:Identifier>REMARK</ows:Identifier>
 			<ows:Title>a remark</ows:Title>
 			<wps:Data>
-				<wps:LiteralData>Ceci est une remarque</wps:LiteralData>
+				<wps:LiteralData>Ceci est une remarque incroyable</wps:LiteralData>
 			</wps:Data>
 		</wps:Input>
 		<wps:Input>
@@ -51,14 +51,14 @@
 			<ows:Identifier>PRODUCT_ID</ows:Identifier>
 			<ows:Title>The id of the product into the current order</ows:Title>
 			<wps:Data>
-				<wps:LiteralData>2</wps:LiteralData>
+				<wps:LiteralData>9720</wps:LiteralData>
 			</wps:Data>
 		</wps:Input>
 		<wps:Input>
 			<ows:Identifier>FILENAME</ows:Identifier>
 			<ows:Title>the filename of the data</ows:Title>
 			<wps:Data>
-				<wps:LiteralData>fichier.txt</wps:LiteralData>
+				<wps:LiteralData>fichier12.txt</wps:LiteralData>
 			</wps:Data>
 		</wps:Input>
 		<wps:Input>

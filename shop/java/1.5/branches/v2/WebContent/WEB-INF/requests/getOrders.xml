@@ -5,13 +5,12 @@
 	xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.opengis.net/wps/1.0.0../wpsExecute_request.xsd">
 	<ows:Identifier>getOrders</ows:Identifier>
-	<ows:Identifier>getOrders</ows:Identifier>
 	<wps:DataInputs>
 		<wps:Input>
 			<ows:Identifier>userName</ows:Identifier>
 			<ows:Title>provider userName</ows:Title>
 			<wps:Data>
-				<wps:LiteralData>rmi</wps:LiteralData>
+				<wps:LiteralData>PAR00012</wps:LiteralData>
 			</wps:Data>
 		</wps:Input>
 		<wps:Input>
