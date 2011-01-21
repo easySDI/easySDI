@@ -3097,21 +3097,22 @@ class ADMIN_metadata {
 		$catalogBoundaryIsocode = config_easysdi::getValue("catalog_boundary_isocode");
 		$catalogUrlBase = config_easysdi::getValue("catalog_url");
 		
-		// T�l�charger le XML indiqu� par l'utilisateur
+		// Télécharger le XML indiqué par l'utilisateur
 		$xml = new DomDocument();
 		$xml->formatOutput = true; 
 		$xml = DOMDocument::loadXML($xmlfile);
-		
+		//echo ($xmlfile)."<br>";
 		// Appliquer le XSL
 		$style = new DomDocument();
 		$style->formatOutput = true; 
 		$style->load($xslfile);
+		//echo ($xslfile)."<br>";
 		
 		// XML conforme à la norme ISO
 		$processor = new xsltProcessor();
 		$processor->importStylesheet($style);
 		$cswResults = $processor->transformToDoc($xml);
-		
+		//print_r($cswResults->saveXML());
 		if ($cswResults == false or !$cswResults->childNodes->item(0)->hasChildNodes())
 		{
 			//$xpathResults = new DOMXPath($doc);
@@ -3142,7 +3143,7 @@ class ADMIN_metadata {
 		}
 		else if ($importtype == 2) // Import de type fusion
 		{
-			// R�cup�rer en GET le xml d�j� stock� pour cette m�tadonn�e
+			// Récupérer en GET le xml déjà stocké pour cette métadonnée
 			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 			$catalogUrlBase = config_easysdi::getValue("catalog_url");
 			$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&content=CORE&id=".$metadata_id;
@@ -3151,48 +3152,59 @@ class ADMIN_metadata {
 			// Enlever les balises CSW Response pour ne garder que les gmd, depuis gmd:MD_Metadata
 			$existingXML = $existingXML->children("http://www.isotc211.org/2005/gmd");
 			$existingXML = DOMDocument::loadXML($existingXML->asXML());
-			
-			// Nettoyage du XML d�j� stock�, s'il y a lieu
+			//echo "<br>";print_r($existingXML->saveXML());
+			// Nettoyage du XML déjà stocké, s'il y a lieu
 			if ($pretreatmentxslfile)
 			{
 				$pretreatment = new DomDocument();
+				$pretreatment->formatOutput = true; 
 				$pretreatment->load($pretreatmentxslfile);
 				$processor->importStylesheet($pretreatment);
+				//echo "<br>";print_r($pretreatment->saveXML());
 				$existingXML = $processor->transformToDoc($existingXML);
 			}
-	
-			// Cr�ation des deux fichiers � fusionner
+			//echo "<br>";print_r($existingXML->saveXML());
+			
+			// Création des deux fichiers à fusionner
 			$tmp = uniqid();
 			//$existingXMLFile = "/home/sites/demo.depth.ch/web/geodbmeta/administrator/components/com_easysdi_catalog/core/controller/test_import/existingXML_clean.xml";
 			$existingXMLFile = JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'xml'.DS.'tmp'.DS.$tmp.'_1.xml';
+			$existingXMLFileRelative='C:/Inetpub/wwwroot/geodbmeta_test/administrator/components/com_easysdi_core/xml/tmp/'.$tmp.'_1.xml';
 			$existingXML->save($existingXMLFile);
 			
 			//$ESRIXMLFile = "/home/sites/demo.depth.ch/web/geodbmeta/administrator/components/com_easysdi_catalog/core/controller/test_import/ESRIXML_iso.xml";
 			$ESRIXMLFile = JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'xml'.DS.'tmp'.DS.$tmp.'_2.xml';
+			//echo JPATH_ADMINISTRATOR;
+			$ESRIXMLFileRelative='C:/Inetpub/wwwroot/geodbmeta_test/administrator/components/com_easysdi_core/xml/tmp/'.$tmp.'_2.xml';
 			$cswResults->save($ESRIXMLFile);
 			
-			// R�cup�ration de la feuille de style � utiliser pour les fusionner
+			// Récupération de la feuille de style à utiliser pour les fusionner
 			$style = new DomDocument();
+			$style->formatOutput = true; 
 			//$style->load("/home/sites/demo.depth.ch/web/geodbmeta/administrator/components/com_easysdi_core/xsl/XML2XML_merge_ESRI.xsl");
-			$style->load( JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'xsl'.DS.'XML2XML_merge_ESRI.xsl');
+			$style->load(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'xsl'.DS.'XML2XML_merge_ESRI.xsl');
+			//echo "<br>";print_r($style->saveXML());
 			
 			$xmlmerge= "<?xml version='1.0'?>
 					<merge xmlns='http://informatik.hu-berlin.de/merge'>
-					  <file1>".$ESRIXMLFile."</file1>
-					  <file2>".$existingXMLFile."</file2>
+					  <file1>$existingXMLFileRelative</file1>
+					  <file2>$ESRIXMLFileRelative</file2>
 					</merge>";
 	
 			$merging = new DomDocument();
-			$cswResults = new DomDocument();
+			$merging->formatOutput = true; 
 			$merging = DOMDocument::loadXML($xmlmerge);
+			$cswResults = new DomDocument();
+			$cswResults->formatOutput = true; 
+			//echo "<br>";print_r($merging->saveXML());
 			$MergingProcessor = new xsltProcessor();
 			$MergingProcessor->importStylesheet($style);
 			$cswResults = $MergingProcessor->transformToDoc($merging);
-			//print_r($cswResults);
+			//print_r($cswResults->saveXML());break;
 			$mergedXMLFile = JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'xml'.DS.'tmp'.DS.$tmp.'_3.xml';
 			$cswResults->save($mergedXMLFile);
 			
-			// Suppression des deux fichiers � fusionner
+			// Suppression des deux fichiers à fusionner
 			unlink($existingXMLFile);
 			unlink($ESRIXMLFile);
 		}
@@ -4178,7 +4190,8 @@ class ADMIN_metadata {
 			</csw:Transaction>'; 
 		
 		$result = ADMIN_metadata::CURLRequest("POST", $catalogUrlBase, $xmlstr);
-		
+		//print_r($xmlstr);
+			
 		$updateResults = DOMDocument::loadXML($result);
 		
 		$xpathUpdate = new DOMXPath($updateResults);

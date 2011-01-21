@@ -523,37 +523,44 @@ class SITE_catalog {
 									$cswAccountId="";
 									
 									$defaultLang=false;
+									$suffix="";
 									
 									foreach($this->langList as $lang)
 									{
-										if ($lang->defaultlang)
-											if ($lang->code_easysdi == $language->_lang)
-												$defaultLang=true;											
+										if ($lang->code_easysdi == $language->_lang)
+										{
+											if ($lang->defaultlang)
+												$defaultLang=true;
+											else
+												$suffix="_".$lang->code;
+										}
+										
 									}
 											
 									foreach ($kwords as $word) 
 									{
 										if ($word <> "")
 										{
+											$word = utf8_encode(strtolower(utf8_decode($word)));
 											if ($defaultLang)
 											{
 												$cswTitle .= "
 												 	 	<ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escapeChar=\"\\\">
-															<ogc:PropertyName>title</ogc:PropertyName>
+															<ogc:PropertyName>mainsearch</ogc:PropertyName>
 															<ogc:Literal>%$word%</ogc:Literal>
 														</ogc:PropertyIsLike>\r\n
 													";
 												$title++;
 												$cswKeyword .= "
 												 		<ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escapeChar=\"\\\">
-															<ogc:PropertyName>keyword</ogc:PropertyName>
+															<ogc:PropertyName>mainsearch</ogc:PropertyName>
 															<ogc:Literal>%$word%</ogc:Literal>
 														</ogc:PropertyIsLike>\r\n
 													";
 												$keyword++;
 												$cswAbstract .= "
 												 	 	<ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escapeChar=\"\\\">
-													     	<ogc:PropertyName>abstract</ogc:PropertyName>
+													     	<ogc:PropertyName>mainsearch</ogc:PropertyName>
 															<ogc:Literal>%$word%</ogc:Literal>
 														</ogc:PropertyIsLike>
 													";
@@ -565,21 +572,21 @@ class SITE_catalog {
 											{
 												$cswTitle .= "
 												 	 	<ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escapeChar=\"\\\">
-															<ogc:PropertyName>title_trad</ogc:PropertyName>
+															<ogc:PropertyName>mainsearch$suffix</ogc:PropertyName>
 															<ogc:Literal>%$word%</ogc:Literal>
 														</ogc:PropertyIsLike>\r\n
 													";
 												$title++;
 												$cswKeyword .= "
 												 		<ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escapeChar=\"\\\">
-															<ogc:PropertyName>keyword</ogc:PropertyName>
+															<ogc:PropertyName>mainsearch$suffix</ogc:PropertyName>
 															<ogc:Literal>%$word%</ogc:Literal>
 														</ogc:PropertyIsLike>\r\n
 													";
 												$keyword++;
 												$cswAbstract .= "
 												 	 	<ogc:PropertyIsLike wildCard=\"%\" singleChar=\"_\" escapeChar=\"\\\">
-													     	<ogc:PropertyName>abstract_trad</ogc:PropertyName>
+													     	<ogc:PropertyName>mainsearch$suffix</ogc:PropertyName>
 															<ogc:Literal>%$word%</ogc:Literal>
 														</ogc:PropertyIsLike>
 													";
@@ -1617,6 +1624,7 @@ class SITE_catalog {
 									{
 										if ($word <> "")
 										{
+											$word = utf8_encode(strtolower(utf8_decode($word)));
 											if ($defaultLang)
 											{
 												$cswTitle .= "
