@@ -73,7 +73,7 @@ function com_install(){
 	$version = $db->loadResult();
 	if (!$version)
 	{
-		$version= '0.1';
+		$version= '1.0';
 		$query="INSERT INTO #__sdi_list_module (guid, code, name, description, created, createdby, label, value, currentversion) 
 										VALUES ('".helper_easysdi::getUniqueId()."', 'SHOP', 'com_easysdi_shop', 'com_easysdi_shop', '".date('Y-m-d H:i:s')."', '".$user_id."', 'com_sdi_shop', 'com_sdi_shop', '".$version."')";
 		$db->setQuery( $query);		
