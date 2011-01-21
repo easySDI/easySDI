@@ -221,7 +221,7 @@
          <!-- Comparing the attributes -->
          <xslt:variable name="diff-att">
             <!-- same number ... -->
-            <xslt:if test="count($node1/@*)!=count($node2/@*)">.</xslt:if>
+            <!-- <xslt:if test="count($node1/@*)!=count($node2/@*)">.</xslt:if> -->
             <!-- ... and same name/content -->
             <xslt:for-each select="$node1/@*">
                <xslt:if test="not($node2/@* [local-name()=local-name(current()) and namespace-uri()=namespace-uri(current()) and .=current()])">.</xslt:if>

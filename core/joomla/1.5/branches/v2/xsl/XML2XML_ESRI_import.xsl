@@ -14,6 +14,38 @@ xmlns:bee="http://www.depth.ch/2008/bee"
 	
 	<xsl:template match="/">
 		<gmd:MD_Metadata>
+			<gmd:identificationInfo>
+				<gmd:MD_DataIdentification>
+					<gmd:extent>
+						<gmd:EX_Extent>
+							<gmd:geographicElement>
+								<gmd:EX_GeographicBoundingBox>
+									<gmd:northBoundLatitude>
+										<gco:Decimal>
+											<xsl:value-of select ="metadata/idinfo/spdom/bounding/northbc"/>
+										</gco:Decimal>
+									</gmd:northBoundLatitude>
+									<gmd:southBoundLatitude>
+										<gco:Decimal>
+											<xsl:value-of select ="metadata/idinfo/spdom/bounding/southbc"/>
+										</gco:Decimal>
+									</gmd:southBoundLatitude>
+									<gmd:eastBoundLongitude>
+										<gco:Decimal>
+											<xsl:value-of select ="metadata/idinfo/spdom/bounding/eastbc"/>
+										</gco:Decimal>
+									</gmd:eastBoundLongitude>
+									<gmd:westBoundLongitude>
+										<gco:Decimal>
+											<xsl:value-of select ="metadata/idinfo/spdom/bounding/westbc"/>
+										</gco:Decimal>
+									</gmd:westBoundLongitude>
+								</gmd:EX_GeographicBoundingBox>
+							</gmd:geographicElement>
+						</gmd:EX_Extent>
+					</gmd:extent>
+				</gmd:MD_DataIdentification>
+			</gmd:identificationInfo>
 			<gmd:contentInfo xmlns:bee="http://www.depth.ch/2008/bee">
 				<gmd:MD_FeatureCatalogueDescription>
 					<gmd:class>
@@ -91,38 +123,6 @@ xmlns:bee="http://www.depth.ch/2008/bee"
 					</gmd:class>
 				</gmd:MD_FeatureCatalogueDescription>
 			</gmd:contentInfo>
-			<gmd:identificationInfo>
-				<gmd:MD_DataIdentification>
-					<gmd:extent>
-						<gmd:EX_Extent>
-							<gmd:geographicElement>
-								<gmd:EX_GeographicBoundingBox>
-									<gmd:northBoundLatitude>
-										<gco:Decimal>
-											<xsl:value-of select ="metadata/idinfo/spdom/bounding/northbc"/>
-										</gco:Decimal>
-									</gmd:northBoundLatitude>
-									<gmd:southBoundLatitude>
-										<gco:Decimal>
-											<xsl:value-of select ="metadata/idinfo/spdom/bounding/southbc"/>
-										</gco:Decimal>
-									</gmd:southBoundLatitude>
-									<gmd:eastBoundLongitude>
-										<gco:Decimal>
-											<xsl:value-of select ="metadata/idinfo/spdom/bounding/eastbc"/>
-										</gco:Decimal>
-									</gmd:eastBoundLongitude>
-									<gmd:westBoundLongitude>
-										<gco:Decimal>
-											<xsl:value-of select ="metadata/idinfo/spdom/bounding/westbc"/>
-										</gco:Decimal>
-									</gmd:westBoundLongitude>
-								</gmd:EX_GeographicBoundingBox>
-							</gmd:geographicElement>
-						</gmd:EX_Extent>
-					</gmd:extent>
-				</gmd:MD_DataIdentification>
-			</gmd:identificationInfo>
 		</gmd:MD_Metadata>
 	</xsl:template>
 </xsl:stylesheet>
