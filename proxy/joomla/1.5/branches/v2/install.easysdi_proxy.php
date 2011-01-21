@@ -128,7 +128,7 @@ function com_install(){
 		}
 		
 		// Update component version
-		$version="0.2";
+		$version="1.0";
 		$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='PROXY'"; 
 		$db->setQuery( $query);	
 		if (!$db->query()) 
