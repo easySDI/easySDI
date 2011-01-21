@@ -461,7 +461,7 @@ class SITE_cpanel {
 				$orderPerimeter->perimeter_id=$row->perimeter_id;
 				$orderPerimeter->order_id=$order_copy_id;
 				$orderPerimeter->value=$row->value;
-				$orderPerimeter->text=$row->text;
+				$orderPerimeter->text=addslashes($row->text);
 				if(!$orderPerimeter->store())
 				{
 					echo "<div class='alert'>";
