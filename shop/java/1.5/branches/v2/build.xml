@@ -2,11 +2,11 @@
 <project default="createwar" basedir=".">
 	
 	
-	<property name="projet.conf.dir" value="conf"/>
   <property name="projet.src.dir" value="src"/>
   <property name="projet.work.dir" value="work"/>
   <property name="projet.out.dir" value="out"/>
-  <property name="projet.lib.dir" value="lib"/>
+  <property name="projet.lib.dir" value="WebContent\\WEB-INF\\lib"/>
+  <property name="projet.web.dir" value="WebContent\\WEB-INF"/>
   <property name="projet.tomcat.lib.dir" value="C:\tomcat6\lib"/>
   
    <path id="projet.classpath">
@@ -17,10 +17,6 @@
 	      <include name="*.jar"/>
 	    </fileset>
    </path>
-	
-<target name="syncJar" depends="create-structure,copy-resources,compilation,compression,Sync-jar" description="Main target">
-	    
-  </target>
 
   <target name="createwar" depends="create-structure,copy-resources,compilation,compression,deleteResources,war" description="Main target">
     
@@ -30,7 +26,6 @@
   	<echo>Creating the working directory structure</echo>
   	<mkdir dir="${projet.out.dir}" />
   	<mkdir dir="${projet.work.dir}" />
-  	<mkdir dir="${projet.work.dir}/conf" />
   	<mkdir dir="${projet.work.dir}/WEB-INF" />
   	<mkdir dir="${projet.work.dir}/WEB-INF/classes" />
   	<mkdir dir="${projet.work.dir}/WEB-INF/lib" />
@@ -40,30 +35,15 @@
 	    <jar jarfile="${projet.work.dir}/WEB-INF/lib/wps.jar" basedir="${projet.work.dir}/WEB-INF/classes"  />			
 	</target>
 
-	 <target name="Sync-jar">    
-			<echo>Copy the resources into the working directory</echo>
-	  		<copy todir="C:/Program Files/Apache Software Foundation/Tomcat 5.5/webapps/wps/WEB-INF/lib" >
-	  	      <fileset dir="${projet.work.dir}/WEB-INF/lib" >
-	  	        <include name="wps.jar"/>
-	  	        
-	  	      </fileset>
-	  	    </copy>
-	  </target>
 	
   <target name="copy-resources">    
 		<echo>Copy the resources into the working directory</echo>
-  		<copy todir="${projet.work.dir}/WEB-INF/lib" >
-  	      <fileset dir="${projet.lib.dir}" >
-  	        <include name="**/*.jar"/>
-  	        <include name="**/*.zip"/>
+  		
+  		<copy todir="${projet.work.dir}/WEB-INF" >
+  	      <fileset dir="${projet.web.dir}" >
+  	        <include name="**"/>
   	      </fileset>
   	    </copy>
-  	
-  		<copy todir="${projet.work.dir}/WEB-INF/" >
-  	  	      <fileset dir="${projet.conf.dir}" >
-  	  	        <include name="web.xml"/>  	  	        
-  	  	      </fileset>
-  	  	</copy>
   		
   		<copy todir="${projet.work.dir}/WEB-INF/classes" >
   	  	  	      <fileset dir="${projet.src.dir}" >
@@ -71,13 +51,6 @@
   	  	  	      </fileset>
   	  	</copy>
   	
-  		<copy todir="${projet.work.dir}/conf/" >
-  	  	  	      <fileset dir="${projet.conf.dir}" >
-  	  	  	        <include name="config.xml"/>  	  	        
-  	  	  	  		<include name="mailer.conf"/>
-  	  	  	  		<include name="NewPolicy.xml"/>  	  	  	      	
-  	  	  	      </fileset>
-  	  	  	</copy>  	
   </target>
 	
   <target name="compilation" description="Compilation" >  	
