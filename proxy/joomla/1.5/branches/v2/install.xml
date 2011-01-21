@@ -26,6 +26,7 @@
 		<languages folder="./language/admin">
 			<language tag="fr-FR">fr-FR.com_easysdi_proxy.ini</language>
 			<language tag="en-GB">en-GB.com_easysdi_proxy.ini</language>
+			<language tag="de-DE">de-DE.com_easysdi_proxy.ini</language>
 		</languages>
 	</administration>	
 </install>

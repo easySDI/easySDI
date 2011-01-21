@@ -84,22 +84,10 @@ function com_install(){
 	//When there is no DB version, then we create the full db
 	if (!$version)
 	{	
-		$version= '0.1';
-		$query="INSERT INTO #__sdi_list_module (guid, code, name, description, created, createdby, label, value, currentversion) 
-										VALUES ('".helper_easysdi::getUniqueId()."', 'PROXY', 'com_easysdi_proxy', 'com_easysdi_proxy', '".date('Y-m-d H:i:s')."', '".$user_id."', 'com_sdi_proxy', 'com_sdi_proxy', '".$version."')";
-		$db->setQuery( $query);
-		
-		if (!$db->query()) 
-		{			
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-			return false;
-		}
-		
 		$query = "SELECT id FROM `#__sdi_list_module` where `code` = 'PROXY'";
 		$db->setQuery( $query);
 		$id = $db->loadResult();
-		
-		
+				
 		/**
 		 * Insert value for PROXY_CONFIG in configuration table
 		 */
@@ -111,9 +99,7 @@ function com_install(){
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			return false;
 		}
-	}
-	if ($version == "0.1")
-	{
+	
 		$query = "SELECT id FROM `#__sdi_list_module` where `code` = 'PROXY'";
 		$db->setQuery( $query);
 		$id = $db->loadResult();
