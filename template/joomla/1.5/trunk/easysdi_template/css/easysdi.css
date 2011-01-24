@@ -1438,13 +1438,19 @@ div .reqUser{
                    text-align: center;
                    line-height: 16px; } 
 
+.particular-link-tierce a {display: block; /* or inline-block; I think IE would respect it since a link is an inline-element */
+                   background: transparent url(../images/picto_tiers.png) top left no-repeat; 
+                   text-align: center;
+                   line-height: 16px; }
+		   
+
 .particular-order-link a {display: block; /* or inline-block; I think IE would respect it since a link is an inline-element */
                    background: transparent url(../icons/silk/cart.png) no-repeat scroll center center; 
                    text-align: center;
                    line-height: 16px;
 }
 		   
-.particular-view-product-link, .particular-link, .particular-order-link{
+.particular-view-product-link, .particular-link, .particular-link-tierce, .particular-order-link{
 	height:18px;
 	width:18px;
 }
