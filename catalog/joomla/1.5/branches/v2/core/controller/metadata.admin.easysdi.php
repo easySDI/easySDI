@@ -3169,14 +3169,22 @@ class ADMIN_metadata {
 			$tmp = uniqid();
 			//$existingXMLFile = "/home/sites/demo.depth.ch/web/geodbmeta/administrator/components/com_easysdi_catalog/core/controller/test_import/existingXML_clean.xml";
 			$existingXMLFile = JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'xml'.DS.'tmp'.DS.$tmp.'_1.xml';
-			$existingXMLFileRelative='C:/Inetpub/wwwroot/geodbmeta_test/administrator/components/com_easysdi_core/xml/tmp/'.$tmp.'_1.xml';
+			//$existingXMLFileRelative='C:/Inetpub/wwwroot/geodbmeta_test/administrator/components/com_easysdi_core/xml/tmp/'.$tmp.'_1.xml';
+			$existingXMLFileRelative=JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'xml'.DS.'tmp'.DS.$tmp.'_1.xml';
 			$existingXML->save($existingXMLFile);
 			
 			//$ESRIXMLFile = "/home/sites/demo.depth.ch/web/geodbmeta/administrator/components/com_easysdi_catalog/core/controller/test_import/ESRIXML_iso.xml";
 			$ESRIXMLFile = JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'xml'.DS.'tmp'.DS.$tmp.'_2.xml';
 			//echo JPATH_ADMINISTRATOR;
-			$ESRIXMLFileRelative='C:/Inetpub/wwwroot/geodbmeta_test/administrator/components/com_easysdi_core/xml/tmp/'.$tmp.'_2.xml';
+			//$ESRIXMLFileRelative='C:/Inetpub/wwwroot/geodbmeta_test/administrator/components/com_easysdi_core/xml/tmp/'.$tmp.'_2.xml';
+			$ESRIXMLFileRelative=JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'xml'.DS.'tmp'.DS.$tmp.'_2.xml';
 			$cswResults->save($ESRIXMLFile);
+			
+			if (DS <> "/" )
+			{
+				$existingXMLFileRelative = str_replace(DS, "/", $existingXMLFileRelative);
+				$ESRIXMLFileRelative = str_replace(DS, "/", $ESRIXMLFileRelative);
+			}
 			
 			// Récupération de la feuille de style à utiliser pour les fusionner
 			$style = new DomDocument();

@@ -811,7 +811,9 @@ function com_install(){
 			  	  `id` bigint(20) NOT NULL AUTO_INCREMENT,
 				  `parent_id` bigint(20) NOT NULL,
 				  `child_id` bigint(20) NOT NULL,
-				  PRIMARY KEY (`id`)
+				  PRIMARY KEY (`id`),
+				  KEY `parent_id` (`parent_id`),
+				  KEY `child_id` (`child_id`)
 				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;"; 
 		$db->setQuery( $query);
 		if (!$db->query()) 
@@ -1248,6 +1250,15 @@ function com_install(){
 				ADD CONSTRAINT `#__sdi_objectversion_ibfk_1` FOREIGN KEY (`object_id`) REFERENCES `#__sdi_object` (`id`),
 				ADD CONSTRAINT `#__sdi_objectversion_ibfk_2` FOREIGN KEY (`metadata_id`) REFERENCES `#__sdi_metadata` (`id`),
 				ADD CONSTRAINT `#__sdi_objectversion_ibfk_3` FOREIGN KEY (`parent_id`) REFERENCES `#__sdi_objectversion` (`id`);
+				";
+		$db->setQuery( $query);	
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+		
+		$query="ALTER TABLE `#__sdi_objectversionlink`
+				ADD CONSTRAINT `#__sdi_objectversionlink_ibfk_1` FOREIGN KEY (`parent_id`) REFERENCES `#__sdi_objectversion` (`id`),
+				ADD CONSTRAINT `#__sdi_objectversionlink_ibfk_2` FOREIGN KEY (`child_id`) REFERENCES `#__sdi_objectversion` (`id`);
 				";
 		$db->setQuery( $query);	
 		if (!$db->query()) {

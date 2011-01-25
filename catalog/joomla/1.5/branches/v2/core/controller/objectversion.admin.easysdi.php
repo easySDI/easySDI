@@ -1076,7 +1076,7 @@ class ADMIN_objectversion {
 		// qui ne sont ni l'objet courant, ni dans la liste des objets sélectionnés,
 		// et pour lesquels il existe une relation parent/enfant entre les types d'objets
 		//$query = "SELECT SQL_CALC_FOUND_ROWS DISTINCT ov.id as value, o.objecttype_id as objecttype_id, o.name as object_name, CONCAT(o.name, ' ', ov.title) as name, otl.parentbound_upper 
-		$query = "SELECT DISTINCT ov.id as value, o.objecttype_id as objecttype_id, o.name as object_name, CONCAT(o.name, ' ', ov.title) as name, otl.parentbound_upper
+		/*$query = "SELECT DISTINCT ov.id as value, o.objecttype_id as objecttype_id, o.name as object_name, CONCAT(o.name, ' ', ov.title) as name, otl.parentbound_upper
 				  FROM #__sdi_objecttype ot
 				  INNER JOIN #__sdi_object o ON o.objecttype_id=ot.id
 				  INNER JOIN #__sdi_objectversion ov ON ov.object_id=o.id 
@@ -1094,7 +1094,33 @@ class ADMIN_objectversion {
 		
 				  WHERE otl.parent_id = ".$rowParentObject->objecttype_id." 
 				        AND ov.id<>".$objectversion_id;
-	
+		*/
+		$query = 
+		"SELECT ov.id as value, o.objecttype_id as objecttype_id, o.name as object_name, CONCAT(o.name, ' ', ov.title) as name, otl.parentbound_upper, link.* 
+		FROM #__sdi_objectversion ov 
+		INNER JOIN #__sdi_object o ON ov.object_id=o.id
+		INNER JOIN #__sdi_objecttype ot ON o.objecttype_id=ot.id 
+		INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
+		LEFT OUTER JOIN #__sdi_manager_object ma ON o.id = ma.object_id
+		LEFT OUTER JOIN #__sdi_editor_object e ON o.id = e.object_id 
+		LEFT OUTER JOIN #__sdi_objecttypelink otl ON otl.child_id=o.objecttype_id
+		LEFT OUTER JOIN 
+						(SELECT count(*) as linkCount, ovl.parent_id, parent_o.objecttype_id as parentobjecttype_id, ovl.child_id 
+						 FROM #__sdi_objectversionlink ovl 
+						 INNER JOIN #__sdi_objectversion parent_ov ON ovl.parent_id=parent_ov.id
+						 INNER JOIN #__sdi_object parent_o ON parent_ov.object_id=parent_o.id
+						 WHERE parent_o.objecttype_id=".$rowParentObject->objecttype_id."
+						 GROUP BY ovl.child_id
+						) AS link ON link.child_id=ov.id
+		WHERE otl.child_id IS NOT NULL AND otl.parent_id=".$rowParentObject->objecttype_id."
+			  AND ov.id<>".$objectversion_id."
+			  AND 
+			  (link.child_id IS NULL
+			   OR
+			   (link.linkCount < otl.parentbound_upper)
+			  )
+		";
+		
 		// Ajout des filtres
 		if ($objecttype_id)
 			$query .= " AND ot.id=".$objecttype_id;
