@@ -232,7 +232,7 @@ JToolBarHelper::title(JText::_("EASYSDI_TITLE_ACCOUNT"));
 							</tr>
 							<tr>
 								<td><?php echo JText::_("EASYSDI_TEXT_USER"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="username" value="<?php echo $rowUser->username; ?>" /></td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="username" value="<?php echo $rowUser->username; ?>" /><input type="hidden" name="old_username" value="<?php echo $rowUser->username; ?>" /></td>
 							</tr>
 							<tr>
 								<td><?php echo JText::_("EASYSDI_TEXT_PASSWORD"); ?> : </td>
@@ -240,7 +240,7 @@ JToolBarHelper::title(JText::_("EASYSDI_TITLE_ACCOUNT"));
 							</tr>
 							<tr>
 								<td><?php echo JText::_("EASYSDI_TEXT_EMAIL"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="email" value="<?php echo $rowUser->email; ?>" /></td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="email" value="<?php echo $rowUser->email; ?>" /><input type="hidden" name="old_email" value="<?php echo $rowUser->email; ?>" /></td>
 							</tr>
 							<tr>
 								<td><?php echo JText::_("EASYSDI_TEXT_GROUP"); ?> : </td>
@@ -790,7 +790,7 @@ JToolBarHelper::title(JText::_("EASYSDI_TITLE_ACCOUNT"));
 							</tr>
 							<tr>
 								<td><?php echo JText::_("EASYSDI_TEXT_USER"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="username" value="<?php echo $rowUser->username; ?>" /></td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="username" value="<?php echo $rowUser->username; ?>" /><input type="hidden" name="old_username" value="<?php echo $rowUser->username; ?>" /></td>
 							</tr>
 							<tr>
 								<td><?php echo JText::_("EASYSDI_TEXT_PASSWORD"); ?> : </td>
@@ -798,7 +798,7 @@ JToolBarHelper::title(JText::_("EASYSDI_TITLE_ACCOUNT"));
 							</tr>
 							<tr>
 								<td><?php echo JText::_("EASYSDI_TEXT_EMAIL"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="email" value="<?php echo $rowUser->email; ?>" /></td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="email" value="<?php echo $rowUser->email; ?>" /><input type="hidden" name="old_email" value="<?php echo $rowUser->email; ?>" /></td>
 							</tr>
 							<tr>
 								<td><?php echo JText::_("EASYSDI_TEXT_GROUP"); ?> : </td>

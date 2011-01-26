@@ -377,6 +377,30 @@ class ADMIN_partner {
 			$mainframe->redirect("index.php?option=$option&task=listPartner" );
 			exit();
 		}
+		
+		//Check if username already exit cause in jos_user name isn't unique but should be...
+		if (JRequest::getVar('old_username','') != $rowUser->username){
+			$database->setQuery("SELECT count(*) FROM #__users WHERE username = '".$rowUser->username."'");
+			$total = $database->loadResult();
+			if($total > 0){
+				$mainframe->enqueueMessage(JText::_("EASYSDI_ACCOUNT_ALREADY_EXISTS"),"ERROR");
+				$mainframe->redirect("index.php?option=$option&task=listPartner" );
+				exit();
+			}
+		}
+		
+		//CSheck if email is unique also because it must be (pass recovery!).
+                if (JRequest::getVar('old_email','') != $rowUser->email){
+			$database->setQuery("SELECT count(*) FROM #__users WHERE email = '".$rowUser->email."'");
+			$total = $database->loadResult();
+			if($total > 0){
+				$mainframe->enqueueMessage(JText::_("EASYSDI_EMAIL_ALREADY_REGISTRED"),"ERROR");
+				$mainframe->redirect("index.php?option=$option&task=listPartner" );
+				exit();
+			}
+		}		
+		
+		//rebuild password
 		if (JRequest::getVar('old_password','') != $rowUser->password)
 		{
 			//$rowUser->password = md5( JRequest::getVar('password','') );
