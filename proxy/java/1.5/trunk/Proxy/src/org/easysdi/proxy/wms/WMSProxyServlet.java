@@ -658,7 +658,7 @@ public class WMSProxyServlet extends ProxyServlet {
 			{
 				Map.Entry<Integer,String> entry = (Map.Entry<Integer,String>)it.next();
 				String path  = entry.getValue();
-				if(path == null || path.isEmpty())
+				if(path == null || path.length() == 0)
 					continue;
 				String ext = (path.lastIndexOf(".")==-1)?"":path.substring(path.lastIndexOf(".")+1,path.length());
 				if (ext.equals("xml"))
