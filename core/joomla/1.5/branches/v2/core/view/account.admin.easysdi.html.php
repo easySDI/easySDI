@@ -234,7 +234,8 @@ class HTML_account {
 			<tr>
 				<td><?php echo JText::_("CORE_ACCOUNT_USER_LABEL"); ?> :</td>
 				<td><input class="inputbox" type="text" size="50" maxlength="100"
-					name="username" value="<?php echo $rowUser->username; ?>" /></td>
+					name="username" value="<?php echo $rowUser->username; ?>" /><input type="hidden"
+					name="old_username" value="<?php echo $rowUser->username; ?>" /></td>
 			</tr>
 			<tr>
 				<td><?php echo JText::_("CORE_ACCOUNT_PASSWORD_LABEL"); ?> :</td>
@@ -246,7 +247,8 @@ class HTML_account {
 			<tr>
 				<td><?php echo JText::_("CORE_ACCOUNT_EMAIL_LABEL"); ?> :</td>
 				<td><input class="inputbox" type="text" size="50" maxlength="100"
-					name="user_email" value="<?php echo $rowUser->email; ?>" /></td>
+					name="user_email" value="<?php echo $rowUser->email; ?>" /><input type="hidden"
+					name="old_email" value="<?php echo $rowUser->email; ?>" /></td>
 			</tr>
 			<tr>
 				<td><?php echo JText::_("CORE_ACCOUNT_GROUP_LABEL"); ?> :</td>
@@ -857,7 +859,8 @@ class HTML_account {
 			<tr>
 				<td><?php echo JText::_("CORE_ACCOUNT_USER_LABEL"); ?> :</td>
 				<td><input class="inputbox" type="text" size="50" maxlength="100"
-					name="username" value="<?php echo $rowUser->username; ?>" /></td>
+					name="username" value="<?php echo $rowUser->username; ?>" /><input type="hidden"
+					name="old_username" value="<?php echo $rowUser->username; ?>" /></td>
 			</tr>
 			<tr>
 				<td><?php echo JText::_("CORE_ACCOUNT_PASSWORD_LABEL"); ?> :</td>
@@ -869,7 +872,8 @@ class HTML_account {
 			<tr>
 				<td><?php echo JText::_("CORE_ACCOUNT_EMAIL_LABEL"); ?> :</td>
 				<td><input class="inputbox" type="text" size="50" maxlength="100"
-					name="user_email" value="<?php echo $rowUser->email; ?>" /></td>
+					name="user_email" value="<?php echo $rowUser->email; ?>" /><input type="hidden"
+					name="old_email" value="<?php echo $rowUser->email; ?>" /></td>
 			</tr>
 			<tr>
 				<td><?php echo JText::_("CORE_ACCOUNT_GROUP_LABEL"); ?> :</td>

@@ -263,7 +263,7 @@ class ADMIN_account {
 			$account = new account( $database );
 			$account->load( $account_id );
 		
-			// Vider les entrées de la table #__sdi_account_accountprofile
+			// Vider les entrï¿½es de la table #__sdi_account_accountprofile
 			$database->setQuery("DELETE FROM #__sdi_account_accountprofile WHERE account_id=".$account_id);
 			//echo $database->getQuery()."<br>";
 			if (!$database->query())
@@ -271,7 +271,7 @@ class ADMIN_account {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
 			
-			// Vider les entrées de la table #__sdi_actor
+			// Vider les entrï¿½es de la table #__sdi_actor
 			$database->setQuery("DELETE FROM #__sdi_actor WHERE account_id=".$account_id);
 			//echo $database->getQuery()."<br>";
 			if (!$database->query())
@@ -288,7 +288,7 @@ class ADMIN_account {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 				$mainframe->redirect("index.php?option=$option&task=listAccount" );
 			}
-			/* Contrairement à la V1, ne pas supprimer le compte Joomla associé */
+			/* Contrairement ï¿½ la V1, ne pas supprimer le compte Joomla associï¿½ */
 			/*if (!$user->delete()) {
 				//echo "<script> alert('".$user->getError()."'); window.history.go(-1); </script>\n";
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -400,6 +400,26 @@ class ADMIN_account {
 		}
 		//echo JRequest::getVar('password','')."<br>".JRequest::getVar('old_password','')."<br>".$rowUser->password."<br>";
 		
+		//Check if username already exit cause in jos_user name isn't unique but should be...
+		if (JRequest::getVar('old_username','') != $rowUser->username){
+			$database->setQuery("SELECT count(*) FROM #__users WHERE username = '".$rowUser->username."'");
+			$total = $database->loadResult();
+			if($total > 0){
+				$mainframe->enqueueMessage(JText::_("EASYSDI_ACCOUNT_ALREADY_EXISTS"),"ERROR");
+				$mainframe->redirect("index.php?option=$option&task=ctrlPanelAccountManager" );
+			}
+		}
+		
+		//CSheck if email is unique also because it must be (pass recovery!).
+                if (JRequest::getVar('old_email','') != $_POST['user_email']){
+			$database->setQuery("SELECT count(*) FROM #__users WHERE email = '".$_POST['user_email']."'");
+			$total = $database->loadResult();
+			if($total > 0){
+				$mainframe->enqueueMessage(JText::_("EASYSDI_EMAIL_ALREADY_REGISTRED"),"ERROR");
+				$mainframe->redirect("index.php?option=$option&task=ctrlPanelAccountManager" );
+			}
+		}
+		
 		if (JRequest::getVar('old_password','') != $rowUser->password)
 		{
 			$rowUser->password = md5( JRequest::getVar('password','') );
@@ -442,7 +462,7 @@ class ADMIN_account {
 			$rowAccount->code = sprintf( '%04x%04x-%04x-%04x-%04x-%04x%04x%04x', mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0x0fff ) | 0x4000, mt_rand( 0, 0x3fff ) | 0x8000, mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ) );
 		}*/
 		
-		// Générer un guid
+		// Gï¿½nï¿½rer un guid
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 		if ($rowAccount->guid == null)
 			$rowAccount->guid = helper_easysdi::getUniqueId();
@@ -506,7 +526,7 @@ class ADMIN_account {
 			$rowAddress->fax=$_POST['fax'][$index];
 			$rowAddress->email=$_POST['email'][$index];
 	
-			// Générer un guid
+			// Gï¿½nï¿½rer un guid
 			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 			if ($rowAddress->guid == null)
 				$rowAddress->guid = helper_easysdi::getUniqueId();

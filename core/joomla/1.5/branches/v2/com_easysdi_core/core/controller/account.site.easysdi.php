@@ -737,6 +737,31 @@ class SITE_account {
 			echo "</div>";
 			exit;
 		}
+		
+		//Check if username already exit cause in jos_user name isn't unique but should be...
+		if (JRequest::getVar('old_username','') != $rowUser->username){
+			$database->setQuery("SELECT count(*) FROM #__users WHERE username = '".$rowUser->username."'");
+			$total = $database->loadResult();
+			if($total > 0){
+				echo "<div class='alert'>";
+			        echo JText::_("EASYSDI_ACCOUNT_ALREADY_EXISTS");
+			        echo "</div>";
+				exit();
+			}
+		}
+		
+		//CSheck if email is unique also because it must be (pass recovery!).
+                if (JRequest::getVar('old_email','') != $_POST['user_email']){
+			$database->setQuery("SELECT count(*) FROM #__users WHERE email = '".$_POST['user_email']."'");
+			$total = $database->loadResult();
+			if($total > 0){
+				echo "<div class='alert'>";
+			        echo JText::_("EASYSDI_EMAIL_ALREADY_REGISTRED");
+			        echo "</div>";
+				exit();
+			}
+		}
+		
 		if (JRequest::getVar('old_password','') != $rowUser->password)
 		{
 			$salt = JUserHelper::genRandomPassword(32);
@@ -776,7 +801,7 @@ class SITE_account {
 		$rowAccount->user_id=$rowUser->id;
 		$rowAccount->id=$_POST['account_id'];
 		
-		// Générer un guid
+		// Gï¿½nï¿½rer un guid
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 		if ($rowAccount->guid == null)
 			$rowAccount->guid = helper_easysdi::getUniqueId();
@@ -825,7 +850,7 @@ class SITE_account {
 			$rowAddress->fax=$_POST['fax'][$index];
 			$rowAddress->email=$_POST['email'][$index];
 	
-			// Générer un guid
+			// Gï¿½nï¿½rer un guid
 			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 			if ($rowAddress->guid == null)
 				$rowAddress->guid = helper_easysdi::getUniqueId();
@@ -989,6 +1014,30 @@ class SITE_account {
 			exit;
 		}
 		
+		//Check if username already exit cause in jos_user name isn't unique but should be...
+		if (JRequest::getVar('old_username','') != $rowUser->username){
+			$database->setQuery("SELECT count(*) FROM #__users WHERE username = '".$rowUser->username."'");
+			$total = $database->loadResult();
+			if($total > 0){
+				echo "<div class='alert'>";
+			        echo JText::_("EASYSDI_ACCOUNT_ALREADY_EXISTS");
+			        echo "</div>";
+				exit();
+			}
+		}
+		
+		//CSheck if email is unique also because it must be (pass recovery!).
+                if (JRequest::getVar('old_email','') != $rowUser->email){
+			$database->setQuery("SELECT count(*) FROM #__users WHERE email = '".$rowUser->email."'");
+			$total = $database->loadResult();
+			if($total > 0){
+				echo "<div class='alert'>";
+			        echo JText::_("EASYSDI_EMAIL_ALREADY_REGISTRED");
+			        echo "</div>";
+				exit();
+			}
+		}
+		
 		if (JRequest::getVar('old_password','') != $rowUser->password)
 		{
 			//$rowUser->password = md5( JRequest::getVar('password','') );
@@ -1029,7 +1078,7 @@ class SITE_account {
 		$rowAccount->user_id=$rowUser->id;
 		$rowAccount->id=$_POST['account_id'];
 		
-		// Générer un guid
+		// Gï¿½nï¿½rer un guid
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 		if ($rowAccount->guid == null)
 			$rowAccount->guid = helper_easysdi::getUniqueId();
@@ -1072,7 +1121,7 @@ class SITE_account {
 			$rowAddress->fax=$_POST['fax'][$index];
 			$rowAddress->email=$_POST['email'][$index];
 	
-			// Générer un guid
+			// Gï¿½nï¿½rer un guid
 			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 			if ($rowAddress->guid == null)
 				$rowAddress->guid = helper_easysdi::getUniqueId();
