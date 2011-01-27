@@ -200,7 +200,7 @@ class SITE_catalog {
 		/* Construction de la requête de recherche */
 		// Ne retourner des résultats que si l'utilisateur a soumis une requête
 		// ou qu'un contexte est défini
-		if(isset($_GET['simple_search_button']) || isset($_GET['limitstart']) || isset($_GET['context']))
+		if(isset($_POST['simple_search_button']) || isset($_POST['limitstart']) || isset($_POST['context']) || isset($_GET['context']))
 		{
 			// Si aucun utilisateur n'est loggé, ne retourner que les métadonnées publiques
 			if($account->id == 0)
@@ -281,7 +281,7 @@ class SITE_catalog {
 				$lowerFilter = JRequest::getVar('create_cal_'.$searchFilter->guid);
 				$upperFilter = JRequest::getVar('update_cal_'.$searchFilter->guid);
 							
-				if (isset($_GET['filter_'.$searchFilter->guid]) or isset($_GET['create_cal_'.$searchFilter->guid]) or isset($_GET['update_cal_'.$searchFilter->guid]))
+				if (isset($_POST['filter_'.$searchFilter->guid]) or isset($_POST['create_cal_'.$searchFilter->guid]) or isset($_POST['update_cal_'.$searchFilter->guid]))
 				{
 					switch ($searchFilter->attributetype_code)
 					{
@@ -750,7 +750,7 @@ class SITE_catalog {
 									}
 									
 								}
-								else if (!array_key_exists('objecttype_id', $_GET) and !array_key_exists('bboxMinX', $_GET)) // Cas du premier appel. Rechercher sur tous les types
+								else if (!array_key_exists('objecttype_id', $_POST) and !array_key_exists('bboxMinX', $_POST)) // Cas du premier appel. Rechercher sur tous les types
 								{
 									//echo "<b>Cas2:</b><br>";
 									//$countSimpleFilters++;
@@ -819,7 +819,7 @@ class SITE_catalog {
 								//$versions = JRequest::getVar('versions');
 								$versions = JRequest::getVar('systemfilter_'.$searchFilter->guid);
 								//print_r("<pre>".var_dump($versions)."</pre>");
-								if ($versions == "0" or !array_key_exists('systemfilter_'.$searchFilter->guid, $_GET)) // Cas du premier appel et des versions actuelles. Rechercher sur les dernières versions publiées à la date courante 
+								if ($versions == "0" or !array_key_exists('systemfilter_'.$searchFilter->guid, $_POST)) // Cas du premier appel et des versions actuelles. Rechercher sur les dernières versions publiées à la date courante 
 								{
 									//$countSimpleFilters++;
 									// Si l'utilisateur a choisi de ne chercher que sur les versions actuelles,
@@ -1830,7 +1830,7 @@ class SITE_catalog {
 										break;
 									}
 								}
-								else if (!array_key_exists('objecttype_id', $_GET) and !array_key_exists('bboxMinX', $_GET)) // Cas du premier appel. Rechercher sur tous les types
+								else if (!array_key_exists('objecttype_id', $_POST) and !array_key_exists('bboxMinX', $_POST)) // Cas du premier appel. Rechercher sur tous les types
 								{
 									//echo "<b>Cas2:</b><br>";
 									//$countAdvancedFilters++;
@@ -1898,7 +1898,7 @@ class SITE_catalog {
 								//$versions = JRequest::getVar('versions');
 								$versions = JRequest::getVar('systemfilter_'.$searchFilter->guid);
 								//print_r("<pre>".var_dump($versions)."</pre>");
-								if ($versions == "0" or !array_key_exists('systemfilter_'.$searchFilter->guid, $_GET)) // Cas du premier appel et des versions actuelles. Rechercher sur les versions actuelles publiées à la date courante 
+								if ($versions == "0" or !array_key_exists('systemfilter_'.$searchFilter->guid, $_POST)) // Cas du premier appel et des versions actuelles. Rechercher sur les versions actuelles publiées à la date courante 
 								{
 									//$countAdvancedFilters++;
 									// Si l'utilisateur a choisi de ne chercher que sur les versions actuelles,

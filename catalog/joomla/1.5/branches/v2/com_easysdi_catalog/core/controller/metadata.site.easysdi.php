@@ -228,7 +228,7 @@ class SITE_metadata {
 				 INNER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id
 				 WHERE ot.predefined=false 
 				 	   AND cl.code='".$language->_lang."'
-				 ORDER BY t.label";
+				 ORDER BY ot.ordering";
 		
 		$listObjectType[] = JHTML::_('select.option', '0', JText::_('CATALOG_METADATA_SELECT_OBJECTTYPE'), 'value', 'text');
 		$database->setQuery($query);

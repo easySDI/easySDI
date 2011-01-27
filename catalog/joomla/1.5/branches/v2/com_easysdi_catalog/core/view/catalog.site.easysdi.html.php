@@ -66,7 +66,7 @@ class HTML_catalog{
 									FROM #__sdi_context_objecttype co
 									INNER JOIN #__sdi_context c ON c.id=co.context_id 
 									WHERE c.code = '".$context."')
-				 ORDER BY t.label");
+				 ORDER BY ot.ordering");
 		}
 		else
 		{
@@ -77,7 +77,7 @@ class HTML_catalog{
 				 INNER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id
 				 WHERE ot.predefined=false 
 				 	   AND cl.code='".$language->_lang."'
-				 ORDER BY t.label");
+				 ORDER BY ot.ordering");
 		}
 		$objecttypes = array_merge( $objecttypes, $db->loadObjectList() );
 		HTML_catalog::alter_array_value_with_Jtext($objecttypes);
@@ -88,7 +88,7 @@ class HTML_catalog{
 
 <h2><?php echo JText::_("CATALOG_SEARCH_CRITERIA_TITLE"); ?></h2>
 
-<form name="catalog_search_form" id="catalog_search_form" method="get" action="">
+<form name="catalog_search_form" id="catalog_search_form" method="POST" action="">
 	<input type="hidden" name="option" id="option" value="<?php echo JRequest::getVar('option' );?>" /> 
 	<input type="hidden" name="view" id="view" value="<?php echo JRequest::getVar('view' );?>" /> 
 	<input type="hidden" name="context" id="context" value="<?php echo JRequest::getVar('context' );?>" /> 
@@ -786,161 +786,8 @@ if($cswResults)
 		$xmlBase->formatOutput = true;
 	
 		$doc = displayManager::constructXML($xmlBase, $db, $language, $md->getFileIdentifier(), false, null, null);
-		//$doc->save("C:\\RecorderWebGIS\\catalog_search\\catalog_search_".$md->getFileIdentifier().".xml");
 		
-		/*
-		$root = $doc->getElementsByTagName("MD_Metadata");
-		$root = $root->item(0);
-	
-		$XMLNewRoot = $doc->createElement("Metadata");
-		$doc->appendChild($XMLNewRoot);
-		$XMLNewRoot->appendChild($root);
-	
-		$XMLSdi = $doc->createElementNS('http://www.depth.ch/sdi', 'sdi:Metadata');
-		$XMLSdi->setAttribute('user_lang', $language->_lang);
-		$XMLNewRoot->appendChild($XMLSdi);
-		
-		$queryAccountID = "	select o.account_id 
-							FROM #__sdi_metadata m
-							INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
-							INNER JOIN #__sdi_object o ON o.id = ov.object_id 
-							WHERE m.guid = '".$md->getFileIdentifier()."'";
-		$db->setQuery($queryAccountID);
-		$account_id = $db->loadResult();
-	
-		if ($account_id <> "")
-		{
-			$queryAccountLogo = "select logo from #__sdi_account where id = ".$account_id;
-			$db->setQuery($queryAccountLogo);
-			$account_logo = $db->loadResult();
-		}
-		else
-		{
-			$account_logo = "";
-		}
-		
-		$logoWidth = config_easysdi::getValue("logo_width");
-		$logoHeight = config_easysdi::getValue("logo_height");
-	
-		// Cr�er une entr�e pour le logo du compte
-		$XMLALogo = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:account_logo", $account_logo);
-		$XMLALogo->setAttribute('width', $logoWidth);
-		$XMLALogo->setAttribute('height', $logoHeight);
-		$XMLSdi->appendChild($XMLALogo);
-	
-		// R�cup�rer les informations de base sur l'objet, sa version et sa m�tadonn�e
-		$object=array();
-		$queryObject = "	select o.name, ov.title, v.code as metadata_visibility 
-							FROM #__sdi_metadata m
-							INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
-							INNER JOIN #__sdi_object o ON o.id = ov.object_id
-							INNER JOIN #__sdi_list_visibility v ON v.id = o.visibility_id 
-							WHERE m.guid = '".$md->getFileIdentifier()."'";
-		$db->setQuery($queryObject);
-		$object = $db->loadObject();
-		
-		// Modify objectversion_title to construct an XML valid date
-		$explodeDate = array();
-		$explodeDate = explode(" ", $object->title);
-		$object->title = $explodeDate[0]."T".$explodeDate[1]; 
-		
-		// Cr�er une entr�e pour l'objet
-		$XMLObject = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:object");
-		if ($object)
-		{
-			$XMLObject->setAttribute('object_name', $object->name);
-			$XMLObject->setAttribute('objectversion_title', $object->title);
-			$XMLObject->setAttribute('metadata_visibility', $object->metadata_visibility);
-		}
-		else
-		{
-			$XMLObject->setAttribute('object_name', '');
-			$XMLObject->setAttribute('objectversion_title', '');
-			$XMLObject->setAttribute('metadata_visibility', '');
-		}
-		$XMLSdi->appendChild($XMLObject);
-		
-		// R�cup�rer le type d'objet
-		$objecttype = array();
-		// R�cup�rer le logo du type d'objet
-		$queryObjecttype = "SELECT ot.code, t.label, ot.logo 
-							FROM #__sdi_objecttype ot
-							INNER JOIN #__sdi_object o ON o.objecttype_id=ot.id
-							INNER JOIN #__sdi_objectversion ov ON ov.object_id=o.id
-							INNER JOIN #__sdi_metadata m ON m.id=ov.metadata_id
-							INNER JOIN #__sdi_translation t ON t.element_guid=ot.guid
-							INNER JOIN jos_sdi_language l ON t.language_id=l.id
-							INNER JOIN jos_sdi_list_codelang cl ON l.codelang_id=cl.id
-							WHERE m.guid = '".$md->getFileIdentifier()."'
-								  AND cl.code = '".$language->_lang."'";
-		$db->setQuery($queryObjecttype);
-		$objecttype = $db->loadObject();
-		
-		// Cr�er une entr�e pour le type d'objet
-		if ($objecttype)
-		{
-			$XMLObjectType = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:objecttype", $objecttype->label);
-			$XMLObjectType->setAttribute('code', $objecttype->code);
-			$XMLObjectType->setAttribute('logo_path', $objecttype->logo);
-			$XMLObjectType->setAttribute('logo_width', $logoWidth);
-			$XMLObjectType->setAttribute('logo_height', $logoHeight);
-		}
-		else
-		{
-			$XMLObjectType = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:objecttype");
-			$XMLObjectType->setAttribute('code', '');
-			$XMLObjectType->setAttribute('logo_path', '');
-			$XMLObjectType->setAttribute('logo_width', '');
-			$XMLObjectType->setAttribute('logo_height', '');
-		}
-		$XMLSdi->appendChild($XMLObjectType);
-		
-		// Entr�es � ajouter si le shop est install�
-		$shopExist=0;
-		$query = "	SELECT count(*) 
-					FROM #__sdi_list_module 
-					WHERE code='SHOP'";
-		$db->setQuery($query);
-		$shopExist = $db->loadResult();
-		
-		if ($shopExist == 1)
-		{
-			$product = array();
-			$queryProduct = "	SELECT p.id, p.free, p.available, p.published, pf.size, pf.type 
-								FROM #__sdi_metadata m
-								INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
-								INNER JOIN #__sdi_product p ON p.objectversion_id = ov.id 
-								LEFT OUTER JOIN #__sdi_product_file pf ON pf.product_id = p.id 
-								WHERE m.guid = '".$md->getFileIdentifier()."'";
-			$db->setQuery($queryProduct);
-			$product = $db->loadObject();
-			
-			// Cr�er une entr�e pour le produit, avec comme attributs la gratuit�, la disponibilit� et l'�tat de publication
-			if ($product)
-			{
-				$XMLProduct = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:product", $product->id);
-				$XMLProduct->setAttribute('published', (int)$product->published);
-				$XMLProduct->setAttribute('available', (int)$product->available);
-				$XMLProduct->setAttribute('free', (int)$product->free);
-				$XMLProduct->setAttribute('file_size', $product->size);
-				$XMLProduct->setAttribute('file_type', $product->type);
-			}
-			else
-			{
-				$XMLProduct = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:product");
-				$XMLProduct->setAttribute('published', (int)0);
-				$XMLProduct->setAttribute('available', (int)0);
-				$XMLProduct->setAttribute('free', (int)0);
-				$XMLProduct->setAttribute('file_size', '');
-				$XMLProduct->setAttribute('file_type', '');
-			}
-			$XMLSdi->appendChild($XMLProduct);
-		}
-	
-		//$doc->save("C:\\RecorderWebGIS\\catalog_search\\catalog_search_".$md->getFileIdentifier().".xml");
-		*/
-		
-		// R�pertoire des fichiers xsl, s'il y en a un
+		// Répertoire des fichiers xsl, s'il y en a un
 		$xslFolder = ""; 
 		
 		if (isset($context))
