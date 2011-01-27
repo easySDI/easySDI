@@ -187,7 +187,7 @@ class SITE_object {
 				 INNER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id
 				 WHERE ot.predefined=false 
 				 	   AND cl.code='".$language->_lang."'
-				 ORDER BY ot.ordering";
+				 ORDER BY t.label";
 		
 		$listObjectType[] = JHTML::_('select.option', '0', JText::_('CATALOG_OBJECT_SELECT_OBJECTTYPE'), 'value', 'text');
 		$db->setQuery($query);
