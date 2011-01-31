@@ -16,6 +16,7 @@
  */
 package org.easysdi.proxy.core;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
@@ -116,6 +117,7 @@ public abstract class ProxyServlet extends HttpServlet {
 	protected String srsName = null;
 	protected Map<Integer, String> wfsFilePathList = new TreeMap<Integer, String>();
 	protected Multimap<Integer, String> wmsFilePathList = HashMultimap.create();
+	protected Multimap<Integer, String> wmtsFilePathList = HashMultimap.create();
 	// une liste
 	// des
 	// fichiers
@@ -670,7 +672,7 @@ public abstract class ProxyServlet extends HttpServlet {
 			if (method.equalsIgnoreCase("POST")) {
 				hpcon.setRequestProperty("Content-Length", "" + Integer.toString(parameters.getBytes().length));
 				// hpcon.setRequestProperty("Content-Type", contentType);
-				hpcon.setRequestProperty("Content-Type", "text/xml");
+				hpcon.setRequestProperty("Content-Type", "text/xml ; charset=utf-8");
 
 				hpcon.setDoOutput(true);
 				DataOutputStream printout = new DataOutputStream(hpcon.getOutputStream());
@@ -1911,5 +1913,54 @@ public abstract class ProxyServlet extends HttpServlet {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	protected void sendHttpServletResponse (HttpServletRequest req, HttpServletResponse resp, ByteArrayOutputStream tempOut, String responseContentType)
+	{
+		try
+		{
+			// Ecriture du résultat final dans resp de
+			// httpServletResponse*****************************************************
+			// No post rule to apply. Copy the file result on the output stream
+			BufferedOutputStream os = new BufferedOutputStream(resp.getOutputStream());
+			resp.setContentType(responseContentType);
+			try {
+				dump("transform begin response writting");
+				if ("1".equals(req.getParameter("download"))) {
+					String format = req.getParameter("format");
+					if (format == null)
+						format = req.getParameter("FORMAT");
+					if (format != null) {
+						String parts[] = format.split("/");
+						String ext = "";
+						if (parts.length > 1)
+							ext = parts[1];
+						resp.setHeader("Content-Disposition", "attachment; filename=download." + ext);
+					}
+				}
+				if (tempOut != null)
+					os.write(tempOut.toByteArray());
+				dump("transform end response writting");
+			} finally {
+				os.flush();
+				os.close();
+				// Log le résultat et supprime les fichiers temporaires
+				DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
+				Date d = new Date();
+				dump("SYSTEM", "ClientResponseDateTime", dateFormat.format(d));
+				if (tempOut != null)
+					dump("SYSTEM", "ClientResponseLength", tempOut.size());
+			}
+	
+			DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
+			Date d = new Date();
+			dump("SYSTEM", "ClientResponseDateTime", dateFormat.format(d));
+		} 
+		catch (Exception e) 
+		{
+			resp.setHeader("easysdi-proxy-error-occured", "true");
+			e.printStackTrace();
+			dump("ERROR", e.getMessage());
+		}
 	}
 }

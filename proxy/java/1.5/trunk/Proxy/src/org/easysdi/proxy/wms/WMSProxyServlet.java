@@ -981,7 +981,7 @@ public class WMSProxyServlet extends ProxyServlet {
 				dump("INFO","Exception(s) returned by remote server(s) are sent to client.");
 				responseContentType ="text/xml";
 				ByteArrayOutputStream exceptionOutputStream = buildResponseForOgcServiceException();
-				sendHttpServletResponse(req,resp,exceptionOutputStream);
+				sendHttpServletResponse(req,resp,exceptionOutputStream, responseContentType);
 				return;
 			}
 			
@@ -1373,7 +1373,7 @@ public class WMSProxyServlet extends ProxyServlet {
 
 			// Ou Ecriture du résultat final dans resp de
 			// httpServletResponse*****************************************************
-			sendHttpServletResponse(req,resp,tempOut);
+			sendHttpServletResponse(req,resp,tempOut, responseContentType);
 			// No post rule to apply. Copy the file result on the output stream
 //			BufferedOutputStream os = new BufferedOutputStream(resp.getOutputStream());
 //			resp.setContentType(responseContentType);
@@ -1449,54 +1449,54 @@ public class WMSProxyServlet extends ProxyServlet {
 		}
 	}
 
-	private void sendHttpServletResponse (HttpServletRequest req, HttpServletResponse resp, ByteArrayOutputStream tempOut)
-	{
-		try
-		{
-			// Ecriture du résultat final dans resp de
-			// httpServletResponse*****************************************************
-			// No post rule to apply. Copy the file result on the output stream
-			BufferedOutputStream os = new BufferedOutputStream(resp.getOutputStream());
-			resp.setContentType(responseContentType);
-			try {
-				dump("transform begin response writting");
-				if ("1".equals(req.getParameter("download"))) {
-					String format = req.getParameter("format");
-					if (format == null)
-						format = req.getParameter("FORMAT");
-					if (format != null) {
-						String parts[] = format.split("/");
-						String ext = "";
-						if (parts.length > 1)
-							ext = parts[1];
-						resp.setHeader("Content-Disposition", "attachment; filename=download." + ext);
-					}
-				}
-				if (tempOut != null)
-					os.write(tempOut.toByteArray());
-				dump("transform end response writting");
-			} finally {
-				os.flush();
-				os.close();
-				// Log le résultat et supprime les fichiers temporaires
-				DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
-				Date d = new Date();
-				dump("SYSTEM", "ClientResponseDateTime", dateFormat.format(d));
-				if (tempOut != null)
-					dump("SYSTEM", "ClientResponseLength", tempOut.size());
-			}
-	
-			DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
-			Date d = new Date();
-			dump("SYSTEM", "ClientResponseDateTime", dateFormat.format(d));
-		} 
-		catch (Exception e) 
-		{
-			resp.setHeader("easysdi-proxy-error-occured", "true");
-			e.printStackTrace();
-			dump("ERROR", e.getMessage());
-		}
-	}
+//	private void sendHttpServletResponse (HttpServletRequest req, HttpServletResponse resp, ByteArrayOutputStream tempOut)
+//	{
+//		try
+//		{
+//			// Ecriture du résultat final dans resp de
+//			// httpServletResponse*****************************************************
+//			// No post rule to apply. Copy the file result on the output stream
+//			BufferedOutputStream os = new BufferedOutputStream(resp.getOutputStream());
+//			resp.setContentType(responseContentType);
+//			try {
+//				dump("transform begin response writting");
+//				if ("1".equals(req.getParameter("download"))) {
+//					String format = req.getParameter("format");
+//					if (format == null)
+//						format = req.getParameter("FORMAT");
+//					if (format != null) {
+//						String parts[] = format.split("/");
+//						String ext = "";
+//						if (parts.length > 1)
+//							ext = parts[1];
+//						resp.setHeader("Content-Disposition", "attachment; filename=download." + ext);
+//					}
+//				}
+//				if (tempOut != null)
+//					os.write(tempOut.toByteArray());
+//				dump("transform end response writting");
+//			} finally {
+//				os.flush();
+//				os.close();
+//				// Log le résultat et supprime les fichiers temporaires
+//				DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
+//				Date d = new Date();
+//				dump("SYSTEM", "ClientResponseDateTime", dateFormat.format(d));
+//				if (tempOut != null)
+//					dump("SYSTEM", "ClientResponseLength", tempOut.size());
+//			}
+//	
+//			DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
+//			Date d = new Date();
+//			dump("SYSTEM", "ClientResponseDateTime", dateFormat.format(d));
+//		} 
+//		catch (Exception e) 
+//		{
+//			resp.setHeader("easysdi-proxy-error-occured", "true");
+//			e.printStackTrace();
+//			dump("ERROR", e.getMessage());
+//		}
+//	}
 	// ***************************************************************************************************************************************
 
 	/**
