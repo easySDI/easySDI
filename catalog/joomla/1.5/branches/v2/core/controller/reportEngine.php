@@ -244,6 +244,10 @@ class reportEngine{
 				file_put_contents($tmpfile.'.html', $file);
 				reportEngine::setResponse($file, $tmpfile.'.html', 'text/html', 'report.html');
 				break;
+			case "makepdf":
+				file_put_contents($tmpfile.'.pdf', $file);
+				reportEngine::setResponse($file, $tmpfile.'.pdf', 'application/pdf', 'report.pdf');
+				break;
 			case "pdf":
 				$exportpdf_url = config_easysdi::getValue("JAVA_BRIDGE_URL");
 	

@@ -47,7 +47,7 @@ class HTML_objectversion {
 		<div class="row">
 			 <div class="row">
 				<input type="submit" id="newobjectversion_button" name="newobjectversion_button" class="submit" value ="<?php echo JText::_("CATALOG_NEW_OBJECTVERSION"); ?>" onClick="document.getElementById('objectversionListForm').task.value='newObjectVersion';document.getElementById('objectversionListForm').submit();"/>
-				<input type="submit" id="back_button" name="back_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="document.getElementById('objectversionListForm').task.value='cancelObjectVersion';window.open('<?php echo JRoute::_('index.php?task=cancelObjectVersion&object_id='.$object_id); ?>', '_self')"/>
+				<input type="submit" id="back_button" name="back_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="document.getElementById('objectversionListForm').task.value='cancelObjectVersion';window.open('<?php echo JRoute::_(displayManager::buildUrl('index.php?task=cancelObjectVersion&object_id='.$object_id)); ?>', '_self')"/>
 			</div>	 
 		 </div>
 	<script>
@@ -114,13 +114,13 @@ class HTML_objectversion {
 					if ($links > 0)
 					{
 						?> 
-						<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_OBJECTVERSION_DELETE')); ?>" id="deleteObject" onClick="return suppressObjectVersion_click('<?php echo JRoute::_("index.php?option=com_easysdi_catalog&task=deleteObjectVersion&object_id=".$object_id."&cid[]=".$row->id); ?>', true)" ></div>
+						<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_OBJECTVERSION_DELETE')); ?>" id="deleteObject" onClick="return suppressObjectVersion_click('<?php echo JRoute::_(displayManager::buildUrl("index.php?option=com_easysdi_catalog&task=deleteObjectVersion&object_id=".$object_id."&cid[]=".$row->id)); ?>', true)" ></div>
 						<?php 
 					}
 					else
 					{
 						?> 
-						<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_OBJECTVERSION_DELETE')); ?>" id="deleteObject" onClick="return suppressObjectVersion_click('<?php echo JRoute::_("index.php?option=com_easysdi_catalog&task=deleteObjectVersion&object_id=".$object_id."&cid[]=".$row->id); ?>', false);" ></div>
+						<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_OBJECTVERSION_DELETE')); ?>" id="deleteObject" onClick="return suppressObjectVersion_click('<?php echo JRoute::_(displayManager::buildUrl("index.php?option=com_easysdi_catalog&task=deleteObjectVersion&object_id=".$object_id."&cid[]=".$row->id)); ?>', false);" ></div>
 						<?php
 					}
 				}
@@ -131,8 +131,8 @@ class HTML_objectversion {
 				}
 			}
 			?>
-			<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_OBJECTVERSION_VIEWLINK')); ?>" id="viewObjectVersionLink" onClick="window.open('<?php echo JRoute::_("index.php?option=com_easysdi_catalog&task=viewObjectVersionLink&object_id=".$object_id."&cid[]=".$row->id); ?>', '_self');" ></div>
-			<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_OBJECTVERSION_MANAGELINK')); ?>" id="manageObjectVersionLink" onClick="window.open('<?php echo JRoute::_("index.php?option=com_easysdi_catalog&task=manageObjectVersionLink&object_id=".$object_id."&cid[]=".$row->id); ?>', '_self');" ></div>
+			<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_OBJECTVERSION_VIEWLINK')); ?>" id="viewObjectVersionLink" onClick="window.open('<?php echo JRoute::_(displayManager::buildUrl("index.php?option=com_easysdi_catalog&task=viewObjectVersionLink&object_id=".$object_id."&cid[]=".$row->id)); ?>', '_self');" ></div>
+			<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_OBJECTVERSION_MANAGELINK')); ?>" id="manageObjectVersionLink" onClick="window.open('<?php echo JRoute::_(displayManager::buildUrl("index.php?option=com_easysdi_catalog&task=manageObjectVersionLink&object_id=".$object_id."&cid[]=".$row->id)); ?>', '_self');" ></div>
 			</td>
 			</tr>
 			<?php		
@@ -191,7 +191,7 @@ else
 			<div class="row">
 				 <div class="row">
 					<input type="submit" id="simple_search_button" name="simple_search_button" class="submit" value ="<?php echo JText::_("CORE_SAVE"); ?>" onClick="document.getElementById('adminForm').task.value='saveObjectVersion'; document.getElementById('adminForm').submit();"/>
-					<input type="submit" id="back_button" name="back_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="document.getElementById('adminForm').task.value='backObjectVersion';window.open('<?php echo JRoute::_('index.php?task=backObjectVersion&object_id='.$object_id); ?>', '_self')"/>
+					<input type="submit" id="back_button" name="back_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="document.getElementById('adminForm').task.value='backObjectVersion';window.open('<?php echo JRoute::_(displayManager::buildUrl('index.php?task=backObjectVersion&object_id='.$object_id)); ?>', '_self')"/>
 				</div>	 
 			 </div>
 				<div class="row">	
@@ -270,7 +270,7 @@ else
 			class="adminForm">
 			<div class="row">
 				 <div class="row">
-					<input type="submit" id="back_button" name="back_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="document.getElementById('adminForm').task.value='cancelObjectVersionLink';window.open('<?php echo JRoute::_('index.php?task=cancelObjectVersionLink&object_id='.$object_id); ?>', '_self')"/>
+					<input type="submit" id="back_button" name="back_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="document.getElementById('adminForm').task.value='cancelObjectVersionLink';window.open('<?php echo JRoute::_(displayManager::buildUrl('index.php?task=cancelObjectVersionLink&object_id='.$object_id)); ?>', '_self')"/>
 				</div>	 
 			 </div>
 			<input type="hidden" name="option" value="<?php echo $option; ?>" /> 
@@ -414,7 +414,7 @@ else
 			class="adminForm">
 			<div class="row">
 				 <div class="row">
-					<input type="submit" id="back_button" name="back_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="document.getElementById('adminForm').task.value='cancelObjectVersionLink';window.open('<?php echo JRoute::_('index.php?task=cancelObjectVersionLink&object_id='.$object_id); ?>', '_self')"/>
+					<input type="submit" id="back_button" name="back_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="document.getElementById('adminForm').task.value='cancelObjectVersionLink';window.open('<?php echo JRoute::_(displayManager::buildUrl('index.php?task=cancelObjectVersionLink&object_id='.$object_id)); ?>', '_self')"/>
 				</div>	 
 			 </div>
 			<input type="hidden" name="option" value="<?php echo $option; ?>" /> 

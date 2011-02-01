@@ -69,7 +69,7 @@ else
 		<div class="row">
 			 <div class="row">
 				<input type="button" id="simple_search_button" name="simple_search_button" class="submit" value ="<?php echo JText::_("CORE_SAVE"); ?>" onClick="Pre_Post('adminForm', 'selected_managers', 'manager'); Pre_Post('adminForm', 'selected_editors', 'editor'); verify();"/>
-				<input type="submit" id="back_button" name="back_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="document.getElementById('adminForm').task.value='cancelObject';window.open('<?php echo JRoute::_('index.php?task=cancelObject&object_id='.$rowObject->id); ?>', '_self')"/>
+				<input type="submit" id="back_button" name="back_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="document.getElementById('adminForm').task.value='cancelObject';window.open('<?php echo JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=cancelObject&object_id='.$rowObject->id)); ?>', '_self')"/>
 			</div>	 
 		 </div>
 		<div class="row">
@@ -421,7 +421,7 @@ if ($rowObject->updated)
 			else 
 			{
 				?>
-				<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_OBJECT_MANAGEAPPLICATION')); ?>" id="listApplication" onClick="window.open('<?php echo JRoute::_('index.php?option='.$option.'&task=listApplication&object_id='.$row->id); ?>', '_self');"></div>
+				<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_OBJECT_MANAGEAPPLICATION')); ?>" id="listApplication" onClick="window.open('<?php echo JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listApplication&object_id='.$row->id)); ?>', '_self');"></div>
 				<?php 
 				$objecttype = new objecttype($database);
 				$objecttype->load($row->objecttype_id);
@@ -429,7 +429,7 @@ if ($rowObject->updated)
 				if ($objecttype->hasVersioning)
 				{
 					?>
-					<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_OBJECT_MANAGEVERSION')); ?>" id="listObjectVersion" onClick="window.open('<?php echo JRoute::_('index.php?option='.$option.'&task=listObjectVersion&object_id='.$row->id); ?>', '_self');"></div>
+					<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_OBJECT_MANAGEVERSION')); ?>" id="listObjectVersion" onClick="window.open('<?php echo JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listObjectVersion&object_id='.$row->id)); ?>', '_self');"></div>
 					<?php
 				}
 				else
@@ -439,8 +439,8 @@ if ($rowObject->updated)
 					<?php 
 				}
 				?>
-				<div class="logo" title="<?php echo addslashes(JText::_('CORE_EDIT_OBJECT')); ?>" id="editObject" onClick="window.open('<?php echo JRoute::_('index.php?option='.$option.'&task=editObject&cid[]='.$row->id); ?>', '_self');"></div>
-				<div class="logo" title="<?php echo addslashes(JText::_('CORE_DELETE_OBJECT')); ?>" id="deleteObject" onClick="return suppressObject_click('<?php echo JRoute::_('index.php?option='.$option.'&task=deleteObject&cid[]='.$row->id); ?>');" ></div>
+				<div class="logo" title="<?php echo addslashes(JText::_('CORE_EDIT_OBJECT')); ?>" id="editObject" onClick="window.open('<?php echo JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=editObject&cid[]='.$row->id)); ?>', '_self');"></div>
+				<div class="logo" title="<?php echo addslashes(JText::_('CORE_DELETE_OBJECT')); ?>" id="deleteObject" onClick="return suppressObject_click('<?php echo JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=deleteObject&cid[]='.$row->id)); ?>');" ></div>
 			<?php 
 			}
 			?>

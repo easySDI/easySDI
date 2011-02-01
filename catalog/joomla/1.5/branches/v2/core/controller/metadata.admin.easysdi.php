@@ -594,6 +594,7 @@ class ADMIN_metadata {
 						for ($pos=1; $pos<=$count; $pos++)
 						{
 							$nodeValue = $usefullVals[$pos-1];
+							$nodeValue = htmlspecialchars($nodeValue);
 							//$nodeValue = stripslashes($nodeValue);
 									
 							$XMLNode = $XMLDoc->createElement($child->attribute_isocode);
@@ -684,13 +685,13 @@ class ADMIN_metadata {
 									for ($langPos=1; $langPos<=$langCount; $langPos++)
 									{
 										$nodeValue=$usefullVals[$lang->code_easysdi];
-									//echo $nodeValue."<br>";
+										//echo $nodeValue."<br>";
 										/*if (mb_detect_encoding($nodeValue) <> "UTF-8")
 											$nodeValue = utf8_encode($nodeValue);
 										*/
 										//$nodeValue = stripslashes($nodeValue);
+										$nodeValue = htmlspecialchars($nodeValue);
 										$nodeValue = preg_replace("/\r\n|\r|\n/","&#xD;",$nodeValue);
-									
 										// Ajout des balises inh�rantes aux locales
 										if ($lang->defaultlang == true) // La langue par d�faut
 										{
@@ -4107,10 +4108,15 @@ class ADMIN_metadata {
 	function CURLRequest($type, $url, $xmlBody="")
 	{
 		// Ce décode est nécessaire pour arriver à sauver dans un bon encodage le fichier XML.
-		// FIXME: À voir si c'est vraiment la meilleure solution ou s'il y a un problème d'encodage avant
-		//echo mb_internal_encoding();
-		//if (mb_detect_encoding($xmlBody)== "UTF-8")
-			$xmlBody = utf8_decode($xmlBody);
+		// Ceci permet d'envoyer au proxy les caractères accentués.
+		$xmlBody = utf8_decode($xmlBody);
+
+		/*
+		//$fp = fopen('/home/users/depthch/easysdi/proxy/logs/xmlBodyApresDecode.xml', 'w');
+		//$fp = fopen('C:\RecorderWebGIS\xmlBodyApresDecode.xml', 'w');
+		fwrite($fp, $xmlBody);
+		fclose($fp);
+		*/
 		
 		$database =& JFactory::getDBO(); 
 		
@@ -4129,7 +4135,7 @@ class ADMIN_metadata {
         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: text/xml', 'charset="UTF-8"'));
         curl_setopt($ch, CURLOPT_COOKIE, $cookies);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_ENCODING, "UTF-8");
+        curl_setopt($ch, CURLOPT_ENCODING, "");
         
         // Sp�cifique POST
         if ($type=="POST")
@@ -4206,7 +4212,7 @@ class ADMIN_metadata {
 		$xpathUpdate->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
 		
 		$updated = $xpathUpdate->query("//csw:totalUpdated")->item(0)->nodeValue;
-		$updated = $xpathUpdate->query("//csw:totalUpdated")->item(0)->nodeValue;
+		//$updated = $xpathUpdate->query("//csw:totalUpdated")->item(0)->nodeValue;
 		
 		/*
 		$xmlstr = '<?xml version="1.0" encoding="UTF-8"?>
