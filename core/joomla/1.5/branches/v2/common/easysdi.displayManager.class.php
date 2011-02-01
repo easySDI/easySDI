@@ -1326,14 +1326,16 @@ function DisplayMetadata ($xslStyle, $xml)
 		}
 
 		$file = $dom->saveXML();
+		
 		error_reporting(0);
 		ini_set('zlib.output_compression', 0);
 		header('Content-type: application/xml');
 		header('Content-Disposition: attachement; filename="metadata.xml"');
+		header('Content-Transfer-Encoding: binary');
 		header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
 		header('Pragma: public');
 		header("Expires: 0"); 
-		header("Content-Length: ".filesize($file));
+		header("Content-Length: ".strlen($file)); // Attention, très important que la taille soit juste, sinon IE pos problème
 		
 		echo $file;
 		//Very important, if you don't call this, the content-type will have no effect
@@ -2096,6 +2098,12 @@ function DisplayMetadata ($xslStyle, $xml)
 		//$doc->save("C:\RecorderWebGIS\oto_".$fileIdentifier.".xml");
 		
 		return $doc;
+	}
+	
+	// Add Itemid and lang to the url
+	function buildUrl($url)
+	{
+		return $url."&Itemid=".JRequest::getVar('Itemid')."&lang=".JRequest::getVar('lang');
 	}
 }
 
