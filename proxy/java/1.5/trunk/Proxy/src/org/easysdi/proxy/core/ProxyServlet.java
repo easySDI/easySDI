@@ -110,14 +110,14 @@ public abstract class ProxyServlet extends HttpServlet {
 
 	protected org.easysdi.xml.documents.Config configuration;
 
-	protected Policy policy;
+	public Policy policy;
 	protected String responseContentType = null;
 	protected List<String> responseContentTypeList = new ArrayList<String>();
 	protected String bbox = null;
 	protected String srsName = null;
 	protected Map<Integer, String> wfsFilePathList = new TreeMap<Integer, String>();
-	protected Multimap<Integer, String> wmsFilePathList = HashMultimap.create();
-	protected Multimap<Integer, String> wmtsFilePathList = HashMultimap.create();
+	public Multimap<Integer, String> wmsFilePathList = HashMultimap.create();
+	public Multimap<Integer, String> wmtsFilePathList = HashMultimap.create();
 	// une liste
 	// des
 	// fichiers
@@ -147,7 +147,9 @@ public abstract class ProxyServlet extends HttpServlet {
 
 	//Store operations supported by the current version of the proxy
 	//Update this list to reflect proxy's capabilities
-	protected static List<String> ServiceSupportedOperations = Arrays.asList();
+	public static List<String> ServiceSupportedOperations = Arrays.asList();
+	//Store all the operations define by the ogc norme for the specific service
+	public static List<String> ServiceOperations = Arrays.asList();
 	
 	private List<String> lLogs = new Vector<String>();
 	protected boolean hasPolicy = true;
@@ -193,7 +195,7 @@ public abstract class ProxyServlet extends HttpServlet {
 		return null;
 	}
 
-	protected String getRemoteServerUrl(int i) {
+	public String getRemoteServerUrl(int i) {
 		if (configuration == null)
 			return null;
 
@@ -350,7 +352,7 @@ public abstract class ProxyServlet extends HttpServlet {
 	 *            the HttpServletRequest request
 	 * @return returns the url
 	 */
-	protected String getServletUrl(HttpServletRequest req) {
+	public String getServletUrl(HttpServletRequest req) {
 		// http://hostname.com:80/mywebapp/servlet/MyServlet/a/b;c=123?d=789
 		if (configuration.getHostTranslator() != null && configuration.getHostTranslator().length() > 0) {
 			return configuration.getHostTranslator();
@@ -495,7 +497,7 @@ public abstract class ProxyServlet extends HttpServlet {
 
 	}
 
-	protected void dump(Object o) {
+	public void dump(Object o) {
 		if (o != null)
 			dump("INFO", o.toString());
 		else
@@ -1156,7 +1158,7 @@ public abstract class ProxyServlet extends HttpServlet {
 	 *            the operation to check
 	 * @return true | false.
 	 */
-	protected boolean isOperationAllowed(String operation) {
+	public boolean isOperationAllowed(String operation) {
 		if (policy == null)
 			return false;
 		
@@ -1308,7 +1310,7 @@ public abstract class ProxyServlet extends HttpServlet {
 	 *            the url of the remote server.
 	 * @return true if the layer is allowed, false if not
 	 */
-	protected boolean isLayerAllowed(String layer, String url) {
+	public boolean isLayerAllowed(String layer, String url) {
 		if (policy == null)
 			return false;
 		if (policy.getAvailabilityPeriod() != null) {

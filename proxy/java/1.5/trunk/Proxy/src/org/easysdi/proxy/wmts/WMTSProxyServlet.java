@@ -49,6 +49,7 @@ import org.easysdi.proxy.wms.WMSProxyCapabilitiesLayerFilter;
 import org.easysdi.xml.documents.RemoteServerInfo;
 import org.easysdi.xml.resolver.ResourceResolver;
 import org.geotools.referencing.CRS;
+import org.jdom.Element;
 import org.jdom.filter.Filter;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
@@ -74,19 +75,17 @@ import com.google.common.collect.Multimap;
 public class WMTSProxyServlet extends ProxyServlet{
 
 	/**
-	 * Store all the possible operations for a WMTS service
-	 * Used in buildCapabilitiesXSLT()
-	 */
-	private String[] WMTSOperation = { "GetCapabilities", "GetTile", "GetFeatureInfo" };
-	/**
 	 * Store the url of the server which returned the response i
 	 */
 	private Map<Integer, String> serverUrlPerfilePathList = new TreeMap<Integer, String>(); 
-	
+	/**
+	 * 
+	 */
+	protected WMTSProxyXSLTBuilder XSLTBuilder; 
 	
 	public WMTSProxyServlet() {
 		super();
-		ServiceSupportedOperations = Arrays.asList("GetCapabilities", "GetTile");
+		
 	}
 
 	private static final long serialVersionUID = 1982682293133286643L;
@@ -354,22 +353,28 @@ public class WMTSProxyServlet extends ProxyServlet{
 				// files.
 				List<File> tempFileCapa = new Vector<File>();
 	
-				// Boucle sur les fichiers réponses
+				// Loop on the response files
 				for (int iFilePath = 0; iFilePath < wmtsFilePathList.size(); iFilePath++) {
 					//Load response file
+					
 					InputSource iS = new InputSource(new FileInputStream(wmtsFilePathList.get(iFilePath).toArray(new String[1])[0]));
 					
-					//Get the WMS version of the response
-					SAXBuilder sxb = new SAXBuilder();
-					org.jdom.Document  docParent = sxb.build(iS);
-					responseVersion = docParent.getRootElement().getAttribute("version").getValue();
-					responseVersion = responseVersion.replaceAll("\\.", "");
+					//Get the WMTS version of the response -> not needed for now because only 1.0.0 is supported
+//					SAXBuilder sxb = new SAXBuilder();
+//					org.jdom.Document  docParent = sxb.build(iS);
+//					responseVersion = docParent.getRootElement().getAttribute("version").getValue();
+//					responseVersion = responseVersion.replaceAll("\\.", "");
 					
 					//Transform with XSL
 					tempFileCapa.add(createTempFile("transform_GetCapabilities_" + UUID.randomUUID().toString(), ".xml"));
 					FileOutputStream tempFosCapa = new FileOutputStream(tempFileCapa.get(iFilePath));
-					StringBuffer sb = buildCapabilitiesXSLT(req, resp, iFilePath, responseVersion);
-					InputSource inputSource = new InputSource(new FileInputStream(wmsFilePathList.get(iFilePath).toArray(new String[1])[0]));
+					StringBuffer sb = XSLTBuilder.getCapabilitiesXSLT( req, resp, iFilePath);
+					if (sb == null){
+						//something went wrong in the construction of the XSL
+						sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in XSLT building. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
+						return;
+					}					
+					InputSource inputSource = new InputSource(new FileInputStream(wmtsFilePathList.get(iFilePath).toArray(new String[1])[0]));
 					InputStream xslt = new ByteArrayInputStream(sb.toString().getBytes());
 					XMLReader xmlReader = XMLReaderFactory.createXMLReader();
 					String user = (String) getUsername(getRemoteServerUrl(iFilePath));
@@ -384,78 +389,34 @@ public class WMTSProxyServlet extends ProxyServlet{
 					// Write the result in a temporary file
 					dump("transform begin xslt transform to response file " + iFilePath);
 					transformer.transform(saxSource, new StreamResult(tempFosCapa));
-					// Debug tb 06.07.2009
 					tempFosCapa.flush();
 					tempFosCapa.close();
-					// Fin de Debug
 					dump("transform end xslt transform to response file " + iFilePath);
 				}
 	
-				// Merge the results of all the capabilities and return it
-				// into a single file
+				// Merge the results of all the capabilities and return it into a single file
 				dump("transform begin mergeCapabilities");
-				tempOut = mergeCapabilities(tempFileCapa, resp);
+				tempOut = XSLTBuilder.mergeCapabilities(tempFileCapa, resp);
 				dump("transform end mergeCapabilities");
 				
 				//Application de la transformation XSLT pour la réécriture des métadonnées du service 
 				dump("DEBUG","transform begin apply XSLT on service metadata");
-				if(tempOut != null)
-				{
-					ByteArrayOutputStream out = new ByteArrayOutputStream();
-					StringBuffer sb = buildServiceMetadataCapabilitiesXSLT(responseVersion);
-					InputStream xslt = new ByteArrayInputStream(sb.toString().getBytes());
-					InputSource inputSource = new InputSource(new ByteArrayInputStream(tempOut.toByteArray()) );
-					XMLReader xmlReader = XMLReaderFactory.createXMLReader();
-					SAXSource saxSource = new SAXSource(xmlReader, inputSource);
-					transformer = tFactory.newTransformer(new StreamSource(xslt));
-					transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-					transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
-					transformer.transform(saxSource, new StreamResult(out));
-					tempOut = out;
-				}
+//				if(tempOut != null)
+//				{
+//					ByteArrayOutputStream out = new ByteArrayOutputStream();
+//					StringBuffer sb = buildServiceMetadataCapabilitiesXSLT(responseVersion);
+//					InputStream xslt = new ByteArrayInputStream(sb.toString().getBytes());
+//					InputSource inputSource = new InputSource(new ByteArrayInputStream(tempOut.toByteArray()) );
+//					XMLReader xmlReader = XMLReaderFactory.createXMLReader();
+//					SAXSource saxSource = new SAXSource(xmlReader, inputSource);
+//					transformer = tFactory.newTransformer(new StreamSource(xslt));
+//					transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+//					transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+//					transformer.transform(saxSource, new StreamResult(out));
+//					tempOut = out;
+//				}
 				dump("DEBUG","transform end apply XSLT on service metadata");
 				dump("transform end GetCapabilities operation");
-				
-				dump("DEBUG","Start - Rewrite BBOX");
-				//Réécriture des BBOX
-				ByteArrayInputStream in =  new ByteArrayInputStream(tempOut.toByteArray());
-				SAXBuilder sxb = new SAXBuilder();
-				org.jdom.Document  docParent = sxb.build(in);
-				Filter filtre = new WMSProxyCapabilitiesLayerFilter();
-		    	Iterator it= docParent.getDescendants(filtre);
-		    	List<org.jdom.Element> layersList = new ArrayList<org.jdom.Element>();
-		    	while(it.hasNext())
-				{
-		    		layersList.add((org.jdom.Element)it.next());
-				}
-		    	if(layersList.size() != 0)
-		    	{
-			    	CoordinateReferenceSystem wgsCRS = null;
-					try {
-						wgsCRS = CRS.decode("EPSG:4326");
-						if(!rewriteBBOX(layersList, wgsCRS, null, responseVersion))
-						{
-							sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in BoundingBox calculation.","NoApplicableCode","",requestedVersion));
-							return;
-						}
-					} catch (NoSuchAuthorityCodeException e1) {
-						dump("ERROR","Exception when trying to load SRS EPSG:4326 : "+e1.getMessage());
-						sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in BoundingBox calculation.","NoApplicableCode","",requestedVersion));
-						return;
-					} catch (FactoryException e1) {
-						dump("ERROR",e1.getMessage());
-						sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in BoundingBox calculation.","NoApplicableCode","",requestedVersion));
-						return;
-					}
-					
-		    	}
-		    	dump("DEBUG","End - Rewrite BBOX");
-		    	//Return
-				XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
-				ByteArrayOutputStream result =new ByteArrayOutputStream ();
-				sortie.output(docParent,result );
-				tempOut = result;	
-			
 			}
 		}
 		catch (Exception e){
