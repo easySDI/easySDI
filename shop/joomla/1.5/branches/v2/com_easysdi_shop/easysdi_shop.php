@@ -78,7 +78,8 @@ switch($task){
 		
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'perimList.easysdi.html.php');
-		$mainframe->redirect("index.php?option=$option&view=shop&step=$step&perimeter_id=$perimeter_id&Item_id=$Itemid");
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.displayManager.class.php');
+		$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&view=shop&step=$step&perimeter_id=$perimeter_id&Item_id=$Itemid"), false));
 	break;
 		
 	case "downloadAvailableProduct":
@@ -114,7 +115,7 @@ switch($task){
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'shop.site.easysdi.html.php');
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.displayManager.class.php');
 							
-		SITE_shop::deleteProduct();
+				SITE_shop::deleteProduct();
 
 	/*****************************************************************************************************************************
 	 * Order
@@ -161,9 +162,10 @@ switch($task){
 	case "changeOrderToSend":
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'cpanel.easysdi.class.php');
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'cpanel.site.easysdi.php');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.displayManager.class.php');
 		
 		SITE_cpanel::sendOrder(order_id);
-		$mainframe->redirect("index.php?option=$option&task=listOrders&limitstart=$limitstart&limit=$limit" );
+		$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=listOrders&limitstart=$limitstart&limit=$limit"), false));
 		break;
 		
 	case "orderDraft":
@@ -177,25 +179,28 @@ switch($task){
 	case "archiveOrder":
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'cpanel.site.easysdi.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'cpanel.easysdi.class.php');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.displayManager.class.php');
 		
 		SITE_cpanel::archiveOrder($order_id);
-		$mainframe->redirect("index.php?option=$option&task=listOrders&limitstart=$limitstart&limit=$limit" );
+		$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=listOrders&limitstart=$limitstart&limit=$limit"), false));
 		break;
 		
 	case "copyOrder":
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'cpanel.site.easysdi.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'cpanel.easysdi.class.php');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.displayManager.class.php');
 		
 		SITE_cpanel::copyOrder($order_id);
-		$mainframe->redirect("index.php?option=$option&task=listOrders&limitstart=$limitstart&limit=$limit" );
+		$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=listOrders&limitstart=$limitstart&limit=$limit"), false));
 		break;
 		
 	case "suppressOrder":
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'cpanel.site.easysdi.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'cpanel.easysdi.class.php');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.displayManager.class.php');
 		
 		SITE_cpanel::suppressOrder();
-		$mainframe->redirect("index.php?option=$option&task=listOrders&limitstart=$limitstart&limit=$limit" );
+		$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=listOrders&limitstart=$limitstart&limit=$limit"), false));
 		break;	
 		
 	case "listProductsForPartnerId":
@@ -207,9 +212,10 @@ switch($task){
 	case "saveOrdersForProvider":
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'cpanel.site.easysdi.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'cpanel.easysdi.class.php');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.displayManager.class.php');
 		
 		SITE_cpanel::saveOrdersForProvider($order_id);
-		$mainframe->redirect("index.php?option=$option&task=listOrdersForProvider&limitstart=$limitstart&limit=$limit" );
+		$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=listOrdersForProvider&limitstart=$limitstart&limit=$limit"), false));
 		break;
 		
 	case "processOrder":
@@ -247,9 +253,10 @@ switch($task){
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'cpanel.site.easysdi.php');
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'shop.easysdi.class.php');
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'shop.site.easysdi.html.php');
-			
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.displayManager.class.php');
+		
 		SITE_shop::saveOrder("SENT");
-		$mainframe->redirect("index.php?option=$option&task=listOrders&limitstart=$limitstart&limit=$limit" );
+		$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=listOrders&limitstart=$limitstart&limit=$limit"), false));
 		break;
 
 	case "saveOrder":
@@ -257,9 +264,10 @@ switch($task){
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'cpanel.site.easysdi.php');
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'shop.easysdi.class.php');
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'shop.site.easysdi.html.php');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.displayManager.class.php');
 		
 		SITE_shop::saveOrder("SAVED");
-		$mainframe->redirect("index.php?option=$option&task=listOrders&limitstart=$limitstart&limit=$limit" );
+		$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=listOrders&limitstart=$limitstart&limit=$limit"), false));
 		break;
 
 	/*****************************************************************************************************************************
@@ -289,11 +297,12 @@ switch($task){
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'product.site.easysdi.php');
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_catalog'.DS.'core'.DS.'model'.DS.'objectversion.easysdi.class.php');
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_catalog'.DS.'core'.DS.'model'.DS.'object.easysdi.class.php');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.displayManager.class.php');
 			
 		if (JRequest::getVar('id',-1) !=-1 ){
 			SITE_product::editProduct($option);
 		}else{
-			$mainframe->redirect("index.php?option=$option&task=listProduct&limitstart=$limitstart&limit=$limit" );
+			$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=listProduct&limitstart=$limitstart&limit=$limit"), false));
 		}
 		break;
 	
@@ -316,7 +325,7 @@ switch($task){
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.displayManager.class.php');
 		
 		SITE_product::saveProduct(true, $option);
-		$mainframe->redirect("index.php?option=$option&task=listProduct&limitstart=$limitstart&limit=$limit" );
+		$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=listProduct&limitstart=$limitstart&limit=$limit"), false));
 		break;
 		
 	case "newProduct":
@@ -336,9 +345,10 @@ switch($task){
 	case "suppressProduct":
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'product.easysdi.class.php');
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'product.site.easysdi.php');		
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.displayManager.class.php');
 			
 		SITE_product::suppressProduct($cid,$option);
-		$mainframe->redirect("index.php?option=$option&task=listProduct&limitstart=$limitstart&limit=$limit" );
+		$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=listProduct&limitstart=$limitstart&limit=$limit"), false));
 		break;
 		
 	case "downloadFinalProduct":
@@ -362,7 +372,7 @@ switch($task){
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.displayManager.class.php');
 
 		SITE_favorite::metadataNotification(1);
-		$mainframe->redirect("index.php?option=$option&task=manageFavorite&myFavoritesFirst=$myFavoritesFirst&simpleSearchCriteria=$simpleSearchCriteria&freetextcriteria=$freetextcriteria&limitstart=$limitstart&limit=$limit&furnisher_id=$furnisher_id"."&Itemid=".JRequest::getVar('Itemid'));
+		$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=manageFavorite&myFavoritesFirst=$myFavoritesFirst&simpleSearchCriteria=$simpleSearchCriteria&freetextcriteria=$freetextcriteria&limitstart=$limitstart&limit=$limit&furnisher_id=$furnisher_id"."&Itemid=".JRequest::getVar('Itemid')), false));
 		break;
 
 	case "removeMetadataNotification":
@@ -372,7 +382,7 @@ switch($task){
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.displayManager.class.php');
 			
 		SITE_favorite::metadataNotification(0);
-		$mainframe->redirect("index.php?option=$option&task=manageFavorite&myFavoritesFirst=$myFavoritesFirst&simpleSearchCriteria=$simpleSearchCriteria&freetextcriteria=$freetextcriteria&limitstart=$limitstart&limit=$limit&furnisher_id=$furnisher_id"."&Itemid=".JRequest::getVar('Itemid') );
+		$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=manageFavorite&myFavoritesFirst=$myFavoritesFirst&simpleSearchCriteria=$simpleSearchCriteria&freetextcriteria=$freetextcriteria&limitstart=$limitstart&limit=$limit&furnisher_id=$furnisher_id"."&Itemid=".JRequest::getVar('Itemid')), false));
 		break;
 			
 	case "addFavorite":
@@ -382,7 +392,7 @@ switch($task){
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.displayManager.class.php');
 			
 		SITE_favorite::favoriteProduct(1);
-//		$mainframe->redirect("index.php?option=$option&task=manageFavorite&myFavoritesFirst=$myFavoritesFirst&simpleSearchCriteria=$simpleSearchCriteria&freetextcriteria=$freetextcriteria&limitstart=$limitstart&limit=$limit&furnisher_id=$furnisher_id"."&Itemid=".JRequest::getVar('Itemid') );
+//		$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=manageFavorite&myFavoritesFirst=$myFavoritesFirst&simpleSearchCriteria=$simpleSearchCriteria&freetextcriteria=$freetextcriteria&limitstart=$limitstart&limit=$limit&furnisher_id=$furnisher_id"."&Itemid=".JRequest::getVar('Itemid')), false));
 		break;
 
 	case "removeFavorite":
@@ -392,7 +402,7 @@ switch($task){
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.displayManager.class.php');
 			
 		SITE_favorite::favoriteProduct(0);
-//		$mainframe->redirect("index.php?option=$option&task=manageFavorite&myFavoritesFirst=$myFavoritesFirst&simpleSearchCriteria=$simpleSearchCriteria&freetextcriteria=$freetextcriteria&limitstart=$limitstart&limit=$limit&furnisher_id=$furnisher_id"."&Itemid=".JRequest::getVar('Itemid') );
+//		$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=manageFavorite&myFavoritesFirst=$myFavoritesFirst&simpleSearchCriteria=$simpleSearchCriteria&freetextcriteria=$freetextcriteria&limitstart=$limitstart&limit=$limit&furnisher_id=$furnisher_id"."&Itemid=".JRequest::getVar('Itemid')), false));
 		break;
 
 	case "manageFavoriteProduct":
@@ -401,7 +411,7 @@ switch($task){
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'favorite.site.easysdi.php');
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.displayManager.class.php');
 			
-		$mainframe->redirect("index.php?option=$option&task=manageFavorite&myFavoritesFirst=$myFavoritesFirst&simpleSearchCriteria=$simpleSearchCriteria&freetextcriteria=$freetextcriteria&limitstart=$limitstart&limit=$limit&furnisher_id=$furnisher_id"."&Itemid=".JRequest::getVar('Itemid') );
+		$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=manageFavorite&myFavoritesFirst=$myFavoritesFirst&simpleSearchCriteria=$simpleSearchCriteria&freetextcriteria=$freetextcriteria&limitstart=$limitstart&limit=$limit&furnisher_id=$furnisher_id"."&Itemid=".JRequest::getVar('Itemid')), false));
 		break;
 
 	case "manageFavorite":
@@ -427,7 +437,8 @@ switch($task){
 	 * Default
 	 *****************************************************************************************************************************/
 	default :
-		$mainframe->redirect("index.php");
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.displayManager.class.php');
+		$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php"), false));
 		break;
 }
 
