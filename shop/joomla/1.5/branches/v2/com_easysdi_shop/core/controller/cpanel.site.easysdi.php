@@ -778,7 +778,7 @@ class SITE_cpanel {
 		if($product_list_id == 0)
 		{
 			$mainframe->enqueueMessage(JText::_("SHOP_ORDER_MESSAGE_NO_SELECTION"),'info');						
-			$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=listOrdersForProvider"), false));
+			$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=listOrdersForProvider" ), false));
 			exit();
 		}
 		$queryOrder = "SELECT * FROM #__sdi_order_product WHERE id = $product_list_id";
