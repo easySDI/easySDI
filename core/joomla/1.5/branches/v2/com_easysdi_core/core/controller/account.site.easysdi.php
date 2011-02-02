@@ -330,7 +330,7 @@ class SITE_account {
 		}
 
 		$types = array();
-		$types[] = JHTML::_('select.option','',JText::_("EASYSDI_LIST_ACCOUNT_ROOT") );
+		$types[] = JHTML::_('select.option','',JText::_("CORE_LIST_ACCOUNT_ROOT") );
 
 		if ($type==''){
 			$db->setQuery( "SELECT #__sdi_account.id AS value,CONCAT('&nbsp;&nbsp;&gt; ',#__users.name) AS text FROM #__users,#__sdi_account WHERE #__users.id=#__sdi_account.user_id AND #__sdi_account.root_id IS NULL ORDER BY #__users.name" );
@@ -605,7 +605,7 @@ class SITE_account {
 		if (!is_array( $cid ) || count( $cid ) < 1) {
 			//echo "<script> alert('S�lectionnez un enregistrement � supprimer'); window.history.go(-1);</script>\n";
 			$mainframe->enqueueMessage("S�lectionnez un enregistrement � supprimer","error");
-			$mainframe->redirect("index.php?option=$option&task=listAccount" );
+			$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=listAccount"), false));
 			exit;
 		}
 		foreach( $cid as $account_id )
@@ -620,12 +620,12 @@ class SITE_account {
 			if (!$account->delete()) {
 				//echo "<script> alert('".$account->getError()."'); window.history.go(-1); </script>\n";
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=listAccount" );
+				$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=listAccount"), false));
 			}
 			/*if (!$user->delete()) {
 				//echo "<script> alert('".$user->getError()."'); window.history.go(-1); </script>\n";
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=listAccount" );
+				$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=listAccount"), false);
 			}*/
 			
 			SITE_account::includeAccountExtension(0,'BOTTOM','removeAccount',$account_id);
@@ -633,7 +633,7 @@ class SITE_account {
 			
 		}
 
-		$mainframe->redirect("index.php?option=$option&task=listAccount" );		
+		$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=listAccount"), false));		
 	}
 
 	function exportAccount( $cid, $option ) {
@@ -642,7 +642,7 @@ class SITE_account {
 		if (!is_array( $cid ) || count( $cid ) < 1) {
 			//echo "<script> alert('S�lectionnez un enregistrement � exporter'); window.history.go(-1);</script>\n";
 			$mainframe->enqueueMessage('S�lectionnez un enregistrement � exporter','error');
-			$mainframe->redirect("index.php?option=$option&task=listAccount" );
+			$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=listAccount"), false));
 			exit;
 		}
 
@@ -884,7 +884,7 @@ class SITE_account {
 		}
 		
 		//$mainframe->redirect("index.php?option=$option&task=listAccount&type=$type");
-		$mainframe->redirect("index.php?option=$option&task=".JRequest::getVar('return','showAccount') );
+		$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=".JRequest::getVar('return','showAccount')), false));
 	}
 
 	function cancelAccount( $returnList, $option ) {
@@ -899,7 +899,7 @@ class SITE_account {
 		SITE_account::includeAccountExtension(0,'BOTTOM','cancelAccount',0);
 		if ($returnList == true) {
 			//mosRedirect( "index2.php?option=$option&task=listAccount" );
-			$mainframe->redirect("index.php?option=$option&task=listAccount&type=$type" );
+			$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=listAccount&type=$type"), false));
 		}
 		
 		
@@ -915,7 +915,7 @@ class SITE_account {
 
 		if (!$affiliate_id) {
 			$mainframe->enqueueMessage(JText::_("EASYSDI_SELECT_ROW_TO_DELETE"),"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=listAffiliateAccount" );
+			$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=listAffiliateAccount"), false));
 			return;
 		}
 		
@@ -945,7 +945,7 @@ class SITE_account {
 				array_push($errMsg,JText::_("EASYSDI_DELETE_AFFILIATE_ERROR_CONCLUSION"));
 			array_push($errMsg, JText::sprintf("EASYSDI_DELETE_AFFILIATE_ERROR_PRODUCT",$user->username, $list));
 			//$mainframe->enqueueMessage(JText::sprintf("EASYSDI_DELETE_AFFILIATE_ERROR_PRODUCT",$user->username, $list));
-			//$mainframe->redirect("index.php?option=$option&task=listAffiliateAccount" );
+			//$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=listAffiliateAccount"), false));
 		}
 		
 		//Check if the user is Referenced by an pending order
@@ -964,7 +964,7 @@ class SITE_account {
 				array_push($errMsg,JText::_("EASYSDI_DELETE_AFFILIATE_ERROR_CONCLUSION"));
 			array_push($errMsg, JText::sprintf("EASYSDI_DELETE_AFFILIATE_ERROR_ORDER",$user->username, $list));
 			//$mainframe->enqueueMessage(JText::sprintf("EASYSDI_DELETE_AFFILIATE_ERROR_ORDER",$user->username, $list));
-			//$mainframe->redirect("index.php?option=$option&task=listAffiliateAccount" );
+			//$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=listAffiliateAccount"), false));
 		}
 		*/
 		//check if current user has children
@@ -983,7 +983,7 @@ class SITE_account {
 				array_push($errMsg,JText::_("EASYSDI_DELETE_AFFILIATE_ERROR_CONCLUSION"));
 			array_push($errMsg, JText::sprintf("EASYSDI_DELETE_AFFILIATE_ERROR_Account",$user->username, $list));
 			//$mainframe->enqueueMessage(JText::sprintf("EASYSDI_DELETE_AFFILIATE_ERROR_Account",$user->username, $list));
-			//$mainframe->redirect("index.php?option=$option&task=listAffiliateAccount" );
+			//$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=listAffiliateAccount"), false));
 		}
 		//Add conclusion if there was an error
 		
@@ -1222,7 +1222,7 @@ class SITE_account {
 		}
 		
 		SITE_account::includeAccountExtension(0,'BOTTOM','saveAccount',$rowAccount->id);
-		$mainframe->redirect("index.php?option=$option&task=".JRequest::getVar('return','showAccount')."&type=".JRequest::getVar('type') );
+		$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=".JRequest::getVar('return','showAccount')."&type=".JRequest::getVar('type')), false));
 	}
 	
 
