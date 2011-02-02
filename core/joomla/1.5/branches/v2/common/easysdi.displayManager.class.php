@@ -2103,7 +2103,11 @@ function DisplayMetadata ($xslStyle, $xml)
 	// Add Itemid and lang to the url
 	function buildUrl($url)
 	{
-		return $url."&Itemid=".JRequest::getVar('Itemid')."&lang=".JRequest::getVar('lang');
+		if (JRequest::getVar('Itemid') and JRequest::getVar('Itemid') <> "")
+			$url = $url."&Itemid=".JRequest::getVar('Itemid');
+		if (JRequest::getVar('lang') and JRequest::getVar('lang') <> "")
+			$url = $url."&lang=".JRequest::getVar('lang');
+		return $url;
 	}
 }
 
