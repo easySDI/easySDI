@@ -114,7 +114,8 @@ if ($curstep == "2")
 				document.getElementById('bufferValue').disabled=false;
 				document.getElementById('bufferValue').style.display = 'inline';
 				document.getElementById('bufferValueSuffix').innerHTML = '<?php echo JText::_("EASYSDI_BUFFER_UNIT_LABEL"); ?>';
-
+				document.getElementById('bufferRegion').style.display='block';
+				
 				return ;
 			}
 			<?php 
@@ -123,7 +124,7 @@ if ($curstep == "2")
 			document.getElementById('bufferValue').disabled=true;
 			document.getElementById('bufferValue').style.display = 'none';
 			document.getElementById('bufferValueSuffix').innerHTML = '<?php echo JText::_("EASYSDI_BUFFER_UNAVAILABLE"); ?>';
-			
+			document.getElementById('bufferRegion').style.display='none';
 		}
 
 
@@ -177,6 +178,8 @@ if ($curstep == "2")
 						//Free selection perimeter case
 						//Always display the button for manual perimeter
 						document.getElementById('addPerimeterButton').style.display='block';
+						document.getElementById('manualAddGeometry').style.display='block';
+						
 						//Hide manual 
 						document.getElementById('manualPerimDivId').style.display='none';
 					}
@@ -196,11 +199,13 @@ if ($curstep == "2")
 						if(<?php echo $row->is_localisation;?> == 0)
 						{
 							document.getElementById('addPerimeterButton').style.display='none';
+							document.getElementById('manualAddGeometry').style.display='none';
 							document.getElementById('manualPerimDivId').style.display='none';
 						}
 						else
 						{	
 							document.getElementById('addPerimeterButton').style.display='block';
+							document.getElementById('manualAddGeometry').style.display='block';
 						}
 					} 
 
@@ -221,6 +226,37 @@ if ($curstep == "2")
 											bFromZoomEnd);
 
 					enableBufferByPerimeter('<?php echo $row->id; ?>');
+					
+					//show/hide menu buttons according free perim
+					if (isFreeSelectionPerimeter)
+					{
+						//disable pointer button
+						pointControl.displayClass="olControlDrawFeaturePointDisable";
+						//show modify feature ctrl
+						modifyFeatureControl.displayClass="olControlModifyFeature";
+						panelEdition.redraw();
+					}else
+					{
+						//show pointer button
+						pointControl.displayClass="olControlDrawFeaturePoint";
+						//hide modify feature ctrl
+						modifyFeatureControl.displayClass="olControlModifyFeatureDisable";
+						panelEdition.redraw();
+					}
+					
+					//Refresh content of manual perimeter
+					//Is normally based on the state of addPerimeterButton. User had to click it before
+					//now it's auto-triggered.
+					if(document.getElementById('addPerimeterButton').style.display == 'block')
+						selectManualPerimeter();
+					
+					//Display hint when no manual selection is available
+					if(document.getElementById('manualAddGeometry').style.display == 'none' &&
+					   document.getElementById('manualPerimDivId').style.display == 'none'){
+						document.getElementById('manualPerimHint').style.display='block';
+					}else{
+					        document.getElementById('manualPerimHint').style.display='none';
+					}
 				}
 
 				<?php 
@@ -230,31 +266,126 @@ if ($curstep == "2")
 		</script>
 
 
-		<input type="hidden" size="30" id="lastSelectedPerimeterIndex"  value="0">
+		<input type="hidden" size="30" id="lastSelectedPerimeterIndex"  value="0">	
 		<table>
 		<tr>
 		<td><select id="perimeterList" onChange="selectPerimeter('perimeterList', false)"  >
 		<!-- option value="-1"><?php echo JText::_("EASYSDI_SELECT_THE_PERIMETER"); ?></option -->
 		<?php
-				foreach ($rows as $row)
+		
+		$q = "SELECT id  FROM #__easysdi_perimeter_definition WHERE perimeter_code='FREE'";
+		$db->setQuery($q);
+		$free_perim_id = $db->loadResult();
+		
+		foreach ($rows as $row)
 		{
 			?>
-		<option value="<?php echo $row->id ?>" <?php if ($row->id == $mainframe->getUserState('perimeter_id')) { echo 'SELECTED';};?>><?php echo JText::_($row->perimeter_name); ?>
+		<option value="<?php echo $row->id ?>" <?php if ($row->id == $mainframe->getUserState('perimeter_id') || $row->id == JRequest::getVar('perimeter_id')) { echo 'SELECTED';};?>><?php echo JText::_($row->perimeter_name); ?>
 		</option>
 		<?php
 
 		}
 		?>
-		</select></td>
-		</tr>
-		<tr>
-		<td>
-		<div id="panelEdition" class="olControlEditingToolbar"></div>
+		</select>
 		</td>
 		</tr>
 		<tr>
-		<td></td>
+		<td>
+		<?php
+		    $index = JRequest::getVar('tabIndex',0);
+		    $tabs =& JPANE::getInstance('Tabs', array('startOffset' => $index));
+		    echo $tabs->startPane("selectPane");
+                    echo $tabs->startPanel(JText::_("EASYSDI_SHOP_PERIMETER_GRAPHIC_MODE"),"graphSelectPane");
+		    ?>
+                    <div id="panelEdition" class="olControlEditingToolbar"></div>
+		    <?php
+		    echo $tabs->endPanel();
+                    echo $tabs->startPanel(JText::_("EASYSDI_SHOP_PERIMETER_MANU_MODE"),"manuSelectPane");
+		    ?>
+		    <!-- <button class="addPerimeterButton" type="button" id="addPerimeterButton"> </button> -->
+		    <div id="addPerimeterButton">
+		        <div id="manualPerimDivId" style="display: none">
+			<?php include 'manual_perimeter.php' ;?></div>
+			<div id="manualAddGeometry" style="display: none">
+			<table>
+			<tr>
+			<td><?php echo JText::_("EASYSDI_ADD_Y_TEXT");?></td>
+			<td><input type="text" id="xText" value=""></td>
+			</tr>
+			<tr>
+			<td><?php echo JText::_("EASYSDI_ADD_X_TEXT");?></td>
+			<td><input type="text" id="yText" value=""></td>
+			</tr>
+			<tr>
+			   <td colspan="2" align="left">
+			      <table class="perimeterActionSpaceHolder">
+			         <tr>
+				    <td>
+			               <button title="<?php echo JText::_("EASYSDI_ADD_GEOMETRY_PERIMETER");?>" class="addCoordinateButton" type="button"
+			                   onClick="if(isValidCoordinates()){addGeometryPerimeter();document.getElementById('xText').value='';document.getElementById('yText').value='';}">
+			               </button>
+				    </td>
+				    <td>
+			               <button title="<?php echo JText::_("EASYSDI_MODIFY_GEOMETRY_PERIMETER");?>" class="editCoordinateButton" type="button"
+				         onClick="if(isValidCoordinates()){modifyGeometryPerimeter();document.getElementById('xText').value='';document.getElementById('yText').value='';}">
+			               </button>
+				    </td>
+				    <td>
+			               <div class="particular-loadperim-link">
+				            <a title="<?php echo JText::_("EASYSDI_SHOP_LOAD_PERIMETER_FROM_LIST_LINK");?>" rel="{handler:'iframe',size:{x:600,y:600}}" href="./index.php?tmpl=component&option=com_easysdi_shop&task=loadListForPerim&perimeter_id=<?php echo $free_perim_id; ?>&Itemid=<?php echo JRequest::getVar('Itemid');?>" class="modal">&nbsp;</a>
+			                </div>
+			            </td>
+				 </tr>
+		               </table>
+			   </td>
+			</tr>
+			</table>
+			</div>
+		    </div>
+                    <div id="manualPerimHint" style="display:none" class="graphSelHint"><?php echo JText::_("EASYSDI_SHOP_PERIMETER_NO_MANUAL_SELECTION");?></div>
+		    <?php
+		    ?>
+
+		    
+		    
+		    <?php
+		    echo $tabs->endPanel();
+		    echo $tabs->endPane();
+		?>
+		</td>
 		</tr>
+		</table>
+		
+		<fieldset>
+		<legend><?php echo JText::_('EASYSDI_SHOP_CURRENT_SELECTION');?></legend>
+		<!-- Current selection -->
+		<table>
+		<tr>
+		<td>
+		<select multiple="multiple" size="6" id="selectedSurface"  	onChange="changeSelectedSurface()">
+		<?php
+				$selSurfaceList = $mainframe->getUserState('selectedSurfaces');
+				$selSurfaceListName = $mainframe->getUserState('selectedSurfacesName');
+				$i=0;
+				foreach ($selSurfaceList as $sel)
+				{
+					echo "<option value=\"$sel\">$selSurfaceListName[$i] </option>";
+					$i++;
+				}
+				?>
+				</select>
+		</td>
+		<td valign="bottom">
+			<button title="<?php echo JText::_("EASYSDI_SHOP_PERIMETER_REMOVE");?>" class="deletePerimeterButton" type="button"
+					onClick="removeSelected();"></button>
+		</td>
+		</tr>
+		</table>
+		</fieldset>
+		<!-- Buffer -->
+		<fieldset id="bufferRegion">
+		<legend><?php echo JText::_('EASYSDI_BUFFER');?></legend>
+		<table>
 		<tr>
 		<td>
 		<?php echo JText::_("EASYSDI_BUFFER");?>
@@ -262,7 +393,12 @@ if ($curstep == "2")
 		<span id="bufferValueSuffix"><?php echo JText::_("EASYSDI_BUFFER_UNIT_LABEL"); ?></span></td>
 		</tr>
 		</table>
-		<br>
+		</fieldset>
+		
+		<fieldset>
+		<legend><?php echo JText::_('EASYSDI_SHOP_INFO');?></legend>
+		<!-- infos -->
+		<table>
 		<?php
 		//$query =  "SELECT * FROM #__easysdi_product  WHERE id in (";
 		$querySurfaceMax = "SELECT min(surface_max) as surface_max FROM #__easysdi_product  WHERE id in (";
@@ -283,7 +419,7 @@ if ($curstep == "2")
 		$rowsSurfaceMin = $db->loadObjectList();
 		foreach( $rowsSurfaceMin as $surfaceMin )
 		{
-			echo JText::_("EASYSDI_SURFACE_MIN")." ".renderAreaText($surfaceMin->surface_min, true)."<br>";
+			echo "<tr><td>".JText::_("EASYSDI_SURFACE_MIN")." ".renderAreaText($surfaceMin->surface_min, true)."</td></tr>\n";
 			?>
 			<input type="hidden" size="10" id="totalSurfaceMin" disabled="disabled" value="<?php echo $surfaceMin->surface_min; ?>">
 			<?php
@@ -294,7 +430,7 @@ if ($curstep == "2")
 		$rowsSurfaceMax = $db->loadObjectList();
 		foreach( $rowsSurfaceMax as $surfaceMax )
 		{
-			echo JText::_("EASYSDI_SURFACE_MAX")." ".renderAreaText($surfaceMax->surface_max, true)."<br>";
+			echo "<tr><td>".JText::_("EASYSDI_SURFACE_MAX")." ".renderAreaText($surfaceMax->surface_max, true)."</td></tr>\n";
 			?>
 			<input type="hidden" size="10" id="totalSurfaceMax" disabled="disabled" value="<?php echo $surfaceMax->surface_max; ?>">
 			<?php
@@ -305,30 +441,19 @@ if ($curstep == "2")
 		if (!$totalArea) $totalArea=0;
 		$un = "";
 		if($totalArea <= $meterToKilometerLimit)
-			$un = JText::_("EASYSDI_SURFACE_M2");
+			$un = JText::_("EASYSDI_SURFACE_MIN_UNIT");
 		else
-			$un = JText::_("EASYSDI_SURFACE_KM2");
+			$un = JText::_("EASYSDI_RECAP_ORDER_KM2");
 
-		echo "<div id=\"EASYSDI_SURFACE_SELECTED\">".JText::_("EASYSDI_SURFACE_SELECTED")." ($un):"."</div>";?>
+		echo "<tr><td><div id=\"EASYSDI_SURFACE_SELECTED\">".JText::_("EASYSDI_SURFACE_SELECTED")." ($un):"."</div></td></tr>\n";?>
+		
 		<input type="hidden" size="30" id="totalSurface" disabled="disabled" value="<?php echo $totalArea; ?>">
-		<input type="text"  id="totalSurfaceDisplayed" disabled="disabled" value="<?php echo renderAreaText($totalArea, false); ?>">
-		<br>
-		<select multiple="multiple" size="10" id="selectedSurface"  	onChange="changeSelectedSurface()">
-		<?php
-				$selSurfaceList = $mainframe->getUserState('selectedSurfaces');
-				$selSurfaceListName = $mainframe->getUserState('selectedSurfacesName');
-				$i=0;
-				foreach ($selSurfaceList as $sel)
-				{
-					echo "<option value=\"$sel\">$selSurfaceListName[$i] </option>";
-					$i++;
-				}
-				?>
-				</select>
-
-
-
-				<script><!--
+		<tr><td><input type="text"  id="totalSurfaceDisplayed" disabled="disabled" value="<?php echo renderAreaText($totalArea, false); ?>"></td></tr>
+		<input type="hidden" name="tabIndex"  value="<?php echo  JRequest::getVar('tabIndex'); ?>">
+		</table>
+		</fieldset>
+		
+		<script><!--
 				
 				window.addEvent('domready', function() {
 					$('xText').addEvent('keydown', function(event){
@@ -624,12 +749,12 @@ if ($curstep == "2")
 					var yVal = document.getElementById("yText").value;
 					
 					if(!isNumeric(xVal)){
-						alert('<?php echo JText::_("EASYSDI_ERROR_COORDX_INVALID");?>' + ' ' + document.getElementById("xText").value);
+						alert('<?php echo JText::_("EASYSDI_PERIMETER_MESSAGE__ERROR_COORDX_INVALID");?>' + ' ' + document.getElementById("xText").value);
 						return false;
 					}
 					else if (!isNumeric(yVal))
 					{
-						alert('<?php echo JText::_("EASYSDI_ERROR_COORDY_INVALID");?>' + ' '+  document.getElementById("yText").value);
+						alert('<?php echo JText::_("EASYSDI_PERIMETER_MESSAGE__ERROR_COORDY_INVALID");?>' + ' '+  document.getElementById("yText").value);
 						return false;
 					}
 					else{
@@ -638,7 +763,6 @@ if ($curstep == "2")
 				}
 				
 				function isNumeric(str){
-					//str = alltrim(str);
 					var val = /^[-+]?[0-9]+(\.[0-9]+)?$/.test(str);
 					return val;
 				} 
@@ -719,41 +843,8 @@ if ($curstep == "2")
 				-->
 				</script>
 
-				<button class="deletePerimeterButton" type="button"
-					onClick="removeSelected();"><?php echo JText::_("EASYSDI_REMOVE_SELECTED_VALUE");?></button>
-
-					<button class="addPerimeterButton" type="button" id="addPerimeterButton"
-						onClick="selectManualPerimeter();"><?php echo JText::_("EASYSDI_SELECT_MANUAL_PERIMETER");?></button>
-
-
-						<div id="manualPerimDivId" style="display: none"><?php
-								/*
- <select id="perimetersList"></select>
- <button class="addPerimeterButton" type="button" onClick="addManualPerimeter();"><?php echo JText::_("EASYSDI_ADD_MANUAL_PERIMETER");?></button>
- <button class="addPerimeterButton" type="button" onClick="recenterOnPerimeter();"><?php echo JText::_("EASYSDI_RECENTER_MANUAL_PERIMETER");?></button>
-								 */
-								?> <?php include 'manual_perimeter.php' ;?></div>
-						<div id="manualAddGeometry" style="display: none">
-						<table>
-						<tr>
-						<td><?php echo JText::_("EASYSDI_ADD_Y_TEXT");?></td>
-						<td><input type="text" id="xText" value=""></td>
-						</tr>
-						<tr>
-						<td><?php echo JText::_("EASYSDI_ADD_X_TEXT");?></td>
-						<td><input type="text" id="yText" value=""></td>
-						</tr>
-						<tr>
-						<td colspan="2" align="left"><button class="searchButton" type="button"
-						onClick="if(isValidCoordinates()){addGeometryPerimeter();document.getElementById('xText').value='';document.getElementById('yText').value='';}"><?php echo JText::_("EASYSDI_ADD_GEOMETRY_PERIMETER");?></button></td>
-							</tr>
-							<tr>
-							<td colspan="2" align="left"><button class="searchButton" type="button"
-							onClick="if(isValidCoordinates()){modifyGeometryPerimeter();document.getElementById('xText').value='';document.getElementById('yText').value='';}"><?php echo JText::_("EASYSDI_MODIFY_GEOMETRY_PERIMETER");?></button></td>
-								</tr>
-								</table>
-								</div>
-								<?php
+				
+					<?php
 	}
 }else{
 

@@ -108,10 +108,14 @@ class HTML_shop {
 	
 	<script>
 	var map;
+	var panelEdition;
+	var pointControl;
+	var modifyFeatureControl;
 	var loadingpanel;
 	var wfs = null;
 	var wfs3=null;
 	var wfs5=null;
+	var uploadedPerimeterContent = '<?php echo str_replace("\r\n", "\\n", $mainframe->getUserState('perimeterContent')); $mainframe->setUserState('perimeterContent', null);?>';
 	var vectors;
 	var nameField;
 	var idField;
@@ -128,6 +132,67 @@ class HTML_shop {
 	var EASYSDI_SURFACE_SELECTED = '<?php echo JText::_("EASYSDI_SURFACE_SELECTED");?>';
 	var MOD_PERIM_AREA_PRECISION = <?php echo config_easysdi::getValue("MOD_PERIM_AREA_PRECISION");?>;
 	if(MOD_PERIM_AREA_PRECISION == '') MOD_PERIM_AREA_PRECISION = 2;
+	
+	var oldLoad = window.onload;
+	window.onload=function()
+	{
+		initMap();
+		fromZoomEnd= false;
+		selectPerimeter('perimeterList', false);	
+		if (oldLoad) oldLoad();
+		
+		/* upload perimeter from uploaded list */
+		if(uploadedPerimeterContent != "")
+			drawUploadedPerimeter();
+	}
+	
+	function drawUploadedPerimeter() 
+		{
+		    //Clear existing free perimeter
+		    var elSel = document.getElementById('selectedSurface');		
+		    var i;
+		    for (i = elSel.length - 1; i>=0; i--) {
+		    	document.getElementById('totalSurface').value = parseFloat(document.getElementById('totalSurface').value) - parseFloat(elSel.options[i].value);
+		    	elSel.remove(i);			  	       
+		    }
+		    
+		    var wkt = new OpenLayers.Format.Text();
+	            var collection = wkt.read(uploadedPerimeterContent);
+		    if(!collection) {
+			    alert("<?php echo JText::_('EASYSDI_SHOP_LOAD_PERIMETER_FROM_LIST_BAD_FORMAT'); ?>");
+			    return false;
+		    }else if(!collection.length || collection.length==0){
+				alert("<?php echo JText::_('EASYSDI_SHOP_LOAD_PERIMETER_FROM_LIST_EMPTY_COLLECTION'); ?>");
+				return false;
+		    }
+		    else{
+			    if(collection.constructor != Array) {
+	                    	collection = [collection];
+	                    }
+			    for(var i=0; i<collection.length; ++i) {
+				   xVal = parseFloat(collection[i].geometry.x).toFixed(<?php echo $decimal_precision; ?>);
+			   	   yVal = parseFloat(collection[i].geometry.y).toFixed(<?php echo $decimal_precision; ?>);
+			   	   if (elSel.options.selectedIndex>=0)
+			   	   {
+			   	   	var selectedIndex = elSel.options.selectedIndex;
+                           	   
+			   	   	for (i = elSel.length - 1; i>=selectedIndex; i--) 
+			   	   	{
+			   	   		elSel.options[i+1] = new Option (elSel.options[i].text,elSel.options[i].value);
+			   	   	}
+			   	   	elSel.options[selectedIndex] = new Option(xVal+" / "+yVal,xVal+" "+yVal);
+			   	   }
+			   	   else
+			   	   {
+			   	   	elSel.options[elSel.options.length] = new Option(xVal+" / "+yVal,xVal+" "+yVal);
+			   	   }
+			    }
+		    }
+		    
+		    //Draw new perimeter
+	            drawSelectedSurface();
+		    
+	        }
 	
 	function onFeatureSelect(feature) 
 	{
@@ -686,13 +751,20 @@ function setAlpha(imageformat)
 					
 					function OpenLayerCtrlClicked(ctrl, evt, ctrlPanel, otherPanel){
 						if(ctrl != null){
-							//If type buuton, trigger it directly
+							//If type button, trigger it directly
 							if(ctrl.type == OpenLayers.Control.TYPE_BUTTON){
 								ctrl.trigger();
 							}
 							//else deactivate buttons from both panels
 							else
-							{				
+							{
+								//check for unauthorized buttons
+								if (isFreeSelectionPerimeter && ctrl.displayClass=="olControlDrawFeaturePointDisable")
+									return;
+								
+								if (!isFreeSelectionPerimeter && ctrl.displayClass=="olControlModifyFeatureDisable")
+									return;
+								
 								var controls = ctrlPanel.controls;	
 								for(var i = 0; i<controls.length; ++i){
 									if(controls[i].type != OpenLayers.Control.TYPE_BUTTON){
@@ -780,21 +852,21 @@ function setAlpha(imageformat)
 				rectControl.title = '<?php echo JText::_("EASYSDI_TOOL_RECTCTRL_HINT") ?>';
 				rectControl.featureAdded = function() { intersect();};												
 				rectControl.handler.setOptions({irregular: true});                                  
-	            rectControl.events.register("activate", null, function() { $("toolsStatus").innerHTML = "<?php echo JText::_("EASYSDI_TOOL_REC_ACTIVATED") ?>"; fromZoomEnd =false; })
+				rectControl.events.register("activate", null, function() { $("toolsStatus").innerHTML = "<?php echo JText::_("EASYSDI_TOOL_REC_ACTIVATED") ?>"; fromZoomEnd =false; })
 	            
 	            
-	            //Polygonal  bounding box selection
-	            polyControl = new OpenLayers.Control.DrawFeature(vectors, OpenLayers.Handler.Polygon,{'displayClass':'olControlDrawFeaturePolygon'});
+	            		//Polygonal  bounding box selection
+				polyControl = new OpenLayers.Control.DrawFeature(vectors, OpenLayers.Handler.Polygon,{'displayClass':'olControlDrawFeaturePolygon'});
 				polyControl.title = '<?php echo JText::_("EASYSDI_TOOL_POLYCTRL_HINT") ?>';
-	            polyControl.featureAdded = function() { intersect();};
+				polyControl.featureAdded = function() { intersect();};
 				polyControl.events.register("activate", null, function() { $("toolsStatus").innerHTML = "<?php echo JText::_("EASYSDI_TOOL_POLY_ACTIVATED") ?>"; fromZoomEnd =false;})
 			
 				//Point selection
-	            pointControl = new OpenLayers.Control.DrawFeature(vectors, OpenLayers.Handler.Point,{'displayClass':'olControlDrawFeaturePoint'});
-                pointControl.title = '<?php echo JText::_("EASYSDI_TOOL_POINTCTRL_HINT") ?>';
+				pointControl = new OpenLayers.Control.DrawFeature(vectors, OpenLayers.Handler.Point,{id: 'pointCtrl', 'displayClass':'olControlDrawFeaturePoint'});
+				pointControl.title = '<?php echo JText::_("EASYSDI_TOOL_POINTCTRL_HINT") ?>';
 				pointControl.featureAdded = function() { intersect();};
 				pointControl.events.register("activate", null, function() { $("toolsStatus").innerHTML = "<?php echo JText::_("EASYSDI_TOOL_POINT_ACTIVATED") ?>"; fromZoomEnd =false; })            
-	         
+				
 				//Modify feature shape  
 				modifyFeatureControl = new OpenLayers.Control.ModifyFeature(vectors,{'displayClass':'olControlModifyFeature'});				
 				modifyFeatureControl.title = '<?php echo JText::_("EASYSDI_TOOL_MODFEATURE_HINT") ?>';
@@ -807,7 +879,7 @@ function setAlpha(imageformat)
 				/*
 					Container panel for standard controls
 				*/
-				var panelEdition;
+				
 				var panel;
 	            
 				panel = new OpenLayers.Control.Panel({defaultControl: oZoomBoxInCtrl,
@@ -1059,14 +1131,7 @@ function setAlpha(imageformat)
 			});
 	 }
 	 
-	var oldLoad = window.onload;
-	window.onload=function()
-	{
-		initMap();
-		fromZoomEnd= false;
-		selectPerimeter('perimeterList', false);	
-		if (oldLoad) oldLoad();
-	}
+	
 	
 	</script>
 	<table class="infoShop">

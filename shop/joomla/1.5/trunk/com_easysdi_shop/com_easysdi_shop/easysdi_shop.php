@@ -62,6 +62,26 @@ if ($view == 'shop' && $task != 'deleteProduct')
 }
 
 switch($task){
+	case "loadListForPerim":
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
+		require_once(JPATH_COMPONENT.DS.'core'.DS.'perimList.easysdi.html.php');
+		SITE_listPerim::show();
+	break;
+	
+	case "redirectFromListForPerim":
+		$Itemid = JRequest::getVar('Itemid');
+		$option = JRequest::getVar('option');
+		$perimeter_id = JRequest::getVar('perimeter_id');
+		$step = JRequest::getVar('step');
+		
+		$perimeterContent = JRequest::getVar('perimeterContent');
+		$mainframe->setUserState('perimeterContent',$perimeterContent);
+		
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
+		require_once(JPATH_COMPONENT.DS.'core'.DS.'perimList.easysdi.html.php');
+		$mainframe->redirect("index.php?option=$option&view=shop&step=$step&perimeter_id=$perimeter_id&Item_id=$Itemid");
+	break;
+	
 	case "shop":
 		include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'user.php');
 			
