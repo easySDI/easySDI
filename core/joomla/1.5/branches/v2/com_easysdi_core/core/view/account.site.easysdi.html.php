@@ -25,6 +25,13 @@ class HTML_account {
 	{
 		global  $mainframe;
 		$database =& JFactory::getDBO(); 
+		
+		$user =& JFactory::getUser();
+		$app	= &JFactory::getApplication();
+		$router = &$app->getRouter();
+		$router->setVars($_REQUEST);
+		
+		
 		$tabs =& JPANE::getInstance('Tabs');
 	?>
 	<div class="contentin">
@@ -394,6 +401,13 @@ class HTML_account {
 		global  $mainframe;
 
 		$database =& JFactory::getDBO(); 
+		
+		$user =& JFactory::getUser();
+		$app	= &JFactory::getApplication();
+		$router = &$app->getRouter();
+		$router->setVars($_REQUEST);
+		
+		
 		$index = JRequest::getVar('tabIndex', 0);
 		$tabs =& JPANE::getInstance('Tabs',array('startOffset'=>$index));
 		
@@ -775,6 +789,9 @@ class HTML_account {
 		<input type="hidden" id="task" name="task" value="" />
 		<input type="hidden" id="tabIndex" name="tabIndex" value="<?php echo JRequest::getVar('tabIndex'); ?>" />
 		<input type="hidden" id="tab" name="tab" value="" />
+		<input type="hidden" id="Itemid" name="Itemid" value="<?php echo JRequest::getVar('Itemid'); ?>">
+		<input type="hidden" id="lang" name="lang" value="<?php echo JRequest::getVar('lang'); ?>">
+		
 <?php 
 		if ($hasTheRightToEdit)
 		{ 
@@ -794,7 +811,11 @@ class HTML_account {
 	function listAccount( &$rows, $search, $option, $root_Account_id,$types,$type)
 	{				
 		$database =& JFactory::getDBO();		 
-							
+		$user =& JFactory::getUser();
+		$app	= &JFactory::getApplication();
+		$router = &$app->getRouter();
+		$router->setVars($_REQUEST);
+		
 ?>
 	<div id="page">
 	<h2 class="contentheading"><?php echo JText::_("CORE_ACCOUNT_TAB_AFFILIATES_LABEL"); ?></h2>
@@ -826,12 +847,12 @@ class HTML_account {
 		<br/>
 	<h3><?php echo JText::_("CORE_SEARCH_RESULTS_TITLE"); ?></h3>
 		<script>
-		function suppressAffiliate_click(id, name, type, search){
+		function suppressAffiliate_click(name, url){
 			text = '<?php echo JText::_("CORE_SHOP_CONFIRM_AFFILIATE_DELETE"); ?>';
 			conf = confirm(text.replace('%s',name));
 			if(!conf)
 				return false;
-			window.open('./index.php?option=com_easysdi_core&return=listAffiliateAccount&task=deleteAffiliate&affiliate_id='+id+'&type='+type+'&search='+search, '_self');
+			window.open(url, '_self');
 		}
 		</script>
 		<table id="affiliateTable" class="box-table">
@@ -839,8 +860,7 @@ class HTML_account {
 			<tr>
 				<th class='title'><?php echo JText::_("CORE_ACCOUNT_TAB_COL_USER"); ?></th>
 				<th class='descr'><?php echo JText::_("CORE_ACCOUNT_TAB_COL_ACCOUNT"); ?></th>
-				<th class='logo'>&nbsp;</th>
-				<th class='logo'>&nbsp;</th>
+				<th class='title'><?php echo JText::_('CORE_ACCOUNT_ACTIONS'); ?></th>
 			</tr>
 		</thead>
 		<tbody>		
@@ -866,8 +886,10 @@ class HTML_account {
 			<tr class="<?php echo "row$k"; ?>">
 				<td align="center"><?php echo $row->account_username; ?></td>
 				<td><?php echo $row->account_name; ?></td>
-				<td align="center"><div title="<?php echo JText::_('EASYSDI_ACTION_EDIT_AFFILIATE'); ?>" id="editAffiliate" onClick="window.open('./index.php?option=com_easysdi_core&return=listAffiliateAccount&task=editAffiliateById&affiliate_id=<?php echo $row->user_id;?>&type=<?php echo $type;?>&search=<?php echo addslashes($search);?>', '_self');"></div></td>
-				<td align="center"><div title="<?php if(count($deleteErrors) == 0) echo JText::_('EASYSDI_ACTION_DELETE_AFFILIATE'); else echo $deleteErrorsTxt; ?>." id="deleteAffiliate" <?php if(count($deleteErrors) == 0) echo "onClick=\"return suppressAffiliate_click('$row->user_id','".addslashes($row->name)."','$type','".addslashes($search)."');\"";?> class="<?php if(count($deleteErrors) == 0) echo "deletableAccount"; else echo "unDeletableAccount";?>" ></div></td>
+				<td class="objectActions">
+					<div class="logo" title="<?php echo addslashes(JText::_('CORE_ACTION_EDIT_AFFILIATE')); ?>" id="editAffiliate" onClick="window.open('<?php echo JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&return=listAffiliateAccount&task=editAffiliateById&affiliate_id='.$row->user_id.'&type='.$type.'&search='.addslashes($search))); ?>', '_self');"></div>
+					<div class="logo" title="<?php if(count($deleteErrors) == 0) echo JText::_('CORE_ACTION_DELETE_AFFILIATE'); else echo $deleteErrorsTxt; ?>" id="deleteAffiliate" <?php if(count($deleteErrors) == 0) echo "onClick=\"return suppressAffiliate_click('".addslashes($row->name)."', '".JRoute::_(displayManager::buildUrl('index.php?option=com_easysdi_core&return=listAffiliateAccount&task=deleteAffiliate&affiliate_id='.$row->user_id.'&type='.$type.'&search='.addslashes($search)))."');\"";?> class="<?php if(count($deleteErrors) == 0) echo "deletableAccount"; else echo "unDeletableAccount";?>" ></div>
+				</td>
 			</tr>
 <?php
 			$k = 1 - $k;
@@ -881,7 +903,10 @@ class HTML_account {
 	  	</table>
 	  	<input type="hidden" name="return" value="listAffiliateAccount" />
 	  	<input type="hidden" name="option" value="<?php echo $option; ?>" />
-	  	<input type="hidden" id="task" name="task" value="listAffiliateAccount" />	  	 	 
+	  	<input type="hidden" id="task" name="task" value="listAffiliateAccount" />
+	  	<input type="hidden" id="Itemid" name="Itemid" value="<?php echo JRequest::getVar('Itemid'); ?>">
+		<input type="hidden" id="lang" name="lang" value="<?php echo JRequest::getVar('lang'); ?>">
+			  	 	 
 	  </form>
 	  </div>
 	  </div>
@@ -903,6 +928,12 @@ class HTML_account {
 		$database =& JFactory::getDBO();
 		$index = JRequest::getVar('tabIndex', 0);
 		$tabs =& JPANE::getInstance('Tabs',array('startOffset'=>$index));
+		
+		$user =& JFactory::getUser();
+		$app	= &JFactory::getApplication();
+		$router = &$app->getRouter();
+		$router->setVars($_REQUEST);
+		
 	?>
 	
 	
@@ -1251,6 +1282,8 @@ class HTML_account {
 		<input type="hidden" name="address_id[]" value="<?php echo $rowContact->id; ?>" />
 		<input type="hidden" name="address_id[]" value="<?php echo $rowSubscription->id; ?>" />
 		<input type="hidden" name="address_id[]" value="<?php echo $rowDelivery->id; ?>" />				
+		<input type="hidden" id="Itemid" name="Itemid" value="<?php echo JRequest::getVar('Itemid'); ?>">
+		<input type="hidden" id="lang" name="lang" value="<?php echo JRequest::getVar('lang'); ?>">
 				
 		<!-- input type="hidden" name="option" value="<?php echo $option; ?>" / -->
 		<input type="hidden" name="task" value="" />
@@ -1278,7 +1311,14 @@ class HTML_account {
 	function editRootAccount( &$rowUser, &$rowAccount, $rowContact, $rowSubscription, $rowDelivery, $option )
 	{
 		global  $mainframe;
-		$database =& JFactory::getDBO(); 
+		$database =& JFactory::getDBO();
+
+		$user =& JFactory::getUser();
+		$app	= &JFactory::getApplication();
+		$router = &$app->getRouter();
+		$router->setVars($_REQUEST);
+		
+		
 		$tabs =& JPANE::getInstance('Tabs');
 		//mosMakeHtmlSafe( $rowAccount, ENT_QUOTES );
 
@@ -1755,6 +1795,9 @@ class HTML_account {
 		<input type="hidden" name="createdby" value="<?php echo ($rowAccount->createdby)? $rowAccount->createdby : $user->id; ?>" /> 
 		<input type="hidden" name="updated" value="<?php echo ($rowAccount->created) ? date ("Y-m-d H:i:s") :  ''; ?>" />
 		<input type="hidden" name="updatedby" value="<?php echo ($rowAccount->createdby)? $user->id : ''; ?>" />
+		
+		<input type="hidden" id="Itemid" name="Itemid" value="<?php echo JRequest::getVar('Itemid'); ?>">
+		<input type="hidden" id="lang" name="lang" value="<?php echo JRequest::getVar('lang'); ?>">
 	</form>
 
 	<script language="javascript" type="text/javascript">
@@ -1771,6 +1814,13 @@ class HTML_account {
 		global  $mainframe;
 
 		$database =& JFactory::getDBO(); 
+		
+		$user =& JFactory::getUser();
+		$app	= &JFactory::getApplication();
+		$router = &$app->getRouter();
+		$router->setVars($_REQUEST);
+		
+		
 		$index = JRequest::getVar('tabIndex');
 		$tabs =& JPANE::getInstance('Tabs',array('startOffset'=>$index));
 	
@@ -2077,6 +2127,9 @@ class HTML_account {
 		<input type="hidden" name="createdby" value="<?php echo ($rowAccount->createdby)? $rowAccount->createdby : $user->id; ?>" /> 
 		<input type="hidden" name="updated" value="<?php echo ($rowAccount->created) ? date ("Y-m-d H:i:s") :  ''; ?>" />
 		<input type="hidden" name="updatedby" value="<?php echo ($rowAccount->createdby)? $user->id : ''; ?>" />
+		
+		<input type="hidden" id="Itemid" name="Itemid" value="<?php echo JRequest::getVar('Itemid'); ?>">
+		<input type="hidden" id="lang" name="lang" value="<?php echo JRequest::getVar('lang'); ?>">
 		
 		<table>
 			<tr>
