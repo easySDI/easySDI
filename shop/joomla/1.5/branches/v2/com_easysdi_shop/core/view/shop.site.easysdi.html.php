@@ -252,7 +252,7 @@ class HTML_shop
 	<?php
 	}
 
-	function orderPerimeter ($cid, $basemap, $basemap_contents, $option, $task,$step)
+	function orderPerimeter ($cid, $basemap, $basemap_contents, $option, $task,$step,$decimal_precision)
 	{
 		global  $mainframe;
 		?>
@@ -261,10 +261,14 @@ class HTML_shop
 		<script type="text/javascript" src="./administrator/components/com_easysdi_shop/lib/openlayers2.8/lib/OpenLayers/Control/LoadingPanel.js"></script>
 		<script>
 		var map;
+		var panelEdition;
+		var pointControl;
+		var modifyFeatureControl;
 		var loadingpanel;
 		var wfs = null;
 		var wfs3=null;
 		var wfs5=null;
+		var uploadedPerimeterContent = '<?php echo str_replace("\r\n", "\\n", $mainframe->getUserState('perimeterContent')); $mainframe->setUserState('perimeterContent', null);?>';
 		var vectors;
 		var nameField;
 		var idField;
@@ -279,6 +283,69 @@ class HTML_shop
 		var SHOP_PERIMETER_SURFACE_KM2 = '<?php echo JText::_("SHOP_PERIMETER_SURFACE_KM2");?>';
 		var SHOP_PERIMETER_SURFACE_SELECTED = '<?php echo JText::_("SHOP_PERIMETER_SURFACE_SELECTED");?>';
 		var SHOP_CONFIGURATION_MOD_PERIM_AREAPRECISION = <?php echo config_easysdi::getValue("SHOP_CONFIGURATION_MOD_PERIM_AREAPRECISION",2);?>;
+		
+		
+		//addGeometryPerimeter
+		var oldLoad = window.onload;
+		window.onload=function()
+		{
+			initMap();
+			fromZoomEnd= false;
+			selectPerimeter('perimeterList', false);	
+			if (oldLoad) oldLoad();
+			
+			/* upload perimeter from uploaded list */
+			if(uploadedPerimeterContent != "")
+				drawUploadedPerimeter();
+		}
+		
+		function drawUploadedPerimeter() 
+		{
+		    //Clear existing free perimeter
+		    var elSel = document.getElementById('selectedSurface');		
+		    var i;
+		    for (i = elSel.length - 1; i>=0; i--) {
+		    	document.getElementById('totalSurface').value = parseFloat(document.getElementById('totalSurface').value) - parseFloat(elSel.options[i].value);
+		    	elSel.remove(i);			  	       
+		    }
+		    
+		    var wkt = new OpenLayers.Format.Text();
+	            var collection = wkt.read(uploadedPerimeterContent);
+		    if(!collection) {
+			    alert("<?php echo JText::_('EASYSDI_SHOP_LOAD_PERIMETER_FROM_LIST_BAD_FORMAT'); ?>");
+			    return false;
+		    }else if(!collection.length || collection.length==0){
+				alert("<?php echo JText::_('EASYSDI_SHOP_LOAD_PERIMETER_FROM_LIST_EMPTY_COLLECTION'); ?>");
+				return false;
+		    }
+		    else{
+			    if(collection.constructor != Array) {
+	                    	collection = [collection];
+	                    }
+			    for(var i=0; i<collection.length; ++i) {
+				   xVal = parseFloat(collection[i].geometry.x).toFixed(<?php echo $decimal_precision; ?>);
+			   	   yVal = parseFloat(collection[i].geometry.y).toFixed(<?php echo $decimal_precision; ?>);
+			   	   if (elSel.options.selectedIndex>=0)
+			   	   {
+			   	   	var selectedIndex = elSel.options.selectedIndex;
+                           	   
+			   	   	for (i = elSel.length - 1; i>=selectedIndex; i--) 
+			   	   	{
+			   	   		elSel.options[i+1] = new Option (elSel.options[i].text,elSel.options[i].value);
+			   	   	}
+			   	   	elSel.options[selectedIndex] = new Option(xVal+" / "+yVal,xVal+" "+yVal);
+			   	   }
+			   	   else
+			   	   {
+			   	   	elSel.options[elSel.options.length] = new Option(xVal+" / "+yVal,xVal+" "+yVal);
+			   	   }
+			    }
+		    }
+		    
+		    //Draw new perimeter
+	            drawSelectedSurface();
+		    
+	        }
 		
 		function onFeatureSelect(feature) 
 		{
@@ -787,7 +854,7 @@ class HTML_shop
 					map.addLayer(vectors);
 						$("scale").innerHTML = "<?php echo JText::_("SHOP_SHOP_MAP_SCALE") ?>"+map.getScale().toFixed(0);
 						
-						function OpenLayerCtrlClicked(ctrl, evt, ctrlPanel, otherPanel){
+					function OpenLayerCtrlClicked(ctrl, evt, ctrlPanel, otherPanel){
 							if(ctrl != null){
 								//If type button, trigger it directly
 								if(ctrl.type == OpenLayers.Control.TYPE_BUTTON){
@@ -795,7 +862,14 @@ class HTML_shop
 								}
 								//else deactivate buttons from both panels
 								else
-								{				
+								{	
+									//check for unauthorized buttons
+									if (isFreeSelectionPerimeter && ctrl.displayClass=="olControlDrawFeaturePointDisable")
+										return;
+								
+									if (!isFreeSelectionPerimeter && ctrl.displayClass=="olControlModifyFeatureDisable")
+										return;
+								
 									var controls = ctrlPanel.controls;	
 									for(var i = 0; i<controls.length; ++i){
 										if(controls[i].type != OpenLayers.Control.TYPE_BUTTON){
@@ -876,7 +950,7 @@ class HTML_shop
 					polyControl.events.register("activate", null, function() { $("toolsStatus").innerHTML = "<?php echo JText::_("SHOP_OL_TOOL_POLY_ACTIVATED") ?>"; fromZoomEnd =false;})
 				
 					//Point selection
-		            pointControl = new OpenLayers.Control.DrawFeature(vectors, OpenLayers.Handler.Point,{'displayClass':'olControlDrawFeaturePoint'});
+		            pointControl = new OpenLayers.Control.DrawFeature(vectors, OpenLayers.Handler.Point,{id: 'pointCtrl','displayClass':'olControlDrawFeaturePoint'});
 	                pointControl.title = '<?php echo JText::_("SHOP_OL_TOOL_POINTCTRL_HINT") ?>';
 					pointControl.featureAdded = function() { intersect();};
 					pointControl.events.register("activate", null, function() { $("toolsStatus").innerHTML = "<?php echo JText::_("SHOP_OL_TOOL_POINT_ACTIVATED") ?>"; fromZoomEnd =false; })            
@@ -893,7 +967,6 @@ class HTML_shop
 					/*
 						Container panel for standard controls
 					*/
-					var panelEdition;
 					var panel;
 		            
 					panel = new OpenLayers.Control.Panel({defaultControl: oZoomBoxInCtrl,
@@ -1139,15 +1212,6 @@ class HTML_shop
 				});
 		 }
 		 
-		var oldLoad = window.onload;
-		window.onload=function()
-		{
-			initMap();
-			fromZoomEnd= false;
-			selectPerimeter('perimeterList', false);	
-			if (oldLoad) oldLoad();
-		}
-		
 		</script>
 		<table class="infoShop">
 		<!-- info sup -->
