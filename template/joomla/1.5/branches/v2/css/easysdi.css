@@ -76,14 +76,13 @@ div .freeMd{
 	background-image:url(../images/money_dollar_disabled.png);
 }
 
-
 div .easysdi_product_does_not_exist{
 	background-image:url(../images/cart_disabled.png);
 }
 
 /* Buttons in the metadata view  */
 
-.addFavorite{
+.addToFavorite{
 	background-color:transparent;
 	background-image:url(../icons/silk/star.png);
 	background-position:0 0;
@@ -656,12 +655,11 @@ legend    {
 }
 
 
-
 dl.tabs {
-	padding: 4px 10px;
-	margin: 10px 0 -1px 0;
-	z-index: 50;
 	border-bottom: 1px solid #ABABAB;
+	margin: 10px 0 -1px;
+	padding: 4px 10px;
+	z-index: 50;
 }
 
 dl.tabs dt {
@@ -892,7 +890,7 @@ height:16px;
   background-repeat: no-repeat;
 }
 .olControlEditingToolbar  {
-    float:left;
+    float:right;
     right: 0px;
     height: 30px; 
     width: 200px;
@@ -901,7 +899,7 @@ height:16px;
   background-image: url("../images/editing_tool_bar.png");
   background-repeat: no-repeat;
   float:left;
-  width:  24px;
+  width:  25px;
   height: 24px;
   margin: 5px;
 }
@@ -1571,6 +1569,10 @@ div .reqUser{
 	width:125px;
 }
 
+.listOrdersForProvider .treatment .longInputBox{
+	width:340px;
+}
+
 #searchOrder{
 	width:252px;
 }
@@ -1824,6 +1826,12 @@ padding:0;
 	width:160px;
 }
 
+.inmodule fieldset{
+	margin-left:3px;
+	margin-right: 3px;
+	margin-top: 3px;
+	border: 1px solid #ABABAB;
+}
 
 .inmodule select{
 	font-size:1.1em;
@@ -1851,6 +1859,123 @@ padding:0;
 	margin-top:3px;
 	width:125px !important;
 }
+
+.addCoordinateButton{
+	background-color:transparent !important;
+	background-image:url(../icons/silk/add.png) !important;
+	background-position:center center !important;
+	background-repeat:no-repeat !important;
+	height:16px !important;
+	width:20px !important;
+	border: 0px;
+}
+
+.editCoordinateButton{
+	background-color:transparent !important;
+	background-image:url(../icons/silk/pencil.png) !important;
+	background-position:center center !important;
+	background-repeat:no-repeat !important;
+	height:16px !important;
+	width:20px !important;
+	border: 0px;
+}
+
+.particular-loadperim-link a {
+	           display: block !important; /* or inline-block; I think IE would respect it since a link is an inline-element */
+                   background: transparent url(../icons/silk/page.png) no-repeat scroll center center !important;
+                   text-align: center !important;
+                   line-height: 16px !important;
+		   width:20px !important;
+}
+
+.olControlDrawFeaturePointDisableItemInactive{
+	background-image:url(../images/openlayers/btn_pointeur_0.png) !important;
+	background-color: transparent !important;
+	background-position: 0 0 !important;
+	background-repeat: no-repeat !important;
+	height: 26px !important;
+	width: 28px !important;
+}
+
+.olControlDrawFeaturePointDisableItemActive{
+	background-image:url(../images/openlayers/btn_pointeur_0.png) !important;
+	background-color: transparent !important;
+	background-position: 0 0 !important;
+	background-repeat: no-repeat !important;
+	height: 26px !important;
+	width: 28px !important;
+}
+
+.olControlModifyFeatureDisableItemInactive{
+	background-image:url(../images/openlayers/btn_deplsommet_0.png) !important;
+	background-color: transparent !important;
+	background-position: 0 0 !important;
+	background-repeat: no-repeat !important;
+	height: 26px !important;
+	width: 28px !important;
+}
+
+.olControlModifyFeatureDisableItemActive{
+	background-image:url(../images/openlayers/btn_deplsommet_0.png) !important;
+	background-color: transparent !important;
+	background-position: 0 0 !important;
+	background-repeat: no-repeat !important;
+	height: 26px !important;
+	width: 28px !important;
+}
+
+#selectedSurface{
+	width:130px;
+}
+
+.deletePerimeterButton{
+	background-color:transparent !important;
+	background-image:url(../icons/silk/delete.png) !important;
+	background-position:0 0 !important;
+	background-repeat:no-repeat !important;
+	height:16px !important;
+	width:16px !important;
+	border: 0px;
+}
+
+.perimeterActionSpaceHolder{
+	width:51px !important;
+}
+
+.graphSelHint{
+	padding-left: 7px;
+	padding-right: 7px;
+	width: 156px;
+	text-align:justify;
+}
+
+.olControlEditingToolbar {
+    padding-top:5px;
+    padding-bottom:5px;
+    float: none !important;
+    height: 30px !important;
+    right: 0 !important;
+    margin-left: 4px;
+    width: 160px !important;
+}
+
+.current dd{
+    border-bottom: 1px solid #ABABAB;
+    border-left: 1px solid #ABABAB;
+    border-right: 1px solid #ABABAB;
+    margin-left:0px;
+}
+
+#manualAddGeometry{
+   padding-top:5px;
+}
+
+#manualPerimHint{
+	padding-top:5px;
+	margin-bottom:5px;
+}
+
+
 /***********************/
 /*** EasySDI Mod-menu */
 /***********************/
@@ -2165,6 +2290,192 @@ div#historyAssignMetadata{
 
 .easysdi_shop_backend_datefield {
 	width:281px !important;
+}
+
+
+/***********************/
+/*** EasySDI Publish ***/
+/***********************/
+#excReport{
+	width:650px !important;
+}
+
+#excMessage{
+		background-color:#CCCCCC;
+		font-size:9px;
+		border:1px solid #AAAAAA;
+
+
+}
+
+
+.publish .errorMsg{
+	background:#FBE3E4 url(../../../components/com_easysdi_publish/img/fancyupload/failed.png) no-repeat scroll 4px 4px;
+	border-bottom:1px solid #FBC2C4;
+	text-align:left;
+	#clear:left;
+	color:#8A1F11;
+	#cursor:pointer;
+	display:none;
+	line-height:25px;
+	padding-left:44px;
+}
+
+.publish .edit:hover, .publish .delete:hover, .publish .deleteDis:hover{
+	cursor:pointer;
+}
+
+
+#layerListTable .edit, #featureListTable .edit{
+	background-color:transparent;
+	background-image:url(../icons/silk/pencil.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:18px;
+	width:14px;	
+}
+
+#layerListTable .deleteDis, #featureListTable .deleteDis{
+	background-color:transparent;
+	background-image:url(../icons/silk/delete.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:18px;
+	width:14px;
+	/* for IE */
+	filter:alpha(opacity=20);
+	/* CSS3 standard */
+	opacity:0.2;
+}
+
+#layerListTable .delete, #featureListTable .delete{
+	background-color:transparent;
+	background-image:url(../icons/silk/delete.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:18px;
+	width:14px;
+}
+
+.publish .title{
+	width:200px;
+}
+
+.publish .titlel{
+	width:150px;
+}
+
+.publish .descr{
+	width:80px;
+}
+
+
+#layerListTable .logo, #featureListTable .logo{
+	width:16px;
+	height:16px;
+}
+
+
+.publish a:hover, a.hover {
+	color:#000000;
+}
+
+.publish a:link, .publish a:visited {
+	/*color:#135CAE;*/
+	font-weight:bold;
+	text-decoration:underline;
+}
+
+.publish .fileActionDisabled {
+	color:#CCCCCC;
+	font-weight:bold;
+	text-decoration:underline;
+}
+
+dl.tabs dt span {
+    font-weight: bold;
+}
+
+.publish dd {
+	margin-left:0;
+}
+
+.publish dl.tabs dt {
+	color:#666666;
+	font-weight:bold;
+	font-size:12px;
+}
+
+.publish dl.tabs dt.open {
+	color:#000000;
+	font-weight:bold;
+	font-size:14px;
+}
+
+.publish table.list th{
+	background:lightgray;
+}
+
+/*
+.publish table.list tbody tr td {
+	background:#FFFFFF none repeat scroll 0 0;
+	border:1px solid #FFFFFF;
+	height:25px;
+}
+*/
+.publish legend {
+	color:#666666;
+	font-size:12px;
+	font-weight:bold;
+}
+
+.publish .buttonDisabled{
+	background:transparent url(../images/bg_bouton_dis.png) repeat-x scroll center center;
+	border:0 solid #B9B9B9;
+	color:#FFFFFF;
+	font-family:arial;
+	font-size:11px;
+	font-weight:bold;
+	padding:1px 6px;
+}
+
+/*
+.publish select{
+	width:160px;
+}
+*/
+/*
+.publish fieldset {
+	width:266px;
+	margin-top:10px;
+}
+*/
+
+.publish .endpointslist{
+	width:512px;
+}
+
+#fieldsNameTab .inputbox, #descriptionTab .inputbox{
+	width:231px;
+}
+
+.publish .layerGeneralInfo{
+	width:410px;
+}
+
+.demoPurpose{
+	border-bottom:2px solid #110000;
+}
+
+/* Publish quick view */
+
+.viewmap {
+    width: 502px;
+    height: 251px;
+    border: 1px solid #ccc;
+}
+#tags {
+    display: none;
 }
 
 /* Pour �tre compatible avec GeodbMeta*/
