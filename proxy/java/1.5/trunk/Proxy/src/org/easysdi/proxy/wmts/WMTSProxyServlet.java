@@ -81,7 +81,7 @@ public class WMTSProxyServlet extends ProxyServlet{
 	/**
 	 * 
 	 */
-	protected WMTSProxyXSLTBuilder XSLTBuilder; 
+	protected WMTSProxyDocumentBuilder docBuilder; 
 	
 	public WMTSProxyServlet() {
 		super();
@@ -317,106 +317,55 @@ public class WMTSProxyServlet extends ProxyServlet{
 			
 			//Aucun serveur n'a retourné d'exception ou le mode de gestion des exceptions est "permissif"
 			// Vérifie et prépare l'application d'un fichier xslt utilisateur
-			String userXsltPath = getConfiguration().getXsltPath();
-			if (SecurityContextHolder.getContext().getAuthentication() != null) {
-				userXsltPath = userXsltPath + "/" + SecurityContextHolder.getContext().getAuthentication().getName() + "/";
-			}
-			
-			userXsltPath = userXsltPath + "/" + version + "/" + operation + ".xsl";
-			String globalXsltPath = getConfiguration().getXsltPath() + "/" + version + "/" + operation + ".xsl";
-			
-			File xsltFile = new File(userXsltPath);
-			boolean isPostTreat = false;
-			if (!xsltFile.exists()) {
-				dump("Postreatment file " + xsltFile.toString() + "does not exist");
-				xsltFile = new File(globalXsltPath);
-				if (xsltFile.exists()) {
-					isPostTreat = true;
-				} else {
-					dump("Postreatment file " + xsltFile.toString() + "does not exist");
-				}
-			} else {
-				isPostTreat = true;
-			}
-			
-			// Transforms the results using a xslt before sending the response back
-			Transformer transformer = null;
-			TransformerFactory tFactory = TransformerFactory.newInstance();
-			
-			ByteArrayOutputStream tempOut = null; 
-			String responseVersion="";
+//			String userXsltPath = getConfiguration().getXsltPath();
+//			if (SecurityContextHolder.getContext().getAuthentication() != null) {
+//				userXsltPath = userXsltPath + "/" + SecurityContextHolder.getContext().getAuthentication().getName() + "/";
+//			}
+//			
+//			userXsltPath = userXsltPath + "/" + version + "/" + operation + ".xsl";
+//			String globalXsltPath = getConfiguration().getXsltPath() + "/" + version + "/" + operation + ".xsl";
+//			
+//			File xsltFile = new File(userXsltPath);
+//			boolean isPostTreat = false;
+//			if (!xsltFile.exists()) {
+//				dump("Postreatment file " + xsltFile.toString() + "does not exist");
+//				xsltFile = new File(globalXsltPath);
+//				if (xsltFile.exists()) {
+//					isPostTreat = true;
+//				} else {
+//					dump("Postreatment file " + xsltFile.toString() + "does not exist");
+//				}
+//			} else {
+//				isPostTreat = true;
+//			}
+
+			ByteArrayOutputStream tempOut = new ByteArrayOutputStream(); 
 			
 			if ("GetCapabilities".equalsIgnoreCase(operation)) {
-				dump("transform begin GetCapabilities operation");
-	
-				// Contains the list of temporary modified Capabilities
-				// files.
-				List<File> tempFileCapa = new Vector<File>();
-	
-				// Loop on the response files
-				for (int iFilePath = 0; iFilePath < wmtsFilePathList.size(); iFilePath++) {
-					//Load response file
-					
-					InputSource iS = new InputSource(new FileInputStream(wmtsFilePathList.get(iFilePath).toArray(new String[1])[0]));
-					
-					//Get the WMTS version of the response -> not needed for now because only 1.0.0 is supported
-//					SAXBuilder sxb = new SAXBuilder();
-//					org.jdom.Document  docParent = sxb.build(iS);
-//					responseVersion = docParent.getRootElement().getAttribute("version").getValue();
-//					responseVersion = responseVersion.replaceAll("\\.", "");
-					
-					//Transform with XSL
-					tempFileCapa.add(createTempFile("transform_GetCapabilities_" + UUID.randomUUID().toString(), ".xml"));
-					FileOutputStream tempFosCapa = new FileOutputStream(tempFileCapa.get(iFilePath));
-					StringBuffer sb = XSLTBuilder.getCapabilitiesXSLT( req, resp, iFilePath);
-					if (sb == null){
-						//something went wrong in the construction of the XSL
-						sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in XSLT building. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
-						return;
-					}					
-					InputSource inputSource = new InputSource(new FileInputStream(wmtsFilePathList.get(iFilePath).toArray(new String[1])[0]));
-					InputStream xslt = new ByteArrayInputStream(sb.toString().getBytes());
-					XMLReader xmlReader = XMLReaderFactory.createXMLReader();
-					String user = (String) getUsername(getRemoteServerUrl(iFilePath));
-					String password = (String) getPassword(getRemoteServerUrl(iFilePath));
-					if (user != null && user.length() > 0) {
-						ResourceResolver rr = new ResourceResolver(user, password);
-						xmlReader.setEntityResolver(rr);
-					}
-					SAXSource saxSource = new SAXSource(xmlReader, inputSource);
-					transformer = tFactory.newTransformer(new StreamSource(xslt));
-	
-					// Write the result in a temporary file
-					dump("transform begin xslt transform to response file " + iFilePath);
-					transformer.transform(saxSource, new StreamResult(tempFosCapa));
-					tempFosCapa.flush();
-					tempFosCapa.close();
-					dump("transform end xslt transform to response file " + iFilePath);
+				dump("INFO","transform - Start - Capabilities filtering");
+				if(!docBuilder.CapabilitiesFiltering(wmtsFilePathList))
+				{
+					//Something went wrong
+					sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in Capabilities filtering. Exception : "+docBuilder.getLastException().toString(),"NoApplicableCode","",requestedVersion));
+					return;
 				}
-	
-				// Merge the results of all the capabilities and return it into a single file
-				dump("transform begin mergeCapabilities");
-				tempOut = XSLTBuilder.mergeCapabilities(tempFileCapa, resp);
-				dump("transform end mergeCapabilities");
+				dump("INFO","transform - End - Capabilities filtering");
+				dump("INFO","transform - Start - Capabilities merging");
+				if(!docBuilder.mergeCapabilities(wmtsFilePathList))
+				{
+					//Something went wrong
+					sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in Capabilities merging. Exception : "+docBuilder.getLastException().toString(),"NoApplicableCode","",requestedVersion));
+					return;
+				}
+				dump("INFO","transform - End - Capabilities merging");
 				
-				//Application de la transformation XSLT pour la réécriture des métadonnées du service 
-				dump("DEBUG","transform begin apply XSLT on service metadata");
-//				if(tempOut != null)
-//				{
-//					ByteArrayOutputStream out = new ByteArrayOutputStream();
-//					StringBuffer sb = buildServiceMetadataCapabilitiesXSLT(responseVersion);
-//					InputStream xslt = new ByteArrayInputStream(sb.toString().getBytes());
-//					InputSource inputSource = new InputSource(new ByteArrayInputStream(tempOut.toByteArray()) );
-//					XMLReader xmlReader = XMLReaderFactory.createXMLReader();
-//					SAXSource saxSource = new SAXSource(xmlReader, inputSource);
-//					transformer = tFactory.newTransformer(new StreamSource(xslt));
-//					transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-//					transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
-//					transformer.transform(saxSource, new StreamResult(out));
-//					tempOut = out;
-//				}
-				dump("DEBUG","transform end apply XSLT on service metadata");
-				dump("transform end GetCapabilities operation");
+				
+				FileInputStream reader = new FileInputStream(new File(wmtsFilePathList.get(0).toArray(new String[1])[0]));
+				byte[] data = new byte[reader.available()];
+				reader.read(data, 0, reader.available());
+				tempOut.write(data);
+				reader.close();
+				sendHttpServletResponse(req,resp, tempOut,responseContentType);
 			}
 		}
 		catch (Exception e){

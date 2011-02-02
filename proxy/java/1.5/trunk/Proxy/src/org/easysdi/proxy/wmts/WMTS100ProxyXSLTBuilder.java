@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.easysdi.proxy.core.ProxyServlet;
+import org.easysdi.proxy.policy.Layer;
+import org.easysdi.proxy.policy.Server;
 import org.easysdi.proxy.wms.WMSProxyCapabilitiesLayerFilter;
 import org.jdom.Namespace;
 import org.jdom.filter.Filter;
@@ -57,7 +59,7 @@ public class WMTS100ProxyXSLTBuilder extends WMTSProxyXSLTBuilder{
 				StringBuffer WMTSCapabilities100 = new StringBuffer();
 				WMTSCapabilities100.append("<xsl:stylesheet version=\"1.00\" " +
 								"xmlns:ows=\"http://www.opengis.net/ows/1.1\" " +
-								"xmlns=\"http://www.opengis.net/wmts/1.0\" " +
+								"xmlns:wmts=\"http://www.opengis.net/wmts/1.0\" " +
 								"xmlns:sld=\"http://www.opengis.net/sld\" " + 
 								"xmlns:xsi=\"http://www.opengis.net/wmts/1.0\" "+ 
 								"xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" " +
@@ -65,39 +67,23 @@ public class WMTS100ProxyXSLTBuilder extends WMTSProxyXSLTBuilder{
 								"xmlns:gml=\"http://www.opengis.net/gml\" "+
 								">");
 				WMTSCapabilities100.append("<xsl:output method=\"xml\" omit-xml-declaration=\"no\" version=\"1.0\" encoding=\"UTF-8\" indent=\"yes\"/>");
-				
+				WMTSCapabilities100.append("<xsl:template match=\"/\">");
+				WMTSCapabilities100.append("<xsl:apply-templates/>");
+				WMTSCapabilities100.append("</xsl:template>");
 				// Operations filtering
 				if (!servlet.policy.getOperations().isAll() || deniedOperations.size() > 0 ) {
-					Iterator<String> it = permitedOperations.iterator();
+					Iterator<String> it = deniedOperations.iterator();
 					while (it.hasNext()) {
 						String text = it.next();
 						if (text != null) {
-							WMTSCapabilities100.append("<xsl:template match=\"Capabilities/ows:OperationMetadata/ows:Operation\">");
-							WMTSCapabilities100.append("<xsl:if test=\"@name='"+text+"'\">");
-							WMTSCapabilities100.append("<!-- Copy the current node -->");
-							WMTSCapabilities100.append("<xsl:copy>");
-							WMTSCapabilities100.append("<!-- Including any attributes it has and any child nodes -->");
-							WMTSCapabilities100.append("<xsl:apply-templates select=\"@*|node()\"/>");
-							WMTSCapabilities100.append("</xsl:copy>");
-						    WMTSCapabilities100.append("</xsl:if>");
-							WMTSCapabilities100.append("</xsl:template>");
-						}
-					}
-
-					it = deniedOperations.iterator();
-					while (it.hasNext()) {
-						String text = it.next();
-						if (text != null) {
-							WMTSCapabilities100.append("<xsl:template match=\"Capabilities/ows:OperationMetadata/ows:Operation\">");
-							WMTSCapabilities100.append("<xsl:if test=\"@name='"+text+"'\">");
-							WMTSCapabilities100.append("</xsl:if>");
+							WMTSCapabilities100.append("<xsl:template match=\"//ows:OperationsMetadata/ows:Operation[@name='"+text+"']\">");
 							WMTSCapabilities100.append("</xsl:template>");
 						}
 					}
 				}
 				if (permitedOperations.size() == 0 )
 				{
-					WMTSCapabilities100.append("<xsl:template match=\"Capabilities/ows:OperationMetadata");
+					WMTSCapabilities100.append("<xsl:template match=\"//ows:OperationsMetadata");
 					WMTSCapabilities100.append("\"></xsl:template>");
 				}
 				
@@ -118,7 +104,7 @@ public class WMTS100ProxyXSLTBuilder extends WMTSProxyXSLTBuilder{
     				boolean allowed = servlet.isLayerAllowed(layerTitle.getValue(), servlet.getRemoteServerUrl(remoteServerIndex));
 					if (!allowed) {
 						// The layer is not allowed, it is removed from the capabilities
-						WMTSCapabilities100.append("<xsl:template match=\"//Layer[starts-with(ows:Title,'" + layerTitle.getValue() + "')]");
+						WMTSCapabilities100.append("<xsl:template match=\"//wmts:Layer[ows:Title='" + layerTitle.getValue() + "']");
 						WMTSCapabilities100.append("\"></xsl:template>");
 					}
 				}
@@ -187,11 +173,17 @@ public class WMTS100ProxyXSLTBuilder extends WMTSProxyXSLTBuilder{
 					servlet.dump("ERROR", e.getMessage());
 				}
 				if (documentChild != null) {
-					NodeList nl = documentChild.getElementsByTagName("Layer");
-					NodeList nlMaster = documentMaster.getElementsByTagName("Layer");
+					NodeList nl = documentChild.getElementsByTagNameNS("http://www.opengis.net/wmts/1.0","Layer");
+					NodeList nlMaster = documentMaster.getElementsByTagNameNS("http://www.opengis.net/wmts/1.0","Layer");
 					Node ItemMaster = nlMaster.item(0);
 					if (nl.item(0) != null)
 						ItemMaster.insertBefore(documentMaster.importNode(nl.item(0).cloneNode(true), true), null);
+					
+					NodeList nM = documentChild.getElementsByTagNameNS("http://www.opengis.net/wmts/1.0","TileMatrixSet");
+					NodeList nMMaster = documentMaster.getElementsByTagNameNS("http://www.opengis.net/wmts/1.0","TileMatrixSet");
+					Node ItemMMaster = nMMaster.item(0);
+					if (nM.item(0) != null)
+						ItemMMaster.insertBefore(documentMaster.importNode(nM.item(0).cloneNode(true), true), null);
 				}
 			}
 

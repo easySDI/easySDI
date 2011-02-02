@@ -13,6 +13,7 @@ public class WMTS100ProxyServlet extends WMTSProxyServlet{
 		super();
 		ServiceOperations =  Arrays.asList( "GetCapabilities", "GetTile", "GetFeatureInfo" );
 		ServiceSupportedOperations = Arrays.asList("GetCapabilities", "GetTile");
-		XSLTBuilder = new WMTS100ProxyXSLTBuilder(this);
+		docBuilder = new WMTS100ProxyDocumentBuilder(this);
+		
 	}
 }
