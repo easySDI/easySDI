@@ -258,7 +258,7 @@ class SITE_metadata {
 		{
 			$msg = JText::_('CATALOG_OBJECT_SELECTMETADATA_MSG');
 			//$mainframe->redirect("index.php?option=$option&task=listMetadata", $msg);
-			$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listMetadata', false ), $msg);
+			$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listMetadata'), false ), $msg);
 			exit;
 		}
 		
@@ -277,7 +277,7 @@ class SITE_metadata {
 		{
 			$msg = JText::_('CATALOG_METADATA_EDIT_NOMETADATA_MSG');
 			//$mainframe->redirect("index.php?option=$option&task=listMetadata", $msg );
-			$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listMetadata', false ), $msg);
+			$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listMetadata'), false ), $msg);
 		}
 		
 		/*
@@ -318,7 +318,7 @@ class SITE_metadata {
 		{
 			$msg = JText::sprintf('DESCBEINGEDITTED', JText::_('The item'), $rowObject->name);
 			//$mainframe->redirect("index.php?option=$option&task=listObject", $msg );
-			$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listObject', false ), $msg);
+			$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listObject'), false ), $msg);
 		}
 
 		$rowObject->checkout($user->get('id'));
@@ -460,7 +460,7 @@ class SITE_metadata {
 			//$xpathResults = new DOMXPath($doc);
 			$msg = $cswResults->childNodes->item(0)->nodeValue;
 			//$mainframe->redirect("index.php?option=$option&task=listMetadata", $msg );
-			$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listMetadata', false ), $msg);
+			$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listMetadata'), false ), $msg);
 		}
 		else
 		{
@@ -468,7 +468,7 @@ class SITE_metadata {
 			//$xpathResults = new DOMXPath($doc);
 			$msg = JText::_('CATALOG_METADATA_EDIT_NOMETADATA_MSG');
 			//$mainframe->redirect("index.php?option=$option&task=listMetadata", $msg );
-			$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listMetadata', false ), $msg);
+			$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listMetadata'), false ), $msg);
 		}
 		
 		$xpathResults->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
@@ -511,7 +511,7 @@ class SITE_metadata {
 		$rowObject->checkin();
 		
 		//$mainframe->redirect("index.php?option=$option&task=listMetadata" );
-		$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listMetadata', false ));
+		$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listMetadata'), false ));
 	}
 	
 	function historyAssignMetadata($metadata_id, $option)
@@ -575,7 +575,7 @@ class SITE_metadata {
 		{
 			$msg = JText::_('CATALOG_OBJECT_ARCHIVEMETADATA_MSG');
 			//$mainframe->redirect("index.php?option=$option&task=listMetadata", $msg);
-			$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listMetadata', false ), $msg);
+			$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listMetadata'), false ), $msg);
 			exit;
 		}
 		

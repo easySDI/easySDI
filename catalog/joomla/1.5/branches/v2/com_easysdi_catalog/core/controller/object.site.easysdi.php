@@ -261,7 +261,7 @@ class SITE_object {
 		{
 			$msg = JText::sprintf('DESCBEINGEDITTED', JText::_('The item'), $rowObject->name);
 			//$mainframe->redirect("index.php?option=$option&task=listObject", $msg );
-			$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listObject', false ), $msg);
+			$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listObject'), false ), $msg);
 		}
 
 		$rowObject->checkout($user->get('id'));
@@ -423,7 +423,7 @@ class SITE_object {
 		if (!$rowObject->bind( $_POST )) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			//$mainframe->redirect("index.php?option=$option&task=listObject" );
-			$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listObject', false ));
+			$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listObject'), false ));
 			exit();
 		}
 
@@ -493,7 +493,7 @@ class SITE_object {
 			{
 				$mainframe->enqueueMessage('Error on metadata insert',"ERROR");
 				//$mainframe->redirect("index.php?option=$option&task=listObject" );
-				$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listObject', false ));
+				$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listObject'), false ));
 				exit();
 			}
 		
@@ -509,7 +509,7 @@ class SITE_object {
 			if (!$rowMetadata->store()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 				//$mainframe->redirect("index.php?option=$option&task=listObject" );
-				$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listObject', false ));
+				$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listObject'), false ));
 				exit();
 			}
 			
@@ -517,7 +517,7 @@ class SITE_object {
 			if (!$rowObject->store()) {			
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 				//$mainframe->redirect("index.php?option=$option&task=listObject" );
-				$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listObject', false ));
+				$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listObject'), false ));
 				exit();
 			}
 			// Construire la premi�re version
@@ -537,7 +537,7 @@ class SITE_object {
 			if (!$rowObjectVersion->store(false)) {			
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 				//$mainframe->redirect("index.php?option=$option&task=listObject" );
-				$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listObject', false ));
+				$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listObject'), false ));
 				exit();
 			}
 		}
@@ -546,7 +546,7 @@ class SITE_object {
 			if (!$rowObject->store()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 				//$mainframe->redirect("index.php?option=$option&task=listObject" );
-				$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listObject', false ));
+				$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listObject'), false ));
 				exit();
 			}
 		}
@@ -606,7 +606,7 @@ class SITE_object {
 				if (!$rowManagerObject->delete()) {			
 					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 					//$mainframe->redirect("index.php?option=$option&task=listCodeValue" );
-					//$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listCodeValue', false ));
+					//$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listCodeValue'), false ));
 					//exit();
 				}
 			}
@@ -626,7 +626,7 @@ class SITE_object {
 					if (!$rowManagerObject->store(false)) {			
 						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 						//$mainframe->redirect("index.php?option=$option&task=listCodeValue" );
-						//$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listCodeValue', false ));
+						//$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listCodeValue'), false ));
 						//exit();
 					}
 				}
@@ -655,7 +655,7 @@ class SITE_object {
 				if (!$rowEditorObject->delete()) {			
 					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 					//$mainframe->redirect("index.php?option=$option&task=listCodeValue" );
-					//$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listCodeValue', false ));
+					//$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listCodeValue'), false ));
 					//exit();
 				}
 			}
@@ -676,7 +676,7 @@ class SITE_object {
 					if (!$rowEditorObject->store(false)) {			
 						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 						//$mainframe->redirect("index.php?option=$option&task=listCodeValue" );
-						//$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listCodeValue', false ));
+						//$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listCodeValue'), false ));
 						//exit();
 					}
 				}
@@ -695,7 +695,7 @@ class SITE_object {
 			//$mainframe->enqueueMessage(JText::_("EASYSDI_SELECT_ROW_TO_DELETE"),"error");
 			$mainframe->enqueueMessage("S�lectionnez un enregistrement � supprimer","error");
 			//$mainframe->redirect("index.php?option=$option&task=listObject" );
-			$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listObject', false ));
+			$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listObject'), false ));
 			exit;
 		}
 		foreach( $cid as $id )
@@ -721,7 +721,7 @@ class SITE_object {
 			if ($total <> count($listVersion))
 			{
 				$mainframe->enqueueMessage(JText::_("CATALOG_OBJECT_DELETE_VERSIONSTATE_MSG"),"error");
-				$mainframe->redirect("index.php?option=$option&task=listObject" );
+				$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=listObject" ), false));
 				exit;
 			}
 			
@@ -745,7 +745,7 @@ class SITE_object {
 				if ($metadata->metadatastate_id <> 2 and $metadata->metadatastate_id <> 4)
 				{
 					$mainframe->enqueueMessage(JText::_("CATALOG_OBJECTVERSION_DELETE_PRODUCTEXIST_MSG","error"));
-					$mainframe->redirect(JRoute::_('index.php?option=$option&task=listObject', false) );
+					$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option=$option&task=listObject'), false) );
 					exit;
 				}
 			}
@@ -789,28 +789,28 @@ class SITE_object {
 				if ($deleted <> 1)
 				{
 					$mainframe->enqueueMessage('Error on metadata delete',"ERROR");
-					$mainframe->redirect("index.php?option=$option&task=listProduct" );
+					$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=listProduct"), false));
 					exit();
 				}
 				
 				if (!$metadata->delete()) {
 					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-					$mainframe->redirect("index.php?option=$option&task=listObject" );
+					$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=listObject" ), false));
 				}
 				
 				if (!$objectversion->delete()) {
 					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-					$mainframe->redirect("index.php?option=$option&task=listObject" );
+					$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=listObject" ), false));
 				}
 			}
 			
 			if (!$object->delete()) {
 				$mainframe->enqueueMessage('CATALOG_OBJECT_DELETE_SHOPLINK_MSG',"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=listObject" );
+				$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=listObject" ), false));
 			}
 		}
 
-		$mainframe->redirect("index.php?option=$option&task=listObject" );
+		$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=listObject" ), false));
 	}
 	
 	/**
@@ -830,7 +830,7 @@ class SITE_object {
 			$rowObject->load(JRequest::get('object_id'));
 			$rowObject->checkin();
 		}
-		$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listObject', false ));
+		$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listObject'), false ));
 	}
 	
 	function changeContent( $state = 0 )
@@ -854,7 +854,7 @@ class SITE_object {
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			//$mainframe->redirect("index.php?option=$option&task=listObject" );
-			$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listObject', false ));
+			$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listObject'), false ));
 			exit();
 		}
 
@@ -880,7 +880,7 @@ class SITE_object {
 		
 		$mainframe->enqueueMessage($msg,"SUCCESS");
 		//$mainframe->redirect("index.php?option=$option&task=listObject" );
-		$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listObject', false ));
+		$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listObject'), false ));
 		exit();
 	}
 	
@@ -911,7 +911,7 @@ class SITE_object {
 				if (!$row->store()) {
 					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 					//$mainframe->redirect("index.php?option=$option&task=listObject" );
-					$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listObject', false ));
+					$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listObject'), false ));
 					exit();
 				}
 			}
@@ -922,7 +922,7 @@ class SITE_object {
 
 		$mainframe->enqueueMessage(JText::_('New ordering saved'),"SUCCESS");
 		//$mainframe->redirect("index.php?option=$option&task=listObject" );
-		$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listObject', false ));
+		$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listObject'), false ));
 		exit();
 	}
 	
@@ -946,7 +946,7 @@ class SITE_object {
 		}
 
 		//$mainframe->redirect("index.php?option=$option&task=listObject" );
-		$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listObject', false ));
+		$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listObject'), false ));
 		exit();
 	}
 }

@@ -480,7 +480,7 @@ switch($task){
 			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.displayManager.class.php');
 			
 			
-			ADMIN_objectversion::saveObjectVersionLink($option);
+			SITE_objectversion::saveObjectVersionLink($option);
 			$object_id = JRequest::getVar ('object_id');
 			SITE_objectversion::listObjectVersion($object_id, $option);
 			break;

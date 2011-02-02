@@ -720,6 +720,16 @@ else
 				         id:'objectversion_id', 
 				         xtype: 'hidden',
 				         value:'".$objectversion_id."' 
+				       },
+				       { 
+				         id:'Itemid', 
+				         xtype: 'hidden',
+				         value:'".JRequest::getVar('Itemid')."' 
+				       },
+				       { 
+				         id:'lang', 
+				         xtype: 'hidden',
+				         value:'".JRequest::getVar('lang')."' 
 				       }
 					],
 					buttons: [

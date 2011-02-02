@@ -322,6 +322,7 @@ if ($rowObject->updated)
 	{
 		$database =& JFactory::getDBO(); 
 		$user	=& JFactory::getUser();
+		
 		$app	= &JFactory::getApplication();
 		$router = &$app->getRouter();
 		$router->setVars($_REQUEST);
