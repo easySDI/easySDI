@@ -583,7 +583,7 @@ class HTML_product{
 		</div>
 		<div class="row">
 			<input type="submit" id="save_product" name="save_product" class="submit" value ="<?php echo JText::_("CORE_SAVE"); ?>" onClick="document.getElementById('productForm').task.value='saveProduct';validateForm();"/>
-			<input type="submit" id="back_product" name="back_product" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="window.open('<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=cancelEditProduct'); ?>', '_self');"/>
+			<input type="submit" id="back_product" name="back_product" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="window.open('<?php echo JRoute::_(displayManager::buildUrl('index.php?option=com_easysdi_shop&task=cancelEditProduct')); ?>', '_self');"/>
 		 </div>
 		<script>
 		function validateForm()
@@ -721,11 +721,11 @@ class HTML_product{
 			else
 			{
 				?>
-				<div title="<?php echo JText::_('SHOP_ACTION_EDIT_PRODUCT'); ?>" id="editProduct" onClick="window.open('<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=editProduct&id='.$row->id.'&limitstart='.JRequest::getVar("limitstart").'&limit='.JRequest::getVar("limit")); ?>', '_self');"></div>
+				<div title="<?php echo JText::_('SHOP_ACTION_EDIT_PRODUCT'); ?>" id="editProduct" onClick="window.open('<?php echo JRoute::_(displayManager::buildUrl('index.php?option=com_easysdi_shop&task=editProduct&id='.$row->id.'&limitstart='.JRequest::getVar("limitstart").'&limit='.JRequest::getVar("limit"))); ?>', '_self');"></div>
 				<?php
 			}
 			?>
-			<div title="<?php echo JText::_('SHOP_ACTION_DELETE_PRODUCT'); ?>" id="deleteProduct" onClick="return suppressProduct_click('<?php echo JRoute::_('index.php?option=com_easysdi_shop&task=suppressProduct&limitstart='.JRequest::getVar("limitstart").'&limit='.JRequest::getVar("limit").'&publishedobject=product&cid[]='.$row->id); ?>');" ></div>
+			<div title="<?php echo JText::_('SHOP_ACTION_DELETE_PRODUCT'); ?>" id="deleteProduct" onClick="return suppressProduct_click('<?php echo JRoute::_(displayManager::buildUrl('index.php?option=com_easysdi_shop&task=suppressProduct&limitstart='.JRequest::getVar("limitstart").'&limit='.JRequest::getVar("limit").'&publishedobject=product&cid[]='.$row->id)); ?>');" ></div>
 			</td>
 			</tr>
 			<?php		

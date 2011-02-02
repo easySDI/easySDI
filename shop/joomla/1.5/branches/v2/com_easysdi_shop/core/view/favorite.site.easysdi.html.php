@@ -54,7 +54,7 @@ class HTML_favorite{
 		 		}
 		 	</script>
 			
-			<form name="orderForm" id="orderForm" action='<?php echo JRoute::_("index.php") ?>' method='POST'>
+			<form name="orderForm" id="orderForm" action='<?php echo JRoute::_(displayManager::buildUrl("index.php")) ?>' method='POST'>
 
 				<?php $pageNav = new JPagination($total,$limitstart,$limit); ?>
 				<br/>
