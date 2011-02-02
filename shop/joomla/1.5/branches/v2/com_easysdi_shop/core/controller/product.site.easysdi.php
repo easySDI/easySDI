@@ -50,7 +50,7 @@ class SITE_product {
 		if (!$product->bind( $_POST )) {			
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			//$mainframe->redirect("index.php?option=$option&task=listProduct" );
-			$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listProduct', false ));
+			$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listProduct'), false ));
 			exit();
 		}
 		
@@ -66,7 +66,7 @@ class SITE_product {
 		if (!$product->store()) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			//$mainframe->redirect("index.php?option=$option&task=listProduct" );
-			$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listProduct', false ));
+			$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listProduct'), false ));
 			exit();
 		}
 		
@@ -74,7 +74,7 @@ class SITE_product {
 		if(!$product_perimeter->delete($product->id)){
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			//$mainframe->redirect("index.php?option=$option&task=listProduct" );
-			$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listProduct', false ));
+			$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listProduct'), false ));
 			exit();
 		}
 
@@ -86,7 +86,7 @@ class SITE_product {
 			if(!$product_perimeter->store()){
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 				//$mainframe->redirect("index.php?option=$option&task=listProduct" );
-				$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listProduct', false ));
+				$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listProduct'), false ));
 				exit();
 			}
 		}
@@ -97,14 +97,14 @@ class SITE_product {
 			if(!$product_perimeter->loadById($product->id,$bufferPerimeterId)){
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 				//$mainframe->redirect("index.php?option=$option&task=listProduct" );
-				$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listProduct', false ));
+				$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listProduct'), false ));
 				exit();
 			}
 			$product_perimeter->buffer = 1;
 			if(!$product_perimeter->store()){
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 				//$mainframe->redirect("index.php?option=$option&task=listProduct" );
-				$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listProduct', false ));
+				$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listProduct'), false ));
 				exit();
 			}
 		}
@@ -113,7 +113,7 @@ class SITE_product {
 		if(!$product_property->delete($product->id)){
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			//$mainframe->redirect("index.php?option=$option&task=listProduct" );
-			$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listProduct', false ));
+			$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listProduct'), false ));
 			exit();
 		}
 
@@ -126,7 +126,7 @@ class SITE_product {
 			if(!$product_property->store()){
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 				//$mainframe->redirect("index.php?option=$option&task=listProduct" );
-				$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listProduct', false ));
+				$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listProduct'), false ));
 				exit();
 			}
 		}
@@ -159,7 +159,7 @@ class SITE_product {
 			$limitstart = JRequest::getVar("limitstart");
 			$limit = JRequest::getVar("limit");
 			//$mainframe->redirect("index.php?option=$option&task=listProduct&limitstart=$limitstart&limit=$limit" );
-			$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listProduct&limitstart='.$limitstart.'&limit='.$limit, false ));
+			$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listProduct&limitstart='.$limitstart.'&limit='.$limit), false ));
 		}	
 	}
 	
@@ -520,7 +520,7 @@ class SITE_product {
 		$product->checkin();
 
 		//$mainframe->redirect("index.php?option=$option&task=listProduct" );
-		$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listProduct', false ));
+		$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listProduct'), false ));
 	}
 }
 ?>

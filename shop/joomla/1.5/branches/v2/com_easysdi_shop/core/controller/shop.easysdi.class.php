@@ -95,7 +95,7 @@ class SITE_shop {
 		}
 		$mainframe->setUserState('productList',$newProductList);
 		if(count($newProductList)!= 0)
-			$mainframe->redirect("index.php?option=$option&view=shop&Itemid=$itemId&step=$step&lang=$lang");
+			$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&view=shop&Itemid=$itemId&step=$step&lang=$lang"), false));
 	}
 
 	function orderPerimeter ($cid)

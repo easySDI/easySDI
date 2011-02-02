@@ -277,7 +277,7 @@ class SITE_cpanel {
 		$queryURL = "SELECT id FROM #__menu WHERE link = 'index.php?option=com_easysdi_shop&view=shop' ";
 		$database->setQuery($queryURL);
 		$redirectURL = $database->loadResult();
-		$mainframe->redirect("index.php?option=$option&view=shop&Itemid=$redirectURL&step=5" );
+		$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&view=shop&Itemid=$redirectURL&step=5"), false));
 	}
 	
 	function suppressOrder(){
@@ -778,7 +778,7 @@ class SITE_cpanel {
 		if($product_list_id == 0)
 		{
 			$mainframe->enqueueMessage(JText::_("SHOP_ORDER_MESSAGE_NO_SELECTION"),'info');						
-			$mainframe->redirect("index.php?option=$option&task=listOrdersForProvider" );
+			$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=listOrdersForProvider"), false));
 			exit();
 		}
 		$queryOrder = "SELECT * FROM #__sdi_order_product WHERE id = $product_list_id";
