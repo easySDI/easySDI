@@ -1,6 +1,7 @@
-package org.easysdi.proxy.wmts;
+package org.easysdi.proxy.wmts.v100;
 
 import java.util.Arrays;
+import org.easysdi.proxy.wmts.*;
 
 public class WMTS100ProxyServlet extends WMTSProxyServlet{
 

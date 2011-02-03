@@ -1,4 +1,4 @@
-package org.easysdi.proxy.wmts;
+package org.easysdi.proxy.wmts.v100;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -11,7 +11,7 @@ import java.util.Vector;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.DocumentBuilderFactory;
-
+import org.easysdi.proxy.wmts.*;
 import org.easysdi.proxy.core.ProxyServlet;
 import org.easysdi.proxy.policy.Layer;
 import org.easysdi.proxy.policy.Server;
@@ -19,13 +19,6 @@ import org.easysdi.proxy.wms.WMSProxyCapabilitiesLayerFilter;
 import org.jdom.Namespace;
 import org.jdom.filter.Filter;
 import org.jdom.input.SAXBuilder;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.bootstrap.DOMImplementationRegistry;
-import org.w3c.dom.ls.DOMImplementationLS;
-import org.w3c.dom.ls.LSOutput;
-import org.w3c.dom.ls.LSSerializer;
 
 public class WMTS100ProxyXSLTBuilder extends WMTSProxyXSLTBuilder{
 
@@ -142,58 +135,59 @@ public class WMTS100ProxyXSLTBuilder extends WMTSProxyXSLTBuilder{
 			return null;
 
 		try {
-			File fMaster = tempFileCapa.get(0);
-			DocumentBuilderFactory db = DocumentBuilderFactory.newInstance();
-			db.setNamespaceAware(false);
-			Document documentMaster = db.newDocumentBuilder().parse(fMaster);
-			DOMImplementationLS implLS = null;
-			if (documentMaster.getImplementation().hasFeature("LS", "3.0")) {
-				implLS = (DOMImplementationLS) documentMaster.getImplementation();
-			} else {
-				DOMImplementationRegistry enregistreur = DOMImplementationRegistry.newInstance();
-				implLS = (DOMImplementationLS) enregistreur.getDOMImplementation("LS 3.0");
-			}
-			if (implLS == null) {
-				servlet.dump("Error", "DOM Load and Save not Supported. Multiple server is not allowed");
-				ByteArrayOutputStream out = new ByteArrayOutputStream();
-				FileInputStream reader = new FileInputStream(fMaster);
-				byte[] data = new byte[reader.available()];
-				reader.read(data, 0, reader.available());
-				out.write(data);
-				reader.close();
-				return out;
-			}
-
-			for (int i = 1; i < tempFileCapa.size(); i++) {
-				Document documentChild = null;
-				try {
-					documentChild = db.newDocumentBuilder().parse(tempFileCapa.get(i));
-				} catch (Exception e) {
-					e.printStackTrace();
-					servlet.dump("ERROR", e.getMessage());
-				}
-				if (documentChild != null) {
-					NodeList nl = documentChild.getElementsByTagNameNS("http://www.opengis.net/wmts/1.0","Layer");
-					NodeList nlMaster = documentMaster.getElementsByTagNameNS("http://www.opengis.net/wmts/1.0","Layer");
-					Node ItemMaster = nlMaster.item(0);
-					if (nl.item(0) != null)
-						ItemMaster.insertBefore(documentMaster.importNode(nl.item(0).cloneNode(true), true), null);
-					
-					NodeList nM = documentChild.getElementsByTagNameNS("http://www.opengis.net/wmts/1.0","TileMatrixSet");
-					NodeList nMMaster = documentMaster.getElementsByTagNameNS("http://www.opengis.net/wmts/1.0","TileMatrixSet");
-					Node ItemMMaster = nMMaster.item(0);
-					if (nM.item(0) != null)
-						ItemMMaster.insertBefore(documentMaster.importNode(nM.item(0).cloneNode(true), true), null);
-				}
-			}
-
-			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			LSSerializer serialiseur = implLS.createLSSerializer();
-			LSOutput sortie = implLS.createLSOutput();
-			sortie.setEncoding("UTF-8");
-			sortie.setByteStream(out);
-			serialiseur.write(documentMaster, sortie);
-			return out;
+//			File fMaster = tempFileCapa.get(0);
+//			DocumentBuilderFactory db = DocumentBuilderFactory.newInstance();
+//			db.setNamespaceAware(false);
+//			Document documentMaster = db.newDocumentBuilder().parse(fMaster);
+//			DOMImplementationLS implLS = null;
+//			if (documentMaster.getImplementation().hasFeature("LS", "3.0")) {
+//				implLS = (DOMImplementationLS) documentMaster.getImplementation();
+//			} else {
+//				DOMImplementationRegistry enregistreur = DOMImplementationRegistry.newInstance();
+//				implLS = (DOMImplementationLS) enregistreur.getDOMImplementation("LS 3.0");
+//			}
+//			if (implLS == null) {
+//				servlet.dump("Error", "DOM Load and Save not Supported. Multiple server is not allowed");
+//				ByteArrayOutputStream out = new ByteArrayOutputStream();
+//				FileInputStream reader = new FileInputStream(fMaster);
+//				byte[] data = new byte[reader.available()];
+//				reader.read(data, 0, reader.available());
+//				out.write(data);
+//				reader.close();
+//				return out;
+//			}
+//
+//			for (int i = 1; i < tempFileCapa.size(); i++) {
+//				Document documentChild = null;
+//				try {
+//					documentChild = db.newDocumentBuilder().parse(tempFileCapa.get(i));
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//					servlet.dump("ERROR", e.getMessage());
+//				}
+//				if (documentChild != null) {
+//					NodeList nl = documentChild.getElementsByTagNameNS("http://www.opengis.net/wmts/1.0","Layer");
+//					NodeList nlMaster = documentMaster.getElementsByTagNameNS("http://www.opengis.net/wmts/1.0","Layer");
+//					Node ItemMaster = nlMaster.item(0);
+//					if (nl.item(0) != null)
+//						ItemMaster.insertBefore(documentMaster.importNode(nl.item(0).cloneNode(true), true), null);
+//					
+//					NodeList nM = documentChild.getElementsByTagNameNS("http://www.opengis.net/wmts/1.0","TileMatrixSet");
+//					NodeList nMMaster = documentMaster.getElementsByTagNameNS("http://www.opengis.net/wmts/1.0","TileMatrixSet");
+//					Node ItemMMaster = nMMaster.item(0);
+//					if (nM.item(0) != null)
+//						ItemMMaster.insertBefore(documentMaster.importNode(nM.item(0).cloneNode(true), true), null);
+//				}
+//			}
+//
+//			ByteArrayOutputStream out = new ByteArrayOutputStream();
+//			LSSerializer serialiseur = implLS.createLSSerializer();
+//			LSOutput sortie = implLS.createLSOutput();
+//			sortie.setEncoding("UTF-8");
+//			sortie.setByteStream(out);
+//			serialiseur.write(documentMaster, sortie);
+//			return out;
+			return null;
 		} catch (Exception e) {
 			resp.setHeader("easysdi-proxy-error-occured", "true");
 			e.printStackTrace();

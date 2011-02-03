@@ -16,7 +16,6 @@
  */
 package org.easysdi.proxy.wmts;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -342,22 +341,39 @@ public class WMTSProxyServlet extends ProxyServlet{
 			ByteArrayOutputStream tempOut = new ByteArrayOutputStream(); 
 			
 			if ("GetCapabilities".equalsIgnoreCase(operation)) {
-				dump("INFO","transform - Start - Capabilities filtering");
-				if(!docBuilder.CapabilitiesFiltering(wmtsFilePathList))
+				dump("INFO","transform - Start - Capabilities operations filtering");
+				if(!docBuilder.CapabilitiesOperationFiltering(wmtsFilePathList, getServletUrl(req)))
 				{
 					//Something went wrong
-					sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in Capabilities filtering. Exception : "+docBuilder.getLastException().toString(),"NoApplicableCode","",requestedVersion));
+					sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in Capabilities operations filtering. Exception : "+docBuilder.getLastException().toString(),"NoApplicableCode","",requestedVersion));
 					return;
 				}
-				dump("INFO","transform - End - Capabilities filtering");
+				dump("INFO","transform - End - Capabilities operations filtering");
+				dump("INFO","transform - Start - Capabilities layers filtering");
+				if(!docBuilder.CapabilitiesLayerFiltering(wmtsFilePathList))
+				{
+					//Something went wrong
+					sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in Capabilities layers filtering. Exception : "+docBuilder.getLastException().toString(),"NoApplicableCode","",requestedVersion));
+					return;
+				}
+				dump("INFO","transform - End - Capabilities layers filtering");
 				dump("INFO","transform - Start - Capabilities merging");
-				if(!docBuilder.mergeCapabilities(wmtsFilePathList))
+				if(!docBuilder.CapabilitiesMerging(wmtsFilePathList))
 				{
 					//Something went wrong
 					sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in Capabilities merging. Exception : "+docBuilder.getLastException().toString(),"NoApplicableCode","",requestedVersion));
 					return;
 				}
 				dump("INFO","transform - End - Capabilities merging");
+				
+				dump("INFO","transform - Start - Capabilities metadata writing");
+				if(!docBuilder.CapabilitiesMetadataWriting(wmtsFilePathList))
+				{
+					//Something went wrong
+					sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in Capabilities metadata writing. Exception : "+docBuilder.getLastException().toString(),"NoApplicableCode","",requestedVersion));
+					return;
+				}
+				dump("INFO","transform - End - Capabilities metadata writing");
 				
 				
 				FileInputStream reader = new FileInputStream(new File(wmtsFilePathList.get(0).toArray(new String[1])[0]));

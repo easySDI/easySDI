@@ -1,26 +1,13 @@
-package org.easysdi.proxy.wmts;
+package org.easysdi.proxy.wmts.v100;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-
-import javax.naming.NameParser;
-import javax.servlet.http.HttpServletResponse;
-import javax.xml.parsers.DocumentBuilderFactory;
-
 import org.easysdi.proxy.core.ProxyServlet;
-import org.easysdi.proxy.csw.CSWProxyGetRequestHandler;
-import org.easysdi.proxy.csw.CSWProxyMetadataContentFilter;
-import org.easysdi.proxy.csw.CSWProxyMetadataExceptionFilter;
-import org.easysdi.proxy.policy.Server;
-import org.jdom.Attribute;
+import org.easysdi.proxy.wmts.*;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.Namespace;
@@ -29,13 +16,6 @@ import org.jdom.filter.Filter;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.bootstrap.DOMImplementationRegistry;
-import org.w3c.dom.ls.DOMImplementationLS;
-import org.w3c.dom.ls.LSOutput;
-import org.w3c.dom.ls.LSSerializer;
-
 import com.google.common.collect.Multimap;
 
 public class WMTS100ProxyDocumentBuilder extends WMTSProxyDocumentBuilder {
@@ -47,11 +27,9 @@ public class WMTS100ProxyDocumentBuilder extends WMTSProxyDocumentBuilder {
 		super(proxyServlet);
 	}
 	
-	public Boolean CapabilitiesFiltering (Multimap<Integer, String> filePathList ){
-		
-	    try
-	    {
-	    	SAXBuilder sxb = new SAXBuilder();
+	public Boolean CapabilitiesOperationFiltering (Multimap<Integer, String> filePathList, String href ){
+		try{
+			SAXBuilder sxb = new SAXBuilder();
 	    	//Retrieve allowed and denied operations from the policy
 			List<String> permitedOperations = new Vector<String>();
 			List<String> deniedOperations = new Vector<String>();
@@ -68,9 +46,80 @@ public class WMTS100ProxyDocumentBuilder extends WMTSProxyDocumentBuilder {
 					servlet.dump("INFO",ProxyServlet.ServiceOperations.get(i) + " is denied");
 				}
 			}
+				
+			String filePath = filePathList.get(0).toArray(new String[1])[0];
+	    	Document  docParent = sxb.build(new File(filePath));
+	    	Element racine = docParent.getRootElement();
+	      
+	    	//get the namespace
+	    	nsWMTS = racine.getNamespace();
+	    	List lns = racine.getAdditionalNamespaces();
+	    	Iterator ilns = lns.iterator();
+	    	while (ilns.hasNext())
+	    	{
+	    		Namespace ns = (Namespace)ilns.next();
+	    		if(ns.getPrefix().equalsIgnoreCase("ows"))
+	    			nsOWS = ns;
+	    	}
+	    	
+	    	
+	    	//We can not modify Elements while we loop over them with an iterator.
+	    	//We have to use a separate List storing the Elements we want to modify.
+	    	
+	    	//Operation filtering
+	    	Filter operationFilter = new WMTSProxyCapabilitiesOperationFilter();
+	    	Filter xlinkFilter = new WMTSProxyCapabilitiesXlinkFilter();
+	    	List<Element> operationList = new ArrayList<Element>();	    	  
+	    	Iterator iOperation= racine.getDescendants(operationFilter);
+	    	while(iOperation.hasNext())
+	    	{
+	    	   Element courant = (Element)iOperation.next();
+	    	   operationList.add(courant);
+	    	}
+	    	//Modification of the selected Elements
+	    	Iterator iLOperation = operationList.iterator();
+	    	while (iLOperation.hasNext())
+	    	{
+	    		Element child = (Element)iLOperation.next();
+	    		if (deniedOperations.contains(child.getAttribute("name").getValue()))
+				{
+	    				Parent parent = child.getParent();
+	    				parent.removeContent (child);
+				}
+	    		else
+	    		{
+	    			Iterator iXlink = child.getDescendants(xlinkFilter);
+	    			List<Element> xlinkList = new ArrayList<Element>();	  
+	    			while (iXlink.hasNext())
+	    			{
+	    				Element courant = (Element)iXlink.next();
+	    				xlinkList.add(courant);
+	    			}
+	    			Iterator ilXlink = xlinkList.iterator();
+	    			while(ilXlink.hasNext())
+	    			{
+	    				Element toUpdate = (Element)ilXlink.next();
+	    				toUpdate.setAttribute("href", href, nsOWS);
+	    			}
+	    		}
+	    	}
+	    	
+    	   XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
+           sortie.output(docParent, new FileOutputStream(filePath));
 			
-			
-			for (int iFilePath = 0; iFilePath < filePathList.size(); iFilePath++) {
+           return true;
+		}
+		catch (Exception ex){
+			setLastException(ex);
+			return false;
+		}
+	}
+	public Boolean CapabilitiesLayerFiltering (Multimap<Integer, String> filePathList ){
+		
+	    try
+	    {
+	    	SAXBuilder sxb = new SAXBuilder();
+	    	for (int iFilePath = 0; iFilePath < filePathList.size(); iFilePath++) {
 			
 				String filePath = filePathList.get(iFilePath).toArray(new String[1])[0];
 		    	Document  docParent = sxb.build(new File(filePath));
@@ -87,31 +136,6 @@ public class WMTS100ProxyDocumentBuilder extends WMTSProxyDocumentBuilder {
 		    			nsOWS = ns;
 		    	}
 		    	
-		    	
-		    	//We can not modify Elements while we loop over them with an iterator.
-		    	//We have to use a separate List storing the Elements we want to modify.
-		    	
-		    	//Operation filtering
-		    	Filter operationFilter = new WMTSProxyCapabilitiesOperationFilter();
-		    	List<Element> operationList = new ArrayList<Element>();	    	  
-		    	Iterator iOperation= racine.getDescendants(operationFilter);
-		    	while(iOperation.hasNext())
-		    	{
-		    	   Element courant = (Element)iOperation.next();
-		    	   operationList.add(courant);
-		    	}
-		    	//Modification of the selected Elements
-		    	Iterator iLOperation = operationList.iterator();
-		    	while (iLOperation.hasNext())
-		    	{
-		    		Element child = (Element)iLOperation.next();
-		    		if (deniedOperations.contains(child.getAttribute("name").getValue()))
-					{
-		    				Parent parent = child.getParent();
-		    				parent.removeContent (child);
-					}
-		    	}
-	
 		    	//Layer filtering
 		    	Filter layerFilter = new WMTSProxyCapabilitiesLayerFilter();
 		    	List<Element> layerList = new ArrayList<Element>();	    	  
@@ -159,7 +183,7 @@ public class WMTS100ProxyDocumentBuilder extends WMTSProxyDocumentBuilder {
 		}
 	}
 	
-	public Boolean mergeCapabilities(Multimap<Integer, String> filePathList)
+	public Boolean CapabilitiesMerging(Multimap<Integer, String> filePathList)
 	{
 		if (filePathList.size() == 0)
 		{
@@ -184,6 +208,8 @@ public class WMTS100ProxyDocumentBuilder extends WMTSProxyDocumentBuilder {
 					Element racineChild = documentChild.getRootElement();
 					nsWMTS = racineChild.getNamespace();
 					Element contentsChild = racineChild.getChild("Contents", nsWMTS);
+//					List layers = contentsChild.getChildren("Layer", nsWMTS);
+//					List matrix = contentsChild.getChildren("TileMatrixSet", nsWMTS);
 			    	contentsMaster.addContent(contentsChild.cloneContent());
 				}
 			}
@@ -197,4 +223,20 @@ public class WMTS100ProxyDocumentBuilder extends WMTSProxyDocumentBuilder {
 			return false;
 		}
 	}
+	
+	public Boolean CapabilitiesMetadataWriting(Multimap<Integer, String> filePathList)
+	{
+		try
+		{
+			SAXBuilder sxb = new SAXBuilder();
+			Document document = sxb.build(new File(filePathList.get(0).toArray(new String[1])[0]));
+			
+			return true;
+		}
+		catch (Exception ex)
+		{
+			return false;
+		}
+	}
+	
 }

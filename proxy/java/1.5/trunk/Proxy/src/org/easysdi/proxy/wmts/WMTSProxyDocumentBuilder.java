@@ -22,6 +22,8 @@ public abstract class WMTSProxyDocumentBuilder {
 		return lastException;
 	}
 	
-	public abstract Boolean CapabilitiesFiltering (Multimap<Integer, String> filePathList);
-	public abstract Boolean mergeCapabilities(Multimap<Integer, String> filePathList);
+	public abstract Boolean CapabilitiesOperationFiltering (Multimap<Integer, String> filePathList, String href );
+	public abstract Boolean CapabilitiesLayerFiltering (Multimap<Integer, String> filePathList);
+	public abstract Boolean CapabilitiesMerging(Multimap<Integer, String> filePathList);
+	public abstract Boolean CapabilitiesMetadataWriting(Multimap<Integer, String> filePathList);
 }
