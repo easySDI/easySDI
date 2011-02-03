@@ -80,7 +80,7 @@ public class WMTSProxyServlet extends ProxyServlet{
 	/**
 	 * 
 	 */
-	protected WMTSProxyDocumentBuilder docBuilder; 
+	protected WMTSProxyResponseBuilder docBuilder; 
 	
 	public WMTSProxyServlet() {
 		super();
@@ -367,7 +367,7 @@ public class WMTSProxyServlet extends ProxyServlet{
 				dump("INFO","transform - End - Capabilities merging");
 				
 				dump("INFO","transform - Start - Capabilities metadata writing");
-				if(!docBuilder.CapabilitiesMetadataWriting(wmtsFilePathList))
+				if(!docBuilder.CapabilitiesServiceMetadataWriting(wmtsFilePathList))
 				{
 					//Something went wrong
 					sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in Capabilities metadata writing. Exception : "+docBuilder.getLastException().toString(),"NoApplicableCode","",requestedVersion));

@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Vector;
 import org.easysdi.proxy.core.ProxyServlet;
 import org.easysdi.proxy.wmts.*;
+import org.easysdi.xml.documents.Config;
+import org.easysdi.xml.documents.ServiceContactAdressInfo;
+import org.easysdi.xml.documents.ServiceContactInfo;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.Namespace;
@@ -18,13 +21,12 @@ import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import com.google.common.collect.Multimap;
 
-public class WMTS100ProxyDocumentBuilder extends WMTSProxyDocumentBuilder {
+public class WMTS100ProxyResponseBuilder extends WMTSProxyResponseBuilder {
 
-	private Namespace nsOWS = Namespace.getNamespace("http://www.opengis.net/ows/1.1");
-	private Namespace nsWMTS = Namespace.getNamespace("http://www.opengis.net/wmts/1.0");
-	
-	public WMTS100ProxyDocumentBuilder(WMTSProxyServlet proxyServlet) {
+	public WMTS100ProxyResponseBuilder(WMTSProxyServlet proxyServlet) {
 		super(proxyServlet);
+		nsOWS = Namespace.getNamespace("http://www.opengis.net/ows/1.1");
+		nsWMTS = Namespace.getNamespace("http://www.opengis.net/wmts/1.0");
 	}
 	
 	public Boolean CapabilitiesOperationFiltering (Multimap<Integer, String> filePathList, String href ){
@@ -99,7 +101,7 @@ public class WMTS100ProxyDocumentBuilder extends WMTSProxyDocumentBuilder {
 	    			while(ilXlink.hasNext())
 	    			{
 	    				Element toUpdate = (Element)ilXlink.next();
-	    				toUpdate.setAttribute("href", href, nsOWS);
+	    				toUpdate.setAttribute("href", href, nsXLINK);
 	    			}
 	    		}
 	    	}
@@ -224,13 +226,69 @@ public class WMTS100ProxyDocumentBuilder extends WMTSProxyDocumentBuilder {
 		}
 	}
 	
-	public Boolean CapabilitiesMetadataWriting(Multimap<Integer, String> filePathList)
+	public Boolean CapabilitiesServiceMetadataWriting(Multimap<Integer, String> filePathList)
 	{
 		try
 		{
+			Config config = servlet.getConfiguration();
+			ServiceContactInfo serviceContactInfo = config.getContactInfo();
+			
 			SAXBuilder sxb = new SAXBuilder();
 			Document document = sxb.build(new File(filePathList.get(0).toArray(new String[1])[0]));
+			Element racine = document.getRootElement();
+			racine.removeContent(racine.getChild("ServiceIdentification", nsOWS));
 			
+			Element newServiceIdentification = new Element("ServiceIdentification", nsOWS);
+			
+			if(config.getTitle() != null && config.getTitle().length() != 0)
+				newServiceIdentification.addContent((new Element("Title", nsOWS)).setText(config.getTitle()));
+			
+			if(config.getAbst() != null && config.getAbst().length() != 0)
+				newServiceIdentification.addContent((new Element("Abstract", nsOWS)).setText(config.getAbst()));
+			
+			if(config.getKeywordList() != null && config.getKeywordList().size() != 0)
+			{
+				Element keywords = new Element("Keywords", nsOWS);
+				Iterator<String> iKeywords = config.getKeywordList().iterator();
+				while (iKeywords.hasNext())
+				{
+					keywords.addContent((new Element("Keyword", nsOWS)).setText(iKeywords.next()));
+				}
+				newServiceIdentification.addContent(keywords);
+			}
+			
+			newServiceIdentification.addContent((new Element("ServiceType", nsOWS)).setText("OGC WMTS"));
+			newServiceIdentification.addContent((new Element("ServiceTypeVersion", nsOWS)).setText("1.0.0"));
+			
+			if(config.getFees() != null && config.getFees().length() != 0)
+				newServiceIdentification.addContent((new Element("Fees", nsOWS)).setText(config.getFees()));
+			
+			if(config.getAccessConstraints() != null && config.getAccessConstraints().length() != 0)
+				newServiceIdentification.addContent((new Element("AccessConstraints", nsOWS)).setText(config.getAccessConstraints()));
+			
+			racine.addContent( 0, newServiceIdentification);
+			if(serviceContactInfo != null && !serviceContactInfo.isEmpty())
+			{	
+				Element newServiceProvider = new Element("ServiceProvider", nsOWS);
+				if(serviceContactInfo.getOrganization() != null && serviceContactInfo.getOrganization().length() != 0)
+					newServiceIdentification.addContent((new Element("ProviderName", nsOWS)).setText(serviceContactInfo.getOrganization()));
+				if(serviceContactInfo.getLinkage() != null && serviceContactInfo.getLinkage().length() != 0)
+				{
+					Element site = new Element("ProviderSite", nsOWS);
+					site.setAttribute("href", serviceContactInfo.getLinkage(),nsXLINK);
+					newServiceIdentification.addContent(site);
+				}
+				
+				ServiceContactAdressInfo  serviceContactAddressInfo = serviceContactInfo.getContactAddress();
+				if(!serviceContactAddressInfo.isEmpty() && serviceContactInfo.getVoicePhone() != null && serviceContactInfo.getVoicePhone().length() != 0 && serviceContactInfo.getFacSimile() != null && serviceContactInfo.getFacSimile().length() != 0)
+				{
+					Element newProvider = new Element("ServiceProvider", nsOWS);
+				}
+				racine.addContent( 1, newServiceProvider);
+			}
+			XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
+	        sortie.output(document, new FileOutputStream(filePathList.get(0).toArray(new String[1])[0]));
+
 			return true;
 		}
 		catch (Exception ex)

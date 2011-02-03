@@ -9,6 +9,7 @@ package org.easysdi.proxy.policy;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -86,6 +87,21 @@ public class Servers implements Serializable {
 			server = new ArrayList<Server>();
 		}
 		return this.server;
+	}
+	
+	public Server getServerByUrl (String url){
+		if (server == null || url == null)
+			return null;
+		Iterator<Server> i = server.iterator();
+		while (i.hasNext())
+		{
+			Server s = i.next();
+			if (url.equals(s.getUrl()))
+			{
+				return s;
+			}
+		}
+		return null;
 	}
 
 	/**

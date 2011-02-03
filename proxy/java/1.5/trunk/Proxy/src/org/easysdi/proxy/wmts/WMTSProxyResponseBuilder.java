@@ -1,15 +1,19 @@
 package org.easysdi.proxy.wmts;
 
 import org.easysdi.proxy.core.ProxyServlet;
+import org.jdom.Namespace;
 
 import com.google.common.collect.Multimap;
 
-public abstract class WMTSProxyDocumentBuilder {
+public abstract class WMTSProxyResponseBuilder {
 
 	protected ProxyServlet servlet; 
-	private Exception lastException;
+	protected Exception lastException;
+	protected Namespace nsOWS ;
+	protected Namespace nsWMTS;
+	protected Namespace nsXLINK = Namespace.getNamespace("http://www.w3.org/1999/xlink");
 	
-	public WMTSProxyDocumentBuilder(ProxyServlet proxyServlet) {
+	public WMTSProxyResponseBuilder(ProxyServlet proxyServlet) {
 		super();
 		servlet = proxyServlet;
 	}
@@ -25,5 +29,5 @@ public abstract class WMTSProxyDocumentBuilder {
 	public abstract Boolean CapabilitiesOperationFiltering (Multimap<Integer, String> filePathList, String href );
 	public abstract Boolean CapabilitiesLayerFiltering (Multimap<Integer, String> filePathList);
 	public abstract Boolean CapabilitiesMerging(Multimap<Integer, String> filePathList);
-	public abstract Boolean CapabilitiesMetadataWriting(Multimap<Integer, String> filePathList);
+	public abstract Boolean CapabilitiesServiceMetadataWriting(Multimap<Integer, String> filePathList);
 }
