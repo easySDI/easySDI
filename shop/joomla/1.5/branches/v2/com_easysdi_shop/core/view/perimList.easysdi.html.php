@@ -29,10 +29,10 @@ class SITE_listPerim {
 			var wkt = new OpenLayers.Format.Text();
 	                var collection = wkt.read(perimeterVal);
 			if(!collection) {
-				alert("<?php echo JText::_('EASYSDI_SHOP_LOAD_PERIMETER_FROM_LIST_BAD_FORMAT'); ?>");
+				alert("<?php echo JText::_('SHOP_PERIMETER_LOAD_PERIMETER_FROM_LIST_BAD_FORMAT'); ?>");
 				return false;
 			}else if(!collection.length || collection.length==0){
-				alert("<?php echo JText::_('EASYSDI_SHOP_LOAD_PERIMETER_FROM_LIST_EMPTY_COLLECTION'); ?>");
+				alert("<?php echo JText::_('SHOP_PERIMETER_LOAD_PERIMETER_FROM_LIST_EMPTY_COLLECTION'); ?>");
 				return false;
 			}
 
@@ -40,7 +40,7 @@ class SITE_listPerim {
 		}
 		</script>
 		<div id="metadata" class="contentin">
-			<h2 class="contentheading"><?php echo JText::_('EASYSDI_SHOP_LOAD_PERIMETER_FROM_LIST_TITLE'); ?></h2>
+			<h2 class="contentheading"><?php echo JText::_('SHOP_PERIMETER_LOAD_PERIMETER_FROM_LIST_TITLE'); ?></h2>
 				<table width="100%">
 				  <tr>
 				    <td>&nbsp;</td>
@@ -49,9 +49,9 @@ class SITE_listPerim {
 				    <td valign="top">
 				      <FORM ACTION="index.php" METHOD="POST" target="_parent">
 				        <fieldset>
-				        <legend><?php echo JText::_('EASYSDI_SHOP_LOAD_PERIMETER_FROM_LIST_COMMENT');?></legend>
+				        <legend><?php echo JText::_('SHOP_PERIMETER_LOAD_PERIMETER_FROM_LIST_COMMENT');?></legend>
 					<TEXTAREA ID="perimeterContent" NAME="perimeterContent" COLS=30 ROWS=16></TEXTAREA><BR/>
-					<button onclick="return ValidateFrmt();" type="submit"><?php echo JText::_("EASYSDI_SHOP_LOAD_PERIMETER_FROM_LIST_SEND_BTN"); ?></button>
+					<button onclick="return ValidateFrmt();" type="submit"><?php echo JText::_("SHOP_PERIMETER_LOAD_PERIMETER_FROM_LIST_SEND_BTN"); ?></button>
 					<input type="hidden" name="option" value="com_easysdi_shop"/>
 					<input type="hidden" name="step" value="2"/>
 					<input type="hidden" name="task" value="redirectFromListForPerim"/>
@@ -62,15 +62,15 @@ class SITE_listPerim {
 				    </td>
 				    <td valign="top">
 				      <fieldset>
-				      <legend><?php echo JText::_('EASYSDI_SHOP_LOAD_PERIMETER_FROM_LIST_EXAMPLE');?></legend>
-				      <p><?php echo JText::_('EASYSDI_SHOP_LOAD_PERIMETER_FROM_LIST_EXAMPLE_HEADER'); ?><BR/></p>
+				      <legend><?php echo JText::_('SHOP_PERIMETER_LOAD_PERIMETER_FROM_LIST_EXAMPLE');?></legend>
+				      <p><?php echo JText::_('SHOP_PERIMETER_LOAD_PERIMETER_FROM_LIST_EXAMPLE_HEADER'); ?><BR/></p>
 				      <p align="center"><img style="border: 1px solid" src="components/com_easysdi_shop/img/ex_load_perim_csv.png" width="188" height="159"/></p>
 				      <BR/>
 				      <p>
 				      <ul>
-				        <li><?php echo JText::_('EASYSDI_SHOP_LOAD_PERIMETER_FROM_LIST_EXAMPLE_FOOTER1'); ?></li>
-					<li><?php echo JText::_('EASYSDI_SHOP_LOAD_PERIMETER_FROM_LIST_EXAMPLE_FOOTER2'); ?></li>
-					<li><a href="components/com_easysdi_shop/img/ex_csv_tab_file.txt" target="_blank"><?php echo JText::_('EASYSDI_SHOP_LOAD_PERIMETER_FROM_LIST_EXAMPLE_FILE'); ?></a></li>
+				        <li><?php echo JText::_('SHOP_PERIMETER_LOAD_PERIMETER_FROM_LIST_EXAMPLE_FOOTER1'); ?></li>
+					<li><?php echo JText::_('SHOP_PERIMETER_LOAD_PERIMETER_FROM_LIST_EXAMPLE_FOOTER2'); ?></li>
+					<li><a href="components/com_easysdi_shop/img/ex_csv_tab_file.txt" target="_blank"><?php echo JText::_('SHOP_PERIMETER_LOAD_PERIMETER_FROM_LIST_EXAMPLE_FILE'); ?></a></li>
 				      </ul>
 				      </p>
 				      </fieldset>
