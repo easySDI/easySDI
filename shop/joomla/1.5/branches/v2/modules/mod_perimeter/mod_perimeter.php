@@ -267,18 +267,18 @@ if ($curstep == "2")
 		<td>
 		<!--
 		<fieldset>
-		<legend><?php echo JText::_('EASYSDI_SHOP_PERIMETER_SELECTION');?></legend>
+		<legend><?php echo JText::_('SHOP_PERIMETER_PERIMETER_SELECTION');?></legend>
 		-->
 		<?php
 		    $index = JRequest::getVar('tabIndex',0);
 		    $tabs =& JPANE::getInstance('Tabs', array('startOffset' => $index));
 		    echo $tabs->startPane("selectPane");
-                    echo $tabs->startPanel(JText::_("EASYSDI_SHOP_PERIMETER_GRAPHIC_MODE"),"graphSelectPane");
+                    echo $tabs->startPanel(JText::_("SHOP_PERIMETER_PERIMETER_GRAPHIC_MODE"),"graphSelectPane");
 		    ?>
 		    <div id="panelEdition" class="olControlEditingToolbar"></div>
 		    <?php
 		    echo $tabs->endPanel();
-                    echo $tabs->startPanel(JText::_("EASYSDI_SHOP_PERIMETER_MANU_MODE"),"manuSelectPane");
+                    echo $tabs->startPanel(JText::_("SHOP_PERIMETER_PERIMETER_MANU_MODE"),"manuSelectPane");
 		    ?>
 		    <div id="addPerimeterButton">
 		        <div id="manualPerimDivId" style="display: none">
@@ -309,7 +309,7 @@ if ($curstep == "2")
 				    </td>
 				    <td>
 			               <div class="particular-loadperim-link">
-				            <a title="<?php echo JText::_("EASYSDI_SHOP_LOAD_PERIMETER_FROM_LIST_LINK");?>" rel="{handler:'iframe',size:{x:600,y:600}}" href="./index.php?tmpl=component&option=com_easysdi_shop&task=loadListForPerim&perimeter_id=<?php echo $free_perim_id; ?>&Itemid=<?php echo JRequest::getVar('Itemid');?>" class="modal">&nbsp;</a>
+				            <a title="<?php echo JText::_("SHOP_PERIMETER_LOAD_PERIMETER_FROM_LIST_LINK");?>" rel="{handler:'iframe',size:{x:600,y:600}}" href="./index.php?tmpl=component&option=com_easysdi_shop&task=loadListForPerim&perimeter_id=<?php echo $free_perim_id; ?>&Itemid=<?php echo JRequest::getVar('Itemid');?>" class="modal">&nbsp;</a>
 			                </div>
 			            </td>
 				 </tr>
@@ -319,7 +319,7 @@ if ($curstep == "2")
 			</table>
 			</div>
 		    </div>
-		    <div id="manualPerimHint" style="display:none" class="graphSelHint"><?php echo JText::_("EASYSDI_SHOP_PERIMETER_NO_MANUAL_SELECTION");?></div>
+		    <div id="manualPerimHint" style="display:none" class="graphSelHint"><?php echo JText::_("SHOP_PERIMETER_PERIMETER_NO_MANUAL_SELECTION");?></div>
 		    <?php
 		    ?>
 
@@ -332,7 +332,7 @@ if ($curstep == "2")
 		</table>
 		
 		<fieldset>
-		<legend><?php echo JText::_('EASYSDI_SHOP_CURRENT_SELECTION');?></legend>
+		<legend><?php echo JText::_('SHOP_PERIMETER_CURRENT_SELECTION');?></legend>
 		<!-- Current selection -->
 		<table>
 		<tr>
@@ -351,7 +351,7 @@ if ($curstep == "2")
 				</select>
 		</td>
 		<td valign="bottom">
-			<button title="<?php echo JText::_("EASYSDI_SHOP_PERIMETER_REMOVE");?>" class="deletePerimeterButton" type="button"
+			<button title="<?php echo JText::_("SHOP_PERIMETER_PERIMETER_REMOVE");?>" class="deletePerimeterButton" type="button"
 					onClick="removeSelected();"></button>
 		</td>
 		</tr>
@@ -371,7 +371,7 @@ if ($curstep == "2")
 		</fieldset>
 		
 		<fieldset>
-		<legend><?php echo JText::_('EASYSDI_SHOP_INFO');?></legend>
+		<legend><?php echo JText::_('SHOP_PERIMETER_INFO');?></legend>
 		<!-- infos -->
 		<table>
 		<?php
