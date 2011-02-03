@@ -312,10 +312,10 @@ class HTML_shop
 		    var wkt = new OpenLayers.Format.Text();
 	            var collection = wkt.read(uploadedPerimeterContent);
 		    if(!collection) {
-			    alert("<?php echo JText::_('EASYSDI_SHOP_LOAD_PERIMETER_FROM_LIST_BAD_FORMAT'); ?>");
+			    alert("<?php echo JText::_('SHOP_PERIMETER_LOAD_PERIMETER_FROM_LIST_BAD_FORMAT'); ?>");
 			    return false;
 		    }else if(!collection.length || collection.length==0){
-				alert("<?php echo JText::_('EASYSDI_SHOP_LOAD_PERIMETER_FROM_LIST_EMPTY_COLLECTION'); ?>");
+				alert("<?php echo JText::_('SHOP_PERIMETER_LOAD_PERIMETER_FROM_LIST_EMPTY_COLLECTION'); ?>");
 				return false;
 		    }
 		    else{
