@@ -11,11 +11,14 @@ public abstract class WMTSProxyResponseBuilder {
 	protected Exception lastException;
 	protected Namespace nsOWS ;
 	protected Namespace nsWMTS;
-	protected Namespace nsXLINK = Namespace.getNamespace("http://www.w3.org/1999/xlink");
+	protected Namespace nsXLINK;
 	
 	public WMTSProxyResponseBuilder(ProxyServlet proxyServlet) {
 		super();
 		servlet = proxyServlet;
+		nsOWS = Namespace.getNamespace("http://www.opengis.net/ows/1.1");
+		nsXLINK = Namespace.getNamespace("http://www.w3.org/1999/xlink");
+		
 	}
 	
 	public void setLastException(Exception lastException) {
@@ -29,5 +32,5 @@ public abstract class WMTSProxyResponseBuilder {
 	public abstract Boolean CapabilitiesOperationFiltering (Multimap<Integer, String> filePathList, String href );
 	public abstract Boolean CapabilitiesLayerFiltering (Multimap<Integer, String> filePathList);
 	public abstract Boolean CapabilitiesMerging(Multimap<Integer, String> filePathList);
-	public abstract Boolean CapabilitiesServiceMetadataWriting(Multimap<Integer, String> filePathList);
+	public abstract Boolean CapabilitiesServiceIdentificationWriting(Multimap<Integer, String> filePathList);
 }

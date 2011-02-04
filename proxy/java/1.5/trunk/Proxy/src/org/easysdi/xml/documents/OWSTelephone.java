@@ -18,7 +18,7 @@ package org.easysdi.xml.documents;
 
 import java.io.Serializable;
 
-public class ServiceContactPhone implements Serializable{
+public class OWSTelephone implements Serializable{
 	
 	private static final long serialVersionUID = -1522579526391545420L;
 	

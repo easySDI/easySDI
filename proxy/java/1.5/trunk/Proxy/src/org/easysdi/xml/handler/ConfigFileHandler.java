@@ -22,12 +22,13 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Vector;
-import org.easysdi.xml.documents.RemoteServerInfo;
-import org.easysdi.xml.documents.ServiceContactAdressInfo;
-import org.easysdi.xml.documents.ServiceContactInfo;
+
+import org.easysdi.xml.documents.*;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
+
+import com.sun.corba.se.impl.encoding.OSFCodeSetRegistry;
 
 
 public class ConfigFileHandler extends DefaultHandler {
@@ -48,49 +49,24 @@ public class ConfigFileHandler extends DefaultHandler {
 	private String logPeriod = "";
 	private String toleranceDistance = "0";
 	private boolean isAuthorization = false;
-	private boolean isPolicyFile = false;
-	private boolean isLoginService = false;
 	private boolean isTransaction = false;
-	private boolean isUser = false;
-	private boolean isPassword = false;
 	private boolean isTheGoodId = false;
 	private boolean isConfig = false;
 	private boolean isRemoteServer = false;
 	private boolean isRemoteServerList = false;
-	private boolean isLogFile = false;
-	private boolean isRemoteServerUrl = false;
 	private String remoteServerUrl = null;
 	private boolean isLogConfig = false;
 	private boolean isXsltPath = false;
-	private boolean isLogConfigUrl = false;
-	private boolean isXsltPathUrl = false;
 	private String xsltPathUrl = null;
-	private boolean isLogDateFormat = false;
 	private String logDateFormat = null;
-	private boolean isMaxRecords = false;
 	private String maxRecords = null;
-	private boolean isServletClass = false;
 	private String servletClass;
 	private boolean isFileStructure = false;
-	private boolean isMaxRequestNumber = false;
 	private double maxRequestNumber = -1;
-	private boolean isAvailabilityPeriod = false;
-	private boolean isAvailabilityPeriodFrom = false;
-	private boolean isAvailabilityPeriodTo = false;
-	private boolean isAvailabilityPeriodFromDate = false;
-	private boolean isAvailabilityPeriodFromMask = false;
-	private boolean isAvailabilityPeriodToDate = false;
-	private boolean isAvailabilityPeriodToMask = false;
-	private String availabilityPeriodFromDate = null;
-	private String availabilityPeriodFromMask = null;
-	private String availabilityPeriodToDate = null;
-	private String availabilityPeriodToMask = null;
 	private String prefix = "";
 	private String hostTranslator = "";
 	private String transaction = "ogc";
-	private boolean isPrefix = false;
 	private boolean isDouglasPeuckerSimplifier = false;
-	private boolean isToleranceDistance = false;
 	private boolean isServiceMetadata=false;
 	private boolean isContactInformation=false;
 	private boolean isContactAddress=false;
@@ -119,13 +95,27 @@ public class ConfigFileHandler extends DefaultHandler {
 	private String exceptionMode ="Permissive";
 	private boolean isException=false;
 	private String ogcSearchFilter="";
-
-	/**
-	 * ServiceProvider
-	 */
-	private boolean isServiceProvider =false;
-	private boolean isProviderAddress =false;
-
+	
+	private Boolean isKeywordList = false;
+	private Boolean isServiceProvider = false;
+	private Boolean isResponsibleParty = false;
+	private Boolean isContact = false;
+	private Boolean isTelephone = false;
+	private Boolean isAddress = false;
+	private String providerName = null;
+	private String providerSite = null;
+	private String individualName = null;
+	private String positionName = null;
+	private String role = null;
+	private String delivryPoint = null;
+	private String area = null;
+	private OWSAddress owsAddress = null;
+	private OWSContact owsContact = null;
+	private OWSResponsibleParty owsResponsible = null;
+	private OWSServiceProvider owsProvider = null;
+	private OWSTelephone owsPhone = null;
+	private OWSServiceMetadata owsServiceMetadata = null;
+	
 	
 	public ConfigFileHandler(String id) {
 		super();
@@ -142,101 +132,40 @@ public class ConfigFileHandler extends DefaultHandler {
 			}
 			String sgrouping = attr.getValue("grouping");
 			grouping = (sgrouping == null) ? true : Boolean.parseBoolean(sgrouping);
-
 		}
 
 		if (isTheGoodId && isConfig && qName.equals("douglasPeuckerSimplifier")) {
 			isDouglasPeuckerSimplifier = true;
 		}
-		if (isTheGoodId && isConfig && isDouglasPeuckerSimplifier && qName.equals("toleranceDistance")) {
-			isToleranceDistance = true;
-		}
-
-		if (isTheGoodId && isConfig && qName.equals("servlet-class")) {
-			isServletClass = true;
-		}
-		if (isTheGoodId && isConfig && qName.equals("availability-period")) {
-			isAvailabilityPeriod = true;
-		}
-		if (isTheGoodId && isConfig && isAvailabilityPeriod && qName.equals("from")) {
-			isAvailabilityPeriodFrom = true;
-		}
-		if (isTheGoodId && isConfig && isAvailabilityPeriod && isAvailabilityPeriodFrom && qName.equals("date")) {
-			isAvailabilityPeriodFromDate = true;
-		}
-		if (isTheGoodId && isConfig && isAvailabilityPeriod && isAvailabilityPeriodFrom && qName.equals("mask")) {
-			isAvailabilityPeriodFromMask = true;
-		}
-
-		if (isTheGoodId && isConfig && isAvailabilityPeriod && qName.equals("to")) {
-			isAvailabilityPeriodTo = true;
-		}
-		if (isTheGoodId && isConfig && isAvailabilityPeriod && isAvailabilityPeriodTo && qName.equals("date")) {
-			isAvailabilityPeriodToDate = true;
-		}
-		if (isTheGoodId && isConfig && isAvailabilityPeriod && isAvailabilityPeriodTo && qName.equals("mask")) {
-			isAvailabilityPeriodToMask = true;
-		}
-
+	
 		if (isTheGoodId && isConfig && qName.equals("remote-server-list")) {
 			isRemoteServerList = true;
 		}
-		if (isTheGoodId && isConfig && isRemoteServerList && qName.equals("max-request-number")) {
-			isMaxRequestNumber = true;
-		}
-
+		
 		if (isTheGoodId && isConfig && isRemoteServerList && qName.equals("remote-server")) {
 			isRemoteServer = true;
 		}
+		
 		if (isTheGoodId && isConfig && qName.equals("authorization")) {
 			isAuthorization = true;
 		}
-		if (isTheGoodId && isConfig && isAuthorization && qName.equals("policy-file")) {
-			isPolicyFile = true;
-		}
+		
 		if (isTheGoodId && isConfig && isRemoteServer && qName.equals("transaction")) {
 			isTransaction = true;
 		}
-		if (isTheGoodId && isConfig && isRemoteServer && qName.equals("login-service")) {
-			isLoginService = true;
-		}
-		if (isTheGoodId && isConfig && isRemoteServer && qName.equals("url")) {
-			isRemoteServerUrl = true;
-		}
-		if (isTheGoodId && isConfig && isRemoteServer && qName.equals("user")) {
-			isUser = true;
-		}
-		if (isTheGoodId && isConfig && isRemoteServer && qName.equals("prefix")) {
-			isPrefix = true;
-		}
-		if (isTheGoodId && isConfig && isRemoteServer && qName.equals("password")) {
-			isPassword = true;
-		}
-		if (isTheGoodId && isConfig && isRemoteServer && qName.equals("max-records")) {
-			isMaxRecords = true;
-		}
-
+		
 		if (isTheGoodId && isConfig && qName.equals("log-config")) {
 			isLogConfig = true;
 		}
+		
 		if (isTheGoodId && isConfig && qName.equals("xslt-path")) {
 			isXsltPath = true;
 		}
-		if (isTheGoodId && isConfig && isLogConfig && qName.equals("url")) {
-			isLogConfigUrl = true;
-		}
-		if (isTheGoodId && isConfig && isLogConfig && qName.equals("date-format")) {
-			isLogDateFormat = true;
-		}
+		
 		if (isTheGoodId && isConfig && isLogConfig && qName.equals("file-structure")) {
 			isFileStructure = true;
 		}
 
-		if (isTheGoodId && isConfig && isXsltPath && qName.equals("url")) {
-			isXsltPathUrl = true;
-		}
-		
-		//Service Metadata
 		if (isTheGoodId && isConfig && qName.equals("service-metadata")) {
 			isServiceMetadata = true;
 			return;
@@ -246,25 +175,40 @@ public class ConfigFileHandler extends DefaultHandler {
 			isContactInformation = true;
 			return;
 		}
-		if (isTheGoodId && isConfig && isServiceMetadata && qName.equals("ServiceProvider")) {
-			isServiceProvider = true;
-			return;
-		}
-		if (isTheGoodId && isConfig && isServiceMetadata && isServiceProvider && qName.equals("ServiceProvider")) {
-			isServiceProvider = true;
-			return;
-		}
 		
 		if (isTheGoodId && isConfig && isServiceMetadata && isContactInformation && qName.equals("ContactAddress")) {
 			isContactAddress = true;
 			return;
 		}
 		
-		//Exception
 		if (isTheGoodId && isConfig && qName.equals("exception")) {
 			isException = true;
 		}
-	
+		
+		if (isTheGoodId && isConfig && isServiceMetadata && qName.equals("KeywordList")) {
+			isKeywordList = true;
+			return;
+		}
+		if (isTheGoodId && isConfig && isServiceMetadata && qName.equals("ServiceProvider")) {
+			isServiceProvider = true;
+			return;
+		}
+		if (isTheGoodId && isConfig && isServiceMetadata && isServiceProvider && qName.equals("ResponsibleParty")) {
+			isResponsibleParty = true;
+			return;
+		}
+		if (isTheGoodId && isConfig && isServiceMetadata && isServiceProvider && isResponsibleParty && qName.equals("Contact")) {
+			isContact = true;
+			return;
+		}
+		if (isTheGoodId && isConfig && isServiceMetadata && isServiceProvider && isResponsibleParty && isContact && qName.equals("Telephone")) {
+			isTelephone = true;
+			return;
+		}
+		if (isTheGoodId && isConfig && isServiceMetadata && isServiceProvider && isResponsibleParty && isContact && qName.equals("Address")) {
+			isAddress = true;
+			return;
+		}
 	}
 
 	public void endElement(String nameSpace, String localName, String qName) throws SAXException {
@@ -287,6 +231,7 @@ public class ConfigFileHandler extends DefaultHandler {
 				config.setContactInfo(contactInfo);
 				config.setExceptionMode(exceptionMode);
 				config.setOgcSearchFilter(ogcSearchFilter);
+				config.setOwsServiceMetadata(owsServiceMetadata);
 			}
 			isTheGoodId = false;
 		}
@@ -294,10 +239,10 @@ public class ConfigFileHandler extends DefaultHandler {
 		if (isTheGoodId && isConfig && qName.equals("douglasPeuckerSimplifier")) {
 			isDouglasPeuckerSimplifier = false;
 		}
+		
 		if (isTheGoodId && isConfig && isDouglasPeuckerSimplifier && qName.equals("toleranceDistance")) {
 
 			toleranceDistance = data;
-			isToleranceDistance = false;
 		}
 
 		if (isTheGoodId && isConfig && qName.equals("host-translator")) {
@@ -306,52 +251,21 @@ public class ConfigFileHandler extends DefaultHandler {
 
 		if (isTheGoodId && isConfig && qName.equals("servlet-class")) {
 			servletClass = data;
-			isServletClass = false;
 		}
+		
 		if (isTheGoodId && isConfig && qName.equals("remote-server-list")) {
 			isRemoteServerList = false;
 		}
+		
 		if (isTheGoodId && isConfig && isRemoteServerList && qName.equals("max-request-number")) {
 			maxRequestNumber = Double.parseDouble(data);
-			isMaxRequestNumber = false;
 		}
-
-		if (isTheGoodId && isConfig && qName.equals("availability-period")) {
-			isAvailabilityPeriod = false;
-		}
-		if (isTheGoodId && isConfig && isAvailabilityPeriod && qName.equals("from")) {
-			isAvailabilityPeriodFrom = false;
-		}
-		if (isTheGoodId && isConfig && isAvailabilityPeriod && isAvailabilityPeriodFrom && qName.equals("date")) {
-			availabilityPeriodFromDate = data;
-			isAvailabilityPeriodFromDate = false;
-		}
-		if (isTheGoodId && isConfig && isAvailabilityPeriod && isAvailabilityPeriodFrom && qName.equals("mask")) {
-			availabilityPeriodFromMask = data;
-			isAvailabilityPeriodFromMask = false;
-		}
-
-		if (isTheGoodId && isConfig && isAvailabilityPeriod && qName.equals("to")) {
-			isAvailabilityPeriodTo = false;
-		}
-		if (isTheGoodId && isConfig && isAvailabilityPeriod && isAvailabilityPeriodTo && qName.equals("date")) {
-			availabilityPeriodToDate = data;
-			isAvailabilityPeriodToDate = false;
-		}
-		if (isTheGoodId && isConfig && isAvailabilityPeriod && isAvailabilityPeriodTo && qName.equals("mask")) {
-			availabilityPeriodToMask = data;
-			isAvailabilityPeriodToMask = false;
-		}
-
+		
 		if (isTheGoodId && isConfig && isRemoteServerList && qName.equals("remote-server")) {
 			if (remoteServer == null)
 				remoteServer = new Vector<RemoteServerInfo>();
 			RemoteServerInfo rs = new RemoteServerInfo(remoteServerUrl, user, password, maxRecords, loginService, prefix, transaction);
-//			rs.setDeleteServiceUrl(deleteServiceUrl);
-//			rs.setInsertServiceUrl(insertServiceUrl);
-//			rs.setSearchServiceUrl(searchServiceUrl);
 			remoteServer.add(rs);
-
 			isRemoteServer = false;
 			remoteServerUrl = null;
 			user = null;
@@ -359,30 +273,15 @@ public class ConfigFileHandler extends DefaultHandler {
 			maxRecords = null;
 			loginService = null;
 			transaction = null;
-//			deleteServiceUrl = null;
-//			insertServiceUrl = null;
-//			searchServiceUrl = null;
 		}
 
 		if (isTheGoodId && isConfig && qName.equals("authorization")) {
 			isAuthorization = false;
 		}
+		
 		if (isTheGoodId && isConfig && isAuthorization && qName.equals("policy-file")) {
 			policyFile = data;
-			isPolicyFile = false;
 		}
-
-//		if (isTheGoodId && isConfig && isTransaction && qName.equals("search-service-url")) {
-//			searchServiceUrl = data;
-//		}
-//		if (isTheGoodId && isConfig && isTransaction && qName.equals("delete-service-url")) {
-//
-//			deleteServiceUrl = data;
-//		}
-//		if (isTheGoodId && isConfig && isTransaction && qName.equals("insert-service-url")) {
-//
-//			insertServiceUrl = data;
-//		}
 
 		if (isTheGoodId && isConfig && isTransaction && qName.equals("type")) {
 			transaction = data;
@@ -391,21 +290,21 @@ public class ConfigFileHandler extends DefaultHandler {
 		if (isTheGoodId && isConfig && isRemoteServer && qName.equals("transaction")) {
 			isTransaction = false;
 		}
+		
 		if (isTheGoodId && isConfig && isRemoteServer && qName.equals("login-service")) {
 			loginService = data;
-			isLoginService = false;
 		}
+		
 		if (isTheGoodId && isConfig && isRemoteServer && qName.equals("url")) {
 			remoteServerUrl = data;
-			isRemoteServerUrl = false;
 		}
+		
 		if (isTheGoodId && isConfig && isRemoteServer && qName.equals("max-records")) {
 			maxRecords = data;
-			isMaxRecords = false;
 		}
+		
 		if (isTheGoodId && isConfig && isRemoteServer && qName.equals("prefix")) {
 			prefix = data;
-			isPrefix = false;
 		}
 
 		if (isTheGoodId && isConfig && isRemoteServer && qName.equals("user")) {
@@ -413,46 +312,51 @@ public class ConfigFileHandler extends DefaultHandler {
 				user = null;
 			else
 				user = data;
-			isUser = false;
 		}
+		
 		if (isTheGoodId && isConfig && isRemoteServer && qName.equals("password")) {
 			if (data.length() == 0)
 				password = null;
 			else
 				password = data;
-			isPassword = false;
 		}
+		
 		if (isTheGoodId && isConfig && qName.equals("xslt-path")) {
 			isXsltPath = false;
 		}
+		
 		if (isTheGoodId && isConfig && isXsltPath && qName.equals("url")) {
 			xsltPathUrl = data;
-			isXsltPathUrl = false;
 		}
 
 		if (isTheGoodId && isConfig && qName.equals("log-config")) {
 			isLogConfig = false;
 		}
+		
 		if (isTheGoodId && isConfig && isLogConfig && qName.equals("url")) {
 			logFile = data;
-			isLogConfigUrl = false;
 		}
 
 		if (isTheGoodId && isConfig && isLogConfig && isFileStructure && qName.equals("path")) {
 			logPath = data;
 		}
+		
 		if (isTheGoodId && isConfig && isLogConfig && isFileStructure && qName.equals("suffix")) {
 			logSuffix = data;
 		}
+		
 		if (isTheGoodId && isConfig && isLogConfig && isFileStructure && qName.equals("prefix")) {
 			logPrefix = data;
 		}
+		
 		if (isTheGoodId && isConfig && isLogConfig && isFileStructure && qName.equals("extension")) {
 			logExtension = data;
 		}
+		
 		if (isTheGoodId && isConfig && isLogConfig && isFileStructure && qName.equals("period")) {
 			logPeriod = data;
 		}
+		
 		if (isTheGoodId && isConfig && isLogConfig && qName.equals("file-structure")) {
 			String period = "";
 			if (logPeriod.equalsIgnoreCase("daily")) {
@@ -485,21 +389,18 @@ public class ConfigFileHandler extends DefaultHandler {
 			isFileStructure = false;
 		}
 
-		//Service metadata
 		if (isTheGoodId && isConfig && isLogConfig && qName.equals("date-format")) {
 			logDateFormat = data;
-			isLogDateFormat = false;
 		}
-		
 		
 		if (isTheGoodId && isConfig && isServiceMetadata && qName.equals("Title")) {
 			title = data;
-		
 		}
+		
 		if (isTheGoodId && isConfig && isServiceMetadata && qName.equals("Abstract")) {
 			abst = data;
-		
 		}
+		
 		if (isTheGoodId && isConfig && isServiceMetadata && qName.equals("Keyword")) {
 			if(data != null && !"".equals(data))
 			{
@@ -512,162 +413,73 @@ public class ConfigFileHandler extends DefaultHandler {
 		}
 	
 		if (isTheGoodId && isConfig && isServiceMetadata && qName.equals("Fees")) {
-			fees = data;
-		
+			fees = data;		
 		}
+		
 		if (isTheGoodId && isConfig && isServiceMetadata && qName.equals("AccessConstraints")) {
-			accessConstraints = data;
-		
+			accessConstraints = data;			
 		}
+		
 		if (isTheGoodId && isConfig && isServiceMetadata && isContactInformation && qName.equals("ContactName")) {
 			contactName = data;
-		
 		}
 
 		if (isTheGoodId && isConfig && isServiceMetadata && isContactInformation && qName.equals("ContactOrganization")) {
 			contactOrganisation = data;
-			
 		}
+		
 		if (isTheGoodId && isConfig && isServiceMetadata && isContactInformation && qName.equals("ContactPosition")) {
 			contactPosition = data;
-			
 		}
+		
 		if (isTheGoodId && isConfig && isServiceMetadata && isContactInformation && qName.equals("VoicePhone")) {
 			voicePhone = data;
-		
 		}
+		
 		if (isTheGoodId && isConfig && isServiceMetadata && isContactInformation && qName.equals("Facsimile")) {
 			facsimile = data;
-			
 		}
+		
 		if (isTheGoodId && isConfig && isServiceMetadata && isContactInformation && qName.equals("ElectronicMailAddress")) {
 			electronicMailAddress = data;
-			
 		}
+		
 		if (isTheGoodId && isConfig && isServiceMetadata && isContactInformation && qName.equals("Linkage")) {
 			linkage =data;
-			
 		}
+		
 		if (isTheGoodId && isConfig && isServiceMetadata && isContactInformation && qName.equals("HoursofSservice")) {
 			hoursOfService = data;
-			
 		}
+		
 		if (isTheGoodId && isConfig && isServiceMetadata && isContactInformation && qName.equals("Instructions")) {
 			instructions = data;
-			
 		}
 		
-		if (isTheGoodId && isConfig && isServiceMetadata && isServiceProvider && qName.equals("ProviderName")) {
-			contactName = data;
-		
-		}
-
-		if (isTheGoodId && isConfig && isServiceMetadata && isServiceProvider && qName.equals("IndividualName")) {
-			contactOrganisation = data;
-			
-		}
-		if (isTheGoodId && isConfig && isServiceMetadata && isServiceProvider && qName.equals("PositionName")) {
-			contactPosition = data;
-			
-		}
-		if (isTheGoodId && isConfig && isServiceMetadata && isServiceProvider && qName.equals("VoicePhone")) {
-			voicePhone = data;
-		
-		}
-		if (isTheGoodId && isConfig && isServiceMetadata && isServiceProvider && qName.equals("Facsimile")) {
-			facsimile = data;
-			
-		}
-		if (isTheGoodId && isConfig && isServiceMetadata && isServiceProvider && qName.equals("ElectronicMailAddress")) {
-			electronicMailAddress = data;
-			
-		}
-		if (isTheGoodId && isConfig && isServiceMetadata && isServiceProvider && qName.equals("Linkage")) {
-			linkage =data;
-			
-		}
-		if (isTheGoodId && isConfig && isServiceMetadata && isServiceProvider && qName.equals("HoursofSservice")) {
-			hoursOfService = data;
-			
-		}
-		if (isTheGoodId && isConfig && isServiceMetadata && isServiceProvider && qName.equals("Instructions")) {
-			instructions = data;
-			
-		}
 		if (isTheGoodId && isConfig && isServiceMetadata && isContactInformation && isContactAddress && qName.equals("AddressType")) {
 			adressType = data;
-			
 		}
+		
 		if (isTheGoodId && isConfig && isServiceMetadata && isContactInformation && isContactAddress && qName.equals("Address")) {
 			adress =data;
-		
 		}
+		
 		if (isTheGoodId && isConfig && isServiceMetadata && isContactInformation && isContactAddress && qName.equals("PostalCode")) {
 			postalCode = data;
-			
 		}
+		
 		if (isTheGoodId && isConfig && isServiceMetadata && isContactInformation && isContactAddress && qName.equals("City")) {
 			city = data;
-			
 		}
+		
 		if (isTheGoodId && isConfig && isServiceMetadata && isContactInformation && isContactAddress && qName.equals("State")) {
 			state = data;
-			
 		}
+		
 		if (isTheGoodId && isConfig && isServiceMetadata && isContactInformation && isContactAddress && qName.equals("Country")) {
 			country = data;
-		
 		}
-		if (isTheGoodId && isConfig && isServiceMetadata && isServiceProvider && isProviderAddress && qName.equals("AddressType")) {
-			adressType = data;
 			
-		}
-		if (isTheGoodId && isConfig && isServiceMetadata && isServiceProvider && isProviderAddress && qName.equals("Address")) {
-			adress =data;
-		
-		}
-		if (isTheGoodId && isConfig && isServiceMetadata && isServiceProvider && isProviderAddress && qName.equals("PostalCode")) {
-			postalCode = data;
-			
-		}
-		if (isTheGoodId && isConfig && isServiceMetadata && isServiceProvider && isProviderAddress && qName.equals("City")) {
-			city = data;
-			
-		}
-		if (isTheGoodId && isConfig && isServiceMetadata && isServiceProvider && isProviderAddress && qName.equals("Area")) {
-			state = data;
-			
-		}
-		if (isTheGoodId && isConfig && isServiceMetadata && isServiceProvider && isProviderAddress && qName.equals("Country")) {
-			country = data;
-		
-		}
-		if (isTheGoodId && isConfig && isServiceMetadata && isServiceProvider && qName.equals("Address")) {
-			contactAdress = new ServiceContactAdressInfo();
-			contactAdress.setAddress(adress);
-			contactAdress.setCity(city);
-			contactAdress.setCountry(country);
-			contactAdress.setPostalCode(postalCode);
-			contactAdress.setState(state);
-			contactAdress.setType(adressType);
-			
-			isContactAddress = false;
-		}
-		if (isTheGoodId && isConfig && isServiceMetadata && qName.equals("ServiceProvider")) {
-			contactInfo = new ServiceContactInfo();
-			contactInfo.setContactAddress(contactAdress);
-			contactInfo.seteMail(electronicMailAddress);
-			contactInfo.setFacSimile(facsimile);
-			contactInfo.setHoursofSservice(hoursOfService);
-			contactInfo.setInstructions(instructions);
-			contactInfo.setLinkage(linkage);
-			contactInfo.setName(contactName);
-			contactInfo.setOrganization(contactOrganisation);
-			contactInfo.setPosition(contactPosition);
-			contactInfo.setVoicePhone(voicePhone);
-			
-			isContactInformation = false;
-		}
 		if (isTheGoodId && isConfig && isServiceMetadata && isContactInformation && qName.equals("ContactAddress")) {
 			contactAdress = new ServiceContactAdressInfo();
 			contactAdress.setAddress(adress);
@@ -676,9 +488,9 @@ public class ConfigFileHandler extends DefaultHandler {
 			contactAdress.setPostalCode(postalCode);
 			contactAdress.setState(state);
 			contactAdress.setType(adressType);
-			
 			isContactAddress = false;
 		}
+		
 		if (isTheGoodId && isConfig && isServiceMetadata && qName.equals("ContactInformation")) {
 			contactInfo = new ServiceContactInfo();
 			contactInfo.setContactAddress(contactAdress);
@@ -689,14 +501,11 @@ public class ConfigFileHandler extends DefaultHandler {
 			contactInfo.setLinkage(linkage);
 			contactInfo.setName(contactName);
 			contactInfo.setOrganization(contactOrganisation);
-		//	contactInfo.setSite(contactSite);
 			contactInfo.setPosition(contactPosition);
 			contactInfo.setVoicePhone(voicePhone);
-			
 			isContactInformation = false;
 		}
 		
-		//Exception
 		if (isTheGoodId && isConfig && isException && qName.equals("mode")) {
 			exceptionMode = data;
 			isException = false;
@@ -706,18 +515,141 @@ public class ConfigFileHandler extends DefaultHandler {
 			ogcSearchFilter = data;
 		}
 		
+		if (isTheGoodId && isConfig && isServiceMetadata && isServiceProvider && qName.equals("ProviderName")) {
+			providerName = data;
+		}
+
+		if (isTheGoodId && isConfig && isServiceMetadata && isServiceProvider && qName.equals("ProviderSite")) {
+			providerSite = data;
+		}
+		
+		if (isTheGoodId && isConfig && isServiceMetadata && isServiceProvider && isResponsibleParty && qName.equals("IndividualName")) {
+			individualName = data;
+		}
+		
+		if (isTheGoodId && isConfig && isServiceMetadata && isServiceProvider && isResponsibleParty && qName.equals("PositionName")) {
+			positionName = data;
+		}
+		
+		if (isTheGoodId && isConfig && isServiceMetadata && isServiceProvider && isResponsibleParty && qName.equals("Role")) {
+			role = data;
+		}
+		
+		if (isTheGoodId && isConfig && isServiceMetadata && isServiceProvider && isResponsibleParty && isContact && qName.equals("HoursofService")) {
+			hoursOfService = data;
+		}
+		
+		if (isTheGoodId && isConfig && isServiceMetadata && isServiceProvider && isResponsibleParty && isContact && qName.equals("Instructions")) {
+			instructions = data;
+		}
+		
+		if (isTheGoodId && isConfig && isServiceMetadata && isServiceProvider && isResponsibleParty && isContact && qName.equals("onlineResource")) {
+			linkage = data;
+		}
+		
+		if (isTheGoodId && isConfig && isServiceMetadata && isServiceProvider && isResponsibleParty && isContact && isTelephone && qName.equals("VoicePhone")) {
+			voicePhone = data;
+		}
+		
+		if (isTheGoodId && isConfig && isServiceMetadata && isServiceProvider && isResponsibleParty && isContact && isTelephone && qName.equals("Facsimile")) {
+			facsimile = data;
+		}
+		
+		if (isTheGoodId && isConfig && isServiceMetadata && isServiceProvider && isResponsibleParty && isContact && isAddress && qName.equals("AddressType")) {
+			adressType = data;
+		}
+		
+		if (isTheGoodId && isConfig && isServiceMetadata && isServiceProvider && isResponsibleParty && isContact && isAddress && qName.equals("DelivryPoint")) {
+			delivryPoint = data;
+		}
+		
+		if (isTheGoodId && isConfig && isServiceMetadata && isServiceProvider && isResponsibleParty && isContact && isAddress && qName.equals("PostalCode")) {
+			postalCode = data;
+		}
+		
+		if (isTheGoodId && isConfig && isServiceMetadata && isServiceProvider && isResponsibleParty && isContact && isAddress && qName.equals("City")) {
+			city = data;
+		}
+		
+		if (isTheGoodId && isConfig && isServiceMetadata && isServiceProvider && isResponsibleParty && isContact && isAddress && qName.equals("Area")) {
+			area = data;
+		}
+		
+		if (isTheGoodId && isConfig && isServiceMetadata && isServiceProvider && isResponsibleParty && isContact && isAddress && qName.equals("Country")) {
+			country = data;
+		}
+		
+		if (isTheGoodId && isConfig && isServiceMetadata && isServiceProvider && isResponsibleParty && isContact && isAddress && qName.equals("ElectronicMailAddress")) {
+			electronicMailAddress = data;
+		}
+		
+		if (isTheGoodId && isConfig && qName.equals("service-metadata")) {
+			owsServiceMetadata = new OWSServiceMetadata();
+			owsServiceMetadata.setAbst(abst);
+			owsServiceMetadata.setAccessConstraints(accessConstraints);
+			owsServiceMetadata.setFees(fees);
+			owsServiceMetadata.setKeywords(keywordList);
+			owsServiceMetadata.setProvider(owsProvider);
+			owsServiceMetadata.setTitle(title);
+			isServiceMetadata = false;
+		}
+		
+		if (isTheGoodId && isConfig && isServiceMetadata && qName.equals("ServiceProvider")) {
+			owsProvider = new OWSServiceProvider();
+			owsProvider.setLinkage(providerSite);
+			owsProvider.setName(providerName);
+			owsProvider.setResponsibleParty(owsResponsible);
+			isServiceProvider = false;
+		}
+		
+		if (isTheGoodId && isConfig && isServiceMetadata && isServiceProvider && qName.equals("ResponsibleParty")) {
+			owsResponsible = new OWSResponsibleParty();
+			owsResponsible.setContactInfo(owsContact);
+			owsResponsible.setName(individualName);
+			owsResponsible.setPosition(positionName);
+			owsResponsible.setRole(role);
+			isResponsibleParty = false;
+		}
+		
+		if (isTheGoodId && isConfig && isServiceMetadata && isServiceProvider && isResponsibleParty && qName.equals("Contact")) {
+			owsContact = new OWSContact();
+			owsContact.setAdress(owsAddress);
+			owsContact.setContactPhone(owsPhone);
+			owsContact.setHoursofSservice(hoursOfService);
+			owsContact.setInstructions(instructions);
+			owsContact.setLinkage(linkage);
+			isContact = false;
+		}
+		
+		if (isTheGoodId && isConfig && isServiceMetadata && isServiceProvider && isResponsibleParty && isContact && qName.equals("Telephone")) {
+			owsPhone = new OWSTelephone();
+			owsPhone.setFacSimile(facsimile);
+			owsPhone.setVoicePhone(voicePhone);
+			isTelephone = false;
+		}
+		
+		if (isTheGoodId && isConfig && isServiceMetadata && isServiceProvider && isResponsibleParty && isContact && qName.equals("Address")) {
+			owsAddress = new OWSAddress();
+			owsAddress.setAddress(adress);
+			owsAddress.setArea(area);
+			owsAddress.setCity(city);
+			owsAddress.setCountry(country);
+			owsAddress.setElectronicMail(electronicMailAddress);
+			owsAddress.setPostalCode(postalCode);
+			owsAddress.setType(adressType);
+			isAddress = false;
+		}
+		
 		data = "";
 	}
 
 	public void startDocument() {
-
 	}
 
 	public void endDocument() {
 	}
 
 	public void characters(char[] caracteres, int debut, int longueur) throws SAXException {
-
 		String donnees = new String(caracteres, debut, longueur);
 		if (data == null)
 			data = donnees.trim();

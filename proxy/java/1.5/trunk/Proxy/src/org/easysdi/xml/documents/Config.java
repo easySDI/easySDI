@@ -21,7 +21,7 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * @author Administrateur
+ * @author Depth SA
  * 
  */
 public class Config implements Serializable{
@@ -49,6 +49,7 @@ public class Config implements Serializable{
 	private String accessConstraints =null;
 	private String exceptionMode = "permissive";
 	private String ogcSearchFilter=null;
+	private OWSServiceMetadata owsServiceMetadata = null;
 
 	/**
 	 * @param ogcSearchFilter the ogcSearchFilter to set
@@ -283,6 +284,21 @@ public class Config implements Serializable{
 	 */
 	public String getExceptionMode() {
 		return exceptionMode;
+	}
+
+	/**
+	 * @param owsServiceIdentification the owsServiceIdentification to set
+	 */
+	public void setOwsServiceMetadata(OWSServiceMetadata owsServiceMetadata) {
+		if(owsServiceMetadata != null && !owsServiceMetadata.isEmpty())
+			this.owsServiceMetadata = owsServiceMetadata;
+	}
+
+	/**
+	 * @return the owsServiceIdentification
+	 */
+	public OWSServiceMetadata getOwsServiceMetadata() {
+		return owsServiceMetadata;
 	}
 
 }

@@ -341,14 +341,6 @@ public class WMTSProxyServlet extends ProxyServlet{
 			ByteArrayOutputStream tempOut = new ByteArrayOutputStream(); 
 			
 			if ("GetCapabilities".equalsIgnoreCase(operation)) {
-				dump("INFO","transform - Start - Capabilities operations filtering");
-				if(!docBuilder.CapabilitiesOperationFiltering(wmtsFilePathList, getServletUrl(req)))
-				{
-					//Something went wrong
-					sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in Capabilities operations filtering. Exception : "+docBuilder.getLastException().toString(),"NoApplicableCode","",requestedVersion));
-					return;
-				}
-				dump("INFO","transform - End - Capabilities operations filtering");
 				dump("INFO","transform - Start - Capabilities layers filtering");
 				if(!docBuilder.CapabilitiesLayerFiltering(wmtsFilePathList))
 				{
@@ -357,6 +349,15 @@ public class WMTSProxyServlet extends ProxyServlet{
 					return;
 				}
 				dump("INFO","transform - End - Capabilities layers filtering");
+				dump("INFO","transform - Start - Capabilities operations filtering");
+				if(!docBuilder.CapabilitiesOperationFiltering(wmtsFilePathList, getServletUrl(req)))
+				{
+					//Something went wrong
+					sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in Capabilities operations filtering. Exception : "+docBuilder.getLastException().toString(),"NoApplicableCode","",requestedVersion));
+					return;
+				}
+				dump("INFO","transform - End - Capabilities operations filtering");
+				
 				dump("INFO","transform - Start - Capabilities merging");
 				if(!docBuilder.CapabilitiesMerging(wmtsFilePathList))
 				{
@@ -367,7 +368,7 @@ public class WMTSProxyServlet extends ProxyServlet{
 				dump("INFO","transform - End - Capabilities merging");
 				
 				dump("INFO","transform - Start - Capabilities metadata writing");
-				if(!docBuilder.CapabilitiesServiceMetadataWriting(wmtsFilePathList))
+				if(!docBuilder.CapabilitiesServiceIdentificationWriting(wmtsFilePathList))
 				{
 					//Something went wrong
 					sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in Capabilities metadata writing. Exception : "+docBuilder.getLastException().toString(),"NoApplicableCode","",requestedVersion));

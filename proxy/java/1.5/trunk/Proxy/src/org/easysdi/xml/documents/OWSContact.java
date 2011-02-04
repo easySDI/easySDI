@@ -18,7 +18,7 @@ package org.easysdi.xml.documents;
 
 import java.io.Serializable;
 
-public class ContactInfo implements Serializable{
+public class OWSContact implements Serializable{
 	
 	private static final long serialVersionUID = -1522579526391545420L;
 
@@ -26,36 +26,36 @@ public class ContactInfo implements Serializable{
 	private String hoursofSservice = null;
 	private String instructions = null;
 	private boolean isEmpty = true;
-	private ServiceContactPhone contactPhone = null;
-	private ServiceContactAdress contactAdress = null;
+	private OWSTelephone phone = null;
+	private OWSAddress adress = null;
 	
 	public boolean isEmpty (){
 		return isEmpty;
 	}
 	
-	public void setContactPhone(ServiceContactPhone contactPhone) {
-		if(contactPhone!=null && !"".equals(contactPhone))
+	public void setContactPhone(OWSTelephone phone) {
+		if(phone!=null && !"".equals(phone))
 		{
 			isEmpty = false;
-			this.contactPhone = contactPhone;
+			this.phone = phone;
 		}
 	}
 
 
-	public ServiceContactPhone getContactPhone() {
-		return contactPhone;
+	public OWSTelephone getContactPhone() {
+		return phone;
 	}
 
-	public void setContactAdress(ServiceContactAdress contactAdress) {
-		if(contactAdress!=null && !"".equals(contactAdress))
+	public void setAdress(OWSAddress adress) {
+		if(adress!=null && !"".equals(adress))
 		{
 			isEmpty = false;
-			this.contactAdress = contactAdress;
+			this.adress = adress;
 		}
 	}
 
-	public ServiceContactAdress getContactAdress() {
-		return this.contactAdress;
+	public OWSAddress getAdress() {
+		return this.adress;
 	}
 
 	

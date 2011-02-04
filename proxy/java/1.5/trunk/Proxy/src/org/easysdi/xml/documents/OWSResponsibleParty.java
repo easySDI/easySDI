@@ -18,28 +18,29 @@ package org.easysdi.xml.documents;
 
 import java.io.Serializable;
 
-public class ServiceProvider implements Serializable{
+public class OWSResponsibleParty implements Serializable{
 	
 	private static final long serialVersionUID = -1522579526391545420L;
 	private String name = null;
-	private String linkage = null;
-	private ServiceContact serviceContact = null;
+	private String position = null;
+	private String role = null;
+	private OWSContact contact = null;
 	private boolean isEmpty = true;
 	
 	public boolean isEmpty (){
 		return isEmpty;
 	}
 	
-	public void setServiceContact(ServiceContact contact) {
+	public void setContactInfo(OWSContact contact) {
 		if(contact!=null && !"".equals(contact))
 		{
 			isEmpty = false;
-			this.serviceContact = contact;
+			this.contact = contact;
 		}
 	}
 
-	public ServiceContact getServiceContact() {
-		return this.serviceContact;
+	public OWSContact getContactInfo() {
+		return this.contact;
 	}
 	
 	/**
@@ -59,17 +60,33 @@ public class ServiceProvider implements Serializable{
 		return name;
 	}
 	
-
-	public void setLinkage(String linkage) {
-		if(linkage != null && !"".equals(linkage))
+	/**
+	 * @param position the position to set
+	 */
+	public void setPosition(String position) {
+		if(position != null && !"".equals(position))
 		{
 			isEmpty = false;
-			this.linkage = linkage;
+			this.position = position;
+		}
+	}
+	/**
+	 * @return the position
+	 */
+	public String getPosition() {
+		return position;
+	}
+
+	public void setRole(String role) {
+		if(role != null && !"".equals(role))
+		{
+			isEmpty = false;
+			this.role = role;
 		}
 	}
 
-	public String getLinkage() {
-		return linkage;
+	public String getRole() {
+		return role;
 	}
 	
 

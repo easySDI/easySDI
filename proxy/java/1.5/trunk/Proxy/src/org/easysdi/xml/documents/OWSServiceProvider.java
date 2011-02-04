@@ -18,29 +18,28 @@ package org.easysdi.xml.documents;
 
 import java.io.Serializable;
 
-public class ServiceContact implements Serializable{
+public class OWSServiceProvider implements Serializable{
 	
 	private static final long serialVersionUID = -1522579526391545420L;
 	private String name = null;
-	private String position = null;
-	private String role = null;
-	private ContactInfo contactInfo = null;
+	private String linkage = null;
+	private OWSResponsibleParty responsible = null;
 	private boolean isEmpty = true;
 	
 	public boolean isEmpty (){
 		return isEmpty;
 	}
 	
-	public void setContactInfo(ContactInfo contact) {
-		if(contact!=null && !"".equals(contact))
+	public void setResponsibleParty(OWSResponsibleParty responsibleParty) {
+		if(responsibleParty!=null && !"".equals(responsibleParty))
 		{
 			isEmpty = false;
-			this.contactInfo = contact;
+			this.responsible = responsibleParty;
 		}
 	}
 
-	public ContactInfo getContactInfo() {
-		return this.contactInfo;
+	public OWSResponsibleParty getResponsibleParty() {
+		return this.responsible;
 	}
 	
 	/**
@@ -60,33 +59,17 @@ public class ServiceContact implements Serializable{
 		return name;
 	}
 	
-	/**
-	 * @param position the position to set
-	 */
-	public void setPosition(String position) {
-		if(position != null && !"".equals(position))
-		{
-			isEmpty = false;
-			this.position = position;
-		}
-	}
-	/**
-	 * @return the position
-	 */
-	public String getPosition() {
-		return position;
-	}
 
-	public void setRole(String role) {
-		if(role != null && !"".equals(role))
+	public void setLinkage(String linkage) {
+		if(linkage != null && !"".equals(linkage))
 		{
 			isEmpty = false;
-			this.role = role;
+			this.linkage = linkage;
 		}
 	}
 
-	public String getRole() {
-		return role;
+	public String getLinkage() {
+		return linkage;
 	}
 	
 

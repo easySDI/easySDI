@@ -8,9 +8,8 @@ import java.util.List;
 import java.util.Vector;
 import org.easysdi.proxy.core.ProxyServlet;
 import org.easysdi.proxy.wmts.*;
-import org.easysdi.xml.documents.Config;
-import org.easysdi.xml.documents.ServiceContactAdressInfo;
-import org.easysdi.xml.documents.ServiceContactInfo;
+import org.easysdi.jdom.filter.*;
+import org.easysdi.xml.documents.*;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.Namespace;
@@ -25,7 +24,6 @@ public class WMTS100ProxyResponseBuilder extends WMTSProxyResponseBuilder {
 
 	public WMTS100ProxyResponseBuilder(WMTSProxyServlet proxyServlet) {
 		super(proxyServlet);
-		nsOWS = Namespace.getNamespace("http://www.opengis.net/ows/1.1");
 		nsWMTS = Namespace.getNamespace("http://www.opengis.net/wmts/1.0");
 	}
 	
@@ -53,7 +51,7 @@ public class WMTS100ProxyResponseBuilder extends WMTSProxyResponseBuilder {
 	    	Document  docParent = sxb.build(new File(filePath));
 	    	Element racine = docParent.getRootElement();
 	      
-	    	//get the namespace
+	    	//get the namespaces
 	    	nsWMTS = racine.getNamespace();
 	    	List lns = racine.getAdditionalNamespaces();
 	    	Iterator ilns = lns.iterator();
@@ -62,6 +60,8 @@ public class WMTS100ProxyResponseBuilder extends WMTSProxyResponseBuilder {
 	    		Namespace ns = (Namespace)ilns.next();
 	    		if(ns.getPrefix().equalsIgnoreCase("ows"))
 	    			nsOWS = ns;
+	    		if(ns.getPrefix().equalsIgnoreCase("xlink"))
+	    			nsXLINK = ns;
 	    	}
 	    	
 	    	
@@ -69,8 +69,8 @@ public class WMTS100ProxyResponseBuilder extends WMTSProxyResponseBuilder {
 	    	//We have to use a separate List storing the Elements we want to modify.
 	    	
 	    	//Operation filtering
-	    	Filter operationFilter = new WMTSProxyCapabilitiesOperationFilter();
-	    	Filter xlinkFilter = new WMTSProxyCapabilitiesXlinkFilter();
+	    	Filter operationFilter = new ElementOperationFilter();
+	    	Filter xlinkFilter = new AttributeXlinkFilter();
 	    	List<Element> operationList = new ArrayList<Element>();	    	  
 	    	Iterator iOperation= racine.getDescendants(operationFilter);
 	    	while(iOperation.hasNext())
@@ -139,7 +139,7 @@ public class WMTS100ProxyResponseBuilder extends WMTSProxyResponseBuilder {
 		    	}
 		    	
 		    	//Layer filtering
-		    	Filter layerFilter = new WMTSProxyCapabilitiesLayerFilter();
+		    	Filter layerFilter = new ElementLayerFilter();
 		    	List<Element> layerList = new ArrayList<Element>();	    	  
 		    	Iterator iLayer= racine.getDescendants(layerFilter);
 		    	while(iLayer.hasNext())
@@ -199,7 +199,7 @@ public class WMTS100ProxyResponseBuilder extends WMTSProxyResponseBuilder {
 			SAXBuilder sxb = new SAXBuilder();
 			String fileMasterPath = filePathList.get(0).toArray(new String[1])[0];
 			Document documentMaster = sxb.build(new File(fileMasterPath));
-			Filter layerFilter = new WMTSProxyCapabilitiesLayerFilter();
+			Filter layerFilter = new ElementLayerFilter();
 			Element racineMaster = documentMaster.getRootElement();
 			Element contentsMaster=  ((Element)racineMaster.getDescendants(layerFilter).next()).getParentElement();
 			
@@ -226,64 +226,99 @@ public class WMTS100ProxyResponseBuilder extends WMTSProxyResponseBuilder {
 		}
 	}
 	
-	public Boolean CapabilitiesServiceMetadataWriting(Multimap<Integer, String> filePathList)
+	public Boolean CapabilitiesServiceIdentificationWriting(Multimap<Integer, String> filePathList)
 	{
 		try
 		{
 			Config config = servlet.getConfiguration();
-			ServiceContactInfo serviceContactInfo = config.getContactInfo();
+			OWSServiceMetadata serviceMetadata = config.getOwsServiceMetadata();
+			
 			
 			SAXBuilder sxb = new SAXBuilder();
 			Document document = sxb.build(new File(filePathList.get(0).toArray(new String[1])[0]));
 			Element racine = document.getRootElement();
 			racine.removeContent(racine.getChild("ServiceIdentification", nsOWS));
+			racine.removeContent(racine.getChild("ServiceProvider", nsOWS));
+			
+			if(serviceMetadata == null || serviceMetadata.isEmpty())
+			{
+				XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
+		        sortie.output(document, new FileOutputStream(filePathList.get(0).toArray(new String[1])[0]));
+				return true;
+			}
 			
 			Element newServiceIdentification = new Element("ServiceIdentification", nsOWS);
-			
-			if(config.getTitle() != null && config.getTitle().length() != 0)
-				newServiceIdentification.addContent((new Element("Title", nsOWS)).setText(config.getTitle()));
-			
-			if(config.getAbst() != null && config.getAbst().length() != 0)
-				newServiceIdentification.addContent((new Element("Abstract", nsOWS)).setText(config.getAbst()));
-			
-			if(config.getKeywordList() != null && config.getKeywordList().size() != 0)
+			if(serviceMetadata.getTitle() != null && serviceMetadata.getTitle().length() != 0)
+				newServiceIdentification.addContent((new Element("Title", nsOWS)).setText(serviceMetadata.getTitle()));
+			if(serviceMetadata.getAbst() != null && serviceMetadata.getAbst().length() != 0)
+				newServiceIdentification.addContent((new Element("Abstract", nsOWS)).setText(serviceMetadata.getAbst()));
+			if(serviceMetadata.getKeywords() != null && serviceMetadata.getKeywords().size() != 0)
 			{
 				Element keywords = new Element("Keywords", nsOWS);
-				Iterator<String> iKeywords = config.getKeywordList().iterator();
+				Iterator<String> iKeywords = serviceMetadata.getKeywords().iterator();
 				while (iKeywords.hasNext())
 				{
 					keywords.addContent((new Element("Keyword", nsOWS)).setText(iKeywords.next()));
 				}
 				newServiceIdentification.addContent(keywords);
 			}
-			
 			newServiceIdentification.addContent((new Element("ServiceType", nsOWS)).setText("OGC WMTS"));
 			newServiceIdentification.addContent((new Element("ServiceTypeVersion", nsOWS)).setText("1.0.0"));
-			
-			if(config.getFees() != null && config.getFees().length() != 0)
-				newServiceIdentification.addContent((new Element("Fees", nsOWS)).setText(config.getFees()));
-			
-			if(config.getAccessConstraints() != null && config.getAccessConstraints().length() != 0)
-				newServiceIdentification.addContent((new Element("AccessConstraints", nsOWS)).setText(config.getAccessConstraints()));
+			if(serviceMetadata.getFees() != null && serviceMetadata.getFees().length() != 0)
+				newServiceIdentification.addContent((new Element("Fees", nsOWS)).setText(serviceMetadata.getFees()));
+			if(serviceMetadata.getAccessConstraints() != null && serviceMetadata.getAccessConstraints().length() != 0)
+				newServiceIdentification.addContent((new Element("AccessConstraints", nsOWS)).setText(serviceMetadata.getAccessConstraints()));
 			
 			racine.addContent( 0, newServiceIdentification);
-			if(serviceContactInfo != null && !serviceContactInfo.isEmpty())
+			
+			OWSServiceProvider serviceProvider = serviceMetadata.getProvider();
+			if(serviceProvider != null && !serviceProvider.isEmpty())
 			{	
 				Element newServiceProvider = new Element("ServiceProvider", nsOWS);
-				if(serviceContactInfo.getOrganization() != null && serviceContactInfo.getOrganization().length() != 0)
-					newServiceIdentification.addContent((new Element("ProviderName", nsOWS)).setText(serviceContactInfo.getOrganization()));
-				if(serviceContactInfo.getLinkage() != null && serviceContactInfo.getLinkage().length() != 0)
+				if(serviceProvider.getName() != null )
+					newServiceProvider.addContent((new Element("ProviderName", nsOWS)).setText(serviceProvider.getName()));
+				if(serviceProvider.getLinkage() != null )
 				{
 					Element site = new Element("ProviderSite", nsOWS);
-					site.setAttribute("href", serviceContactInfo.getLinkage(),nsXLINK);
-					newServiceIdentification.addContent(site);
+					site.setAttribute("href", serviceProvider.getLinkage(),nsXLINK);
+					newServiceProvider.addContent(site);
 				}
 				
-				ServiceContactAdressInfo  serviceContactAddressInfo = serviceContactInfo.getContactAddress();
-				if(!serviceContactAddressInfo.isEmpty() && serviceContactInfo.getVoicePhone() != null && serviceContactInfo.getVoicePhone().length() != 0 && serviceContactInfo.getFacSimile() != null && serviceContactInfo.getFacSimile().length() != 0)
+				OWSResponsibleParty responsibleParty = serviceProvider.getResponsibleParty();
+				if(responsibleParty != null && !responsibleParty.isEmpty())
 				{
-					Element newProvider = new Element("ServiceProvider", nsOWS);
+					Element newServiceContact = new Element("ServiceContact", nsOWS);
+					if(responsibleParty.getName() != null)
+						newServiceContact.addContent((new Element("IndividualName", nsOWS)).setText(responsibleParty.getName()));
+					if(responsibleParty.getPosition() != null)
+						newServiceContact.addContent((new Element("PositionName", nsOWS)).setText(responsibleParty.getPosition()));
+					if(responsibleParty.getRole() != null)
+						newServiceContact.addContent((new Element("Role", nsOWS)).setText(responsibleParty.getRole()));
+					
+					OWSContact contact  = responsibleParty.getContactInfo();
+					if(contact != null && !contact.isEmpty())
+					{
+						Element newContactInfo = new Element("ContactInfo", nsOWS);
+						OWSTelephone phone = contact.getContactPhone();
+						if(phone != null && !phone.isEmpty())
+						{
+							Element newPhone = new Element("Phone", nsOWS);
+							if(phone.getVoicePhone() != null)
+								newPhone.addContent((new Element("Voice", nsOWS)).setText(phone.getVoicePhone()));
+							if(phone.getFacSimile() != null)
+								newPhone.addContent((new Element("Facsimile", nsOWS)).setText(phone.getFacSimile()));
+							newContactInfo.addContent(newPhone);
+						}
+						OWSAddress address = contact.getAdress();
+						if(address != null && !address.isEmpty())
+						{
+							Element newAddress = new Element("Address", nsOWS);
+							
+						}
+					}
 				}
+				
+				
 				racine.addContent( 1, newServiceProvider);
 			}
 			XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
