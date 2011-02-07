@@ -19,50 +19,21 @@ package org.easysdi.proxy.wmts;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.UUID;
 import java.util.Vector;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.sax.SAXSource;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-
+import org.easysdi.jdom.filter.ElementExceptionReportFilter;
 import org.easysdi.proxy.core.ProxyServlet;
-import org.easysdi.proxy.wms.WMSProxyCapabilitiesLayerFilter;
 import org.easysdi.xml.documents.RemoteServerInfo;
-import org.easysdi.xml.resolver.ResourceResolver;
-import org.geotools.referencing.CRS;
-import org.jdom.Element;
-import org.jdom.filter.Filter;
+import org.jdom.*;
 import org.jdom.input.SAXBuilder;
-import org.jdom.output.Format;
-import org.jdom.output.XMLOutputter;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.NoSuchAuthorityCodeException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
-
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
@@ -92,7 +63,7 @@ public class WMTSProxyServlet extends ProxyServlet{
 	@Override
 	protected void requestPreTreatmentPOST(HttpServletRequest req,
 			HttpServletResponse resp) {
-		// TODO Auto-generated method stub
+		// Auto-generated method stub
 		
 	}
 
@@ -344,7 +315,6 @@ public class WMTSProxyServlet extends ProxyServlet{
 				dump("INFO","transform - Start - Capabilities contents filtering");
 				if(!docBuilder.CapabilitiesContentsFiltering(wmtsFilePathList))
 				{
-					//Something went wrong
 					sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in Capabilities layers filtering. Exception : "+docBuilder.getLastException().toString(),"NoApplicableCode","",requestedVersion));
 					return;
 				}
@@ -352,7 +322,6 @@ public class WMTSProxyServlet extends ProxyServlet{
 				dump("INFO","transform - Start - Capabilities operations filtering");
 				if(!docBuilder.CapabilitiesOperationsFiltering(wmtsFilePathList, getServletUrl(req)))
 				{
-					//Something went wrong
 					sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in Capabilities operations filtering. Exception : "+docBuilder.getLastException().toString(),"NoApplicableCode","",requestedVersion));
 					return;
 				}
@@ -361,7 +330,6 @@ public class WMTSProxyServlet extends ProxyServlet{
 				dump("INFO","transform - Start - Capabilities merging");
 				if(!docBuilder.CapabilitiesMerging(wmtsFilePathList))
 				{
-					//Something went wrong
 					sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in Capabilities merging. Exception : "+docBuilder.getLastException().toString(),"NoApplicableCode","",requestedVersion));
 					return;
 				}
@@ -370,8 +338,7 @@ public class WMTSProxyServlet extends ProxyServlet{
 				dump("INFO","transform - Start - Capabilities metadata writing");
 				if(!docBuilder.CapabilitiesServiceIdentificationWriting(wmtsFilePathList,getServletUrl(req)))
 				{
-					//Something went wrong
-					sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in Capabilities metadata writing. Exception : "+docBuilder.getLastException().toString(),"NoApplicableCode","",requestedVersion));
+					sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in Capabilities Service Identification writing. Exception : "+docBuilder.getLastException().toString(),"NoApplicableCode","",requestedVersion));
 					return;
 				}
 				dump("INFO","transform - End - Capabilities metadata writing");
@@ -410,12 +377,12 @@ public class WMTSProxyServlet extends ProxyServlet{
 				String ext = (path.lastIndexOf(".")==-1)?"":path.substring(path.lastIndexOf(".")+1,path.length());
 				if (ext.equals("xml"))
 				{
-					DocumentBuilderFactory db = DocumentBuilderFactory.newInstance();
-					Document documentMaster = db.newDocumentBuilder().parse(new File(path));
+					SAXBuilder sxb = new SAXBuilder();
+					Document documentMaster = sxb.build(new File(path));
 					if (documentMaster != null) 
 					{
-						NodeList nl = documentMaster.getElementsByTagName("ExceptionReport");
-						if (nl.item(0) != null)
+						List<?> exceptionList = documentMaster.getContent(new ElementExceptionReportFilter());
+						if(exceptionList.iterator().hasNext())
 						{
 							toRemove.put(entry.getKey(), path);
 						}
