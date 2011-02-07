@@ -23,7 +23,7 @@ public class OWSAddress implements Serializable{
 	private static final long serialVersionUID = -1522579526391545420L;
 	
 	private String type = null;
-	private String address= null;
+	private String delivryPoint= null;
 	private String postalCode= null;
 	private String city= null;
 	private String area= null;
@@ -53,18 +53,18 @@ public class OWSAddress implements Serializable{
 	/**
 	 * @param address the address to set
 	 */
-	public void setAddress(String address) {
+	public void setDelivryPoint(String address) {
 		if(address !=null && !"".equals(address))
 		{
 			isEmpty = false;
-			this.address = address;
+			this.delivryPoint = address;
 		}
 	}
 	/**
 	 * @return the address
 	 */
-	public String getAddress() {
-		return address;
+	public String getDelivryPoint() {
+		return delivryPoint;
 	}
 	/**
 	 * @param postalCode the postalCode to set

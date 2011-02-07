@@ -27,7 +27,7 @@ public class WMTS100ProxyResponseBuilder extends WMTSProxyResponseBuilder {
 		nsWMTS = Namespace.getNamespace("http://www.opengis.net/wmts/1.0");
 	}
 	
-	public Boolean CapabilitiesOperationFiltering (Multimap<Integer, String> filePathList, String href ){
+	public Boolean CapabilitiesOperationsFiltering (Multimap<Integer, String> filePathList, String href ){
 		try{
 			SAXBuilder sxb = new SAXBuilder();
 	    	//Retrieve allowed and denied operations from the policy
@@ -116,7 +116,7 @@ public class WMTS100ProxyResponseBuilder extends WMTSProxyResponseBuilder {
 			return false;
 		}
 	}
-	public Boolean CapabilitiesLayerFiltering (Multimap<Integer, String> filePathList ){
+	public Boolean CapabilitiesContentsFiltering (Multimap<Integer, String> filePathList ){
 		
 	    try
 	    {
@@ -128,14 +128,15 @@ public class WMTS100ProxyResponseBuilder extends WMTSProxyResponseBuilder {
 		    	Element racine = docParent.getRootElement();
 		      
 		    	//get the namespace
-		    	nsWMTS = racine.getNamespace();
+		    	Namespace localNsWMTS = racine.getNamespace(); 
+		    	Namespace localNsOWS = nsOWS;
 		    	List lns = racine.getAdditionalNamespaces();
 		    	Iterator ilns = lns.iterator();
 		    	while (ilns.hasNext())
 		    	{
 		    		Namespace ns = (Namespace)ilns.next();
 		    		if(ns.getPrefix().equalsIgnoreCase("ows"))
-		    			nsOWS = ns;
+		    			localNsOWS = ns;
 		    	}
 		    	
 		    	//Layer filtering
@@ -152,18 +153,18 @@ public class WMTS100ProxyResponseBuilder extends WMTSProxyResponseBuilder {
 		    	while (iLLayer.hasNext())
 		    	{
 		    		Element layerElement = (Element)iLLayer.next();
-		    		Element idElement = layerElement.getChild("Identifier", nsOWS);
+		    		Element idElement = layerElement.getChild("Identifier", localNsOWS);
 		    		if (idElement!= null && !servlet.isLayerAllowed(idElement.getText(),servlet.getRemoteServerUrl(iFilePath)))
 					{
-//		    				Element tileMatrixLink = (layerElement.getChild("TileMatrixSetLink", nsWMTS)).getChild("TileMatrixSet", nsWMTS);
+//		    				Element tileMatrixLink = (layerElement.getChild("TileMatrixSetLink", localNsWMTS)).getChild("TileMatrixSet", localNsWMTS);
 		    				Parent parent = layerElement.getParent();
 		    				parent.removeContent (layerElement);
-//		    				List<Element> TileMatrixSet = ((Element)parent).getChildren("TileMatrixSet", nsWMTS);
+//		    				List<Element> TileMatrixSet = ((Element)parent).getChildren("TileMatrixSet", localNsWMTS);
 //		    				Iterator<Element> iTileMatrixSet = TileMatrixSet.iterator();
 //		    				while (iTileMatrixSet.hasNext())
 //		    				{
 //		    					Element m = iTileMatrixSet.next();
-//		    					if(m.getChild("Identifier", nsOWS).getText().equalsIgnoreCase(tileMatrixLink.getText()))
+//		    					if(m.getChild("Identifier", localNsOWS).getText().equalsIgnoreCase(tileMatrixLink.getText()))
 //		    					{
 //		    						parent.removeContent(m);
 //		    						break;
@@ -208,8 +209,8 @@ public class WMTS100ProxyResponseBuilder extends WMTSProxyResponseBuilder {
 				documentChild = sxb.build(new File(filePathList.get(iFilePath).toArray(new String[1])[0]));
 				if (documentChild != null) {
 					Element racineChild = documentChild.getRootElement();
-					nsWMTS = racineChild.getNamespace();
-					Element contentsChild = racineChild.getChild("Contents", nsWMTS);
+					Namespace localNsWMTS = racineChild.getNamespace(); 
+					Element contentsChild = racineChild.getChild("Contents", localNsWMTS);
 //					List layers = contentsChild.getChildren("Layer", nsWMTS);
 //					List matrix = contentsChild.getChildren("TileMatrixSet", nsWMTS);
 			    	contentsMaster.addContent(contentsChild.cloneContent());
@@ -226,7 +227,7 @@ public class WMTS100ProxyResponseBuilder extends WMTSProxyResponseBuilder {
 		}
 	}
 	
-	public Boolean CapabilitiesServiceIdentificationWriting(Multimap<Integer, String> filePathList)
+	public Boolean CapabilitiesServiceIdentificationWriting(Multimap<Integer, String> filePathList, String href)
 	{
 		try
 		{
@@ -313,14 +314,55 @@ public class WMTS100ProxyResponseBuilder extends WMTSProxyResponseBuilder {
 						if(address != null && !address.isEmpty())
 						{
 							Element newAddress = new Element("Address", nsOWS);
-							
+							if (address.getDelivryPoint() != null)
+							{
+								newAddress.addContent((new Element ("DelivryPoint", nsOWS)).setText(address.getDelivryPoint()));
+							}
+							if (address.getCity() != null)
+							{
+								newAddress.addContent((new Element ("City", nsOWS)).setText(address.getCity()));
+							}
+							if (address.getArea() != null)
+							{
+								newAddress.addContent((new Element ("AdministrativeArea", nsOWS)).setText(address.getArea()));
+							}
+							if (address.getPostalCode() != null)
+							{
+								newAddress.addContent((new Element ("PostalCode", nsOWS)).setText(address.getPostalCode()));
+							}
+							if (address.getCountry() != null)
+							{
+								newAddress.addContent((new Element ("Country", nsOWS)).setText(address.getCountry()));
+							}
+							if (address.getElectronicMail() != null)
+							{
+								newAddress.addContent((new Element ("ElectronicMailAddress", nsOWS)).setText(address.getElectronicMail()));
+							}
+							newContactInfo.addContent(newAddress);
 						}
+						newServiceContact.addContent(newContactInfo);
 					}
+					newServiceProvider.addContent(newServiceContact);
 				}
-				
-				
 				racine.addContent( 1, newServiceProvider);
 			}
+			
+			Element serviceMetadataUrl = racine.getChild("ServiceMetadataURL", nsWMTS);
+			if(serviceMetadataUrl != null)
+			{
+				String metadataUrl = serviceMetadataUrl.getAttributeValue("href", nsXLINK);
+				if(metadataUrl.contains("?"))
+				{
+					metadataUrl = metadataUrl.replace(metadataUrl.substring(0, metadataUrl.indexOf("?")), href);
+				}
+				else if (metadataUrl.contains("/1.0.0/WMTSCapabilities.xml"))
+				{
+					metadataUrl = metadataUrl.replace(metadataUrl.substring(0, metadataUrl.indexOf("/1.0.0")), href);
+				}
+				serviceMetadataUrl.setAttribute("href", metadataUrl, nsXLINK);
+			}
+			
+			
 			XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
 	        sortie.output(document, new FileOutputStream(filePathList.get(0).toArray(new String[1])[0]));
 

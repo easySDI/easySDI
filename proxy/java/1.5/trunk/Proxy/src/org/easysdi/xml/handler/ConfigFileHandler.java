@@ -630,7 +630,7 @@ public class ConfigFileHandler extends DefaultHandler {
 		
 		if (isTheGoodId && isConfig && isServiceMetadata && isServiceProvider && isResponsibleParty && isContact && qName.equals("Address")) {
 			owsAddress = new OWSAddress();
-			owsAddress.setAddress(adress);
+			owsAddress.setDelivryPoint(delivryPoint);
 			owsAddress.setArea(area);
 			owsAddress.setCity(city);
 			owsAddress.setCountry(country);

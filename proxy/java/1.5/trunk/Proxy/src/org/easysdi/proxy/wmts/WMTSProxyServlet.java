@@ -341,16 +341,16 @@ public class WMTSProxyServlet extends ProxyServlet{
 			ByteArrayOutputStream tempOut = new ByteArrayOutputStream(); 
 			
 			if ("GetCapabilities".equalsIgnoreCase(operation)) {
-				dump("INFO","transform - Start - Capabilities layers filtering");
-				if(!docBuilder.CapabilitiesLayerFiltering(wmtsFilePathList))
+				dump("INFO","transform - Start - Capabilities contents filtering");
+				if(!docBuilder.CapabilitiesContentsFiltering(wmtsFilePathList))
 				{
 					//Something went wrong
 					sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in Capabilities layers filtering. Exception : "+docBuilder.getLastException().toString(),"NoApplicableCode","",requestedVersion));
 					return;
 				}
-				dump("INFO","transform - End - Capabilities layers filtering");
+				dump("INFO","transform - End - Capabilities contents filtering");
 				dump("INFO","transform - Start - Capabilities operations filtering");
-				if(!docBuilder.CapabilitiesOperationFiltering(wmtsFilePathList, getServletUrl(req)))
+				if(!docBuilder.CapabilitiesOperationsFiltering(wmtsFilePathList, getServletUrl(req)))
 				{
 					//Something went wrong
 					sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in Capabilities operations filtering. Exception : "+docBuilder.getLastException().toString(),"NoApplicableCode","",requestedVersion));
@@ -368,7 +368,7 @@ public class WMTSProxyServlet extends ProxyServlet{
 				dump("INFO","transform - End - Capabilities merging");
 				
 				dump("INFO","transform - Start - Capabilities metadata writing");
-				if(!docBuilder.CapabilitiesServiceIdentificationWriting(wmtsFilePathList))
+				if(!docBuilder.CapabilitiesServiceIdentificationWriting(wmtsFilePathList,getServletUrl(req)))
 				{
 					//Something went wrong
 					sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in Capabilities metadata writing. Exception : "+docBuilder.getLastException().toString(),"NoApplicableCode","",requestedVersion));

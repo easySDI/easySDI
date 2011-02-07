@@ -576,6 +576,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 //			dump("DEBUG","End old way");
 						
 //			dump("DEBUG","Start new way");
+//			req.setCharacterEncoding("UTF-8");
 			BufferedReader r = req.getReader();
 			StringBuffer param = new StringBuffer();
 			char[] buf = new char[4 * 1024]; // 4Kchar buffer
