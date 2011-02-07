@@ -144,6 +144,9 @@ class SITE_object {
 			$mainframe->setUserState('limitstart', $limitstart);
 		}	
 		
+		if ($limitstart < 0)
+			$limitstart = 0;
+		
 		//echo $limitstart."<br>";
 		//break;
 		// Create the pagination object

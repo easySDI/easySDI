@@ -36,7 +36,19 @@ class SITE_catalog {
 		
 		$option=JRequest::getVar("option");
 		$limit = JRequest::getVar('limit', $MDPag );
-		$limitstart = JRequest::getVar('limitstart', 0 );
+		//$limitstart = JRequest::getVar('limitstart', 0 );
+		$context	= $option.'.listCatalogContent';
+		$limitstart	= $mainframe->getUserStateFromRequest($context.'limitstart', 'limitstart', 0, 'int');
+				
+		// Si le nombre de résultats retournés a changé, adapter la page affichée
+		if ($limitstart >= $total)
+		{
+			$limitstart = ( $limit != 0 ? ((floor($total / $limit) * $limit)-1) : 0 );
+			$mainframe->setUserState('limitstart', $limitstart);
+		}	
+		
+		if ($limitstart < 0)
+			$limitstart = 0;
 		
 		// Langues à gérer
 		$this->langList = array();

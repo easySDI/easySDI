@@ -165,7 +165,7 @@ function listRelation(&$rows, $lists, $page, $option,  $filter_order_Dir, $filte
 <?php
 	}
 	
-	function newRelation(&$row, &$rowAttribute, $types, $type, $classes, $attributes, $objecttypes, $rendertypes, $relationtypes, $fieldsLength, $attributeFieldsLength, $boundsStyle, $style, $defaultStyle_textbox, $defaultStyle_textarea, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale_Textbox, $defaultStyle_Locale_Textarea, $defaultStyle_Choicelist, $languages, $codevalues, $choicevalues, $selectedcodevalues, $profiles, $selected_profiles, $contexts, $selected_contexts, $attributetypes, $attributeid, $pageReloaded, $localeDefaults, $labels, $filterfields, $informations, $namespacelist, $searchCriteriaFieldsLength, $searchCriteria, $child_attributetype, $option)
+	function newRelation(&$row, &$rowAttribute, $types, $type, $classes, $attributes, $objecttypes, $rendertypes, $relationtypes, $fieldsLength, $attributeFieldsLength, $boundsStyle, $style, $defaultStyle_textbox, $defaultStyle_textarea, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale_Textbox, $defaultStyle_Locale_Textarea, $defaultStyle_Choicelist, $renderStyle, $languages, $codevalues, $choicevalues, $selectedcodevalues, $profiles, $selected_profiles, $contexts, $selected_contexts, $attributetypes, $attributeid, $pageReloaded, $localeDefaults, $labels, $filterfields, $informations, $namespacelist, $searchCriteriaFieldsLength, $searchCriteria, $child_attributetype, $option)
 	{
 		JHTML::script('catalog.js', 'administrator/components/com_easysdi_catalog/js/');
 		global  $mainframe;
@@ -302,17 +302,21 @@ foreach ($languages as $lang)
 if ($type == 2)
 { 
 ?>
-			<table width=540>
+			<table border="0" cellpadding="3" cellspacing="0">
 				<tr>
 					<td width=150><?php echo JText::_("CATALOG_ATTRIBUTECHILD"); ?></td>
 					<td><?php echo JHTML::_("select.genericlist",$attributes, 'attributechild_id', 'size="1" class="inputbox" onchange="javascript:submitbutton(\'newRelation\');"', 'value', 'text', $attributeid ); // javascript:changeVisibility(this.value); javascript:updatelist(this.value)?></td>							
-				</tr>
+				</tr>	
+			</table>
+			<div id="div_render" style="<?php echo $renderStyle; ?>">
+			<table border="0" cellpadding="3" cellspacing="0">
 				<tr>
-					<td><?php echo JText::_("CATALOG_RENDERTYPE"); ?></td>
+					<td WIDTH=150><?php echo JText::_("CATALOG_RENDERTYPE"); ?></td>
 					<?php if ($pageReloaded and array_key_exists('rendertype_id', $_POST)) $selectedRendertype = $_POST['rendertype_id']; else $selectedRendertype = $row->rendertype_id; ?>
 					<td><?php echo JHTML::_("select.genericlist",$rendertypes, 'rendertype_id', 'size="1" class="inputbox" onchange="javascript:changeDefaultField(this.value);"', 'value', 'text', $selectedRendertype ); ?></td>							
 				</tr>	
 			</table>
+			</div>
 			<div id = "div_defaultVal_textbox" style="<?php echo $defaultStyle_textbox; ?>">
 			<table border="0" cellpadding="3" cellspacing="0">
 			<tr>

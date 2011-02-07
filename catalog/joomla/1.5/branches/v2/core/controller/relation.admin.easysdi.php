@@ -446,6 +446,7 @@ class ADMIN_relation {
 		$defaultStyle_Radio = "display:none";
 		$defaultStyle_Locale_Textbox = "display:none";
 		$defaultStyle_Locale_Textarea = "display:inline";
+		$renderStyle = "display:inline";
 		$codevalues=array();
 		$choicevalues=array();
 		$selectedcodevalues=array();
@@ -499,11 +500,13 @@ class ADMIN_relation {
 			// + Champ de saisie de codeValueList
 			if ($rowAttribute->attributetype_id <> 6)
 			{
+				$renderStyle = "display:inline";
 				$style = "display:none";
 				$defaults['style'] = "display:none";
 			}
 			else
 			{
+				$renderStyle = "display:inline";
 				$style = "display:inline";
 				$defaults['style'] = "display:inline";
 			}
@@ -516,6 +519,7 @@ class ADMIN_relation {
 				$rowAttribute->attributetype_id == 6 or // List
 				$rowAttribute->attributetype_id == 7) // Link
 			{
+				$renderStyle = "display:inline";
 				$defaultStyle_textarea = "display:none";
 				$defaultStyle_textbox = "display:none";
 				$defaults['style_textarea'] = "display:none";
@@ -524,6 +528,7 @@ class ADMIN_relation {
 			else
 				if ($rowRelation->rendertype_id == 1)
 				{
+					$renderStyle = "display:inline";
 					$defaultStyle_textarea = "display:inline";
 					$defaultStyle_textbox = "display:none";
 					$defaults['style_textarea'] = "display:inline";
@@ -531,6 +536,7 @@ class ADMIN_relation {
 				}
 				else
 				{
+					$renderStyle = "display:inline";
 					$defaultStyle_textbox = "display:inline";
 					$defaultStyle_textarea = "display:none";
 					$defaults['style_textarea'] = "display:none";
@@ -540,11 +546,13 @@ class ADMIN_relation {
 			// Radio button pour la saisie de la valeur par d�faut pour la date
 			if ($rowAttribute->attributetype_id <> 5)
 			{
+				$renderStyle = "display:inline";
 				$defaultStyle_Radio = "display:none";
 				$defaults['style_radio'] = "display:none";
 			}
 			else
 			{
+				$renderStyle = "display:inline";
 				$defaultStyle_Radio = "display:inline";
 				$defaults['style_radio'] = "display:inline";
 				if ($rowAttribute->default <> "today")
@@ -557,6 +565,7 @@ class ADMIN_relation {
 			// Plusieurs textbox pour la saisie de la valeur par d�faut pour la locale
 			if ($rowAttribute->attributetype_id <> 3)
 			{
+				$renderStyle = "display:inline";
 				$defaultStyle_Locale_Textbox = "display:none";
 				$defaultStyle_Locale_Textarea = "display:none";
 				$defaults['style_locale_textarea'] = "display:none";
@@ -565,6 +574,7 @@ class ADMIN_relation {
 			else
 				if ($rowRelation->rendertype_id == 1) // Rendu Textarea
 				{
+					$renderStyle = "display:inline";
 					$defaultStyle_Locale_Textbox = "display:none";
 					$defaultStyle_Locale_Textarea = "display:inline";
 					$defaults['style_locale_textarea'] = "display:inline";
@@ -572,7 +582,8 @@ class ADMIN_relation {
 				}
 				else
 				{
-					$defaultStyle_Locale_Textarea = "display:none";
+					$renderStyle = "display:inline";
+				$defaultStyle_Locale_Textarea = "display:none";
 					$defaultStyle_Locale_Textbox = "display:inline";
 					$defaults['style_locale_textarea'] = "display:none";
 					$defaults['style_locale_textbox'] = "display:inline";
@@ -581,6 +592,7 @@ class ADMIN_relation {
 			// Liste d�roulante choicelist
 			if ($rowAttribute->attributetype_id <> 9 and $rowAttribute->attributetype_id <> 10)
 			{
+				$renderStyle = "display:inline";
 				$defaultStyle_textbox = "display:none";
 				$defaultStyle_textarea = "display:none";
 				$defaultStyle_Choicelist = "display:none";
@@ -590,6 +602,7 @@ class ADMIN_relation {
 			}
 			else
 			{
+				$renderStyle = "display:inline";
 				$defaultStyle_textbox = "display:none";
 				$defaultStyle_textarea = "display:none";
 				$defaultStyle_Choicelist = "display:inline";
@@ -630,12 +643,13 @@ class ADMIN_relation {
 			if ($rowAttribute->attributetype_id == 11) // Thesaurus GEMET
 			{
 				$boundsStyle = "display:none";
+				$renderStyle = "display:none";
 				$defaultStyle_textbox = "display:none";
 				$defaultStyle_textarea = "display:none";
 				$defaultStyle_Choicelist = "display:none";
-				$defaults['style_choicelist'] = "display:none";
 				$defaultStyle_Locale_Textbox = "display:none";
 				$defaultStyle_Locale_Textarea = "display:none";
+				$defaults['style_choicelist'] = "display:none";				
 			}
 		}
 		/* Fin de la pr�paration consacr�e � une relation vers un attribut */
@@ -686,7 +700,7 @@ class ADMIN_relation {
 		}
 		
 		
-		HTML_relation::newRelation($rowRelation, $rowAttribute, $types, $type, $classes, $attributes, $objecttypes, $rendertypes, $relationtypes, $fieldsLength, $attributeFieldsLength, $boundsStyle, $style, $defaultStyle_textbox, $defaultStyle_textarea, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale_Textbox, $defaultStyle_Locale_Textarea, $defaultStyle_Choicelist, $languages, $codevalues, $choicevalues, $selectedcodevalues, $profiles, $selected_profiles, $contexts, $selected_contexts, $attributetypes, $attributeid, $pageReloaded, $localeDefaults, $labels, $filterfields, $informations, $namespacelist, $searchCriteriaFieldsLength, $searchCriteria, $child_attributetype, $option);
+		HTML_relation::newRelation($rowRelation, $rowAttribute, $types, $type, $classes, $attributes, $objecttypes, $rendertypes, $relationtypes, $fieldsLength, $attributeFieldsLength, $boundsStyle, $style, $defaultStyle_textbox, $defaultStyle_textarea, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale_Textbox, $defaultStyle_Locale_Textarea, $defaultStyle_Choicelist, $renderStyle, $languages, $codevalues, $choicevalues, $selectedcodevalues, $profiles, $selected_profiles, $contexts, $selected_contexts, $attributetypes, $attributeid, $pageReloaded, $localeDefaults, $labels, $filterfields, $informations, $namespacelist, $searchCriteriaFieldsLength, $searchCriteria, $child_attributetype, $option);
 	}
 	
 	function editRelation($id, $option)
@@ -1269,6 +1283,9 @@ class ADMIN_relation {
 		
 		if ($rowRelation->namespace_id == 0)
 			$rowRelation->namespace_id = null;
+		
+		if ($rowRelation->rendertype_id == 0)
+			$rowRelation->rendertype_id = null;
 		
 		if (array_key_exists('classassociation_id', $_POST) and $_POST['classassociation_id'] == 0)
 		{

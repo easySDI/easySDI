@@ -4109,14 +4109,16 @@ class ADMIN_metadata {
 	{
 		// Ce décode est nécessaire pour arriver à sauver dans un bon encodage le fichier XML.
 		// Ceci permet d'envoyer au proxy les caractères accentués.
-		$xmlBody = utf8_decode($xmlBody);
+		//$xmlBody = utf8_decode($xmlBody);
 
-		/*
+		
 		//$fp = fopen('/home/users/depthch/easysdi/proxy/logs/xmlBodyApresDecode.xml', 'w');
 		//$fp = fopen('C:\RecorderWebGIS\xmlBodyApresDecode.xml', 'w');
+		$filename = JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'xml'.DS.'tmp'.DS.'sendedrequest.xml';
+		$fp = fopen($filename, 'w');
 		fwrite($fp, $xmlBody);
 		fclose($fp);
-		*/
+		
 		
 		$database =& JFactory::getDBO(); 
 		
@@ -4132,7 +4134,7 @@ class ADMIN_metadata {
 		// Configuration commune
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: text/xml', 'charset="UTF-8"'));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: text/xml; charset="UTF-8"', 'charset="UTF-8"'));
         curl_setopt($ch, CURLOPT_COOKIE, $cookies);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_ENCODING, "");
