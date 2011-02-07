@@ -111,7 +111,9 @@ public abstract class ProxyServlet extends HttpServlet {
 	protected org.easysdi.xml.documents.Config configuration;
 
 	public Policy policy;
+	protected String requestCharacterEncoding = null;
 	protected String responseContentType = null;
+	protected String responseCharacterEncoding = null;
 	protected List<String> responseContentTypeList = new ArrayList<String>();
 	protected String bbox = null;
 	protected String srsName = null;
@@ -235,6 +237,7 @@ public abstract class ProxyServlet extends HttpServlet {
 
 		DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
 		Date d = new Date();
+		requestCharacterEncoding = req.getCharacterEncoding();
 		try {
 			requestPreTreatmentPOST(req, resp);
 		} finally {
@@ -249,8 +252,10 @@ public abstract class ProxyServlet extends HttpServlet {
 		// Get the date and time of the request
 		DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
 		Date d = new Date();
-
+		requestCharacterEncoding = req.getCharacterEncoding();
+		
 		try {
+			
 			requestPreTreatmentGET(req, resp);
 		} finally {
 			deleteTempFileList();
@@ -567,8 +572,9 @@ public abstract class ProxyServlet extends HttpServlet {
 	public void sendOgcExceptionBuiltInResponse (HttpServletResponse resp,StringBuffer ogcException)
 	{
 		try {
-			resp.setContentType("application/xml");
+			resp.setContentType("text/xml; charset=utf-8");
 			resp.setContentLength(Integer.MAX_VALUE);
+			
 			OutputStream os;
 			os = resp.getOutputStream();
 			os.write(ogcException.toString().getBytes());
@@ -590,7 +596,7 @@ public abstract class ProxyServlet extends HttpServlet {
 	public void sendProxyBuiltInResponse (HttpServletResponse resp,StringBuffer xmlResponse)
 	{
 		try {
-			resp.setContentType("application/xml");
+			resp.setContentType("text/xml; charset=utf-8");
 			resp.setContentLength(Integer.MAX_VALUE);
 			OutputStream os;
 			os = resp.getOutputStream();
@@ -673,8 +679,10 @@ public abstract class ProxyServlet extends HttpServlet {
 
 			if (method.equalsIgnoreCase("POST")) {
 				hpcon.setRequestProperty("Content-Length", "" + Integer.toString(parameters.getBytes().length));
-				// hpcon.setRequestProperty("Content-Type", contentType);
-				hpcon.setRequestProperty("Content-Type", "text/xml; charset=utf-8");
+				String contentType = XML;
+				if(requestCharacterEncoding != null)
+					contentType += "; " +requestCharacterEncoding;
+				hpcon.setRequestProperty("Content-Type", contentType);
 
 				hpcon.setDoOutput(true);
 				DataOutputStream printout = new DataOutputStream(hpcon.getOutputStream());
@@ -698,6 +706,7 @@ public abstract class ProxyServlet extends HttpServlet {
 
 			int input;
 
+			responseCharacterEncoding = hpcon.getContentEncoding();
 			responseContentType = hpcon.getContentType().split(";")[0];
 			responseContentTypeList.add(responseContentType);
 			String tmpDir = System.getProperty("java.io.tmpdir");
@@ -1926,6 +1935,7 @@ public abstract class ProxyServlet extends HttpServlet {
 			// No post rule to apply. Copy the file result on the output stream
 			BufferedOutputStream os = new BufferedOutputStream(resp.getOutputStream());
 			resp.setContentType(responseContentType);
+			resp.setCharacterEncoding(responseCharacterEncoding);
 			try {
 				dump("transform begin response writting");
 				if ("1".equals(req.getParameter("download"))) {

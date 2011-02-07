@@ -20,7 +20,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
@@ -79,6 +82,13 @@ public class WMTSProxyServlet extends ProxyServlet{
 			String updateSequence = "";
 			String acceptFormats = "";
 			String paramUrlBase = "";
+			String layer = "";
+			String style = "";
+			String format ="";
+			String tileMatrixSet = "";
+			String tileMatrix = "";
+			String tileRow = "";
+			String tileCol = "";
 			
 			Enumeration<String> parameterNames = req.getParameterNames();
 			while (parameterNames.hasMoreElements()) {
@@ -90,12 +100,19 @@ public class WMTSProxyServlet extends ProxyServlet{
 					value = "1.0.0";
 					paramUrlBase = paramUrlBase + key + "=" + value + "&";
 				}
-				else
+				else{
 					paramUrlBase = paramUrlBase + key + "=" + value + "&";
+				}
 				
 				if (key.equalsIgnoreCase("service") )
 				{
 					service = req.getParameter(key);
+					if(!service.equalsIgnoreCase("WMTS"))
+					{
+						dump("ERROR", "Service requested is not WMTS.");
+						sendOgcExceptionBuiltInResponse(resp,generateOgcError("Operation request contains an invalid parameter value.","InvalidParameterValue","service", "1.0.0"));
+						return;
+					}
 				}
 				else if (key.equalsIgnoreCase("request"))
 				{
@@ -127,6 +144,34 @@ public class WMTSProxyServlet extends ProxyServlet{
 				else if (key.equalsIgnoreCase("acceptFormats"))
 				{
 					acceptFormats = req.getParameter(key);
+				}
+				else if (key.equalsIgnoreCase("Layer"))
+				{
+					layer = req.getParameter(key);
+				}
+				else if (key.equalsIgnoreCase("Style"))
+				{
+					style = req.getParameter(key);
+				}
+				else if (key.equalsIgnoreCase("Format"))
+				{
+					format = req.getParameter(key);
+				}
+				else if (key.equalsIgnoreCase("TileMatrixSet"))
+				{
+					tileMatrixSet = req.getParameter(key);
+				}
+				else if (key.equalsIgnoreCase("TileMatrix"))
+				{
+					tileMatrix = req.getParameter(key);
+				}
+				else if (key.equalsIgnoreCase("TileRow"))
+				{
+					tileRow = req.getParameter(key);
+				}
+				else if (key.equalsIgnoreCase("TileCol"))
+				{
+					tileCol = req.getParameter(key);
 				}
 			}
 			
@@ -189,6 +234,21 @@ public class WMTSProxyServlet extends ProxyServlet{
 								}
 							}
 						}
+						if ("GetTile".equalsIgnoreCase(operation)) {
+							String filePath = sendData("GET", getRemoteServerUrl(j), paramUrlBase);
+
+							synchronized (wmtsFilePathList) {
+								synchronized (layerFilePathList) {
+									synchronized (serverUrlPerfilePathList) {
+										// Insert the responses
+										dump("requestPreTraitementGET save response getTile from thread server " + getRemoteServerUrl(j));
+										layerFilePathList.put(layerOrder, "");
+										serverUrlPerfilePathList.put(layerOrder, getRemoteServerUrl(j));
+										wmtsFilePathList.put(layerOrder, filePath);
+									}
+								}
+							}
+						}
 						dump("DEBUG", "Thread Server: " + getRemoteServerUrl(j) + " work finished");
 					}
 					catch (Exception e)
@@ -201,9 +261,31 @@ public class WMTSProxyServlet extends ProxyServlet{
 				}
 			}
 			
-			
+			//Servers define in config.xml
 			List<RemoteServerInfo> grsiList = getRemoteServerInfoList();
 			List<RemoteServerThread> serverThreadList = new Vector<RemoteServerThread>();
+			
+			//Layers requested
+			List<String> layerArray = null;
+			if (layer != null && layer != "" )
+			{
+				layerArray = Collections.synchronizedList(new ArrayList<String>(Arrays.asList(layer.split(","))));
+			}
+			else
+			{
+				layerArray = Collections.synchronizedList(new ArrayList<String>());
+			}
+			
+			//Check layer
+			Iterator<String> iLayer =  layerArray.iterator();
+			while (iLayer.hasNext())
+			{
+				String slayer = iLayer.next();
+				if(!isLayerAllowed(slayer)){
+					sendOgcExceptionBuiltInResponse(resp,generateOgcError("Invalid layer(s) given in the LAYER parameter : "+slayer,"LayerNotDefined","layer",requestedVersion));
+					return;
+				}
+			}
 			
 			int layerOrder = 0;
 			String lastServerURL = null;
@@ -229,6 +311,10 @@ public class WMTSProxyServlet extends ProxyServlet{
 					serverThreadList.add(s);
 				}
 
+			}
+			else 
+			{
+				
 			}
 			
 			for (int i = 0; i < serverThreadList.size(); i++) {
