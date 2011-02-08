@@ -78,6 +78,7 @@ public class WMTSProxyServlet extends ProxyServlet{
 			String service = "";
 			String request = "";
 			String acceptVersions = "";
+			String version ="";
 			String sections = "";
 			String updateSequence = "";
 			String acceptFormats = "";
@@ -127,6 +128,16 @@ public class WMTSProxyServlet extends ProxyServlet{
 						requestedVersion = "100";
 					}
 					else
+					{
+						dump("ERROR", "WMTS requested version is not supported.");
+						sendOgcExceptionBuiltInResponse(resp,generateOgcError("Version not supported.","InvalidParameterValue","acceptVersions", "1.0.0"));
+						return;
+					}
+				}
+				else if (key.equalsIgnoreCase("version"))
+				{
+					version = req.getParameter(key);
+					if(!version.equalsIgnoreCase("1.0.0"))
 					{
 						dump("ERROR", "WMTS requested version is not supported.");
 						sendOgcExceptionBuiltInResponse(resp,generateOgcError("Version not supported.","InvalidParameterValue","acceptVersions", "1.0.0"));
@@ -185,76 +196,41 @@ public class WMTSProxyServlet extends ProxyServlet{
 			 *
 			 */
 			class RemoteServerThread extends Thread {
-				protected Vector<String> serverFilePathList = new Vector<String>();
-				protected Vector<String> serverLayerFilePathList = new Vector<String>();
-
 				String operation;
 				String paramUrl;
-				List layerToKeepList;
-				int iServer;
-				String paramUrlBase;
-				String format;
-				int j;
-				int layerOrder;
+				int remoteServerIndex;
 				HttpServletResponse resp;
 
-				public RemoteServerThread(	String pOperation,
-											String pParamUrl, 
-											List pLayerToKeepList, 
-											int pIServer,  
-											String pParamUrlBase,
-											int pJ, 
-											String pFormat, 
-											HttpServletResponse res) {
+				public RemoteServerThread(	String pOperation,String pParamUrl, int pRemoteServerIndex, HttpServletResponse response) {
 					operation = pOperation;
 					paramUrl = pParamUrl;
-					layerToKeepList = pLayerToKeepList;
-					iServer = pIServer;
-					paramUrlBase = pParamUrlBase;
-					j = pJ;
-					format = pFormat;
-					resp = res;
+					remoteServerIndex = pRemoteServerIndex;
+					resp = response;
 				}
 				
 				public void run() {
+					String remoteServerUrl =  getRemoteServerUrl(remoteServerIndex);
 					try {
-						dump("DEBUG", "Thread Server: " + getRemoteServerUrl(j) + " work begin");
-						if ("GetCapabilities".equalsIgnoreCase(operation)) {
-							String filePath = sendData("GET", getRemoteServerUrl(j), paramUrlBase);
-
-							synchronized (wmtsFilePathList) {
-								synchronized (layerFilePathList) {
-									synchronized (serverUrlPerfilePathList) {
-										// Insert the responses
-										dump("requestPreTraitementGET save response capabilities from thread server " + getRemoteServerUrl(j));
-										layerFilePathList.put(layerOrder, "");
-										serverUrlPerfilePathList.put(layerOrder, getRemoteServerUrl(j));
-										wmtsFilePathList.put(layerOrder, filePath);
-									}
+						
+						dump("DEBUG", "Thread Server: " + remoteServerUrl + " work begin");
+						
+						String filePath = sendData("GET", remoteServerUrl, paramUrl);
+						synchronized (wmtsFilePathList) {
+							synchronized (layerFilePathList) {
+								synchronized (serverUrlPerfilePathList) {
+									dump("requestPreTraitementGET save response capabilities from thread server " + remoteServerUrl);
+									layerFilePathList.put(remoteServerIndex, "");
+									serverUrlPerfilePathList.put(remoteServerIndex, remoteServerUrl);
+									wmtsFilePathList.put(remoteServerIndex, filePath);
 								}
 							}
 						}
-						if ("GetTile".equalsIgnoreCase(operation)) {
-							String filePath = sendData("GET", getRemoteServerUrl(j), paramUrlBase);
-
-							synchronized (wmtsFilePathList) {
-								synchronized (layerFilePathList) {
-									synchronized (serverUrlPerfilePathList) {
-										// Insert the responses
-										dump("requestPreTraitementGET save response getTile from thread server " + getRemoteServerUrl(j));
-										layerFilePathList.put(layerOrder, "");
-										serverUrlPerfilePathList.put(layerOrder, getRemoteServerUrl(j));
-										wmtsFilePathList.put(layerOrder, filePath);
-									}
-								}
-							}
-						}
-						dump("DEBUG", "Thread Server: " + getRemoteServerUrl(j) + " work finished");
+						dump("DEBUG", "Thread Server: " + remoteServerUrl + " work finished");
 					}
 					catch (Exception e)
 					{
 						resp.setHeader("easysdi-proxy-error-occured", "true");
-						dump("ERROR", "Server Thread " + getRemoteServerUrl(j) + " :" + e.getMessage());
+						dump("ERROR", "Server Thread " + remoteServerUrl+ " :" + e.getMessage());
 						e.printStackTrace();
 						sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
 					}
@@ -262,59 +238,37 @@ public class WMTSProxyServlet extends ProxyServlet{
 			}
 			
 			//Servers define in config.xml
-			List<RemoteServerInfo> grsiList = getRemoteServerInfoList();
+			List<RemoteServerInfo> remoteServerList = getRemoteServerInfoList();
 			List<RemoteServerThread> serverThreadList = new Vector<RemoteServerThread>();
 			
-			//Layers requested
-			List<String> layerArray = null;
-			if (layer != null && layer != "" )
-			{
-				layerArray = Collections.synchronizedList(new ArrayList<String>(Arrays.asList(layer.split(","))));
-			}
-			else
-			{
-				layerArray = Collections.synchronizedList(new ArrayList<String>());
-			}
-			
-			//Check layer
-			Iterator<String> iLayer =  layerArray.iterator();
-			while (iLayer.hasNext())
-			{
-				String slayer = iLayer.next();
-				if(!isLayerAllowed(slayer)){
-					sendOgcExceptionBuiltInResponse(resp,generateOgcError("Invalid layer(s) given in the LAYER parameter : "+slayer,"LayerNotDefined","layer",requestedVersion));
-					return;
-				}
-			}
-			
-			int layerOrder = 0;
-			String lastServerURL = null;
-			String newServerURL = null;
 			String cpOperation = new String(request);
-			String cpParamUrl = "";
-			String cpParamUrlBase = new String(paramUrlBase);
-			String cpFormat = new String(acceptFormats);
-			String filter = null;
+			String cpParamUrl = new String(paramUrlBase);
 			if (request.equalsIgnoreCase("getcapabilities")) {
-				for (int jj = 0; jj < grsiList.size(); jj++) {
-					RemoteServerThread s = new RemoteServerThread(  cpOperation, 
-																	cpParamUrl, 
-																	null, 
-																	serverThreadList.size(), 
-																	cpParamUrlBase, 
-																	jj, 
-																	cpFormat, 
-																	resp);
-
-					s.layerOrder = jj;
+				for (int iRS = 0; iRS < remoteServerList.size(); iRS++) {
+					RemoteServerThread s = new RemoteServerThread(cpOperation, cpParamUrl, iRS, resp);
 					s.start();
 					serverThreadList.add(s);
 				}
 
 			}
-			else 
+			else if(request.equalsIgnoreCase("gettile"))
 			{
-				
+				//Check layer
+				if(!isLayerAllowed(layer)){
+					sendOgcExceptionBuiltInResponse(resp,generateOgcError("Invalid layer name given in the LAYER parameter : "+layer,"InvalidParameterValue","layer",requestedVersion));
+					return;
+				}
+				//Find the remote server which is storing the requested layer.
+				for (int iRS = 0; iRS < remoteServerList.size(); iRS++) {
+					String remoteServerUrl = remoteServerList.get(iRS).getUrl();
+					if(isLayerAllowed(layer, remoteServerUrl))
+					{
+						RemoteServerThread s = new RemoteServerThread(cpOperation, cpParamUrl, iRS,resp);
+						s.start();
+						serverThreadList.add(s);
+						break;
+					}
+				}
 			}
 			
 			for (int i = 0; i < serverThreadList.size(); i++) {
@@ -329,7 +283,6 @@ public class WMTSProxyServlet extends ProxyServlet{
 				dump("INFO", "This request has no authorized results! Generate an empty response.");
 				sendProxyBuiltInResponse(resp,generateEmptyResponse(request));
 			}
-			
 		}
 		catch (Exception e)
 		{
@@ -503,7 +456,7 @@ public class WMTSProxyServlet extends ProxyServlet{
 		sb.append("<ExceptionReport xmlns=\"http://www.opengis.net/ows/1.1\" " +
 				"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +
 				"xsi:schemaLocation=\"http://www.opengis.net/ows/1.1\" version=\"");
-		sb.append(version);
+		sb.append("1.1.0");
 		sb.append("\">\n");
 		sb.append("\t<Exception ");
 		sb.append(" exceptionCode=\"");

@@ -701,14 +701,21 @@ public abstract class ProxyServlet extends HttpServlet {
 				in = new GZIPInputStream(hpcon.getInputStream());
 				dump("DEBUG", "return of the remote server is zipped");
 			} else {
-				in = hpcon.getInputStream();
+				if(hpcon.getResponseCode() == 400 || hpcon.getResponseCode() == 500)
+					in = hpcon.getErrorStream();
+				else
+					in = hpcon.getInputStream();
+				
 			}
 
 			int input;
 
 			responseCharacterEncoding = hpcon.getContentEncoding();
-			responseContentType = hpcon.getContentType().split(";")[0];
-			responseContentTypeList.add(responseContentType);
+			if(hpcon.getContentType() != null)
+			{
+				responseContentType = hpcon.getContentType().split(";")[0];
+				responseContentTypeList.add(responseContentType);
+			}
 			String tmpDir = System.getProperty("java.io.tmpdir");
 			dump(" tmpDir :  " + tmpDir);
 
