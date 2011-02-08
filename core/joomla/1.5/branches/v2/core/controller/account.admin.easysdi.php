@@ -263,6 +263,15 @@ class ADMIN_account {
 			$account = new account( $database );
 			$account->load( $account_id );
 		
+			// Vider les entr�es de la table #__sdi_address
+			$database->setQuery("DELETE FROM #__sdi_address WHERE account_id=".$account_id);
+			//echo $database->getQuery()."<br>";
+			if (!$database->query())
+			{	
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			
+			
 			// Vider les entr�es de la table #__sdi_account_accountprofile
 			$database->setQuery("DELETE FROM #__sdi_account_accountprofile WHERE account_id=".$account_id);
 			//echo $database->getQuery()."<br>";
