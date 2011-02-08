@@ -40,7 +40,8 @@ class TOOLBAR_objecttype {
 		
 		JToolBarHelper::save('saveObjectType');
 		JToolBarHelper::apply('applyObjectType');
-		JToolBarHelper::cancel('cancelObjectType');
+		JToolBarHelper::spacer();
+		JToolBarHelper::custom( 'cancelObjectType', 'back.png', 'back.png', JTEXT::_("CORE_MENU_BACK"), false );
 	}
 }
 
