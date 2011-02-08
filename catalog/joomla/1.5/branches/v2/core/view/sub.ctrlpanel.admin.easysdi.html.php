@@ -19,7 +19,7 @@
 			             <li><?php printf('<a href="index.php?option=%s&amp;task=listObjectType">', $option); echo JText::_( 'CORE_OBJECTTYPE_PANEL' ); ?></a></li>
 			             <li><?php printf('<a href="index.php?option=%s&amp;task=listObjectTypeLink">', $option); echo JText::_( 'CORE_OBJECTTYPELINK_PANEL' ); ?></a></li>
 			             <li><?php printf('<a href="index.php?option=%s&amp;task=listBoundary">', $option); echo JText::_( 'CORE_BOUNDARY_PANEL' ); ?></a></li>
-			             <li><?php printf('<a href="index.php?option=%s&amp;task=listNamespace">', $option); echo JText::_( 'CORE_NAMESPACE_PANEL' ); ?></a></li>
+			             <li><?php printf('<a href="index.php?option=%s&amp;task=listMDNamespace">', $option); echo JText::_( 'CORE_NAMESPACE_PANEL' ); ?></a></li>
 				  </ul>
 			       </td>
 			       <td class="header_sdi_list">
