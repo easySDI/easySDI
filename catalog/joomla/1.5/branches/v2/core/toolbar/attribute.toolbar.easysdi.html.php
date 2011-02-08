@@ -27,7 +27,7 @@ class TOOLBAR_attribute {
 		JToolBarHelper::deleteList( JText::_( 'CATALOG_ATTRIBUTE_DELETE_CONFIRM_MSG'), 'removeAttribute', JText::_( 'DELETE'));		
 		
 		JToolBarHelper::spacer();
-		JToolBarHelper::custom( 'cpanel', 'tool_f2.png', 'tool_f2.png', JTEXT::_("CORE_MENU_CPANEL"), false );
+		JToolBarHelper::custom( 'cpanel', 'tool_easysdi_admin.png', 'tool_easysdi_admin.png', JTEXT::_("CORE_MENU_CPANEL"), false );
 	}
 	function _EDIT() {
 		global $mainframe;

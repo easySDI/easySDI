@@ -27,7 +27,7 @@ class TOOLBAR_profile {
 		JToolBarHelper::deleteList( JText::_( 'CATALOG_PROFILE_DELETE_CONFIRM_MSG'), 'removeProfile', JText::_( 'DELETE'));		
 		
 		JToolBarHelper::spacer();
-		JToolBarHelper::custom( 'cpanel', 'tool_f2.png', 'tool_f2.png', JTEXT::_("CORE_MENU_CPANEL"), false );
+		JToolBarHelper::custom( 'cpanel', 'tool_easysdi_admin.png', 'tool_easysdi_admin.png', JTEXT::_("CORE_MENU_CPANEL"), false );
 	}
 	function _EDIT() {
 		global $mainframe;

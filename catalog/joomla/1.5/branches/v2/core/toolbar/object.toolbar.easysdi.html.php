@@ -61,7 +61,7 @@ class TOOLBAR_object{
 		//JToolBarHelper::custom('viewObjectLink', 'tool_f2.png', 'tool_f2.png', JTEXT::_("CORE_OBJECT_MENU_VIEWOBJECTTYPELINK"), false );
 		//JToolBarHelper::custom('manageObjectLink', 'edit.png', 'edit.png', JTEXT::_("CORE_OBJECT_MENU_MANAGEOBJECTTYPELINK"), false );
 		JToolBarHelper::spacer();
-		JToolBarHelper::custom( 'cpanel', 'tool_f2.png', 'tool_f2.png', JTEXT::_("CORE_MENU_CPANEL"), false );
+		JToolBarHelper::custom( 'cpanel', 'tool_easysdi_admin.png', 'tool_easysdi_admin.png', JTEXT::_("CORE_MENU_CPANEL"), false );
 	}
 }
 ?>
