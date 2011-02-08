@@ -23,7 +23,7 @@ class TOOLBAR_resources {
 		JToolBarHelper::title(JText::_("CORE_RESOURCES_TITLE"));
 		JToolBarHelper::editList('editResource');
 		JToolBarHelper::spacer();
-		JToolBarHelper::custom( 'cpanel', 'tool_f2.png', 'tool_f2.png', JTEXT::_("CORE_MENU_CPANEL"), false );
+		JToolBarHelper::custom( 'cpanel', 'tool_easysdi_admin.png', 'tool_easysdi_admin.png', JTEXT::_("CORE_MENU_CPANEL"), false );
 	}
 	function _EDIT() {
 		JToolBarHelper::title(JText::_( 'CORE_RESOURCES_TITLE_EDIT' ).': <small><small>[ '. JText::_("CORE_EDIT").' ]</small></small>', 'addedit.png');
