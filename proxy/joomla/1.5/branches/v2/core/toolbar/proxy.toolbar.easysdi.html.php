@@ -101,7 +101,7 @@ class TOOLBAR_proxy{
 		//JToolBarHelper::custom('deleteConfig','delete.png','delete.png',JText::_( 'EASYSDI_DELETE CONFIG' ),true, true);
 		JToolBarHelper::editList('editPolicyList',JText::_( 'EASYSDI_POLICIES LIST' ));
 		JToolBarHelper::spacer();
-		JToolBarHelper::custom( 'cpanel', 'tool_f2.png', 'tool_f2.png', JTEXT::_("CORE_MENU_CPANEL"), false );
+		JToolBarHelper::custom( 'cpanel', 'tool_easysdi_admin.png', 'tool_easysdi_admin.png', JTEXT::_("CORE_MENU_CPANEL"), false );
 	}
 	
 }
