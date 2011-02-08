@@ -34,7 +34,7 @@ class TOOLBAR_perimeter{
 		JToolBarHelper::deleteList('','deletePerimeter');
 		JToolBarHelper::custom( 'copyPerimeter', 'copy.png', 'copy.png', JTEXT::_("SHOP_MENU_COPY_PERIMETER"), false );
 		JToolBarHelper::spacer();
-		JToolBarHelper::custom( 'ctrlPanelShop', 'tool_f2.png', 'tool_f2.png', JTEXT::_("CORE_MENU_CPANEL"), false );
+		JToolBarHelper::custom( 'ctrlPanelShop', 'tool_easysdi_admin.png', 'tool_easysdi_admin.png', JTEXT::_("CORE_MENU_CPANEL"), false );
 	}
 	
 }

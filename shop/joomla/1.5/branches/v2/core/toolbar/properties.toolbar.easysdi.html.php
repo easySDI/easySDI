@@ -32,7 +32,7 @@ class TOOLBAR_properties{
 		JToolBarHelper::deleteList('','deleteProperties');
 		JToolBarHelper::custom( 'listPropertiesValues', 'preview.png', 'preview.png',JTEXT::_("SHOP_MENU_PROPERTIES_VALUES"), false);
 		JToolBarHelper::spacer();
-		JToolBarHelper::custom( 'ctrlPanelShop', 'tool_f2.png', 'tool_f2.png', JTEXT::_("CORE_MENU_CPANEL"), false );
+		JToolBarHelper::custom( 'ctrlPanelShop', 'tool_easysdi_admin.png', 'tool_easysdi_admin.png', JTEXT::_("CORE_MENU_CPANEL"), false );
 	}
 	
 	function _EDITPROPERTIESVALUES(){
