@@ -1092,7 +1092,7 @@ function DisplayMetadata ($xslStyle, $xml)
 		$processor->importStylesheet($xslStyle);
 		$xmlToHtml = $processor->transformToXml($xml);
 		
-		$myHtml="";
+		$myHtml = "<script type=\"text/javascript\" src=\"/media/system/js/mootools.js\"></script>";
 		// Toolbar build from EasySDIV1
 		if ($toolbar==1){
 			$buttonsHtml .= "<table align=\"right\"><tr align='right'>";
