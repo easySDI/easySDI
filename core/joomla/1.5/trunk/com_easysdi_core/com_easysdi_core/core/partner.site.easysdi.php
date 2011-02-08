@@ -967,6 +967,27 @@ class SITE_partner {
 		//New status --> jos_users.block=1
 		$rowUser->block=1;
 
+		
+		//Check if username already exit cause in jos_user name isn't unique but should be...
+		$database->setQuery("SELECT count(*) FROM #__users WHERE username = '".$rowUser->username."'");
+		$total = $database->loadResult();
+		if($total > 0){
+			echo "<div class='alert'>";
+			echo JText::_("EASYSDI_ACCOUNT_ALREADY_EXISTS");
+			echo "</div>";
+			exit;
+		}
+		
+		//CSheck if email is unique also because it must be (pass recovery!).
+		$database->setQuery("SELECT count(*) FROM #__users WHERE email = '".$rowUser->email."'");
+		$total = $database->loadResult();
+		if($total > 0){
+			echo "<div class='alert'>";
+			echo JText::_("EASYSDI_EMAIL_ALREADY_REGISTRED");
+			echo "</div>";
+			exit;
+		}
+		
 		//$rowUser->password = md5( JRequest::getVar('password','') );
 		$salt = JUserHelper::genRandomPassword(32);
 		$crypt = JUserHelper::getCryptedPassword(JRequest::getVar('password',''), $salt);
