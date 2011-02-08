@@ -261,13 +261,22 @@ class ADMIN_partner {
 		
 			$user =&	 new JTableUser($database);
 			$user->load( $partner->user_id );
-			//$user = new mosUser( $database );
-			//$user->load( $partner->user_id );
+			
+			//delete adresses
+			$database->setQuery( "DELETE FROM #__easysdi_community_address WHERE partner_id=".$partner_id);
+			if (!$database->query()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				$mainframe->redirect("index.php?option=$option&task=listPartner" );
+			}
+			
+			//delete partner
 			if (!$partner->delete()) {
 				//echo "<script> alert('".$partner->getError()."'); window.history.go(-1); </script>\n";
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 				$mainframe->redirect("index.php?option=$option&task=listPartner" );
 			}
+			
+			//delete juser
 			if (!$user->delete()) {
 				//echo "<script> alert('".$user->getError()."'); window.history.go(-1); </script>\n";
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
