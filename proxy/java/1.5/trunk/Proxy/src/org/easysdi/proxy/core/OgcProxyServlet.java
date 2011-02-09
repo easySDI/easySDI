@@ -350,7 +350,7 @@ public class OgcProxyServlet extends HttpServlet {
 				ps.setPolicy((Policy) policyE.getValue());
 			} else {
 				// If no policy found, return an OGC Exception and quit.
-				ps.sendOgcExceptionBuiltInResponse(resp, ps.generateOgcError("No policy found.", "NoApplicableCode", null, ""));
+				ps.sendOgcExceptionBuiltInResponse(resp, ps.generateOgcException("No policy found.", "NoApplicableCode", null, ""));
 				throw new PolicyNotFoundException(PolicyNotFoundException.NO_POLICY_FOUND);
 			}
 			return ps;

@@ -194,7 +194,7 @@ public class WMSProxyServlet extends ProxyServlet {
 		ServiceSupportedOperations = Arrays.asList("GetCapabilities", "GetMap", "GetFeatureInfo", "GetLegendGraphic");
 	}
 	
-	protected StringBuffer generateOgcError(String errorMessage, String code, String locator, String version) {
+	protected StringBuffer generateOgcException(String errorMessage, String code, String locator, String version) {
 		dump("ERROR", errorMessage);
 		StringBuffer sb = new StringBuffer("<?xml version='1.0' encoding='utf-8' ?>");
 		sb.append("<ServiceExceptionReport xmlns=\"http://www.opengis.net/ogc\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.opengis.net/ogc\" version=\"");
@@ -964,7 +964,7 @@ public class WMSProxyServlet extends ProxyServlet {
 			//les enlève de la collection de résultats wmsFilePathList 
 			if(!filterServersResponsesForOgcServiceExceptionFiles())
 			{
-				sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in OGC exception management. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
+				sendOgcExceptionBuiltInResponse(resp,generateOgcException("Error in OGC exception management. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
 				return;
 			}
 			
@@ -981,7 +981,7 @@ public class WMSProxyServlet extends ProxyServlet {
 				dump("INFO","Exception(s) returned by remote server(s) are sent to client.");
 				responseContentType ="text/xml";
 				ByteArrayOutputStream exceptionOutputStream = buildResponseForOgcServiceException();
-				sendHttpServletResponse(req,resp,exceptionOutputStream, responseContentType);
+				sendHttpServletResponse(req,resp,exceptionOutputStream, responseContentType, HttpServletResponse.SC_OK);
 				return;
 			}
 			
@@ -1110,16 +1110,16 @@ public class WMSProxyServlet extends ProxyServlet {
 							wgsCRS = CRS.decode("EPSG:4326");
 							if(!rewriteBBOX(layersList, wgsCRS, null, responseVersion))
 							{
-								sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in BoundingBox calculation.","NoApplicableCode","",requestedVersion));
+								sendOgcExceptionBuiltInResponse(resp,generateOgcException("Error in BoundingBox calculation.","NoApplicableCode","",requestedVersion));
 								return;
 							}
 						} catch (NoSuchAuthorityCodeException e1) {
 							dump("ERROR","Exception when trying to load SRS EPSG:4326 : "+e1.getMessage());
-							sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in BoundingBox calculation.","NoApplicableCode","",requestedVersion));
+							sendOgcExceptionBuiltInResponse(resp,generateOgcException("Error in BoundingBox calculation.","NoApplicableCode","",requestedVersion));
 							return;
 						} catch (FactoryException e1) {
 							dump("ERROR",e1.getMessage());
-							sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in BoundingBox calculation.","NoApplicableCode","",requestedVersion));
+							sendOgcExceptionBuiltInResponse(resp,generateOgcException("Error in BoundingBox calculation.","NoApplicableCode","",requestedVersion));
 							return;
 						}
 						
@@ -1373,7 +1373,7 @@ public class WMSProxyServlet extends ProxyServlet {
 
 			// Ou Ecriture du résultat final dans resp de
 			// httpServletResponse*****************************************************
-			sendHttpServletResponse(req,resp,tempOut, responseContentType);
+			sendHttpServletResponse(req,resp,tempOut, responseContentType,  HttpServletResponse.SC_OK);
 			// No post rule to apply. Copy the file result on the output stream
 //			BufferedOutputStream os = new BufferedOutputStream(resp.getOutputStream());
 //			resp.setContentType(responseContentType);
@@ -1439,13 +1439,13 @@ public class WMSProxyServlet extends ProxyServlet {
 		{
 			e.printStackTrace();
 			dump("ERROR", e.getMessage());
-			sendOgcExceptionBuiltInResponse(resp,generateOgcError("Response format not recognized. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
+			sendOgcExceptionBuiltInResponse(resp,generateOgcException("Response format not recognized. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
 		}
 		catch (Exception e) {
 			resp.setHeader("easysdi-proxy-error-occured", "true");
 			e.printStackTrace();
 			dump("ERROR", e.toString());
-			sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
+			sendOgcExceptionBuiltInResponse(resp,generateOgcException("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
 		}
 	}
 
@@ -1710,7 +1710,7 @@ public class WMSProxyServlet extends ProxyServlet {
 					version = value;
 					if (version.replaceAll("\\.", "").equalsIgnoreCase("100")) {
 						dump("ERROR", "Bad WMS version request.");
-						sendOgcExceptionBuiltInResponse(resp,generateOgcError("Version not supported.","InvalidParameterValue","version", "1.1.1"));
+						sendOgcExceptionBuiltInResponse(resp,generateOgcException("Version not supported.","InvalidParameterValue","version", "1.1.1"));
 						return;
 					}
 				} else if (key.equalsIgnoreCase("wmtver")) {
@@ -1773,7 +1773,7 @@ public class WMSProxyServlet extends ProxyServlet {
 				if(layers == null || layers.equalsIgnoreCase(""))
 				{
 					String param =  "GetMap".equals(operation) ? "LAYERS" : "QUERY_LAYERS";
-					sendOgcExceptionBuiltInResponse(resp,generateOgcError(param+" parameter is missing.","LayerNotDefined",param,requestedVersion));
+					sendOgcExceptionBuiltInResponse(resp,generateOgcException(param+" parameter is missing.","LayerNotDefined",param,requestedVersion));
 					return;
 				}
 			}
@@ -2155,7 +2155,7 @@ public class WMSProxyServlet extends ProxyServlet {
 			//Vérifie si toutes les layers requêtées existent et sont accessibles sur les serveurs distants
 			for (int k = 0 ; k < layerArray.size() ; k++){
 				if(!isLayerAllowed(layerArray.get(k))){
-					sendOgcExceptionBuiltInResponse(resp,generateOgcError("Invalid layer(s) given in the LAYERS parameter : "+layerArray.get(k),"LayerNotDefined","layers",requestedVersion));
+					sendOgcExceptionBuiltInResponse(resp,generateOgcException("Invalid layer(s) given in the LAYERS parameter : "+layerArray.get(k),"LayerNotDefined","layers",requestedVersion));
 					return;
 				}
 			}
@@ -2285,7 +2285,7 @@ public class WMSProxyServlet extends ProxyServlet {
 													re = new ReferencedEnvelope(Double.parseDouble(c[0]), Double.parseDouble(c[2]), Double
 														.parseDouble(c[1]), Double.parseDouble(c[3]), CRS.decode(srsName));
 												}catch (Exception ex) {
-													sendOgcExceptionBuiltInResponse(resp, generateOgcError("Invalid SRS given","InvalidSRS","SRS",requestedVersion));
+													sendOgcExceptionBuiltInResponse(resp, generateOgcException("Invalid SRS given","InvalidSRS","SRS",requestedVersion));
 													return;
 												}
 //												ReferencedEnvelope re = new ReferencedEnvelope(Double.parseDouble(c[0]), Double.parseDouble(c[2]), Double
@@ -2383,7 +2383,7 @@ public class WMSProxyServlet extends ProxyServlet {
 							{
 								//Not supported operation
 								try {
-									sendOgcExceptionBuiltInResponse(resp,generateOgcError("Operation not supported : "+operation,"OperationNotSupported ","request",requestedVersion));
+									sendOgcExceptionBuiltInResponse(resp,generateOgcException("Operation not supported : "+operation,"OperationNotSupported ","request",requestedVersion));
 									return;
 								} catch (Exception e) {
 									e.printStackTrace();
@@ -2515,7 +2515,7 @@ public class WMSProxyServlet extends ProxyServlet {
 		} catch (AvailabilityPeriodException e) {
 			dump("ERROR", e.getMessage());
 			resp.setHeader("easysdi-proxy-error-occured", "true");
-			sendOgcExceptionBuiltInResponse(resp,generateOgcError(e.getMessage(),"OperationNotSupported","request",requestedVersion));
+			sendOgcExceptionBuiltInResponse(resp,generateOgcException(e.getMessage(),"OperationNotSupported","request",requestedVersion));
 			
 //			dump("ERROR", e.getMessage());
 //			resp.setStatus(401);
@@ -2529,7 +2529,7 @@ public class WMSProxyServlet extends ProxyServlet {
 			resp.setHeader("easysdi-proxy-error-occured", "true");
 			e.printStackTrace();
 			dump("ERROR", e.toString());
-			sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
+			sendOgcExceptionBuiltInResponse(resp,generateOgcException("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
 		}
 	}
 

@@ -160,7 +160,7 @@ public class WFSProxyServlet extends ProxyServlet {
 		ServiceSupportedOperations = Arrays.asList("GetCapabilities", "DescribeFeatureType", "GetFeature","Transaction");
 	}
 	
-	protected StringBuffer generateOgcError(String errorMessage, String code, String locator, String version) {
+	protected StringBuffer generateOgcException(String errorMessage, String code, String locator, String version) {
 		dump("ERROR", errorMessage);
 		StringBuffer sb = new StringBuffer("<?xml version='1.0' encoding='utf-8' ?>\n");
 		sb.append("<ServiceExceptionReport xmlns=\"http://www.opengis.net/ogc\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.opengis.net/ogc\" version=\"1.2.0\">\n");
@@ -531,7 +531,7 @@ public class WFSProxyServlet extends ProxyServlet {
 			
 			if (!version.equalsIgnoreCase("100")) {
 				dump("ERROR", "Bad wfs version request: 1.0.0 only");
-				sendOgcExceptionBuiltInResponse(resp,generateOgcError("Version not supported. Only 1.0.0 supported.","InvalidParameterValue ","version",requestedVersion));
+				sendOgcExceptionBuiltInResponse(resp,generateOgcException("Version not supported. Only 1.0.0 supported.","InvalidParameterValue ","version",requestedVersion));
 				return;
 			}
 
@@ -864,7 +864,7 @@ public class WFSProxyServlet extends ProxyServlet {
 						out.write(s.getBytes());
 						out.flush();
 						out.close();
-						sendHttpServletResponse(req,resp,out,"text/xml");
+						sendHttpServletResponse(req,resp,out,"text/xml", HttpServletResponse.SC_OK);
 						return;
 					}
 				}
@@ -894,7 +894,7 @@ public class WFSProxyServlet extends ProxyServlet {
 						out.write(s.getBytes());
 						out.flush();
 						out.close();
-						sendHttpServletResponse(req,resp,out, "text/xml");
+						sendHttpServletResponse(req,resp,out, "text/xml", HttpServletResponse.SC_OK);
 						return;
 					}
 
@@ -1012,7 +1012,7 @@ public class WFSProxyServlet extends ProxyServlet {
 					transform(version, currentOperation, req, resp);
 				} else {
 					dump("ERROR", "Bad wfs version request: 1.0.0 only");
-					sendOgcExceptionBuiltInResponse(resp,generateOgcError("Version not supported. Only 1.0.0 supported.","InvalidParameterValue ","version",requestedVersion));
+					sendOgcExceptionBuiltInResponse(resp,generateOgcException("Version not supported. Only 1.0.0 supported.","InvalidParameterValue ","version",requestedVersion));
 					return ;
 				}
 			} else {
@@ -1023,7 +1023,7 @@ public class WFSProxyServlet extends ProxyServlet {
 
 		} catch (AvailabilityPeriodException e) {
 			dump("ERROR", e.getMessage());
-			sendOgcExceptionBuiltInResponse(resp,generateOgcError(e.getMessage(),"OperationNotSupported","request",requestedVersion));
+			sendOgcExceptionBuiltInResponse(resp,generateOgcException(e.getMessage(),"OperationNotSupported","request",requestedVersion));
 //			resp.setStatus(401);
 //			try {
 //				resp.getWriter().println(e.getMessage());
@@ -1034,7 +1034,7 @@ public class WFSProxyServlet extends ProxyServlet {
 			resp.setHeader("easysdi-proxy-error-occured", "true");
 			e.printStackTrace();
 			dump("ERROR", e.toString());
-			sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
+			sendOgcExceptionBuiltInResponse(resp,generateOgcException("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
 		}
 	}
 
@@ -1089,7 +1089,7 @@ public class WFSProxyServlet extends ProxyServlet {
 					//If version is not 1.0.0, return an ogc exception
 					if (!version.replaceAll("\\.", "").equalsIgnoreCase("100")) {
 						dump("ERROR", "Bad wfs version request: 1.0.0 only");
-						sendOgcExceptionBuiltInResponse(resp,generateOgcError("Version not supported. Only 1.0.0 supported.","InvalidParameterValue ","version",requestedVersion));
+						sendOgcExceptionBuiltInResponse(resp,generateOgcException("Version not supported. Only 1.0.0 supported.","InvalidParameterValue ","version",requestedVersion));
 						return;
 					}
 				} else if (key.equalsIgnoreCase("service")) {
@@ -1169,7 +1169,7 @@ public class WFSProxyServlet extends ProxyServlet {
 
 						for (int k = 0 ; k < fields.length ; k++){
 							if(!isFeatureTypeAllowed(fields[k])){
-								sendOgcExceptionBuiltInResponse(resp,generateOgcError("Invalid Feature Type given in the TYPENAME parameter : "+fields[k],"InvalidParameterValue","typename",requestedVersion));
+								sendOgcExceptionBuiltInResponse(resp,generateOgcException("Invalid Feature Type given in the TYPENAME parameter : "+fields[k],"InvalidParameterValue","typename",requestedVersion));
 								return;
 							}
 						}
@@ -1498,7 +1498,7 @@ public class WFSProxyServlet extends ProxyServlet {
 						if ("DescribeFeatureType".equalsIgnoreCase(currentOperation)) {
 							if (featureTypeListToKeep.size() == 0) {
 								//Debug HVH 18.12.2010
-								sendOgcExceptionBuiltInResponse(resp,generateOgcError("Invalid Feature Type(s) given in the TYPENAME parameter.","InvalidParameterValue","typename",requestedVersion));
+								sendOgcExceptionBuiltInResponse(resp,generateOgcException("Invalid Feature Type(s) given in the TYPENAME parameter.","InvalidParameterValue","typename",requestedVersion));
 								return;
 								//Fin debug HVH
 //								String s = "<?xml version='1.0' encoding='utf-8' ?>"
@@ -1544,7 +1544,7 @@ public class WFSProxyServlet extends ProxyServlet {
 								out.write(s.getBytes());
 								out.flush();
 								out.close();
-								sendHttpServletResponse(req,resp,out,"text/xml");
+								sendHttpServletResponse(req,resp,out,"text/xml", HttpServletResponse.SC_OK);
 								return;
 							}
 						}
@@ -1607,7 +1607,7 @@ public class WFSProxyServlet extends ProxyServlet {
 				} else {
 					//Moved to the begining of the requestPreTreatmentGET method  
 					dump("ERROR", "Bad wfs version request: 1.0.0 only");
-					sendOgcExceptionBuiltInResponse(resp,generateOgcError("Version not supported. Only 1.0.0 supported.","InvalidParameterValue ","version",requestedVersion));
+					sendOgcExceptionBuiltInResponse(resp,generateOgcException("Version not supported. Only 1.0.0 supported.","InvalidParameterValue ","version",requestedVersion));
 				}
 				// Debug tb 24.06.2009
 			} else {
@@ -1621,7 +1621,7 @@ public class WFSProxyServlet extends ProxyServlet {
 			// Fin de Debug
 		} catch (AvailabilityPeriodException e) {
 			dump("ERROR", e.getMessage());
-			sendOgcExceptionBuiltInResponse(resp,generateOgcError(e.getMessage(),"OperationNotSupported","request",requestedVersion));
+			sendOgcExceptionBuiltInResponse(resp,generateOgcException(e.getMessage(),"OperationNotSupported","request",requestedVersion));
 //			resp.setStatus(401);
 //			try {
 //				resp.getWriter().println(e.getMessage());
@@ -1632,7 +1632,7 @@ public class WFSProxyServlet extends ProxyServlet {
 			resp.setHeader("easysdi-proxy-error-occured", "true");
 			e.printStackTrace();
 			dump("ERROR", e.toString());
-			sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
+			sendOgcExceptionBuiltInResponse(resp,generateOgcException("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
 		}
 	}
 
@@ -2322,7 +2322,7 @@ public class WFSProxyServlet extends ProxyServlet {
 				//directement au client
 				dump("INFO","Exception(s) returned by remote server(s) are sent to client.");
 				ByteArrayOutputStream exceptionOutputStream = buildResponseForOgcServiceException();
-				sendHttpServletResponse(req,resp,exceptionOutputStream,"text/xml");
+				sendHttpServletResponse(req,resp,exceptionOutputStream,"text/xml", HttpServletResponse.SC_OK);
 				return;
 			}
 			
@@ -2392,7 +2392,7 @@ public class WFSProxyServlet extends ProxyServlet {
 						{
 							//If one of the response version is different than 1.0.0, then the request is rejected
 							dump("ERROR", "One of the remote servers can not answer in WFS version 1.0.0. The request is rejected.");
-							sendOgcExceptionBuiltInResponse(resp,generateOgcError("One of the remote servers can not answer in WFS version 1.0.0.","NoApplicableCode","",requestedVersion));
+							sendOgcExceptionBuiltInResponse(resp,generateOgcException("One of the remote servers can not answer in WFS version 1.0.0.","NoApplicableCode","",requestedVersion));
 							return;
 						}
 						
@@ -3019,12 +3019,12 @@ public class WFSProxyServlet extends ProxyServlet {
 		{
 			e.printStackTrace();
 			dump("ERROR", e.getMessage());
-			sendOgcExceptionBuiltInResponse(resp,generateOgcError("Response format not recognized. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
+			sendOgcExceptionBuiltInResponse(resp,generateOgcException("Response format not recognized. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
 		} 
 		catch (Exception e) {
 			e.printStackTrace();
 			dump("Transform ERROR", e.toString());
-			sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
+			sendOgcExceptionBuiltInResponse(resp,generateOgcException("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
 		}
 	}
 

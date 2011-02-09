@@ -107,7 +107,7 @@ public class CSWProxyServlet extends ProxyServlet {
 
 	}
 	
-	protected StringBuffer generateOgcError(String errorMessage, String code, String locator, String version) {
+	protected StringBuffer generateOgcException(String errorMessage, String code, String locator, String version) {
 		dump("ERROR", errorMessage);
 		StringBuffer sb = new StringBuffer("<?xml version='1.0' encoding='utf-8'?>\n");
 		sb.append("<ows:ExceptionReport xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" version=\"1.0.0\" xsi:schemaLocation=\"http://www.opengis.net/ows http://schemas.opengis.net/ows/1.0.0/owsExceptionReport.xsd\">\n");
@@ -597,21 +597,21 @@ public class CSWProxyServlet extends ProxyServlet {
 				e.printStackTrace();
 				dump("ERROR", e.toString());
 				resp.setHeader("easysdi-proxy-error-occured", "true");
-				sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
+				sendOgcExceptionBuiltInResponse(resp,generateOgcException("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
 			}
 		} else {
 			try {
 				resp.setContentType("application/xml");
 				resp.setContentLength(Integer.MAX_VALUE);
 				OutputStream os = resp.getOutputStream();
-				os.write(generateOgcError("Operation not allowed","","",requestedVersion).toString().getBytes());
+				os.write(generateOgcException("Operation not allowed","","",requestedVersion).toString().getBytes());
 				os.flush();
 				os.close();
 			} catch (Exception e) {
 				e.printStackTrace();
 				dump("ERROR", e.toString());
 				resp.setHeader("easysdi-proxy-error-occured", "true");
-				sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
+				sendOgcExceptionBuiltInResponse(resp,generateOgcException("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
 			}
 		}
 	}
@@ -687,14 +687,14 @@ public class CSWProxyServlet extends ProxyServlet {
 		catch (AvailabilityPeriodException e) 
 		{
 			dump("ERROR", e.getMessage());
-			sendOgcExceptionBuiltInResponse(resp,generateOgcError(e.getMessage(),"OperationNotSupported ","request",requestedVersion));
+			sendOgcExceptionBuiltInResponse(resp,generateOgcException(e.getMessage(),"OperationNotSupported ","request",requestedVersion));
 		} 
 		catch (Exception e) 
 		{
 			e.printStackTrace();
 			dump("ERROR", e.toString());
 			resp.setHeader("easysdi-proxy-error-occured", "true");
-			sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
+			sendOgcExceptionBuiltInResponse(resp,generateOgcException("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
 		}
 	}
 
@@ -799,7 +799,7 @@ public class CSWProxyServlet extends ProxyServlet {
 		} catch (AvailabilityPeriodException e) 
 		{
 			dump("ERROR", e.getMessage());
-			sendOgcExceptionBuiltInResponse(resp,generateOgcError(e.getMessage(),"OperationNotSupported ","request",requestedVersion));
+			sendOgcExceptionBuiltInResponse(resp,generateOgcException(e.getMessage(),"OperationNotSupported ","request",requestedVersion));
 //			resp.setStatus(401);
 //			try {
 //				resp.getWriter().println(e.getMessage());
@@ -810,7 +810,7 @@ public class CSWProxyServlet extends ProxyServlet {
 			e.printStackTrace();
 			dump("ERROR", e.toString());
 			resp.setHeader("easysdi-proxy-error-occured", "true");
-			sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
+			sendOgcExceptionBuiltInResponse(resp,generateOgcException("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
 		}
 	}
 

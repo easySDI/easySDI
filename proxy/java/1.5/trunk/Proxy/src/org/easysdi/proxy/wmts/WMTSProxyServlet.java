@@ -19,6 +19,7 @@ package org.easysdi.proxy.wmts;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,13 +48,7 @@ import com.google.common.collect.Multimap;
  */
 public class WMTSProxyServlet extends ProxyServlet{
 
-	/**
-	 * Store the url of the server which returned the response i
-	 */
-	private Map<Integer, String> serverUrlPerfilePathList = new TreeMap<Integer, String>(); 
-	/**
-	 * 
-	 */
+	private static final long serialVersionUID = 1982682293133286643L;
 	protected WMTSProxyResponseBuilder docBuilder; 
 	
 	public WMTSProxyServlet() {
@@ -61,13 +56,10 @@ public class WMTSProxyServlet extends ProxyServlet{
 		
 	}
 
-	private static final long serialVersionUID = 1982682293133286643L;
-
 	@Override
 	protected void requestPreTreatmentPOST(HttpServletRequest req,
 			HttpServletResponse resp) {
 		// Auto-generated method stub
-		
 	}
 
 	@Override
@@ -111,7 +103,8 @@ public class WMTSProxyServlet extends ProxyServlet{
 					if(!service.equalsIgnoreCase("WMTS"))
 					{
 						dump("ERROR", "Service requested is not WMTS.");
-						sendOgcExceptionBuiltInResponse(resp,generateOgcError("Operation request contains an invalid parameter value.","InvalidParameterValue","service", "1.0.0"));
+						ByteArrayOutputStream out = generateProxyOgcException("Operation request contains an invalid parameter value.","InvalidParameterValue","service","1.0.0");
+						sendHttpServletResponse(req, resp,out,"text/xml", HttpServletResponse.SC_BAD_REQUEST);
 						return;
 					}
 				}
@@ -125,12 +118,13 @@ public class WMTSProxyServlet extends ProxyServlet{
 					if(acceptVersions.contains("1.0.0"))
 					{
 						acceptVersions = "1.0.0";
-						requestedVersion = "100";
+						requestedVersion = "1.0.0";
 					}
 					else
 					{
 						dump("ERROR", "WMTS requested version is not supported.");
-						sendOgcExceptionBuiltInResponse(resp,generateOgcError("Version not supported.","InvalidParameterValue","acceptVersions", "1.0.0"));
+						ByteArrayOutputStream out = generateProxyOgcException("Version not supported.","InvalidParameterValue","acceptVersions","1.0.0");
+						sendHttpServletResponse(req, resp,out,"text/xml", HttpServletResponse.SC_BAD_REQUEST);
 						return;
 					}
 				}
@@ -140,7 +134,8 @@ public class WMTSProxyServlet extends ProxyServlet{
 					if(!version.equalsIgnoreCase("1.0.0"))
 					{
 						dump("ERROR", "WMTS requested version is not supported.");
-						sendOgcExceptionBuiltInResponse(resp,generateOgcError("Version not supported.","InvalidParameterValue","acceptVersions", "1.0.0"));
+						ByteArrayOutputStream out = generateProxyOgcException("Version not supported.","InvalidParameterValue","version","1.0.0");
+						sendHttpServletResponse(req, resp,out,"text/xml", HttpServletResponse.SC_BAD_REQUEST);
 						return;
 					}
 				}
@@ -196,13 +191,11 @@ public class WMTSProxyServlet extends ProxyServlet{
 			 *
 			 */
 			class RemoteServerThread extends Thread {
-				String operation;
 				String paramUrl;
 				int remoteServerIndex;
 				HttpServletResponse resp;
 
-				public RemoteServerThread(	String pOperation,String pParamUrl, int pRemoteServerIndex, HttpServletResponse response) {
-					operation = pOperation;
+				public RemoteServerThread(	String pParamUrl, int pRemoteServerIndex, HttpServletResponse response) {
 					paramUrl = pParamUrl;
 					remoteServerIndex = pRemoteServerIndex;
 					resp = response;
@@ -213,26 +206,21 @@ public class WMTSProxyServlet extends ProxyServlet{
 					try {
 						
 						dump("DEBUG", "Thread Server: " + remoteServerUrl + " work begin");
-						
 						String filePath = sendData("GET", remoteServerUrl, paramUrl);
 						synchronized (wmtsFilePathList) {
-							synchronized (layerFilePathList) {
-								synchronized (serverUrlPerfilePathList) {
-									dump("requestPreTraitementGET save response capabilities from thread server " + remoteServerUrl);
-									layerFilePathList.put(remoteServerIndex, "");
-									serverUrlPerfilePathList.put(remoteServerIndex, remoteServerUrl);
-									wmtsFilePathList.put(remoteServerIndex, filePath);
-								}
-							}
+							dump("requestPreTraitementGET save response from thread server " + remoteServerUrl);
+							wmtsFilePathList.put(remoteServerIndex, filePath);
 						}
 						dump("DEBUG", "Thread Server: " + remoteServerUrl + " work finished");
 					}
 					catch (Exception e)
 					{
+						e.printStackTrace();
 						resp.setHeader("easysdi-proxy-error-occured", "true");
 						dump("ERROR", "Server Thread " + remoteServerUrl+ " :" + e.getMessage());
-						e.printStackTrace();
-						sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
+						ByteArrayOutputStream out = generateProxyOgcException("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion);
+						sendHttpServletResponse(null, resp,out,"text/xml", HttpServletResponse.SC_BAD_REQUEST);
+						return;
 					}
 				}
 			}
@@ -240,12 +228,10 @@ public class WMTSProxyServlet extends ProxyServlet{
 			//Servers define in config.xml
 			List<RemoteServerInfo> remoteServerList = getRemoteServerInfoList();
 			List<RemoteServerThread> serverThreadList = new Vector<RemoteServerThread>();
-			
-			String cpOperation = new String(request);
-			String cpParamUrl = new String(paramUrlBase);
+
 			if (request.equalsIgnoreCase("getcapabilities")) {
 				for (int iRS = 0; iRS < remoteServerList.size(); iRS++) {
-					RemoteServerThread s = new RemoteServerThread(cpOperation, cpParamUrl, iRS, resp);
+					RemoteServerThread s = new RemoteServerThread( paramUrlBase, iRS, resp);
 					s.start();
 					serverThreadList.add(s);
 				}
@@ -255,7 +241,8 @@ public class WMTSProxyServlet extends ProxyServlet{
 			{
 				//Check layer
 				if(!isLayerAllowed(layer)){
-					sendOgcExceptionBuiltInResponse(resp,generateOgcError("Invalid layer name given in the LAYER parameter : "+layer,"InvalidParameterValue","layer",requestedVersion));
+					ByteArrayOutputStream out = generateProxyOgcException("Invalid layer name given in the LAYER parameter : "+layer,"InvalidParameterValue","layer",requestedVersion);
+					sendHttpServletResponse(req, resp,out,"text/xml", HttpServletResponse.SC_BAD_REQUEST);
 					return;
 				}
 				//Find the remote server which is storing the requested layer.
@@ -263,10 +250,8 @@ public class WMTSProxyServlet extends ProxyServlet{
 					String remoteServerUrl = remoteServerList.get(iRS).getUrl();
 					if(isLayerAllowed(layer, remoteServerUrl))
 					{
-						RemoteServerThread s = new RemoteServerThread(cpOperation, cpParamUrl, iRS,resp);
-						s.start();
-						serverThreadList.add(s);
-						break;
+						sendDataStream(resp,"GET", remoteServerUrl, paramUrlBase);
+						return;
 					}
 				}
 			}
@@ -289,7 +274,9 @@ public class WMTSProxyServlet extends ProxyServlet{
 			resp.setHeader("easysdi-proxy-error-occured", "true");
 			e.printStackTrace();
 			dump("ERROR", e.toString());
-			sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
+			ByteArrayOutputStream out = generateProxyOgcException("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion);
+			sendHttpServletResponse(req, resp,out,"text/xml", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			return;
 		}
 		
 	}
@@ -298,33 +285,21 @@ public class WMTSProxyServlet extends ProxyServlet{
 		
 		try{
 		
-			//Filtre les fichiers réponses des serveurs :
-			//ajoute les fichiers d'exception dans ogcExceptionFilePathList
-			//les enlève de la collection de résultats wmtsFilePathList 
-			if(!filterServersResponsesForOgcServiceExceptionFiles())
-			{
-				sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in OGC exception management. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
-				return;
-			}
-			
-			//Si le mode de gestion des exceptions est "restrictif" et si au moins un serveur retourne une exception OGC
-			//Ou
-			//Si le mode de gestion des exceptions est "permissif" et que tous les serveurs retournent des exceptions
-			//alors le proxy retourne l'ensemble des exceptions concaténées
-			if((configuration.getExceptionMode().equals("restrictive") && ogcExceptionFilePathList.size() > 0) || 
+			//Filter remote servers responses 
+			Boolean asRemoteServerServiceException = filterServersResponsesForOgcServiceExceptionFiles();
+
+			//Manage exception acccording to servlet configuration 
+			if((configuration.getExceptionMode().equals("restrictive") && asRemoteServerServiceException) || 
 					(configuration.getExceptionMode().equals("permissive") && wmtsFilePathList.size() == 0))
 			{
-				//Traitement des réponses de type exception OGC
-				//Le stream retourné contient les exceptions concaténées et mises en forme pour être retournées 
-				//directement au client
 				dump("INFO","Exception(s) returned by remote server(s) are sent to client.");
 				responseContentType ="text/xml";
-				ByteArrayOutputStream exceptionOutputStream = buildResponseForOgcServiceException();
-				sendHttpServletResponse(req,resp,exceptionOutputStream, "text/xml");
+				sendHttpServletResponse(req,resp,buildResponseForRemoteOgcException(), "text/xml", responseStatusCode);
 				return;
 			}
+
 			
-			//Aucun serveur n'a retourné d'exception ou le mode de gestion des exceptions est "permissif"
+			
 			// Vérifie et prépare l'application d'un fichier xslt utilisateur
 //			String userXsltPath = getConfiguration().getXsltPath();
 //			if (SecurityContextHolder.getContext().getAuthentication() != null) {
@@ -354,14 +329,18 @@ public class WMTSProxyServlet extends ProxyServlet{
 				dump("INFO","transform - Start - Capabilities contents filtering");
 				if(!docBuilder.CapabilitiesContentsFiltering(wmtsFilePathList))
 				{
-					sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in Capabilities layers filtering. Exception : "+docBuilder.getLastException().toString(),"NoApplicableCode","",requestedVersion));
+					dump("ERROR",docBuilder.getLastException().toString());
+					ByteArrayOutputStream out = generateProxyOgcException("Error in Capabilities layers filtering. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion);
+					sendHttpServletResponse(req, resp,out,"text/xml", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 					return;
 				}
 				dump("INFO","transform - End - Capabilities contents filtering");
 				dump("INFO","transform - Start - Capabilities operations filtering");
 				if(!docBuilder.CapabilitiesOperationsFiltering(wmtsFilePathList, getServletUrl(req)))
 				{
-					sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in Capabilities operations filtering. Exception : "+docBuilder.getLastException().toString(),"NoApplicableCode","",requestedVersion));
+					dump("ERROR",docBuilder.getLastException().toString());
+					ByteArrayOutputStream out = generateProxyOgcException("Error in Capabilities operations filtering. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion);
+					sendHttpServletResponse(req, resp,out,"text/xml", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 					return;
 				}
 				dump("INFO","transform - End - Capabilities operations filtering");
@@ -369,7 +348,9 @@ public class WMTSProxyServlet extends ProxyServlet{
 				dump("INFO","transform - Start - Capabilities merging");
 				if(!docBuilder.CapabilitiesMerging(wmtsFilePathList))
 				{
-					sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in Capabilities merging. Exception : "+docBuilder.getLastException().toString(),"NoApplicableCode","",requestedVersion));
+					dump("ERROR",docBuilder.getLastException().toString());
+					ByteArrayOutputStream out = generateProxyOgcException("Error in Capabilities merging. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion);
+					sendHttpServletResponse(req, resp,out,"text/xml", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 					return;
 				}
 				dump("INFO","transform - End - Capabilities merging");
@@ -377,7 +358,9 @@ public class WMTSProxyServlet extends ProxyServlet{
 				dump("INFO","transform - Start - Capabilities metadata writing");
 				if(!docBuilder.CapabilitiesServiceIdentificationWriting(wmtsFilePathList,getServletUrl(req)))
 				{
-					sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in Capabilities Service Identification writing. Exception : "+docBuilder.getLastException().toString(),"NoApplicableCode","",requestedVersion));
+					dump("ERROR",docBuilder.getLastException().toString());
+					ByteArrayOutputStream out = generateProxyOgcException("Error in Capabilities Service Identification writing. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion);
+					sendHttpServletResponse(req, resp,out,"text/xml", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 					return;
 				}
 				dump("INFO","transform - End - Capabilities metadata writing");
@@ -388,16 +371,35 @@ public class WMTSProxyServlet extends ProxyServlet{
 				reader.read(data, 0, reader.available());
 				tempOut.write(data);
 				reader.close();
-				sendHttpServletResponse(req,resp, tempOut,responseContentType);
+				sendHttpServletResponse(req,resp, tempOut,responseContentType, responseStatusCode);
+			}
+			else if("GetTile".equalsIgnoreCase(operation))
+			{
+				dump("INFO","transform - Start - GetTile");
+				FileInputStream reader = new FileInputStream(new File(wmtsFilePathList.get(0).toArray(new String[1])[0]));
+				byte[] data = new byte[reader.available()];
+				reader.read(data, 0, reader.available());
+				tempOut.write(data);
+				reader.close();
+				sendHttpServletResponse(req,resp, tempOut,responseContentType, responseStatusCode);
 			}
 		}
 		catch (Exception e){
-			
+			e.printStackTrace();
+			dump("ERROR", e.toString());
+			resp.setHeader("easysdi-proxy-error-occured", "true");
+			ByteArrayOutputStream out = generateProxyOgcException("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion);
+			sendHttpServletResponse(req, resp,out,"text/xml", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		}
 		
 	}
 
-	protected boolean filterServersResponsesForOgcServiceExceptionFiles () 
+	/**
+	 * Filter on the remote servers response files :
+			- add exception files in ogcExceptionFilePathList
+			- remove exception file from wmtsFilePathList 
+	 */
+	protected boolean filterServersResponsesForOgcServiceExceptionFiles () throws Exception
 	{
 		try
 		{
@@ -429,6 +431,9 @@ public class WMTSProxyServlet extends ProxyServlet{
 				}
 			}
 			
+			if(toRemove.size() == 0)
+				return false;
+			
 			Iterator<Map.Entry<Integer,String>> itR = toRemove.entries().iterator();
 			while(itR.hasNext())
 			{
@@ -445,13 +450,14 @@ public class WMTSProxyServlet extends ProxyServlet{
 		{
 			ex.printStackTrace();
 			dump("ERROR", ex.getMessage());
-			return false;
+			throw ex;
 		}
 	}
 	
 	@Override
-	protected StringBuffer generateOgcError(String errorMessage, String code, String locator, String version) {
+	protected StringBuffer generateOgcException(String errorMessage, String code, String locator, String version) {
 		dump("ERROR", errorMessage);
+		
 		StringBuffer sb = new StringBuffer("<?xml version='1.0' encoding='utf-8' ?>");
 		sb.append("<ExceptionReport xmlns=\"http://www.opengis.net/ows/1.1\" " +
 				"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +
@@ -477,9 +483,48 @@ public class WMTSProxyServlet extends ProxyServlet{
 		}
 		sb.append("</Exception>\n");
 		sb.append("</ExceptionReport>");
+
 		return sb;
 	}
 
+	
+	protected ByteArrayOutputStream generateProxyOgcException(String errorMessage, String code, String locator, String version) {
+		dump("ERROR", errorMessage);
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		String s = new String ();
+		s = "<?xml version='1.0' encoding='utf-8'?>";
+		s+= "\n<ExceptionReport xmlns=\"http://www.opengis.net/ows/1.1\" ";
+		s+= "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" ";
+		s+= "xsi:schemaLocation=\"http://www.opengis.net/ows/1.1\" version=\"1.1.0\">";
+		s+= "\n\t<Exception exceptionCode=\"";
+		s+= code;
+		s+= "\"";
+		if(locator != null && locator != "" )
+		{
+			s+= " locator=\"";
+			s+= locator;
+			s+= "\"";
+		}
+		s+= ">";
+		if( errorMessage != null && errorMessage.length()!= 0)
+		{
+			s+= "\n\t\t<ExceptionText>";
+			s+= errorMessage;
+			s+= "</ExceptionText>";
+		}
+		s+= "\n\t</Exception>";
+		s+= "\n</ExceptionReport>";
+		
+		byte buf[] = s.getBytes(); 
+		try {
+			out.write(buf);
+		} catch (IOException e) {
+			e.printStackTrace();
+			dump("ERROR", e.getMessage());
+		}
+		 
+		return out;
+	}
 	protected StringBuffer generateEmptyResponse (String operation)
 	{
 		StringBuffer sb = new StringBuffer("<?xml version='1.0' encoding='utf-8' ?>");

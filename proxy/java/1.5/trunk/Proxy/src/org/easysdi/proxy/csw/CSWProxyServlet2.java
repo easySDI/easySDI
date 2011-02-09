@@ -349,14 +349,14 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			e.printStackTrace();
 			dump("ERROR", e.getMessage());
 			resp.setHeader("easysdi-proxy-error-occured", "true");
-			sendOgcExceptionBuiltInResponse(resp,generateOgcError("Response format not recognized. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
+			sendOgcExceptionBuiltInResponse(resp,generateOgcException("Response format not recognized. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
 		} 
 		catch (Exception e) 
 		{
 			e.printStackTrace();
 			dump("ERROR", e.toString());
 			resp.setHeader("easysdi-proxy-error-occured", "true");
-			sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
+			sendOgcExceptionBuiltInResponse(resp,generateOgcException("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
 		}
 	}
 
@@ -441,7 +441,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			
 			//GetRecords is not supported in GET request
 			if(currentOperation.equalsIgnoreCase("GetRecords"))
-				sendOgcExceptionBuiltInResponse(resp,generateOgcError("Operation not supported in a GET request","OperationNotSupported ","request", requestedVersion));
+				sendOgcExceptionBuiltInResponse(resp,generateOgcException("Operation not supported in a GET request","OperationNotSupported ","request", requestedVersion));
 			
 			//GetRecordById
 			if(currentOperation.equalsIgnoreCase("GetRecordById"))
@@ -523,7 +523,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					CSWProxyMetadataContentManager cswManager = new CSWProxyMetadataContentManager(this);
 					if ( !cswManager.buildCompleteMetadata(filePathList.get(0)))
 					{
-						sendOgcExceptionBuiltInResponse(resp, generateOgcError("Request can not be completed. "+cswManager.GetLastError(), "NoApplicableCode", "", requestedVersion));
+						sendOgcExceptionBuiltInResponse(resp, generateOgcException("Request can not be completed. "+cswManager.GetLastError(), "NoApplicableCode", "", requestedVersion));
 						return;
 					}
 					dump("INFO","End - Complete metadata");
@@ -537,14 +537,14 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 		catch (AvailabilityPeriodException e) 
 		{
 			dump("ERROR", e.getMessage());
-			sendOgcExceptionBuiltInResponse(resp,generateOgcError(e.getMessage(),"OperationNotSupported","request",requestedVersion));
+			sendOgcExceptionBuiltInResponse(resp,generateOgcException(e.getMessage(),"OperationNotSupported","request",requestedVersion));
 		} 
 		catch (Exception e) 
 		{
 			e.printStackTrace();
 			dump("ERROR", e.toString());
 			resp.setHeader("easysdi-proxy-error-occured", "true");
-			sendOgcExceptionBuiltInResponse(resp,generateOgcError(e.getMessage(),"NoApplicableCode","request",requestedVersion));
+			sendOgcExceptionBuiltInResponse(resp,generateOgcException(e.getMessage(),"NoApplicableCode","request",requestedVersion));
 		}
 	}
 
@@ -607,7 +607,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			String content = rh.getContent();
 			if( !content.equalsIgnoreCase("") && !content.equalsIgnoreCase("core") && !content.equalsIgnoreCase("complete"))
 			{
-				sendOgcExceptionBuiltInResponse(resp, generateOgcError("Invalid value for parameter 'content' : "+content, "InvalidParameterValue", "content", requestedVersion));
+				sendOgcExceptionBuiltInResponse(resp, generateOgcException("Invalid value for parameter 'content' : "+content, "InvalidParameterValue", "content", requestedVersion));
 				return;
 			}
 			
@@ -697,7 +697,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					CSWProxyMetadataContentManager cswManager = new CSWProxyMetadataContentManager(this);
 					if ( !cswManager.buildCompleteMetadata(filePathList.get(0)))
 					{
-						sendOgcExceptionBuiltInResponse(resp, generateOgcError("Request can not be completed. "+cswManager.GetLastError(), "NoApplicableCode", "", requestedVersion));
+						sendOgcExceptionBuiltInResponse(resp, generateOgcException("Request can not be completed. "+cswManager.GetLastError(), "NoApplicableCode", "", requestedVersion));
 						return;
 					}
 					dump("INFO","End - Complete metadata");
@@ -735,7 +735,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					CSWProxyMetadataContentManager cswManager = new CSWProxyMetadataContentManager(this);
 					if ( !cswManager.buildCompleteMetadata(filePathList.get(0)))
 					{
-						sendOgcExceptionBuiltInResponse(resp, generateOgcError("Request can not be completed. "+cswManager.GetLastError(), "NoApplicableCode", "", requestedVersion));
+						sendOgcExceptionBuiltInResponse(resp, generateOgcException("Request can not be completed. "+cswManager.GetLastError(), "NoApplicableCode", "", requestedVersion));
 						return;
 					}
 					dump("INFO","End - Complete metadata");
@@ -757,20 +757,20 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 		catch (AvailabilityPeriodException e) 
 		{
 			dump("ERROR", e.getMessage());
-			sendOgcExceptionBuiltInResponse(resp,generateOgcError(e.getMessage(),"OperationNotSupported","request",requestedVersion));
+			sendOgcExceptionBuiltInResponse(resp,generateOgcException(e.getMessage(),"OperationNotSupported","request",requestedVersion));
 		}
 		catch (SAXParseException e)
 		{
 			dump("ERROR", e.toString());
 			resp.setHeader("easysdi-proxy-error-occured", "true");
-			sendOgcExceptionBuiltInResponse(resp,generateOgcError("The query syntax is invalid","NoApplicableCode","",requestedVersion));
+			sendOgcExceptionBuiltInResponse(resp,generateOgcException("The query syntax is invalid","NoApplicableCode","",requestedVersion));
 		}
 		catch (Exception e) 
 		{
 			e.printStackTrace();
 			dump("ERROR", e.toString());
 			resp.setHeader("easysdi-proxy-error-occured", "true");
-			sendOgcExceptionBuiltInResponse(resp,generateOgcError("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
+			sendOgcExceptionBuiltInResponse(resp,generateOgcException("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
 		}
 	}
 }

@@ -62,6 +62,8 @@ import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.easysdi.jdom.filter.ElementExceptionFilter;
+import org.easysdi.jdom.filter.ElementExceptionReportFilter;
 import org.easysdi.proxy.exception.AvailabilityPeriodException;
 import org.easysdi.proxy.policy.Attribute;
 import org.easysdi.proxy.policy.AvailabilityPeriod;
@@ -77,8 +79,11 @@ import org.geotools.xml.DocumentFactory;
 import org.geotools.xml.SchemaFactory;
 import org.geotools.xml.XMLHandlerHints;
 import org.jdom.Document;
+import org.jdom.Element;
 import org.jdom.Namespace;
 import org.jdom.input.SAXBuilder;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -115,6 +120,7 @@ public abstract class ProxyServlet extends HttpServlet {
 	protected String responseContentType = null;
 	protected String responseCharacterEncoding = null;
 	protected List<String> responseContentTypeList = new ArrayList<String>();
+	protected Integer responseStatusCode = HttpServletResponse.SC_OK;
 	protected String bbox = null;
 	protected String srsName = null;
 	protected Map<Integer, String> wfsFilePathList = new TreeMap<Integer, String>();
@@ -268,12 +274,66 @@ public abstract class ProxyServlet extends HttpServlet {
 
 	protected abstract void requestPreTreatmentGET(HttpServletRequest req, HttpServletResponse resp);
 
-	/*
-	 * protected abstract void transform(HashMap<String,String> env,
-	 * HttpServletRequest req, HttpServletResponse resp, String filePath) ;
-	 */
-
 	/**
+	 * Aggregate exception files from remote servers in one single file
+	 * Valid for
+	 * WMTS 1.0.0
+	 * WFS 1.1
+	 * 
+	 */
+	protected ByteArrayOutputStream buildResponseForRemoteOgcException ()
+	{
+		try 
+		{
+			for (String path : ogcExceptionFilePathList.values()) 
+			{
+				File fMaster = new File(path);
+				SAXBuilder sxb = new SAXBuilder();
+				Document documentMaster = sxb.build(new File(path));
+				if (documentMaster != null) 
+				{
+					List<?> exceptionReportList = documentMaster.getContent(new ElementExceptionReportFilter());
+					Iterator<?> iExceptionReportList = exceptionReportList.iterator();
+					if(iExceptionReportList.hasNext())
+					{
+						Element exceptionReport = (Element) iExceptionReportList.next();
+						for (String pathChild : ogcExceptionFilePathList.values()) 
+						{
+							Document documentChild = null;
+							if(path.equals(pathChild))
+								continue;
+							
+							documentChild = sxb.build(new File(pathChild));
+							
+							if (documentChild != null) {
+								List<?> exceptionList = documentChild.getContent(new ElementExceptionReportFilter());
+								Iterator<?> iExceptionList = exceptionList.iterator();
+								if (iExceptionList.hasNext())
+								{
+									List<Element> exceptionListChild = ((Element) iExceptionList.next()).cloneContent();
+									exceptionReport.addContent(exceptionListChild);
+								}
+							}
+						}
+					}
+				}
+				
+			 XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
+	         ByteArrayOutputStream out = new ByteArrayOutputStream();
+	         sortie.output(documentMaster,out);
+	         return out;
+			}
+		}
+		catch (Exception ex)
+		{
+			ex.printStackTrace();
+			dump("ERROR", ex.getMessage());
+			return null;
+		}
+		return null;
+	}
+	/**
+	 * Aggregate exception files from remote servers in one single file
 	 * The search for tags <ServiceExceptionReport> and <ServiceException> is valid for
 	 * WMS version 1.1, 1.3
 	 * WFS version 1.0
@@ -696,19 +756,23 @@ public abstract class ProxyServlet extends HttpServlet {
 			// getting the response is required to force the request, otherwise
 			// it might not even be sent at all
 			InputStream in = null;
-
-			if (hpcon.getContentEncoding() != null && hpcon.getContentEncoding().indexOf("gzip") != -1) {
-				in = new GZIPInputStream(hpcon.getInputStream());
-				dump("DEBUG", "return of the remote server is zipped");
-			} else {
-				if(hpcon.getResponseCode() == 400 || hpcon.getResponseCode() == 500)
-					in = hpcon.getErrorStream();
-				else
-					in = hpcon.getInputStream();
-				
+   
+			if(hpcon.getResponseCode() >= 400)
+			{
+				in = hpcon.getErrorStream();
+				responseStatusCode = hpcon.getResponseCode();
 			}
-
-			int input;
+			else
+			{
+				if (hpcon.getContentEncoding() != null && hpcon.getContentEncoding().indexOf("gzip") != -1) 
+				{
+					in = new GZIPInputStream(hpcon.getInputStream());
+					dump("DEBUG", "return of the remote server is zipped");
+				} else 
+				{
+					in = hpcon.getInputStream();
+				}
+			}
 
 			responseCharacterEncoding = hpcon.getContentEncoding();
 			if(hpcon.getContentType() != null)
@@ -716,6 +780,7 @@ public abstract class ProxyServlet extends HttpServlet {
 				responseContentType = hpcon.getContentType().split(";")[0];
 				responseContentTypeList.add(responseContentType);
 			}
+			 
 			String tmpDir = System.getProperty("java.io.tmpdir");
 			dump(" tmpDir :  " + tmpDir);
 
@@ -723,8 +788,7 @@ public abstract class ProxyServlet extends HttpServlet {
 
 			FileOutputStream tempFos = new FileOutputStream(tempFile);
 
-//			byte[] buf = new byte[32768];
-			byte[] buf = new byte[in.available()]; 
+			byte[] buf = new byte[in.available()];
 			int nread;
 			while ((nread = in.read(buf)) != -1) {
 				tempFos.write(buf, 0, nread);
@@ -744,11 +808,103 @@ public abstract class ProxyServlet extends HttpServlet {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
-
-			// throw new IOException(e.getMessage());
 		}
 	}
 
+	public void sendDataStream(HttpServletResponse resp, String method, String sUrl, String parameters) throws Exception{
+		
+			if (sUrl != null) {
+				if (sUrl.endsWith("?")) {
+					sUrl = sUrl.substring(0, sUrl.length() - 1);
+				}
+			}
+			DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
+			Date d = new Date();
+			dump("SYSTEM", "RemoteRequestUrl", sUrl);
+			dump("SYSTEM", "RemoteRequest", parameters.replaceAll("\r", ""));
+			dump("SYSTEM", "RemoteRequestLength", parameters.length());
+			dump("SYSTEM", "RemoteRequestDateTime", dateFormat.format(d));
+			String cookie = null;
+
+			if (getLoginService(sUrl) != null) {
+				cookie = geonetworkLogIn(getLoginService(sUrl));
+			}
+
+			String encoding = null;
+			if (getUsername(sUrl) != null && getPassword(sUrl) != null) {
+				String userPassword = getUsername(sUrl) + ":" + getPassword(sUrl);
+				encoding = new sun.misc.BASE64Encoder().encode(userPassword.getBytes());
+			}
+
+			if (method.equalsIgnoreCase("GET")) {
+				if (!sUrl.contains("?"))
+					sUrl = sUrl + "?" + parameters;
+				else
+					sUrl = sUrl+ "&" + parameters;
+			}
+			URL url = new URL(sUrl);
+			HttpURLConnection hpcon = null;
+
+			hpcon = (HttpURLConnection) url.openConnection();
+			hpcon.setRequestMethod(method);
+			if (cookie != null) {
+				hpcon.addRequestProperty("Cookie", cookie);
+			}
+			if (encoding != null) {
+				hpcon.setRequestProperty("Authorization", "Basic " + encoding);
+			}
+			hpcon.setUseCaches(false);
+			hpcon.setDoInput(true);
+
+			if (method.equalsIgnoreCase("POST")) {
+				hpcon.setRequestProperty("Content-Length", "" + Integer.toString(parameters.getBytes().length));
+				String contentType = XML;
+				if(requestCharacterEncoding != null)
+					contentType += "; " +requestCharacterEncoding;
+				hpcon.setRequestProperty("Content-Type", contentType);
+				hpcon.setDoOutput(true);
+				DataOutputStream printout = new DataOutputStream(hpcon.getOutputStream());
+				printout.writeBytes(parameters);
+				printout.flush();
+				printout.close();
+			} else {
+				hpcon.setDoOutput(false);
+			}
+
+			
+			InputStream in = null;
+			if(hpcon.getResponseCode() >= 400)
+			{
+				in = hpcon.getErrorStream();
+			}
+			else
+			{
+				in = hpcon.getInputStream();
+			}
+			resp.setCharacterEncoding(hpcon.getContentEncoding());
+			resp.setContentType(hpcon.getContentType());
+			resp.setStatus(hpcon.getResponseCode());
+			resp.setContentLength(hpcon.getContentLength());
+			
+			BufferedOutputStream os = new BufferedOutputStream(resp.getOutputStream());
+			byte[] buf = new byte[in.available()];
+			int nread;
+			while ((nread = in.read(buf)) != -1) {
+				os.write(buf, 0, nread);
+			}
+			os.flush();
+			os.close();
+			
+			dump("SYSTEM", "RemoteResponseToRequestUrl", sUrl);
+
+			dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
+			d = new Date();
+			dump("SYSTEM", "RemoteResponseDateTime", dateFormat.format(d));
+			
+
+	
+	}
+	
 	protected String geonetworkLogIn(String loginServiceUrl) {
 
 		String cookie = null;
@@ -1073,7 +1229,7 @@ public abstract class ProxyServlet extends HttpServlet {
 		return null;
 	}
 
-	protected abstract  StringBuffer generateOgcError(String errorMessage, String code, String locator, String version) ;
+	protected abstract  StringBuffer generateOgcException(String errorMessage, String code, String locator, String version) ;
 	
 
 	/**
@@ -1144,14 +1300,14 @@ public abstract class ProxyServlet extends HttpServlet {
 		//IF operation is not supported by the current version of the proxy
 		if(!ServiceSupportedOperations.contains(currentOperation))
 		{
-			sendOgcExceptionBuiltInResponse(resp,generateOgcError("Operation not allowed","OperationNotSupported","request", requestedVersion));
+			sendOgcExceptionBuiltInResponse(resp,generateOgcException("Operation not allowed","OperationNotSupported","request", requestedVersion));
 			return true;
 		}
 		try
 		{
 			if (!isOperationAllowed(currentOperation))
 			{
-				sendOgcExceptionBuiltInResponse(resp,generateOgcError("Operation not allowed","OperationNotSupported","request",requestedVersion));
+				sendOgcExceptionBuiltInResponse(resp,generateOgcException("Operation not allowed","OperationNotSupported","request",requestedVersion));
 				return true;
 				
 			}
@@ -1159,7 +1315,7 @@ public abstract class ProxyServlet extends HttpServlet {
 		catch (AvailabilityPeriodException ex)
 		{
 			
-			sendOgcExceptionBuiltInResponse(resp,generateOgcError(ex.getMessage(),"OperationNotSupported","request",requestedVersion));
+			sendOgcExceptionBuiltInResponse(resp,generateOgcException(ex.getMessage(),"OperationNotSupported","request",requestedVersion));
 			return true;
 		}
 		
@@ -1933,7 +2089,7 @@ public abstract class ProxyServlet extends HttpServlet {
 		return null;
 	}
 	
-	protected void sendHttpServletResponse (HttpServletRequest req, HttpServletResponse resp, ByteArrayOutputStream tempOut, String responseContentType)
+	protected void sendHttpServletResponse (HttpServletRequest req, HttpServletResponse resp, ByteArrayOutputStream tempOut, String responseContentType, Integer responseCode)
 	{
 		try
 		{
@@ -1941,11 +2097,13 @@ public abstract class ProxyServlet extends HttpServlet {
 			// httpServletResponse*****************************************************
 			// No post rule to apply. Copy the file result on the output stream
 			BufferedOutputStream os = new BufferedOutputStream(resp.getOutputStream());
-			resp.setContentType(responseContentType);
 			resp.setCharacterEncoding(responseCharacterEncoding);
+			resp.setContentType(responseContentType);
+			resp.setStatus(responseCode);
+			resp.setContentLength(tempOut.size());
 			try {
 				dump("transform begin response writting");
-				if ("1".equals(req.getParameter("download"))) {
+				if (req!= null && "1".equals(req.getParameter("download"))) {
 					String format = req.getParameter("format");
 					if (format == null)
 						format = req.getParameter("FORMAT");
