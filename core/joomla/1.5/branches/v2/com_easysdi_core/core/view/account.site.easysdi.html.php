@@ -822,28 +822,14 @@ class HTML_account {
 	<div class="contentin">
 	<form action="index.php" method="GET" id="adminAffiliateAccountForm" name="adminAffiliateAccountForm">
 	<h3> <?php echo JText::_("CORE_SEARCH_CRITERIA_TITLE"); ?></h3>
-		<table width="100%">
-			<tr>
-				<td>
-					<?php echo JHTML::_("select.genericlist", $types, 'type', 'size="1" class="inputboxEditAffiliates" onchange="document.getElementById(\'adminAffiliateAccountForm\').submit();"', 'value', 'text', $type ); ?>				
-				</td>
-				<td align="right">
-					<button type="button" onclick="document.getElementById('task').value='createAffiliate';document.getElementById('adminAffiliateAccountForm').submit();"><?php echo JText::_("CORE_NEW_AFFILIATE"); ?></button>
-				</td>
-			</tr>
-		<!-- 
-			<tr>
-				<td>
-				
-					<input type="text" name="search" value="<?php echo $search;?>" class="inputboxEditAffiliates" onChange="javascript:submitbutton('listAccount');" /> 
-				</td>
-				
-				<td align="right">
-					<button type="submit" class="searchButton" > <?php echo JText::_("CORE_SEARCH_BUTTON"); ?></button>
-				</td>
-			</tr>
-		-->
-		</table>
+		<div class="row">
+			 <div class="row">
+			 	<?php echo JHTML::_("select.genericlist", $types, 'type', 'size="1" class="inputboxEditAffiliates" onchange="document.getElementById(\'adminAffiliateAccountForm\').submit();"', 'value', 'text', $type ); ?>
+			 </div>
+			 <div class="row">
+				<input type="button" id="newaffiliateaccount_button" name="newaffiliateaccount_button" class="submit" value ="<?php echo JText::_("CORE_NEW_AFFILIATE"); ?>" onClick="document.getElementById('adminAffiliateAccountForm').task.value='createAffiliate';document.getElementById('adminAffiliateAccountForm').submit();"/>
+			</div>	 
+		 </div>
 		<br/>
 	<h3><?php echo JText::_("CORE_SEARCH_RESULTS_TITLE"); ?></h3>
 		<script>
@@ -1274,6 +1260,13 @@ class HTML_account {
 		echo $tabs->endPanel();		
 		echo $tabs->endPane();
 ?>
+		<div class="row">
+			 <div class="row">
+				<input type="button" id="save_button" name="save_button" class="submit" value ="<?php echo JText::_("CORE_SAVE"); ?>" onClick="var form = document.adminForm;form.task.value='saveAccount';submitbutton();"/>
+				<input type="submit" id="back_button" name="back_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="var form = document.getElementById('adminForm');form.task.value='showAccount';form.submit();"/>
+			</div>	 
+		 </div>
+		 
 		<input type="hidden" name="usertype" value="<?php echo $rowUser->usertype; ?>" />
 		<input type="hidden" name="logo" value="<?php echo $rowAccount->logo;  ?>" />
 		<input type="hidden" name="gid" value="<?php echo $rowUser->gid; ?>"/>
@@ -1287,16 +1280,6 @@ class HTML_account {
 				
 		<!-- input type="hidden" name="option" value="<?php echo $option; ?>" / -->
 		<input type="hidden" name="task" value="" />
-		<table>
-			<tr>
-				<td>
-					<button type="button" onClick="var form = document.adminForm;form.task.value='saveAccount';submitbutton();" ><?php echo JText::_("CORE_SAVE"); ?></button>
-				</td>
-				<td>
-					<button type="button" onClick="var form = document.getElementById('adminForm');form.task.value='showAccount';form.submit();" ><?php echo JText::_("CORE_CANCEL"); ?></button>
-				</td>
-			</tr>
-		</table>
 		
 
 	</form>
@@ -2108,6 +2091,15 @@ class HTML_account {
 		echo $tabs->endPanel();
 		echo $tabs->endPane();
 ?>
+
+		<div class="row">
+			 <div class="row">
+				<input type="button" id="save_button" name="save_button" class="submit" value ="<?php echo JText::_("CORE_SAVE"); ?>" onClick="var form = document.adminForm;form.task.value='saveAffiliateAccount';submitbutton();"/>
+				<input type="submit" id="back_button" name="back_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="window.history.go(-1);"/>
+			</div>	 
+		 </div>
+		 
+		
 		<input type="hidden" name="id" value="<?php echo $rowUser->id; ?>" />
 		<input type="hidden" name="type" value="<?php echo JRequest::getVar('type'); ?>" />
 		<input type="hidden" name="account_id" value="<?php echo $rowAccount->id; ?>" />
@@ -2130,17 +2122,7 @@ class HTML_account {
 		
 		<input type="hidden" id="Itemid" name="Itemid" value="<?php echo JRequest::getVar('Itemid'); ?>">
 		<input type="hidden" id="lang" name="lang" value="<?php echo JRequest::getVar('lang'); ?>">
-		
-		<table>
-			<tr>
-				<td>
-					<button type="button" onCLick="var form = document.adminForm;form.task.value='saveAffiliateAccount';submitbutton();" ><?php echo JText::_("CORE_SAVE"); ?></button>
-				</td>
-				<td>
-					<button type="button" onCLick="window.history.go(-1);" ><?php echo JText::_("CORE_CANCEL"); ?></button>
-				</td>
-			</tr>
-		</table>
+				
 	</form>
 	</div>
 <?php
