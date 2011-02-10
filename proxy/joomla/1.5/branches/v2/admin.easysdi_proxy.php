@@ -92,8 +92,7 @@ switch($task){
 		$document->addScript( JURI::root(true).'/administrator/components/com_easysdi_proxy/js/policy.js' );
 		$document->addScript( JURI::root(true).'/administrator/components/com_easysdi_proxy/lib/openlayers/OpenLayers.js' );
 		$document->addScript( JURI::root(true).'/administrator/components/com_easysdi_proxy/lib/proj4js/proj4js-compressed.js' );
-		
-		
+				
 		TOOLBAR_proxy::editPolicy();
 		ADMIN_proxy::editPolicy($xml,true);
 		break;
@@ -127,6 +126,7 @@ switch($task){
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'proxy.toolbar.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'proxy.admin.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'proxy.admin.easysdi.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'js'.DS.'config.php');
 		
 		TOOLBAR_proxy::editConfig();
 		ADMIN_proxy::editConfig($xml);
@@ -157,7 +157,8 @@ switch($task){
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'proxy.toolbar.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'proxy.admin.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'proxy.admin.easysdi.php');
-		
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'js'.DS.'config.php');
+				
 		TOOLBAR_proxy::editConfig();
 		ADMIN_proxy::editConfig($xml,true);
 		break;
@@ -165,6 +166,7 @@ switch($task){
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'proxy.toolbar.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'proxy.admin.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'proxy.admin.easysdi.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'js'.DS.'config.php');
 		
 		$configId = JRequest::getVar("configId");
 		ADMIN_PROXY::deleteConfig($xml,$configFilePath,$configId);
@@ -192,6 +194,7 @@ switch($task){
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'proxy.toolbar.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'proxy.admin.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'proxy.admin.easysdi.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'js'.DS.'config.php');
 		
 		ADMIN_PROXY::saveConfig($xml,$configFilePath);
 		TOOLBAR_proxy::configList();

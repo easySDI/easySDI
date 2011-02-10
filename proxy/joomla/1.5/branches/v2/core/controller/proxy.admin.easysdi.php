@@ -23,6 +23,7 @@ class ADMIN_proxy
 	function editConfig($xml,$new = false)
 	{
 		$option = JRequest::getVar('option');
+		$servletClass = JRequest::getVar('servletClass',"");
 		
 		// Nouvelle configuration ou edition d'une configuration existante
 		if (!$new){
@@ -63,7 +64,29 @@ class ADMIN_proxy
 			$remoteServer->password="";
 		}
 		
-		HTML_proxy::editConfig($xml, $new, $configId, $option);
+		$availableServlet = array("org.easysdi.proxy.wfs.WFSProxyServlet" => "org.easysdi.proxy.wfs.WFSProxyServlet", "org.easysdi.proxy.wms.WMSProxyServlet" => "org.easysdi.proxy.wms.WMSProxyServlet", "org.easysdi.proxy.wmts.v100.WMTSProxyServlet" => "org.easysdi.proxy.wmts.v100.WMTSProxyServlet", "org.easysdi.proxy.csw.CSWProxyServlet" => "org.easysdi.proxy.csw.CSWProxyServlet");
+		$availableServletList = array();
+ 
+		  foreach($availableServlet as $key=>$value) :
+		    $availableServletList[] = JHTML::_('select.option', $key, $value);
+		  endforeach;
+		if($servletClass == "org.easysdi.proxy.wms.WMSProxyServlet" )
+		{
+			HTML_proxy::editConfigWMS($xml, $new, $configId, $availableServletList, $option);
+		}
+		else if($servletClass == "org.easysdi.proxy.wmts.v100.WMTSProxyServlet" )
+		{
+			HTML_proxy::editConfigWMTS($xml, $new, $configId, $availableServletList, $option);
+		}
+		else if($servletClass == "org.easysdi.proxy.csw.CSWProxyServlet" )
+		{
+			HTML_proxy::editConfigCSW($xml, $new, $configId, $availableServletList, $option);
+		}
+		else 
+		{
+			HTML_proxy::editConfigWFS($xml, $new, $configId, $availableServletList, $option);	
+		} 
+//		HTML_proxy::editConfig($xml, $new, $configId, $availableServletList, $option);
 	}
 	
 	function editPolicy ($xml, $new=false)
