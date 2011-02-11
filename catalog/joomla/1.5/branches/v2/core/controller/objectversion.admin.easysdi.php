@@ -360,7 +360,7 @@ class ADMIN_objectversion {
 			
 			/* GESTION VIRALE DES VERSIONS
 			 * 
-			 * Si l'objet en question � des liens enfants, les �tudier afin de voir s'il faut cr�er de nouvelles versions des enfants �galement
+			 * Si l'objet en question a des liens enfants, les étudier afin de voir s'il faut créer de nouvelles versions des enfants également
 			*/
 			// R�cup�rer tous les liens enfants de la derni�re version
 			$child_objectlinks=array();
@@ -383,7 +383,7 @@ class ADMIN_objectversion {
 			{
 				foreach($child_objectlinks as $ol)
 				{
-					// R�cup�rer l'objet li� � la version enfant
+					// Récupérer l'objet lié à la version enfant
 					$rowChildObject = new object($database);
 					$rowChildObject->load($ol->childobject_id);
 					
@@ -402,12 +402,12 @@ class ADMIN_objectversion {
 					{
 						foreach($rowObjectTypeLink as $otl)
 						{
-							// R�cup�rer toutes les versions de l'objet enfant, ordonn�es de la plus r�cente � la plus ancienne
+							// Récupérer toutes les versions de l'objet enfant, ordonnées de la plus récente à la plus ancienne
 							$childListVersions = array();
 							$database->setQuery( "SELECT * FROM #__sdi_objectversion WHERE object_id=".$rowChildObject->id." ORDER BY created DESC" );
 							$childListVersions = array_merge( $childListVersions, $database->loadObjectList() );
 							
-							// R�cup�rer la m�tadonn�e de la derni�re version de l'objet
+							// Récupérer la métadonnée de la dernière version de l'objet
 							$childLastObjectVersion = new objectversion( $database );
 							$childLastMetadata = new metadata( $database );
 							if (count($childListVersions) > 0)
@@ -427,7 +427,7 @@ class ADMIN_objectversion {
 								require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 								$new_metadata_guid = helper_easysdi::getUniqueId();
 								
-								// Cr�er une nouvelle m�tadonn�e
+								// Créer une nouvelle métadonnée
 								$childMetadata = new metadata( $database );
 								$childMetadata->guid = $new_metadata_guid;
 								$childMetadata->name = $new_metadata_guid;
@@ -435,7 +435,7 @@ class ADMIN_objectversion {
 								$childMetadata->createdby = $_POST['createdby'];
 								$childMetadata->metadatastate_id = 4;
 								
-								// Cr�er une nouvelle version de l'enfant
+								// Créer une nouvelle version de l'enfant
 								ADMIN_objectversion::createVersion($rowChildObject, $object_id, $childLastMetadata->guid, $new_metadata_guid, $option);
 	
 								if (!$childMetadata->store()) 
@@ -579,8 +579,8 @@ class ADMIN_objectversion {
 			
 			if ($metadata->metadatastate_id <> 2 and $metadata->metadatastate_id <> 4)
 			{
-				$mainframe->enqueueMessage("CATALOG_OBJECTVERSION_DELETE_STATE_MSG","error");
-				//$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=".$object_id );
+				$mainframe->enqueueMessage(JText::_("CATALOG_OBJECTVERSION_DELETE_STATE_MSG"),"error");
+				$mainframe->redirect(JRoute::_('index.php?option='.$option.'&task=listObjectVersion&object_id='.$object_id, false ));
 				exit;
 			}
 			
@@ -709,13 +709,13 @@ class ADMIN_objectversion {
 		global $mainframe;
 		$database=& JFactory::getDBO(); 
 		
-		// R�cup�rer l'attribut qui correspond au stockage de l'id
+		// Récupérer l'attribut qui correspond au stockage de l'id
 		$idrow = "";
 		//$database->setQuery("SELECT a.name as name, ns.prefix as ns, CONCAT(ns.prefix,':',a.name) as attribute_isocode, at.isocode as type_isocode FROM #__sdi_profile p, #__sdi_objecttype ot, #__sdi_relation rel, #__sdi_list_attributetype as at, #__sdi_attribute a LEFT OUTER JOIN #__sdi_namespace ns ON a.namespace_id=ns.id WHERE p.id=ot.profile_id AND rel.id=p.metadataid AND a.id=rel.attributechild_id AND at.id=a.attributetype_id AND ot.id=".$rowObject->objecttype_id);
 		$database->setQuery("SELECT a.name as name, ns.prefix as ns, CONCAT(ns.prefix, ':', a.isocode) as attribute_isocode, CONCAT(atns.prefix, ':', at.isocode) as type_isocode FROM #__sdi_profile p, #__sdi_objecttype ot, #__sdi_relation rel, #__sdi_attribute a LEFT OUTER JOIN #__sdi_namespace ns ON a.namespace_id=ns.id INNER JOIN #__sdi_list_attributetype as at ON at.id=a.attributetype_id LEFT OUTER JOIN #__sdi_namespace atns ON at.namespace_id=atns.id WHERE p.id=ot.profile_id AND rel.id=p.metadataid AND a.id=rel.attributechild_id AND ot.id=".$rowObject->objecttype_id);
 		$idrow = $database->loadObjectList();
 		
-		// R�cup�rer la classe racine
+		// Récupérer la classe racine
 		$root = array();
 		$query = "SELECT c.name as name, ns.prefix as ns, CONCAT(ns.prefix, ':', c.isocode) as isocode, c.label as label, prof.class_id as id FROM #__sdi_profile prof, #__sdi_objecttype ot, #__sdi_object o, #__sdi_class c LEFT OUTER JOIN #__sdi_namespace ns ON c.namespace_id=ns.id WHERE prof.id=ot.profile_id AND ot.id=o.objecttype_id AND c.id=prof.class_id AND o.id=".$rowObject->id;
 		$database->setQuery($query);
@@ -726,54 +726,63 @@ class ADMIN_objectversion {
 		$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&content=CORE&id=".$metadata_guid;
 		
 		$cswResults = DOMDocument::load($catalogUrlGetRecordById);
+		
+		// Si la métadonnée du lien enfant n'existe plus, sauter le reste des étapes
 		$doc = new DOMDocument();
-		$xmlContent = $doc->importNode($cswResults->getElementsByTagName($root[0]->name)->item(0), true);
-		$doc->appendChild($xmlContent);				 
-		
-		/* Remplacer la valeur du noeud fileIdentifier par la valeur metadata_guid*/
-        $nodeList = &$doc->getElementsByTagName($idrow[0]->name);
-
-        foreach ($nodeList as $node)
-        {
-        	// Remplacer la valeur de fileIdentifier par celle de metadata_id pour que
-        	// la m�tadonn�e import�e prenne son nouvel id 
-        	if ($node->parentNode->nodeName == $root[0]->ns.":".$root[0]->name)
-        	{
-        		foreach ($node->childNodes as $child)
-        		{
-        			if ($child->nodeName == $idrow[0]->type_isocode)
-        			{
-        				$child->nodeValue = $new_metadata_guid;
-        			}
-        		}
-        	}
-        }
-        
-		// Ins�rer dans Geonetwork la nouvelle version de la m�tadonn�e
-		$xmlstr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
-		<csw:Transaction service=\"CSW\"
-		version=\"2.0.2\"
-		xmlns:csw=\"http://www.opengis.net/cat/csw/2.0.2\" >
-		<csw:Insert>
-		".substr($doc->saveXML(), strlen('<?xml version="1.0"?>'))."
-		</csw:Insert>
-		</csw:Transaction>";
-		
-		//$doc->save("C:\\RecorderWebGIS\\".$new_metadata_guid.".xml");
-		
-		//$result = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
-		$result = ADMIN_metadata::CURLRequest("POST", $catalogUrlBase, $xmlstr);
-		
-		$insertResults = DOMDocument::loadXML($result);
-		$xpathInsert = new DOMXPath($insertResults);
-		$xpathInsert->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
-		$inserted = $xpathInsert->query("//csw:totalInserted")->item(0)->nodeValue;
-		
-		if ($inserted <> 1)
+		if ($cswResults->getElementsByTagName($root[0]->name)->length == 0)
 		{
-			$mainframe->enqueueMessage('Error on metadata insert',"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=$object_id" );
-			exit();
+			$mainframe->enqueueMessage(JText::_('CATALOG_METADATA_SAVE_RETRIEVEPROBLEM_MSG'),"ERROR");
+		}
+		else
+		{
+			$xmlContent = $doc->importNode($cswResults->getElementsByTagName($root[0]->name)->item(0), true);
+			$doc->appendChild($xmlContent);				 
+			
+			/* Remplacer la valeur du noeud fileIdentifier par la valeur metadata_guid*/
+			$nodeList = &$doc->getElementsByTagName($idrow[0]->name);
+				
+	        foreach ($nodeList as $node)
+	        {
+	        	// Remplacer la valeur de fileIdentifier par celle de metadata_id pour que
+	        	// la m�tadonn�e import�e prenne son nouvel id 
+	        	if ($node->parentNode->nodeName == $root[0]->ns.":".$root[0]->name)
+	        	{
+	        		foreach ($node->childNodes as $child)
+	        		{
+	        			if ($child->nodeName == $idrow[0]->type_isocode)
+	        			{
+	        				$child->nodeValue = $new_metadata_guid;
+	        			}
+	        		}
+	        	}
+	        }
+	        
+			// Insérer dans Geonetwork la nouvelle version de la métadonnée
+			$xmlstr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+			<csw:Transaction service=\"CSW\"
+			version=\"2.0.2\"
+			xmlns:csw=\"http://www.opengis.net/cat/csw/2.0.2\" >
+			<csw:Insert>
+			".substr($doc->saveXML(), strlen('<?xml version="1.0"?>'))."
+			</csw:Insert>
+			</csw:Transaction>";
+			
+			//$doc->save("C:\\RecorderWebGIS\\".$new_metadata_guid.".xml");
+			
+			//$result = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
+			$result = ADMIN_metadata::CURLRequest("POST", $catalogUrlBase, $xmlstr);
+			
+			$insertResults = DOMDocument::loadXML($result);
+			$xpathInsert = new DOMXPath($insertResults);
+			$xpathInsert->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
+			$inserted = $xpathInsert->query("//csw:totalInserted")->item(0)->nodeValue;
+			
+			if ($inserted <> 1)
+			{
+				$mainframe->enqueueMessage(JText::_('CATALOG_METADATA_SAVE_INSERTPROBLEM_MSG'),"ERROR");
+				$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=$object_id" );
+				exit();
+			}
 		}
 	}
 	

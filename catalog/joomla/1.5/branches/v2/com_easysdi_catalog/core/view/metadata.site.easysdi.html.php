@@ -205,7 +205,7 @@ else
 							)
 						{
 							?>
-								<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_EDIT_METADATA_ACTION')); ?>" id="editMetadata" onClick="document.getElementById('metadataListForm').task.value='editMetadata';document.getElementById('cid[]').value=<?php echo $row->version_id?>;document.getElementById('metadataListForm').submit(); //window.open('./index.php?option=<?php echo $option;?>&task=editMetadata&cid[]=<?php echo $row->version_id?>', '_self');"></div>
+								<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_EDIT_METADATA_ACTION')); ?>" id="editMetadata" onClick="window.open('<?php echo JRoute::_(displayManager::buildUrl('index.php?task=editMetadata&option='.$option.'&cid[]='.$row->version_id)); ?>', '_self');"></div>
 							<?php
 						}
 						else
@@ -224,7 +224,8 @@ else
 						if ($rowMetadata->metadatastate_id == 4 and $rowMetadata->editor_id == $rowCurrentUser->id) // En travail et t�che d'�dition assign�e
 						{
 							?>
-							<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_EDIT_METADATA_ACTION')); ?>" id="editMetadata" onClick="document.getElementById('metadataListForm').task.value='editMetadata';document.getElementById('cid[]').value=<?php echo $row->version_id?>;document.getElementById('metadataListForm').submit(); // window.open('./index.php?option=<?php echo $option;?>&task=editMetadata&cid[]=<?php echo $row->version_id?>', '_self'); "></div>
+							<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_EDIT_METADATA_ACTION')); ?>" id="editMetadata" onClick="window.open('<?php echo JRoute::_(displayManager::buildUrl('index.php?task=editMetadata&option='.$option.'&cid[]='.$row->version_id)); ?>', '_self'); "></div>
+							
 							<?php
 						} 
 						else
@@ -328,6 +329,10 @@ else
 		
 		$database =& JFactory::getDBO();
 		$language =& JFactory::getLanguage();
+		$user	=& JFactory::getUser();
+		$app	= &JFactory::getApplication();
+		$router = &$app->getRouter();
+		$router->setVars($_REQUEST);
 		
 		if (file_exists($uri->base(true).'/components/com_easysdi_catalog/ext/src/locale/ext-lang-'.$language->_lang.'.js')) 
 			JHTML::script('ext-lang-'.$language->_lang.'.js', 'administrator/components/com_easysdi_catalog/ext/src/locale/');
@@ -403,7 +408,6 @@ else
 		$publish_url = 'index.php?option='.$option.'&task=validateForPublishMetadata';
 		$assign_url = 'index.php?option='.$option.'&task=assignMetadata';
 		
-		$user =& JFactory::getUser();
 		$user_id = $user->get('id');
 
 		$this->javascript = "";

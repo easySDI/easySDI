@@ -190,8 +190,8 @@ else
 		    <form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
 			<div class="row">
 				 <div class="row">
-					<input type="submit" id="simple_search_button" name="simple_search_button" class="submit" value ="<?php echo JText::_("CORE_SAVE"); ?>" onClick="document.getElementById('adminForm').task.value='saveObjectVersion'; document.getElementById('adminForm').submit();"/>
-					<input type="submit" id="back_button" name="back_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="document.getElementById('adminForm').task.value='backObjectVersion';window.open('<?php echo JRoute::_(displayManager::buildUrl('index.php?task=backObjectVersion&object_id='.$object_id)); ?>', '_self')"/>
+					<input type="button" id="save_button" name="save_button" class="submit" value ="<?php echo JText::_("CORE_SAVE"); ?>" onClick="document.getElementById('adminForm').task.value='saveObjectVersion'; document.getElementById('adminForm').submit();"/>
+					<input type="button" id="back_button" name="back_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="document.getElementById('adminForm').task.value='backObjectVersion';window.open('<?php echo JRoute::_(displayManager::buildUrl('index.php?task=backObjectVersion&object_id='.$object_id)); ?>', '_self')"/>
 				</div>	 
 			 </div>
 				<div class="row">	
@@ -720,16 +720,6 @@ else
 				         id:'objectversion_id', 
 				         xtype: 'hidden',
 				         value:'".$objectversion_id."' 
-				       },
-				       { 
-				         id:'Itemid', 
-				         xtype: 'hidden',
-				         value:'".JRequest::getVar('Itemid')."' 
-				       },
-				       { 
-				         id:'lang', 
-				         xtype: 'hidden',
-				         value:'".JRequest::getVar('lang')."' 
 				       }
 					],
 					buttons: [

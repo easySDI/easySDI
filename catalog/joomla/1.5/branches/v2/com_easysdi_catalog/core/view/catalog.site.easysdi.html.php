@@ -88,7 +88,7 @@ class HTML_catalog{
 
 <h2><?php echo JText::_("CATALOG_SEARCH_CRITERIA_TITLE"); ?></h2>
 
-<form name="catalog_search_form" id="catalog_search_form" method="POST" action="">
+<form name="catalog_search_form" id="catalog_search_form" method="GET" action="">
 	<input type="hidden" name="option" id="option" value="<?php echo JRequest::getVar('option' );?>" /> 
 	<input type="hidden" name="view" id="view" value="<?php echo JRequest::getVar('view' );?>" /> 
 	<input type="hidden" name="context" id="context" value="<?php echo JRequest::getVar('context' );?>" /> 
