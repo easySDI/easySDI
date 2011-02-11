@@ -845,8 +845,8 @@ class HTML_account {
 		<thead>
 			<tr>
 				<th class='title'><?php echo JText::_("CORE_ACCOUNT_TAB_COL_USER"); ?></th>
-				<th class='descr'><?php echo JText::_("CORE_ACCOUNT_TAB_COL_ACCOUNT"); ?></th>
-				<th class='title'><?php echo JText::_('CORE_ACCOUNT_ACTIONS'); ?></th>
+				<th class='title'><?php echo JText::_("CORE_ACCOUNT_TAB_COL_ACCOUNT"); ?></th>
+				<th class='title'><?php echo JText::_('CORE_ACCOUNT_ACTIONS'); ?></th>				
 			</tr>
 		</thead>
 		<tbody>		
@@ -858,23 +858,26 @@ class HTML_account {
 			$row = $rows[$i];
 			
 			$deleteErrors = SITE_Account::checkIsAccountDeletable($row->user_id);
-			$deleteErrorsTxt = $deleteErrors[0]." ";
+			$deleteErrorsTxt = "";
+			if (count($deleteErrors) > 0)
+				$deleteErrorsTxt = $deleteErrors[0]." ";
 			
 			$m = 0;
 			foreach ($deleteErrors as $err){
 				if($m > 0)
 				   $deleteErrorsTxt .= $err;
 			   	if($m > 0 && $m < (count($deleteErrors)-1))
-				   $deleteErrorsTxt .= " ".JText::_("EASYSDI_AND")." ";
+				   $deleteErrorsTxt .= " ".JText::_("CORE_ACCOUNT_AND")." ";
 				$m++;
 			}
+			
 ?>
 			<tr class="<?php echo "row$k"; ?>">
-				<td align="center"><?php echo $row->account_username; ?></td>
+				<td><?php echo $row->account_username; ?></td>
 				<td><?php echo $row->account_name; ?></td>
-				<td class="objectActions">
+				<td class="affiliateActions">
 					<div class="logo" title="<?php echo addslashes(JText::_('CORE_ACTION_EDIT_AFFILIATE')); ?>" id="editAffiliate" onClick="window.open('<?php echo JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&return=listAffiliateAccount&task=editAffiliateById&affiliate_id='.$row->user_id.'&type='.$type.'&search='.addslashes($search))); ?>', '_self');"></div>
-					<div class="logo" title="<?php if(count($deleteErrors) == 0) echo JText::_('CORE_ACTION_DELETE_AFFILIATE'); else echo $deleteErrorsTxt; ?>" id="deleteAffiliate" <?php if(count($deleteErrors) == 0) echo "onClick=\"return suppressAffiliate_click('".addslashes($row->name)."', '".JRoute::_(displayManager::buildUrl('index.php?option=com_easysdi_core&return=listAffiliateAccount&task=deleteAffiliate&affiliate_id='.$row->user_id.'&type='.$type.'&search='.addslashes($search)))."');\"";?> class="<?php if(count($deleteErrors) == 0) echo "deletableAccount"; else echo "unDeletableAccount";?>" ></div>
+					<div class="logo <?php if(count($deleteErrors) == 0) echo "deletableAccount"; else echo "unDeletableAccount";?>" title="<?php if(count($deleteErrors) == 0) echo JText::_('CORE_ACTION_DELETE_AFFILIATE'); else echo $deleteErrorsTxt; ?>" id="deleteAffiliate" <?php if(count($deleteErrors) == 0) echo "onClick=\"return suppressAffiliate_click('".addslashes($row->name)."', '".JRoute::_(displayManager::buildUrl('index.php?option=com_easysdi_core&return=listAffiliateAccount&task=deleteAffiliate&affiliate_id='.$row->user_id.'&type='.$type.'&search='.addslashes($search)))."');\"";?>></div>
 				</td>
 			</tr>
 <?php
@@ -1858,7 +1861,7 @@ class HTML_account {
 							</tr>
 							<tr>
 								<td class="ptitle"><?php echo JText::_("CORE_ACCOUNT_USER_LABEL"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="username" value="<?php echo $rowUser->username; ?>" /></td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="username" value="<?php echo $rowUser->username; ?>" /><input type="hidden" name="old_username" value="<?php echo $rowUser->username; ?>" /></td>
 							</tr>
 							<tr>
 								<td class="ptitle"><?php echo JText::_("CORE_ACCOUNT_PASSWORD_LABEL"); ?> : </td>
@@ -1940,7 +1943,7 @@ class HTML_account {
 			</tr>
 			<tr>
 				<td class="ptitle"><?php echo JText::_("CORE_ACCOUNT_CONTACT_LABEL"); ?> : </td>
-				<td><?php echo JHTML::_("select.genericlist",$titles, 'id[0]', 'size="1" class="inputbox"', 'value', 'text', $rowContact->id ); ?></td>
+				<td><?php echo JHTML::_("select.genericlist",$titles, 'title_id[0]', 'size="1" class="inputbox"', 'value', 'text', $rowContact->title_id ); ?></td>
 			</tr>
 			<tr>
 				<td class="ptitle"><?php echo JText::_("CORE_ACCOUNT_FIRSTNAME_LABEL"); ?> : </td>

@@ -22,6 +22,7 @@ class SITE_account {
 
 	function includeAccountExtension($tab_id,$tab_location,$action,$account_id)
 	{
+		global $mainframe;
 		$database =& JFactory::getDBO();
 				
 		$database->setQuery( "SELECT code FROM #__sdi_accountextension WHERE accounttab_id = ".$tab_id." AND tablocation_id = '".$tab_location."' AND action = '".$action."' ORDER BY ordering" );
@@ -46,12 +47,12 @@ class SITE_account {
 		//								   "index.php?option=$option&task=showAccount");
 		
 		if ($user->guest){
-			$mainframe->enqueueMessage(JText::_("EASYSDI_ACCOUNT_NOT_CONNECTED"),"INFO");
+			$mainframe->enqueueMessage(JText::_("CORE_ACCOUNT_NOTCONNECTED_MSG"),"INFO");
 			return;
 		}
 		if(!usermanager::isEasySDIUser($user))
 		{
-			$mainframe->enqueueMessage(JText::_("EASYSDI_NOT_CONNECTED_AS_EASYSDI_USER"),"INFO");
+			$mainframe->enqueueMessage(JText::_("CORE_ACCOUNT_NOTCONNECTEDASEASYSDIUSER_MSG"),"INFO");
 			return;
 		}
 		if(!userManager::isUserAllowed($user,"MYACCOUNT"))
@@ -74,9 +75,7 @@ class SITE_account {
 		$database->setQuery($query );
 		$hasTheRightToEdit = $database->loadResult();
 		if ($database->getErrorNum()) {
-			echo "<div class='alert'>";
-			echo 			$database->getErrorMsg();
-			echo "</div>";
+			$mainframe->enqueueMessage($database->getErrorMsg(),"error");
 			$hasTheRightToEdit=0;
 		}
 			
@@ -89,9 +88,7 @@ class SITE_account {
 		$database->setQuery($query );
 		$hasTheRightToManageHisOwnAffiliates = $database->loadResult();
 		if ($database->getErrorNum()) {
-			echo "<div class='alert'>";
-			echo 			$database->getErrorMsg();
-			echo "</div>";
+			$mainframe->enqueueMessage($database->getErrorMsg(),"error");
 			$hasTheRightToManageHisOwnAffiliates=0;
 		}
 			
@@ -107,12 +104,12 @@ class SITE_account {
 		$option = JRequest::getVar("option");
 		$user = JFactory::getUser();
 		if ($user->guest){
-			$mainframe->enqueueMessage(JText::_("EASYSDI_ACCOUNT_NOT_CONNECTED"),"INFO");
+			$mainframe->enqueueMessage(JText::_("CORE_ACCOUNT_NOTCONNECTED_MSG"),"INFO");
 			return;
 		}
 		if(!usermanager::isEasySDIUser($user))
 		{
-			$mainframe->enqueueMessage(JText::_("EASYSDI_NOT_CONNECTED_AS_EASYSDI_USER"),"INFO");
+			$mainframe->enqueueMessage(JText::_("CORE_ACCOUNT_NOTCONNECTEDASEASYSDIUSER_MSG"),"INFO");
 			return;
 		}
 		$database =& JFactory::getDBO();
@@ -133,26 +130,20 @@ class SITE_account {
 		$database->setQuery( "SELECT id FROM #__sdi_address WHERE account_id=".$rowAccount->id." AND type_id=1" );
 		$contact_id = $database->loadResult();
 		if ($database->getErrorNum()) {
-			echo "<div class='alert'>";
-			echo 			$database->getErrorMsg();
-			echo "</div>";
+			$mainframe->enqueueMessage($database->getErrorMsg(),"error");
 		}
 			
 		$rowContact = new address( $database );
 		$rowContact->load( $contact_id );
 		if ($database->getErrorNum()) {
-			echo "<div class='alert'>";
-			echo 			$database->getErrorMsg();
-			echo "</div>";
+			$mainframe->enqueueMessage($database->getErrorMsg(),"error");
 		}
 
 
 		$database->setQuery( "SELECT id FROM #__sdi_address WHERE account_id=".$rowAccount->id." AND type_id=2" );
 		$subscription_id = $database->loadResult();
 		if ($database->getErrorNum()) {
-			echo "<div class='alert'>";
-			echo 			$database->getErrorMsg();
-			echo "</div>";
+			$mainframe->enqueueMessage($database->getErrorMsg(),"error");
 		}
 
 		$rowSubscription = new address( $database );
@@ -161,17 +152,13 @@ class SITE_account {
 		$database->setQuery( "SELECT id FROM #__sdi_address WHERE account_id=".$rowAccount->id." AND type_id=3" );
 		$delivery_id = $database->loadResult();
 		if ($database->getErrorNum()) {
-			echo "<div class='alert'>";
-			echo 			$database->getErrorMsg();
-			echo "</div>";
+			$mainframe->enqueueMessage($database->getErrorMsg(),"error");
 		}
 
 		$rowDelivery = new address( $database );
 		$rowDelivery->load( $delivery_id );
 		if ($database->getErrorNum()) {
-			echo "<div class='alert'>";
-			echo 			$database->getErrorMsg();
-			echo "</div>";
+			$mainframe->enqueueMessage($database->getErrorMsg(),"error");
 		}
 			
 		$rowUser =&	 new JTableUser($database);
@@ -184,78 +171,48 @@ class SITE_account {
 
 	function showAffiliateAccount($hasTheRightToEdit,$hasTheRightToManageHisOwnAffiliates)
 	{	global  $mainframe;
-	$user = JFactory::getUser();
-	if ($user->guest)
-	{
-		$mainframe->enqueueMessage(JText::_("EASYSDI_ACCOUNT_NOT_CONNECTED"),"INFO");
-		return;
-	}
-	if(!usermanager::isEasySDIUser($user))
-	{
-		$mainframe->enqueueMessage(JText::_("EASYSDI_NOT_CONNECTED_AS_EASYSDI_USER"),"INFO");
-		return;
-	}
+		$user = JFactory::getUser();
+		if ($user->guest)
+		{
+			$mainframe->enqueueMessage(JText::_("CORE_ACCOUNT_NOTCONNECTED_MSG"),"INFO");
+			return;
+		}
+		if(!usermanager::isEasySDIUser($user))
+		{
+			$mainframe->enqueueMessage(JText::_("CORE_ACCOUNT_NOTCONNECTEDASEASYSDIUSER_MSG"),"INFO");
+			return;
+		}
 
-	$option = JRequest::getVar("option");
-	$database =& JFactory::getDBO();
-
-	$rowAccount = new AccountByUserId( $database );
-	$rowAccount->load( $user->id );
-
-	$database->setQuery( "SELECT id FROM #__sdi_address WHERE account_id=".$rowAccount->id." AND type_id=1" );
-
-	$contact_id = $database->loadResult();
-	if ($database->getErrorNum())
-	{
-		echo "<div class='alert'>";
-		echo $database->getErrorMsg();
-		echo "</div>";
-	}
-
-	$rowContact = new address( $database );
-	$rowContact->load( $contact_id );
-/*
-	$database->setQuery( "SELECT id FROM #__sdi_address WHERE account_id=".$rowAccount->id." AND type_id=2" );
-	$subscription_id = $database->loadResult();
-	if ($database->getErrorNum()) {
-		echo "<div class='alert'>";
-		echo 			$database->getErrorMsg();
-		echo "</div>";
-	}
-
-	$rowSubscription = new address( $database );
-	$rowSubscription->load( $subscription_id );
-
-	$database->setQuery( "SELECT id FROM #__sdi_address WHERE account_id=".$rowAccount->id." AND type_id=3" );
-	$delivery_id = $database->loadResult();
-	if ($database->getErrorNum()) {
-		echo "<div class='alert'>";
-		echo 			$database->getErrorMsg();
-		echo "</div>";
-	}
-
-	$rowDelivery = new address( $database );
-	$rowDelivery->load( $delivery_id );
-	if ($database->getErrorNum()) {
-		echo "<div class='alert'>";
-		echo 			$database->getErrorMsg();
-		echo "</div>";
-	}
-*/	
-	$rowUser =&	 new JTableUser($database);
-	$rowUser->load( $rowAccount->user_id );
-
-	if ($id == 0)
-	{
-		$rowAccount->root_id=JRequest::getVar('type','');
-		$rowAccount->parent_id=JRequest::getVar('type','');
-		$rowUser->usertype='Registered';
-		$rowUser->gid=18;
-	}
-
-	//HTML_Account::showAffiliateAccount($hasTheRightToEdit,$hasTheRightToManageHisOwnAffiliates, $rowUser, $rowAccount, $rowContact, $rowSubscription, $rowDelivery, $option );
-	HTML_Account::showAffiliateAccount($hasTheRightToEdit,$hasTheRightToManageHisOwnAffiliates, $rowUser, $rowAccount, $rowContact, $option );
+		$option = JRequest::getVar("option");
+		$database =& JFactory::getDBO();
 	
+		$rowAccount = new AccountByUserId( $database );
+		$rowAccount->load( $user->id );
+	
+		$database->setQuery( "SELECT id FROM #__sdi_address WHERE account_id=".$rowAccount->id." AND type_id=1" );
+	
+		$contact_id = $database->loadResult();
+		if ($database->getErrorNum())
+		{
+			$mainframe->enqueueMessage($database->getErrorMsg(),"error");
+		}
+	
+		$rowContact = new address( $database );
+		$rowContact->load( $contact_id );
+		
+		$rowUser =&	 new JTableUser($database);
+		$rowUser->load( $rowAccount->user_id );
+	
+		if ($id == 0)
+		{
+			$rowAccount->root_id=JRequest::getVar('type','');
+			$rowAccount->parent_id=JRequest::getVar('type','');
+			$rowUser->usertype='Registered';
+			$rowUser->gid=18;
+		}
+	
+		HTML_Account::showAffiliateAccount($hasTheRightToEdit,$hasTheRightToManageHisOwnAffiliates, $rowUser, $rowAccount, $rowContact, $option );
+		
 	}
 	
 	function listAccount($option) 
@@ -291,24 +248,11 @@ class SITE_account {
 		$rowAccount->load( $user->id );
 
 			
-		//Has the user the right to manage the affiliate
-		/*$query = "SELECT count(*) FROM #__easysdi_community_actor as a ,#__easysdi_community_role as b where a.role_id = b.role_id and role_code = 'ACCOUNT'  and Account_id = $rowAccount->Account_id";
-
-		$db->setQuery($query );
-		$hasTheRightToManageAffiliates = $db->loadResult();
-		if ($db->getErrorNum()) {
-		echo "<div class='alert'>";
-		echo 			$db->getErrorMsg();
-		echo "</div>";
-		$hasTheRightToManageAffiliates=0;
-		}
-		*/
 		$type = JRequest::getVar("type",$rowAccount->id);
 		if (!$type){
 			$type=$rowAccount->id;
 		}
 
-		/*if ($hasTheRightToManageAffiliates){*/
 		$query = "SELECT COUNT(*) FROM #__users,#__sdi_account WHERE #__users.id=#__sdi_account.user_id AND #__sdi_account.parent_id = ".$type." AND #__sdi_account.id <> $type";
 		$query .= $filter;
 		$db->setQuery( $query );
@@ -324,9 +268,7 @@ class SITE_account {
 		$rows = $db->loadObjectList();
 
 		if ($db->getErrorNum()) {
-			echo "<div class='alert'>";
-			echo 			$db->getErrorMsg();
-			echo "</div>";
+			$mainframe->enqueueMessage($database->getErrorMsg(),"error");
 		}
 
 		$types = array();
@@ -369,26 +311,20 @@ class SITE_account {
 		$database->setQuery( "SELECT id FROM #__sdi_address WHERE account_id=".$rowAccount->id." AND type_id=1" );
 		$contact_id = $database->loadResult();
 		if ($database->getErrorNum()) {
-			echo "<div class='alert'>";
-			echo 			$database->getErrorMsg();
-			echo "</div>";
+			$mainframe->enqueueMessage($database->getErrorMsg(),"error");
 		}
 			
 		$rowContact = new address( $database );
 		$rowContact->load( $contact_id );
 		if ($database->getErrorNum()) {
-			echo "<div class='alert'>";
-			echo 			$database->getErrorMsg();
-			echo "</div>";
+			$mainframe->enqueueMessage($database->getErrorMsg(),"error");
 		}
 
 
 		$database->setQuery( "SELECT id FROM #__sdi_address WHERE account_id=".$rowAccount->id." AND type_id=2" );
 		$subscription_id = $database->loadResult();
 		if ($database->getErrorNum()) {
-			echo "<div class='alert'>";
-			echo 			$database->getErrorMsg();
-			echo "</div>";
+			$mainframe->enqueueMessage($database->getErrorMsg(),"error");
 		}
 
 		$rowSubscription = new address( $database );
@@ -397,17 +333,13 @@ class SITE_account {
 		$database->setQuery( "SELECT id FROM #__sdi_address WHERE account_id=".$rowAccount->id." AND type_id=3" );
 		$delivery_id = $database->loadResult();
 		if ($database->getErrorNum()) {
-			echo "<div class='alert'>";
-			echo 			$database->getErrorMsg();
-			echo "</div>";
+			$mainframe->enqueueMessage($database->getErrorMsg(),"error");
 		}
 
 		$rowDelivery = new address( $database );
 		$rowDelivery->load( $delivery_id );
 		if ($database->getErrorNum()) {
-			echo "<div class='alert'>";
-			echo 			$database->getErrorMsg();
-			echo "</div>";
+			$mainframe->enqueueMessage($database->getErrorMsg(),"error");
 		}
 			
 		$rowUser =&	 new JTableUser($database);
@@ -416,9 +348,10 @@ class SITE_account {
 		HTML_account::editAccount( $rowUser, $rowAccount, $rowContact, $rowSubscription, $rowDelivery ,$option );
 	}
 	
-	// Cr�ation d'enregistrement (id = 0)
+	// Création d'enregistrement (id = 0)
 	// ou modification de l'enregistrement id = n
 	function editRootAccount($id, $option) {
+		global $mainframe;
 		if($id=='')
 		{
 			$id = JRequest::getVar('id');
@@ -444,24 +377,27 @@ class SITE_account {
 	
 		$database->setQuery( "SELECT id FROM #__sdi_address WHERE account_id=".$id." AND type_id=1" );
 		$contact_id = $database->loadResult();
-		echo $database->getErrorMsg();
+		if ($database->getErrorNum()) {
+			$mainframe->enqueueMessage($database->getErrorMsg(),"error");
+		}
 		$rowContact = new address( $database );
 		$rowContact->load( $contact_id );
-		//print_r($rowContact); echo "<br>";
 		
 		$database->setQuery( "SELECT id FROM #__sdi_address WHERE account_id=".$id." AND type_id=2" );
 		$subscription_id = $database->loadResult();
-		echo $database->getErrorMsg();
+		if ($database->getErrorNum()) {
+			$mainframe->enqueueMessage($database->getErrorMsg(),"error");
+		}
 		$rowSubscription = new address( $database );
 		$rowSubscription->load( $subscription_id );
-		//print_r($rowSubscription); echo "<br>";
 		
 		$database->setQuery( "SELECT id FROM #__sdi_address WHERE account_id=".$id." AND type_id=3" );
 		$delivery_id = $database->loadResult();
-		echo $database->getErrorMsg();
+		if ($database->getErrorNum()) {
+			$mainframe->enqueueMessage($database->getErrorMsg(),"error");
+		}
 		$rowDelivery = new address( $database );
 		$rowDelivery->load( $delivery_id );
-		//print_r($rowDelivery); echo "<br>";
 		
 		$rowUser =&	 new JTableUser($database);
 		$JId = JRequest::getVar('JId');
@@ -479,9 +415,10 @@ class SITE_account {
 		HTML_account::editRootAccount( $rowUser, $rowAccount, $rowContact, $rowSubscription, $rowDelivery, $option );
 	}
 
-	// Cr�ation d'enregistrement (id = 0)
+	// Création d'enregistrement (id = 0)
 	// ou modification de l'enregistrement id = n
 	function editAffiliateAccount( $id) {		
+		global $mainframe;
 		$user = JFactory::getUser();
 
 		if(!usermanager::isUserAllowed($user, "ACCOUNT"))
@@ -527,17 +464,16 @@ class SITE_account {
 		{
 			$rowAccount->load( $user->id );
 		}
-
+	
 		if ($id!=0){
 			$database->setQuery( "SELECT id FROM #__sdi_address WHERE account_id=".$rowAccount->id." AND type_id=1" );
 			$contact_id = $database->loadResult();
 			if ($database->getErrorNum()) {
-				echo "<div class='alert'>";
-				echo $database->getErrorMsg();
-				echo "</div>";
+				$mainframe->enqueueMessage($database->getErrorMsg(),"error");
 			}
 			$rowContact = new address( $database );
 			$rowContact->load( $contact_id );
+			
 			$rowUser =&	 new JTableUser($database);
 			$rowUser->load( $rowAccount->user_id );
 
@@ -579,7 +515,9 @@ class SITE_account {
 		$language =& JFactory::getLanguage();
 		$database->setQuery( "SELECT ap.id as value, t.label as text FROM #__sdi_language l, #__sdi_list_codelang cl, #__sdi_accountprofile ap LEFT OUTER JOIN #__sdi_translation t ON ap.guid=t.element_guid WHERE t.language_id=l.id AND l.codelang_id=cl.id AND cl.code='".$language->_lang."' AND ap.id IN(SELECT accountprofile_id FROM #__sdi_account_accountprofile WHERE account_id=".$r_id.")" );
 		$rowsProfile = $database->loadObjectList();
-		echo $database->getErrorMsg();
+		if ($database->getErrorNum()) {
+			$mainframe->enqueueMessage($database->getErrorMsg(),"error");
+		}
 		
 		$rowsAccountProfile = "";
 		if($rowAccount->id)
@@ -587,7 +525,9 @@ class SITE_account {
 			//Get user profile
 			$database->setQuery( "SELECT accountprofile_id as value FROM #__sdi_account_accountprofile WHERE account_id=".$rowAccount->id );
 			$rowsAccountProfile = $database->loadObjectList();
-			echo $database->getErrorMsg();
+			if ($database->getErrorNum()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"error");
+			}
 		}
 
 		if(!$rowAccount->id)
@@ -603,8 +543,7 @@ class SITE_account {
 		$database =& JFactory::getDBO();
 		
 		if (!is_array( $cid ) || count( $cid ) < 1) {
-			//echo "<script> alert('S�lectionnez un enregistrement � supprimer'); window.history.go(-1);</script>\n";
-			$mainframe->enqueueMessage("S�lectionnez un enregistrement � supprimer","error");
+			$mainframe->enqueueMessage(JText::_("CORE_ACCOUNT_DELETE_NOSELECTEDACCOUNT_MSG"),"error");
 			$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=listAccount"), false));
 			exit;
 		}
@@ -615,18 +554,11 @@ class SITE_account {
 		
 			$user =&	 new JTableUser($database);
 			$user->load( $account->user_id );
-			//$user = new mosUser( $database );
-			//$user->load( $account->user_id );
+			
 			if (!$account->delete()) {
-				//echo "<script> alert('".$account->getError()."'); window.history.go(-1); </script>\n";
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 				$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=listAccount"), false));
 			}
-			/*if (!$user->delete()) {
-				//echo "<script> alert('".$user->getError()."'); window.history.go(-1); </script>\n";
-				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=listAccount"), false);
-			}*/
 			
 			SITE_account::includeAccountExtension(0,'BOTTOM','removeAccount',$account_id);
 			
@@ -637,11 +569,11 @@ class SITE_account {
 	}
 
 	function exportAccount( $cid, $option ) {
+		global $mainframe;
 		$database =& JFactory::getDBO();
 
 		if (!is_array( $cid ) || count( $cid ) < 1) {
-			//echo "<script> alert('S�lectionnez un enregistrement � exporter'); window.history.go(-1);</script>\n";
-			$mainframe->enqueueMessage('S�lectionnez un enregistrement � exporter','error');
+			$mainframe->enqueueMessage(JText::_("CORE_ACCOUNT_EXPORT_NOSELECTEDACCOUNT_MSG"),"error");
 			$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=listAccount"), false));
 			exit;
 		}
@@ -659,9 +591,7 @@ class SITE_account {
 			$xml .= "<user>";
 			$user =&	 new JTableUser($database);
 			$user->load( $account->user_id );
-			//$user =& JFactory::getUser( $account->user_id );
-			/*$user = new mosUser( $database );
-			$user->load( $account->user_id );*/
+			
 			$xml .= utf8_encode($user->toXML(true));
 			$xml .= "</user>";
 
@@ -692,7 +622,6 @@ class SITE_account {
 			$xml .= "</account>";
 		}
 		$xml .= "</easysdi>";
-		//echo "<textarea rows='1000' cols='1000'>".$xml."</textarea>"; 		
 		$document->loadXML($xml);
 	
 		$processor = new xsltProcessor();
@@ -743,21 +672,19 @@ class SITE_account {
 			$database->setQuery("SELECT count(*) FROM #__users WHERE username = '".$rowUser->username."'");
 			$total = $database->loadResult();
 			if($total > 0){
-				echo "<div class='alert'>";
-			        echo JText::_("EASYSDI_ACCOUNT_ALREADY_EXISTS");
-			        echo "</div>";
+				$mainframe->enqueueMessage(JText::_("CORE_ACCOUNT_ALREADYEXISTS_MSG"),"error");
+				$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=".JRequest::getVar('return','showAccount')), false));
 				exit();
 			}
 		}
 		
 		//CSheck if email is unique also because it must be (pass recovery!).
-                if (JRequest::getVar('old_email','') != $_POST['user_email']){
+        if (JRequest::getVar('old_email','') != $_POST['user_email']){
 			$database->setQuery("SELECT count(*) FROM #__users WHERE email = '".$_POST['user_email']."'");
 			$total = $database->loadResult();
 			if($total > 0){
-				echo "<div class='alert'>";
-			        echo JText::_("EASYSDI_EMAIL_ALREADY_REGISTRED");
-			        echo "</div>";
+				$mainframe->enqueueMessage(JText::_("CORE_ACCOUNT_ALREADYREGISTRED_MSG"),"error");
+				$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=".JRequest::getVar('return','showAccount')), false));
 				exit();
 			}
 		}
@@ -773,45 +700,41 @@ class SITE_account {
 		
 		if (!$rowUser->store()) {
 
-			echo "<div class='alert'>";
-			echo $database->getErrorMsg();
-			echo "</div>";
+			$mainframe->enqueueMessage($database->getErrorMsg(),"error");
+			$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=".JRequest::getVar('return','showAccount')), false));
 			exit;
 		}
-		
+	
 		if (JRequest::getVar('id','') == '')
 		{
 			$database->setQuery( "UPDATE #__users SET registerDate=now() WHERE id = (".$rowUser->id.")");
 			if (!$database->query()) {
-				echo "<div class='alert'>";
-				echo $database->getErrorMsg();
-				echo "</div>";
+				$mainframe->enqueueMessage($database->getErrorMsg(),"error");
+				$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=".JRequest::getVar('return','showAccount')), false));
 				exit;
 			}
 		}
 
 		$rowAccount = new account( $database );
 		if (!$rowAccount->bind( $_POST )) {			
-			echo "<div class='alert'>";
-			echo $database->getErrorMsg();
-			echo "</div>";
+			$mainframe->enqueueMessage($database->getErrorMsg(),"error");
+			$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=".JRequest::getVar('return','showAccount')), false));
 			exit;
 		}
 		
 		$rowAccount->user_id=$rowUser->id;
 		$rowAccount->id=$_POST['account_id'];
 		
-		// G�n�rer un guid
+		// Générer un guid
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 		if ($rowAccount->guid == null)
 			$rowAccount->guid = helper_easysdi::getUniqueId();
 		
 		
 		if (!$rowAccount->store(false)) {
-			echo "<div class='alert'>";
-			echo $database->getErrorMsg();
-			echo "</div>";
-			exit;
+			$mainframe->enqueueMessage($database->getErrorMsg(),"error");
+			$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=".JRequest::getVar('return','showAccount')), false));
+			exit();
 		}
 	
 		$counter=0;
@@ -856,17 +779,15 @@ class SITE_account {
 				$rowAddress->guid = helper_easysdi::getUniqueId();
 				
 			if (!$rowAddress->store()) {
-				echo "<div class='alert'>";
-				echo $database->getErrorMsg();
-				echo "</div>";
+				$mainframe->enqueueMessage($database->getErrorMsg(),"error");
+				$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=".JRequest::getVar('return','showAccount')), false));
 				exit;
 			}
 			
 			$database->setQuery( "UPDATE #__sdi_address SET updated=now() WHERE id IN (".$rowAddress->id.")");
 			if (!$database->query()) {
-				echo "<div class='alert'>";
-				echo $database->getErrorMsg();
-				echo "</div>";
+				$mainframe->enqueueMessage($database->getErrorMsg(),"error");
+				$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=".JRequest::getVar('return','showAccount')), false));
 				exit;
 			}
 
@@ -877,13 +798,11 @@ class SITE_account {
 		$query .= " WHERE id IN (".$rowAccount->id.")";
 		$database->setQuery( $query );
 		if (!$database->query()) {
-			echo "<div class='alert'>";
-			echo $database->getErrorMsg();
-			echo "</div>";
+			$mainframe->enqueueMessage($database->getErrorMsg(),"error");
+			$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=".JRequest::getVar('return','showAccount')), false));
 			exit;
 		}
 		
-		//$mainframe->redirect("index.php?option=$option&task=listAccount&type=$type");
 		$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=".JRequest::getVar('return','showAccount')), false));
 	}
 
@@ -898,7 +817,6 @@ class SITE_account {
 		
 		SITE_account::includeAccountExtension(0,'BOTTOM','cancelAccount',0);
 		if ($returnList == true) {
-			//mosRedirect( "index2.php?option=$option&task=listAccount" );
 			$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=listAccount&type=$type"), false));
 		}
 		
@@ -906,6 +824,7 @@ class SITE_account {
 	}
 	
 	function checkIsAccountDeletable($affiliate_id){
+		global $mainframe;
 		$database =& JFactory::getDBO();
 		$user = JFactory::getUser();
 		if(!usermanager::isUserAllowed($user, "ACCOUNT"))
@@ -914,7 +833,7 @@ class SITE_account {
 		}
 
 		if (!$affiliate_id) {
-			$mainframe->enqueueMessage(JText::_("EASYSDI_SELECT_ROW_TO_DELETE"),"ERROR");
+			$mainframe->enqueueMessage(JText::_("CORE_ACCOUNT_SELECT_ROW_TO_DELETE"),"ERROR");
 			$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=listAffiliateAccount"), false));
 			return;
 		}
@@ -932,6 +851,7 @@ class SITE_account {
 							OR m.account_id=$Account->id 
 							OR e.account_id=$Account->id";
 		$database->setQuery( $query );
+		
 		$products = $database->loadObjectList();
 		if($products)
 		{
@@ -942,8 +862,9 @@ class SITE_account {
 			}	
 			$list .= "<br>";
 			if(count($errMsg) == 0)
-				array_push($errMsg,JText::_("EASYSDI_DELETE_AFFILIATE_ERROR_CONCLUSION"));
-			array_push($errMsg, JText::sprintf("EASYSDI_DELETE_AFFILIATE_ERROR_PRODUCT",$user->username, $list));
+				array_push($errMsg,JText::_("CORE_ACCOUNT_DELETE_AFFILIATE_ERROR_CONCLUSION"));
+			
+			array_push($errMsg, JText::sprintf("CORE_ACCOUNT_DELETE_AFFILIATE_ERROR_PRODUCT",$user->username, $list));
 			//$mainframe->enqueueMessage(JText::sprintf("EASYSDI_DELETE_AFFILIATE_ERROR_PRODUCT",$user->username, $list));
 			//$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=listAffiliateAccount"), false));
 		}
@@ -980,13 +901,12 @@ class SITE_account {
 			}	
 			$list .= "<br>";
 			if(count($errMsg) == 0)
-				array_push($errMsg,JText::_("EASYSDI_DELETE_AFFILIATE_ERROR_CONCLUSION"));
-			array_push($errMsg, JText::sprintf("EASYSDI_DELETE_AFFILIATE_ERROR_Account",$user->username, $list));
-			//$mainframe->enqueueMessage(JText::sprintf("EASYSDI_DELETE_AFFILIATE_ERROR_Account",$user->username, $list));
-			//$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=listAffiliateAccount"), false));
+				array_push($errMsg,JText::_("CORE_DELETE_AFFILIATE_ERROR_CONCLUSION"));
+				
+			array_push($errMsg, JText::sprintf("CORE_DELETE_AFFILIATE_ERROR_ACCOUNT",$user->username, $list));
 		}
-		//Add conclusion if there was an error
 		
+		//Add conclusion if there was an error
 		return $errMsg;
 	}
 
@@ -1008,9 +928,8 @@ class SITE_account {
 
 
 		if (!$rowUser->bind( $_POST )) {
-			echo "<div class='alert'>";
-			echo $database->getErrorMsg();
-			echo "</div>";
+			$mainframe->enqueueMessage($database->getErrorMsg(),"error");
+			$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=".JRequest::getVar('return','showAccount')."&type=".JRequest::getVar('type')), false));
 			exit;
 		}
 		
@@ -1019,22 +938,21 @@ class SITE_account {
 			$database->setQuery("SELECT count(*) FROM #__users WHERE username = '".$rowUser->username."'");
 			$total = $database->loadResult();
 			if($total > 0){
-				echo "<div class='alert'>";
-			        echo JText::_("EASYSDI_ACCOUNT_ALREADY_EXISTS");
-			        echo "</div>";
-				exit();
+				$mainframe->enqueueMessage(JText::_("CORE_ACCOUNT_ALREADYEXISTS_MSG"),"error");
+				$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=".JRequest::getVar('return','showAccount')."&type=".JRequest::getVar('type')), false));
+				exit;
 			}
 		}
 		
+		
 		//CSheck if email is unique also because it must be (pass recovery!).
-                if (JRequest::getVar('old_email','') != $rowUser->email){
+        if (JRequest::getVar('old_email','') != $rowUser->email){
 			$database->setQuery("SELECT count(*) FROM #__users WHERE email = '".$rowUser->email."'");
 			$total = $database->loadResult();
 			if($total > 0){
-				echo "<div class='alert'>";
-			        echo JText::_("EASYSDI_EMAIL_ALREADY_REGISTRED");
-			        echo "</div>";
-				exit();
+				$mainframe->enqueueMessage(JText::_("CORE_EMAIL_ALREADYREGISTRED_MSG"),"error");
+				$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=".JRequest::getVar('return','showAccount')."&type=".JRequest::getVar('type')), false));
+				exit;
 			}
 		}
 		
@@ -1048,45 +966,44 @@ class SITE_account {
 		
 		$rowUser->email = $_POST['user_email'];
 		
-		if (!$rowUser->store()) {
-
-			echo "<div class='alert'>";
-			echo $database->getErrorMsg();
-			echo "</div>";
+		if (!$rowUser->store()) 
+		{
+			$mainframe->enqueueMessage($database->getErrorMsg(),"error");
+			$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=".JRequest::getVar('return','showAccount')."&type=".JRequest::getVar('type')), false));
 			exit;
 		}
 
 		if (JRequest::getVar('id','') == '')
 		{
 			$database->setQuery( "UPDATE #__users SET registerDate=now() WHERE id = (".$rowUser->id.")");
-			if (!$database->query()) {
-				echo "<div class='alert'>";
-				echo $database->getErrorMsg();
-				echo "</div>";
+			if (!$database->query()) 
+			{
+				$mainframe->enqueueMessage($database->getErrorMsg(),"error");
+				$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=".JRequest::getVar('return','showAccount')."&type=".JRequest::getVar('type')), false));
 				exit;
 			}
 		}
 
 		$rowAccount = new account( $database );
-		if (!$rowAccount->bind( $_POST )) {			
-			echo "<div class='alert'>";
-			echo $database->getErrorMsg();
-			echo "</div>";
+		if (!$rowAccount->bind( $_POST )) 
+		{			
+			$mainframe->enqueueMessage($database->getErrorMsg(),"error");
+			$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=".JRequest::getVar('return','showAccount')."&type=".JRequest::getVar('type')), false));
 			exit;
 		}
 		
 		$rowAccount->user_id=$rowUser->id;
 		$rowAccount->id=$_POST['account_id'];
 		
-		// G�n�rer un guid
+		// Générer un guid
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 		if ($rowAccount->guid == null)
 			$rowAccount->guid = helper_easysdi::getUniqueId();
 		
-		if (!$rowAccount->store(false)) {
-			echo "<div class='alert'>";
-			echo $database->getErrorMsg();
-			echo "</div>";
+		if (!$rowAccount->store(false)) 
+		{
+			$mainframe->enqueueMessage($database->getErrorMsg(),"error");
+			$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=".JRequest::getVar('return','showAccount')."&type=".JRequest::getVar('type')), false));
 			exit;
 		}
 
@@ -1120,24 +1037,25 @@ class SITE_account {
 			$rowAddress->phone=$_POST['phone'][$index];
 			$rowAddress->fax=$_POST['fax'][$index];
 			$rowAddress->email=$_POST['email'][$index];
+			print_r($rowAddress);
 	
 			// G�n�rer un guid
 			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 			if ($rowAddress->guid == null)
 				$rowAddress->guid = helper_easysdi::getUniqueId();
 			
-			if (!$rowAddress->store()) {
-				echo "<div class='alert'>";
-				echo $database->getErrorMsg();
-				echo "</div>";
+			if (!$rowAddress->store()) 
+			{
+				$mainframe->enqueueMessage($database->getErrorMsg(),"error");
+				$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=".JRequest::getVar('return','showAccount')."&type=".JRequest::getVar('type')), false));
 				exit;
 			}
 
 			$database->setQuery( "UPDATE #__sdi_address SET updated=now() WHERE id IN (".$rowAddress->id.")");
-			if (!$database->query()) {
-				echo "<div class='alert'>";
-				echo $database->getErrorMsg();
-				echo "</div>";
+			if (!$database->query()) 
+			{
+				$mainframe->enqueueMessage($database->getErrorMsg(),"error");
+				$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=".JRequest::getVar('return','showAccount')."&type=".JRequest::getVar('type')), false));
 				exit;
 			}
 
@@ -1146,20 +1064,20 @@ class SITE_account {
 
 
 		$database->setQuery( "DELETE FROM #__sdi_actor WHERE account_id IN (".$rowAccount->id.")");
-		if (!$database->query()) {
-			echo "<div class='alert'>";
-			echo $database->getErrorMsg();
-			echo "</div>";
+		if (!$database->query()) 
+		{
+			$mainframe->enqueueMessage($database->getErrorMsg(),"error");
+			$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=".JRequest::getVar('return','showAccount')."&type=".JRequest::getVar('type')), false));
 			exit;
 		}
 				
 		foreach( $_POST['role_id'] as $role_id )
 		{
 			$database->setQuery( "INSERT INTO #__sdi_actor (guid, role_id, account_id, updated) VALUES ('".helper_easysdi::getUniqueId()."', ".$role_id.",".$rowAccount->id.",now())" );
-				if (!$database->query()) {
-				echo "<div class='alert'>";
-				echo $database->getErrorMsg();
-				echo "</div>";
+			if (!$database->query()) 
+			{
+				$mainframe->enqueueMessage($database->getErrorMsg(),"error");
+				$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=".JRequest::getVar('return','showAccount')."&type=".JRequest::getVar('type')), false));
 				exit;
 			}
 
@@ -1167,11 +1085,11 @@ class SITE_account {
 		
 		//Save profile selection
 		$database->setQuery( "DELETE FROM #__sdi_account_accountprofile WHERE account_id IN (".$rowAccount->id.")");
-		if (!$database->query()) {
-			echo "<div class='alert'>";
-			echo $database->getErrorMsg();
-			echo "</div>";	
-			exit();
+		if (!$database->query()) 
+		{
+			$mainframe->enqueueMessage($database->getErrorMsg(),"error");
+			$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=".JRequest::getVar('return','showAccount')."&type=".JRequest::getVar('type')), false));
+			exit;
 		}
 		$profile_id_list ="";
 		if(isset($_POST['profile_id']))
@@ -1183,10 +1101,9 @@ class SITE_account {
 					$database->setQuery( "INSERT INTO #__sdi_account_accountprofile (accountprofile_id, account_id) VALUES (".$profile_id.",".$rowAccount->id.")" );
 					if (!$database->query()) 
 					{
-						echo "<div class='alert'>";
-						echo $database->getErrorMsg();
-						echo "</div>";
-						exit();
+						$mainframe->enqueueMessage($database->getErrorMsg(),"error");
+						$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=".JRequest::getVar('return','showAccount')."&type=".JRequest::getVar('type')), false));
+						exit;
 					}
 					$profile_id_list .= $profile_id;
 					$profile_id_list .= ",";
@@ -1201,11 +1118,11 @@ class SITE_account {
 					   WHERE account_id IN (SELECT account_id FROM #__sdi_account WHERE root_id=".$rowAccount->id.") 
 					   AND 
 					   accountprofile_id NOT IN (".$profile_id_list.")");
-			if (!$database->query()) {
-				echo "<div class='alert'>";
-				echo $database->getErrorMsg();
-				echo "</div>";
-				exit();
+			if (!$database->query()) 
+			{
+				$mainframe->enqueueMessage($database->getErrorMsg(),"error");
+				$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=".JRequest::getVar('return','showAccount')."&type=".JRequest::getVar('type')), false));
+				exit;
 			}
 		}
 		
@@ -1214,10 +1131,10 @@ class SITE_account {
 		$query = "UPDATE #__sdi_account SET updated=now()";
 		$query .= " WHERE id IN (".$rowAccount->id.")";
 		$database->setQuery( $query );
-		if (!$database->query()) {
-			echo "<div class='alert'>";
-			echo $database->getErrorMsg();
-			echo "</div>";
+		if (!$database->query()) 
+		{
+			$mainframe->enqueueMessage($database->getErrorMsg(),"error");
+			$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=".JRequest::getVar('return','showAccount')."&type=".JRequest::getVar('type')), false));
 			exit;
 		}
 		
