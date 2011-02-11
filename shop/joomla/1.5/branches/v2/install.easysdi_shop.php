@@ -828,8 +828,8 @@ function com_install(){
 					`account_id`  bigint(20) NOT NULL ,
 					`enable_notification`  tinyint(1) NULL DEFAULT NULL ,
 					PRIMARY KEY (`id`),
-					INDEX `#_sdi_favorite_ibfk_1` USING BTREE (`metadata_id`) ,
-					INDEX `#_sdi_favorite_ibfk_2` USING BTREE (`account_id`) 
+					INDEX `favorite_ibfk_1` USING BTREE (`metadata_id`) ,
+					INDEX `favorite_ibfk_2` USING BTREE (`account_id`) 
 					)
 					ENGINE=InnoDB
 					DEFAULT CHARACTER SET=utf8
