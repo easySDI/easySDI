@@ -263,6 +263,16 @@ echo $pane->endPanel();
 		}
 	}
 	
+	/**
+	 * 
+	 * Edit configuration for WFS servlet
+	 * @param unknown_type $xml
+	 * @param unknown_type $new
+	 * @param unknown_type $configId
+	 * @param unknown_type $availableServletList
+	 * @param unknown_type $option
+	 * @param unknown_type $task
+	 */
 	function editConfigWFS($xml,$new, $configId,$availableServletList, $option, $task)
 	{
 		?><form name='adminForm' id='adminForm' action='index.php' method='POST'>
@@ -270,426 +280,232 @@ echo $pane->endPanel();
 			<input type='hidden' name="isNewConfig" value="<?php echo $new; ?>">
 			<input
 			type='hidden' name='option' value='<?php echo $option;?>'> <input
-			type='hidden' name='task' value='editConfig'> <input type='hidden'
+			type='hidden' name='task' value='<?php echo $task;?>'> <input type='hidden'
 			name='configId' value='<?php echo $configId;?>'> <?php
 			foreach ($xml->config as $config) {
 				if (strcmp($config['id'],$configId)==0){
 					$servletClass=$config->{'servlet-class'};
+					$keywordString = "";
+					foreach ($config->{"service-metadata"}->{'KeywordList'}->Keyword as $keyword)
+					{
+						$keywordString .= $keyword .",";
+					}
+					$keywordString = substr($keywordString, 0, strlen($keywordString)-1) ;
+					HTML_proxy::genericServletInformationsHeader ($config, $configId, "org.easysdi.proxy.wfs.WFSProxyServlet", $availableServletList)
 					?>
 		
-		<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_CONFIG ID' );?></legend>
-		<table class="admintable">
-			<tr>
-				<td colspan="4"><input type='text' name='newConfigId'
-					value='<?php echo $configId;?>'></td>
-			</tr>
-		</table>
-		</fieldset>
-		<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_SERVLET TYPE' );?></legend>
 		
-		<table class="admintable">
-				<tr>
-					<td>
-					<?php echo JHTML::_("select.genericlist",$availableServletList, 'servletClass', 'size="1" onChange="submit()"', 'value', 'text', "org.easysdi.proxy.wfs.WFSProxyServlet" ); ?>
-					</td>
-				</tr>
-		</table>
-		</fieldset>
 
-		<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_HOST TRANSLATOR'); ?></legend>
-		<table class="admintable">
-			<tr>
-				<td><input size="100" type="text" name="hostTranslator"
-					value="<?php  echo $config->{'host-translator'}; ?>"></td>
-			</tr>
-		</table>
-		</fieldset>
-
-	<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_SERVER LIST'); ?></legend>
-	<table class="admintable">
-	
-	<thead>
-		<tr>
-			<th><?php echo JText::_( 'EASYSDI_URL'); ?></th>
-			<th><?php echo JText::_( 'EASYSDI_USER'); ?></th>
-			<th><?php echo JText::_( 'EASYSDI_PASSWORD'); ?></th>
-		</tr>
-		</thead>
-		<tbody id="remoteServerTable" ><?php
-		$remoteServerList = $config->{'remote-server-list'};
-		$iServer=0;
-		foreach ($remoteServerList->{'remote-server'} as $remoteServer){
-			?><tr>
-					<td class="key"><input type="text" name="URL_<?php echo $iServer;?>" value="<?php echo $remoteServer->url; ?>" size=70></td>
-					<td><input name="USER_<?php echo $iServer;?>" type="text" value="<?php echo $remoteServer->user; ?>"></td>
-					<td><input name="PASSWORD_<?php echo $iServer;?>" type="password" value="<?php echo $remoteServer->password; ?>"></td>				
-					<td><input id="removeServerButton" type="button" onClick="javascript:removeServer(<?php echo $iServer;?>);" value="<?php echo JText::_( 'EASYSDI_REMOVE' ); ?>"></td>
-								
-				</tr>
-			<?php
-		$iServer=$iServer+1;
-		}
-		?></tbody>
-	</table>
-	</fieldset>
-
-	<script>
-	var nbServer = <?php echo $iServer?>;
-	</script>
-		<fieldset class="adminform" id="service_metadata" ><legend><?php echo JText::_( 'PROXY_CONFIG_FS_SERVICE_METADATA'); ?></legend>
-			<table class="admintable" >
-				<tr>
-					<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_TITLE"); ?> : </td>
-					<td><input name="service_title" id="service_title" type="text" size=100 value="<?php echo $config->{"service-metadata"}->{"Title"}; ?>"></td>
-				</tr>
-				<tr>
-					<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_ABSTRACT"); ?> : </td>
-					<td><input name="service_abstract" id="service_abstract" type="text" size=100 value="<?php echo $config->{"service-metadata"}->{"Abstract"}; ?>"></td>
-				</tr>
-				<tr>
-					<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_KEYWORD"); ?> : </td>
-					<td><input name="service_keyword" id="service_keyword" type="text" size=100 value="<?php echo $keywordString; ?>"></td>
-				</tr>
-				<tr>
-					<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_FEES"); ?> : </td>
-					<td><input name="service_fees" id="service_fees" type="text" size=100 value="<?php echo $config->{"service-metadata"}->{"Fees"}; ?>"></td>
-				</tr>
-				<tr>
-					<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONSTRAINTS"); ?> : </td>
-					<td><input name="service_accessconstraints" id="service_accessconstraints" type="text" size=100 value="<?php echo $config->{"service-metadata"}->{"AccessConstraints"}; ?>"></td>
-				</tr>
-			</table>
-		</fieldset>
-		<fieldset class="adminform" id="exceptionMode"><legend><?php echo JText::_( 'PROXY_CONFIG_EXCEPTION_MANAGEMENT_MODE'); ?></legend>
-			<table class="admintable">
-				<tr>
-					<td><input type="radio" name="exception_mode" value="permissive" <?php if (strcmp($config->{"exception"}->{"mode"},"permissive")==0 || !$config->{"exception"}->{"mode"}){echo "checked";} ?> > <?php echo JText::_( 'PROXY_CONFIG_EXCEPTION_MANAGEMENT_MODE_PERMISSIVE'); ?><br></td>
-				</tr>
-				<tr>
-					<td><input type="radio" name="exception_mode" value="restrictive" <?php if (strcmp($config->{"exception"}->{"mode"},"restrictive")==0){echo "checked";} ?> > <?php echo JText::_( 'PROXY_CONFIG_EXCEPTION_MANAGEMENT_MODE_RESTRICTIVE'); ?><br></td>
-				</tr>
-			</table>
-		</fieldset>
-		<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_POLICY FILE LOCATION'); ?></legend>
-		<table class="admintable">
-			<tr>
-				<td><input name="policyFile" type="text" size=100
-					value="<?php echo $config->{"authorization"}->{"policy-file"}; ?>"></td>
-			</tr>
-		</table>
-		</fieldset>
-
-		<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_LOG CONFIG'); ?></legend>
-		<table class="admintable">
-			<tr>
-				<td class="key"><?php echo JText::_( 'PROXY_CONFIG_LOG_FILE_NAME'); ?></td>
-				<td><b>[<?php echo JText::_( 'EASYSDI_PREFIX'); ?>].[YYYYMMDD].[<?php echo JText::_( 'EASYSDI_SUFFIX'); ?>].[<?php echo JText::_( 'EASYSDI_EXTENSION'); ?>]</b></td>
-			</tr>
-			<tr>
-				<td colspan = "2">
+				<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_SERVER LIST'); ?></legend>
 				<table class="admintable">
+				
+				<thead>
 					<tr>
-						<th><?php echo JText::_( 'EASYSDI_PATH'); ?></th>
-						<th><?php echo JText::_( 'EASYSDI_PREFIX'); ?></th>
-						<th><?php echo JText::_( 'EASYSDI_SUFFIX'); ?></th>
-						<th><?php echo JText::_( 'EASYSDI_EXTENSION'); ?></th>
+						<th><?php echo JText::_( 'EASYSDI_URL'); ?></th>
+						<th><?php echo JText::_( 'EASYSDI_USER'); ?></th>
+						<th><?php echo JText::_( 'EASYSDI_PASSWORD'); ?></th>
 					</tr>
-					<tr>
-						<td><input name="logPath"  id="logPath" size=70 type="text"
-							value="<?php  echo $config->{"log-config"}->{"file-structure"}->{"path"};?>"></td>
-						<td><input name="logPrefix" id="logPrefix" type="text"
-							value="<?php  echo $config->{"log-config"}->{"file-structure"}->{"prefix"};?>"></td>
-						<td><input name="logSuffix" id="logSuffix" type="text"
-							value="<?php  echo $config->{"log-config"}->{"file-structure"}->{"suffix"};?>"></td>
-						<td><input name="logExt" type="text"
-							value="<?php  echo $config->{"log-config"}->{"file-structure"}->{"extension"};?>"></td>
-					</tr>
+					</thead>
+					<tbody id="remoteServerTable" ><?php
+					$remoteServerList = $config->{'remote-server-list'};
+					$iServer=0;
+					foreach ($remoteServerList->{'remote-server'} as $remoteServer){
+						?><tr>
+								<td><input type="text" name="URL_<?php echo $iServer;?>" value="<?php echo $remoteServer->url; ?>" size=70></td>
+								<td><input name="USER_<?php echo $iServer;?>" type="text" value="<?php echo $remoteServer->user; ?>"></td>
+								<td><input name="PASSWORD_<?php echo $iServer;?>" type="password" value="<?php echo $remoteServer->password; ?>"></td>				
+								<td><input id="removeServerButton" type="button" onClick="javascript:removeServer(<?php echo $iServer;?>);" value="<?php echo JText::_( 'EASYSDI_REMOVE' ); ?>"></td>
+											
+							</tr>
+						<?php
+					$iServer=$iServer+1;
+					}
+					?></tbody>
 				</table>
-				</td>
-			</tr>
-			<tr>
-				<td colspan = "2">
-					<table class="admintable">
+				</fieldset>
+			
+				<script>
+				var nbServer = <?php echo $iServer?>;
+				</script>
+				<fieldset class="adminform" id="service_metadata" ><legend><?php echo JText::_( 'PROXY_CONFIG_FS_SERVICE_METADATA'); ?></legend>
+					<table class="admintable" >
 						<tr>
-							<td class="key"><?php echo JText::_( 'PROXY_CONFIG_LOG_PERIOD'); ?></td>
-							<td><select name="logPeriod">
-								<option <?php if (strcmp($config->{"log-config"}->{"file-structure"}->{"period"},"daily")==0){echo "selected";} ?>
-									value="daily"><?php echo JText::_( 'EASYSDI_DAILY'); ?></option>
-								<option <?php if (strcmp($config->{"log-config"}->{"file-structure"}->{"period"},"monthly")==0){echo "selected";} ?>
-									value="monthly"><?php echo JText::_( 'EASYSDI_MONTHLY'); ?></option>
-								<option <?php if (strcmp($config->{"log-config"}->{"file-structure"}->{"period"},"weekly")==0){echo "selected";} ?>
-									value="weekly"><?php echo JText::_( 'EASYSDI_WEEKLY'); ?></option>
-								<option <?php if (strcmp($config->{"log-config"}->{"file-structure"}->{"period"},"annualy")==0){echo "selected";} ?>
-									value="annually"><?php echo JText::_( 'EASYSDI_ANNUALLY'); ?></option>
-							</select></td>
+							<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_TITLE"); ?> : </td>
+							<td><input name="service_title" id="service_title" type="text" size=100 value="<?php echo $config->{"service-metadata"}->{"Title"}; ?>"></td>
+						</tr>
+						<tr>
+							<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_ABSTRACT"); ?> : </td>
+							<td><input name="service_abstract" id="service_abstract" type="text" size=100 value="<?php echo $config->{"service-metadata"}->{"Abstract"}; ?>"></td>
+						</tr>
+						<tr>
+							<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_KEYWORD"); ?> : </td>
+							<td><input name="service_keyword" id="service_keyword" type="text" size=100 value="<?php echo $keywordString; ?>"></td>
+						</tr>
+						<tr>
+							<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_FEES"); ?> : </td>
+							<td><input name="service_fees" id="service_fees" type="text" size=100 value="<?php echo $config->{"service-metadata"}->{"Fees"}; ?>"></td>
+						</tr>
+						<tr>
+							<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONSTRAINTS"); ?> : </td>
+							<td><input name="service_accessconstraints" id="service_accessconstraints" type="text" size=100 value="<?php echo $config->{"service-metadata"}->{"AccessConstraints"}; ?>"></td>
 						</tr>
 					</table>
-				</td>
-			</tr>
-			<tr>
-				<td colspan = "2">
-					<table class="admintable">
-						<tr>
-							<td class="key"><?php echo JText::_( 'PROXY_CONFIG_LOG_DATE_FORMAT'); ?></td>
-							<td>
-								<select name="dateFormat" id="dateFormat" ">
-								<option <?php if ($config->{"log-config"}->{"date-format"} == "dd/MM/yyyy HH:mm:ss"){echo "selected";}?>
-									value="dd/MM/yyyy HH:mm:ss">dd/MM/yyyy HH:mm:ss</option>
-								<option <?php if ($config->{"log-config"}->{"date-format"} == "dd/MM/yyyy HH:mm:ss:SSS"){echo "selected";}?>
-									value="dd/MM/yyyy HH:mm:ss:SSS">dd/MM/yyyy HH:mm:ss:SSS</option>
-							</select>
-							</td>
-						</tr>
-					</table>
-				</td>
-			</tr>
-		</table>
-		</fieldset>
-			<?php
-			break;
+				</fieldset>
+		
+				<?php
+				HTML_proxy::genericServletInformationsFooter ($config);
+				break;
+			}
 		}
-	}
-	?>
-	</form>
-	<?php
+		?>
+		</form>
+		<?php
 	}
 
-function editConfigWMS($xml,$new, $configId,$availableServletList, $option)
+	/**
+	 * 
+	 * Edit configuration for WMS servlet
+	 * @param unknown_type $xml
+	 * @param unknown_type $new
+	 * @param unknown_type $configId
+	 * @param unknown_type $availableServletList
+	 * @param unknown_type $option
+	 * @param unknown_type $task
+	 */
+	function editConfigWMS($xml,$new, $configId,$availableServletList, $option, $task)
 	{
 		?><form name='adminForm' id='adminForm' action='index.php' method='POST'>
 		<input type='hidden' name='serviceType' id='serviceType' value="<?php echo JRequest::getVar('serviceType');?>" >
 			<input type='hidden' name="isNewConfig" value="<?php echo $new; ?>">
 			<input
 			type='hidden' name='option' value='<?php echo $option;?>'> <input
-			type='hidden' name='task' value='editConfig'> <input type='hidden'
+			type='hidden' name='task' value='<?php echo $task;?>'> <input type='hidden'
 			name='configId' value='<?php echo $configId;?>'> <?php
 			foreach ($xml->config as $config) {
 				if (strcmp($config['id'],$configId)==0){
 					$servletClass=$config->{'servlet-class'};
+					$keywordString = "";
+					foreach ($config->{"service-metadata"}->{'KeywordList'}->Keyword as $keyword)
+					{
+						$keywordString .= $keyword .",";
+					}
+					$keywordString = substr($keywordString, 0, strlen($keywordString)-1) ;
+					HTML_proxy::genericServletInformationsHeader ($config, $configId, "org.easysdi.proxy.wms.WMSProxyServlet", $availableServletList)
 					?>
 		
-		<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_CONFIG ID' );?></legend>
-		<table class="admintable">
-			<tr>
-				<td colspan="4"><input type='text' name='newConfigId'
-					value='<?php echo $configId;?>'></td>
-			</tr>
-		</table>
-		</fieldset>
-		<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_SERVLET TYPE' );?></legend>
 		
-		<table class="admintable">
-				<tr>
-					<td>
-					<?php echo JHTML::_("select.genericlist",$availableServletList, 'servletClass', 'size="1" onChange="submit()"', 'value', 'text', "org.easysdi.proxy.wms.WMSProxyServlet" ); ?>
-					</td>
-				</tr>
-		</table>
-		</fieldset>
 
-		<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_HOST TRANSLATOR'); ?></legend>
-		<table class="admintable">
-			<tr>
-				<td><input size="100" type="text" name="hostTranslator"
-					value="<?php  echo $config->{'host-translator'}; ?>"></td>
-			</tr>
-		</table>
-		</fieldset>
-
-	<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_SERVER LIST'); ?></legend>
-	<table class="admintable">
-	
-	<thead>
-		<tr>
-			<th><?php echo JText::_( 'EASYSDI_URL'); ?></th>
-			<th><?php echo JText::_( 'EASYSDI_USER'); ?></th>
-			<th><?php echo JText::_( 'EASYSDI_PASSWORD'); ?></th>
-		</tr>
-		</thead>
-		<tbody id="remoteServerTable" ><?php
-		$remoteServerList = $config->{'remote-server-list'};
-		$iServer=0;
-		foreach ($remoteServerList->{'remote-server'} as $remoteServer){
-			?><tr>
-					<td class="key"><input type="text" name="URL_<?php echo $iServer;?>" value="<?php echo $remoteServer->url; ?>" size=70></td>
-					<td><input name="USER_<?php echo $iServer;?>" type="text" value="<?php echo $remoteServer->user; ?>"></td>
-					<td><input name="PASSWORD_<?php echo $iServer;?>" type="password" value="<?php echo $remoteServer->password; ?>"></td>				
-					<td><input id="removeServerButton" type="button" onClick="javascript:removeServer(<?php echo $iServer;?>);" value="<?php echo JText::_( 'EASYSDI_REMOVE' ); ?>"></td>
-				</tr>
-			<?php
-		$iServer=$iServer+1;
-		}
-		?></tbody>
-	</table>
-	</fieldset>
-
-	<script>
-	var nbServer = <?php echo $iServer?>;
-	</script>
-		<fieldset class="adminform" id="service_metadata" ><legend><?php echo JText::_( 'PROXY_CONFIG_FS_SERVICE_METADATA'); ?></legend>
-			<table class="admintable" >
-				<tr>
-					<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_TITLE"); ?> : </td>
-					<td><input name="service_title" id="service_title" type="text" size=100 value="<?php echo $config->{"service-metadata"}->{"Title"}; ?>"></td>
-				</tr>
-				<tr>
-					<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_ABSTRACT"); ?> : </td>
-					<td><input name="service_abstract" id="service_abstract" type="text" size=100 value="<?php echo $config->{"service-metadata"}->{"Abstract"}; ?>"></td>
-				</tr>
-				<tr>
-					<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_KEYWORD"); ?> : </td>
-					<td><input name="service_keyword" id="service_keyword" type="text" size=100 value="<?php echo $keywordString; ?>"></td>
-				</tr>
-				<tr>
-					<td colspan="2">
-					<fieldset class="adminform" id ="servicemetadata_contact"><legend><?php echo JText::_( 'PROXY_CONFIG_FS_SERVICE_METADATA_CONTACT'); ?></legend>
-						<table>
-							<tr>
-								<td class="key" ><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_ORGANIZATION"); ?> : </td>
-								<td colspan="2"><input name="service_contactorganization" id="service_contactorganization" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ContactOrganization"}; ?>"></td>
-							</tr>
-							<tr>
-								<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_PERSON"); ?> : </td>
-								<td colspan="2"><input name="service_contactperson" id="service_contactperson" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ContactName"}; ?>"></td>
-							</tr>
-							<tr>
-								<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_POSITION"); ?> : </td>
-								<td colspan="2"><input name="service_contactposition" id="service_contactposition" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ContactPosition"}; ?>"></td>
-							</tr>
-							<tr>
-								<td class="key" id="service_contacttype_t"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_ADRESSTYPE"); ?> : </td>
-								<td colspan="2"><input name="service_contacttype" id="service_contacttype" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"AddressType"}; ?>"></td>
-							</tr>
-							<tr>
-								<td class="key" ><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_ADRESS"); ?> : </td>
-								<td colspan="2"><input name="service_contactadress" id="service_contactadress" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"Address"}; ?>"></td>
-							</tr>
-							<tr>
-								<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_CITY"); ?> : </td>
-								<td><input name="service_contactpostcode" id="service_contactpostcode" type="text" size="5" value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"PostalCode"}; ?>"></td>
-								<td><input name="service_contactcity" id="service_contactcity" type="text" size="68" value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"City"}; ?>"></td>
-							</tr>
-							<tr>
-								<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_STATE"); ?> : </td>
-								<td colspan="2"><input name="service_contactstate" id="service_contactstate" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"State"}; ?>"></td>
-							</tr>
-							<tr>
-								<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_COUNTRY"); ?> : </td>
-								<td colspan="2"><input name="service_contactcountry" id="service_contactcountry" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"Country"}; ?>"></td>
-							</tr>
-							<tr>
-								<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_TEL"); ?> : </td>
-								<td colspan="2"><input name="service_contacttel" id="service_contacttel" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"VoicePhone"}; ?>"></td>
-							</tr>
-							<tr>
-								<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_FAX"); ?> : </td>
-								<td colspan="2"><input name="service_contactfax" id="service_contactfax" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"Facsimile"}; ?>"></td>
-							</tr>
-							<tr>
-								<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_MAIL"); ?> : </td>
-								<td colspan="2"><input name="service_contactmail" id="service_contactmail" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ElectronicMailAddress"}; ?>"></td>
-							</tr>
-						</table>
-					</fieldset>
-					 </td>
-				</tr>
-				
-				<tr>
-					<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_FEES"); ?> : </td>
-					<td><input name="service_fees" id="service_fees" type="text" size=100 value="<?php echo $config->{"service-metadata"}->{"Fees"}; ?>"></td>
-				</tr>
-				<tr>
-					<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONSTRAINTS"); ?> : </td>
-					<td><input name="service_accessconstraints" id="service_accessconstraints" type="text" size=100 value="<?php echo $config->{"service-metadata"}->{"AccessConstraints"}; ?>"></td>
-				</tr>
-			</table>
-		</fieldset>
-		<fieldset class="adminform" id="exceptionMode"><legend><?php echo JText::_( 'PROXY_CONFIG_EXCEPTION_MANAGEMENT_MODE'); ?></legend>
+			<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_SERVER LIST'); ?></legend>
 			<table class="admintable">
+			
+			<thead>
 				<tr>
-					<td><input type="radio" name="exception_mode" value="permissive" <?php if (strcmp($config->{"exception"}->{"mode"},"permissive")==0 || !$config->{"exception"}->{"mode"}){echo "checked";} ?> > <?php echo JText::_( 'PROXY_CONFIG_EXCEPTION_MANAGEMENT_MODE_PERMISSIVE'); ?><br></td>
+					<th><?php echo JText::_( 'EASYSDI_URL'); ?></th>
+					<th><?php echo JText::_( 'EASYSDI_USER'); ?></th>
+					<th><?php echo JText::_( 'EASYSDI_PASSWORD'); ?></th>
 				</tr>
-				<tr>
-					<td><input type="radio" name="exception_mode" value="restrictive" <?php if (strcmp($config->{"exception"}->{"mode"},"restrictive")==0){echo "checked";} ?> > <?php echo JText::_( 'PROXY_CONFIG_EXCEPTION_MANAGEMENT_MODE_RESTRICTIVE'); ?><br></td>
-				</tr>
+				</thead>
+				<tbody id="remoteServerTable" ><?php
+				$remoteServerList = $config->{'remote-server-list'};
+				$iServer=0;
+				foreach ($remoteServerList->{'remote-server'} as $remoteServer){
+					?><tr>
+							<td><input type="text" name="URL_<?php echo $iServer;?>" value="<?php echo $remoteServer->url; ?>" size=70></td>
+							<td><input name="USER_<?php echo $iServer;?>" type="text" value="<?php echo $remoteServer->user; ?>"></td>
+							<td><input name="PASSWORD_<?php echo $iServer;?>" type="password" value="<?php echo $remoteServer->password; ?>"></td>				
+							<td><input id="removeServerButton" type="button" onClick="javascript:removeServer(<?php echo $iServer;?>);" value="<?php echo JText::_( 'EASYSDI_REMOVE' ); ?>"></td>
+						</tr>
+					<?php
+				$iServer=$iServer+1;
+				}
+				?></tbody>
 			</table>
-		</fieldset>
-		<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_POLICY FILE LOCATION'); ?></legend>
-		<table class="admintable">
-			<tr>
-				<td><input name="policyFile" type="text" size=100
-					value="<?php echo $config->{"authorization"}->{"policy-file"}; ?>"></td>
-			</tr>
-		</table>
-		</fieldset>
-
-		<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_LOG CONFIG'); ?></legend>
-		<table class="admintable">
-			<tr>
-				<td class="key"><?php echo JText::_( 'PROXY_CONFIG_LOG_FILE_NAME'); ?></td>
-				<td><b>[<?php echo JText::_( 'EASYSDI_PREFIX'); ?>].[YYYYMMDD].[<?php echo JText::_( 'EASYSDI_SUFFIX'); ?>].[<?php echo JText::_( 'EASYSDI_EXTENSION'); ?>]</b></td>
-			</tr>
-			<tr>
-				<td colspan = "2">
-				<table class="admintable">
+			</fieldset>
+		
+			<script>
+			var nbServer = <?php echo $iServer?>;
+			</script>
+			<fieldset class="adminform" id="service_metadata" ><legend><?php echo JText::_( 'PROXY_CONFIG_FS_SERVICE_METADATA'); ?></legend>
+				<table class="admintable" >
 					<tr>
-						<th><?php echo JText::_( 'EASYSDI_PATH'); ?></th>
-						<th><?php echo JText::_( 'EASYSDI_PREFIX'); ?></th>
-						<th><?php echo JText::_( 'EASYSDI_SUFFIX'); ?></th>
-						<th><?php echo JText::_( 'EASYSDI_EXTENSION'); ?></th>
+						<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_TITLE"); ?> : </td>
+						<td><input name="service_title" id="service_title" type="text" size=100 value="<?php echo $config->{"service-metadata"}->{"Title"}; ?>"></td>
 					</tr>
 					<tr>
-						<td><input name="logPath"  id="logPath" size=70 type="text"
-							value="<?php  echo $config->{"log-config"}->{"file-structure"}->{"path"};?>"></td>
-						<td><input name="logPrefix" id="logPrefix" type="text"
-							value="<?php  echo $config->{"log-config"}->{"file-structure"}->{"prefix"};?>"></td>
-						<td><input name="logSuffix" id="logSuffix" type="text"
-							value="<?php  echo $config->{"log-config"}->{"file-structure"}->{"suffix"};?>"></td>
-						<td><input name="logExt" type="text"
-							value="<?php  echo $config->{"log-config"}->{"file-structure"}->{"extension"};?>"></td>
+						<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_ABSTRACT"); ?> : </td>
+						<td><input name="service_abstract" id="service_abstract" type="text" size=100 value="<?php echo $config->{"service-metadata"}->{"Abstract"}; ?>"></td>
+					</tr>
+					<tr>
+						<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_KEYWORD"); ?> : </td>
+						<td><input name="service_keyword" id="service_keyword" type="text" size=100 value="<?php echo $keywordString; ?>"></td>
+					</tr>
+					<tr>
+						<td colspan="2">
+						<fieldset class="adminform" id ="servicemetadata_contact"><legend><?php echo JText::_( 'PROXY_CONFIG_FS_SERVICE_METADATA_CONTACT'); ?></legend>
+							<table>
+								<tr>
+									<td class="key" ><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_ORGANIZATION"); ?> : </td>
+									<td colspan="2"><input name="service_contactorganization" id="service_contactorganization" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ContactOrganization"}; ?>"></td>
+								</tr>
+								<tr>
+									<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_PERSON"); ?> : </td>
+									<td colspan="2"><input name="service_contactperson" id="service_contactperson" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ContactName"}; ?>"></td>
+								</tr>
+								<tr>
+									<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_POSITION"); ?> : </td>
+									<td colspan="2"><input name="service_contactposition" id="service_contactposition" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ContactPosition"}; ?>"></td>
+								</tr>
+								<tr>
+									<td class="key" id="service_contacttype_t"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_ADRESSTYPE"); ?> : </td>
+									<td colspan="2"><input name="service_contacttype" id="service_contacttype" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"AddressType"}; ?>"></td>
+								</tr>
+								<tr>
+									<td class="key" ><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_ADRESS"); ?> : </td>
+									<td colspan="2"><input name="service_contactadress" id="service_contactadress" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"Address"}; ?>"></td>
+								</tr>
+								<tr>
+									<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_CITY"); ?> : </td>
+									<td><input name="service_contactpostcode" id="service_contactpostcode" type="text" size="5" value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"PostalCode"}; ?>"></td>
+									<td><input name="service_contactcity" id="service_contactcity" type="text" size="68" value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"City"}; ?>"></td>
+								</tr>
+								<tr>
+									<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_STATE"); ?> : </td>
+									<td colspan="2"><input name="service_contactstate" id="service_contactstate" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"State"}; ?>"></td>
+								</tr>
+								<tr>
+									<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_COUNTRY"); ?> : </td>
+									<td colspan="2"><input name="service_contactcountry" id="service_contactcountry" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"Country"}; ?>"></td>
+								</tr>
+								<tr>
+									<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_TEL"); ?> : </td>
+									<td colspan="2"><input name="service_contacttel" id="service_contacttel" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"VoicePhone"}; ?>"></td>
+								</tr>
+								<tr>
+									<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_FAX"); ?> : </td>
+									<td colspan="2"><input name="service_contactfax" id="service_contactfax" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"Facsimile"}; ?>"></td>
+								</tr>
+								<tr>
+									<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONTACT_MAIL"); ?> : </td>
+									<td colspan="2"><input name="service_contactmail" id="service_contactmail" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ContactInformation"}->{"ElectronicMailAddress"}; ?>"></td>
+								</tr>
+							</table>
+						</fieldset>
+						 </td>
+					</tr>
+					
+					<tr>
+						<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_FEES"); ?> : </td>
+						<td><input name="service_fees" id="service_fees" type="text" size=100 value="<?php echo $config->{"service-metadata"}->{"Fees"}; ?>"></td>
+					</tr>
+					<tr>
+						<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONSTRAINTS"); ?> : </td>
+						<td><input name="service_accessconstraints" id="service_accessconstraints" type="text" size=100 value="<?php echo $config->{"service-metadata"}->{"AccessConstraints"}; ?>"></td>
 					</tr>
 				</table>
-				</td>
-			</tr>
-			<tr>
-				<td colspan = "2">
-					<table class="admintable">
-						<tr>
-							<td class="key"><?php echo JText::_( 'PROXY_CONFIG_LOG_PERIOD'); ?></td>
-							<td><select name="logPeriod">
-								<option <?php if (strcmp($config->{"log-config"}->{"file-structure"}->{"period"},"daily")==0){echo "selected";} ?>
-									value="daily"><?php echo JText::_( 'EASYSDI_DAILY'); ?></option>
-								<option <?php if (strcmp($config->{"log-config"}->{"file-structure"}->{"period"},"monthly")==0){echo "selected";} ?>
-									value="monthly"><?php echo JText::_( 'EASYSDI_MONTHLY'); ?></option>
-								<option <?php if (strcmp($config->{"log-config"}->{"file-structure"}->{"period"},"weekly")==0){echo "selected";} ?>
-									value="weekly"><?php echo JText::_( 'EASYSDI_WEEKLY'); ?></option>
-								<option <?php if (strcmp($config->{"log-config"}->{"file-structure"}->{"period"},"annualy")==0){echo "selected";} ?>
-									value="annually"><?php echo JText::_( 'EASYSDI_ANNUALLY'); ?></option>
-							</select></td>
-						</tr>
-					</table>
-				</td>
-			</tr>
-			<tr>
-				<td colspan = "2">
-					<table class="admintable">
-						<tr>
-							<td class="key"><?php echo JText::_( 'PROXY_CONFIG_LOG_DATE_FORMAT'); ?></td>
-							<td>
-								<select name="dateFormat" id="dateFormat" ">
-								<option <?php if ($config->{"log-config"}->{"date-format"} == "dd/MM/yyyy HH:mm:ss"){echo "selected";}?>
-									value="dd/MM/yyyy HH:mm:ss">dd/MM/yyyy HH:mm:ss</option>
-								<option <?php if ($config->{"log-config"}->{"date-format"} == "dd/MM/yyyy HH:mm:ss:SSS"){echo "selected";}?>
-									value="dd/MM/yyyy HH:mm:ss:SSS">dd/MM/yyyy HH:mm:ss:SSS</option>
-							</select>
-							</td>
-						</tr>
-					</table>
-				</td>
-			</tr>
-		</table>
-		</fieldset>
+			</fieldset>
+
 			<?php
+			HTML_proxy::genericServletInformationsFooter ($config);
 			break;
 		}
 	}
@@ -698,8 +514,17 @@ function editConfigWMS($xml,$new, $configId,$availableServletList, $option)
 	<?php
 	}
 	
-	
-	function editConfigCSW($xml,$new, $configId,$availableServletList, $option)
+	/**
+	 * 
+	 * Edit configuration for CSW servlet
+	 * @param unknown_type $xml
+	 * @param unknown_type $new
+	 * @param unknown_type $configId
+	 * @param unknown_type $availableServletList
+	 * @param unknown_type $option
+	 * @param unknown_type $task
+	 */
+	function editConfigCSW($xml,$new, $configId,$availableServletList, $option, $task)
 	{
 		?>
 
@@ -707,96 +532,70 @@ function editConfigWMS($xml,$new, $configId,$availableServletList, $option)
 		<input type='hidden' name='serviceType' id='serviceType' value="<?php echo JRequest::getVar('serviceType');?>" >
 		<input type='hidden' name="isNewConfig" value="<?php echo $new; ?>">
 		<input type='hidden' name='option' value='<?php echo $option;?>'> 
-		<input type='hidden' name='task' value='editConfig'> 
+		<input type='hidden' name='task' value='<?php echo $task;?>'> 
 		<input type='hidden' name='configId' value='<?php echo $configId;?>'> 
 		<?php
 			foreach ($xml->config as $config) {
 			if (strcmp($config['id'],$configId)==0){
 				$servletClass=$config->{'servlet-class'};
-				
-		
+				$keywordString = "";
+				foreach ($config->{"service-metadata"}->{'KeywordList'}->Keyword as $keyword)
+				{
+					$keywordString .= $keyword .",";
+				}
+				$keywordString = substr($keywordString, 0, strlen($keywordString)-1) ;
+				HTML_proxy::genericServletInformationsHeader ($config, $configId, "org.easysdi.proxy.csw.CSWProxyServlet", $availableServletList)
 		?>
-	
-	<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_CONFIG ID' );?></legend>
-	<table class="admintable">
-		<tr>
-			<td colspan="4"><input type='text' name='newConfigId'
-				value='<?php echo $configId;?>'></td>
-		</tr>
-	</table>
-	</fieldset>
-	<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_SERVLET TYPE' );?></legend>
-	
-	<table class="admintable">
-		<tr>
-			<td>
-			<?php echo JHTML::_("select.genericlist",$availableServletList, 'servletClass', 'size="1" onChange="submit()"', 'value', 'text', "org.easysdi.proxy.csw.CSWProxyServlet" ); ?>
-			</td>
-		</tr>
-	</table>
-	</fieldset>
-	
-	<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_HOST TRANSLATOR'); ?></legend>
-	<table class="admintable">
-		<tr>
-			<td><input size="100" type="text" name="hostTranslator"
-				value="<?php  echo $config->{'host-translator'}; ?>"></td>
-		</tr>
-	</table>
-	</fieldset>
-	
-	<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_SERVER LIST'); ?></legend>
-	<table class="admintable">
-	
-	<thead>
-		<tr>
-			<th><?php echo JText::_( 'EASYSDI_URL'); ?></th>
-			<th><?php echo JText::_( 'EASYSDI_USER'); ?></th>
-			<th><?php echo JText::_( 'EASYSDI_PASSWORD'); ?></th>
-		</tr>
-		</thead>
-		<tbody id="remoteServerTable" ><?php
-		$remoteServerList = $config->{'remote-server-list'};
-		$iServer=0;
-		foreach ($remoteServerList->{'remote-server'} as $remoteServer){
-			?><tr>
-					<td class="key"><input type="text" name="URL_<?php echo $iServer;?>" value="<?php echo $remoteServer->url; ?>" size=70></td>
-					<td><input name="USER_<?php echo $iServer;?>" type="text" value="<?php echo $remoteServer->user; ?>"></td>
-					<td><input name="PASSWORD_<?php echo $iServer;?>" type="password" value="<?php echo $remoteServer->password; ?>"></td>				
-					<td><input id="removeServerButton" type="button" onClick="javascript:removeServer(<?php echo $iServer;?>);" value="<?php echo JText::_( 'EASYSDI_REMOVE' ); ?>"></td>
-									
+			<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_SERVER LIST'); ?></legend>
+			<table class="admintable">
+			
+			<thead>
+				<tr>
+					<th><?php echo JText::_( 'EASYSDI_URL'); ?></th>
+					<th><?php echo JText::_( 'EASYSDI_USER'); ?></th>
+					<th><?php echo JText::_( 'EASYSDI_PASSWORD'); ?></th>
 				</tr>
-				<tr>						
-				<td colspan="4">
-				<div id="specificGeonetowrk" >
-					<table>	
-					<tr>									
-					<td><?php echo JText::_( 'EASYSDI_MAX_RECORDS');?></td><td><input type="text" name="max-records_<?php echo $iServer;?>" value="<?php echo $remoteServer->{'max-records'}; ?>" size=5></td>
-					</tr>
-					<tr>
-					<td><?php echo JText::_( 'EASYSDI_LOGIN_SERVICE');?></td><td><input type="text" name="login-service_<?php echo $iServer;?>" value="<?php echo $remoteServer->{'login-service'}; ?>" size=70></td>
-					</tr>								
-					</table>
-				</div>
-				</td>
+				</thead>
+				<tbody id="remoteServerTable" ><?php
+				$remoteServerList = $config->{'remote-server-list'};
+				$iServer=0;
+				foreach ($remoteServerList->{'remote-server'} as $remoteServer){
+					?><tr>
+							<td><input type="text" name="URL_<?php echo $iServer;?>" value="<?php echo $remoteServer->url; ?>" size=70></td>
+							<td><input name="USER_<?php echo $iServer;?>" type="text" value="<?php echo $remoteServer->user; ?>"></td>
+							<td><input name="PASSWORD_<?php echo $iServer;?>" type="password" value="<?php echo $remoteServer->password; ?>"></td>
+						</tr>
+						<tr>						
+						<td colspan="4">
+						<div id="specificGeonetowrk" >
+							<table>	
+							<tr>									
+							<td><?php echo JText::_( 'EASYSDI_MAX_RECORDS');?></td><td><input type="text" name="max-records_<?php echo $iServer;?>" value="<?php echo $remoteServer->{'max-records'}; ?>" size=5></td>
+							</tr>
+							<tr>
+							<td><?php echo JText::_( 'EASYSDI_LOGIN_SERVICE');?></td><td><input type="text" name="login-service_<?php echo $iServer;?>" value="<?php echo $remoteServer->{'login-service'}; ?>" size=70></td>
+							</tr>								
+							</table>
+						</div>
+						</td>
+						</tr>
+					<?php
+				$iServer=$iServer+1;
+				}
+				?></tbody>
+			</table>
+			</fieldset>
+			<fieldset class="adminform" id="ogcSearchFilterFS"><legend><?php echo JText::_( 'PROXY_CONFIG_CSW_OGC_SEARCH_FILTER' );?></legend>
+			<table class="admintable">
+				<tr>
+					<td colspan="4"><input type='text' name='ogcSearchFilter'
+						value='<?php echo $config->{"ogc-search-filter"}; ?>'></td>
 				</tr>
-			<?php
-		$iServer=$iServer+1;
-		}
-		?></tbody>
-	</table>
-	</fieldset>
-	<fieldset class="adminform" id="ogcSearchFilterFS"><legend><?php echo JText::_( 'PROXY_CONFIG_CSW_OGC_SEARCH_FILTER' );?></legend>
-	<table class="admintable">
-		<tr>
-			<td colspan="4"><input type='text' name='ogcSearchFilter'
-				value='<?php echo $config->{"ogc-search-filter"}; ?>'></td>
-		</tr>
-	</table>
-	</fieldset>
-	<script>
-	var nbServer = <?php echo $iServer?>;
-	</script>
+			</table>
+			</fieldset>
+			<script>
+			var nbServer = <?php echo $iServer?>;
+			</script>
 			<fieldset class="adminform" id="service_metadata" ><legend><?php echo JText::_( 'PROXY_CONFIG_FS_SERVICE_METADATA'); ?></legend>
 				<table class="admintable" >
 					<tr>
@@ -883,7 +682,240 @@ function editConfigWMS($xml,$new, $configId,$availableServletList, $option)
 					</tr>
 				</table>
 			</fieldset>
-			<fieldset class="adminform" id="exceptionMode"><legend><?php echo JText::_( 'PROXY_CONFIG_EXCEPTION_MANAGEMENT_MODE'); ?></legend>
+	
+				<?php
+				HTML_proxy::genericServletInformationsFooter ($config);
+				break;
+			}
+		}
+		?>
+		</form>
+		<?php
+	}
+	
+/**
+	 * 
+	 * Edit configuration for WMTS 1.0.0 servlet
+	 * @param unknown_type $xml
+	 * @param unknown_type $new
+	 * @param unknown_type $configId
+	 * @param unknown_type $availableServletList
+	 * @param unknown_type $option
+	 * @param unknown_type $task
+	 */
+	function editConfigWMTS100($xml,$new, $configId,$availableServletList, $option, $task)
+	{
+		?>
+
+	<form name='adminForm' id='adminForm' action='index.php' method='POST'>
+		<input type='hidden' name='serviceType' id='serviceType' value="<?php echo JRequest::getVar('serviceType');?>" >
+		<input type='hidden' name="isNewConfig" value="<?php echo $new; ?>">
+		<input type='hidden' name='option' value='<?php echo $option;?>'> 
+		<input type='hidden' name='task' value='<?php echo $task;?>'> 
+		<input type='hidden' name='configId' value='<?php echo $configId;?>'> 
+		<input type='hidden' name="nbServer" value=''>
+		<?php
+			foreach ($xml->config as $config) {
+			if (strcmp($config['id'],$configId)==0){
+				$servletClass=$config->{'servlet-class'};
+				$keywordString = "";
+				foreach ($config->{"service-metadata"}->{"ServiceIdentification"}->{'KeywordList'}->Keyword as $keyword)
+				{
+					$keywordString .= $keyword .",";
+				}
+				$keywordString = substr($keywordString, 0, strlen($keywordString)-1) ;
+				HTML_proxy::genericServletInformationsHeader ($config, $configId, "org.easysdi.proxy.wmts.v100.WMTS100ProxyServlet", $availableServletList)
+		?>
+			<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_SERVER LIST'); ?></legend>
+			<table class="admintable">
+			
+			<thead>
+				<tr>
+					<th><?php echo JText::_( 'EASYSDI_SERVER_ALIAS'); ?></th>
+					<th><?php echo JText::_( 'EASYSDI_URL'); ?></th>
+					<th><?php echo JText::_( 'EASYSDI_USER'); ?></th>
+					<th><?php echo JText::_( 'EASYSDI_PASSWORD'); ?></th>
+				</tr>
+				</thead>
+				<tbody id="remoteServerTable" ><?php
+				$remoteServerList = $config->{'remote-server-list'};
+				$iServer=0;
+				foreach ($remoteServerList->{'remote-server'} as $remoteServer){
+					?><tr>
+							<td><input type="text" name="ALIAS_<?php echo $iServer;?>" value="<?php echo $remoteServer->alias; ?>" size=20></td>
+							<td><input type="text" name="URL_<?php echo $iServer;?>" value="<?php echo $remoteServer->url; ?>" size=70></td>
+							<td><input name="USER_<?php echo $iServer;?>" type="text" value="<?php echo $remoteServer->user; ?>"></td>
+							<td><input name="PASSWORD_<?php echo $iServer;?>" type="password" value="<?php echo $remoteServer->password; ?>"></td>				
+<!--							<td><input id="removeServerButton" type="button" onClick="javascript:removeServer(<?php echo $iServer;?>);" value="<?php echo JText::_( 'EASYSDI_REMOVE' ); ?>"></td>-->
+					</tr>
+					<?php
+				$iServer=$iServer+1;
+				}
+				?></tbody>
+			</table>
+			</fieldset>
+			<script>
+			var nbServer = <?php echo $iServer?>;
+			</script>
+			<fieldset class="adminform" id="service_metadata" ><legend><?php echo JText::_( 'PROXY_CONFIG_FS_SERVICE_METADATA'); ?></legend>
+				<fieldset class="adminform" id="service_identification" ><legend><?php echo JText::_( 'PROXY_CONFIG_FS_SERVICE_METADATA_IDENTIFICATION'); ?></legend>
+					<table class="admintable" >
+						<tr>
+							<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_TITLE"); ?> : </td>
+							<td><input name="service_title" id="service_title" type="text" size=100 value="<?php echo $config->{"service-metadata"}->{"ServiceIdentification"}->{"Title"}; ?>"></td>
+						</tr>
+						<tr>
+							<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_ABSTRACT"); ?> : </td>
+							<td><input name="service_abstract" id="service_abstract" type="text" size=100 value="<?php echo $config->{"service-metadata"}->{"ServiceIdentification"}->{"Abstract"}; ?>"></td>
+						</tr>
+						<tr>
+							<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_KEYWORD"); ?> : </td>
+							<td><input name="service_keyword" id="service_keyword" type="text" size=100 value="<?php echo $keywordString; ?>"></td>
+						</tr>
+						<tr>
+							<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_FEES"); ?> : </td>
+							<td><input name="service_fees" id="service_fees" type="text" size=100 value="<?php echo $config->{"service-metadata"}->{"ServiceIdentification"}->{"Fees"}; ?>"></td>
+						</tr>
+						<tr>
+							<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_CONSTRAINTS"); ?> : </td>
+							<td><input name="service_accessconstraints" id="service_accessconstraints" type="text" size=100 value="<?php echo $config->{"service-metadata"}->{"ServiceIdentification"}->{"AccessConstraints"}; ?>"></td>
+						</tr>
+					</table>
+				</fieldset>
+				<fieldset class="adminform" id="service_identification" ><legend><?php echo JText::_( 'PROXY_CONFIG_FS_SERVICE_METADATA_PROVIDER'); ?></legend>
+					<table class="admintable" >
+						<tr>
+							<td class="key" ><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_PROVIDER_NAME"); ?> : </td>
+							<td colspan="2"><input name="service_providername" id="service_providername" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ServiceProvider"}->{"ProviderName"}; ?>"></td>
+						</tr>
+						<tr>
+							<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_PROVIDER_SITE"); ?> : </td>
+							<td colspan="2"><input name="service_providersite" id="service_providersite" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ServiceProvider"}->{"ProviderSite"}; ?>"></td>
+						</tr>
+						<tr>
+							<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_RESPONSIBLE_NAME"); ?> : </td>
+							<td colspan="2"><input name="service_responsiblename" id="service_responsiblename" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{"IndividualName"}; ?>"></td>
+						</tr>
+						<tr>
+							<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_RESPONSIBLE_POSITION"); ?> : </td>
+							<td colspan="2"><input name="service_responsibleposition" id="service_responsibleposition" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{"PositionName"}; ?>"></td>
+						</tr>
+						<tr>
+							<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_RESPONSIBLE_ROLE"); ?> : </td>
+							<td colspan="2"><input name="service_responsiblerole" id="service_responsiblerole" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{"Role"}; ?>"></td>
+						</tr>
+						<tr>
+							<td class="key" ><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_RESPONSIBLE_CONTACT_ADRESS_TYPE"); ?> : </td>
+							<td colspan="2"><input name="service_responsiblecontactadresstype" id="service_responsiblecontactadresstype" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'Contact'}->{'Address'}->{"AddressType"}; ?>"></td>
+						</tr>
+						<tr>
+							<td class="key" ><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_RESPONSIBLE_CONTACT_ADRESS_DELIVRYPOINT"); ?> : </td>
+							<td colspan="2"><input name="service_responsiblecontactadress" id="service_responsiblecontactadress" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'Contact'}->{'Address'}->{'DelivryPoint'}; ?>"></td>
+						</tr>
+						<tr>
+							<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_RESPONSIBLE_CONTACT_CITY"); ?> : </td>
+							<td><input name="service_responsiblecontactpostcode" id="service_responsiblecontactpostcode" type="text" size="5" value="<?php echo $config->{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'Contact'}->{'Address'}->{"PostalCode"}; ?>"></td>
+							<td><input name="service_responsiblecontactcity" id="service_responsiblecontactcity" type="text" size="68" value="<?php echo $config->{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'Contact'}->{'Address'}->{"City"}; ?>"></td>
+						</tr>
+						<tr>
+							<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_RESPONSIBLE_CONTACT_AREA"); ?> : </td>
+							<td colspan="2"><input name="service_responsiblecontactarea" id="service_responsiblecontactarea" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'Contact'}->{'Address'}->{"Area"}; ?>"></td>
+						</tr>
+						<tr>
+							<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_RESPONSIBLE_CONTACT_COUNTRY"); ?> : </td>
+							<td colspan="2"><input name="service_responsiblecontactcountry" id="service_responsiblecontactcountry" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'Contact'}->{'Address'}->{"Country"}; ?>"></td>
+						</tr>
+						<tr>
+							<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_RESPONSIBLE_CONTACT_MAIL"); ?> : </td>
+							<td colspan="2"><input name="service_responsiblecontactmail" id="service_responsiblecontactmail" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'Contact'}->{'Address'}->{"ElectronicMailAddress"}; ?>"></td>
+						</tr>
+						<tr>
+							<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_RESPONSIBLE_CONTACT_PHONE"); ?> : </td>
+							<td colspan="2"><input name="service_responsiblecontactphone" id="service_responsiblecontactphone" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'Contact'}->{"Telephone"}->{"VoicePhone"}; ?>"></td>
+						</tr>
+						<tr>
+							<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_RESPONSIBLE_CONTACT_FAX"); ?> : </td>
+							<td colspan="2"><input name="service_responsiblecontactfax" id="service_responsiblecontactfax" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'Contact'}->{"Telephone"}->{"Facsimile"}; ?>"></td>
+						</tr>
+						<tr>
+							<td class="key" id="service_contactlinkage_t"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_RESPONSIBLE_CONTACT_ONLINERES"); ?> : </td>
+							<td colspan="2"><input name="service_responsiblecontactonline" id="service_responsiblecontactonline" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'Contact'}->{"OnlineResource"}; ?>"></td>
+						</tr>
+						<tr>
+							<td class="key" id="service_contacthours_t"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_RESPONSIBLE_CONTACT_HOURS"); ?> : </td>
+							<td colspan="2"><input name="service_responsiblecontacthours" id="service_responsiblecontacthours" type="text" size="80" value="<?php echo $config->{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'Contact'}->{"HoursOfService"}; ?>"></td>
+						</tr>
+						<tr>
+							<td class="key" id="service_contactinstructions_t"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_RESPONSIBLE_CONTACT_INSTRUCTIONS"); ?> : </td>
+							<td colspan="2"><textarea name="service_responsiblecontactinstructions" id="service_responsiblecontactinstructions"  cols="45" rows="5"  ><?php echo $config->{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'Contact'}->{"Instructions"}; ?></textarea></td>
+						</tr>
+					</table>
+				</fieldset>
+			</fieldset>
+	
+				<?php
+				HTML_proxy::genericServletInformationsFooter ($config);
+				break;
+			}
+		}
+		?>
+		</form>
+		<?php
+	}
+	
+	/**
+	 * 
+	 * Generic servlet informations form :
+	 * - config Id
+	 * - servlet type
+	 * - host translator
+	 * @param unknown_type $config
+	 */
+	function genericServletInformationsHeader ($config, $configId, $servletClass, $availableServletList)
+	{
+		?>
+		<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_CONFIG ID' );?></legend>
+			<table class="admintable">
+				<tr>
+					<td colspan="4"><input type='text' name='newConfigId'
+						value='<?php echo $configId;?>'></td>
+				</tr>
+			</table>
+			</fieldset>
+			<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_SERVLET TYPE' );?></legend>
+			
+			<table class="admintable">
+				<tr>
+					<td>
+					<?php echo JHTML::_("select.genericlist",$availableServletList, 'servletClass', 'size="1" onChange="submit()"', 'value', 'text', $servletClass ); ?>
+					</td>
+				</tr>
+			</table>
+			</fieldset>
+			
+			<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_HOST TRANSLATOR'); ?></legend>
+			<table class="admintable">
+				<tr>
+					<td><input size="100" type="text" name="hostTranslator"
+						value="<?php  echo $config->{'host-translator'}; ?>"></td>
+				</tr>
+			</table>
+		</fieldset>
+		<?php 
+	}
+	
+	/**
+	 * 
+	 * Generic servlet informations form :
+	 * -  exception mode
+	 * -  policy file
+	 * -  log file parameter
+	 * @param unknown_type $config
+	 */
+	function genericServletInformationsFooter ($config)
+	{
+		?>
+				<fieldset class="adminform" id="exceptionMode"><legend><?php echo JText::_( 'PROXY_CONFIG_EXCEPTION_MANAGEMENT_MODE'); ?></legend>
 				<table class="admintable">
 					<tr>
 						<td><input type="radio" name="exception_mode" value="permissive" <?php if (strcmp($config->{"exception"}->{"mode"},"permissive")==0 || !$config->{"exception"}->{"mode"}){echo "checked";} ?> > <?php echo JText::_( 'PROXY_CONFIG_EXCEPTION_MANAGEMENT_MODE_PERMISSIVE'); ?><br></td>
@@ -968,13 +1000,7 @@ function editConfigWMS($xml,$new, $configId,$availableServletList, $option)
 				</tr>
 			</table>
 			</fieldset>
-				<?php
-				break;
-			}
-		}
-		?>
-		</form>
-		<?php
+			<?php 
 	}
 	
 	function showPoliciesList($xml){
@@ -2335,6 +2361,10 @@ function generateWMSHTML($config,$thePolicy){
 					{
 						echo "WMS";
 					}
+					else if($config->{'servlet-class'} == "org.easysdi.proxy.wmts.v100.WMTS100ProxyServlet")
+					{
+						echo "WMTS100";
+					}
 					else if($config->{'servlet-class'} == "org.easysdi.proxy.csw.CSWProxyServlet")
 					{
 						echo "CSW";
@@ -2350,6 +2380,10 @@ function generateWMSHTML($config,$thePolicy){
 			{
 				//echo "<b>".WMS."  </b>";
 				echo "<b>WMS</b>";
+			}
+			else if($config->{'servlet-class'} == "org.easysdi.proxy.wmts.v100.WMTS100ProxyServlet")
+			{
+				echo "<b>WMTS100</b>";
 			}
 			else if($config->{'servlet-class'} == "org.easysdi.proxy.csw.CSWProxyServlet")
 			{

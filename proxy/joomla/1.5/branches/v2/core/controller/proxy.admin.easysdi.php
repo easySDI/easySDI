@@ -25,9 +25,22 @@ class ADMIN_proxy
 		$option = JRequest::getVar('option');
 		$servletClass = JRequest::getVar('servletClass',"");
 		
-		// Nouvelle configuration ou edition d'une configuration existante
+		$task = "editConfig";
+		if($new)
+			$task = "addConfig";
+		
+			
 		if (!$new){
 			$configId = JRequest::getVar("configId");
+			if($servletClass == "")
+			{
+				foreach ($xml->config as $config) {
+					if (strcmp($config['id'],$configId)==0){
+						$servletClass = $config->{'servlet-class'};
+						break;
+					}
+				}
+			}
 		}else{
 			$found = false;
 			$configId = "New Config";
@@ -64,29 +77,35 @@ class ADMIN_proxy
 			$remoteServer->password="";
 		}
 		
-		$availableServlet = array("org.easysdi.proxy.wfs.WFSProxyServlet" => "org.easysdi.proxy.wfs.WFSProxyServlet", "org.easysdi.proxy.wms.WMSProxyServlet" => "org.easysdi.proxy.wms.WMSProxyServlet", "org.easysdi.proxy.wmts.v100.WMTSProxyServlet" => "org.easysdi.proxy.wmts.v100.WMTSProxyServlet", "org.easysdi.proxy.csw.CSWProxyServlet" => "org.easysdi.proxy.csw.CSWProxyServlet");
+		$availableServlet = array("org.easysdi.proxy.wfs.WFSProxyServlet" => "org.easysdi.proxy.wfs.WFSProxyServlet", 
+								  "org.easysdi.proxy.wms.WMSProxyServlet" => "org.easysdi.proxy.wms.WMSProxyServlet", 
+								  "org.easysdi.proxy.wmts.v100.WMTS100ProxyServlet" => "org.easysdi.proxy.wmts.v100.WMTS100ProxyServlet", 
+								  "org.easysdi.proxy.csw.CSWProxyServlet" => "org.easysdi.proxy.csw.CSWProxyServlet");
 		$availableServletList = array();
- 
-		  foreach($availableServlet as $key=>$value) :
-		    $availableServletList[] = JHTML::_('select.option', $key, $value);
-		  endforeach;
+		 foreach($availableServlet as $key=>$value) :
+		 	$availableServletList[] = JHTML::_('select.option', $key, $value);
+		 endforeach;
+		 
 		if($servletClass == "org.easysdi.proxy.wms.WMSProxyServlet" )
 		{
-			HTML_proxy::editConfigWMS($xml, $new, $configId, $availableServletList, $option);
+			HTML_proxy::editConfigWMS($xml, $new, $configId, $availableServletList, $option,$task);
 		}
 		else if($servletClass == "org.easysdi.proxy.wmts.v100.WMTSProxyServlet" )
 		{
-			HTML_proxy::editConfigWMTS($xml, $new, $configId, $availableServletList, $option);
+			HTML_proxy::editConfigWMTS($xml, $new, $configId, $availableServletList, $option,$task);
 		}
 		else if($servletClass == "org.easysdi.proxy.csw.CSWProxyServlet" )
 		{
-			HTML_proxy::editConfigCSW($xml, $new, $configId, $availableServletList, $option);
+			HTML_proxy::editConfigCSW($xml, $new, $configId, $availableServletList, $option,$task);
 		}
+		else if($servletClass == "org.easysdi.proxy.wmts.v100.WMTS100ProxyServlet" )
+		{
+			HTML_proxy::editConfigWMTS100($xml, $new, $configId, $availableServletList, $option,$task);
+		}	
 		else 
 		{
-			HTML_proxy::editConfigWFS($xml, $new, $configId, $availableServletList, $option);	
+			HTML_proxy::editConfigWFS($xml, $new, $configId, $availableServletList, $option,$task);	
 		} 
-//		HTML_proxy::editConfig($xml, $new, $configId, $availableServletList, $option);
 	}
 	
 	function editPolicy ($xml, $new=false)
@@ -1003,30 +1022,31 @@ function saveConfig($xml,$configFilePath){
 				$url = JRequest::getVar("URL_".$i,"");
 
 				if (strlen($url)==0) break;
+				$alias = JRequest::getVar("ALIAS_".$i,"");
 				$user = JRequest::getVar("USER_".$i,"");
 				$pwd = JRequest::getVar("PASSWORD_".$i,"");
 
 				$remoteServer = $config->{'remote-server-list'}->addChild("remote-server");
+				$remoteServer->alias=$alias;
 				$remoteServer->user=$user;
 				$remoteServer->url=$url;
 				$remoteServer->password=$pwd;
-				if (strcmp($servletClass,"org.easysdi.proxy.csw.CSWProxyServlet")==0 ){
-				
-				$remoteServer->{'max-records'}=JRequest::getVar("max-records_".$i,"-1");
-				$remoteServer->{'login-service'}=JRequest::getVar("login-service_".$i,"");
-				$geonetworktransaction  = $remoteServer->addChild("transaction");
-				$geonetworktransaction->{'type'}='geonetwork';
-//				$geonetworktransaction->{'search-service-url'}=JRequest::getVar("search-service-url_".$i,"");
-//				$geonetworktransaction->{'delete-service-url'}=JRequest::getVar("delete-service-url_".$i,"");;
-//				$geonetworktransaction->{'insert-service-url'}=JRequest::getVar("insert-service-url_".$i,"");;
-
+				if (strcmp($servletClass,"org.easysdi.proxy.csw.CSWProxyServlet")==0 )
+				{
+					$remoteServer->{'max-records'}=JRequest::getVar("max-records_".$i,"-1");
+					$remoteServer->{'login-service'}=JRequest::getVar("login-service_".$i,"");
+					$geonetworktransaction  = $remoteServer->addChild("transaction");
+					$geonetworktransaction->{'type'}='geonetwork';
 				}
 				$i++;
 			}
 			
 			//Ogc search filter
-			$ogcSearchFilter = JRequest::getVar("ogcSearchFilter","");
-			$config->{"ogc-search-filter"}=$ogcSearchFilter;
+			if (strcmp($servletClass,"org.easysdi.proxy.csw.CSWProxyServlet")==0 )
+			{
+				$ogcSearchFilter = JRequest::getVar("ogcSearchFilter","");
+				$config->{"ogc-search-filter"}=$ogcSearchFilter;
+			}
 			
 			//Exception
 			$exceptionMode = JRequest::getVar("exception_mode","permissive");
@@ -1037,57 +1057,126 @@ function saveConfig($xml,$configFilePath){
 			$config->{"authorization"}->{"policy-file"}=$policyFile;
 			
 			//Service metadata
-			$config->{"service-metadata"}->{"Title"}=JRequest::getVar("service_title"); 
-			$config->{"service-metadata"}->{"Abstract"}=JRequest::getVar("service_abstract"); 
-			$config->{"service-metadata"}->{"KeywordList"}="";
-			$keywordsList = JRequest::getVar("service_keyword" );
-			$pos = strpos($keywordsList, ",");
-			if($pos)
+			if (strcmp($servletClass,"org.easysdi.proxy.wmts.v100.WMTS100ProxyServlet")==0 )
 			{
-				$keywords = $keywordsList;
-				while ($pos)
-				{
-					$config->{"service-metadata"}->{'KeywordList'}->addChild("Keyword",  trim(substr ($keywords, 0,$pos ))) ;
-					$keywords = substr ($keywords, $pos +1 );
-					$pos = strpos($keywords,",");
-				}
-				$config->{"service-metadata"}->{'KeywordList'}->addChild("Keyword",  $keywords) ;
+				$config = ADMIN_proxy::serviceMetadataOWS($config);
 			}
-			else
+			else 
 			{
-				$config->{"service-metadata"}->{"KeywordList"}->{"Keyword"}=$keywordsList;
+				$config = ADMIN_proxy::serviceMetadataWFS($config);
 			}
-			$config->{"service-metadata"}->{"ContactInformation"}->{"ContactOrganization"}=JRequest::getVar("service_contactorganization");
-			$config->{"service-metadata"}->{"ContactInformation"}->{"ContactName"}=JRequest::getVar("service_contactperson"); 
-			$config->{"service-metadata"}->{"ContactInformation"}->{"ContactPosition"}=JRequest::getVar("service_contactposition" );
-			$config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"AddressType"}=JRequest::getVar("service_contacttype" );
-			$config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"Address"}=JRequest::getVar("service_contactadress" );
-			$config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"PostalCode"}=JRequest::getVar("service_contactpostcode");
-			$config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"City"}=JRequest::getVar("service_contactcity" );
-			$config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"State"}=JRequest::getVar("service_contactstate" );
-			$config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"Country"}=JRequest::getVar("service_contactcountry" );
-			$config->{"service-metadata"}->{"ContactInformation"}->{"VoicePhone"}=JRequest::getVar("service_contacttel" );
-			$config->{"service-metadata"}->{"ContactInformation"}->{"Facsimile"}=JRequest::getVar("service_contactfax" );
-			$config->{"service-metadata"}->{"ContactInformation"}->{"ElectronicMailAddress"}=JRequest::getVar("service_contactmail");
-			$config->{"service-metadata"}->{"ContactInformation"}->{"Linkage"}=JRequest::getVar("service_contactlinkage");
-			$config->{"service-metadata"}->{"ContactInformation"}->{"HoursofSservice"}=JRequest::getVar("service_contacthours" );
-			$config->{"service-metadata"}->{"ContactInformation"}->{"Instructions"}=JRequest::getVar("service_contactinstructions");
-			if(JRequest::getVar("service_fees" ))
-				$config->{"service-metadata"}->{"Fees"}=JRequest::getVar("service_fees" );
-			else
-				$config->{"service-metadata"}->{"Fees"}="none";
-			if(JRequest::getVar("service_accessconstraints"))
-				$config->{"service-metadata"}->{"AccessConstraints"}=JRequest::getVar("service_accessconstraints"); 
-			else
-				$config->{"service-metadata"}->{"AccessConstraints"}="none";
-
 			$xml->asXML($configFilePath);
 		}
 	}
-
-
-
 }
+
+/**
+ * 
+ * Service metadata OWS 1.1.0 spécification
+ * @param unknown_type $config
+ */
+function serviceMetadataOWS ($config)
+{
+	//ServiceIdentification
+	$config->{"service-metadata"}->{"ServiceIdentification"}->{"Title"}=JRequest::getVar("service_title"); 
+	$config->{"service-metadata"}->{"ServiceIdentification"}->{"Abstract"}=JRequest::getVar("service_abstract"); 
+	$config->{"service-metadata"}->{"ServiceIdentification"}->{"KeywordList"}="";
+	$keywordsList = JRequest::getVar("service_keyword" );
+	$pos = strpos($keywordsList, ",");
+	if($pos)
+	{
+		$keywords = $keywordsList;
+		while ($pos)
+		{
+			$config->{"service-metadata"}->{"ServiceIdentification"}->{"KeywordList"}->addChild("Keyword",  trim(substr ($keywords, 0,$pos ))) ;
+			$keywords = substr ($keywords, $pos +1 );
+			$pos = strpos($keywords,",");
+		}
+		$config->{"service-metadata"}->{"ServiceIdentification"}->{"KeywordList"}->addChild("Keyword",  $keywords) ;
+	}
+	else
+	{
+		$config->{"service-metadata"}->{"ServiceIdentification"}->{"KeywordList"}->{"Keyword"}=$keywordsList;
+	}
+	if(JRequest::getVar("service_fees" ))
+		$config->{"service-metadata"}->{"ServiceIdentification"}->{"Fees"}=JRequest::getVar("service_fees" );
+	else
+		$config->{"service-metadata"}->{"ServiceIdentification"}->{"Fees"}="none";
+	if(JRequest::getVar("service_accessconstraints"))
+		$config->{"service-metadata"}->{"ServiceIdentification"}->{"AccessConstraints"}=JRequest::getVar("service_accessconstraints"); 
+	else
+		$config->{"service-metadata"}->{"ServiceIdentification"}->{"AccessConstraints"}="none";
+		
+	//Service Provider
+	$config->{"service-metadata"}->{"ServiceProvider"}->{"ProviderName"}=JRequest::getVar("service_providername");
+	$config->{"service-metadata"}->{"ServiceProvider"}->{"ProviderSite"}=JRequest::getVar("service_providersite"); 
+	$config->{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'IndividualName'}=JRequest::getVar("service_responsiblename");
+	$config->{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'PositionName'}=JRequest::getVar("service_responsibleposition");
+	$config->{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'Role'}=JRequest::getVar("service_responsiblerole");
+	$config->{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'Contact'}->{'HoursOfService'}=JRequest::getVar("service_responsiblecontacthours");
+	$config->{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'Contact'}->{'Instructions'}=JRequest::getVar("service_responsiblecontactinstructions");
+	$config->{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'Contact'}->{'OnlineResource'}=JRequest::getVar("service_responsiblecontactonline");
+	$config->{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'Contact'}->{'Telephone'}->{'VoicePhone'}=JRequest::getVar("service_responsiblecontactphone");
+	$config->{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'Contact'}->{'Telephone'}->{'Facsimile'}=JRequest::getVar("service_responsiblecontactfax");
+	$config->{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'Contact'}->{'Address'}->{'AddressType'}=JRequest::getVar("service_responsiblecontactadresstype");
+	$config->{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'Contact'}->{'Address'}->{'DelivryPoint'}=JRequest::getVar("service_responsiblecontactadress");
+	$config->{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'Contact'}->{'Address'}->{'PostalCode'}=JRequest::getVar("service_responsiblecontactpostcode");
+	$config->{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'Contact'}->{'Address'}->{'City'}=JRequest::getVar("service_responsiblecontactcity");
+	$config->{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'Contact'}->{'Address'}->{'Area'}=JRequest::getVar("service_responsiblecontactarea");
+	$config->{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'Contact'}->{'Address'}->{'Country'}=JRequest::getVar("service_responsiblecontactcountry");
+	$config->{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'Contact'}->{'Address'}->{'ElectronicMailAddress'}=JRequest::getVar("service_responsiblecontactmail");
+	
+	return $config;
+}
+
+function serviceMetadataWFS ($config)
+{
+	$config->{"service-metadata"}->{"Title"}=JRequest::getVar("service_title"); 
+	$config->{"service-metadata"}->{"Abstract"}=JRequest::getVar("service_abstract"); 
+	$config->{"service-metadata"}->{"KeywordList"}="";
+	$keywordsList = JRequest::getVar("service_keyword" );
+	$pos = strpos($keywordsList, ",");
+	if($pos)
+	{
+		$keywords = $keywordsList;
+		while ($pos)
+		{
+			$config->{"service-metadata"}->{'KeywordList'}->addChild("Keyword",  trim(substr ($keywords, 0,$pos ))) ;
+			$keywords = substr ($keywords, $pos +1 );
+			$pos = strpos($keywords,",");
+		}
+		$config->{"service-metadata"}->{'KeywordList'}->addChild("Keyword",  $keywords) ;
+	}
+	else
+	{
+		$config->{"service-metadata"}->{"KeywordList"}->{"Keyword"}=$keywordsList;
+	}
+	$config->{"service-metadata"}->{"ContactInformation"}->{"ContactOrganization"}=JRequest::getVar("service_contactorganization");
+	$config->{"service-metadata"}->{"ContactInformation"}->{"ContactName"}=JRequest::getVar("service_contactperson"); 
+	$config->{"service-metadata"}->{"ContactInformation"}->{"ContactPosition"}=JRequest::getVar("service_contactposition" );
+	$config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"AddressType"}=JRequest::getVar("service_contacttype" );
+	$config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"Address"}=JRequest::getVar("service_contactadress" );
+	$config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"PostalCode"}=JRequest::getVar("service_contactpostcode");
+	$config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"City"}=JRequest::getVar("service_contactcity" );
+	$config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"State"}=JRequest::getVar("service_contactstate" );
+	$config->{"service-metadata"}->{"ContactInformation"}->{"ContactAddress"}->{"Country"}=JRequest::getVar("service_contactcountry" );
+	$config->{"service-metadata"}->{"ContactInformation"}->{"VoicePhone"}=JRequest::getVar("service_contacttel" );
+	$config->{"service-metadata"}->{"ContactInformation"}->{"Facsimile"}=JRequest::getVar("service_contactfax" );
+	$config->{"service-metadata"}->{"ContactInformation"}->{"ElectronicMailAddress"}=JRequest::getVar("service_contactmail");
+	$config->{"service-metadata"}->{"ContactInformation"}->{"Linkage"}=JRequest::getVar("service_contactlinkage");
+	$config->{"service-metadata"}->{"ContactInformation"}->{"HoursofSservice"}=JRequest::getVar("service_contacthours" );
+	$config->{"service-metadata"}->{"ContactInformation"}->{"Instructions"}=JRequest::getVar("service_contactinstructions");
+	if(JRequest::getVar("service_fees" ))
+		$config->{"service-metadata"}->{"Fees"}=JRequest::getVar("service_fees" );
+	else
+		$config->{"service-metadata"}->{"Fees"}="none";
+	if(JRequest::getVar("service_accessconstraints"))
+		$config->{"service-metadata"}->{"AccessConstraints"}=JRequest::getVar("service_accessconstraints"); 
+	else
+		$config->{"service-metadata"}->{"AccessConstraints"}="none";
+	return $config;
+}
+
 
 function addNewServer($xml){
 
