@@ -276,12 +276,13 @@ echo $pane->endPanel();
 	function editConfigWFS($xml,$new, $configId,$availableServletList, $option, $task)
 	{
 		?><form name='adminForm' id='adminForm' action='index.php' method='POST'>
-		<input type='hidden' name='serviceType' id='serviceType' value="<?php echo JRequest::getVar('serviceType');?>" >
+			<input type='hidden' name='serviceType' id='serviceType' value="<?php echo JRequest::getVar('serviceType');?>" >
 			<input type='hidden' name="isNewConfig" value="<?php echo $new; ?>">
-			<input
-			type='hidden' name='option' value='<?php echo $option;?>'> <input
-			type='hidden' name='task' value='<?php echo $task;?>'> <input type='hidden'
-			name='configId' value='<?php echo $configId;?>'> <?php
+			<input type='hidden' name='option' value='<?php echo $option;?>'> 
+			<input type='hidden' name='task' value='<?php echo $task;?>'> 
+			<input type='hidden' name='configId' value='<?php echo $configId;?>'> 
+			<input type='hidden' name="nbServer" id="nbServer" value=''>	
+			<?php
 			foreach ($xml->config as $config) {
 				if (strcmp($config['id'],$configId)==0){
 					$servletClass=$config->{'servlet-class'};
@@ -293,41 +294,7 @@ echo $pane->endPanel();
 					$keywordString = substr($keywordString, 0, strlen($keywordString)-1) ;
 					HTML_proxy::genericServletInformationsHeader ($config, $configId, "org.easysdi.proxy.wfs.WFSProxyServlet", $availableServletList)
 					?>
-		
-		
-
-				<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_SERVER LIST'); ?></legend>
-				<table class="admintable">
-				
-				<thead>
-					<tr>
-						<th><?php echo JText::_( 'EASYSDI_URL'); ?></th>
-						<th><?php echo JText::_( 'EASYSDI_USER'); ?></th>
-						<th><?php echo JText::_( 'EASYSDI_PASSWORD'); ?></th>
-					</tr>
-					</thead>
-					<tbody id="remoteServerTable" ><?php
-					$remoteServerList = $config->{'remote-server-list'};
-					$iServer=0;
-					foreach ($remoteServerList->{'remote-server'} as $remoteServer){
-						?><tr>
-								<td><input type="text" name="URL_<?php echo $iServer;?>" value="<?php echo $remoteServer->url; ?>" size=70></td>
-								<td><input name="USER_<?php echo $iServer;?>" type="text" value="<?php echo $remoteServer->user; ?>"></td>
-								<td><input name="PASSWORD_<?php echo $iServer;?>" type="password" value="<?php echo $remoteServer->password; ?>"></td>				
-								<td><input id="removeServerButton" type="button" onClick="javascript:removeServer(<?php echo $iServer;?>);" value="<?php echo JText::_( 'EASYSDI_REMOVE' ); ?>"></td>
-											
-							</tr>
-						<?php
-					$iServer=$iServer+1;
-					}
-					?></tbody>
-				</table>
-				</fieldset>
-			
-				<script>
-				var nbServer = <?php echo $iServer?>;
-				</script>
-				<fieldset class="adminform" id="service_metadata" ><legend><?php echo JText::_( 'PROXY_CONFIG_FS_SERVICE_METADATA'); ?></legend>
+					<fieldset class="adminform" id="service_metadata" ><legend><?php echo JText::_( 'PROXY_CONFIG_FS_SERVICE_METADATA'); ?></legend>
 					<table class="admintable" >
 						<tr>
 							<td class="key"><?php echo JText::_("PROXY_CONFIG_SERVICE_METADATA_TITLE"); ?> : </td>
@@ -375,12 +342,13 @@ echo $pane->endPanel();
 	function editConfigWMS($xml,$new, $configId,$availableServletList, $option, $task)
 	{
 		?><form name='adminForm' id='adminForm' action='index.php' method='POST'>
-		<input type='hidden' name='serviceType' id='serviceType' value="<?php echo JRequest::getVar('serviceType');?>" >
+			<input type='hidden' name='serviceType' id='serviceType' value="<?php echo JRequest::getVar('serviceType');?>" >
 			<input type='hidden' name="isNewConfig" value="<?php echo $new; ?>">
-			<input
-			type='hidden' name='option' value='<?php echo $option;?>'> <input
-			type='hidden' name='task' value='<?php echo $task;?>'> <input type='hidden'
-			name='configId' value='<?php echo $configId;?>'> <?php
+			<input type='hidden' name='option' value='<?php echo $option;?>'> 
+			<input type='hidden' name='task' value='<?php echo $task;?>'> 
+			<input type='hidden' name='configId' value='<?php echo $configId;?>'> 
+			<input type='hidden' name="nbServer" id="nbServer" value=''>	
+			<?php
 			foreach ($xml->config as $config) {
 				if (strcmp($config['id'],$configId)==0){
 					$servletClass=$config->{'servlet-class'};
@@ -390,41 +358,10 @@ echo $pane->endPanel();
 						$keywordString .= $keyword .",";
 					}
 					$keywordString = substr($keywordString, 0, strlen($keywordString)-1) ;
+
 					HTML_proxy::genericServletInformationsHeader ($config, $configId, "org.easysdi.proxy.wms.WMSProxyServlet", $availableServletList)
 					?>
 		
-		
-
-			<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_SERVER LIST'); ?></legend>
-			<table class="admintable">
-			
-			<thead>
-				<tr>
-					<th><?php echo JText::_( 'EASYSDI_URL'); ?></th>
-					<th><?php echo JText::_( 'EASYSDI_USER'); ?></th>
-					<th><?php echo JText::_( 'EASYSDI_PASSWORD'); ?></th>
-				</tr>
-				</thead>
-				<tbody id="remoteServerTable" ><?php
-				$remoteServerList = $config->{'remote-server-list'};
-				$iServer=0;
-				foreach ($remoteServerList->{'remote-server'} as $remoteServer){
-					?><tr>
-							<td><input type="text" name="URL_<?php echo $iServer;?>" value="<?php echo $remoteServer->url; ?>" size=70></td>
-							<td><input name="USER_<?php echo $iServer;?>" type="text" value="<?php echo $remoteServer->user; ?>"></td>
-							<td><input name="PASSWORD_<?php echo $iServer;?>" type="password" value="<?php echo $remoteServer->password; ?>"></td>				
-							<td><input id="removeServerButton" type="button" onClick="javascript:removeServer(<?php echo $iServer;?>);" value="<?php echo JText::_( 'EASYSDI_REMOVE' ); ?>"></td>
-						</tr>
-					<?php
-				$iServer=$iServer+1;
-				}
-				?></tbody>
-			</table>
-			</fieldset>
-		
-			<script>
-			var nbServer = <?php echo $iServer?>;
-			</script>
 			<fieldset class="adminform" id="service_metadata" ><legend><?php echo JText::_( 'PROXY_CONFIG_FS_SERVICE_METADATA'); ?></legend>
 				<table class="admintable" >
 					<tr>
@@ -534,6 +471,7 @@ echo $pane->endPanel();
 		<input type='hidden' name='option' value='<?php echo $option;?>'> 
 		<input type='hidden' name='task' value='<?php echo $task;?>'> 
 		<input type='hidden' name='configId' value='<?php echo $configId;?>'> 
+		<input type='hidden' name="nbServer" id="nbServer" value=''>	
 		<?php
 			foreach ($xml->config as $config) {
 			if (strcmp($config['id'],$configId)==0){
@@ -544,47 +482,9 @@ echo $pane->endPanel();
 					$keywordString .= $keyword .",";
 				}
 				$keywordString = substr($keywordString, 0, strlen($keywordString)-1) ;
+				
 				HTML_proxy::genericServletInformationsHeader ($config, $configId, "org.easysdi.proxy.csw.CSWProxyServlet", $availableServletList)
 		?>
-			<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_SERVER LIST'); ?></legend>
-			<table class="admintable">
-			
-			<thead>
-				<tr>
-					<th><?php echo JText::_( 'EASYSDI_URL'); ?></th>
-					<th><?php echo JText::_( 'EASYSDI_USER'); ?></th>
-					<th><?php echo JText::_( 'EASYSDI_PASSWORD'); ?></th>
-				</tr>
-				</thead>
-				<tbody id="remoteServerTable" ><?php
-				$remoteServerList = $config->{'remote-server-list'};
-				$iServer=0;
-				foreach ($remoteServerList->{'remote-server'} as $remoteServer){
-					?><tr>
-							<td><input type="text" name="URL_<?php echo $iServer;?>" value="<?php echo $remoteServer->url; ?>" size=70></td>
-							<td><input name="USER_<?php echo $iServer;?>" type="text" value="<?php echo $remoteServer->user; ?>"></td>
-							<td><input name="PASSWORD_<?php echo $iServer;?>" type="password" value="<?php echo $remoteServer->password; ?>"></td>
-						</tr>
-						<tr>						
-						<td colspan="4">
-						<div id="specificGeonetowrk" >
-							<table>	
-							<tr>									
-							<td><?php echo JText::_( 'EASYSDI_MAX_RECORDS');?></td><td><input type="text" name="max-records_<?php echo $iServer;?>" value="<?php echo $remoteServer->{'max-records'}; ?>" size=5></td>
-							</tr>
-							<tr>
-							<td><?php echo JText::_( 'EASYSDI_LOGIN_SERVICE');?></td><td><input type="text" name="login-service_<?php echo $iServer;?>" value="<?php echo $remoteServer->{'login-service'}; ?>" size=70></td>
-							</tr>								
-							</table>
-						</div>
-						</td>
-						</tr>
-					<?php
-				$iServer=$iServer+1;
-				}
-				?></tbody>
-			</table>
-			</fieldset>
 			<fieldset class="adminform" id="ogcSearchFilterFS"><legend><?php echo JText::_( 'PROXY_CONFIG_CSW_OGC_SEARCH_FILTER' );?></legend>
 			<table class="admintable">
 				<tr>
@@ -713,7 +613,7 @@ echo $pane->endPanel();
 		<input type='hidden' name='option' value='<?php echo $option;?>'> 
 		<input type='hidden' name='task' value='<?php echo $task;?>'> 
 		<input type='hidden' name='configId' value='<?php echo $configId;?>'> 
-		<input type='hidden' name="nbServer" value=''>
+		<input type='hidden' name="nbServer" id="nbServer" value=''>
 		<?php
 			foreach ($xml->config as $config) {
 			if (strcmp($config['id'],$configId)==0){
@@ -724,39 +624,10 @@ echo $pane->endPanel();
 					$keywordString .= $keyword .",";
 				}
 				$keywordString = substr($keywordString, 0, strlen($keywordString)-1) ;
+				
 				HTML_proxy::genericServletInformationsHeader ($config, $configId, "org.easysdi.proxy.wmts.v100.WMTS100ProxyServlet", $availableServletList)
 		?>
-			<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_SERVER LIST'); ?></legend>
-			<table class="admintable">
 			
-			<thead>
-				<tr>
-					<th><?php echo JText::_( 'EASYSDI_SERVER_ALIAS'); ?></th>
-					<th><?php echo JText::_( 'EASYSDI_URL'); ?></th>
-					<th><?php echo JText::_( 'EASYSDI_USER'); ?></th>
-					<th><?php echo JText::_( 'EASYSDI_PASSWORD'); ?></th>
-				</tr>
-				</thead>
-				<tbody id="remoteServerTable" ><?php
-				$remoteServerList = $config->{'remote-server-list'};
-				$iServer=0;
-				foreach ($remoteServerList->{'remote-server'} as $remoteServer){
-					?><tr>
-							<td><input type="text" name="ALIAS_<?php echo $iServer;?>" value="<?php echo $remoteServer->alias; ?>" size=20></td>
-							<td><input type="text" name="URL_<?php echo $iServer;?>" value="<?php echo $remoteServer->url; ?>" size=70></td>
-							<td><input name="USER_<?php echo $iServer;?>" type="text" value="<?php echo $remoteServer->user; ?>"></td>
-							<td><input name="PASSWORD_<?php echo $iServer;?>" type="password" value="<?php echo $remoteServer->password; ?>"></td>				
-<!--							<td><input id="removeServerButton" type="button" onClick="javascript:removeServer(<?php echo $iServer;?>);" value="<?php echo JText::_( 'EASYSDI_REMOVE' ); ?>"></td>-->
-					</tr>
-					<?php
-				$iServer=$iServer+1;
-				}
-				?></tbody>
-			</table>
-			</fieldset>
-			<script>
-			var nbServer = <?php echo $iServer?>;
-			</script>
 			<fieldset class="adminform" id="service_metadata" ><legend><?php echo JText::_( 'PROXY_CONFIG_FS_SERVICE_METADATA'); ?></legend>
 				<fieldset class="adminform" id="service_identification" ><legend><?php echo JText::_( 'PROXY_CONFIG_FS_SERVICE_METADATA_IDENTIFICATION'); ?></legend>
 					<table class="admintable" >
@@ -901,6 +772,55 @@ echo $pane->endPanel();
 				</tr>
 			</table>
 		</fieldset>
+		<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_SERVER LIST'); ?></legend>
+			<table class="admintable">
+				<thead>
+				<tr>
+					<th><?php echo JText::_( 'EASYSDI_SERVER_ALIAS'); ?></th>
+					<th><?php echo JText::_( 'EASYSDI_URL'); ?></th>
+					<th><?php echo JText::_( 'EASYSDI_USER'); ?></th>
+					<th><?php echo JText::_( 'EASYSDI_PASSWORD'); ?></th>
+				</tr>
+				</thead>
+				<tbody id="remoteServerTable" ><?php
+				$remoteServerList = $config->{'remote-server-list'};
+				$iServer=0;
+				foreach ($remoteServerList->{'remote-server'} as $remoteServer){
+					?><tr id="remoteServerTableRow<?php echo $iServer;?>">
+							<td><input type="text" name="ALIAS_<?php echo $iServer;?>" value="<?php echo $remoteServer->alias; ?>" size=20></td>
+							<td><input type="text" name="URL_<?php echo $iServer;?>" value="<?php echo $remoteServer->url; ?>" size=70></td>
+							<td><input name="USER_<?php echo $iServer;?>" type="text" value="<?php echo $remoteServer->user; ?>"></td>
+							<td><input name="PASSWORD_<?php echo $iServer;?>" type="password" value="<?php echo $remoteServer->password; ?>">	
+							<?php if ($iServer > 0){?>			
+							<input id="removeServerButton" type="button" onClick="javascript:removeServer(<?php echo $iServer;?>);" value="<?php echo JText::_( 'EASYSDI_REMOVE' ); ?>">
+							<?php }?>
+							</td>
+					</tr>
+					<?php if ($servletClass == "org.easysdi.proxy.csw.CSWProxyServlet"){?>
+					<tr>						
+						<td colspan="4">
+						<div id="specificGeonetowrk" >
+							<table>	
+							<tr>									
+							<td><?php echo JText::_( 'EASYSDI_MAX_RECORDS');?></td><td><input type="text" name="max-records_<?php echo $iServer;?>" value="<?php echo $remoteServer->{'max-records'}; ?>" size=5></td>
+							</tr>
+							<tr>
+							<td><?php echo JText::_( 'EASYSDI_LOGIN_SERVICE');?></td><td><input type="text" name="login-service_<?php echo $iServer;?>" value="<?php echo $remoteServer->{'login-service'}; ?>" size=70></td>
+							</tr>								
+							</table>
+						</div>
+						</td>
+						</tr>
+					<?php
+					}
+				$iServer=$iServer+1;
+				}
+				?></tbody>
+			</table>
+			</fieldset>
+			<script>
+			var nbServer = <?php echo $iServer?>;
+			</script>
 		<?php 
 	}
 	

@@ -23,6 +23,7 @@ function submitbutton(pressbutton){
 			alert ('<?php echo  JText::_( 'PROXY_CONFIG_EDIT_VALIDATION_SERVICE_MD_ERROR');?>');	
 			return;
 		}
+		document.getElementById('nbServer').value = nbServer;
 		submitform(pressbutton);
 	}
 	else
@@ -36,27 +37,15 @@ function submitbutton(pressbutton){
 function removeServer(servNo){
 
 	noeud = document.getElementById("remoteServerTable");
-	var fils = noeud.childNodes;
-	
-	noeud.removeChild(fils[servNo]);
-	
-//	noeud = document.getElementById("remoteServerTable");
-//	fils = noeud.childNodes;
-//	var nbFils = fils.length;
-//	
-//	for(var i = 0; i < nbFils; i++){
-//			fils[i].childNodes[0].childNodes[0].name="URL_"+i;	
-//			fils[i].childNodes[1].childNodes[0].name="USER_"+i;
-//			fils[i].childNodes[2].childNodes[0].name="PASSWORD_"+i;						
-//			fils[i].childNodes[2].childNodes[1].setAttribute("onClick","javascript:removeServer("+i+");");
-//	} 
-//	nbServer = nbServer - 1;
+	var fils = document.getElementById("remoteServerTableRow"+servNo);
+	noeud.removeChild(fils);
 }
 
 function addNewServer(){
 	
 	var tr = document.createElement('tr');	
-
+	tr.id = "remoteServerTableRow"+nbServer;
+		
 	var tdAlias = document.createElement('td');
 	var tdUrl = document.createElement('td');
 	var tdUser = document.createElement('td');

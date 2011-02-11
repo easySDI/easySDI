@@ -1018,10 +1018,11 @@ function saveConfig($xml,$configFilePath){
 			//Remote server
 			$config->{'remote-server-list'}="";				
 			$i=0;
-			while(true){
+			for($i = 0 ; $i <= JRequest::getVar("nbServer",0); $i++)
+			{
 				$url = JRequest::getVar("URL_".$i,"");
-
-				if (strlen($url)==0) break;
+				
+				if (strlen($url)==0) continue;
 				$alias = JRequest::getVar("ALIAS_".$i,"");
 				$user = JRequest::getVar("USER_".$i,"");
 				$pwd = JRequest::getVar("PASSWORD_".$i,"");
@@ -1038,9 +1039,8 @@ function saveConfig($xml,$configFilePath){
 					$geonetworktransaction  = $remoteServer->addChild("transaction");
 					$geonetworktransaction->{'type'}='geonetwork';
 				}
-				$i++;
 			}
-			
+						
 			//Ogc search filter
 			if (strcmp($servletClass,"org.easysdi.proxy.csw.CSWProxyServlet")==0 )
 			{
