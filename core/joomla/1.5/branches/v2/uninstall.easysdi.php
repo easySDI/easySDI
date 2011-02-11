@@ -47,13 +47,6 @@ function com_uninstall(){
 	/**
 	 * Delete components
 	 */
-	$query = "DELETE FROM #__components where `option`= 'com_easysdi_partner' ";	
-	$db->setQuery( $query);
-	if (!$db->query()) {
-		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-		return false;
-	}
-	
 	$query = "DELETE FROM #__components where `option`= 'com_easysdi_core' ";
 	$db->setQuery( $query);
 	if (!$db->query()) {
