@@ -339,6 +339,7 @@ switch($task){
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'product.site.easysdi.php');	
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_catalog'.DS.'core'.DS.'model'.DS.'objectversion.easysdi.class.php');
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_catalog'.DS.'core'.DS.'model'.DS.'object.easysdi.class.php');		
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.displayManager.class.php');
 			
 		SITE_product::editProduct($option,true);
 		break;
