@@ -113,14 +113,14 @@ class reportEngine{
 			// Construire une requ�te Geonetwork GetRecords pour demander les métadonnées choisies pour le rapport
 			$xmlBody = SITE_catalog::BuildCSWRequest(10, 1, "results", "gmd:MD_Metadata", "full", "1.1.0", $filter, "title", "ASC");
 			
-			//echo htmlspecialchars($xmlBody);
+			//echo htmlspecialchars($xmlBody);die();
 
 			// Envoi de la requ�te
 			$catalogUrlBase = config_easysdi::getValue("catalog_url");
 			$xmlResponse = ADMIN_metadata::CURLRequest("POST", $catalogUrlBase,$xmlBody);
 			$cswResults = DOMDocument::loadXML($xmlResponse);
 
-			//echo htmlspecialchars($cswResults->saveXML())."<hr>";
+			//echo htmlspecialchars($cswResults->saveXML())."<hr>";die();
 
 			// Traitement du retour CSW pour g�n�rer le rapport
 			if ($cswResults !=null and $cswResults !="")
@@ -182,7 +182,7 @@ class reportEngine{
 					}
 		
 					// Rassembler tous les noeuds et les transmettre au processeur XSLT
-					//echo htmlspecialchars($myDoc->saveXML())."<hr>";
+					//echo htmlspecialchars($myDoc->saveXML())."<hr>";die();
 
 					$style = new DomDocument();
 					$style->load(JPATH_COMPONENT_ADMINISTRATOR.DS.'xsl'.DS.'getreport'.DS.'report.xsl');
@@ -192,10 +192,7 @@ class reportEngine{
 					$processor->setParameter('', 'reporttype', $reporttype);
 					$processor->importStylesheet($style);
 					$xml = $processor->transformToXML($myDoc);
-					//echo htmlspecialchars($xml);
-					//$xml = new DomDocument();
-					//$xml = $processor->transformToDoc($myDoc);
-					//echo htmlspecialchars($xml->saveXML());
+					//echo htmlspecialchars($xml->saveXML());die();
 					$tmp = uniqid();
 					$tmpfile = JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'xml'.DS.'tmp'.DS.$tmp;
 					//print_r(libxml_get_last_error());
@@ -244,11 +241,15 @@ class reportEngine{
 				file_put_contents($tmpfile.'.html', $file);
 				reportEngine::setResponse($file, $tmpfile.'.html', 'text/html', 'report.html');
 				break;
-			case "makepdf":
-				file_put_contents($tmpfile.'.pdf', $file);
-				reportEngine::setResponse($file, $tmpfile.'.pdf', 'application/pdf', 'report.pdf');
+			case "pdf_makepdf":
+				file_put_contents($tmpfile.'.html', $file);
+				$mpdf=new mPDF();
+				$mpdf->WriteHTML($file);
+				$mpdf->Output();
+				//file_put_contents($tmpfile.'.pdf', $mpdf->Output());
+				//reportEngine::setResponse($file, $tmpfile.'.pdf', 'application/pdf', 'report.pdf');
 				break;
-			case "pdf":
+			case "pdf_fop":
 				$exportpdf_url = config_easysdi::getValue("JAVA_BRIDGE_URL");
 	
 				if ($exportpdf_url )

@@ -89,6 +89,7 @@ class ADMIN_objectversion {
 		// R�cup�rer la m�tadonn�e de la derni�re version de l'objet
 		$rowLastMetadata = new metadata( $database );
 		$rowLastObjectVersion = new objectversion( $database );
+		
 		if (count($listVersions) > 0)
 		{
 			$rowLastMetadata->load($listVersions[0]->metadata_id);
@@ -101,7 +102,6 @@ class ADMIN_objectversion {
 			$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=$object_id" );
 			exit();
 		}
-		
 		// R�cup�ration des types mysql pour les champs
 		$tableFields = array();
 		$tableFields = $database->getTableFields("#__sdi_objectversion", false);
@@ -166,12 +166,13 @@ class ADMIN_objectversion {
 		// R�cup�rer la m�tadonn�e de la derni�re version de l'objet
 		$rowLastMetadata = new metadata( $database );
 		$rowLastObjectVersion = new objectversion( $database );
+		
 		if (count($listVersions) > 0)
 		{
 			$rowLastMetadata->load($listVersions[0]->metadata_id);
 			$rowLastObjectVersion->load($listVersions[0]->id);
 		}
-	
+		
 		if ($id==0)
 		{
 			if ($rowLastMetadata->metadatastate_id <> 1 and $rowLastMetadata->metadatastate_id <> 2)

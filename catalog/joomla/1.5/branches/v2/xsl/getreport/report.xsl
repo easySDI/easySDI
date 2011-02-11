@@ -42,7 +42,10 @@
 			<xsl:when test="$format='xhtml'">
 				<xsl:copy-of select="*"></xsl:copy-of>
 			</xsl:when>
-			<xsl:when test="$format='pdf'">
+			<xsl:when test="$format='pdf_makepdf'">
+				<xsl:copy-of select="*"></xsl:copy-of>
+			</xsl:when>
+			<xsl:when test="$format='pdf_fop'">
 				<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format">
 					<fo:layout-master-set>
 						<fo:simple-page-master page-height="11in"
