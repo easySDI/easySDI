@@ -24,6 +24,17 @@ function submitbutton(pressbutton){
 			return;
 		}
 		document.getElementById('nbServer').value = nbServer;
+		for(i = 0; i<=nbServer ; i++)
+		{
+			if(document.getElementById('ALIAS_'+i) != null)
+			{
+				if(document.getElementById('ALIAS_'+i).value == "")
+				{
+					alert ('<?php echo  JText::_( 'PROXY_CONFIG_EDIT_VALIDATION_SERVICE_ALIAS_ERROR');?>');	
+					return;
+				}
+			}
+		}
 		submitform(pressbutton);
 	}
 	else
@@ -55,6 +66,7 @@ function addNewServer(){
 	inputAlias.size=20;
 	inputAlias.type="text";
 	inputAlias.name="ALIAS_"+nbServer;
+	inputAlias.id="ALIAS_"+nbServer;
 				
 	var inputUrl = document.createElement('input');
 	inputUrl.size=70;

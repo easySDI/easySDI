@@ -493,9 +493,7 @@ echo $pane->endPanel();
 				</tr>
 			</table>
 			</fieldset>
-			<script>
-			var nbServer = <?php echo $iServer?>;
-			</script>
+			
 			<fieldset class="adminform" id="service_metadata" ><legend><?php echo JText::_( 'PROXY_CONFIG_FS_SERVICE_METADATA'); ?></legend>
 				<table class="admintable" >
 					<tr>
@@ -787,7 +785,7 @@ echo $pane->endPanel();
 				$iServer=0;
 				foreach ($remoteServerList->{'remote-server'} as $remoteServer){
 					?><tr id="remoteServerTableRow<?php echo $iServer;?>">
-							<td><input type="text" name="ALIAS_<?php echo $iServer;?>" value="<?php echo $remoteServer->alias; ?>" size=20></td>
+							<td><input type="text" name="ALIAS_<?php echo $iServer;?>" id="ALIAS_<?php echo $iServer;?>" value="<?php echo $remoteServer->alias; ?>" size=20></td>
 							<td><input type="text" name="URL_<?php echo $iServer;?>" value="<?php echo $remoteServer->url; ?>" size=70></td>
 							<td><input name="USER_<?php echo $iServer;?>" type="text" value="<?php echo $remoteServer->user; ?>"></td>
 							<td><input name="PASSWORD_<?php echo $iServer;?>" type="password" value="<?php echo $remoteServer->password; ?>">	
@@ -818,9 +816,11 @@ echo $pane->endPanel();
 				?></tbody>
 			</table>
 			</fieldset>
+			
 			<script>
 			var nbServer = <?php echo $iServer?>;
 			</script>
+			
 		<?php 
 	}
 	
