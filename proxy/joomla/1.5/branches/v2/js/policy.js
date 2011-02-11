@@ -139,25 +139,7 @@ function activateLayer(server,layerName){
 	}
 }
 
-function disableOperationCheckBoxes()
-{
-	var check = document.getElementById('AllOperations').checked;
-	
-	document.getElementById('oGetCapabilities').disabled=check;
-	document.getElementById('oGetMap').disabled=check;
-	document.getElementById('oGetFeatureInfo').disabled=check;
-//	document.getElementById('oDescribeLayer').disabled=check;
-	document.getElementById('oGetLegendGraphic').disabled=check;
-//	document.getElementById('oGetStyles').disabled=check;
-//	document.getElementById('oPutStyles').disabled=check;
-	document.getElementById('oGetCapabilities').checked=check;
-	document.getElementById('oGetMap').checked=check;
-	document.getElementById('oGetFeatureInfo').checked=check;
-//	document.getElementById('oDescribeLayer').checked=check;
-	document.getElementById('oGetLegendGraphic').checked=check;
-//	document.getElementById('oGetStyles').checked=check;
-//	document.getElementById('oPutStyles').checked=check;
-}
+
 function disableServersLayers ()
 {
 	var nb = 0;
@@ -264,22 +246,7 @@ function addNewMetadataToExclude(nbParam,nbServer)
 	document.getElementById("metadataParamTable").appendChild(tr);
 	document.getElementById(nbParam).value = document.getElementById(nbParam).value +1 ;
 }
-function disableOperationCheckBoxes()
-{
-	var check = document.getElementById('AllOperations').checked;
-	
-	document.getElementById('oGetCapabilities').disabled=check;
-	document.getElementById('oDescribeRecord').disabled=check;
-	document.getElementById('oTransaction').disabled=check;
-	document.getElementById('oGetRecords').disabled=check;
-	document.getElementById('oGetRecordbyId').disabled=check;
-	document.getElementById('oGetCapabilities').checked=check;
-	document.getElementById('oDescribeRecord').checked=check;
-	document.getElementById('oTransaction').checked=check;
-	document.getElementById('oGetRecords').checked=check;
-	document.getElementById('oGetRecordbyId').checked=check;
 
-}
 function disableVisibilitiesCheckBoxes ()
 {
 	var check = document.getElementById('AllVisibilities').checked;

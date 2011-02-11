@@ -235,6 +235,22 @@ echo $pane->endPanel();
 			}
 		return false;
 	}
+	
+	function isWMTSLayerChecked($theServer,$layer){
+
+		if (strcasecmp($theServer->{"Layers"}['All'],"true")==0) return true;
+
+		if (count($theServer->Layers->Layer)==0) return false;
+
+		foreach ($theServer->Layers->Layer as $theLayer )
+		{
+				if (strcmp($theLayer->{'Name'},$layer->{'Identifier'})==0)
+				{
+					return true;
+				}
+			}
+		return false;
+	}
 
 
 	function isChecked($theServer,$featureType){
@@ -1123,7 +1139,6 @@ echo $pane->endPanel();
 				$thePolicy ->Servers['All']="false";
 				$thePolicy ->Subjects['All']="false";
 				$thePolicy ->Operations['All']="true";
-				//$thePolicy ->AvailabilityPeriod->Mask="d MMM yyyy HH:mm:ss";
 				$thePolicy ->AvailabilityPeriod->Mask="dd-mm-yyyy";
 				$thePolicy ->AvailabilityPeriod->From->Date="28-01-2008";
 				$thePolicy ->AvailabilityPeriod->To->Date="28-01-2108";				
@@ -1337,20 +1352,19 @@ function submitbutton(pressbutton)
 </fieldset>
 
 			<?php 
-//			if (strcmp($servletClass,"org.easysdi.proxy.wfs.SimpleWFSProxyServlet")==0 ||strcmp($servletClass,"org.easysdi.proxy.wfs.WFSProxyServlet")==0){
-//				HTML_proxy::generateWFSHTML($config,$thePolicy);
-//			}
 			if (strcmp($servletClass,"org.easysdi.proxy.wfs.WFSProxyServlet")==0){
 				HTML_proxy::generateWFSHTML($config,$thePolicy);
 			}
-			?> <?php if (strcmp($servletClass,"org.easysdi.proxy.wms.WMSProxyServlet")==0 ){
+			else if (strcmp($servletClass,"org.easysdi.proxy.wms.WMSProxyServlet")==0 ){
 				HTML_proxy::generateWMSHTML($config,$thePolicy);  }
 				
-				if (strcmp($servletClass,"org.easysdi.proxy.csw.CSWProxyServlet")==0 ){					
+			else if (strcmp($servletClass,"org.easysdi.proxy.csw.CSWProxyServlet")==0 ){					
 				HTML_proxy::generateCSWHTML($config,$thePolicy, $rowsVisibility, $rowsStatus, $rowsObjectTypes);  
-				}
-				
-				break;
+			}
+			else if (strcmp($servletClass,"org.easysdi.proxy.wmts.v100.WMTS100ProxyServlet")==0 ){					
+				HTML_proxy::generateWMTS100HTML($config,$thePolicy);  
+			}
+			break;
 			}		
 				
 		} ?>
@@ -1358,12 +1372,198 @@ function submitbutton(pressbutton)
 </form>
 		<?php
 	}
+	
+	/**
+	 * 
+	 * Generate 
+	 * @param unknown_type $config
+	 * @param unknown_type $thePolicy
+	 */
+	function generateWMTS100HTML($config,$thePolicy){
+	?>
+	<script>
+		function disableOperationCheckBoxes()
+		{
+			var check = document.getElementById('AllOperations').checked;
+			
+			document.getElementById('oGetCapabilities').disabled=check;
+			document.getElementById('oGetTile').disabled=check;
+			document.getElementById('oGetCapabilities').checked=check;
+			document.getElementById('oGetTile').checked=check;
+		}
+		</script>
+		<fieldset class="adminform"><legend><?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_OPERATION'); ?></legend>
+			<table class="admintable">
+				<tr>
+					<td >
+					<?php if (strcasecmp($thePolicy->Operations['All'],'True')==0 || !$thePolicy->Operations){$checkedO='checked';} ?>	
+						<input <?php echo $checkedO; ?>
+						type="checkBox" name="AllOperations[]" id="AllOperations" 
+						onclick="disableOperationCheckBoxes();"><?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_OPERATION_ALL'); ?></td>
+					<td><input type="checkBox" name="operation[]" id="oGetCapabilities" value="GetCapabilities" <?php if (strcasecmp($checkedO,'checked')==0){echo 'disabled checked';} ?>
+						<?php foreach ($thePolicy->Operations->Operation as $operation)
+							{
+								if(strcasecmp($operation->Name,'GetCapabilities')==0) echo 'checked';			
+							}?>
+						><?php echo JText::_( 'PROXY_CONFIG_OPERATION_GETCAPABILITIES'); ?>
+					</td>
+				<tr>
+					<td></td>
+					<td><input type="checkBox" name="operation[]" id="oGetTile" value="GetTile" <?php if (strcasecmp($checkedO,'checked')==0){echo 'disabled checked';} ?>
+						<?php foreach ($thePolicy->Operations->Operation as $operation)
+							{
+								if(strcasecmp($operation->Name,'GetTile')==0) echo 'checked';			
+							}?>
+						><?php echo JText::_( 'PROXY_CONFIG_OPERATION_GETTILE'); ?>
+					</td>
+				</tr>	
+				<tr>
+					<td></td>
+					<td><input type="checkBox" name="operation[]" id="oGetFeatureInfo" value="GetFeatureInfo"  disabled>
+					<i><?php echo JText::_( 'PROXY_CONFIG_OPERATION_GETFEATUREINFO'); ?></i></td>
+				</tr>
+
+			</table>
+		</fieldset>
+
+	<fieldset class="adminform"><legend><?php echo JText::_( 'PROXY_CONFIG_SERVER_ALL_TITLE'); ?></legend>
+		<table class="admintable">
+			<tr>
+				<td><input type="checkBox" name="AllServers[]" id="AllServers" value="All" onclick="disableServersLayers();" <?php if (strcasecmp($thePolicy->Servers['All'],'True')==0 ) echo 'checked'; ?>><?php echo JText::_( 'PROXY_CONFIG_SERVER_ALL'); ?></td>
+			</tr>
+		</table>
+	</fieldset>
+	<?php 
+		$remoteServerList = $config->{'remote-server-list'};
+		$iServer=0;
+		foreach ($remoteServerList->{'remote-server'} as $remoteServer){
+
+			$urlWithPassword = $remoteServer->url;
+			
+			if (strlen($remoteServer->user)!=null && strlen($remoteServer->password)!=null){
+				if (strlen($remoteServer->user)>0 && strlen($remoteServer->password)>0){
+
+					if (strpos($remoteServer->url,"http:")===False){
+						$urlWithPassword =  "https://".$remoteServer->user.":".$remoteServer->password."@".substr($remoteServer->url,8);
+					}else{
+						$urlWithPassword =  "http://".$remoteServer->user.":".$remoteServer->password."@".substr($remoteServer->url,7);
+					}
+				}
+			}
+						
+			$pos1 = stripos($urlWithPassword, "?");
+			$separator = "&";
+			if ($pos1 === false) {
+	    		//"?" Not found then use ? instead of &
+	    		$separator = "?";  
+			}
+
+			$xmlCapa = simplexml_load_file($urlWithPassword.$separator."REQUEST=GetCapabilities&version=1.0.0&SERVICE=WMTS");
+			
+			if ($xmlCapa === false){
+					global $mainframe;		
+							$mainframe->enqueueMessage(JText::_('EASYSDI_UNABLE TO RETRIEVE THE CAPABILITIES OF THE REMOTE SERVER' )." - ".$urlWithPassword,'error');
+			}
+			else{			
+			foreach ($thePolicy->Servers->Server as $policyServer){			
+				if (strcmp($policyServer->url,$remoteServer->url)==0){
+					$theServer  = $policyServer;
+				}
+					
+			}
+			?>
+
+	<input type="hidden" name="remoteServer<?php echo $iServer;?>" id="remoteServer<?php echo $iServer;?>" value="<?php echo $remoteServer->url ?>">
+	<fieldset class="adminform" id="fsServer<?php echo $iServer;?>" >
+		<legend><?php echo JText::_( 'EASYSDI_WMTS_SERVER'); ?> <?php echo $remoteServer->alias ;?> (<?php echo $remoteServer->url; ?>)</legend>
+		<table class="admintable">
+			<tr>
+				<td class="key"><?php echo JText::_( 'EASYSDI_WFS_SERVER_PREFIXE'); ?> </td>		
+				<td>
+				<input type="text" size ="100"   name="serverPrefixe<?php echo $iServer; ?>" id="serverPrefixe<?php echo $iServer; ?>" value="<?php echo $theServer->Prefix; ?>">
+				</td>
+			</tr>
+			<tr>
+				<td class="key"><?php echo JText::_( 'EASYSDI_WFS_SERVER_NAMESPACE'); ?></td>
+				<td>
+				<input type="text" size ="100"  name="serverNamespace<?php echo $iServer; ?>" id="serverNamespace<?php echo $iServer; ?>" value="<?php echo $theServer->Namespace; ?>">
+				</td>
+			</tr>
+		</table>
+		<br>
+		<table class="admintable" id="remoteServerTable@<?php echo $iServer; ?>" <?php if (strcasecmp($thePolicy->Servers['All'],'True')==0 ) echo "style='display:none'"; ?>>
+			<tr>
+				<td colspan="4"><input type="checkBox" name="AllLayers@<?php echo $iServer; ?>" id="AllLayers@<?php echo $iServer; ?>" value="All" <?php if (strcasecmp($theServer->Layers['All'],'True')==0 ) echo ' checked '; ?> onclick="disableLayers(<?php echo $iServer; ?>);"><?php echo JText::_( 'PROXY_CONFIG_LAYER_ALL'); ?></td>
+			</tr>
+			<tr>
+				<th><b><?php echo JText::_( 'EASYSDI_LAYER NAME'); ?></b></th>
+			</tr>
+			
+			<?php
+			$layernum = 0;
+			$namespaces = $xmlCapa->getDocNamespaces(); 
+    		$xmlCapa->registerXPathNamespace('wmts', $namespaces['']); 
+    
+    
+			foreach ($xmlCapa->xpath('//wmts:Layer') as $layer){
+				
+				if ($layer->{'ows:Identifier'} !=null){
+					if (strlen($layer->{'ows:Identifier'})>0 ){?>
+			<tr>
+				<td class="key" >
+					<table width ="100%" height="100%" >
+						<tr valign="top" >
+						<td width="15"><input onClick="activateLayer('<?php echo $iServer ; ?>','<?php echo $layernum; ?>')" <?php if( HTML_proxy::isLayerChecked($theServer,$layer) || strcasecmp($theServer->Layers['All'],'True')==0) echo ' checked';?> type="checkbox"
+							id="layer@<?php echo $iServer; ?>@<?php echo $layernum;?>" 
+							name="layer@<?php echo $iServer; ?>@<?php echo $layernum;?>"
+							value="<?php echo $layer->{'ows:Identifier'};?>"></td>
+						<td align="left"><?php echo $layer->{'ows:Identifier'}; ?></td>
+						</tr>
+						<tr >
+						<td colspan="2" align="left">"<?php if (!(strpos($layer->{'ows:Title'},":")===False)) {echo substr($layer->{'ows:Title'},strrpos($layer->{'ows:Title'}, ":")+1);}else{echo $layer->{'ows:Title'};}?>"
+							</td>
+						</tr>
+					</table>		
+				</td>
+			</tr>
+			<?php  
+			$layernum += 1;
+					}
+				}
+			}?>
+		</table>
+		<input type="hidden" id="countLayer<?php echo $iServer; ?>" value="<?php echo $layernum; ?>">
+	</fieldset>
+	<?php
+	$iServer = $iServer +1;
+			}
+		}
+		?>
+		<input type="hidden" id="countServer" value="<?php echo $iServer -1; ?>">
+		<?php 
+	}
+	
 
 	function generateCSWHTML($config,$thePolicy, $rowsVisibility, $rowsStatus, $rowsObjectTypes)
 	{
 	?>
 		<script>
+		function disableOperationCheckBoxes()
+		{
+			var check = document.getElementById('AllOperations').checked;
+			
+			document.getElementById('oGetCapabilities').disabled=check;
+			document.getElementById('oDescribeRecord').disabled=check;
+			document.getElementById('oTransaction').disabled=check;
+			document.getElementById('oGetRecords').disabled=check;
+			document.getElementById('oGetRecordbyId').disabled=check;
+			document.getElementById('oGetCapabilities').checked=check;
+			document.getElementById('oDescribeRecord').checked=check;
+			document.getElementById('oTransaction').checked=check;
+			document.getElementById('oGetRecords').checked=check;
+			document.getElementById('oGetRecordbyId').checked=check;
 
+		}
 		</script>
 		<fieldset class="adminform"><legend><?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_OPERATION'); ?></legend>
 			<table class="admintable">
@@ -1618,7 +1818,25 @@ function submitbutton(pressbutton)
 function generateWMSHTML($config,$thePolicy){
 	?>
 	<script>
+	function disableOperationCheckBoxes()
+	{
+		var check = document.getElementById('AllOperations').checked;
 		
+		document.getElementById('oGetCapabilities').disabled=check;
+		document.getElementById('oGetMap').disabled=check;
+		document.getElementById('oGetFeatureInfo').disabled=check;
+//		document.getElementById('oDescribeLayer').disabled=check;
+		document.getElementById('oGetLegendGraphic').disabled=check;
+//		document.getElementById('oGetStyles').disabled=check;
+//		document.getElementById('oPutStyles').disabled=check;
+		document.getElementById('oGetCapabilities').checked=check;
+		document.getElementById('oGetMap').checked=check;
+		document.getElementById('oGetFeatureInfo').checked=check;
+//		document.getElementById('oDescribeLayer').checked=check;
+		document.getElementById('oGetLegendGraphic').checked=check;
+//		document.getElementById('oGetStyles').checked=check;
+//		document.getElementById('oPutStyles').checked=check;
+	}
 		</script>
 		<fieldset class="adminform"><legend><?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_OPERATION'); ?></legend>
 			<table class="admintable">

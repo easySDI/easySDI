@@ -127,7 +127,6 @@ class ADMIN_proxy
 			}
 		}
 		//Get  profiles
-		//$database->setQuery( "SELECT code as value, translation as text FROM #__sdi_accountprofile ORDER BY text" );
 		$database->setQuery( "SELECT ap.code as value, t.label as text FROM #__sdi_language l, #__sdi_list_codelang cl, #__sdi_accountprofile ap LEFT OUTER JOIN #__sdi_translation t ON ap.guid=t.element_guid WHERE t.language_id=l.id AND l.codelang_id=cl.id AND cl.code='".$language->_lang."'" );
 		$rowsProfile = $database->loadObjectList();
 		echo $database->getErrorMsg();
