@@ -1433,7 +1433,7 @@ function com_install(){
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");		
 		}
 		
-		$query =  "insert into #__components (name,link,admin_menu_link,admin_menu_alt,`option`,admin_menu_img,params)
+		$query =  "INSERT INTO #__components (name,link,admin_menu_link,admin_menu_alt,`option`,admin_menu_img,params)
 			values('EasySDI','option=com_easysdi_core','option=com_easysdi_core','Easysdi main menu','com_easysdi_core','components/com_easysdi_core/common/icons/favicon16.ico','')";
 		$db->setQuery( $query);
 		if (!$db->query()) 

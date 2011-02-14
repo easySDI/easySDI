@@ -23,6 +23,7 @@
 			<folder>java</folder>
 			<folder>js</folder>
 			<folder>language</folder>
+			<folder>lib</folder>
 			<folder>templates</folder>
 			<folder>xml</folder>
 			<folder>xsl</folder>
