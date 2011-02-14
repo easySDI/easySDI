@@ -23,11 +23,7 @@ public class OWSServiceMetadata implements Serializable{
 	
 	private static final long serialVersionUID = -1522579526391545420L;
 	
-	private String title = null;
-	private String abst = null;
-	private String fees = null;
-	private String accessConstraints = null;
-	private List<String> keywords = null;
+	private OWSServiceIdentification identification = null;
 	private OWSServiceProvider provider =null;
 	
 	private boolean isEmpty = true;
@@ -36,96 +32,7 @@ public class OWSServiceMetadata implements Serializable{
 		return isEmpty;
 	}
 	
-	/**
-	 * @param title the title to set
-	 */
-	public void setTitle(String title) {
-		if(title != null && !"".equals(title))
-		{
-			isEmpty = false;
-			this.title = title;
-		}
-	}
-
-	/**
-	 * @return the title
-	 */
-	public String getTitle() {
-		return title;
-	}
-
-	/**
-	 * @param abst the abst to set
-	 */
-	public void setAbst(String abst) {
-		if(abst != null && !"".equals(abst))
-		{
-			isEmpty = false;
-			this.abst = abst;
-		}
-	}
-
-	/**
-	 * @return the abst
-	 */
-	public String getAbst() {
-		return abst;
-	}
-
-	/**
-	 * @param fees the fees to set
-	 */
-	public void setFees(String fees) {
-		if(fees != null && !"".equals(fees))
-		{
-			isEmpty = false;
-			this.fees = fees;
-		}
-	}
-
-	/**
-	 * @return the fees
-	 */
-	public String getFees() {
-		return fees;
-	}
-
-	/**
-	 * @param accessConstraints the accessConstraints to set
-	 */
-	public void setAccessConstraints(String accessConstraints) {
-		if(accessConstraints != null && !"".equals(accessConstraints))
-		{
-			isEmpty = false;
-			this.accessConstraints = accessConstraints;
-		}
-	}
-
-	/**
-	 * @return the accessConstraints
-	 */
-	public String getAccessConstraints() {
-		return accessConstraints;
-	}
-
-	/**
-	 * @param keywords the keywords to set
-	 */
-	public void setKeywords(List<String> keywords) {
-		if(keywords != null && keywords.size() != 0)
-		{
-			isEmpty = false;
-			this.keywords = keywords;
-		}
-	}
-
-	/**
-	 * @return the keywords
-	 */
-	public List<String> getKeywords() {
-		return keywords;
-	}
-
+	
 	/**
 	 * @param provider the provider to set
 	 */
@@ -142,6 +49,26 @@ public class OWSServiceMetadata implements Serializable{
 	 */
 	public OWSServiceProvider getProvider() {
 		return provider;
+	}
+
+
+	/**
+	 * @param identification the identification to set
+	 */
+	public void setIdentification(OWSServiceIdentification identification) {
+		if(identification != null && !identification.isEmpty())
+		{
+			isEmpty = false;
+			this.identification = identification;
+		}
+	}
+
+
+	/**
+	 * @return the identification
+	 */
+	public OWSServiceIdentification getIdentification() {
+		return identification;
 	}
 
 }

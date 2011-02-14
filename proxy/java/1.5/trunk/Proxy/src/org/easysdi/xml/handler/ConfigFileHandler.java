@@ -97,6 +97,7 @@ public class ConfigFileHandler extends DefaultHandler {
 	private String ogcSearchFilter="";
 	
 	private Boolean isKeywordList = false;
+	private Boolean isServiceIdentification = false;
 	private Boolean isServiceProvider = false;
 	private Boolean isResponsibleParty = false;
 	private Boolean isContact = false;
@@ -115,6 +116,7 @@ public class ConfigFileHandler extends DefaultHandler {
 	private OWSServiceProvider owsProvider = null;
 	private OWSTelephone owsPhone = null;
 	private OWSServiceMetadata owsServiceMetadata = null;
+	private OWSServiceIdentification  owsServiceIdentification = null;
 	
 	
 	public ConfigFileHandler(String id) {
@@ -191,6 +193,10 @@ public class ConfigFileHandler extends DefaultHandler {
 		}
 		if (isTheGoodId && isConfig && isServiceMetadata && qName.equals("ServiceProvider")) {
 			isServiceProvider = true;
+			return;
+		}
+		if (isTheGoodId && isConfig && isServiceMetadata && qName.equals("ServiceIdentification")) {
+			isServiceIdentification = true;
 			return;
 		}
 		if (isTheGoodId && isConfig && isServiceMetadata && isServiceProvider && qName.equals("ResponsibleParty")) {
@@ -412,13 +418,40 @@ public class ConfigFileHandler extends DefaultHandler {
 			}
 		}
 	
-		if (isTheGoodId && isConfig && isServiceMetadata && qName.equals("Fees")) {
+		if (isTheGoodId && isConfig && isServiceMetadata  && qName.equals("Fees")) {
 			fees = data;		
 		}
 		
 		if (isTheGoodId && isConfig && isServiceMetadata && qName.equals("AccessConstraints")) {
 			accessConstraints = data;			
 		}
+		
+//		if (isTheGoodId && isConfig && isServiceMetadata && isServiceIdentification && qName.equals("Title")) {
+//			title = data;
+//		}
+//		
+//		if (isTheGoodId && isConfig && isServiceMetadata && isServiceIdentification && qName.equals("Abstract")) {
+//			abst = data;
+//		}
+//		
+//		if (isTheGoodId && isConfig && isServiceMetadata && isServiceIdentification && qName.equals("Keyword")) {
+//			if(data != null && !"".equals(data))
+//			{
+//				if(keywordList == null)
+//				{
+//					keywordList = new Vector <String>();
+//				}
+//				keywordList.add(data);
+//			}
+//		}
+//	
+//		if (isTheGoodId && isConfig && isServiceMetadata && isServiceIdentification && qName.equals("Fees")) {
+//			fees = data;		
+//		}
+//		
+//		if (isTheGoodId && isConfig && isServiceMetadata && isServiceIdentification && qName.equals("AccessConstraints")) {
+//			accessConstraints = data;			
+//		}
 		
 		if (isTheGoodId && isConfig && isServiceMetadata && isContactInformation && qName.equals("ContactName")) {
 			contactName = data;
@@ -585,13 +618,19 @@ public class ConfigFileHandler extends DefaultHandler {
 		
 		if (isTheGoodId && isConfig && qName.equals("service-metadata")) {
 			owsServiceMetadata = new OWSServiceMetadata();
-			owsServiceMetadata.setAbst(abst);
-			owsServiceMetadata.setAccessConstraints(accessConstraints);
-			owsServiceMetadata.setFees(fees);
-			owsServiceMetadata.setKeywords(keywordList);
+			owsServiceMetadata.setIdentification(owsServiceIdentification);
 			owsServiceMetadata.setProvider(owsProvider);
-			owsServiceMetadata.setTitle(title);
 			isServiceMetadata = false;
+		}
+		
+		if (isTheGoodId && isConfig && isServiceMetadata && qName.equals("ServiceIdentification")) {
+			owsServiceIdentification = new OWSServiceIdentification();
+			owsServiceIdentification.setAbst(abst);
+			owsServiceIdentification.setAccessConstraints(accessConstraints);
+			owsServiceIdentification.setFees(fees);
+			owsServiceIdentification.setKeywords(keywordList);
+			owsServiceIdentification.setTitle(title);
+			isServiceIdentification = false;
 		}
 		
 		if (isTheGoodId && isConfig && isServiceMetadata && qName.equals("ServiceProvider")) {

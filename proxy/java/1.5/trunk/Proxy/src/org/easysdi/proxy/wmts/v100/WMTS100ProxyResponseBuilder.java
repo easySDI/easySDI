@@ -247,31 +247,33 @@ public class WMTS100ProxyResponseBuilder extends WMTSProxyResponseBuilder {
 		        sortie.output(document, new FileOutputStream(filePathList.get(0).toArray(new String[1])[0]));
 				return true;
 			}
-			
-			Element newServiceIdentification = new Element("ServiceIdentification", nsOWS);
-			if(serviceMetadata.getTitle() != null && serviceMetadata.getTitle().length() != 0)
-				newServiceIdentification.addContent((new Element("Title", nsOWS)).setText(serviceMetadata.getTitle()));
-			if(serviceMetadata.getAbst() != null && serviceMetadata.getAbst().length() != 0)
-				newServiceIdentification.addContent((new Element("Abstract", nsOWS)).setText(serviceMetadata.getAbst()));
-			if(serviceMetadata.getKeywords() != null && serviceMetadata.getKeywords().size() != 0)
+						
+			if(serviceMetadata.getIdentification() != null && !serviceMetadata.getIdentification().isEmpty())
 			{
-				Element keywords = new Element("Keywords", nsOWS);
-				Iterator<String> iKeywords = serviceMetadata.getKeywords().iterator();
-				while (iKeywords.hasNext())
+				Element newServiceIdentification = new Element("ServiceIdentification", nsOWS);
+				if(serviceMetadata.getIdentification().getTitle() != null && serviceMetadata.getIdentification().getTitle().length() != 0)
+					newServiceIdentification.addContent((new Element("Title", nsOWS)).setText(serviceMetadata.getIdentification().getTitle()));
+				if(serviceMetadata.getIdentification().getAbst() != null && serviceMetadata.getIdentification().getAbst().length() != 0)
+					newServiceIdentification.addContent((new Element("Abstract", nsOWS)).setText(serviceMetadata.getIdentification().getAbst()));
+				if(serviceMetadata.getIdentification().getKeywords() != null && serviceMetadata.getIdentification().getKeywords().size() != 0)
 				{
-					keywords.addContent((new Element("Keyword", nsOWS)).setText(iKeywords.next()));
+					Element keywords = new Element("Keywords", nsOWS);
+					Iterator<String> iKeywords = serviceMetadata.getIdentification().getKeywords().iterator();
+					while (iKeywords.hasNext())
+					{
+						keywords.addContent((new Element("Keyword", nsOWS)).setText(iKeywords.next()));
+					}
+					newServiceIdentification.addContent(keywords);
 				}
-				newServiceIdentification.addContent(keywords);
+				newServiceIdentification.addContent((new Element("ServiceType", nsOWS)).setText("OGC WMTS"));
+				newServiceIdentification.addContent((new Element("ServiceTypeVersion", nsOWS)).setText("1.0.0"));
+				if(serviceMetadata.getIdentification().getFees() != null && serviceMetadata.getIdentification().getFees().length() != 0)
+					newServiceIdentification.addContent((new Element("Fees", nsOWS)).setText(serviceMetadata.getIdentification().getFees()));
+				if(serviceMetadata.getIdentification().getAccessConstraints() != null && serviceMetadata.getIdentification().getAccessConstraints().length() != 0)
+					newServiceIdentification.addContent((new Element("AccessConstraints", nsOWS)).setText(serviceMetadata.getIdentification().getAccessConstraints()));
+				
+				racine.addContent( 0, newServiceIdentification);
 			}
-			newServiceIdentification.addContent((new Element("ServiceType", nsOWS)).setText("OGC WMTS"));
-			newServiceIdentification.addContent((new Element("ServiceTypeVersion", nsOWS)).setText("1.0.0"));
-			if(serviceMetadata.getFees() != null && serviceMetadata.getFees().length() != 0)
-				newServiceIdentification.addContent((new Element("Fees", nsOWS)).setText(serviceMetadata.getFees()));
-			if(serviceMetadata.getAccessConstraints() != null && serviceMetadata.getAccessConstraints().length() != 0)
-				newServiceIdentification.addContent((new Element("AccessConstraints", nsOWS)).setText(serviceMetadata.getAccessConstraints()));
-			
-			racine.addContent( 0, newServiceIdentification);
-			
 			OWSServiceProvider serviceProvider = serviceMetadata.getProvider();
 			if(serviceProvider != null && !serviceProvider.isEmpty())
 			{	
