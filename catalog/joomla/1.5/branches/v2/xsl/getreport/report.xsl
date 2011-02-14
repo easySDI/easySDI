@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <xsl:stylesheet version="1.0"
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:gmd="http://www.isotc211.org/2005/gmd"
 	xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:xlink="http://www.w3.org/1999/xlink"
 	xmlns:ext="http://www.depth.ch/2008/ext" xmlns:fo="http://www.w3.org/1999/XSL/Format"
 	xmlns:fox="http://xml.apache.org/fop/extensions">
-
+	
 	<xsl:output method="html" encoding="utf-8" indent="yes" media-type="text/html" />
-
+	
 	<xsl:param name="language"></xsl:param>
 	<xsl:param name="format"></xsl:param>
 	<xsl:param name="reporttype"></xsl:param>
-	<xsl:variable name="context"></xsl:variable>
+	<xsl:variable name="context"></xsl:variable>	
 	
 	<!-- Choix du type de retour -->
 	<xsl:template match="*">
@@ -38,7 +37,11 @@
 				<xsl:copy-of select="*"></xsl:copy-of>
 			</xsl:when>
 			<xsl:when test="($format='xhtml') or ($format='pdf_makepdf')">
+				<html>
+				<body>
 				<xsl:copy-of select="*"></xsl:copy-of>
+				</body>
+				</html>
 			</xsl:when>
 			<xsl:when test="$format='pdf_fop'">
 				<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format">

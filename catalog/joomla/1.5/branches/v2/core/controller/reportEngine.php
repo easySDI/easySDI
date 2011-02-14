@@ -228,26 +228,26 @@ class reportEngine{
 		{
 			case "xml":
 				file_put_contents($tmpfile.'.xml', $file);
-				reportEngine::setResponse($file, $tmpfile.'.xml', 'text/xml', 'report.xml', filesize($tmpfile.'.xml'));
+				reportEngine::setResponse($file, $tmpfile.'.xml', 'text/xml', 'report.xml', strlen($file));
 				break;
 			case "csv":
 				file_put_contents($tmpfile.'.csv', $file);
-				reportEngine::setResponse($file, $tmpfile.'.csv', 'text/csv', 'report.csv', filesize($tmpfile.'.csv'));
+				reportEngine::setResponse($file, $tmpfile.'.csv', 'text/csv', 'report.csv', strlen($file));
 				break;
 			case "rtf":
 				file_put_contents($tmpfile.'.rtf', $file);
-				reportEngine::setResponse($file, $tmpfile.'.rtf', 'text/rtf', 'report.rtf', filesize($tmpfile.'.rtf'));
+				reportEngine::setResponse($file, $tmpfile.'.rtf', 'text/rtf', 'report.rtf', strlen($file));
 				break;
 			case "xhtml":
 				file_put_contents($tmpfile.'.html', $file);
-				reportEngine::setResponse($file, $tmpfile.'.html', 'text/html', 'report.html', filesize($tmpfile.'.html'));
+				reportEngine::setResponse($file, $tmpfile.'.html', 'text/html', 'report.html', strlen($file));
 				break;
 			case "pdf_makepdf":
 				$mpdf=new mPDF();
 				$mpdf->WriteHTML($file);
 				$mpdf->Output($tmpfile.'.pdf','F');
 				$file = $mpdf->Output('','S');
-				reportEngine::setResponse($file, $tmpfile.'.pdf', 'application/pdf', 'report.pdf', filesize($tmpfile.'.pdf'));
+				reportEngine::setResponse($file, $tmpfile.'.pdf', 'application/pdf', 'report.pdf', strlen($file));
 				break;
 			case "pdf_fop":
 				$exportpdf_url = config_easysdi::getValue("JAVA_BRIDGE_URL");
@@ -300,7 +300,7 @@ class reportEngine{
 	 */
 	function verifyRequest($params, $user)
 	{
-		// Contr�ler que tous les param�tres sont renseign�s
+		// Contrôler que tous les paramètres sont renseignés
 		foreach ($params as $key => $param)
 		{
 			if ($param == '' or count($param) == 0)
