@@ -551,17 +551,20 @@ function savePolicy($xml){
 	$thePolicy->AvailabilityPeriod->From->Date =$dateFrom;
 	$thePolicy->AvailabilityPeriod->To->Date =$dateTo;
 	
-	//Image size
-	$thePolicy->ImageSize="";
-	if(strlen($minHeight)>0 && strlen($minWidth>0) )
+	if (strcasecmp($servletClass, 'org.easysdi.proxy.wms.WMSProxyServlet') == 0 )
 	{
-		$thePolicy->ImageSize->Minimum->Width = $minWidth;
-		$thePolicy->ImageSize->Minimum->Height = $minHeight;
-	}
-	if(strlen($maxHeight)>0 && strlen($maxWidth>0) )
-	{
-		$thePolicy->ImageSize->Maximum->Width = $maxWidth;
-		$thePolicy->ImageSize->Maximum->Height = $maxHeight;
+		//Image size
+		$thePolicy->ImageSize="";
+		if(strlen($minHeight)>0 && strlen($minWidth>0) )
+		{
+			$thePolicy->ImageSize->Minimum->Width = $minWidth;
+			$thePolicy->ImageSize->Minimum->Height = $minHeight;
+		}
+		if(strlen($maxHeight)>0 && strlen($maxWidth>0) )
+		{
+			$thePolicy->ImageSize->Maximum->Width = $maxWidth;
+			$thePolicy->ImageSize->Maximum->Height = $maxHeight;
+		}
 	}
 	
 	//Users and Roles
@@ -705,9 +708,12 @@ function savePolicy($xml){
 				$serverNamespace = JRequest::getVar("serverNamespace$i","");
 				$theServer->Namespace = $serverNamespace;
 				
-				$theServer->Metadata ="";
-				$theServer->Layers ="";
-				$theServer->FeatureTypes="";
+				if (strcasecmp($servletClass, 'org.easysdi.proxy.csw.CSWProxyServlet') == 0 )
+					$theServer->Metadata ="";
+				if (strcasecmp($servletClass, 'org.easysdi.proxy.wms.WMSProxyServlet') == 0 || strcasecmp($servletClass, 'org.easysdi.proxy.wmts.v100.WMTS100ProxyServlet') == 0) 
+					$theServer->Layers ="";
+				if (strcasecmp($servletClass, 'org.easysdi.proxy.wfs.WFSProxyServlet') == 0 )
+					$theServer->FeatureTypes="";
 				
 				while (list($key, $val) = each($params )) 
 				{
@@ -754,9 +760,12 @@ function savePolicy($xml){
 				$serverNamespace = JRequest::getVar("serverNamespace$i","");
 				$theServer->Namespace = $serverNamespace;
 				
-				$theServer->Metadata ="";
-				$theServer->Layers ="";
-				$theServer->FeatureTypes="";
+				if (strcasecmp($servletClass, 'org.easysdi.proxy.csw.CSWProxyServlet') == 0 )
+					$theServer->Metadata ="";
+				if (strcasecmp($servletClass, 'org.easysdi.proxy.wms.WMSProxyServlet') == 0 || strcasecmp($servletClass, 'org.easysdi.proxy.wmts.v100.WMTS100ProxyServlet') == 0)
+					$theServer->Layers ="";
+				if (strcasecmp($servletClass, 'org.easysdi.proxy.wfs.WFSProxyServlet') == 0 )
+					$theServer->FeatureTypes="";
 				$foundParamToExclude = false;
 				$foundLayer = false;
 				$foundFeatureType = false;
@@ -896,14 +905,6 @@ function savePolicy($xml){
 					}
 					
 				}
-//				if($foundFeatureType == false && strcasecmp($servletClass, 'org.easysdi.proxy.wfs.WFSProxyServlet') == 0)
-//				{
-//					$theServer->FeatureTypes['All']='true';
-//				}
-//				if($foundLayer == false && strcasecmp($servletClass, 'org.easysdi.proxy.wms.WMSProxyServlet') == 0)
-//				{
-//					$theServer->Layers['All']='true';
-//				}
 				if($foundFeatureType == false && strcasecmp($servletClass, 'org.easysdi.proxy.wfs.WFSProxyServlet') == 0)
 				{
 					$theServer->FeatureTypes['All']='false';

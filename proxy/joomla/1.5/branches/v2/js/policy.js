@@ -158,7 +158,6 @@ function disableServersLayers ()
 		while (document.getElementById('layer@'+nb+'@'+iLay) != null)
 		{
 			document.getElementById('layer@'+nb+'@'+iLay).checked = check;
-//			document.getElementById('layer@'+nb+'@'+iLay).disabled = check;
 			document.getElementById('scaleMin@'+nb+'@'+iLay).disabled=check;
 			document.getElementById('scaleMax@'+nb+'@'+iLay).disabled=check;
 			document.getElementById('LocalFilter@'+nb+'@'+iLay).disabled=check;
@@ -205,7 +204,6 @@ function disableLayers(iServ)
 	
 	while (document.getElementById('layer@'+iServ+'@'+iLay) != null)
 	{
-//		document.getElementById('layer@'+iServ+'@'+iLay).disabled = check;
 		document.getElementById('layer@'+iServ+'@'+iLay).checked = check;
 		document.getElementById('scaleMin@'+iServ+'@'+iLay).disabled=check;
 		document.getElementById('scaleMax@'+iServ+'@'+iLay).disabled=check;
@@ -213,6 +211,43 @@ function disableLayers(iServ)
 		
 		iLay ++;
 	}
+}
+
+function disableWMTSLayers(iServ)
+{
+	var iLay = 0;
+	var check = document.getElementById('AllLayers@'+iServ).checked;
+	
+	while (document.getElementById('layer@'+iServ+'@'+iLay) != null)
+	{
+		document.getElementById('layer@'+iServ+'@'+iLay).checked = check;
+		iLay ++;
+	}
+}
+
+function disableWMTSServersLayers ()
+{
+	var nb = 0;
+	var iLay = 0;
+	var display = "block";
+	var check = document.getElementById('AllServers').checked;
+	if (document.getElementById('AllServers').checked)
+	{
+		display="none";
+	}
+	
+	while (document.getElementById('remoteServerTable@'+nb) != null)
+	{
+		document.getElementById('remoteServerTable@'+nb).style.display=display;
+		document.getElementById('AllLayers@'+nb).checked = check;
+		while (document.getElementById('layer@'+nb+'@'+iLay) != null)
+		{
+			document.getElementById('layer@'+nb+'@'+iLay).checked = check;
+			iLay ++;
+		}
+		iLay = 0;
+		nb ++;
+	}	
 }
 
 function disableFeatureTypes(iServ)

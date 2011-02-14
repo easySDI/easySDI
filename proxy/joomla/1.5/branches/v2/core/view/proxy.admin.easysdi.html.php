@@ -116,10 +116,6 @@ echo $pane->endPanel();
 		<?php 
 	}
 	
-	
-	
-		
-		
 	function getFeatureTypeAttributesList($theServer,$featureType){
 
 		if (count($theServer->FeatureTypes->FeatureType )==0) return "";
@@ -174,9 +170,6 @@ echo $pane->endPanel();
 			}
 		return "";
 	}
-
-
-
 
 	function getLayerLocalFilter($theServer,$layer){
 
@@ -244,7 +237,7 @@ echo $pane->endPanel();
 
 		foreach ($theServer->Layers->Layer as $theLayer )
 		{
-				if (strcmp($theLayer->{'Name'},$layer->{'Identifier'})==0)
+				if (strcmp($theLayer->{'Name'},$layer)==0)
 				{
 					return true;
 				}
@@ -1374,10 +1367,9 @@ function submitbutton(pressbutton)
 	}
 	
 	/**
-	 * 
-	 * Generate 
-	 * @param unknown_type $config
-	 * @param unknown_type $thePolicy
+	 * Generate WMTS 100 form
+	 * @param XML $config
+	 * @param XML $thePolicy
 	 */
 	function generateWMTS100HTML($config,$thePolicy){
 	?>
@@ -1429,7 +1421,7 @@ function submitbutton(pressbutton)
 	<fieldset class="adminform"><legend><?php echo JText::_( 'PROXY_CONFIG_SERVER_ALL_TITLE'); ?></legend>
 		<table class="admintable">
 			<tr>
-				<td><input type="checkBox" name="AllServers[]" id="AllServers" value="All" onclick="disableServersLayers();" <?php if (strcasecmp($thePolicy->Servers['All'],'True')==0 ) echo 'checked'; ?>><?php echo JText::_( 'PROXY_CONFIG_SERVER_ALL'); ?></td>
+				<td><input type="checkBox" name="AllServers[]" id="AllServers" value="All" onclick="disableWMTSServersLayers();" <?php if (strcasecmp($thePolicy->Servers['All'],'True')==0 ) echo 'checked'; ?>><?php echo JText::_( 'PROXY_CONFIG_SERVER_ALL'); ?></td>
 			</tr>
 		</table>
 	</fieldset>
@@ -1475,7 +1467,7 @@ function submitbutton(pressbutton)
 
 	<input type="hidden" name="remoteServer<?php echo $iServer;?>" id="remoteServer<?php echo $iServer;?>" value="<?php echo $remoteServer->url ?>">
 	<fieldset class="adminform" id="fsServer<?php echo $iServer;?>" >
-		<legend><?php echo JText::_( 'EASYSDI_WMTS_SERVER'); ?> <?php echo $remoteServer->alias ;?> (<?php echo $remoteServer->url; ?>)</legend>
+		<legend><?php echo JText::_( 'PROXY_CONFOG_WMTS_SERVER'); ?> <?php echo $remoteServer->alias ;?> (<?php echo $remoteServer->url; ?>)</legend>
 		<table class="admintable">
 			<tr>
 				<td class="key"><?php echo JText::_( 'EASYSDI_WFS_SERVER_PREFIXE'); ?> </td>		
@@ -1491,45 +1483,46 @@ function submitbutton(pressbutton)
 			</tr>
 		</table>
 		<br>
-		<table class="admintable" id="remoteServerTable@<?php echo $iServer; ?>" <?php if (strcasecmp($thePolicy->Servers['All'],'True')==0 ) echo "style='display:none'"; ?>>
+		<table width ="100%"  class="admintable" id="remoteServerTable@<?php echo $iServer; ?>" <?php if (strcasecmp($thePolicy->Servers['All'],'True')==0 ) echo "style='display:none'"; ?>>
 			<tr>
-				<td colspan="4"><input type="checkBox" name="AllLayers@<?php echo $iServer; ?>" id="AllLayers@<?php echo $iServer; ?>" value="All" <?php if (strcasecmp($theServer->Layers['All'],'True')==0 ) echo ' checked '; ?> onclick="disableLayers(<?php echo $iServer; ?>);"><?php echo JText::_( 'PROXY_CONFIG_LAYER_ALL'); ?></td>
+				<td colspan="1"><input type="checkBox" name="AllLayers@<?php echo $iServer; ?>" id="AllLayers@<?php echo $iServer; ?>" value="All" <?php if (strcasecmp($theServer->Layers['All'],'True')==0 ) echo ' checked '; ?> onclick="disableWMTSLayers(<?php echo $iServer; ?>);"><?php echo JText::_( 'PROXY_CONFIG_LAYER_ALL'); ?></td>
 			</tr>
 			<tr>
-				<th><b><?php echo JText::_( 'EASYSDI_LAYER NAME'); ?></b></th>
+				<th><b><?php echo JText::_( 'PROXY_CONFIG_LAYER_ID'); ?></b></th>
 			</tr>
 			
 			<?php
 			$layernum = 0;
-			$namespaces = $xmlCapa->getDocNamespaces(); 
-    		$xmlCapa->registerXPathNamespace('wmts', $namespaces['']); 
-    
-    
-			foreach ($xmlCapa->xpath('//wmts:Layer') as $layer){
-				
-				if ($layer->{'ows:Identifier'} !=null){
-					if (strlen($layer->{'ows:Identifier'})>0 ){?>
-			<tr>
-				<td class="key" >
-					<table width ="100%" height="100%" >
-						<tr valign="top" >
-						<td width="15"><input onClick="activateLayer('<?php echo $iServer ; ?>','<?php echo $layernum; ?>')" <?php if( HTML_proxy::isLayerChecked($theServer,$layer) || strcasecmp($theServer->Layers['All'],'True')==0) echo ' checked';?> type="checkbox"
-							id="layer@<?php echo $iServer; ?>@<?php echo $layernum;?>" 
-							name="layer@<?php echo $iServer; ?>@<?php echo $layernum;?>"
-							value="<?php echo $layer->{'ows:Identifier'};?>"></td>
-						<td align="left"><?php echo $layer->{'ows:Identifier'}; ?></td>
-						</tr>
-						<tr >
-						<td colspan="2" align="left">"<?php if (!(strpos($layer->{'ows:Title'},":")===False)) {echo substr($layer->{'ows:Title'},strrpos($layer->{'ows:Title'}, ":")+1);}else{echo $layer->{'ows:Title'};}?>"
-							</td>
-						</tr>
-					</table>		
-				</td>
-			</tr>
-			<?php  
-			$layernum += 1;
-					}
+			$namespaces = $xmlCapa->getDocNamespaces();
+			$dom_capa = dom_import_simplexml ($xmlCapa);
+			
+    		$layers = $dom_capa->getElementsByTagNameNS($namespaces[''],'Layer');
+			foreach ( $layers as $layer){
+				$identifiers = $layer->getElementsByTagNameNS($namespaces['ows'],'Identifier');
+				foreach ( $identifiers as $identifier){
+					if($identifier->parentNode->nodeName == "Layer")
+					{
+						$title = $identifier->parentNode->getElementsByTagNameNS($namespaces['ows'],'Title')->item(0)->nodeValue;
+					?>
+					<tr>
+						<td class="key" >
+							<table width ="100%" height="100%" >
+								<tr valign="top" >
+								<td width="15"><input  
+									<?php if( HTML_proxy::isWMTSLayerChecked($theServer,$identifier->nodeValue) || strcasecmp($theServer->Layers['All'],'True')==0) echo ' checked';?> type="checkbox"
+									id="layer@<?php echo $iServer; ?>@<?php echo $layernum;?>" 
+									name="layer@<?php echo $iServer; ?>@<?php echo $layernum;?>"
+									value="<?php echo $identifier->nodeValue;?>"></td>
+								<td align="left"><?php echo $identifier->nodeValue; ?> ( <?php echo $title;?> )</td>
+								</tr>
+							</table>		
+						</td>
+						
+					</tr>
+					<?php  
+					$layernum += 1;
 				}
+			}
 			}?>
 		</table>
 		<input type="hidden" id="countLayer<?php echo $iServer; ?>" value="<?php echo $layernum; ?>">
@@ -1543,7 +1536,12 @@ function submitbutton(pressbutton)
 		<?php 
 	}
 	
-
+	/**
+	 * 
+	 * Generate CSW form
+	 * @param XML  $config
+	 * @param XML $thePolicy
+	 */
 	function generateCSWHTML($config,$thePolicy, $rowsVisibility, $rowsStatus, $rowsObjectTypes)
 	{
 	?>
@@ -1815,7 +1813,13 @@ function submitbutton(pressbutton)
 		}
 	}
 
-function generateWMSHTML($config,$thePolicy){
+	/**
+	 * 
+	 * Generate WMS form
+	 * @param XML  $config
+	 * @param XML $thePolicy
+	 */
+	function generateWMSHTML($config,$thePolicy){
 	?>
 	<script>
 	function disableOperationCheckBoxes()
@@ -1825,17 +1829,11 @@ function generateWMSHTML($config,$thePolicy){
 		document.getElementById('oGetCapabilities').disabled=check;
 		document.getElementById('oGetMap').disabled=check;
 		document.getElementById('oGetFeatureInfo').disabled=check;
-//		document.getElementById('oDescribeLayer').disabled=check;
 		document.getElementById('oGetLegendGraphic').disabled=check;
-//		document.getElementById('oGetStyles').disabled=check;
-//		document.getElementById('oPutStyles').disabled=check;
 		document.getElementById('oGetCapabilities').checked=check;
 		document.getElementById('oGetMap').checked=check;
 		document.getElementById('oGetFeatureInfo').checked=check;
-//		document.getElementById('oDescribeLayer').checked=check;
 		document.getElementById('oGetLegendGraphic').checked=check;
-//		document.getElementById('oGetStyles').checked=check;
-//		document.getElementById('oPutStyles').checked=check;
 	}
 		</script>
 		<fieldset class="adminform"><legend><?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_OPERATION'); ?></legend>
@@ -2082,8 +2080,12 @@ function generateWMSHTML($config,$thePolicy){
 		<?php 
 	}
 
-	//--------------------------------------------------
-
+	/**
+	 * 
+	 * Generate WFS form
+	 * @param XML  $config
+	 * @param XML $thePolicy
+	 */
 	function generateWFSHTML($config,$thePolicy)
 	{
 		?>
@@ -2095,12 +2097,10 @@ function generateWMSHTML($config,$thePolicy){
 			document.getElementById('oGetCapabilities').disabled=check;
 			document.getElementById('oTransaction').disabled=check;
 			document.getElementById('oDescribeFeatureType').disabled=check;
-//			document.getElementById('oLockFeature').disabled=check;
 			document.getElementById('oGetFeature').disabled=check;
 			document.getElementById('oGetCapabilities').checked=check;
 			document.getElementById('oTransaction').checked=check;
 			document.getElementById('oDescribeFeatureType').checked=check;
-//			document.getElementById('oLockFeature').checked=check;
 			document.getElementById('oGetFeature').checked=check;
 		}
 		</script>
