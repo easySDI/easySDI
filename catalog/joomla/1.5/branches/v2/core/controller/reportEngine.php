@@ -279,11 +279,11 @@ class reportEngine{
 						fclose ($fp);
 						//ob_end_clean();
 						
-						reportEngine::setResponse($result, $foptmp, 'application/pdf', 'report.pdf');
+						reportEngine::setResponse($result, $foptmp, 'application/pdf', 'report.pdf', strlen($result));
 					}else
 					{
 						//If there was an error when generating the pdf, write it.
-						$mainframe->redirect("index.php?option=com_easysdi_core&tmpl=component&task=reportPdfError&res=".urlencode($res));
+						$mainframe->redirect(JRoute::_("index.php?option=com_easysdi_core&tmpl=component&task=reportPdfError&res=".urlencode($res), false));
 					}
 				}else {
 					printf(JText::_(  'CORE_UNABLE TO LOAD THE CONFIGURATION KEY FOR FOP JAVA BRIDGE'  )); 
