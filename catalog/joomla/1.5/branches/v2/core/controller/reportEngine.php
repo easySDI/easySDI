@@ -182,15 +182,16 @@ class reportEngine{
 					}
 		
 					// Rassembler tous les noeuds et les transmettre au processeur XSLT
-					//echo htmlspecialchars($myDoc->saveXML())."<hr>";die();
-
+					//echo htmlspecialchars($myDoc->saveXML())."<hr>";
 					$style = new DomDocument();
 					$style->load(JPATH_COMPONENT_ADMINISTRATOR.DS.'xsl'.DS.'getreport'.DS.'report.xsl');
 					$processor = new xsltProcessor();
 					$processor->setParameter('', 'language', $language);
 					$processor->setParameter('', 'format', $format);
 					$processor->setParameter('', 'reporttype', $reporttype);
+					$processor->setParameter('', 'context', $context);
 					$processor->importStylesheet($style);
+					//echo htmlspecialchars($style->saveXML());die();
 					$xml = $processor->transformToXML($myDoc);
 					//echo htmlspecialchars($xml->saveXML());die();
 					$tmp = uniqid();
@@ -227,27 +228,26 @@ class reportEngine{
 		{
 			case "xml":
 				file_put_contents($tmpfile.'.xml', $file);
-				reportEngine::setResponse($file, $tmpfile.'.xml', 'text/xml', 'report.xml');
+				reportEngine::setResponse($file, $tmpfile.'.xml', 'text/xml', 'report.xml', filesize($tmpfile.'.xml'));
 				break;
 			case "csv":
 				file_put_contents($tmpfile.'.csv', $file);
-				reportEngine::setResponse($file, $tmpfile.'.csv', 'text/csv', 'report.csv');
+				reportEngine::setResponse($file, $tmpfile.'.csv', 'text/csv', 'report.csv', filesize($tmpfile.'.csv'));
 				break;
 			case "rtf":
 				file_put_contents($tmpfile.'.rtf', $file);
-				reportEngine::setResponse($file, $tmpfile.'.rtf', 'text/rtf', 'report.rtf');
+				reportEngine::setResponse($file, $tmpfile.'.rtf', 'text/rtf', 'report.rtf', filesize($tmpfile.'.rtf'));
 				break;
 			case "xhtml":
 				file_put_contents($tmpfile.'.html', $file);
-				reportEngine::setResponse($file, $tmpfile.'.html', 'text/html', 'report.html');
+				reportEngine::setResponse($file, $tmpfile.'.html', 'text/html', 'report.html', filesize($tmpfile.'.html'));
 				break;
 			case "pdf_makepdf":
-				file_put_contents($tmpfile.'.html', $file);
 				$mpdf=new mPDF();
 				$mpdf->WriteHTML($file);
-				$mpdf->Output();
-				//file_put_contents($tmpfile.'.pdf', $mpdf->Output());
-				//reportEngine::setResponse($file, $tmpfile.'.pdf', 'application/pdf', 'report.pdf');
+				$mpdf->Output($tmpfile.'.pdf','F');
+				$file = $mpdf->Output('','S');
+				reportEngine::setResponse($file, $tmpfile.'.pdf', 'application/pdf', 'report.pdf', filesize($tmpfile.'.pdf'));
 				break;
 			case "pdf_fop":
 				$exportpdf_url = config_easysdi::getValue("JAVA_BRIDGE_URL");
@@ -323,7 +323,7 @@ class reportEngine{
 		}
 		
 		// Valeurs autorisées pour format: XML/CSV/RTF/XHTML/PDF
-		$formatValues = array ('xml', 'csv', 'rtf', 'xhtml', 'pdf');
+		$formatValues = array ('xml', 'csv', 'rtf', 'xhtml', 'pdf_fop', 'pdf_makepdf');
 		if (array_search($params['format'], $formatValues) === false)
 		{
 			// Retourner une erreur au format XML, format�e par un XSl
@@ -363,7 +363,7 @@ class reportEngine{
 		return true;
 	}
 	
-	function setResponse($file, $filename, $contenttype, $downloadname)
+	function setResponse($file, $filename, $contenttype, $downloadname, $size)
 	{
 		unlink($filename);
 		error_reporting(0);
@@ -375,7 +375,7 @@ class reportEngine{
 		header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
 		header('Pragma: public');
 		header("Expires: 0"); 
-		header("Content-Length: ".filesize($filename));
+		header("Content-Length: ".$size);
 		
 		echo $file;
 		//Very important, if you don't call this, the content-type will have no effect

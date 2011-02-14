@@ -6,13 +6,13 @@
 	xmlns:ext="http://www.depth.ch/2008/ext" xmlns:fo="http://www.w3.org/1999/XSL/Format"
 	xmlns:fox="http://xml.apache.org/fop/extensions">
 
-	<xsl:output method="html" encoding="utf-8" indent="yes" />
+	<xsl:output method="html" encoding="utf-8" indent="yes" media-type="text/html" />
 
 	<xsl:param name="language"></xsl:param>
 	<xsl:param name="format"></xsl:param>
 	<xsl:param name="reporttype"></xsl:param>
-	<xsl:variable name="method"></xsl:variable>
-
+	<xsl:variable name="context"></xsl:variable>
+	
 	<!-- Choix du type de retour -->
 	<xsl:template match="*">
 		<xsl:choose>
@@ -29,9 +29,7 @@
 		</xsl:choose>
 		<xsl:choose>
 			<xsl:when test="$format='xml'">
-				<MetadataSet>
 				<xsl:copy-of select="*"></xsl:copy-of>
-				</MetadataSet>
 			</xsl:when>
 			<xsl:when test="$format='csv'">
 				<xsl:copy-of select="*"></xsl:copy-of>
@@ -39,10 +37,7 @@
 			<xsl:when test="$format='rtf'">
 				<xsl:copy-of select="*"></xsl:copy-of>
 			</xsl:when>
-			<xsl:when test="$format='xhtml'">
-				<xsl:copy-of select="*"></xsl:copy-of>
-			</xsl:when>
-			<xsl:when test="$format='pdf_makepdf'">
+			<xsl:when test="($format='xhtml') or ($format='pdf_makepdf')">
 				<xsl:copy-of select="*"></xsl:copy-of>
 			</xsl:when>
 			<xsl:when test="$format='pdf_fop'">

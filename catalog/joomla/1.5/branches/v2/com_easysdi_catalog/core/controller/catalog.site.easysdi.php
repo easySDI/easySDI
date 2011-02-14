@@ -2681,8 +2681,8 @@ class SITE_catalog {
 			$cswResults= simplexml_load_string($xmlResponse);
 			//echo var_dump($cswResults->saveXML())."<br>";
 			// DOMDocument
-			$myDoc = new DomDocument();
-			$myDoc->loadXML($xmlBody);
+			//$myDoc = new DomDocument();
+			//$myDoc->loadXML($xmlBody);
 			//$myDoc->save("C:\\RecorderWebGIS\\searchRequest.xml");
 			$myDoc = new DomDocument();
 			$myDoc->loadXML($cswResults->asXML());
