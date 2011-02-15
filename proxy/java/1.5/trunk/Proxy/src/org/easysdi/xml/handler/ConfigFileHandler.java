@@ -39,6 +39,7 @@ public class ConfigFileHandler extends DefaultHandler {
 	private List<RemoteServerInfo> remoteServer = null;
 	private String policyFile = null;
 	private String loginService = null;
+	private String alias = null;
 	private String user = null;
 	private String password = null;
 	private String logFile = null;
@@ -53,6 +54,7 @@ public class ConfigFileHandler extends DefaultHandler {
 	private boolean isTheGoodId = false;
 	private boolean isConfig = false;
 	private boolean isRemoteServer = false;
+	private boolean isRemoteServerMaster = false;
 	private boolean isRemoteServerList = false;
 	private String remoteServerUrl = null;
 	private boolean isLogConfig = false;
@@ -146,6 +148,7 @@ public class ConfigFileHandler extends DefaultHandler {
 		
 		if (isTheGoodId && isConfig && isRemoteServerList && qName.equals("remote-server")) {
 			isRemoteServer = true;
+			isRemoteServerMaster = (attr.getValue("master") == "true" ) ? true : false ;
 		}
 		
 		if (isTheGoodId && isConfig && qName.equals("authorization")) {
@@ -270,10 +273,13 @@ public class ConfigFileHandler extends DefaultHandler {
 		if (isTheGoodId && isConfig && isRemoteServerList && qName.equals("remote-server")) {
 			if (remoteServer == null)
 				remoteServer = new Vector<RemoteServerInfo>();
-			RemoteServerInfo rs = new RemoteServerInfo(remoteServerUrl, user, password, maxRecords, loginService, prefix, transaction);
+			RemoteServerInfo rs = new RemoteServerInfo(alias, remoteServerUrl, user, password, maxRecords, loginService, prefix, transaction);
 			remoteServer.add(rs);
 			isRemoteServer = false;
+			rs.isMaster =isRemoteServerMaster;
+			isRemoteServerMaster = false;
 			remoteServerUrl = null;
+			alias = null;
 			user = null;
 			password = null;
 			maxRecords = null;
@@ -299,6 +305,10 @@ public class ConfigFileHandler extends DefaultHandler {
 		
 		if (isTheGoodId && isConfig && isRemoteServer && qName.equals("login-service")) {
 			loginService = data;
+		}
+		
+		if (isTheGoodId && isConfig && isRemoteServer && qName.equals("alias")) {
+			alias = data;
 		}
 		
 		if (isTheGoodId && isConfig && isRemoteServer && qName.equals("url")) {

@@ -34,28 +34,22 @@ public class RemoteServerInfo implements Serializable{
 	private String loginService;
 	private String prefix; 
 	private String transaction="ogc";
-//	private String insertServiceUrl;
-//	private String deleteServiceUrl;
-//	private String searchServiceUrl;
+	private String alias;
+	public Boolean isMaster = false;
+
+	/**
+	 * @param alias the alias to set
+	 */
+	public void setAlias(String alias) {
+		this.alias = alias;
+	}
+	/**
+	 * @return the alias
+	 */
+	public String getAlias() {
+		return alias;
+	}
 	
-//	public String getInsertServiceUrl() {
-//	    return insertServiceUrl;
-//	}
-//	public void setInsertServiceUrl(String insertServiceUrl) {
-//	    this.insertServiceUrl = insertServiceUrl;
-//	}
-//	public String getDeleteServiceUrl() {
-//	    return deleteServiceUrl;
-//	}
-//	public void setDeleteServiceUrl(String deleteServiceUrl) {
-//	    this.deleteServiceUrl = deleteServiceUrl;
-//	}
-//	public String getSearchServiceUrl() {
-//	    return searchServiceUrl;
-//	}
-//	public void setSearchServiceUrl(String searchServiceUrl) {
-//	    this.searchServiceUrl = searchServiceUrl;
-//	}
 	public String getTransaction() {
 	    return transaction;
 	}
@@ -74,9 +68,10 @@ public class RemoteServerInfo implements Serializable{
 	 * @param password
 	 * @param maxRecords
 	 */
-	public RemoteServerInfo(String url, String user, String password,
+	public RemoteServerInfo(String alias, String url, String user, String password,
 		String maxRecords, String loginService,String preifx,String transaction) {
 	    super();
+	    this.alias = alias;
 	    this.url = url;
 	    this.user = user;
 	    this.password = password;

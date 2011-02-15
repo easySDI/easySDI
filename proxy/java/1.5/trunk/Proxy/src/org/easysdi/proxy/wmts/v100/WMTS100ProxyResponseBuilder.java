@@ -27,7 +27,7 @@ public class WMTS100ProxyResponseBuilder extends WMTSProxyResponseBuilder {
 		nsWMTS = Namespace.getNamespace("http://www.opengis.net/wmts/1.0");
 	}
 	
-	public Boolean CapabilitiesOperationsFiltering (Multimap<Integer, String> filePathList, String href ){
+	public Boolean CapabilitiesOperationsFiltering (String filePath, String href ){
 		try{
 			SAXBuilder sxb = new SAXBuilder();
 	    	//Retrieve allowed and denied operations from the policy
@@ -47,8 +47,7 @@ public class WMTS100ProxyResponseBuilder extends WMTSProxyResponseBuilder {
 				}
 			}
 				
-			String filePath = filePathList.get(0).toArray(new String[1])[0];
-	    	Document  docParent = sxb.build(new File(filePath));
+			Document  docParent = sxb.build(new File(filePath));
 	    	Element racine = docParent.getRootElement();
 	      
 	    	//get the namespaces
@@ -171,6 +170,13 @@ public class WMTS100ProxyResponseBuilder extends WMTSProxyResponseBuilder {
 //		    					}
 //		    				}
 					}
+		    		else
+		    		{
+		    			//Rewrite Layer name with alias prefix
+//		    			String name = idElement.getValue();
+//		    			servlet.getRemoteServerHastable();
+		    			
+		    		}
 		    	}
 		    	
 	    	   XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());

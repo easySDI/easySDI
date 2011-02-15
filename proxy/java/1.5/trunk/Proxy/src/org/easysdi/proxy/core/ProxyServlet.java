@@ -94,6 +94,7 @@ import org.w3c.dom.ls.LSSerializer;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import com.sun.org.apache.xalan.internal.xsltc.runtime.Hashtable;
 
 public abstract class ProxyServlet extends HttpServlet {
 
@@ -125,7 +126,7 @@ public abstract class ProxyServlet extends HttpServlet {
 	protected String srsName = null;
 	protected Map<Integer, String> wfsFilePathList = new TreeMap<Integer, String>();
 	public Multimap<Integer, String> wmsFilePathList = HashMultimap.create();
-	public Multimap<Integer, String> wmtsFilePathList = HashMultimap.create();
+	public Multimap<String, String> wmtsFilePathList = HashMultimap.create();
 	// une liste
 	// des
 	// fichiers
@@ -190,6 +191,20 @@ public abstract class ProxyServlet extends HttpServlet {
 			return null;
 
 		return configuration.getRemoteServer();
+	}
+	
+	public Hashtable getRemoteServerHastable() {
+		if (configuration == null)
+			return null;
+		Hashtable htRemoteServer = new Hashtable();
+		List<RemoteServerInfo> list = configuration.getRemoteServer();
+		Iterator<RemoteServerInfo> iRS = list.iterator();
+		while (iRS.hasNext())
+		{
+			RemoteServerInfo RS = iRS.next();
+			htRemoteServer.put(RS.getAlias(),RS);
+		}
+		return htRemoteServer;
 	}
 
 	protected RemoteServerInfo getRemoteServerInfo(int i) {
@@ -780,6 +795,7 @@ public abstract class ProxyServlet extends HttpServlet {
 				responseContentType = hpcon.getContentType().split(";")[0];
 				responseContentTypeList.add(responseContentType);
 			}
+			
 			 
 			String tmpDir = System.getProperty("java.io.tmpdir");
 			dump(" tmpDir :  " + tmpDir);
@@ -811,7 +827,7 @@ public abstract class ProxyServlet extends HttpServlet {
 		}
 	}
 
-	public void sendDataStream(HttpServletResponse resp, String method, String sUrl, String parameters) throws Exception{
+	public void sendDataDirectStream(HttpServletResponse resp, String method, String sUrl, String parameters) throws Exception{
 		
 			if (sUrl != null) {
 				if (sUrl.endsWith("?")) {
@@ -870,7 +886,6 @@ public abstract class ProxyServlet extends HttpServlet {
 			} else {
 				hpcon.setDoOutput(false);
 			}
-
 			
 			InputStream in = null;
 			if(hpcon.getResponseCode() >= 400)
@@ -894,15 +909,13 @@ public abstract class ProxyServlet extends HttpServlet {
 			}
 			os.flush();
 			os.close();
+			in.close();
 			
 			dump("SYSTEM", "RemoteResponseToRequestUrl", sUrl);
 
 			dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
 			d = new Date();
 			dump("SYSTEM", "RemoteResponseDateTime", dateFormat.format(d));
-			
-
-	
 	}
 	
 	protected String geonetworkLogIn(String loginServiceUrl) {
@@ -1320,6 +1333,30 @@ public abstract class ProxyServlet extends HttpServlet {
 		}
 		
 		return false;
+	}
+	
+	/**
+	 * 
+	 */
+	protected boolean isOperationSupported (String currentOperation)
+	{
+		if(!ServiceSupportedOperations.contains(currentOperation))
+		{
+			return false;
+		}
+		try
+		{
+			if (!isOperationAllowed(currentOperation))
+			{
+				return false;
+				
+			}
+		}
+		catch (AvailabilityPeriodException ex)
+		{
+			return false;
+		}
+		return true;
 	}
 	
 	/**

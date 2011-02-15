@@ -29,8 +29,8 @@ public abstract class WMTSProxyResponseBuilder {
 		return lastException;
 	}
 	
-	public abstract Boolean CapabilitiesOperationsFiltering (Multimap<Integer, String> filePathList, String href );
-	public abstract Boolean CapabilitiesContentsFiltering (Multimap<Integer, String> filePathList);
-	public abstract Boolean CapabilitiesMerging(Multimap<Integer, String> filePathList);
-	public abstract Boolean CapabilitiesServiceIdentificationWriting(Multimap<Integer, String> filePathList, String href);
+	public abstract Boolean CapabilitiesOperationsFiltering (String filePath, String href );
+	public abstract Boolean CapabilitiesContentsFiltering (Multimap<String, String> filePathList);
+	public abstract Boolean CapabilitiesMerging(Multimap<String, String> filePathList);
+	public abstract Boolean CapabilitiesServiceIdentificationWriting(String filePath, String href);
 }
