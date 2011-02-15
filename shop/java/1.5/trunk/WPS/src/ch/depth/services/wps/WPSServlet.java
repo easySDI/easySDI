@@ -343,7 +343,7 @@ public class WPSServlet extends HttpServlet {
 			//ResultSet rs = stmt.executeQuery("SELECT *, osl.code as orderCode FROM "+getJoomlaPrefix()+"easysdi_order o, "+getJoomlaPrefix()+"easysdi_community_partner p, "+getJoomlaPrefix()+"easysdi_order_status_list osl WHERE osl.id=o.status AND osl.code = '"+statusToRead+"' AND o.user_id = p.user_id "+"AND (SELECT COUNT(*) FROM "+getJoomlaPrefix()+"easysdi_order_product_list opl ,  "+getJoomlaPrefix()+"easysdi_product p, "+getJoomlaPrefix()+"easysdi_community_partner part, "+getJoomlaPrefix()+"users u  WHERE opl.order_id = o.order_id AND opl.product_id = p.id AND p.partner_id = part.partner_id AND part.user_id = u.id AND u.username='"+userName+"')   > 0");
 			ResultSet rs = stmt.executeQuery("SELECT DISTINCT o.order_id, o.name, o.type, o.third_party, p.partner_id, p.root_id, o.buffer, o.remark, o.user_id "+
 			"FROM "+getJoomlaPrefix()+"easysdi_order o, "+getJoomlaPrefix()+"easysdi_community_partner p, "+getJoomlaPrefix()+"easysdi_order_status_list osl, "+getJoomlaPrefix()+"easysdi_order_product_list opl , jos_easysdi_product prod, "+getJoomlaPrefix()+"easysdi_community_partner part, "+getJoomlaPrefix()+"users u "+
-			"WHERE opl.order_id = o.order_id AND osl.id=o.status AND osl.code = 'SENT' AND o.user_id = p.user_id "+
+			"WHERE opl.order_id = o.order_id AND osl.id=o.status AND osl.code = '"+statusToRead+"' AND o.user_id = p.user_id "+
 			"and opl.product_id = prod.id AND prod.partner_id = part.partner_id AND part.user_id = u.id AND u.username='"+userName+"'");
 			
 			
@@ -359,7 +359,7 @@ public class WPSServlet extends HttpServlet {
 
 				String name = rs.getString("name");
 				int type = rs.getInt("type");
-			        //String order_update = rs.getString("order_update");
+				//String order_update = rs.getString("order_update");
 				String third_party = rs.getString("third_party");
 				//String archived = rs.getString("archived");
 				//String RESPONSE_DATE = rs.getString("RESPONSE_DATE");
@@ -901,16 +901,11 @@ public class WPSServlet extends HttpServlet {
 				conn =  DriverManager.getConnection(connexionString);
 
 				Statement stmt = conn.createStatement();
-				stmt.executeUpdate("update "+getJoomlaPrefix()+"easysdi_order set response_send = '1' ,response_date = str_to_date('"+responseDate+"', '%d.%m.%Y %H:%i:%s')  where order_id = "+order_id);
-
 				PreparedStatement pre;
 
 				//insertion blob si existant
 				if (data != "")
 				{	
-					pre = conn.prepareStatement("update "+getJoomlaPrefix()+"easysdi_order_product_list set price = "+price+",remark = '"+remark+"', filename =  '"+ filename+ "', status = (SELECT id FROM "+getJoomlaPrefix()+"easysdi_order_product_status_list where code='AVAILABLE') where order_id = "+order_id +" AND product_id = "+product_id);
-					pre.executeUpdate();
-
 					String query = "SELECT id FROM "+getJoomlaPrefix()+"easysdi_order_product_list where order_id = "+order_id +" AND product_id = "+product_id;
 					ResultSet rs = stmt.executeQuery(query);
 					rs.next();
@@ -919,11 +914,21 @@ public class WPSServlet extends HttpServlet {
 					pre = conn.prepareStatement(queryBlob);
 					ByteArrayInputStream bais = new ByteArrayInputStream(Base64Coder.decode(data));
 					pre.setBinaryStream(1,bais,data.length());
+					pre.executeUpdate();
+					
+					pre = conn.prepareStatement("update "+getJoomlaPrefix()+"easysdi_order_product_list set price = "+price+",remark = '"+remark+"', filename =  '"+ filename+ "', status = (SELECT id FROM "+getJoomlaPrefix()+"easysdi_order_product_status_list where code='AVAILABLE') where order_id = "+order_id +" AND product_id = "+product_id);
+					pre.executeUpdate();
+					
 				}
-				else
+				else{
 					pre = conn.prepareStatement("update "+getJoomlaPrefix()+"easysdi_order_product_list set price = "+price+",remark = '"+remark+"', status = (SELECT id FROM "+getJoomlaPrefix()+"easysdi_order_product_status_list where code='AVAILABLE') where order_id = "+order_id +" AND product_id = "+product_id);
+				  pre.executeUpdate();
+				}
 				// Mise a jour de la requete
-				pre.executeUpdate();
+				
+				
+				//update order row
+				stmt.executeUpdate("update "+getJoomlaPrefix()+"easysdi_order set response_send = '1' ,response_date = str_to_date('"+responseDate+"', '%d.%m.%Y %H:%i:%s')  where order_id = "+order_id);
 
 
 				//update order status
@@ -983,7 +988,6 @@ public class WPSServlet extends HttpServlet {
 					out.write("order_id:"+order_id+BR);
 					out.write("responseDate:"+responseDate+BR);
 					out.write("product_id:"+product_id+BR);
-					out.write("data:"+data+BR);
 					out.write("filename:"+filename+BR);
 					out.write("rebate:"+rebate+BR);
 					out.write("price:"+price+BR);
@@ -1115,7 +1119,7 @@ public class WPSServlet extends HttpServlet {
 				System.out.println("Writing error file:"+System.getProperty("java.io.tmpdir")+"errorStream.txt");
 				FileWriter fw = new FileWriter(f,true);
 				fw.write(sw.toString());
-				fw.write(e.getMessage());
+				fw.write(stack2string(e));
 				fw.write("responseDate:"+responseDate);
 				fw.write("order_id:"+order_id);
 				fw.write("product_id:"+product_id);
@@ -1130,6 +1134,7 @@ public class WPSServlet extends HttpServlet {
 			catch (IOException ex){
 				ex.printStackTrace();
 			}
+			return error ("ERROR","An error just occured:"+e.getMessage());
 		}
 		finally{
 			if(conn != null){
@@ -1145,6 +1150,18 @@ public class WPSServlet extends HttpServlet {
 		return error ("ERROR","An error just occured");
 	}
 
+  public static String stack2string(Exception e) {
+		try {
+			StringWriter sw = new StringWriter();
+			PrintWriter pw = new PrintWriter(sw);
+			e.printStackTrace(pw);
+			return "------\r\n" + sw.toString() + "------\r\n";
+		}
+		catch(Exception e2) {
+			return "bad stack2string";
+		}
+	}
+	
 	public static String encodeSpecialChars(String s){
 		s = s.replace("&", "&#38;");
 		return s;
