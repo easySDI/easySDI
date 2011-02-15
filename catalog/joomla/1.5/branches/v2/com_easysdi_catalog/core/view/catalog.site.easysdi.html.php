@@ -217,9 +217,9 @@ class HTML_catalog{
 					{
 						case "objecttype":
 							$selectedObjectType = array();
-							if (JRequest::getVar('systemfilter_'.$searchFilter->guid))
+							if (JRequest::getVar('systemfilter_'.$searchFilter->guid) and JRequest::getVar('systemfilter_'.$searchFilter->guid) <> "Array")
 								$selectedObjectType = JRequest::getVar('systemfilter_'.$searchFilter->guid);
-							else if (!JRequest::getVar('bboxMinX'))
+							else if (!JRequest::getVar('bboxMinX') or JRequest::getVar('systemfilter_'.$searchFilter->guid) == "Array")
 								$selectedObjectType = $objecttypes;
 							
 							?>
@@ -533,10 +533,11 @@ class HTML_catalog{
 					{
 						case "objecttype":
 							$selectedObjectType = array();
-							if (JRequest::getVar('systemfilter_'.$searchFilter->guid))
+							if (JRequest::getVar('systemfilter_'.$searchFilter->guid) and JRequest::getVar('systemfilter_'.$searchFilter->guid) <> "Array")
 								$selectedObjectType = JRequest::getVar('systemfilter_'.$searchFilter->guid);
-							else if (!JRequest::getVar('bboxMinX'))
-								$selectedObjectType = $objecttypes;						
+							else if (!JRequest::getVar('bboxMinX') or JRequest::getVar('systemfilter_'.$searchFilter->guid) == "Array")
+								$selectedObjectType = $objecttypes;
+													
 							?>
 					<div class="row">
 						<div class="label"><?php echo JText::_($searchFilter->guid."_LABEL");?></div>
@@ -817,8 +818,12 @@ if($cswResults)
 	
 	
 	<div class="paging">
-		<?php echo $pageNav->getPagesCounter(); ?>&nbsp;<?php echo $pageNav->getPagesLinks(); ?>
-	</div>
+    	<h3 class="hidden"><?php JText::_('WEITERE TREFFER ANZEIGEN'); ?></h3>
+    	<p class="info"><?php echo $pageNav->getPagesCounter(); ?></p>
+		<p class="select"><?php echo $pageNav->getPagesLinks( ); ?></p>
+  	</div>
+
+	
 	
 	<?php 
 	} 

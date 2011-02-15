@@ -1,8 +1,8 @@
-.easysdi_shop_backend_form {width: auto;}
-.easysdi_shop_backend_fieldset {width: auto;}
-.easysdi_shop_backend_textarea {width: 600px !important;} /* important fait que ça prime sur tout le reste */
-.easysdi_shop_backend_textfield {width: 600px;}
-.easysdi_shop_backend_combobox {width: auto;}
+.easysdi_shop_backend_form {width: 600px;}
+.easysdi_shop_backend_fieldset {width: 550px;}
+.easysdi_shop_backend_textarea {width: 520px !important;} /* important fait que ça prime sur tout le reste */
+.easysdi_shop_backend_textfield {width: 520px;}
+.easysdi_shop_backend_combobox {width: 520px;}
 .easysdi_shop_backend_multiselect {width: auto;}
 .easysdi_shop_backend_numberfield {width: auto;}
 .easysdi_shop_backend_datetimefield {width: auto;}

@@ -4274,6 +4274,16 @@ class HTML_metadata {
 														         id:'option', 
 														         xtype: 'hidden',
 														         value:'".$option."' 
+														       },
+														       { 
+														         id:'Itemid', 
+														         xtype: 'hidden',
+														         value:'".JRequest::getVar('Itemid')."' 
+														       },
+														       { 
+														         id:'lang', 
+														         xtype: 'hidden',
+														         value:'".JRequest::getVar('lang')."' 
 														       }
 														    ] 
 														     ,buttonAlign:'right' 
@@ -4381,6 +4391,16 @@ class HTML_metadata {
 														         id:'option', 
 														         xtype: 'hidden',
 														         value:'".$option."' 
+														       },
+														       { 
+														         id:'Itemid', 
+														         xtype: 'hidden',
+														         value:'".JRequest::getVar('Itemid')."' 
+														       },
+														       { 
+														         id:'lang', 
+														         xtype: 'hidden',
+														         value:'".JRequest::getVar('lang')."' 
 														       }
 														    ] 
 														     ,buttonAlign:'right' 
@@ -4596,6 +4616,16 @@ class HTML_metadata {
 											         id:'option', 
 											         xtype: 'hidden',
 											         value:'".$option."' 
+											       },
+											       { 
+											         id:'Itemid', 
+											         xtype: 'hidden',
+											         value:'".JRequest::getVar('Itemid')."' 
+											       },
+											       { 
+											         id:'lang', 
+											         xtype: 'hidden',
+											         value:'".JRequest::getVar('lang')."' 
 											       }
 											    ] 
 											     ,buttonAlign:'right' 
@@ -4713,6 +4743,16 @@ class HTML_metadata {
 															         id:'option', 
 															         xtype: 'hidden',
 															         value:'".$option."' 
+															       },
+															       { 
+															         id:'Itemid', 
+															         xtype: 'hidden',
+															         value:'".JRequest::getVar('Itemid')."' 
+															       },
+															       { 
+															         id:'lang', 
+															         xtype: 'hidden',
+															         value:'".JRequest::getVar('lang')."' 
 															       }
 															    ] 
 															     ,buttonAlign:'center' 

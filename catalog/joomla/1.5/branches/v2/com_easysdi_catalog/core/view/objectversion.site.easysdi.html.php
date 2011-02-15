@@ -61,6 +61,13 @@ class HTML_objectversion {
 			window.open(url, '_self');
 		}
 	</script>
+	<div class="ticker">
+	<h2><?php echo JText::_("CORE_SEARCH_RESULTS_TITLE"); ?></h2>
+	<?php
+	if(count($rows) == 0){
+		echo "<p><strong>".JText::_("CATALOG_OBJECTVERSION_NORESULTFOUND")."</strong>&nbsp;0&nbsp;</p>";
+		
+	}else{?>
 	<table id="myObjectversions" class="box-table">
 	<thead>
 	<tr>
@@ -69,6 +76,7 @@ class HTML_objectversion {
 	<th class='title'><?php echo JText::_('CATALOG_METADATA_ACTIONS'); ?></th>
 	</tr>
 	</thead>
+	<?php } ?>
 	<tbody>
 	<?php
 		$i=0;
@@ -141,8 +149,15 @@ class HTML_objectversion {
 	?>
 	</tbody>
 	</table>
-	<?php echo $pageNav->getPagesCounter(); ?>&nbsp;<?php echo $pageNav->getPagesLinks(); ?>
 	
+	</div>
+	
+	<div class="paging">
+	    <h3 class="hidden"><?php JText::_('WEITERE TREFFER ANZEIGEN'); ?></h3>
+	    <p class="info"><?php echo $pageNav->getPagesCounter(); ?></p>
+		<p class="select"><?php echo $pageNav->getPagesLinks( ); ?></p>
+	</div>
+
 		<input type="hidden" name="option" value="<?php echo $option; ?>">
 		<input type="hidden" name="object_id" value="<?php echo $object_id; ?>">
 		<input type="hidden" id="task" name="task" value="listObjectVersion">
@@ -423,9 +438,9 @@ else
 			<input type="hidden" id="Itemid" name="Itemid" value="<?php echo JRequest::getVar('Itemid'); ?>">
 			<input type="hidden" id="lang" name="lang" value="<?php echo JRequest::getVar('lang'); ?>">
 			</form>
-			<table width="100%">
+			<table width="auto">
 			<tr>
-				<td width="100%">
+				<td width="auto">
 				<div id="viewLinksOutput"></div></td>
 			</tr>
 		   </table>
@@ -441,8 +456,6 @@ else
 			var domNode = Ext.DomQuery.selectNode('div#viewLinksOutput')
 			Ext.DomHelper.insertHtml('afterBegin',domNode,'<div id=formContainer></div>');
 			
-			//var pagesize = ".$pageSize.";
-						
 			// Column Model shortcut array
 			var cols = [
 				{ id : 'value', hidden: true, dataIndex: 'value', menuDisabled: true},
@@ -461,7 +474,7 @@ else
 		    	id				 : 'unselected',
 				ddGroup          : 'selectedGridDDGroup',
 		        ds				 : getObjectList(),
-				width			 : 350,
+				width			 : 300,
 				columns          : cols,
 				enableDragDrop   : true,
 		        stripeRows       : true,
@@ -503,7 +516,7 @@ else
 				id				 : 'selected',
 				ddGroup          : 'unselectedGridDDGroup',
 		        store            : selectedGridStore,
-		        width			 : 350,
+		        width			 : 300,
 				columns          : cols,
 				enableDragDrop   : true,
 		        stripeRows       : true,
@@ -685,7 +698,7 @@ else
 			        	{
 			        		id			: 'gridPanel',
 			        		xtype		 : 'panel',
-							width        : 760,
+							width        : 660,
 							height       : 300,
 							layout       : 'hbox',
 							border		 : false,
@@ -821,7 +834,6 @@ else
 					    });
 				return ds;
 				
-				// limit:".$pageSize.", start:0, 
 			}
 			
 			function childbound_upper_reached(toAddChild)

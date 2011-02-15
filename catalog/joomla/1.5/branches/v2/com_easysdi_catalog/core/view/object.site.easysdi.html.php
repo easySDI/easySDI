@@ -367,7 +367,7 @@ if ($rowObject->updated)
 			window.open(url, '_self');
 		}
 	</script>
-	<div class="searchresults">
+	<div class="ticker">
 	<h2><?php echo JText::_("CORE_SEARCH_RESULTS_TITLE"); ?></h2>
 	<?php
 	if(count($rows) == 0){
@@ -453,9 +453,14 @@ if ($rowObject->updated)
 	?>
 	</tbody>
 	</table>
-	<?php echo $pageNav->getPagesCounter(); ?>&nbsp;<?php echo $pageNav->getPagesLinks(); ?>
-			 
+	
 	</div>
+	<div class="paging">
+    	<h3 class="hidden"><?php JText::_('WEITERE TREFFER ANZEIGEN'); ?></h3>
+    	<p class="info"><?php echo $pageNav->getPagesCounter(); ?></p>
+		<p class="select"><?php echo $pageNav->getPagesLinks( ); ?></p>
+  	</div>
+  	
 			<input type="hidden" name="option" value="<?php echo $option; ?>">
 			<input type="hidden" id="task" name="task" value="listObject">
 			<input type="hidden" id="Itemid" name="Itemid" value="<?php echo JRequest::getVar('Itemid'); ?>">

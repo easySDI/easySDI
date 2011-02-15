@@ -199,10 +199,19 @@ class SITE_catalog {
 			$account->id = 0;
 		}
 		
+
+		// Recherche du cas où on a changé la langue et que les tableaux en GET ont sauté
+		// On se base sur les champs contenant la valeur "Array". S'il y en a, on saute tous les traitement et on redirige la page sur la recherche de départ
+		$languageChanged = false;
+		$languageChanged = in_array("Array", $_REQUEST);
+		$key = array_search("Array", $_REQUEST);
+
 		/* Construction de la requête de recherche */
 		// Ne retourner des résultats que si l'utilisateur a soumis une requête
 		// ou qu'un contexte est défini
-		if(isset($_REQUEST['simple_search_button']) || isset($_REQUEST['limitstart']) || isset($_REQUEST['context']) || isset($_GET['context']))
+		if(
+			(isset($_REQUEST['simple_search_button']) || isset($_REQUEST['limitstart']) || isset($_REQUEST['context']) || isset($_GET['context']))
+			&& !$languageChanged)
 		{
 			// Si aucun utilisateur n'est loggé, ne retourner que les métadonnées publiques
 			if($account->id == 0)
@@ -724,27 +733,24 @@ class SITE_catalog {
 									//$countSimpleFilters++;
 									$arrObjecttypeMd=null;
 								
-									//echo ", objecttype";
-									$query = "SELECT m.guid as metadata_id 
-											  FROM #__sdi_objectversion ov 
-											  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
-											  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
-											  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
-											  WHERE o.objecttype_id IN (".implode(",", $objecttype_id).") "
-											.$mysqlFilter;
-									$database->setQuery( $query);
-									//echo "<br>".$database->getQuery()."<br>";
-									//echo "list_id:".$database->getQuery()."<hr>";
-									$list_id = $database->loadObjectList() ;
-									//echo "list_id:". htmlspecialchars($list_id)."<hr>";
-						
-									if ($database->getErrorNum())
+									$list_id=array();
+									if (implode(",", $objecttype_id) <> "")
 									{
-										echo "<div class='alert'>";
-										echo 	$database->getErrorMsg();
-										echo "</div>";
+										//echo ", objecttype";
+										$query = "SELECT m.guid as metadata_id 
+												  FROM #__sdi_objectversion ov 
+												  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
+												  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
+												  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
+												  WHERE o.objecttype_id IN (".implode(",", $objecttype_id).") "
+												.$mysqlFilter;
+										$database->setQuery( $query);									
+										//echo "<br>".$database->getQuery()."<br>";
+										//echo "list_id:".$database->getQuery()."<hr>";
+										$list_id = $database->loadObjectList() ;
+										//echo "list_id:". htmlspecialchars($list_id)."<hr>";
 									}
-									
+																		
 									if(count($list_id) == 0)
 									{
 										$arrObjecttypeMd[] = -1;
@@ -788,12 +794,6 @@ class SITE_catalog {
 									//echo "list_id:".$database->getQuery()."<hr>";
 									$list_id = $database->loadObjectList() ;
 									//echo "list_id:". htmlspecialchars($list_id)."<hr>";
-									if ($database->getErrorNum())
-									{
-										echo "<div class='alert'>";
-										echo 	$database->getErrorMsg();
-										echo "</div>";
-									}
 								}
 								else if (count($objecttype_id) == 0)
 								{
@@ -1158,13 +1158,17 @@ class SITE_catalog {
 								if (count($managers) > 0 and $managers[0] <> "")
 								{
 									$countSimpleFilters++;
-									// Sélectionner tous les objets dont le nom ressemble au texte saisi
-									$query = "SELECT o.id 
-											  FROM #__sdi_object o 
-											  INNER JOIN #__sdi_manager_object mo ON mo.object_id=o.id
-											  WHERE mo.account_id IN (".implode(", ", $managers).") ";
-									$database->setQuery( $query);
-									$objectlist = $database->loadObjectList() ;
+									$objectlist = array();
+									if (implode(",", $managers) <> "")
+									{
+										// Sélectionner tous les objets dont le nom ressemble au texte saisi
+										$query = "SELECT o.id 
+												  FROM #__sdi_object o 
+												  INNER JOIN #__sdi_manager_object mo ON mo.object_id=o.id
+												  WHERE mo.account_id IN (".implode(", ", $managers).") ";
+										$database->setQuery( $query);
+										$objectlist = $database->loadObjectList() ;
+									}
 									
 									// Construire la liste des guid à filtrer
 									// Pour chaque objet, sélectionner toutes ses versions
@@ -1228,16 +1232,20 @@ class SITE_catalog {
 							case "account_id":
 								//$accounts = JRequest::getVar('account_id');
 								$accounts = JRequest::getVar('systemfilter_'.$searchFilter->guid);
-								
+																
 								if (count($accounts) > 0 and $accounts[0] <> "")
 								{
 									$countSimpleFilters++;
-									// Sélectionner tous les objets dont le nom ressemble au texte saisi
-									$query = "SELECT o.id 
-											  FROM #__sdi_object o 
-											  WHERE o.account_id IN (".implode(", ", $accounts).") ";
-									$database->setQuery( $query);
-									$objectlist = $database->loadObjectList() ;
+									$objectlist=array();
+									if (implode(",", $accounts) <> "")
+									{
+										// Sélectionner tous les objets dont le nom ressemble au texte saisi
+										$query = "SELECT o.id 
+												  FROM #__sdi_object o 
+												  WHERE o.account_id IN (".implode(", ", $accounts).") ";
+										$database->setQuery( $query);
+										$objectlist = $database->loadObjectList() ;
+									}
 									
 									// Construire la liste des guid à filtrer
 									// Pour chaque objet, sélectionner toutes ses versions
@@ -1254,7 +1262,10 @@ class SITE_catalog {
 										$database->setQuery( $query);
 										//echo "<br>".$database->getQuery()."<br>";
 										$accountlist = $database->loadObjectList() ;
-										
+										if ($database->getErrorNum())
+										{
+											$msg = $database->getErrorMsg();
+										}
 										
 										foreach ($accountlist as $a)
 										{
@@ -1807,23 +1818,20 @@ class SITE_catalog {
 									$arrObjecttypeMd=null;
 								
 									//echo ", objecttype";
-									$query = "SELECT m.guid as metadata_id 
-											  FROM #__sdi_objectversion ov 
-											  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
-											  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
-											  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
-											  WHERE o.objecttype_id IN (".implode(",", $objecttype_id).") "
-											.$mysqlFilter;
-									$database->setQuery( $query);
-									//echo "list_id:".$database->getQuery()."<hr>";
-									$list_id = $database->loadObjectList() ;
-									//echo "list_id:". htmlspecialchars($list_id)."<hr>";
-						
-									if ($database->getErrorNum())
+									$list_id=array();
+									if (implode(",", $objecttype_id) <> "")
 									{
-										echo "<div class='alert'>";
-										echo 	$database->getErrorMsg();
-										echo "</div>";
+										$query = "SELECT m.guid as metadata_id 
+												  FROM #__sdi_objectversion ov 
+												  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
+												  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
+												  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
+												  WHERE o.objecttype_id IN (".implode(",", $objecttype_id).") "
+												.$mysqlFilter;
+										$database->setQuery( $query);
+										//echo "list_id:".$database->getQuery()."<hr>";
+										$list_id = $database->loadObjectList() ;
+										//echo "list_id:". htmlspecialchars($list_id)."<hr>";
 									}
 									
 									if(count($list_id) == 0)
@@ -1870,9 +1878,7 @@ class SITE_catalog {
 									//echo "list_id:". htmlspecialchars($list_id)."<hr>";
 									if ($database->getErrorNum())
 									{
-										echo "<div class='alert'>";
-										echo 	$database->getErrorMsg();
-										echo "</div>";
+										$msg = $database->getErrorMsg();
 									}
 								}
 								else if (count($objecttype_id) == 0)
@@ -2232,13 +2238,17 @@ class SITE_catalog {
 								if (count($managers) > 0 and $managers[0] <> "")
 								{
 									$countAdvancedFilters++;
-									// Sélectionner tous les objets dont le nom ressemble au texte saisi
-									$query = "SELECT o.id 
-											  FROM #__sdi_object o 
-											  INNER JOIN #__sdi_manager_object mo ON mo.object_id=o.id
-											  WHERE mo.account_id IN (".implode(", ", $managers).") ";
-									$database->setQuery( $query);
-									$objectlist = $database->loadObjectList() ;
+									$objectlist=array();
+									if (implode(",", $managers) <> "")
+									{
+										// Sélectionner tous les objets dont le nom ressemble au texte saisi
+										$query = "SELECT o.id 
+												  FROM #__sdi_object o 
+												  INNER JOIN #__sdi_manager_object mo ON mo.object_id=o.id
+												  WHERE mo.account_id IN (".implode(", ", $managers).") ";
+										$database->setQuery( $query);
+										$objectlist = $database->loadObjectList() ;
+									}
 									
 									// Construire la liste des guid à filtrer
 									// Pour chaque objet, sélectionner toutes ses versions
@@ -2307,12 +2317,16 @@ class SITE_catalog {
 								if (count($accounts) > 0 and $accounts[0] <> "")
 								{
 									$countAdvancedFilters++;
-									// Sélectionner tous les objets dont le nom ressemble au texte saisi
-									$query = "SELECT o.id 
-											  FROM #__sdi_object o 
-											  WHERE o.account_id IN (".implode(", ", $accounts).") ";
-									$database->setQuery( $query);
-									$objectlist = $database->loadObjectList() ;
+									$objectlist=array();
+									if (implode(",", $accounts) <> "")
+									{
+										// Sélectionner tous les objets dont le nom ressemble au texte saisi
+										$query = "SELECT o.id 
+												  FROM #__sdi_object o 
+												  WHERE o.account_id IN (".implode(", ", $accounts).") ";
+										$database->setQuery( $query);
+										$objectlist = $database->loadObjectList() ;
+									}
 									
 									// Construire la liste des guid à filtrer
 									// Pour chaque objet, sélectionner toutes ses versions
@@ -2329,7 +2343,11 @@ class SITE_catalog {
 										$database->setQuery( $query);
 										//echo "<br>".$database->getQuery()."<br>";
 										$accountlist = $database->loadObjectList() ;
-										
+										if ($database->getErrorNum())
+										{
+											$msg = $database->getErrorMsg();
+										}
+									
 										//If no result, give an unexisting id back
 										/*if(count($accountlist)== 0)
 											$arrAccountsMd[] = -1;*/
@@ -2718,7 +2736,7 @@ class SITE_catalog {
 					}
 
 					// Si le nombre de résultats retournés a changé, adapter la page affichée
-					echo $limitstart." ".$total."<br>";
+					//echo $limitstart." ".$total."<br>";
 					if ($limitstart >= $total)
 					{
 						$limitstart = ( $limit != 0 ? ((floor($total / $limit) * $limit)-1) : 0 );
@@ -2731,7 +2749,7 @@ class SITE_catalog {
 						$mainframe->setUserState('limitstart', $limitstart);
 					}
 					
-					echo $limitstart." ".$total;
+					//echo $limitstart." ".$total;
 					$pageNav = new JPagination($total,$limitstart,$limit);
 					
 					// Séparation en n éléments par page
@@ -2758,6 +2776,10 @@ class SITE_catalog {
 					// Fin du tri
 				}
 			}
+		}
+		else if ($languageChanged) // Si on a fait un changement de langue, recharger la page de départ
+		{
+			$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listCatalogContent&context='.$context), false ), $msg);
 		}
 		else // Si la recherche n'a pas été lancée, afficher une liste de résultats vide
 		{

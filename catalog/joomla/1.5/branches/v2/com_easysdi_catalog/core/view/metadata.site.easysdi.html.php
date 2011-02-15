@@ -96,7 +96,7 @@ class HTML_metadata {
 				<input type="submit" id="simple_search_button" name="simple_search_button" class="easysdi_search_button submit" value ="<?php echo JText::_("CORE_SEARCH_BUTTON"); ?>" onClick="document.getElementById('metadataListForm').task.value='listMetadata';document.getElementById('metadataListForm').submit();"/>
 			</div>	 
 		 </div>
-	<div class="searchresults">
+	<div class="ticker">
 	<h2><?php echo JText::_("CORE_SEARCH_RESULTS_TITLE"); ?></h2>
 	<?php
 	if(count($rows) == 0){
@@ -305,7 +305,11 @@ else
 			</tbody>
 			</table>
 			</div>
-			<?php echo $pageNav->getPagesCounter(); ?>&nbsp;<?php echo $pageNav->getPagesLinks(); ?>
+			<div class="paging">
+		    	<h3 class="hidden"><?php JText::_('WEITERE TREFFER ANZEIGEN'); ?></h3>
+		    	<p class="info"><?php echo $pageNav->getPagesCounter(); ?></p>
+				<p class="select"><?php echo $pageNav->getPagesLinks( ); ?></p>
+		  	</div>
 			 
 			<input type="hidden" id="cid[]" name="cid[]" value="">
 			<input type="hidden" id="id" name="id" value="">
@@ -448,7 +452,7 @@ else
 		   <div id="contentin" class="contentin easysdi-table">
 		   <table width="100%">
 			<tr>
-				<td width="100%"><div id="editMdOutput"></div></td>
+				<td width="700px"><div id="editMdOutput"></div></td>
 			</tr>
 		   </table>
 		   <form action="index.php" method="post" name="adminForm" id="adminForm"
@@ -5070,11 +5074,11 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 					{
 				       $menu .= "handler: function()
 					                {
-					                	// Cr�er une iframe pour demander � l'utilisateur le type d'import
+					                	// Créer une iframe pour demander à l'utilisateur le type d'import
 										if (!winxml)
 											winxml = new Ext.Window({
 											                title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_IMPORT_XMLFILE_ALERT'))."',
-											                width:500,
+											                width:600,
 											                height:130,
 											                closeAction:'hide',
 											                layout:'fit', 
@@ -5186,7 +5190,7 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 					{
 						$menu .= "handler: function()
 					                {
-					                	// Cr�er une iframe pour demander � l'utilisateur le type d'import
+					                	// Créer une iframe pour demander à l'utilisateur le type d'import
 										if (!wincsw)
 											wincsw = new Ext.Window({
 											                title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_IMPORT_CSW_ALERT'))."',
@@ -5371,7 +5375,7 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 			            text: '".JText::_('CATALOG_REPLICATE')."',
 						handler: function()
 		                {
-		                	// Cr�er une iframe pour demander � l'utilisateur le type d'import
+		                	// Cr�er une iframe pour demander à l'utilisateur le type d'import
 							if (!winrct)
 								winrct = new Ext.Window({
 								                title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_REPLICATE_ALERT'))."',
@@ -5533,7 +5537,7 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 	
 								Ext.getCmp('objectselector').store.load();
 								
-								// Masquer le bouton de rafra�chissement
+								// Masquer le bouton de rafraîchissement
 								Ext.getCmp('objectselector').getBottomToolbar().refresh.hide();
 								winrct.show();
 				        	}
