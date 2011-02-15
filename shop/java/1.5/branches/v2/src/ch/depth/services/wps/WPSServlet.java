@@ -344,31 +344,31 @@ public class WPSServlet extends HttpServlet {
 			conn =  DriverManager.getConnection(getConnexionString());
 
 			Statement stmt = conn.createStatement();
-			
+
 			String query = "SELECT DISTINCT o.id as order_id, o.name, o.type_id, o.thirdparty_id, p.id as accountId, p.root_id, o.buffer "+
-            "FROM "+getJP()+"sdi_order o, "+getJP()+"sdi_account p, "+getJP()+"sdi_list_orderstatus osl, "+getJP()+"sdi_order_product opl , "+getJP()+"sdi_product prod, "+getJP()+"sdi_account part, "+getJP()+"sdi_objectversion ov, "+getJP()+"sdi_object ob, "+getJP()+"users u "+
-            "WHERE opl.order_id = o.id AND osl.id=o.status_id AND osl.code = '"+statusToRead+"' AND o.user_id = p.user_id "+
-            "and opl.product_id = prod.id AND prod.objectversion_id = ov.id AND ov.object_id=ob.id AND ob.account_id = part.id AND part.user_id = u.id AND u.username='"+userName+"'";
-			
+			"FROM "+getJP()+"sdi_order o, "+getJP()+"sdi_account p, "+getJP()+"sdi_list_orderstatus osl, "+getJP()+"sdi_order_product opl , "+getJP()+"sdi_product prod, "+getJP()+"sdi_account part, "+getJP()+"sdi_objectversion ov, "+getJP()+"sdi_object ob, "+getJP()+"users u "+
+			"WHERE opl.order_id = o.id AND osl.id=o.status_id AND osl.code = '"+statusToRead+"' AND o.user_id = p.user_id "+
+			"and opl.product_id = prod.id AND prod.objectversion_id = ov.id AND ov.object_id=ob.id AND ob.account_id = part.id AND part.user_id = u.id AND u.username='"+userName+"'";
+
 			//System.out.println("query getOrder:"+query);
 
 			ResultSet rs = stmt.executeQuery(query);
-									
+
 			StringBuffer res = new StringBuffer();
 			res.append("<easysdi:orders 	xmlns:easysdi=\"http://www.easysdi.org\">");
 			List<String> orderIdList = new Vector<String>();
 			while (rs.next()) 
 			{
 				String order_id = rs.getString("order_id");
-				
+
 				//System.out.println("GetOders, sending order->"+order_id);
-				
+
 				orderIdList.add(order_id);
 				//String remark = rs.getString("remark");
 				//String provider_id = rs.getString("provider_id");
 
 				String name = rs.getString("name");
-				
+
 				int type = rs.getInt("type_id");
 				//String order_update = rs.getString("order_update");
 				String third_party = rs.getString("thirdparty_id");
@@ -385,7 +385,7 @@ public class WPSServlet extends HttpServlet {
 				/* TODO: hack asitvd */
 				int isRebate = 0;
 				String rebate = "0";
-				
+
 				/* We let the rebate to "0" so the WPSClient continue to be compatible
 				Statement stmtRebate = conn.createStatement();
 				ResultSet rsRebate = stmtRebate.executeQuery("SELECT isrebate, rebate FROM "+getJoomlaPrefix()+"sdi_account part, "+getJoomlaPrefix()+"users u WHERE u.id=part.user_id AND u.username='"+userName+"'");
@@ -397,12 +397,12 @@ public class WPSServlet extends HttpServlet {
 
 				rsRebate.close();
 				stmtRebate.close();
-                */
+				 */
 
 				// HACK ASIT-VD: Contr�le de l'application ou pas du rabais selon
 				// le profil du client qui passe la commande et/ou du tiers pour qui la commande est pass�e
 				boolean ApplicableRebate=false;
-				
+
 				/* We let the rebate to "0" so the WPSClient continue to be compatible
 				Statement stmtProfile = conn.createStatement();
 				ResultSet rsProfile;
@@ -442,7 +442,7 @@ public class WPSServlet extends HttpServlet {
 						ApplicableRebate=true;
 				}
 
-                */
+				 */
 
 				// D�but de la construction du fichier
 				res.append("<easysdi:order>\n");
@@ -479,8 +479,8 @@ public class WPSServlet extends HttpServlet {
 				res.append("<easysdi:ID>"+account_id+"</easysdi:ID>\n");
 				Statement stmtAdd = conn.createStatement();
 				query = "SELECT *, c.code as countryCode FROM "+getJP()+"sdi_address a, "+getJP()+"sdi_list_addresstype t, "+
-				        getJP()+"sdi_list_country c "+
-				        "where a.type_id = t.id and a.country_id = c.id and t.name = 'EASYSDI_TYPE_CONTACT' and a.account_id = "+account_id;
+				getJP()+"sdi_list_country c "+
+				"where a.type_id = t.id and a.country_id = c.id and t.name = 'EASYSDI_TYPE_CONTACT' and a.account_id = "+account_id;
 				//System.out.println(query);
 				ResultSet rsAddContact = stmtAdd.executeQuery(query);
 
@@ -493,7 +493,7 @@ public class WPSServlet extends HttpServlet {
 				}
 				rsClientJoomlaName.close();
 				stmtClientJoomlaName.close();
-				
+
 				while(rsAddContact.next()){
 
 					res.append("<easysdi:CONTACTADDRESS>\n");
@@ -583,7 +583,7 @@ public class WPSServlet extends HttpServlet {
 					"where a.type_id = t.id and a.country_id = c.id and t.name = 'EASYSDI_TYPE_CONTACT' and a.account_id = "+third_party;
 					//System.out.println(query);
 					rsAddContact = stmtAdd.executeQuery(query);
-					
+
 					//get the tierce Joomla name
 					String tierceJoomlaName = "";
 					Statement stmtTierceJoomlaName = conn.createStatement();
@@ -614,9 +614,9 @@ public class WPSServlet extends HttpServlet {
 					query ="SELECT *, c.code as countryCode  FROM "+getJP()+"sdi_address a,"+getJP()+"sdi_list_addresstype t, "+
 					getJP()+"sdi_list_country c "+
 					"where a.type_id = t.id and a.country_id = c.id and t.name = 'EASYSDI_TYPE_INVOICING' and a.account_id = "+third_party;
-				    //System.out.println(query);
+					//System.out.println(query);
 					rsAddContact = stmtAdd.executeQuery(query);
-					
+
 					while(rsAddContact.next()){		     
 						res.append("<easysdi:INVOICEADDRESS>\n");
 						res.append("<easysdi:NAME1>"+encodeSpecialChars(rsAddContact.getString("corporatename1"))+"</easysdi:NAME1>\n");
@@ -633,10 +633,10 @@ public class WPSServlet extends HttpServlet {
 						res.append("<easysdi:FAX>"+rsAddContact.getString("fax")+"</easysdi:FAX>\n");
 						res.append("</easysdi:INVOICEADDRESS>\n");																
 					}
-                    query = "SELECT *, c.code as countryCode FROM "+getJP()+"sdi_address a,"+getJP()+"sdi_list_addresstype t, "+
+					query = "SELECT *, c.code as countryCode FROM "+getJP()+"sdi_address a,"+getJP()+"sdi_list_addresstype t, "+
 					getJP()+"sdi_list_country c "+
-                    "where a.type_id = t.id and a.country_id = c.id and t.name = 'EASYSDI_TYPE_DELIVERY' and a.account_id = "+third_party;
-    			    //System.out.println(query);
+					"where a.type_id = t.id and a.country_id = c.id and t.name = 'EASYSDI_TYPE_DELIVERY' and a.account_id = "+third_party;
+					//System.out.println(query);
 					rsAddContact = stmtAdd.executeQuery(query);
 					while(rsAddContact.next()){		     
 						res.append("<easysdi:DELIVERYADDRESS>\n");
@@ -683,7 +683,7 @@ public class WPSServlet extends HttpServlet {
 
 				Statement stmtPerim = conn.createStatement();
 				query = "SELECT op.value, p.code, p.fieldname FROM "+getJP()+"sdi_order_perimeter op, "+getJP()+"sdi_perimeter p "+
-                "where op.perimeter_id = p.id and op.order_id = "+order_id+" order by op.id";
+				"where op.perimeter_id = p.id and op.order_id = "+order_id+" order by op.id";
 				//System.out.println(query);
 				ResultSet rsPerim = stmtPerim.executeQuery(query);
 
@@ -710,13 +710,13 @@ public class WPSServlet extends HttpServlet {
 				Statement stmtProducts = conn.createStatement();
 
 				query = "SELECT p.name as name, meta.guid as metadata_id, p.id as product_id "+
-				   "FROM "+getJP()+"sdi_order_product op ,"+getJP()+"sdi_product p, "+getJP()+"sdi_list_treatmenttype treatment, "+getJP()+"sdi_metadata meta, "+
-				   getJP()+"sdi_account acc, "+getJP()+"sdi_objectversion ov, "+getJP()+"sdi_object ob, "+getJP()+"users u "+
-				   "WHERE p.id=op.product_id AND treatment.id=p.treatmenttype_id AND op.order_id = "+order_id + " AND p.objectversion_id=ov.id"+" AND ov.object_id=ob.id"+" AND ob.account_id = acc.id "+" AND ov.metadata_id = meta.id "+
-				   "AND acc.user_id = u.id AND u.username='"+userName+"' AND treatment.code='AUTO'";
-				
+				"FROM "+getJP()+"sdi_order_product op ,"+getJP()+"sdi_product p, "+getJP()+"sdi_list_treatmenttype treatment, "+getJP()+"sdi_metadata meta, "+
+				getJP()+"sdi_account acc, "+getJP()+"sdi_objectversion ov, "+getJP()+"sdi_object ob, "+getJP()+"users u "+
+				"WHERE p.id=op.product_id AND treatment.id=p.treatmenttype_id AND op.order_id = "+order_id + " AND p.objectversion_id=ov.id"+" AND ov.object_id=ob.id"+" AND ob.account_id = acc.id "+" AND ov.metadata_id = meta.id "+
+				"AND acc.user_id = u.id AND u.username='"+userName+"' AND treatment.code='AUTO'";
+
 				ResultSet rsProducts = stmtProducts.executeQuery(query);
-				
+
 				//System.out.println(query);
 
 				while(rsProducts.next()){
@@ -728,14 +728,14 @@ public class WPSServlet extends HttpServlet {
 					res.append("<easysdi:PROPERTIES>\n");
 
 					Statement stmtProp = conn.createStatement();
-					
+
 					query = "SELECT pv.code as value, prop.code as code FROM "+getJP()+"sdi_order_property oprop, "+getJP()+"sdi_propertyvalue pv, "+getJP()+"sdi_order_product op,  "+getJP()+"sdi_property prop  "+
 					"where  op.order_id = "+order_id+" and op.id = oprop.orderproduct_id and prop.id = pv.property_id and oprop.propertyvalue_id = pv.id and op.product_id = " + rsProducts.getString("product_id");
-					
+
 					//System.out.println(query); 
-					
+
 					ResultSet rsProp = stmtProp.executeQuery(query);
-					
+
 					while(rsProp.next()){
 
 						res.append("<easysdi:PROPERTY>\n");
@@ -841,22 +841,22 @@ public class WPSServlet extends HttpServlet {
 			/* We cannot do this because its dependant of the status id value, which can change...
 			 * We'll have to select all order with status 'Await' and then test each on in a loop
 			 * by counting achieved/await product.
-			
+
 			ResultSet rs1;
 			//Select all pending orders.
 			query = "select o.id as order_id, sum(l.status_id)/count(l.id) as sum_stat "+
 			        "from "+getJP()+"sdi_order o, "+getJP()+"sdi_order_product l where "+
 			        "o.id=l.order_id and o.status_id =(SELECT id FROM "+getJP()+"sdi_list_orderstatus where code='AWAIT') group by o.id order by sum_stat;";
-			
+
 			//System.out.println(query);
-			
+
 			rs1 = stmt.executeQuery(query);
 			while(rs1.next()){
-			*/
-				/* sum_stat: 1 = no order element is treated, let the order status to 4
-				 *           1<sumstat<2 = at least one element has been treated -> set order status to progress (3)
-				 *           
-				 */
+			 */
+			/* sum_stat: 1 = no order element is treated, let the order status to 4
+			 *           1<sumstat<2 = at least one element has been treated -> set order status to progress (3)
+			 *           
+			 */
 			/*
 				double sum_stat = rs1.getDouble("sum_stat");
 				int id = rs1.getInt("order_id");
@@ -877,8 +877,8 @@ public class WPSServlet extends HttpServlet {
 					stmt2.close();
 				}
 			}
-		    */
-		
+			 */
+
 			out.write("***************************************"+BR);
 			out.close();
 			//rs1.close();
@@ -1013,7 +1013,7 @@ public class WPSServlet extends HttpServlet {
 			}
 
 			//System.out.println("SetOrderResponse for: order id:"+order_id+" product id"+product_id);
-			
+
 			if (data == null) data ="";
 			if (filename == null) filename ="";
 
@@ -1024,29 +1024,23 @@ public class WPSServlet extends HttpServlet {
 				conn =  DriverManager.getConnection(connexionString);
 
 				Statement stmt = conn.createStatement();
-				stmt.executeUpdate("update "+getJP()+"sdi_order set responsesent = '1' ,response = str_to_date('"+responseDate+"', '%d.%m.%Y %H:%i:%s')  where id = "+order_id);
-
 				PreparedStatement pre;
+				String query = "";
 				
-				//insertion blob si existant
+				//Try to insert the blob first because it is the request that is the most likely to fail,
+				//and since we use no transaction...
 				if (data != "")
 				{	
-					//System.out.println("With data");
-					String query = "update "+getJP()+"sdi_order_product set price = "+price+",remark = '"+remark+"', status_id = (SELECT id FROM "+getJP()+"sdi_list_productstatus where code='AVAILABLE') where order_id = "+order_id +" AND product_id = "+product_id;
-					//System.out.println(query);
-					pre = conn.prepareStatement(query);
-					pre.executeUpdate();
-
 					query = "SELECT id FROM "+getJP()+"sdi_order_product where order_id = "+order_id +" AND product_id = "+product_id;
 					ResultSet rs = stmt.executeQuery(query);
 					rs.next();
 					int id = rs.getInt("id");
-					
+
 					query = "SELECT COUNT(*) as count FROM "+getJP()+"sdi_orderproduct_file where orderproduct_id = "+id;
 					rs = stmt.executeQuery(query);
 					rs.next();
 					int count = rs.getInt("count");
-					
+
 					//new record for file
 					if(count == 0){
 						queryBlob = "insert into "+getJP()+"sdi_orderproduct_file (filename, data, orderproduct_id) values (?, ?, "+id+")";
@@ -1057,23 +1051,35 @@ public class WPSServlet extends HttpServlet {
 						queryBlob = "update "+getJP()+"sdi_orderproduct_file set filename=?, data=? where orderproduct_id = "+id;
 						//System.out.println(queryBlob);
 					}
-					
+
 					pre = conn.prepareStatement(queryBlob);
-					pre.setString(1, filename);			
+					pre.setString(1, filename);	
 					ByteArrayInputStream bais = new ByteArrayInputStream(Base64Coder.decode(data));
 					pre.setBinaryStream(2,bais,data.length());
+					// Mise a jour de la requete
+					pre.executeUpdate();
+					
+					//System.out.println("With data");
+					query = "update "+getJP()+"sdi_order_product set price = "+price+",remark = '"+remark+"', status_id = (SELECT id FROM "+getJP()+"sdi_list_productstatus where code='AVAILABLE') where order_id = "+order_id +" AND product_id = "+product_id;
+					//System.out.println(query);
+					pre = conn.prepareStatement(query);
+					pre.executeUpdate();
+					
 				}
 				else{
 					//System.out.println("Without data");
-					String query = "update "+getJP()+"sdi_order_product set name='"+filename+"', price = "+price+",remark = '"+remark+"', status_id = (SELECT id FROM "+getJP()+"sdi_list_productstatus where code='AVAILABLE') where order_id = "+order_id +" AND product_id = "+product_id;
+					query = "update "+getJP()+"sdi_order_product set name='"+filename+"', price = "+price+",remark = '"+remark+"', status_id = (SELECT id FROM "+getJP()+"sdi_list_productstatus where code='AVAILABLE') where order_id = "+order_id +" AND product_id = "+product_id;
 					//System.out.println("query");
 					pre = conn.prepareStatement(query);
-				
+					// Mise a jour de la requete
+					pre.executeUpdate();
+
 				}
-				// Mise a jour de la requete
-				pre.executeUpdate();
 
+				//update order row
+				stmt.executeUpdate("update "+getJP()+"sdi_order set responsesent = '1' ,response = str_to_date('"+responseDate+"', '%d.%m.%Y %H:%i:%s')  where id = "+order_id);
 
+				
 				//update order status
 				/*
 				String query = "";
@@ -1087,7 +1093,7 @@ public class WPSServlet extends HttpServlet {
 				int totalProd = 0;
 				int totalAchievedProducts = 0;
 
-				String query = "SELECT COUNT(*) as count FROM "+getJP()+"sdi_order_product WHERE order_id = "+order_id;
+				query = "SELECT COUNT(*) as count FROM "+getJP()+"sdi_order_product WHERE order_id = "+order_id;
 				ResultSet rs = stmt.executeQuery(query);
 				rs.next();
 				totalProd = rs.getInt("count");
@@ -1267,7 +1273,6 @@ public class WPSServlet extends HttpServlet {
 				fw.write("responseDate:"+responseDate);
 				fw.write("order_id:"+order_id);
 				fw.write("product_id:"+product_id);
-				fw.write("data:"+data);
 				fw.write("filename:"+filename);
 				fw.write("rebate:"+rebate);
 				fw.write("price:"+price);
@@ -1278,6 +1283,7 @@ public class WPSServlet extends HttpServlet {
 			catch (IOException ex){
 				ex.printStackTrace();
 			}
+			return error ("ERROR","An error just occured:"+stack2string(e));
 		}
 		finally{
 			if(conn != null){
@@ -1289,16 +1295,30 @@ public class WPSServlet extends HttpServlet {
 			}
 
 		}
-
 		return error ("ERROR","An error just occured");
+
+
 	}
+
+	public static String stack2string(Exception e) {
+		try {
+			StringWriter sw = new StringWriter();
+			PrintWriter pw = new PrintWriter(sw);
+			e.printStackTrace(pw);
+			return "------\r\n" + sw.toString() + "------\r\n";
+		}
+		catch(Exception e2) {
+			return "bad stack2string";
+		}
+	}
+
 
 	public static String encodeSpecialChars(String s){
 		s = s.replace("&", "&#38;");
 		return s;
 	}
 
-	private String getResourceAsString(String resourceName){
+	public String getResourceAsString(String resourceName){
 		try{
 
 			InputStream is = this.getClass().getResourceAsStream(resourceName);
