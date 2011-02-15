@@ -82,6 +82,19 @@ div .easysdi_product_does_not_exist{
 
 /* Buttons in the metadata view  */
 
+.addFavorite{
+	background-color:transparent;
+	background-image:url(../icons/silk/star.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	/* for IE */
+	filter:alpha(opacity=20);
+	/* CSS3 standard */
+	opacity:0.2;
+	height:16px;
+	width:16px;
+}
+
 .addToFavorite{
 	background-color:transparent;
 	background-image:url(../icons/silk/star.png);
@@ -1995,7 +2008,7 @@ padding:0;
 	width:240px;
 }
 
-div#editAffiliate:hover, .deletablePartner:hover{
+div#editAffiliate:hover, .deletableAccount:hover{
 	cursor:pointer;
 }
 
@@ -2006,9 +2019,34 @@ div#editAffiliate{
 	background-repeat:no-repeat;
 	height:16px;
 	width:16px;
+	padding-left:2px;
+	padding-right:2px;	
 }
 
-.deletablePartner{
+div#deleteAffiliate:hover{
+	cursor:pointer;
+}
+
+div#deleteAffiliate{
+	background-color:transparent;
+	background-image:url(../icons/silk/page_delete.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+	padding-left:2px;
+	padding-right:2px;	
+}
+
+.box-table .affiliateActions{
+	width:40px;
+}
+
+.box-table .affiliateActions div{
+	float:left;
+}
+		
+.deletableAccount{
 	background-color:transparent;
 	background-image:url(../icons/silk/page_delete.png);
 	background-position:0 0;
@@ -2018,7 +2056,7 @@ div#editAffiliate{
 }
 
 
-.unDeletablePartner{
+.unDeletableAccount{
 	background-color:transparent;
 	/* for IE */
 	filter:alpha(opacity=20);
@@ -2029,14 +2067,6 @@ div#editAffiliate{
 	background-repeat:no-repeat;
 	height:16px;
 	width:16px;
-}
-
-#affiliateTable .logo, #favoriteManTable .logo{
-	width:16px;
-}
-
-#affiliateTable .title{
-	width:100px;
 }
 
 div#printPartnerRecap{

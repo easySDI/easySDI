@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE install PUBLIC "-//Joomla! 1.5//DTD template 1.0//EN" "http://dev.joomla.org/xml/1.5/template-install.dtd" >
-<install version="1.5" type="template">
+<install version="2.0" type="template">
 		<name>easysdi</name>
 	
-	<creationDate>decembre 10</creationDate>
+	<creationDate>January 2011</creationDate>
 	<author>depth.ch</author>
 	<authorEmail>easysdi@depth.ch</authorEmail>
 	<authorUrl>http://www.depth.ch</authorUrl>
     <copyright>EASYSDI</copyright>
     <license>EASYSDI</license>
-    <version>1.0</version>
+    <version>2.0</version>
 	<description>EASYSDI Template</description>
 	<files>
 		<filename>index.php</filename>
