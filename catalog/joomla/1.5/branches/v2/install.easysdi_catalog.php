@@ -784,7 +784,7 @@ function com_install(){
 				  `metadata_id` bigint(20) NOT NULL,
 				  `parent_id` bigint(20),
 				  `code` varchar(20),
-				  `name` varchar(50) NOT NULL,
+				  `name` varchar(50),
 				  `title` datetime NOT NULL,
 				  `description` varchar(100),
 			  	  `created` datetime NOT NULL,
