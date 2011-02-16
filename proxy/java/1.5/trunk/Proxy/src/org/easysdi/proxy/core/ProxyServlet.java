@@ -38,7 +38,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -62,7 +64,6 @@ import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
-import org.easysdi.jdom.filter.ElementExceptionFilter;
 import org.easysdi.jdom.filter.ElementExceptionReportFilter;
 import org.easysdi.proxy.exception.AvailabilityPeriodException;
 import org.easysdi.proxy.policy.Attribute;
@@ -94,7 +95,7 @@ import org.w3c.dom.ls.LSSerializer;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import com.sun.org.apache.xalan.internal.xsltc.runtime.Hashtable;
+
 
 public abstract class ProxyServlet extends HttpServlet {
 
@@ -126,26 +127,18 @@ public abstract class ProxyServlet extends HttpServlet {
 	protected String srsName = null;
 	protected Map<Integer, String> wfsFilePathList = new TreeMap<Integer, String>();
 	public Multimap<Integer, String> wmsFilePathList = HashMultimap.create();
-	public Multimap<String, String> wmtsFilePathList = HashMultimap.create();
-	// une liste
-	// des
-	// fichiers
-	// (sendData)
-	// r�ponse de
-	// chaque
-	// serveur
-	// WFS.
+	
+	//WMTS response files
+	public Hashtable<String, String> wmtsFilePathTable = new Hashtable<String, String>();
+	public Hashtable<String, String> ogcExceptionFilePathTable = new Hashtable<String, String>();
+	
+	//List of the remote servers define in the config.xml
+	public Hashtable<String, RemoteServerInfo> remoteServerInfoHashTable = new Hashtable <String, RemoteServerInfo>();
+
+	//Une liste des fichiers (sendData) réponse de chaque serveur WFS
 	protected Map<Integer, String> layerFilePathList = new TreeMap<Integer, String>();
-	protected Vector<String> featureTypePathList = new Vector<String>(); // Contient
-	// le
-	// featureTypetoKeep.get(0)
-	// (->reference
-	// pour
-	// le
-	// filtre
-	// remoteFilter)
-	// par
-	// Server
+	protected Vector<String> featureTypePathList = new Vector<String>(); 
+	// Contient	le featureTypetoKeep.get(0) (->reference pour le filtre remoteFilter) par Server
 	// Debug tb 04.06.2009
 	protected List<String> policyAttributeListToKeepPerFT = new Vector<String>();
 	protected int policyAttributeListNb = 0;
@@ -169,7 +162,6 @@ public abstract class ProxyServlet extends HttpServlet {
 	//Use for accessing EasySDI Joomla data
 	private JoomlaProvider joomlaProvider;
 	
-	// protected String prefix = "SRV";
 
 	
 	/**
@@ -186,6 +178,71 @@ public abstract class ProxyServlet extends HttpServlet {
 		return joomlaProvider;
 	}
 	
+	/**
+	 * Get the list of remote servers defined in the config.xml
+	 * in a Hashtable mapping <alias,RemoteServerInfo>
+	 * replace : getRemoteServerInfoList
+	 * @return
+	 */
+	public Hashtable<String, RemoteServerInfo> getRemoteServerHastable() {
+		
+		if (configuration == null)
+			return null;
+		
+		List<RemoteServerInfo> list = configuration.getRemoteServer();
+		Iterator<RemoteServerInfo> iRS = list.iterator();
+		while (iRS.hasNext())
+		{
+			RemoteServerInfo RS = iRS.next();
+			remoteServerInfoHashTable.put(RS.getAlias(),RS);
+		}
+		return remoteServerInfoHashTable;
+	}
+
+	/**
+	 * Get a remoteServerInfo by his alias
+	 * Use Hastable remoteServerInfoHashTable
+	 * Replace : getRemoteServerInfo()
+	 * @param alias
+	 * @return
+	 */
+	public RemoteServerInfo getRemoteServerInfo (String alias)
+	{
+		if(alias == null || alias == "")
+			return null;
+		
+		if (remoteServerInfoHashTable.isEmpty())
+		{
+			remoteServerInfoHashTable = getRemoteServerHastable();
+		}
+		return remoteServerInfoHashTable.get(alias);
+	}
+	
+	/**
+	 * Get the remoteServerInfo defines as the master in the config.xml
+	 * @return
+	 */
+	public RemoteServerInfo getRemoteServerInfoMaster()
+	{
+		if (remoteServerInfoHashTable.isEmpty())
+		{
+			remoteServerInfoHashTable = getRemoteServerHastable();
+		}
+		Iterator<Map.Entry<String, RemoteServerInfo>> i =  remoteServerInfoHashTable.entrySet().iterator();
+		while (i.hasNext())
+		{
+			Map.Entry<String, RemoteServerInfo> entry = i.next();
+			if(entry.getValue().isMaster)
+				return entry.getValue();
+		}
+		return null;
+	}
+	
+	/**
+	 * Get the list of remote servers defined in the config.xml
+	 * @deprecated
+	 * @return
+	 */
 	protected List<RemoteServerInfo> getRemoteServerInfoList() {
 		if (configuration == null)
 			return null;
@@ -193,20 +250,13 @@ public abstract class ProxyServlet extends HttpServlet {
 		return configuration.getRemoteServer();
 	}
 	
-	public Hashtable getRemoteServerHastable() {
-		if (configuration == null)
-			return null;
-		Hashtable htRemoteServer = new Hashtable();
-		List<RemoteServerInfo> list = configuration.getRemoteServer();
-		Iterator<RemoteServerInfo> iRS = list.iterator();
-		while (iRS.hasNext())
-		{
-			RemoteServerInfo RS = iRS.next();
-			htRemoteServer.put(RS.getAlias(),RS);
-		}
-		return htRemoteServer;
-	}
 
+	/**
+	 * Get a RemoteServerInfo by his index in the list
+	 * @deprecated
+	 * @param i
+	 * @return
+	 */
 	protected RemoteServerInfo getRemoteServerInfo(int i) {
 		if (configuration == null)
 			return null;
@@ -218,6 +268,12 @@ public abstract class ProxyServlet extends HttpServlet {
 		return null;
 	}
 
+	/**
+	 * Get a RemoteServerInfo Url by is index in the list
+	 * @deprecated
+	 * @param i
+	 * @return
+	 */
 	public String getRemoteServerUrl(int i) {
 		if (configuration == null)
 			return null;
@@ -289,64 +345,7 @@ public abstract class ProxyServlet extends HttpServlet {
 
 	protected abstract void requestPreTreatmentGET(HttpServletRequest req, HttpServletResponse resp);
 
-	/**
-	 * Aggregate exception files from remote servers in one single file
-	 * Valid for
-	 * WMTS 1.0.0
-	 * WFS 1.1
-	 * 
-	 */
-	protected ByteArrayOutputStream buildResponseForRemoteOgcException ()
-	{
-		try 
-		{
-			for (String path : ogcExceptionFilePathList.values()) 
-			{
-				File fMaster = new File(path);
-				SAXBuilder sxb = new SAXBuilder();
-				Document documentMaster = sxb.build(new File(path));
-				if (documentMaster != null) 
-				{
-					List<?> exceptionReportList = documentMaster.getContent(new ElementExceptionReportFilter());
-					Iterator<?> iExceptionReportList = exceptionReportList.iterator();
-					if(iExceptionReportList.hasNext())
-					{
-						Element exceptionReport = (Element) iExceptionReportList.next();
-						for (String pathChild : ogcExceptionFilePathList.values()) 
-						{
-							Document documentChild = null;
-							if(path.equals(pathChild))
-								continue;
-							
-							documentChild = sxb.build(new File(pathChild));
-							
-							if (documentChild != null) {
-								List<?> exceptionList = documentChild.getContent(new ElementExceptionReportFilter());
-								Iterator<?> iExceptionList = exceptionList.iterator();
-								if (iExceptionList.hasNext())
-								{
-									List<Element> exceptionListChild = ((Element) iExceptionList.next()).cloneContent();
-									exceptionReport.addContent(exceptionListChild);
-								}
-							}
-						}
-					}
-				}
-				
-			 XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
-	         ByteArrayOutputStream out = new ByteArrayOutputStream();
-	         sortie.output(documentMaster,out);
-	         return out;
-			}
-		}
-		catch (Exception ex)
-		{
-			ex.printStackTrace();
-			dump("ERROR", ex.getMessage());
-			return null;
-		}
-		return null;
-	}
+	
 	/**
 	 * Aggregate exception files from remote servers in one single file
 	 * The search for tags <ServiceExceptionReport> and <ServiceException> is valid for
@@ -827,6 +826,14 @@ public abstract class ProxyServlet extends HttpServlet {
 		}
 	}
 
+	/**
+	 * Send directly to client the remote response
+	 * @param resp
+	 * @param method
+	 * @param sUrl
+	 * @param parameters
+	 * @throws Exception
+	 */
 	public void sendDataDirectStream(HttpServletResponse resp, String method, String sUrl, String parameters) throws Exception{
 		
 			if (sUrl != null) {
@@ -912,7 +919,6 @@ public abstract class ProxyServlet extends HttpServlet {
 			in.close();
 			
 			dump("SYSTEM", "RemoteResponseToRequestUrl", sUrl);
-
 			dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
 			d = new Date();
 			dump("SYSTEM", "RemoteResponseDateTime", dateFormat.format(d));

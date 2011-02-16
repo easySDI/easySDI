@@ -1,5 +1,7 @@
 package org.easysdi.proxy.wmts;
 
+import java.util.Hashtable;
+
 import org.easysdi.proxy.core.ProxyServlet;
 import org.jdom.Namespace;
 
@@ -30,7 +32,7 @@ public abstract class WMTSProxyResponseBuilder {
 	}
 	
 	public abstract Boolean CapabilitiesOperationsFiltering (String filePath, String href );
-	public abstract Boolean CapabilitiesContentsFiltering (Multimap<String, String> filePathList);
-	public abstract Boolean CapabilitiesMerging(Multimap<String, String> filePathList);
+	public abstract Boolean CapabilitiesContentsFiltering (Hashtable<String, String> filePathList);
+	public abstract Boolean CapabilitiesMerging(Hashtable<String, String> filePathList);
 	public abstract Boolean CapabilitiesServiceIdentificationWriting(String filePath, String href);
 }

@@ -3,13 +3,17 @@ package org.easysdi.proxy.wmts.v100;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 import org.easysdi.proxy.core.ProxyServlet;
 import org.easysdi.proxy.wmts.*;
 import org.easysdi.jdom.filter.*;
 import org.easysdi.xml.documents.*;
+import org.jdom.Content;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.Namespace;
@@ -27,7 +31,11 @@ public class WMTS100ProxyResponseBuilder extends WMTSProxyResponseBuilder {
 		nsWMTS = Namespace.getNamespace("http://www.opengis.net/wmts/1.0");
 	}
 	
+	/**
+	 * Filter the operations allowed
+	 */
 	public Boolean CapabilitiesOperationsFiltering (String filePath, String href ){
+		servlet.dump("INFO","transform - Start - Capabilities operations filtering");
 		try{
 			SAXBuilder sxb = new SAXBuilder();
 	    	//Retrieve allowed and denied operations from the policy
@@ -107,7 +115,7 @@ public class WMTS100ProxyResponseBuilder extends WMTSProxyResponseBuilder {
 	    	
     	   XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
            sortie.output(docParent, new FileOutputStream(filePath));
-			
+           servlet.dump("INFO","transform - End - Capabilities operations filtering");
            return true;
 		}
 		catch (Exception ex){
@@ -115,15 +123,22 @@ public class WMTS100ProxyResponseBuilder extends WMTSProxyResponseBuilder {
 			return false;
 		}
 	}
-	public Boolean CapabilitiesContentsFiltering (Multimap<Integer, String> filePathList ){
-		
+	
+	/**
+	 * Filter the contents of the capabilities :
+	 * - allowed layers
+	 */
+	public Boolean CapabilitiesContentsFiltering (Hashtable<String, String> filePathList ){
+		servlet.dump("INFO","transform - Start - Capabilities contents filtering");
 	    try
 	    {
 	    	SAXBuilder sxb = new SAXBuilder();
-	    	for (int iFilePath = 0; iFilePath < filePathList.size(); iFilePath++) {
-			
-				String filePath = filePathList.get(iFilePath).toArray(new String[1])[0];
-		    	Document  docParent = sxb.build(new File(filePath));
+	    	Iterator<Map.Entry<String, String>> iFile =  filePathList.entrySet().iterator();
+	    	while (iFile.hasNext())
+	    	{
+	    		Map.Entry<String, String > fileEntry = iFile.next(); 
+	    		String filePath = fileEntry.getValue();
+	    		Document  docParent = sxb.build(new File(filePath));
 		    	Element racine = docParent.getRootElement();
 		      
 		    	//get the namespace
@@ -153,7 +168,7 @@ public class WMTS100ProxyResponseBuilder extends WMTSProxyResponseBuilder {
 		    	{
 		    		Element layerElement = (Element)iLLayer.next();
 		    		Element idElement = layerElement.getChild("Identifier", localNsOWS);
-		    		if (idElement!= null && !servlet.isLayerAllowed(idElement.getText(),servlet.getRemoteServerUrl(iFilePath)))
+		    		if (idElement!= null && !servlet.isLayerAllowed(idElement.getText(),servlet.getRemoteServerInfo(fileEntry.getKey()).getUrl()))
 					{
 //		    				Element tileMatrixLink = (layerElement.getChild("TileMatrixSetLink", localNsWMTS)).getChild("TileMatrixSet", localNsWMTS);
 		    				Parent parent = layerElement.getParent();
@@ -173,16 +188,15 @@ public class WMTS100ProxyResponseBuilder extends WMTSProxyResponseBuilder {
 		    		else
 		    		{
 		    			//Rewrite Layer name with alias prefix
-//		    			String name = idElement.getValue();
-//		    			servlet.getRemoteServerHastable();
-		    			
+		    			String name = idElement.getText();
+		    			idElement.setText(fileEntry.getKey()+"_"+name); 
 		    		}
 		    	}
 		    	
 	    	   XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
 	           sortie.output(docParent, new FileOutputStream(filePath));
-			}
-			
+	    	}
+	    	servlet.dump("INFO","transform - End - Capabilities contents filtering");
            return true;
 	    }
 		catch (Exception ex )
@@ -192,8 +206,12 @@ public class WMTS100ProxyResponseBuilder extends WMTSProxyResponseBuilder {
 		}
 	}
 	
-	public Boolean CapabilitiesMerging(Multimap<Integer, String> filePathList)
+	/**
+	 * Merge the capabilities into one single file
+	 */
+	public Boolean CapabilitiesMerging(Hashtable<String,String> filePathList)
 	{
+		servlet.dump("INFO","transform - Start - Capabilities merging");
 		if (filePathList.size() == 0)
 		{
 			setLastException(new Exception("No response file"));
@@ -204,28 +222,46 @@ public class WMTS100ProxyResponseBuilder extends WMTSProxyResponseBuilder {
 
 		try {
 			SAXBuilder sxb = new SAXBuilder();
-			String fileMasterPath = filePathList.get(0).toArray(new String[1])[0];
+			RemoteServerInfo master = servlet.getRemoteServerInfoMaster();
+			String fileMasterPath = filePathList.get(master.getAlias());
 			Document documentMaster = sxb.build(new File(fileMasterPath));
 			Filter layerFilter = new ElementLayerFilter();
 			Element racineMaster = documentMaster.getRootElement();
 			Element contentsMaster=  ((Element)racineMaster.getDescendants(layerFilter).next()).getParentElement();
 			
-			for (int iFilePath = 1; iFilePath < filePathList.size(); iFilePath++) {
+			Enumeration<String> enumFile = filePathList.elements();
+			while (enumFile.hasMoreElements())
+			{
+				String nfile = enumFile.nextElement();
+				if(nfile.equals(fileMasterPath))
+					continue;
 				Document documentChild = null;
-				documentChild = sxb.build(new File(filePathList.get(iFilePath).toArray(new String[1])[0]));
+				documentChild = sxb.build(new File(nfile));
 				if (documentChild != null) {
 					Element racineChild = documentChild.getRootElement();
 					Namespace localNsWMTS = racineChild.getNamespace(); 
-					Element contentsChild = racineChild.getChild("Contents", localNsWMTS);
-//					List layers = contentsChild.getChildren("Layer", nsWMTS);
-//					List matrix = contentsChild.getChildren("TileMatrixSet", nsWMTS);
-			    	contentsMaster.addContent(contentsChild.cloneContent());
+					Element contentsChild = (Element)racineChild.getChild("Contents", localNsWMTS);
+					contentsMaster.addContent(contentsChild.cloneContent());
+//					Iterator<Element> ichild = contentsChild.getDescendants(new ElementLayerFilter());
+//					int masterLayersSize = contentsMaster.getContent(new ElementLayerFilter()).size()+1;
+//					while (ichild.hasNext())
+//					{
+//						Element child = (Element)((Element)ichild.next()).clone();
+//						contentsMaster.addContent(masterLayersSize, child);
+//						masterLayersSize +=1;
+//					}
+//					Iterator<Element> itmschild = contentsChild.getDescendants(new ElementTileMatrixSetFilter());
+//					while (itmschild.hasNext())
+//					{
+//						Element child = (Element)((Element)itmschild.next()).clone();
+//						contentsMaster.addContent(child);
+//					}
 				}
 			}
 			
 			XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
 	        sortie.output(documentMaster, new FileOutputStream(fileMasterPath));
-
+	        servlet.dump("INFO","transform - End - Capabilities merging");
 			return true;
 		} catch (Exception ex) {
 			setLastException(ex);
@@ -233,16 +269,16 @@ public class WMTS100ProxyResponseBuilder extends WMTSProxyResponseBuilder {
 		}
 	}
 	
-	public Boolean CapabilitiesServiceIdentificationWriting(Multimap<Integer, String> filePathList, String href)
+	public Boolean CapabilitiesServiceIdentificationWriting(String filePath, String href)
 	{
+		servlet.dump("INFO","transform - Start - Capabilities metadata writing");
 		try
 		{
 			Config config = servlet.getConfiguration();
 			OWSServiceMetadata serviceMetadata = config.getOwsServiceMetadata();
 			
-			
 			SAXBuilder sxb = new SAXBuilder();
-			Document document = sxb.build(new File(filePathList.get(0).toArray(new String[1])[0]));
+			Document document = sxb.build(new File(filePath));
 			Element racine = document.getRootElement();
 			racine.removeContent(racine.getChild("ServiceIdentification", nsOWS));
 			racine.removeContent(racine.getChild("ServiceProvider", nsOWS));
@@ -250,7 +286,7 @@ public class WMTS100ProxyResponseBuilder extends WMTSProxyResponseBuilder {
 			if(serviceMetadata == null || serviceMetadata.isEmpty())
 			{
 				XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
-		        sortie.output(document, new FileOutputStream(filePathList.get(0).toArray(new String[1])[0]));
+		        sortie.output(document, new FileOutputStream(filePath));
 				return true;
 			}
 						
@@ -372,8 +408,9 @@ public class WMTS100ProxyResponseBuilder extends WMTSProxyResponseBuilder {
 			
 			
 			XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
-	        sortie.output(document, new FileOutputStream(filePathList.get(0).toArray(new String[1])[0]));
+	        sortie.output(document, new FileOutputStream(filePath));
 
+	        servlet.dump("INFO","transform - End - Capabilities metadata writing");
 			return true;
 		}
 		catch (Exception ex)
