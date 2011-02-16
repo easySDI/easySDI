@@ -681,7 +681,8 @@ class ADMIN_metadata {
 									//$count = $count/count($this->langList);
 								
 									//echo "count langue: ".$langCount."\r\n";
-								
+									//print_r($usefullVals); echo "\r\n";
+									
 									for ($langPos=1; $langPos<=$langCount; $langPos++)
 									{
 										$nodeValue=$usefullVals[$lang->code_easysdi];
@@ -693,7 +694,7 @@ class ADMIN_metadata {
 										$nodeValue = htmlspecialchars($nodeValue);
 										$nodeValue = preg_replace("/\r\n|\r|\n/","&#xD;",$nodeValue);
 										// Ajout des balises inh�rantes aux locales
-										if ($lang->defaultlang == true) // La langue par d�faut
+										if ($lang->defaultlang == true) // La langue par défaut
 										{
 											$XMLNode = $XMLDoc->createElement("gco:CharacterString", $nodeValue);
 											$xmlLocParent->appendChild($XMLNode);
@@ -713,6 +714,7 @@ class ADMIN_metadata {
 											$XMLNode->setAttribute('locale', "#".$lang->code);
 											//$xmlParent = $XMLNode;
 										}
+										//print_r($XMLNode->nodeName.", ".$XMLNode->nodeValue);
 									}
 								}
 							}
@@ -1316,7 +1318,7 @@ class ADMIN_metadata {
 								*/
 								//$nodeValue = stripslashes($loc->content);
 								//$nodeValue = preg_replace("/\r\n|\r|\n/","&#xD;",$nodeValue);
-								
+								//echo $isdefault.", ".$codeToSave;
 								// Ajout des balises inh�rantes aux locales
 								if ($isdefault) // La langue par d�faut
 								{

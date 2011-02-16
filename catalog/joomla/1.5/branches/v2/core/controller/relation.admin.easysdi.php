@@ -1308,7 +1308,13 @@ class ADMIN_relation {
 		$database->setQuery( "SELECT l.id, c.code FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY id" );
 		$languages = array_merge( $languages, $database->loadObjectList() );
 		
-	
+		// Supprimer tout ce qui avait été créé comme traductions jusqu'à présent pour cette relation
+		$query = "delete from #__sdi_translation where element_guid='".$rowRelation->guid."'";
+		$database->setQuery( $query);
+		if (!$database->query()) {
+			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+		}
+			
 		// Stocker les labels
 		foreach ($languages as $lang)
 		{
@@ -1666,6 +1672,13 @@ class ADMIN_relation {
 		{
 			$rowRelation= new relation( $database );
 			$rowRelation->load( $relation_id );
+			
+			// Supprimer tout ce qui avait été créé comme traductions jusqu'à présent pour cette relation
+			$query = "delete from #__sdi_translation where element_guid='".$rowRelation->guid."'";
+			$database->setQuery( $query);
+			if (!$database->query()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
 			
 			// Supprimer tout ce qui avait �t� cr�� jusqu'� pr�sent pour cette relation en relation avec le profile
 			$query = "delete from #__sdi_relation_profile where relation_id=".$rowRelation->id;

@@ -459,6 +459,12 @@ class ADMIN_codevalue {
 		$database->setQuery( "SELECT l.id, c.code FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY id" );
 		$languages = array_merge( $languages, $database->loadObjectList() );
 		
+		// Supprimer tout ce qui avait été créé comme traductions jusqu'à présent pour ce code valeur
+		$query = "delete from #__sdi_translation where element_guid='".$rowCodeValue->guid."'";
+		$database->setQuery( $query);
+		if (!$database->query()) {
+			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+		}
 	
 		if ($rowAttribute->attributetype_id == 9 or $rowAttribute->attributetype_id == 10)
 		{
@@ -613,6 +619,13 @@ class ADMIN_codevalue {
 			$rowCodeValue= new codevalue( $database );
 			$rowCodeValue->load( $codevalue_id );
 			
+			// Supprimer tout ce qui avait été créé comme traductions pour ce code valeur
+			$query = "delete from #__sdi_translation where element_guid='".$rowCodeValue->guid."'";
+			$database->setQuery( $query);
+			if (!$database->query()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+		
 			if (!$rowCodeValue->delete()) {			
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 				$mainframe->redirect("index.php?option=$option&task=listCodeValue&attribute_id=$attributeid" );

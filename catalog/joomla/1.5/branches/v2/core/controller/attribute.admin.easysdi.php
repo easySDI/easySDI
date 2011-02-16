@@ -280,12 +280,19 @@ class ADMIN_attribute {
 			exit();
 		}
 		
-		// Langues � g�rer
+		// Langues à gérer
 		$languages = array();
 		$database->setQuery( "SELECT l.id, c.code FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY id" );
 		$languages = array_merge( $languages, $database->loadObjectList() );
 		
 	
+		// Supprimer tout ce qui avait été créé comme traductions jusqu'à présent pour cet attribut
+		$query = "delete from #__sdi_translation where element_guid='".$rowAttribute->guid."'";
+		$database->setQuery( $query);
+		if (!$database->query()) {
+			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+		}
+		
 		// Stocker l'aide contextuelle
 		foreach ($languages as $lang)
 		{
@@ -375,6 +382,13 @@ class ADMIN_attribute {
 		{
 			$rowAttribute= new attribute( $database );
 			$rowAttribute->load( $attribute_id );
+			
+			// Supprimer tout ce qui avait été créé comme traductions pour cet attribut
+			$query = "delete from #__sdi_translation where element_guid='".$rowAttribute->guid."'";
+			$database->setQuery( $query);
+			if (!$database->query()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
 			
 			if (!$rowAttribute->delete()) {			
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
