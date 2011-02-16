@@ -1028,6 +1028,10 @@ function saveConfig($xml,$configFilePath){
 				$pwd = JRequest::getVar("PASSWORD_".$i,"");
 
 				$remoteServer = $config->{'remote-server-list'}->addChild("remote-server");
+				if($i == 0)
+					$remoteServer['master'] = "true";
+				else 
+					$remoteServer['master'] = "false";
 				$remoteServer->alias=$alias;
 				$remoteServer->user=$user;
 				$remoteServer->url=$url;
