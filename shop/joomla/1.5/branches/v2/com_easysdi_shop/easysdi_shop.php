@@ -79,7 +79,7 @@ switch($task){
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'perimList.easysdi.html.php');
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.displayManager.class.php');
-		$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&view=shop&step=$step&perimeter_id=$perimeter_id&Item_id=$Itemid"), false));
+		$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&view=shop&step=$step&perimeter_id=$perimeter_id&Itemid=$Itemid"), false));
 	break;
 		
 	case "downloadAvailableProduct":
