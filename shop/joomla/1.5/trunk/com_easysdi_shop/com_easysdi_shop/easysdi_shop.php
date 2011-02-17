@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * EasySDI, a solution to implement easily any spatial data infrastructure
  * Copyright (C) EasySDI Community
@@ -79,7 +79,7 @@ switch($task){
 		
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'perimList.easysdi.html.php');
-		$mainframe->redirect("index.php?option=$option&view=shop&step=$step&perimeter_id=$perimeter_id&Item_id=$Itemid");
+		$mainframe->redirect("index.php?option=$option&view=shop&step=$step&perimeter_id=$perimeter_id&Itemid=$Itemid");
 	break;
 	
 	case "shop":
