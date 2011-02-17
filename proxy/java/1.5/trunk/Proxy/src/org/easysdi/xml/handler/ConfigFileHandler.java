@@ -148,7 +148,9 @@ public class ConfigFileHandler extends DefaultHandler {
 		
 		if (isTheGoodId && isConfig && isRemoteServerList && qName.equals("remote-server")) {
 			isRemoteServer = true;
-			isRemoteServerMaster = (attr.getValue("master") == "true" ) ? true : false ;
+			String master = attr.getValue("master"); 
+			if(master!= null && master.equals("true"))
+				isRemoteServerMaster = true;
 		}
 		
 		if (isTheGoodId && isConfig && qName.equals("authorization")) {

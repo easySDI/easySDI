@@ -908,13 +908,15 @@ public abstract class ProxyServlet extends HttpServlet {
 			resp.setStatus(hpcon.getResponseCode());
 			resp.setContentLength(hpcon.getContentLength());
 			
-			BufferedOutputStream os = new BufferedOutputStream(resp.getOutputStream());
+			
+			//BufferedOutputStream os = new BufferedOutputStream(resp.getOutputStream());
+			OutputStream os = resp.getOutputStream();
 			byte[] buf = new byte[in.available()];
 			int nread;
 			while ((nread = in.read(buf)) != -1) {
 				os.write(buf, 0, nread);
+				os.flush();
 			}
-			os.flush();
 			os.close();
 			in.close();
 			

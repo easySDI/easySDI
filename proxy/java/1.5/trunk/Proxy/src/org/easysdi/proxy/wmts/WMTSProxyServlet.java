@@ -163,6 +163,12 @@ public class WMTSProxyServlet extends ProxyServlet{
 				{
 					layer = req.getParameter(key);
 					pLayer = new ProxyLayer(layer);
+					if(pLayer.getAlias() == null)
+					{
+						ByteArrayOutputStream out = owsExceptionReport.generateExceptionReport("Invalid layer name given in the LAYER parameter : "+layer,"InvalidParameterValue","layer");
+						sendHttpServletResponse(req, resp,out,"text/xml", HttpServletResponse.SC_BAD_REQUEST);
+						return;
+					}
 				}
 				else if (key.equalsIgnoreCase("Style"))
 				{
