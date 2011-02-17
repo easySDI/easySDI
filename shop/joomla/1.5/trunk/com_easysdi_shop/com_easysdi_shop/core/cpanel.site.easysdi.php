@@ -395,10 +395,7 @@ class SITE_cpanel {
 
 		//Allows Pathway with mod_menu_easysdi
 		breadcrumbsBuilder::addBreadCrumb("EASYSDI_MENU_ITEM_MYTREATMENT");
-		
-		//$limit		= $mainframe->getUserStateFromRequest( 'global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int' );
-		//$limitstart	= $mainframe->getUserStateFromRequest( $option.'.limitstart', 'limitstart', 0, 'int' );
-		
+
 		$limit = JRequest::getVar('limit', 20 );
 		$limitstart = JRequest::getVar('limitstart', 0 );
 		
@@ -432,6 +429,8 @@ class SITE_cpanel {
 		
 		$orderStatus = JRequest::getVar("orderStatus",$dfltStatus);
 		
+		
+				
 		//Get the id of product status AWAIT to get only order with product not already AVAILAIBLE to costumer
 		$queryStatus = "select id from #__easysdi_order_product_status_list where code ='AWAIT'";
 		$database->setQuery($queryStatus);
@@ -661,10 +660,11 @@ class SITE_cpanel {
 			echo 			$database->getErrorMsg();
 			echo "</div>";
 		}
+		
+		//load product list
 		$database->setQuery( "SELECT p.id as value, p.data_title as text FROM #__easysdi_product p, #__easysdi_community_partner par, #__users j where par.user_id = j.id and par.partner_id = p.diffusion_partner_id and par.user_id =".$user->id." order by p.data_title" );
 		$product_list = $database->loadObjectList();
-	        array_unshift($product_list, JHTML::_('select.option','-1', JText::_("EASYSDI_SHOP_ALL")));  
-		
+	        array_unshift($product_list, JHTML::_('select.option','-1', JText::_("EASYSDI_SHOP_ALL")));  	
 		if ($database->getErrorNum()) {
 			echo "<div class='alert'>";
 			echo 			$database->getErrorMsg();

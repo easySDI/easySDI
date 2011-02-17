@@ -586,13 +586,6 @@ class HTML_cpanel {
 				<td align="left" colspan="2">
 					<input id="treatmentSearch" type="text" name="search" value="<?php echo $search;?>" class="inputbox"></input>			
 				</td>
-				
-				<!--
-				<td align="right" colspan="2">
-				    <input type="checkBox" value="" name="onlyTreatment" id="onlyTreatment">
-				    <span><?php echo JText::_("EASYSDI_SHOP_TREATMENT_ONLY");?></span>
-				</td>
-				-->
 			</tr>
 			<tr>
 				<td align="left">
@@ -668,6 +661,7 @@ class HTML_cpanel {
 			</tr>
 			</table>
 			</div>
+			
 		<table class="treatment" width="100%">
 			<tr>
 			     <td align="right" colspan="5">
