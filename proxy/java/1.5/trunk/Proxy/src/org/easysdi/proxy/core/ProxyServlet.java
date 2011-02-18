@@ -787,7 +787,7 @@ public abstract class ProxyServlet extends HttpServlet {
 				}
 			}
 
-			responseContentType = "text/xml; charset=utf-8";
+			responseContentType = hpcon.getContentType();
 			String responseExtensionContentType=null;
 			if(hpcon.getContentType() != null)
 			{

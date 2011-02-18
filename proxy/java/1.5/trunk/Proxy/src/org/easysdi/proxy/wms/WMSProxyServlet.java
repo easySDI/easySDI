@@ -979,7 +979,7 @@ public class WMSProxyServlet extends ProxyServlet {
 				//Le stream retourné contient les exceptions concaténées et mises en forme pour être retournées 
 				//directement au client
 				dump("INFO","Exception(s) returned by remote server(s) are sent to client.");
-				responseContentType ="text/xml";
+				responseContentType ="text/xml; charset=utf-8";
 				ByteArrayOutputStream exceptionOutputStream = buildResponseForOgcServiceException();
 				sendHttpServletResponse(req,resp,exceptionOutputStream, responseContentType, HttpServletResponse.SC_OK);
 				return;

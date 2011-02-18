@@ -864,7 +864,7 @@ public class WFSProxyServlet extends ProxyServlet {
 						out.write(s.getBytes());
 						out.flush();
 						out.close();
-						sendHttpServletResponse(req,resp,out,"text/xml", HttpServletResponse.SC_OK);
+						sendHttpServletResponse(req,resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
 						return;
 					}
 				}
@@ -894,7 +894,7 @@ public class WFSProxyServlet extends ProxyServlet {
 						out.write(s.getBytes());
 						out.flush();
 						out.close();
-						sendHttpServletResponse(req,resp,out, "text/xml", HttpServletResponse.SC_OK);
+						sendHttpServletResponse(req,resp,out, "text/xml; charset=utf-8", HttpServletResponse.SC_OK);
 						return;
 					}
 
@@ -1544,7 +1544,7 @@ public class WFSProxyServlet extends ProxyServlet {
 								out.write(s.getBytes());
 								out.flush();
 								out.close();
-								sendHttpServletResponse(req,resp,out,"text/xml", HttpServletResponse.SC_OK);
+								sendHttpServletResponse(req,resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
 								return;
 							}
 						}
@@ -2322,7 +2322,7 @@ public class WFSProxyServlet extends ProxyServlet {
 				//directement au client
 				dump("INFO","Exception(s) returned by remote server(s) are sent to client.");
 				ByteArrayOutputStream exceptionOutputStream = buildResponseForOgcServiceException();
-				sendHttpServletResponse(req,resp,exceptionOutputStream,"text/xml", HttpServletResponse.SC_OK);
+				sendHttpServletResponse(req,resp,exceptionOutputStream,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
 				return;
 			}
 			
