@@ -17,7 +17,10 @@ public class ElementTileMatrixSetFilter implements Filter
          Element element = (Element)ob;
          if(element.getName().equals("TileMatrixSet"))
          {
-        	 return true;
+        	 if(element.getParentElement().getName().equals("Contents"))
+        		 return true;
+        	 else
+        		 return false;
          }
          else
          {

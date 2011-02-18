@@ -120,7 +120,6 @@ public abstract class ProxyServlet extends HttpServlet {
 	public Policy policy;
 	protected String requestCharacterEncoding = null;
 	protected String responseContentType = null;
-	protected String responseCharacterEncoding = null;
 	protected List<String> responseContentTypeList = new ArrayList<String>();
 	protected Integer responseStatusCode = HttpServletResponse.SC_OK;
 	protected String bbox = null;
@@ -788,18 +787,19 @@ public abstract class ProxyServlet extends HttpServlet {
 				}
 			}
 
-			responseCharacterEncoding = hpcon.getContentEncoding();
+			responseContentType = "text/xml; charset=utf-8";
+			String responseExtensionContentType=null;
 			if(hpcon.getContentType() != null)
 			{
-				responseContentType = hpcon.getContentType().split(";")[0];
-				responseContentTypeList.add(responseContentType);
+				responseExtensionContentType = hpcon.getContentType().split(";")[0];
+				responseContentTypeList.add(responseExtensionContentType);
 			}
 			
 			 
 			String tmpDir = System.getProperty("java.io.tmpdir");
 			dump(" tmpDir :  " + tmpDir);
 
-			File tempFile = createTempFile("sendData_" + UUID.randomUUID().toString(), getExtension(responseContentType));
+			File tempFile = createTempFile("sendData_" + UUID.randomUUID().toString(), getExtension(responseExtensionContentType));
 
 			FileOutputStream tempFos = new FileOutputStream(tempFile);
 
@@ -903,7 +903,7 @@ public abstract class ProxyServlet extends HttpServlet {
 			{
 				in = hpcon.getInputStream();
 			}
-			resp.setCharacterEncoding(hpcon.getContentEncoding());
+			
 			resp.setContentType(hpcon.getContentType());
 			resp.setStatus(hpcon.getResponseCode());
 			resp.setContentLength(hpcon.getContentLength());
@@ -2142,10 +2142,10 @@ public abstract class ProxyServlet extends HttpServlet {
 			// httpServletResponse*****************************************************
 			// No post rule to apply. Copy the file result on the output stream
 			BufferedOutputStream os = new BufferedOutputStream(resp.getOutputStream());
-			resp.setCharacterEncoding(responseCharacterEncoding);
 			resp.setContentType(responseContentType);
 			resp.setStatus(responseCode);
 			resp.setContentLength(tempOut.size());
+			
 			try {
 				dump("transform begin response writting");
 				if (req!= null && "1".equals(req.getParameter("download"))) {

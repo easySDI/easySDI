@@ -241,21 +241,21 @@ public class WMTS100ProxyResponseBuilder extends WMTSProxyResponseBuilder {
 					Element racineChild = documentChild.getRootElement();
 					Namespace localNsWMTS = racineChild.getNamespace(); 
 					Element contentsChild = (Element)racineChild.getChild("Contents", localNsWMTS);
-					contentsMaster.addContent(contentsChild.cloneContent());
-//					Iterator<Element> ichild = contentsChild.getDescendants(new ElementLayerFilter());
+//					contentsMaster.addContent(contentsChild.cloneContent());
+					Iterator<Element> ichild = contentsChild.getDescendants(new ElementLayerFilter());
 //					int masterLayersSize = contentsMaster.getContent(new ElementLayerFilter()).size()+1;
-//					while (ichild.hasNext())
-//					{
-//						Element child = (Element)((Element)ichild.next()).clone();
-//						contentsMaster.addContent(masterLayersSize, child);
+					while (ichild.hasNext())
+					{
+						Element child = (Element)((Element)ichild.next()).clone();
+						contentsMaster.addContent(1, child);
 //						masterLayersSize +=1;
-//					}
-//					Iterator<Element> itmschild = contentsChild.getDescendants(new ElementTileMatrixSetFilter());
-//					while (itmschild.hasNext())
-//					{
-//						Element child = (Element)((Element)itmschild.next()).clone();
-//						contentsMaster.addContent(child);
-//					}
+					}
+					Iterator<Element> itmschild = contentsChild.getDescendants(new ElementTileMatrixSetFilter());
+					while (itmschild.hasNext())
+					{
+						Element child = (Element)((Element)itmschild.next()).clone();
+						contentsMaster.addContent(child);
+					}
 				}
 			}
 			
