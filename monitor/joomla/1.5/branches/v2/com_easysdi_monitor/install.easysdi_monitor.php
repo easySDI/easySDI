@@ -77,7 +77,7 @@ function com_install(){
 	        
 		//Insert configuration keys
 		$query = "INSERT  INTO #__sdi_configuration (guid, code, name, description, created, createdby,  value, module_id) VALUES
-				('".helper_easysdi::getUniqueId()."', 'MONITOR_URL', 'MONITOR_URL', 'MONITOR', '".date('Y-m-d H:i:s')."', '".$user_id."',  'http://admin:adm@localhost:8083/Monitor', '".$module_id."')";
+				('".helper_easysdi::getUniqueId()."', 'MONITOR_URL', 'MONITOR_URL', 'MONITOR', '".date('Y-m-d H:i:s')."', '".$user_id."',  'http://admin:admin@localhost:8080/Monitor', '".$module_id."')";
 		$db->setQuery( $query);
 		if (!$db->query())
 		{	
