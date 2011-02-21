@@ -1,7 +1,7 @@
 <?xml version="1.0"  ?>
 <install version="1.5" type="module">
 	<name>mod_easysdi_caddy</name>
-	<version>2.0</version>
+	<version>2.0.0</version>
 	<creationDate>February 2010</creationDate>
 	<author>Depth.ch</author>
 	<authorEmail>easysdi@depth.ch</authorEmail>
