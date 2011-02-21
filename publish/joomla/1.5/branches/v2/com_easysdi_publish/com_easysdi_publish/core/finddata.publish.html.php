@@ -152,7 +152,7 @@ class PUBLISH_Finddata {
 						<input type="hidden" name="featureSourceId" id="featureSourceId" value="<?php echo $featureSourceId; ?>" />
 						<input type="hidden" name="fieldsName" id="fieldsName" value="<?php echo $fieldsName; ?>" />
 						<input type="hidden" name="featureSourceGuid" id="featureSourceGuid" value="<?php echo $featureSourceGuid; ?>" />
-						<input type="hidden" name="servAdr" id="servAdr" value="<?php echo "http://".$_SERVER['HTTP_HOST']; ?>" />
+						<input type="hidden" name="servAdr" id="servAdr" value="<?php echo "http://".$_SERVER['SERVER_ADDR']; ?>" />
 						<input type="hidden" name="maxFileSize" id="maxFileSize" value="<?php echo $maxFileSize*1024*1024; ?>" />
 						<input type="hidden" name="existingNames" id="existingNames" value="<?php echo $existingNames;?>" />
 						<input type="hidden" name="task" id="task" value="<?php echo JRequest::getVar('task' );?>" />
