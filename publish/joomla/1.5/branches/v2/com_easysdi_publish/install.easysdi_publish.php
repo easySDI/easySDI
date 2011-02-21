@@ -79,7 +79,7 @@ function com_install(){
 	        
 		//Insert configuration keys
 		$query = "INSERT  INTO #__sdi_configuration (guid, code, name, description, created, createdby,  value, module_id) VALUES
-				('".helper_easysdi::getUniqueId()."', 'WPS_PUBLISHER', 'WPS_PUBLISHER', 'PUBLISH', '".date('Y-m-d H:i:s')."', '".$user_id."',  'http://localhost:8080/servletWPS/WPSServlet', '".$module_id."')";
+				('".helper_easysdi::getUniqueId()."', 'WPS_PUBLISHER', 'WPS_PUBLISHER', 'PUBLISH', '".date('Y-m-d H:i:s')."', '".$user_id."',  'http://localhost:8080/OWSPublisher/services', '".$module_id."')";
 		$db->setQuery( $query);
 		if (!$db->query())
 		{	
