@@ -1,0 +1,91 @@
+.x-btn .kmz {
+  background-image:url("../img/kml.png");
+}
+
+.pagination{
+		display:none;
+	visibility:hidden;
+}
+
+.counter{
+		display:none;
+	visibility:hidden;
+}
+
+#whitebox .limit{
+	text-align:center;
+}
+
+div.current {
+	border:1px solid #CCCCCC;
+	clear:both;
+	padding:10px;
+}
+
+.publish .errorMsg{
+	background:#FBE3E4 url(../img/fancyupload/failed.png) no-repeat scroll 4px 4px;
+	border-bottom:1px solid #FBC2C4;
+	#clear:left;
+	color:#8A1F11;
+	#cursor:pointer;
+	display:none;
+	line-height:25px;
+	padding-left:44px;
+}
+
+.publish a:hover, a.hover {
+	color:#000000;
+}
+
+.publish a:link, a:visited {
+	#color:#135CAE;
+	font-weight:bold;
+	text-decoration:underline;
+}
+
+.publish .fileActionDisabled {
+	color:#CCCCCC;
+	font-weight:bold;
+	text-decoration:underline;
+}
+
+.publish dd {
+	margin-left:0;
+}
+
+.publish dl.tabs dt {
+	color:#666666;
+	font-weight:bold;
+	font-size:12px;
+}
+
+.publish dl.tabs dt.open {
+	color:#000000;
+	font-weight:bold;
+	font-size:14px;
+}
+
+.publish table.list{
+	background-color:#E7E7E7;
+	border-spacing:1px;
+	color:#000000;
+	width:100%;
+}
+
+.publish table.list tbody tr td {
+	background:#FFFFFF none repeat scroll 0 0;
+	border:1px solid #FFFFFF;
+	height:25px;
+}
+
+.publish legend {
+	color:#666666;
+	font-size:12px;
+	font-weight:bold;
+}
+
+.viewmap {
+border:1px solid #CCCCCC;
+height:200px;
+width:400px;
+}
