@@ -1049,6 +1049,7 @@ function com_install(){
 					  `checked_out` bigint(20) NOT NULL,
 					  `checked_out_time` datetime,
 					  `visibility_id` bigint(20) NOT NULL,
+					  `metadata_id` bigint(20),
 					  PRIMARY KEY (`id`),
 					  UNIQUE KEY `guid` (`guid`),
 					  KEY `objecttype_id` (`objecttype_id`),
