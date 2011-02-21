@@ -4,7 +4,7 @@
 	<creationDate>November 2010</creationDate>
 	<author>asitvd.ch</author>
 	<authorEmail>support@asitvd.ch</authorEmail>
-	<version>2.0</version>
+	<version>2.0.0</version>
 	<description>OGC web services monitoring application</description>
 	<installfile>install.easysdi_monitor.php</installfile>
 	<uninstallfile>uninstall.easysdi_monitor.php</uninstallfile>	
