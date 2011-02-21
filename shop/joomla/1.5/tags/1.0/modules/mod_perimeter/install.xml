@@ -1,0 +1,20 @@
+<?xml version="1.0"  ?>
+<install version="1.5" type="module">
+	<name>Mod_Perimeter</name>
+	<version>1.0</version>
+	<creationDate>July 2008</creationDate>
+	<author>Depth.ch</author>
+	<authorEmail>easysdi@depth.ch</authorEmail>
+	<authorUrl>www.depth.ch</authorUrl>
+	<copyright></copyright>
+	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
+	<description>module to manage the perimeters.</description>
+	<files>
+		<filename module="mod_perimeter">mod_perimeter.php</filename>
+		<filename module="mod_perimeter">manual_perimeter.php</filename>
+	</files>
+	<languages folder="./language/site">
+		<language tag="fr-FR">fr-FR.mod_perimeter.ini</language>
+		<language tag="en-GB">en-GB.mod_perimeter.ini</language>
+	</languages>
+</install>
