@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <project default="sync" basedir=".">
 
-	<property name="projet.out.dir" value="C:\SVN\easysdi\catalog\out" />
+	<property name="projet.out.dir" value="C:\Source\v2\catalog\out" />
 
 
 	<target name="com_easysdi" depends="create-structure,compression"
@@ -24,7 +24,7 @@
 
 	<target name="sync" description="Copy from here to apache">
 		<copy
-			todir="C:\Inetpub\wwwroot\geodbmeta_test\administrator\components\com_easysdi_catalog">
+			todir="C:\www\Server\sdiv2\administrator\components\com_easysdi_catalog">
 			<fileset dir=".">
 				<include name="**/*.php" />
 				<include name="**/*.xsl" />
@@ -41,7 +41,7 @@
 			</fileset>
 		</copy>
 		<copy
-			todir="C:\Inetpub\wwwroot\geodbmeta_test\components\com_easysdi_catalog">
+			todir="C:\www\Server\sdiv2\components\com_easysdi_catalog">
 			<fileset dir="./com_easysdi_catalog">
 				<include name="**/*.php" />
 				<include name="**/*.xsl" />
@@ -58,7 +58,7 @@
 			</fileset>
 		</copy>
 		<copy
-			todir="C:\Inetpub\wwwroot\geodbmeta_test\administrator\components\com_easysdi_catalog">
+			todir="C:\www\Server\sdiv2\administrator\components\com_easysdi_catalog">
 			<fileset dir=".">
 				<include name="**/*.php" />
 				<include name="**/*.xsl" />
@@ -75,26 +75,26 @@
 			</fileset>
 		</copy>
 		<copy
-			todir="C:\Inetpub\wwwroot\geodbmeta_test\components\com_easysdi_core\views">
+			todir="C:\www\Server\sdiv2\components\com_easysdi_core\views">
 			<fileset dir="./com_easysdi_catalog/core/view">
 				<include name="**/*.php" />
 				<include name="**/*.xml" />
 			</fileset>
 		</copy>
 		<copy		   
-		   todir="C:\Inetpub\wwwroot\geodbmeta_test\administrator\language\fr-FR">
+		   todir="C:\www\Server\sdiv2\administrator\language\fr-FR">
 		     <fileset dir="./language/admin">
 		      <include name="**/fr-FR.com_easysdi_catalog.ini" />
 		     </fileset>
 		    </copy>
 		<copy		   
-		   todir="C:\Inetpub\wwwroot\geodbmeta_test\administrator\language\de-DE">
+		   todir="C:\www\Server\sdiv2\administrator\language\de-DE">
 		     <fileset dir="./language/admin">
 		      <include name="**/de-DE.com_easysdi_catalog.ini" />
 		     </fileset>
 		    </copy>
 		<copy		   
-		   todir="C:\Inetpub\wwwroot\geodbmeta_test\administrator\language\en-GB">
+		   todir="C:\www\Server\sdiv2\administrator\language\en-GB">
 		     <fileset dir="./language/admin">
 		      <include name="**/en-GB.com_easysdi_catalog.ini" />
 		     </fileset>
