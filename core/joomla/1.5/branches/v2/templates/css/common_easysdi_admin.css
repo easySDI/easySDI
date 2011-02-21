@@ -7,6 +7,10 @@
     background-image: url(../images/toolbar/icon-32-export.png); 
 }
 
+.icon-32-tool_f2 {
+    background-image: url(../images/toolbar/icon-32-tool_f2.png);
+}
+
 .icon-32-tool_easysdi_admin { 
     background-image: url(../../../../../administrator/components/com_easysdi_core/common/icons/easysdi_small.png);
     background-repeat: no-repeat;
