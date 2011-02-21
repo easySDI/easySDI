@@ -84,6 +84,16 @@ function com_install(){
 	//When there is no DB version, then we create the full db
 	if (!$version)
 	{	
+		$version = "0.1";
+		$query="INSERT INTO #__sdi_list_module (guid, code, name, description, created, createdby, label, value, currentversion) 
+										VALUES ('".helper_easysdi::getUniqueId()."', 'PROXY', 'com_easysdi_proxy', 'com_easysdi_proxy', '".date('Y-m-d H:i:s')."', ".$user_id.", 'com_easysdi_proxy', 'com_easysdi_proxy', '".$version."')";
+		$db->setQuery( $query);
+		
+		if (!$db->query()) 
+		{			
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			return false;
+		}
 		$query = "SELECT id FROM `#__sdi_list_module` where `code` = 'PROXY'";
 		$db->setQuery( $query);
 		$id = $db->loadResult();
@@ -92,17 +102,13 @@ function com_install(){
 		 * Insert value for PROXY_CONFIG in configuration table
 		 */
 		$query = "insert into #__sdi_configuration (guid, code, name, description, created, createdby, label, value, module_id) 
-											values('".helper_easysdi::getUniqueId()."', 'PROXY_CONFIG', 'PROXY_CONFIG', 'PROXY', '".date('Y-m-d H:i:s')."', '".$user_id."', null, 'C:/www/tomcat-5-5/webapps/proxy/conf/config.xml', '".$id."')";
+											values('".helper_easysdi::getUniqueId()."', 'PROXY_CONFIG', 'PROXY_CONFIG', 'PROXY', '".date('Y-m-d H:i:s')."', '".$user_id."', null, '/home/configs/proxy/WEB-INF/conf/config.xml', '".$id."')";
 		$db->setQuery( $query);
 		if (!$db->query())
 		{	
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			return false;
 		}
-	
-		$query = "SELECT id FROM `#__sdi_list_module` where `code` = 'PROXY'";
-		$db->setQuery( $query);
-		$id = $db->loadResult();
 		
 		$query="INSERT INTO #__sdi_module_panel (guid, code, name, description, created, createdby,module_id, view_path,ordering) 
 										VALUES ('".helper_easysdi::getUniqueId()."', 'PROXY_PANEL', 'Proxy Panel', 'Proxy Panel', '".date('Y-m-d H:i:s')."', '".$user_id."', '".$id."', 'com_easysdi_proxy/core/view/sub.ctrlpanel.admin.easysdi.html.php', '4')";
