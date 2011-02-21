@@ -670,16 +670,6 @@ class ADMIN_objectversion {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}*/
 			
-			if (!$objectversion->delete()) {
-				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=".$object_id );
-			}
-			
-			if (!$metadata->delete()) {
-				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=".$object_id );
-			}
-			
 			// Supprimer tous les liens vers la version, parents ou enfants
 			$links = array();
 			$query = 'SELECT l.id' .
@@ -698,6 +688,16 @@ class ADMIN_objectversion {
 					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 					$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=".$object_id );
 				}
+			}
+			
+			if (!$objectversion->delete()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=".$object_id );
+			}
+			
+			if (!$metadata->delete()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=".$object_id );
 			}
 		}
 
@@ -1254,14 +1254,17 @@ class ADMIN_objectversion {
 		/* Ins�rer les nouveaux liens*/
 		foreach ($objectversionlinks as $link)
 		{
-			$rowObjectVersionLink = new objectversionlink($database);
-			$rowObjectVersionLink->parent_id = $objectversion_id;
-			$rowObjectVersionLink->child_id = $link;
-			
-			if (!$rowObjectVersionLink->store()) {
-				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=$object_id" );
-				exit();
+			if ($link <> "")
+			{
+				$rowObjectVersionLink = new objectversionlink($database);
+				$rowObjectVersionLink->parent_id = $objectversion_id;
+				$rowObjectVersionLink->child_id = $link;
+				
+				if (!$rowObjectVersionLink->store()) {
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+					$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=$object_id" );
+					exit();
+				}
 			}
 		}
 	}

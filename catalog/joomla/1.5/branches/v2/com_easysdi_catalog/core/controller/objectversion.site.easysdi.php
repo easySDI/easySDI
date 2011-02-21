@@ -608,7 +608,7 @@ function deleteObjectVersion($cid, $option)
 				exit;
 			}
 			
-			// Tests suppl�mentaires si le SHOP est install�
+			// Tests supplémentaires si le SHOP est installé
 			$shopExist = 0;
 			$query = "	SELECT count(*) 
 						FROM #__sdi_list_module 
@@ -634,7 +634,7 @@ function deleteObjectVersion($cid, $option)
 				}
 			}
 			
-			// Supprimer de Geonetwork la m�tadonn�e
+			// Supprimer de Geonetwork la métadonnée
 			$xmlstr = '<?xml version="1.0" encoding="UTF-8"?>
 				<csw:Transaction service="CSW" version="2.0.2" xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" xmlns:ogc="http://www.opengis.net/ogc" 
 				    xmlns:apiso="http://www.opengis.net/cat/csw/apiso/1.0">
@@ -669,7 +669,7 @@ function deleteObjectVersion($cid, $option)
 				exit();
 			}*/
 			
-			// Si une version suit, corriger son parent_id avec celui de la version qui va �tre supprim�e
+			// Si une version suit, corriger son parent_id avec celui de la version qui va être supprim�e
 			$query = 'SELECT *' .
 					' FROM #__sdi_objectversion
 					  WHERE parent_id=' . $objectversion->id;
@@ -695,18 +695,6 @@ function deleteObjectVersion($cid, $option)
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
 			
-			if (!$objectversion->delete()) {
-				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				//$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=".$object_id );
-				$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listObjectVersion&object_id='.$object_id), false ));
-			}
-			
-			if (!$metadata->delete()) {
-				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				//$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=".$object_id );
-				$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listObjectVersion&object_id='.$object_id), false ));
-			}
-			
 			// Supprimer tous les liens vers la version, parents ou enfants
 			$links = array();
 			$query = 'SELECT l.id' .
@@ -726,6 +714,16 @@ function deleteObjectVersion($cid, $option)
 					//$mainframe->redirect("index.php?option=$option&task=listObjectVersion&object_id=".$object_id );
 					$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listObjectVersion&object_id='.$object_id), false ));
 				}
+			}
+			
+			if (!$objectversion->delete()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listObjectVersion&object_id='.$object_id), false ));
+			}
+			
+			if (!$metadata->delete()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listObjectVersion&object_id='.$object_id), false ));
 			}
 		}
 	}
@@ -768,14 +766,17 @@ function deleteObjectVersion($cid, $option)
 		/* Ins�rer les nouveaux liens*/
 		foreach ($objectversionlinks as $link)
 		{
-			$rowObjectVersionLink = new objectversionlink($database);
-			$rowObjectVersionLink->parent_id = $objectversion_id;
-			$rowObjectVersionLink->child_id = $link;
-			
-			if (!$rowObjectVersionLink->store()) {
-				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=listObjectVersion&object_id=$object_id"), false));
-				exit();
+			if ($link <> "")
+			{
+				$rowObjectVersionLink = new objectversionlink($database);
+				$rowObjectVersionLink->parent_id = $objectversion_id;
+				$rowObjectVersionLink->child_id = $link;
+				
+				if (!$rowObjectVersionLink->store()) {
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+					$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=listObjectVersion&object_id=$object_id"), false));
+					exit();
+				}
 			}
 		}
 	}
