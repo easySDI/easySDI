@@ -79,17 +79,18 @@ public class DeleteLayerProcesslet implements Processlet{
 
 			logger.info("Layer Name to remove: " + layerFromWebTier.getName());
 
+			//remove from remote server
+			boolean res = diffuserController.removeLayer( myDiffuser, layerFromWebTier );
+			logger.info("RemoveLayer DataTier Result: " + res );
+			if( false == res){
+				throw new LayerNotFoundException("no layer with guid '"+LayerId+"' found on the server.");
+			}
+			
 			try{
 				layerFromWebTier.delete();
 			}catch(DataAccessException e){
 				System.out.println("Error occured, cause:"+e.getCause() +" message:"+ e.getMessage());
 				throw new DataInputException("Delete failed, error when deleting layer: "+e.getCause() +" message:"+ e.getMessage());
-			}
-			
-			boolean res = diffuserController.removeLayer( myDiffuser, layerFromWebTier );
-			logger.info("RemoveLayer DataTier Result: " + res );
-			if( false == res){
-				throw new LayerNotFoundException("no layer with guid '"+LayerId+"' found on the server.");
 			}
 
 			((LiteralOutput)out.getParameter("LayerId")).setValue(LayerId);

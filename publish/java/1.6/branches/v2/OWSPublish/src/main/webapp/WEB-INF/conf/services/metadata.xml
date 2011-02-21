@@ -6,23 +6,23 @@
     <Abstract>Service for publishing member's dataset to a diffusion server</Abstract>
   </ServiceIdentification>
   <ServiceProvider>
-    <ProviderName>ASITVD</ProviderName>
-    <ProviderSite>http://www.asitvd.ch</ProviderSite>
+    <ProviderName>MyCompany</ProviderName>
+    <ProviderSite>http://www.mycompany.com</ProviderSite>
     <ServiceContact>
-      <IndividualName>Rémy Baud</IndividualName>
+      <IndividualName>Foo Bar</IndividualName>
       <PositionName>Technical responsible</PositionName>
-      <Phone>022/3167357</Phone>
-      <Facsimile>022/3167358</Facsimile>
-      <ElectronicMailAddress>support@asitvd.ch
+      <Phone>012/1234567</Phone>
+      <Facsimile>012/1234567</Facsimile>
+      <ElectronicMailAddress>info@mycompany.com
       </ElectronicMailAddress>
       <Address>
-        <DeliveryPoint>Av de l'Université 5</DeliveryPoint>
-        <City>Lausanne</City>
-        <AdministrativeArea>VD</AdministrativeArea>
-        <PostalCode>1000</PostalCode>
+        <DeliveryPoint>21 Gladstone av</DeliveryPoint>
+        <City>City</City>
+        <AdministrativeArea></AdministrativeArea>
+        <PostalCode>1234</PostalCode>
         <Country>Switzerland</Country>
       </Address>
-      <OnlineResource>http://www.asitvd.ch</OnlineResource>
+      <OnlineResource>http://www.mycompany.com</OnlineResource>
       <HoursOfService>24x7</HoursOfService>
       <ContactInstructions>Don't hesitate to call</ContactInstructions>
       <Role>PointOfContact</Role>

@@ -42,7 +42,7 @@ public abstract class CommonDiffuserControllerAdapter implements IDiffuserAdapte
 			List<String> attributeAlias, String title, String name, String qualityArea,
 			String keywordList, String abstract1, String geometry) throws PublishGeneralException, FeatureSourceException, DiffuserException, PublicationException, PublishConfigurationException
 	{
-		logger.info("Dedans CommonDiffusorControllerAdaptor publishLayer");
+		logger.info("Dedans CommonDiffusorControllerAdapter publishLayer");
 		return null;
 	}
 

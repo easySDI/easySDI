@@ -19,12 +19,17 @@
       <DataType reference="http://www.w3.org/TR/xmlschema-2/#string">string</DataType>
       <!--  <DefaultUOM>unity</DefaultUOM> -->
     </LiteralInput>
-    <LiteralInput minOccurs="1" maxOccurs="20">
+    <LiteralInput minOccurs="0" maxOccurs="20">
       <Identifier>URLFile</Identifier>
       <Title>The URL of the file to transform</Title>
       <DataType reference="http://www.w3.org/TR/xmlschema-2/#string">string</DataType>
       <!--  <DefaultUOM>unity</DefaultUOM> -->
     </LiteralInput>
+    <ComplexInput minOccurs="0" maxOccurs="1">
+      <Identifier>ZipInput</Identifier>
+      <Title>The file to transform compressed in a Zip file</Title>
+      <DefaultFormat encoding="base64" mimeType="application/zip" />
+    </ComplexInput>
     <LiteralInput>
       <Identifier>ScriptName</Identifier>
       <Title>Name of the script to execute</Title>

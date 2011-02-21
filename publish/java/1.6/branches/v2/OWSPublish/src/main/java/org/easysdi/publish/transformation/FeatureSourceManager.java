@@ -2,6 +2,7 @@ package org.easysdi.publish.transformation;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -60,18 +61,8 @@ public class FeatureSourceManager {
 	}
 
 
-	public String manageDataset( ProcessletExecutionInfo info, String featureSourceId, String diffusorName, List<String> URLs,
+	public void manageDataset( ProcessletExecutionInfo info, String featureSourceId, String featuresourceGuid, String diffusorName, List<String> URLs,
 			String ScriptName, String sourceDataType, String epsgProj, String dataset){
-
-		String featuresourceGuid;
-
-		if(featureSourceId.equals("none")){
-			UUID uuid = new UUID();
-			featuresourceGuid = uuid.toString();
-		}
-		else{
-			featuresourceGuid = featureSourceId;
-		}
 
 		RunnableDatasetTransformer rdst = new RunnableDatasetTransformer();
 
@@ -82,9 +73,6 @@ public class FeatureSourceManager {
 
 		// Start the thread transformation process
 		rdst.run();
-
-		//return response to the client
-		return featuresourceGuid;
 	}
 
 	public void deleteFeatureSource(String fsId) throws PublishGeneralException, PublishConfigurationException, DiffuserException, FeatureSourceException{
@@ -159,99 +147,6 @@ public class FeatureSourceManager {
 		}
 
 	}
-
-	private boolean writeHttpGetToFileSystem(List<String> URLs)
-	throws MalformedURLException, IOException, DataSourceNotFoundException, TransformationException, PublishConfigurationException {
-		int count = 0;
-		UUID uuid = new UUID();
-		tempFileDir = System.getProperty("java.io.tmpdir")+"/"+uuid.toString()+"/";
-		logger.info("Temp file dir is: " + tempFileDir);
-		boolean success = (new File(tempFileDir)).mkdir();
-		if (success) {
-			logger.info("Directory: " + tempFileDir + " created");
-		}
-		else{
-			logger.info("Directory: " + tempFileDir + " not created");
-		}
-
-		for (String strUrl : URLs) {
-			BinaryIn  in  = new BinaryIn(strUrl.replace(" ", "%20"));
-			String[] temp = strUrl.split("/");
-			BinaryOut out = new BinaryOut(tempFileDir+temp[temp.length-1]);
-			// read one 8-bit char at a time
-			while (!in.isEmpty()) {
-				char c = in.readChar();
-				out.write(c);
-			}
-			out.flush();
-			out.close();
-			in.close();
-		}
-		System.out.println("tempdir:"+tempFileDir);
-		return true;
-	}
-
-	private boolean deleteDirectory(File path) {
-		if( path.exists() ) {
-			File[] files = path.listFiles();
-			for(int i=0; i<files.length; i++) {
-				if(files[i].isDirectory()) {
-					deleteDirectory(files[i]);
-				}
-				else {
-					files[i].delete();
-				}
-			}
-		}
-		return( path.delete() );
-	}
-
-	private ITransformerAdapter getTransformerAdapter(String scriptName, String sourceDataType) throws PublishConfigurationException{
-		ITransformerAdapter transformer = null;
-		if( !scriptName.equals( "none" ) )
-		{
-			if( TransformerHelper.getTransformerPlugIns().contains( scriptName ) )
-			{
-				logger.info( scriptName + " is instantiated" );
-				transformer = TransformerHelper.transformerFactory( scriptName );
-			}
-			else
-			{
-				logger.info( scriptName + " does not exists" );
-			}
-		}
-
-		//Is there a plug-in corresponding to a specific File Type (e.g. shape)?
-		if( !sourceDataType.equals( "none" ) )
-		{
-			if( TransformerHelper.getFileTypeToTransformerAssociation().keySet().contains( sourceDataType ) )
-			{
-				String plugInName = TransformerHelper.getFileTypeToTransformerAssociation(). get(sourceDataType);
-				logger.info( plugInName + " is instantiated in order to transform a " + sourceDataType );
-				transformer = TransformerHelper.transformerFactory( plugInName );
-			}
-			else
-			{
-				logger.info( "A plug in for " + sourceDataType + " does not exists" );
-			}			
-		}
-		//If no transformer was found, throw an exception
-		if( null == transformer )
-		{
-			logger.info( "no transformer was found for script: "+scriptName+" or source data type:" + sourceDataType);
-			throw new PublishConfigurationException( "no transformer was found for script: "+scriptName+" or source data type:" + sourceDataType );
-		}
-		return transformer;
-	}
-
-	/*
-	private void setFsStatus(FeatureSource fs, String detail, Throwable t){
-		fs.setStatus("UNAVAILABLE");
-		fs.setUpdateDate(cal);
-		fs.setExcDetail(detail);
-		fs.setExcMessage(Utils.getStackTrace(t));
-	}
-    */
 	
 	public float getProgressForFeatureSource(String guid) throws NoSuchTransformerForFeatureSourceGuid{
 		float progress = 0f;

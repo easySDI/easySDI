@@ -81,6 +81,7 @@ public class RunnableDatasetTransformer{
 		this.dataset = dataset;
 		this.transMap = transMap;
 		this.featuresourceGuid = featuresourceGuid;
+		this.tempFileDir =  System.getProperty("java.io.tmpdir")+"/"+featuresourceGuid+"/";
 	}
 
 	public void run()  {
@@ -140,7 +141,8 @@ public class RunnableDatasetTransformer{
 			//we keep the existing featureSourceId
 			else{
 				isUpdate = true;
-				postgisOutputTableName = featureSourceId.replace("-", "")+"_temp";
+				int random = (int)(Math.random() * 10000);
+				postgisOutputTableName = featureSourceId.replace("-", "")+"_temp"+random;
 				//existing featureSource, retrieve id from Guid
 				fs = FeatureSource.getFromGuid(featureSourceId);
 				fs.setDiffuser(diff);
@@ -149,7 +151,6 @@ public class RunnableDatasetTransformer{
 				fs.setGuid(featuresourceGuid);
 				fs.setTableName(postgisOutputTableName);
 				fs.setUpdateDate(cal);
-				fs.setStatus("UPDATING");
 
 				//store the new feature source
 				try{
@@ -162,11 +163,7 @@ public class RunnableDatasetTransformer{
 
 				logger.info("update:"+featuresourceGuid);
 			}
-
-			//Retrieve locally the supplied files for transformation. They go into the OS Java temp
-			//folder
-			tempFileDir = Utils.writeHttpGetToFileSystem(featuresourceGuid, URLs);
-
+			
 			//Inputs from Interface + GUI:
 			logger.info("diffusor name"+diffuserName);
 			for(String url : URLs)
@@ -218,8 +215,6 @@ public class RunnableDatasetTransformer{
 				//postgisOutputTableName is a temporary table with guid and _temp at the end
 				existingFeatureInfo=(IFeatureSourceInfo)constructor.newInstance((Object)geoDb, (Object)existingFsTable);
 			}
-
-
 
 			/* If it's an update, we must compare that the attributes, geometry and coordinate system 
 			 * are the same that actual*/
@@ -292,38 +287,11 @@ public class RunnableDatasetTransformer{
 
 			}
 
-
-			//
-			//Build a FeatureSource and save it
-			//
-			/*
-			Featuresource fs = new Featuresource();
-			if(!featureSourceId.equals("none")){
-				//existing featureSource, retrieve id from Guid
-				fs.setId(Featuresource.getIdFromGuid(featureSourceId));
-			}
-			fs.setFeatureGUID(featuresourceGuid);
-			fs.setDiffuserId( geoDb.getId() );
-			fs.setTableName(postgisOutputTableName);
-			fs.setScriptName(ScriptName);
-			fs.setSourceDataType(sourceDataType);
-			Calendar cal = Calendar.getInstance();
-			Date dt = cal.getTime();
-			//Set creation date only if new
-			if(featureSourceId.equals("none")){
-				fs.setCreation_date(dt);
-			}
-			fs.setUpdate_date(dt);
-
-			//store the new feature source
-			if(fs.store() == false){
-				System.out.println("Error occured storing fs, cause:"+fs.errorCause +" message:"+ fs.errorMessage);
-			}
-			 */
-
 			//store the new feature source
 			fs.setStatus("AVAILABLE");
 			fs.setUpdateDate(cal);
+			fs.setExcDetail("null");
+			fs.setExcMessage("null");
 			//store the new feature source
 			//Store in finally close
 
@@ -428,7 +396,10 @@ public class RunnableDatasetTransformer{
 		}
 		//FeatureSource
 		catch(IncompatibleUpdateFeatureSourceException e){
-			setFsStatus(fs, "UNAVAILABLE", "EASYSDI_PUBLISH_WPS_ERROR_INCOMPATIBLE_FEATURE_SOURCE", e);
+			//We do not change the status after a failed update, we let the old status
+			fs.setUpdateDate(cal);
+			fs.setExcDetail("EASYSDI_PUBLISH_WPS_ERROR_INCOMPATIBLE_FEATURE_SOURCE");
+			fs.setExcMessage(e.getMessage());
 		}
 		//writeHttpGetToFileSystem
 		catch (IOException e) {

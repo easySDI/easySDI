@@ -54,6 +54,7 @@ public class Config {
 			res.append("<password>"+diff.getPwd()+"</password>");
 			//geodb
 			res.append("<dbname>"+db.getName()+"</dbname>");
+			res.append("<dbscheme>"+db.getScheme()+"</dbscheme>");
 			res.append("<dbtype>"+db.getGeodatabaseTypeId()+"</dbtype>");
 			res.append("<dburl>"+db.getUrl()+"</dburl>");
 			res.append("<dbusername>"+db.getUser()+"</dbusername>");
@@ -99,7 +100,7 @@ public class Config {
 	public String getAvailableDatasetFromSource(HttpServletRequest req){
 		String[] urls = req.getParameter("files").split(",");
 		List<String> URLs = new ArrayList<String>();
-		String tempFileDir = "";
+		List<String> outFiles = new ArrayList<String>();
 		String location = new UUID().toString();
 		String mainFileName = "";
 
@@ -111,7 +112,7 @@ public class Config {
 
 			//Retrieve locally the supplied files for transformation. They go into the OS Java temp
 			//folder
-			tempFileDir = Utils.writeHttpGetToFileSystem(location, URLs);
+			outFiles = Utils.writeHttpGetToFileSystem(location, URLs, null);
 
 			//look for the files in the temp dir.
 			String fileName = null;
@@ -150,7 +151,7 @@ public class Config {
 
 			//Look for the datasets contained into the supplied file
 			InputDatasetInfo idi = new InputDatasetInfo();
-			idi.getInfoForDataset(tempFileDir+mainFileName);
+			idi.getInfoForDataset(location+mainFileName);
 
 
 			//Build the response
@@ -185,6 +186,7 @@ public class Config {
 		String dbname = req.getParameter("dbname");
 		String dbtype = req.getParameter("dbtype");
 		String dburl = req.getParameter("dburl");
+		String dbdbscheme = req.getParameter("dbscheme");
 		String dbusername = req.getParameter("dbusername");
 		String dbpassword = req.getParameter("dbpassword");
 
@@ -198,12 +200,14 @@ public class Config {
 			geodb.setName(dbname);
 			geodb.setGeodatabaseTypeId(Long.parseLong(dbtype));
 			geodb.setUrl(dburl);
+			geodb.setScheme(dbdbscheme);
 			geodb.setUser(dbusername);
 			geodb.setPwd(dbpassword);			
 
 			try{
 				geodb.persist();
 			}catch(DataAccessException e){
+				e.printStackTrace();
 				System.out.println("Error occured, cause:"+e.getCause() +" message:"+ e.getMessage());
 				throw new DataInputException("Insert failed, error when creating database: "+e.getCause() +" message:"+ e.getMessage());
 			}
@@ -246,6 +250,7 @@ public class Config {
 			try{
 				d.persist();
 			}catch(DataAccessException e){
+				e.printStackTrace();
 				System.out.println("Error occured, cause:"+e.getCause() +" message:"+ e.getMessage());
 				throw new DataInputException("Insert failed, error when creating diffuser: "+e.getCause() +" message:"+ e.getMessage());
 			}
@@ -315,8 +320,11 @@ public class Config {
 		for(String guid : fsList){
 
 			FeatureSource f = FeatureSource.getFromGuid(guid);
-
-
+            
+			//A requested fs may not exit, so we give what we have only.
+			if (f == null)
+				continue;
+			
 			res.append("<featuresource id=\""+f.getFeatureSourceId()+"\" guid=\""+f.getGuid()+"\">");
 			res.append("<id>"+f.getFeatureSourceId()+"</id>");
 			res.append("<diffuserid>"+f.getDiffuser().getDiffuserId()+"</diffuserid>");

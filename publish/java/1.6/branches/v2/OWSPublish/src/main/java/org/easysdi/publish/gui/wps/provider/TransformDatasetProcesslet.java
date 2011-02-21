@@ -3,20 +3,32 @@ package org.easysdi.publish.gui.wps.provider;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.codec.binary.Base64;
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.wps.Processlet;
 import org.deegree.services.wps.ProcessletException;
 import org.deegree.services.wps.ProcessletExecutionInfo;
 import org.deegree.services.wps.ProcessletInputs;
 import org.deegree.services.wps.ProcessletOutputs;
+import org.deegree.services.wps.input.ComplexInput;
 import org.deegree.services.wps.input.LiteralInput;
 import org.deegree.services.wps.input.ProcessletInput;
 import org.deegree.services.wps.output.LiteralOutput;
+import org.easysdi.publish.Utils;
 import org.easysdi.publish.biz.database.Geodatabase;
+import org.easysdi.publish.exception.TransformationException;
+import org.easysdi.publish.transformation.BinaryIn;
+import org.easysdi.publish.transformation.BinaryOut;
 import org.easysdi.publish.transformation.FeatureSourceManager;
 import org.easysdi.publish.transformation.TransformerHelper;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.eaio.uuid.UUID;
 
 
 public class TransformDatasetProcesslet implements Processlet{
@@ -57,7 +69,7 @@ public class TransformDatasetProcesslet implements Processlet{
 			ProcessletExecutionInfo info) throws ProcessletException {
 
 		try{
-						
+
 			//Read input values
 			String diffusionServerName = ((LiteralInput)in.getParameter("DiffusionServerName")).getValue();
 			String featureSourceId = ((LiteralInput)in.getParameter("FeatureSourceId")).getValue();
@@ -66,36 +78,54 @@ public class TransformDatasetProcesslet implements Processlet{
 			String SourceDataType = ((LiteralInput)in.getParameter("SourceDataType")).getValue();
 			String CoordEpsgCode = ((LiteralInput)in.getParameter("CoordEpsgCode")).getValue();
 			String Dataset = ((LiteralInput)in.getParameter("Dataset")).getValue();
+			ComplexInput ZipInput = (ComplexInput) in.getParameter( "ZipInput" );
 
-			//do the url list:
-			List<String> URLList = new ArrayList<String>();
-			for(ProcessletInput PIUrl : URLFileList){
-				URLList.add(((LiteralInput)PIUrl).getValue());
+			//Holder for the FeatureSourceGUID
+			String featuresourceGuid;
+			if(featureSourceId.equals("none")){
+				UUID uuid = new UUID();
+				featuresourceGuid = uuid.toString();
 			}
+			else{
+				featuresourceGuid = featureSourceId;
+			}
+
+			List<String> URLList = null;
+
+			URLList = new ArrayList<String>();
+			if(URLFileList != null){
+				for(ProcessletInput PIUrl : URLFileList){
+					URLList.add(((LiteralInput)PIUrl).getValue());
+				}
+			}
+			//Build and array of path+name for all supplied files, locally accessible.
+			URLList = Utils.writeHttpGetToFileSystem(featuresourceGuid, URLList, ZipInput);
 
 			logger.info("diffusionServerName: "+diffusionServerName);
 			logger.info("featureSourceId: "+featureSourceId);
-			for(ProcessletInput PIUrl : URLFileList){
-				logger.info("URLFile: "+((LiteralInput)PIUrl).getValue());
-			}
 			logger.info("ScriptName: "+ScriptName);
 			logger.info("SourceDataType: "+SourceDataType);
 			logger.info("CoordEpsgCode: "+CoordEpsgCode);
 			logger.info("Dataset: "+Dataset);
-
 
 			//Perform transformation
 			//check that this type of file can be handled by any transformer that has been plugged in
 			TransformerHelper.getTransformerPlugIns();
 			TransformerHelper.getFileTypeToTransformerAssociation();
 			//call the transformer and handle exceptions, then dispatch the relevant to the GUI
-			String response = fsm.manageDataset(info, featureSourceId, diffusionServerName, URLList,ScriptName, SourceDataType, CoordEpsgCode, Dataset);
+			fsm.manageDataset(info, featureSourceId, featuresourceGuid, diffusionServerName, URLList, ScriptName, SourceDataType, CoordEpsgCode, Dataset);
 
 			//Fill the response
 			LiteralOutput featureSourceGuid = (LiteralOutput)out.getParameter("FeatureSourceGuid");
-			featureSourceGuid.setValue(response);
-			logger.info("TransformDataset returned -> FeatureSourceGuid:"+response);
-		}catch(Exception e){
+			featureSourceGuid.setValue(featuresourceGuid);
+			logger.info("TransformDataset returned -> FeatureSourceGuid:"+featuresourceGuid);
+			 
+		}catch(TransformationException e){
+			logger.info("Transformation exception" + e.getMessage());
+			e.printStackTrace();
+			throw new ProcessletException(e.getMessage());
+		}
+		catch(Exception e){
 			logger.info("Exception non gérée" + e.getMessage());
 			e.printStackTrace();
 			throw new ProcessletException(e.getMessage());

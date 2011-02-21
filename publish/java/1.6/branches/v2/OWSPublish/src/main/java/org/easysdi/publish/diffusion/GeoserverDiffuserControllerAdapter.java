@@ -510,39 +510,36 @@ public class GeoserverDiffuserControllerAdapter extends CommonDiffuserController
 	@Override
 	public boolean removeLayer(Diffuser diff, Layer layer) throws PublishGeneralException, DiffuserException, PublicationException, PublishConfigurationException {
 		boolean success = true;
-		String LayerRestURL = diff.getUrl() + REST_PATH + layer.getName() + ".xml";
+		
+		//PutMethod methodApplyStyle = new PutMethod( diff.getUrl()+"/rest/layers/easySDIPublishNamespace:"+name);
+		//static final String REST_PATH = "/rest/workspaces/"+EASY_SDI_NAMESPACE+"/datastores/"+EASY_SDI_DATASTORE+"/featuretypes/"; 
 
+		//
+		//delete the layer associated to the featuretype
+		//
+		String LayerRestURL = diff.getUrl() + "/rest/layers/easySDIPublishNamespace:" + layer.getName() + ".xml";
 		setCredentials(diff.getUser(), diff.getPwd() );
 		super.getLogger().info("diffuser: " + diff.getName());
-
 		authenticate(LayerRestURL);
-
 		super.removeLayer( diff, layer );
-
 		// Create a method instance.
 		DeleteMethod method = new DeleteMethod(LayerRestURL);
-
 		// Provide custom retry handler is necessary
 		method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, 
 				new DefaultHttpMethodRetryHandler(3, false));
-
 		try {
 			// Execute the method.
 			int statusCode = client.executeMethod(method);
-
 			if (statusCode != HttpStatus.SC_OK) {
 				//System.err.println("Method failed: " + method.getStatusLine());
 				super.logger.warning("Method failed: " + method.getStatusLine());
 				success = false;
 				throw new PublicationException( ((Integer)statusCode).toString() );
 			}
-
 			// Read the response body.
 			byte[] responseBody = method.getResponseBody();
-
 			// Deal with the response.
 			super.getLogger().fine( new String(responseBody));
-
 		} catch (HttpException e) {
 			success = false;
 			//System.err.println("Fatal protocol violation: " + e.getMessage());
@@ -558,10 +555,49 @@ public class GeoserverDiffuserControllerAdapter extends CommonDiffuserController
 			method.releaseConnection();
 		}  
 
+		//
+		//delete the featureType associated to the prvious deleted layer
+		//
+		LayerRestURL = diff.getUrl() + "/rest/workspaces/"+EASY_SDI_NAMESPACE+"/datastores/"+EASY_SDI_DATASTORE+"/featuretypes/" + layer.getName() + ".xml";
+		setCredentials(diff.getUser(), diff.getPwd() );
+		super.getLogger().info("diffuser: " + diff.getName());
+		authenticate(LayerRestURL);
+		super.removeLayer( diff, layer );
+		// Create a method instance.
+		method = new DeleteMethod(LayerRestURL);
+		// Provide custom retry handler is necessary
+		method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, 
+				new DefaultHttpMethodRetryHandler(3, false));
+		try {
+			// Execute the method.
+			int statusCode = client.executeMethod(method);
+			if (statusCode != HttpStatus.SC_OK) {
+				//System.err.println("Method failed: " + method.getStatusLine());
+				super.logger.warning("Method failed: " + method.getStatusLine());
+				success = false;
+				throw new PublicationException( ((Integer)statusCode).toString() );
+			}
+			// Read the response body.
+			byte[] responseBody = method.getResponseBody();
+			// Deal with the response.
+			super.getLogger().fine( new String(responseBody));
+		} catch (HttpException e) {
+			success = false;
+			//System.err.println("Fatal protocol violation: " + e.getMessage());
+			super.logger.warning("Fatal protocol violation: " + e.getMessage());
+			throw new PublicationException( e.getMessage() );
+		} catch (IOException e) {
+			success = false;
+			super.logger.warning("Fatal transport error: " + e.getMessage());
+			//System.err.println("Fatal transport error: " + e.getMessage());
+			throw new PublicationException( e.getMessage() );
+		} finally {
+			// Release the connection.
+			method.releaseConnection();
+		}
+		
 		return success;
 	}
-
-
 
 	public static String xmlToString(Node node) {
 		try {
@@ -597,7 +633,7 @@ public class GeoserverDiffuserControllerAdapter extends CommonDiffuserController
 		try {
 			String tempFile = System.getProperty("java.io.tmpdir")+"/publishLayerPublishedSldDump.xml";
 			logger.info("Temp file dir is: " + tempFile);
-			OutputStream	out = new FileOutputStream(new File(tempFile));
+			OutputStream out = new FileOutputStream(new File(tempFile));
 
 			byte buf[]=new byte[1024];
 			int len;
