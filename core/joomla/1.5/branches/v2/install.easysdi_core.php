@@ -94,8 +94,7 @@ function com_install(){
 		$db->setQuery( $query);
 		$id = $db->loadResult();
 		
-		if ($version == "0.1")
-		{	
+		
 			/**
 			 * Create the configuration table
 			 */
@@ -1408,9 +1407,19 @@ function com_install(){
 			{
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}
-		}
-		
 	}
+	if ($version == "1.0")
+	{
+		// Update component version
+		$version="2.0.0";
+		$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='CATALOG'"; 
+		$db->setQuery( $query);	
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+	}
+	
 	
 	/**
 	 * Menu creation
