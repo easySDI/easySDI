@@ -123,6 +123,17 @@ function com_install(){
 		}
 		
 	}
+	if($version == "1.0")
+	{
+		// Update component version
+		$version="2.1";
+		$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='PROXY'"; 
+		$db->setQuery( $query);	
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+	}
 	
 
 	$query = "DELETE FROM #__components where `option`= 'com_easysdi_proxy' ";
