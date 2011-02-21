@@ -85,6 +85,17 @@ function com_install(){
 			return false;
 		}
 	}
+	if($version == "0.1")
+	{
+		// Update component version
+		$version="2.0.0";
+		$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='MONITOR'"; 
+		$db->setQuery( $query);	
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+	}
 	
 	$query = "DELETE FROM #__components where `option`= 'com_easysdi_monitor' ";
 	$db->setQuery($query);
