@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+<layout title="Base">
+<message>
+<![CDATA[Description of my layout.]]>
+</message>
+</layout>
+<state>
+<name>Easysdi Publish</name>
+<description>A description</description>
+  <url>
+    <param name="task" type="list" default="gettingStarted" label="Type" description="Type of menu">
+      <option value="gettingStarted">Home</option>
+    </param>
+  </url>
+  <params>
+  </params>
+</state>
+</metadata>
