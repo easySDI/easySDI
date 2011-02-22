@@ -588,6 +588,12 @@ class ADMIN_searchcriteria {
 					exit();
 				}
 				
+				// TODO: Doit être corrigé car désormais le tab n'est plus stocké
+				// dans ces colonnes mais dans la table #__sdi_searchcriteria_tab.
+				// La meilleur façon de corriger ça est de stocker désormais l'ordre
+				// dans la table #__sdi_searchcriteria_tab, afin de pouvoir avoir un ordre
+				// différent pour le critère selon qu'il est dans un contexte ou dans un autre.
+				
 				// remember to updateOrder this group
 				$condition = 'simpletab = '.(int) $row->simpletab.
 							 ' AND advancedtab = '.(int) $row->advancedtab;
