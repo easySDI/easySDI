@@ -385,7 +385,48 @@ public class WPSServlet extends HttpServlet {
 				rsRebate.close();
 				stmtRebate.close();
 
-				// Debut de la construction du fichier
+				// HACK ASIT-VD: Contr�le de l'application ou pas du rabais selon
+				// le profil du client qui passe la commande et/ou du tiers pour qui la commande est pass�e
+				boolean ApplicableRebate=false;
+				Statement stmtProfile = conn.createStatement();
+				ResultSet rsProfile;
+				String qry="SELECT prof.profile_id, prof.profile_name as profile_name FROM "+getJoomlaPrefix()+"asitvd_community_partner part, "+getJoomlaPrefix()+"asitvd_community_profile prof WHERE prof.profile_id=part.profile_id AND part.partner_id='"+third_party+"'";
+				if (!third_party.equalsIgnoreCase("0")){
+					rsProfile = stmtProfile.executeQuery(qry);
+				}
+				else {
+					int rootId = 0;
+					Statement stmtRootId = conn.createStatement();
+					ResultSet rsRootId = stmtRootId.executeQuery("SELECT root_id as root_id FROM "+getJoomlaPrefix()+"asitvd_community_partner where user_id='"+user_id+"'");
+					while(rsRootId.next()){
+						rootId = rsRootId.getInt("root_id");
+					}
+					rsRootId.close();
+					stmtRootId.close();
+
+					if(root_id != null){
+						//Not a root
+						stmtRootId = conn.createStatement();
+						rsRootId = stmtRootId.executeQuery("SELECT user_id as root_id FROM "+getJoomlaPrefix()+"asitvd_community_partner where partner_id='"+root_id+"'");
+						while(rsRootId.next()){
+							rootId = rsRootId.getInt("root_id");
+						}
+						rsRootId.close();
+						stmtRootId.close();
+						qry="SELECT prof.profile_id, prof.profile_name as profile_name FROM "+getJoomlaPrefix()+"asitvd_community_partner part, "+getJoomlaPrefix()+"asitvd_community_profile prof WHERE prof.profile_id=part.profile_id AND part.user_id='"+rootId+"'";
+						rsProfile = stmtProfile.executeQuery(qry);
+					}else{
+						qry="SELECT prof.profile_id, prof.profile_name as profile_name FROM "+getJoomlaPrefix()+"asitvd_community_partner part, "+getJoomlaPrefix()+"asitvd_community_profile prof WHERE prof.profile_id=part.profile_id AND part.user_id='"+user_id+"'";
+						rsProfile = stmtProfile.executeQuery(qry);
+					}
+				}
+
+				while(rsProfile.next()){
+					if (rsProfile.getString("profile_name").equals("ASITVD_FOUNDER") || rsProfile.getString("profile_name").equals("ASITVD_MEMBER"))
+						ApplicableRebate=true;
+				}
+
+				// D�but de la construction du fichier
 				res.append("<easysdi:order>\n");
 				res.append("<easysdi:header>\n");
 				res.append("<easysdi:VERSION>2.0</easysdi:VERSION>\n");
@@ -574,7 +615,9 @@ public class WPSServlet extends HttpServlet {
 
 				//res.append("<easysdi:DISCOUNT>0</easysdi:DISCOUNT>\n");
 				// Insertion du rabais s'il y en a un, sinon 0
-				if(isRebate==1){
+				// HACK ASITVD: Insertion du rabais s'il est applicable selon le profil de l'utilisateur
+
+				if(isRebate==1 && ApplicableRebate==true){
 					res.append("<easysdi:REBATE>"+rebate+"</easysdi:REBATE>\n");		    
 				}
 				else
@@ -1115,7 +1158,7 @@ public class WPSServlet extends HttpServlet {
 				StringWriter sw = new StringWriter();
 				PrintWriter pw = new PrintWriter(sw);
 				e.printStackTrace(pw);
-				File f = new File(System.getProperty("java.io.tmpdir")+"/"+"errorStream.txt");
+				File f = new File(System.getProperty("java.io.tmpdir")+"/"+"_errorStream4.txt");
 				System.out.println("Writing error file:"+System.getProperty("java.io.tmpdir")+"errorStream.txt");
 				FileWriter fw = new FileWriter(f,true);
 				fw.write(sw.toString());

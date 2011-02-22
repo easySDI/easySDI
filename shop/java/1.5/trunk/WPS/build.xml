@@ -7,7 +7,7 @@
   <property name="projet.work.dir" value="work"/>
   <property name="projet.out.dir" value="out"/>
   <property name="projet.lib.dir" value="lib"/>
-  <property name="projet.tomcat.lib.dir" value="C:\www\tomcat-5-5\common\lib"/>
+  <property name="projet.tomcat.lib.dir" value="C:\tomcat6\lib"/>
   
    <path id="projet.classpath">
 	    <fileset dir="${projet.lib.dir}">
