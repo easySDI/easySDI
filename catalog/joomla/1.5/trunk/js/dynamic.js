@@ -671,6 +671,7 @@
 	
 	function createSuperBoxSelect(id, label, value, clone, master, min, max, mandatoryMsg)
 	{
+		var optional=false;
 		if (clone) optional=true; // Pas sûr que ce soit juste, il faut peut-être toujours l'avoir à false?
 		if (master) master.clones_count=master.clones_count+1;
 		var clones_count = (master) ? master.clones_count : 1;
