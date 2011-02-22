@@ -209,4 +209,39 @@
 		</AvailabilityPeriod>
 		<ImageSize/>
 	</Policy>
+	<Policy Id="WMTS-Policy" ConfigId="WMTS">
+    <Servers All="false">
+    	<Server>
+    		<url>http://v2.suite.opengeo.org/geoserver/gwc/service/wmts</url>
+    		<Prefix>v</Prefix>
+    		<Namespace>v</Namespace>
+    		<Layers All="false">
+    			<Layer>
+    				<Name>medford:hydro</Name>
+    			</Layer>
+    			<Layer>
+    				<Name>medford:firestations</Name>
+    			</Layer>
+    			<Layer>
+    				<Name>medford:buildings</Name>
+    			</Layer>
+    			<Layer>
+    				<Name>medford:citylimits</Name>
+    			</Layer>
+    		</Layers>
+    	</Server>
+    </Servers>
+    <Subjects All="true"/>
+    <Operations All="true"/>
+    <AvailabilityPeriod>
+      <Mask>d-mm-yyyy</Mask>
+      <From>
+        <Date>28-01-2008</Date>
+      </From>
+      <To>
+        <Date>28-01-2108</Date>
+      </To>
+    </AvailabilityPeriod>
+    <ImageSize/>
+  </Policy>
 </PolicySet>
