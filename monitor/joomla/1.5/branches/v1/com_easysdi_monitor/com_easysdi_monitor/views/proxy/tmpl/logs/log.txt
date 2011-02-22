@@ -1,0 +1,63 @@
+-----------------------------
+REQUEST HEADERS
+-----------------------------
+forward->:Authorization:Basic YWRtaW46YWRt
+forward->:Host:www.valid.asitvd.ch
+forward->:User-Agent:Mozilla/5.0 (Windows; U; Windows NT 5.1; fr; rv:1.9.2.10) Gecko/20100914 Firefox/3.6.10 ( .NET CLR 3.5.30729; .NET4.0E)
+forward->:Accept:text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+forward->:Accept-Language:fr-ch,fr;q=0.8,fr-fr;q=0.6,en-us;q=0.4,en;q=0.2
+forward->:Accept-Encoding:gzip,deflate
+forward->:Accept-Charset:ISO-8859-1,utf-8;q=0.7,*;q=0.7
+forward->:Keep-Alive:115
+forward->:X-Requested-With:XMLHttpRequest
+forward->:Referer:http://www.valid.asitvd.ch/index.php?option=com_content&view=article&id=136&Itemid=154&lang=fr
+forward->:Cookie:jce_imgmanager_dir=%2F; fontSize=75; __utma=140329763.419810823.1288873744.1294734828.1294738648.27; __utmz=140329763.1288873744.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); jfcookie[lang]=fr; d00fbd4d14b281fe982e68d7067dd898=5la0aml5btnok15m2lgbrtvh96; __utmc=140329763; 63d222910caebe0a93ebe6016b9e5852=cik8vvv0h61itmo6vlnmtbqhb4; ys-JobStateGrid=o%3Acolumns%3Da%253Ao%25253Aid%25253Dn%2525253A0%25255Ewidth%25253Dn%2525253A50%255Eo%25253Aid%25253Dn%2525253A1%25255Ewidth%25253Dn%2525253A147%255Eo%25253Aid%25253Dn%2525253A2%25255Ewidth%25253Dn%2525253A50%255Eo%25253Aid%25253Dn%2525253A3%25255Ewidth%25253Dn%2525253A270%255Eo%25253Aid%25253Dn%2525253A4%25255Ewidth%25253Dn%2525253A60%255Eo%25253Aid%25253Dn%2525253A5%25255Ewidth%25253Dn%2525253A70%255Eo%25253Aid%25253Dn%2525253A6%25255Ewidth%25253Dn%2525253A80%255Eo%25253Aid%25253Dn%2525253A7%25255Ewidth%25253Dn%2525253A150; __utmb=140329763.2.10.1294738648
+forward->:Via:1.0 proxy2.vd.ch:8080 (squid/2.5.STABLE3)
+forward->:X-Forwarded-For:10.245.113.56
+forward->:Cache-Control:max-age=259200
+forward->:Connection:keep-alive
+-----------------------------
+
+received url:http://admin:adm@localhost:8083/Monitor/jobs/WMS_eau_APEM/status
+-----------------------------
+REQUEST PARAMS
+-----------------------------
+_dc=1294738809483
+-----------------------------
+resulting url:http://admin:adm@localhost:8083/Monitor/jobs/WMS_eau_APEM/status?_dc=1294738809483&
+
+getfile
+Auth with: admin:adm
+GET:http://admin:adm@localhost:8083/Monitor/jobs/WMS_eau_APEM/status?_dc=1294738809483&
+CURL SUCCEEDED:
+end getfile
+Raw response:-->HTTP/1.1 200 OK
+Server: Apache-Coyote/1.1
+Content-Type: application/json;charset=UTF-8
+Content-Language: fr-CH
+Transfer-Encoding: chunked
+Date: Tue, 11 Jan 2011 09:40:11 GMT
+
+{"success":true,"message":"L'execution du job s'est bien déroulée","data":{"url":"https://secure.asitvd.ch/proxy/ogc/vd-wms-fonds","statusCause":"No error","status":"Disponible","statusCode":"AVAILABLE","serviceType":"WMS","queriesResults":[{"testedUrl":"https://secure.asitvd.ch/proxy/ogc/vd-wms-fonds?REQUEST=GetCapabilities&VERSION=1.1.1&SERVICE=WMS","status":"Disponible","statusCode":"AVAILABLE","responseDelay":1.2730000019073486,"requestTime":"2011-01-11 10:40:09","queryName":"GetCap","message":"No error","httpCode":200,"serviceExceptionCode":""}],"jobName":"vd-wms-fonds","httpMethod":"GET"}}<--
+-----------------------------
+Response headers
+-----------------------------
+sending->HTTP/1.1 200 OK
+sending->Server: Apache-Coyote/1.1
+sending->Content-Type: application/json;charset=UTF-8
+sending->Content-Language: fr-CH
+sending->Date: Tue, 11 Jan 2011 09:40:11 GMT
+-----------------------------
+
+output:{"success":true,"message":"L'execution du job s'est bien déroulée","data":{"url":"https://secure.asitvd.ch/proxy/ogc/vd-wms-fonds","statusCause":"No error","status":"Disponible","statusCode":"AVAILABLE","serviceType":"WMS","queriesResults":[{"testedUrl":"https://secure.asitvd.ch/proxy/ogc/vd-wms-fonds?REQUEST=GetCapabilities&VERSION=1.1.1&SERVICE=WMS","status":"Disponible","statusCode":"AVAILABLE","responseDelay":1.2730000019073486,"requestTime":"2011-01-11 10:40:09","queryName":"GetCap","message":"No error","httpCode":200,"serviceExceptionCode":""}],"jobName":"vd-wms-fonds","httpMethod":"GET"}}eryName":"GetCap","message":"Unauthorized","httpCode":401,"serviceExceptionCode":""}],"jobName":"WMS_eau_APEM","httpMethod":"GET"}}<--
+-----------------------------
+Response headers
+-----------------------------
+sending->HTTP/1.1 200 OK
+sending->Server: Apache-Coyote/1.1
+sending->Content-Type: application/json;charset=UTF-8
+sending->Content-Language: fr-CH
+sending->Date: Tue, 11 Jan 2011 09:40:09 GMT
+-----------------------------
+
+output:{"success":true,"message":"L'execution du job s'est bien déroulée","data":{"url":"http://www.sig-pyrenees.net/proxy/ogc/wms_eau","statusCause":"Unauthorized","status":"Indisponible","statusCode":"UNAVAILABLE","serviceType":"WMS","queriesResults":[{"testedUrl":"http://www.sig-pyrenees.net/proxy/ogc/wms_eau?SERVICE=WMS&LAYERS=apem%3AEstives&FORMAT=image%2Fpng&TRANSPARENT=TRUE&HEIGHT=842&BGCOLOR=0xFFFFFF&REQUEST=GetMap&WIDTH=1020&BBOX=412918.805424238%2C1741422.91833529%2C482603.155961056%2C1798946.66652353&SRS=EPSG%3A27582&STYLES=&VERSION=1.1.1","status":"Indisponible","statusCode":"UNAVAILABLE","responseDelay":0.07999999821186066,"requestTime":"2011-01-11 10:40:10","queryName":"GetMapEstives","message":"Unauthorized","httpCode":401,"serviceExceptionCode":""},{"testedUrl":"http://www.sig-pyrenees.net/proxy/ogc/wms_eau?SERVICE=WMS&LAYERS=apem%3AHydro&FORMAT=image%2Fpng&HEIGHT=842&TRANSPARENT=TRUE&BGCOLOR=0xFFFFFF&REQUEST=GetMap&WIDTH=1020&BBOX=412918.805424238%2C1741422.91833529%2C482603.155961056%2C1798946.66652353&SRS=EPSG%3A27582&STYLES=&VERSION=1.1.1","status":"Indisponible","statusCode":"UNAVAILABLE","responseDelay":0.07900000363588333,"requestTime":"2011-01-11 10:40:10","queryName":"GetMapHydro","message":"Unauthorized","httpCode":401,"serviceExceptionCode":""},{"testedUrl":"http://www.sig-pyrenees.net/proxy/ogc/wms_eau?REQUEST=GetCapabilities&VERSION=1.1.1&SERVICE=WMS","status":"Indisponible","statusCode":"UNAVAILABLE","responseDelay":0.07999999821186066,"requestTime":"2011-01-11 10:40:10","queryName":"GetCap","message":"Unauthorized","httpCode":401,"serviceExceptionCode":""}],"jobName":"WMS_eau_APEM","httpMethod":"GET"}}
