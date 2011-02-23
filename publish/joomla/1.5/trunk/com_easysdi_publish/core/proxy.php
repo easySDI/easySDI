@@ -67,21 +67,21 @@ foreach ($_SERVER as $k => $v){
 	  
 	  //fwrite($fh, $k.":".$v."\n");
 	  
-	  if (substr($k, 0, 12) == "CONTENT_TYPE") 
+	   if (substr($k, 0, 12) == "CONTENT_TYPE") 
     {
     	$k = "Content-Type";
-    	$requ_headers[] = $k.":".$v;
+    	          $requ_headers[] = $k.":".$v;
 		  fwrite($fh, $k.":".$v."\n");
 	  }
 	  
-	  /*
+	  
 	  if (substr($k, 0, 14) == "CONTENT_LENGTH") 
     {
     	$k = "Content-Length";
     	$requ_headers[] = $k.":".$v;
 		  fwrite($fh, $k.":".$v."\n");
 	  }
-	 */
+	 
 	  
     if (substr($k, 0, 5) == "HTTP_") 
     { 
@@ -166,8 +166,15 @@ foreach ($_GET as $key => $value){
            }
       */
 	   //remove the headers form the curl response text
-	   $HTML = str_replace($h, "", $HTML);
+	   $HTML = str_replace(trim($h), "", $HTML);
   	}
+  	
+  	//suppress all crlf 
+  	$HTML = str_replace("\r\n", "", $HTML);
+  	
+  	
+  	
+  	
   fwrite($fh, "-----------------------------\n");
   fwrite($fh, "\n");
 	
@@ -258,13 +265,7 @@ function getFile($fileLoc)
      }
      //$fileLoc = "http://localhost:8080/geoserver/ows";
      $ch = curl_init($fileLoc);
-     
-     //set req headers
-     curl_setopt($ch,CURLOPT_HTTPHEADER,$requ_headers);
-     curl_setopt($ch, CURLOPT_USERAGENT, $user_agent);
-     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-     curl_setopt($ch, CURLOPT_HEADER, true);
-     curl_setopt($ch, CURLOPT_HEADERFUNCTION, 'read_header');
+ 
      //Tells CURL not to send expect:100 continue header. (transformDataset)
      //cause then he do not read the other ones..
      //But Jetty on geoserver doesn't seem to like this, so
@@ -279,23 +280,57 @@ function getFile($fileLoc)
      if($verb == "GET"){
 	      fwrite($fh, "GET:".$fileLoc."\n");
 	      //curl_setopt($ch, CURLOPT_BINARYTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt ($ch, CURLOPT_FAILONERROR, true);
+	      curl_setopt($ch, CURLOPT_HTTPHEADER,$requ_headers);
+        curl_setopt($ch, CURLOPT_HEADER, 1);
+        curl_setopt($ch, CURLOPT_HEADERFUNCTION, 'read_header');
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt ($ch, CURLOPT_FAILONERROR, 1);
      }else if($verb == "POST"){
 	      $xmlBody = file_get_contents('php://input');
         fwrite($fh, "POST\n");
 	      fwrite($fh, "xmlBody:".$xmlBody."\n");
+        curl_setopt($ch, CURLOPT_HTTPHEADER,$requ_headers);
+        curl_setopt($ch, CURLOPT_HEADER, 1);
+        curl_setopt($ch, CURLOPT_HEADERFUNCTION, 'read_header');
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
         curl_setopt($ch, CURLOPT_POST, 1);
-        //curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: text/xml'));
-        curl_setopt($ch, CURLOPT_POSTFIELDS, "$xmlBody");
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $xmlBody);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
      }else if($verb == "PUT"){
         fwrite($fh, "PUT\n");
 	      $xmlBody = file_get_contents('php://input');
+	      curl_setopt($ch, CURLOPT_HTTPHEADER,$requ_headers);
+        curl_setopt($ch, CURLOPT_HEADER, 1);
+        curl_setopt($ch, CURLOPT_HEADERFUNCTION, 'read_header');
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
 	      curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');  
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $xmlBody);  
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $xmlBody);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);  
 	      fwrite($fh, "xmlBody:".$xmlBody."\n");
+     }else if($verb == "DELETE"){
+        fwrite($fh, "DELETE\n");
+	      $xmlBody = file_get_contents('php://input');
+	      curl_setopt($ch, CURLOPT_HTTPHEADER,$requ_headers);
+        curl_setopt($ch, CURLOPT_HEADER, 1);
+        curl_setopt($ch, CURLOPT_HEADERFUNCTION, 'read_header');
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+	      curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');  
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $xmlBody);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);  
+	      fwrite($fh, "xmlBody:".$xmlBody."\n");
+     }else{
+     	  //send not implemented header
+        header('Method Not Implemented',true,501);
+        return "";
      }
      
      $file = curl_exec($ch);

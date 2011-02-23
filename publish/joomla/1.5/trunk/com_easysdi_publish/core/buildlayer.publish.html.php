@@ -42,7 +42,7 @@ class PUBLISH_Buildlayer {
 		
 		//Geometry list
 		$geometry_list = array();
-		$geometry_list [] = JHTML::_('select.option','choose geometry', "");
+		$geometry_list [] = JHTML::_('select.option','choose style', "");
 		$geometry_list [] = JHTML::_('select.option','point', JTEXT::_("EASYSDI_PUBLISH_POINT"));
 		$geometry_list [] = JHTML::_('select.option','line', JTEXT::_("EASYSDI_PUBLISH_LINE"));
 		$geometry_list [] = JHTML::_('select.option','polygon', JTEXT::_("EASYSDI_PUBLISH_POLYGON"));
@@ -94,28 +94,28 @@ class PUBLISH_Buildlayer {
 		JHTML::script('buildlayer.js', 'components/com_easysdi_publish/js/');
 		
 		//Fields name from feature source,and GUID
-		$fieldsName = "";
+    //$fieldsName = "";
 		$featureSourceGuid = "";
-		$arrAliases="";
-		$fieldAliases="";
+		//$arrAliases="";
+		//$fieldAliases="";
 		if($featureSourceId != ""){
-			$database->setQuery( "SELECT fieldsName FROM #__sdi_publish_featuresource where id=".$featureSourceId);
-			$fieldsName = $database->loadResult();
+			//$database->setQuery( "SELECT fieldsName FROM #__sdi_publish_featuresource where id=".$featureSourceId);
+			//$fieldsName = $database->loadResult();
 		
 			//featureSourceGuid
 			$database->setQuery( "SELECT featureGUID FROM #__sdi_publish_featuresource where id=".$featureSourceId);
 			$featureSourceGuid = $database->loadResult();
 		
 			//aliases
-			$database->setQuery( "SELECT fieldsaliases FROM #__sdi_publish_featuresource where id=".$featureSourceId);
-			$fieldAliases = $database->loadResult();
-			$arrAliases = explode(",", $fieldAliases);
+			//$database->setQuery( "SELECT fieldsaliases FROM #__sdi_publish_featuresource where id=".$featureSourceId);
+			//$fieldAliases = $database->loadResult();
+			//$arrAliases = explode(",", $fieldAliases);
 		}
-		$fieldsName = explode(",", $fieldsName);
+		//$fieldsName = explode(",", $fieldsName);
 		
 		//Retrieve the existing Layer name
 		$joomlaUser = JFactory::getUser();
-		$query = "SELECT name FROM #__sdi_publish_layer l, #__easysdi_community_partner p where p.partner_id=l.partner_id AND p.user_id=".$joomlaUser->id;
+		$query = "SELECT l.name FROM #__sdi_publish_layer l, #__sdi_account p where p.id=l.partner_id AND p.user_id=".$joomlaUser->id;
 		$database->setQuery($query);
 		$res = $database->loadObjectList();
 		$existingNames = "";
@@ -135,11 +135,13 @@ class PUBLISH_Buildlayer {
 	   		//echo "<pre>";  print_r($srvFs);  echo "</pre>";
 
 				//insert fields name once, is new fs, move to layer
+					/*
 					if($row->fieldsName == "undefined" || $row->fieldsName == "" || $row->fieldsName == "null"){
 						$fName = (string)$srvFs->fieldsname;
 						$database->setQuery( "UPDATE #__sdi_publish_featuresource SET fieldsaliases = '".$fName."', fieldsName = '".$fName."' where id=".$row->id);
 						$res = $database->query();
 					}
+					*/
 				$i++;
 			}
 		}
@@ -162,8 +164,8 @@ class PUBLISH_Buildlayer {
 						<input type="hidden" name="layerId" id="layerId" value="<?php echo $layerId; ?>" />
 						<input type="hidden" name="layerGuid" id="layerGuid" value="<?php echo $layerGuid; ?>" />
 						<input type="hidden" name="featureSourceGuid" id="featureSourceGuid" value="<?php echo $featureSourceGuid; ?>" />
-						<input type="hidden" name="fieldsName" id="fieldsName" value="<?php echo implode(",",$fieldsName); ?>" />
-						<input type="hidden" name="currentAliases" id="currentAliases" value="<?php echo $fieldAliases; ?>" />
+						<!-- <input type="hidden" name="fieldsName" id="fieldsName" value="<?php echo implode(",",$fieldsName); ?>" /> -->
+						<!-- <input type="hidden" name="currentAliases" id="currentAliases" value="<?php echo $fieldAliases; ?>" /> -->
 						<input type="hidden" name="existingNames" id="existingNames" value="<?php echo $existingNames;?>" />
 						<input type="hidden" name="wmsUrl" id="wmsUrl" value="" />
 						<input type="hidden" name="wfsUrl" id="wfsUrl" value="" />
@@ -189,12 +191,13 @@ class PUBLISH_Buildlayer {
 							</tr>
 						  <!-- The Geometry -->
 							<tr>
-								<td align="left"><?php echo JText::_("EASYSDI_PUBLISH_CHOOSEGEOMTRY"); ?>:</td>
+								<td align="left"><?php echo JText::_("EASYSDI_PUBLISH_CHOOSE_STYLE"); ?>:</td>
 								<td align="left"><?php echo JHTML::_("select.genericlist",$geometry_list, 'geometry', 'size="1" class="inputbox"', 'value', 'text', $selectedGeometry); ?></td>
 							</tr>
 						</table>
 						
 						<!-- fields Name -->
+						<!--
 						<div id="fieldsNameTab">
 						<fieldset>
 							<legend><?php echo JText::_("EASYSDI_PUBLISH_FIELDS_NAME"); ?></legend>
@@ -223,6 +226,7 @@ class PUBLISH_Buildlayer {
 							</table>
 						</fieldset>
 						</div>
+						-->
 						<!-- Description -->
 						<div id="descriptionTab">
 							<fieldset>

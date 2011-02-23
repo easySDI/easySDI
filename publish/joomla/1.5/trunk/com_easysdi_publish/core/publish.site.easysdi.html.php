@@ -75,8 +75,9 @@ class HTML_site {
 		foreach ($featureSources as $row)
 						$fsList .= $row->featureGUID.",";
 		$url = $wpsConfig."?operation=ListFeatureSources&list=".$fsList;
-		$xml = simplexml_load_file($url);
-		
+		$xml = simplexml_load_file($url,'SimpleXMLElement', LIBXML_NOCDATA);
+		//echo "<pre>";  print_r($xml);  echo "</pre>";
+
 		$i=0;
 		foreach ($featureSources as $row){
 			$srvFs = $xml->xpath("//featuresource[@guid='$row->featureGUID']");
@@ -85,130 +86,23 @@ class HTML_site {
 				//echo "<pre>";  print_r($srvFs);  echo "</pre>";
 				$status = (string)$srvFs->status;
 				$featureSources[$i]->status = $status;
+				$featureSources[$i]->excmessage = (string)$srvFs->excmessage;
+	  		$featureSources[$i]->excdetail = (string)$srvFs->excdetail;
 			}else{
-				$featureSources[$i]->status = "UNAVAILABLE";
+				$featureSources[$i]->status = "OUT_OF_SYNC";
 			}
-			if($status == "CREATING")
-				array_push($fsInProgress, $featureSources[$i]->featureGUID);
 			$i++;
 		}
-					//echo "<pre>";  print_r($featureSources[0]);  echo "</pre>";
+					//echo "<pre>";  print_r($featureSources[8]);  echo "</pre>";
 		?>	
 		
-				<script type="text/javascript">
-			
-		<?php
-		echo "var fs_array = new Array();\n";
-		echo "var pbArray = new Hash();\n";
-
-		$ix = 0;
-		foreach($fsInProgress as $value)
-		{
-			echo "fs_array.push(\"$value\");\n";
-		}
-		foreach($fsInProgress as $value)
-		{
-			$id = str_replace("-","",$value);
-		  echo "var pb".$id.";\n";
-		}
-		echo "var base_url = '".$base_url."';\n";
-		echo "var wpsConfig = '".$wpsAddress."/config"."';\n";
-		?>
-		
-
-		window.addEvent('domready', function() {
-		
-		<?php
-		foreach($fsInProgress as $value)
-		{
-			$id = str_replace("-","",$value);
-		  echo "var pb".$id."= new dwProgressBar({
-						container: $('pb$value'),
-						startPercentage: 0,
-						speed:3500,
-						boxID: 'box$id',
-						percentageID: 'perc$value',
-						displayID: 'text$value',
-						displayText: false
-					});\n";
-		}
-		
-		foreach($fsInProgress as $value)
-		{
-			$id = str_replace("-","",$value);
-			echo "pbArray.set('$value', pb".$id.");\n";
-		  //echo "pbArray['$value'] = pb".$id.";\n";
-		}		
-		?>
-
-
-		  //Do featuresource progress at time interval until all fs are done
-		  setTimeout("doFsProgress();",3000);
-
-		});
-
+		<script type="text/javascript">
+	
 		function paginateOnChange(button, tabIndex){
 			$('tabIndex').value = tabIndex;
 			submitbutton(button);
 		}
 		
-		function doFsProgress(){
-			  
-				var reqArray = new Array();
-				for (i=0; i<fs_array.length; i++){
-
-						reqArray[i] = new Request({
-							url: base_url+'components/com_easysdi_publish/core/proxy.php?proxy_url='+wpsConfig,
-							method: 'get',
-							data : {
-								'operation':'GetTransformationProgress',
-								'guid':fs_array[i]
-								},
-							evalResponse: true,
-							//we have to wait to return the function's response.
-							async : true,
-							onSuccess: function(responseText, responseXML){
-								if(responseXML == null)
-									return;
-								sfid = responseXML.getElementsByTagName('progression')[0].attributes[0].nodeValue;
-								prog = parseInt(responseXML.getElementsByTagName('progression')[0].lastChild.textContent);
-								stat = responseXML.getElementsByTagName('status')[0].lastChild.textContent;
-								
-								if(stat == "CREATING")
-									pbArray.get(sfid).set(prog);
-									
-								if(stat == "AVAILABLE")
-									pbArray.get(sfid).set(100);
-								
-								$('st'+sfid).innerHTML=stat;
-								
-								//If progress is not available
-								if(prog == -1){
-									 $('pb'+sfid).innerHTML = 'unsupported';
-								}
-								
-								if((prog == 100 || prog == -1) && stat != "CREATING"){	
-									for(var j=0; j<fs_array.length; j++){
-										if(fs_array[j] == sfid){
-											//remove fs
-											pbArray.erase(sfid);
-											$('pb'+sfid).style.display='none';
-										}
-									}
-								}
-		  				},
-		  				onFailure: function(xhr){
-		  					return false;
-		  				}
-		  			}).send();
-					
-				}
-				
-				//Do progress until all fs are done
-				if(pbArray.length != 0)
-				   setTimeout("doFsProgress();",5000);
-
-		}
 		</script>
 		
 		<table width="100%">
@@ -236,10 +130,9 @@ class HTML_site {
 								<thead>
 									<tr>
 										<th class="title" align="left"><?php echo JText::_("EASYSDI_PUBLISH_TEXT_NAME"); ?></th>
-										<th class="descr align="center"><?php echo JText::_("EASYSDI_PUBLISH_TEXT_PROGRESS"); ?></th>
 										<th class="descr" align="center"><?php echo JText::_("EASYSDI_PUBLISH_TEXT_STATUS"); ?></th>
-										<th class="descr" align="center"><?php echo JText::_("EASYSDI_TEXT_CREATION_DATE"); ?></th>
-										<th class="descr" align="center"><?php echo JText::_("EASYSDI_TEXT_UPDATE_DATE"); ?></th>
+										<th class="date" align="center"><?php echo JText::_("EASYSDI_TEXT_CREATION_DATE"); ?></th>
+										<th class="date" align="center"><?php echo JText::_("EASYSDI_TEXT_UPDATE_DATE"); ?></th>
 										<th class="logo" align="center">&nbsp;</th>
 										<th class="logo" align="center">&nbsp;</th>
 										<th class="logo" align="center">&nbsp;</th>
@@ -257,9 +150,14 @@ class HTML_site {
 ?>
 									<tr class="<?php echo "row$k"; ?>">
 										<td align="left"><?php echo $row->name; ?></td>
-										<td><div class="prog" id="<?php echo "pb".$row->featureGUID; ?>"/></td>
-										<?php if($row->status == "AVAILABLE"){?>	
-											<td align="center"><div id="<?php echo "st".$row->featureGUID; ?>"><?php echo $row->status; ?></div></td>
+										<?php if($row->status == "AVAILABLE"){?>
+										  <?php if($row->excmessage == "null"){?>
+											   <td align="center"><div id="<?php echo "st".$row->featureGUID; ?>"><?php echo $row->status; ?></div></td>
+											<?php }else{ ?>
+											   <td align="center"><a id="<?php echo "st".$row->featureGUID; ?>" title="<?php echo JText::_('EASYSDI_PUBLISH_VIEW_FS_STATUS_DETAILS'); ?>" class="modal" href="./index.php?tmpl=component&option=com_easysdi_publish&task=showFsStats&guid=<?php echo $row->featureGUID;?>" rel="{handler:'iframe',size:{x:650,y:350}}"><?php echo $row->status; ?></a>(Update failed)</td>											
+											<?php } ?>
+										<?php }else if($row->status == "OUT_OF_SYNC"){ ?>
+										  <td align="center"><div id="<?php echo "st".$row->featureGUID; ?>"><?php echo JText::_('EASYSDI_PUBLISH_FS_OUT_OF_SYNC'); ?></div></td>
 										<?php }else{ ?>
 											<td align="center"><a id="<?php echo "st".$row->featureGUID; ?>" title="<?php echo JText::_('EASYSDI_PUBLISH_VIEW_FS_STATUS_DETAILS'); ?>" class="modal" href="./index.php?tmpl=component&option=com_easysdi_publish&task=showFsStats&guid=<?php echo $row->featureGUID;?>" rel="{handler:'iframe',size:{x:650,y:350}}"><?php echo $row->status; ?></a></td>
 										<?php } ?>
@@ -489,7 +387,7 @@ class HTML_site {
 					
 					//select layer
 					$layerList = array();
-					$db->setQuery( "SELECT l.id AS value, l.name as text FROM #__sdi_publish_layer l, #__easysdi_community_partner p where p.partner_id=l.partner_id AND p.user_id=".$joomlaUser->id);
+					$db->setQuery( "SELECT l.id AS value, l.name as text FROM #__sdi_publish_layer l, #__sdi_account p where p.id=l.partner_id AND p.user_id=".$joomlaUser->id);
 					$layerList = $db->loadObjectList();
 					$layerList [] = JHTML::_('select.option','0', JText::_("EASYSDI_PUBLISH_CHOOSE_LAYER"));
 										

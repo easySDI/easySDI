@@ -138,8 +138,7 @@ class SITE_publish {
 		$featureSource->formatId = JRequest::getVar("transfFormatId");
 		$featureSource->scriptId = JRequest::getVar("transfScriptId");
 		$featureSource->fileList = JRequest::getVar("fileList");
-		$featureSource->fieldsName = JRequest::getVar("fieldsName");
-		$featureSource->fieldsaliases = JRequest::getVar("fieldsName");
+		$featureSource->responseDoc = JRequest::getVar("responseDoc");
 		if(JRequest::getVar("featureSourceId") == 0)
 			$featureSource->creation_date = date('y-m-j, G-i-s');
 		$featureSource->update_date = date('y-m-j, G:i:s');
@@ -186,7 +185,8 @@ class SITE_publish {
 			$layerGuid = 'none';
 			
 			//load all featuresource for the partner
-				$query = "SELECT f.featureGUID, f.fieldsName FROM #__sdi_publish_featuresource f, #__sdi_account p where p.id=f.partner_id AND p.user_id=".$joomlaUser->id;
+				//$query = "SELECT f.featureGUID, f.fieldsName FROM #__sdi_publish_featuresource f, #__sdi_account p where p.id=f.partner_id AND p.user_id=".$joomlaUser->id;
+				$query = "SELECT f.featureGUID FROM #__sdi_publish_featuresource f, #__sdi_account p where p.id=f.partner_id AND p.user_id=".$joomlaUser->id;
 				$query .= " ORDER BY f.name";
 				$db->setQuery( $query );	
 				
@@ -202,16 +202,27 @@ class SITE_publish {
 	function editLayer($wpsPublish, $currentUser, $config){
 		global $mainframe;
 		$db=& JFactory::getDBO();
-		
+		$joomlaUser = JFactory::getUser();
 		//retrieve Layer info
-		$layerId = JRequest::getVar('id');	
+		$layerId = JRequest::getVar('id');
+		
+		$query = "SELECT f.featureGUID FROM #__sdi_publish_featuresource f, #__sdi_account p where p.id=f.partner_id AND p.user_id=".$joomlaUser->id;
+		$query .= " ORDER BY f.name";
+		$db->setQuery( $query );	
+				
+		$featureSources = $db->loadObjectList();
+		if ($db->getErrorNum()) {
+			echo $db->stderr();
+			return false;
+		}
+				
 		$db->setQuery( "SELECT layerGuid FROM #__sdi_publish_layer where id=".$layerId);
 		$layerGuid = $db->loadResult();
 		if($db->getErrorNum()){
 				$mainframe->enqueueMessage(JText::_("ERROR_EXECUTING_QUERY"),"ERROR");
 				return;
 		}
-		PUBLISH_Buildlayer::Buildlayer($layerId, $layerGuid, $wpsPublish, $currentUser, $config);
+		PUBLISH_Buildlayer::Buildlayer($featureSources, $layerId, $layerGuid, $wpsPublish, $currentUser, $config);
 }
 	
 	
@@ -225,7 +236,7 @@ class SITE_publish {
 		$layer->featuresourceId = JRequest::getVar("featureSourceId");
 		$layer->name = JRequest::getVar("layer_name");
 		$layer->title = JRequest::getVar("layerTitle");
-		$featureSource->geometry = JRequest::getVar("geometry");
+		$layer->geometry = JRequest::getVar("geometry");
 		$layer->description = JRequest::getVar("layerDescription");
 		$layer->quality_area = JRequest::getVar("layerQuality");
 		$layer->keywords = JRequest::getVar("layerKeyword");
@@ -290,7 +301,7 @@ class SITE_publish {
 			//load fslist from the server and update fs object
 			$wpsConfig = $wpsAddress."/config";
 			$url = $wpsConfig."?operation=ListFeatureSources&list=".$guid;
-			$xml = simplexml_load_file($url);
+			$xml = simplexml_load_file($url,'SimpleXMLElement', LIBXML_NOCDATA);
 			$i=0;
 			$swlWhere = "";
 			$srvFs = $xml->xpath("//featuresource[@guid='$guid']");

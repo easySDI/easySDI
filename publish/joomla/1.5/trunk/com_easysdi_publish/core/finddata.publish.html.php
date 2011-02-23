@@ -56,7 +56,7 @@ class PUBLISH_Finddata {
 					
 		//Retrieve the existing Feature Source name
 		$joomlaUser = JFactory::getUser();
-		$query = "SELECT name FROM #__sdi_publish_featuresource f, #__easysdi_community_partner p where p.partner_id=f.partner_id AND p.user_id=".$joomlaUser->id;
+		$query = "SELECT f.name FROM #__sdi_publish_featuresource f, #__sdi_account p where p.id=f.partner_id AND p.user_id=".$joomlaUser->id;
 		$database->setQuery($query);
 		$res = $database->loadObjectList();
 		$existingNames = "";
@@ -79,14 +79,14 @@ class PUBLISH_Finddata {
 			$database->setQuery( "SELECT name FROM #__sdi_publish_featuresource where id=".$featureSourceId);
 			$fsName = $database->loadResult();
 			
-			$database->setQuery( "SELECT fieldsName FROM #__sdi_publish_featuresource where id=".$featureSourceId);
-			$fieldsName = $database->loadResult();
+			//$database->setQuery( "SELECT fieldsName FROM #__sdi_publish_featuresource where id=".$featureSourceId);
+			//$fieldsName = $database->loadResult();
 			
 			$database->setQuery( "SELECT projection FROM #__sdi_publish_featuresource where id=".$featureSourceId);
 			$selectedEpsg = $database->loadResult();
 			
-			$database->setQuery( "SELECT formatId FROM #__sdi_publish_featuresource where id=".$featureSourceId);
-			$selectedFormat = $database->loadResult();
+			$database->setQuery( "SELECT publish_script_name FROM #__sdi_publish_script where id=".$config->default_datasource_handler);
+		  $selectedFormat = $database->loadResult();
 		}
 		else
 		{
@@ -102,26 +102,29 @@ class PUBLISH_Finddata {
 	  
 	  $param = array('size'=>array('x'=>350,'y'=>800) );
 		JHTML::_("behavior.modal","a.modal",$param);
-					
 	?>
+	<script type="text/javascript">
+  
+  var EASYSDI_PUBLISH_TEXT_PROGRESSION = '<?php echo JText::_("EASYSDI_PUBLISH_TEXT_PROGRESSION");?>';
+  
+  </script>
+	
 	
 	<link rel="stylesheet" href="components/com_easysdi_publish/css/fancy.css" type="text/css" media="screen, projection">
 		<div id="page">
 		<h2 class="contentheading"><?php echo JText::_("EASYSDI_PUBLISH_PUBLISH_TITLE"); ?></h2>
 		<div class="contentin">
-			<h3><?php echo JText::_("EASYSDI_PUBLISH_FEATURESOURCE_NAME"); ?>: <?php echo $fsName ?></h3>
+			<h3><?php if($isUpdate) echo JText::_("EASYSDI_PUBLISH_UPDATE_FEATURESOURCE_NAME").": ".$fsName; else echo JText::_("EASYSDI_PUBLISH_NEW_FEATURESOURCE_NAME")?></h3>
 				<div class="publish">	
 					<!-- File choice -->
 						<fieldset style="width:430px;">
 						<legend><?php echo JText::_("EASYSDI_PUBLISH_CHOOSE_FILES"); ?> (<?php echo JText::_("EASYSDI_PUBLISH_MAX_FILE_SIZE"); ?>: <?php echo $maxFileSize; ?> <?php echo JText::_("EASYSDI_PUBLISH_MB"); ?>)</legend>
 						<form action="components/com_easysdi_publish/core/script.php" method="post" enctype="multipart/form-data" id="form-demo">
 							<div id="demo-fallback" class="hide">
-								<p>
-											Please replace:
-											mootools.js in "www\Joomla\media\system\js"
-											With the one provided here:
-											"www\Joomla\components\com_easysdi_publish\js\fancyupload"
-										</p>
+								<p><b>
+											Please activate the "System - Mootools Upgrade" plugin in the Joomla! backend,
+											 because Mootools 1.2 is required for the uploader (next version of Publish will suppress this incompatibility). 
+								</b></p>
 							</div>
 							<div style="width:430px;" id="demo-status" class="hide">
 								<p>
@@ -165,7 +168,7 @@ class PUBLISH_Finddata {
 						<table>
 							<tr>
 								<td align="left"><?php echo JText::_("EASYSDI_PUBLISH_TEXT_NAME"); ?>:</td>
-								<td align="left"><input id="featuresource_name" name="featuresource_name" class="inputbox" type="text" size="10" maxlength="100" value="<?php echo $fsName; ?>" /></td>	
+								<td align="left"><input id="featuresource_name" name="featuresource_name" class="inputbox" type="text" size="10" maxlength="100" value="<?php echo $fsName; ?>" <?php if($isUpdate) echo "DISABLED"; ?>/></td>	
 							</tr>
 						</table>
 						<table>
@@ -212,9 +215,14 @@ class PUBLISH_Finddata {
 						
 							<table style="width:480px;">
 								<tr>
-									<td width="40px" align="left">
+									<td align="left">
 										<button name="home" id="home"><?php echo JText::_("EASYSDI_PUBLISH_HOME"); ?></button>
-									<td align="right"><img id="loadingImg" width="25px" height="25px" src="components/com_easysdi_publish/img/loading.gif"></img></td>
+									<td align="right">
+										<div style="font-weight:bold" width="50px" id="progress"></div>
+									</td>
+									<td align="right" width="30px">
+										<img id="loadingImg" width="25px" height="25px" src="components/com_easysdi_publish/img/loading.gif"></img>
+									</td>
 									<!--
 									<td width="40px" align="right">
 										<button name="demo-upload" id="demo-upload"><?php echo JText::_("EASYSDI_PUBLISH_UPLOAD_FILES"); ?></button>

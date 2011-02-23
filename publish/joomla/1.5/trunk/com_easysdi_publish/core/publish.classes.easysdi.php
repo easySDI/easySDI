@@ -24,13 +24,11 @@ class featureSource extends JTable
 	var $partner_id=0;
 	var $name=null;
 	var $projection=null;
-	var $fieldsaliases=null;
 	var $formatId=null;
 	var $scriptId=null;
 	var $fileList=null;
 	var $creation_date=null;
 	var $update_date=null;
-	var $fieldsName=null;
 
 	// Class constructor
 	function __construct( &$db )
