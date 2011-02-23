@@ -102,15 +102,20 @@ if($database->getErrorNum()){
 		return;
 }
 
+//Test connection to WPS
+if(testConnection($wpsConfig) == false){
+	 echo "<h3>".JText::_("EASYSDI_ERROR")."</h3>";
+   echo JText::_("EASYSDI_PUBLISH_ERROR_CONNECTING_TO_WPS")." ".$wpsAddress;
+}else{
+
+
 /**
  * Handle view publish
  */
 switch($task){
-	//case "manageFavoriteProduct":
-	//	$mainframe->redirect("index.php?option=$option&task=manageFavorite&myFavoritesFirst=$myFavoritesFirst&simpleSearchCriteria=$simpleSearchCriteria&freetextcriteria=$freetextcriteria&limitstart=$limitstart" );
-	//	break;
 	
 	case "gettingStarted":
+	  
 		SITE_publish::gettingStarted($userRights, $wpsAddress, getCurrentUser($wpsConfig));
 		break;
 	
@@ -164,49 +169,23 @@ switch($task){
 	case "showFormatList":
 		SITE_publish::showFormatList();
 		break;
-		
-	case "showError":
-		break;
 	
 	default :	
 		$mainframe->redirect("index.php?option=com_easysdi_publish&task=gettingStarted");		
 		//$mainframe->enqueueMessage(JText::_("EASYSDI_ACTION_NOT_ALLOWED"), "INFO");
 		break;
 }
-
+}
 
 function getCurrentUser($wpsConfig){
 	global $mainframe;
 	$joomlaUser = JFactory::getUser();
 	$database =& JFactory::getDBO();
 	//Retrieve diffusion server list from wps
-	$url = $wpsConfig."?operation=listPublicationServers";
-	
-	$xml = null;
-	
-	//Test connection to the server
-	preg_match("~([a-z]*://)?([^:^/]*)(:([0-9]{1,5}))?(/.*)?~i", $url, $parts);
-	$protocol = $parts[1];
-	$server = $parts[2];
-	$port = $parts[4];
-	$path = $parts[5];
-	
-	if ($port == "") {
-	     if (strtolower($protocol) == "https://") {
-	          $port = "443";
-	     } else {
-	          $port = "80";
-	     }
-	}
-	if ($path == "") { $path = "/"; }	
-	if (!$sock = @fsockopen(((strtolower($protocol) == "https://")?"ssl://":"").$server, $port, $errno, $errstr, 5))
-	{
-			$mainframe->enqueueMessage(JText::_("EASYSDI_PUBLISH_CANNOT_CONNECT_TO WPS"), "ERROR");
-			$mainframe->redirect("index.php?option=com_easysdi_publish&task=showError");
-	}else{
-			$xml = simplexml_load_file($url);		
-	}
-	
+	$url = $wpsConfig."?operation=listPublicationServers";	
+
+	$xml = simplexml_load_file($url);
+
 	//retrieve general info of the logged user and config
 	$query = "select u.easysdi_user_id, u.publish_user_max_layers, u.publish_user_total_space, u.publish_user_diff_server_id, u.publish_user_diff_server_id from #__sdi_publish_user u, #__sdi_account p where u.easysdi_user_id=p.id AND p.user_id=".$joomlaUser->id;
 	$database->setQuery($query);
@@ -228,5 +207,33 @@ function getCurrentUser($wpsConfig){
 	}
 	
 	return $currentUser[0];
+}
+
+function testConnection($wpsConfig){
+
+  $url = $wpsConfig."?operation=listPublicationServers";
+		
+	//Test connection to the server
+	preg_match("~([a-z]*://)?([^:^/]*)(:([0-9]{1,5}))?(/.*)?~i", $url, $parts);
+	$protocol = $parts[1];
+	$server = $parts[2];
+	$port = $parts[4];
+	$path = $parts[5];
+	
+	if ($port == "") {
+	     if (strtolower($protocol) == "https://") {
+	          $port = "443";
+	     } else {
+	          $port = "80";
+	     }
+	}
+	if ($path == "") { $path = "/"; }	
+	if (!$sock = @fsockopen(((strtolower($protocol) == "https://")?"ssl://":"").$server, $port, $errno, $errstr, 5))
+	{
+		   return false;
+	}else{
+	     return true;
+  }
+
 }
  ?>	
