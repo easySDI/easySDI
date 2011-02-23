@@ -216,8 +216,6 @@ class ADMIN_publish {
 		$database->setQuery( $query);
 		$module_id = $database->loadResult();
 
-		$database->setQuery("UPDATE #__sdi_configuration SET value='".$_POST['publication_server_wps_address']."' WHERE code='WPS_PUBLISHER' AND module_id=".$module_id);
-		$database->query();
 		$publishConfig->default_diffusion_server_id=$_POST['default_diffusion_server_id'];
 		$publishConfig->default_datasource_handler=$_POST['default_datasource_handler'];
 
@@ -244,6 +242,7 @@ class ADMIN_publish {
 		$diffusion_server_db_name=$_POST['diffusion_server_db_name'];
 		$diffusor_bd_type_id=$_POST['diffusor_bd_type_id'];
 		$diffusion_server_db_url=$_POST['diffusion_server_db_url'];
+		$diffusion_server_db_scheme=$_POST['diffusion_server_db_scheme'];
 		$diffusion_server_db_username=$_POST['diffusion_server_db_username'];
 		$diffusion_server_db_password=$_POST['diffusion_server_db_password'];
 
@@ -257,6 +256,7 @@ class ADMIN_publish {
 		$url.= "&dbname=".$diffusion_server_db_name;
 		$url.= "&dbtype=".$diffusor_bd_type_id;
 		$url.= "&dburl=".$diffusion_server_db_url;
+		$url.= "&dbscheme=".$diffusion_server_db_scheme;
 		$url.= "&dbusername=".$diffusion_server_db_username;
 		$url.= "&dbpassword=".$diffusion_server_db_password;								 
 		

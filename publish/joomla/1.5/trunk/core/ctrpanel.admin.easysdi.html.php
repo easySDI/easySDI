@@ -19,6 +19,34 @@ defined('_JEXEC') or die('Restricted access');
 
 class HTML_ctrlpanel {
 	
+	function display_xml_error($error, $xml)
+  {
+    $return  = $xml[$error->line - 1] . "\n";
+    $return .= str_repeat('-', $error->column) . "^\n";
+
+    switch ($error->level) {
+        case LIBXML_ERR_WARNING:
+            $return .= "Warning $error->code: ";
+            break;
+         case LIBXML_ERR_ERROR:
+            $return .= "Error $error->code: ";
+            break;
+        case LIBXML_ERR_FATAL:
+            $return .= "Fatal Error $error->code: ";
+            break;
+    }
+
+    $return .= trim($error->message) .
+               "\n  Line: $error->line" .
+               "\n  Column: $error->column";
+
+    if ($error->file) {
+        $return .= "\n  File: $error->file";
+    }
+
+    return "$return\n\n--------------------------------------------\n\n";
+  }
+	
 	function ctrlPanelPublish($format_rows, $rowPublishConfig, $options, $config_Id, $partner_list, $layers, $use_pagination_layer, $pageNav, $filter_order, $filter_order_Dir, $search){
 		//diffusor_rows obsolete
 		
@@ -34,7 +62,12 @@ class HTML_ctrlpanel {
 		//Get the server list from the WPS
 		$wpsConfig = $wpsAddress."/config";
 		$url = $wpsConfig."?operation=listPublicationServers";
-		$xml = simplexml_load_file($url);		
+		$xml = simplexml_load_file($url);
+		//check error by getting the doc
+		if(!$xml){		
+		   echo JText::_("EASYSDI_PUBLISH_ERROR_CONNECTING_TO_WPS")." ".$wpsAddress;
+		   return;
+		}
 		//get the server edit list
 		$servers = $xml->server;
 		$diffusor_rows = Array();
@@ -48,7 +81,7 @@ class HTML_ctrlpanel {
 		$diffusionServers = $diffusor_rows;
 		//$diffusionServers [] = JHTML::_('select.option','0', JText::_("EASYsdi_publish_diffuser_LIST_TITLE") );
 		
-				//File format for the user
+		//File format for the user
 		$format_list = array();
 		$database->setQuery( "SELECT id AS value, publish_script_display_name as text FROM #__sdi_publish_script WHERE publish_script_is_public=1");
 		$format_list = $database->loadObjectList();
@@ -90,27 +123,14 @@ class HTML_ctrlpanel {
 			<tr>
 				<td>
 					<fieldset>
-						<legend><b><?php echo JText::_("EASYSDI_PUBLISH_PUBLICATION_SERVER"); ?></b></legend>
-						<table border="0" cellpadding="3" cellspacing="0">
-							<tr>
-								<td><?php echo JText::_("EASYSDI_PUBLISH_WPS_ADDRESS"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="publication_server_wps_address" value="<?php echo $wpsAddress; ?>" /></td>
-							</tr>
-							<tr>							
-								<td colspan="2">
-								<fieldset>
-								<legend><b><?php echo JText::_("EASYSDI_PUBLISH_SUPPORTED_FORMAT_LIST"); ?></b></legend>
-									<ul>
-									<?php							
-										foreach( $format_rows as $format ) 
-											echo "<li>".$format->publish_script_name."</li>";
-									?>
-									</ul>
-								</fieldset>
-								</td>
-							</tr>
-						</table>
-					</fieldset>
+						<legend><b><?php echo JText::_("EASYSDI_PUBLISH_SUPPORTED_FORMAT_LIST"); ?></b></legend>
+							<ul>
+							<?php							
+								foreach( $format_rows as $format ) 
+									echo "<li>".$format->publish_script_name."</li>";
+							?>
+							</ul>
+				  </fieldset>
 				</td>
 			</tr>
 		</table>
@@ -159,6 +179,7 @@ class HTML_ctrlpanel {
     														'url' => "",
     														'username' => "",
     														'password' => "",
+    														'dbscheme' => "",
     														'dbname' => "",
     														'dbtype' => "",
     														'dburl' => "",
@@ -188,6 +209,7 @@ class HTML_ctrlpanel {
 										<th width="10%" align="center"><?php echo JText::_("EASYSDI_PUBLISH_DATABASE");?></th>
 										<th width="10%" align="center"><?php echo JText::_("EASYSDI_PUBLISH_TYPE");?></th>
 										<th width="10%" align="center"><?php echo JText::_("EASYSDI_PUBLISH_URL");?></th>
+										<th width="10%" align="center"><?php echo JText::_("EASYSDI_PUBLISH_SCHEMA");?></th>
 										<th width="30%" align="center"><?php echo JText::_("EASYSDI_PUBLISH_USERNAME");?></th>
 										<th width="10%" align="center"><?php echo JText::_("EASYSDI_PUBLISH_PASSWORD");?></th>
 										<!--<th width="10%" align="center">&nbsp;</th>-->
@@ -210,6 +232,7 @@ class HTML_ctrlpanel {
 										<td align="left"><?php echo $row->dbname; ?></td>
 										<td align="center"><?php echo $row->dbtype; ?></td>
 										<td align="center"><?php echo $row->dburl; ?></td>
+										<td align="center"><?php echo $row->dbscheme; ?></td>
 										<td align="center"><?php echo $row->dbusername; ?></td>
 										<td align="center"><?php echo $row->dbpassword; ?></td>
 									  <!-- <td align="center"><a href="index.php?option=com_easysdi_publish&task=viewLayer&id=<?php echo $row->id; ?>"><?php echo JText::_("EASYSDI_PUBLISH_VIEW"); ?></a></td> -->
@@ -279,6 +302,10 @@ class HTML_ctrlpanel {
 										<tr>
 												<td><?php echo JText::_("EASYSDI_PUBLISH_URL"); ?> : </td>
 												<td><input class="inputbox" type="text" size="50" maxlength="100" name="diffusion_server_db_url" value="<?php echo $diffusor->dburl; ?>" /></td>
+										</tr>
+										<tr>
+											<td><?php echo JText::_("EASYSDI_PUBLISH_SCHEMA"); ?> : </td>
+											<td><input class="inputbox" type="text" size="50" maxlength="100" name="diffusion_server_db_scheme" value="<?php echo $diffusor->dbscheme; ?>" /></td>
 										</tr>
 										<tr>
 											<td><?php echo JText::_("EASYSDI_PUBLISH_USERNAME"); ?> : </td>
@@ -398,6 +425,9 @@ class HTML_ctrlpanel {
 		
 <?php
 		echo $tabs->endPanel();
+		
+		/*
+		
 		echo $tabs->startPanel(JText::_("EASYSDI_PUBLISH_SCRIPT_MANAGEMENT"),"partnerPane3");
 
 		//load scripts
@@ -411,9 +441,10 @@ class HTML_ctrlpanel {
 		//If it's an existing diffusor, else new.
 		if($scriptId != 0)	
 			$script->load($scriptId);
-
+    */
 
 ?>		
+    <!--
 		<div class="info"><?php echo JText::_("EASYSDI_PUBLISH_SELECT_SCRIPT_MANAGEMENT_HINT"); ?></div>
 		<br/>
 		<table border="0" cellpadding="0" cellspacing="0">
@@ -459,13 +490,13 @@ class HTML_ctrlpanel {
 				</td>
 			</tr>
 		</table>
-	<!-- Type hidden here -->
+		-->
 	<input type="hidden" name="task" value="editGlobalSettings"/>
 	<input type="hidden" name="option" value="<?php echo $options; ?>" />
 	<input type="hidden" name="config_id" value="<?php echo $config_Id; ?>" />
-	<input type="hidden" id="publish_script_file" name="publish_script_file" value="<?php echo $script->publish_script_file; ?>" />
 	<input type="hidden" id="tabIndex" name="tabIndex" value="<?php echo JRequest::getVar('tabIndex'); ?>" />
-	
+	<!--
+	<input type="hidden" id="publish_script_file" name="publish_script_file" value="<?php echo $script->publish_script_file; ?>" />	
 	<div id="fileUpload">
 		<table>
 			<tr>
@@ -477,7 +508,6 @@ class HTML_ctrlpanel {
 								<td><?php echo JText::_("EASYSDI_PUBLISH_FILE"); ?> : </td>
 								<td><input class="inputbox" type="file" size="40" maxlength="100" name="Filedata" /></td>
 								<td><input type="button" name="addScript" id="addScript" onClick="javascript:reloadTab(3,'saveConfig');" value="<?php echo JText::_("EASYSDI_PUBLISH_SAVE"); ?>"/></td>
-								<!-- <input type="hidden" name="MAX_FILE_SIZE" value="100000" /> -->
 								<input type="hidden" name="config_id" value="<?php echo $config_Id; ?>" />
 							</tr>
 							<tr>
@@ -489,8 +519,9 @@ class HTML_ctrlpanel {
 			</tr>
 		</table>
 	</div>
+	-->
 <?php
-		echo $tabs->endPanel();
+		//echo $tabs->endPanel();
 		echo $tabs->startPanel(JText::_("EASYSDI_PUBLISH_LAYER_MANAGEMENT"),"partnerPane4");
 
 		//load scripts
@@ -606,9 +637,11 @@ class HTML_ctrlpanel {
 		$('partnerPane2').addEvent('click', function() {
 				$('tabIndex').value = 2;
 		});
-		$('partnerPane3').addEvent('click', function() {
-				$('tabIndex').value = 3;
-		});
+		
+		//$('partnerPane3').addEvent('click', function() {
+		//		$('tabIndex').value = 3;	
+		//});
+		
 		$('partnerPane4').addEvent('click', function() {
 				$('tabIndex').value = 4;
 		});
@@ -624,12 +657,15 @@ class HTML_ctrlpanel {
 		if(objSelDif.options[objSelDif.selectedIndex].value == 'new')
 			objBtn.disabled = true;
 		
-		objSelScr = document.getElementById('man_script_id');
+		//objSelScr = document.getElementById('man_script_id');
+		
 		objBtn = document.getElementById('deleteScript');
 		//If new script, deactive delete button
+		/*
 		if(objSelScr.options[objSelScr.selectedIndex].value == 0){
 			objBtn.disabled = true;
 		}
+		*/
 		
 		/*
 		//if new script and no file uploaded, hide config
