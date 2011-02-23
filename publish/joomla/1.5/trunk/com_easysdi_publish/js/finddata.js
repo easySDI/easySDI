@@ -5,6 +5,7 @@ var wpsServlet = "";
 var baseUrl = "";
 var userId = "";
 var errorMsg = "";
+var responseDoc = "";
 
 window.addEvent('domready', function() {
 				/*
@@ -194,7 +195,9 @@ function validateFs_click()
 		url: baseUrl + wpsServlet,
 		//url: "http://localhost/components/com_easysdi_publish/core/proxy.php",
 		method: 'post',
-		evalResponse: false,
+		//if set to true, causes Content-Type to be url encoded
+		urlEncoded: false,
+		headers:{'Content-Type': 'text/xml'},
 		onSuccess: function(responseText, responseXML){			
 			$('loadingImg').style.visibility = 'hidden';
 			$('loadingImg').style.display = 'none';
@@ -213,38 +216,24 @@ function validateFs_click()
 				$('errorMsg').style.visibilty = 'visible';
 				$('errorMsg').set('html', exText[0].firstChild.nodeValue);
 			}
-			//No exception, get the FS id in response and submit
+			//No exception, get the response document and submit
 			else
 			{
 				cont = false;
-				var featureSourceGuid;
-				var attr;
-				out = responseXML.getElementsByTagName('wps:RawDataOutput');
+				var out = responseXML.getElementsByTagName('wps:ExecuteResponse');
 				if(out != null){
-					//the datasetId
-					lastChild = out[0].lastChild;
-					if(lastChild != null){
-						featureSourceGuid = lastChild.textContent;
-						cont = true;
-					}			
-				}
-				if(cont == true){
+					temp = out[0].getAttribute("statusLocation");
+					//bug deegree 3: port is uncorrect
+					temp = temp.split("?");
+					responseDoc = wpsServlet+"?"+temp[1];
+					$('loadingImg').style.visibility = 'visible';
+			    $('loadingImg').style.display = 'block';
+					doProgression();
 					
-					$('featureSourceGuid').value = featureSourceGuid;
-					$('fieldsName').value = attr;
-					$('task').value = 'saveFeatureSource';
-					//Make sure the server has created the fs	
-					//setTimeout("submitForm();",3000);
-					submitForm();
-				}else{
-					$('errorMsg').style.display = 'block';
-					$('errorMsg').style.visibilty = 'visible';
-					$('errorMsg').set('html', "Something went wrong with the parser");
 				}
+				
 			}
 		},
-		
-		headers:{'content-type': 'text/xml' },
 		onRequest: function() { 
 			//Activate here please wait...
 			$('loadingImg').style.visibility = 'visible';
@@ -264,6 +253,61 @@ function validateFs_click()
 	
 	return false;
 }
+
+
+function doProgression(){
+			  
+            var stat = "";
+            var response = "";
+            
+            
+						var fsprogReq = new Request({
+							url: baseUrl+responseDoc,
+							method: 'get',
+							evalResponse: true,
+							//we have to wait to return the function's response.
+							async : true,
+							onSuccess: function(responseText, responseXML){
+								response = responseXML;
+								//look the status
+								
+								if(responseXML.getElementsByTagName('wps:ProcessAccepted')[0] != null)
+								   stat = "accepted";
+								else if(responseXML.getElementsByTagName('wps:ProcessStarted')[0] != null)
+								   stat = "started";
+								else if(responseXML.getElementsByTagName('wps:ProcessSucceeded')[0] != null)
+								   stat = "succeeded";
+								else
+									alert ("unknown status");
+								
+								if(stat == "accepted"){
+								   //we do nothing, we poll again till prog appears
+								   setTimeout("doProgression();",3000);
+								}else if(stat == "started"){
+								   //we read the prog
+								   prog = parseInt(responseXML.getElementsByTagName('wps:ProcessStarted')[0].getAttribute("percentCompleted"));
+								   //stat = responseXML.getElementsByTagName('status')[0].lastChild.textContent;
+								   $('progress').innerHTML = EASYSDI_PUBLISH_TEXT_PROGRESSION+prog+"%";
+								   setTimeout("doProgression();",3000);
+								}else if(stat == "succeeded"){
+			             $('progress').innerHTML = EASYSDI_PUBLISH_TEXT_PROGRESSION+"100%";
+				           //read response and save fs
+				           out = response.getElementsByTagName('wps:LiteralData');
+					         $('featureSourceGuid').value = out[0].textContent;
+				           $('task').value = 'saveFeatureSource';
+				           submitForm();
+								}else{
+								   alert("Error: Cannot read stat from feature source");
+								}								
+		  				},
+		  				onFailure: function(xhr){
+		  					$('loadingImg').style.visibility = 'hidden';
+			          $('loadingImg').style.display = 'none';
+		  					return false;
+		  				}
+		  			}).send();
+		}
+
 
 function searchds_click(){
 	URLFile = '';

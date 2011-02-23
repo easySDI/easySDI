@@ -1,16 +1,24 @@
 function WPSTransformDatasetRequest(diffusionServerName, FeatureSourceId, URLFile, scriptName, sourceDataType, coordEpsgCode, dataset)
 {
-	var req = '<?xml version="1.0" encoding="ISO-8859-1"?>';
-	req += '<wps:Execute service="WPS" version="1.0.0" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0../wpsExecute_request.xsd">';
+	//xml headers
+	var req = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
+	
+	//WPS execute
+  req += '<wps:Execute service="WPS" version="1.0.0"';
+	req += ' xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1"';
+	req += ' xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"';
+	req += ' xsi:schemaLocation="http://www.opengis.net/wps/1.0.0';
+  req += ' http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd">';
+	
 	//the request type
-	req += '<ows:Identifier>transformDataset</ows:Identifier>';
+	req += '<ows:Identifier>TransformDataset</ows:Identifier>';
 		req += '<wps:DataInputs>';
 		
 		//loop data iputs
 	
 			//server name
 			req += '<wps:Input>';
-			req += '<ows:Identifier>diffusionServerName</ows:Identifier>';
+			req += '<ows:Identifier>DiffusionServerName</ows:Identifier>';
 			req += '<ows:Title>diffusion Server Name</ows:Title>';
 			req += '<wps:Data>';
 				req += '<wps:LiteralData>'+diffusionServerName+'</wps:LiteralData>';
@@ -40,7 +48,7 @@ function WPSTransformDatasetRequest(diffusionServerName, FeatureSourceId, URLFil
 			
 			//scriptName
 			req += '<wps:Input>';
-			req += '<ows:Identifier>scriptName</ows:Identifier>';
+			req += '<ows:Identifier>ScriptName</ows:Identifier>';
 			req += '<ows:Title>Name of the script to execute</ows:Title>';
 			req += '<wps:Data>';
 				req += '<wps:LiteralData>'+scriptName+'</wps:LiteralData>';
@@ -49,7 +57,7 @@ function WPSTransformDatasetRequest(diffusionServerName, FeatureSourceId, URLFil
 			
 			//sourceDataType
 			req += '<wps:Input>';
-			req += '<ows:Identifier>sourceDataType</ows:Identifier>';
+			req += '<ows:Identifier>SourceDataType</ows:Identifier>';
 			req += '<ows:Title>Type of the data source (e.g SHAPE)</ows:Title>';
 			req += '<wps:Data>';
 				req += '<wps:LiteralData>'+sourceDataType+'</wps:LiteralData>';
@@ -58,7 +66,7 @@ function WPSTransformDatasetRequest(diffusionServerName, FeatureSourceId, URLFil
 			
 			//coordEpsgCode
 			req+='<wps:Input>';
-			req+='<ows:Identifier>coordEpsgCode</ows:Identifier>';
+			req+='<ows:Identifier>CoordEpsgCode</ows:Identifier>';
 			req+='<ows:Title>The EPSG code of the projection</ows:Title>';
 			req+='<wps:Data>';
 				req+='<wps:LiteralData>'+coordEpsgCode+'</wps:LiteralData>';
@@ -67,7 +75,7 @@ function WPSTransformDatasetRequest(diffusionServerName, FeatureSourceId, URLFil
 			
 			//dataset
 			req+='<wps:Input>';
-			req+='<ows:Identifier>dataset</ows:Identifier>';
+			req+='<ows:Identifier>Dataset</ows:Identifier>';
 			req+='<ows:Title>The dataset to transform contained in the source file</ows:Title>';
 			req+='<wps:Data>';
 				req+='<wps:LiteralData>'+dataset+'</wps:LiteralData>';
@@ -75,6 +83,16 @@ function WPSTransformDatasetRequest(diffusionServerName, FeatureSourceId, URLFil
 			req+='</wps:Input>';
 			
 		req += '</wps:DataInputs>';
+		
+		//async request
+		req += '<wps:ResponseForm>';
+		req += '<wps:ResponseDocument storeExecuteResponse="true"	status="true">';
+			req += '<wps:Output>';
+				req += '<ows:Identifier>FeatureSourceGuid</ows:Identifier>';
+			req += '</wps:Output>';
+		req += '</wps:ResponseDocument>';
+	req += '</wps:ResponseForm>';
+			
 	req += '</wps:Execute>';
 	
 	return req;
@@ -83,13 +101,14 @@ function WPSTransformDatasetRequest(diffusionServerName, FeatureSourceId, URLFil
 
 function WPSPublishLayer(featureTypeId, layerId, aliases, theTitle, theName, quality, keywords, theAbstract, geometry)
 {
-var req='<wps:Execute service="WPS" version="1.0.0" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0../wpsExecute_request.xsd">';
-	req+='<ows:Identifier>publishLayer</ows:Identifier>';
+	var req='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
+  req+='<wps:Execute service="WPS" version="1.0.0" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1"	xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"	xsi:schemaLocation="http://www.opengis.net/wps/1.0.0http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd">';
+	req+='<ows:Identifier>PublishLayer</ows:Identifier>';
 	req+='<wps:DataInputs>';
 		
 		//FeatureTypeId
 		req+='<wps:Input>';
-			req+='<ows:Identifier>FeatureTypeId </ows:Identifier>';
+			req+='<ows:Identifier>FeatureSourceId</ows:Identifier>';
 			req+='<ows:Title>id of the feature Type</ows:Title>';
 			req+='<wps:Data>';
 				req+='<wps:LiteralData>'+featureTypeId+'</wps:LiteralData>';
@@ -98,7 +117,7 @@ var req='<wps:Execute service="WPS" version="1.0.0" xmlns:wps="http://www.opengi
 		
 		//layerId
 		req+='<wps:Input>';
-			req+='<ows:Identifier>LayerId </ows:Identifier>';
+			req+='<ows:Identifier>LayerId</ows:Identifier>';
 			req+='<ows:Title>id of an existing, none creates a new one</ows:Title>';
 			req+='<wps:Data>';
 				req+='<wps:LiteralData>'+layerId+'</wps:LiteralData>';
@@ -137,7 +156,7 @@ var req='<wps:Execute service="WPS" version="1.0.0" xmlns:wps="http://www.opengi
 		
 		//Quality
 		req+='<wps:Input>';
-			req+='<ows:Identifier>Quality/Area</ows:Identifier>';
+			req+='<ows:Identifier>Quality_Area</ows:Identifier>';
 			req+='<ows:Title>Quality/Area</ows:Title>';
 			req+='<wps:Data>';
 				req+='<wps:LiteralData>'+quality+'</wps:LiteralData>';
@@ -163,7 +182,7 @@ var req='<wps:Execute service="WPS" version="1.0.0" xmlns:wps="http://www.opengi
 		
 		//geometry
 			req+='<wps:Input>';
-			req+='<ows:Identifier>geometry</ows:Identifier>';
+			req+='<ows:Identifier>Geometry</ows:Identifier>';
 			req+='<ows:Title>The geometry type</ows:Title>';
 			req+='<wps:Data>';
 				req+='<wps:LiteralData>'+geometry+'</wps:LiteralData>';
@@ -180,13 +199,16 @@ req+='</wps:Execute>';
 
 function WPSDeleteFeatureSource(fsId)
 {
-var req='<wps:Execute service="WPS" version="1.0.0" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0../wpsExecute_request.xsd">';
-	req+='<ows:Identifier>deleteFeatureSource</ows:Identifier>';
+	
+  var req='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
+	req+='<wps:Execute service="WPS" version="1.0.0" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"	xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd">';
+	
+	req+='<ows:Identifier>DeleteFeatureSource</ows:Identifier>';
 	req+='<wps:DataInputs>';
 		
 		//FeatureSourceId
 		req+='<wps:Input>';
-			req+='<ows:Identifier>FeatureSourceId </ows:Identifier>';
+			req+='<ows:Identifier>FeatureSourceId</ows:Identifier>';
 			req+='<ows:Title>id of an existing feature source</ows:Title>';
 			req+='<wps:Data>';
 				req+='<wps:LiteralData>'+fsId+'</wps:LiteralData>';
@@ -202,13 +224,15 @@ req+='</wps:Execute>';
 function WPSDeleteLayer(layerId)
 {
 var req='<wps:Execute service="WPS" version="1.0.0" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0../wpsExecute_request.xsd">';
-	req+='<ows:Identifier>deleteLayer</ows:Identifier>';
+	
+  var req='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
+	req += '<wps:Execute service="WPS" version="1.0.0" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"	xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd">';
+	req+='<ows:Identifier>DeleteLayer</ows:Identifier>';
 	req+='<wps:DataInputs>';
 		
 		//LayerId
 		req+='<wps:Input>';
-			req+='<ows:Identifier>LayerId </ows:Identifier>';
-			req+='<ows:Title>id of an existing layer</ows:Title>';
+			req+='<ows:Identifier>LayerId</ows:Identifier>';
 			req+='<wps:Data>';
 				req+='<wps:LiteralData>'+layerId+'</wps:LiteralData>';
 			req+='</wps:Data>';

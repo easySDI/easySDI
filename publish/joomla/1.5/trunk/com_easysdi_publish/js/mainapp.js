@@ -56,7 +56,8 @@ var postBody = WPSDeleteFeatureSource(guid);
 var req = new Request({
 		url: baseUrl + wpsServlet,
 		method: 'post',
-		evalResponse: true,
+		urlEncoded: false,
+		headers:{'Content-Type': 'text/xml'},
 		onSuccess: function(responseText, responseXML){
 			//alert(responseText);
 			var ex = responseXML.getElementsByTagName('ows:Exception');
@@ -73,31 +74,15 @@ var req = new Request({
 				$('errorMsg').style.visibilty = 'visible';
 				$('errorMsg').set('html', exText[0].firstChild.nodeValue);
 			}
-			//No exception, get the Layer id and attributes in response and submit
+			//No exception, get the Fs id  and submit
 			else
 			{
-				cont = false;
-				
-				out = responseXML.getElementsByTagName('wps:RawDataOutput');
-				//read the rawdataoutput
-				if(out != null){
-					//get the layerId
-					lastChild = out[0].lastChild;
-					if(lastChild != null){
-						respFeatureId = lastChild.textContent;
-						//check if this was the one requested
-						if(respFeatureId == guid){
-							cont = true;
-						}
-					}
-				}
-				
-				if(cont == true){
-					//feed the hidden types with the response value					
-					$('task').value = "deleteFeatureSource";
-					$('featureSourceGuid').value = guid;
-					$('adminForm').submit();
-				}
+				out = responseXML.getElementsByTagName('wps:LiteralData');
+				respFeatureId = out[0].textContent;
+				//feed the hidden types with the response value					
+				$('task').value = "deleteFeatureSource";
+				$('featureSourceGuid').value = guid;
+				$('adminForm').submit();
 			}
 		},
 		headers:{'content-type': 'text/xml' },
@@ -132,7 +117,8 @@ var postBody = WPSDeleteLayer(guid);
 var req = new Request({
 	url: baseUrl + wpsServlet,
 	method: 'post',
-	evalResponse: true,
+	urlEncoded: false,
+	headers:{'Content-Type': 'text/xml'},
 	onSuccess: function(responseText, responseXML){
 			//alert(responseText);
 			var ex = responseXML.getElementsByTagName('ows:Exception');
@@ -145,31 +131,14 @@ var req = new Request({
 				$('errorMsg').style.visibilty = 'visible';
 				$('errorMsg').set('html', exText[0].firstChild.nodeValue);
 			}
-			//No exception
+			//No exception, delete the Layer
 			else
 			{
-				cont = false;
-				
-				out = responseXML.getElementsByTagName('wps:RawDataOutput');
-				//read the rawdataoutput
-				if(out != null){
-					lastChild = out[0].lastChild;
-					if(lastChild != null){
-						respLayerId = lastChild.textContent;
-						//check if this was the one requested
-						if(respLayerId == guid){
-							cont = true;
-						}
-					}
-				}
-				
-				if(cont == true){
 					//Submit the form for saving the values
 					//Setting the hidden types
 					$('task').value = "deleteLayer";
 					$('layerGuid').value = guid;
 					$('adminForm').submit();
-				}
 			}
 		},
 		headers:{'content-type': 'text/xml' }, 

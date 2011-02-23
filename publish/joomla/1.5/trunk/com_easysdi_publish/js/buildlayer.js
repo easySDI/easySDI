@@ -42,8 +42,8 @@ function init(){
 			userId = $('userId').value;
 			//Disable fields name and desciption if no Feature Source Selected
 			if($('featureSourceId').options[$('featureSourceId').selectedIndex].value == 0){
-				$('fieldsNameTab').style.visibility = 'hidden';
-				$('fieldsNameTab').style.display = 'none';	
+				//$('fieldsNameTab').style.visibility = 'hidden';
+				//$('fieldsNameTab').style.display = 'none';	
 				$('descriptionTab').style.visibility = 'hidden';
 				$('descriptionTab').style.display = 'none';
 				$('validateLayer').style.visibility = 'hidden';
@@ -76,13 +76,13 @@ function layer_name_change(){
 }
 
 function validateForm(){
-	var fieldsName = $('fieldsName').value.split(",");
+	//var fieldsName = $('fieldsName').value.split(",");
 	//Reset background
 	$('layer_name').style.background = "";
 	$('geometry').style.background = "";
-	for (var i = 0; i < fieldsName.length; i++){
-		$('attributeAlias'+i).style.background = "";
-	}
+	//for (var i = 0; i < fieldsName.length; i++){
+	//	$('attributeAlias'+i).style.background = "";
+	//}
 	$('layerTitle').style.background = "";
 	$('layerDescription').style.background = "";
 	$('layerQuality').style.background = "";
@@ -117,6 +117,7 @@ function validateForm(){
 	}
 	
 	//check the aliases, if they contain comma and reserved keywords
+	/*
 	for (var i = 0; i < fieldsName.length; i++){
 		var alias = $('attributeAlias'+i).value;
 		if(alias == "")
@@ -145,17 +146,17 @@ function validateForm(){
 				return false;
 			}
 		}
-		/*
-		if(kwrd = alias.toLowerCase().match("id")){
-			if(alias == "id"){
-				errorMsg = "Incorrect value for alias, reserved keyword found: '"+kwrd+"'";
-				displayErr(errorMsg, $('attributeAlias'+i));
-				return false;
-			}
-		}
-		*/
+		
+		//if(kwrd = alias.toLowerCase().match("id")){
+		//	if(alias == "id"){
+		//		errorMsg = "Incorrect value for alias, reserved keyword found: '"+kwrd+"'";
+		//		displayErr(errorMsg, $('attributeAlias'+i));
+		//		return false;
+		//	}
+		//}
+		
 	}
-	
+	*/
 	//check layer title
 	if($('layerTitle').value == "" || $('layerTitle').value == "New"){
 		errorMsg = "You must enter a Layer title";
@@ -232,6 +233,7 @@ function validateLayer_click()
 	//aliases: string of kind: AttrXY=AttrXYAlias,AttrXY=AttrXYAlias
 	//fieldsName = $('fieldsName').value.split(",");
 	//fetch current aliases
+	/*
 	currentAliases = $('currentAliases').value.split(",");
 	aliases = "";
 	for (var i = 0; i < currentAliases.length; i++){
@@ -240,6 +242,7 @@ function validateLayer_click()
 			aliases += ",";
 		aliases += currentAliases[i]+"="+objAlias.value;
 	}
+	*/
 	//The title
 	theTitle = $('layerTitle').value;
 	
@@ -258,6 +261,8 @@ function validateLayer_click()
 	//Geometry
 	geometry = $('geometry').value;
 	
+	var aliases = "";
+	
 	var postBody = WPSPublishLayer(featureTypeId, layerId, aliases, theTitle, theName, quality, keywords, theAbstract, geometry);
 	//alert("url:"+baseUrl + wpsServlet+"   body:"+postBody);
 	
@@ -265,7 +270,8 @@ function validateLayer_click()
 	var req = new Request({
 		url: baseUrl + wpsServlet,
 		method: 'post',
-		evalResponse: true,
+		urlEncoded: false,
+		headers:{'Content-Type': 'text/xml'},
 		onSuccess: function(responseText, responseXML){
 			//alert(responseText);
 			$('validateLayer').disabled = false;
@@ -293,53 +299,53 @@ function validateLayer_click()
 				respEndpoints = Array();
 				respBbox = Array();
 				
-				out = responseXML.getElementsByTagName('wps:RawDataOutput');
+				var out = responseXML.getElementsByTagName('wps:Output');
 				//read the rawdataoutput
 				if(out != null){
 					//get the layerId
-					lastChild = out[0].lastChild;
+					lastChild = out[0].getElementsByTagName('wps:LiteralData')[0];
 					if(lastChild != null){
 						respLayerId = lastChild.textContent;
 						cont = true;
 					}
 					//get the wms url
-					lastChild = out[1].lastChild;
+					lastChild = out[1].getElementsByTagName('wps:LiteralData')[0];;
 					if(lastChild != null){
 						respEndpoints[0] = lastChild.textContent;
 						cont = true;
 					}
 					//get the wfs url
-					lastChild = out[2].lastChild;
+					lastChild = out[2].getElementsByTagName('wps:LiteralData')[0];;
 					if(lastChild != null){
 						respEndpoints[1] = lastChild.textContent;
 						cont = true;
 					}
 					//get the kml url
-					lastChild = out[3].lastChild;
+					lastChild = out[3].getElementsByTagName('wps:LiteralData')[0];;
 					if(lastChild != null){
 						respEndpoints[2] = lastChild.textContent;
 						cont = true;
 					}
 					//get minx
-					lastChild = out[4].lastChild;
+					lastChild = out[4].getElementsByTagName('wps:LiteralData')[0];;
 					if(lastChild != null){
 						respBbox[0] = lastChild.textContent;
 						cont = true;
 					}
 					//get miny
-					lastChild = out[5].lastChild;
+					lastChild = out[5].getElementsByTagName('wps:LiteralData')[0];;
 					if(lastChild != null){
 						respBbox[1] = lastChild.textContent;
 						cont = true;
 					}
 					//get maxX
-					lastChild = out[6].lastChild;
+					lastChild = out[6].getElementsByTagName('wps:LiteralData')[0];;
 					if(lastChild != null){
 						respBbox[2] = lastChild.textContent;
 						cont = true;
 					}
 					//get maxY
-					lastChild = out[7].lastChild;
+					lastChild = out[7].getElementsByTagName('wps:LiteralData')[0];;
 					if(lastChild != null){
 						respBbox[3] = lastChild.textContent;
 						cont = true;
@@ -373,7 +379,6 @@ function validateLayer_click()
 			alert('Request completed successfully.'+responseXML); 
 		},
 		*/
-		headers:{'content-type': 'text/xml' },
 		onRequest: function() { 
 			//Activate here please wait...
 			$('loadingImg').style.visibility = 'visible';
