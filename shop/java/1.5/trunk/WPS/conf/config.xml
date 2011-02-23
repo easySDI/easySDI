@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<languageFile>/home/sites/demo.easysdi.org/web/language/fr-FR/fr-FR.com_easysdi_shop.ini</languageFile>
-<connexionString>jdbc:mysql://localhost/joomla?user=root&password=root&noDatetimeStringSync=true</connexionString>
-<joomlaPrefix>jos_</joomlaPrefix>
-<jdbcDriver>com.mysql.jdbc.Driver</jdbcDriver>
-<platformName>EASYSDI</platformName>
-<sender>stephanie.dondainaz@depth.ch</sender>
-<mailConfig>/var/lib/tomcat5/webapps/wps/conf/mailer.conf</mailConfig>
