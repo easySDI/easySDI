@@ -1,14 +1,20 @@
 <?xml version="1.0" ?>
-<project default="compression" basedir=".">
+<project default="com_easysdi_publish" basedir=".">
 
 	<property name="projet.out.dir" value="out" />
 
 
-	<target name="com_easysdi" depends="create-structure,compression"
+	<target name="com_easysdi_publish" depends="create-structure,minify,compression"
 		description="Main target">
 
 	</target>
-
+	
+        <target name="minify" description="Minifying js files">
+		<exec executable="cmd" os="Windows XP" dir=".\com_easysdi_publish\js\styler\">
+      		<arg line="/c C:\tools\env\Scripts\jsbuild.exe -o script build_s.cfg"/>
+   		</exec>
+	</target>
+	
 	<target name="create-structure">
 		<echo>Creating the working directory structure</echo>
 		<delete>
