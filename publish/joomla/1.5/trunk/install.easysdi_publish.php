@@ -196,8 +196,6 @@ function com_install(){
  		 `formatId` bigint(20) unsigned default NULL,
  		 `scriptId` bigint(20) unsigned default NULL,
  		 `fileList` varchar(1000) default NULL,
- 		 `fieldsName` varchar(500) DEFAULT NULL,
- 		 `fieldsaliases` varchar(1000) default NULL,
  		 `creation_date` timestamp NOT NULL default CURRENT_TIMESTAMP,
  		 `update_date` timestamp NOT NULL default '0000-00-00 00:00:00',
  		  PRIMARY KEY  (`id`)
@@ -224,6 +222,7 @@ function com_install(){
   		`wfsUrl` varchar(1000) DEFAULT NULL,
   		`kmlUrl` varchar(1000) DEFAULT NULL,
   		`bbox` varchar(400) default NULL,
+  		`geometry` varchar(45) default NULL,
 		  PRIMARY KEY  (`id`)
 		)";
 		$db->setQuery( $query);

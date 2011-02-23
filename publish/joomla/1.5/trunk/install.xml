@@ -22,6 +22,7 @@
 			<filename>admin.easysdi_publish.php</filename>
 			<filename>license.txt</filename>					
 			<folder>core</folder>
+			<folder>icons</folder>
 		</files>
 		<languages folder="./language/admin">
 			<language tag="fr-FR">fr-FR.com_easysdi_publish.ini</language>
