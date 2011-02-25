@@ -56,7 +56,7 @@ class ADMIN_proxy
 					$theNewPolicy->Servers[All]="false";
 					$theNewPolicy->Subjects[All]="false";
 					$theNewPolicy->Operations[All]="true";
-					$theNewPolicy->AvailabilityPeriod->Mask="dd-mm-yyyy";
+					$theNewPolicy->AvailabilityPeriod->Mask="dd-MM-yyyy";
 					$theNewPolicy->AvailabilityPeriod->From->Date="28-01-2008";
 					$theNewPolicy->AvailabilityPeriod->To->Date="28-01-2108";
 
@@ -399,7 +399,7 @@ class ADMIN_proxy
 						$thePolicy->Servers[All]="false";
 						$thePolicy->Subjects[All]="false";
 						$thePolicy->Operations[All]="true";
-						$thePolicy->AvailabilityPeriod->Mask="d-mm-yyyy";
+						$thePolicy->AvailabilityPeriod->Mask="dd-MM-yyyy";
 						$thePolicy->AvailabilityPeriod->From->Date="28-01-2008";
 						$thePolicy->AvailabilityPeriod->To->Date="28-01-2108";
 					}
