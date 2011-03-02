@@ -462,14 +462,8 @@ class HTML_cpanel {
 				}
 			}
 			if(boolPrice){
-				if (confirm("<?php echo JText::_("SHOP_ORDER_HAS_PRICE_NULL"); ?>")){
-					document.getElementById('processOrderForm').task<?php echo $option; ?>.value='saveOrdersForProvider';
-					document.getElementById('processOrderForm').submit();
-					return true;
-				}
-				else{
-					return false;
-				}
+				alert("<?php echo JText::_("SHOP_ORDER_HAS_PRICE_NULL"); ?>");
+				return false;
 			}else{
 				document.getElementById('processOrderForm').task<?php echo $option; ?>.value='saveOrdersForProvider';
 				document.getElementById('processOrderForm').submit();
