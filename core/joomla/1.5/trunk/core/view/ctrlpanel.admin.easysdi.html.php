@@ -200,6 +200,11 @@ class HTML_ctrlpanel {
 						      </td>
 						   </tr>
 						   <tr>
+						      <td>
+						         <b>Please note that Highcharts is not free for commercial use. Please see licence details <a href="http://www.highcharts.com/license" target="_blank">here</a></b>
+						      </td>
+						   </tr>
+						   <tr>
 						      <td>&nbsp;</td>
 						   </tr>
 						   <!-- MAP -->
@@ -246,6 +251,10 @@ class HTML_ctrlpanel {
 						$file = file_get_contents (JPATH_COMPONENT_ADMINISTRATOR.DS.'license.txt');
 						echo htmlspecialchars  ($file,ENT_QUOTES);
 						?></PRE>
+						<br/>
+						<p style="padding-left:10px">
+						<b>Please note that Highcharts is not free for commercial use. Please see licence details <a href="http://www.highcharts.com/license" target="_blank">here</a></b>
+						</p>
 						<?php
 						echo $pane->endPanel('cpanel-panel-licence');
 						
