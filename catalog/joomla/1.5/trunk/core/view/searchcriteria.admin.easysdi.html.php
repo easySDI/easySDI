@@ -80,18 +80,18 @@ class HTML_searchcriteria {
 					else{ 
 						if ($disabled){
 					?>
-							 <?php echo $page->orderUpIcon($i, true, 'orderdownSearchCriteria', '', false ); ?>
-				             <?php echo $page->orderDownIcon($i, count($rows)-1, true, 'orderupSearchCriteria', '', false ); ?>
+							 <?php echo $page->orderUpIcon($i, true, 'orderupSearchCriteria', '', false ); ?>
+				             <?php echo $page->orderDownIcon($i, count($rows)-1, true, 'orderdownSearchCriteria', '', false ); ?>
 		            <?php
 						}
 						else {
 					?>
-							 <?php echo $page->orderUpIcon($i, true, 'orderdownSearchCriteria', 'Move Down', isset($rows[$i-1]) ); ?>
-		 		             <?php echo $page->orderDownIcon($i, count($rows)-1, true, 'orderupSearchCriteria', 'Move Up', isset($rows[$i+1]) ); ?>
+							 <?php echo $page->orderUpIcon($i, true, 'orderupSearchCriteria', 'Move Up', isset($rows[$i-1]) ); ?>
+		 		             <?php echo $page->orderDownIcon($i, count($rows)-1, true, 'orderdownSearchCriteria', 'Move Down', isset($rows[$i+1]) ); ?>
 					<?php
 						}
 					}?>
-					<input type="text" id="or<?php echo $i;?>" name="ordering[]" size="5" <?php echo $disabled; ?> value="<?php echo $row->ordering;?>" class="text_area" style="text-align: center" />
+					<input type="text" id="or<?php echo $i;?>" name="ordering[]" size="5" <?php echo $disabled; ?> value="<?php echo $row->cc_ordering;?>" class="text_area" style="text-align: center" />
 	            </td>
 <?php
 if ($row->criteriatype_name <> "relation")

@@ -63,7 +63,7 @@ class ADMIN_searchcriteria {
 		$pagination = new JPagination($total, $limitstart, $limit);
 
 		// Recherche des enregistrements selon les limites
-		$query = "SELECT sc.*, sc.label as system_label, t.label as csw_label, c.name as criteriatype_name, c.label as criteriatype_label, tab.id as tab_id, tab.code as tab_code, tab.label as tab_label 
+		$query = "SELECT sc.*, sc.label as system_label, sc_tab.ordering as cc_ordering, t.label as csw_label, c.name as criteriatype_name, c.label as criteriatype_label, tab.id as tab_id, tab.code as tab_code, tab.label as tab_label 
 				  FROM #__sdi_searchcriteria sc 
 				  LEFT OUTER JOIN #__sdi_relation_context rc ON rc.relation_id=sc.relation_id 
 				  INNER JOIN #__sdi_list_criteriatype c ON c.id=sc.criteriatype_id 
@@ -576,45 +576,57 @@ class ADMIN_searchcriteria {
 		// Update the ordering for items in the cid array
 		for ($i = 0; $i < $total; $i ++)
 		{
-			// Instantiate an article table object
-			$row = new searchcriteria( $db );
-			
-			$row->load( (int) $cid[$i] );
-			if ($row->ordering != $order[$i]) {
-				$row->ordering = $order[$i];
-				if (!$row->store()) {
-					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-					$mainframe->redirect("index.php?option=$option&task=listSearchCriteria&context_id=".$context_id );
-					exit();
-				}
-				
-				// TODO: Doit être corrigé car désormais le tab n'est plus stocké
-				// dans ces colonnes mais dans la table #__sdi_searchcriteria_tab.
-				// La meilleur façon de corriger ça est de stocker désormais l'ordre
-				// dans la table #__sdi_searchcriteria_tab, afin de pouvoir avoir un ordre
-				// différent pour le critère selon qu'il est dans un contexte ou dans un autre.
-				
-				// remember to updateOrder this group
-				$condition = 'simpletab = '.(int) $row->simpletab.
-							 ' AND advancedtab = '.(int) $row->advancedtab;
-				$found = false;
-				foreach ($conditions as $cond)
-					if ($cond[1] == $condition) {
-						$found = true;
-						break;
-					}
-				if (!$found)
-					$conditions[] = array ($row->id, $condition);
-			}
+//			// Instantiate an article table object
+//			$row = new searchcriteria( $db );
+//			
+//			$row->load( (int) $cid[$i] );
+//			if ($row->ordering != $order[$i]) {
+//				$row->ordering = $order[$i];
+//				if (!$row->store()) {
+//					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+//					$mainframe->redirect("index.php?option=$option&task=listSearchCriteria&context_id=".$context_id );
+//					exit();
+//				}
+//				
+//				// TODO: Doit être corrigé car désormais le tab n'est plus stocké
+//				// dans ces colonnes mais dans la table #__sdi_searchcriteria_tab.
+//				// La meilleur façon de corriger ça est de stocker désormais l'ordre
+//				// dans la table #__sdi_searchcriteria_tab, afin de pouvoir avoir un ordre
+//				// différent pour le critère selon qu'il est dans un contexte ou dans un autre.
+//				
+//				// remember to updateOrder this group
+//				$condition = 'simpletab = '.(int) $row->simpletab.
+//							 ' AND advancedtab = '.(int) $row->advancedtab;
+//				$found = false;
+//				foreach ($conditions as $cond)
+//					if ($cond[1] == $condition) {
+//						$found = true;
+//						break;
+//					}
+//				if (!$found)
+//					$conditions[] = array ($row->id, $condition);
+//			}
+		
+         		$query = 'UPDATE #__sdi_searchcriteria_tab'
+		                . ' SET ordering = '.$order[$i]
+		                . ' WHERE '.$db->nameQuote('context_id').' = '.$db->quote($context_id)
+		                . ' AND '.$db->nameQuote('searchcriteria_id').' = '.$db->quote($cid[$i]);
+
+                $db->setQuery( $query );
+
+                if (!$db->query()) {
+                	$err = $db->getErrorMsg();
+                	JError::raiseError( 500, $err );
+                }
 		}
 
 		// execute updateOrder for each group
-		foreach ($conditions as $cond)
-		{
-			$row->load($cond[0]);
-			$row->reorder($cond[1]);
-		}
-		
+//		foreach ($conditions as $cond)
+//		{
+//			$row->load($cond[0]);
+//			$row->reorder($cond[1]);
+//		}
+//		
 		$cache = & JFactory::getCache('com_easysdi_catalog');
 		$cache->clean();
 
@@ -635,12 +647,34 @@ class ADMIN_searchcriteria {
 		
 		if (isset( $cid[0] ))
 		{
-			$row = new searchcriteria( $db );
-			$row->load( (int) $cid[0] );
-			$row->move($direction, 'simpletab = '.(int) $row->simpletab.' AND advancedtab = '.(int) $row->advancedtab);
-			
-			$cache = & JFactory::getCache('com_easysdi_catalog');
-			$cache->clean();
+			$query = "SELECT sc.ordering
+                        FROM #__sdi_searchcriteria_tab sc"
+                        ." WHERE ".$db->nameQuote('context_id')." = ".$db->quote($context_id)
+                        ." AND ".$db->nameQuote('searchcriteria_id')." = ".$db->quote($cid[0]);
+
+                        $db->setQuery( $query );
+                        $currentOrdering =  $db->loadResult();
+
+                        if (isset($currentOrdering)) {
+                        	$newOrdering = (int)$currentOrdering + (int)$direction;
+                        	if($newOrdering< 0) $newOrdering = 0;
+
+                        	// $this->saveSearchcriteriaTabOrdering($db, $cid[0], $context_id, $newOrdering);
+                        	$query = 'UPDATE #__sdi_searchcriteria_tab'
+                        	. ' SET ordering = '.$newOrdering
+                        	. ' WHERE '.$db->nameQuote('context_id').' = '.$db->quote($context_id)
+                        	. ' AND '.$db->nameQuote('searchcriteria_id').' = '.$db->quote($cid[0]);
+
+                        	$db->setQuery( $query );
+
+                        	if (!$db->query()) {
+                        		$err = $db->getErrorMsg();
+                        		JError::raiseError( 500, $err );
+                        	}
+                        }
+
+                        $cache = & JFactory::getCache('com_easysdi_catalog');
+                        $cache->clean();
 		}
 
 		$mainframe->redirect("index.php?option=$option&task=listSearchCriteria&context_id=".$context_id );

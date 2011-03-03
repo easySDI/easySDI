@@ -387,7 +387,7 @@ class HTML_metadata {
 														// Retour � la page pr�c�dente
 														Ext.MessageBox.alert('".JText::_('CATALOG_SAVEMETADATA_MSG_SUCCESS_TITLE')."', 
 							                    						 '".JText::_('CATALOG_SAVEMETADATA_MSG_SUCCESS_TEXT')."',
-							                    						 function () {window.open ('./index.php?option=".$option."&task=cancelMetadata','_parent');});
+							                    						 function () {window.open ('./index.php?option=".$option."&Itemid=".JRequest::getVar('Itemid')."&lang=".JRequest::getVar('lang')."&task=cancelMetadata','_parent');});
 												
 													
 														myMask.hide();
@@ -444,7 +444,7 @@ class HTML_metadata {
 												{
 													Ext.MessageBox.alert('".JText::_('CATALOG_UPDATEMETADATA_MSG_SUCCESS_TITLE')."', 
 							                    						 '".JText::_('CATALOG_UPDATEMETADATA_MSG_SUCCESS_TEXT')."',
-							                    						 function () {window.open ('./index.php?option=".$option."&task=cancelMetadata','_parent');});
+							                    						 function () {window.open ('./index.php?option=".$option."&Itemid=".JRequest::getVar('Itemid')."&lang=".JRequest::getVar('lang')."&task=cancelMetadata','_parent');});
 												
 													myMask.hide();
 												},
