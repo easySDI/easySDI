@@ -682,7 +682,7 @@ else
 													// Retour � la page pr�c�dente
 													Ext.MessageBox.alert('".JText::_('CATALOG_SAVEMETADATA_MSG_SUCCESS_TITLE')."', 
 							                    						 '".JText::_('CATALOG_SAVEMETADATA_MSG_SUCCESS_TEXT')."',
-							                    						 function () {window.open ('./index.php?option=".$option."&task=cancelMetadata&object_id=".$object_id."','_parent');});
+							                    						 function () {window.open ('./index.php?option=".$option."&task=cancelMetadata&object_id=".$object_id."&Itemid=".JRequest::getVar('Itemid')."&lang=".JRequest::getVar('lang')."','_parent');});
 													myMask.hide();
 												},
 												failure: function(form, action) 
@@ -765,7 +765,7 @@ else
 												{
 													Ext.MessageBox.alert('".JText::_('CATALOG_VALIDATEMETADATA_MSG_SUCCESS_TITLE')."', 
 							                    						 '".JText::_('CATALOG_VALIDATEMETADATA_MSG_SUCCESS_TEXT')."',
-							                    						 function () {window.open ('./index.php?option=".$option."&task=cancelMetadata&object_id=".$object_id."','_parent');});
+							                    						 function () {window.open ('./index.php?option=".$option."&task=cancelMetadata&object_id=".$object_id."&Itemid=".JRequest::getVar('Itemid')."&lang=".JRequest::getVar('lang')."','_parent');});
 
 													myMask.hide();
 												},
@@ -933,7 +933,7 @@ else
 	
 																					                    	Ext.MessageBox.alert('".JText::_('CATALOG_PUBLISHMETADATA_MSG_SUCCESS_TITLE')."', 
 																					                    						 '".JText::_('CATALOG_PUBLISHMETADATA_MSG_SUCCESS_TEXT')."',
-																					                    						 function () {window.open ('./index.php?option=".$option."&task=listMetadata','_parent');});																
+																					                    						 function () {window.open ('./index.php?option=".$option."&Itemid=".JRequest::getVar('Itemid')."&task=listMetadata','_parent');});																
 																										},
 																										failure: function(form, action) 
 																										{
@@ -1012,7 +1012,7 @@ else
 											{
 												Ext.MessageBox.alert('".JText::_('CATALOG_INVALIDATEMETADATA_MSG_SUCCESS_TITLE')."', 
 							                    						 '".JText::_('CATALOG_INVALIDATEMETADATA_MSG_SUCCESS_TEXT')."',
-							                    						 function () {window.open ('./index.php?option=".$option."&task=cancelMetadata&object_id=".$object_id."','_parent');});
+							                    						 function () {window.open ('./index.php?option=".$option."&task=cancelMetadata&object_id=".$object_id."&Itemid=".JRequest::getVar('Itemid')."&lang=".JRequest::getVar('lang')."','_parent');});
 											
 													
 												myMask.hide();
@@ -1064,7 +1064,7 @@ else
 												{
 													Ext.MessageBox.alert('".JText::_('CATALOG_UPDATEMETADATA_MSG_SUCCESS_TITLE')."', 
 							                    						 '".JText::_('CATALOG_UPDATEMETADATA_MSG_SUCCESS_TEXT')."',
-							                    						 function () {window.open ('./index.php?option=".$option."&task=cancelMetadata&object_id=".$object_id."','_parent');});
+							                    						 function () {window.open ('./index.php?option=".$option."&task=cancelMetadata&object_id=".$object_id."&Itemid=".JRequest::getVar('Itemid')."&lang=".JRequest::getVar('lang')."','_parent');});
 												
 													myMask.hide();
 												},
@@ -1186,7 +1186,7 @@ else
 																	                    	
 																	                    	Ext.MessageBox.alert('".JText::_('CATALOG_ASSIGNMETADATA_MSG_SUCCESS_TITLE')."', 
 																				                    						 '".JText::_('CATALOG_ASSIGNMETADATA_MSG_SUCCESS_TEXT')."',
-																				                    						 function () {window.open ('./index.php?option=".$option."&task=cancelMetadata&object_id=".$object_id."','_parent');});
+																				                    						 function () {window.open ('./index.php?option=".$option."&task=cancelMetadata&object_id=".$object_id."&Itemid=".JRequest::getVar('Itemid')."&lang=".JRequest::getVar('lang')."','_parent');});
 																						},
 																						failure: function(form, action) 
 																						{
