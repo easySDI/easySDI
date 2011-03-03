@@ -1360,6 +1360,29 @@ function com_install(){
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 	}
+	if($version == "2.0.0")
+	{
+		
+		$query="ALTER TABLE `#__sdi_searchcriteria_tab` ADD ordering bigint(20) NOT NULL";
+		$db->setQuery( $query);	
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+		
+		
+		
+		// Update component version
+		$version="2.0.1";
+		$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='CATALOG'"; 
+		$db->setQuery( $query);	
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+	}
+	
+	
+	
 	/**
 	 * Copy View files in Core component to allow  Menu Item Manger to find entries
 	 */
