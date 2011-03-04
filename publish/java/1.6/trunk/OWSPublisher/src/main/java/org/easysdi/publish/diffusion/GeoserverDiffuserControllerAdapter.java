@@ -295,9 +295,9 @@ public class GeoserverDiffuserControllerAdapter extends CommonDiffuserController
 					is = new FileInputStream(new File(m_executionPath+"WEB-INF/conf/publish/line.xml"));
 					super.getLogger().info("Style for geom:"+style+" is line.xml");
 				}else if(style.equalsIgnoreCase("Point")){
-					is = new FileInputStream(new File(m_executionPath+"WEB-INF/conf/publish/polygon.xml"));
+					is = new FileInputStream(new File(m_executionPath+"WEB-INF/conf/publish/point.xml"));
 					//is = this.getClass().getResourceAsStream("point.xml");
-					super.getLogger().info("Style for geom:"+style+" is polygon.xml");
+					super.getLogger().info("Style for geom:"+style+" is point.xml");
 				}else{
 					throw new PublicationException("The layer geometry:"+style+" has not been recognize.");
 				}
