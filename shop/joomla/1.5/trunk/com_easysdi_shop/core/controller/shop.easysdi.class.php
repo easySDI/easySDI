@@ -1103,6 +1103,16 @@ function validateForm(toStep, fromStep){
 			echo 	$db->getErrorMsg();
 			echo "</div>";
 		}
+		
+		$user = JFactory::getUser();
+		$account = new accountByUserId($db);
+		if (!$user->guest)
+		{
+			$account->load($user->id);
+		}else
+		{
+			$account->id = 0;
+		}
 
 		HTML_shop::searchProducts ($suppliers, $account,$account_id, $user,$rows,$public,$countMD,$total, $limitstart, $limit,$option,$task,$view,$step);	
 	}
@@ -1185,6 +1195,7 @@ function validateForm(toStep, fromStep){
 		}
 		
 		$user = JFactory::getUser();
+		
 		$account = new accountByUserId($db);
 		if (!$user->guest)
 		{
