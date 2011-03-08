@@ -197,7 +197,6 @@ sending->
   
 	
         print $HTML; //Output the page using print_r so that frames at least partially are written
-        flush();
         
         //Calculate execution time and add HTML comment with that info
         //$duration = microtime_diff($start_time, microtime());
