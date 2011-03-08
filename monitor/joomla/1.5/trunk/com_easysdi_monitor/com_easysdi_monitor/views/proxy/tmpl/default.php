@@ -32,7 +32,7 @@ require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'commo
 $monitorUrl = config_easysdi::getValue("MONITOR_URL");
 
 //logger
-$myFile = JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_monitor'.DS.'views'.DS.'proxy'.DS.'tmpl'.DS.'logs'.DS.'log.txt';
+$myFile = JPATH_SITE.DS.'components'.DS.'com_easysdi_monitor'.DS.'views'.DS.'proxy'.DS.'tmpl'.DS.'logs'.DS.'log.txt';
 $fh = fopen($myFile, 'w');
  
 //request headers
@@ -180,7 +180,6 @@ foreach ($_GET as $key => $value){
 
 	
   print $HTML; //Output the page using print_r so that frames at least partially are written
-  flush();
   fclose($fh);
   
   //disallows futher buffers in output 
