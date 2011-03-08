@@ -228,7 +228,7 @@ function validateFs_click()
 					responseDoc = wpsServlet+"?"+temp[1];
 					$('loadingImg').style.visibility = 'visible';
 			    $('loadingImg').style.display = 'block';
-					doProgression();
+					return doProgression();
 					
 				}
 				
@@ -264,7 +264,7 @@ function doProgression(){
 						var fsprogReq = new Request({
 							url: baseUrl+responseDoc,
 							method: 'get',
-							evalResponse: true,
+							evalResponse: false,
 							//we have to wait to return the function's response.
 							async : true,
 							onSuccess: function(responseText, responseXML){
@@ -289,16 +289,24 @@ function doProgression(){
 								   //stat = responseXML.getElementsByTagName('status')[0].lastChild.textContent;
 								   $('progress').innerHTML = EASYSDI_PUBLISH_TEXT_PROGRESSION+prog+"%";
 								   setTimeout("doProgression();",3000);
-								}else if(stat == "succeeded"){
-			             $('progress').innerHTML = EASYSDI_PUBLISH_TEXT_PROGRESSION+"100%";
-				           //read response and save fs
-				           out = response.getElementsByTagName('wps:LiteralData');
-					         $('featureSourceGuid').value = out[0].textContent;
-				           $('task').value = 'saveFeatureSource';
-				           submitForm();
-								}else{
-								   alert("Error: Cannot read stat from feature source");
-								}								
+								}
+								else if(stat == "succeeded"){
+			                                           $('progress').innerHTML = EASYSDI_PUBLISH_TEXT_PROGRESSION+"100%";
+				                                   //read response and save fs
+				                                   out = response.getElementsByTagName('wps:LiteralData');
+					                           //$('featureSourceGuid').value = out[0].textContent;
+				                                   //$('featureSourceGuid').value = out[0].firstChild.nodeValue;
+								   
+								   var form = document.getElementById('publish_form');
+								   form.task.value='saveFeatureSource';
+								   form.featureSourceGuid.value = out[0].firstChild.nodeValue;
+								   
+				                                   form.submit();
+					                        
+								}
+								else{
+						                        alert("Error: Cannot read stat from feature source");
+					                            }								
 		  				},
 		  				onFailure: function(xhr){
 		  					$('loadingImg').style.visibility = 'hidden';
@@ -331,15 +339,18 @@ function searchds_click(){
 	var req = new Request({
 		url: baseUrl + wpsServlet + "/config",
 		method: 'post',
-		evalResponse: true,
-		data:{'files':URLFile,
-					'operation':'GetAvailableDatasetFromSource'},
+		evalResponse: false,
+		urlEncoded: true,
+		data:{
+		      'operation':'GetAvailableDatasetFromSource',
+		      'files':URLFile
+		},
 		onSuccess: function(responseText, responseXML){			
 			$('loadingImg').style.visibility = 'hidden';
 			$('loadingImg').style.display = 'none';
 			$('validateFs').disabled = false;
 			$('validateFs').className = '';
-			var ex = responseXML.getElementsByTagName('exception');
+			var ex = responseXML.getElementsByTagName('ows:Exception');
 			//handle the exception if there is
 			if(ex.length > 0){
 				code = ex[0].attributes[0].nodeValue;
@@ -371,7 +382,6 @@ function searchds_click(){
 			}
 		},
 		
-		headers:{'content-type': 'text/xml' },
 		onRequest: function() { 
 			//Activate here please wait...
 			$('loadingImg').style.visibility = 'visible';

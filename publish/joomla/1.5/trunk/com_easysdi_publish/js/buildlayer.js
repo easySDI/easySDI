@@ -226,7 +226,6 @@ function validateLayer_click()
 	// Build the WPS post body
 	//featureTypeId: mandatory
 	featureTypeId = $('featureSourceGuid').value;
-	
 	//layerId: none if new, else update
 	layerId = $('layerGuid').value;
 	
@@ -253,7 +252,7 @@ function validateLayer_click()
 	quality = $('layerQuality').value;
 
 	//keywords
-	keywords = $('layerKeyword').value;
+	theKeywords = $('layerKeyword').value;
 	
 	//abstract
 	theAbstract = $('layerDescription').value;
@@ -263,7 +262,7 @@ function validateLayer_click()
 	
 	var aliases = "";
 	
-	var postBody = WPSPublishLayer(featureTypeId, layerId, aliases, theTitle, theName, quality, keywords, theAbstract, geometry);
+	var postBody = WPSPublishLayer(featureTypeId, layerId, aliases, theTitle, theName, quality, theKeywords, theAbstract, geometry);
 	//alert("url:"+baseUrl + wpsServlet+"   body:"+postBody);
 	
 	//send and handle the request
@@ -305,56 +304,70 @@ function validateLayer_click()
 					//get the layerId
 					lastChild = out[0].getElementsByTagName('wps:LiteralData')[0];
 					if(lastChild != null){
-						respLayerId = lastChild.textContent;
+						respLayerId = lastChild.firstChild.nodeValue;
 						cont = true;
 					}
 					//get the wms url
 					lastChild = out[1].getElementsByTagName('wps:LiteralData')[0];;
 					if(lastChild != null){
-						respEndpoints[0] = lastChild.textContent;
+						respEndpoints[0] = lastChild.firstChild.nodeValue;
 						cont = true;
 					}
 					//get the wfs url
 					lastChild = out[2].getElementsByTagName('wps:LiteralData')[0];;
 					if(lastChild != null){
-						respEndpoints[1] = lastChild.textContent;
+						respEndpoints[1] = lastChild.firstChild.nodeValue;
 						cont = true;
 					}
 					//get the kml url
 					lastChild = out[3].getElementsByTagName('wps:LiteralData')[0];;
 					if(lastChild != null){
-						respEndpoints[2] = lastChild.textContent;
+						respEndpoints[2] = lastChild.firstChild.nodeValue;
 						cont = true;
 					}
 					//get minx
 					lastChild = out[4].getElementsByTagName('wps:LiteralData')[0];;
 					if(lastChild != null){
-						respBbox[0] = lastChild.textContent;
+						respBbox[0] = lastChild.firstChild.nodeValue;
 						cont = true;
 					}
 					//get miny
 					lastChild = out[5].getElementsByTagName('wps:LiteralData')[0];;
 					if(lastChild != null){
-						respBbox[1] = lastChild.textContent;
+						respBbox[1] = lastChild.firstChild.nodeValue;
 						cont = true;
 					}
 					//get maxX
 					lastChild = out[6].getElementsByTagName('wps:LiteralData')[0];;
 					if(lastChild != null){
-						respBbox[2] = lastChild.textContent;
+						respBbox[2] = lastChild.firstChild.nodeValue;
 						cont = true;
 					}
 					//get maxY
 					lastChild = out[7].getElementsByTagName('wps:LiteralData')[0];;
 					if(lastChild != null){
-						respBbox[3] = lastChild.textContent;
+						respBbox[3] = lastChild.firstChild.nodeValue;
 						cont = true;
 					}
 					
 				}
 				
 				if(cont == true){
-					//feed the hidden types with the response value					
+					//feed the hidden types with the response value	
+					var form = document.getElementById('publish_form');
+					form.layerGuid.value=respLayerId;
+					form.wmsUrl.value = respEndpoints[0];
+					form.wfsUrl.value = respEndpoints[1];
+					form.kmlUrl.value = respEndpoints[2];
+					form.minx.value = respBbox[0];
+					form.miny.value = respBbox[1];
+					form.maxx.value = respBbox[2];
+					form.maxy.value = respBbox[3];
+					
+					form.task.value='saveLayer';
+					form.submit();
+					
+					/*					
 					$('layerGuid').value = respLayerId;
 					$('wmsUrl').value = respEndpoints[0];
 					$('wfsUrl').value = respEndpoints[1];
@@ -367,6 +380,7 @@ function validateLayer_click()
 					//Submit the form for saving the values
 					$('task').value = 'saveLayer';
 					$('publish_form').submit();
+					*/
 				}else{
 					$('errorMsg').style.display = 'block';
 					$('errorMsg').style.visibilty = 'visible';
