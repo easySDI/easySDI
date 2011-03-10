@@ -440,6 +440,10 @@ class SITE_product {
 		
 		$query .= $filter;
 		$query .= " order by p.name";
+		
+		$database->setQuery($query);
+		$total = count($database->loadObjectList() );
+		
 		$database->setQuery($query,$limitstart,$limit);		
 		$rows = $database->loadObjectList() ;
 		if ($database->getErrorNum()) {
@@ -447,7 +451,9 @@ class SITE_product {
 			echo 			$database->getErrorMsg();
 			echo "</div>";
 		}	
-		$pageNav = new JPagination(count($rows),$limitstart,$limit);
+		
+		jimport('joomla.html.pagination'); 
+		$pageNav = new JPagination($total,$limitstart,$limit);
 		
 		HTML_product::listProduct($pageNav,$rows,$option,$account,$search);
 		
