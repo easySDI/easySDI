@@ -699,14 +699,16 @@ class SITE_cpanel {
 		global  $mainframe;
 		$database =& JFactory::getDBO();
 		$products_id = JRequest::getVar("product_id");
-		
+		$isOneElemTreated = false;
 		foreach ($products_id as $product_id)
 		{
 			$remark = JRequest::getVar("remark".$product_id);
 			$remark = $database->quote( $database->getEscaped($remark), false );
 			$price = JRequest::getVar("price".$product_id,"0");
-			if (strlen($price)!=0)
+			$fileName = addslashes($_FILES['file'.$product_id]["name"]);
+			if ((strlen($remark)!=0 || strlen($fileName)!=0) && strlen($price)!=0)
 			{
+				$isOneElemTreated = true;
 				$status_id = sdilist::getIdByCode('#__sdi_list_productstatus','AVAILABLE' );
 				
 				$query = "SELECT id FROM #__sdi_order_product WHERE order_id=".$order_id." AND product_id = ".$product_id;
@@ -726,7 +728,6 @@ class SITE_cpanel {
 				 	break;
 				}
 				
-				$fileName = $_FILES['file'.$product_id]["name"];
 			 	if (strlen($fileName)>0)
 			 	{
 				 	$tmpName =  $_FILES['file'.$product_id]["tmp_name"];
@@ -744,7 +745,8 @@ class SITE_cpanel {
 				 }
 			}
 		}
-		 SITE_cpanel::setOrderStatus($order_id,1);
+		if($isOneElemTreated)
+		    SITE_cpanel::setOrderStatus($order_id,1);
 	}
 
 	function notifyUserByEmail($order_id, $subject, $body)
