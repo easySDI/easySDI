@@ -81,7 +81,7 @@ class SITE_catalog {
 		// Liste des critères de recherche simple
 		$context= JRequest::getVar('context');
 		$listSimpleFilters = array();
-		$database->setQuery("SELECT sc.*, r.guid as relation_guid, a.id as attribute_id, at.code as attributetype_code, sc.code as criteria_code, rt.code as rendertype_code
+		$database->setQuery("SELECT sc.*, sc_tab.ordering as context_order , r.guid as relation_guid, a.id as attribute_id, at.code as attributetype_code, sc.code as criteria_code, rt.code as rendertype_code
 					   FROM #__sdi_searchcriteria sc
 					   			  LEFT OUTER JOIN #__sdi_relation r ON r.id=sc.relation_id
 								  LEFT OUTER JOIN #__sdi_relation_context rc ON r.id=rc.relation_id 
@@ -96,7 +96,7 @@ class SITE_catalog {
 					   		 OR c.code='".$context."')
 					   		 AND c_tab.code='".$context."'
 					   		 AND tab.code = 'simple' 
-					   ORDER BY sc.ordering");
+					   ORDER BY context_order");
 		//echo $database->getQuery()."<br>";
 		$listSimpleFilters = array_merge( $listSimpleFilters, $database->loadObjectList() );		
 		//print_r($listSimpleFilters);echo "<hr>";
@@ -113,7 +113,7 @@ class SITE_catalog {
 					   WHERE c.code='".$context."'
 					         AND sc.advancedtab = 1 
 					   ORDER BY r.ordering");*/
-		$database->setQuery("SELECT sc.*, r.guid as relation_guid, a.id as attribute_id, at.code as attributetype_code, sc.code as criteria_code, rt.code as rendertype_code
+		$database->setQuery("SELECT sc.*, sc_tab.ordering as context_order , r.guid as relation_guid, a.id as attribute_id, at.code as attributetype_code, sc.code as criteria_code, rt.code as rendertype_code
 					   FROM #__sdi_searchcriteria sc
 					   			  LEFT OUTER JOIN #__sdi_relation r ON r.id=sc.relation_id
 								  LEFT OUTER JOIN #__sdi_relation_context rc ON r.id=rc.relation_id 
@@ -128,7 +128,7 @@ class SITE_catalog {
 					   		 OR c.code='".$context."')
 					   		 AND c_tab.code='".$context."'
 					   		 AND tab.code = 'advanced' 
-					   ORDER BY sc.ordering");
+					   ORDER BY context_order");
 		//echo $database->getQuery()."<br>";
 		$listAdvancedFilters = array_merge( $listAdvancedFilters, $database->loadObjectList() );		
 		//print_r($listAdvancedFilters);echo "<hr>";

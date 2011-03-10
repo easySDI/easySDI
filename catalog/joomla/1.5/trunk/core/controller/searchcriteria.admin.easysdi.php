@@ -37,9 +37,13 @@ class ADMIN_searchcriteria {
 		$filter_order_Dir	= $mainframe->getUserStateFromRequest( $option.$context.".filter_order_Dir",	'filter_order_Dir',	'ASC',		'word' );
 		
 		// Test si le filtre est valide
+		
+		if( strcmp ($filter_order,   "ordering" ) == 0)
+			$filter_order = "cc_ordering";
+		
 		if ($filter_order <> "id" 
 			and $filter_order <> "name" 
-			and $filter_order <> "ordering" 
+			and $filter_order <> "cc_ordering" 
 			and $filter_order <> "ogcsearchfilter" 
 			and $filter_order <> "criteriatype_label" 
 			and $filter_order <> "simpletab" 
@@ -85,6 +89,8 @@ class ADMIN_searchcriteria {
 			//exit();
 		}
 		
+		if( strcmp ($filter_order,   "cc_ordering" ) == 0)
+			$filter_order = "ordering";
 		
 		HTML_searchcriteria::listSearchCriteria($rows, $pagination, $filter_order_Dir, $filter_order, $context_id, $option);
 
