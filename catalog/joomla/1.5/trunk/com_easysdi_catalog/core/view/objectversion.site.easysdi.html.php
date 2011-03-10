@@ -206,7 +206,7 @@ else
 			<div class="row">
 				 <div class="row">
 					<input type="button" id="save_button" name="save_button" class="submit" value ="<?php echo JText::_("CORE_SAVE"); ?>" onClick="document.getElementById('adminForm').task.value='saveObjectVersion'; document.getElementById('adminForm').submit();"/>
-					<input type="button" id="back_button" name="back_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="document.getElementById('adminForm').task.value='backObjectVersion';window.open('<?php echo JRoute::_(displayManager::buildUrl('index.php?task=backObjectVersion&object_id='.$object_id)); ?>', '_self')"/>
+					<input type="button" id="back_button" name="back_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="document.getElementById('adminForm').task.value='backObjectVersion';window.open('<?php echo JRoute::_(displayManager::buildUrl('index.php?option=com_easysdi_catalog&task=backObjectVersion&object_id='.$object_id)); ?>', '_self')"/>
 				</div>	 
 			 </div>
 				<div class="row">	
