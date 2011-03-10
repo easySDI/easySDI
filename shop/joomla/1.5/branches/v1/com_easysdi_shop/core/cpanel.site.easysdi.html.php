@@ -440,9 +440,9 @@ class HTML_cpanel {
 				<td><?php echo JText::_("EASYSDI_DATA")." ".$i?> : </td>
 				<td><a class="modal" title="<?php echo JText::_("EASYSDI_VIEW_MD"); ?>" href="./index.php?tmpl=component&option=com_easysdi_shop&task=showMetadata&id=<?php echo $row->metadata_id;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}"><?php echo $row->data_title ;?></a></td>
 				</tr>
-				<tr><td><?php echo JText::_("EASYSDI_PRICE") ;?></td><td> <input type="text" name="price<?php echo $row->product_id?>" value=""></td></tr>
-				<tr><td><?php echo JText::_("EASYSDI_REMARK") ;?></td><td> <textarea rows="5" cols="30" name="remark<?php echo $row->product_id?>"></textarea></td></tr>
-				<tr><td><?php echo JText::_("EASYSDI_FILE") ;?></td><td> <input type="file" name="file<?php echo $row->product_id?>" ></td></tr>
+				<tr><td><?php echo JText::_("EASYSDI_PRICE") ;?></td><td> <input type="text" name="price<?php echo $row->product_id?>" id="price<?php echo $row->product_id?>" value=""></td></tr>
+				<tr><td><?php echo JText::_("EASYSDI_REMARK") ;?></td><td> <textarea rows="5" cols="30" name="remark<?php echo $row->product_id?>" id="remark<?php echo $row->product_id?>"></textarea></td></tr>
+				<tr><td><?php echo JText::_("EASYSDI_FILE") ;?></td><td> <input type="file" name="file<?php echo $row->product_id?>" id="file<?php echo $row->product_id?>"></td></tr>
 				</tbody>
 				</table>
 				<input type="hidden" name="product_id[]" value="<?php echo $row->product_id?>">
@@ -475,9 +475,9 @@ class HTML_cpanel {
 				</tr>
 				</thead>
 				<tbody>
-				<tr><td><?php echo JText::_("EASYSDI_PRICE") ;?></td><td> <input type="text" name="price<?php echo $row->product_id?>" value=""></td></tr>
-				<tr><td><?php echo JText::_("EASYSDI_REMARK") ;?></td><td> <textarea rows="5" cols="30" name="remark<?php echo $row->product_id?>"></textarea></td></tr>
-				<tr><td><?php echo JText::_("EASYSDI_FILE") ;?></td><td> <input type="file" name="file<?php echo $row->product_id?>" ></td></tr>			
+				<tr><td><?php echo JText::_("EASYSDI_PRICE") ;?></td><td> <input type="text" name="price<?php echo $row->product_id?>" id="price<?php echo $row->product_id?>" value=""></td></tr>
+				<tr><td><?php echo JText::_("EASYSDI_REMARK") ;?></td><td> <textarea rows="5" cols="30" name="remark<?php echo $row->product_id?>" id="remark<?php echo $row->product_id?>"></textarea></td></tr>
+				<tr><td><?php echo JText::_("EASYSDI_FILE") ;?></td><td> <input type="file" name="file<?php echo $row->product_id?>" id="file<?php echo $row->product_id?>" ></td></tr>			
 				<!-- separator -->
 				<?php
 				if($i > 2){?>
@@ -500,23 +500,65 @@ class HTML_cpanel {
 		<input type="hidden" id="limitstart" name="limitstart" value="<?php echo JRequest::getVar("limitstart"); ?>">
 		<script>
 		function validateForm(){
+						
 			var aSel = $('processOrderForm').getElementsByTagName("input");
 			var boolPrice = false;
+			var pid = Array();
+			var isSomethingTreated = false;
+			var j = 0;
 			for(var i=0;i<aSel.length;i++){
-				//search prices
-				if(aSel[i].name.indexOf("price") != -1){			
-					if(aSel[i].value == "")
-						boolPrice=true;
+				if(aSel[i].name == "product_id[]"){
+					pid[j] = aSel[i].value;
+					j++;
 				}
 			}
+			
+			//Data coherence for each product
+			for(var i=0;i<pid.length;i++){
+				//if we have a remark or a file (or both), we then need a price
+				if(document.getElementById('file'+pid[i]).value != "" || document.getElementById('remark'+pid[i]).value != ""){
+					if(document.getElementById('price'+pid[i]).value == ""){			
+					    boolPrice=true;
+					}else{
+					   //check for numeric value
+					   if(isNaN(document.getElementById('price'+pid[i]).value)){
+					      alert("<?php echo JText::_("EASYSDI_PRICE_NOT_A_NUMBER"); ?>");
+					      return false;
+					   }
+					}
+						
+				        isSomethingTreated = true;
+				}
+				
+				//We can't have a price alone without rem or file
+				if(document.getElementById('price'+pid[i]).value != "" && (document.getElementById('file'+pid[i]).value == "" && document.getElementById('remark'+pid[i]).value == "")){
+					//check for numeric value
+					if(isNaN(document.getElementById('price'+pid[i]).value)){
+					    alert("<?php echo JText::_("EASYSDI_PRICE_NOT_A_NUMBER"); ?>");
+					    return false;
+					}
+					alert("<?php echo JText::_("EASYSDI_NO_REM_NO_FILE"); ?>");
+					return false;
+				}
+			}
+			
 			if(boolPrice){
 				alert("<?php echo JText::_("EASYSDI_HAS_PRICE_NULL"); ?>");
 				return false;
 			}else{
-				document.getElementById('processOrderForm').task<?php echo $option; ?>.value='saveOrdersForProvider';
-				document.getElementById('processOrderForm').submit();
-				return true;
+				if(!isSomethingTreated){
+					alert("<?php echo JText::_("EASYSDI_NO_PRODUCT_TREATED"); ?>");
+					return false;
+				}
+				else
+				{
+				   document.getElementById('processOrderForm').task<?php echo $option; ?>.value='saveOrdersForProvider';
+				   document.getElementById('processOrderForm').submit();
+				   return true;
+				}
 			}
+			
+			
 		}
 		</script>
 		<table width="100%">

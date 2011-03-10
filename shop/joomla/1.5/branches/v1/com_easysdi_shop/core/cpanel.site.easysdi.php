@@ -522,6 +522,7 @@ class SITE_cpanel {
 		// Ne montre pas dans la liste les devis dont le prix est gratuit. Ils sont automatiquement traité par le système.
 		// Ni les requêtes de type brouillon
 		$query = "SELECT o.order_id as order_id, 
+		                                 o.third_party as third_party,
 						 p.metadata_id as metadata_id,
 						 p.data_title as productName,
 						 opl.id as product_list_id,
@@ -694,20 +695,21 @@ class SITE_cpanel {
 		$products_id = JRequest::getVar("product_id");
 
 		$order_id =  JRequest::getVar("order_id");
+		$isOneElemTreated = false;
 		foreach ($products_id as $product_id)
 		{
 			$remark = JRequest::getVar("remark".$product_id);
 			$remark = $database->quote( $database->getEscaped($remark), false );
 			$price = JRequest::getVar("price".$product_id,"0");
-			if (strlen($price)!=0)
+			$fileName = addslashes($_FILES['file'.$product_id]["name"]);
+			if ((strlen($remark)!=0 || strlen($fileName)!=0) && strlen($price)!=0)
 			{
-
+				$isOneElemTreated = true;
 				$queryStatus = "select id from #__easysdi_order_product_status_list where code ='AVAILABLE'";
 				$database->setQuery($queryStatus);
 				$status_id = $database->loadResult();
 				
 				$query = "UPDATE #__easysdi_order_product_list SET status = ".$status_id.", remark= ".$remark.",price = $price ";
-				$fileName = $_FILES['file'.$product_id]["name"];
 				$content = null;
 			 	if (strlen($fileName)>0)
 			 	{
@@ -773,7 +775,8 @@ class SITE_cpanel {
 			 }*/
 			}
 		}
-		 SITE_cpanel::setOrderStatus($order_id,true);
+		if($isOneElemTreated)
+			SITE_cpanel::setOrderStatus($order_id,true);
 	}
 
 	function notifyUserByEmail($order_id, $subject, $body){
