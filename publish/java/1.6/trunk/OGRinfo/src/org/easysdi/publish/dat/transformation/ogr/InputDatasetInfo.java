@@ -8,9 +8,9 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-import org.easysdi.publish.Utils;
 import org.easysdi.publish.exception.DataInputException;
 import org.easysdi.publish.exception.PublishConfigurationException;
+import org.easysdi.publish.util.Utils;
 
 public class InputDatasetInfo {
 	Logger logger = Logger.getLogger("eu.bauel.publish.transformation.plugin.InputDatasetInfo");

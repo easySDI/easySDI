@@ -2,8 +2,8 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
-	<classpathentry kind="lib" path="C:/workspace-sts-2.3.2.RELEASE/OWSPublisher/src/main/webapp/WEB-INF/lib/mysql-connector-java-5.1.10-bin.jar"/>
-	<classpathentry kind="lib" path="C:/workspace-sts-2.3.2.RELEASE/OWSPublisher/src/main/webapp/WEB-INF/lib/uuid-3.1.jar"/>
-	<classpathentry kind="lib" path="/OWSPublisher/target/classes"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/publish-core-api"/>
+	<classpathentry kind="lib" path="/OWSPublisher/src/main/webapp/WEB-INF/lib/mysql-connector-java-5.1.10-bin.jar"/>
+	<classpathentry kind="lib" path="/OWSPublisher/src/main/webapp/WEB-INF/lib/uuid-3.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
