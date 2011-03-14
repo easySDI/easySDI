@@ -24,7 +24,6 @@ import java.util.logging.Logger;
 
 import org.deegree.services.controller.OGCFrontController;
 import org.deegree.services.wps.ProcessletExecutionInfo;
-import org.easysdi.publish.Utils;
 import org.easysdi.publish.biz.database.Geodatabase;
 import org.easysdi.publish.biz.diffuser.Diffuser;
 import org.easysdi.publish.biz.layer.FeatureSource;
@@ -43,6 +42,7 @@ import org.easysdi.publish.gui.wps.provider.TransformDatasetProcesslet;
 import org.easysdi.publish.helper.Attribute;
 import org.easysdi.publish.helper.IFeatureSourceInfo;
 import org.easysdi.publish.helper.IHelper;
+import org.easysdi.publish.util.Utils;
 import org.springframework.dao.DataAccessException;
 
 //import ch.depth.services.wps.WPSServlet;

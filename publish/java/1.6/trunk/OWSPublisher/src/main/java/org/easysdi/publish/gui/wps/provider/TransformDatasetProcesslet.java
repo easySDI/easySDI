@@ -14,13 +14,13 @@ import org.deegree.services.wps.input.ComplexInput;
 import org.deegree.services.wps.input.LiteralInput;
 import org.deegree.services.wps.input.ProcessletInput;
 import org.deegree.services.wps.output.LiteralOutput;
-import org.easysdi.publish.Utils;
 import org.easysdi.publish.biz.database.Geodatabase;
 import org.easysdi.publish.exception.TransformationException;
-import org.easysdi.publish.transformation.BinaryIn;
-import org.easysdi.publish.transformation.BinaryOut;
 import org.easysdi.publish.transformation.FeatureSourceManager;
 import org.easysdi.publish.transformation.TransformerHelper;
+import org.easysdi.publish.util.BinaryIn;
+import org.easysdi.publish.util.BinaryOut;
+import org.easysdi.publish.util.Utils;
 
 import java.io.File;
 import java.io.FileInputStream;

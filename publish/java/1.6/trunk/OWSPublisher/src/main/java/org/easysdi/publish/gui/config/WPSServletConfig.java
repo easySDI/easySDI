@@ -15,12 +15,12 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 
-import org.easysdi.publish.Utils;
 import org.easysdi.publish.diffusion.GeoserverDiffuserControllerAdapter;
 import org.easysdi.publish.diffusion.IDiffuserAdapter;
 import org.easysdi.publish.diffusion.PublishLayerResponse;
 import org.easysdi.publish.exception.DataInputException;
 import org.easysdi.publish.exception.PublishConfigurationException;
+import org.easysdi.publish.util.Utils;
 import org.easysdi.publish.validation.InputValidator;
 
 

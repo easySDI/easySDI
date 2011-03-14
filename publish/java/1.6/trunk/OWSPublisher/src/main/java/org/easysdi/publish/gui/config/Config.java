@@ -10,7 +10,6 @@ import java.util.logging.Logger;
 import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServletRequest;
 
-import org.easysdi.publish.Utils;
 import org.easysdi.publish.exception.DataInputException;
 import org.easysdi.publish.exception.DataSourceWrongFormatException;
 import org.easysdi.publish.exception.FeatureSourceNotFoundException;
@@ -18,6 +17,7 @@ import org.easysdi.publish.exception.NoSuchTransformerForFeatureSourceGuid;
 import org.easysdi.publish.exception.PublishConfigurationException;
 import org.easysdi.publish.exception.TransformationException;
 import org.easysdi.publish.transformation.FeatureSourceManager;
+import org.easysdi.publish.util.Utils;
 
 import com.eaio.uuid.UUID;
 
@@ -151,7 +151,7 @@ public class Config {
 
 			//Look for the datasets contained into the supplied file
 			InputDatasetInfo idi = new InputDatasetInfo();
-			idi.getInfoForDataset(location+mainFileName);
+			idi.getInfoForDataset(System.getProperty("java.io.tmpdir")+"/"+location+"/"+mainFileName);
 
 
 			//Build the response

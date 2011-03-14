@@ -22,9 +22,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.easysdi.publish.ClassPathHacker;
-import org.easysdi.publish.TransformerPluginsLoader;
 import org.easysdi.publish.transformation.ITransformerAdapter;
+import org.easysdi.publish.util.ClassPathHacker;
+import org.easysdi.publish.util.TransformerPluginsLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

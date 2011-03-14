@@ -14,7 +14,6 @@ import org.deegree.services.wps.ProcessletOutputs;
 import org.deegree.services.wps.input.LiteralInput;
 import org.deegree.services.wps.input.ProcessletInput;
 import org.deegree.services.wps.output.LiteralOutput;
-import org.easysdi.publish.Utils;
 import org.easysdi.publish.diffusion.GeoserverDiffuserControllerAdapter;
 import org.easysdi.publish.diffusion.IDiffuserAdapter;
 import org.easysdi.publish.diffusion.PublishLayerResponse;
@@ -25,6 +24,7 @@ import org.easysdi.publish.exception.PublicationException;
 import org.easysdi.publish.exception.PublishConfigurationException;
 import org.easysdi.publish.exception.PublishGeneralException;
 import org.easysdi.publish.gui.ExceptionMessage;
+import org.easysdi.publish.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
