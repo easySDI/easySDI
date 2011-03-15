@@ -108,7 +108,16 @@ public class WMTS100ProxyResponseBuilder extends WMTSProxyResponseBuilder {
 	    			while(ilXlink.hasNext())
 	    			{
 	    				Element toUpdate = (Element)ilXlink.next();
-	    				toUpdate.setAttribute("href", href, nsXLINK);
+	    				String att = toUpdate.getAttribute("href", nsXLINK).getValue();
+	    				if(att.contains("?"))
+	    				{
+	    					att = att.replace(att.substring(0, att.indexOf("?")), href);
+	    				}
+	    				else
+	    				{
+	    					att = href;
+	    				}
+	    				toUpdate.setAttribute("href", att, nsXLINK);
 	    			}
 	    		}
 	    	}
