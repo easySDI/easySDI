@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
+	version="2.4">
+	<display-name>Easysdi Publish WPS server</display-name>
+	<context-param>
+		<param-name>log4jConfigLocation</param-name>
+		<param-value>/WEB-INF/log4j.properties</param-value>
+	</context-param>
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>
+			/WEB-INF/publish-servlet.xml
+		</param-value>
+	</context-param>
+	<listener>
+    	<listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
+	</listener>
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+	<servlet>
+		<servlet-name>services</servlet-name>
+		<servlet-class>org.deegree.services.controller.OGCFrontController</servlet-class>
+		<!--
+			parameter 'ConfigurationFile' is optional (only needed when a
+			non-default location is used for the 'services_metadata.xml' file)
+		-->
+		<!--
+			init-param> <param-name>ConfigurationFile</param-name>
+			<param-value>conf/services_metadata.xml</param-value> </init-param
+		-->
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>services</servlet-name>
+		<url-pattern>/services</url-pattern>
+	</servlet-mapping>
+
+	<!-- This is the config servlet -->
+	<servlet>
+		<servlet-name>serviceConfig</servlet-name>
+		<servlet-class>org.easysdi.publish.gui.config.WPSServletConfig</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>serviceConfig</servlet-name>
+		<url-pattern>/services/config</url-pattern>
+	</servlet-mapping>
+
+
+</web-app>
