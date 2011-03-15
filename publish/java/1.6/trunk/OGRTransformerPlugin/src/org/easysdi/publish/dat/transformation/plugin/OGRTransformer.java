@@ -27,13 +27,13 @@ import java.util.logging.Logger;
 import org.deegree.services.wps.ProcessletExecutionInfo;
 import org.easysdi.publish.dat.transformation.ogr.InputDatasetInfo;
 
-import org.easysdi.publish.Utils;
 import org.easysdi.publish.exception.DataInputException;
 import org.easysdi.publish.exception.DataSourceNotFoundException;
 import org.easysdi.publish.exception.DataSourceWrongFormatException;
 import org.easysdi.publish.exception.PublishConfigurationException;
 import org.easysdi.publish.exception.TransformationException;
 import org.easysdi.publish.transformation.ITransformerAdapter;
+import org.easysdi.publish.util.Utils;
 
 public class OGRTransformer implements ITransformerAdapter {
 
