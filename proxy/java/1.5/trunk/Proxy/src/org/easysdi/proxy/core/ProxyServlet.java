@@ -437,7 +437,7 @@ public abstract class ProxyServlet extends HttpServlet {
 		String servletPath = req.getServletPath(); // /servlet/MyServlet
 		String pathInfo = req.getPathInfo(); // /a/b;c=123
 		if(pathInfo.endsWith("?"))
-			pathInfo = pathInfo.substring(0, pathInfo.length()-2);
+			pathInfo = pathInfo.substring(0, pathInfo.length()-1);
 		// String queryString = req.getQueryString(); // d=789
 
 		String url = scheme + "://" + serverName + ":" + serverPort + contextPath + servletPath;
