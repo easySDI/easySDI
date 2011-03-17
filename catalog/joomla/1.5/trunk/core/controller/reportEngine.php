@@ -111,7 +111,7 @@ class reportEngine{
 			$filter = "<ogc:Filter xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:gml=\"http://www.opengis.net/gml\">".$filter."</ogc:Filter>";
 			
 			// Construire une requ�te Geonetwork GetRecords pour demander les métadonnées choisies pour le rapport
-			$xmlBody = SITE_catalog::BuildCSWRequest(10, 1, "results", "gmd:MD_Metadata", "full", "1.1.0", $filter, "title", "ASC");
+			$xmlBody = SITE_catalog::BuildCSWRequest(10, 1, "results", "gmd:MD_Metadata", "full", "1.1.0", $filter, "title", "ASC", 'COMPLETE');
 			
 			//echo htmlspecialchars($xmlBody);die();
 

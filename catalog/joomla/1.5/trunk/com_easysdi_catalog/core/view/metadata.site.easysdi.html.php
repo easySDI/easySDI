@@ -863,14 +863,28 @@ else
 				if($isManager and $isValidated)
 				{
 					$this->javascript .="
-						form.fbar.add(new Ext.Button({text: '".JText::_('CORE_PUBLISH')."',
+							form.fbar.add(new Ext.Button({text: '".JText::_('CORE_PUBLISH')."',
 											handler: function()
 							                {
 							                	myMask.show();
 							                 	var fields = new Array();
+
 							        			form.getForm().isInvalid=false;
+							        			form.getForm().fieldInvalid =false;
+					        					form.getForm().extValidationCorrupt =false;
 							        			form.cascade(function(cmp)
 							        			{
+							        				//verifies whether client validation is ok for any field that needs validation.
+							        				if(cmp.isValid){
+								        				if(!cmp.isValid()){														
+																form.getForm().fieldInvalid =true;														
+													
+															if(!document.getElementById(cmp.id)){														
+																	form.getForm().extValidationCorrupt =true;														
+															}
+														}
+													}
+													
 								        			if (cmp.xtype=='fieldset')
 							         				{
 							         					if (cmp.clones_count)
@@ -907,163 +921,341 @@ else
 							        			});
 							        			var fieldsets = fields.join(' | ');
 							        			
-							        			if (!form.getForm().isInvalid)
-							        			{
-													form.getForm().setValues({fieldsets: fieldsets});
-								                 	form.getForm().setValues({task: 'validateForPublishMetadata'});
-								                 	form.getForm().setValues({metadata_id: '".$metadata_id."'});
-								                 	form.getForm().setValues({object_id: '".$object_id."'});
-													form.getForm().submit({
-												    	scope: this,
-														method	: 'POST',
-														clientValidation: true,
-														success: function(form, action) 
-														{
-															xml = (action.result.file.xml);
-															xmlfile = xml.split('<br>').join('\\n');
-															// Cr�er une iframe pour demander � l'utilisateur la date de publication
-															if (!win)
-																win = new Ext.Window({
-																		                title:'Publication',
-																		                width:300,
-																		                height:170,
-																		                closeAction:'hide',
-																		                layout:'fit', 
-																					    border:false, 
-																					    closable:false, 
-																					    modal:true,
-																					    renderTo:Ext.getBody(), 
-																					    frame:true,
-																					    items:[{ 
-																						     xtype:'form' 
-																						     ,id:'publishform' 
-																						     ,defaultType:'textfield' 
-																						     ,frame:true 
-																						     ,method:'post' 
-																						     ,defaults:{anchor:'95%'} 
-																						     ,items:[ 
-																						       { 
-																						         fieldLabel:'".html_Metadata::cleanText(JText::_('CATALOG_VALIDATEMETADATA_PUBLISHBOX_DATE_MSG'))."', 
-																						         id:'publishdate', 
-																						         xtype: 'datefield',
-																						         format: 'd.m.Y',
-																						         value:'' 
-																						       },
-																						       { 
-																						         fieldLabel:'".html_Metadata::cleanText(JText::_('CATALOG_VALIDATEMETADATA_PUBLISHBOX_ARCHIVELAST_MSG'))."', 
-																						         id:'archivelast', 
-																						         xtype: 'checkbox',
-																						         checked:false 
-																						       },
-																						       { 
-																						         id:'metadata_id', 
-																						         xtype: 'hidden',
-																						         value:'".$metadata_id."' 
-																						       },
-																						       { 
-																						         id:'object_id', 
-																						         xtype: 'hidden',
-																						         value:'".$object_id."' 
-																						       },
-																						       { 
-																						         id:'account_id', 
-																						         xtype: 'hidden',
-																						         value:'".$account_id."' 
-																						       },
-																						       { 
-																						         id:'xml', 
-																						         xtype: 'hidden',
-																						         value: xmlfile
-																						       },
-																						       { 
-																						         id:'option', 
-																						         xtype: 'hidden',
-																						         value:'".$option."' 
-																						       },
-																						       { 
-																						         id:'task', 
-																						         xtype: 'hidden',
-																						         value: 'publishMetadata'
-																						       }
-																						    ] 
-																						     ,buttonAlign:'right' 
-																						     ,buttons: [{
-																				                    text:'".html_Metadata::cleanText(JText::_('CORE_ALERT_SUBMIT'))."',
-																				                    handler: function(){
-																				                    	myMask.show();
-																				                    	win.items.get(0).getForm().setValues({task: 'publishMetadata'});
-								                 														win.items.get(0).getForm().submit({
-																								    	scope: this,
-																										method	: 'POST',
-																										url:'index.php?option=com_easysdi_catalog&task=publishMetadata',
-																										success: function(form, action) 
-																										{
-																											win.hide();
-																											myMask.hide();
+							        			form.getForm().setValues({fieldsets: fieldsets});
+								                form.getForm().setValues({task: 'validateForPublishMetadata'});
+								                form.getForm().setValues({metadata_id: '".$metadata_id."'});
+								                form.getForm().setValues({object_id: '".$object_id."'});
+							        				myMask.hide();
+							        			//if (!form.getForm().isInvalid)
+								        			if ((!form.getForm().isInvalid) &&(!form.getForm().fieldInvalid) )							        			
+								        			{
 	
-																					                    	Ext.MessageBox.alert('".JText::_('CATALOG_PUBLISHMETADATA_MSG_SUCCESS_TITLE')."', 
-																					                    						 '".JText::_('CATALOG_PUBLISHMETADATA_MSG_SUCCESS_TEXT')."',
-																					                    						 function () {window.open ('./index.php?option=".$option."&Itemid=".JRequest::getVar('Itemid')."&task=listMetadata','_parent');});																
-																										},
-																										failure: function(form, action) 
-																										{
-																											win.hide();
-																											myMask.hide();
-																											
-																					                    	if (action.result)
-																					                    	{
-																					                    		Ext.MessageBox.alert('".JText::_('CATALOG_PUBLISHMETADATA_MSG_FAILURE_TITLE')."', action.result.errors.message);
-																					                    	}
-																					                    	else
-																					                    	{
-																					                    		Ext.MessageBox.alert('".JText::_('CATALOG_PUBLISHMETADATA_MSG_FAILURE_TITLE')."', '".JText::_('CATALOG_PUBLISHMETADATA_MSG_FAILURE_TEXT')."');
-																					                    	}
-																										}
-																										});
-																				                    }
-																				                },{
-																				                    text: '".html_Metadata::cleanText(JText::_('CORE_ALERT_CANCEL'))."',
-																				                    handler: function(){
-																				                        win.hide();
-																				                }
-																						   }] 
-																		                }]
-																		            });
-															else
-															{
-																win.items.get(0).findById('publishdate').setValue('');
-																win.items.get(0).findById('archivelast').setValue(false);
-															}
-																
-									  						win.show();
-									  						
-															myMask.hide();
-														},
-														failure: function(form, action) 
-														{
- 															if (action.result)
-									                    	{
-									                    		Ext.MessageBox.alert('".JText::_('CATALOG_PUBLISHMETADATA_MSG_FAILURE_TITLE')."', action.result.errors.message);
-									                    	}
-									                    	else
-															{
-	                        									Ext.MessageBox.alert('".JText::_('CATALOG_PUBLISHMETADATA_MSG_FAILURE_TITLE')."', '".JText::_('CATALOG_PUBLISHMETADATA_MSG_FAILURE_TEXT')."');
-															}
-															myMask.hide();
-														},
-														url:'".$publish_url."'
-													});
-												}
-												else
-												{
-													Ext.MessageBox.alert('".JText::_('CATALOG_VALIDATEMETADATA_LANGUAGE_MSG_FAILURE_TITLE')."', '".JText::_('CATALOG_VALIDATEMETADATA_LANGUAGE_MSG_FAILURE_TEXT')."');
-																
-													myMask.hide();
-												}
+								        				form.getForm().submit({
+																						    	scope: this,
+																								method	: 'POST',
+																								clientValidation: false,
+																								success: function(form, action) 
+																								{
+																									xml = (action.result.file.xml);
+																									xmlfile = xml.split('<br>').join('\\n');
+																									// Cr�er une iframe pour demander � l'utilisateur la date de publication
+																									if (!win)
+																										win = new Ext.Window({
+																												                title:'Publication',
+																												                width:300,
+																												                height:170,
+																												                closeAction:'hide',
+																												                layout:'fit', 
+																															    border:false, 
+																															    closable:false, 
+																															    modal:true,
+																															    renderTo:Ext.getBody(), 
+																															    frame:true,
+																															    items:[{ 
+																																     xtype:'form' 
+																																     ,id:'publishform' 
+																																     ,defaultType:'textfield' 
+																																     ,frame:true 
+																																     ,method:'post' 
+																																     ,defaults:{anchor:'95%'} 
+																																     ,items:[ 
+																																       { 
+																																         fieldLabel:'".html_Metadata::cleanText(JText::_('CATALOG_VALIDATEMETADATA_PUBLISHBOX_DATE_MSG'))."', 
+																																         id:'publishdate', 
+																																         xtype: 'datefield',
+																																         format: 'd.m.Y',
+																																         value:'' 
+																																       },
+																																       { 
+																																         fieldLabel:'".html_Metadata::cleanText(JText::_('CATALOG_VALIDATEMETADATA_PUBLISHBOX_ARCHIVELAST_MSG'))."', 
+																																         id:'archivelast', 
+																																         xtype: 'checkbox',
+																																         checked:false 
+																																       },
+																																       { 
+																																         id:'metadata_id', 
+																																         xtype: 'hidden',
+																																         value:'".$metadata_id."' 
+																																       },
+																																       { 
+																																         id:'object_id', 
+																																         xtype: 'hidden',
+																																         value:'".$object_id."' 
+																																       },
+																																       { 
+																																         id:'account_id', 
+																																         xtype: 'hidden',
+																																         value:'".$account_id."' 
+																																       },
+																																       { 
+																																         id:'xml', 
+																																         xtype: 'hidden',
+																																         value: xmlfile
+																																       },
+																																       { 
+																																         id:'option', 
+																																         xtype: 'hidden',
+																																         value:'".$option."' 
+																																       },
+																																       { 
+																																         id:'task', 
+																																         xtype: 'hidden',
+																																         value: 'publishMetadata'
+																																       }
+																																    ] 
+																																     ,buttonAlign:'right' 
+																																     ,buttons: [{
+																														                    text:'".html_Metadata::cleanText(JText::_('CORE_ALERT_SUBMIT'))."',
+																														                    handler: function(){
+																														                    	myMask.show();
+																														                    	win.items.get(0).getForm().setValues({task: 'publishMetadata'});
+																		                 														win.items.get(0).getForm().submit({
+																																		    	scope: this,
+																																				method	: 'POST',
+																																				url:'index.php?option=com_easysdi_catalog&task=publishMetadata',
+																																				success: function(form, action) 
+																																				{
+																																					win.hide();
+																																					myMask.hide();
+											
+																															                    	Ext.MessageBox.alert('".JText::_('CATALOG_PUBLISHMETADATA_MSG_SUCCESS_TITLE')."', 
+																															                    						 '".JText::_('CATALOG_PUBLISHMETADATA_MSG_SUCCESS_TEXT')."',
+																															                    						 function () {window.open ('./index.php?option=".$option."&Itemid=".JRequest::getVar('Itemid')."&task=listMetadata','_parent');});																
+																																				},
+																																				failure: function(form, action) 
+																																				{
+																																					win.hide();
+																																					myMask.hide();
+																																					
+																															                    	if (action.result)
+																															                    	{
+																															                    		Ext.MessageBox.alert('".JText::_('CATALOG_PUBLISHMETADATA_MSG_FAILURE_TITLE')."', action.result.errors.message);
+																															                    	}
+																															                    	else
+																															                    	{
+																															                    		Ext.MessageBox.alert('".JText::_('CATALOG_PUBLISHMETADATA_MSG_FAILURE_TITLE')."', '".JText::_('CATALOG_PUBLISHMETADATA_MSG_FAILURE_TEXT')."');
+																															                    	}
+																																				}
+																																				});
+																														                    }
+																														                },{
+																														                    text: '".html_Metadata::cleanText(JText::_('CORE_ALERT_CANCEL'))."',
+																														                    handler: function(){
+																														                        win.hide();
+																														                }
+																																   }] 
+																												                }]
+																												            });
+																									else
+																									{
+																										win.items.get(0).findById('publishdate').setValue('');
+																										win.items.get(0).findById('archivelast').setValue(false);
+																									}
+																										
+																			  						win.show();
+																			  						
+																									myMask.hide();
+																								},
+																								failure: function(form, action) 
+																								{
+										 															if (action.result)
+																			                    	{
+																			                    		Ext.MessageBox.alert('".JText::_('CATALOG_PUBLISHMETADATA_MSG_FAILURE_TITLE')."', action.result.errors.message);
+																			                    	}
+																			                    	else
+																									{
+											                        									Ext.MessageBox.alert('".JText::_('CATALOG_PUBLISHMETADATA_MSG_FAILURE_TITLE')."', '".JText::_('CATALOG_PUBLISHMETADATA_MSG_FAILURE_TEXT')."');
+																									}
+																									myMask.hide();
+																								},
+																								url:'".$publish_url."'
+																							});
+														
+													}
+													else{
+				
+																if(form.getForm().extValidationCorrupt){															
+																			Ext.Msg.show({
+																			   modal : true,														
+																			   title:'".JText::_('CATALOG_VALIDATEMETADATA_MSG_FAILURE_TITLE')."',
+																			   msg: '".JText::_('CATALOG_PUBLISHMETADATA_MSG_EXTCORRUPT')."',
+																			   buttons: Ext.Msg.YESNO,
+								
+																			   fn:  function(btn){															           			
+										        								
+																						if (btn == 'no'){
+																							return;
+																						}
+																						else{
+																							form.getForm().submit({
+																						    	scope: this,
+																								method	: 'POST',
+																								clientValidation: false,
+																								success: function(form, action) 
+																								{
+																									xml = (action.result.file.xml);
+																									xmlfile = xml.split('<br>').join('\\n');
+																									// Cr�er une iframe pour demander � l'utilisateur la date de publication
+																									if (!win)
+																										win = new Ext.Window({
+																												                title:'Publication',
+																												                width:300,
+																												                height:170,
+																												                closeAction:'hide',
+																												                layout:'fit', 
+																															    border:false, 
+																															    closable:false, 
+																															    modal:true,
+																															    renderTo:Ext.getBody(), 
+																															    frame:true,
+																															    items:[{ 
+																																     xtype:'form' 
+																																     ,id:'publishform' 
+																																     ,defaultType:'textfield' 
+																																     ,frame:true 
+																																     ,method:'post' 
+																																     ,defaults:{anchor:'95%'} 
+																																     ,items:[ 
+																																       { 
+																																         fieldLabel:'".html_Metadata::cleanText(JText::_('CATALOG_VALIDATEMETADATA_PUBLISHBOX_DATE_MSG'))."', 
+																																         id:'publishdate', 
+																																         xtype: 'datefield',
+																																         format: 'd.m.Y',
+																																         value:'' 
+																																       },
+																																       { 
+																																         fieldLabel:'".html_Metadata::cleanText(JText::_('CATALOG_VALIDATEMETADATA_PUBLISHBOX_ARCHIVELAST_MSG'))."', 
+																																         id:'archivelast', 
+																																         xtype: 'checkbox',
+																																         checked:false 
+																																       },
+																																       { 
+																																         id:'metadata_id', 
+																																         xtype: 'hidden',
+																																         value:'".$metadata_id."' 
+																																       },
+																																       { 
+																																         id:'object_id', 
+																																         xtype: 'hidden',
+																																         value:'".$object_id."' 
+																																       },
+																																       { 
+																																         id:'account_id', 
+																																         xtype: 'hidden',
+																																         value:'".$account_id."' 
+																																       },
+																																       { 
+																																         id:'xml', 
+																																         xtype: 'hidden',
+																																         value: xmlfile
+																																       },
+																																       { 
+																																         id:'option', 
+																																         xtype: 'hidden',
+																																         value:'".$option."' 
+																																       },
+																																       { 
+																																         id:'task', 
+																																         xtype: 'hidden',
+																																         value: 'publishMetadata'
+																																       }
+																																    ] 
+																																     ,buttonAlign:'right' 
+																																     ,buttons: [{
+																														                    text:'".html_Metadata::cleanText(JText::_('CORE_ALERT_SUBMIT'))."',
+																														                    handler: function(){
+																														                    	myMask.show();
+																														                    	win.items.get(0).getForm().setValues({task: 'publishMetadata'});
+																		                 														win.items.get(0).getForm().submit({
+																																		    	scope: this,
+																																				method	: 'POST',
+																																				url:'index.php?option=com_easysdi_catalog&task=publishMetadata',
+																																				success: function(form, action) 
+																																				{
+																																					win.hide();
+																																					myMask.hide();
+											
+																															                    	Ext.MessageBox.alert('".JText::_('CATALOG_PUBLISHMETADATA_MSG_SUCCESS_TITLE')."', 
+																															                    						 '".JText::_('CATALOG_PUBLISHMETADATA_MSG_SUCCESS_TEXT')."',
+																															                    						 function () {window.open ('./index.php?option=".$option."&Itemid=".JRequest::getVar('Itemid')."&task=listMetadata','_parent');});																
+																																				},
+																																				failure: function(form, action) 
+																																				{
+																																					win.hide();
+																																					myMask.hide();
+																																					
+																															                    	if (action.result)
+																															                    	{
+																															                    		Ext.MessageBox.alert('".JText::_('CATALOG_PUBLISHMETADATA_MSG_FAILURE_TITLE')."', action.result.errors.message);
+																															                    	}
+																															                    	else
+																															                    	{
+																															                    		Ext.MessageBox.alert('".JText::_('CATALOG_PUBLISHMETADATA_MSG_FAILURE_TITLE')."', '".JText::_('CATALOG_PUBLISHMETADATA_MSG_FAILURE_TEXT')."');
+																															                    	}
+																																				}
+																																				});
+																														                    }
+																														                },{
+																														                    text: '".html_Metadata::cleanText(JText::_('CORE_ALERT_CANCEL'))."',
+																														                    handler: function(){
+																														                        win.hide();
+																														                }
+																																   }] 
+																												                }]
+																												            });
+																									else
+																									{
+																										win.items.get(0).findById('publishdate').setValue('');
+																										win.items.get(0).findById('archivelast').setValue(false);
+																									}
+																										
+																			  						win.show();
+																			  						
+																									myMask.hide();
+																								},
+																								failure: function(form, action) 
+																								{
+										 															if (action.result)
+																			                    	{
+																			                    		Ext.MessageBox.alert('".JText::_('CATALOG_PUBLISHMETADATA_MSG_FAILURE_TITLE')."', action.result.errors.message);
+																			                    	}
+																			                    	else
+																									{
+											                        									Ext.MessageBox.alert('".JText::_('CATALOG_PUBLISHMETADATA_MSG_FAILURE_TITLE')."', '".JText::_('CATALOG_PUBLISHMETADATA_MSG_FAILURE_TEXT')."');
+																									}
+																									myMask.hide();
+																								},
+																								url:'".$publish_url."'
+																							});
+																						}
+																					} ,
+																			   animEl: 'elId'
+																			});			        			 		
+																						
+																	
+																	}else if (form.getForm().isInvalid){													
+															
+																		Ext.MessageBox.alert('".JText::_('CATALOG_VALIDATEMETADATA_LANGUAGE_MSG_FAILURE_TITLE')."', '".JText::_('CATALOG_VALIDATEMETADATA_LANGUAGE_MSG_FAILURE_TEXT')."');
+																					
+																		myMask.hide();
+																		
+
+																		
+																	}else{
+																		Ext.MessageBox.alert('".JText::_('CATALOG_VALIDATEMETADATA_MSG_FAILURE_TITLE')."', '".JText::_('CATALOG_VALIDATEMETADATA_MSG_FAILURE_TEXT')."');
+																			
+																		myMask.hide();
+
+																	
+																	}
+																	
+														}//end else 		
+												
+												
+												
 								        	}})
 								        );
 						form.render();";
-						
 					// Possibilit� de revenir en travail. Contr�les ExtJs et passage � l'�tat "En travail"
 					$this->javascript .="
 					form.fbar.add(new Ext.Button({text: '".JText::_('CORE_INVALIDATE')."',

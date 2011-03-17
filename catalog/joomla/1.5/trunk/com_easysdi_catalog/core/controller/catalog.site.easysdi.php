@@ -2794,7 +2794,7 @@ class SITE_catalog {
 		
 	}
 
-	function BuildCSWRequest($maxRecords, $startPosition, $resultType, $typeNames, $elementSetName, $constraintVersion, $filter, $sortBy, $sortOrder)
+	function BuildCSWRequest($maxRecords, $startPosition, $resultType, $typeNames, $elementSetName, $constraintVersion, $filter, $sortBy, $sortOrder, $mode = 'CORE')
 	{
 		//Bug: If we have accents, we must specify ISO-8859-1
 		$req = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
@@ -2810,7 +2810,7 @@ class SITE_catalog {
 		{
 			$req .= "resultType=\"$resultType\" 
 					outputSchema=\"csw:IsoRecord\" 
-					content=\"CORE\" ";
+					content=\"".$mode."\" ";
 		}
 
 		// add max records if not 0
