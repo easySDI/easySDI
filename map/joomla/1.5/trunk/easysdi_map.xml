@@ -1,11 +1,16 @@
 <?xml version="1.0" ?>
 <install type="component" version="1.5">
 	<name>EasySDI_Map</name>
-	<creationDate>June 2010</creationDate>
-	<author>DEPTH SA</author>
+	<version>2.0.0</version>
+	<releaseDate>2011-03-30</releaseDate>
+    <releaseType>Major update</releaseType>
+	<creationDate>Mars 2011</creationDate>
+	<author>Depth.ch</author>
+	<authorEmail>easysdi@depth.ch</authorEmail>
+	<authorUrl>www.depth.ch</authorUrl>
 	<authorUrl>http://www.easysdi.org</authorUrl>
-	<license>GPL 3.0</license>
-	<version>1.0.1</version>
+	<copyright></copyright>
+	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
 	<description>Web Mapping Module for EasySDI</description>
 	<installfile>install.easysdi_map.php</installfile>
 	<uninstallfile>uninstall.easysdi_map.php</uninstallfile>
