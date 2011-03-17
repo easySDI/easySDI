@@ -153,23 +153,19 @@ foreach ($_GET as $key => $value){
          //do not have to forward this.	
 		     if($h == "Transfer-Encoding: chunked\r\n"){
 		     	  $HTML = str_replace($h, "", $HTML);
-		        continue;   
+		        continue;
 		     }
-		        
+		     
 		     //don't send empty header
-	       if(trim($h) != ""){
-	          fwrite($fh, "sending->".$h);
-	          header($h);
-	       }
-		  /* 
-           if(substr($h, 0, 6) != "HTTP/1" && $h!="\r\n"){
-	            fwrite($fh, "sending->".$h);
-	            header($h);
-           }else{
-           	  header($h);
-              fwrite($fh, "not sending->".$h);
-           }
-      */
+	       	     if(trim($h) != ""){
+			//Only send Content-Type header, if sending HTTP 1.1 OK
+			//It causes a bug if response length > 8000 char
+		     	if (substr($h, 0, 12) == "Content-Type")
+	       	        {
+		           fwrite($fh, "sending->".$h);
+		     	   header($h);
+		     	}
+	       	     }
 	   //remove the headers form the curl response text
 	   $HTML = str_replace($h, "", $HTML);
   	}
