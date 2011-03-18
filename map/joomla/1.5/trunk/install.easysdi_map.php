@@ -242,7 +242,7 @@ function com_install()
 		CREATE TABLE `#__sdi_mapcontext` (
 		  `id` int(11) NOT NULL AUTO_INCREMENT,
 		  `user_id` int(11) NOT NULL,
-		  `WMC_text` text,
+		  `WMCtext` text,
 		  PRIMARY KEY (`id`)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 		
@@ -264,7 +264,7 @@ function com_install()
 		  `ordering`  bigint(20) NULL DEFAULT 0 ,
 		  `checked_out`  bigint(20) NOT NULL DEFAULT 0 ,
 		  `checked_out_time`  datetime NULL DEFAULT NULL ,
-		  `translation` varchar(200) DEFAULT NULL, --> to put in code field!!
+		  `translation` varchar(200) DEFAULT NULL, 
 		  `object` varchar(100) DEFAULT NULL,
 		  `enable` tinyint(1) NOT NULL DEFAULT '1',
 		  PRIMARY KEY (`id`)
@@ -273,14 +273,14 @@ function com_install()
 		-- ----------------------------
 		-- Records of __sdi_mapdisplayoption
 		-- ----------------------------
-		INSERT INTO `#__sdi_mapdisplayoption` VALUES ('1', 'EASYSDI_MAP_SIMPLESEARCH', 'SimpleSearch', '0');
-		INSERT INTO `#__sdi_mapdisplayoption` VALUES ('2', 'EASYSDI_MAP_ADVANCEDSEARCH', 'AdvancedSearch', '0');
-		INSERT INTO `#__sdi_mapdisplayoption` VALUES ('3', 'EASYSDI_MAP_DATAPRECISION', 'DataPrecision', '0');
-		INSERT INTO `#__sdi_mapdisplayoption` VALUES ('4', 'EASYSDI_MAP_LOCALISATION', 'Localisation', '1');
-		INSERT INTO `#__sdi_mapdisplayoption` VALUES ('5', 'EASYSDI_MAP_TOOLBAR', 'ToolBar', '1');
-		INSERT INTO `#__sdi_mapdisplayoption` VALUES ('6', 'EASYSDI_MAP_MAPOVERVIEW', 'MapOverview', '1');
-		INSERT INTO `#__sdi_mapdisplayoption` VALUES ('7', 'EASYSDI_MAP_ANNOTATION', 'Annotation', '0');
-		INSERT INTO `#__sdi_mapdisplayoption` VALUES ('8', 'EASYSDI_MAP_COORDINATE', 'Coordinate', '1');
+		INSERT INTO `#__sdi_mapdisplayoption` (guid,name,created,createdby,checked_out,translation, object,enable) VALUES ('".helper_easysdi::getUniqueId()."', 'SimpleSearch','','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'EASYSDI_MAP_SIMPLESEARCH','SimpleSearch','0');
+		INSERT INTO `#__sdi_mapdisplayoption` (guid,name,created,createdby,checked_out,translation, object,enable) VALUES ('".helper_easysdi::getUniqueId()."', 'AdvancedSearch','','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'EASYSDI_MAP_ADVANCEDSEARCH','AdvancedSearch','0');
+		INSERT INTO `#__sdi_mapdisplayoption` (guid,name,created,createdby,checked_out,translation, object,enable) VALUES ('".helper_easysdi::getUniqueId()."', 'DataPrecision','','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'EASYSDI_MAP_DATAPRECISION','DataPrecision','0');
+		INSERT INTO `#__sdi_mapdisplayoption` (guid,name,created,createdby,checked_out,translation, object,enable) VALUES ('".helper_easysdi::getUniqueId()."', 'Localisation','','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'EASYSDI_MAP_LOCALISATION','Localisation','1');
+		INSERT INTO `#__sdi_mapdisplayoption` (guid,name,created,createdby,checked_out,translation, object,enable) VALUES ('".helper_easysdi::getUniqueId()."', 'ToolBar','','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'EASYSDI_MAP_TOOLBAR','ToolBar','1');
+		INSERT INTO `#__sdi_mapdisplayoption` (guid,name,created,createdby,checked_out,translation, object,enable) VALUES ('".helper_easysdi::getUniqueId()."', 'MapOverview','','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'EASYSDI_MAP_MAPOVERVIEW','MapOverview','1');
+		INSERT INTO `#__sdi_mapdisplayoption` (guid,name,created,createdby,checked_out,translation, object,enable) VALUES ('".helper_easysdi::getUniqueId()."', 'Annotation','','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'EASYSDI_MAP_ANNOTATION','Annotation','0');
+		INSERT INTO `#__sdi_mapdisplayoption` (guid,name,created,createdby,checked_out,translation, object,enable) VALUES ('".helper_easysdi::getUniqueId()."', 'Coordinate','','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'EASYSDI_MAP_COORDINATE','Coordinate','1');
 		
 		-- ----------------------------
 		-- Table structure for `#__sdi_mapextension`
@@ -299,13 +299,13 @@ function com_install()
 		DROP TABLE IF EXISTS `#__sdi_mapextensionresource`;
 		CREATE TABLE `#__sdi_mapextensionresource` (
 		  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-		  `id_ext` bigint(20) DEFAULT NULL,
+		  `ext_id` bigint(20) DEFAULT NULL,
 		  `resource_type` varchar(100) DEFAULT NULL,
 		  `resource_folder` varchar(500) DEFAULT NULL,
 		  `resource_file` varchar(500) DEFAULT NULL,
 		  PRIMARY KEY (`id`),
-		  KEY `id_ext` (`id_ext`),
-		  CONSTRAINT `#__easysdi_map_extension_resource_ibfk_1` FOREIGN KEY (`id_ext`) REFERENCES `#__easysdi_map_extension` (`id`) ON DELETE CASCADE
+		  KEY `ext_id` (`ext_id`),
+		  CONSTRAINT `#__sdi_mapextensionresource_ibfk_1` FOREIGN KEY (`ext_id`) REFERENCES `#__sdi_mapextension` (`id`) ON DELETE CASCADE
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 		
 		-- ----------------------------
@@ -313,13 +313,23 @@ function com_install()
 		-- ----------------------------
 		DROP TABLE IF EXISTS `#__sdi_resultgrid`;
 		CREATE TABLE `#__sdi_resultgrid` (
-		  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-		  `internal_name` varchar(100) NOT NULL DEFAULT '',
-		  `title` varchar(500) DEFAULT NULL,
-		  `feature_type` bigint(20) DEFAULT NULL,
-		  `distinct_fk` varchar(100) NOT NULL DEFAULT '',
-		  `distinct_pk` varchar(100) NOT NULL DEFAULT '',
-		  `row_details_feature_type` bigint(20) DEFAULT NULL,
+		  `id`  bigint(20) NOT NULL AUTO_INCREMENT ,
+		  `guid`  varchar(36) NOT NULL ,
+		  `code`  varchar(20) NULL DEFAULT NULL ,
+		  `name`  varchar(50) NOT NULL ,
+		  `description`  varchar(100)NULL DEFAULT NULL ,
+		  `created`  datetime NOT NULL ,
+		  `updated`  datetime NULL DEFAULT NULL ,
+		  `createdby`  bigint(20) NOT NULL ,
+		  `updatedby`  bigint(20) NULL DEFAULT NULL ,
+		  `label`  varchar(50) NULL DEFAULT NULL ,
+		  `ordering`  bigint(20) NULL DEFAULT 0 ,
+		  `checked_out`  bigint(20) NOT NULL DEFAULT 0 ,
+		  `checked_out_time`  datetime NULL DEFAULT NULL ,
+		  `featuretype` bigint(20) DEFAULT NULL,
+		  `distinctfk` varchar(100) NOT NULL DEFAULT '',
+		  `distinctpk` varchar(100) NOT NULL DEFAULT '',
+		  `rowdetailsfeaturetype` bigint(20) DEFAULT NULL,
 		  PRIMARY KEY (`id`)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 		
@@ -328,8 +338,19 @@ function com_install()
 		-- ----------------------------
 		DROP TABLE IF EXISTS `#__sdi_featuretype`;
 		CREATE TABLE `#__sdi_featuretype` (
-		  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-		  `name` varchar(100) NOT NULL DEFAULT '',
+		  `id`  bigint(20) NOT NULL AUTO_INCREMENT ,
+		  `guid`  varchar(36) NOT NULL ,
+		  `code`  varchar(20) NULL DEFAULT NULL ,
+		  `name`  varchar(50) NOT NULL ,
+		  `description`  varchar(100)NULL DEFAULT NULL ,
+		  `created`  datetime NOT NULL ,
+		  `updated`  datetime NULL DEFAULT NULL ,
+		  `createdby`  bigint(20) NOT NULL ,
+		  `updatedby`  bigint(20) NULL DEFAULT NULL ,
+		  `label`  varchar(50) NULL DEFAULT NULL ,
+		  `ordering`  bigint(20) NULL DEFAULT 0 ,
+		  `checked_out`  bigint(20) NOT NULL DEFAULT 0 ,
+		  `checked_out_time`  datetime NULL DEFAULT NULL ,
 		  `geometry` varchar(100) DEFAULT NULL,
 		  PRIMARY KEY (`id`)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -340,13 +361,13 @@ function com_install()
 		DROP TABLE IF EXISTS `#__sdi_featuretype_usage`;
 		CREATE TABLE `#__sdi_featuretype_usage` (
 		  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-		  `id_ft` bigint(20) NOT NULL,
-		  `id_use` bigint(20) NOT NULL,
+		  `ft_id` bigint(20) NOT NULL,
+		  `usage_id` bigint(20) NOT NULL,
 		  PRIMARY KEY (`id`),
-		  KEY `id_ft` (`id_ft`),
-		  KEY `id_use` (`id_use`),
-		  CONSTRAINT `#__sdi_featuretype_usage_ibfk_1` FOREIGN KEY (`id_ft`) REFERENCES `#__sdi_featuretype` (`id`) ON DELETE CASCADE,
-		  CONSTRAINT `#__sdi_featuretype_usage_ibfk_2` FOREIGN KEY (`id_use`) REFERENCES `#__sdi_usage` (`id`) ON DELETE CASCADE
+		  KEY `ft_id` (`ft_id`),
+		  KEY `usage_id` (`usage_id`),
+		  CONSTRAINT `#__sdi_featuretype_usage_ibfk_1` FOREIGN KEY (`ft_id`) REFERENCES `#__sdi_featuretype` (`id`) ON DELETE CASCADE,
+		  CONSTRAINT `#__sdi_featuretype_usage_ibfk_2` FOREIGN KEY (`usage_id`) REFERENCES `#__sdi_usage` (`id`) ON DELETE CASCADE
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 		
 		-- ----------------------------
@@ -354,10 +375,21 @@ function com_install()
 		-- ----------------------------
 		DROP TABLE IF EXISTS `#__sdi_mapfilter`;
 		CREATE TABLE `#__sdi_mapfilter` (
-		  `id` int(11) NOT NULL AUTO_INCREMENT,
+		  `id`  bigint(20) NOT NULL AUTO_INCREMENT ,
+		  `guid`  varchar(36) NOT NULL ,
+		  `code`  varchar(20) NULL DEFAULT NULL ,
+		  `name`  varchar(50) NOT NULL ,
+		  `description`  varchar(100)NULL DEFAULT NULL ,
+		  `created`  datetime NOT NULL ,
+		  `updated`  datetime NULL DEFAULT NULL ,
+		  `createdby`  bigint(20) NOT NULL ,
+		  `updatedby`  bigint(20) NULL DEFAULT NULL ,
+		  `label`  varchar(50) NULL DEFAULT NULL ,
+		  `ordering`  bigint(20) NULL DEFAULT 0 ,
+		  `checked_out`  bigint(20) NOT NULL DEFAULT 0 ,
+		  `checked_out_time`  datetime NULL DEFAULT NULL ,
 		  `user_id` int(11) NOT NULL,
 		  `title` varchar(100) NOT NULL,
-		  `description` varchar(1000) NOT NULL,
 		  `filter_data` text NOT NULL,
 		  `filter_mode` int(11) NOT NULL,
 		  PRIMARY KEY (`id`)
@@ -368,21 +400,33 @@ function com_install()
 		-- ----------------------------
 		DROP TABLE IF EXISTS `#__sdi_geolocation`;
 		CREATE TABLE `#__sdi_geolocation` (
-		  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-		  `wfs_url` varchar(4000) NOT NULL DEFAULT '',
-		  `layer_name` varchar(4000) NOT NULL DEFAULT '',
-		  `title` varchar(4000) NOT NULL DEFAULT '',
-		  `area_field_name` varchar(100) NOT NULL DEFAULT '',
-		  `name_field_name` varchar(100) NOT NULL DEFAULT '',
-		  `id_field_name` varchar(100) NOT NULL DEFAULT '',
-		  `feature_type_name` varchar(400) NOT NULL DEFAULT '',
-		  `parent_fk_field_name` varchar(100) NOT NULL DEFAULT '',
-		  `parent_id` bigint(20) NOT NULL DEFAULT '0',
+		   `id`  bigint(20) NOT NULL AUTO_INCREMENT ,
+		  `guid`  varchar(36) NOT NULL ,
+		  `code`  varchar(20) NULL DEFAULT NULL ,
+		  `name`  varchar(50) NOT NULL ,
+		  `description`  varchar(100)NULL DEFAULT NULL ,
+		  `created`  datetime NOT NULL ,
+		  `updated`  datetime NULL DEFAULT NULL ,
+		  `createdby`  bigint(20) NOT NULL ,
+		  `updatedby`  bigint(20) NULL DEFAULT NULL ,
+		  `label`  varchar(50) NULL DEFAULT NULL ,
+		  `ordering`  bigint(20) NULL DEFAULT 0 ,
+		  `checked_out`  bigint(20) NOT NULL DEFAULT 0 ,
+		  `checked_out_time`  datetime NULL DEFAULT NULL ,
+		  `wfsurl` varchar(4000) NOT NULL DEFAULT '',
+		  `wmsurl` varchar(4000) NOT NULL DEFAULT '',
+		  `layername` varchar(4000) NOT NULL DEFAULT '',
+		  `areafield` varchar(100) NOT NULL DEFAULT '',
+		  `namefield` varchar(100) NOT NULL DEFAULT '',
+		  `idfield` varchar(100) NOT NULL DEFAULT '',
+		  `featuretypename` varchar(400) NOT NULL DEFAULT '',
+		  `parentfkfield` varchar(100) NOT NULL DEFAULT '',
+		  `parentid` bigint(20) NOT NULL DEFAULT '0',
 		  `maxfeatures` int(11) NOT NULL DEFAULT '-1',
-		  `img_format` varchar(100) NOT NULL DEFAULT 'image/png',
-		  `min_resolution` bigint(20) NOT NULL DEFAULT '0',
-		  `max_resolution` bigint(20) NOT NULL DEFAULT '0',
-		  `extract_id_from_fid` tinyint(1) NOT NULL DEFAULT '1',
+		  `imgformat` varchar(100) NOT NULL DEFAULT 'image/png',
+		  `minresolution` bigint(20) NOT NULL DEFAULT '0',
+		  `maxresolution` bigint(20) NOT NULL DEFAULT '0',
+		  `extractidfromfid` tinyint(1) NOT NULL DEFAULT '1',
 		  `user` varchar(400) DEFAULT NULL,
 		  `password` varchar(400) DEFAULT NULL,
 		  `easysdi_account_id` bigint(20) DEFAULT NULL,
@@ -394,12 +438,22 @@ function com_install()
 		-- ----------------------------
 		DROP TABLE IF EXISTS `#__sdi_precision`;
 		CREATE TABLE `#__sdi_precision` (
-		  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-		  `name` varchar(100) NOT NULL DEFAULT '',
-		  `title` varchar(250) DEFAULT NULL,
-		  `min_resolution` bigint(20) DEFAULT NULL,
-		  `max_resolution` bigint(20) DEFAULT NULL,
-		  `low_scale_switch_to` varchar(100) DEFAULT NULL,
+		  `id`  bigint(20) NOT NULL AUTO_INCREMENT ,
+		  `guid`  varchar(36) NOT NULL ,
+		  `code`  varchar(20) NULL DEFAULT NULL ,
+		  `name`  varchar(50) NOT NULL ,
+		  `description`  varchar(100)NULL DEFAULT NULL ,
+		  `created`  datetime NOT NULL ,
+		  `updated`  datetime NULL DEFAULT NULL ,
+		  `createdby`  bigint(20) NOT NULL ,
+		  `updatedby`  bigint(20) NULL DEFAULT NULL ,
+		  `label`  varchar(50) NULL DEFAULT NULL ,
+		  `ordering`  bigint(20) NULL DEFAULT 0 ,
+		  `checked_out`  bigint(20) NOT NULL DEFAULT 0 ,
+		  `checked_out_time`  datetime NULL DEFAULT NULL ,
+		  `minresolution` bigint(20) DEFAULT NULL,
+		  `maxresolution` bigint(20) DEFAULT NULL,
+		  `lowscaleswitchto` varchar(100) DEFAULT NULL,
 		  `style` varchar(500) DEFAULT NULL,
 		  PRIMARY KEY (`id`)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -409,9 +463,19 @@ function com_install()
 		-- ----------------------------
 		DROP TABLE IF EXISTS `#__sdi_projection`;
 		CREATE TABLE `#__sdi_projection` (
-		  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-		  `name` varchar(200) NOT NULL DEFAULT '',
-		  `title` varchar(200) DEFAULT NULL,
+		  `id`  bigint(20) NOT NULL AUTO_INCREMENT ,
+		  `guid`  varchar(36) NOT NULL ,
+		  `code`  varchar(20) NULL DEFAULT NULL ,
+		  `name`  varchar(50) NOT NULL ,
+		  `description`  varchar(100)NULL DEFAULT NULL ,
+		  `created`  datetime NOT NULL ,
+		  `updated`  datetime NULL DEFAULT NULL ,
+		  `createdby`  bigint(20) NOT NULL ,
+		  `updatedby`  bigint(20) NULL DEFAULT NULL ,
+		  `label`  varchar(50) NULL DEFAULT NULL ,
+		  `ordering`  bigint(20) NULL DEFAULT 0 ,
+		  `checked_out`  bigint(20) NOT NULL DEFAULT 0 ,
+		  `checked_out_time`  datetime NULL DEFAULT NULL ,
 		  `proj4text` varchar(500) NOT NULL DEFAULT '',
 		  `numDigits` int(2) NOT NULL DEFAULT '0',
 		  `enable` tinyint(1) NOT NULL DEFAULT '1',
@@ -423,30 +487,42 @@ function com_install()
 		-- ----------------------------
 		DROP TABLE IF EXISTS `#__sdi_searchlayer`;
 		CREATE TABLE `#__sdi_searchlayer` (
-		  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-		  `feature_type` bigint(20) DEFAULT NULL,
-		  `geometry_name` varchar(100) NOT NULL DEFAULT '',
-		  `row_details_feature_type` bigint(20) DEFAULT NULL,
+		  `id`  bigint(20) NOT NULL AUTO_INCREMENT ,
+		  `guid`  varchar(36) NOT NULL ,
+		  `code`  varchar(20) NULL DEFAULT NULL ,
+		  `name`  varchar(50) NOT NULL ,
+		  `description`  varchar(100)NULL DEFAULT NULL ,
+		  `created`  datetime NOT NULL ,
+		  `updated`  datetime NULL DEFAULT NULL ,
+		  `createdby`  bigint(20) NOT NULL ,
+		  `updatedby`  bigint(20) NULL DEFAULT NULL ,
+		  `label`  varchar(50) NULL DEFAULT NULL ,
+		  `ordering`  bigint(20) NULL DEFAULT 0 ,
+		  `checked_out`  bigint(20) NOT NULL DEFAULT 0 ,
+		  `checked_out_time`  datetime NULL DEFAULT NULL ,
+		  `featuretype` bigint(20) DEFAULT NULL,
+		  `geometryname` varchar(100) NOT NULL DEFAULT '',
+		  `rowdetailsfeaturetype` bigint(20) DEFAULT NULL,
 		  `styles` varchar(500) DEFAULT NULL,
 		  `enable` tinyint(1) NOT NULL DEFAULT '0',
 		  PRIMARY KEY (`id`)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 		
 		-- ----------------------------
-		-- Table structure for `#__easysdi_map_service_account`
+		-- Table structure for `#__sdi_map_serviceaccount`
 		-- ----------------------------
-		DROP TABLE IF EXISTS `#__easysdi_map_service_account`;
-		CREATE TABLE `#__easysdi_map_service_account` (
+		DROP TABLE IF EXISTS `#__sdi_map_serviceaccount`;
+		CREATE TABLE `#__sdi_map_serviceaccount` (
 		  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-		  `partner_id` bigint(20) NOT NULL,
+		  `account_id` bigint(20) NOT NULL,
 		  PRIMARY KEY (`id`)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 		
 		-- ----------------------------
-		-- Table structure for `#__easysdi_map_simple_search_additional_filter`
+		-- Table structure for `#__sdi_simplesearchfilter`
 		-- ----------------------------
-		DROP TABLE IF EXISTS `#__easysdi_map_simple_search_additional_filter`;
-		CREATE TABLE `#__easysdi_map_simple_search_additional_filter` (
+		DROP TABLE IF EXISTS `#__sdi_simplesearchfilter`;
+		CREATE TABLE `#__sdi_simplesearchfilter` (
 		  `id` bigint(20) NOT NULL AUTO_INCREMENT,
 		  `attribute` varchar(100) NOT NULL DEFAULT '',
 		  `value` varchar(100) NOT NULL DEFAULT '',
@@ -456,10 +532,10 @@ function com_install()
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 		
 		-- ----------------------------
-		-- Table structure for `#__easysdi_map_simple_search_type`
+		-- Table structure for `#__sdi_simplesearchtype`
 		-- ----------------------------
-		DROP TABLE IF EXISTS `#__easysdi_map_simple_search_type`;
-		CREATE TABLE `#__easysdi_map_simple_search_type` (
+		DROP TABLE IF EXISTS `#__sdi_simplesearchtype`;
+		CREATE TABLE `#__sdi_simplesearchtype` (
 		  `id` bigint(20) NOT NULL AUTO_INCREMENT,
 		  `title` varchar(500) NOT NULL DEFAULT '',
 		  `dropdown_feature_type` varchar(100) NOT NULL DEFAULT '',
@@ -481,8 +557,8 @@ function com_install()
 		  PRIMARY KEY (`id`),
 		  KEY `id_sst` (`id_sst`),
 		  KEY `id_erg` (`id_erg`),
-		  CONSTRAINT `#__easysdi_map_sst_erg_ibfk_1` FOREIGN KEY (`id_sst`) REFERENCES `#__easysdi_map_simple_search_type` (`id`) ON DELETE CASCADE,
-		  CONSTRAINT `#__easysdi_map_sst_erg_ibfk_2` FOREIGN KEY (`id_erg`) REFERENCES `#__easysdi_map_extra_result_grid` (`id`) ON DELETE CASCADE
+		  CONSTRAINT `#__sdi_sst_erg_ibfk_1` FOREIGN KEY (`id_sst`) REFERENCES `#__sdi_simplesearchtype` (`id`) ON DELETE CASCADE,
+		  CONSTRAINT `#__sdi_sst_erg_ibfk_2` FOREIGN KEY (`id_erg`) REFERENCES `#__sdi_resultgrid` (`id`) ON DELETE CASCADE
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 		
 		-- ----------------------------
@@ -496,8 +572,8 @@ function com_install()
 		  PRIMARY KEY (`id`),
 		  KEY `id_sst` (`id_sst`),
 		  KEY `id_saf` (`id_saf`),
-		  CONSTRAINT `#__easysdi_map_sst_saf_ibfk_1` FOREIGN KEY (`id_sst`) REFERENCES `#__easysdi_map_simple_search_type` (`id`) ON DELETE CASCADE,
-		  CONSTRAINT `#__easysdi_map_sst_saf_ibfk_2` FOREIGN KEY (`id_saf`) REFERENCES `#__easysdi_map_simple_search_additional_filter` (`id`) ON DELETE CASCADE
+		  CONSTRAINT `#__sdi_sst_saf_ibfk_1` FOREIGN KEY (`id_sst`) REFERENCES `#__sdi_simplesearchtype` (`id`) ON DELETE CASCADE,
+		  CONSTRAINT `#__sdi_sst_saf_ibfk_2` FOREIGN KEY (`id_saf`) REFERENCES `#__sdi_resultgrid` (`id`) ON DELETE CASCADE
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 		
 		-- ----------------------------
@@ -514,54 +590,75 @@ function com_install()
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 		
 		-- ----------------------------
+		-- Table structure for `#__sdi_overlaygroup`
+		-- ----------------------------
+		DROP TABLE IF EXISTS `#__sdi_overlaygroup`;
+		CREATE TABLE `#__sdi_overlaygroup` (
+		  `id`  bigint(20) NOT NULL AUTO_INCREMENT ,
+		  `guid`  varchar(36) NOT NULL ,
+		  `code`  varchar(20) NULL DEFAULT NULL ,
+		  `name`  varchar(50) NOT NULL ,
+		  `description`  varchar(100)NULL DEFAULT NULL ,
+		  `created`  datetime NOT NULL ,
+		  `updated`  datetime NULL DEFAULT NULL ,
+		  `createdby`  bigint(20) NOT NULL ,
+		  `updatedby`  bigint(20) NULL DEFAULT NULL ,
+		  `label`  varchar(50) NULL DEFAULT NULL ,
+		  `ordering`  bigint(20) NULL DEFAULT 0 ,
+		  `checked_out`  bigint(20) NOT NULL DEFAULT 0 ,
+		  `checked_out_time`  datetime NULL DEFAULT NULL ,
+		  `open` tinyint(1) NOT NULL DEFAULT '0',
+		  PRIMARY KEY (`id`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+		
+		-- ----------------------------
 		-- Table structure for `#__sdi_overlay`
 		-- ----------------------------
 		DROP TABLE IF EXISTS `#__sdi_overlay`;
 		CREATE TABLE `#__sdi_overlay` (
-		  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-		  `overlay_def_id` bigint(20) NOT NULL DEFAULT '0',
+		  `id`  bigint(20) NOT NULL AUTO_INCREMENT ,
+		  `guid`  varchar(36) NOT NULL ,
+		  `code`  varchar(20) NULL DEFAULT NULL ,
+		  `name`  varchar(50) NOT NULL ,
+		  `description`  varchar(100)NULL DEFAULT NULL ,
+		  `created`  datetime NOT NULL ,
+		  `updated`  datetime NULL DEFAULT NULL ,
+		  `createdby`  bigint(20) NOT NULL ,
+		  `updatedby`  bigint(20) NULL DEFAULT NULL ,
+		  `label`  varchar(50) NULL DEFAULT NULL ,
+		  `ordering`  bigint(20) NULL DEFAULT 0 ,
+		  `checked_out`  bigint(20) NOT NULL DEFAULT 0 ,
+		  `checked_out_time`  datetime NULL DEFAULT NULL ,
+		  
+		  `group_id` bigint(20) NOT NULL DEFAULT '0',
 		  `url` varchar(400) NOT NULL DEFAULT '',
-		  `url_type` varchar(100) NOT NULL DEFAULT '',
-		  `name` varchar(100) NOT NULL DEFAULT '',
+		  `type` varchar(100) NOT NULL DEFAULT '',
 		  `layers` varchar(300) NOT NULL DEFAULT '',
-		  `maxExtent` varchar(100) NOT NULL DEFAULT '',
-		  `maxScale` varchar(100) NOT NULL DEFAULT 'auto',
-		  `minScale` varchar(100) NOT NULL DEFAULT 'auto',
+		  `maxextent` varchar(100) NOT NULL DEFAULT '',
+		  `maxscale` varchar(100) NOT NULL DEFAULT 'auto',
+		  `minscale` varchar(100) NOT NULL DEFAULT 'auto',
 		  `resolutions` text,
-		  `resolutionOverScale` tinyint(1) NOT NULL DEFAULT '0',
+		  `resolutionoverscale` tinyint(1) NOT NULL DEFAULT '0',
 		  `projection` varchar(100) NOT NULL DEFAULT '',
-		  `img_format` varchar(100) NOT NULL DEFAULT 'image/png',
-		  `customStyle` tinyint(1) unsigned NOT NULL DEFAULT '0',
+		  `imgformat` varchar(100) NOT NULL DEFAULT 'image/png',
+		  `customstyle` tinyint(1) unsigned NOT NULL DEFAULT '0',
 		  `cache` tinyint(1) NOT NULL DEFAULT '0',
 		  `unit` varchar(100) NOT NULL DEFAULT '',
 		  `singletile` tinyint(1) NOT NULL DEFAULT '0',
 		  `user` varchar(400) DEFAULT NULL,
 		  `password` varchar(400) DEFAULT NULL,
-		  `overlay_group_id` bigint(20) DEFAULT NULL,
-		  `default_visibility` tinyint(1) NOT NULL DEFAULT '0',
+		  `defaultvisibility` tinyint(1) NOT NULL DEFAULT '0',
 		  `order` int(11) NOT NULL DEFAULT '0',
-		  `default_opacity` float NOT NULL DEFAULT '1',
-		  `metadata_url` varchar(500) DEFAULT NULL,
+		  `defaultopacity` float NOT NULL DEFAULT '1',
+		  `metadataurl` varchar(500) DEFAULT NULL,
 		  
-		  `minResolution` varchar(100) NOT NULL DEFAULT 'auto',
-		  `maxResolution` varchar(100) NOT NULL DEFAULT 'auto',
-		  `alias` varchar(400) DEFAULT NULL,
+		  `minresolution` varchar(100) NOT NULL DEFAULT 'auto',
+		  `maxresolution` varchar(100) NOT NULL DEFAULT 'auto',
 		  
-		  PRIMARY KEY (`id`)
+		  PRIMARY KEY (`id`),
+		  CONSTRAINT `#__sdi_overlay_ibfk_1` FOREIGN KEY (`group_id`) REFERENCES `#__sdi_overlaygroup` (`id`) ON DELETE CASCADE
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-		
 	
-		-- ----------------------------
-		-- Table structure for `#__sdi_overlaygroup`
-		-- ----------------------------
-		DROP TABLE IF EXISTS `#__sdi_overlaygroup`;
-		CREATE TABLE `#__sdi_overlaygroup` (
-		  `id` int(11) NOT NULL AUTO_INCREMENT,
-		  `name` varchar(30) DEFAULT NULL,
-		  `order` int(11) NOT NULL DEFAULT '0',
-		  `open` tinyint(1) NOT NULL DEFAULT '0',
-		  PRIMARY KEY (`id`)
-		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 		";
 
 		$db->setQuery( $query);
