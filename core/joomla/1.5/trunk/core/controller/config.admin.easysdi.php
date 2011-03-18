@@ -30,6 +30,7 @@ class ADMIN_config {
 		$proxyList=array();
 		$monitorList=array();
 		$publishList=array();
+		$mapList=array();
 		
 		$result=array();
 		$query = "SELECT c.* FROM #__sdi_configuration c, #__sdi_list_module m WHERE c.module_id=m.id AND m.code='CORE'";
@@ -120,6 +121,23 @@ class ADMIN_config {
 			}
 		}
 		
+		$query = "SELECT count(*) FROM #__sdi_configuration c, #__sdi_list_module m WHERE c.module_id=m.id AND m.code='MAP'";
+		$db->setQuery( $query );
+		$mapItem = $db->loadResult();
+
+		if ($mapItem>0)
+		{
+			$result=array();
+			$query = "SELECT c.* FROM #__sdi_configuration c, #__sdi_list_module m WHERE c.module_id=m.id AND m.code='MAP'";
+			$db->setQuery( $query );
+			$result = $db->loadObjectList();
+			foreach($result as $row)
+			{
+				$mapList[$row->code] = $row;
+			}
+		}
+		
+		
 		// Récupération des types mysql pour les champs
 		$tableFields = array();
 		$tableFields = $db->getTableFields("#__sdi_configuration", false);
@@ -147,7 +165,7 @@ class ADMIN_config {
 		$attributetypelist = $db->loadObjectList();
 		
 		
-		HTML_config::showConfig($option, $coreList, $catalogItem, $catalogList, $shopItem, $shopList, $proxyItem, $proxyList,  $monitorItem, $monitorList,$publishItem, $publishList,$fieldsLength, $attributetypelist );
+		HTML_config::showConfig($option, $coreList, $catalogItem, $catalogList, $shopItem, $shopList, $proxyItem, $proxyList,  $monitorItem, $monitorList,$publishItem, $publishList,$mapItem, $mapList, $fieldsLength, $attributetypelist );
 	}
 
 	function saveShowConfig($option) {
@@ -300,6 +318,103 @@ class ADMIN_config {
 		if ($_POST['publish_item'] > 0)
 		{
 			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['publish_url'])."\" WHERE code = 'WPS_PUBLISHER'");
+			if (!$database->query()) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+		}
+		
+		// Sauvegarde des clés MAP
+		if ($_POST['map_item'] > 0)
+		{
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['componentPath'])."\" WHERE code = 'componentPath'");
+			if (!$database->query()) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['componentUrl'])."\" WHERE code = 'componentUrl'");
+			if (!$database->query()) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['projection'])."\" WHERE code = 'projection'");
+			if (!$database->query()) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['pubWfsUrl'])."\" WHERE code = 'pubWfsUrl'");
+			if (!$database->query()) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['maxFeatures'])."\" WHERE code = 'maxFeatures'");
+			if (!$database->query()) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['pubFeatureNS'])."\" WHERE code = 'pubFeatureNS'");
+			if (!$database->query()) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['pubFeaturePrefix'])."\" WHERE code = 'pubFeaturePrefix'");
+			if (!$database->query()) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['wpsReportsUrl'])."\" WHERE code = 'wpsReportsUrl'");
+			if (!$database->query()) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['shp2GmlUrl'])."\" WHERE code = 'shp2GmlUrl'");
+			if (!$database->query()) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['featureIdAttribute'])."\" WHERE code = 'featureIdAttribute'");
+			if (!$database->query()) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['maxSearchBars'])."\" WHERE code = 'maxSearchBars'");
+			if (!$database->query()) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['WMSFilterSupport'])."\" WHERE code = 'WMSFilterSupport'");
+			if (!$database->query()) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['pubWmsUrl'])."\" WHERE code = 'pubWmsUrl'");
+			if (!$database->query()) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['defaultCoordMapZoom'])."\" WHERE code = 'defaultCoordMapZoom'");
+			if (!$database->query()) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['autocompleteNumChars'])."\" WHERE code = 'autocompleteNumChars'");
+			if (!$database->query()) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['autocompleteUseFID'])."\" WHERE code = 'autocompleteUseFID'");
+			if (!$database->query()) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['autocompleteMaxFeat'])."\" WHERE code = 'autocompleteMaxFeat'");
+			if (!$database->query()) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['layerProxyXMLFile'])."\" WHERE code = 'layerProxyXMLFile'");
+			if (!$database->query()) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['maptofopURL'])."\" WHERE code = 'maptofopURL'");
+			if (!$database->query()) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['numZoomLevels'])."\" WHERE code = 'numZoomLevels'");
+			if (!$database->query()) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['localisationInputWidth'])."\" WHERE code = 'localisationInputWidth'");
+			if (!$database->query()) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['legendOrFilterPanelWidth'])."\" WHERE code = 'legendOrFilterPanelWidth'");
+			if (!$database->query()) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['treePanelWidth'])."\" WHERE code = 'treePanelWidth'");
 			if (!$database->query()) {			
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
