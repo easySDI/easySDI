@@ -108,7 +108,7 @@ class HTML_resultgrid
 			}
 			else if (document.getElementById('feature_type').value == "")
 			{
-				alert ('<?php echo  JText::_( 'EASYSDI_RESULTGRID_FT_VALIDATION_ERROR');?>');	
+				alert ('<?php echo  JText::_( 'EASYSDI_RESULTGRft_id_VALIDATION_ERROR');?>');	
 				return;
 			}
 			else if (document.getElementById('distinct_fk').value == "")
@@ -151,7 +151,7 @@ class HTML_resultgrid
 								<td colspan="2"><input class="inputbox" type="text" size="100" maxlength="500" name="title" id="title" value="<?php echo $resultGrid->title; ?>" /></td>
 							</tr>
 							<tr>
-								<td class="key"><?php echo JText::_("EASYSDI_MAP_RESULT_GRID_FTYPE"); ?></td>
+								<td class="key"><?php echo JText::_("EASYSDI_MAP_RESULT_GRft_idYPE"); ?></td>
 								<td>
 								<?php echo JHTML::_("select.genericlist",$rowsResultGridFT, 'feature_type', 'size="1" class="inputbox" ', 'value', 'text',$resultGrid->feature_type); ?>								
 								</td>

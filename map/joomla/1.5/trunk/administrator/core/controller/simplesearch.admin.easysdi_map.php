@@ -32,12 +32,12 @@ class ADMIN_simplesearch
 		$limitstart = $mainframe->getUserStateFromRequest( "view{$option}limitstart", 'limitstart', 0 );
 		$use_pagination = JRequest::getVar('use_pagination',0);
 		
-		$query ="SELECT COUNT(*) FROM #__easysdi_map_simple_search_type";
+		$query ="SELECT COUNT(*) FROM #__sdi_simplesearchtype";
 		$db->setQuery( $query );
 		$total = $db->loadResult();
 		$pageNav = new JPagination($total,$limitstart,$limit);
 		
-		$query = "SELECT *  FROM #__easysdi_map_simple_search_type ";
+		$query = "SELECT *  FROM #__sdi_simplesearchtype ";
 		$query .= " ORDER BY title";
 		if ($use_pagination) 
 		{
@@ -66,22 +66,22 @@ class ADMIN_simplesearch
 		$simpleSearch->load($id);
 		
 		//Get availaible additional filters
-		$db->setQuery( "SELECT id as value, attribute as text FROM #__easysdi_map_simple_search_additional_filter" );
+		$db->setQuery( "SELECT id as value, attribute as text FROM #__sdi_simplesearchfilter" );
 		$rowsFilters = $db->loadObjectList();
 		echo $db->getErrorMsg();
 		
 		//Get current additional filters
-		$db->setQuery( "SELECT id as value FROM #__easysdi_map_simple_search_additional_filter WHERE id IN (SELECT id_saf FROM #__easysdi_map_sst_saf WHERE id_sst=$id)" );
+		$db->setQuery( "SELECT id as value FROM #__sdi_simplesearchfilter WHERE id IN (SELECT id_saf FROM #__sdi_sst_saf WHERE id_sst=$id)" );
 		$rowsSelectedFilter = $db->loadObjectList();
 		echo $db->getErrorMsg();
 		
 		//Get availaible extra results grids
-		$db->setQuery( "SELECT id as value, title as text FROM #__easysdi_map_extra_result_grid" );
+		$db->setQuery( "SELECT id as value, name as text FROM #__sdi_resultgrid" );
 		$rowsResultGrid = $db->loadObjectList();
 		echo $db->getErrorMsg();
 		
 		//Get current extra results grids
-		$db->setQuery( "SELECT id as value FROM #__easysdi_map_extra_result_grid WHERE id IN (SELECT id_erg FROM #__easysdi_map_sst_erg WHERE id_sst=$id)" );
+		$db->setQuery( "SELECT id as value FROM #__sdi_resultgrid WHERE id IN (SELECT id_erg FROM #__sdi_sst_erg WHERE id_sst=$id)" );
 		$rowsSelectedGrid = $db->loadObjectList();
 		echo $db->getErrorMsg();
 
@@ -134,7 +134,7 @@ class ADMIN_simplesearch
 		/**
 		 * Save selected additional filters 
 		*/
-		$db->setQuery( "DELETE FROM #__easysdi_map_sst_saf WHERE id_sst=".$simpleSearch->id);
+		$db->setQuery( "DELETE FROM #__sdi_sst_saf WHERE id_sst=".$simpleSearch->id);
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			$mainframe->redirect("index.php?option=$option&task=simpleSearch" );
@@ -146,7 +146,7 @@ class ADMIN_simplesearch
 			{
 				foreach( $_POST['filter_id'] as $filter_id )
 				{
-					$db->setQuery( "INSERT INTO #__easysdi_map_sst_saf (id_sst, id_saf) VALUES (".$simpleSearch->id.",".$filter_id.")" );
+					$db->setQuery( "INSERT INTO #__sdi_sst_saf (id_sst, id_saf) VALUES (".$simpleSearch->id.",".$filter_id.")" );
 					if (!$db->query()) 
 					{
 						$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
@@ -160,7 +160,7 @@ class ADMIN_simplesearch
 		/**
 		 * Save selected grids results
 		*/
-		$db->setQuery( "DELETE FROM #__easysdi_map_sst_erg WHERE id_sst=".$simpleSearch->id);
+		$db->setQuery( "DELETE FROM #__sdi_sst_erg WHERE id_sst=".$simpleSearch->id);
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			$mainframe->redirect("index.php?option=$option&task=simpleSearch" );
@@ -172,7 +172,7 @@ class ADMIN_simplesearch
 			{
 				foreach( $_POST['grid_id'] as $grid_id )
 				{
-					$db->setQuery( "INSERT INTO #__easysdi_map_sst_erg (id_sst, id_erg) VALUES (".$simpleSearch->id.",".$grid_id.")" );
+					$db->setQuery( "INSERT INTO #__sdi_sst_erg (id_sst, id_erg) VALUES (".$simpleSearch->id.",".$grid_id.")" );
 					if (!$db->query()) 
 					{
 						$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
@@ -196,12 +196,12 @@ class ADMIN_simplesearch
 		$limitstart = $mainframe->getUserStateFromRequest( "view{$option}limitstart", 'limitstart', 0 );
 		$use_pagination = JRequest::getVar('use_pagination',0);
 		
-		$query ="SELECT COUNT(*) FROM #__easysdi_map_simple_search_additional_filter";
+		$query ="SELECT COUNT(*) FROM #__sdi_simplesearchfilter";
 		$db->setQuery( $query );
 		$total = $db->loadResult();
 		$pageNav = new JPagination($total,$limitstart,$limit);
 		
-		$query = "SELECT *  FROM #__easysdi_map_simple_search_additional_filter ";
+		$query = "SELECT *  FROM #__sdi_simplesearchfilter ";
 		$query .= " ORDER BY attribute";
 		if ($use_pagination) 
 		{

@@ -97,7 +97,7 @@ class HTML_ctrlpanel
 					<a href="<?php echo $link; ?>">
 					
 						<?php 
-						$text = JText::_( 'EASYSDI_MAP_ANNOTATION_STYLE' );
+						$text = JText::_( 'EASYSDI_MAP_annotationStyle' );
 						echo JHTML::_('image.site',  'icon-48-component.png', '/templates/'. $template .'/images/header/', NULL, NULL, $text); ?>
 						<span><?php echo $text; ?></span></a>
 				</div>

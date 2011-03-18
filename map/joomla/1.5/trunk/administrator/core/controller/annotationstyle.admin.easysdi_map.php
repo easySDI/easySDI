@@ -29,12 +29,12 @@ class ADMIN_annotationstyle
 		$limitstart = $mainframe->getUserStateFromRequest( "view{$option}limitstart", 'limitstart', 0 );
 		$use_pagination = JRequest::getVar('use_pagination',0);
 		
-		$query ="SELECT COUNT(*) FROM #__easysdi_map_annotation_style";
+		$query ="SELECT COUNT(*) FROM #__sdi_annotationstyle";
 		$db->setQuery( $query );
 		$total = $db->loadResult();
 		$pageNav = new JPagination($total,$limitstart,$limit);
 		
-		$query = "SELECT *  FROM #__easysdi_map_annotation_style";
+		$query = "SELECT *  FROM #__sdi_annotationstyle";
 		$query .= " ORDER BY name";
 		if ($use_pagination) 
 		{
@@ -59,10 +59,10 @@ class ADMIN_annotationstyle
 		global  $mainframe;
 		$db =& JFactory::getDBO(); 
 		
-		$annotation_style = new annotation_style ($db);
-		$annotation_style->load($id);
+		$annotationStyle = new annotationStyle ($db);
+		$annotationStyle->load($id);
 
-		HTML_annotationstyle::editAnnotationStyle($annotation_style, $option);
+		HTML_annotationstyle::editAnnotationStyle($annotationStyle, $option);
 	}
 	
 	function deleteAnnotationStyle($cid,$option)
@@ -76,12 +76,12 @@ class ADMIN_annotationstyle
 			$mainframe->redirect("index.php?option=$option&task=annotationStyle" );
 			exit;
 		}
-		foreach( $cid as $annotation_style_id )
+		foreach( $cid as $annotationStyle_id )
 		{
-			$annotation_style = new annotation_style ($db);
-			$annotation_style->load($annotation_style_id);
+			$annotationStyle = new annotationStyle ($db);
+			$annotationStyle->load($annotationStyle_id);
 				
-			if (!$annotation_style->delete()) {
+			if (!$annotationStyle->delete()) {
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 				$mainframe->redirect("index.php?option=$option&task=annotationStyle" );
 			}				
@@ -93,21 +93,20 @@ class ADMIN_annotationstyle
 		global $mainframe;
 		$db=& JFactory::getDBO(); 
 			
-		$annotation_style = new annotation_style ($db);
-		if (!$annotation_style->bind( $_POST )) 
+		$annotationStyle = new annotationStyle ($db);
+		if (!$annotationStyle->bind( $_POST )) 
 		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");						
 			$mainframe->redirect("index.php?option=$option&task=annotationStyle" );
 			exit();
 		}		
 
-		if (!$annotation_style->store()) 
+		if (!$annotationStyle->store()) 
 		{			
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			$mainframe->redirect("index.php?option=$option&task=annotationStyle" );
 			exit();
 		}
 	}
-
 }
 ?>

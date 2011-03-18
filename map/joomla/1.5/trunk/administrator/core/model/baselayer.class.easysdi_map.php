@@ -35,7 +35,7 @@ class baseLayer extends sdiTable
 	var $cache=false;
 	var $unit=null;
 	var $default_visibility=false;
-	var $order=null;
+	var $ordering=null;
 	var $default_opacity=null;
 	var $metadata_url=null;
 	var $singletile=false;

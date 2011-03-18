@@ -35,7 +35,28 @@ function com_install()
 	}	
 	if (!$version)
 	{
-	$query =
+		$version= '2.0.0';
+		$query="INSERT INTO #__sdi_list_module (guid, code, name, description, created, createdby, label, value, currentversion) 
+				VALUES ('".helper_easysdi::getUniqueId()."', 'MAP', 'com_easysdi_map', 'com_easysdi_map', '".date('Y-m-d H:i:s')."', '".$user_id."', 'com_sdi_map', 'com_sdi_map', '".$version."')";
+		$db->setQuery( $query);
+		
+		if (!$db->query()) 
+		{			
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			return false;
+		}
+		$module_id = $db->insertid();
+		
+		$query="INSERT INTO #__sdi_module_panel (guid, code, name, description, created, createdby,module_id, view_path,ordering) 
+										VALUES ('".helper_easysdi::getUniqueId()."', 'MAP_PANEL', 'Map Panel', 'Map Panel', '".date('Y-m-d H:i:s')."', '".$user_id."', '".$module_id."', 'com_easysdi_map/core/view/sub.ctrlpanel.admin.easysdi.html.php', '7')";
+		$db->setQuery( $query);		
+		if (!$db->query()) 
+		{			
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			return false;
+		}
+		
+		$query =
 		"
 		SET FOREIGN_KEY_CHECKS=0;
 		-- ----------------------------
@@ -91,15 +112,15 @@ function com_install()
 		  `ordering`  bigint(20) NULL DEFAULT 0 ,
 		  `checked_out`  bigint(20) NOT NULL DEFAULT 0 ,
 		  `checked_out_time`  datetime NULL DEFAULT NULL ,
-		  `id_ft` bigint(20) NOT NULL,
-		  `data_type` varchar(100) NOT NULL DEFAULT '',
+		  `ft_id` bigint(20) NOT NULL,
+		  `datatype` varchar(100) NOT NULL DEFAULT '',
 		  `width` bigint(20) DEFAULT NULL,
-		  `initial_visibility` tinyint(1) NOT NULL DEFAULT '0',
+		  `initialvisibility` tinyint(1) NOT NULL DEFAULT '0',
 		  `visible` tinyint(1) NOT NULL DEFAULT '0',
-		  `misc_search` tinyint(1) NOT NULL DEFAULT '0',
+		  `miscsearch` tinyint(1) NOT NULL DEFAULT '0',
 		  PRIMARY KEY (`id`),
-		  KEY `id_ft` (`id_ft`),
-		  CONSTRAINT `#__sdi_featuretypeattribute_ibfk_1` FOREIGN KEY (`id_ft`) REFERENCES `#__sdi_featuretype` (`id`) ON DELETE CASCADE
+		  KEY `ft_id` (`ft_id`),
+		  CONSTRAINT `#__sdi_featuretypeattribute_ibfk_1` FOREIGN KEY (`ft_id`) REFERENCES `#__sdi_featuretype` (`id`) ON DELETE CASCADE
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 		
 		-- ----------------------------
@@ -138,25 +159,25 @@ function com_install()
 		  
 		  `url` varchar(400) NOT NULL DEFAULT '',
 		  `layers` varchar(300) NOT NULL DEFAULT '',
-		  `img_format` varchar(100) NOT NULL DEFAULT 'image/png',
+		  `imgformat` varchar(100) NOT NULL DEFAULT 'image/png',
 		  `customStyle` tinyint(1) unsigned NOT NULL DEFAULT '0',
 		  `singletile` tinyint(1) NOT NULL DEFAULT '0',
 		  `cache` tinyint(1) NOT NULL DEFAULT '0',
 		  `user` varchar(400) DEFAULT NULL,
 		  `password` varchar(400) DEFAULT NULL,
-		  `easysdi_account_id` bigint(20) DEFAULT NULL,
-		  `default_visibility` tinyint(1) NOT NULL DEFAULT '0',
-		  `default_opacity` float NOT NULL DEFAULT '1',
-		  `metadata_url` varchar(500) DEFAULT NULL,
+		  `easysdiaccount_id` bigint(20) DEFAULT NULL,
+		  `defaultvisibility` tinyint(1) NOT NULL DEFAULT '0',
+		  `defaultopacity` float NOT NULL DEFAULT '1',
+		  `metadataurl` varchar(500) DEFAULT NULL,
 		  
 		  `projection` varchar(100) NOT NULL DEFAULT 'EPSG:4326',
 		  `unit` varchar(100) NOT NULL DEFAULT '',
-		  `minScale` varchar(100) NOT NULL DEFAULT 'auto',
-		  `maxScale` varchar(100) NOT NULL DEFAULT 'auto',
+		  `minscale` varchar(100) NOT NULL DEFAULT 'auto',
+		  `maxscale` varchar(100) NOT NULL DEFAULT 'auto',
 		  `resolutions` text,
 		  `resolutionOverScale` tinyint(4) NOT NULL DEFAULT '0',
 		  `extent` varchar(100) DEFAULT NULL,
-		  `maxExtent` varchar(100) NOT NULL DEFAULT '-180,-90,180,90',
+		  `maxextent` varchar(100) NOT NULL DEFAULT '-180,-90,180,90',
 		  
 		  PRIMARY KEY (`id`)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -186,54 +207,32 @@ function com_install()
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 		
 		-- ----------------------------
-		-- Table structure for `#__sdi_mapconfig`
+		-- Records of #__sdi_configuration
 		-- ----------------------------
-		DROP TABLE IF EXISTS `#__sdi_mapconfig`;
-		CREATE TABLE `#__sdi_mapconfig` (
-		  `id`  bigint(20) NOT NULL AUTO_INCREMENT ,
-		  `guid`  varchar(36) NOT NULL ,
-		  `code`  varchar(20) NULL DEFAULT NULL ,
-		  `name`  varchar(50) NOT NULL ,
-		  `description`  varchar(100)NULL DEFAULT NULL ,
-		  `created`  datetime NOT NULL ,
-		  `updated`  datetime NULL DEFAULT NULL ,
-		  `createdby`  bigint(20) NOT NULL ,
-		  `updatedby`  bigint(20) NULL DEFAULT NULL ,
-		  `label`  varchar(50) NULL DEFAULT NULL ,
-		  `ordering`  bigint(20) NULL DEFAULT 0 ,
-		  `checked_out`  bigint(20) NOT NULL DEFAULT 0 ,
-		  `checked_out_time`  datetime NULL DEFAULT NULL ,
-		  `key` varchar(100) NOT NULL DEFAULT '',
-		  `value` varchar(500) DEFAULT NULL,
-		  PRIMARY KEY (`id`)
-		) ENGINE=InnoDB AUTO_INCREMENT=24;
-		
-		-- ----------------------------
-		-- Records of #__sdi_mapconfig
-		-- ----------------------------
-		INSERT INTO `#__sdi_mapconfig` (guid,name,description, created,createdby,checked_out,key, value) VALUES ('".helper_easysdi::getUniqueId()."', 'componentPath','','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'componentPath',null);
-		INSERT INTO `#__sdi_mapconfig` (guid,name,description, created,createdby,checked_out,key, value) VALUES ('".helper_easysdi::getUniqueId()."', 'componentUrl','','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'componentUrl',null);
-		INSERT INTO `#__sdi_mapconfig` (guid,name,description, created,createdby,checked_out,key, value) VALUES ('".helper_easysdi::getUniqueId()."', 'projection','','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'projection','EPSG:27572');
-		INSERT INTO `#__sdi_mapconfig` (guid,name,description, created,createdby,checked_out,key, value) VALUES ('".helper_easysdi::getUniqueId()."', 'pubWfsUrl','url of publication database Wfs service proxy','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'pubWfsUrl',null);
-		INSERT INTO `#__sdi_mapconfig` (guid,name,description, created,createdby,checked_out,key, value) VALUES ('".helper_easysdi::getUniqueId()."', 'maxFeatures','maximum number of features for WFS requests','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'maxFeatures','1000');
-		INSERT INTO `#__sdi_mapconfig` (guid,name,description, created,createdby,checked_out,key, value) VALUES ('".helper_easysdi::getUniqueId()."', 'pubFeatureNS','namespace of publication database Wfs service','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'pubFeatureNS',null);
-		INSERT INTO `#__sdi_mapconfig` (guid,name,description, created,createdby,checked_out,key, value) VALUES ('".helper_easysdi::getUniqueId()."', 'pubFeaturePrefix','prefix of publication database Wfs feature type','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'pubFeaturePrefix','ms');
-		INSERT INTO `#__sdi_mapconfig` (guid,name,description, created,createdby,checked_out,key, value) VALUES ('".helper_easysdi::getUniqueId()."', 'wpsReportsUrl','path to WPS service for report hook-up','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'wpsReportsUrl',null);
-		INSERT INTO `#__sdi_mapconfig` (guid,name,description, created,createdby,checked_out,key, value) VALUES ('".helper_easysdi::getUniqueId()."', 'shp2GmlUrl','path to Shp to Gml service - needs to be a local proxy as via Ajax','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'shp2GmlUrl',null);
-		INSERT INTO `#__sdi_mapconfig` (guid,name,description, created,createdby,checked_out,key, value) VALUES ('".helper_easysdi::getUniqueId()."', 'featureIdAttribute','name of attribute used to identify features (=the Primary Key)','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'featureIdAttribute','unit_guid');
-		INSERT INTO `#__sdi_mapconfig` (guid,name,description, created,createdby,checked_out,key, value) VALUES ('".helper_easysdi::getUniqueId()."', 'maxSearchBars','','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'maxSearchBars','3');
-		INSERT INTO `#__sdi_mapconfig` (guid,name,description, created,createdby,checked_out,key, value) VALUES ('".helper_easysdi::getUniqueId()."', 'WMSFilterSupport','Does the server support filters in WMS requests.','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'WMSFilterSupport','false');
-		INSERT INTO `#__sdi_mapconfig` (guid,name,description, created,createdby,checked_out,key, value) VALUES ('".helper_easysdi::getUniqueId()."', 'pubWmsUrl','url of publication database Wms service proxy','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'pubWmsUrl',null);
-		INSERT INTO `#__sdi_mapconfig` (guid,name,description, created,createdby,checked_out,key, value) VALUES ('".helper_easysdi::getUniqueId()."', 'defaultCoordMapZoom','','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'defaultCoordMapZoom','0');
-		INSERT INTO `#__sdi_mapconfig` (guid,name,description, created,createdby,checked_out,key, value) VALUES ('".helper_easysdi::getUniqueId()."', 'autocompleteNumChars','','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'autocompleteNumChars','4');
-		INSERT INTO `#__sdi_mapconfig` (guid,name,description, created,createdby,checked_out,key, value) VALUES ('".helper_easysdi::getUniqueId()."', 'autocompleteUseFID','','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'autocompleteUseFID','1');
-		INSERT INTO `#__sdi_mapconfig` (guid,name,description, created,createdby,checked_out,key, value) VALUES ('".helper_easysdi::getUniqueId()."', 'autocompleteMaxFeat','','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'autocompleteMaxFeat','50');
-		INSERT INTO `#__sdi_mapconfig` (guid,name,description, created,createdby,checked_out,key, value) VALUES ('".helper_easysdi::getUniqueId()."', 'layerProxyXMLFile','','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'layerProxyXMLFile','');
-		INSERT INTO `#__sdi_mapconfig` (guid,name,description, created,createdby,checked_out,key, value) VALUES ('".helper_easysdi::getUniqueId()."', 'maptofopURL','Simple reporting service based on FOP.  HTTP-GET','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'maptofopURL',null);
-		INSERT INTO `#__sdi_mapconfig` (guid,name,description, created,createdby,checked_out,key, value) VALUES ('".helper_easysdi::getUniqueId()."', 'numZoomLevels','','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'numZoomLevels','10');
-		INSERT INTO `#__sdi_mapconfig` (guid,name,description, created,createdby,checked_out,key, value) VALUES ('".helper_easysdi::getUniqueId()."', 'localisationInputWidth','Width of the geolocation combobox.','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'localisationInputWidth','300');
-		INSERT INTO `#__sdi_mapconfig` (guid,name,description, created,createdby,checked_out,key, value) VALUES ('".helper_easysdi::getUniqueId()."', 'legendOrFilterPanelWidth','Width of the legend panel.','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'legendOrFilterPanelWidth','250');
-		INSERT INTO `#__sdi_mapconfig` (guid,name,description, created,createdby,checked_out,key, value) VALUES ('".helper_easysdi::getUniqueId()."', 'treePanelWidth','Width of the layers panel.','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'treePanelWidth','250');
+						
+		INSERT INTO `#__sdi_configuration` (guid,code,name,description, created,createdby,checked_out,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'componentPath', 'componentPath','','".date('Y-m-d H:i:s')."', '".$user_id."',0, null, '".$module_id."');
+		INSERT INTO `#__sdi_configuration` (guid,code,name,description, created,createdby,checked_out,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'componentUrl','componentUrl','','".date('Y-m-d H:i:s')."', '".$user_id."',0,  null,'".$module_id."');
+		INSERT INTO `#__sdi_configuration` (guid,code,name,description, created,createdby,checked_out,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'projection','projection','','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'EPSG:27572','".$module_id."');
+		INSERT INTO `#__sdi_configuration` (guid,code,name,description, created,createdby,checked_out,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'pubWfsUrl','pubWfsUrl','url of publication database Wfs service proxy','".date('Y-m-d H:i:s')."', '".$user_id."',0,  null,'".$module_id."');
+		INSERT INTO `#__sdi_configuration` (guid,code,name,description, created,createdby,checked_out,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'maxFeatures', 'maxFeatures','maximum number of features for WFS requests','".date('Y-m-d H:i:s')."', '".$user_id."',0, '1000','".$module_id."');
+		INSERT INTO `#__sdi_configuration` (guid,code,name,description, created,createdby,checked_out,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'pubFeatureNS','pubFeatureNS','namespace of publication database Wfs service','".date('Y-m-d H:i:s')."', '".$user_id."',0,  null,'".$module_id."');
+		INSERT INTO `#__sdi_configuration` (guid,code,name,description, created,createdby,checked_out,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'pubFeaturePrefix','pubFeaturePrefix','prefix of publication database Wfs feature type','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'ms','".$module_id."');
+		INSERT INTO `#__sdi_configuration` (guid,code,name,description, created,createdby,checked_out,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'wpsReportsUrl','wpsReportsUrl','path to WPS service for report hook-up','".date('Y-m-d H:i:s')."', '".$user_id."',0,  null,'".$module_id."');
+		INSERT INTO `#__sdi_configuration` (guid,code,name,description, created,createdby,checked_out,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'shp2GmlUrl','shp2GmlUrl','path to Shp to Gml service - needs to be a local proxy as via Ajax','".date('Y-m-d H:i:s')."', '".$user_id."',0,  null,'".$module_id."');
+		INSERT INTO `#__sdi_configuration` (guid,code,name,description, created,createdby,checked_out,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'featureIdAttribute','featureIdAttribute','name of attribute used to identify features (=the Primary Key)','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'unit_guid','".$module_id."');
+		INSERT INTO `#__sdi_configuration` (guid,code,name,description, created,createdby,checked_out,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'maxSearchBars','maxSearchBars','','".date('Y-m-d H:i:s')."', '".$user_id."',0,  '3','".$module_id."');
+		INSERT INTO `#__sdi_configuration` (guid,code,name,description, created,createdby,checked_out,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'WMSFilterSupport', 'WMSFilterSupport','Does the server support filters in WMS requests.','".date('Y-m-d H:i:s')."', '".$user_id."',0, 'false','".$module_id."');
+		INSERT INTO `#__sdi_configuration` (guid,code,name,description, created,createdby,checked_out,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'pubWmsUrl','pubWmsUrl','url of publication database Wms service proxy','".date('Y-m-d H:i:s')."', '".$user_id."',0,  null,'".$module_id."');
+		INSERT INTO `#__sdi_configuration` (guid,code,name,description, created,createdby,checked_out,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'defaultCoordMapZoom','defaultCoordMapZoom','','".date('Y-m-d H:i:s')."', '".$user_id."',0,  '0','".$module_id."');
+		INSERT INTO `#__sdi_configuration` (guid,code,name,description, created,createdby,checked_out,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'autocompleteNumChars','autocompleteNumChars','','".date('Y-m-d H:i:s')."', '".$user_id."',0,  '4','".$module_id."');
+		INSERT INTO `#__sdi_configuration` (guid,code,name,description, created,createdby,checked_out,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'autocompleteUseFID','autocompleteUseFID','','".date('Y-m-d H:i:s')."', '".$user_id."',0,  '1','".$module_id."');
+		INSERT INTO `#__sdi_configuration` (guid,code,name,description, created,createdby,checked_out,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'autocompleteMaxFeat','autocompleteMaxFeat','','".date('Y-m-d H:i:s')."', '".$user_id."',0,  '50','".$module_id."');
+		INSERT INTO `#__sdi_configuration` (guid,code,name,description, created,createdby,checked_out,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'layerProxyXMLFile','layerProxyXMLFile','','".date('Y-m-d H:i:s')."', '".$user_id."',0,  '','".$module_id."');
+		INSERT INTO `#__sdi_configuration` (guid,code,name,description, created,createdby,checked_out,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'maptofopURL', 'maptofopURL','Simple reporting service based on FOP.  HTTP-GET','".date('Y-m-d H:i:s')."', '".$user_id."',0, null,'".$module_id."');
+		INSERT INTO `#__sdi_configuration` (guid,code,name,description, created,createdby,checked_out,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'numZoomLevels', 'numZoomLevels','','".date('Y-m-d H:i:s')."', '".$user_id."',0, '10','".$module_id."');
+		INSERT INTO `#__sdi_configuration` (guid,code,name,description, created,createdby,checked_out,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'localisationInputWidth', 'localisationInputWidth','Width of the geolocation combobox.','".date('Y-m-d H:i:s')."', '".$user_id."',0, '300','".$module_id."');
+		INSERT INTO `#__sdi_configuration` (guid,code,name,description, created,createdby,checked_out,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'legendOrFilterPanelWidth','legendOrFilterPanelWidth','Width of the legend panel.','".date('Y-m-d H:i:s')."', '".$user_id."',0,  '250','".$module_id."');
+		INSERT INTO `#__sdi_configuration` (guid,code,name,description, created,createdby,checked_out,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'treePanelWidth','treePanelWidth','Width of the layers panel.','".date('Y-m-d H:i:s')."', '".$user_id."',0,  '250','".$module_id."');
 		
 		-- ----------------------------
 		-- Table structure for `#__sdi_mapcontext`
@@ -300,9 +299,9 @@ function com_install()
 		CREATE TABLE `#__sdi_mapextensionresource` (
 		  `id` bigint(20) NOT NULL AUTO_INCREMENT,
 		  `ext_id` bigint(20) DEFAULT NULL,
-		  `resource_type` varchar(100) DEFAULT NULL,
-		  `resource_folder` varchar(500) DEFAULT NULL,
-		  `resource_file` varchar(500) DEFAULT NULL,
+		  `resourcetype` varchar(100) DEFAULT NULL,
+		  `resourcefolder` varchar(500) DEFAULT NULL,
+		  `resourcefile` varchar(500) DEFAULT NULL,
 		  PRIMARY KEY (`id`),
 		  KEY `ext_id` (`ext_id`),
 		  CONSTRAINT `#__sdi_mapextensionresource_ibfk_1` FOREIGN KEY (`ext_id`) REFERENCES `#__sdi_mapextension` (`id`) ON DELETE CASCADE
@@ -390,8 +389,8 @@ function com_install()
 		  `checked_out_time`  datetime NULL DEFAULT NULL ,
 		  `user_id` int(11) NOT NULL,
 		  `title` varchar(100) NOT NULL,
-		  `filter_data` text NOT NULL,
-		  `filter_mode` int(11) NOT NULL,
+		  `filterdata` text NOT NULL,
+		  `filtermode` int(11) NOT NULL,
 		  PRIMARY KEY (`id`)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 		
@@ -429,7 +428,7 @@ function com_install()
 		  `extractidfromfid` tinyint(1) NOT NULL DEFAULT '1',
 		  `user` varchar(400) DEFAULT NULL,
 		  `password` varchar(400) DEFAULT NULL,
-		  `easysdi_account_id` bigint(20) DEFAULT NULL,
+		  `easysdiaccount_id` bigint(20) DEFAULT NULL,
 		  PRIMARY KEY (`id`)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 		
@@ -538,10 +537,10 @@ function com_install()
 		CREATE TABLE `#__sdi_simplesearchtype` (
 		  `id` bigint(20) NOT NULL AUTO_INCREMENT,
 		  `title` varchar(500) NOT NULL DEFAULT '',
-		  `dropdown_feature_type` varchar(100) NOT NULL DEFAULT '',
-		  `dropdown_display_attr` varchar(100) NOT NULL DEFAULT '',
-		  `dropdown_id_attr` varchar(100) NOT NULL DEFAULT '',
-		  `search_attribute` varchar(500) NOT NULL DEFAULT '',
+		  `dropdownfeaturetype` varchar(100) NOT NULL DEFAULT '',
+		  `dropdowndisplayattr` varchar(100) NOT NULL DEFAULT '',
+		  `dropdownidattr` varchar(100) NOT NULL DEFAULT '',
+		  `searchattribute` varchar(500) NOT NULL DEFAULT '',
 		  `operator` varchar(5) NOT NULL DEFAULT '',
 		  PRIMARY KEY (`id`)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -647,8 +646,8 @@ function com_install()
 		  `singletile` tinyint(1) NOT NULL DEFAULT '0',
 		  `user` varchar(400) DEFAULT NULL,
 		  `password` varchar(400) DEFAULT NULL,
+		  `easysdiaccount_id` bigint(20) DEFAULT NULL,
 		  `defaultvisibility` tinyint(1) NOT NULL DEFAULT '0',
-		  `order` int(11) NOT NULL DEFAULT '0',
 		  `defaultopacity` float NOT NULL DEFAULT '1',
 		  `metadataurl` varchar(500) DEFAULT NULL,
 		  
@@ -664,25 +663,6 @@ function com_install()
 		$db->setQuery( $query);
 		if (!$db->queryBatch())		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-		}
-		$version= '2.0.0';
-		$query="INSERT INTO #__sdi_list_module (guid, code, name, description, created, createdby, label, value, currentversion) 
-				VALUES ('".helper_easysdi::getUniqueId()."', 'MAP', 'com_easysdi_map', 'com_easysdi_map', '".date('Y-m-d H:i:s')."', '".$user_id."', 'com_sdi_map', 'com_sdi_map', '".$version."')";
-		$db->setQuery( $query);
-		
-		if (!$db->query()) 
-		{			
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-			return false;
-		}
-		
-		$query="INSERT INTO #__sdi_module_panel (guid, code, name, description, created, createdby,module_id, view_path,ordering) 
-										VALUES ('".helper_easysdi::getUniqueId()."', 'MAP_PANEL', 'Map Panel', 'Map Panel', '".date('Y-m-d H:i:s')."', '".$user_id."', '".$module_id."', 'com_easysdi_map/core/view/sub.ctrlpanel.admin.easysdi.html.php', '3')";
-		$db->setQuery( $query);		
-		if (!$db->query()) 
-		{			
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-			return false;
 		}
 	}	
 

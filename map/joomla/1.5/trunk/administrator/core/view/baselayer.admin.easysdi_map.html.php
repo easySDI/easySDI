@@ -23,7 +23,7 @@ class HTML_baselayer
 	function listBaseDefinition($use_pagination, $rows, $pageNav, $option)
 	{
 		JToolBarHelper::title(JText::_("EASYSDI_LIST_BASE_DEF"));
-		$order_field = JRequest::getVar ('order_field');
+		$ordering_field = JRequest::getVar ('order_field');
 		?>
 <script>
 		function tableOrder(task, orderField)
@@ -229,10 +229,10 @@ function submitbutton(pressbutton)
 				<?php
 	}
 
-	function listBaseLayer($use_pagination, $rows, $id_base, $pageNav, $option)
+	function listBaseLayer($use_pagination, $rows, $pageNav, $option)
 	{
-		JToolBarHelper::title(JText::_("EASYSDI_LIST_BASE_LAYER"));
-		$order_field = JRequest::getVar ('order_field');
+		JToolBarHelper::title(JText::_("EASYSDI_LIST_baseLayer"));
+		$ordering_field = JRequest::getVar ('order_field');
 
 		?>
 <script>
@@ -248,12 +248,12 @@ function submitbutton(pressbutton)
 <table class="adminlist">
 	<thead>
 		<tr>
-			<th width="20" class='title'><?php echo JText::_("EASYSDI_BASE_LAYER_SHARP"); ?></th>
+			<th width="20" class='title'><?php echo JText::_("EASYSDI_baseLayer_SHARP"); ?></th>
 			<th width="20" class='title'><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows); ?>);" /></th>
-			<th class='title'><a href="javascript:tableOrder('baseLayer', 'name');" title="Click to sort by this column"><?php echo JText::_("EASYSDI_BASE_LAYER_NAME"); ?></th>
-			<th class='title'><a><?php echo JText::_("EASYSDI_BASE_LAYER_URL"); ?></a></th>
-			<th class='title'><?php echo JText::_("EASYSDI_BASE_LAYER_PROJECTION"); ?></th>
-			<th class='title'><a href="javascript:tableOrder('baseLayer', 'order');" title="Click to sort by this column"><?php echo JText::_("EASYSDI_BASE_LAYER_ORDER"); ?></th>
+			<th class='title'><a href="javascript:tableOrder('baseLayer', 'name');" title="Click to sort by this column"><?php echo JText::_("EASYSDI_baseLayer_NAME"); ?></th>
+			<th class='title'><a><?php echo JText::_("EASYSDI_baseLayer_URL"); ?></a></th>
+			<th class='title'><?php echo JText::_("EASYSDI_baseLayer_PROJECTION"); ?></th>
+			<th class='title'><a href="javascript:tableOrder('baseLayer', 'order');" title="Click to sort by this column"><?php echo JText::_("EASYSDI_baseLayer_ORDER"); ?></th>
 		</tr>
 	</thead>
 	<tbody>
@@ -272,7 +272,7 @@ function submitbutton(pressbutton)
 			<td><?php echo $row->url; ?></td>
 			<td><?php echo $row->projection; ?></td>
 			<td class="order" nowrap="nowrap"><?php
-			$disabled = ($order_field == 'order') ? true : false;
+			$disabled = ($ordering_field == 'order') ? true : false;
 
 			?> <span><?php echo $pageNav->orderUpIcon($i,  true, 'orderupbasemaplayer', 'Move Up', $disabled);  ?></span> <span><?php echo $pageNav->orderDownIcon($i,1,  true, 'orderdownbasemaplayer', 'Move Down', $disabled);   ?></span>
 
@@ -302,23 +302,23 @@ function submitbutton(pressbutton)
 	}
 	?>
 </table>
-<input type="hidden" name="option" value="<?php echo $option; ?>" /> <input type="hidden" name="order_field" value="<?php echo $order_field;?>" /> <input
+<input type="hidden" name="option" value="<?php echo $option; ?>" /> <input type="hidden" name="order_field" value="<?php echo $ordering_field;?>" /> <input
 	type="hidden" name="id_base" value="<?php echo $id_base;?>"> <input type="hidden" name="task" value="baseLayer" /> <input type="hidden"
 	name="boxchecked" value="0" /> <input type="hidden" name="hidemainmenu" value="0"></form>
 	<?php
 	}
 
-	function editBaseLayer( $base_layer, $option )
+	function editBaseLayer( $baseLayer, $option )
 	{
 		global  $mainframe;
 		JHTML::script('jquery-1.3.2.min.js', 'components/com_easysdi_map/externals/jquery/');
-		if ($base_layer->id != 0)
+		if ($baseLayer->id != 0)
 		{
-			JToolBarHelper::title( JText::_("EASYSDI_BASE_LAYER_EDIT"), 'generic.png' );
+			JToolBarHelper::title( JText::_("EASYSDI_baseLayer_EDIT"), 'generic.png' );
 		}
 		else
 		{
-			JToolBarHelper::title( JText::_("EASYSDI_BASE_LAYER_NEW"), 'generic.png' );
+			JToolBarHelper::title( JText::_("EASYSDI_baseLayer_NEW"), 'generic.png' );
 		}
 		?>
 <script>
@@ -402,92 +402,92 @@ $j(document).ready(function() {
 		<fieldset>
 		<table class="admintable">
 			<tr>
-				<td class="key"><?php echo JText::_("EASYSDI_BASE_LAYER_ID"); ?></td>
-				<td><?php echo $base_layer->id; ?></td>
+				<td class="key"><?php echo JText::_("EASYSDI_baseLayer_ID"); ?></td>
+				<td><?php echo $baseLayer->id; ?></td>
 			</tr>
 			<tr>
-				<td class="key"><?php echo JText::_("EASYSDI_BASE_LAYER_NAME"); ?></td>
-				<td><input class="inputbox" type="text" size="50" maxlength="100" name="name" id="name" value="<?php echo stripslashes($base_layer->name); ?>" /></td>
+				<td class="key"><?php echo JText::_("EASYSDI_baseLayer_NAME"); ?></td>
+				<td><input class="inputbox" type="text" size="50" maxlength="100" name="name" id="name" value="<?php echo stripslashes($baseLayer->name); ?>" /></td>
 			</tr>
 			<tr>
-				<td class="key"><?php echo JText::_("EASYSDI_BASE_LAYER_LAYERS"); ?></td>
-				<td><input class="inputbox" type="text" size="50" maxlength="100" name="layers" id="layers" value="<?php echo $base_layer->layers; ?>" /></td>
+				<td class="key"><?php echo JText::_("EASYSDI_baseLayer_LAYERS"); ?></td>
+				<td><input class="inputbox" type="text" size="50" maxlength="100" name="layers" id="layers" value="<?php echo $baseLayer->layers; ?>" /></td>
 				<td><?php echo JText::_("EASYSDI_OVERLAY_LAYERS_SEPARATOR"); ?></td>
 			</tr>
 			<tr>
-				<td class="key"><?php echo JText::_("EASYSDI_BASE_LAYER_PROJECTION"); ?></td>
-				<td><input class="inputbox" type="text" size="50" maxlength="100" name="projection" id="projection" value="<?php echo $base_layer->projection; ?>" /></td>
+				<td class="key"><?php echo JText::_("EASYSDI_baseLayer_PROJECTION"); ?></td>
+				<td><input class="inputbox" type="text" size="50" maxlength="100" name="projection" id="projection" value="<?php echo $baseLayer->projection; ?>" /></td>
 			</tr>
 			<tr>
-				<td class="key"><?php echo JText::_("EASYSDI_BASE_LAYER_IMG_FORMAT"); ?></td>
-				<td><input class="inputbox" name="img_format" id="img_format" type="text" size="50" maxlength="100" value="<?php echo $base_layer->img_format; ?>" />
+				<td class="key"><?php echo JText::_("EASYSDI_baseLayer_IMG_FORMAT"); ?></td>
+				<td><input class="inputbox" name="img_format" id="img_format" type="text" size="50" maxlength="100" value="<?php echo $baseLayer->img_format; ?>" />
 				</td>
 				<td>ex : image/png</td>
 			</tr>
 			<tr>
-				<td class="key"><?php echo JText::_("EASYSDI_BASE_LAYER_UNIT"); ?></td>
+				<td class="key"><?php echo JText::_("EASYSDI_baseLayer_UNIT"); ?></td>
 				<td><select class="inputbox" name="unit">
-					<option <?php if($base_layer->unit == 'm') echo "selected" ; ?> value="m"><?php echo JText::_("EASYSDI_METERS"); ?></option>
-					<option <?php if($base_layer->unit == 'degrees') echo "selected" ; ?> value="degrees"><?php echo JText::_("EASYSDI_DEGREES"); ?></option>
+					<option <?php if($baseLayer->unit == 'm') echo "selected" ; ?> value="m"><?php echo JText::_("EASYSDI_METERS"); ?></option>
+					<option <?php if($baseLayer->unit == 'degrees') echo "selected" ; ?> value="degrees"><?php echo JText::_("EASYSDI_DEGREES"); ?></option>
 				</select></td>
 			</tr>
 			<tr>
-				<td class="key"><?php echo JText::_("EASYSDI_BASE_LAYER_MAXEXTENT"); ?></td>
-				<td><input class="inputbox" type="text" size="50" maxlength="100" name="maxExtent" id="maxExtent" value="<?php echo $base_layer->maxExtent; ?>" /></td>
+				<td class="key"><?php echo JText::_("EASYSDI_baseLayer_MAXEXTENT"); ?></td>
+				<td><input class="inputbox" type="text" size="50" maxlength="100" name="maxExtent" id="maxExtent" value="<?php echo $baseLayer->maxExtent; ?>" /></td>
 			</tr>
 			<tr>
 				<td colspan="2"><input type="radio" id="resolutionOverScale0" name="resolutionOverScale" value="0"
-				<?php if ($base_layer->resolutionOverScale == 0) echo "checked=\"checked\""; ?> /> <?php echo JText::_("EASYSDI_BASE_SCALES"); ?></td>
+				<?php if ($baseLayer->resolutionOverScale == 0) echo "checked=\"checked\""; ?> /> <?php echo JText::_("EASYSDI_BASE_SCALES"); ?></td>
 			</tr>
 			<tr>
 				<td class="key"><?php echo JText::_("EASYSDI_BASE_MIN_SCALE"); ?></td>
 				<td><input class="inputbox scales" type="text" size="50" maxlength="100" name="minScale" id="minScale"
-				<?php if ($base_layer->resolutionOverScale == 1) echo 'disabled' ?> value="<?php echo $base_layer->minScale; ?>" /></td>
+				<?php if ($baseLayer->resolutionOverScale == 1) echo 'disabled' ?> value="<?php echo $baseLayer->minScale; ?>" /></td>
 			</tr>
 			<tr class="scales">
 				<td class="key"><?php echo JText::_("EASYSDI_BASE_MAX_SCALE"); ?></td>
 				<td><input class="inputbox scales" name="maxScale" id="maxScale" type="text" size="50" maxlength="100"
-				<?php if ($base_layer->resolutionOverScale == 1) echo 'disabled' ?> value="<?php echo $base_layer->maxScale; ?>" /></td>
+				<?php if ($baseLayer->resolutionOverScale == 1) echo 'disabled' ?> value="<?php echo $baseLayer->maxScale; ?>" /></td>
 			</tr>
 			<tr>
 				<td colspan="2"><input type="radio" id="resolutionOverScale1" name="resolutionOverScale" value="1"
-				<?php if ($base_layer->resolutionOverScale == 1) echo "checked=\"checked\""; ?> /> <?php echo JText::_("EASYSDI_BASE_RESOLUTIONS"); ?></td>
+				<?php if ($baseLayer->resolutionOverScale == 1) echo "checked=\"checked\""; ?> /> <?php echo JText::_("EASYSDI_BASE_RESOLUTIONS"); ?></td>
 			</tr>
 			<tr>
 				<td class="key"><?php echo JText::_("EASYSDI_BASE_RESOLUTIONS"); ?></td>
 				<td style=""><textarea id="resolutions" class="textarea resolutions" style="height: 200px; width: 500px;" name="resolutions" size="50"
-					maxlength="4000" <?php if ($base_layer->resolutionOverScale == 0) echo 'disabled' ?>><?php echo $base_layer->resolutions; ?></textarea></td>
+					maxlength="4000" <?php if ($baseLayer->resolutionOverScale == 0) echo 'disabled' ?>><?php echo $baseLayer->resolutions; ?></textarea></td>
 			</tr>
 			<tr>
 				<td class="key"><?php echo JText::_("EASYSDI_BASE_CACHE"); ?></td>
-				<td><input class="checkbox" name="cache" value="1" type="checkbox" <?php if ($base_layer->cache == 1) echo "checked=\"checked\""; ?> /></td>
+				<td><input class="checkbox" name="cache" value="1" type="checkbox" <?php if ($baseLayer->cache == 1) echo "checked=\"checked\""; ?> /></td>
 			</tr>
 			<tr>
-				<td class="key"><?php echo JText::_("EASYSDI_BASE_LAYER_URL"); ?></td>
-				<td><input class="inputbox" type="text" size="50" maxlength="100" name="url" id="url" value="<?php echo $base_layer->url; ?>" /></td>
+				<td class="key"><?php echo JText::_("EASYSDI_baseLayer_URL"); ?></td>
+				<td><input class="inputbox" type="text" size="50" maxlength="100" name="url" id="url" value="<?php echo $baseLayer->url; ?>" /></td>
 			</tr>
 			<tr>
-				<td class="key"><?php echo JText::_("EASYSDI_BASE_LAYER_TILE"); ?></td>
-				<td><input class="checkbox" name="singletile" value="1" type="checkbox" <?php if ($base_layer->singletile == 1) echo "checked=\"checked\""; ?> /></td>
+				<td class="key"><?php echo JText::_("EASYSDI_baseLayer_TILE"); ?></td>
+				<td><input class="checkbox" name="singletile" value="1" type="checkbox" <?php if ($baseLayer->singletile == 1) echo "checked=\"checked\""; ?> /></td>
 			</tr>
 			<tr>
-				<td class="key"><?php echo JText::_("EASYSDI_BASE_LAYER_CUSTOM_STYLE_ENABLED"); ?></td>
-				<td><input class="checkbox" name="customStyle" value="0" type="checkbox" <?php if ($base_layer->customStyle == 1) echo "checked=\"checked\""; ?> /></td>
+				<td class="key"><?php echo JText::_("EASYSDI_baseLayer_CUSTOM_STYLE_ENABLED"); ?></td>
+				<td><input class="checkbox" name="customStyle" value="0" type="checkbox" <?php if ($baseLayer->customStyle == 1) echo "checked=\"checked\""; ?> /></td>
 			</tr>
 			<tr>
-				<td class="key"><?php echo JText::_("EASYSDI_BASE_LAYER_VISIBILITY"); ?></td>
+				<td class="key"><?php echo JText::_("EASYSDI_baseLayer_VISIBILITY"); ?></td>
 				<td><input class="checkbox" name="default_visibility" value="1" type="checkbox"
-				<?php if ($base_layer->default_visibility == 1) echo "checked=\"checked\""; ?> /></td>
+				<?php if ($baseLayer->default_visibility == 1) echo "checked=\"checked\""; ?> /></td>
 			</tr>
 			<tr>
-				<td class="key"><?php echo JText::_("EASYSDI_BASE_LAYER_OPACITY"); ?></td>
+				<td class="key"><?php echo JText::_("EASYSDI_baseLayer_OPACITY"); ?></td>
 				<td><input class="inputbox" type="text" size="50" maxlength="100" name="default_opacity" id="default_opacity"
-					value="<?php echo $base_layer->default_opacity; ?>" /></td>
+					value="<?php echo $baseLayer->default_opacity; ?>" /></td>
 			</tr>
 			<tr>
-				<td class="key"><?php echo JText::_("EASYSDI_BASE_LAYER_METADATA"); ?></td>
+				<td class="key"><?php echo JText::_("EASYSDI_baseLayer_METADATA"); ?></td>
 				<td><input class="inputbox" type="text" size="50" maxlength="500" name="metadata_url" id="metadata_url"
-					value="<?php echo $base_layer->metadata_url; ?>" /></td>
+					value="<?php echo $baseLayer->metadata_url; ?>" /></td>
 			</tr>
 		</table>
 		</fieldset>
@@ -496,9 +496,9 @@ $j(document).ready(function() {
 
 </table>
 
-<input type="hidden" name="option" value="<?php echo $option; ?>" /> <input type="hidden" name="id" value="<?php echo $base_layer->id;?>"> <input
-	type="hidden" name="id_base" value="<?php echo $base_layer->id_base;?>"> <input type="hidden" name="order" value="<?php echo $base_layer->order;?>">
-<input type="hidden" name="cid[]" value="<?php echo $base_layer->id_base;?>"> <input type="hidden" name="task" value="saveBaseLayer" /></form>
+<input type="hidden" name="option" value="<?php echo $option; ?>" /> <input type="hidden" name="id" value="<?php echo $baseLayer->id;?>"> <input
+	type="hidden" name="id_base" value="<?php echo $baseLayer->id_base;?>"> <input type="hidden" name="order" value="<?php echo $baseLayer->order;?>">
+<input type="hidden" name="cid[]" value="<?php echo $baseLayer->id_base;?>"> <input type="hidden" name="task" value="saveBaseLayer" /></form>
 				<?php
 	}
 }

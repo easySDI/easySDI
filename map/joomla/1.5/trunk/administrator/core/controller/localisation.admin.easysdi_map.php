@@ -29,13 +29,13 @@ class ADMIN_localisation
 		$limitstart = $mainframe->getUserStateFromRequest( "view{$option}limitstart", 'limitstart', 0 );
 		$use_pagination = JRequest::getVar('use_pagination',0);
 		
-		$query ="SELECT COUNT(*) FROM #__easysdi_map_localisation_layer";
+		$query ="SELECT COUNT(*) FROM #__sdi_geolocation";
 		$db->setQuery( $query );
 		$total = $db->loadResult();
 		$pageNav = new JPagination($total,$limitstart,$limit);
 		
-		$query = "SELECT *  FROM #__easysdi_map_localisation_layer ";
-		$query .= " ORDER BY title";
+		$query = "SELECT *  FROM #__sdi_geolocation ";
+		$query .= " ORDER BY name";
 		if ($use_pagination) 
 		{
 			$db->setQuery( $query ,$pageNav->limitstart, $pageNav->limit);	
@@ -59,10 +59,10 @@ class ADMIN_localisation
 		global  $mainframe;
 		$db =& JFactory::getDBO(); 
 		
-		$localisation = new localisation ($db);
-		$localisation->load($id);
+		$geolocation = new geolocation ($db);
+		$geolocation->load($id);
 
-		HTML_localisation::editLocalisation($localisation, $option);
+		HTML_localisation::editLocalisation($geolocation, $option);
 	}
 	
 	function deleteLocalisation($cid,$option)
@@ -76,12 +76,12 @@ class ADMIN_localisation
 			$mainframe->redirect("index.php?option=$option&task=localisation" );
 			exit;
 		}
-		foreach( $cid as $localisation_id )
+		foreach( $cid as $location_id )
 		{
-			$localisation = new localisation ($db);
-			$localisation->load($localisation_id);
+			$geolocation = new geolocation ($db);
+			$geolocation->load($location_id);
 				
-			if (!$localisation->delete()) {
+			if (!$geolocation->delete()) {
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 				$mainframe->redirect("index.php?option=$option&task=localisation" );
 			}				
@@ -93,20 +93,19 @@ class ADMIN_localisation
 		global $mainframe;
 		$db=& JFactory::getDBO(); 
 			
-		$localisation =& new localisation($db);
-		if (!$localisation->bind( $_POST )) 
+		$geolocation = new geolocation ($db);
+		if (!$geolocation->bind( $_POST )) 
 		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");						
 			$mainframe->redirect("index.php?option=$option&task=localisation" );
 			exit();
 		}				
-		if (!$localisation->store()) 
+		if (!$geolocation->store()) 
 		{			
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			$mainframe->redirect("index.php?option=$option&task=localisation" );
 			exit();
 		}
 	}
-
 }
 ?>

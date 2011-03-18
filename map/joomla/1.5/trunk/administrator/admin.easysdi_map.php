@@ -573,8 +573,7 @@ switch($task)
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'baselayer.toolbar.easysdi_map.html.php');
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'baselayer.admin.easysdi_map.php');
 		TOOLBAR_baselayer::_LIST();
-		$cid = JRequest::getVar ('cid', array(0) );
-		ADMIN_baselayer::listBaseLayer($cid[0],$option);
+		ADMIN_baselayer::listBaseLayer($option);
 		break;
 	case 'editBaseLayer' :
 	case 'newBaseLayer':
@@ -584,8 +583,7 @@ switch($task)
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'baselayer.admin.easysdi_map.php');
 		TOOLBAR_baselayer::_EDIT();
 		$cid = JRequest::getVar ('cid', array(0) );
-		$id_base = JRequest::getVar ('id_base', 0);
-		ADMIN_baselayer::editBaseLayer($cid[0],$id_base, $option);
+		ADMIN_baselayer::editBaseLayer($cid[0], $option);
 		break;
 	case 'deleteBaseLayer':
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'baselayer.admin.easysdi_map.html.php');
@@ -593,19 +591,16 @@ switch($task)
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'baselayer.toolbar.easysdi_map.html.php');
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'baselayer.admin.easysdi_map.php');
 		$cid = JRequest::getVar ('cid', array(0) );
-		$id_base = JRequest::getVar ('id_base');
 		ADMIN_baselayer::deleteBaseLayer($cid, $option);
-		$mainframe->redirect("index.php?option=$option&task=baseLayer&cid=$id_base");
+		$mainframe->redirect("index.php?option=$option&task=baseLayer");
 		break;
 	case 'saveBaseLayer':
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'baselayer.admin.easysdi_map.html.php');
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'baselayer.class.easysdi_map.php');
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'baselayer.toolbar.easysdi_map.html.php');
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'baselayer.admin.easysdi_map.php');
-		$cid = JRequest::getVar ('id_base',0) ;
-		$id_base = JRequest::getVar ('id_base');
 		ADMIN_baselayer::saveBaseLayer($option);
-		$mainframe->redirect("index.php?option=$option&task=baseLayer&cid=$id_base");
+		$mainframe->redirect("index.php?option=$option&task=baseLayer");
 		break;
 	case 'orderupbasemaplayer':
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'baselayer.admin.easysdi_map.html.php');
@@ -614,8 +609,8 @@ switch($task)
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'baselayer.admin.easysdi_map.php');
 		$cid = JRequest::getVar ('cid', array(0) );
 		$order_field = JRequest::getVar ('order_field','') ;
-		ADMIN_baselayer::orderUpBasemapLayer($cid[0],JRequest::getVar('id_base'));
-		$mainframe->redirect("index.php?option=$option&task=baseLayer&cid[]=".JRequest::getVar('id_base')."&order_field=".$order_field );
+		ADMIN_baselayer::orderUpBasemapLayer($cid[0]);
+		$mainframe->redirect("index.php?option=$option&task=baseLayer&order_field=".$order_field );
 		break;
 	case 'orderdownbasemaplayer':
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'baselayer.admin.easysdi_map.html.php');
@@ -624,45 +619,8 @@ switch($task)
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'baselayer.admin.easysdi_map.php');
 		$cid = JRequest::getVar ('cid', array(0) );
 		$order_field = JRequest::getVar ('order_field','') ;
-		ADMIN_baselayer::orderDownBasemapLayer($cid[0],JRequest::getVar('id_base'));
-		$mainframe->redirect("index.php?option=$option&task=baseLayer&cid[]=".JRequest::getVar('id_base')."&order_field=".$order_field );
-		break;
-		/**
-		 * Base definition
-		 */
-	case 'baseDefinition':
-		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'baselayer.admin.easysdi_map.html.php');
-		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'baselayer.toolbar.easysdi_map.html.php');
-		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'baselayer.admin.easysdi_map.php');
-		TOOLBAR_baselayer::_LIST_DEFINITION();
-		ADMIN_baselayer::listBaseDefinition($option);
-		break;
-	case 'editBaseDefinition' :
-	case 'newBaseDefinition':
-		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'baselayer.admin.easysdi_map.html.php');
-		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'baselayer.class.easysdi_map.php');
-		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'baselayer.toolbar.easysdi_map.html.php');
-		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'baselayer.admin.easysdi_map.php');
-		TOOLBAR_baselayer::_EDIT_DEFINITION();
-		$cid = JRequest::getVar ('cid', array(0) );
-		ADMIN_baselayer::editBaseDefinition($cid[0], $option);
-		break;
-	case 'deleteBaseDefinition':
-		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'baselayer.admin.easysdi_map.html.php');
-		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'baselayer.class.easysdi_map.php');
-		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'baselayer.toolbar.easysdi_map.html.php');
-		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'baselayer.admin.easysdi_map.php');
-		$cid = JRequest::getVar ('cid', array(0) );
-		ADMIN_baselayer::deleteBaseDefinition($cid, $option);
-		$mainframe->redirect("index.php?option=$option&task=baseDefinition");
-		break;
-	case 'saveBaseDefinition':
-		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'baselayer.admin.easysdi_map.html.php');
-		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'baselayer.class.easysdi_map.php');
-		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'baselayer.toolbar.easysdi_map.html.php');
-		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'baselayer.admin.easysdi_map.php');
-		ADMIN_baselayer::saveBaseDefinition($option);
-		$mainframe->redirect("index.php?option=$option&task=baseDefinition");
+		ADMIN_baselayer::orderDownBasemapLayer($cid[0]);
+		$mainframe->redirect("index.php?option=$option&task=baseLayer&order_field=".$order_field );
 		break;
 		/**
 		 * Localisation
@@ -755,10 +713,6 @@ switch($task)
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'annotationstyle.admin.easysdi_map.php');
 		ADMIN_annotationstyle::saveAnnotationStyle($option);
 		$mainframe->redirect("index.php?option=$option&task=annotationStyle");
-		break;
-	case "listResources":
-		TOOLBAR_resources::_DEFAULT();
-		ADMIN_resources::listResources( $option );
 		break;
 	case "editResource":
 		TOOLBAR_resources::_EDIT();

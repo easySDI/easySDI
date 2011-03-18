@@ -29,13 +29,13 @@ class ADMIN_searchlayer
 		$limitstart = $mainframe->getUserStateFromRequest( "view{$option}limitstart", 'limitstart', 0 );
 		$use_pagination = JRequest::getVar('use_pagination',0);
 		
-		$query ="SELECT COUNT(*) FROM #__easysdi_map_search_layer";
+		$query ="SELECT COUNT(*) FROM #__sdi_searchLayer";
 		$db->setQuery( $query );
 		$total = $db->loadResult();
 		$pageNav = new JPagination($total,$limitstart,$limit);
 		
-		$query = "SELECT #__easysdi_map_search_layer.*, #__easysdi_map_feature_type.name  FROM #__easysdi_map_search_layer INNER JOIN #__easysdi_map_feature_type ON #__easysdi_map_search_layer.feature_type = #__easysdi_map_feature_type.id ";
-		$query .= " ORDER BY feature_type";
+		$query = "SELECT #__sdi_searchLayer.*, #__sdi_featuretype.name  FROM #__sdi_searchLayer INNER JOIN #__sdi_featuretype ON #__sdi_searchLayer.featuretype = #__sdi_featuretype.id ";
+		$query .= " ORDER BY featuretype";
 		if ($use_pagination) 
 		{
 			$db->setQuery( $query ,$pageNav->limitstart, $pageNav->limit);	
@@ -63,10 +63,10 @@ class ADMIN_searchlayer
 		$search_layer->load($id);
 		
 		//Get available feature type 
-		$db->setQuery( "SELECT id as value, name as text FROM #__easysdi_map_feature_type WHERE id IN (SELECT id_ft FROM #__easysdi_map_feature_type_use WHERE id_use IN (SELECT id from #__easysdi_map_use WHERE name ='searchLayer' ))" );
+		$db->setQuery( "SELECT id as value, name as text FROM #__sdi_featuretype WHERE id IN (SELECT ft_id FROM #__sdi_featuretype_usage WHERE usage_id IN (SELECT id from #__sdi_usage WHERE name ='searchLayer' ))" );
 		$rowsSearchLayerFT = $db->loadObjectList();
 		echo $db->getErrorMsg();
-		$db->setQuery( "SELECT id as value, name as text FROM #__easysdi_map_feature_type WHERE id IN (SELECT id_ft FROM #__easysdi_map_feature_type_use WHERE id_use IN (SELECT id from #__easysdi_map_use WHERE name ='rowDetails' ))" );
+		$db->setQuery( "SELECT id as value, name as text FROM #__sdi_featuretype WHERE id IN (SELECT ft_id FROM #__sdi_featuretype_usage WHERE usage_id IN (SELECT id from #__sdi_usage WHERE name ='rowDetails' ))" );
 		$rowsDetailsFT = $db->loadObjectList();
 		echo $db->getErrorMsg();
 
@@ -86,10 +86,10 @@ class ADMIN_searchlayer
 		}
 		foreach( $cid as $search_layer_id )
 		{
-			$search_layer = new search_layer ($db);
-			$search_layer->load($search_layer_id);
+			$searchLayer = new searchLayer ($db);
+			$searchLayer->load($search_layer_id);
 				
-			if (!$search_layer->delete()) {
+			if (!$searchLayer->delete()) {
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 				$mainframe->redirect("index.php?option=$option&task=searchlayer" );
 			}				
@@ -101,31 +101,30 @@ class ADMIN_searchlayer
 		global $mainframe;
 		$db=& JFactory::getDBO(); 
 			
-		$search_layer = new search_layer ($db);
-		if (!$search_layer->bind( $_POST )) 
+		$searchLayer = new searchLayer ($db);
+		if (!$searchLayer->bind( $_POST )) 
 		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");						
 			$mainframe->redirect("index.php?option=$option&task=searchlayer" );
 			exit();
 		}		
 		
-		if($search_layer->enable == 1)
+		if($searchLayer->enable == 1)
 		{
 			/** Disable all other search layers*/
-			$db->setQuery( "UPDATE #__easysdi_map_search_layer SET enable='0'");
+			$db->setQuery( "UPDATE #__sdi_searchLayer SET enable='0'");
 			if (!$db->query()) {
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 				$mainframe->redirect("index.php?option=$option&task=searchlayer" );				
 			}
 		}
 		
-		if (!$search_layer->store()) 
+		if (!$searchLayer->store()) 
 		{			
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			$mainframe->redirect("index.php?option=$option&task=searchlayer" );
 			exit();
 		}
 	}
-
 }
 ?>

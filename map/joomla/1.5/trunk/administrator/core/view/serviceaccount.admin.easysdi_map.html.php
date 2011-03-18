@@ -38,7 +38,7 @@ class HTML_serviceaccount
 						<table class="admintable">
 							<tr>
 								<td class="key" width="100p"><?php echo JText::_("EASYSDI_MAP_SA_USER_ID"); ?></td>
-								<td><?php echo $account->partner_id; ?></td>								
+								<td><?php echo $account->account_id; ?></td>								
 							</tr>
 							<tr>
 								<td class="key" width="100p"><?php echo JText::_("EASYSDI_MAP_SA_NAME"); ?></td>
@@ -54,7 +54,7 @@ class HTML_serviceaccount
 							</tr>
 							<tr>
 								<td class="key"><?php echo JText::_("EASYSDI_MAP_SA_CHANGE"); ?></td>
-								<td><?php echo JHTML::_("select.genericlist",$rowsAccount, 'partner_id', 'size="1" class="inputbox" onChange="javascript:submitbutton(\'serviceAccount\');"', 'value', 'text',$account->partner_id); ?></td>
+								<td><?php echo JHTML::_("select.genericlist",$rowsAccount, 'account_id', 'size="1" class="inputbox" onChange="javascript:submitbutton(\'serviceAccount\');"', 'value', 'text',$account->account_id); ?></td>
 							</tr>
 						</table>
 					</fieldset>

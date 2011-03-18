@@ -23,7 +23,7 @@ defined('_JEXEC') or die('Restricted access');
 
 class ADMIN_baselayer 
 {
-	function listBaseDefinition ($option)
+	function listBaseLayer ($option)
 	{
 		global  $mainframe;
 		$db =& JFactory::getDBO(); 
@@ -31,110 +31,17 @@ class ADMIN_baselayer
 		$limit = $mainframe->getUserStateFromRequest( "viewlistlimit", 'limit', 10 );
 		$limitstart = $mainframe->getUserStateFromRequest( "view{$option}limitstart", 'limitstart', 0 );
 		$use_pagination = JRequest::getVar('use_pagination',0);
+		$ordering_field = JRequest::getVar('order_field');
 		
-		$query ="SELECT COUNT(*) FROM #__easysdi_map_base_definition";
+		$query ="SELECT COUNT(*) FROM #__sdi_baselayer";
 		$db->setQuery( $query );
 		$total = $db->loadResult();
 		$pageNav = new JPagination($total,$limitstart,$limit);
 		
-		$query = "SELECT *  FROM #__easysdi_map_base_definition";
-		if ($use_pagination) 
+		$query = "SELECT *  FROM #__sdi_baselayer l ";
+		if($ordering_field)
 		{
-			$db->setQuery( $query ,$pageNav->limitstart, $pageNav->limit);	
-		}
-		else
-		{
-			$db->setQuery( $query);
-		}
-		$rows = $db->loadObjectList();
-		if ($db->getErrorNum()) 
-		{
-			$mainframe->enqueueMessage($db->stderr(),"error");
-			return ;
-		}
-		
-		HTML_baselayer::listBaseDefinition($use_pagination, $rows, $pageNav, $option);
-	}
-	
-	function editBaseDefinition ($id,$option)
-	{
-		global  $mainframe;
-		$db =& JFactory::getDBO(); 
-		
-		$base_definition = new base_definition ($db);
-		$base_definition->load($id);
-
-		HTML_baselayer::editBaseDefinition($base_definition, $option);
-	}
-	
-	function deleteBaseDefinition($cid,$option)
-	{
-		global $mainframe;
-		$db =& JFactory::getDBO();
-		
-		if (!is_array( $cid ) || count( $cid ) < 1) 
-		{
-			$mainframe->enqueueMessage(JText::_("EASYSDI_SELECT_ROW_TO_DELETE"),"error");
-			$mainframe->redirect("index.php?option=$option&task=baseDefinition" );
-			exit;
-		}
-		foreach( $cid as $base_id )
-		{
-			$base_definition = new base_definition ($db);
-			$base_definition->load($base_id);
-				
-			if (!$base_definition->delete()) {
-				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=baseDefinition" );
-			}				
-		}	
-	}
-	
-	function saveBaseDefinition($option)
-	{
-		global $mainframe;
-		$db=& JFactory::getDBO(); 
-			
-		$base_definition =& new base_definition($db);
-		if (!$base_definition->bind( $_POST )) 
-		{
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");						
-			$mainframe->redirect("index.php?option=$option&task=baseDefinition" );
-			exit();
-		}				
-		if (!$base_definition->store()) 
-		{			
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=baseDefinition" );
-			exit();
-		}
-	}
-	
-	function listBaseLayer ($id_base, $option)
-	{
-		global  $mainframe;
-		$db =& JFactory::getDBO(); 
-		
-		if(!$id_base)
-		{
-			$id_base = JRequest::getVar('id_base');
-		}
-		
-		$limit = $mainframe->getUserStateFromRequest( "viewlistlimit", 'limit', 10 );
-		$limitstart = $mainframe->getUserStateFromRequest( "view{$option}limitstart", 'limitstart', 0 );
-		$use_pagination = JRequest::getVar('use_pagination',0);
-		$order_field = JRequest::getVar('order_field');
-		
-		$query ="SELECT COUNT(*) FROM #__easysdi_map_base_layer WHERE id_base=$id_base";
-		$db->setQuery( $query );
-		$total = $db->loadResult();
-		$pageNav = new JPagination($total,$limitstart,$limit);
-		
-		$query = "SELECT *  FROM #__easysdi_map_base_layer l WHERE l.id_base=$id_base";
-		
-		if($order_field)
-		{
-			$query .= " order by l.".$order_field;
+			$query .= " order by l.".$ordering_field;
 		}
 		else
 		{
@@ -156,19 +63,18 @@ class ADMIN_baselayer
 			return ;
 		}
 		
-		HTML_baselayer::listBaseLayer($use_pagination, $rows,$id_base, $pageNav, $option);
+		HTML_baselayer::listBaseLayer($use_pagination, $rows, $pageNav, $option);
 	}
 	
-	function editBaseLayer ($id,$id_base,$option)
+	function editBaseLayer ($id,$option)
 	{
 		global  $mainframe;
 		$db =& JFactory::getDBO(); 
 		
-		$base_layer = new base_layer ($db);
-		$base_layer->load($id);
-		$base_layer->id_base=$id_base;
-
-		HTML_baselayer::editBaseLayer($base_layer, $option);
+		$baseLayer = new baseLayer ($db);
+		$baseLayer->load($id);
+		
+		HTML_baselayer::editBaseLayer($baseLayer, $option);
 	}
 	
 	function deleteBaseLayer($cid,$option)
@@ -176,28 +82,20 @@ class ADMIN_baselayer
 		global $mainframe;
 		$db =& JFactory::getDBO();
 		
-		$id_base = JRequest::getVar ('id_base', array(0) );
-		$id_bases = array ();
-		$id_bases[0]=$id_base;
-		
 		if (!is_array( $cid ) || count( $cid ) < 1) 
 		{
 			$mainframe->enqueueMessage(JText::_("EASYSDI_SELECT_ROW_TO_DELETE"),"error");
-			$mainframe->redirect("index.php?option=$option&task=baseLayer&cid=$id_bases" );
+			$mainframe->redirect("index.php?option=$option&task=baseLayer" );
 			exit;
 		}
-		foreach( $cid as $base_layer_id )
+		foreach( $cid as $baseLayer_id )
 		{
-			$base_layer = new base_layer ($db);
-			$base_layer->load($base_layer_id);
-				
-			$query ="UPDATE #__easysdi_map_base_layer b SET b.order = b.order-1 WHERE b.order > $base_layer->order" ;
-			$db->setQuery( $query );
-			$db->query();
+			$baseLayer = new baseLayer ($db);
+			$baseLayer->load($baseLayer_id);
 			
-			if (!$base_layer->delete()) {
+			if (!$baseLayer->delete()) {
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=baseLayer&cid=$id_bases" );
+				$mainframe->redirect("index.php?option=$option&task=baseLayer" );
 			}				
 		}	
 	}
@@ -207,102 +105,36 @@ class ADMIN_baselayer
 		global $mainframe;
 		$db=& JFactory::getDBO(); 
 		
-		$cid = JRequest::getVar ('cid', array(0) );
-			
-		$base_layer =& new base_layer($db);
-		if (!$base_layer->bind( $_POST )) 
+		$baseLayer =& new baseLayer($db);
+		if (!$baseLayer->bind( $_POST )) 
 		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");						
-			$mainframe->redirect("index.php?option=$option&task=baseLayer&cid=$cid" );
+			$mainframe->redirect("index.php?option=$option&task=baseLayer" );
 			exit();
 		}				
-		if($base_layer->order == '' || $base_layer->order == 0 )
-		{
-			$query ="SELECT MAX(b.order) FROM #__easysdi_map_base_layer b " ;
-			$db->setQuery( $query );
-			$total = $db->loadResult();
-			$base_layer->order = $total + 1;
-		}
-		if (!$base_layer->store()) 
+		  
+		if (!$baseLayer->store()) 
 		{			
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=baseLayer&cid=$cid" );
+			$mainframe->redirect("index.php?option=$option&task=baseLayer" );
 			exit();
 		}
 	}
 	
-	/*
-	 * Re order the layer in the base map
-	*/
-	function orderUpBasemapLayer($id,$basemapId)
-	{
-		
+	function orderUpBasemapLayer($id){
 		global  $mainframe;
-		$database =& JFactory::getDBO(); 
-		
-
-		$query = "SELECT *  FROM #__easysdi_map_base_layer  WHERE id = $id AND id_base = $basemapId LIMIT 1";
-		$database->setQuery( $query );
-		$row1 = $database->loadObject() ;
-			if ($database->getErrorNum()) {
-					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			}
-
-		$query = "SELECT *  FROM #__easysdi_map_base_layer l  WHERE  l.id_base = $basemapId AND l.order< $row1->order  order by l.order DESC LIMIT 1";
-		$database->setQuery( $query );
-		$row2 = $database->loadObject() ;
-			if ($database->getErrorNum()) {
-					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			}		
-		
-
-		$query = "update #__easysdi_map_base_layer l set l.order= $row1->order where l.id =$row2->id";
-			$database->setQuery( $query );				
-			if (!$database->query()) {		
-				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");								
-			}		
-				
-		$query = "update #__easysdi_map_base_layer l set l.order= $row2->order where l.id =$row1->id";
-			$database->setQuery( $query );				
-			if (!$database->query()) {		
-				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");								
-			}		
+		$db =& JFactory::getDBO();
+		$baseLayer = new baseLayer( $db );
+		$baseLayer->load( $id);
+		$baseLayer->orderUp();
 	}
 	
-	/*
-	 * Re order the base layer in the base map
-	*/
-	function orderDownBasemapLayer($id,$basemapId)
-	{
+	function orderDownBasemapLayer($id){
 		global  $mainframe;
-		$database =& JFactory::getDBO(); 
-
-		$query = "SELECT *  FROM #__easysdi_map_base_layer  WHERE id = $id AND id_base = $basemapId LIMIT 1";
-		$database->setQuery( $query );
-		$row1 = $database->loadObject() ;
-			if ($database->getErrorNum()) {
-					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			}
-
-		$query = "SELECT *  FROM #__easysdi_map_base_layer l  WHERE  l.id_base = $basemapId AND l.order > $row1->order  order by l.order ASC LIMIT 1";
-		$database->setQuery( $query );
-		$row2 = $database->loadObject() ;
-			if ($database->getErrorNum()) {
-					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			}		
-		
-
-		$query = "update #__easysdi_map_base_layer l set l.order= $row1->order where l.id =$row2->id";
-			$database->setQuery( $query );				
-			if (!$database->query()) {		
-				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");								
-			}		
-				
-		$query = "update #__easysdi_map_base_layer l set l.order= $row2->order where l.id =$row1->id";
-			$database->setQuery( $query );				
-			if (!$database->query()) {		
-				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");								
-			}
+		$db =& JFactory::getDBO();
+		$baseLayer = new baseLayer( $db );
+		$baseLayer->load( $id);
+		$baseLayer->orderDown();
 	}
 
 }

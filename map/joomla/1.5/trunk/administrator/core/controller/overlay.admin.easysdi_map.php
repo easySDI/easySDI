@@ -28,7 +28,7 @@ class ADMIN_overlay
 		$limit = $mainframe->getUserStateFromRequest( "viewlistlimit", 'limit', 10 );
 		$limitstart = $mainframe->getUserStateFromRequest( "view{$option}limitstart", 'limitstart', 0 );
 		$use_pagination = JRequest::getVar('use_pagination',0);
-		$order_field = JRequest::getVar('order_field');
+		$ordering_field = JRequest::getVar('order_field');
 
 		$query ="SELECT COUNT(*) FROM #__easysdi_overlay_content " ;
 		$db->setQuery( $query );
@@ -36,9 +36,9 @@ class ADMIN_overlay
 		$pageNav = new JPagination($total,$limitstart,$limit);
 
 		$query = "SELECT *  FROM #__easysdi_overlay_content l " ;
-		if($order_field)
+		if($ordering_field)
 		{
-			$query .= " ORDER BY l.$order_field";
+			$query .= " ORDER BY l.$ordering_field";
 		}
 		else
 		{
@@ -144,7 +144,7 @@ class ADMIN_overlay
 		$limit = $mainframe->getUserStateFromRequest( "viewlistlimit", 'limit', 10 );
 		$limitstart = $mainframe->getUserStateFromRequest( "view{$option}limitstart", 'limitstart', 0 );
 		$use_pagination = JRequest::getVar('use_pagination',0);
-		$order_field = JRequest::getVar('order_field');
+		$ordering_field = JRequest::getVar('order_field');
 
 		$query ="SELECT COUNT(*) FROM #__easysdi_overlay_group";
 		$db->setQuery( $query );
@@ -152,9 +152,9 @@ class ADMIN_overlay
 		$pageNav = new JPagination($total,$limitstart,$limit);
 
 		$query = "SELECT *  FROM #__easysdi_overlay_group g ";
-		if($order_field)
+		if($ordering_field)
 		{
-			$query .= " ORDER BY g.$order_field";
+			$query .= " ORDER BY g.$ordering_field";
 		}
 		else
 		{

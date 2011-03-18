@@ -29,12 +29,12 @@ class ADMIN_resultgrid
 		$limitstart = $mainframe->getUserStateFromRequest( "view{$option}limitstart", 'limitstart', 0 );
 		$use_pagination = JRequest::getVar('use_pagination',0);
 		
-		$query ="SELECT COUNT(*) FROM #__easysdi_map_extra_result_grid";
+		$query ="SELECT COUNT(*) FROM #__sdi_resultgrid";
 		$db->setQuery( $query );
 		$total = $db->loadResult();
 		$pageNav = new JPagination($total,$limitstart,$limit);
 		
-		$query = "SELECT *  FROM #__easysdi_map_extra_result_grid ";
+		$query = "SELECT *  FROM #__sdi_resultgrid ";
 		$query .= " ORDER BY title";
 		if ($use_pagination) 
 		{
@@ -63,10 +63,10 @@ class ADMIN_resultgrid
 		$resultGrid->load($id);
 
 		//Get available feature type 
-		$db->setQuery( "SELECT id as value, name as text FROM #__easysdi_map_feature_type WHERE id IN (SELECT id_ft FROM #__easysdi_map_feature_type_use WHERE id_use IN (SELECT id from #__easysdi_map_use WHERE name ='extraDistinctGrid' ))" );
+		$db->setQuery( "SELECT id as value, name as text FROM #__sdi_featuretype WHERE id IN (SELECT ft_id FROM #__sdi_featuretype_usage WHERE usage_id IN (SELECT id from #__sdi_usage WHERE name ='extraDistinctGrid' ))" );
 		$rowsResultGridFT = $db->loadObjectList();
 		echo $db->getErrorMsg();
-		$db->setQuery( "SELECT id as value, name as text FROM #__easysdi_map_feature_type WHERE id IN (SELECT id_ft FROM #__easysdi_map_feature_type_use WHERE id_use IN (SELECT id from #__easysdi_map_use WHERE name ='rowDetails' ))" );
+		$db->setQuery( "SELECT id as value, name as text FROM #__sdi_featuretype WHERE id IN (SELECT ft_id FROM #__sdi_featuretype_usage WHERE usage_id IN (SELECT id from #__sdi_usage WHERE name ='rowDetails' ))" );
 		$rowsDetailsFT = $db->loadObjectList();
 		echo $db->getErrorMsg();
 		

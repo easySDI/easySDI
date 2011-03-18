@@ -29,9 +29,9 @@ class HTML_annotationstyle
 		<table class="adminlist">
 		<thead>
 			<tr>
-				<th width="20" class='title'><?php echo JText::_("EASYSDI_ANNOTATION_STYLE_SHARP"); ?></th>
+				<th width="20" class='title'><?php echo JText::_("EASYSDI_annotationStyle_SHARP"); ?></th>
 				<th width="20" class='title'><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows); ?>);" /></th>
-				<th class='title'><?php echo JText::_("EASYSDI_ANNOTATION_STYLE_NAME"); ?></th>
+				<th class='title'><?php echo JText::_("EASYSDI_annotationStyle_NAME"); ?></th>
 			</tr>
 		</thead>
 		<tbody>		
@@ -74,15 +74,15 @@ class HTML_annotationstyle
 		<?php		
 	}
 	
-	function editAnnotationStyle($annotation_style, $option)
+	function editAnnotationStyle($annotationStyle, $option)
 	{
-		if ($annotation_style->id != 0)
+		if ($annotationStyle->id != 0)
 		{
-			JToolBarHelper::title( JText::_("EASYSDI_EDIT_ANNOTATION_STYLE"), 'generic.png' );
+			JToolBarHelper::title( JText::_("EASYSDI_EDIT_annotationStyle"), 'generic.png' );
 		}
 		else
 		{
-			JToolBarHelper::title( JText::_("EASYSDI_NEW_ANNOTATION_STYLE"), 'generic.png' );
+			JToolBarHelper::title( JText::_("EASYSDI_NEW_annotationStyle"), 'generic.png' );
 		}
 		
 
@@ -121,75 +121,75 @@ class HTML_annotationstyle
 					<fieldset>
 						<table class="admintable">
 							<tr>
-								<td class="key" width="100p"><?php echo JText::_("EASYSDI_ANNOTATION_STYLE_ID"); ?></td>
-								<td><?php echo $annotation_style->id; ?></td>								
+								<td class="key" width="100p"><?php echo JText::_("EASYSDI_annotationStyle_ID"); ?></td>
+								<td><?php echo $annotationStyle->id; ?></td>								
 							</tr>
 							<tr>
-								<td  class="key" width="100p"><?php echo JText::_("EASYSDI_ANNOTATION_STYLE_NAME"); ?></td>
-								<td><input class="inputbox" type="text" size="100" maxlength="200" name="name" id="name" value="<?php echo $annotation_style->name; ?>" /></td>								
+								<td  class="key" width="100p"><?php echo JText::_("EASYSDI_annotationStyle_NAME"); ?></td>
+								<td><input class="inputbox" type="text" size="100" maxlength="200" name="name" id="name" value="<?php echo $annotationStyle->name; ?>" /></td>								
 							</tr>
 							<tr>
-								<td class="key"><?php echo JText::_("EASYSDI_ANNOTATION_STYLE_FILL_COLOR"); ?></td>
-								<td><input class="inputbox" type="text" size="7" maxlength="7" name="fillColor" id="fillColor" value="<?php echo $annotation_style->fillColor; ?>" /></td>
+								<td class="key"><?php echo JText::_("EASYSDI_annotationStyle_FILL_COLOR"); ?></td>
+								<td><input class="inputbox" type="text" size="7" maxlength="7" name="fillColor" id="fillColor" value="<?php echo $annotationStyle->fillColor; ?>" /></td>
 							</tr>
 							<tr>
-								<td class="key"><?php echo JText::_("EASYSDI_ANNOTATION_STYLE_FILL_OPACITY"); ?></td>
-								<td><input class="inputbox" type="text" size="100" maxlength="100" name="fillOpacity" id="fillOpacity" value="<?php echo $annotation_style->fillOpacity; ?>" /></td>
+								<td class="key"><?php echo JText::_("EASYSDI_annotationStyle_FILL_OPACITY"); ?></td>
+								<td><input class="inputbox" type="text" size="100" maxlength="100" name="fillOpacity" id="fillOpacity" value="<?php echo $annotationStyle->fillOpacity; ?>" /></td>
 							</tr>
 							<tr>
-								<td class="key"><?php echo JText::_("EASYSDI_ANNOTATION_STYLE_STROKE_COLOR"); ?></td>
-								<td><input class="inputbox" type="text" size="7" maxlength="7" name="strokeColor" id="strokeColor" value="<?php echo $annotation_style->strokeColor; ?>" /></td>
+								<td class="key"><?php echo JText::_("EASYSDI_annotationStyle_STROKE_COLOR"); ?></td>
+								<td><input class="inputbox" type="text" size="7" maxlength="7" name="strokeColor" id="strokeColor" value="<?php echo $annotationStyle->strokeColor; ?>" /></td>
 							</tr>
 							<tr>
-								<td class="key"><?php echo JText::_("EASYSDI_ANNOTATION_STYLE_STROKE_OPACITY"); ?></td>
-								<td><input class="inputbox" type="text" size="100" maxlength="100" name="strokeOpacity" id="strokeOpacity" value="<?php echo $annotation_style->strokeOpacity; ?>" /></td>
+								<td class="key"><?php echo JText::_("EASYSDI_annotationStyle_STROKE_OPACITY"); ?></td>
+								<td><input class="inputbox" type="text" size="100" maxlength="100" name="strokeOpacity" id="strokeOpacity" value="<?php echo $annotationStyle->strokeOpacity; ?>" /></td>
 							</tr>
 							<tr>
-								<td class="key"><?php echo JText::_("EASYSDI_ANNOTATION_STYLE_STROKE_WIDTH"); ?></td>
-								<td><input class="inputbox" type="text" size="100" maxlength="100" name="strokeWidth" id="strokeWidth" value="<?php echo $annotation_style->strokeWidth; ?>" /></td>
+								<td class="key"><?php echo JText::_("EASYSDI_annotationStyle_STROKE_WIDTH"); ?></td>
+								<td><input class="inputbox" type="text" size="100" maxlength="100" name="strokeWidth" id="strokeWidth" value="<?php echo $annotationStyle->strokeWidth; ?>" /></td>
 							</tr>
 							<tr>
-								<td class="key"><?php echo JText::_("EASYSDI_ANNOTATION_STYLE_STROKE_LINE_CAP"); ?></td>
-								<td><input class="inputbox" type="text" size="100" maxlength="7" name="strokeLinecap" id="strokeLinecap" value="<?php echo $annotation_style->strokeLinecap; ?>" /></td>
+								<td class="key"><?php echo JText::_("EASYSDI_annotationStyle_STROKE_LINE_CAP"); ?></td>
+								<td><input class="inputbox" type="text" size="100" maxlength="7" name="strokeLinecap" id="strokeLinecap" value="<?php echo $annotationStyle->strokeLinecap; ?>" /></td>
 							</tr>
 							<tr>
-								<td class="key"><?php echo JText::_("EASYSDI_ANNOTATION_STYLE_STROKE_DASH_STYLE"); ?></td>
-								<td><input class="inputbox" type="text" size="100" maxlength="11" name="strokeDashstyle" id="strokeDashstyle" value="<?php echo $annotation_style->strokeDashstyle; ?>" /></td>
+								<td class="key"><?php echo JText::_("EASYSDI_annotationStyle_STROKE_DASH_STYLE"); ?></td>
+								<td><input class="inputbox" type="text" size="100" maxlength="11" name="strokeDashstyle" id="strokeDashstyle" value="<?php echo $annotationStyle->strokeDashstyle; ?>" /></td>
 							</tr>
 							<tr>
-								<td class="key"><?php echo JText::_("EASYSDI_ANNOTATION_STYLE_POINT_RADIUS"); ?></td>
-								<td><input class="inputbox" type="text" size="100" maxlength="100" name="pointRadius" id="pointRadius" value="<?php echo $annotation_style->pointRadius; ?>" /></td>
+								<td class="key"><?php echo JText::_("EASYSDI_annotationStyle_POINT_RADIUS"); ?></td>
+								<td><input class="inputbox" type="text" size="100" maxlength="100" name="pointRadius" id="pointRadius" value="<?php echo $annotationStyle->pointRadius; ?>" /></td>
 							</tr>
 							<tr>
-								<td class="key"><?php echo JText::_("EASYSDI_ANNOTATION_STYLE_EXTERNAL_GRAPHIC"); ?></td>
-								<td><input class="inputbox" type="text" size="100" maxlength="400" name="externalGraphic" id="externalGraphic" value="<?php echo $annotation_style->externalGraphic; ?>" /></td>
+								<td class="key"><?php echo JText::_("EASYSDI_annotationStyle_EXTERNAL_GRAPHIC"); ?></td>
+								<td><input class="inputbox" type="text" size="100" maxlength="400" name="externalGraphic" id="externalGraphic" value="<?php echo $annotationStyle->externalGraphic; ?>" /></td>
 							</tr>
 							<tr>
-								<td class="key"><?php echo JText::_("EASYSDI_ANNOTATION_STYLE_GRAPHIC_WIDTH"); ?></td>
-								<td><input class="inputbox" type="text" size="100" maxlength="100" name="graphicWidth" id="graphicWidth" value="<?php echo $annotation_style->graphicWidth; ?>" /></td>
+								<td class="key"><?php echo JText::_("EASYSDI_annotationStyle_GRAPHIC_WIDTH"); ?></td>
+								<td><input class="inputbox" type="text" size="100" maxlength="100" name="graphicWidth" id="graphicWidth" value="<?php echo $annotationStyle->graphicWidth; ?>" /></td>
 							</tr>
 							<tr>
-								<td class="key"><?php echo JText::_("EASYSDI_ANNOTATION_STYLE_GRAPHIC_HEIGHT"); ?></td>
-								<td><input class="inputbox" type="text" size="100" maxlength="100" name="graphicHeight" id="graphicHeight" value="<?php echo $annotation_style->graphicHeight; ?>" /></td>
+								<td class="key"><?php echo JText::_("EASYSDI_annotationStyle_GRAPHIC_HEIGHT"); ?></td>
+								<td><input class="inputbox" type="text" size="100" maxlength="100" name="graphicHeight" id="graphicHeight" value="<?php echo $annotationStyle->graphicHeight; ?>" /></td>
 							</tr>
 							<tr>
-								<td class="key"><?php echo JText::_("EASYSDI_ANNOTATION_STYLE_GRAPHIC_OPACITY"); ?></td>
-								<td><input class="inputbox" type="text" size="100" maxlength="100" name="graphicOpacity" id="graphicOpacity" value="<?php echo $annotation_style->graphicOpacity; ?>" /></td>
+								<td class="key"><?php echo JText::_("EASYSDI_annotationStyle_GRAPHIC_OPACITY"); ?></td>
+								<td><input class="inputbox" type="text" size="100" maxlength="100" name="graphicOpacity" id="graphicOpacity" value="<?php echo $annotationStyle->graphicOpacity; ?>" /></td>
 							</tr>
 							<tr>
-								<td class="key"><?php echo JText::_("EASYSDI_ANNOTATION_STYLE_GRAPHIC_X_OFFSET"); ?></td>
-								<td><input class="inputbox" type="text" size="100" maxlength="100" name="graphicXOffset" id="graphicXOffset" value="<?php echo $annotation_style->graphicXOffset; ?>" /></td>
+								<td class="key"><?php echo JText::_("EASYSDI_annotationStyle_GRAPHIC_X_OFFSET"); ?></td>
+								<td><input class="inputbox" type="text" size="100" maxlength="100" name="graphicXOffset" id="graphicXOffset" value="<?php echo $annotationStyle->graphicXOffset; ?>" /></td>
 							</tr>
 							<tr>
-								<td class="key"><?php echo JText::_("EASYSDI_ANNOTATION_STYLE_GRAPHIC_Y_OFFSET"); ?></td>
-								<td><input class="inputbox" type="text" size="100" maxlength="100" name="graphicYOffset" id="graphicYOffset" value="<?php echo $annotation_style->graphicYOffset; ?>" /></td>
+								<td class="key"><?php echo JText::_("EASYSDI_annotationStyle_GRAPHIC_Y_OFFSET"); ?></td>
+								<td><input class="inputbox" type="text" size="100" maxlength="100" name="graphicYOffset" id="graphicYOffset" value="<?php echo $annotationStyle->graphicYOffset; ?>" /></td>
 							</tr>
 						</table>
 					</fieldset>
 				</td>
 			</tr>
 		</table>
-		<input type="hidden" name="id" value="<?php echo $annotation_style->id; ?>" />
+		<input type="hidden" name="id" value="<?php echo $annotationStyle->id; ?>" />
 		<input type="hidden" name="option" value="<?php echo $option; ?>" />
 		<input type="hidden" name="task" value="" />
 	</form>

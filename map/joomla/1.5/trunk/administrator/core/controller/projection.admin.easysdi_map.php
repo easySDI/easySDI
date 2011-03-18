@@ -29,12 +29,12 @@ class ADMIN_projection
 		$limitstart = $mainframe->getUserStateFromRequest( "view{$option}limitstart", 'limitstart', 0 );
 		$use_pagination = JRequest::getVar('use_pagination',0);
 		
-		$query ="SELECT COUNT(*) FROM #__easysdi_map_projection";
+		$query ="SELECT COUNT(*) FROM #__sdi_projection";
 		$db->setQuery( $query );
 		$total = $db->loadResult();
 		$pageNav = new JPagination($total,$limitstart,$limit);
 		
-		$query = "SELECT *  FROM #__easysdi_map_projection";
+		$query = "SELECT *  FROM #__sdi_projection";
 		$query .= " ORDER BY name";
 		if ($use_pagination) 
 		{

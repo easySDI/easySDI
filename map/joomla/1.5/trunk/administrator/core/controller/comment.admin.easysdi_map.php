@@ -29,13 +29,13 @@ class ADMIN_comment
 		$limitstart = $mainframe->getUserStateFromRequest( "view{$option}limitstart", 'limitstart', 0 );
 		$use_pagination = JRequest::getVar('use_pagination',0);
 		
-		$query ="SELECT COUNT(*) FROM #__easysdi_map_comment_feature_type";
+		$query ="SELECT COUNT(*) FROM #__sdi_commentfeaturetype";
 		$db->setQuery( $query );
 		$total = $db->loadResult();
 		$pageNav = new JPagination($total,$limitstart,$limit);
 		
-		$query = "SELECT *  FROM #__easysdi_map_comment_feature_type ";
-		$query .= " ORDER BY type_name";
+		$query = "SELECT *  FROM #__sdi_commentfeaturetype ";
+		$query .= " ORDER BY featuretypename";
 		if ($use_pagination) 
 		{
 			$db->setQuery( $query ,$pageNav->limitstart, $pageNav->limit);	
@@ -103,7 +103,7 @@ class ADMIN_comment
 		if($comment->enable == 1)
 		{
 			/** Disable all other comment feature type*/
-			$db->setQuery( "UPDATE #__easysdi_map_comment_feature_type SET enable='0'");
+			$db->setQuery( "UPDATE #__sdi_commentfeaturetype SET enable='0'");
 			if (!$db->query()) {
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 				$mainframe->redirect("index.php?option=$option&task=comment" );				

@@ -23,7 +23,7 @@ class HTML_localisation
 	function listLocalisation($use_pagination, $rows, $pageNav, $option)
 	{
 		JToolBarHelper::title(JText::_("EASYSDI_LIST_LOCALISATION"));
-		$order_field = JRequest::getVar ('order_field');
+		$ordering_field = JRequest::getVar ('order_field');
 		?>
 		<script>
 		function tableOrder(task, orderField)

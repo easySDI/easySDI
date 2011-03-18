@@ -23,7 +23,7 @@ class HTML_overlay
 	function listOverlayContent($use_pagination, $rows, $pageNav, $option)
 	{
 		JToolBarHelper::title(JText::_("EASYSDI_LIST_OVERLAY_CONTENT"));
-		$order_field = JRequest::getVar ('order_field');
+		$ordering_field = JRequest::getVar ('order_field');
 		?>
 <script>
 		function tableOrder(task, orderField)
@@ -60,7 +60,7 @@ class HTML_overlay
 			<td><?php echo stripcslashes($row->name); ?></td>
 			<td><?php echo $row->projection; ?></td>
 			<td class="order" nowrap="nowrap"><?php
-			$disabled = ($order_field == 'order') ? true : false;
+			$disabled = ($ordering_field == 'order') ? true : false;
 			?> <span><?php echo $pageNav->orderUpIcon($i,  true, 'orderupoverlay', 'Move Up', $disabled);  ?></span> <span><?php echo $pageNav->orderDownIcon($i,1,  true, 'orderdownoverlay', 'Move Down', $disabled);   ?></span>
 			<?php echo $row->order;?> <?php
 			?></td>
@@ -85,7 +85,7 @@ class HTML_overlay
 	}
 	?>
 </table>
-<input type="hidden" name="option" value="<?php echo $option; ?>" /> <input type="hidden" name="order_field" value="<?php echo $order_field;?>" /> <input
+<input type="hidden" name="option" value="<?php echo $option; ?>" /> <input type="hidden" name="order_field" value="<?php echo $ordering_field;?>" /> <input
 	type="hidden" name="task" value="overlayContent" /> <input type="hidden" name="boxchecked" value="0" /> <input type="hidden" name="hidemainmenu"
 	value="0"></form>
 	<?php
@@ -271,7 +271,7 @@ $j(document).ready(function() {
 				<td>ex : image/png</td>
 			</tr>
 			<tr>
-				<td class="key"><?php echo JText::_("EASYSDI_BASE_LAYER_CUSTOM_STYLE_ENABLED"); ?></td>
+				<td class="key"><?php echo JText::_("EASYSDI_baseLayer_CUSTOM_STYLE_ENABLED"); ?></td>
 				<td><input class="checkbox" name="customStyle" value="1" type="checkbox"
 				<?php if ($overlay_content->customStyle == 1) echo "checked=\"checked\""; ?> /></td>
 			</tr>
@@ -305,7 +305,7 @@ $j(document).ready(function() {
 	function listOverlayGroup($use_pagination, $rows, $pageNav, $option)
 	{
 		JToolBarHelper::title(JText::_("EASYSDI_LIST_OVERLAY_GROUP"));
-		$order_field = JRequest::getVar ('order_field');
+		$ordering_field = JRequest::getVar ('order_field');
 		?>
 <form action="index.php" method="GET" name="adminForm"><script>
 		function tableOrder(task, orderField)
@@ -339,7 +339,7 @@ $j(document).ready(function() {
 			<td><a href="#edit" onclick="return listItemTask('cb<?php echo $i;?>','editOverlayGroup')"><?php echo $row->name; ?></a></td>
 			<td><?php if($row->open == 1){echo JText::_("EASYSDI_YES");}else{echo JText::_("EASYSDI_NO");} ?></td>
 			<td width="10%" class="order" nowrap="nowrap"><?php
-			$disabled = ($order_field == 'order') ? true : false;
+			$disabled = ($ordering_field == 'order') ? true : false;
 			?> <span><?php echo $pageNav->orderUpIcon($i,  true, 'orderupoverlaygroup', 'Move Up', $disabled);  ?></span> <span><?php echo $pageNav->orderDownIcon($i,1,  true, 'orderdownoverlaygroup', 'Move Down', $disabled);   ?></span>
 			<?php echo $row->order;?> <?php
 			?></td>
@@ -367,7 +367,7 @@ $j(document).ready(function() {
 </table>
 <input type="hidden" name="option" value="<?php echo $option; ?>" /> <input type="hidden" name="task" value="overlayGroup" /> <input type="hidden"
 	name="boxchecked" value="0" /> <input type="hidden" name="hidemainmenu" value="0"> <input type="hidden" name="order_field"
-	value="<?php echo $order_field;?>" /></form>
+	value="<?php echo $ordering_field;?>" /></form>
 	<?php
 	}
 
