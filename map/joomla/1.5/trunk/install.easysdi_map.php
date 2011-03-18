@@ -272,14 +272,14 @@ function com_install()
 		-- ----------------------------
 		-- Records of __sdi_mapdisplayoption
 		-- ----------------------------
-		INSERT INTO `#__sdi_mapdisplayoption` (guid,name,created,createdby,checked_out,translation, object,enable) VALUES ('".helper_easysdi::getUniqueId()."', 'SimpleSearch','','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'EASYSDI_MAP_SIMPLESEARCH','SimpleSearch','0');
-		INSERT INTO `#__sdi_mapdisplayoption` (guid,name,created,createdby,checked_out,translation, object,enable) VALUES ('".helper_easysdi::getUniqueId()."', 'AdvancedSearch','','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'EASYSDI_MAP_ADVANCEDSEARCH','AdvancedSearch','0');
-		INSERT INTO `#__sdi_mapdisplayoption` (guid,name,created,createdby,checked_out,translation, object,enable) VALUES ('".helper_easysdi::getUniqueId()."', 'DataPrecision','','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'EASYSDI_MAP_DATAPRECISION','DataPrecision','0');
-		INSERT INTO `#__sdi_mapdisplayoption` (guid,name,created,createdby,checked_out,translation, object,enable) VALUES ('".helper_easysdi::getUniqueId()."', 'Localisation','','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'EASYSDI_MAP_LOCALISATION','Localisation','1');
-		INSERT INTO `#__sdi_mapdisplayoption` (guid,name,created,createdby,checked_out,translation, object,enable) VALUES ('".helper_easysdi::getUniqueId()."', 'ToolBar','','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'EASYSDI_MAP_TOOLBAR','ToolBar','1');
-		INSERT INTO `#__sdi_mapdisplayoption` (guid,name,created,createdby,checked_out,translation, object,enable) VALUES ('".helper_easysdi::getUniqueId()."', 'MapOverview','','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'EASYSDI_MAP_MAPOVERVIEW','MapOverview','1');
-		INSERT INTO `#__sdi_mapdisplayoption` (guid,name,created,createdby,checked_out,translation, object,enable) VALUES ('".helper_easysdi::getUniqueId()."', 'Annotation','','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'EASYSDI_MAP_ANNOTATION','Annotation','0');
-		INSERT INTO `#__sdi_mapdisplayoption` (guid,name,created,createdby,checked_out,translation, object,enable) VALUES ('".helper_easysdi::getUniqueId()."', 'Coordinate','','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'EASYSDI_MAP_COORDINATE','Coordinate','1');
+		INSERT INTO `#__sdi_mapdisplayoption` (guid,name,created,createdby,checked_out,translation, object,enable) VALUES ('".helper_easysdi::getUniqueId()."', 'SimpleSearch','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'EASYSDI_MAP_SIMPLESEARCH','SimpleSearch','0');
+		INSERT INTO `#__sdi_mapdisplayoption` (guid,name,created,createdby,checked_out,translation, object,enable) VALUES ('".helper_easysdi::getUniqueId()."', 'AdvancedSearch','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'EASYSDI_MAP_ADVANCEDSEARCH','AdvancedSearch','0');
+		INSERT INTO `#__sdi_mapdisplayoption` (guid,name,created,createdby,checked_out,translation, object,enable) VALUES ('".helper_easysdi::getUniqueId()."', 'DataPrecision','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'EASYSDI_MAP_DATAPRECISION','DataPrecision','0');
+		INSERT INTO `#__sdi_mapdisplayoption` (guid,name,created,createdby,checked_out,translation, object,enable) VALUES ('".helper_easysdi::getUniqueId()."', 'Localisation','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'EASYSDI_MAP_LOCALISATION','Localisation','1');
+		INSERT INTO `#__sdi_mapdisplayoption` (guid,name,created,createdby,checked_out,translation, object,enable) VALUES ('".helper_easysdi::getUniqueId()."', 'ToolBar','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'EASYSDI_MAP_TOOLBAR','ToolBar','1');
+		INSERT INTO `#__sdi_mapdisplayoption` (guid,name,created,createdby,checked_out,translation, object,enable) VALUES ('".helper_easysdi::getUniqueId()."', 'MapOverview','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'EASYSDI_MAP_MAPOVERVIEW','MapOverview','1');
+		INSERT INTO `#__sdi_mapdisplayoption` (guid,name,created,createdby,checked_out,translation, object,enable) VALUES ('".helper_easysdi::getUniqueId()."', 'Annotation','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'EASYSDI_MAP_ANNOTATION','Annotation','0');
+		INSERT INTO `#__sdi_mapdisplayoption` (guid,name,created,createdby,checked_out,translation, object,enable) VALUES ('".helper_easysdi::getUniqueId()."', 'Coordinate','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'EASYSDI_MAP_COORDINATE','Coordinate','1');
 		
 		-- ----------------------------
 		-- Table structure for `#__sdi_mapextension`
@@ -673,24 +673,16 @@ function com_install()
 		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 	}
 
-	$query =  "insert into #__components (parent,name,link,admin_menu_link,admin_menu_alt,`option`,admin_menu_img,params)
-				values($id,'Map','','option=com_easysdi_map','Map','com_easysdi_map','js/ThemeOffice/component.png','')";
+	$query =  "insert into #__components (name,link,admin_menu_alt,`option`,admin_menu_img,params)
+				values('EasySDI - Map','option=com_easysdi_map','EasySDI Map','com_easysdi_map','js/ThemeOffice/component.png','')";
 	$db->setQuery( $query);
 	if (!$db->query())
 	{
 		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		return false;
 	}
-	$query =  "insert into #__components (name,link,admin_menu_alt,`option`,admin_menu_img,params)
-		values('EasySDI - Map','option=com_easysdi_map','Map','com_easysdi_map','js/ThemeOffice/component.png','')";
-	$db->setQuery( $query);
-	if (!$db->query())
-	{
-		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-	}
 
 	$mainframe->enqueueMessage("Congratulations Map component for EasySdi is now installed and ready to be used. Enjoy EasySdi!","INFO");
-
 	return true;
 }
 ?>

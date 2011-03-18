@@ -60,17 +60,14 @@ class HTML_display
 				<td align="center"><?php echo $i+$pageNav->limitstart+1;?></td>
 				<td><?php echo JText::_($row->translation); ?></td>
 				<td><input type="checkbox"  id="isEnable<?php echo $row->id;?>" name="isEnable<?php echo $row->id;?>" value="" <?php if($row->enable == 1)echo " checked" ?> onChange="saveChanges(<?php echo $row->id; ?>);" /></td>
-				
 			</tr>
 		<?php
 			$k = 1 - $k;
 			$i++;
 		}
-		
-			?></tbody>
-			
+		?>
+		</tbody>
 		<?php			
-		
 		if ($use_pagination)
 		{?>
 		<tfoot>
@@ -83,7 +80,7 @@ class HTML_display
 		?>
 	  	</table>
 	  	<input type="hidden" name="option" value="<?php echo $option; ?>" />
-	  	<input type="hidden" name="task" value="projection" />
+	  	<input type="hidden" name="task" value="display" />
 	  	<input type="hidden" name="id" id="id" value="" />
 	  	<input type="hidden" name="enable" id="enable" value="" />
 	  	<input type="hidden" name="boxchecked" value="0" />
@@ -91,6 +88,5 @@ class HTML_display
 	  	</form>
 		<?php		
 	}
-	
 }
 ?>

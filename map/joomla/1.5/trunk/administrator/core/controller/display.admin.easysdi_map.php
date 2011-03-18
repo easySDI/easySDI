@@ -35,7 +35,7 @@ class ADMIN_display
 		$pageNav = new JPagination($total,$limitstart,$limit);
 		
 		$query = "SELECT *  FROM #__sdi_mapdisplayoption";
-		$query .= " ORDER BY object";
+		$query .= " ORDER BY object ";
 		if ($use_pagination) 
 		{
 			$db->setQuery( $query ,$pageNav->limitstart, $pageNav->limit);	
@@ -70,8 +70,6 @@ class ADMIN_display
 			$mainframe->redirect("index.php?option=$option&task=display" );
 			exit();
 		}
-
 	}
-
 }
 ?>
