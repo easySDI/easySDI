@@ -19,28 +19,30 @@
 
 defined('_JEXEC') or die('Restricted access');
 
-class localisation extends JTable
+class geolocation extends sdiTable
 {	
-	var $id=null;
-	var $wfs_url=null;
-	var $layer_name=null;
-	var $title=null;
-	var $area_field_name=null;
-	var $name_field_name=null;
-	var $id_field_name=null;
-	var $feature_type_name=null;
-	var $parent_fk_field_name=null;
-	var $parent_id=null;	
+	var $wfsurl=null;
+	var $wmsurl=null;
+	var $layername=null;
+	var $areafield=null;
+	var $namefield=null;
+	var $idfield=null;
+	var $featuretypename=null;
+	var $parentfkfield=null;
+	var $parentid=null;	
 	var $maxfeatures=null;
-	var $img_format=null;
-	var $min_resolution=null;
-	var $max_resolution=null;
-	var $extract_id_from_fid=null;
-	
+	var $imgformat=null;
+	var $minresolution=null;
+	var $maxresolution=null;
+	var $extractidfromfid=null;
+	var $user=null;
+	var $password=null;
+	var $easysdiaccount_id=null;
+		
 	// Class constructor
 	function __construct( &$db )
 	{
-		parent::__construct ( '#__easysdi_map_localisation_layer', 'id', $db ) ;    		
+		parent::__construct ( '#__sdi_geolocation', 'id', $db ) ;    		
 	}
 }
 

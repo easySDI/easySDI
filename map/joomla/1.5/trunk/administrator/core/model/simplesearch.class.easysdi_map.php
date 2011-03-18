@@ -23,16 +23,16 @@ class simpleSearch extends JTable
 {
 	var $id=null;
 	var $title=null;
-	var $dropdown_feature_type=null;
-	var $dropdown_display_attr=null;
-	var $dropdown_id_attr=null;
-	var $search_attribute=null;
+	var $dropdownfeaturetype=null;
+	var $dropdowndisplayattr=null;
+	var $dropdownidattr=null;
+	var $searchattribute=null;
 	var $operator=null;
 	 	
 	// Class constructor
 	function __construct( &$db )
 	{
-		parent::__construct ( '#__easysdi_map_simple_search_type', 'id', $db ) ;    		
+		parent::__construct ( '#__sdi_simplesearchtype', 'id', $db ) ;    		
 	}
 }
 
@@ -47,7 +47,7 @@ class additionalFilter extends JTable
 	// Class constructor
 	function __construct( &$db )
 	{
-		parent::__construct ( '#__easysdi_map_simple_search_additional_filter', 'id', $db ) ;    		
+		parent::__construct ( '#__sdi_simplesearchfilter', 'id', $db ) ;    		
 	}
 }
 ?>

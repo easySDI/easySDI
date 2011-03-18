@@ -19,16 +19,15 @@
 
 defined('_JEXEC') or die('Restricted access');
 
-class service_account extends JTable
+class serviceAccount extends JTable
 {
 	var $id=null;
-	var $partner_id=null;
-
+	var $account_id=null;
 	 	
 	// Class constructor
 	function __construct( &$db )
 	{
-		parent::__construct ( '#__easysdi_map_service_account', 'id', $db ) ;    		
+		parent::__construct ( '#__sdi_map_serviceaccount', 'id', $db ) ;    		
 	}
 }
 

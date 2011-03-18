@@ -19,10 +19,8 @@
 
 defined('_JEXEC') or die('Restricted access');
 
-class annotation_style extends JTable
+class annotationStyle extends sdiTable
 {
-	var $id=null;
-	var $name = null;
 	var $fillColor = null;
 	var $fillOpacity = null;
 	var $strokeColor = null;
@@ -41,7 +39,7 @@ class annotation_style extends JTable
 	// Class constructor
 	function __construct( &$db )
 	{
-		parent::__construct ( '#__easysdi_map_annotation_style', 'id', $db ) ;    		
+		parent::__construct ( '#__sdi_annotationstyle', 'id', $db ) ;    		
 	}
 }
 

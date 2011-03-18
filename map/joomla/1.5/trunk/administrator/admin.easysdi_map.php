@@ -43,8 +43,7 @@ switch($task)
 {
 	default:
 	case 'ctrlPanel':
-		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'ctrlPanel'.DS.'ctrlpanel.admin.easysdi_map.html.php');
-		HTML_ctrlpanel::mapCtrlPanel($option);
+		$mainframe->redirect("index.php?option=com_easysdi_core" );
 		break;
 	case 'overlayCtrlPanel':
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'ctrlPanel'.DS.'overlay.ctrlpanel.admin.easysdi_map.html.php');

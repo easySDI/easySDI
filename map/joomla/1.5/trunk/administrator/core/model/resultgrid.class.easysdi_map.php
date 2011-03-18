@@ -19,20 +19,17 @@
 
 defined('_JEXEC') or die('Restricted access');
 
-class result_grid extends JTable
+class resultGrid extends sdiTable
 {
-	var $id=null;
-	var $internal_name=null;
-	var $title=null;
-	var $feature_type=null;
-	var $distinct_fk=null;
-	var $distinct_pk=null;
-	var $row_details_feature_type=null;
+	var $featuretype=null;
+	var $distinctfk=null;
+	var $distinctpk=null;
+	var $rowdetailsfeaturetype=null;
 	 	
 	// Class constructor
 	function __construct( &$db )
 	{
-		parent::__construct ( '#__easysdi_map_extra_result_grid', 'id', $db ) ;    		
+		parent::__construct ( '#__sdi_resultgrid', 'id', $db ) ;    		
 	}
 }
 

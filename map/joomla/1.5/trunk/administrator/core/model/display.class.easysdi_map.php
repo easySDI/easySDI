@@ -19,17 +19,16 @@
 
 defined('_JEXEC') or die('Restricted access');
 
-class display extends JTable
+class display extends sdiTable
 {
-	var $id=null;
-	var $object=null;
 	var $translation=null;
+	var $object=null;
 	var $enable=null;
 	 	
 	// Class constructor
 	function __construct( &$db )
 	{
-		parent::__construct ( '#__easysdi_map_display_options', 'id', $db ) ;    		
+		parent::__construct ( '#__sdi_mapdisplayoption', 'id', $db ) ;    		
 	}
 }
 

@@ -19,21 +19,19 @@
 
 defined('_JEXEC') or die('Restricted access');
 
-class base_layer extends JTable
+class baseLayer extends sdiTable
 {
-	var $id=null;
-	var $id_base=null;
-	var $name=null;
 	var $url=null;
 	var $layers=null;
 	var $projection=null;
-	var $img_format=null;
+	var $imgformat=null;
 	var $customStyle=false;
-	var $maxExtent=null;
-	var $minScale=null;
-	var $maxScale=null;
+	var $maxextent=null;
+	var $extent=null;
+	var $minscale=null;
+	var $maxscale=null;
 	var $resolutions='';
-	var $resolutionOverScale=false;
+	var $resolutionoverscale=false;
 	var $cache=false;
 	var $unit=null;
 	var $default_visibility=false;
@@ -41,30 +39,17 @@ class base_layer extends JTable
 	var $default_opacity=null;
 	var $metadata_url=null;
 	var $singletile=false;
+	var $user=null;
+	var $password=null;
+	var $easysdiaccount_id =null;
+	var $defaultvisibility=null;
+	var $defaultopacity=null;
+	var $metadataurl=null;
 
 	// Class constructor
 	function __construct( &$db )
 	{
-		parent::__construct ( '#__easysdi_map_base_layer', 'id', $db ) ;
-	}
-}
-class base_definition extends JTable
-{
-	var $id=null;
-	var $projection=null;
-	var $extent=null;
-	var $maxExtent=null;
-	var $minScale=null;
-	var $maxScale=null;
-	var $resolutions=null;
-	var $resolutionOverScale=false;
-	var $unit=null;
-	var $def=false;
-
-	// Class constructor
-	function __construct( &$db )
-	{
-		parent::__construct ( '#__easysdi_map_base_definition', 'id', $db ) ;
+		parent::__construct ( '#__sdi_baselayer', 'id', $db ) ;
 	}
 }
 

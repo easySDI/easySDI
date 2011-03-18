@@ -19,32 +19,28 @@
 
 defined('_JEXEC') or die('Restricted access');
 
-class feature_type extends JTable
+class featureType extends sdiTable
 {
-	var $id=null;
-	var $name=null;
 	var $geometry=null;
 		 	
 	// Class constructor
 	function __construct( &$db )
 	{
-		parent::__construct ( '#__easysdi_map_feature_type', 'id', $db ) ;    		
+		parent::__construct ( '#__sdi_featuretype', 'id', $db ) ;    		
 	}
 }
 class attribute extends JTable
 {
-	var $id=null;
-	var $id_ft=null;
-	var $name=null;
-	var $data_type=null;
+	var $ft_id=null;
+	var $datatype=null;
 	var $width=null;
-	var $initial_visibility=null;
+	var $initialvisibility=null;
 	var $visible = null;
 		 	
 	// Class constructor
 	function __construct( &$db )
 	{
-		parent::__construct ( '#__easysdi_map_attribute', 'id', $db ) ;    		
+		parent::__construct ( '#__sdi_featuretypeattribute', 'id', $db ) ;    		
 	}
 }
 ?>

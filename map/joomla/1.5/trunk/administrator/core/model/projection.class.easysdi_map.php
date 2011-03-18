@@ -19,11 +19,8 @@
 
 defined('_JEXEC') or die('Restricted access');
 
-class projection extends JTable
+class projection extends sdiTable
 {
-	var $id=null;
-	var $name=null;
-	var $title=null;
 	var $proj4text=null;
 	var $numDigits=0;
 	var $enable=1;
@@ -31,7 +28,7 @@ class projection extends JTable
 	// Class constructor
 	function __construct( &$db )
 	{
-		parent::__construct ( '#__easysdi_map_projection', 'id', $db ) ;    		
+		parent::__construct ( '#__sdi_projection', 'id', $db ) ;    		
 	}
 }
 

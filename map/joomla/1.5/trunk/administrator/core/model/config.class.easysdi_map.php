@@ -19,17 +19,15 @@
 
 defined('_JEXEC') or die('Restricted access');
 
-class mapConfig extends JTable
+class mapConfig extends sdiTable
 {
-	var $id=null;
-	var $name=null;
+	var $key=null;
 	var $value=null;
-	var $description=null;
 	 	
 	// Class constructor
 	function __construct( &$db )
 	{
-		parent::__construct ( '#__easysdi_map_config', 'id', $db ) ;    		
+		parent::__construct ( '#__sdi_mapconfig', 'id', $db ) ;    		
 	}
 }
 

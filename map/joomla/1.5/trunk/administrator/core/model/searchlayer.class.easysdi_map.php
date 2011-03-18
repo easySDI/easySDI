@@ -19,19 +19,18 @@
 
 defined('_JEXEC') or die('Restricted access');
 
-class search_layer extends JTable
+class searchLayer extends sdiTable
 {
-	var $id=null;
-	var $feature_type=null;
-	var $geometry_name=null;
-	var $row_details_feature_type=null;
+	var $featuretype=null;
+	var $geometryname=null;
+	var $rowdetailsfeaturetype=null;
 	var $styles=null;
 	var $enable=0;
 	 	
 	// Class constructor
 	function __construct( &$db )
 	{
-		parent::__construct ( '#__easysdi_map_search_layer', 'id', $db ) ;    		
+		parent::__construct ( '#__sdi_searchlayer', 'id', $db ) ;    		
 	}
 }
 

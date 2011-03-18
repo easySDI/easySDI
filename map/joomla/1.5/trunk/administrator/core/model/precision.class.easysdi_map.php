@@ -19,20 +19,17 @@
 
 defined('_JEXEC') or die('Restricted access');
 
-class precision extends JTable
+class precision extends sdiTable
 {
-	var $id=null;
-	var $name=null;
-	var $title=null;
-	var $min_resolution=null;
-	var $max_resolution=null;
-	var $low_scale_switch_to=null;
+	var $minresolution=null;
+	var $maxresolution=null;
+	var $lowscaleswitchto=null;
 	var $style=null;
 	 	
 	// Class constructor
 	function __construct( &$db )
 	{
-		parent::__construct ( '#__easysdi_map_precision', 'id', $db ) ;    		
+		parent::__construct ( '#__sdi_precision', 'id', $db ) ;    		
 	}
 }
 

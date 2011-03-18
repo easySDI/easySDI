@@ -19,17 +19,16 @@
 
 defined('_JEXEC') or die('Restricted access');
 
-class comment extends JTable
+class comment extends sdiTable
 {
-	var $id=null;
-	var $type_name=null;
-	var $feature_comment_count=null;
+	var $featuretypename=null;
+	var $countattribute=null;
 	var $enable=null;
 	 	
 	// Class constructor
 	function __construct( &$db )
 	{
-		parent::__construct ( '#__easysdi_map_comment_feature_type', 'id', $db ) ;    		
+		parent::__construct ( '#__sdi_commentfeaturetype', 'id', $db ) ;    		
 	}
 }
 
