@@ -19,7 +19,7 @@ defined('_JEXEC') or die('Restricted access');
 
 class HTML_config {
 	
-	function showConfig($option, $coreList, $catalogItem, $catalogList, $shopItem, $shopList, $proxyItem, $proxyList, $monitorItem, $monitorList, $publishItem, $publishList,$fieldsLength, $attributetypelist )
+	function showConfig($option, $coreList, $catalogItem, $catalogList, $shopItem, $shopList, $proxyItem, $proxyList, $monitorItem, $monitorList, $publishItem, $publishList,$mapItem, $mapList,$fieldsLength, $attributetypelist )
 	{
 		global $mainframe;
 
@@ -64,6 +64,11 @@ if ($monitorItem > 0){
 if ($publishItem > 0){
 ?>					
 					<li><a id="publish"><?php echo JText::_( 'CORE_CONFIGURATION_PUBLISH_TAB_TITLE' ); ?></a></li>
+<?php
+}
+if ($mapItem > 0){
+?>					
+					<li><a id="map"><?php echo JText::_( 'CORE_CONFIGURATION_MAP_TAB_TITLE' ); ?></a></li>
 <?php
 }
 ?>
@@ -550,6 +555,267 @@ if ($monitorItem > 0){
 		
 <?php
 }
+	if ($mapItem > 0){
+?>	
+			<div id="page-map">
+				<table class="noshow">
+					<tr>
+						<td width="60%">
+							<fieldset class="adminform">
+								<legend><?php echo JText::_( 'CORE_CONFIGURATION_MAP_FIELDSET_TITLE' ); ?></legend>
+								 
+								<table class="admintable" cellspacing="1">
+									<tbody>
+									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_MAP_COMPONENT_PATH_TIP' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_MAP_COMPONENT_PATH_LABEL' ); ?>
+											</span>
+										</td>
+										<td>
+											<input class="text_area" type="text" size="100" name="componentPath" value="<?php echo $mapList['componentPath']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+										</td>
+									</tr>
+									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_MAP_COMPONENT_URL_TIP' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_MAP_COMPONENT_URL_LABEL' ); ?>
+											</span>
+										</td>
+										<td>
+											<input class="text_area" type="text" size="100" name="componentUrl" value="<?php echo $mapList['componentUrl']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+										</td>
+									</tr>
+									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_MAP_PROJECTION_TIP' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_MAP_PROJECTION_LABEL' ); ?>
+											</span>
+										</td>
+										<td>
+											<input class="text_area" type="text" size="100" name="projection" value="<?php echo $mapList['projection']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+										</td>
+									</tr>
+									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_MAP_PUBWFSURL_TIP' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_MAP_PUBWFSURL_LABEL' ); ?>
+											</span>
+										</td>
+										<td>
+											<input class="text_area" type="text" size="100" name="pubWfsUrl" value="<?php echo $mapList['pubWfsUrl']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+										</td>
+									</tr>
+									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_MAP_MAXFEATURES_TIP' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_MAP_MAXFEATURES_LABEL' ); ?>
+											</span>
+										</td>
+										<td>
+											<input class="text_area" type="text" size="100" name="maxFeatures" value="<?php echo $mapList['maxFeatures']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+										</td>
+									</tr>
+									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_MAP_PUBFEATURENS_TIP' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_MAP_PUBFEATURENS_LABEL' ); ?>
+											</span>
+										</td>
+										<td>
+											<input class="text_area" type="text" size="100" name="pubFeatureNS" value="<?php echo $mapList['pubFeatureNS']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+										</td>
+									</tr>
+									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_MAP_PUBFEATURENS_TIP' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_MAP_PUBFEATURENS_LABEL' ); ?>
+											</span>
+										</td>
+										<td>
+											<input class="text_area" type="text" size="100" name="pubFeatureNS" value="<?php echo $mapList['pubFeatureNS']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+										</td>
+									</tr>
+									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_MAP_PUBFEATUREPREFIX_TIP' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_MAP_PUBFEATUREPREFIX_LABEL' ); ?>
+											</span>
+										</td>
+										<td>
+											<input class="text_area" type="text" size="100" name="pubFeaturePrefix" value="<?php echo $mapList['pubFeaturePrefix']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+										</td>
+									</tr>
+									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_MAP_WPSREPORTURL_TIP' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_MAP_WPSREPORTURL_LABEL' ); ?>
+											</span>
+										</td>
+										<td>
+											<input class="text_area" type="text" size="100" name="wpsReportUrl" value="<?php echo $mapList['wpsReportUrl']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+										</td>
+									</tr>
+									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_MAP_SHP2GML_TIP' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_MAP_SHP2GML_LABEL' ); ?>
+											</span>
+										</td>
+										<td>
+											<input class="text_area" type="text" size="100" name="shp2Gml" value="<?php echo $mapList['shp2Gml']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+										</td>
+									</tr>
+									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_MAP_FEATIDATTRIBUTE_TIP' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_MAP_FEATIDATTRIBUTE_LABEL' ); ?>
+											</span>
+										</td>
+										<td>
+											<input class="text_area" type="text" size="100" name="featureIdAttribute" value="<?php echo $mapList['featureIdAttribute']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+										</td>
+									</tr>
+									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_MAP_MAXSEARCHBARS_TIP' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_MAP_MAXSEARCHBARS_LABEL' ); ?>
+											</span>
+										</td>
+										<td>
+											<input class="text_area" type="text" size="100" name="maxSearchBars" value="<?php echo $mapList['maxSearchBars']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+										</td>
+									</tr>
+									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_MAP_WMSFILTERSUPPORT_TIP' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_MAP_WMSFILTERSUPPORT_LABEL' ); ?>
+											</span>
+										</td>
+										<td>
+											<input class="text_area" type="text" size="100" name="wmsFilterSupport" value="<?php echo $mapList['wmsFilterSupport']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+										</td>
+									</tr>
+									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_MAP_PUBWMSURL_TIP' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_MAP_PUBWMSURL_LABEL' ); ?>
+											</span>
+										</td>
+										<td>
+											<input class="text_area" type="text" size="100" name="pubWmsUrl" value="<?php echo $mapList['pubWmsUrl']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+										</td>
+									</tr>
+									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_MAP_DFTLMAPZOOM_TIP' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_MAP_DFTLMAPZOOM_LABEL' ); ?>
+											</span>
+										</td>
+										<td>
+											<input class="text_area" type="text" size="100" name="defaultCoordMapZoom" value="<?php echo $mapList['defaultCoordMapZoom']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+										</td>
+									</tr>
+									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_MAP_AUTOCOMPLCHAR_TIP' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_MAP_AUTOCOMPLCHAR_LABEL' ); ?>
+											</span>
+										</td>
+										<td>
+											<input class="text_area" type="text" size="100" name="autocompleteNumChars" value="<?php echo $mapList['autocompleteNumChars']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+										</td>
+									</tr>
+									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_MAP_AUTOCOMPLFID_TIP' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_MAP_AUTOCOMPLFID_LABEL' ); ?>
+											</span>
+										</td>
+										<td>
+											<input class="text_area" type="text" size="100" name="autocompleteUseFID" value="<?php echo $mapList['autocompleteUseFID']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+										</td>
+									</tr>
+									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_MAP_AUTOCOMPLMAXF_TIP' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_MAP_AUTOCOMPLMAXF_LABEL' ); ?>
+											</span>
+										</td>
+										<td>
+											<input class="text_area" type="text" size="100" name="autocompleteMaxFeat" value="<?php echo $mapList['autocompleteMaxFeat']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+										</td>
+									</tr>
+									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_MAP_LAYERPROXYXMLFILE_TIP' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_MAP_LAYERPROXYXMLFILE_LABEL' ); ?>
+											</span>
+										</td>
+										<td>
+											<input class="text_area" type="text" size="100" name="layerProxyXMLFile" value="<?php echo $mapList['layerProxyXMLFile']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+										</td>
+									</tr>
+									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_MAP_MAPTOFOPURL_TIP' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_MAP_MAPTOFOPURL_LABEL' ); ?>
+											</span>
+										</td>
+										<td>
+											<input class="text_area" type="text" size="100" name="maptoFopURL" value="<?php echo $mapList['maptoFopURL']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+										</td>
+									</tr>
+									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_MAP_NUMZOOMLEVELS_TIP' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_MAP_NUMZOOMLEVELS_LABEL' ); ?>
+											</span>
+										</td>
+										<td>
+											<input class="text_area" type="text" size="100" name="numZoomLevels" value="<?php echo $mapList['numZoomLevels']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+										</td>
+									</tr>
+									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_MAP_LOCATIONWIDTH_TIP' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_MAP_LOCATIONWIDTH_LABEL' ); ?>
+											</span>
+										</td>
+										<td>
+											<input class="text_area" type="text" size="100" name="locatisationInputWidth" value="<?php echo $mapList['locatisationInputWidth']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+										</td>
+									</tr>
+									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_MAP_LEGENDWIDTH_TIP' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_MAP_LEGENDWIDTH_LABEL' ); ?>
+											</span>
+										</td>
+										<td>
+											<input class="text_area" type="text" size="100" name="legendOrFilterPanelWidth" value="<?php echo $mapList['legendOrFilterPanelWidth']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+										</td>
+									</tr>
+									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_MAP_TREEWIDTH_TIP' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_MAP_TREEWIDTH_LABEL' ); ?>
+											</span>
+										</td>
+										<td>
+											<input class="text_area" type="text" size="100" name="treePanelWidth" value="<?php echo $mapList['treePanelWidth']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+										</td>
+									</tr>
+									</tbody>
+								</table>
+							</fieldset>	
+						</td>
+					</tr>
+				</table>
+			</div>
+		
+<?php
+}
 ?>
 		</div>
 		<div class="clr"></div>
@@ -562,6 +828,7 @@ if ($monitorItem > 0){
 		<input type="hidden" name="proxy_item" value="<?php echo $proxyItem; ?>" />
 		<input type="hidden" name="monitor_item" value="<?php echo $monitorItem; ?>" />
 		<input type="hidden" name="publish_item" value="<?php echo $publishItem; ?>" />
+		<input type="hidden" name="map_item" value="<?php echo $mapItem; ?>" />
 		<?php echo JHTML::_( 'form.token' ); ?>
 		</form>
 		<?php
