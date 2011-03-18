@@ -34,7 +34,7 @@ include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'database'.DS.'table'.DS.'user.php')
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'resources.toolbar.easysdi.html.php');
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'resources.admin.easysdi.html.php');
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'resources.admin.easysdi.php');
-
+require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'sditable.easysdi.class.php');
 
 global $mainframe;
 $task = JRequest::getVar('task');

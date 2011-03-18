@@ -573,7 +573,7 @@ function com_install()
 		  KEY `id_sst` (`id_sst`),
 		  KEY `id_saf` (`id_saf`),
 		  CONSTRAINT `#__sdi_sst_saf_ibfk_1` FOREIGN KEY (`id_sst`) REFERENCES `#__sdi_simplesearchtype` (`id`) ON DELETE CASCADE,
-		  CONSTRAINT `#__sdi_sst_saf_ibfk_2` FOREIGN KEY (`id_saf`) REFERENCES `#__sdi_resultgrid` (`id`) ON DELETE CASCADE
+		  CONSTRAINT `#__sdi_sst_saf_ibfk_2` FOREIGN KEY (`id_saf`) REFERENCES `#__sdi_simplesearchfilter` (`id`) ON DELETE CASCADE
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 		
 		-- ----------------------------
@@ -670,6 +670,15 @@ function com_install()
 				VALUES ('".helper_easysdi::getUniqueId()."', 'MAP', 'com_easysdi_map', 'com_easysdi_map', '".date('Y-m-d H:i:s')."', '".$user_id."', 'com_sdi_map', 'com_sdi_map', '".$version."')";
 		$db->setQuery( $query);
 		
+		if (!$db->query()) 
+		{			
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			return false;
+		}
+		
+		$query="INSERT INTO #__sdi_module_panel (guid, code, name, description, created, createdby,module_id, view_path,ordering) 
+										VALUES ('".helper_easysdi::getUniqueId()."', 'MAP_PANEL', 'Map Panel', 'Map Panel', '".date('Y-m-d H:i:s')."', '".$user_id."', '".$module_id."', 'com_easysdi_map/core/view/sub.ctrlpanel.admin.easysdi.html.php', '3')";
+		$db->setQuery( $query);		
 		if (!$db->query()) 
 		{			
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
