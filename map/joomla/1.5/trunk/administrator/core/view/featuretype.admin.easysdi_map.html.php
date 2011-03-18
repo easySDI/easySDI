@@ -181,11 +181,11 @@ class HTML_featuretype
 								<input type="hidden" name="ID_<?php echo $iAttribute;?>" id="ID_<?php echo $iAttribute;?>" value="<?php echo $attribute->id; ?>" />
 								<tr id="TR_<?php echo $iAttribute; ?>" >
 									<td class="key"><input class="inputbox" type="text" name="NAME_<?php echo $iAttribute;?>" id="NAME_<?php echo $iAttribute;?>" value="<?php echo $attribute->name; ?>" size=70></td>
-									<td><input class="inputbox" type="text" name="DATATYPE_<?php echo $iAttribute;?>" id="DATATYPE_<?php echo $iAttribute;?>"  value="<?php echo $attribute->data_type; ?>"></td>
+									<td><input class="inputbox" type="text" name="DATATYPE_<?php echo $iAttribute;?>" id="DATATYPE_<?php echo $iAttribute;?>"  value="<?php echo $attribute->datatype; ?>"></td>
 									<td><?php echo JHTML::_("select.genericlist",$rowsProfiles, 'PROFILE_'.$iAttribute.'[]', 'size="5" multiple="true" class="selectbox"', 'value', 'text', $rowsAttributeProfiles[$attribute->id] ); ?></td>
 									<td><input type="checkbox"  name="VISIBLE_<?php echo $iAttribute;?>" id="VISIBLE_<?php echo $iAttribute;?>"  value="1" onChange="javascript:enableVisibility(<?php echo $iAttribute;?>)" <?php if ($attribute->visible) echo "checked"; ?>"></td>
 									<td><input class="inputbox" type="text" name="WIDTH_<?php echo $iAttribute;?>" id="WIDTH_<?php echo $iAttribute;?>"  <?php if (!$attribute->visible) echo "disabled"; ?> value="<?php if ($attribute->visible) echo $attribute->width; ?>"></td>				
-									<td><input type="checkbox" name="VISIBILITY_<?php echo $iAttribute;?>" id="VISIBILITY_<?php echo $iAttribute;?>" value="1" <?php if (!$attribute->visible) echo "disabled"; if ($attribute->initial_visibility && $attribute->visible) echo "checked"; ?>"></td>
+									<td><input type="checkbox" name="VISIBILITY_<?php echo $iAttribute;?>" id="VISIBILITY_<?php echo $iAttribute;?>" value="1" <?php if (!$attribute->visible) echo "disabled"; if ($attribute->initialvisibility && $attribute->visible) echo "checked"; ?>"></td>
 									<td><input type="button" onClick="document.getElementById('selectAttr').value=<?php echo $iAttribute; ?>;javascript:submitbutton('removeAttribute');" value="<?php echo JText::_( 'EASYSDI_MAP_REMOVE_ATTRIBUTE' ); ?>"></td>													
 								</tr>
 							<?php 

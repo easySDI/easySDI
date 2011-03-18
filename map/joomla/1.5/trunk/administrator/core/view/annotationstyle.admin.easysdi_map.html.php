@@ -90,18 +90,13 @@ class HTML_annotationstyle
 	<script>	
 	function submitbutton(pressbutton)
 	{
-		if(pressbutton== "saveProjection")
+		if(pressbutton== "saveAnnotationStyle")
 		{
 			if (document.getElementById('name').value == "")
 			{	
-				alert ('<?php echo  JText::_( 'EASYSDI_PROJECTION_NAME_VALIDATION_ERROR');?>');	
+				alert ('<?php echo  JText::_( 'EASYSDI_PROJECTION_NAME_ANNOTATION_ERROR');?>');	
 				return;
 			}
-			else if (document.getElementById('title').value == "")
-			{
-				alert ('<?php echo  JText::_( 'EASYSDI_PROJECTION_TITLE_VALIDATION_ERROR');?>');	
-				return;
-			}			
 			else
 			{	
 				submitform(pressbutton);

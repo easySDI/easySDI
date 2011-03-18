@@ -46,8 +46,8 @@ class HTML_comment
 			<tr class="<?php echo "row$k"; ?>">
 				<td align="center"><?php echo $i+$pageNav->limitstart+1;?></td>
 				<td><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->id; ?>" onclick="isChecked(this.checked);" /></td>
-				<td><a href="#edit" onclick="return listItemTask('cb<?php echo $i;?>','editComment')"><?php echo $row->type_name; ?></a></td>
-				<td><?php echo $row->feature_comment_count; ?></td>
+				<td><a href="#edit" onclick="return listItemTask('cb<?php echo $i;?>','editComment')"><?php echo $row->featuretypename; ?></a></td>
+				<td><?php echo $row->countattribute; ?></td>
 				<td><input type="checkbox" disabled id="isEnable<?php echo $i;?>" name="isEnable<?php echo $i;?>" value="" <?php if($row->enable == 1)echo " checked" ?> /></td>
 			</tr>
 		<?php
@@ -96,12 +96,12 @@ class HTML_comment
 	{
 		if(pressbutton == "saveComment")
 		{
-			if (document.getElementById('type_name').value == "")
+			if (document.getElementById('featuretypename').value == "")
 			{	
 				alert ('<?php echo  JText::_( 'EASYSDI_COMMENT_TYPE_NAME_VALIDATION_ERROR');?>');	
 				return;
 			}
-			else if (document.getElementById('feature_comment_count').value == "")
+			else if (document.getElementById('countattribute').value == "")
 			{	
 				alert ('<?php echo  JText::_( 'EASYSDI_COMMENT_COUNT_VALIDATION_ERROR');?>');	
 				return;
@@ -129,11 +129,11 @@ class HTML_comment
 							</tr>
 							<tr>
 								<td class="key" width="100p"><?php echo JText::_("EASYSDI_MAP_COMMENT_TYPE_NAME"); ?></td>
-								<td><input class="inputbox" type="text" size="100" maxlength="100" name="type_name" id="type_name" value="<?php echo $comment->type_name; ?>" /></td>								
+								<td><input class="inputbox" type="text" size="100" maxlength="100" name="featuretypename" id="featuretypename" value="<?php echo $comment->featuretypename; ?>" /></td>								
 							</tr>
 							<tr>
 								<td class="key"><?php echo JText::_("EASYSDI_MAP_COMMENT_COUNT"); ?></td>
-								<td><input class="inputbox" type="text" size="100" maxlength="500" name="feature_comment_count" id="feature_comment_count" value="<?php echo $comment->feature_comment_count; ?>" /></td>
+								<td><input class="inputbox" type="text" size="100" maxlength="500" name="countattribute" id="countattribute" value="<?php echo $comment->countattribute; ?>" /></td>
 							</tr>
 							<tr>
 								<td class="key"><?php echo JText::_("EASYSDI_MAP_COMMENT_ENABLE"); ?></td>

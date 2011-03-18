@@ -18,9 +18,9 @@
 
 defined('_JEXEC') or die('Restricted access');
 
-class HTML_localisation 
+class HTML_geolocation 
 {
-	function listLocalisation($use_pagination, $rows, $pageNav, $option)
+	function listGeolocation($use_pagination, $rows, $pageNav, $option)
 	{
 		JToolBarHelper::title(JText::_("EASYSDI_LIST_LOCALISATION"));
 		$ordering_field = JRequest::getVar ('order_field');
@@ -40,7 +40,7 @@ class HTML_localisation
 			<tr>
 				<th width="20" class='title'><?php echo JText::_("EASYSDI_LOCALISATION_SHARP"); ?></th>
 				<th width="20" class='title'><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows); ?>);" /></th>
-				<th class='title'><a href="javascript:tableOrder('localisation', 'title');" title="Click to sort by this column"><?php echo JText::_("EASYSDI_LOCALISATION_TITLE"); ?></a></th>
+				<th class='title'><a href="javascript:tableOrder('geolocation', 'name');" title="Click to sort by this column"><?php echo JText::_("EASYSDI_LOCALISATION_TITLE"); ?></a></th>
 				<th class='title'><?php echo JText::_("EASYSDI_LOCALISATION_URL"); ?></th>
 			</tr>
 		</thead>
@@ -54,8 +54,8 @@ class HTML_localisation
 			<tr class="<?php echo "row$k"; ?>">
 				<td align="center"><?php echo $i+$pageNav->limitstart+1;?></td>
 				<td><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->id; ?>" onclick="isChecked(this.checked);" /></td>
-				<td><a href="#edit" onclick="return listItemTask('cb<?php echo $i;?>','editLocalisation')"><?php echo $row->title; ?></a></td>
-				<td><?php echo $row->wfs_url; ?></td>								 
+				<td><a href="#edit" onclick="return listItemTask('cb<?php echo $i;?>','editGeolocation')"><?php echo $row->name; ?></a></td>
+				<td><?php echo $row->wfsurl; ?></td>								 
 			</tr>
 		<?php
 			$k = 1 - $k;
@@ -86,10 +86,10 @@ class HTML_localisation
 		<?php		
 	}
 	
-	function editLocalisation( $localisation, $option )
+	function editGeolocation( $geolocation, $option )
 	{
 		global  $mainframe;
-		if ($localisation->id != 0)
+		if ($geolocation->id != 0)
 		{
 			JToolBarHelper::title( JText::_("EASYSDI_LOCALISATION_EDIT"), 'generic.png' );
 		}
@@ -101,20 +101,20 @@ class HTML_localisation
 		<script>	
 	function submitbutton(pressbutton)
 	{
-		if(pressbutton == "saveLocalisation")
+		if(pressbutton == "saveGeolocation")
 		{
 			
-			if (document.getElementById('wfs_url').value == "")
+			if (document.getElementById('wfsurl').value == "")
 			{
 				alert ('<?php echo  JText::_( 'EASYSDI_LOCALISATION_CT_WFS_URL_VALIDATION_ERROR');?>');	
 				return;
 			}
-			else if (document.getElementById('title').value == "")
+			else if (document.getElementById('name').value == "")
 			{
 				alert ('<?php echo  JText::_( 'EASYSDI_LOCALISATION_CT_TITLE_VALIDATION_ERROR');?>');	
 				return;
 			}
-			else if (document.getElementById('area_field_name').value == "")
+			else if (document.getElementById('areafield').value == "")
 			{	
 				alert ('<?php echo  JText::_( 'EASYSDI_LOCALISATION_CT_AREA_NAME_VALIDATION_ERROR');?>');	
 				return;
@@ -137,45 +137,45 @@ class HTML_localisation
 						<table class="admintable">
 							<tr>
 								<td class="key" ><?php echo JText::_("EASYSDI_LOCALISATION_ID"); ?></td>
-								<td><?php echo $localisation->id; ?></td>																
+								<td><?php echo $geolocation->id; ?></td>																
 							</tr>	
 							<tr>							
 								<td class="key"><?php echo JText::_("EASYSDI_LOCALISATION_WFS_URL"); ?></td>
-								<td><input class="inputbox" type="text" size="50" maxlength="1000" name="wfs_url" id="wfs_url" value="<?php echo $localisation->wfs_url; ?>" /></td>							
+								<td><input class="inputbox" type="text" size="50" maxlength="1000" name="wfsurl" id="wfs_url" value="<?php echo $geolocation->wfsurl; ?>" /></td>							
 							</tr>	
 									
 							<tr>
 								<td class="key"><?php echo JText::_("EASYSDI_LOCALISATION_TITLE"); ?></td>
-								<td><input class="inputbox" type="text" size="50" maxlength="1000" name="title" id="title" value="<?php echo $localisation->title; ?>" /></td>
+								<td><input class="inputbox" type="text" size="50" maxlength="1000" name="name" id="title" value="<?php echo $geolocation->name; ?>" /></td>
 													
 							</tr>
 							<tr>
 								<td class="key"><?php echo JText::_("EASYSDI_LOCALISATION_AREA_FIELD_NAME"); ?></td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="area_field_name" id="area_field_name" value="<?php echo $localisation->area_field_name; ?>" /></td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="areafield" id="areafield" value="<?php echo $geolocation->areafield; ?>" /></td>
 							</tr>
 							<tr>
 								<td class="key"><?php echo JText::_("EASYSDI_LOCALISATION_NAME_FIELD_NAME"); ?></td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="name_field_name" id="name_field_name" value="<?php echo $localisation->name_field_name; ?>" /></td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="namefield" id="namefield" value="<?php echo $geolocation->namefield; ?>" /></td>
 							</tr>
 							<tr>
 								<td class="key"><?php echo JText::_("EASYSDI_LOCALISATION_ID_FIELD_NAME"); ?></td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="id_field_name" id="id_field_name" value="<?php echo $localisation->id_field_name; ?>" /></td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="idfield" id="idfield" value="<?php echo $geolocation->idfield; ?>" /></td>
 							</tr>
 							<tr>
 								<td class="key"><?php echo JText::_("EASYSDI_LOCALISATION_FEAT_TYPE_NAME"); ?></td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="feature_type_name" id="feature_type_name" value="<?php echo $localisation->feature_type_name; ?>" /></td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="featuretypename" id="featuretypename" value="<?php echo $geolocation->featuretypename; ?>" /></td>
 							</tr>
 							<tr>
 								<td class="key"><?php echo JText::_("EASYSDI_LOCALISATION_PARENT_FK_FIELD_NAME"); ?></td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="parent_fk_field_name" id="parent_fk_field_name" value="<?php echo $localisation->parent_fk_field_name; ?>" /></td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="parentfkfield" id="parentfkfield" value="<?php echo $geolocation->parentfkfield; ?>" /></td>
 							</tr>
 							<tr>
 								<td class="key"><?php echo JText::_("EASYSDI_LOCALISATION_PARENT_ID"); ?></td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="parent_id" id="parent_id" value="<?php echo $localisation->parent_id; ?>" /></td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="parentid" id="parentid" value="<?php echo $geolocation->parentid; ?>" /></td>
 							</tr>
 							<tr>
 								<td class="key"><?php echo JText::_("EASYSDI_LOCALISATION_MAX_FEATURE"); ?></td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="maxfeatures" id="maxfeatures" value="<?php echo $localisation->maxfeatures; ?>" /></td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="maxfeatures" id="maxfeatures" value="<?php echo $geolocation->maxfeatures; ?>" /></td>
 							</tr>							
 						</table>
 					</fieldset>
@@ -185,8 +185,8 @@ class HTML_localisation
 		</table>
 		
 		<input type="hidden" name="option" value="<?php echo $option; ?>" />
-		<input type="hidden" name="id" value="<?php echo $localisation->id;?>">
-		<input type="hidden" name="task" value="saveLocalisation" />
+		<input type="hidden" name="id" value="<?php echo $geolocation->id;?>">
+		<input type="hidden" name="task" value="saveGeolocation" />
 		</form>
 	<?php
 	}

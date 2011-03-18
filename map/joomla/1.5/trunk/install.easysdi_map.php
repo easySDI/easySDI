@@ -175,7 +175,7 @@ function com_install()
 		  `minscale` varchar(100) NOT NULL DEFAULT 'auto',
 		  `maxscale` varchar(100) NOT NULL DEFAULT 'auto',
 		  `resolutions` text,
-		  `resolutionOverScale` tinyint(4) NOT NULL DEFAULT '0',
+		  `resolutionoverscale` tinyint(4) NOT NULL DEFAULT '0',
 		  `extent` varchar(100) DEFAULT NULL,
 		  `maxextent` varchar(100) NOT NULL DEFAULT '-180,-90,180,90',
 		  

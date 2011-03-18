@@ -623,41 +623,41 @@ switch($task)
 		$mainframe->redirect("index.php?option=$option&task=baseLayer&order_field=".$order_field );
 		break;
 		/**
-		 * Localisation
+		 * geolocation
 		 */
-	case 'localisation':
-		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'localisation.admin.easysdi_map.html.php');
-		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'localisation.toolbar.easysdi_map.html.php');
-		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'localisation.admin.easysdi_map.php');
-		TOOLBAR_localisation::_LIST();
-		ADMIN_localisation::listLocalisation($option);
+	case 'geolocation':
+		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'geolocation.admin.easysdi_map.html.php');
+		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'geolocation.toolbar.easysdi_map.html.php');
+		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'geolocation.admin.easysdi_map.php');
+		TOOLBAR_geolocation::_LIST();
+		ADMIN_geolocation::listGeolocation($option);
 		break;
-	case 'editLocalisation' :
-	case 'newLocalisation':
-		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'localisation.admin.easysdi_map.html.php');
-		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'localisation.class.easysdi_map.php');
-		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'localisation.toolbar.easysdi_map.html.php');
-		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'localisation.admin.easysdi_map.php');
-		TOOLBAR_localisation::_EDIT();
+	case 'editGeolocation' :
+	case 'newGeolocation':
+		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'geolocation.admin.easysdi_map.html.php');
+		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'geolocation.class.easysdi_map.php');
+		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'geolocation.toolbar.easysdi_map.html.php');
+		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'geolocation.admin.easysdi_map.php');
+		TOOLBAR_geolocation::_EDIT();
 		$cid = JRequest::getVar ('cid', array(0) );
-		ADMIN_localisation::editLocalisation($cid[0], $option);
+		ADMIN_geolocation::editGeolocation($cid[0], $option);
 		break;
-	case 'deleteLocalisation':
-		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'localisation.admin.easysdi_map.html.php');
-		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'localisation.class.easysdi_map.php');
-		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'localisation.toolbar.easysdi_map.html.php');
-		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'localisation.admin.easysdi_map.php');
+	case 'deleteGeolocation':
+		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'geolocation.admin.easysdi_map.html.php');
+		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'geolocation.class.easysdi_map.php');
+		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'geolocation.toolbar.easysdi_map.html.php');
+		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'geolocation.admin.easysdi_map.php');
 		$cid = JRequest::getVar ('cid', array(0) );
-		ADMIN_localisation::deleteLocalisation($cid, $option);
-		$mainframe->redirect("index.php?option=$option&task=localisation");
+		ADMIN_geolocation::deleteGeolocation($cid, $option);
+		$mainframe->redirect("index.php?option=$option&task=geolocation");
 		break;
-	case 'saveLocalisation':
-		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'localisation.admin.easysdi_map.html.php');
-		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'localisation.class.easysdi_map.php');
-		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'localisation.toolbar.easysdi_map.html.php');
-		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'localisation.admin.easysdi_map.php');
-		ADMIN_localisation::saveLocalisation($option);
-		$mainframe->redirect("index.php?option=$option&task=localisation");
+	case 'saveGeolocation':
+		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'geolocation.admin.easysdi_map.html.php');
+		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'geolocation.class.easysdi_map.php');
+		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'geolocation.toolbar.easysdi_map.html.php');
+		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'geolocation.admin.easysdi_map.php');
+		ADMIN_geolocation::saveGeolocation($option);
+		$mainframe->redirect("index.php?option=$option&task=geolocation");
 		break;
 		/**
 		 * Display options

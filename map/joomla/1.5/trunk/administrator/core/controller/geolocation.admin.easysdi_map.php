@@ -18,7 +18,7 @@
 
 defined('_JEXEC') or die('Restricted access');
 
-class ADMIN_localisation 
+class ADMIN_geolocation 
 {
 	function listLocalisation ($option)
 	{
@@ -51,7 +51,7 @@ class ADMIN_localisation
 			return ;
 		}
 		
-		HTML_localisation::listLocalisation($use_pagination, $rows, $pageNav, $option);
+		HTML_geolocation::listLocalisation($use_pagination, $rows, $pageNav, $option);
 	}
 	
 	function editLocalisation ($id,$option)
@@ -62,7 +62,7 @@ class ADMIN_localisation
 		$geolocation = new geolocation ($db);
 		$geolocation->load($id);
 
-		HTML_localisation::editLocalisation($geolocation, $option);
+		HTML_geolocation::editLocalisation($geolocation, $option);
 	}
 	
 	function deleteLocalisation($cid,$option)

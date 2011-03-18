@@ -52,7 +52,7 @@ class HTML_overlayctrlpanel
 			</div>
 			
 			<?php	
-			$link = "index.php?option=$option&amp;task=localisation";
+			$link = "index.php?option=$option&amp;task=geolocation";
 			?>
 			<div style="float:<?php echo ($lang->isRTL()) ? 'right' : 'left'; ?>;">
 				<div class="icon">
