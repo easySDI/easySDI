@@ -20,15 +20,11 @@ defined('_JEXEC') or die('Restricted access');
 
 class HTML_simplesearch 
 {
-	/**
-	* Simple searches types 
-	*/
 	function listSimpleSearch($use_pagination, $rows, $pageNav, $option)
 	{
 		JToolBarHelper::title(JText::_("EASYSDI_LIST_SIMPLE_SEARCH"));
 		?>
 		<form action="index.php" method="GET" name="adminForm">
-
 		<table class="adminlist">
 		<thead>
 			<tr>
@@ -53,11 +49,9 @@ class HTML_simplesearch
 			$k = 1 - $k;
 			$i++;
 		}
-		
-			?></tbody>
-			
+		?>
+		</tbody>
 		<?php			
-		
 		if ($use_pagination)
 		{?>
 		<tfoot>
@@ -87,140 +81,134 @@ class HTML_simplesearch
 		{
 			JToolBarHelper::title( JText::_("EASYSDI_MAP_NEW_SIMPLE_SEARCH"), 'generic.png' );
 		}
-		
-
-	?>			
-	<script>	
-	function submitbutton(pressbutton)
-	{
-		if(pressbutton == "saveSimpleSearch")
+		?>			
+		<script>	
+		function submitbutton(pressbutton)
 		{
-			if (document.getElementById('title').value == "")
-			{	
-				alert ('<?php echo  JText::_( 'EASYSDI_SIMPLESEARCH_TITLE_VALIDATION_ERROR');?>');	
-				return;
-			}
-			else if (document.getElementById('dropdown_feature_type').value == "")
+			if(pressbutton == "saveSimpleSearch")
 			{
-				alert ('<?php echo  JText::_( 'EASYSDI_SIMPLESEARCH_FT_VALIDATION_ERROR');?>');	
-				return;
-			}
-			else if (document.getElementById('dropdown_display_attr').value == "")
-			{
-				alert ('<?php echo  JText::_( 'EASYSDI_SIMPLESEARCH_ATTR_VALIDATION_ERROR');?>');	
-				return;
-			}
-			else if (document.getElementById('dropdown_id_attr').value == "")
-			{
-				alert ('<?php echo  JText::_( 'EASYSDI_SIMPLESEARCH_ID_ATTR_VALIDATION_ERROR');?>');	
-				return;
-			}
-			else if (document.getElementById('search_attribute').value == "")
-			{
-				alert ('<?php echo  JText::_( 'EASYSDI_SIMPLESEARCH_SEARCH_ATTR_VALIDATION_ERROR');?>');	
-				return;
-			}
-			else if (document.getElementById('operator').value == "")
-			{
-				alert ('<?php echo  JText::_( 'EASYSDI_SIMPLESEARCH_OPERATOR_VALIDATION_ERROR');?>');	
-				return;
+				if (document.getElementById('title').value == "")
+				{	
+					alert ('<?php echo  JText::_( 'EASYSDI_SIMPLESEARCH_TITLE_VALIDATION_ERROR');?>');	
+					return;
+				}
+				else if (document.getElementById('dropdown_feature_type').value == "")
+				{
+					alert ('<?php echo  JText::_( 'EASYSDI_SIMPLESEARCH_FT_VALIDATION_ERROR');?>');	
+					return;
+				}
+				else if (document.getElementById('dropdown_display_attr').value == "")
+				{
+					alert ('<?php echo  JText::_( 'EASYSDI_SIMPLESEARCH_ATTR_VALIDATION_ERROR');?>');	
+					return;
+				}
+				else if (document.getElementById('dropdown_id_attr').value == "")
+				{
+					alert ('<?php echo  JText::_( 'EASYSDI_SIMPLESEARCH_ID_ATTR_VALIDATION_ERROR');?>');	
+					return;
+				}
+				else if (document.getElementById('search_attribute').value == "")
+				{
+					alert ('<?php echo  JText::_( 'EASYSDI_SIMPLESEARCH_SEARCH_ATTR_VALIDATION_ERROR');?>');	
+					return;
+				}
+				else if (document.getElementById('operator').value == "")
+				{
+					alert ('<?php echo  JText::_( 'EASYSDI_SIMPLESEARCH_OPERATOR_VALIDATION_ERROR');?>');	
+					return;
+				}
+				else
+				{	
+					submitform(pressbutton);
+				}
 			}
 			else
-			{	
+			{
 				submitform(pressbutton);
 			}
 		}
-		else
-		{
-			submitform(pressbutton);
-		}
-	}
-	</script>	
-	<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
-
-		<table border="0" cellpadding="0" cellspacing="0">
-			<tr>
-				<td>
-					<fieldset>						
-						<table class="admintable">
-							<tr>
-								<td class="key" width="100p"><?php echo JText::_("EASYSDI_MAP_SIMPLE_SEARCH_ID"); ?></td>
-								<td><?php echo $simpleSearch->id; ?></td>								
-							</tr>
-							<tr>
-								<td class="key" width="100p"><?php echo JText::_("EASYSDI_MAP_SIMPLE_SEARCH_TITLE"); ?></td>
-								<td><input class="inputbox" type="text" size="100" maxlength="500" name="title" id="title" value="<?php echo $simpleSearch->title; ?>" /></td>								
-							</tr>
-							<tr>
-								<td class="key"><?php echo JText::_("EASYSDI_MAP_SIMPLE_SEARCH_DROPDOWN_FT"); ?></td>
-								<td><input class="inputbox" type="text" size="100" maxlength="100" name="dropdown_feature_type" id="dropdown_feature_type" value="<?php echo $simpleSearch->dropdown_feature_type; ?>" /></td>
-							</tr>
-							<tr>
-								<td class="key"><?php echo JText::_("EASYSDI_MAP_SIMPLE_SEARCH_DROPDOWN_ATTR"); ?></td>
-								<td><input class="inputbox" type="text" size="100" maxlength="100" name="dropdown_display_attr" id="dropdown_display_attr" value="<?php echo $simpleSearch->dropdown_display_attr; ?>" /></td>
-							</tr>
-							<tr>
-								<td class="key"><?php echo JText::_("EASYSDI_MAP_SIMPLE_SEARCH_DROPDOWN_ID_ATTR"); ?></td>
-								<td><input class="inputbox" type="text" size="100" maxlength="100" name="dropdown_id_attr" id="dropdown_id_attr" value="<?php echo $simpleSearch->dropdown_id_attr; ?>" /></td>
-							</tr>
-							<tr>
-								<td class="key"><?php echo JText::_("EASYSDI_MAP_SIMPLE_SEARCH_SEARCH_ATTR"); ?></td>
-								<td><input class="inputbox" type="text" size="100" maxlength="500" name="search_attribute" id="search_attribute" value="<?php echo $simpleSearch->search_attribute; ?>" /></td>
-							</tr>
-							<tr>
-								<td class="key"><?php echo JText::_("EASYSDI_MAP_SIMPLE_SEARCH_OPERATOR"); ?></td>
-								<td><input class="inputbox" type="text" size="5" maxlength="5" name="operator" id="operator" value="<?php echo $simpleSearch->operator; ?>" /></td>
-							</tr>							
-						</table>
-					</fieldset>
-					<fieldset>						
-						<table class="admintable">
-							<tr>
-								<td class="key"><?php echo JText::_("EASYSDI_MAP_SIMPLE_SEARCH_ADD_FILTERS"); ?> : </td>
-								<td><?php echo JHTML::_("select.genericlist",$rowsFilters, 'filter_id[]', 'size="5" multiple="true" class="selectbox"', 'value', 'text', $rowsSelectedFilter ); ?></td>
-								<td><a href="./index.php?option=com_easysdi_map&task=newAdditionalFilter" > 
-									<img class="helpTemplate" 
-										 src="../templates/easysdi/icons/silk/add.png" 
-										 alt="<?php echo JText::_("EASYSDI_MAP_SIMPLE_SEARCH_NEW_ADD_FILTERS") ?>" 
-										 />
-								</a></td>
-							</tr>
-						</table>
-					</fieldset>
-					<fieldset>						
-						<table class="admintable">
-							<tr>
-								<td class="key"><?php echo JText::_("EASYSDI_MAP_SIMPLE_SEARCH_RESULT_GRID"); ?> : </td>
-								<td><?php echo JHTML::_("select.genericlist",$rowsResultGrid, 'grid_id[]', 'size="5" multiple="true" class="selectbox"', 'value', 'text', $rowsSelectedGrid ); ?></td>
-								<td><a href="./index.php?option=com_easysdi_map&task=newResultGrid" > 
-									<img class="helpTemplate" 
-										 src="../templates/easysdi/icons/silk/add.png" 
-										 alt="<?php echo JText::_("EASYSDI_MAP_SIMPLE_SEARCH_NEW_RESULT_GRID") ?>" 
-										 />
-								</a></td>
-							</tr>
-						</table>
-					</fieldset>
-				</td>
-			</tr>
-		</table>
-		<input type="hidden" name="id" value="<?php echo $simpleSearch->id; ?>" />
-		<input type="hidden" name="option" value="<?php echo $option; ?>" />
-		<input type="hidden" name="task" value="" />
-	</form>
+		</script>	
+		<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
 	
-<?php
+			<table border="0" cellpadding="0" cellspacing="0">
+				<tr>
+					<td>
+						<fieldset>						
+							<table class="admintable">
+								<tr>
+									<td class="key" width="100p"><?php echo JText::_("EASYSDI_MAP_SIMPLE_SEARCH_ID"); ?></td>
+									<td><?php echo $simpleSearch->id; ?></td>								
+								</tr>
+								<tr>
+									<td class="key" width="100p"><?php echo JText::_("EASYSDI_MAP_SIMPLE_SEARCH_TITLE"); ?></td>
+									<td><input class="inputbox" type="text" size="100" maxlength="500" name="title" id="title" value="<?php echo $simpleSearch->title; ?>" /></td>								
+								</tr>
+								<tr>
+									<td class="key"><?php echo JText::_("EASYSDI_MAP_SIMPLE_SEARCH_DROPDOWN_FT"); ?></td>
+									<td><input class="inputbox" type="text" size="100" maxlength="100" name="dropdownfeaturetype" id="dropdownfeaturetype" value="<?php echo $simpleSearch->dropdownfeaturetype; ?>" /></td>
+								</tr>
+								<tr>
+									<td class="key"><?php echo JText::_("EASYSDI_MAP_SIMPLE_SEARCH_DROPDOWN_ATTR"); ?></td>
+									<td><input class="inputbox" type="text" size="100" maxlength="100" name="dropdowndisplayattr" id="dropdowndisplayattr" value="<?php echo $simpleSearch->dropdowndisplayattr; ?>" /></td>
+								</tr>
+								<tr>
+									<td class="key"><?php echo JText::_("EASYSDI_MAP_SIMPLE_SEARCH_DROPDOWN_ID_ATTR"); ?></td>
+									<td><input class="inputbox" type="text" size="100" maxlength="100" name="dropdownidattr" id="dropdownidattr" value="<?php echo $simpleSearch->dropdownidattr; ?>" /></td>
+								</tr>
+								<tr>
+									<td class="key"><?php echo JText::_("EASYSDI_MAP_SIMPLE_SEARCH_SEARCH_ATTR"); ?></td>
+									<td><input class="inputbox" type="text" size="100" maxlength="500" name="searchattribute" id="searchattribute" value="<?php echo $simpleSearch->searchattribute; ?>" /></td>
+								</tr>
+								<tr>
+									<td class="key"><?php echo JText::_("EASYSDI_MAP_SIMPLE_SEARCH_OPERATOR"); ?></td>
+									<td><input class="inputbox" type="text" size="5" maxlength="5" name="operator" id="operator" value="<?php echo $simpleSearch->operator; ?>" /></td>
+								</tr>							
+							</table>
+						</fieldset>
+						<fieldset>						
+							<table class="admintable">
+								<tr>
+									<td class="key"><?php echo JText::_("EASYSDI_MAP_SIMPLE_SEARCH_ADD_FILTERS"); ?> : </td>
+									<td><?php echo JHTML::_("select.genericlist",$rowsFilters, 'filter_id[]', 'size="5" multiple="true" class="selectbox"', 'value', 'text', $rowsSelectedFilter ); ?></td>
+									<td><a href="./index.php?option=com_easysdi_map&task=newAdditionalFilter" > 
+										<img class="helpTemplate" 
+											 src="../templates/easysdi/icons/silk/add.png" 
+											 alt="<?php echo JText::_("EASYSDI_MAP_SIMPLE_SEARCH_NEW_ADD_FILTERS") ?>" 
+											 />
+									</a></td>
+								</tr>
+							</table>
+						</fieldset>
+						<fieldset>						
+							<table class="admintable">
+								<tr>
+									<td class="key"><?php echo JText::_("EASYSDI_MAP_SIMPLE_SEARCH_RESULT_GRID"); ?> : </td>
+									<td><?php echo JHTML::_("select.genericlist",$rowsResultGrid, 'grid_id[]', 'size="5" multiple="true" class="selectbox"', 'value', 'text', $rowsSelectedGrid ); ?></td>
+									<td><a href="./index.php?option=com_easysdi_map&task=newResultGrid" > 
+										<img class="helpTemplate" 
+											 src="../templates/easysdi/icons/silk/add.png" 
+											 alt="<?php echo JText::_("EASYSDI_MAP_SIMPLE_SEARCH_NEW_RESULT_GRID") ?>" 
+											 />
+									</a></td>
+								</tr>
+							</table>
+						</fieldset>
+					</td>
+				</tr>
+			</table>
+			<input type="hidden" name="id" value="<?php echo $simpleSearch->id; ?>" />
+			<input type="hidden" name="option" value="<?php echo $option; ?>" />
+			<input type="hidden" name="task" value="" />
+		</form>
+		<?php
 	}
 	
-	/**
-	 * Additional filters
-	*/
+	
 	function listAdditionalFilter($use_pagination, $rows, $pageNav, $option)
 	{
 		JToolBarHelper::title(JText::_("EASYSDI_LIST_ADD_FILTER"));
 		?>
 		<form action="index.php" method="GET" name="adminForm">
-
 		<table class="adminlist">
 		<thead>
 			<tr>
@@ -251,11 +239,9 @@ class HTML_simplesearch
 			$k = 1 - $k;
 			$i++;
 		}
-		
-			?></tbody>
-			
+		?>
+		</tbody>
 		<?php			
-		
 		if ($use_pagination)
 		{?>
 		<tfoot>
@@ -285,73 +271,69 @@ class HTML_simplesearch
 		{
 			JToolBarHelper::title( JText::_("EASYSDI_MAP_NEW_ADD_FILTER"), 'generic.png' );
 		}
-		
-
-	?>				
-	<script>	
-	function submitbutton(pressbutton)
-	{
-		if(pressbutton == "saveAdditionalFilter")
+		?>				
+		<script>	
+		function submitbutton(pressbutton)
 		{
-			if (document.getElementById('attribute').value == "")
-			{	
-				alert ('<?php echo  JText::_( 'EASYSDI_ADDFILTER_ATTRIBUTE_VALIDATION_ERROR');?>');	
-				return;
-			}
-			else if (document.getElementById('value').value == "")
+			if(pressbutton == "saveAdditionalFilter")
 			{
-				alert ('<?php echo  JText::_( 'EASYSDI_ADDFILTER_VALUE_VALIDATION_ERROR');?>');	
-				return;
-			}			
+				if (document.getElementById('attribute').value == "")
+				{	
+					alert ('<?php echo  JText::_( 'EASYSDI_ADDFILTER_ATTRIBUTE_VALIDATION_ERROR');?>');	
+					return;
+				}
+				else if (document.getElementById('value').value == "")
+				{
+					alert ('<?php echo  JText::_( 'EASYSDI_ADDFILTER_VALUE_VALIDATION_ERROR');?>');	
+					return;
+				}			
+				else
+				{	
+					submitform(pressbutton);
+				}
+			}
 			else
-			{	
+			{
 				submitform(pressbutton);
 			}
 		}
-		else
-		{
-			submitform(pressbutton);
-		}
-	}
-	</script>	
-	<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
-
-		<table border="0" cellpadding="0" cellspacing="0">
-			<tr>
-				<td>
-					<fieldset>						
-						<table class="admintable">
-							<tr>
-								<td class="key" width="100p"><?php echo JText::_("EASYSDI_MAP_ADD_FILTER_ID"); ?></td>
-								<td><?php echo $additionalFilter->id; ?></td>								
-							</tr>
-							<tr>
-								<td class="key" width="100p"><?php echo JText::_("EASYSDI_MAP_ADD_FILTER_TITLE"); ?></td>
-								<td><input class="inputbox" type="text" size="100" maxlength="100" name="title" id="title" value="<?php echo $additionalFilter->title; ?>" /></td>								
-							</tr>
-							<tr>
-								<td class="key" width="100p"><?php echo JText::_("EASYSDI_MAP_ADD_FILTER_ATTRIBUTE"); ?></td>
-								<td><input class="inputbox" type="text" size="100" maxlength="100" name="attribute" id="attribute" value="<?php echo $additionalFilter->attribute; ?>" /></td>								
-							</tr>
-							<tr>
-								<td class="key"><?php echo JText::_("EASYSDI_MAP_ADD_FILTER_VALUE"); ?></td>
-								<td><input class="inputbox" type="text" size="100" maxlength="100" name="value" id="value" value="<?php echo $additionalFilter->value; ?>" /></td>
-							</tr>
-							<tr>
-								<td class="key"><?php echo JText::_("EASYSDI_MAP_ADD_FILTER_OPERATOR"); ?></td>
-								<td><input class="inputbox" type="text" size="5" maxlength="5" name="operator" id="operator" value="<?php echo $additionalFilter->operator; ?>" /></td>
-							</tr>
-						</table>
-					</fieldset>
-				</td>
-			</tr>
-		</table>
-		<input type="hidden" name="id" value="<?php echo $additionalFilter->id; ?>" />
-		<input type="hidden" name="option" value="<?php echo $option; ?>" />
-		<input type="hidden" name="task" value="" />
-	</form>
-	
-<?php
+		</script>	
+		<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
+			<table border="0" cellpadding="0" cellspacing="0">
+				<tr>
+					<td>
+						<fieldset>						
+							<table class="admintable">
+								<tr>
+									<td class="key" width="100p"><?php echo JText::_("EASYSDI_MAP_ADD_FILTER_ID"); ?></td>
+									<td><?php echo $additionalFilter->id; ?></td>								
+								</tr>
+								<tr>
+									<td class="key" width="100p"><?php echo JText::_("EASYSDI_MAP_ADD_FILTER_TITLE"); ?></td>
+									<td><input class="inputbox" type="text" size="100" maxlength="100" name="title" id="title" value="<?php echo $additionalFilter->title; ?>" /></td>								
+								</tr>
+								<tr>
+									<td class="key" width="100p"><?php echo JText::_("EASYSDI_MAP_ADD_FILTER_ATTRIBUTE"); ?></td>
+									<td><input class="inputbox" type="text" size="100" maxlength="100" name="attribute" id="attribute" value="<?php echo $additionalFilter->attribute; ?>" /></td>								
+								</tr>
+								<tr>
+									<td class="key"><?php echo JText::_("EASYSDI_MAP_ADD_FILTER_VALUE"); ?></td>
+									<td><input class="inputbox" type="text" size="100" maxlength="100" name="value" id="value" value="<?php echo $additionalFilter->value; ?>" /></td>
+								</tr>
+								<tr>
+									<td class="key"><?php echo JText::_("EASYSDI_MAP_ADD_FILTER_OPERATOR"); ?></td>
+									<td><input class="inputbox" type="text" size="5" maxlength="5" name="operator" id="operator" value="<?php echo $additionalFilter->operator; ?>" /></td>
+								</tr>
+							</table>
+						</fieldset>
+					</td>
+				</tr>
+			</table>
+			<input type="hidden" name="id" value="<?php echo $additionalFilter->id; ?>" />
+			<input type="hidden" name="option" value="<?php echo $option; ?>" />
+			<input type="hidden" name="task" value="" />
+		</form>
+		<?php
 	}
 }
 ?>

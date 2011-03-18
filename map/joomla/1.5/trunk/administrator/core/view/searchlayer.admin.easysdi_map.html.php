@@ -46,19 +46,17 @@ class HTML_searchlayer
 			<tr class="<?php echo "row$k"; ?>">
 				<td align="center"><?php echo $i+$pageNav->limitstart+1;?></td>
 				<td><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->id; ?>" onclick="isChecked(this.checked);" /></td>
-				<td><a href="#edit" onclick="return listItemTask('cb<?php echo $i;?>','editSearchLayer')"><?php echo $row->name; ?></a></td>
-				<td><?php echo $row->geometry_name; ?></td>
+				<td><a href="#edit" onclick="return listItemTask('cb<?php echo $i;?>','editSearchLayer')"><?php echo $row->description; ?></a></td>
+				<td><?php echo $row->geometryname; ?></td>
 				<td><input type="checkbox" disabled id="isEnable<?php echo $i;?>" name="isEnable<?php echo $i;?>" value="" <?php if($row->enable == 1)echo " checked" ?> /></td>
 			</tr>
 		<?php
 			$k = 1 - $k;
 			$i++;
 		}
-		
-			?></tbody>
-			
+		?>
+		</tbody>
 		<?php			
-		
 		if ($use_pagination)
 		{?>
 		<tfoot>
@@ -88,93 +86,88 @@ class HTML_searchlayer
 		{
 			JToolBarHelper::title( JText::_("EASYSDI_MAP_NEW_SEARCH_LAYER"), 'generic.png' );
 		}
-		
-
-	?>			
-	<script>	
-	function submitbutton(pressbutton)
-	{
-		if(pressbutton == "saveSearchLayer")
+		?>			
+		<script>	
+		function submitbutton(pressbutton)
 		{
-			if (document.getElementById('feature_type').value == "")
-			{	
-				alert ('<?php echo  JText::_( 'EASYSDI_SERACHLAYER_FT_VALIDATION_ERROR');?>');	
-				return;
-			}
-			else if (document.getElementById('geometry_name').value == "")
+			if(pressbutton == "saveSearchLayer")
 			{
-				alert ('<?php echo  JText::_( 'EASYSDI_SERACHLAYER_GEOM_VALIDATION_ERROR');?>');	
-				return;
+				if (document.getElementById('feature_type').value == "")
+				{	
+					alert ('<?php echo  JText::_( 'EASYSDI_SERACHLAYER_FT_VALIDATION_ERROR');?>');	
+					return;
+				}
+				else if (document.getElementById('geometry_name').value == "")
+				{
+					alert ('<?php echo  JText::_( 'EASYSDI_SERACHLAYER_GEOM_VALIDATION_ERROR');?>');	
+					return;
+				}
+				else
+				{	
+					submitform(pressbutton);
+				}
 			}
 			else
-			{	
+			{
 				submitform(pressbutton);
 			}
 		}
-		else
-		{
-			submitform(pressbutton);
-		}
-	}
-	</script>	
-	<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
-
-		<table border="0" cellpadding="0" cellspacing="0">
-			<tr>
-				<td>
-					<fieldset>						
-						<table class="admintable">
-							<tr>
-								<td class="key" width="100p"><?php echo JText::_("EASYSDI_MAP_SEARCH_LAYER_ID"); ?></td>
-								<td colspan="2"><?php echo $search_layer->id; ?></td>								
-							</tr>
-							<tr>
-								<td class="key" width="100p"><?php echo JText::_("EASYSDI_MAP_SEARCH_LAYER_FT"); ?></td>
-								<td>
-								<?php echo JHTML::_("select.genericlist",$rowsSearchLayerFT, 'feature_type', 'size="1" class="inputbox" ', 'value', 'text',$search_layer->feature_type); ?>
-								</td>	
-								<td align="right"><a href="./index.php?option=com_easysdi_map&task=newFeatureType" > 
-									<img class="helpTemplate" 
-										 src="../templates/easysdi/icons/silk/add.png" 
-										 alt="<?php echo JText::_("EASYSDI_MAP_SEARCH_LAYER_NEW_FT") ?>" 
-										 />
-								</a></td>							
-							</tr>
-							<tr>
-								<td class="key"><?php echo JText::_("EASYSDI_MAP_SEARCH_LAYER_GEOM"); ?></td>
-								<td colspan="2"><input class="inputbox" type="text" size="100" maxlength="100" name="geometry_name" id="geometry_name" value="<?php echo $search_layer->geometry_name; ?>" /></td>
-							</tr>
-							<tr>
-								<td class="key"><?php echo JText::_("EASYSDI_MAP_SEARCH_LAYER_ROW_DETAILS_FT"); ?></td>
-								<td>
-								<?php echo JHTML::_("select.genericlist",$rowsDetailsFT, 'row_details_feature_type', 'size="1" class="inputbox" ', 'value', 'text',$search_layer->row_details_feature_type); ?>
-								</td>
-								<td align="right"><a href="./index.php?option=com_easysdi_map&task=newFeatureType" > 
-									<img class="helpTemplate" 
-										 src="../templates/easysdi/icons/silk/add.png" 
-										 alt="<?php echo JText::_("EASYSDI_MAP_SEARCH_LAYER_NEW_FT") ?>" 
-										 />
-								</a></td>
-							</tr>
-							<tr>
-								<td class="key"><?php echo JText::_("EASYSDI_MAP_SEARCH_LAYER_STYLES"); ?></td>
-								<td colspan="2"><input class="inputbox" type="text" size="100" maxlength="500" name="styles" id="styles" value="<?php echo $search_layer->styles; ?>" /></td>
-							</tr>
-							<tr>
-								<td class="key"><?php echo JText::_("EASYSDI_MAP_SEARCH_LAYER_ENABLE"); ?></td>
-								<td><input class="inputbox" value="1" type="checkbox" name="enable" id="enable" <?php if ($search_layer->enable == 1) echo " checked"; ?> /></td>
-							</tr>
-						</table>
-					</fieldset>
-				</td>
-			</tr>
-		</table>
-		<input type="hidden" name="id" value="<?php echo $search_layer->id; ?>" />
-		<input type="hidden" name="option" value="<?php echo $option; ?>" />
-		<input type="hidden" name="task" value="" />
-	</form>
-	
-<?php
+		</script>	
+			<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
+				<table border="0" cellpadding="0" cellspacing="0">
+					<tr>
+						<td>
+							<fieldset>						
+								<table class="admintable">
+									<tr>
+										<td class="key" width="100p"><?php echo JText::_("EASYSDI_MAP_SEARCH_LAYER_ID"); ?></td>
+										<td colspan="2"><?php echo $search_layer->id; ?></td>								
+									</tr>
+									<tr>
+										<td class="key" width="100p"><?php echo JText::_("EASYSDI_MAP_SEARCH_LAYER_FT"); ?></td>
+										<td>
+										<?php echo JHTML::_("select.genericlist",$rowsSearchLayerFT, 'featuretype', 'size="1" class="inputbox" ', 'value', 'text',$search_layer->featuretype); ?>
+										</td>	
+										<td align="right"><a href="./index.php?option=com_easysdi_map&task=newFeatureType" > 
+											<img class="helpTemplate" 
+												 src="../templates/easysdi/icons/silk/add.png" 
+												 alt="<?php echo JText::_("EASYSDI_MAP_SEARCH_LAYER_NEW_FT") ?>" 
+												 />
+										</a></td>							
+									</tr>
+									<tr>
+										<td class="key"><?php echo JText::_("EASYSDI_MAP_SEARCH_LAYER_GEOM"); ?></td>
+										<td colspan="2"><input class="inputbox" type="text" size="100" maxlength="100" name="geometryname" id="geometryname" value="<?php echo $search_layer->geometryname; ?>" /></td>
+									</tr>
+									<tr>
+										<td class="key"><?php echo JText::_("EASYSDI_MAP_SEARCH_LAYER_ROW_DETAILS_FT"); ?></td>
+										<td>
+										<?php echo JHTML::_("select.genericlist",$rowsDetailsFT, 'rowdetailsfeaturetype', 'size="1" class="inputbox" ', 'value', 'text',$search_layer->rowdetailsfeaturetype); ?>										</td>
+										<td align="right"><a href="./index.php?option=com_easysdi_map&task=newFeatureType" > 
+											<img class="helpTemplate" 
+												 src="../templates/easysdi/icons/silk/add.png" 
+												 alt="<?php echo JText::_("EASYSDI_MAP_SEARCH_LAYER_NEW_FT") ?>" 
+												 />
+										</a></td>
+									</tr>
+									<tr>
+										<td class="key"><?php echo JText::_("EASYSDI_MAP_SEARCH_LAYER_STYLES"); ?></td>
+										<td colspan="2"><input class="inputbox" type="text" size="100" maxlength="500" name="styles" id="styles" value="<?php echo $search_layer->styles; ?>" /></td>
+									</tr>
+									<tr>
+										<td class="key"><?php echo JText::_("EASYSDI_MAP_SEARCH_LAYER_ENABLE"); ?></td>
+										<td><input class="inputbox" value="1" type="checkbox" name="enable" id="enable" <?php if ($search_layer->enable == 1) echo " checked"; ?> /></td>
+									</tr>
+								</table>
+							</fieldset>
+						</td>
+					</tr>
+				</table>
+				<input type="hidden" name="id" value="<?php echo $search_layer->id; ?>" />
+				<input type="hidden" name="option" value="<?php echo $option; ?>" />
+				<input type="hidden" name="task" value="" />
+			</form>
+		<?php
 	}
 }
 ?>

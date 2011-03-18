@@ -47,18 +47,15 @@ class HTML_projection
 				<td align="center"><?php echo $i+$pageNav->limitstart+1;?></td>
 				<td><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->id; ?>" onclick="isChecked(this.checked);" /></td>
 				<td><a href="#edit" onclick="return listItemTask('cb<?php echo $i;?>','editProjection')"><?php echo $row->name; ?></a></td>
-				<td><?php echo $row->title; ?></td>
+				<td><?php echo $row->description; ?></td>
 				<td><input type="checkbox" disabled id="isEnable<?php echo $i;?>" name="isEnable<?php echo $i;?>" value="" <?php if($row->enable == 1)echo " checked" ?> /></td>
 			</tr>
 		<?php
 			$k = 1 - $k;
 			$i++;
 		}
-		
-			?></tbody>
-			
+		?></tbody>
 		<?php			
-		
 		if ($use_pagination)
 		{?>
 		<tfoot>
@@ -88,77 +85,73 @@ class HTML_projection
 		{
 			JToolBarHelper::title( JText::_("EASYSDI_NEW_PROJECTION"), 'generic.png' );
 		}
-		
-
-	?>	
-	<script>	
-	function submitbutton(pressbutton)
-	{
-		if(pressbutton== "saveProjection")
+		?>	
+		<script>	
+		function submitbutton(pressbutton)
 		{
-			if (document.getElementById('name').value == "")
-			{	
-				alert ('<?php echo  JText::_( 'EASYSDI_PROJECTION_NAME_VALIDATION_ERROR');?>');	
-				return;
-			}
-			else if (document.getElementById('title').value == "")
+			if(pressbutton== "saveProjection")
 			{
-				alert ('<?php echo  JText::_( 'EASYSDI_PROJECTION_TITLE_VALIDATION_ERROR');?>');	
-				return;
-			}			
+				if (document.getElementById('name').value == "")
+				{	
+					alert ('<?php echo  JText::_( 'EASYSDI_PROJECTION_NAME_VALIDATION_ERROR');?>');	
+					return;
+				}
+				else if (document.getElementById('description').value == "")
+				{
+					alert ('<?php echo  JText::_( 'EASYSDI_PROJECTION_TITLE_VALIDATION_ERROR');?>');	
+					return;
+				}			
+				else
+				{	
+					submitform(pressbutton);
+				}
+			}
 			else
 			{	
 				submitform(pressbutton);
 			}
 		}
-		else
-		{	
-			submitform(pressbutton);
-		}
-		
-	}
-	</script>			
-	<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
-		<table border="0" cellpadding="0" cellspacing="0">
-			<tr>
-				<td>
-					<fieldset>
-						<table class="admintable">
-							<tr>
-								<td class="key" width="100p"><?php echo JText::_("EASYSDI_PROJECTION_ID"); ?></td>
-								<td><?php echo $projection->id; ?></td>								
-							</tr>
-							<tr>
-								<td  class="key" width="100p"><?php echo JText::_("EASYSDI_PROJECTION_NAME"); ?></td>
-								<td><input class="inputbox" type="text" size="100" maxlength="200" name="name" id="name" value="<?php echo $projection->name; ?>" /></td>								
-							</tr>
-							<tr>
-								<td class="key"><?php echo JText::_("EASYSDI_PROJECTION_TITLE"); ?></td>
-								<td><input class="inputbox" type="text" size="100" maxlength="200" name="title" id="title" value="<?php echo $projection->title; ?>" /></td>
-							</tr>
-							<tr>
-								<td class="key"><?php echo JText::_("EASYSDI_PROJECTION_TEXT"); ?></td>
-								<td><input class="inputbox" type="text" size="100" maxlength="500" name="proj4text" id="proj4text" value="<?php echo $projection->proj4text; ?>" /></td>
-							</tr>
-							<tr>
-								<td class="key"><?php echo JText::_("EASYSDI_PROJECTION_DIGIT"); ?></td>
-								<td><input class="inputbox" type="text" size="2" maxlength="2" name="numDigits" id="numDigits" value="<?php echo $projection->numDigits; ?>" /></td>
-							</tr>
-							<tr>
-								<td class="key"><?php echo JText::_("EASYSDI_PROJECTION_ENABLE"); ?></td>
-								<td><input class="inputbox" value="1" type="checkbox" name="enable" id="enable"  <?php if ($projection->enable == 1) echo " checked"; ?> /></td>
-							</tr>
-						</table>
-					</fieldset>
-				</td>
-			</tr>
-		</table>
-		<input type="hidden" name="id" value="<?php echo $projection->id; ?>" />
-		<input type="hidden" name="option" value="<?php echo $option; ?>" />
-		<input type="hidden" name="task" value="" />
-	</form>
-	
-<?php
+		</script>			
+		<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
+			<table border="0" cellpadding="0" cellspacing="0">
+				<tr>
+					<td>
+						<fieldset>
+							<table class="admintable">
+								<tr>
+									<td class="key" width="100p"><?php echo JText::_("EASYSDI_PROJECTION_ID"); ?></td>
+									<td><?php echo $projection->id; ?></td>								
+								</tr>
+								<tr>
+									<td  class="key" width="100p"><?php echo JText::_("EASYSDI_PROJECTION_NAME"); ?></td>
+									<td><input class="inputbox" type="text" size="100" maxlength="50" name="name" id="name" value="<?php echo $projection->name; ?>" /></td>								
+								</tr>
+								<tr>
+									<td class="key"><?php echo JText::_("EASYSDI_PROJECTION_TITLE"); ?></td>
+									<td><input class="inputbox" type="text" size="100" maxlength="100" name="description" id="description" value="<?php echo $projection->description; ?>" /></td>
+								</tr>
+								<tr>
+									<td class="key"><?php echo JText::_("EASYSDI_PROJECTION_TEXT"); ?></td>
+									<td><input class="inputbox" type="text" size="100" maxlength="500" name="proj4text" id="proj4text" value="<?php echo $projection->proj4text; ?>" /></td>
+								</tr>
+								<tr>
+									<td class="key"><?php echo JText::_("EASYSDI_PROJECTION_DIGIT"); ?></td>
+									<td><input class="inputbox" type="text" size="2" maxlength="2" name="numDigits" id="numDigits" value="<?php echo $projection->numDigits; ?>" /></td>
+								</tr>
+								<tr>
+									<td class="key"><?php echo JText::_("EASYSDI_PROJECTION_ENABLE"); ?></td>
+									<td><input class="inputbox" value="1" type="checkbox" name="enable" id="enable"  <?php if ($projection->enable == 1) echo " checked"; ?> /></td>
+								</tr>
+							</table>
+						</fieldset>
+					</td>
+				</tr>
+			</table>
+			<input type="hidden" name="id" value="<?php echo $projection->id; ?>" />
+			<input type="hidden" name="option" value="<?php echo $option; ?>" />
+			<input type="hidden" name="task" value="" />
+		</form>
+		<?php
 	}
 }
 ?>

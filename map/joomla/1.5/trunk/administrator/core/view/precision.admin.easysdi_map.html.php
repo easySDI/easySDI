@@ -46,17 +46,15 @@ class HTML_precision
 				<td align="center"><?php echo $i+$pageNav->limitstart+1;?></td>
 				<td><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->id; ?>" onclick="isChecked(this.checked);" /></td>
 				<td><a href="#edit" onclick="return listItemTask('cb<?php echo $i;?>','editPrecision')"><?php echo $row->name; ?></a></td>
-				<td><?php echo $row->title; ?></td>
+				<td><?php echo $row->description; ?></td>
 			</tr>
 		<?php
 			$k = 1 - $k;
 			$i++;
 		}
-		
-			?></tbody>
-			
+		?>
+		</tbody>
 		<?php			
-		
 		if ($use_pagination)
 		{?>
 		<tfoot>
@@ -86,80 +84,77 @@ class HTML_precision
 		{
 			JToolBarHelper::title( JText::_("EASYSDI_MAP_NEW_PRECISION"), 'generic.png' );
 		}
-		
-
-	?>	
-	<script>	
-	function submitbutton(pressbutton)
-	{
-		if(pressbutton == "savePrecision")
+		?>	
+		<script>	
+		function submitbutton(pressbutton)
 		{
-			if (document.getElementById('name').value == "")
-			{	
-				alert ('<?php echo  JText::_( 'EASYSDI_PRECISION_NAME_VALIDATION_ERROR');?>');	
-				return;
-			}
-			else if (document.getElementById('title').value == "")
+			if(pressbutton == "savePrecision")
 			{
-				alert ('<?php echo  JText::_( 'EASYSDI_PRECISION_TITLE_VALIDATION_ERROR');?>');	
-				return;
+				if (document.getElementById('name').value == "")
+				{	
+					alert ('<?php echo  JText::_( 'EASYSDI_PRECISION_NAME_VALIDATION_ERROR');?>');	
+					return;
+				}
+				else if (document.getElementById('description').value == "")
+				{
+					alert ('<?php echo  JText::_( 'EASYSDI_PRECISION_TITLE_VALIDATION_ERROR');?>');	
+					return;
+				}
+				else
+				{	
+					submitform(pressbutton);
+				}
 			}
 			else
-			{	
+			{
 				submitform(pressbutton);
 			}
 		}
-		else
-		{
-			submitform(pressbutton);
-		}
-	}
-	</script>			
-	<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
-		<table border="0" cellpadding="0" cellspacing="0">
-			<tr>
-				<td>
-					<fieldset>						
-						<table class="admintable">
-							<tr>
-								<td class="key" width="100p"><?php echo JText::_("EASYSDI_MAP_PRECISION_ID"); ?></td>
-								<td><?php echo $precision->id; ?></td>								
-							</tr>
-							<tr>
-								<td class="key" width="100p"><?php echo JText::_("EASYSDI_MAP_PRECISION_NAME"); ?></td>
-								<td><input class="inputbox" type="text" size="100" maxlength="100" name="name" id="name" value="<?php echo $precision->name; ?>" /></td>								
-							</tr>
-							<tr>
-								<td class="key"><?php echo JText::_("EASYSDI_MAP_PRECISION_TITLE"); ?></td>
-								<td><input class="inputbox" type="text" size="100" maxlength="500" name="title" id="title" value="<?php echo $precision->title; ?>" /></td>
-							</tr>
-							<tr>
-								<td class="key"><?php echo JText::_("EASYSDI_MAP_PRECISION_MIN_SCALE"); ?></td>
-								<td><input class="inputbox" type="text" size="100" maxlength="250" name="min_resolution" id="min_resolution" value="<?php echo $precision->min_resolution; ?>" /></td>
-							</tr>
-							<tr>
-								<td class="key"><?php echo JText::_("EASYSDI_MAP_PRECISION_MAX_SCALE"); ?></td>
-								<td><input class="inputbox" type="text" size="100" maxlength="250" name="max_resolution" id="max_resolution" value="<?php echo $precision->max_resolution; ?>" /></td>
-							</tr>
-							<tr>
-								<td class="key"><?php echo JText::_("EASYSDI_MAP_PRECISION_LOW_SCALE_SWITCH_TO"); ?></td>
-								<td><input class="inputbox" type="text" size="100" maxlength="250" name="low_scale_switch_to" id="low_scale_switch_to" value="<?php echo $precision->low_scale_switch_to; ?>" /></td>
-							</tr>
-							<tr>
-								<td class="key"><?php echo JText::_("EASYSDI_MAP_PRECISION_STYLE"); ?></td>
-								<td><input class="inputbox" type="text" size="100" maxlength="250" name="style" id="style" value="<?php echo $precision->style; ?>" /></td>
-							</tr>
-						</table>
-					</fieldset>
-				</td>
-			</tr>
-		</table>
-		<input type="hidden" name="id" value="<?php echo $precision->id; ?>" />
-		<input type="hidden" name="option" value="<?php echo $option; ?>" />
-		<input type="hidden" name="task" value="" />
-	</form>
-	
-<?php
+		</script>			
+		<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
+			<table border="0" cellpadding="0" cellspacing="0">
+				<tr>
+					<td>
+						<fieldset>						
+							<table class="admintable">
+								<tr>
+									<td class="key" width="100p"><?php echo JText::_("EASYSDI_MAP_PRECISION_ID"); ?></td>
+									<td><?php echo $precision->id; ?></td>								
+								</tr>
+								<tr>
+									<td class="key" width="100p"><?php echo JText::_("EASYSDI_MAP_PRECISION_NAME"); ?></td>
+									<td><input class="inputbox" type="text" size="100" maxlength="50" name="name" id="name" value="<?php echo $precision->name; ?>" /></td>								
+								</tr>
+								<tr>
+									<td class="key"><?php echo JText::_("EASYSDI_MAP_PRECISION_TITLE"); ?></td>
+									<td><input class="inputbox" type="text" size="100" maxlength="100" name="description" id="title" value="<?php echo $precision->description; ?>" /></td>
+								</tr>
+								<tr>
+									<td class="key"><?php echo JText::_("EASYSDI_MAP_PRECISION_MIN_SCALE"); ?></td>
+									<td><input class="inputbox" type="text" size="100" maxlength="100" name="minresolution" id="minresolution" value="<?php echo $precision->minresolution; ?>" /></td>
+								</tr>
+								<tr>
+									<td class="key"><?php echo JText::_("EASYSDI_MAP_PRECISION_MAX_SCALE"); ?></td>
+									<td><input class="inputbox" type="text" size="100" maxlength="100" name="maxresolution" id="maxresolution" value="<?php echo $precision->maxresolution; ?>" /></td>
+								</tr>
+								<tr>
+									<td class="key"><?php echo JText::_("EASYSDI_MAP_PRECISION_LOW_SCALE_SWITCH_TO"); ?></td>
+									<td><input class="inputbox" type="text" size="100" maxlength="100" name="lowscaleswitchto" id="lowscaleswitchto" value="<?php echo $precision->lowscaleswitchto; ?>" /></td>
+								</tr>
+								<tr>
+									<td class="key"><?php echo JText::_("EASYSDI_MAP_PRECISION_STYLE"); ?></td>
+									<td><input class="inputbox" type="text" size="100" maxlength="500" name="style" id="style" value="<?php echo $precision->style; ?>" /></td>
+								</tr>
+							</table>
+						</fieldset>
+					</td>
+				</tr>
+			</table>
+			<input type="hidden" name="id" value="<?php echo $precision->id; ?>" />
+			<input type="hidden" name="option" value="<?php echo $option; ?>" />
+			<input type="hidden" name="task" value="" />
+		</form>
+		<?php
 	}
 }
 ?>
