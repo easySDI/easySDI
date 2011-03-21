@@ -38,6 +38,7 @@ class ADMIN_annotationstyle
 			$query_search .= ' or LOWER(name) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
 		}
 		
+		//Base query
 		$query ="SELECT COUNT(*) FROM #__sdi_annotationstyle ";
 		$query .= $query_search;
 		$db->setQuery( $query );
@@ -58,6 +59,7 @@ class ADMIN_annotationstyle
 		$orderby 	= ' order by '. $filter_order .' '. $filter_order_Dir;
 		$query .= $orderby;
 				
+		//Pagination
 		if ($use_pagination) 
 		{
 			$db->setQuery( $query ,$pageNav->limitstart, $pageNav->limit);	

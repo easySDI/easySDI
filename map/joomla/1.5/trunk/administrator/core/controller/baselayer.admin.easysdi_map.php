@@ -31,23 +31,40 @@ class ADMIN_baselayer
 		$limit = $mainframe->getUserStateFromRequest( "viewlistlimit", 'limit', 10 );
 		$limitstart = $mainframe->getUserStateFromRequest( "view{$option}limitstart", 'limitstart', 0 );
 		$use_pagination = JRequest::getVar('use_pagination',0);
-		$ordering_field = JRequest::getVar('order_field');
 		
-		$query ="SELECT COUNT(*) FROM #__sdi_baselayer";
+		//Search
+		$search = $mainframe->getUserStateFromRequest( "searchBaseLayer{$option}", 'searchBaseLayer', '' );
+		$search = $db->getEscaped( trim( strtolower( $search ) ) );
+		if ($search)
+		{
+			$query_search = ' where LOWER(id) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+			$query_search .= ' or LOWER(name) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+			$query_search .= ' or LOWER(url) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+			$query_search .= ' or LOWER(layers) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+		}
+		
+		//Base query
+		$query ="SELECT COUNT(*) FROM #__sdi_baselayer ";
+		$query .= $query_search;
 		$db->setQuery( $query );
 		$total = $db->loadResult();
 		$pageNav = new JPagination($total,$limitstart,$limit);
 		
 		$query = "SELECT *  FROM #__sdi_baselayer l ";
-		if($ordering_field)
+		$query .= $query_search;
+		
+		// table ordering
+		$filter_order		= $mainframe->getUserStateFromRequest( "$option.filter_order",		'filter_order',		'id',	'cmd' );
+		$filter_order_Dir	= $mainframe->getUserStateFromRequest( "$option.filter_order_Dir",	'filter_order_Dir',	'ASC',		'word' );
+		if ($filter_order <> "name" && $filter_order <> "url" && $filter_order <> "layers" && $filter_order <> "ordering")
 		{
-			$query .= " order by l.".$ordering_field;
+			$filter_order		= "id";
+			$filter_order_Dir	= "ASC";
 		}
-		else
-		{
-			$query .= " ORDER BY l.name";
-		}		
-			
+		$orderby 	= ' order by '. $filter_order .' '. $filter_order_Dir;
+		$query .= $orderby;
+
+		//Pagination
 		if ($use_pagination) 
 		{
 			$db->setQuery( $query ,$pageNav->limitstart, $pageNav->limit);	
@@ -63,7 +80,7 @@ class ADMIN_baselayer
 			return ;
 		}
 		
-		HTML_baselayer::listBaseLayer($use_pagination, $rows, $pageNav, $option);
+		HTML_baselayer::listBaseLayer($use_pagination, $rows, $pageNav, $search, $filter_order_Dir, $filter_order,$option);
 	}
 	
 	function editBaseLayer ($id,$option)
@@ -74,7 +91,35 @@ class ADMIN_baselayer
 		$baseLayer = new baseLayer ($db);
 		$baseLayer->load($id);
 		
-		HTML_baselayer::editBaseLayer($baseLayer, $option);
+		$user =& JFactory::getUser();
+		$createUser="";
+		$updateUser="";
+		
+		if ($baseLayer->created)
+		{ 
+			if ($baseLayer->createdby and $baseLayer->createdby<> 0)
+			{
+				$query = "SELECT name FROM #__users WHERE id=(SELECT user_id FROM #__sdi_account WHERE id =".$baseLayer->createdby.")" ;
+				$db->setQuery($query);
+				$createUser = $db->loadResult();
+			}
+			else
+				$createUser = "";
+					
+		}
+		if ($baseLayer->updated and $baseLayer->updated<> '0000-00-00 00:00:00')
+		{ 
+			if ($baseLayer->updatedby and $baseLayer->updatedby<> 0)
+			{
+				$query = "SELECT name FROM #__users WHERE id=(SELECT user_id FROM #__sdi_account WHERE id =".$baseLayer->updatedby.")" ;
+				$db->setQuery($query);
+				$updateUser = $db->loadResult();
+			}
+			else
+				$updateUser = "";
+		}
+		
+		HTML_baselayer::editBaseLayer($baseLayer,$createUser, $updateUser,  $option);
 	}
 	
 	function deleteBaseLayer($cid,$option)
