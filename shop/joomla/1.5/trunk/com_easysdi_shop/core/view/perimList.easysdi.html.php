@@ -24,9 +24,30 @@ class SITE_listPerim {
 		?>
 		<script type="text/javascript" src="./administrator/components/com_easysdi_shop/lib/openlayers2.8/lib/OpenLayers.js"></script>
 		<script>
+		
+		function trim (myString)
+		{
+		    return myString.replace(/^\s+/g,'').replace(/\s+$/g,'')
+		} 
+		
 		function ValidateFrmt(){
 			var perimeterVal = document.getElementById('perimeterContent').value;
 			var wkt = new OpenLayers.Format.Text();
+			var points = perimeterVal.split("\n");
+			
+			//add lon/lat at beginning of the array
+			if(trim(points[0]) != "lon\tlat"){
+				points.unshift("lon\tlat");
+			}
+			
+			//add first point to the end if needed
+			if(trim(points[1]) != trim(points[points.length-1]))
+				points.push(points[1]);
+			
+			perimeterVal = points.join("\n");
+			
+			document.getElementById('perimeterContent').value = perimeterVal;
+			
 	                var collection = wkt.read(perimeterVal);
 			if(!collection) {
 				alert("<?php echo JText::_('SHOP_PERIMETER_LOAD_PERIMETER_FROM_LIST_BAD_FORMAT'); ?>");
