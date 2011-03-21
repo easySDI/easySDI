@@ -117,8 +117,8 @@ public class Config {
 			//look for the files in the temp dir.
 			String fileName = null;
 			String extension = null;
-			for(int i=0; i<URLs.size(); i++){
-				String url = URLs.get(i);
+			for(int i=0; i<outFiles.size(); i++){
+				String url = outFiles.get(i);
 				String[] tempStr = url.split("/");
 				fileName = url.split("/")[tempStr.length - 1];
 				String[] arrfileName = fileName.split("\\.");
@@ -141,7 +141,7 @@ public class Config {
 					break;
 				}else{
 					//catch the first one if no candidate found
-					if(i == (URLs.size() - 1)){
+					if(i == (outFiles.size() - 1)){
 						mainFileName =  fileName;
 						extension = arrfileName[1].toLowerCase();
 						break;
