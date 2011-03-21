@@ -56,19 +56,16 @@ class ADMIN_display
 	
 	function saveDisplay($option)
 	{
-	
 		global $mainframe;
 		$db=& JFactory::getDBO(); 
 			
-		$display =& new display ($db);
-		$display->id = 	JRequest::getVar('id');
-		$display->enable =JRequest::getVar('enable','0');
+		$id = 	JRequest::getVar('id');
+		$enable =JRequest::getVar('enable','0');
 
-		if (!$display->store()) 
-		{			
+		$db->setQuery( "UPDATE #__sdi_mapdisplayoption SET enable=$enable WHERE id=$id");
+		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=display" );
-			exit();
+			$mainframe->redirect("index.php?option=$option&task=display" );				
 		}
 	}
 }
