@@ -38,6 +38,11 @@ require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'model'.DS.'account.easysdi.class.php');
 
 global $mainframe;
+
+$language =& JFactory::getLanguage();
+$language->load('com_easysdi_core');
+$language->load('com_easysdi_map');
+
 $task = JRequest::getVar('task');
 $option = JRequest::getVar('option');
 
