@@ -22,24 +22,24 @@ class TOOLBAR_overlay {
 
 	function _DEFAULT() 
 	{
-		JToolBarHelper::addNew('newOverlayContent');
-		JToolBarHelper::editList('editOverlayContent');
-		JToolBarHelper::deleteList('','deleteOverlayContent');
+		JToolBarHelper::addNew('newOverlay');
+		JToolBarHelper::editList('editOverlay');
+		JToolBarHelper::deleteList('','deleteOverlay');
 		JToolBarHelper::custom( 'overlayCtrlPanel', 'back.png', 'back.png', JTEXT::_("MAP_MENU_BACK"), false );
 	}
 	
-	function _LISTOVERLAYCONTENT() 
+	function _LISTOVERLAY() 
 	{
-		JToolBarHelper::addNew('newOverlayContent');
-		JToolBarHelper::editList('editOverlayContent');
-		JToolBarHelper::deleteList('','deleteOverlayContent');
+		JToolBarHelper::addNew('newOverlay');
+		JToolBarHelper::editList('editOverlay');
+		JToolBarHelper::deleteList('','deleteOverlay');
 		JToolBarHelper::custom( 'overlayCtrlPanel', 'back.png', 'back.png', JTEXT::_("MAP_MENU_BACK"), false );
 	}
 
-	function _EDITOVERLAYCONTENT() 
+	function _EDITOVERLAY() 
 	{
-		JToolBarHelper::save('saveOverlayContent');
-		JToolBarHelper::cancel('overlayContent');
+		JToolBarHelper::save('saveOverlay');
+		JToolBarHelper::cancel('overlay');
 	}
 
 	function _LISTOVERLAYGROUP() 

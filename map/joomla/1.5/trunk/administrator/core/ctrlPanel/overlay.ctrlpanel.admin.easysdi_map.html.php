@@ -65,7 +65,7 @@ class HTML_overlayctrlpanel
 			</div>
 			
 			<?php	
-			$link = "index.php?option=$option&amp;task=overlayContent";
+			$link = "index.php?option=$option&amp;task=overlay";
 			?>
 			<div style="float:<?php echo ($lang->isRTL()) ? 'right' : 'left'; ?>;">
 				<div class="icon">

@@ -20,30 +20,30 @@ defined('_JEXEC') or die('Restricted access');
 
 class HTML_overlay
 {
-	function listOverlayContent($use_pagination, $rows, $pageNav, $option)
+	function listOverlay($use_pagination, $rows, $pageNav,$search, $filter_order_Dir, $filter_order,  $option)
 	{
-		JToolBarHelper::title(JText::_("EASYSDI_LIST_OVERLAY_CONTENT"));
-		$ordering_field = JRequest::getVar ('order_field');
+		JToolBarHelper::title(JText::_("MAP_LIST_OVERLAY_CONTENT"));
 		?>
-		<script>
-		function tableOrder(task, orderField)
-		{
-			document.forms['adminForm'].elements['order_field'].value=orderField;
-			document.forms['adminForm'].submit();
-			return;
-		
-		}
-		</script>
 		<form action="index.php" method="GET" name="adminForm">
+		<table width="100%">
+			<tr>
+				<td class="key"  width="100%">
+					<?php echo JText::_("FILTER"); ?>:
+					<input type="text" name="searchOverlay" id="searchOverlay" value="<?php echo $search;?>" class="text_area" onchange="document.adminForm.submit();" />
+					<button onclick="this.form.submit();"><?php echo JText::_( "GO" ); ?></button>
+					<button onclick="document.getElementById('searchOverlay').value='';this.form.submit();"><?php echo JText::_( "RESET" ); ?></button>
+				</td>
+			</tr>
+		</table>
 		<table class="adminlist">
 			<thead>
 				<tr>
-					<th width="20" class='title'><?php echo JText::_("EASYSDI_OVERLAY_CONTENT_SHARP"); ?></th>
+					<th width="20" class='title'><?php echo JText::_("MAP_OVERLAY_CONTENT_SHARP"); ?></th>
 					<th width="20" class='title'><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows); ?>);" /></th>
-					<th class='title'><a href="javascript:tableOrder('overlayContent', 'url');" title="Click to sort by this column"><?php echo JText::_("EASYSDI_OVERLAY_CONTENT_URL"); ?></a></th>
-					<th class='title'><a href="javascript:tableOrder('overlayContent', 'name');" title="Click to sort by this column"><?php echo JText::_("EASYSDI_OVERLAY_CONTENT_NAME"); ?></th>
-					<th class='title'><?php echo JText::_("EASYSDI_OVERLAY_CONTENT_PROJECTION"); ?></th>
-					<th class='title'><a href="javascript:tableOrder('overlayContent', 'order');" title="Click to sort by this column"><?php echo JText::_("EASYSDI_OVERLAY_ORDER"); ?></th>
+					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_OVERLAY_NAME"), 'name', @$filter_order_Dir, @$filter_order); ?></th>
+					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_OVERLAY_URL"), 'url', @$filter_order_Dir, @$filter_order); ?></th>
+					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_OVERLAY_LAYERS"), 'layers', @$filter_order_Dir, @$filter_order); ?></th>
+					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_OVERLAY_ORDER"), 'ordering', @$filter_order_Dir, @$filter_order); ?></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -56,10 +56,10 @@ class HTML_overlay
 				<tr class="<?php echo "row$k"; ?>">
 					<td align="center"><?php echo $i+$pageNav->limitstart+1;?></td>
 					<td><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->id; ?>" onclick="isChecked(this.checked);" /></td>
-					<td><a href="#edit" onclick="return listItemTask('cb<?php echo $i;?>','editOverlayContent')"><?php echo $row->url; ?></a></td>
+					<td><a href="#edit" onclick="return listItemTask('cb<?php echo $i;?>','editOverlay')"><?php echo $row->url; ?></a></td>
 					<td><?php echo stripcslashes($row->name); ?></td>
-					<td><?php echo $row->projection; ?></td>
-					<td class="order" nowrap="nowrap"><?php $disabled = ($ordering_field == 'order') ? true : false; ?> 
+					<td><?php echo $row->layers; ?></td>
+					<td class="order" nowrap="nowrap"><?php $disabled = ($filter_order == 'ordering') ? true : false; ?> 
 						<span><?php echo $pageNav->orderUpIcon($i,  true, 'orderupoverlay', 'Move Up', $disabled);  ?></span> 
 						<span><?php echo $pageNav->orderDownIcon($i,1,  true, 'orderdownoverlay', 'Move Down', $disabled);   ?></span>
 						<?php echo $row->ordering;?> 
@@ -84,25 +84,26 @@ class HTML_overlay
 			?>
 		</table>
 		<input type="hidden" name="option" value="<?php echo $option; ?>" /> 
-		<input type="hidden" name="order_field" value="<?php echo $ordering_field;?>" /> 
-		<input type="hidden" name="task" value="overlayContent" /> 
+		<input type="hidden" name="task" value="overlay" /> 
 		<input type="hidden" name="boxchecked" value="0" /> 
 		<input type="hidden" name="hidemainmenu" value="0">
+		<input type="hidden" name="filter_order_Dir" value="<?php echo $filter_order_Dir; ?>" />
+	  	<input type="hidden" name="filter_order" value="<?php echo $filter_order; ?>" />
 		</form>
 		<?php
 	}
 
-	function editOverlayContent( $overlay_content,$rowsGroup, $option )
+	function editOverlay( $overlay_content,$createUser, $updateUser,$rowsGroup, $option )
 	{
 		global  $mainframe;
 		JHTML::script('jquery-1.3.2.min.js', 'components/com_easysdi_map/externals/jquery/');
 		if ($overlay_content->id != 0)
 		{
-			JToolBarHelper::title( JText::_("EASYSDI_OVERLAY_CONTENT_EDIT"), 'generic.png' );
+			JToolBarHelper::title( JText::_("MAP_OVERLAY_CONTENT_EDIT"), 'generic.png' );
 		}
 		else
 		{
-			JToolBarHelper::title( JText::_("EASYSDI_OVERLAY_CONTENT_NEW"), 'generic.png' );
+			JToolBarHelper::title( JText::_("MAP_OVERLAY_CONTENT_NEW"), 'generic.png' );
 		}
 		?>
 		<script>
@@ -124,46 +125,46 @@ class HTML_overlay
 		});
 		function submitbutton(pressbutton)
 		{
-			if(pressbutton == "saveOverlayContent")
+			if(pressbutton == "saveOverlay")
 			{
 				if (document.getElementById('projection').value == "")
 				{	
-					alert ('<?php echo  JText::_( 'EASYSDI_OVL_CT_PROJECTION_VALIDATION_ERROR');?>');	
+					alert ('<?php echo  JText::_( 'MAP_OVL_CT_PROJECTION_VALIDATION_ERROR');?>');	
 					return;
 				}
 				else if (false && $j('#resolutionoverscale0').attr('checked') && document.getElementById('minscale').value == "")
 				{
-					alert ('<?php echo  JText::_( 'EASYSDI_OVL_CT_MIN_SCALE_VALIDATION_ERROR');?>');	
+					alert ('<?php echo  JText::_( 'MAP_OVL_CT_MIN_SCALE_VALIDATION_ERROR');?>');	
 					return;
 				}
 				else if (false && $j('#resolutionoverscale0').attr('checked') && document.getElementById('maxscale').value == "")
 				{
-					alert ('<?php echo  JText::_( 'EASYSDI_OVL_CT_MAX_SCALE_VALIDATION_ERROR');?>');	
+					alert ('<?php echo  JText::_( 'MAP_OVL_CT_MAX_SCALE_VALIDATION_ERROR');?>');	
 					return;
 				}
 				else if ($j('#resolutionoverscale1').attr('checked') && document.getElementById('resolutions').value == "")
 				{
-					alert ('<?php echo  JText::_( 'EASYSDI_OVL_CT_RESOLUTION_VALIDATION_ERROR');?>');	
+					alert ('<?php echo  JText::_( 'MAP_OVL_CT_RESOLUTION_VALIDATION_ERROR');?>');	
 					return;
 				}
 				else if (false && document.getElementById('maxextent').value == "")
 				{
-					alert ('<?php echo  JText::_( 'EASYSDI_OVL_CT_MAX_EXTENT_VALIDATION_ERROR');?>');	
+					alert ('<?php echo  JText::_( 'MAP_OVL_CT_MAX_EXTENT_VALIDATION_ERROR');?>');	
 					return;
 				}
 				else if (document.getElementById('url').value == "")
 				{
-					alert ('<?php echo  JText::_( 'EASYSDI_OVL_CT_URL_VALIDATION_ERROR');?>');	
+					alert ('<?php echo  JText::_( 'MAP_OVL_CT_URL_VALIDATION_ERROR');?>');	
 					return;
 				}
 				else if (document.getElementById('layers').value == "")
 				{
-					alert ('<?php echo  JText::_( 'EASYSDI_OVL_CT_LAYER_VALIDATION_ERROR');?>');	
+					alert ('<?php echo  JText::_( 'MAP_OVL_CT_LAYER_VALIDATION_ERROR');?>');	
 					return;
 				}
 				else if (document.getElementById('name').value == "")
 				{
-					alert ('<?php echo  JText::_( 'EASYSDI_OVL_CT_NAME_VALIDATION_ERROR');?>');	
+					alert ('<?php echo  JText::_( 'MAP_OVL_CT_NAME_VALIDATION_ERROR');?>');	
 					return;
 				}			
 				else
@@ -184,109 +185,109 @@ class HTML_overlay
 				<fieldset>
 				<table class="admintable">
 					<tr>
-						<td class="key"><?php echo JText::_("EASYSDI_OVERLAY_CONTENT_ID"); ?></td>
+						<td class="key"><?php echo JText::_("MAP_OVERLAY_CONTENT_ID"); ?></td>
 						<td><?php echo $overlay_content->id; ?></td>
 					</tr>
 					<tr>
-						<td class="key"><?php echo JText::_("EASYSDI_OVERLAY_NAME"); ?></td>
+						<td class="key"><?php echo JText::_("MAP_OVERLAY_NAME"); ?></td>
 						<td><input class="inputbox" type="text" size="50" maxlength="100" name="name" id="name"
 							value="<?php echo stripcslashes($overlay_content->name); ?>" /></td>
 					</tr>
 					<tr>
-						<td class="key"><?php echo JText::_("EASYSDI_OVERLAY_LAYERS"); ?></td>
+						<td class="key"><?php echo JText::_("MAP_OVERLAY_LAYERS"); ?></td>
 						<td><input class="inputbox" type="text" size="50" maxlength="100" name="layers" id="layers" value="<?php echo $overlay_content->layers; ?>" /></td>
-						<td><?php echo JText::_("EASYSDI_OVERLAY_LAYERS_SEPARATOR"); ?></td>
+						<td><?php echo JText::_("MAP_OVERLAY_LAYERS_SEPARATOR"); ?></td>
 					</tr>
 					<tr>
-						<td class="key"><?php echo JText::_("EASYSDI_OVERLAY_CONTENT_GROUP"); ?></td>
+						<td class="key"><?php echo JText::_("MAP_OVERLAY_CONTENT_GROUP"); ?></td>
 						<td><?php echo JHTML::_("select.genericlist",$rowsGroup, 'group_id', 'size="1" class="inputbox" ', 'value', 'text',$overlay_content->group_id); ?>
 					
 					</tr>
 					<tr>
-						<td class="key"><?php echo JText::_("EASYSDI_OVERLAY_PROJECTION"); ?></td>
+						<td class="key"><?php echo JText::_("MAP_OVERLAY_PROJECTION"); ?></td>
 						<td><input class="inputbox" type="text" size="50" maxlength="100" name="projection" id="projection"
 							value="<?php echo $overlay_content->projection; ?>" /></td>
 					</tr>
 		
 					<tr>
-						<td class="key"><?php echo JText::_("EASYSDI_OVERLAY_UNIT"); ?></td>
+						<td class="key"><?php echo JText::_("MAP_OVERLAY_UNIT"); ?></td>
 						<td><select class="inputbox" name="unit">
-							<option <?php if($overlay_content->unit == 'm') echo "selected" ; ?> value="m"><?php echo JText::_("EASYSDI_METERS"); ?></option>
-							<option <?php if($overlay_content->unit == 'degrees') echo "selected" ; ?> value="degrees"><?php echo JText::_("EASYSDI_DEGREES"); ?></option>
+							<option <?php if($overlay_content->unit == 'm') echo "selected" ; ?> value="m"><?php echo JText::_("MAP_METERS"); ?></option>
+							<option <?php if($overlay_content->unit == 'degrees') echo "selected" ; ?> value="degrees"><?php echo JText::_("MAP_DEGREES"); ?></option>
 						</select></td>
 					</tr>
 		
 					<tr>
-						<td class="key"><?php echo JText::_("EASYSDI_OVERLAY_MAXEXTENT"); ?></td>
+						<td class="key"><?php echo JText::_("MAP_OVERLAY_MAXEXTENT"); ?></td>
 						<td><input class="inputbox" type="text" size="50" maxlength="100" name="maxextent" id="maxextent"
 							value="<?php echo $overlay_content->maxExtent; ?>" /></td>
 					</tr>
 					<tr>
 						<td colspan="2"><input type="radio" id="resolutionoverscale0" name="resolutionoverscale" value="0"
-						<?php if ($overlay_content->resolutionoverscale == 0) echo "checked=\"checked\""; ?> /> <?php echo JText::_("EASYSDI_BASE_SCALES"); ?></td>
+						<?php if ($overlay_content->resolutionoverscale == 0) echo "checked=\"checked\""; ?> /> <?php echo JText::_("MAP_BASE_SCALES"); ?></td>
 					</tr>
 					<tr>
-						<td class="key"><?php echo JText::_("EASYSDI_BASE_MIN_SCALE"); ?></td>
+						<td class="key"><?php echo JText::_("MAP_BASE_MIN_SCALE"); ?></td>
 						<td><input class="inputbox scales" type="text" size="50" maxlength="100" name="minscale" id="minscale"
 						<?php if ($overlay_content->resolutionoverscale == 1) echo 'disabled' ?> value="<?php echo $overlay_content->minscale; ?>" /></td>
 					</tr>
 					<tr class="scales">
-						<td class="key"><?php echo JText::_("EASYSDI_BASE_MAX_SCALE"); ?></td>
+						<td class="key"><?php echo JText::_("MAP_BASE_MAX_SCALE"); ?></td>
 						<td><input class="inputbox scales" name="maxscale" id="maxscale" type="text" size="50" maxlength="100"
 						<?php if ($overlay_content->resolutionoverscale == 1) echo 'disabled' ?> value="<?php echo $overlay_content->maxscale; ?>" /></td>
 					</tr>
 					<tr>
 						<td colspan="2"><input type="radio" id="resolutionoverscale1" name="resolutionoverscale" value="1"
-						<?php if ($overlay_content->resolutionoverscale == 1) echo "checked=\"checked\""; ?> /> <?php echo JText::_("EASYSDI_BASE_RESOLUTIONS"); ?></td>
+						<?php if ($overlay_content->resolutionoverscale == 1) echo "checked=\"checked\""; ?> /> <?php echo JText::_("MAP_BASE_RESOLUTIONS"); ?></td>
 					</tr>
 					<tr>
-						<td class="key"><?php echo JText::_("EASYSDI_BASE_RESOLUTIONS"); ?></td>
+						<td class="key"><?php echo JText::_("MAP_BASE_RESOLUTIONS"); ?></td>
 						<td style=""><textarea class="textarea resolutions" style="height: 200px; width: 500px;" id="resolutions" name="resolutions" size="50"
 							maxlength="4000" <?php if ($overlay_content->resolutionoverscale == 0) echo 'disabled' ?>><?php echo $overlay_content->resolutions; ?></textarea></td>
 					</tr>
 					<tr>
-						<td class="key"><?php echo JText::_("EASYSDI_BASE_CACHE"); ?></td>
+						<td class="key"><?php echo JText::_("MAP_BASE_CACHE"); ?></td>
 						<td><input class="checkbox" name="cache" value="1" type="checkbox" <?php if ($overlay_content->cache == 1) echo "checked=\"checked\""; ?> /></td>
 					</tr>
 					<tr>
-						<td class="key"><?php echo JText::_("EASYSDI_OVERLAY_URL"); ?></td>
+						<td class="key"><?php echo JText::_("MAP_OVERLAY_URL"); ?></td>
 						<td><input class="inputbox" type="text" size="50" maxlength="100" name="url" id="url" value="<?php echo $overlay_content->url; ?>" /></td>
 					</tr>
 					<tr>
-						<td class="key"><?php echo JText::_("EASYSDI_OVERLAY_URL_TYPE"); ?></td>
+						<td class="key"><?php echo JText::_("MAP_OVERLAY_URL_TYPE"); ?></td>
 						<td><select class="inputbox" name="type">
-							<option value="WMS" <?php if($overlay_content->type == 'WMS') echo "selected" ; ?>><?php echo JText::_("EASYSDI_WMS"); ?></option>
-							<option value="WFS" <?php if($overlay_content->type == 'WFS') echo "selected" ; ?>><?php echo JText::_("EASYSDI_WFS"); ?></option>
+							<option value="WMS" <?php if($overlay_content->type == 'WMS') echo "selected" ; ?>><?php echo JText::_("MAP_WMS"); ?></option>
+							<option value="WFS" <?php if($overlay_content->type == 'WFS') echo "selected" ; ?>><?php echo JText::_("MAP_WFS"); ?></option>
 						</select></td>
 					</tr>
 					<tr>
-						<td class="key"><?php echo JText::_("EASYSDI_OVERLAY_TILE"); ?></td>
+						<td class="key"><?php echo JText::_("MAP_OVERLAY_TILE"); ?></td>
 						<td><input class="checkbox" name="singletile" value="1" type="checkbox"
 						<?php if ($overlay_content->singletile == 1) echo "checked=\"checked\""; ?> /></td>
 					</tr>
 					<tr>
-						<td class="key"><?php echo JText::_("EASYSDI_OVERLAY_IMG_FORMAT"); ?></td>
+						<td class="key"><?php echo JText::_("MAP_OVERLAY_IMG_FORMAT"); ?></td>
 						<td><input class="inputbox" name="imgformat" id="imgformat" type="text" size="50" maxlength="100"
 							value="<?php echo $overlay_content->imgformat; ?>" /></td>
 						<td>ex : image/png</td>
 					</tr>
 					<tr>
-						<td class="key"><?php echo JText::_("EASYSDI_baseLayer_CUSTOM_STYLE_ENABLED"); ?></td>
+						<td class="key"><?php echo JText::_("MAP_baseLayer_CUSTOM_STYLE_ENABLED"); ?></td>
 						<td><input class="checkbox" name="customstyle" value="1" type="checkbox"
 						<?php if ($overlay_content->customstyle == 1) echo "checked=\"checked\""; ?> /></td>
 					</tr>
 					<tr>
-						<td class="key"><?php echo JText::_("EASYSDI_OVERLAY_VISIBILITY"); ?></td>
+						<td class="key"><?php echo JText::_("MAP_OVERLAY_VISIBILITY"); ?></td>
 						<td><input class="checkbox" name="defaultvisibility" value="1" type="checkbox"
 						<?php if ($overlay_content->defaultvisibility == 1) echo "checked=\"checked\""; ?> /></td>
 					</tr>
 					<tr>
-						<td class="key"><?php echo JText::_("EASYSDI_OVERLAY_OPACITY"); ?></td>
+						<td class="key"><?php echo JText::_("MAP_OVERLAY_OPACITY"); ?></td>
 						<td><input class="inputbox" type="text" size="50" maxlength="100" name="defaultopacity" id="defaultopacity"
 							value="<?php echo $overlay_content->defaultopacity; ?>" /></td>
 					</tr>
 					<tr>
-						<td class="key"><?php echo JText::_("EASYSDI_OVERLAY_METADATA"); ?></td>
+						<td class="key"><?php echo JText::_("MAP_OVERLAY_METADATA"); ?></td>
 						<td><input class="inputbox" type="text" size="50" maxlength="500" name="metadata_url" id="metadataurl"
 							value="<?php echo $overlay_content->metadataurl; ?>" /></td>
 					</tr>
@@ -295,36 +296,69 @@ class HTML_overlay
 				</td>
 			</tr>
 		</table>
+		<br></br>
+		<table border="0" cellpadding="3" cellspacing="0">
+		<?php
+		if ($overlay_group->created)
+		{ 
+		?>
+			<tr>
+				<td><?php echo JText::_("CORE_CREATED"); ?> : </td>
+				<td><?php if ($overlay_group->created) {echo date('d.m.Y h:i:s',strtotime($overlay_group->created));} ?></td>
+				<td>, </td>
+				<td><?php echo $createUser; ?></td>
+			</tr>
+		<?php
+		}
+		if ($overlay_group->updated and $overlay_group->updated<> '0000-00-00 00:00:00')
+		{ 
+		?>
+			<tr>
+				<td><?php echo JText::_("CORE_UPDATED"); ?> : </td>
+				<td><?php if ($overlay_group->updated and $overlay_group->updated<> 0) {echo date('d.m.Y h:i:s',strtotime($overlay_group->updated));} ?></td>
+				<td>, </td>
+				<td><?php echo $updateUser; ?></td>
+			</tr>
+		<?php
+		}
+		?>		
+		</table>
 		<input type="hidden" name="option" value="<?php echo $option; ?>" /> 
-		<input type="hidden" name="id" value="<?php echo $overlay_content->id;?>"> 
-		<input type="hidden" name="order" value="<?php echo $overlay_content->ordering;?>"> 
-		<input type="hidden" name="task" value="saveOverlayContent" />
+		<input type="hidden" name="task" value="saveOverlay" />
+		<input type="hidden" name="id" value="<?php echo $overlay_group->id; ?>" />
+		<input type="hidden" name="guid" value="<?php echo $overlay_group->guid?>" />
+		<input type="hidden" name="ordering" value="<?php echo $overlay_group->ordering; ?>" />
+		<input type="hidden" name="created" value="<?php echo $overlay_group->created;?>" />
+		<input type="hidden" name="createdby" value="<?php echo $overlay_group->createdby; ?>" /> 
+		<input type="hidden" name="updated" value="<?php echo $overlay_group->created; ?>" />
+		<input type="hidden" name="updatedby" value="<?php echo $overlay_group->createdby; ?>" /> 
 		</form>
 		<?php
 	}
 
-	function listOverlayGroup($use_pagination, $rows, $pageNav, $option)
+	function listOverlayGroup($use_pagination, $rows, $pageNav,$search, $filter_order_Dir, $filter_order, $option)
 	{
-		JToolBarHelper::title(JText::_("EASYSDI_LIST_OVERLAY_GROUP"));
-		$ordering_field = JRequest::getVar ('order_field');
+		JToolBarHelper::title(JText::_("MAP_LIST_OVERLAY_GROUP"));
 		?>
 		<form action="index.php" method="GET" name="adminForm">
-		<script>
-		function tableOrder(task, orderField)
-		{
-			document.forms['adminForm'].elements['order_field'].value=orderField;
-			document.forms['adminForm'].submit();
-			return;
-		}
-		</script>
+		<table width="100%">
+			<tr>
+				<td class="key"  width="100%">
+					<?php echo JText::_("FILTER"); ?>:
+					<input type="text" name="searchOverlayGroup" id="searchOverlayGroup" value="<?php echo $search;?>" class="text_area" onchange="document.adminForm.submit();" />
+					<button onclick="this.form.submit();"><?php echo JText::_( "GO" ); ?></button>
+					<button onclick="document.getElementById('searchOverlayGroup').value='';this.form.submit();"><?php echo JText::_( "RESET" ); ?></button>
+				</td>
+			</tr>
+		</table>
 		<table class="adminlist">
 			<thead>
 				<tr>
-					<th width="20" class='title'><?php echo JText::_("EASYSDI_OVERLAY_GROUP_SHARP"); ?></th>
+					<th width="20" class='title'><?php echo JText::_("MAP_OVERLAY_GROUP_SHARP"); ?></th>
 					<th width="20" class='title'><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows); ?>);" /></th>
-					<th class='title'><a href="javascript:tableOrder('overlayGroup', 'name');" title="Click to sort by this column"><?php echo JText::_("EASYSDI_OVERLAY_GROUP_NAME"); ?></th>
-					<th class='title'><a href="javascript:tableOrder('overlayGroup', 'open');" title="Click to sort by this column"><?php echo JText::_("EASYSDI_OVERLAY_GROUP_OPEN"); ?></th>
-					<th class='title'><a href="javascript:tableOrder('overlayGroup', 'ordering');" title="Click to sort by this column"><?php echo JText::_("EASYSDI_OVERLAY_GROUP_ORDER"); ?></th>
+					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_OVERLAY_GROUP_NAME"), 'name', @$filter_order_Dir, @$filter_order); ?></th>
+					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_OVERLAY_GROUP_OPEN"), 'open', @$filter_order_Dir, @$filter_order); ?></th>
+					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_OVERLAY_GROUP_ORDER"), 'ordering', @$filter_order_Dir, @$filter_order); ?></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -338,10 +372,11 @@ class HTML_overlay
 					<td align="center"><?php echo $i+$pageNav->limitstart+1;?></td>
 					<td><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->id; ?>" onclick="isChecked(this.checked);" /></td>
 					<td><a href="#edit" onclick="return listItemTask('cb<?php echo $i;?>','editOverlayGroup')"><?php echo $row->name; ?></a></td>
-					<td><?php if($row->open == 1){echo JText::_("EASYSDI_YES");}else{echo JText::_("EASYSDI_NO");} ?></td>
-					<td width="10%" class="order" nowrap="nowrap"><?php
-					$disabled = ($ordering_field == 'ordering') ? true : false;
-					?> <span><?php echo $pageNav->orderUpIcon($i,  true, 'orderupoverlaygroup', 'Move Up', $disabled);  ?></span> <span><?php echo $pageNav->orderDownIcon($i,1,  true, 'orderdownoverlaygroup', 'Move Down', $disabled);   ?></span>
+					<td><?php if($row->open == 1){echo JText::_("MAP_YES");}else{echo JText::_("MAP_NO");} ?></td>
+					<td width="10%" class="order" nowrap="nowrap">
+					<?php $disabled = ($filter_order == 'ordering') ? true : false; ?> 
+					<span><?php echo $pageNav->orderUpIcon($i,  true, 'orderupoverlaygroup', 'Move Up', $disabled);  ?></span> 
+					<span><?php echo $pageNav->orderDownIcon($i,1,  true, 'orderdownoverlaygroup', 'Move Down', $disabled);   ?></span>
 					<?php echo $row->ordering;?> <?php
 					?></td>
 				</tr>
@@ -367,20 +402,21 @@ class HTML_overlay
 		<input type="hidden" name="task" value="overlayGroup" /> 
 		<input type="hidden" name="boxchecked" value="0" /> 
 		<input type="hidden" name="hidemainmenu" value="0"> 
-		<input type="hidden" name="order_field" value="<?php echo $ordering_field;?>" />
+		<input type="hidden" name="filter_order_Dir" value="<?php echo $filter_order_Dir; ?>" />
+	  	<input type="hidden" name="filter_order" value="<?php echo $filter_order; ?>" />
 		</form>
 		<?php
 	}
 
-	function editOverlayGroup ($overlay_group, $option)
+	function editOverlayGroup ($overlay_group,$createUser, $updateUser, $option)
 	{
 		if ($overlay_group->id != 0)
 		{
-			JToolBarHelper::title( JText::_("EASYSDI_OVERLAY_GROUP_EDIT"), 'generic.png' );
+			JToolBarHelper::title( JText::_("MAP_OVERLAY_GROUP_EDIT"), 'generic.png' );
 		}
 		else
 		{
-			JToolBarHelper::title( JText::_("EASYSDI_OVERLAY_GROUP_NEW"), 'generic.png' );
+			JToolBarHelper::title( JText::_("MAP_OVERLAY_GROUP_NEW"), 'generic.png' );
 		}
 		?>
 		<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
@@ -390,15 +426,15 @@ class HTML_overlay
 				<fieldset>
 				<table class="admintable">
 					<tr>
-						<td class="key"><?php echo JText::_("EASYSDI_OVERLAY_GROUP_ID"); ?> :</td>
+						<td class="key"><?php echo JText::_("MAP_OVERLAY_GROUP_ID"); ?> :</td>
 						<td><?php echo $overlay_group->id; ?></td>
 					</tr>
 					<tr>
-						<td class="key"><?php echo JText::_("EASYSDI_OVERLAY_GROUP_NAME"); ?> :</td>
+						<td class="key"><?php echo JText::_("MAP_OVERLAY_GROUP_NAME"); ?> :</td>
 						<td><input class="inputbox" type="text" size="100" maxlength="400" name="name" value="<?php echo $overlay_group->name; ?>" /></td>
 					</tr>
 					<tr>
-						<td class="key"><?php echo JText::_("EASYSDI_OVERLAY_GROUP_OPEN"); ?></td>
+						<td class="key"><?php echo JText::_("MAP_OVERLAY_GROUP_OPEN"); ?></td>
 						<td><input class="checkbox" name="open" value="1" type="checkbox" <?php if ($overlay_group->open == 1) echo "checked=\"checked\""; ?> /></td>
 					</tr>
 		
@@ -407,9 +443,42 @@ class HTML_overlay
 				</td>
 			</tr>
 		</table>
-		<input type="hidden" name="id" value="<?php echo $overlay_group->id; ?>" /> 
+		<br></br>
+		<table border="0" cellpadding="3" cellspacing="0">
+		<?php
+		if ($overlay_group->created)
+		{ 
+		?>
+			<tr>
+				<td><?php echo JText::_("CORE_CREATED"); ?> : </td>
+				<td><?php if ($overlay_group->created) {echo date('d.m.Y h:i:s',strtotime($overlay_group->created));} ?></td>
+				<td>, </td>
+				<td><?php echo $createUser; ?></td>
+			</tr>
+		<?php
+		}
+		if ($overlay_group->updated and $overlay_group->updated<> '0000-00-00 00:00:00')
+		{ 
+		?>
+			<tr>
+				<td><?php echo JText::_("CORE_UPDATED"); ?> : </td>
+				<td><?php if ($overlay_group->updated and $overlay_group->updated<> 0) {echo date('d.m.Y h:i:s',strtotime($overlay_group->updated));} ?></td>
+				<td>, </td>
+				<td><?php echo $updateUser; ?></td>
+			</tr>
+		<?php
+		}
+		?>		
+		</table>
 		<input type="hidden" name="option" value="<?php echo $option; ?>" /> 
 		<input type="hidden" name="task" value="saveOverlayGroup" />
+		<input type="hidden" name="id" value="<?php echo $overlay_group->id; ?>" />
+		<input type="hidden" name="guid" value="<?php echo $overlay_group->guid?>" />
+		<input type="hidden" name="ordering" value="<?php echo $overlay_group->ordering; ?>" />
+		<input type="hidden" name="created" value="<?php echo $overlay_group->created;?>" />
+		<input type="hidden" name="createdby" value="<?php echo $overlay_group->createdby; ?>" /> 
+		<input type="hidden" name="updated" value="<?php echo $overlay_group->created; ?>" />
+		<input type="hidden" name="updatedby" value="<?php echo $overlay_group->createdby; ?>" /> 
 		</form>
 		<?php
 	}

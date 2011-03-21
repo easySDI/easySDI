@@ -112,39 +112,39 @@ switch($task)
 	/**
 	 * Overlay
 	 */
-	case 'overlayContent':
+	case 'overlay':
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'overlay.admin.easysdi_map.html.php');
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'overlay.toolbar.easysdi_map.html.php');
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'overlay.admin.easysdi_map.php');
-		TOOLBAR_overlay::_LISTOVERLAYCONTENT();
-		ADMIN_overlay::listOverlayContent($option);
+		TOOLBAR_overlay::_LISTOVERLAY();
+		ADMIN_overlay::listOverlay($option);
 		break;
-	case 'editOverlayContent':
-	case 'newOverlayContent';
+	case 'editOverlay':
+	case 'newOverlay';
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'overlay.admin.easysdi_map.html.php');
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'overlay.class.easysdi_map.php');
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'overlay.toolbar.easysdi_map.html.php');
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'overlay.admin.easysdi_map.php');
-		TOOLBAR_overlay::_EDITOVERLAYCONTENT();
+		TOOLBAR_overlay::_EDITOVERLAY();
 		$cid = JRequest::getVar ('cid', array(0) );
-		ADMIN_overlay::editOverlayContent($cid[0], $option);
+		ADMIN_overlay::editOverlay($cid[0], $option);
 		break;
-	case 'saveOverlayContent';
+	case 'saveOverlay';
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'overlay.admin.easysdi_map.html.php');
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'overlay.class.easysdi_map.php');
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'overlay.toolbar.easysdi_map.html.php');
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'overlay.admin.easysdi_map.php');
-		ADMIN_overlay::saveOverlayContent($option);
-		$mainframe->redirect("index.php?option=$option&task=overlayContent" );
+		ADMIN_overlay::saveOverlay($option);
+		$mainframe->redirect("index.php?option=$option&task=overlay" );
 		break;
-	case 'deleteOverlayContent':
+	case 'deleteOverlay':
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'overlay.admin.easysdi_map.html.php');
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'overlay.class.easysdi_map.php');
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'overlay.toolbar.easysdi_map.html.php');
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'overlay.admin.easysdi_map.php');
 		$cid = JRequest::getVar ('cid', array(0) );
-		ADMIN_overlay::deleteOverlayContent($cid,$option);
-		$mainframe->redirect("index.php?option=$option&task=overlayContent" );
+		ADMIN_overlay::deleteOverlay($cid,$option);
+		$mainframe->redirect("index.php?option=$option&task=overlay" );
 		break;
 	case 'orderupoverlay':
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'overlay.admin.easysdi_map.html.php');
@@ -153,8 +153,8 @@ switch($task)
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'overlay.admin.easysdi_map.php');
 		$cid = JRequest::getVar ('cid', array(0) );
 		$order_field = JRequest::getVar ('order_field','') ;
-		ADMIN_overlay::orderUpOverlay($cid[0], "#__easysdi_overlay_content");
-		$mainframe->redirect("index.php?option=$option&task=overlayContent&order_field=".$order_field );
+		ADMIN_overlay::orderUpOverlay($cid[0], "#__sdi_overlay");
+		$mainframe->redirect("index.php?option=$option&task=overlay&order_field=".$order_field );
 		break;
 	case 'orderdownoverlay':
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'overlay.admin.easysdi_map.html.php');
@@ -163,8 +163,8 @@ switch($task)
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'overlay.admin.easysdi_map.php');
 		$cid = JRequest::getVar ('cid', array(0) );
 		$order_field = JRequest::getVar ('order_field','') ;
-		ADMIN_overlay::orderDownOverlay($cid[0], "#__easysdi_overlay_content");
-		$mainframe->redirect("index.php?option=$option&task=overlayContent&order_field=".$order_field );
+		ADMIN_overlay::orderDownOverlay($cid[0], "#__sdi_overlay");
+		$mainframe->redirect("index.php?option=$option&task=overlay&order_field=".$order_field );
 		break;
 	/**
 	 * Overlay Group

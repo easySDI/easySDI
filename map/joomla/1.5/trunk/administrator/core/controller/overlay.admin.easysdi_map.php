@@ -20,7 +20,7 @@ defined('_JEXEC') or die('Restricted access');
 
 class ADMIN_overlay
 {
-	function listOverlayContent ($option)
+	function listOverlay ($option)
 	{
 		global  $mainframe;
 		$db =& JFactory::getDBO();
@@ -28,24 +28,38 @@ class ADMIN_overlay
 		$limit = $mainframe->getUserStateFromRequest( "viewlistlimit", 'limit', 10 );
 		$limitstart = $mainframe->getUserStateFromRequest( "view{$option}limitstart", 'limitstart', 0 );
 		$use_pagination = JRequest::getVar('use_pagination',0);
-		$ordering_field = JRequest::getVar('order_field');
+		
+		//Search
+		$search = $mainframe->getUserStateFromRequest( "searchOverlay{$option}", 'searchOverlay', '' );
+		$search = $db->getEscaped( trim( strtolower( $search ) ) );
+		if ($search)
+		{
+			$query_search = ' where LOWER(id) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+			$query_search .= ' or LOWER(name) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+		}
 
-		$query ="SELECT COUNT(*) FROM #__easysdi_overlay_content " ;
+		//Base query
+		$query ="SELECT COUNT(*) FROM #__sdi_overlay " ;
+		$query .= $query_search;
 		$db->setQuery( $query );
 		$total = $db->loadResult();
 		$pageNav = new JPagination($total,$limitstart,$limit);
 
-		$query = "SELECT *  FROM #__easysdi_overlay_content l " ;
-		if($ordering_field)
+		$query = "SELECT *  FROM #__sdi_overlay l " ;
+		$query .= $query_search;
+		
+		// table ordering
+		$filter_order		= $mainframe->getUserStateFromRequest( "$option.filter_order",		'filter_order',		'id',	'cmd' );
+		$filter_order_Dir	= $mainframe->getUserStateFromRequest( "$option.filter_order_Dir",	'filter_order_Dir',	'ASC',		'word' );
+		if ($filter_order <> "name" && $filter_order <> "url"  )
 		{
-			$query .= " ORDER BY l.$ordering_field";
+			$filter_order		= "id";
+			$filter_order_Dir	= "ASC";
 		}
-		else
-		{
-			$query .= " ORDER BY l.name";
-		}
-
-
+		$orderby 	= ' order by '. $filter_order .' '. $filter_order_Dir;
+		$query .= $orderby;
+				
+		//Pagination
 		if ($use_pagination)
 		{
 			$db->setQuery( $query ,$pageNav->limitstart, $pageNav->limit);
@@ -61,77 +75,100 @@ class ADMIN_overlay
 			return ;
 		}
 
-		HTML_overlay::listOverlayContent($use_pagination, $rows, $pageNav, $option);
+		HTML_overlay::listOverlay($use_pagination, $rows, $pageNav,$search, $filter_order_Dir, $filter_order,  $option);
 	}
 
-	function editOverlayContent ($id,$option)
+	function editOverlay ($id,$option)
 	{
 		global  $mainframe;
 		$db =& JFactory::getDBO();
 
-		$overlay_content = new overlay_content ($db);
-		$overlay_content->load($id);
+		$overlay = new overlay ($db);
+		$overlay->load($id);
 
+		$user =& JFactory::getUser();
+		$createUser="";
+		$updateUser="";
+		if ($overlay->created)
+		{ 
+			if ($overlay->createdby and $overlay->createdby<> 0)
+			{
+				$query = "SELECT name FROM #__users WHERE id=(SELECT user_id FROM #__sdi_account WHERE id =".$overlay->createdby.")" ;
+				$db->setQuery($query);
+				$createUser = $db->loadResult();
+			}
+			else
+				$createUser = "";
+					
+		}
+		if ($overlay->updated and $overlay->updated<> '0000-00-00 00:00:00')
+		{ 
+			if ($overlay->updatedby and $overlay->updatedby<> 0)
+			{
+				$query = "SELECT name FROM #__users WHERE id=(SELECT user_id FROM #__sdi_account WHERE id =".$overlay->updatedby.")" ;
+				$db->setQuery($query);
+				$updateUser = $db->loadResult();
+			}
+			else
+				$updateUser = "";
+		}
+		
 		//Get availaible overlay groups
-		$db->setQuery( "SELECT id as value, name as text FROM #__easysdi_overlay_group" );
+		$db->setQuery( "SELECT id as value, name as text FROM #__sdi_overlaygroup" );
 		$rowsGroup = $db->loadObjectList();
 		echo $db->getErrorMsg();
 
-		HTML_overlay::editOverlayContent($overlay_content,$rowsGroup, $option);
+		HTML_overlay::editOverlay($overlay,$createUser, $updateUser,$rowsGroup, $option);
 	}
 
-	function saveOverlayContent($option)
+	function saveOverlay($option)
 	{
 		global $mainframe;
 		$db=& JFactory::getDBO();
-		$overlay_content =& new overlay_content($db);
+		$overlay =& new overlay($db);
 
-		if (!$overlay_content->bind( $_POST ))
+		if (!$overlay->bind( $_POST ))
 		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=overlayContent" );
+			$mainframe->redirect("index.php?option=$option&task=overlay" );
 			exit();
 		}
 		
-		if($overlay_content->order == '' || $overlay_content->order == 0 )
+		if($overlay->order == '' || $overlay->order == 0 )
 		{
-			$query ="SELECT MAX(o.order) FROM #__easysdi_overlay_content o " ;
+			$query ="SELECT MAX(o.order) FROM #__sdi_overlay o " ;
 			$db->setQuery( $query );
 			$total = $db->loadResult();
-			$overlay_content->order = $total + 1;
+			$overlay->ordering = $total + 1;
 		}
 
-		if (!$overlay_content->store())
+		if (!$overlay->store())
 		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=overlayContent" );
+			$mainframe->redirect("index.php?option=$option&task=overlay" );
 			exit();
 		}
 	}
 
-	function deleteOverlayContent($cid,$option)
+	function deleteOverlay($cid,$option)
 	{
 		global $mainframe;
 		$db =& JFactory::getDBO();
 
 		if (!is_array( $cid ) || count( $cid ) < 1)
 		{
-			$mainframe->enqueueMessage(JText::_("EASYSDI_SELECT_ROW_TO_DELETE"),"error");
-			$mainframe->redirect("index.php?option=$option&task=overlayContent" );
+			$mainframe->enqueueMessage(JText::_("MAP_SELECT_ROW_TO_DELETE"),"error");
+			$mainframe->redirect("index.php?option=$option&task=overlay" );
 			exit;
 		}
-		foreach( $cid as $overlay_content_id )
+		foreach( $cid as $overlay_id )
 		{
-			$overlay_content = new overlay_content ($db);
-			$overlay_content->load($overlay_content_id);
+			$overlay = new overlay ($db);
+			$overlay->load($overlay_id);
 
-			$query ="UPDATE #__easysdi_overlay_content o SET o.order = o.order-1 WHERE o.order > $overlay_content->order" ;
-			$db->setQuery( $query );
-			$db->query();
-
-			if (!$overlay_content->delete()) {
+			if (!$overlay->delete()) {
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=overlayContent" );
+				$mainframe->redirect("index.php?option=$option&task=overlay" );
 			}
 		}
 	}
@@ -144,22 +181,38 @@ class ADMIN_overlay
 		$limit = $mainframe->getUserStateFromRequest( "viewlistlimit", 'limit', 10 );
 		$limitstart = $mainframe->getUserStateFromRequest( "view{$option}limitstart", 'limitstart', 0 );
 		$use_pagination = JRequest::getVar('use_pagination',0);
-		$ordering_field = JRequest::getVar('order_field');
+	
+		//Search
+		$search = $mainframe->getUserStateFromRequest( "searchOverlayGroup{$option}", 'searchOverlayGroup', '' );
+		$search = $db->getEscaped( trim( strtolower( $search ) ) );
+		if ($search)
+		{
+			$query_search = ' where LOWER(id) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+			$query_search .= ' or LOWER(name) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+		}
 
-		$query ="SELECT COUNT(*) FROM #__easysdi_overlay_group";
+		//Base query
+		$query ="SELECT COUNT(*) FROM #__sdi_overlaygroup";
 		$db->setQuery( $query );
+		$query .= $query_search;
 		$total = $db->loadResult();
 		$pageNav = new JPagination($total,$limitstart,$limit);
 
-		$query = "SELECT *  FROM #__easysdi_overlay_group g ";
-		if($ordering_field)
+		$query = "SELECT *  FROM #__sdi_overlaygroup g ";
+		$query .= $query_search;
+		
+		// table ordering
+		$filter_order		= $mainframe->getUserStateFromRequest( "$option.filter_order",		'filter_order',		'id',	'cmd' );
+		$filter_order_Dir	= $mainframe->getUserStateFromRequest( "$option.filter_order_Dir",	'filter_order_Dir',	'ASC',		'word' );
+		if ($filter_order <> "name" &&  $filter_order <> "ordering" && $filter_order <> "open")
 		{
-			$query .= " ORDER BY g.$ordering_field";
+			$filter_order		= "id";
+			$filter_order_Dir	= "ASC";
 		}
-		else
-		{
-			$query .= " ORDER BY g.name";
-		}
+		$orderby 	= ' order by '. $filter_order .' '. $filter_order_Dir;
+		$query .= $orderby;
+				
+		//Pagination
 		if ($use_pagination)
 		{
 			$db->setQuery( $query ,$pageNav->limitstart, $pageNav->limit);
@@ -175,7 +228,7 @@ class ADMIN_overlay
 			return ;
 		}
 
-		HTML_overlay::listOverlayGroup($use_pagination, $rows, $pageNav, $option);
+		HTML_overlay::listOverlayGroup($use_pagination, $rows, $pageNav,$search, $filter_order_Dir, $filter_order, $option);
 	}
 
 	function editOverlayGroup ($id,$option)
@@ -183,10 +236,37 @@ class ADMIN_overlay
 		global  $mainframe;
 		$db =& JFactory::getDBO();
 
-		$overlay_group = new overlay_group ($db);
+		$overlay_group = new overlayGroup ($db);
 		$overlay_group->load($id);
 
-		HTML_overlay::editOverlayGroup($overlay_group, $option);
+		$user =& JFactory::getUser();
+		$createUser="";
+		$updateUser="";
+		if ($overlay_group->created)
+		{ 
+			if ($overlay_group->createdby and $overlay_group->createdby<> 0)
+			{
+				$query = "SELECT name FROM #__users WHERE id=(SELECT user_id FROM #__sdi_account WHERE id =".$overlay_group->createdby.")" ;
+				$db->setQuery($query);
+				$createUser = $db->loadResult();
+			}
+			else
+				$createUser = "";
+					
+		}
+		if ($overlay_group->updated and $overlay_group->updated<> '0000-00-00 00:00:00')
+		{ 
+			if ($overlay_group->updatedby and $overlay_group->updatedby<> 0)
+			{
+				$query = "SELECT name FROM #__users WHERE id=(SELECT user_id FROM #__sdi_account WHERE id =".$overlay_group->updatedby.")" ;
+				$db->setQuery($query);
+				$updateUser = $db->loadResult();
+			}
+			else
+				$updateUser = "";
+		}
+		
+		HTML_overlay::editOverlayGroup($overlay_group,$createUser, $updateUser, $option);
 	}
 
 	function deleteOverlayGroup($cid,$option)
@@ -196,13 +276,13 @@ class ADMIN_overlay
 
 		if (!is_array( $cid ) || count( $cid ) < 1)
 		{
-			$mainframe->enqueueMessage(JText::_("EASYSDI_SELECT_ROW_TO_DELETE"),"error");
+			$mainframe->enqueueMessage(JText::_("MAP_SELECT_ROW_TO_DELETE"),"error");
 			$mainframe->redirect("index.php?option=$option&task=overlayGroup" );
 			exit;
 		}
 		foreach( $cid as $overlay_group_id )
 		{
-			$overlay_group = new overlay_group ($db);
+			$overlay_group = new overlayGroup ($db);
 			$overlay_group->load($overlay_group_id);
 
 			if (!$overlay_group->delete()) {
@@ -217,20 +297,12 @@ class ADMIN_overlay
 		global $mainframe;
 		$db=& JFactory::getDBO();
 			
-		$overlay_group =& new overlay_group($db);
+		$overlay_group =& new overlayGroup($db);
 		if (!$overlay_group->bind( $_POST ))
 		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			$mainframe->redirect("index.php?option=$option&task=overlayGroup" );
 			exit();
-		}
-
-		if($overlay_group->order == '' || $overlay_group->order == 0 )
-		{
-			$query ="SELECT MAX(g.order) FROM #__easysdi_overlay_group g";
-			$db->setQuery( $query );
-			$total = $db->loadResult();
-			$overlay_group->order = $total + 1;
 		}
 
 		if (!$overlay_group->store())
