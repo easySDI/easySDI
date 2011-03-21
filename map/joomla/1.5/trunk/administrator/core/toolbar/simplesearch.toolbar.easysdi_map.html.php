@@ -25,7 +25,7 @@ class TOOLBAR_simplesearch {
 		JToolBarHelper::addNew('newSimpleSearch');
 		JToolBarHelper::editList('editSimpleSearch');
 		JToolBarHelper::deleteList('','deleteSimpleSearch');
-		JToolBarHelper::custom( 'ctrlPanel', 'back.png', 'back.png', JTEXT::_("EASYSDI_MAP_MENU_BACK"), false );
+		JToolBarHelper::custom( 'ctrlPanel', 'back.png', 'back.png', JTEXT::_("MAP_MENU_BACK"), false );
 	}
 	
 	function _LISTSIMPLESEARCH() 
@@ -33,7 +33,7 @@ class TOOLBAR_simplesearch {
 		JToolBarHelper::addNew('newSimpleSearch');
 		JToolBarHelper::editList('editSimpleSearch');
 		JToolBarHelper::deleteList('','deleteSimpleSearch');
-		JToolBarHelper::custom( 'simplesearchCtrlPanel', 'back.png', 'back.png', JTEXT::_("EASYSDI_MAP_MENU_BACK"), false );
+		JToolBarHelper::custom( 'simplesearchCtrlPanel', 'back.png', 'back.png', JTEXT::_("MAP_MENU_BACK"), false );
 	}
 
 	function _EDITSIMPLESEARCH() 
@@ -51,7 +51,7 @@ class TOOLBAR_addfilter {
 		JToolBarHelper::addNew('newAdditionalFilter');
 		JToolBarHelper::editList('editAdditionalFilter');
 		JToolBarHelper::deleteList('','deleteAdditionalFilter');
-		JToolBarHelper::custom( 'ctrlPanel', 'back.png', 'back.png', JTEXT::_("EASYSDI_MAP_MENU_BACK"), false );
+		JToolBarHelper::custom( 'ctrlPanel', 'back.png', 'back.png', JTEXT::_("MAP_MENU_BACK"), false );
 	}
 	
 	function _LISTADDFILTER() 
@@ -59,7 +59,7 @@ class TOOLBAR_addfilter {
 		JToolBarHelper::addNew('newAdditionalFilter');
 		JToolBarHelper::editList('editAdditionalFilter');
 		JToolBarHelper::deleteList('','deleteAdditionalFilter');
-		JToolBarHelper::custom( 'simplesearchCtrlPanel', 'back.png', 'back.png', JTEXT::_("EASYSDI_MAP_MENU_BACK"), false );
+		JToolBarHelper::custom( 'simplesearchCtrlPanel', 'back.png', 'back.png', JTEXT::_("MAP_MENU_BACK"), false );
 	}
 
 	function _EDITADDFILTER() 

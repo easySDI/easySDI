@@ -25,7 +25,7 @@ class TOOLBAR_annotationstyle {
 		JToolBarHelper::addNew('newAnnotationStyle');
 		JToolBarHelper::editList('editAnnotationStyle');
 		JToolBarHelper::deleteList('','deleteAnnotationStyle');
-		JToolBarHelper::custom( 'ctrlPanel', 'back.png', 'back.png', JTEXT::_("EASYSDI_MAP_MENU_BACK"), false );
+		JToolBarHelper::custom( 'ctrlPanel', 'back.png', 'back.png', JTEXT::_("MAP_MENU_BACK"), false );
 	}
 	
 	function _LIST() 
@@ -33,7 +33,7 @@ class TOOLBAR_annotationstyle {
 		JToolBarHelper::addNew('newAnnotationStyle');
 		JToolBarHelper::editList('editAnnotationStyle');
 		JToolBarHelper::deleteList('','deleteAnnotationStyle');
-		JToolBarHelper::custom( 'ctrlPanel', 'back.png', 'back.png', JTEXT::_("EASYSDI_MAP_MENU_BACK"), false );
+		JToolBarHelper::custom( 'ctrlPanel', 'back.png', 'back.png', JTEXT::_("MAP_MENU_BACK"), false );
 	}
 
 	function _EDIT() 

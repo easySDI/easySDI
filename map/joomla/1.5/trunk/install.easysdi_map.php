@@ -165,7 +165,7 @@ function com_install()
 		  `cache` tinyint(1) NOT NULL DEFAULT '0',
 		  `user` varchar(400) DEFAULT NULL,
 		  `password` varchar(400) DEFAULT NULL,
-		  `easysdiaccount_id` bigint(20) DEFAULT NULL,
+		  `account_id` bigint(20) DEFAULT NULL,
 		  `defaultvisibility` tinyint(1) NOT NULL DEFAULT '0',
 		  `defaultopacity` float NOT NULL DEFAULT '1',
 		  `metadataurl` varchar(500) DEFAULT NULL,
@@ -428,7 +428,7 @@ function com_install()
 		  `extractidfromfid` tinyint(1) NOT NULL DEFAULT '1',
 		  `user` varchar(400) DEFAULT NULL,
 		  `password` varchar(400) DEFAULT NULL,
-		  `easysdiaccount_id` bigint(20) DEFAULT NULL,
+		  `account_id` bigint(20) DEFAULT NULL,
 		  PRIMARY KEY (`id`)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 		
@@ -646,7 +646,7 @@ function com_install()
 		  `singletile` tinyint(1) NOT NULL DEFAULT '0',
 		  `user` varchar(400) DEFAULT NULL,
 		  `password` varchar(400) DEFAULT NULL,
-		  `easysdiaccount_id` bigint(20) DEFAULT NULL,
+		  `account_id` bigint(20) DEFAULT NULL,
 		  `defaultvisibility` tinyint(1) NOT NULL DEFAULT '0',
 		  `defaultopacity` float NOT NULL DEFAULT '1',
 		  `metadataurl` varchar(500) DEFAULT NULL,

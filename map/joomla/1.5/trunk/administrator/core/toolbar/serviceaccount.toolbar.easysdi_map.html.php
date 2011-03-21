@@ -23,13 +23,13 @@ class TOOLBAR_serviceaccount {
 	function _DEFAULT() 
 	{
 		JToolBarHelper::editList('editServiceAccount');
-		JToolBarHelper::custom( 'rightCtrlPanel', 'back.png', 'back.png', JTEXT::_("EASYSDI_MAP_MENU_BACK"), false );
+		JToolBarHelper::custom( 'rightCtrlPanel', 'back.png', 'back.png', JTEXT::_("MAP_MENU_BACK"), false );
 	}
 	
 	function _LIST() 
 	{
 		JToolBarHelper::editList('editServiceAccount');
-		JToolBarHelper::custom( 'rightCtrlPanel', 'back.png', 'back.png', JTEXT::_("EASYSDI_MAP_MENU_BACK"), false );
+		JToolBarHelper::custom( 'rightCtrlPanel', 'back.png', 'back.png', JTEXT::_("MAP_MENU_BACK"), false );
 	}
 
 	function _EDIT() 

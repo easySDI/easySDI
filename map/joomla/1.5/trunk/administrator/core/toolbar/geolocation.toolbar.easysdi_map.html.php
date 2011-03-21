@@ -18,28 +18,28 @@
 
 defined('_JEXEC') or die('Restricted access');
 
-class TOOLBAR_localisation {
+class TOOLBAR_geolocation {
 
 	function _DEFAULT() 
 	{
-		JToolBarHelper::addNew('newLocalisation');
-		JToolBarHelper::editList('editLocalisation');
-		JToolBarHelper::deleteList('','deleteLocalisation');
-		JToolBarHelper::custom( 'overlayCtrlPanel', 'back.png', 'back.png', JTEXT::_("EASYSDI_MAP_MENU_BACK"), false );
+		JToolBarHelper::addNew('newGeolocation');
+		JToolBarHelper::editList('editGeolocation');
+		JToolBarHelper::deleteList('','deleteGeolocation');
+		JToolBarHelper::custom( 'overlayCtrlPanel', 'back.png', 'back.png', JTEXT::_("MAP_MENU_BACK"), false );
 	}
 	
 	function _LIST() 
 	{
-		JToolBarHelper::addNew('newLocalisation');
-		JToolBarHelper::editList('editLocalisation');
-		JToolBarHelper::deleteList('','deleteLocalisation');
-		JToolBarHelper::custom( 'overlayCtrlPanel', 'back.png', 'back.png', JTEXT::_("EASYSDI_MAP_MENU_BACK"), false );
+		JToolBarHelper::addNew('newGeolocation');
+		JToolBarHelper::editList('editGeolocation');
+		JToolBarHelper::deleteList('','deleteGeolocation');
+		JToolBarHelper::custom( 'overlayCtrlPanel', 'back.png', 'back.png', JTEXT::_("MAP_MENU_BACK"), false );
 	}
 
 	function _EDIT() 
 	{
-		JToolBarHelper::save('saveLocalisation');
-		JToolBarHelper::cancel('localisation');
+		JToolBarHelper::save('saveGeolocation');
+		JToolBarHelper::cancel('geolocation');
 	}
 }
 ?>

@@ -25,7 +25,7 @@ class TOOLBAR_projection {
 		JToolBarHelper::addNew('newProjection');
 		JToolBarHelper::editList('editProjection');
 		JToolBarHelper::deleteList('','deleteProjection');
-		JToolBarHelper::custom( 'ctrlPanel', 'back.png', 'back.png', JTEXT::_("EASYSDI_MAP_MENU_BACK"), false );
+		JToolBarHelper::custom( 'ctrlPanel', 'back.png', 'back.png', JTEXT::_("MAP_MENU_BACK"), false );
 	}
 	
 	function _LIST() 
@@ -33,7 +33,7 @@ class TOOLBAR_projection {
 		JToolBarHelper::addNew('newProjection');
 		JToolBarHelper::editList('editProjection');
 		JToolBarHelper::deleteList('','deleteProjection');
-		JToolBarHelper::custom( 'ctrlPanel', 'back.png', 'back.png', JTEXT::_("EASYSDI_MAP_MENU_BACK"), false );
+		JToolBarHelper::custom( 'ctrlPanel', 'back.png', 'back.png', JTEXT::_("MAP_MENU_BACK"), false );
 	}
 
 	function _EDIT() 

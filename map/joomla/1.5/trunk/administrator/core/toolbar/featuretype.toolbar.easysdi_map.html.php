@@ -25,7 +25,7 @@ class TOOLBAR_featuretype {
 		JToolBarHelper::addNew('newFeatureType');
 		JToolBarHelper::editList('editFeatureType');
 		JToolBarHelper::deleteList('','deleteFeatureType');
-		JToolBarHelper::custom( 'ctrlPanel', 'back.png', 'back.png', JTEXT::_("EASYSDI_MAP_MENU_BACK"), false );
+		JToolBarHelper::custom( 'ctrlPanel', 'back.png', 'back.png', JTEXT::_("MAP_MENU_BACK"), false );
 	}
 	
 	function _LIST() 
@@ -33,7 +33,7 @@ class TOOLBAR_featuretype {
 		JToolBarHelper::addNew('newFeatureType');
 		JToolBarHelper::editList('editFeatureType');
 		JToolBarHelper::deleteList('','deleteFeatureType');
-		JToolBarHelper::custom( 'ctrlPanel', 'back.png', 'back.png', JTEXT::_("EASYSDI_MAP_MENU_BACK"), false );
+		JToolBarHelper::custom( 'ctrlPanel', 'back.png', 'back.png', JTEXT::_("MAP_MENU_BACK"), false );
 	}
 
 	function _EDIT() 

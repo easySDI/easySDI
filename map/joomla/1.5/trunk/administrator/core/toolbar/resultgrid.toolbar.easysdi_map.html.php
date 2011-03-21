@@ -25,7 +25,7 @@ class TOOLBAR_resultgrid {
 		JToolBarHelper::addNew('newResultGrid');
 		JToolBarHelper::editList('editResultGrid');
 		JToolBarHelper::deleteList('','deleteResultGrid');
-		JToolBarHelper::custom( 'ctrlPanel', 'back.png', 'back.png', JTEXT::_("EASYSDI_MAP_MENU_BACK"), false );
+		JToolBarHelper::custom( 'ctrlPanel', 'back.png', 'back.png', JTEXT::_("MAP_MENU_BACK"), false );
 	}
 	
 	function _LISTRESULTGRID() 
@@ -33,7 +33,7 @@ class TOOLBAR_resultgrid {
 		JToolBarHelper::addNew('newResultGrid');
 		JToolBarHelper::editList('editResultGrid');
 		JToolBarHelper::deleteList('','deleteResultGrid');
-		JToolBarHelper::custom( 'ctrlPanel', 'back.png', 'back.png', JTEXT::_("EASYSDI_MAP_MENU_BACK"), false );
+		JToolBarHelper::custom( 'ctrlPanel', 'back.png', 'back.png', JTEXT::_("MAP_MENU_BACK"), false );
 	}
 
 	function _EDITRESULTGRID() 

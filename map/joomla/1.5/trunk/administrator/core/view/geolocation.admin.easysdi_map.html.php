@@ -20,28 +20,28 @@ defined('_JEXEC') or die('Restricted access');
 
 class HTML_geolocation 
 {
-	function listGeolocation($use_pagination, $rows, $pageNav, $option)
+	function listGeolocation($use_pagination, $rows, $pageNav, $search, $filter_order_Dir, $filter_order,$option)
 	{
-		JToolBarHelper::title(JText::_("EASYSDI_LIST_LOCALISATION"));
-		$ordering_field = JRequest::getVar ('order_field');
+		JToolBarHelper::title(JText::_("MAP_GEOLOCATION_LIST"));
 		?>
-		<script>
-		function tableOrder(task, orderField)
-		{
-			document.forms['adminForm'].elements['order_field'].value=orderField;
-			document.forms['adminForm'].submit();
-			return;
-		
-		}
-		</script>
 		<form action="index.php" method="GET" name="adminForm">
+		<table width="100%">
+			<tr>
+				<td class="key"  width="100%">
+					<?php echo JText::_("FILTER"); ?>:
+					<input type="text" name="searchGeolocation" id="searchGeolocation" value="<?php echo $search;?>" class="text_area" onchange="document.adminForm.submit();" />
+					<button onclick="this.form.submit();"><?php echo JText::_( "GO" ); ?></button>
+					<button onclick="document.getElementById('searchGeolocation').value='';this.form.submit();"><?php echo JText::_( "RESET" ); ?></button>
+				</td>
+			</tr>
+		</table>
 		<table class="adminlist">
 		<thead>
 			<tr>
-				<th width="20" class='title'><?php echo JText::_("EASYSDI_LOCALISATION_SHARP"); ?></th>
+				<th width="20" class='title'><?php echo JText::_("MAP_GEOLOCATION_SHARP"); ?></th>
 				<th width="20" class='title'><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows); ?>);" /></th>
-				<th class='title'><a href="javascript:tableOrder('geolocation', 'name');" title="Click to sort by this column"><?php echo JText::_("EASYSDI_LOCALISATION_TITLE"); ?></a></th>
-				<th class='title'><?php echo JText::_("EASYSDI_LOCALISATION_URL"); ?></th>
+				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_GEOLOCATION_NAME"), 'name', @$filter_order_Dir, @$filter_order); ?></th>
+				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_GEOLOCATION_WFSURL"), 'wfsurl', @$filter_order_Dir, @$filter_order); ?></th>
 			</tr>
 		</thead>
 		<tbody>		
@@ -61,11 +61,8 @@ class HTML_geolocation
 			$k = 1 - $k;
 			$i++;
 		}
-		
-			?></tbody>
-			
+		?></tbody>
 		<?php			
-		
 		if ($use_pagination)
 		{?>
 		<tfoot>
@@ -78,24 +75,25 @@ class HTML_geolocation
 		?>
 	  	</table>
 	  	<input type="hidden" name="option" value="<?php echo $option; ?>" />
-	  	<input type="hidden" name="order_field" value="" />
-	  	<input type="hidden" name="task" value="localisation" />
+	  	<input type="hidden" name="task" value="geolocation" />
 	  	<input type="hidden" name="boxchecked" value="0" />
 	  	<input type="hidden" name="hidemainmenu" value="0">
+	  	<input type="hidden" name="filter_order_Dir" value="<?php echo $filter_order_Dir; ?>" />
+	  	<input type="hidden" name="filter_order" value="<?php echo $filter_order; ?>" />
 	  	</form>
 		<?php		
 	}
 	
-	function editGeolocation( $geolocation, $option )
+	function editGeolocation( $geolocation, $createUser, $updateUser,$option )
 	{
 		global  $mainframe;
 		if ($geolocation->id != 0)
 		{
-			JToolBarHelper::title( JText::_("EASYSDI_LOCALISATION_EDIT"), 'generic.png' );
+			JToolBarHelper::title( JText::_("MAP_GEOLOCATION_EDIT"), 'generic.png' );
 		}
 		else
 		{
-			JToolBarHelper::title( JText::_("EASYSDI_LOCALISATION_NEW"), 'generic.png' );
+			JToolBarHelper::title( JText::_("MAP_GEOLOCATION_NEW"), 'generic.png' );
 		}
 		?>		
 		<script>	
@@ -106,17 +104,17 @@ class HTML_geolocation
 			
 			if (document.getElementById('wfsurl').value == "")
 			{
-				alert ('<?php echo  JText::_( 'EASYSDI_LOCALISATION_CT_WFS_URL_VALIDATION_ERROR');?>');	
+				alert ('<?php echo  JText::_( 'MAP_GEOLOCATION_CT_WFS_URL_VALIDATION_ERROR');?>');	
 				return;
 			}
 			else if (document.getElementById('name').value == "")
 			{
-				alert ('<?php echo  JText::_( 'EASYSDI_LOCALISATION_CT_TITLE_VALIDATION_ERROR');?>');	
+				alert ('<?php echo  JText::_( 'MAP_GEOLOCATION_CT_TITLE_VALIDATION_ERROR');?>');	
 				return;
 			}
 			else if (document.getElementById('areafield').value == "")
 			{	
-				alert ('<?php echo  JText::_( 'EASYSDI_LOCALISATION_CT_AREA_NAME_VALIDATION_ERROR');?>');	
+				alert ('<?php echo  JText::_( 'MAP_GEOLOCATION_CT_AREA_NAME_VALIDATION_ERROR');?>');	
 				return;
 			}else
 			{	
@@ -136,57 +134,88 @@ class HTML_geolocation
 					<fieldset>
 						<table class="admintable">
 							<tr>
-								<td class="key" ><?php echo JText::_("EASYSDI_LOCALISATION_ID"); ?></td>
+								<td class="key" ><?php echo JText::_("MAP_GEOLOCATION_ID"); ?></td>
 								<td><?php echo $geolocation->id; ?></td>																
 							</tr>	
 							<tr>							
-								<td class="key"><?php echo JText::_("EASYSDI_LOCALISATION_WFS_URL"); ?></td>
-								<td><input class="inputbox" type="text" size="50" maxlength="1000" name="wfsurl" id="wfs_url" value="<?php echo $geolocation->wfsurl; ?>" /></td>							
+								<td class="key"><?php echo JText::_("MAP_GEOLOCATION_WFS_URL"); ?></td>
+								<td><input class="inputbox" type="text" size="50" maxlength="1000" name="wfsurl" id="wfsurl" value="<?php echo $geolocation->wfsurl; ?>" /></td>							
 							</tr>	
 									
 							<tr>
-								<td class="key"><?php echo JText::_("EASYSDI_LOCALISATION_TITLE"); ?></td>
-								<td><input class="inputbox" type="text" size="50" maxlength="1000" name="name" id="title" value="<?php echo $geolocation->name; ?>" /></td>
+								<td class="key"><?php echo JText::_("MAP_GEOLOCATION_NAME"); ?></td>
+								<td><input class="inputbox" type="text" size="50" maxlength="1000" name="name" id="name" value="<?php echo $geolocation->name; ?>" /></td>
 													
 							</tr>
 							<tr>
-								<td class="key"><?php echo JText::_("EASYSDI_LOCALISATION_AREA_FIELD_NAME"); ?></td>
+								<td class="key"><?php echo JText::_("MAP_GEOLOCATION_AREA_FIELD_NAME"); ?></td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="areafield" id="areafield" value="<?php echo $geolocation->areafield; ?>" /></td>
 							</tr>
 							<tr>
-								<td class="key"><?php echo JText::_("EASYSDI_LOCALISATION_NAME_FIELD_NAME"); ?></td>
+								<td class="key"><?php echo JText::_("MAP_GEOLOCATION_NAME_FIELD_NAME"); ?></td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="namefield" id="namefield" value="<?php echo $geolocation->namefield; ?>" /></td>
 							</tr>
 							<tr>
-								<td class="key"><?php echo JText::_("EASYSDI_LOCALISATION_ID_FIELD_NAME"); ?></td>
+								<td class="key"><?php echo JText::_("MAP_GEOLOCATION_ID_FIELD_NAME"); ?></td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="idfield" id="idfield" value="<?php echo $geolocation->idfield; ?>" /></td>
 							</tr>
 							<tr>
-								<td class="key"><?php echo JText::_("EASYSDI_LOCALISATION_FEAT_TYPE_NAME"); ?></td>
+								<td class="key"><?php echo JText::_("MAP_GEOLOCATION_FEAT_TYPE_NAME"); ?></td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="featuretypename" id="featuretypename" value="<?php echo $geolocation->featuretypename; ?>" /></td>
 							</tr>
 							<tr>
-								<td class="key"><?php echo JText::_("EASYSDI_LOCALISATION_PARENT_FK_FIELD_NAME"); ?></td>
+								<td class="key"><?php echo JText::_("MAP_GEOLOCATION_PARENT_FK_FIELD_NAME"); ?></td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="parentfkfield" id="parentfkfield" value="<?php echo $geolocation->parentfkfield; ?>" /></td>
 							</tr>
 							<tr>
-								<td class="key"><?php echo JText::_("EASYSDI_LOCALISATION_PARENT_ID"); ?></td>
+								<td class="key"><?php echo JText::_("MAP_GEOLOCATION_PARENT_ID"); ?></td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="parentid" id="parentid" value="<?php echo $geolocation->parentid; ?>" /></td>
 							</tr>
 							<tr>
-								<td class="key"><?php echo JText::_("EASYSDI_LOCALISATION_MAX_FEATURE"); ?></td>
+								<td class="key"><?php echo JText::_("MAP_GEOLOCATION_MAX_FEATURE"); ?></td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="maxfeatures" id="maxfeatures" value="<?php echo $geolocation->maxfeatures; ?>" /></td>
 							</tr>							
 						</table>
 					</fieldset>
 				</td>
 			</tr>
-			
 		</table>
-		
+		<br></br>
+		<table border="0" cellpadding="3" cellspacing="0">
+		<?php
+		if ($geolocation->created)
+		{ 
+		?>
+			<tr>
+				<td><?php echo JText::_("CORE_CREATED"); ?> : </td>
+				<td><?php if ($geolocation->created) {echo date('d.m.Y h:i:s',strtotime($geolocation->created));} ?></td>
+				<td>, </td>
+				<td><?php echo $createUser; ?></td>
+			</tr>
+		<?php
+		}
+		if ($geolocation->updated and $geolocation->updated<> '0000-00-00 00:00:00')
+		{ 
+		?>
+			<tr>
+				<td><?php echo JText::_("CORE_UPDATED"); ?> : </td>
+				<td><?php if ($geolocation->updated and $geolocation->updated<> 0) {echo date('d.m.Y h:i:s',strtotime($geolocation->updated));} ?></td>
+				<td>, </td>
+				<td><?php echo $updateUser; ?></td>
+			</tr>
+		<?php
+		}
+		?>		
+		</table>
 		<input type="hidden" name="option" value="<?php echo $option; ?>" />
-		<input type="hidden" name="id" value="<?php echo $geolocation->id;?>">
 		<input type="hidden" name="task" value="saveGeolocation" />
+		<input type="hidden" name="id" value="<?php echo $geolocation->id; ?>" />
+		<input type="hidden" name="guid" value="<?php echo $geolocation->guid?>" />
+		<input type="hidden" name="ordering" value="<?php echo $geolocation->ordering; ?>" />
+		<input type="hidden" name="created" value="<?php echo $geolocation->created;?>" />
+		<input type="hidden" name="createdby" value="<?php echo $geolocation->createdby; ?>" /> 
+		<input type="hidden" name="updated" value="<?php echo $geolocation->created; ?>" />
+		<input type="hidden" name="updatedby" value="<?php echo $geolocation->createdby; ?>" /> 
 		</form>
 	<?php
 	}

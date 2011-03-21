@@ -20,7 +20,7 @@ defined('_JEXEC') or die('Restricted access');
 
 class ADMIN_geolocation 
 {
-	function listLocalisation ($option)
+	function listGeolocation ($option)
 	{
 		global  $mainframe;
 		$db =& JFactory::getDBO(); 
@@ -29,13 +29,37 @@ class ADMIN_geolocation
 		$limitstart = $mainframe->getUserStateFromRequest( "view{$option}limitstart", 'limitstart', 0 );
 		$use_pagination = JRequest::getVar('use_pagination',0);
 		
-		$query ="SELECT COUNT(*) FROM #__sdi_geolocation";
+		//Search
+		$search = $mainframe->getUserStateFromRequest( "searchGeolocation{$option}", 'searchGeolocation', '' );
+		$search = $db->getEscaped( trim( strtolower( $search ) ) );
+		if ($search)
+		{
+			$query_search = ' where LOWER(id) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+			$query_search .= ' or LOWER(name) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+		}
+		
+		//Base query
+		$query ="SELECT COUNT(*) FROM #__sdi_geolocation ";
+		$query .= $query_search;
 		$db->setQuery( $query );
 		$total = $db->loadResult();
 		$pageNav = new JPagination($total,$limitstart,$limit);
 		
 		$query = "SELECT *  FROM #__sdi_geolocation ";
-		$query .= " ORDER BY name";
+		$query .= $query_search;
+		
+		// table ordering
+		$filter_order		= $mainframe->getUserStateFromRequest( "$option.filter_order",		'filter_order',		'id',	'cmd' );
+		$filter_order_Dir	= $mainframe->getUserStateFromRequest( "$option.filter_order_Dir",	'filter_order_Dir',	'ASC',		'word' );
+		if ($filter_order <> "name" && $filter_order <> "wfsurl"  )
+		{
+			$filter_order		= "id";
+			$filter_order_Dir	= "ASC";
+		}
+		$orderby 	= ' order by '. $filter_order .' '. $filter_order_Dir;
+		$query .= $orderby;
+				
+		//Pagination
 		if ($use_pagination) 
 		{
 			$db->setQuery( $query ,$pageNav->limitstart, $pageNav->limit);	
@@ -51,21 +75,48 @@ class ADMIN_geolocation
 			return ;
 		}
 		
-		HTML_geolocation::listLocalisation($use_pagination, $rows, $pageNav, $option);
+		HTML_geolocation::listGeolocation($use_pagination, $rows, $pageNav,$search, $filter_order_Dir, $filter_order, $option);
 	}
 	
-	function editLocalisation ($id,$option)
+	function editGeolocation ($id,$option)
 	{
 		global  $mainframe;
 		$db =& JFactory::getDBO(); 
 		
 		$geolocation = new geolocation ($db);
 		$geolocation->load($id);
+		
+		$user =& JFactory::getUser();
+		$createUser="";
+		$updateUser="";
+		if ($geolocation->created)
+		{ 
+			if ($geolocation->createdby and $geolocation->createdby<> 0)
+			{
+				$query = "SELECT name FROM #__users WHERE id=(SELECT user_id FROM #__sdi_account WHERE id =".$geolocation->createdby.")" ;
+				$db->setQuery($query);
+				$createUser = $db->loadResult();
+			}
+			else
+				$createUser = "";
+					
+		}
+		if ($geolocation->updated and $geolocation->updated<> '0000-00-00 00:00:00')
+		{ 
+			if ($geolocation->updatedby and $geolocation->updatedby<> 0)
+			{
+				$query = "SELECT name FROM #__users WHERE id=(SELECT user_id FROM #__sdi_account WHERE id =".$geolocation->updatedby.")" ;
+				$db->setQuery($query);
+				$updateUser = $db->loadResult();
+			}
+			else
+				$updateUser = "";
+		}
 
-		HTML_geolocation::editLocalisation($geolocation, $option);
+		HTML_geolocation::editGeolocation($geolocation,$createUser, $updateUser, $option);
 	}
 	
-	function deleteLocalisation($cid,$option)
+	function deleteGeolocation($cid,$option)
 	{
 		global $mainframe;
 		$db =& JFactory::getDBO();
@@ -73,7 +124,7 @@ class ADMIN_geolocation
 		if (!is_array( $cid ) || count( $cid ) < 1) 
 		{
 			$mainframe->enqueueMessage(JText::_("EASYSDI_SELECT_ROW_TO_DELETE"),"error");
-			$mainframe->redirect("index.php?option=$option&task=localisation" );
+			$mainframe->redirect("index.php?option=$option&task=geolocation" );
 			exit;
 		}
 		foreach( $cid as $location_id )
@@ -83,12 +134,12 @@ class ADMIN_geolocation
 				
 			if (!$geolocation->delete()) {
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=localisation" );
+				$mainframe->redirect("index.php?option=$option&task=geolocation" );
 			}				
 		}	
 	}
 	
-	function saveLocalisation($option)
+	function saveGeolocation($option)
 	{
 		global $mainframe;
 		$db=& JFactory::getDBO(); 
@@ -97,13 +148,13 @@ class ADMIN_geolocation
 		if (!$geolocation->bind( $_POST )) 
 		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");						
-			$mainframe->redirect("index.php?option=$option&task=localisation" );
+			$mainframe->redirect("index.php?option=$option&task=geolocation" );
 			exit();
 		}				
 		if (!$geolocation->store()) 
 		{			
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=localisation" );
+			$mainframe->redirect("index.php?option=$option&task=geolocation" );
 			exit();
 		}
 	}

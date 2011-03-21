@@ -23,7 +23,7 @@ class HTML_rightctrlpanel
 	function rightCtrlPanel($option)
 	{
 		JToolBarHelper::title( JText::_(  'EASYSDI_RIGHT_CONTROL_PANEL' ), 'generic.png' );
-		JToolBarHelper::custom( 'ctrlPanel', 'config.png', 'config.png', JTEXT::_("EASYSDI_CONTROL_PANEL"), false );
+		JToolBarHelper::custom( 'ctrlPanel', 'config.png', 'config.png', JTEXT::_("MAP_CONTROL_PANEL"), false );
 		
 		global $mainframe;
 		$lang		=& JFactory::getLanguage();

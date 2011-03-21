@@ -37,7 +37,7 @@ class geolocation extends sdiTable
 	var $extractidfromfid=null;
 	var $user=null;
 	var $password=null;
-	var $easysdiaccount_id=null;
+	var $account_id=null;
 		
 	// Class constructor
 	function __construct( &$db )

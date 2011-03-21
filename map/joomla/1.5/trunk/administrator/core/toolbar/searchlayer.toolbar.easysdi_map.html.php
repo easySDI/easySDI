@@ -25,7 +25,7 @@ class TOOLBAR_searchlayer {
 		JToolBarHelper::addNew('newSearchLayer');
 		JToolBarHelper::editList('editSearchLayer');
 		JToolBarHelper::deleteList('','deleteSearchLayer');
-		JToolBarHelper::custom( 'ctrlPanel', 'back.png', 'back.png', JTEXT::_("EASYSDI_MAP_MENU_BACK"), false );
+		JToolBarHelper::custom( 'ctrlPanel', 'back.png', 'back.png', JTEXT::_("MAP_MENU_BACK"), false );
 	}
 	
 	function _LIST() 
@@ -33,7 +33,7 @@ class TOOLBAR_searchlayer {
 		JToolBarHelper::addNew('newSearchLayer');
 		JToolBarHelper::editList('editSearchLayer');
 		JToolBarHelper::deleteList('','deleteSearchLayer');
-		JToolBarHelper::custom( 'ctrlPanel', 'back.png', 'back.png', JTEXT::_("EASYSDI_MAP_MENU_BACK"), false );
+		JToolBarHelper::custom( 'ctrlPanel', 'back.png', 'back.png', JTEXT::_("MAP_MENU_BACK"), false );
 	}
 
 	function _EDIT() 

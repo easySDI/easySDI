@@ -25,7 +25,7 @@ class TOOLBAR_config {
 		JToolBarHelper::addNew('newMapConfig');
 		JToolBarHelper::editList('editMapConfig');
 		JToolBarHelper::deleteList('','deleteMapConfig');
-		JToolBarHelper::custom( 'ctrlPanel', 'back.png', 'back.png', JTEXT::_("EASYSDI_MAP_MENU_BACK"), false );
+		JToolBarHelper::custom( 'ctrlPanel', 'back.png', 'back.png', JTEXT::_("MAP_MENU_BACK"), false );
 	}
 	
 	function _LIST() 
@@ -33,7 +33,7 @@ class TOOLBAR_config {
 		JToolBarHelper::addNew('newMapConfig');
 		JToolBarHelper::editList('editMapConfig');
 		JToolBarHelper::deleteList('','deleteMapConfig');
-		JToolBarHelper::custom( 'ctrlPanel', 'back.png', 'back.png', JTEXT::_("EASYSDI_MAP_MENU_BACK"), false );
+		JToolBarHelper::custom( 'ctrlPanel', 'back.png', 'back.png', JTEXT::_("MAP_MENU_BACK"), false );
 	}
 
 	function _EDIT() 

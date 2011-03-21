@@ -25,7 +25,7 @@ class TOOLBAR_precision {
 		JToolBarHelper::addNew('newPrecision');
 		JToolBarHelper::editList('editPrecision');
 		JToolBarHelper::deleteList('','deletePrecision');
-		JToolBarHelper::custom( 'ctrlPanel', 'back.png', 'back.png', JTEXT::_("EASYSDI_MAP_MENU_BACK"), false );
+		JToolBarHelper::custom( 'ctrlPanel', 'back.png', 'back.png', JTEXT::_("MAP_MENU_BACK"), false );
 	}
 	
 	function _LIST() 
@@ -33,7 +33,7 @@ class TOOLBAR_precision {
 		JToolBarHelper::addNew('newPrecision');
 		JToolBarHelper::editList('editPrecision');
 		JToolBarHelper::deleteList('','deletePrecision');
-		JToolBarHelper::custom( 'ctrlPanel', 'back.png', 'back.png', JTEXT::_("EASYSDI_MAP_MENU_BACK"), false );
+		JToolBarHelper::custom( 'ctrlPanel', 'back.png', 'back.png', JTEXT::_("MAP_MENU_BACK"), false );
 	}
 
 	function _EDIT() 

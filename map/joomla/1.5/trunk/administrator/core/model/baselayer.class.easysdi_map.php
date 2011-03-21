@@ -38,7 +38,7 @@ class baseLayer extends sdiTable
 	var $singletile=false;
 	var $user=null;
 	var $password=null;
-	var $easysdiaccount_id =null;
+	var $account_id =null;
 	var $defaultvisibility=null;
 	var $defaultopacity=null;
 	var $metadataurl=null;

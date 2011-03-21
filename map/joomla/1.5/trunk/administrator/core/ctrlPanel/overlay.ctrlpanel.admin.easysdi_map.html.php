@@ -22,15 +22,15 @@ class HTML_overlayctrlpanel
 {
 	function overlayCtrlPanel($option)
 	{
-		JToolBarHelper::title( JText::_(  'EASYSDI_OVERLAY_CONTROL_PANEL' ), 'generic.png' );
-		JToolBarHelper::custom( 'ctrlPanel', 'config.png', 'config.png', JTEXT::_("EASYSDI_CONTROL_PANEL"), false );
+		JToolBarHelper::title( JText::_(  'MAP_OVERLAY_CONTROL_PANEL' ), 'generic.png' );
+		JToolBarHelper::custom( 'ctrlPanel', 'config.png', 'config.png', JTEXT::_("MAP_CONTROL_PANEL"), false );
 		
 		global $mainframe;
 		$lang		=& JFactory::getLanguage();
 		$template	= $mainframe->getTemplate();
 		$pane		=& JPane::getInstance('sliders');
 		echo $pane->startPane("content-pane");
-		echo $pane->startPanel( JText::_('EASYSDI_OVERLAY_MODULES'), 'cpanel-panel-1' );
+		echo $pane->startPanel( JText::_('MAP_OVERLAY_MODULES'), 'cpanel-panel-1' );
 		?>
 		<form ation="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
 			<input type="hidden" name="option" id="option" value="<?php echo $option?>">
@@ -45,7 +45,7 @@ class HTML_overlayctrlpanel
 				<div class="icon">
 					<a href="<?php echo $link; ?>">
 						<?php 
-							$text = JText::_( 'EASYSDI_baseLayer' );					
+							$text = JText::_( 'MAP_BASELAYER' );					
 							echo JHTML::_('image.site',  'icon-48-component.png', '/templates/'. $template .'/images/header/', NULL, NULL, $text ); ?>
 						<span><?php echo $text; ?></span></a>
 				</div>
@@ -58,7 +58,7 @@ class HTML_overlayctrlpanel
 				<div class="icon">
 					<a href="<?php echo $link; ?>">
 						<?php 
-							$text = JText::_( 'EASYSDI_LOCALISATION' );					
+							$text = JText::_( 'MAP_GEOLOCATION' );					
 							echo JHTML::_('image.site',  'icon-48-component.png', '/templates/'. $template .'/images/header/', NULL, NULL, $text ); ?>
 						<span><?php echo $text; ?></span></a>
 				</div>
@@ -71,7 +71,7 @@ class HTML_overlayctrlpanel
 				<div class="icon">
 					<a href="<?php echo $link; ?>">
 						<?php 
-							$text = JText::_( 'EASYSDI_OVERLAY_DEFINITION' );					
+							$text = JText::_( 'MAP_OVERLAY_DEFINITION' );					
 							echo JHTML::_('image.site',  'icon-48-component.png', '/templates/'. $template .'/images/header/', NULL, NULL, $text ); ?>
 						<span><?php echo $text; ?></span></a>
 				</div>
@@ -84,7 +84,7 @@ class HTML_overlayctrlpanel
 				<div class="icon">
 					<a href="<?php echo $link; ?>">
 						<?php 
-							$text = JText::_( 'EASYSDI_OVERLAY_GROUP' );					
+							$text = JText::_( 'MAP_OVERLAY_GROUP' );					
 							echo JHTML::_('image.site',  'icon-48-component.png', '/templates/'. $template .'/images/header/', NULL, NULL, $text ); ?>
 						<span><?php echo $text; ?></span></a>
 				</div>

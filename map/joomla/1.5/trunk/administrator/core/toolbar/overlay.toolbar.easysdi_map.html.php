@@ -25,7 +25,7 @@ class TOOLBAR_overlay {
 		JToolBarHelper::addNew('newOverlayContent');
 		JToolBarHelper::editList('editOverlayContent');
 		JToolBarHelper::deleteList('','deleteOverlayContent');
-		JToolBarHelper::custom( 'overlayCtrlPanel', 'back.png', 'back.png', JTEXT::_("EASYSDI_MAP_MENU_BACK"), false );
+		JToolBarHelper::custom( 'overlayCtrlPanel', 'back.png', 'back.png', JTEXT::_("MAP_MENU_BACK"), false );
 	}
 	
 	function _LISTOVERLAYCONTENT() 
@@ -33,7 +33,7 @@ class TOOLBAR_overlay {
 		JToolBarHelper::addNew('newOverlayContent');
 		JToolBarHelper::editList('editOverlayContent');
 		JToolBarHelper::deleteList('','deleteOverlayContent');
-		JToolBarHelper::custom( 'overlayCtrlPanel', 'back.png', 'back.png', JTEXT::_("EASYSDI_MAP_MENU_BACK"), false );
+		JToolBarHelper::custom( 'overlayCtrlPanel', 'back.png', 'back.png', JTEXT::_("MAP_MENU_BACK"), false );
 	}
 
 	function _EDITOVERLAYCONTENT() 
@@ -47,7 +47,7 @@ class TOOLBAR_overlay {
 		JToolBarHelper::addNew('newOverlayGroup');
 		JToolBarHelper::editList('editOverlayGroup');
 		JToolBarHelper::deleteList('','deleteOverlayGroup');
-		JToolBarHelper::custom( 'overlayCtrlPanel', 'back.png', 'back.png', JTEXT::_("EASYSDI_MAP_MENU_BACK"), false );
+		JToolBarHelper::custom( 'overlayCtrlPanel', 'back.png', 'back.png', JTEXT::_("MAP_MENU_BACK"), false );
 	}
 
 	function _EDITOVERLAYGROUP() 
