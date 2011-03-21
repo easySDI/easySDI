@@ -20,18 +20,27 @@ defined('_JEXEC') or die('Restricted access');
 
 class HTML_featuretype 
 {
-	function listFeatureType($use_pagination, $rows, $pageNav, $option)
+	function listFeatureType($use_pagination, $rows, $pageNav,$search, $filter_order_Dir, $filter_order, $option)
 	{
-		JToolBarHelper::title(JText::_("EASYSDI_LIST_MAP_FEATURE_TYPE"));
+		JToolBarHelper::title(JText::_("MAP_LIST_FEATURE_TYPE"));
 		?>
 		<form action="index.php" method="GET" name="adminForm">
-
+		<table width="100%">
+			<tr>
+				<td class="key"  width="100%">
+					<?php echo JText::_("FILTER"); ?>:
+					<input type="text" name="searchFeatureType" id="searchFeatureType" value="<?php echo $search;?>" class="text_area" onchange="document.adminForm.submit();" />
+					<button onclick="this.form.submit();"><?php echo JText::_( "GO" ); ?></button>
+					<button onclick="document.getElementById('searchFeatureType').value='';this.form.submit();"><?php echo JText::_( "RESET" ); ?></button>
+				</td>
+			</tr>
+		</table>
 		<table class="adminlist">
 		<thead>
 			<tr>
-				<th width="20" class='title'><?php echo JText::_("EASYSDI_MAP_FT_SHARP"); ?></th>
+				<th width="20" class='title'><?php echo JText::_("MAP_FEATURETYPE_SHARP"); ?></th>
 				<th width="20" class='title'><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows); ?>);" /></th>
-				<th class='title'><?php echo JText::_("EASYSDI_MAP_FT_NAME"); ?></th>
+				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_FEATURETYPE_NAME"), 'name', @$filter_order_Dir, @$filter_order); ?></th>
 			</tr>
 		</thead>
 		<tbody>		
@@ -70,19 +79,21 @@ class HTML_featuretype
 	  	<input type="hidden" name="task" value="featureType" />
 	  	<input type="hidden" name="boxchecked" value="0" />
 	  	<input type="hidden" name="hidemainmenu" value="0">
+	  	<input type="hidden" name="filter_order_Dir" value="<?php echo $filter_order_Dir; ?>" />
+	  	<input type="hidden" name="filter_order" value="<?php echo $filter_order; ?>" />
 	  	</form>
 		<?php		
 	}
 	
-	function editFeatureType ($feature_type, $rowsUses,$rowsSelectedUses,$rowsAttributes,$rowsProfiles,$rowsAttributeProfiles,$option)
+	function editFeatureType ($feature_type, $rowsUses,$rowsSelectedUses,$rowsAttributes,$rowsProfiles,$rowsAttributeProfiles,$createUser,$updateUser,$option)
 	{
 		if ($feature_type->id != 0)
 		{
-			JToolBarHelper::title( JText::_("EASYSDI_MAP_EDIT_FT"), 'generic.png' );
+			JToolBarHelper::title( JText::_("MAP_EDIT_FEATURETYPE"), 'generic.png' );
 		}
 		else
 		{
-			JToolBarHelper::title( JText::_("EASYSDI_MAP_NEW_FT"), 'generic.png' );
+			JToolBarHelper::title( JText::_("MAP_NEW_FEATURETYPE"), 'generic.png' );
 		}
 		
 		HTML_featuretype::alter_array_value_with_Jtext($rowsUses);
@@ -136,42 +147,42 @@ class HTML_featuretype
 			<tr>
 				<td>
 					<fieldset>
-					<legend><?php echo  JText::_("EASYSDI_MAP_LEGEND_FT")?></legend>						
+					<legend><?php echo  JText::_("MAP_LEGEND_FEATURETYPE")?></legend>						
 						<table class="admintable">
 							<tr>
-								<td class="key" width="100p"><?php echo JText::_("EASYSDI_MAP_FT_ID"); ?></td>
+								<td class="key" width="100p"><?php echo JText::_("MAP_FEATURETYPE_ID"); ?></td>
 								<td><?php echo $feature_type->id; ?></td>								
 							</tr>
 							<tr>
-								<td class="key" width="100p"><?php echo JText::_("EASYSDI_MAP_FT_NAME"); ?></td>
+								<td class="key" width="100p"><?php echo JText::_("MAP_FEATURETYPE_NAME"); ?></td>
 								<td><input class="inputbox" type="text" size="100" maxlength="100" name="name" id="name" value="<?php echo $feature_type->name; ?>" /></td>								
 							</tr>
 							<tr>
-								<td class="key"><?php echo JText::_("EASYSDI_MAP_FT_USE"); ?></td>
+								<td class="key"><?php echo JText::_("MAP_FEATURETYPE_USE"); ?></td>
 								<td><?php echo JHTML::_("select.genericlist",$rowsUses, 'uses_id[]', 'size="5" multiple="true" class="selectbox" onChange="javascript:checkUses()"', 'value', 'text', $rowsSelectedUses ); ?></td>
 							</tr>
 							<tr id="geom">
-								<td class="key" width="100p"><?php echo JText::_("EASYSDI_MAP_FT_GEOMETRY"); ?></td>
+								<td class="key" width="100p"><?php echo JText::_("MAP_FEATURETYPE_GEOMETRY"); ?></td>
 								<td><input class="inputbox" type="text" size="100" maxlength="100" name="geometry" id="geometry" value="<?php echo $feature_type->geometry; ?>" /></td>								
 							</tr>
 						</table>
 					</fieldset>
 					<fieldset>		
-					<legend><?php echo  JText::_("EASYSDI_MAP_LEGEND_ATTRIBUTE")?>
+					<legend><?php echo  JText::_("MAP_LEGEND_ATTRIBUTE")?>
 						<a href="#" onclick="javascript: submitbutton('addNewAttribute')"> 
 									<img class="helpTemplate" 
 										 src="../templates/easysdi/icons/silk/add.png" 
-										 alt="<?php echo JText::_("EASYSDI_MAP_ADD_NEW_ATTRIBUTE") ?>" 
+										 alt="<?php echo JText::_("MAP_ADD_NEW_ATTRIBUTE") ?>" 
 										 />
 								</a></legend>				
 						<table class="admintable">
 						<tr>
-							<th width="310"><?php echo JText::_( 'EASYSDI_MAP_ATTR_NAME'); ?></th>
-							<th width="110"><?php echo JText::_( 'EASYSDI_MAP_ATTR_DATA_TYPE'); ?></th>
-							<th width="150"><?php echo JText::_( 'EASYSDI_MAP_ATTR_PROFILE'); ?></th>
-							<th width="50"><?php echo JText::_( 'EASYSDI_MAP_ATTR_VISIBLE'); ?></th>
-							<th width="110"><?php echo JText::_( 'EASYSDI_MAP_ATTR_WIDTH'); ?></th>
-							<th width="50"><?php echo JText::_( 'EASYSDI_MAP_ATTR_VISIBILITY'); ?></th>							
+							<th width="310"><?php echo JText::_( 'MAP_ATTR_NAME'); ?></th>
+							<th width="110"><?php echo JText::_( 'MAP_ATTR_DATA_TYPE'); ?></th>
+							<th width="150"><?php echo JText::_( 'MAP_ATTR_PROFILE'); ?></th>
+							<th width="50"><?php echo JText::_( 'MAP_ATTR_VISIBLE'); ?></th>
+							<th width="110"><?php echo JText::_( 'MAP_ATTR_WIDTH'); ?></th>
+							<th width="50"><?php echo JText::_( 'MAP_ATTR_VISIBILITY'); ?></th>							
 						</tr>
 							<tbody id="attributeTable" >
 							<?php $iAttribute = 0; 
@@ -186,7 +197,7 @@ class HTML_featuretype
 									<td><input type="checkbox"  name="VISIBLE_<?php echo $iAttribute;?>" id="VISIBLE_<?php echo $iAttribute;?>"  value="1" onChange="javascript:enableVisibility(<?php echo $iAttribute;?>)" <?php if ($attribute->visible) echo "checked"; ?>"></td>
 									<td><input class="inputbox" type="text" name="WIDTH_<?php echo $iAttribute;?>" id="WIDTH_<?php echo $iAttribute;?>"  <?php if (!$attribute->visible) echo "disabled"; ?> value="<?php if ($attribute->visible) echo $attribute->width; ?>"></td>				
 									<td><input type="checkbox" name="VISIBILITY_<?php echo $iAttribute;?>" id="VISIBILITY_<?php echo $iAttribute;?>" value="1" <?php if (!$attribute->visible) echo "disabled"; if ($attribute->initialvisibility && $attribute->visible) echo "checked"; ?>"></td>
-									<td><input type="button" onClick="document.getElementById('selectAttr').value=<?php echo $iAttribute; ?>;javascript:submitbutton('removeAttribute');" value="<?php echo JText::_( 'EASYSDI_MAP_REMOVE_ATTRIBUTE' ); ?>"></td>													
+									<td><input type="button" onClick="document.getElementById('selectAttr').value=<?php echo $iAttribute; ?>;javascript:submitbutton('removeAttribute');" value="<?php echo JText::_( 'MAP_REMOVE_ATTRIBUTE' ); ?>"></td>													
 								</tr>
 							<?php 
 								$iAttribute += 1;
@@ -198,12 +209,45 @@ class HTML_featuretype
 				</td>
 			</tr>
 		</table>
-		<input type="hidden" name="id" value="<?php echo $feature_type->id; ?>" />
+		<br></br>
+		<table border="0" cellpadding="3" cellspacing="0">
+		<?php
+		if ($feature_type->created)
+		{ 
+		?>
+			<tr>
+				<td><?php echo JText::_("CORE_CREATED"); ?> : </td>
+				<td><?php if ($feature_type->created) {echo date('d.m.Y h:i:s',strtotime($feature_type->created));} ?></td>
+				<td>, </td>
+				<td><?php echo $createUser; ?></td>
+			</tr>
+		<?php
+		}
+		if ($feature_type->updated and $feature_type->updated<> '0000-00-00 00:00:00')
+		{ 
+		?>
+			<tr>
+				<td><?php echo JText::_("CORE_UPDATED"); ?> : </td>
+				<td><?php if ($feature_type->updated and $feature_type->updated<> 0) {echo date('d.m.Y h:i:s',strtotime($feature_type->updated));} ?></td>
+				<td>, </td>
+				<td><?php echo $updateUser; ?></td>
+			</tr>
+		<?php
+		}
+		?>		
+		</table>
 		<input type="hidden" name="selectAttr" id="selectAttr" value="" />
 		<input type="hidden" name="option" value="<?php echo $option; ?>" />
 		<input type="hidden" name="task" value="" />
 		<input type="hidden" name="iAttribute" id="iAttribute" value="<?php echo $iAttribute; ?>" />
 		<input type="hidden" name="toRemoveAttrList" id="toRemoveAttrList" value="" />
+		<input type="hidden" name="id" value="<?php echo $feature_type->id; ?>" />
+		<input type="hidden" name="guid" value="<?php echo $feature_type->guid?>" />
+		<input type="hidden" name="ordering" value="<?php echo $feature_type->ordering; ?>" />
+		<input type="hidden" name="created" value="<?php echo $feature_type->created;?>" />
+		<input type="hidden" name="createdby" value="<?php echo $feature_type->createdby; ?>" /> 
+		<input type="hidden" name="updated" value="<?php echo $feature_type->created; ?>" />
+		<input type="hidden" name="updatedby" value="<?php echo $feature_type->createdby; ?>" /> 
 	</form>
 	<script >
 	var nbAttribute = <?php echo $iAttribute;?>;
@@ -318,7 +362,7 @@ class HTML_featuretype
 		
 		var aButton = document.createElement('input');
 		aButton.type="button";
-		aButton.value="<?php echo JText::_( 'EASYSDI_MAP_REMOVE_ATTRIBUTE' ); ?>";
+		aButton.value="<?php echo JText::_( 'MAP_REMOVE_ATTRIBUTE' ); ?>";
 		aButton.setAttribute("onClick","document.getElementById('selectAttr').value="+nbAttribute+" ;javascript:submitbutton('removeAttribute');");
 		
 		var tdButton = document.createElement('td');

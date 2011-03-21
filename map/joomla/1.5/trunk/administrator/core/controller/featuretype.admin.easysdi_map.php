@@ -29,13 +29,37 @@ class ADMIN_featuretype
 		$limitstart = $mainframe->getUserStateFromRequest( "view{$option}limitstart", 'limitstart', 0 );
 		$use_pagination = JRequest::getVar('use_pagination',0);
 		
-		$query ="SELECT COUNT(*) FROM #__sdi_featuretype";
+		//Search
+		$search = $mainframe->getUserStateFromRequest( "searchFeatureType{$option}", 'searchFeatureType', '' );
+		$search = $db->getEscaped( trim( strtolower( $search ) ) );
+		if ($search)
+		{
+			$query_search = ' where LOWER(id) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+			$query_search .= ' or LOWER(name) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+		}
+		
+		//Base query
+		$query ="SELECT COUNT(*) FROM #__sdi_featuretype ";
+		$query .= $query_search;
 		$db->setQuery( $query );
 		$total = $db->loadResult();
 		$pageNav = new JPagination($total,$limitstart,$limit);
 		
 		$query = "SELECT *  FROM #__sdi_featuretype ";
-		$query .= " ORDER BY name";
+		$query .= $query_search;
+		
+		// table ordering
+		$filter_order		= $mainframe->getUserStateFromRequest( "$option.filter_order",		'filter_order',		'id',	'cmd' );
+		$filter_order_Dir	= $mainframe->getUserStateFromRequest( "$option.filter_order_Dir",	'filter_order_Dir',	'ASC',		'word' );
+		if ($filter_order <> "name" )
+		{
+			$filter_order		= "id";
+			$filter_order_Dir	= "ASC";
+		}
+		$orderby 	= ' order by '. $filter_order .' '. $filter_order_Dir;
+		$query .= $orderby;
+				
+		//Pagination
 		if ($use_pagination) 
 		{
 			$db->setQuery( $query ,$pageNav->limitstart, $pageNav->limit);	
@@ -51,7 +75,7 @@ class ADMIN_featuretype
 			return ;
 		}
 		
-		HTML_featuretype::listFeatureType($use_pagination, $rows, $pageNav, $option);
+		HTML_featuretype::listFeatureType($use_pagination, $rows, $pageNav,$search, $filter_order_Dir, $filter_order, $option);
 	}
 	
 	function editFeatureType ($id,$option)
@@ -59,40 +83,87 @@ class ADMIN_featuretype
 		global  $mainframe;
 		$db =& JFactory::getDBO(); 
 		
-		$feature_type = new feature_type ($db);
+		$feature_type = new featureType ($db);
 		$feature_type->load($id);
+		
+		//Get user name
+		$user =& JFactory::getUser();
+		$createUser="";
+		$updateUser="";
+		if ($feature_type->created)
+		{ 
+			if ($feature_type->createdby and $feature_type->createdby<> 0)
+			{
+				$query = "SELECT name FROM #__users WHERE id=(SELECT user_id FROM #__sdi_account WHERE id =".$feature_type->createdby.")" ;
+				$db->setQuery($query);
+				$createUser = $db->loadResult();
+			}
+			else
+				$createUser = "";
+					
+		}
+		if ($feature_type->updated and $feature_type->updated<> '0000-00-00 00:00:00')
+		{ 
+			if ($feature_type->updatedby and $feature_type->updatedby<> 0)
+			{
+				$query = "SELECT name FROM #__users WHERE id=(SELECT user_id FROM #__sdi_account WHERE id =".$feature_type->updatedby.")" ;
+				$db->setQuery($query);
+				$updateUser = $db->loadResult();
+			}
+			else
+				$updateUser = "";
+		}
 		
 		//Get availaible feature type use
 		$db->setQuery( "SELECT id as value, translation as text FROM #__sdi_usage" );
 		$rowsUses = $db->loadObjectList();
-		echo $db->getErrorMsg();
+		if ($db->getErrorNum()) 
+		{
+			$mainframe->enqueueMessage($db->stderr(),"error");
+			return ;
+		}
 		
 		//Get current feature type use
 		$db->setQuery( "SELECT id as value FROM #__sdi_usage WHERE id IN (SELECT usage_id FROM #__sdi_featuretype_usage WHERE ft_id=$id)" );
 		$rowsSelectedUses = $db->loadObjectList();
-		echo $db->getErrorMsg();
+		if ($db->getErrorNum()) 
+		{
+			$mainframe->enqueueMessage($db->stderr(),"error");
+			return ;
+		}
 
 		//Get defined attributes of the feature type
 		$db->setQuery( "SELECT * FROM #__sdi_featuretypeattribute WHERE ft_id=".$id );
 		$rowsAttributes = $db->loadObjectList();
-		echo $db->getErrorMsg();
+		if ($db->getErrorNum()) 
+		{
+			$mainframe->enqueueMessage($db->stderr(),"error");
+			return ;
+		}
 		//Get selected profiles for each attributes
 		$rowsAttributeProfiles = array();		
 		foreach ($rowsAttributes as $attr)
 		{
 			$db->setQuery( "SELECT profile_id as value FROM #__sdi_ftatt_profile WHERE ftatt_id= ".$attr->id );
 			$rowsAttrProf = $db->loadObjectList();
-			echo $db->getErrorMsg();
+			if ($db->getErrorNum()) 
+			{
+				$mainframe->enqueueMessage($db->stderr(),"error");
+				return ;
+			}
 			$rowsAttributeProfiles [$attr->id] = $rowsAttrProf;			
 		}
-		
 		
 		//Get availaible profile
 		$db->setQuery( "SELECT id as value, code as text FROM #__sdi_accountprofile" );
 		$rowsProfiles = $db->loadObjectList();
-		echo $db->getErrorMsg();
+		if ($db->getErrorNum()) 
+		{
+			$mainframe->enqueueMessage($db->stderr(),"error");
+			return ;
+		}
 		
-		HTML_featuretype::editFeatureType($feature_type, $rowsUses,$rowsSelectedUses,$rowsAttributes,$rowsProfiles,$rowsAttributeProfiles,$option);
+		HTML_featuretype::editFeatureType($feature_type, $rowsUses,$rowsSelectedUses,$rowsAttributes,$rowsProfiles,$rowsAttributeProfiles,$createUser,$updateUser,$option);
 	}
 	
 	function deleteFeatureType($cid,$option)
