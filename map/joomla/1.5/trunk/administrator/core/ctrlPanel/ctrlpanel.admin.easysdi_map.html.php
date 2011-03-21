@@ -40,22 +40,6 @@ class HTML_ctrlpanel
 		<div id="cpanel">	
 		<table>
 			<tr>
-			<td>				
-			<?php
-			$link = "index.php?option=$option&amp;task=mapConfig";
-			?>
-			<div style="float:<?php echo ($lang->isRTL()) ? 'right' : 'left'; ?>;">
-				<div class="icon">
-					<a href="<?php echo $link; ?>">
-					
-						<?php 
-						$text = JText::_( 'EASYSDI_MAP_CONFIG' );
-						echo JHTML::_('image.site',  'icon-48-component.png', '/templates/'. $template .'/images/header/', NULL, NULL, $text); ?>
-						<span><?php echo $text; ?></span></a>
-				</div>
-			</div>
-			</td>
-			
 			<td>
 			<?php
 			$link = "index.php?option=$option&amp;task=display";

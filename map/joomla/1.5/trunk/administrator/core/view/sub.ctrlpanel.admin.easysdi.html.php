@@ -15,7 +15,6 @@
 								<td class="header_sdi_comp_links">&nbsp;</td>
 								<td class="header_sdi_list">
 									<ul>
-										<li><?php printf('<a href="index.php?option=%s&amp;task=mapConfig">', 'com_easysdi_map'); echo JText::_( 'CORE_CPANEL_MAP_CONFIG_LABEL' ); ?></a></li>
 										<li><?php printf('<a href="index.php?option=%s&amp;task=display">', 'com_easysdi_map'); echo JText::_( 'CORE_CPANEL_MAP_DISPLAY_LABEL' ); ?></a></li>
 										<li><?php printf('<a href="index.php?option=%s&amp;task=rightCtrlPanel">', 'com_easysdi_map'); echo JText::_( 'CORE_CPANEL_MAP_RIGHT_LABEL' ); ?></a></li>
 										<li><?php printf('<a href="index.php?option=%s&amp;task=annotationStyle">', 'com_easysdi_map'); echo JText::_( 'CORE_CPANEL_MAP_ANNOTATION_LABEL' ); ?></a></li>
@@ -27,7 +26,6 @@
 									<ul >
 										<li><?php printf('<a href="index.php?option=%s&amp;task=projection">', 'com_easysdi_map'); echo JText::_( 'CORE_CPANEL_MAP_PROJECTION_LABEL' ); ?></a></li>
 										<li><?php printf('<a href="index.php?option=%s&amp;task=featureType">', 'com_easysdi_map'); echo JText::_( 'CORE_CPANEL_MAP_FEATURETYPE_LABEL' ); ?></a></li>
-										<li><?php printf('<a href="index.php?option=%s&amp;task=comment">', 'com_easysdi_map'); echo JText::_( 'CORE_CPANEL_MAP_COMMENT_LABEL' ); ?></a></li>
 										<li><?php printf('<a href="index.php?option=%s&amp;task=searchLayer">', 'com_easysdi_map'); echo JText::_( 'CORE_CPANEL_MAP_SEARCHLAYER_LABEL' ); ?></a></li>
 										<li><?php printf('<a href="index.php?option=%s&amp;task=precision">', 'com_easysdi_map'); echo JText::_( 'CORE_CPANEL_MAP_PRECISION_LABEL' ); ?></a></li>
 										<li><?php printf('<a href="index.php?option=%s&amp;task=resultGrid">', 'com_easysdi_map'); echo JText::_( 'CORE_CPANEL_MAP_RESULTGRID_LABEL' ); ?></a></li>
