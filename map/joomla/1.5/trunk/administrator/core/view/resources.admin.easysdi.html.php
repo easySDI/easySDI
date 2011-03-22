@@ -31,9 +31,9 @@ class HTML_resources {
 				<tr>
 					<th class="langmanager">
 					
-					<?php echo JText::_(EASYSDI_EDIT_RESOURCE); ?><span class="componentheading">
+					<?php echo JText::_(MAP_EDIT_RESOURCE); ?><span class="componentheading">
 						&nbsp;[<?php echo basename($file).' : '; ?>
-						<?php echo is_writable($file) ? '<b><font color="green"> Modifiable</font></b>' : '<font color="red"> Non Modifiable</font></b>' ?>]
+						<?php echo is_writable($file) ? '<b><font color="green"> '.JText::_(MAP_RESOURCE_WRITABLE).' </font></b>' : '<font color="red"> '.JText::_(MAP_RESOURCE_NONWRITABLE).' </font></b>' ?>]
 					</span>
 					</th>
 			</tr></table></td>
@@ -45,7 +45,7 @@ class HTML_resources {
 			<td>
 				<input type="checkbox" id="disable_write" name="disable_write" value="1"/>
 				<input type="hidden" name="enable_write" value="0" />
-				<label for="disable_write"><?php echo JText::_(TEXT_CHANGENOTWRITABLE); ?></label>
+				<label for="disable_write"><?php echo JText::_(MAP_RESOURCE_CHANGENOTWRITABLE); ?></label>
 			</td>
 				<?php } 
 				else
@@ -53,7 +53,7 @@ class HTML_resources {
 			<td>
 				<input type="checkbox" id="enable_write" name="enable_write" value="1"/>
 				<input type="hidden" name="disable_write" value="0" />
-				<label for="enable_write"><?php echo JText::_(TEXT_IGNOREWRITABLE); ?></label>
+				<label for="enable_write"><?php echo JText::_(MAP_RESOURCE_IGNOREWRITABLE); ?></label>
 			</td>
 			<?php
 				} // if

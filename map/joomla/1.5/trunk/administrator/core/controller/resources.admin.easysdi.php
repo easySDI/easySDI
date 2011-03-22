@@ -28,7 +28,7 @@ class ADMIN_resources {
 
 			HTML_resources::editResource( $file, $content, $option );
 		} else {
-			$mainframe->enqueueMessage("Operation Failed: Could not open $file","error");
+			$mainframe->enqueueMessage(JText::_(MAP_RESOURCE_FILENOTOPEN),"error");
 			$mainframe->redirect("index.php?option=$option" );
 		}
 	}
@@ -43,15 +43,15 @@ class ADMIN_resources {
 
 		clearstatcache();
 		if (!is_writable( $file )) {
-			$mainframe->enqueueMessage("Operation Failed: The file is not writable.","error");
+			$mainframe->enqueueMessage(JText::_(MAP_RESOURCE_FILENOTWRITABLE),"error");
 			$mainframe->redirect("index.php?option=$option" );
 		}
 		
 		if ($fp = fopen( $file, "w" )) {
-		fwrite( $fp, $content);
+			fwrite( $fp, $content);
 			
 			if ($enable_write) {
-				@chmod($file, $oldperms);
+				//@chmod($file, $oldperms);
 			} else {
 				if ($_POST['disable_write'])
 					@chmod($file, $oldperms & 0777555);
@@ -59,7 +59,7 @@ class ADMIN_resources {
 			$mainframe->redirect("index.php?option=$option" );
 		} else {
 			if ($enable_write) @chmod($file, $oldperms);
-			$mainframe->enqueueMessage("Operation Failed: Could not save $file","error");
+			$mainframe->enqueueMessage(JText::_(MAP_RESOURCE_FILENOTSAVE),"error");
 			$mainframe->redirect("index.php?option=$option" );
 		}
 	}
