@@ -29,13 +29,37 @@ class ADMIN_precision
 		$limitstart = $mainframe->getUserStateFromRequest( "view{$option}limitstart", 'limitstart', 0 );
 		$use_pagination = JRequest::getVar('use_pagination',0);
 		
+		//Search
+		$search = $mainframe->getUserStateFromRequest( "searchPrecision{$option}", 'searchPrecision', '' );
+		$search = $db->getEscaped( trim( strtolower( $search ) ) );
+		if ($search)
+		{
+			$query_search = ' where LOWER(id) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+			$query_search .= ' or LOWER(name) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+		}
+		
+		//Base query
 		$query ="SELECT COUNT(*) FROM #__sdi_precision";
+		$query .= $query_search;
 		$db->setQuery( $query );
 		$total = $db->loadResult();
 		$pageNav = new JPagination($total,$limitstart,$limit);
 		
 		$query = "SELECT *  FROM #__sdi_precision";
-		$query .= " ORDER BY name";
+		$query .= $query_search;
+		
+		// table ordering
+		$filter_order		= $mainframe->getUserStateFromRequest( "$option.filter_order",		'filter_order',		'id',	'cmd' );
+		$filter_order_Dir	= $mainframe->getUserStateFromRequest( "$option.filter_order_Dir",	'filter_order_Dir',	'ASC',		'word' );
+		if ($filter_order <> "name" && $filter_order <> "description")
+		{
+			$filter_order		= "id";
+			$filter_order_Dir	= "ASC";
+		}
+		$orderby 	= ' order by '. $filter_order .' '. $filter_order_Dir;
+		$query .= $orderby;
+				
+		//Pagination
 		if ($use_pagination) 
 		{
 			$db->setQuery( $query ,$pageNav->limitstart, $pageNav->limit);	
@@ -51,7 +75,7 @@ class ADMIN_precision
 			return ;
 		}
 		
-		HTML_precision::listPrecision($use_pagination, $rows, $pageNav, $option);
+		HTML_precision::listPrecision($use_pagination, $rows, $pageNav,  $search, $filter_order_Dir, $filter_order,$option);
 	}
 	
 	function editPrecision ($id,$option)
@@ -62,7 +86,34 @@ class ADMIN_precision
 		$precision = new precision ($db);
 		$precision->load($id);
 
-		HTML_precision::editPrecision($precision, $option);
+		$user =& JFactory::getUser();
+		$createUser="";
+		$updateUser="";
+		if ($precision->created)
+		{ 
+			if ($precision->createdby and $precision->createdby<> 0)
+			{
+				$query = "SELECT name FROM #__users WHERE id=(SELECT user_id FROM #__sdi_account WHERE id =".$precision->createdby.")" ;
+				$db->setQuery($query);
+				$createUser = $db->loadResult();
+			}
+			else
+				$createUser = "";
+					
+		}
+		if ($precision->updated and $precision->updated<> '0000-00-00 00:00:00')
+		{ 
+			if ($precision->updatedby and $precision->updatedby<> 0)
+			{
+				$query = "SELECT name FROM #__users WHERE id=(SELECT user_id FROM #__sdi_account WHERE id =".$precision->updatedby.")" ;
+				$db->setQuery($query);
+				$updateUser = $db->loadResult();
+			}
+			else
+				$updateUser = "";
+		}
+		
+		HTML_precision::editPrecision($precision,$createUser, $updateUser, $option);
 	}
 	
 	function deletePrecision($cid,$option)
