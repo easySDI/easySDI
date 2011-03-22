@@ -22,7 +22,7 @@ class HTML_simplesearchctrlpanel
 {
 	function simplesearchCtrlPanel($option)
 	{
-		JToolBarHelper::title( JText::_(  'EASYSDI_SIMPLESEARCH_CONTROL_PANEL' ), 'generic.png' );
+		JToolBarHelper::title( JText::_(  'MAP_SIMPLESEARCH_CONTROL_PANEL' ), 'generic.png' );
 		JToolBarHelper::custom( 'ctrlPanel', 'config.png', 'config.png', JTEXT::_("MAP_CONTROL_PANEL"), false );
 		
 		global $mainframe;
@@ -30,7 +30,7 @@ class HTML_simplesearchctrlpanel
 		$template	= $mainframe->getTemplate();
 		$pane		=& JPane::getInstance('sliders');
 		echo $pane->startPane("content-pane");
-		echo $pane->startPanel( JText::_('EASYSDI_SIMPLESEARCH_MODULES'), 'cpanel-panel-1' );
+		echo $pane->startPanel( JText::_('MAP_SIMPLESEARCH_MODULES'), 'cpanel-panel-1' );
 		?>
 		<form ation="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
 			<input type="hidden" name="option" id="option" value="<?php echo $option?>">
@@ -45,7 +45,7 @@ class HTML_simplesearchctrlpanel
 				<div class="icon">
 					<a href="<?php echo $link; ?>">
 						<?php 
-							$text = JText::_( 'EASYSDI_MAP_SIMPLE_SEARCH' );					
+							$text = JText::_( 'MAP_SIMPLE_SEARCH' );					
 							echo JHTML::_('image.site',  'icon-48-component.png', '/templates/'. $template .'/images/header/', NULL, NULL, $text ); ?>
 						<span><?php echo $text; ?></span></a>
 				</div>
@@ -58,7 +58,7 @@ class HTML_simplesearchctrlpanel
 				<div class="icon">
 					<a href="<?php echo $link; ?>">
 						<?php 
-							$text = JText::_( 'EASYSDI_MAP_SIMPLE_SEARCH_ADD_FILTER' );					
+							$text = JText::_( 'MAP_SIMPLE_SEARCH_ADD_FILTER' );					
 							echo JHTML::_('image.site',  'icon-48-component.png', '/templates/'. $template .'/images/header/', NULL, NULL, $text ); ?>
 						<span><?php echo $text; ?></span></a>
 				</div>

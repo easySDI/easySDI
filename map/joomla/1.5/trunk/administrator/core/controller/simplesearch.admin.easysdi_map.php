@@ -32,13 +32,38 @@ class ADMIN_simplesearch
 		$limitstart = $mainframe->getUserStateFromRequest( "view{$option}limitstart", 'limitstart', 0 );
 		$use_pagination = JRequest::getVar('use_pagination',0);
 		
+		//Search
+		$search = $mainframe->getUserStateFromRequest( "searchSimpleSearch{$option}", 'searchSimpleSearch', '' );
+		$search = $db->getEscaped( trim( strtolower( $search ) ) );
+		if ($search)
+		{
+			$query_search = ' where LOWER(id) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+			$query_search .= ' or LOWER(name) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+			$query_search .= ' or LOWER(description) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+		}
+		
+		//Base query
 		$query ="SELECT COUNT(*) FROM #__sdi_simplesearchtype";
+		$query .= $query_search;
 		$db->setQuery( $query );
 		$total = $db->loadResult();
 		$pageNav = new JPagination($total,$limitstart,$limit);
 		
 		$query = "SELECT *  FROM #__sdi_simplesearchtype ";
-		$query .= " ORDER BY title";
+		$query .= $query_search;
+		
+		// table ordering
+		$filter_order		= $mainframe->getUserStateFromRequest( "$option.filter_order",		'filter_order',		'id',	'cmd' );
+		$filter_order_Dir	= $mainframe->getUserStateFromRequest( "$option.filter_order_Dir",	'filter_order_Dir',	'ASC',		'word' );
+		if ($filter_order <> "name" && $filter_order <> "description" )
+		{
+			$filter_order		= "id";
+			$filter_order_Dir	= "ASC";
+		}
+		$orderby 	= ' order by '. $filter_order .' '. $filter_order_Dir;
+		$query .= $orderby;
+				
+		//Pagination
 		if ($use_pagination) 
 		{
 			$db->setQuery( $query ,$pageNav->limitstart, $pageNav->limit);	
@@ -54,7 +79,7 @@ class ADMIN_simplesearch
 			return ;
 		}
 		
-		HTML_simplesearch::listSimpleSearch($use_pagination, $rows, $pageNav, $option);
+		HTML_simplesearch::listSimpleSearch($use_pagination, $rows, $pageNav,$search, $filter_order_Dir, $filter_order, $option);
 	}
 	
 	function editSimpleSearch ($id,$option)
@@ -64,6 +89,33 @@ class ADMIN_simplesearch
 		
 		$simpleSearch = new simpleSearch ($db);
 		$simpleSearch->load($id);
+		
+		$user =& JFactory::getUser();
+		$createUser="";
+		$updateUser="";
+		if ($simpleSearch->created)
+		{ 
+			if ($simpleSearch->createdby and $simpleSearch->createdby<> 0)
+			{
+				$query = "SELECT name FROM #__users WHERE id=(SELECT user_id FROM #__sdi_account WHERE id =".$simpleSearch->createdby.")" ;
+				$db->setQuery($query);
+				$createUser = $db->loadResult();
+			}
+			else
+				$createUser = "";
+					
+		}
+		if ($simpleSearch->updated and $simpleSearch->updated<> '0000-00-00 00:00:00')
+		{ 
+			if ($simpleSearch->updatedby and $simpleSearch->updatedby<> 0)
+			{
+				$query = "SELECT name FROM #__users WHERE id=(SELECT user_id FROM #__sdi_account WHERE id =".$simpleSearch->updatedby.")" ;
+				$db->setQuery($query);
+				$updateUser = $db->loadResult();
+			}
+			else
+				$updateUser = "";
+		}
 		
 		//Get availaible additional filters
 		$db->setQuery( "SELECT id as value, attribute as text FROM #__sdi_simplesearchfilter" );
@@ -85,7 +137,7 @@ class ADMIN_simplesearch
 		$rowsSelectedGrid = $db->loadObjectList();
 		echo $db->getErrorMsg();
 
-		HTML_simplesearch::editSimpleSearch($simpleSearch, $rowsFilters,$rowsSelectedFilter,$rowsResultGrid,$rowsSelectedGrid, $option);
+		HTML_simplesearch::editSimpleSearch($simpleSearch, $rowsFilters,$rowsSelectedFilter,$rowsResultGrid,$rowsSelectedGrid,$createUser, $updateUser, $option);
 	}
 	
 	function deleteSimpleSearch($cid,$option)
@@ -196,13 +248,37 @@ class ADMIN_simplesearch
 		$limitstart = $mainframe->getUserStateFromRequest( "view{$option}limitstart", 'limitstart', 0 );
 		$use_pagination = JRequest::getVar('use_pagination',0);
 		
+		//Search
+		$search = $mainframe->getUserStateFromRequest( "searchAdditionalFilter{$option}", 'searchAdditionalFilter', '' );
+		$search = $db->getEscaped( trim( strtolower( $search ) ) );
+		if ($search)
+		{
+			$query_search = ' where LOWER(id) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+			$query_search .= ' or LOWER(name) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+		}
+		
+		//Base query
 		$query ="SELECT COUNT(*) FROM #__sdi_simplesearchfilter";
+		$query .= $query_search;
 		$db->setQuery( $query );
 		$total = $db->loadResult();
 		$pageNav = new JPagination($total,$limitstart,$limit);
 		
 		$query = "SELECT *  FROM #__sdi_simplesearchfilter ";
-		$query .= " ORDER BY attribute";
+		$query .= $query_search;
+		
+		// table ordering
+		$filter_order		= $mainframe->getUserStateFromRequest( "$option.filter_order",		'filter_order',		'id',	'cmd' );
+		$filter_order_Dir	= $mainframe->getUserStateFromRequest( "$option.filter_order_Dir",	'filter_order_Dir',	'ASC',		'word' );
+		if ($filter_order <> "name" && $filter_order <> "description")
+		{
+			$filter_order		= "id";
+			$filter_order_Dir	= "ASC";
+		}
+		$orderby 	= ' order by '. $filter_order .' '. $filter_order_Dir;
+		$query .= $orderby;
+				
+		//Pagination
 		if ($use_pagination) 
 		{
 			$db->setQuery( $query ,$pageNav->limitstart, $pageNav->limit);	
@@ -218,7 +294,7 @@ class ADMIN_simplesearch
 			return ;
 		}
 		
-		HTML_simplesearch::listAdditionalFilter($use_pagination, $rows, $pageNav, $option);
+		HTML_simplesearch::listAdditionalFilter($use_pagination, $rows, $pageNav, $search, $filter_order_Dir, $filter_order,$option);
 	}
 	
 	function editAdditionalFilter ($id,$option)
@@ -229,7 +305,34 @@ class ADMIN_simplesearch
 		$additionalFilter = new additionalFilter ($db);
 		$additionalFilter->load($id);
 
-		HTML_simplesearch::editAdditionalFilter($additionalFilter, $option);
+		$user =& JFactory::getUser();
+		$createUser="";
+		$updateUser="";
+		if ($additionalFilter->created)
+		{ 
+			if ($additionalFilter->createdby and $additionalFilter->createdby<> 0)
+			{
+				$query = "SELECT name FROM #__users WHERE id=(SELECT user_id FROM #__sdi_account WHERE id =".$additionalFilter->createdby.")" ;
+				$db->setQuery($query);
+				$createUser = $db->loadResult();
+			}
+			else
+				$createUser = "";
+					
+		}
+		if ($additionalFilter->updated and $additionalFilter->updated<> '0000-00-00 00:00:00')
+		{ 
+			if ($additionalFilter->updatedby and $additionalFilter->updatedby<> 0)
+			{
+				$query = "SELECT name FROM #__users WHERE id=(SELECT user_id FROM #__sdi_account WHERE id =".$additionalFilter->updatedby.")" ;
+				$db->setQuery($query);
+				$updateUser = $db->loadResult();
+			}
+			else
+				$updateUser = "";
+		}
+		
+		HTML_simplesearch::editAdditionalFilter($additionalFilter, $createUser, $updateUser,$option);
 	}
 	
 	function deleteAdditionalFilter($cid,$option)

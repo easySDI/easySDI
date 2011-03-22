@@ -22,7 +22,7 @@ class HTML_searchlayerctrlpanel
 {
 	function searchlayerCtrlPanel($option)
 	{
-		JToolBarHelper::title( JText::_(  'EASYSDI_SEARCH_LAYER_CONTROL_PANEL' ), 'generic.png' );
+		JToolBarHelper::title( JText::_(  'MAP_SEARCH_LAYER_CONTROL_PANEL' ), 'generic.png' );
 		JToolBarHelper::custom( 'ctrlPanel', 'config.png', 'config.png', JTEXT::_("MAP_CONTROL_PANEL"), false );
 		
 		global $mainframe;
@@ -30,7 +30,7 @@ class HTML_searchlayerctrlpanel
 		$template	= $mainframe->getTemplate();
 		$pane		=& JPane::getInstance('sliders');
 		echo $pane->startPane("content-pane");
-		echo $pane->startPanel( JText::_('EASYSDI_SEARCH_LAYER_MODULES'), 'cpanel-panel-1' );
+		echo $pane->startPanel( JText::_('MAP_SEARCH_LAYER_MODULES'), 'cpanel-panel-1' );
 		?>
 		<form ation="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
 			<input type="hidden" name="option" id="option" value="<?php echo $option?>">
@@ -45,7 +45,7 @@ class HTML_searchlayerctrlpanel
 				<div class="icon">
 					<a href="<?php echo $link; ?>">
 						<?php 
-							$text = JText::_( 'EASYSDI_MAP_SEARCH_LAYER' );					
+							$text = JText::_( 'MAP_SEARCH_LAYER' );					
 							echo JHTML::_('image.site',  'icon-48-component.png', '/templates/'. $template .'/images/header/', NULL, NULL, $text ); ?>
 						<span><?php echo $text; ?></span></a>
 				</div>
@@ -58,7 +58,7 @@ class HTML_searchlayerctrlpanel
 				<div class="icon">
 					<a href="<?php echo $link; ?>">
 						<?php 
-							$text = JText::_( 'EASYSDI_MAP_PRECISION' );					
+							$text = JText::_( 'MAP_PRECISION' );					
 							echo JHTML::_('image.site',  'icon-48-component.png', '/templates/'. $template .'/images/header/', NULL, NULL, $text ); ?>
 						<span><?php echo $text; ?></span></a>
 				</div>
@@ -71,7 +71,7 @@ class HTML_searchlayerctrlpanel
 				<div class="icon">
 					<a href="<?php echo $link; ?>">
 						<?php 
-							$text = JText::_( 'EASYSDI_MAP_RESULT_GRID' );					
+							$text = JText::_( 'MAP_RESULT_GRID' );					
 							echo JHTML::_('image.site',  'icon-48-component.png', '/templates/'. $template .'/images/header/', NULL, NULL, $text ); ?>
 						<span><?php echo $text; ?></span></a>
 				</div>

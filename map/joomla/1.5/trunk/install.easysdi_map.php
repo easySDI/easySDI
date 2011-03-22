@@ -523,10 +523,21 @@ function com_install()
 		DROP TABLE IF EXISTS `#__sdi_simplesearchfilter`;
 		CREATE TABLE `#__sdi_simplesearchfilter` (
 		  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+		  `guid`  varchar(36) NOT NULL ,
+		  `code`  varchar(20) NULL DEFAULT NULL ,
+		  `name`  varchar(50) NOT NULL ,
+		  `description`  varchar(100)NULL DEFAULT NULL ,
+		  `created`  datetime NOT NULL ,
+		  `updated`  datetime NULL DEFAULT NULL ,
+		  `createdby`  bigint(20) NOT NULL ,
+		  `updatedby`  bigint(20) NULL DEFAULT NULL ,
+		  `label`  varchar(50) NULL DEFAULT NULL ,
+		  `ordering`  bigint(20) NULL DEFAULT 0 ,
+		  `checked_out`  bigint(20) NOT NULL DEFAULT 0 ,
+		  `checked_out_time`  datetime NULL DEFAULT NULL ,
 		  `attribute` varchar(100) NOT NULL DEFAULT '',
 		  `value` varchar(100) NOT NULL DEFAULT '',
 		  `operator` varchar(5) NOT NULL DEFAULT '==',
-		  `title` varchar(200) DEFAULT NULL,
 		  PRIMARY KEY (`id`)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 		
@@ -536,7 +547,18 @@ function com_install()
 		DROP TABLE IF EXISTS `#__sdi_simplesearchtype`;
 		CREATE TABLE `#__sdi_simplesearchtype` (
 		  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-		  `title` varchar(500) NOT NULL DEFAULT '',
+		  `guid`  varchar(36) NOT NULL ,
+		  `code`  varchar(20) NULL DEFAULT NULL ,
+		  `name`  varchar(50) NOT NULL ,
+		  `description`  varchar(100)NULL DEFAULT NULL ,
+		  `created`  datetime NOT NULL ,
+		  `updated`  datetime NULL DEFAULT NULL ,
+		  `createdby`  bigint(20) NOT NULL ,
+		  `updatedby`  bigint(20) NULL DEFAULT NULL ,
+		  `label`  varchar(50) NULL DEFAULT NULL ,
+		  `ordering`  bigint(20) NULL DEFAULT 0 ,
+		  `checked_out`  bigint(20) NOT NULL DEFAULT 0 ,
+		  `checked_out_time`  datetime NULL DEFAULT NULL ,
 		  `dropdownfeaturetype` varchar(100) NOT NULL DEFAULT '',
 		  `dropdowndisplayattr` varchar(100) NOT NULL DEFAULT '',
 		  `dropdownidattr` varchar(100) NOT NULL DEFAULT '',

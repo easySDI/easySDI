@@ -19,10 +19,8 @@
 
 defined('_JEXEC') or die('Restricted access');
 
-class simpleSearch extends JTable
+class simpleSearch extends sdiTable
 {
-	var $id=null;
-	var $title=null;
 	var $dropdownfeaturetype=null;
 	var $dropdowndisplayattr=null;
 	var $dropdownidattr=null;
@@ -36,13 +34,11 @@ class simpleSearch extends JTable
 	}
 }
 
-class additionalFilter extends JTable
+class additionalFilter extends sdiTable
 {
-	var $id=null;
 	var $attribute=null;
 	var $value=null;
 	var $operator='==';
-	var $title=null;
 	 	
 	// Class constructor
 	function __construct( &$db )
