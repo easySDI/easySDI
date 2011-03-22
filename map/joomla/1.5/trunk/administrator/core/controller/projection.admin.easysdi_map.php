@@ -29,13 +29,38 @@ class ADMIN_projection
 		$limitstart = $mainframe->getUserStateFromRequest( "view{$option}limitstart", 'limitstart', 0 );
 		$use_pagination = JRequest::getVar('use_pagination',0);
 		
+		//Search
+		$search = $mainframe->getUserStateFromRequest( "searchProjection{$option}", 'searchProjection', '' );
+		$search = $db->getEscaped( trim( strtolower( $search ) ) );
+		if ($search)
+		{
+			$query_search = ' where LOWER(id) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+			$query_search .= ' or LOWER(name) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+			$query_search .= ' or LOWER(description) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+		}
+		
+		//Base query
 		$query ="SELECT COUNT(*) FROM #__sdi_projection";
+		$query .= $query_search;
 		$db->setQuery( $query );
 		$total = $db->loadResult();
 		$pageNav = new JPagination($total,$limitstart,$limit);
 		
 		$query = "SELECT *  FROM #__sdi_projection";
-		$query .= " ORDER BY name";
+		$query .= $query_search;
+		
+		// table ordering
+		$filter_order		= $mainframe->getUserStateFromRequest( "$option.filter_order",		'filter_order',		'id',	'cmd' );
+		$filter_order_Dir	= $mainframe->getUserStateFromRequest( "$option.filter_order_Dir",	'filter_order_Dir',	'ASC',		'word' );
+		if ($filter_order <> "name" && $filter_order <> "description" && $filter_order <> "enable")
+		{
+			$filter_order		= "id";
+			$filter_order_Dir	= "ASC";
+		}
+		$orderby 	= ' order by '. $filter_order .' '. $filter_order_Dir;
+		$query .= $orderby;
+				
+		//Pagination
 		if ($use_pagination) 
 		{
 			$db->setQuery( $query ,$pageNav->limitstart, $pageNav->limit);	
@@ -51,7 +76,7 @@ class ADMIN_projection
 			return ;
 		}
 		
-		HTML_projection::listProjection($use_pagination, $rows, $pageNav, $option);
+		HTML_projection::listProjection($use_pagination, $rows, $pageNav, $search, $filter_order_Dir, $filter_order,$option);
 	}
 	
 	function editProjection ($id,$option)
@@ -62,7 +87,34 @@ class ADMIN_projection
 		$projection = new projection ($db);
 		$projection->load($id);
 
-		HTML_projection::editProjection($projection, $option);
+		$user =& JFactory::getUser();
+		$createUser="";
+		$updateUser="";
+		if ($projection->created)
+		{ 
+			if ($projection->createdby and $projection->createdby<> 0)
+			{
+				$query = "SELECT name FROM #__users WHERE id=(SELECT user_id FROM #__sdi_account WHERE id =".$projection->createdby.")" ;
+				$db->setQuery($query);
+				$createUser = $db->loadResult();
+			}
+			else
+				$createUser = "";
+					
+		}
+		if ($projection->updated and $projection->updated<> '0000-00-00 00:00:00')
+		{ 
+			if ($projection->updatedby and $projection->updatedby<> 0)
+			{
+				$query = "SELECT name FROM #__users WHERE id=(SELECT user_id FROM #__sdi_account WHERE id =".$projection->updatedby.")" ;
+				$db->setQuery($query);
+				$updateUser = $db->loadResult();
+			}
+			else
+				$updateUser = "";
+		}
+		
+		HTML_projection::editProjection($projection,$createUser, $updateUser, $option);
 	}
 	
 	function deleteProjection($cid,$option)
