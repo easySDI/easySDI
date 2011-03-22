@@ -29,13 +29,37 @@ class ADMIN_searchlayer
 		$limitstart = $mainframe->getUserStateFromRequest( "view{$option}limitstart", 'limitstart', 0 );
 		$use_pagination = JRequest::getVar('use_pagination',0);
 		
-		$query ="SELECT COUNT(*) FROM #__sdi_searchLayer";
+		//Search
+		$search = $mainframe->getUserStateFromRequest( "searchSearchLayer{$option}", 'searchSearchLayer', '' );
+		$search = $db->getEscaped( trim( strtolower( $search ) ) );
+		if ($search)
+		{
+			$query_search = ' where LOWER(id) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+			$query_search .= ' or LOWER(name) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+		}
+		
+		//Base query
+		$query ="SELECT COUNT(*) FROM #__sdi_searchLayer ";
+		$query .= $query_search;
 		$db->setQuery( $query );
 		$total = $db->loadResult();
 		$pageNav = new JPagination($total,$limitstart,$limit);
 		
-		$query = "SELECT #__sdi_searchLayer.*, #__sdi_featuretype.name  FROM #__sdi_searchLayer INNER JOIN #__sdi_featuretype ON #__sdi_searchLayer.featuretype = #__sdi_featuretype.id ";
-		$query .= " ORDER BY featuretype";
+		$query = "SELECT #__sdi_searchLayer.*, #__sdi_featuretype.name as featuretypeName  FROM #__sdi_searchLayer INNER JOIN #__sdi_featuretype ON #__sdi_searchLayer.featuretype = #__sdi_featuretype.id ";
+		$query .= $query_search;
+		
+		// table ordering
+		$filter_order		= $mainframe->getUserStateFromRequest( "$option.filter_order",		'filter_order',		'id',	'cmd' );
+		$filter_order_Dir	= $mainframe->getUserStateFromRequest( "$option.filter_order_Dir",	'filter_order_Dir',	'ASC',		'word' );
+		if ($filter_order <> "name" && $filter_order <> "enable" )
+		{
+			$filter_order		= "id";
+			$filter_order_Dir	= "ASC";
+		}
+		$orderby 	= ' order by '. $filter_order .' '. $filter_order_Dir;
+		$query .= $orderby;
+				
+		//Pagination
 		if ($use_pagination) 
 		{
 			$db->setQuery( $query ,$pageNav->limitstart, $pageNav->limit);	
@@ -51,7 +75,7 @@ class ADMIN_searchlayer
 			return ;
 		}
 		
-		HTML_searchlayer::listSearchLayer($use_pagination, $rows, $pageNav, $option);
+		HTML_searchlayer::listSearchLayer($use_pagination, $rows, $pageNav,$search, $filter_order_Dir, $filter_order, $option);
 	}
 	
 	function editSearchLayer ($id,$option)
@@ -59,8 +83,35 @@ class ADMIN_searchlayer
 		global  $mainframe;
 		$db =& JFactory::getDBO(); 
 		
-		$search_layer = new search_layer ($db);
+		$search_layer = new searchLayer ($db);
 		$search_layer->load($id);
+		
+		$user =& JFactory::getUser();
+		$createUser="";
+		$updateUser="";
+		if ($search_layer->created)
+		{ 
+			if ($search_layer->createdby and $search_layer->createdby<> 0)
+			{
+				$query = "SELECT name FROM #__users WHERE id=(SELECT user_id FROM #__sdi_account WHERE id =".$search_layer->createdby.")" ;
+				$db->setQuery($query);
+				$createUser = $db->loadResult();
+			}
+			else
+				$createUser = "";
+					
+		}
+		if ($search_layer->updated and $search_layer->updated<> '0000-00-00 00:00:00')
+		{ 
+			if ($search_layer->updatedby and $search_layer->updatedby<> 0)
+			{
+				$query = "SELECT name FROM #__users WHERE id=(SELECT user_id FROM #__sdi_account WHERE id =".$search_layer->updatedby.")" ;
+				$db->setQuery($query);
+				$updateUser = $db->loadResult();
+			}
+			else
+				$updateUser = "";
+		}
 		
 		//Get available feature type 
 		$db->setQuery( "SELECT id as value, name as text FROM #__sdi_featuretype WHERE id IN (SELECT ft_id FROM #__sdi_featuretype_usage WHERE usage_id IN (SELECT id from #__sdi_usage WHERE name ='searchLayer' ))" );
@@ -70,7 +121,7 @@ class ADMIN_searchlayer
 		$rowsDetailsFT = $db->loadObjectList();
 		echo $db->getErrorMsg();
 
-		HTML_searchlayer::editSearchLayer($search_layer, $rowsSearchLayerFT, $rowsDetailsFT, $option);
+		HTML_searchlayer::editSearchLayer($search_layer, $rowsSearchLayerFT, $rowsDetailsFT,$createUser, $updateUser, $option);
 	}
 	
 	function deleteSearchLayer($cid,$option)
@@ -80,7 +131,7 @@ class ADMIN_searchlayer
 		
 		if (!is_array( $cid ) || count( $cid ) < 1) 
 		{
-			$mainframe->enqueueMessage(JText::_("EASYSDI_SELECT_ROW_TO_DELETE"),"error");
+			$mainframe->enqueueMessage(JText::_("MAP_SELECT_ROW_TO_DELETE"),"error");
 			$mainframe->redirect("index.php?option=$option&task=searchlayer" );
 			exit;
 		}
