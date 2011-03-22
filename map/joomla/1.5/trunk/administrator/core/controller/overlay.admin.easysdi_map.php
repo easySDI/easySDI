@@ -45,18 +45,25 @@ class ADMIN_overlay
 		$total = $db->loadResult();
 		$pageNav = new JPagination($total,$limitstart,$limit);
 
-		$query = "SELECT *  FROM #__sdi_overlay l " ;
+		$query = "SELECT l.*, g.name as group_name  FROM #__sdi_overlay l INNER JOIN #__sdi_overlaygroup g ON l.group_id = g.id " ;
 		$query .= $query_search;
 		
 		// table ordering
 		$filter_order		= $mainframe->getUserStateFromRequest( "$option.filter_order",		'filter_order',		'id',	'cmd' );
 		$filter_order_Dir	= $mainframe->getUserStateFromRequest( "$option.filter_order_Dir",	'filter_order_Dir',	'ASC',		'word' );
-		if ($filter_order <> "name" && $filter_order <> "url"  )
+		if ($filter_order <> "name" && $filter_order <> "group_id" && $filter_order <> "ordering" && $filter_order <> "layers" )
 		{
 			$filter_order		= "id";
 			$filter_order_Dir	= "ASC";
 		}
-		$orderby 	= ' order by '. $filter_order .' '. $filter_order_Dir;
+		if($filter_order == "ordering")
+		{
+			$orderby 	= ' order by "group_id" ASC, '. $filter_order .' '. $filter_order_Dir;
+		}
+		else 
+		{
+			$orderby 	= ' order by '. $filter_order .' '. $filter_order_Dir;
+		}
 		$query .= $orderby;
 				
 		//Pagination
@@ -134,15 +141,7 @@ class ADMIN_overlay
 			exit();
 		}
 		
-		if($overlay->order == '' || $overlay->order == 0 )
-		{
-			$query ="SELECT MAX(o.order) FROM #__sdi_overlay o " ;
-			$db->setQuery( $query );
-			$total = $db->loadResult();
-			$overlay->ordering = $total + 1;
-		}
-
-		if (!$overlay->store())
+		if (!$overlay->store("group_id",$overlay->group_id))
 		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			$mainframe->redirect("index.php?option=$option&task=overlay" );
@@ -166,7 +165,7 @@ class ADMIN_overlay
 			$overlay = new overlay ($db);
 			$overlay->load($overlay_id);
 
-			if (!$overlay->delete()) {
+			if (!$overlay->delete("group_id",$overlay->group_id)) {
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 				$mainframe->redirect("index.php?option=$option&task=overlay" );
 			}
@@ -313,78 +312,31 @@ class ADMIN_overlay
 		}
 	}
 
-	/*
-	 * Re order the overlays
-	 */
-	function orderUpOverlay($id, $tableName)
-	{
-
-		global  $mainframe;
-		$database =& JFactory::getDBO();
-
-
-		$query = "SELECT *  FROM $tableName  WHERE id = $id ";
-		$database->setQuery( $query );
-		$row1 = $database->loadObject() ;
-		if ($database->getErrorNum()) {
-			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-		}
-
-		$query = "SELECT *  FROM $tableName l  WHERE l.order< $row1->order  order by l.order DESC LIMIT 1";
-		$database->setQuery( $query );
-		$row2 = $database->loadObject() ;
-		if ($database->getErrorNum()) {
-			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-		}
-
-
-		$query = "update $tableName l set l.order= $row1->order where l.id =$row2->id";
-		$database->setQuery( $query );
-		if (!$database->query()) {
-			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-		}
-
-		$query = "update $tableName l set l.order= $row2->order where l.id =$row1->id";
-		$database->setQuery( $query );
-		if (!$database->query()) {
-			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-		}
+	function orderUpOverlay($id){
+		$db =& JFactory::getDBO();
+		$overlay = new overlay( $db );
+		$overlay->load( $id);
+		$overlay->orderUp("group_id",$overlay->group_id);
 	}
-
-	/*
-	 * Re order the overlays
-	 */
-	function orderDownOverlay($id,$tableName)
-	{
-		global  $mainframe;
-		$database =& JFactory::getDBO();
-
-		$query = "SELECT *  FROM $tableName  WHERE id = $id ";
-		$database->setQuery( $query );
-		$row1 = $database->loadObject() ;
-		if ($database->getErrorNum()) {
-			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-		}
-
-		$query = "SELECT *  FROM $tableName l  WHERE  l.order > $row1->order  order by l.order ASC LIMIT 1";
-		$database->setQuery( $query );
-		$row2 = $database->loadObject() ;
-		if ($database->getErrorNum()) {
-			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-		}
-
-
-		$query = "update $tableName l set l.order= $row1->order where l.id =$row2->id";
-		$database->setQuery( $query );
-		if (!$database->query()) {
-			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-		}
-
-		$query = "update $tableName l set l.order= $row2->order where l.id =$row1->id";
-		$database->setQuery( $query );
-		if (!$database->query()) {
-			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-		}
+	
+	function orderDownOverlay($id){
+		$db =& JFactory::getDBO();
+		$overlay = new overlay( $db );
+		$overlay->load( $id);
+		$overlay->orderDown("group_id",$overlay->group_id);
 	}
+	function orderUpOverlayGroup($id){
+		$db =& JFactory::getDBO();
+		$overlayGroup = new overlayGroup( $db );
+		$overlayGroup->load( $id);
+		$overlayGroup->orderUp();
+	}
+	
+	function orderDownOverlayGroup($id){
+		$db =& JFactory::getDBO();
+		$overlayGroup = new overlayGroup( $db );
+		$overlayGroup->load( $id);
+		$overlayGroup->orderDown();
+	}	
 }
 ?>

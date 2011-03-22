@@ -41,7 +41,7 @@ class HTML_overlay
 					<th width="20" class='title'><?php echo JText::_("MAP_OVERLAY_CONTENT_SHARP"); ?></th>
 					<th width="20" class='title'><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows); ?>);" /></th>
 					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_OVERLAY_NAME"), 'name', @$filter_order_Dir, @$filter_order); ?></th>
-					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_OVERLAY_URL"), 'url', @$filter_order_Dir, @$filter_order); ?></th>
+					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_OVERLAY_GROUP"), 'group_id', @$filter_order_Dir, @$filter_order); ?></th>
 					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_OVERLAY_LAYERS"), 'layers', @$filter_order_Dir, @$filter_order); ?></th>
 					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_OVERLAY_ORDER"), 'ordering', @$filter_order_Dir, @$filter_order); ?></th>
 				</tr>
@@ -56,8 +56,8 @@ class HTML_overlay
 				<tr class="<?php echo "row$k"; ?>">
 					<td align="center"><?php echo $i+$pageNav->limitstart+1;?></td>
 					<td><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->id; ?>" onclick="isChecked(this.checked);" /></td>
-					<td><a href="#edit" onclick="return listItemTask('cb<?php echo $i;?>','editOverlay')"><?php echo $row->url; ?></a></td>
-					<td><?php echo stripcslashes($row->name); ?></td>
+					<td><a href="#edit" onclick="return listItemTask('cb<?php echo $i;?>','editOverlay')"><?php echo stripcslashes($row->name); ?></a></td>
+					<td><?php echo $row->group_name; ?></td>
 					<td><?php echo $row->layers; ?></td>
 					<td class="order" nowrap="nowrap"><?php $disabled = ($filter_order == 'ordering') ? true : false; ?> 
 						<span><?php echo $pageNav->orderUpIcon($i,  true, 'orderupoverlay', 'Move Up', $disabled);  ?></span> 
@@ -299,23 +299,23 @@ class HTML_overlay
 		<br></br>
 		<table border="0" cellpadding="3" cellspacing="0">
 		<?php
-		if ($overlay_group->created)
+		if ($overlay_content->created)
 		{ 
 		?>
 			<tr>
 				<td><?php echo JText::_("CORE_CREATED"); ?> : </td>
-				<td><?php if ($overlay_group->created) {echo date('d.m.Y h:i:s',strtotime($overlay_group->created));} ?></td>
+				<td><?php if ($overlay_content->created) {echo date('d.m.Y h:i:s',strtotime($overlay_content->created));} ?></td>
 				<td>, </td>
 				<td><?php echo $createUser; ?></td>
 			</tr>
 		<?php
 		}
-		if ($overlay_group->updated and $overlay_group->updated<> '0000-00-00 00:00:00')
+		if ($overlay_content->updated and $overlay_content->updated<> '0000-00-00 00:00:00')
 		{ 
 		?>
 			<tr>
 				<td><?php echo JText::_("CORE_UPDATED"); ?> : </td>
-				<td><?php if ($overlay_group->updated and $overlay_group->updated<> 0) {echo date('d.m.Y h:i:s',strtotime($overlay_group->updated));} ?></td>
+				<td><?php if ($overlay_content->updated and $overlay_content->updated<> 0) {echo date('d.m.Y h:i:s',strtotime($overlay_content->updated));} ?></td>
 				<td>, </td>
 				<td><?php echo $updateUser; ?></td>
 			</tr>
@@ -325,13 +325,13 @@ class HTML_overlay
 		</table>
 		<input type="hidden" name="option" value="<?php echo $option; ?>" /> 
 		<input type="hidden" name="task" value="saveOverlay" />
-		<input type="hidden" name="id" value="<?php echo $overlay_group->id; ?>" />
-		<input type="hidden" name="guid" value="<?php echo $overlay_group->guid?>" />
-		<input type="hidden" name="ordering" value="<?php echo $overlay_group->ordering; ?>" />
-		<input type="hidden" name="created" value="<?php echo $overlay_group->created;?>" />
-		<input type="hidden" name="createdby" value="<?php echo $overlay_group->createdby; ?>" /> 
-		<input type="hidden" name="updated" value="<?php echo $overlay_group->created; ?>" />
-		<input type="hidden" name="updatedby" value="<?php echo $overlay_group->createdby; ?>" /> 
+		<input type="hidden" name="id" value="<?php echo $overlay_content->id; ?>" />
+		<input type="hidden" name="guid" value="<?php echo $overlay_content->guid?>" />
+		<input type="hidden" name="ordering" value="<?php echo $overlay_content->ordering; ?>" />
+		<input type="hidden" name="created" value="<?php echo $overlay_content->created;?>" />
+		<input type="hidden" name="createdby" value="<?php echo $overlay_content->createdby; ?>" /> 
+		<input type="hidden" name="updated" value="<?php echo $overlay_content->created; ?>" />
+		<input type="hidden" name="updatedby" value="<?php echo $overlay_content->createdby; ?>" /> 
 		</form>
 		<?php
 	}

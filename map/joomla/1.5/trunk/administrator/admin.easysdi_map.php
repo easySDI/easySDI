@@ -152,9 +152,8 @@ switch($task)
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'overlay.toolbar.easysdi_map.html.php');
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'overlay.admin.easysdi_map.php');
 		$cid = JRequest::getVar ('cid', array(0) );
-		$order_field = JRequest::getVar ('order_field','') ;
-		ADMIN_overlay::orderUpOverlay($cid[0], "#__sdi_overlay");
-		$mainframe->redirect("index.php?option=$option&task=overlay&order_field=".$order_field );
+		ADMIN_overlay::orderUpOverlay($cid[0]);
+		$mainframe->redirect("index.php?option=$option&task=overlay");
 		break;
 	case 'orderdownoverlay':
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'overlay.admin.easysdi_map.html.php');
@@ -162,9 +161,8 @@ switch($task)
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'overlay.toolbar.easysdi_map.html.php');
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'overlay.admin.easysdi_map.php');
 		$cid = JRequest::getVar ('cid', array(0) );
-		$order_field = JRequest::getVar ('order_field','') ;
-		ADMIN_overlay::orderDownOverlay($cid[0], "#__sdi_overlay");
-		$mainframe->redirect("index.php?option=$option&task=overlay&order_field=".$order_field );
+		ADMIN_overlay::orderDownOverlay($cid[0]);
+		$mainframe->redirect("index.php?option=$option&task=overlay");
 		break;
 	/**
 	 * Overlay Group
@@ -209,9 +207,8 @@ switch($task)
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'overlay.toolbar.easysdi_map.html.php');
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'overlay.admin.easysdi_map.php');
 		$cid = JRequest::getVar ('cid', array(0) );
-		$order_field = JRequest::getVar ('order_field','') ;
-		ADMIN_overlay::orderUpOverlay($cid[0], "#__easysdi_overlay_group");
-		$mainframe->redirect("index.php?option=$option&task=overlayGroup&order_field=".$order_field );
+		ADMIN_overlay::orderUpOverlayGroup($cid[0]);
+		$mainframe->redirect("index.php?option=$option&task=overlayGroup");
 		break;
 	case 'orderdownoverlaygroup':
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'overlay.admin.easysdi_map.html.php');
@@ -219,9 +216,8 @@ switch($task)
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'overlay.toolbar.easysdi_map.html.php');
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'overlay.admin.easysdi_map.php');
 		$cid = JRequest::getVar ('cid', array(0) );
-		$order_field = JRequest::getVar ('order_field','') ;
-		ADMIN_overlay::orderDownOverlay($cid[0],"#__easysdi_overlay_group");
-		$mainframe->redirect("index.php?option=$option&task=overlayGroup&order_field=".$order_field );
+		ADMIN_overlay::orderDownOverlayGroup($cid[0]);
+		$mainframe->redirect("index.php?option=$option&task=overlayGroup");
 		break;
 	/**
 	 * Result Grid
