@@ -22,7 +22,7 @@ class HTML_display
 {
 	function listDisplay($use_pagination, $rows, $pageNav, $option)
 	{
-		JToolBarHelper::title(JText::_("EASYSDI_MAP_DISPLAY_OPTION"));
+		JToolBarHelper::title(JText::_("MAP_DISPLAY_OPTION"));
 		?>
 		<form action="index.php" method="GET" name="adminForm">
 		<script>
@@ -43,9 +43,9 @@ class HTML_display
 		<table class="adminlist">
 		<thead>
 			<tr>
-				<th width="20" class='title'><?php echo JText::_("EASYSDI_DISPLAY_SHARP"); ?></th>
-				<th class='title'><?php echo JText::_("EASYSDI_DISPLAY_TRANSLATION"); ?></th>
-				<th class='title'><?php echo JText::_("EASYSDI_PROJECTION_ENABLE"); ?></th>
+				<th width="20" class='title'><?php echo JText::_("MAP_DISPLAY_SHARP"); ?></th>
+				<th class='title'><?php echo JText::_("MAP_DISPLAY_TRANSLATION"); ?></th>
+				<th class='title'><?php echo JText::_("MAP_PROJECTION_ENABLE"); ?></th>
 				
 			</tr>
 		</thead>
