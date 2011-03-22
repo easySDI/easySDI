@@ -22,7 +22,7 @@ class HTML_rightctrlpanel
 {
 	function rightCtrlPanel($option)
 	{
-		JToolBarHelper::title( JText::_(  'EASYSDI_RIGHT_CONTROL_PANEL' ), 'generic.png' );
+		JToolBarHelper::title( JText::_(  'MAP_RIGHT_CONTROL_PANEL' ), 'generic.png' );
 		JToolBarHelper::custom( 'ctrlPanel', 'config.png', 'config.png', JTEXT::_("MAP_CONTROL_PANEL"), false );
 		
 		global $mainframe;
@@ -30,7 +30,7 @@ class HTML_rightctrlpanel
 		$template	= $mainframe->getTemplate();
 		$pane		=& JPane::getInstance('sliders');
 		echo $pane->startPane("content-pane");
-		echo $pane->startPanel( JText::_('EASYSDI_OVERLAY_MODULES'), 'cpanel-panel-1' );
+		echo $pane->startPanel( JText::_('MAP_OVERLAY_MODULES'), 'cpanel-panel-1' );
 		?>
 		<form ation="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
 			<input type="hidden" name="option" id="option" value="<?php echo $option?>">
@@ -46,7 +46,7 @@ class HTML_rightctrlpanel
 				<div class="icon">
 					<a href="<?php echo $link; ?>">
 						<?php 
-							$text = JText::_( 'EASYSDI_SERVICE_ACCOUNT' );					
+							$text = JText::_( 'MAP_SERVICE_ACCOUNT' );					
 							echo JHTML::_('image.site',  'icon-48-component.png', '/templates/'. $template .'/images/header/', NULL, NULL, $text ); ?>
 						<span><?php echo $text; ?></span></a>
 				</div>

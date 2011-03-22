@@ -22,7 +22,7 @@ class HTML_serviceaccount
 {
 	function editServiceAccount ($service_account, $account, $rowsAccount, $option)
 	{
-		JToolBarHelper::title( JText::_("EASYSDI_MAP_EDIT_SERVICE_ACCOUNT"), 'generic.png' );
+		JToolBarHelper::title( JText::_("MAP_EDIT_SERVICE_ACCOUNT"), 'generic.png' );
 		?>			
 		<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
 			<table border="0" cellpadding="0" cellspacing="0">
@@ -31,24 +31,24 @@ class HTML_serviceaccount
 						<fieldset>						
 							<table class="admintable">
 								<tr>
-									<td class="key" width="100p"><?php echo JText::_("EASYSDI_MAP_SA_USER_ID"); ?></td>
-									<td><?php echo $account->account_id; ?></td>								
+									<td class="key" width="100p"><?php echo JText::_("MAP_SA_USER_ID"); ?></td>
+									<td><?php echo $account->id; ?></td>								
 								</tr>
 								<tr>
-									<td class="key" width="100p"><?php echo JText::_("EASYSDI_MAP_SA_NAME"); ?></td>
+									<td class="key" width="100p"><?php echo JText::_("MAP_SA_NAME"); ?></td>
 									<td><?php echo $account->name; ?></td>								
 								</tr>
 								<tr>
-									<td class="key"><?php echo JText::_("EASYSDI_MAP_SA_USER_NAME"); ?></td>
+									<td class="key"><?php echo JText::_("MAP_SA_USER_NAME"); ?></td>
 									<td><?php echo $account->username; ?></td>	
 								</tr>
 								<tr>
-									<td class="key"><?php echo JText::_("EASYSDI_MAP_SA_USER_TYPE"); ?></td>
+									<td class="key"><?php echo JText::_("MAP_SA_USER_TYPE"); ?></td>
 									<td><?php echo $account->usertype; ?></td>	
 								</tr>
 								<tr>
-									<td class="key"><?php echo JText::_("EASYSDI_MAP_SA_CHANGE"); ?></td>
-									<td><?php echo JHTML::_("select.genericlist",$rowsAccount, 'account_id', 'size="1" class="inputbox" onChange="javascript:submitbutton(\'serviceAccount\');"', 'value', 'text',$account->account_id); ?></td>
+									<td class="key"><?php echo JText::_("MAP_SA_CHANGE"); ?></td>
+									<td><?php echo JHTML::_("select.genericlist",$rowsAccount, 'account_id', 'size="1" class="inputbox" onChange="javascript:submitbutton(\'serviceAccount\');"', 'value', 'text',$account->id); ?></td>
 								</tr>
 							</table>
 						</fieldset>

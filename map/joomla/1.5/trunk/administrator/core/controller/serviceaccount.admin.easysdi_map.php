@@ -28,9 +28,9 @@ class ADMIN_serviceaccount
 		$account;
 		if ($id)
 		{
-			$query = "SELECT  p.account_id, u.name, u.username, u.usertype 
+			$query = "SELECT  p.id, u.name, u.username, u.usertype 
 					  FROM  #__users u INNER JOIN #__sdi_account p ON u.id = p.user_id 
-					  WHERE p.account_id=$id";
+					  WHERE p.id=$id";
 			$query .= " LIMIT 1 ";
 			$db->setQuery( $query);
 			$accounts = $db->loadObjectList();
@@ -38,9 +38,9 @@ class ADMIN_serviceaccount
 		}
 		else
 		{
-			$query = "SELECT p.account_id, u.name, u.username, u.usertype 
+			$query = "SELECT p.id, u.name, u.username, u.usertype 
 						FROM #__sdi_map_serviceaccount sa 
-						INNER JOIN #__sdi_account p ON p.account_id = sa.account_id 
+						INNER JOIN #__sdi_account p ON p.id = sa.account_id 
 						INNER JOIN #__users u ON u.id = p.user_id";
 			$query .= " LIMIT 1 ";
 			$db->setQuery( $query);
@@ -49,7 +49,7 @@ class ADMIN_serviceaccount
 		}
 		$query = "SELECT sa.*, u.name, u.username, u.usertype 
 				  FROM #__sdi_map_serviceaccount sa 
-				  INNER JOIN #__sdi_account p ON p.account_id = sa.account_id
+				  INNER JOIN #__sdi_account p ON p.id = sa.account_id
 				  INNER JOIN #__users u ON u.id = p.user_id";
 		$query .= " LIMIT 1 ";
 		$db->setQuery( $query);
@@ -57,7 +57,7 @@ class ADMIN_serviceaccount
 		$service_account = $services_account[0];
 				
 		//Get availaible easysdi account
-		$db->setQuery( "SELECT p.account_id as value, u.name as text 
+		$db->setQuery( "SELECT p.id as value, u.name as text 
 						FROM #__users u 
 						INNER JOIN #__sdi_account p 
 						ON u.id = p.user_id " );

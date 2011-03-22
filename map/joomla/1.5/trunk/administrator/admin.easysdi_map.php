@@ -476,7 +476,7 @@ switch($task)
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'serviceaccount.toolbar.easysdi_map.html.php');
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'serviceaccount.admin.easysdi_map.php');
 		TOOLBAR_serviceaccount::_EDIT();
-		$id = JRequest::getVar ('partner_id', '' );
+		$id = JRequest::getVar ('account_id', '' );
 		ADMIN_serviceaccount::editServiceAccount($id,$option);
 		break;
 	case 'saveServiceAccount':
