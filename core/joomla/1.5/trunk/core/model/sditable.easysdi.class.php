@@ -112,10 +112,14 @@ class sdiTable extends JTable
 		return parent::delete();
 	}
 
-	function orderDown()
+	function orderDown($filter="", $filter_value="")
 	{
 		global  $mainframe;
-		$this->_db->setQuery( "select * from  $this->_tbl  where `ordering` > $this->ordering   order by `ordering` " );
+		$mainframe->enqueueMessage("select * from  $this->_tbl  where `ordering` > $this->ordering AND $filter = '".$filter_value."'  order by `ordering` " ,"INFO");
+		if($filter)
+			$this->_db->setQuery( "select * from  $this->_tbl  where `ordering` > $this->ordering AND $filter = '".$filter_value."'  order by `ordering` " );
+		else
+			$this->_db->setQuery( "select * from  $this->_tbl  where `ordering` > $this->ordering   order by `ordering` " );
 		$row = $this->_db->loadObject() ;
 		if ($this->_db->getErrorNum()) {
 			$mainframe->enqueueMessage($this->_db->getErrorMsg(),"ERROR");
@@ -133,10 +137,14 @@ class sdiTable extends JTable
 		return true;
 	}
 
-	function orderUp()
+	function orderUp($filter="", $filter_value="")
 	{
 		global  $mainframe;
-		$this->_db->setQuery( "select * from  $this->_tbl  where `ordering` < $this->ordering   order by `ordering` desc" );
+		$mainframe->enqueueMessage("select * from  $this->_tbl  where `ordering` < $this->ordering AND $filter = '".$filter_value."'  order by `ordering` desc"  ,"INFO");
+		if($filter)
+			$this->_db->setQuery( "select * from  $this->_tbl  where `ordering` < $this->ordering AND $filter = '".$filter_value."'  order by `ordering` desc " );
+		else
+			$this->_db->setQuery( "select * from  $this->_tbl  where `ordering` < $this->ordering   order by `ordering` desc" );
 		$row = $this->_db->loadObject() ;
 		if ($this->_db->getErrorNum()) {
 			$mainframe->enqueueMessage($this->_db->getErrorMsg(),"ERROR");
