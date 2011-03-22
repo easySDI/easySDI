@@ -29,13 +29,37 @@ class ADMIN_resultgrid
 		$limitstart = $mainframe->getUserStateFromRequest( "view{$option}limitstart", 'limitstart', 0 );
 		$use_pagination = JRequest::getVar('use_pagination',0);
 		
+		//Search
+		$search = $mainframe->getUserStateFromRequest( "searchResultGrid{$option}", 'searchResultGrid', '' );
+		$search = $db->getEscaped( trim( strtolower( $search ) ) );
+		if ($search)
+		{
+			$query_search = ' where LOWER(id) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+			$query_search .= ' or LOWER(name) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+		}
+		
+		//Base query
 		$query ="SELECT COUNT(*) FROM #__sdi_resultgrid";
+		$query .= $query_search;
 		$db->setQuery( $query );
 		$total = $db->loadResult();
 		$pageNav = new JPagination($total,$limitstart,$limit);
 		
 		$query = "SELECT *  FROM #__sdi_resultgrid ";
-		$query .= " ORDER BY title";
+		$query .= $query_search;
+		
+		// table ordering
+		$filter_order		= $mainframe->getUserStateFromRequest( "$option.filter_order",		'filter_order',		'id',	'cmd' );
+		$filter_order_Dir	= $mainframe->getUserStateFromRequest( "$option.filter_order_Dir",	'filter_order_Dir',	'ASC',		'word' );
+		if ($filter_order <> "name" && $filter_order <> "description" )
+		{
+			$filter_order		= "id";
+			$filter_order_Dir	= "ASC";
+		}
+		$orderby 	= ' order by '. $filter_order .' '. $filter_order_Dir;
+		$query .= $orderby;
+				
+		//Pagination
 		if ($use_pagination) 
 		{
 			$db->setQuery( $query ,$pageNav->limitstart, $pageNav->limit);	
@@ -51,7 +75,7 @@ class ADMIN_resultgrid
 			return ;
 		}
 		
-		HTML_resultgrid::listResultGrid($use_pagination, $rows, $pageNav, $option);
+		HTML_resultgrid::listResultGrid($use_pagination, $rows, $pageNav, $search, $filter_order_Dir, $filter_order,$option);
 	}
 	
 	function editResultGrid ($id,$option)
@@ -59,9 +83,36 @@ class ADMIN_resultgrid
 		global  $mainframe;
 		$db =& JFactory::getDBO(); 
 		
-		$resultGrid = new result_grid ($db);
+		$resultGrid = new resultGrid ($db);
 		$resultGrid->load($id);
 
+		$user =& JFactory::getUser();
+		$createUser="";
+		$updateUser="";
+		if ($resultGrid->created)
+		{ 
+			if ($resultGrid->createdby and $resultGrid->createdby<> 0)
+			{
+				$query = "SELECT name FROM #__users WHERE id=(SELECT user_id FROM #__sdi_account WHERE id =".$resultGrid->createdby.")" ;
+				$db->setQuery($query);
+				$createUser = $db->loadResult();
+			}
+			else
+				$createUser = "";
+					
+		}
+		if ($resultGrid->updated and $resultGrid->updated<> '0000-00-00 00:00:00')
+		{ 
+			if ($resultGrid->updatedby and $resultGrid->updatedby<> 0)
+			{
+				$query = "SELECT name FROM #__users WHERE id=(SELECT user_id FROM #__sdi_account WHERE id =".$resultGrid->updatedby.")" ;
+				$db->setQuery($query);
+				$updateUser = $db->loadResult();
+			}
+			else
+				$updateUser = "";
+		}
+		
 		//Get available feature type 
 		$db->setQuery( "SELECT id as value, name as text FROM #__sdi_featuretype WHERE id IN (SELECT ft_id FROM #__sdi_featuretype_usage WHERE usage_id IN (SELECT id from #__sdi_usage WHERE name ='extraDistinctGrid' ))" );
 		$rowsResultGridFT = $db->loadObjectList();
@@ -70,7 +121,7 @@ class ADMIN_resultgrid
 		$rowsDetailsFT = $db->loadObjectList();
 		echo $db->getErrorMsg();
 		
-		HTML_resultgrid::editResultGrid($resultGrid,$rowsResultGridFT,$rowsDetailsFT, $option);
+		HTML_resultgrid::editResultGrid($resultGrid,$rowsResultGridFT,$rowsDetailsFT, $createUser, $updateUser,$option);
 	}
 	
 	function deleteResultGrid($cid,$option)
@@ -86,7 +137,7 @@ class ADMIN_resultgrid
 		}
 		foreach( $cid as $result_grid_id )
 		{
-			$resultGrid = new result_grid ($db);
+			$resultGrid = new resultGrid ($db);
 			$resultGrid->load($result_grid_id);
 				
 			if (!$resultGrid->delete()) {
@@ -101,7 +152,7 @@ class ADMIN_resultgrid
 		global $mainframe;
 		$db=& JFactory::getDBO(); 
 			
-		$resultGrid =& new result_grid($db);
+		$resultGrid =& new resultGrid($db);
 		if (!$resultGrid->bind( $_POST )) 
 		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");						
