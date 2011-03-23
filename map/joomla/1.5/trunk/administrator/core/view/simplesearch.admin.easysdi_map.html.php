@@ -100,22 +100,22 @@ class HTML_simplesearch
 					alert ('<?php echo  JText::_( 'MAP_SIMPLESEARCH_CODE_VALIDATION_ERROR');?>');	
 					return;
 				}
-				else if (document.getElementById('dropdown_feature_type').value == "")
+				else if (document.getElementById('dropdownfeaturetype').value == "")
 				{
 					alert ('<?php echo  JText::_( 'MAP_SIMPLESEARCH_FT_VALIDATION_ERROR');?>');	
 					return;
 				}
-				else if (document.getElementById('dropdown_display_attr').value == "")
+				else if (document.getElementById('dropdowndisplayattr').value == "")
 				{
 					alert ('<?php echo  JText::_( 'MAP_SIMPLESEARCH_ATTR_VALIDATION_ERROR');?>');	
 					return;
 				}
-				else if (document.getElementById('dropdown_id_attr').value == "")
+				else if (document.getElementById('dropdownidattr').value == "")
 				{
 					alert ('<?php echo  JText::_( 'MAP_SIMPLESEARCH_ID_ATTR_VALIDATION_ERROR');?>');	
 					return;
 				}
-				else if (document.getElementById('search_attribute').value == "")
+				else if (document.getElementById('searchattribute').value == "")
 				{
 					alert ('<?php echo  JText::_( 'MAP_SIMPLESEARCH_SEARCH_ATTR_VALIDATION_ERROR');?>');	
 					return;
