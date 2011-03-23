@@ -178,6 +178,7 @@ function com_install()
 		  `resolutionoverscale` tinyint(4) NOT NULL DEFAULT '0',
 		  `extent` varchar(100) DEFAULT NULL,
 		  `maxextent` varchar(100) NOT NULL DEFAULT '-180,-90,180,90',
+		  `defineBaseMap` tinyint(1) NOT NULL DEFAULT '0',
 		  
 		  PRIMARY KEY (`id`)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8;

@@ -52,21 +52,20 @@ $roleList = array();
 
 if ($loggedIn!='false')
 { // note not boolean
-$query = "SELECT cpp.profile_id FROM #__easysdi_community_partner cp ".
-		"INNER JOIN #__easysdi_community_partner_profile cpp ON cpp.partner_id=cp.partner_id WHERE cp.user_id=".$user->id.
-		" ORDER BY cpp.profile_id DESC LIMIT 1;";
+$query = "SELECT aap.accountprofile_id FROM #__sdi_account a ".
+		"INNER JOIN #__sdi_account_accountprofile aap ON aap.account_id=a.id WHERE a.user_id=".$user->id.
+		" ORDER BY aap.accountprofile_id DESC LIMIT 1;";
 $db->setQuery($query);
 $result = $db->loadAssocList();
 if (count($result)>0)
 {
-	$role=$result[0]['profile_id'];
+	$role=$result[0]['accountprofile_id'];
 }
-$query = "SELECT cf.profile_code FROM #__easysdi_community_partner cp ".
-	"INNER JOIN #__easysdi_community_partner_profile cpp ON cpp.partner_id=cp.partner_id ".
-	"INNER JOIN #__easysdi_community_profile cf ON cpp.profile_id=cf.profile_id ".
-	  " WHERE cp.user_id=".$user->id.
-	" ORDER BY cpp.profile_id DESC LIMIT 1;";
-//#__easysdi_community_profile
+$query = "SELECT ap.code FROM #__sdi_account a ".
+	"INNER JOIN #__sdi_account_accountprofile aap ON aap.account_id=a.id ".
+	"INNER JOIN #__sdi_accountprofile ap ON aap.accountprofile_id=ap.id ".
+	  " WHERE a.user_id=".$user->id.
+	" ORDER BY aap.accountprofile_id DESC LIMIT 1;";
 
 $db->setQuery($query);
 $result = $db->loadAssocList();
@@ -74,7 +73,7 @@ if (!is_null($result))
 {
 	foreach ($result as $rec)
 	{
-		$roleList[] =$rec['profile_code'];
+		$roleList[] =$rec['code'];
 		//      $s .= "// user has role ".$rec['profile_code']."\n";
 	}
 }
@@ -82,22 +81,22 @@ if (!is_null($result))
 else
 {
 	// Get the profile role code for the default Public Role
-	$query = "SELECT profile_code FROM #__easysdi_community_profile WHERE profile_id=".$role." ;";
+	$query = "SELECT code FROM #__sdi_accountprofile WHERE id=".$role." ;";
 	$db->setQuery($query);
 	$result = $db->loadAssocList();
 	// assuming id is PK there will only be one record.
 	if (count($result)>0)
 	{
-		$roleList[] =$result[0]['profile_code'];
+		$roleList[] =$result[0]['code'];
 		//    $s .= "// user has role ".$result[0]['profile_code']."\n";
 	}
 	// Public Role - default
-	$query = "SELECT profile_id FROM #__easysdi_community_profile
-				WHERE profile_code='public' ;";
+	$query = "SELECT id FROM #__sdi_accountprofile
+				WHERE code='public' ;";
 	$db->setQuery($query);
 	$result = $db->loadAssocList();
 	if (count($result)>0)
-	$role=$result[0]['profile_id'];
+	$role=$result[0]['id'];
 }
 
 // user.areaLimitedFullPrecision - set to true if the user has full precision access but only in a certain area.
@@ -129,7 +128,7 @@ $valid_wms_layers = array();
 $doCheckProxyLayerPermissions = false;
 $policyError = "";
 
-$query = "SELECT * from #__easysdi_map_config where name='layerProxyXMLFile';";
+$query = "SELECT * from #__sdi_configuration where name='layerProxyXMLFile';";
 $db->setQuery($query);
 $result = $db->loadAssocList();
 if (!is_null($result) && $result->value != '') {
@@ -167,7 +166,7 @@ if (!is_null($result) && $result->value != '') {
 			}
 		}
 		if($policy->AvailabilityPeriod){
-			if((string)$policy->AvailabilityPeriod->Mask == "d-mm-yyyy"){
+			if((string)$policy->AvailabilityPeriod->Mask == "dd-MM-yyyy"){
 				sscanf((string)$policy->AvailabilityPeriod->From->Date, "%u-%u-%u", $fromDay, $fromMonth, $fromYear);
 				sscanf((string)$policy->AvailabilityPeriod->To->Date, "%u-%u-%u", $toDay, $toMonth, $toYear);
 				if($toYear > 2037) { // php mktime limit
@@ -178,7 +177,7 @@ if (!is_null($result) && $result->value != '') {
 					continue;
 				}
 			} else {
-				$policyError = "alert('Unrecognised date format in Policy AvailabilityPeriod - expected d-mm-yyyy, got ".(string)$policy->AvailabilityPeriod->Mask."');\n";
+				$policyError = "alert('Unrecognised date format in Policy AvailabilityPeriod - expected dd-MM-yyyy, got ".(string)$policy->AvailabilityPeriod->Mask."');\n";
 			}
 		}
 
@@ -221,29 +220,29 @@ function checkProxyLayerPermissions($doCheck, $type, $name, $valid_wms_layers, $
 //Get default base map definition
 $s .= " \n SData.baseMap = ";
 //$query = "SELECT * from #__easysdi_basemap_definition WHERE def = 1;";
-$query = "SELECT * from #__easysdi_map_base_definition WHERE def = 1;";
+$query = "SELECT * from #__sdi_baselayer WHERE defineBaseMap = 1;";
 $db->setQuery($query);
 $result = $db->loadObject();
 $s .= "{
     id : '$result->id',
     projection : '$result->projection',\n";
 if ($result->maxExtent) {
-	$s .= "    maxExtent : new OpenLayers.Bounds($result->maxExtent),\n";
+	$s .= "    maxExtent : new OpenLayers.Bounds($result->maxextent),\n";
 }
 if ($result->extent){
 	$s .= "    extent : new OpenLayers.Bounds($result->extent),\n";
 }else if ($result->maxExtent) {
-	$s .= "    extent : new OpenLayers.Bounds($result->maxExtent),\n";
+	$s .= "    extent : new OpenLayers.Bounds($result->maxextent),\n";
 }
 
 if ($result->resolutionOverScale && $result->resolutions) {
 	$s .= "    resolutions : $result->resolutions,\n";
 }
-if (!$result->resolutionOverScale && $result->minScale) {
-	$s .= "    minScale : $result->minScale,\n";
+if (!$result->resolutionOverScale && $result->minscale) {
+	$s .= "    minScale : $result->minscale,\n";
 }
-if (!$result->resolutionOverScale && $result->maxScale) {
-	$s .= "    maxScale : $result->maxScale,\n";
+if (!$result->resolutionOverScale && $result->maxscale) {
+	$s .= "    maxScale : $result->maxscale,\n";
 }
 $s .= "    units : '$result->unit'
 }";
@@ -251,7 +250,7 @@ $s .= ";\n";
 
 // Export layer objects from the base layers table.
 //$query = "SELECT * from #__easysdi_basemap_content;";
-$query = "SELECT l.* from #__easysdi_map_base_layer l join #__easysdi_map_base_definition d on (l.id_base = d.id) order by d.def ASC, l.order ASC;";
+$query = "SELECT l.* from #__sdi_baselayer l  order by l.ordering ASC;";
 $db->setQuery($query);
 $result = $db->loadAssocList();
 $s .= "SData.baseLayers = [";
@@ -270,23 +269,23 @@ if (!is_null($result)) {
     url : '$l_url',
     layers : '$l_layers',
     projection : '$l_projection',
-	defaultVisibility : $l_default_visibility,	
-	defaultOpacity : $l_default_opacity,
-	metadataUrl : '$l_metadata_url',
-    imageFormat : '$l_img_format',
+	defaultVisibility : $l_defaultvisibility,	
+	defaultOpacity : $l_defaultopacity,
+	metadataUrl : '$l_metadataurl',
+    imageFormat : '$l_imgformat',
     cache : $cache,
     customStyle : $customStyle,\n";
 			if ($l_singletile == 0){ $s .="    singletile : false,\n";}else{$s .="    singletile : true,\n";}
-			if ($l_maxExtent) {
-				$s .= "    maxExtent : new OpenLayers.Bounds($l_maxExtent),\n";
+			if ($l_maxextent) {
+				$s .= "    maxExtent : new OpenLayers.Bounds($l_maxextent),\n";
 			}
-			if ($l_resolutionOverScale && $l_resolutions) {
+			if ($l_resolutionoverscale && $l_resolutions) {
 				$s .= "    resolutions : $l_resolutions,\n";
 			}
-			if (!$l_resolutionOverScale && $l_minScale) {
+			if (!$l_resolutionoverscale && $l_minScale) {
 				$s .= "    minScale : $l_minScale,\n";
 			}
-			if (!$l_resolutionOverScale && $l_maxScale) {
+			if (!$l_resolutionoverscale && $l_maxScale) {
 				$s .= "    maxScale : $l_maxScale,\n";
 			}
 			$s .= "    units : '$l_unit'
@@ -301,7 +300,7 @@ if($i == 0){
 }
 
 
-$query = "SELECT * from #__easysdi_overlay_group g order by g.order asc;";
+$query = "SELECT * from #__sdi_overlaygroup g order by g.ordering asc;";
 $db->setQuery($query);
 $result = $db->loadAssocList();
 
@@ -319,7 +318,7 @@ if (!is_null($result)) {
 };
 $s .= "];\n";
 
-$query = "SELECT * from #__easysdi_overlay_content o order by o.order DESC;";
+$query = "SELECT * from #__sdi_overlay o order by o.ordering DESC;";
 $db->setQuery($query);
 $result = $db->loadAssocList();
 
@@ -339,30 +338,30 @@ if (!is_null($result)) {
 			$done_first=true;
 			$s .= "{
     id : $l_id,
-    group : $l_overlay_group_id,
+    group : $l_group_id,
     name : '$l_name',
     url : '$l_url',
-    url_type: '$l_url_type',    
+    url_type: '$l_type',    
     layers : '$l_layers',
     projection : '$l_projection',
-	defaultVisibility : $l_default_visibility,
-	defaultOpacity : $l_default_opacity,
-	metadataUrl : '$l_metadata_url',
-	imageFormat : '$l_img_format',
+	defaultVisibility : $l_defaultvisibility,
+	defaultOpacity : $l_defaultopacity,
+	metadataUrl : '$l_metadataurl',
+	imageFormat : '$l_imgformat',
 	cache : $cache,
 	customStyle : $customStyle,\n";
 			if ($l_singletile == 0){ $s .="singletile : false,\n";}else{$s .="singletile : true,\n";}
-			if ($l_maxExtent) {
+			if ($l_maxextent) {
 				//$s .= "    maxExtent : new OpenLayers.Bounds($l_maxExtent),\n";
 			}
-			if ($l_resolutionOverScale && $l_resolutions) {
+			if ($l_resolutionoverscale && $l_resolutions) {
 				$s .= "resolutions : $l_resolutions,\n";
 			}
-			if (!$l_resolutionOverScale && $l_minScale) {
-				$s .= "minScale : $l_minScale,\n";
+			if (!$l_resolutionoverscale && $l_minscale) {
+				$s .= "minScale : $l_minscale,\n";
 			}
-			if (!$l_resolutionOverScale && $l_maxScale) {
-				$s .= "maxScale : $l_maxScale,\n";
+			if (!$l_resolutionoverscale && $l_maxscale) {
+				$s .= "maxScale : $l_maxscale,\n";
 			}
 			$s .= "units : '$l_unit'
 }";
@@ -374,7 +373,7 @@ $s .= "];\n";
 
 $s .= "SData.localisationLayers = [";
 //$query = "SELECT * from #__easysdi_perimeter_definition where is_localisation != 0;";
-$query = "SELECT * from #__easysdi_map_localisation_layer;";
+$query = "SELECT * from #__sdi_geolocation;";
 $db->setQuery($query);
 $result = $db->loadAssocList();
 $i = 0;
@@ -391,20 +390,20 @@ foreach ($result as $rec)
 	 */
 	$s .= "{
     id: '$l_id',
-    wfs_url: '$l_wfs_url',
-    //wms_url: '$l_wms_url',
-    layer_name: '$l_layer_name',
-    area_field_name: '$l_area_field_name',
-    name_field_name: '$l_name_field_name',
-    id_field_name: '$l_id_field_name',    
-    feature_type_name: '$l_feature_type_name',
+    wfs_url: '$l_wfsurl',
+    //wms_url: '$l_wmsurl',
+    layer_name: '$l_layername',
+    area_field_name: '$l_areafield',
+    name_field_name: '$l_namefield',
+    id_field_name: '$l_idfield',    
+    feature_type_name: '$l_featuretypename',
     maxfeatures: '$l_maxfeatures',
-    img_format: '$l_img_format',
-    min_scale: '$l_min_resolution',
-    max_scale: '$l_max_resolution',
-    title: '$l_title',
-    parent_id: '$l_parent_id',
-    parent_fk_field_name: '$l_parent_fk_field_name',
+    img_format: '$l_imgformat',
+    min_scale: '$l_minresolution',
+    max_scale: '$l_maxresolution',
+    title: '$l_name',
+    parent_id: '$l_parentid',
+    parent_fk_field_name: '$l_parentfkfield',
     extract_id_from_fid: true
   }";
 	if ($i != count($result)) $s .= ",";

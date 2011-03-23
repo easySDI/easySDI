@@ -185,7 +185,6 @@ class HTML_baselayer
 		<table border="0" cellpadding="0" cellspacing="0">
 			<tr>
 				<td>
-				<fieldset>
 				<table class="admintable">
 					<tr>
 						<td class="key"><?php echo JText::_("MAP_BASELAYER_NAME"); ?></td>
@@ -196,14 +195,13 @@ class HTML_baselayer
 						<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['description'];?>" name="description" id="description" value="<?php echo stripslashes($baseLayer->description); ?>" /></td>
 					</tr>
 					<tr>
+						<td class="key"><?php echo JText::_("MAP_BASELAYER_URL"); ?></td>
+						<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['url'];?>" name="url" id="url" value="<?php echo $baseLayer->url; ?>" /></td>
+					</tr>
+					<tr>
 						<td class="key"><?php echo JText::_("MAP_BASELAYER_LAYERS"); ?></td>
 						<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['layers'];?>" name="layers" id="layers" value="<?php echo $baseLayer->layers; ?>" /></td>
 						<td><?php echo JText::_("MAP_OVERLAY_LAYERS_SEPARATOR"); ?></td>
-					</tr>
-					<tr>
-						<td class="key"><?php echo JText::_("MAP_BASELAYER_PROJECTION"); ?></td>
-						<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['projection'];?>" name="projection" 
-						id="projection" value="<?php echo $baseLayer->projection; ?>" /></td>
 					</tr>
 					<tr>
 						<td class="key"><?php echo JText::_("MAP_BASELAYER_IMG_FORMAT"); ?></td>
@@ -211,6 +209,44 @@ class HTML_baselayer
 						value="<?php echo $baseLayer->imgformat; ?>" />
 						</td>
 						<td>ex : image/png</td>
+					</tr>
+					<tr>
+						<td class="key"><?php echo JText::_("MAP_BASE_CACHE"); ?></td>
+						<td><input class="checkbox" name="cache" value="1" type="checkbox" <?php if ($baseLayer->cache == 1) echo "checked=\"checked\""; ?> /></td>
+					</tr>
+					
+					<tr>
+						<td class="key"><?php echo JText::_("MAP_BASELAYER_TILE"); ?></td>
+						<td><input class="checkbox" name="singletile" value="1" type="checkbox" <?php if ($baseLayer->singletile == 1) echo "checked=\"checked\""; ?> /></td>
+					</tr>
+					<tr>
+						<td class="key"><?php echo JText::_("MAP_BASELAYER_CUSTOM_STYLE_ENABLED"); ?></td>
+						<td><input class="checkbox" name="customstyle" value="0" type="checkbox" <?php if ($baseLayer->customstyle == 1) echo "checked=\"checked\""; ?> /></td>
+					</tr>
+					<tr>
+						<td class="key"><?php echo JText::_("MAP_BASELAYER_VISIBILITY"); ?></td>
+						<td><input class="checkbox" name="defaultvisibility" value="1" type="checkbox"
+						<?php if ($baseLayer->defaultvisibility == 1) echo "checked=\"checked\""; ?> /></td>
+					</tr>
+					<tr>
+						<td class="key"><?php echo JText::_("MAP_BASELAYER_OPACITY"); ?></td>
+						<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['defaultopacity'];?>" name="defaultopacity" id="defaultopacity"
+							value="<?php echo $baseLayer->defaultopacity; ?>" /></td>
+					</tr>
+					<tr>
+						<td class="key"><?php echo JText::_("MAP_BASELAYER_METADATA"); ?></td>
+						<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['metadataurl'];?>" name="metadataurl" id="metadataurl"
+							value="<?php echo $baseLayer->metadataurl; ?>" /></td>
+					</tr>
+					
+					<tr>
+					<td colspan="2">
+					<fieldset><legend><?php echo JText::_("MAP_BASELAYER_USE_BASEMAP"); ?><input class="checkbox" name="defineBaseMap" id="defineBaseMap" value="1" type="checkbox" <?php if ($baseLayer->defineBaseMap == 1) echo "checked=\"checked\""; ?> /></legend>
+					<table class="admintable">
+					<tr>
+						<td class="key"><?php echo JText::_("MAP_BASELAYER_PROJECTION"); ?></td>
+						<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['projection'];?>" name="projection" 
+						id="projection" value="<?php echo $baseLayer->projection; ?>" /></td>
 					</tr>
 					<tr>
 						<td class="key"><?php echo JText::_("MAP_BASELAYER_UNIT"); ?></td>
@@ -247,39 +283,12 @@ class HTML_baselayer
 						<td style=""><textarea id="resolutions" class="textarea resolutions" style="height: 200px; width: 500px;" name="resolutions" size="100"
 							maxlength="4000" <?php if ($baseLayer->resolutionOverScale == 0) echo 'disabled' ?>><?php echo $baseLayer->resolutions; ?></textarea></td>
 					</tr>
-					<tr>
-						<td class="key"><?php echo JText::_("MAP_BASE_CACHE"); ?></td>
-						<td><input class="checkbox" name="cache" value="1" type="checkbox" <?php if ($baseLayer->cache == 1) echo "checked=\"checked\""; ?> /></td>
-					</tr>
-					<tr>
-						<td class="key"><?php echo JText::_("MAP_BASELAYER_URL"); ?></td>
-						<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['url'];?>" name="url" id="url" value="<?php echo $baseLayer->url; ?>" /></td>
-					</tr>
-					<tr>
-						<td class="key"><?php echo JText::_("MAP_BASELAYER_TILE"); ?></td>
-						<td><input class="checkbox" name="singletile" value="1" type="checkbox" <?php if ($baseLayer->singletile == 1) echo "checked=\"checked\""; ?> /></td>
-					</tr>
-					<tr>
-						<td class="key"><?php echo JText::_("MAP_BASELAYER_CUSTOM_STYLE_ENABLED"); ?></td>
-						<td><input class="checkbox" name="customstyle" value="0" type="checkbox" <?php if ($baseLayer->customstyle == 1) echo "checked=\"checked\""; ?> /></td>
-					</tr>
-					<tr>
-						<td class="key"><?php echo JText::_("MAP_BASELAYER_VISIBILITY"); ?></td>
-						<td><input class="checkbox" name="defaultvisibility" value="1" type="checkbox"
-						<?php if ($baseLayer->defaultvisibility == 1) echo "checked=\"checked\""; ?> /></td>
-					</tr>
-					<tr>
-						<td class="key"><?php echo JText::_("MAP_BASELAYER_OPACITY"); ?></td>
-						<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['defaultopacity'];?>" name="defaultopacity" id="defaultopacity"
-							value="<?php echo $baseLayer->defaultopacity; ?>" /></td>
-					</tr>
-					<tr>
-						<td class="key"><?php echo JText::_("MAP_BASELAYER_METADATA"); ?></td>
-						<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['metadataurl'];?>" name="metadataurl" id="metadataurl"
-							value="<?php echo $baseLayer->metadataurl; ?>" /></td>
+					</table>
+					</fieldset>
+					</td>
 					</tr>
 				</table>
-				</fieldset>
+				
 				</td>
 			</tr>
 		</table>
