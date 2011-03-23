@@ -33,7 +33,7 @@ class TOOLBAR_resultgrid {
 		JToolBarHelper::addNew('newResultGrid');
 		JToolBarHelper::editList('editResultGrid');
 		JToolBarHelper::deleteList('','deleteResultGrid');
-		JToolBarHelper::custom( 'ctrlPanel', 'back.png', 'back.png', JTEXT::_("MAP_MENU_BACK"), false );
+		JToolBarHelper::custom( 'ctrlPanel', 'tool_easysdi_admin.png', 'tool_easysdi_admin.png', JTEXT::_("CORE_MENU_CPANEL"), false );
 	}
 
 	function _EDITRESULTGRID() 

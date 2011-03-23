@@ -25,7 +25,7 @@ class TOOLBAR_baselayer {
 		JToolBarHelper::addNew('newBaseLayer');
 		JToolBarHelper::editList('editBaseLayer');
 		JToolBarHelper::deleteList('','deleteBaseLayer');
-		JToolBarHelper::custom( 'baseDefinition', 'back.png', 'back.png', JTEXT::_("MAP_MENU_BACK"), false );
+		JToolBarHelper::custom( 'overlayCtrlPanel', 'back.png', 'back.png', JTEXT::_("MAP_MENU_BACK"), false );
 	}
 	
 	function _LIST() 
@@ -33,7 +33,7 @@ class TOOLBAR_baselayer {
 		JToolBarHelper::addNew('newBaseLayer');
 		JToolBarHelper::editList('editBaseLayer');
 		JToolBarHelper::deleteList('','deleteBaseLayer');
-		JToolBarHelper::custom( 'baseDefinition', 'back.png', 'back.png', JTEXT::_("MAP_MENU_BACK"), false );
+		JToolBarHelper::custom( 'overlayCtrlPanel', 'back.png', 'back.png', JTEXT::_("MAP_MENU_BACK"), false );
 	}
 
 	function _EDIT() 
@@ -48,13 +48,13 @@ class TOOLBAR_baselayer {
 		JToolBarHelper::editList('editBaseDefinition');
 		JToolBarHelper::custom( 'baseLayer', 'preview.png', 'preview.png', JTEXT::_("EASYSDI_MENU_LISTBASEMAP_CONTENT"), false );
 		JToolBarHelper::deleteList('','deleteBaseDefinition');
-		JToolBarHelper::custom( 'overlayCtrlPanel', 'back.png', 'back.png', JTEXT::_("MAP_MENU_BACK"), false );
+		JToolBarHelper::custom( 'ctrlPanel', 'tool_easysdi_admin.png', 'tool_easysdi_admin.png', JTEXT::_("CORE_MENU_CPANEL"), false );
 	}
 
 	function _EDIT_DEFINITION() 
 	{
 		JToolBarHelper::save('saveBaseDefinition');
-		JToolBarHelper::cancel('baseDefinition');
+		JToolBarHelper::cancel('baseLayer');
 	}
 }
 ?>

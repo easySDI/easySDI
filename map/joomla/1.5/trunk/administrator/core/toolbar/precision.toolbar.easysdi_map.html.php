@@ -33,7 +33,7 @@ class TOOLBAR_precision {
 		JToolBarHelper::addNew('newPrecision');
 		JToolBarHelper::editList('editPrecision');
 		JToolBarHelper::deleteList('','deletePrecision');
-		JToolBarHelper::custom( 'ctrlPanel', 'back.png', 'back.png', JTEXT::_("MAP_MENU_BACK"), false );
+		JToolBarHelper::custom( 'ctrlPanel', 'tool_easysdi_admin.png', 'tool_easysdi_admin.png', JTEXT::_("CORE_MENU_CPANEL"), false );
 	}
 
 	function _EDIT() 

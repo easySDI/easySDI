@@ -23,7 +23,7 @@ class HTML_ctrlpanel
 	function mapCtrlPanel($option)
 	{
 		JToolBarHelper::title( JText::_(  'EASYSDI_MAP_CONTROL_PANEL' ), 'generic.png' );
-		JToolBarHelper::custom( 'rootCore', 'config.png', 'config.png', JText::_('EASYSDI_COMPONENT_CONTROL_PANEL'), false );
+		JToolBarHelper::custom( 'ctrlPanel', 'tool_easysdi_admin.png', 'tool_easysdi_admin.png', JTEXT::_("CORE_MENU_CPANEL"), false );
 		
 		global $mainframe;
 		$lang		=& JFactory::getLanguage();
