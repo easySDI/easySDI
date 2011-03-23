@@ -81,7 +81,7 @@ class HTML_searchlayer
 		<?php		
 	}
 	
-	function editSearchLayer ($search_layer, $rowsSearchLayerFT, $rowsDetailsFT,$createUser, $updateUser, $option)
+	function editSearchLayer ($search_layer, $rowsSearchLayerFT, $rowsDetailsFT,$createUser, $updateUser,$fieldsLength, $option)
 	{
 		if ($search_layer->id != 0)
 		{
@@ -125,16 +125,12 @@ class HTML_searchlayer
 							<fieldset>						
 								<table class="admintable">
 									<tr>
-										<td class="key" width="100p"><?php echo JText::_("MAP_SEARCH_LAYER_ID"); ?></td>
-										<td colspan="2"><?php echo $search_layer->id; ?></td>								
-									</tr>
-									<tr>
 										<td class="key"><?php echo JText::_("MAP_SEARCH_LAYER_NAME"); ?></td>
-										<td colspan="2"><input class="inputbox" type="text" size="100" maxlength="50" name="name" id="name" value="<?php echo $search_layer->name; ?>" /></td>
+										<td colspan="2"><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['name'];?>" name="name" id="name" value="<?php echo $search_layer->name; ?>" /></td>
 									</tr>
 									<tr>
 										<td class="key"><?php echo JText::_("MAP_SEARCH_LAYER_DESCRIPTION"); ?></td>
-										<td colspan="2"><input class="inputbox" type="text" size="100" maxlength="100" name="description" id="description" value="<?php echo $search_layer->description; ?>" /></td>
+										<td colspan="2"><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['description'];?>" name="description" id="description" value="<?php echo $search_layer->description; ?>" /></td>
 									</tr>
 									<tr>
 										<td class="key" width="100p"><?php echo JText::_("MAP_SEARCH_LAYER_FT"); ?></td>
@@ -150,7 +146,7 @@ class HTML_searchlayer
 									</tr>
 									<tr>
 										<td class="key"><?php echo JText::_("MAP_SEARCH_LAYER_GEOM"); ?></td>
-										<td colspan="2"><input class="inputbox" type="text" size="100" maxlength="100" name="geometryname" id="geometryname" value="<?php echo $search_layer->geometryname; ?>" /></td>
+										<td colspan="2"><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['geometryname'];?>" name="geometryname" id="geometryname" value="<?php echo $search_layer->geometryname; ?>" /></td>
 									</tr>
 									<tr>
 										<td class="key"><?php echo JText::_("MAP_SEARCH_LAYER_ROW_DETAILS_FT"); ?></td>
@@ -165,7 +161,7 @@ class HTML_searchlayer
 									</tr>
 									<tr>
 										<td class="key"><?php echo JText::_("MAP_SEARCH_LAYER_STYLES"); ?></td>
-										<td colspan="2"><input class="inputbox" type="text" size="100" maxlength="500" name="styles" id="styles" value="<?php echo $search_layer->styles; ?>" /></td>
+										<td colspan="2"><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['styles'];?>" name="styles" id="styles" value="<?php echo $search_layer->styles; ?>" /></td>
 									</tr>
 									<tr>
 										<td class="key"><?php echo JText::_("MAP_SEARCH_LAYER_ENABLE"); ?></td>

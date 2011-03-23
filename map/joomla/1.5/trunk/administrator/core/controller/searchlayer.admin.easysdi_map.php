@@ -115,7 +115,7 @@ class ADMIN_searchlayer
 		$rowsDetailsFT = $db->loadObjectList();
 		echo $db->getErrorMsg();
 
-		HTML_searchlayer::editSearchLayer($search_layer, $rowsSearchLayerFT, $rowsDetailsFT,$createUser, $updateUser, $option);
+		HTML_searchlayer::editSearchLayer($search_layer, $rowsSearchLayerFT, $rowsDetailsFT,$createUser, $updateUser, $search_layer->getFieldsLength(),$option);
 	}
 	
 	function deleteSearchLayer($cid,$option)

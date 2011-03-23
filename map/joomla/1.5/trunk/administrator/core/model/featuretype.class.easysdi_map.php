@@ -21,6 +21,7 @@ defined('_JEXEC') or die('Restricted access');
 
 class featureType extends sdiTable
 {
+	var $featuretypename=null;
 	var $geometry=null;
 		 	
 	// Class constructor

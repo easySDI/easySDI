@@ -87,7 +87,7 @@ class HTML_overlay
 		<?php
 	}
 
-	function editOverlay( $overlay_content,$createUser, $updateUser,$rowsGroup, $option )
+	function editOverlay( $overlay_content,$createUser, $updateUser,$rowsGroup,$fieldsLength, $option )
 	{
 		global  $mainframe;
 		JHTML::script('jquery-1.3.2.min.js', 'components/com_easysdi_map/externals/jquery/');
@@ -179,17 +179,13 @@ class HTML_overlay
 				<fieldset>
 				<table class="admintable">
 					<tr>
-						<td class="key"><?php echo JText::_("MAP_OVERLAY_CONTENT_ID"); ?></td>
-						<td><?php echo $overlay_content->id; ?></td>
-					</tr>
-					<tr>
 						<td class="key"><?php echo JText::_("MAP_OVERLAY_NAME"); ?></td>
-						<td><input class="inputbox" type="text" size="50" maxlength="100" name="name" id="name"
+						<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['name'];?>" name="name" id="name"
 							value="<?php echo stripcslashes($overlay_content->name); ?>" /></td>
 					</tr>
 					<tr>
 						<td class="key"><?php echo JText::_("MAP_OVERLAY_LAYERS"); ?></td>
-						<td><input class="inputbox" type="text" size="50" maxlength="100" name="layers" id="layers" value="<?php echo $overlay_content->layers; ?>" /></td>
+						<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['layers'];?>" name="layers" id="layers" value="<?php echo $overlay_content->layers; ?>" /></td>
 						<td><?php echo JText::_("MAP_OVERLAY_LAYERS_SEPARATOR"); ?></td>
 					</tr>
 					<tr>
@@ -199,7 +195,7 @@ class HTML_overlay
 					</tr>
 					<tr>
 						<td class="key"><?php echo JText::_("MAP_OVERLAY_PROJECTION"); ?></td>
-						<td><input class="inputbox" type="text" size="50" maxlength="100" name="projection" id="projection"
+						<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['projection'];?>" name="projection" id="projection"
 							value="<?php echo $overlay_content->projection; ?>" /></td>
 					</tr>
 		
@@ -213,7 +209,7 @@ class HTML_overlay
 		
 					<tr>
 						<td class="key"><?php echo JText::_("MAP_OVERLAY_MAXEXTENT"); ?></td>
-						<td><input class="inputbox" type="text" size="50" maxlength="100" name="maxextent" id="maxextent"
+						<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['maxextent'];?>" name="maxextent" id="maxextent"
 							value="<?php echo $overlay_content->maxExtent; ?>" /></td>
 					</tr>
 					<tr>
@@ -222,12 +218,12 @@ class HTML_overlay
 					</tr>
 					<tr>
 						<td class="key"><?php echo JText::_("MAP_BASE_MIN_SCALE"); ?></td>
-						<td><input class="inputbox scales" type="text" size="50" maxlength="100" name="minscale" id="minscale"
+						<td><input class="inputbox scales" type="text" size="100" maxlength="<?php echo $fieldsLength['minscale'];?>" name="minscale" id="minscale"
 						<?php if ($overlay_content->resolutionoverscale == 1) echo 'disabled' ?> value="<?php echo $overlay_content->minscale; ?>" /></td>
 					</tr>
 					<tr class="scales">
 						<td class="key"><?php echo JText::_("MAP_BASE_MAX_SCALE"); ?></td>
-						<td><input class="inputbox scales" name="maxscale" id="maxscale" type="text" size="50" maxlength="100"
+						<td><input class="inputbox scales" name="maxscale" id="maxscale" type="text" size="100" maxlength="<?php echo $fieldsLength['maxscale'];?>"
 						<?php if ($overlay_content->resolutionoverscale == 1) echo 'disabled' ?> value="<?php echo $overlay_content->maxscale; ?>" /></td>
 					</tr>
 					<tr>
@@ -236,7 +232,7 @@ class HTML_overlay
 					</tr>
 					<tr>
 						<td class="key"><?php echo JText::_("MAP_BASE_RESOLUTIONS"); ?></td>
-						<td style=""><textarea class="textarea resolutions" style="height: 200px; width: 500px;" id="resolutions" name="resolutions" size="50"
+						<td style=""><textarea class="textarea resolutions" style="height: 200px; width: 500px;" id="resolutions" name="resolutions" size="100"
 							maxlength="4000" <?php if ($overlay_content->resolutionoverscale == 0) echo 'disabled' ?>><?php echo $overlay_content->resolutions; ?></textarea></td>
 					</tr>
 					<tr>
@@ -245,7 +241,7 @@ class HTML_overlay
 					</tr>
 					<tr>
 						<td class="key"><?php echo JText::_("MAP_OVERLAY_URL"); ?></td>
-						<td><input class="inputbox" type="text" size="50" maxlength="100" name="url" id="url" value="<?php echo $overlay_content->url; ?>" /></td>
+						<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['url'];?>" name="url" id="url" value="<?php echo $overlay_content->url; ?>" /></td>
 					</tr>
 					<tr>
 						<td class="key"><?php echo JText::_("MAP_OVERLAY_URL_TYPE"); ?></td>
@@ -261,7 +257,7 @@ class HTML_overlay
 					</tr>
 					<tr>
 						<td class="key"><?php echo JText::_("MAP_OVERLAY_IMG_FORMAT"); ?></td>
-						<td><input class="inputbox" name="imgformat" id="imgformat" type="text" size="50" maxlength="100"
+						<td><input class="inputbox" name="imgformat" id="imgformat" type="text" size="100" maxlength="<?php echo $fieldsLength['imgformat'];?>"
 							value="<?php echo $overlay_content->imgformat; ?>" /></td>
 						<td>ex : image/png</td>
 					</tr>
@@ -277,12 +273,12 @@ class HTML_overlay
 					</tr>
 					<tr>
 						<td class="key"><?php echo JText::_("MAP_OVERLAY_OPACITY"); ?></td>
-						<td><input class="inputbox" type="text" size="50" maxlength="100" name="defaultopacity" id="defaultopacity"
+						<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['defaultopacity'];?>" name="defaultopacity" id="defaultopacity"
 							value="<?php echo $overlay_content->defaultopacity; ?>" /></td>
 					</tr>
 					<tr>
 						<td class="key"><?php echo JText::_("MAP_OVERLAY_METADATA"); ?></td>
-						<td><input class="inputbox" type="text" size="50" maxlength="500" name="metadata_url" id="metadataurl"
+						<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['metadata_url'];?>" name="metadata_url" id="metadataurl"
 							value="<?php echo $overlay_content->metadataurl; ?>" /></td>
 					</tr>
 				</table>
@@ -398,7 +394,7 @@ class HTML_overlay
 		<?php
 	}
 
-	function editOverlayGroup ($overlay_group,$createUser, $updateUser, $option)
+	function editOverlayGroup ($overlay_group,$createUser, $updateUser,$fieldsLength, $option)
 	{
 		if ($overlay_group->id != 0)
 		{
@@ -416,16 +412,12 @@ class HTML_overlay
 				<fieldset>
 				<table class="admintable">
 					<tr>
-						<td class="key"><?php echo JText::_("MAP_OVERLAY_GROUP_ID"); ?> :</td>
-						<td><?php echo $overlay_group->id; ?></td>
-					</tr>
-					<tr>
 						<td class="key"><?php echo JText::_("MAP_OVERLAY_GROUP_NAME"); ?> :</td>
-						<td><input class="inputbox" type="text" size="100" maxlength="400" name="name" value="<?php echo $overlay_group->name; ?>" /></td>
+						<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['name'];?>" name="name" value="<?php echo $overlay_group->name; ?>" /></td>
 					</tr>
 					<tr>
 						<td class="key"><?php echo JText::_("MAP_OVERLAY_GROUP_DESCRIPTION"); ?> :</td>
-						<td><input class="inputbox" type="text" size="100" maxlength="100" name="description" value="<?php echo $overlay_group->description; ?>" /></td>
+						<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['description'];?>" name="description" value="<?php echo $overlay_group->description; ?>" /></td>
 					</tr>
 					<tr>
 						<td class="key"><?php echo JText::_("MAP_OVERLAY_GROUP_OPEN"); ?></td>

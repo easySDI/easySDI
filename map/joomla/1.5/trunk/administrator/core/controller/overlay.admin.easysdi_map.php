@@ -118,7 +118,7 @@ class ADMIN_overlay
 		$rowsGroup = $db->loadObjectList();
 		echo $db->getErrorMsg();
 
-		HTML_overlay::editOverlay($overlay,$createUser, $updateUser,$rowsGroup, $option);
+		HTML_overlay::editOverlay($overlay,$createUser, $updateUser,$rowsGroup,$overlay->getFieldsLength(), $option);
 	}
 
 	function saveOverlay($option)
@@ -267,7 +267,7 @@ class ADMIN_overlay
 				$updateUser = "";
 		}
 		
-		HTML_overlay::editOverlayGroup($overlay_group,$createUser, $updateUser, $option);
+		HTML_overlay::editOverlayGroup($overlay_group,$createUser, $updateUser, $overlay_group->getFieldsLength(),$option);
 	}
 
 	function deleteOverlayGroup($cid,$option)

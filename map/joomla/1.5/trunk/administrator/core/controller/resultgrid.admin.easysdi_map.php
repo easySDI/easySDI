@@ -114,7 +114,7 @@ class ADMIN_resultgrid
 		$rowsDetailsFT = $db->loadObjectList();
 		echo $db->getErrorMsg();
 		
-		HTML_resultgrid::editResultGrid($resultGrid,$rowsResultGridFT,$rowsDetailsFT, $createUser, $updateUser,$option);
+		HTML_resultgrid::editResultGrid($resultGrid,$rowsResultGridFT,$rowsDetailsFT, $createUser, $updateUser,$resultGrid->getFieldsLength(),$option);
 	}
 	
 	function deleteResultGrid($cid,$option)

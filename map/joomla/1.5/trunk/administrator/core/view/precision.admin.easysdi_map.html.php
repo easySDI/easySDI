@@ -79,7 +79,7 @@ class HTML_precision
 		<?php		
 	}
 	
-	function editPrecision ($precision,$createUser, $updateUser, $option)
+	function editPrecision ($precision,$createUser, $updateUser,$fieldsLength, $option)
 	{
 		if ($precision->id != 0)
 		{
@@ -123,32 +123,28 @@ class HTML_precision
 						<fieldset>						
 							<table class="admintable">
 								<tr>
-									<td class="key" width="100p"><?php echo JText::_("MAP_PRECISION_ID"); ?></td>
-									<td><?php echo $precision->id; ?></td>								
-								</tr>
-								<tr>
 									<td class="key" width="100p"><?php echo JText::_("MAP_PRECISION_NAME"); ?></td>
-									<td><input class="inputbox" type="text" size="100" maxlength="50" name="name" id="name" value="<?php echo $precision->name; ?>" /></td>								
+									<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['name'];?>" name="name" id="name" value="<?php echo $precision->name; ?>" /></td>								
 								</tr>
 								<tr>
 									<td class="key"><?php echo JText::_("MAP_PRECISION_DESCRIPTION"); ?></td>
-									<td><input class="inputbox" type="text" size="100" maxlength="100" name="description" id="description" value="<?php echo $precision->description; ?>" /></td>
+									<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['description'];?>" name="description" id="description" value="<?php echo $precision->description; ?>" /></td>
 								</tr>
 								<tr>
 									<td class="key"><?php echo JText::_("MAP_PRECISION_MIN_SCALE"); ?></td>
-									<td><input class="inputbox" type="text" size="100" maxlength="100" name="minresolution" id="minresolution" value="<?php echo $precision->minresolution; ?>" /></td>
+									<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['minresolution'];?>" name="minresolution" id="minresolution" value="<?php echo $precision->minresolution; ?>" /></td>
 								</tr>
 								<tr>
 									<td class="key"><?php echo JText::_("MAP_PRECISION_MAX_SCALE"); ?></td>
-									<td><input class="inputbox" type="text" size="100" maxlength="100" name="maxresolution" id="maxresolution" value="<?php echo $precision->maxresolution; ?>" /></td>
+									<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['maxresolution'];?>" name="maxresolution" id="maxresolution" value="<?php echo $precision->maxresolution; ?>" /></td>
 								</tr>
 								<tr>
 									<td class="key"><?php echo JText::_("MAP_PRECISION_LOW_SCALE_SWITCH_TO"); ?></td>
-									<td><input class="inputbox" type="text" size="100" maxlength="100" name="lowscaleswitchto" id="lowscaleswitchto" value="<?php echo $precision->lowscaleswitchto; ?>" /></td>
+									<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['lowscaleswitchto'];?>" name="lowscaleswitchto" id="lowscaleswitchto" value="<?php echo $precision->lowscaleswitchto; ?>" /></td>
 								</tr>
 								<tr>
 									<td class="key"><?php echo JText::_("MAP_PRECISION_STYLE"); ?></td>
-									<td><input class="inputbox" type="text" size="100" maxlength="500" name="style" id="style" value="<?php echo $precision->style; ?>" /></td>
+									<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['style'];?>" name="style" id="style" value="<?php echo $precision->style; ?>" /></td>
 								</tr>
 							</table>
 						</fieldset>

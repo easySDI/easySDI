@@ -80,7 +80,7 @@ class HTML_projection
 		<?php		
 	}
 	
-	function editProjection ($projection, $createUser, $updateUser,$option)
+	function editProjection ($projection, $createUser, $updateUser,$fieldsLength, $option)
 	{
 		if ($projection->id != 0)
 		{
@@ -124,24 +124,20 @@ class HTML_projection
 						<fieldset>
 							<table class="admintable">
 								<tr>
-									<td class="key" width="100p"><?php echo JText::_("MAP_PROJECTION_ID"); ?></td>
-									<td><?php echo $projection->id; ?></td>								
-								</tr>
-								<tr>
 									<td  class="key" width="100p"><?php echo JText::_("MAP_PROJECTION_NAME"); ?></td>
-									<td><input class="inputbox" type="text" size="100" maxlength="50" name="name" id="name" value="<?php echo $projection->name; ?>" /></td>								
+									<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['name'];?>" name="name" id="name" value="<?php echo $projection->name; ?>" /></td>								
 								</tr>
 								<tr>
 									<td class="key"><?php echo JText::_("MAP_PROJECTION_DESCRIPTION"); ?></td>
-									<td><input class="inputbox" type="text" size="100" maxlength="100" name="description" id="description" value="<?php echo $projection->description; ?>" /></td>
+									<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['description'];?>" name="description" id="description" value="<?php echo $projection->description; ?>" /></td>
 								</tr>
 								<tr>
 									<td class="key"><?php echo JText::_("MAP_PROJECTION_TEXT"); ?></td>
-									<td><input class="inputbox" type="text" size="100" maxlength="500" name="proj4text" id="proj4text" value="<?php echo $projection->proj4text; ?>" /></td>
+									<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['proj4text'];?>" name="proj4text" id="proj4text" value="<?php echo $projection->proj4text; ?>" /></td>
 								</tr>
 								<tr>
 									<td class="key"><?php echo JText::_("MAP_PROJECTION_DIGIT"); ?></td>
-									<td><input class="inputbox" type="text" size="2" maxlength="2" name="numDigits" id="numDigits" value="<?php echo $projection->numDigits; ?>" /></td>
+									<td><input class="inputbox" type="text" size="2" maxlength="<?php echo $fieldsLength['numDigits'];?>" name="numDigits" id="numDigits" value="<?php echo $projection->numDigits; ?>" /></td>
 								</tr>
 								<tr>
 									<td class="key"><?php echo JText::_("MAP_PROJECTION_ENABLE"); ?></td>

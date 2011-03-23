@@ -350,6 +350,7 @@ function com_install()
 		  `ordering`  bigint(20) NULL DEFAULT 0 ,
 		  `checked_out`  bigint(20) NOT NULL DEFAULT 0 ,
 		  `checked_out_time`  datetime NULL DEFAULT NULL ,
+		  `featuretypename`  varchar(100) NOT NULL ,
 		  `geometry` varchar(100) DEFAULT NULL,
 		  PRIMARY KEY (`id`)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8;

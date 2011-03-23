@@ -82,7 +82,6 @@ class HTML_annotationstyle
 	
 	function editAnnotationStyle($annotationStyle,$createUser,$updateUser,$fieldsLength, $option)
 	{
-		print_r ($fieldsLength);
 		if ($annotationStyle->id != 0)
 		{
 			JToolBarHelper::title( JText::_("MAP_EDIT_ANNOTATION_STYLE"), 'generic.png' );

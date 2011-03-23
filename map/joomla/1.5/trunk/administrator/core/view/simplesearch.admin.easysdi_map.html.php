@@ -79,7 +79,7 @@ class HTML_simplesearch
 		<?php		
 	}
 	
-	function editSimpleSearch ($simpleSearch, $rowsFilters,$rowsSelectedFilter,$rowsResultGrid,$rowsSelectedGrid,$createUser, $updateUser, $option)
+	function editSimpleSearch ($simpleSearch, $rowsFilters,$rowsSelectedFilter,$rowsResultGrid,$rowsSelectedGrid,$createUser, $updateUser,$fieldsLength, $option)
 	{
 		if ($simpleSearch->id != 0)
 		{
@@ -144,36 +144,32 @@ class HTML_simplesearch
 						<fieldset>						
 							<table class="admintable">
 								<tr>
-									<td class="key" width="100p"><?php echo JText::_("MAP_SIMPLE_SEARCH_ID"); ?></td>
-									<td><?php echo $simpleSearch->id; ?></td>								
-								</tr>
-								<tr>
 									<td class="key" width="100p"><?php echo JText::_("MAP_SIMPLE_SEARCH_NAME"); ?></td>
-									<td><input class="inputbox" type="text" size="100" maxlength="500" name="name" id="name" value="<?php echo $simpleSearch->name; ?>" /></td>								
+									<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['name'];?>" name="name" id="name" value="<?php echo $simpleSearch->name; ?>" /></td>								
 								</tr>
 								<tr>
 									<td class="key" width="100p"><?php echo JText::_("MAP_SIMPLE_SEARCH_DESCRIPTION"); ?></td>
-									<td><input class="inputbox" type="text" size="100" maxlength="500" name="description" id="description" value="<?php echo $simpleSearch->description; ?>" /></td>								
+									<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['description'];?>" name="description" id="description" value="<?php echo $simpleSearch->description; ?>" /></td>								
 								</tr>
 								<tr>
 									<td class="key"><?php echo JText::_("MAP_SIMPLE_SEARCH_DROPDOWN_FT"); ?></td>
-									<td><input class="inputbox" type="text" size="100" maxlength="100" name="dropdownfeaturetype" id="dropdownfeaturetype" value="<?php echo $simpleSearch->dropdownfeaturetype; ?>" /></td>
+									<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['dropdownfeaturetype'];?>" name="dropdownfeaturetype" id="dropdownfeaturetype" value="<?php echo $simpleSearch->dropdownfeaturetype; ?>" /></td>
 								</tr>
 								<tr>
 									<td class="key"><?php echo JText::_("MAP_SIMPLE_SEARCH_DROPDOWN_ATTR"); ?></td>
-									<td><input class="inputbox" type="text" size="100" maxlength="100" name="dropdowndisplayattr" id="dropdowndisplayattr" value="<?php echo $simpleSearch->dropdowndisplayattr; ?>" /></td>
+									<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['dropdowndisplayattr'];?>" name="dropdowndisplayattr" id="dropdowndisplayattr" value="<?php echo $simpleSearch->dropdowndisplayattr; ?>" /></td>
 								</tr>
 								<tr>
 									<td class="key"><?php echo JText::_("MAP_SIMPLE_SEARCH_DROPDOWN_ID_ATTR"); ?></td>
-									<td><input class="inputbox" type="text" size="100" maxlength="100" name="dropdownidattr" id="dropdownidattr" value="<?php echo $simpleSearch->dropdownidattr; ?>" /></td>
+									<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['dropdownidattr'];?>" name="dropdownidattr" id="dropdownidattr" value="<?php echo $simpleSearch->dropdownidattr; ?>" /></td>
 								</tr>
 								<tr>
 									<td class="key"><?php echo JText::_("MAP_SIMPLE_SEARCH_SEARCH_ATTR"); ?></td>
-									<td><input class="inputbox" type="text" size="100" maxlength="500" name="searchattribute" id="searchattribute" value="<?php echo $simpleSearch->searchattribute; ?>" /></td>
+									<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['searchattribute'];?>" name="searchattribute" id="searchattribute" value="<?php echo $simpleSearch->searchattribute; ?>" /></td>
 								</tr>
 								<tr>
 									<td class="key"><?php echo JText::_("MAP_SIMPLE_SEARCH_OPERATOR"); ?></td>
-									<td><input class="inputbox" type="text" size="5" maxlength="5" name="operator" id="operator" value="<?php echo $simpleSearch->operator; ?>" /></td>
+									<td><input class="inputbox" type="text" size="5" maxlength="<?php echo $fieldsLength['operator'];?>" name="operator" id="operator" value="<?php echo $simpleSearch->operator; ?>" /></td>
 								</tr>							
 							</table>
 						</fieldset>
@@ -308,7 +304,7 @@ class HTML_simplesearch
 		<?php		
 	}
 	
-	function editAdditionalFilter ($additionalFilter,$createUser, $updateUser, $option)
+	function editAdditionalFilter ($additionalFilter,$createUser, $updateUser,$fieldsLength, $option)
 	{
 		if ($additionalFilter->id != 0)
 		{
@@ -352,28 +348,24 @@ class HTML_simplesearch
 						<fieldset>						
 							<table class="admintable">
 								<tr>
-									<td class="key" width="100p"><?php echo JText::_("MAP_ADD_FILTER_ID"); ?></td>
-									<td><?php echo $additionalFilter->id; ?></td>								
-								</tr>
-								<tr>
 									<td class="key" width="100p"><?php echo JText::_("MAP_ADD_FILTER_NAME"); ?></td>
-									<td><input class="inputbox" type="text" size="100" maxlength="50" name="name" id="name" value="<?php echo $additionalFilter->name; ?>" /></td>								
+									<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['name'];?>" name="name" id="name" value="<?php echo $additionalFilter->name; ?>" /></td>								
 								</tr>
 								<tr>
 									<td class="key" width="100p"><?php echo JText::_("MAP_ADD_FILTER_DESCRIPTION"); ?></td>
-									<td><input class="inputbox" type="text" size="100" maxlength="100" name="description" id="description" value="<?php echo $additionalFilter->description; ?>" /></td>								
+									<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['description'];?>" name="description" id="description" value="<?php echo $additionalFilter->description; ?>" /></td>								
 								</tr>
 								<tr>
 									<td class="key" width="100p"><?php echo JText::_("MAP_ADD_FILTER_ATTRIBUTE"); ?></td>
-									<td><input class="inputbox" type="text" size="100" maxlength="100" name="attribute" id="attribute" value="<?php echo $additionalFilter->attribute; ?>" /></td>								
+									<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['attribute'];?>" name="attribute" id="attribute" value="<?php echo $additionalFilter->attribute; ?>" /></td>								
 								</tr>
 								<tr>
 									<td class="key"><?php echo JText::_("MAP_ADD_FILTER_VALUE"); ?></td>
-									<td><input class="inputbox" type="text" size="100" maxlength="100" name="value" id="value" value="<?php echo $additionalFilter->value; ?>" /></td>
+									<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['value'];?>" name="value" id="value" value="<?php echo $additionalFilter->value; ?>" /></td>
 								</tr>
 								<tr>
 									<td class="key"><?php echo JText::_("MAP_ADD_FILTER_OPERATOR"); ?></td>
-									<td><input class="inputbox" type="text" size="5" maxlength="5" name="operator" id="operator" value="<?php echo $additionalFilter->operator; ?>" /></td>
+									<td><input class="inputbox" type="text" size="5" maxlength="<?php echo $fieldsLength['operator'];?>" name="operator" id="operator" value="<?php echo $additionalFilter->operator; ?>" /></td>
 								</tr>
 							</table>
 						</fieldset>

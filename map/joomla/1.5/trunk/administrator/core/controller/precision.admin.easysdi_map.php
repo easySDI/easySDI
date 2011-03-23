@@ -77,7 +77,7 @@ class ADMIN_precision
 		$precision = new precision ($db);
 		$precision->load($id);
 
-		$geolocation->tryCheckOut($option,'precision');
+		$precision->tryCheckOut($option,'precision');
 		
 		$user =& JFactory::getUser();
 		$createUser="";
@@ -106,7 +106,7 @@ class ADMIN_precision
 				$updateUser = "";
 		}
 		
-		HTML_precision::editPrecision($precision,$createUser, $updateUser, $option);
+		HTML_precision::editPrecision($precision,$createUser, $updateUser,$precision->getFieldsLength(), $option);
 	}
 	
 	function deletePrecision($cid,$option)

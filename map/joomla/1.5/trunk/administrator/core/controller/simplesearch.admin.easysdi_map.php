@@ -130,7 +130,7 @@ class ADMIN_simplesearch
 		$rowsSelectedGrid = $db->loadObjectList();
 		echo $db->getErrorMsg();
 
-		HTML_simplesearch::editSimpleSearch($simpleSearch, $rowsFilters,$rowsSelectedFilter,$rowsResultGrid,$rowsSelectedGrid,$createUser, $updateUser, $option);
+		HTML_simplesearch::editSimpleSearch($simpleSearch, $rowsFilters,$rowsSelectedFilter,$rowsResultGrid,$rowsSelectedGrid,$createUser, $updateUser, $simpleSearch->getFieldsLength(),$option);
 	}
 	
 	function deleteSimpleSearch($cid,$option)
@@ -333,7 +333,7 @@ class ADMIN_simplesearch
 				$updateUser = "";
 		}
 		
-		HTML_simplesearch::editAdditionalFilter($additionalFilter, $createUser, $updateUser,$option);
+		HTML_simplesearch::editAdditionalFilter($additionalFilter, $createUser, $updateUser,$additionalFilter->getFieldsLength(),$option);
 	}
 	
 	function deleteAdditionalFilter($cid,$option)

@@ -107,7 +107,7 @@ class ADMIN_projection
 				$updateUser = "";
 		}
 		
-		HTML_projection::editProjection($projection,$createUser, $updateUser, $option);
+		HTML_projection::editProjection($projection,$createUser, $updateUser,$projection->getFieldsLength(), $option);
 	}
 	
 	function deleteProjection($cid,$option)

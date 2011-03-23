@@ -153,6 +153,10 @@ class HTML_featuretype
 								<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['description'];?>" name="description" id="description" value="<?php echo $feature_type->description; ?>" /></td>								
 							</tr>
 							<tr>
+								<td class="key" width="100p"><?php echo JText::_("MAP_FEATURETYPE_FEATURETYPENAME"); ?></td>
+								<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['featuretypename'];?>" name="featuretypename" id="featuretypename" value="<?php echo $feature_type->featuretypename; ?>" /></td>								
+							</tr>
+							<tr>
 								<td class="key"><?php echo JText::_("MAP_FEATURETYPE_USE"); ?></td>
 								<td><?php echo JHTML::_("select.genericlist",$rowsUses, 'uses_id[]', 'size="5" multiple="true" class="selectbox" onChange="javascript:checkUses()"', 'value', 'text', $rowsSelectedUses ); ?></td>
 							</tr>

@@ -79,7 +79,7 @@ class HTML_resultgrid
 		<?php		
 	}
 	
-	function editResultGrid ($resultGrid,$rowsResultGridFT,$rowsDetailsFT, $createUser, $updateUser,$option)
+	function editResultGrid ($resultGrid,$rowsResultGridFT,$rowsDetailsFT, $createUser, $updateUser,$fieldsLength,$option)
 	{
 		if ($resultGrid->id != 0)
 		{
@@ -141,16 +141,12 @@ class HTML_resultgrid
 						<fieldset>
 							<table class="admintable" >
 								<tr>
-									<td class="key" width="100p"><?php echo JText::_("MAP_RESULT_GRID_ID"); ?></td>
-									<td><?php echo $resultGrid->id; ?></td>								
-								</tr>
-								<tr>
 									<td class="key" width="100p"><?php echo JText::_("MAP_RESULT_GRID_NAME"); ?></td>
-									<td colspan="2"><input class="inputbox" type="text" size="100" maxlength="50" name="name" id="name" value="<?php echo $resultGrid->name; ?>" /></td>								
+									<td colspan="2"><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['name'];?>" name="name" id="name" value="<?php echo $resultGrid->name; ?>" /></td>								
 								</tr>
 								<tr>
 									<td class="key"><?php echo JText::_("MAP_RESULT_GRID_DESCRIPTION"); ?></td>
-									<td colspan="2"><input class="inputbox" type="text" size="100" maxlength="500" name="description" id="description" value="<?php echo $resultGrid->description; ?>" /></td>
+									<td colspan="2"><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['description'];?>" name="description" id="description" value="<?php echo $resultGrid->description; ?>" /></td>
 								</tr>
 								<tr>
 									<td class="key"><?php echo JText::_("MAP_RESULT_GRID_FTYPE"); ?></td>
@@ -166,11 +162,11 @@ class HTML_resultgrid
 								</tr>
 								<tr>
 									<td class="key"><?php echo JText::_("MAP_RESULT_GRID_DISTINCTFK"); ?></td>
-									<td colspan="2"><input class="inputbox" type="text" size="100" maxlength="100" name="distinctfk" id="distinctfk" value="<?php echo $resultGrid->distinctfk; ?>" /></td>
+									<td colspan="2"><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['distinctfk'];?>" name="distinctfk" id="distinctfk" value="<?php echo $resultGrid->distinctfk; ?>" /></td>
 								</tr>
 								<tr>
 									<td class="key"><?php echo JText::_("MAP_RESULT_GRID_DISTINCTPK"); ?></td>
-									<td colspan="2"><input class="inputbox" type="text" size="100" maxlength="100" name="distinctpk" id="distinctpk" value="<?php echo $resultGrid->distinctpk; ?>" /></td>
+									<td colspan="2"><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['distinctpk'];?>" name="distinctpk" id="distinctpk" value="<?php echo $resultGrid->distinctpk; ?>" /></td>
 								</tr>
 								<tr>
 									<td class="key"><?php echo JText::_("MAP_RESULT_GRID_DETAIL_FT"); ?></td>
