@@ -102,7 +102,6 @@ switch($task)
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'projection.admin.easysdi_map.php');
 		$cid = JRequest::getVar ('cid', array(0) );
 		ADMIN_projection::deleteProjection($cid, $option);
-		$mainframe->redirect("index.php?option=$option&task=projection");
 		break;
 	case 'saveProjection':
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'projection.admin.easysdi_map.html.php');
@@ -110,7 +109,6 @@ switch($task)
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'projection.toolbar.easysdi_map.html.php');
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'projection.admin.easysdi_map.php');
 		ADMIN_projection::saveProjection($option);
-		$mainframe->redirect("index.php?option=$option&task=projection");
 		break;
 	case "cancelProjection":
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'projection.admin.easysdi_map.php');
@@ -143,7 +141,6 @@ switch($task)
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'overlay.toolbar.easysdi_map.html.php');
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'overlay.admin.easysdi_map.php');
 		ADMIN_overlay::saveOverlay($option);
-		$mainframe->redirect("index.php?option=$option&task=overlay" );
 		break;
 	case 'deleteOverlay':
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'overlay.admin.easysdi_map.html.php');
@@ -152,7 +149,6 @@ switch($task)
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'overlay.admin.easysdi_map.php');
 		$cid = JRequest::getVar ('cid', array(0) );
 		ADMIN_overlay::deleteOverlay($cid,$option);
-		$mainframe->redirect("index.php?option=$option&task=overlay" );
 		break;
 	case 'orderupoverlay':
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'overlay.admin.easysdi_map.html.php');
@@ -161,7 +157,6 @@ switch($task)
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'overlay.admin.easysdi_map.php');
 		$cid = JRequest::getVar ('cid', array(0) );
 		ADMIN_overlay::orderUpOverlay($cid[0]);
-		$mainframe->redirect("index.php?option=$option&task=overlay");
 		break;
 	case 'orderdownoverlay':
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'overlay.admin.easysdi_map.html.php');
@@ -170,7 +165,6 @@ switch($task)
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'overlay.admin.easysdi_map.php');
 		$cid = JRequest::getVar ('cid', array(0) );
 		ADMIN_overlay::orderDownOverlay($cid[0]);
-		$mainframe->redirect("index.php?option=$option&task=overlay");
 		break;
 	case "cancelOverlay":
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'overlay.admin.easysdi_map.php');

@@ -92,6 +92,8 @@ class ADMIN_overlay
 
 		$overlay = new overlay ($db);
 		$overlay->load($id);
+		
+		$overlay->tryCheckOut($option,'overlay');
 
 		$user =& JFactory::getUser();
 		$createUser="";
@@ -147,6 +149,9 @@ class ADMIN_overlay
 			$mainframe->redirect("index.php?option=$option&task=overlay" );
 			exit();
 		}
+		
+		$overlay->checkin();
+		$mainframe->redirect("index.php?option=$option&task=overlay" );
 	}
 
 	function deleteOverlay($cid,$option)
@@ -170,6 +175,18 @@ class ADMIN_overlay
 				$mainframe->redirect("index.php?option=$option&task=overlay" );
 			}
 		}
+		$mainframe->redirect("index.php?option=$option&task=overlay" );
+	}
+	
+	function cancelOverlay($option)
+	{
+		global $mainframe;
+		$db = & JFactory::getDBO();
+		$overlay = new overlay ($db);
+		$overlay->bind(JRequest::get('post'));
+		$overlay->checkin();
+
+		$mainframe->redirect("index.php?option=$option&task=overlay" );
 	}
 
 	function listOverlayGroup ($option)
@@ -335,6 +352,8 @@ class ADMIN_overlay
 		$overlay = new overlay( $db );
 		$overlay->load( $id);
 		$overlay->orderUp("group_id",$overlay->group_id);
+		
+		$mainframe->redirect("index.php?option=$option&task=overlay");
 	}
 	
 	function orderDownOverlay($id){
@@ -342,6 +361,8 @@ class ADMIN_overlay
 		$overlay = new overlay( $db );
 		$overlay->load( $id);
 		$overlay->orderDown("group_id",$overlay->group_id);
+		
+		$mainframe->redirect("index.php?option=$option&task=overlay");
 	}
 	function orderUpOverlayGroup($id){
 		$db =& JFactory::getDBO();

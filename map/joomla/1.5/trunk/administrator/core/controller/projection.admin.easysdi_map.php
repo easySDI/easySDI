@@ -86,6 +86,8 @@ class ADMIN_projection
 		
 		$projection = new projection ($db);
 		$projection->load($id);
+		
+		$projection->tryCheckOut($option,'projection');
 
 		$user =& JFactory::getUser();
 		$createUser="";
@@ -138,6 +140,7 @@ class ADMIN_projection
 				$mainframe->redirect("index.php?option=$option&task=projection" );
 			}				
 		}	
+		$mainframe->redirect("index.php?option=$option&task=projection");
 	}
 	
 	function saveProjection($option)
@@ -161,6 +164,20 @@ class ADMIN_projection
 			$mainframe->redirect("index.php?option=$option&task=projection" );
 			exit();
 		}
+		
+		$projection->checkin();
+		$mainframe->redirect("index.php?option=$option&task=projection");
+	}
+	
+	function cancelProjection($option)
+	{
+		global $mainframe;
+		$db = & JFactory::getDBO();
+		$projection =& new projection ($db);
+		$projection->bind(JRequest::get('post'));
+		$projection->checkin();
+
+		$mainframe->redirect("index.php?option=$option&task=projection" );
 	}
 
 }
