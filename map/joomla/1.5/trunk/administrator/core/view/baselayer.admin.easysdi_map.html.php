@@ -94,7 +94,7 @@ class HTML_baselayer
 		<?php
 	}
 
-	function editBaseLayer( $baseLayer,$createUser, $updateUser, $option )
+	function editBaseLayer( $baseLayer,$createUser, $updateUser,$fieldsLength, $option )
 	{
 		global  $mainframe;
 		JHTML::script('jquery-1.3.2.min.js', 'components/com_easysdi_map/externals/jquery/');
@@ -188,29 +188,27 @@ class HTML_baselayer
 				<fieldset>
 				<table class="admintable">
 					<tr>
-						<td class="key"><?php echo JText::_("MAP_BASELAYER_ID"); ?></td>
-						<td><?php echo $baseLayer->id; ?></td>
-					</tr>
-					<tr>
 						<td class="key"><?php echo JText::_("MAP_BASELAYER_NAME"); ?></td>
-						<td><input class="inputbox" type="text" size="50" maxlength="100" name="name" id="name" value="<?php echo stripslashes($baseLayer->name); ?>" /></td>
+						<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['name'];?>" name="name" id="name" value="<?php echo stripslashes($baseLayer->name); ?>" /></td>
 					</tr>
 					<tr>
 						<td class="key"><?php echo JText::_("MAP_BASELAYER_DESCRIPTION"); ?></td>
-						<td><input class="inputbox" type="text" size="50" maxlength="100" name="description" id="description" value="<?php echo stripslashes($baseLayer->description); ?>" /></td>
+						<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['description'];?>" name="description" id="description" value="<?php echo stripslashes($baseLayer->description); ?>" /></td>
 					</tr>
 					<tr>
 						<td class="key"><?php echo JText::_("MAP_BASELAYER_LAYERS"); ?></td>
-						<td><input class="inputbox" type="text" size="50" maxlength="100" name="layers" id="layers" value="<?php echo $baseLayer->layers; ?>" /></td>
+						<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['layers'];?>" name="layers" id="layers" value="<?php echo $baseLayer->layers; ?>" /></td>
 						<td><?php echo JText::_("MAP_OVERLAY_LAYERS_SEPARATOR"); ?></td>
 					</tr>
 					<tr>
 						<td class="key"><?php echo JText::_("MAP_BASELAYER_PROJECTION"); ?></td>
-						<td><input class="inputbox" type="text" size="50" maxlength="100" name="projection" id="projection" value="<?php echo $baseLayer->projection; ?>" /></td>
+						<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['projection'];?>" name="projection" 
+						id="projection" value="<?php echo $baseLayer->projection; ?>" /></td>
 					</tr>
 					<tr>
 						<td class="key"><?php echo JText::_("MAP_BASELAYER_IMG_FORMAT"); ?></td>
-						<td><input class="inputbox" name="imgformat" id="imgformat" type="text" size="50" maxlength="100" value="<?php echo $baseLayer->imgformat; ?>" />
+						<td><input class="inputbox" name="imgformat" id="imgformat" type="text" size="100" maxlength="<?php echo $fieldsLength['imgformat'];?>" 
+						value="<?php echo $baseLayer->imgformat; ?>" />
 						</td>
 						<td>ex : image/png</td>
 					</tr>
@@ -223,7 +221,8 @@ class HTML_baselayer
 					</tr>
 					<tr>
 						<td class="key"><?php echo JText::_("MAP_BASELAYER_MAXEXTENT"); ?></td>
-						<td><input class="inputbox" type="text" size="50" maxlength="100" name="maxextent" id="maxextent" value="<?php echo $baseLayer->maxextent; ?>" /></td>
+						<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['maxextent'];?>" name="maxextent" id="maxextent" 
+						value="<?php echo $baseLayer->maxextent; ?>" /></td>
 					</tr>
 					<tr>
 						<td colspan="2"><input type="radio" id="resolutionoverscale" name="resolutionoverscale" value="0"
@@ -231,12 +230,12 @@ class HTML_baselayer
 					</tr>
 					<tr>
 						<td class="key"><?php echo JText::_("MAP_BASE_MIN_SCALE"); ?></td>
-						<td><input class="inputbox scales" type="text" size="50" maxlength="100" name="minscale" id="minscale"
+						<td><input class="inputbox scales" type="text" size="100" maxlength="<?php echo $fieldsLength['minscale'];?>" name="minscale" id="minscale" 
 						<?php if ($baseLayer->resolutionoverscale == 1) echo 'disabled' ?> value="<?php echo $baseLayer->minscale; ?>" /></td>
 					</tr>
 					<tr class="scales">
 						<td class="key"><?php echo JText::_("MAP_BASE_MAX_SCALE"); ?></td>
-						<td><input class="inputbox scales" name="maxscale" id="maxscale" type="text" size="50" maxlength="100"
+						<td><input class="inputbox scales" name="maxscale" id="maxscale" type="text" size="100" maxlength="<?php echo $fieldsLength['maxscale'];?>"
 						<?php if ($baseLayer->resolutionoverscale == 1) echo 'disabled' ?> value="<?php echo $baseLayer->maxscale; ?>" /></td>
 					</tr>
 					<tr>
@@ -245,7 +244,7 @@ class HTML_baselayer
 					</tr>
 					<tr>
 						<td class="key"><?php echo JText::_("MAP_BASE_RESOLUTIONS"); ?></td>
-						<td style=""><textarea id="resolutions" class="textarea resolutions" style="height: 200px; width: 500px;" name="resolutions" size="50"
+						<td style=""><textarea id="resolutions" class="textarea resolutions" style="height: 200px; width: 500px;" name="resolutions" size="100"
 							maxlength="4000" <?php if ($baseLayer->resolutionOverScale == 0) echo 'disabled' ?>><?php echo $baseLayer->resolutions; ?></textarea></td>
 					</tr>
 					<tr>
@@ -254,7 +253,7 @@ class HTML_baselayer
 					</tr>
 					<tr>
 						<td class="key"><?php echo JText::_("MAP_BASELAYER_URL"); ?></td>
-						<td><input class="inputbox" type="text" size="50" maxlength="100" name="url" id="url" value="<?php echo $baseLayer->url; ?>" /></td>
+						<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['url'];?>" name="url" id="url" value="<?php echo $baseLayer->url; ?>" /></td>
 					</tr>
 					<tr>
 						<td class="key"><?php echo JText::_("MAP_BASELAYER_TILE"); ?></td>
@@ -271,12 +270,12 @@ class HTML_baselayer
 					</tr>
 					<tr>
 						<td class="key"><?php echo JText::_("MAP_BASELAYER_OPACITY"); ?></td>
-						<td><input class="inputbox" type="text" size="50" maxlength="100" name="defaultopacity" id="defaultopacity"
+						<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['defaultopacity'];?>" name="defaultopacity" id="defaultopacity"
 							value="<?php echo $baseLayer->defaultopacity; ?>" /></td>
 					</tr>
 					<tr>
 						<td class="key"><?php echo JText::_("MAP_BASELAYER_METADATA"); ?></td>
-						<td><input class="inputbox" type="text" size="50" maxlength="500" name="metadataurl" id="metadataurl"
+						<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['metadataurl'];?>" name="metadataurl" id="metadataurl"
 							value="<?php echo $baseLayer->metadataurl; ?>" /></td>
 					</tr>
 				</table>

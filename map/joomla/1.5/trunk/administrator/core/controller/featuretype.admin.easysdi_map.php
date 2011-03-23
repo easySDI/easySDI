@@ -157,7 +157,7 @@ class ADMIN_featuretype
 			return ;
 		}
 		
-		HTML_featuretype::editFeatureType($feature_type, $rowsUses,$rowsSelectedUses,$rowsAttributes,$rowsProfiles,$rowsAttributeProfiles,$createUser,$updateUser,$option);
+		HTML_featuretype::editFeatureType($feature_type, $rowsUses,$rowsSelectedUses,$rowsAttributes,$rowsProfiles,$rowsAttributeProfiles,$createUser,$updateUser,$feature_type->getFieldsLength(),$option);
 	}
 	
 	function deleteFeatureType($cid,$option)

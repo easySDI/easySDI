@@ -109,7 +109,7 @@ class ADMIN_comment
 				$updateUser = "";
 		}
 		
-		HTML_comment::editComment($comment,$createUser, $updateUser,  $option);
+		HTML_comment::editComment($comment,$createUser, $updateUser,$comment->getFieldsLength(),  $option);
 	}
 	
 	function deleteComment($cid,$option)

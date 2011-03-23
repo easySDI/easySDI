@@ -85,7 +85,7 @@ class HTML_comment
 		<?php		
 	}
 	
-	function editComment ($comment,$createUser, $updateUser,  $option)
+	function editComment ($comment,$createUser, $updateUser,$fieldsLength,  $option)
 	{
 		if ($comment->id != 0)
 		{
@@ -131,24 +131,20 @@ class HTML_comment
 					<fieldset>						
 						<table class="admintable">
 							<tr>
-								<td class="key" width="100p"><?php echo JText::_("MAP_COMMENT_ID"); ?></td>
-								<td><?php echo $comment->id; ?></td>								
-							</tr>
-							<tr>
 								<td class="key" width="100p"><?php echo JText::_("MAP_COMMENT_NAME"); ?></td>
-								<td><input class="inputbox" type="text" size="100" maxlength="100" name="name" id="name" value="<?php echo $comment->name; ?>" /></td>								
+								<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['name'];?>" name="name" id="name" value="<?php echo $comment->name; ?>" /></td>								
 							</tr>
 							<tr>
 								<td class="key" width="100p"><?php echo JText::_("MAP_COMMENT_DESCRIPTION"); ?></td>
-								<td><input class="inputbox" type="text" size="100" maxlength="100" name="description" id="description" value="<?php echo $comment->description; ?>" /></td>								
+								<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['description'];?>" name="description" id="description" value="<?php echo $comment->description; ?>" /></td>								
 							</tr>
 							<tr>
 								<td class="key" width="100p"><?php echo JText::_("MAP_COMMENT_FEATURETYPE_NAME"); ?></td>
-								<td><input class="inputbox" type="text" size="100" maxlength="100" name="featuretypename" id="featuretypename" value="<?php echo $comment->featuretypename; ?>" /></td>								
+								<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['featuretypename'];?>" name="featuretypename" id="featuretypename" value="<?php echo $comment->featuretypename; ?>" /></td>								
 							</tr>
 							<tr>
 								<td class="key"><?php echo JText::_("MAP_COMMENT_COUNTATTRIBUTE"); ?></td>
-								<td><input class="inputbox" type="text" size="100" maxlength="500" name="countattribute" id="countattribute" value="<?php echo $comment->countattribute; ?>" /></td>
+								<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['countattribute'];?>" name="countattribute" id="countattribute" value="<?php echo $comment->countattribute; ?>" /></td>
 							</tr>
 							<tr>
 								<td class="key"><?php echo JText::_("MAP_COMMENT_ENABLE"); ?></td>

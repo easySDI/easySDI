@@ -107,7 +107,7 @@ class ADMIN_geolocation
 				$updateUser = "";
 		}
 
-		HTML_geolocation::editGeolocation($geolocation,$createUser, $updateUser, $option);
+		HTML_geolocation::editGeolocation($geolocation,$createUser, $updateUser,$geolocation->getFieldsLength(), $option);
 	}
 	
 	function deleteGeolocation($cid,$option)

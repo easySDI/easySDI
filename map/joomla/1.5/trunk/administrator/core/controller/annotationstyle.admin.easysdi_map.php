@@ -106,7 +106,8 @@ class ADMIN_annotationstyle
 			else
 				$updateUser = "";
 		}
-		HTML_annotationstyle::editAnnotationStyle($annotationStyle,$createUser, $updateUser, $option);
+		
+		HTML_annotationstyle::editAnnotationStyle($annotationStyle,$createUser, $updateUser, $annotationStyle->getFieldsLength(), $option);
 	}
 	
 	function deleteAnnotationStyle($cid,$option)

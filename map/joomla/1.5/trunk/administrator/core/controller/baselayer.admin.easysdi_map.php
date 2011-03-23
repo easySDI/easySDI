@@ -113,7 +113,7 @@ class ADMIN_baselayer
 				$updateUser = "";
 		}
 		
-		HTML_baselayer::editBaseLayer($baseLayer,$createUser, $updateUser,  $option);
+		HTML_baselayer::editBaseLayer($baseLayer,$createUser, $updateUser, $baseLayer->getFieldsLength(), $option);
 	}
 	
 	function deleteBaseLayer($cid,$option)

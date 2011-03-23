@@ -80,8 +80,9 @@ class HTML_annotationstyle
 		<?php		
 	}
 	
-	function editAnnotationStyle($annotationStyle,$createUser,$updateUser, $option)
+	function editAnnotationStyle($annotationStyle,$createUser,$updateUser,$fieldsLength, $option)
 	{
+		print_r ($fieldsLength);
 		if ($annotationStyle->id != 0)
 		{
 			JToolBarHelper::title( JText::_("MAP_EDIT_ANNOTATION_STYLE"), 'generic.png' );
@@ -122,72 +123,68 @@ class HTML_annotationstyle
 					<fieldset>
 						<table class="admintable">
 							<tr>
-								<td class="key" width="100p"><?php echo JText::_("MAP_ANNOTATION_STYLE_ID"); ?></td>
-								<td><?php echo $annotationStyle->id; ?></td>								
-							</tr>
-							<tr>
 								<td  class="key" width="100p"><?php echo JText::_("MAP_ANNOTATION_STYLE_NAME"); ?></td>
-								<td><input class="inputbox" type="text" size="100" maxlength="200" name="name" id="name" value="<?php echo $annotationStyle->name; ?>" /></td>								
+								<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['name'];?>" name="name" id="name" value="<?php echo $annotationStyle->name; ?>" /></td>								
 							</tr>
 							<tr>
 								<td  class="key" width="100p"><?php echo JText::_("MAP_ANNOTATION_STYLE_DESCRIPTION"); ?></td>
-								<td><input class="inputbox" type="text" size="100" maxlength="200" name="description" id="description" value="<?php echo $annotationStyle->description; ?>" /></td>								
+								<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['description'];?>" name="description" id="description" value="<?php echo $annotationStyle->description; ?>" /></td>								
 							</tr>
 							<tr>
 								<td class="key"><?php echo JText::_("MAP_ANNOTATION_STYLE_FILL_COLOR"); ?></td>
-								<td><input class="inputbox" type="text" size="7" maxlength="7" name="fillColor" id="fillColor" value="<?php echo $annotationStyle->fillColor; ?>" /></td>
+								<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['fillColor'];?>" name="fillColor" id="fillColor" value="<?php echo $annotationStyle->fillColor; ?>" /></td>
 							</tr>
 							<tr>
 								<td class="key"><?php echo JText::_("MAP_ANNOTATION_STYLE_FILL_OPACITY"); ?></td>
-								<td><input class="inputbox" type="text" size="100" maxlength="100" name="fillOpacity" id="fillOpacity" value="<?php echo $annotationStyle->fillOpacity; ?>" /></td>
+								<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['fillOpacity'];?>" name="fillOpacity" id="fillOpacity" value="<?php echo $annotationStyle->fillOpacity; ?>" /></td>
 							</tr>
 							<tr>
 								<td class="key"><?php echo JText::_("MAP_ANNOTATION_STYLE_STROKE_COLOR"); ?></td>
-								<td><input class="inputbox" type="text" size="7" maxlength="7" name="strokeColor" id="strokeColor" value="<?php echo $annotationStyle->strokeColor; ?>" /></td>
+								<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['strokeColor'];?>" name="strokeColor" id="strokeColor" value="<?php echo $annotationStyle->strokeColor; ?>" /></td>
 							</tr>
 							<tr>
 								<td class="key"><?php echo JText::_("MAP_ANNOTATION_STYLE_STROKE_OPACITY"); ?></td>
-								<td><input class="inputbox" type="text" size="100" maxlength="100" name="strokeOpacity" id="strokeOpacity" value="<?php echo $annotationStyle->strokeOpacity; ?>" /></td>
+								<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['strokeOpacity'];?>" name="strokeOpacity" id="strokeOpacity" value="<?php echo $annotationStyle->strokeOpacity; ?>" /></td>
 							</tr>
 							<tr>
 								<td class="key"><?php echo JText::_("MAP_ANNOTATION_STYLE_STROKE_WIDTH"); ?></td>
-								<td><input class="inputbox" type="text" size="100" maxlength="100" name="strokeWidth" id="strokeWidth" value="<?php echo $annotationStyle->strokeWidth; ?>" /></td>
+								<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['strokeWidth'];?>" name="strokeWidth" id="strokeWidth" value="<?php echo $annotationStyle->strokeWidth; ?>" /></td>
 							</tr>
 							<tr>
 								<td class="key"><?php echo JText::_("MAP_ANNOTATION_STYLE_STROKE_LINE_CAP"); ?></td>
-								<td><input class="inputbox" type="text" size="100" maxlength="7" name="strokeLinecap" id="strokeLinecap" value="<?php echo $annotationStyle->strokeLinecap; ?>" /></td>
+								<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['strokeLinecap'];?>" name="strokeLinecap" id="strokeLinecap" value="<?php echo $annotationStyle->strokeLinecap; ?>" /></td>
 							</tr>
 							<tr>
 								<td class="key"><?php echo JText::_("MAP_ANNOTATION_STYLE_STROKE_DASH_STYLE"); ?></td>
-								<td><input class="inputbox" type="text" size="100" maxlength="11" name="strokeDashstyle" id="strokeDashstyle" value="<?php echo $annotationStyle->strokeDashstyle; ?>" /></td>
+								<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['strokeDashstyle'];?>" name="strokeDashstyle" id="strokeDashstyle" value="<?php echo $annotationStyle->strokeDashstyle; ?>" /></td>
 							</tr>
 							<tr>
 								<td class="key"><?php echo JText::_("MAP_ANNOTATION_STYLE_POINT_RADIUS"); ?></td>
-								<td><input class="inputbox" type="text" size="100" maxlength="100" name="pointRadius" id="pointRadius" value="<?php echo $annotationStyle->pointRadius; ?>" /></td>
+								<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['pointRadius'];?>" name="pointRadius" id="pointRadius" value="<?php echo $annotationStyle->pointRadius; ?>" /></td>
 							</tr>
 							<tr>
 								<td class="key"><?php echo JText::_("MAP_ANNOTATION_STYLE_EXTERNAL_GRAPHIC"); ?></td>
-								<td><input class="inputbox" type="text" size="100" maxlength="400" name="externalGraphic" id="externalGraphic" value="<?php echo $annotationStyle->externalGraphic; ?>" /></td>
+								<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['externalGraphic'];?>" name="externalGraphic" id="externalGraphic" value="<?php echo $annotationStyle->externalGraphic; ?>" /></td>
 							</tr>
 							<tr>
 								<td class="key"><?php echo JText::_("MAP_ANNOTATION_STYLE_GRAPHIC_WIDTH"); ?></td>
-								<td><input class="inputbox" type="text" size="100" maxlength="100" name="graphicWidth" id="graphicWidth" value="<?php echo $annotationStyle->graphicWidth; ?>" /></td>
+								<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['graphicWidth'];?>" name="graphicWidth" id="graphicWidth" value="<?php echo $annotationStyle->graphicWidth; ?>" /></td>
 							</tr>
 							<tr>
 								<td class="key"><?php echo JText::_("MAP_ANNOTATION_STYLE_GRAPHIC_HEIGHT"); ?></td>
-								<td><input class="inputbox" type="text" size="100" maxlength="100" name="graphicHeight" id="graphicHeight" value="<?php echo $annotationStyle->graphicHeight; ?>" /></td>
+								<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['graphicHeight'];?>" name="graphicHeight" id="graphicHeight" value="<?php echo $annotationStyle->graphicHeight; ?>" /></td>
 							</tr>
 							<tr>
 								<td class="key"><?php echo JText::_("MAP_ANNOTATION_STYLE_GRAPHIC_OPACITY"); ?></td>
-								<td><input class="inputbox" type="text" size="100" maxlength="100" name="graphicOpacity" id="graphicOpacity" value="<?php echo $annotationStyle->graphicOpacity; ?>" /></td>
+								<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['graphicOpacity'];?>" name="graphicOpacity" id="graphicOpacity" value="<?php echo $annotationStyle->graphicOpacity; ?>" /></td>
 							</tr>
 							<tr>
 								<td class="key"><?php echo JText::_("MAP_ANNOTATION_STYLE_GRAPHIC_X_OFFSET"); ?></td>
-								<td><input class="inputbox" type="text" size="100" maxlength="100" name="graphicXOffset" id="graphicXOffset" value="<?php echo $annotationStyle->graphicXOffset; ?>" /></td>
+								<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['graphicXOffset'];?>" name="graphicXOffset" id="graphicXOffset" value="<?php echo $annotationStyle->graphicXOffset; ?>" /></td>
 							</tr>
 							<tr>
 								<td class="key"><?php echo JText::_("MAP_ANNOTATION_STYLE_GRAPHIC_Y_OFFSET"); ?></td>
-								<td><input class="inputbox" type="text" size="100" maxlength="100" name="graphicYOffset" id="graphicYOffset" value="<?php echo $annotationStyle->graphicYOffset; ?>" /></td>
+								<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['graphicYOffset'];?>" name="graphicYOffset" id="graphicYOffset" value="<?php echo $annotationStyle->graphicYOffset; ?>" /></td>
 							</tr>
 						</table>
 					</fieldset>

@@ -80,7 +80,7 @@ class HTML_featuretype
 		<?php		
 	}
 	
-	function editFeatureType ($feature_type, $rowsUses,$rowsSelectedUses,$rowsAttributes,$rowsProfiles,$rowsAttributeProfiles,$createUser,$updateUser,$option)
+	function editFeatureType ($feature_type, $rowsUses,$rowsSelectedUses,$rowsAttributes,$rowsProfiles,$rowsAttributeProfiles,$createUser,$updateUser,$fieldsLength,$option)
 	{
 		if ($feature_type->id != 0)
 		{
@@ -145,16 +145,12 @@ class HTML_featuretype
 					<legend><?php echo  JText::_("MAP_LEGEND_FEATURETYPE")?></legend>						
 						<table class="admintable">
 							<tr>
-								<td class="key" width="100p"><?php echo JText::_("MAP_FEATURETYPE_ID"); ?></td>
-								<td><?php echo $feature_type->id; ?></td>								
-							</tr>
-							<tr>
 								<td class="key" width="100p"><?php echo JText::_("MAP_FEATURETYPE_NAME"); ?></td>
-								<td><input class="inputbox" type="text" size="100" maxlength="100" name="name" id="name" value="<?php echo $feature_type->name; ?>" /></td>								
+								<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['name'];?>" name="name" id="name" value="<?php echo $feature_type->name; ?>" /></td>								
 							</tr>
 							<tr>
 								<td class="key" width="100p"><?php echo JText::_("MAP_FEATURETYPE_DESCRIPTION"); ?></td>
-								<td><input class="inputbox" type="text" size="100" maxlength="100" name="description" id="description" value="<?php echo $feature_type->description; ?>" /></td>								
+								<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['description'];?>" name="description" id="description" value="<?php echo $feature_type->description; ?>" /></td>								
 							</tr>
 							<tr>
 								<td class="key"><?php echo JText::_("MAP_FEATURETYPE_USE"); ?></td>
@@ -162,7 +158,7 @@ class HTML_featuretype
 							</tr>
 							<tr id="geom">
 								<td class="key" width="100p"><?php echo JText::_("MAP_FEATURETYPE_GEOMETRY"); ?></td>
-								<td><input class="inputbox" type="text" size="100" maxlength="100" name="geometry" id="geometry" value="<?php echo $feature_type->geometry; ?>" /></td>								
+								<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['geometry'];?>" name="geometry" id="geometry" value="<?php echo $feature_type->geometry; ?>" /></td>								
 							</tr>
 						</table>
 					</fieldset>
