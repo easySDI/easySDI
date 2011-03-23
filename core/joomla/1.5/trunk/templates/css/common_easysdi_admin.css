@@ -62,6 +62,12 @@
     background-size: 59px 48px;
 }
 
+.icon-48-map {
+    background-image: url("../../../../../administrator/components/com_easysdi_core/common/icons/easysdi_picto_map.jpg");
+    -moz-background-size: 59px 48px;
+    background-size: 59px 48px;
+}
+
 div.header {
     padding-left: 70px !important;
     color: #5b6d73 !important;
