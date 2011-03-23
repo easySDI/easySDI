@@ -87,6 +87,8 @@ class ADMIN_geolocation
 		$geolocation = new geolocation ($db);
 		$geolocation->load($id);
 		
+		$geolocation->tryCheckOut($option,'geolocation');
+		
 		$user =& JFactory::getUser();
 		$createUser="";
 		$updateUser="";
@@ -138,6 +140,7 @@ class ADMIN_geolocation
 				$mainframe->redirect("index.php?option=$option&task=geolocation" );
 			}				
 		}	
+		$mainframe->redirect("index.php?option=$option&task=geolocation");
 	}
 	
 	function saveGeolocation($option)
@@ -155,9 +158,21 @@ class ADMIN_geolocation
 		if (!$geolocation->store()) 
 		{			
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=geolocation" );
-			exit();
 		}
+		
+		$geolocation->checkin();
+		$mainframe->redirect("index.php?option=$option&task=geolocation");
+	}
+	
+	function cancelGeolocation($option)
+	{
+		global $mainframe;
+		$db = & JFactory::getDBO();
+		$geolocation = new geolocation ($db);
+		$geolocation->bind(JRequest::get('post'));
+		$geolocation->checkin();
+
+		$mainframe->redirect("index.php?option=$option&task=geolocation" );
 	}
 }
 ?>

@@ -62,7 +62,9 @@ class ADMIN_serviceaccount
 						INNER JOIN #__sdi_account p 
 						ON u.id = p.user_id " );
 		$rowsAccount = $db->loadObjectList();
-		echo $db->getErrorMsg();			
+		echo $db->getErrorMsg();	
+
+//		$account->tryCheckOut($option,'serviceAccount');
 
 		HTML_serviceaccount::editServiceAccount($service_account,$account, $rowsAccount, $option);
 	}
@@ -87,6 +89,20 @@ class ADMIN_serviceaccount
 			$mainframe->redirect("index.php?option=$option&task=serviceAccount" );
 			exit();
 		}
+		
+//		$serviceAccount->checkin();
+		$mainframe->redirect("index.php?option=$option&task=rightCtrlPanel");
+	}
+	
+	function cancelServiceAccount($option)
+	{
+		global $mainframe;
+//		$db = & JFactory::getDBO();
+//		$serviceAccount = new serviceAccount ($db);
+//		$serviceAccount->bind(JRequest::get('post'));
+//		$serviceAccount->checkin();
+
+		$mainframe->redirect("index.php?option=$option&task=rightCtrlPanel" );
 	}
 }
 ?>

@@ -65,8 +65,8 @@ class ADMIN_display
 		$db->setQuery( "UPDATE #__sdi_mapdisplayoption SET enable=$enable WHERE id=$id");
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=display" );				
 		}
+		$mainframe->redirect("index.php?option=$option&task=display");
 	}
 }
 ?>

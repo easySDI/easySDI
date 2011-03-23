@@ -533,7 +533,6 @@ switch($task)
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'serviceaccount.toolbar.easysdi_map.html.php');
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'serviceaccount.admin.easysdi_map.php');
 		ADMIN_serviceaccount::saveServiceAccount($option);
-		$mainframe->redirect("index.php?option=$option&task=rightCtrlPanel");
 		break;
 	case "cancelServiceAccount":
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'serviceaccount.admin.easysdi_map.php');
@@ -567,7 +566,6 @@ switch($task)
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'comment.admin.easysdi_map.php');
 		$cid = JRequest::getVar ('cid', array(0) );
 		ADMIN_comment::deleteComment($cid, $option);
-		$mainframe->redirect("index.php?option=$option&task=comment");
 		break;
 	case 'saveComment':
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'comment.admin.easysdi_map.html.php');
@@ -575,7 +573,6 @@ switch($task)
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'comment.toolbar.easysdi_map.html.php');
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'comment.admin.easysdi_map.php');
 		ADMIN_comment::saveComment($option);
-		$mainframe->redirect("index.php?option=$option&task=comment");
 		break;
 	case "cancelComment":
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'comment.admin.easysdi_map.php');
@@ -609,7 +606,6 @@ switch($task)
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'baselayer.admin.easysdi_map.php');
 		$cid = JRequest::getVar ('cid', array(0) );
 		ADMIN_baselayer::deleteBaseLayer($cid, $option);
-		$mainframe->redirect("index.php?option=$option&task=baseLayer");
 		break;
 	case 'saveBaseLayer':
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'baselayer.admin.easysdi_map.html.php');
@@ -617,7 +613,6 @@ switch($task)
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'baselayer.toolbar.easysdi_map.html.php');
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'baselayer.admin.easysdi_map.php');
 		ADMIN_baselayer::saveBaseLayer($option);
-		$mainframe->redirect("index.php?option=$option&task=baseLayer");
 		break;
 	case 'orderupbasemaplayer':
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'baselayer.admin.easysdi_map.html.php');
@@ -627,7 +622,6 @@ switch($task)
 		$cid = JRequest::getVar ('cid', array(0) );
 		$order_field = JRequest::getVar ('order_field','') ;
 		ADMIN_baselayer::orderUpBasemapLayer($cid[0]);
-		$mainframe->redirect("index.php?option=$option&task=baseLayer&order_field=".$order_field );
 		break;
 	case 'orderdownbasemaplayer':
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'baselayer.admin.easysdi_map.html.php');
@@ -637,7 +631,6 @@ switch($task)
 		$cid = JRequest::getVar ('cid', array(0) );
 		$order_field = JRequest::getVar ('order_field','') ;
 		ADMIN_baselayer::orderDownBasemapLayer($cid[0]);
-		$mainframe->redirect("index.php?option=$option&task=baseLayer&order_field=".$order_field );
 		break;
 	case "cancelBaseLayer":
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'baselayer.admin.easysdi_map.php');
@@ -671,7 +664,6 @@ switch($task)
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'geolocation.admin.easysdi_map.php');
 		$cid = JRequest::getVar ('cid', array(0) );
 		ADMIN_geolocation::deleteGeolocation($cid, $option);
-		$mainframe->redirect("index.php?option=$option&task=geolocation");
 		break;
 	case 'saveGeolocation':
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'geolocation.admin.easysdi_map.html.php');
@@ -679,7 +671,6 @@ switch($task)
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'geolocation.toolbar.easysdi_map.html.php');
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'geolocation.admin.easysdi_map.php');
 		ADMIN_geolocation::saveGeolocation($option);
-		$mainframe->redirect("index.php?option=$option&task=geolocation");
 		break;
 	case "cancelGeolocation":
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'geolocation.admin.easysdi_map.php');
@@ -702,7 +693,6 @@ switch($task)
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'display.toolbar.easysdi_map.html.php');
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'display.admin.easysdi_map.php');
 		ADMIN_display::saveDisplay($option);
-		$mainframe->redirect("index.php?option=$option&task=display");
 		break;
 	/**
 	 * Annotation styles

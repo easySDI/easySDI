@@ -92,6 +92,8 @@ class ADMIN_baselayer
 		$baseLayer = new baseLayer ($db);
 		$baseLayer->load($id);
 		
+		$baseLayer->tryCheckOut($option,'baseLayer');
+		
 		$user =& JFactory::getUser();
 		$createUser="";
 		$updateUser="";
@@ -144,6 +146,7 @@ class ADMIN_baselayer
 				$mainframe->redirect("index.php?option=$option&task=baseLayer" );
 			}				
 		}	
+		$mainframe->redirect("index.php?option=$option&task=baseLayer");
 	}
 	
 	function saveBaseLayer($option)
@@ -165,6 +168,9 @@ class ADMIN_baselayer
 			$mainframe->redirect("index.php?option=$option&task=baseLayer" );
 			exit();
 		}
+		
+		$baseLayer->checkin();
+		$mainframe->redirect("index.php?option=$option&task=baseLayer");
 	}
 	
 	function orderUpBasemapLayer($id){
@@ -173,6 +179,7 @@ class ADMIN_baselayer
 		$baseLayer = new baseLayer( $db );
 		$baseLayer->load( $id);
 		$baseLayer->orderUp();
+		$mainframe->redirect("index.php?option=$option&task=baseLayer&order_field=".$order_field );
 	}
 	
 	function orderDownBasemapLayer($id){
@@ -181,6 +188,18 @@ class ADMIN_baselayer
 		$baseLayer = new baseLayer( $db );
 		$baseLayer->load( $id);
 		$baseLayer->orderDown();
+		$mainframe->redirect("index.php?option=$option&task=baseLayer&order_field=".$order_field );
+	}
+	
+	function cancelBaseLayer($option)
+	{
+		global $mainframe;
+		$db = & JFactory::getDBO();
+		$baseLayer = new baseLayer( $db );
+		$baseLayer->bind(JRequest::get('post'));
+		$baseLayer->checkin();
+
+		$mainframe->redirect("index.php?option=$option&task=baseLayer" );
 	}
 
 }

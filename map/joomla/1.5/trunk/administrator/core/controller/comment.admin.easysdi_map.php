@@ -88,6 +88,8 @@ class ADMIN_comment
 		
 		$comment = new comment ($db);
 		$comment->load($id);
+		
+		$comment->tryCheckOut($option,'comment');
 
 		$user =& JFactory::getUser();
 		$createUser="";
@@ -140,6 +142,7 @@ class ADMIN_comment
 				$mainframe->redirect("index.php?option=$option&task=comment" );
 			}				
 		}	
+		$mainframe->redirect("index.php?option=$option&task=comment");
 	}
 	
 	function saveComment($option)
@@ -169,6 +172,20 @@ class ADMIN_comment
 			$mainframe->redirect("index.php?option=$option&task=comment" );
 			exit();
 		}
+		
+		$comment->checkin();
+		$mainframe->redirect("index.php?option=$option&task=comment");
+	}
+	
+	function cancelComment($option)
+	{
+		global $mainframe;
+		$db = & JFactory::getDBO();
+		$comment =& new comment($db);
+		$comment->bind(JRequest::get('post'));
+		$comment->checkin();
+
+		$mainframe->redirect("index.php?option=$option&task=comment" );
 	}
 
 }
