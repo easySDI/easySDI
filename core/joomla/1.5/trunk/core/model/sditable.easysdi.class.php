@@ -348,6 +348,29 @@ class sdiTable extends JTable
 	 	$this->_db->setQuery( "SELECT id AS value, name AS text FROM ".$this->_tbl." order by name" );
 	 	return  $this->_db->loadObjectList();
 	 }
+	 
+	 function getFieldsLength()
+	 {
+		$tableFields = array();
+		$tableFields = $this->_db->getTableFields($this->_tbl, false);
+		
+		// Parcours des champs pour extraire les informations utiles:
+		// - le nom du champ
+		// - sa longueur en caract�res
+		$fieldsLength = array();
+		foreach($tableFields as $table)
+		{
+			foreach ($table as $field)
+			{
+				if (substr($field->Type, 0, strlen("varchar")) == "varchar")
+				{
+					$length = strpos($field->Type, ")")-strpos($field->Type, "(")-1;
+					$fieldsLength[$field->Field] = substr($field->Type, strpos($field->Type, "(")+ 1, $length);
+				}
+			} 
+		}
+		return $fieldsLength;
+	 }
 
 	function tryCheckOut($option, $task)
 	{
