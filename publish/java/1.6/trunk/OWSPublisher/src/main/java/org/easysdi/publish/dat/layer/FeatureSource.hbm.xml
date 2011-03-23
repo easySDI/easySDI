@@ -21,7 +21,7 @@
 		<property name="scriptName" type="string" length="100" column="SCRIPTNAME"></property>
 		<property name="sourceDataType" type="string" length="100" column="SOURCEDATATYPE"></property>
 		<property name="crsCode" type="string" length="50" column="CRSCODE"></property>
-		<property name="fieldsName" type="string" length="600" column="FIELDSNAME"></property>
+		<property name="fieldsName" type="string" length="2000" column="FIELDSNAME"></property>
 		<property name="creationDate" type="calendar_date" column="CREATION_DATE"></property>
 		<property name="updateDate" type="calendar_date" column="UPDATE_DATE"></property>
 		<property name="status" type="string" length="20" column="STATUS"></property>

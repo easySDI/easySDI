@@ -431,6 +431,7 @@ public class RunnableDatasetTransformer{
 				fs.persist();
 			}catch(DataAccessException e){
 				System.out.println("Error occured, cause:"+e.getCause() +" message:"+ e.getMessage());
+				e.printStackTrace();
 			}
 			
 			//set progress to 100%
