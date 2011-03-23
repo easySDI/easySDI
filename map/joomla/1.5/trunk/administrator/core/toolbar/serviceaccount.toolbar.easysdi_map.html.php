@@ -35,7 +35,7 @@ class TOOLBAR_serviceaccount {
 	function _EDIT() 
 	{
 		JToolBarHelper::save('saveServiceAccount');
-		JToolBarHelper::cancel('rightCtrlPanel');
+		JToolBarHelper::cancel('cancelServiceAccount');
 	}
 
 }

@@ -39,7 +39,7 @@ class TOOLBAR_baselayer {
 	function _EDIT() 
 	{
 		JToolBarHelper::save('saveBaseLayer');
-		JToolBarHelper::cancel('baseLayer');
+		JToolBarHelper::cancel('cancelBaseLayer');
 	}
 	
 	function _LIST_DEFINITION() 

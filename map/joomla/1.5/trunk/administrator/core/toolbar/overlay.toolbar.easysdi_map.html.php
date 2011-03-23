@@ -39,7 +39,7 @@ class TOOLBAR_overlay {
 	function _EDITOVERLAY() 
 	{
 		JToolBarHelper::save('saveOverlay');
-		JToolBarHelper::cancel('overlay');
+		JToolBarHelper::cancel('cancelOverlay');
 	}
 
 	function _LISTOVERLAYGROUP() 
@@ -53,7 +53,7 @@ class TOOLBAR_overlay {
 	function _EDITOVERLAYGROUP() 
 	{
 		JToolBarHelper::save('saveOverlayGroup');
-		JToolBarHelper::cancel('overlayGroup');
+		JToolBarHelper::cancel('cancelOverlayGroup');
 	}
 }
 ?>

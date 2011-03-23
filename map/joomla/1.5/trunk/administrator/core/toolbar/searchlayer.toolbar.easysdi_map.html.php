@@ -39,7 +39,7 @@ class TOOLBAR_searchlayer {
 	function _EDIT() 
 	{
 		JToolBarHelper::save('saveSearchLayer');
-		JToolBarHelper::cancel('searchLayer');
+		JToolBarHelper::cancel('cancelSearchLayer');
 	}
 
 }

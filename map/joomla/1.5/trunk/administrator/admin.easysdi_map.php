@@ -112,6 +112,11 @@ switch($task)
 		ADMIN_projection::saveProjection($option);
 		$mainframe->redirect("index.php?option=$option&task=projection");
 		break;
+	case "cancelProjection":
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'projection.admin.easysdi_map.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'projection.class.easysdi_map.php');
+		ADMIN_projection::cancelProjection($option);		
+		break;
 	/**
 	 * Overlay
 	 */
@@ -166,6 +171,11 @@ switch($task)
 		$cid = JRequest::getVar ('cid', array(0) );
 		ADMIN_overlay::orderDownOverlay($cid[0]);
 		$mainframe->redirect("index.php?option=$option&task=overlay");
+		break;
+	case "cancelOverlay":
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'overlay.admin.easysdi_map.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'overlay.class.easysdi_map.php');
+		ADMIN_overlay::cancelOverlay($option);		
 		break;
 	/**
 	 * Overlay Group
@@ -222,6 +232,11 @@ switch($task)
 		ADMIN_overlay::orderDownOverlayGroup($cid[0]);
 		$mainframe->redirect("index.php?option=$option&task=overlayGroup");
 		break;
+	case "cancelOverlayGroup":
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'overlay.admin.easysdi_map.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'overlay.class.easysdi_map.php');
+		ADMIN_overlay::cancelOverlayGroup($option);		
+		break;
 	/**
 	 * Result Grid
 	 */
@@ -258,6 +273,11 @@ switch($task)
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'resultgrid.admin.easysdi_map.php');
 		ADMIN_resultgrid::saveResultGrid($option);
 		$mainframe->redirect("index.php?option=$option&task=resultGrid");
+		break;
+	case "cancelResultGrid":
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'resultgrid.admin.easysdi_map.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'resultgrid.class.easysdi_map.php');
+		ADMIN_resultgrid::cancelResultGrid($option);		
 		break;
 	/**
 	 * Simple search type
@@ -296,6 +316,11 @@ switch($task)
 		ADMIN_simplesearch::saveSimpleSearch($option);
 		$mainframe->redirect("index.php?option=$option&task=simpleSearch");
 		break;
+	case "cancelSimpleSearch":
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'simplesearch.admin.easysdi_map.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'simplesearch.class.easysdi_map.php');
+		ADMIN_simplesearch::cancelSimpleSearch($option);		
+		break;
 	/**
 	 * Simple search additional filters
 	 */
@@ -332,6 +357,11 @@ switch($task)
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'simplesearch.admin.easysdi_map.php');
 		ADMIN_simplesearch::saveAdditionalFilter($option);
 		$mainframe->redirect("index.php?option=$option&task=additionalFilter");
+		break;
+	case "cancelAdditionalFilter":
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'simplesearch.admin.easysdi_map.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'simplesearch.class.easysdi_map.php');
+		ADMIN_simplesearch::cancelAdditionalFilter($option);		
 		break;
 	/**
 	 * Search layer : main result grid
@@ -370,6 +400,11 @@ switch($task)
 		ADMIN_searchlayer::saveSearchlayer($option);
 		$mainframe->redirect("index.php?option=$option&task=searchLayer");
 		break;
+	case "cancelSearchLayer":
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'searchlayer.admin.easysdi_map.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'searchlayer.class.easysdi_map.php');
+		ADMIN_searchlayer::cancelSearchLayer($option);		
+		break;
 	/**
 	 * Precision
 	 */
@@ -407,6 +442,11 @@ switch($task)
 		ADMIN_precision::savePrecision($option);
 		$mainframe->redirect("index.php?option=$option&task=precision");
 		break;
+	case "cancelPrecision":
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'precision.admin.easysdi_map.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'precision.class.easysdi_map.php');
+		ADMIN_precision::cancelPrecision($option);		
+		break;
 	/**
 	 * Feature type
 	 */
@@ -443,6 +483,11 @@ switch($task)
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'featuretype.admin.easysdi_map.php');
 		ADMIN_featuretype::saveFeatureType($option);
 		$mainframe->redirect("index.php?option=$option&task=featureType");
+		break;
+	case "cancelFeatureType":
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'featuretype.admin.easysdi_map.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'featuretype.class.easysdi_map.php');
+		ADMIN_featuretype::cancelFeatureType($option);		
 		break;
 	/**
 	 * Profile
@@ -490,6 +535,11 @@ switch($task)
 		ADMIN_serviceaccount::saveServiceAccount($option);
 		$mainframe->redirect("index.php?option=$option&task=rightCtrlPanel");
 		break;
+	case "cancelServiceAccount":
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'serviceaccount.admin.easysdi_map.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'serviceaccount.class.easysdi_map.php');
+		ADMIN_serviceaccount::cancelServiceAccount($option);		
+		break;
 	/**
 	 * Comment feature type
 	 */
@@ -526,6 +576,11 @@ switch($task)
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'comment.admin.easysdi_map.php');
 		ADMIN_comment::saveComment($option);
 		$mainframe->redirect("index.php?option=$option&task=comment");
+		break;
+	case "cancelComment":
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'comment.admin.easysdi_map.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'comment.class.easysdi_map.php');
+		ADMIN_comment::cancelComment($option);		
 		break;
 	/**
 	 * Base layer
@@ -584,6 +639,11 @@ switch($task)
 		ADMIN_baselayer::orderDownBasemapLayer($cid[0]);
 		$mainframe->redirect("index.php?option=$option&task=baseLayer&order_field=".$order_field );
 		break;
+	case "cancelBaseLayer":
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'baselayer.admin.easysdi_map.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'baselayer.class.easysdi_map.php');
+		ADMIN_baselayer::cancelBaseLayer($option);		
+		break;
 	/**
 	 * Geolocation
 	 */
@@ -620,6 +680,11 @@ switch($task)
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'geolocation.admin.easysdi_map.php');
 		ADMIN_geolocation::saveGeolocation($option);
 		$mainframe->redirect("index.php?option=$option&task=geolocation");
+		break;
+	case "cancelGeolocation":
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'geolocation.admin.easysdi_map.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'geolocation.class.easysdi_map.php');
+		ADMIN_geolocation::cancelGeolocation($option);		
 		break;
 	/**
 	 * Display options
@@ -666,7 +731,6 @@ switch($task)
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'annotationstyle.admin.easysdi_map.php');
 		$cid = JRequest::getVar ('cid', array(0) );
 		ADMIN_annotationstyle::deleteAnnotationStyle($cid, $option);
-		$mainframe->redirect("index.php?option=$option&task=annotationStyle");
 		break;
 	case 'saveAnnotationStyle':
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'annotationstyle.admin.easysdi_map.html.php');
@@ -674,8 +738,15 @@ switch($task)
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'annotationstyle.toolbar.easysdi_map.html.php');
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'annotationstyle.admin.easysdi_map.php');
 		ADMIN_annotationstyle::saveAnnotationStyle($option);
-		$mainframe->redirect("index.php?option=$option&task=annotationStyle");
 		break;
+	case "cancelAnnotationStyle":
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'annotationstyle.admin.easysdi_map.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'annotationstyle.class.easysdi_map.php');
+		ADMIN_annotationstyle::cancelAnnotationStyle($option);		
+		break;
+	/**
+	 * Resource
+	 */
 	case "editResource":
 		TOOLBAR_resources::_EDIT();
 		ADMIN_resources::editResource($option);

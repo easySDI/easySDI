@@ -39,7 +39,7 @@ class TOOLBAR_projection {
 	function _EDIT() 
 	{
 		JToolBarHelper::save('saveProjection');
-		JToolBarHelper::cancel('projection');
+		JToolBarHelper::cancel('canceProjection');
 	}
 
 }

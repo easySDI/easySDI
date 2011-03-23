@@ -39,7 +39,7 @@ class TOOLBAR_precision {
 	function _EDIT() 
 	{
 		JToolBarHelper::save('savePrecision');
-		JToolBarHelper::cancel('precision');
+		JToolBarHelper::cancel('cancelPrecision');
 	}
 
 }

@@ -39,7 +39,7 @@ class TOOLBAR_featuretype {
 	function _EDIT() 
 	{
 		JToolBarHelper::save('saveFeatureType');
-		JToolBarHelper::cancel('featureType');
+		JToolBarHelper::cancel('cancelFeatureType');
 	}
 
 }

@@ -39,7 +39,7 @@ class TOOLBAR_simplesearch {
 	function _EDITSIMPLESEARCH() 
 	{
 		JToolBarHelper::save('saveSimpleSearch');
-		JToolBarHelper::cancel('simpleSearch');
+		JToolBarHelper::cancel('cancelSimpleSearch');
 	}
 
 }
@@ -65,7 +65,7 @@ class TOOLBAR_addfilter {
 	function _EDITADDFILTER() 
 	{
 		JToolBarHelper::save('saveAdditionalFilter');
-		JToolBarHelper::cancel('additionalFilter');
+		JToolBarHelper::cancel('cancelAdditionalFilter');
 	}
 
 }

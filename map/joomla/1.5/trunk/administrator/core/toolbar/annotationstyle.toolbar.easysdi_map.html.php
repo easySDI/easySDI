@@ -39,7 +39,7 @@ class TOOLBAR_annotationstyle {
 	function _EDIT() 
 	{
 		JToolBarHelper::save('saveAnnotationStyle');
-		JToolBarHelper::cancel('annotationStyle');
+		JToolBarHelper::cancel('cancelAnnotationStyle');
 	}
 
 }

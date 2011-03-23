@@ -39,7 +39,7 @@ class TOOLBAR_resultgrid {
 	function _EDITRESULTGRID() 
 	{
 		JToolBarHelper::save('saveResultGrid');
-		JToolBarHelper::cancel('resultGrid');
+		JToolBarHelper::cancel('cancelResultGrid');
 	}
 
 }

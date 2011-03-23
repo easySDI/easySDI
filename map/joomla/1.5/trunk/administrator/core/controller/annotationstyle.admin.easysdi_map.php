@@ -87,6 +87,8 @@ class ADMIN_annotationstyle
 		$annotationStyle = new annotationStyle ($db);
 		$annotationStyle->load($id);
 					
+		$annotationStyle->tryCheckOut($option,'annotationStyle');
+		
 		$user =& JFactory::getUser();
 		$createUser="";
 		$updateUser="";
@@ -137,6 +139,7 @@ class ADMIN_annotationstyle
 				$mainframe->redirect("index.php?option=$option&task=annotationStyle" );
 			}				
 		}	
+		$mainframe->redirect("index.php?option=$option&task=annotationStyle");
 	}
 	
 	function saveAnnotationStyle($option)
@@ -158,6 +161,20 @@ class ADMIN_annotationstyle
 			$mainframe->redirect("index.php?option=$option&task=annotationStyle" );
 			exit();
 		}
+		
+		$annotationStyle->checkin();
+		$mainframe->redirect("index.php?option=$option&task=annotationStyle" );
+	}
+	
+	function cancelAnnotationStyle($option)
+	{
+		global $mainframe;
+		$db = & JFactory::getDBO();
+		$annotationStyle = new annotationStyle ($db);
+		$annotationStyle->bind(JRequest::get('post'));
+		$annotationStyle->checkin();
+
+		$mainframe->redirect("index.php?option=$option&task=annotationStyle" );
 	}
 }
 ?>

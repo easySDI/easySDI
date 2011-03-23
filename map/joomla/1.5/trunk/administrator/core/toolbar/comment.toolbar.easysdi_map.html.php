@@ -39,7 +39,7 @@ class TOOLBAR_comment
 	function _EDIT() 
 	{
 		JToolBarHelper::save('saveComment');
-		JToolBarHelper::cancel('comment');
+		JToolBarHelper::cancel('cancelComment');
 	}
 
 }

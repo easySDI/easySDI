@@ -39,7 +39,7 @@ class TOOLBAR_geolocation {
 	function _EDIT() 
 	{
 		JToolBarHelper::save('saveGeolocation');
-		JToolBarHelper::cancel('geolocation');
+		JToolBarHelper::cancel('cancelGeolocation');
 	}
 }
 ?>
