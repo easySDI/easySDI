@@ -85,6 +85,8 @@ class ADMIN_resultgrid
 		
 		$resultGrid = new resultGrid ($db);
 		$resultGrid->load($id);
+		
+		$resultGrid->tryCheckOut($option,'resultGrid');
 
 		$user =& JFactory::getUser();
 		$createUser="";
@@ -145,6 +147,8 @@ class ADMIN_resultgrid
 				$mainframe->redirect("index.php?option=$option&task=resultGrid" );
 			}				
 		}	
+		
+		$mainframe->redirect("index.php?option=$option&task=resultGrid");
 	}
 	
 	function saveResultGrid($option)
@@ -166,6 +170,20 @@ class ADMIN_resultgrid
 			$mainframe->redirect("index.php?option=$option&task=resultGrid" );
 			exit();
 		}
+		
+		$resultGrid->checkin();
+		$mainframe->redirect("index.php?option=$option&task=resultGrid");
+	}
+	
+	function cancelResultGrid($option)
+	{
+		global $mainframe;
+		$db = & JFactory::getDBO();
+		$resultGrid =& new resultGrid($db);
+		$resultGrid->bind(JRequest::get('post'));
+		$resultGrid->checkin();
+
+		$mainframe->redirect("index.php?option=$option&task=resultGrid" );
 	}
 
 }

@@ -87,6 +87,8 @@ class ADMIN_searchlayer
 		$search_layer = new searchLayer ($db);
 		$search_layer->load($id);
 		
+		$search_layer->tryCheckOut($option,'geolocation');
+		
 		$user =& JFactory::getUser();
 		$createUser="";
 		$updateUser="";
@@ -146,6 +148,7 @@ class ADMIN_searchlayer
 				$mainframe->redirect("index.php?option=$option&task=searchlayer" );
 			}				
 		}	
+		$mainframe->redirect("index.php?option=$option&task=searchLayer");
 	}
 	
 	function saveSearchLayer($option)
@@ -177,6 +180,20 @@ class ADMIN_searchlayer
 			$mainframe->redirect("index.php?option=$option&task=searchlayer" );
 			exit();
 		}
+		
+		$searchLayer->checkin();
+		$mainframe->redirect("index.php?option=$option&task=searchLayer");
+	}
+	
+	function cancelSearchLayer($option)
+	{
+		global $mainframe;
+		$db = & JFactory::getDBO();
+		$searchLayer = new searchLayer ($db);
+		$searchLayer->bind(JRequest::get('post'));
+		$searchLayer->checkin();
+
+		$mainframe->redirect("index.php?option=$option&task=searchLayer" );
 	}
 }
 ?>

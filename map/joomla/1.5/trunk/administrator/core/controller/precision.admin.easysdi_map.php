@@ -86,6 +86,8 @@ class ADMIN_precision
 		$precision = new precision ($db);
 		$precision->load($id);
 
+		$geolocation->tryCheckOut($option,'precision');
+		
 		$user =& JFactory::getUser();
 		$createUser="";
 		$updateUser="";
@@ -137,6 +139,8 @@ class ADMIN_precision
 				$mainframe->redirect("index.php?option=$option&task=precision" );
 			}				
 		}	
+		
+		$mainframe->redirect("index.php?option=$option&task=precision");
 	}
 	
 	function savePrecision($option)
@@ -158,6 +162,20 @@ class ADMIN_precision
 			$mainframe->redirect("index.php?option=$option&task=precision" );
 			exit();
 		}
+		
+		$precision->checkin();
+		$mainframe->redirect("index.php?option=$option&task=precision");
+	}
+	
+	function cancelPrecision($option)
+	{
+		global $mainframe;
+		$db = & JFactory::getDBO();
+		$precision =& new precision($db);
+		$precision->bind(JRequest::get('post'));
+		$precision->checkin();
+
+		$mainframe->redirect("index.php?option=$option&task=precision" );
 	}
 
 }

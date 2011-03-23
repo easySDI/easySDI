@@ -90,6 +90,8 @@ class ADMIN_simplesearch
 		$simpleSearch = new simpleSearch ($db);
 		$simpleSearch->load($id);
 		
+		$simpleSearch->tryCheckOut($option,'simpleSearch');
+		
 		$user =& JFactory::getUser();
 		$createUser="";
 		$updateUser="";
@@ -161,6 +163,7 @@ class ADMIN_simplesearch
 				$mainframe->redirect("index.php?option=$option&task=simpleSearch" );
 			}				
 		}	
+		$mainframe->redirect("index.php?option=$option&task=simpleSearch");
 	}
 	
 	function saveSimpleSearch($option)
@@ -234,6 +237,20 @@ class ADMIN_simplesearch
 				}
 			}
 		}
+		
+		$simpleSearch->checkin();
+		$mainframe->redirect("index.php?option=$option&task=simpleSearch");
+	}
+	
+	function cancelSimpleSearch($option)
+	{
+		global $mainframe;
+		$db = & JFactory::getDBO();
+		$simpleSearch =& new simpleSearch($db);
+		$simpleSearch->bind(JRequest::get('post'));
+		$simpleSearch->checkin();
+
+		$mainframe->redirect("index.php?option=$option&task=simpleSearch" );
 	}
 	
 	/** 
@@ -305,6 +322,8 @@ class ADMIN_simplesearch
 		$additionalFilter = new additionalFilter ($db);
 		$additionalFilter->load($id);
 
+		$additionalFilter->tryCheckOut($option,'additionalFilter');
+		
 		$user =& JFactory::getUser();
 		$createUser="";
 		$updateUser="";
@@ -356,6 +375,8 @@ class ADMIN_simplesearch
 				$mainframe->redirect("index.php?option=$option&task=additionalFilter" );
 			}				
 		}	
+		
+		$mainframe->redirect("index.php?option=$option&task=additionalFilter");
 	}
 	
 	function saveAdditionalFilter($option)
@@ -377,6 +398,20 @@ class ADMIN_simplesearch
 			$mainframe->redirect("index.php?option=$option&task=additionalFilter" );
 			exit();
 		}
+		
+		$additionalFilter->checkin();
+		$mainframe->redirect("index.php?option=$option&task=additionalFilter");
+	}
+	
+	function cancelAdditionalFilter($option)
+	{
+		global $mainframe;
+		$db = & JFactory::getDBO();
+		$additionalFilter =& new additionalFilter($db);
+		$additionalFilter->bind(JRequest::get('post'));
+		$additionalFilter->checkin();
+
+		$mainframe->redirect("index.php?option=$option&task=additionalFilter" );
 	}
 }
 ?>

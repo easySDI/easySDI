@@ -204,7 +204,6 @@ switch($task)
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'overlay.admin.easysdi_map.php');
 		$cid = JRequest::getVar ('cid', array(0) );
 		ADMIN_overlay::deleteOverlayGroup($cid, $option);
-		$mainframe->redirect("index.php?option=$option&task=overlayGroup");
 		break;
 	case 'saveOverlayGroup';
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'overlay.admin.easysdi_map.html.php');
@@ -212,7 +211,6 @@ switch($task)
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'overlay.toolbar.easysdi_map.html.php');
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'overlay.admin.easysdi_map.php');
 		ADMIN_overlay::saveOverlayGroup($option);
-		$mainframe->redirect("index.php?option=$option&task=overlayGroup");
 		break;
 	case 'orderupoverlaygroup':
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'overlay.admin.easysdi_map.html.php');
@@ -221,7 +219,6 @@ switch($task)
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'overlay.admin.easysdi_map.php');
 		$cid = JRequest::getVar ('cid', array(0) );
 		ADMIN_overlay::orderUpOverlayGroup($cid[0]);
-		$mainframe->redirect("index.php?option=$option&task=overlayGroup");
 		break;
 	case 'orderdownoverlaygroup':
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'overlay.admin.easysdi_map.html.php');
@@ -230,7 +227,6 @@ switch($task)
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'overlay.admin.easysdi_map.php');
 		$cid = JRequest::getVar ('cid', array(0) );
 		ADMIN_overlay::orderDownOverlayGroup($cid[0]);
-		$mainframe->redirect("index.php?option=$option&task=overlayGroup");
 		break;
 	case "cancelOverlayGroup":
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'overlay.admin.easysdi_map.php');
@@ -264,7 +260,6 @@ switch($task)
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'resultgrid.admin.easysdi_map.php');
 		$cid = JRequest::getVar ('cid', array(0) );
 		ADMIN_resultgrid::deleteResultGrid($cid, $option);
-		$mainframe->redirect("index.php?option=$option&task=resultGrid");
 		break;
 	case 'saveResultGrid';
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'resultgrid.admin.easysdi_map.html.php');
@@ -272,7 +267,6 @@ switch($task)
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'resultgrid.toolbar.easysdi_map.html.php');
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'resultgrid.admin.easysdi_map.php');
 		ADMIN_resultgrid::saveResultGrid($option);
-		$mainframe->redirect("index.php?option=$option&task=resultGrid");
 		break;
 	case "cancelResultGrid":
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'resultgrid.admin.easysdi_map.php');
@@ -306,7 +300,6 @@ switch($task)
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'simplesearch.admin.easysdi_map.php');
 		$cid = JRequest::getVar ('cid', array(0) );
 		ADMIN_simplesearch::deleteSimpleSearch($cid, $option);
-		$mainframe->redirect("index.php?option=$option&task=simpleSearch");
 		break;
 	case 'saveSimpleSearch';
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'simplesearch.admin.easysdi_map.html.php');
@@ -314,7 +307,6 @@ switch($task)
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'simplesearch.toolbar.easysdi_map.html.php');
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'simplesearch.admin.easysdi_map.php');
 		ADMIN_simplesearch::saveSimpleSearch($option);
-		$mainframe->redirect("index.php?option=$option&task=simpleSearch");
 		break;
 	case "cancelSimpleSearch":
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'simplesearch.admin.easysdi_map.php');
@@ -348,7 +340,6 @@ switch($task)
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'simplesearch.admin.easysdi_map.php');
 		$cid = JRequest::getVar ('cid', array(0) );
 		ADMIN_simplesearch::deleteAdditionalFilter($cid, $option);
-		$mainframe->redirect("index.php?option=$option&task=additionalFilter");
 		break;
 	case 'saveAdditionalFilter';
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'simplesearch.admin.easysdi_map.html.php');
@@ -356,7 +347,6 @@ switch($task)
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'simplesearch.toolbar.easysdi_map.html.php');
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'simplesearch.admin.easysdi_map.php');
 		ADMIN_simplesearch::saveAdditionalFilter($option);
-		$mainframe->redirect("index.php?option=$option&task=additionalFilter");
 		break;
 	case "cancelAdditionalFilter":
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'simplesearch.admin.easysdi_map.php');
@@ -390,7 +380,6 @@ switch($task)
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'searchlayer.admin.easysdi_map.php');
 		$cid = JRequest::getVar ('cid', array(0) );
 		ADMIN_searchlayer::deleteSearchlayer($cid, $option);
-		$mainframe->redirect("index.php?option=$option&task=searchLayer");
 		break;
 	case 'saveSearchLayer':
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'searchlayer.admin.easysdi_map.html.php');
@@ -398,7 +387,6 @@ switch($task)
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'searchlayer.toolbar.easysdi_map.html.php');
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'searchlayer.admin.easysdi_map.php');
 		ADMIN_searchlayer::saveSearchlayer($option);
-		$mainframe->redirect("index.php?option=$option&task=searchLayer");
 		break;
 	case "cancelSearchLayer":
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'searchlayer.admin.easysdi_map.php');
@@ -432,7 +420,6 @@ switch($task)
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'precision.admin.easysdi_map.php');
 		$cid = JRequest::getVar ('cid', array(0) );
 		ADMIN_precision::deletePrecision($cid, $option);
-		$mainframe->redirect("index.php?option=$option&task=precision");
 		break;
 	case 'savePrecision':
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'precision.admin.easysdi_map.html.php');
@@ -440,7 +427,6 @@ switch($task)
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'precision.toolbar.easysdi_map.html.php');
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'precision.admin.easysdi_map.php');
 		ADMIN_precision::savePrecision($option);
-		$mainframe->redirect("index.php?option=$option&task=precision");
 		break;
 	case "cancelPrecision":
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'precision.admin.easysdi_map.php');
@@ -474,7 +460,6 @@ switch($task)
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'featuretype.admin.easysdi_map.php');
 		$cid = JRequest::getVar ('cid', array(0) );
 		ADMIN_featuretype::deleteFeatureType($cid, $option);
-		$mainframe->redirect("index.php?option=$option&task=featureType");
 		break;
 	case 'saveFeatureType':
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'featuretype.admin.easysdi_map.html.php');
@@ -482,7 +467,6 @@ switch($task)
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'featuretype.toolbar.easysdi_map.html.php');
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'featuretype.admin.easysdi_map.php');
 		ADMIN_featuretype::saveFeatureType($option);
-		$mainframe->redirect("index.php?option=$option&task=featureType");
 		break;
 	case "cancelFeatureType":
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'featuretype.admin.easysdi_map.php');

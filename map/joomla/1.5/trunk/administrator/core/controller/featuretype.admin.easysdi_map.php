@@ -87,6 +87,8 @@ class ADMIN_featuretype
 		$feature_type = new featureType ($db);
 		$feature_type->load($id);
 		
+		$feature_type->tryCheckOut($option,'featureType');
+		
 		//Get user name
 		$user =& JFactory::getUser();
 		$createUser="";
@@ -188,6 +190,7 @@ class ADMIN_featuretype
 				$mainframe->redirect("index.php?option=$option&task=featureType" );
 			}				
 		}	
+		$mainframe->redirect("index.php?option=$option&task=featureType");
 	}
 	
 	function saveFeatureType($option)
@@ -283,7 +286,20 @@ class ADMIN_featuretype
 					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 				}
 		}
+		
+		$featureType->checkin();
+		$mainframe->redirect("index.php?option=$option&task=featureType");
 	}
 
+	function cancelFeatureType($option)
+	{
+		global $mainframe;
+		$db = & JFactory::getDBO();
+		$featureType = new featureType ($db);
+		$featureType->bind(JRequest::get('post'));
+		$featureType->checkin();
+
+		$mainframe->redirect("index.php?option=$option&task=featureType" );
+	}
 }
 ?>
