@@ -27,7 +27,6 @@ class ADMIN_comment
 		
 		$limit = $mainframe->getUserStateFromRequest( "viewlistlimit", 'limit', 10 );
 		$limitstart = $mainframe->getUserStateFromRequest( "view{$option}limitstart", 'limitstart', 0 );
-		$use_pagination = JRequest::getVar('use_pagination',0);
 		
 		//Search
 		$search = $mainframe->getUserStateFromRequest( "searchComment{$option}", 'searchComment', '' );
@@ -62,15 +61,7 @@ class ADMIN_comment
 		$orderby 	= ' order by '. $filter_order .' '. $filter_order_Dir;
 		$query .= $orderby;
 		
-		//Pagination
-		if ($use_pagination) 
-		{
-			$db->setQuery( $query ,$pageNav->limitstart, $pageNav->limit);	
-		}
-		else
-		{
-			$db->setQuery( $query);
-		}
+		$db->setQuery( $query ,$pageNav->limitstart, $pageNav->limit);	
 		$rows = $db->loadObjectList();
 		if ($db->getErrorNum()) 
 		{
@@ -78,7 +69,7 @@ class ADMIN_comment
 			return ;
 		}
 		
-		HTML_comment::listComment($use_pagination, $rows, $pageNav, $search, $filter_order_Dir, $filter_order,$option);
+		HTML_comment::listComment($rows, $pageNav, $search, $filter_order_Dir, $filter_order,$option);
 	}
 	
 	function editComment ($id,$option)

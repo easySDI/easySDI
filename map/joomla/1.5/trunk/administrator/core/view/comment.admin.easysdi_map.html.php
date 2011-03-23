@@ -20,7 +20,7 @@ defined('_JEXEC') or die('Restricted access');
 
 class HTML_comment 
 {
-	function listComment($use_pagination, $rows, $pageNav, $search, $filter_order_Dir, $filter_order,$option)
+	function listComment( $rows, $pageNav, $search, $filter_order_Dir, $filter_order,$option)
 	{
 		JToolBarHelper::title(JText::_("MAP_LIST_COMMENT"));
 		?>
@@ -67,19 +67,14 @@ class HTML_comment
 			$k = 1 - $k;
 			$i++;
 		}
-			?></tbody>
-		<?php			
-		if ($use_pagination)
-		{?>
+			?>
+		</tbody>
 		<tfoot>
 		<tr>	
 		<td colspan="8"><?php echo $pageNav->getListFooter(); ?></td>
 		</tr>
 		</tfoot>
-		<?php
-		}
-		?>
-	  	</table>
+		</table>
 	  	<input type="hidden" name="option" value="<?php echo $option; ?>" />
 	  	<input type="hidden" name="task" value="comment" />
 	  	<input type="hidden" name="boxchecked" value="0" />

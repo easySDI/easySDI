@@ -20,7 +20,7 @@ defined('_JEXEC') or die('Restricted access');
 
 class HTML_projection 
 {
-	function listProjection($use_pagination, $rows, $pageNav,$search, $filter_order_Dir, $filter_order, $option)
+	function listProjection( $rows, $pageNav,$search, $filter_order_Dir, $filter_order, $option)
 	{
 		JToolBarHelper::title(JText::_("MAP_LIST_PROJECTION"));
 		?>
@@ -64,17 +64,11 @@ class HTML_projection
 			$i++;
 		}
 		?></tbody>
-		<?php			
-		if ($use_pagination)
-		{?>
 		<tfoot>
 		<tr>	
 		<td colspan="8"><?php echo $pageNav->getListFooter(); ?></td>
 		</tr>
 		</tfoot>
-		<?php
-		}
-		?>
 	  	</table>
 	  	<input type="hidden" name="option" value="<?php echo $option; ?>" />
 	  	<input type="hidden" name="task" value="projection" />

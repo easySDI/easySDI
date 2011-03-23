@@ -20,7 +20,7 @@ defined('_JEXEC') or die('Restricted access');
 
 class HTML_overlay
 {
-	function listOverlay($use_pagination, $rows, $pageNav,$search, $filter_order_Dir, $filter_order,  $option)
+	function listOverlay( $rows, $pageNav,$search, $filter_order_Dir, $filter_order,  $option)
 	{
 		JToolBarHelper::title(JText::_("MAP_LIST_OVERLAY_CONTENT"));
 		?>
@@ -71,17 +71,11 @@ class HTML_overlay
 			}
 			?>
 			</tbody>
-			<?php
-			if ($use_pagination)
-			{?>
 			<tfoot>
 				<tr>
 					<td colspan="8"><?php echo $pageNav->getListFooter(); ?></td>
 				</tr>
 			</tfoot>
-			<?php
-			}
-			?>
 		</table>
 		<input type="hidden" name="option" value="<?php echo $option; ?>" /> 
 		<input type="hidden" name="task" value="overlay" /> 
@@ -336,7 +330,7 @@ class HTML_overlay
 		<?php
 	}
 
-	function listOverlayGroup($use_pagination, $rows, $pageNav,$search, $filter_order_Dir, $filter_order, $option)
+	function listOverlayGroup( $rows, $pageNav,$search, $filter_order_Dir, $filter_order, $option)
 	{
 		JToolBarHelper::title(JText::_("MAP_LIST_OVERLAY_GROUP"));
 		?>
@@ -388,17 +382,11 @@ class HTML_overlay
 			}
 			?>
 			</tbody>
-			<?php
-			if ($use_pagination)
-			{?>
 			<tfoot>
 				<tr>
 					<td colspan="8"><?php echo $pageNav->getListFooter(); ?></td>
 				</tr>
 			</tfoot>
-			<?php
-			}
-			?>
 		</table>
 		<input type="hidden" name="option" value="<?php echo $option; ?>" /> 
 		<input type="hidden" name="task" value="overlayGroup" /> 

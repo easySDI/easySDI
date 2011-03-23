@@ -20,7 +20,7 @@ defined('_JEXEC') or die('Restricted access');
 
 class HTML_annotationstyle 
 {
-	function listAnnotationStyle($use_pagination, $rows, $pageNav,$search, $filter_order_Dir, $filter_order,$option)
+	function listAnnotationStyle( $rows, $pageNav,$search, $filter_order_Dir, $filter_order,$option)
 	{
 		JToolBarHelper::title(JText::_("MAP_ANNOTATION_STYLE"));
 		?>
@@ -62,21 +62,14 @@ class HTML_annotationstyle
 			$i++;
 		}
 		
-			?></tbody>
-			
-		<?php			
-		
-		if ($use_pagination)
-		{?>
+			?>
+		</tbody>
 		<tfoot>
 		<tr>	
 		<td colspan="8"><?php echo $pageNav->getListFooter(); ?></td>
 		</tr>
 		</tfoot>
-		<?php
-		}
-		?>
-	  	</table>
+		</table>
 	  	<input type="hidden" name="option" value="<?php echo $option; ?>" />
 	  	<input type="hidden" name="task" value="annotationStyle" />
 	  	<input type="hidden" name="boxchecked" value="0" />

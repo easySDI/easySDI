@@ -27,7 +27,6 @@ class ADMIN_display
 		
 		$limit = $mainframe->getUserStateFromRequest( "viewlistlimit", 'limit', 10 );
 		$limitstart = $mainframe->getUserStateFromRequest( "view{$option}limitstart", 'limitstart', 0 );
-		$use_pagination = JRequest::getVar('use_pagination',0);
 		
 		$query ="SELECT COUNT(*) FROM #__sdi_mapdisplayoption";
 		$db->setQuery( $query );
@@ -36,14 +35,8 @@ class ADMIN_display
 		
 		$query = "SELECT *  FROM #__sdi_mapdisplayoption";
 		$query .= " ORDER BY object ";
-		if ($use_pagination) 
-		{
-			$db->setQuery( $query ,$pageNav->limitstart, $pageNav->limit);	
-		}
-		else
-		{
-			$db->setQuery( $query);
-		}
+		$db->setQuery( $query ,$pageNav->limitstart, $pageNav->limit);	
+		
 		$rows = $db->loadObjectList();
 		if ($db->getErrorNum()) 
 		{
@@ -51,7 +44,7 @@ class ADMIN_display
 			return ;
 		}
 		
-		HTML_display::listDisplay($use_pagination, $rows, $pageNav, $option);
+		HTML_display::listDisplay( $rows, $pageNav, $option);
 	}
 	
 	function saveDisplay($option)

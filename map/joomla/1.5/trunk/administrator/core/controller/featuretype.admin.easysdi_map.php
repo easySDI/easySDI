@@ -27,7 +27,6 @@ class ADMIN_featuretype
 		
 		$limit = $mainframe->getUserStateFromRequest( "viewlistlimit", 'limit', 10 );
 		$limitstart = $mainframe->getUserStateFromRequest( "view{$option}limitstart", 'limitstart', 0 );
-		$use_pagination = JRequest::getVar('use_pagination',0);
 		
 		//Search
 		$search = $mainframe->getUserStateFromRequest( "searchFeatureType{$option}", 'searchFeatureType', '' );
@@ -59,16 +58,8 @@ class ADMIN_featuretype
 		}
 		$orderby 	= ' order by '. $filter_order .' '. $filter_order_Dir;
 		$query .= $orderby;
-				
-		//Pagination
-		if ($use_pagination) 
-		{
-			$db->setQuery( $query ,$pageNav->limitstart, $pageNav->limit);	
-		}
-		else
-		{
-			$db->setQuery( $query);
-		}
+		
+		$db->setQuery( $query ,$pageNav->limitstart, $pageNav->limit);	
 		$rows = $db->loadObjectList();
 		if ($db->getErrorNum()) 
 		{
@@ -76,7 +67,7 @@ class ADMIN_featuretype
 			return ;
 		}
 		
-		HTML_featuretype::listFeatureType($use_pagination, $rows, $pageNav,$search, $filter_order_Dir, $filter_order, $option);
+		HTML_featuretype::listFeatureType( $rows, $pageNav,$search, $filter_order_Dir, $filter_order, $option);
 	}
 	
 	function editFeatureType ($id,$option)

@@ -20,7 +20,7 @@ defined('_JEXEC') or die('Restricted access');
 
 class HTML_display 
 {
-	function listDisplay($use_pagination, $rows, $pageNav, $option)
+	function listDisplay( $rows, $pageNav, $option)
 	{
 		JToolBarHelper::title(JText::_("MAP_DISPLAY_OPTION"));
 		?>
@@ -67,18 +67,12 @@ class HTML_display
 		}
 		?>
 		</tbody>
-		<?php			
-		if ($use_pagination)
-		{?>
 		<tfoot>
 		<tr>	
 		<td colspan="8"><?php echo $pageNav->getListFooter(); ?></td>
 		</tr>
 		</tfoot>
-		<?php
-		}
-		?>
-	  	</table>
+		</table>
 	  	<input type="hidden" name="option" value="<?php echo $option; ?>" />
 	  	<input type="hidden" name="task" value="display" />
 	  	<input type="hidden" name="id" id="id" value="" />

@@ -20,7 +20,7 @@ defined('_JEXEC') or die('Restricted access');
 
 class HTML_simplesearch 
 {
-	function listSimpleSearch($use_pagination, $rows, $pageNav,$search, $filter_order_Dir, $filter_order, $option)
+	function listSimpleSearch( $rows, $pageNav,$search, $filter_order_Dir, $filter_order, $option)
 	{
 		JToolBarHelper::title(JText::_("MAP_LIST_SIMPLE_SEARCH"));
 		?>
@@ -63,17 +63,11 @@ class HTML_simplesearch
 		}
 		?>
 		</tbody>
-		<?php			
-		if ($use_pagination)
-		{?>
 		<tfoot>
 		<tr>	
 		<td colspan="8"><?php echo $pageNav->getListFooter(); ?></td>
 		</tr>
 		</tfoot>
-		<?php
-		}
-		?>
 	  	</table>
 	  	<input type="hidden" name="option" value="<?php echo $option; ?>" />
 	  	<input type="hidden" name="task" value="simpleSearch" />
@@ -255,7 +249,7 @@ class HTML_simplesearch
 	}
 	
 	
-	function listAdditionalFilter($use_pagination, $rows, $pageNav,$search, $filter_order_Dir, $filter_order, $option)
+	function listAdditionalFilter($rows, $pageNav,$search, $filter_order_Dir, $filter_order, $option)
 	{
 		JToolBarHelper::title(JText::_("MAP_LIST_ADD_FILTER"));
 		?>
@@ -298,17 +292,11 @@ class HTML_simplesearch
 		}
 		?>
 		</tbody>
-		<?php			
-		if ($use_pagination)
-		{?>
 		<tfoot>
 		<tr>	
 		<td colspan="8"><?php echo $pageNav->getListFooter(); ?></td>
 		</tr>
 		</tfoot>
-		<?php
-		}
-		?>
 	  	</table>
 	  	<input type="hidden" name="option" value="<?php echo $option; ?>" />
 	  	<input type="hidden" name="task" value="additionalFilter" />
