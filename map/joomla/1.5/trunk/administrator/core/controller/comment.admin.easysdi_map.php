@@ -36,6 +36,8 @@ class ADMIN_comment
 		{
 			$query_search = ' where LOWER(featuretypename) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
 			$query_search .= ' or LOWER(countattribute) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+			$query_search .= ' or LOWER(description) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+			$query_search .= ' or LOWER(name) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
 			$query_search .= ' or LOWER(enable) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
 		}
 			
@@ -52,7 +54,7 @@ class ADMIN_comment
 		// table ordering
 		$filter_order		= $mainframe->getUserStateFromRequest( "$option.filter_order",		'filter_order',		'id',	'cmd' );
 		$filter_order_Dir	= $mainframe->getUserStateFromRequest( "$option.filter_order_Dir",	'filter_order_Dir',	'ASC',		'word' );
-		if ($filter_order <> "featuretypename" && $filter_order <> "countattribute" )
+		if ($filter_order <> "featuretypename" && $filter_order <> "countattribute" && $filter_order <> "name"  && $filter_order <> "description")
 		{
 			$filter_order		= "id";
 			$filter_order_Dir	= "ASC";
@@ -90,11 +92,11 @@ class ADMIN_comment
 		$user =& JFactory::getUser();
 		$createUser="";
 		$updateUser="";
-		if ($annotationStyle->created)
+		if ($comment->created)
 		{ 
-			if ($annotationStyle->createdby and $annotationStyle->createdby<> 0)
+			if ($comment->createdby and $comment->createdby<> 0)
 			{
-				$query = "SELECT name FROM #__users WHERE id=(SELECT user_id FROM #__sdi_account WHERE id =".$annotationStyle->createdby.")" ;
+				$query = "SELECT name FROM #__users WHERE id=(SELECT user_id FROM #__sdi_account WHERE id =".$comment->createdby.")" ;
 				$db->setQuery($query);
 				$createUser = $db->loadResult();
 			}
@@ -102,11 +104,11 @@ class ADMIN_comment
 				$createUser = "";
 					
 		}
-		if ($annotationStyle->updated and $annotationStyle->updated<> '0000-00-00 00:00:00')
+		if ($comment->updated and $comment->updated<> '0000-00-00 00:00:00')
 		{ 
-			if ($annotationStyle->updatedby and $annotationStyle->updatedby<> 0)
+			if ($comment->updatedby and $comment->updatedby<> 0)
 			{
-				$query = "SELECT name FROM #__users WHERE id=(SELECT user_id FROM #__sdi_account WHERE id =".$annotationStyle->updatedby.")" ;
+				$query = "SELECT name FROM #__users WHERE id=(SELECT user_id FROM #__sdi_account WHERE id =".$comment->updatedby.")" ;
 				$db->setQuery($query);
 				$updateUser = $db->loadResult();
 			}

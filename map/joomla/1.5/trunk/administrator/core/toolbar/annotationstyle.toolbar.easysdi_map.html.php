@@ -33,7 +33,7 @@ class TOOLBAR_annotationstyle {
 		JToolBarHelper::addNew('newAnnotationStyle');
 		JToolBarHelper::editList('editAnnotationStyle');
 		JToolBarHelper::deleteList('','deleteAnnotationStyle');
-		JToolBarHelper::custom( 'ctrlPanel', 'back.png', 'back.png', JTEXT::_("MAP_MENU_BACK"), false );
+		JToolBarHelper::custom( 'ctrlPanel', 'tool_easysdi_admin.png', 'tool_easysdi_admin.png', JTEXT::_("CORE_MENU_CPANEL"), false );
 	}
 
 	function _EDIT() 

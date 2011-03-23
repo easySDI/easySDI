@@ -40,6 +40,8 @@ class HTML_comment
 			<tr>
 				<th width="20" class='title'><?php echo JText::_("MAP_COMMENT_SHARP"); ?></th>
 				<th width="20" class='title'><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows); ?>);" /></th>
+				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_COMMENT_NAME"), 'name', @$filter_order_Dir, @$filter_order); ?></th>
+				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_COMMENT_DESCRIPTION"), 'description', @$filter_order_Dir, @$filter_order); ?></th>
 				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_COMMENT_FEATURETYPE_NAME"), 'featuretypename', @$filter_order_Dir, @$filter_order); ?></th>
 				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_COMMENT_COUNTATTRIBUTE"), 'countattribute', @$filter_order_Dir, @$filter_order); ?></th>
 				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_COMMENT_ENABLE"), 'enable', @$filter_order_Dir, @$filter_order); ?></th>
@@ -55,7 +57,9 @@ class HTML_comment
 			<tr class="<?php echo "row$k"; ?>">
 				<td align="center"><?php echo $i+$pageNav->limitstart+1;?></td>
 				<td><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->id; ?>" onclick="isChecked(this.checked);" /></td>
-				<td><a href="#edit" onclick="return listItemTask('cb<?php echo $i;?>','editComment')"><?php echo $row->featuretypename; ?></a></td>
+				<td><a href="#edit" onclick="return listItemTask('cb<?php echo $i;?>','editComment')"><?php echo $row->name; ?></a></td>
+				<td><?php echo $row->description; ?></td>
+				<td><?php echo $row->featuretypename; ?></td>
 				<td><?php echo $row->countattribute; ?></td>
 				<td><input type="checkbox" disabled id="isEnable<?php echo $i;?>" name="isEnable<?php echo $i;?>" value="" <?php if($row->enable == 1)echo " checked" ?> /></td>
 			</tr>
@@ -134,6 +138,14 @@ class HTML_comment
 							<tr>
 								<td class="key" width="100p"><?php echo JText::_("MAP_COMMENT_ID"); ?></td>
 								<td><?php echo $comment->id; ?></td>								
+							</tr>
+							<tr>
+								<td class="key" width="100p"><?php echo JText::_("MAP_COMMENT_NAME"); ?></td>
+								<td><input class="inputbox" type="text" size="100" maxlength="100" name="name" id="name" value="<?php echo $comment->name; ?>" /></td>								
+							</tr>
+							<tr>
+								<td class="key" width="100p"><?php echo JText::_("MAP_COMMENT_DESCRIPTION"); ?></td>
+								<td><input class="inputbox" type="text" size="100" maxlength="100" name="description" id="description" value="<?php echo $comment->description; ?>" /></td>								
 							</tr>
 							<tr>
 								<td class="key" width="100p"><?php echo JText::_("MAP_COMMENT_FEATURETYPE_NAME"); ?></td>
