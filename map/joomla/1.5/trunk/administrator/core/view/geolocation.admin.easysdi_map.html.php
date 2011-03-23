@@ -41,6 +41,7 @@ class HTML_geolocation
 				<th width="20" class='title'><?php echo JText::_("MAP_GEOLOCATION_SHARP"); ?></th>
 				<th width="20" class='title'><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows); ?>);" /></th>
 				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_GEOLOCATION_NAME"), 'name', @$filter_order_Dir, @$filter_order); ?></th>
+				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_GEOLOCATION_DESCRIPTION"), 'description', @$filter_order_Dir, @$filter_order); ?></th>
 				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_GEOLOCATION_WFSURL"), 'wfsurl', @$filter_order_Dir, @$filter_order); ?></th>
 			</tr>
 		</thead>
@@ -55,6 +56,7 @@ class HTML_geolocation
 				<td align="center"><?php echo $i+$pageNav->limitstart+1;?></td>
 				<td><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->id; ?>" onclick="isChecked(this.checked);" /></td>
 				<td><a href="#edit" onclick="return listItemTask('cb<?php echo $i;?>','editGeolocation')"><?php echo $row->name; ?></a></td>
+				<td><?php echo $row->description; ?></td>
 				<td><?php echo $row->wfsurl; ?></td>								 
 			</tr>
 		<?php
@@ -137,15 +139,17 @@ class HTML_geolocation
 								<td class="key" ><?php echo JText::_("MAP_GEOLOCATION_ID"); ?></td>
 								<td><?php echo $geolocation->id; ?></td>																
 							</tr>	
-							<tr>							
-								<td class="key"><?php echo JText::_("MAP_GEOLOCATION_WFS_URL"); ?></td>
-								<td><input class="inputbox" type="text" size="50" maxlength="1000" name="wfsurl" id="wfsurl" value="<?php echo $geolocation->wfsurl; ?>" /></td>							
-							</tr>	
-									
 							<tr>
 								<td class="key"><?php echo JText::_("MAP_GEOLOCATION_NAME"); ?></td>
 								<td><input class="inputbox" type="text" size="50" maxlength="1000" name="name" id="name" value="<?php echo $geolocation->name; ?>" /></td>
-													
+							</tr>
+							<tr>
+								<td class="key"><?php echo JText::_("MAP_GEOLOCATION_DESCRIPTION"); ?></td>
+								<td><input class="inputbox" type="text" size="50" maxlength="1000" name="description" id="description" value="<?php echo $geolocation->description; ?>" /></td>
+							</tr>
+							<tr>							
+								<td class="key"><?php echo JText::_("MAP_GEOLOCATION_WFS_URL"); ?></td>
+								<td><input class="inputbox" type="text" size="50" maxlength="1000" name="wfsurl" id="wfsurl" value="<?php echo $geolocation->wfsurl; ?>" /></td>							
 							</tr>
 							<tr>
 								<td class="key"><?php echo JText::_("MAP_GEOLOCATION_AREA_FIELD_NAME"); ?></td>

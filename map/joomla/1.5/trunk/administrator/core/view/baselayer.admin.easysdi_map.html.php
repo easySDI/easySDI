@@ -22,7 +22,7 @@ class HTML_baselayer
 {
 	function listBaseLayer($use_pagination, $rows, $pageNav,$search, $filter_order_Dir, $filter_order, $option)
 	{
-		JToolBarHelper::title(JText::_("MAP_LIST_baseLayer"));
+		JToolBarHelper::title(JText::_("MAP_LIST_BASELAYER"));
 		?>
 		<form action="index.php" method="GET" name="adminForm">
 		<table width="100%">
@@ -41,6 +41,7 @@ class HTML_baselayer
 					<th width="20" class='title'><?php echo JText::_("MAP_BASELAYER_SHARP"); ?></th>
 					<th width="20" class='title'><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows); ?>);" /></th>
 					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_BASELAYER_NAME"), 'name', @$filter_order_Dir, @$filter_order); ?></th>
+					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_BASELAYER_DESCRIPTION"), 'description', @$filter_order_Dir, @$filter_order); ?></th>
 					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_BASELAYER_URL"), 'url', @$filter_order_Dir, @$filter_order); ?></th>
 					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_BASELAYER_LAYERS"), 'layers', @$filter_order_Dir, @$filter_order); ?></th>
 					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_BASELAYER_ORDER"), 'ordering', @$filter_order_Dir, @$filter_order); ?></th>
@@ -59,6 +60,7 @@ class HTML_baselayer
 					<td align="center"><?php echo $i+$pageNav->limitstart+1;?></td>
 					<td><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->id; ?>" onclick="isChecked(this.checked);" /></td>
 					<td><a href="#edit" onclick="return listItemTask('cb<?php echo $i;?>','editBaseLayer')"><?php echo stripcslashes($row->name); ?></a></td>
+					<td><?php echo $row->description; ?></td>
 					<td><?php echo $row->url; ?></td>
 					<td><?php echo $row->layers; ?></td>
 					<td class="order" nowrap="nowrap">
@@ -200,6 +202,10 @@ class HTML_baselayer
 					<tr>
 						<td class="key"><?php echo JText::_("MAP_BASELAYER_NAME"); ?></td>
 						<td><input class="inputbox" type="text" size="50" maxlength="100" name="name" id="name" value="<?php echo stripslashes($baseLayer->name); ?>" /></td>
+					</tr>
+					<tr>
+						<td class="key"><?php echo JText::_("MAP_BASELAYER_DESCRIPTION"); ?></td>
+						<td><input class="inputbox" type="text" size="50" maxlength="100" name="description" id="description" value="<?php echo stripslashes($baseLayer->description); ?>" /></td>
 					</tr>
 					<tr>
 						<td class="key"><?php echo JText::_("MAP_BASELAYER_LAYERS"); ?></td>

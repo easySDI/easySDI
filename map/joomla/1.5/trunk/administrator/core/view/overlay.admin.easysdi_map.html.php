@@ -357,6 +357,7 @@ class HTML_overlay
 					<th width="20" class='title'><?php echo JText::_("MAP_OVERLAY_GROUP_SHARP"); ?></th>
 					<th width="20" class='title'><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows); ?>);" /></th>
 					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_OVERLAY_GROUP_NAME"), 'name', @$filter_order_Dir, @$filter_order); ?></th>
+					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_OVERLAY_GROUP_DESCRIPTION"), 'description', @$filter_order_Dir, @$filter_order); ?></th>
 					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_OVERLAY_GROUP_OPEN"), 'open', @$filter_order_Dir, @$filter_order); ?></th>
 					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_OVERLAY_GROUP_ORDER"), 'ordering', @$filter_order_Dir, @$filter_order); ?></th>
 				</tr>
@@ -372,6 +373,7 @@ class HTML_overlay
 					<td align="center"><?php echo $i+$pageNav->limitstart+1;?></td>
 					<td><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->id; ?>" onclick="isChecked(this.checked);" /></td>
 					<td><a href="#edit" onclick="return listItemTask('cb<?php echo $i;?>','editOverlayGroup')"><?php echo $row->name; ?></a></td>
+					<td><?php echo $row->description; ?></a></td>
 					<td><?php if($row->open == 1){echo JText::_("MAP_YES");}else{echo JText::_("MAP_NO");} ?></td>
 					<td width="10%" class="order" nowrap="nowrap">
 					<?php $disabled = ($filter_order == 'ordering') ? true : false; ?> 
@@ -432,6 +434,10 @@ class HTML_overlay
 					<tr>
 						<td class="key"><?php echo JText::_("MAP_OVERLAY_GROUP_NAME"); ?> :</td>
 						<td><input class="inputbox" type="text" size="100" maxlength="400" name="name" value="<?php echo $overlay_group->name; ?>" /></td>
+					</tr>
+					<tr>
+						<td class="key"><?php echo JText::_("MAP_OVERLAY_GROUP_DESCRIPTION"); ?> :</td>
+						<td><input class="inputbox" type="text" size="100" maxlength="100" name="description" value="<?php echo $overlay_group->description; ?>" /></td>
 					</tr>
 					<tr>
 						<td class="key"><?php echo JText::_("MAP_OVERLAY_GROUP_OPEN"); ?></td>

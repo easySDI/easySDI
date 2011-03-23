@@ -41,6 +41,7 @@ class HTML_featuretype
 				<th width="20" class='title'><?php echo JText::_("MAP_FEATURETYPE_SHARP"); ?></th>
 				<th width="20" class='title'><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows); ?>);" /></th>
 				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_FEATURETYPE_NAME"), 'name', @$filter_order_Dir, @$filter_order); ?></th>
+				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_FEATURETYPE_DESCRIPTION"), 'description', @$filter_order_Dir, @$filter_order); ?></th>
 			</tr>
 		</thead>
 		<tbody>		
@@ -54,6 +55,7 @@ class HTML_featuretype
 				<td align="center"><?php echo $i+$pageNav->limitstart+1;?></td>
 				<td><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->id; ?>" onclick="isChecked(this.checked);" /></td>
 				<td><a href="#edit" onclick="return listItemTask('cb<?php echo $i;?>','editFeatureType')"><?php echo $row->name; ?></a></td>				
+				<td><?php echo $row->description; ?></a></td>
 			</tr>
 		<?php
 			$k = 1 - $k;
@@ -156,6 +158,10 @@ class HTML_featuretype
 							<tr>
 								<td class="key" width="100p"><?php echo JText::_("MAP_FEATURETYPE_NAME"); ?></td>
 								<td><input class="inputbox" type="text" size="100" maxlength="100" name="name" id="name" value="<?php echo $feature_type->name; ?>" /></td>								
+							</tr>
+							<tr>
+								<td class="key" width="100p"><?php echo JText::_("MAP_FEATURETYPE_DESCRIPTION"); ?></td>
+								<td><input class="inputbox" type="text" size="100" maxlength="100" name="description" id="description" value="<?php echo $feature_type->description; ?>" /></td>								
 							</tr>
 							<tr>
 								<td class="key"><?php echo JText::_("MAP_FEATURETYPE_USE"); ?></td>

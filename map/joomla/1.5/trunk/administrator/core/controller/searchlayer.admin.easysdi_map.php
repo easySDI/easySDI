@@ -36,6 +36,7 @@ class ADMIN_searchlayer
 		{
 			$query_search = ' where LOWER(id) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
 			$query_search .= ' or LOWER(name) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+			$query_search .= ' or LOWER(description) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
 		}
 		
 		//Base query
@@ -51,7 +52,7 @@ class ADMIN_searchlayer
 		// table ordering
 		$filter_order		= $mainframe->getUserStateFromRequest( "$option.filter_order",		'filter_order',		'id',	'cmd' );
 		$filter_order_Dir	= $mainframe->getUserStateFromRequest( "$option.filter_order_Dir",	'filter_order_Dir',	'ASC',		'word' );
-		if ($filter_order <> "name" && $filter_order <> "enable" )
+		if ($filter_order <> "name" && $filter_order <> "enable" && $filter_order <> "description" )
 		{
 			$filter_order		= "id";
 			$filter_order_Dir	= "ASC";

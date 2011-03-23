@@ -188,6 +188,7 @@ class ADMIN_overlay
 		{
 			$query_search = ' where LOWER(id) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
 			$query_search .= ' or LOWER(name) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+			$query_search .= ' or LOWER(description) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
 		}
 
 		//Base query
@@ -203,7 +204,7 @@ class ADMIN_overlay
 		// table ordering
 		$filter_order		= $mainframe->getUserStateFromRequest( "$option.filter_order",		'filter_order',		'id',	'cmd' );
 		$filter_order_Dir	= $mainframe->getUserStateFromRequest( "$option.filter_order_Dir",	'filter_order_Dir',	'ASC',		'word' );
-		if ($filter_order <> "name" &&  $filter_order <> "ordering" && $filter_order <> "open")
+		if ($filter_order <> "name" &&  $filter_order <> "ordering" && $filter_order <> "open" && $filter_order <> "desription")
 		{
 			$filter_order		= "id";
 			$filter_order_Dir	= "ASC";

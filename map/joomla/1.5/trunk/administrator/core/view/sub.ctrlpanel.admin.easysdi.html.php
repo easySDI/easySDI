@@ -4,7 +4,7 @@
 			<tbody>
 				<tr>
 					<td class="header_sdi_comp_title">
-						<div class="header_sdi icon-48-shop"><?php echo JText::_( 'CORE_CPANEL_MAP_LABEL' );?></div>
+						<div class="header_sdi icon-48-map"><?php echo JText::_( 'CORE_CPANEL_MAP_LABEL' );?></div>
 					</td>
 					<td>&nbsp;</td>
 				</tr>

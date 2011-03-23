@@ -41,7 +41,7 @@ class HTML_searchlayer
 				<th width="20" class='title'><?php echo JText::_("MAP_SEARCH_LAYER_SHARP"); ?></th>
 				<th width="20" class='title'><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows); ?>);" /></th>
 				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_SEARCH_LAYER_NAME"), 'name', @$filter_order_Dir, @$filter_order); ?></th>
-				<th class='title'><?php echo  JText::_("MAP_SEARCH_LAYER_FT"); ?></th>
+				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_SEARCH_LAYER_DESCRIPTION"), 'description', @$filter_order_Dir, @$filter_order); ?></th>
 				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_SEARCH_LAYER_ENABLE"), 'enable', @$filter_order_Dir, @$filter_order); ?></th>
 			</tr>
 		</thead>
@@ -56,7 +56,7 @@ class HTML_searchlayer
 				<td align="center"><?php echo $i+$pageNav->limitstart+1;?></td>
 				<td><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->id; ?>" onclick="isChecked(this.checked);" /></td>
 				<td><a href="#edit" onclick="return listItemTask('cb<?php echo $i;?>','editSearchLayer')"><?php echo $row->name; ?></a></td>
-				<td><?php echo $row->featuretypeName; ?></td>
+				<td><?php echo $row->description; ?></td>
 				<td><input type="checkbox" disabled id="isEnable<?php echo $i;?>" name="isEnable<?php echo $i;?>" value="" <?php if($row->enable == 1)echo " checked" ?> /></td>
 			</tr>
 		<?php
@@ -137,6 +137,10 @@ class HTML_searchlayer
 									<tr>
 										<td class="key"><?php echo JText::_("MAP_SEARCH_LAYER_NAME"); ?></td>
 										<td colspan="2"><input class="inputbox" type="text" size="100" maxlength="50" name="name" id="name" value="<?php echo $search_layer->name; ?>" /></td>
+									</tr>
+									<tr>
+										<td class="key"><?php echo JText::_("MAP_SEARCH_LAYER_DESCRIPTION"); ?></td>
+										<td colspan="2"><input class="inputbox" type="text" size="100" maxlength="100" name="description" id="description" value="<?php echo $search_layer->description; ?>" /></td>
 									</tr>
 									<tr>
 										<td class="key" width="100p"><?php echo JText::_("MAP_SEARCH_LAYER_FT"); ?></td>
