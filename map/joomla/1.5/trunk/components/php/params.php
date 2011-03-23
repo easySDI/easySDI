@@ -436,9 +436,9 @@ $s .= "];\n";
  *
  */
 $s .= "\nSData.distinctResultsGrids = {";
-$query = "SELECT ft.name, erg.*, ftrd.name as rd_feature_type from #__easysdi_map_extra_result_grid erg ".
-    "INNER JOIN #__easysdi_map_feature_type ft ON ft.id=erg.feature_type ".
-    "INNER JOIN #__easysdi_map_feature_type ftrd ON ftrd.id=erg.row_details_feature_type;";
+$query = "SELECT ft.name, erg.*, ftrd.name as rd_feature_type from #__sdi_resultgrid erg ".
+    "INNER JOIN #__sdi_featuretype ft ON ft.id=erg.featuretype ".
+    "INNER JOIN #__sdi_featuretype ftrd ON ftrd.id=erg.rowdetailsfeaturetype;";
 $db->setQuery($query);
 $result = $db->loadAssocList();
 $i = 0;
@@ -449,8 +449,8 @@ foreach ($result as $rec)
 	$s .= "\n  '$l_internal_name' : {
     title: '$l_title'
    ,featureType: '$l_name'
-   ,distinctFk: '$l_distinct_fk' // the foreign key in the main feature type
-   ,distinctPk: '$l_distinct_pk' // the primary key in the distinct feature type
+   ,distinctFk: '$l_distinctfk' // the foreign key in the main feature type
+   ,distinctPk: '$l_distinctpk' // the primary key in the distinct feature type
    ,rowDetailsFeatureType: '$l_rd_feature_type'\n  }";
 	if ($i != count($result)) $s .= ",";
 }
@@ -473,7 +473,7 @@ $s .= "};\n\n";
  *   distinctResultsGrids - array of the distinct tabs that are available.
  */
 
-$query = "SELECT * from #__easysdi_map_simple_search_type;";
+$query = "SELECT * from #__sdi_simplesearchtype;";
 $db->setQuery($query);
 $result = $db->loadAssocList();
 if (count($result)>0) {
@@ -484,16 +484,16 @@ if (count($result)>0) {
 		$i++;
 		extract($rec, EXTR_PREFIX_ALL, "l");
 		$s .= "{\n    title : EasySDI_Map.lang.getLocal('$l_title')
-	   ,untranslatedTitle : '$l_title'
-	   ,dropDownFeatureType : '$l_dropdown_feature_type'
-	   ,dropDownDisplayAttr : '$l_dropdown_display_attr'
-	   ,searchAttribute : '$l_search_attribute'
+	   ,untranslatedTitle : '$l_code'
+	   ,dropDownFeatureType : '$l_dropdownfeaturetype'
+	   ,dropDownDisplayAttr : '$l_dropdowndisplayattr'
+	   ,searchAttribute : '$l_searchattribute'
 	   ,operator : '$l_operator'\n";
-		if(!is_null($l_dropdown_id_attr) && strlen($l_dropdown_id_attr) > 0) {
-			$s .= "   ,dropDownIdAttr : '$l_dropdown_id_attr'\n";
+		if(!is_null($l_dropdownidattr) && strlen($l_dropdownidattr) > 0) {
+			$s .= "   ,dropDownIdAttr : '$l_dropdownidattr'\n";
 		}
-		$filterquery = "SELECT * from #__easysdi_map_simple_search_additional_filter ssaf
-	    INNER JOIN #__easysdi_map_sst_saf link ON link.id_saf = ssaf.id
+		$filterquery = "SELECT * from #__sdi_simplesearchfilter ssaf
+	    INNER JOIN #__sdi_sst_saf link ON link.id_saf = ssaf.id
 	    WHERE link.id_sst = $l_id;";
 		$db->setQuery($filterquery);
 		$filters = $db->loadAssocList();
