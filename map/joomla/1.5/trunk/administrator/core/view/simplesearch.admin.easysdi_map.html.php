@@ -95,9 +95,9 @@ class HTML_simplesearch
 		{
 			if(pressbutton == "saveSimpleSearch")
 			{
-				if (document.getElementById('title').value == "")
+				if (document.getElementById('code').value == "")
 				{	
-					alert ('<?php echo  JText::_( 'MAP_SIMPLESEARCH_TITLE_VALIDATION_ERROR');?>');	
+					alert ('<?php echo  JText::_( 'MAP_SIMPLESEARCH_CODE_VALIDATION_ERROR');?>');	
 					return;
 				}
 				else if (document.getElementById('dropdown_feature_type').value == "")
@@ -150,6 +150,10 @@ class HTML_simplesearch
 								<tr>
 									<td class="key" width="100p"><?php echo JText::_("MAP_SIMPLE_SEARCH_DESCRIPTION"); ?></td>
 									<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['description'];?>" name="description" id="description" value="<?php echo $simpleSearch->description; ?>" /></td>								
+								</tr>
+								<tr>
+									<td class="key" width="100p"><?php echo JText::_("MAP_SIMPLE_SEARCH_CODE"); ?></td>
+									<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['code'];?>" name="code" id="code" value="<?php echo $simpleSearch->code; ?>" /></td>								
 								</tr>
 								<tr>
 									<td class="key"><?php echo JText::_("MAP_SIMPLE_SEARCH_DROPDOWN_FT"); ?></td>
