@@ -153,9 +153,9 @@ foreach ($_GET as $key => $value){
 		        
 		     //don't send empty header
 	       	     if(trim($h) != ""){
-			//Only send Content-Type header, if sending HTTP 1.1 OK
+			//Only send Content-Type and encoding header, if sending HTTP 1.1 OK
 			//It causes a bug if response length > 8000 char
-		     	if (substr($h, 0, 12) == "Content-Type")
+		     	if (substr($h, 0, 12) == "Content-Type" || substr($h, 0, 16) == "Content-Encoding")
 	       	        {
 		           fwrite($fh, "sending->".$h);
 		     	   header($h);
