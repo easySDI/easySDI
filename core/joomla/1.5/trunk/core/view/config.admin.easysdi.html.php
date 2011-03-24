@@ -628,16 +628,6 @@ if ($monitorItem > 0){
 									</tr>
 									<tr>
 										<td valign="top" class="key">
-											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_MAP_PUBFEATURENS_TIP' ); ?>">
-												<?php echo JText::_( 'CORE_CONFIGURATION_MAP_PUBFEATURENS_LABEL' ); ?>
-											</span>
-										</td>
-										<td>
-											<input class="text_area" type="text" size="100" name="pubFeatureNS" value="<?php echo $mapList['pubFeatureNS']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
-										</td>
-									</tr>
-									<tr>
-										<td valign="top" class="key">
 											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_MAP_PUBFEATUREPREFIX_TIP' ); ?>">
 												<?php echo JText::_( 'CORE_CONFIGURATION_MAP_PUBFEATUREPREFIX_LABEL' ); ?>
 											</span>
