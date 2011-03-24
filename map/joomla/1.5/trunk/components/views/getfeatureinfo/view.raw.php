@@ -27,7 +27,7 @@ class EasySDI_mapViewGetfeatureinfo extends JView {
 	{
 		ob_end_clean();
 		$db =& JFactory::getDBO();
-		$query = "SELECT value FROM #__easysdi_map_config c where name = 'pubWmsUrl' limit 1".
+		$query = "SELECT value FROM #__sdi_configuration c where name = 'pubWmsUrl' limit 1".
 		$db->setQuery($query);
 		$pubwmsURL = $db->getOne($query).'?';
 		$pubwmsURL.=substr($_SERVER["QUERY_STRING"],52);

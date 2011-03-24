@@ -71,7 +71,7 @@ jimport('joomla.application.component.model');
   	// Load if not already loaded
   	if (!$this->_map_filter) {
   		$db =& $this->getDBO();
-  		$query = "SELECT * FROM ".$db->nameQuote('#__easysdi_map_filter').
+  		$query = "SELECT * FROM ".$db->nameQuote('#__sdi_mapfilter').
   		" WHERE ".$db->nameQuote('id')." = ".$this->_id;
   		$db->setQuery($query);
   		$this->_map_filter = $db->loadObject();
@@ -86,7 +86,7 @@ jimport('joomla.application.component.model');
   {
   	// Load if not already loaded  	
   	$db =& $this->getDBO();
-  	$query = "SELECT mf.id, mf.title, mf.description, mf.filter_mode, u.name FROM #__easysdi_map_filter ".
+  	$query = "SELECT mf.id, mf.name, mf.description, mf.filter_mode, u.name FROM #__sdi_mapfilter ".
   		"mf INNER JOIN #__users u ON u.id=mf.user_id";
   	if ($this->_user_id!=null) {
   	  $query .= " WHERE user_id=".$this->_user_id;
@@ -98,9 +98,9 @@ jimport('joomla.application.component.model');
   		} else {
   			$query .= " AND";
   		}
-  		$query .= " title LIKE '$filter%'";
+  		$query .= " name LIKE '$filter%'";
   	}  	    	
-  	$query .=	" ORDER BY ".$db->nameQuote('title');
+  	$query .=	" ORDER BY ".$db->nameQuote('name');
   	$limit = JRequest::getCmd('limit', '');
   	$offset = JRequest::getCmd('offset', '');
   	
@@ -121,16 +121,16 @@ jimport('joomla.application.component.model');
   	// Check if this is an overwrite based on unique username/title
   	$title=$data['title'];
   	$user_id=$data['user_id'];
-  	$query = "SELECT mf.id FROM #__easysdi_map_filter mf ".
+  	$query = "SELECT mf.id FROM #__sdi_mapfilter mf ".
 	  	"INNER JOIN #__users u ON u.id=mf.user_id ".
-	  	"WHERE mf.title='$title' AND u.id=$user_id";
+	  	"WHERE mf.name='$title' AND u.id=$user_id";
   	$db->setQuery($query);
   	$existing=$db->loadObject();
   	if ($existing) {
   		// Got a match, so set the ID for overwrite.
   		$data['id'] = $existing->id;
   	}
-  	$table =& $this->getTable('easysdi_map_filter');
+  	$table =& $this->getTable('sdi_mapfilter');
   	if (!$table->save($data)) {
   		// error occurred, so update model error message
   		$this->setError($table->getError());

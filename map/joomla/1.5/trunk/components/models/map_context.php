@@ -71,7 +71,7 @@ jimport('joomla.application.component.model');
     // Load if not already loaded
     if (!$this->_map_context) {
       $db =& $this->getDBO();
-      $query = "SELECT * FROM ".$db->nameQuote('#__easysdi_map_context');
+      $query = "SELECT * FROM ".$db->nameQuote('#__sdi_mapcontext');
       if($this->_id!=null) {
         $query = $query." WHERE ".$db->nameQuote('id')." = ".$this->_id;
       } else {
@@ -91,7 +91,7 @@ jimport('joomla.application.component.model');
   {
     // Load if not already loaded   
     $db =& $this->getDBO();
-    $query = "SELECT * FROM #__easysdi_map_context mc ";
+    $query = "SELECT * FROM #__sdi_mapcontext mc ";
     if ($this->_user_id!=null) {
       $query .= " WHERE user_id=".$this->_user_id;
     }   
@@ -114,7 +114,7 @@ jimport('joomla.application.component.model');
       return false;
     }
 
-    $query = "SELECT mc.id FROM #__easysdi_map_context mc ".
+    $query = "SELECT mc.id FROM #__sdi_mapcontext mc ".
       "WHERE mc.user_id=$user_id";
     $db->setQuery($query);
     $existing=$db->loadObject();
@@ -122,7 +122,7 @@ jimport('joomla.application.component.model');
       // Got a match, so set the ID for overwrite.
       $data['id'] = $existing->id;
     }
-    $table =& $this->getTable('easysdi_map_context');
+    $table =& $this->getTable('sdi_map_context');
     if (!$table->save($data)) {
       // error occurred, so update model error message
       $this->setError($table->getError());
@@ -135,7 +135,7 @@ jimport('joomla.application.component.model');
    * Remove a saved context by ID
    */
   function delete($id) {
-    $table =& $this->getTable('easysdi_map_context');
+    $table =& $this->getTable('sdi_map_context');
     $table->delete($id);
   }
 }
