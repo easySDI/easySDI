@@ -52,7 +52,7 @@ EasySDI_Mon.drawResponseTimeGraph = function (container, aStores, logRes, tickIn
 			text:EasySDI_Mon.lang.getLocal('response time')+' '+EasySDI_Mon.lang.getLocal('ms suffix')
 		}
 		,
-		min: 0,
+		min: 0, // set to -1 to show tooltip for errors 
 		//Sets the maxY to 4/3 the timeout
 		max: jobRecord.get('timeout')*1000*1.3333333,
 		minorGridLineWidth: 0, 
@@ -75,9 +75,30 @@ EasySDI_Mon.drawResponseTimeGraph = function (container, aStores, logRes, tickIn
 		},
 		tooltip: {
 			formatter: function() {
-			return '<b>'+ this.series.name +'</b><br/>'+
-			new Date(this.x).format('d-m-Y H:i:s') +' -> '+ this.y +EasySDI_Mon.lang.getLocal('ms suffix');
-		}
+				var tip =  
+					"<b>"+ this.series.name +"</b><br/>"+
+					new Date(this.x).format('d-m-Y H:i:s') +" -> "+ this.y + EasySDI_Mon.lang.getLocal('ms suffix')+" <br/>";
+					
+					if(this.point.log == "aggLogs")
+					{
+						tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip H24_AVAILABILITY')+":</b> "+Math.round(this.point.data.data.h24Availability)+"%<br/>";
+						tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip H24_NB_CONN_ERRORS')+":</b> "+this.point.data.data.h24NbConnErrors+"<br/>";
+						tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip H24_NB_BIZ_ERRORS')+":</b> "+this.point.data.data.h24NbBizErrors+"<br/>";
+					}else
+					{
+						tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip response size')+"</b>: "+Math.round(this.point.data.data.size)+" bytes<br/>";
+						if(this.point.data.data.statusCode.toLowerCase() == "unavailable")
+						{
+							tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip http statuscode')+"</b>: "+ this.point.data.data.httpCode+"<br/>";
+							tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip response message')+"</b>: "+ this.point.data.data.message+"<br/>";
+						}
+						if(this.point.data.data.statusCode.toLowerCase() == "out_of_order")// failed
+						{
+							tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip response message')+"</b>: "+ this.point.data.data.message;
+						}
+					}
+				return tip;
+			}
 		},
 		legend: {
 			layout: 'vertical',
@@ -102,7 +123,16 @@ EasySDI_Mon.drawResponseTimeGraph = function (container, aStores, logRes, tickIn
 			for ( var i=0; i< aRec.length; i++ )
 			{   
 				if(logRes == 'aggLogs')
-					series.data.push([aRec[i].get('date').getTime(), Math.round(aRec[i].get('h24MeanRespTime') * 1000)]);
+				{
+					var point = {
+							x: aRec[i].get('date').getTime(),
+							y: Math.round(aRec[i].get('h24MeanRespTime') * 1000) != -1 ? Math.round(aRec[i].get('h24MeanRespTime') * 1000) : 0,
+							data: aRec[i],
+							log: logRes
+						};
+					series.data.push(point);
+					//series.data.push([aRec[i].get('date').getTime(), Math.round(aRec[i].get('h24MeanRespTime') * 1000)]);
+				}
 				else{
 					var status = aRec[i].get('statusCode');
 					var color;
@@ -120,20 +150,19 @@ EasySDI_Mon.drawResponseTimeGraph = function (container, aStores, logRes, tickIn
 						color = '#b3b3b3';
 						break;
 					default: 
-						color = '#b3b3b3';;
+						color = '#b3b3b3';
 						break;
 					}
-
 					var point = {
 							x: aRec[i].get('time').getTime(),
-							y: Math.round(aRec[i].get('delay') * 1000),
+							y: Math.round(aRec[i].get('delay') * 1000) != -1 ? Math.round(aRec[i].get('delay') * 1000) : 0,
 							marker: {
-						fillColor: color
-					}
+								fillColor: color
+							},
+							data: aRec[i], // record info for tooltip
+							log: logRes
 					};
-
 					series.data.push(point);
-
 					//series.data.push([aRec[i].get('time').getTime(), Math.round(aRec[i].get('delay') * 1000)]);
 				}
 			}
@@ -146,7 +175,14 @@ EasySDI_Mon.drawResponseTimeGraph = function (container, aStores, logRes, tickIn
 				series.name = storeName+EasySDI_Mon.lang.getLocal('sla suffix');
 				for ( var i=0; i< aRec.length; i++ )
 				{   
-					series.data.push([aRec[i].get('date').getTime(), Math.round(aRec[i].get('slaMeanRespTime') * 1000)]);
+					var point = {
+							x: aRec[i].get('date').getTime(),
+							y: Math.round(aRec[i].get('slaMeanRespTime') * 1000) != -1 ? Math.round(aRec[i].get('slaMeanRespTime') * 1000) : 0,
+							data: aRec[i],
+							log: logRes
+					};
+					series.data.push(point);				
+					//series.data.push([aRec[i].get('date').getTime(), Math.round(aRec[i].get('slaMeanRespTime') * 1000)]);
 				}
 				options.series.push(series);
 			}

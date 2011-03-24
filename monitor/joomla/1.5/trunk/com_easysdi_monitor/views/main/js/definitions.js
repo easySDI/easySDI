@@ -51,7 +51,17 @@ Ext.onReady(function(){
        wcs: [
               ['GetCapabilities'],
    	   ['GetCoverage']
-   	 ]
+   	 ]/*,
+   	 all: [
+      	    ['GetCapabilities'],
+   	          ['GetMap'],
+           ['GetFeature'],
+   	      ['GetTile'],
+   		  ['GetRecordById'],
+   	          ['GetRecords'],
+   		  ['DescribeSensor'],
+   		  ['GetCoverage']
+  	       ]*/
    }
    
    EasySDI_Mon.HttpMethodStore = [
@@ -65,7 +75,8 @@ Ext.onReady(function(){
    			 ['WMTS'],
    			 ['CSW'],
    			 ['SOS'],
-   			 ['WCS']
+   			 ['WCS']/*,
+   			 ['ALL']*/
    		       ];
    
    EasySDI_Mon.RepPeriodStore = [
@@ -75,8 +86,16 @@ Ext.onReady(function(){
    			 [EasySDI_Mon.lang.getLocal('this month'),'thismonth'],
    			 [EasySDI_Mon.lang.getLocal('past 6 months'),'past6months'],
    			 [EasySDI_Mon.lang.getLocal('past year'),'pastyear'],
+   			 [EasySDI_Mon.lang.getLocal('Enter period...'),'period'],
    			 [EasySDI_Mon.lang.getLocal('all'),'All']
    		       ];
+   
+   EasySDI_Mon.ToleranceStore = [
+         ['0','0%'],['5','5%'],['10','10%'],['15','15%'],['20','20%'],['25','25%'],['40','40%'],['50','50%'],['75','75%'],['100','100%']
+   ];
+   
+   /*Used in report for select between aggLogs and logs */
+   EasySDI_Mon.DaysForUsingLogs = 6;                      
    		       
    EasySDI_Mon.DefaultJob = {
    		name:'',
@@ -106,6 +125,15 @@ Ext.onReady(function(){
    EasySDI_Mon.DefaultGetCapReq = {
    		name:'',
    		serviceMethod:''
+   };
+   
+   EasySDI_Mon.DefaultOverviewPage = {
+		   name:'',
+		   isPublic:''
+   };
+   
+   EasySDI_Mon.DefaultPageCombo = {
+		   name: ''
    };
    
    EasySDI_Mon.YesNoCombo = [[EasySDI_Mon.lang.getLocal('YES'), 'Y'],[EasySDI_Mon.lang.getLocal('NO'), 'N']];

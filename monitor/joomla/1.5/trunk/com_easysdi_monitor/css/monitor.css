@@ -162,4 +162,80 @@ background-repeat:no-repeat;
    display: inline-block;
 }
 
+.OverviewLabel
+{
+	font-weight: bold !important;
+	vertical-align:top;
+}
+.OverviewTableCells
+{
+	vertical-align:top !important;
+	padding-right:15px;
+	padding-bottom:5px;
+	width:50%;
+}
+
+.OverviewTableCellsOk
+{
+	vertical-align:top !important;
+	padding-right:15px;
+	padding-bottom:5px;
+	width:50%;
+	background-color:#7dff9c;
+}
+.OverviewTableCellsFailed
+{
+	vertical-align:top !important;
+	padding-right:15px;
+	padding-bottom:5px;
+	width:50%;
+	background-color:#e2ff1d;
+}
+.OverviewTableCellsError
+{
+	vertical-align:top !important;
+	padding-right:15px;
+	padding-bottom:5px;
+	width:50%;
+	background-color:#ff7f7f;
+}
+.OverviewTableCellsNotTested
+{
+	vertical-align:top !important;
+	padding-right:15px;
+	padding-bottom:5px;
+	width:50%;
+	background-color:#b3b3b3;
+}
+
+.OverviewTableCellsImg
+{
+	vertical-align:top !important;
+	text-align:center;
+	padding-left:15px;
+}
+.OverviewTableCellsInludeBox
+{
+	vertical-align:top !important;
+	text-align:right !important;
+}
+.OverviewTableCellsInludeText
+{
+	
+	text-align:left !important;
+	font-variant:bold;
+}
+.ReportTableCell
+{
+	vertical-align:top !important;
+}
+.Text_area_result
+{
+	width: 290px;
+	height: 140px;
+}
+
+#tablepagePanel .x-table-layout {
+	width:100% !important;
+}
 

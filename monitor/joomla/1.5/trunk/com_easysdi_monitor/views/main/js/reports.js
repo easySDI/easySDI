@@ -84,7 +84,7 @@ Ext.onReady(function() {
 		region: 'center',
 		height: 50,
 		frame:true,
-		layoutConfig:{columns:11},
+		layoutConfig:{columns:7},
 		border:false,
 		defaults: {
 			border: false,
@@ -109,7 +109,7 @@ Ext.onReady(function() {
 				store:jobComboStore
 			}]
 		},{
-			html:EasySDI_Mon.lang.getLocal('grid header method')+':'
+			html:EasySDI_Mon.lang.getLocal('report request select')+':'
 		},{
 			items:[{
 				xtype:          'combo',
@@ -127,7 +127,7 @@ Ext.onReady(function() {
 				store:methodComboStore
 			}]
 		},{
-			html:EasySDI_Mon.lang.getLocal('period')+':',
+			html:EasySDI_Mon.lang.getLocal('period')+':'
 		},{
 			xtype: 'combo',
 			mode: 'local',
@@ -135,7 +135,6 @@ Ext.onReady(function() {
 			triggerAction: 'all',
 			forceSelection: true,
 			editable:       false,
-			// fieldLabel:     'Job',
 			name:           'repCbPeriod',
 			emptyText: EasySDI_Mon.lang.getLocal('combo select a period'),
 			displayField:   'name',
@@ -144,7 +143,57 @@ Ext.onReady(function() {
 			store:          new Ext.data.SimpleStore({
 				fields : ['name', 'value'],
 				data : EasySDI_Mon.RepPeriodStore
+			}),
+			width: 200
+		},
+		{
+			items:[{
+				id: 'mtnBtnView',
+				xtype:'button',
+				handler: function(){
+				   mtnBtnView_click();
+			        },
+				listeners: {
+                                    click: function() {
+				        mtnBtnView_click();
+                                    }
+                                },
+			        text: EasySDI_Mon.lang.getLocal('action view')
+			}]
+		},
+		{},
+		{},
+		{},
+		{},
+		{},
+		{
+			items:[
+			new Ext.FormPanel({
+					id: 'periodeDatePanel',
+					layout:'table',
+					layoutConfig:{columns:2},
+					hidden: true,
+			items:[		
+			{
+				id: 'minDatePicker',
+				xtype: 'datefield',
+				name: 'minDatePicker',
+				cellCls: 'ReportTableCell',
+				width: 100,
+				format: 'Y-m-d'
+			},
+			{
+				id: 'maxDatePicker',
+				xtype: 'datefield',
+				name: 'maxDatePicker',
+				maxValue: new Date().format('Y-m-d'),
+				cellCls: 'ReportTableCell',
+				width: 100,
+				format: 'Y-m-d'
+			}
+			]
 			})
+			]
 		}
 		/*
 	     ,{
@@ -175,7 +224,7 @@ Ext.onReady(function() {
               }]
              }
 		 */
-		,{
+		/*,{
 			items:[{
 				id: 'mtnBtnView',
 				xtype:'button',
@@ -189,7 +238,8 @@ Ext.onReady(function() {
                                 },
 			        text: EasySDI_Mon.lang.getLocal('action view')
 			}]
-		}]
+		}*/
+		]
 	});
 
 
@@ -216,7 +266,25 @@ Ext.onReady(function() {
 			//jobComboStore.add(aRec[i]);
 		}
 	}
-
+	
+	Ext.getCmp('repCbPeriod').on('select',function(cmd,rec)
+			{
+				var name;
+				if(rec == null){
+				   name = Ext.getCmp('repCbPeriod').getValue();
+				}else{
+				   name = rec.get("value");
+				}
+				
+				if(name && name == "period")
+				{
+					Ext.getCmp('periodeDatePanel').setVisible(true);
+				}else
+				{
+					Ext.getCmp('periodeDatePanel').setVisible(false);
+				}
+	});
+	
 	Ext.getCmp('repCbJobs').on('select', function(cmb, rec){
 		//refresh method store
 		var name;
@@ -338,6 +406,39 @@ Ext.onReady(function() {
 			//a month
 			tickInterval = 4 * 7 * 24 * 3600 * 1000;
 			break;
+		case "period":
+			var minPeriod = Ext.getCmp('minDatePicker').getValue();
+			var maxPeriod = Ext.getCmp('maxDatePicker').getValue();
+			if(maxPeriod == "" || minPeriod == "")
+			{
+				Ext.MessageBox.alert(EasySDI_Mon.lang.getLocal('error'), EasySDI_Mon.lang.getLocal('report enter period'));
+				myMask.hide();
+				return false;
+			}
+			minDate = minPeriod;
+			maxDate = maxPeriod;
+			if(!maxDate || !minDate || (maxDate < minDate))
+			{
+				Ext.MessageBox.alert(EasySDI_Mon.lang.getLocal('error'), EasySDI_Mon.lang.getLocal('report invalid period'));
+				myMask.hide();
+				return false;
+			}
+			
+			// find days
+			var ms = minDate.getElapsed(maxDate);
+			var r = ms % 86400000;
+			var days = (ms - r) / 86400000;
+			days++;
+			if(days <= EasySDI_Mon.DaysForUsingLogs)
+			{
+				logRes = "logs";
+			}else
+			{
+				logRes = "aggLogs";
+			}
+						
+			tickInterval = findtickInterval(days);
+			break;
 		case "All":
 			logRes = "aggLogs";
 			//a month
@@ -365,7 +466,7 @@ Ext.onReady(function() {
 			if(logRes == "aggLogs")
 				fields = ['h24Availability', 'slaNbBizErrors','h24NbConnErrors','h24MeanRespTime','slaMeanRespTime','h24NbBizErrors','slaAvalabilty','slaNbConnErrors', {name: 'date', type: 'date', dateFormat: 'Y-m-d'}];
 			else
-				fields = [{name: 'time', type: 'date', dateFormat: 'Y-m-d H:i:s'}, 'message', 'httpCode', 'status', 'statusCode', 'delay']
+				fields = [{name: 'time', type: 'date', dateFormat: 'Y-m-d H:i:s'}, 'message', 'httpCode', 'status', 'statusCode', 'delay','size']
 
 			aStores[aMethods[i]] = new Ext.data.JsonStore({
 				root:'data',
@@ -390,7 +491,29 @@ Ext.onReady(function() {
 			});
 		}
 	}
-
+    
+    function findtickInterval(days)
+	{
+		var ticks = 0;
+		if(days == 1)
+		{
+			ticks = 2 * 3600 * 1000;
+		}else if(days == 2)
+		{
+			ticks = 4 * 3600 * 1000;
+		}else if(days < 8 )
+		{
+			ticks = 24 * 3600 * 1000;
+		}else if(days < 32)
+		{
+			ticks = 7 * 24 * 3600 * 1000;
+		}else
+		{
+			ticks = 4 * 7 * 24 * 3600 * 1000;
+		}
+		return ticks;
+	}
+        
 	//called when all stores are loaded
 	function onDataReady(aStores, logRes){
 

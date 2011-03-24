@@ -39,14 +39,25 @@ Ext.onReady(function(){
 		restful:true,
 		proxy: proxy,
 		writer: writer,
-		fields:['serviceMethod', 'status', 'name', 'params']
+		//fields:['serviceMethod', 'status', 'name', 'params']
+		fields:[{name:'serviceMethod'},{name: 'status'},{name: 'name'},{name: 'statusCode'},{name: 'params'},
+		        {name:'queryValidationSettings',mapping:'queryValidationSettings'},{name:'id',mapping:'queryValidationSettings.id'},{name:'useSizeValidation',mapping:'queryValidationSettings.useSizeValidation'},
+		        {name:'normSize',mapping:'queryValidationSettings.normSize'},{name:'normSizeTolerance',mapping:'queryValidationSettings.normSizeTolerance'},
+		        {name:'useTimeValidation',mapping:'queryValidationSettings.useTimeValidation'}, {name:'normTime',mapping:'queryValidationSettings.normTime'},
+		        {name:'useXpathValidation',mapping:'queryValidationSettings.useXpathValidation'},
+		        {name:'xpathExpression',mapping:'queryValidationSettings.xpathExpression'}, {name:'expectedXpathOutput',mapping:'queryValidationSettings.expectedXpathOutput'},
+		        {name:'queryValidationResult', mapping: 'queryValidationResult'},{name:'sizeValidationResult', mapping: 'queryValidationResult.sizeValidationResult'},
+		        {name:'responseSize', mapping: 'queryValidationResult.responseSize'},
+		        {name:'timeValidationResult', mapping: 'queryValidationResult.timeValidationResult'},{name:'deliveryTime', mapping: 'queryValidationResult.deliveryTime'},
+		        {name:'xpathValidationResult', mapping: 'queryValidationResult.xpathValidationResult'},{name:'xpathValidationOutput', mapping: 'queryValidationResult.xpathValidationOutput'}        
+		]
 	});
 
 	var cm = new Ext.grid.ColumnModel([{
 		header:EasySDI_Mon.lang.getLocal('grid header name'),
 		dataIndex:"name",
 		width:50,
-		sortable: true,
+		sortable: true
 	},{
 		header:EasySDI_Mon.lang.getLocal('grid header method'),
 		dataIndex:"serviceMethod",
@@ -56,7 +67,7 @@ Ext.onReady(function(){
 		header:EasySDI_Mon.lang.getLocal('grid header params'),
 		dataIndex:"params",
 		renderer: paramsRenderer,
-		width:320,
+		width:320
 	}
 	]);
 
@@ -120,7 +131,17 @@ Ext.onReady(function(){
 		}
 		})
 	});
-
+	
+	function enableNormSave()
+	{
+		if(Ext.getCmp('reqTextID').getValue() != "" && Ext.getCmp('sMComboxID').getValue() != "")
+		{
+					Ext.getCmp('saveNormBtnID').enable();
+		}else
+		{
+					Ext.getCmp('saveNormBtnID').disable();
+		}
+	}
 
 	/**
 	 * onAdd
@@ -130,75 +151,289 @@ Ext.onReady(function(){
 		if (!rec) {
 			return false;
 		}
+		
+		var reqP = new Ext.FormPanel({
+					id: 'newReqPanel',
+					labelWidth: 90,
+					monitorValid:true,
+					bodyStyle:'padding:5px 5px 0',
+					frame:true,
+					height: 370,
+					defaults: {width: 290},
+					defaultType: 'textfield',
+					items: [{
+						id: 'reqTextID',
+						fieldLabel: EasySDI_Mon.lang.getLocal('grid header name'),
+						xtype: 'textfield',
+						name: 'name',
+						allowBlank:false,
+						vtype: 'reqname',
+						listeners: {
+							'invalid': enableNormSave,
+							'valid': enableNormSave		
+						}
+					},{
+						id: 'sMComboxID',
+						xtype:          'combo',
+						mode:           'local',
+						triggerAction:  'all',
+						allowBlank:false,
+						forceSelection: true,
+						fieldLabel:      EasySDI_Mon.lang.getLocal('grid header method'),
+						name:           'serviceMethod',
+						displayField:   'name',
+						valueField:     'name',
+						store:          new Ext.data.SimpleStore({
+							fields : ['name'],
+							data : EasySDI_Mon.ServiceMethodStore[Ext.getCmp('JobGrid').getSelectionModel().getSelected().get('serviceType').toLowerCase()]
+						}),
+						listeners: {
+							'change': enableNormSave		
+						}
+					},{
+						fieldLabel: EasySDI_Mon.lang.getLocal('grid header params'),
+						name: 'params',
+						height:200,
+						allowBlank:true,
+						xtype: 'textarea',
+						allowBlank: true
+					}],
+					buttons: [{
+						formBind:true,
+						text: EasySDI_Mon.lang.getLocal('grid action ok'),
+						handler: function(){
+						var name = rec.get('name');
+						proxy.setUrl(EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+name+'/queries');
+						var fields = Ext.getCmp('newReqPanel').getForm().getFieldValues();
+						var fields2 = Ext.getCmp('newNormPanel').getForm().getFieldValues();
+						var u = new _reqGrid.store.recordType(EasySDI_Mon.DefaultReq);
+						for (var el in fields){
+							u.set(el, fields[el]);
+							if(el == "params")
+							   fieldParams = fields[el];
+						}
+						for(var el in fields2)
+						{
+							u.set(el, fields2[el]);
+						}
+						_reqGrid.store.insert(0, u);
+						Ext.data.DataProxy.addListener('write', createMethodParams);
+						store.save();
+						win.close();
+
+					}
+					},{
+						text: EasySDI_Mon.lang.getLocal('grid action cancel'),
+						handler: function(){
+						win.close();
+					}
+					}]
+				});
+
+		var reqNorm = new Ext.FormPanel({
+					id: 'newNormPanel',
+					monitorValid:true,
+					frame:true,
+					labelWidth: 150,
+					autoWidth:true,
+					height: 370,
+					region:'center',
+					items: [
+					{
+					layout:'column',
+						items:[
+						{	
+							layout: 'form',
+							items: [{
+								xtype: 'checkbox',
+								fieldLabel: EasySDI_Mon.lang.getLocal('norm request size validation'),
+								name: 'useSizeValidation',
+								trueText: 'true',
+								checked: rec.get('useSizeValidation') ? true :false,
+								falseText: 'false',
+								handler: function(com){
+										if(com.checked)
+										{
+											Ext.getCmp('normSize').enable();
+											Ext.getCmp('normSizeTolerance').enable();
+										}else
+										{
+											Ext.getCmp('normSize').disable();
+											Ext.getCmp('normSizeTolerance').disable();
+										}
+								},
+								columnWidth: 1.0
+							},
+							{
+								id: 'normSize',
+								xtype: 'numberfield',
+								minValue: 0,
+								disabled: rec.get('useSizeValidation') ? false :true,
+								fieldLabel: EasySDI_Mon.lang.getLocal('norm request norm size'),
+								name: 'normSize',
+								width: 80,
+								columnWidth: 1.0
+							},
+							{
+								id: 'normSizeTolerance',
+								xtype:          'combo',
+								mode:           'local',
+								triggerAction:  'all',
+								editable: false,
+								disabled: rec.get('useSizeValidation') ? false :true,
+								allowBlank:false,
+								forceSelection: true,
+								fieldLabel:     EasySDI_Mon.lang.getLocal('norm request size tolerance'),
+								name:           'normSizeTolerance',
+								displayField:   'value',
+								valueField:     'normSizeTolerance',
+								store:          new Ext.data.SimpleStore({
+									fields : ['normSizeTolerance','value'],
+									data : EasySDI_Mon.ToleranceStore
+								}),
+								columnWidth: 1.0
+							},
+							{
+								xtype: 'checkbox',
+								fieldLabel: EasySDI_Mon.lang.getLocal('norm request time validation'),
+								name: 'useTimeValidation',
+								trueText: 'true',
+								checked: rec.get('useTimeValidation') ? true: false,
+								falseText: 'false',
+								handler: function(com){
+									if(com.checked)
+									{
+										Ext.getCmp('normTime').enable();
+									}else
+									{
+										Ext.getCmp('normTime').disable();
+									}
+								},
+								columnWidth: 1.0
+							},
+							{
+								id:'normTime',
+								xtype: 'numberfield',
+								minValue: 0,
+								disabled: rec.get('useTimeValidation') ? false: true,
+								fieldLabel: EasySDI_Mon.lang.getLocal('norm request norm time'),
+								name: 'normTime',
+								width: 80,
+								columnWidth: 1.0
+							},
+							{
+								xtype: 'checkbox',
+								fieldLabel: EasySDI_Mon.lang.getLocal('norm request xpath validation'),
+								name: 'useXpathValidation',	
+								handler: function(com){
+									if(com.checked)
+									{
+										Ext.getCmp('xpathExpression').enable();
+										Ext.getCmp('expectedXpathOutput').enable();
+									}else
+									{
+										Ext.getCmp('xpathExpression').disable();
+										Ext.getCmp('expectedXpathOutput').disable();
+									}
+								},
+								trueText: 'true',
+								falseText: 'false',
+								columnWidth: 1.0
+							},
+							{
+								id: 'expectedXpathOutput',
+								xtype: 'textarea',
+								height:60,
+								fieldLabel: EasySDI_Mon.lang.getLocal('norm request norm xpath result'),
+								name: 'expectedXpathOutput',
+								allowBlank: true,
+								disabled: rec.get('useXpathValidation') ? false: true,
+								width: 250,
+								columnWidth: 1.0
+							},
+							{
+								id: 'xpathExpression',
+								xtype: 'textarea',
+								height:60,
+								name: 'xpathExpression',
+								fieldLabel: EasySDI_Mon.lang.getLocal('norm request xpath'),
+								allowBlank:true,
+								disabled: rec.get('useXpathValidation') ? false: true,
+								width: 250,
+								columnWidth: 1.0
+							},
+							{
+								html: '<a href="http://www.w3schools.com/xpath/xpath_syntax.asp" target="_blank">'+EasySDI_Mon.lang.getLocal('norm request help xpathsyntax')+'</a>'
+							}
+							],
+							buttons: [{
+								id:'saveNormBtnID',
+								formBind:true,
+								text: EasySDI_Mon.lang.getLocal('grid action ok'),
+								handler: function(){
+								var name = rec.get('name');
+								proxy.setUrl(EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+name+'/queries');
+								var fields = Ext.getCmp('newReqPanel').getForm().getFieldValues();
+								var fields2 = Ext.getCmp('newNormPanel').getForm().getFieldValues();
+								var u = new _reqGrid.store.recordType(EasySDI_Mon.DefaultReq);
+								for (var el in fields){
+									u.set(el, fields[el]);
+									if(el == "params")
+									   fieldParams = fields[el];
+								}
+								for(var el in fields2)
+								{
+									u.set(el, fields2[el]);
+								}
+								_reqGrid.store.insert(0, u);
+								Ext.data.DataProxy.addListener('write', createMethodParams);
+								store.save();
+								win.close();
+
+							}
+							},{
+								text: EasySDI_Mon.lang.getLocal('grid action cancel'),
+								handler: function(){
+								win.close();
+							}
+							}]
+						}
+						]}
+						]
+				});
+			
+		requestParmPanel = {
+			title: 'Request',
+			xtype: 'panel',
+			height: 370,
+			border:false,
+			items: [reqP]
+		};
+		
+		requestNormPanel = {
+			title: 'Norm values',
+			xtype: 'panel',
+			height: 370,
+			border:false,
+			items: [reqNorm]
+		};
+		
 		//Open a window for entering job's first values
 		win = new  Ext.Window({
 			title:EasySDI_Mon.lang.getLocal('new request'),
 			width:450,
+			height: 450,
 			autoScroll:true,
 			modal:true,
 			resizable:false,
-			items: [new Ext.FormPanel({
-				ref: 'newReqPanel',
-				labelWidth: 90,
-				monitorValid:true,
-				bodyStyle:'padding:5px 5px 0',
-				frame:true,
-				defaults: {width: 290},
-				defaultType: 'textfield',
-				items: [{
-					fieldLabel: EasySDI_Mon.lang.getLocal('grid header name'),
-					xtype: 'textfield',
-					name: 'name',
-					allowBlank:false,
-					vtype: 'reqname'
-				},{
-					xtype:          'combo',
-					mode:           'local',
-					triggerAction:  'all',
-					allowBlank:false,
-					forceSelection: true,
-					fieldLabel:      EasySDI_Mon.lang.getLocal('grid header method'),
-					name:           'serviceMethod',
-					displayField:   'name',
-					valueField:     'name',
-					store:          new Ext.data.SimpleStore({
-						fields : ['name'],
-						data : EasySDI_Mon.ServiceMethodStore[Ext.getCmp('JobGrid').getSelectionModel().getSelected().get('serviceType').toLowerCase()]
-					})
-				},{
-					fieldLabel: EasySDI_Mon.lang.getLocal('grid header params'),
-					name: 'params',
-					height:200,
-					allowBlank:true,
-					xtype: 'textarea',
-					allowBlank: true
-				}],
-				buttons: [{
-					formBind:true,
-					text: EasySDI_Mon.lang.getLocal('grid action ok'),
-					handler: function(){
-					var name = rec.get('name');
-					proxy.setUrl(EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+name+'/queries');
-					var fields = win.newReqPanel.getForm().getFieldValues();
-					var u = new _reqGrid.store.recordType(EasySDI_Mon.DefaultReq);
-					for (var el in fields){
-						u.set(el, fields[el]);
-						if(el == "params")
-						   fieldParams = fields[el];
-					}
-					_reqGrid.store.insert(0, u);
-					Ext.data.DataProxy.addListener('write', createMethodParams);
-					store.save();
-					win.close();
-
-				}
-				},{
-					text: EasySDI_Mon.lang.getLocal('grid action cancel'),
-					handler: function(){
-					win.close();
-				}
-				}]
-			})//en form panel new request
+			items: [
+			new Ext.TabPanel({
+			id: 'card-tabs-panel2',
+			activeTab: 0,
+				items:[
+					requestParmPanel,
+					requestNormPanel 
+				]})
 			]
 		});
 		win.show();
@@ -220,16 +455,11 @@ Ext.onReady(function(){
 			if(i<params.length-1)
 				strParams += "&";
 		}
-
-		win = new  Ext.Window({
-			title:EasySDI_Mon.lang.getLocal('edit request'),
-			width:450,
-			autoScroll:true,
-			modal:true,
-			resizable:false,
-			items: [new Ext.FormPanel({
-				ref: 'editReqPanel',
+		
+		var reqP = new Ext.FormPanel({
+				id: 'editReqPanel',
 				labelWidth: 90,
+				height: 370,
 				monitorValid:true,
 				bodyStyle:'padding:5px 5px 0',
 				frame:true,
@@ -242,6 +472,7 @@ Ext.onReady(function(){
 					name: 'name',
 					allowBlank:false,
 					disabled:true
+				
 				},{
 					xtype:          'combo',
 					mode:           'local',
@@ -250,7 +481,7 @@ Ext.onReady(function(){
 					allowBlank:false,
 					forceSelection: true,
 					editable:       false,
-					fieldLabel:     EasySDI_Mon.lang.getLocal('grid header method'),
+					fieldLabel:      EasySDI_Mon.lang.getLocal('grid header method'),
 					name:           'serviceMethod',
 					displayField:   'name',
 					valueField:     'name',
@@ -261,11 +492,10 @@ Ext.onReady(function(){
 				},{
 					fieldLabel: EasySDI_Mon.lang.getLocal('grid header params'),
 					value: strParams,
-					height:200,
 					name: 'params',
+					height:200,
 					allowBlank:true,
-					xtype: 'textarea',
-					allowBlank: true
+					xtype: 'textarea'
 				}],
 				buttons: [{
 					formBind:true,
@@ -276,18 +506,23 @@ Ext.onReady(function(){
 					   var name = rec.get('name');
 					   //Change the proxy to the good url
 					   proxy.setUrl(EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+jobName+'/queries');
-					   var fields = win.editReqPanel.getForm().getFieldValues();
+					   var fields = Ext.getCmp('editReqPanel').getForm().getFieldValues();
+					   var fieldsValiation = Ext.getCmp('editNormPanel').getForm().getFieldValues(); 
 					   //Avoids commit to each "set()"
 					   var r = rec;
 					   rec.beginEdit();
 					   rec.set('serviceMethod', fields.serviceMethod);
 					   rec.set('params', fields.params);
+					   for(var el in fieldsValiation)
+					   {
+							rec.set(el, fieldsValiation[el]);
+					   }
 					   rec.endEdit();
 					   fieldParams = fields.params;
 					   //after save, save the params
 					   Ext.data.DataProxy.addListener('write', createMethodParams);
 					   store.save();
-					win.close();
+					   win.close();
 				}
 				},{
 					text: EasySDI_Mon.lang.getLocal('grid action cancel'),
@@ -295,13 +530,226 @@ Ext.onReady(function(){
 					win.close();
 				}
 				}]
-			})//end form panel
-			]
-		});
+			});
 
+		var reqNorm = new Ext.FormPanel({
+					id: 'editNormPanel',
+					monitorValid:true,
+					frame:true,
+					labelWidth: 150,
+					autoWidth:true,
+					height: 370,
+					region:'center',
+					items: [
+					{
+					layout:'column',
+						items:[
+						{	
+							layout: 'form',
+							items: [{
+								xtype: 'checkbox',
+								fieldLabel: EasySDI_Mon.lang.getLocal('norm request size validation'),
+								name: 'useSizeValidation',
+								trueText: 'true',
+								falseText: 'false',
+								checked: rec.get('useSizeValidation') ? true :false,
+								handler: function(com){
+										if(com.checked)
+										{
+											Ext.getCmp('normSize').enable();
+											Ext.getCmp('normSizeTolerance').enable();
+										}else
+										{
+											Ext.getCmp('normSize').disable();
+											Ext.getCmp('normSizeTolerance').disable();
+										}
+								},
+								columnWidth: 1.0
+							},
+							{
+								id: 'normSize',
+								xtype: 'numberfield',
+								minValue: 0,
+								disabled: rec.get('useSizeValidation') ? false :true,
+								fieldLabel: EasySDI_Mon.lang.getLocal('norm request norm size'),
+								name: 'normSize',
+								width: 80,
+								value: rec.get('normSize'),
+								columnWidth: 1.0
+							},
+							{
+								id: 'normSizeTolerance',
+								xtype:          'combo',
+								mode:           'local',
+								triggerAction:  'all',
+								editable: false,
+								disabled: rec.get('useSizeValidation') ? false :true,
+								allowBlank:false,
+								value: rec.get('normSizeTolerance') ? rec.get('normSizeTolerance'):'5',
+								forceSelection: true,
+								fieldLabel:     EasySDI_Mon.lang.getLocal('norm request size tolerance'),
+								name:           'normSizeTolerance',
+								displayField:   'value',
+								valueField:     'normSizeTolerance',
+								store:          new Ext.data.SimpleStore({
+									fields : ['normSizeTolerance','value'],
+									data : EasySDI_Mon.ToleranceStore
+								}),
+								columnWidth: 1.0
+							},
+							{
+								xtype: 'checkbox',
+								fieldLabel: EasySDI_Mon.lang.getLocal('norm request time validation'),
+								name: 'useTimeValidation',
+								trueText: 'true',
+								checked: rec.get('useTimeValidation') ? true: false,
+								falseText: 'false',
+								handler: function(com){
+									if(com.checked)
+									{
+										Ext.getCmp('normTime').enable();
+									}else
+									{
+										Ext.getCmp('normTime').disable();
+									}
+								},
+								columnWidth: 1.0
+							},
+							{
+								id:'normTime',
+								xtype: 'numberfield',
+								minValue: 0,
+								disabled: rec.get('useTimeValidation') ? false: true,
+								fieldLabel: EasySDI_Mon.lang.getLocal('norm request norm time'),
+								name: 'normTime',
+								width: 80,
+								value: rec.get('normTime'),
+								columnWidth: 1.0
+							},
+							{
+								xtype: 'checkbox',
+								fieldLabel: EasySDI_Mon.lang.getLocal('norm request xpath validation'),
+								name: 'useXpathValidation',	
+								checked: rec.get('useXpathValidation') ? true: false,
+								handler: function(com){
+									if(com.checked)
+									{
+										Ext.getCmp('xpathExpression').enable();
+										Ext.getCmp('expectedXpathOutput').enable();
+									}else
+									{
+										Ext.getCmp('xpathExpression').disable();
+										Ext.getCmp('expectedXpathOutput').disable();
+									}
+								},
+								trueText: 'true',
+								falseText: 'false',
+								columnWidth: 1.0
+							},
+							{
+								id: 'expectedXpathOutput',
+								xtype: 'textarea',
+								fieldLabel: EasySDI_Mon.lang.getLocal('norm request norm xpath result'),
+								name: 'expectedXpathOutput',
+								allowBlank: true,
+								value: rec.get('expectedXpathOutput') ? rec.get('expectedXpathOutput') : '',
+								disabled: rec.get('useXpathValidation') ? false: true,
+								height:60,
+								width: 250,
+								columnWidth: 1.0
+							},
+							{
+								id: 'xpathExpression',
+								xtype: 'textarea',
+								height:60,
+								name: 'xpathExpression',
+								fieldLabel: EasySDI_Mon.lang.getLocal('norm request xpath'),
+								allowBlank:true,
+								value: rec.get('xpathExpression') ? rec.get('xpathExpression') : '',
+								disabled: rec.get('useXpathValidation') ? false: true,
+								width: 250,
+								columnWidth: 1.0
+							},
+							{
+								html: '<a href="http://www.w3schools.com/xpath/xpath_syntax.asp" target="_blank">'+EasySDI_Mon.lang.getLocal('norm request help xpathsyntax')+'</a>'
+							}],
+							buttons: [{
+								formBind:true,
+								text: EasySDI_Mon.lang.getLocal('grid action ok'),
+								handler: function(){
+									 var jobRec = Ext.getCmp('JobGrid').getSelectionModel().getSelected();
+									   var jobName = jobRec.get('name');
+									   var name = rec.get('name');
+									   //Change the proxy to the good url
+									   proxy.setUrl(EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+jobName+'/queries');
+									   var fields = Ext.getCmp('editReqPanel').getForm().getFieldValues();
+									   var fieldsValiation = Ext.getCmp('editNormPanel').getForm().getFieldValues(); 
+									   //Avoids commit to each "set()"
+									   var r = rec;
+									   rec.beginEdit();
+									   rec.set('serviceMethod', fields.serviceMethod);
+									   rec.set('params', fields.params);
+									   for(var el in fieldsValiation)
+									   {
+											rec.set(el, fieldsValiation[el]);
+									   }
+									   rec.endEdit();
+									   rec.endEdit();
+									   fieldParams = fields.params;
+									   //after save, save the params
+									   Ext.data.DataProxy.addListener('write', createMethodParams);
+									   store.save();
+									   win.close();
+									  
+									}// end handler
+							},{
+								text: EasySDI_Mon.lang.getLocal('grid action cancel'),
+								handler: function(){
+									win.close();
+							  }
+							}]
+							
+						}
+						]}
+					]
+				});
+			
+		requestParmPanel = {
+			title: 'Request',
+			xtype: 'panel',
+			height: 370,
+			border:false,
+			items: [reqP]
+		};
+		
+		requestNormPanel = {
+			title: 'Norm values',
+			xtype: 'panel',
+			height: 370,
+			border:false,
+			items: [reqNorm]
+		};
+	
+		//Open a window for entering job's first values
+		win = new  Ext.Window({
+		title:EasySDI_Mon.lang.getLocal('edit request'),
+			width:450,
+			height: 450,
+			autoScroll:true,
+			modal:true,
+			resizable:false,
+			items: [
+			new Ext.TabPanel({
+			id: 'card-tabs-panel2',
+			activeTab: 0,
+				items:[
+					requestParmPanel,
+					requestNormPanel 
+				]})
+			]
+		});	
 		win.show();
-	}
-  
+  }  
   
   function createMethodParams (proxy, action, result, res, rs) {
   	
@@ -317,15 +765,36 @@ Ext.onReady(function(){
 				  params: fieldParams,
 				  url: EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+jobName+'/queries/'+name+"/params",
 				  success: function(response){
-            reloadReqGrid();
+				  	reloadReqGrid();
 				  },
 				  failure: function(response){
 			          EasySDI_Mon.App.setAlert(false,  EasySDI_Mon.lang.getLocal('error meth params')+'. '+'status:'+response.status+' message:'+response.statusText);
 				  }
 				});
-	                               
+	        
+	      var paramsTemp = "";
+		  if(rs.data.id)
+		  {
+			  paramsTemp = '{"data":{"id":"'+rs.data.id+'","useSizeValidation":"'+rs.data.useSizeValidation+'","normSize":"'+rs.data.normSize+'","normSizeTolerance": "'+rs.data.normSizeTolerance+'","useTimeValidation":"'+rs.data.useTimeValidation+'","normTime":"'+rs.data.normTime+'","useXpathValidation":"'+rs.data.useXpathValidation+'","xpathExpression":"'+rs.data.xpathExpression+'","expectedXpathOutput": "'+rs.data.expectedXpathOutput+'"}}';
+		  }else{
+			  paramsTemp = '{"data":{"useSizeValidation":"'+rs.data.useSizeValidation+'","normSize":"'+rs.data.normSize+'","normSizeTolerance": "'+rs.data.normSizeTolerance+'","useTimeValidation":"'+rs.data.useTimeValidation+'","normTime":"'+rs.data.normTime+'","useXpathValidation":"'+rs.data.useXpathValidation+'","xpathExpression":"'+rs.data.xpathExpression+'","expectedXpathOutput": "'+rs.data.expectedXpathOutput+'"}}';
+		  }
+	      Ext.Ajax.request({
+					loadMask: true,
+					method: 'PUT',// BOTH insert/update
+					headers: {
+					'Content-Type': 'application/json'
+				},
+				params: paramsTemp,
+				url: EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+jobName+'/queries/'+name+'/validationSettings',
+				success: function(response){
+					reloadReqGrid();
+				},
+				failure: function(response){
+					 EasySDI_Mon.App.setAlert(false,  EasySDI_Mon.lang.getLocal('error meth params')+'. '+'status:'+response.status+' message:'+response.statusText);
+				}
+		});	
 	}
-  
   
 	/**
 	 * onDelete

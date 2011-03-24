@@ -136,12 +136,15 @@ Ext.extend(Ext.App, Ext.util.Observable, {
             delay = 5;    // <-- when status is error, msg box delay is 3 seconds.
         }
         // add some smarts to msg's duration (div by 13.3 between 3 & 9 seconds)
-        delay = msg.length / 13.3;
-        if (delay < 3) {
-            delay = 3;
-        }
-        else if (delay > 9) {
-            delay = 9;
+        if(msg)
+        {
+		    delay = msg.length / 13.3;
+		    if (delay < 3) {
+		        delay = 3;
+		    }
+		    else if (delay > 9) {
+		        delay = 9;
+		    }
         }
 
         this.msgCt.alignTo(document, 't-t');

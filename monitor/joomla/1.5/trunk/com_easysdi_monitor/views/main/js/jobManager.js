@@ -35,7 +35,7 @@ Ext.onReady(function() {
 		restful:true,
 		proxy: proxy,
 		writer: writer,
-		fields:['status', 'statusCode', 'httpMethod', 'testInterval', 'bizErrors', 'isPublic', 'allowsRealTime', 'httpErrors', 'serviceType', 'password', 'url' ,'id' ,'slaEndTime', 'name', 'queries', 'login', 'triggersAlerts', 'timeout', 'isAutomatic', 'slaStartTime', {name: 'lastStatusUpdate', type: 'date', dateFormat: 'Y-m-d H:i:s'}]
+		fields:['status', 'statusCode', 'httpMethod', 'testInterval', 'bizErrors', 'isPublic', 'allowsRealTime', 'httpErrors', 'serviceType', 'password', 'url' ,'id' ,'slaEndTime', 'name', 'queries', 'login', 'triggersAlerts', 'timeout', 'isAutomatic', 'slaStartTime', {name: 'lastStatusUpdate', type: 'date', dateFormat: 'Y-m-d H:i:s'},'saveResponse']
 	});
 
 
@@ -405,6 +405,7 @@ Ext.onReady(function() {
 		frame:true,
 		//bodyStyle:'padding:5px 5px 0',
 		// width: 400,
+		autoHeight:true, // To fit for extra checkbox
 		labelWidth: 100,
 		autoWidth:true,
 		region:'center',
@@ -454,7 +455,7 @@ Ext.onReady(function() {
 			fieldLabel: EasySDI_Mon.lang.getLocal('grid header isrealtime'),
 			name: 'allowsRealTime',
 			trueText: 'true',
-			falseText: 'false',
+			falseText: 'false'
 		},{
 			xtype: 'numberfield',
 			minValue: 1,
@@ -466,25 +467,31 @@ Ext.onReady(function() {
 			fieldLabel: EasySDI_Mon.lang.getLocal('grid header triggersAlerts'),
 			name: 'triggersAlerts',
 			trueText: 'true',
-			falseText: 'false',
+			falseText: 'false'
 		},{
 			xtype:'checkbox',
 			fieldLabel: EasySDI_Mon.lang.getLocal('grid header httperrors'),
 			name: 'httpErrors',
 			trueText: 'true',
-			falseText: 'false',
+			falseText: 'false'
 		},{
 			xtype:'checkbox',
 			fieldLabel: EasySDI_Mon.lang.getLocal('grid header ogcerrors'),
 			name: 'bizErrors',
 			trueText: 'true',
-			falseText: 'false',
+			falseText: 'false'
 		},{
 			xtype:'checkbox',
 			fieldLabel: EasySDI_Mon.lang.getLocal('grid header ispublic'),
 			name: 'isPublic',
 			trueText: 'true',
-			falseText: 'false',
+			falseText: 'false'
+		},{
+			xtype:'checkbox',
+			fieldLabel: EasySDI_Mon.lang.getLocal('grid header saveresponse'),
+			name: 'saveResponse',
+			trueText: 'true',
+			falseText: 'false'
 		}
 
 		],

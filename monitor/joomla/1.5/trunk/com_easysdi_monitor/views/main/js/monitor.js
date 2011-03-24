@@ -92,6 +92,15 @@ Ext.onReady(function() {
 			border:false,
 			items: [Ext.getCmp('MaintenancePanel')]
 	};
+	
+	responseoverviewPanel = {
+			title:EasySDI_Mon.lang.getLocal('responseoverview'),
+			xtype: 'panel',
+			layout: 'border',
+			region: 'center',
+			border:false,
+			items: [Ext.getCmp('ResponseOverviewPanel')]
+	};
 
 	var cardTabs = new Ext.TabPanel({
 		id: 'card-tabs-panel',
@@ -102,7 +111,8 @@ Ext.onReady(function() {
 		       jobPanel,
 		       reportPanel,
 		       alertPanel,
-		       maintenancePanel
+		       maintenancePanel,
+		       responseoverviewPanel
 		       ]
 	});
 
@@ -209,8 +219,14 @@ Ext.onReady(function() {
 	});
 
 	//Touille the help link
-	Ext.getDom('toolbar-help').getChildren()[0].setAttribute("onClick","window.open('http://forge.easysdi.org/wiki/monitor')");
-
+	try
+	{
+		Ext.getDom('toolbar-help').getChildren()[0].setAttribute("onClick","window.open('http://forge.easysdi.org/wiki/monitor')");
+	}catch(e)
+	{
+		// ERROR IE 7
+	}
+	
 
 	/* Note: if Joomla menu appears under the app, you need to adapt the css for #menu li ul (prop z-index)*/
 	//We remove the default Joomla admin submenu till we use Ext TabPanel.
