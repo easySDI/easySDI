@@ -682,6 +682,21 @@ function com_install()
 		  CONSTRAINT `#__sdi_overlay_ibfk_1` FOREIGN KEY (`group_id`) REFERENCES `#__sdi_overlaygroup` (`id`) ON DELETE CASCADE
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	
+		-- ----------------------------
+		-- Table structure for `#__sdi_profile_role`
+		-- ----------------------------
+		DROP TABLE IF EXISTS `#__sdi_profile_role`;
+		CREATE TABLE `#__sdi_profile_role` (
+		  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+		  `profile_id` bigint(20) NOT NULL,
+		  `role_id` bigint(20) NOT NULL,
+		  PRIMARY KEY (`id`),
+		  KEY `profile_id` (`profile_id`),
+		  KEY `role_id` (`role_id`),
+		  CONSTRAINT `#__sdi_profile_role_ibfk_1` FOREIGN KEY (`profile_id`) REFERENCES `#__sdi_accountprofile` (`id`) ON DELETE CASCADE,
+		  CONSTRAINT `#__sdi_profile_role_ibfk_2` FOREIGN KEY (`role_id`) REFERENCES `#__sdi_list_role` (`id`) ON DELETE CASCADE
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+		
 		";
 
 		$db->setQuery( $query);

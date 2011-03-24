@@ -132,6 +132,10 @@ class HTML_projection
 									<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['description'];?>" name="description" id="description" value="<?php echo $projection->description; ?>" /></td>
 								</tr>
 								<tr>
+									<td class="key"><?php echo JText::_("MAP_PROJECTION_CODE"); ?></td>
+									<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['code'];?>" name="code" id="code" value="<?php echo $projection->code; ?>" /></td>
+								</tr>
+								<tr>
 									<td class="key"><?php echo JText::_("MAP_PROJECTION_TEXT"); ?></td>
 									<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['proj4text'];?>" name="proj4text" id="proj4text" value="<?php echo $projection->proj4text; ?>" /></td>
 								</tr>

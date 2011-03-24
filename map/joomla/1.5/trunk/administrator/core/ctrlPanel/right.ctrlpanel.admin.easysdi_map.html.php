@@ -40,6 +40,19 @@ class HTML_rightctrlpanel
 					
 						
 			<?php	
+			$link = "index.php?option=$option&amp;task=profile";
+			?>
+			<div style="float:<?php echo ($lang->isRTL()) ? 'right' : 'left'; ?>;">
+				<div class="icon">
+					<a href="<?php echo $link; ?>">
+						<?php 
+							$text = JText::_( 'MAP__PROFILE' );					
+							echo JHTML::_('image.site',  'icon-48-component.png', '/templates/'. $template .'/images/header/', NULL, NULL, $text ); ?>
+						<span><?php echo $text; ?></span></a>
+				</div>
+			</div>
+			
+			<?php	
 			$link = "index.php?option=$option&amp;task=serviceAccount";
 			?>
 			<div style="float:<?php echo ($lang->isRTL()) ? 'right' : 'left'; ?>;">

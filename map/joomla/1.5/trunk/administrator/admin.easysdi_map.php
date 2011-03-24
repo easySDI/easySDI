@@ -482,6 +482,7 @@ switch($task)
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'profile.class.easysdi_map.php');
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'profile.toolbar.easysdi_map.html.php');
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'profile.admin.easysdi_map.php');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'model'.DS.'accountprofile.easysdi.class.php');
 		TOOLBAR_profile::_EDIT();
 		$cid = JRequest::getVar ('cid', array(0) );
 		ADMIN_profile::editProfile($cid[0], $option);
