@@ -483,7 +483,7 @@ if (count($result)>0) {
 	{
 		$i++;
 		extract($rec, EXTR_PREFIX_ALL, "l");
-		$s .= "{\n    title : EasySDI_Map.lang.getLocal('$l_title')
+		$s .= "{\n    title : EasySDI_Map.lang.getLocal('$l_code')
 	   ,untranslatedTitle : '$l_code'
 	   ,dropDownFeatureType : '$l_dropdownfeaturetype'
 	   ,dropDownDisplayAttr : '$l_dropdowndisplayattr'
@@ -511,8 +511,8 @@ if (count($result)>0) {
 			};
 			$s .= "]\n";
 		};
-		$gridquery = "SELECT * from #__easysdi_map_extra_result_grid erg
-	    INNER JOIN #__easysdi_map_sst_erg link ON link.id_erg = erg.id
+		$gridquery = "SELECT * from #__sdi_resultgrid erg
+	    INNER JOIN #__sdi_sst_erg link ON link.id_erg = erg.id
 	    WHERE link.id_sst = $l_id;";
 		$db->setQuery($gridquery);
 		$grids = $db->loadAssocList();
@@ -524,7 +524,7 @@ if (count($result)>0) {
 			{
 				$j++;
 				extract($grid, EXTR_PREFIX_ALL, "lg");
-				$s .= "'$lg_internal_name'";
+				$s .= "'$lg_name'";
 				if ($j != count($grids)) $s .= ", ";
 			};
 			$s .= "]\n    }\n";
@@ -564,9 +564,9 @@ $s .= "alert('Invalid configuration. No simple search methods are available.');\
  * TODO: searchPrecisions.selected - behaviour should be auto-select first when system first loads. Subsequent- remember user settings.
  */
 // Retrieve the search layer that is stored in the database
-$query = "SELECT ft.id as ft_id, ft.name, ftdet.name as det_name, sl.* from #__easysdi_map_search_layer sl ".
-"JOIN #__easysdi_map_feature_type ft on ft.id=sl.feature_type ".
-"JOIN #__easysdi_map_feature_type ftdet on ftdet.id=sl.row_details_feature_type where enable <> 0;";
+$query = "SELECT ft.id as ft_id, ft.name, ftdet.name as det_name, sl.* from #__sdi_searchlayer sl ".
+"JOIN #__sdi_featuretype ft on ft.id=sl.featuretype ".
+"JOIN #__sdi_featuretype ftdet on ftdet.id=sl.rowdetailsfeaturetype where enable <> 0;";
 $db->setQuery($query);
 $result = $db->loadAssocList();
 $i=0;
@@ -580,7 +580,7 @@ if (!is_null($result) && count($result)>0) {
 	  $l_name=str_replace('<access>', $access, $l_name);
 	  $l_det_name=str_replace('<access>', $access, $l_det_name);
 	  $s .= "\n    featureType: '$l_name{geom}'
-   ,geometryName: '$l_geometry_name'
+   ,geometryName: '$l_geometryname'
    ,rowDetailsFeatureType: '$l_det_name'\n";
 	  $s .= "   ,styles: [ ";
 	  if(!is_null($l_styles) && strlen($l_styles) > 0) {
@@ -608,7 +608,7 @@ $s .= "alert('Invalid configuration. No search layer defined.');\n";
  *   set to.
  */
 // Retrieve the precisions that are stored in the database
-$query = "SELECT * from #__easysdi_map_precision;";
+$query = "SELECT * from #__sdi_precision;";
 $db->setQuery($query);
 $result = $db->loadAssocList();
 $s .= "
@@ -621,15 +621,15 @@ if (!is_null($result)) {
 		$i++;
 		extract($rec, EXTR_PREFIX_ALL, "l");
 		$s .= "\n    $l_name : {
-        title : '$l_title'\n";
-		if(!is_null($l_max_resolution) && strlen($l_max_resolution) > 0 && $l_max_resolution > 0) {
-			$s .= "       ,maxScale : $l_max_resolution\n";
+        title : '$l_description'\n";
+		if(!is_null($l_maxresolution) && strlen($l_maxresolution) > 0 && $l_max_resolution > 0) {
+			$s .= "       ,maxScale : $l_maxresolution\n";
 		}
-		if(!is_null($l_min_resolution) && strlen($l_min_resolution) > 0 && $l_min_resolution > 0) {
-			$s .= "       ,minScale : $l_min_resolution\n";
+		if(!is_null($l_minresolution) && strlen($l_minresolution) > 0 && $l_minresolution > 0) {
+			$s .= "       ,minScale : $l_minresolution\n";
 		}
-		if(!is_null($l_low_scale_switch_to) && strlen($l_low_scale_switch_to) > 0) {
-			$s .= "       ,lowScaleSwitchTo : '$l_low_scale_switch_to'\n";
+		if(!is_null($l_lowscaleswitchto) && strlen($l_lowscaleswitchto) > 0) {
+			$s .= "       ,lowScaleSwitchTo : '$l_lowscaleswitchto'\n";
 		}
 		if(!is_null($l_style) && strlen($l_style) > 0) {
 			$s .= "       ,style : { $l_style }\n";
@@ -647,19 +647,19 @@ $s .= "};
 $s .= "
 SData.attrs = [];
 SData.defaultAttrs = [];\n";
-$query = "SELECT * from #__easysdi_map_feature_type;";
+$query = "SELECT * from #__sdi_featuretype;";
 $db->setQuery($query);
 $ftypes = $db->loadAssocList();
 if (!is_null($ftypes) && count($ftypes)>0) {
 	foreach ($ftypes as $ftype) {
 		extract($ftype, EXTR_PREFIX_ALL, "f");
-		$query = "SELECT DISTINCT a.* from #__easysdi_map_attribute a ".
-				"INNER JOIN #__easysdi_map_attribute_profile ap ON ap.id_attr=a.id AND ap.id_prof=".$role.
-				" where a.id_ft=$f_id;";
+		$query = "SELECT DISTINCT a.* from #__sdi_featuretypeattribute a ".
+				"INNER JOIN #__sdi_ftatt_profile ap ON ap.ftatt_id=a.id AND ap.profile_id=".$role.
+				" where a.id=$f_id;";
 		$db->setQuery($query);
 		$attrs = $db->loadAssocList();
-		$f_name=str_replace('<access>', $access, $f_name);
-		$s .= "SData.attrs.$f_name = [";
+		$f_name=str_replace('<access>', $access, $f_featuretypename);
+		$s .= "SData.attrs.$f_featuretypename = [";
 		$i=0;
 		$defaults = array(); // list of attributes that are initially visible in the grid
 		foreach ($attrs as $attr) {
@@ -667,14 +667,14 @@ if (!is_null($ftypes) && count($ftypes)>0) {
 			extract($attr, EXTR_PREFIX_ALL, "a");
 			$a_name=str_replace('<lang>', $lang, $a_name);
 			$s .= "{\n\tname: '$a_name',\n".
-				"\ttype: '$a_data_type'";			
+				"\ttype: '$a_datatype'";			
 			if ($a_visible==0) {
 				$s .= ",\n\tvisible: false";
 			} else {
 				if (!empty($a_width)) {
 					$s .= ",\n\twidth: $a_width";
 				}
-				if ($a_initial_visibility!=0) {
+				if ($a_initialvisibility!=0) {
 					$defaults[] = "'$a_name'";
 				}
 			}
@@ -686,7 +686,7 @@ if (!is_null($ftypes) && count($ftypes)>0) {
 		 * SData.defaultAttrs describes the list of attributes that are visible for a new user who has
 		 * not configured their columns.
 		 */
-		$s .= "SData.defaultAttrs.$f_name = new Array(".implode(', ', $defaults).") ;\n";
+		$s .= "SData.defaultAttrs.$f_featuretypename = new Array(".implode(', ', $defaults).") ;\n";
 	}
 }
 
@@ -695,565 +695,19 @@ if (!is_null($ftypes) && count($ftypes)>0) {
  * then the details report will not have a overview map.
  */
 $s .= "SData.detailsReportGeoms = {\n";
-$query = "SELECT DISTINCT * from #__easysdi_map_feature_type WHERE geometry IS NOT NULL AND geometry<>'';";
+$query = "SELECT DISTINCT * from #__sdi_featuretype WHERE geometry IS NOT NULL AND geometry<>'';";
 $db->setQuery($query);
 $ftypes = $db->loadAssocList();
 if (!is_null($ftypes) && count($ftypes)>0) {
 	$i=0;
 	foreach ($ftypes as $ftype) {
 		$i++;
-		$f_name = str_replace('<access>',$access, $ftype['name']);
+		$f_name = str_replace('<access>',$access, $ftype['featuretypename']);
 		$s .= "\t$f_name : '".$ftype['geometry']."'";
 		if ($i < count($ftypes)) $s .= ",\n";
 	}
 }
 $s .= "\n}\n";
-
-/*$s .= "
- SData.attrs.vw_simple_occurrence_$access = [{
- name: 'unit_guid',
- type: 'string',
- visible: false
- },
- {
- // needed for the distinct grids to be built from.
- name: 'preferred_identification_key',
- type: 'string',
- visible: false
- }, {
- name: 'simple_classification_$lang',
- type: 'string',
- width: 200
- }, {
- name: 'themes',
- type: 'string',
- width: 200
- }, {
- name: 'preferred_determination',
- type: 'string',
- width: 160
- }, {
- name: 'preferred_determination_authority',
- type: 'string',
- width: 200
- }, {
- name: 'common_name_$lang',
- type: 'string',
- width: 160
- }, {
- name: 'designations',
- type: 'string',
- width: 200
- }, {
- name: 'determiner',
- type: 'string',
- width: 160
- }, {
- name: 'sample_type',
- type: 'string',
- width: 160
- }, {
- name: 'date',
- type: 'string',
- width: 200
- }, {
- name: 'sample_comment',
- type: 'string',
- width: 300
- }, {
- name: 'site_name',
- type: 'string',
- width: 200
- }, {
- name: 'survey_name',
- type: 'string',
- width: 200
- }, {
- name: 'survey_responsible',
- type: 'string',
- width: 200
- }, {
- name: 'survey_keywords',
- type: 'string',
- width: 200
- }, {
- name: 'reference_list',
- type: 'string',
- width: 200
- }, {
- name: 'comment_count',
- type: 'int',
- width: 100
- }";
-
- if ($role!=0) {
- // At least forester access
- $s .= ", {
- name: 'rank',
- type: 'string',
- width: 140
- }, {
- name: 'field_data',
- type: 'string',
- width: 200
- }, {
- name: 'verified',
- type: 'boolean',
- width: 100
- }, {
- name: 'sample_recorders',
- type: 'string',
- width: 200
- }, {
- name: 'spatial_ref',
- type: 'string',
- width: 140
- }, {
- name: 'spatial_ref_system',
- type: 'string',
- width: 120
- }, {
- name: 'site_name',
- type: 'string',
- width: 200
- }, {
- name: 'site_description',
- type: 'string',
- width: 220
- }, {
- name: 'sample_lat',
- type: 'float',
- width: 180
- }, {
- name: 'sample_long',
- type: 'float',
- width: 180
- }";
- }
-
- if ($role>1) {
- // Has scientist/professional access
- $s .= ", {
- name: 'lineage',
- type: 'string',
- width: 200
- }, {
- name: 'has_specimen',
- type: 'boolean',
- width: 100
- }, {
- name: 'zero_abundance',
- type: 'boolean',
- width: 100
- }, {
- name: 'occurrence_key',
- type: 'string',
- width: 120
- }";
- }
- $s .= "];\n";
- /**
- * SData.defaultAttrs describes the list of attributes that are visible for a new user who has
- * not configured their columns.
-
- $s .= "SData.defaultAttrs.vw_simple_occurrence_$access = new Array(
- 'preferred_determination', 'common_name_$lang', 'date', 'sample_recorders', 'spatial_ref', 'site_name'
- ) ;\n";
-
- $s .= "SData.attrs.vw_simple_taxon = [{
- name: 'taxon_list_item_key',
- type: 'string',
- visible: false
- }, {
- name: 'recommended_taxon_list_item_key',
- type: 'string',
- visible: false
- }, {
- name: 'taxon_list_key',
- type: 'string',
- visible: false
- }, {
- name: 'simple_classification_$lang',
- type: 'string',
- width: 200
- }, {
- name: 'preferred_taxon_name',
- type: 'string',
- width: 160
- }, {
- name: 'preferred_taxon_authority',
- type: 'string',
- width: 140
- }, {
- name: 'common_name_$lang',
- type: 'string',
- width: 140
- }, {
- name: 'designations',
- type: 'string',
- width: 180
- }";
- if ($role!=0) {
- // At least forester access
- $s .= ", {
- name: 'rank',
- type: 'string',
- width: 140
- }";
- }
- $s .= "];\n";
-
- $s .= "SData.defaultAttrs.vw_simple_taxon = ['simple_classification_$lang', 'preferred_taxon_name',
- 'preferred_taxon_authority', 'designations'];\n";
-
- // Attributes for the taxon details report
- $s .= "SData.attrs.vw_adv_taxon = [{
- name: 'taxon_list_item_key',
- type: 'string',
- visible: false
- }, {
- name: 'recommended_taxon_list_item_key',
- type: 'string',
- visible: false
- }, {
- name: 'taxon_list_key',
- type: 'string',
- visible: false
- }, {
- name: 'lineage',
- type: 'string',
- width: 200
- }, {
- name: 'themes',
- type: 'string',
- width: 150
- }, {
- name: 'simple_classification_$lang',
- type: 'string',
- width: 200
- }, {
- name: 'preferred_taxon_name',
- type: 'string',
- width: 160
- }, {
- name: 'preferred_taxon_authority',
- type: 'string',
- width: 140
- }, {
- name: 'synonyms',
- type: 'string',
- width: 170
- }, {
- name: 'common_name_$lang',
- type: 'string',
- width: 140
- }, {
- name: 'designations',
- type: 'string',
- width: 180
- }, {
- name: 'facts',
- type: 'string',
- width: 200
- }, {
- name: 'associated_biotopes',
- type: 'string',
- width: 200
- }";
-
- if ($role!=0) {
- // At least forester access
- $s .= ", {
- name: 'rank',
- type: 'string',
- width: 140
- }, {
- name: 'taxonomic_buffer',
- type: 'int',
- width: 140
- }";
- }
- $s .= "];\n";
-
-
- $s .= "SData.attrs.vw_simple_biotope = [{
- name: 'biotope_list_item_key',
- type: 'string',
- visible: false
- }, {
- name: 'biotope_classification_key',
- type: 'string',
- visible: false
- }, {
- name: 'short_term',
- type: 'string',
- width: 160
- }, {
- name: 'full_term',
- type: 'string',
- width: 160
- }, {
- name: 'designations',
- type: 'string',
- width: 140
- }];\n";
-
- $s .= "SData.defaultAttrs.vw_simple_biotope = ['short_term', 'designations'];\n";
-
- // The biotope details report
- $s .= "SData.attrs.vw_adv_biotope = [{
- name: 'short_term',
- type: 'string',
- width: 160
- }, {
- name: 'full_term',
- type: 'string',
- width: 160
- }, {
- name: 'designations',
- type: 'string',
- width: 140
- }, {
- name: 'facts',
- type: 'string',
- width: 200
- }];\n";
-
- $s .= "SData.attrs.vw_adv_occurrence_$access = [{
- name: 'unit_guid',
- type: 'string',
- visible: false
- },
- {
- name: 'simple_classification_$lang',
- type: 'string',
- width: 200
- }, {
- name: 'themes',
- type: 'string',
- width: 200
- }, {
- name: 'preferred_determination',
- type: 'string',
- width: 160
- }, {
- name: 'preferred_taxon_authority',
- type: 'string',
- width: 140
- }, {
- name: 'common_name_$lang',
- type: 'string',
- width: 160
- }, {
- name: 'designations',
- type: 'string',
- width: 200
- }, {
- name: 'determiner',
- type: 'string',
- width: 160
- }, {
- name: 'sample_type',
- type: 'string',
- width: 160
- }, {
- name: 'date',
- type: 'string',
- width: 200
- }, {
- name: 'sample_comment',
- type: 'string',
- width: 300
- }, {
- name: 'survey_name',
- type: 'string',
- width: 200
- }, {
- name: 'survey_responsible',
- type: 'string',
- width: 200
- }, {
- name: 'survey_keywords',
- type: 'string',
- width: 200
- }, {
- name: 'reference_list',
- type: 'string',
- width: 200
- }, {
- name: 'comment_count',
- type: 'int',
- width: 100
- }, {
- name: 'biotope_short_term',
- type: 'int',
- width: 100
- }";
-
- if ($role!=0) {
- // At least forester access
- $s .= ", {
- name: 'rank',
- type: 'string',
- width: 200
- }, {
- name: 'field_data',
- type: 'string',
- width: 200
- }, {
- name: 'verified',
- type: 'boolean',
- width: 100
- }, {
- name: 'sample_recorders',
- type: 'string',
- width: 200
- }, {
- name: 'spatial_ref',
- type: 'string',
- width: 140
- }, {
- name: 'spatial_ref_system',
- type: 'string',
- width: 120
- }, {
- name: 'site_name',
- type: 'string',
- width: 200
- }, {
- name: 'site_description',
- type: 'string',
- width: 220
- }, {
- name: 'sample_lat',
- type: 'float',
- width: 180
- }, {
- name: 'sample_long',
- type: 'float',
- width: 180
- }, {
- name: 'taxonomic_buffer',
- type: 'int',
- width: 150
- }, {
- name: 'survey_type',
- type: 'string',
- width: 120
- }";
- }
-
- if ($role>1) {
- // Has scientist/professional access
- $s .= ", {
- name: 'lineage',
- type: 'string',
- width: 200
- }, {
- name: 'has_specimen',
- type: 'boolean',
- width: 100
- }, {
- name: 'zero_abundance',
- type: 'boolean',
- width: 100
- }, {
- name: 'occurrence_key',
- type: 'string',
- width: 120
- }, {
- name: 'preferred_taxon_name',
- type: 'string',
- width: 120
- }, {
- name: 'preferred_taxon_authority',
- type: 'string',
- width: 120
- }, {
- name: 'determination_type',
- type: 'string',
- width: 120
- }, {
- name: 'determiner_role',
- type: 'string',
- width: 120
- }, {
- name: 'determination_comment',
- type: 'string',
- width: 200
- }, {
- name: 'specimen_reg_number',
- type: 'string',
- width: 120
- }, {
- name: 'collection_name',
- type: 'string',
- width: 150
- }, {
- name: 'collector',
- type: 'string',
- width: 120
- }, {
- name: 'record_type',
- type: 'string',
- width: 120
- }, {
- name: 'surveyors_ref',
- type: 'string',
- width: 120
- }, {
- name: 'related_observations',
- type: 'string',
- width: 200
- }, {
- name: 'substrate',
- type: 'string',
- width: 120
- }, {
- name: 'sample_start_time',
- type: 'string',
- width: 120
- }, {
- name: 'sample_duration',
- type: 'string',
- width: 120
- }, {
- name: 'weather',
- type: 'string',
- width: 120
- }, {
- name: 'sample_measurements',
- type: 'string',
- width: 120
- }, {
- name: 'event_owner',
- type: 'string',
- width: 120
- }, {
- name: 'spatial_ref_qualifier',
- type: 'string',
- width: 120
- }, {
- name: 'site_type',
- type: 'string',
- width: 120
- }, {
- name: 'site_status',
- type: 'string',
- width: 120
- }, {
- name: 'site_file_code',
- type: 'string',
- width: 120
- }, {
- name: 'survey_type',
- type: 'string',
- width: 120
- }
- ";
- }
- $s .= "];\n";
- */
 
 /**
  * Specify the optional comments feature type here. Used to capture comments stored via WFST.
@@ -1269,12 +723,12 @@ $s .= "\n}\n";
  *   featureCommentCount: The name of the attribute in the main features table which stores a count of the comments.
  */
 $s .= "SData.commentFeatureType = {\n";
-$query = "SELECT * from #__easysdi_map_comment_feature_type WHERE enable!=0 LIMIT 1;";
+$query = "SELECT * from #__sdi_commentfeaturetype WHERE enable!=0 LIMIT 1;";
 $db->setQuery($query);
 $commenttypes = $db->loadAssocList();
 if (!is_null($commenttypes) && count($commenttypes)>0) {
-	$s .= "\ttypeName: '".$commenttypes[0]['type_name']."',\n";
-	$s .= "\tfeatureCommentCount: '".$commenttypes[0]['feature_comment_count']."'";
+	$s .= "\ttypeName: '".$commenttypes[0]['featuretypename']."',\n";
+	$s .= "\tfeatureCommentCount: '".$commenttypes[0]['countattribute']."'";
 }
 $s .= "\n}\n";
 
@@ -1305,7 +759,7 @@ $compDefaults = array(
 ,'autocompleteMaxFeat' => 50 // Max number of features returned by each WFS call for simple seach autocomplete comboboxes.
 );
 
-$query = "SELECT * from #__easysdi_map_config;";
+$query = "SELECT * from #__sdi_configuration WHERE module_id=(SELECT id FROM #__sdi_list_module WHERE code = 'MAP' LIMIT 1);";
 $db->setQuery($query);
 $result = $db->loadAssocList();
 if (!is_null($result)) {
@@ -1353,7 +807,7 @@ $s .="},
 ";
 
 // Retrieve the projection details from the database
-$query = "SELECT * from #__easysdi_map_projection where enable <> 0;";
+$query = "SELECT * from #__sdi_projection where enable <> 0;";
 $db->setQuery($query);
 $result = $db->loadAssocList();
 $s .= "  displayProjections: [";
@@ -1363,7 +817,7 @@ if (!is_null($result) && count($result)>0) {
 	{
 		$i++;
 		extract($rec, EXTR_PREFIX_ALL, "l");
-		$s .= "\n    {name : '$l_name', title : EasySDI_Map.lang.getLocal('$l_title'), numDigits : $l_numDigits";
+		$s .= "\n    {name : '$l_name', title : EasySDI_Map.lang.getLocal('$l_code'), numDigits : $l_numDigits";
 		if(!is_null($l_proj4text) && strlen($l_proj4text) > 0) {
 			$s .= ", proj4text : '$l_proj4text'}";
 		} else  {
@@ -1383,9 +837,9 @@ $s .="\n  ],
       attrList: [ " ;
 if($searchLayer_ft_id)
 {
-	$query = "SELECT a.name from #__easysdi_map_attribute a
-		INNER JOIN #__easysdi_map_attribute_profile p ON a.id = p.id_attr  
-		where a.id_ft=$searchLayer_ft_id AND a.misc_search=1 AND p.id_prof=$role;";
+	$query = "SELECT a.name from #__sdi_featuretypeattribute a
+		INNER JOIN #__sdi_ftatt_profile p ON a.id = p.ftatt_id  
+		where a.iftatt_id=$searchLayer_ft_id AND a.miscsearch=1 AND p.profile_id=$role;";
 	$db->setQuery($query);
 	$result = $db->loadAssocList();
 	$i = 0;
@@ -1448,7 +902,7 @@ $s .="],
     ";
 
 $query = 'SELECT r.role_code '.
-		'FROM #__easysdi_community_role r '.
+		'FROM #__sdi_community_role r '.
 		'INNER JOIN #__easysdi_map_profile_role pr ON pr.id_role=r.role_id '.
 		"WHERE pr.id_prof=$role";
 $db->setQuery($query);
