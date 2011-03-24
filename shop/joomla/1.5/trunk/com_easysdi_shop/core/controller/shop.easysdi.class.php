@@ -1273,6 +1273,8 @@ function validateForm(toStep, fromStep){
 		if (isset($jfcookie["lang"]) && $jfcookie["lang"] != "") 
 		{
 		   $client_lang = $jfcookie["lang"];
+		   $ar = explode("-",$client_lang);
+		   $client_lang = $ar[0];
 		}
 	
 		$key = config_easysdi::getValue("SHOP_CONFIGURATION_ARTICLE_TERMS_OF_USE");
