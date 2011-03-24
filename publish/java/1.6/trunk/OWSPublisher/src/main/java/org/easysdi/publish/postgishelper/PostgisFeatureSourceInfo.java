@@ -284,8 +284,10 @@ public class PostgisFeatureSourceInfo implements IFeatureSourceInfo {
 
 		}catch(FactoryException fe){
 			fe.printStackTrace();
+		}finally{
+			if(dataStore != null)
+				dataStore.dispose();
 		}
-
 	}
 
 	private Class getClassForName (String name) throws TransformationException{
