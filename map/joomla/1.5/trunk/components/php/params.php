@@ -226,22 +226,22 @@ $result = $db->loadObject();
 $s .= "{
     id : '$result->id',
     projection : '$result->projection',\n";
-if ($result->maxExtent) {
+if ($result->maxextent) {
 	$s .= "    maxExtent : new OpenLayers.Bounds($result->maxextent),\n";
 }
 if ($result->extent){
 	$s .= "    extent : new OpenLayers.Bounds($result->extent),\n";
-}else if ($result->maxExtent) {
+}else if ($result->maxextent) {
 	$s .= "    extent : new OpenLayers.Bounds($result->maxextent),\n";
 }
 
-if ($result->resolutionOverScale && $result->resolutions) {
+if ($result->resolutionoverscale && $result->resolutions) {
 	$s .= "    resolutions : $result->resolutions,\n";
 }
-if (!$result->resolutionOverScale && $result->minscale) {
+if (!$result->resolutionoverscale && $result->minscale) {
 	$s .= "    minScale : $result->minscale,\n";
 }
-if (!$result->resolutionOverScale && $result->maxscale) {
+if (!$result->resolutionoverscale && $result->maxscale) {
 	$s .= "    maxScale : $result->maxscale,\n";
 }
 $s .= "    units : '$result->unit'
