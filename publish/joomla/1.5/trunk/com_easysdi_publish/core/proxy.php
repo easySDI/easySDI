@@ -89,8 +89,8 @@ foreach ($_SERVER as $k => $v){
          $k = str_replace(' ', '-', ucwords(strtolower($k)));	 
 	       if($k == "Accept-Encoding"){
 		        //comment following lines to disable gzip
-		        $requ_headers[] = $k.":".$v;
-		        fwrite($fh, $k.":".$v."\n");
+		        //$requ_headers[] = $k.":".$v;
+		        //fwrite($fh, $k.":".$v."\n");
 	       }else{
 	         $requ_headers[] = $k.":".$v;
 	         fwrite($fh, $k.":".$v."\n");
@@ -155,7 +155,7 @@ foreach ($_GET as $key => $value){
 	       	     if(trim($h) != ""){
 			//Only send Content-Type and encoding header, if sending HTTP 1.1 OK
 			//It causes a bug if response length > 8000 char
-		     	if (substr($h, 0, 12) == "Content-Type" || substr($h, 0, 16) == "Content-Encoding")
+		     	if (substr($h, 0, 12) == "Content-Type")
 	       	        {
 		           fwrite($fh, "sending->".$h);
 		     	   header($h);
