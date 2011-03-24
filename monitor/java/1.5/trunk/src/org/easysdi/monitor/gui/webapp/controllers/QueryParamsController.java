@@ -1,5 +1,6 @@
 package org.easysdi.monitor.gui.webapp.controllers;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
@@ -115,11 +116,12 @@ public class QueryParamsController extends AbstractMonitorController {
         if (null != requestParams) {
             String paramValue;
             QueryParam queryParam;
+            ArrayList<String> paramsFound = new ArrayList<String>();
             
             for (String paramName : requestParams.keySet()) {
 
-                if (!StringUtils.isBlank(paramName)) {                  
-                    //paramValue = request.getParameter(paramName);
+                if (!StringUtils.isBlank(paramName) && !paramsFound.contains(paramName.toLowerCase())) {
+                	paramsFound.add(paramName.toLowerCase());
                 	paramValue = requestParams.get(paramName);
                 	queryParam = config.findParam(paramName);
 

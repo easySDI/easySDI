@@ -38,6 +38,7 @@ public class JobDefaultsInfo {
     private Calendar     slaStartTime;
     private Integer      testInterval;
     private Integer      timeout;
+    private Boolean		 saveResponse;
     
     
 
@@ -172,7 +173,27 @@ public class JobDefaultsInfo {
         return this.published;
     }
 
+    /**
+     * Gets whether the job response should be saved.
+     * 
+     * @param saveResponseString "true" if new job response should be saved.
+     */
+    private void setSaveResponse(String saveResponseString) {
+        this.saveResponse 
+            = BooleanUtil.parseBooleanStringWithNull(saveResponseString);
+    }
 
+
+
+    /**
+     * Gets the new value for the saveResponse.
+     * 
+     * @return  a boolean if the value must be changed, or<br>
+     *          <code>null</code> otherwise
+     */
+    private Boolean getSaveResponse() {
+        return this.saveResponse;
+    }
 
     /**
      * Defines whether jobs can be executed on demand by default.
@@ -396,6 +417,7 @@ public class JobDefaultsInfo {
         jobDefaultsInfo.setBizErrorsEnabled(requestParams.get("bizErrors"));
         jobDefaultsInfo.setHttpErrorsEnabled(requestParams.get("httpErrors"));
         jobDefaultsInfo.setPublished(requestParams.get("isPublic"));
+        jobDefaultsInfo.setSaveResponse(requestParams.get("saveResponse"));
         jobDefaultsInfo.setRealTimeAllowed(requestParams.get("allowsRealTime"));
         jobDefaultsInfo.setSlaEndTime(requestParams.get("slaEndTime"));
         jobDefaultsInfo.setSlaStartTime(requestParams.get("slaStartTime"));
@@ -427,6 +449,8 @@ public class JobDefaultsInfo {
                                     this.getHttpErrorsEnabled());
         success &= this.updateParam(defaultsMap.get("IS_PUBLIC"),
                                     this.getPublished());
+        success &= this.updateParam(defaultsMap.get("SAVE_RESPONSE"),
+                this.getSaveResponse());
         success &= this.updateParam(defaultsMap.get("ALLOWS_REALTIME"),
                                     this.getRealTimeAllowed());
         success &= this.updateParam(defaultsMap.get("SLA_START_TIME"),

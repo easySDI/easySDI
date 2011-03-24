@@ -39,6 +39,7 @@ public final class JobConfiguration {
     private int         testInterval;
     private int         timeout;
     private String      url;
+    private boolean		saveResponse;
 
 
 
@@ -558,7 +559,25 @@ public final class JobConfiguration {
         return this.testInterval;
     }
 
-
+    /**
+     * Defines if this jobs last qurry response should be saved.
+     * 
+     * @param   newSaveResponse  <code>true</code> to allow reponse to be saved
+     */
+    public void setSaveResponse(boolean newSaveResponse) {
+        this.saveResponse = newSaveResponse;
+    }   
+    
+    /**
+     * Gets the save response for the job.
+     * <p>
+     * This property is ignored if the job isn't automatically executed.
+     * 
+     * @return  <code>true</code> if job has to save last reposne
+     */
+    public boolean getSaveResponse() {
+        return this.saveResponse;
+    }  
 
     /**
      * Defines how much time an answer can take before considering the job as 
@@ -715,6 +734,10 @@ public final class JobConfiguration {
             this.defineProperty(defaultParams, "TRIGGERS_ALERTS", 
                            this.getClass().getMethod("setAlertsActivated", 
                                                      boolean.class));
+            
+            this.defineProperty(defaultParams, "SAVE_RESPONSE", 
+                    this.getClass().getMethod("setSaveResponse", 
+                                              boolean.class));
             
             this.defineProperty(defaultParams, "BUSINESS_ERRORS", 
                            this.getClass().getMethod("setBizErrorChecked", 

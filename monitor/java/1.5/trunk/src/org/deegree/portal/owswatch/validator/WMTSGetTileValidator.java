@@ -1,5 +1,7 @@
 package org.deegree.portal.owswatch.validator;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.Serializable;
 
@@ -42,14 +44,30 @@ public class WMTSGetTileValidator extends AbstractValidator implements Serializa
         try {
             InputStream stream = copyStream( method.getResponseBodyAsStream() );
             stream.reset();
-            ImageIO.read( stream );
+            BufferedImage image = ImageIO.read(stream);
+            String imageformat = "jpg";
+            int index  = contentType.lastIndexOf("/");
+            if(index > -1 && index < contentType.length())
+            {
+            	imageformat = contentType.substring(index+1).toLowerCase();
+            }
+            // Open
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            // Write
+            ImageIO.write(image,imageformat, baos);
+            //close
+            baos.flush();
+            byte[] imageAsBytes = baos.toByteArray();
+            baos.close();
+          
             status = Status.RESULT_STATE_AVAILABLE;
             lastMessage = status.getStatusMessage();
-            return new ValidatorResponse( lastMessage, status );
+            return new ValidatorResponse( lastMessage, status,imageAsBytes);
+            //return new ValidatorResponse( lastMessage, status );
         } catch ( Exception e ) {
             status = Status.RESULT_STATE_SERVICE_UNAVAILABLE;
             lastMessage = e.getLocalizedMessage();
-            return new ValidatorResponse( lastMessage, status );
+            return new ValidatorResponse( lastMessage, status);
         }
     }
 

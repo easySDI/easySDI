@@ -17,6 +17,7 @@
 		<property name="queryId" type="long" column="ID_QUERY" />
 		<property name="requestTime" type="calendar" column="REQUEST_TIME" />
 		<property name="responseDelay" type="float" column="RESPONSE_DELAY" />
+		<property name="responseSize" type="float" column="RESPONSE_SIZE" />
 		<property name="message" type="text" column="MESSAGE" />
 		<property name="httpCode" type="integer" column="HTTP_CODE" />
 		<property name="serviceExceptionCode" type="string" length="100" 

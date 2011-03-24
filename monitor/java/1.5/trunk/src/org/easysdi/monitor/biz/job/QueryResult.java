@@ -33,6 +33,7 @@ public class QueryResult {
     private Status          status 
         = Status.getStatusObject(StatusValue.NOT_TESTED);
     private String          testedUrl;
+    private float           size;
 
 
 
@@ -70,6 +71,18 @@ public class QueryResult {
         this.setHttpMethod(testedHttpMethod);
         this.setStatusAndMessageFromOws(owsResponse);
         this.setServiceExceptionCode(owsResponse.getServiceExceptionCode());
+        if(owsResponse.getImage() != null)
+        {
+        	this.setSize(owsResponse.getImage().length);
+        }
+        else if(owsResponse.getData()!= null)
+        {
+        	this.setSize(owsResponse.getData().getBytes().length);
+        }
+        else
+        {
+        	this.setSize(owsResponse.toString().length());        
+        }
     }
 
 
@@ -84,7 +97,7 @@ public class QueryResult {
         return new RawLogEntry(this.getQueryId(), this.getRequestTime(),
                                this.getResponseDelay(), this.getStatusValue(),
                                this.getMessage(), this.getHttpCode(), 
-                               this.getServiceExceptionCode());
+                               this.getServiceExceptionCode(), this.getSize());
     }
 
 
@@ -446,7 +459,7 @@ public class QueryResult {
      * 
      * @return  the query whose execution produced this result
      */
-    private Query getParentQuery() {
+    public Query getParentQuery() {
 
         if (null == this.parentQuery) {
             
@@ -511,4 +524,23 @@ public class QueryResult {
     private void setTestedUrl(String newTestedUrl) {
         this.testedUrl = newTestedUrl;
     }
+    
+    /**
+     * Defines the size of the result.
+     * 
+     * @param size
+     */
+	public void setSize(float size) {
+		this.size = size;
+	}
+	
+	/**
+	 * Gets the size of the result
+	 *  
+	 * @return
+	 */
+	public float getSize() {
+		return size;
+	}
+
 }

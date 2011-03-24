@@ -108,6 +108,13 @@
 				<value>org/easysdi/monitor/dat/job/ServiceTypeMethod.hbm.xml</value>
 				<value>org/easysdi/monitor/dat/job/Status.hbm.xml</value>
 				<value>org/easysdi/monitor/dat/security/User.hbm.xml</value>
+			    <value>org/easysdi/monitor/dat/job/Overview.hbm.xml</value>
+				<value>org/easysdi/monitor/dat/job/OverviewQuery.hbm.xml</value>
+				<value>org/easysdi/monitor/dat/job/OverviewQueryView.hbm.xml</value>
+				<value>org/easysdi/monitor/dat/job/OverviewLastQuery.hbm.xml</value>
+				<value>org/easysdi/monitor/dat/job/QueryValidationResult.hbm.xml</value>
+				<value>org/easysdi/monitor/dat/job/QueryValidationSettings.hbm.xml</value>
+		
 			</list>
 		</property>
 		<property name="hibernateProperties">
@@ -178,8 +185,36 @@
 	<bean id="valueObjectDao" class="org.easysdi.monitor.dat.dao.hibernate.ValueObjectDao">
 		<constructor-arg ref="hibernateSessionFactory" />
 	</bean>
+	
+	 <bean id="overviewDao" class="org.easysdi.monitor.dat.dao.hibernate.OverviewDao">
+		<constructor-arg ref="hibernateSessionFactory" />
+		<property name="txManager" ref="transactionManager"></property>
+	</bean>
 
+    <bean id="overviewQueryDao" class="org.easysdi.monitor.dat.dao.hibernate.OverviewQueryDao">
+		<constructor-arg ref="hibernateSessionFactory" />
+		<property name="txManager" ref="transactionManager"></property>
+	</bean>
 
+    <bean id="overviewQueryViewDao" class="org.easysdi.monitor.dat.dao.hibernate.OverviewQueryViewDao">
+		<constructor-arg ref="hibernateSessionFactory" />
+		<property name="txManager" ref="transactionManager"></property>
+	</bean>
+	
+	<bean id="lastLogDao" class="org.easysdi.monitor.dat.dao.hibernate.LastLogDao">
+		<constructor-arg ref="hibernateSessionFactory" />
+	</bean>
+	
+	<bean id="queryValidationSettingsDao" class="org.easysdi.monitor.dat.dao.hibernate.QueryValidationSettingsDao">
+		<constructor-arg ref="hibernateSessionFactory" />
+	</bean>
+
+	<bean id="queryValidationResultDao" class="org.easysdi.monitor.dat.dao.hibernate.QueryValidationResultDao">
+		<constructor-arg ref="hibernateSessionFactory" />
+	</bean>
+	
+	
+	
 	<!-- Scheduler beans -->
 	<bean id="logAggregationJob" class="org.springframework.scheduling.quartz.JobDetailBean">
 		<property name="jobClass" value="org.easysdi.monitor.biz.job.auto.quartz.AggregatorJob"></property>

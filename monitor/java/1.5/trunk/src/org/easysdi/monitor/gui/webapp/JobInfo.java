@@ -55,6 +55,7 @@ public final class JobInfo {
     private Integer      testInterval;
     private Integer      timeout;
     private String       url;
+    private Boolean		 saveResponse;
 
 
     
@@ -211,6 +212,16 @@ public final class JobInfo {
         return this.published;
     }
 
+    /**
+     * Gets the save response for the job.
+     * <p>
+     * This property is ignored if the job isn't automatically executed.
+     * 
+     * @return <code>true</code> if job has to save last reposne
+     */
+    private Boolean getSaveResponse() {
+        return this.saveResponse;
+    } 
 
 
     /**
@@ -556,7 +567,20 @@ public final class JobInfo {
             = BooleanUtil.parseBooleanStringWithNull(publishedString);
     }
 
-
+    /**
+     * Defines if this jobs last qurry response should be saved.
+     * 
+     * @param saveResponseString <ul>
+     *                          <li><code>"true"</code> if the job response should 
+     *                          be saved</li>
+     *                          <li><code>"false"</code> if it shouldn't</li>
+     *                          <li><code>null</code> ??</li>
+     *                          </ul>
+     */
+    private void setSaveResponse(String saveResponseString) {
+        this.saveResponse = BooleanUtil.parseBooleanStringWithNull(saveResponseString);
+    }
+   
 
     /**
      * Defines if the job can be executed on demand.
@@ -753,6 +777,7 @@ public final class JobInfo {
 
         newJobInfo.setPassword(requestParams.get("password"));
         newJobInfo.setPublished(requestParams.get("isPublic"));
+        newJobInfo.setSaveResponse(requestParams.get("saveResponse"));
         newJobInfo.setRealTimeAllowed(requestParams.get("allowsRealTime"));
 
         JobInfo.copyValueToConfig(newJobInfo, "setServiceType", 
@@ -870,7 +895,10 @@ public final class JobInfo {
         
         JobInfo.copyValueToConfig(config, "setPublished", this.isPublished(), 
                                   false, "isPublic", false);        
-
+        
+        JobInfo.copyValueToConfig(config, "setSaveResponse", this.getSaveResponse(), 
+                false, "saveResponse", false);
+        
         JobInfo.copyValueToConfig(config, "setRealTimeAllowed", 
                                   this.isRealTimeAllowed(), false, 
                                   "allowsRealTime", false);

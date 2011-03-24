@@ -15,6 +15,11 @@
 			</generator>
 		</id>
 		<many-to-one name="status" column="ID_STATUS" class="Status" not-null="true"></many-to-one>
+		
+		<!--Validation settings for a query -->
+		<one-to-one name="queryValidationSettings" class="QueryValidationSettings" property-ref="queryId" cascade="all" />	
+		<one-to-one name="queryValidationResult" class="QueryValidationResult" property-ref="queryId" cascade="all" />	
+		
 		<component name="config" class="QueryConfiguration" lazy="false">
 			<parent name="query" />
 			<property name="name" type="string" length="45" column="NAME" lazy="false"></property>

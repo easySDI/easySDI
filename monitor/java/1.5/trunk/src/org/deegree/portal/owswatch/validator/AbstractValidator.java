@@ -142,7 +142,10 @@ public abstract class AbstractValidator implements Validator {
         // we assume that its well formed, since there might be huge xmls, which would take time to be parsed
         status = Status.RESULT_STATE_AVAILABLE;
         lastMessage = status.getStatusMessage();
-        return new ValidatorResponse( lastMessage, status );
+        //return new ValidatorResponse( lastMessage, status );
+        ValidatorResponse response = new ValidatorResponse( lastMessage, status );
+        response.setData(xml);
+        return response;
     }
 
     /**

@@ -65,6 +65,10 @@ public class ValidatorResponse implements Serializable {
     private String serviceExceptionCode = null;
 
     private Status status = null;
+    
+    private byte[] image = null;
+
+    private String data = null;
 
     /**
      * Constructor
@@ -102,7 +106,48 @@ public class ValidatorResponse implements Serializable {
         this(message, status);
         this.setHttpStatusCode(httpStatusCode);
     }
+    
+    /**
+     * Constructor
+     * 
+     * @param message
+     * @param status
+     * @param image
+     */
+    public ValidatorResponse(String message,Status status,byte[] image)
+    {
+    	this(message,status);
+    	this.setImage(image);
+    }
+    
+    /**
+	 * @return the image
+	 */
+	public byte[] getImage() {
+		return image;
+	}
 
+	/**
+	 * @param image the image to set
+	 */
+	public void setImage(byte[] image) {
+		this.image = image;
+	}
+	
+    /**
+	 * @return the data
+	 */
+	public String getData() {
+		return data;
+	}
+
+	/**
+	 * @param data the data to set
+	 */
+	public void setData(String data) {
+		this.data = data;
+	}
+    
     /**
      * Defines the returned HTTP status code.
      * 

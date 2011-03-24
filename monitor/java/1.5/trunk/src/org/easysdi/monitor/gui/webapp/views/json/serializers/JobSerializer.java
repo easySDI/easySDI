@@ -1,7 +1,6 @@
 package org.easysdi.monitor.gui.webapp.views.json.serializers;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Locale;
 
 import org.apache.commons.lang.StringUtils;
@@ -86,6 +85,7 @@ public class JobSerializer {
         jsonJob.put("timeout", jobConfig.getTimeout());
         jsonJob.put("url", jobConfig.getUrl());
         jsonJob.put("lastStatusUpdate", dateFormat.format(this.getJob().getStatusUpdateTime().getTime()));
+        jsonJob.put("saveResponse",jobConfig.getSaveResponse());
         
         if (includeQueries) {
             jsonJob.put("queries", 

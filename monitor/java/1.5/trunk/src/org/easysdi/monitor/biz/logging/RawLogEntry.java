@@ -30,6 +30,7 @@ public class RawLogEntry {
     private Calendar requestTime;
     private String   serviceExceptionCode;
     private Status   status;
+    private float    responseSize;
 
     
     
@@ -63,7 +64,7 @@ public class RawLogEntry {
     public RawLogEntry(long newQueryId, Calendar newRequestTime, 
                        float newRequestDelay, StatusValue newStatus, 
                        String newMessage, Integer newHttpCode, 
-                       String newExceptionCode) {
+                       String newExceptionCode, float size) {
 
         this.setLogEntryId(null);
         this.setQueryId(newQueryId);
@@ -73,6 +74,7 @@ public class RawLogEntry {
         this.setMessage(newMessage);
         this.setHttpCode(newHttpCode);
         this.setServiceExceptionCode(newExceptionCode);
+        this.setResponseSize(size);
     }
 
 
@@ -97,11 +99,11 @@ public class RawLogEntry {
     public RawLogEntry(long newQueryId, Date newRequestTime, 
                        float newRequestDelay, StatusValue newStatus, 
                        String newMessage, Integer newHttpCode, 
-                       String newExceptionCode) {
+                       String newExceptionCode, float size) {
     
         this(newQueryId, DateUtil.dateToCalendar(newRequestTime), 
              newRequestDelay, newStatus, newMessage, newHttpCode, 
-             newExceptionCode);
+             newExceptionCode,size);
         
     }
 
@@ -438,4 +440,20 @@ public class RawLogEntry {
     public void delete() {
         LogDaoHelper.getLogDao().deleteRawLog(this);
     }
+    
+    /**
+     * 
+     * @param responseSize
+     */
+	public void setResponseSize(float responseSize) {
+		this.responseSize = responseSize;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public float getResponseSize() {
+		return responseSize;
+	}
 }

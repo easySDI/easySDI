@@ -16,6 +16,7 @@ import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.easysdi.monitor.biz.alert.AbstractAction;
 import org.easysdi.monitor.biz.job.Job;
+import org.easysdi.monitor.biz.job.Overview;
 import org.easysdi.monitor.biz.job.Query;
 import org.easysdi.monitor.biz.logging.LogManager;
 import org.easysdi.monitor.biz.logging.RawLogEntry;
@@ -199,7 +200,26 @@ public abstract class AbstractMonitorController {
         }
     }
 
+    /**
+     * Gets a overview from an identifying string (without role enforcing).
+     * 
+     * @param   idString                    a string containing either the overview's
+     *                                      identifier or its name
+     * @return                              the overview
+     * @throws  MonitorInterfaceException   no overview matches the identifying 
+     *                                      string
+     */
+    protected Overview getOverview(String idString) throws MonitorInterfaceException {
 
+        final Overview overview = Overview.getFromIdString(idString);
+
+        if (null == overview) {
+            throw new MonitorInterfaceException("Overview doesn't exist",
+                                                "overview.notExist");
+        }
+
+        return overview;
+    }
 
     /**
      * Gets a query from an identifying string (without role enforcing).

@@ -60,10 +60,45 @@ public class QuerySerializer {
                           QuerySerializer.buildParamsArray(queryConfig, mapper)
             );
         }
+        jsonQuery.put("queryValidationResult", 
+                QuerySerializer.buildQueryValidationResult(query, locale, mapper));
+        jsonQuery.put("queryValidationSettings", 
+                QuerySerializer.buildQueryValidationSettings(query, locale, mapper));
 
         return jsonQuery;
     }
 
+    /**
+     * Generates the JSON representation the query valdation settings
+     * 
+     * @param query
+     * @param locale
+     * @param mapper
+     * @return
+     */
+	private static ObjectNode buildQueryValidationSettings(Query query, Locale locale, ObjectMapper mapper) {
+
+		QueryValidationSettingsSerializer queryValidationSettingsSerializer 
+			= new QueryValidationSettingsSerializer(query.getQueryValidationSettings());
+
+		return (ObjectNode) queryValidationSettingsSerializer.serialize(locale, mapper);
+	}
+	
+	/**
+	 * Genereates the JSON representation for a last validation result
+	 * 
+	 * @param query
+	 * @param locale
+	 * @param mapper
+	 * @return
+	 */
+	private static ObjectNode buildQueryValidationResult(Query query, Locale locale, ObjectMapper mapper) {
+
+		QueryValidationResultSerializer queryValidationResultSerializer 
+			= new QueryValidationResultSerializer(query.getQueryValidationResult());
+
+		return (ObjectNode) queryValidationResultSerializer.serialize(locale, mapper);
+	}
 
 
     /**

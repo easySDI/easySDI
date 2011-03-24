@@ -2,7 +2,6 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
-	
 	<bean id="action" class="org.easysdi.monitor.gui.webapp.views.json.ActionView" />
 	<bean id="actionsCollection" class="org.easysdi.monitor.gui.webapp.views.json.ActionsCollectionView" />
 	<bean id="aggregLogsCsv" class="org.easysdi.monitor.gui.webapp.views.csv.AggregLogView" />
@@ -22,4 +21,11 @@
 	<bean id="rawLogsJson" class="org.easysdi.monitor.gui.webapp.views.json.RawLogView" />
 	<bean id="respTimeCsv" class="org.easysdi.monitor.gui.webapp.views.csv.ResponseTimeView" />
 	<bean id="respTimeJson" class="org.easysdi.monitor.gui.webapp.views.json.ResponseTimeView" />
+	<bean id="overview" class="org.easysdi.monitor.gui.webapp.views.json.OverviewView" />
+	<bean id="overviewsCollection" class="org.easysdi.monitor.gui.webapp.views.json.OverviewsCollectionView" />
+	<bean id="overviewQueryView" class="org.easysdi.monitor.gui.webapp.views.json.OverviewQueryViewView" />
+	<bean id="overviewQueryCollection" class="org.easysdi.monitor.gui.webapp.views.json.OverviewQueryViewCollectionView" />
+	<bean id="queryValidationSettings" class="org.easysdi.monitor.gui.webapp.views.json.QueryValidationSettingsView" />
+	<bean id="queryValidationResult" class="org.easysdi.monitor.gui.webapp.views.json.QueryValidationResultView" />
+	
 </beans>

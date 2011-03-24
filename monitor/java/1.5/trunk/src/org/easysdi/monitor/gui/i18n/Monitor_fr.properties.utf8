@@ -57,6 +57,18 @@ jobDefault.json.error = Une erreur s'est produite lors de la représentation des
 jobDefaultsCollection.details.success = Le détail des paramètres par défaut des jobs a bien été récupéré
 jobDefaultsCollection.modify.success = Les paramètres par défaut des jobs ont bien été modifiés
 
+overviewsCollection.details.success= Overview parameter details was successfully retrieved
+overviews.details.success= Overview parameter details was successfully retrieved
+overviewpage.create.success= The overview was successfully created
+overview.delete.success= The overview was successfully deleted
+overview.delete.error= An error occurred while deleting the overview
+overview.modify.success = The overview was updated successfully
+overview.modify.error = Unable to update the overview
+overviewQuery.modify.success = The overviewQuery was updated successfully
+overviewQuery.details.success= Overview query details was successfully retrieved
+overviewQueryCollection.details.success = Overview query details was successfully retrieved
+overview.notExist=The overview with the given key was not found
+
 jobResult.execution.error = Une erreur s'est produite lors de l'execution du job
 jobResult.execution.success = L'execution du job s'est bien déroulée
 jobResult.json.error = Une erreur s'est produite lors de la représentation du résultat de l'exécution
@@ -125,6 +137,8 @@ queryParams.json.error = Une erreur s'est produite lors de la représentation de
 queryParams.modify.error = Une erreur s'est produite lors de la modification des paramètres de la query
 queryParams.modify.notExist = L'un des paramètres à modifier n'existe pas
 queryParams.modify.success = Les paramètres de la query ont bien été modifiés
+
+queryValidationSettings.modify.success=The validation settings for the query were successfully updated
 
 request.processing.error = Une erreur s'est produite pendant le traitement de votre requête
 

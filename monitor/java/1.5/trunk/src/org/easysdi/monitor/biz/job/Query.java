@@ -34,8 +34,24 @@ public class Query {
     private MonitorServiceLog    owsLogger;
     private long                 queryId;
     private Status               status;
+    private OverviewLastQueryResult last_query_result;
+    private QueryValidationSettings queryValidationSettings;
+    private QueryValidationResult queryValidationResult;
 
+    /**
+	 * @return the last_query_result
+	 */
+	public OverviewLastQueryResult getLast_query_result() {
+		last_query_result.setQueryid(getQueryId());
+		return last_query_result;
+	}
 
+	/**
+	 * @param lastQueryResult the last_query_result to set
+	 */
+	public void setLast_query_result(OverviewLastQueryResult lastQueryResult) {
+		this.last_query_result = lastQueryResult;
+	}
 
     /**
      * No-argument constructor, used by the persistance mechanism.
@@ -402,4 +418,38 @@ public class Query {
 
         return false;
     }
+    
+    /**
+     * 
+     * @param queryValidationSettings
+     */
+	public void setQueryValidationSettings(QueryValidationSettings queryValidationSettings) {
+		this.queryValidationSettings = queryValidationSettings;
+	}
+
+
+	/**
+	 * 
+	 * @return
+	 */
+	public QueryValidationSettings getQueryValidationSettings() {
+		return queryValidationSettings;
+	}
+
+
+	/**
+	 * 
+	 * @param queryValidationResult
+	 */
+	public void setQueryValidationResult(QueryValidationResult queryValidationResult) {
+		this.queryValidationResult = queryValidationResult;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public QueryValidationResult getQueryValidationResult() {
+		return queryValidationResult;
+	}
 }

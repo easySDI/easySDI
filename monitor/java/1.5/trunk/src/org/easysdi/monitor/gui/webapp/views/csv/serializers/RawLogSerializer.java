@@ -51,6 +51,7 @@ public final class RawLogSerializer {
 
         elements.add(entry.getStatus().getDisplayString(locale));
         elements.add(Float.toString(entry.getResponseDelay()));
+        elements.add(Float.toString(entry.getResponseSize()));
         elements.add(entry.getMessage());
 
         return StringUtils.join(elements.iterator(), fieldSeparator);
@@ -84,6 +85,7 @@ public final class RawLogSerializer {
 
         headers.add(i18nMessages.getMessage("log.header.status"));
         headers.add(i18nMessages.getMessage("log.header.respDelay"));
+        headers.add(i18nMessages.getMessage("log.header.size"));
         headers.add(i18nMessages.getMessage("log.header.message"));
 
         return StringUtils.join(headers.iterator(), fieldSeparator);

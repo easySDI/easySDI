@@ -58,6 +58,7 @@ public final class RawLogSerializer {
         }
 
         jsonEntry.put("message", entry.getMessage());
+        jsonEntry.put("size", entry.getResponseSize());
         jsonEntry.put("delay", entry.getResponseDelay());
         jsonEntry.put("httpCode", ((null != entry.getHttpCode()) 
                                   ? entry.getHttpCode().toString() : ""));
