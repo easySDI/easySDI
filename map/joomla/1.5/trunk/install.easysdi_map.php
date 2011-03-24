@@ -697,8 +697,38 @@ function com_install()
 		  CONSTRAINT `#__sdi_profile_role_ibfk_2` FOREIGN KEY (`role_id`) REFERENCES `#__sdi_list_role` (`id`) ON DELETE CASCADE
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 		
-		";
-
+		INSERT INTO `#__sdi_list_role` (guid,code,name,description, created,createdby,publish_id,roletype_id) 
+		VALUES  ('".helper_easysdi::getUniqueId()."', 'DATA_PRECISION', 'EASYSDI_DATA_PRECISION_RIGHT','Access to the data precision tab','".date('Y-m-d H:i:s')."', '".$user_id."', 0, 1);
+		
+		INSERT INTO `#__sdi_list_role` (guid,code,name,description, created,createdby,publish_id,roletype_id) 
+		VALUES  ('".helper_easysdi::getUniqueId()."', 'ADV_SEARCH_TAXA', 'EASYSDI_ADV_SEARCH_TAXA_RIGHT','Access to the advanced search taxon tab','".date('Y-m-d H:i:s')."', '".$user_id."', 0, 1);
+		
+		INSERT INTO `#__sdi_list_role` (guid,code,name,description, created,createdby,publish_id,roletype_id) 
+		VALUES  ('".helper_easysdi::getUniqueId()."', 'ADV_SEARCH_BIOTOPE', 'EASYSDI_ADV_SEARCH_BIOTOPE_RIGHT','Access to the advanced search taxon status tab','".date('Y-m-d H:i:s')."', '".$user_id."', 0, 1);
+		
+		INSERT INTO `#__sdi_list_role` (guid,code,name,description, created,createdby,publish_id,roletype_id) 
+		VALUES  ('".helper_easysdi::getUniqueId()."', 'ADV_SEARCH_TAX_STS', 'EASYSDI_ADV_SEARCH_TAXON_STATUS_RIGHT','Access to the advanced search taxon status tab','".date('Y-m-d H:i:s')."', '".$user_id."', 0, 1);
+		
+		INSERT INTO `#__sdi_list_role` (guid,code,name,description, created,createdby,publish_id,roletype_id) 
+		VALUES  ('".helper_easysdi::getUniqueId()."', 'ADV_SEARCH_BIO_STS', 'EASYSDI_ADV_SEARCH_BIOTOPE_STATUS_RIGHT','Access to the advanced search biotope status tab','".date('Y-m-d H:i:s')."', '".$user_id."', 0, 1);
+		
+		INSERT INTO `#__sdi_list_role` (guid,code,name,description, created,createdby,publish_id,roletype_id) 
+		VALUES  ('".helper_easysdi::getUniqueId()."', 'ADV_SEARCH_SURVEY', 'EASYSDI_ADV_SEARCH_SURVEY_RIGHT','Access to the advanced search surveys tabb','".date('Y-m-d H:i:s')."', '".$user_id."', 0, 1);
+		
+		INSERT INTO `#__sdi_list_role` (guid,code,name,description, created,createdby,publish_id,roletype_id) 
+		VALUES  ('".helper_easysdi::getUniqueId()."', 'ADV_SEARCH_CRITERIA', 'EASYSDI_ADV_SEARCH_CRITERIA_RIGHT','Access to the advanced search criteria tab','".date('Y-m-d H:i:s')."', '".$user_id."', 0, 1);
+		
+		INSERT INTO `#__sdi_list_role` (guid,code,name,description, created,createdby,publish_id,roletype_id) 
+		VALUES  ('".helper_easysdi::getUniqueId()."', 'ADV_SEARCH_MISC', 'EASYSDI_ADV_SEARCH_MISC_RIGHT','Access to the advanced search misc tab','".date('Y-m-d H:i:s')."', '".$user_id."', 0, 1);
+		
+		INSERT INTO `#__sdi_list_role` (guid,code,name,description, created,createdby,publish_id,roletype_id) 
+		VALUES  ('".helper_easysdi::getUniqueId()."', 'ADV_SEARCH_PLACE', 'EASYSDI_ADV_SEARCH_PLACE_RIGHT','Access to the advanced search place filter tab','".date('Y-m-d H:i:s')."', '".$user_id."', 0, 1);
+		
+		INSERT INTO `#__sdi_list_role` (guid,code,name,description, created,createdby,publish_id,roletype_id) 
+		VALUES  ('".helper_easysdi::getUniqueId()."', 'SEARCH_SAVE_LOAD', 'EASYSDI_SEARCH_SAVE_LOAD_RIGHT','Access to the save and load searches functionnality','".date('Y-m-d H:i:s')."', '".$user_id."', 0, 1);
+		
+					";
+		
 		$db->setQuery( $query);
 		if (!$db->queryBatch())		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");

@@ -665,7 +665,7 @@ if (!is_null($ftypes) && count($ftypes)>0) {
 		foreach ($attrs as $attr) {
 			$i++;
 			extract($attr, EXTR_PREFIX_ALL, "a");
-			$a_name=str_replace('<lang>', $lang, $a_name);
+			$a_name=str_replace('<lang>', $lang->_lang, $a_name);
 			$s .= "{\n\tname: '$a_name',\n".
 				"\ttype: '$a_datatype'";			
 			if ($a_visible==0) {
@@ -1085,7 +1085,7 @@ $s .="
 ";
 
 // Retrieve the details report feature types so we can sort them in column category order
-$query = "SELECT name from #__sdi_featuretype ft
+$query = "SELECT featuretypename from #__sdi_featuretype ft
 INNER JOIN #__sdi_featuretype_usage ftu ON ftu.ft_id=ft.id
 WHERE ftu.usage_id=3 ";
 $db->setQuery($query);

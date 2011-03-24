@@ -31,10 +31,6 @@ class HTML_serviceaccount
 						<fieldset>						
 							<table class="admintable">
 								<tr>
-									<td class="key" width="100p"><?php echo JText::_("MAP_SA_USER_ID"); ?></td>
-									<td><?php echo $account->id; ?></td>								
-								</tr>
-								<tr>
 									<td class="key" width="100p"><?php echo JText::_("MAP_SA_NAME"); ?></td>
 									<td><?php echo $account->name; ?></td>								
 								</tr>
