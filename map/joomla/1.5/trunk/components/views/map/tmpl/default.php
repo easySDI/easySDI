@@ -94,8 +94,8 @@ $doc->addStyleDeclaration('body{overflow:hidden;}');
  */
 //Javascript files
 $db =& JFactory::getDBO();
-$query = "SELECT resource_folder, resource_file FROM #__easysdi_map_extension_resource WHERE resource_type='js' AND id_ext IN
-			(SELECT id FROM #__easysdi_map_extension WHERE  extended_object='FilterPanel' OR extended_object='SearchPanel') ";
+$query = "SELECT resource_folder, resource_file FROM #__sdi_map_extensionresource WHERE resource_type='js' AND id_ext IN
+			(SELECT id FROM #__sdi_mapextension WHERE  extended_object='FilterPanel' OR extended_object='SearchPanel') ";
 $db->setQuery($query);
 $resources = $db->loadObjectList();
 foreach ($resources as $resource)
@@ -103,8 +103,8 @@ foreach ($resources as $resource)
 	JHTML::script($resource->resource_file, $resource->resource_folder);
 }
 //Php files
-$query = "SELECT resource_folder, resource_file FROM #__easysdi_map_extension_resource WHERE resource_type='php' AND id_ext IN
-			(SELECT id FROM #__easysdi_map_extension WHERE  extended_object='FilterPanel' OR extended_object='SearchPanel') ";
+$query = "SELECT resource_folder, resource_file FROM #__sdi_map_extensionresource WHERE resource_type='php' AND id_ext IN
+			(SELECT id FROM #__sdi_mapextension WHERE  extended_object='FilterPanel' OR extended_object='SearchPanel') ";
 $db->setQuery($query);
 $resources = $db->loadObjectList();
 foreach ($resources as $resource)

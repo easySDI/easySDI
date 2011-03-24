@@ -901,16 +901,16 @@ $s .="],
   authorisedTo: {    
     ";
 
-$query = 'SELECT r.role_code '.
-		'FROM #__sdi_community_role r '.
-		'INNER JOIN #__easysdi_map_profile_role pr ON pr.id_role=r.role_id '.
-		"WHERE pr.id_prof=$role";
+$query = 'SELECT r.code '.
+		'FROM #__sdi_list_role r '.
+		'INNER JOIN #__sdi_profile_role pr ON pr.role_id=r.id '.
+		"WHERE pr.profile_id=$role";
 $db->setQuery($query);
 $result = $db->loadAssocList();
 $i=0;
 foreach ($result as $rec) {
 	$i++;
-	$s .= "'".$rec['role_code']."': true";
+	$s .= "'".$rec['code']."': true";
 	if ($i != count($result)) $s .= ",";
 }
 //Add the dataprecision in the authorization list if role is not public
@@ -942,7 +942,7 @@ $s .= " componentParams.proxiedPubWfsUrl = '".$proxyURLAsString."&url='+componen
  * This section loads the extensions classes name that have to be instanciated in place of the defaults one
  */
 /*  FilterPanelClassName :'FilterPanel'  FilterPanelClassName :'RwgFilterPanel' */
-$query = "SELECT * FROM #__easysdi_map_extension WHERE extended_object='FilterPanel' OR extended_object='SearchPanel' ";
+$query = "SELECT * FROM #__sdi_mapextension WHERE extended_object='FilterPanel' OR extended_object='SearchPanel' ";
 $db->setQuery($query);
 $extensions = $db->loadObjectList();
 //Default classes name
@@ -974,7 +974,7 @@ var extensionClasses = {
  * - map coordinate toolbar
  */
 // Retrieve the element display options that are stored in the database
-$query = "SELECT * FROM #__easysdi_map_display_options ;";
+$query = "SELECT * FROM #__sdi_mapdisplayoption ;";
 $db->setQuery($query);
 $options = $db->loadObjectList();
 $i = 1;
@@ -1030,7 +1030,7 @@ componentParams.getMapImageFormat =
  ";*/
 
 //Annotation styles
-$query = "SELECT * FROM #__easysdi_map_annotation_style ;";
+$query = "SELECT * FROM #__sdi_annotationstyle ;";
 $db->setQuery($query);
 $styles = $db->loadObjectList();
 $i = 1;
@@ -1085,13 +1085,13 @@ $s .="
 ";
 
 // Retrieve the details report feature types so we can sort them in column category order
-$query = "SELECT name from #__easysdi_map_feature_type ft
-INNER JOIN #__easysdi_map_feature_type_use ftu ON ftu.id_ft=ft.id
-WHERE ftu.id_use=3 ";
+$query = "SELECT name from #__sdi_featuretype ft
+INNER JOIN #__sdi_featuretype_usage ftu ON ftu.ft_id=ft.id
+WHERE ftu.usage_id=3 ";
 $db->setQuery($query);
 $result = $db->loadAssocList();
 foreach ($result as $ftype) {
-	$f_name = str_replace('<access>',$access, $ftype['name']);
+	$f_name = str_replace('<access>',$access, $ftype['featuretypename']);
 	$s .= "
 SData.attrs.$f_name.sort(
   function(a,b) {
