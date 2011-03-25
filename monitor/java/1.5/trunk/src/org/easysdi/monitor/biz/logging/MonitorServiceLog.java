@@ -25,6 +25,7 @@ import org.easysdi.monitor.biz.job.QueryValidationSettings;
 import org.easysdi.monitor.dat.dao.LogDaoHelper;
 
 import org.easysdi.monitor.biz.job.OverviewLastQueryResult;
+import org.easysdi.monitor.biz.job.Status.StatusValue;
 import org.easysdi.monitor.dat.dao.LastLogDaoHelper;
 import org.xml.sax.InputSource;
 
@@ -85,13 +86,8 @@ public class MonitorServiceLog extends ServiceLog {
 
         if (this.isResultLogged()) {
             final RawLogEntry logEntry = result.createRawLogEntry();
-
-            if (!LogDaoHelper.getLogDao().persistRawLog(logEntry)) {
-                this.logger.error(
-                       "An exception was thrown while saving a log entry");
-            }
-            
-         // Save last log
+                   
+            // Save last log
 			long queryID = result.getQueryId();
 
 			// Does a log already exist
@@ -123,6 +119,7 @@ public class MonitorServiceLog extends ServiceLog {
 					//Save received image in file system:
 					byte[] imgBytes  = response.getImage();
 					String imageType = determineImageType(imgBytes);
+					// FIXME replace with image handler
 					String strFilePath = this.getProperties().getProperty("imagefolderLocal")+queryID + imageType;
 
 					try{
@@ -167,12 +164,16 @@ public class MonitorServiceLog extends ServiceLog {
 						float max = validationSettings.getNormSize() + (validationSettings.getNormSize() * validationSettings.getNormSizeTolerance() / 100); 
 						float min = validationSettings.getNormSize() - (validationSettings.getNormSize() * validationSettings.getNormSizeTolerance() / 100);
 						if(responseSize < min || responseSize > max){
+							logEntry.setMessage("Size validation fail");
+							logEntry.setStatus(StatusValue.UNAVAILABLE);// TODO create new type
 							validationResult.setSizeValidationResult(false);
 						}			
 					}
 					if(validationSettings.isUseTimeValidation() && validationSettings.getNormTime() != null)
 					{
 						if(validationSettings.getNormTime() < (deliveryTime *1000)){
+							logEntry.setMessage("Time validation fail");
+							logEntry.setStatus(StatusValue.OUT_OF_ORDER);
 							validationResult.setTimeValidationResult(false);
 						}
 					}
@@ -190,12 +191,16 @@ public class MonitorServiceLog extends ServiceLog {
 						}
 						catch(Exception e)
 						{
-							xpathValidationOutput = "Xpath evaluation failed.";
+							logEntry.setMessage("Xpath evaluation failed");
+							logEntry.setStatus(StatusValue.UNAVAILABLE);
+							xpathValidationOutput = "Xpath evaluation failed";
 							validationResult.setXpathValidationResult(false);
 						}
 
 						validationResult.setXpathValidationOutput(xpathValidationOutput);
 						if(validationSettings.getExpectedXpathOutput().compareTo(xpathValidationOutput)!= 0){
+							logEntry.setMessage("Xpath result not equel to norm output");
+							logEntry.setStatus(StatusValue.UNAVAILABLE);
 							validationResult.setXpathValidationResult(false);
 						}
 					}		
@@ -205,7 +210,13 @@ public class MonitorServiceLog extends ServiceLog {
 				validationResult.persist();
 			}
 			
-			// Save or update row
+			// Save raw log	
+            if (!LogDaoHelper.getLogDao().persistRawLog(logEntry)) {
+                this.logger.error(
+                       "An exception was thrown while saving a log entry");
+            }
+            
+        	// Save or update row
 			if (!LastLogDaoHelper.getLastLogDao().create(lastQueryEntry)) {
 				this.logger
 				.error("An exception was thrown while saving a last log entry");
