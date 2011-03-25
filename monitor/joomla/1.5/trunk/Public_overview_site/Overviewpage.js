@@ -5,7 +5,7 @@ Ext.onReady(function() {
 	EasySDI_Mon.appHeight = 600;
 	var pagename = "";
 	
-	var proxy_URL = "administrator/components/com_easysdi_monitor/views/proxy/tmpl/proxy.php?proxy_url=";
+	var proxy_URL = "administrator/components/com_easysdi_monitor/views/main/tmpl/proxy.php?proxy_url=";
 	
 	var proxyTableOverview = new Ext.data.HttpProxy({
 		api: {
