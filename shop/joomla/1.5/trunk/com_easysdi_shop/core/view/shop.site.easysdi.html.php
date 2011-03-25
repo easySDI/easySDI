@@ -2002,14 +2002,14 @@ class HTML_shop
 		<tr>
 		<td width="50%" align="right" >    
 		<input
-		onClick="document.getElementById('task').value = 'shop'; window.parent.document.getElementById('sbox-window').close();"
+		onClick="document.getElementById('task').value = 'shop'; try{ window.parent.document.getElementById('sbox-window').close();}catch(err){javascript:history.back();}"
 		type="button"
 		class="button"
 		value='<?php echo JText::_("SHOP_SHOP_PRODUCT_TERMS_DENY"); ?>'> 
 		</td>
 		<td width="50%" align="left">
 		<input 
-		onClick="document.getElementById('task').value = 'doDownloadAvailableProduct';document.getElementById('product_id').value = '<?php echo $id; ?>';document.getElementById('dlProductForm').submit();window.parent.document.getElementById('sbox-window').close();"
+		onClick="document.getElementById('task').value = 'doDownloadAvailableProduct';document.getElementById('product_id').value = '<?php echo $id; ?>';document.getElementById('dlProductForm').submit();try{ window.parent.document.getElementById('sbox-window').close();}catch(err){}"
 		type="button"
 		class="button"
 		value='<?php echo JText::_("SHOP_SHOP_PRODUCT_TERMS_ACCEPT"); ?>'> 
@@ -2026,6 +2026,7 @@ class HTML_shop
 		<input type='hidden' id="product_id" name='product_id' value=''>
 	
 		</form>
+		
 		<?php
 	}
 	
