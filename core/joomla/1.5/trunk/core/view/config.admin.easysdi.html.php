@@ -773,7 +773,7 @@ if ($monitorItem > 0){
 											</span>
 										</td>
 										<td>
-											<input class="text_area" type="text" size="100" name="locatisationInputWidth" value="<?php echo $mapList['locatisationInputWidth']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+											<input class="text_area" type="text" size="100" name="localisationInputWidth" value="<?php echo $mapList['localisationInputWidth']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
 										</td>
 									</tr>
 									<tr>
