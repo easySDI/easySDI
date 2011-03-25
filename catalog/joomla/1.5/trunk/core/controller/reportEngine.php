@@ -101,9 +101,9 @@ class reportEngine{
 		if (count($results) > 0)
 		{
 			$filter = "";
-			foreach ($results as $result)
+			foreach ($results as $rs)
 			{
-				$filter  .= "<ogc:PropertyIsEqualTo><ogc:PropertyName>fileId</ogc:PropertyName><ogc:Literal>".$result->metadata_guid."</ogc:Literal></ogc:PropertyIsEqualTo>";
+				$filter  .= "<ogc:PropertyIsEqualTo><ogc:PropertyName>fileId</ogc:PropertyName><ogc:Literal>".$rs->metadata_guid."</ogc:Literal></ogc:PropertyIsEqualTo>";
 			}
 			if (count($results) > 1)
 				$filter = "<ogc:Or>".$filter."</ogc:Or>";
@@ -369,8 +369,10 @@ class reportEngine{
 		error_reporting(0);
 		ini_set('zlib.output_compression', 0);
                         
-		header('Content-type: '.$contenttype);
-		header('Content-Disposition: attachment; filename="'.$downloadname.'"');
+	   if(!strpos($contenttype,"html"))  {           
+			header('Content-type: '.$contenttype);
+			header('Content-Disposition:attachment ; filename="'.$downloadname.'"');
+        }
 		header('Content-Transfer-Encoding: binary');
 		header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
 		header('Pragma: public');
