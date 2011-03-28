@@ -34,7 +34,6 @@ class baseLayer extends sdiTable
 	var $resolutionoverscale=false;
 	var $cache=false;
 	var $unit=null;
-	var $ordering=null;
 	var $singletile=false;
 	var $user=null;
 	var $password=null;
@@ -42,12 +41,30 @@ class baseLayer extends sdiTable
 	var $defaultvisibility=null;
 	var $defaultopacity=null;
 	var $metadataurl=null;
-	var $defineBaseMap=null;
-
+	
 	// Class constructor
 	function __construct( &$db )
 	{
 		parent::__construct ( '#__sdi_baselayer', 'id', $db ) ;
+	}
+}
+
+class baseMap extends sdiTable
+{
+	var $projection=null;
+	var $unit=null;
+	var $minscale=null;
+	var $maxscale=null;
+	var $maxextent=null;
+	var $extent=null;
+	var $resolutions='';
+	var $resolutionoverscale=false;
+	var $default=true;
+	
+	// Class constructor
+	function __construct( &$db )
+	{
+		parent::__construct ( '#__sdi_basemapdefinition', 'id', $db ) ;
 	}
 }
 

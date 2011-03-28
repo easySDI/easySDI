@@ -110,7 +110,7 @@ class HTML_baselayer
 		<script>
 		var $j = jQuery.noConflict();
 		$j(document).ready(function() {
-			!$j("input[name=resolutionOverScale]:radio").change(
+			!$j("input[name=resolutionoverscale]:radio").change(
 					function(e){
 						if (e.target.value==0)
 						{
@@ -238,11 +238,6 @@ class HTML_baselayer
 						<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['metadataurl'];?>" name="metadataurl" id="metadataurl"
 							value="<?php echo $baseLayer->metadataurl; ?>" /></td>
 					</tr>
-					
-					<tr>
-					<td colspan="2">
-					<fieldset><legend><?php echo JText::_("MAP_BASELAYER_USE_BASEMAP"); ?><input class="checkbox" name="defineBaseMap" id="defineBaseMap" value="1" type="checkbox" <?php if ($baseLayer->defineBaseMap == 1) echo "checked=\"checked\""; ?> /></legend>
-					<table class="admintable">
 					<tr>
 						<td class="key"><?php echo JText::_("MAP_BASELAYER_PROJECTION"); ?></td>
 						<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['projection'];?>" name="projection" 
@@ -281,11 +276,7 @@ class HTML_baselayer
 					<tr>
 						<td class="key"><?php echo JText::_("MAP_BASE_RESOLUTIONS"); ?></td>
 						<td style=""><textarea id="resolutions" class="textarea resolutions" style="height: 200px; width: 500px;" name="resolutions" size="100"
-							maxlength="4000" <?php if ($baseLayer->resolutionOverScale == 0) echo 'disabled' ?>><?php echo $baseLayer->resolutions; ?></textarea></td>
-					</tr>
-					</table>
-					</fieldset>
-					</td>
+							maxlength="4000" <?php if ($baseLayer->resolutionoverscale == 0) echo 'disabled' ?>><?php echo $baseLayer->resolutions; ?></textarea></td>
 					</tr>
 				</table>
 				
@@ -328,6 +319,170 @@ class HTML_baselayer
 		<input type="hidden" name="createdby" value="<?php echo $baseLayer->createdby; ?>" /> 
 		<input type="hidden" name="updated" value="<?php echo $baseLayer->created; ?>" />
 		<input type="hidden" name="updatedby" value="<?php echo $baseLayer->createdby; ?>" /> 
+		</form>
+		<?php
+	}
+	
+	function editBaseMap( $baseMap,$createUser, $updateUser,$fieldsLength, $option )
+	{
+		global  $mainframe;
+		JHTML::script('jquery-1.3.2.min.js', 'components/com_easysdi_map/externals/jquery/');
+		JToolBarHelper::title( JText::_("MAP_BASEMAP_EDIT"), 'generic.png' );
+		?>
+		<script>
+		var $j = jQuery.noConflict();
+		$j(document).ready(function() {
+			!$j("input[name=resolutionoverscale]:radio").change(
+					function(e){
+						if (e.target.value==0)
+						{
+							  $j(".scales").removeAttr('disabled'); 
+							  $j(".resolutions").attr("disabled","disabled");
+						}
+						else if (e.target.value==1)  {
+							$j(".resolutions").removeAttr('disabled');
+							$j(".scales").attr("disabled","disabled");
+						}
+						}
+					);
+		});
+		function submitbutton(pressbutton)
+		{
+			if(pressbutton == "saveBaseMap")
+			{
+				
+				if (document.getElementById('name').value == "")
+				{
+					alert ('<?php echo  JText::_( 'MAP_BASE_CT_NAME_VALIDATION_ERROR');?>');	
+					return;
+				}
+				else if (document.getElementById('projection').value == "")
+				{	
+					alert ('<?php echo  JText::_( 'MAP_BASE_CT_PROJECTION_VALIDATION_ERROR');?>');	
+					return;
+				}
+				else if (false && document.getElementById('maxextent').value == "")
+				{
+					alert ('<?php echo  JText::_( 'MAP_BASE_CT_MAX_EXTENT_VALIDATION_ERROR');?>');	
+					return;
+				}
+				else if (false && $j('#resolutionoverscale0').attr('checked') && document.getElementById('minscale').value == "")
+				{
+					alert ('<?php echo  JText::_( 'MAP_BASE_CT_MIN_SCALE_VALIDATION_ERROR');?>');	
+					return;
+				}
+				else if (false && $j('#resolutionoverscale0').attr('checked') && document.getElementById('maxscale').value == "")
+				{
+					alert ('<?php echo  JText::_( 'MAP_BASE_CT_MAX_SCALE_VALIDATION_ERROR');?>');	
+					return;
+				}
+				else if ($j('#resolutionoverscale1').attr('checked') && document.getElementById('resolutions').value == "")
+				{
+					alert ('<?php echo  JText::_( 'MAP_BASE_CT_RESOLUTION_VALIDATION_ERROR');?>');	
+					return;
+				}
+				else
+				{	
+					submitform(pressbutton);
+				}
+			}
+			else
+			{
+				submitform(pressbutton);
+			}
+		}
+		</script>
+		<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
+		<table border="0" cellpadding="0" cellspacing="0">
+			<tr>
+				<td>
+				<table class="admintable">
+					<tr>
+						<td class="key"><?php echo JText::_("MAP_BASELAYER_NAME"); ?></td>
+						<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['name'];?>" name="name" id="name" value="<?php echo stripslashes($baseMap->name); ?>" /></td>
+					</tr>
+					<tr>
+						<td class="key"><?php echo JText::_("MAP_BASELAYER_PROJECTION"); ?></td>
+						<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['projection'];?>" name="projection" 
+						id="projection" value="<?php echo $baseMap->projection; ?>" /></td>
+					</tr>
+					<tr>
+						<td class="key"><?php echo JText::_("MAP_BASELAYER_UNIT"); ?></td>
+						<td><select class="inputbox" name="unit">
+							<option <?php if($baseMap->unit == 'm') echo "selected" ; ?> value="m"><?php echo JText::_("MAP_METERS"); ?></option>
+							<option <?php if($baseMap->unit == 'degrees') echo "selected" ; ?> value="degrees"><?php echo JText::_("MAP_DEGREES"); ?></option>
+						</select></td>
+					</tr>
+					<tr>
+						<td class="key"><?php echo JText::_("MAP_BASELAYER_MAXEXTENT"); ?></td>
+						<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['maxextent'];?>" name="maxextent" id="maxextent" 
+						value="<?php echo $baseMap->maxextent; ?>" /></td>
+					</tr>
+					<tr>
+						<td colspan="2"><input type="radio" id="resolutionoverscale" name="resolutionoverscale" value="0"
+						<?php if ($baseMap->resolutionoverscale == 0) echo "checked=\"checked\""; ?> /> <?php echo JText::_("MAP_BASE_SCALES"); ?></td>
+					</tr>
+					<tr>
+						<td class="key"><?php echo JText::_("MAP_BASE_MIN_SCALE"); ?></td>
+						<td><input class="inputbox scales" type="text" size="100" maxlength="<?php echo $fieldsLength['minscale'];?>" name="minscale" id="minscale" 
+						<?php if ($baseMap->resolutionoverscale == 1) echo 'disabled' ?> value="<?php echo $baseMap->minscale; ?>" /></td>
+					</tr>
+					<tr class="scales">
+						<td class="key"><?php echo JText::_("MAP_BASE_MAX_SCALE"); ?></td>
+						<td><input class="inputbox scales" name="maxscale" id="maxscale" type="text" size="100" maxlength="<?php echo $fieldsLength['maxscale'];?>"
+						<?php if ($baseMap->resolutionoverscale == 1) echo 'disabled' ?> value="<?php echo $baseMap->maxscale; ?>" /></td>
+					</tr>
+					<tr>
+						<td colspan="2"><input type="radio" id="resolutionoverscale1" name="resolutionoverscale" value="1"
+						<?php if ($baseMap->resolutionoverscale == 1) echo "checked=\"checked\""; ?> /> <?php echo JText::_("MAP_BASE_RESOLUTIONS"); ?></td>
+					</tr>
+					<tr>
+						<td class="key"><?php echo JText::_("MAP_BASE_RESOLUTIONS"); ?></td>
+						<td style=""><textarea id="resolutions" class="textarea resolutions" style="height: 200px; width: 500px;" name="resolutions" size="100"
+							maxlength="4000" <?php if ($baseMap->resolutionoverscale == 0) echo 'disabled' ?>><?php echo $baseMap->resolutions; ?></textarea></td>
+					</tr>
+					
+				</table>
+				
+				</td>
+			</tr>
+		</table>
+		<br></br>
+		<table border="0" cellpadding="3" cellspacing="0">
+		<?php
+		if ($baseMap->created)
+		{ 
+		?>
+			<tr>
+				<td><?php echo JText::_("CORE_CREATED"); ?> : </td>
+				<td><?php if ($baseMap->created) {echo date('d.m.Y h:i:s',strtotime($baseMap->created));} ?></td>
+				<td>, </td>
+				<td><?php echo $createUser; ?></td>
+			</tr>
+		<?php
+		}
+		if ($baseMap->updated and $baseMap->updated<> '0000-00-00 00:00:00')
+		{ 
+		?>
+			<tr>
+				<td><?php echo JText::_("CORE_UPDATED"); ?> : </td>
+				<td><?php if ($baseMap->updated and $baseMap->updated<> 0) {echo date('d.m.Y h:i:s',strtotime($baseMap->updated));} ?></td>
+				<td>, </td>
+				<td><?php echo $updateUser; ?></td>
+			</tr>
+		<?php
+		}
+		?>		
+		</table>
+		<input type="hidden" name="option" value="<?php echo $option; ?>" />
+		<input type="hidden" name="task" value="editBaseLayer" /> 
+		<input type="hidden" name="id" value="<?php echo $baseMap->id; ?>" />
+		<input type="hidden" name="guid" value="<?php echo $baseMap->guid?>" />
+		<input type="hidden" name="ordering" value="<?php echo $baseMap->ordering; ?>" />
+		<input type="hidden" name="created" value="<?php echo $baseMap->created;?>" />
+		<input type="hidden" name="createdby" value="<?php echo $baseMap->createdby; ?>" /> 
+		<input type="hidden" name="updated" value="<?php echo $baseMap->created; ?>" />
+		<input type="hidden" name="updatedby" value="<?php echo $baseMap->createdby; ?>" /> 
 		</form>
 		<?php
 	}

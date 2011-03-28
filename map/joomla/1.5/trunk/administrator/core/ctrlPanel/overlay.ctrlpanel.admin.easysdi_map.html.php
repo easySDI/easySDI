@@ -39,6 +39,18 @@ class HTML_overlayctrlpanel
 		<div id="cpanel">		
 					
 			<?php	
+			$link = "index.php?option=$option&amp;task=baseMap";
+			?>
+			<div style="float:<?php echo ($lang->isRTL()) ? 'right' : 'left'; ?>;">
+				<div class="icon">
+					<a href="<?php echo $link; ?>">
+						<?php 
+							$text = JText::_( 'MAP_BASEMAP' );					
+							echo JHTML::_('image.site',  'icon-48-component.png', '/templates/'. $template .'/images/header/', NULL, NULL, $text ); ?>
+						<span><?php echo $text; ?></span></a>
+				</div>
+			</div>
+			<?php	
 			$link = "index.php?option=$option&amp;task=baseLayer";
 			?>
 			<div style="float:<?php echo ($lang->isRTL()) ? 'right' : 'left'; ?>;">

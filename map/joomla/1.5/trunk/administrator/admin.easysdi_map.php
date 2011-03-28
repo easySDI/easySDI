@@ -561,6 +561,26 @@ switch($task)
 	/**
 	 * Base layer
 	 */
+	case 'baseMap':
+		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'baselayer.admin.easysdi_map.html.php');
+		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'baselayer.class.easysdi_map.php');
+		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'baselayer.toolbar.easysdi_map.html.php');
+		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'baselayer.admin.easysdi_map.php');
+		TOOLBAR_baseMap::_EDIT();
+		ADMIN_baselayer::editbaseMap($option);
+		break;
+	case 'saveBaseMap':
+		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'baselayer.admin.easysdi_map.html.php');
+		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'baselayer.class.easysdi_map.php');
+		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'baselayer.toolbar.easysdi_map.html.php');
+		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'baselayer.admin.easysdi_map.php');
+		ADMIN_baselayer::saveBaseMap($option);
+		break;
+	case "cancelBaseMap":
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'baselayer.admin.easysdi_map.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'baselayer.class.easysdi_map.php');
+		ADMIN_baselayer::cancelBaseMap($option);		
+		break;
 	case 'baseLayer':
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'baselayer.admin.easysdi_map.html.php');
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'baselayer.toolbar.easysdi_map.html.php');

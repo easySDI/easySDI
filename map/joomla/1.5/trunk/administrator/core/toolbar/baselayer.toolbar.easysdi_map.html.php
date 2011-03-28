@@ -57,4 +57,19 @@ class TOOLBAR_baselayer {
 		JToolBarHelper::cancel('baseLayer');
 	}
 }
+class TOOLBAR_basemap {
+
+	function _DEFAULT() 
+	{
+		JToolBarHelper::save('saveBaseMap');
+		JToolBarHelper::cancel('cancelBaseMap');
+	}
+	
+	
+	function _EDIT() 
+	{
+		JToolBarHelper::save('saveBaseMap');
+		JToolBarHelper::cancel('cancelBaseMap');
+	}
+}
 ?>
