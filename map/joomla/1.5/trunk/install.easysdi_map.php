@@ -139,6 +139,41 @@ function com_install()
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 		
 		-- ----------------------------
+		-- Table structure for `#__sdi_basemapdefinition`
+		-- ----------------------------
+		CREATE TABLE `#__sdi_basemapdefinition` (
+		`id`  bigint(20) NOT NULL AUTO_INCREMENT ,
+		`guid`  varchar(36) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+		`code`  varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+		`name`  varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+		`description`  varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+		`created`  datetime NOT NULL ,
+		`updated`  datetime NULL DEFAULT NULL ,
+		`createdby`  bigint(20) NOT NULL ,
+		`updatedby`  bigint(20) NULL DEFAULT NULL ,
+		`label`  varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+		`ordering`  bigint(20) NULL DEFAULT NULL ,
+		`checked_out`  bigint(20) NOT NULL DEFAULT 0 ,
+		`checked_out_time`  datetime NULL DEFAULT NULL ,
+		`projection`  varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+		`unit`  varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+		`minscale`  varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+		`maxscale`  varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+		`resolutions` text,
+		`resolutionoverscale` tinyint(4) NOT NULL DEFAULT '0',
+		`default`  tinyint(1) NOT NULL DEFAULT 0 ,
+		`maxextent`  varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+		`extent` varchar(100) DEFAULT NULL,
+		PRIMARY KEY (`id`),
+		UNIQUE INDEX `guid` (`guid`) USING BTREE ,
+		UNIQUE INDEX `code` (`code`) USING BTREE 
+		)
+		ENGINE=InnoDB
+		DEFAULT CHARSET=utf8
+		;
+
+		
+		-- ----------------------------
 		-- Table structure for `#__sdi_baselayer`
 		-- ----------------------------
 		DROP TABLE IF EXISTS `#__sdi_baselayer`;
@@ -178,7 +213,6 @@ function com_install()
 		  `resolutionoverscale` tinyint(4) NOT NULL DEFAULT '0',
 		  `extent` varchar(100) DEFAULT NULL,
 		  `maxextent` varchar(100) NOT NULL DEFAULT '-180,-90,180,90',
-		  `defineBaseMap` tinyint(1) NOT NULL DEFAULT '0',
 		  
 		  PRIMARY KEY (`id`)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
