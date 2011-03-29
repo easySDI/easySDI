@@ -199,6 +199,15 @@ class HTML_baselayer
 						<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['url'];?>" name="url" id="url" value="<?php echo $baseLayer->url; ?>" /></td>
 					</tr>
 					<tr>
+						<td class="key"><?php echo JText::_("MAP_BASELAYER_URL_VERSION"); ?></td>
+						<td>
+							<select class="inputbox" name="version" id="version">
+								<option <?php if($baseLayer->version == '1.1.1') echo "selected" ; ?> value="1.1.1"><?php echo "1.1.1"; ?></option>
+								<option <?php if($baseLayer->version == '1.3.0') echo "selected" ; ?> value="1.3.0"><?php echo "1.3.0"; ?></option>
+							</select>
+						</td>
+					</tr>
+					<tr>
 						<td class="key"><?php echo JText::_("MAP_BASELAYER_LAYERS"); ?></td>
 						<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['layers'];?>" name="layers" id="layers" value="<?php echo $baseLayer->layers; ?>" /></td>
 						<td><?php echo JText::_("MAP_OVERLAY_LAYERS_SEPARATOR"); ?></td>

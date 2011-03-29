@@ -297,7 +297,7 @@ var wmsOptions = {
 url : this.url,
 params : OpenLayers.Util.applyDefaults( {
 service : "WMS",
-version : "1.1.0",
+version : componentParams.pubWmsVersion,
 request : "GetFeatureInfo",
 layers : layerNames,
 query_layers : layerNames,

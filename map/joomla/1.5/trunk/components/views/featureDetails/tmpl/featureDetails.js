@@ -293,7 +293,7 @@ filterText +
 		  var dom = new OpenLayers.Format.Filter.v1_0_0().write(filter);
       var filterText = this._XMLtoString(dom);
       var WMSoptions = {
-              VERSION: "1.1.0",
+              VERSION: componentParams.pubWmsVersion,
               LAYERS: featureType,
               SRS: componentParams.projection,
               TRANSPARENT: true, 

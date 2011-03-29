@@ -23,6 +23,7 @@ class overlay extends sdiTable
 {
 	var $group_id=null;
 	var $url=null;
+	var $version=null;
 	var $type=null;
 	var $layers=null;
 	var $maxextent=null;

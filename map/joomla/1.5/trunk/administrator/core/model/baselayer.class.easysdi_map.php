@@ -22,6 +22,7 @@ defined('_JEXEC') or die('Restricted access');
 class baseLayer extends sdiTable
 {
 	var $url=null;
+	var $version=null;
 	var $layers=null;
 	var $projection=null;
 	var $imgformat=null;

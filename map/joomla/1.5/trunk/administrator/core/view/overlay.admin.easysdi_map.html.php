@@ -200,6 +200,16 @@ class HTML_overlay
 						</select></td>
 					</tr>
 					<tr>
+						<td class="key"><?php echo JText::_("MAP_OVERLAY_URL_VERSION"); ?></td>
+						<td>
+							<select class="inputbox" name="version" id="version">
+								<option <?php if($overlay_content->version == '1.0.0') echo "selected" ; ?> value="1.0.0"><?php echo "1.0.0"; ?></option>
+								<option <?php if($overlay_content->version == '1.1.1') echo "selected" ; ?> value="1.1.1"><?php echo "1.1.1"; ?></option>
+								<option <?php if($overlay_content->version == '1.3.0') echo "selected" ; ?> value="1.3.0"><?php echo "1.3.0"; ?></option>
+							</select>
+						</td>
+					</tr>
+					<tr>
 						<td class="key"><?php echo JText::_("MAP_OVERLAY_LAYERS"); ?></td>
 						<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['layers'];?>" name="layers" id="layers" value="<?php echo $overlay_content->layers; ?>" /></td>
 						<td><?php echo JText::_("MAP_OVERLAY_LAYERS_SEPARATOR"); ?></td>

@@ -63,7 +63,7 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 					FILTER : filterText,
 					GEOMETRYNAME : geom,
 					FORMAT : 'image/png',
-					VERSION : '1.1.0'
+					VERSION : componentParams.pubWmsVersion
 				};
 				layerOptions = {
 					isBaseLayer : false,
@@ -98,7 +98,7 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 						FILTER : filterText,
 						GEOMETRYNAME : p.lowScaleSwitchTo,
 						FORMAT : 'image/png',
-						VERSION : '1.1.0'
+						VERSION : componentParams.pubWmsVersion
 					};
 					layerOptions = {
 						isBaseLayer : false,
@@ -140,7 +140,7 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 				GEOMETRYNAME : geom,
 				FORMAT : 'image/png',
 				TILED : true,
-				VERSION : '1.0.0'
+				VERSION : componentParams.pubWmsVersion
 			};
 			layerOptions = {
 				isBaseLayer : false,
@@ -1355,7 +1355,7 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 			url = url.substr(0, url.length - 1);
 		}
 
-		url += "&VERSION=1.1.1&SRS=" + componentParams.projection + "&FORMAT=" + img_format
+		url += "&VERSION="+componentParams.pubWmsVersion+"&SRS=" + componentParams.projection + "&FORMAT=" + img_format
 				+ "&SERVICE=WMS&REQUEST=GetMap&EXCEPTIONS=application%2Fvnd.ogc.se_inimage&BBOX=";
 		url += this.map.getExtent().left + "," + this.map.getExtent().bottom + "," + this.map.getExtent().right + ","
 				+ this.map.getExtent().top;
