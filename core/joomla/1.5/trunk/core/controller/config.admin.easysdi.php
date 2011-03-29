@@ -342,6 +342,14 @@ class ADMIN_config {
 			if (!$database->query()) {			
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['pubWfsVersion'])."\" WHERE code = 'pubWfsVersion'");
+			if (!$database->query()) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['pubWmsVersion'])."\" WHERE code = 'pubWmsVersion'");
+			if (!$database->query()) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
 			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['maxFeatures'])."\" WHERE code = 'maxFeatures'");
 			if (!$database->query()) {			
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");

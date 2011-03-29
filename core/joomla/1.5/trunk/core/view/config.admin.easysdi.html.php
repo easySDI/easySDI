@@ -601,20 +601,10 @@ if ($monitorItem > 0){
 							</fieldset>
 									
 							<fieldset class="adminform">
-								<legend><?php echo JText::_( 'CORE_CONFIGURATION_WMSMAP_FIELDSET_TITLE' ); ?></legend>
+								<legend><?php echo JText::_( 'CORE_CONFIGURATION_SERVICEPUB_FIELDSET_TITLE' ); ?></legend>
 								 
 								<table class="admintable" cellspacing="1">
 									<tbody>
-									<tr>
-										<td valign="top" class="key">
-											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_MAP_WMSFILTERSUPPORT_TIP' ); ?>">
-												<?php echo JText::_( 'CORE_CONFIGURATION_MAP_WMSFILTERSUPPORT_LABEL' ); ?>
-											</span>
-										</td>
-										<td>
-											<input class="text_area" type="text" size="100" name="WMSFilterSupport" value="<?php echo $mapList['WMSFilterSupport']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
-										</td>
-									</tr>
 									<tr>
 										<td valign="top" class="key">
 											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_MAP_PUBWMSURL_TIP' ); ?>">
@@ -623,6 +613,29 @@ if ($monitorItem > 0){
 										</td>
 										<td>
 											<input class="text_area" type="text" size="100" name="pubWmsUrl" value="<?php echo $mapList['pubWmsUrl']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+										</td>
+									</tr>
+									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_MAP_PUBWMSVERSION_TIP' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_MAP_PUBWMSVERSION_LABEL' ); ?>
+											</span>
+										</td>
+										<td>
+											<select class="inputbox" name="pubWmsVersion">
+											<option <?php if($mapList['pubWmsVersion']->value == '1.1.1') echo "selected" ; ?> value="1.1.1"><?php echo "1.1.1"; ?></option>
+											<option <?php if($mapList['pubWmsVersion']->value == '1.3.0') echo "selected" ; ?> value="1.3.0"><?php echo "1.3.0"; ?></option>
+											</select>
+										</td>
+									</tr>
+									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_MAP_WMSFILTERSUPPORT_TIP' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_MAP_WMSFILTERSUPPORT_LABEL' ); ?>
+											</span>
+										</td>
+										<td>
+											<input class="text_area" type="text" size="100" name="WMSFilterSupport" value="<?php echo $mapList['WMSFilterSupport']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
 										</td>
 									</tr>
 									<tr>
@@ -655,15 +668,7 @@ if ($monitorItem > 0){
 											<input class="text_area" type="text" size="100" name="defaultCoordMapZoom" value="<?php echo $mapList['defaultCoordMapZoom']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
 										</td>
 									</tr>
-									</tbody>
-									</table>
-								</fieldset>
-								
-								<fieldset class="adminform">
-								<legend><?php echo JText::_( 'CORE_CONFIGURATION_WFSMAP_FIELDSET_TITLE' ); ?></legend>
-								 
-								<table class="admintable" cellspacing="1">
-									<tbody>
+									
 									<tr>
 										<td valign="top" class="key">
 											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_MAP_PUBWFSURL_TIP' ); ?>">
@@ -672,6 +677,18 @@ if ($monitorItem > 0){
 										</td>
 										<td>
 											<input class="text_area" type="text" size="100" name="pubWfsUrl" value="<?php echo $mapList['pubWfsUrl']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+										</td>
+									</tr>
+									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_MAP_PUBWFSVERSION_TIP' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_MAP_PUBWFSVERSION_LABEL' ); ?>
+											</span>
+										</td>
+										<td>
+											<select class="inputbox" name="pubWfsVersion">
+											<option <?php if($mapList['pubWfsVersion']->value == '1.0.0') echo "selected" ; ?> value="1.0.0"><?php echo "1.0.0"; ?></option>
+											</select>
 										</td>
 									</tr>
 									<tr>
