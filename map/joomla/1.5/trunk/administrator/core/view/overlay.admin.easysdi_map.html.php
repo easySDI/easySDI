@@ -103,7 +103,7 @@ class HTML_overlay
 		<script>
 		var $j = jQuery.noConflict();
 		$j(document).ready(function() {
-			!$j("input[name=resolutionOverScale]:radio").change(
+			!$j("input[name=resolutionoverscale]:radio").change(
 					function(e){
 						if (e.target.value==0)
 						{
@@ -184,14 +184,63 @@ class HTML_overlay
 							value="<?php echo stripcslashes($overlay_content->name); ?>" /></td>
 					</tr>
 					<tr>
+						<td class="key"><?php echo JText::_("MAP_OVERLAY_CONTENT_GROUP"); ?></td>
+						<td><?php echo JHTML::_("select.genericlist",$rowsGroup, 'group_id', 'size="1" class="inputbox" ', 'value', 'text',$overlay_content->group_id); ?>
+					
+					</tr>
+					<tr>
+						<td class="key"><?php echo JText::_("MAP_OVERLAY_URL"); ?></td>
+						<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['url'];?>" name="url" id="url" value="<?php echo $overlay_content->url; ?>" /></td>
+					</tr>
+					<tr>
+						<td class="key"><?php echo JText::_("MAP_OVERLAY_URL_TYPE"); ?></td>
+						<td><select class="inputbox" name="type">
+							<option value="WMS" <?php if($overlay_content->type == 'WMS') echo "selected" ; ?>><?php echo JText::_("MAP_WMS"); ?></option>
+							<option value="WFS" <?php if($overlay_content->type == 'WFS') echo "selected" ; ?>><?php echo JText::_("MAP_WFS"); ?></option>
+						</select></td>
+					</tr>
+					<tr>
 						<td class="key"><?php echo JText::_("MAP_OVERLAY_LAYERS"); ?></td>
 						<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['layers'];?>" name="layers" id="layers" value="<?php echo $overlay_content->layers; ?>" /></td>
 						<td><?php echo JText::_("MAP_OVERLAY_LAYERS_SEPARATOR"); ?></td>
 					</tr>
-					<tr>
-						<td class="key"><?php echo JText::_("MAP_OVERLAY_CONTENT_GROUP"); ?></td>
-						<td><?php echo JHTML::_("select.genericlist",$rowsGroup, 'group_id', 'size="1" class="inputbox" ', 'value', 'text',$overlay_content->group_id); ?>
 					
+					
+					
+					<tr>
+						<td class="key"><?php echo JText::_("MAP_OVERLAY_IMG_FORMAT"); ?></td>
+						<td><input class="inputbox" name="imgformat" id="imgformat" type="text" size="100" maxlength="<?php echo $fieldsLength['imgformat'];?>"
+							value="<?php echo $overlay_content->imgformat; ?>" /></td>
+						<td>ex : image/png</td>
+					</tr>
+					<tr>
+						<td class="key"><?php echo JText::_("MAP_BASE_CACHE"); ?></td>
+						<td><input class="checkbox" name="cache" value="1" type="checkbox" <?php if ($overlay_content->cache == 1) echo "checked=\"checked\""; ?> /></td>
+					</tr>
+					<tr>
+						<td class="key"><?php echo JText::_("MAP_OVERLAY_TILE"); ?></td>
+						<td><input class="checkbox" name="singletile" value="1" type="checkbox"
+						<?php if ($overlay_content->singletile == 1) echo "checked=\"checked\""; ?> /></td>
+					</tr>
+					<tr>
+						<td class="key"><?php echo JText::_("MAP_BASELAYER_CUSTOM_STYLE_ENABLED"); ?></td>
+						<td><input class="checkbox" name="customstyle" value="1" type="checkbox"
+						<?php if ($overlay_content->customstyle == 1) echo "checked=\"checked\""; ?> /></td>
+					</tr>
+					<tr>
+						<td class="key"><?php echo JText::_("MAP_OVERLAY_VISIBILITY"); ?></td>
+						<td><input class="checkbox" name="defaultvisibility" value="1" type="checkbox"
+						<?php if ($overlay_content->defaultvisibility == 1) echo "checked=\"checked\""; ?> /></td>
+					</tr>
+					<tr>
+						<td class="key"><?php echo JText::_("MAP_OVERLAY_OPACITY"); ?></td>
+						<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['defaultopacity'];?>" name="defaultopacity" id="defaultopacity"
+							value="<?php echo $overlay_content->defaultopacity; ?>" /></td>
+					</tr>
+					<tr>
+						<td class="key"><?php echo JText::_("MAP_OVERLAY_METADATA"); ?></td>
+						<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['metadata_url'];?>" name="metadata_url" id="metadataurl"
+							value="<?php echo $overlay_content->metadataurl; ?>" /></td>
 					</tr>
 					<tr>
 						<td class="key"><?php echo JText::_("MAP_OVERLAY_PROJECTION"); ?></td>
@@ -206,7 +255,6 @@ class HTML_overlay
 							<option <?php if($overlay_content->unit == 'degrees') echo "selected" ; ?> value="degrees"><?php echo JText::_("MAP_DEGREES"); ?></option>
 						</select></td>
 					</tr>
-		
 					<tr>
 						<td class="key"><?php echo JText::_("MAP_OVERLAY_MAXEXTENT"); ?></td>
 						<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['maxextent'];?>" name="maxextent" id="maxextent"
@@ -235,52 +283,7 @@ class HTML_overlay
 						<td style=""><textarea class="textarea resolutions" style="height: 200px; width: 500px;" id="resolutions" name="resolutions" size="100"
 							maxlength="4000" <?php if ($overlay_content->resolutionoverscale == 0) echo 'disabled' ?>><?php echo $overlay_content->resolutions; ?></textarea></td>
 					</tr>
-					<tr>
-						<td class="key"><?php echo JText::_("MAP_BASE_CACHE"); ?></td>
-						<td><input class="checkbox" name="cache" value="1" type="checkbox" <?php if ($overlay_content->cache == 1) echo "checked=\"checked\""; ?> /></td>
-					</tr>
-					<tr>
-						<td class="key"><?php echo JText::_("MAP_OVERLAY_URL"); ?></td>
-						<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['url'];?>" name="url" id="url" value="<?php echo $overlay_content->url; ?>" /></td>
-					</tr>
-					<tr>
-						<td class="key"><?php echo JText::_("MAP_OVERLAY_URL_TYPE"); ?></td>
-						<td><select class="inputbox" name="type">
-							<option value="WMS" <?php if($overlay_content->type == 'WMS') echo "selected" ; ?>><?php echo JText::_("MAP_WMS"); ?></option>
-							<option value="WFS" <?php if($overlay_content->type == 'WFS') echo "selected" ; ?>><?php echo JText::_("MAP_WFS"); ?></option>
-						</select></td>
-					</tr>
-					<tr>
-						<td class="key"><?php echo JText::_("MAP_OVERLAY_TILE"); ?></td>
-						<td><input class="checkbox" name="singletile" value="1" type="checkbox"
-						<?php if ($overlay_content->singletile == 1) echo "checked=\"checked\""; ?> /></td>
-					</tr>
-					<tr>
-						<td class="key"><?php echo JText::_("MAP_OVERLAY_IMG_FORMAT"); ?></td>
-						<td><input class="inputbox" name="imgformat" id="imgformat" type="text" size="100" maxlength="<?php echo $fieldsLength['imgformat'];?>"
-							value="<?php echo $overlay_content->imgformat; ?>" /></td>
-						<td>ex : image/png</td>
-					</tr>
-					<tr>
-						<td class="key"><?php echo JText::_("MAP_baseLayer_CUSTOM_STYLE_ENABLED"); ?></td>
-						<td><input class="checkbox" name="customstyle" value="1" type="checkbox"
-						<?php if ($overlay_content->customstyle == 1) echo "checked=\"checked\""; ?> /></td>
-					</tr>
-					<tr>
-						<td class="key"><?php echo JText::_("MAP_OVERLAY_VISIBILITY"); ?></td>
-						<td><input class="checkbox" name="defaultvisibility" value="1" type="checkbox"
-						<?php if ($overlay_content->defaultvisibility == 1) echo "checked=\"checked\""; ?> /></td>
-					</tr>
-					<tr>
-						<td class="key"><?php echo JText::_("MAP_OVERLAY_OPACITY"); ?></td>
-						<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['defaultopacity'];?>" name="defaultopacity" id="defaultopacity"
-							value="<?php echo $overlay_content->defaultopacity; ?>" /></td>
-					</tr>
-					<tr>
-						<td class="key"><?php echo JText::_("MAP_OVERLAY_METADATA"); ?></td>
-						<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['metadata_url'];?>" name="metadata_url" id="metadataurl"
-							value="<?php echo $overlay_content->metadataurl; ?>" /></td>
-					</tr>
+					
 				</table>
 				</fieldset>
 				</td>

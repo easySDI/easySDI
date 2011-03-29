@@ -22,7 +22,7 @@ class HTML_overlayctrlpanel
 {
 	function overlayCtrlPanel($option)
 	{
-		JToolBarHelper::title( JText::_(  'MAP_OVERLAY_CONTROL_PANEL' ), 'generic.png' );
+		JToolBarHelper::title( JText::_(  'MAP_CARTO_CONTROL_PANEL' ), 'generic.png' );
 		JToolBarHelper::custom( 'ctrlPanel', 'tool_easysdi_admin.png', 'tool_easysdi_admin.png', JTEXT::_("CORE_MENU_CPANEL"), false );
 		
 		global $mainframe;

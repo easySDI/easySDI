@@ -25,7 +25,7 @@
 								<td class="header_sdi_list">
 									<ul >
 										<li><?php printf('<a href="index.php?option=%s&amp;task=projection">', 'com_easysdi_map'); echo JText::_( 'CORE_CPANEL_MAP_PROJECTION_LABEL' ); ?></a></li>
-										<li><?php printf('<a href="index.php?option=%s&amp;task=overlayCtrlPanel">', 'com_easysdi_map'); echo JText::_( 'CORE_CPANEL_MAP_OVERLAY_LABEL' ); ?></a></li>
+										<li><?php printf('<a href="index.php?option=%s&amp;task=overlayCtrlPanel">', 'com_easysdi_map'); echo JText::_( 'CORE_CPANEL_MAP_CARTO_LABEL' ); ?></a></li>
 										<li><?php printf('<a href="index.php?option=%s&amp;task=featureType">', 'com_easysdi_map'); echo JText::_( 'CORE_CPANEL_MAP_FEATURETYPE_LABEL' ); ?></a></li>
 										<li><?php printf('<a href="index.php?option=%s&amp;task=comment">', 'com_easysdi_map'); echo JText::_( 'CORE_CPANEL_MAP_COMMENT_LABEL' ); ?></a></li>
 									</ul>

@@ -218,11 +218,16 @@ function checkProxyLayerPermissions($doCheck, $type, $name, $valid_wms_layers, $
 }
 
 //Get default base map definition
-$s .= " \n SData.baseMap = ";
 //$query = "SELECT * from #__easysdi_basemap_definition WHERE def = 1;";
-$query = "SELECT * from #__sdi_baselayer WHERE defineBaseMap = 1;";
+$query = "SELECT * from #__sdi_basemapdefinition LIMIT 0,1;";
 $db->setQuery($query);
 $result = $db->loadObject();
+if (count($result)==0)
+{
+	$s .= "alert('Invalid configuration. No Base Map defined.');\n";
+}
+else {
+$s .= " \n SData.baseMap = ";
 $s .= "{
     id : '$result->id',
     projection : '$result->projection',\n";
@@ -247,6 +252,7 @@ if (!$result->resolutionoverscale && $result->maxscale) {
 $s .= "    units : '$result->unit'
 }";
 $s .= ";\n";
+}
 
 // Export layer objects from the base layers table.
 //$query = "SELECT * from #__easysdi_basemap_content;";
