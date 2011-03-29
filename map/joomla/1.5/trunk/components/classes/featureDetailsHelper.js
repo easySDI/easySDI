@@ -83,7 +83,7 @@ EasySDI_Map.FeatureDetailsHelper.prototype.getComments = function()	{
 		featurePrefix: componentParams.pubFeaturePrefix,
 		featureType: SData.commentFeatureType.typeName,
 		srsName: componentParams.projection,
-		version: "1.0.0",
+		version: componentParams.pubWfsVersion,
 		filter:	new	OpenLayers.Filter.Comparison({
 			type:	OpenLayers.Filter.Comparison.EQUAL_TO,
 			property:	componentParams.featureIdAttribute,
@@ -172,7 +172,7 @@ EasySDI_Map.FeatureDetailsHelper.prototype.saveComment = function()	{
 			featurePrefix: componentParams.pubFeaturePrefix,
 			featureType: SData.commentFeatureType.typeName,
 			srsName: componentParams.projection,
-			version: "1.0.0"
+			version: componentParams.pubWfsVersion
 		});
 		// Create	a	geometry-less	vector feature to	help post	the	attributes for the comment
 		d=new	Date();

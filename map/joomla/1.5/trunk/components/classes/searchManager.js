@@ -149,7 +149,7 @@ EasySDI_Map.SearchManager.prototype.doWfsSearch = function(searchBar) {
 			featureType : featureType,
 			filter : filter,
 			srsName : componentParams.projection,
-			version : "1.0.0",
+			version : componentParams.pubWfsVersion,
 			propertyNames : propertyNames,
 			maxFeatures : componentParams.maxFeatures,
 			format : new OpenLayers.Format.WFST.Custom( {

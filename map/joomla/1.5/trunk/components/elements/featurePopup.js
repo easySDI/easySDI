@@ -61,7 +61,7 @@ EasySDI_Map.FeaturePopup = Ext.extend(Ext.Window, {
 	    featurePrefix: componentParams.pubFeaturePrefix,	    
 	    featureType: this.featureType,
 	    srsName: componentParams.projection,
-	    version: "1.0.0",
+	    version: componentParams.pubWfsVersion,
 	    propertyNames: SData.defaultAttrs[this.featureType].concat([SData.commentFeatureType.featureCommentCount]),
 	    filter: new OpenLayers.Filter.Comparison({
 	      type: OpenLayers.Filter.Comparison.EQUAL_TO,

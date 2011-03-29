@@ -268,7 +268,7 @@ filterText +
       basemapscontentid: baseLayer.id,
       LAYERS: baseLayer.layers,
       SERVICE: baseLayer.url_type,
-      VERSION: "1.1.0",
+      VERSION: baseLayer.version,
       STYLES: '',
       SRS: baseLayer.projection,
       FORMAT: baseLayer.imageFormat,
