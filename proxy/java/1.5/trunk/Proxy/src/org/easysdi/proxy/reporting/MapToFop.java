@@ -80,13 +80,26 @@ public class MapToFop {
 	public void initWmsWfs(JoomlaProvider provider) throws ServletException, IOException, ServiceException {
 		JdbcTemplate sjt = provider.getSjt();
 		String prefix = provider.getPrefix();
-
-		String wms = sjt.queryForObject("select value as pubWmsUrl from " + prefix + "easysdi_map_config where name = 'pubWmsUrl' limit 1", String.class);
-		if (wms == null)
-			throw new ServletException("pubWmsUrl must be set !");
-		String wfs = sjt.queryForObject("select value as pubWfsUrl from " + prefix + "easysdi_map_config where name = 'pubWfsUrl' limit 1", String.class);
-		if (wfs == null)
-			throw new ServletException("pubWfsUrl must be set !");
+		String wms ="";
+		String wfs ="";
+		if(provider.getVersion()== null || Integer.parseInt(provider.getVersion())<200)
+		{
+			wms = sjt.queryForObject("select value as pubWmsUrl from " + prefix + "easysdi_map_config where name = 'pubWmsUrl' limit 1", String.class);
+			if (wms == null)
+				throw new ServletException("pubWmsUrl must be set !");
+			wfs = sjt.queryForObject("select value as pubWfsUrl from " + prefix + "easysdi_map_config where name = 'pubWfsUrl' limit 1", String.class);
+			if (wfs == null)
+				throw new ServletException("pubWfsUrl must be set !");
+		}
+		else
+		{
+			wms = sjt.queryForObject("select value as pubWmsUrl from " + prefix + "sdi_configuration where name = 'pubWmsUrl' limit 1", String.class);
+			if (wms == null)
+				throw new ServletException("pubWmsUrl must be set !");
+			wfs = sjt.queryForObject("select value as pubWfsUrl from " + prefix + "sdi_configuration where name = 'pubWfsUrl' limit 1", String.class);
+			if (wfs == null)
+				throw new ServletException("pubWfsUrl must be set !");
+		}
 		token = SecurityContextHolder.getContext().getAuthentication();
 		if (token != null && token.getPrincipal().toString() != null && token.getCredentials().toString() != null) {
 			this.setCredentials(token.getPrincipal().toString(), token.getCredentials().toString());
@@ -118,7 +131,7 @@ public class MapToFop {
 		this.urlWFS = urlWFS;
 		if (connectionParameters == null)
 			connectionParameters = new HashMap<String, Object>();
-		connectionParameters.put(WFSDataStoreFactory.URL.key, new URL(urlWFS + "?request=getcapabilities&version=1.0.0"));
+		connectionParameters.put(WFSDataStoreFactory.URL.key, new URL(urlWFS + "?request=getcapabilities&service=WFS&version=1.0.0"));
 		connectionParameters.put(WFSDataStoreFactory.TIMEOUT.key, 60000);
 		connectionParameters.put(WFSDataStoreFactory.TRY_GZIP.key, false);
 		this.wfs = wfsFactory.createDataStore(connectionParameters);
