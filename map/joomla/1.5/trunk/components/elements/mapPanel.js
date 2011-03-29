@@ -1355,7 +1355,7 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 			url = url.substr(0, url.length - 1);
 		}
 
-		url += "&VERSION=1.0.0&SRS=" + componentParams.projection + "&FORMAT=" + img_format
+		url += "&VERSION=1.1.1&SRS=" + componentParams.projection + "&FORMAT=" + img_format
 				+ "&SERVICE=WMS&REQUEST=GetMap&EXCEPTIONS=application%2Fvnd.ogc.se_inimage&BBOX=";
 		url += this.map.getExtent().left + "," + this.map.getExtent().bottom + "," + this.map.getExtent().right + ","
 				+ this.map.getExtent().top;
