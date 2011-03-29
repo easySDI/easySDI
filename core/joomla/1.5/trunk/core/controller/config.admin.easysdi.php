@@ -398,7 +398,7 @@ class ADMIN_config {
 			if (!$database->query()) {			
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
-			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['maptoFopURL'])."\" WHERE code = 'maptoFopURL'");
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['maptofopURL'])."\" WHERE code = 'maptofopURL'");
 			if (!$database->query()) {			
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}

@@ -612,7 +612,7 @@ if ($monitorItem > 0){
 											</span>
 										</td>
 										<td>
-											<input class="text_area" type="text" size="100" name="wmsFilterSupport" value="<?php echo $mapList['wmsFilterSupport']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+											<input class="text_area" type="text" size="100" name="WMSFilterSupport" value="<?php echo $mapList['WMSFilterSupport']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
 										</td>
 									</tr>
 									<tr>
@@ -731,7 +731,7 @@ if ($monitorItem > 0){
 											</span>
 										</td>
 										<td>
-											<input class="text_area" type="text" size="100" name="wpsReportUrl" value="<?php echo $mapList['wpsReportUrl']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+											<input class="text_area" type="text" size="100" name="wpsReportsUrl" value="<?php echo $mapList['wpsReportsUrl']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
 										</td>
 									</tr>
 									<tr>
@@ -741,7 +741,7 @@ if ($monitorItem > 0){
 											</span>
 										</td>
 										<td>
-											<input class="text_area" type="text" size="100" name="shp2Gml" value="<?php echo $mapList['shp2Gml']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+											<input class="text_area" type="text" size="100" name="shp2GmlUrl" value="<?php echo $mapList['shp2GmlUrl']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
 										</td>
 									</tr>
 									<tr>
@@ -751,7 +751,7 @@ if ($monitorItem > 0){
 											</span>
 										</td>
 										<td>
-											<input class="text_area" type="text" size="100" name="maptoFopURL" value="<?php echo $mapList['maptoFopURL']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+											<input class="text_area" type="text" size="100" name="maptofopURL" value="<?php echo $mapList['maptofopURL']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
 										</td>
 									</tr>
 									</tbody>
