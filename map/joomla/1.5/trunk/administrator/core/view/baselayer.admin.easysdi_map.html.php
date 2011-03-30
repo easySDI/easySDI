@@ -202,6 +202,7 @@ class HTML_baselayer
 						<td class="key"><?php echo JText::_("MAP_BASELAYER_URL_VERSION"); ?></td>
 						<td>
 							<select class="inputbox" name="version" id="version">
+								<option <?php if($baseLayer->version == '1.1.0') echo "selected" ; ?> value="1.1.0"><?php echo "1.1.0"; ?></option>
 								<option <?php if($baseLayer->version == '1.1.1') echo "selected" ; ?> value="1.1.1"><?php echo "1.1.1"; ?></option>
 								<option <?php if($baseLayer->version == '1.3.0') echo "selected" ; ?> value="1.3.0"><?php echo "1.3.0"; ?></option>
 							</select>
