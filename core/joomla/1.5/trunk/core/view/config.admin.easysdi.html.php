@@ -623,6 +623,7 @@ if ($monitorItem > 0){
 										</td>
 										<td>
 											<select class="inputbox" name="pubWmsVersion">
+											<option <?php if($mapList['pubWmsVersion']->value == '1.1.0') echo "selected" ; ?> value="1.1.1"><?php echo "1.1.0"; ?></option>
 											<option <?php if($mapList['pubWmsVersion']->value == '1.1.1') echo "selected" ; ?> value="1.1.1"><?php echo "1.1.1"; ?></option>
 											<option <?php if($mapList['pubWmsVersion']->value == '1.3.0') echo "selected" ; ?> value="1.3.0"><?php echo "1.3.0"; ?></option>
 											</select>
