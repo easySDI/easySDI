@@ -1509,7 +1509,7 @@ EasySDI_Map.PlaceFilterPanel = Ext.extend(EasySDI_Map.BaseFilterPanel,
 	    SRS: componentParams.projection,
 	    TRANSPARENT: true,
 	    FORMAT: 'image/png',
-	    VERSION: '1.0.0'
+	    VERSION: componentParams.pubWmsVersion
 	  };
 	  var mapLayer = new OpenLayers.Layer.WMS(layer.title,
 	    layer.wms_url,
@@ -1521,12 +1521,12 @@ EasySDI_Map.PlaceFilterPanel = Ext.extend(EasySDI_Map.BaseFilterPanel,
 	  var parts = layer.feature_type_name.split(":");
 	  var clickFeatureCtrl = new OpenLayers.Control.GetFeature({
 	        protocol: new OpenLayers.Protocol.WFS({
-	        version: '1.0.0',
-	                url: layer.wfs_url,
-	                srsName: componentParams.projection,
-	                featureType: 'rec_sect',
+	        version: componentParams.pubWfsVersion,
+	        url: layer.wfs_url,
+	        srsName: componentParams.projection,
+	        featureType: 'rec_sect',
 	        featurePrefix: 'eai',
-	                featureNS: 'http://www.easysdi.org/eai'
+	        featureNS: 'http://www.easysdi.org/eai'
 	    }),
 	    layer: layer,
 	    toggle: true

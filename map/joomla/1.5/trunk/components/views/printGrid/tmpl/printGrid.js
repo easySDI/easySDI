@@ -40,7 +40,7 @@ PrintGrid = function(filterString) {
     featureType: this.usableFeatureType,
     geometryName: null,
     srsName: componentParams.projection,
-    version: "1.0.0",
+    version: componentParams.pubWfsVersion,
     filter: filter,
     propertyNames: this.attrs,
     maxFeatures: componentParams.maxFeatures

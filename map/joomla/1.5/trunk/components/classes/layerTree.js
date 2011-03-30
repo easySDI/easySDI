@@ -441,7 +441,7 @@ _addBaseLayer : function(layer, i) {
 	var WMSoptions = {
 		LAYERS : layer.layers,
 		SERVICE : layer.url_type,
-		VERSION : "1.1.0",
+		VERSION : layer.version,
 		STYLES : '',
 		SRS : layer.projection,
 		FORMAT : layer.imageFormat

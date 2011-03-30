@@ -272,7 +272,7 @@ EasySDI_Map.FeatureGrid = Ext.extend(EasySDI_Map.ReportBase, {
       geometryName: geometryName,
       propertyNames: props,
       srsName: componentParams.projection,
-      version: "1.0.0",
+      version: componentParams.pubWfsVersion,
       filter: this.getFilter()
     });    
     

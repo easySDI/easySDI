@@ -399,7 +399,7 @@ foreach ($result as $rec)
 	$s .= "{
     id: '$l_id',
     wfs_url: '$l_wfsurl',
-    //wms_url: '$l_wmsurl',
+    wms_url: '$l_wmsurl',
     layer_name: '$l_layername',
     area_field_name: '$l_areafield',
     name_field_name: '$l_namefield',

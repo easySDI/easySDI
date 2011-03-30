@@ -54,7 +54,7 @@ EasySDI_Map.FeatureDetails = Ext.extend(EasySDI_Map.ReportBase, {
       featurePrefix: componentParams.pubFeaturePrefix,
       featureType: this.url.type,
       srsName: componentParams.projection,
-      version: "1.0.0",
+      version: componentParams.pubWfsVersion,
       propertyNames: props,
       filter: new OpenLayers.Filter.Comparison({
         type: OpenLayers.Filter.Comparison.EQUAL_TO,
@@ -204,7 +204,7 @@ EasySDI_Map.FeatureDetails = Ext.extend(EasySDI_Map.ReportBase, {
 '</wps:Input>'+
 '<wps:Input><ows:Identifier>wfsRequest</ows:Identifier>'+
 '<wps:Data><wps:ComplexData schema="http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd" mimeType="text/xml" encoding="UTF-8">'+
-'<wfs:GetFeature service="WFS" version="1.0.0" outputFormat="GML2" xmlns:wfs="http://www.opengis.net/wfs" '+ 'xmlns:ogc="http://www.opengis.net/ogc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" '+
+'<wfs:GetFeature service="WFS" version="'+ componentParams.pubWfsVersion +'" outputFormat="GML2" xmlns:wfs="http://www.opengis.net/wfs" '+ 'xmlns:ogc="http://www.opengis.net/ogc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" '+
 'xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd"> '+
 '<wfs:Query typeName="' + componentParams.pubFeaturePrefix + ':' + this.url.type.replace('{geom}','') + '">' +
 this._getProperties() +
