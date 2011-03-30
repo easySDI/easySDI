@@ -1766,14 +1766,22 @@ public class WMSProxyServlet extends ProxyServlet {
 			}
 			// Fin de Debug
 			
-			//HVH - 4.11.2010 : sen an OGC Exception if parameters LAYERS OR QUERY_LAYERS are empty or missing
+			//HVH - 4.11.2010 : send an OGC Exception if parameters LAYERS OR QUERY_LAYERS are empty or missing
 			if ("GetMap".equals(operation) ||
-				 "GetLegendGraphic".equals(operation)) 
+				 "GetFeatureInfo".equals(operation)) 
 			{
 				if(layers == null || layers.equalsIgnoreCase(""))
 				{
 					String param =  "GetMap".equals(operation) ? "LAYERS" : "QUERY_LAYERS";
 					sendOgcExceptionBuiltInResponse(resp,generateOgcException(param+" parameter is missing.","LayerNotDefined",param,requestedVersion));
+					return;
+				}
+			}
+			if("GetLegendGraphic".equals(operation))
+			{
+				if(layer == null || layer.equals(""))
+				{
+					sendOgcExceptionBuiltInResponse(resp,generateOgcException("LAYER parameter is missing.","LayerNotDefined","LAYER",requestedVersion));
 					return;
 				}
 			}
