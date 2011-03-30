@@ -131,7 +131,7 @@ public class MapToFop {
 		this.urlWFS = urlWFS;
 		if (connectionParameters == null)
 			connectionParameters = new HashMap<String, Object>();
-		connectionParameters.put(WFSDataStoreFactory.URL.key, new URL(urlWFS + "?request=getcapabilities&service=WFS&version=1.0.0"));
+		connectionParameters.put(WFSDataStoreFactory.URL.key, new URL(urlWFS + "?request=GetCapabilities&service=WFS&version=1.0.0"));
 		connectionParameters.put(WFSDataStoreFactory.TIMEOUT.key, 60000);
 		connectionParameters.put(WFSDataStoreFactory.TRY_GZIP.key, false);
 		this.wfs = wfsFactory.createDataStore(connectionParameters);
