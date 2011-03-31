@@ -22,7 +22,7 @@ class HTML_simplesearch
 {
 	function listSimpleSearch( $rows, $pageNav,$search, $filter_order_Dir, $filter_order, $option)
 	{
-		JToolBarHelper::title(JText::_("MAP_LIST_SIMPLE_SEARCH"));
+		JToolBarHelper::title(JText::_("MAP_LIST_SIMPLE_SEARCH"), 'map.png');
 		?>
 		<form action="index.php" method="GET" name="adminForm">
 		<table width="100%">
@@ -83,11 +83,11 @@ class HTML_simplesearch
 	{
 		if ($simpleSearch->id != 0)
 		{
-			JToolBarHelper::title( JText::_("MAP_EDIT_SIMPLE_SEARCH"), 'generic.png' );
+			JToolBarHelper::title( JText::_("MAP_EDIT_SIMPLE_SEARCH").': <small><small>['. JText::_("CORE_EDIT").']</small></small>', 'addedit.png' );
 		}
 		else
 		{
-			JToolBarHelper::title( JText::_("MAP_NEW_SIMPLE_SEARCH"), 'generic.png' );
+			JToolBarHelper::title( JText::_("MAP_EDIT_SIMPLE_SEARCH").': <small><small>['. JText::_("CORE_NEW").']</small></small>', 'addedit.png' );
 		}
 		?>			
 		<script>	
@@ -312,11 +312,11 @@ class HTML_simplesearch
 	{
 		if ($additionalFilter->id != 0)
 		{
-			JToolBarHelper::title( JText::_("MAP_EDIT_ADD_FILTER"), 'generic.png' );
+			JToolBarHelper::title( JText::_("MAP_EDIT_ADD_FILTER").': <small><small>['. JText::_("CORE_EDIT").']</small></small>', 'addedit.png' );
 		}
 		else
 		{
-			JToolBarHelper::title( JText::_("MAP_NEW_ADD_FILTER"), 'generic.png' );
+			JToolBarHelper::title( JText::_("MAP_EDIT_ADD_FILTER").': <small><small>['. JText::_("CORE_NEW").']</small></small>', 'addedit.png' );
 		}
 		?>				
 		<script>	

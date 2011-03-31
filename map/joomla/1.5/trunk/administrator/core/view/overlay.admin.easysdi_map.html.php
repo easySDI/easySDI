@@ -22,7 +22,7 @@ class HTML_overlay
 {
 	function listOverlay( $rows, $pageNav,$search, $filter_order_Dir, $filter_order,  $option)
 	{
-		JToolBarHelper::title(JText::_("MAP_LIST_OVERLAY_CONTENT"));
+		JToolBarHelper::title(JText::_("MAP_LIST_OVERLAY_CONTENT"), 'map.png');
 		?>
 		<form action="index.php" method="GET" name="adminForm">
 		<table width="100%">
@@ -93,11 +93,11 @@ class HTML_overlay
 		JHTML::script('jquery-1.3.2.min.js', 'components/com_easysdi_map/externals/jquery/');
 		if ($overlay_content->id != 0)
 		{
-			JToolBarHelper::title( JText::_("MAP_OVERLAY_CONTENT_EDIT"), 'generic.png' );
+			JToolBarHelper::title( JText::_("MAP_OVERLAY_CONTENT_EDIT").': <small><small>['. JText::_("CORE_EDIT").']</small></small>', 'addedit.png' );
 		}
 		else
 		{
-			JToolBarHelper::title( JText::_("MAP_OVERLAY_CONTENT_NEW"), 'generic.png' );
+			JToolBarHelper::title( JText::_("MAP_OVERLAY_CONTENT_EDIT").': <small><small>['. JText::_("CORE_NEW").']</small></small>', 'addedit.png' );
 		}
 		?>
 		<script>
@@ -342,7 +342,7 @@ class HTML_overlay
 
 	function listOverlayGroup( $rows, $pageNav,$search, $filter_order_Dir, $filter_order, $option)
 	{
-		JToolBarHelper::title(JText::_("MAP_LIST_OVERLAY_GROUP"));
+		JToolBarHelper::title(JText::_("MAP_LIST_OVERLAY_GROUP"), 'map.png');
 		?>
 		<form action="index.php" method="GET" name="adminForm">
 		<table width="100%">
@@ -412,11 +412,11 @@ class HTML_overlay
 	{
 		if ($overlay_group->id != 0)
 		{
-			JToolBarHelper::title( JText::_("MAP_OVERLAY_GROUP_EDIT"), 'generic.png' );
+			JToolBarHelper::title( JText::_("MAP_OVERLAY_GROUP_EDIT").': <small><small>['. JText::_("CORE_EDIT").']</small></small>', 'addedit.png' );
 		}
 		else
 		{
-			JToolBarHelper::title( JText::_("MAP_OVERLAY_GROUP_NEW"), 'generic.png' );
+			JToolBarHelper::title( JText::_("MAP_OVERLAY_GROUP_EDIT").': <small><small>['. JText::_("CORE_NEW").']</small></small>', 'addedit.png' );
 		}
 		?>
 		<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">

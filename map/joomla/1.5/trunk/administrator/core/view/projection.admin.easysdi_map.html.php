@@ -22,7 +22,7 @@ class HTML_projection
 {
 	function listProjection( $rows, $pageNav,$search, $filter_order_Dir, $filter_order, $option)
 	{
-		JToolBarHelper::title(JText::_("MAP_LIST_PROJECTION"));
+		JToolBarHelper::title(JText::_("MAP_LIST_PROJECTION"), 'map.png');
 		?>
 		<form action="index.php" method="GET" name="adminForm">
 		<table width="100%">
@@ -84,11 +84,11 @@ class HTML_projection
 	{
 		if ($projection->id != 0)
 		{
-			JToolBarHelper::title( JText::_("MAP_EDIT_PROJECTION"), 'generic.png' );
+			JToolBarHelper::title( JText::_("MAP_EDIT_PROJECTION").': <small><small>['. JText::_("CORE_EDIT").']</small></small>', 'addedit.png' );
 		}
 		else
 		{
-			JToolBarHelper::title( JText::_("MAP_NEW_PROJECTION"), 'generic.png' );
+			JToolBarHelper::title( JText::_("MAP_EDIT_PROJECTION").': <small><small>['. JText::_("CORE_NEW").']</small></small>', 'addedit.png' );
 		}
 		?>	
 		<script>	

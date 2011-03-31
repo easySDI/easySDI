@@ -59,10 +59,6 @@ switch($task)
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'ctrlPanel'.DS.'overlay.ctrlpanel.admin.easysdi_map.html.php');
 		HTML_overlayctrlpanel::overlayCtrlPanel($option);
 		break;
-	case 'rightCtrlPanel':
-		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'ctrlPanel'.DS.'right.ctrlpanel.admin.easysdi_map.html.php');
-		HTML_rightctrlpanel::rightCtrlPanel($option);
-		break;
 	case 'simplesearchCtrlPanel':
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'ctrlPanel'.DS.'simplesearch.ctrlpanel.admin.easysdi_map.html.php');
 		HTML_simplesearchctrlpanel::simplesearchCtrlPanel($option);

@@ -22,7 +22,7 @@ class HTML_display
 {
 	function listDisplay( $rows, $pageNav, $option)
 	{
-		JToolBarHelper::title(JText::_("MAP_DISPLAY_OPTION"));
+		JToolBarHelper::title(JText::_("MAP_DISPLAY_OPTION"), 'map.png');
 		?>
 		<form action="index.php" method="GET" name="adminForm">
 		<script>

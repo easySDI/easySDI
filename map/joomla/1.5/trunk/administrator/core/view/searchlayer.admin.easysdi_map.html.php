@@ -22,7 +22,7 @@ class HTML_searchlayer
 {
 	function listSearchLayer( $rows, $pageNav,$search, $filter_order_Dir, $filter_order, $option)
 	{
-		JToolBarHelper::title(JText::_("MAP_LIST_SEARCH_LAYER"));
+		JToolBarHelper::title(JText::_("MAP_LIST_SEARCH_LAYER"), 'map.png');
 		?>
 		<form action="index.php" method="GET" name="adminForm">
 		<table width="100%">
@@ -85,11 +85,11 @@ class HTML_searchlayer
 	{
 		if ($search_layer->id != 0)
 		{
-			JToolBarHelper::title( JText::_("MAP_EDIT_SEARCH_LAYER"), 'generic.png' );
+			JToolBarHelper::title( JText::_("MAP_EDIT_SEARCH_LAYER").': <small><small>['. JText::_("CORE_EDIT").']</small></small>', 'addedit.png' );
 		}
 		else
 		{
-			JToolBarHelper::title( JText::_("MAP_NEW_SEARCH_LAYER"), 'generic.png' );
+			JToolBarHelper::title( JText::_("MAP_EDIT_SEARCH_LAYER").': <small><small>['. JText::_("CORE_NEW").']</small></small>', 'addedit.png' );
 		}
 		?>			
 		<script>	

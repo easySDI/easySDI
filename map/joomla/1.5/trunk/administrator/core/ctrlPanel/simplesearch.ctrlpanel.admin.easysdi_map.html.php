@@ -22,7 +22,7 @@ class HTML_simplesearchctrlpanel
 {
 	function simplesearchCtrlPanel($option)
 	{
-		JToolBarHelper::title( JText::_(  'MAP_SIMPLESEARCH_CONTROL_PANEL' ), 'generic.png' );
+		JToolBarHelper::title( JText::_(  'MAP_SIMPLESEARCH_CONTROL_PANEL' ), 'map.png' );
 		JToolBarHelper::custom( 'ctrlPanel', 'tool_easysdi_admin.png', 'tool_easysdi_admin.png', JTEXT::_("CORE_MENU_CPANEL"), false );
 		
 		global $mainframe;

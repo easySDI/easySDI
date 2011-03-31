@@ -22,7 +22,7 @@ class HTML_geolocation
 {
 	function listGeolocation( $rows, $pageNav, $search, $filter_order_Dir, $filter_order,$option)
 	{
-		JToolBarHelper::title(JText::_("MAP_GEOLOCATION_LIST"));
+		JToolBarHelper::title(JText::_("MAP_GEOLOCATION_LIST"), 'map.png');
 		?>
 		<form action="index.php" method="GET" name="adminForm">
 		<table width="100%">
@@ -85,11 +85,11 @@ class HTML_geolocation
 		global  $mainframe;
 		if ($geolocation->id != 0)
 		{
-			JToolBarHelper::title( JText::_("MAP_GEOLOCATION_EDIT"), 'generic.png' );
+			JToolBarHelper::title( JText::_("MAP_GEOLOCATION_EDIT").': <small><small>['. JText::_("CORE_EDIT").']</small></small>', 'addedit.png' );
 		}
 		else
 		{
-			JToolBarHelper::title( JText::_("MAP_GEOLOCATION_NEW"), 'generic.png' );
+			JToolBarHelper::title( JText::_("MAP_GEOLOCATION_EDIT").': <small><small>['. JText::_("CORE_NEW").']</small></small>', 'addedit.png' );
 		}
 		?>		
 		<script>	

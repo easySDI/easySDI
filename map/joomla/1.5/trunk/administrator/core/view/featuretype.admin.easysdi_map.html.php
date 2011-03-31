@@ -22,7 +22,7 @@ class HTML_featuretype
 {
 	function listFeatureType( $rows, $pageNav,$search, $filter_order_Dir, $filter_order, $option)
 	{
-		JToolBarHelper::title(JText::_("MAP_LIST_FEATURE_TYPE"));
+		JToolBarHelper::title(JText::_("MAP_LIST_FEATURE_TYPE"), 'map.png');
 		?>
 		<form action="index.php" method="GET" name="adminForm">
 		<table width="100%">
@@ -84,11 +84,11 @@ class HTML_featuretype
 	{
 		if ($feature_type->id != 0)
 		{
-			JToolBarHelper::title( JText::_("MAP_EDIT_FEATURETYPE"), 'generic.png' );
+			JToolBarHelper::title( JText::_("MAP_EDIT_FEATURETYPE").': <small><small>['. JText::_("CORE_EDIT").']</small></small>', 'addedit.png' );
 		}
 		else
 		{
-			JToolBarHelper::title( JText::_("MAP_NEW_FEATURETYPE"), 'generic.png' );
+			JToolBarHelper::title( JText::_("MAP_EDIT_FEATURETYPE").': <small><small>['. JText::_("CORE_NEW").']</small></small>', 'addedit.png' );
 		}
 		
 		HTML_featuretype::alter_array_value_with_Jtext($rowsUses);

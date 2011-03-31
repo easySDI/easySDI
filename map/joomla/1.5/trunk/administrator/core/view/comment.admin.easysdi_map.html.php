@@ -22,7 +22,7 @@ class HTML_comment
 {
 	function listComment( $rows, $pageNav, $search, $filter_order_Dir, $filter_order,$option)
 	{
-		JToolBarHelper::title(JText::_("MAP_LIST_COMMENT"));
+		JToolBarHelper::title(JText::_("MAP_LIST_COMMENT"), 'map.png');
 		?>
 		<form action="index.php" method="GET" name="adminForm">
 		<table width="100%">
@@ -89,11 +89,11 @@ class HTML_comment
 	{
 		if ($comment->id != 0)
 		{
-			JToolBarHelper::title( JText::_("MAP_EDIT_COMMENT"), 'generic.png' );
+			JToolBarHelper::title( JText::_("MAP_EDIT_COMMENT").': <small><small>['. JText::_("CORE_EDIT").']</small></small>', 'addedit.png' );
 		}
 		else
 		{
-			JToolBarHelper::title( JText::_("MAP_NEW_COMMENT"), 'generic.png' );
+			JToolBarHelper::title( JText::_("MAP_EDIT_COMMENT").': <small><small>['. JText::_("CORE_NEW").']</small></small>', 'addedit.png' );
 		}
 		
 

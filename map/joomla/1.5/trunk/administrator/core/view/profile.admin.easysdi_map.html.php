@@ -22,7 +22,7 @@ class HTML_profile
 {
 	function listProfile( $rows, $pageNav,$search, $filter_order_Dir, $filter_order, $option)
 	{
-		JToolBarHelper::title(JText::_("MAP_LIST_PROFILE"));
+		JToolBarHelper::title(JText::_("MAP_LIST_PROFILE"), 'map.png');
 		?>
 		<form action="index.php" method="GET" name="adminForm">
 		<table width="100%">
@@ -83,7 +83,7 @@ class HTML_profile
 	function editProfile ($profile,$rowsRoles,$rowsSelectedRoles, $option)
 	{
 		HTML_profile::alter_array_value_with_Jtext($rowsRoles);
-		JToolBarHelper::title( JText::_("MAP_EDIT_RIGHT_PROFILE"), 'generic.png' );
+		JToolBarHelper::title( JText::_("MAP_EDIT_RIGHT_PROFILE").': <small><small>['. JText::_("CORE_EDIT").']</small></small>', 'addedit.png' );
 		
 	?>			
 	<script>	

@@ -22,7 +22,7 @@ class HTML_resultgrid
 {
 	function listResultGrid( $rows, $pageNav,$search, $filter_order_Dir, $filter_order, $option)
 	{
-		JToolBarHelper::title(JText::_("MAP_LIST_RESULT_GRID"));
+		JToolBarHelper::title(JText::_("MAP_LIST_RESULT_GRID"), 'map.png');
 		?>
 		<form action="index.php" method="GET" name="adminForm">
 		<table width="100%">
@@ -83,11 +83,11 @@ class HTML_resultgrid
 	{
 		if ($resultGrid->id != 0)
 		{
-			JToolBarHelper::title( JText::_("MAP_EDIT_RESULT_GRID"), 'generic.png' );
+			JToolBarHelper::title( JText::_("MAP_EDIT_RESULT_GRID").': <small><small>['. JText::_("CORE_EDIT").']</small></small>', 'addedit.png' );
 		}
 		else
 		{
-			JToolBarHelper::title( JText::_("MAP_NEW_RESULT_GRID"), 'generic.png' );
+			JToolBarHelper::title( JText::_("MAP_EDIT_RESULT_GRID").': <small><small>['. JText::_("CORE_NEW").']</small></small>', 'addedit.png' );
 		}
 		$rowsDetailsFTChoice = array();
 		$rowsDetailsFTChoice[] = JHTML::_('select.option','0', JText::_("MAP_ROW_DETAIL_CHOICE" ));

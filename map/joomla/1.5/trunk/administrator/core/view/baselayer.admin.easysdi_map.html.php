@@ -22,7 +22,7 @@ class HTML_baselayer
 {
 	function listBaseLayer( $rows, $pageNav,$search, $filter_order_Dir, $filter_order, $option)
 	{
-		JToolBarHelper::title(JText::_("MAP_LIST_BASELAYER"));
+		JToolBarHelper::title(JText::_("MAP_LIST_BASELAYER"), 'map.png');
 		?>
 		<form action="index.php" method="GET" name="adminForm">
 		<table width="100%">
@@ -100,11 +100,11 @@ class HTML_baselayer
 		JHTML::script('jquery-1.3.2.min.js', 'components/com_easysdi_map/externals/jquery/');
 		if ($baseLayer->id != 0)
 		{
-			JToolBarHelper::title( JText::_("MAP_BASELAYER_EDIT"), 'generic.png' );
+			JToolBarHelper::title( JText::_("MAP_BASELAYER_EDIT").': <small><small>['. JText::_("CORE_EDIT").']</small></small>', 'addedit.png' );
 		}
 		else
 		{
-			JToolBarHelper::title( JText::_("MAP_BASELAYER_NEW"), 'generic.png' );
+			JToolBarHelper::title( JText::_("MAP_BASELAYER_EDIT").': <small><small>['. JText::_("CORE_NEW").']</small></small>', 'addedit.png' );
 		}
 		?>
 		<script>
@@ -337,7 +337,7 @@ class HTML_baselayer
 	{
 		global  $mainframe;
 		JHTML::script('jquery-1.3.2.min.js', 'components/com_easysdi_map/externals/jquery/');
-		JToolBarHelper::title( JText::_("MAP_BASEMAP_EDIT"), 'generic.png' );
+		JToolBarHelper::title( JText::_("MAP_BASEMAP_EDIT").': <small><small>['. JText::_("CORE_EDIT").']</small></small>', 'addedit.png' );
 		?>
 		<script>
 		var $j = jQuery.noConflict();

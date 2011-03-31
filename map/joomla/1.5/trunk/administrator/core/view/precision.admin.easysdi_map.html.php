@@ -22,7 +22,7 @@ class HTML_precision
 {
 	function listPrecision( $rows, $pageNav, $search, $filter_order_Dir, $filter_order, $option)
 	{
-		JToolBarHelper::title(JText::_("MAP_LIST_PRECISION"));
+		JToolBarHelper::title(JText::_("MAP_LIST_PRECISION"), 'map.png');
 		?>
 		<form action="index.php" method="GET" name="adminForm">
 		<table width="100%">
@@ -83,11 +83,11 @@ class HTML_precision
 	{
 		if ($precision->id != 0)
 		{
-			JToolBarHelper::title( JText::_("MAP_EDIT_PRECISION"), 'generic.png' );
+			JToolBarHelper::title( JText::_("MAP_EDIT_PRECISION").': <small><small>['. JText::_("CORE_EDIT").']</small></small>', 'addedit.png' );
 		}
 		else
 		{
-			JToolBarHelper::title( JText::_("MAP_NEW_PRECISION"), 'generic.png' );
+			JToolBarHelper::title( JText::_("MAP_EDIT_PRECISION").': <small><small>['. JText::_("CORE_NEW").']</small></small>', 'addedit.png' );
 		}
 		?>	
 		<script>	
