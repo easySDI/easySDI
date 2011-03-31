@@ -556,7 +556,26 @@ if ($monitorItem > 0){
 <?php
 }
 	if ($mapItem > 0){
+		JHTML::script('jquery-1.3.2.min.js', 'components/com_easysdi_map/externals/jquery/');
 ?>	
+<script>
+var $j = jQuery.noConflict();
+$j(document).ready(function() {
+	!$j("input[name=mapResolutionOverScale]:radio").change(
+			function(e){
+				if (e.target.value==0)
+				{
+					  $j(".scales").removeAttr('disabled'); 
+					  $j(".resolutions").attr("disabled","disabled");
+				}
+				else if (e.target.value==1)  {
+					$j(".resolutions").removeAttr('disabled');
+					$j(".scales").attr("disabled","disabled");
+				}
+				}
+			);
+});
+</script>
 			<div id="page-map">
 				<table class="noshow">
 					<tr>
@@ -612,7 +631,6 @@ if ($monitorItem > 0){
 									
 							<fieldset class="adminform">
 								<legend><?php echo JText::_( 'CORE_CONFIGURATION_SERVICEPUB_FIELDSET_TITLE' ); ?></legend>
-								 
 								<table class="admintable" cellspacing="1">
 									<tbody>
 									<tr>
@@ -646,40 +664,9 @@ if ($monitorItem > 0){
 											</span>
 										</td>
 										<td>
-											<input class="text_area" type="text" size="100" name="WMSFilterSupport" value="<?php echo $mapList['WMSFilterSupport']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+											<input type="checkbox"  id="WMSFilterSupport" name="WMSFilterSupport" value="1" <?php if($mapList['WMSFilterSupport']->value == '1')echo " checked" ;?>  /> 
 										</td>
 									</tr>
-									<tr>
-										<td valign="top" class="key">
-											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_MAP_PROJECTION_TIP' ); ?>">
-												<?php echo JText::_( 'CORE_CONFIGURATION_MAP_PROJECTION_LABEL' ); ?>
-											</span>
-										</td>
-										<td>
-											<input class="text_area" type="text" size="100" name="projection" value="<?php echo $mapList['projection']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
-										</td>
-									</tr>
-									<tr>
-										<td valign="top" class="key">
-											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_MAP_NUMZOOMLEVELS_TIP' ); ?>">
-												<?php echo JText::_( 'CORE_CONFIGURATION_MAP_NUMZOOMLEVELS_LABEL' ); ?>
-											</span>
-										</td>
-										<td>
-											<input class="text_area" type="text" size="100" name="numZoomLevels" value="<?php echo $mapList['numZoomLevels']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
-										</td>
-									</tr>
-									<tr>
-										<td valign="top" class="key">
-											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_MAP_DFTLMAPZOOM_TIP' ); ?>">
-												<?php echo JText::_( 'CORE_CONFIGURATION_MAP_DFTLMAPZOOM_LABEL' ); ?>
-											</span>
-										</td>
-										<td>
-											<input class="text_area" type="text" size="100" name="defaultCoordMapZoom" value="<?php echo $mapList['defaultCoordMapZoom']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
-										</td>
-									</tr>
-									
 									<tr>
 										<td valign="top" class="key">
 											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_MAP_PUBWFSURL_TIP' ); ?>">
@@ -746,7 +733,107 @@ if ($monitorItem > 0){
 									</tbody>
 									</table>
 								</fieldset>
-								
+								<fieldset class="adminform">
+								<legend><?php echo JText::_( 'CORE_CONFIGURATION_CARTO_FIELDSET_TITLE' ); ?></legend>
+								<table class="admintable" cellspacing="1">
+									<tbody>
+									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_MAP_PROJECTION_TIP' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_MAP_PROJECTION_LABEL' ); ?>
+											</span>
+										</td>
+										<td>
+											<input class="text_area" type="text" size="100" name="projection" value="<?php echo $mapList['projection']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+										</td>
+									</tr>
+									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_MAP_UNIT_TIP' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_MAP_UNIT_LABEL' ); ?>
+											</span>
+										<td>
+											<select class="inputbox" name="mapUnit">
+												<option <?php if($mapList['mapUnit']->value == 'm') echo "selected" ; ?> value="m"><?php echo JText::_("CORE_METERS"); ?></option>
+												<option <?php if($mapList['mapUnit']->value == 'degrees') echo "selected" ; ?> value="degrees"><?php echo JText::_("CORE_DEGREES"); ?></option>
+											</select
+										></td>
+									</tr>
+									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_MAP_MAXEXTENT_TIP' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_MAP_MAXEXTENT_LABEL' ); ?>
+											</span>
+										</td>
+										<td>
+											<input class="text_area" type="text" size="100" name="mapMaxExtent" value="<?php echo $mapList['mapMaxExtent']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+										</td>
+									</tr>
+									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_MAP_NUMZOOMLEVELS_TIP' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_MAP_NUMZOOMLEVELS_LABEL' ); ?>
+											</span>
+										</td>
+										<td>
+											<input class="text_area" type="text" size="100" name="numZoomLevels" value="<?php echo $mapList['numZoomLevels']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+										</td>
+									</tr>
+									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_MAP_DFTLMAPZOOM_TIP' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_MAP_DFTLMAPZOOM_LABEL' ); ?>
+											</span>
+										</td>
+										<td>
+											<input class="text_area" type="text" size="100" name="defaultCoordMapZoom" value="<?php echo $mapList['defaultCoordMapZoom']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+										</td>
+									</tr>
+									<tr>
+										<td valign="top"  colspan="2">
+											<input type="radio" id="mapResolutionOverScale" name="mapResolutionOverScale" value="0" <?php if ($mapList['mapResolutionOverScale']->value == 0) echo "checked=\"checked\""; ?> /> <?php echo JText::_("CORE_CONFIGURATION_MAP_SCALES"); ?>
+										</td>
+									</tr>
+									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_MAP_MINSCALE_TIP' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_MAP_MINSCALE_LABEL' ); ?>
+											</span>
+										</td>
+										<td>
+											<input class="inputbox scales" type="text" size="100" name="mapMinScale" <?php if ($mapList['mapResolutionOverScale']->value == 1) echo 'disabled' ?> value="<?php echo $mapList['mapMinScale']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+										</td>
+									</tr>
+									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_MAP_MAXSCALE_TIP' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_MAP_MAXSCALE_LABEL' ); ?>
+											</span>
+										</td>
+										<td>
+											<input class="inputbox scales" type="text" size="100" name="mapMaxScale" <?php if ($mapList['mapResolutionOverScale']->value == 1) echo 'disabled' ?> value="<?php echo $mapList['mapMaxScale']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+										</td>
+									</tr>
+									<tr>
+										<td valign="top" colspan="2">
+											<input type="radio" id="mapResolutionOverScale1" name="mapResolutionOverScale" value="1" <?php if ($mapList['mapResolutionOverScale']->value == 1) echo "checked=\"checked\""; ?> /> <?php echo JText::_("CORE_CONFIGURATION_MAP_RESOLUTIONS"); ?>
+										</td>
+									</tr>
+									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_MAP_RESOLUTIONS_TIP' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_MAP_RESOLUTIONS_LABEL' ); ?>
+											</span>
+										</td>
+										<td>
+											<textarea class="textarea resolutions" style="height: 200px; width: 500px;" id="mapResolutions" name="mapResolutions" <?php if ($mapList['mapResolutionOverScale']->value == 0) echo 'disabled' ?> >
+											<?php echo $mapList['mapResolutions']->value; ?> 
+											</textarea>
+										</td>
+									</tr>
+									</tbody>
+									</table>
+								</fieldset>
 								<fieldset class="adminform">
 								<legend><?php echo JText::_( 'CORE_CONFIGURATION_SERVICEMAP_FIELDSET_TITLE' ); ?></legend>
 								 

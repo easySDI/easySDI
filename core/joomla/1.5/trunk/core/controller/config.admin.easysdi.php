@@ -441,7 +441,30 @@ class ADMIN_config {
 				$database->setQuery( "UPDATE #__sdi_mapdisplayoption SET enable=0 WHERE name IN('SimpleSearch','AdvancedSearch','DataPrecision')");
 				$database->query();
 			}
-			
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['mapResolutionOverScale'])."\" WHERE code = 'mapResolutionOverScale'");
+			if (!$database->query()) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['mapUnit'])."\" WHERE code = 'mapUnit'");
+			if (!$database->query()) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['mapMaxExtent'])."\" WHERE code = 'mapMaxExtent'");
+			if (!$database->query()) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['mapMinScale'])."\" WHERE code = 'mapMinScale'");
+			if (!$database->query()) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['mapMaxScale'])."\" WHERE code = 'mapMaxScale'");
+			if (!$database->query()) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['mapResolutions'])."\" WHERE code = 'mapResolutions'");
+			if (!$database->query()) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
 			
 		}
 	}
