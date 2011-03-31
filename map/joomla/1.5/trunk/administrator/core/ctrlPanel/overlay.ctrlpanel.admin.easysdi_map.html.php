@@ -30,90 +30,55 @@ class HTML_overlayctrlpanel
 		$template	= $mainframe->getTemplate();
 		$pane		=& JPane::getInstance('sliders');
 		echo $pane->startPane("content-pane");
-		echo $pane->startPanel( JText::_('MAP_OVERLAY_MODULES'), 'cpanel-panel-1' );
+	
 		?>
-		<form ation="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
+		<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
 			<input type="hidden" name="option" id="option" value="<?php echo $option?>">
 			<input type="hidden" name="task" id="task" value="">
 		</form>
-		<div id="cpanel">		
-					
-			<?php	
-			$link = "index.php?option=$option&amp;task=baseMap";
-			?>
-			<div style="float:<?php echo ($lang->isRTL()) ? 'right' : 'left'; ?>;">
-				<div class="icon">
-					<a href="<?php echo $link; ?>">
-						<?php 
-							$text = JText::_( 'MAP_BASEMAP' );					
-							echo JHTML::_('image.site',  'icon-48-component.png', '/templates/'. $template .'/images/header/', NULL, NULL, $text ); ?>
-						<span><?php echo $text; ?></span></a>
-				</div>
-			</div>
-			<?php	
-			$link = "index.php?option=$option&amp;task=baseLayer";
-			?>
-			<div style="float:<?php echo ($lang->isRTL()) ? 'right' : 'left'; ?>;">
-				<div class="icon">
-					<a href="<?php echo $link; ?>">
-						<?php 
-							$text = JText::_( 'MAP_BASELAYER' );					
-							echo JHTML::_('image.site',  'icon-48-component.png', '/templates/'. $template .'/images/header/', NULL, NULL, $text ); ?>
-						<span><?php echo $text; ?></span></a>
-				</div>
-			</div>
-			
-			<?php	
-			$link = "index.php?option=$option&amp;task=geolocation";
-			?>
-			<div style="float:<?php echo ($lang->isRTL()) ? 'right' : 'left'; ?>;">
-				<div class="icon">
-					<a href="<?php echo $link; ?>">
-						<?php 
-							$text = JText::_( 'MAP_GEOLOCATION' );					
-							echo JHTML::_('image.site',  'icon-48-component.png', '/templates/'. $template .'/images/header/', NULL, NULL, $text ); ?>
-						<span><?php echo $text; ?></span></a>
-				</div>
-			</div>
-			
-			<?php	
-			$link = "index.php?option=$option&amp;task=overlay";
-			?>
-			<div style="float:<?php echo ($lang->isRTL()) ? 'right' : 'left'; ?>;">
-				<div class="icon">
-					<a href="<?php echo $link; ?>">
-						<?php 
-							$text = JText::_( 'MAP_OVERLAY_DEFINITION' );					
-							echo JHTML::_('image.site',  'icon-48-component.png', '/templates/'. $template .'/images/header/', NULL, NULL, $text ); ?>
-						<span><?php echo $text; ?></span></a>
-				</div>
-			</div>
-			
-			<?php	
-			$link = "index.php?option=$option&amp;task=overlayGroup";
-			?>
-			<div style="float:<?php echo ($lang->isRTL()) ? 'right' : 'left'; ?>;">
-				<div class="icon">
-					<a href="<?php echo $link; ?>">
-						<?php 
-							$text = JText::_( 'MAP_OVERLAY_GROUP' );					
-							echo JHTML::_('image.site',  'icon-48-component.png', '/templates/'. $template .'/images/header/', NULL, NULL, $text ); ?>
-						<span><?php echo $text; ?></span></a>
-				</div>
-			</div>
-			
+		
+		<table width=100% border="0">
+			<tr valign=top>
+				<td width=60%>
+					<table width=100% border="0">
+						<tr>
+							<td>
+							     <table class="header_sdi_table" width="100%">
+								   <tbody>
+								      <tr>
+								         <td colspan="2">
+									    <table width="100%">
+									      <tr>
+								               <td class="header_sdi_comp_links">&nbsp;</td>
+								               <td class="header_sdi_list">
+									          <ul>
+									             <li><?php printf('<a href="index.php?option=%s&amp;task=baseMap">', $option); echo JText::_( 'MAP_BASEMAP' ); ?></li>
+									             <li><?php printf('<a href="index.php?option=%s&amp;task=baseLayer">', $option); echo JText::_( 'MAP_BASELAYER' ); ?></li>
+									             <li><?php printf('<a href="index.php?option=%s&amp;task=geolocation">', $option); echo JText::_( 'MAP_GEOLOCATION' ); ?></li>
+									          </ul>
+									       </td>
+									       <td class="header_sdi_list">
+									       <ul >
+									             <li><?php printf('<a href="index.php?option=%s&amp;task=overlay">', $option); echo JText::_( 'MAP_OVERLAY_DEFINITION' ); ?></li>
+									             <li><?php printf('<a href="index.php?option=%s&amp;task=overlayGroup">', $option); echo JText::_( 'MAP_OVERLAY_GROUP' ); ?></li>
+									         </ul>
+									       </td>
+									       <td class="header_sdi_list">&nbsp;</td>
+									       </tr>
+									       </table>
+									 </td>
+								      </tr>
+								    </tbody>
+								 </table>
+							</td>
+						</tr>
+						</table>
+						</td>
+						</tr>
+						</table>
 			<?php
 			echo $pane->endPanel();
-			?>
-			<div id="rightcpanel">
-			</div>
-			<?php
-			echo $pane->endPanel();
-			echo $pane->endPane();
-			?>
-	
-		</div>
-		<?php 
+
 	}
 }
 ?>
