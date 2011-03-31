@@ -62,7 +62,6 @@ function com_install()
 		-- ----------------------------
 		-- Table structure for `#__sdi_annotationstyle`
 		-- ----------------------------
-		DROP TABLE IF EXISTS `#__sdi_annotationstyle`;
 		CREATE TABLE `#__sdi_annotationstyle` (
 		  	`id`  bigint(20) NOT NULL AUTO_INCREMENT ,
 			`guid`  varchar(36) NOT NULL ,
@@ -97,7 +96,6 @@ function com_install()
 		-- ----------------------------
 		-- Table structure for `#__sdi_featuretypeattribute`
 		-- ----------------------------
-		DROP TABLE IF EXISTS `#__sdi_featuretypeattribute`;
 		CREATE TABLE `#__sdi_featuretypeattribute` (
 		  `id`  bigint(20) NOT NULL AUTO_INCREMENT ,
 		  `guid`  varchar(36) NOT NULL ,
@@ -126,7 +124,6 @@ function com_install()
 		-- ----------------------------
 		-- Table structure for `#__sdi_ftatt_profile`
 		-- ----------------------------
-		DROP TABLE IF EXISTS `#__sdi_ftatt_profile`;
 		CREATE TABLE `#__sdi_ftatt_profile` (
 		  `id` bigint(20) NOT NULL AUTO_INCREMENT,
 		  `ftatt_id` bigint(20) NOT NULL,
@@ -176,7 +173,6 @@ function com_install()
 		-- ----------------------------
 		-- Table structure for `#__sdi_baselayer`
 		-- ----------------------------
-		DROP TABLE IF EXISTS `#__sdi_baselayer`;
 		CREATE TABLE `#__sdi_baselayer` (
 		  `id`  bigint(20) NOT NULL AUTO_INCREMENT ,
 		  `guid`  varchar(36) NOT NULL ,
@@ -220,7 +216,6 @@ function com_install()
 		-- ----------------------------
 		-- Table structure for `#__sdi_commentfeaturetype`
 		-- ----------------------------
-		DROP TABLE IF EXISTS `#__sdi_commentfeaturetype`;
 		CREATE TABLE `#__sdi_commentfeaturetype` (
 		  `id`  bigint(20) NOT NULL AUTO_INCREMENT ,
 		  `guid`  varchar(36) NOT NULL ,
@@ -270,12 +265,11 @@ function com_install()
 		INSERT INTO `#__sdi_configuration` (guid,code,name,description, created,createdby,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'treePanelWidth','treePanelWidth','Width of the layers panel.','".date('Y-m-d H:i:s')."', '".$user_id."', '250','".$module_id."');
 		INSERT INTO `#__sdi_configuration` (guid,code,name,description, created,createdby,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'pubWfsVersion','pubWfsVersion','Version of publication WFS service.','".date('Y-m-d H:i:s')."', '".$user_id."', '1.0.0','".$module_id."');
 		INSERT INTO `#__sdi_configuration` (guid,code,name,description, created,createdby,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'pubWmsVersion','pubWmsVersion','Version of publication WMS service.','".date('Y-m-d H:i:s')."', '".$user_id."', '1.1.1','".$module_id."');
-		INSERT INTO `#__sdi_configuration` (guid,code,name,description, created,createdby,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'enableQueryEngine','enableQueryEngine','Enable the query engine.','".date('Y-m-d H:i:s')."', '".$user_id."', '1.1.1','".$module_id."');
+		INSERT INTO `#__sdi_configuration` (guid,code,name,description, created,createdby,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'enableQueryEngine','enableQueryEngine','Enable the query engine.','".date('Y-m-d H:i:s')."', '".$user_id."', '0','".$module_id."');
 		
 		-- ----------------------------
 		-- Table structure for `#__sdi_mapcontext`
 		-- ----------------------------
-		DROP TABLE IF EXISTS `#__sdi_mapcontext`;
 		CREATE TABLE `#__sdi_mapcontext` (
 		  `id` int(11) NOT NULL AUTO_INCREMENT,
 		  `user_id` int(11) NOT NULL,
@@ -286,7 +280,6 @@ function com_install()
 		-- ----------------------------
 		-- Table structure for `#__sdi_mapdisplayoption`
 		-- ----------------------------
-		DROP TABLE IF EXISTS `#__sdi_mapdisplayoption`;
 		CREATE TABLE `#__sdi_mapdisplayoption` (
 		  `id`  bigint(20) NOT NULL AUTO_INCREMENT ,
 		  `guid`  varchar(36) NOT NULL ,
@@ -301,7 +294,6 @@ function com_install()
 		  `ordering`  bigint(20) NULL DEFAULT 0 ,
 		  `checked_out`  bigint(20) NOT NULL DEFAULT 0 ,
 		  `checked_out_time`  datetime NULL DEFAULT NULL ,
-		  `translation` varchar(200) DEFAULT NULL, 
 		  `object` varchar(100) DEFAULT NULL,
 		  `enable` tinyint(1) NOT NULL DEFAULT '1',
 		  PRIMARY KEY (`id`)
@@ -310,19 +302,18 @@ function com_install()
 		-- ----------------------------
 		-- Records of __sdi_mapdisplayoption
 		-- ----------------------------
-		INSERT INTO `#__sdi_mapdisplayoption` (guid,name,created,createdby,checked_out,translation, object,enable) VALUES ('".helper_easysdi::getUniqueId()."', 'SimpleSearch','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'MAP_SIMPLESEARCH','SimpleSearch','0');
-		INSERT INTO `#__sdi_mapdisplayoption` (guid,name,created,createdby,checked_out,translation, object,enable) VALUES ('".helper_easysdi::getUniqueId()."', 'AdvancedSearch','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'MAP_ADVANCEDSEARCH','AdvancedSearch','0');
-		INSERT INTO `#__sdi_mapdisplayoption` (guid,name,created,createdby,checked_out,translation, object,enable) VALUES ('".helper_easysdi::getUniqueId()."', 'DataPrecision','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'MAP_DATAPRECISION','DataPrecision','0');
-		INSERT INTO `#__sdi_mapdisplayoption` (guid,name,created,createdby,checked_out,translation, object,enable) VALUES ('".helper_easysdi::getUniqueId()."', 'Localisation','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'MAP_LOCALISATION','Localisation','1');
-		INSERT INTO `#__sdi_mapdisplayoption` (guid,name,created,createdby,checked_out,translation, object,enable) VALUES ('".helper_easysdi::getUniqueId()."', 'ToolBar','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'MAP_TOOLBAR','ToolBar','1');
-		INSERT INTO `#__sdi_mapdisplayoption` (guid,name,created,createdby,checked_out,translation, object,enable) VALUES ('".helper_easysdi::getUniqueId()."', 'MapOverview','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'MAP_MAPOVERVIEW','MapOverview','1');
-		INSERT INTO `#__sdi_mapdisplayoption` (guid,name,created,createdby,checked_out,translation, object,enable) VALUES ('".helper_easysdi::getUniqueId()."', 'Annotation','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'MAP_ANNOTATION','Annotation','0');
-		INSERT INTO `#__sdi_mapdisplayoption` (guid,name,created,createdby,checked_out,translation, object,enable) VALUES ('".helper_easysdi::getUniqueId()."', 'Coordinate','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'MAP_COORDINATE','Coordinate','1');
+		INSERT INTO `#__sdi_mapdisplayoption` (guid,name,created,createdby,checked_out,code, object,enable) VALUES ('".helper_easysdi::getUniqueId()."', 'SimpleSearch','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'MAP_SIMPLESEARCH','SimpleSearch','0');
+		INSERT INTO `#__sdi_mapdisplayoption` (guid,name,created,createdby,checked_out,code, object,enable) VALUES ('".helper_easysdi::getUniqueId()."', 'AdvancedSearch','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'MAP_ADVANCEDSEARCH','AdvancedSearch','0');
+		INSERT INTO `#__sdi_mapdisplayoption` (guid,name,created,createdby,checked_out,code, object,enable) VALUES ('".helper_easysdi::getUniqueId()."', 'DataPrecision','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'MAP_DATAPRECISION','DataPrecision','0');
+		INSERT INTO `#__sdi_mapdisplayoption` (guid,name,created,createdby,checked_out,code, object,enable) VALUES ('".helper_easysdi::getUniqueId()."', 'Localisation','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'MAP_LOCALISATION','Localisation','1');
+		INSERT INTO `#__sdi_mapdisplayoption` (guid,name,created,createdby,checked_out,code, object,enable) VALUES ('".helper_easysdi::getUniqueId()."', 'ToolBar','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'MAP_TOOLBAR','ToolBar','1');
+		INSERT INTO `#__sdi_mapdisplayoption` (guid,name,created,createdby,checked_out,code, object,enable) VALUES ('".helper_easysdi::getUniqueId()."', 'MapOverview','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'MAP_MAPOVERVIEW','MapOverview','1');
+		INSERT INTO `#__sdi_mapdisplayoption` (guid,name,created,createdby,checked_out,code, object,enable) VALUES ('".helper_easysdi::getUniqueId()."', 'Annotation','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'MAP_ANNOTATION','Annotation','1');
+		INSERT INTO `#__sdi_mapdisplayoption` (guid,name,created,createdby,checked_out,code, object,enable) VALUES ('".helper_easysdi::getUniqueId()."', 'Coordinate','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'MAP_COORDINATE','Coordinate','1');
 		
 		-- ----------------------------
 		-- Table structure for `#__sdi_mapextension`
 		-- ----------------------------
-		DROP TABLE IF EXISTS `#__sdi_mapextension`;
 		CREATE TABLE `#__sdi_mapextension` (
 		  `id` bigint(20) NOT NULL AUTO_INCREMENT,
 		  `extended_object` varchar(100) DEFAULT NULL,
@@ -333,7 +324,6 @@ function com_install()
 		-- ----------------------------
 		-- Table structure for `#__sdi_mapextensionresource`
 		-- ----------------------------
-		DROP TABLE IF EXISTS `#__sdi_mapextensionresource`;
 		CREATE TABLE `#__sdi_mapextensionresource` (
 		  `id` bigint(20) NOT NULL AUTO_INCREMENT,
 		  `ext_id` bigint(20) DEFAULT NULL,
@@ -348,7 +338,6 @@ function com_install()
 		-- ----------------------------
 		-- Table structure for `#__sdi_resultgrid`
 		-- ----------------------------
-		DROP TABLE IF EXISTS `#__sdi_resultgrid`;
 		CREATE TABLE `#__sdi_resultgrid` (
 		  `id`  bigint(20) NOT NULL AUTO_INCREMENT ,
 		  `guid`  varchar(36) NOT NULL ,
@@ -373,7 +362,6 @@ function com_install()
 		-- ----------------------------
 		-- Table structure for `#__sdi_featuretype`
 		-- ----------------------------
-		DROP TABLE IF EXISTS `#__sdi_featuretype`;
 		CREATE TABLE `#__sdi_featuretype` (
 		  `id`  bigint(20) NOT NULL AUTO_INCREMENT ,
 		  `guid`  varchar(36) NOT NULL ,
@@ -396,7 +384,6 @@ function com_install()
 		-- ----------------------------
 		-- Table structure for `#__sdi_featuretype_usage`
 		-- ----------------------------
-		DROP TABLE IF EXISTS `#__sdi_featuretype_usage`;
 		CREATE TABLE `#__sdi_featuretype_usage` (
 		  `id` bigint(20) NOT NULL AUTO_INCREMENT,
 		  `ft_id` bigint(20) NOT NULL,
@@ -411,7 +398,6 @@ function com_install()
 		-- ----------------------------
 		-- Table structure for `#__sdi_mapfilter`
 		-- ----------------------------
-		DROP TABLE IF EXISTS `#__sdi_mapfilter`;
 		CREATE TABLE `#__sdi_mapfilter` (
 		  `id`  bigint(20) NOT NULL AUTO_INCREMENT ,
 		  `guid`  varchar(36) NOT NULL ,
@@ -436,7 +422,6 @@ function com_install()
 		-- ----------------------------
 		-- Table structure for `#__sdi_geolocation`
 		-- ----------------------------
-		DROP TABLE IF EXISTS `#__sdi_geolocation`;
 		CREATE TABLE `#__sdi_geolocation` (
 		   `id`  bigint(20) NOT NULL AUTO_INCREMENT ,
 		  `guid`  varchar(36) NOT NULL ,
@@ -474,7 +459,6 @@ function com_install()
 		-- ----------------------------
 		-- Table structure for `#__sdi_precision`
 		-- ----------------------------
-		DROP TABLE IF EXISTS `#__sdi_precision`;
 		CREATE TABLE `#__sdi_precision` (
 		  `id`  bigint(20) NOT NULL AUTO_INCREMENT ,
 		  `guid`  varchar(36) NOT NULL ,
@@ -499,7 +483,6 @@ function com_install()
 		-- ----------------------------
 		-- Table structure for `#__sdi_projection`
 		-- ----------------------------
-		DROP TABLE IF EXISTS `#__sdi_projection`;
 		CREATE TABLE `#__sdi_projection` (
 		  `id`  bigint(20) NOT NULL AUTO_INCREMENT ,
 		  `guid`  varchar(36) NOT NULL ,
@@ -523,7 +506,6 @@ function com_install()
 		-- ----------------------------
 		-- Table structure for `#__sdi_searchlayer`
 		-- ----------------------------
-		DROP TABLE IF EXISTS `#__sdi_searchlayer`;
 		CREATE TABLE `#__sdi_searchlayer` (
 		  `id`  bigint(20) NOT NULL AUTO_INCREMENT ,
 		  `guid`  varchar(36) NOT NULL ,
@@ -549,7 +531,6 @@ function com_install()
 		-- ----------------------------
 		-- Table structure for `#__sdi_simplesearchfilter`
 		-- ----------------------------
-		DROP TABLE IF EXISTS `#__sdi_simplesearchfilter`;
 		CREATE TABLE `#__sdi_simplesearchfilter` (
 		  `id` bigint(20) NOT NULL AUTO_INCREMENT,
 		  `guid`  varchar(36) NOT NULL ,
@@ -573,7 +554,6 @@ function com_install()
 		-- ----------------------------
 		-- Table structure for `#__sdi_simplesearchtype`
 		-- ----------------------------
-		DROP TABLE IF EXISTS `#__sdi_simplesearchtype`;
 		CREATE TABLE `#__sdi_simplesearchtype` (
 		  `id` bigint(20) NOT NULL AUTO_INCREMENT,
 		  `guid`  varchar(36) NOT NULL ,
@@ -599,7 +579,6 @@ function com_install()
 		-- ----------------------------
 		-- Table structure for `#__sdi_sst_erg`
 		-- ----------------------------
-		DROP TABLE IF EXISTS `#__sdi_sst_erg`;
 		CREATE TABLE `#__sdi_sst_erg` (
 		  `id` bigint(20) NOT NULL AUTO_INCREMENT,
 		  `id_sst` bigint(20) NOT NULL,
@@ -614,7 +593,6 @@ function com_install()
 		-- ----------------------------
 		-- Table structure for `#__sdi_sst_saf`
 		-- ----------------------------
-		DROP TABLE IF EXISTS `#__sdi_sst_saf`;
 		CREATE TABLE `#__sdi_sst_saf` (
 		  `id` bigint(20) NOT NULL AUTO_INCREMENT,
 		  `id_sst` bigint(20) NOT NULL,
@@ -629,7 +607,6 @@ function com_install()
 		-- ----------------------------
 		-- Table structure for `#__sdi_usage`
 		-- ----------------------------
-		DROP TABLE IF EXISTS `#__sdi_usage`;
 		CREATE TABLE `#__sdi_usage` (
 		  `id` bigint(20) NOT NULL AUTO_INCREMENT,
 		  `name` varchar(100) NOT NULL DEFAULT '',
@@ -642,7 +619,6 @@ function com_install()
 		-- ----------------------------
 		-- Table structure for `#__sdi_overlaygroup`
 		-- ----------------------------
-		DROP TABLE IF EXISTS `#__sdi_overlaygroup`;
 		CREATE TABLE `#__sdi_overlaygroup` (
 		  `id`  bigint(20) NOT NULL AUTO_INCREMENT ,
 		  `guid`  varchar(36) NOT NULL ,
@@ -664,7 +640,6 @@ function com_install()
 		-- ----------------------------
 		-- Table structure for `#__sdi_overlay`
 		-- ----------------------------
-		DROP TABLE IF EXISTS `#__sdi_overlay`;
 		CREATE TABLE `#__sdi_overlay` (
 		  `id`  bigint(20) NOT NULL AUTO_INCREMENT ,
 		  `guid`  varchar(36) NOT NULL ,
@@ -712,7 +687,6 @@ function com_install()
 		-- ----------------------------
 		-- Table structure for `#__sdi_profile_role`
 		-- ----------------------------
-		DROP TABLE IF EXISTS `#__sdi_profile_role`;
 		CREATE TABLE `#__sdi_profile_role` (
 		  `id` bigint(20) NOT NULL AUTO_INCREMENT,
 		  `profile_id` bigint(20) NOT NULL,
