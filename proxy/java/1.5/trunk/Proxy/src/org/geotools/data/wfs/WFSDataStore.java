@@ -42,6 +42,7 @@ import java.util.zip.GZIPInputStream;
 
 import javax.naming.OperationNotSupportedException;
 
+import org.apache.xerces.impl.dv.util.Base64;
 import org.geotools.data.AbstractDataStore;
 import org.geotools.data.DataSourceException;
 import org.geotools.data.DataUtilities;
@@ -93,7 +94,6 @@ import org.opengis.referencing.operation.TransformException;
 import org.opengis.geometry.MismatchedDimensionException;
 import org.xml.sax.SAXException;
 
-import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -290,9 +290,10 @@ public class WFSDataStore extends AbstractDataStore {
 			synchronized (Authenticator.class) {
 				Authenticator.setDefault(auth);
 				WFSAuthenticator ath = (WFSAuthenticator) auth;
+				String encoded = Base64.encode(new StringBuffer().append(ath.getPasswordAuthentication().getUserName()).append(":").append(
+						new String(ath.getPasswordAuthentication().getPassword())).toString().getBytes());
 				connection.addRequestProperty("Authorization", "Basic "
-						+ Base64.encode(new StringBuffer().append(ath.getPasswordAuthentication().getUserName()).append(":").append(
-								new String(ath.getPasswordAuthentication().getPassword())).toString().getBytes()));
+						+ encoded);
 				connection.connect();
 				Authenticator.setDefault(null);
 			}
