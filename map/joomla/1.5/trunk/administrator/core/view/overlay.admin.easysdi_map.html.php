@@ -269,7 +269,7 @@ class HTML_overlay
 					<tr>
 						<td class="key"><?php echo JText::_("MAP_OVERLAY_MAXEXTENT"); ?></td>
 						<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['maxextent'];?>" name="maxextent" id="maxextent"
-							value="<?php echo $overlay_content->maxExtent; ?>" /></td>
+							value="<?php echo $overlay_content->maxextent; ?>" /></td>
 					</tr>
 					<tr>
 						<td colspan="2"><input type="radio" id="resolutionoverscale0" name="resolutionoverscale" value="0"
