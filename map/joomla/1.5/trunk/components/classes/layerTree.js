@@ -409,7 +409,7 @@ _addLayers : function() {
 	Ext.each(SData.baseLayers, this._addBaseLayer, this);
 	this.previousLayerNode = null;
 	Ext.each(SData.overlayLayers, this._addOverlayLayer, this);
-	this._layerStore.map.zoomToExtent(SData.baseMap.extent, true);
+	this._layerStore.map.zoomToExtent(componentParams.mapMaxExtent, true);
 },
 
 /**

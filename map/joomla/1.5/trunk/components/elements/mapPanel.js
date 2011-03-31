@@ -340,24 +340,24 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 			layers : []
 		};
 
-		if (SData.baseMap.projection != undefined)
-			options.projection = SData.baseMap.projection;
-		if (SData.baseMap.units != undefined)
-			options.units = SData.baseMap.units;
-		if (SData.baseMap.maxExtent != undefined)
-			options.maxExtent = SData.baseMap.maxExtent;
-		if (SData.baseMap.minScale != undefined)
-			options.minScale = SData.baseMap.minScale;
-		if (SData.baseMap.maxScale != undefined)
-			options.maxScale = SData.baseMap.maxScale;
-		if (SData.baseMap.resolutions != undefined)
-			options.resolutions = SData.baseMap.resolutions;
-		if (componentParams.numZoomLevels != undefined)
+		if (componentParams.projection != '')
+			options.projection = componentParams.projection;
+		if (componentParams.mapUnit != '')
+			options.units = componentParams.mapUnit;
+		if (componentParams.mapMaxExtent != '')
+			options.maxExtent = componentParams.mapMaxExtent;
+		if (componentParams.mapMinScale != '')
+			options.minScale = componentParams.mapMinScale;
+		if (componentParams.mapMaxScale != '')
+			options.maxScale = componentParams.mapMaxScale;
+		if (componentParams.mapResolutions != '')
+			options.resolutions = componentParams.mapResolutions;
+		if (componentParams.numZoomLevels != '')
 			options.numZoomLevels = componentParams.numZoomLevels;
 
 		var ov_options = {};
-		if (SData.baseMap.maxExtent != undefined)
-			ov_options.maxExtent = SData.baseMap.maxExtent;
+		if (componentParams.mapMaxExtent != '')
+			ov_options.maxExtent = componentParams.mapMaxExtent;
 
 		this.map = new OpenLayers.Map(options);
 
@@ -1417,7 +1417,7 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 	},
 
 	_zoomToMaxExtent : function() {
-		this.map.zoomToExtent(SData.baseMap.maxExtent);
+		this.map.zoomToExtent(componentParams.mapMaxExtent);
 	},
 
 	/**

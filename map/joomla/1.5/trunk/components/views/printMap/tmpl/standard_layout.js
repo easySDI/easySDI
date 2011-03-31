@@ -304,19 +304,19 @@ printMap = function(config) {
 		controls : [],
 		layers : []
 	};
-
-	if (SData.baseMap.projection != undefined)
-		options.projection = SData.baseMap.projection;
-	if (SData.baseMap.units != undefined)
-		options.units = SData.baseMap.units;
-	if (SData.baseMap.maxExtent != undefined)
-		options.maxExtent = SData.baseMap.maxExtent;
-	if (SData.baseMap.minScale != undefined)
-		options.minScale = SData.baseMap.minScale;
-	if (SData.baseMap.maxScale != undefined)
-		options.maxScale = SData.baseMap.maxScale;
-	if (SData.baseMap.resolutions != undefined)
-		options.resolutions = SData.baseMap.resolutions;
+	
+	if (componentParams.projection != undefined)
+		options.projection = componentParams.projection;
+	if (componentParams.mapUnit != undefined)
+		options.units = componentParams.mapUnit;
+	if (componentParams.mapMaxExtent != undefined)
+		options.maxExtent = componentParams.mapMaxExtent;
+	if (componentParams.mapMinScale != undefined)
+		options.minScale = componentParams.mapMinScale;
+	if (componentParams.mapMaxScale != undefined)
+		options.maxScale = componentParams.mapMaxScale;
+	if (componentParams.mapResolutions != undefined)
+		options.resolutions = componentParams.mapResolutions;
 	if (componentParams.numZoomLevels != undefined)
 		options.numZoomLevels = componentParams.numZoomLevels;
 

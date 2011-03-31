@@ -33,8 +33,7 @@ $db =& JFactory::getDBO();
 $proxyURL = array('url' => JURI::base()."index.php",
                   'option' => 'com_easysdi_map',
                   'Itemid' => JRequest::getCmd("Itemid"),
-                  'view' => 'proxy'//,
-//'format' => 'raw'
+                  'view' => 'proxy'
 );
 $proxyURLAsString = $proxyURL['url'];
 foreach($proxyURL as $proxyParam => $proxyParamValue) {
@@ -74,7 +73,6 @@ if (!is_null($result))
 	foreach ($result as $rec)
 	{
 		$roleList[] =$rec['code'];
-		//      $s .= "// user has role ".$rec['profile_code']."\n";
 	}
 }
 }
@@ -88,7 +86,6 @@ else
 	if (count($result)>0)
 	{
 		$roleList[] =$result[0]['code'];
-		//    $s .= "// user has role ".$result[0]['profile_code']."\n";
 	}
 	// Public Role - default
 	$query = "SELECT id FROM #__sdi_accountprofile
@@ -187,7 +184,6 @@ if (!is_null($result) && $result->value != '') {
 				foreach($server->Layers->Layer as $layer){
 					if(!in_array((string)$layer->Name, $valid_wms_layers)){
 						$valid_wms_layers[] = (string)$layer->Name;
-						//					$s .= "// user has access to WMS layer ".$layer->Name."\n";
 					}
 				}
 			}
@@ -196,7 +192,6 @@ if (!is_null($result) && $result->value != '') {
 					$layerName=((string)$server->Prefix).":".((string)$featureType->Name);
 					if(!in_array($layerName, $valid_wfs_features)){
 						$valid_wfs_features[] = $layerName;
-						//					$s .= "// user has access to WFS Feature ".$layerName."\n";
 					}
 				}
 			}
@@ -217,45 +212,9 @@ function checkProxyLayerPermissions($doCheck, $type, $name, $valid_wms_layers, $
 	return (in_array($name, $valid_wms_layers));
 }
 
-//Get default base map definition
-//$query = "SELECT * from #__easysdi_basemap_definition WHERE def = 1;";
-$query = "SELECT * from #__sdi_basemapdefinition LIMIT 0,1;";
-$db->setQuery($query);
-$result = $db->loadObject();
-if (count($result)==0)
-{
-	$s .= "alert('Invalid configuration. No Base Map defined.');\n";
-}
-else {
-$s .= " \n SData.baseMap = ";
-$s .= "{
-    id : '$result->id',
-    projection : '$result->projection',\n";
-if ($result->maxextent) {
-	$s .= "    maxExtent : new OpenLayers.Bounds($result->maxextent),\n";
-}
-if ($result->extent){
-	$s .= "    extent : new OpenLayers.Bounds($result->extent),\n";
-}else if ($result->maxextent) {
-	$s .= "    extent : new OpenLayers.Bounds($result->maxextent),\n";
-}
 
-if ($result->resolutionoverscale && $result->resolutions) {
-	$s .= "    resolutions : $result->resolutions,\n";
-}
-if (!$result->resolutionoverscale && $result->minscale) {
-	$s .= "    minScale : $result->minscale,\n";
-}
-if (!$result->resolutionoverscale && $result->maxscale) {
-	$s .= "    maxScale : $result->maxscale,\n";
-}
-$s .= "    units : '$result->unit'
-}";
-$s .= ";\n";
-}
 
 // Export layer objects from the base layers table.
-//$query = "SELECT * from #__easysdi_basemap_content;";
 $query = "SELECT l.* from #__sdi_baselayer l  order by l.ordering ASC;";
 $db->setQuery($query);
 $result = $db->loadAssocList();
@@ -306,7 +265,7 @@ if($i == 0){
 	$s .= "alert('Invalid configuration. No Base Layers are available.');\n";
 }
 
-
+// Export overlay groups objects from the __sdi_overlaygroup table.
 $query = "SELECT * from #__sdi_overlaygroup g order by g.ordering asc;";
 $db->setQuery($query);
 $result = $db->loadAssocList();
@@ -325,6 +284,7 @@ if (!is_null($result)) {
 };
 $s .= "];\n";
 
+// Export overlays objects from the __sdi_overlay table.
 $query = "SELECT * from #__sdi_overlay o order by o.ordering DESC;";
 $db->setQuery($query);
 $result = $db->loadAssocList();
@@ -360,7 +320,7 @@ if (!is_null($result)) {
 	customStyle : $customStyle,\n";
 			if ($l_singletile == 0){ $s .="singletile : false,\n";}else{$s .="singletile : true,\n";}
 			if ($l_maxextent) {
-				//$s .= "    maxExtent : new OpenLayers.Bounds($l_maxExtent),\n";
+				$s .= "    maxExtent : new OpenLayers.Bounds($l_maxextent),\n";
 			}
 			if ($l_resolutionoverscale && $l_resolutions) {
 				$s .= "resolutions : $l_resolutions,\n";
@@ -775,7 +735,10 @@ if (!is_null($result)) {
 	{
 		$i++;
 		extract($rec, EXTR_PREFIX_ALL, "l");
-		$s .= "    $l_name : '$l_value',";
+		if($l_name == 'mapMaxExtent')
+			$s .= "	$l_name :  new OpenLayers.Bounds($l_value), ";
+		else
+			$s .= "    $l_name : '$l_value',";
 		if(!is_null($l_description) && strlen($l_description) > 0) {
 			$s .= " // $l_description";
 		}
