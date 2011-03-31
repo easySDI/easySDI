@@ -596,6 +596,16 @@ if ($monitorItem > 0){
 											<input class="text_area" type="text" size="100" name="layerProxyXMLFile" value="<?php echo $mapList['layerProxyXMLFile']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
 										</td>
 									</tr>
+									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_MAP_ENABLEQUERYENGINE_TIP' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_MAP_ENABLEQUERYENGINE_LABEL' ); ?>
+											</span>
+										</td>
+										<td>
+											<input type="checkbox"  id="enableQueryEngine" name="enableQueryEngine" value="1" <?php if($mapList['enableQueryEngine']->value == '1')echo " checked" ;?>  /> 
+										</td>
+									</tr>
 									</tbody>
 								</table>
 							</fieldset>

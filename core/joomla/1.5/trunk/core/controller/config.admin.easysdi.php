@@ -426,6 +426,21 @@ class ADMIN_config {
 			if (!$database->query()) {			
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
+			if($_POST['enableQueryEngine'])
+			{
+				$database->setQuery( "UPDATE #__sdi_configuration SET value='1' WHERE code = 'enableQueryEngine'");
+				if (!$database->query()) {			
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				}
+			}
+			else {
+				$database->setQuery( "UPDATE #__sdi_configuration SET value='0' WHERE code = 'enableQueryEngine'");
+				if (!$database->query()) {			
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				}
+			}
+			
+			
 		}
 	}
 
