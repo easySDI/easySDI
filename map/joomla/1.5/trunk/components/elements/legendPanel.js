@@ -286,7 +286,7 @@ EasySDI_Map.LegendPanel = Ext.extend(Ext.Panel, {
         FILTER: null,
         SRS: null,
         FORMAT: this.wmsLegendFormat,
-        VERSION: '1.1.1'
+        VERSION: layer.params.VERSION
       });
       layer.legendURL = url;
       return url;
