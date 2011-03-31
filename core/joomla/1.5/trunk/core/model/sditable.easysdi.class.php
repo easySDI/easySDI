@@ -115,7 +115,6 @@ class sdiTable extends JTable
 	function orderDown($filter="", $filter_value="")
 	{
 		global  $mainframe;
-		$mainframe->enqueueMessage("select * from  $this->_tbl  where `ordering` > $this->ordering AND $filter = '".$filter_value."'  order by `ordering` " ,"INFO");
 		if($filter)
 			$this->_db->setQuery( "select * from  $this->_tbl  where `ordering` > $this->ordering AND $filter = '".$filter_value."'  order by `ordering` " );
 		else
@@ -140,7 +139,6 @@ class sdiTable extends JTable
 	function orderUp($filter="", $filter_value="")
 	{
 		global  $mainframe;
-		$mainframe->enqueueMessage("select * from  $this->_tbl  where `ordering` < $this->ordering AND $filter = '".$filter_value."'  order by `ordering` desc"  ,"INFO");
 		if($filter)
 			$this->_db->setQuery( "select * from  $this->_tbl  where `ordering` < $this->ordering AND $filter = '".$filter_value."'  order by `ordering` desc " );
 		else

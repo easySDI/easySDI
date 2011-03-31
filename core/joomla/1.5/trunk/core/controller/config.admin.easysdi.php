@@ -438,6 +438,8 @@ class ADMIN_config {
 				if (!$database->query()) {			
 					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 				}
+				$database->setQuery( "UPDATE #__sdi_mapdisplayoption SET enable=0 WHERE name IN('SimpleSearch','AdvancedSearch','DataPrecision')");
+				$database->query();
 			}
 			
 			
