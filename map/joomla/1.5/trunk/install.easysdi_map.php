@@ -546,16 +546,6 @@ function com_install()
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 		
 		-- ----------------------------
-		-- Table structure for `#__sdi_map_serviceaccount`
-		-- ----------------------------
-		DROP TABLE IF EXISTS `#__sdi_map_serviceaccount`;
-		CREATE TABLE `#__sdi_map_serviceaccount` (
-		  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-		  `account_id` bigint(20) NOT NULL,
-		  PRIMARY KEY (`id`)
-		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-		
-		-- ----------------------------
 		-- Table structure for `#__sdi_simplesearchfilter`
 		-- ----------------------------
 		DROP TABLE IF EXISTS `#__sdi_simplesearchfilter`;

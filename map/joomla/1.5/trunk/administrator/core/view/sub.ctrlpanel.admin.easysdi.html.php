@@ -15,7 +15,7 @@
 								<td class="header_sdi_comp_links">&nbsp;</td>
 								<td class="header_sdi_list">
 									<ul>
-										<li><?php printf('<a href="index.php?option=%s&amp;task=rightCtrlPanel">', 'com_easysdi_map'); echo JText::_( 'CORE_CPANEL_MAP_RIGHT_LABEL' ); ?></a></li>
+										<li><?php printf('<a href="index.php?option=%s&amp;task=profile">', 'com_easysdi_map'); echo JText::_( 'CORE_CPANEL_MAP_RIGHT_LABEL' ); ?></a></li>
 										<li><?php printf('<a href="index.php?option=%s&amp;task=display">', 'com_easysdi_map'); echo JText::_( 'CORE_CPANEL_MAP_DISPLAY_LABEL' ); ?></a></li>
 										<li><?php printf('<a href="index.php?option=%s&amp;task=annotationStyle">', 'com_easysdi_map'); echo JText::_( 'CORE_CPANEL_MAP_ANNOTATION_LABEL' ); ?></a></li>
 										<li><?php printf('<a href="index.php?option=%s&amp;task=editResource&filename='.JPATH_ROOT.DS.'components'.DS.'com_easysdi_map'.DS.'resource'.DS.'xslt'.DS.'getFeatureInfo.xslt'.'">', 'com_easysdi_map'); echo JText::_( 'CORE_CPANEL_MAP_RESOURCE_XSL_LABEL' ); ?></a></li>

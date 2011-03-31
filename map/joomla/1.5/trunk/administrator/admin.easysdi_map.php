@@ -496,29 +496,6 @@ switch($task)
 		$mainframe->redirect("index.php?option=$option&task=profile");
 		break;
 	/**
-	 * Service account
-	 */
-	case 'serviceAccount':
-		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'serviceaccount.admin.easysdi_map.html.php');
-		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'serviceaccount.toolbar.easysdi_map.html.php');
-		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'serviceaccount.admin.easysdi_map.php');
-		TOOLBAR_serviceaccount::_EDIT();
-		$id = JRequest::getVar ('account_id', '' );
-		ADMIN_serviceaccount::editServiceAccount($id,$option);
-		break;
-	case 'saveServiceAccount':
-		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'serviceaccount.admin.easysdi_map.html.php');
-		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'serviceaccount.class.easysdi_map.php');
-		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'serviceaccount.toolbar.easysdi_map.html.php');
-		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'serviceaccount.admin.easysdi_map.php');
-		ADMIN_serviceaccount::saveServiceAccount($option);
-		break;
-	case "cancelServiceAccount":
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'serviceaccount.admin.easysdi_map.php');
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'serviceaccount.class.easysdi_map.php');
-		ADMIN_serviceaccount::cancelServiceAccount($option);		
-		break;
-	/**
 	 * Comment feature type
 	 */
 	case 'comment':

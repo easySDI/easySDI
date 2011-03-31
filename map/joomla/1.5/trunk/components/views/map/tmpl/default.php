@@ -41,6 +41,7 @@ JHTML::script('OpenLayers.js', 'components/com_easysdi_map/externals/openlayers/
 JHTML::script('SortableWFS.js', 'components/com_easysdi_map/classes/');
 JHTML::script('getfeatureinfo.js', 'components/com_easysdi_map/classes/');
 JHTML::script('proj4js-compressed.js', 'components/com_easysdi_map/externals/proj4js/');
+//JHTML::script('EPSG27572.js', 'components/com_easysdi_map/externals/proj4js/lib/defs/');
 // And the GeoExt library
 JHTML::script('GeoExt.js', 'components/com_easysdi_map/externals/geoext/lib/');
 // Now the component specific JavaScript
