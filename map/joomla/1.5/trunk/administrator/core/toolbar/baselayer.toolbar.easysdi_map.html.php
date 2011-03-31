@@ -25,7 +25,7 @@ class TOOLBAR_baselayer {
 		JToolBarHelper::addNew('newBaseLayer');
 		JToolBarHelper::editList('editBaseLayer');
 		JToolBarHelper::deleteList('','deleteBaseLayer');
-		JToolBarHelper::custom( 'overlayCtrlPanel', 'back.png', 'back.png', JTEXT::_("MAP_MENU_BACK"), false );
+		JToolBarHelper::custom( 'ctrlPanel', 'tool_easysdi_admin.png', 'tool_easysdi_admin.png', JTEXT::_("CORE_MENU_CPANEL"), false );
 	}
 	
 	function _LIST() 
@@ -33,7 +33,7 @@ class TOOLBAR_baselayer {
 		JToolBarHelper::addNew('newBaseLayer');
 		JToolBarHelper::editList('editBaseLayer');
 		JToolBarHelper::deleteList('','deleteBaseLayer');
-		JToolBarHelper::custom( 'overlayCtrlPanel', 'back.png', 'back.png', JTEXT::_("MAP_MENU_BACK"), false );
+		JToolBarHelper::custom( 'ctrlPanel', 'tool_easysdi_admin.png', 'tool_easysdi_admin.png', JTEXT::_("CORE_MENU_CPANEL"), false );
 	}
 
 	function _EDIT() 

@@ -135,7 +135,7 @@ class HTML_featuretype
  			document.getElementById('WIDTH_'+i).value = "";
  		}
  	}
-	</script>			
+ 	</script>			
 	<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
 
 		<table border="0" cellpadding="0" cellspacing="0">
@@ -255,6 +255,19 @@ class HTML_featuretype
 	
 	function submitbutton(pressbutton)
 	{
+		if(pressbutton == "saveFeatureType")
+		{
+			if (document.getElementById('featuretypename').value == "")
+			{
+				alert ('<?php echo  JText::_( 'MAP_FEATURETYPENAME_VALIDATION_ERROR');?>');	
+				return;
+			}
+			else
+			{	
+				submitform(pressbutton);
+			}
+		}
+		
 		if (pressbutton=="addNewAttribute")
 		{	
 			addNewAttribute();

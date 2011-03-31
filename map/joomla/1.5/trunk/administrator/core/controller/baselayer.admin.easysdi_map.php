@@ -257,7 +257,7 @@ class ADMIN_baselayer
 		}
 		
 		$baseMap->checkin();
-		$mainframe->redirect("index.php?option=$option&task=overlayCtrlPanel");
+		$mainframe->redirect("index.php?option=com_easysdi_core");
 	}
 	
 	function cancelBaseMap($option)
@@ -268,7 +268,7 @@ class ADMIN_baselayer
 		$baseMap->bind(JRequest::get('post'));
 		$baseMap->checkin();
 
-		$mainframe->redirect("index.php?option=$option&task=overlayCtrlPanel" );
+		$mainframe->redirect("index.php?option=com_easysdi_core" );
 	}
 }
 ?>

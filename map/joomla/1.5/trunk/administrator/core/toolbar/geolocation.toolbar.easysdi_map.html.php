@@ -33,7 +33,7 @@ class TOOLBAR_geolocation {
 		JToolBarHelper::addNew('newGeolocation');
 		JToolBarHelper::editList('editGeolocation');
 		JToolBarHelper::deleteList('','deleteGeolocation');
-		JToolBarHelper::custom( 'overlayCtrlPanel', 'back.png', 'back.png', JTEXT::_("MAP_MENU_BACK"), false );
+		JToolBarHelper::custom( 'ctrlPanel', 'tool_easysdi_admin.png', 'tool_easysdi_admin.png', JTEXT::_("CORE_MENU_CPANEL"), false );
 	}
 
 	function _EDIT() 

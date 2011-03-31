@@ -55,10 +55,6 @@ switch($task)
 	case 'ctrlPanel':
 		$mainframe->redirect("index.php?option=com_easysdi_core" );
 		break;
-	case 'overlayCtrlPanel':
-		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'ctrlPanel'.DS.'overlay.ctrlpanel.admin.easysdi_map.html.php');
-		HTML_overlayctrlpanel::overlayCtrlPanel($option);
-		break;
 	case 'simplesearchCtrlPanel':
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'ctrlPanel'.DS.'simplesearch.ctrlpanel.admin.easysdi_map.html.php');
 		HTML_simplesearchctrlpanel::simplesearchCtrlPanel($option);
@@ -152,7 +148,7 @@ switch($task)
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'overlay.toolbar.easysdi_map.html.php');
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'overlay.admin.easysdi_map.php');
 		$cid = JRequest::getVar ('cid', array(0) );
-		ADMIN_overlay::orderUpOverlay($cid[0]);
+		ADMIN_overlay::orderUpOverlay($option,$cid[0]);
 		break;
 	case 'orderdownoverlay':
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'overlay.admin.easysdi_map.html.php');
@@ -160,7 +156,7 @@ switch($task)
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'overlay.toolbar.easysdi_map.html.php');
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'overlay.admin.easysdi_map.php');
 		$cid = JRequest::getVar ('cid', array(0) );
-		ADMIN_overlay::orderDownOverlay($cid[0]);
+		ADMIN_overlay::orderDownOverlay($option,$cid[0]);
 		break;
 	case "cancelOverlay":
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'overlay.admin.easysdi_map.php');
@@ -208,7 +204,7 @@ switch($task)
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'overlay.toolbar.easysdi_map.html.php');
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'overlay.admin.easysdi_map.php');
 		$cid = JRequest::getVar ('cid', array(0) );
-		ADMIN_overlay::orderUpOverlayGroup($cid[0]);
+		ADMIN_overlay::orderUpOverlayGroup($option,$cid[0]);
 		break;
 	case 'orderdownoverlaygroup':
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'overlay.admin.easysdi_map.html.php');
@@ -216,7 +212,7 @@ switch($task)
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'overlay.toolbar.easysdi_map.html.php');
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'overlay.admin.easysdi_map.php');
 		$cid = JRequest::getVar ('cid', array(0) );
-		ADMIN_overlay::orderDownOverlayGroup($cid[0]);
+		ADMIN_overlay::orderDownOverlayGroup($option,$cid[0]);
 		break;
 	case "cancelOverlayGroup":
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'overlay.admin.easysdi_map.php');

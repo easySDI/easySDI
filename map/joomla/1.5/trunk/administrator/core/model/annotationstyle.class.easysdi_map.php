@@ -21,20 +21,20 @@ defined('_JEXEC') or die('Restricted access');
 
 class annotationStyle extends sdiTable
 {
-	var $fillColor = null;
-	var $fillOpacity = null;
-	var $strokeColor = null;
-	var $strokeOpacity = null;
-	var $strokeWidth = null;
-	var $strokeLinecap = null;
-	var $strokeDashstyle = null;
-	var $pointRadius = null;
-	var $externalGraphic = null;
-	var $graphicWidth = null;
-	var $graphicHeight = null;
-	var $graphicOpacity = null;
-	var $graphicXOffset = null;
-	var $graphicYOffset = null;
+	var $fillcolor = null;
+	var $fillopacity = null;
+	var $strokecolor = null;
+	var $strokeopacity = null;
+	var $strokewidth = null;
+	var $strokelinecap = null;
+	var $strokedashstyle = null;
+	var $pointradius = null;
+	var $externalgraphic = null;
+	var $graphicwidth = null;
+	var $graphicheight = null;
+	var $graphicopacity = null;
+	var $graphicxoffset = null;
+	var $graphicyoffset = null;
 	 	
 	// Class constructor
 	function __construct( &$db )

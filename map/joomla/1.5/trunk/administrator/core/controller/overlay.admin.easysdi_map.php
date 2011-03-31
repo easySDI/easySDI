@@ -329,24 +329,25 @@ class ADMIN_overlay
 		$mainframe->redirect("index.php?option=$option&task=overlayGroup" );
 	}
 
-	function orderUpOverlay($id){
+	function orderUpOverlay($option,$id){
+		global $mainframe;
 		$db =& JFactory::getDBO();
 		$overlay = new overlay( $db );
 		$overlay->load( $id);
 		$overlay->orderUp("group_id",$overlay->group_id);
-		
 		$mainframe->redirect("index.php?option=$option&task=overlay");
 	}
 	
-	function orderDownOverlay($id){
+	function orderDownOverlay($option,$id){
+		global $mainframe;
 		$db =& JFactory::getDBO();
 		$overlay = new overlay( $db );
 		$overlay->load( $id);
 		$overlay->orderDown("group_id",$overlay->group_id);
-		
 		$mainframe->redirect("index.php?option=$option&task=overlay");
 	}
-	function orderUpOverlayGroup($id){
+	function orderUpOverlayGroup($option,$id){
+		global $mainframe;
 		$db =& JFactory::getDBO();
 		$overlayGroup = new overlayGroup( $db );
 		$overlayGroup->load( $id);
@@ -354,7 +355,8 @@ class ADMIN_overlay
 		$mainframe->redirect("index.php?option=$option&task=overlayGroup");
 	}
 	
-	function orderDownOverlayGroup($id){
+	function orderDownOverlayGroup($option,$id){
+		global $mainframe;
 		$db =& JFactory::getDBO();
 		$overlayGroup = new overlayGroup( $db );
 		$overlayGroup->load( $id);
