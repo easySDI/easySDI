@@ -270,6 +270,7 @@ function com_install()
 		INSERT INTO `#__sdi_configuration` (guid,code,name,description, created,createdby,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'treePanelWidth','treePanelWidth','Width of the layers panel.','".date('Y-m-d H:i:s')."', '".$user_id."', '250','".$module_id."');
 		INSERT INTO `#__sdi_configuration` (guid,code,name,description, created,createdby,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'pubWfsVersion','pubWfsVersion','Version of publication WFS service.','".date('Y-m-d H:i:s')."', '".$user_id."', '1.0.0','".$module_id."');
 		INSERT INTO `#__sdi_configuration` (guid,code,name,description, created,createdby,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'pubWmsVersion','pubWmsVersion','Version of publication WMS service.','".date('Y-m-d H:i:s')."', '".$user_id."', '1.1.1','".$module_id."');
+		INSERT INTO `#__sdi_configuration` (guid,code,name,description, created,createdby,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'enableQueryEngine','enableQueryEngine','Enable the query engine.','".date('Y-m-d H:i:s')."', '".$user_id."', '1.1.1','".$module_id."');
 		
 		-- ----------------------------
 		-- Table structure for `#__sdi_mapcontext`

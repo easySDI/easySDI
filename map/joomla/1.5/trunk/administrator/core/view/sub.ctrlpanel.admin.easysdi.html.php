@@ -35,6 +35,15 @@
 							</tr>
 						</table>
 					</td>
+					<?php 
+					$db =& JFactory::getDBO(); 
+					$query ="SELECT value FROM #__sdi_configuration WHERE code ='enableQueryEngine' ";
+					$db->setQuery( $query );
+					$value = $db->loadResult();
+					
+					if ($value == '1')
+					{
+					?>
 					<td colspan="2">
 						<table width="100%">
 							<tr>
@@ -52,6 +61,9 @@
 							</tr>
 						</table>
 					</td>
+					<?php 
+					}
+					?>
 				</tr>
 			</tbody>
 		</table>
