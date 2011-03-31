@@ -28,12 +28,24 @@ class ADMIN_display
 		$limit = $mainframe->getUserStateFromRequest( "viewlistlimit", 'limit', 10 );
 		$limitstart = $mainframe->getUserStateFromRequest( "view{$option}limitstart", 'limitstart', 0 );
 		
+		$query ="SELECT value FROM #__sdi_configuration WHERE code ='enableQueryEngine' ";
+		$db->setQuery( $query );
+		$enableQueryEngine = $db->loadResult();
+					
 		$query ="SELECT COUNT(*) FROM #__sdi_mapdisplayoption";
 		$db->setQuery( $query );
 		$total = $db->loadResult();
 		$pageNav = new JPagination($total,$limitstart,$limit);
 		
 		$query = "SELECT *  FROM #__sdi_mapdisplayoption";
+		if($enableQueryEngine == '0')
+		{
+			$query .= " WHERE name NOT IN('SimpleSearch','AdvancedSearch','DataPrecision') ";
+			
+			//Disable the display option for the query engine 
+			$db->setQuery( "UPDATE #__sdi_mapdisplayoption SET enable=0 WHERE name IN('SimpleSearch','AdvancedSearch','DataPrecision')");
+			$db->query();
+		}
 		$query .= " ORDER BY object ";
 		$db->setQuery( $query ,$pageNav->limitstart, $pageNav->limit);	
 		
