@@ -250,7 +250,7 @@ class HTML_overlay
 					</tr>
 					<tr>
 						<td class="key"><?php echo JText::_("MAP_OVERLAY_METADATA"); ?></td>
-						<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['metadata_url'];?>" name="metadata_url" id="metadataurl"
+						<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['metadataurl'];?>" name="metadataurl" id="metadataurl"
 							value="<?php echo $overlay_content->metadataurl; ?>" /></td>
 					</tr>
 					<tr>

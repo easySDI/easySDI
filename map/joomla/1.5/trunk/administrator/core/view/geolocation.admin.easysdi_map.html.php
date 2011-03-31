@@ -142,29 +142,30 @@ class HTML_geolocation
 								<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['wfsurl'];?>" name="wfsurl" id="wfsurl" value="<?php echo $geolocation->wfsurl; ?>" /></td>							
 							</tr>
 							<tr>
-								<td class="key"><?php echo JText::_("MAP_GEOLOCATION_AREA_FIELD_NAME"); ?></td>
-								<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['areafield'];?>" name="areafield" id="areafield" value="<?php echo $geolocation->areafield; ?>" /></td>
-							</tr>
-							<tr>
-								<td class="key"><?php echo JText::_("MAP_GEOLOCATION_NAME_FIELD_NAME"); ?></td>
-								<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['namefield'];?>" name="namefield" id="namefield" value="<?php echo $geolocation->namefield; ?>" /></td>
+								<td class="key"><?php echo JText::_("MAP_GEOLOCATION_FEAT_TYPE_NAME"); ?></td>
+								<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['featuretypename'];?>" name="featuretypename" id="featuretypename" value="<?php echo $geolocation->featuretypename; ?>" /></td>
 							</tr>
 							<tr>
 								<td class="key"><?php echo JText::_("MAP_GEOLOCATION_ID_FIELD_NAME"); ?></td>
 								<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['idfield'];?>" name="idfield" id="idfield" value="<?php echo $geolocation->idfield; ?>" /></td>
 							</tr>
 							<tr>
-								<td class="key"><?php echo JText::_("MAP_GEOLOCATION_FEAT_TYPE_NAME"); ?></td>
-								<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['featuretypename'];?>" name="featuretypename" id="featuretypename" value="<?php echo $geolocation->featuretypename; ?>" /></td>
+								<td class="key"><?php echo JText::_("MAP_GEOLOCATION_NAME_FIELD_NAME"); ?></td>
+								<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['namefield'];?>" name="namefield" id="namefield" value="<?php echo $geolocation->namefield; ?>" /></td>
 							</tr>
 							<tr>
-								<td class="key"><?php echo JText::_("MAP_GEOLOCATION_PARENT_FK_FIELD_NAME"); ?></td>
-								<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['parentfkfield'];?>" name="parentfkfield" id="parentfkfield" value="<?php echo $geolocation->parentfkfield; ?>" /></td>
+								<td class="key"><?php echo JText::_("MAP_GEOLOCATION_AREA_FIELD_NAME"); ?></td>
+								<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['areafield'];?>" name="areafield" id="areafield" value="<?php echo $geolocation->areafield; ?>" /></td>
 							</tr>
 							<tr>
 								<td class="key"><?php echo JText::_("MAP_GEOLOCATION_PARENT_ID"); ?></td>
 								<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['parentid'];?>" name="parentid" id="parentid" value="<?php echo $geolocation->parentid; ?>" /></td>
 							</tr>
+							<tr>
+								<td class="key"><?php echo JText::_("MAP_GEOLOCATION_PARENT_FK_FIELD_NAME"); ?></td>
+								<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['parentfkfield'];?>" name="parentfkfield" id="parentfkfield" value="<?php echo $geolocation->parentfkfield; ?>" /></td>
+							</tr>
+							
 							<tr>
 								<td class="key"><?php echo JText::_("MAP_GEOLOCATION_MAX_FEATURE"); ?></td>
 								<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['maxfeatures'];?>" name="maxfeatures" id="maxfeatures" value="<?php echo $geolocation->maxfeatures; ?>" /></td>
