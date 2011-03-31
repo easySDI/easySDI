@@ -25,8 +25,7 @@
 								<td class="header_sdi_list">
 									<ul >
 										<li><?php printf('<a href="index.php?option=%s&amp;task=projection">', 'com_easysdi_map'); echo JText::_( 'CORE_CPANEL_MAP_PROJECTION_LABEL' ); ?> </li>
-										<li><?php printf('<a href="index.php?option=%s&amp;task=baseMap">', 'com_easysdi_map'); echo JText::_( 'CORE_CPANEL_MAP_BASEMAP' ); ?></li>
-							             <li><?php printf('<a href="index.php?option=%s&amp;task=baseLayer">', 'com_easysdi_map'); echo JText::_( 'CORE_CPANEL_MAP_BASELAYER' ); ?></li>
+										 <li><?php printf('<a href="index.php?option=%s&amp;task=baseLayer">', 'com_easysdi_map'); echo JText::_( 'CORE_CPANEL_MAP_BASELAYER' ); ?></li>
 							             <li><?php printf('<a href="index.php?option=%s&amp;task=overlayGroup">', 'com_easysdi_map'); echo JText::_( 'CORE_CPANEL_MAP_OVERLAY_GROUP' ); ?></li>
 							             <li><?php printf('<a href="index.php?option=%s&amp;task=overlay">', 'com_easysdi_map'); echo JText::_( 'CORE_CPANEL_MAP_OVERLAY_DEFINITION' ); ?></li>
 							             <li><?php printf('<a href="index.php?option=%s&amp;task=geolocation">', 'com_easysdi_map'); echo JText::_( 'CORE_CPANEL_MAP_GEOLOCATION' ); ?></li>
