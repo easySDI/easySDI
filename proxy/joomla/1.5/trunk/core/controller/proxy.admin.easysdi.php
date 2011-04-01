@@ -568,7 +568,7 @@ function savePolicy($xml){
 	}
 	
 	//Users and Roles
-	if (strlen($allUsers)>0)
+	if (is_array($allUsers))
 	{
 		$thePolicy->Subjects="";
 		$thePolicy->Subjects['All']="true";
@@ -597,7 +597,7 @@ function savePolicy($xml){
 	
 	//Operations
 	$AllOperations = JRequest::getVar("AllOperations","");
-	if (strlen($AllOperations)>0)
+	if (is_array($AllOperations))
 	{
 		$thePolicy->Operations="";
 		$thePolicy->Operations['All']="true";
@@ -620,7 +620,7 @@ function savePolicy($xml){
 	{
 		//Visibility
 		$AllVisibilities = JRequest::getVar("AllVisibilities","");
-		if (strlen($AllVisibilities)>0)
+		if (is_array($AllVisibilities))
 		{
 			$thePolicy->ObjectVisibilities="";
 			$thePolicy->ObjectVisibilities['All']="true";
@@ -641,7 +641,7 @@ function savePolicy($xml){
 		
 		//Status
 		$AllStatus = JRequest::getVar("AllStatus","");
-		if (strlen($AllStatus)>0)
+		if (is_array($AllStatus))
 		{
 			$thePolicy->ObjectStatus="";
 			$thePolicy->ObjectStatus['All']="true";
@@ -667,7 +667,7 @@ function savePolicy($xml){
 		
 		//ObjectType
 		$AllObjectType = JRequest::getVar("AllObjectType","");
-		if (strlen($AllObjectType)>0)
+		if (is_array($AllObjectType))
 		{
 			$thePolicy->ObjectTypes="";
 			$thePolicy->ObjectTypes['All']="true";
@@ -689,7 +689,7 @@ function savePolicy($xml){
 			
 	//Servers
 	$AllServer = JRequest::getVar("AllServers","");
-	if (strlen($AllServer)>0)
+	if (is_array($AllServer))
 	{
 		//All servers checked
 		$thePolicy->Servers['All']="true";
