@@ -51,6 +51,7 @@ import java.util.logging.Level;
 import java.util.zip.GZIPInputStream;
 
 import javax.naming.NoPermissionException;
+import javax.net.ssl.SSLHandshakeException;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -817,7 +818,14 @@ public abstract class ProxyServlet extends HttpServlet {
 			dump("SYSTEM", "RemoteResponseDateTime", dateFormat.format(d));
 			return tempFile.toString();
 
-		} catch (Exception e) {
+		}catch (SSLHandshakeException e)
+		{
+			e.printStackTrace();
+			dump("ERROR","Unable to find valid certification. "+e.getCause().toString());
+			return null;
+			
+		}
+		catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}
