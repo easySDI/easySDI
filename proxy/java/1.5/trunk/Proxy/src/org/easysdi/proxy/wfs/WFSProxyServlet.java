@@ -354,17 +354,17 @@ public class WFSProxyServlet extends ProxyServlet {
 			serviceMetadataXSLT.append("<xsl:template match=\"wfs:Service\">");
 			serviceMetadataXSLT.append("<xsl:copy>");
 			//Name
-			serviceMetadataXSLT.append("<xsl:element name=\"Name\"> ");
+			serviceMetadataXSLT.append("<xsl:element name=\"Name\" namespace=\"http://www.opengis.net/wfs\"> ");
 			serviceMetadataXSLT.append("<xsl:text>WFS</xsl:text>");
 			serviceMetadataXSLT.append("</xsl:element>");
 			//Title
-			serviceMetadataXSLT.append("<xsl:element name=\"Title\"> ");
+			serviceMetadataXSLT.append("<xsl:element name=\"Title\" namespace=\"http://www.opengis.net/wfs\"> ");
 			serviceMetadataXSLT.append("<xsl:text>" + getConfiguration().getTitle() + "</xsl:text>");
 			serviceMetadataXSLT.append("</xsl:element>");
 			//Abstract
 			if(getConfiguration().getAbst()!=null)
 			{
-				serviceMetadataXSLT.append("<xsl:element name=\"Abstract\"> ");
+				serviceMetadataXSLT.append("<xsl:element name=\"Abstract\" namespace=\"http://www.opengis.net/wfs\"> ");
 				serviceMetadataXSLT.append("<xsl:text>" + getConfiguration().getAbst() + "</xsl:text>");
 				serviceMetadataXSLT.append("</xsl:element>");
 			}
@@ -372,7 +372,7 @@ public class WFSProxyServlet extends ProxyServlet {
 			if(getConfiguration().getKeywordList()!= null)
 			{
 				List<String> keywords = getConfiguration().getKeywordList();
-				serviceMetadataXSLT.append("<xsl:element name=\"Keywords\"> ");
+				serviceMetadataXSLT.append("<xsl:element name=\"Keywords\" namespace=\"http://www.opengis.net/wfs\"> ");
 				String sKeyWords = new String() ;
 				for (int n = 0; n < keywords.size(); n++) {
 					sKeyWords+= keywords.get(n);
@@ -388,19 +388,19 @@ public class WFSProxyServlet extends ProxyServlet {
 				serviceMetadataXSLT.append("</xsl:element>");
 			}
 			//OnlineResource
-			serviceMetadataXSLT.append("<xsl:copy-of select=\"wfs:OnlineResource\"/>");
+			serviceMetadataXSLT.append("<xsl:copy-of select=\"wfs:OnlineResource\" />");
 			
 			//Fees
 			if(getConfiguration().getFees()!=null)
 			{
-				serviceMetadataXSLT.append("<xsl:element name=\"Fees\"> ");
+				serviceMetadataXSLT.append("<xsl:element name=\"Fees\" namespace=\"http://www.opengis.net/wfs\"> ");
 				serviceMetadataXSLT.append("<xsl:text>" + getConfiguration().getFees() + "</xsl:text>");
 				serviceMetadataXSLT.append("</xsl:element>");
 			}
 			//AccesConstraints
 			if(getConfiguration().getAccessConstraints()!=null)
 			{
-				serviceMetadataXSLT.append("<xsl:element name=\"AccessConstraints\"> ");
+				serviceMetadataXSLT.append("<xsl:element name=\"AccessConstraints\" namespace=\"http://www.opengis.net/wfs\"> ");
 				serviceMetadataXSLT.append("<xsl:text>" + getConfiguration().getAccessConstraints() + "</xsl:text>");
 				serviceMetadataXSLT.append("</xsl:element>");
 			}
