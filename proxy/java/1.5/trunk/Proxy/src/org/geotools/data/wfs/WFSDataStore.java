@@ -16,10 +16,13 @@
 package org.geotools.data.wfs;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.Reader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
@@ -94,6 +97,7 @@ import org.opengis.referencing.operation.TransformException;
 import org.opengis.geometry.MismatchedDimensionException;
 import org.xml.sax.SAXException;
 
+//import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -237,6 +241,22 @@ public class WFSDataStore extends AbstractDataStore {
 		if ((protocol & GET_PROTOCOL) == GET_PROTOCOL) {
 			HttpURLConnection hc = getConnection(createGetCapabilitiesRequest(host), auth, false);
 			InputStream is = getInputStream(hc);
+//			if (is != null) {
+//				
+//				Writer writer = new StringWriter();
+//				char[] buffer = new char[1024];
+//				try {
+//				Reader reader = new BufferedReader(
+//				new InputStreamReader(is, "UTF-8"));
+//				int n;
+//				while ((n = reader.read(buffer)) != -1) {
+//				writer.write(buffer, 0, n);
+//				}
+//				} finally {
+//				is.close();
+//				}
+//				System.err.println (writer.toString());
+//				} 
 			t = DocumentFactory.getInstance(is, hints, WFSDataStoreFactory.logger.getLevel());
 		}
 
@@ -292,6 +312,7 @@ public class WFSDataStore extends AbstractDataStore {
 				WFSAuthenticator ath = (WFSAuthenticator) auth;
 				String encoded = Base64.encode(new StringBuffer().append(ath.getPasswordAuthentication().getUserName()).append(":").append(
 						new String(ath.getPasswordAuthentication().getPassword())).toString().getBytes());
+//				encoded = encoded.replaceAll("\n","");
 				connection.addRequestProperty("Authorization", "Basic "
 						+ encoded);
 				connection.connect();
