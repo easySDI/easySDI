@@ -181,7 +181,7 @@ background-repeat:no-repeat;
 	padding-right:15px;
 	padding-bottom:5px;
 	width:50%;
-	background-color:#7dff9c;
+	background-color:#CCFFCC;
 }
 .OverviewTableCellsFailed
 {
@@ -189,7 +189,7 @@ background-repeat:no-repeat;
 	padding-right:15px;
 	padding-bottom:5px;
 	width:50%;
-	background-color:#e2ff1d;
+	background-color:#FFFF00;
 }
 .OverviewTableCellsError
 {
@@ -197,7 +197,7 @@ background-repeat:no-repeat;
 	padding-right:15px;
 	padding-bottom:5px;
 	width:50%;
-	background-color:#ff7f7f;
+	background-color:#FF0000;
 }
 .OverviewTableCellsNotTested
 {
@@ -239,3 +239,7 @@ background-repeat:no-repeat;
 	width:100% !important;
 }
 
+.Div_overview_request
+{
+	float:left;
+}

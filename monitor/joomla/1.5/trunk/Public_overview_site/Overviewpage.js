@@ -2,7 +2,7 @@ Ext.namespace("EasySDI_Mon");
 
 Ext.onReady(function() {
 	
-	EasySDI_Mon.appHeight = 600;
+	EasySDI_Mon.appHeight = 800;
 	var pagename = "";
 	
 	var proxy_URL = "administrator/components/com_easysdi_monitor/views/main/tmpl/proxy.php?proxy_url=";
@@ -71,15 +71,15 @@ Ext.onReady(function() {
 			xtype: 'panel',
 			id: 'requestTable',
 			region: 'center',
-			height:350,
 			autoHeight: true,
 			hidden: true,
-			layout:'table',	
-			layoutConfig:{columns:3},
+			width: '98%',
+			//layout:'table',	
+			//layoutConfig:{columns:3},
 			defaults: {
-				bodyStyle:'padding:2px',
-				width:380, 
-				height:280
+				bodyStyle:'padding:8px',
+				//width:380, 
+				//height:280
 			},
 			title: ''
 	};
@@ -125,8 +125,7 @@ Ext.onReady(function() {
 		}
 		
 		// Get request data
-		var aRec = overviewTableStore.getRange();
-		
+		var aRec = overviewTableStore.getRange();		
 		for ( var i=0; i< aRec.length; i++ )
 		{	
 			var content_type = aRec[i].get('serviceMethod');
@@ -138,8 +137,13 @@ Ext.onReady(function() {
 					table.add(controls);
 			}
 		}
-		table.doLayout();
 		
+		// Add float left style to div 
+		for(var i = 0;i < table.items.items.length;i++)
+		{
+			table.items.items[i].addClass('Div_overview_request');
+		}
+		table.doLayout();
 		// Set update timeout to 1 min
 	   window.setTimeout(initTable, 60000);
 	}

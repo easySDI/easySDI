@@ -346,12 +346,12 @@ Ext.onReady(function() {
 			height:350,
 			autoScroll: true,
 			hidden: true,
-			layout:'table',
-			layoutConfig:{columns:3},
+		//	layout:'table',
+		//	layoutConfig:{columns:3},
 			defaults: {
 				bodyStyle:'padding:5px',
-				width:320,//280 
-				height:280 //260
+				//width:320,//280 
+				//height:280 //260
 			}, 
 			//collapsible:false,
 			title: ''		
@@ -432,7 +432,6 @@ Ext.onReady(function() {
 		
 		// Create tableview
 		var table = Ext.getCmp('requestTable');
-		
 		try
 		{
 			// Remove all items from fieldSet
@@ -458,7 +457,6 @@ Ext.onReady(function() {
 		
 		// Get request data
 		var aRec = overviewTableStore.getRange();
-		
 		for ( var i=0; i< aRec.length; i++ )
 		{	
 			var content_type = aRec[i].get('serviceMethod');
@@ -474,9 +472,14 @@ Ext.onReady(function() {
 					controls = createTable(aRec[i],content_type.toLowerCase());
 					table.add(controls);
 				}
-		
 			}
 		}
+		
+		for(var i = 0;i < table.items.items.length;i++)
+		{
+			table.items.items[i].addClass('Div_request');
+		}
+		
 		table.doLayout();
 	}
 	
