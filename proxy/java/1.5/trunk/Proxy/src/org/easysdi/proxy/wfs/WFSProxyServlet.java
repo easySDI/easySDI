@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -71,6 +72,7 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 
+import org.apache.jasper.tagplugins.jstl.core.ForEach;
 import org.easysdi.proxy.core.ProxyServlet;
 import org.easysdi.proxy.exception.AvailabilityPeriodException;
 import org.easysdi.proxy.policy.Operation;
@@ -90,7 +92,10 @@ import org.geotools.xml.XSISAXHandler;
 import org.geotools.xml.gml.GMLFeatureCollection;
 import org.geotools.xml.schema.ComplexType;
 import org.geotools.xml.schema.Schema;
+import org.jdom.Namespace;
 import org.jdom.input.SAXBuilder;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.w3c.dom.Document;
@@ -2938,6 +2943,47 @@ public class WFSProxyServlet extends ProxyServlet {
 						}
 						// Fin de Debug
 					}
+					
+					if(tempFile != null)
+					{
+						//Replace url pointing to the remote server in the  <wfs:FeatureCollection>  element by proxy url
+						SAXBuilder sxb = new SAXBuilder();
+						org.jdom.Document  docParent = sxb.build(tempFile);
+				    	org.jdom.Element racine = docParent.getRootElement();
+				    	Namespace nsXSI = null;
+				    	List lns =  racine.getAdditionalNamespaces();
+				    	Iterator ilns = lns.iterator();
+				    	while (ilns.hasNext())
+				    	{
+				    		Namespace ns = (Namespace)ilns.next();
+				    		if(ns.getPrefix().equalsIgnoreCase("xsi"))
+				    		{
+				    			nsXSI = ns;
+				    			break;
+				    		}
+				    	}
+				    	if(nsXSI != null)
+				    	{
+				    		org.jdom.Attribute schemaLocation = racine.getAttribute("schemaLocation", nsXSI);
+				    		String[] values =  schemaLocation.getValue().split(" ");
+				    		for (int i = 0 ; i < values.length ; i++)
+				    		{
+				    			if(values[i].contains("DescribeFeatureType"))
+				    			{
+				    				values[i] = values[i].replace(values[i].subSequence(0, values[i].indexOf("?")),getServletUrl(req) );
+				    				break;
+				    			}
+				    		}
+				    		String newAttValue = "";
+				    		for (int i = 0 ; i < values.length ; i++)
+				    		{
+				    			newAttValue += values[i] + " ";
+				    		}
+				    		racine.setAttribute("schemaLocation", newAttValue, nsXSI);
+				    		XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
+					        sortie.output(docParent, new FileOutputStream(tempFile.getAbsolutePath()));
+				    	}
+					}
 				}
 
 				// Envoie du résultat des traitements "TempFile" sur la réponse
@@ -2973,6 +3019,24 @@ public class WFSProxyServlet extends ProxyServlet {
 				}
 			}
 
+			
+//			BufferedReader reader = new BufferedReader(new FileReader(tempFile));
+//            String line = "", oldtext = "";
+//            while((line = reader.readLine()) != null)
+//                {
+//                oldtext += line + "\r\n";
+//            }
+//            reader.close();
+//            // replace a word in a file
+//            //String newtext = oldtext.replaceAll("drink", "Love");
+//           
+//            //To replace a line in a file
+//            String newtext = oldtext.replaceAll("https://secure.vd.ch/asitvd/wfs", "http://localhost/proxy/ogc/asit-wfs");
+//           
+//            FileWriter writer = new FileWriter(tempFile);
+//            writer.write(newtext);
+//            writer.close();
+            
 			// No post rule to apply.
 			// Copy the file result on the output stream
 
