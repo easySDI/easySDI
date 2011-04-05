@@ -826,6 +826,9 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 					// feature type and the id - the id is not available
 					// as a
 					// distinct entry in the record
+				if (parts[1] != null && parts[0]!=null)
+				{
+					//Prefix exists
 					storeObject.wfslist.push( {
 						url : loc.wfs_url,
 						featureType : parts[1],
@@ -845,6 +848,30 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 						filterField : loc.name_field_name,
 						maxFeatures : componentParams.autocompleteMaxFeat
 					});
+					
+				}
+				else
+				{
+					//No prefix
+					storeObject.wfslist.push( {
+						url : loc.wfs_url,
+						featureType : loc.feature_type_name,
+						featureNS : loc.featureNS,
+						fields : [ {
+							name : 'ipa_fullid',
+							mapping : (componentParams.autocompleteUseFID ? 'fid' : loc.id_field_name),
+							type : 'string',
+							prefix : loc.id
+						}, {
+							name : 'ipa_display_name',
+							mapping : loc.name_field_name,
+							type : 'string',
+							append : " (" + loc.title + ")"
+						} ],
+						filterField : loc.name_field_name,
+						maxFeatures : componentParams.autocompleteMaxFeat
+					});
+				}
 				}, this);
 			this.locStore = new EasySDI_Map.WfsMultiStore( {}, storeObject);
 		} else {

@@ -94,29 +94,62 @@ EasySDI_Map.WfsStore = Ext.extend(Ext.data.Store, {
     // then.
     var settings = {};
     // Merge in wfs settings
-    var wfsDefaults = {
-	    url : componentParams.proxiedPubWfsUrl,
-	    featureNS : componentParams.pubFeatureNS,
-	    featurePrefix : componentParams.pubFeaturePrefix
-	  };
+    var wfsDefaults = {}
+    if(componentParams.pubFeaturePrefix)
+    {
+    	wfsDefaults = {
+    		    url : componentParams.proxiedPubWfsUrl,
+    		    featureNS : componentParams.pubFeatureNS,
+    		    featurePrefix : componentParams.pubFeaturePrefix
+    		  };
+    }
+    else
+    {
+    	wfsDefaults = {
+    		    url : componentParams.proxiedPubWfsUrl,
+    		    featureNS : componentParams.pubFeatureNS
+    		  };
+    }
+
     var wfsSettings = Ext.merge({}, wfsDefaults, wfsconfig);
 
-    var proto = new OpenLayers.Protocol.WFS.v1_1_0({
-      url: wfsSettings.url,
-      featureType: wfsSettings.featureType,
-      featureNS: wfsSettings.featureNS,
-      featurePrefix: wfsSettings.featurePrefix,
-      filter: wfsSettings.filter,
-      srsName: wfsSettings.srsName,
-      maxFeatures: wfsSettings.maxFeatures,
-      format: new OpenLayers.Format.WFST.v1_0_0_Sortable({
-          version: "1.0.0",
-          featureType: wfsSettings.featureType,
-          featureNS: wfsSettings.featureNS,
-          featurePrefix: wfsSettings.featurePrefix,
-          srsName: wfsSettings.srsName
-        })
-    });
+    var proto = null;
+    if(wfsSettings.featurePrefix)
+    {
+    	proto = new OpenLayers.Protocol.WFS.v1_1_0({
+    	      url: wfsSettings.url,
+    	      featureType: wfsSettings.featureType,
+    	      featureNS: wfsSettings.featureNS,
+    	      featurePrefix: wfsSettings.featurePrefix,
+    	      filter: wfsSettings.filter,
+    	      srsName: wfsSettings.srsName,
+    	      maxFeatures: wfsSettings.maxFeatures,
+    	      format: new OpenLayers.Format.WFST.v1_0_0_Sortable({
+    	          version: "1.0.0",
+    	          featureType: wfsSettings.featureType,
+    	          featureNS: wfsSettings.featureNS,
+    	          featurePrefix: wfsSettings.featurePrefix,
+    	          srsName: wfsSettings.srsName
+    	        })
+    	    });
+    }
+    else
+    {
+    	proto = new OpenLayers.Protocol.WFS.v1_1_0({
+    	      url: wfsSettings.url,
+    	      featureType: wfsSettings.featureType,
+    	      featureNS: wfsSettings.featureNS,
+    	      filter: wfsSettings.filter,
+    	      srsName: wfsSettings.srsName,
+    	      maxFeatures: wfsSettings.maxFeatures,
+    	      format: new OpenLayers.Format.WFST.v1_0_0_Sortable({
+    	          version: "1.0.0",
+    	          featureType: wfsSettings.featureType,
+    	          featureNS: wfsSettings.featureNS,
+    	          srsName: wfsSettings.srsName
+    	        })
+    	    });
+    }
 
     settings.proxy = new GeoExt.data.ProtocolProxy({protocol: proto});
     settings.reader = new GeoExt.data.FeatureReader({}, EasySDI_Map.data.recordize(wfsconfig.fields));
@@ -346,20 +379,39 @@ EasySDI_Map.WfsMultiStore = Ext.extend(Ext.data.Store, {
         // Merge in wfs settings
         wfsSettings = Ext.merge({}, wfsDefaults, wfsconfig);
 
-        proto = new OpenLayers.Protocol.WFS.v1_1_0({
-          url: wfsSettings.url,
-          featureType: wfsSettings.featureType,
-          featurePrefix: wfsSettings.featurePrefix,
-          featureNS: wfsSettings.featureNS,
-          maxFeatures: wfsSettings.maxFeatures,
-          format: new OpenLayers.Format.WFST.v1_0_0_Sortable({
-              version: "1.0.0",
-              featureType: wfsSettings.featureType,
-              featureNS: componentParams.pubFeatureNS,
-              featurePrefix: wfsSettings.featurePrefix,
-              srsName: wfsSettings.srsName
-            })
-        });
+        if(wfsSettings.featurePrefix)
+        {
+        	 proto = new OpenLayers.Protocol.WFS.v1_1_0({
+                 url: wfsSettings.url,
+                 featureType: wfsSettings.featureType,
+                 featurePrefix: wfsSettings.featurePrefix,
+                 featureNS: wfsSettings.featureNS,
+                 maxFeatures: wfsSettings.maxFeatures,
+                 format: new OpenLayers.Format.WFST.v1_0_0_Sortable({
+                     version: "1.0.0",
+                     featureType: wfsSettings.featureType,
+                     featureNS: componentParams.pubFeatureNS,
+                     featurePrefix: wfsSettings.featurePrefix,
+                     srsName: wfsSettings.srsName
+                   })
+               });
+        }
+        else
+        {
+        	 proto = new OpenLayers.Protocol.WFS.v1_1_0({
+                 url: wfsSettings.url,
+                 featureType: wfsSettings.featureType,
+                 featureNS: wfsSettings.featureNS,
+                 maxFeatures: wfsSettings.maxFeatures,
+                 format: new OpenLayers.Format.WFST.v1_0_0_Sortable({
+                     version: "1.0.0",
+                     featureType: wfsSettings.featureType,
+                     featureNS: componentParams.pubFeatureNS,
+                     srsName: wfsSettings.srsName
+                   })
+               });
+        }
+       
 
         protolist.push({protocol: proto,
                       reader: new GeoExt.data.FeatureReader({}, EasySDI_Map.data.recordize(wfsconfig.fields)),
