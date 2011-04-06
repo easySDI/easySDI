@@ -477,7 +477,7 @@ Ext.onReady(function() {
 		
 		for(var i = 0;i < table.items.items.length;i++)
 		{
-			table.items.items[i].addClass('Div_request');
+			table.items.items[i].addClass('Div_overview_request');
 		}
 		
 		table.doLayout();
