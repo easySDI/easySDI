@@ -351,7 +351,7 @@ Ext.onReady(function() {
 			defaults: {
 				bodyStyle:'padding:5px',
 				//width:320,//280 
-				//height:280 //260
+				height:300 //260
 			}, 
 			//collapsible:false,
 			title: ''		
@@ -558,6 +558,7 @@ Ext.onReady(function() {
 	        	           	xtype: 'label',
 	        	        	value: '',
 	        	        	name: 'service_name',
+							
 							text: rec.get('name'),
 							cellCls: tHeaderColor
 	        	        },

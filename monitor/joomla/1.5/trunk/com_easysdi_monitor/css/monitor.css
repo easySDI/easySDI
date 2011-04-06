@@ -242,4 +242,10 @@ background-repeat:no-repeat;
 .Div_overview_request
 {
 	float:left;
+	min-width:200px;
+}
+.Div_overview_request_pub
+{
+	float:left;
+	min-width:270px;
 }

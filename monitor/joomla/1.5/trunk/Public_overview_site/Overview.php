@@ -13,8 +13,6 @@
 </script>
 <script type="text/javascript" src="administrator/components/com_easysdi_monitor/lib/ext/ext-all.js" >
 </script>
-<script type="text/javascript" src="administrator/components/com_easysdi_monitor/lib/Highcharts-2.0.3/js/modules/exporting.js" >
-</script>
 <script type="text/javascript" src="administrator/components/com_easysdi_monitor/ApplicationSettings.js" >
 </script>
 <script type="text/javascript" src="Overviewpage.js">

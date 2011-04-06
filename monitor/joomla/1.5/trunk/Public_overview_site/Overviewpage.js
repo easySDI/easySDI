@@ -5,7 +5,7 @@ Ext.onReady(function() {
 	EasySDI_Mon.appHeight = 800;
 	var pagename = "";
 	
-	var proxy_URL = "administrator/components/com_easysdi_monitor/views/main/tmpl/proxy.php?proxy_url=";
+	var proxy_URL = "/administrator/components/com_easysdi_monitor/views/main/tmpl/proxy.php?proxy_url=";
 	
 	var proxyTableOverview = new Ext.data.HttpProxy({
 		api: {
@@ -79,7 +79,7 @@ Ext.onReady(function() {
 			defaults: {
 				bodyStyle:'padding:8px',
 				//width:380, 
-				//height:280
+				height:290
 			},
 			title: ''
 	};
@@ -141,7 +141,7 @@ Ext.onReady(function() {
 		// Add float left style to div 
 		for(var i = 0;i < table.items.items.length;i++)
 		{
-			table.items.items[i].addClass('Div_overview_request');
+			table.items.items[i].addClass('Div_overview_request_pub');
 		}
 		table.doLayout();
 		// Set update timeout to 1 min
@@ -432,7 +432,8 @@ Ext.onReady(function() {
 				}
 			}
 		}
-		mainURL += "/administrator/components/com_easysdi_monitor/views/proxy/tmpl/proxy.php?proxy_url=";
+		// Proxy_URL
+		mainURL += proxy_URL;
 		
 		// ONLY FOR TEST
 		if(window.location.host.toLowerCase() == "localhost")
