@@ -305,19 +305,19 @@ printMap = function(config) {
 		layers : []
 	};
 	
-	if (componentParams.projection != undefined)
+	if (componentParams.projection != '')
 		options.projection = componentParams.projection;
-	if (componentParams.mapUnit != undefined)
+	if (componentParams.mapUnit != '')
 		options.units = componentParams.mapUnit;
-	if (componentParams.mapMaxExtent != undefined)
+	if (componentParams.mapMaxExtent != '')
 		options.maxExtent = componentParams.mapMaxExtent;
-	if (componentParams.mapMinScale != undefined)
+	if (componentParams.mapMinScale != '')
 		options.minScale = componentParams.mapMinScale;
-	if (componentParams.mapMaxScale != undefined)
+	if (componentParams.mapMaxScale != '')
 		options.maxScale = componentParams.mapMaxScale;
-	if (componentParams.mapResolutions != undefined)
+	if (componentParams.mapResolutions != '')
 		options.resolutions = componentParams.mapResolutions;
-	if (componentParams.numZoomLevels != undefined)
+	if (componentParams.numZoomLevels != '')
 		options.numZoomLevels = componentParams.numZoomLevels;
 
 	thisMap = new OpenLayers.Map('map', options);

@@ -145,7 +145,6 @@ EasySDI_Map.WfsStore = Ext.extend(Ext.data.Store, {
     	      format: new OpenLayers.Format.WFST.v1_0_0_Sortable({
     	          version: "1.0.0",
     	          featureType: wfsSettings.featureType,
-    	          featureNS: wfsSettings.featureNS,
     	          srsName: wfsSettings.srsName
     	        })
     	    });
@@ -406,7 +405,6 @@ EasySDI_Map.WfsMultiStore = Ext.extend(Ext.data.Store, {
                  format: new OpenLayers.Format.WFST.v1_0_0_Sortable({
                      version: "1.0.0",
                      featureType: wfsSettings.featureType,
-                     featureNS: componentParams.pubFeatureNS,
                      srsName: wfsSettings.srsName
                    })
                });

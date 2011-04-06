@@ -856,7 +856,6 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 					storeObject.wfslist.push( {
 						url : loc.wfs_url,
 						featureType : loc.feature_type_name,
-						featureNS : loc.featureNS,
 						fields : [ {
 							name : 'ipa_fullid',
 							mapping : (componentParams.autocompleteUseFID ? 'fid' : loc.id_field_name),

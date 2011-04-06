@@ -372,7 +372,7 @@ foreach ($result as $rec)
     title: '$l_name',
     parent_id: '$l_parentid',
     parent_fk_field_name: '$l_parentfkfield',
-    extract_id_from_fid: true
+    extract_id_from_fid: false
   }";
 	if ($i != count($result)) $s .= ",";
 }
