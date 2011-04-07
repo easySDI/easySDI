@@ -905,7 +905,7 @@ $j(document).ready(function() {
 											</span>
 										</td>
 										<td>
-											<input class="text_area" type="text" size="100" name="autocompleteUseFID" value="<?php echo $mapList['autocompleteUseFID']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+											<input type="checkbox"  id="autocompleteUseFID" name="autocompleteUseFID" value="1" <?php if($mapList['autocompleteUseFID']->value == '1')echo " checked" ;?>  /> 
 										</td>
 									</tr>
 									<tr>
