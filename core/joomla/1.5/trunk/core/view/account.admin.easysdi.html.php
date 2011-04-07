@@ -626,7 +626,7 @@ class HTML_account {
 <table border="0" cellpadding="0" cellspacing="0">
 	<tr>
 		<td>
-		<fieldset><legend><?php echo JText::_('EASYSDI_PROFILE_TITLE'); ?></legend>
+		<fieldset><legend><?php echo JText::_('CORE_ACCOUNT_RIGHTS_PROFILE'); ?></legend>
 		<table border="0" cellpadding="3" cellspacing="0">
 			<tr>
 			<?php
@@ -649,7 +649,7 @@ class HTML_account {
 		?>
 	<tr>
 		<td>
-		<fieldset><legend><?php echo JText::_($row->name); ?></legend>
+		<fieldset><legend><?php echo JText::_('CORE_ACCOUNT_RIGHTS_FONCTION'); ?></legend>
 		<table border="0" cellpadding="3" cellspacing="0">
 			<tr>
 			<?php
