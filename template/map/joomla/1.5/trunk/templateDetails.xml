@@ -9,7 +9,7 @@
 	<authorUrl>http://www.depth.ch</authorUrl>
     <copyright>EASYSDI</copyright>
     <license>EASYSDI</license>
-    <version>1.0</version>
+    <version>2.0.0</version>
 	<description>EASYSDI Template</description>
 	<files>
 		<filename>index.php</filename>
