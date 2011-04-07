@@ -31,9 +31,9 @@
 							             <li><?php printf('<a href="index.php?option=%s&amp;task=geolocation">', 'com_easysdi_map'); echo JText::_( 'CORE_CPANEL_MAP_GEOLOCATION' ); ?></li>
 									</ul>
 								</td>
-							</tr>
-						</table>
-					</td>
+<!--							</tr>-->
+<!--						</table>-->
+<!--					</td>-->
 					<?php 
 					$db =& JFactory::getDBO(); 
 					$query ="SELECT value FROM #__sdi_configuration WHERE code ='enableQueryEngine' ";
@@ -43,10 +43,10 @@
 					if ($value == '1')
 					{
 					?>
-					<td colspan="2">
-						<table width="100%">
-							<tr>
-								<td class="header_sdi_comp_links">&nbsp;</td>
+<!--					<td colspan="2">-->
+<!--						<table width="100%">-->
+<!--							<tr>-->
+<!--								<td class="header_sdi_comp_links">&nbsp;</td>-->
 								<td class="header_sdi_list">
 									<ul >
 										<li><?php printf('<a href="index.php?option=%s&amp;task=featureType">', 'com_easysdi_map'); echo JText::_( 'CORE_CPANEL_MAP_FEATURETYPE_LABEL' ); ?> </li>
@@ -57,12 +57,20 @@
 										<li><?php printf('<a href="index.php?option=%s&amp;task=resultGrid">', 'com_easysdi_map'); echo JText::_( 'CORE_CPANEL_MAP_RESULTGRID_LABEL' ); ?> </li>
 									</ul>
 								</td>
-							</tr>
-						</table>
-					</td>
+<!--							</tr>-->
+<!--						</table>-->
+<!--					</td>-->
+					<?php 
+					}
+					else {
+					?>
+					<td>&nbsp;</td>
 					<?php 
 					}
 					?>
+							</tr>
+						</table>
+					</td>
 				</tr>
 			</tbody>
 		</table>

@@ -50,23 +50,4 @@ class baseLayer extends sdiTable
 	}
 }
 
-class baseMap extends sdiTable
-{
-	var $projection=null;
-	var $unit=null;
-	var $minscale=null;
-	var $maxscale=null;
-	var $maxextent=null;
-	var $extent=null;
-	var $resolutions='';
-	var $resolutionoverscale=false;
-	var $default=true;
-	
-	// Class constructor
-	function __construct( &$db )
-	{
-		parent::__construct ( '#__sdi_basemapdefinition', 'id', $db ) ;
-	}
-}
-
 ?>

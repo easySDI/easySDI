@@ -14,7 +14,9 @@ function com_uninstall()
 		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		return false;
 	}
-	$mainframe->enqueueMessage("The Map component for EasySdi is now removed from your system. We are sorry to see you go!","INFO");
+	$mainframe->enqueueMessage("The Map component for EasySdi is now removed from your system. 
+	Pay attention the database is not deleted and could still be used if you install Easysdi again.
+	We are sorry to see you go!","INFO");
 	return true;
 }
 ?>

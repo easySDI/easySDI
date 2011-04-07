@@ -100,7 +100,7 @@ class HTML_annotationstyle
 		{
 			if (document.getElementById('name').value == "")
 			{	
-				alert ('<?php echo  JText::_( 'MAP_PROJECTION_NAME_ANNOTATION_ERROR');?>');	
+				alert ('<?php echo  JText::_( 'MAP_ANNOTATION_NAME_ERROR');?>');	
 				return;
 			}
 			else

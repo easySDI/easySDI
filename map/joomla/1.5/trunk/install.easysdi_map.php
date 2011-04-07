@@ -92,7 +92,7 @@ function com_install()
 			`graphicyoffset` float DEFAULT NULL,
 		  PRIMARY KEY (`id`)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-		
+			
 		-- ----------------------------
 		-- Table structure for `#__sdi_featuretypeattribute`
 		-- ----------------------------
@@ -136,41 +136,6 @@ function com_install()
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 		
 		-- ----------------------------
-		-- Table structure for `#__sdi_basemapdefinition`
-		-- ----------------------------
-		CREATE TABLE `#__sdi_basemapdefinition` (
-		`id`  bigint(20) NOT NULL AUTO_INCREMENT ,
-		`guid`  varchar(36) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
-		`code`  varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
-		`name`  varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
-		`description`  varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
-		`created`  datetime NOT NULL ,
-		`updated`  datetime NULL DEFAULT NULL ,
-		`createdby`  bigint(20) NOT NULL ,
-		`updatedby`  bigint(20) NULL DEFAULT NULL ,
-		`label`  varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
-		`ordering`  bigint(20) NULL DEFAULT NULL ,
-		`checked_out`  bigint(20) NOT NULL DEFAULT 0 ,
-		`checked_out_time`  datetime NULL DEFAULT NULL ,
-		`projection`  varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
-		`unit`  varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
-		`minscale`  varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
-		`maxscale`  varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
-		`resolutions` text,
-		`resolutionoverscale` tinyint(4) NOT NULL DEFAULT '0',
-		`default`  tinyint(1) NOT NULL DEFAULT 0 ,
-		`maxextent`  varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
-		`extent` varchar(100) DEFAULT NULL,
-		PRIMARY KEY (`id`),
-		UNIQUE INDEX `guid` (`guid`) USING BTREE ,
-		UNIQUE INDEX `code` (`code`) USING BTREE 
-		)
-		ENGINE=InnoDB
-		DEFAULT CHARSET=utf8
-		;
-
-		
-		-- ----------------------------
 		-- Table structure for `#__sdi_baselayer`
 		-- ----------------------------
 		CREATE TABLE `#__sdi_baselayer` (
@@ -189,6 +154,7 @@ function com_install()
 		  `checked_out_time`  datetime NULL DEFAULT NULL ,
 		  
 		  `url` varchar(400) NOT NULL DEFAULT '',
+		  `version` varchar(10) NOT NULL DEFAULT '',
 		  `layers` varchar(300) NOT NULL DEFAULT '',
 		  `imgformat` varchar(100) NOT NULL DEFAULT 'image/png',
 		  `customStyle` tinyint(1) unsigned NOT NULL DEFAULT '0',
@@ -242,7 +208,7 @@ function com_install()
 						
 		INSERT INTO `#__sdi_configuration` (guid,code,name,description, created,createdby,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'componentPath', 'componentPath','','".date('Y-m-d H:i:s')."', '".$user_id."', null, '".$module_id."');
 		INSERT INTO `#__sdi_configuration` (guid,code,name,description, created,createdby,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'componentUrl','componentUrl','','".date('Y-m-d H:i:s')."', '".$user_id."',  null,'".$module_id."');
-		INSERT INTO `#__sdi_configuration` (guid,code,name,description, created,createdby,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'projection','projection','','".date('Y-m-d H:i:s')."', '".$user_id."','EPSG:27572','".$module_id."');
+		INSERT INTO `#__sdi_configuration` (guid,code,name,description, created,createdby,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'projection','projection','','".date('Y-m-d H:i:s')."', '".$user_id."','EPSG:27582','".$module_id."');
 		INSERT INTO `#__sdi_configuration` (guid,code,name,description, created,createdby,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'pubWfsUrl','pubWfsUrl','url of publication database Wfs service proxy','".date('Y-m-d H:i:s')."', '".$user_id."',null,'".$module_id."');
 		INSERT INTO `#__sdi_configuration` (guid,code,name,description, created,createdby,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'maxFeatures', 'maxFeatures','maximum number of features for WFS requests','".date('Y-m-d H:i:s')."', '".$user_id."','1000','".$module_id."');
 		INSERT INTO `#__sdi_configuration` (guid,code,name,description, created,createdby,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'pubFeatureNS','pubFeatureNS','namespace of publication database Wfs service','".date('Y-m-d H:i:s')."', '".$user_id."', null,'".$module_id."');
@@ -255,7 +221,7 @@ function com_install()
 		INSERT INTO `#__sdi_configuration` (guid,code,name,description, created,createdby,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'pubWmsUrl','pubWmsUrl','url of publication database Wms service proxy','".date('Y-m-d H:i:s')."', '".$user_id."',null,'".$module_id."');
 		INSERT INTO `#__sdi_configuration` (guid,code,name,description, created,createdby,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'defaultCoordMapZoom','defaultCoordMapZoom','','".date('Y-m-d H:i:s')."', '".$user_id."','0','".$module_id."');
 		INSERT INTO `#__sdi_configuration` (guid,code,name,description, created,createdby,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'autocompleteNumChars','autocompleteNumChars','','".date('Y-m-d H:i:s')."', '".$user_id."','4','".$module_id."');
-		INSERT INTO `#__sdi_configuration` (guid,code,name,description, created,createdby,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'autocompleteUseFID','autocompleteUseFID','','".date('Y-m-d H:i:s')."', '".$user_id."', '1','".$module_id."');
+		INSERT INTO `#__sdi_configuration` (guid,code,name,description, created,createdby,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'autocompleteUseFID','autocompleteUseFID','','".date('Y-m-d H:i:s')."', '".$user_id."', '0','".$module_id."');
 		INSERT INTO `#__sdi_configuration` (guid,code,name,description, created,createdby,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'autocompleteMaxFeat','autocompleteMaxFeat','','".date('Y-m-d H:i:s')."', '".$user_id."', '50','".$module_id."');
 		INSERT INTO `#__sdi_configuration` (guid,code,name,description, created,createdby,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'layerProxyXMLFile','layerProxyXMLFile','','".date('Y-m-d H:i:s')."', '".$user_id."', '','".$module_id."');
 		INSERT INTO `#__sdi_configuration` (guid,code,name,description, created,createdby,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'maptofopURL', 'maptofopURL','Simple reporting service based on FOP.  HTTP-GET','".date('Y-m-d H:i:s')."', '".$user_id."', null,'".$module_id."');
@@ -266,6 +232,12 @@ function com_install()
 		INSERT INTO `#__sdi_configuration` (guid,code,name,description, created,createdby,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'pubWfsVersion','pubWfsVersion','Version of publication WFS service.','".date('Y-m-d H:i:s')."', '".$user_id."', '1.0.0','".$module_id."');
 		INSERT INTO `#__sdi_configuration` (guid,code,name,description, created,createdby,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'pubWmsVersion','pubWmsVersion','Version of publication WMS service.','".date('Y-m-d H:i:s')."', '".$user_id."', '1.1.1','".$module_id."');
 		INSERT INTO `#__sdi_configuration` (guid,code,name,description, created,createdby,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'enableQueryEngine','enableQueryEngine','Enable the query engine.','".date('Y-m-d H:i:s')."', '".$user_id."', '0','".$module_id."');
+		INSERT INTO `#__sdi_configuration` (guid,code,name,description, created,createdby,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'mapUnit','mapUnit','Map unit.','".date('Y-m-d H:i:s')."', '".$user_id."', 'm','".$module_id."');
+		INSERT INTO `#__sdi_configuration` (guid,code,name,description, created,createdby,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'mapResolutionOverScale','mapResolutionOverScale','','".date('Y-m-d H:i:s')."', '".$user_id."', '0','".$module_id."');
+		INSERT INTO `#__sdi_configuration` (guid,code,name,description, created,createdby,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'mapMaxScale','mapMaxScale','Map maximum scale.','".date('Y-m-d H:i:s')."', '".$user_id."', '1','".$module_id."');
+		INSERT INTO `#__sdi_configuration` (guid,code,name,description, created,createdby,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'mapMinScale','mapMinScale','Map minimum scale.','".date('Y-m-d H:i:s')."', '".$user_id."', '5000000','".$module_id."');
+		INSERT INTO `#__sdi_configuration` (guid,code,name,description, created,createdby,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'mapResolutions','mapResolutions','Map resolutions list.','".date('Y-m-d H:i:s')."', '".$user_id."', '','".$module_id."');
+		INSERT INTO `#__sdi_configuration` (guid,code,name,description, created,createdby,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'mapMaxExtent','mapMaxExtent','Map maximum extent.','".date('Y-m-d H:i:s')."', '".$user_id."', '','".$module_id."');
 		
 		-- ----------------------------
 		-- Table structure for `#__sdi_mapcontext`
@@ -658,6 +630,7 @@ function com_install()
 		  `group_id` bigint(20) NOT NULL DEFAULT '0',
 		  `url` varchar(400) NOT NULL DEFAULT '',
 		  `type` varchar(100) NOT NULL DEFAULT '',
+		  `version` varchar(10) NOT NULL DEFAULT '',
 		  `layers` varchar(300) NOT NULL DEFAULT '',
 		  `maxextent` varchar(100) NOT NULL DEFAULT '',
 		  `maxscale` varchar(100) NOT NULL DEFAULT 'auto',

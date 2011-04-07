@@ -33,8 +33,9 @@ class ADMIN_overlay
 		$search = $db->getEscaped( trim( strtolower( $search ) ) );
 		if ($search)
 		{
-			$query_search = ' where LOWER(id) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
-			$query_search .= ' or LOWER(name) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+			$query_search = ' where LOWER(l.id) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+			$query_search .= ' or LOWER(l.name) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+			$query_search .= ' or LOWER(g.name) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
 		}
 
 		//Base query
