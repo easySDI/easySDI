@@ -35,6 +35,8 @@
 			             <li><?php printf('<a href="index.php?option=%s&amp;task=listClass">', $option); echo JText::_( 'CORE_CLASS_PANEL' ); ?></a></li>
 			             <li><?php printf('<a href="index.php?option=%s&amp;task=listAttribute">', $option); echo JText::_( 'CORE_ATTRIBUTE_PANEL' ); ?></a></li>
 			             <li><?php printf('<a href="index.php?option=%s&amp;task=listRelation">', $option); echo JText::_( 'CORE_RELATION_PANEL' ); ?></a></li>
+						 <li><?php printf('<a href="index.php?option=%s&amp;task=listQueryReports">', $option); echo JText::_( 'CORE_XQUERY_PANEL' ); ?></a></li>
+						
 				 </ul>
 			       </td>
 			       </tr>
