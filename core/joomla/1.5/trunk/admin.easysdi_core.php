@@ -689,7 +689,11 @@ switch($task){
 	case "listRelation":
 		$mainframe->redirect("index.php?option=com_easysdi_catalog&task=listRelation" );
 		break;
-
+		
+	case "listQueryReports":
+		$mainframe->redirect("index.php?option=com_easysdi_catalog&task=listQueryReports" );
+		break;
+		
 	case "listObjectTypeLink":
 		$mainframe->redirect("index.php?option=com_easysdi_catalog&task=listObjectTypeLink" );
 		break;
