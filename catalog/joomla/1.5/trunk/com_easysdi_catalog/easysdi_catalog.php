@@ -787,6 +787,22 @@ switch($task){
 			
 			testreport::main();
 			break;
+		case 'testxQuery':
+			require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'testMxQuery.php');
+			require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'testMxQuery.html.php');
+			testMxQuery::test();
+			break;
+		case 'listMyReports':
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'xquery.easysdi.class.php');
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'xquery.admin.easysdi.html.php');
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'xquery.admin.easysdi.php');
+			ADMIN_xQuery::listMyReports();
+			break;
+		case 'processXQuery':
+			require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'testMxQuery.php');
+			require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'testMxQuery.html.php');
+			testMxQuery::process();
+			break;	
 	}
 //}
  ?>

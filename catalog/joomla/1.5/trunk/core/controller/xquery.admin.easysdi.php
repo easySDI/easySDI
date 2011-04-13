@@ -594,6 +594,53 @@ class ADMIN_xQuery{
 		
 	}
 	
+	
+	function listMyReports(){
+		
+	    $homeUrl ="index.php";
+		
+		global $mainframe;	
+			
+		$database=& JFactory::getDBO(); 
+		$user =& JFactory::getUser();
+		
+		$resetpagination = JRequest::getVar('resetpagination', 0);
+		if($resetpagination ==1){			
+			JRequest::setVar('limit', 10);
+			JRequest::setVar('limitstart', 0);
+			JRequest::setVar('resetpagination', 0);
+		}
+		
+		$limit		=  JRequest::getVar('limit', 10);
+		$limitstart	=  JRequest::getVar('limitstart', 0);
+		//get the total
+		$query = "select count(*)  from #__sdi_xqueryreportassignation where user_id =".$user->id;
+		$database->setQuery($query);
+		$total = $database->loadResult();
+		$pagination = new JPagination($total,$limitstart,$limit);
+		
+		$selectsql = "select #__sdi_xqueryreport.* from #__sdi_xqueryreportassignation , #__sdi_xqueryreport  
+					  where #__sdi_xqueryreport.id=#__sdi_xqueryreportassignation.report_id AND #__sdi_xqueryreportassignation.user_id =".$user->id;
+		
+		try{
+			
+			$database->setQuery( $selectsql, $pagination->limitstart, $pagination->limit);
+			$rows = $database->loadObjectList();
+			if ($database->getErrorNum()) {
+				
+				$mainframe->redirect($homeUrl, $database->getErrorMsg(),"ERROR");	
+		
+			}
+			else{
+				
+				HTML_xquery::listMyReports($rows, $pagination);
+					
+			}
+		}
+		catch(Exception $e){
+			$mainframe->redirect($homeUrl, $e->getTraceAsString());
+		}
+	}
 }
 
 

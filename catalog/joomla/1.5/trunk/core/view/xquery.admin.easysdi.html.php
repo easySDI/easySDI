@@ -286,7 +286,56 @@ function assignXQueryReport($orgrows, $accountrowsbyorg,$pagination, $assignedUs
 <?php
 }
 
+	function listMyReports($rows, $pagination){
+?>
+<h1><?php echo JText::_("CATALOG_XQUERY_MYREPORTS"); ?> </h1>
+
+<form action="" method="post" name="adminForm">
+<table class="xbox-table">
+		<thead>
+			<tr >
+				<th class='title' style="width:10px"><?php echo JText::_("CORE_SHARP"); ?></th>
+				<th class='title' style="width:50px"><?php echo JText::_("CATALOG_XQUERY_REPORTNAME");  ?></th>
+				<th class='title' style="width:100px"><?php echo JText::_("CATALOG_XQUERY_REPORTDESCRIPTION");  ?></th>
+				<th class='title' style="width:50px"><?php echo JText::_("CATALOG_XQUERY_ACTION");  ?></th>
+				
+				
+			</tr>
+		</thead>
+		<tbody>
+			<?php 
+			
+				$limitstart	=  JRequest::getVar('limitstart', 0);
+				$num = $limitstart+1;
+				foreach ($rows as $row) 
+				
+				{?> 
+				
+				<tr >
+				<td  ><?php echo $num?></td>
+				<td  ><?php echo  $row->xqueryname  ?></td>
+				<td  ></td>
+				<td  class="executeXQuery"></td>
+				
+				</tr>
+				
+			<?php 
+			$num = $num+1;
+				}
+			?>
 
 
+		</tbody>
+		<tfoot>
+		<!-- add pagination for in footer -->
+			<tr>	
+				<td colspan="13"><?php echo $pagination->getListFooter(); ?></td>
+			</tr>
+		</tfoot>
+		</table>
+</form>
+
+<?php 
+	}
 } //end class  HTML_xquery
 ?>

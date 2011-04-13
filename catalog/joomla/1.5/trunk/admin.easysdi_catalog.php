@@ -2232,6 +2232,13 @@ switch($task){
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'xquery.admin.easysdi.php');
 		ADMIN_xQuery::saveXQueryUserReportAccess();
 		break;
+		
+	case 'listMyReports':
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'xquery.easysdi.class.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'xquery.admin.easysdi.html.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'xquery.admin.easysdi.php');
+		ADMIN_xQuery::listMyReports();
+		break;
 	default:
 		$mainframe->redirect("index.php?option=com_easysdi_core" );
 		break;
