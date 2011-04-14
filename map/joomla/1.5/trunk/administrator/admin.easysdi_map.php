@@ -609,6 +609,15 @@ switch($task)
 		$order_field = JRequest::getVar ('order_field','') ;
 		ADMIN_baselayer::orderDownBasemapLayer($cid[0]);
 		break;
+	case 'saveOrderBaseMapLayer':
+		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'baselayer.admin.easysdi_map.html.php');
+		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'baselayer.class.easysdi_map.php');
+		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'baselayer.toolbar.easysdi_map.html.php');
+		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'baselayer.admin.easysdi_map.php');
+		$cid		= JRequest::getVar( 'cid', array(0));
+		$order		= JRequest::getVar( 'ordering', array (0));
+		ADMIN_baselayer::saveOrderBaseMapLayer($option,$cid, $order);
+		break;
 	case "cancelBaseLayer":
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'baselayer.admin.easysdi_map.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'baselayer.class.easysdi_map.php');

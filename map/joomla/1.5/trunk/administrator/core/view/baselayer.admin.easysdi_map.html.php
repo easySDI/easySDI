@@ -44,7 +44,8 @@ class HTML_baselayer
 					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_BASELAYER_DESCRIPTION"), 'description', @$filter_order_Dir, @$filter_order); ?></th>
 					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_BASELAYER_URL"), 'url', @$filter_order_Dir, @$filter_order); ?></th>
 					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_BASELAYER_LAYERS"), 'layers', @$filter_order_Dir, @$filter_order); ?></th>
-					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_BASELAYER_ORDER"), 'ordering', @$filter_order_Dir, @$filter_order); ?></th>
+					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_BASELAYER_ORDER"), 'ordering', @$filter_order_Dir, @$filter_order); ?>
+					<?php echo JHTML::_('grid.order',  $rows, 'filesave.png', 'saveOrderBaseMapLayer' ); ?></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -64,11 +65,13 @@ class HTML_baselayer
 					<td><?php echo $row->url; ?></td>
 					<td><?php echo $row->layers; ?></td>
 					<td class="order" nowrap="nowrap">
-					<?php $disabled = ($filter_order == 'ordering') ? true : false; ?> 
+					<?php $enabled = ($filter_order == 'ordering') ? true : false;
+					$disabledText = $enabled ? '' : 'disabled="disabled"';
+					?> 
 					<span>
-					<?php echo $pageNav->orderUpIcon($i,  true, 'orderupbasemaplayer', 'Move Up', $disabled);  ?></span> 
-					<span><?php echo $pageNav->orderDownIcon($i,1,  true, 'orderdownbasemaplayer', 'Move Down', $disabled);   ?></span>
-					<?php echo $row->ordering;?> 
+					<?php echo $pageNav->orderUpIcon($i,  true, 'orderupbasemaplayer', 'Move Up', $enabled);  ?></span> 
+					<span><?php echo $pageNav->orderDownIcon($i,1,  true, 'orderdownbasemaplayer', 'Move Down', $enabled);   ?></span>
+					<input type="text" id="or<?php echo $i;?>" name="ordering[]" size="5" <?php echo $disabledText; ?> value="<?php echo $row->ordering;?>" class="text_area" style="text-align: center" />
 					</td>
 				</tr>
 				<?php

@@ -192,5 +192,45 @@ class ADMIN_baselayer
 
 		$mainframe->redirect("index.php?option=$option&task=baseLayer" );
 	}	
+	
+	function saveOrderBaseMapLayer($option, $cid,$order)
+	{
+		global $mainframe;
+		if( $mainframe->getUserStateFromRequest( "$option.filter_order",		'filter_order',		'id',	'cmd' ) != 'ordering')
+		{
+			$mainframe->redirect("index.php?option=$option&task=baseLayer" );
+		}
+
+		$db			= & JFactory::getDBO();
+		$total		= count($cid);
+		$conditions	= array ();
+
+		JArrayHelper::toInteger($cid, array(0));
+		JArrayHelper::toInteger($order, array(0));
+
+		// Update the ordering for items in the cid array
+		for ($i = 0; $i < $total; $i ++)
+		{
+			// Instantiate an article table object
+			$row = new baseLayer( $db );
+			$row->load( (int) $cid[$i]);
+			
+			if ($row->ordering != $order[$i]) {
+				$row->ordering = $order[$i];
+				if (!$row->store()) {
+					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+					$mainframe->redirect("index.php?option=$option&task=baseLayer" );
+					exit();
+				}
+			}
+		}
+
+		$cache = & JFactory::getCache('com_easysdi_map');
+		$cache->clean();
+
+		$mainframe->enqueueMessage(JText::_('New ordering saved'),"SUCCESS");
+		$mainframe->redirect("index.php?option=$option&task=baseLayer" );
+		exit();
+	}
 }
 ?>

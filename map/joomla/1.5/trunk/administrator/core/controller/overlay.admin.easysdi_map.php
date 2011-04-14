@@ -389,6 +389,11 @@ class ADMIN_overlay
 	{
 		global $mainframe;
 
+		if( $mainframe->getUserStateFromRequest( "$option.filter_order",		'filter_order',		'id',	'cmd' ) != 'ordering')
+		{
+			$mainframe->redirect("index.php?option=$option&task=overlay" );
+		}
+		
 		$db			= & JFactory::getDBO();
 		$total		= count($cid);
 		$conditions	= array ();
