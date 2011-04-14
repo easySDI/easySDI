@@ -73,41 +73,26 @@ class HTML_overlay
 					<td><a href="#edit" onclick="return listItemTask('cb<?php echo $i;?>','editOverlay')"><?php echo stripcslashes($row->name); ?></a></td>
 					<td><?php echo $row->group_name; ?></td>
 					<td><?php echo $row->layers; ?></td>
-					<?php $disabled = (($filter_order == 'ordering' && $filter_group_id != -1) )  ?  '' : 'disabled="disabled"'; ?>
-					<td width="100px" align="right">
-					<?php
-					if ($filter_order=="ordering" and $filter_order_Dir=="asc"){
-						if ($disabled && $filter_group_id != -1){
-					?>
-							 <?php echo $pageNav->orderUpIcon($i, true, 'orderupoverlay', '', false ); ?>
-				             <?php echo $pageNav->orderDownIcon($i, count($rows), true, 'orderdownoverlay', '', false ); ?>
-		            <?php
-						}
-						elseif(!$disabled) {
-					?>
-							 <?php echo $pageNav->orderUpIcon($i, true, 'orderupoverlay', 'Move Up', isset($rows[$i-1]) ); ?>
-				             <?php echo $pageNav->orderDownIcon($i, count($rows), true, 'orderdownoverlay', 'Move Down', isset($rows[$i+1]) ); ?>
-					<?php
-						}		
+					
+					<td width="100px" align="right" >
+					<?php  $ordering = ($filter_order == 'ordering')  ? true : false;
+						   $byGroup = ($filter_group_id == -1)? false: true;
+						   $disabled = ($ordering && $filter_group_id != -1) ?  '' : 'disabled="disabled"';
+					if ($byGroup &&  $filter_order_Dir=="asc"){	
+						?>
+							<span><?php echo $pageNav->orderUpIcon($i, true, 'orderupoverlay', 'Move Up', $ordering ); ?></span>
+					        <span><?php echo $pageNav->orderDownIcon($i, count($rows), true, 'orderdownoverlay', 'Move Down', $ordering ); ?></span>
+						<?php
 					}
-					else{
-						if ($disabled && $filter_group_id != -1){
-					?>
-							 <?php echo $pageNav->orderUpIcon($i, true, 'orderdownoverlay', '', false ); ?>
-				             <?php echo $pageNav->orderDownIcon($i, count($rows), true, 'orderupoverlay', '', false ); ?>
-		            <?php
-						}
-						elseif (!$disabled) {
-					?>
-							 <?php echo $pageNav->orderUpIcon($i, true, 'orderdownoverlay', 'Move Down', isset($rows[$i-1]) ); ?>
-		 		             <?php echo $pageNav->orderDownIcon($i, count($rows), true, 'orderupoverlay', 'Move Up', isset($rows[$i+1]) ); ?>
-					<?php
-						}
+					elseif ($byGroup  ){
+						?>
+							 <span><?php echo $pageNav->orderUpIcon($i, true, 'orderdownoverlay', 'Move Down', $ordering ); ?></span>
+			 		         <span><?php echo $pageNav->orderDownIcon($i, count($rows), true, 'orderupoverlay', 'Move Up', $ordering); ?></span>
+						<?php
 					}
-
-					?>
+					 ?>
 					<input type="text" id="or<?php echo $i;?>" name="ordering[]" size="5" <?php echo $disabled; ?> value="<?php echo $row->ordering;?>" class="text_area" style="text-align: center" />
-	            </td>
+					</td>
 				</tr>
 				<?php
 				$k = 1 - $k;
@@ -407,7 +392,8 @@ class HTML_overlay
 					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_OVERLAY_GROUP_NAME"), 'name', @$filter_order_Dir, @$filter_order); ?></th>
 					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_OVERLAY_GROUP_DESCRIPTION"), 'description', @$filter_order_Dir, @$filter_order); ?></th>
 					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_OVERLAY_GROUP_OPEN"), 'open', @$filter_order_Dir, @$filter_order); ?></th>
-					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_OVERLAY_GROUP_ORDER"), 'ordering', @$filter_order_Dir, @$filter_order); ?></th>
+					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_OVERLAY_GROUP_ORDER"), 'ordering', @$filter_order_Dir, @$filter_order); ?>
+					<?php echo JHTML::_('grid.order',  $rows, 'filesave.png', 'saveOrderOverlayGroup' ); ?></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -423,12 +409,23 @@ class HTML_overlay
 					<td><a href="#edit" onclick="return listItemTask('cb<?php echo $i;?>','editOverlayGroup')"><?php echo $row->name; ?></a></td>
 					<td><?php echo $row->description; ?></a></td>
 					<td><?php if($row->open == 1){echo JText::_("MAP_YES");}else{echo JText::_("MAP_NO");} ?></td>
-					<td width="10%" class="order" nowrap="nowrap">
-					<?php $disabled = ($filter_order == 'ordering') ? true : false; ?> 
-					<span><?php echo $pageNav->orderUpIcon($i,  true, 'orderupoverlaygroup', 'Move Up', $disabled);  ?></span> 
-					<span><?php echo $pageNav->orderDownIcon($i,1,  true, 'orderdownoverlaygroup', 'Move Down', $disabled);   ?></span>
-					<?php echo $row->ordering;?> <?php
-					?></td>
+					<td width="100px" align="right" >
+					<?php  $ordering = ($filter_order == 'ordering')  ? true : false;
+					if ($filter_order_Dir=="asc"){						
+					?>
+						<span><?php echo $pageNav->orderUpIcon($i, true, 'orderupoverlaygroup', 'Move Up', $ordering ); ?></span>
+				        <span><?php echo $pageNav->orderDownIcon($i, count($rows), true, 'orderdownoverlaygroup', 'Move Down', $ordering ); ?></span>
+					<?php		
+					}
+					else{		
+					?>
+						 <span><?php echo $pageNav->orderUpIcon($i, true, 'orderdownoverlaygroup', 'Move Down', $ordering ); ?></span>
+	 		             <span><?php echo $pageNav->orderDownIcon($i, count($rows), true, 'orderupoverlaygroup', 'Move Up', $ordering); ?></span>
+					<?php
+					}
+					$disabled = $ordering ?  '' : 'disabled="disabled"'; ?>
+					<input type="text" id="or<?php echo $i;?>" name="ordering[]" size="5" <?php echo $disabled; ?> value="<?php echo $row->ordering;?>" class="text_area" style="text-align: center" />
+					</td>
 				</tr>
 				<?php
 				$k = 1 - $k;

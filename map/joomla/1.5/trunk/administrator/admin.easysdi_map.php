@@ -223,6 +223,15 @@ switch($task)
 		$cid = JRequest::getVar ('cid', array(0) );
 		ADMIN_overlay::orderDownOverlayGroup($option,$cid[0]);
 		break;
+	case 'saveOrderOverlayGroup':
+		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'overlay.admin.easysdi_map.html.php');
+		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'overlay.class.easysdi_map.php');
+		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'overlay.toolbar.easysdi_map.html.php');
+		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'overlay.admin.easysdi_map.php');
+		$cid		= JRequest::getVar( 'cid', array(0));
+		$order		= JRequest::getVar( 'ordering', array (0));
+		ADMIN_overlay::saveOrderOverlayGroup($option,$cid, $order);
+		break;
 	case "cancelOverlayGroup":
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'overlay.admin.easysdi_map.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'overlay.class.easysdi_map.php');
@@ -597,8 +606,7 @@ switch($task)
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'baselayer.toolbar.easysdi_map.html.php');
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'baselayer.admin.easysdi_map.php');
 		$cid = JRequest::getVar ('cid', array(0) );
-		$order_field = JRequest::getVar ('order_field','') ;
-		ADMIN_baselayer::orderUpBasemapLayer($cid[0]);
+		ADMIN_baselayer::orderUpBasemapLayer($option,$cid[0]);
 		break;
 	case 'orderdownbasemaplayer':
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'baselayer.admin.easysdi_map.html.php');
@@ -606,8 +614,7 @@ switch($task)
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'baselayer.toolbar.easysdi_map.html.php');
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'baselayer.admin.easysdi_map.php');
 		$cid = JRequest::getVar ('cid', array(0) );
-		$order_field = JRequest::getVar ('order_field','') ;
-		ADMIN_baselayer::orderDownBasemapLayer($cid[0]);
+		ADMIN_baselayer::orderDownBasemapLayer($option,$cid[0]);
 		break;
 	case 'saveOrderBaseMapLayer':
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'baselayer.admin.easysdi_map.html.php');

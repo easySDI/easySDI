@@ -64,14 +64,22 @@ class HTML_baselayer
 					<td><?php echo $row->description; ?></td>
 					<td><?php echo $row->url; ?></td>
 					<td><?php echo $row->layers; ?></td>
-					<td class="order" nowrap="nowrap">
-					<?php $enabled = ($filter_order == 'ordering') ? true : false;
-					$disabledText = $enabled ? '' : 'disabled="disabled"';
-					?> 
-					<span>
-					<?php echo $pageNav->orderUpIcon($i,  true, 'orderupbasemaplayer', 'Move Up', $enabled);  ?></span> 
-					<span><?php echo $pageNav->orderDownIcon($i,1,  true, 'orderdownbasemaplayer', 'Move Down', $enabled);   ?></span>
-					<input type="text" id="or<?php echo $i;?>" name="ordering[]" size="5" <?php echo $disabledText; ?> value="<?php echo $row->ordering;?>" class="text_area" style="text-align: center" />
+					<td width="100px" align="right" >
+					<?php  $ordering = ($filter_order == 'ordering')  ? true : false;
+					if ($filter_order_Dir=="asc"){						
+					?>
+						<span><?php echo $pageNav->orderUpIcon($i, true, 'orderupbasemaplayer', 'Move Up', $ordering ); ?></span>
+				        <span><?php echo $pageNav->orderDownIcon($i, count($rows), true, 'orderdownbasemaplayer', 'Move Down', $ordering ); ?></span>
+					<?php		
+					}
+					else{		
+					?>
+						 <span><?php echo $pageNav->orderUpIcon($i, true, 'orderdownbasemaplayer', 'Move Down', $ordering ); ?></span>
+	 		             <span><?php echo $pageNav->orderDownIcon($i, count($rows), true, 'orderupbasemaplayer', 'Move Up', $ordering); ?></span>
+					<?php
+					}
+					$disabled = $ordering ?  '' : 'disabled="disabled"'; ?>
+					<input type="text" id="or<?php echo $i;?>" name="ordering[]" size="5" <?php echo $disabled; ?> value="<?php echo $row->ordering;?>" class="text_area" style="text-align: center" />
 					</td>
 				</tr>
 				<?php

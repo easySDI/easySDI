@@ -164,22 +164,22 @@ class ADMIN_baselayer
 		$mainframe->redirect("index.php?option=$option&task=baseLayer");
 	}
 	
-	function orderUpBasemapLayer($id){
+	function orderUpBasemapLayer($option,$id){
 		global  $mainframe;
 		$db =& JFactory::getDBO();
 		$baseLayer = new baseLayer( $db );
 		$baseLayer->load( $id);
 		$baseLayer->orderUp();
-		$mainframe->redirect("index.php?option=$option&task=baseLayer&order_field=".$order_field );
+		$mainframe->redirect("index.php?option=$option&task=baseLayer" );
 	}
 	
-	function orderDownBasemapLayer($id){
+	function orderDownBasemapLayer($option,$id){
 		global  $mainframe;
 		$db =& JFactory::getDBO();
 		$baseLayer = new baseLayer( $db );
 		$baseLayer->load( $id);
 		$baseLayer->orderDown();
-		$mainframe->redirect("index.php?option=$option&task=baseLayer&order_field=".$order_field );
+		$mainframe->redirect("index.php?option=$option&task=baseLayer" );
 	}
 	
 	function cancelBaseLayer($option)
