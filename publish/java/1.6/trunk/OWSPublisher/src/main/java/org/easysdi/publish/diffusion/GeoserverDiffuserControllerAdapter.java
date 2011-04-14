@@ -403,7 +403,8 @@ public class GeoserverDiffuserControllerAdapter extends CommonDiffuserController
 
 			//Apply style to the layer if new layer
 			if(layerId.equals("none")){
-				String newStyle = name+"_"+layerGuid;
+				String newStyle = CurrentUser.getCurrentPrincipal()+"_"+name;
+				//String newStyle = name+"_"+layerGuid;
 				PutMethod methodApplyStyle = new PutMethod( diff.getUrl()+"/rest/layers/"+CurrentUser.getCurrentPrincipal()+":"+name);
 				String body = "<layer><enabled>true</enabled><defaultStyle><name>"+newStyle+"</name><atom:link rel=\"alternate\" href=\"http://localhost:8080/geoserver/rest/styles/"+newStyle+".xml\" type=\"application/xml\"/></defaultStyle></layer>";				
 				is = new ByteArrayInputStream(body.getBytes("UTF-8"));

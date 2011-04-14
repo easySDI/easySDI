@@ -152,7 +152,7 @@ public class RunnableDatasetTransformer{
 				fs.setScriptName(ScriptName);
 				fs.setSourceDataType(sourceDataType);
 				fs.setGuid(featuresourceGuid);
-				fs.setTableName(postgisOutputTableName);
+				//fs.setTableName(postgisOutputTableName);
 				fs.setUpdateDate(cal);
 
 				//store the new feature source
@@ -181,7 +181,6 @@ public class RunnableDatasetTransformer{
 			//Init the diffuser if its a new FeatureSource,
 			//makes sure the diffuser has his proper database
 			if(featureSourceId.equals("none")){
-				System.out.println("call initDatabaseForDiffuser");
 				helper.initDatabaseForDiffuser(currentUser);
 			}
 			helper.dropTable(postgisOutputTableName);

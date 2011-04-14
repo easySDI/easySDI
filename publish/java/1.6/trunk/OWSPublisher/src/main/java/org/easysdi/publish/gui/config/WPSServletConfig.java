@@ -48,7 +48,6 @@ public class WPSServletConfig extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-		System.out.println("current user:"+SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
 		try{
 			String operation = req.getParameter("operation");		
 			if (operation != null){
