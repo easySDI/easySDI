@@ -62,14 +62,14 @@ public class FeatureSourceManager {
 
 
 	public void manageDataset( ProcessletExecutionInfo info, String featureSourceId, String featuresourceGuid, String diffusorName, List<String> URLs,
-			String ScriptName, String sourceDataType, String epsgProj, String dataset){
+			String ScriptName, String sourceDataType, String epsgProj, String dataset, String currentUser){
 
 		RunnableDatasetTransformer rdst = new RunnableDatasetTransformer();
 
 		// Create the thread supplying it the runnable object
 
 		rdst.init(info, featureSourceId,  diffusorName,  URLs,
-				ScriptName,  sourceDataType,  epsgProj, dataset, transMap, featuresourceGuid);
+				ScriptName,  sourceDataType,  epsgProj, dataset, transMap, featuresourceGuid, currentUser);
 
 		// Start the thread transformation process
 		rdst.run();
@@ -119,22 +119,7 @@ public class FeatureSourceManager {
 			Geodatabase geoDb = diff.getGeodatabase();
 
 			//get the helper accordingly to the geodatabase and drop the table if it exists.
-			IHelper helper = null;
-			String strDbTypeClass = geoDb.getGeodatabaseType().getName().substring(0, 1).toUpperCase() +  geoDb.getGeodatabaseType().getName().substring(1);
-			try {
-				helper = (IHelper) Class.forName("org.easysdi.publish."+geoDb.getGeodatabaseType().getName()+"helper."+strDbTypeClass+"Helper").newInstance();
-			} catch (InstantiationException e) {
-				e.printStackTrace();
-				throw new DataSourceNotFoundException( e.getMessage() );
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-				throw new DataSourceNotFoundException( e.getMessage() );
-			} catch (ClassNotFoundException e) {
-				logger.warning("You must provide this helper class for the DB:"+strDbTypeClass + 
-						" this class:"+strDbTypeClass+"Helper"+" must implement: org.easysdi.publish.helper.Helper");
-				e.printStackTrace();
-				throw new DiffuserNotFoundException( e.getMessage() );
-			}
+			IHelper helper = geoDb.getHelper();
 
 			String postgisOutputTableName = featureSourceId.replace("-", "");
 

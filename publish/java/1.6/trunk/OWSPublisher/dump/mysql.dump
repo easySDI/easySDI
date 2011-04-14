@@ -120,7 +120,7 @@ CREATE TABLE `geodatabase` (
 
 /*!40000 ALTER TABLE `geodatabase` DISABLE KEYS */;
 INSERT INTO `geodatabase` (`ID_GEODATABASE`,`NAME`,`URL`,`USERNAME`,`PASSWORD`,`SCHEME`,`TYPE`) VALUES 
- (1,'postgislocalhost','jdbc:postgresql://localhost:5432/postgis','postgres','rbago000\'\'','public',3);
+ (1,'postgislocalhost','jdbc:postgresql://localhost:5432','postgres','rbago000\'\'','public',3);
 /*!40000 ALTER TABLE `geodatabase` ENABLE KEYS */;
 
 

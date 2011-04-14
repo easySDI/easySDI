@@ -3,12 +3,16 @@ package org.easysdi.publish.gui.config;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import javax.annotation.security.RolesAllowed;
+
 import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.easysdi.publish.exception.DataInputException;
 import org.easysdi.publish.exception.DataSourceWrongFormatException;
@@ -29,11 +33,17 @@ import org.easysdi.publish.biz.layer.FeatureSource;
 import org.easysdi.publish.dat.transformation.ogr.Dataset;
 import org.easysdi.publish.dat.transformation.ogr.InputDatasetInfo;
 import org.springframework.dao.DataAccessException;
+import org.springframework.http.HttpHeaders;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import javax.servlet.http.HttpSession;
+
 
 public class Config {
 	Logger logger = Logger.getLogger("org.easysdi.services.config");
-
-	public String getPublicationServerlist(){		
+	
+	//@RolesAllowed({"proxy_user"})
+	public String getPublicationServerlist(){
 		StringBuilder res = new StringBuilder();
 		ArrayList<Integer> alServ = new ArrayList<Integer>();
 		List<Diffuser> lDif = Diffuser.getAllDiffusers();

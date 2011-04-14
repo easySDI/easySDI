@@ -85,6 +85,7 @@ import org.easysdi.publish.exception.PublishGeneralException;
 import org.easysdi.publish.helper.Attribute;
 import org.easysdi.publish.helper.IFeatureSourceInfo;
 import org.easysdi.publish.helper.IHelper;
+import org.easysdi.publish.security.CurrentUser;
 //import org.geotools.data.postgis.PostgisDataStoreFactory;
 import org.springframework.dao.DataAccessException;
 import org.w3c.dom.DOMException;
@@ -112,21 +113,15 @@ public class GeoserverDiffuserControllerAdapter extends CommonDiffuserController
 	static final String EASY_SDI_NAMESPACE ="easySDIPublishNamespace";
 	static final String EASY_SDI_DATASTORE ="easySDIPublishDatastore";	
 	static final String REST_PATH = "/rest/workspaces/"+EASY_SDI_NAMESPACE+"/datastores/"+EASY_SDI_DATASTORE+"/featuretypes/"; 
+	final static String LOGIN_FORM = "/j_acegi_security_check";
+	final static String NEW_FEATURE_TYPE_FORM = "/config/data/typeNewSubmit.do";
+	final static String NEW_LAYER_FORM = "/config/data/typeEditorSubmit.do";
+	final static String APPLY_FORM = "/admin/saveToGeoServer.do";
+	final static String SAVE_FORM = "/admin/saveToXML.do";
+	//final static String GEBASTELETE_URL = "http://admin:geoserver@localhost:8080/geoserver";
+	//final static String GEBASTELETE_URL = "http://localhost:8080/geoserver";
 
-
-	public GeoserverDiffuserControllerAdapter()
-	{    	
-		logger.info("Dedans GeoserverDiffuserControllerAdaptor");
-		//initializePostContentSkeleton();
-
-		// Configure httpClient logging
-
-		//System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.NoOpLog");
-
-		//System.setProperty("org.apache.commons.logging.simplelog.showdatetime", "true");
-		//System.setProperty("org.apache.commons.logging.simplelog.log.httpclient.wire.header", "debug");
-		//System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient", "debug");
-	}
+	public GeoserverDiffuserControllerAdapter(){}
 
 	private void authenticate( String URIstr )
 	{
@@ -142,15 +137,71 @@ public class GeoserverDiffuserControllerAdapter extends CommonDiffuserController
 		client.getState().setCredentials(new AuthScope(myURL.getHost(), myURL.getPort(), AuthScope.ANY_REALM), defaultcreds);
 		client.getParams().setAuthenticationPreemptive(true);
 	}
-
-
-	final static String LOGIN_FORM = "/j_acegi_security_check";
-	final static String NEW_FEATURE_TYPE_FORM = "/config/data/typeNewSubmit.do";
-	final static String NEW_LAYER_FORM = "/config/data/typeEditorSubmit.do";
-	final static String APPLY_FORM = "/admin/saveToGeoServer.do";
-	final static String SAVE_FORM = "/admin/saveToXML.do";
-	//final static String GEBASTELETE_URL = "http://admin:geoserver@localhost:8080/geoserver";
-	//final static String GEBASTELETE_URL = "http://localhost:8080/geoserver";
+	
+	private void init(Diffuser diff) throws PublicationException, IOException, PublishConfigurationException{		
+		//checking for the diffuser's namespace
+		setCredentials(diff.getUser(), diff.getPwd());
+		authenticate(diff.getUrl());
+		GetMethod methodGetNs = new GetMethod( diff.getUrl()+"/rest/namespaces/"+CurrentUser.getCurrentPrincipal());
+		super.getLogger().info("after methodGetNs");
+		//methodWriteLayer.setRequestHeader("Content-type", "text/xml");
+		ExecuteResponse response = execute(methodGetNs);
+		if( response.getHttpCode() == 200 ){
+			//Ok the namespace exist so we assume the user is correctly configured (workspace, datastore...).
+			return;
+		}else if( response.getHttpCode() == 404 ){
+			//the namespace doesn't exist so we have to create it
+			createWorkspace(diff);
+			createDatastore(diff);
+		}
+		else if( response.getHttpCode() != 200 ){
+		    throw new PublicationException( ((Integer)response.getHttpCode()).toString() );
+		}
+	}
+	
+	private void createWorkspace(Diffuser diff) throws IOException, PublicationException{
+		//Create the workspace
+		PostMethod createWorkspace = new PostMethod( diff.getUrl()+"/rest/workspaces");
+		String body = "<workspace><name>"+CurrentUser.getCurrentPrincipal()+"</name></workspace>";
+		InputStream is = new ByteArrayInputStream(body.getBytes("UTF-8"));
+		createWorkspace.setRequestBody(is);
+		is.close();
+		createWorkspace.setRequestHeader("Content-type", "text/xml");
+		ExecuteResponse response = execute(createWorkspace);
+		//Expect code 201 created
+		if( response.getHttpCode() != 201 && response.getHttpCode() != 200){		    	
+		    throw new PublicationException( ((Integer)response.getHttpCode()).toString() );
+		}
+	}
+	
+	private void createDatastore(Diffuser diff) throws IOException, PublicationException, PublishConfigurationException{
+		//Create the workspace
+		PostMethod createDatastore = new PostMethod( diff.getUrl()+"/rest/workspaces/"+CurrentUser.getCurrentPrincipal()+"/datastores");
+		//missing user and schema
+		String body = 
+		"<dataStore>" +
+			"<name>"+CurrentUser.getCurrentPrincipal()+"_datastore</name>" +
+			"<connectionParameters>" +
+				"<host>"+diff.getGeodatabase().getDbHost()+"</host>" +
+				"<port>"+diff.getGeodatabase().getDbPort()+"</port>" +
+				"<database>"+CurrentUser.getCurrentPrincipal()+"</database>" +
+				"<user>"+diff.getGeodatabase().getUser()+"</user>" +
+				"<passwd>"+diff.getGeodatabase().getPwd()+"</passwd>" +
+				"<schema>public</schema>" +
+				"<dbtype>postgis</dbtype>" +
+			"</connectionParameters>" +
+		"</dataStore>";
+		
+		InputStream is = new ByteArrayInputStream(body.getBytes("UTF-8"));
+		createDatastore.setRequestBody(is);
+		is.close();
+		createDatastore.setRequestHeader("Content-type", "text/xml");
+		ExecuteResponse response = execute(createDatastore);
+		//Expect code 201 created
+		if( response.getHttpCode() != 201 && response.getHttpCode() != 200){		    	
+		    throw new PublicationException( ((Integer)response.getHttpCode()).toString() );
+		}
+	}
 
 	@Override
 	public PublishLayerResponse publishLayer(String layerId, String featureTypeId,
@@ -173,6 +224,9 @@ public class GeoserverDiffuserControllerAdapter extends CommonDiffuserController
 			logger.info("log2");
 			//Get the layer: if layerId = "none", create a new one, else update existing
 			if(layerId.equals("none")){
+				//check that the current user has a namespace and a properly configured
+				//environment to publish.
+				init(diff);
 				UUID uuid = new UUID();
 				layerGuid = uuid.toString();
 				logger.info("A new Layer is created ID: "+layerGuid);
@@ -206,9 +260,10 @@ public class GeoserverDiffuserControllerAdapter extends CommonDiffuserController
 
 			String strDbTypeClass = geoDb.getGeodatabaseType().getName().substring(0, 1).toUpperCase() +  geoDb.getGeodatabaseType().getName().substring(1);
 			//get the helper accordingly to the geodatabase and Enforce the coordinate system supplied.
-			IHelper helper = null;
-			helper = (IHelper) Class.forName("org.easysdi.publish."+geoDb.getGeodatabaseType().getName()+"helper."+strDbTypeClass+"Helper").newInstance();	
-			helper.setGeodatabase(geoDb);
+			IHelper helper = geoDb.getHelper();
+			geoDb.setUrl(geoDb.getUrl()+"/"+CurrentUser.getCurrentPrincipal());
+			//helper = (IHelper) Class.forName("org.easysdi.publish."+geoDb.getGeodatabaseType().getName()+"helper."+strDbTypeClass+"Helper").newInstance();	
+			//helper.setGeodatabase(geoDb);
 
 			//Now set the attribute aliases
 			//construct the map: (AttrXY=AttrXYAlias)
@@ -266,8 +321,6 @@ public class GeoserverDiffuserControllerAdapter extends CommonDiffuserController
 
 			authenticate( diff.getUrl() );
 
-			super.getLogger().info("diffuser url: "+diff.getUrl()+"/rest/workspaces/easySDIPublishNamespace/datastores/easySDIPublishDatastore/featuretypes"   );
-
 			//remove the layer first 
 			if(isUpdate){
 				Layer tmp = Layer.getFromGuid( layerGuid );
@@ -278,7 +331,8 @@ public class GeoserverDiffuserControllerAdapter extends CommonDiffuserController
 			//create a new style for the layer if new
 			//
 			if(layerId.equals("none")){
-				String newStyle = name+"_"+layerGuid;
+				//String newStyle = name+"_"+layerGuid;
+				String newStyle = CurrentUser.getCurrentPrincipal()+"_"+name;
 				//Add a default style to the layer
 				PostMethod methodAddStyle = null;
 				//Post a default style for the layer
@@ -311,7 +365,10 @@ public class GeoserverDiffuserControllerAdapter extends CommonDiffuserController
 
 				methodAddStyle.setRequestBody( inpStrForHttp );
 				methodAddStyle.setRequestHeader("Content-type", "application/vnd.ogc.sld+xml");
-				executeAndHandleExcpt(methodAddStyle);
+				ExecuteResponse response = execute(methodAddStyle);
+				if( response.getHttpCode() != 200 && response.getHttpCode() != 201 ){		    	
+				    throw new PublicationException( ((Integer)response.getHttpCode()).toString() );
+				}
 			}
 
 			//
@@ -329,8 +386,9 @@ public class GeoserverDiffuserControllerAdapter extends CommonDiffuserController
 
 			PostMethod methodWriteLayer = null;
 			//Post the layer
-			methodWriteLayer = new PostMethod( diff.getUrl()+"/rest/workspaces/easySDIPublishNamespace/datastores/easySDIPublishDatastore/featuretypes");
-			super.getLogger().info("after methodWriteLayer plop");
+			methodWriteLayer = new PostMethod( diff.getUrl()+"/rest/workspaces/"+CurrentUser.getCurrentPrincipal()+"/datastores/"+CurrentUser.getCurrentPrincipal()+"_datastore/featuretypes");
+			super.getLogger().info("post layer to:"+diff.getUrl()+"/rest/workspaces/"+CurrentUser.getCurrentPrincipal()+"/datastores/"+CurrentUser.getCurrentPrincipal()+"_datastore/featuretypes");
+			super.getLogger().info("after methodWriteLayer");
 			// Send any XML file as the body of the POST request
 			//methodWriteLayer.setRequestBody( this.getClass().getResourceAsStream("publishTemplate.xml"));
 			methodWriteLayer.setRequestBody( inpStrForHttp );
@@ -338,18 +396,24 @@ public class GeoserverDiffuserControllerAdapter extends CommonDiffuserController
 			methodWriteLayer.setRequestHeader("Content-type", "text/xml");
 
 			super.getLogger().info("methodWriteLayer:   "   );
-			executeAndHandleExcpt(methodWriteLayer);
+			ExecuteResponse response = execute(methodWriteLayer);
+			if( response.getHttpCode() != 200 &&  response.getHttpCode() != 201 ){		    	
+			    throw new PublicationException( ((Integer)response.getHttpCode()).toString() );
+			}
 
 			//Apply style to the layer if new layer
 			if(layerId.equals("none")){
 				String newStyle = name+"_"+layerGuid;
-				PutMethod methodApplyStyle = new PutMethod( diff.getUrl()+"/rest/layers/easySDIPublishNamespace:"+name);
+				PutMethod methodApplyStyle = new PutMethod( diff.getUrl()+"/rest/layers/"+CurrentUser.getCurrentPrincipal()+":"+name);
 				String body = "<layer><enabled>true</enabled><defaultStyle><name>"+newStyle+"</name><atom:link rel=\"alternate\" href=\"http://localhost:8080/geoserver/rest/styles/"+newStyle+".xml\" type=\"application/xml\"/></defaultStyle></layer>";				
 				is = new ByteArrayInputStream(body.getBytes("UTF-8"));
 				methodApplyStyle.setRequestBody(is);
 				is.close();
 				methodApplyStyle.setRequestHeader("Content-type", "text/xml");
-				executeAndHandleExcpt(methodApplyStyle);
+				response = execute(methodApplyStyle);
+				if( response.getHttpCode() != 200 ){		    	
+				    throw new PublicationException( ((Integer)response.getHttpCode()).toString() );
+				}
 			}
 
 			//OK layer created; save it persistently
@@ -360,7 +424,7 @@ public class GeoserverDiffuserControllerAdapter extends CommonDiffuserController
 				if( null == layer )
 				{
 					logger.warning("No layer correspondin to " + layerGuid);
-					throw new FeatureSourceNotFoundException("No layer correspondin to " + layerGuid);
+					throw new FeatureSourceNotFoundException("No layer corresponding to " + layerGuid);
 				}
 			}
 			else{
@@ -397,11 +461,11 @@ public class GeoserverDiffuserControllerAdapter extends CommonDiffuserController
 
 			resp.layerGuid = layerGuid;
 			resp.endPointsTypes.add("WMS_URL");
-			resp.endPoints.add( diff.getUrl()+ "/wms?layers="+EASY_SDI_NAMESPACE+":"+layer.getName());
+			resp.endPoints.add( diff.getUrl()+ "/" + CurrentUser.getCurrentPrincipal()+"/wms?layers="+EASY_SDI_NAMESPACE+":"+layer.getName());
 			resp.endPointsTypes.add("WFS_URL");
-			resp.endPoints.add( diff.getUrl()+ "/wfs?layers="+EASY_SDI_NAMESPACE+":"+layer.getName());
+			resp.endPoints.add( diff.getUrl()+ "/" + CurrentUser.getCurrentPrincipal()+"/wfs?layers="+EASY_SDI_NAMESPACE+":"+layer.getName());
 			resp.endPointsTypes.add("KML_URL");
-			resp.endPoints.add( diff.getUrl()+ "/wms/kml?layers="+EASY_SDI_NAMESPACE+":"+layer.getName());
+			resp.endPoints.add( diff.getUrl()+ "/" + CurrentUser.getCurrentPrincipal()+"/wms/kml?layers="+EASY_SDI_NAMESPACE+":"+layer.getName());
 			resp.bboxTypes.add("MinX");
 			resp.bbox.add(fsi.getBbox().get("MinX").toString());
 			resp.bboxTypes.add("MinY");
@@ -470,11 +534,16 @@ public class GeoserverDiffuserControllerAdapter extends CommonDiffuserController
 	}
 
 	/*TODO: improve by making only execute, but not handle exception */
-	private BufferedReader executeAndHandleExcpt(HttpMethod method) throws PublicationException {
-		BufferedReader br=null;
+	private ExecuteResponse execute(HttpMethod method) throws PublicationException {
+		Integer returnCode = null;
+		ExecuteResponse response = new ExecuteResponse();
+		BufferedReader br = null;
 		try{
-			int returnCode = client.executeMethod(method);
-			//super.getLogger().info("returnCode: " + returnCode);
+			returnCode = client.executeMethod(method);
+			response.setHttpCode(returnCode);
+			
+			//!!!!!! this is new, maybe will bug
+			response.setBody(method.getResponseBodyAsString());
 
 			if(returnCode == HttpStatus.SC_NOT_IMPLEMENTED) {
 				super.getLogger().warning("The Post method is not implemented by the server at URI " );
@@ -490,10 +559,13 @@ public class GeoserverDiffuserControllerAdapter extends CommonDiffuserController
 				if( returnCode != 200 ){		    	
 					br = new BufferedReader(new InputStreamReader(method.getResponseBodyAsStream()));
 					String readLine;
+					StringBuffer sb = new StringBuffer();
 					while(((readLine = br.readLine()) != null)) {
 						super.getLogger().info(readLine);
-						throw new PublicationException( ((Integer)returnCode).toString() );
+						sb.append(readLine);
+						//throw new PublicationException( ((Integer)returnCode).toString() );
 					}
+					response.setMessage(sb.toString());
 				}
 			}
 		} catch (Exception e) {
@@ -504,7 +576,7 @@ public class GeoserverDiffuserControllerAdapter extends CommonDiffuserController
 			method.releaseConnection();
 			if(br != null) try { br.close(); } catch (Exception fe) {}
 		}
-		return br;
+		return response;
 	}
 
 	@Override
@@ -517,7 +589,7 @@ public class GeoserverDiffuserControllerAdapter extends CommonDiffuserController
 		//
 		//delete the layer associated to the featuretype
 		//
-		String LayerRestURL = diff.getUrl() + "/rest/layers/easySDIPublishNamespace:" + layer.getName() + ".xml";
+		String LayerRestURL = diff.getUrl() + "/rest/layers/"+CurrentUser.getCurrentPrincipal()+":" + layer.getName() + ".xml";
 		setCredentials(diff.getUser(), diff.getPwd() );
 		super.getLogger().info("diffuser: " + diff.getName());
 		authenticate(LayerRestURL);
@@ -556,9 +628,9 @@ public class GeoserverDiffuserControllerAdapter extends CommonDiffuserController
 		}  
 
 		//
-		//delete the featureType associated to the prvious deleted layer
+		//delete the featureType associated to the previous deleted layer
 		//
-		LayerRestURL = diff.getUrl() + "/rest/workspaces/"+EASY_SDI_NAMESPACE+"/datastores/"+EASY_SDI_DATASTORE+"/featuretypes/" + layer.getName() + ".xml";
+		LayerRestURL = diff.getUrl() + "/rest/workspaces/"+CurrentUser.getCurrentPrincipal()+"/datastores/"+CurrentUser.getCurrentPrincipal()+"_datastore/featuretypes/" + layer.getName() + ".xml";
 		setCredentials(diff.getUser(), diff.getPwd() );
 		super.getLogger().info("diffuser: " + diff.getName());
 		authenticate(LayerRestURL);
@@ -780,30 +852,3 @@ public class GeoserverDiffuserControllerAdapter extends CommonDiffuserController
 	}
 
 }
-
-
-
-
-/*
-
-	    Cookie[] cookies = client.getState().getCookies();
-	     for (int i = 0; i < cookies.length; i++) {
-	         Cookie cookie = cookies[i];
-	         super.getLogger().info( "Cookie: " + cookie.getName() + ", Value: " + cookie.getValue() +
-	           ", IsPersistent?: " + cookie.isPersistent() + ", Expiry Date: " + cookie.getExpiryDate() +  ", Comment: " + cookie.getComment());
-
-	         cookie.setValue("My own value");
-	       }
-
-	    client.getParams().setParameter("http.useragent", "Test Client");
-	    PostMethod methodNewLayer = new PostMethod( GEBASTELETE_URL+NEW_LAYER_FORM);
-	    //method.addParameter("p", "\"java2s\"");
-	    for( String key : PostContent.keySet() )
-	    {
-	    	methodNewLayer.addParameter(key, PostContent.get(key));
-	    }
-		super.getLogger().info("NEW_LAYER_FORM:" + GEBASTELETE_URL+NEW_LAYER_FORM + " / Param" + client.getParams().toString()  );
-	    executeAndHandleExcpt(br, methodNewLayer);
-
-
- */

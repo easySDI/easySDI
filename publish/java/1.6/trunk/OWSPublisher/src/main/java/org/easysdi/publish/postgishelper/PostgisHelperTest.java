@@ -25,8 +25,19 @@ public class PostgisHelperTest {
 
 	public static void main(String[] args) {
 		
-		PostgisHelper ph = new PostgisHelper("jdbc:postgresql://localhost:5432/postgis", "postgres", "rbago000'");
+		PostgisHelper ph = new PostgisHelper("jdbc:postgresql://localhost:5432", "postgres", "rbago000''");
 				
+		ph.setTable("myNewDiff");
+		
+		try {
+			ph.initDatabaseForDiffuser("myNewDiff");
+		} catch (PublishConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		/*
 		//Get columns names.
 		List<String> atrLst = null;
 		try {
@@ -41,6 +52,7 @@ public class PostgisHelperTest {
 		} catch (PublishConfigurationException e) {
 			e.printStackTrace();
 		}
+		*/
 		
 		/*
 		//sample setting aliases
@@ -66,6 +78,7 @@ public class PostgisHelperTest {
 
         */
 		//Give back column names
+		/*
 		try {
 			atrLst = ph.getColumnNameFromTable("ef2e4440e04b11df9a7f00238b529631");
 		} catch (PublishConfigurationException e) {
@@ -83,6 +96,9 @@ public class PostgisHelperTest {
 			i++;
 		}
 		System.out.println("attributes are:"+stb.toString());
+		*/
+		
+		
 	}
 	
 	

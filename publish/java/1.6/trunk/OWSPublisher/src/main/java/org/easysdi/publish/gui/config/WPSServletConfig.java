@@ -22,6 +22,8 @@ import org.easysdi.publish.exception.DataInputException;
 import org.easysdi.publish.exception.PublishConfigurationException;
 import org.easysdi.publish.util.Utils;
 import org.easysdi.publish.validation.InputValidator;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 
 public class WPSServletConfig extends HttpServlet {
@@ -29,7 +31,7 @@ public class WPSServletConfig extends HttpServlet {
 	Logger logger = Logger.getLogger("org.easysdi.services.wps.WPSServlet");
 	private Map<String, String> ERROR_DEFINITION_MAP = new HashMap<String, String>();
 	Config conf;
-
+	
 	public void init(ServletConfig config) throws ServletException {
 		conf = new Config();
 		ERROR_DEFINITION_MAP.put("UndefinedIdentifier", "The identifier is not defined.");
@@ -46,6 +48,7 @@ public class WPSServletConfig extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
+		System.out.println("current user:"+SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
 		try{
 			String operation = req.getParameter("operation");		
 			if (operation != null){

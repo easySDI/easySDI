@@ -3,6 +3,8 @@ package org.easysdi.publish.biz.database;
 import org.easysdi.publish.dat.dao.GeodatabaseDaoHelper;
 import org.easysdi.publish.dat.dao.IGeodatabaseDao;
 import org.easysdi.publish.exception.PublishConfigurationException;
+import org.easysdi.publish.helper.GeodatabaseHelper;
+import org.easysdi.publish.helper.IHelper;
 
 public class Geodatabase {
 	private long                    geodatabaseId;
@@ -12,11 +14,12 @@ public class Geodatabase {
 	private String                  pwd;
 	private String                  scheme;
 	private long                    geodatabaseTypeId;
+	private GeodatabaseHelper		helper;
 	
 	public Geodatabase(){
 		
 	}
-	
+
 	public long getGeodatabaseId() {
 		return geodatabaseId;
 	}
@@ -129,5 +132,9 @@ public class Geodatabase {
     public void delete() {
          GeodatabaseDaoHelper.getGeodatabaseDao().delete(this);
     }
+    
+    public IHelper getHelper() throws InstantiationException, IllegalAccessException, ClassNotFoundException, PublishConfigurationException {
+    	return GeodatabaseHelper.getInstance(this);
+	}
 	
 }

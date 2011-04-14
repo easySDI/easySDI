@@ -27,6 +27,7 @@ import org.easysdi.publish.gui.ExceptionMessage;
 import org.easysdi.publish.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 
 public class PublishLayerProcesslet implements Processlet{
@@ -48,6 +49,9 @@ public class PublishLayerProcesslet implements Processlet{
 	public void process(ProcessletInputs in, ProcessletOutputs out,
 			ProcessletExecutionInfo info) throws ProcessletException {
 
+		System.out.println("thread id"+Thread.currentThread().getId());
+		System.out.println(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
+		
 		String layerId = ((LiteralInput)in.getParameter("LayerId")).getValue();
 		String FeatureSourceId = ((LiteralInput)in.getParameter("FeatureSourceId")).getValue();
 		List<ProcessletInput> AttributeAliasList = in.getParameters("AttributeAlias");

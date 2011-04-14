@@ -63,13 +63,14 @@ public class RunnableDatasetTransformer{
 	String ScriptName;
 	String sourceDataType;
 	String epsgProj;
-	String dataset; 
+	String dataset;
+	String currentUser;
 	TransformDatasetResponse resp;
 	Map<String, ITransformerAdapter> transMap;
 	String featuresourceGuid = "";
 
 	public void init(ProcessletExecutionInfo info, String featureSourceId, String diffusorName, List<String> URLs,
-			String ScriptName, String sourceDataType, String epsgProj, String dataset, Map<String, ITransformerAdapter> transMap, String featuresourceGuid) {
+			String ScriptName, String sourceDataType, String epsgProj, String dataset, Map<String, ITransformerAdapter> transMap, String featuresourceGuid, String currentUser) {
 
 		this.info = info;
 		this.featureSourceId = featureSourceId;
@@ -81,16 +82,17 @@ public class RunnableDatasetTransformer{
 		this.dataset = dataset;
 		this.transMap = transMap;
 		this.featuresourceGuid = featuresourceGuid;
+		this.currentUser = currentUser;
 		this.tempFileDir =  System.getProperty("java.io.tmpdir")+"/"+featuresourceGuid+"/";
 	}
 
 	public void run()  {
 		manageDataset( info, featureSourceId,  diffusorName,  URLs,
-				ScriptName,  sourceDataType,  epsgProj, dataset, featuresourceGuid);
+				ScriptName,  sourceDataType,  epsgProj, dataset, featuresourceGuid, currentUser);
 	}
 
 	public void manageDataset( ProcessletExecutionInfo info, String featureSourceId, String diffuserName, List<String> URLs,
-			String ScriptName, String sourceDataType, String epsgProj, String dataset, String featuresourceGuid){
+			String ScriptName, String sourceDataType, String epsgProj, String dataset, String featuresourceGuid, String currentUser){
 
 		TransformDatasetResponse response;
 		IHelper helper = null;
@@ -110,7 +112,8 @@ public class RunnableDatasetTransformer{
 			logger.info("diffuserName"+diffuserName);
 			Diffuser diff = Diffuser.getFromIdString(diffuserName);
 			geoDb = diff.getGeodatabase();
-
+			geoDb.setUrl(geoDb.getUrl()+"/"+currentUser);
+			
 			if(geoDb == null)
 				throw new DatabaseForDiffuserNotfoundException("No database found for diffuser: "+diffuserName);
 
@@ -173,12 +176,14 @@ public class RunnableDatasetTransformer{
 			logger.info("sourceDataType is:"+sourceDataType);
 
 			//get the helper accordingly to the geodatabase to drop the table if it exists.
-			helper = null;
-			logger.info("geodb_type"+geoDb.getGeodatabaseType().getName());
-			strDbTypeClass = geoDb.getGeodatabaseType().getName().substring(0, 1).toUpperCase() +  geoDb.getGeodatabaseType().getName().substring(1);
-			logger.info("strDbTypeClass:"+strDbTypeClass+" type:"+geoDb.getGeodatabaseType().getName()+" url:"+geoDb.getUrl());  
-			helper = (IHelper) Class.forName("org.easysdi.publish."+geoDb.getGeodatabaseType().getName()+"helper."+strDbTypeClass+"Helper").newInstance();
-			helper.setGeodatabase(geoDb);
+			helper = geoDb.getHelper();
+			
+			//Init the diffuser if its a new FeatureSource,
+			//makes sure the diffuser has his proper database
+			if(featureSourceId.equals("none")){
+				System.out.println("call initDatabaseForDiffuser");
+				helper.initDatabaseForDiffuser(currentUser);
+			}
 			helper.dropTable(postgisOutputTableName);
 
 			//find the transformer and launch the script
@@ -203,6 +208,7 @@ public class RunnableDatasetTransformer{
 			logger.info("geodb_type"+geoDb.getGeodatabaseType().getName());
 			
 			logger.info("try to instanciate org.easysdi.publish."+geoDb.getGeodatabaseType().getName()+"helper."+strDbTypeClass+"FeatureSourceInfo");
+			strDbTypeClass = geoDb.getGeodatabaseType().getName().substring(0, 1).toUpperCase() +  geoDb.getGeodatabaseType().getName().substring(1);
 			Class cl=Class.forName("org.easysdi.publish."+geoDb.getGeodatabaseType().getName()+"helper."+strDbTypeClass+"FeatureSourceInfo");
 			//Get a class instance for the method signature. Here void main(String[])
 			Class arg1type = Geodatabase.class;

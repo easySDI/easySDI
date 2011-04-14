@@ -28,6 +28,7 @@ import java.util.logging.Logger;
 import org.easysdi.publish.biz.database.Geodatabase;
 import org.easysdi.publish.exception.PublishConfigurationException;
 import org.easysdi.publish.helper.IHelper;
+import org.easysdi.publish.security.CurrentUser;
 
 public class PostgisHelper implements IHelper{
 	private Connection connection;
@@ -36,16 +37,19 @@ public class PostgisHelper implements IHelper{
 	private ResultSet rs;
 	private String url;
 	private String user;
-	private String pwd;	
+	private String pwd;
+	private String table;
+
+	
 
 	public PostgisHelper(){}
-	
+
 	public PostgisHelper(Geodatabase g){
 		this.url = g.getUrl();
 		this.user = g.getUser();
 		this.pwd = g.getPwd();
 	}
-	
+
 	//Constructor for test purpose only
 	public PostgisHelper(String url, String user, String pwd){
 		this.url = url;
@@ -60,17 +64,25 @@ public class PostgisHelper implements IHelper{
 		this.pwd = g.getPwd();
 	}
 	
+	public void setConnectionInfo(Geodatabase g, String table)
+	{
+		this.url = g.getUrl();
+		this.user = g.getUser();
+		this.pwd = g.getPwd();
+		this.table = table;
+	}
+
 	private void getConnection() throws PublishConfigurationException{
 		try
 		{   
 			//Load the JDBC driver and establish a connection. 
 			Class.forName("org.postgresql.Driver");
-			connection = DriverManager.getConnection(this.url, this.user, this.pwd);
+			connection = DriverManager.getConnection(this.url+"/"+this.table, this.user, this.pwd);
 			statement = connection.createStatement();
 
 		}catch(Exception e){
 			logger.warning(e.getMessage());
-			throw new PublishConfigurationException("Could not connect to: "+this.url+" cause:"+e.getMessage());
+			throw new PublishConfigurationException("Could not connect to: "+this.url+"/"+this.table+" cause:"+e.getMessage());
 		}
 	}
 
@@ -86,7 +98,7 @@ public class PostgisHelper implements IHelper{
 			logger.warning(e.getMessage());
 		}
 	}
-	
+
 	public void renameTable(String oldTable, String newTable) throws PublishConfigurationException{
 		getConnection();
 		try {
@@ -99,14 +111,14 @@ public class PostgisHelper implements IHelper{
 			closeConnection();
 		}
 	}
-	
+
 	public void dropTable(String table) throws PublishConfigurationException{
 		getConnection();
 		try {
 			//drop only table if it exists
 			String query= "select count(*) as result from INFORMATION_SCHEMA.TABLES "+
 			"where table_name = \'"+table+"\'";
-		
+
 			ResultSet rs = statement.executeQuery(query);
 			if(rs.next()){
 				if(rs.getInt("result") == 1){
@@ -140,7 +152,7 @@ public class PostgisHelper implements IHelper{
 			closeConnection();
 		}
 	}
-	
+
 	public List<String> getColumnNameFromTable(String table) throws PublishConfigurationException{
 		//check if the constraint exists
 		List<String> arLst = new ArrayList<String>();
@@ -164,5 +176,54 @@ public class PostgisHelper implements IHelper{
 			closeConnection();
 		}
 		return arLst;
+	}
+
+	@Override
+	public void initDatabaseForDiffuser(String currentUser)
+	throws PublishConfigurationException {
+
+		System.out.println("entered initDatabaseForDiffuser");
+		//If not found, we have to create this db based on the
+		//postgis template
+		try{	
+			Class.forName("org.postgresql.Driver");
+			//connect to template_postgis
+			String url = this.url.replace("/"+CurrentUser.getCurrentPrincipal(), "/template_postgis");
+			connection = DriverManager.getConnection(url, this.user, this.pwd);
+			statement = connection.createStatement();
+			
+			//Look if the database exists
+			boolean found = false;
+			String query = "select datname from pg_catalog.pg_database";
+			System.out.println(query);
+			rs = statement.executeQuery(query);	
+			while(rs.next()){
+				if(rs.getString("datname").equals(currentUser)){
+					found = true;
+					break;
+				}
+			}
+			
+			//return if the table exists
+			if(found == true)
+				return;
+			
+			query = "CREATE DATABASE "+currentUser+" WITH ENCODING='UTF8' TEMPLATE=template_postgis";
+			statement.executeUpdate(query);
+			
+		}catch(Exception e){
+			logger.warning(e.getMessage());
+			throw new PublishConfigurationException("Error while creating new db for diffuser cause:"+e.getMessage());
+		}finally{
+			closeConnection();
+		}
+	}
+	
+	public String getTable() {
+		return table;
+	}
+
+	public void setTable(String table) {
+		this.table = table;
 	}
 }

@@ -32,5 +32,7 @@ public interface IHelper {
 	public void renameTable(String oldTable, String newTable) throws PublishConfigurationException;
 	public void setAttributeAliases(String table, Map<String,String> columns) throws PublishConfigurationException;
 	public void setGeodatabase(Geodatabase geoDb) throws PublishConfigurationException;
+	public void setConnectionInfo(Geodatabase geoDb, String table) throws PublishConfigurationException;
 	public List<String> getColumnNameFromTable(String postgisOutputTableName) throws PublishConfigurationException;
+	public void initDatabaseForDiffuser(String currentUser) throws PublishConfigurationException;
 }

@@ -122,7 +122,6 @@
 	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/slf4j-api-1.5.10.jar.old"/>
 	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/slf4j-api-1.5.11.jar"/>
 	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/slf4j-log4j12-1.5.11.jar"/>
-	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/spring-security-core-2.0.5.RELEASE.jar"/>
 	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/stax-api-1.0-2.jar"/>
 	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/stringtemplate-3.2.jar"/>
 	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/uuid-3.1.jar"/>
@@ -131,5 +130,11 @@
 	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/xercesImpl-2.9.1.jar"/>
 	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/xml-apis-1.3.02.jar"/>
 	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/xmlParserAPIs-2.0.2.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/serializer.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/spring-security-config-3.0.1.RELEASE.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/spring-security-core-3.0.1.RELEASE.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/spring-security-web-3.0.1.RELEASE.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/xalan.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/jsr250-api-1.0.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

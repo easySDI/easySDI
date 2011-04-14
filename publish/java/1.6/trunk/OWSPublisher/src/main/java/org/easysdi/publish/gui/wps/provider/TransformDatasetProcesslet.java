@@ -16,6 +16,7 @@ import org.deegree.services.wps.input.ProcessletInput;
 import org.deegree.services.wps.output.LiteralOutput;
 import org.easysdi.publish.biz.database.Geodatabase;
 import org.easysdi.publish.exception.TransformationException;
+import org.easysdi.publish.security.CurrentUser;
 import org.easysdi.publish.transformation.FeatureSourceManager;
 import org.easysdi.publish.transformation.TransformerHelper;
 import org.easysdi.publish.util.BinaryIn;
@@ -27,6 +28,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.eaio.uuid.UUID;
 
@@ -46,6 +48,7 @@ public class TransformDatasetProcesslet implements Processlet{
 
 	@Override
 	public void init() {
+	
 		try{
 			m_executionPath = OGCFrontController.getInstance().getServletConfig().getServletContext().getRealPath("/");
 
@@ -69,7 +72,6 @@ public class TransformDatasetProcesslet implements Processlet{
 			ProcessletExecutionInfo info) throws ProcessletException {
 
 		try{
-
 			//Read input values
 			String diffusionServerName = ((LiteralInput)in.getParameter("DiffusionServerName")).getValue();
 			String featureSourceId = ((LiteralInput)in.getParameter("FeatureSourceId")).getValue();
@@ -80,6 +82,9 @@ public class TransformDatasetProcesslet implements Processlet{
 			String Dataset = ((LiteralInput)in.getParameter("Dataset")).getValue();
 			ComplexInput ZipInput = (ComplexInput) in.getParameter( "ZipInput" );
 
+			//Get current user from session
+			String currentUser = CurrentUser.getCurrentPrincipal();
+			
 			//Holder for the FeatureSourceGUID
 			String featuresourceGuid;
 			if(featureSourceId.equals("none")){
@@ -113,7 +118,7 @@ public class TransformDatasetProcesslet implements Processlet{
 			TransformerHelper.getTransformerPlugIns();
 			TransformerHelper.getFileTypeToTransformerAssociation();
 			//call the transformer and handle exceptions, then dispatch the relevant to the GUI
-			fsm.manageDataset(info, featureSourceId, featuresourceGuid, diffusionServerName, URLList, ScriptName, SourceDataType, CoordEpsgCode, Dataset);
+			fsm.manageDataset(info, featureSourceId, featuresourceGuid, diffusionServerName, URLList, ScriptName, SourceDataType, CoordEpsgCode, Dataset, currentUser);
 
 			//Fill the response
 			LiteralOutput featureSourceGuid = (LiteralOutput)out.getParameter("FeatureSourceGuid");

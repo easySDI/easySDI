@@ -3,6 +3,8 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:util="http://www.springframework.org/schema/util"
 	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xmlns:sec="http://www.springframework.org/schema/security"
 	xsi:schemaLocation="
 						http://www.springframework.org/schema/beans
 						http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
@@ -14,27 +16,32 @@
        					http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
        					http://www.springframework.org/schema/util
        					http://www.springframework.org/schema/util/spring-util-3.0.xsd
+       					http://www.springframework.org/schema/security
+          				http://www.springframework.org/schema/security/spring-security-3.0.xsd
        					">
+       					
+	
 
 	<!-- Gestion des propriétés pour ce fichier de configuration -->
-	 
 	<context:property-placeholder location="/WEB-INF/publish-config.properties" />
-     
+          
 	<!-- Hibernate beans -->
+    <context:annotation-config />
+	<context:component-scan base-package="org.easysdi.publish" />
 
 	<bean id="hibernateDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
 		destroy-method="close">
 		<property name="driverClass">
-			<value>${jdbc.driver}</value>
+			<value>${hibernate.jdbc.driver}</value>
 		</property>
 		<property name="jdbcUrl">
-			<value>${jdbc.url}</value>
+			<value>${hibernate.jdbc.url}</value>
 		</property>
 		<property name="user">
-			<value>${jdbc.user}</value>
+			<value>${hibernate.jdbc.user}</value>
 		</property>
 		<property name="password">
-			<value>${jdbc.password}</value>
+			<value>${hibernate.jdbc.password}</value>
 		</property>
 		<property name="initialPoolSize">
 			<value>${hibernate.c3p0.initialPoolSize}</value>
@@ -65,6 +72,54 @@
 		</property>
 		<property name="testConnectionOnCheckin">
 			<value>${hibernate.c3p0.testConnectionOnCheckin}</value>
+		</property>
+	</bean>
+	
+	<!-- Hibernate beans -->
+
+	<bean id="joomlaDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
+		destroy-method="close">
+		<property name="driverClass">
+			<value>${joomla.jdbc.driver}</value>
+		</property>
+		<property name="jdbcUrl">
+			<value>${joomla.jdbc.url}</value>
+		</property>
+		<property name="user">
+			<value>${joomla.jdbc.user}</value>
+		</property>
+		<property name="password">
+			<value>${joomla.jdbc.password}</value>
+		</property>
+		<property name="initialPoolSize">
+			<value>${joomla.c3p0.initialPoolSize}</value>
+		</property>
+		<property name="minPoolSize">
+			<value>${joomla.c3p0.minPoolSize}</value>
+		</property>
+		<property name="maxPoolSize">
+			<value>${joomla.c3p0.maxPoolSize}</value>
+		</property>
+		<property name="acquireRetryAttempts">
+			<value>${joomla.c3p0.acquireRetryAttempts}</value>
+		</property>
+		<property name="acquireIncrement">
+			<value>${joomla.c3p0.acquireIncrement}</value>
+		</property>
+		<property name="idleConnectionTestPeriod">
+			<value>${joomla.c3p0.idleConnectionTestPeriod}</value>
+		</property>
+		<property name="maxIdleTime">
+			<value>${joomla.c3p0.maxIdleTime}</value>
+		</property>
+		<property name="maxConnectionAge">
+			<value>${joomla.c3p0.maxConnectionAge}</value>
+		</property>
+		<property name="preferredTestQuery">
+			<value>${joomla.c3p0.preferredTestQuery}</value>
+		</property>
+		<property name="testConnectionOnCheckin">
+			<value>${joomla.c3p0.testConnectionOnCheckin}</value>
 		</property>
 	</bean>
 
@@ -101,15 +156,7 @@
 		class="org.springframework.orm.hibernate3.HibernateTransactionManager">
 		<property name="sessionFactory" ref="hibernateSessionFactory" />
 	</bean>
-
-	<!--
-		<aop:config> <aop:pointcut id="controllerMethod"
-		expression="execution(public
-		org.springframework.web.servlet.ModelAndView
-		org.easysdi.monitor.gui.webapp.controllers.*Controller.*(..))" />
-		<aop:advisor advice-ref="controllerTransactionAdvice"
-		pointcut-ref="controllerMethod" /> </aop:config>
-	-->
+	
 	<tx:advice id="controllerTransactionAdvice"
 		transaction-manager="transactionManager">
 		<tx:attributes>
