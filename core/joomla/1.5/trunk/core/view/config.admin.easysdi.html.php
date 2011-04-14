@@ -317,6 +317,16 @@ if ($catalogItem > 0){
 											<input class="text_area" type="text" size="50" name="catalog_search_ogcfilterfileid" value="<?php echo $catalogList['CATALOG_SEARCH_OGCFILTERFILEID']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
 										</td>
 									</tr>
+									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_MXQUERYURL' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_MXQUERYURL' ); ?>
+											</span>
+										</td>
+										<td>
+											<input class="text_area" type="text" size="50" name="catalog_mxqueryurl" value="<?php echo $catalogList['CATALOG_MXQUERYURL']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+										</td>
+									</tr>
 									</tbody>
 								</table>
 							</fieldset>	

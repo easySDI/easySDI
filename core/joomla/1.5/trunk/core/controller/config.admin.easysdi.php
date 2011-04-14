@@ -138,13 +138,13 @@ class ADMIN_config {
 		}
 		
 		
-		// Récupération des types mysql pour les champs
+		// Rï¿½cupï¿½ration des types mysql pour les champs
 		$tableFields = array();
 		$tableFields = $db->getTableFields("#__sdi_configuration", false);
 		
 		// Parcours des champs pour extraire les informations utiles:
 		// - le nom du champ
-		// - sa longueur en caractères
+		// - sa longueur en caractï¿½res
 		$fieldsLength = array();
 		foreach($tableFields as $table)
 		{
@@ -172,7 +172,7 @@ class ADMIN_config {
 		global $mainframe;
 		$database=& JFactory::getDBO(); 
 		
-		// Sauvegarde des clés CORE
+		// Sauvegarde des clï¿½s CORE
 		$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['description_length'])."\" WHERE code = 'DESCRIPTION_LENGTH'");
 		if (!$database->query()) {			
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -190,7 +190,7 @@ class ADMIN_config {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 		}
 		
-		// Sauvegarde des clés CATALOG
+		// Sauvegarde des clï¿½s CATALOG
 		if ($_POST['catalog_item'] > 0)
 		{
 			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['catalog_url'])."\" WHERE code = 'CATALOG_URL'");
@@ -253,9 +253,13 @@ class ADMIN_config {
 			if (!$database->query()) {			
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['catalog_mxqueryurl'])."\" WHERE code = 'CATALOG_MXQUERYURL'");
+			if (!$database->query()) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
 		}
 		
-		// Sauvegarde des clés SHOP
+		// Sauvegarde des clï¿½s SHOP
 		if ($_POST['shop_item'] > 0)
 		{
 			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['proxyhost'])."\" WHERE code = 'SHOP_CONFIGURATION_PROXYHOST'");
@@ -296,7 +300,7 @@ class ADMIN_config {
 			}
 		}
 		
-		// Sauvegarde des clés PROXY
+		// Sauvegarde des clï¿½s PROXY
 		if ($_POST['proxy_item'] > 0)
 		{
 			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['proxy_config'])."\" WHERE code = 'PROXY_CONFIG'");
@@ -305,7 +309,7 @@ class ADMIN_config {
 			}
 		}
 		
-		// Sauvegarde des clés MONITOR
+		// Sauvegarde des clï¿½s MONITOR
 		if ($_POST['monitor_item'] > 0)
 		{
 			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['monitor_url'])."\" WHERE code = 'MONITOR_URL'");
@@ -314,7 +318,7 @@ class ADMIN_config {
 			}
 		}
 		
-		// Sauvegarde des clés PUBLISH
+		// Sauvegarde des clï¿½s PUBLISH
 		if ($_POST['publish_item'] > 0)
 		{
 			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['publish_url'])."\" WHERE code = 'WPS_PUBLISHER'");
@@ -323,7 +327,7 @@ class ADMIN_config {
 			}
 		}
 		
-		// Sauvegarde des clés MAP
+		// Sauvegarde des clï¿½s MAP
 		if ($_POST['map_item'] > 0)
 		{
 			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['componentPath'])."\" WHERE code = 'componentPath'");
