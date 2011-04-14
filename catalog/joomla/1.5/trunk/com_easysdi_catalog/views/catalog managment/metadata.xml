@@ -12,6 +12,7 @@
     <param name="task" type="list" default="listObject" label="Type" description="Type of menu">
       <option value="listObject">List Object</option>
       <option value="listMetadata">List Metadata</option>
+       <option value="listMyReports">List My Reports</option>
     </param>
   </url>
   <params>

@@ -798,6 +798,26 @@ switch($task){
 			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'xquery.admin.easysdi.php');
 			ADMIN_xQuery::listMyReports();
 			break;
+			
+		case 'processXQueryReport':
+			require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'catalog.site.easysdi.php'); //reuse buildcsw
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'metadata.admin.easysdi.php'); // for same curl as search results
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'xquery.easysdi.class.php');
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'xquery.admin.easysdi.html.php');
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'xquery.admin.easysdi.php');
+			
+			ADMIN_xQuery::processXQueryReport();
+			break;
+			
+		case 'provideXMLDataForXQueryReport':
+			require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'catalog.site.easysdi.php'); //reuse buildcsw
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'metadata.admin.easysdi.php'); // for same curl as search results
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'xquery.easysdi.class.php');
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'xquery.admin.easysdi.html.php');
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'xquery.admin.easysdi.php');
+			
+			ADMIN_xQuery::provideXMLDataForXQueryReport();
+			break;
 		case 'processXQuery':
 			require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'testMxQuery.php');
 			require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'testMxQuery.html.php');

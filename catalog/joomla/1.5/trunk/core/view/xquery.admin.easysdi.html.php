@@ -108,12 +108,24 @@ function newXQueryReport(){
 			</fieldset>
 		
 			<fieldset>
-							<legend align="top"><?php echo JText::_("CATALOG_XQUERY_SQLFILTERLABEL"); ?></legend>
+							<legend align="top"><?php echo JText::_("CATALOG_XQUERY_OGCFILTERLABEL"); ?></legend>
 							<table><tbody><tr>
 									<td class="td_left"> <?php echo JText::_("CATALOG_XQUERY_ENTEROGC"); ?>	</td>
 									<td class="td_middle"></td>
 									<td class="td_right"> <textarea name ="ogcfilter"  class="text_area  textarea_size" >
 		 								</textarea>  
+							 		 </td>
+							 		</tr></tbody>							 	
+							</table>
+			</fieldset>
+			
+			<fieldset>
+							<legend align="top"><?php echo JText::_("CATALOG_XQUERY_REPORTCODE"); ?></legend>
+							<table><tbody><tr>
+									<td class="td_left"> <?php echo JText::_("CATALOG_XQUERY_ENTERREPORTCODE"); ?>	</td>
+									<td class="td_middle"></td>
+									<td class="td_right"> <textarea name ="reportcode"  class="text_area  textarea_size" >
+		 							</textarea>  
 							 		 </td>
 							 		</tr></tbody>							 	
 							</table>
@@ -175,13 +187,23 @@ function editXQueryReport($rows){
 							<table><tbody><tr>
 									<td class="td_left"> <?php echo JText::_("CATALOG_XQUERY_ENTEROGC"); ?>	</td>
 									<td class="td_middle"></td>
-									<td class="td_right"> <textarea name ="ogcfilter" class="text_area  textarea_size" ><?php echo $row->ogcfilter    ?> 
+									<td class="td_right"> <textarea name ="ogcfilter" class="text_area  textarea_size" >
 		 								</textarea>  
 							 		 </td>
 							 		</tr></tbody>							 	
 							</table>
 			</fieldset>
-		
+		    <fieldset>
+							<legend align="top"><?php echo JText::_("CATALOG_XQUERY_REPORTCODE"); ?></legend>
+							<table><tbody><tr>
+									<td class="td_left"> <?php echo JText::_("CATALOG_XQUERY_ENTERREPORTCODE"); ?>	</td>
+									<td class="td_middle"></td>
+									<td class="td_right"> <textarea name ="reportcode"  class="text_area  textarea_size" ><?php echo $row->reportcode    ?> 
+		 							</textarea>  
+							 		 </td>
+							 		</tr></tbody>							 	
+							</table>
+			</fieldset>
 
 	
 			<fieldset>
@@ -315,7 +337,7 @@ function assignXQueryReport($orgrows, $accountrowsbyorg,$pagination, $assignedUs
 				<td  ><?php echo $num?></td>
 				<td  ><?php echo  $row->xqueryname  ?></td>
 				<td  ></td>
-				<td  class="executeXQuery"></td>
+				<td  ><div class="executeXQuery"  onclick="submitbutton('processXQueryReport',<?php echo $row->id ?>)"></div></td>
 				
 				</tr>
 				

@@ -18,6 +18,8 @@
 defined('_JEXEC') or die('Restricted access');
 
 ?>
+
+<?php if(JRequest::getVar("task")!="provideXMLDataForXQueryReport"){?>
 <style>
 
 .textarea_size{
@@ -55,6 +57,7 @@ defined('_JEXEC') or die('Restricted access');
 	var cancelReportUrl ="<?php echo "index.php?option=com_easysdi_catalog&task=listQueryReports&cid=0&resetpagination=1"?>";
 	var assignReportUrl = "<?php echo "index.php?option=com_easysdi_catalog&task=assignXQueryReport&cid="?>";
 	var saveUserReportAccessUrl = "<?php echo "index.php?option=com_easysdi_catalog&task=saveXQueryUserReportAccess&cid="?>";
+	var processReportUrl = "<?php echo "index.php?option=com_easysdi_catalog&task=processXQueryReport&cid="?>";
 	
 	var selectOnlyOneMsg = "<?php echo JText::_("CATALOG_XQUERY_SELECTONLYONE") ?>";
 	var reportToPreviewId = 0;
@@ -66,7 +69,7 @@ defined('_JEXEC') or die('Restricted access');
 	var tmpUserAccountsToRemove = new Array();
 	var currentOrgFilter = "";
 		
-	function submitbutton(action) 
+	function submitbutton(action,id) 
 	{
 		debugger;
 		
@@ -105,6 +108,9 @@ defined('_JEXEC') or die('Restricted access');
 			
 				actionUrl = saveUserReportAccessUrl +  reportToAssignId + "&add="+tmpUserAccountsToAdd.join(";") + "&remove="+tmpUserAccountsToRemove.join(";") ;
 					
+		}
+		else if (action == "processXQueryReport" ){
+			actionUrl = processReportUrl + id ;
 		}
 		else{ actionUrl ="";}
 		
@@ -206,7 +212,7 @@ defined('_JEXEC') or die('Restricted access');
 		 document.adminForm.submit();
 	} 
 </script>
-
+<?php }//end if?>
 <?php
 
 class ADMIN_xQuery{
@@ -297,28 +303,28 @@ class ADMIN_xQuery{
 	function saveXQueryReport(){
 		
 		$cid = JRequest::getVar('cid');
+		$xfileid = 0;
+		
 		
 		$xqueryHomeUrl ="index.php?option=com_easysdi_catalog&task=listQueryReports&cid=0";
 		
 		global $mainframe;	
 			
 		$database=& JFactory::getDBO(); 
-		$adminUser =& JFactory::getUser();
-		
+		$adminUser =& JFactory::getUser();		
 
-		//input params
-		//xsltUrl
-		//xQueryReportName
-		//metadataIdSql
-		//ogcfilter
-		//selectedUsers[]
-		//$cid = JRequest::getVar( 'cid', array(0), '', 'array' );
-		
+		if($cid!=0){
+			
+			$database->setQuery("select xfileid from #__sdi_xqueryreport where id=".$cid);
+			$xfileid =$database->loadResult();
+			
+		}
 		$xsltUrl =JRequest::getVar( 'xsltUrl');
 		$xQueryReportName =JRequest::getVar( 'xQueryReportName' );
 		$metadataIdSql=JRequest::getVar( 'metadataIdSql');
 		$ogcfilter=JRequest::getVar( 'ogcfilter' );
-		$selectedUsersIds=JRequest::getVar( 'selectedUsersIdArr');
+		$reportcode=JRequest::getVar( 'reportcode' );
+	
 		
 		$metadataIdSql = strtolower($metadataIdSql);
 		$updateindex = strpos($metadataIdSql, "update");
@@ -340,9 +346,17 @@ class ADMIN_xQuery{
 		}
 		$metadataIdSql= $metadataIdSql;
 		
+		
+		$uid = ADMIN_xQuery::saveXQueryCode();
+		
+		
+		if (!ADMIN_xQuery::testUid($uid)) // then its a stacktrace.
+			$mainframe->redirect($xqueryHomeUrl, $uid,"ERROR");		
+			
+		
 		if( $cid==0){
-			$saveSql = "INSERT INTO #__sdi_xqueryreport (sqlfilter, ogcfilter, xslttemplateurl,xqueryname)
-					    VALUES ('".$metadataIdSql."','". $ogcfilter."','". $xsltUrl."','".$xQueryReportName."')";
+			$saveSql = "INSERT INTO #__sdi_xqueryreport (sqlfilter, ogcfilter, xslttemplateurl,xqueryname, xfileid, reportcode)
+					    VALUES ('".$metadataIdSql."','". $ogcfilter."','". $xsltUrl."','".$xQueryReportName."'.'".$uid."','".$reportcode."')";
 			$newReport = true;
 		}else{
 			$saveSql = "UPDATE			 #__sdi_xqueryreport 
@@ -350,8 +364,12 @@ class ADMIN_xQuery{
 										, ogcfilter='". $ogcfilter."'
 										, xslttemplateurl='". $xsltUrl."'													
 										, xqueryname='".$xQueryReportName."'
+										, xfileid='".$uid."'
+										, reportcode='".$reportcode."'
 					    WHERE id = ".$cid;
 			$newReport = false;
+			
+			//delete the other one
 		}
 		
 		
@@ -372,8 +390,15 @@ class ADMIN_xQuery{
 					$database->setQuery($saveSql);
 					$result =$database->query();
 					if(!result)
-						$mainframe->redirect($xqueryHomeUrl, $database->getErrorMsg(),"ERROR");
+						$mainframe->redirect($xqueryHomeUrl, $database->getErrorMsg(),"ERROR");											
 					
+				}else{
+					//deleteOld xfileid
+					if($xfileid!=''){
+						$fileDeleted = ADMIN_xQuery::deleteXfileWithId($xfileid);
+						if (!ADMIN_xQuery::testUid($fileDeleted)) // then its a stacktrace.
+							$mainframe->redirect($xqueryHomeUrl, $fileDeleted,"ERROR");	
+					}
 				}
 				
 				
@@ -641,6 +666,205 @@ class ADMIN_xQuery{
 			$mainframe->redirect($homeUrl, $e->getTraceAsString());
 		}
 	}
+	
+  function saveXQueryCode()
+  {
+  	$ch = curl_init();
+  	
+  	$mxqueryroot = config_easysdi::getValue("catalog_mxqueryurl");
+  	$mxqueryManage= $mxqueryroot."/manage";
+  	curl_setopt($ch, CURLOPT_URL, $mxqueryManage);
+ 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+  	curl_setopt($ch, CURLOPT_POST, true);
+
+  	$data =   'operationtype=1&xquerycode='.urlencode(JRequest::getVar("reportcode", " "))."&fileid=";
+
+  	curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+  	
+  	try{
+  		$output = curl_exec($ch);
+  	}
+  	catch(Exception $e){
+
+  		$output =  $e->getTraceAsString();
+  	}
+  	$info = curl_getinfo($ch);
+  	curl_close($ch);
+	return $output;
+
+	
+  }	 
+  
+  
+  function deleteXfileWithId($id)
+  {
+  	$ch = curl_init();
+  	
+  	$mxqueryroot = config_easysdi::getValue("catalog_mxqueryurl");
+  	$mxqueryManage= $mxqueryroot."/".manage;
+  	curl_setopt($ch, CURLOPT_URL, $mxqueryManage);
+ 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+  	curl_setopt($ch, CURLOPT_POST, true);
+
+  	$data =   "operationtype=0&xquerycode=&fileid=".trim($id);
+
+  	curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+  	
+  	try{
+  		$output = curl_exec($ch);
+  	}
+  	catch(Exception $e){
+
+  		$output =  $e->getTraceAsString();
+  	}
+  	$info = curl_getinfo($ch);
+  	curl_close($ch);
+	return $output;
+
+	
+  }	 
+  
+  function process() {
+  	
+  	$ch = curl_init();
+  	curl_setopt($ch, CURLOPT_URL, "http://localhost:8080/MXQuery/process");
+ 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+  	curl_setopt($ch, CURLOPT_POST, true);
+
+  	$data =   'url='.urlencode(JRequest::getVar("url", " ")).'&fileid='.urlencode(JRequest::getVar("fileid", " "));
+
+  	curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+  	
+  	try{
+  		$output = curl_exec($ch);
+  	}
+  	catch(Exception $e){
+
+  		$output =  $e->getTraceAsString();
+  	}
+  	$info = curl_getinfo($ch);
+  	curl_close($ch);
+	return  $output;
+  //	HTML_testMxQuery::display( $output);
+  //  die();
+  }
+  
+  function testUid($uid){
+  	
+  		$uidArr = explode("-",$uid);
+		if (count($uidArr)!=5) // then its a stacktrace.
+			return false;
+		else
+			return true ;
+  }
+  function processXQueryReport(){
+  	
+  	global $mainframe;	
+			
+	$database=& JFactory::getDBO(); 
+  	$cid= JRequest::getVar('cid',0);		
+  	$selectsql = "select xfileid from #__sdi_xqueryreport where id=".$cid;
+	
+  	$database->setQuery( $selectsql);
+	$xfileid = $database->loadResult();
+	if ($database->getErrorNum()) {			
+			// redirect to mymxquery reports page with error message	
+	}
+		
+  	$mxqueryroot = config_easysdi::getValue("catalog_mxqueryurl");
+  	$mxqueryProcess= $mxqueryroot."/process";
+  	$ch = curl_init();
+  	curl_setopt($ch, CURLOPT_URL, $mxqueryProcess);
+ 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+  	curl_setopt($ch, CURLOPT_POST, true);
+  	
+  	$fullURI = explode("?",$_SERVER['REQUEST_URI']);
+  	
+	$getXMLUrl = "http://".$_SERVER['HTTP_HOST']."/".$fullURI[0]."?option=com_easysdi_catalog&task=provideXMLDataForXQueryReport&cid=".$cid ;
+
+  	$data =   'url='.urlencode($getXMLUrl).'&fileid='.urlencode(trim($xfileid));
+
+  	curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+  	
+  	try{
+  		$output = curl_exec($ch);
+  	}
+  	catch(Exception $e){
+
+  		$output =  $e->getTraceAsString();
+  	}
+  	$info = curl_getinfo($ch);
+  	curl_close($ch);
+	echo  $output;
+	die;
+  	
+  	
+  }
+  function provideXMLDataForXQueryReport(){
+  	
+  		global $mainframe;	
+			
+		$database=& JFactory::getDBO(); 
+		$user =& JFactory::getUser();
+		$cid= JRequest::getVar('cid',0);
+		
+		if($cid == 0){
+		// redirect to mymxquery reports page with error message
+		}
+	
+		
+		$selectsql = "select sqlfilter from #__sdi_xqueryreport where id=".$cid;
+		
+  		$database->setQuery( $selectsql);
+		$metadataIdSqlfilter = $database->loadResult();
+		if ($database->getErrorNum()) {			
+				// redirect to mymxquery reports page with error message	
+		}
+		
+	
+ 		$database->setQuery( $metadataIdSqlfilter);
+		$metadataIds = $database->loadObjectList();
+		if ($database->getErrorNum()) {			
+				// redirect to mymxquery reports page with error message	
+		}
+		
+		$catalogUrlBase = config_easysdi::getValue("catalog_url");
+		$cswfilter = ADMIN_xQuery::buildCSWFilter($metadataIds, $report->ogcfilter );		
+		$xmlBody = SITE_catalog::BuildCSWRequest(0, 0, "results", "gmd:MD_Metadata", "full", "1.1.0", $cswfilter, $ogcsearchsorting, "ASC");
+		$xmlResponse = ADMIN_metadata::CURLRequest("POST", $catalogUrlBase,$xmlBody);
+		
+		ini_set('zlib.output_compression', 0);
+		header('Content-type: application/xml');
+		header('Content-Disposition: attachement; filename="metadata.xml"');
+		header('Content-Transfer-Encoding: binary');
+		header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
+		header('Pragma: public');
+		header("Expires: 0"); 
+		header("Content-Length: ".strlen($xmlResponse)); //
+		echo $xmlResponse; // return the xml response directly as xml. // or see how it is done by export xml.
+		die;
+
+  }
+  
+  function buildCSWFilter($metadataIds, $ogcfilter){
+		
+				
+  		$cswfilterCond.= "<ogc:Or>";
+  		foreach ($metadataIds as $metadataId)
+  		{
+  			//keep it so to keep the request "small"
+  			$cswfilterCond .= "<ogc:PropertyIsEqualTo><ogc:PropertyName>fileId</ogc:PropertyName><ogc:Literal>$metadataId->guid</ogc:Literal></ogc:PropertyIsEqualTo>\r\n";
+  		}
+  			
+  		$cswfilterCond.= "</ogc:Or>";		
+		$cswfilterCond.= $ogcfilter;
+		$cswfilter = "<ogc:Filter xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:gml=\"http://www.opengis.net/gml\">\r\n";
+		$cswfilter .= $cswfilterCond;
+		$cswfilter .= "</ogc:Filter>\r\n";
+		
+		return $cswfilter;
+			
+  }
 }
 
 
