@@ -28,25 +28,37 @@ class ADMIN_overlay
 		$limit = $mainframe->getUserStateFromRequest( "viewlistlimit", 'limit', 10 );
 		$limitstart = $mainframe->getUserStateFromRequest( "view{$option}limitstart", 'limitstart', 0 );
 		
+		$where = array();
+		
 		//Search
 		$search = $mainframe->getUserStateFromRequest( "searchOverlay{$option}", 'searchOverlay', '' );
 		$search = $db->getEscaped( trim( strtolower( $search ) ) );
 		if ($search)
 		{
-			$query_search = ' where LOWER(l.id) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
-			$query_search .= ' or LOWER(l.name) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
-			$query_search .= ' or LOWER(g.name) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false );
+			$where[] = ' ( LOWER(l.id) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false ).
+			 ' or LOWER(l.name) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false ).
+			 ' or LOWER(g.name) LIKE '.$db->Quote( '%'.$db->getEscaped( $search, true ).'%', false ).')';
+		}
+		
+		//Filter
+		$filter_group_id = $mainframe->getUserStateFromRequest( $option.$overlay.'filter_group_id',	'filter_group_id',	-1,	'int' );
+		if ($filter_group_id > 0) {
+			$where[] = ' l.group_id = ' . (int) $filter_group_id;
 		}
 
+		$where = (count($where) ? implode(' AND ', $where) : '');
+		
 		//Base query
 		$query ="SELECT COUNT(*) FROM #__sdi_overlay " ;
-		$query .= $query_search;
+		if($where)
+			$query .= ' WHERE '.$where;
 		$db->setQuery( $query );
 		$total = $db->loadResult();
 		$pageNav = new JPagination($total,$limitstart,$limit);
 
 		$query = "SELECT l.*, g.name as group_name  FROM #__sdi_overlay l INNER JOIN #__sdi_overlaygroup g ON l.group_id = g.id " ;
-		$query .= $query_search;
+		if($where)
+			$query .= ' WHERE '.$where;
 		
 		// table ordering
 		$filter_order		= $mainframe->getUserStateFromRequest( "$option.filter_order",		'filter_order',		'id',	'cmd' );
@@ -73,8 +85,16 @@ class ADMIN_overlay
 			$mainframe->enqueueMessage($db->stderr(),"error");
 			return ;
 		}
-
-		HTML_overlay::listOverlay( $rows, $pageNav,$search, $filter_order_Dir, $filter_order,  $option);
+		
+		$query = '	SELECT g.id AS value, g.name AS text 
+					FROM #__sdi_overlaygroup g 
+					ORDER BY g.name';
+		$groups[] = JHTML::_('select.option', '-1', JText::_('MAP_OVERLAY_OVERLAYGROUP_SELECT'), 'value', 'text');
+		$db->setQuery($query);
+		$groups = array_merge($groups, $db->loadObjectList());
+		$lists['group_id'] = JHTML::_('select.genericlist',  $groups, 'filter_group_id', 'class="inputbox" size="1" onchange="document.adminForm.submit( );"', 'value', 'text', $filter_group_id);
+		
+		HTML_overlay::listOverlay( $rows,$lists, $pageNav,$search, $filter_order_Dir, $filter_order,  $option);
 	}
 
 	function editOverlay ($id,$option)
@@ -364,5 +384,41 @@ class ADMIN_overlay
 		$overlayGroup->orderDown();
 		$mainframe->redirect("index.php?option=$option&task=overlayGroup");
 	}	
+	
+	function saveOrderOverlay($option, $cid,$order)
+	{
+		global $mainframe;
+
+		$db			= & JFactory::getDBO();
+		$total		= count($cid);
+		$conditions	= array ();
+
+		JArrayHelper::toInteger($cid, array(0));
+		JArrayHelper::toInteger($order, array(0));
+
+		// Update the ordering for items in the cid array
+		for ($i = 0; $i < $total; $i ++)
+		{
+			// Instantiate an article table object
+			$row = new overlay( $db );
+			$row->load( (int) $cid[$i]);
+			
+			if ($row->ordering != $order[$i]) {
+				$row->ordering = $order[$i];
+				if (!$row->store()) {
+					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+					$mainframe->redirect("index.php?option=$option&task=overlay" );
+					exit();
+				}
+			}
+		}
+
+		$cache = & JFactory::getCache('com_easysdi_map');
+		$cache->clean();
+
+		$mainframe->enqueueMessage(JText::_('New ordering saved'),"SUCCESS");
+		$mainframe->redirect("index.php?option=$option&task=overlay" );
+		exit();
+	}
 }
 ?>

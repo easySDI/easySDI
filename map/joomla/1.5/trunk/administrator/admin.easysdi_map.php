@@ -158,6 +158,15 @@ switch($task)
 		$cid = JRequest::getVar ('cid', array(0) );
 		ADMIN_overlay::orderDownOverlay($option,$cid[0]);
 		break;
+	case 'saveOrderOverlay':
+		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'overlay.admin.easysdi_map.html.php');
+		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'overlay.class.easysdi_map.php');
+		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'overlay.toolbar.easysdi_map.html.php');
+		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'overlay.admin.easysdi_map.php');
+		$cid		= JRequest::getVar( 'cid', array(0));
+		$order		= JRequest::getVar( 'ordering', array (0));
+		ADMIN_overlay::saveOrderOverlay($option,$cid, $order);
+		break;
 	case "cancelOverlay":
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'overlay.admin.easysdi_map.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'overlay.class.easysdi_map.php');

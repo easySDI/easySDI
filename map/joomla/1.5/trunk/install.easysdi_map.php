@@ -708,6 +708,17 @@ function com_install()
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 	}	
+	if ($version == "2.0.0")
+	{
+		// Update component version
+		$version="2.0.1";
+		$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='MAP'"; 
+		$db->setQuery( $query);	
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+	}
 
 	$query = "DELETE FROM #__components where `option`= 'com_easysdi_map'";
 	$db->setQuery( $query);
