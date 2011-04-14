@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySDI, a solution to implement easily any spatial data infrastructure
- * Copyright (C) 2009 Antoine Elbel & Rémy Baud (aelbel@solnet.ch remy.baud@asitvd.ch)
+ * Copyright (C) 2009 Antoine Elbel & Rï¿½my Baud (aelbel@solnet.ch remy.baud@asitvd.ch)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,6 +47,7 @@ global $mainframe;
 //Import css
 //JHTML::_('stylesheet', 'easysdi_shop.css', 'administrator/components/com_easysdi_shop/templates/css/');
 JHTML::_('stylesheet', 'easysdi.css', 'templates/easysdi/css/');
+JHTML::_('stylesheet', 'common_easysdi_admin.css', 'administrator/components/com_easysdi_core/templates/css/');
 
 //Load Publish needed classes
 require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'ctrpanel.admin.easysdi.html.php');

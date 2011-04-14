@@ -314,13 +314,14 @@ function com_install(){
 		}
 	}
 	
+
 	$query = "DELETE FROM #__components where `option`= 'com_easysdi_publish' ";
 	$db->setQuery($query);
 	if (!$db->query()) 
 	{
 		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");		
 	}
-
+  
 	$query =  "insert into #__components (name,link,admin_menu_alt,`option`,admin_menu_img,params)
 		values('EasySDI - Publish','option=com_easysdi_publish&task=editGlobalSettings','Easysdi Publish','com_easysdi_publish','js/ThemeOffice/component.png','')";
 	$db->setQuery( $query);
@@ -328,6 +329,7 @@ function com_install(){
 	{
 		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");		
 	}
+  
 	
 	$mainframe->enqueueMessage("Congratulation Publish for EasySDI is installed and ready to be used. Enjoy EasySdi Publish!
 	 Do not forget to check/change the WPS_PUBLISHER key depending on your servlet container location.","INFO");

@@ -1,10 +1,10 @@
 <?xml version="1.0"  ?>
 <install version="1.5" type="component">
 	<name>EasySDI_publish</name>
-	<version>2.0.0</version>
-	<releaseDate>2011-02-21</releaseDate>
+	<version>2.0.1</version>
+	<releaseDate>2011-04-14</releaseDate>
     <releaseType>Major update</releaseType>
-	<creationDate>november 2010</creationDate>
+	<creationDate>april 2011</creationDate>
 	<author>Antoine Elbel - Remy Baud</author>
 	<authorEmail>support@asitvd.ch</authorEmail>
 	<authorUrl>www.asitvd.ch</authorUrl>
