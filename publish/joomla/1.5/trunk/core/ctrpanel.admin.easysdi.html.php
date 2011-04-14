@@ -16,9 +16,10 @@
 */
 
 defined('_JEXEC') or die('Restricted access');
+require_once(JPATH_SITE.DS.'components'.DS.'com_easysdi_publish'.DS.'core'.DS.'proxy.php');
 
 class HTML_ctrlpanel {
-	
+
 	function display_xml_error($error, $xml)
   {
     $return  = $xml[$error->line - 1] . "\n";
@@ -49,7 +50,6 @@ class HTML_ctrlpanel {
 	
 	function ctrlPanelPublish($format_rows, $rowPublishConfig, $options, $config_Id, $partner_list, $layers, $use_pagination_layer, $pageNav, $filter_order, $filter_order_Dir, $search){
 		//diffusor_rows obsolete
-		
 		global  $mainframe;
 		$database =& JFactory::getDBO();
 		
@@ -62,7 +62,9 @@ class HTML_ctrlpanel {
 		//Get the server list from the WPS
 		$wpsConfig = $wpsAddress."/config";
 		$url = $wpsConfig."?operation=listPublicationServers";
-		$xml = simplexml_load_file($url);
+		$doc = SITE_proxy::fetch($url, false);
+		$xml = simplexml_load_string($doc);
+		
 		//check error by getting the doc
 		if(!$xml){		
 		   echo JText::_("EASYSDI_PUBLISH_ERROR_CONNECTING_TO_WPS")." ".$wpsAddress;

@@ -34,6 +34,7 @@ require_once(JPATH_COMPONENT.DS.'core'.DS.'finddata.publish.html.php');
 require_once(JPATH_COMPONENT.DS.'core'.DS.'buildlayer.publish.html.php');
 require_once(JPATH_COMPONENT.DS.'core'.DS.'publish.classes.easysdi.php');
 require_once(JPATH_COMPONENT.DS.'core'.DS.'helper.php');
+require_once(JPATH_COMPONENT.DS.'core'.DS.'proxy.php');
 require_once(JPATH_COMPONENT.DS.'core'.DS.'publish.epsg.html.php');
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.usermanager.class.php');
 
@@ -102,17 +103,15 @@ if($database->getErrorNum()){
 		return;
 }
 
-//Test connection to WPS
-if(testConnection($wpsConfig) == false){
-	 echo "<h3>".JText::_("EASYSDI_ERROR")."</h3>";
-   echo JText::_("EASYSDI_PUBLISH_ERROR_CONNECTING_TO_WPS")." ".$wpsAddress;
-}else{
-
 
 /**
  * Handle view publish
  */
 switch($task){
+	
+	case "proxy":
+		SITE_proxy::fetch($_GET['proxy_url'],true,getCurrentUser($wpsConfig));
+	break;
 	
 	case "gettingStarted":
 	  
@@ -175,16 +174,16 @@ switch($task){
 		//$mainframe->enqueueMessage(JText::_("EASYSDI_ACTION_NOT_ALLOWED"), "INFO");
 		break;
 }
-}
+
 
 function getCurrentUser($wpsConfig){
 	global $mainframe;
 	$joomlaUser = JFactory::getUser();
 	$database =& JFactory::getDBO();
 	//Retrieve diffusion server list from wps
-	$url = $wpsConfig."?operation=listPublicationServers";	
-
-	$xml = simplexml_load_file($url);
+	$url = $wpsConfig."?operation=listPublicationServers";
+  $doc = SITE_proxy::fetch($url, false);
+  $xml = simplexml_load_string($doc);
 
 	//retrieve general info of the logged user and config
 	$query = "select u.easysdi_user_id, u.publish_user_max_layers, u.publish_user_total_space, u.publish_user_diff_server_id, u.publish_user_diff_server_id from #__sdi_publish_user u, #__sdi_account p where u.easysdi_user_id=p.id AND p.user_id=".$joomlaUser->id;
@@ -197,6 +196,8 @@ function getCurrentUser($wpsConfig){
 	$diffusor = $xml->xpath("//server[@id=$sid]");
 	$diffusor = $diffusor[0];
 	$currentUser[0]->diffusion_server_name = (string)$diffusor->name;
+	$currentUser[0]->diffusion_username = (string)$diffusor->username;
+	$currentUser[0]->diffusion_password = (string)$diffusor->password;
 	
 	//User exist in easysdi and has rights, check if he has been configurated in EasySDI Publish
 	if(count($currentUser)<1)
@@ -209,6 +210,7 @@ function getCurrentUser($wpsConfig){
 	return $currentUser[0];
 }
 
+/*
 function testConnection($wpsConfig){
 
   $url = $wpsConfig."?operation=listPublicationServers";
@@ -228,12 +230,14 @@ function testConnection($wpsConfig){
 	     }
 	}
 	if ($path == "") { $path = "/"; }	
-	if (!$sock = @fsockopen(((strtolower($protocol) == "https://")?"ssl://":"").$server, $port, $errno, $errstr, 5))
+	if (!$sock = fsockopen(((strtolower($protocol) == "https://")?"ssl://":"").$server, $port, $errno, $errstr, 5))
 	{
 		   return false;
 	}else{
 	     return true;
   }
-
 }
+*/
+
+
  ?>	

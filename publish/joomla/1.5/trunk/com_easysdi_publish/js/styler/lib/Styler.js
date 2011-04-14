@@ -162,7 +162,7 @@ var Styler = Ext.extend(Ext.util.Observable, {
             OpenLayers.Util.getParameters(window.location.href)
         ).NAMESPACE;
         Ext.Ajax.request({
-            url: styler_proxy_url+'='+styler_host+"/ows",
+            url: styler_proxy_url+'='+styler_host+"/"+styler_namespace+"/ows",
             method: "GET",
             disableCaching: false,
             success: this.parseWMSCapabilities,

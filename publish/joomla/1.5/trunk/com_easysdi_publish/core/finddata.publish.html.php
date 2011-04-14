@@ -149,7 +149,6 @@ class PUBLISH_Finddata {
 					<form name="publish_form" id="publish_form"  method="POST">
 						<input type="hidden" name="fileList" id="fileList" value="" />
 						<input type="hidden" name="userId" id="userId" value="<?php echo $currentPartner;?>" />
-						<input type="hidden" name="wpsPublish" id="wpsPublish" value="<?php echo $wpsPublish;?>" />
 						<input type="hidden" name="baseUrl" id="baseUrl" value="<?php echo $base_url; ?>" />
 						<input type="hidden" name="diffusionServerName" id="diffusionServerName" value="<?php echo $currentUser->diffusion_server_name; ?>" />
 						<input type="hidden" name="featureSourceId" id="featureSourceId" value="<?php echo $featureSourceId; ?>" />

@@ -69,7 +69,9 @@ class PUBLISH_Buildlayer {
 		foreach ($featureSources as $row)
 						$fsList .= $row->featureGUID.",";
 		$url = $wpsConfig."?operation=ListFeatureSources&list=".$fsList;
-		$xml = simplexml_load_file($url);
+		$doc = SITE_proxy::fetch($url, false);
+  	$xml = simplexml_load_string($doc);
+		//$xml = simplexml_load_file($url);
 		$i=0;
 		$swlWhere = "";
 		foreach ($featureSources as $row){

@@ -75,6 +75,7 @@ class ADMIN_publish {
 		//General pane
 		//
 
+
 		//enum of formats
 		$format_rows = null;
 		
@@ -191,7 +192,6 @@ class ADMIN_publish {
 			echo $database->stderr();
 			return false;
 		}
-
 		HTML_ctrlpanel::ctrlPanelPublish($format_rows, $rowPublishConfig, $options, $config_Id, $partner_list, $layers, $use_pagination_layer, $pageNav, $filter_order, $filter_order_Dir, $search);
 	}
 

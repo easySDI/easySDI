@@ -37,7 +37,7 @@ window.addEvent('domready', function() {
 
 function init(){
 			//load config elements
-			wpsServlet = $('wpsPublish').value;
+			wpsServlet = 'servletPublish';
 			baseUrl = $('baseUrl').value+'components/com_easysdi_publish/core/proxy.php?proxy_url=';
 			userId = $('userId').value;
 			//Disable fields name and desciption if no Feature Source Selected
@@ -226,6 +226,7 @@ function validateLayer_click()
 	// Build the WPS post body
 	//featureTypeId: mandatory
 	featureTypeId = $('featureSourceGuid').value;
+	
 	//layerId: none if new, else update
 	layerId = $('layerGuid').value;
 	
@@ -252,7 +253,7 @@ function validateLayer_click()
 	quality = $('layerQuality').value;
 
 	//keywords
-	theKeywords = $('layerKeyword').value;
+	keywords = $('layerKeyword').value;
 	
 	//abstract
 	theAbstract = $('layerDescription').value;
@@ -262,12 +263,13 @@ function validateLayer_click()
 	
 	var aliases = "";
 	
-	var postBody = WPSPublishLayer(featureTypeId, layerId, aliases, theTitle, theName, quality, theKeywords, theAbstract, geometry);
+	var postBody = WPSPublishLayer(featureTypeId, layerId, aliases, theTitle, theName, quality, keywords, theAbstract, geometry);
 	//alert("url:"+baseUrl + wpsServlet+"   body:"+postBody);
 	
 	//send and handle the request
 	var req = new Request({
-		url: baseUrl + wpsServlet,
+		url: "index.php?option=com_easysdi_publish&task=proxy&proxy_url=" + wpsServlet,
+		//url: baseUrl + wpsServlet,
 		method: 'post',
 		urlEncoded: false,
 		headers:{'Content-Type': 'text/xml'},
@@ -304,70 +306,56 @@ function validateLayer_click()
 					//get the layerId
 					lastChild = out[0].getElementsByTagName('wps:LiteralData')[0];
 					if(lastChild != null){
-						respLayerId = lastChild.firstChild.nodeValue;
+						respLayerId = lastChild.textContent;
 						cont = true;
 					}
 					//get the wms url
 					lastChild = out[1].getElementsByTagName('wps:LiteralData')[0];;
 					if(lastChild != null){
-						respEndpoints[0] = lastChild.firstChild.nodeValue;
+						respEndpoints[0] = lastChild.textContent;
 						cont = true;
 					}
 					//get the wfs url
 					lastChild = out[2].getElementsByTagName('wps:LiteralData')[0];;
 					if(lastChild != null){
-						respEndpoints[1] = lastChild.firstChild.nodeValue;
+						respEndpoints[1] = lastChild.textContent;
 						cont = true;
 					}
 					//get the kml url
 					lastChild = out[3].getElementsByTagName('wps:LiteralData')[0];;
 					if(lastChild != null){
-						respEndpoints[2] = lastChild.firstChild.nodeValue;
+						respEndpoints[2] = lastChild.textContent;
 						cont = true;
 					}
 					//get minx
 					lastChild = out[4].getElementsByTagName('wps:LiteralData')[0];;
 					if(lastChild != null){
-						respBbox[0] = lastChild.firstChild.nodeValue;
+						respBbox[0] = lastChild.textContent;
 						cont = true;
 					}
 					//get miny
 					lastChild = out[5].getElementsByTagName('wps:LiteralData')[0];;
 					if(lastChild != null){
-						respBbox[1] = lastChild.firstChild.nodeValue;
+						respBbox[1] = lastChild.textContent;
 						cont = true;
 					}
 					//get maxX
 					lastChild = out[6].getElementsByTagName('wps:LiteralData')[0];;
 					if(lastChild != null){
-						respBbox[2] = lastChild.firstChild.nodeValue;
+						respBbox[2] = lastChild.textContent;
 						cont = true;
 					}
 					//get maxY
 					lastChild = out[7].getElementsByTagName('wps:LiteralData')[0];;
 					if(lastChild != null){
-						respBbox[3] = lastChild.firstChild.nodeValue;
+						respBbox[3] = lastChild.textContent;
 						cont = true;
 					}
 					
 				}
 				
 				if(cont == true){
-					//feed the hidden types with the response value	
-					var form = document.getElementById('publish_form');
-					form.layerGuid.value=respLayerId;
-					form.wmsUrl.value = respEndpoints[0];
-					form.wfsUrl.value = respEndpoints[1];
-					form.kmlUrl.value = respEndpoints[2];
-					form.minx.value = respBbox[0];
-					form.miny.value = respBbox[1];
-					form.maxx.value = respBbox[2];
-					form.maxy.value = respBbox[3];
-					
-					form.task.value='saveLayer';
-					form.submit();
-					
-					/*					
+					//feed the hidden types with the response value					
 					$('layerGuid').value = respLayerId;
 					$('wmsUrl').value = respEndpoints[0];
 					$('wfsUrl').value = respEndpoints[1];
@@ -380,7 +368,6 @@ function validateLayer_click()
 					//Submit the form for saving the values
 					$('task').value = 'saveLayer';
 					$('publish_form').submit();
-					*/
 				}else{
 					$('errorMsg').style.display = 'block';
 					$('errorMsg').style.visibilty = 'visible';

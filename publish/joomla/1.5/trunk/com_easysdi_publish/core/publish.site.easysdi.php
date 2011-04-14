@@ -45,7 +45,8 @@ class SITE_publish {
 		//Get the server list from the WPS
 		$wpsConfig = $wpsPublish."/config";
 		$url = $wpsConfig."?operation=listPublicationServers";
-		$xml = simplexml_load_file($url);		
+		$doc = SITE_proxy::fetch($url, false);
+		$xml = simplexml_load_string($doc);
 		//get the server edit list
 		$servers = $xml->server;
 		$user_diffusor_url = "";
@@ -301,8 +302,8 @@ class SITE_publish {
 			//load fslist from the server and update fs object
 			$wpsConfig = $wpsAddress."/config";
 			$url = $wpsConfig."?operation=ListFeatureSources&list=".$guid;
-			$xml = simplexml_load_file($url,'SimpleXMLElement', LIBXML_NOCDATA);
-			$i=0;
+			$doc = SITE_proxy::fetch($url, false);
+			$xml = simplexml_load_string($doc);
 			$swlWhere = "";
 			$srvFs = $xml->xpath("//featuresource[@guid='$guid']");
 	  	if(count($srvFs) > 0){

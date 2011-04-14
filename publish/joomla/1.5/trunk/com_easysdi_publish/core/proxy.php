@@ -38,6 +38,24 @@ browsing, it is only a simple proxy browser. Use it at your own risk.
 //error_reporting(0);
 //**BEGIN USER CONFIG**
 //Page to display by default (if no URL is supplied)
+
+
+
+
+defined('_JEXEC') or die('Restricted access');
+require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
+
+
+class SITE_proxy {
+
+private static $fh = null;
+private static $requ_headers = null;
+private static $resp_header = null;
+private static $pwd = "";
+private static $isRequestForWps = false;
+
+function fetch($url, $output=true, $currentUser=null){
+
 $default_url = "http://www.google.com";
 //Tag to prepend page titles
 $title_tag = "PF--";
@@ -46,40 +64,41 @@ $proxify_media = false;
 //**END USER CONFIG**
 
 //logger
-$myFile = "log_new.txt";
-$fh = fopen($myFile, 'w');
+$myFile = "C:\wamp\www\web2\components\com_easysdi_publish\core\log_new.txt";
+self::$fh = fopen($myFile, 'w');
+fwrite(self::$fh, "-----------------------------\n");
 
-//fwrite($fh, "SERVER values:".print_r($_SERVER, true)."\n");
+//fwrite(self::$fh, "SERVER values:".print_r($_SERVER, true)."\n");
  
 //request headers
-$requ_headers = Array();
+self::$requ_headers = Array();
 
 //response headers
-$resp_header = Array();
+self::$resp_header = Array();
 
 $start_time = microtime();
 
 //read request headers
-fwrite($fh, "-----------------------------\n");
-fwrite($fh, "REQUEST HEADERS\n");
-fwrite($fh, "-----------------------------\n");
+fwrite(self::$fh, "-----------------------------\n");
+fwrite(self::$fh, "REQUEST HEADERS\n");
+fwrite(self::$fh, "-----------------------------\n");
 foreach ($_SERVER as $k => $v){
 	  
-	  //fwrite($fh, $k.":".$v."\n");
+	  //fwrite(self::$fh, $k.":".$v."\n");
 	  
 	   if (substr($k, 0, 12) == "CONTENT_TYPE") 
     {
     	$k = "Content-Type";
-    	          $requ_headers[] = $k.":".$v;
-		  fwrite($fh, $k.":".$v."\n");
+    	          self::$requ_headers[] = $k.":".$v;
+		  fwrite(self::$fh, $k.":".$v."\n");
 	  }
 	  
 	  
 	  if (substr($k, 0, 14) == "CONTENT_LENGTH") 
     {
     	$k = "Content-Length";
-    	$requ_headers[] = $k.":".$v;
-		  fwrite($fh, $k.":".$v."\n");
+    	self::$requ_headers[] = $k.":".$v;
+		  fwrite(self::$fh, $k.":".$v."\n");
 	  }
 	 
 	  
@@ -89,21 +108,20 @@ foreach ($_SERVER as $k => $v){
          $k = str_replace(' ', '-', ucwords(strtolower($k)));	 
 	       if($k == "Accept-Encoding"){
 		        //comment following lines to disable gzip
-		        //$requ_headers[] = $k.":".$v;
-		        //fwrite($fh, $k.":".$v."\n");
+		        self::$requ_headers[] = $k.":".$v;
+		        fwrite(self::$fh, $k.":".$v."\n");
 	       }else{
-	         $requ_headers[] = $k.":".$v;
-	         fwrite($fh, $k.":".$v."\n");
+	         self::$requ_headers[] = $k.":".$v;
+	         fwrite(self::$fh, $k.":".$v."\n");
 	       }
     } 
 }
-fwrite($fh, "-----------------------------\n");
-fwrite($fh, "\n");
+fwrite(self::$fh, "-----------------------------\n");
+fwrite(self::$fh, "\n");
 
-$url = $_GET['proxy_url'];
 //if get values are set, append the to the url
 
-fwrite($fh, "received url:".$url."\n");
+fwrite(self::$fh, "received url:".$url."\n");
 
   
 if(stristr($url, '?') === FALSE)
@@ -111,38 +129,64 @@ if(stristr($url, '?') === FALSE)
   else
    $url .= "&";
    
-fwrite($fh, "-----------------------------\n");
-fwrite($fh, "REQUEST PARAMS\n");
-fwrite($fh, "-----------------------------\n");
+fwrite(self::$fh, "-----------------------------\n");
+fwrite(self::$fh, "REQUEST PARAMS\n");
+fwrite(self::$fh, "-----------------------------\n");
 foreach ($_GET as $key => $value){
 	$i = 0;
-	if($key != "proxy_url" && $key != "postBody"){
+	
+	if($key != "proxy_url" && $key != "postBody"&& $key != "option"&& $key != "task"&& $key != "Itemid"){
 		if($i < (sizeof($_GET)-1)){
 			$url .= $key."=".$value."&";
 		}else{
 			$url .= $key."=".$value;
 		}
-		fwrite($fh, $key."=".$value."\n");
+		fwrite(self::$fh, $key."=".$value."\n");
 	}
 	$i++;
 }
-  fwrite($fh, "-----------------------------\n");
-  fwrite($fh, "resulting url:".$url."\n");
-  fwrite($fh, "\n");
+
+//is the request for the wps?
+if (strstr($url, "servletPublish") != false){
+   self::$isRequestForWps = true;
+   fwrite(self::$fh,"Handling a request for the WPSPublisher\n");
+}else{
+	 fwrite(self::$fh,"Handling an HTTP request\n");
+}
+
+//replace servletPublish with the real url with user credentials
+$wpsAddress = config_easysdi::getValue("WPS_PUBLISHER");
+$joomlaUser = JFactory::getUser();
+$database =& JFactory::getDBO();
+$query = "select password from #__users where username='".$joomlaUser->name."'";
+$database->setQuery($query);
+self::$pwd = $database->loadresult();
+$url_wps = parse_url($wpsAddress);
+
+$wpsAddress = str_replace("//", "//".$joomlaUser->name.":".self::$pwd, $wpsAddress);
+
+$url = str_replace("servletPublish", $url_wps['scheme']."://".$url_wps['host'].":".$url_wps['port']."/OWSPublisher/services", $url);
+
+
+
+
+  fwrite(self::$fh, "-----------------------------\n");
+  fwrite(self::$fh, "resulting url:".$url."\n");
+  fwrite(self::$fh, "\n");
     
 
-  fwrite($fh, "getfile\n");
-  $HTML = getFile($url);
-  fwrite($fh, "end getfile\n");
+  fwrite(self::$fh, "getfile\n");
+  $HTML = SITE_proxy::getFile($url, $currentUser);
+  fwrite(self::$fh, "end getfile\n");
   
-  fwrite($fh, "Raw response:-->".$HTML."<--\n");
+  fwrite(self::$fh, "Raw response:-->".$HTML."<--\n");
         
-	//print_r($resp_header);
-	//$resp_header[] = "Host:www.valid.asitvd.ch:8080";
-	fwrite($fh, "-----------------------------\n");
-	fwrite($fh, "Response headers\n");
-	fwrite($fh, "-----------------------------\n");
-	foreach($resp_header as $h)
+	//print_r(self::$resp_header);
+	//self::$resp_header[] = "Host:www.valid.asitvd.ch:8080";
+	fwrite(self::$fh, "-----------------------------\n");
+	fwrite(self::$fh, "Response headers\n");
+	fwrite(self::$fh, "-----------------------------\n");
+	foreach(self::$resp_header as $h)
 	{          
          //because curl read entirely the response, we
          //do not have to forward this.	
@@ -152,16 +196,20 @@ foreach ($_GET as $key => $value){
 		     }
 		        
 		     //don't send empty header
-	       	     if(trim($h) != ""){
-			//Only send Content-Type and encoding header, if sending HTTP 1.1 OK
-			//It causes a bug if response length > 8000 char
-		     	if (substr($h, 0, 12) == "Content-Type")
-	       	        {
-		           fwrite($fh, "sending->".$h);
-		     	   header($h);
-		     	}
-	       	     }
-		  
+	       if(trim($h) != ""){
+	          fwrite(self::$fh, "sending->".$h);
+	          if($output)
+	          	header($h);
+	       }
+		  /* 
+           if(substr($h, 0, 6) != "HTTP/1" && $h!="\r\n"){
+	            fwrite(self::$fh, "sending->".$h);
+	            header($h);
+           }else{
+           	  header($h);
+              fwrite(self::$fh, "not sending->".$h);
+           }
+      */
 	   //remove the headers form the curl response text
 	   $HTML = str_replace(trim($h), "", $HTML);
   	}
@@ -172,10 +220,10 @@ foreach ($_GET as $key => $value){
   	
   	
   	
-  fwrite($fh, "-----------------------------\n");
-  fwrite($fh, "\n");
+  fwrite(self::$fh, "-----------------------------\n");
+  fwrite(self::$fh, "\n");
 	
-	fwrite($fh, "output:".$HTML);
+	fwrite(self::$fh, "output:".$HTML);
 	
 	/*
 	sending->HTTP/1.1 200 OK
@@ -193,20 +241,22 @@ sending->
 	//echo "-->".$HTML."<--";
   
 	
-        print $HTML; //Output the page using print_r so that frames at least partially are written
+				if($output){
+        	print $HTML; //Output the page using print_r so that frames at least partially are written
+          flush();
+          fclose(self::$fh);
+    			exit;
+        }else{
+        	return $HTML;
+        }
         
         //Calculate execution time and add HTML comment with that info
         //$duration = microtime_diff($start_time, microtime());
         //$duration = sprintf("%0.3f", $duration);
         //echo ("\n<!-- PageForward v1.5 took $duration seconds to construct this page.-->");
     //}
-    fclose($fh);
-
-
-
-
-
-
+    
+}
 
 //Finds the nth position of a string within a string. (Stolen from http://us3.php.net/strings).
 function strnpos($haystack, $needle, $occurance, $pos = 0) {
@@ -240,20 +290,18 @@ function microtime_diff($a, $b)
 }
 
 function read_header($url, $str) {
-   global $resp_header;
    if(strlen($str) > 0) {
-     $resp_header[] = $str;
+     self::$resp_header[] = $str;
    }
    return strlen($str);   
 }
 
 //Retrieves a file from the web.
-function getFile($fileLoc)
-{
-     global $requ_headers;
-     global $fh;
-     
+function getFile($fileLoc, $currentUser)
+{     
      $verb = $_SERVER['REQUEST_METHOD'];
+     if(stristr($fileLoc, 'operation=listPublicationServers'))
+         $verb='GET';
      //Sends user-agent of actual browser being used--unless there isn't one.
      $user_agent = $_SERVER['HTTP_USER_AGENT'];
      if (empty($user_agent)) {
@@ -266,19 +314,48 @@ function getFile($fileLoc)
      //cause then he do not read the other ones..
      //But Jetty on geoserver doesn't seem to like this, so
      //do not set it for him. (getfeatureinfo on layer preview fails)
-     if(stristr($fileLoc, '/geoserver/') === FALSE)
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Expect:'));
-     //auth
+     if(stristr($fileLoc, '/geoserver/') === FALSE){
+     		fwrite(self::$fh, "Removed 100 continue header \n");
+        //curl_setopt($ch, CURLOPT_HTTPHEADER, array('Expect:'));
+     }else{
+        fwrite(self::$fh, "kept 100 continue header \n");
+     }
+     //authentication for Post Put
      if(isset($_SERVER['PHP_AUTH_USER']) && isset($_SERVER['PHP_AUTH_PW'])){
-	       fwrite($fh, "Auth with: ".$_SERVER['PHP_AUTH_USER'].':'.$_SERVER['PHP_AUTH_PW']."\n");
+	       fwrite(self::$fh, "Auth with: ".$_SERVER['PHP_AUTH_USER'].':'.$_SERVER['PHP_AUTH_PW']."\n");
          curl_setopt($ch, CURLOPT_USERPWD, $_SERVER['PHP_AUTH_USER'].':'.$_SERVER['PHP_AUTH_PW']);
+     }else if(stristr($fileLoc, 'geoserver/rest/styles/')){
+     	   //add credentials for geoserver rest interface automatically
+     	   /*
+     	   $wpsPublish = config_easysdi::getValue("WPS_PUBLISHER");
+     	   $wpsConfig = $wpsPublish."/config";
+
+				 //get diffuser list from wps
+				 $url = $wpsConfig."?operation=listPublicationServers";
+  	     $doc = SITE_proxy::fetch($url, false);
+  	     $xml = simplexml_load_string($doc);
+  	     $servers = $xml->server;
+  	     
+  	     //get diffuser id from user
+  	     $database =& JFactory::getDBO();
+  	     $joomlaUser = JFactory::getUser();
+			   $query = "select u.publish_user_diff_server_id from #__sdi_publish_user u, #__sdi_account p where u.easysdi_user_id=p.id AND p.user_id=".$joomlaUser->id;
+				 $database->setQuery($query);
+				 $sid = $database->loadResult();
+				 
+				 $diffusor = $servers->xpath("//server[@id=$sid]");
+				 $diffusor = $diffusor[0];
+				 			*/	 
+				 			
+				 fwrite(self::$fh, "Auth with (for geoserver rest auto login): ".$currentUser->diffusion_username.':'.$currentUser->diffusion_password."\n");
+         curl_setopt($ch, CURLOPT_USERPWD, $currentUser->diffusion_username.':'.$currentUser->diffusion_password);
      }
      if($verb == "GET"){
-	      fwrite($fh, "GET:".$fileLoc."\n");
+	      fwrite(self::$fh, "GET:".$fileLoc."\n");
 	      //curl_setopt($ch, CURLOPT_BINARYTRANSFER, 1);
-	      curl_setopt($ch, CURLOPT_HTTPHEADER,$requ_headers);
+	      curl_setopt($ch, CURLOPT_HTTPHEADER,self::$requ_headers);
         curl_setopt($ch, CURLOPT_HEADER, 1);
-        curl_setopt($ch, CURLOPT_HEADERFUNCTION, 'read_header');
+        curl_setopt($ch, CURLOPT_HEADERFUNCTION, 'SITE_proxy::read_header');
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
@@ -286,11 +363,11 @@ function getFile($fileLoc)
         curl_setopt ($ch, CURLOPT_FAILONERROR, 1);
      }else if($verb == "POST"){
 	      $xmlBody = file_get_contents('php://input');
-        fwrite($fh, "POST\n");
-	      fwrite($fh, "xmlBody:".$xmlBody."\n");
-        curl_setopt($ch, CURLOPT_HTTPHEADER,$requ_headers);
+        fwrite(self::$fh, "POST\n");
+	      fwrite(self::$fh, "xmlBody:".$xmlBody."\n");
+        curl_setopt($ch, CURLOPT_HTTPHEADER,self::$requ_headers);
         curl_setopt($ch, CURLOPT_HEADER, 1);
-        curl_setopt($ch, CURLOPT_HEADERFUNCTION, 'read_header');
+        curl_setopt($ch, CURLOPT_HEADERFUNCTION, 'SITE_proxy::read_header');
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
         curl_setopt($ch, CURLOPT_POST, 1);
@@ -298,31 +375,31 @@ function getFile($fileLoc)
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
      }else if($verb == "PUT"){
-        fwrite($fh, "PUT\n");
+        fwrite(self::$fh, "PUT\n");
 	      $xmlBody = file_get_contents('php://input');
-	      curl_setopt($ch, CURLOPT_HTTPHEADER,$requ_headers);
+	      curl_setopt($ch, CURLOPT_HTTPHEADER,self::$requ_headers);
         curl_setopt($ch, CURLOPT_HEADER, 1);
-        curl_setopt($ch, CURLOPT_HEADERFUNCTION, 'read_header');
+        curl_setopt($ch, CURLOPT_HEADERFUNCTION, 'SITE_proxy::read_header');
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
 	      curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');  
         curl_setopt($ch, CURLOPT_POSTFIELDS, $xmlBody);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);  
-	      fwrite($fh, "xmlBody:".$xmlBody."\n");
+	      fwrite(self::$fh, "xmlBody:".$xmlBody."\n");
      }else if($verb == "DELETE"){
-        fwrite($fh, "DELETE\n");
+        fwrite(self::$fh, "DELETE\n");
 	      $xmlBody = file_get_contents('php://input');
-	      curl_setopt($ch, CURLOPT_HTTPHEADER,$requ_headers);
+	      curl_setopt($ch, CURLOPT_HTTPHEADER,self::$requ_headers);
         curl_setopt($ch, CURLOPT_HEADER, 1);
-        curl_setopt($ch, CURLOPT_HEADERFUNCTION, 'read_header');
+        curl_setopt($ch, CURLOPT_HEADERFUNCTION, 'SITE_proxy::read_header');
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
 	      curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');  
         curl_setopt($ch, CURLOPT_POSTFIELDS, $xmlBody);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);  
-	      fwrite($fh, "xmlBody:".$xmlBody."\n");
+	      fwrite(self::$fh, "xmlBody:".$xmlBody."\n");
      }else{
      	  //send not implemented header
         header('Method Not Implemented',true,501);
@@ -330,17 +407,17 @@ function getFile($fileLoc)
      }
      
      $file = curl_exec($ch);
-     //fwrite($fh, "curl raw output:".$file);
+     fwrite(self::$fh, "curl raw output:".$file);
      $error;
      if ($error = curl_error($ch)) {
-	      fwrite($fh, "CURL ERROR:".$error."\n");
+	      fwrite(self::$fh, "CURL ERROR:".$error."\n");
      }else{
-	      fwrite($fh, "CURL SUCCEEDED:".$error."\n");
+	      fwrite(self::$fh, "CURL SUCCEEDED:".$error."\n");
      }
      
      $info = curl_getinfo($ch);
      
-      //fwrite($fh, "CURL infos:".print_r($info)."\n");
+      //fwrite(self::$fh, "CURL infos:".print_r($info)."\n");
      
      //If auth requested
      if($info['http_code'] == 401){
@@ -352,5 +429,5 @@ function getFile($fileLoc)
      curl_close($ch);
      return $file;
 }
-
+}
 ?>

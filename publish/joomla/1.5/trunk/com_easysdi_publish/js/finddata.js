@@ -41,7 +41,7 @@ window.addEvent('domready', function() {
 
 function init(){
 			//load config elements
-			wpsServlet = $('wpsPublish').value;
+			wpsServlet = 'servletPublish';
 			//serverAdress = $('servAdr').value;
 			//if($('baseUrl').value != "/")
 			//   baseUrl = serverAdress+"/"+$('baseUrl').value+'components/com_easysdi_publish/core/proxy.php?proxy_url=';
@@ -187,13 +187,12 @@ function validateFs_click()
 	dataset = $('datasets').options[$('datasets').selectedIndex].value;
 	
 	var postBody = WPSTransformDatasetRequest(diffusionServerName, FeatureSourceId, URLFile, scriptName, sourceDataType, coordEpsgCode, dataset);
-	//alert("url:"+baseUrl + wpsServlet+"   body:"+postBody);
+	//alert("url:"+"index.php?option=com_easysdi_publish&task=proxy&proxy_url="   body:"+postBody);
 	//WPSTransformDatasetRequest
 	//send the request
 	//alert("request:" + baseUrl + wpsServlet);
 	var req = new Request({
-		url: baseUrl + wpsServlet,
-		//url: "http://localhost/components/com_easysdi_publish/core/proxy.php",
+		url: "index.php?option=com_easysdi_publish&task=proxy&proxy_url=" + wpsServlet,
 		method: 'post',
 		//if set to true, causes Content-Type to be url encoded
 		urlEncoded: false,
@@ -228,7 +227,7 @@ function validateFs_click()
 					responseDoc = wpsServlet+"?"+temp[1];
 					$('loadingImg').style.visibility = 'visible';
 			    $('loadingImg').style.display = 'block';
-					return doProgression();
+					doProgression();
 					
 				}
 				
@@ -262,9 +261,9 @@ function doProgression(){
             
             
 						var fsprogReq = new Request({
-							url: baseUrl+responseDoc,
+						  url: "index.php?option=com_easysdi_publish&task=proxy&proxy_url=" + responseDoc,
 							method: 'get',
-							evalResponse: false,
+							evalResponse: true,
 							//we have to wait to return the function's response.
 							async : true,
 							onSuccess: function(responseText, responseXML){
@@ -289,24 +288,16 @@ function doProgression(){
 								   //stat = responseXML.getElementsByTagName('status')[0].lastChild.textContent;
 								   $('progress').innerHTML = EASYSDI_PUBLISH_TEXT_PROGRESSION+prog+"%";
 								   setTimeout("doProgression();",3000);
-								}
-								else if(stat == "succeeded"){
-			                                           $('progress').innerHTML = EASYSDI_PUBLISH_TEXT_PROGRESSION+"100%";
-				                                   //read response and save fs
-				                                   out = response.getElementsByTagName('wps:LiteralData');
-					                           //$('featureSourceGuid').value = out[0].textContent;
-				                                   //$('featureSourceGuid').value = out[0].firstChild.nodeValue;
-								   
-								   var form = document.getElementById('publish_form');
-								   form.task.value='saveFeatureSource';
-								   form.featureSourceGuid.value = out[0].firstChild.nodeValue;
-								   
-				                                   form.submit();
-					                        
-								}
-								else{
-						                        alert("Error: Cannot read stat from feature source");
-					                            }								
+								}else if(stat == "succeeded"){
+			             $('progress').innerHTML = EASYSDI_PUBLISH_TEXT_PROGRESSION+"100%";
+				           //read response and save fs
+				           out = response.getElementsByTagName('wps:LiteralData');
+					         $('featureSourceGuid').value = out[0].textContent;
+				           $('task').value = 'saveFeatureSource';
+				           submitForm();
+								}else{
+								   alert("Error: Cannot read stat from feature source");
+								}								
 		  				},
 		  				onFailure: function(xhr){
 		  					$('loadingImg').style.visibility = 'hidden';
@@ -337,20 +328,17 @@ function searchds_click(){
 		alert("Please select and unpload file(s) first.")
 	
 	var req = new Request({
-		url: baseUrl + wpsServlet + "/config",
+		url: "index.php?option=com_easysdi_publish&task=proxy&proxy_url=" + wpsServlet + "/config",
 		method: 'post',
-		evalResponse: false,
-		urlEncoded: true,
-		data:{
-		      'operation':'GetAvailableDatasetFromSource',
-		      'files':URLFile
-		},
+		evalResponse: true,
+		data:{'files':URLFile,
+					'operation':'GetAvailableDatasetFromSource'},
 		onSuccess: function(responseText, responseXML){			
 			$('loadingImg').style.visibility = 'hidden';
 			$('loadingImg').style.display = 'none';
 			$('validateFs').disabled = false;
 			$('validateFs').className = '';
-			var ex = responseXML.getElementsByTagName('ows:Exception');
+			var ex = responseXML.getElementsByTagName('exception');
 			//handle the exception if there is
 			if(ex.length > 0){
 				code = ex[0].attributes[0].nodeValue;
@@ -382,6 +370,7 @@ function searchds_click(){
 			}
 		},
 		
+		headers:{'content-type': 'text/xml' },
 		onRequest: function() { 
 			//Activate here please wait...
 			$('loadingImg').style.visibility = 'visible';

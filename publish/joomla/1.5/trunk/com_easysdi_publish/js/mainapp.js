@@ -6,8 +6,7 @@ var baseUrl;
 window.addEvent('domready', function() {
 			
 			wpsServlet = $('wpsPublish').value;
-			baseUrl = $('baseUrl').value+'components/com_easysdi_publish/core/proxy.php?proxy_url=';
-				 
+			baseUrl = 'index.php?option=com_easysdi_publish&task=proxy&proxy_url=';
 	
 	  //Add onclick event for the three panes. That call the correct function on the controller.
 		if($('findDataPane') != null){

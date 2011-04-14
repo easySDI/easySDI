@@ -75,7 +75,9 @@ class HTML_site {
 		foreach ($featureSources as $row)
 						$fsList .= $row->featureGUID.",";
 		$url = $wpsConfig."?operation=ListFeatureSources&list=".$fsList;
-		$xml = simplexml_load_file($url,'SimpleXMLElement', LIBXML_NOCDATA);
+  	$doc = SITE_proxy::fetch($url, false);
+  	$xml = simplexml_load_string($doc);
+		//$xml = simplexml_load_file($url,'SimpleXMLElement', LIBXML_NOCDATA);
 		//echo "<pre>";  print_r($xml);  echo "</pre>";
 
 		$i=0;
@@ -317,18 +319,18 @@ class HTML_site {
 					//Look in which order jsbuild export dependencies! (jsbuild -v -o script build_s.cfg)
 					//and write the same order here
 					
-					/*
+					
 					JHTML::script('Styler.js', 'components/com_easysdi_publish/js/styler/lib/');
 					JHTML::script('ColorManager.js', 'components/com_easysdi_publish/js/styler/lib/Styler/');
 					JHTML::script('dispatch.js', 'components/com_easysdi_publish/js/styler/lib/Styler/');
 					JHTML::script('SchemaManager.js', 'components/com_easysdi_publish/js/styler/lib/Styler/');
 					JHTML::script('olx.js', 'components/com_easysdi_publish/js/styler/lib/');
 					JHTML::script('SLDManager.js', 'components/com_easysdi_publish/js/styler/lib/Styler/');
-					*/
+					
 					
 
 					//compressed
-					JHTML::script('Styler.js', 'components/com_easysdi_publish/js/styler/script/');					
+					//JHTML::script('Styler.js', 'components/com_easysdi_publish/js/styler/script/');					
 				  
 				  JHTML::script('color-picker.ux.js', 'components/com_easysdi_publish/js/styler/externals/ux/colorpicker/');
 					
@@ -400,9 +402,12 @@ class HTML_site {
     //Required by getFeatureControl
     //OpenLayers.ProxyHost= "/components/com_easysdi_publish/core/proxy.php?proxy_url=";
     
-    var styler_proxy_url = 'components/com_easysdi_publish/core/proxy.php?proxy_url';
+    
+    var styler_proxy_url = 'index.php?option=com_easysdi_publish&task=proxy&proxy_url';
     OpenLayers.ProxyHost = styler_proxy_url+'=';
     var styler_host = '<?php echo $user_diffusor_url;?>';
+    var styler_namespace = '<?php echo JFactory::getUser()->name;?>';
+    
     Ext.BLANK_IMAGE_URL = "theme/img/blank.gif";
     
     Ext.onReady(function() {
