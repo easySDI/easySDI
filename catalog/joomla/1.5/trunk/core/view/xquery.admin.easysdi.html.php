@@ -34,9 +34,12 @@ class  HTML_xquery{
 				<th class='title' style="width:10px"><?php echo JText::_("CORE_SHARP"); ?></th>
 				<th class='title' style="width:10px"><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows); ?>);" /></th>				
 				<th class='title' style="width:30px"><?php echo JText::_("CATALOG_XQUERY_REPORTNAME");  ?></th>
+				<th class='title' style="width:30px"><?php echo JText::_("CATALOG_XQUERY_DESCRIPTION");  ?></th>
 				<th class='title' style="width:100px"><?php echo JText::_("CATALOG_XQUERY_SQLFILTER");  ?></th>
 				<th class='title' style="width:100px"><?php echo JText::_("CATALOG_XQUERY_OGCFILTER");  ?></th>
 				<th class='title' style="width:100px"><?php echo JText::_("CATALOG_XQUERY_XSLTURL");  ?></th>
+				<th class='title' style="width:50px"><?php echo JText::_("CATALOG_XQUERY_ACTION");  ?></th>
+				
 				
 			</tr>
 		</thead>
@@ -53,9 +56,12 @@ class  HTML_xquery{
 				<td  style="width:10px"><?php echo $num?></td>
 				<td  style="width:10px"><input type="checkbox" name="toggle" value="" onclick="setReportIdToPreview(this, <?php echo $row->id?>)" /></td>				
 				<td  style="width:30px"><?php echo  $row->xqueryname  ?></td>
+				<td  style="width:30px"><?php echo  $row->description  ?></td>
 				<td  style="width:100px"><?php echo $row->sqlfilter ?></td>
 				<td  style="width:100px"><?php echo $row->ogcfilter  ?></td>
 				<td  style="width:100px"><?php echo $row->xslttemplateurl ?></td>
+				<td  ><div class="executeXQuery"  onclick="submitbutton('adminTestXQueryReport',<?php echo $row->id ?>)"></div></td>
+				
 				
 				</tr>
 				
@@ -91,6 +97,18 @@ function newXQueryReport(){
 									<td class="td_left"> <?php echo JText::_("CATALOG_XQUERY_ENTERNAME"); ?>	</td>
 									<td class="td_middle"></td>
 									<td class="td_right"> <input name="xQueryReportName" value="" class="input_width300"/>    </td>
+								</tr></tbody>
+							</table>
+			</fieldset>
+			
+			<fieldset>
+							<legend align="top"><?php echo JText::_("CATALOG_XQUERY_DESCRIPTION"); ?></legend>
+							<table><tbody><tr>
+								
+									<td class="td_left"> <?php echo JText::_("CATALOG_XQUERY_ENTERDESC"); ?>	</td>
+									<td class="td_middle"></td>
+									<td class="td_right"><textarea name ="description"  class="text_area  textarea_size">
+							 			</textarea> </td>
 								</tr></tbody>
 							</table>
 			</fieldset>
@@ -142,6 +160,28 @@ function newXQueryReport(){
 								</tr></tbody>
 							</table>
 			</fieldset>
+			
+			<fieldset>
+							<legend align="top"><?php echo JText::_("CATALOG_XQUERY_RETURNTYPE"); ?></legend>
+							<table><tbody><tr>
+								
+									<td class="td_left"> <?php echo JText::_("CATALOG_XQUERY_ENTERRETURNTYPE"); ?>	</td>
+									<td class="td_middle">
+									</td>
+									<td class="td_right"> <?php 
+										$currentValue = '1'; //Set this value from DB, etc. 
+										$arr = array(
+										  JHTML::_('select.option', '0', JText::_('text/plain') ),
+										  JHTML::_('select.option', '1', JText::_('text/xml') ),
+										  JHTML::_('select.option', '2', JText::_('text/html') )
+										);
+										 
+										 echo JHTML::_('select.genericlist', $arr, 'applicationType', null, 'value', 'text', $currentValue);
+ 									?>  </td>
+								</tr></tbody>
+							</table>
+			</fieldset>
+	
 	
 	</form>
 	
@@ -171,6 +211,17 @@ function editXQueryReport($rows){
 			</fieldset>
 			
 			<fieldset>
+							<legend align="top"><?php echo JText::_("CATALOG_XQUERY_DESCRIPTION"); ?></legend>
+							<table><tbody><tr>
+								
+									<td class="td_left"> <?php echo JText::_("CATALOG_XQUERY_ENTERDESC"); ?>	</td>
+									<td class="td_middle"></td>
+									<td class="td_right"><textarea name ="description"  class="text_area  textarea_size"><?php echo $row->description  ?></textarea> </td>
+								</tr></tbody>
+							</table>
+			</fieldset>
+			
+			<fieldset>
 							<legend align="top"><?php echo JText::_("CATALOG_XQUERY_SQLFILTERLABEL"); ?></legend>
 							<table><tbody><tr>
 									<td class="td_left"> <?php echo JText::_("CATALOG_XQUERY_ENTERSQL"); ?>	</td>
@@ -183,7 +234,7 @@ function editXQueryReport($rows){
 			</fieldset>
 		
 			<fieldset>
-							<legend align="top"><?php echo JText::_("CATALOG_XQUERY_SQLFILTERLABEL"); ?></legend>
+							<legend align="top"><?php echo JText::_("CATALOG_XQUERY_OGCFILTERLABEL"); ?></legend>
 							<table><tbody><tr>
 									<td class="td_left"> <?php echo JText::_("CATALOG_XQUERY_ENTEROGC"); ?>	</td>
 									<td class="td_middle"></td>
@@ -216,7 +267,26 @@ function editXQueryReport($rows){
 							</table>
 			</fieldset>
 	
-	
+			<fieldset>
+							<legend align="top"><?php echo JText::_("CATALOG_XQUERY_RETURNTYPE"); ?></legend>
+							<table><tbody><tr>
+								
+									<td class="td_left"> <?php echo JText::_("CATALOG_XQUERY_ENTERDESC"); ?>	</td>
+									<td class="td_middle">
+									</td>
+									<td class="td_right"> <?php 
+										$currentValue = $row->applicationType; //Set this value from DB, etc. 
+										$arr = array(
+										  JHTML::_('select.option', '0', JText::_('text/plain') ),
+										  JHTML::_('select.option', '1', JText::_('text/xml') ),
+										  JHTML::_('select.option', '2', JText::_('text/html') )
+										);
+										 
+										 echo JHTML::_('select.genericlist', $arr, 'applicationType', null, 'value', 'text', $currentValue);
+ 									?>  </td>
+								</tr></tbody>
+							</table>
+			</fieldset>
 	
 	</form>
 
@@ -336,7 +406,7 @@ function assignXQueryReport($orgrows, $accountrowsbyorg,$pagination, $assignedUs
 				<tr >
 				<td  ><?php echo $num?></td>
 				<td  ><?php echo  $row->xqueryname  ?></td>
-				<td  ></td>
+				<td  ><?php echo  $row->description  ?></td>
 				<td  ><div class="executeXQuery"  onclick="submitbutton('processXQueryReport',<?php echo $row->id ?>)"></div></td>
 				
 				</tr>

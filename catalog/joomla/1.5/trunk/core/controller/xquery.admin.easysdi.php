@@ -19,35 +19,12 @@ defined('_JEXEC') or die('Restricted access');
 
 ?>
 
-<?php if(JRequest::getVar("task")!="provideXMLDataForXQueryReport"){?>
-<style>
 
-.textarea_size{
-	min-height:200px;
-	width:300px;
-}
+<?php if((JRequest::getVar("task")!="provideXMLDataForXQueryReport") && 
+(JRequest::getVar("task") !="processXQueryReport") &&
+(JRequest::getVar("task")!="adminTestXQueryReport"))
+{?>
 
-.td_left{
- 	width:300px;
-	vertical-align:top;
-	text-align:left;
-}
-
-.td_middle{
-	width:200px;
-	text-align:center;
-}
-.td_right{
- 	width:300px; 
- 	vertical-align:top;
-	text-align:left;
-
-}
-
-.input_width300{
-	width:300px;
-}
-</style>
 
 <script type="text/javascript">
 	var newReportUrl ="<?php echo "index.php?option=com_easysdi_catalog&task=newXQueryReport&cid=0"?>";
@@ -58,6 +35,7 @@ defined('_JEXEC') or die('Restricted access');
 	var assignReportUrl = "<?php echo "index.php?option=com_easysdi_catalog&task=assignXQueryReport&cid="?>";
 	var saveUserReportAccessUrl = "<?php echo "index.php?option=com_easysdi_catalog&task=saveXQueryUserReportAccess&cid="?>";
 	var processReportUrl = "<?php echo "index.php?option=com_easysdi_catalog&task=processXQueryReport&cid="?>";
+	var adminTestXQueryReportUrl =  "<?php echo "../index.php?option=com_easysdi_catalog&task=processXQueryReport&cid="?>";
 	
 	var selectOnlyOneMsg = "<?php echo JText::_("CATALOG_XQUERY_SELECTONLYONE") ?>";
 	var reportToPreviewId = 0;
@@ -111,6 +89,9 @@ defined('_JEXEC') or die('Restricted access');
 		}
 		else if (action == "processXQueryReport" ){
 			actionUrl = processReportUrl + id ;
+		}
+		else if (action =="adminTestXQueryReport"){
+			actionUrl = adminTestXQueryReportUrl + id ;
 		}
 		else{ actionUrl ="";}
 		
@@ -324,7 +305,8 @@ class ADMIN_xQuery{
 		$metadataIdSql=JRequest::getVar( 'metadataIdSql');
 		$ogcfilter=JRequest::getVar( 'ogcfilter' );
 		$reportcode=JRequest::getVar( 'reportcode' );
-	
+		$desc=JRequest::getVar( 'description' );
+	    $applicationType = JRequest::getVar( 'applicationType');
 		
 		$metadataIdSql = strtolower($metadataIdSql);
 		$updateindex = strpos($metadataIdSql, "update");
@@ -350,13 +332,14 @@ class ADMIN_xQuery{
 		$uid = ADMIN_xQuery::saveXQueryCode();
 		
 		
-		if (!ADMIN_xQuery::testUid($uid)) // then its a stacktrace.
+		if (!ADMIN_xQuery::testUid($uid)) {// then its a stacktrace.
 			$mainframe->redirect($xqueryHomeUrl, $uid,"ERROR");		
+		}
 			
 		
 		if( $cid==0){
-			$saveSql = "INSERT INTO #__sdi_xqueryreport (sqlfilter, ogcfilter, xslttemplateurl,xqueryname, xfileid, reportcode)
-					    VALUES ('".$metadataIdSql."','". $ogcfilter."','". $xsltUrl."','".$xQueryReportName."'.'".$uid."','".$reportcode."')";
+			$saveSql = "INSERT INTO #__sdi_xqueryreport (sqlfilter, ogcfilter, xslttemplateurl,xqueryname, xfileid, reportcode, description, applicationType)
+					    VALUES ('".$metadataIdSql."','". $ogcfilter."','". $xsltUrl."','".$xQueryReportName."','".$uid."','".$reportcode."','".$desc."','".$applicationType."')";
 			$newReport = true;
 		}else{
 			$saveSql = "UPDATE			 #__sdi_xqueryreport 
@@ -366,6 +349,8 @@ class ADMIN_xQuery{
 										, xqueryname='".$xQueryReportName."'
 										, xfileid='".$uid."'
 										, reportcode='".$reportcode."'
+										, description='".$desc."'
+										, applicationType='".$applicationType."'
 					    WHERE id = ".$cid;
 			$newReport = false;
 			
@@ -389,15 +374,17 @@ class ADMIN_xQuery{
 					$saveSql = "INSERT INTO #__sdi_xqueryreportassignation (report_id, user_id)	VALUES (".$lastInsertId.",".$adminUser->id.")";		
 					$database->setQuery($saveSql);
 					$result =$database->query();
-					if(!result)
-						$mainframe->redirect($xqueryHomeUrl, $database->getErrorMsg(),"ERROR");											
+					if(!result){
+						$mainframe->redirect($xqueryHomeUrl, $database->getErrorMsg(),"ERROR");		
+					}									
 					
 				}else{
 					//deleteOld xfileid
 					if($xfileid!=''){
 						$fileDeleted = ADMIN_xQuery::deleteXfileWithId($xfileid);
-						if (!ADMIN_xQuery::testUid($fileDeleted)) // then its a stacktrace.
-							$mainframe->redirect($xqueryHomeUrl, $fileDeleted,"ERROR");	
+						if (!ADMIN_xQuery::testUid($fileDeleted)) {// then its a stacktrace.
+							$mainframe->redirect($xqueryHomeUrl, $fileDeleted,"ERROR");
+						}	
 					}
 				}
 				
@@ -760,29 +747,81 @@ class ADMIN_xQuery{
   function processXQueryReport(){
   	
   	global $mainframe;	
-			
+
+  	$fullURI = explode("?",$_SERVER['REQUEST_URI']);
+  	
+  	$homeUrl = "http://".$_SERVER['HTTP_HOST']."/".$fullURI[0] ;
 	$database=& JFactory::getDBO(); 
-  	$cid= JRequest::getVar('cid',0);		
-  	$selectsql = "select xfileid from #__sdi_xqueryreport where id=".$cid;
+	$user =& JFactory::getUser();
+	$cid= JRequest::getVar('cid',0);	
 	
-  	$database->setQuery( $selectsql);
-	$xfileid = $database->loadResult();
-	if ($database->getErrorNum()) {			
-			// redirect to mymxquery reports page with error message	
+  	if($user->id==''){
+		 $mainframe->redirect($homeUrl,  JText::_("CATALOG_XQUERY_NOACCESS"), "ERROR");
 	}
 		
+	$selectsql = "select id from #__sdi_xqueryreportassignation where report_id=".$cid." and user_id=".$user->id;
+	
+  	$database->setQuery( $selectsql);
+	$access = $database->loadResult();
+	if ($database->getErrorNum()) {			
+		$mainframe->redirect($homeUrl, $database->getErrorMsg(),"ERROR");	
+		
+	}
+	
+  	if($access ==''){
+		 $mainframe->redirect($homeUrl,  JText::_("CATALOG_XQUERY_NOACCESS"), "ERROR");
+	}
+	
+		
+	
+  	$selectsql = "select xfileid, reportcode, xslttemplateurl,  applicationType from #__sdi_xqueryreport where id=".$cid;
+	
+  	$database->setQuery( $selectsql);
+	$row = $database->loadObjectList();
+	if ($database->getErrorNum()) {			
+			$mainframe->redirect($homeUrl, $database->getErrorMsg(),"ERROR");	
+	}
+	
+	if(($row[0]->xfileid =='') || ($row[0]->reportcode =='')){
+		$mainframe->redirect($homeUrl,  JText::_("CATALOG_XQUERY_NOREPORTCODECREATED"), "ERROR");
+	}		
+	$xfileid = $row[0]->xfileid;
+	
+  	$selectsql = "select prefix, uri from #__sdi_namespace";
+	
+  	$database->setQuery($selectsql);
+	$namespaces = $database->loadObjectList();
+	if ($database->getErrorNum()) {			
+		$mainframe->redirect($homeUrl, $database->getErrorMsg(),"ERROR");	
+	}
+	
+	$nsList ="";
+
+	$index= 0;
+	foreach($namespaces as $ns){
+		$index = $index+1;
+		$nsList .=$ns->prefix ."=".$ns->uri.";"	;	
+	}
+	
   	$mxqueryroot = config_easysdi::getValue("catalog_mxqueryurl");
   	$mxqueryProcess= $mxqueryroot."/process";
+  	
+  	
+  	$cookiesList=array();
+  	foreach($_COOKIE as $key => $val)
+  	{
+  		$cookiesList[]=$key."=".$val;
+  	}
+  	$cookies= implode(";", $cookiesList);
+
   	$ch = curl_init();
   	curl_setopt($ch, CURLOPT_URL, $mxqueryProcess);
  	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
   	curl_setopt($ch, CURLOPT_POST, true);
-  	
-  	$fullURI = explode("?",$_SERVER['REQUEST_URI']);
-  	
-	$getXMLUrl = "http://".$_SERVER['HTTP_HOST']."/".$fullURI[0]."?option=com_easysdi_catalog&task=provideXMLDataForXQueryReport&cid=".$cid ;
+  	curl_setopt($ch, CURLOPT_COOKIE, $cookies);
 
-  	$data =   'url='.urlencode($getXMLUrl).'&fileid='.urlencode(trim($xfileid));
+	$getXMLUrl = "http://".$_SERVER['HTTP_HOST']."/".$fullURI[0]."?option=com_easysdi_catalog&task=provideXMLDataForXQueryReport&cid=".$cid ;
+  	$data =   'url='.urlencode($getXMLUrl).'&fileid='.urlencode(trim($xfileid)).'&namespaces='.urlencode(trim($nsList));
 
   	curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
   	
@@ -795,56 +834,147 @@ class ADMIN_xQuery{
   	}
   	$info = curl_getinfo($ch);
   	curl_close($ch);
-	echo  $output;
-	die;
+  	
+	$extension =".txt";
+	$contentType ="text/plain";
+	
+	if( $row[0]->xslttemplateurl !=''){
+		try{
+			$ch = curl_init();
+			$timeout = 10;
+			curl_setopt($ch,CURLOPT_URL, $row[0]->xslttemplateurl);
+			curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
+			curl_setopt($ch,CURLOPT_CONNECTTIMEOUT,$timeout);
+			$data = curl_exec($ch);
+			curl_close($ch);
+
+			$style = new DomDocument();
+			$style->loadXML($data);
+
+			$output = $processor->transformToDoc($output);
+			$output = displayManager::buildXHTML($style, $output);
+		}
+		catch(Exception $e){
+
+			$output =  $e->getTraceAsString();
+		}
+		
+	
+	}	
+
+	if( $row[0]->applicationType == 1){
+		$contentType ="text/xml";
+		$extension =".xml";
+	}else if( $row[0]->applicationType == 2){
+		$contentType ="text/html";
+		$extension =".html";
+	}else{
+		$contentType ="text/plain";
+		$extension =".txt";
+	}
+
+
+	ini_set('zlib.output_compression', 0);
+	header('Content-type:'.$contentType);
+	header('Content-Disposition: attachement; filename="results'.$extension);
+	header('Content-Transfer-Encoding: binary');
+	header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
+	header('Pragma: public');
+	header("Expires: 0");
+	header("Content-Length: ".strlen($output)); // Attention, très important que la taille soit juste, sinon IE pos problème
+
+	echo $output;
+	//Very important, if you don't call this, the content-type will have no effect
+	die();
+  	
+
   	
   	
   }
   function provideXMLDataForXQueryReport(){
   	
-  		global $mainframe;	
-			
-		$database=& JFactory::getDBO(); 
-		$user =& JFactory::getUser();
-		$cid= JRequest::getVar('cid',0);
-		
-		if($cid == 0){
-		// redirect to mymxquery reports page with error message
-		}
-	
-		
-		$selectsql = "select sqlfilter from #__sdi_xqueryreport where id=".$cid;
-		
-  		$database->setQuery( $selectsql);
-		$metadataIdSqlfilter = $database->loadResult();
-		if ($database->getErrorNum()) {			
-				// redirect to mymxquery reports page with error message	
-		}
-		
-	
- 		$database->setQuery( $metadataIdSqlfilter);
-		$metadataIds = $database->loadObjectList();
-		if ($database->getErrorNum()) {			
-				// redirect to mymxquery reports page with error message	
-		}
-		
-		$catalogUrlBase = config_easysdi::getValue("catalog_url");
-		$cswfilter = ADMIN_xQuery::buildCSWFilter($metadataIds, $report->ogcfilter );		
-		$xmlBody = SITE_catalog::BuildCSWRequest(0, 0, "results", "gmd:MD_Metadata", "full", "1.1.0", $cswfilter, $ogcsearchsorting, "ASC");
-		$xmlResponse = ADMIN_metadata::CURLRequest("POST", $catalogUrlBase,$xmlBody);
-		
-		ini_set('zlib.output_compression', 0);
+  		ini_set('zlib.output_compression', 0);
 		header('Content-type: application/xml');
 		header('Content-Disposition: attachement; filename="metadata.xml"');
 		header('Content-Transfer-Encoding: binary');
 		header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
 		header('Pragma: public');
 		header("Expires: 0"); 
-		header("Content-Length: ".strlen($xmlResponse)); //
+  	
+  	  	$fullURI = explode("?",$_SERVER['REQUEST_URI']);
+  		$homeUrl = "http://".$_SERVER['HTTP_HOST']."/".$fullURI[0] ;
+  		global $mainframe;	
+			
+		$database=& JFactory::getDBO(); 
+		$user =& JFactory::getUser();
+		$cid= JRequest::getVar('cid',0);
+		
+    	if($user->id==''){
+				$xmlResponse = "ERROR : No user id found";
+		}
+		
+  		$selectsql = "select id from #__sdi_xqueryreportassignation where report_id=".$cid." and user_id=".$user->id;
+		$medatadataFilterSql ="";
+		$metadataIdSqlfilter ="";
+		
+  		$database->setQuery( $selectsql);
+		$access = $database->loadResult();
+		if ($database->getErrorNum()) {			
+			$xmlResponse = "ERROR : " +$database->getErrorMsg();
+			header("Content-Length: ".strlen($xmlResponse)); //
+			echo $xmlResponse; // return the xml response directly as xml. // or see how it is done by export xml.
+			die;
+		}
+		
+		if($access ==''){
+			$xmlResponse ="ERROR:User has no access to this report";
+			header("Content-Length: ".strlen($xmlResponse)); //
+			echo $xmlResponse; // return the xml response directly as xml. // or see how it is done by export xml.
+			die;
+		}
+		
+		// verify access;
+		if($cid == 0){
+			$xmlResponse = "ERROR : No report ID provided";
+			header("Content-Length: ".strlen($xmlResponse)); //
+			echo $xmlResponse; // return the xml response directly as xml. // or see how it is done by export xml.
+			die;
+			
+		}
+		
+			
+		$medatadataFilterSql = "select sqlfilter from #__sdi_xqueryreport where id=".$cid ;
+		
+  		$database->setQuery( $medatadataFilterSql);
+		$metadataIdSqlfilter = $database->loadResult();
+		if ($database->getErrorNum()) {			
+			$xmlResponse = "ERROR : " +$database->getErrorMsg();
+			echo $xmlResponse; // return the xml response directly as xml. // or see how it is done by export xml.
+			die;
+		
+		}
+		
+	
+ 		$database->setQuery( $metadataIdSqlfilter);
+		$metadataIds = $database->loadObjectList();
+		if ($database->getErrorNum()) {			
+			$xmlResponse = "ERROR : " +$database->getErrorMsg();
+			echo $xmlResponse; // return the xml response directly as xml. // or see how it is done by export xml.
+			die;
+		}
+		
+		$catalogUrlBase = config_easysdi::getValue("catalog_url");
+		$cswfilter = ADMIN_xQuery::buildCSWFilter($metadataIds, $report->ogcfilter );		
+		$xmlBody = SITE_catalog::BuildCSWRequest(0, 0, "results", "gmd:MD_Metadata", "full", "1.1.0", $cswfilter, $ogcsearchsorting, "ASC");
+		$xmlResponse = ADMIN_metadata::CURLRequest("POST", $catalogUrlBase,$xmlBody);
 		echo $xmlResponse; // return the xml response directly as xml. // or see how it is done by export xml.
 		die;
+	
+	}
+		
+		
 
-  }
+  
   
   function buildCSWFilter($metadataIds, $ogcfilter){
 		

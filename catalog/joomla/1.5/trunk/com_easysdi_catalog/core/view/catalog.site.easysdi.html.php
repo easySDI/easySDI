@@ -99,6 +99,9 @@ class HTML_catalog{
 	<input type="hidden" name="Itemid" id="Itemid" value="<?php echo JRequest::getVar('Itemid');?>" /> 
 	<input type="hidden" name="lang" id="lang" value="<?php echo JRequest::getVar('lang');?>" /> 
 	<input type="hidden" name="tabIndex" id="tabIndex" value="" /> 
+	<input type="hidden" name="limit" id="limit" value="20" /> 
+	<input type="hidden" name="limitstart" id="limitstart" value="0" /> 
+	<input type="hidden" name="tabIndex" id="tabIndex" value="" /> 
 	<input type="hidden" name="simulatedTabIndex" id="simulatedTabIndex" value="<?php echo JRequest::getVar('simulatedTabIndex');?>" /> 
 	<input type="hidden" name="advancedSrch" id="advancedSrch" value="<?php echo JRequest::getVar('advancedSrch', 0);?>" /> 
 

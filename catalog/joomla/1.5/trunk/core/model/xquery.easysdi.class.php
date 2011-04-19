@@ -23,9 +23,12 @@ class xqueryreport extends JTable
 	var $id=null;
 	var $xqueryname=null;
 	var $ogcfilter=null;
-	var $sqlfilter=null;
-	var $generatedurlforxml =null;
+	var $sqlfilter=null;	
 	var $xlsttemplateurl = null;
+	var $xfileid = null;
+	var $reportcode = null;
+	var $description = null;
+	var $applicationType = null;
 	
 	
 	// Class constructor
