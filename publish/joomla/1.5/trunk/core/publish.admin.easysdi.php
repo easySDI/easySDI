@@ -37,7 +37,9 @@ class ADMIN_publish {
 			
 			//store to the WPS					
 			//echo $url."<br>";					 
-			$xml = simplexml_load_file($url);
+			$doc = SITE_proxy::fetch($url, false);
+			$xml = simplexml_load_string($doc);
+			//$xml = simplexml_load_file($url);
 			//echo "<pre>";  print_r($xml);  echo "</pre>";
 				
 			//Look for an exception
@@ -269,8 +271,9 @@ class ADMIN_publish {
 			
 			//echo $url."<br>";
 						 
-			$xml = simplexml_load_file($url);
-			
+			//$xml = simplexml_load_file($url);
+			$doc = SITE_proxy::fetch($url, false);
+			$xml = simplexml_load_string($doc);
 			//echo "<pre>";  print_r($xml);  echo "</pre>";
 			
 			//Look for an exception
