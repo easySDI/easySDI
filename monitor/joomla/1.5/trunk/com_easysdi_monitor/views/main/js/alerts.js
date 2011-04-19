@@ -106,7 +106,7 @@ Ext.onReady(function() {
 	}
 	]);
 
-	_alertsGrid = new Ext.grid.GridPanel({
+	var _alertsGrid = new Ext.grid.GridPanel({
 		id:'AlertGrid',
 		region:'center',
 		stripeRows: true,

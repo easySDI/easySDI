@@ -177,11 +177,11 @@ Ext.extend(Ext.App, Ext.util.Observable, {
      * @param {Object} status
      */
     decodeStatusIcon : function(status) {
-        iconCls = '';
+        var iconCls = '';
         switch (status) {
             case true:
             case this.STATUS_OK:
-                iconCls = this.ICON_OK;
+                iconCls = this.ICON_OK;           
                 break;
             case this.STATUS_NOTICE:
                 iconCls = this.ICON_NOTICE;

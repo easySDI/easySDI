@@ -2,6 +2,10 @@
 
 <project default="com_easysdi_monitor" basedir=".">
 	<property name="projet.out.dir" value="out" />
+	<property name="projet.src.dir" value="views/main/js" />
+	<property name="projet.lib.dir" value="lib" />
+	<taskdef name="jscomp" classname="com.google.javascript.jscomp.ant.CompileTask"
+           classpath="js_minifier/compiler.jar"/>
 	<target name="com_easysdi_monitor" depends="create-structure,minify,compression"
 		description="Main target" />
 	<target name="create-structure">
@@ -12,63 +16,32 @@
 		<mkdir dir="${projet.out.dir}" />
 	</target>
 	<target name="minify" description="Compression">
-		<exec executable="cmd" os="Windows XP">
-      		<arg line="/c C:\tools\env\Scripts\jsbuild.exe -o script build.cfg"/>
-   		</exec>
+		<echo>Checking code syntax and minifying.</echo>
+		<jscomp compilationLevel="whitespace" warning="verbose" 
+            debug="false" output="script/Monitor.js">
+      <sources dir="views/main/js">
+        <file name="language.js"/>
+        <file name="vtypes.js"/>
+        <file name="app/App.js"/>
+        <file name="definitions.js"/>
+        <file name="jobManager.js"/>
+        <file name="jobRequest.js"/>
+        <file name="jobAlert.js"/>
+        <file name="reports.js"/>
+        <file name="alerts.js"/>
+        <file name="state.js"/>
+        <file name="maintenance.js"/>
+        <file name="monitor.js"/>
+        <file name="graphs/healthGraphRaw.js"/>
+        <file name="graphs/healthGraphAgg.js"/>
+        <file name="graphs/healthLineGraph.js"/>
+        <file name="graphs/responseTimeGraph.js"/>
+      </sources>
+    </jscomp>
 	</target>
 	<target name="compression" description="Compression">
 		<jar compress="true" jarfile="${projet.out.dir}/com_easysdi_monitor.zip"
 			basedir="."
 			excludes="out/** ; .cache/** ; .svn/** ; .settings/** ; *.project; .prefs" />
 	</target>
-	<!-- 
-	<target name="sync" description="Copy from here to apache">
-		<copy
-			todir="C:\wamp\www\Joomla\administrator\components\com_easysdi_publish">
-			<fileset dir=".">
-				<include name="**/*.php" />
-				<include name="**/*.xsl" />
-				<include name="**/*.inc" />
-				<include name="**/*.jar" />
-				<include name="**/*.xml" />
-				<include name="**/*.png" />
-				<include name="**/*.ttf" />
-				<include name="**/*.txt" />
-				<include name="**/*.css" />
-			</fileset>
-		</copy>
-		<copy todir="C:\wamp\www\Joomla\components\com_easysdi_publish">
-			<fileset dir="./com_easysdi_publish">
-				<include name="**/*.php" />
-				<include name="**/*.xsl" />
-				<include name="**/*.inc" />
-				<include name="**/*.jar" />
-				<include name="**/*.xml" />
-				<include name="**/*.png" />
-				<include name="**/*.ttf" />
-				<include name="**/*.txt" />
-			</fileset>
-		</copy>
-		<copy todir="C:\wamp\www\Joomla\language\fr-FR">
-			<fileset dir="./language/site">
-				<include name="**/fr-FR.com_easysdi_publish.ini" />
-			</fileset>
-		</copy>
-		<copy todir="C:\wamp\www\Joomla\language\en-GB">
-			<fileset dir="./language/site">
-				<include name="**/en-GB.com_easysdi_publish.ini" />
-			</fileset>
-		</copy>
-		<copy todir="C:\wamp\www\Joomla\administrator\language\fr-FR">
-			<fileset dir="./language/admin">
-				<include name="**/fr-FR.com_easysdi_publish.ini" />
-			</fileset>
-		</copy>
-		<copy todir="C:\wamp\www\Joomla\administrator\language\en-GB">
-			<fileset dir="./language/admin">
-				<include name="**/en-GB.com_easysdi_publish.ini" />
-			</fileset>
-		</copy>
-	</target>
-	 -->
 </project>

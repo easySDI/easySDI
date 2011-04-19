@@ -191,6 +191,6 @@ EasySDI_Mon.drawResponseTimeGraph = function (container, aStores, logRes, tickIn
 	}
 
 	//Output the graph
-	chart = new Highcharts.Chart(options);
+	var chart = new Highcharts.Chart(options);
 	return chart;
 };

@@ -44,7 +44,7 @@ Ext.onReady(function(){
 		fields:['actionId', 'type', 'target']
 	});
 
-	_alertForm = new Ext.FormPanel({
+	var _alertForm = new Ext.FormPanel({
 		id:'AlertForm',
 		title: EasySDI_Mon.lang.getLocal('alerts'),
 		labelWidth: 90,

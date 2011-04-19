@@ -84,7 +84,7 @@ Ext.onReady(function() {
 	}]);
 
 
-	_jobDailyGrid = new Ext.grid.GridPanel({
+	var _jobDailyGrid = new Ext.grid.GridPanel({
 		id:'JobDailyGrid',
 		loadMask:true,
 		region:'center',
@@ -101,7 +101,7 @@ Ext.onReady(function() {
 		})
 	});
 
-	dailyGridPanel = {
+	var dailyGridPanel = {
 			title: EasySDI_Mon.lang.getLocal('daily logs'),
 			xtype: 'panel',
 			layout: 'border',

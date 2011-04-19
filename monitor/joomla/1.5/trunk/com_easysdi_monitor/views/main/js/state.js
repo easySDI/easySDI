@@ -86,7 +86,7 @@ Ext.onReady(function() {
 
 	]);
 
-	_jobStateGrid = new Ext.grid.GridPanel({
+	var _jobStateGrid = new Ext.grid.GridPanel({
 		id:'JobStateGrid',
 		loadMask:true,
 		region:'center',

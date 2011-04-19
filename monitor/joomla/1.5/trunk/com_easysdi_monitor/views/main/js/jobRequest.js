@@ -89,7 +89,7 @@ Ext.onReady(function(){
 		}
 	}
 
-	_reqGrid = new Ext.grid.GridPanel({
+	var _reqGrid = new Ext.grid.GridPanel({
 		id:'ReqGrid',
 		loadMask:true,
 		region:'center',
@@ -419,7 +419,7 @@ Ext.onReady(function(){
 		};
 		
 		//Open a window for entering job's first values
-		win = new  Ext.Window({
+		var win = new  Ext.Window({
 			title:EasySDI_Mon.lang.getLocal('new request'),
 			width:450,
 			height: 450,

@@ -44,7 +44,7 @@ Ext.onReady(function() {
 	});
 
 	//Job panel
-	jobPanel = {
+	var jobPanel = {
 			title: EasySDI_Mon.lang.getLocal('jobs'),
 			frame:true,
 			xtype: 'panel',
@@ -54,7 +54,7 @@ Ext.onReady(function() {
 			items: [accordion, Ext.getCmp('JobGrid')]
 	};
 
-	reportPanel = {
+	var reportPanel = {
 			id:'reportPanel',
 			title: EasySDI_Mon.lang.getLocal('reports'),
 			xtype: 'panel',
@@ -66,7 +66,7 @@ Ext.onReady(function() {
 			        ]
 	};
 
-	alertPanel = {
+	var alertPanel = {
 			title:EasySDI_Mon.lang.getLocal('alerts'),
 			xtype: 'panel',
 			layout: 'border',
@@ -75,7 +75,7 @@ Ext.onReady(function() {
 			items: [Ext.getCmp('AlertGrid')]
 	};
 
-	statePanel = {
+	var statePanel = {
 			title:EasySDI_Mon.lang.getLocal('state'),
 			xtype: 'panel',
 			layout: 'border',
@@ -84,7 +84,7 @@ Ext.onReady(function() {
 			items: [Ext.getCmp('JobStateGrid')]
 	};
 
-	maintenancePanel = {
+	var maintenancePanel = {
 			title:EasySDI_Mon.lang.getLocal('maintenance'),
 			xtype: 'panel',
 			layout: 'border',

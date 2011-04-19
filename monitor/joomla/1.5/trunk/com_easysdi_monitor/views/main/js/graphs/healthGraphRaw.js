@@ -135,6 +135,6 @@ EasySDI_Mon.drawHealthGraphRaw = function(container, aStores, logRes){
 	    options.series.push(avSeries);
 	    
 	    //Output the graph
-	    chart = new Highcharts.Chart(options);
+	    var chart = new Highcharts.Chart(options);
 	    return chart;
 	  };

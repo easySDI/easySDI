@@ -337,11 +337,11 @@ Ext.onReady(function() {
 		Ext.data.DataProxy.addListener('write', afterReqInserted);
 		var reqGrid = Ext.getCmp('ReqGrid');
 		reqGrid.store.proxy.setUrl(EasySDI_Mon.proxy+'/jobs/'+result[0].name+'/queries');
-		u = new reqGrid.store.recordType(EasySDI_Mon.DefaultGetCapReq);
+		var u = new reqGrid.store.recordType(EasySDI_Mon.DefaultGetCapReq);
 		u.set('name', 'GetCap');
 		u.set('serviceMethod', 'GetCapabilities');
-		_reqGrid.store.insert(0, u);
-		_reqGrid.store.save();
+		reqGrid.store.insert(0, u);
+		reqGrid.store.save();
 		//If the job has been added to the other collection than the current,
 		//we need to refresh the grid
 		if((Ext.getCmp('jobCbCollection').getValue() == 'jobs' && result[0].isPublic == false)||
@@ -398,7 +398,7 @@ Ext.onReady(function() {
 
 
 	//Advanced edition form
-	_advForm = new Ext.FormPanel({
+	var _advForm = new Ext.FormPanel({
 		id: 'jobAdvForm',
 		title: EasySDI_Mon.lang.getLocal('advanced'),
 		// labelAlign: 'top',

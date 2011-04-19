@@ -197,7 +197,7 @@ Ext.onReady(function(){
                       return '<div'+' title="'+EasySDI_Mon.lang.getLocal('title untested-to-unavailable')+'" '+'class="icon-gridrenderer-untested-to-unavailable"/>';
                 break;
                 default: 
-                   return value;
+                   return newStatus;
                 break;
             }
    };

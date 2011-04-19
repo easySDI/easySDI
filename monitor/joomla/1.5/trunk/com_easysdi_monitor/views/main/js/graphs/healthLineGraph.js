@@ -88,7 +88,7 @@ EasySDI_Mon.drawHealthLineGraph = function(container, aStores, logRes, tickInter
 	}
 
 	//Output the graph
-	chart = new Highcharts.Chart(options);
+	var chart = new Highcharts.Chart(options);
 	return chart;
 
 };
