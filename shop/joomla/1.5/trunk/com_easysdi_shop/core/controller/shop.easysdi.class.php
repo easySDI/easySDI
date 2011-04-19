@@ -1262,6 +1262,7 @@ function validateForm(toStep, fromStep){
 	
 	function downloadAvailableProduct($id)
 	{
+		global  $mainframe;
 		$option = JRequest::getVar('option');
 		$task = JRequest::getVar('task');
 		$view = JRequest::getVar('view');
@@ -1288,6 +1289,7 @@ function validateForm(toStep, fromStep){
 		
 		$dispatcher =& JDispatcher::getInstance();
 		$dispatcher->trigger('onPrepareContent', array(&$row,&$params,0));
+		$mainframe->addCustomHeadTag('<meta http-equiv="X-UA-Compatible" content="IE=Edge">');
 		
 		HTML_shop::downloadAvailableProduct($id, $option, $task,$view,$step,$row);
 	}
