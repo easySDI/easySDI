@@ -2,18 +2,38 @@
 <project default="com_easysdi_publish" basedir=".">
 
 	<property name="projet.out.dir" value="out" />
-
+  <taskdef name="jscomp" classname="com.google.javascript.jscomp.ant.CompileTask"
+           classpath="js_minifier/compiler.jar"/>
 
 	<target name="com_easysdi_publish" depends="create-structure,minify,compression"
 		description="Main target">
 
 	</target>
 	
-        <target name="minify" description="Minifying js files">
+  <target name="minify" description="Compression">
+		<echo>Checking code syntax and minifying.</echo>
+		<jscomp compilationLevel="whitespace" warning="verbose" 
+            debug="false" output="com_easysdi_publish/js/styler/script/Styler.js">
+      <sources dir="com_easysdi_publish/js/styler/lib">
+        <file name="Styler.js"/>
+        <file name="olx.js"/>
+      </sources>
+      <sources dir="com_easysdi_publish/js/styler/lib/Styler">
+        <file name="ColorManager.js"/>
+        <file name="dispatch.js"/>
+        <file name="SchemaManager.js"/>
+        <file name="SLDManager.js"/>
+      </sources>
+    </jscomp>
+	</target>
+	
+	<!--
+  <target name="minify" description="Minifying js files">
 		<exec executable="cmd" os="Windows XP" dir=".\com_easysdi_publish\js\styler\">
       		<arg line="/c C:\tools\env\Scripts\jsbuild.exe -o script build_s.cfg"/>
    		</exec>
 	</target>
+	-->
 	
 	<target name="create-structure">
 		<echo>Creating the working directory structure</echo>
