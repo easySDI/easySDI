@@ -29,6 +29,7 @@
         <file name="jobAlert.js"/>
         <file name="reports.js"/>
         <file name="alerts.js"/>
+		<file name="responseoverview.js" />
         <file name="state.js"/>
         <file name="maintenance.js"/>
         <file name="monitor.js"/>
