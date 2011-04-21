@@ -1,0 +1,1528 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<env:Envelope xmlns:env="http://schemas.xmlsoap.org/soap/envelope/">
+	<env:Header>
+		<gch:requestID xmlns:gch="http://www.geocat.ch/2003/05/gateway/header"
+			env:mustUnderstand="true">
+			<gch:version>0.99</gch:version>
+			<gch:sendingNodeId>sendingNode</gch:sendingNodeId>
+			<gch:referenceId>3</gch:referenceId>
+			<gch:messageId>uuid:aa59aef3-3310-4acc-9eb0-b6a8f2008e4d
+			</gch:messageId>
+			<gch:responseTo>3</gch:responseTo>
+			<gch:dateAndTime>2008-02-20T10:38:28.000+01:00</gch:dateAndTime>
+		</gch:requestID>
+	</env:Header>
+	<env:Body>
+		<gcq:catalogGatewayRequest
+			xmlns:gcq="http://www.geocat.ch/2003/05/gateway/query">
+			<gcq:queryResult>
+				<chmin:MD_Metadata xmlns:chmin="http://www.geocat.ch/2003/05/gateway/GM03Small"
+					objid="242">
+					<chmin:fileIdentifier>242</chmin:fileIdentifier>
+					<chmin:dateStamp>2005-02-17T16:33:36.000+01:00</chmin:dateStamp>
+					<chmin:dataSetURI>www.asit.vd.ch</chmin:dataSetURI>
+					<chmin:metadataSetURI>http://www.asit.vd.ch/geoportal/geocatalog/data.asp?lng=FR&amp;type=public&amp;form=metadata&amp;ID=242
+					</chmin:metadataSetURI>
+					<chmin:identificationInfo>
+						<chmin:language>fr</chmin:language>
+						<chmin:topicCategory>planningCadastre</chmin:topicCategory>
+						<chmin:abstract>
+							<chmin:textGroup>
+								<chmin:plainText>Extrait de la base de données du cadastre des
+									conduites souterraines relevées depuis 1970 dans le domaine
+									public et dans la plupart des parcelles privées communales
+									(assainissement, gaz, chauffage urbain, électricité,
+									téléréseau, circulation, transports publics, téléphone fixe et
+									mobile) ou une sélection de ces types de conduite.
+									La base de données du cadastre des conduites ne gère pas les
+									canalisations situées sur les parcelles privées.
+
+									Positionnement des conduites, en coordonnées X et Y, sur tout le domaine
+									public du territoire lausannois et le domaine privé de la
+									Commune de Lausanne. </chmin:plainText>
+								<chmin:language>fr</chmin:language>
+								<chmin:country>CH</chmin:country>
+								<chmin:characterSetCode>utf16</chmin:characterSetCode>
+							</chmin:textGroup>
+						</chmin:abstract>
+						<chmin:citation>
+							<chmin:title>
+								<chmin:textGroup>
+									<chmin:plainText>Plan du cadastre des conduites - Lausanne
+									</chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:title>
+							<chmin:date>
+								<chmin:date>2004-01-01</chmin:date>
+								<chmin:dateType>revision</chmin:dateType>
+							</chmin:date>
+						</chmin:citation>
+						<chmin:pointOfContact>
+							<chmin:role>custodian</chmin:role>
+							<chmin:individualName>Service du Cadastre</chmin:individualName>
+							<chmin:positionName>N/A</chmin:positionName>
+							<chmin:organisationName>
+								<chmin:textGroup>
+									<chmin:plainText>Commune de Lausanne </chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:organisationName>
+						</chmin:pointOfContact>
+						<chmin:extent>
+							<chmin:description>Ville de Lausanne</chmin:description>
+							<chmin:geographicElement>
+								<chmin:westBoundLongitude>6.07</chmin:westBoundLongitude>
+								<chmin:eastBoundLongitude>7.25</chmin:eastBoundLongitude>
+								<chmin:southBoundLatitude>46.18</chmin:southBoundLatitude>
+								<chmin:northBoundLatitude>46.98</chmin:northBoundLatitude>
+							</chmin:geographicElement>
+						</chmin:extent>
+					</chmin:identificationInfo>
+				</chmin:MD_Metadata>
+				<chmin:MD_Metadata xmlns:chmin="http://www.geocat.ch/2003/05/gateway/GM03Small"
+					objid="328">
+					<chmin:fileIdentifier>328</chmin:fileIdentifier>
+					<chmin:dateStamp>2007-09-11T17:12:35.000+01:00</chmin:dateStamp>
+					<chmin:dataSetURI>www.asit.vd.ch</chmin:dataSetURI>
+					<chmin:metadataSetURI>http://www.asit.vd.ch/geoportal/geocatalog/data.asp?lng=FR&amp;type=public&amp;form=metadata&amp;ID=328
+					</chmin:metadataSetURI>
+					<chmin:identificationInfo>
+						<chmin:language>fr</chmin:language>
+						<chmin:topicCategory>planningCadastre</chmin:topicCategory>
+						<chmin:abstract>
+							<chmin:textGroup>
+								<chmin:plainText>Etat d'avancement de la base de données
+									cadastrale. Mensuration numérique, semi-numérique numérisé et
+									graphique numérisé.</chmin:plainText>
+								<chmin:language>fr</chmin:language>
+								<chmin:country>CH</chmin:country>
+								<chmin:characterSetCode>utf16</chmin:characterSetCode>
+							</chmin:textGroup>
+						</chmin:abstract>
+						<chmin:citation>
+							<chmin:title>
+								<chmin:textGroup>
+									<chmin:plainText>Cadastre - Etat d'avancement de la BDCO
+									</chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:title>
+							<chmin:date>
+								<chmin:date>2008-02-20</chmin:date>
+								<chmin:dateType>revision</chmin:dateType>
+							</chmin:date>
+						</chmin:citation>
+						<chmin:pointOfContact>
+							<chmin:role>custodian</chmin:role>
+							<chmin:individualName>Roger Hug</chmin:individualName>
+							<chmin:positionName>N/A</chmin:positionName>
+							<chmin:organisationName>
+								<chmin:textGroup>
+									<chmin:plainText>Etat de Vaud - Service Information sur le
+										territoire</chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:organisationName>
+						</chmin:pointOfContact>
+						<chmin:extent>
+							<chmin:description>Canton de Vaud</chmin:description>
+							<chmin:geographicElement>
+								<chmin:westBoundLongitude>6.07</chmin:westBoundLongitude>
+								<chmin:eastBoundLongitude>7.25</chmin:eastBoundLongitude>
+								<chmin:southBoundLatitude>46.18</chmin:southBoundLatitude>
+								<chmin:northBoundLatitude>46.98</chmin:northBoundLatitude>
+							</chmin:geographicElement>
+						</chmin:extent>
+					</chmin:identificationInfo>
+				</chmin:MD_Metadata>
+				<chmin:MD_Metadata xmlns:chmin="http://www.geocat.ch/2003/05/gateway/GM03Small"
+					objid="349">
+					<chmin:fileIdentifier>349</chmin:fileIdentifier>
+					<chmin:dateStamp>2007-09-11T17:15:08.000+01:00</chmin:dateStamp>
+					<chmin:dataSetURI>www.asit.vd.ch</chmin:dataSetURI>
+					<chmin:metadataSetURI>http://www.asit.vd.ch/geoportal/geocatalog/data.asp?lng=FR&amp;type=public&amp;form=metadata&amp;ID=349
+					</chmin:metadataSetURI>
+					<chmin:identificationInfo>
+						<chmin:language>fr</chmin:language>
+						<chmin:topicCategory>planningCadastre</chmin:topicCategory>
+						<chmin:abstract>
+							<chmin:textGroup>
+								<chmin:plainText>Points de référence de catégorie 1 et 2 pour
+									l'exécution de la mensuration.</chmin:plainText>
+								<chmin:language>fr</chmin:language>
+								<chmin:country>CH</chmin:country>
+								<chmin:characterSetCode>utf16</chmin:characterSetCode>
+							</chmin:textGroup>
+						</chmin:abstract>
+						<chmin:citation>
+							<chmin:title>
+								<chmin:textGroup>
+									<chmin:plainText>Cadastre (PF) - Points fixes 1 et 2
+									</chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:title>
+							<chmin:date>
+								<chmin:date>2008-02-20</chmin:date>
+								<chmin:dateType>revision</chmin:dateType>
+							</chmin:date>
+						</chmin:citation>
+						<chmin:pointOfContact>
+							<chmin:role>custodian</chmin:role>
+							<chmin:individualName>Nicolas Ciana</chmin:individualName>
+							<chmin:positionName>N/A</chmin:positionName>
+							<chmin:organisationName>
+								<chmin:textGroup>
+									<chmin:plainText>Etat de Vaud - Office de l'information sur le
+										territoire</chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:organisationName>
+						</chmin:pointOfContact>
+						<chmin:pointOfContact>
+							<chmin:role>pointOfContact</chmin:role>
+							<chmin:individualName>Pierre Vuagniaux</chmin:individualName>
+							<chmin:positionName>N/A</chmin:positionName>
+							<chmin:organisationName>
+								<chmin:textGroup>
+									<chmin:plainText>Etat de Vaud - Office de l'information sur le
+										territoire</chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:organisationName>
+						</chmin:pointOfContact>
+						<chmin:extent>
+							<chmin:description>Canton de Vaud</chmin:description>
+							<chmin:geographicElement>
+								<chmin:westBoundLongitude>6.07</chmin:westBoundLongitude>
+								<chmin:eastBoundLongitude>7.25</chmin:eastBoundLongitude>
+								<chmin:southBoundLatitude>46.18</chmin:southBoundLatitude>
+								<chmin:northBoundLatitude>46.98</chmin:northBoundLatitude>
+							</chmin:geographicElement>
+						</chmin:extent>
+					</chmin:identificationInfo>
+				</chmin:MD_Metadata>
+				<chmin:MD_Metadata xmlns:chmin="http://www.geocat.ch/2003/05/gateway/GM03Small"
+					objid="439">
+					<chmin:fileIdentifier>439</chmin:fileIdentifier>
+					<chmin:dateStamp>2007-12-05T13:43:59.000+01:00</chmin:dateStamp>
+					<chmin:dataSetURI>www.asit.vd.ch</chmin:dataSetURI>
+					<chmin:metadataSetURI>http://www.asit.vd.ch/geoportal/geocatalog/data.asp?lng=FR&amp;type=public&amp;form=metadata&amp;ID=439
+					</chmin:metadataSetURI>
+					<chmin:identificationInfo>
+						<chmin:language>fr</chmin:language>
+						<chmin:topicCategory>inlandWaters</chmin:topicCategory>
+						<chmin:topicCategory>environment</chmin:topicCategory>
+						<chmin:abstract>
+							<chmin:textGroup>
+								<chmin:plainText>Cadastre des sites pollués recensés par le
+									SESA.
+									Ces sites peuvent être
+									- des lieux de stockage définitif de déchets (à l'exclusion des
+									sites dans lesquels sont déposés exclusivement des matériaux
+									d'excavation et des déblais non pollués)
+
+									- des aires d'exploitation (en activité ou non), dans lesquelles
+									ont été utilisées des substances dangereuses pour
+									l'environnement
+
+									- des lieux d'accidents, pollués à la suite d'événements
+									extraordinaires
+</chmin:plainText>
+								<chmin:language>fr</chmin:language>
+								<chmin:country>CH</chmin:country>
+								<chmin:characterSetCode>utf16</chmin:characterSetCode>
+							</chmin:textGroup>
+						</chmin:abstract>
+						<chmin:citation>
+							<chmin:title>
+								<chmin:textGroup>
+									<chmin:plainText>Cadastre des sites pollués</chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:title>
+							<chmin:date>
+								<chmin:date>2007-12-03</chmin:date>
+								<chmin:dateType>revision</chmin:dateType>
+							</chmin:date>
+						</chmin:citation>
+						<chmin:pointOfContact>
+							<chmin:role>distributor</chmin:role>
+							<chmin:individualName>Pierre Vuagniaux</chmin:individualName>
+							<chmin:positionName>N/A</chmin:positionName>
+							<chmin:organisationName>
+								<chmin:textGroup>
+									<chmin:plainText>Etat de Vaud - Office de l'information sur le
+										territoire</chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:organisationName>
+						</chmin:pointOfContact>
+						<chmin:pointOfContact>
+							<chmin:role>pointOfContact</chmin:role>
+							<chmin:individualName>Pierre Vuagniaux</chmin:individualName>
+							<chmin:positionName>N/A</chmin:positionName>
+							<chmin:organisationName>
+								<chmin:textGroup>
+									<chmin:plainText>Etat de Vaud - Office de l'information sur le
+										territoire</chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:organisationName>
+						</chmin:pointOfContact>
+						<chmin:pointOfContact>
+							<chmin:role>custodian</chmin:role>
+							<chmin:individualName>Pierre Vuagniaux</chmin:individualName>
+							<chmin:positionName>N/A</chmin:positionName>
+							<chmin:organisationName>
+								<chmin:textGroup>
+									<chmin:plainText>Etat de Vaud - Office de l'information sur le
+										territoire</chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:organisationName>
+						</chmin:pointOfContact>
+						<chmin:pointOfContact>
+							<chmin:role>pointOfContact</chmin:role>
+							<chmin:individualName>Pierre Vuagniaux</chmin:individualName>
+							<chmin:positionName>N/A</chmin:positionName>
+							<chmin:organisationName>
+								<chmin:textGroup>
+									<chmin:plainText>Etat de Vaud - Office de l'information sur le
+										territoire</chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:organisationName>
+						</chmin:pointOfContact>
+						<chmin:extent>
+							<chmin:description>Canton de Vaud</chmin:description>
+							<chmin:geographicElement>
+								<chmin:westBoundLongitude>6.07</chmin:westBoundLongitude>
+								<chmin:eastBoundLongitude>7.25</chmin:eastBoundLongitude>
+								<chmin:southBoundLatitude>46.18</chmin:southBoundLatitude>
+								<chmin:northBoundLatitude>46.98</chmin:northBoundLatitude>
+							</chmin:geographicElement>
+						</chmin:extent>
+					</chmin:identificationInfo>
+				</chmin:MD_Metadata>
+				<chmin:MD_Metadata xmlns:chmin="http://www.geocat.ch/2003/05/gateway/GM03Small"
+					objid="477">
+					<chmin:fileIdentifier>477</chmin:fileIdentifier>
+					<chmin:dateStamp>2007-09-11T17:10:33.000+01:00</chmin:dateStamp>
+					<chmin:dataSetURI>www.asit.vd.ch</chmin:dataSetURI>
+					<chmin:metadataSetURI>http://www.asit.vd.ch/geoportal/geocatalog/data.asp?lng=FR&amp;type=public&amp;form=metadata&amp;ID=477
+					</chmin:metadataSetURI>
+					<chmin:identificationInfo>
+						<chmin:language>fr</chmin:language>
+						<chmin:topicCategory>planningCadastre</chmin:topicCategory>
+						<chmin:abstract>
+							<chmin:textGroup>
+								<chmin:plainText>Les données cadastrales sont issues de la
+									mensuration officielle. Elles comprennent notamment les
+									biens-fonds (parcelles et domaines publics), la couverture du
+									sol (routes, bâtiments, forêts, vignes, cours d'eau, etc...)
+									ainsi que des objets divers (murs, piscines, téleskis, etc...)
+								</chmin:plainText>
+								<chmin:language>fr</chmin:language>
+								<chmin:country>CH</chmin:country>
+								<chmin:characterSetCode>utf16</chmin:characterSetCode>
+							</chmin:textGroup>
+						</chmin:abstract>
+						<chmin:citation>
+							<chmin:title>
+								<chmin:textGroup>
+									<chmin:plainText>Cadastre - Données cadastrales Interlis-VD
+									</chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:title>
+							<chmin:date>
+								<chmin:date>2008-02-20</chmin:date>
+								<chmin:dateType>revision</chmin:dateType>
+							</chmin:date>
+						</chmin:citation>
+						<chmin:pointOfContact>
+							<chmin:role>custodian</chmin:role>
+							<chmin:individualName>Roger Hug</chmin:individualName>
+							<chmin:positionName>N/A</chmin:positionName>
+							<chmin:organisationName>
+								<chmin:textGroup>
+									<chmin:plainText>Canton de Vaud - Office de l'information sur
+										le territoire</chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:organisationName>
+						</chmin:pointOfContact>
+						<chmin:pointOfContact>
+							<chmin:role>distributor</chmin:role>
+							<chmin:individualName>Isaline Jalade</chmin:individualName>
+							<chmin:positionName>N/A</chmin:positionName>
+							<chmin:organisationName>
+								<chmin:textGroup>
+									<chmin:plainText>Canton de Vaud - Office de l'information sur
+										le territoire</chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:organisationName>
+						</chmin:pointOfContact>
+						<chmin:pointOfContact>
+							<chmin:role>pointOfContact</chmin:role>
+							<chmin:individualName>Pierre Vuagniaux</chmin:individualName>
+							<chmin:positionName>N/A</chmin:positionName>
+							<chmin:organisationName>
+								<chmin:textGroup>
+									<chmin:plainText>Canton de Vaud - Office de l'information sur
+										le territoire</chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:organisationName>
+						</chmin:pointOfContact>
+						<chmin:extent>
+							<chmin:description>Canton de Vaud</chmin:description>
+							<chmin:geographicElement>
+								<chmin:westBoundLongitude>6.07</chmin:westBoundLongitude>
+								<chmin:eastBoundLongitude>7.25</chmin:eastBoundLongitude>
+								<chmin:southBoundLatitude>46.18</chmin:southBoundLatitude>
+								<chmin:northBoundLatitude>46.98</chmin:northBoundLatitude>
+							</chmin:geographicElement>
+						</chmin:extent>
+					</chmin:identificationInfo>
+				</chmin:MD_Metadata>
+				<chmin:MD_Metadata xmlns:chmin="http://www.geocat.ch/2003/05/gateway/GM03Small"
+					objid="478">
+					<chmin:fileIdentifier>478</chmin:fileIdentifier>
+					<chmin:dateStamp>2007-09-11T17:10:51.000+01:00</chmin:dateStamp>
+					<chmin:dataSetURI>www.asit.vd.ch</chmin:dataSetURI>
+					<chmin:metadataSetURI>http://www.asit.vd.ch/geoportal/geocatalog/data.asp?lng=FR&amp;type=public&amp;form=metadata&amp;ID=478
+					</chmin:metadataSetURI>
+					<chmin:identificationInfo>
+						<chmin:language>fr</chmin:language>
+						<chmin:topicCategory>planningCadastre</chmin:topicCategory>
+						<chmin:abstract>
+							<chmin:textGroup>
+								<chmin:plainText>Les données extraites sont identiques au
+									produit Données cadastrales Interlis-VD sauf que la surface
+									d´extraction doit être comprise entre 0 et 6 hectares. Cette
+									donnée est réservée pour l'élaboration des projets de mutations
+									et d'enquêtes.</chmin:plainText>
+								<chmin:language>fr</chmin:language>
+								<chmin:country>CH</chmin:country>
+								<chmin:characterSetCode>utf16</chmin:characterSetCode>
+							</chmin:textGroup>
+						</chmin:abstract>
+						<chmin:citation>
+							<chmin:title>
+								<chmin:textGroup>
+									<chmin:plainText>Cadastre - Données cadastrales Interlis-VD
+										mutations et enquêtes (0-6 ha)</chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:title>
+							<chmin:date>
+								<chmin:date>2008-02-20</chmin:date>
+								<chmin:dateType>revision</chmin:dateType>
+							</chmin:date>
+						</chmin:citation>
+						<chmin:pointOfContact>
+							<chmin:role>custodian</chmin:role>
+							<chmin:individualName>Roger Hug</chmin:individualName>
+							<chmin:positionName>N/A</chmin:positionName>
+							<chmin:organisationName>
+								<chmin:textGroup>
+									<chmin:plainText>Canton de Vaud - Office de l'information sur
+										le territoire</chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:organisationName>
+						</chmin:pointOfContact>
+						<chmin:pointOfContact>
+							<chmin:role>distributor</chmin:role>
+							<chmin:individualName>Isaline Jalade</chmin:individualName>
+							<chmin:positionName>N/A</chmin:positionName>
+							<chmin:organisationName>
+								<chmin:textGroup>
+									<chmin:plainText>Canton de Vaud - Office de l'information sur
+										le territoire</chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:organisationName>
+						</chmin:pointOfContact>
+						<chmin:pointOfContact>
+							<chmin:role>pointOfContact</chmin:role>
+							<chmin:individualName>Pierre Vuagniaux</chmin:individualName>
+							<chmin:positionName>N/A</chmin:positionName>
+							<chmin:organisationName>
+								<chmin:textGroup>
+									<chmin:plainText>Canton de Vaud - Office de l'information sur
+										le territoire</chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:organisationName>
+						</chmin:pointOfContact>
+						<chmin:extent>
+							<chmin:description>Canton de Vaud</chmin:description>
+							<chmin:geographicElement>
+								<chmin:westBoundLongitude>6.07</chmin:westBoundLongitude>
+								<chmin:eastBoundLongitude>7.25</chmin:eastBoundLongitude>
+								<chmin:southBoundLatitude>46.18</chmin:southBoundLatitude>
+								<chmin:northBoundLatitude>46.98</chmin:northBoundLatitude>
+							</chmin:geographicElement>
+						</chmin:extent>
+					</chmin:identificationInfo>
+				</chmin:MD_Metadata>
+				<chmin:MD_Metadata xmlns:chmin="http://www.geocat.ch/2003/05/gateway/GM03Small"
+					objid="479">
+					<chmin:fileIdentifier>479</chmin:fileIdentifier>
+					<chmin:dateStamp>2007-09-11T17:11:34.000+01:00</chmin:dateStamp>
+					<chmin:dataSetURI>www.asit.vd.ch</chmin:dataSetURI>
+					<chmin:metadataSetURI>http://www.asit.vd.ch/geoportal/geocatalog/data.asp?lng=FR&amp;type=public&amp;form=metadata&amp;ID=479
+					</chmin:metadataSetURI>
+					<chmin:identificationInfo>
+						<chmin:language>fr</chmin:language>
+						<chmin:topicCategory>planningCadastre</chmin:topicCategory>
+						<chmin:abstract>
+							<chmin:textGroup>
+								<chmin:plainText>Cette donnée est réservée aux bureaux
+									d´ingénieurs géomètres qui commandent des données cadastrales
+									pour procéder à la mise à jour de la BDCO. Pour toute commande
+									effectuée au moyen de cette donnée, un périmètre de mise à jour
+									est défini au sein de la BDCO. Le géomètre opérateur dispose
+									ensuite de 3 semaines au maximum pour livrer les données mises
+									à jour à l'OIT. Passé ce délai, le périmètre de mise à jour
+									sera effacé et le géomètre opérateur devra procéder à une
+									nouvelle commande. Pour des cas exceptionnels une prolongation
+									peut-être demandée à l'OIT. L'OIT se réserve le droit de ne
+									plus honorer les commandes des bureaux ayant fait un usage
+									abusif de cette donnée. Les données livrées comportent tous les
+									projets de mutations de biens-fonds non encore validés par le
+									registre foncier. Le géomètre opérateur est toutefois averti si
+									un ou plusieurs projets se trouvent dans l'extrait délivré. Ces
+									données ne peuvent pas être utilisées dans un autre cadre que
+									la mise à jour de la BDCO vu qu'il n'est pas possible de
+									distinguer les objets validés par le registre foncier de ceux
+									qui ne le sont pas. Un extrait distinct issu d'une donnée
+									"Mutations et enquêtes" est obligatoire pour produire le plan
+									de mutation.</chmin:plainText>
+								<chmin:language>fr</chmin:language>
+								<chmin:country>CH</chmin:country>
+								<chmin:characterSetCode>utf16</chmin:characterSetCode>
+							</chmin:textGroup>
+						</chmin:abstract>
+						<chmin:citation>
+							<chmin:title>
+								<chmin:textGroup>
+									<chmin:plainText>Cadastre - Données cadastrales Interlis-VD
+										pour mise à jour BDCO</chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:title>
+							<chmin:date>
+								<chmin:date>2008-02-20</chmin:date>
+								<chmin:dateType>revision</chmin:dateType>
+							</chmin:date>
+						</chmin:citation>
+						<chmin:pointOfContact>
+							<chmin:role>custodian</chmin:role>
+							<chmin:individualName>Roger Hug</chmin:individualName>
+							<chmin:positionName>N/A</chmin:positionName>
+							<chmin:organisationName>
+								<chmin:textGroup>
+									<chmin:plainText>Canton de Vaud - Office de l'information sur
+										le territoire</chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:organisationName>
+						</chmin:pointOfContact>
+						<chmin:pointOfContact>
+							<chmin:role>distributor</chmin:role>
+							<chmin:individualName>Isaline Jalade</chmin:individualName>
+							<chmin:positionName>N/A</chmin:positionName>
+							<chmin:organisationName>
+								<chmin:textGroup>
+									<chmin:plainText>Canton de Vaud - Office de l'information sur
+										le territoire</chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:organisationName>
+						</chmin:pointOfContact>
+						<chmin:pointOfContact>
+							<chmin:role>pointOfContact</chmin:role>
+							<chmin:individualName>Pierre Vuagniaux</chmin:individualName>
+							<chmin:positionName>N/A</chmin:positionName>
+							<chmin:organisationName>
+								<chmin:textGroup>
+									<chmin:plainText>Canton de Vaud - Office de l'information sur
+										le territoire</chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:organisationName>
+						</chmin:pointOfContact>
+						<chmin:extent>
+							<chmin:description>Canton de Vaud</chmin:description>
+							<chmin:geographicElement>
+								<chmin:westBoundLongitude>6.07</chmin:westBoundLongitude>
+								<chmin:eastBoundLongitude>7.25</chmin:eastBoundLongitude>
+								<chmin:southBoundLatitude>46.18</chmin:southBoundLatitude>
+								<chmin:northBoundLatitude>46.98</chmin:northBoundLatitude>
+							</chmin:geographicElement>
+						</chmin:extent>
+					</chmin:identificationInfo>
+				</chmin:MD_Metadata>
+				<chmin:MD_Metadata xmlns:chmin="http://www.geocat.ch/2003/05/gateway/GM03Small"
+					objid="480">
+					<chmin:fileIdentifier>480</chmin:fileIdentifier>
+					<chmin:dateStamp>2007-09-11T17:11:13.000+01:00</chmin:dateStamp>
+					<chmin:dataSetURI>www.asit.vd.ch</chmin:dataSetURI>
+					<chmin:metadataSetURI>http://www.asit.vd.ch/geoportal/geocatalog/data.asp?lng=FR&amp;type=public&amp;form=metadata&amp;ID=480
+					</chmin:metadataSetURI>
+					<chmin:identificationInfo>
+						<chmin:language>fr</chmin:language>
+						<chmin:topicCategory>planningCadastre</chmin:topicCategory>
+						<chmin:abstract>
+							<chmin:textGroup>
+								<chmin:plainText>Les données extraites sont identiques au
+									produit Données cadastrales Interlis-VD sauf que la surface
+									d´extraction doit être comprise entre 6 et 12 hectares. Cette
+									donnée est réservée pour l'élaboration des projets de mutations
+									et d'enquêtes.</chmin:plainText>
+								<chmin:language>fr</chmin:language>
+								<chmin:country>CH</chmin:country>
+								<chmin:characterSetCode>utf16</chmin:characterSetCode>
+							</chmin:textGroup>
+						</chmin:abstract>
+						<chmin:citation>
+							<chmin:title>
+								<chmin:textGroup>
+									<chmin:plainText>Cadastre - Données cadastrales Interlis-VD
+										mutations et enquêtes (6-12 ha)</chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:title>
+							<chmin:date>
+								<chmin:date>2008-02-20</chmin:date>
+								<chmin:dateType>revision</chmin:dateType>
+							</chmin:date>
+						</chmin:citation>
+						<chmin:pointOfContact>
+							<chmin:role>custodian</chmin:role>
+							<chmin:individualName>Roger Hug</chmin:individualName>
+							<chmin:positionName>N/A</chmin:positionName>
+							<chmin:organisationName>
+								<chmin:textGroup>
+									<chmin:plainText>Canton de Vaud - Office de l'information sur
+										le territoire</chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:organisationName>
+						</chmin:pointOfContact>
+						<chmin:pointOfContact>
+							<chmin:role>distributor</chmin:role>
+							<chmin:individualName>Isaline Jalade</chmin:individualName>
+							<chmin:positionName>N/A</chmin:positionName>
+							<chmin:organisationName>
+								<chmin:textGroup>
+									<chmin:plainText>Canton de Vaud - Office de l'information sur
+										le territoire</chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:organisationName>
+						</chmin:pointOfContact>
+						<chmin:pointOfContact>
+							<chmin:role>pointOfContact</chmin:role>
+							<chmin:individualName>Pierre Vuagniaux</chmin:individualName>
+							<chmin:positionName>N/A</chmin:positionName>
+							<chmin:organisationName>
+								<chmin:textGroup>
+									<chmin:plainText>Canton de Vaud - Office de l'information sur
+										le territoire</chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:organisationName>
+						</chmin:pointOfContact>
+						<chmin:extent>
+							<chmin:description>Canton de Vaud</chmin:description>
+							<chmin:geographicElement>
+								<chmin:westBoundLongitude>6.07</chmin:westBoundLongitude>
+								<chmin:eastBoundLongitude>7.25</chmin:eastBoundLongitude>
+								<chmin:southBoundLatitude>46.18</chmin:southBoundLatitude>
+								<chmin:northBoundLatitude>46.98</chmin:northBoundLatitude>
+							</chmin:geographicElement>
+						</chmin:extent>
+					</chmin:identificationInfo>
+				</chmin:MD_Metadata>
+				<chmin:MD_Metadata xmlns:chmin="http://www.geocat.ch/2003/05/gateway/GM03Small"
+					objid="481">
+					<chmin:fileIdentifier>481</chmin:fileIdentifier>
+					<chmin:dateStamp>2007-09-11T17:08:37.000+01:00</chmin:dateStamp>
+					<chmin:dataSetURI>www.asit.vd.ch</chmin:dataSetURI>
+					<chmin:metadataSetURI>http://www.asit.vd.ch/geoportal/geocatalog/data.asp?lng=FR&amp;type=public&amp;form=metadata&amp;ID=481
+					</chmin:metadataSetURI>
+					<chmin:identificationInfo>
+						<chmin:language>fr</chmin:language>
+						<chmin:topicCategory>planningCadastre</chmin:topicCategory>
+						<chmin:abstract>
+							<chmin:textGroup>
+								<chmin:plainText>Les données extraites sont identiques au
+									produit Données cadastrales GEOBAT sauf que la surface
+									d´extraction doit être comprise entre 0 et 7 hectares. Cette
+									donnée est réservée pour l'élaboration des projets de mutations
+									et d'enquêtes.</chmin:plainText>
+								<chmin:language>fr</chmin:language>
+								<chmin:country>CH</chmin:country>
+								<chmin:characterSetCode>utf16</chmin:characterSetCode>
+							</chmin:textGroup>
+						</chmin:abstract>
+						<chmin:citation>
+							<chmin:title>
+								<chmin:textGroup>
+									<chmin:plainText>Cadastre - Données cadastrales GEOBAT
+										mutations et enquêtes (0-7 ha)</chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:title>
+							<chmin:date>
+								<chmin:date>2008-02-20</chmin:date>
+								<chmin:dateType>revision</chmin:dateType>
+							</chmin:date>
+						</chmin:citation>
+						<chmin:pointOfContact>
+							<chmin:role>custodian</chmin:role>
+							<chmin:individualName>Roger Hug</chmin:individualName>
+							<chmin:positionName>N/A</chmin:positionName>
+							<chmin:organisationName>
+								<chmin:textGroup>
+									<chmin:plainText>Canton de Vaud - Office de l'information sur
+										le territoire</chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:organisationName>
+						</chmin:pointOfContact>
+						<chmin:pointOfContact>
+							<chmin:role>distributor</chmin:role>
+							<chmin:individualName>Isaline Jalade</chmin:individualName>
+							<chmin:positionName>N/A</chmin:positionName>
+							<chmin:organisationName>
+								<chmin:textGroup>
+									<chmin:plainText>Canton de Vaud - Office de l'information sur
+										le territoire</chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:organisationName>
+						</chmin:pointOfContact>
+						<chmin:pointOfContact>
+							<chmin:role>pointOfContact</chmin:role>
+							<chmin:individualName>Pierre Vuagniaux</chmin:individualName>
+							<chmin:positionName>N/A</chmin:positionName>
+							<chmin:organisationName>
+								<chmin:textGroup>
+									<chmin:plainText>Canton de Vaud - Office de l'information sur
+										le territoire</chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:organisationName>
+						</chmin:pointOfContact>
+						<chmin:extent>
+							<chmin:description>Canton de Vaud</chmin:description>
+							<chmin:geographicElement>
+								<chmin:westBoundLongitude>6.07</chmin:westBoundLongitude>
+								<chmin:eastBoundLongitude>7.25</chmin:eastBoundLongitude>
+								<chmin:southBoundLatitude>46.18</chmin:southBoundLatitude>
+								<chmin:northBoundLatitude>46.98</chmin:northBoundLatitude>
+							</chmin:geographicElement>
+						</chmin:extent>
+					</chmin:identificationInfo>
+				</chmin:MD_Metadata>
+				<chmin:MD_Metadata xmlns:chmin="http://www.geocat.ch/2003/05/gateway/GM03Small"
+					objid="482">
+					<chmin:fileIdentifier>482</chmin:fileIdentifier>
+					<chmin:dateStamp>2007-09-11T17:09:29.000+01:00</chmin:dateStamp>
+					<chmin:dataSetURI>www.asit.vd.ch</chmin:dataSetURI>
+					<chmin:metadataSetURI>http://www.asit.vd.ch/geoportal/geocatalog/data.asp?lng=FR&amp;type=public&amp;form=metadata&amp;ID=482
+					</chmin:metadataSetURI>
+					<chmin:identificationInfo>
+						<chmin:language>fr</chmin:language>
+						<chmin:topicCategory>planningCadastre</chmin:topicCategory>
+						<chmin:abstract>
+							<chmin:textGroup>
+								<chmin:plainText>Les données extraites sont identiques au
+									produit Données cadastrales GEOBAT sauf que la surface
+									d´extraction doit être comprise entre 7 et 13 hectares. Cette
+									donnée est réservée pour l'élaboration des projets de mutations
+									et d'enquêtes.</chmin:plainText>
+								<chmin:language>fr</chmin:language>
+								<chmin:country>CH</chmin:country>
+								<chmin:characterSetCode>utf16</chmin:characterSetCode>
+							</chmin:textGroup>
+						</chmin:abstract>
+						<chmin:citation>
+							<chmin:title>
+								<chmin:textGroup>
+									<chmin:plainText>Cadastre - Données cadastrales GEOBAT
+										mutations et enquêtes (7-13 ha)</chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:title>
+							<chmin:date>
+								<chmin:date>2008-02-20</chmin:date>
+								<chmin:dateType>revision</chmin:dateType>
+							</chmin:date>
+						</chmin:citation>
+						<chmin:pointOfContact>
+							<chmin:role>custodian</chmin:role>
+							<chmin:individualName>Roger Hug</chmin:individualName>
+							<chmin:positionName>N/A</chmin:positionName>
+							<chmin:organisationName>
+								<chmin:textGroup>
+									<chmin:plainText>Canton de Vaud - Office de l'information sur
+										le territoire</chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:organisationName>
+						</chmin:pointOfContact>
+						<chmin:pointOfContact>
+							<chmin:role>distributor</chmin:role>
+							<chmin:individualName>Isaline Jalade</chmin:individualName>
+							<chmin:positionName>N/A</chmin:positionName>
+							<chmin:organisationName>
+								<chmin:textGroup>
+									<chmin:plainText>Canton de Vaud - Office de l'information sur
+										le territoire</chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:organisationName>
+						</chmin:pointOfContact>
+						<chmin:pointOfContact>
+							<chmin:role>pointOfContact</chmin:role>
+							<chmin:individualName>Pierre Vuagniaux</chmin:individualName>
+							<chmin:positionName>N/A</chmin:positionName>
+							<chmin:organisationName>
+								<chmin:textGroup>
+									<chmin:plainText>Canton de Vaud - Office de l'information sur
+										le territoire</chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:organisationName>
+						</chmin:pointOfContact>
+						<chmin:extent>
+							<chmin:description>Canton de Vaud</chmin:description>
+							<chmin:geographicElement>
+								<chmin:westBoundLongitude>6.07</chmin:westBoundLongitude>
+								<chmin:eastBoundLongitude>7.25</chmin:eastBoundLongitude>
+								<chmin:southBoundLatitude>46.18</chmin:southBoundLatitude>
+								<chmin:northBoundLatitude>46.98</chmin:northBoundLatitude>
+							</chmin:geographicElement>
+						</chmin:extent>
+					</chmin:identificationInfo>
+				</chmin:MD_Metadata>
+				<chmin:MD_Metadata xmlns:chmin="http://www.geocat.ch/2003/05/gateway/GM03Small"
+					objid="490">
+					<chmin:fileIdentifier>490</chmin:fileIdentifier>
+					<chmin:dateStamp>2005-02-25T10:08:06.000+01:00</chmin:dateStamp>
+					<chmin:dataSetURI>www.asit.vd.ch</chmin:dataSetURI>
+					<chmin:metadataSetURI>http://www.asit.vd.ch/geoportal/geocatalog/data.asp?lng=FR&amp;type=public&amp;form=metadata&amp;ID=490
+					</chmin:metadataSetURI>
+					<chmin:identificationInfo>
+						<chmin:language>fr</chmin:language>
+						<chmin:topicCategory>planningCadastre</chmin:topicCategory>
+						<chmin:abstract>
+							<chmin:textGroup>
+								<chmin:plainText>Protocole indiquant pour chaque point de
+									polygone (point fixe planimétrique de niveau 3 de la
+									mensuration officielle) sa situation, sa matérialisation, ses
+									coordonnées planimétriques au cm et un croquis de repérage.
+
+									L¿altitude n¿est pas indiquée sur les protocoles en raison du
+									risque d¿erreur suite au repositionnement de la matérialisation
+									du point. Toutefois, elle peut être communiquée par le service
+									du cadastre.</chmin:plainText>
+								<chmin:language>fr</chmin:language>
+								<chmin:country>CH</chmin:country>
+								<chmin:characterSetCode>utf16</chmin:characterSetCode>
+							</chmin:textGroup>
+						</chmin:abstract>
+						<chmin:citation>
+							<chmin:title>
+								<chmin:textGroup>
+									<chmin:plainText>Points fixes de mensuration - Lausanne
+									</chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:title>
+							<chmin:date>
+								<chmin:date>2004-01-01</chmin:date>
+								<chmin:dateType>revision</chmin:dateType>
+							</chmin:date>
+						</chmin:citation>
+						<chmin:pointOfContact>
+							<chmin:role>custodian</chmin:role>
+							<chmin:individualName>Service du Cadastre</chmin:individualName>
+							<chmin:positionName>N/A</chmin:positionName>
+							<chmin:organisationName>
+								<chmin:textGroup>
+									<chmin:plainText>Commune de Lausanne </chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:organisationName>
+						</chmin:pointOfContact>
+						<chmin:extent>
+							<chmin:description>Commune de Lausanne</chmin:description>
+							<chmin:geographicElement>
+								<chmin:westBoundLongitude>6.07</chmin:westBoundLongitude>
+								<chmin:eastBoundLongitude>7.25</chmin:eastBoundLongitude>
+								<chmin:southBoundLatitude>46.18</chmin:southBoundLatitude>
+								<chmin:northBoundLatitude>46.98</chmin:northBoundLatitude>
+							</chmin:geographicElement>
+						</chmin:extent>
+					</chmin:identificationInfo>
+				</chmin:MD_Metadata>
+				<chmin:MD_Metadata xmlns:chmin="http://www.geocat.ch/2003/05/gateway/GM03Small"
+					objid="508">
+					<chmin:fileIdentifier>508</chmin:fileIdentifier>
+					<chmin:dateStamp>2007-09-11T17:11:53.000+01:00</chmin:dateStamp>
+					<chmin:dataSetURI>www.asit.vd.ch</chmin:dataSetURI>
+					<chmin:metadataSetURI>http://www.asit.vd.ch/geoportal/geocatalog/data.asp?lng=FR&amp;type=public&amp;form=metadata&amp;ID=508
+					</chmin:metadataSetURI>
+					<chmin:identificationInfo>
+						<chmin:language>fr</chmin:language>
+						<chmin:topicCategory>planningCadastre</chmin:topicCategory>
+						<chmin:abstract>
+							<chmin:textGroup>
+								<chmin:plainText>Les données cadastrales sont issues de la
+									mensuration officielle. Elles comprennent notamment les
+									biens-fonds (parcelles et domaines publics) et la couverture du
+									sol (routes, chemins, bâtiments, murs, forêts, vignes, cours
+									d'eau).
+
+									Ces données sont extraites de la base de données cadastrales
+									officielle (BDCO). Elles ne comprennent ni la représentation du
+									système de coordonnées et ni le cartouche reproduits sur le
+									plan du registre foncier.
+
+									L´échelle du plan cadastral, déterminée lors de la mensuration,
+									conditionne le domaine d´utilisation des données cadastrales.
+									Elle est fonction de la zone et du degré de précision recherché
+									(en principe 1:500 en zone urbaine, 1:1000 en zone agricole et
+									1:5000 en zone de montagne).
+</chmin:plainText>
+								<chmin:language>fr</chmin:language>
+								<chmin:country>CH</chmin:country>
+								<chmin:characterSetCode>utf16</chmin:characterSetCode>
+							</chmin:textGroup>
+						</chmin:abstract>
+						<chmin:citation>
+							<chmin:title>
+								<chmin:textGroup>
+									<chmin:plainText>Cadastre - Données cadastrales SIG
+									</chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:title>
+							<chmin:date>
+								<chmin:date>2008-02-20</chmin:date>
+								<chmin:dateType>revision</chmin:dateType>
+							</chmin:date>
+						</chmin:citation>
+						<chmin:pointOfContact>
+							<chmin:role>custodian</chmin:role>
+							<chmin:individualName>Roger Hug</chmin:individualName>
+							<chmin:positionName>N/A</chmin:positionName>
+							<chmin:organisationName>
+								<chmin:textGroup>
+									<chmin:plainText>Canton de Vaud - Office de l'information sur
+										le territoire</chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:organisationName>
+						</chmin:pointOfContact>
+						<chmin:pointOfContact>
+							<chmin:role>distributor</chmin:role>
+							<chmin:individualName>Isaline Jalade</chmin:individualName>
+							<chmin:positionName>N/A</chmin:positionName>
+							<chmin:organisationName>
+								<chmin:textGroup>
+									<chmin:plainText>Canton de Vaud - Office de l'information sur
+										le territoire</chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:organisationName>
+						</chmin:pointOfContact>
+						<chmin:pointOfContact>
+							<chmin:role>pointOfContact</chmin:role>
+							<chmin:individualName>Pierre Vuagniaux</chmin:individualName>
+							<chmin:positionName>N/A</chmin:positionName>
+							<chmin:organisationName>
+								<chmin:textGroup>
+									<chmin:plainText>Canton de Vaud - Office de l'information sur
+										le territoire</chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:organisationName>
+						</chmin:pointOfContact>
+						<chmin:extent>
+							<chmin:description>Canton de Vaud</chmin:description>
+							<chmin:geographicElement>
+								<chmin:westBoundLongitude>6.07</chmin:westBoundLongitude>
+								<chmin:eastBoundLongitude>7.25</chmin:eastBoundLongitude>
+								<chmin:southBoundLatitude>46.18</chmin:southBoundLatitude>
+								<chmin:northBoundLatitude>46.98</chmin:northBoundLatitude>
+							</chmin:geographicElement>
+						</chmin:extent>
+					</chmin:identificationInfo>
+				</chmin:MD_Metadata>
+				<chmin:MD_Metadata xmlns:chmin="http://www.geocat.ch/2003/05/gateway/GM03Small"
+					objid="509">
+					<chmin:fileIdentifier>509</chmin:fileIdentifier>
+					<chmin:dateStamp>2007-09-11T17:09:07.000+01:00</chmin:dateStamp>
+					<chmin:dataSetURI>www.asit.vd.ch</chmin:dataSetURI>
+					<chmin:metadataSetURI>http://www.asit.vd.ch/geoportal/geocatalog/data.asp?lng=FR&amp;type=public&amp;form=metadata&amp;ID=509
+					</chmin:metadataSetURI>
+					<chmin:identificationInfo>
+						<chmin:language>fr</chmin:language>
+						<chmin:topicCategory>planningCadastre</chmin:topicCategory>
+						<chmin:abstract>
+							<chmin:textGroup>
+								<chmin:plainText>Les données cadastrales sont issues de la
+									mensuration officielle. Elles comprennent notamment les
+									biens-fonds (parcelles et domaines publics) et la couverture du
+									sol (routes, chemins, bâtiments, murs, forêts, vignes, cours
+									d'eau).
+
+									Ces données sont extraites de la base de données cadastrales
+									officielle (BDCO). Elles ne comprennent ni la représentation du
+									système de coordonnées et ni le cartouche reproduits sur le
+									plan du registre foncier.
+
+									L´échelle du plan cadastral, déterminée lors de la mensuration,
+									conditionne le domaine d´utilisation des données cadastrales.
+									Elle est fonction de la zone et du degré de précision recherché
+									(en principe 1:500 en zone urbaine, 1:1000 en zone agricole et
+									1:5000 en zone de montagne).
+</chmin:plainText>
+								<chmin:language>fr</chmin:language>
+								<chmin:country>CH</chmin:country>
+								<chmin:characterSetCode>utf16</chmin:characterSetCode>
+							</chmin:textGroup>
+						</chmin:abstract>
+						<chmin:citation>
+							<chmin:title>
+								<chmin:textGroup>
+									<chmin:plainText>Cadastre - Données cadastrales GEOBAT
+									</chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:title>
+							<chmin:date>
+								<chmin:date>2008-02-20</chmin:date>
+								<chmin:dateType>revision</chmin:dateType>
+							</chmin:date>
+						</chmin:citation>
+						<chmin:pointOfContact>
+							<chmin:role>custodian</chmin:role>
+							<chmin:individualName>Roger Hug</chmin:individualName>
+							<chmin:positionName>N/A</chmin:positionName>
+							<chmin:organisationName>
+								<chmin:textGroup>
+									<chmin:plainText>Canton de Vaud - Office de l'information sur
+										le territoire</chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:organisationName>
+						</chmin:pointOfContact>
+						<chmin:pointOfContact>
+							<chmin:role>distributor</chmin:role>
+							<chmin:individualName>Isaline Jalade</chmin:individualName>
+							<chmin:positionName>N/A</chmin:positionName>
+							<chmin:organisationName>
+								<chmin:textGroup>
+									<chmin:plainText>Canton de Vaud - Office de l'information sur
+										le territoire</chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:organisationName>
+						</chmin:pointOfContact>
+						<chmin:pointOfContact>
+							<chmin:role>pointOfContact</chmin:role>
+							<chmin:individualName>Pierre Vuagniaux</chmin:individualName>
+							<chmin:positionName>N/A</chmin:positionName>
+							<chmin:organisationName>
+								<chmin:textGroup>
+									<chmin:plainText>Canton de Vaud - Office de l'information sur
+										le territoire</chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:organisationName>
+						</chmin:pointOfContact>
+						<chmin:extent>
+							<chmin:description>Canton de Vaud</chmin:description>
+							<chmin:geographicElement>
+								<chmin:westBoundLongitude>6.07</chmin:westBoundLongitude>
+								<chmin:eastBoundLongitude>7.25</chmin:eastBoundLongitude>
+								<chmin:southBoundLatitude>46.18</chmin:southBoundLatitude>
+								<chmin:northBoundLatitude>46.98</chmin:northBoundLatitude>
+							</chmin:geographicElement>
+						</chmin:extent>
+					</chmin:identificationInfo>
+				</chmin:MD_Metadata>
+				<chmin:MD_Metadata xmlns:chmin="http://www.geocat.ch/2003/05/gateway/GM03Small"
+					objid="510">
+					<chmin:fileIdentifier>510</chmin:fileIdentifier>
+					<chmin:dateStamp>2007-09-11T17:08:17.000+01:00</chmin:dateStamp>
+					<chmin:dataSetURI>www.asit.vd.ch</chmin:dataSetURI>
+					<chmin:metadataSetURI>http://www.asit.vd.ch/geoportal/geocatalog/data.asp?lng=FR&amp;type=public&amp;form=metadata&amp;ID=510
+					</chmin:metadataSetURI>
+					<chmin:identificationInfo>
+						<chmin:language>fr</chmin:language>
+						<chmin:topicCategory>planningCadastre</chmin:topicCategory>
+						<chmin:abstract>
+							<chmin:textGroup>
+								<chmin:plainText>Produit fourni sous forme d´un fichier texte
+									contenant les coordonnées des points de la mensuration
+									officielle. La structure du fichier est décrite dans le
+									formulaire OIT 6350 - annexe 1</chmin:plainText>
+								<chmin:language>fr</chmin:language>
+								<chmin:country>CH</chmin:country>
+								<chmin:characterSetCode>utf16</chmin:characterSetCode>
+							</chmin:textGroup>
+						</chmin:abstract>
+						<chmin:citation>
+							<chmin:title>
+								<chmin:textGroup>
+									<chmin:plainText>Cadastre - Données cadastrales : Points
+										MD.01-MO-VD</chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:title>
+							<chmin:date>
+								<chmin:date>2008-02-20</chmin:date>
+								<chmin:dateType>revision</chmin:dateType>
+							</chmin:date>
+						</chmin:citation>
+						<chmin:pointOfContact>
+							<chmin:role>distributor</chmin:role>
+							<chmin:individualName>Isaline Jalade</chmin:individualName>
+							<chmin:positionName>N/A</chmin:positionName>
+							<chmin:organisationName>
+								<chmin:textGroup>
+									<chmin:plainText>Etat de Vaud - Office de l'information sur le
+										territoire</chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:organisationName>
+						</chmin:pointOfContact>
+						<chmin:pointOfContact>
+							<chmin:role>custodian</chmin:role>
+							<chmin:individualName>Roger Hug</chmin:individualName>
+							<chmin:positionName>N/A</chmin:positionName>
+							<chmin:organisationName>
+								<chmin:textGroup>
+									<chmin:plainText>Etat de Vaud - Office de l'information sur le
+										territoire</chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:organisationName>
+						</chmin:pointOfContact>
+						<chmin:pointOfContact>
+							<chmin:role>pointOfContact</chmin:role>
+							<chmin:individualName>Pierre Vuagniaux</chmin:individualName>
+							<chmin:positionName>N/A</chmin:positionName>
+							<chmin:organisationName>
+								<chmin:textGroup>
+									<chmin:plainText>Etat de Vaud - Office de l'information sur le
+										territoire</chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:organisationName>
+						</chmin:pointOfContact>
+						<chmin:extent>
+							<chmin:description>Canton de Vaud</chmin:description>
+							<chmin:geographicElement>
+								<chmin:westBoundLongitude>6.07</chmin:westBoundLongitude>
+								<chmin:eastBoundLongitude>7.25</chmin:eastBoundLongitude>
+								<chmin:southBoundLatitude>46.18</chmin:southBoundLatitude>
+								<chmin:northBoundLatitude>46.98</chmin:northBoundLatitude>
+							</chmin:geographicElement>
+						</chmin:extent>
+					</chmin:identificationInfo>
+				</chmin:MD_Metadata>
+				<chmin:MD_Metadata xmlns:chmin="http://www.geocat.ch/2003/05/gateway/GM03Small"
+					objid="533">
+					<chmin:fileIdentifier>533</chmin:fileIdentifier>
+					<chmin:dateStamp>2007-09-11T17:10:14.000+01:00</chmin:dateStamp>
+					<chmin:dataSetURI>www.asit.vd.ch</chmin:dataSetURI>
+					<chmin:metadataSetURI>http://www.asit.vd.ch/geoportal/geocatalog/data.asp?lng=FR&amp;type=public&amp;form=metadata&amp;ID=533
+					</chmin:metadataSetURI>
+					<chmin:identificationInfo>
+						<chmin:language>fr</chmin:language>
+						<chmin:topicCategory>planningCadastre</chmin:topicCategory>
+						<chmin:abstract>
+							<chmin:textGroup>
+								<chmin:plainText>Les données cadastrales sont issues de la
+									mensuration officielle. Elles comprennent notamment les
+									biens-fonds (parcelles et domaines publics), la couverture du
+									sol (routes, bâtiments, forêts, vignes, cours d'eau, etc...)
+									ainsi que des objets divers (murs, piscines, téleskis, etc...)
+								</chmin:plainText>
+								<chmin:language>fr</chmin:language>
+								<chmin:country>CH</chmin:country>
+								<chmin:characterSetCode>utf16</chmin:characterSetCode>
+							</chmin:textGroup>
+						</chmin:abstract>
+						<chmin:citation>
+							<chmin:title>
+								<chmin:textGroup>
+									<chmin:plainText>Cadastre - Données cadastrales Interlis-CH
+									</chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:title>
+							<chmin:date>
+								<chmin:date>2008-02-20</chmin:date>
+								<chmin:dateType>revision</chmin:dateType>
+							</chmin:date>
+						</chmin:citation>
+						<chmin:pointOfContact>
+							<chmin:role>custodian</chmin:role>
+							<chmin:individualName>Roger Hug</chmin:individualName>
+							<chmin:positionName>N/A</chmin:positionName>
+							<chmin:organisationName>
+								<chmin:textGroup>
+									<chmin:plainText>Canton de Vaud - Office de l'information sur
+										le territoire</chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:organisationName>
+						</chmin:pointOfContact>
+						<chmin:pointOfContact>
+							<chmin:role>distributor</chmin:role>
+							<chmin:individualName>Isaline Jalade</chmin:individualName>
+							<chmin:positionName>N/A</chmin:positionName>
+							<chmin:organisationName>
+								<chmin:textGroup>
+									<chmin:plainText>Canton de Vaud - Office de l'information sur
+										le territoire</chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:organisationName>
+						</chmin:pointOfContact>
+						<chmin:pointOfContact>
+							<chmin:role>pointOfContact</chmin:role>
+							<chmin:individualName>Pierre Vuagniaux</chmin:individualName>
+							<chmin:positionName>N/A</chmin:positionName>
+							<chmin:organisationName>
+								<chmin:textGroup>
+									<chmin:plainText>Canton de Vaud - Office de l'information sur
+										le territoire</chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:organisationName>
+						</chmin:pointOfContact>
+						<chmin:extent>
+							<chmin:description>Canton de Vaud</chmin:description>
+							<chmin:geographicElement>
+								<chmin:westBoundLongitude>6.07</chmin:westBoundLongitude>
+								<chmin:eastBoundLongitude>7.25</chmin:eastBoundLongitude>
+								<chmin:southBoundLatitude>46.18</chmin:southBoundLatitude>
+								<chmin:northBoundLatitude>46.98</chmin:northBoundLatitude>
+							</chmin:geographicElement>
+						</chmin:extent>
+					</chmin:identificationInfo>
+				</chmin:MD_Metadata>
+				<chmin:MD_Metadata xmlns:chmin="http://www.geocat.ch/2003/05/gateway/GM03Small"
+					objid="535">
+					<chmin:fileIdentifier>535</chmin:fileIdentifier>
+					<chmin:dateStamp>2007-03-21T11:29:32.000+01:00</chmin:dateStamp>
+					<chmin:dataSetURI>www.asit.vd.ch</chmin:dataSetURI>
+					<chmin:metadataSetURI>http://www.asit.vd.ch/geoportal/geocatalog/data.asp?lng=FR&amp;type=public&amp;form=metadata&amp;ID=535
+					</chmin:metadataSetURI>
+					<chmin:identificationInfo>
+						<chmin:language>fr</chmin:language>
+						<chmin:topicCategory>environment</chmin:topicCategory>
+						<chmin:abstract>
+							<chmin:textGroup>
+								<chmin:plainText>Le cadastre du bruit routier détermine les
+									niveaux sonores le long des axes routiers pour le jour
+									(06h00-22h00) et pour la nuit (22h00-06h00). Ce cadastre est
+									basé sur le plan de charge trafic de l'année 2000.
+								</chmin:plainText>
+								<chmin:language>fr</chmin:language>
+								<chmin:country>CH</chmin:country>
+								<chmin:characterSetCode>utf16</chmin:characterSetCode>
+							</chmin:textGroup>
+						</chmin:abstract>
+						<chmin:citation>
+							<chmin:title>
+								<chmin:textGroup>
+									<chmin:plainText>Cadastre du bruit routier</chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:title>
+							<chmin:date>
+								<chmin:date>2002-11-11</chmin:date>
+								<chmin:dateType>revision</chmin:dateType>
+							</chmin:date>
+						</chmin:citation>
+						<chmin:pointOfContact>
+							<chmin:role>custodian</chmin:role>
+							<chmin:individualName>N/A</chmin:individualName>
+							<chmin:positionName>N/A</chmin:positionName>
+							<chmin:organisationName>
+								<chmin:textGroup>
+									<chmin:plainText>Service de l'environnement et de l'énergie
+										(SEVEN)</chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:organisationName>
+						</chmin:pointOfContact>
+						<chmin:pointOfContact>
+							<chmin:role>distributor</chmin:role>
+							<chmin:individualName>N/A</chmin:individualName>
+							<chmin:positionName>N/A</chmin:positionName>
+							<chmin:organisationName>
+								<chmin:textGroup>
+									<chmin:plainText>Service de l'environnement et de l'énergie
+										(SEVEN)</chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:organisationName>
+						</chmin:pointOfContact>
+						<chmin:pointOfContact>
+							<chmin:role>pointOfContact</chmin:role>
+							<chmin:individualName>N/A</chmin:individualName>
+							<chmin:positionName>N/A</chmin:positionName>
+							<chmin:organisationName>
+								<chmin:textGroup>
+									<chmin:plainText>Service de l'environnement et de l'énergie
+										(SEVEN)</chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:organisationName>
+						</chmin:pointOfContact>
+						<chmin:extent>
+							<chmin:description>Canton de Vaud</chmin:description>
+							<chmin:geographicElement>
+								<chmin:westBoundLongitude>6.07</chmin:westBoundLongitude>
+								<chmin:eastBoundLongitude>7.25</chmin:eastBoundLongitude>
+								<chmin:southBoundLatitude>46.18</chmin:southBoundLatitude>
+								<chmin:northBoundLatitude>46.98</chmin:northBoundLatitude>
+							</chmin:geographicElement>
+						</chmin:extent>
+					</chmin:identificationInfo>
+				</chmin:MD_Metadata>
+				<chmin:MD_Metadata xmlns:chmin="http://www.geocat.ch/2003/05/gateway/GM03Small"
+					objid="540">
+					<chmin:fileIdentifier>540</chmin:fileIdentifier>
+					<chmin:dateStamp>2007-09-11T17:12:13.000+01:00</chmin:dateStamp>
+					<chmin:dataSetURI>www.asit.vd.ch</chmin:dataSetURI>
+					<chmin:metadataSetURI>http://www.asit.vd.ch/geoportal/geocatalog/data.asp?lng=FR&amp;type=public&amp;form=metadata&amp;ID=540
+					</chmin:metadataSetURI>
+					<chmin:identificationInfo>
+						<chmin:language>fr</chmin:language>
+						<chmin:topicCategory>planningCadastre</chmin:topicCategory>
+						<chmin:abstract>
+							<chmin:textGroup>
+								<chmin:plainText>Cette donnée ne comporte que les points
+									particuliers de la mensuration officielle. Elle est diffusée en
+									complément de la donnée "Données cadastrales SIG".
+
+									Les points particuliers comprennent tous les points contribuant à
+									la définition des bâtiments et les points fiables des autres
+									objets des thèmes couverture du sol et objets divers.
+
+									Les données sont extraites de la base de données cadastrales
+									officielle (BDCO). Elles ne comprennent ni la représentation du
+									système de coordonnées et ni le cartouche reproduits sur le
+									plan du registre foncier. </chmin:plainText>
+								<chmin:language>fr</chmin:language>
+								<chmin:country>CH</chmin:country>
+								<chmin:characterSetCode>utf16</chmin:characterSetCode>
+							</chmin:textGroup>
+						</chmin:abstract>
+						<chmin:citation>
+							<chmin:title>
+								<chmin:textGroup>
+									<chmin:plainText>Cadastre - Données cadastrales SIG : points
+										particuliers</chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:title>
+							<chmin:date>
+								<chmin:date>2008-02-20</chmin:date>
+								<chmin:dateType>revision</chmin:dateType>
+							</chmin:date>
+						</chmin:citation>
+						<chmin:pointOfContact>
+							<chmin:role>pointOfContact</chmin:role>
+							<chmin:individualName>Pierre Vuagniaux</chmin:individualName>
+							<chmin:positionName>N/A</chmin:positionName>
+							<chmin:organisationName>
+								<chmin:textGroup>
+									<chmin:plainText>Canton de Vaud - Office de l'information sur
+										le territoire</chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:organisationName>
+						</chmin:pointOfContact>
+						<chmin:pointOfContact>
+							<chmin:role>distributor</chmin:role>
+							<chmin:individualName>Isaline Jalade</chmin:individualName>
+							<chmin:positionName>N/A</chmin:positionName>
+							<chmin:organisationName>
+								<chmin:textGroup>
+									<chmin:plainText>Canton de Vaud - Office de l'information sur
+										le territoire</chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:organisationName>
+						</chmin:pointOfContact>
+						<chmin:pointOfContact>
+							<chmin:role>custodian</chmin:role>
+							<chmin:individualName>Roger Hug</chmin:individualName>
+							<chmin:positionName>N/A</chmin:positionName>
+							<chmin:organisationName>
+								<chmin:textGroup>
+									<chmin:plainText>Canton de Vaud - Office de l'information sur
+										le territoire</chmin:plainText>
+									<chmin:language>fr</chmin:language>
+									<chmin:country>CH</chmin:country>
+									<chmin:characterSetCode>utf16</chmin:characterSetCode>
+								</chmin:textGroup>
+							</chmin:organisationName>
+						</chmin:pointOfContact>
+						<chmin:extent>
+							<chmin:description>Canton de Vaud</chmin:description>
+							<chmin:geographicElement>
+								<chmin:westBoundLongitude>6.07</chmin:westBoundLongitude>
+								<chmin:eastBoundLongitude>7.25</chmin:eastBoundLongitude>
+								<chmin:southBoundLatitude>46.18</chmin:southBoundLatitude>
+								<chmin:northBoundLatitude>46.98</chmin:northBoundLatitude>
+							</chmin:geographicElement>
+						</chmin:extent>
+					</chmin:identificationInfo>
+				</chmin:MD_Metadata>
+			</gcq:queryResult>
+		</gcq:catalogGatewayRequest>
+	</env:Body>
+</env:Envelope>
