@@ -436,7 +436,7 @@ class ADMIN_proxy
 		}
 
 		{
-			if (strlen($allUsers)>0)
+			if (is_array($allUsers))
 			{
 				$thePolicy->Subjects="";
 				$thePolicy->Subjects[All]="true";
@@ -470,7 +470,7 @@ class ADMIN_proxy
 		
 		//Operations
 		$AllOperations = JRequest::getVar("AllOperations","");
-		if (strlen($AllOperations)>0)
+		if (is_array($AllOperations))
 		{
 			$thePolicy->Operations="";
 			$thePolicy->Operations['All']="true";
