@@ -225,13 +225,14 @@ echo $pane->endPane();
 	function isChecked($theServer,$featureType){
 
 		if (strcasecmp($theServer->{"FeatureTypes"}['All'],"true")==0) return true;
-		$featureName ="";
-		if (strrpos($featureType->{'Name'}, ":") === false) 
-			$featureName =  $featureType->{'Name'}; 
-		else 
-			$featureName = substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);
+//		$featureName ="";
+//		if (strrpos($featureType->{'Name'}, ":") === false) 
+//			$featureName =  $featureType->{'Name'}; 
+//		else 
+//			$featureName = substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);
 		if (count($theServer->FeatureTypes->FeatureType )==0) return false;
 		foreach ($theServer->FeatureTypes->FeatureType as $ft ){
+//			if (strcmp($ft->{'Name'},$featureName)==0){
 			if (strcmp($ft->{'Name'},$featureName)==0){
 				return true;
 			}
@@ -1953,8 +1954,10 @@ function activateLayer(server,layerName){
 				<input align="left" onClick="activateFeatureType('<?php echo $iServer; ?>','<?php echo $ftnum;?>')" <?php if( HTML_proxy ::isChecked($theServer,$featureType)) echo 'checked';?> type="checkbox"
 					id="featuretype@<?php echo $iServer; ?>@<?php echo $ftnum; ?>"
 					name="featuretype@<?php echo $iServer; ?>@<?php echo $ftnum; ?>" 
-					value="<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"></td>
-				<td align="left"><?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?></td>
+					value="<?php echo $featureType->{'Name'}; ?>"></td>
+<!--					value="<?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?>"></td>-->
+					<td align="left"><?php echo $featureType->{'Name'}; ?></td>
+<!--				<td align="left"><?php if (strrpos($featureType->{'Name'}, ":") === false) echo $featureType->{'Name'}; else echo substr($featureType->{'Name'},strrpos($featureType->{'Name'}, ":")+1);?></td>-->
 			</tr>
 			<tr>
 				<td colspan="2" align="left">"<?php if (strrpos($featureType->{'Title'}, ":") === false) echo $featureType->{'Title'}; else echo substr($featureType->{'Title'},strrpos($featureType->{'Title'}, ":")+1);?>"
