@@ -1,0 +1,245 @@
+
+
+
+
+
+
+
+
+<script type="text/javascript">
+	var newReportUrl ="index.php?option=com_easysdi_catalog&task=newXQueryReport&cid=0";
+	var editReportUrl ="index.php?option=com_easysdi_catalog&task=editXQueryReport&cid=";
+	var saveReportUrl ="index.php?option=com_easysdi_catalog&task=saveXQueryReport&cid=";
+	var deleteReportUrl ="index.php?option=com_easysdi_catalog&task=deleteXQueryReport&cid=";
+	var cancelReportUrl ="index.php?option=com_easysdi_catalog&task=listQueryReports&cid=0&resetpagination=1";
+	var assignReportUrl = "index.php?option=com_easysdi_catalog&task=assignXQueryReport&cid=";
+	var saveUserReportAccessUrl = "index.php?option=com_easysdi_catalog&task=saveXQueryUserReportAccess&cid=";
+	var processReportUrl = "index.php?option=com_easysdi_catalog&task=processXQueryReport&cid=";
+	var adminTestXQueryReportUrl =  "index.php?option=com_easysdi_catalog&task=processXQueryReport&cid=";
+	var listXQueryReportUrl = "index.php?option=com_easysdi_catalog&task=listQueryReports";
+	var listMyReportUrl = "index.php?option=com_easysdi_catalog&view=catalog+managment&task=listMyReports";
+
+	
+	var adminPanelUrl = "index.php?";
+	var selectOnlyOneMsg = " Please select only one report to proceed with.";
+	var reportToPreviewId = 0;
+	var reportToUpdateId = 0;
+	var reportToDeleteId = 0;
+	var reportToAssignId = 0;
+	var tmpReportIds = new Array();
+	var tmpUserAccountsToAdd = new Array();
+	var tmpUserAccountsToRemove = new Array();
+	var currentOrgFilter = "";
+	var sortByQueryName=  "asc";
+	var sortByUserFullName=  "asc";
+	var sortByUserEmailAddress=  "asc";
+	var showUsers=  0; // 0= all, 1= users assigned only, 2= users not yet assigned.
+
+	
+	function submitbutton(action,id) 
+	{
+				
+		actionUrl ="";
+		if (action == "newXQueryReport" )
+			actionUrl = newReportUrl;
+		
+		else if (action == "editXQueryReport" ){
+
+			if (id!=undefined)
+				actionUrl = editReportUrl + id;
+				
+			else if(tmpReportIds.length == 1)
+				actionUrl = editReportUrl + reportToPreviewId;
+			else
+				alert(selectOnlyOneMsg);
+		}
+		
+		else if (action == "saveXQueryReport" ){
+			actionUrl = saveReportUrl + reportToUpdateId;
+		}
+		
+		else if (action == "deleteXQueryReport" ){
+			actionUrl = deleteReportUrl + reportToDeleteId;
+		}
+		
+		else if (action == "cancelXQueryReport" ){
+			actionUrl = cancelReportUrl;
+		}		
+		else if (action == "assignXQueryReport" ){
+			if (id!=undefined)
+				actionUrl = assignReportUrl +  id + currentOrgFilter + "&resetpagination=1";
+			else if(tmpReportIds.length == 1)
+				actionUrl = assignReportUrl +  reportToAssignId + currentOrgFilter + "&resetpagination=1";
+			else{
+				 if (reportToAssignId != 0)
+					 actionUrl = assignReportUrl +  reportToAssignId + currentOrgFilter +"&resetpagination=1" ;
+				 else
+					alert(selectOnlyOneMsg);
+			}
+		}
+		else if (action == "assignXQueryReportSortEmail" ){
+			
+			if(tmpReportIds.length == 1)
+				actionUrl = assignReportUrl +  reportToAssignId + getOrgFilter() + "&sortByUserEmailAddress="+sortByUserEmailAddress +"&sortType=email";
+			else{
+				 if (reportToAssignId != 0)
+					 actionUrl = assignReportUrl +  reportToAssignId + getOrgFilter()+ "&sortByUserEmailAddress="+sortByUserEmailAddress +"&sortType=email";
+				 else
+					alert(selectOnlyOneMsg);
+			}
+		}
+		else if (action == "assignXQueryReportSortFullName" ){
+			
+			if(tmpReportIds.length == 1)
+				actionUrl = assignReportUrl +  reportToAssignId + getOrgFilter()+ "&sortByUserFullName="+sortByUserFullName +"&sortType=fullname";
+			else{
+				 if (reportToAssignId != 0)
+					 actionUrl = assignReportUrl +  reportToAssignId + getOrgFilter() + "&sortByUserFullName="+sortByUserFullName +"&sortType=fullname";
+				 else
+					alert(selectOnlyOneMsg);
+			}
+		}
+		else if (action == "saveXQueryUserReportAccess" ){
+			
+				actionUrl = saveUserReportAccessUrl +  reportToAssignId + "&add="+tmpUserAccountsToAdd.join(";") + "&remove="+tmpUserAccountsToRemove.join(";") ;
+					
+		}
+		else if (action == "processXQueryReport" ){
+			actionUrl = processReportUrl + id ;
+		}
+		else if (action =="adminTestXQueryReport"){
+			actionUrl = adminTestXQueryReportUrl + id ;
+		}
+		else if (action =="listXQueryReport"){
+			actionUrl = listXQueryReportUrl +"&sortByQueryName="+sortByQueryName;
+		}
+
+		else if(action =="listMyReport"){
+			actionUrl = listMyReportUrl +"&sortByQueryName="+sortByQueryName ;
+		}
+		else if (action =="adminPanel"){
+			actionUrl = adminPanelUrl ;
+		}
+		
+		else{ actionUrl ="";}
+		
+
+
+		if(actionUrl !=""){
+			document.adminForm.action= actionUrl;
+			document.adminForm.submit();
+		}
+		
+	}
+
+	function getOrgFilter(){
+		node = document.getElementById("orgfilter")
+		index= node.selectedIndex;
+		currentOrgFilter = "&root="+node[index].value;
+		return currentOrgFilter;
+	}
+	function filterByOrg(){
+		node = document.getElementById("orgfilter")
+		index= node.selectedIndex;
+		currentOrgFilter = "&root="+node[index].value;
+
+		submitbutton("assignXQueryReport");
+	}
+	
+	function setUserReportAccess(obj, id){
+		
+		indexofId = null;
+
+		if(obj.checked){
+
+			for(i=0; i< tmpUserAccountsToRemove.length ;i++){
+				if(tmpUserAccountsToRemove[i]==id){
+					indexofId= i;
+					break
+				}
+			}
+
+			if(null!=indexofId)
+				tmpUserAccountsToRemove.splice(i,1); // start at index i and remove 1 element
+			else{
+				tmpUserAccountsToAdd.push(id);
+			}
+			
+			
+
+			
+		}
+		else{
+			for(i=0; i< tmpUserAccountsToAdd.length ;i++){
+				if(tmpUserAccountsToAdd[i]==id){
+					indexofId= i;
+					break
+				}
+			}
+
+			if(null!=indexofId)
+				tmpUserAccountsToAdd.splice(i,1); // start at index i and remove 1 element
+			else{
+				tmpUserAccountsToRemove.push(id);
+			}
+
+		}
+		
+	
+		
+	}
+	function setReportIdToPreview(obj, id){
+		reportToPreviewId= id;
+		reportToAssignId =  id;
+		indexofId = null;
+
+		if(obj.checked)
+			tmpReportIds.push(id);
+		else{
+			for(i=0; i< tmpReportIds.length ;i++){
+				if(tmpReportIds[i]==id){
+					indexofId= i;
+					break
+				}
+			}
+
+			if(null!=indexofId)
+				tmpReportIds.splice(i,1); // start at index i and remove 1 element
+
+		}
+		
+		reportToDeleteId = tmpReportIds.join(";");
+		
+	}
+
+	function submitform(pressbutton){
+
+		debugger;
+		 if(document.adminForm.baseURI){
+			 currentbaseuri =document.adminForm.baseURI
+			 document.adminForm.action =currentbaseuri.replace("&resetpagination=1","");
+		 }
+		 if (pressbutton) {
+	 		document.adminForm.task.value=pressbutton;
+		 }
+		 if (typeof document.adminForm.onsubmit == "function") {
+			 document.adminForm.onsubmit();
+		 }
+		 document.adminForm.submit();
+	} 
+
+	function setSort(item, sortType, refreshType){
+		if(item=="QueryName")
+			sortByQueryName = sortType;
+		else if(item=="userFullName")
+			sortByUserFullName = sortType;
+		else if(item=="userEmail")
+			sortByUserEmailAddress = sortType;
+		else 
+			return;
+
+		submitbutton(refreshType);
+	}
+
+
+</script>

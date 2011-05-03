@@ -1,0 +1,12 @@
+{
+	"db.hostname" : "localhost:3306",
+	"db.testdb" :"easysdi_test",
+	"db.username" :"root",
+	"db.password":"invulsion",
+	"catalog_mxquery_url" : "localhost:8080/MXQuery",
+	"catalog_url": "localhost:8080/proxy/ogc/geonetwork",
+	"proxy_url" : "localhost:8080/proxy",
+	"geodbmeta_http_frontend_root" : "http://localhost/sdiv2/index.php",
+	"geodbmeta_http_admin_root" : "http://localhost/sdiv2/administrator/index.php"
+	
+}
