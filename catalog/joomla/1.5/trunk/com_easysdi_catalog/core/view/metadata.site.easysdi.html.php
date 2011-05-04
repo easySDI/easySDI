@@ -1303,8 +1303,21 @@ else
 						                {
 						                	myMask.show();
 						                 	var fields = new Array();
+						                 	form.getForm().fieldInvalid =false;
+					        				form.getForm().extValidationCorrupt =false;
 						        			form.cascade(function(cmp)
 						        			{
+						        				//verifies whether client validation is ok for any field that needs validation.
+						        				if(cmp.isValid){
+							        				if(!cmp.isValid()){														
+															form.getForm().fieldInvalid =true;														
+												
+														if(!document.getElementById(cmp.id)){														
+																form.getForm().extValidationCorrupt =true;														
+														}
+													}
+												}
+												
 							        			if (cmp.xtype=='fieldset')
 						         				{
 						         					if (cmp.clones_count)
@@ -1318,26 +1331,84 @@ else
 						                 	form.getForm().setValues({metadata_id: '".$metadata_id."'});
 						                 	form.getForm().setValues({object_id: '".$object_id."'});
 						                 	form.getForm().setValues({account_id: '".$account_id."'});
-											form.getForm().submit({
-										    	scope: this,
-												method	: 'POST',
-												clientValidation: true,
-												success: function(form, action) 
-												{
-													Ext.MessageBox.alert('".JText::_('CATALOG_UPDATEMETADATA_MSG_SUCCESS_TITLE')."', 
-							                    						 '".JText::_('CATALOG_UPDATEMETADATA_MSG_SUCCESS_TEXT')."',
-							                    						 function () {window.open ('./index.php?option=".$option."&task=cancelMetadata&object_id=".$object_id."&Itemid=".JRequest::getVar('Itemid')."&lang=".JRequest::getVar('lang')."','_parent');});
-												
-													myMask.hide();
-												},
-												failure: function(form, action) 
-												{
-                        							Ext.MessageBox.alert('".JText::_('CATALOG_UPDATEMETADATA_MSG_FAILURE_TITLE')."', '".JText::_('CATALOG_UPDATEMETADATA_MSG_FAILURE_TEXT')."');
+						                 	
+							            	if (!form.getForm().fieldInvalid) 
+						        			{
+												form.getForm().submit({
+											    	scope: this,
+													method	: 'POST',
+													clientValidation: true,
+													success: function(form, action) 
+													{
+														Ext.MessageBox.alert('".JText::_('CATALOG_UPDATEMETADATA_MSG_SUCCESS_TITLE')."', 
+								                    						 '".JText::_('CATALOG_UPDATEMETADATA_MSG_SUCCESS_TEXT')."',
+								                    						 function () {window.open ('./index.php?option=".$option."&task=cancelMetadata&object_id=".$object_id."&Itemid=".JRequest::getVar('Itemid')."&lang=".JRequest::getVar('lang')."','_parent');});
+													
+														myMask.hide();
+													},
+													failure: function(form, action) 
+													{
+	                        							Ext.MessageBox.alert('".JText::_('CATALOG_UPDATEMETADATA_MSG_FAILURE_TITLE')."', '".JText::_('CATALOG_UPDATEMETADATA_MSG_FAILURE_TEXT')."');
+																
+														myMask.hide();
+													},
+													url:'".$update_url."'
+												});
+											}//end 
+											else{
+												if(form.getForm().extValidationCorrupt){															
+															Ext.Msg.show({
+															   modal : true,														
+															   title:'".JText::_('CATALOG_VALIDATEMETADATA_MSG_FAILURE_TITLE')."',
+															   msg: '".JText::_('CATALOG_VALIDATEMETADATA_MSG_EXTCORRUPT')."',
+															   buttons: Ext.Msg.YESNO,
+				
+															   fn:  function(btn){															           			
+						        								
+																		if (btn == 'no')
+																			form.getForm().fieldInvalid = true;
+																		else
+																			{
+																						form.getForm().submit({
+																				    	scope: this,
+																						method	: 'POST',
+																						clientValidation: true,
+																						success: function(form, action) 
+																						{
+																							Ext.MessageBox.alert('".JText::_('CATALOG_UPDATEMETADATA_MSG_SUCCESS_TITLE')."', 
+																	                    						 '".JText::_('CATALOG_UPDATEMETADATA_MSG_SUCCESS_TEXT')."',
+																	                    						 function () {window.open ('./index.php?option=".$option."&task=cancelMetadata&object_id=".$object_id."&Itemid=".JRequest::getVar('Itemid')."&lang=".JRequest::getVar('lang')."','_parent');});
+																						
+																							myMask.hide();
+																						},
+																						failure: function(form, action) 
+																						{
+										                        							Ext.MessageBox.alert('".JText::_('CATALOG_UPDATEMETADATA_MSG_FAILURE_TITLE')."', '".JText::_('CATALOG_UPDATEMETADATA_MSG_FAILURE_TEXT')."');
+																									
+																							myMask.hide();
+																						},
+																						url:'".$update_url."'
+																					});
+				
+																			}
+																	} ,
+															   animEl: 'elId'
+															});			        			 		
+																		
+													
+													}else{
+														Ext.MessageBox.alert('".JText::_('CATALOG_UPDATEMETADATA_MSG_FAILURE_TITLE')."', '".JText::_('CATALOG_UPDATEMETADATA_MSG_FAILURE_TEXT')."');
 															
-													myMask.hide();
-												},
-												url:'".$update_url."'
-											});
+														myMask.hide();
+											
+													
+													}
+				
+				
+											}
+											
+											
+											
 							        	}})
 							        );
 						form.render();";

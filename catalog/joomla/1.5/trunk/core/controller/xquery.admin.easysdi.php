@@ -35,8 +35,12 @@ defined('_JEXEC') or die('Restricted access');
 	var assignReportUrl = "<?php echo "index.php?option=com_easysdi_catalog&task=assignXQueryReport&cid="?>";
 	var saveUserReportAccessUrl = "<?php echo "index.php?option=com_easysdi_catalog&task=saveXQueryUserReportAccess&cid="?>";
 	var processReportUrl = "<?php echo "index.php?option=com_easysdi_catalog&task=processXQueryReport&cid="?>";
-	var adminTestXQueryReportUrl =  "<?php echo "../index.php?option=com_easysdi_catalog&task=processXQueryReport&cid="?>";
+	var adminTestXQueryReportUrl =  "<?php echo "index.php?option=com_easysdi_catalog&task=processXQueryReport&cid="?>";
+	var listXQueryReportUrl = "<?php echo "index.php?option=com_easysdi_catalog&task=listQueryReports"?>";
+	var listMyReportUrl = "<?php echo "index.php?option=com_easysdi_catalog&view=catalog+managment&task=listMyReports"?>";
+
 	
+	var adminPanelUrl = "<?php echo "index.php?option=com_easysdi_core"?>";
 	var selectOnlyOneMsg = "<?php echo JText::_("CATALOG_XQUERY_SELECTONLYONE") ?>";
 	var reportToPreviewId = 0;
 	var reportToUpdateId = 0;
@@ -46,17 +50,25 @@ defined('_JEXEC') or die('Restricted access');
 	var tmpUserAccountsToAdd = new Array();
 	var tmpUserAccountsToRemove = new Array();
 	var currentOrgFilter = "";
-		
+	var sortByQueryName=  "<?php echo JRequest::getVar('sortByQueryName', "asc")?>";
+	var sortByUserFullName=  "<?php echo JRequest::getVar('sortByUserFullName', "asc")?>";
+	var sortByUserEmailAddress=  "<?php echo JRequest::getVar('sortByUserEmailAddress', "asc")?>";
+	var showUsers=  <?php echo JRequest::getVar('showUsers', 0)?>; // 0= all, 1= users assigned only, 2= users not yet assigned.
+
+	
 	function submitbutton(action,id) 
 	{
-		debugger;
-		
+				
 		actionUrl ="";
 		if (action == "newXQueryReport" )
 			actionUrl = newReportUrl;
 		
 		else if (action == "editXQueryReport" ){
-			if(tmpReportIds.length == 1)
+
+			if (id!=undefined)
+				actionUrl = editReportUrl + id;
+				
+			else if(tmpReportIds.length == 1)
 				actionUrl = editReportUrl + reportToPreviewId;
 			else
 				alert(selectOnlyOneMsg);
@@ -74,13 +86,38 @@ defined('_JEXEC') or die('Restricted access');
 			actionUrl = cancelReportUrl;
 		}		
 		else if (action == "assignXQueryReport" ){
-			if(tmpReportIds.length == 1)
+			if (id!=undefined)
+				actionUrl = assignReportUrl +  id + currentOrgFilter + "&resetpagination=1";
+			else if(tmpReportIds.length == 1)
 				actionUrl = assignReportUrl +  reportToAssignId + currentOrgFilter + "&resetpagination=1";
-			else
+			else{
 				 if (reportToAssignId != 0)
 					 actionUrl = assignReportUrl +  reportToAssignId + currentOrgFilter +"&resetpagination=1" ;
 				 else
 					alert(selectOnlyOneMsg);
+			}
+		}
+		else if (action == "assignXQueryReportSortEmail" ){
+			
+			if(tmpReportIds.length == 1)
+				actionUrl = assignReportUrl +  reportToAssignId + getOrgFilter() + "&sortByUserEmailAddress="+sortByUserEmailAddress +"&sortType=email";
+			else{
+				 if (reportToAssignId != 0)
+					 actionUrl = assignReportUrl +  reportToAssignId + getOrgFilter()+ "&sortByUserEmailAddress="+sortByUserEmailAddress +"&sortType=email";
+				 else
+					alert(selectOnlyOneMsg);
+			}
+		}
+		else if (action == "assignXQueryReportSortFullName" ){
+			
+			if(tmpReportIds.length == 1)
+				actionUrl = assignReportUrl +  reportToAssignId + getOrgFilter()+ "&sortByUserFullName="+sortByUserFullName +"&sortType=fullname";
+			else{
+				 if (reportToAssignId != 0)
+					 actionUrl = assignReportUrl +  reportToAssignId + getOrgFilter() + "&sortByUserFullName="+sortByUserFullName +"&sortType=fullname";
+				 else
+					alert(selectOnlyOneMsg);
+			}
 		}
 		else if (action == "saveXQueryUserReportAccess" ){
 			
@@ -93,6 +130,17 @@ defined('_JEXEC') or die('Restricted access');
 		else if (action =="adminTestXQueryReport"){
 			actionUrl = adminTestXQueryReportUrl + id ;
 		}
+		else if (action =="listXQueryReport"){
+			actionUrl = listXQueryReportUrl +"&sortByQueryName="+sortByQueryName;
+		}
+
+		else if(action =="listMyReport"){
+			actionUrl = listMyReportUrl +"&sortByQueryName="+sortByQueryName ;
+		}
+		else if (action =="adminPanel"){
+			actionUrl = adminPanelUrl ;
+		}
+		
 		else{ actionUrl ="";}
 		
 
@@ -104,6 +152,12 @@ defined('_JEXEC') or die('Restricted access');
 		
 	}
 
+	function getOrgFilter(){
+		node = document.getElementById("orgfilter")
+		index= node.selectedIndex;
+		currentOrgFilter = "&root="+node[index].value;
+		return currentOrgFilter;
+	}
 	function filterByOrg(){
 		node = document.getElementById("orgfilter")
 		index= node.selectedIndex;
@@ -180,6 +234,7 @@ defined('_JEXEC') or die('Restricted access');
 
 	function submitform(pressbutton){
 
+		debugger;
 		 if(document.adminForm.baseURI){
 			 currentbaseuri =document.adminForm.baseURI
 			 document.adminForm.action =currentbaseuri.replace("&resetpagination=1","");
@@ -192,6 +247,21 @@ defined('_JEXEC') or die('Restricted access');
 		 }
 		 document.adminForm.submit();
 	} 
+
+	function setSort(item, sortType, refreshType){
+		if(item=="QueryName")
+			sortByQueryName = sortType;
+		else if(item=="userFullName")
+			sortByUserFullName = sortType;
+		else if(item=="userEmail")
+			sortByUserEmailAddress = sortType;
+		else 
+			return;
+
+		submitbutton(refreshType);
+	}
+
+
 </script>
 <?php }//end if?>
 <?php
@@ -212,7 +282,10 @@ class ADMIN_xQuery{
 			JRequest::setVar('limit', 10);
 			JRequest::setVar('limitstart', 0);
 			JRequest::setVar('resetpagination', 0);
+
 		}
+		
+
 		
 		$limit		=  JRequest::getVar('limit', 10);
 		$limitstart	=  JRequest::getVar('limitstart', 0);
@@ -222,7 +295,8 @@ class ADMIN_xQuery{
 		$total = $database->loadResult();
 		$pagination = new JPagination($total,$limitstart,$limit);
 		
-		$selectsql = "select * from #__sdi_xqueryreport";
+		$selectsql = "select * from #__sdi_xqueryreport order by xqueryname ".JRequest::getVar('sortByQueryName', "asc");
+		
 		try{
 			
 			$database->setQuery( $selectsql, $pagination->limitstart, $pagination->limit);
@@ -430,6 +504,23 @@ class ADMIN_xQuery{
 					$mainframe->redirect($xqueryHomeUrl, $database->getErrorMsg(),"ERROR");
 						
 				}
+		
+			}
+		}
+		catch(Exception $e)
+		{
+			$mainframe->redirect($xqueryHomeUrl, $e->getTraceAsString());
+		}
+		
+		try{
+			if($deletesql != ""){
+				$deletesql ="DELETE FROM #__sdi_xqueryreportassignation where report_id in(".join(",",$cid).")";
+				$database->setQuery($deletesql);
+				if (!$database->query())
+				{
+					$mainframe->redirect($xqueryHomeUrl, $database->getErrorMsg(),"ERROR");
+						
+				}
 				else{
 					$mainframe->redirect($xqueryHomeUrl, JText::_("CATALOG_XQUERY_DELETESUCCESS"));
 						
@@ -440,7 +531,6 @@ class ADMIN_xQuery{
 		{
 			$mainframe->redirect($xqueryHomeUrl, $e->getTraceAsString());
 		}
-		
 
 	}
 	function assignXQueryReport(){
@@ -450,17 +540,24 @@ class ADMIN_xQuery{
 			
 		$db =& JFactory::getDBO(); 
 		
-		
 		$reportId = JRequest::getVar('cid', 0);
 		$resetpagination = JRequest::getVar('resetpagination', 0);
+		
+		$sortType = JRequest::getVar('sortType', '');
+		$sortByEmail =  JRequest::getVar('sortByUserEmailAddress', 'asc');
+		$sortByUserFullName =  JRequest::getVar('sortByUserFullName', 'asc');
+		
 		if($resetpagination ==1){			
-			JRequest::setVar('limit', 10);
+			//JRequest::setVar('limit', 10);
 			JRequest::setVar('limitstart', 0);
 			JRequest::setVar('resetpagination', 0);
 		}
+	
+		//	JRequest::setVar('limitstart', 0);
 		
 		$limit		=  JRequest::getVar('limit', 10);
 		$limitstart	=  JRequest::getVar('limitstart', 0);
+	
 		
 		if($reportId ==0){			
 			$mainframe->redirect( $xqueryHomeUrl, JText::_("CATALOG_XQUERY_REPORT_ID_MISSING"),"ERROR");			
@@ -484,11 +581,21 @@ class ADMIN_xQuery{
 		// Recherche des enregistrements selon les limites
 		//print_r($type); echo "<br>";
 		if ($root_acc_id == '') { //select all users
-			$query = "SELECT #__users.name as account_name,#__users.email as account_email, #__users.usertype as account_usertype,   #__sdi_account.user_id as id FROM #__users,#__sdi_account WHERE #__users.id=#__sdi_account.user_id AND #__sdi_account.root_id IS NOT NULL order by account_name ASC";
+			$query = "SELECT #__users.name as account_name,#__users.email as account_email, #__users.usertype as account_usertype,   #__sdi_account.user_id as id FROM #__users,#__sdi_account WHERE #__users.id=#__sdi_account.user_id AND #__sdi_account.root_id IS NOT NULL ";
 					} else {
-			$query = "SELECT #__users.name as account_name,#__users.email as account_email, #__users.usertype as account_usertype,   #__sdi_account.user_id as id FROM #__users,#__sdi_account WHERE #__users.id=#__sdi_account.user_id AND #__sdi_account.parent_id = ".$root_acc_id." AND #__sdi_account.root_id IS NOT NULL order by account_name ASC";
+			$query = "SELECT #__users.name as account_name,#__users.email as account_email, #__users.usertype as account_usertype,   #__sdi_account.user_id as id FROM #__users,#__sdi_account WHERE #__users.id=#__sdi_account.user_id AND #__sdi_account.parent_id = ".$root_acc_id." AND #__sdi_account.root_id IS NOT NULL ";
 		}	
-				
+		
+		$sortCondition = "";
+		if($sortType =="email")
+			$sortCondition = "order by account_email  " . $sortByEmail;
+		else if ($sortType =="fullname")
+			$sortCondition = "order by account_name " . $sortByUserFullName;
+		else
+			$sortCondition = "order by account_name asc";
+			
+		$query.=$sortCondition;
+		
 		$db->setQuery( $query, $pagination->limitstart, $pagination->limit);
 		
 
@@ -607,6 +714,7 @@ class ADMIN_xQuery{
 	}
 	
 	
+	
 	function listMyReports(){
 		
 	    $homeUrl ="index.php";
@@ -615,13 +723,6 @@ class ADMIN_xQuery{
 			
 		$database=& JFactory::getDBO(); 
 		$user =& JFactory::getUser();
-		
-		$resetpagination = JRequest::getVar('resetpagination', 0);
-		if($resetpagination ==1){			
-			JRequest::setVar('limit', 10);
-			JRequest::setVar('limitstart', 0);
-			JRequest::setVar('resetpagination', 0);
-		}
 		
 		$limit		=  JRequest::getVar('limit', 10);
 		$limitstart	=  JRequest::getVar('limitstart', 0);
@@ -632,7 +733,7 @@ class ADMIN_xQuery{
 		$pagination = new JPagination($total,$limitstart,$limit);
 		
 		$selectsql = "select #__sdi_xqueryreport.* from #__sdi_xqueryreportassignation , #__sdi_xqueryreport  
-					  where #__sdi_xqueryreport.id=#__sdi_xqueryreportassignation.report_id AND #__sdi_xqueryreportassignation.user_id =".$user->id;
+					  where #__sdi_xqueryreport.id=#__sdi_xqueryreportassignation.report_id AND #__sdi_xqueryreportassignation.user_id =".$user->id." order by #__sdi_xqueryreport.xqueryname ".JRequest::getVar('sortByQueryName', "asc");
 		
 		try{
 			
@@ -747,6 +848,7 @@ class ADMIN_xQuery{
   function processXQueryReport(){
   	
   	global $mainframe;	
+  	
 
   	$fullURI = explode("?",$_SERVER['REQUEST_URI']);
   	
@@ -768,7 +870,11 @@ class ADMIN_xQuery{
 		
 	}
 	
+	$usertype= strtolower($user->usertype);
+	
   	if($access ==''){
+  		
+  		if(strpos($usertype, "admin")=== FALSE)
 		 $mainframe->redirect($homeUrl,  JText::_("CATALOG_XQUERY_NOACCESS"), "ERROR");
 	}
 	
@@ -821,6 +927,7 @@ class ADMIN_xQuery{
   	curl_setopt($ch, CURLOPT_COOKIE, $cookies);
 
 	$getXMLUrl = "http://".$_SERVER['HTTP_HOST']."/".$fullURI[0]."?option=com_easysdi_catalog&task=provideXMLDataForXQueryReport&cid=".$cid ;
+
   	$data =   'url='.urlencode($getXMLUrl).'&fileid='.urlencode(trim($xfileid)).'&namespaces='.urlencode(trim($nsList));
 
   	curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
@@ -876,7 +983,8 @@ class ADMIN_xQuery{
 
 	ini_set('zlib.output_compression', 0);
 	header('Content-type:'.$contentType);
-	header('Content-Disposition: attachement; filename="results'.$extension);
+	if (strpos($contentType, "html")===FALSE)
+		header('Content-Disposition: attachment; filename="results'.$extension);
 	header('Content-Transfer-Encoding: binary');
 	header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
 	header('Pragma: public');
@@ -911,7 +1019,13 @@ class ADMIN_xQuery{
 		
     	if($user->id==''){
 				$xmlResponse = "ERROR : No user id found";
+				header("Content-Length: ".strlen($xmlResponse)); 
+				echo $xmlResponse; 
+				die;
 		}
+
+		$usertype= strtolower($user->usertype);	
+		
 		
   		$selectsql = "select id from #__sdi_xqueryreportassignation where report_id=".$cid." and user_id=".$user->id;
 		$medatadataFilterSql ="";
@@ -927,13 +1041,17 @@ class ADMIN_xQuery{
 		}
 		
 		if($access ==''){
-			$xmlResponse ="ERROR:User has no access to this report";
-			header("Content-Length: ".strlen($xmlResponse)); //
-			echo $xmlResponse; // return the xml response directly as xml. // or see how it is done by export xml.
-			die;
+			
+			if(strpos($usertype, "admin")=== FALSE){ //allowing admins to access anyway.
+				$xmlResponse ="ERROR:User has no access to this report";
+				header("Content-Length: ".strlen($xmlResponse)); //
+				echo $xmlResponse; // return the xml response directly as xml. // or see how it is done by export xml.
+				die;
+			}
+			
 		}
 		
-		// verify access;
+
 		if($cid == 0){
 			$xmlResponse = "ERROR : No report ID provided";
 			header("Content-Length: ".strlen($xmlResponse)); //
@@ -946,7 +1064,7 @@ class ADMIN_xQuery{
 		$medatadataFilterSql = "select sqlfilter from #__sdi_xqueryreport where id=".$cid ;
 		
   		$database->setQuery( $medatadataFilterSql);
-		$metadataIdSqlfilter = $database->loadResult();
+		$metadataIdSqlfilter = trim($database->loadResult());
 		if ($database->getErrorNum()) {			
 			$xmlResponse = "ERROR : " +$database->getErrorMsg();
 			echo $xmlResponse; // return the xml response directly as xml. // or see how it is done by export xml.
@@ -954,7 +1072,11 @@ class ADMIN_xQuery{
 		
 		}
 		
-	
+		if ($metadataIdSqlfilter =='')
+			$metadataIdSqlfilter = "select guid from #__sdi_metadata";
+		
+		$cswfilter="";
+		
  		$database->setQuery( $metadataIdSqlfilter);
 		$metadataIds = $database->loadObjectList();
 		if ($database->getErrorNum()) {			
@@ -962,10 +1084,11 @@ class ADMIN_xQuery{
 			echo $xmlResponse; // return the xml response directly as xml. // or see how it is done by export xml.
 			die;
 		}
+		$cswfilter = ADMIN_xQuery::buildCSWFilter($metadataIds, $report->ogcfilter );		
+		
 		
 		$catalogUrlBase = config_easysdi::getValue("catalog_url");
-		$cswfilter = ADMIN_xQuery::buildCSWFilter($metadataIds, $report->ogcfilter );		
-		$xmlBody = SITE_catalog::BuildCSWRequest(0, 0, "results", "gmd:MD_Metadata", "full", "1.1.0", $cswfilter, $ogcsearchsorting, "ASC");
+		$xmlBody = ADMIN_xQuery::BuildCSWRequest(0, 0, "results", "gmd:MD_Metadata", "full", "1.1.0", $cswfilter, $ogcsearchsorting, "ASC");
 		$xmlResponse = ADMIN_metadata::CURLRequest("POST", $catalogUrlBase,$xmlBody);
 		echo $xmlResponse; // return the xml response directly as xml. // or see how it is done by export xml.
 		die;
@@ -978,15 +1101,19 @@ class ADMIN_xQuery{
   
   function buildCSWFilter($metadataIds, $ogcfilter){
 		
+  		$cswfilterCond="";
 				
-  		$cswfilterCond.= "<ogc:Or>";
+  		
   		foreach ($metadataIds as $metadataId)
   		{
   			//keep it so to keep the request "small"
   			$cswfilterCond .= "<ogc:PropertyIsEqualTo><ogc:PropertyName>fileId</ogc:PropertyName><ogc:Literal>$metadataId->guid</ogc:Literal></ogc:PropertyIsEqualTo>\r\n";
   		}
+  		if($cswfilterCond!="")
+  			$cswfilterCond= "<ogc:Or>".$cswfilterCond."</ogc:Or>";	
   			
-  		$cswfilterCond.= "</ogc:Or>";		
+  		
+  			
 		$cswfilterCond.= $ogcfilter;
 		$cswfilter = "<ogc:Filter xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:gml=\"http://www.opengis.net/gml\">\r\n";
 		$cswfilter .= $cswfilterCond;
@@ -995,6 +1122,68 @@ class ADMIN_xQuery{
 		return $cswfilter;
 			
   }
+  
+	function BuildCSWRequest($maxRecords, $startPosition, $resultType, $typeNames, $elementSetName, $constraintVersion, $filter, $sortBy, $sortOrder, $mode = 'CORE')
+	{
+		//Bug: If we have accents, we must specify ISO-8859-1
+		$req = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
+		$req .= "";
+		
+		//Get Records section
+		$req .=  "<csw:GetRecords 
+					xmlns:csw=\"http://www.opengis.net/cat/csw/2.0.2\" 
+					service=\"CSW\" 
+					version=\"2.0.2\" ";
+		
+		if ($resultType != "")
+		{
+			$req .= "resultType=\"$resultType\" 
+					outputSchema=\"csw:IsoRecord\" 
+					content=\"".$mode."\" ";
+		}
+
+		// add max records if not 0
+		if($maxRecords != 0)
+			$req .= "maxRecords=\"".$maxRecords."\" ";
+		
+		//add start position
+		if($startPosition != 0)
+			$req .= "startPosition=\"".$startPosition."\" ";
+		
+		$req .= "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:gmd=\"http://www.isotc211.org/2005/gmd\" xsi:schemaLocation=\"http://www.opengis.net/cat/csw/2.0.2 http://schemas.opengis.net/csw/2.0.2/CSW-discovery.xsd\">\r\n";
+	
+		//Query section
+		//Types name
+		$req .= "<csw:Query typeNames=\"".$typeNames."\">\r\n";
+		if($elementSetName != "")
+		{
+			//ElementSetName
+			$req .= "<csw:ElementSetName>".$elementSetName."</csw:ElementSetName>\r\n";
+		}
+		//ConstraintVersion
+		$req .="<csw:Constraint version=\"".$constraintVersion."\">\r\n";
+		//filter
+		$req .= $filter."\r\n";
+		
+		$req .= "</csw:Constraint>\r\n";
+		
+		//Sort by
+		if($sortBy != "" && $sortOrder != ""){
+			$req .= "<ogc:SortBy>";
+			$req .= "<ogc:SortProperty>";
+			$req .= "<ogc:PropertyName>".$sortBy."</ogc:PropertyName>";
+			$req .= "<ogc:SortOrder>".$sortOrder."</ogc:SortOrder>";
+			$req .= "</ogc:SortProperty>";
+			$req .= "</ogc:SortBy>";
+		}
+		
+		
+		$req .= "</csw:Query>\r\n";
+		$req .= "</csw:GetRecords>\r\n";
+		
+		//echo htmlspecialchars(utf8_encode($req));
+		return utf8_encode($req);
+	}
 }
 
 
