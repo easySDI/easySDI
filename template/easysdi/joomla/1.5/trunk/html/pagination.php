@@ -108,7 +108,7 @@ function pagination_list_render($list)
 
 function pagination_item_active(&$item) {
 	//return "<a href=\"".$item->link."\" title=\"".$item->text."\">".$item->text."</a>";
-	return "<a href=\"".$item->link."&limitstart=".$item->base."\" title=\"".$item->text."\">".$item->text."</a>";
+	return "<a href=\"".$item->link."&limit=".JRequest::getVar("limit",10)."&limitstart=".$item->base."\" title=\"".$item->text."\">".$item->text."</a>";
 }
 
 function pagination_item_inactive(&$item) {
