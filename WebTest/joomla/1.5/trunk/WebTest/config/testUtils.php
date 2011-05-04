@@ -3,6 +3,32 @@
 define("USER_NOACCESS_ID", 71);
 define("ADMIN_TYPE", 0);
 define("USER_TYPE", 1);
+define("ADMIN_USER","kghoorbin");
+define("ADMIN_USER_THIERRY","tbussien");
+define("REG_USER_MAGONI","bmagoni");
+define("REG_USER_KIEGLER","pkiegler");
+define("REG_USER_MDROZ","mdrozedit");
+
+//user 71 peter kiegler => pkiegler/test , registered user
+//user 72 mdroz editor =>mdrozedit /test , registered user
+//user 81 bruno magoni manager => manager/test , registered user
+//user 82 thierry bussien => tbussien/test , registered user.
+
+class TEST{
+	
+	
+	public static function main(){
+		
+		$string = file_get_contents( dirname(__FILE__)."/bmagoni.html");
+	//	echo $string;
+		preg_match('(<input type="hidden".*name="return".*>)', $string, $matches);
+		foreach ($matches as $match)
+			echo "found: ".$match."\n";
+	
+}
+}
+
+
 
 class TESTPROPS{
 	
@@ -13,8 +39,23 @@ class TESTPROPS{
 		$prop = trim(file_get_contents( dirname(__FILE__)."/topology_test.json"));	
 		self::$propArray=json_decode($prop,true);
 		
+
+	}
+	public function setCookies($cookies,$user){
+		
+		self::$propArray["users"][$user]["cookies"]=$cookies;
 	
 	}
+	
+	public function setToken($token,$user){
+		
+		self::$propArray["users"][$user]["token"]=$token;
+	}
+	public function setReturnValue($value,$user){
+		
+		self::$propArray["users"][$user]["return"]=$value;
+	}
+
 	public static function getInstance()
 	{
 		if (!self::$prop_instance)
@@ -64,9 +105,16 @@ class DBUTIL   {
 	}
 	
 	public function executeSQL($sql){
-
+	try{
 		$stmt=   self::$dbcon->query($sql);
-		return $stmt->fetchAll();
+		if($stmt!='')
+			return $stmt->fetchAll();
+		else
+			return array(); // empty array.
+		
+	}catch(Exception $e){
+		echo $e->getTraceAsString();
+	}
 	}
 
 	
@@ -77,8 +125,8 @@ class DBUTIL   {
 
 class URLCON{
 	
-	private static $adminCookies = null;
-	private static $userCookies = null;
+	//private static $adminCookies = null;
+	//private static $userCookies = null;
 	private static  $con_instance =null;
 	private static $beforeAdminLoginCookies = null;
 	private static $beforeUserLoginCookies = null;
@@ -88,66 +136,100 @@ class URLCON{
 	
 	private function __construct() {
 		
-		self::loginAsAdmin();
-		//self::loginAsUser();
+		self::setCookiesForLogin();
+		self::setTokenForLogin();
+		self::loginAsAdmins();
+		self::loginAsUsers();
+		
+		
 	}
 	
-	public function loginAsAdmin(){
-		$adminlogintoken = self::getBeforeLoginToken(ADMIN_TYPE);
-		self::getCookiesForAdminLogin();
+	public function loginAsAdmins(){
+		
+		$props = TESTPROPS::getInstance();
+		$propArray=$props->getProperties();
+		//$adminlogintoken = self::getBeforeLoginToken(ADMIN_TYPE);
+		//$adminLoginCookies = self::getCookiesForAdminLogin();
 		$params = array();
 		$params["option"] ="com_login";
-		$params["passwd"] ="kghoorbin";
+		//$params["passwd"] =$propArray["users"]["kghoorbin"]["password"];
 		$params["task"] ="login";
-		$params["username"] ="kghoorbin";
-		$params[$adminlogintoken] =1;
+		//$params["username"] =$propArray["users"]["kghoorbin"]["login"];
+		
 		$params["testmode"]=1;
 		
-		echo json_encode($params);
+		//echo json_encode($params);
 //		$response =self::executeRequest($params, 0);
 //		$fp = fopen('responseafterlogin.html', 'w');
 //		fwrite($fp, $response);
 //		fclose($fp);
-		$responseHeader  =self::executeLoginRequestGetHeadersOnly($params, 0);
-		echo "response header after login \n";
-		echo $responseHeader;
-		self::$adminCookies = self::getCookieFromResponseHeader($responseHeader);	
-		echo "admin cookie =" .self::$adminCookies. "\n";
+
+		foreach($propArray["admins"] as $adminUser){
+			
+			$params[$propArray["users"][$adminUser]["token"]]=1;
+			$params["passwd"] =$propArray["users"][$adminUser]["password"];	
+			$params["username"] =$propArray["users"][$adminUser]["login"];				
+			$responseHeader  =self::executeLoginRequestGetHeadersOnly($params, ADMIN_TYPE, $adminUser);
+			$cookies = self::getCookieFromResponseHeader($responseHeader);	
+		
+			$props->setCookies($cookies, $adminUser);
+			
+		}
+//		$responseHeader  =self::executeLoginRequestGetHeadersOnly($params, ADMIN_TYPE);
+//		echo "response header after login \n";
+//		echo $responseHeader;
+//		self::$adminCookies = self::getCookieFromResponseHeader($responseHeader);	
+//		$props->setCookiesAfterLogin(self::$adminCookies,"kghoorbin" );
+
 		
 	}	
 
 	
-	public function loginAsUser(){
+	public function loginAsUsers(){
 		
-		$params = array();
-		$params["option"] ="com_login";
-		$params["passwd"] ="sgillieron";
-		$params["task"] ="login";
-		$params["username"] ="sgillieron";
+		//$userlogintoken = self::getBeforeLoginToken(USER_TYPE);
+
 		
-		$responseHeader  =self::executeLoginRequestGetHeadersOnly($params, 1);
-		self::$userCookies = self::getCookieFromResponseHeader($responseHeader);	
-	//	echo "user cookie =" .self::$userCookies. "\n";
+		$props = TESTPROPS::getInstance();
+		$propArray=$props->getProperties();
+		
+		foreach($propArray["registered"] as $simpleuser){
+			$params = array();
+			$params["testmode"]=1;
+			$params["task"] ="login";
+			$params["testmode"]=1;
+			$params["return"]=$propArray["users"][$simpleuser]["return"];	
+			$params[$propArray["users"][$simpleuser]["token"]]=1;
+			$params["passwd"] =$propArray["users"][$simpleuser]["password"];	
+			$params["username"] =$propArray["users"][$simpleuser]["login"];				
+			$responseHeader  =self::executeLoginRequestGetHeadersOnly($params, USER_TYPE, $simpleuser);	
+			$cookies = self::getCookieFromResponseHeader($responseHeader);				
+			$props->setCookies($cookies, $simpleuser);
+			
+		}
+
 		
 	}
 	
 
 	// request type = 0 for administrator backend
-	private function executeLoginRequestGetHeadersOnly($params,$requestType =0){
+	private function executeLoginRequestGetHeadersOnly($params,$requestType =0, $user){
 		
 		$props = TESTPROPS::getInstance();
 		$propArray=$props->getProperties();
 		
 		$ch = curl_init();		
-	  	if($requestType==0)
+	  	if($requestType==ADMIN_TYPE)
 	  		curl_setopt($ch,CURLOPT_URL , $propArray["geodbmeta_http_admin_root"]);
 	  	else
 	  		curl_setopt($ch,CURLOPT_URL , $propArray["geodbmeta_http_frontend_root"]);
-	  		
-	  	if( $requestType==0)
-	  	  	curl_setopt($ch, CURLOPT_COOKIE, self::$adminCookies);
-	  	else
-	  	  	curl_setopt($ch, CURLOPT_COOKIE, self::$userCookies);
+	  	
+	  	if ($user){
+		  	if( $requestType==ADMIN_TYPE)
+		  	  	curl_setopt($ch, CURLOPT_COOKIE, $propArray["users"][$user]["cookies"]);
+		  	else
+		  	  	curl_setopt($ch, CURLOPT_COOKIE, $propArray["users"][$user]["cookies"]);
+	  	}
 	  		
 	 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 	 	//only callin the head
@@ -172,6 +254,10 @@ class URLCON{
 	  	}
 
 	  	curl_close($ch);  	
+	  	
+//	  		$fp = fopen($user.'.html', 'w');
+//			fwrite($fp, $output);
+//			fclose($fp);
 	  	
 	  	return $output;
 	}
@@ -219,7 +305,7 @@ class URLCON{
 	// request type = 0 if for admin access, 1 = front end access. The url and cookies are different for each case.
 	
 	
-	public function executeRequest( $namevaluepair, $requestType=0){
+	public function executeRequest( $namevaluepair, $requestType=ADMIN_TYPE, $user){
 		
 		$props = TESTPROPS::getInstance();
 		$propArray=$props->getProperties();
@@ -231,9 +317,9 @@ class URLCON{
 	  		curl_setopt($ch,CURLOPT_URL , $propArray["geodbmeta_http_frontend_root"]);
 	  	
 	  	if( $requestType==0)
-	  	  	curl_setopt($ch, CURLOPT_COOKIE, self::$adminCookies);
+	  	  	curl_setopt($ch, CURLOPT_COOKIE, $propArray["users"][$user]["cookies"]);
 	  	 else
-	  	  	curl_setopt($ch, CURLOPT_COOKIE, self::$userCookies);
+	  	  	curl_setopt($ch, CURLOPT_COOKIE, $propArray["users"][$user]["cookies"]);
 	  	
 	  	
 	 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);	 
@@ -257,86 +343,118 @@ class URLCON{
 		return $output;
 	}
 	
-	private function getCookiesForAdminLogin(){
-		if(self::$adminCookies==null){
-			$responseHeader =self::executeLoginRequestGetHeadersOnly(null, 0);
-			$cookies = self::getCookieFromResponseHeader($responseHeader);
-			self::$adminCookies= $cookies;
-			self::$beforeAdminLoginCookies =$cookies;
-		}
-		echo "cookies for admin login". self::$adminCookies;
-	}
-	
-	public function getCookiesForRequest(){
-		return self::$adminCookies;
-	}
-	
-	private function getBeforeLoginToken($type=ADMIN_TYPE){
-	
+	private function setCookiesForLogin(){
+		
 		
 		$props = TESTPROPS::getInstance();
 		$propArray=$props->getProperties();
 		
-		$ch = curl_init();		
+		foreach($propArray["registered"] as $simpleuser){
+						
+			$responseHeader =self::executeLoginRequestGetHeadersOnly(null, USER_TYPE,null);
+			$cookies = self::getCookieFromResponseHeader($responseHeader);	
+			$props->setCookies($cookies, $simpleuser);
 		
-		if($type==ADMIN_TYPE){
-			if(self::$adminLoginToken ==null){
-	  			curl_setopt($ch,CURLOPT_URL , $propArray["geodbmeta_http_admin_root"]); 	  		
-			}
-			else 
-				 return  self::$adminLoginToken;  
-		}
-	  	else{
-	  		if(self::$userLoginToken ==null){
-	  			curl_setopt($ch,CURLOPT_URL , $propArray["geodbmeta_http_frontend_root"]);
-	  		}
-	  		else
-	  			return self::$userLoginToken;
-	  	}
-	  		
-	 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);	 
-	  	curl_setopt($ch, CURLOPT_POST, 0);	  	
-	  	
-	  	try{
-	  		$output = curl_exec($ch);
-	  	}
-	  	catch(Exception $e){
-	
-	  		$output =  $e->getTraceAsString();
-	  	}
-
-	  	curl_close($ch);
-
-	 
-	   $indexofNameQuote = strrpos($output, "name=\"" );
-	   $indexofNameQuote += 6; // the length of name=" is 6.
-	   $indexofNextQuote = strpos($output, "\"",$indexofNameQuote );
-	   $tokenLength = $indexofNextQuote- $indexofNameQuote;
-	   $token = substr($output,$indexofNameQuote, $tokenLength );
-	   
-	   if($type==ADMIN_TYPE){
-	  	 	self::$adminLoginToken  =$token;
-	  	 	
-	   }
-	   else{
-			self::$userLoginToken = $token;
 			
-	   }		
-	  
-	   return $token;
+		}
+		
+		foreach($propArray["admins"] as $adminuser){
+						
+			$responseHeader =self::executeLoginRequestGetHeadersOnly(null, ADMIN_TYPE,null);
+			$cookies = self::getCookieFromResponseHeader($responseHeader);	
+			$props->setCookies($cookies, $adminuser);
+			
+		}
+		
+		
+	}
+	
+	
+	public function setTokenForLogin(){
+	
+		
+		$props = TESTPROPS::getInstance();
+		$propArray=$props->getProperties();
+	
+	//	$accountTypes =array("admins", "registered");
+	$accountTypes =array( "registered");
+		foreach ($accountTypes as $type){
+			
+			foreach($propArray[$type] as $user){
+				$ch = curl_init();
+				if($type == "registered")
+					curl_setopt($ch,CURLOPT_URL , $propArray["geodbmeta_http_frontend_root"]);
+				else
+					curl_setopt($ch,CURLOPT_URL , $propArray["geodbmeta_http_admin_root"]); 	
+						
+				curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);	 
+			  	curl_setopt($ch, CURLOPT_POST, 0);	  	
+			  	
+			  	try{
+			  		$output = curl_exec($ch);
+			  	}
+			  	catch(Exception $e){
+			
+			  		$output =  $e->getTraceAsString();
+			  	}
+		
+			  	curl_close($ch);
+		
+	   $fp = fopen($user.'response.html', 'w');
+	fwrite($fp, $output);
+	fclose($fp);
+			   $indexofNameQuote = strrpos($output, "name=\"" );
+			   $indexofNameQuote += 6; // the length of name=" is 6.
+			   $indexofNextQuote = strpos($output, "\"",$indexofNameQuote );
+			   $tokenLength = $indexofNextQuote- $indexofNameQuote;
+			   $token = substr($output,$indexofNameQuote, $tokenLength );
+			   $props->setToken($token, $user );
+			   
+			   if($type == "registered"){
+			     preg_match('(<input type="hidden".*name="return".*>)', $output, $matches);
+			  	 $match = trim($matches[0]);
+			  	 $indexofValueQuote = strrpos($match, "value=\"" );
+			  	 $indexofValueQuote += 7; // the length of name=" is 6.
+			  	 $indexofNextQuote = strpos($match, "\"",$indexofValueQuote );
+			  	 $returnValueLength = $indexofNextQuote- $indexofValueQuote;
+			  	 $returnValue= substr($match,$indexofValueQuote, $returnValueLength );
+			  	 $props->setReturnValue($returnValue, $user );
+			  	 
+			  	 
+			   }
+				
+			}
+		}
+		
+		
 	 
 	  	
 	  	
 	}
+	
+	
 	
 	
 	
 	
 }
+
+
 //if (!defined('PHPUnit_MAIN_METHOD')) {
 //	$urlinstance =URLCON::getInstance();
-//    $urlinstance->loginAsAdmin();
+//  //  $urlinstance->loginAsAdmin();
 //
+//     echo "done";
+//}
+////
+//if (!defined('PHPUnit_MAIN_METHOD')) {
+//	$urlinstance =TESTPROPS::getInstance();  
+//
+//     echo "done";
+//}
+
+//if (!defined('PHPUnit_MAIN_METHOD')) {
+//	TEST::main();  
 //     echo "done";
 //}
 ?>

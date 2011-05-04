@@ -6,7 +6,36 @@
 	"catalog_mxquery_url" : "localhost:8080/MXQuery",
 	"catalog_url": "localhost:8080/proxy/ogc/geonetwork",
 	"proxy_url" : "localhost:8080/proxy",
-	"geodbmeta_http_frontend_root" : "http://localhost/sdiv2/index.php",
-	"geodbmeta_http_admin_root" : "http://localhost/sdiv2/administrator/index.php"
+	"geodbmeta_http_frontend_root" : "http://localhost/sdiv2/index.php?option=com_user&view=login",
+	"geodbmeta_http_frontend_loginroot" : "http://localhost/sdiv2/index.php",
+	"geodbmeta_http_admin_root" : "http://localhost/sdiv2/administrator/index.php",
+	"users":{
+			"pkiegler":{
+				"login":"pkiegler",
+				"password":"test"
+				
+			},
+			
+			"kghoorbin":{
+				"login":"kghoorbin",
+				"password":"kghoorbin"
+			},
+			
+			"bmagoni":{
+				"login":"manager",
+				"password":"test"
+			},
+			"mdroz":{
+				"login":"mdrozedit",
+				"password":"test"
+			},
+			
+			"tbussien":{
+				"login":"tbussien",
+				"password":"test"
+			}			
+	},
+	"admins":["kghoorbin","tbussien"] ,
+	"registered":["pkiegler", "bmagoni", "mdroz"]
 	
 }
