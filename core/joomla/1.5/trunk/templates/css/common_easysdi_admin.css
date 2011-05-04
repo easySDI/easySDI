@@ -130,6 +130,41 @@ div.header_sdi {
 }
 .icon-32-adduser 		{ background-image: url(../images/toolbar/icon-32-adduser.png); }
 
+.manageUsers{
+	background-color:transparent;
+	background-image:url(../images/toolbar/icon-32-adduser.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:30px;
+
+}
+.sortAsc{
+	background-color:transparent;
+	background-image:url(../images/sort_asc.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:20px;
+}
+.sortAsc:hover{
+	cursor :pointer;
+}
+
+.sortDesc{
+	background-color:transparent;
+	background-image:url(../images/sort_desc.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:20px;
+}
+.sortDesc:hover{
+	cursor :pointer;
+}
+.manageUsers:hover{
+	cursor :pointer;
+}
+
 .executeXQuery{
 	background-color:transparent;
 	background-image:url(../images/toolbar/asterisk_orange.png);
