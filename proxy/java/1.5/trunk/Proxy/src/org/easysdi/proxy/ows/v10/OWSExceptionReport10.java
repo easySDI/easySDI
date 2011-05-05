@@ -14,32 +14,29 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html. 
  */
-package org.easysdi.proxy.ows.v200;
+package org.easysdi.proxy.ows.v10;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import org.easysdi.proxy.ows.OWSExceptionReport;
 
-
 /**
  * @author DEPTH SA
  *
  */
-public class OWS200ExceptionReport implements OWSExceptionReport {
+public class OWSExceptionReport10 implements OWSExceptionReport {
 
-	/* 
-	 * @see org.easysdi.proxy.ows.OWSExceptionReport#generateExceptionReport(java.lang.String, java.lang.String, java.lang.String)
-	 */
 	public StringBuffer generateExceptionReport(String errorMessage,String code, String locator) throws IOException {
-		return generateExceptionReport(errorMessage, code, locator, "1.0.0");
+			return generateExceptionReport(errorMessage, code, locator, "1.0.0");
 	}
 
 	public StringBuffer generateExceptionReport(String errorMessage,String code, String locator, String version) throws IOException {
 		StringBuffer sb = new StringBuffer("<?xml version='1.0' encoding='utf-8'?>\n");
-		sb.append("\n<ExceptionReport xmlns=\"http://www.opengis.net/ows/2.0\" ");
+		
+		sb.append("\n<ExceptionReport xmlns=\"http://www.opengis.net/ows\" ");
 		sb.append("xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" ");
-		sb.append("xsi:schemaLocation=\"http://www.opengis.net/ows/2.0 owsExceptionReport.xsd\" version=\""+version+"\">");
+		sb.append("xsi:schemaLocation=\"http://www.opengis.net/ows owsExceptionReport.xsd\" version=\""+version+"\">");
 		sb.append("\n\t<Exception exceptionCode=\"");
 		sb.append(code);
 		sb.append("\"");

@@ -76,7 +76,7 @@ public class WMTS100ProxyServlet extends WMTSProxyServlet{
 					if(!service.equalsIgnoreCase("WMTS"))
 					{
 						dump("INFO", "Service requested is not WMTS.");
-						ByteArrayOutputStream out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_SERVICE_NAME,OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE,"service");
+						StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_SERVICE_NAME,OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE,"service");
 						sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
 						return;
 					}
@@ -96,7 +96,7 @@ public class WMTS100ProxyServlet extends WMTSProxyServlet{
 					else
 					{
 						dump("INFO", "WMTS requested version is not supported.");
-						ByteArrayOutputStream out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_VERSION_NOT_SUPPORTED,OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE,"acceptVersions");
+						StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_VERSION_NOT_SUPPORTED,OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE,"acceptVersions");
 						sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
 						return;
 					}
@@ -107,7 +107,7 @@ public class WMTS100ProxyServlet extends WMTSProxyServlet{
 					if(!version.equalsIgnoreCase("1.0.0"))
 					{
 						dump("INFO", "WMTS requested version is not supported.");
-						ByteArrayOutputStream out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_VERSION_NOT_SUPPORTED,OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE,"version");
+						StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_VERSION_NOT_SUPPORTED,OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE,"version");
 						sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
 						return;
 					}
@@ -130,7 +130,7 @@ public class WMTS100ProxyServlet extends WMTSProxyServlet{
 					pLayer = new ProxyLayer(layer);
 					if(pLayer.getAlias() == null)
 					{
-						ByteArrayOutputStream out = owsExceptionReport.generateExceptionReport("Invalid layer name given in the LAYER parameter : "+layer,OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE,"layer");
+						StringBuffer out = owsExceptionReport.generateExceptionReport("Invalid layer name given in the LAYER parameter : "+layer,OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE,"layer");
 						sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
 						return;
 					}
@@ -165,7 +165,7 @@ public class WMTS100ProxyServlet extends WMTSProxyServlet{
 			if(!isOperationSupported(request))
 			{
 				dump("INFO", "Operation not allowed.");
-				ByteArrayOutputStream out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_OPERATION_NOT_ALLOWED ,OWSExceptionReport.CODE_OPERATION_NOT_SUPPORTED,"request");
+				StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_OPERATION_NOT_ALLOWED ,OWSExceptionReport.CODE_OPERATION_NOT_SUPPORTED,"request");
 				sendHttpServletResponse(null, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_NOT_IMPLEMENTED);
 				return;
 			}
@@ -202,7 +202,7 @@ public class WMTS100ProxyServlet extends WMTSProxyServlet{
 						e.printStackTrace();
 						resp.setHeader("easysdi-proxy-error-occured", "true");
 						dump("ERROR", "Server Thread " + remoteServer.getUrl()+ " :" + e.getMessage());
-						ByteArrayOutputStream out;
+						StringBuffer out;
 						try {
 							out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
 							sendHttpServletResponse(null, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -236,7 +236,7 @@ public class WMTS100ProxyServlet extends WMTSProxyServlet{
 				
 				//Check layer
 				if( RS == null || !isLayerAllowed(pLayer.getName(), RS.getUrl())){
-					ByteArrayOutputStream out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_LAYER_NAME+layer,OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE,"layer");
+					StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_LAYER_NAME+layer,OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE,"layer");
 					sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
 					return;
 				}
@@ -263,7 +263,7 @@ public class WMTS100ProxyServlet extends WMTSProxyServlet{
 			resp.setHeader("easysdi-proxy-error-occured", "true");
 			e.printStackTrace();
 			dump("ERROR", e.toString());
-			ByteArrayOutputStream out;
+			StringBuffer out;
 			try {
 				out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
 				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

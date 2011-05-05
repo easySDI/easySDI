@@ -14,22 +14,45 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html. 
  */
-package org.easysdi.proxy.wmts.v100;
+package org.easysdi.proxy.exception;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+/**
+ * @author DEPTH SA
+ *
+ */
+public class InvalidServiceNameException extends ProxyServletException {
 
-import org.easysdi.proxy.ows.v200.OWS200ExceptionReport;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6089495385047608602L;
 
-public class WMTS100ExceptionReport extends OWS200ExceptionReport{
-
-	public static final String CODE_TILE_OUT_OF_RANGE 				= "TileOutOfRange";
-	public static final String CODE_POINT_IJ_OUT_OF_RANGE 			= "PointIJOutOfRange";
-	
-	public StringBuffer generateExceptionReport(String errorMessage,String code, String locator, String version) throws IOException {
-		if(version == null || version.equalsIgnoreCase("")){
-			version = "1.0.0";
-		}
-		return super.generateExceptionReport(errorMessage, code, locator, version);
+	/**
+	 * 
+	 */
+	public InvalidServiceNameException() {
 	}
+
+	/**
+	 * @param message
+	 */
+	public InvalidServiceNameException(String message) {
+		super(message);
+	}
+
+	/**
+	 * @param cause
+	 */
+	public InvalidServiceNameException(Throwable cause) {
+		super(cause);
+	}
+
+	/**
+	 * @param message
+	 * @param cause
+	 */
+	public InvalidServiceNameException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
 }

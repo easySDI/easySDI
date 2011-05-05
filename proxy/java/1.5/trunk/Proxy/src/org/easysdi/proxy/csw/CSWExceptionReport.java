@@ -14,22 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html. 
  */
-package org.easysdi.proxy.wmts.v100;
+package org.easysdi.proxy.csw;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import org.easysdi.proxy.ows.v10.OWSExceptionReport10;
 
-import org.easysdi.proxy.ows.v200.OWS200ExceptionReport;
+/**
+ * @author DEPTH SA
+ *
+ */
+public class CSWExceptionReport extends OWSExceptionReport10 {
 
-public class WMTS100ExceptionReport extends OWS200ExceptionReport{
-
-	public static final String CODE_TILE_OUT_OF_RANGE 				= "TileOutOfRange";
-	public static final String CODE_POINT_IJ_OUT_OF_RANGE 			= "PointIJOutOfRange";
-	
-	public StringBuffer generateExceptionReport(String errorMessage,String code, String locator, String version) throws IOException {
-		if(version == null || version.equalsIgnoreCase("")){
-			version = "1.0.0";
-		}
-		return super.generateExceptionReport(errorMessage, code, locator, version);
-	}
 }

@@ -123,6 +123,8 @@ public abstract class ProxyServlet extends HttpServlet {
 	protected Map<Integer, String> wfsFilePathList = new TreeMap<Integer, String>();
 	public Multimap<Integer, String> wmsFilePathList = HashMultimap.create();
 	
+	
+	
 	//WMTS response files
 	public Hashtable<String, String> wmtsFilePathTable = new Hashtable<String, String>();
 	public Hashtable<String, String> ogcExceptionFilePathTable = new Hashtable<String, String>();
@@ -131,7 +133,7 @@ public abstract class ProxyServlet extends HttpServlet {
 	public Hashtable<String, RemoteServerInfo> remoteServerInfoHashTable = new Hashtable <String, RemoteServerInfo>();
 
 	//Une liste des fichiers (sendData) réponse de chaque serveur WFS
-	protected Map<Integer, String> layerFilePathList = new TreeMap<Integer, String>();
+	public Map<Integer, String> layerFilePathList = new TreeMap<Integer, String>();
 	protected Vector<String> featureTypePathList = new Vector<String>(); 
 	// Contient	le featureTypetoKeep.get(0) (->reference pour le filtre remoteFilter) par Server
 	// Debug tb 04.06.2009
@@ -157,6 +159,9 @@ public abstract class ProxyServlet extends HttpServlet {
 	//Use for accessing EasySDI Joomla data
 	private JoomlaProvider joomlaProvider;
 	
+	//Object representing the request
+	protected ProxyServletRequest proxyRequest;
+	
 
 	
 	/**
@@ -173,6 +178,20 @@ public abstract class ProxyServlet extends HttpServlet {
 		return joomlaProvider;
 	}
 	
+	/**
+	 * @param proxyRequest the proxyRequest to set
+	 */
+	public void setProxyRequest(ProxyServletRequest proxyRequest) {
+		this.proxyRequest = proxyRequest;
+	}
+
+	/**
+	 * @return the proxyRequest
+	 */
+	public ProxyServletRequest getProxyRequest() {
+		return proxyRequest;
+	}
+
 	/**
 	 * Get the list of remote servers defined in the config.xml
 	 * in a Hashtable mapping <alias,RemoteServerInfo>
@@ -2177,6 +2196,58 @@ public abstract class ProxyServlet extends HttpServlet {
 				dump("SYSTEM", "ClientResponseDateTime", dateFormat.format(d));
 				if (tempOut != null)
 					dump("SYSTEM", "ClientResponseLength", tempOut.size());
+			}
+	
+			DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
+			Date d = new Date();
+			dump("SYSTEM", "ClientResponseDateTime", dateFormat.format(d));
+		} 
+		catch (Exception e) 
+		{
+			resp.setHeader("easysdi-proxy-error-occured", "true");
+			e.printStackTrace();
+			dump("ERROR", e.getMessage());
+		}
+	}
+	
+	protected void sendHttpServletResponse (HttpServletRequest req, HttpServletResponse resp, StringBuffer tempOut, String responseContentType, Integer responseCode)
+	{
+		try
+		{
+			// Ecriture du résultat final dans resp de
+			// httpServletResponse*****************************************************
+			// No post rule to apply. Copy the file result on the output stream
+			BufferedOutputStream os = new BufferedOutputStream(resp.getOutputStream());
+			resp.setContentType(responseContentType);
+			resp.setStatus(responseCode);
+			resp.setContentLength(tempOut.length());
+			
+			try {
+				dump("transform begin response writting");
+				if (req!= null && "1".equals(req.getParameter("download"))) {
+					String format = req.getParameter("format");
+					if (format == null)
+						format = req.getParameter("FORMAT");
+					if (format != null) {
+						String parts[] = format.split("/");
+						String ext = "";
+						if (parts.length > 1)
+							ext = parts[1];
+						resp.setHeader("Content-Disposition", "attachment; filename=download." + ext);
+					}
+				}
+				if (tempOut != null)
+					os.write(tempOut.toString().getBytes());
+				dump("transform end response writting");
+			} finally {
+				os.flush();
+				os.close();
+				// Log le résultat et supprime les fichiers temporaires
+				DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
+				Date d = new Date();
+				dump("SYSTEM", "ClientResponseDateTime", dateFormat.format(d));
+				if (tempOut != null)
+					dump("SYSTEM", "ClientResponseLength", tempOut.length());
 			}
 	
 			DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());

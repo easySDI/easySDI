@@ -54,7 +54,7 @@ public class WMTSProxyServlet extends ProxyServlet{
 	@Override
 	protected void requestPreTreatmentPOST(HttpServletRequest req,
 			HttpServletResponse resp) {
-		ByteArrayOutputStream out;
+		StringBuffer out;
 		try {
 			dump("INFO", "HTTP POST method is not supported.");
 			out = owsExceptionReport.generateExceptionReport("HTTP POST method is not supported.",OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
@@ -120,7 +120,7 @@ public class WMTSProxyServlet extends ProxyServlet{
 				if(!docBuilder.CapabilitiesContentsFiltering(wmtsFilePathTable))
 				{
 					dump("ERROR",docBuilder.getLastException().toString());
-					ByteArrayOutputStream out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
+					StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
 					sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 					return;
 				}
@@ -128,7 +128,7 @@ public class WMTSProxyServlet extends ProxyServlet{
 				if(!docBuilder.CapabilitiesOperationsFiltering(wmtsFilePathTable.get(rs.getAlias()), getServletUrl(req)))
 				{
 					dump("ERROR",docBuilder.getLastException().toString());
-					ByteArrayOutputStream out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
+					StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
 					sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 					return;
 				}
@@ -136,7 +136,7 @@ public class WMTSProxyServlet extends ProxyServlet{
 				if(!docBuilder.CapabilitiesMerging(wmtsFilePathTable))
 				{
 					dump("ERROR",docBuilder.getLastException().toString());
-					ByteArrayOutputStream out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
+					StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
 					sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 					return;
 				}
@@ -144,7 +144,7 @@ public class WMTSProxyServlet extends ProxyServlet{
 				if(!docBuilder.CapabilitiesServiceIdentificationWriting(wmtsFilePathTable.get(rs.getAlias()),getServletUrl(req)))
 				{
 					dump("ERROR",docBuilder.getLastException().toString());
-					ByteArrayOutputStream out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
+					StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
 					sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 					return;
 				}
@@ -161,7 +161,7 @@ public class WMTSProxyServlet extends ProxyServlet{
 			e.printStackTrace();
 			dump("ERROR", e.toString());
 			resp.setHeader("easysdi-proxy-error-occured", "true");
-			ByteArrayOutputStream out;
+			StringBuffer out;
 			try {
 				out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
 				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
