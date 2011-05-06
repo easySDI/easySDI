@@ -12,6 +12,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.Vector;
@@ -23,12 +24,19 @@ import org.easysdi.proxy.configuration.ProxyLayer;
 import org.easysdi.proxy.wms.WMSProxyServlet;
 import org.easysdi.xml.documents.RemoteServerInfo;
 import org.geotools.geometry.jts.JTS;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
+import org.geotools.util.GeometryConverterFactory;
 import org.geotools.xml.DocumentFactory;
+import org.opengis.geometry.BoundingBox;
+import org.opengis.geometry.DirectPosition;
+import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
+import org.opengis.referencing.operation.TransformException;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.IntersectionMatrix;
@@ -87,9 +95,71 @@ public class WMSProxyServerGetMapThread extends Thread {
 			}
 			layerGroupList.add(layerGroup);
 			
+			//request BBOX to geometry
+			String requestBbox = servlet.getProxyRequest().getBbox();
+			CoordinateReferenceSystem requestCRS = servlet.getProxyRequest().getCoordinateReferenceSystem();
+			ReferencedEnvelope requestEnvelope = new ReferencedEnvelope(servlet.getProxyRequest().getX1(), 
+																		servlet.getProxyRequest().getX2(), 
+																		servlet.getProxyRequest().getY1(),
+																		servlet.getProxyRequest().getY2(), 
+																		requestCRS);
+			GeometryConverterFactory factory = new GeometryConverterFactory();
+			Geometry requestGeometry = (Geometry) factory.createConverter( Envelope.class, Geometry.class, null )
+											.convert( requestEnvelope , Geometry.class);
+			
 			Iterator<TreeMap<Integer, ProxyLayer>> itLGL = layerGroupList.iterator();
+			
 			while (itLGL.hasNext()){
 				TreeMap<Integer, ProxyLayer> continuousLayers = itLGL.next();
+				Geometry previousPolygonFilter = null;
+				//Check if the filter on layer covered the requested BBOX
+				//If not, the layer is removed from the request
+				//In the same time, check if all the layer in a group have the same geographic filter
+				boolean isGeographicFilterEqual = true;
+				Iterator<Entry<Integer, ProxyLayer>> itL = continuousLayers.entrySet().iterator();
+				List<Integer> layerIndexToRemove = new ArrayList<Integer> ();
+				while (itL.hasNext()){
+					Entry<Integer, ProxyLayer> layer = itL.next();
+					
+					//Compare the filter with the requested BBOX
+					String filter = servlet.getLayerFilter(remoteServer.getUrl(), layer.getValue().getName());
+					if(filter == null || filter.length() == 0){
+						//No filter define on the layer : the layer has to be requested
+						continue;
+					}
+					InputStream bis = new ByteArrayInputStream(filter.getBytes());
+					Object object = DocumentFactory.getInstance(bis, null, Level.WARNING);
+					WKTReader wktReader = new WKTReader();
+					Geometry polygonFilter = wktReader.read(object.toString());
+					
+					if(	polygonFilter.crosses(requestGeometry) ||
+						requestGeometry.crosses(polygonFilter) ||
+						polygonFilter.touches(requestGeometry) ||
+						requestGeometry.touches(polygonFilter) ||
+						polygonFilter.overlaps(requestGeometry)||
+						requestGeometry.overlaps(polygonFilter)||
+						polygonFilter.intersects(requestGeometry)||
+						requestGeometry.intersects(polygonFilter)||
+						polygonFilter.coveredBy(requestGeometry) ||
+						polygonFilter.covers(requestGeometry)
+						){
+						//Filter crosses the requested BBOX : the layer has to be requested
+						//Check if the current filter is equal to the previous one
+						if(previousPolygonFilter != null){
+							if(!polygonFilter.equalsExact(previousPolygonFilter))
+								isGeographicFilterEqual = false;
+						}
+						previousPolygonFilter = polygonFilter;
+					}else{
+						//Filter do not crossed the requested BBOX : the layer has not to be requested
+						layerIndexToRemove.add(layer.getKey());
+					}
+				}
+				
+				//Remove from the layers list those who are not covered by the requested BBOX (due to policy geographix filter restriction)
+				for (int i = 0 ; i < layerIndexToRemove.size();i++)
+					continuousLayers.remove(layerIndexToRemove.get(i));
+				
 				if(continuousLayers.size()==1){
 					//Send the request
 					servlet.dump("requestPreTraitementGET send request multiLayer to thread server " + remoteServer.getUrl());
@@ -97,165 +167,42 @@ public class WMSProxyServerGetMapThread extends Thread {
 					th.start();
 					layerThreadList.add(th);
 				}else{
-					//Compare the filter
+					if(isGeographicFilterEqual){
+						//Send all the layer in the same request : layers are in the same order than in the request and the geographic filter are the same
+						servlet.dump("requestPreTraitementGET send request multiLayer to thread server " + remoteServer.getUrl());
+						WMSProxyLayerThread th = new WMSProxyLayerThread(servlet,paramUrlBase,continuousLayers,styles, remoteServer,resp);
+						th.start();
+						layerThreadList.add(th);
+					}else{
+						//Layers have to be requested separatly : geogrphic filter are not the same
+						Iterator<Entry<Integer, ProxyLayer>> itLToS = continuousLayers.entrySet().iterator();
+						while (itLToS.hasNext()){
+							Entry<Integer, ProxyLayer> layer = itLToS.next();
+							TreeMap<Integer, ProxyLayer> temp = new TreeMap<Integer, ProxyLayer>();
+							temp.put(layer.getKey(), layer.getValue());
+							servlet.dump("requestPreTraitementGET send request singleLayer to thread server " + remoteServer.getUrl());
+							WMSProxyLayerThread th = new WMSProxyLayerThread(servlet,paramUrlBase,temp,styles, remoteServer,resp);
+							th.start();
+							layerThreadList.add(th);
+						}
+					}
 				}
-				
 			}
 			
 			//Wait for thread answer
 			for (int i = 0; i < layerThreadList.size(); i++) {
 				layerThreadList.get(i).join();
 			}
-			
-			
-				// Test si les filtres des layers sont différents
-				// les uns des autres:
-				// ->envoi de 1 "thread layer" par groupe de couches
-				// ayant un "policy filter" identique
-				// for(int
-				// iLayers=0;iLayers<layerToKeepList.size();iLayers++)
-				while (layerToKeepList.size() > 0) {
-					List<String> layerToKeepListPerThread = new Vector<String>();
-					List<String> stylesToKeepListPerThread = new Vector<String>();
 
-					String filter = getLayerFilter(getRemoteServerUrl(j), (String) layerToKeepList.get(0));
-
-					layerToKeepListPerThread.add((String) layerToKeepList.remove(0));
-					stylesToKeepListPerThread.add((String) stylesToKeepList.remove(0));
-
-					// Création du polygon A à partir du filtre de
-					// iLayer
-					Boolean isNoFilterA = false;
-					Geometry polygonA = null;
-
-					// Par la même occasion, vérification que la
-					// bbox de la requête utilisateur est dans le
-					// filter de layerToKeepList(0)
-					// Sinon les layers ayant le même filtre ne sont
-					// pas conservées dans la requête.
-					System.setProperty("org.geotools.referencing.forceXY", "true");
-					String[] s = bbox.split(",");
-					boolean iscoveredByfilter = true;
-
-					if (filter != null && filter.length() > 0) {
-						InputStream bis = new ByteArrayInputStream(filter.getBytes());
-						Object object = DocumentFactory.getInstance(bis, null, Level.WARNING);
-						WKTReader wktReader = new WKTReader();
-
-						polygonA = wktReader.read(object.toString());
-
-						Geometry polygon = wktReader.read(object.toString());
-						filter.indexOf("srsName");
-						String srs = filter.substring(filter.indexOf("srsName"));
-						srs = srs.substring(srs.indexOf("\"") + 1);
-						srs = srs.substring(0, srs.indexOf("\""));
-						polygon.setSRID(Integer.parseInt(srs.substring(5)));
-						CoordinateReferenceSystem sourceCRS = CRS.decode("EPSG:" + (new Integer(polygon.getSRID())).toString());
-						CoordinateReferenceSystem targetCRS = CRS.decode(srsName);
-						double x1 = Double.parseDouble(s[0]);
-						double y1 = Double.parseDouble(s[1]);
-						double x2 = Double.parseDouble(s[2]);
-						double y2 = Double.parseDouble(s[3]);
-						MathTransform a = CRS.findMathTransform(sourceCRS, targetCRS, false);
-						polygon = JTS.transform(polygon, a);
-						polygon.setSRID(Integer.parseInt(srs.substring(5)));
-						Coordinate[] c = { new Coordinate(x1, y1), new Coordinate(x1, y1), new Coordinate(x2, y1), new Coordinate(x2, y2),
-								new Coordinate(x1, y2), new Coordinate(x1, y1) };
-						GeometryFactory gf = new GeometryFactory();
-						Geometry bboxGeom = gf.createPolygon(gf.createLinearRing(c), null);
-						bboxGeom.setSRID(Integer.parseInt(srs.substring(5)));
-						IntersectionMatrix mat1 = bboxGeom.relate(polygon);
-						IntersectionMatrix mat2 = polygon.relate(bboxGeom);
-
-						if (mat1.isIntersects() || mat2.isIntersects() || bboxGeom.overlaps(polygon) || polygon.overlaps(bboxGeom)
-								|| polygon.coveredBy(bboxGeom) || bboxGeom.coveredBy(polygon) || bboxGeom.touches(polygon)
-								|| polygon.touches(bboxGeom) || bboxGeom.intersects((polygon)) || bboxGeom.covers((polygon))
-								|| bboxGeom.crosses((polygon)) || polygon.crosses(bboxGeom) || polygon.intersects((bboxGeom))
-								|| polygon.covers((bboxGeom))) {
-							iscoveredByfilter = true;
-						} else {
-							iscoveredByfilter = false;
-						}
-					} else {
-						isNoFilterA = true;
-					}
-					for (int k = 0; k < layerToKeepList.size(); k++) {
-						// Création du polygon B à partir du filtre
-						// de iLayer
-						Boolean isNoFilterB = false;
-						filter = getLayerFilter(getRemoteServerUrl(j), (String) layerToKeepList.get(k));
-						Geometry polygonB = null;
-						if (filter != null && filter.length() > 0) {
-							InputStream bis = new ByteArrayInputStream(filter.getBytes());
-							Object object = DocumentFactory.getInstance(bis, null, Level.WARNING);
-							WKTReader wktReader = new WKTReader();
-							polygonB = wktReader.read(object.toString());
-						} else {
-							isNoFilterB = true;
-						}
-
-						// Comparaison des filtres
-						if (!isNoFilterA && !isNoFilterB) {
-							if (polygonA.equalsExact(polygonB)) {
-								layerToKeepListPerThread.add((String) layerToKeepList.remove(k));
-								stylesToKeepListPerThread.add((String) stylesToKeepList.remove(k));
-								k--;
-							}
-						} else if (isNoFilterA && isNoFilterB) {
-							layerToKeepListPerThread.add((String) layerToKeepList.remove(k));
-							stylesToKeepListPerThread.add((String) stylesToKeepList.remove(k));
-							k--;
-						}
-					}
-
-					if (iscoveredByfilter) {
-						// Création et lancement des threads sur
-						// serveur j pour chaque groupe de couches
-						// (à filtres identiques)
-						dump("requestPreTraitementGET send request multiLayer to thread server " + getRemoteServerUrl(j));
-						SendLayerThread th = new SendLayerThread(layerThreadList.size(), layerToKeepListPerThread, stylesToKeepListPerThread,
-								paramUrlBase, j, width, height, format, resp);
-						th.start();
-						layerThreadList.add(th);
-					} else {
-						//HVH - 18.12.2010 : 
-						//Création d'une image vide comme réponse à la requête en dehors du filtre
-						generateEmptyImage(width, height, format, true, j, resp);
-						dump("INFO", "Thread Layers group: " + layerToKeepListPerThread.get(0) + " work finished on server "
-								+ getRemoteServerUrl(j) + " : bbox not covered by policy filter.");
-					}
-				}
-				// Récupération du résultat des threads sur serveur
-				// j
-				// Autant de filePath à ajouter que de couches
-				for (int i = 0; i < layerThreadList.size(); i++) {
-					layerThreadList.get(i).join();
-
-					// Si une réponse a bien été renvoyée par le
-					// thread i
-					if (!serverFilePathList.isEmpty() && !((String) serverFilePathList.get(i)).equals("")) {
-						synchronized (wmsFilePathList) {
-							synchronized (layerFilePathList) {
-								synchronized (serverUrlPerfilePathList) {
-									// Insert les réponses
-									layerFilePathList.put(layerOrder, serverLayerFilePathList.get(i));
-									serverUrlPerfilePathList.put(layerOrder, getRemoteServerUrl(j));
-									wmsFilePathList.put(layerOrder, serverFilePathList.get(i));
-								}
-							}
-						}
-					}
-				}
-			
-			// Fin de Debug
-			dump("DEBUG", "Thread Server: " + getRemoteServerUrl(j) + " work finished");
+			servlet.dump("DEBUG", "Thread Server: " + remoteServer.getUrl() + " work finished");
+		} catch (FactoryException e){
+			//CRS can not be determine with the given SRS code
+			resp.setHeader("easysdi-proxy-error-occured", "true");
+			servlet.dump("ERROR", "Server Thread " + remoteServer.getUrl() + " :" + e.getMessage());
 		} catch (Exception e) {
 			resp.setHeader("easysdi-proxy-error-occured", "true");
-			dump("ERROR", "Server Thread " + getRemoteServerUrl(j) + " :" + e.getMessage());
+			servlet.dump("ERROR", "Server Thread " + remoteServer.getUrl() + " :" + e.getMessage());
 			e.printStackTrace();
-		}
-
-			
+		}			
 	}
-
 }

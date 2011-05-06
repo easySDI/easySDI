@@ -12,6 +12,10 @@ import javax.servlet.http.HttpServletRequest;
 import org.easysdi.proxy.core.ProxyServletRequest;
 import org.easysdi.proxy.exception.ProxyServletException;
 import org.easysdi.proxy.exception.VersionNotSupportedException;
+import org.geotools.referencing.CRS;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.NoSuchAuthorityCodeException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 
 /**
@@ -28,8 +32,32 @@ public class WMSProxyServletRequest extends ProxyServletRequest {
 	/**
 	 * 
 	 */
+	private Double x1;
+	
+	/**
+	 * 
+	 */
+	private Double x2;
+	
+	/**
+	 * 
+	 */
+	private Double y1;
+	
+	/**
+	 * 
+	 */
+	private Double y2;
+	
+	/**
+	 * 
+	 */
 	private String srsName;
 	
+	/**
+	 * 
+	 */
+	private CoordinateReferenceSystem crs; 
 	/**
 	 * 
 	 */
@@ -72,14 +100,64 @@ public class WMSProxyServletRequest extends ProxyServletRequest {
 		return bbox;
 	}
 
-
+	/**
+	 * @return x1 of bbox
+	 */
+	public double getX1(){
+		if(x1 == null ){
+			String[] s = bbox.split(",");
+			x1 = Double.parseDouble(s[0]);
+		}
+		return x1;
+	}
+	/**
+	 * @return x2 of bbox
+	 */
+	public double getX2(){
+		if(x2 == null ){
+			String[] s = bbox.split(",");
+			x2 = Double.parseDouble(s[2]);
+		}
+		return x2;
+	}
+	
+	/**
+	 * @return y1 of bbox
+	 */
+	public double getY1(){
+		if(y1 == null ){
+			String[] s = bbox.split(",");
+			y1 = Double.parseDouble(s[1]);
+		}
+		return y1;
+	}
+	
+	/**
+	 * @return y2 of bbox
+	 */
+	public double getY2(){
+		if(y2 == null ){
+			String[] s = bbox.split(",");
+			y2 = Double.parseDouble(s[3]);
+		}
+		return y2;
+	}
+	
 	/**
 	 * @return the srsName
 	 */
 	public String getSrsName() {
 		return srsName;
 	}
-
+	
+	/**
+	 * @return the coordinateReferenceSystem get from the srsName given in the request
+	 */
+	public CoordinateReferenceSystem getCoordinateReferenceSystem () throws FactoryException{
+		if(crs == null)
+			crs = CRS.decode(getSrsName());
+		return crs;
+	}
 
 	/**
 	 * @return the layer
@@ -149,6 +227,9 @@ public class WMSProxyServletRequest extends ProxyServletRequest {
 //		
 //	}
 	
+	/**
+	 * @throws ProxyServletException
+	 */
 	public void parseRequestGET () throws ProxyServletException{
 		Enumeration<String> parameterNames = request.getParameterNames();
 		
@@ -210,14 +291,10 @@ public class WMSProxyServletRequest extends ProxyServletRequest {
 			} else if (key.equalsIgnoreCase("LAYER")) {
 				// Gets the requested layer -> GetLegendGraphic only
 				layer = value;
-			}
-			// Debug tb 18.01.2010
-			else if (key.equalsIgnoreCase("QUERY_LAYERS")) {
+			} else if (key.equalsIgnoreCase("QUERY_LAYERS")) {
 				// Gets the requested querylayers -> GetFeatureInfo
 				queryLayers = value;
-			}
-			// Fin de Debug
-			else if (key.equalsIgnoreCase("LAYERS")) {
+			} else if (key.equalsIgnoreCase("LAYERS")) {
 				// Gets the requested layers -> GetMap
 				layers = value;
 			} else if (key.equalsIgnoreCase("STYLES")) {

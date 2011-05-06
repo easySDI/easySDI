@@ -197,6 +197,10 @@ public class WMSProxyServlet extends ProxyServlet {
 	 * 
 	 */
 	private String styles;
+	
+	/**
+	 * 
+	 */
 	private static DocumentBuilder builder = null;
 	
 	static {
@@ -207,6 +211,13 @@ public class WMSProxyServlet extends ProxyServlet {
 		} catch (ParserConfigurationException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	/**
+	 * @return the proxyRequest
+	 */
+	public WMSProxyServletRequest getProxyRequest() {
+		return getProxyRequest();
 	}
 
 	/**
@@ -1586,15 +1597,15 @@ public class WMSProxyServlet extends ProxyServlet {
 		
 		boolean sendRequest = true;
 		String version = "000";
-		String requestedVersion = proxyRequest.getVersion();
+		String requestedVersion = getProxyRequest().getVersion();
 					
 		//Generate OGC exception and send it to the client if current operation is not allowed
-		if(handleNotAllowedOperation(proxyRequest.getOperation(),resp))
+		if(handleNotAllowedOperation(getProxyRequest().getOperation(),resp))
 			return;
 		
 		Method preTreatmentMethod;
 		try {
-			preTreatmentMethod = this.getClass().getMethod("requestPreTreatment"+proxyRequest.getOperation(), new Class [] {Class.forName ("javax.servlet.http.HttpServletRequest"), Class.forName ("javax.servlet.http.HttpServletResponse")});
+			preTreatmentMethod = this.getClass().getMethod("requestPreTreatment"+getProxyRequest().getOperation(), new Class [] {Class.forName ("javax.servlet.http.HttpServletRequest"), Class.forName ("javax.servlet.http.HttpServletResponse")});
 			preTreatmentMethod.invoke(this, (Object[]) null);
 		} catch (SecurityException e2) {
 			// TODO Auto-generated catch block
@@ -1966,8 +1977,8 @@ public class WMSProxyServlet extends ProxyServlet {
 
 			//
 			List<String> layerArray = null;
-			if (((WMSProxyServletRequest)proxyRequest).getLayer() != null && ((WMSProxyServletRequest)proxyRequest).getLayer() != "" && ((WMSProxyServletRequest)proxyRequest).getLayers() == null)
-				layers = ((WMSProxyServletRequest)proxyRequest).getLayer();
+			if (((WMSProxyServletRequest)getProxyRequest()).getLayer() != null && ((WMSProxyServletRequest)getProxyRequest()).getLayer() != "" && ((WMSProxyServletRequest)getProxyRequest()).getLayers() == null)
+				layers = ((WMSProxyServletRequest)getProxyRequest()).getLayer();
 			if (layers != null)
 			{
 				layerArray = Collections.synchronizedList(new ArrayList<String>(Arrays.asList(layers.split(","))));
@@ -1989,15 +2000,15 @@ public class WMSProxyServlet extends ProxyServlet {
 			int layerOrder = 0;
 			String lastServerURL = null;
 			String newServerURL = null;
-			String cpOperation = new String(proxyRequest.getOperation());
+			String cpOperation = new String(getProxyRequest().getOperation());
 			String cpParamUrl = "";
-			String cpParamUrlBase = new String(proxyRequest.getUrlParameters());
-			String cpWidth = new String(((WMSProxyServletRequest)proxyRequest).getWidth());
-			String cpHeight = new String(((WMSProxyServletRequest)proxyRequest).getHeight());
-			String cpFormat = new String(((WMSProxyServletRequest)proxyRequest).getFormat());
+			String cpParamUrlBase = new String(getProxyRequest().getUrlParameters());
+			String cpWidth = new String(((WMSProxyServletRequest)getProxyRequest()).getWidth());
+			String cpHeight = new String(((WMSProxyServletRequest)getProxyRequest()).getHeight());
+			String cpFormat = new String(((WMSProxyServletRequest)getProxyRequest()).getFormat());
 			String filter = null;
 			//
-			if (proxyRequest.getOperation().equalsIgnoreCase("getcapabilities")) {
+			if (getProxyRequest().getOperation().equalsIgnoreCase("getcapabilities")) {
 				for (int jj = 0; jj < grsiList.size(); jj++) {
 					SendServerThread s = new SendServerThread(cpOperation, cpParamUrl, null, serverThreadList.size(), null, cpParamUrlBase, jj, cpWidth,
 							cpHeight, cpFormat, resp);
@@ -2020,11 +2031,11 @@ public class WMSProxyServlet extends ProxyServlet {
 							// si vrai:
 							// la requête n'est pas envoyée
 							sendRequest = true;
-							if (("GetMap".equalsIgnoreCase(proxyRequest.getOperation()) || 
-								 "map".equalsIgnoreCase(proxyRequest.getOperation())) || 
-								 "getfeatureinfo".equalsIgnoreCase(proxyRequest.getOperation())) 
+							if (("GetMap".equalsIgnoreCase(getProxyRequest().getOperation()) || 
+								 "map".equalsIgnoreCase(getProxyRequest().getOperation())) || 
+								 "getfeatureinfo".equalsIgnoreCase(getProxyRequest().getOperation())) 
 							{
-								if (!isSizeInTheRightRange(Integer.parseInt(((WMSProxyServletRequest)proxyRequest).getWidth()), Integer.parseInt(((WMSProxyServletRequest)proxyRequest).getWidth())))
+								if (!isSizeInTheRightRange(Integer.parseInt(((WMSProxyServletRequest)getProxyRequest()).getWidth()), Integer.parseInt(((WMSProxyServletRequest)getProxyRequest()).getWidth())))
 								{
 									dump("requestPreTraitementGET says: request ImageSize out of bounds, see the policy definition.");
 									sendRequest = false;
@@ -2124,7 +2135,7 @@ public class WMSProxyServlet extends ProxyServlet {
 												// la
 												// requête est
 												// autorisée
-												if (isLayerInScale(tmpFT, newServerURL, RendererUtilities.calculateOGCScale(re, Integer.parseInt(((WMSProxyServletRequest)proxyRequest).getWidth()), null))) {
+												if (isLayerInScale(tmpFT, newServerURL, RendererUtilities.calculateOGCScale(re, Integer.parseInt(((WMSProxyServletRequest)getProxyRequest()).getWidth()), null))) {
 													serverOK = true;
 												} else {
 													dump("requestPreTraitementGET says: request Scale out of bounds, see the policy definition.");
@@ -2182,7 +2193,7 @@ public class WMSProxyServlet extends ProxyServlet {
 								// couche
 								// "LAYER" de l'opération GetLegendGraphic
 							} 
-							else if ("GetLegendGraphic".equalsIgnoreCase(proxyRequest.getOperation()) ) 
+							else if ("GetLegendGraphic".equalsIgnoreCase(getProxyRequest().getOperation()) ) 
 							{
 								// Vérification que la couche de la req est
 								// autorisée
@@ -2212,7 +2223,7 @@ public class WMSProxyServlet extends ProxyServlet {
 							{
 								//Not supported operation
 								try {
-									sendOgcExceptionBuiltInResponse(resp,generateOgcException("Operation not supported : "+proxyRequest.getOperation(),"OperationNotSupported ","request",requestedVersion));
+									sendOgcExceptionBuiltInResponse(resp,generateOgcException("Operation not supported : "+getProxyRequest().getOperation(),"OperationNotSupported ","request",requestedVersion));
 									return;
 								} catch (Exception e) {
 									e.printStackTrace();
@@ -2247,7 +2258,7 @@ public class WMSProxyServlet extends ProxyServlet {
 								// threads.
 								// Originales rééctrites dans boucle serveur
 								// courante!
-								if (layers != null && proxyRequest.getOperation().equalsIgnoreCase("getmap") || proxyRequest.getOperation().equalsIgnoreCase("getfeatureinfo")) {
+								if (layers != null && getProxyRequest().getOperation().equalsIgnoreCase("getmap") || getProxyRequest().getOperation().equalsIgnoreCase("getfeatureinfo")) {
 									List<String> layersTabWithNS = Arrays.asList(layers.split(","));
 									List<String> layersTab = new ArrayList<String>();
 									for (String layerName : layersTabWithNS) {
@@ -2287,11 +2298,11 @@ public class WMSProxyServlet extends ProxyServlet {
 							// sendRequest=false
 							else {
 								sendRequest = true;
-								if (("GetMap".equalsIgnoreCase(proxyRequest.getOperation()) || "map".equalsIgnoreCase(proxyRequest.getOperation()) || "GetLegendGraphic"
-										.equalsIgnoreCase(proxyRequest.getOperation()))) {
+								if (("GetMap".equalsIgnoreCase(getProxyRequest().getOperation()) || "map".equalsIgnoreCase(getProxyRequest().getOperation()) || "GetLegendGraphic"
+										.equalsIgnoreCase(getProxyRequest().getOperation()))) {
 									dump("requestPreTraitementGET save response server " + getRemoteServerUrl(j)
 											+ ": emptyImage. Proxy bloc the request to this server due to policy config.");
-									generateEmptyImage(((WMSProxyServletRequest)proxyRequest).getWidth(), ((WMSProxyServletRequest)proxyRequest).getHeight(), ((WMSProxyServletRequest)proxyRequest).getFormat(), true, j, resp);
+									generateEmptyImage(((WMSProxyServletRequest)getProxyRequest()).getWidth(), ((WMSProxyServletRequest)getProxyRequest()).getHeight(), ((WMSProxyServletRequest)getProxyRequest()).getFormat(), true, j, resp);
 								}
 							}
 						}
@@ -2330,10 +2341,10 @@ public class WMSProxyServlet extends ProxyServlet {
 			// *****************************************************************************************************************************
 			if (wmsFilePathList.size() > 0) {
 				// Lancement du post traitement
-				version = proxyRequest.getVersion().replaceAll("\\.", "");
+				version = getProxyRequest().getVersion().replaceAll("\\.", "");
 
 				dump("requestPreTraitementGET begin transform");
-				transform(version, proxyRequest.getOperation(), req, resp);
+				transform(version, getProxyRequest().getOperation(), req, resp);
 				dump("requestPreTraitementGET end transform");
 				// Fin du post traitement
 				// *****************************************************************************************************************************
@@ -2365,7 +2376,7 @@ public class WMSProxyServlet extends ProxyServlet {
 		while(it.hasNext())
 		{
 			WMSProxyServerGetCapabilitiesThread s = new WMSProxyServerGetCapabilitiesThread(this,
-																							proxyRequest.getUrlParameters(), 
+																							getProxyRequest().getUrlParameters(), 
 																							it.next().getValue(), 
 																							resp);
 
@@ -2386,7 +2397,7 @@ public class WMSProxyServlet extends ProxyServlet {
 		if (wmsGetCapabilitiesResponseFilePathMap.size() > 0) {
 			// Lancement du post traitement
 			dump("requestPreTraitementGET begin transform");
-			transform(proxyRequest.getVersion().replaceAll("\\.", ""), proxyRequest.getOperation(), req, resp);
+			transform(getProxyRequest().getVersion().replaceAll("\\.", ""), getProxyRequest().getOperation(), req, resp);
 			dump("requestPreTraitementGET end transform");
 			// Fin du post traitement
 			// *****************************************************************************************************************************
@@ -2403,15 +2414,15 @@ public class WMSProxyServlet extends ProxyServlet {
 	protected void requestPreTreatmentGetMap (HttpServletRequest req, HttpServletResponse resp){
 		
 		//Check the LAYERS parameter validity
-		if(((WMSProxyServletRequest)proxyRequest).getLayers() == null || ((WMSProxyServletRequest)proxyRequest).getLayers().equalsIgnoreCase(""))
+		if(((WMSProxyServletRequest)getProxyRequest()).getLayers() == null || ((WMSProxyServletRequest)getProxyRequest()).getLayers().equalsIgnoreCase(""))
 		{
 			sendOgcExceptionBuiltInResponse(resp,generateOgcException("LAYERS parameter is missing.","LayerNotDefined","LAYERS",requestedVersion));
 			return;
 		}
 		
 		//Check the WIDTH and HEIGHT parameters validity against the policy rules
-		if (!isSizeInTheRightRange(Integer.parseInt(((WMSProxyServletRequest)proxyRequest).getWidth()), 
-				   Integer.parseInt(((WMSProxyServletRequest)proxyRequest).getWidth())))
+		if (!isSizeInTheRightRange(Integer.parseInt(((WMSProxyServletRequest)getProxyRequest()).getWidth()), 
+				   Integer.parseInt(((WMSProxyServletRequest)getProxyRequest()).getWidth())))
 		{
 			dump("requestPreTraitementGET says: request ImageSize out of bounds, see the policy definition.");
 			sendOgcExceptionBuiltInResponse(resp,generateOgcException("ImageSize out of bounds, see the policy definition.","InvalidDimensionValue","WIDTH",requestedVersion));
@@ -2423,14 +2434,14 @@ public class WMSProxyServlet extends ProxyServlet {
 		
 		//Get the requested layer names
 		TreeMap<Integer,String> layerMap = new TreeMap <Integer,String>();
-		ArrayList<String> layerParamAsArray = new ArrayList<String>(Arrays.asList(((WMSProxyServletRequest)proxyRequest).getLayers().split(",")));
+		ArrayList<String> layerParamAsArray = new ArrayList<String>(Arrays.asList(((WMSProxyServletRequest)getProxyRequest()).getLayers().split(",")));
 		for (int index = 0 ; index < layerParamAsArray.size() ; index++){
 			layerMap.put(index, layerParamAsArray.get(index));
 		}
 		
 		//Check the STYLES parameter
 		TreeMap<Integer,String> layerStyleMap = new TreeMap <Integer,String>();
-		ArrayList<String> layerStyleParamAsArray = new ArrayList<String>(Arrays.asList(((WMSProxyServletRequest)proxyRequest).getStyles().split(",")));
+		ArrayList<String> layerStyleParamAsArray = new ArrayList<String>(Arrays.asList(((WMSProxyServletRequest)getProxyRequest()).getStyles().split(",")));
 		//A style definition is mandatory for each layer, we create them if needed
 		if (layerStyleParamAsArray.size() < layerMap.size()) {
 			int diffSize = layerMap.size() - layerStyleParamAsArray.size();
@@ -2443,7 +2454,7 @@ public class WMSProxyServlet extends ProxyServlet {
 		}
 		
 		//Get the BBOX parameter
-		String[] c = ((WMSProxyServletRequest)proxyRequest).getBbox().split(",");
+		String[] c = ((WMSProxyServletRequest)getProxyRequest()).getBbox().split(",");
 		ReferencedEnvelope rEnvelope;
 		try {
 			rEnvelope = new ReferencedEnvelope(Double.parseDouble(c[0]), Double.parseDouble(c[2]), Double.parseDouble(c[1]), Double.parseDouble(c[3]), CRS.decode(srsName));
@@ -2477,7 +2488,7 @@ public class WMSProxyServlet extends ProxyServlet {
 			}
 			
 			//Check if the scale is available
-			if (isLayerInScale(layerName, RS.getUrl(), RendererUtilities.calculateOGCScale(rEnvelope, Integer.parseInt(((WMSProxyServletRequest)proxyRequest).getWidth()), null))) {
+			if (isLayerInScale(layerName, RS.getUrl(), RendererUtilities.calculateOGCScale(rEnvelope, Integer.parseInt(((WMSProxyServletRequest)getProxyRequest()).getWidth()), null))) {
 				//Layer to keep in the request
 				layerTableToKeep.put(layerOrdered.getKey(),layer);
 				//Servers to call to complete the request
@@ -2517,13 +2528,13 @@ public class WMSProxyServlet extends ProxyServlet {
 	 * @param resp
 	 */
 	protected void requestPreTreatmentGetLegendGraphic (HttpServletRequest req, HttpServletResponse resp){
-		if(((WMSProxyServletRequest)proxyRequest).getLayer() == null || ((WMSProxyServletRequest)proxyRequest).getLayer().equals(""))
+		if(((WMSProxyServletRequest)getProxyRequest()).getLayer() == null || ((WMSProxyServletRequest)getProxyRequest()).getLayer().equals(""))
 		{
 			sendOgcExceptionBuiltInResponse(resp,generateOgcException("LAYER parameter is missing.","LayerNotDefined","LAYER",requestedVersion));
 			return;
 		}
 		List<String> layerArray = null;
-		layerArray = Collections.synchronizedList(new ArrayList<String>(Arrays.asList(((WMSProxyServletRequest)proxyRequest).getLayer().split(","))));
+		layerArray = Collections.synchronizedList(new ArrayList<String>(Arrays.asList(((WMSProxyServletRequest)getProxyRequest()).getLayer().split(","))));
 		for (int k = 0 ; k < layerArray.size() ; k++){
 			if(!isLayerAllowed(layerArray.get(k))){
 				sendOgcExceptionBuiltInResponse(resp,generateOgcException("Invalid layer given in the LAYER parameter : "+layerArray.get(k),"LayerNotDefined","LAYER",requestedVersion));
@@ -2537,13 +2548,13 @@ public class WMSProxyServlet extends ProxyServlet {
 	 * @param resp
 	 */
 	protected void requestPreTreatmentGetFeatureInfo (HttpServletRequest req, HttpServletResponse resp){
-		if(((WMSProxyServletRequest)proxyRequest).getQueryLayers() == null || ((WMSProxyServletRequest)proxyRequest).getQueryLayers().equalsIgnoreCase(""))
+		if(((WMSProxyServletRequest)getProxyRequest()).getQueryLayers() == null || ((WMSProxyServletRequest)getProxyRequest()).getQueryLayers().equalsIgnoreCase(""))
 		{
 			sendOgcExceptionBuiltInResponse(resp,generateOgcException("QUERY_LAYERS parameter is missing.","LayerNotDefined","QUERY_LAYERS",requestedVersion));
 			return;
 		}
 		List<String> layerArray = null;
-		layerArray = Collections.synchronizedList(new ArrayList<String>(Arrays.asList(((WMSProxyServletRequest)proxyRequest).getQueryLayers().split(","))));
+		layerArray = Collections.synchronizedList(new ArrayList<String>(Arrays.asList(((WMSProxyServletRequest)getProxyRequest()).getQueryLayers().split(","))));
 		for (int k = 0 ; k < layerArray.size() ; k++){
 			if(!isLayerAllowed(layerArray.get(k))){
 				sendOgcExceptionBuiltInResponse(resp,generateOgcException("Invalid layer(s) given in the QUERY_LAYERS parameter : "+layerArray.get(k),"LayerNotDefined","QUERY_LAYERS",requestedVersion));

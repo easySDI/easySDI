@@ -111,6 +111,9 @@ public abstract class ProxyServlet extends HttpServlet {
 	protected static final String SVG = "image/svg+xml";
 	private List<String> temporaryFileList = new Vector();
 
+	/**
+	 * Configuration loaded to complete the request
+	 */
 	protected org.easysdi.xml.documents.Config configuration;
 
 	public Policy policy;
@@ -124,43 +127,79 @@ public abstract class ProxyServlet extends HttpServlet {
 	public Multimap<Integer, String> wmsFilePathList = HashMultimap.create();
 	
 	
-	
-	//WMTS response files
+	/**
+	 * WMTS response files
+	 */
 	public Hashtable<String, String> wmtsFilePathTable = new Hashtable<String, String>();
 	public Hashtable<String, String> ogcExceptionFilePathTable = new Hashtable<String, String>();
 	
-	//List of the remote servers define in the config.xml
+	/**
+	 * List of the remote servers define in the config.xml
+	 */
 	public Hashtable<String, RemoteServerInfo> remoteServerInfoHashTable = new Hashtable <String, RemoteServerInfo>();
 
-	//Une liste des fichiers (sendData) réponse de chaque serveur WFS
+	/**
+	 * Une liste des fichiers (sendData) réponse de chaque serveur WFS
+	 */
 	public Map<Integer, String> layerFilePathList = new TreeMap<Integer, String>();
+	
+	/**
+	 * 
+	 */
 	protected Vector<String> featureTypePathList = new Vector<String>(); 
-	// Contient	le featureTypetoKeep.get(0) (->reference pour le filtre remoteFilter) par Server
-	// Debug tb 04.06.2009
+	
+	/**
+	 *  Contient	le featureTypetoKeep.get(0) (->reference pour le filtre remoteFilter) par Server
+	 *  Debug tb 04.06.2009
+	 */
 	protected List<String> policyAttributeListToKeepPerFT = new Vector<String>();
+	
+	/**
+	 * 
+	 */
 	protected int policyAttributeListNb = 0;
 	// Fin de debug
 	
-	//Liste des fichiers réponses de chaque serveur qui contiennent des erreurs OGC
+	/**
+	 * Liste des fichiers réponses de chaque serveur qui contiennent des erreurs OGC
+	 */
 	protected Multimap<Integer, String> ogcExceptionFilePathList = HashMultimap.create();
 
-	//Store operations supported by the current version of the proxy
-	//Update this list to reflect proxy's capabilities
+	/**
+	 * Store operations supported by the current version of the proxy
+	 * Update this list to reflect proxy's capabilities
+	 */
 	public static List<String> ServiceSupportedOperations = Arrays.asList();
-	//Store all the operations define by the ogc norme for the specific service
+	
+	/**
+	 * Store all the operations define by the ogc norme for the specific service
+	 */
 	public static List<String> ServiceOperations = Arrays.asList();
 	
+	/**
+	 * 
+	 */
 	private List<String> lLogs = new Vector<String>();
+	
+	/**
+	 * 
+	 */
 	protected boolean hasPolicy = true;
 	
-	//Value of the version parameter received in the request
+	/**
+	 * Value of the version parameter received in the request
+	 */
 	protected String requestedVersion ;
 
-	//Use for accessing EasySDI Joomla data
+	/**
+	 * Use for accessing EasySDI Joomla data
+	 */
 	private JoomlaProvider joomlaProvider;
 	
-	//Object representing the request
-	protected ProxyServletRequest proxyRequest;
+	/**
+	 * Object representing the request
+	 */
+	private ProxyServletRequest proxyRequest;
 	
 
 	
@@ -1838,7 +1877,7 @@ public abstract class ProxyServlet extends HttpServlet {
 		return null;
 	}
 
-	protected String getLayerFilter(String url, String layer) {
+	public String getLayerFilter(String url, String layer) {
 		if (policy == null)
 			return null;
 
