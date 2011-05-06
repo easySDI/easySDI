@@ -53,7 +53,7 @@ public class WMSProxyServerGetMapThread extends Thread {
 	WMSProxyServlet servlet;
 	String paramUrlBase;
 	TreeMap<Integer, ProxyLayer> layers;
-	TreeMap<Integer, ProxyLayer> styles;
+	TreeMap<Integer, String> styles;
 	RemoteServerInfo remoteServer;
 	HttpServletResponse resp;
 
@@ -61,7 +61,7 @@ public class WMSProxyServerGetMapThread extends Thread {
 	public WMSProxyServerGetMapThread(	WMSProxyServlet servlet, 
 										String paramUrlBase,
 										TreeMap<Integer, ProxyLayer> layers,
-										TreeMap<Integer, ProxyLayer> styles,
+										TreeMap<Integer, String> styles,
 										RemoteServerInfo remoteServer, 
 										HttpServletResponse resp) {
 		this.servlet = servlet;
@@ -80,11 +80,14 @@ public class WMSProxyServerGetMapThread extends Thread {
 			//Layer order
 			List<TreeMap<Integer, ProxyLayer>> layerGroupList = new ArrayList<TreeMap<Integer,ProxyLayer>>() ;
 			TreeMap<Integer, ProxyLayer> layerGroup = new TreeMap<Integer, ProxyLayer>();
-			Integer previous = 0;
+			Integer previous = -1;
 			Iterator<Integer> itKey = layers.keySet().iterator();
 			while (itKey.hasNext()){
 				Integer key = itKey.next();
-				if(key == previous +1){
+				if(previous == -1)
+				{
+					layerGroup.put(key, layers.get(key));
+				}else if(key == previous +1){
 					layerGroup.put(key, layers.get(key));
 				}else{
 					layerGroupList.add(layerGroup);
@@ -94,6 +97,7 @@ public class WMSProxyServerGetMapThread extends Thread {
 				previous = key;
 			}
 			layerGroupList.add(layerGroup);
+			
 			
 			//request BBOX to geometry
 			String requestBbox = servlet.getProxyRequest().getBbox();
@@ -158,7 +162,9 @@ public class WMSProxyServerGetMapThread extends Thread {
 				
 				//Remove from the layers list those who are not covered by the requested BBOX (due to policy geographix filter restriction)
 				for (int i = 0 ; i < layerIndexToRemove.size();i++)
+				{
 					continuousLayers.remove(layerIndexToRemove.get(i));
+				}
 				
 				if(continuousLayers.size()==1){
 					//Send the request
@@ -174,7 +180,7 @@ public class WMSProxyServerGetMapThread extends Thread {
 						th.start();
 						layerThreadList.add(th);
 					}else{
-						//Layers have to be requested separatly : geogrphic filter are not the same
+						//Layers have to be requested separatly : geographic filter are not the same
 						Iterator<Entry<Integer, ProxyLayer>> itLToS = continuousLayers.entrySet().iterator();
 						while (itLToS.hasNext()){
 							Entry<Integer, ProxyLayer> layer = itLToS.next();

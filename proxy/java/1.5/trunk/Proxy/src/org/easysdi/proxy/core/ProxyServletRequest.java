@@ -34,7 +34,7 @@ public abstract class ProxyServletRequest {
 	/**
 	 * 
 	 */
-	protected String urlParameters;
+	protected String urlParameters="";
 	
 	/**
 	 * 

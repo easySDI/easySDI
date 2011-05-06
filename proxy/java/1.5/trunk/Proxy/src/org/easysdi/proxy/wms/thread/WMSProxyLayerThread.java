@@ -32,14 +32,14 @@ public class WMSProxyLayerThread extends Thread {
 	WMSProxyServlet servlet;
 	String paramUrlBase;
 	TreeMap<Integer, ProxyLayer> layers;
-	TreeMap<Integer, ProxyLayer> styles;
+	TreeMap<Integer, String> styles;
 	RemoteServerInfo remoteServer;
 	HttpServletResponse resp;
 
 	public WMSProxyLayerThread(	WMSProxyServlet servlet, 
 								String paramUrlBase,
 								TreeMap<Integer, ProxyLayer> layers,
-								TreeMap<Integer, ProxyLayer> styles,
+								TreeMap<Integer, String> styles,
 								RemoteServerInfo remoteServer, 
 								HttpServletResponse resp) {
 		this.servlet = servlet;
@@ -63,8 +63,8 @@ public class WMSProxyLayerThread extends Thread {
 				styleList += styles.get(layer.getKey()) +",";
 			}
 			
-			String layersUrl = "&LAYERS=" + layerList.substring(0, layerList.length()-2);
-			String stylesUrl = "&STYLES=" + styleList.substring(0, layerList.length()-2);
+			String layersUrl = "&LAYERS=" + layerList.substring(0, layerList.length()-1);
+			String stylesUrl = "&STYLES=" + styleList.substring(0, styleList.length()-1);
 			
 			//Set TRANSPARENT to TRUE if not present
 			if (paramUrlBase.toUpperCase().indexOf("TRANSPARENT=") == -1)

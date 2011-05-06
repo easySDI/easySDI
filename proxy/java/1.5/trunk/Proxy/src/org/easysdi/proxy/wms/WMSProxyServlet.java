@@ -94,6 +94,7 @@ import org.easysdi.proxy.policy.Operation;
 import org.easysdi.proxy.policy.Server;
 import org.easysdi.proxy.policy.Servers;
 import org.easysdi.proxy.wms.thread.WMSProxyServerGetCapabilitiesThread;
+import org.easysdi.proxy.wms.thread.WMSProxyServerGetMapThread;
 import org.easysdi.xml.documents.RemoteServerInfo;
 import org.easysdi.xml.resolver.ResourceResolver;
 import org.geotools.data.ows.CRSEnvelope;
@@ -217,7 +218,7 @@ public class WMSProxyServlet extends ProxyServlet {
 	 * @return the proxyRequest
 	 */
 	public WMSProxyServletRequest getProxyRequest() {
-		return getProxyRequest();
+		return (WMSProxyServletRequest)proxyRequest;
 	}
 
 	/**
@@ -1606,7 +1607,7 @@ public class WMSProxyServlet extends ProxyServlet {
 		Method preTreatmentMethod;
 		try {
 			preTreatmentMethod = this.getClass().getMethod("requestPreTreatment"+getProxyRequest().getOperation(), new Class [] {Class.forName ("javax.servlet.http.HttpServletRequest"), Class.forName ("javax.servlet.http.HttpServletResponse")});
-			preTreatmentMethod.invoke(this, (Object[]) null);
+			preTreatmentMethod.invoke(this ,new Object[] {req,resp});
 		} catch (SecurityException e2) {
 			// TODO Auto-generated catch block
 			e2.printStackTrace();
@@ -2411,7 +2412,7 @@ public class WMSProxyServlet extends ProxyServlet {
 	 * @param req
 	 * @param resp
 	 */
-	protected void requestPreTreatmentGetMap (HttpServletRequest req, HttpServletResponse resp){
+	public void requestPreTreatmentGetMap (HttpServletRequest req, HttpServletResponse resp){
 		
 		//Check the LAYERS parameter validity
 		if(((WMSProxyServletRequest)getProxyRequest()).getLayers() == null || ((WMSProxyServletRequest)getProxyRequest()).getLayers().equalsIgnoreCase(""))
@@ -2441,7 +2442,10 @@ public class WMSProxyServlet extends ProxyServlet {
 		
 		//Check the STYLES parameter
 		TreeMap<Integer,String> layerStyleMap = new TreeMap <Integer,String>();
-		ArrayList<String> layerStyleParamAsArray = new ArrayList<String>(Arrays.asList(((WMSProxyServletRequest)getProxyRequest()).getStyles().split(",")));
+		ArrayList<String> layerStyleParamAsArray = new ArrayList<String>();
+		if(((WMSProxyServletRequest)getProxyRequest()).getStyles() != null){
+			layerStyleParamAsArray = new ArrayList<String>(Arrays.asList(((WMSProxyServletRequest)getProxyRequest()).getStyles().split(",")));
+		}
 		//A style definition is mandatory for each layer, we create them if needed
 		if (layerStyleParamAsArray.size() < layerMap.size()) {
 			int diffSize = layerMap.size() - layerStyleParamAsArray.size();
@@ -2457,7 +2461,7 @@ public class WMSProxyServlet extends ProxyServlet {
 		String[] c = ((WMSProxyServletRequest)getProxyRequest()).getBbox().split(",");
 		ReferencedEnvelope rEnvelope;
 		try {
-			rEnvelope = new ReferencedEnvelope(Double.parseDouble(c[0]), Double.parseDouble(c[2]), Double.parseDouble(c[1]), Double.parseDouble(c[3]), CRS.decode(srsName));
+			rEnvelope = new ReferencedEnvelope(Double.parseDouble(c[0]), Double.parseDouble(c[2]), Double.parseDouble(c[1]), Double.parseDouble(c[3]), CRS.decode(((WMSProxyServletRequest)getProxyRequest()).getSrsName()));
 		}catch (Exception ex) {
 			sendOgcExceptionBuiltInResponse(resp, generateOgcException("Invalid SRS given","InvalidSRS","SRS",requestedVersion));
 			return;
@@ -2506,21 +2510,49 @@ public class WMSProxyServlet extends ProxyServlet {
 		}
 		
 		//Loop on the remote server to send the request 
+		List<WMSProxyServerGetMapThread> serverThreadList = new Vector<WMSProxyServerGetMapThread>();
 		for(int k = 0; k<remoteServerToCall.size();k++){
-			TreeMap<Integer, String> layerByServerTable = new TreeMap<Integer, String>();
+			TreeMap<Integer, ProxyLayer> layerByServerTable = new TreeMap<Integer, ProxyLayer>();
 			RemoteServerInfo RS = (RemoteServerInfo)remoteServersTable.get(remoteServerToCall.get(k));
 			Iterator<Entry<Integer, ProxyLayer>> itLK = layerTableToKeep.entrySet().iterator();
 			//Build a list of the layers for the current remote server
 			while(itLK.hasNext()){
 				Entry<Integer, ProxyLayer> layerOrdered = itLK.next();
 				if(((ProxyLayer)layerOrdered.getValue()).getAlias().equals(RS.getAlias())){
-					layerByServerTable.put(layerOrdered.getKey(), ((ProxyLayer)layerOrdered.getValue()).getName());
+					layerByServerTable.put(layerOrdered.getKey(), layerOrdered.getValue());
 				}
 			}
-			//TODO : New Thread to request this remote server
-			
-			
+			//New Thread to request this remote server
+			WMSProxyServerGetMapThread s = new WMSProxyServerGetMapThread(	this,
+																			getProxyRequest().getUrlParameters(), 
+																			layerByServerTable, 
+																			layerStyleMap,
+																			RS,
+																			resp);
+
+			s.start();
+			serverThreadList.add(s);
 		}	
+		
+		// Wait for thread results
+		for (int i = 0; i < serverThreadList.size(); i++) {
+			try {
+				serverThreadList.get(i).join();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		//Post Treatment
+		if (wmsGetMapResponseFilePathMap.size() > 0) {
+			dump("requestPreTraitementGET begin transform");
+			transform(getProxyRequest().getVersion().replaceAll("\\.", ""), getProxyRequest().getOperation(), req, resp);
+			dump("requestPreTraitementGET end transform");
+		} else {
+			// TODO : generate an empty response or an exception if we supposed to get at least a result
+			dump("ERROR", "This request has no authorized results!");
+		}
 	}
 	
 	/**

@@ -199,7 +199,7 @@ public abstract class ProxyServlet extends HttpServlet {
 	/**
 	 * Object representing the request
 	 */
-	private ProxyServletRequest proxyRequest;
+	protected ProxyServletRequest proxyRequest;
 	
 
 	

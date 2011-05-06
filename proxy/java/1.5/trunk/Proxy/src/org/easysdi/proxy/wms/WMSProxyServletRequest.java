@@ -257,7 +257,7 @@ public class WMSProxyServletRequest extends ProxyServletRequest {
 				urlParameters = urlParameters + key + "=" + value + "&";
 			}
 
-			if (key.equalsIgnoreCase("requestuest")) {
+			if (key.equalsIgnoreCase("request")) {
 				// Gets the requested Operation
 				if (value.equalsIgnoreCase("capabilities")) {
 					operation = "GetCapabilities";
