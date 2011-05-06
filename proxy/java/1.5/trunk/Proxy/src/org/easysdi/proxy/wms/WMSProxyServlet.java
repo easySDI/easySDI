@@ -227,7 +227,7 @@ public class WMSProxyServlet extends ProxyServlet {
 	public WMSProxyServlet ()
 	{
 		super();
-		ServiceSupportedOperations = Arrays.asList("GetCapabilities", "GetMap", "GetFeatureInfo", "GetLegendGraphic");
+		owsExceptionReport = new WMSExceptionReport ();
 	}
 	
 	protected StringBuffer generateOgcException(String errorMessage, String code, String locator, String version) {
@@ -1612,7 +1612,7 @@ public class WMSProxyServlet extends ProxyServlet {
 			// TODO Auto-generated catch block
 			e2.printStackTrace();
 		} catch (NoSuchMethodException e2) {
-			// TODO Auto-generated catch block
+			// Operation NotSupported
 			e2.printStackTrace();
 		} catch (IllegalArgumentException e1) {
 			// TODO Auto-generated catch block
@@ -2560,18 +2560,35 @@ public class WMSProxyServlet extends ProxyServlet {
 	 * @param resp
 	 */
 	protected void requestPreTreatmentGetLegendGraphic (HttpServletRequest req, HttpServletResponse resp){
-		if(((WMSProxyServletRequest)getProxyRequest()).getLayer() == null || ((WMSProxyServletRequest)getProxyRequest()).getLayer().equals(""))
-		{
-			sendOgcExceptionBuiltInResponse(resp,generateOgcException("LAYER parameter is missing.","LayerNotDefined","LAYER",requestedVersion));
-			return;
-		}
-		List<String> layerArray = null;
-		layerArray = Collections.synchronizedList(new ArrayList<String>(Arrays.asList(((WMSProxyServletRequest)getProxyRequest()).getLayer().split(","))));
-		for (int k = 0 ; k < layerArray.size() ; k++){
-			if(!isLayerAllowed(layerArray.get(k))){
-				sendOgcExceptionBuiltInResponse(resp,generateOgcException("Invalid layer given in the LAYER parameter : "+layerArray.get(k),"LayerNotDefined","LAYER",requestedVersion));
+		try {
+			if(((WMSProxyServletRequest)getProxyRequest()).getLayer() == null || ((WMSProxyServletRequest)getProxyRequest()).getLayer().equals(""))
+			{
+				StringBuffer out = owsExceptionReport.generateExceptionReport("LAYER "+OWSExceptionReport.TEXT_MISSING_PARAMETER_VALUE,OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE,"service");
+				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
+				sendOgcExceptionBuiltInResponse(resp,generateOgcException("LAYER parameter is missing.","MissingParameterValue","LAYER",requestedVersion));
 				return;
 			}
+			List<String> layerArray = null;
+			layerArray = Collections.synchronizedList(new ArrayList<String>(Arrays.asList(((WMSProxyServletRequest)getProxyRequest()).getLayer().split(","))));
+			for (int k = 0 ; k < layerArray.size() ; k++){
+				if(!isLayerAllowed(layerArray.get(k))){
+					sendOgcExceptionBuiltInResponse(resp,generateOgcException("Invalid layer name given in the LAYER parameter : "+layerArray.get(k),"LayerNotDefined","LAYER",requestedVersion));
+					return;
+				}
+			}
+		} catch (IOException e) {
+			resp.setHeader("easysdi-proxy-error-occured", "true");
+			e.printStackTrace();
+			dump("ERROR", e.toString());
+			StringBuffer out;
+			try {
+				out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
+				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			} catch (IOException e1) {
+				dump("ERROR", e1.toString());
+				e1.printStackTrace();
+			}
+			return;
 		}
 	}
 	

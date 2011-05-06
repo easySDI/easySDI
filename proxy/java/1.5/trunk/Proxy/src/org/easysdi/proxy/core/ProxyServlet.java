@@ -65,6 +65,7 @@ import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.easysdi.proxy.exception.AvailabilityPeriodException;
+import org.easysdi.proxy.ows.OWSExceptionReport;
 import org.easysdi.proxy.policy.Attribute;
 import org.easysdi.proxy.policy.AvailabilityPeriod;
 import org.easysdi.proxy.policy.FeatureType;
@@ -158,7 +159,6 @@ public abstract class ProxyServlet extends HttpServlet {
 	 * 
 	 */
 	protected int policyAttributeListNb = 0;
-	// Fin de debug
 	
 	/**
 	 * Liste des fichiers réponses de chaque serveur qui contiennent des erreurs OGC
@@ -185,6 +185,11 @@ public abstract class ProxyServlet extends HttpServlet {
 	 * 
 	 */
 	protected boolean hasPolicy = true;
+	
+	/**
+	 * 
+	 */
+	protected OWSExceptionReport owsExceptionReport;
 	
 	/**
 	 * Value of the version parameter received in the request

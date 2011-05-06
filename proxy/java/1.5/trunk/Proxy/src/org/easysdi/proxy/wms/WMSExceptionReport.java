@@ -34,6 +34,9 @@ public class WMSExceptionReport implements OWSExceptionReport {
 		return generateExceptionReport (errorMessage, code, locator, "1.1.0");
 	}
 
+	/* (non-Javadoc)
+	 * @see org.easysdi.proxy.ows.OWSExceptionReport#generateExceptionReport(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+	 */
 	public StringBuffer generateExceptionReport(String errorMessage,String code, String locator, String version) throws IOException {
 		if (version == null || version == "")
 			version = "1.1.0";

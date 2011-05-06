@@ -16,17 +16,25 @@
  */
 package org.easysdi.proxy.wms;
 
+import java.util.Arrays;
+
 /**
  * @author DEPTH SA
  *
  */
-public class WMSProxyServlet110 {
+public class WMSProxyServlet110 extends WMSProxyServlet{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4655526702718323449L;
 
 	/**
 	 * 
 	 */
 	public WMSProxyServlet110() {
-		// TODO Auto-generated constructor stub
+		super();
+		ServiceSupportedOperations = Arrays.asList("GetCapabilities", "GetMap", "GetFeatureInfo");
 	}
 
 }

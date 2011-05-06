@@ -44,8 +44,7 @@ public class WMTSProxyServlet extends ProxyServlet{
 	private static final long serialVersionUID = 1982682293133286643L;
 	protected WMTSProxyResponseBuilder docBuilder; 
 	protected OWSExceptionManager owsExceptionManager;
-	protected OWSExceptionReport owsExceptionReport;
-	
+		
 	public WMTSProxyServlet() {
 		super();
 		

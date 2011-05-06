@@ -49,6 +49,7 @@ public interface OWSExceptionReport {
 	public static final String TEXT_OPERATION_NOT_ALLOWED 			= "Operation not allowed.";
 	public static final String TEXT_ERROR_IN_EASYSDI_PROXY 			= "Error in EasySDI Proxy. Consult the proxy log for more details.";
 	
+	public static final String TEXT_MISSING_PARAMETER_VALUE			= "Parameter is missing.";
 	public static final String TEXT_INVALID_FORMAT					= "Request contains a format not offered by the server.";
 	public static final String TEXT_INVALID_CRS 					= "Request contains a CRS not offered by the server for one or more of the layers.";
 	public static final String TEXT_INVALID_SRS 					= "Request contains a SRS not offered by the service instance for one or more of the layers.";
