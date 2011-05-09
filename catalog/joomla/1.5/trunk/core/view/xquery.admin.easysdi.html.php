@@ -23,22 +23,41 @@ defined('_JEXEC') or die('Restricted access');
 <?php 
 class  HTML_xquery{
 	
-	function list_XQueryReports($rows, $pagination){
-
+	function list_XQueryReports($rows, $pagination ){
+//			$displaySortAsc="none";
+//			$displaySortDesc="none";
+//		
+//		if(JRequest::getVar('sortByQueryName')=="asc")
+//			$displaySortAsc="block";
+//		else if(JRequest::getVar('sortByQueryName')=="desc")
+//			$displaySortDesc=block;
+//		else{
+//			$displaySortAsc="block";
+//			$displaySortDesc="none";
+	
 ?>
 <form action="" method="post" name="adminForm">
 
 <table class="adminlist">
 		<thead>
 			<tr>
-				<th class='title' style="width:10px"><?php echo JText::_("CORE_SHARP"); ?></th>
-				<th class='title' style="width:10px"><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows); ?>);" /></th>				
-				<th class='title' style="width:30px"><?php echo JText::_("CATALOG_XQUERY_REPORTNAME");  ?></th>
-				<th class='title' style="width:30px"><?php echo JText::_("CATALOG_XQUERY_DESCRIPTION");  ?></th>
-				<th class='title' style="width:100px"><?php echo JText::_("CATALOG_XQUERY_SQLFILTER");  ?></th>
-				<th class='title' style="width:100px"><?php echo JText::_("CATALOG_XQUERY_OGCFILTER");  ?></th>
-				<th class='title' style="width:100px"><?php echo JText::_("CATALOG_XQUERY_XSLTURL");  ?></th>
-				<th class='title' style="width:50px"><?php echo JText::_("CATALOG_XQUERY_ACTION");  ?></th>
+				<th class='title' ><?php echo JText::_("CORE_SHARP"); ?></th>
+				<th class='title' ></th>				
+				<th class='title' >
+				<div style="float:left">
+					<div style="float:left"><?php echo JText::_("CATALOG_XQUERY_REPORTNAME");  ?>&nbsp;&nbsp;&nbsp;</div>
+					<div id="QueryNameSortDesc" class="sortDesc" onclick="setSort('QueryName', 'desc', 'listXQueryReport')" style="float:left;display:block"></div>					
+					<div id="QueryNameSortAsc" class="sortAsc" onclick="setSort('QueryName', 'asc', 'listXQueryReport');"  style="float:left;display:block">&nbsp;&nbsp;&nbsp;</div>
+					
+				</div>
+				<div style="clear:both"></div>
+				</th>
+				<th class='title' ><?php echo JText::_("CATALOG_XQUERY_DESCRIPTION");  ?></th>
+				<th class='title' ><?php echo JText::_("CATALOG_XQUERY_SQLFILTER");  ?></th>
+				<th class='title' ><?php echo JText::_("CATALOG_XQUERY_OGCFILTER");  ?></th>
+				<th class='title' ><?php echo JText::_("CATALOG_XQUERY_XSLTURL");  ?></th>
+				<th class='title' ><?php echo JText::_("CATALOG_XQUERY_MANAGE_USERS");  ?></th>
+				<th class='title' ><?php echo JText::_("CATALOG_XQUERY_ACTION");  ?></th>
 				
 				
 			</tr>
@@ -53,13 +72,14 @@ class  HTML_xquery{
 				{?> 
 				
 				<tr>
-				<td  style="width:10px"><?php echo $num?></td>
-				<td  style="width:10px"><input type="checkbox" name="toggle" value="" onclick="setReportIdToPreview(this, <?php echo $row->id?>)" /></td>				
-				<td  style="width:30px"><?php echo  $row->xqueryname  ?></td>
-				<td  style="width:30px"><?php echo  $row->description  ?></td>
-				<td  style="width:100px"><?php echo $row->sqlfilter ?></td>
-				<td  style="width:100px"><?php echo $row->ogcfilter  ?></td>
-				<td  style="width:100px"><?php echo $row->xslttemplateurl ?></td>
+				<td  ><?php echo $num?></td>
+				<td  ><input type="checkbox" name="toggle" value="" onclick="setReportIdToPreview(this, <?php echo $row->id?>)" /></td>				
+				<td  ><a href="javascript:submitbutton('editXQueryReport',<?php echo $row->id ?>)"><?php echo  $row->xqueryname  ?></a></td>
+				<td  ><?php echo  $row->description  ?></td>
+				<td  ><?php echo $row->sqlfilter ?></td>
+				<td  ><?php echo $row->ogcfilter  ?></td>
+				<td  ><?php echo $row->xslttemplateurl ?></td>
+				<td  ><div class="manageUsers"  onclick="submitbutton('assignXQueryReport',<?php echo $row->id ?>)"></div></td>
 				<td  ><div class="executeXQuery"  onclick="submitbutton('adminTestXQueryReport',<?php echo $row->id ?>)"></div></td>
 				
 				
@@ -75,7 +95,7 @@ class  HTML_xquery{
 		<tfoot>
 		<!-- add pagination for in footer -->
 			<tr>	
-				<td colspan="13"><?php echo $pagination->getListFooter(); ?></td>
+				<td colspan="9"><?php echo $pagination->getListFooter(); ?></td>
 			</tr>
 		</tfoot>
 		</table>
@@ -92,11 +112,10 @@ function newXQueryReport(){
 		<!-- Name of the report -->
 			<fieldset>
 							<legend align="top"><?php echo JText::_("CATALOG_XQUERY_NAME"); ?></legend>
-							<table><tbody><tr>
-								
-									<td class="td_left"> <?php echo JText::_("CATALOG_XQUERY_ENTERNAME"); ?>	</td>
+							<table><tbody><tr>								
+									<td class="td_left"> <?php echo JText::_("CATALOG_XQUERY_ENTERNAME"); ?></td>
 									<td class="td_middle"></td>
-									<td class="td_right"> <input name="xQueryReportName" value="" class="input_width300"/>    </td>
+									<td class="td_right"> <input name="xQueryReportName" value="" class="input_width300"/></td>
 								</tr></tbody>
 							</table>
 			</fieldset>
@@ -105,10 +124,9 @@ function newXQueryReport(){
 							<legend align="top"><?php echo JText::_("CATALOG_XQUERY_DESCRIPTION"); ?></legend>
 							<table><tbody><tr>
 								
-									<td class="td_left"> <?php echo JText::_("CATALOG_XQUERY_ENTERDESC"); ?>	</td>
+									<td class="td_left"> <?php echo JText::_("CATALOG_XQUERY_ENTERDESC"); ?></td>
 									<td class="td_middle"></td>
-									<td class="td_right"><textarea name ="description"  class="text_area  textarea_size">
-							 			</textarea> </td>
+									<td class="td_right"><textarea name ="description"  class="text_area  textarea_size"></textarea></td>
 								</tr></tbody>
 							</table>
 			</fieldset>
@@ -116,11 +134,9 @@ function newXQueryReport(){
 			<fieldset>
 							<legend align="top"><?php echo JText::_("CATALOG_XQUERY_SQLFILTERLABEL"); ?></legend>
 							<table><tbody><tr>
-									<td class="td_left"> <?php echo JText::_("CATALOG_XQUERY_ENTERSQL"); ?>	</td>
+									<td class="td_left"> <?php echo JText::_("CATALOG_XQUERY_ENTERSQL"); ?></td>
 									<td class="td_middle"></td>
-									<td class="td_right"> <textarea name ="metadataIdSql"  class="text_area  textarea_size">
-							 			</textarea>   
-							 		 </td>
+									<td class="td_right"> <textarea name ="metadataIdSql"  class="text_area  textarea_size"></textarea></td>
 							 		</tr></tbody>
 							</table>
 			</fieldset>
@@ -128,11 +144,9 @@ function newXQueryReport(){
 			<fieldset>
 							<legend align="top"><?php echo JText::_("CATALOG_XQUERY_OGCFILTERLABEL"); ?></legend>
 							<table><tbody><tr>
-									<td class="td_left"> <?php echo JText::_("CATALOG_XQUERY_ENTEROGC"); ?>	</td>
+									<td class="td_left"> <?php echo JText::_("CATALOG_XQUERY_ENTEROGC"); ?></td>
 									<td class="td_middle"></td>
-									<td class="td_right"> <textarea name ="ogcfilter"  class="text_area  textarea_size" >
-		 								</textarea>  
-							 		 </td>
+									<td class="td_right"> <textarea name ="ogcfilter"  class="text_area  textarea_size" ></textarea></td>
 							 		</tr></tbody>							 	
 							</table>
 			</fieldset>
@@ -140,11 +154,9 @@ function newXQueryReport(){
 			<fieldset>
 							<legend align="top"><?php echo JText::_("CATALOG_XQUERY_REPORTCODE"); ?></legend>
 							<table><tbody><tr>
-									<td class="td_left"> <?php echo JText::_("CATALOG_XQUERY_ENTERREPORTCODE"); ?>	</td>
+									<td class="td_left"> <?php echo JText::_("CATALOG_XQUERY_ENTERREPORTCODE"); ?></td>
 									<td class="td_middle"></td>
-									<td class="td_right"> <textarea name ="reportcode"  class="text_area  textarea_size" >
-		 							</textarea>  
-							 		 </td>
+									<td class="td_right"> <textarea name ="reportcode"  class="text_area  textarea_size" ></textarea></td>
 							 		</tr></tbody>							 	
 							</table>
 			</fieldset>
@@ -154,9 +166,9 @@ function newXQueryReport(){
 							<legend align="top"><?php echo JText::_("CATALOG_XQUERY_XSLTURL"); ?></legend>
 							<table><tbody><tr>
 								
-									<td class="td_left"> <?php echo JText::_("CATALOG_XQUERY_ENTERXSLTURL"); ?>	</td>
+									<td class="td_left"> <?php echo JText::_("CATALOG_XQUERY_ENTERXSLTURL"); ?></td>
 									<td class="td_middle"></td>
-									<td class="td_right"> <input name="xsltUrl" value="" class="input_width300"/>    </td>
+									<td class="td_right"> <input name="xsltUrl" value="" class="input_width300"/></td>
 								</tr></tbody>
 							</table>
 			</fieldset>
@@ -165,7 +177,7 @@ function newXQueryReport(){
 							<legend align="top"><?php echo JText::_("CATALOG_XQUERY_RETURNTYPE"); ?></legend>
 							<table><tbody><tr>
 								
-									<td class="td_left"> <?php echo JText::_("CATALOG_XQUERY_ENTERRETURNTYPE"); ?>	</td>
+									<td class="td_left"> <?php echo JText::_("CATALOG_XQUERY_ENTERRETURNTYPE"); ?></td>
 									<td class="td_middle">
 									</td>
 									<td class="td_right"> <?php 
@@ -203,20 +215,19 @@ function editXQueryReport($rows){
 							<legend align="top"><?php echo JText::_("CATALOG_XQUERY_NAME"); ?></legend>
 							<table><tbody><tr>
 								
-									<td class="td_left"> <?php echo JText::_("CATALOG_XQUERY_ENTERNAME"); ?>	</td>
+									<td class="td_left"> <?php echo JText::_("CATALOG_XQUERY_ENTERNAME"); ?></td>
 									<td class="td_middle"></td>
-									<td class="td_right"> <input name="xQueryReportName"  class="input_width300" value="<?php echo $row->xqueryname  ?>"/>    </td>
+									<td class="td_right"> <input name="xQueryReportName"  class="input_width300" value="<?php echo $row->xqueryname  ?>"/></td>
 								</tr></tbody>
 							</table>
 			</fieldset>
 			
 			<fieldset>
 							<legend align="top"><?php echo JText::_("CATALOG_XQUERY_DESCRIPTION"); ?></legend>
-							<table><tbody><tr>
-								
+							<table><tbody><tr>								
 									<td class="td_left"> <?php echo JText::_("CATALOG_XQUERY_ENTERDESC"); ?>	</td>
 									<td class="td_middle"></td>
-									<td class="td_right"><textarea name ="description"  class="text_area  textarea_size"><?php echo $row->description  ?></textarea> </td>
+									<td class="td_right"><textarea name ="description"  class="text_area  textarea_size"><?php echo $row->description  ?></textarea></td>
 								</tr></tbody>
 							</table>
 			</fieldset>
@@ -226,9 +237,7 @@ function editXQueryReport($rows){
 							<table><tbody><tr>
 									<td class="td_left"> <?php echo JText::_("CATALOG_XQUERY_ENTERSQL"); ?>	</td>
 									<td class="td_middle"></td>
-									<td class="td_right"> <textarea name ="metadataIdSql" class="text_area  textarea_size"><?php echo $row->sqlfilter  ?>
-							 			</textarea>   
-							 		 </td>
+									<td class="td_right"> <textarea name ="metadataIdSql" class="text_area  textarea_size"><?php echo $row->sqlfilter  ?></textarea></td>
 							 		</tr></tbody>
 							</table>
 			</fieldset>
@@ -238,9 +247,7 @@ function editXQueryReport($rows){
 							<table><tbody><tr>
 									<td class="td_left"> <?php echo JText::_("CATALOG_XQUERY_ENTEROGC"); ?>	</td>
 									<td class="td_middle"></td>
-									<td class="td_right"> <textarea name ="ogcfilter" class="text_area  textarea_size" >
-		 								</textarea>  
-							 		 </td>
+									<td class="td_right"> <textarea name ="ogcfilter" class="text_area  textarea_size" ></textarea></td>
 							 		</tr></tbody>							 	
 							</table>
 			</fieldset>
@@ -249,9 +256,7 @@ function editXQueryReport($rows){
 							<table><tbody><tr>
 									<td class="td_left"> <?php echo JText::_("CATALOG_XQUERY_ENTERREPORTCODE"); ?>	</td>
 									<td class="td_middle"></td>
-									<td class="td_right"> <textarea name ="reportcode"  class="text_area  textarea_size" ><?php echo $row->reportcode    ?> 
-		 							</textarea>  
-							 		 </td>
+									<td class="td_right"> <textarea name ="reportcode"  class="text_area  textarea_size" ><?php echo $row->reportcode    ?></textarea></td>
 							 		</tr></tbody>							 	
 							</table>
 			</fieldset>
@@ -262,7 +267,7 @@ function editXQueryReport($rows){
 							<table><tbody><tr>								
 									<td class="td_left"> <?php echo JText::_("CATALOG_XQUERY_ENTERXSLTURL"); ?>	</td>
 									<td class="td_middle"></td>
-									<td class="td_right"> <input name="xsltUrl" value="<?php echo $row->xslttemplateurl   ?>" class="input_width300"/>    </td>
+									<td class="td_right"> <input name="xsltUrl" value="<?php echo $row->xslttemplateurl   ?>" class="input_width300"/></td>
 								</tr></tbody>
 							</table>
 			</fieldset>
@@ -329,11 +334,28 @@ function assignXQueryReport($orgrows, $accountrowsbyorg,$pagination, $assignedUs
 	<table class="adminlist">
 		<thead>
 			<tr>
-				<th class='title' style="width:10px"><?php echo JText::_("CORE_SHARP"); ?></th>
-				<th class='title' style="width:30px"><?php echo JText::_("CATALOG_XQUERY_USER_FULLNAME");  ?></th>
-				<th class='title' style="width:100px"><?php echo JText::_("CATALOG_XQUERY_USER_EMAIL");  ?></th>
-				<th class='title' style="width:100px"><?php echo JText::_("CATALOG_XQUERY_ACCOUNTTYPE");  ?></th>	
-				<th class='title' style="width:100px"><?php echo JText::_("CATALOG_XQUERY_ENABLEREPORTACCESS");  ?></th>					
+				<th class='title' ><?php echo JText::_("CORE_SHARP"); ?></th>
+				<th class='title' >
+				<div style="float:left">
+					<div style="float:left"><?php echo JText::_("CATALOG_XQUERY_USER_FULLNAME");  ?>&nbsp;&nbsp;&nbsp;</div>
+					<div id="userFullNameSortDesc" class="sortDesc" onclick="setSort('userFullName', 'desc', 'assignXQueryReportSortFullName')" style="float:left;display:block"></div>					
+					<div id="userFullNameSortAsc" class="sortAsc" onclick="setSort('userFullName', 'asc', 'assignXQueryReportSortFullName');"  style="float:left;display:block">&nbsp;&nbsp;&nbsp;</div>
+					
+				</div>
+				<div style="clear:both"></div>
+	
+				</th>
+				<th class='title' >
+				<div style="float:left">
+					<div style="float:left"><?php echo JText::_("CATALOG_XQUERY_USER_EMAIL");  ?>&nbsp;&nbsp;&nbsp;</div>
+					<div id="userEmailSortDesc" class="sortDesc" onclick="setSort('userEmail', 'desc', 'assignXQueryReportSortEmail')" style="float:left;display:block"></div>					
+					<div id="userEmailSortAsc" class="sortAsc" onclick="setSort('userEmail', 'asc', 'assignXQueryReportSortEmail');"  style="float:left;display:block">&nbsp;&nbsp;&nbsp;</div>
+					
+				</div>
+				<div style="clear:both"></div>
+				</th>
+				<th class='title' ><?php echo JText::_("CATALOG_XQUERY_ACCOUNTTYPE");  ?></th>	
+				<th class='title' ><?php echo JText::_("CATALOG_XQUERY_ENABLEREPORTACCESS");  ?></th>					
 				
 			</tr>
 		</thead>
@@ -347,11 +369,11 @@ function assignXQueryReport($orgrows, $accountrowsbyorg,$pagination, $assignedUs
 				{?> 
 				
 				<tr>
-				<td  style="width:10px"><?php echo $num?></td>
-				<td  style="width:30px"><?php echo  $accountrow->account_name  ?></td>
-				<td  style="width:100px"><?php echo $accountrow->account_email ?></td>
-				<td  style="width:100px"><?php echo $accountrow->account_usertype  ?></td>		
-				<td  style="width:10px;text-align:center"><input type="checkbox" name="toggle" value="" <?php  if($assignedUsers[$accountrow->id]) echo "checked";?> onclick="setUserReportAccess(this, <?php echo $accountrow->id?>)" /></td>				
+				<td  ><?php echo $num?></td>
+				<td  ><?php echo  $accountrow->account_name  ?></td>
+				<td  ><?php echo $accountrow->account_email ?></td>
+				<td  ><?php echo $accountrow->account_usertype  ?></td>		
+				<td  ><input type="checkbox" name="toggle" value="" <?php  if($assignedUsers[$accountrow->id]) echo "checked";?> onclick="setUserReportAccess(this, <?php echo $accountrow->id?>)" /></td>				
 				
 				
 				</tr>
@@ -366,7 +388,7 @@ function assignXQueryReport($orgrows, $accountrowsbyorg,$pagination, $assignedUs
 		<tfoot>
 		<!-- add pagination for in footer -->
 			<tr>	
-				<td colspan="13"><?php echo $pagination->getListFooter(); ?></td>
+				<td colspan="5"><?php echo $pagination->getListFooter(); ?></td>
 			</tr>
 		</tfoot>
 		</table>
@@ -378,18 +400,29 @@ function assignXQueryReport($orgrows, $accountrowsbyorg,$pagination, $assignedUs
 <?php
 }
 
-	function listMyReports($rows, $pagination){
+function listMyReports($rows, $pagination){
 ?>
 <h1><?php echo JText::_("CATALOG_XQUERY_MYREPORTS"); ?> </h1>
 
 <form action="" method="post" name="adminForm">
-<table class="xbox-table">
+<input type="hidden" name="limitstart" value= "0"/>
+<table class="box-table">
 		<thead>
 			<tr >
-				<th class='title' style="width:10px"><?php echo JText::_("CORE_SHARP"); ?></th>
-				<th class='title' style="width:50px"><?php echo JText::_("CATALOG_XQUERY_REPORTNAME");  ?></th>
-				<th class='title' style="width:100px"><?php echo JText::_("CATALOG_XQUERY_REPORTDESCRIPTION");  ?></th>
-				<th class='title' style="width:50px"><?php echo JText::_("CATALOG_XQUERY_ACTION");  ?></th>
+				
+				<th class='title' style="text-align:left" >
+				<div style="float:left">
+					<div style="float:left"><?php echo JText::_("CATALOG_XQUERY_REPORTNAME");  ?>&nbsp;&nbsp;&nbsp;</div>
+					<div id="QueryNameSortDesc" class="sortDesc" onclick="setSort('QueryName', 'desc', 'listMyReport')" style="float:left;display:block"></div>					
+					<div id="QueryNameSortAsc" class="sortAsc" onclick="setSort('QueryName', 'asc', 'listMyReport');"  style="float:left;display:block">&nbsp;&nbsp;&nbsp;</div>
+					
+				</div>
+				<div style="clear:both">
+				</div>
+				
+				</th>
+				<th class='title' style="text-align:left"><?php echo JText::_("CATALOG_XQUERY_REPORTDESCRIPTION");  ?></th>
+				<th class='title' style="text-align:left"><?php echo JText::_("CATALOG_XQUERY_ACTION");  ?></th>
 				
 				
 			</tr>
@@ -404,7 +437,7 @@ function assignXQueryReport($orgrows, $accountrowsbyorg,$pagination, $assignedUs
 				{?> 
 				
 				<tr >
-				<td  ><?php echo $num?></td>
+			
 				<td  ><?php echo  $row->xqueryname  ?></td>
 				<td  ><?php echo  $row->description  ?></td>
 				<td  ><div class="executeXQuery"  onclick="submitbutton('processXQueryReport',<?php echo $row->id ?>)"></div></td>
@@ -421,7 +454,7 @@ function assignXQueryReport($orgrows, $accountrowsbyorg,$pagination, $assignedUs
 		<tfoot>
 		<!-- add pagination for in footer -->
 			<tr>	
-				<td colspan="13"><?php echo $pagination->getListFooter(); ?></td>
+				<td colspan="3"><?php echo $pagination->getListFooter(); ?></td>
 			</tr>
 		</tfoot>
 		</table>

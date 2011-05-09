@@ -1079,6 +1079,7 @@ class ADMIN_xQuery{
 		
  		$database->setQuery( $metadataIdSqlfilter);
 		$metadataIds = $database->loadObjectList();
+		
 		if ($database->getErrorNum()) {			
 			$xmlResponse = "ERROR : " +$database->getErrorMsg();
 			echo $xmlResponse; // return the xml response directly as xml. // or see how it is done by export xml.
@@ -1086,9 +1087,9 @@ class ADMIN_xQuery{
 		}
 		$cswfilter = ADMIN_xQuery::buildCSWFilter($metadataIds, $report->ogcfilter );		
 		
-		
+		$maxRecords = count($metadataIds);
 		$catalogUrlBase = config_easysdi::getValue("catalog_url");
-		$xmlBody = ADMIN_xQuery::BuildCSWRequest(0, 0, "results", "gmd:MD_Metadata", "full", "1.1.0", $cswfilter, $ogcsearchsorting, "ASC");
+		$xmlBody = ADMIN_xQuery::BuildCSWRequest($maxRecords, 0, "results", "gmd:MD_Metadata", "full", "1.1.0", $cswfilter, $ogcsearchsorting, "ASC");
 		$xmlResponse = ADMIN_metadata::CURLRequest("POST", $catalogUrlBase,$xmlBody);
 		echo $xmlResponse; // return the xml response directly as xml. // or see how it is done by export xml.
 		die;

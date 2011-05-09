@@ -413,6 +413,7 @@
 	            disabled: dis,
 	            maxLength: maxL,
 	            qTip: tip,
+	            decimalSeparator:'.',
 	            qTipDelay: dismissDelay
 	        });
 		 
