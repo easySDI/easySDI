@@ -1,19 +1,27 @@
 /**
- * 
+ * EasySDI, a solution to implement easily any spatial data infrastructure
+ * Copyright (C) EasySDI Community
+ * For more information : www.easysdi.org
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or 
+ * any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html. 
  */
 package org.easysdi.proxy.wms.thread;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.TreeMap;
 import java.util.Vector;
 import java.util.logging.Level;
@@ -23,27 +31,18 @@ import javax.servlet.http.HttpServletResponse;
 import org.easysdi.proxy.configuration.ProxyLayer;
 import org.easysdi.proxy.wms.WMSProxyServlet;
 import org.easysdi.xml.documents.RemoteServerInfo;
-import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.referencing.CRS;
 import org.geotools.util.GeometryConverterFactory;
 import org.geotools.xml.DocumentFactory;
-import org.opengis.geometry.BoundingBox;
-import org.opengis.geometry.DirectPosition;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.MathTransform;
-import org.opengis.referencing.operation.TransformException;
 
-import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.IntersectionMatrix;
 import com.vividsolutions.jts.io.WKTReader;
 
 /**
- * @author Helene
+ * @author DEPTH SA
  *
  */
 public class WMSProxyServerGetMapThread extends Thread {
@@ -100,7 +99,7 @@ public class WMSProxyServerGetMapThread extends Thread {
 			
 			
 			//request BBOX to geometry
-			String requestBbox = servlet.getProxyRequest().getBbox();
+			//String requestBbox = servlet.getProxyRequest().getBbox();
 			CoordinateReferenceSystem requestCRS = servlet.getProxyRequest().getCoordinateReferenceSystem();
 			ReferencedEnvelope requestEnvelope = new ReferencedEnvelope(servlet.getProxyRequest().getX1(), 
 																		servlet.getProxyRequest().getX2(), 
@@ -172,7 +171,7 @@ public class WMSProxyServerGetMapThread extends Thread {
 					WMSProxyLayerThread th = new WMSProxyLayerThread(servlet,paramUrlBase,continuousLayers,styles, remoteServer,resp);
 					th.start();
 					layerThreadList.add(th);
-				}else{
+				}else if(continuousLayers.size()>1){
 					if(isGeographicFilterEqual){
 						//Send all the layer in the same request : layers are in the same order than in the request and the geographic filter are the same
 						servlet.dump("requestPreTraitementGET send request multiLayer to thread server " + remoteServer.getUrl());

@@ -16,7 +16,6 @@
  */
 package org.easysdi.proxy.ows;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 public interface OWSExceptionReport {
@@ -42,12 +41,12 @@ public interface OWSExceptionReport {
 	public static final String CODE_INVALID_DIMENSION_VALUE			= "InvalidDimensionValue";
 	
 	public static final String TEXT_OPERATION_NOT_SUPPORTED 		= "Request is for an operation that is not supported by the server.";	
-	
+	public static final String TEXT_OPERATION_NOT_ALLOWED			= "Request is for an operation that is not allowed by this server security options.";
 	public static final String TEXT_VERSION_NOT_SUPPORTED			= "Version not supported.";
 	public static final String TEXT_INVALID_LAYER_NAME 				= "Invalid layer name given in the LAYER parameter : ";
 	public static final String TEXT_INVALID_SERVICE_NAME 			= "Invalid service name given in the SERVICE parameter.";
-	public static final String TEXT_OPERATION_NOT_ALLOWED 			= "Operation not allowed.";
 	public static final String TEXT_ERROR_IN_EASYSDI_PROXY 			= "Error in EasySDI Proxy. Consult the proxy log for more details.";
+	public static final String TEXT_NO_RESULT_RECEIVED_BY_PROXY		= "Error in EasySDI Proxy. EasySDI Proxy didn't receive any result from remote server.";
 	
 	public static final String TEXT_MISSING_PARAMETER_VALUE			= "Parameter is missing.";
 	public static final String TEXT_INVALID_FORMAT					= "Request contains a format not offered by the server.";

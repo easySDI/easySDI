@@ -162,7 +162,14 @@ public class WMTS100ProxyServlet extends WMTSProxyServlet{
 			}
 			
 			//Generate OGC exception and send it to the client if current request operation is not allowed
-			if(!isOperationSupported(request))
+			if(!isOperationSupportedByProxy(request))
+			{
+				dump("INFO", "Operation not supported.");
+				StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_OPERATION_NOT_SUPPORTED ,OWSExceptionReport.CODE_OPERATION_NOT_SUPPORTED,"request");
+				sendHttpServletResponse(null, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_NOT_IMPLEMENTED);
+				return;
+			}
+			if(!isOperationAllowedByPolicy(request))
 			{
 				dump("INFO", "Operation not allowed.");
 				StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_OPERATION_NOT_ALLOWED ,OWSExceptionReport.CODE_OPERATION_NOT_SUPPORTED,"request");

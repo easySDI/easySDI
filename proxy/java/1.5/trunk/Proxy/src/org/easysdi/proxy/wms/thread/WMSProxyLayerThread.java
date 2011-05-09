@@ -1,31 +1,15 @@
 package org.easysdi.proxy.wms.thread;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map.Entry;
 import java.util.TreeMap;
-import java.util.Vector;
-import java.util.logging.Level;
 
 import javax.servlet.http.HttpServletResponse;
 
 import org.easysdi.proxy.configuration.ProxyLayer;
 import org.easysdi.proxy.wms.WMSProxyServlet;
 import org.easysdi.xml.documents.RemoteServerInfo;
-import org.geotools.geometry.jts.JTS;
-import org.geotools.referencing.CRS;
-import org.geotools.xml.DocumentFactory;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.MathTransform;
-
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.IntersectionMatrix;
-import com.vividsolutions.jts.io.WKTReader;
 
 public class WMSProxyLayerThread extends Thread {
 

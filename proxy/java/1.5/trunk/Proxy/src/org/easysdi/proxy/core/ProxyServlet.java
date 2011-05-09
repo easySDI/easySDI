@@ -1412,27 +1412,30 @@ public abstract class ProxyServlet extends HttpServlet {
 	}
 	
 	/**
-	 * 
+	 * Return If the current operation is  allowed by the loaded policy
+	 * @param currentOperation
 	 */
-	protected boolean isOperationSupported (String currentOperation)
+	protected boolean isOperationAllowedByPolicy (String currentOperation)
 	{
-		if(!ServiceSupportedOperations.contains(currentOperation))
-		{
-			return false;
-		}
-		try
-		{
-			if (!isOperationAllowed(currentOperation))
-			{
-				return false;
-				
+		try{
+			if (isOperationAllowed(currentOperation)) {
+				return true;
 			}
-		}
-		catch (AvailabilityPeriodException ex)
-		{
+		}catch (AvailabilityPeriodException ex){
 			return false;
 		}
-		return true;
+		return false;
+	}
+	
+	/**
+	 * Return if the current operation is supported by the current version of the proxy
+	 * @param currentOperation
+	 */
+	protected boolean isOperationSupportedByProxy (String currentOperation)
+	{
+		if(ServiceSupportedOperations.contains(currentOperation))
+			return true;
+		return false;
 	}
 	
 	/**
