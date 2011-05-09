@@ -73,7 +73,7 @@ if ($log) {
 $error = false;
 
 if (!isset($_FILES['Filedata']) || !is_uploaded_file($_FILES['Filedata']['tmp_name'])) {
-	$error = 'Invalid Upload';
+	$error = 'EASYSDI_PUBLISH_INVALID_UPLOAD';
 }
 
 /**
@@ -119,6 +119,7 @@ if (!$error && ($size[0] < 25) || ($size[1] < 25))
 if ($error) {
 
 	$return = array(
+		'success' => 'false',
 		'status' => '0',
 		'error' => $error
 	);
@@ -126,6 +127,7 @@ if ($error) {
 } else {
 
 	$return = array(
+		'success' => 'true',
 		'status' => '1',
 		'name' => $_FILES['Filedata']['name']
 	);
@@ -148,7 +150,7 @@ if ($error) {
 	//replace space by underscore in file name
 	$fName = str_replace(" ", "_", $_FILES['Filedata']['name']);
 	move_uploaded_file($_FILES['Filedata']['tmp_name'], $path."/". utf8_decode($fName));
-	$return['src'] = '/tmp/'.$guid."/".$fName;
+	$return['src'] = 'tmp/'.$guid."/".$fName;
 	
 	
 	// ... and if available, we get image data
@@ -188,6 +190,7 @@ if (isset($_REQUEST['response']) && $_REQUEST['response'] == 'xml') {
 	// header('Content-type: application/json');
 
 	echo json_encode($return);
+	//echo "{success:true, file:\"buhh\"}";
 }
 
 ?>

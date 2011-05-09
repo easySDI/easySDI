@@ -48,7 +48,7 @@ class HTML_ctrlpanel {
     return "$return\n\n--------------------------------------------\n\n";
   }
 	
-	function ctrlPanelPublish($format_rows, $rowPublishConfig, $options, $config_Id, $partner_list, $layers, $use_pagination_layer, $pageNav, $filter_order, $filter_order_Dir, $search){
+	function ctrlPanelPublish($format_rows, $crs_rows, $rowPublishConfig, $options, $config_Id, $partner_list, $layers, $use_pagination_layer, $pageNav, $filter_order, $filter_order_Dir, $search){
 		//diffusor_rows obsolete
 		global  $mainframe;
 		$database =& JFactory::getDBO();
@@ -90,6 +90,23 @@ class HTML_ctrlpanel {
 		$format_list [] = JHTML::_('select.option','0', JText::_("EASYSDI_PUBLISH_PARTNER_LIST_TITLE"));
 		$format_list = array_reverse($format_list);
 		
+		$crsId = JRequest::getVar('crs_id', 'new');
+		$crsEdit = Array();
+		$crsEdit[] = JHTML::_('select.option','new', JText::_("EASYSDI_PUBLISH_NEW_CRS") );
+		$crsEdit = array_merge($crsEdit, $crs_rows);
+		$crs = null;
+		if($crsId != 'new'){
+		   $database->setQuery( "SELECT * FROM #__sdi_publish_crs WHERE id=".$crsId);
+		   $crs = $database->loadObjectList();
+		   $crs = $crs[0];
+		}else{
+			 $crs = (object)array(
+	  			'id' =>  "",
+    				'code' => "",
+    				'name' => ""
+	  			 );
+		 }
+		
 ?>
 		<form action="index.php" enctype="multipart/form-data" method="post" name="adminForm" id="adminForm" class="adminForm">
 <?php
@@ -118,6 +135,10 @@ class HTML_ctrlpanel {
 								<td><?php echo JText::_("EASYSDI_PUBLISH_CHOOSE_FORMAT_HANDLER"); ?> : </td>
 								<td><?php echo JHTML::_("select.genericlist",$format_list, 'default_datasource_handler', 'size="1" class="inputbox"', 'value', 'text', $rowPublishConfig->default_datasource_handler); ?></td>
 							</tr>
+							<tr>							
+								<td><?php echo JText::_("EASYSDI_PUBLISH_CHOOSE_DEFAULT_CRS"); ?> : </td>
+								<td><?php echo JHTML::_("select.genericlist",$crs_rows, 'default_prefered_crs', 'size="1" class="inputbox"', 'value', 'text', $rowPublishConfig->default_prefered_crs); ?></td>
+							</tr>
 						</table>
 					</fieldset>
 				</td>
@@ -132,7 +153,53 @@ class HTML_ctrlpanel {
 									echo "<li>".$format->publish_script_name."</li>";
 							?>
 							</ul>
-				  </fieldset>
+					</fieldset>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<fieldset>
+						<legend><b><?php echo JText::_("EASYSDI_PUBLISH_CRS"); ?></b></legend>
+						<fieldset>
+						<legend><b><?php echo JText::_("EASYSDI_PUBLISH_MANAGE_CRS_LIST"); ?></b></legend>
+							<table border="0" cellpadding="3" cellspacing="0">
+								<tr>
+									<td>
+											<?php echo JHTML::_("select.genericlist",$crsEdit, 'crs_id', 'size="1" class="inputbox" onChange="javascript:reloadTab(0,\'editGlobalSettings\');"', 'value', 'text', $crsId); ?>
+									</td>
+									<td>
+									  <INPUT type="button" name="deleteCrs" id="deleteCrs" value="<?php echo JText::_("EASYSDI_PUBLISH_DELETE"); ?>" onClick="javascript:reloadTab(0,'deleteCrs');">
+								          <INPUT type="button" name="addCrs" id="addCrs" value="<?php echo JText::_("EASYSDI_PUBLISH_SAVE"); ?>" onClick="javascript:reloadTab(0,'saveConfig');">
+									</td>
+								</tr>
+							</table>
+							<table border="0" cellpadding="3" cellspacing="0">
+								<tr>
+									<td><?php echo JText::_("EASYSDI_PUBLISH_CRS_NAME"); ?> : </td>
+									<td><input class="inputbox" type="text" size="20" maxlength="100" name="crs_name" value="<?php echo $crs->name; ?>" /></td>
+								</tr>
+								<tr>
+									<td><?php echo JText::_("EASYSDI_PUBLISH_CRS_CODE"); ?> : </td>
+									<td><input class="inputbox" type="text" size="20" maxlength="100" name="crs_code" value="<?php echo $crs->code; ?>" /></td>
+								</tr>
+							</table>
+						</fieldset>
+						<fieldset>
+						<legend><b><?php echo JText::_("EASYSDI_PUBLISH_SUPPORTED_CRS_LIST"); ?></b></legend>
+							<table border="0" cellpadding="3" cellspacing="0">
+								<tr>
+									<td colspan="2">
+									<ul>
+									<?php							
+										foreach( $crs_rows as $crs ) 
+											echo "<li>".$crs->text."</li>";
+									?>
+									</ul>
+									</td>
+								</tr>
+							</table>
+						</fieldset>
+					</fieldset>
 				</td>
 			</tr>
 		</table>
@@ -188,8 +255,8 @@ class HTML_ctrlpanel {
     														'dbusername' => "",
     														'dbpassword' => "",
 	  													 );
-		 } 
-		 
+		 }
+		 		 
 		 $databseName = $diffusor->dbname;
      $pos = strstr($databseName, '@');
 		 if(strlen($pos) > 0) {
@@ -622,8 +689,17 @@ class HTML_ctrlpanel {
 	<script language="javascript" type="text/javascript">
 		
 	window.addEvent('domready', function() {
-		init();
-	});		
+	//Touille the help link
+	try
+	{
+		document.getElementById('toolbar-help').getChildren()[0].setAttribute("onClick","window.open('http://forge.easysdi.org/wiki/publish')");
+        }catch(e){}
+
+	//Inits the page
+	init();
+	});
+	
+	
 	function init(){
 		
 		var i=0;
@@ -656,6 +732,12 @@ class HTML_ctrlpanel {
 		objSelDif = document.getElementById('diffusor_id');
 		objBtn = document.getElementById('deleteDiffusor');
 		//If new server, deactive delete button
+		if(objSelDif.options[objSelDif.selectedIndex].value == 'new')
+			objBtn.disabled = true;
+		
+		objSelDif = document.getElementById('crs_id');
+		objBtn = document.getElementById('deleteCrs');
+		//If new crs, deactive delete button
 		if(objSelDif.options[objSelDif.selectedIndex].value == 'new')
 			objBtn.disabled = true;
 		

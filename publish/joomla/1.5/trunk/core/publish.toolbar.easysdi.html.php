@@ -22,6 +22,7 @@ class TOOLBAR_publish{
 		global $mainframe;
 		JToolBarHelper::title( JText::_( 'CORE_CONFIGURATION_PUBLISH_TAB_TITLE' ), 'config.png' );
 		JToolBarHelper::save('saveMDTABS');
+		JToolBarHelper::help(null);
 		JToolBarHelper::spacer();
 		JToolBarHelper::custom( 'cancelConfig', 'tool_easysdi_admin.png', 'tool_easysdi_admin.png', JTEXT::_("CORE_MENU_BACK"), false );
 	}
@@ -30,6 +31,7 @@ class TOOLBAR_publish{
 		global $mainframe;
 		JToolBarHelper::title( JText::_( 'CORE_CONFIGURATION_PUBLISH_TAB_TITLE' ), 'config.png' );
 		JToolBarHelper::save('saveConfig');
+		JToolBarHelper::help(null);
 		JToolBarHelper::spacer();
 		JToolBarHelper::custom( 'cancelConfig', 'tool_easysdi_admin.png', 'tool_easysdi_admin.png', JTEXT::_("CORE_MENU_BACK"), false );
 	}

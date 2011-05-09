@@ -212,7 +212,7 @@ class SITE_publish {
 		$db->setQuery( $query );	
 				
 		$featureSources = $db->loadObjectList();
-		if ($db->getErrorNum()) {
+		if ($db->getErrorNum()){
 			echo $db->stderr();
 			return false;
 		}
@@ -227,29 +227,47 @@ class SITE_publish {
 }
 	
 	
-	function saveLayer(){
+	function saveLayer($isCopy){
+		
 		global $mainframe;
 		$database=& JFactory::getDBO();
 		$layer =& new layer($database);
-		//if layerId = 0 => create new, else update
-		if(JRequest::getVar("layerId") != 0)
-			$layer->id = JRequest::getVar("layerId");
-		$layer->featuresourceId = JRequest::getVar("featureSourceId");
-		$layer->name = JRequest::getVar("layer_name");
-		$layer->title = JRequest::getVar("layerTitle");
-		$layer->geometry = JRequest::getVar("geometry");
-		$layer->description = JRequest::getVar("layerDescription");
-		$layer->quality_area = JRequest::getVar("layerQuality");
-		$layer->keywords = JRequest::getVar("layerKeyword");
-		$layer->layerGuid = JRequest::getVar("layerGuid");
-		if(JRequest::getVar("layerId") == 0)
-			$layer->creation_date = date('y-m-j, G-i-s');
-		$layer->update_date = date('y-m-j, G:i:s');
-		$layer->partner_id = JRequest::getVar("userId");
+		
+		if($isCopy){
+			$layer->load(JRequest::getVar("layerIdToCopy"));
+		}
+		
+		/*
+		print_r($_GET);
+		print_r($layer);
+		exit;
+		*/
+		
+		if($isCopy){
+			$layer->id = 0;
+			$layer->name = JRequest::getVar("layerCopyName");
+			$layer->title = JRequest::getVar("layerCopyName");
+		}else{
+			if(JRequest::getVar("layerId") != 0)
+				$layer->id = JRequest::getVar("layerId");
+			$layer->featuresourceId = JRequest::getVar("featureSourceId");
+			$layer->name = JRequest::getVar("layer_name");
+			$layer->title = JRequest::getVar("layerTitle");
+			$layer->geometry = JRequest::getVar("geometry");
+			$layer->description = JRequest::getVar("layerDescription");
+			$layer->quality_area = JRequest::getVar("layerQuality");
+			$layer->keywords = JRequest::getVar("layerKeyword");
+			$layer->layerGuid = JRequest::getVar("layerGuid");
+			$layer->update_date = date('y-m-j, G:i:s');
+			$layer->partner_id = JRequest::getVar("userId");
+			$layer->bbox = JRequest::getVar("minx").",".JRequest::getVar("miny").",".JRequest::getVar("maxx").",".JRequest::getVar("maxy");
+		}
 		$layer->wmsUrl = JRequest::getVar("wfsUrl");
 		$layer->wfsUrl = JRequest::getVar("wmsUrl");
 		$layer->kmlUrl = JRequest::getVar("kmlUrl");
-		$layer->bbox = JRequest::getVar("minx").",".JRequest::getVar("miny").",".JRequest::getVar("maxx").",".JRequest::getVar("maxy");
+		if(JRequest::getVar("layerId") == 0)
+			$layer->creation_date = date('y-m-j, G-i-s');
+		
 		//save only if layer has a name
 		if($layer->name != "")
 		{
@@ -311,7 +329,10 @@ class SITE_publish {
 					
 	  			$row->status = (string)$srvFs->status;
 	  			$row->excmessage = (string)$srvFs->excmessage;
-	  			$row->excdetail = (string)$srvFs->excdetail;
+	  			$row->exccode = (string)$srvFs->exccode;
+				$row->excstacktrace = (string)$srvFs->excstacktrace;
+				$row->tablename = (string)$srvFs->tablename;
+				$row->featureguid = (string)$srvFs->featureguid;
 			}
 		}
 		HTML_site::showFsStats($row);

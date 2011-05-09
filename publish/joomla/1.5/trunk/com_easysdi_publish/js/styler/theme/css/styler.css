@@ -57,47 +57,47 @@ h1, h2, h3, h4 {
 /* Pan- and Zoom- Panel Styles*/
 
 .olControlPanPanel div {
-    background-image:url(../../externals/ext/resources/images/gray/panel/tool-sprites.gif);
-    height:15px;
-    width:15px;
+    background-image:url(../../externals/ext/resources/images/gray/panel/tool-sprites.gif) !important;
+    height:15px !important;
+    width:15px !important;
     /* workaround for button height in IE */
-    font-size:0px;
+    font-size:0px !important;
 }
 
 .olControlPanPanel .olControlPanNorthItemInactive {
-    background-position:15px -60px;
-    left:16px
+    background-position:15px -60px !important;
+    left:16px !important;
 }
 .olControlPanPanel .olControlPanEastItemInactive {
-    background-position:15px -120px;
-    left: 30px;
-    top: 16px;
+    background-position:15px -120px !important;
+    left: 30px !important;
+    top: 16px !important;
 }
 .olControlPanPanel .olControlPanSouthItemInactive {
-    background-position:15px -75px;
-    left: 16px;
-    top: 32px;
+    background-position:15px -75px !important;
+    left: 16px !important;
+    top: 32px !important;
 }
 .olControlPanPanel .olControlPanWestItemInactive {
-    background-position:15px -105px;
-    left: 2px;
-    top: 16px;
+    background-position:15px -105px !important;
+    left: 2px !important;
+    top: 16px !important;
 }
 
 .olControlZoomPanel { 
-    left:21px;
+    left:20px !important;
 }
 
 .olControlZoomPanel div {
-    background-image:url(../../externals/ext/resources/images/gray/panel/tool-sprites.gif);
-    height:15px;
-    width:15px;
+    background-image:url(../../externals/ext/resources/images/gray/panel/tool-sprites.gif) !important;
+    height:15px !important;
+    width:15px !important;
     /* workaround for button height in IE */
-    font-size:0px;
+    font-size:0px !important;
 }
 
 .olControlZoomPanel .olControlZoomInItemInactive {
-    background-position:15px -240px;
+    background-position:15px -240px !important;
 }
 
 .olControlZoomPanel .olControlZoomToMaxExtentItemInactive {
@@ -106,6 +106,14 @@ h1, h2, h3, h4 {
 
 .olControlZoomPanel .olControlZoomOutItemInactive {
     background-position:15px -255px;
-    top: 123px;
+    top: 123px !important;
+    
 }
 
+.olControlScaleLineTop{
+   text-align: center !important;
+}
+
+.olControlScaleLineBottom{
+   text-align: center !important;
+}

@@ -105,6 +105,7 @@ function com_install(){
 		  `default_dataset_upload_size` int(20) unsigned DEFAULT NULL,
 		  `default_diffusion_server_id` bigint(20) unsigned DEFAULT NULL,
 		  `default_datasource_handler` bigint(20) unsigned DEFAULT NULL,
+		  `default_prefered_crs` bigint(20) unsigned DEFAULT NULL,
 		  PRIMARY KEY (`id`)
 		 )"; 
 		$db->setQuery( $query);
@@ -113,6 +114,17 @@ function com_install(){
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 		
+    $query="CREATE TABLE IF NOT EXISTS `#__sdi_publish_crs` (
+      `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+      `code` varchar(45) DEFAULT NULL,
+      `name` varchar(100) DEFAULT NULL,
+      PRIMARY KEY (`id`)
+    )";
+    $db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
 		
 		$query="CREATE TABLE IF NOT EXISTS  `#__sdi_publish_diffuser` (
 		  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -264,14 +276,23 @@ function com_install(){
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 		
+		//Add crs systems
+		$query = "insert into `#__sdi_publish_crs` (code, name)
+			values('EPSG:4326', 'WGS84 - lon/lat'),('EPSG:21781','CH1903 / LV03'),('EPSG:26986','North American Datum 1983'),('EPSG:2277','NAD83 / Texas Central (ftUS)')";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
 		//Some value in the default config
 		$db->setQuery( "SELECT id FROM #__sdi_publish_diffuser where diffusion_server_name='diffuserlocalhost'");
 		$dfltDiffId = $db->loadResult();
 		$db->setQuery( "SELECT id FROM #__sdi_publish_script where publish_script_name='OGR'");
 		$dfltScriptId = $db->loadResult();
 		
-		$query = "insert into `#__sdi_publish_config` (default_publisher_layer_number, default_dataset_upload_size, default_diffusion_server_id, default_datasource_handler)
-			values('10', '15', '".$dfltDiffId."', '".$dfltScriptId."')";
+		$query = "insert into `#__sdi_publish_config` (default_publisher_layer_number, default_dataset_upload_size, default_diffusion_server_id, default_datasource_handler,default_prefered_crs)
+			values('10', '15', '".$dfltDiffId."', '".$dfltScriptId."','2')";
 		$db->setQuery( $query);
 		if (!$db->query()) 
 		{
@@ -305,7 +326,7 @@ function com_install(){
 	if ($version == "0.1")
 	{
 		// Update component version
-		$version="2.0.0";
+		$version="2.2.0";
 		$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='PUBLISH'"; 
 		$db->setQuery( $query);	
 		if (!$db->query()) 
@@ -314,14 +335,14 @@ function com_install(){
 		}
 	}
 	
-
+	
 	$query = "DELETE FROM #__components where `option`= 'com_easysdi_publish' ";
 	$db->setQuery($query);
 	if (!$db->query()) 
 	{
 		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");		
 	}
-  
+
 	$query =  "insert into #__components (name,link,admin_menu_alt,`option`,admin_menu_img,params)
 		values('EasySDI - Publish','option=com_easysdi_publish&task=editGlobalSettings','Easysdi Publish','com_easysdi_publish','js/ThemeOffice/component.png','')";
 	$db->setQuery( $query);
@@ -329,7 +350,6 @@ function com_install(){
 	{
 		$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");		
 	}
-  
 	
 	$mainframe->enqueueMessage("Congratulation Publish for EasySDI is installed and ready to be used. Enjoy EasySdi Publish!
 	 Do not forget to check/change the WPS_PUBLISHER key depending on your servlet container location.","INFO");

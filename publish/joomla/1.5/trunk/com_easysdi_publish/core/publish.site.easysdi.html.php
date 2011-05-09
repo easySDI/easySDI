@@ -29,7 +29,10 @@ class HTML_site {
 		$base_url = substr($_SERVER['PHP_SELF'], 0, -9);
 		JHTML::script('mainapp.js', 'components/com_easysdi_publish/js/');
 		JHTML::script('htmlEncode.js', 'components/com_easysdi_publish/js/');
-
+		if($index != 2){
+			JHTML::script('ext-base.js', 'components/com_easysdi_publish/js/extuploader/');
+			JHTML::script('ext-all.js', 'components/com_easysdi_publish/js/extuploader/');
+		}
 		?>
 		
 		<div id="page">
@@ -44,7 +47,7 @@ class HTML_site {
 			<input type="hidden" name="baseUrl" id="baseUrl" value="<?php echo $base_url; ?>" />
 			<input type="hidden" name="featureSourceGuid" id="featureSourceGuid" value="" />
 			<input type="hidden" name="layerGuid" id="layerGuid" value="" />
-			<input type='hidden'  name='limitstart' value="<?php echo  $limitstart; ?>">
+			<input type='hidden'  name='limitstart' value="">
 
 			
 			<!-- Help -->
@@ -55,57 +58,64 @@ class HTML_site {
 						</tr>
 			</table>
 		<?php
-		    //show only if joomla user has the rights
-				echo $tabs->startPane("publishPane");
-				if($userRights['GEOSERVICE_DATA_MANA'])
-				{
-					echo $tabs->startPanel(JText::_("EASYSDI_PUBLISH_FIND_DATA"),"findDataPane");
-					if($index == 0){
-					echo "<br/>";
-					$param = array('size'=>array('x'=>800,'y'=>800) );
-					JHTML::_("behavior.modal","a.modal",$param);
+		   //show only if joomla user has the rights
+		echo $tabs->startPane("publishPane");
+		if($userRights['GEOSERVICE_DATA_MANA'])
+		{
+			echo $tabs->startPanel(JText::_("EASYSDI_PUBLISH_FIND_DATA"),"findDataPane");
+			
+			echo "<!-- start featuresource section -->";
+			
+			
+			
+			
+			
+			if($index == 0){
+			echo "<br/>";
+			$param = array('size'=>array('x'=>800,'y'=>800) );
+			JHTML::_("behavior.modal","a.modal",$param);
 					
 		
-		//Get the fs status from the server and update the featuresource object
-		//
-		$wpsConfig = $wpsPublish."/config";
-		$fsList = "";
-		$fsInProgress = Array();
-		
-		foreach ($featureSources as $row)
-						$fsList .= $row->featureGUID.",";
-		$url = $wpsConfig."?operation=ListFeatureSources&list=".$fsList;
-  	$doc = SITE_proxy::fetch($url, false);
-  	$xml = simplexml_load_string($doc);
-		//$xml = simplexml_load_file($url,'SimpleXMLElement', LIBXML_NOCDATA);
-		//echo "<pre>";  print_r($xml);  echo "</pre>";
+			//Get the fs status from the server and update the featuresource object
+			//
+			$wpsConfig = $wpsPublish."/config";
+			$fsList = "";
+			$fsInProgress = Array();
+			
+			foreach ($featureSources as $row)
+							$fsList .= $row->featureGUID.",";
+			$url = $wpsConfig."?operation=ListFeatureSources&list=".$fsList;
+  			$doc = SITE_proxy::fetch($url, false);
+  			$xml = simplexml_load_string($doc);
+			//$xml = simplexml_load_file($url,'SimpleXMLElement', LIBXML_NOCDATA);
+			//echo "<pre>";  print_r($xml);  echo "</pre>";
 
-		$i=0;
-		foreach ($featureSources as $row){
-			$srvFs = $xml->xpath("//featuresource[@guid='$row->featureGUID']");
-			if(count($srvFs) > 0){
-				$srvFs = $srvFs[0];
-				//echo "<pre>";  print_r($srvFs);  echo "</pre>";
-				$status = (string)$srvFs->status;
-				$featureSources[$i]->status = $status;
-				$featureSources[$i]->excmessage = (string)$srvFs->excmessage;
-	  		$featureSources[$i]->excdetail = (string)$srvFs->excdetail;
-			}else{
-				$featureSources[$i]->status = "OUT_OF_SYNC";
+			$i=0;
+			foreach ($featureSources as $row){
+				$srvFs = $xml->xpath("//featuresource[@guid='$row->featureGUID']");
+				if(count($srvFs) > 0){
+					$srvFs = $srvFs[0];
+					//echo "<pre>";  print_r($srvFs);  echo "</pre>";
+					$status = (string)$srvFs->status;
+					$featureSources[$i]->status = $status;
+					$featureSources[$i]->excmessage = (string)$srvFs->excmessage;
+	  			$featureSources[$i]->excdetail = (string)$srvFs->excdetail;
+				}else{
+					$featureSources[$i]->status = "OUT_OF_SYNC";
+				}
+				$i++;
 			}
-			$i++;
-		}
-					//echo "<pre>";  print_r($featureSources[8]);  echo "</pre>";
-		?>	
+			//echo "<pre>";  print_r($featureSources[8]);  echo "</pre>";
+			?>	
 		
-		<script type="text/javascript">
-	
-		function paginateOnChange(button, tabIndex){
-			$('tabIndex').value = tabIndex;
-			submitbutton(button);
-		}
-		
-		</script>
+			<script type="text/javascript">
+	        	
+			function paginateOnChange(button, tabIndex){
+				$('tabIndex').value = tabIndex;
+				submitbutton(button);
+			}
+			
+			</script>
 		
 		<table width="100%">
 			<tr>
@@ -113,10 +123,14 @@ class HTML_site {
 					<table width="100%">
 						<tr>
 							<td align="left"><span><?php echo JText::_("EASYSDI_PUBLISH_FIND_DATA_TITLE");?></span></td>
+						        <td align="right" width="30px">
+								<img id="loadingImg" width="25px" height="25px" src="components/com_easysdi_publish/img/loading.gif"></img>
+							</td>
 						</tr>
 					</table>
 				</td>
 			</tr>
+			
 			<tr>
 				<td>
 						<fieldset>
@@ -141,7 +155,7 @@ class HTML_site {
 									</tr>
 								</thead>
 								<tbody>
-<?php
+								<?php
 								$k = 0;
 								$i=0;
 								foreach ($featureSources as $row)
@@ -149,7 +163,7 @@ class HTML_site {
 										$db->setQuery( "SELECT count(*) FROM #__sdi_publish_featuresource f, #__sdi_publish_layer l where l.featuresourceId=f.id AND f.id=".$row->id);
 										$isDeletable = $db->loadResult();
 									
-?>
+								?>
 									<tr class="<?php echo "row$k"; ?>">
 										<td align="left"><?php echo $row->name; ?></td>
 										<?php if($row->status == "AVAILABLE"){?>
@@ -188,33 +202,51 @@ class HTML_site {
 										</td>
 										<td align="right"> <?php echo $pageNav->getPagesLinks(); ?></td>
 									</tr>
-								</table>
-
-								
 							</table>
+
 						</fieldset>
 				</td>
 			</tr>
 		</table>
 
 <?php
+echo "<!-- end featuresource section -->";
 				}
 					echo $tabs->endPanel();
 				}
 				if($userRights['GEOSERVICE_MANAGER'])
 				{
 					echo $tabs->startPanel(JText::_("EASYSDI_PUBLISH_BUILD_LAYERS"),"publishLayersPane");
+					echo "<!-- start layer section -->";
 					if($index == 1){
 					echo "<br/>";
 					
 ?>
 
+			<input type="hidden" name="wmsUrl" id="wmsUrl" value="" />
+			<input type="hidden" name="wfsUrl" id="wfsUrl" value="" />
+			<input type="hidden" name="kmlUrl" id="kmlUrl" value="" />
+			<input type="hidden" name="minx" id="minx" value="" />
+			<input type="hidden" name="miny" id="miny" value="" />
+			<input type="hidden" name="maxx" id="maxx" value="" />
+			<input type="hidden" name="maxy" id="maxy" value="" />
+			<input type="hidden" name="copyLayer" id="copyLayer" value="0"/>
+			<input type="hidden" name="layerIdToCopy" id="layerIdToCopy" value="0"/>
+			<input type="hidden" name="layerCopyName" id="layerCopyName" value=""/>
+
+			
+			
+
+		
 		<table width="100%">
 			<tr>
 				<td width="100%">
 					<table width="100%">
 						<tr>
 							<td align="left"><span><?php echo JText::_("EASYSDI_PUBLISH_BUILD_LAYERS_TITLE");?></span></td>
+							<td align="right" width="30px">
+								<img id="loadingImg" width="25px" height="25px" src="components/com_easysdi_publish/img/loading.gif"></img>
+							</td>
 						</tr>
 					</table>
 				</td>
@@ -263,7 +295,8 @@ class HTML_site {
 										<td align="center"><?php echo date("d-m-Y", strtotime($row->creation_date)); ?></td>
 										<td align="center"><?php echo date("d-m-Y", strtotime($row->update_date)); ?></td>
 										<td class="logo"><div title="<?php echo JText::_('EASYSDI_PUBLISH_EDIT_LAYER'); ?>" class="edit" onClick="window.open('index.php?option=com_easysdi_publish&task=editLayer&id=<?php echo $row->id; ?>', '_main');"/></td>
-									  <td class="logo"><div title="<?php echo JText::_('EASYSDI_PUBLISH_REMOVE_LAYER'); ?>" class="delete" onClick="return deleteLayer_click('<?php echo $row->layerGuid; ?>');"/></td>
+									        <td class="logo"><div title="<?php echo JText::_('EASYSDI_PUBLISH_REMOVE_LAYER'); ?>" class="delete" onClick="return deleteLayer_click('<?php echo $row->layerGuid; ?>');"/></td>
+									        <td class="logo"><div title="<?php echo JText::_('EASYSDI_PUBLISH_COPY_LAYER'); ?>" class="copy" onClick="return copyLayer_click(<?php echo "'".JText::_('EASYSDI_PUBLISH_COPY_LAYER_PROMPT')."','".$row->layerGuid."',".$row->id; ?>);"/></td>
 									</tr>
 <?php
 									$k = 1 - $k;
@@ -281,8 +314,7 @@ class HTML_site {
 										</td>
 										<td align="right"> <?php echo $pageNav->getPagesLinks(); ?></td>
 									</tr>
-								</table>
-						</table>
+							</table>
 						</fieldset>
 				</td>
 			</tr>
@@ -290,6 +322,7 @@ class HTML_site {
 
 <?php			
 					}
+					echo "<!-- stop layer section -->";
 					echo $tabs->endPanel();
 				}
 				if($userRights['GEOSERVICE_MANAGER'] || $userRights['GEOSERVICE_DATA_MANA'])
@@ -304,8 +337,8 @@ class HTML_site {
         
         	JHTML::stylesheet('ext-all.css', 'components/com_easysdi_publish/js/styler/externals/ext/resources/css/');
 					JHTML::stylesheet('color-picker.ux.css', 'components/com_easysdi_publish/js/styler/externals/ux/colorpicker/');
-					JHTML::stylesheet('xtheme-gray.css', 'components/com_easysdi_publish/js/styler/externals/ext/resources/css/');
-					JHTML::stylesheet('style.css', 'components/com_easysdi_publish/js/styler/externals/openlayers/theme/default/');
+					//JHTML::stylesheet('xtheme-gray.css', 'components/com_easysdi_publish/js/styler/externals/ext/resources/css/');
+					//JHTML::stylesheet('style.css', 'components/com_easysdi_publish/js/styler/externals/openlayers/theme/default/');
 					JHTML::stylesheet('styler.css', 'components/com_easysdi_publish/js/styler/theme/css/');
  
 	        JHTML::script('OpenLayers.js', 'components/com_easysdi_publish/js/styler/script/');
@@ -330,10 +363,11 @@ class HTML_site {
 					
 
 					//compressed
-					//JHTML::script('Styler.js', 'components/com_easysdi_publish/js/styler/script/');					
+		//			JHTML::script('Styler.js', 'components/com_easysdi_publish/js/styler/script/');					
 				  
-				  JHTML::script('color-picker.ux.js', 'components/com_easysdi_publish/js/styler/externals/ux/colorpicker/');
-					
+	                          	//User extensions
+					JHTML::script('color-picker.ux.js', 'components/com_easysdi_publish/js/styler/externals/ux/colorpicker/');
+					JHTML::script('ScaleLine.js', 'components/com_easysdi_publish/js/styler/externals/openlayers/Control/');
 
 /*				
 					JHTML::stylesheet('ext-all.css', 'components/com_easysdi_publish/js/styler/externals/ext/resources/css/');
@@ -408,7 +442,7 @@ class HTML_site {
     var styler_host = '<?php echo $user_diffusor_url;?>';
     var styler_namespace = '<?php echo JFactory::getUser()->name;?>';
     
-    Ext.BLANK_IMAGE_URL = "theme/img/blank.gif";
+    Ext.BLANK_IMAGE_URL = "components/com_easysdi_publish/js/styler/externals/openlayers/theme/default/img/blank.gif";
     
     Ext.onReady(function() {
     	
@@ -502,11 +536,19 @@ class HTML_site {
 		</div>
 		</div>
 	</form>
+	<div id="mainApp"></div>
 	<div class="publish">	
 		<table style="width:480px;">
-				<tr>
-					<td align="right"><div style="width:430px;" id="errorMsg" class="errorMsg"></td>
-				</tr>
+			<tr>
+				<td align="right">
+				   <div style="width:430px;" id="errorMsg" class="errorMsg">
+				     <table>
+				       <tr><td id="errorMsgCode"></td></tr>
+				       <tr><td id="errorMsgDescr"></td></tr>
+				     </table>
+				   </div>
+				</td>
+			</tr>
 		</table>
 	</div>
 
@@ -519,23 +561,44 @@ class HTML_site {
 		
 			<div id="metadata" class="contentin">
 				<div id="excReport">
-					<h2 class="contentheading"><?php echo JText::_('EASYSDI_FEATURESOURCE_STATUS_TITLE'); ?></h2>
+				<h2 class="contentheading"><?php echo JText::_('EASYSDI_FEATURESOURCE_STATUS_TITLE').":&nbsp;".$fsRow->name; ?></h2>
 					<table>
 						<tr><td>&nbsp;</td></tr>
 						<!-- feature source details -->
-						<tr><td><?php echo JText::_('EASYSDI_PUBLISH_FEATURESOURCE_NAME');?>:</td><td><?php echo $fsRow->name; ?></td></tr>
+						<tr><td><?php echo JText::_('EASYSDI_PUBLISH_TEXT_STATUS');?>:</td><td><?php echo JText::_($fsRow->status); ?></td></tr>
+						<tr><td><?php echo JText::_('EASYSDI_PUBLISH_FS_GUID');?>:</td><td><?php echo $fsRow->featureguid; ?></td></tr>
 						<tr><td><?php echo JText::_('EASYSDI_PUBLISH_PROJECTION');?>:</td><td><?php echo $fsRow->projection; ?></td></tr>
 						<tr><td><?php echo JText::_('EASYSDI_TEXT_CREATION_DATE');?>:</td><td><?php echo $fsRow->creation_date; ?></td></tr>
 						<tr><td><?php echo JText::_('EASYSDI_TEXT_UPDATE_DATE');?>:</td><td><?php echo $fsRow->update_date; ?></td></tr>
-						<!-- exceptions if there are -->
-						<?php if(strlen($fsRow->excdetail) > 0 && $fsRow->excdetail != "null"){?>
-						<tr><td>&nbsp;</td></tr>
-						<tr><td><?php echo JText::_('EASYSDI_ERROR_DETAIL');?>:</td><td><?php echo JText::_($fsRow->excdetail); ?></td></tr>
-						<tr><td>&nbsp;</td></tr>
-						<tr><td><?php echo JText::_('EASYSDI_ERROR_MESSAGE');?>:</td></tr>
-						<tr><td colspan="2"><div id="excMessage"><?php echo trim($fsRow->excmessage); ?></div></td></tr>
-					  <?php } ?>
 					</table>
+						<!-- exceptions if there are -->
+					<?php if(strlen($fsRow->exccode) > 0 && $fsRow->exccode != "null"){?>
+					<fieldset>
+					   <script>
+					   function toggle5(showHideDiv, switchImgTag) {
+                                              var ele = document.getElementById(showHideDiv);
+                                              var imageEle = document.getElementById(switchImgTag);
+                                              if(ele.style.display == "block") {
+                                              ele.style.display = "none";
+                                              imageEle.innerHTML = '<img src="components/com_easysdi_publish/img/plus.png">';
+                                              }
+                                              else {
+                                              ele.style.display = "block";
+                                               imageEle.innerHTML = '<img src="components/com_easysdi_publish/img/minus.png">';
+                                               }
+                                           }
+					   </script>
+				           <legend><?php echo JText::_("EASYSDI_PUBLISH_WPS_TRANSFORMATION_SUM"); ?></legend>
+                                              <div id="headerDivImg">
+                                              <div id="titleTextImg"><?php echo trim($fsRow->excmessage); ?></div>
+                                              <p>
+					         <a href="javascript:toggle5('contentDivImg', 'imageDivLink');" id="imageDivLink">
+					            <img src="components/com_easysdi_publish/img/plus.png">
+					         </a>
+                                              </p></div>
+                                              <div style="display: none;" id="contentDivImg"><?php echo trim($fsRow->excstacktrace); ?></div>
+					</fieldset>
+					<?php } ?>
 				</div>
 			</div>
 			<?php

@@ -196,7 +196,7 @@ var Styler = Ext.extend(Ext.util.Observable, {
      * Create the layout with a map panel, a layers panel, and a legend panel.
      */
     createLayout: function() {
-        
+
         // register the color manager with every color field
         Ext.util.Observable.observeClass(gxp.form.ColorField);
         gxp.form.ColorField.on({
@@ -217,12 +217,14 @@ var Styler = Ext.extend(Ext.util.Observable, {
         this.mapPanel = new GeoExt.MapPanel({
             border: true,
             region: "center",
+	    ref: '../removeBtn',
             map: {
                 allOverlays: false,
                 controls: [
                     new OpenLayers.Control.Navigation({zoomWheelEnabled: false}),
                     new OpenLayers.Control.PanPanel(),
                     new OpenLayers.Control.ZoomPanel(),
+		    new OpenLayers.Control.ScaleLine(),
                     this.getFeatureControl
                 ],
                 projection: new OpenLayers.Projection("EPSG:900913"),
@@ -240,7 +242,15 @@ var Styler = Ext.extend(Ext.util.Observable, {
                 plugins: new GeoExt.ZoomSliderTip({
                     template: "<div>Zoom Level: {zoom}</div><div>Scale: 1 : {scale}</div>"
                 })
-            }]
+            }],
+	    bbar: [
+		   new Ext.form.Label({
+				width: 50,
+				id: 'ScaleText',
+				text: 'Scale:'
+		   })
+
+            ]
         });
 
         this.legendContainer = new Ext.Panel({
@@ -399,19 +409,36 @@ var Styler = Ext.extend(Ext.util.Observable, {
             }
         });
 */
- this.win = new Ext.Window({
-						    	pageX:230,
-						    	pageY:360,
-						    	width:530,
-						    	height:400,
-						    	closable:false,
-						    	draggable:false,
-						    	resizable:false,
-						    	shadow:false,
-						    	modal:false,
-						    	cls:'StylerWindow',
-						    	//style:'position:relative',
-						    	//renderTo: OpenLayers.Util.getElement('hello-win'),
+ 
+        this.win = new Ext.Panel({
+	           renderTo: 'mainApp',
+		   width:551,
+                   height:400,
+		   frame: false,
+		   border: false,
+		   layout:'fit',
+		   cls:'StylerWindow',
+		   items: {
+                	layout: "border",
+                	deferredRender: false,
+                	items: [this.mapPanel, westPanel]
+            	    }
+        });
+
+	/*
+        this.win = new Ext.Window({
+                pageX:230,
+                pageY:360,
+                width:530,
+                height:400,
+                closable:false,
+                draggable:false,
+                resizable:false,
+                shadow:false,
+                modal:false,
+                cls:'StylerWindow',
+                //style:'position:relative',
+                //renderTo: OpenLayers.Util.getElement('hello-win'),
                 layout:'fit',
                // closeAction:'hide',
                 plain: false,
@@ -421,19 +448,8 @@ var Styler = Ext.extend(Ext.util.Observable, {
                 	deferredRender: false,
                 	items: [this.mapPanel, westPanel]
             		}
-
-/*
-                buttons: [{
-                    text:'Submit',
-                    disabled:true
-                },{
-                    text: 'Close',
-                    handler: function(){
-                        win.hide();
-                    }
-                }]
-                */
             });
+	  */  
 
         this.map = this.mapPanel.map;
         this.map.events.on({
@@ -667,8 +683,8 @@ var Styler = Ext.extend(Ext.util.Observable, {
 					    
 
     			 
-       		    	OpenLayers.Util.getElement('wmsUrl').innerHTML = '<a target=\"_blank\" href="'+styler_host+'/wms?layers='+this.currentLayer.params.LAYERS+'&request=getcapabilities">View capabilities</a>';
-       		    	OpenLayers.Util.getElement('wfsUrl').innerHTML = '<a target=\"_blank\" href="'+styler_host+'/wfs?layers='+this.currentLayer.params.LAYERS+'&request=getcapabilities">View capabilities</a>';
+       		    	OpenLayers.Util.getElement('wmsUrl').innerHTML = '<a target=\"_blank\" href="'+styler_host+'/'+styler_namespace+'/wms?request=getcapabilities">View capabilities</a>';
+       		    	OpenLayers.Util.getElement('wfsUrl').innerHTML = '<a target=\"_blank\" href="'+styler_host+'/'+styler_namespace+'/wfs?request=getcapabilities">View capabilities</a>';
 					    	OpenLayers.Util.getElement('kmlUrl').innerHTML = '<a id=\"kmlHref\" target=\"_blank\" href="">View layer in Google Earth</a>';
 					    	OpenLayers.Util.getElement('kmlHref').href = styler_host+"/wms/kml?layers="+this.currentLayer.params.LAYERS;
     			    	break;
@@ -811,6 +827,9 @@ var Styler = Ext.extend(Ext.util.Observable, {
         if (legend && legend.setCurrentScaleDenominator) {
             legend.setCurrentScaleDenominator(this.map.getScale());
         }
+	
+        Ext.get('ScaleText').dom.innerHTML = "Scale: "+Math.round(this.map.getScale());
+	
     },
 
     /**

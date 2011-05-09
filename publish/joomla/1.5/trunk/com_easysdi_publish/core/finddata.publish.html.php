@@ -46,6 +46,7 @@ class PUBLISH_Finddata {
 		$format_list = array_reverse($format_list);
 		
 		//Epsg code list
+		/*
 		$epsg_list = array();
 		$epsg_list [] = JHTML::_('select.option',0, JTEXT::_("EASYSDI_PUBLISH_CHOOSEPROJECTION"));
 		$epsg_list [] = JHTML::_('select.option','EPSG:4326', 'WGS84');
@@ -53,7 +54,8 @@ class PUBLISH_Finddata {
 		$epsg_list [] = JHTML::_('select.option','EPSG:26986', 'North American Datum 1983');
 		$epsg_list [] = JHTML::_('select.option','EPSG:26740', 'NAD 17 zone 10');
 		$epsg_list [] = JHTML::_('select.option','EPSG:2277', 'NAD83 / Texas Central (ftUS)');
-					
+		*/
+		
 		//Retrieve the existing Feature Source name
 		$joomlaUser = JFactory::getUser();
 		$query = "SELECT f.name FROM #__sdi_publish_featuresource f, #__sdi_account p where p.id=f.partner_id AND p.user_id=".$joomlaUser->id;
@@ -69,10 +71,20 @@ class PUBLISH_Finddata {
 		//Retrieve fs name and fieldsName
 		$fsName = "";
 		$fieldsName = "";
-		$selectedEpsg = 0;
+		
+		
+		
+		$database->setQuery( "SELECT code FROM #__sdi_publish_crs where id=".$config->default_prefered_crs);
+		$selectedEpsg = $database->loadResult();
 		//default datasource handler		
 		$database->setQuery( "SELECT publish_script_name FROM #__sdi_publish_script where id=".$config->default_datasource_handler);
 		$selectedFormat = $database->loadResult();
+		
+		//load CRS list
+		$database->setQuery( "SELECT code as value, name as text FROM #__sdi_publish_crs order by name" );
+		$epsg_list = $database->loadObjectList();
+		
+		
 		
 		if($isUpdate)
 		{
@@ -93,11 +105,13 @@ class PUBLISH_Finddata {
 			$fsName = "New";	
 		}
 		
-		JHTML::script('Swiff.Uploader.js', 'components/com_easysdi_publish/js/fancyupload/');
-		JHTML::script('Fx.ProgressBar.js', 'components/com_easysdi_publish/js/fancyupload/');
+		JHTML::script('ext-base.js', 'components/com_easysdi_publish/js/extuploader/');
+		JHTML::script('ext-all.js', 'components/com_easysdi_publish/js/extuploader/');
+		JHTML::script('FileUploadField.js', 'components/com_easysdi_publish/js/extuploader/');
+		JHTML::script('file-upload.js', 'components/com_easysdi_publish/js/extuploader/');
 		JHTML::script('Lang.js', 'components/com_easysdi_publish/js/');
-		JHTML::script('FancyUpload2.js', 'components/com_easysdi_publish/js/fancyupload/');
-		JHTML::script('fancyuploader.js', 'components/com_easysdi_publish/js/');
+		//JHTML::script('FancyUpload2.js', 'components/com_easysdi_publish/js/fancyupload/');
+		//JHTML::script('fancyuploader.js', 'components/com_easysdi_publish/js/');
 		JHTML::script('finddata.js', 'components/com_easysdi_publish/js/');
 	  
 	  $param = array('size'=>array('x'=>350,'y'=>800) );
@@ -105,45 +119,33 @@ class PUBLISH_Finddata {
 	?>
 	<script type="text/javascript">
   
-  var EASYSDI_PUBLISH_TEXT_PROGRESSION = '<?php echo JText::_("EASYSDI_PUBLISH_TEXT_PROGRESSION");?>';
-  
+	var EASYSDI_PUBLISH_TEXT_PROGRESSION = '<?php echo JText::_("EASYSDI_PUBLISH_TEXT_PROGRESSION");?>';
+	var EASYSDI_PUBLISH_TEXT_PROGRESSION_UNAVAILABLE = '<?php echo JText::_("EASYSDI_PUBLISH_TEXT_PROGRESSION_UNAVAILABLE");?>';
+	
+	var excArray = new Array();
+	excArray['EASYSDI_PUBLISH_WPS_ERROR_DATASOURCE_WRONG_FORMAT'] = '<?php echo JText::_("EASYSDI_PUBLISH_WPS_ERROR_DATASOURCE_WRONG_FORMAT");?>';
+	excArray['EASYSDI_PUBLISH_WPS_ERROR_COMMUNICATION_EXCEPTION'] = '<?php echo JText::_("EASYSDI_PUBLISH_WPS_ERROR_COMMUNICATION_EXCEPTION");?>';
+	excArray['EASYSDI_PUBLISH_WPS_ERROR_CONFIGURATION_EXCEPTION'] = '<?php echo JText::_("EASYSDI_PUBLISH_WPS_ERROR_CONFIGURATION_EXCEPTION");?>';
+	excArray['EASYSDI_PUBLISH_INVALID_UPLOAD'] = '<?php echo JText::_("EASYSDI_PUBLISH_INVALID_UPLOAD");?>';
+
   </script>
 	
-	
-	<link rel="stylesheet" href="components/com_easysdi_publish/css/fancy.css" type="text/css" media="screen, projection">
+	<link rel="stylesheet" href="components/com_easysdi_publish/css/ext-all.css" type="text/css" media="screen, projection">
+	<link rel="stylesheet" href="components/com_easysdi_publish/css/FileUploadField.css" type="text/css" media="screen, projection">
 		<div id="page">
 		<h2 class="contentheading"><?php echo JText::_("EASYSDI_PUBLISH_PUBLISH_TITLE"); ?></h2>
 		<div class="contentin">
 			<h3><?php if($isUpdate) echo JText::_("EASYSDI_PUBLISH_UPDATE_FEATURESOURCE_NAME").": ".$fsName; else echo JText::_("EASYSDI_PUBLISH_NEW_FEATURESOURCE_NAME")?></h3>
-				<div class="publish">	
+				<div class="publish">
 					<!-- File choice -->
-						<fieldset style="width:430px;">
+						<fieldset style="width:460px;">
 						<legend><?php echo JText::_("EASYSDI_PUBLISH_CHOOSE_FILES"); ?> (<?php echo JText::_("EASYSDI_PUBLISH_MAX_FILE_SIZE"); ?>: <?php echo $maxFileSize; ?> <?php echo JText::_("EASYSDI_PUBLISH_MB"); ?>)</legend>
-						<form action="components/com_easysdi_publish/core/script.php" method="post" enctype="multipart/form-data" id="form-demo">
-							<div id="demo-fallback" class="hide">
-								<p><b>
-											Please activate the "System - Mootools Upgrade" plugin in the Joomla! backend,
-											 because Mootools 1.2 is required for the uploader (next version of Publish will suppress this incompatibility). 
-								</b></p>
-							</div>
-							<div style="width:430px;" id="demo-status" class="hide">
-								<p>
-									<a href="#" id="demo-browse"><?php echo JText::_("EASYSDI_PUBLISH_ADD_FILES"); ?></a> |
-									<a href="#" id="demo-clear"><?php echo JText::_("EASYSDI_PUBLISH_CLEAR_FILES"); ?></a><!--  |
-									<a href="#" id="demo-upload"><?php echo JText::_("EASYSDI_PUBLISH_START_UPLOAD"); ?></a> -->
-								</p>
-								<div>
-									<span class="overall-title"></span><br />
-									<img src="components/com_easysdi_publish/img/fancyupload/progress-bar/bar.gif" class="progress overall-progress" />
-								</div>
-								<div>
-									<span class="current-title"></span><br />
-									<img src="components/com_easysdi_publish/img/fancyupload/progress-bar/bar.gif" class="progress current-progress" />
-								</div>
-								<div class="current-text"></div>
-							</div>
-							<ul id="demo-list"></ul>
-						</form>
+						<div id="fi-form"></div>
+						<table>
+						   <tr>
+						   <td align="left" class="info"><?php echo JText::_("EASYSDI_PUBLISH_GENERAL_RESTRICTIONS"); ?>&nbsp;<a href="http://forge.easysdi.org/projects/publish/wiki/Dataset_upload_restrictions" target="_blank"><?php echo JText::_("EASYSDI_PUBLISH_GENERAL_RESTRICTIONS_HERE"); ?></a></td>
+						   </tr>
+						</table>
 						</fieldset>
 					<!-- <input type="hidden" name="option" id="option" value="<?php echo JRequest::getVar('option' );?>" /> -->
 					<form name="publish_form" id="publish_form"  method="POST">
@@ -164,25 +166,19 @@ class PUBLISH_Finddata {
 						<fieldset style="width:460px;">
 						<legend><?php echo JText::_("EASYSDI_PUBLISH_CHOOSE_DATASET"); ?></legend>
 						<!-- Feature Source name -->
-						<table>
+						<table width="100%">
 							<tr>
-								<td align="left"><?php echo JText::_("EASYSDI_PUBLISH_TEXT_NAME"); ?>:</td>
-								<td align="left"><input id="featuresource_name" name="featuresource_name" class="inputbox" type="text" size="10" maxlength="100" value="<?php echo $fsName; ?>" <?php if($isUpdate) echo "DISABLED"; ?>/></td>	
+								<td width="100px" class="title1" align="left"><?php echo JText::_("EASYSDI_PUBLISH_TEXT_NAME"); ?>:</td>
+								<td align="left"><input id="featuresource_name" name="featuresource_name" class="inputbox" type="text" size="20" maxlength="100" value="<?php echo $fsName; ?>" <?php if($isUpdate) echo "DISABLED"; ?>/></td>	
 							</tr>
-						</table>
-						<table>
-								<tr>
-									<td align="left"><?php echo JText::_("EASYSDI_PUBLISH_DATASET").":"; ?></td>
-									<!-- the dataset -->
-									<td align="left"><select class="inputbox" size="1" id="datasets" name="datasets">
-											<option value="0"><?php echo JText::_("EASYSDI_PUBLISH_PARTNER_LIST_TITLE"); ?></option>
-											</select>
-									</td>
-									<!-- projection -->
-									<td align="left"><?php echo JHTML::_("select.genericlist",$epsg_list, 'projection', 'size="1" class="inputbox"', 'value', 'text', $selectedEpsg); ?></td>
-								  <td align="left"><a class="modal" href="./index.php?tmpl=component&option=com_easysdi_publish&task=showEpsgList" rel="{handler:'iframe',size:{x:650,y:350}}"><?php echo JText::_("EASYSDI_PUBLISH_VIEW_EPSG_LIST"); ?></a></td>
-									<!-- <td align="left"><button name="searchds" id="searchds"><?php echo JText::_("EASYSDI_PUBLISH_SEARCH"); ?></button></td> -->
-								</tr>
+							<tr>
+								<td width="100px" align="left"><?php echo JText::_("EASYSDI_PUBLISH_DATASET").":"; ?></td>
+								<!-- the dataset -->
+								<td align="left"><select class="inputbox" size="1" id="datasets" name="datasets">
+										<option value="0"><?php echo JText::_("EASYSDI_PUBLISH_PARTNER_LIST_TITLE"); ?></option>
+										</select>
+								</td>
+							</tr>
 						</table>
 						</fieldset>
 						
@@ -196,20 +192,28 @@ class PUBLISH_Finddata {
 						
 						<!-- Advanced tab -->
 						<div id="advancedTab">
-							<fieldset style="width:460px;">
-							<legend><?php echo JText::_("EASYSDI_PUBLISH_APPLY_SCRIPT"); ?></legend>
-								<table>
+						   <fieldset style="width:460px;">
+						   <legend><?php echo JText::_("EASYSDI_PUBLISH_ADVANCED"); ?></legend>
+							<table width="100%">
 								<tr>
-									<td align="left"><?php echo JText::_("EASYSDI_PUBLISH_CHOOSE_SCRIPT"); ?></td>
+									<!-- projection -->
+									<td width="150px" align="left"><?php echo JText::_("EASYSDI_PUBLISH_CHOOSE_PROJECTION"); ?></td>
+									<td align="left"><?php echo JHTML::_("select.genericlist",$epsg_list, 'projection', 'size="1" class="inputbox"', 'value', 'text', $selectedEpsg); ?></td>
+									<td align="center"><a class="modal" href="./index.php?tmpl=component&option=com_easysdi_publish&task=showEpsgList" rel="{handler:'iframe',size:{x:650,y:350}}"><?php echo JText::_("EASYSDI_PUBLISH_VIEW_EPSG_LIST"); ?></a></td>
+								</tr>
+								<tr>
+								        <!-- script -->
+									<td width="150px" align="left"><?php echo JText::_("EASYSDI_PUBLISH_CHOOSE_SCRIPT"); ?></td>
 									<td colspan="2" align="left"><?php echo JHTML::_("select.genericlist",$script_list, 'transfScriptId', 'size="1" class="inputbox"', 'value', 'text', $selectedScript); ?></td>
 								</tr>
 								<tr>
-									<td align="left"><?php echo JText::_("EASYSDI_PUBLISH_CHOOSE_FORMAT_HANDLER"); ?></td>
+								        <!-- data handler -->
+									<td width="150px" align="left"><?php echo JText::_("EASYSDI_PUBLISH_CHOOSE_FORMAT_HANDLER"); ?></td>
 									<td align="left"><?php echo JHTML::_("select.genericlist",$format_list, 'transfFormatId', 'size="1" class="inputbox"', 'value', 'text', $selectedFormat); ?></td>
-								  <td align="left"><a class="modal" href="./index.php?tmpl=component&option=com_easysdi_publish&task=showFormatList" rel="{handler:'iframe',size:{x:350,y:450}}"><?php echo JText::_("EASYSDI_PUBLISH_DATASOURCE HANDLER_FORMAT_LIST"); ?></a></td>
+									<td align="center"><a class="modal" href="./index.php?tmpl=component&option=com_easysdi_publish&task=showFormatList" rel="{handler:'iframe',size:{x:350,y:450}}"><?php echo JText::_("EASYSDI_PUBLISH_DATASOURCE HANDLER_FORMAT_LIST"); ?></a></td>
 								</tr>
 							</table>
-							</fieldset>
+						   </fieldset>
 						</div>
 						
 							<table style="width:480px;">
@@ -228,14 +232,21 @@ class PUBLISH_Finddata {
 									</td>
 									-->
 									<td width="40px" align="right">
-										<button name="validateFs" id="validateFs"><?php if($isUpdate) echo JText::_("EASYSDI_PUBLISH_UPDATE"); else echo JText::_("EASYSDI_PUBLISH_CREATE"); ?></button>
+										<button name="validateFs" onclick="return validateFs_click();" id="validateFs"><?php if($isUpdate) echo JText::_("EASYSDI_PUBLISH_UPDATE"); else echo JText::_("EASYSDI_PUBLISH_CREATE"); ?></button>
 									</td>
 								</tr>
 							</table>
 						</form>
 						<table style="width:480px;">
 							<tr>
-								<td align="right"><div style="width:430px;" id="errorMsg" class="errorMsg"></td>
+								<td align="right">
+								   <div style="width:430px;" id="errorMsg" class="errorMsg">
+								     <table>
+								       <tr><td id="errorMsgCode"></td></tr>
+								       <tr><td id="errorMsgDescr"></td></tr>
+								     </table>
+								   </div>
+								</td>
 							</tr>
 						</table>	
 				</div>

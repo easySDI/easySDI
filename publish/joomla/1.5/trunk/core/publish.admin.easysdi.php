@@ -38,7 +38,7 @@ class ADMIN_publish {
 			//store to the WPS					
 			//echo $url."<br>";					 
 			$doc = SITE_proxy::fetch($url, false);
-			$xml = simplexml_load_string($doc);
+  	  $xml = simplexml_load_string($doc);
 			//$xml = simplexml_load_file($url);
 			//echo "<pre>";  print_r($xml);  echo "</pre>";
 				
@@ -50,6 +50,22 @@ class ADMIN_publish {
 			} 	
 		}
 		return $error;
+	}
+	
+	function deleteCrs($crs_id, $options)
+	{
+		$database =& JFactory::getDBO();
+
+		if($crs_id != 0)
+		{
+			$database->setQuery( "DELETE FROM #__sdi_publish_crs where id=".$crs_id );
+			$database->query();
+			if ($database -> getErrorNum()) {
+				$mainframe->enqueueMessage($database -> stderr(),"ERROR");
+				return false;
+			}
+		}
+		return true;
 	}
 	
 	function deleteScript($scriptId, $options)
@@ -80,7 +96,8 @@ class ADMIN_publish {
 
 		//enum of formats
 		$format_rows = null;
-		
+		//crs list
+		$crs_rows = null;
 		//partner list
 		$partner_list = null;
 		//instance of config in db
@@ -110,6 +127,10 @@ class ADMIN_publish {
 		$database->setQuery( "SELECT publish_script_name FROM #__sdi_publish_script WHERE publish_script_is_public=1 order by publish_script_name" );
 		$format_rows = $database->loadObjectList() ;
 
+		//load CRS list
+		$database->setQuery( "SELECT id as value, name as text FROM #__sdi_publish_crs" );
+		$crs_rows = $database->loadObjectList() ;
+		
 		//load partner list
 		$database->setQuery( "SELECT a.id as value, j.name as text FROM #__sdi_account a, #__users j where a.user_id = j.id;" );
 		$partner_list = $database->loadObjectList();
@@ -194,7 +215,7 @@ class ADMIN_publish {
 			echo $database->stderr();
 			return false;
 		}
-		HTML_ctrlpanel::ctrlPanelPublish($format_rows, $rowPublishConfig, $options, $config_Id, $partner_list, $layers, $use_pagination_layer, $pageNav, $filter_order, $filter_order_Dir, $search);
+		HTML_ctrlpanel::ctrlPanelPublish($format_rows, $crs_rows, $rowPublishConfig, $options, $config_Id, $partner_list, $layers, $use_pagination_layer, $pageNav, $filter_order, $filter_order_Dir, $search);
 	}
 
 	function saveConfig( $options, $uploadFileName ) {
@@ -220,7 +241,7 @@ class ADMIN_publish {
 
 		$publishConfig->default_diffusion_server_id=$_POST['default_diffusion_server_id'];
 		$publishConfig->default_datasource_handler=$_POST['default_datasource_handler'];
-
+		$publishConfig->default_prefered_crs=$_POST['default_prefered_crs'];
 		//Makes an update because config_id is given. Otherwise it would make an insert
 		if (!$publishConfig->store()) {
 			//echo "<script> alert('".$rowAddress->getError()."'); window.history.go(-1); </script>\n";
@@ -229,9 +250,24 @@ class ADMIN_publish {
 			exit();
 		}
 
+		//save the crs
+		if($_POST['crs_name'] != "" && $_POST['crs_code'] != ""){
+		
+			$crsObject =& new crsObject( $database );
+			if($_POST['crs_id'] != 'new')
+			   $crsObject->id = $_POST['crs_id'];
+			$crsObject->name = $_POST['crs_name'];
+			$crsObject->code = $_POST['crs_code'];
+			if (!$crsObject->store()) {
+				//echo "<script> alert('".$rowAddress->getError()."'); window.history.go(-1); </script>\n";
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				$mainframe->redirect("index.php?option=$option&task=editGlobalSettings" );
+				exit();
+			}
+		}
+		
 		//save the diffusor settings to the wps
 		//If diffusor_id = 0 => create new, else update
-		
 		$dId = "";
 		if($_POST['diffusor_id'] != 'new'){
 			$dId = $_POST['diffusor_id'];
@@ -249,7 +285,7 @@ class ADMIN_publish {
 		$diffusion_server_db_password=$_POST['diffusion_server_db_password'];
 
 		$url = $wpsConfig."?operation=managePublicationServer";
-	  $url.= "&id=".$dId;
+		$url.= "&id=".$dId;
 		$url.= "&name=".$diffusion_server_name;
 		$url.= "&type=".$diffusor_type_id;
 		$url.= "&url=".$diffusion_server_url;
@@ -260,17 +296,13 @@ class ADMIN_publish {
 		$url.= "&dburl=".$diffusion_server_db_url;
 		$url.= "&dbscheme=".$diffusion_server_db_scheme;
 		$url.= "&dbusername=".$diffusion_server_db_username;
-		$url.= "&dbpassword=".$diffusion_server_db_password;								 
+		$url.= "&dbpassword=".$diffusion_server_db_password;
 		
-			
+		
 		//Makes an update because diffusor_id is given. Otherwise it would make an insert
 		//save only if diffusion server has a name, url, dbname, dbtype etc...
 		if($_POST['diffusion_server_name'] != "" && $_POST['diffusor_type_id'] != "" && $_POST['diffusion_server_url'] != "" && $_POST['diffusion_server_db_name'] != "" && $_POST['diffusor_bd_type_id'] != "" && $_POST['diffusion_server_db_url'] != "" )
 		{
-			//store to the WPS					
-			
-			//echo $url."<br>";
-						 
 			//$xml = simplexml_load_file($url);
 			$doc = SITE_proxy::fetch($url, false);
 			$xml = simplexml_load_string($doc);
@@ -278,10 +310,10 @@ class ADMIN_publish {
 			
 			//Look for an exception
 			foreach($xml->xpath('//ows:ExceptionText') as $exc) { 
-    		$exc->registerXPathNamespace('ows', 'http://www.opengis.net/ows/1.1../../../ows/1.1.0/owsExceptionReport.xsd'); 
-    		$mainframe->enqueueMessage((string)$exc,"ERROR");
+				$exc->registerXPathNamespace('ows', 'http://www.opengis.net/ows/1.1../../../ows/1.1.0/owsExceptionReport.xsd'); 
+				$mainframe->enqueueMessage((string)$exc,"ERROR");
 				$mainframe->redirect("index.php?option=$option&task=editGlobalSettings" );
-    		exit;
+				exit;
 			} 
 		}
 		

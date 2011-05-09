@@ -82,7 +82,12 @@ switch($task){
 		  $mainframe->enqueueMessage(JText::_("EASYSDI_PUBLISH_DELETE_DIFFUSOR_ERROR").": ".$diffusorName." reason:".$error	,"INFO");
 		$mainframe->redirect("index.php?option=com_easysdi_publish&task=editGlobalSettings&tabIndex=".$tabIndex );
 		break;
-	
+	case "deleteCrs":
+		$crsId = JRequest::getVar("crs_id",0);
+		ADMIN_publish::deleteCrs($crsId, $option);
+		$tabIndex = JRequest::getVar("tabIndex",0);
+		$mainframe->redirect("index.php?option=com_easysdi_publish&task=editGlobalSettings&tabIndex=".$tabIndex );
+		break;
 	case "deleteScript":
 		$scriptId = JRequest::getVar("man_script_id",0);
 		$scriptName = JRequest::getVar("publish_script_name");

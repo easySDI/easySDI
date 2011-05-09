@@ -18,9 +18,8 @@ window.addEvent('domready', function() {
 				$('home').addEvent('click', function() {
 					return home_click();
 				});
-				$('validateFs').addEvent('click', function() {
-					return validateFs_click();
-				});
+				
+				
 				$('transfFormatId').addEvent('change', function() {
 					transfFormatId_change();
 				});
@@ -70,14 +69,14 @@ function featuresource_name_change()
 {
 	$('errorMsg').style.display = 'none';
 	$('errorMsg').style.visibilty = 'hidden';
-	$('errorMsg').set('html', '');
+	$('errorMsg').innerHTML = '';
 }
 function transfFormatId_change()
 {
 	$('transfScriptId').selectedIndex = $('transfScriptId').length -1;
 	$('errorMsg').style.display = 'none';
 	$('errorMsg').style.visibilty = 'hidden';
-	$('errorMsg').set('html', '');
+	$('errorMsg').innerHTML = '';
 }
 
 function transfScriptId_change()
@@ -85,14 +84,27 @@ function transfScriptId_change()
 	$('transfFormatId').selectedIndex = $('transfFormatId').length-1;
 	$('errorMsg').style.display = 'none';
 	$('errorMsg').style.visibilty = 'hidden';
-	$('errorMsg').set('html', '');
+	$('errorMsg').innerHTML = '';
 }
 
 function validateForm(){
 	//Reset background
+	$('errorMsg').style.display = 'none';
+	$('errorMsg').style.visibilty = 'hidden';
+	$('errorMsg').innerHTML = '';
+	
+	$('form-file').style.background = "";
 	$('featuresource_name').style.background = "";
 	$('transfFormatId').style.background = "";
+	$('datasets').style.background = "";
 	$('projection').style.background = "";
+	
+	//check file length
+	if($('fileList').value == ''){
+		errorMsg = "You must choose a file first";
+		displayErr(errorMsg, $('form-file'));
+		return false;
+	}
 	
 	//check FS name
 	if($('featuresource_name').value == "" || $('featuresource_name').value == "New"){
@@ -129,7 +141,7 @@ function validateForm(){
 	
 	if($('datasets').options[$('datasets').selectedIndex].value == ""){
 		 errorMsg = "You must choose a supported dataset from the source file(s).";
-		displayErr(errorMsg, $('dataset'));
+		displayErr(errorMsg, $('datasets'));
 		return false;	
 	}
 	
@@ -148,13 +160,12 @@ function displayErr(err, elem){
 		elem.style.background = "#FBE3E4";
 		$('errorMsg').style.display = 'block';
 		$('errorMsg').style.visibilty = 'visible';
-		$('errorMsg').set('html', err);
+		$('errorMsg').innerHTML = err;
 }
 
 function validateFs_click()
 {
 	// Do some validation stuffs
-	
 	if(!validateForm())
 		return false;
 	
@@ -188,21 +199,27 @@ function validateFs_click()
 	
 	var postBody = WPSTransformDatasetRequest(diffusionServerName, FeatureSourceId, URLFile, scriptName, sourceDataType, coordEpsgCode, dataset);
 	//alert("url:"+"index.php?option=com_easysdi_publish&task=proxy&proxy_url="   body:"+postBody);
-	//WPSTransformDatasetRequest
-	//send the request
-	//alert("request:" + baseUrl + wpsServlet);
-	var req = new Request({
+
+	//Activate here please wait...
+	$('loadingImg').style.visibility = 'visible';
+	$('loadingImg').style.display = 'block';
+	//disable create / update button
+	$('validateFs').disabled = true;
+	$('validateFs').className = 'buttonDisabled';
+	
+	
+	Ext.Ajax.request({
+		//loadMask: true,
 		url: "index.php?option=com_easysdi_publish&task=proxy&proxy_url=" + wpsServlet,
 		method: 'post',
-		//if set to true, causes Content-Type to be url encoded
-		urlEncoded: false,
-		headers:{'Content-Type': 'text/xml'},
-		onSuccess: function(responseText, responseXML){			
+		headers: {'Content-Type': 'text/xml'},
+		xmlData:postBody,
+		success: function(response){
 			$('loadingImg').style.visibility = 'hidden';
 			$('loadingImg').style.display = 'none';
 			$('validateFs').disabled = false;
 			$('validateFs').className = '';
-			var ex = responseXML.getElementsByTagName('ows:Exception');
+			var ex = response.responseXML.getElementsByTagName('ows:Exception');
 			//handle the exception if there is
 			if(ex.length > 0){
 				code = ex[0].attributes[0].nodeValue;
@@ -210,45 +227,35 @@ function validateFs_click()
 				//Most relevant are: transformator did not succeed with supplied files
 				//Files where missing.
 				//For now, simply output the text in front-end for debug suppose.
-				exText = responseXML.getElementsByTagName('ows:ExceptionText');
+				exText = response.responseXML.getElementsByTagName('ows:ExceptionText');
 				$('errorMsg').style.display = 'block';
 				$('errorMsg').style.visibilty = 'visible';
-				$('errorMsg').set('html', exText[0].firstChild.nodeValue);
+				$('errorMsg').innerHTML = exText[0].firstChild.nodeValue;
 			}
 			//No exception, get the response document and submit
 			else
 			{
 				cont = false;
-				var out = responseXML.getElementsByTagName('wps:ExecuteResponse');
+				var out = response.responseXML.getElementsByTagName('wps:ExecuteResponse');
 				if(out != null){
 					temp = out[0].getAttribute("statusLocation");
 					//bug deegree 3: port is uncorrect
 					temp = temp.split("?");
 					responseDoc = wpsServlet+"?"+temp[1];
 					$('loadingImg').style.visibility = 'visible';
-			    $('loadingImg').style.display = 'block';
+					$('loadingImg').style.display = 'block';
 					doProgression();
-					
 				}
 				
 			}
 		},
-		onRequest: function() { 
-			//Activate here please wait...
-			$('loadingImg').style.visibility = 'visible';
-			$('loadingImg').style.display = 'block';
-			//disable create / update button
-			$('validateFs').disabled = true;
-			$('validateFs').className = 'buttonDisabled';
-		}, 
-		// Our request will most likely succeed, but just in case, we'll add an
-		// onFailure method which will let the user know what happened.
-		onFailure: function(xhr){
+		failure: function(response){
 			$('errorMsg').style.display = 'block';
 			$('errorMsg').style.visibilty = 'visible';
-			$('errorMsg').set('html', "System error: returned status code " + xhr.status + " " + xhr.statusText + " please try again or contact the service provider for help.");
+			$('errorMsg').innerHTML = "System error: returned status code " + xhr.status + " " + xhr.statusText + " please try again or contact the service provider for help.";
 		}
-	}).send(postBody);
+
+	});
 	
 	return false;
 }
@@ -259,58 +266,61 @@ function doProgression(){
             var stat = "";
             var response = "";
             
+	    Ext.Ajax.request({
+                url: "index.php?option=com_easysdi_publish&task=proxy&proxy_url=" + responseDoc,
+	    	method: 'get',
+	    	success: function(response){
+			
+			//look the status
+			if(response.responseXML.getElementsByTagName('wps:ProcessAccepted')[0] != null)
+			   stat = "accepted";
+			else if(response.responseXML.getElementsByTagName('wps:ProcessStarted')[0] != null)
+			   stat = "started";
+			else if(response.responseXML.getElementsByTagName('wps:ProcessSucceeded')[0] != null)
+			   stat = "succeeded";
+			else
+				alert ("unknown status");
+			
+			if(stat == "accepted"){
+			   //we do nothing, we poll again till prog appears
+			   setTimeout("doProgression();",3000);
+			}else if(stat == "started"){
+			   //we read the prog
+			   prog = parseInt(response.responseXML.getElementsByTagName('wps:ProcessStarted')[0].getAttribute("percentCompleted"));
+			   //stat = responseXML.getElementsByTagName('status')[0].lastChild.textContent;
+			   if(prog < 0){
+				   $('progress').innerHTML = EASYSDI_PUBLISH_TEXT_PROGRESSION + EASYSDI_PUBLISH_TEXT_PROGRESSION_UNAVAILABLE;
+			   }else{
+				   $('progress').innerHTML = EASYSDI_PUBLISH_TEXT_PROGRESSION+prog+"%";
+			   }
+			   setTimeout("doProgression();",2000);
+			}else if(stat == "succeeded"){
+				$('progress').innerHTML = EASYSDI_PUBLISH_TEXT_PROGRESSION+"100%";
+				//read response and save fs
+				out = response.responseXML.getElementsByTagName('wps:LiteralData');
+				$('featureSourceGuid').value = out[0].textContent;
+				$('task').value = 'saveFeatureSource';
+				submitForm();
+			}else{
+			   alert("Error: Cannot read stat from feature source");
+			}
+	    	},
+	    	failure: function(response){
+	    		$('loadingImg').style.visibility = 'hidden';
+			$('loadingImg').style.display = 'none';
+		  	return false;
+	    	}
             
-						var fsprogReq = new Request({
-						  url: "index.php?option=com_easysdi_publish&task=proxy&proxy_url=" + responseDoc,
-							method: 'get',
-							evalResponse: true,
-							//we have to wait to return the function's response.
-							async : true,
-							onSuccess: function(responseText, responseXML){
-								response = responseXML;
-								//look the status
-								
-								if(responseXML.getElementsByTagName('wps:ProcessAccepted')[0] != null)
-								   stat = "accepted";
-								else if(responseXML.getElementsByTagName('wps:ProcessStarted')[0] != null)
-								   stat = "started";
-								else if(responseXML.getElementsByTagName('wps:ProcessSucceeded')[0] != null)
-								   stat = "succeeded";
-								else
-									alert ("unknown status");
-								
-								if(stat == "accepted"){
-								   //we do nothing, we poll again till prog appears
-								   setTimeout("doProgression();",3000);
-								}else if(stat == "started"){
-								   //we read the prog
-								   prog = parseInt(responseXML.getElementsByTagName('wps:ProcessStarted')[0].getAttribute("percentCompleted"));
-								   //stat = responseXML.getElementsByTagName('status')[0].lastChild.textContent;
-								   $('progress').innerHTML = EASYSDI_PUBLISH_TEXT_PROGRESSION+prog+"%";
-								   setTimeout("doProgression();",3000);
-								}else if(stat == "succeeded"){
-			             $('progress').innerHTML = EASYSDI_PUBLISH_TEXT_PROGRESSION+"100%";
-				           //read response and save fs
-				           out = response.getElementsByTagName('wps:LiteralData');
-					         $('featureSourceGuid').value = out[0].textContent;
-				           $('task').value = 'saveFeatureSource';
-				           submitForm();
-								}else{
-								   alert("Error: Cannot read stat from feature source");
-								}								
-		  				},
-		  				onFailure: function(xhr){
-		  					$('loadingImg').style.visibility = 'hidden';
-			          $('loadingImg').style.display = 'none';
-		  					return false;
-		  				}
-		  			}).send();
+	    });
+	    
 		}
 
 
 function searchds_click(){
 	URLFile = '';
-	//alert($('fileList').value);
+	$('errorMsg').style.display = 'none';
+	$('errorMsg').style.visibilty = 'hidden';
+	$('datasets').options.length = 0;
 	fileList = $('fileList').value.split(",");
 	var fileI = 0;
 	for (fileI = 0; fileI < fileList.length; fileI++){
@@ -327,18 +337,44 @@ function searchds_click(){
 	if(fileI == 0)
 		alert("Please select and unpload file(s) first.")
 	
-	var req = new Request({
+	$('loadingImg').style.visibility = 'visible';
+	$('loadingImg').style.display = 'block';
+	//disable create / update button
+	$('validateFs').disabled = true;
+	$('validateFs').className = 'buttonDisabled';
+	
+	Ext.Ajax.request({
+		//loadMask: true,
 		url: "index.php?option=com_easysdi_publish&task=proxy&proxy_url=" + wpsServlet + "/config",
 		method: 'post',
-		evalResponse: true,
-		data:{'files':URLFile,
+		/*
+		headers: {
+		'Content-Type': 'application/json'
+		},
+		*/
+		params: {'files':URLFile,
 					'operation':'GetAvailableDatasetFromSource'},
-		onSuccess: function(responseText, responseXML){			
+		success: function(response){
 			$('loadingImg').style.visibility = 'hidden';
-			$('loadingImg').style.display = 'none';
+			//$('loadingImg').style.display = 'none';
 			$('validateFs').disabled = false;
 			$('validateFs').className = '';
-			var ex = responseXML.getElementsByTagName('exception');
+			var ex = response.responseXML.getElementsByTagName('ows:Exception');
+			//handle the exception if there is
+			if(ex.length > 0){
+				code = ex[0].attributes[0].nodeValue;
+				//TODO look what we do if an exception occurs.
+				//Most relevant are: transformator did not succeed with supplied files
+				//Files where missing.
+				//For now, simply output the text in front-end for debug suppose.
+				exText = response.responseXML.getElementsByTagName('ows:ExceptionText');
+				$('errorMsg').style.display = 'block';
+				$('errorMsg').style.visibilty = 'visible';
+				$('errorMsgCode').innerHTML = excArray[code];
+				$('errorMsgDescr').innerHTML = exText[0].firstChild.nodeValue;
+			}
+			/*
+			var ex = response.responseXML.getElementsByTagName('exception');
 			//handle the exception if there is
 			if(ex.length > 0){
 				code = ex[0].attributes[0].nodeValue;
@@ -349,44 +385,39 @@ function searchds_click(){
 				exText = ex[0].firstChild.nodeValue;
 				$('errorMsg').style.display = 'block';
 				$('errorMsg').style.visibilty = 'visible';
-				$('errorMsg').set('html', "Une erreur est survenue: code:"+code+" message:"+exText);
+				$('errorMsg').innerHTML = "Une erreur est survenue: code:"+code+" message:"+exText;
 			}
 			//No exception, get the FS id in response and submit
+			*/
+			
 			else
 			{
 				cont = false;
-				var out = responseXML.getElementsByTagName('dataset');
+				var out = response.responseXML.getElementsByTagName('dataset');
 				if(out != null){
-					//the dataset name
 					var searchdsObj = $('datasets');
+					//clean the list
+					searchdsObj.options.length = 0;
+
+					
+					//the dataset name
 					for(i=0; i<out.length; i++){
 						var dsname = out[i].firstChild.nodeValue;
 						searchdsObj.options[searchdsObj.options.length] = new Option(dsname,dsname);
 						//set the only dataset as selected
 						if(out.length == 1)
-							 searchdsObj.options[1].selected = true;
+							 searchdsObj.options[0].selected = true;
 					}
 				}
 			}
 		},
-		
-		headers:{'content-type': 'text/xml' },
-		onRequest: function() { 
-			//Activate here please wait...
-			$('loadingImg').style.visibility = 'visible';
-			$('loadingImg').style.display = 'block';
-			//disable create / update button
-			$('validateFs').disabled = true;
-			$('validateFs').className = 'buttonDisabled';
-		}, 
-		// Our request will most likely succeed, but just in case, we'll add an
-		// onFailure method which will let the user know what happened.
-		onFailure: function(xhr){
+		failure: function(response){
 			$('errorMsg').style.display = 'block';
 			$('errorMsg').style.visibilty = 'visible';
-			$('errorMsg').set('html', "System error: returned status code " + xhr.status + " " + xhr.statusText + " please try again or contact the service provider for help.");
+			$('errorMsg').innerHTML = "System error: returned status code " + xhr.status + " " + xhr.statusText + " please try again or contact the service provider for help.";
 		}
-	}).send();
+
+	});
 	
 	return false;
 	

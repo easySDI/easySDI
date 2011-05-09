@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySDI, a solution to implement easily any spatial data infrastructure
- * Copyright (C) 2009 Antoine Elbel & Rémy Baud (aelbel@solnet.ch remy.baud@asitvd.ch)
+ * Copyright (C) 2009 Antoine Elbel & Rï¿½my Baud (aelbel@solnet.ch remy.baud@asitvd.ch)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,11 +24,25 @@ class publishConfig extends JTable
 	var $default_dataset_upload_size=0;
 	var $default_diffusion_server_id=null;
 	var $default_datasource_handler=null;
+	var $default_prefered_crs=null;
 	
 	// Class constructor
 	function __construct( &$db )
 	{
 		parent::__construct ( '#__sdi_publish_config', 'id', $db ) ;    		
+	}
+}
+
+class crsObject extends JTable
+{
+	var $id=null;
+	var $code=null;
+	var $name=null;
+	
+	// Class constructor
+	function __construct( &$db )
+	{
+		parent::__construct ( '#__sdi_publish_crs', 'id', $db ) ;    		
 	}
 }
 

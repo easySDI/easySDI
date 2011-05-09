@@ -103,11 +103,13 @@ function validateForm(){
 	}
 	
 	//check layer name unique
+	
 	if(!checkNameUnique($('layer_name').value) && $('task').value=='createLayer'){
 		errorMsg = "There is already a Layer with the same name";
 		displayErr(errorMsg, $('layer_name'));
 		return false;	
 	}
+	
 	
 	//check the layer length
 	if(!lengthRestriction($('layer_name'), 0, 20)){
@@ -213,7 +215,7 @@ function displayErr(err, elem){
 		elem.style.background = "#FBE3E4";
 		$('errorMsg').style.display = 'block';
 		$('errorMsg').style.visibilty = 'visible';
-		$('errorMsg').set('html', err);
+		$('errorMsg').innerHTML = err;
 }
 
 function validateLayer_click()
@@ -230,19 +232,6 @@ function validateLayer_click()
 	//layerId: none if new, else update
 	layerId = $('layerGuid').value;
 	
-	//aliases: string of kind: AttrXY=AttrXYAlias,AttrXY=AttrXYAlias
-	//fieldsName = $('fieldsName').value.split(",");
-	//fetch current aliases
-	/*
-	currentAliases = $('currentAliases').value.split(",");
-	aliases = "";
-	for (var i = 0; i < currentAliases.length; i++){
-		objAlias = $('attributeAlias'+i);
-		if(aliases != '' && i < currentAliases.length)
-			aliases += ",";
-		aliases += currentAliases[i]+"="+objAlias.value;
-	}
-	*/
 	//The title
 	theTitle = $('layerTitle').value;
 	
@@ -266,20 +255,24 @@ function validateLayer_click()
 	var postBody = WPSPublishLayer(featureTypeId, layerId, aliases, theTitle, theName, quality, keywords, theAbstract, geometry);
 	//alert("url:"+baseUrl + wpsServlet+"   body:"+postBody);
 	
-	//send and handle the request
-	var req = new Request({
+	$('loadingImg').style.visibility = 'visible';
+	$('loadingImg').style.display = 'block';
+	$('validateLayer').disabled = true;
+        $('validateLayer').className = 'buttonDisabled';
+		  
+	Ext.Ajax.request({
+		//loadMask: true,
 		url: "index.php?option=com_easysdi_publish&task=proxy&proxy_url=" + wpsServlet,
-		//url: baseUrl + wpsServlet,
 		method: 'post',
-		urlEncoded: false,
-		headers:{'Content-Type': 'text/xml'},
-		onSuccess: function(responseText, responseXML){
+		headers: {'Content-Type': 'text/xml'},
+		xmlData:postBody,
+		success: function(response){
 			//alert(responseText);
 			$('validateLayer').disabled = false;
-		  $('validateLayer').className = '';
+			$('validateLayer').className = '';
 			$('loadingImg').style.visibility = 'hidden';
 			$('loadingImg').style.display = 'none';
-			var ex = responseXML.getElementsByTagName('ows:Exception');
+			var ex = response.responseXML.getElementsByTagName('ows:Exception');
 			//handle the exception if there is
 			if(ex.length > 0){
 				code = ex[0].attributes[0].nodeValue;
@@ -287,10 +280,11 @@ function validateLayer_click()
 				//Most relevant are: transformator did not succeed with supplied files
 				//Files where missing.
 				//For now, simply output the text in front-end for debug suppose.
-				exText = responseXML.getElementsByTagName('ows:ExceptionText');
+				exText = response.responseXML.getElementsByTagName('ows:ExceptionText');
 				$('errorMsg').style.display = 'block';
 				$('errorMsg').style.visibilty = 'visible';
-				$('errorMsg').set('html', exText[0].firstChild.nodeValue);
+				$('errorMsgCode').innerHTML = code;
+				$('errorMsgDescr').innerHTML = exText[0].firstChild.nodeValue;
 			}
 			//No exception, get the Layer id and attributes in response and submit
 			else
@@ -300,7 +294,7 @@ function validateLayer_click()
 				respEndpoints = Array();
 				respBbox = Array();
 				
-				var out = responseXML.getElementsByTagName('wps:Output');
+				var out = response.responseXML.getElementsByTagName('wps:Output');
 				//read the rawdataoutput
 				if(out != null){
 					//get the layerId
@@ -371,33 +365,18 @@ function validateLayer_click()
 				}else{
 					$('errorMsg').style.display = 'block';
 					$('errorMsg').style.visibilty = 'visible';
-					$('errorMsg').set('html', "Something went wrong with the parser");
+					$('errorMsg').innerHTML = "Something went wrong with the parser";
 				}
 			}
 		},
-		/*
-		onComplete: function(responseXML) { 
-			alert('Request completed successfully.'+responseXML); 
-		},
-		*/
-		onRequest: function() { 
-			//Activate here please wait...
-			$('loadingImg').style.visibility = 'visible';
-			$('loadingImg').style.display = 'block';
-			$('validateLayer').disabled = true;
-		  $('validateLayer').className = 'buttonDisabled';
-		}, 
-		// Our request will most likely succeed, but just in case, we'll add an
-		// onFailure method which will let the user know what happened.
-		onFailure: function(){
+		failure: function(response){
 			$('errorMsg').style.display = 'block';
 			$('errorMsg').style.visibilty = 'visible';
-			$('errorMsg').set('html', "System error: returned status code " + xhr.status + " " + xhr.statusText + " please try again or contact the service provider for help.");
+			$('errorMsg').innerHTML = "System error: returned status code " + xhr.status + " " + xhr.statusText + " please try again or contact the service provider for help.";
 		}
+
 	});
-	req.send(postBody);
-	
-	
+
 }
 
 function featureSourceId_change(){

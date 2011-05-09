@@ -75,13 +75,13 @@ if(!$userRights["GEOSERVICE_DATA_MANA"] && !$userRights["GEOSERVICE_MANAGER"])
 //Global js script files
 JHTML::script('validation.js', 'components/com_easysdi_publish/js/');
 JHTML::script('wps.js', 'components/com_easysdi_publish/js/');
-JHTML::script('dwProgressBar.js', 'components/com_easysdi_publish/js/');
+//JHTML::script('dwProgressBar.js', 'components/com_easysdi_publish/js/');
 //if(JRequest::getVar('tabIndex') != 2)
 //	JHTML::script('OpenLayers.js', 'http://www.openlayers.org/api/');
 //JHTML::script('proj4js.js', './administrator/components/com_easysdi_core/common/lib/js/proj4js/lib/');
 
 //see template
-JHTML::stylesheet('dwPbar.css','components/com_easysdi_publish/css/');
+//JHTML::stylesheet('dwPbar.css','components/com_easysdi_publish/css/');
 
 //read requested URL
 $option = JRequest::getVar('option');
@@ -153,7 +153,8 @@ switch($task){
 		break;
 	
 	case "saveLayer":
-		SITE_publish::saveLayer();
+		$isCopy = JRequest::getVar('copyLayer',0);
+		SITE_publish::saveLayer($isCopy);
 		$mainframe->redirect("index.php?option=com_easysdi_publish&task=gettingStarted&tabIndex=1");		
 		break;
 	
@@ -182,17 +183,24 @@ function getCurrentUser($wpsConfig){
 	$database =& JFactory::getDBO();
 	//Retrieve diffusion server list from wps
 	$url = $wpsConfig."?operation=listPublicationServers";
-  $doc = SITE_proxy::fetch($url, false);
-  $xml = simplexml_load_string($doc);
+	$doc = SITE_proxy::fetch($url, false);
+	$xml = simplexml_load_string($doc);
+	if($xml == null){                    
+		$mainframe->enqueueMessage(JText::_("EASYSDI_PUBLISH_ERROR_CONNECTING_TO_WPS"), "ERROR");
+		$mainframe->redirect("index.php");
+		return;
+	}
 
 	//retrieve general info of the logged user and config
 	$query = "select u.easysdi_user_id, u.publish_user_max_layers, u.publish_user_total_space, u.publish_user_diff_server_id, u.publish_user_diff_server_id from #__sdi_publish_user u, #__sdi_account p where u.easysdi_user_id=p.id AND p.user_id=".$joomlaUser->id;
 	$database->setQuery($query);
 	$currentUser = $database->loadObjectList();
-	
+		
 	//get the diffusor of the current user and update the currentUser object
 	$sid = $currentUser[0]->publish_user_diff_server_id;
-	//echo "<pre>";  print_r($xml);  echo "</pre>";
+		
+	//echo "<pre>xml:";  print_r($xml);  echo "</pre>";
+	//exit;
 	$diffusor = $xml->xpath("//server[@id=$sid]");
 	$diffusor = $diffusor[0];
 	$currentUser[0]->diffusion_server_name = (string)$diffusor->name;
@@ -203,7 +211,7 @@ function getCurrentUser($wpsConfig){
 	if(count($currentUser)<1)
 	{                    
 		$mainframe->enqueueMessage(JText::_("EASYSDI_PUBLISH_USER_DOESNT_EXIST"), "ERROR");
-	  $mainframe->redirect("index.php?option=com_easysdi_publish&task=showError");
+		$mainframe->redirect("index.php?option=com_easysdi_publish&task=showError");
 		return;
 	}
 	

@@ -196,6 +196,37 @@ req+='</wps:Execute>';
 	return req;
 }
 
+function WPSCopyLayer(layerId, theName)
+{
+	var req='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
+	req+='<wps:Execute service="WPS" version="1.0.0" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1"	xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"	xsi:schemaLocation="http://www.opengis.net/wps/1.0.0http://schemas.opengis.net/wps/1.0.0/wpsExecute_request.xsd">';
+	req+='<ows:Identifier>CopyLayer</ows:Identifier>';
+	req+='<wps:DataInputs>';
+		
+		//layerId
+		req+='<wps:Input>';
+			req+='<ows:Identifier>LayerId</ows:Identifier>';
+			req+='<ows:Title>id of an existing, none creates a new one</ows:Title>';
+			req+='<wps:Data>';
+				req+='<wps:LiteralData>'+layerId+'</wps:LiteralData>';
+			req+='</wps:Data>';
+		req+='</wps:Input>';
+		
+		//Title
+		req+='<wps:Input>';
+			req+='<ows:Identifier>Name</ows:Identifier>';
+			req+='<ows:Title>Alias for layer name</ows:Title>';
+			req+='<wps:Data>';
+				req+='<wps:LiteralData>'+theName+'</wps:LiteralData>';
+			req+='</wps:Data>';
+		req+='</wps:Input>';
+		
+	req+='</wps:DataInputs>';
+req+='</wps:Execute>';
+
+
+	return req;
+}
 
 function WPSDeleteFeatureSource(fsId)
 {

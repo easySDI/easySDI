@@ -87,11 +87,11 @@ class PUBLISH_Buildlayer {
 
 		//Feature Source list for the user with status "CREATED"
 		$fs_list = array();
-		$query = "SELECT id AS value, name as text FROM #__sdi_publish_featuresource where partner_id=".$currentPartner.$swlWhere;
+		$query = "SELECT id AS value, name as text FROM #__sdi_publish_featuresource where partner_id=".$currentPartner.$swlWhere." order by name asc";
 		$database->setQuery($query);
 		$fs_list = (Array)$database->loadObjectList();
-		$fs_list [] = JHTML::_('select.option','0', JText::_("EASYSDI_PUBLISH_CHOOSEFEATURESOURCE"));
-		$fs_list = array_reverse($fs_list);
+		array_unshift($fs_list,JHTML::_('select.option','0', JText::_("EASYSDI_PUBLISH_CHOOSEFEATURESOURCE")));
+		//$fs_list = array_reverse($fs_list);
 		
 		JHTML::script('buildlayer.js', 'components/com_easysdi_publish/js/');
 		
@@ -149,7 +149,8 @@ class PUBLISH_Buildlayer {
 		}
 
 		
-		
+		JHTML::script('ext-base.js', 'components/com_easysdi_publish/js/extuploader/');
+		JHTML::script('ext-all.js', 'components/com_easysdi_publish/js/extuploader/');
 	?>
 	
 	
@@ -184,17 +185,27 @@ class PUBLISH_Buildlayer {
 							<!-- The layer name -->
 							<tr>
 								<td align="left" width="40%"><?php echo JText::_("EASYSDI_PUBLISH_TEXT_NAME"); ?>:</td>
-								<td align="left"><input id="layer_name" name="layer_name" class="inputbox" type="text" size="20" maxlength="100" value="<?php echo $layerName; ?>" /></td>	
+								<td align="left"><input id="layer_name" name="layer_name" class="inputbox" type="text" size="20" maxlength="100" value="<?php echo $layerName; ?>"  <?php if($isUpdate) echo "DISABLED"; ?>/></td>	
 							</tr>
 							<!-- The Feature Source -->
 							<tr>
 								<td align="left"><?php echo JText::_("EASYSDI_PUBLISH_FEATURESOURCE_NAME"); ?>:</td>
-								<td align="left"><?php echo JHTML::_("select.genericlist",$fs_list, 'featureSourceId', 'size="1" class="inputbox"', 'value', 'text', $featureSourceId == "" ? 0 : $featureSourceId); ?></td>
+								<td align="left"><?php 
+								   if(!$isUpdate)
+								      echo JHTML::_("select.genericlist",$fs_list, 'featureSourceId', 'size="1" class="inputbox" ', 'value', 'text', $featureSourceId == "" ? 0 : $featureSourceId); 
+								   else
+								      echo JHTML::_("select.genericlist",$fs_list, 'featureSourceId', 'size="1" class="inputbox" disabled="true"', 'value', 'text', $featureSourceId == "" ? 0 : $featureSourceId); 
+							        ?></td>
 							</tr>
 						  <!-- The Geometry -->
 							<tr>
 								<td align="left"><?php echo JText::_("EASYSDI_PUBLISH_CHOOSE_STYLE"); ?>:</td>
-								<td align="left"><?php echo JHTML::_("select.genericlist",$geometry_list, 'geometry', 'size="1" class="inputbox"', 'value', 'text', $selectedGeometry); ?></td>
+								<td align="left"><?php 
+								    if(!$isUpdate)
+								       echo JHTML::_("select.genericlist",$geometry_list, 'geometry', 'size="1" class="inputbox"', 'value', 'text', $selectedGeometry); 
+								   else
+								       echo JHTML::_("select.genericlist",$geometry_list, 'geometry', 'size="1" class="inputbox" disabled="true"', 'value', 'text', $selectedGeometry); 
+							           ?></td>
 							</tr>
 						</table>
 						
@@ -255,11 +266,18 @@ class PUBLISH_Buildlayer {
 						</div>
 					</form>
 					<!-- Error message holder -->
-					<table class="layerGeneralInfo">
+					<table style="width:480px;">
 						<tr>
-							<td align="right"><div id="errorMsg" class="errorMsg"></td>
+							<td align="right">
+							   <div style="width:430px;" id="errorMsg" class="errorMsg">
+							     <table>
+							       <tr><td id="errorMsgCode"></td></tr>
+							       <tr><td id="errorMsgDescr"></td></tr>
+							     </table>
+							   </div>
+							</td>
 						</tr>
-					</table>
+					</table>	
 					<!-- Create/update button holder -->
 					<table class="layerGeneralInfo">
 						<tr>
