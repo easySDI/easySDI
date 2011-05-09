@@ -23,8 +23,8 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 <head>
 <jdoc:include type="head" />
 <!-- required entry to extend OpenLayers default styles-->
-<link rel="stylesheet" href="administrator/components/com_easysdi_shop/lib/openlayers2.8/theme/default/style.css" />
-
+<!-- <link rel="stylesheet" href="administrator/components/com_easysdi_shop/lib/openlayers2.8/theme/default/style.css" />
+-->
 <link rel="stylesheet" href="<?php echo $this->baseurl ?>/templates/system/css/system.css" type="text/css" />
 <link rel="stylesheet" href="<?php echo $this->baseurl ?>/templates/system/css/general.css" type="text/css" />
 <link rel="stylesheet" href="<?php echo $this->baseurl ?>/templates/easysdi/css/template.css" type="text/css" />
