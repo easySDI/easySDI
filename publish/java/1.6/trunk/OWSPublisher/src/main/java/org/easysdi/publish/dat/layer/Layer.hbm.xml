@@ -25,6 +25,9 @@
 		<property name="description" type="string" length="100"
 			column="DESCRIPTION"></property>
 		<property name="status" type="string" length="20" column="STATUS"></property>
+		<property name="quality_area" type="string" length="100" column="QUALITY_AREA"></property>
+		<property name="_abstract" type="string" length="100" column="ABSTRACT"></property>
+		<property name="style" type="string" length="100" column="STYLE"></property>
 		<property name="creationDate" type="calendar_date" column="CREATION_DATE"></property>
 		<property name="updateDate" type="calendar_date" column="UPDATE_DATE"></property>
 	</class>

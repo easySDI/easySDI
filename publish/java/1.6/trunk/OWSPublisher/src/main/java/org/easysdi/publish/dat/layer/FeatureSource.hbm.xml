@@ -26,6 +26,7 @@
 		<property name="updateDate" type="calendar_date" column="UPDATE_DATE"></property>
 		<property name="status" type="string" length="20" column="STATUS"></property>
 		<property name="excMessage" type="string" length="2000" column="EXCMESSAGE"></property>		
-	    <property name="excDetail" type="string" length="500" column="EXCDETAIL"></property>
+	    <property name="excCode" type="string" length="500" column="EXCCODE"></property>
+	    <property name="excStackTrace" type="string" length="3000" column="EXCSTACKTRACE"></property> 
 	</class>
 </hibernate-mapping>

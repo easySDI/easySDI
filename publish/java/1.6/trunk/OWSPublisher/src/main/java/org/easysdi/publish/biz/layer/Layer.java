@@ -16,6 +16,9 @@ public class Layer {
 	private String name;
 	private String description;
 	private String status;
+	private String _abstract;
+	private String quality_area;
+	private String style;
 	private Calendar creationDate; 
 	private Calendar updateDate;
 	
@@ -108,6 +111,30 @@ public class Layer {
 	public void setStatus(String status) {
 		this.status = status;
 	}
+	public String get_abstract() {
+		return _abstract;
+	}
+
+	public void set_abstract(String abstract1) {
+		_abstract = abstract1;
+	}
+
+	public String getQuality_area() {
+		return quality_area;
+	}
+
+	public void setQuality_area(String qualityArea) {
+		quality_area = qualityArea;
+	}
+
+	public String getStyle() {
+		return style;
+	}
+
+	public void setStyle(String style) {
+		this.style = style;
+	}
+
 	public Calendar getCreationDate() {
 		return creationDate;
 	}

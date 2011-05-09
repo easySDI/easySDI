@@ -174,18 +174,18 @@ public class Config {
 			res.append("</datasets>");
 			return res.toString();
 		} catch (DataInputException e) {
-			return "<?xml version=\"1.0\" encoding=\"UTF-8\"?><exception code=\"EASYSDI_PUBLISH_WPS_ERROR_DATASOURCE_WRONG_FORMAT\">"+e.getMessage()+"</exception>";
+			return Utils.exceptiontoXML("EASYSDI_PUBLISH_WPS_ERROR_DATASOURCE_WRONG_FORMAT", e.getMessage());
 		} catch (MalformedURLException e) {
-			return "<?xml version=\"1.0\" encoding=\"UTF-8\"?><exception code=\"EASYSDI_PUBLISH_WPS_ERROR_COMMUNICATION_EXCEPTION\">"+e.getMessage()+"</exception>";
+			return Utils.exceptiontoXML("EASYSDI_PUBLISH_WPS_ERROR_COMMUNICATION_EXCEPTION", e.getMessage());
 		} catch (IOException e) {
-			return "<?xml version=\"1.0\" encoding=\"UTF-8\"?><exception code=\"EASYSDI_PUBLISH_WPS_ERROR_COMMUNICATION_EXCEPTION\">"+e.getMessage()+"</exception>";
+			return Utils.exceptiontoXML("EASYSDI_PUBLISH_WPS_ERROR_COMMUNICATION_EXCEPTION", e.getMessage());
 		} catch (TransformationException e) {
-			return "<?xml version=\"1.0\" encoding=\"UTF-8\"?><exception code=\"EASYSDI_PUBLISH_WPS_ERROR_DATASOURCE_WRONG_FORMAT\">"+e.getMessage()+"</exception>";
+			return Utils.exceptiontoXML("EASYSDI_PUBLISH_WPS_ERROR_DATASOURCE_WRONG_FORMAT", e.getMessage());
 		} catch (PublishConfigurationException e) {
-			return "<?xml version=\"1.0\" encoding=\"UTF-8\"?><exception code=\"EASYSDI_PUBLISH_WPS_ERROR_CONFIGURATION_EXCEPTION\">"+e.getMessage()+"</exception>";
+			return Utils.exceptiontoXML("EASYSDI_PUBLISH_WPS_ERROR_CONFIGURATION_EXCEPTION", e.getMessage());
 		}
 	}
-
+	
 	public String addPublicationServer(HttpServletRequest req) throws DataInputException{		
 		String id = req.getParameter("id");
 		String name = req.getParameter("name");
@@ -351,7 +351,8 @@ public class Config {
 				res.append("<update_date>null</update_date>");
 			res.append("<status>"+f.getStatus()+"</status>");
 			res.append("<excmessage><![CDATA["+f.getExcMessage()+"]]></excmessage>");
-			res.append("<excdetail>"+f.getExcDetail()+"</excdetail>");
+			res.append("<exccode>"+f.getExcCode()+"</exccode>");
+			res.append("<excstacktrace>"+f.getExcStackTrace()+"</excstacktrace>");
 			res.append("</featuresource>");
 		}
 		res.append("</featuresources>");

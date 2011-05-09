@@ -295,8 +295,9 @@ public class RunnableDatasetTransformer{
 			//store the new feature source
 			fs.setStatus("AVAILABLE");
 			fs.setUpdateDate(cal);
-			fs.setExcDetail("null");
+			fs.setExcCode("null");
 			fs.setExcMessage("null");
+			fs.setExcStackTrace("null");
 			//store the new feature source
 			//Store in finally close
 
@@ -403,8 +404,9 @@ public class RunnableDatasetTransformer{
 		catch(IncompatibleUpdateFeatureSourceException e){
 			//We do not change the status after a failed update, we let the old status
 			fs.setUpdateDate(cal);
-			fs.setExcDetail("EASYSDI_PUBLISH_WPS_ERROR_INCOMPATIBLE_FEATURE_SOURCE");
+			fs.setExcCode("EASYSDI_PUBLISH_WPS_ERROR_INCOMPATIBLE_FEATURE_SOURCE");
 			fs.setExcMessage(e.getMessage());
+			fs.setExcStackTrace(Utils.getStackTrace(e));
 		}
 		//writeHttpGetToFileSystem
 		catch (IOException e) {
@@ -501,11 +503,12 @@ public class RunnableDatasetTransformer{
 		return( path.delete() );
 	}
 
-	private void setFsStatus(FeatureSource fs, String s, String detail, Throwable t){
-		fs.setStatus(s);
+	private void setFsStatus(FeatureSource fs, String status, String code, Throwable t){
+		fs.setStatus(status);
 		fs.setUpdateDate(cal);
-		fs.setExcDetail(detail);
-		fs.setExcMessage(Utils.getStackTrace(t));
+		fs.setExcCode(code);
+		fs.setExcMessage(t.getMessage());
+		fs.setExcStackTrace(Utils.getStackTrace(t));
 	}
 
 }

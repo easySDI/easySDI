@@ -440,8 +440,10 @@ public class GeoserverDiffuserControllerAdapter extends CommonDiffuserController
 			layer.setTitle(title);
 			// TODO what about the Layer status?
 			layer.setStatus("PUBLISHED");
+			layer.set_abstract(abstr);
+			layer.setStyle(style);
+			layer.setQuality_area(qualityArea);
 			Calendar cal = Calendar.getInstance();
-
 			//Set creation date only if new
 			if(layerId.equals("none")){
 				layer.setCreationDate(cal);

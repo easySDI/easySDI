@@ -21,9 +21,11 @@ public class FeatureSource {
 	private Calendar updateDate;
 	private String status;
 	private String excMessage;
-	private String excDetail;
+	private String excCode;
+	private String excStackTrace;
 	
-    public void persist() {
+
+	public void persist() {
         FeatureSourceDaoHelper.getFeatureSourceDao().persist(this);
     }
     
@@ -125,10 +127,16 @@ public class FeatureSource {
 	public void setExcMessage(String excMessage) {
 		this.excMessage = excMessage;
 	}
-	public String getExcDetail() {
-		return excDetail;
+	public String getExcCode() {
+		return excCode;
 	}
-	public void setExcDetail(String excDetail) {
-		this.excDetail = excDetail;
+	public void setExcCode(String excDetail) {
+		this.excCode = excDetail;
+	}
+    public String getExcStackTrace() {
+		return excStackTrace;
+	}
+	public void setExcStackTrace(String excStackTrace) {
+		this.excStackTrace = excStackTrace;
 	}
 }
