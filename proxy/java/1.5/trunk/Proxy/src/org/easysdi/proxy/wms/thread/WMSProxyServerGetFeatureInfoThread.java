@@ -25,7 +25,8 @@ import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.easysdi.proxy.configuration.ProxyLayer;
+import org.easysdi.proxy.core.ProxyLayer;
+import org.easysdi.proxy.core.ProxyRemoteServerResponse;
 import org.easysdi.proxy.wms.WMSProxyServlet;
 import org.easysdi.xml.documents.RemoteServerInfo;
 
@@ -87,11 +88,10 @@ public class WMSProxyServerGetFeatureInfoThread extends Thread {
 			
 			String filePath = servlet.sendData("GET", remoteServer.getUrl(), paramUrlBase + queryLayersUrl + "&" + layersUrl + "&" + stylesUrl);
 			
-			HashMap<String, String> resultMap = new HashMap<String, String>();
-			resultMap.put(filePath, remoteServer.getAlias());
+			ProxyRemoteServerResponse response = new ProxyRemoteServerResponse(remoteServer.getAlias(), filePath);
 			
 			synchronized (servlet.wmsGetMapResponseFilePathMap) {
-				servlet.wmsGetFeatureInfoResponseFilePathMap.put(layers.firstKey(),resultMap );
+				servlet.wmsGetFeatureInfoResponseFilePathMap.put(layers.firstKey(),response );
 			}
 		} catch (Exception e) {
 //			resp.setHeader("easysdi-proxy-error-occured", "true");

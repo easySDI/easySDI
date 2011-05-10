@@ -71,7 +71,8 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 
 import org.apache.xerces.dom.DeferredElementImpl;
-import org.easysdi.proxy.configuration.ProxyLayer;
+import org.easysdi.proxy.core.ProxyLayer;
+import org.easysdi.proxy.core.ProxyRemoteServerResponse;
 import org.easysdi.proxy.core.ProxyServlet;
 import org.easysdi.proxy.ows.OWSExceptionReport;
 import org.easysdi.proxy.policy.BoundingBox;
@@ -80,6 +81,9 @@ import org.easysdi.proxy.policy.Server;
 import org.easysdi.proxy.wms.thread.WMSProxyServerGetCapabilitiesThread;
 import org.easysdi.proxy.wms.thread.WMSProxyServerGetFeatureInfoThread;
 import org.easysdi.proxy.wms.thread.WMSProxyServerGetMapThread;
+import org.easysdi.proxy.wms.WMSProxyResponseBuilder;
+import org.easysdi.proxy.wmts.WMTSProxyResponseBuilder;
+import org.easysdi.proxy.wmts.v100.WMTS100ProxyResponseBuilder;
 import org.easysdi.xml.documents.RemoteServerInfo;
 import org.easysdi.xml.resolver.ResourceResolver;
 import org.geotools.data.ows.CRSEnvelope;
@@ -116,6 +120,7 @@ import org.w3c.dom.ls.DOMImplementationLS;
 import org.w3c.dom.ls.LSOutput;
 import org.w3c.dom.ls.LSSerializer;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
@@ -153,13 +158,13 @@ public class WMSProxyServlet extends ProxyServlet {
 	 * Fill by the WMSProxyServletGetMapThread with
 	 * <index of layer in the request,<path,alias>>
 	 */
-	public TreeMap<Integer, HashMap<String, String>> wmsGetMapResponseFilePathMap = new TreeMap<Integer, HashMap<String, String>>();
+	public TreeMap<Integer, ProxyRemoteServerResponse> wmsGetMapResponseFilePathMap = new TreeMap<Integer, ProxyRemoteServerResponse>();
 	
 	/**
 	 * Fill by the WMSProxyServletGetFEatureInfoThread with
 	 * <index of layer in the request,<path,alias>>
 	 */
-	public TreeMap<Integer, HashMap<String, String>> wmsGetFeatureInfoResponseFilePathMap = new TreeMap<Integer, HashMap<String, String>>();
+	public TreeMap<Integer, ProxyRemoteServerResponse> wmsGetFeatureInfoResponseFilePathMap = new TreeMap<Integer, ProxyRemoteServerResponse>();
 	
 	/**
 	 * Fill by the WMSProxyServletGetCapabilitiesThread with
@@ -177,6 +182,11 @@ public class WMSProxyServlet extends ProxyServlet {
 	 * 
 	 */
 	private static DocumentBuilder builder = null;
+	
+	/**
+	 * 
+	 */
+	protected WMSProxyResponseBuilder docBuilder;
 	
 	static {
 		DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
@@ -1982,6 +1992,184 @@ public class WMSProxyServlet extends ProxyServlet {
 		}
 	}
 
+	/**
+	 * 
+	 * @param req
+	 * @param resp
+	 */
+	private void transformGetCapabilities (HttpServletRequest req, HttpServletResponse resp){
+		try{
+			//Get the responses which are OGC exception (XML)
+			HashMap<String, String> remoteServerExceptionFiles = getRemoteServerExceptionResponse(wmsGetCapabilitiesResponseFilePathMap);
+	
+			//If the Exception mode is 'restrictive' and at least a response is an exception
+			//Or if the Exception mode is 'permissive' and all the response are exceptio
+			//Aggegate the exception files and send the result to the client
+			if((remoteServerExceptionFiles.size() > 0 && configuration.getExceptionMode().equals("restrictive")) ||  
+					(configuration.getExceptionMode().equals("permissive") && wmsGetCapabilitiesResponseFilePathMap.size() == 0)){
+				dump("INFO","Exception(s) returned by remote server(s) are sent to client.");
+				ByteArrayOutputStream exceptionOutputStream = docBuilder.ExceptionAggregation(remoteServerExceptionFiles);
+				sendHttpServletResponse(req,resp,exceptionOutputStream, "text/xml; charset=utf-8", HttpServletResponse.SC_OK);
+				return;
+			}
+			
+			//Capabilities rewriting
+			RemoteServerInfo rs = getRemoteServerInfoMaster();
+			
+			if(!docBuilder.CapabilitiesContentsFiltering(wmsGetCapabilitiesResponseFilePathMap))
+			{
+				dump("ERROR",docBuilder.getLastException().toString());
+				StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
+				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+				return;
+			}
+			
+			if(!docBuilder.CapabilitiesOperationsFiltering(wmtsFilePathTable.get(rs.getAlias()), getServletUrl(req)))
+			{
+				dump("ERROR",docBuilder.getLastException().toString());
+				StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
+				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+				return;
+			}
+			
+			if(!docBuilder.CapabilitiesMerging(wmtsFilePathTable))
+			{
+				dump("ERROR",docBuilder.getLastException().toString());
+				StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
+				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+				return;
+			}
+			
+			if(!docBuilder.CapabilitiesServiceIdentificationWriting(wmtsFilePathTable.get(rs.getAlias()),getServletUrl(req)))
+			{
+				dump("ERROR",docBuilder.getLastException().toString());
+				StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
+				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+				return;
+			}
+			
+	//		FileInputStream reader = new FileInputStream(new File(wmtsFilePathTable.get(rs.getAlias())));
+	//		byte[] data = new byte[reader.available()];
+	//		reader.read(data, 0, reader.available());
+	//		tempOut.write(data);
+	//		reader.close();
+	//		sendHttpServletResponse(req,resp, tempOut,responseContentType, responseStatusCode);
+
+		} catch (Exception e) {
+			resp.setHeader("easysdi-proxy-error-occured", "true");
+			e.printStackTrace();
+			dump("ERROR", e.toString());
+			StringBuffer out;
+		try {
+			out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
+			sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+		} catch (IOException e1) {
+			dump("ERROR", e1.toString());
+			e1.printStackTrace();
+		}
+		return;
+	}
+		
+	}
+	protected HashMap<String, String> getRemoteServerExceptionResponse (HashMap<String, String> remoteServerResponseFile)
+	{
+		HashMap<String, String> toRemove = new HashMap<String, String>();
+		HashMap<String, String> remoteServerExceptionFiles = new HashMap<String, String>();
+		
+		try {
+			Iterator<Entry<String,String>> it = remoteServerResponseFile.entrySet().iterator();
+			while(it.hasNext()){
+				Entry<String,String> entry = it.next();
+				String path  = entry.getValue();
+				if(path == null || path.length() == 0)
+					continue;
+				
+				//Check if the response is an XML exception
+				if(isRemoteServerResponseException(path)){
+					toRemove.put(entry.getKey(), path);
+				}
+			}
+			
+			Iterator<Entry<String,String>> itR = toRemove.entrySet().iterator();
+			while(itR.hasNext())
+			{
+				Entry<String, String> entry = itR.next();
+				remoteServerExceptionFiles.put(entry.getKey(),entry.getValue());
+				remoteServerResponseFile.remove(entry.getKey());
+			}
+			
+			return remoteServerExceptionFiles;
+		} catch (SAXException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ParserConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return remoteServerExceptionFiles;
+	}
+	protected HashMap<String, String> getRemoteServerExceptionResponse (TreeMap<Integer,ProxyRemoteServerResponse> remoteServerResponseFile)
+	{
+		TreeMap<Integer, ProxyRemoteServerResponse> toRemove = new TreeMap<Integer, ProxyRemoteServerResponse>();
+		HashMap<String, String> remoteServerExceptionFiles = new HashMap<String, String>();
+		
+		try{
+			Iterator<Entry<Integer, ProxyRemoteServerResponse>> it = remoteServerResponseFile.entrySet().iterator();
+			while(it.hasNext()){
+				Entry<Integer, ProxyRemoteServerResponse> entry = it.next();
+				ProxyRemoteServerResponse response = entry.getValue();
+				String path = response.getPath();
+				if(path == null || path.length() == 0)
+					continue;
+				
+				//Check if the response is an XML exception
+				if(isRemoteServerResponseException(path)){
+					toRemove.put(entry.getKey(), response);
+				}
+			}
+			
+			Iterator<Entry<Integer, ProxyRemoteServerResponse>> itR = toRemove.entrySet().iterator();
+			while(itR.hasNext())
+			{
+				Entry<Integer, ProxyRemoteServerResponse> entry = itR.next();
+				remoteServerExceptionFiles.put(entry.getValue().getAlias(),entry.getValue().getPath());
+				remoteServerResponseFile.remove(entry.getKey());
+			}
+			
+			return remoteServerExceptionFiles;
+		} catch (SAXException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ParserConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return remoteServerExceptionFiles;
+	}
+	
+	private boolean isRemoteServerResponseException(String path) throws SAXException, IOException, ParserConfigurationException{
+		String ext = (path.lastIndexOf(".")==-1)?"":path.substring(path.lastIndexOf(".")+1,path.length());
+		if (ext.equals("xml"))
+		{
+			DocumentBuilderFactory db = DocumentBuilderFactory.newInstance();
+			Document documentMaster = db.newDocumentBuilder().parse(new File(path));
+			if (documentMaster != null) 
+			{
+				NodeList nl = documentMaster.getElementsByTagName("ServiceExceptionReport");
+				if (nl.item(0) != null)
+				{
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 	private List<Object> checkGetMapRequestValidity (HttpServletRequest req, HttpServletResponse resp) throws Exception{
 		//Check the WIDTH and HEIGHT parameters validity against the policy rules
 		if (!isSizeInTheRightRange(Integer.parseInt(((WMSProxyServletRequest)getProxyRequest()).getWidth()), 
@@ -2199,7 +2387,4 @@ public class WMSProxyServlet extends ProxyServlet {
 
 		return imageSource;
 	}
-
-	// ***************************************************************************************************************************************
-
 }

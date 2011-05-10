@@ -14,31 +14,50 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html. 
  */
-package org.easysdi.proxy.wms;
-
-import java.util.Arrays;
-
-import org.easysdi.proxy.wms.WMSProxyServlet;
-import org.easysdi.proxy.wms.v111.WMSProxyResponseBuilder111;
+package org.easysdi.proxy.core;
 
 /**
  * @author DEPTH SA
  *
  */
-public class WMSProxyServlet111 extends WMSProxyServlet {
+public class ProxyRemoteServerResponse {
 
+	private String alias;
+	private String path;
+	
+	
+	
 	/**
-	 * 
+	 * @param alias
+	 * @param path
 	 */
-	private static final long serialVersionUID = -4934729929697691603L;
-
-	/**
-	 * 
-	 */
-	public WMSProxyServlet111() {
+	public ProxyRemoteServerResponse(String alias, String path) {
 		super();
-		ServiceSupportedOperations = Arrays.asList("GetCapabilities", "GetMap", "GetFeatureInfo", "GetLegendGraphic");
-		docBuilder = new WMSProxyResponseBuilder111(this);
+		this.alias = alias;
+		this.path = path;
 	}
-
+	/**
+	 * @param alias the alias to set
+	 */
+	public void setAlias(String alias) {
+		this.alias = alias;
+	}
+	/**
+	 * @return the alias
+	 */
+	public String getAlias() {
+		return alias;
+	}
+	/**
+	 * @param path the path to set
+	 */
+	public void setPath(String path) {
+		this.path = path;
+	}
+	/**
+	 * @return the path
+	 */
+	public String getPath() {
+		return path;
+	}
 }

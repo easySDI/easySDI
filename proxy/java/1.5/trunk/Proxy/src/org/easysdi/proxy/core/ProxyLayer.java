@@ -14,31 +14,59 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html. 
  */
-package org.easysdi.proxy.wms;
-
-import java.util.Arrays;
-
-import org.easysdi.proxy.wms.WMSProxyServlet;
-import org.easysdi.proxy.wms.v111.WMSProxyResponseBuilder111;
+package org.easysdi.proxy.core;
 
 /**
  * @author DEPTH SA
  *
  */
-public class WMSProxyServlet111 extends WMSProxyServlet {
+public class ProxyLayer {
+	
+	private String alias;
+	private String name;
+	
+	public ProxyLayer (String requestedLayer)
+	{
+		if(requestedLayer != null)
+		{
+			if(requestedLayer.contains("_"))
+			{
+				this.setAlias(requestedLayer.substring(0, requestedLayer.indexOf("_")));
+				this.setName(requestedLayer.substring(requestedLayer.indexOf("_")+1));
+			}
+			else
+			{
+				this.setName(requestedLayer);
+			}
+		}
+	}
 
 	/**
-	 * 
+	 * @param alias the alias to set
 	 */
-	private static final long serialVersionUID = -4934729929697691603L;
+	public void setAlias(String alias) {
+		this.alias = alias;
+	}
 
 	/**
-	 * 
+	 * @return the alias
 	 */
-	public WMSProxyServlet111() {
-		super();
-		ServiceSupportedOperations = Arrays.asList("GetCapabilities", "GetMap", "GetFeatureInfo", "GetLegendGraphic");
-		docBuilder = new WMSProxyResponseBuilder111(this);
+	public String getAlias() {
+		return alias;
+	}
+
+	/**
+	 * @param name the name to set
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	/**
+	 * @return the name
+	 */
+	public String getName() {
+		return name;
 	}
 
 }

@@ -28,7 +28,7 @@ import java.util.logging.Level;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.easysdi.proxy.configuration.ProxyLayer;
+import org.easysdi.proxy.core.ProxyLayer;
 import org.easysdi.proxy.wms.WMSProxyServlet;
 import org.easysdi.xml.documents.RemoteServerInfo;
 import org.geotools.geometry.jts.ReferencedEnvelope;

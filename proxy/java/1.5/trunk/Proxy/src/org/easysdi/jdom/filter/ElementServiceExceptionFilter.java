@@ -14,31 +14,38 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html. 
  */
-package org.easysdi.proxy.wms;
+package org.easysdi.jdom.filter;
 
-import java.util.Arrays;
-
-import org.easysdi.proxy.wms.WMSProxyServlet;
-import org.easysdi.proxy.wms.v111.WMSProxyResponseBuilder111;
+import org.jdom.Element;
+import org.jdom.filter.Filter;
 
 /**
  * @author DEPTH SA
  *
  */
-public class WMSProxyServlet111 extends WMSProxyServlet {
+public class ElementServiceExceptionFilter implements Filter {
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -4934729929697691603L;
+	private static final long serialVersionUID = -1444602052004801405L;
 
-	/**
-	 * 
-	 */
-	public WMSProxyServlet111() {
-		super();
-		ServiceSupportedOperations = Arrays.asList("GetCapabilities", "GetMap", "GetFeatureInfo", "GetLegendGraphic");
-		docBuilder = new WMSProxyResponseBuilder111(this);
-	}
+	public boolean matches(Object ob)
+    {
+       //Check if filtered objects are Element 
+       if(!(ob instanceof Element)){return false;}
+
+       //Filter to use against Elements
+       Element element = (Element)ob;
+       if(element.getName().equals("ServiceException"))
+       {
+      	 return true;
+       }
+       else
+       {
+      	 return false;
+       }
+
+    }
 
 }

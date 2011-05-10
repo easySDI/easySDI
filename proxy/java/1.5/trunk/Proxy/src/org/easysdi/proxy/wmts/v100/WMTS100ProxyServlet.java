@@ -12,7 +12,7 @@ import java.util.Vector;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.easysdi.proxy.configuration.ProxyLayer;
+import org.easysdi.proxy.core.ProxyLayer;
 import org.easysdi.proxy.ows.OWSExceptionReport;
 import org.easysdi.proxy.ows.v200.*;
 import org.easysdi.proxy.wmts.*;

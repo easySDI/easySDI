@@ -7,7 +7,8 @@ import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.easysdi.proxy.configuration.ProxyLayer;
+import org.easysdi.proxy.core.ProxyLayer;
+import org.easysdi.proxy.core.ProxyRemoteServerResponse;
 import org.easysdi.proxy.wms.WMSProxyServlet;
 import org.easysdi.xml.documents.RemoteServerInfo;
 
@@ -56,11 +57,10 @@ public class WMSProxyLayerThread extends Thread {
 			
 			String filePath = servlet.sendData("GET", remoteServer.getUrl(), paramUrlBase + layersUrl + stylesUrl);
 			
-			HashMap<String, String> resultMap = new HashMap<String, String>();
-			resultMap.put(filePath, remoteServer.getAlias());
+			ProxyRemoteServerResponse response = new ProxyRemoteServerResponse(remoteServer.getAlias(), filePath);
 			
 			synchronized (servlet.wmsGetMapResponseFilePathMap) {
-				servlet.wmsGetMapResponseFilePathMap.put(layers.firstKey(),resultMap );
+				servlet.wmsGetMapResponseFilePathMap.put(layers.firstKey(),response);
 			}
 			servlet.dump("DEBUG", "Thread Layers group: " + "" + " work finished on server " + remoteServer.getUrl());
 		} catch (Exception e) {

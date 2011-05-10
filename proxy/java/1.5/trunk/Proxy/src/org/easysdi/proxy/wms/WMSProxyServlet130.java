@@ -19,6 +19,7 @@ package org.easysdi.proxy.wms;
 import java.util.Arrays;
 
 import org.easysdi.proxy.wms.WMSProxyServlet;
+import org.easysdi.proxy.wms.v130.WMSProxyResponseBuilder130;
 
 /**
  * @author DEPTH SA
@@ -37,6 +38,7 @@ public class WMSProxyServlet130 extends WMSProxyServlet {
 	public WMSProxyServlet130() {
 		super();
 		ServiceSupportedOperations = Arrays.asList("GetCapabilities", "GetMap", "GetFeatureInfo", "GetLegendGraphic");
+		docBuilder = new WMSProxyResponseBuilder130(this);
 	}
 
 }

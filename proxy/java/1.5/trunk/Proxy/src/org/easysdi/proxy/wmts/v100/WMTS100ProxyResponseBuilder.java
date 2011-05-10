@@ -1,9 +1,11 @@
 package org.easysdi.proxy.wmts.v100;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -426,6 +428,19 @@ public class WMTS100ProxyResponseBuilder extends WMTSProxyResponseBuilder {
 		{
 			return false;
 		}
+	}
+
+	@Override
+	public ByteArrayOutputStream ExceptionAggregation(HashMap<String, String> remoteServerExceptionFiles) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Boolean CapabilitiesContentsFiltering(
+			HashMap<String, String> filePathList) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }
