@@ -198,6 +198,7 @@ public class WMSProxyServlet extends ProxyServlet {
 	public WMSProxyServlet ()
 	{
 		super();
+		ServiceOperations = Arrays.asList( "GetCapabilities", "GetMap", "GetFeatureInfo", "DescribeLayer", "GetLegendGraphic", "PutStyles", "GetStyles" );
 	}
 	
 	protected StringBuffer generateOgcException(String errorMessage, String code, String locator, String version) {
@@ -2011,9 +2012,7 @@ public class WMSProxyServlet extends ProxyServlet {
 			if(!isAllGetCapabilitiesResponseSameVersion(wmsGetCapabilitiesResponseFilePathMap)){
 				dump("ERROR",OWSExceptionReport.TEXT_VERSION_NEGOCIATION_FAILED);
 				StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_VERSION_NEGOCIATION_FAILED,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,null);
-				ByteArrayOutputStream os = new ByteArrayOutputStream();
-				os.write(out.toString().getBytes());
-				sendHttpServletResponse(req, resp,os,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 				return;
 			}
 				

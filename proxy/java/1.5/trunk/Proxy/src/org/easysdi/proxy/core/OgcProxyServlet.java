@@ -99,27 +99,40 @@ public class OgcProxyServlet extends HttpServlet {
 	 * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
 	 */
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		servletResponse = resp;
 		ProxyServlet obj = null;
 
 		try {
-			obj = createProxy(req.getPathInfo().substring(1), req, resp);
-			waitWhenConnectionsExceed(req, obj.getConfiguration().getMaxRequestNumber());
 
+			obj = createProxy(req.getPathInfo().substring(1), req, resp);
+			
+			double maxRequestNumber = -1;
+			if (obj != null)
+				maxRequestNumber = obj.getConfiguration().getMaxRequestNumber();
+			
+			waitWhenConnectionsExceed(req, maxRequestNumber);
+			
 			if (obj != null) {
 				obj.doGet(req, resp);
 			}
-		} catch (PolicyNotFoundException e) {
-
 		} catch (Exception e) {
-			StringBuffer sb = generateOgcError(e.getMessage());
-			e.printStackTrace();
-			resp.setContentType("text/xml");
-			resp.setContentLength(sb.length());
-			OutputStream os = resp.getOutputStream();
-			os.write(sb.toString().getBytes());
-			os.flush();
-			os.close();
+			StringBuffer out = new OWS200ExceptionReport().generateExceptionReport(e.getMessage(), OWSExceptionReport.CODE_NO_APPLICABLE_CODE, null, null) ;
+			servletResponse.setContentType("text/xml");
+			servletResponse.setContentLength(out.length());
+			OutputStream os;
+			try {
+				os = servletResponse.getOutputStream();
+				os.write(out.toString().getBytes());
+				os.flush();
+				os.close();
+			} catch (IOException ex) {
+				ex.printStackTrace();
+			} 
 		} finally {
+			/**
+			 * What ever happens, always decrease the connection number when
+			 * finished.
+			 */
 			if (obj != null)
 				decreaseConnections(req, obj.getConfiguration().getMaxRequestNumber());
 		}

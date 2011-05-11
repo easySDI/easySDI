@@ -2268,6 +2268,7 @@ public abstract class ProxyServlet extends HttpServlet {
 			resp.setContentType(responseContentType);
 			resp.setStatus(responseCode);
 			resp.setContentLength(tempOut.length());
+			//resp.setCharacterEncoding("UTF-8");
 			
 			try {
 				dump("transform begin response writting");
@@ -2283,7 +2284,10 @@ public abstract class ProxyServlet extends HttpServlet {
 						resp.setHeader("Content-Disposition", "attachment; filename=download." + ext);
 					}
 				}
-				if (tempOut != null)
+				if(responseCode.equals(HttpServletResponse.SC_INTERNAL_SERVER_ERROR)){
+					resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, tempOut.toString());
+				}
+				else if (tempOut != null)
 					os.write(tempOut.toString().getBytes());
 				dump("transform end response writting");
 			} finally {
