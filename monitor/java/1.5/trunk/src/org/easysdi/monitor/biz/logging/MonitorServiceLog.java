@@ -207,7 +207,17 @@ public class MonitorServiceLog extends ServiceLog {
 				}
 				validationResult.setResponseSize(responseSize);
 				validationResult.setDeliveryTime(deliveryTime);	
-				validationResult.persist();
+				try
+				{
+					if(!validationResult.persist())
+					{
+						this.logger.error("An exception was thrown while saving validationResult");
+					}
+				}catch(Exception e)
+				{
+					this.logger.error("An exception was thrown while saving validationResult: "+e.getMessage());
+				}
+				
 			}
 			
 			// Save raw log	

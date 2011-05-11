@@ -26,6 +26,10 @@ public class QueryValidationResultDao extends AbstractDao implements
 
 		} catch (DataAccessException e) {
 			return false;
+		}catch(Exception e)
+		{
+			// org.hibernate.exception.LockAcquisitionException
+			throw new IllegalArgumentException("queryValidationResult saveorupdate error: "+e.getMessage());
 		}
 	}
 
