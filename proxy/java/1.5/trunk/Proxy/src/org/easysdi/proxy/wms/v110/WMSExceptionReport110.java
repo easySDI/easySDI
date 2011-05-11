@@ -14,32 +14,30 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html. 
  */
-package org.easysdi.proxy.wms;
+package org.easysdi.proxy.wms.v110;
 
-import java.util.Arrays;
+import java.io.IOException;
 
-import org.easysdi.proxy.wms.v110.WMSExceptionReport110;
-import org.easysdi.proxy.wms.v110.WMSProxyResponseBuilder110;
+import org.easysdi.proxy.wms.WMSExceptionReport;
 
 /**
  * @author DEPTH SA
  *
  */
-public class WMSProxyServlet110 extends WMSProxyServlet{
+public class WMSExceptionReport110 extends WMSExceptionReport {
 
-	/**
-	 * 
+	/* (non-Javadoc)
+	 * @see org.easysdi.proxy.ows.OWSExceptionReport#generateExceptionReport(java.lang.String, java.lang.String, java.lang.String)
 	 */
-	private static final long serialVersionUID = -4655526702718323449L;
-
-	/**
-	 * 
-	 */
-	public WMSProxyServlet110() {
-		super();
-		ServiceSupportedOperations = Arrays.asList("GetCapabilities", "GetMap", "GetFeatureInfo");
-		docBuilder = new WMSProxyResponseBuilder110(this);
-		owsExceptionReport = new WMSExceptionReport110 ();
+	public StringBuffer generateExceptionReport(String errorMessage,String code, String locator) throws IOException {
+		StringBuffer sb = new StringBuffer();
+		sb.append("<?xml version='1.0' encoding='utf-8'?>");
+		sb.append("<!DOCTYPE ServiceExceptionReport SYSTEM \"http://schemas.opengis.net/wms/1.1.0/exception_1_1_0.dtd\">\n");
+		sb.append("\n<ServiceExceptionReport version=\"1.1.0\">");
+		sb.append(this.getServiceExceptionBody(errorMessage, code, locator));
+		sb.append("\n</ServiceExceptionReport>");
+		
+		return sb;
 	}
 
 }

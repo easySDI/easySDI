@@ -442,5 +442,11 @@ public class WMTS100ProxyResponseBuilder extends WMTSProxyResponseBuilder {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public Boolean CapabilitiesMerging(HashMap<String, String> filePathList) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 }

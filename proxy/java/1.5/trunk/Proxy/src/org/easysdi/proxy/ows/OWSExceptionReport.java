@@ -47,6 +47,7 @@ public interface OWSExceptionReport {
 	public static final String TEXT_INVALID_SERVICE_NAME 			= "Invalid service name given in the SERVICE parameter.";
 	public static final String TEXT_ERROR_IN_EASYSDI_PROXY 			= "Error in EasySDI Proxy. Consult the proxy log for more details.";
 	public static final String TEXT_NO_RESULT_RECEIVED_BY_PROXY		= "Error in EasySDI Proxy. EasySDI Proxy didn't receive any result from remote server.";
+	public static final String TEXT_VERSION_NEGOCIATION_FAILED		= "Remote servers did not respond with the same WMS protocol version : version number negociation in multi server context failed.";
 	
 	public static final String TEXT_MISSING_PARAMETER_VALUE			= "Parameter is missing.";
 	public static final String TEXT_INVALID_FORMAT					= "Request contains a format not offered by the server.";
@@ -61,5 +62,5 @@ public interface OWSExceptionReport {
 	public static final String TEXT_INVALID_DIMENSION_VALUE			= "Request contains an invalid sample dimension value.";
 	
 	public StringBuffer generateExceptionReport (String errorMessage, String code, String locator) throws IOException;
-	public StringBuffer generateExceptionReport (String errorMessage, String code, String locator, String version) throws IOException;
+	
 }

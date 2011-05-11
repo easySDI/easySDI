@@ -60,6 +60,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXSource;
@@ -82,8 +84,6 @@ import org.easysdi.proxy.wms.thread.WMSProxyServerGetCapabilitiesThread;
 import org.easysdi.proxy.wms.thread.WMSProxyServerGetFeatureInfoThread;
 import org.easysdi.proxy.wms.thread.WMSProxyServerGetMapThread;
 import org.easysdi.proxy.wms.WMSProxyResponseBuilder;
-import org.easysdi.proxy.wmts.WMTSProxyResponseBuilder;
-import org.easysdi.proxy.wmts.v100.WMTS100ProxyResponseBuilder;
 import org.easysdi.xml.documents.RemoteServerInfo;
 import org.easysdi.xml.resolver.ResourceResolver;
 import org.geotools.data.ows.CRSEnvelope;
@@ -100,6 +100,7 @@ import org.geotools.referencing.NamedIdentifier;
 import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.xml.DocumentFactory;
 import org.integratedmodelling.geospace.gis.FeatureRasterizer;
+import org.jdom.JDOMException;
 import org.jdom.Namespace;
 import org.jdom.filter.Filter;
 import org.jdom.input.SAXBuilder;
@@ -181,23 +182,9 @@ public class WMSProxyServlet extends ProxyServlet {
 	/**
 	 * 
 	 */
-	private static DocumentBuilder builder = null;
-	
-	/**
-	 * 
-	 */
 	protected WMSProxyResponseBuilder docBuilder;
 	
-	static {
-		DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
-		domFactory.setNamespaceAware(true);
-		try {
-			builder = domFactory.newDocumentBuilder();
-		} catch (ParserConfigurationException e) {
-			e.printStackTrace();
-		}
-	}
-	
+
 	/**
 	 * @return the proxyRequest
 	 */
@@ -211,7 +198,6 @@ public class WMSProxyServlet extends ProxyServlet {
 	public WMSProxyServlet ()
 	{
 		super();
-		owsExceptionReport = new WMSExceptionReport ();
 	}
 	
 	protected StringBuffer generateOgcException(String errorMessage, String code, String locator, String version) {
@@ -1591,7 +1577,7 @@ public class WMSProxyServlet extends ProxyServlet {
 			if(!isOperationSupportedByProxy(getProxyRequest().getOperation()))
 			{
 				StringBuffer out;
-				out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_OPERATION_NOT_SUPPORTED,OWSExceptionReport.CODE_OPERATION_NOT_SUPPORTED,"REQUEST",getProxyRequest().getRequestedVersion());
+				out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_OPERATION_NOT_SUPPORTED,OWSExceptionReport.CODE_OPERATION_NOT_SUPPORTED,"REQUEST");
 				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
 				return;
 			}
@@ -1599,7 +1585,7 @@ public class WMSProxyServlet extends ProxyServlet {
 			if(!isOperationAllowedByPolicy(getProxyRequest().getOperation()))
 			{
 				StringBuffer out;
-				out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_OPERATION_NOT_ALLOWED,OWSExceptionReport.CODE_OPERATION_NOT_SUPPORTED,"REQUEST",getProxyRequest().getRequestedVersion());
+				out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_OPERATION_NOT_ALLOWED,OWSExceptionReport.CODE_OPERATION_NOT_SUPPORTED,"REQUEST");
 				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
 				return;
 			}
@@ -1610,8 +1596,13 @@ public class WMSProxyServlet extends ProxyServlet {
 		
 		Method preTreatmentMethod;
 		try {
-			preTreatmentMethod = this.getClass().getMethod("requestPreTreatment"+getProxyRequest().getOperation(), new Class [] {Class.forName ("javax.servlet.http.HttpServletRequest"), Class.forName ("javax.servlet.http.HttpServletResponse")});
-			preTreatmentMethod.invoke(this ,new Object[] {req,resp});
+			if(getProxyRequest().getOperation().equals("GetCapabilities")){
+				requestPreTreatmentGetCapabilities(req, resp);
+			}else{
+				preTreatmentMethod = this.getClass().getMethod("requestPreTreatment"+getProxyRequest().getOperation(), new Class [] {Class.forName ("javax.servlet.http.HttpServletRequest"), Class.forName ("javax.servlet.http.HttpServletResponse")});
+				preTreatmentMethod.invoke(this ,new Object[] {req,resp});
+			}
+			
 		} catch (SecurityException e2) {
 			// TODO Auto-generated catch block
 			e2.printStackTrace();
@@ -1651,7 +1642,7 @@ public class WMSProxyServlet extends ProxyServlet {
 	 * @param req
 	 * @param resp
 	 */
-	protected void requestPreTreatmentGetCapabilities (HttpServletRequest req, HttpServletResponse resp){
+	public void requestPreTreatmentGetCapabilities (HttpServletRequest req, HttpServletResponse resp){
 		List<WMSProxyServerGetCapabilitiesThread> serverThreadList = new Vector<WMSProxyServerGetCapabilitiesThread>();
 		Hashtable<String, RemoteServerInfo> remoteServersTable = getRemoteServerHastable();
 		Iterator<Entry<String, RemoteServerInfo>> it =remoteServersTable.entrySet().iterator();
@@ -1679,10 +1670,7 @@ public class WMSProxyServlet extends ProxyServlet {
 
 		if (wmsGetCapabilitiesResponseFilePathMap.size() > 0) {
 			dump("requestPreTraitementGET begin transform");
-			
-			
-			transform(getProxyRequest().getVersion().replaceAll("\\.", ""), getProxyRequest().getOperation(), req, resp);
-			
+			transformGetCapabilities(req, resp);
 			dump("requestPreTraitementGET end transform");
 		} else {
 			StringBuffer out;
@@ -1706,7 +1694,7 @@ public class WMSProxyServlet extends ProxyServlet {
 			//Check the LAYERS parameter validity
 			if(((WMSProxyServletRequest)getProxyRequest()).getLayers() == null || ((WMSProxyServletRequest)getProxyRequest()).getLayers().equalsIgnoreCase(""))
 			{
-				StringBuffer out = owsExceptionReport.generateExceptionReport("LAYERS "+OWSExceptionReport.TEXT_MISSING_PARAMETER_VALUE,OWSExceptionReport.CODE_MISSING_PARAMETER_VALUE,"LAYERS",getProxyRequest().getRequestedVersion());
+				StringBuffer out = owsExceptionReport.generateExceptionReport("LAYERS "+OWSExceptionReport.TEXT_MISSING_PARAMETER_VALUE,OWSExceptionReport.CODE_MISSING_PARAMETER_VALUE,"LAYERS");
 				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
 				return;
 			}
@@ -1801,12 +1789,12 @@ public class WMSProxyServlet extends ProxyServlet {
 	 * @param req
 	 * @param resp
 	 */
-	protected void requestPreTreatmentGetLegendGraphic (HttpServletRequest req, HttpServletResponse resp){
+	public void requestPreTreatmentGetLegendGraphic (HttpServletRequest req, HttpServletResponse resp){
 		try {
 			//Check the LAYER parameter 
 			if(((WMSProxyServletRequest)getProxyRequest()).getLayer() == null || ((WMSProxyServletRequest)getProxyRequest()).getLayer().equals(""))
 			{
-				StringBuffer out = owsExceptionReport.generateExceptionReport("LAYER "+OWSExceptionReport.TEXT_MISSING_PARAMETER_VALUE,OWSExceptionReport.CODE_MISSING_PARAMETER_VALUE,"LAYER",getProxyRequest().getRequestedVersion());
+				StringBuffer out = owsExceptionReport.generateExceptionReport("LAYER "+OWSExceptionReport.TEXT_MISSING_PARAMETER_VALUE,OWSExceptionReport.CODE_MISSING_PARAMETER_VALUE,"LAYER");
 				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
 				return;
 			}
@@ -1818,7 +1806,7 @@ public class WMSProxyServlet extends ProxyServlet {
 			String layerAsString = ((WMSProxyServletRequest)getProxyRequest()).getLayer();
 			ProxyLayer layer = new ProxyLayer(layerAsString);
 			if(layer.getAlias() == null){
-				StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_LAYER_NAME,OWSExceptionReport.CODE_LAYER_NOT_DEFINED,"LAYER",getProxyRequest().getRequestedVersion());
+				StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_LAYER_NAME,OWSExceptionReport.CODE_LAYER_NOT_DEFINED,"LAYER");
 				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
 				return;
 			}
@@ -1828,7 +1816,7 @@ public class WMSProxyServlet extends ProxyServlet {
 			
 			//Check the availaibility of the requested LAYERS 
 			if( RS == null || !isLayerAllowed(layer.getName(), RS.getUrl())){
-				StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_LAYER_NAME,OWSExceptionReport.CODE_LAYER_NOT_DEFINED,"LAYER",getProxyRequest().getRequestedVersion());
+				StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_LAYER_NAME,OWSExceptionReport.CODE_LAYER_NOT_DEFINED,"LAYER");
 				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
 				return;
 			}
@@ -1856,11 +1844,11 @@ public class WMSProxyServlet extends ProxyServlet {
 	 * @param req
 	 * @param resp
 	 */
-	protected void requestPreTreatmentGetFeatureInfo (HttpServletRequest req, HttpServletResponse resp){
+	public void requestPreTreatmentGetFeatureInfo (HttpServletRequest req, HttpServletResponse resp){
 		try{
 			if(((WMSProxyServletRequest)getProxyRequest()).getQueryLayers() == null || ((WMSProxyServletRequest)getProxyRequest()).getQueryLayers().equalsIgnoreCase(""))
 			{
-				StringBuffer out = owsExceptionReport.generateExceptionReport("QUERY_LAYERS "+OWSExceptionReport.TEXT_MISSING_PARAMETER_VALUE,OWSExceptionReport.CODE_MISSING_PARAMETER_VALUE,"QUERY_LAYERS",getProxyRequest().getRequestedVersion());
+				StringBuffer out = owsExceptionReport.generateExceptionReport("QUERY_LAYERS "+OWSExceptionReport.TEXT_MISSING_PARAMETER_VALUE,OWSExceptionReport.CODE_MISSING_PARAMETER_VALUE,"QUERY_LAYERS");
 				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
 				return;
 			}
@@ -1894,7 +1882,7 @@ public class WMSProxyServlet extends ProxyServlet {
 				ProxyLayer layer = new ProxyLayer(layerArray.get(k));
 				if(layer.getAlias() == null)
 				{
-					StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_LAYER_NAME,OWSExceptionReport.CODE_LAYER_NOT_DEFINED,"QUERY_LAYERS",getProxyRequest().getRequestedVersion());
+					StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_LAYER_NAME,OWSExceptionReport.CODE_LAYER_NOT_DEFINED,"QUERY_LAYERS");
 					sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
 					return;
 				}
@@ -1904,7 +1892,7 @@ public class WMSProxyServlet extends ProxyServlet {
 				
 				//Check the availaibility of the requested QUERY_LAYERS 
 				if( RS == null || !isLayerAllowed(layer.getName(), RS.getUrl())){
-					StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_LAYER_NAME,OWSExceptionReport.CODE_LAYER_NOT_DEFINED,"QUERY_LAYERS",getProxyRequest().getRequestedVersion());
+					StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_LAYER_NAME,OWSExceptionReport.CODE_LAYER_NOT_DEFINED,"QUERY_LAYERS");
 					sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
 					return ;
 				}
@@ -1993,11 +1981,17 @@ public class WMSProxyServlet extends ProxyServlet {
 	}
 
 	/**
-	 * 
+	 * Overwrite the GetCapabilities response with config and policy informations :
+	 * - Service metadata 
+	 * - Authorized operations
+	 * - Authorized layers
+	 * - BBOX (geographic filter)
+	 * - online resources
+	 * Merge all the remote response in one single file to send to the client.
 	 * @param req
 	 * @param resp
 	 */
-	private void transformGetCapabilities (HttpServletRequest req, HttpServletResponse resp){
+	public void transformGetCapabilities (HttpServletRequest req, HttpServletResponse resp){
 		try{
 			//Get the responses which are OGC exception (XML)
 			HashMap<String, String> remoteServerExceptionFiles = getRemoteServerExceptionResponse(wmsGetCapabilitiesResponseFilePathMap);
@@ -2013,6 +2007,16 @@ public class WMSProxyServlet extends ProxyServlet {
 				return;
 			}
 			
+			//Check if all the responses are in the same WMS protocol version
+			if(!isAllGetCapabilitiesResponseSameVersion(wmsGetCapabilitiesResponseFilePathMap)){
+				dump("ERROR",OWSExceptionReport.TEXT_VERSION_NEGOCIATION_FAILED);
+				StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_VERSION_NEGOCIATION_FAILED,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,null);
+				ByteArrayOutputStream os = new ByteArrayOutputStream();
+				os.write(out.toString().getBytes());
+				sendHttpServletResponse(req, resp,os,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+				return;
+			}
+				
 			//Capabilities rewriting
 			RemoteServerInfo rs = getRemoteServerInfoMaster();
 			
@@ -2024,7 +2028,7 @@ public class WMSProxyServlet extends ProxyServlet {
 				return;
 			}
 			
-			if(!docBuilder.CapabilitiesOperationsFiltering(wmtsFilePathTable.get(rs.getAlias()), getServletUrl(req)))
+			if(!docBuilder.CapabilitiesOperationsFiltering(wmsGetCapabilitiesResponseFilePathMap.get(rs.getAlias()), getServletUrl(req)))
 			{
 				dump("ERROR",docBuilder.getLastException().toString());
 				StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
@@ -2032,7 +2036,7 @@ public class WMSProxyServlet extends ProxyServlet {
 				return;
 			}
 			
-			if(!docBuilder.CapabilitiesMerging(wmtsFilePathTable))
+			if(!docBuilder.CapabilitiesMerging(wmsGetCapabilitiesResponseFilePathMap))
 			{
 				dump("ERROR",docBuilder.getLastException().toString());
 				StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
@@ -2040,7 +2044,7 @@ public class WMSProxyServlet extends ProxyServlet {
 				return;
 			}
 			
-			if(!docBuilder.CapabilitiesServiceIdentificationWriting(wmtsFilePathTable.get(rs.getAlias()),getServletUrl(req)))
+			if(!docBuilder.CapabilitiesServiceIdentificationWriting(wmsGetCapabilitiesResponseFilePathMap.get(rs.getAlias()),getServletUrl(req)))
 			{
 				dump("ERROR",docBuilder.getLastException().toString());
 				StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
@@ -2048,29 +2052,74 @@ public class WMSProxyServlet extends ProxyServlet {
 				return;
 			}
 			
-	//		FileInputStream reader = new FileInputStream(new File(wmtsFilePathTable.get(rs.getAlias())));
-	//		byte[] data = new byte[reader.available()];
-	//		reader.read(data, 0, reader.available());
-	//		tempOut.write(data);
-	//		reader.close();
-	//		sendHttpServletResponse(req,resp, tempOut,responseContentType, responseStatusCode);
+			File result = applyUserXSLT(new File(wmsGetCapabilitiesResponseFilePathMap.get(rs.getAlias())));
+			FileInputStream reader = new FileInputStream(result);
+			byte[] data = new byte[reader.available()];
+			reader.read(data, 0, reader.available());
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			out.write(data);
+			reader.close();
+			sendHttpServletResponse(req,resp, out,responseContentType, responseStatusCode);
 
 		} catch (Exception e) {
 			resp.setHeader("easysdi-proxy-error-occured", "true");
 			e.printStackTrace();
 			dump("ERROR", e.toString());
 			StringBuffer out;
-		try {
-			out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
-			sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-		} catch (IOException e1) {
-			dump("ERROR", e1.toString());
-			e1.printStackTrace();
+			try {
+				out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
+				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			} catch (IOException e1) {
+				dump("ERROR", e1.toString());
+				e1.printStackTrace();
+			}
+			return;
 		}
-		return;
 	}
+	
+	private File applyUserXSLT (File response){
+		String userXsltPath = getConfiguration().getXsltPath();
+		if (SecurityContextHolder.getContext().getAuthentication() != null) {
+			userXsltPath = userXsltPath + "/" + SecurityContextHolder.getContext().getAuthentication().getName() + "/";
+		}
+
+		userXsltPath = userXsltPath + "/" + getProxyRequest().getVersion() + "/" + getProxyRequest().getOperation() + ".xsl";
+		String globalXsltPath = getConfiguration().getXsltPath() + "/" + getProxyRequest().getVersion() + "/" + getProxyRequest().getOperation() + ".xsl";
 		
+		File result = new File (response.getPath()+".xml");
+		File xsltFile = new File(userXsltPath);
+		if (!xsltFile.exists()) {
+			dump("Postreatment file " + xsltFile.toString() + "does not exist");
+			xsltFile = new File(globalXsltPath);
+		} 
+		
+		if (xsltFile.exists() && isXML(responseContentType)) {
+			dump("transform begin userTransform xslt");
+
+			Transformer transformer = null;
+			TransformerFactory tFactory = TransformerFactory.newInstance();
+			try {
+				transformer = tFactory.newTransformer(new StreamSource(xsltFile));
+				transformer.transform(new StreamSource(response), new StreamResult(result));
+			} catch (TransformerConfigurationException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (TransformerException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			dump("transform end userTransform xslt");
+			return result;
+		}else{
+			return response;
+		}
 	}
+	
+	/**
+	 * Get the exception files return by the remote servers.
+	 * @param remoteServerResponseFile
+	 * @return
+	 */
 	protected HashMap<String, String> getRemoteServerExceptionResponse (HashMap<String, String> remoteServerResponseFile)
 	{
 		HashMap<String, String> toRemove = new HashMap<String, String>();
@@ -2111,6 +2160,12 @@ public class WMSProxyServlet extends ProxyServlet {
 		}
 		return remoteServerExceptionFiles;
 	}
+	
+	/**
+	 * Get the exception files return by the remote servers.
+	 * @param remoteServerResponseFile
+	 * @return
+	 */
 	protected HashMap<String, String> getRemoteServerExceptionResponse (TreeMap<Integer,ProxyRemoteServerResponse> remoteServerResponseFile)
 	{
 		TreeMap<Integer, ProxyRemoteServerResponse> toRemove = new TreeMap<Integer, ProxyRemoteServerResponse>();
@@ -2153,6 +2208,14 @@ public class WMSProxyServlet extends ProxyServlet {
 		return remoteServerExceptionFiles;
 	}
 	
+	/**
+	 * Return if the file at the given path is an XML OGC exception file.
+	 * @param path
+	 * @return
+	 * @throws SAXException
+	 * @throws IOException
+	 * @throws ParserConfigurationException
+	 */
 	private boolean isRemoteServerResponseException(String path) throws SAXException, IOException, ParserConfigurationException{
 		String ext = (path.lastIndexOf(".")==-1)?"":path.substring(path.lastIndexOf(".")+1,path.length());
 		if (ext.equals("xml"))
@@ -2170,13 +2233,58 @@ public class WMSProxyServlet extends ProxyServlet {
 		}
 		return false;
 	}
-	private List<Object> checkGetMapRequestValidity (HttpServletRequest req, HttpServletResponse resp) throws Exception{
+	
+	public boolean isAllGetCapabilitiesResponseSameVersion (HashMap<String, String> wmsGetCapabilitiesResponse){
+		
+		if(wmsGetCapabilitiesResponse.size() == 1)
+			return true;
+		
+		SAXBuilder sxb = new SAXBuilder();
+		Iterator<Entry<String, String>> iFilePath = wmsGetCapabilitiesResponse.entrySet().iterator();
+		
+		String firstVersion = null;
+		
+		while (iFilePath.hasNext()){
+			Entry<String, String> filePath = iFilePath.next();
+
+			try {
+				org.jdom.Document doc = sxb.build(new File (filePath.getValue()));
+				org.jdom.Element racine = doc.getRootElement();
+				String version = racine.getAttributeValue("version");
+				if(firstVersion == null){
+					firstVersion = version;
+				}else{
+					if(!firstVersion.equals(version)){
+						return false;
+					}
+				}
+					
+			} catch (JDOMException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return false;
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return false;
+			}
+		}
+		return true;
+	}
+	/**
+	 * Check the validity of the request GETMAP
+	 * @param req
+	 * @param resp
+	 * @return
+	 * @throws Exception
+	 */
+	public List<Object> checkGetMapRequestValidity (HttpServletRequest req, HttpServletResponse resp) throws Exception{
 		//Check the WIDTH and HEIGHT parameters validity against the policy rules
 		if (!isSizeInTheRightRange(Integer.parseInt(((WMSProxyServletRequest)getProxyRequest()).getWidth()), 
 				   Integer.parseInt(((WMSProxyServletRequest)getProxyRequest()).getWidth())))
 		{
 			dump("requestPreTraitementGET says: request ImageSize out of bounds, see the policy definition.");
-			StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_DIMENSION_VALUE,OWSExceptionReport.CODE_INVALID_DIMENSION_VALUE,"WIDTH",getProxyRequest().getRequestedVersion());
+			StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_DIMENSION_VALUE,OWSExceptionReport.CODE_INVALID_DIMENSION_VALUE,"WIDTH");
 			sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
 			return null;
 		}
@@ -2215,7 +2323,7 @@ public class WMSProxyServlet extends ProxyServlet {
 		try {
 			rEnvelope = new ReferencedEnvelope(Double.parseDouble(c[0]), Double.parseDouble(c[2]), Double.parseDouble(c[1]), Double.parseDouble(c[3]), CRS.decode(((WMSProxyServletRequest)getProxyRequest()).getSrsName()));
 		}catch (Exception ex) {
-			StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_SRS,OWSExceptionReport.CODE_INVALID_SRS,"SRS",getProxyRequest().getRequestedVersion());
+			StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_SRS,OWSExceptionReport.CODE_INVALID_SRS,"SRS");
 			sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
 			return null;
 		}
@@ -2232,7 +2340,7 @@ public class WMSProxyServlet extends ProxyServlet {
 			ProxyLayer layer = new ProxyLayer(layerName);
 			if(layer.getAlias() == null)
 			{
-				StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_LAYER_NAME,OWSExceptionReport.CODE_LAYER_NOT_DEFINED,"LAYERS",getProxyRequest().getRequestedVersion());
+				StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_LAYER_NAME,OWSExceptionReport.CODE_LAYER_NOT_DEFINED,"LAYERS");
 				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
 				return null;
 			}
@@ -2241,7 +2349,7 @@ public class WMSProxyServlet extends ProxyServlet {
 			
 			//Check the availaibility of the requested LAYERS 
 			if( RS == null || !isLayerAllowed(layer.getName(), RS.getUrl())){
-				StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_LAYER_NAME,OWSExceptionReport.CODE_LAYER_NOT_DEFINED,"LAYERS",getProxyRequest().getRequestedVersion());
+				StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_LAYER_NAME,OWSExceptionReport.CODE_LAYER_NOT_DEFINED,"LAYERS");
 				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
 				return null;
 			}
@@ -2264,8 +2372,9 @@ public class WMSProxyServlet extends ProxyServlet {
 		map.add(layerStyleMap);
 		return map;
 	}
+	
 	/**
-	 * 
+	 * Generate an empty image
 	 * @param width
 	 * @param height
 	 * @param format
@@ -2301,8 +2410,14 @@ public class WMSProxyServlet extends ProxyServlet {
 		}
 	}
 
-	/*
+	/**
 	 * envelope contains the envelope of the whole image
+	 * @param imageSource
+	 * @param envelope
+	 * @param polygonFilter
+	 * @param isTransparent
+	 * @param resp
+	 * @return
 	 */
 	private BufferedImage imageFiltering(BufferedImage imageSource, CRSEnvelope envelope, Geometry polygonFilter, boolean isTransparent,
 			HttpServletResponse resp) {

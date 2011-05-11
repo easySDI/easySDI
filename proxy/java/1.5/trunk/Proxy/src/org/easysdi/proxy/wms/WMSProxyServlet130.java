@@ -18,7 +18,11 @@ package org.easysdi.proxy.wms;
 
 import java.util.Arrays;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.easysdi.proxy.wms.WMSProxyServlet;
+import org.easysdi.proxy.wms.v130.WMSExceptionReport130;
 import org.easysdi.proxy.wms.v130.WMSProxyResponseBuilder130;
 
 /**
@@ -39,6 +43,55 @@ public class WMSProxyServlet130 extends WMSProxyServlet {
 		super();
 		ServiceSupportedOperations = Arrays.asList("GetCapabilities", "GetMap", "GetFeatureInfo", "GetLegendGraphic");
 		docBuilder = new WMSProxyResponseBuilder130(this);
+		owsExceptionReport = new WMSExceptionReport130 ();
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.easysdi.proxy.wms.WMSProxyServlet#transformGetCapabilities(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+	 */
+	@Override
+	public void transformGetCapabilities(HttpServletRequest req,HttpServletResponse resp) {
+		super.transformGetCapabilities(req, resp);
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.easysdi.proxy.wms.WMSProxyServlet#requestPreTreatmentGetCapabilities(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+	 */
+	@Override
+	public void requestPreTreatmentGetCapabilities(HttpServletRequest req,
+			HttpServletResponse resp) {
+		// TODO Auto-generated method stub
+		super.requestPreTreatmentGetCapabilities(req, resp);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.easysdi.proxy.wms.WMSProxyServlet#requestPreTreatmentGetMap(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+	 */
+	@Override
+	public void requestPreTreatmentGetMap(HttpServletRequest req,
+			HttpServletResponse resp) {
+		// TODO Auto-generated method stub
+		super.requestPreTreatmentGetMap(req, resp);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.easysdi.proxy.wms.WMSProxyServlet#requestPreTreatmentGetLegendGraphic(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+	 */
+	@Override
+	public void requestPreTreatmentGetLegendGraphic(HttpServletRequest req,
+			HttpServletResponse resp) {
+		// TODO Auto-generated method stub
+		super.requestPreTreatmentGetLegendGraphic(req, resp);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.easysdi.proxy.wms.WMSProxyServlet#requestPreTreatmentGetFeatureInfo(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+	 */
+	@Override
+	public void requestPreTreatmentGetFeatureInfo(HttpServletRequest req,
+			HttpServletResponse resp) {
+		// TODO Auto-generated method stub
+		super.requestPreTreatmentGetFeatureInfo(req, resp);
 	}
 
 }

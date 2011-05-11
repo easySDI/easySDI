@@ -25,6 +25,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Vector;
 
 import org.easysdi.jdom.filter.AttributeXlinkFilter;
@@ -58,6 +59,9 @@ public class WMSProxyResponseBuilder130 extends WMSProxyResponseBuilder {
 		nsWMS = Namespace.getNamespace("http://www.opengis.net/wms");
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.easysdi.proxy.core.ProxyResponseBuilder#CapabilitiesOperationsFiltering(java.lang.String, java.lang.String)
+	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public Boolean CapabilitiesOperationsFiltering(String filePath, String href) {
@@ -138,6 +142,9 @@ public class WMSProxyResponseBuilder130 extends WMSProxyResponseBuilder {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.easysdi.proxy.core.ProxyResponseBuilder#CapabilitiesContentsFiltering(java.util.HashMap)
+	 */
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Boolean CapabilitiesContentsFiltering(HashMap<String, String> wmsGetCapabilitiesResponseFilePath) {
@@ -145,7 +152,7 @@ public class WMSProxyResponseBuilder130 extends WMSProxyResponseBuilder {
 	    try
 	    {
 	    	SAXBuilder sxb = new SAXBuilder();
-	    	Iterator<Map.Entry<String, String>> iFile =  wmsGetCapabilitiesResponseFilePath.entrySet().iterator();
+	    	Iterator<Entry<String, String>> iFile =  wmsGetCapabilitiesResponseFilePath.entrySet().iterator();
 	    	while (iFile.hasNext())
 	    	{
 	    		Map.Entry<String, String > fileEntry = iFile.next(); 
@@ -153,9 +160,6 @@ public class WMSProxyResponseBuilder130 extends WMSProxyResponseBuilder {
 	    		Document  docParent = sxb.build(new File(filePath));
 		    	Element racine = docParent.getRootElement();
 		      
-		    	//get the namespace
-		    	Namespace localNsWMS = racine.getNamespace(); 
-		    	
 		    	//Layer filtering
 		    	Filter layerFilter = new ElementLayerFilter();
 		    	List<Element> layerList = new ArrayList<Element>();	    	  
@@ -165,12 +169,13 @@ public class WMSProxyResponseBuilder130 extends WMSProxyResponseBuilder {
 		    	   Element courant = (Element)iLayer.next();
 		    	   layerList.add(courant);
 		    	}
+		    	
 		    	//Modification of the selected Elements
 		    	Iterator iLLayer = layerList.iterator();
 		    	while (iLLayer.hasNext())
 		    	{
 		    		Element layerElement = (Element)iLLayer.next();
-		    		Element nameElement = layerElement.getChild("Name", localNsWMS);
+		    		Element nameElement = layerElement.getChild("Name", nsWMS);
 		    		if (nameElement!= null && !servlet.isLayerAllowed(nameElement.getText(),servlet.getRemoteServerInfo(fileEntry.getKey()).getUrl()))
 					{
 		    				Parent parent = layerElement.getParent();
@@ -197,55 +202,56 @@ public class WMSProxyResponseBuilder130 extends WMSProxyResponseBuilder {
 		}
 	}
 
-	public Boolean CapabilitiesMerging(HashMap<String, String> filePathList) {
+	/**
+	 * @param wmsGetCapabilitiesResponseFilePath
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public Boolean CapabilitiesMerging(HashMap<String, String> wmsGetCapabilitiesResponseFilePath) {
 		servlet.dump("INFO","transform - Start - Capabilities merging");
-		if (filePathList.size() == 0)
+		if (wmsGetCapabilitiesResponseFilePath.size() == 0)
 		{
 			setLastException(new Exception("No response file"));
 			return false;
 		}
-		if(filePathList.size() == 1)
+		if(wmsGetCapabilitiesResponseFilePath.size() == 1)
 			return true;
 
 		try {
 			SAXBuilder sxb = new SAXBuilder();
+			
+			//Get the master remote server 
 			RemoteServerInfo master = servlet.getRemoteServerInfoMaster();
-			String fileMasterPath = filePathList.get(master.getAlias());
+			String fileMasterPath = wmsGetCapabilitiesResponseFilePath.get(master.getAlias());
 			Document documentMaster = sxb.build(new File(fileMasterPath));
+			
+			//Filter the layer
 			Filter layerFilter = new ElementLayerFilter();
 			Element racineMaster = documentMaster.getRootElement();
-			Iterator<Element> iLayer = racineMaster.getDescendants(layerFilter);
+			Element capabilityMaster = (Element)racineMaster.getChild("Capability", nsWMS);
 			
-			while ()
-			
-			Element contentsMaster=  ((Element)racineMaster.getDescendants(layerFilter).next()).getParentElement();
-			
-			Enumeration<String> enumFile = filePathList.elements();
-			while (enumFile.hasMoreElements())
+			Iterator<Entry<String,String>> it = wmsGetCapabilitiesResponseFilePath.entrySet().iterator();
+			while (it.hasNext())
 			{
-				String nfile = enumFile.nextElement();
+				Entry<String,String> entry = it.next();
+				String nfile = entry.getValue();
+				
+				//If it is the master document, continue
 				if(nfile.equals(fileMasterPath))
 					continue;
+				
 				Document documentChild = null;
 				documentChild = sxb.build(new File(nfile));
 				if (documentChild != null) {
 					Element racineChild = documentChild.getRootElement();
-					Namespace localNsWMTS = racineChild.getNamespace(); 
-					Element contentsChild = (Element)racineChild.getChild("Contents", localNsWMTS);
-//					contentsMaster.addContent(contentsChild.cloneContent());
-					Iterator<Element> ichild = contentsChild.getDescendants(new ElementLayerFilter());
-//					int masterLayersSize = contentsMaster.getContent(new ElementLayerFilter()).size()+1;
+					
+					Element capabilityChild = (Element)racineChild.getChild("Capability", nsWMS);
+					
+					Iterator<Element> ichild = capabilityChild.getDescendants(new ElementLayerFilter());
 					while (ichild.hasNext())
 					{
 						Element child = (Element)((Element)ichild.next()).clone();
-						contentsMaster.addContent(1, child);
-//						masterLayersSize +=1;
-					}
-					Iterator<Element> itmschild = contentsChild.getDescendants(new ElementTileMatrixSetFilter());
-					while (itmschild.hasNext())
-					{
-						Element child = (Element)((Element)itmschild.next()).clone();
-						contentsMaster.addContent(child);
+						capabilityMaster.addContent(1, child);
 					}
 				}
 			}
@@ -261,23 +267,18 @@ public class WMSProxyResponseBuilder130 extends WMSProxyResponseBuilder {
 	}
 
 	@Override
-	public Boolean CapabilitiesServiceIdentificationWriting(String filePath,
-			String href) {
-		// TODO Auto-generated method stub
-		return null;
+	public Boolean CapabilitiesServiceIdentificationWriting(String filePath,String href) {
+		return true;
 	}
 
 	@Override
-	public Boolean CapabilitiesContentsFiltering(
-			Hashtable<String, String> filePathList) {
-		// TODO Auto-generated method stub
-		return null;
+	public Boolean CapabilitiesContentsFiltering(Hashtable<String, String> filePathList) {
+		return true;
 	}
 
 	@Override
 	public Boolean CapabilitiesMerging(Hashtable<String, String> filePathList) {
-		// TODO Auto-generated method stub
-		return null;
+		return true;
 	}
 
 }

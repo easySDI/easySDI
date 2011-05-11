@@ -16,35 +16,18 @@
  */
 package org.easysdi.proxy.wms;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-
 import org.easysdi.proxy.ows.OWSExceptionReport;
 
 /**
  * @author DEPTH SA
  *
  */
-public class WMSExceptionReport implements OWSExceptionReport {
+public abstract class WMSExceptionReport implements OWSExceptionReport {
 
-	/* (non-Javadoc)
-	 * @see org.easysdi.proxy.ows.OWSExceptionReport#generateExceptionReport(java.lang.String, java.lang.String, java.lang.String)
-	 */
-	public StringBuffer generateExceptionReport(String errorMessage,String code, String locator) throws IOException {
-		return generateExceptionReport (errorMessage, code, locator, "1.1.0");
-	}
 
-	/* (non-Javadoc)
-	 * @see org.easysdi.proxy.ows.OWSExceptionReport#generateExceptionReport(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
-	 */
-	public StringBuffer generateExceptionReport(String errorMessage,String code, String locator, String version) throws IOException {
-		if (version == null || version == "")
-			version = "1.1.0";
-		StringBuffer sb = new StringBuffer("<?xml version='1.0' encoding='utf-8'?>\n");
-		sb.append("\n<ServiceExceptionReport xmlns=\"http://www.opengis.net/ows/1.1\" ");
-		sb.append("xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" ");
-		sb.append("xsi:schemaLocation=\"http://www.opengis.net/ows/1.1\" version=\""+version+"\">");
-		sb.append("\n\t<Exception exceptionCode=\"");
+	public StringBuffer getServiceExceptionBody (String errorMessage,String code, String locator){
+		StringBuffer sb = new StringBuffer();
+		sb.append("\n\t<ServiceException code=\"");
 		sb.append(code);
 		sb.append("\"");
 		if(locator != null && locator != "" )
@@ -56,12 +39,9 @@ public class WMSExceptionReport implements OWSExceptionReport {
 		sb.append(">");
 		if( errorMessage != null && errorMessage.length()!= 0)
 		{
-			sb.append("\n\t\t<ExceptionText>");
-			sb.append(errorMessage);
-			sb.append("</ExceptionText>");
+			sb.append("\n\t"+errorMessage);
 		}
-		sb.append("\n\t</Exception>");
-		sb.append("\n</ExceptionReport>");
+		sb.append("\n\t</ServiceException>");
 		
 		return sb;
 	}

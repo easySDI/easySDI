@@ -68,4 +68,10 @@ public class WMSProxyResponseBuilder110 extends WMSProxyResponseBuilder {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public Boolean CapabilitiesMerging(HashMap<String, String> filePathList) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

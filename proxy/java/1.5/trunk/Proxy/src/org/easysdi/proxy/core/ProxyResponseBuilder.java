@@ -60,6 +60,7 @@ public abstract class ProxyResponseBuilder {
 	public abstract Boolean CapabilitiesContentsFiltering (Hashtable<String, String> filePathList);
 	public abstract Boolean CapabilitiesContentsFiltering (HashMap<String, String> filePathList);
 	public abstract Boolean CapabilitiesMerging(Hashtable<String, String> filePathList);
+	public abstract Boolean CapabilitiesMerging(HashMap<String, String> filePathList);
 	public abstract Boolean CapabilitiesServiceIdentificationWriting(String filePath, String href);
 	public abstract ByteArrayOutputStream ExceptionAggregation(HashMap<String, String> remoteServerExceptionFiles);
 }

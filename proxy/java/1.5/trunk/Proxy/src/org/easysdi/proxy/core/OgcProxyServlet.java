@@ -42,6 +42,7 @@ import org.easysdi.proxy.ows.OWSExceptionReport;
 import org.easysdi.proxy.ows.v200.OWS200ExceptionReport;
 import org.easysdi.proxy.wfs.WFSExceptionReport;
 import org.easysdi.proxy.wms.WMSExceptionReport;
+import org.easysdi.proxy.wms.v130.WMSExceptionReport130;
 import org.easysdi.proxy.wmts.v100.WMTS100ExceptionReport;
 import org.easysdi.proxy.policy.Policy;
 import org.easysdi.security.JoomlaProvider;
@@ -98,42 +99,41 @@ public class OgcProxyServlet extends HttpServlet {
 	 * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
 	 */
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		servletResponse = resp;
 		ProxyServlet obj = null;
 
 		try {
 			obj = createProxy(req.getPathInfo().substring(1), req, resp);
-			
-			double maxRequestNumber = -1;
-			if (obj != null)
-				maxRequestNumber = obj.getConfiguration().getMaxRequestNumber();
-			
-			waitWhenConnectionsExceed(req, maxRequestNumber);
-			
+			waitWhenConnectionsExceed(req, obj.getConfiguration().getMaxRequestNumber());
+
 			if (obj != null) {
 				obj.doGet(req, resp);
 			}
+		} catch (PolicyNotFoundException e) {
+
 		} catch (Exception e) {
-			StringBuffer out = new OWS200ExceptionReport().generateExceptionReport(e.getMessage(), OWSExceptionReport.CODE_NO_APPLICABLE_CODE, null, null) ;
-			servletResponse.setContentType("text/xml");
-			servletResponse.setContentLength(out.length());
-			OutputStream os;
-			try {
-				os = servletResponse.getOutputStream();
-				os.write(out.toString().getBytes());
-				os.flush();
-				os.close();
-			} catch (IOException ex) {
-				ex.printStackTrace();
-			} 
+			StringBuffer sb = generateOgcError(e.getMessage());
+			e.printStackTrace();
+			resp.setContentType("text/xml");
+			resp.setContentLength(sb.length());
+			OutputStream os = resp.getOutputStream();
+			os.write(sb.toString().getBytes());
+			os.flush();
+			os.close();
 		} finally {
-			/**
-			 * What ever happens, always decrease the connection number when
-			 * finished.
-			 */
 			if (obj != null)
 				decreaseConnections(req, obj.getConfiguration().getMaxRequestNumber());
 		}
+	}
+	
+	private StringBuffer generateOgcError(String errorMessage) {
+		StringBuffer sb = new StringBuffer("<?xml version='1.0' encoding='utf-8' ?>");
+		sb
+				.append("<ServiceExceptionReport xmlns=\"http://www.opengis.net/ogc\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.opengis.net/ogc\" version=\"1.2.0\">");
+		sb.append("<ServiceException>");
+		sb.append(errorMessage);
+		sb.append("</ServiceException>");
+		sb.append("</ServiceExceptionReport>");
+		return sb;
 	}
 
 	/* (non-Javadoc)
@@ -214,7 +214,7 @@ public class OgcProxyServlet extends HttpServlet {
 				e.printStackTrace();
 			} catch (ProxyServletException e){
 				sendException(e, className, null);
-				return null;
+				e.printStackTrace();
 			}
 			
 			//Get the correct CSWProxyServlet class name according to the EasySDI version currently running
@@ -292,7 +292,7 @@ public class OgcProxyServlet extends HttpServlet {
 		StringBuffer out = new StringBuffer() ;
 		try {
 			if(servletClass.equalsIgnoreCase("WMSProxyServlet")){
-				out = new WMSExceptionReport().generateExceptionReport(errorMessage, code, locator,version);
+				out = new WMSExceptionReport130().generateExceptionReport(errorMessage, code, locator);
 			}else if (servletClass.equalsIgnoreCase("WFSProxyServlet")){
 				out = new WFSExceptionReport().generateExceptionReport(errorMessage, code, locator,version);
 			}else if (servletClass.equalsIgnoreCase("WMST100ProxyServlet")){
