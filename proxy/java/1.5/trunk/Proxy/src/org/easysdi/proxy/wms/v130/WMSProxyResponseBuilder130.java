@@ -161,7 +161,7 @@ public class WMSProxyResponseBuilder130 extends WMSProxyResponseBuilder {
 	 */
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Boolean CapabilitiesContentsFiltering(HashMap<String, String> wmsGetCapabilitiesResponseFilePath) {
+	public Boolean CapabilitiesContentsFiltering(HashMap<String, String> wmsGetCapabilitiesResponseFilePath, String href) {
 		servlet.dump("INFO","transform - Start - Capabilities contents filtering");
 	    try
 	    {
@@ -200,6 +200,25 @@ public class WMSProxyResponseBuilder130 extends WMSProxyResponseBuilder {
 		    			//Rewrite Layer name with alias prefix
 		    			String name = nameElement.getText();
 		    			nameElement.setText(fileEntry.getKey()+"_"+name); 
+		    			
+		    			//Get the remote server URL
+		    			String serverUrl = servlet.getRemoteServerInfo(fileEntry.getKey()).getUrl();
+		    			//Rewrite the online resource present in the <Style> element
+		    			Iterator iXlink = layerElement.getDescendants(new AttributeXlinkFilter());
+		    			List<Element> xlinkList = new ArrayList<Element>();	  
+						while (iXlink.hasNext()){
+							Element courant = (Element)iXlink.next();
+							xlinkList.add(courant);
+						}
+						Iterator ilXlink = xlinkList.iterator();
+						while(ilXlink.hasNext()){
+							Element toUpdate = (Element)ilXlink.next();
+							String att = toUpdate.getAttribute("href", nsXLINK).getValue();
+							if(att.contains(serverUrl)){
+								att = att.replace(att.substring(0, att.indexOf("?")), href);
+							}
+							toUpdate.setAttribute("href", att, nsXLINK);
+						}
 		    		}
 		    	}
 		    	
@@ -216,9 +235,8 @@ public class WMSProxyResponseBuilder130 extends WMSProxyResponseBuilder {
 		}
 	}
 
-	/**
-	 * @param wmsGetCapabilitiesResponseFilePath
-	 * @return
+	/* (non-Javadoc)
+	 * @see org.easysdi.proxy.wms.WMSProxyResponseBuilder#CapabilitiesMerging(java.util.HashMap)
 	 */
 	@SuppressWarnings("unchecked")
 	public Boolean CapabilitiesMerging(HashMap<String, String> wmsGetCapabilitiesResponseFilePath) {
@@ -279,6 +297,9 @@ public class WMSProxyResponseBuilder130 extends WMSProxyResponseBuilder {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.easysdi.proxy.wms.WMSProxyResponseBuilder#CapabilitiesServiceMetadataWriting(java.lang.String, java.lang.String)
+	 */
 	@Override
 	public Boolean CapabilitiesServiceMetadataWriting(String filePath,String href) {
 		servlet.dump("INFO","transform - Start - Capabilities metadata writing");
@@ -421,4 +442,5 @@ public class WMSProxyResponseBuilder130 extends WMSProxyResponseBuilder {
 			setLastException(ex);
 			return false;
 		}
-	}}
+	}
+}

@@ -42,36 +42,27 @@ public class WMSProxyResponseBuilder111 extends WMSProxyResponseBuilder {
 	}
 
 	@Override
-	public Boolean CapabilitiesContentsFiltering(
-			Hashtable<String, String> filePathList) {
-		// TODO Auto-generated method stub
-		return null;
+	public Boolean CapabilitiesContentsFiltering(Hashtable<String, String> filePathList) {
+		return super.CapabilitiesContentsFiltering(filePathList);
+	}
+	
+	@Override
+	public Boolean CapabilitiesContentsFiltering(HashMap<String, String> filePathList, String href) {
+		return super.CapabilitiesContentsFiltering(filePathList, href);
 	}
 
 	@Override
 	public Boolean CapabilitiesMerging(Hashtable<String, String> filePathList) {
-		// TODO Auto-generated method stub
-		return null;
+		return super.CapabilitiesMerging(filePathList);
 	}
-
-	@Override
-	public Boolean CapabilitiesServiceMetadataWriting(String filePath,
-			String href) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Boolean CapabilitiesContentsFiltering(
-			HashMap<String, String> filePathList) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
+	
 	@Override
 	public Boolean CapabilitiesMerging(HashMap<String, String> filePathList) {
-		// TODO Auto-generated method stub
-		return null;
+		return super.CapabilitiesMerging(filePathList);
 	}
-
+	
+	@Override
+	public Boolean CapabilitiesServiceMetadataWriting(String filePath,String href) {
+		return super.CapabilitiesServiceMetadataWriting(filePath, href);
+	}
 }

@@ -2019,7 +2019,7 @@ public class WMSProxyServlet extends ProxyServlet {
 			//Capabilities rewriting
 			RemoteServerInfo rs = getRemoteServerInfoMaster();
 			
-			if(!docBuilder.CapabilitiesContentsFiltering(wmsGetCapabilitiesResponseFilePathMap))
+			if(!docBuilder.CapabilitiesContentsFiltering(wmsGetCapabilitiesResponseFilePathMap,getServletUrl(req)))
 			{
 				dump("ERROR",docBuilder.getLastException().toString());
 				StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");

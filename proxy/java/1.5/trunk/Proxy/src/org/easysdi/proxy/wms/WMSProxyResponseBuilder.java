@@ -35,7 +35,10 @@ import org.easysdi.jdom.filter.ElementServiceExceptionFilter;
 import org.easysdi.jdom.filter.ElementServiceExceptionReportFilter;
 import org.easysdi.proxy.core.ProxyResponseBuilder;
 import org.easysdi.proxy.core.ProxyServlet;
+import org.easysdi.xml.documents.Config;
 import org.easysdi.xml.documents.RemoteServerInfo;
+import org.easysdi.xml.documents.ServiceContactAdressInfo;
+import org.easysdi.xml.documents.ServiceContactInfo;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -163,7 +166,7 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 	 */
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Boolean CapabilitiesContentsFiltering(HashMap<String, String> wmsGetCapabilitiesResponseFilePath) {
+	public Boolean CapabilitiesContentsFiltering(HashMap<String, String> wmsGetCapabilitiesResponseFilePath, String href) {
 		servlet.dump("INFO","transform - Start - Capabilities contents filtering");
 	    try
 	    {
@@ -202,6 +205,25 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 		    			//Rewrite Layer name with alias prefix
 		    			String name = nameElement.getText();
 		    			nameElement.setText(fileEntry.getKey()+"_"+name); 
+		    					    			
+		    			//Get the remote server URL
+		    			String serverUrl = servlet.getRemoteServerInfo(fileEntry.getKey()).getUrl();
+		    			//Rewrite the online resource present in the <Style> element
+		    			Iterator iXlink = layerElement.getDescendants(new AttributeXlinkFilter());
+		    			List<Element> xlinkList = new ArrayList<Element>();	  
+						while (iXlink.hasNext()){
+							Element courant = (Element)iXlink.next();
+							xlinkList.add(courant);
+						}
+						Iterator ilXlink = xlinkList.iterator();
+						while(ilXlink.hasNext()){
+							Element toUpdate = (Element)ilXlink.next();
+							String att = toUpdate.getAttribute("href", nsXLINK).getValue();
+							if(att.contains(serverUrl)){
+								att = att.replace(att.substring(0, att.indexOf("?")), href);
+							}
+							toUpdate.setAttribute("href", att, nsXLINK);
+						}
 		    		}
 		    	}
 		    	
@@ -275,7 +297,7 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 					while (ichild.hasNext())
 					{
 						Element child = (Element)((Element)ichild.next()).clone();
-						capabilityMaster.addContent(1, child);
+						capabilityMaster.addContent(capabilityMaster.getContentSize(), child);
 					}
 				}
 			}
@@ -295,7 +317,133 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 	 */
 	@Override
 	public Boolean CapabilitiesServiceMetadataWriting(String filePath,String href) {
-		return null;
+		servlet.dump("INFO","transform - Start - Capabilities metadata writing");
+		try
+		{
+			Config config = servlet.getConfiguration();
+			
+			SAXBuilder sxb = new SAXBuilder();
+			Document document = sxb.build(new File(filePath));
+			
+			//Remove the current Service element
+			Element racine = document.getRootElement();
+			racine.removeContent(racine.getChild("Service"));
+			
+			//Create a new Service element
+			Element newService  = new Element ("Service");
+			newService.addContent((new Element("Name")).setText("WMS"));
+			
+			if(config == null )
+			{
+				XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
+		        sortie.output(document, new FileOutputStream(filePath));
+				return true;
+			}
+						
+			
+			if(config.getTitle() != null && config.getTitle().length() != 0)
+				newService.addContent((new Element("Title")).setText(config.getTitle()));
+			if(config.getAbst() != null && config.getAbst().length() != 0)
+				newService.addContent((new Element("Abstract")).setText(config.getAbst()));
+			if(config.getKeywordList() != null && config.getKeywordList().size() != 0)
+			{
+				Element keywords = new Element("KeywordsList");
+				Iterator<String> iKeywords = config.getKeywordList().iterator();
+				while (iKeywords.hasNext())
+				{
+					keywords.addContent((new Element("Keyword")).setText(iKeywords.next()));
+				}
+				newService.addContent(keywords);
+			}
+			Element onlineResource = new Element("OnlineResource");
+			onlineResource.setAttribute("href", href, nsXLINK);
+//			onlineResource.setAttribute("type", "simple");
+			newService.addContent(onlineResource);
+			
+			
+			if(config.getContactInfo() != null && !config.getContactInfo().isEmpty()){
+				Element newContactInformation = new Element("ContactInformation");
+				
+				ServiceContactInfo contactInfo = config.getContactInfo();
+				
+				Element newContactPersonPrimary = new Element("ContactPersonPrimary");
+				Boolean hasContactPersonPrimary = false;
+				if(contactInfo.getName() != null && contactInfo.getName().length() != 0){
+					newContactPersonPrimary.addContent((new Element("ContactPerson")).setText(contactInfo.getName()));
+					hasContactPersonPrimary = true;
+				}
+				if(contactInfo.getOrganization() != null && contactInfo.getOrganization().length() != 0){
+					newContactPersonPrimary.addContent((new Element("ContactOrganization")).setText(contactInfo.getOrganization()));
+					hasContactPersonPrimary = true;
+				}
+				if(hasContactPersonPrimary)
+					newContactInformation.addContent(newContactPersonPrimary);
+				
+				if (contactInfo.getPosition() != null && contactInfo.getPosition().length() != 0)
+					newContactInformation.addContent((new Element("ContactPosition")).setText(contactInfo.getPosition()));
+				
+				ServiceContactAdressInfo contactAddress = contactInfo.getContactAddress();
+				Element newContactAddress = new Element("ContactAddress");
+				Boolean hasContactAddress = false;
+				if(contactAddress.getType() != null && contactAddress.getType().length() != 0){
+					newContactAddress.addContent((new Element("AddressType")).setText(contactAddress.getType()));
+					hasContactAddress = true;
+				}
+				if(contactAddress.getAddress() != null && contactAddress.getAddress().length() != 0){
+					newContactAddress.addContent((new Element("Address")).setText(contactAddress.getAddress()));
+					hasContactAddress = true;
+				}
+				if(contactAddress.getCity() != null && contactAddress.getCity().length() != 0){
+					newContactAddress.addContent((new Element("City")).setText(contactAddress.getCity()));
+					hasContactAddress = true;
+				}
+				if(contactAddress.getState() != null && contactAddress.getState().length() != 0){
+					newContactAddress.addContent((new Element("StateOrProvince")).setText(contactAddress.getState()));
+					hasContactAddress = true;
+				}
+				if(contactAddress.getPostalCode() != null && contactAddress.getPostalCode().length() != 0){
+					newContactAddress.addContent((new Element("PostCode")).setText(contactAddress.getPostalCode()));
+					hasContactAddress = true;
+				}
+				if(contactAddress.getCountry() != null && contactAddress.getCountry().length() != 0){
+					newContactAddress.addContent((new Element("Country")).setText(contactAddress.getCountry()));
+					hasContactAddress = true;
+				}
+				
+				if(hasContactAddress)
+					newContactInformation.addContent(newContactAddress);
+				
+				if (contactInfo.getVoicePhone() != null && contactInfo.getVoicePhone().length() != 0)
+					newContactInformation.addContent((new Element("ContactVoiceTelephone")).setText(contactInfo.getVoicePhone()));
+				
+				if (contactInfo.getFacSimile() != null && contactInfo.getFacSimile().length() != 0)
+					newContactInformation.addContent((new Element("ContactFacsimileTelephone")).setText(contactInfo.getFacSimile()));
+				
+				if (contactInfo.geteMail() != null && contactInfo.geteMail().length() != 0)
+					newContactInformation.addContent((new Element("ContactElectronicMailAddress")).setText(contactInfo.geteMail()));
+				
+				newService.addContent(newContactInformation);
+			}
+			
+				
+			if(config.getFees() != null && config.getFees().length() != 0)
+				newService.addContent((new Element("Fees", nsWMS)).setText(config.getFees()));
+			if(config.getAccessConstraints() != null && config.getAccessConstraints().length() != 0)
+				newService.addContent((new Element("AccessConstraints", nsWMS)).setText(config.getAccessConstraints()));
+			
+			racine.addContent( 1, newService);
+			
+			XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
+	        sortie.output(document, new FileOutputStream(filePath));
+
+	        servlet.dump("INFO","transform - End - Capabilities metadata writing");
+			return true;
+		}
+		catch (Exception ex)
+		{
+			setLastException(ex);
+			return false;
+		}
 	}
 
 	/* (non-Javadoc)

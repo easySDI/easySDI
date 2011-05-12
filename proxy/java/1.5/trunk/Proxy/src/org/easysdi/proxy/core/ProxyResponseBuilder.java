@@ -99,7 +99,7 @@ public abstract class ProxyResponseBuilder {
 	 * @return true if the GetCapabilities was succesfully updated, false otherwise
 	 * If returns false, the caller should call getLastException() to get the catched exception.
 	 */
-	public abstract Boolean CapabilitiesContentsFiltering (HashMap<String, String> filePathList);
+	public abstract Boolean CapabilitiesContentsFiltering (HashMap<String, String> filePathList, String href);
 	
 	/**
 	 * Merge all the remote servers GetCapabilities response into one single file

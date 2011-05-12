@@ -438,8 +438,7 @@ public class WMTS100ProxyResponseBuilder extends WMTSProxyResponseBuilder {
 	}
 
 	@Override
-	public Boolean CapabilitiesContentsFiltering(
-			HashMap<String, String> filePathList) {
+	public Boolean CapabilitiesContentsFiltering(HashMap<String, String> filePathList,String href) {
 		// TODO Auto-generated method stub
 		return null;
 	}
