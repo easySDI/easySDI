@@ -280,7 +280,7 @@ public class WMTS100ProxyResponseBuilder extends WMTSProxyResponseBuilder {
 		}
 	}
 	
-	public Boolean CapabilitiesServiceIdentificationWriting(String filePath, String href)
+	public Boolean CapabilitiesServiceMetadataWriting(String filePath, String href)
 	{
 		servlet.dump("INFO","transform - Start - Capabilities metadata writing");
 		try
@@ -426,6 +426,7 @@ public class WMTS100ProxyResponseBuilder extends WMTSProxyResponseBuilder {
 		}
 		catch (Exception ex)
 		{
+			setLastException(ex);
 			return false;
 		}
 	}

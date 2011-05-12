@@ -124,7 +124,7 @@ public abstract class ProxyResponseBuilder {
 	 * @return true if the GetCapabilities was succesfully updated, false otherwise
 	 * If returns false, the caller should call getLastException() to get the catched exception.
 	 */
-	public abstract Boolean CapabilitiesServiceIdentificationWriting(String filePath, String href);
+	public abstract Boolean CapabilitiesServiceMetadataWriting(String filePath, String href);
 	
 	/**
 	 * Aggregate all the xml exceptions received from remote servers into one single xml exception (OGC compliant)

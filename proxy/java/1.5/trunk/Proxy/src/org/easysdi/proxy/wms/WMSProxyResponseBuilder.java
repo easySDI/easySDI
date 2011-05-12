@@ -294,8 +294,7 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 	 * @see org.easysdi.proxy.core.ProxyResponseBuilder#CapabilitiesServiceIdentificationWriting(java.lang.String, java.lang.String)
 	 */
 	@Override
-	public Boolean CapabilitiesServiceIdentificationWriting(String filePath,String href) {
-		// TODO Auto-generated method stub
+	public Boolean CapabilitiesServiceMetadataWriting(String filePath,String href) {
 		return null;
 	}
 

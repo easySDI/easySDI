@@ -54,7 +54,7 @@ public class WMSProxyResponseBuilder110 extends WMSProxyResponseBuilder {
 	}
 
 	@Override
-	public Boolean CapabilitiesServiceIdentificationWriting(String filePath,
+	public Boolean CapabilitiesServiceMetadataWriting(String filePath,
 			String href) {
 		// TODO Auto-generated method stub
 		return null;
