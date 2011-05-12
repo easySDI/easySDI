@@ -33,12 +33,18 @@ import org.easysdi.jdom.filter.AttributeXlinkFilter;
 import org.easysdi.jdom.filter.ElementLayerFilter;
 import org.easysdi.jdom.filter.ElementServiceExceptionFilter;
 import org.easysdi.jdom.filter.ElementServiceExceptionReportFilter;
+import org.easysdi.proxy.core.ProxyLayer;
 import org.easysdi.proxy.core.ProxyResponseBuilder;
 import org.easysdi.proxy.core.ProxyServlet;
+import org.easysdi.proxy.policy.BoundingBox;
+import org.easysdi.proxy.policy.Layer;
+import org.easysdi.proxy.policy.Server;
 import org.easysdi.xml.documents.Config;
 import org.easysdi.xml.documents.RemoteServerInfo;
 import org.easysdi.xml.documents.ServiceContactAdressInfo;
 import org.easysdi.xml.documents.ServiceContactInfo;
+import org.geotools.geometry.jts.JTS;
+import org.geotools.referencing.CRS;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -48,6 +54,10 @@ import org.jdom.filter.Filter;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.MathTransform;
+
+import com.vividsolutions.jts.geom.Envelope;
 
 /**
  * @author DEPTH SA
@@ -164,12 +174,14 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 	/* (non-Javadoc)
 	 * @see org.easysdi.proxy.core.ProxyResponseBuilder#CapabilitiesContentsFiltering(java.util.HashMap)
 	 */
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "rawtypes", "unchecked", "unused" })
 	@Override
 	public Boolean CapabilitiesContentsFiltering(HashMap<String, String> wmsGetCapabilitiesResponseFilePath, String href) {
 		servlet.dump("INFO","transform - Start - Capabilities contents filtering");
 	    try
 	    {
+	    	CoordinateReferenceSystem wgsCRS = CRS.decode("EPSG:4326");
+			
 	    	SAXBuilder sxb = new SAXBuilder();
 	    	Iterator<Entry<String, String>> iFile =  wmsGetCapabilitiesResponseFilePath.entrySet().iterator();
 	    	while (iFile.hasNext())
@@ -208,6 +220,7 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 		    					    			
 		    			//Get the remote server URL
 		    			String serverUrl = servlet.getRemoteServerInfo(fileEntry.getKey()).getUrl();
+		    			
 		    			//Rewrite the online resource present in the <Style> element
 		    			Iterator iXlink = layerElement.getDescendants(new AttributeXlinkFilter());
 		    			List<Element> xlinkList = new ArrayList<Element>();	  
@@ -226,6 +239,13 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 						}
 		    		}
 		    	}
+		    	
+		    	
+		    	Element t = racine.getChild("Capability");
+		    	List<Element> p = t.getChildren("Layer");
+		    	List<Element> layerParentList =  racine.getChild("Capability").getChildren("Layer");
+		    	if(!rewriteBBOX(layerParentList, wgsCRS, null))
+		    		return false;
 		    	
 	    	   XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
 	           sortie.output(docParent, new FileOutputStream(filePath));
@@ -534,4 +554,206 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 		return out;
 	}
 
+	/**
+	 * Rewrite the BoundingBox definition according to the geographic filter defined in the policy 
+	 * @param elementLayer : the layer
+	 * @param wgsCRS : the EPSG:4326 CoordinateReferenceSystem
+	 * @param parentCRS : the CoordinateReferenceSystem of the parent layer
+	 * @return
+	 */
+	private boolean rewriteBBOX(List<Element> layersList,CoordinateReferenceSystem wgsCRS,CoordinateReferenceSystem parentCRS)
+	{
+		String wgsMaxx;
+		String wgsMaxy;
+		String wgsMinx;
+		String wgsMiny;
+			
+		List<Server> serverList = servlet.getPolicy().getServers().getServer();
+		
+		for(int l = 0 ; l < layersList.size();l++)
+		{
+			Element elementLayer = (Element)layersList.get(l);
+		
+			for (int i=0 ; i < serverList.size() ; i++)
+			{
+				try
+				{
+	    			Server server = serverList.get(i);
+	    			ProxyLayer proxyLayer = new ProxyLayer(elementLayer.getChild("Name").getValue());
+	    			Layer currentLayer = server.getLayers().getLayerByName(proxyLayer.getName());
+	    			
+	    			//Not the right server
+	    			if(currentLayer == null)
+	    				continue;
+	    			
+	    			//No BBOX to rewrite
+	    			if(currentLayer.getBoundingBox() == null)
+	    				continue;
+	    			
+	    			//Calculate WGS BBOX
+	    			BoundingBox srsBBOX =  currentLayer.getBoundingBox();
+	    			if(srsBBOX.getSRS().equalsIgnoreCase("EPSG:4326"))
+	    			{
+	    				wgsMaxx = (srsBBOX.getMaxx());
+	    				wgsMaxy = (srsBBOX.getMaxy());
+	    				wgsMinx = (srsBBOX.getMinx());
+	    				wgsMiny = (srsBBOX.getMiny());
+	    			}	
+	    			else
+	    			{
+	    				CoordinateReferenceSystem sourceCRS = CRS.decode(srsBBOX.getSRS());
+	    				MathTransform transform = CRS.findMathTransform(sourceCRS, wgsCRS);
+	    				Envelope sourceEnvelope = new Envelope(Double.valueOf(srsBBOX.getMinx()),Double.valueOf(srsBBOX.getMaxx()),Double.valueOf(srsBBOX.getMiny()),Double.valueOf(srsBBOX.getMaxy()));
+	    				Envelope targetEnvelope = JTS.transform( sourceEnvelope, transform);
+	    				wgsMaxx = (String.valueOf(targetEnvelope.getMaxX()));
+	    				wgsMaxy = (String.valueOf(targetEnvelope.getMaxY()));
+	    				wgsMinx = (String.valueOf(targetEnvelope.getMinX()));
+	    				wgsMiny = (String.valueOf(targetEnvelope.getMinY()));
+	    			}
+	    			
+	    			if( !writeLatLonBBOX(elementLayer, wgsMinx, wgsMiny,wgsMaxx, wgsMaxy)) return false;
+	    			
+	    			parentCRS = writeCRSBBOX(elementLayer,srsBBOX,wgsCRS,parentCRS,wgsMinx,wgsMiny,wgsMaxx,wgsMaxy);
+	    			
+	    			Filter filtre = new WMSProxyCapabilitiesLayerFilter();
+	    			Iterator<Element> itL = elementLayer.getDescendants(filtre);
+	    			List<org.jdom.Element> sublayersList = new ArrayList<org.jdom.Element>();
+			    	while(itL.hasNext())
+					{
+			    		sublayersList.add((org.jdom.Element)itL.next());
+					}
+	    			while(itL.hasNext())
+					{
+			    		if ( !rewriteBBOX(sublayersList, wgsCRS,parentCRS) ) return false;
+					}	
+				}
+				catch (Exception e)
+				{
+					setLastException(e);
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+	
+	/**
+	 * Rewrite the LatLonBoundingBox Element
+	 * <LatLonBoundingBox minx="-6.06258" miny="41.1632" maxx="10.8783" maxy="51.2918"/>
+	 * @param elementLayer : the layer
+	 * @param wgsMinx : minx in EPSG:4326 reference system
+	 * @param wgsMiny : miny in EPSG:4326 reference system
+	 * @param wgsMaxx : maxx in EPSG:4326 reference system
+	 * @param wgsMaxy : maxy in EPSG:4326 reference system
+	 * @return
+	 */
+	private boolean writeLatLonBBOX(Element elementLayer, String wgsMinx, String wgsMiny, String wgsMaxx, String wgsMaxy)
+	{
+		try
+		{
+			List llBBOXElements = elementLayer.getChildren("LatLonBoundingBox");
+			if(llBBOXElements.size() != 0)
+			{
+	    		Element llBBOX = (Element) llBBOXElements.get(0);
+	    		llBBOX.setAttribute("minx",wgsMinx);
+	    		llBBOX.setAttribute("miny", wgsMiny);
+	    		llBBOX.setAttribute("maxx", wgsMaxx);
+	    		llBBOX.setAttribute("maxy", wgsMaxy);
+			}
+			else
+			{
+				//create element
+				Element element = new Element("LatLonBoundingBox");
+				element.setAttribute("minx",wgsMinx);
+				element.setAttribute("miny", wgsMiny);
+				element.setAttribute("maxx", wgsMaxx);
+				element.setAttribute("maxy", wgsMaxy);
+				elementLayer.addContent(element);
+	   		}
+			return true;
+		}
+		catch (Exception e)
+		{
+			setLastException(e);
+			return false;
+		}
+	}
+	
+	/**
+	 * Rewrite the BoundingBox element
+	 * <BoundingBox SRS="EPSG:27582" minx="10000" miny="1.6e+06" maxx="1.2e+06" maxy="2.7e+06"/>
+	 * @param elementLayer
+	 * @param srsBBOX : the BoundingBox define in the policy filter
+	 * @param wgsCRS : the EPSG:4326 CoordinateReferenceSystem
+	 * @param parentCRS : the CoordinateReferenceSystem of the parent layer
+	 * @param wgsMinx : minx in EPSG:4326 reference system
+	 * @param wgsMiny : miny in EPSG:4326 reference system
+	 * @param wgsMaxx : maxx in EPSG:4326 reference system
+	 * @param wgsMaxy : maxy in EPSG:4326 reference system
+	 * @return
+	 */
+	private CoordinateReferenceSystem writeCRSBBOX(Element elementLayer,BoundingBox srsBBOX,CoordinateReferenceSystem wgsCRS,CoordinateReferenceSystem parentCRS,String wgsMinx, String wgsMiny, String wgsMaxx, String wgsMaxy)
+	{
+		try
+		{
+			List<Element> srsBBOXElements = elementLayer.getChildren("BoundingBox"); 
+			if(srsBBOXElements.size() == 0)
+			{
+				//No BoundingBox for specific SRS : get the SRS parent to create one --> Needed only for WFS 1.3.0 but
+				if(parentCRS == null)
+					return null;
+				MathTransform transform = CRS.findMathTransform(wgsCRS, parentCRS);
+				Envelope sourceEnvelope = new Envelope(Double.valueOf(wgsMinx),Double.valueOf(wgsMaxx),Double.valueOf(wgsMiny),Double.valueOf(wgsMaxy));
+				Envelope targetEnvelope = JTS.transform( sourceEnvelope, transform);
+			
+				Element BBOX = new Element("BoundingBox");	
+				BBOX.setAttribute("SRS", parentCRS.getIdentifiers().toArray()[0].toString());
+				BBOX.setAttribute("minx", String.valueOf(targetEnvelope.getMinX()));
+				BBOX.setAttribute("miny", String.valueOf(targetEnvelope.getMinY()));
+				BBOX.setAttribute("maxx", String.valueOf(targetEnvelope.getMaxX()));
+				BBOX.setAttribute("maxy", String.valueOf(targetEnvelope.getMaxY()));
+				elementLayer.addContent(BBOX);
+				return parentCRS;
+			}
+			else
+			{
+				for (int j = 0 ; j < srsBBOXElements.size() ; j++)
+				{
+					Element BBOX = (Element) srsBBOXElements.get(j);
+					if(BBOX.getAttributeValue("SRS").equals(srsBBOX.getSRS()))
+					{
+						if(j == 0)
+						{
+							parentCRS = CRS.decode(BBOX.getAttributeValue("SRS"));
+						}
+						BBOX.setAttribute("minx", srsBBOX.getMinx());
+						BBOX.setAttribute("miny", srsBBOX.getMiny());
+						BBOX.setAttribute("maxx", srsBBOX.getMaxx());
+						BBOX.setAttribute("maxy", srsBBOX.getMaxy());
+					}
+					else
+					{
+						CoordinateReferenceSystem targetCRS =CRS.decode(BBOX.getAttributeValue("SRS"));
+						if(j == 0)
+						{
+							parentCRS = targetCRS;
+						}
+						MathTransform transform = CRS.findMathTransform(wgsCRS, targetCRS);
+						Envelope sourceEnvelope = new Envelope(Double.valueOf(wgsMinx),Double.valueOf(wgsMaxx),Double.valueOf(wgsMiny),Double.valueOf(wgsMaxy));
+						Envelope targetEnvelope = JTS.transform( sourceEnvelope, transform);
+						BBOX.setAttribute("minx", String.valueOf(targetEnvelope.getMinX()));
+						BBOX.setAttribute("miny", String.valueOf(targetEnvelope.getMinY()));
+						BBOX.setAttribute("maxx", String.valueOf(targetEnvelope.getMaxX()));
+						BBOX.setAttribute("maxy", String.valueOf(targetEnvelope.getMaxY()));
+					}
+				}
+			}
+			return parentCRS;
+		}
+		catch (Exception e)
+		{
+			setLastException(e);
+			return parentCRS;
+		}
+	}
 }

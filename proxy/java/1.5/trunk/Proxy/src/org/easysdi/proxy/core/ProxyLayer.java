@@ -32,7 +32,7 @@ public class ProxyLayer {
 			if(requestedLayer.contains("_"))
 			{
 				this.setAlias(requestedLayer.substring(0, requestedLayer.indexOf("_")));
-				this.setName(requestedLayer.substring(requestedLayer.indexOf("_")+1));
+				this.setName(requestedLayer.substring(requestedLayer.indexOf("_",0)+1));
 			}
 			else
 			{
