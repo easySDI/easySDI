@@ -33,13 +33,11 @@ public class WMSProxyResponseBuilder110 extends WMSProxyResponseBuilder {
 	 */
 	public WMSProxyResponseBuilder110(ProxyServlet proxyServlet) {
 		super(proxyServlet);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
 	public Boolean CapabilitiesOperationsFiltering(String filePath, String href) {
-		// TODO Auto-generated method stub
-		return null;
+		return super.CapabilitiesOperationsFiltering(filePath,href);
 	}
 
 	@Override

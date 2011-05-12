@@ -21,6 +21,7 @@ import java.util.Hashtable;
 
 import org.easysdi.proxy.core.ProxyServlet;
 import org.easysdi.proxy.wms.WMSProxyResponseBuilder;
+import org.jdom.Namespace;
 
 /**
  * @author DEPTH SA
@@ -33,13 +34,11 @@ public class WMSProxyResponseBuilder111 extends WMSProxyResponseBuilder {
 	 */
 	public WMSProxyResponseBuilder111(ProxyServlet proxyServlet) {
 		super(proxyServlet);
-		// TODO Auto-generated constructor stub
 	}
 	
 	@Override
 	public Boolean CapabilitiesOperationsFiltering(String filePath, String href) {
-		// TODO Auto-generated method stub
-		return null;
+		return super.CapabilitiesOperationsFiltering(filePath,href);
 	}
 
 	@Override

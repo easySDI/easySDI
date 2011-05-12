@@ -28,10 +28,29 @@ import org.jdom.Namespace;
  */
 public abstract class ProxyResponseBuilder {
 
+	/**
+	 * The calling servlet
+	 */
 	protected ProxyServlet servlet; 
+	
+	/**
+	 * Last exception catched by one of the class methods
+	 */
 	protected Exception lastException;
+	
+	/**
+	 * OWS namespace "http://www.opengis.net/ows/1.1"
+	 */
 	protected Namespace nsOWS ;
+	
+	/**
+	 * Xlink namespace "http://www.w3.org/1999/xlink"
+	 */
 	protected Namespace nsXLINK;
+	
+	/**
+	 * TExt message used for exception aggregation
+	 */
 	public static final String TEXT_SERVER_ALIAS = "Server %s returns : ";
 	
 	/**
@@ -50,17 +69,67 @@ public abstract class ProxyResponseBuilder {
 	}
 
 	/**
-	 * @return
+	 * @return the last exception catched by one the class methods
 	 */
 	public Exception getLastException() {
 		return lastException;
 	}
 	
+	/**
+	 * Remove the unauthorized operations (defined in the policy) from the GetCapabilities response.
+	 * Overwrite the OnlineResource link for all the authorized operations with the URL of he current servlet. 
+	 * @param filePath : file path of the GetCapabilities response file of the master remote server
+	 * @param href : Url of the current servlet (can be overwrite with the param 'HostTranslator' of the config.xml) @see ProxyServlet.getServletUrl()
+	 * @return true if the GetCapabilities was succesfully updated, false otherwise
+	 * If returns false, the caller should call getLastException() to get the catched exception.
+	 */
 	public abstract Boolean CapabilitiesOperationsFiltering (String filePath, String href );
+	
+	/**
+	 * Remove the unauthorized Layers (defined in the policy) from the GetCapabilities responses.
+	 * @param filePathList : List of the file path of the remote server responses
+	 * @return true if the GetCapabilities was succesfully updated, false otherwise
+	 * If returns false, the caller should call getLastException() to get the catched exception.
+	 */
 	public abstract Boolean CapabilitiesContentsFiltering (Hashtable<String, String> filePathList);
+	
+	/**
+	 * Remove the unauthorized Layers (defined in the policy) from the GetCapabilities responses.
+	 * @param filePathList : File paths of the remote server responses
+	 * @return true if the GetCapabilities was succesfully updated, false otherwise
+	 * If returns false, the caller should call getLastException() to get the catched exception.
+	 */
 	public abstract Boolean CapabilitiesContentsFiltering (HashMap<String, String> filePathList);
+	
+	/**
+	 * Merge all the remote servers GetCapabilities response into one single file
+	 * @param filePathList : File paths of the remote server responses 
+	 * @return true if the GetCapabilities was succesfully merged, false otherwise
+	 * If returns false, the caller should call getLastException() to get the catched exception.
+	 */
 	public abstract Boolean CapabilitiesMerging(Hashtable<String, String> filePathList);
+	
+	/**
+	 * Merge all the remote servers GetCapabilities response into one single file
+	 * @param filePathList : File paths of the remote server responses 
+	 * @return true if the GetCapabilities was succesfully merged, false otherwise
+	 * If returns false, the caller should call getLastException() to get the catched exception.
+	 */
 	public abstract Boolean CapabilitiesMerging(HashMap<String, String> filePathList);
+	
+	/**
+	 * 
+	 * @param filePath :file path of the GetCapabilities response file of the master remote server
+	 * @param href :: Url of the current servlet (can be overwrite with the param 'HostTranslator' of the config.xml) @see ProxyServlet.getServletUrl()
+	 * @return true if the GetCapabilities was succesfully updated, false otherwise
+	 * If returns false, the caller should call getLastException() to get the catched exception.
+	 */
 	public abstract Boolean CapabilitiesServiceIdentificationWriting(String filePath, String href);
+	
+	/**
+	 * Aggregate all the xml exceptions received from remote servers into one single xml exception (OGC compliant)
+	 * @param remoteServerExceptionFiles : file paths of the remote exception
+	 * @return the outputstream to send to the client
+	 */
 	public abstract ByteArrayOutputStream ExceptionAggregation(HashMap<String, String> remoteServerExceptionFiles);
 }

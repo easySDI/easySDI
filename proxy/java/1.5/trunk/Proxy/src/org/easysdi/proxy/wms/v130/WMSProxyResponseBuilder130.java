@@ -19,9 +19,7 @@ package org.easysdi.proxy.wms.v130;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -30,8 +28,6 @@ import java.util.Vector;
 
 import org.easysdi.jdom.filter.AttributeXlinkFilter;
 import org.easysdi.jdom.filter.ElementLayerFilter;
-import org.easysdi.jdom.filter.ElementOperationFilter;
-import org.easysdi.jdom.filter.ElementTileMatrixSetFilter;
 import org.easysdi.proxy.core.ProxyServlet;
 import org.easysdi.proxy.wms.WMSProxyResponseBuilder;
 import org.easysdi.xml.documents.RemoteServerInfo;
@@ -55,7 +51,6 @@ public class WMSProxyResponseBuilder130 extends WMSProxyResponseBuilder {
 	 */
 	public WMSProxyResponseBuilder130(ProxyServlet proxyServlet) {
 		super(proxyServlet);
-		nsXLINK = Namespace.getNamespace("http://www.w3.org/1999/xlink");
 		nsWMS = Namespace.getNamespace("http://www.opengis.net/wms");
 	}
 	
@@ -93,7 +88,8 @@ public class WMSProxyResponseBuilder130 extends WMSProxyResponseBuilder {
 	    	
 	    	//Operation filtering
 	    	Filter xlinkFilter = new AttributeXlinkFilter();
-	    	Element elementRequest = racine.getChild("Request", nsWMS);
+	    	Element elementCapability = racine.getChild("Capability", nsWMS);
+	    	Element elementRequest = elementCapability.getChild("Request", nsWMS);
 	    	List<Element> requestList =  elementRequest.getChildren();
 	    	List<Element> requestListToUpdate = new ArrayList<Element>();
 	    	Iterator iRequest = requestList.iterator();
@@ -102,13 +98,16 @@ public class WMSProxyResponseBuilder130 extends WMSProxyResponseBuilder {
 	    		 requestListToUpdate.add(courant);
 	    	}
 	    	
+	    	List<Element> toRemove =new ArrayList<Element>();
+	    	
 	    	Iterator iRequestToUpdate = requestList.iterator();
 	    	while(iRequestToUpdate.hasNext()){
 	    		 Element request = (Element)iRequestToUpdate.next();
 	    		 //If Request is not allowed by policy or not supported by the current Easysdy proxy : the element is remove from the capabilities document	    		 
 	    		 if(deniedOperations.contains(request.getName())){
-	    			 Parent parent = request.getParent();
-	    			 parent.removeContent (request);
+//	    			 Parent parent = request.getParent();
+//	    			 parent.removeContent (request);
+	    			 toRemove.add(request);
 	    		 }else{
 					//The request is allowed and supported, we overwrite xlink attribute
 					Iterator iXlink = request.getDescendants(xlinkFilter);
@@ -129,6 +128,12 @@ public class WMSProxyResponseBuilder130 extends WMSProxyResponseBuilder {
 						toUpdate.setAttribute("href", att, nsXLINK);
 					}
 	    		 }
+	    	}
+	    	
+	    	Iterator<Element> iToRemove = toRemove.iterator();
+	    	while (iToRemove.hasNext()){
+	    		Element request = iToRemove.next();
+	    		request.getParent().removeContent(request);
 	    	}
 	    	
     	   XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
@@ -226,7 +231,6 @@ public class WMSProxyResponseBuilder130 extends WMSProxyResponseBuilder {
 			Document documentMaster = sxb.build(new File(fileMasterPath));
 			
 			//Filter the layer
-			Filter layerFilter = new ElementLayerFilter();
 			Element racineMaster = documentMaster.getRootElement();
 			Element capabilityMaster = (Element)racineMaster.getChild("Capability", nsWMS);
 			
@@ -247,11 +251,11 @@ public class WMSProxyResponseBuilder130 extends WMSProxyResponseBuilder {
 					
 					Element capabilityChild = (Element)racineChild.getChild("Capability", nsWMS);
 					
-					Iterator<Element> ichild = capabilityChild.getDescendants(new ElementLayerFilter());
+					Iterator<Element> ichild = capabilityChild.getChildren("Layer", nsWMS).iterator();
 					while (ichild.hasNext())
 					{
 						Element child = (Element)((Element)ichild.next()).clone();
-						capabilityMaster.addContent(1, child);
+						capabilityMaster.addContent(capabilityMaster.getContentSize(), child);
 					}
 				}
 			}
@@ -271,14 +275,6 @@ public class WMSProxyResponseBuilder130 extends WMSProxyResponseBuilder {
 		return true;
 	}
 
-	@Override
-	public Boolean CapabilitiesContentsFiltering(Hashtable<String, String> filePathList) {
-		return true;
-	}
-
-	@Override
-	public Boolean CapabilitiesMerging(Hashtable<String, String> filePathList) {
-		return true;
-	}
+	
 
 }
