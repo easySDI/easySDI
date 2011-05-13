@@ -2100,8 +2100,6 @@ public class WMSProxyServlet extends ProxyServlet {
 			}
 			if (g != null)g.dispose();
 			
-			// Etape nécessaire car "resp.getOutputStream()" ne peux pas
-			// lire directement le flux d' "imageSource"
 			Iterator<ImageWriter> iter = ImageIO.getImageWritersByMIMEType(responseContentType);
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			if (iter.hasNext()) {
@@ -2383,8 +2381,8 @@ public class WMSProxyServlet extends ProxyServlet {
 			ProxyLayer layer = new ProxyLayer(layerName);
 			if(layer.getAlias() == null)
 			{
-				dump("INFO",OWSExceptionReport.TEXT_INVALID_LAYER_NAME);
-				StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_LAYER_NAME,OWSExceptionReport.CODE_LAYER_NOT_DEFINED,"LAYERS");
+				dump("INFO",OWSExceptionReport.TEXT_INVALID_LAYER_NAME+layerName);
+				StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_LAYER_NAME +layerName,OWSExceptionReport.CODE_LAYER_NOT_DEFINED,"LAYERS");
 				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
 				return null;
 			}
@@ -2393,8 +2391,8 @@ public class WMSProxyServlet extends ProxyServlet {
 			
 			//Check the availaibility of the requested LAYERS 
 			if( RS == null || !isLayerAllowed(layer.getName(), RS.getUrl())){
-				dump("INFO",OWSExceptionReport.TEXT_INVALID_LAYER_NAME);
-				StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_LAYER_NAME,OWSExceptionReport.CODE_LAYER_NOT_DEFINED,"LAYERS");
+				dump("INFO",OWSExceptionReport.TEXT_INVALID_LAYER_NAME+layerName);
+				StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_LAYER_NAME+layerName,OWSExceptionReport.CODE_LAYER_NOT_DEFINED,"LAYERS");
 				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
 				return null;
 			}

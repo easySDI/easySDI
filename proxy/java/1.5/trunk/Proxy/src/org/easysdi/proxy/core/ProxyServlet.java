@@ -2290,7 +2290,7 @@ public abstract class ProxyServlet extends HttpServlet {
 			resp.setContentLength(tempOut.size());
 			
 			try {
-				dump("transform begin response writting");
+				dump("DEBUG","begin response writting");
 				if (req!= null && "1".equals(req.getParameter("download"))) {
 					String format = req.getParameter("format");
 					if (format == null)
@@ -2305,7 +2305,7 @@ public abstract class ProxyServlet extends HttpServlet {
 				}
 				if (tempOut != null)
 					os.write(tempOut.toByteArray());
-				dump("transform end response writting");
+				dump("DEBUG","end response writting");
 			} finally {
 				os.flush();
 				os.close();
