@@ -29,17 +29,13 @@ import java.util.Vector;
 import org.easysdi.jdom.filter.AttributeXlinkFilter;
 import org.easysdi.jdom.filter.ElementLayerFilter;
 import org.easysdi.proxy.core.ProxyServlet;
+import org.easysdi.proxy.policy.BoundingBox;
 import org.easysdi.proxy.wms.WMSProxyResponseBuilder;
 import org.easysdi.xml.documents.Config;
-import org.easysdi.xml.documents.OWSAddress;
-import org.easysdi.xml.documents.OWSContact;
-import org.easysdi.xml.documents.OWSResponsibleParty;
-import org.easysdi.xml.documents.OWSServiceMetadata;
-import org.easysdi.xml.documents.OWSServiceProvider;
-import org.easysdi.xml.documents.OWSTelephone;
 import org.easysdi.xml.documents.RemoteServerInfo;
 import org.easysdi.xml.documents.ServiceContactAdressInfo;
 import org.easysdi.xml.documents.ServiceContactInfo;
+import org.geotools.referencing.CRS;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.Namespace;
@@ -48,6 +44,7 @@ import org.jdom.filter.Filter;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * @author DEPTH SA
@@ -55,7 +52,7 @@ import org.jdom.output.XMLOutputter;
  */
 public class WMSProxyResponseBuilder130 extends WMSProxyResponseBuilder {
 
-	/**
+		/**
 	 * @param proxyServlet
 	 */
 	public WMSProxyResponseBuilder130(ProxyServlet proxyServlet) {
@@ -159,12 +156,14 @@ public class WMSProxyResponseBuilder130 extends WMSProxyResponseBuilder {
 	/* (non-Javadoc)
 	 * @see org.easysdi.proxy.core.ProxyResponseBuilder#CapabilitiesContentsFiltering(java.util.HashMap)
 	 */
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "rawtypes", "unused" })
 	@Override
 	public Boolean CapabilitiesContentsFiltering(HashMap<String, String> wmsGetCapabilitiesResponseFilePath, String href) {
 		servlet.dump("INFO","transform - Start - Capabilities contents filtering");
 	    try
 	    {
+	    	CoordinateReferenceSystem wgsCRS = CRS.decode("EPSG:4326");
+	    	
 	    	SAXBuilder sxb = new SAXBuilder();
 	    	Iterator<Entry<String, String>> iFile =  wmsGetCapabilitiesResponseFilePath.entrySet().iterator();
 	    	while (iFile.hasNext())
@@ -221,6 +220,18 @@ public class WMSProxyResponseBuilder130 extends WMSProxyResponseBuilder {
 						}
 		    		}
 		    	}
+		    	
+		    	//Rewrite the BBOX according to the policy geographic filter
+		    	Filter layerParentFilter = new ElementLayerFilter();
+		    	List<Element> layerParentList = new ArrayList<Element>();	    	  
+		    	Iterator iLayerParent= racine.getDescendants(layerFilter);
+		    	while(iLayerParent.hasNext())
+		    	{
+		    	   Element courant = (Element)iLayerParent.next();
+		    	   layerParentList.add(courant);
+		    	}
+		    	if(!rewriteBBOX(layerParentList, wgsCRS, null))
+		    		return false;
 		    	
 	    	   XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
 	           sortie.output(docParent, new FileOutputStream(filePath));
@@ -443,4 +454,84 @@ public class WMSProxyResponseBuilder130 extends WMSProxyResponseBuilder {
 			return false;
 		}
 	}
+	
+	/* (non-Javadoc)
+	 * @see org.easysdi.proxy.wms.WMSProxyResponseBuilder#writeLatLonBBOX(org.jdom.Element, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+	 */
+	@SuppressWarnings("rawtypes")
+	@Override
+	protected boolean writeLatLonBBOX(Element elementLayer, String wgsMinx, String wgsMiny, String wgsMaxx, String wgsMaxy)
+	{
+		try
+		{
+			List llBBOXElements = elementLayer.getChildren("EX_GeographicBoundingBox",nsWMS);
+			if(llBBOXElements.size() != 0)
+			{
+	    		org.jdom.Element llBBOX = (org.jdom.Element) llBBOXElements.get(0);
+	    		llBBOX.getChild("westBoundLongitude",nsWMS).setText(wgsMinx);
+	    		llBBOX.getChild("eastBoundLongitude",nsWMS).setText(wgsMaxx);
+	    		llBBOX.getChild("southBoundLatitude",nsWMS).setText(wgsMiny);
+	    		llBBOX.getChild("northBoundLatitude",nsWMS).setText(wgsMaxy);
+			}
+			else
+			{
+				//create element
+				Element element = new Element("EX_GeographicBoundingBox",nsWMS);
+				Element wbl = new Element("westBoundLongitude",nsWMS);
+				wbl.setText(wgsMiny);
+				Element ebl = new Element("eastBoundLongitude",nsWMS);
+				ebl.setText(wgsMaxy);
+				Element sbl = new Element("southBoundLatitude",nsWMS);
+				sbl.setText(wgsMinx);
+				Element nbl = new Element("northBoundLatitude",nsWMS);
+				nbl.setText(wgsMaxx);
+				element.addContent(wbl );
+				element.addContent(ebl );
+				element.addContent(sbl );
+				element.addContent(nbl );
+				elementLayer.addContent(element);
+	   		}
+			return true;
+		}
+		catch (Exception e)
+		{
+			setLastException(e);
+			return false;
+		}
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.easysdi.proxy.wms.WMSProxyResponseBuilder#getElementBoundingBox(org.jdom.Element)
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	protected List<Element> getElementBoundingBox (Element elementLayer)
+	{
+		return elementLayer.getChildren("BoundingBox", nsWMS);
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.easysdi.proxy.wms.WMSProxyResponseBuilder#createElementBoundingBox()
+	 */
+	@Override
+	protected Element createElementBoundingBox ()
+	{
+		return new Element("BoundingBox",nsWMS);
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.easysdi.proxy.wms.WMSProxyResponseBuilder#getAttributeSRS()
+	 */
+	@Override
+	protected String getAttributeSRS ()
+	{
+			return "CRS";
+	}
+
+	/* (non-Javadoc)
+	 * @see org.easysdi.proxy.wms.WMSProxyResponseBuilder#getLayerName(org.jdom.Element)
+	 */
+	@Override
+	protected String getLayerName(Element layer) {
+		return layer.getChild("Name",nsWMS).getValue();	}
 }

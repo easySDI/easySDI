@@ -174,14 +174,14 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 	/* (non-Javadoc)
 	 * @see org.easysdi.proxy.core.ProxyResponseBuilder#CapabilitiesContentsFiltering(java.util.HashMap)
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked", "unused" })
+	@SuppressWarnings({ "rawtypes", "unused" })
 	@Override
 	public Boolean CapabilitiesContentsFiltering(HashMap<String, String> wmsGetCapabilitiesResponseFilePath, String href) {
 		servlet.dump("INFO","transform - Start - Capabilities contents filtering");
 	    try
 	    {
 	    	CoordinateReferenceSystem wgsCRS = CRS.decode("EPSG:4326");
-			
+	    	
 	    	SAXBuilder sxb = new SAXBuilder();
 	    	Iterator<Entry<String, String>> iFile =  wmsGetCapabilitiesResponseFilePath.entrySet().iterator();
 	    	while (iFile.hasNext())
@@ -240,10 +240,15 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 		    		}
 		    	}
 		    	
-		    	
-		    	Element t = racine.getChild("Capability");
-		    	List<Element> p = t.getChildren("Layer");
-		    	List<Element> layerParentList =  racine.getChild("Capability").getChildren("Layer");
+		    	//Rewrite the BBOX according to the policy geographic filter
+		    	Filter layerParentFilter = new ElementLayerFilter();
+		    	List<Element> layerParentList = new ArrayList<Element>();	    	  
+		    	Iterator iLayerParent= racine.getDescendants(layerFilter);
+		    	while(iLayerParent.hasNext())
+		    	{
+		    	   Element courant = (Element)iLayerParent.next();
+		    	   layerParentList.add(courant);
+		    	}
 		    	if(!rewriteBBOX(layerParentList, wgsCRS, null))
 		    		return false;
 		    	
@@ -561,7 +566,8 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 	 * @param parentCRS : the CoordinateReferenceSystem of the parent layer
 	 * @return
 	 */
-	private boolean rewriteBBOX(List<Element> layersList,CoordinateReferenceSystem wgsCRS,CoordinateReferenceSystem parentCRS)
+	@SuppressWarnings("unchecked")
+	protected boolean rewriteBBOX(List<Element> layersList,CoordinateReferenceSystem wgsCRS,CoordinateReferenceSystem parentCRS)
 	{
 		String wgsMaxx;
 		String wgsMaxy;
@@ -579,14 +585,14 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 				try
 				{
 	    			Server server = serverList.get(i);
-	    			ProxyLayer proxyLayer = new ProxyLayer(elementLayer.getChild("Name").getValue());
+	    			ProxyLayer proxyLayer = new ProxyLayer(getLayerName(elementLayer));
 	    			Layer currentLayer = server.getLayers().getLayerByName(proxyLayer.getName());
 	    			
 	    			//Not the right server
 	    			if(currentLayer == null)
 	    				continue;
 	    			
-	    			//No BBOX to rewrite
+	    			//No geographic filter : no BBOX to overwrite
 	    			if(currentLayer.getBoundingBox() == null)
 	    				continue;
 	    			
@@ -647,7 +653,8 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 	 * @param wgsMaxy : maxy in EPSG:4326 reference system
 	 * @return
 	 */
-	private boolean writeLatLonBBOX(Element elementLayer, String wgsMinx, String wgsMiny, String wgsMaxx, String wgsMaxy)
+	@SuppressWarnings("rawtypes")
+	protected boolean writeLatLonBBOX(Element elementLayer, String wgsMinx, String wgsMiny, String wgsMaxx, String wgsMaxy)
 	{
 		try
 		{
@@ -692,11 +699,11 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 	 * @param wgsMaxy : maxy in EPSG:4326 reference system
 	 * @return
 	 */
-	private CoordinateReferenceSystem writeCRSBBOX(Element elementLayer,BoundingBox srsBBOX,CoordinateReferenceSystem wgsCRS,CoordinateReferenceSystem parentCRS,String wgsMinx, String wgsMiny, String wgsMaxx, String wgsMaxy)
+	protected CoordinateReferenceSystem writeCRSBBOX(Element elementLayer,BoundingBox srsBBOX,CoordinateReferenceSystem wgsCRS,CoordinateReferenceSystem parentCRS,String wgsMinx, String wgsMiny, String wgsMaxx, String wgsMaxy)
 	{
 		try
 		{
-			List<Element> srsBBOXElements = elementLayer.getChildren("BoundingBox"); 
+			List<Element> srsBBOXElements = getElementBoundingBox(elementLayer); 
 			if(srsBBOXElements.size() == 0)
 			{
 				//No BoundingBox for specific SRS : get the SRS parent to create one --> Needed only for WFS 1.3.0 but
@@ -706,8 +713,8 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 				Envelope sourceEnvelope = new Envelope(Double.valueOf(wgsMinx),Double.valueOf(wgsMaxx),Double.valueOf(wgsMiny),Double.valueOf(wgsMaxy));
 				Envelope targetEnvelope = JTS.transform( sourceEnvelope, transform);
 			
-				Element BBOX = new Element("BoundingBox");	
-				BBOX.setAttribute("SRS", parentCRS.getIdentifiers().toArray()[0].toString());
+				Element BBOX = createElementBoundingBox();	
+				BBOX.setAttribute(getAttributeSRS(), parentCRS.getIdentifiers().toArray()[0].toString());
 				BBOX.setAttribute("minx", String.valueOf(targetEnvelope.getMinX()));
 				BBOX.setAttribute("miny", String.valueOf(targetEnvelope.getMinY()));
 				BBOX.setAttribute("maxx", String.valueOf(targetEnvelope.getMaxX()));
@@ -720,11 +727,11 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 				for (int j = 0 ; j < srsBBOXElements.size() ; j++)
 				{
 					Element BBOX = (Element) srsBBOXElements.get(j);
-					if(BBOX.getAttributeValue("SRS").equals(srsBBOX.getSRS()))
+					if(BBOX.getAttributeValue(getAttributeSRS()).equals(srsBBOX.getSRS()))
 					{
 						if(j == 0)
 						{
-							parentCRS = CRS.decode(BBOX.getAttributeValue("SRS"));
+							parentCRS = CRS.decode(BBOX.getAttributeValue(getAttributeSRS()));
 						}
 						BBOX.setAttribute("minx", srsBBOX.getMinx());
 						BBOX.setAttribute("miny", srsBBOX.getMiny());
@@ -733,7 +740,7 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 					}
 					else
 					{
-						CoordinateReferenceSystem targetCRS =CRS.decode(BBOX.getAttributeValue("SRS"));
+						CoordinateReferenceSystem targetCRS =CRS.decode(BBOX.getAttributeValue(getAttributeSRS()));
 						if(j == 0)
 						{
 							parentCRS = targetCRS;
@@ -755,5 +762,41 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 			setLastException(e);
 			return parentCRS;
 		}
+	}
+	
+	/**
+	 * Return a list  containing the BoundingBox definition of the specified element <Layer>
+	 * @param elementLayer
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	protected List<Element> getElementBoundingBox (Element elementLayer)
+	{
+		return elementLayer.getChildren("BoundingBox"); 
+	}
+	
+	/**
+	 * @return a new Element defining a BoundingBox
+	 */
+	protected Element createElementBoundingBox ()
+	{
+		return new Element("BoundingBox");
+	}
+
+	
+	/**
+	 * @return the attribute name to use to define the coordinate reference system
+	 */
+	protected String getAttributeSRS ()
+	{
+		return "SRS";
+	}
+	
+	/**
+	 * @param layer
+	 * @return the value of the <Name> element
+	 */
+	protected String getLayerName (Element layer){
+		return layer.getChild("Name").getValue();
 	}
 }
