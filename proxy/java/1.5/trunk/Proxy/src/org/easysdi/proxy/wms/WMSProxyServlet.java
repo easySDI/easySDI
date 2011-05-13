@@ -1929,7 +1929,7 @@ public class WMSProxyServlet extends ProxyServlet {
 			
 			if (wmsGetFeatureInfoResponseFilePathMap.size() > 0) {
 				dump("DEBUG","requestPreTraitementGET begin transform");
-				transform(getProxyRequest().getVersion().replaceAll("\\.", ""), getProxyRequest().getOperation(), req, resp);
+				transformGetFeatureInfo( req, resp);
 				dump("DEBUG","requestPreTraitementGET end transform");
 			} else {
 				// TODO : generate an OGC exception
@@ -1959,7 +1959,7 @@ public class WMSProxyServlet extends ProxyServlet {
 	 * - Authorized layers
 	 * - BBOX (geographic filter)
 	 * - online resources
-	 * Merge all the remote response in one single file to send to the client.
+	 * Merge all the remote responses into one single file to send to the client.
 	 * @param req
 	 * @param resp
 	 */
@@ -2050,6 +2050,12 @@ public class WMSProxyServlet extends ProxyServlet {
 		}
 	}
 	
+	/**
+	 * Apply the geographic filter, defined in the policy, on the response from remote servers.
+	 * Buffer image.
+	 * @param req
+	 * @param resp
+	 */
 	public void transformGetMap (HttpServletRequest req, HttpServletResponse resp){
 		try{
 			//Get the responses which are OGC exception (XML)
@@ -2109,6 +2115,79 @@ public class WMSProxyServlet extends ProxyServlet {
 					writer.write(imageSource);
 			}
 			sendHttpServletResponse(req,resp, out,responseContentType, responseStatusCode);
+		}catch (Exception e){
+			resp.setHeader("easysdi-proxy-error-occured", "true");
+			e.printStackTrace();
+			dump("ERROR", e.getMessage());
+			StringBuffer out;
+			try {
+				out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
+				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			} catch (IOException e1) {
+				dump("ERROR", e1.getMessage());
+				e1.printStackTrace();
+			}
+			return;
+		}
+	}
+	
+	/**
+	 * @param req
+	 * @param resp
+	 */
+	public void transformGetFeatureInfo (HttpServletRequest req, HttpServletResponse resp){
+		try{
+			//Get the responses which are OGC exception (XML)
+			HashMap<String, String> remoteServerExceptionFiles = getRemoteServerExceptionResponse(wmsGetFeatureInfoResponseFilePathMap);
+	
+			//If the Exception mode is 'restrictive' and at least a response is an exception
+			//Or if the Exception mode is 'permissive' and all the response are exceptio
+			//Aggegate the exception files and send the result to the client
+			if((remoteServerExceptionFiles.size() > 0 && configuration.getExceptionMode().equals("restrictive")) ||  
+					(wmsGetMapResponseFilePathMap.size() == 0)){
+				dump("INFO","Exception(s) returned by remote server(s) are sent to client.");
+				ByteArrayOutputStream exceptionOutputStream = docBuilder.ExceptionAggregation(remoteServerExceptionFiles);
+				sendHttpServletResponse(req,resp,exceptionOutputStream, "text/xml; charset=utf-8", HttpServletResponse.SC_OK);
+				return;
+			}
+			
+			tempOut = new ByteArrayOutputStream();
+			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+			XPathFactory xpathFactory = XPathFactory.newInstance();
+			DocumentBuilder builder = factory.newDocumentBuilder();
+			Document doc = builder.newDocument();
+			transformer = tFactory.newTransformer();
+			XPath xpath = xpathFactory.newXPath();
+			XPathExpression expr = xpath.compile("/FeatureCollection");
+			Element rootNode = null;
+
+			for (String path : wmsFilePathList.values()) {
+				Document resultDoc = builder.parse(new File(path));
+				if (rootNode == null) {
+					DeferredElementImpl result = (DeferredElementImpl) expr.evaluate(resultDoc, XPathConstants.NODE);
+					if (result != null) {
+						rootNode = (Element) doc.importNode(result, true);
+						doc.appendChild(rootNode);
+					}
+				} else {
+					DeferredElementImpl result = (DeferredElementImpl) resultDoc.getDocumentElement().getChildNodes();
+					for (int i = 0; i < result.getAttributes().getLength(); i++) {
+						Attr attr = (Attr) doc.importNode(result.getAttributes().item(i), true);
+						rootNode.setAttributeNode(attr);
+					}
+					if (result != null && result.getLength() > 0) {
+						for (int i = 0; i < result.getLength(); i++) {
+							Node nnode = result.item(i);
+							if (!"gml:boundedBy".equals(nnode.getNodeName())) {
+								nnode = doc.importNode(nnode, true);
+								rootNode.appendChild(nnode);
+							}
+						}
+					}
+
+				}
+			}
+			transformer.transform(new DOMSource(doc), new StreamResult(tempOut));
 		}catch (Exception e){
 			resp.setHeader("easysdi-proxy-error-occured", "true");
 			e.printStackTrace();
