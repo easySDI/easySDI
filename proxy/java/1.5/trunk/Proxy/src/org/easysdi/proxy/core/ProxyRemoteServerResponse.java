@@ -25,8 +25,6 @@ public class ProxyRemoteServerResponse {
 	private String alias;
 	private String path;
 	
-	
-	
 	/**
 	 * @param alias
 	 * @param path

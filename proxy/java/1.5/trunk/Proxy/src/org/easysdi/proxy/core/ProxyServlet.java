@@ -117,7 +117,11 @@ public abstract class ProxyServlet extends HttpServlet {
 	 */
 	protected org.easysdi.xml.documents.Config configuration;
 
+	/**
+	 * Policy loaded
+	 */
 	public Policy policy;
+	
 	protected String requestCharacterEncoding = null;
 	protected String responseContentType = null;
 	protected List<String> responseContentTypeList = new ArrayList<String>();
@@ -126,8 +130,7 @@ public abstract class ProxyServlet extends HttpServlet {
 	protected String srsName = null;
 	protected Map<Integer, String> wfsFilePathList = new TreeMap<Integer, String>();
 	public Multimap<Integer, String> wmsFilePathList = HashMultimap.create();
-	
-	
+		
 	/**
 	 * WMTS response files
 	 */
@@ -343,10 +346,19 @@ public abstract class ProxyServlet extends HttpServlet {
 		return null;
 	}
 
+	/**
+	 * Get the policy file path
+	 * @return file path
+	 */
 	protected String getPolicyFilePath() {
 		return configuration.getPolicyFile();
 	}
 
+	
+	/**
+	 * Set the current config
+	 * @param conf
+	 */
 	public void setConfiguration(org.easysdi.xml.documents.Config conf) {
 		configuration = conf;
 	}
@@ -366,6 +378,9 @@ public abstract class ProxyServlet extends HttpServlet {
 		return policyFile;
 	}
 
+	/* (non-Javadoc)
+	 * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+	 */
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		// Get the date and time of the request
 		// lLogs = null;
@@ -382,6 +397,9 @@ public abstract class ProxyServlet extends HttpServlet {
 
 	}
 
+	/* (non-Javadoc)
+	 * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+	 */
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		// lLogs = null;
 		// Get the date and time of the request
@@ -399,8 +417,16 @@ public abstract class ProxyServlet extends HttpServlet {
 
 	}
 
+	/**
+	 * @param req
+	 * @param resp
+	 */
 	protected abstract void requestPreTreatmentPOST(HttpServletRequest req, HttpServletResponse resp);
 
+	/**
+	 * @param req
+	 * @param resp
+	 */
 	protected abstract void requestPreTreatmentGET(HttpServletRequest req, HttpServletResponse resp);
 
 	
@@ -512,6 +538,11 @@ public abstract class ProxyServlet extends HttpServlet {
 		return url;
 	}
 
+	/**
+	 * Write all the dumped informations into the file log
+	 * @param date
+	 * @param req
+	 */
 	private void writeInLog(String date, HttpServletRequest req) {
 		boolean newLog = false;
 		String u = "";
@@ -571,15 +602,30 @@ public abstract class ProxyServlet extends HttpServlet {
 
 	}
 
+	/**
+	 * @param severity
+	 * @param name
+	 * @param o
+	 */
 	protected void dump(String severity, String name, Object o) {
 		dump(severity, name, "" + o);
 	}
 
+	/**
+	 * @param severity
+	 * @param name
+	 * @param sb
+	 */
 	protected void dump(String severity, String name, int sb) {
 		dump(severity, name, "" + sb);
 
 	}
 
+	/**
+	 * @param severity
+	 * @param name
+	 * @param sb
+	 */
 	protected void dump(String severity, String name, StringBuffer sb) {
 		if (sb != null)
 			dump(severity, name, sb.toString());
@@ -587,6 +633,114 @@ public abstract class ProxyServlet extends HttpServlet {
 			dump(severity, name, "null");
 	}
 
+	/**
+	 * @param s
+	 * @param s2
+	 */
+	public void dump(String s, String s2) {
+		if (s2 != null)
+			dump(s, null, s2);
+		else
+			dump(s, null, "null");
+
+	}
+
+	/**
+	 * @param s
+	 * @param o
+	 */
+	protected void dump(String s, Object o) {
+		if (o != null)
+			dump(s, o.toString());
+		else
+			dump(s, "null");
+
+	}
+
+	/**
+	 * @param o
+	 */
+	public void dump(Object o) {
+		if (o != null)
+			dump("INFO", o.toString());
+		else
+			dump("INFO", "null");
+	}
+
+	/**
+	 * @param s
+	 * @param d
+	 */
+	protected void dump(String s, Double d) {
+		dump(s, d.toString());
+	}
+
+	/**
+	 * @param d
+	 */
+	protected void dump(Double d) {
+		dump("INFO", d.toString());
+	}
+
+	/**
+	 * @param s
+	 * @param d
+	 */
+	protected void dump(String s, double d) {
+		dump(s, Double.toString(d));
+	}
+
+	/**
+	 * @param d
+	 */
+	protected void dump(double d) {
+		dump("INFO", Double.toString(d));
+	}
+
+	/**
+	 * Dump the string into the log file with the info severity
+	 * 
+	 * @param s
+	 *            the String to dump
+	 */
+	protected void dump(String s) {
+		if (s != null)
+			dump("INFO", s);
+		else
+			dump("INFO", "null");
+	}
+
+	/**
+	 * Dump the stringBuffer into the log file with the info severity
+	 * 
+	 * @param s
+	 *            the StringBuffer to dump
+	 */
+	protected void dump(StringBuffer s) {
+		if (s != null)
+			dump(s.toString());
+		else
+			dump("null");
+	}
+
+	/**
+	 * Dump the stringBuffer into the log file
+	 * 
+	 * @param s
+	 *            the StringBuffer to dump
+	 */
+	protected void dump(String severity, StringBuffer s) {
+		if (s != null)
+			dump(severity, s.toString());
+		else
+			dump(severity, "null");
+	}
+	
+	/**
+	 * @param severity
+	 * @param name
+	 * @param s
+	 */
 	protected void dump(String severity, String name, String s) {
 		if (severity == null)
 			severity = "DEBUG";
@@ -604,13 +758,9 @@ public abstract class ProxyServlet extends HttpServlet {
 			sb.append("\"");
 		}
 		sb.append(">");
-		// Debug tb 07.01.2010
 		sb.append("<![CDATA[");
-		// Fin de debug
 		sb.append(s);
-		// Debug tb 07.01.2010
 		sb.append("]]>");
-		// Fin de debug
 		sb.append("</logEntry>");
 
 		synchronized (lLogs) {
@@ -618,84 +768,6 @@ public abstract class ProxyServlet extends HttpServlet {
 				lLogs = new Vector<String>();
 			lLogs.add(sb.toString());
 		}
-	}
-
-	public void dump(String s, String s2) {
-		if (s2 != null)
-			dump(s, null, s2);
-		else
-			dump(s, null, "null");
-
-	}
-
-	protected void dump(String s, Object o) {
-		if (o != null)
-			dump(s, o.toString());
-		else
-			dump(s, "null");
-
-	}
-
-	public void dump(Object o) {
-		if (o != null)
-			dump("INFO", o.toString());
-		else
-			dump("INFO", "null");
-	}
-
-	protected void dump(String s, Double d) {
-		dump(s, d.toString());
-	}
-
-	protected void dump(Double d) {
-		dump("INFO", d.toString());
-	}
-
-	protected void dump(String s, double d) {
-		dump(s, Double.toString(d));
-	}
-
-	protected void dump(double d) {
-		dump("INFO", Double.toString(d));
-	}
-
-	/***************************************************************************
-	 * Dump the string into the log file with the info severity
-	 * 
-	 * @param s
-	 *            the String to dump
-	 */
-	protected void dump(String s) {
-		if (s != null)
-			dump("INFO", s);
-		else
-			dump("INFO", "null");
-	}
-
-	/***************************************************************************
-	 * Dump the stringBuffer into the log file with the info severity
-	 * 
-	 * @param s
-	 *            the StringBuffer to dump
-	 */
-	protected void dump(StringBuffer s) {
-		if (s != null)
-			dump(s.toString());
-		else
-			dump("null");
-	}
-
-	/***************************************************************************
-	 * Dump the stringBuffer into the log file
-	 * 
-	 * @param s
-	 *            the StringBuffer to dump
-	 */
-	protected void dump(String severity, StringBuffer s) {
-		if (s != null)
-			dump(severity, s.toString());
-		else
-			dump(severity, "null");
 	}
 
 	/**
