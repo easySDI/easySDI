@@ -1400,6 +1400,14 @@ function com_install(){
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 				return false;
 			}
+			
+			//adding sitemap Params column
+			$query="ALTER TABLE `#__sdi_objecttype` ADD sitemapParams varchar(1000)";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
 
 	
 			

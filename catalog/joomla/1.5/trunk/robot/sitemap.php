@@ -1,12 +1,12 @@
 <?php
 /*
-* Génération du sitemap des métadonnées visibles pour le public
+* Gï¿½nï¿½ration du sitemap des mï¿½tadonnï¿½es visibles pour le public
 */
-	// Charger la configuration de Joomla pour un accès à la base de données mysql
+	// Charger la configuration de Joomla pour un accï¿½s ï¿½ la base de donnï¿½es mysql
 	require_once ('configuration.php');
 	$jconfig = new JConfig(); 
 	
-	// Connection à la base de données
+	// Connection ï¿½ la base de donnï¿½es
 	$db =& mysql_pconnect($jconfig->host, $jconfig->user, $jconfig->password);
 	if (!$db) 
 	{
@@ -14,12 +14,12 @@
 	}
 	$db_selected = mysql_select_db($jconfig->db, $db);
 	if (!$db_selected) {
-	   die ('Impossible de sélectionner la base de données : ' . mysql_error());
+	   die ('Impossible de sï¿½lectionner la base de donnï¿½es : ' . mysql_error());
 	}
 	
-	/* Début du code de génération du sitemap.xml */
+	/* Dï¿½but du code de gï¿½nï¿½ration du sitemap.xml */
 	
-	// URL d'accès à chaque métadonnée
+	// URL d'accï¿½s ï¿½ chaque mï¿½tadonnï¿½e
 	if (isset($_SERVER['HTTPS']) && !empty($_SERVER['HTTPS']) && (strtolower($_SERVER['HTTPS']) != 'off')) {
 		$https = 's://';
 	} else {
@@ -29,7 +29,7 @@
 	$root = "http".$https.substr($_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME'], 0, strrpos($_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME'], '/'));
 	$url = $root."/index.php?tmpl=component&amp;option=com_easysdi_catalog&amp;task=showMetadata&amp;type=complete&amp;id=";
 	
-	// Création d'un DOMDocument
+	// Crï¿½ation d'un DOMDocument
 	$XMLDoc = new DOMDocument('1.0', 'UTF-8');
 	$XMLDoc->formatOutput = true;
 	
@@ -38,12 +38,13 @@
 	$XMLDoc->appendChild($XMLRoot);
 	$XMLRoot->setAttribute('xmlns', "http://www.sitemaps.org/schemas/sitemap/0.9");
 	
-	// Récupérer toutes les métadonnées dont le statut de publication est "public"
+	// Rï¿½cupï¿½rer toutes les mï¿½tadonnï¿½es dont le statut de publication est "public"
 	$mdList=array();
-	$query = "	SELECT m.guid, m.updated
+	$query = "	SELECT m.guid, m.updated, ot.code, ot.sitemapParams
 				FROM #__sdi_metadata m
 				INNER JOIN #__sdi_objectversion ov ON ov.metadata_id=m.id
 				INNER JOIN #__sdi_object o ON o.id=ov.object_id
+				INNER JOIN #__sdi_objecttype ot ON ot.id =o.objecttype_id
 				INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
 				INNER JOIN #__sdi_list_metadatastate ms ON m.metadatastate_id=ms.id
 				WHERE v.code='public'
@@ -52,40 +53,42 @@
 	$query = replacePrefix($query, $jconfig->dbprefix);
 	$mdList = loadObjectList($query);
 	
-	// Parcours des métadonnées pour la création de chaque noeud XML
+	// Parcours des mï¿½tadonnï¿½es pour la crï¿½ation de chaque noeud XML
 	foreach ($mdList as $md)
 	{
 		// Noeud principal
-		$XMLUrl = $XMLDoc->createElement("url");
-		$XMLRoot->appendChild($XMLUrl);
-		
-		//URL de la fiche de métadonnée complète d'EasySDI
-		$XMLLoc = $XMLDoc->createElement("loc", $url.$md->guid);
-		$XMLUrl->appendChild($XMLLoc);
-		
-		// Date modification de la métadonnée
-		$updated = $md->updated;
-		if ($updated <> "")
-			$updated = date('Y-m-d', strtotime($updated));
-		$XMLLastMod = $XMLDoc->createElement("lastmod", $updated);
-		$XMLUrl->appendChild($XMLLastMod);
-		
-		// Fréquence de modification
-		$XMLChangeFreq = $XMLDoc->createElement("changefreq", "always");
-		$XMLUrl->appendChild($XMLChangeFreq);
-		
-		// Priorité
-		$XMLPriority = $XMLDoc->createElement("priority", "0.5");
-		$XMLUrl->appendChild($XMLPriority);
+		if($md->code !="contact"){
+			$XMLUrl = $XMLDoc->createElement("url");
+			$XMLRoot->appendChild($XMLUrl);
+			
+			//URL de la fiche de mï¿½tadonnï¿½e complï¿½te d'EasySDI
+			$XMLLoc = $XMLDoc->createElement("loc", $root."/index.php?".$md->sitemapParams."&id=".$md->guid);
+			$XMLUrl->appendChild($XMLLoc);
+			
+			// Date modification de la mï¿½tadonnï¿½e
+			$updated = $md->updated;
+			if ($updated <> "")
+				$updated = date('Y-m-d', strtotime($updated));
+			$XMLLastMod = $XMLDoc->createElement("lastmod", $updated);
+			$XMLUrl->appendChild($XMLLastMod);
+			
+			// Frï¿½quence de modification
+			$XMLChangeFreq = $XMLDoc->createElement("changefreq", "always");
+			$XMLUrl->appendChild($XMLChangeFreq);
+			
+			// Prioritï¿½
+			$XMLPriority = $XMLDoc->createElement("priority", "0.5");
+			$XMLUrl->appendChild($XMLPriority);
+		}
 	}
 	
 	// Affichage du sitemap.xml
 	echo $XMLDoc->saveXML();
 
-	// Fermeture de la connection à la base de données
+	// Fermeture de la connection ï¿½ la base de donnï¿½es
 	mysql_close($db);
 	
-	/* Fonctions pour alléger le code ci-dessus*/
+	/* Fonctions pour allï¿½ger le code ci-dessus*/
 	
 	/** 
 	* Fonction reprise de database.php dans libraries\joomla\database\
@@ -168,7 +171,7 @@
 	}
 	
 	/*
-	* Construction d'un set de résultat sous forme d'objets, inspiré de loadObjectList dans 
+	* Construction d'un set de rï¿½sultat sous forme d'objets, inspirï¿½ de loadObjectList dans 
 	* mysql.php de joomla, libraries\joomla\database\database\
 	*/
 	function loadObjectList($query)
@@ -176,8 +179,8 @@
 		$result = mysql_query($query);
 		if (!$result) 
 		{
-			$message  = 'Requête invalide : ' . mysql_error() . "\n";
-			$message .= 'Requête complète : ' . $query;
+			$message  = 'Requï¿½te invalide : ' . mysql_error() . "\n";
+			$message .= 'Requï¿½te complï¿½te : ' . $query;
 			die($message);
 		}
 		$array = array();

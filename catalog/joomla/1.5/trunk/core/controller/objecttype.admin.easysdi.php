@@ -19,6 +19,13 @@ defined('_JEXEC') or die('Restricted access');
 
 ?>
 <script type="text/javascript">
+
+	function updateSampleRobotUrl(){
+
+		$sampleUrl = document.getElementById("sampleRobotUrl");
+		$sampleUrl.innerHTML= "index.php?"+document.getElementById("sitemapParams").value +"&id=xxx";
+		
+	}
 	function submitbutton(pressbutton) 
 	{
 		var form = document.adminForm;
@@ -255,6 +262,17 @@ class ADMIN_objecttype {
 				}
 			}
 		}
+		
+		/*Sauvegarde de sitemapParams*/
+		$sitemapParams = $_POST['sitemapParams'];
+		$database->setQuery("UPDATE #__sdi_objecttype SET sitemapParams='".addslashes($sitemapParams)."' WHERE guid='".$rowObjecttype->guid."'");
+		if (!$database->query())
+		{	
+			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			return false;
+		}
+		
+		/*Fin sauvegarde sitemap params*/
 		
 		// R�cup�rer toutes les relations avec les utilisateurs existantes
 		$query = "SELECT * FROM #__sdi_account_objecttype WHERE objecttype_id=".$rowObjecttype->id;
