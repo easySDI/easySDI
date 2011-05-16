@@ -113,7 +113,7 @@ public class RunnableDatasetTransformer{
 			Diffuser diff = Diffuser.getFromIdString(diffuserName);
 			geoDb = diff.getGeodatabase();
 			geoDb.setUrl(geoDb.getUrl()+"/"+currentUser);
-			
+
 			if(geoDb == null)
 				throw new DatabaseForDiffuserNotfoundException("No database found for diffuser: "+diffuserName);
 
@@ -166,7 +166,7 @@ public class RunnableDatasetTransformer{
 
 				logger.info("update:"+featuresourceGuid);
 			}
-			
+
 			//Inputs from Interface + GUI:
 			logger.info("diffusor name"+diffuserName);
 			for(String url : URLs)
@@ -177,7 +177,7 @@ public class RunnableDatasetTransformer{
 
 			//get the helper accordingly to the geodatabase to drop the table if it exists.
 			helper = geoDb.getHelper();
-			
+
 			//Init the diffuser if its a new FeatureSource,
 			//makes sure the diffuser has his proper database
 			if(featureSourceId.equals("none")){
@@ -205,7 +205,7 @@ public class RunnableDatasetTransformer{
 
 			//Get a class instance of the class to instanciate.
 			logger.info("geodb_type"+geoDb.getGeodatabaseType().getName());
-			
+
 			logger.info("try to instanciate org.easysdi.publish."+geoDb.getGeodatabaseType().getName()+"helper."+strDbTypeClass+"FeatureSourceInfo");
 			strDbTypeClass = geoDb.getGeodatabaseType().getName().substring(0, 1).toUpperCase() +  geoDb.getGeodatabaseType().getName().substring(1);
 			Class cl=Class.forName("org.easysdi.publish."+geoDb.getGeodatabaseType().getName()+"helper."+strDbTypeClass+"FeatureSourceInfo");
@@ -440,13 +440,15 @@ public class RunnableDatasetTransformer{
 				System.out.println("Error occured, cause:"+e.getCause() +" message:"+ e.getMessage());
 				e.printStackTrace();
 			}
-			
+
 			//set progress to 100%
 			if(transMap == null)
 				logger.warning("transMap is null, un exception occured before transMap.put in this file.");				
-			transMap.get(featuresourceGuid).setProgress(100f);
-			//unregister transformer
-			transMap.remove(featuresourceGuid);
+			if(transMap.get(featuresourceGuid) != null){
+				transMap.get(featuresourceGuid).setProgress(100f);
+				//unregister transformer
+				transMap.remove(featuresourceGuid);
+			}
 		}
 	}
 

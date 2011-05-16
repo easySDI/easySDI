@@ -65,6 +65,7 @@ public class Config {
 			//geodb
 			res.append("<dbname>"+db.getName()+"</dbname>");
 			res.append("<dbscheme>"+db.getScheme()+"</dbscheme>");
+			res.append("<dbtemplate>"+db.getTemplate()+"</dbtemplate>");
 			res.append("<dbtype>"+db.getGeodatabaseTypeId()+"</dbtype>");
 			res.append("<dburl>"+db.getUrl()+"</dburl>");
 			res.append("<dbusername>"+db.getUser()+"</dbusername>");
@@ -196,7 +197,8 @@ public class Config {
 		String dbname = req.getParameter("dbname");
 		String dbtype = req.getParameter("dbtype");
 		String dburl = req.getParameter("dburl");
-		String dbdbscheme = req.getParameter("dbscheme");
+		String dbscheme = req.getParameter("dbscheme");
+		String dbtemplate = req.getParameter("dbtemplate");
 		String dbusername = req.getParameter("dbusername");
 		String dbpassword = req.getParameter("dbpassword");
 
@@ -210,7 +212,8 @@ public class Config {
 			geodb.setName(dbname);
 			geodb.setGeodatabaseTypeId(Long.parseLong(dbtype));
 			geodb.setUrl(dburl);
-			geodb.setScheme(dbdbscheme);
+			geodb.setScheme(dbscheme);
+			geodb.setTemplate(dbtemplate);
 			geodb.setUser(dbusername);
 			geodb.setPwd(dbpassword);			
 
@@ -268,6 +271,8 @@ public class Config {
 			geodb.setName(dbname+"@"+name);
 			geodb.setGeodatabaseTypeId(Long.parseLong(dbtype));
 			geodb.setUrl(dburl);
+			geodb.setScheme(dbscheme);
+			geodb.setTemplate(dbtemplate);
 			geodb.setUser(dbusername);
 			geodb.setPwd(dbpassword);			
 			try{

@@ -111,6 +111,7 @@ CREATE TABLE `geodatabase` (
   `USERNAME` varchar(100) DEFAULT NULL,
   `PASSWORD` varchar(100) DEFAULT NULL,
   `SCHEME` varchar(100) DEFAULT NULL,
+  `TEMPLATE` varchar(100) DEFAULT NULL,
   `TYPE` int(10) unsigned NOT NULL,
   PRIMARY KEY (`ID_GEODATABASE`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -120,8 +121,8 @@ CREATE TABLE `geodatabase` (
 --
 
 /*!40000 ALTER TABLE `geodatabase` DISABLE KEYS */;
-INSERT INTO `geodatabase` (`ID_GEODATABASE`,`NAME`,`URL`,`USERNAME`,`PASSWORD`,`SCHEME`,`TYPE`) VALUES 
- (1,'postgislocalhost','jdbc:postgresql://localhost:5432','postgres','postgres','public',3);
+INSERT INTO `geodatabase` (`ID_GEODATABASE`,`NAME`,`URL`,`USERNAME`,`PASSWORD`,`SCHEME`,`TEMPLATE`,`TYPE`) VALUES 
+ (1,'postgislocalhost','jdbc:postgresql://localhost:5432','postgres','postgres','public','template_postgis',3);
 /*!40000 ALTER TABLE `geodatabase` ENABLE KEYS */;
 
 

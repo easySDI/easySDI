@@ -20,5 +20,6 @@
 		<property name="pwd" type="string" length="100" column="PASSWORD"></property>
 		<property name="scheme" type="string" length="100" column="SCHEME"></property>
 		<property name="geodatabaseTypeId" type="long" column="TYPE" lazy="false"></property>
+		<property name="template" type="string" length="100" column="TEMPLATE"></property>	
 	</class>
 </hibernate-mapping>

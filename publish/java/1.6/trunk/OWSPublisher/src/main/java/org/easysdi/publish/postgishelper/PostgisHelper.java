@@ -39,8 +39,7 @@ public class PostgisHelper implements IHelper{
 	private String user;
 	private String pwd;
 	private String table;
-
-	
+	private String template;
 
 	public PostgisHelper(){}
 
@@ -48,6 +47,7 @@ public class PostgisHelper implements IHelper{
 		this.url = g.getUrl();
 		this.user = g.getUser();
 		this.pwd = g.getPwd();
+		this.template = g.getTemplate();
 	}
 
 	//Constructor for test purpose only
@@ -62,6 +62,7 @@ public class PostgisHelper implements IHelper{
 		this.url = g.getUrl();
 		this.user = g.getUser();
 		this.pwd = g.getPwd();
+		this.template = g.getTemplate();
 	}
 	
 	public void setConnectionInfo(Geodatabase g, String table)
@@ -69,6 +70,7 @@ public class PostgisHelper implements IHelper{
 		this.url = g.getUrl();
 		this.user = g.getUser();
 		this.pwd = g.getPwd();
+		this.template = g.getTemplate();
 		this.table = table;
 	}
 
@@ -187,8 +189,8 @@ public class PostgisHelper implements IHelper{
 		//postgis template
 		try{	
 			Class.forName("org.postgresql.Driver");
-			//connect to template_postgis
-			String url = this.url.replace("/"+CurrentUser.getCurrentPrincipal(), "/template_postgis");
+			//connect to template
+			String url = this.url.replace("/"+CurrentUser.getCurrentPrincipal(), "/"+this.template);
 			connection = DriverManager.getConnection(url, this.user, this.pwd);
 			statement = connection.createStatement();
 			
@@ -208,10 +210,11 @@ public class PostgisHelper implements IHelper{
 			if(found == true)
 				return;
 			
-			query = "CREATE DATABASE "+currentUser+" WITH ENCODING='UTF8' TEMPLATE=template_postgis";
+			query = "CREATE DATABASE "+currentUser+" WITH ENCODING='UTF8' TEMPLATE="+this.template;
 			statement.executeUpdate(query);
 			
 		}catch(Exception e){
+			e.printStackTrace();
 			logger.warning(e.getMessage());
 			throw new PublishConfigurationException("Error while creating new db for diffuser cause:"+e.getMessage());
 		}finally{

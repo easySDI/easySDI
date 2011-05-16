@@ -13,6 +13,7 @@ public class Geodatabase {
 	private String                  user;
 	private String                  pwd;
 	private String                  scheme;
+	private String                  template;
 	private long                    geodatabaseTypeId;
 	private GeodatabaseHelper		helper;
 	
@@ -66,6 +67,14 @@ public class Geodatabase {
 
 	public void setScheme(String scheme) {
 		this.scheme = scheme;
+	}
+
+	public String getTemplate() {
+		return template;
+	}
+
+	public void setTemplate(String template) {
+		this.template = template;
 	}
 
 	public long getGeodatabaseTypeId() {
