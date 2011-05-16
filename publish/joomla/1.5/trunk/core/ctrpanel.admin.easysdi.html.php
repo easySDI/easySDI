@@ -242,13 +242,14 @@ class HTML_ctrlpanel {
 		   $diffusor = $diffusor[0];
 		}else{
 			 $diffusor = (object)array(
-	  														'id' =>  "",
+	  													'id' =>  "",
     														'name' => "",
     														'type' => "",
     														'url' => "",
     														'username' => "",
     														'password' => "",
     														'dbscheme' => "",
+														'dbtemplate' => "",
     														'dbname' => "",
     														'dbtype' => "",
     														'dburl' => "",
@@ -375,6 +376,10 @@ class HTML_ctrlpanel {
 										<tr>
 											<td><?php echo JText::_("EASYSDI_PUBLISH_SCHEMA"); ?> : </td>
 											<td><input class="inputbox" type="text" size="50" maxlength="100" name="diffusion_server_db_scheme" value="<?php echo $diffusor->dbscheme; ?>" /></td>
+										</tr>
+										<tr>
+											<td><?php echo JText::_("EASYSDI_PUBLISH_TEMPLATE"); ?> : </td>
+											<td><input class="inputbox" type="text" size="50" maxlength="100" name="diffusion_server_db_template" value="<?php echo $diffusor->dbtemplate; ?>" /></td>
 										</tr>
 										<tr>
 											<td><?php echo JText::_("EASYSDI_PUBLISH_USERNAME"); ?> : </td>
