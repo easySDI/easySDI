@@ -281,6 +281,7 @@ class ADMIN_publish {
 		$diffusor_bd_type_id=$_POST['diffusor_bd_type_id'];
 		$diffusion_server_db_url=$_POST['diffusion_server_db_url'];
 		$diffusion_server_db_scheme=$_POST['diffusion_server_db_scheme'];
+		$diffusion_server_db_template=$_POST['diffusion_server_db_template'];
 		$diffusion_server_db_username=$_POST['diffusion_server_db_username'];
 		$diffusion_server_db_password=$_POST['diffusion_server_db_password'];
 
@@ -295,6 +296,7 @@ class ADMIN_publish {
 		$url.= "&dbtype=".$diffusor_bd_type_id;
 		$url.= "&dburl=".$diffusion_server_db_url;
 		$url.= "&dbscheme=".$diffusion_server_db_scheme;
+		$url.= "&dbtemplate=".$diffusion_server_db_template;
 		$url.= "&dbusername=".$diffusion_server_db_username;
 		$url.= "&dbpassword=".$diffusion_server_db_password;
 		

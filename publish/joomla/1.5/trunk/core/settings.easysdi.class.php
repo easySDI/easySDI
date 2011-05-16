@@ -58,6 +58,7 @@ class diffusor extends JTable
 	var $diffusion_server_username=null;
 	var $diffusion_server_db_name=null;
 	var $diffusion_server_db_schema=null;
+	var $diffusion_server_db_template=null;
 	var $diffusion_server_db_port=0;
 	var $diffusion_server_db_username=null;
 	var $diffusion_server_db_password=null;
