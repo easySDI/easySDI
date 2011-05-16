@@ -68,7 +68,7 @@ Ext.Ajax.request({
 			$('loadingImg').style.visibility = 'hidden';
 			$('loadingImg').style.display = 'none';
 			//handle the exception if there is
-			if(ex.length > 0){
+			if(ex.length > 0 && response.responseXML.getElementsByTagName('ows:ExceptionText')[0].firstChild.nodeValue.indexOf('404') == -1){
 				code = ex[0].attributes[0].nodeValue;
 				//TODO look what we do if an exception occurs.
 				//Most relevant are: transformator did not succeed with supplied files
@@ -271,7 +271,7 @@ Ext.Ajax.request({
 			$('loadingImg').style.display = 'none';
 			var ex = response.responseXML.getElementsByTagName('ows:Exception');
 			//handle exceptions if they are
-			if(ex.length > 0){
+			if(ex.length > 0 && response.responseXML.getElementsByTagName('ows:ExceptionText')[0].firstChild.nodeValue.indexOf('404') == -1){
 				code = ex[0].attributes[0].nodeValue;
 				exText = response.responseXML.getElementsByTagName('ows:ExceptionText');
 				//alert(exText);
