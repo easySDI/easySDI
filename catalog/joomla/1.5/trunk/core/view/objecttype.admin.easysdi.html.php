@@ -223,7 +223,7 @@ class HTML_objecttype {
 				
 								<tr>
 								<td width=140><?php echo JText::_("CATALOG_SITEMAP_EXTRAPARAMS") ?> : </td>
-								<td><input id="sitemapParams" onblur="updateSampleRobotUrl()" style="width:244px" type="text" name ="sitemapParam" value="<?php echo htmlspecialchars( $row->sitemapParams)?>" ></td>							
+								<td><input id="sitemapParams" onblur="updateSampleRobotUrl()" style="width:244px" type="text" name ="sitemapParams" value="<?php echo htmlspecialchars( $row->sitemapParams)?>" ></td>							
 								</tr>
 								<tr>
 									<td width=140><?php echo JText::_("CATALOG_SITEMAP_URLSAMPLE") ?> : </td>

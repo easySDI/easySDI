@@ -27,7 +27,7 @@
 	}
 	
 	$root = "http".$https.substr($_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME'], 0, strrpos($_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME'], '/'));
-	$url = $root."/index.php?tmpl=component&amp;option=com_easysdi_catalog&amp;task=showMetadata&amp;type=complete&amp;id=";
+//	$url = $root."/index.php?tmpl=component&amp;option=com_easysdi_catalog&amp;task=showMetadata&amp;type=complete&amp;id=";
 	
 	// Cr�ation d'un DOMDocument
 	$XMLDoc = new DOMDocument('1.0', 'UTF-8');
@@ -57,12 +57,12 @@
 	foreach ($mdList as $md)
 	{
 		// Noeud principal
-		if($md->code !="contact"){
+		if( strpos($md->code, "contact") === FALSE){
 			$XMLUrl = $XMLDoc->createElement("url");
 			$XMLRoot->appendChild($XMLUrl);
 			
 			//URL de la fiche de m�tadonn�e compl�te d'EasySDI
-			$XMLLoc = $XMLDoc->createElement("loc", $root."/index.php?".$md->sitemapParams."&id=".$md->guid);
+			$XMLLoc = $XMLDoc->createElement("loc", htmlspecialchars($root."/index.php?".$md->sitemapParams."&id=".$md->guid));
 			$XMLUrl->appendChild($XMLLoc);
 			
 			// Date modification de la m�tadonn�e
