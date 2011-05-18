@@ -6,6 +6,8 @@
 	xsi:schemaLocation="http://www.opengis.net/wps/1.0.0../wpsExecute_request.xsd">
 	<ows:Identifier>getOrders</ows:Identifier>
 	<wps:DataInputs>
+	    <!-- Obsolete param userName, taking user from Spring authentication.
+			 Will be removed when all clients will support this. -->
 		<wps:Input>
 			<ows:Identifier>userName</ows:Identifier>
 			<ows:Title>provider userName</ows:Title>

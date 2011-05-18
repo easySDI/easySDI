@@ -62,6 +62,7 @@ import net.opengis.wps._1_0.OutputDataType;
 import net.opengis.wps._1_0.StatusType;
 import net.opengis.wps._1_0.ExecuteResponse.ProcessOutputs;
 
+import org.easysdi.security.CurrentUser;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import ch.depth.services.wps.Mailer;
@@ -297,6 +298,8 @@ public class WPSServlet extends HttpServlet {
 			while(itInputs.hasNext()){
 				net.opengis.wps._1_0.InputType inputType = (net.opengis.wps._1_0.InputType)itInputs.next();
 				if (inputType.getIdentifier().getValue().equalsIgnoreCase("userName")){
+					// Obsolete now, taking user from spring authentication
+					// remove when all clients support this.
 					userName = inputType.getData().getLiteralData().getValue();
 				}else{
 					if (inputType.getIdentifier().getValue().equalsIgnoreCase("status")){
@@ -304,10 +307,15 @@ public class WPSServlet extends HttpServlet {
 					}   		    
 				}
 			}
+			
+			//Get userName from Spring Security
+			userName = CurrentUser.getCurrentPrincipal();
 
 			if (userName == null){		    
 				return error("PARTNERNOTDEFINED","paremeter containaing the partner id is not defined");
 			}
+
+			System.out.println("logged with:"+CurrentUser.getCurrentPrincipal());
 
 			net.opengis.wps._1_0.ObjectFactory of = new net.opengis.wps._1_0.ObjectFactory();
 			ExecuteResponse er = of.createExecuteResponse();
@@ -335,14 +343,11 @@ public class WPSServlet extends HttpServlet {
 
 			er.setProcessOutputs(po);
 
-
-
-
+			/* Get connection from spring */
 			Class.forName(getJdbcDriver()).newInstance();
-
-
 			conn =  DriverManager.getConnection(getConnexionString());
 
+			
 			Statement stmt = conn.createStatement();
 
 			String query = "SELECT DISTINCT o.id as order_id, o.name, o.type_id, o.thirdparty_id, p.id as accountId, p.root_id, o.buffer "+
