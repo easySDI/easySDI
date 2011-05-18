@@ -51,13 +51,14 @@ switch($task){
 	/*****************************************************************************************************************************
 	 * Shop
 	 *****************************************************************************************************************************/
-	case "shop":
+	default :
+ 	case "shop":
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'proxy.php');
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'shop.easysdi.class.php');
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'shop.site.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'cpanel.easysdi.class.php');
-						
+					
 		SITE_shop::order();
 		break;
 		
@@ -433,15 +434,7 @@ switch($task){
 			
 		SITE_favorite::searchProducts();
 		break;
-		
 
-	/*****************************************************************************************************************************
-	 * Default
-	 *****************************************************************************************************************************/
-	default :
-		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.displayManager.class.php');
-		$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php"), false));
-		break;
 }
 
 ?>
