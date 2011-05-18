@@ -162,7 +162,7 @@ class HTML_shop
 				?>
 		<tr>
 			 <td class="imgHolder" rowspan=3>
-			 <img <?php if($logoWidth != "") echo "width=\"$logoWidth px\"";?> <?php if($logoHeight != "") echo "width=\"$logoHeight px\"";?> src="<?php echo $partner_logo;?>" title="<?php echo $row->supplier_name;?>"></img>   
+			 <img <?php if($logoWidth != "") echo "width=\"$logoWidth px\"";?> <?php if($logoHeight != "") echo "width=\"$logoHeight px\"";?> src="<?php echo $row->supplier_logo;?>" title="<?php echo $row->supplier_name;?>"></img>   
 			  </td>
 			  <td colspan=3><span class="mdtitle"><?php echo $row->name; ?></span>
 			  </td>
@@ -936,7 +936,7 @@ class HTML_shop
 					/*
 						OpenLayers Edition controls
 					*/
-					rectControl = new OpenLayers.Control.DrawFeature(vectors, OpenLayers.Handler.RegularPolygon,{'displayClass':'olControlDrawFeaturePolygon'});		
+					rectControl = new OpenLayers.Control.DrawFeature(vectors, OpenLayers.Handler.RegularPolygon,{'displayClass':'olControlDrawFeatureRectangle'});		
 					rectControl.title = '<?php echo JText::_("SHOP_OL_TOOL_RECTCTRL_HINT") ?>';
 					rectControl.featureAdded = function() { intersect();};												
 					rectControl.handler.setOptions({irregular: true});                                  
