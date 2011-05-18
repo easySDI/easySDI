@@ -17,6 +17,8 @@
  */
 
 defined('_JEXEC') or die('Restricted access');
+require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
+
 
 global  $mainframe;
 global  $areaPrecision;
