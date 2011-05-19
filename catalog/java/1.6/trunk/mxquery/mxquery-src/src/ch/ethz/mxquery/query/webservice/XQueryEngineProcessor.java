@@ -88,9 +88,10 @@ public class XQueryEngineProcessor extends HttpServlet{
 			url = request.getParameter("url");
 			fileId = request.getParameter("fileid");
 			String[] namespaces = request.getParameter("namespaces").split(";");
+			int maxRecords = Integer.parseInt(request.getParameter("maxrecords"));			
+			int paginationStep =Integer.parseInt(request.getParameter("paginationstep"));
 			
-			
-			tmpXml = downloadXml(url, cookieList);
+			tmpXml = downloadXml(url, cookieList, maxRecords, paginationStep);
 			//	String xQueryReportFileId = request.getParameter("fileid").toString();				
 		
 			
@@ -140,9 +141,22 @@ public class XQueryEngineProcessor extends HttpServlet{
 
 	}
 
+	private String filterResponseToRemoveResultsEnvelope(String response){
+		
+		String output ="";
+		
+		int indexofcswresults = response.indexOf("<csw:SearchResults");
+		int indexofClosingQuote = response.indexOf(">", indexofcswresults);
+		int indexofClosingResultsQuote = response.indexOf("</csw:SearchResults");
+		
+		output= response.substring(indexofClosingQuote+1, indexofClosingResultsQuote);
+		
+		return output;
+		
+	}
 
 	
-	private String downloadXml(String url, String cookieList) throws IOException{
+	private String downloadXml(String url, String cookieList, int maxRecords, int paginationStep) throws IOException{
 
 		URL u;
 	
@@ -150,54 +164,64 @@ public class XQueryEngineProcessor extends HttpServlet{
 		StringBuffer buffer = new StringBuffer();
 		BufferedReader in = null;
 		URLConnection urlConn;
-	   
-		try {
-			 u = new URL(url);			
-			 urlConn =  u.openConnection();
-			 urlConn.setRequestProperty("Cookie", cookieList);
-			 urlConn.connect();
-
-	
-			in = new BufferedReader(
-					new InputStreamReader( urlConn.getInputStream()));
-
-
-			while ((s = in.readLine()) != null) 
-				buffer.append(s);
-			
-			in.close();
-			
-			 
-//			u = new URL(url);
-//			is = u.openStream();     
-//
-//			in = new BufferedReader(
-//					new InputStreamReader( is));
-//
-//
-//			while ((s = in.readLine()) != null) 
-//				buffer.append(s);
-//			
-//			in.close();
-
-
-		} catch (MalformedURLException mue) {
-			mue.printStackTrace();
-
-
-		} catch (IOException ioe) {	        
-			ioe.printStackTrace();	     
-
-		} 
 		String newName = UUID.randomUUID().toString()  +".xml";
 		String newPath =  getServletContext().getRealPath("/")+newName ;
+		int remainder = maxRecords % paginationStep;
+		int numberofLoops = (int)((int) maxRecords/(int)paginationStep);
+		if(remainder!=0){			
+			numberofLoops++; //increase by 1 for last call to get remainder;
+		}
+		
+		int startPosition =0;
+		String thisCallUrl ="";
 		FileWriter writer;
-	
 		writer = new FileWriter(newPath);
-		writer.write(buffer.toString());
+		
+		for (int i = 0; i< numberofLoops; i++){
+			   
+				try {
+					 startPosition = (i*paginationStep);
+					 thisCallUrl = url + "&paginationstep="+paginationStep+"&startposition="+startPosition;
+					 u = new URL(thisCallUrl);			
+					 urlConn =  u.openConnection();
+					 urlConn.setRequestProperty("Cookie", cookieList);
+		
+					 urlConn.connect();
+		
+			
+					in = new BufferedReader(
+							new InputStreamReader( urlConn.getInputStream()));
+		
+		
+					while ((s = in.readLine()) != null) 
+						buffer.append(s);
+					
+					in.close();				
+					 
+
+		
+		
+				} catch (MalformedURLException mue) {
+					mue.printStackTrace();
+		
+		
+				} catch (IOException ioe) {	        
+					ioe.printStackTrace();	     
+		
+				} 
+				
+				
+				if(i==0)
+					writer.append("<?xml version='1.0' encoding='UTF-8'?><results>");				
+				
+				writer.append(filterResponseToRemoveResultsEnvelope(buffer.toString()));				
+					
+		}
+		
+		writer.append("</results>");				
+	
 		writer.close();
-		
-		
+				
 		return  newName;
 		
 
