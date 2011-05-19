@@ -16,11 +16,13 @@
  */
 package org.easysdi.proxy.wms;
 
+import java.io.IOException;
 import java.util.Arrays;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.easysdi.proxy.ows.OWSExceptionReport;
 import org.easysdi.proxy.wms.WMSProxyServlet;
 import org.easysdi.proxy.wms.v130.WMSExceptionReport130;
 import org.easysdi.proxy.wms.v130.WMSProxyResponseBuilder130;
@@ -88,9 +90,29 @@ public class WMSProxyServlet130 extends WMSProxyServlet {
 	 * @see org.easysdi.proxy.wms.WMSProxyServlet#requestPreTreatmentGetFeatureInfo(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
 	 */
 	@Override
-	public void requestPreTreatmentGetFeatureInfo(HttpServletRequest req,
-			HttpServletResponse resp) {
-		// TODO Auto-generated method stub
+	public void requestPreTreatmentGetFeatureInfo(HttpServletRequest req, HttpServletResponse resp) {
+		try {
+			if(((WMSProxyServletRequest)getProxyRequest()).getInfo_format() == null || ((WMSProxyServletRequest)getProxyRequest()).getInfo_format().equalsIgnoreCase(""))
+			{
+				dump("INFO", "QUERY_LAYERS "+OWSExceptionReport.TEXT_MISSING_PARAMETER_VALUE);
+				StringBuffer out = owsExceptionReport.generateExceptionReport("INFO_FORMAT "+OWSExceptionReport.TEXT_MISSING_PARAMETER_VALUE,OWSExceptionReport.CODE_MISSING_PARAMETER_VALUE,"INFO_FORMAT");
+				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
+				return;
+			}
+		} catch (IOException e) {
+			resp.setHeader("easysdi-proxy-error-occured", "true");
+			e.printStackTrace();
+			dump("ERROR", e.getMessage());
+			StringBuffer out;
+			try {
+				out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
+				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			} catch (IOException e1) {
+				dump("ERROR", e1.getMessage());
+				e1.printStackTrace();
+			}
+			return;
+		}
 		super.requestPreTreatmentGetFeatureInfo(req, resp);
 	}
 

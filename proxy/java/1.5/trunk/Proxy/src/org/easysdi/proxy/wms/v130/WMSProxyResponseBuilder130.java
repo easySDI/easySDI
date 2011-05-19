@@ -105,6 +105,7 @@ public class WMSProxyResponseBuilder130 extends WMSProxyResponseBuilder {
 	    	}
 	    	
 	    	List<Element> toRemove =new ArrayList<Element>();
+	    	Element getFeatureInfoElement = null;
 	    	
 	    	Iterator iRequestToUpdate = requestList.iterator();
 	    	while(iRequestToUpdate.hasNext()){
@@ -115,7 +116,13 @@ public class WMSProxyResponseBuilder130 extends WMSProxyResponseBuilder {
 //	    			 parent.removeContent (request);
 	    			 toRemove.add(request);
 	    		 }else{
-					//The request is allowed and supported, we overwrite xlink attribute
+					 //The request is allowed and supported
+	    			 //If request is GetFeatureInfo, only keep the format XML, other are not supported (can't be agregate by the proxy)
+	    			 if(request.getName().equalsIgnoreCase("GetFeatureInfo")){
+	    				 //Saved the element, the modifications will be made outside of the iteration loop
+	    				 getFeatureInfoElement = request;
+	    			 }
+	    			//Overwrite xlink attribute
 					Iterator iXlink = request.getDescendants(xlinkFilter);
 					List<Element> xlinkList = new ArrayList<Element>();	  
 					while (iXlink.hasNext()){
@@ -141,6 +148,16 @@ public class WMSProxyResponseBuilder130 extends WMSProxyResponseBuilder {
 	    		Element request = iToRemove.next();
 	    		request.getParent().removeContent(request);
 	    	}
+	    	
+	    	if(getFeatureInfoElement != null){
+	    		getFeatureInfoElement.removeContent();
+	    		getFeatureInfoElement.addContent((new Element("Format", nsWMS)).setText("application/vnd.ogc.gml"));
+	    		getFeatureInfoElement.addContent((new Element("Format", nsWMS)).setText("text/plain"));
+	    	}
+	    	
+	    	Element elementException = elementCapability.getChild("Exception", nsWMS);
+	    	elementException.removeContent();
+	    	elementException.addContent((new Element("Format", nsWMS)).setText("application/vnd.ogc.se_xml"));
 	    	
     	   XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
            sortie.output(docParent, new FileOutputStream(filePath));
@@ -441,7 +458,7 @@ public class WMSProxyResponseBuilder130 extends WMSProxyResponseBuilder {
 			if(oldMaxWidth!=null)newService.addContent(oldMaxWidth);
 			if(oldMaxHeight!=null)newService.addContent(oldMaxHeight);
 			racine.addContent( 1, newService);
-			
+						
 			XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
 	        sortie.output(document, new FileOutputStream(filePath));
 
@@ -533,5 +550,6 @@ public class WMSProxyResponseBuilder130 extends WMSProxyResponseBuilder {
 	 */
 	@Override
 	protected String getLayerName(Element layer) {
-		return layer.getChild("Name",nsWMS).getValue();	}
+		return layer.getChild("Name",nsWMS).getValue();	
+	}
 }

@@ -26,6 +26,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.Vector;
 import java.util.Map.Entry;
 
@@ -34,6 +35,7 @@ import org.easysdi.jdom.filter.ElementLayerFilter;
 import org.easysdi.jdom.filter.ElementServiceExceptionFilter;
 import org.easysdi.jdom.filter.ElementServiceExceptionReportFilter;
 import org.easysdi.proxy.core.ProxyLayer;
+import org.easysdi.proxy.core.ProxyRemoteServerResponse;
 import org.easysdi.proxy.core.ProxyResponseBuilder;
 import org.easysdi.proxy.core.ProxyServlet;
 import org.easysdi.proxy.policy.BoundingBox;
@@ -151,6 +153,10 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 	    		Element request = iToRemove.next();
 	    		request.getParent().removeContent(request);
 	    	}
+	    	
+	    	Element elementException = elementCapability.getChild("Exception", nsWMS);
+	    	elementException.removeContent();
+	    	elementException.addContent((new Element("Format", nsWMS)).setText("application/vnd.ogc.se_xml"));
 	    	
     	   XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
            sortie.output(docParent, new FileOutputStream(filePath));
@@ -798,5 +804,37 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 	 */
 	protected String getLayerName (Element layer){
 		return layer.getChild("Name").getValue();
+	}
+	
+	public ByteArrayOutputStream GetFeatureInfoAggregation (TreeMap<Integer, ProxyRemoteServerResponse> wmsGetFeatureInfoResponseFilePath){
+		try {
+			SAXBuilder sxb = new SAXBuilder();
+			
+			Document doc = new Document();
+			Element root = new Element("GetFeatureInfoResponse");
+			doc.setRootElement(root);
+			
+			Iterator<Entry<Integer, ProxyRemoteServerResponse>> it = wmsGetFeatureInfoResponseFilePath.entrySet().iterator();
+			while (it.hasNext()){
+				Entry<Integer, ProxyRemoteServerResponse> entry = it.next();
+				Element child = new Element(entry.getValue().getAlias());
+				Document docChild = sxb.build(new File(entry.getValue().getPath()));
+				Element rootChild = docChild.getRootElement();
+				child.addContent(rootChild);
+				root.addContent(child);
+			}
+			 
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
+			sortie.output(doc, out);
+			return out;
+			
+		} catch (JDOMException e) {
+			setLastException(e);
+		} catch (IOException e) {
+			setLastException(e);
+		}
+		return null;
+		
 	}
 }

@@ -2151,43 +2151,15 @@ public class WMSProxyServlet extends ProxyServlet {
 				return;
 			}
 			
-			tempOut = new ByteArrayOutputStream();
-			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-			XPathFactory xpathFactory = XPathFactory.newInstance();
-			DocumentBuilder builder = factory.newDocumentBuilder();
-			Document doc = builder.newDocument();
-			transformer = tFactory.newTransformer();
-			XPath xpath = xpathFactory.newXPath();
-			XPathExpression expr = xpath.compile("/FeatureCollection");
-			Element rootNode = null;
-
-			for (String path : wmsFilePathList.values()) {
-				Document resultDoc = builder.parse(new File(path));
-				if (rootNode == null) {
-					DeferredElementImpl result = (DeferredElementImpl) expr.evaluate(resultDoc, XPathConstants.NODE);
-					if (result != null) {
-						rootNode = (Element) doc.importNode(result, true);
-						doc.appendChild(rootNode);
-					}
-				} else {
-					DeferredElementImpl result = (DeferredElementImpl) resultDoc.getDocumentElement().getChildNodes();
-					for (int i = 0; i < result.getAttributes().getLength(); i++) {
-						Attr attr = (Attr) doc.importNode(result.getAttributes().item(i), true);
-						rootNode.setAttributeNode(attr);
-					}
-					if (result != null && result.getLength() > 0) {
-						for (int i = 0; i < result.getLength(); i++) {
-							Node nnode = result.item(i);
-							if (!"gml:boundedBy".equals(nnode.getNodeName())) {
-								nnode = doc.importNode(nnode, true);
-								rootNode.appendChild(nnode);
-							}
-						}
-					}
-
-				}
+			ByteArrayOutputStream outResult = docBuilder.GetFeatureInfoAggregation(wmsGetFeatureInfoResponseFilePathMap);
+			if(outResult == null){
+				dump("ERROR",docBuilder.getLastException().getMessage());
+				StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
+				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+				return;
 			}
-			transformer.transform(new DOMSource(doc), new StreamResult(tempOut));
+			sendHttpServletResponse(req,resp, outResult,responseContentType, responseStatusCode);
+			
 		}catch (Exception e){
 			resp.setHeader("easysdi-proxy-error-occured", "true");
 			e.printStackTrace();

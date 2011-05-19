@@ -94,6 +94,11 @@ public class WMSProxyServletRequest extends ProxyServletRequest {
 	private String format;
 	
 	/**
+	 * 
+	 */
+	private String info_format;
+	
+	/**
 	 * @return the bbox
 	 */
 	public String getBbox() {
@@ -216,6 +221,20 @@ public class WMSProxyServletRequest extends ProxyServletRequest {
 
 
 	/**
+	 * @param info_format the info_format to set
+	 */
+	public void setInfo_format(String info_format) {
+		this.info_format = info_format;
+	}
+
+	/**
+	 * @return the info_format
+	 */
+	public String getInfo_format() {
+		return info_format;
+	}
+
+	/**
 	 * @param request
 	 */
 	public WMSProxyServletRequest(HttpServletRequest req) {
@@ -305,6 +324,8 @@ public class WMSProxyServletRequest extends ProxyServletRequest {
 				height = value;
 			} else if (key.equalsIgnoreCase("FORMAT")) {
 				format = value;
+			}else if (key.equalsIgnoreCase("INFO_FORMAT")) {
+				info_format = value;
 			}
 		}			
 	}
