@@ -31,6 +31,7 @@ import java.util.Vector;
 import java.util.Map.Entry;
 
 import org.easysdi.jdom.filter.AttributeXlinkFilter;
+import org.easysdi.jdom.filter.ElementFormatFilter;
 import org.easysdi.jdom.filter.ElementLayerFilter;
 import org.easysdi.jdom.filter.ElementServiceExceptionFilter;
 import org.easysdi.jdom.filter.ElementServiceExceptionReportFilter;
@@ -119,6 +120,7 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 	    	}
 	    	
 	    	List<Element> toRemove =new ArrayList<Element>();
+	    	Element getFeatureInfoElement = null;
 	    	
 	    	Iterator iRequestToUpdate = requestList.iterator();
 	    	while(iRequestToUpdate.hasNext()){
@@ -127,7 +129,13 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 	    		 if(deniedOperations.contains(request.getName())){
 	    			 toRemove.add(request);
 	    		 }else{
-					//The request is allowed and supported, we overwrite xlink attribute
+	    			 //The request is allowed and supported
+	    			 //If request is GetFeatureInfo, only keep the format XML, other are not supported (can't be agregate by the proxy)
+	    			 if(request.getName().equalsIgnoreCase("GetFeatureInfo")){
+	    				 //Saved the element, the modifications will be made outside of the iteration loop
+	    				 getFeatureInfoElement = request;
+	    			 }
+	    			//Overwrite xlink attribute
 					Iterator iXlink = request.getDescendants(xlinkFilter);
 					List<Element> xlinkList = new ArrayList<Element>();	  
 					while (iXlink.hasNext()){
@@ -154,9 +162,24 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 	    		request.getParent().removeContent(request);
 	    	}
 	    	
-	    	Element elementException = elementCapability.getChild("Exception", nsWMS);
+	    	if(getFeatureInfoElement != null){
+	    		Filter formatFilter = new ElementFormatFilter();
+	    		Iterator iFormat = getFeatureInfoElement.getDescendants(formatFilter);
+				List<Element> formatList = new ArrayList<Element>();	  
+				while (iFormat.hasNext()){
+					Element courant = (Element)iFormat.next();
+					if(!courant.getValue().contains("xml") && !courant.getValue().contains("gml"))
+						formatList.add(courant);
+				}
+				Iterator<Element> ilFormat = formatList.iterator();
+				while(ilFormat.hasNext()){
+					getFeatureInfoElement.removeContent(ilFormat.next());
+				}
+	    	}
+	    	
+	    	Element elementException = elementCapability.getChild("Exception");
 	    	elementException.removeContent();
-	    	elementException.addContent((new Element("Format", nsWMS)).setText("application/vnd.ogc.se_xml"));
+	    	elementException.addContent((new Element("Format")).setText("application/vnd.ogc.se_xml"));
 	    	
     	   XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
            sortie.output(docParent, new FileOutputStream(filePath));
@@ -218,7 +241,7 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 		    				Parent parent = layerElement.getParent();
 		    				parent.removeContent (layerElement);
 					}
-		    		else
+		    		else if(nameElement != null)
 		    		{
 		    			//Rewrite Layer name with alias prefix
 		    			String name = nameElement.getText();
@@ -486,27 +509,19 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 		SAXBuilder sxb = new SAXBuilder();
 		
 		Document docParent = null; 
-		Element serviceExceptionReport=null;
-		for (String key : remoteServerExceptionFiles.values()) {
+		Element racineParent = null;
+		for (String key : remoteServerExceptionFiles.keySet()) {
 			String path = remoteServerExceptionFiles.get(key);
 			try {
 				//Parent document
 				if(docParent == null){
 					docParent = sxb.build(new File(path));
-					Element racine = docParent.getRootElement();
-					
-					//Get the serviceExceptionReport element
-					Filter serviceExceptionReportFilter = new ElementServiceExceptionReportFilter();
-					Iterator<Element> iSER= racine.getDescendants(serviceExceptionReportFilter);
-					while (iSER.hasNext()){
-						serviceExceptionReport = (Element)iSER.next();
-						break;
-					}
+					racineParent = docParent.getRootElement();
 					
 					//Get the serviceException elements of the parent document
 					List<Element> serviceExceptionList = new ArrayList<Element>();
 					Filter serviceExceptionFilter = new ElementServiceExceptionFilter();
-					Iterator<Element> iSE = serviceExceptionReport.getDescendants(serviceExceptionFilter);
+					Iterator<Element> iSE = racineParent.getDescendants(serviceExceptionFilter);
 					while (iSE.hasNext()){
 						Element serviceException = (Element)iSE.next();
 						serviceExceptionList.add(serviceException);
@@ -518,6 +533,7 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 			    		Element serviceException = (Element)iSEL.next();
 			    		serviceException.setText( String.format(TEXT_SERVER_ALIAS, key) + serviceException.getText());
 			    	}
+			    	continue;
 				}
 				
 				//Child document
@@ -538,7 +554,7 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 		    		Element serviceException = (Element)iSEL.next();
 		    		serviceException.setText( String.format(TEXT_SERVER_ALIAS, key) + serviceException.getText());
 		    		if(serviceException.getParent().removeContent(serviceException)){
-		    			serviceExceptionReport.addContent(serviceException);
+		    			racineParent.addContent(serviceException);
 		    		}else{
 		    			//TODO :error
 		    		}
@@ -591,7 +607,16 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 				try
 				{
 	    			Server server = serverList.get(i);
-	    			ProxyLayer proxyLayer = new ProxyLayer(getLayerName(elementLayer));
+	    			
+	    			String layerName = getLayerName(elementLayer);
+	    			
+	    			//Layer does not have a <Name>, it is not a layer that can be requested  
+	    			if(layerName == null)
+	    					continue;
+	    			
+	    			ProxyLayer proxyLayer = new ProxyLayer(layerName);
+	    			
+	    			
 	    			Layer currentLayer = server.getLayers().getLayerByName(proxyLayer.getName());
 	    			
 	    			//Not the right server
@@ -803,7 +828,10 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 	 * @return the value of the <Name> element
 	 */
 	protected String getLayerName (Element layer){
-		return layer.getChild("Name").getValue();
+		if(layer.getChild("Name") != null)
+			return layer.getChild("Name").getValue();
+		else
+			return null;
 	}
 	
 	public ByteArrayOutputStream GetFeatureInfoAggregation (TreeMap<Integer, ProxyRemoteServerResponse> wmsGetFeatureInfoResponseFilePath){
@@ -820,6 +848,7 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 				Element child = new Element(entry.getValue().getAlias());
 				Document docChild = sxb.build(new File(entry.getValue().getPath()));
 				Element rootChild = docChild.getRootElement();
+				rootChild.detach();
 				child.addContent(rootChild);
 				root.addContent(child);
 			}

@@ -27,6 +27,7 @@ import java.util.Map.Entry;
 import java.util.Vector;
 
 import org.easysdi.jdom.filter.AttributeXlinkFilter;
+import org.easysdi.jdom.filter.ElementFormatFilter;
 import org.easysdi.jdom.filter.ElementLayerFilter;
 import org.easysdi.proxy.core.ProxyServlet;
 import org.easysdi.proxy.policy.BoundingBox;
@@ -150,9 +151,18 @@ public class WMSProxyResponseBuilder130 extends WMSProxyResponseBuilder {
 	    	}
 	    	
 	    	if(getFeatureInfoElement != null){
-	    		getFeatureInfoElement.removeContent();
-	    		getFeatureInfoElement.addContent((new Element("Format", nsWMS)).setText("application/vnd.ogc.gml"));
-	    		getFeatureInfoElement.addContent((new Element("Format", nsWMS)).setText("text/plain"));
+	    		Filter formatFilter = new ElementFormatFilter();
+	    		Iterator iFormat = getFeatureInfoElement.getDescendants(formatFilter);
+				List<Element> formatList = new ArrayList<Element>();	  
+				while (iFormat.hasNext()){
+					Element courant = (Element)iFormat.next();
+					if(!courant.getValue().contains("xml") && !courant.getValue().contains("gml"))
+						formatList.add(courant);
+				}
+				Iterator<Element> ilFormat = formatList.iterator();
+				while(ilFormat.hasNext()){
+					getFeatureInfoElement.removeContent(ilFormat.next());
+				}
 	    	}
 	    	
 	    	Element elementException = elementCapability.getChild("Exception", nsWMS);
@@ -211,7 +221,7 @@ public class WMSProxyResponseBuilder130 extends WMSProxyResponseBuilder {
 		    				Parent parent = layerElement.getParent();
 		    				parent.removeContent (layerElement);
 					}
-		    		else
+		    		else if(nameElement != null)
 		    		{
 		    			//Rewrite Layer name with alias prefix
 		    			String name = nameElement.getText();
@@ -550,6 +560,9 @@ public class WMSProxyResponseBuilder130 extends WMSProxyResponseBuilder {
 	 */
 	@Override
 	protected String getLayerName(Element layer) {
-		return layer.getChild("Name",nsWMS).getValue();	
+		if(layer.getChild("Name",nsWMS) != null)
+			return layer.getChild("Name",nsWMS).getValue();
+		else
+			return null;
 	}
 }

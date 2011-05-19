@@ -1818,6 +1818,7 @@ public class WMSProxyServlet extends ProxyServlet {
 	 * @param req
 	 * @param resp
 	 */
+	@SuppressWarnings("unchecked")
 	public void requestPreTreatmentGetFeatureInfo (HttpServletRequest req, HttpServletResponse resp){
 		try{
 			if(((WMSProxyServletRequest)getProxyRequest()).getQueryLayers() == null || ((WMSProxyServletRequest)getProxyRequest()).getQueryLayers().equalsIgnoreCase(""))
@@ -1837,9 +1838,7 @@ public class WMSProxyServlet extends ProxyServlet {
 				return;
 			
 			//get the authorized layers in the GetMap request
-			@SuppressWarnings("unchecked")
 			TreeMap<Integer,ProxyLayer> layerTableToKeepFromGetMap = (TreeMap<Integer,ProxyLayer>) r.get(1);
-			@SuppressWarnings("unchecked")
 			TreeMap<Integer,String> layerStyleMap = (TreeMap <Integer,String>) r.get(2);
 			
 			//Layer to keep in the remote request
@@ -1873,10 +1872,13 @@ public class WMSProxyServlet extends ProxyServlet {
 					sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
 					return ;
 				}
-				
-				if (layerTableToKeepFromGetMap.containsValue(layer)){
-					layerTableToKeep.put(k, layer);
-					remoteServerToCall.add(RS.getAlias());
+				Iterator<Entry<Integer,ProxyLayer>> i = layerTableToKeepFromGetMap.entrySet().iterator();
+				while(i.hasNext()){
+					Entry<Integer, ProxyLayer> entry =  i.next();
+					if(entry.getValue().getAlias().equals(layer.getAlias()) && entry.getValue().getName().equals(layer.getName())){
+						layerTableToKeep.put(k, layer);
+						remoteServerToCall.add(RS.getAlias());
+					}
 				}
 			}
 			
@@ -2144,7 +2146,7 @@ public class WMSProxyServlet extends ProxyServlet {
 			//Or if the Exception mode is 'permissive' and all the response are exceptio
 			//Aggegate the exception files and send the result to the client
 			if((remoteServerExceptionFiles.size() > 0 && configuration.getExceptionMode().equals("restrictive")) ||  
-					(wmsGetMapResponseFilePathMap.size() == 0)){
+					(wmsGetFeatureInfoResponseFilePathMap.size() == 0)){
 				dump("INFO","Exception(s) returned by remote server(s) are sent to client.");
 				ByteArrayOutputStream exceptionOutputStream = docBuilder.ExceptionAggregation(remoteServerExceptionFiles);
 				sendHttpServletResponse(req,resp,exceptionOutputStream, "text/xml; charset=utf-8", HttpServletResponse.SC_OK);
@@ -2385,6 +2387,14 @@ public class WMSProxyServlet extends ProxyServlet {
 		
 		//Get the requested layer names
 		TreeMap<Integer,String> layerMap = new TreeMap <Integer,String>();
+		if(((WMSProxyServletRequest)getProxyRequest()).getLayers()==null){
+			dump("INFO","LAYERS "+OWSExceptionReport.TEXT_MISSING_PARAMETER_VALUE);
+			StringBuffer out = owsExceptionReport.generateExceptionReport("LAYERS "+OWSExceptionReport.TEXT_MISSING_PARAMETER_VALUE,OWSExceptionReport.CODE_MISSING_PARAMETER_VALUE,"LAYERS");
+			sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
+			return null;
+		}
+			
+		
 		ArrayList<String> layerParamAsArray = new ArrayList<String>(Arrays.asList(((WMSProxyServletRequest)getProxyRequest()).getLayers().split(",")));
 		for (int index = 0 ; index < layerParamAsArray.size() ; index++){
 			layerMap.put(index, layerParamAsArray.get(index));
