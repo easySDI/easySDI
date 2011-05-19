@@ -911,6 +911,9 @@ class ADMIN_xQuery{
 	
   	$mxqueryroot = config_easysdi::getValue("catalog_mxqueryurl");
   	$mxqueryProcess= $mxqueryroot."/process";
+  	$mxqueryPaginationStep = config_easysdi::getValue("catalog_mxquerypagination");
+  	$maxRecords = self::getMaxRecords($database, $cid);
+  	
   	
   	
   	$cookiesList=array();
@@ -929,6 +932,7 @@ class ADMIN_xQuery{
 	$getXMLUrl = "http://".$_SERVER['HTTP_HOST']."/".$fullURI[0]."?option=com_easysdi_catalog&task=provideXMLDataForXQueryReport&cid=".$cid ;
 
   	$data =   'url='.urlencode($getXMLUrl).'&fileid='.urlencode(trim($xfileid)).'&namespaces='.urlencode(trim($nsList));
+  	$data .= '&maxrecords='.urlencode($maxRecords).'&paginationstep='.urlencode($mxqueryPaginationStep);
 
   	curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
   	
@@ -1016,8 +1020,10 @@ class ADMIN_xQuery{
 		$database=& JFactory::getDBO(); 
 		$user =& JFactory::getUser();
 		$cid= JRequest::getVar('cid',0);
+		$paginationStep = JRequest::getVar('paginationstep');
+		$startPosition= JRequest::getVar('startposition');
 		
-    	if($user->id==''){
+    	if(($user->id=='') || ($paginationStep=='')|| ($startPosition=='')){
 				$xmlResponse = "ERROR : No user id found";
 				header("Content-Length: ".strlen($xmlResponse)); 
 				echo $xmlResponse; 
@@ -1077,7 +1083,9 @@ class ADMIN_xQuery{
 		
 		$cswfilter="";
 		
- 		$database->setQuery( $metadataIdSqlfilter);
+ 		$database->setQuery( $metadataIdSqlfilter, $startPosition, $paginationStep);
+ 		
+ 		
 		$metadataIds = $database->loadObjectList();
 		
 		if ($database->getErrorNum()) {			
@@ -1087,16 +1095,48 @@ class ADMIN_xQuery{
 		}
 		$cswfilter = ADMIN_xQuery::buildCSWFilter($metadataIds, $report->ogcfilter );		
 		
-		$maxRecords = count($metadataIds);
+		//$maxRecords = count($metadataIds);
 		$catalogUrlBase = config_easysdi::getValue("catalog_url");
-		$xmlBody = ADMIN_xQuery::BuildCSWRequest($maxRecords, 0, "results", "gmd:MD_Metadata", "full", "1.1.0", $cswfilter, $ogcsearchsorting, "ASC");
+		$xmlBody = ADMIN_xQuery::BuildCSWRequest($paginationStep, 0, "results", "gmd:MD_Metadata", "full", "1.1.0", $cswfilter, $ogcsearchsorting, "ASC");
 		$xmlResponse = ADMIN_metadata::CURLRequest("POST", $catalogUrlBase,$xmlBody);
+		
+	
+    		
 		echo $xmlResponse; // return the xml response directly as xml. // or see how it is done by export xml.
 		die;
 	
 	}
 		
+function getMaxRecords($database, $cid){
+	
 		
+		
+		$medatadataFilterSql = "select sqlfilter from #__sdi_xqueryreport where id=".$cid ;
+		
+  		$database->setQuery( $medatadataFilterSql);
+		$metadataIdSqlfilter = trim($database->loadResult());
+		if ($database->getErrorNum()) {			
+			$xmlResponse = "ERROR : " +$database->getErrorMsg();
+			echo $xmlResponse; // return the xml response directly as xml. // or see how it is done by export xml.
+			die;
+		
+		}
+		
+		if ($metadataIdSqlfilter =='')
+			$metadataIdSqlfilter = "select guid from #__sdi_metadata";
+		
+		
+ 		$database->setQuery( $metadataIdSqlfilter);
+		$metadataIds = $database->loadObjectList();		
+		if ($database->getErrorNum()) {			
+			$xmlResponse = "ERROR : " +$database->getErrorMsg();
+			echo $xmlResponse; // return the xml response directly as xml. // or see how it is done by export xml.
+			die;
+		}		
+		
+		$maxRecords = count($metadataIds);
+		return  $maxRecords;
+}		
 
   
   
