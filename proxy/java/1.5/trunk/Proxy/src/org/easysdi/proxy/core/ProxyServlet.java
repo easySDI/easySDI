@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.lang.reflect.Constructor;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
@@ -64,6 +65,7 @@ import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.log4j.Logger;
 import org.easysdi.proxy.exception.AvailabilityPeriodException;
 import org.easysdi.proxy.ows.OWSExceptionReport;
 import org.easysdi.proxy.policy.Attribute;
@@ -95,6 +97,8 @@ import com.google.common.collect.Multimap;
 
 
 public abstract class ProxyServlet extends HttpServlet {
+
+	
 
 	private static final long serialVersionUID = 3499090220094877198L;
 	private static final String PNG = "image/png";
@@ -209,6 +213,23 @@ public abstract class ProxyServlet extends HttpServlet {
 	 */
 	protected ProxyServletRequest proxyRequest;
 	
+	protected Logger logger;
+	
+	/**
+	 * 
+	 */
+	public ProxyServlet() {
+		super();
+		String loggerClassName = "org.easysdi.proxy.log.ProxyLogger";
+		Class<?> classe;
+		try {
+			classe = Class.forName(loggerClassName);
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Constructor<?> constructeur = classe.getConstructor(new Class [] null);
+	}
 
 	
 	/**
@@ -1390,6 +1411,7 @@ public abstract class ProxyServlet extends HttpServlet {
 		return null;
 	}
 
+	@Deprecated
 	protected abstract  StringBuffer generateOgcException(String errorMessage, String code, String locator, String version) ;
 	
 

@@ -32,6 +32,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URLDecoder;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -48,6 +49,9 @@ import java.util.logging.Level;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageWriter;
 import javax.imageio.stream.FileImageOutputStream;
+import javax.imageio.stream.IIOByteBuffer;
+import javax.imageio.stream.ImageOutputStream;
+import javax.imageio.stream.ImageOutputStreamImpl;
 import javax.imageio.stream.MemoryCacheImageOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -60,6 +64,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import org.apache.log4j.Logger;
 import org.easysdi.proxy.core.ProxyLayer;
 import org.easysdi.proxy.core.ProxyRemoteServerResponse;
 import org.easysdi.proxy.core.ProxyServlet;
@@ -173,93 +178,6 @@ public class WMSProxyServlet extends ProxyServlet {
 		ServiceOperations = Arrays.asList( "GetCapabilities", "GetMap", "GetFeatureInfo", "DescribeLayer", "GetLegendGraphic", "PutStyles", "GetStyles" );
 	}
 	
-	protected StringBuffer generateOgcException(String errorMessage, String code, String locator, String version) {
-		dump("ERROR", errorMessage);
-		StringBuffer sb = new StringBuffer("<?xml version='1.0' encoding='utf-8' ?>");
-		sb.append("<ServiceExceptionReport xmlns=\"http://www.opengis.net/ogc\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.opengis.net/ogc\" version=\"");
-//		sb.append("<ServiceExceptionReport version=\"");
-		sb.append(version);
-		sb.append("\">\n");
-		sb.append("\t<ServiceException ");
-		if(code != null && code != "")
-		{
-			sb.append(" code=\"");
-			sb.append(code);
-			sb.append("\"");
-		}
-		if(locator != null && locator != "" && version.equals("1.3.0"))
-		{
-			sb.append(" locator=\"");
-			sb.append(locator);
-			sb.append("\"");
-		}
-		sb.append(">");
-		sb.append(errorMessage);
-		sb.append("</ServiceException>\n");
-		sb.append("</ServiceExceptionReport>");
-		return sb;
-	}
-	
-	
-	private BufferedImage filterImage(String filter, String fileName, boolean isTransparent, HttpServletResponse resp) {
-		try {
-			if (filter != null) {
-				String[] s = bbox.split(",");
-
-				InputStream bis = new ByteArrayInputStream(filter.getBytes());
-				System.setProperty("org.geotools.referencing.forceXY", "true");
-
-				Object object = DocumentFactory.getInstance(bis, null, Level.WARNING);
-				WKTReader wktReader = new WKTReader();
-
-				Geometry polygon = wktReader.read(object.toString());
-
-				filter.indexOf("srsName");
-				String srs = filter.substring(filter.indexOf("srsName"));
-				srs = srs.substring(srs.indexOf("\"") + 1);
-				srs = srs.substring(0, srs.indexOf("\""));
-				polygon.setSRID(Integer.parseInt(srs.substring(5)));
-
-				CRSEnvelope bbox = new CRSEnvelope(srsName, Double.parseDouble(s[0]), Double.parseDouble(s[1]), Double.parseDouble(s[2]), Double
-						.parseDouble(s[3]));
-
-				// final WorldFileReader reader = new WorldFileReader(new
-				// File(filePath));
-
-				BufferedImage image = ImageIO.read(new File(fileName));
-				int type = BufferedImage.TYPE_INT_BGR;
-				if (image.getTransparency() == Transparency.BITMASK)
-					type = BufferedImage.BITMASK;
-				else if (image.getTransparency() == Transparency.TRANSLUCENT)
-					type = BufferedImage.TRANSLUCENT;
-				BufferedImage canvas = new BufferedImage(image.getWidth(), image.getHeight(), type);
-				canvas.getGraphics().drawImage(image, 0, 0, null);
-				BufferedImage imageOut = imageFiltering(canvas, bbox, polygon, isTransparent, resp);
-
-				return imageOut;
-			} else {
-				if (fileName != null) {
-					BufferedImage image = ImageIO.read(new File(fileName));
-					if (image == null)
-						return null;
-					int type = BufferedImage.TYPE_INT_BGR;
-					if (image.getTransparency() == Transparency.BITMASK)
-						type = BufferedImage.BITMASK;
-					else if (image.getTransparency() == Transparency.TRANSLUCENT)
-						type = BufferedImage.TRANSLUCENT;
-					BufferedImage canvas = new BufferedImage(image.getWidth(), image.getHeight(), type);
-					canvas.getGraphics().drawImage(image, 0, 0, null);
-					return canvas;
-				}
-			}
-		} catch (Exception e) {
-			resp.setHeader("easysdi-proxy-error-occured", "true");
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-	
 	/**
 	 * 
 	 */
@@ -295,13 +213,14 @@ public class WMSProxyServlet extends ProxyServlet {
 			
 		} catch (Exception e) {
 			resp.setHeader("easysdi-proxy-error-occured", "true");
-			dump("ERROR", e.getMessage());
+			e.printStackTrace();
+			dump("ERROR", e.toString());
 			StringBuffer out;
 			try {
 				out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
 				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			} catch (IOException e1) {
-				dump("ERROR", e1.getMessage());
+				dump("ERROR", e1.toString());
 				e1.printStackTrace();
 			}
 		}
@@ -342,9 +261,9 @@ public class WMSProxyServlet extends ProxyServlet {
 				try {
 					out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_NO_RESULT_RECEIVED_BY_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
 					sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-				} catch (IOException e1) {
-					dump("ERROR", e1.getMessage());
-					e1.printStackTrace();
+				} catch (IOException e) {
+					dump("ERROR", e.toString());
+					e.printStackTrace();
 				}
 				return;
 			}
@@ -393,9 +312,19 @@ public class WMSProxyServlet extends ProxyServlet {
 			TreeMap<Integer,ProxyLayer> layerTableToKeep = (TreeMap<Integer,ProxyLayer>) r.get(1);
 			TreeMap<Integer,String> layerStyleMap = (TreeMap <Integer,String>) r.get(2);
 						
+			//No layer to keep from the request according to policy right (scale limitation)
+			//Return an empty image
 			if(layerTableToKeep.size() == 0){
-				generateEmptyImage(getProxyRequest().getWidth(), getProxyRequest().getHeight(), getProxyRequest().getFormat(), true, resp);
-				//TODO : send directly to the client or need a transform call?
+				BufferedImage imgOut = generateEmptyImage(getProxyRequest().getWidth(), getProxyRequest().getHeight(), getProxyRequest().getFormat(), true, resp);
+				Iterator<ImageWriter> iter = ImageIO.getImageWritersByMIMEType(responseContentType);
+				ByteArrayOutputStream out = new ByteArrayOutputStream();
+				if (iter.hasNext()) {
+					ImageWriter writer = (ImageWriter) iter.next();
+					writer.setOutput(out);
+					writer.write(imgOut);
+					writer.dispose();
+				}
+				sendHttpServletResponse(req, resp,out,responseContentType, HttpServletResponse.SC_OK);
 			}
 			
 			//Get the remote server informations
@@ -1198,33 +1127,122 @@ public class WMSProxyServlet extends ProxyServlet {
 	 * @param j
 	 * @param resp
 	 */
-	private void generateEmptyImage(String width, String height, String format, boolean isTransparent, HttpServletResponse resp) {
+//	private void generateEmptyImage(String width, String height, String format, boolean isTransparent, HttpServletResponse resp) {
+//		try {
+//			BufferedImage imgOut = null;
+//			if (isTransparent) {
+//				imgOut = new BufferedImage((int) Double.parseDouble(width), (int) Double.parseDouble(height), BufferedImage.BITMASK);
+//			} else {
+//				imgOut = new BufferedImage((int) Double.parseDouble(width), (int) Double.parseDouble(height), BufferedImage.TYPE_INT_ARGB);
+//			}
+//			responseContentType = URLDecoder.decode(format, "UTF-8");
+//			responseContentTypeList.add(responseContentType);
+//			Iterator<ImageWriter> iter = ImageIO.getImageWritersByMIMEType(responseContentType);
+//
+//			if (iter.hasNext()) {
+//				ImageWriter writer = (ImageWriter) iter.next();
+////				File tempFile = createTempFile(UUID.randomUUID().toString(), getExtension(responseContentType));
+////				FileImageOutputStream output = new FileImageOutputStream(tempFile);
+//				ImageOutputStreamImpl output = new MemoryCacheImageOutputStream(null);
+//				writer.setOutput(output);
+//				writer.write(imgOut);
+////				String filePath = tempFile.getPath();
+////				wmsGetCapabilitiesResponseFilePathMap.put("proxy", filePath);
+//				writer.dispose();
+//			}
+//		} catch (Exception e) {
+//			dump("ERROR","GenerateEmptyImage");
+//		}
+//	}
+	
+	/**
+	 * Generate an empty image
+	 * @param width
+	 * @param height
+	 * @param format
+	 * @param isTransparent
+	 * @param j
+	 * @param resp
+	 */
+	private BufferedImage generateEmptyImage(String width, String height, String format, boolean isTransparent, HttpServletResponse resp) {
+		BufferedImage imgOut = null;
 		try {
-			BufferedImage imgOut = null;
 			if (isTransparent) {
 				imgOut = new BufferedImage((int) Double.parseDouble(width), (int) Double.parseDouble(height), BufferedImage.BITMASK);
 			} else {
 				imgOut = new BufferedImage((int) Double.parseDouble(width), (int) Double.parseDouble(height), BufferedImage.TYPE_INT_ARGB);
 			}
-			responseContentType = URLDecoder.decode(format, "UTF-8");
-			responseContentTypeList.add(responseContentType);
-			Iterator<ImageWriter> iter = ImageIO.getImageWritersByMIMEType(responseContentType);
-
-			if (iter.hasNext()) {
-				ImageWriter writer = (ImageWriter) iter.next();
-				File tempFile = createTempFile(UUID.randomUUID().toString(), getExtension(responseContentType));
-				FileImageOutputStream output = new FileImageOutputStream(tempFile);
-				writer.setOutput(output);
-				writer.write(imgOut);
-				String filePath = tempFile.getPath();
-				wmsGetCapabilitiesResponseFilePathMap.put("proxy", filePath);
-				writer.dispose();
-			}
 		} catch (Exception e) {
 			dump("ERROR","GenerateEmptyImage");
-		}
+		} 
+		return imgOut;
 	}
 
+	/**
+	 * @param filter
+	 * @param fileName
+	 * @param isTransparent
+	 * @param resp
+	 * @return
+	 */
+	private BufferedImage filterImage(String filter, String fileName, boolean isTransparent, HttpServletResponse resp) {
+		try {
+			if (filter != null) {
+				String[] s = bbox.split(",");
+
+				InputStream bis = new ByteArrayInputStream(filter.getBytes());
+				System.setProperty("org.geotools.referencing.forceXY", "true");
+
+				Object object = DocumentFactory.getInstance(bis, null, Level.WARNING);
+				WKTReader wktReader = new WKTReader();
+
+				Geometry polygon = wktReader.read(object.toString());
+
+				filter.indexOf("srsName");
+				String srs = filter.substring(filter.indexOf("srsName"));
+				srs = srs.substring(srs.indexOf("\"") + 1);
+				srs = srs.substring(0, srs.indexOf("\""));
+				polygon.setSRID(Integer.parseInt(srs.substring(5)));
+
+				CRSEnvelope bbox = new CRSEnvelope(srsName, Double.parseDouble(s[0]), Double.parseDouble(s[1]), Double.parseDouble(s[2]), Double
+						.parseDouble(s[3]));
+
+				// final WorldFileReader reader = new WorldFileReader(new
+				// File(filePath));
+
+				BufferedImage image = ImageIO.read(new File(fileName));
+				int type = BufferedImage.TYPE_INT_BGR;
+				if (image.getTransparency() == Transparency.BITMASK)
+					type = BufferedImage.BITMASK;
+				else if (image.getTransparency() == Transparency.TRANSLUCENT)
+					type = BufferedImage.TRANSLUCENT;
+				BufferedImage canvas = new BufferedImage(image.getWidth(), image.getHeight(), type);
+				canvas.getGraphics().drawImage(image, 0, 0, null);
+				BufferedImage imageOut = imageFiltering(canvas, bbox, polygon, isTransparent, resp);
+
+				return imageOut;
+			} else {
+				if (fileName != null) {
+					BufferedImage image = ImageIO.read(new File(fileName));
+					if (image == null)
+						return null;
+					int type = BufferedImage.TYPE_INT_BGR;
+					if (image.getTransparency() == Transparency.BITMASK)
+						type = BufferedImage.BITMASK;
+					else if (image.getTransparency() == Transparency.TRANSLUCENT)
+						type = BufferedImage.TRANSLUCENT;
+					BufferedImage canvas = new BufferedImage(image.getWidth(), image.getHeight(), type);
+					canvas.getGraphics().drawImage(image, 0, 0, null);
+					return canvas;
+				}
+			}
+		} catch (Exception e) {
+			resp.setHeader("easysdi-proxy-error-occured", "true");
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	/**
 	 * envelope contains the envelope of the whole image
 	 * @param imageSource
@@ -1317,5 +1335,10 @@ public class WMSProxyServlet extends ProxyServlet {
 		}
 
 		return imageSource;
+	}
+	
+		@Override
+	protected StringBuffer generateOgcException(String errorMessage,String code, String locator, String version) {
+		return null;
 	}
 }
