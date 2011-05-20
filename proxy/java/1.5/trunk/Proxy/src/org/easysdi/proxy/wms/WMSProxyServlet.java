@@ -26,23 +26,19 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
-import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
 import java.util.Vector;
@@ -55,37 +51,24 @@ import javax.imageio.stream.FileImageOutputStream;
 import javax.imageio.stream.MemoryCacheImageOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathFactory;
 
-import org.apache.xerces.dom.DeferredElementImpl;
 import org.easysdi.proxy.core.ProxyLayer;
 import org.easysdi.proxy.core.ProxyRemoteServerResponse;
 import org.easysdi.proxy.core.ProxyServlet;
 import org.easysdi.proxy.ows.OWSExceptionReport;
-import org.easysdi.proxy.policy.BoundingBox;
-import org.easysdi.proxy.policy.Layer;
-import org.easysdi.proxy.policy.Server;
 import org.easysdi.proxy.wms.thread.WMSProxyServerGetCapabilitiesThread;
 import org.easysdi.proxy.wms.thread.WMSProxyServerGetFeatureInfoThread;
 import org.easysdi.proxy.wms.thread.WMSProxyServerGetMapThread;
 import org.easysdi.proxy.wms.WMSProxyResponseBuilder;
 import org.easysdi.xml.documents.RemoteServerInfo;
-import org.easysdi.xml.resolver.ResourceResolver;
 import org.geotools.data.ows.CRSEnvelope;
 import org.geotools.feature.AttributeType;
 import org.geotools.feature.AttributeTypeFactory;
@@ -101,34 +84,14 @@ import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.xml.DocumentFactory;
 import org.integratedmodelling.geospace.gis.FeatureRasterizer;
 import org.jdom.JDOMException;
-import org.jdom.Namespace;
-import org.jdom.filter.Filter;
 import org.jdom.input.SAXBuilder;
-import org.jdom.output.Format;
-import org.jdom.output.XMLOutputter;
-import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.w3c.dom.bootstrap.DOMImplementationRegistry;
-import org.w3c.dom.ls.DOMImplementationLS;
-import org.w3c.dom.ls.LSOutput;
-import org.w3c.dom.ls.LSSerializer;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
-
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
-import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKTReader;
 
@@ -144,17 +107,6 @@ public class WMSProxyServlet extends ProxyServlet {
 	 */
 	private static final long serialVersionUID = -6946633057100675490L;
 	
-	/**
-	 * Store all the possible operations for a WMS service
-	 * Used in buildCapabilitiesXSLT()
-	 */
-	private String[] WMSOperation = { "GetCapabilities", "GetMap", "GetFeatureInfo", "DescribeLayer", "GetLegendGraphic", "PutStyles", "GetStyles" };
-
-	/**
-	 * Url du serveur ayant renvoyé la réponse i.
-	 */
-	public Map<Integer, String> serverUrlPerfilePathList = new TreeMap<Integer, String>(); 
-
 	/**
 	 * Fill by the WMSProxyServletGetMapThread with
 	 * <index of layer in the request,<path,alias>>
@@ -184,12 +136,32 @@ public class WMSProxyServlet extends ProxyServlet {
 	 */
 	protected WMSProxyResponseBuilder docBuilder;
 	
+	/**
+	 * Protocol version of the remote server response.
+	 * A GetCapabilities response can be made in a protocol version different from the one requested.
+	 * @see OGC WMS Server Implementation specification
+	 */
+	private String responseVersion = null;
 
 	/**
 	 * @return the proxyRequest
 	 */
 	public WMSProxyServletRequest getProxyRequest() {
 		return (WMSProxyServletRequest)proxyRequest;
+	}
+
+	/**
+	 * @param responseVersion the responseVersion to set
+	 */
+	public void setResponseVersion(String responseVersion) {
+		this.responseVersion = responseVersion;
+	}
+
+	/**
+	 * @return the responseVersion
+	 */
+	public String getResponseVersion() {
+		return responseVersion;
 	}
 
 	/**
@@ -227,1206 +199,8 @@ public class WMSProxyServlet extends ProxyServlet {
 		sb.append("</ServiceExceptionReport>");
 		return sb;
 	}
-	// ***************************************************************************************************************************************
-
-	protected StringBuffer buildCapabilitiesXSLT(HttpServletRequest req, HttpServletResponse resp, int remoteServerIndex, String version) {
-
-		try {
-//			String user = "";
-//			if (SecurityContextHolder.getContext().getAuthentication() != null) {
-//				user = SecurityContextHolder.getContext().getAuthentication().getName();
-//			}
-
-			String url = getServletUrl(req);
-			
-			//Retrieve allowed and denied operations from the policy
-			List<String> permitedOperations = new Vector<String>();
-			List<String> deniedOperations = new Vector<String>();
-			for (int i = 0; i < WMSOperation.length; i++) 
-			{
-				if (ServiceSupportedOperations.contains(WMSOperation[i]) && isOperationAllowed(WMSOperation[i])) 
-				{
-					permitedOperations.add(WMSOperation[i]);
-					dump(WMSOperation[i] + " is permitted");
-				} else 
-				{
-					deniedOperations.add(WMSOperation[i]);
-					dump(WMSOperation[i] + " is denied");
-				}
-			}
-			
-			try {
-				StringBuffer WMSCapabilities111 = new StringBuffer();
-				String prefixe = ""; 
-				if("130".equalsIgnoreCase(version))
-					prefixe = "wms:";
-
-				WMSCapabilities111
-						.append("<xsl:stylesheet version=\"1.00\" " +
-								"xmlns:wms=\"http://www.opengis.net/wms\" " +
-								"xmlns:ows=\"http://www.opengis.net/ows\" " +
-								"xmlns:sld=\"http://www.opengis.net/sld\" " + 
-								"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "+ 
-								"xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" " +
-								"xsi:schemaLocation=\"http://www.opengis.net/wms http://schemas.opengeospatial.net/wms/1.3.0/capabilities_1_3_0.xsd  http://www.opengis.net/sld http://schemas.opengis.net/sld/1.1.0/sld_capabilities.xsd  http://mapserver.gis.umn.edu/mapserver http://geoservices.brgm.fr/geologie?service=WMS&amp;version=1.3.0&amp;request=GetSchemaExtension\" " +
-								"xmlns:xlink=\"http://www.w3.org/1999/xlink\">");
-				WMSCapabilities111.append("<xsl:output method=\"xml\" omit-xml-declaration=\"no\" version=\"1.0\" encoding=\"UTF-8\" indent=\"yes\"/>");
-				
-				//HVH-10.12.2010 : WMS 1.3.0 --> namespace wms 
-				if (!"100".equalsIgnoreCase(version)) {
-					// Debug tb 19.11.2009
-					WMSCapabilities111.append("<xsl:template match=\"//"+prefixe+"OnlineResource/@xlink:href\">");
-					WMSCapabilities111.append("<xsl:param name=\"thisValue\">");
-					WMSCapabilities111.append("<xsl:value-of select=\".\"/>");
-					WMSCapabilities111.append("</xsl:param>");
-					WMSCapabilities111.append("<xsl:attribute name=\"xlink:href\">");
-					WMSCapabilities111.append(url);
-					// Changer seulement la partie racine de l'URL, pas les param après '?'
-					WMSCapabilities111.append("<xsl:value-of select=\"substring-after($thisValue,'" + getRemoteServerUrl(remoteServerIndex) + "')\"/>");
-					WMSCapabilities111.append("</xsl:attribute>");
-					WMSCapabilities111.append("</xsl:template>");
-				} else {
-					// Add change on wmtver=1.0.0&request=capabilities support
-					StringBuffer WMSCapabilities100 = new StringBuffer();
-					WMSCapabilities100.append("<xsl:template match=\"OnlineResource\">");
-					WMSCapabilities100.append("<xsl:param name=\"thisValue\">");
-					WMSCapabilities100.append("<xsl:value-of select=\".\"/>");
-					WMSCapabilities100.append("</xsl:param>");
-					WMSCapabilities100.append("<OnlineResource>");
-					WMSCapabilities100.append(url);
-					// Changer seulement la partie racine de l'URL, pas les param après '?'
-					WMSCapabilities100.append("<xsl:value-of select=\"substring-after($thisValue,'" + getRemoteServerUrl(remoteServerIndex) + "')\"/>");
-					WMSCapabilities100.append("</OnlineResource>");
-					WMSCapabilities100.append("</xsl:template>");
-					WMSCapabilities100.append("<xsl:template match=\"@onlineResource\">");
-					WMSCapabilities100.append("<xsl:param name=\"thisValue\">");
-					WMSCapabilities100.append("<xsl:value-of select=\".\"/>");
-					WMSCapabilities100.append("</xsl:param>");
-					WMSCapabilities100.append("<xsl:attribute name=\"onlineResource\">");
-					WMSCapabilities100.append(url);
-					// Changer seulement la partie racine de l'URL, pas les param après '?'
-					WMSCapabilities100.append("<xsl:value-of select=\"substring-after($thisValue,'" + getRemoteServerUrl(remoteServerIndex) + "')\"/>");
-					WMSCapabilities100.append("</xsl:attribute>");
-					WMSCapabilities100.append("</xsl:template>");
-					WMSCapabilities111.append(WMSCapabilities100);
-				}
-				// Fin de Debug
-
-				// Filtrage xsl des opérations
-				//HVH-30.08.2010 : replace old version which did not work				
-				if (!policy.getOperations().isAll() || deniedOperations.size() > 0 ) {
-					Iterator<String> it = permitedOperations.iterator();
-					while (it.hasNext()) {
-						String text = it.next();
-						if (text != null) {
-							WMSCapabilities111.append("<xsl:template match=\""+prefixe+"Capability/Request/");
-							WMSCapabilities111.append(text);
-							WMSCapabilities111.append("\">");
-							WMSCapabilities111.append("<!-- Copy the current node -->");
-							WMSCapabilities111.append("<xsl:copy>");
-							WMSCapabilities111.append("<!-- Including any attributes it has and any child nodes -->");
-							WMSCapabilities111.append("<xsl:apply-templates select=\"@*|node()\"/>");
-							WMSCapabilities111.append("</xsl:copy>");
-							WMSCapabilities111.append("</xsl:template>");
-						}
-					}
-
-					it = deniedOperations.iterator();
-					while (it.hasNext()) {
-						WMSCapabilities111.append("<xsl:template match=\""+prefixe+"Capability/wms:Request/");
-						WMSCapabilities111.append(it.next());
-						WMSCapabilities111.append("\"></xsl:template>");
-					}
-				}
-				if (permitedOperations.size() == 0 )
-				{
-					WMSCapabilities111.append("<xsl:template match=\"wms:Capability/"+prefixe+"Request/\"></xsl:template>");
-				}
-				
-				SAXBuilder saxBuilder = new SAXBuilder();
-				org.jdom.Document jDoc = saxBuilder.build(new File(wmsFilePathList.get(remoteServerIndex).toArray(new String[1])[0]));
-				Filter filtre = new WMSProxyCapabilitiesLayerFilter();
-    			Iterator itL = jDoc.getDescendants(filtre);
-    			while(itL.hasNext())
-				{
-    				org.jdom.Element layer = (org.jdom.Element)itL.next();
-    				org.jdom.Element layerName;
-    				if ("130".equalsIgnoreCase(version)) 
-    					layerName = layer.getChild("Name", Namespace.getNamespace("http://www.opengis.net/wms"));
-    				else
-    					layerName = layer.getChild("Name");
-    				if(layerName == null)
-    					continue;
-    				boolean allowed = isLayerAllowed(layerName.getValue(), getRemoteServerUrl(remoteServerIndex));
-					if (!allowed) {
-						// Si couche pas permise alors on l'enlève
-						WMSCapabilities111.append("<xsl:template match=\"//"+prefixe+"Layer[starts-with("+prefixe+"Name,'" + layerName.getValue() + "')]");
-						WMSCapabilities111.append("\"></xsl:template>");
-					}
-				}
-				
-				WMSCapabilities111.append("  <!-- Whenever you match any node or any attribute -->");
-				WMSCapabilities111.append("<xsl:template match=\"node()|@*\">");
-				WMSCapabilities111.append("<!-- Copy the current node -->");
-				WMSCapabilities111.append("<xsl:copy>");
-				WMSCapabilities111.append("<!-- Including any attributes it has and any child nodes -->");
-				WMSCapabilities111.append("<xsl:apply-templates select=\"@*|node()\"/>");
-				WMSCapabilities111.append("</xsl:copy>");
-				WMSCapabilities111.append("</xsl:template>");
-				WMSCapabilities111.append("</xsl:stylesheet>");
-
-				return WMSCapabilities111;
-			} catch (Exception e) {
-				resp.setHeader("easysdi-proxy-error-occured", "true");
-				e.printStackTrace();
-				dump("ERROR", e.getMessage());
-			}
-
-			// If something goes wrong, an empty stylesheet is returned.
-			StringBuffer sb = new StringBuffer();
-			return sb
-					.append("<xsl:stylesheet version=\"1.00\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"> </xsl:stylesheet>");
-		} catch (Exception e) {
-			resp.setHeader("easysdi-proxy-error-occured", "true");
-			e.printStackTrace();
-			dump("ERROR", e.getMessage());
-		}
-
-		// If something goes wrong, an empty stylesheet is returned.
-		StringBuffer sb = new StringBuffer();
-		return sb
-				.append("<xsl:stylesheet version=\"1.00\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"> </xsl:stylesheet>");
-	}
-
-	protected StringBuffer buildServiceMetadataCapabilitiesXSLT( String version) 
-	{
-		try
-		{
-			String prefixe = ""; 
-			if("130".equalsIgnoreCase(version))
-				prefixe = "wms:";
-			
-			StringBuffer serviceMetadataXSLT = new StringBuffer();
-			serviceMetadataXSLT.append("<xsl:stylesheet version=\"1.00\" " +
-					"xmlns:wms=\"http://www.opengis.net/wms\" " +
-					"xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" " +
-					"xmlns:ows=\"http://www.opengis.net/ows\" " +
-					"xmlns:xlink=\"http://www.w3.org/1999/xlink\">");
-			serviceMetadataXSLT.append("<xsl:output method=\"xml\" omit-xml-declaration=\"no\" version=\"1.0\" encoding=\"UTF-8\" indent=\"yes\"/>");
-			serviceMetadataXSLT.append("<xsl:strip-space elements=\"*\" />");
-			serviceMetadataXSLT.append("<xsl:template match=\"node()|@*\">");
-			serviceMetadataXSLT.append("<!-- Copy the current node -->");
-			serviceMetadataXSLT.append("<xsl:copy>");
-			serviceMetadataXSLT.append("<!-- Including any attributes it has and any child nodes -->");
-			serviceMetadataXSLT.append("<xsl:apply-templates select=\"@*|node()\"/>");
-			serviceMetadataXSLT.append("</xsl:copy>");
-			serviceMetadataXSLT.append("</xsl:template>");
-			//Version 1.2 and 1.3 supported so apply xslt to rewrite service metadata
-			serviceMetadataXSLT.append("<xsl:template match=\""+prefixe+"Service\">");
-			serviceMetadataXSLT.append("<xsl:copy>");
-			//Name
-			serviceMetadataXSLT.append("<xsl:element name=\""+prefixe+"Name\"> ");
-			serviceMetadataXSLT.append("<xsl:text>WMS</xsl:text>");
-			serviceMetadataXSLT.append("</xsl:element>");
-			//Title
-			serviceMetadataXSLT.append("<xsl:element name=\""+prefixe+"Title\"> ");
-			serviceMetadataXSLT.append("<xsl:text>" + getConfiguration().getTitle() + "</xsl:text>");
-			serviceMetadataXSLT.append("</xsl:element>");
-			//Abstract
-			if(getConfiguration().getAbst()!=null)
-			{
-				serviceMetadataXSLT.append("<xsl:element name=\""+prefixe+"Abstract\"> ");
-				serviceMetadataXSLT.append("<xsl:text>" + getConfiguration().getAbst() + "</xsl:text>");
-				serviceMetadataXSLT.append("</xsl:element>");
-			}
-			//Keyword
-			if(getConfiguration().getKeywordList()!= null)
-			{
-				if("100".equals(version))
-				{
-					List<String> keywords = getConfiguration().getKeywordList();
-					serviceMetadataXSLT.append("<xsl:element name=\"Keywords\"> ");
-					String sKeyWords = new String() ;
-					for (int n = 0; n < keywords.size(); n++) {
-						sKeyWords+= keywords.get(n);
-						if(n != keywords.size()-1)
-						{
-							sKeyWords += ", ";
-						}
-					}
-					serviceMetadataXSLT.append("<xsl:text>" + sKeyWords + "</xsl:text>");
-					serviceMetadataXSLT.append("</xsl:element>");
-				}
-				else
-				{
-					List<String> keywords = getConfiguration().getKeywordList();
-					serviceMetadataXSLT.append("<xsl:element name=\""+prefixe+"KeywordList\"> ");
-					for (int n = 0; n < keywords.size(); n++) {
-						serviceMetadataXSLT.append("<xsl:element name=\""+prefixe+"Keyword\"> ");
-						serviceMetadataXSLT.append("<xsl:text>" + keywords.get(n) + "</xsl:text>");
-						serviceMetadataXSLT.append("</xsl:element>");
-					}
-					serviceMetadataXSLT.append("</xsl:element>");
-				}
-			}
-			//OnlineResource
-			serviceMetadataXSLT.append("<xsl:copy-of select=\""+prefixe+"OnlineResource\"/>");
-			//contactInfo
-			if(!"100".equals(version))
-			{
-				if(getConfiguration().getContactInfo()!= null && !getConfiguration().getContactInfo().isEmpty())
-				{
-					serviceMetadataXSLT.append("<xsl:element name=\""+prefixe+"ContactInformation\"> ");
-					
-						serviceMetadataXSLT.append("<xsl:element name=\""+prefixe+"ContactPersonPrimary\"> ");
-						if(configuration.getContactInfo().getName()!=null){
-							serviceMetadataXSLT.append("<xsl:element name=\""+prefixe+"ContactPerson\"> ");
-							serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getName() + "</xsl:text>");
-							serviceMetadataXSLT.append("</xsl:element>");
-						}
-						if(configuration.getContactInfo().getOrganization()!=null){
-							serviceMetadataXSLT.append("<xsl:element name=\""+prefixe+"ContactOrganization\"> ");
-							serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getOrganization()+ "</xsl:text>");
-							serviceMetadataXSLT.append("</xsl:element>");
-						}
-						serviceMetadataXSLT.append("</xsl:element>");
-						if(configuration.getContactInfo().getPosition()!=null){
-							serviceMetadataXSLT.append("<xsl:element name=\""+prefixe+"ContactPosition\"> ");
-							serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getPosition()+ "</xsl:text>");
-							serviceMetadataXSLT.append("</xsl:element>");
-						}
-						if (!configuration.getContactInfo().getContactAddress().isEmpty())
-						{
-							serviceMetadataXSLT.append("<xsl:element name=\""+prefixe+"ContactAddress\"> ");
-							if(configuration.getContactInfo().getContactAddress().getType()!=null){
-								serviceMetadataXSLT.append("<xsl:element name=\""+prefixe+"AddressType\"> ");
-								serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getContactAddress().getType()+ "</xsl:text>");
-								serviceMetadataXSLT.append("</xsl:element>");
-							}
-							if(configuration.getContactInfo().getContactAddress().getAddress()!=null){
-								serviceMetadataXSLT.append("<xsl:element name=\""+prefixe+"Address\"> ");
-								serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getContactAddress().getAddress()+ "</xsl:text>");
-								serviceMetadataXSLT.append("</xsl:element>");
-							}
-							if(!configuration.getContactInfo().getContactAddress().getCity().equals("")){
-								serviceMetadataXSLT.append("<xsl:element name=\""+prefixe+"City\"> ");
-								serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getContactAddress().getCity()+ "</xsl:text>");
-								serviceMetadataXSLT.append("</xsl:element>");
-							}
-							if(configuration.getContactInfo().getContactAddress().getState()!=null){
-								serviceMetadataXSLT.append("<xsl:element name=\""+prefixe+"StateOrProvince\"> ");
-								serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getContactAddress().getState()+ "</xsl:text>");
-								serviceMetadataXSLT.append("</xsl:element>");
-							}
-							if(configuration.getContactInfo().getContactAddress().getPostalCode()!=null){
-								serviceMetadataXSLT.append("<xsl:element name=\""+prefixe+"PostCode\"> ");
-								serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getContactAddress().getPostalCode()+ "</xsl:text>");
-								serviceMetadataXSLT.append("</xsl:element>");
-							}
-							if(configuration.getContactInfo().getContactAddress().getCountry()!=null){
-								serviceMetadataXSLT.append("<xsl:element name=\""+prefixe+"Country\"> ");
-								serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getContactAddress().getCountry()+ "</xsl:text>");
-								serviceMetadataXSLT.append("</xsl:element>");
-							}
-							serviceMetadataXSLT.append("</xsl:element>");
-						}
-						if(configuration.getContactInfo().getVoicePhone()!=null)
-						{
-							serviceMetadataXSLT.append("<xsl:element name=\""+prefixe+"ContactVoiceTelephone\"> ");
-							serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getVoicePhone()+ "</xsl:text>");
-							serviceMetadataXSLT.append("</xsl:element>");
-						}
-						if(configuration.getContactInfo().getFacSimile()!=null)
-						{
-							serviceMetadataXSLT.append("<xsl:element name=\""+prefixe+"ContactFacsimileTelephone\"> ");
-							serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().getFacSimile()+ "</xsl:text>");
-							serviceMetadataXSLT.append("</xsl:element>");
-						}
-						if(configuration.getContactInfo().geteMail()!=null)
-						{
-							serviceMetadataXSLT.append("<xsl:element name=\""+prefixe+"ContactElectronicMailAddress\"> ");
-							serviceMetadataXSLT.append("<xsl:text>" + configuration.getContactInfo().geteMail()+ "</xsl:text>");
-							serviceMetadataXSLT.append("</xsl:element>");
-						}
-					
-					serviceMetadataXSLT.append("</xsl:element>");
-				}
-			}
-			//Fees
-			serviceMetadataXSLT.append("<xsl:element name=\""+prefixe+"Fees\"> ");
-			serviceMetadataXSLT.append("<xsl:text>" + getConfiguration().getFees() + "</xsl:text>");
-			serviceMetadataXSLT.append("</xsl:element>");
-			//AccesConstraints
-			serviceMetadataXSLT.append("<xsl:element name=\""+prefixe+"AccessConstraints\"> ");
-			serviceMetadataXSLT.append("<xsl:text>" + getConfiguration().getAccessConstraints() + "</xsl:text>");
-			serviceMetadataXSLT.append("</xsl:element>");
-			
-			
-			serviceMetadataXSLT.append("</xsl:copy>");
-			serviceMetadataXSLT.append("</xsl:template>");
-		
-			serviceMetadataXSLT.append("</xsl:stylesheet>");	
-			return serviceMetadataXSLT;
-		}
-		catch (Exception ex )
-		{
-			ex.printStackTrace();
-			dump("ERROR", ex.getMessage());
-			// If something goes wrong, an empty stylesheet is returned.
-			StringBuffer sb = new StringBuffer();
-			return sb.append("<xsl:stylesheet version=\"1.00\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"> </xsl:stylesheet>");
-		}
-	}
-	// ***************************************************************************************************************************************
-
 	
-	protected ByteArrayOutputStream buildResponseForServiceException ()
-	{
-		try 
-		{
-			for (String path : ogcExceptionFilePathList.values()) 
-			{
-				DocumentBuilderFactory db = DocumentBuilderFactory.newInstance();
-				db.setNamespaceAware(false);
-				File fMaster = new File(path);
-				Document documentMaster = db.newDocumentBuilder().parse(fMaster);
-				if (documentMaster != null) 
-				{
-					NodeList nl = documentMaster.getElementsByTagName("ServiceExceptionReport");
-					if (nl.item(0) != null)
-					{
-						dump("transform begin exception response writting");
-						DOMImplementationLS implLS = null;
-						if (documentMaster.getImplementation().hasFeature("LS", "3.0")) 
-						{
-							implLS = (DOMImplementationLS) documentMaster.getImplementation();
-						} 
-						else 
-						{
-							DOMImplementationRegistry enregistreur = DOMImplementationRegistry.newInstance();
-							implLS = (DOMImplementationLS) enregistreur.getDOMImplementation("LS 3.0");
-						}
-						
-						Node ItemMaster = nl.item(0);
-						//Loop on other file
-						for (String pathChild : ogcExceptionFilePathList.values()) 
-						{
-							Document documentChild = null;
-							if(path.equals(pathChild))
-								continue;
-							
-							documentChild = db.newDocumentBuilder().parse(pathChild);
-							
-							if (documentChild != null) {
-								NodeList nlChild = documentChild.getElementsByTagName("ServiceException");
-								if (nlChild != null && nlChild.getLength() > 0) 
-								{
-									for (int i = 0; i < nlChild.getLength(); i++) 
-									{
-										Node nnode = nlChild.item(i);
-										nnode = documentMaster.importNode(nnode, true);
-										ItemMaster.appendChild(nnode);
-									}
-								}
-							}
-						}
-						ByteArrayOutputStream out = new ByteArrayOutputStream();
-						LSSerializer serialiseur = implLS.createLSSerializer();
-						LSOutput sortie = implLS.createLSOutput();
-						sortie.setEncoding("UTF-8");
-						sortie.setByteStream(out);
-						serialiseur.write(documentMaster, sortie);
-						dump("transform end exception response writting");
-						return out;
-					}	
-				}
-			}
-		}
-		catch (Exception ex)
-		{
-			ex.printStackTrace();
-			dump("ERROR", ex.getMessage());
-			return null;
-		}
-		return null;
-	}
 	
-	protected boolean filterServersResponsesForOgcServiceExceptionFiles ()
-	{
-		try
-		{
-			dump("DEBUG","filterServerResponseFile begin");
-			
-			Collection<Map.Entry<Integer,String>> r =  wmsFilePathList.entries();
-			Multimap<Integer,String> toRemove = HashMultimap.create();
-			
-			Iterator<Map.Entry<Integer, String>> it = r.iterator();
-			while(it.hasNext())
-			{
-				Map.Entry<Integer,String> entry = (Map.Entry<Integer,String>)it.next();
-				String path  = entry.getValue();
-				if(path == null || path.length() == 0)
-					continue;
-				String ext = (path.lastIndexOf(".")==-1)?"":path.substring(path.lastIndexOf(".")+1,path.length());
-				if (ext.equals("xml"))
-				{
-					DocumentBuilderFactory db = DocumentBuilderFactory.newInstance();
-					Document documentMaster = db.newDocumentBuilder().parse(new File(path));
-					if (documentMaster != null) 
-					{
-						NodeList nl = documentMaster.getElementsByTagName("ServiceExceptionReport");
-						if (nl.item(0) != null)
-						{
-							toRemove.put(entry.getKey(), path);
-//							ogcExceptionFilePathList.put(entry.getKey(), path);
-//							wmsFilePathList.remove(entry.getKey(), path);
-						}
-					}
-				}
-			}
-			
-			Iterator<Map.Entry<Integer,String>> itR = toRemove.entries().iterator();
-			while(itR.hasNext())
-			{
-				Map.Entry<Integer,String> entry = (Map.Entry<Integer,String>)itR.next();
-				
-				ogcExceptionFilePathList.put(entry.getKey(), entry.getValue());
-				wmsFilePathList.remove(entry.getKey(), entry.getValue());
-			}
-			
-			dump("DEBUG","filterServerResponseFile end");
-			return true;
-		}
-		catch (Exception ex)
-		{
-			ex.printStackTrace();
-			dump("ERROR", ex.getMessage());
-			return false;
-		}
-	}
-
-	private org.jdom.Element getElementLayerName (org.jdom.Element elementLayer, Namespace wmsNS, String version)
-	{
-		if(("130").equalsIgnoreCase(version))
-			return (org.jdom.Element)elementLayer.getChild("Name",wmsNS);
-		else
-			return (org.jdom.Element)elementLayer.getChild("Name");
-			
-	}
-	
-	private boolean rewriteBBOX(List<org.jdom.Element> layersList,CoordinateReferenceSystem wgsCRS,CoordinateReferenceSystem parentCRS, String version)
-	{
-		String wgsMaxx;
-		String wgsMaxy;
-		String wgsMinx;
-		String wgsMiny;
-		Namespace wmsNS = Namespace.getNamespace("http://www.opengis.net/wms");
-		
-		for(int l = 0 ; l < layersList.size();l++)
-		{
-    		org.jdom.Element elementLayer = (org.jdom.Element)layersList.get(l);
-    		
-    		List<Server> serverList = policy.getServers().getServer();
-    		if(getElementLayerName(elementLayer,wmsNS,version) == null)
-    		{
-    			continue;
-    		}
-    		for (int i=0 ; i < serverList.size() ; i++)
-    		{
-    			try
-    			{
-	    			Server server = serverList.get(i);
-	    			Layer currentLayer ;
-	    			currentLayer = server.getLayers().getLayerByName(getElementLayerName(elementLayer,wmsNS,version).getValue());
-	    			
-	    			if(currentLayer == null)
-	    				continue;
-	    			
-	    			if(currentLayer.getBoundingBox() == null)
-	    				continue;
-	    			
-	    			//Calculate WGS BBOX
-	    			BoundingBox srsBBOX =  currentLayer.getBoundingBox();
-	    			if(srsBBOX.getSRS().equalsIgnoreCase("EPSG:4326"))
-	    			{
-	    				wgsMaxx = (srsBBOX.getMaxx());
-	    				wgsMaxy = (srsBBOX.getMaxy());
-	    				wgsMinx = (srsBBOX.getMinx());
-	    				wgsMiny = (srsBBOX.getMiny());
-	    			}	
-	    			else
-	    			{
-	    				CoordinateReferenceSystem sourceCRS = CRS.decode(srsBBOX.getSRS());
-	    				MathTransform transform = CRS.findMathTransform(sourceCRS, wgsCRS);
-	    				Envelope sourceEnvelope = new Envelope(Double.valueOf(srsBBOX.getMinx()),Double.valueOf(srsBBOX.getMaxx()),Double.valueOf(srsBBOX.getMiny()),Double.valueOf(srsBBOX.getMaxy()));
-	    				Envelope targetEnvelope = JTS.transform( sourceEnvelope, transform);
-	    				wgsMaxx = (String.valueOf(targetEnvelope.getMaxX()));
-	    				wgsMaxy = (String.valueOf(targetEnvelope.getMaxY()));
-	    				wgsMinx = (String.valueOf(targetEnvelope.getMinX()));
-	    				wgsMiny = (String.valueOf(targetEnvelope.getMinY()));
-	    			}
-	    			
-	    			if(version.equalsIgnoreCase("130"))
-	    			{
-	    				if ( !writeLatLonBBOX130(elementLayer, wgsMinx, wgsMiny,wgsMaxx, wgsMaxy, wmsNS)) return false;
-	    			}
-	    			else
-	    			{
-	    				if( !writeLatLonBBOX111(elementLayer, wgsMinx, wgsMiny,wgsMaxx, wgsMaxy)) return false;
-	    			}
-	    			parentCRS = writeCRSBBOX(elementLayer,srsBBOX,wgsCRS,parentCRS,wgsMinx,wgsMiny,wgsMaxx,wgsMaxy,wmsNS,version);
-	    			
-	    			Filter filtre = new WMSProxyCapabilitiesLayerFilter();
-	    			Iterator itL = elementLayer.getDescendants(filtre);
-	    			List<org.jdom.Element> sublayersList = new ArrayList<org.jdom.Element>();
-			    	while(itL.hasNext())
-					{
-			    		sublayersList.add((org.jdom.Element)itL.next());
-					}
-			    	if(sublayersList.size() != 0)
-			    		if ( !rewriteBBOX(sublayersList, wgsCRS,parentCRS, version) ) return false;
-    			}
-    			catch (Exception e)
-    			{
-    				dump("ERROR", e.toString());
-    				return false;
-    			}
-    		}
-		}
-		return true;
-	}
-	
-	private boolean writeLatLonBBOX130(org.jdom.Element elementLayer, String wgsMinx, String wgsMiny, String wgsMaxx, String wgsMaxy, Namespace wmsNS)
-	{
-		try 
-		{
-			List llBBOXElements = elementLayer.getChildren("EX_GeographicBoundingBox",wmsNS);
-			if(llBBOXElements.size() != 0)
-			{
-	    		org.jdom.Element llBBOX = (org.jdom.Element) llBBOXElements.get(0);
-	    		llBBOX.getChild("westBoundLongitude",wmsNS).setText(wgsMiny);
-	    		llBBOX.getChild("eastBoundLongitude",wmsNS).setText(wgsMaxy);
-	    		llBBOX.getChild("southBoundLatitude",wmsNS).setText(wgsMinx);
-	    		llBBOX.getChild("northBoundLatitude",wmsNS).setText(wgsMaxx);
-			}
-			else
-			{
-				//create element
-				org.jdom.Element element = new org.jdom.Element("EX_GeographicBoundingBox",wmsNS);
-				org.jdom.Element wbl = new org.jdom.Element("westBoundLongitude",wmsNS);
-				wbl.setText(wgsMiny);
-				org.jdom.Element ebl = new org.jdom.Element("eastBoundLongitude",wmsNS);
-				ebl.setText(wgsMaxy);
-				org.jdom.Element sbl = new org.jdom.Element("southBoundLatitude",wmsNS);
-				sbl.setText(wgsMinx);
-				org.jdom.Element nbl = new org.jdom.Element("northBoundLatitude",wmsNS);
-				nbl.setText(wgsMaxx);
-				element.addContent(wbl );
-				element.addContent(ebl );
-				element.addContent(sbl );
-				element.addContent(nbl );
-				elementLayer.addContent(element);
-	   		}
-			return true;
-		}
-		catch (Exception e)
-		{
-			dump("ERROR", e.toString());
-			return false;
-		}
-	}
-	
-	private boolean writeLatLonBBOX111(org.jdom.Element elementLayer, String wgsMinx, String wgsMiny, String wgsMaxx, String wgsMaxy)
-	{
-		try
-		{
-			List llBBOXElements = elementLayer.getChildren("LatLonBoundingBox");
-			if(llBBOXElements.size() != 0)
-			{
-	    		org.jdom.Element llBBOX = (org.jdom.Element) llBBOXElements.get(0);
-	    		llBBOX.setAttribute("minx",wgsMinx);
-	    		llBBOX.setAttribute("miny", wgsMiny);
-	    		llBBOX.setAttribute("maxx", wgsMaxx);
-	    		llBBOX.setAttribute("maxy", wgsMaxy);
-			}
-			else
-			{
-				//create element
-				org.jdom.Element element = new org.jdom.Element("LatLonBoundingBox");
-				element.setAttribute("minx",wgsMinx);
-				element.setAttribute("miny", wgsMiny);
-				element.setAttribute("maxx", wgsMaxx);
-				element.setAttribute("maxy", wgsMaxy);
-				elementLayer.addContent(element);
-	   		}
-			return true;
-		}
-		catch (Exception e)
-		{
-			dump("ERROR", e.toString());
-			return false;
-		}
-	}
-	
-	private List<org.jdom.Element> getElementBoundingBox (org.jdom.Element elementLayer, Namespace wmsNS, String version)
-	{
-		if(("130").equalsIgnoreCase(version))
-			return elementLayer.getChildren("BoundingBox", wmsNS);
-		else
-			return elementLayer.getChildren("BoundingBox"); 
-			
-	}
-	private org.jdom.Element createElementBoundingBox (Namespace wmsNS, String version)
-	{
-		if(("130").equalsIgnoreCase(version))
-			return new org.jdom.Element("BoundingBox",wmsNS);
-		else
-			return new org.jdom.Element("BoundingBox");
-			
-	}
-	private String getAttributeSRS (Namespace wmsNS, String version)
-	{
-		if(("130").equalsIgnoreCase(version))
-			return "CRS";
-		else
-			return "SRS";
-			
-	}
-	
-	private CoordinateReferenceSystem writeCRSBBOX(org.jdom.Element elementLayer,BoundingBox srsBBOX,CoordinateReferenceSystem wgsCRS,CoordinateReferenceSystem parentCRS,String wgsMinx, String wgsMiny, String wgsMaxx, String wgsMaxy, Namespace wmsNS,String version)
-	{
-		try
-		{
-			List srsBBOXElements = getElementBoundingBox(elementLayer, wmsNS, version);
-			if(srsBBOXElements.size() == 0)
-			{
-				//No BoundingBox for specific SRS : get the SRS parent to create one --> Needed only for WFS 1.3.0 but
-				if(parentCRS == null)
-					return null;
-				MathTransform transform = CRS.findMathTransform(wgsCRS, parentCRS);
-				Envelope sourceEnvelope = new Envelope(Double.valueOf(wgsMinx),Double.valueOf(wgsMaxx),Double.valueOf(wgsMiny),Double.valueOf(wgsMaxy));
-				Envelope targetEnvelope = JTS.transform( sourceEnvelope, transform);
-			
-				org.jdom.Element BBOX = createElementBoundingBox(wmsNS,version);
-				BBOX.setAttribute(getAttributeSRS(wmsNS,version), parentCRS.getIdentifiers().toArray()[0].toString());
-				BBOX.setAttribute("minx", String.valueOf(targetEnvelope.getMinX()));
-				BBOX.setAttribute("miny", String.valueOf(targetEnvelope.getMinY()));
-				BBOX.setAttribute("maxx", String.valueOf(targetEnvelope.getMaxX()));
-				BBOX.setAttribute("maxy", String.valueOf(targetEnvelope.getMaxY()));
-				elementLayer.addContent(BBOX);
-				return parentCRS;
-			}
-			else
-			{
-				for (int j = 0 ; j < srsBBOXElements.size() ; j++)
-				{
-					org.jdom.Element BBOX = (org.jdom.Element) srsBBOXElements.get(j);
-					String attSRS = getAttributeSRS(wmsNS,version);
-					if(BBOX.getAttributeValue(attSRS).equals(srsBBOX.getSRS()))
-					{
-						if(j == 0)
-						{
-							parentCRS = CRS.decode(BBOX.getAttributeValue(attSRS));
-						}
-						BBOX.setAttribute("minx", srsBBOX.getMinx());
-						BBOX.setAttribute("miny", srsBBOX.getMiny());
-						BBOX.setAttribute("maxx", srsBBOX.getMaxx());
-						BBOX.setAttribute("maxy", srsBBOX.getMaxy());
-					}
-					else
-					{
-						CoordinateReferenceSystem targetCRS =CRS.decode(BBOX.getAttributeValue(attSRS));
-						if(j == 0)
-						{
-							parentCRS = targetCRS;
-						}
-						MathTransform transform = CRS.findMathTransform(wgsCRS, targetCRS);
-						Envelope sourceEnvelope = new Envelope(Double.valueOf(wgsMinx),Double.valueOf(wgsMaxx),Double.valueOf(wgsMiny),Double.valueOf(wgsMaxy));
-						Envelope targetEnvelope = JTS.transform( sourceEnvelope, transform);
-						BBOX.setAttribute("minx", String.valueOf(targetEnvelope.getMinX()));
-						BBOX.setAttribute("miny", String.valueOf(targetEnvelope.getMinY()));
-						BBOX.setAttribute("maxx", String.valueOf(targetEnvelope.getMaxX()));
-						BBOX.setAttribute("maxy", String.valueOf(targetEnvelope.getMaxY()));
-					}
-				}
-			}
-			return parentCRS;
-		}
-		catch (Exception e)
-		{
-			dump("ERROR", e.toString());
-			return parentCRS;
-		}
-	}
-
-	public void transform(String version, String currentOperation, HttpServletRequest req, HttpServletResponse resp) {
-		try 
-		{
-			String responseVersion="";
-			
-			/**
-			 * Exception mangement
-			 */
-			//Filtre les fichiers réponses des serveurs :
-			//ajoute les fichiers d'exception dans ogcExceptionFilePathList
-			//les enlève de la collection de résultats wmsFilePathList 
-			if(!filterServersResponsesForOgcServiceExceptionFiles())
-			{
-				sendOgcExceptionBuiltInResponse(resp,generateOgcException("Error in OGC exception management. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
-				return;
-			}
-			
-			//Si le mode de gestion des exceptions est "restrictif" et si au moins un serveur retourne une exception OGC
-			//Ou
-			//Si le mode de gestion des exceptions est "permissif" et que tous les serveurs retournent des exceptions
-			//alors le proxy retourne l'ensemble des exceptions concaténées
-			if((configuration.getExceptionMode().equals("restrictive") && ogcExceptionFilePathList.size() > 0) || 
-					(configuration.getExceptionMode().equals("permissive") && wmsFilePathList.size() == 0))
-			{
-				//Traitement des réponses de type exception OGC
-				//Le stream retourné contient les exceptions concaténées et mises en forme pour être retournées 
-				//directement au client
-				dump("INFO","Exception(s) returned by remote server(s) are sent to client.");
-				responseContentType ="text/xml; charset=utf-8";
-				ByteArrayOutputStream exceptionOutputStream = buildResponseForOgcServiceException();
-				sendHttpServletResponse(req,resp,exceptionOutputStream, responseContentType, HttpServletResponse.SC_OK);
-				return;
-			}
-			/***/
-			
-			/**
-			 * XSLT 
-			 */
-			//Aucun serveur n'a retourné d'exception ou le mode de gestion des exceptions est "permissif"
-			// Vérifie et prépare l'application d'un fichier xslt utilisateur
-			String userXsltPath = getConfiguration().getXsltPath();
-			if (SecurityContextHolder.getContext().getAuthentication() != null) {
-				userXsltPath = userXsltPath + "/" + SecurityContextHolder.getContext().getAuthentication().getName() + "/";
-			}
-
-			userXsltPath = userXsltPath + "/" + version + "/" + currentOperation + ".xsl";
-			String globalXsltPath = getConfiguration().getXsltPath() + "/" + version + "/" + currentOperation + ".xsl";
-			
-			File xsltFile = new File(userXsltPath);
-			boolean isPostTreat = false;
-			if (!xsltFile.exists()) {
-				dump("Postreatment file " + xsltFile.toString() + "does not exist");
-				xsltFile = new File(globalXsltPath);
-				if (xsltFile.exists()) {
-					isPostTreat = true;
-				} else {
-					dump("Postreatment file " + xsltFile.toString() + "does not exist");
-				}
-			} else {
-				isPostTreat = true;
-			}
-			/***/
-			
-			// Transforms the results using a xslt before sending the response back
-			Transformer transformer = null;
-			TransformerFactory tFactory = TransformerFactory.newInstance();
-
-			// Debug tb 21.12.2009
-			ByteArrayOutputStream tempOut = null; 
-
-			// ********************************************************************************************************************
-			// Postraitement des réponses à la requête contenue dans les
-			// fichiers filePathList.get(i)
-			if (currentOperation != null) {
-				// Pour une requête utilisateur de type: Capabilities
-				// ************************************************************
-				if ("GetCapabilities".equalsIgnoreCase(currentOperation) || "capabilities".equalsIgnoreCase(currentOperation)) {
-					dump("transform begin GetCapabilities operation");
-
-					// Contains the list of temporary modified Capabilities
-					// files.
-					List<File> tempFileCapa = new Vector<File>();
-
-					// Boucle sur les fichiers réponses
-					for (int iFilePath = 0; iFilePath < wmsFilePathList.size(); iFilePath++) {
-						//Load response file
-						InputSource iS = new InputSource(new FileInputStream(wmsFilePathList.get(iFilePath).toArray(new String[1])[0]));
-						
-						//Get the WMS version of the response
-						SAXBuilder sxb = new SAXBuilder();
-						org.jdom.Document  docParent = sxb.build(iS);
-						responseVersion = docParent.getRootElement().getAttribute("version").getValue();
-						responseVersion = responseVersion.replaceAll("\\.", "");
-						
-						//Transform with XSL
-						tempFileCapa.add(createTempFile("transform_GetCapabilities_" + UUID.randomUUID().toString(), ".xml"));
-						FileOutputStream tempFosCapa = new FileOutputStream(tempFileCapa.get(iFilePath));
-						StringBuffer sb = buildCapabilitiesXSLT(req, resp, iFilePath, responseVersion);
-						InputSource inputSource = new InputSource(new FileInputStream(wmsFilePathList.get(iFilePath).toArray(new String[1])[0]));
-						InputStream xslt = new ByteArrayInputStream(sb.toString().getBytes());
-						XMLReader xmlReader = XMLReaderFactory.createXMLReader();
-						String user = (String) getUsername(getRemoteServerUrl(iFilePath));
-						String password = (String) getPassword(getRemoteServerUrl(iFilePath));
-						if (user != null && user.length() > 0) {
-							ResourceResolver rr = new ResourceResolver(user, password);
-							xmlReader.setEntityResolver(rr);
-						}
-						SAXSource saxSource = new SAXSource(xmlReader, inputSource);
-						transformer = tFactory.newTransformer(new StreamSource(xslt));
-
-						// Write the result in a temporary file
-						dump("transform begin xslt transform to response file " + iFilePath);
-						transformer.transform(saxSource, new StreamResult(tempFosCapa));
-						// Debug tb 06.07.2009
-						tempFosCapa.flush();
-						tempFosCapa.close();
-						// Fin de Debug
-						dump("transform end xslt transform to response file " + iFilePath);
-					}
-
-					// Merge the results of all the capabilities and return it
-					// into a single file
-					dump("transform begin mergeCapabilities");
-					tempOut = mergeCapabilities(tempFileCapa, resp);
-					dump("transform end mergeCapabilities");
-					
-					//Application de la transformation XSLT pour la réécriture des métadonnées du service 
-					dump("DEBUG","transform begin apply XSLT on service metadata");
-					if(tempOut != null)
-					{
-						ByteArrayOutputStream out = new ByteArrayOutputStream();
-						StringBuffer sb = buildServiceMetadataCapabilitiesXSLT(responseVersion);
-						InputStream xslt = new ByteArrayInputStream(sb.toString().getBytes());
-						InputSource inputSource = new InputSource(new ByteArrayInputStream(tempOut.toByteArray()) );
-						XMLReader xmlReader = XMLReaderFactory.createXMLReader();
-						SAXSource saxSource = new SAXSource(xmlReader, inputSource);
-						transformer = tFactory.newTransformer(new StreamSource(xslt));
-						transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-						transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
-						transformer.transform(saxSource, new StreamResult(out));
-						tempOut = out;
-					}
-					dump("DEBUG","transform end apply XSLT on service metadata");
-					dump("transform end GetCapabilities operation");
-					
-					dump("DEBUG","Start - Rewrite BBOX");
-					//Réécriture des BBOX
-					ByteArrayInputStream in =  new ByteArrayInputStream(tempOut.toByteArray());
-					SAXBuilder sxb = new SAXBuilder();
-					org.jdom.Document  docParent = sxb.build(in);
-					Filter filtre = new WMSProxyCapabilitiesLayerFilter();
-			    	Iterator it= docParent.getDescendants(filtre);
-			    	List<org.jdom.Element> layersList = new ArrayList<org.jdom.Element>();
-			    	while(it.hasNext())
-					{
-			    		layersList.add((org.jdom.Element)it.next());
-					}
-			    	if(layersList.size() != 0)
-			    	{
-				    	CoordinateReferenceSystem wgsCRS = null;
-						try {
-							wgsCRS = CRS.decode("EPSG:4326");
-							if(!rewriteBBOX(layersList, wgsCRS, null, responseVersion))
-							{
-								sendOgcExceptionBuiltInResponse(resp,generateOgcException("Error in BoundingBox calculation.","NoApplicableCode","",requestedVersion));
-								return;
-							}
-						} catch (NoSuchAuthorityCodeException e1) {
-							dump("ERROR","Exception when trying to load SRS EPSG:4326 : "+e1.getMessage());
-							sendOgcExceptionBuiltInResponse(resp,generateOgcException("Error in BoundingBox calculation.","NoApplicableCode","",requestedVersion));
-							return;
-						} catch (FactoryException e1) {
-							dump("ERROR",e1.getMessage());
-							sendOgcExceptionBuiltInResponse(resp,generateOgcException("Error in BoundingBox calculation.","NoApplicableCode","",requestedVersion));
-							return;
-						}
-						
-			    	}
-			    	dump("DEBUG","End - Rewrite BBOX");
-			    	//Return
-					XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
-					ByteArrayOutputStream result =new ByteArrayOutputStream ();
-					sortie.output(docParent,result );
-					tempOut = result;
-					
-				}
-				// Pour une requête utilisateur de type: Map
-				// ************************************************************
-				else if (currentOperation.equalsIgnoreCase("GetMap") || "Map".equalsIgnoreCase(currentOperation)) {
-					dump("transform begin GetMap operation");
-
-					//Debug - HVH 17.12.2010 : if an OGC XML exception was returned by a remote server, 
-					//the responseContentType variable can have a wrong value (it can contain : "text/xml").
-					//If the exception has to be returned, this is already done before in the code.
-					//If this code section is reached, that means an image has to be returned so we loop in all the contentType of
-					//the responses received to find one different from text/xml
-					//and we use it as the contentType of the response to return.
-					Iterator<String> itL = responseContentTypeList.iterator();
-					while (itL.hasNext()) {
-						responseContentType = (String) itL.next();
-						if(!isXML(responseContentType))
-							break;
-//						if(!responseContentType.contains("xml"))
-//						{
-//							break;
-//						}
-					} 
-					boolean isTransparent = isAcceptingTransparency(responseContentType);
-					// dump("DEBUG","LAYER N°:"+0+" "+layerFilePathList.get(0));
-
-					dump("transform begin filterImage to layer " + 0);
-					// Debug tb 08.07.2009
-					BufferedImage imageSource = null;
-					// Si les threads ont renvoyés une réponse
-					if (serverUrlPerfilePathList.size() > 0) {
-						// imageSource =
-						// filterImage(getLayerFilter(serverUrlPerfilePathList.get(0),
-						// layerFilePathList.get(0)), wmsFilePathList.get(0),
-						// isTransparent);
-						// Fin de Debug
-						Graphics2D g = null;
-						dump("transform end filterImage to layer " + 0);
-
-						// Boucle sur les fichiers réponses
-						TreeMap<Integer, Collection<String>> tm = new TreeMap<Integer, Collection<String>>(wmsFilePathList.asMap());
-						for (Map.Entry<Integer, Collection<String>> e : tm.entrySet()) {
-							// dump("DEBUG","LAYER N°:"+iFilePath+" "+layerFilePathList.get(iFilePath));
-							int iFilePath = e.getKey();
-							dump("transform begin filterImage to layer " + iFilePath);
-							// Debug tb 08.07.2009
-							BufferedImage image = filterImage(getLayerFilter(serverUrlPerfilePathList.get(iFilePath), layerFilePathList.get(iFilePath)),
-									wmsFilePathList.get(iFilePath), isTransparent, resp);
-							// Fin de Debug
-							if (g == null) {
-								imageSource = image;
-								if (imageSource != null)
-									g = imageSource.createGraphics();
-							} else if (image != null)
-								g.drawImage(image, null, 0, 0);
-							dump("transform end filterImage to layer " + iFilePath);
-						}
-						if (g != null)
-							g.dispose();
-						// Debug tb 11.08.2009
-					}
-					// Si aucune requête n'a été envoyé au serveur, retourne:
-					// empty image
-					else {
-						imageSource = ImageIO.read(new File(wmsFilePathList.get(0).toArray(new String[1])[0]));
-					}
-					// Fin de Debug
-
-					// Etape nécessaire car "resp.getOutputStream()" ne peux pas
-					// lire directement le flux d' "imageSource"
-					Iterator<ImageWriter> iter = ImageIO.getImageWritersByMIMEType(responseContentType);
-					if (iter.hasNext()) {
-						ImageWriter writer = (ImageWriter) iter.next();
-						tempOut = new ByteArrayOutputStream();
-						// tempFile =
-						// createTempFile("transform_GetMap_"+UUID.randomUUID().toString(),
-						// getExtension(responseContentType));
-						// FileImageOutputStream output = new
-						// FileImageOutputStream(tempFile);
-						writer.setOutput(new MemoryCacheImageOutputStream(tempOut));
-						// writer.setOutput(output);
-						dump("transform begin write tempOut");
-						if (imageSource != null)
-							writer.write(imageSource);
-						// Debug tb 06.07.2009
-						dump("transform end write tempOut");
-						// output.flush();
-						// output.close();
-						// Fin de Debug
-					}
-					dump("transform end GetMap operation");
-				}
-				// Debug tb 04.11.2009
-				// Pour une requête utilisateur de type: GetLegendGraphic
-				// ********************************************************
-				else if (currentOperation.equalsIgnoreCase("GetLegendGraphic")) {
-					dump("transform begin GetLegendGraphic operation");
-
-					// boolean isTransparent=
-					// isAcceptingTransparency(responseContentType);
-
-					dump("transform begin add Legend Image " + 0);
-					Graphics2D g = null;
-					dump("transform end filterImage to layer " + 0);
-					// Boucle sur les fichiers réponses
-
-					BufferedImage imageSource = null;
-					String format = "jpeg";
-					for (Map.Entry<Integer, String> e : wmsFilePathList.entries()) {
-						// dump("DEBUG","LAYER N°:"+iFilePath+" "+layerFilePathList.get(iFilePath));
-						int iFilePath = e.getKey();
-						dump("transform begin Legend Image " + iFilePath);
-						// Debug tb 08.07.2009
-
-						BufferedImage image = ImageIO.read(new File(e.getValue()));
-						if (image != null && image.getWidth() > 1) {
-							int type = BufferedImage.TYPE_INT_BGR;
-							if (image.getTransparency() == Transparency.BITMASK) {
-								type = BufferedImage.BITMASK;
-								format = "png";
-							} else if (image.getTransparency() == Transparency.TRANSLUCENT) {
-								type = BufferedImage.TRANSLUCENT;
-								format = "png";
-
-							}
-							BufferedImage canvas = new BufferedImage(image.getWidth(), image.getHeight(), type);
-							canvas.getGraphics().drawImage(image, 0, 0, null);
-
-							// Fin de Debug
-							if (g == null) {
-								imageSource = canvas;
-								g = imageSource.createGraphics();
-							} else if (image != null)
-								g.drawImage(canvas, null, 0, 0);
-							dump("transform end add Legend Image " + iFilePath);
-						}
-					}
-					if (g != null)
-						g.dispose();
-
-					// Si aucune requête n'a été envoyé au serveur, retourne:
-					// empty image
-					else {
-						format = "png";
-						imageSource = new BufferedImage(32, 32, BufferedImage.TRANSLUCENT);
-					}
-					tempOut = new ByteArrayOutputStream();
-					ImageIO.write(imageSource, format, tempOut);
-
-					// Etape nécessaire car "resp.getOutputStream()" ne peux pas
-					// lire directement le flux d' "imageSource"
-					// Iterator<ImageWriter> iter =
-					// ImageIO.getImageWritersByMIMEType(responseContentType);
-
-					// if (iter.hasNext()) {
-					// ImageWriter writer = (ImageWriter) iter.next();
-
-					// tempFile =
-					// createTempFile("transform_GetLegendGraphic_"+UUID.randomUUID().toString(),
-					// getExtension(responseContentType));
-					// FileImageOutputStream output = new
-					// FileImageOutputStream(tempFile);
-					// writer.setOutput(new
-					// MemoryCacheImageOutputStream(tempOut));
-					// writer.setOutput(output);
-					// writer.write(imageSource);
-					// output.flush();
-					// output.close();
-					// Fin de Debug
-					// }
-					dump("transform end GetLegendGraphic operation");
-				}
-
-				else if (currentOperation.equalsIgnoreCase("GetFeatureInfo")) {
-					dump("transform begin GetFeatureInfo operation");
-					// resp.setHeader("Content-Encoding", "gzip");
-
-					tempOut = new ByteArrayOutputStream();
-					DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-					XPathFactory xpathFactory = XPathFactory.newInstance();
-					DocumentBuilder builder = factory.newDocumentBuilder();
-					Document doc = builder.newDocument();
-					transformer = tFactory.newTransformer();
-					XPath xpath = xpathFactory.newXPath();
-					XPathExpression expr = xpath.compile("/FeatureCollection");
-					Element rootNode = null;
-
-					for (String path : wmsFilePathList.values()) {
-						Document resultDoc = builder.parse(new File(path));
-						if (rootNode == null) {
-							DeferredElementImpl result = (DeferredElementImpl) expr.evaluate(resultDoc, XPathConstants.NODE);
-							if (result != null) {
-								rootNode = (Element) doc.importNode(result, true);
-								doc.appendChild(rootNode);
-							}
-						} else {
-							DeferredElementImpl result = (DeferredElementImpl) resultDoc.getDocumentElement().getChildNodes();
-							for (int i = 0; i < result.getAttributes().getLength(); i++) {
-								Attr attr = (Attr) doc.importNode(result.getAttributes().item(i), true);
-								rootNode.setAttributeNode(attr);
-							}
-							if (result != null && result.getLength() > 0) {
-								for (int i = 0; i < result.getLength(); i++) {
-									Node nnode = result.item(i);
-									if (!"gml:boundedBy".equals(nnode.getNodeName())) {
-										nnode = doc.importNode(nnode, true);
-										rootNode.appendChild(nnode);
-									}
-								}
-							}
-
-						}
-					}
-					transformer.transform(new DOMSource(doc), new StreamResult(tempOut));
-					dump("transform end GetFeatureInfo operation");
-				}
-			}
-
-			// ********************************************************************************************************************
-			// Traitement du résultat final avec le xslt utilisateur s'il exist
-			// (voir début de transform())
-			// if a xslt file exists then post-treat the response
-			if (isPostTreat && isXML(responseContentType)) {
-				dump("transform begin userTransform xslt");
-
-				PrintWriter out = resp.getWriter();
-				transformer = tFactory.newTransformer(new StreamSource(xsltFile));
-				ByteArrayInputStream is = new ByteArrayInputStream(tempOut.toByteArray());
-				tempOut = new ByteArrayOutputStream();
-				transformer.transform(new StreamSource(is), new StreamResult(out));
-				// transformer.transform(new StreamSource(tempFile), new
-				// StreamResult(out));
-				// delete the temporary file
-				// tempFile.delete();
-				out.close();
-
-				dump("transform end userTransform xslt");
-				// the job is done. we can go out
-				return;
-			}
-
-			// Ou Ecriture du résultat final dans resp de
-			// httpServletResponse*****************************************************
-			sendHttpServletResponse(req,resp,tempOut, responseContentType,  HttpServletResponse.SC_OK);
-			// No post rule to apply. Copy the file result on the output stream
-
-
-		} 
-		catch (SAXParseException e)
-		{
-			e.printStackTrace();
-			dump("ERROR", e.getMessage());
-			sendOgcExceptionBuiltInResponse(resp,generateOgcException("Response format not recognized. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
-		}
-		catch (Exception e) {
-			resp.setHeader("easysdi-proxy-error-occured", "true");
-			e.printStackTrace();
-			dump("ERROR", e.toString());
-			sendOgcExceptionBuiltInResponse(resp,generateOgcException("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
-		}
-	}
-
-
-	/**
-	 * @return
-	 */
-	private BufferedImage filterImage(String filter, Collection<String> fileNames, boolean isTransparent, HttpServletResponse resp) {
-		BufferedImage imageSource = null;
-		Graphics2D g = null;
-		for (String fileName : fileNames) {
-			BufferedImage image = filterImage(filter, fileName, isTransparent, resp);
-			if (g == null) {
-				imageSource = image;
-				if (imageSource != null)
-					g = imageSource.createGraphics();
-			} else if (image != null)
-				g.drawImage(image, null, 0, 0);
-		}
-		if (g != null)
-
-			g.dispose();
-		return imageSource;
-	}
-
 	private BufferedImage filterImage(String filter, String fileName, boolean isTransparent, HttpServletResponse resp) {
 		try {
 			if (filter != null) {
@@ -1485,82 +259,7 @@ public class WMSProxyServlet extends ProxyServlet {
 		return null;
 	}
 
-	// ***************************************************************************************************************************************
-
-	/**
-	 * @param tempFileCapa
-	 * @return
-	 */
-	private ByteArrayOutputStream mergeCapabilities(List<File> tempFileCapa, HttpServletResponse resp)
-	// private File mergeCapabilities(List<File> tempFileCapa)
-	{
-
-		if (tempFileCapa.size() == 0)
-			return null;
-
-		try {
-			File fMaster = tempFileCapa.get(0);
-			DocumentBuilderFactory db = DocumentBuilderFactory.newInstance();
-			db.setNamespaceAware(false);
-			Document documentMaster = db.newDocumentBuilder().parse(fMaster);
-			DOMImplementationLS implLS = null;
-			if (documentMaster.getImplementation().hasFeature("LS", "3.0")) {
-				implLS = (DOMImplementationLS) documentMaster.getImplementation();
-			} else {
-				DOMImplementationRegistry enregistreur = DOMImplementationRegistry.newInstance();
-				implLS = (DOMImplementationLS) enregistreur.getDOMImplementation("LS 3.0");
-			}
-			if (implLS == null) {
-				dump("Error", "DOM Load and Save not Supported. Multiple server is not allowed");
-				ByteArrayOutputStream out = new ByteArrayOutputStream();
-				FileInputStream reader = new FileInputStream(fMaster);
-				byte[] data = new byte[reader.available()];
-				reader.read(data, 0, reader.available());
-				out.write(data);
-				reader.close();
-				return out;
-				// return fMaster;
-			}
-
-			for (int i = 1; i < tempFileCapa.size(); i++) {
-				Document documentChild = null;
-				try {
-					documentChild = db.newDocumentBuilder().parse(tempFileCapa.get(i));
-				} catch (Exception e) {
-					e.printStackTrace();
-					dump("ERROR", e.getMessage());
-				}
-				if (documentChild != null) {
-					NodeList nl = documentChild.getElementsByTagName("Layer");
-					NodeList nlMaster = documentMaster.getElementsByTagName("Layer");
-					Node ItemMaster = nlMaster.item(0);
-					if (nl.item(0) != null)
-						ItemMaster.insertBefore(documentMaster.importNode(nl.item(0).cloneNode(true), true), null);
-				}
-			}
-
-			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			// File f = createTempFile(UUID.randomUUID().toString(),".xml");
-			// FileOutputStream fluxSortie = new FileOutputStream(f);
-			LSSerializer serialiseur = implLS.createLSSerializer();
-			LSOutput sortie = implLS.createLSOutput();
-			sortie.setEncoding("UTF-8");
-			// sortie.setSystemId(f.toString());
-			// sortie.setByteStream(fluxSortie);
-			sortie.setByteStream(out);
-			serialiseur.write(documentMaster, sortie);
-			// fluxSortie.flush();
-			// fluxSortie.close();
-
-			return out;
-		} catch (Exception e) {
-			resp.setHeader("easysdi-proxy-error-occured", "true");
-			e.printStackTrace();
-			dump("ERROR", e.getMessage());
-			return null;
-		}
-	}
-
+	
 	/**
 	 * 
 	 */
@@ -1988,15 +687,30 @@ public class WMSProxyServlet extends ProxyServlet {
 				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 				return;
 			}
-				
+			
+			//Get the remote server response protocol version
+			if(!getResponseVersion().equals(getProxyRequest().getVersion())){
+				//Instantiate the WMSProxyResponseBuilder corresponding to the response version
+				Class<?> classe = Class.forName("org.easysdi.proxy.wms.v"+getResponseVersion().replaceAll("\\.", "")+"."+"WMSProxyResponseBuilder"+getResponseVersion().replaceAll("\\.", ""));
+				Constructor<?> constructeur = classe.getConstructor(new Class [] {Class.forName ("org.easysdi.proxy.core.ProxyServlet")});
+				docBuilder = (WMSProxyResponseBuilder)constructeur.newInstance(this);
+			}
+			
 			//Capabilities rewriting
 			RemoteServerInfo rs = getRemoteServerInfoMaster();
 			
-			if(!docBuilder.CapabilitiesContentsFiltering(wmsGetCapabilitiesResponseFilePathMap,getServletUrl(req)))
-			{
-				dump("ERROR",docBuilder.getLastException().getMessage());
-				StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
-				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			try{
+				if(!docBuilder.CapabilitiesContentsFiltering(wmsGetCapabilitiesResponseFilePathMap,getServletUrl(req)))
+				{
+					dump("ERROR",docBuilder.getLastException().getMessage());
+					StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
+					sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+					return;
+				}
+			}catch (NoSuchAuthorityCodeException e){
+				dump("INFO",e.getMessage());
+				StringBuffer out = owsExceptionReport.generateExceptionReport(e.getMessage(),OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
+				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
 				return;
 			}
 			
@@ -2331,13 +1045,11 @@ public class WMSProxyServlet extends ProxyServlet {
 	
 	public boolean isAllGetCapabilitiesResponseSameVersion (HashMap<String, String> wmsGetCapabilitiesResponse){
 		
-		if(wmsGetCapabilitiesResponse.size() == 1)
-			return true;
+//		if(wmsGetCapabilitiesResponse.size() == 1)
+//			return true;
 		
 		SAXBuilder sxb = new SAXBuilder();
 		Iterator<Entry<String, String>> iFilePath = wmsGetCapabilitiesResponse.entrySet().iterator();
-		
-		String firstVersion = null;
 		
 		while (iFilePath.hasNext()){
 			Entry<String, String> filePath = iFilePath.next();
@@ -2346,10 +1058,10 @@ public class WMSProxyServlet extends ProxyServlet {
 				org.jdom.Document doc = sxb.build(new File (filePath.getValue()));
 				org.jdom.Element racine = doc.getRootElement();
 				String version = racine.getAttributeValue("version");
-				if(firstVersion == null){
-					firstVersion = version;
+				if(getResponseVersion() == null){
+					setResponseVersion( version);
 				}else{
-					if(!firstVersion.equals(version)){
+					if(!getResponseVersion().equals(version)){
 						return false;
 					}
 				}

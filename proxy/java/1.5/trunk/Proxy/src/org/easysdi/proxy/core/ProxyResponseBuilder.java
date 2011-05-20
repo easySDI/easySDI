@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 
 import org.jdom.Namespace;
+import org.opengis.referencing.NoSuchAuthorityCodeException;
 
 /**
  * @author DEPTH SA
@@ -91,7 +92,7 @@ public abstract class ProxyResponseBuilder {
 	 * @return true if the GetCapabilities was succesfully updated, false otherwise
 	 * If returns false, the caller should call getLastException() to get the catched exception.
 	 */
-	public abstract Boolean CapabilitiesContentsFiltering (Hashtable<String, String> filePathList);
+	public abstract Boolean CapabilitiesContentsFiltering (Hashtable<String, String> filePathList) throws NoSuchAuthorityCodeException; 
 	
 	/**
 	 * Remove the unauthorized Layers (defined in the policy) from the GetCapabilities responses.
@@ -99,7 +100,7 @@ public abstract class ProxyResponseBuilder {
 	 * @return true if the GetCapabilities was succesfully updated, false otherwise
 	 * If returns false, the caller should call getLastException() to get the catched exception.
 	 */
-	public abstract Boolean CapabilitiesContentsFiltering (HashMap<String, String> filePathList, String href);
+	public abstract Boolean CapabilitiesContentsFiltering (HashMap<String, String> filePathList, String href) throws NoSuchAuthorityCodeException;
 	
 	/**
 	 * Merge all the remote servers GetCapabilities response into one single file

@@ -57,8 +57,11 @@ import org.jdom.filter.Filter;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
+import org.opengis.referencing.operation.TransformException;
 
 import com.vividsolutions.jts.geom.Envelope;
 
@@ -109,8 +112,8 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 	    	
 	    	//Operation filtering
 	    	Filter xlinkFilter = new AttributeXlinkFilter();
-	    	Element elementCapability = racine.getChild("Capability");
-	    	Element elementRequest = elementCapability.getChild("Request");
+	    	Element elementCapability = getChildElementCapability(racine);
+	    	Element elementRequest = getChildElementRequest(elementCapability);
 	    	List<Element> requestList =  elementRequest.getChildren();
 	    	List<Element> requestListToUpdate = new ArrayList<Element>();
 	    	Iterator iRequest = requestList.iterator();
@@ -177,9 +180,9 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 				}
 	    	}
 	    	
-	    	Element elementException = elementCapability.getChild("Exception");
+	    	Element elementException = getChildElementException(elementCapability);
 	    	elementException.removeContent();
-	    	elementException.addContent((new Element("Format")).setText("application/vnd.ogc.se_xml"));
+	    	elementException.addContent(getNewElementFormat().setText("application/vnd.ogc.se_xml"));
 	    	
     	   XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
            sortie.output(docParent, new FileOutputStream(filePath));
@@ -193,19 +196,11 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 	}
 
 	/* (non-Javadoc)
-	 * @see org.easysdi.proxy.core.ProxyResponseBuilder#CapabilitiesContentsFiltering(java.util.Hashtable)
-	 */
-	@Override
-	public Boolean CapabilitiesContentsFiltering( Hashtable<String, String> wmsGetCapabilitiesResponseFilePath) {
-		return false;
-	}
-
-	/* (non-Javadoc)
 	 * @see org.easysdi.proxy.core.ProxyResponseBuilder#CapabilitiesContentsFiltering(java.util.HashMap)
 	 */
 	@SuppressWarnings({ "rawtypes", "unused" })
 	@Override
-	public Boolean CapabilitiesContentsFiltering(HashMap<String, String> wmsGetCapabilitiesResponseFilePath, String href) {
+	public Boolean CapabilitiesContentsFiltering(HashMap<String, String> wmsGetCapabilitiesResponseFilePath, String href) throws NoSuchAuthorityCodeException{
 		servlet.dump("INFO","transform - Start - Capabilities contents filtering");
 	    try
 	    {
@@ -235,7 +230,7 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 		    	while (iLLayer.hasNext())
 		    	{
 		    		Element layerElement = (Element)iLLayer.next();
-		    		Element nameElement = layerElement.getChild("Name");
+		    		Element nameElement = getChildElementName(layerElement);
 		    		if (nameElement!= null && !servlet.isLayerAllowed(nameElement.getText(),servlet.getRemoteServerInfo(fileEntry.getKey()).getUrl()))
 					{
 		    				Parent parent = layerElement.getParent();
@@ -278,34 +273,27 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 		    	   Element courant = (Element)iLayerParent.next();
 		    	   layerParentList.add(courant);
 		    	}
-		    	if(!rewriteBBOX(layerParentList, wgsCRS, null))
-		    		return false;
+		    	
+			    if(!rewriteBBOX(layerParentList, wgsCRS, null))
+			    	return false;
 		    	
 	    	   XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
 	           sortie.output(docParent, new FileOutputStream(filePath));
 	    	}
 	    	servlet.dump("INFO","transform - End - Capabilities contents filtering");
            return true;
-	    }
-		catch (Exception ex )
-		{
+	    }catch (NoSuchAuthorityCodeException e){
+	    	throw e;
+	    }catch (Exception ex ) {
 			setLastException(ex);
 			return false;
 		}
 	}
 
 	/* (non-Javadoc)
-	 * @see org.easysdi.proxy.core.ProxyResponseBuilder#CapabilitiesMerging(java.util.Hashtable)
-	 */
-	@Override
-	public Boolean CapabilitiesMerging(Hashtable<String, String> filePathList) {
-		return false;
-	}
-
-	/* (non-Javadoc)
 	 * @see org.easysdi.proxy.core.ProxyResponseBuilder#CapabilitiesMerging(java.util.HashMap)
 	 */
-	@SuppressWarnings({ "unused", "unchecked" })
+	@SuppressWarnings({ "unused" })
 	@Override
 	public Boolean CapabilitiesMerging(HashMap<String, String> wmsGetCapabilitiesResponseFilePath) {
 		servlet.dump("INFO","transform - Start - Capabilities merging");
@@ -328,7 +316,7 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 			//Filter the layer
 			Filter layerFilter = new ElementLayerFilter();
 			Element racineMaster = documentMaster.getRootElement();
-			Element capabilityMaster = (Element)racineMaster.getChild("Capability");
+			Element capabilityMaster = getChildElementCapability(racineMaster);
 			
 			Iterator<Entry<String,String>> it = wmsGetCapabilitiesResponseFilePath.entrySet().iterator();
 			while (it.hasNext())
@@ -345,9 +333,9 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 				if (documentChild != null) {
 					Element racineChild = documentChild.getRootElement();
 					
-					Element capabilityChild = (Element)racineChild.getChild("Capability");
+					Element capabilityChild = getChildElementCapability(racineChild);
 					
-					Iterator<Element> ichild = capabilityChild.getChildren("Layer").iterator();
+					Iterator<Element> ichild = getChildrenElementsLayer(capabilityChild).iterator();
 					while (ichild.hasNext())
 					{
 						Element child = (Element)((Element)ichild.next()).clone();
@@ -410,8 +398,8 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 				newService.addContent(keywords);
 			}
 			Element onlineResource = new Element("OnlineResource");
+			onlineResource.setAttribute("type", "simple",nsXLINK);
 			onlineResource.setAttribute("href", href, nsXLINK);
-//			onlineResource.setAttribute("type", "simple");
 			newService.addContent(onlineResource);
 			
 			
@@ -481,9 +469,9 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 			
 				
 			if(config.getFees() != null && config.getFees().length() != 0)
-				newService.addContent((new Element("Fees", nsWMS)).setText(config.getFees()));
+				newService.addContent((new Element("Fees")).setText(config.getFees()));
 			if(config.getAccessConstraints() != null && config.getAccessConstraints().length() != 0)
-				newService.addContent((new Element("AccessConstraints", nsWMS)).setText(config.getAccessConstraints()));
+				newService.addContent((new Element("AccessConstraints")).setText(config.getAccessConstraints()));
 			
 			racine.addContent( 1, newService);
 			
@@ -589,23 +577,23 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	protected boolean rewriteBBOX(List<Element> layersList,CoordinateReferenceSystem wgsCRS,CoordinateReferenceSystem parentCRS)
+	protected boolean rewriteBBOX(List<Element> layersList,CoordinateReferenceSystem wgsCRS,CoordinateReferenceSystem parentCRS) throws NoSuchAuthorityCodeException
 	{
-		String wgsMaxx;
-		String wgsMaxy;
-		String wgsMinx;
-		String wgsMiny;
+		try{
+			String wgsMaxx;
+			String wgsMaxy;
+			String wgsMinx;
+			String wgsMiny;
+				
+			List<Server> serverList = servlet.getPolicy().getServers().getServer();
 			
-		List<Server> serverList = servlet.getPolicy().getServers().getServer();
-		
-		for(int l = 0 ; l < layersList.size();l++)
-		{
-			Element elementLayer = (Element)layersList.get(l);
-		
-			for (int i=0 ; i < serverList.size() ; i++)
+			for(int l = 0 ; l < layersList.size();l++)
 			{
-				try
+				Element elementLayer = (Element)layersList.get(l);
+			
+				for (int i=0 ; i < serverList.size() ; i++)
 				{
+				
 	    			Server server = serverList.get(i);
 	    			
 	    			String layerName = getLayerName(elementLayer);
@@ -638,14 +626,16 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 	    			}	
 	    			else
 	    			{
-	    				CoordinateReferenceSystem sourceCRS = CRS.decode(srsBBOX.getSRS());
-	    				MathTransform transform = CRS.findMathTransform(sourceCRS, wgsCRS);
-	    				Envelope sourceEnvelope = new Envelope(Double.valueOf(srsBBOX.getMinx()),Double.valueOf(srsBBOX.getMaxx()),Double.valueOf(srsBBOX.getMiny()),Double.valueOf(srsBBOX.getMaxy()));
-	    				Envelope targetEnvelope = JTS.transform( sourceEnvelope, transform);
-	    				wgsMaxx = (String.valueOf(targetEnvelope.getMaxX()));
-	    				wgsMaxy = (String.valueOf(targetEnvelope.getMaxY()));
-	    				wgsMinx = (String.valueOf(targetEnvelope.getMinX()));
-	    				wgsMiny = (String.valueOf(targetEnvelope.getMinY()));
+	    				
+		    				CoordinateReferenceSystem sourceCRS = CRS.decode(srsBBOX.getSRS());
+		    				MathTransform transform = CRS.findMathTransform(sourceCRS, wgsCRS);
+		    				Envelope sourceEnvelope = new Envelope(Double.valueOf(srsBBOX.getMinx()),Double.valueOf(srsBBOX.getMaxx()),Double.valueOf(srsBBOX.getMiny()),Double.valueOf(srsBBOX.getMaxy()));
+		    				Envelope targetEnvelope = JTS.transform( sourceEnvelope, transform);
+		    				wgsMaxx = (String.valueOf(targetEnvelope.getMaxX()));
+		    				wgsMaxy = (String.valueOf(targetEnvelope.getMaxY()));
+		    				wgsMinx = (String.valueOf(targetEnvelope.getMinX()));
+		    				wgsMiny = (String.valueOf(targetEnvelope.getMinY()));
+	    				
 	    			}
 	    			
 	    			if( !writeLatLonBBOX(elementLayer, wgsMinx, wgsMiny,wgsMaxx, wgsMaxy)) return false;
@@ -663,15 +653,16 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 					{
 			    		if ( !rewriteBBOX(sublayersList, wgsCRS,parentCRS) ) return false;
 					}	
-				}
-				catch (Exception e)
-				{
-					setLastException(e);
-					return false;
+				
 				}
 			}
-		}
-		return true;
+			return true;
+		}catch (NoSuchAuthorityCodeException e){
+			throw e;
+		} catch (Exception e) {
+			setLastException(e);
+			return false;
+		} 
 	}
 	
 	/**
@@ -834,6 +825,55 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 			return null;
 	}
 	
+	/**
+	 * @param parent
+	 * @return
+	 */
+	protected Element getChildElementName (Element parent){
+		return parent.getChild("Name");
+	}
+	
+	/**
+	 * @param parent
+	 * @return
+	 */
+	protected Element getChildElementCapability (Element parent){
+		return parent.getChild("Capability");
+	}
+	
+	/**
+	 * @param parent
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	protected List<Element> getChildrenElementsLayer (Element parent){
+		return parent.getChildren("Layer");
+	}
+	
+	/**
+	 * @param parent
+	 * @return
+	 */
+	protected Element getChildElementRequest (Element parent){
+		return parent.getChild("Request");
+	}
+	
+	/**
+	 * @param parent
+	 * @return
+	 */
+	protected Element getChildElementException (Element parent){
+		return parent.getChild("Exception");
+	}
+	
+	/**
+	 * @param parent
+	 * @return
+	 */
+	protected Element getNewElementFormat (){
+		return new Element("Format");
+	}
+	
 	public ByteArrayOutputStream GetFeatureInfoAggregation (TreeMap<Integer, ProxyRemoteServerResponse> wmsGetFeatureInfoResponseFilePath){
 		try {
 			SAXBuilder sxb = new SAXBuilder();
@@ -865,5 +905,21 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 		}
 		return null;
 		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.easysdi.proxy.core.ProxyResponseBuilder#CapabilitiesContentsFiltering(java.util.Hashtable)
+	 */
+	@Override
+	public Boolean CapabilitiesContentsFiltering(Hashtable<String, String> filePathList)throws NoSuchAuthorityCodeException {
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.easysdi.proxy.core.ProxyResponseBuilder#CapabilitiesMerging(java.util.Hashtable)
+	 */
+	@Override
+	public Boolean CapabilitiesMerging(Hashtable<String, String> filePathList) {
+		return null;
 	}
 }

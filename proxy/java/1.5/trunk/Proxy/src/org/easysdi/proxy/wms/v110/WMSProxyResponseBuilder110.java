@@ -16,9 +16,6 @@
  */
 package org.easysdi.proxy.wms.v110;
 
-import java.util.HashMap;
-import java.util.Hashtable;
-
 import org.easysdi.proxy.core.ProxyServlet;
 import org.easysdi.proxy.wms.WMSProxyResponseBuilder;
 
@@ -33,35 +30,5 @@ public class WMSProxyResponseBuilder110 extends WMSProxyResponseBuilder {
 	 */
 	public WMSProxyResponseBuilder110(ProxyServlet proxyServlet) {
 		super(proxyServlet);
-	}
-
-	@Override
-	public Boolean CapabilitiesOperationsFiltering(String filePath, String href) {
-		return super.CapabilitiesOperationsFiltering(filePath,href);
-	}
-
-	@Override
-	public Boolean CapabilitiesContentsFiltering(Hashtable<String, String> filePathList) {
-		return super.CapabilitiesContentsFiltering(filePathList);
-	}
-	
-	@Override
-	public Boolean CapabilitiesContentsFiltering(HashMap<String, String> filePathList, String href) {
-		return super.CapabilitiesContentsFiltering(filePathList, href);
-	}
-
-	@Override
-	public Boolean CapabilitiesMerging(Hashtable<String, String> filePathList) {
-		return super.CapabilitiesMerging(filePathList);
-	}
-	
-	@Override
-	public Boolean CapabilitiesMerging(HashMap<String, String> filePathList) {
-		return super.CapabilitiesMerging(filePathList);
-	}
-	
-	@Override
-	public Boolean CapabilitiesServiceMetadataWriting(String filePath,String href) {
-		return super.CapabilitiesServiceMetadataWriting(filePath, href);
 	}
 }

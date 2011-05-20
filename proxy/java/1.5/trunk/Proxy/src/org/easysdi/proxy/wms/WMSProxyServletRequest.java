@@ -99,6 +99,15 @@ public class WMSProxyServletRequest extends ProxyServletRequest {
 	private String info_format;
 	
 	/**
+	 * In WMS version 1.0.0, the name of the parameter VERSION was WMTVER.
+	 * This name is now deprecated but for backwards compatibility and version 
+	 * negociation a post 1.0.0 server shall accept either form without issuing an exception.
+	 * This backward compatibility is not defined in WMS 1.3.0, so WMTVER parameter is handle 
+	 * only for WMS 1.1.0 and 1.1.1 
+	 */
+	private String wmtver;
+	
+	/**
 	 * @return the bbox
 	 */
 	public String getBbox() {
@@ -235,6 +244,20 @@ public class WMSProxyServletRequest extends ProxyServletRequest {
 	}
 
 	/**
+	 * @param wmtver the wmtver to set
+	 */
+	public void setWmtver(String wmtver) {
+		this.wmtver = wmtver;
+	}
+
+	/**
+	 * @return the wmtver
+	 */
+	public String getWmtver() {
+		return wmtver;
+	}
+
+	/**
 	 * @param request
 	 */
 	public WMSProxyServletRequest(HttpServletRequest req) {
@@ -292,7 +315,7 @@ public class WMSProxyServletRequest extends ProxyServletRequest {
 				}
 			} else if (key.equalsIgnoreCase("wmtver")) {
 				// Gets the requested wmtver
-				version = value;
+				wmtver = value;
 				service = "WMS";
 			} else if (key.equalsIgnoreCase("service")) {
 				// Gets the requested service
@@ -328,5 +351,11 @@ public class WMSProxyServletRequest extends ProxyServletRequest {
 				info_format = value;
 			}
 		}			
+		
+		//If VERSION and WMTVER are both given, VERSION takes precedence
+		//If only WMTVER is given, it will be used as VERSION
+		if(version == null && wmtver != null){
+			version = wmtver;
+		}
 	}
 }
