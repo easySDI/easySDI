@@ -16,9 +16,22 @@
  */
 package org.easysdi.proxy.log;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Priority;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  * @author DEPTH SA
@@ -26,19 +39,29 @@ import org.apache.log4j.Priority;
  */
 public class ProxyLogger extends Logger {
 
-	protected ProxyLogger(String name) {
+	private static Logger rootLogger;
+	private List<String> lLogs = new Vector<String>();
+	private  String logDateFormat;
+	private Level level = Level.INFO;
+	private  String logFile;
+	
+	public ProxyLogger(String name) {
 		super(name);
-		// TODO Auto-generated constructor stub
 	}
 
-	private static Logger rootLogger;
-	
-	
 	public static Logger getRootLogger(){
 		if (rootLogger == null){
-			rootLogger = new ProxyLogger();
+			rootLogger = new ProxyLogger("root");
 		}
 		return rootLogger;
+	}
+	
+	public  void setDateFormat (String logDateFormat){
+		this.logDateFormat = logDateFormat;
+	}
+	
+	public  void setLogFile (String logFile){
+		this.logFile = logFile;
 	}
 
 	/* (non-Javadoc)
@@ -46,8 +69,7 @@ public class ProxyLogger extends Logger {
 	 */
 	@Override
 	public void trace(Object message) {
-		// TODO Auto-generated method stub
-		super.trace(message);
+		this.log(Level.TRACE, message);
 	}
 
 	/* (non-Javadoc)
@@ -55,8 +77,7 @@ public class ProxyLogger extends Logger {
 	 */
 	@Override
 	public void debug(Object message) {
-		// TODO Auto-generated method stub
-		super.debug(message);
+		this.log(Level.DEBUG, message);
 	}
 
 	/* (non-Javadoc)
@@ -64,8 +85,7 @@ public class ProxyLogger extends Logger {
 	 */
 	@Override
 	public void error(Object message) {
-		// TODO Auto-generated method stub
-		super.error(message);
+		this.log(Level.ERROR, message);
 	}
 
 	/* (non-Javadoc)
@@ -73,8 +93,7 @@ public class ProxyLogger extends Logger {
 	 */
 	@Override
 	public void fatal(Object message) {
-		// TODO Auto-generated method stub
-		super.fatal(message);
+		this.log(Level.FATAL, message);
 	}
 
 	/* (non-Javadoc)
@@ -82,8 +101,7 @@ public class ProxyLogger extends Logger {
 	 */
 	@Override
 	public void info(Object message) {
-		// TODO Auto-generated method stub
-		super.info(message);
+		this.log(Level.INFO, message);
 	}
 
 	/* (non-Javadoc)
@@ -91,8 +109,45 @@ public class ProxyLogger extends Logger {
 	 */
 	@Override
 	public void log(Priority priority, Object message) {
-		// TODO Auto-generated method stub
-		super.log(priority, message);
+		String name = null;
+		String text = null;
+		
+		if(priority == null){
+			priority = level;
+		}
+		
+		if(message == null)
+			text = "null";
+		if(message instanceof Object[] ){
+			name = ((String[])message)[0];
+			text = ((String[])message)[1];
+		}else{
+			text = message.toString();
+		}
+		
+		
+		StringBuffer sb = new StringBuffer();
+
+		DateFormat dateFormat = new SimpleDateFormat(this.logDateFormat);
+		Date d = new Date();
+
+		sb.append("<logEntry time=\"" + dateFormat.format(d) + "\" severity=\""+priority.toString()+"\"");
+		if (name != null) {
+			sb.append(" name=\"");
+			sb.append(name);
+			sb.append("\"");
+		}
+		sb.append(">");
+		sb.append("<![CDATA[");
+		sb.append(text);
+		sb.append("]]>");
+		sb.append("</logEntry>");
+
+		synchronized (lLogs) {
+			if (lLogs == null)
+				lLogs = new Vector<String>();
+			lLogs.add(sb.toString());
+		}
 	}
 
 	/* (non-Javadoc)
@@ -100,8 +155,7 @@ public class ProxyLogger extends Logger {
 	 */
 	@Override
 	public void setLevel(Level level) {
-		// TODO Auto-generated method stub
-		super.setLevel(level);
+		this.level = level;
 	}
 
 	/* (non-Javadoc)
@@ -109,8 +163,103 @@ public class ProxyLogger extends Logger {
 	 */
 	@Override
 	public void warn(Object message) {
-		// TODO Auto-generated method stub
-		super.warn(message);
+		this.log(Level.WARN, message);
 	}
 
+	public void system(Object message) {
+		String name = null;
+		String text = null;
+		
+		if(message == null)
+			text = "null";
+		if(message instanceof Object[] ){
+			name = ((String[])message)[0];
+			text = ((String[])message)[1];
+		}else{
+			text = message.toString();
+		}
+		
+		
+		StringBuffer sb = new StringBuffer();
+
+		DateFormat dateFormat = new SimpleDateFormat(this.logDateFormat);
+		Date d = new Date();
+
+		sb.append("<logEntry time=\"" + dateFormat.format(d) + "\" severity=\"SYSTEM\"");
+		if (name != null) {
+			sb.append(" name=\"");
+			sb.append(name);
+			sb.append("\"");
+		}
+		sb.append(">");
+		sb.append("<![CDATA[");
+		sb.append(text);
+		sb.append("]]>");
+		sb.append("</logEntry>");
+
+		synchronized (lLogs) {
+			if (lLogs == null)
+				lLogs = new Vector<String>();
+			lLogs.add(sb.toString());
+		}
+	}
+	
+	public void writeInLog(String date, HttpServletRequest req) {
+		boolean newLog = false;
+		String u = "";
+		if (SecurityContextHolder.getContext().getAuthentication() != null) {
+			u = SecurityContextHolder.getContext().getAuthentication().getName();
+		}
+
+		try {
+			String logFile = this.logFile;
+			if (logFile != null) {
+				File fLogFile = new File(logFile);
+				if (!fLogFile.exists()) {
+					fLogFile.createNewFile();
+					newLog = true;
+				}
+
+				FileWriter fstream = new FileWriter(fLogFile, true);
+				BufferedWriter bWriter = new BufferedWriter(fstream);
+
+				this.system( new String[]{ "RemoteAddr", req.getRemoteAddr()});
+				this.system( new String[]{ "RemoteUser", req.getRemoteUser()});
+				this.system( new String[]{ "QueryString", req.getQueryString()});
+				this.system( new String[]{ "RequestURL", req.getRequestURL().toString()});
+
+				if (newLog)
+					bWriter.write("<Log>");
+				bWriter.write("<LogRequest user=\"" + u + "\" requestTime=\"" + date + "\"> \n");
+				synchronized (lLogs) {
+					for (Iterator<String> i = lLogs.iterator(); i.hasNext();) {
+						bWriter.write(i.next() + "\n");
+					}
+				}
+				bWriter.write("</LogRequest>" + "\n");
+				bWriter.close();
+			} else {
+				String sHeader = "<LogRequest user=\"" + u + "\" requestTime=\"" + date + "\">" + "\n";
+				System.err.println(sHeader);
+				synchronized (lLogs) {
+					for (Iterator<String> i = lLogs.iterator(); i.hasNext();) {
+						System.err.println(i.next() + "\n");
+					}
+				}
+				System.err.println("</LogRequest>" + "\n");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			String sHeader = "<LogRequest user=\"" + u + "\" requestTime=\"" + date + "\">" + "\n";
+			System.err.println(sHeader);
+			synchronized (lLogs) {
+				for (Iterator<String> i = lLogs.iterator(); i.hasNext();) {
+					System.err.println(i.next() + "\n");
+				}
+			}
+			System.err.println("</LogRequest>" + "\n");
+
+		}
+
+	}
 }

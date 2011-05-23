@@ -31,6 +31,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
@@ -77,6 +79,7 @@ import org.easysdi.proxy.policy.Operation;
 import org.easysdi.proxy.policy.Policy;
 import org.easysdi.proxy.policy.Server;
 import org.easysdi.security.JoomlaProvider;
+import org.easysdi.proxy.log.ProxyLogger;
 import org.easysdi.xml.documents.RemoteServerInfo;
 import org.geotools.xml.DocumentFactory;
 import org.geotools.xml.SchemaFactory;
@@ -221,14 +224,34 @@ public abstract class ProxyServlet extends HttpServlet {
 	public ProxyServlet() {
 		super();
 		String loggerClassName = "org.easysdi.proxy.log.ProxyLogger";
+		org.apache.log4j.Level level = org.apache.log4j.Level.INFO; 
 		Class<?> classe;
 		try {
 			classe = Class.forName(loggerClassName);
+//			Constructor<?> constructeur = classe.getConstructor(new Class [] {Class.forName ("java.lang.String")});
+//			logger = (Logger)constructeur.newInstance("root");
+			 Method method = classe.getMethod("getRootLogger", (Class[])null );
+			logger = (Logger) method.invoke(null);
+			logger.setLevel(level);
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		Constructor<?> constructeur = classe.getConstructor(new Class [] null);
 	}
 
 	
@@ -382,6 +405,10 @@ public abstract class ProxyServlet extends HttpServlet {
 	 */
 	public void setConfiguration(org.easysdi.xml.documents.Config conf) {
 		configuration = conf;
+		if (logger instanceof ProxyLogger){
+			((ProxyLogger)logger).setDateFormat(configuration.getLogDateFormat());
+			((ProxyLogger)logger).setLogFile(configuration.getLogFile());
+		}
 	}
 
 	/**
@@ -413,7 +440,10 @@ public abstract class ProxyServlet extends HttpServlet {
 			requestPreTreatmentPOST(req, resp);
 		} finally {
 			deleteTempFileList();
-			writeInLog(dateFormat.format(d), req);
+			if (logger instanceof ProxyLogger){
+				((ProxyLogger)logger).writeInLog(dateFormat.format(d), req);
+			}
+			//writeInLog(dateFormat.format(d), req);
 		}
 
 	}
@@ -433,7 +463,10 @@ public abstract class ProxyServlet extends HttpServlet {
 			requestPreTreatmentGET(req, resp);
 		} finally {
 			deleteTempFileList();
-			writeInLog(dateFormat.format(d), req);
+			if (logger instanceof ProxyLogger){
+				((ProxyLogger)logger).writeInLog(dateFormat.format(d), req);
+			}
+			//writeInLog(dateFormat.format(d), req);
 		}
 
 	}
@@ -561,6 +594,7 @@ public abstract class ProxyServlet extends HttpServlet {
 
 	/**
 	 * Write all the dumped informations into the file log
+	 * @deprecated
 	 * @param date
 	 * @param req
 	 */
@@ -624,6 +658,7 @@ public abstract class ProxyServlet extends HttpServlet {
 	}
 
 	/**
+	 * @deprecated
 	 * @param severity
 	 * @param name
 	 * @param o
@@ -633,6 +668,7 @@ public abstract class ProxyServlet extends HttpServlet {
 	}
 
 	/**
+	 * @deprecated
 	 * @param severity
 	 * @param name
 	 * @param sb
@@ -643,6 +679,7 @@ public abstract class ProxyServlet extends HttpServlet {
 	}
 
 	/**
+	 * @deprecated
 	 * @param severity
 	 * @param name
 	 * @param sb
@@ -655,6 +692,7 @@ public abstract class ProxyServlet extends HttpServlet {
 	}
 
 	/**
+	 * @deprecated
 	 * @param s
 	 * @param s2
 	 */
@@ -667,6 +705,7 @@ public abstract class ProxyServlet extends HttpServlet {
 	}
 
 	/**
+	 * @deprecated
 	 * @param s
 	 * @param o
 	 */
@@ -679,6 +718,7 @@ public abstract class ProxyServlet extends HttpServlet {
 	}
 
 	/**
+	 * @deprecated
 	 * @param o
 	 */
 	public void dump(Object o) {
@@ -689,6 +729,7 @@ public abstract class ProxyServlet extends HttpServlet {
 	}
 
 	/**
+	 * @deprecated
 	 * @param s
 	 * @param d
 	 */
@@ -697,6 +738,7 @@ public abstract class ProxyServlet extends HttpServlet {
 	}
 
 	/**
+	 * @deprecated
 	 * @param d
 	 */
 	protected void dump(Double d) {
@@ -704,6 +746,7 @@ public abstract class ProxyServlet extends HttpServlet {
 	}
 
 	/**
+	 * @deprecated
 	 * @param s
 	 * @param d
 	 */
@@ -712,7 +755,9 @@ public abstract class ProxyServlet extends HttpServlet {
 	}
 
 	/**
+	 * 
 	 * @param d
+	 * @deprecated
 	 */
 	protected void dump(double d) {
 		dump("INFO", Double.toString(d));
@@ -720,9 +765,10 @@ public abstract class ProxyServlet extends HttpServlet {
 
 	/**
 	 * Dump the string into the log file with the info severity
-	 * 
+	 * @deprecated
 	 * @param s
 	 *            the String to dump
+	 *            
 	 */
 	protected void dump(String s) {
 		if (s != null)
@@ -733,7 +779,7 @@ public abstract class ProxyServlet extends HttpServlet {
 
 	/**
 	 * Dump the stringBuffer into the log file with the info severity
-	 * 
+	 * @deprecated
 	 * @param s
 	 *            the StringBuffer to dump
 	 */
@@ -746,7 +792,7 @@ public abstract class ProxyServlet extends HttpServlet {
 
 	/**
 	 * Dump the stringBuffer into the log file
-	 * 
+	 * @deprecated
 	 * @param s
 	 *            the StringBuffer to dump
 	 */
@@ -758,6 +804,7 @@ public abstract class ProxyServlet extends HttpServlet {
 	}
 	
 	/**
+	 * @deprecated
 	 * @param severity
 	 * @param name
 	 * @param s
