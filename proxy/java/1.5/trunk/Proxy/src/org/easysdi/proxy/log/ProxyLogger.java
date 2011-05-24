@@ -22,6 +22,7 @@ import java.io.FileWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -44,6 +45,7 @@ public class ProxyLogger extends Logger {
 	private  String logDateFormat;
 	private Level level = Level.INFO;
 	private  String logFile;
+	private static HashMap<String,ProxyLogger> hLogger = new HashMap<String,ProxyLogger>();
 	
 	public ProxyLogger(String name) {
 		super(name);
@@ -54,6 +56,12 @@ public class ProxyLogger extends Logger {
 			rootLogger = new ProxyLogger("root");
 		}
 		return rootLogger;
+	}
+	
+	public static synchronized Logger getLogger(String name){
+		if(!hLogger.containsKey(name))
+			hLogger.put(name, new ProxyLogger(name));
+		return hLogger.get(name);
 	}
 	
 	public  void setDateFormat (String logDateFormat){
@@ -69,7 +77,7 @@ public class ProxyLogger extends Logger {
 	 */
 	@Override
 	public void trace(Object message) {
-		this.log(Level.TRACE, message);
+		this.log(Level.DEBUG, message);
 	}
 
 	/* (non-Javadoc)
@@ -77,7 +85,7 @@ public class ProxyLogger extends Logger {
 	 */
 	@Override
 	public void debug(Object message) {
-		this.log(Level.DEBUG, message);
+		this.log(Level.INFO, message);
 	}
 
 	/* (non-Javadoc)
@@ -101,7 +109,47 @@ public class ProxyLogger extends Logger {
 	 */
 	@Override
 	public void info(Object message) {
-		this.log(Level.INFO, message);
+		String name = null;
+		String text = null;
+		
+		if(!Level.INFO.isGreaterOrEqual(level))
+			return;
+		
+		if(message == null)
+			text = "null";
+		if(message instanceof Object[] ){
+			name = ((String[])message)[0];
+			text = ((String[])message)[1];
+		}else{
+			text = message.toString();
+			if(text.contains("=")){
+				name = text.substring(0,text.indexOf("="));
+				text = text.substring(text.indexOf("=")+1);
+			}
+		}		
+		
+		StringBuffer sb = new StringBuffer();
+
+		DateFormat dateFormat = new SimpleDateFormat(this.logDateFormat);
+		Date d = new Date();
+
+		sb.append("<logEntry time=\"" + dateFormat.format(d) + "\" severity=\"SYSTEM\"");
+		if (name != null) {
+			sb.append(" name=\"");
+			sb.append(name);
+			sb.append("\"");
+		}
+		sb.append(">");
+		sb.append("<![CDATA[");
+		sb.append(text);
+		sb.append("]]>");
+		sb.append("</logEntry>");
+
+		synchronized (lLogs) {
+			if (lLogs == null)
+				lLogs = new Vector<String>();
+			lLogs.add(sb.toString());
+		}
 	}
 
 	/* (non-Javadoc)
@@ -116,6 +164,9 @@ public class ProxyLogger extends Logger {
 			priority = level;
 		}
 		
+		if(!priority.isGreaterOrEqual(level))
+			return;
+		
 		if(message == null)
 			text = "null";
 		if(message instanceof Object[] ){
@@ -123,6 +174,10 @@ public class ProxyLogger extends Logger {
 			text = ((String[])message)[1];
 		}else{
 			text = message.toString();
+			if(text.contains("=")){
+				name = text.substring(0,text.indexOf("="));
+				text = text.substring(text.indexOf("=")+1);
+			}
 		}
 		
 		
@@ -166,44 +221,6 @@ public class ProxyLogger extends Logger {
 		this.log(Level.WARN, message);
 	}
 
-	public void system(Object message) {
-		String name = null;
-		String text = null;
-		
-		if(message == null)
-			text = "null";
-		if(message instanceof Object[] ){
-			name = ((String[])message)[0];
-			text = ((String[])message)[1];
-		}else{
-			text = message.toString();
-		}
-		
-		
-		StringBuffer sb = new StringBuffer();
-
-		DateFormat dateFormat = new SimpleDateFormat(this.logDateFormat);
-		Date d = new Date();
-
-		sb.append("<logEntry time=\"" + dateFormat.format(d) + "\" severity=\"SYSTEM\"");
-		if (name != null) {
-			sb.append(" name=\"");
-			sb.append(name);
-			sb.append("\"");
-		}
-		sb.append(">");
-		sb.append("<![CDATA[");
-		sb.append(text);
-		sb.append("]]>");
-		sb.append("</logEntry>");
-
-		synchronized (lLogs) {
-			if (lLogs == null)
-				lLogs = new Vector<String>();
-			lLogs.add(sb.toString());
-		}
-	}
-	
 	public void writeInLog(String date, HttpServletRequest req) {
 		boolean newLog = false;
 		String u = "";
@@ -223,10 +240,10 @@ public class ProxyLogger extends Logger {
 				FileWriter fstream = new FileWriter(fLogFile, true);
 				BufferedWriter bWriter = new BufferedWriter(fstream);
 
-				this.system( new String[]{ "RemoteAddr", req.getRemoteAddr()});
-				this.system( new String[]{ "RemoteUser", req.getRemoteUser()});
-				this.system( new String[]{ "QueryString", req.getQueryString()});
-				this.system( new String[]{ "RequestURL", req.getRequestURL().toString()});
+//				this.info( new String[]{ "RemoteAddr", req.getRemoteAddr()});
+//				this.info( new String[]{ "RemoteUser", req.getRemoteUser()});
+//				this.info( new String[]{ "QueryString", req.getQueryString()});
+//				this.info( new String[]{ "RequestURL", req.getRequestURL().toString()});
 
 				if (newLog)
 					bWriter.write("<Log>");

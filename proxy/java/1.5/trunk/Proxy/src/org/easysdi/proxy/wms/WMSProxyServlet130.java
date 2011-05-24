@@ -94,7 +94,7 @@ public class WMSProxyServlet130 extends WMSProxyServlet {
 		try {
 			if(((WMSProxyServletRequest)getProxyRequest()).getInfo_format() == null || ((WMSProxyServletRequest)getProxyRequest()).getInfo_format().equalsIgnoreCase(""))
 			{
-				dump("INFO", "QUERY_LAYERS "+OWSExceptionReport.TEXT_MISSING_PARAMETER_VALUE);
+				logger.info( "QUERY_LAYERS "+OWSExceptionReport.TEXT_MISSING_PARAMETER_VALUE);
 				StringBuffer out = owsExceptionReport.generateExceptionReport("INFO_FORMAT "+OWSExceptionReport.TEXT_MISSING_PARAMETER_VALUE,OWSExceptionReport.CODE_MISSING_PARAMETER_VALUE,"INFO_FORMAT");
 				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
 				return;
@@ -102,13 +102,13 @@ public class WMSProxyServlet130 extends WMSProxyServlet {
 		} catch (IOException e) {
 			resp.setHeader("easysdi-proxy-error-occured", "true");
 			e.printStackTrace();
-			dump("ERROR", e.getMessage());
+			logger.error( e.getMessage());
 			StringBuffer out;
 			try {
 				out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
 				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			} catch (IOException e1) {
-				dump("ERROR", e1.getMessage());
+				logger.error( e1.getMessage());
 				e1.printStackTrace();
 			}
 			return;

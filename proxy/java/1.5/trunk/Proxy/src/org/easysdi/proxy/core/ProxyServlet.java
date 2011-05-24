@@ -30,7 +30,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
@@ -67,7 +66,9 @@ import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.log4j.DailyRollingFileAppender;
 import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
 import org.easysdi.proxy.exception.AvailabilityPeriodException;
 import org.easysdi.proxy.ows.OWSExceptionReport;
 import org.easysdi.proxy.policy.Attribute;
@@ -216,23 +217,23 @@ public abstract class ProxyServlet extends HttpServlet {
 	 */
 	protected ProxyServletRequest proxyRequest;
 	
-	protected Logger logger;
+	public Logger logger;
 	
 	/**
 	 * 
 	 */
 	public ProxyServlet() {
 		super();
+//		String loggerClassName = "org.apache.log4j.Logger";
 		String loggerClassName = "org.easysdi.proxy.log.ProxyLogger";
-		org.apache.log4j.Level level = org.apache.log4j.Level.INFO; 
+		org.apache.log4j.Level level = org.apache.log4j.Level.DEBUG; 
 		Class<?> classe;
 		try {
 			classe = Class.forName(loggerClassName);
-//			Constructor<?> constructeur = classe.getConstructor(new Class [] {Class.forName ("java.lang.String")});
-//			logger = (Logger)constructeur.newInstance("root");
-			 Method method = classe.getMethod("getRootLogger", (Class[])null );
-			logger = (Logger) method.invoke(null);
+			 Method method = classe.getMethod("getLogger",new Class [] {Class.forName ("java.lang.String")} );
+			logger = (Logger) method.invoke(null,new Object[]{"ProxyLogger"});
 			logger.setLevel(level);
+			
 		} catch (SecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -408,6 +409,12 @@ public abstract class ProxyServlet extends HttpServlet {
 		if (logger instanceof ProxyLogger){
 			((ProxyLogger)logger).setDateFormat(configuration.getLogDateFormat());
 			((ProxyLogger)logger).setLogFile(configuration.getLogFile());
+		}else{
+			DailyRollingFileAppender appender = (DailyRollingFileAppender)logger.getAppender("logFileAppender");
+			appender.setFile(configuration.getLogFile());
+			appender.setDatePattern(configuration.getLogDateFormat());
+			PatternLayout layout = (PatternLayout) appender.getLayout();
+			layout.setConversionPattern("%d{"+configuration.getLogDateFormat()+"} %-5p [%t] (%F:%L) - %m%n");
 		}
 	}
 
@@ -430,45 +437,50 @@ public abstract class ProxyServlet extends HttpServlet {
 	 * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
 	 */
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		// Get the date and time of the request
-		// lLogs = null;
-
 		DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
 		Date d = new Date();
 		requestCharacterEncoding = req.getCharacterEncoding();
+		
 		try {
+			logger.info("user="+SecurityContextHolder.getContext().getAuthentication().getName());
+			logger.info("requestTime="+dateFormat.format(d));
+			logger.info("RemoteAddr="+ req.getRemoteAddr());
+			logger.info("RemoteUser="+ req.getRemoteUser());
+			logger.info("QueryString="+ req.getQueryString());
+			logger.info("RequestURL="+ req.getRequestURL().toString());
+			
 			requestPreTreatmentPOST(req, resp);
 		} finally {
 			deleteTempFileList();
 			if (logger instanceof ProxyLogger){
 				((ProxyLogger)logger).writeInLog(dateFormat.format(d), req);
 			}
-			//writeInLog(dateFormat.format(d), req);
 		}
-
 	}
 
 	/* (non-Javadoc)
 	 * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
 	 */
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		// lLogs = null;
-		// Get the date and time of the request
 		DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
 		Date d = new Date();
 		requestCharacterEncoding = req.getCharacterEncoding();
 		
 		try {
-			
+			logger.info("user="+SecurityContextHolder.getContext().getAuthentication().getName());
+			logger.info("requestTime="+dateFormat.format(d));
+			logger.info("RemoteAddr="+ req.getRemoteAddr());
+			logger.info("RemoteUser="+ req.getRemoteUser());
+			logger.info("QueryString="+ req.getQueryString());
+			logger.info("RequestURL="+ req.getRequestURL().toString());
+
 			requestPreTreatmentGET(req, resp);
 		} finally {
 			deleteTempFileList();
 			if (logger instanceof ProxyLogger){
 				((ProxyLogger)logger).writeInLog(dateFormat.format(d), req);
 			}
-			//writeInLog(dateFormat.format(d), req);
 		}
-
 	}
 
 	/**
@@ -507,7 +519,7 @@ public abstract class ProxyServlet extends HttpServlet {
 					NodeList nl = documentMaster.getElementsByTagName("ServiceExceptionReport");
 					if (nl.item(0) != null)
 					{
-						dump("DEBUG","transform begin exception response writting");
+						logger.trace("transform begin exception response writting");
 						DOMImplementationLS implLS = null;
 						if (documentMaster.getImplementation().hasFeature("LS", "3.0")) 
 						{
@@ -548,7 +560,7 @@ public abstract class ProxyServlet extends HttpServlet {
 						sortie.setEncoding("UTF-8");
 						sortie.setByteStream(out);
 						serialiseur.write(documentMaster, sortie);
-						dump("DEBUG","transform end exception response writting");
+						logger.trace("transform end exception response writting");
 						return out;
 					}	
 				}
@@ -557,7 +569,7 @@ public abstract class ProxyServlet extends HttpServlet {
 		catch (Exception ex)
 		{
 			ex.printStackTrace();
-			dump("ERROR", ex.getMessage());
+			logger.error(ex.getMessage());
 			return null;
 		}
 		return null;
@@ -592,251 +604,9 @@ public abstract class ProxyServlet extends HttpServlet {
 		return url;
 	}
 
-	/**
-	 * Write all the dumped informations into the file log
-	 * @deprecated
-	 * @param date
-	 * @param req
-	 */
-	private void writeInLog(String date, HttpServletRequest req) {
-		boolean newLog = false;
-		String u = "";
-		if (SecurityContextHolder.getContext().getAuthentication() != null) {
-			u = SecurityContextHolder.getContext().getAuthentication().getName();
-		}
-
-		try {
-			String logFile = configuration.getLogFile();
-			if (logFile != null) {
-				File fLogFile = new File(logFile);
-				if (!fLogFile.exists()) {
-					fLogFile.createNewFile();
-					newLog = true;
-				}
-
-				FileWriter fstream = new FileWriter(fLogFile, true);
-				BufferedWriter bWriter = new BufferedWriter(fstream);
-
-				dump("SYSTEM", "RemoteAddr", req.getRemoteAddr());
-				dump("SYSTEM", "RemoteUser", req.getRemoteUser());
-				dump("SYSTEM", "QueryString", req.getQueryString());
-				dump("SYSTEM", "RequestURL", req.getRequestURL());
-
-				if (newLog)
-					bWriter.write("<Log>");
-				bWriter.write("<LogRequest user=\"" + u + "\" requestTime=\"" + date + "\"> \n");
-				synchronized (lLogs) {
-					for (Iterator<String> i = lLogs.iterator(); i.hasNext();) {
-						bWriter.write(i.next() + "\n");
-					}
-				}
-				bWriter.write("</LogRequest>" + "\n");
-				bWriter.close();
-			} else {
-				String sHeader = "<LogRequest user=\"" + u + "\" requestTime=\"" + date + "\">" + "\n";
-				System.err.println(sHeader);
-				synchronized (lLogs) {
-					for (Iterator<String> i = lLogs.iterator(); i.hasNext();) {
-						System.err.println(i.next() + "\n");
-					}
-				}
-				System.err.println("</LogRequest>" + "\n");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			String sHeader = "<LogRequest user=\"" + u + "\" requestTime=\"" + date + "\">" + "\n";
-			System.err.println(sHeader);
-			synchronized (lLogs) {
-				for (Iterator<String> i = lLogs.iterator(); i.hasNext();) {
-					System.err.println(i.next() + "\n");
-				}
-			}
-			System.err.println("</LogRequest>" + "\n");
-
-		}
-
-	}
-
-	/**
-	 * @deprecated
-	 * @param severity
-	 * @param name
-	 * @param o
-	 */
-	protected void dump(String severity, String name, Object o) {
-		dump(severity, name, "" + o);
-	}
-
-	/**
-	 * @deprecated
-	 * @param severity
-	 * @param name
-	 * @param sb
-	 */
-	protected void dump(String severity, String name, int sb) {
-		dump(severity, name, "" + sb);
-
-	}
-
-	/**
-	 * @deprecated
-	 * @param severity
-	 * @param name
-	 * @param sb
-	 */
-	protected void dump(String severity, String name, StringBuffer sb) {
-		if (sb != null)
-			dump(severity, name, sb.toString());
-		else
-			dump(severity, name, "null");
-	}
-
-	/**
-	 * @deprecated
-	 * @param s
-	 * @param s2
-	 */
-	public void dump(String s, String s2) {
-		if (s2 != null)
-			dump(s, null, s2);
-		else
-			dump(s, null, "null");
-
-	}
-
-	/**
-	 * @deprecated
-	 * @param s
-	 * @param o
-	 */
-	protected void dump(String s, Object o) {
-		if (o != null)
-			dump(s, o.toString());
-		else
-			dump(s, "null");
-
-	}
-
-	/**
-	 * @deprecated
-	 * @param o
-	 */
-	public void dump(Object o) {
-		if (o != null)
-			dump("INFO", o.toString());
-		else
-			dump("INFO", "null");
-	}
-
-	/**
-	 * @deprecated
-	 * @param s
-	 * @param d
-	 */
-	protected void dump(String s, Double d) {
-		dump(s, d.toString());
-	}
-
-	/**
-	 * @deprecated
-	 * @param d
-	 */
-	protected void dump(Double d) {
-		dump("INFO", d.toString());
-	}
-
-	/**
-	 * @deprecated
-	 * @param s
-	 * @param d
-	 */
-	protected void dump(String s, double d) {
-		dump(s, Double.toString(d));
-	}
-
-	/**
-	 * 
-	 * @param d
-	 * @deprecated
-	 */
-	protected void dump(double d) {
-		dump("INFO", Double.toString(d));
-	}
-
-	/**
-	 * Dump the string into the log file with the info severity
-	 * @deprecated
-	 * @param s
-	 *            the String to dump
-	 *            
-	 */
-	protected void dump(String s) {
-		if (s != null)
-			dump("INFO", s);
-		else
-			dump("INFO", "null");
-	}
-
-	/**
-	 * Dump the stringBuffer into the log file with the info severity
-	 * @deprecated
-	 * @param s
-	 *            the StringBuffer to dump
-	 */
-	protected void dump(StringBuffer s) {
-		if (s != null)
-			dump(s.toString());
-		else
-			dump("null");
-	}
-
-	/**
-	 * Dump the stringBuffer into the log file
-	 * @deprecated
-	 * @param s
-	 *            the StringBuffer to dump
-	 */
-	protected void dump(String severity, StringBuffer s) {
-		if (s != null)
-			dump(severity, s.toString());
-		else
-			dump(severity, "null");
-	}
 	
-	/**
-	 * @deprecated
-	 * @param severity
-	 * @param name
-	 * @param s
-	 */
-	protected void dump(String severity, String name, String s) {
-		if (severity == null)
-			severity = "DEBUG";
-		if (s == null)
-			s = "null";
-		StringBuffer sb = new StringBuffer();
 
-		DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
-		Date d = new Date();
-
-		sb.append("<logEntry time=\"" + dateFormat.format(d) + "\" severity=\"" + severity + "\"");
-		if (name != null) {
-			sb.append(" name=\"");
-			sb.append(name);
-			sb.append("\"");
-		}
-		sb.append(">");
-		sb.append("<![CDATA[");
-		sb.append(s);
-		sb.append("]]>");
-		sb.append("</logEntry>");
-
-		synchronized (lLogs) {
-			if (lLogs == null)
-				lLogs = new Vector<String>();
-			lLogs.add(sb.toString());
-		}
-	}
+	
 
 	/**
 	 * Send to the client the ogc Exception build by the proxy
@@ -862,8 +632,8 @@ public abstract class ProxyServlet extends HttpServlet {
 		{
 			DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
 			Date d = new Date();
-			dump("SYSTEM", "ClientResponseDateTime", dateFormat.format(d));
-			dump("SYSTEM", "ClientResponseLength", ogcException.length());
+			logger.info("ClientResponseDateTime="+ dateFormat.format(d));
+			logger.info("ClientResponseLength="+ ogcException.length());
 		}
 	}
 	
@@ -886,8 +656,8 @@ public abstract class ProxyServlet extends HttpServlet {
 		{
 			DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
 			Date d = new Date();
-			dump("SYSTEM", "ClientResponseDateTime", dateFormat.format(d));
-			dump("SYSTEM", "ClientResponseLength", xmlResponse.length());
+			logger.info("ClientResponseDateTime="+ dateFormat.format(d));
+			logger.info("ClientResponseLength="+ xmlResponse.length());
 		}
 	}
 	/**
@@ -913,10 +683,10 @@ public abstract class ProxyServlet extends HttpServlet {
 			}
 			DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
 			Date d = new Date();
-			dump("SYSTEM", "RemoteRequestUrl", urlstr);
-			dump("SYSTEM", "RemoteRequest", parameters.replaceAll("\r", ""));
-			dump("SYSTEM", "RemoteRequestLength", parameters.length());
-			dump("SYSTEM", "RemoteRequestDateTime", dateFormat.format(d));
+			logger.info("RemoteRequestUrl="+ urlstr);
+			logger.info("RemoteRequest="+ parameters.replaceAll("\r", ""));
+			logger.info("RemoteRequestLength="+ parameters.length());
+			logger.info("RemoteRequestDateTime="+ dateFormat.format(d));
 			String cookie = null;
 
 			if (getLoginService(urlstr) != null) {
@@ -981,7 +751,7 @@ public abstract class ProxyServlet extends HttpServlet {
 				if (hpcon.getContentEncoding() != null && hpcon.getContentEncoding().indexOf("gzip") != -1) 
 				{
 					in = new GZIPInputStream(hpcon.getInputStream());
-					dump("DEBUG", "return of the remote server is zipped");
+					logger.trace( "return of the remote server is zipped");
 				} else 
 				{
 					in = hpcon.getInputStream();
@@ -998,7 +768,7 @@ public abstract class ProxyServlet extends HttpServlet {
 			
 			 
 			String tmpDir = System.getProperty("java.io.tmpdir");
-			dump(" tmpDir :  " + tmpDir);
+			logger.debug(" tmpDir :  " + tmpDir);
 
 			File tempFile = createTempFile("sendData_" + UUID.randomUUID().toString(), getExtension(responseExtensionContentType));
 
@@ -1013,18 +783,18 @@ public abstract class ProxyServlet extends HttpServlet {
 			tempFos.flush();
 			tempFos.close();
 			in.close();
-			dump("SYSTEM", "RemoteResponseToRequestUrl", urlstr);
-			dump("SYSTEM", "RemoteResponseLength", tempFile.length());
+			logger.info("RemoteResponseToRequestUrl="+ urlstr);
+			logger.info("RemoteResponseLength="+ tempFile.length());
 
 			dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
 			d = new Date();
-			dump("SYSTEM", "RemoteResponseDateTime", dateFormat.format(d));
+			logger.info("RemoteResponseDateTime="+ dateFormat.format(d));
 			return tempFile.toString();
 
 		}catch (SSLHandshakeException e)
 		{
 			e.printStackTrace();
-			dump("ERROR","Unable to find valid certification. "+e.getCause().toString());
+			logger.error("Unable to find valid certification. "+e.getCause().toString());
 			return null;
 			
 		}
@@ -1051,10 +821,10 @@ public abstract class ProxyServlet extends HttpServlet {
 			}
 			DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
 			Date d = new Date();
-			dump("SYSTEM", "RemoteRequestUrl", sUrl);
-			dump("SYSTEM", "RemoteRequest", parameters.replaceAll("\r", ""));
-			dump("SYSTEM", "RemoteRequestLength", parameters.length());
-			dump("SYSTEM", "RemoteRequestDateTime", dateFormat.format(d));
+			logger.info("RemoteRequestUrl="+ sUrl);
+			logger.info("RemoteRequest="+ parameters.replaceAll("\r", ""));
+			logger.info("RemoteRequestLength="+ parameters.length());
+			logger.info("RemoteRequestDateTime="+ dateFormat.format(d));
 			String cookie = null;
 
 			if (getLoginService(sUrl) != null) {
@@ -1128,10 +898,10 @@ public abstract class ProxyServlet extends HttpServlet {
 			os.close();
 			in.close();
 			
-			dump("SYSTEM", "RemoteResponseToRequestUrl", sUrl);
+			logger.info("RemoteResponseToRequestUrl="+ sUrl);
 			dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
 			d = new Date();
-			dump("SYSTEM", "RemoteResponseDateTime", dateFormat.format(d));
+			logger.info("RemoteResponseDateTime="+ dateFormat.format(d));
 	}
 	
 	protected String geonetworkLogIn(String loginServiceUrl) {
@@ -1258,10 +1028,10 @@ public abstract class ProxyServlet extends HttpServlet {
 		try {
 			DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
 			Date d = new Date();
-			dump("SYSTEM", "RemoteRequestUrl", urlstr);
-			dump("SYSTEM", "RemoteRequest", param.toString());
-			dump("SYSTEM", "RemoteRequestLength", param.length());
-			dump("SYSTEM", "RemoteRequestDateTime", dateFormat.format(d));
+			logger.info("RemoteRequestUrl="+ urlstr);
+			logger.info("RemoteRequest="+ param.toString());
+			logger.info("RemoteRequestLength="+ param.length());
+			logger.info("RemoteRequestDateTime="+ dateFormat.format(d));
 			
 			HttpClient client = new HttpClient();
 
@@ -1275,12 +1045,12 @@ public abstract class ProxyServlet extends HttpServlet {
 			client.executeMethod(post);
 			StringBuffer response = new StringBuffer(post.getResponseBodyAsString());
 
-			dump("SYSTEM", "RemoteResponseToRequestUrl", urlstr);
-			dump("SYSTEM", "RemoteResponseLength", response.length());
+			logger.info("RemoteResponseToRequestUrl="+ urlstr);
+			logger.info("RemoteResponseLength="+ response.length());
 
 			dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
 			d = new Date();
-			dump("SYSTEM", "RemoteResponseDateTime", dateFormat.format(d));
+			logger.info("RemoteResponseDateTime="+ dateFormat.format(d));
 			
 			return response;
 		} catch (Exception e) {
@@ -1358,7 +1128,7 @@ public abstract class ProxyServlet extends HttpServlet {
 		} else if (responseContentType.startsWith(BMP)) {
 			isTransparent = false;
 		} else {
-			dump("unkwnon content type" + responseContentType);
+			logger.debug("unkwnon content type" + responseContentType);
 		}
 
 		return isTransparent;
@@ -1389,7 +1159,7 @@ public abstract class ProxyServlet extends HttpServlet {
 		} else if (responseContentType.startsWith(BMP)) {
 			ext = ".bmp";
 		} else {
-			dump("unkwnon content type" + responseContentType);
+			logger.debug("unkwnon content type" + responseContentType);
 		}
 
 		return ext;
@@ -1415,10 +1185,10 @@ public abstract class ProxyServlet extends HttpServlet {
 				if (f.exists()) {
 					boolean deleted = f.delete();
 					if (deleted)
-						dump("INFO", "temporary file " + f.toURI().toString() + " is deleted");
+						logger.debug("temporary file " + f.toURI().toString() + " is deleted");
 					else {
 						f.deleteOnExit();
-						dump("WARNING", "temporary file " + f.toURI().toString() + " is not deleted");
+						logger.warn( "temporary file " + f.toURI().toString() + " is not deleted");
 					}
 				}
 
@@ -2359,7 +2129,7 @@ public abstract class ProxyServlet extends HttpServlet {
 			resp.setContentLength(tempOut.size());
 			
 			try {
-				dump("DEBUG","begin response writting");
+				logger.trace("begin response writting");
 				if (req!= null && "1".equals(req.getParameter("download"))) {
 					String format = req.getParameter("format");
 					if (format == null)
@@ -2374,27 +2144,27 @@ public abstract class ProxyServlet extends HttpServlet {
 				}
 				if (tempOut != null)
 					os.write(tempOut.toByteArray());
-				dump("DEBUG","end response writting");
+				logger.trace("end response writting");
 			} finally {
 				os.flush();
 				os.close();
 				// Log le résultat et supprime les fichiers temporaires
 				DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
 				Date d = new Date();
-				dump("SYSTEM", "ClientResponseDateTime", dateFormat.format(d));
+				logger.info("ClientResponseDateTime="+ dateFormat.format(d));
 				if (tempOut != null)
-					dump("SYSTEM", "ClientResponseLength", tempOut.size());
+					logger.info("ClientResponseLength="+ tempOut.size());
 			}
 	
 			DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
 			Date d = new Date();
-			dump("SYSTEM", "ClientResponseDateTime", dateFormat.format(d));
+			logger.info( "ClientResponseDateTime="+ dateFormat.format(d));
 		} 
 		catch (Exception e) 
 		{
 			resp.setHeader("easysdi-proxy-error-occured", "true");
 			e.printStackTrace();
-			dump("ERROR", e.getMessage());
+			logger.error(e.getMessage());
 		}
 	}
 	
@@ -2412,7 +2182,7 @@ public abstract class ProxyServlet extends HttpServlet {
 			//resp.setCharacterEncoding("UTF-8");
 			
 			try {
-				dump("transform begin response writting");
+				logger.trace("transform begin response writting");
 				if (req!= null && "1".equals(req.getParameter("download"))) {
 					String format = req.getParameter("format");
 					if (format == null)
@@ -2430,27 +2200,27 @@ public abstract class ProxyServlet extends HttpServlet {
 				}
 				else if (tempOut != null)
 					os.write(tempOut.toString().getBytes());
-				dump("transform end response writting");
+				logger.trace("transform end response writting");
 			} finally {
 				os.flush();
 				os.close();
 				// Log le résultat et supprime les fichiers temporaires
 				DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
 				Date d = new Date();
-				dump("SYSTEM", "ClientResponseDateTime", dateFormat.format(d));
+				logger.info("ClientResponseDateTime="+ dateFormat.format(d));
 				if (tempOut != null)
-					dump("SYSTEM", "ClientResponseLength", tempOut.length());
+					logger.info("ClientResponseLength="+ tempOut.length());
 			}
 	
 			DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
 			Date d = new Date();
-			dump("SYSTEM", "ClientResponseDateTime", dateFormat.format(d));
+			logger.info("ClientResponseDateTime="+ dateFormat.format(d));
 		} 
 		catch (Exception e) 
 		{
 			resp.setHeader("easysdi-proxy-error-occured", "true");
 			e.printStackTrace();
-			dump("ERROR", e.getMessage());
+			logger.error(e.getMessage());
 		}
 	}
 }

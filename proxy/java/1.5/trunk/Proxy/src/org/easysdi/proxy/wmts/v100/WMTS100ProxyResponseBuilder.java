@@ -37,7 +37,7 @@ public class WMTS100ProxyResponseBuilder extends WMTSProxyResponseBuilder {
 	 * Filter the operations allowed
 	 */
 	public Boolean CapabilitiesOperationsFiltering (String filePath, String href ){
-		servlet.dump("INFO","transform - Start - Capabilities operations filtering");
+		servlet.logger.trace("transform - Start - Capabilities operations filtering");
 		try{
 			SAXBuilder sxb = new SAXBuilder();
 	    	//Retrieve allowed and denied operations from the policy
@@ -49,11 +49,11 @@ public class WMTS100ProxyResponseBuilder extends WMTSProxyResponseBuilder {
 						&& servlet.isOperationAllowed(ProxyServlet.ServiceOperations.get(i))) 
 				{
 					permitedOperations.add(ProxyServlet.ServiceOperations.get(i));
-					servlet.dump("INFO",ProxyServlet.ServiceOperations.get(i) + " is permitted");
+					servlet.logger.trace(ProxyServlet.ServiceOperations.get(i) + " is permitted");
 				} else 
 				{
 					deniedOperations.add(ProxyServlet.ServiceOperations.get(i));
-					servlet.dump("INFO",ProxyServlet.ServiceOperations.get(i) + " is denied");
+					servlet.logger.trace(ProxyServlet.ServiceOperations.get(i) + " is denied");
 				}
 			}
 				
@@ -126,7 +126,7 @@ public class WMTS100ProxyResponseBuilder extends WMTSProxyResponseBuilder {
 	    	
     	   XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
            sortie.output(docParent, new FileOutputStream(filePath));
-           servlet.dump("INFO","transform - End - Capabilities operations filtering");
+           servlet.logger.trace("transform - End - Capabilities operations filtering");
            return true;
 		}
 		catch (Exception ex){
@@ -140,7 +140,7 @@ public class WMTS100ProxyResponseBuilder extends WMTSProxyResponseBuilder {
 	 * - allowed layers
 	 */
 	public Boolean CapabilitiesContentsFiltering (Hashtable<String, String> filePathList ){
-		servlet.dump("INFO","transform - Start - Capabilities contents filtering");
+		servlet.logger.trace("transform - Start - Capabilities contents filtering");
 	    try
 	    {
 	    	SAXBuilder sxb = new SAXBuilder();
@@ -207,7 +207,7 @@ public class WMTS100ProxyResponseBuilder extends WMTSProxyResponseBuilder {
 	    	   XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
 	           sortie.output(docParent, new FileOutputStream(filePath));
 	    	}
-	    	servlet.dump("INFO","transform - End - Capabilities contents filtering");
+	    	servlet.logger.trace("transform - End - Capabilities contents filtering");
            return true;
 	    }
 		catch (Exception ex )
@@ -222,7 +222,7 @@ public class WMTS100ProxyResponseBuilder extends WMTSProxyResponseBuilder {
 	 */
 	public Boolean CapabilitiesMerging(Hashtable<String,String> filePathList)
 	{
-		servlet.dump("INFO","transform - Start - Capabilities merging");
+		servlet.logger.trace("transform - Start - Capabilities merging");
 		if (filePathList.size() == 0)
 		{
 			setLastException(new Exception("No response file"));
@@ -272,7 +272,7 @@ public class WMTS100ProxyResponseBuilder extends WMTSProxyResponseBuilder {
 			
 			XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
 	        sortie.output(documentMaster, new FileOutputStream(fileMasterPath));
-	        servlet.dump("INFO","transform - End - Capabilities merging");
+	        servlet.logger.trace("transform - End - Capabilities merging");
 			return true;
 		} catch (Exception ex) {
 			setLastException(ex);
@@ -282,7 +282,7 @@ public class WMTS100ProxyResponseBuilder extends WMTSProxyResponseBuilder {
 	
 	public Boolean CapabilitiesServiceMetadataWriting(String filePath, String href)
 	{
-		servlet.dump("INFO","transform - Start - Capabilities metadata writing");
+		servlet.logger.trace("transform - Start - Capabilities metadata writing");
 		try
 		{
 			Config config = servlet.getConfiguration();
@@ -421,7 +421,7 @@ public class WMTS100ProxyResponseBuilder extends WMTSProxyResponseBuilder {
 			XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
 	        sortie.output(document, new FileOutputStream(filePath));
 
-	        servlet.dump("INFO","transform - End - Capabilities metadata writing");
+	        servlet.logger.trace("transform - End - Capabilities metadata writing");
 			return true;
 		}
 		catch (Exception ex)

@@ -75,7 +75,7 @@ public class WMTS100ProxyServlet extends WMTSProxyServlet{
 					service = req.getParameter(key);
 					if(!service.equalsIgnoreCase("WMTS"))
 					{
-						dump("INFO", "Service requested is not WMTS.");
+						logger.info( "Service requested is not WMTS.");
 						StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_SERVICE_NAME,OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE,"service");
 						sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
 						return;
@@ -95,7 +95,7 @@ public class WMTS100ProxyServlet extends WMTSProxyServlet{
 					}
 					else
 					{
-						dump("INFO", "WMTS requested version is not supported.");
+						logger.info("WMTS requested version is not supported.");
 						StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_VERSION_NOT_SUPPORTED,OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE,"acceptVersions");
 						sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
 						return;
@@ -106,7 +106,7 @@ public class WMTS100ProxyServlet extends WMTSProxyServlet{
 					version = req.getParameter(key);
 					if(!version.equalsIgnoreCase("1.0.0"))
 					{
-						dump("INFO", "WMTS requested version is not supported.");
+						logger.info( "WMTS requested version is not supported.");
 						StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_VERSION_NOT_SUPPORTED,OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE,"version");
 						sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
 						return;
@@ -164,14 +164,14 @@ public class WMTS100ProxyServlet extends WMTSProxyServlet{
 			//Generate OGC exception and send it to the client if current request operation is not allowed
 			if(!isOperationSupportedByProxy(request))
 			{
-				dump("INFO", "Operation not supported.");
+				logger.info( "Operation not supported.");
 				StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_OPERATION_NOT_SUPPORTED ,OWSExceptionReport.CODE_OPERATION_NOT_SUPPORTED,"request");
 				sendHttpServletResponse(null, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_NOT_IMPLEMENTED);
 				return;
 			}
 			if(!isOperationAllowedByPolicy(request))
 			{
-				dump("INFO", "Operation not allowed.");
+				logger.info("Operation not allowed.");
 				StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_OPERATION_NOT_ALLOWED ,OWSExceptionReport.CODE_OPERATION_NOT_SUPPORTED,"request");
 				sendHttpServletResponse(null, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_NOT_IMPLEMENTED);
 				return;
@@ -196,25 +196,25 @@ public class WMTS100ProxyServlet extends WMTSProxyServlet{
 				public void run() {
 					try {
 						
-						dump("DEBUG", "Thread Server: " + remoteServer.getUrl() + " work begin");
+						logger.trace( "Thread Server: " + remoteServer.getUrl() + " work begin");
 						String filePath = sendData("GET", remoteServer.getUrl(), paramUrl);
 						synchronized (wmtsFilePathTable) {
-							dump("requestPreTraitementGET save response from thread server " + remoteServer.getUrl());
+							logger.trace("requestPreTraitementGET save response from thread server " + remoteServer.getUrl());
 							wmtsFilePathTable.put(remoteServer.getAlias(), filePath);
 						}
-						dump("DEBUG", "Thread Server: " + remoteServer.getUrl() + " work finished");
+						logger.trace( "Thread Server: " + remoteServer.getUrl() + " work finished");
 					}
 					catch (Exception e)
 					{
 						e.printStackTrace();
 						resp.setHeader("easysdi-proxy-error-occured", "true");
-						dump("ERROR", "Server Thread " + remoteServer.getUrl()+ " :" + e.getMessage());
+						logger.error( "Server Thread " + remoteServer.getUrl()+ " :" + e.getMessage());
 						StringBuffer out;
 						try {
 							out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
 							sendHttpServletResponse(null, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 						} catch (IOException e1) {
-							dump("ERROR", e1.toString());
+							logger.error( e1.toString());
 							e1.printStackTrace();
 						}
 						return;
@@ -257,11 +257,11 @@ public class WMTS100ProxyServlet extends WMTSProxyServlet{
 			}
 			if (wmtsFilePathTable.size() > 0) {
 				//Post treatment
-				dump("requestPreTraitementGET begin transform");
+				logger.trace("requestPreTraitementGET begin transform");
 				transform(requestedVersion, request, req, resp);
-				dump("requestPreTraitementGET end transform");
+				logger.trace("requestPreTraitementGET end transform");
 			} else {
-				dump("INFO", "This request has no authorized results. Generate an empty response.");
+				logger.info( "This request has no authorized results. Generate an empty response.");
 				sendProxyBuiltInResponse(resp,generateEmptyResponse(request));
 			}
 		}
@@ -269,13 +269,13 @@ public class WMTS100ProxyServlet extends WMTSProxyServlet{
 		{
 			resp.setHeader("easysdi-proxy-error-occured", "true");
 			e.printStackTrace();
-			dump("ERROR", e.toString());
+			logger.error( e.toString());
 			StringBuffer out;
 			try {
 				out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
 				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			} catch (IOException e1) {
-				dump("ERROR", e1.toString());
+				logger.error( e1.toString());
 				e1.printStackTrace();
 			}
 			return;

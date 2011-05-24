@@ -66,7 +66,7 @@ public class WMSProxyResponseBuilder130 extends WMSProxyResponseBuilder {
 	 */
 	@Override
 	public Boolean CapabilitiesServiceMetadataWriting(String filePath,String href) {
-		servlet.dump("INFO","transform - Start - Capabilities metadata writing");
+		servlet.logger.trace("transform - Start - Capabilities metadata writing");
 		try
 		{
 			Config config = servlet.getConfiguration();
@@ -199,7 +199,7 @@ public class WMSProxyResponseBuilder130 extends WMSProxyResponseBuilder {
 			XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
 	        sortie.output(document, new FileOutputStream(filePath));
 
-	        servlet.dump("INFO","transform - End - Capabilities metadata writing");
+	        servlet.logger.trace("transform - End - Capabilities metadata writing");
 			return true;
 		}
 		catch (Exception ex)

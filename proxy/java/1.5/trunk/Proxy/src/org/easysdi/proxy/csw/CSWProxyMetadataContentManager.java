@@ -144,7 +144,7 @@ public class CSWProxyMetadataContentManager
 					//Fragment can not be include
 					//The all request is aborted
 					//An OGC exception will be send
-					proxy.dump("ERROR",ex.getMessage());
+					proxy.logger.error(ex.getMessage());
 					_lastError = ("Error on : "+target);
 					return false;
 				}
@@ -160,7 +160,7 @@ public class CSWProxyMetadataContentManager
 			//Complete metadata can not be build
 			//The request is aborted
 			//An OGC exception will be send
-			proxy.dump("ERROR",ex.getMessage());
+			proxy.logger.error(ex.getMessage());
 			return false;
 		}
 	}
@@ -219,7 +219,7 @@ public class CSWProxyMetadataContentManager
 		} 
 		catch (Exception ex) 
 		{
-			proxy.dump("ERROR",ex.getMessage());
+			proxy.logger.error(ex.getMessage());
 			return null;
 		}
 	}

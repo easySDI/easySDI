@@ -37,7 +37,7 @@ public class WMSProxyLayerThread extends Thread {
 
 	public void run() {
 		try {
-			servlet.dump("DEBUG", "Thread Layers group: " + "" + " work begin on server " + remoteServer.getUrl());
+			servlet.logger.trace( "Thread Layers group: " + "" + " work begin on server " + remoteServer.getUrl());
 
 			Iterator<Entry<Integer, ProxyLayer>> itPL = layers.entrySet().iterator();
 			String layerList ="";
@@ -62,10 +62,10 @@ public class WMSProxyLayerThread extends Thread {
 			synchronized (servlet.wmsGetMapResponseFilePathMap) {
 				servlet.wmsGetMapResponseFilePathMap.put(layers.firstKey(),response);
 			}
-			servlet.dump("DEBUG", "Thread Layers group: " + "" + " work finished on server " + remoteServer.getUrl());
+			servlet.logger.trace("Thread Layers group: " + "" + " work finished on server " + remoteServer.getUrl());
 		} catch (Exception e) {
 			resp.setHeader("easysdi-proxy-error-occured", "true");
-			servlet.dump("ERROR", "Server " + remoteServer.getUrl() + " Layers group Thread " + "" + " :" + e.getMessage());
+			servlet.logger.error( "Server " + remoteServer.getUrl() + " Layers group Thread " + "" + " :" + e.getMessage());
 			e.printStackTrace();
 		}
 	}

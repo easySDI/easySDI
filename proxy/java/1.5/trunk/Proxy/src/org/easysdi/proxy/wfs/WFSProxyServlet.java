@@ -166,7 +166,7 @@ public class WFSProxyServlet extends ProxyServlet {
 	}
 	
 	protected StringBuffer generateOgcException(String errorMessage, String code, String locator, String version) {
-		dump("ERROR", errorMessage);
+		logger.error(errorMessage);
 		StringBuffer sb = new StringBuffer("<?xml version='1.0' encoding='utf-8' ?>\n");
 		sb.append("<ServiceExceptionReport xmlns=\"http://www.opengis.net/ogc\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.opengis.net/ogc\" version=\"1.2.0\">\n");
 //		sb.append("<ServiceExceptionReport version=\"1.2.0\">\n");
@@ -204,11 +204,11 @@ public class WFSProxyServlet extends ProxyServlet {
 				if (ServiceSupportedOperations.contains(WFSOperation[i]) && isOperationAllowed(WFSOperation[i])) 
 				{
 					permitedOperations.add(WFSOperation[i]);
-					dump(WFSOperation[i] + " is permitted");
+					logger.trace(WFSOperation[i] + " is permitted");
 				} else 
 				{
 					deniedOperations.add(WFSOperation[i]);
-					dump(WFSOperation[i] + " is denied");
+					logger.trace(WFSOperation[i] + " is denied");
 				}
 			}
 
@@ -331,7 +331,7 @@ public class WFSProxyServlet extends ProxyServlet {
 			return WFSCapabilities100;
 		} catch (Exception e) {
 			e.printStackTrace();
-			dump("ERROR", e.getMessage());
+			logger.error(e.getMessage());
 		}
 
 		// If something goes wrong, an empty stylesheet is returned.
@@ -495,7 +495,7 @@ public class WFSProxyServlet extends ProxyServlet {
 		catch (Exception ex )
 		{
 			ex.printStackTrace();
-			dump("ERROR", ex.getMessage());
+			logger.error(ex.getMessage());
 			// If something goes wrong, an empty stylesheet is returned.
 			StringBuffer sb = new StringBuffer();
 			return sb.append("<xsl:stylesheet version=\"1.00\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"> </xsl:stylesheet>");
@@ -524,7 +524,7 @@ public class WFSProxyServlet extends ProxyServlet {
 				paramSB.append(input);
 			}
 			param = paramSB.toString();
-			dump("SYSTEM", "Request", param);
+			logger.info("Request="+ param);
 
 			xr.parse(new InputSource(new InputStreamReader(new ByteArrayInputStream(param.toString().getBytes()))));
 
@@ -535,7 +535,7 @@ public class WFSProxyServlet extends ProxyServlet {
 				version = version.replaceAll("\\.", "");
 			
 			if (!version.equalsIgnoreCase("100")) {
-				dump("ERROR", "Bad wfs version request: 1.0.0 only");
+				logger.error("Bad wfs version request: 1.0.0 only");
 				sendOgcExceptionBuiltInResponse(resp,generateOgcException("Version not supported. Only 1.0.0 supported.","InvalidParameterValue ","version",requestedVersion));
 				return;
 			}
@@ -1016,18 +1016,18 @@ public class WFSProxyServlet extends ProxyServlet {
 				if (version.equalsIgnoreCase("100")||version.equalsIgnoreCase("000")) {
 					transform(version, currentOperation, req, resp);
 				} else {
-					dump("ERROR", "Bad wfs version request: 1.0.0 only");
+					logger.error( "Bad wfs version request: 1.0.0 only");
 					sendOgcExceptionBuiltInResponse(resp,generateOgcException("Version not supported. Only 1.0.0 supported.","InvalidParameterValue ","version",requestedVersion));
 					return ;
 				}
 			} else {
-				dump("ERROR", "This request has no authorized results!");
+				logger.error("This request has no authorized results!");
 			}
 			// *****************************************************************************************************************************
 			// Fin du post traitement
 
 		} catch (AvailabilityPeriodException e) {
-			dump("ERROR", e.getMessage());
+			logger.error( e.getMessage());
 			sendOgcExceptionBuiltInResponse(resp,generateOgcException(e.getMessage(),"OperationNotSupported","request",requestedVersion));
 //			resp.setStatus(401);
 //			try {
@@ -1038,7 +1038,7 @@ public class WFSProxyServlet extends ProxyServlet {
 		} catch (Exception e) {
 			resp.setHeader("easysdi-proxy-error-occured", "true");
 			e.printStackTrace();
-			dump("ERROR", e.toString());
+			logger.error(e.toString());
 			sendOgcExceptionBuiltInResponse(resp,generateOgcException("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
 		}
 	}
@@ -1093,7 +1093,7 @@ public class WFSProxyServlet extends ProxyServlet {
 					version = value;
 					//If version is not 1.0.0, return an ogc exception
 					if (!version.replaceAll("\\.", "").equalsIgnoreCase("100")) {
-						dump("ERROR", "Bad wfs version request: 1.0.0 only");
+						logger.error( "Bad wfs version request: 1.0.0 only");
 						sendOgcExceptionBuiltInResponse(resp,generateOgcException("Version not supported. Only 1.0.0 supported.","InvalidParameterValue ","version",requestedVersion));
 						return;
 					}
@@ -1611,12 +1611,12 @@ public class WFSProxyServlet extends ProxyServlet {
 					transform(version, currentOperation, req, resp);
 				} else {
 					//Moved to the begining of the requestPreTreatmentGET method  
-					dump("ERROR", "Bad wfs version request: 1.0.0 only");
+					logger.error("Bad wfs version request: 1.0.0 only");
 					sendOgcExceptionBuiltInResponse(resp,generateOgcException("Version not supported. Only 1.0.0 supported.","InvalidParameterValue ","version",requestedVersion));
 				}
 				// Debug tb 24.06.2009
 			} else {
-				dump("ERROR", "This request has no authorized results!");
+				logger.error( "This request has no authorized results!");
 			}
 			// Fin de Debug
 			// *****************************************************************************************************************************
@@ -1625,7 +1625,7 @@ public class WFSProxyServlet extends ProxyServlet {
 			// }
 			// Fin de Debug
 		} catch (AvailabilityPeriodException e) {
-			dump("ERROR", e.getMessage());
+			logger.error( e.getMessage());
 			sendOgcExceptionBuiltInResponse(resp,generateOgcException(e.getMessage(),"OperationNotSupported","request",requestedVersion));
 //			resp.setStatus(401);
 //			try {
@@ -1636,7 +1636,7 @@ public class WFSProxyServlet extends ProxyServlet {
 		} catch (Exception e) {
 			resp.setHeader("easysdi-proxy-error-occured", "true");
 			e.printStackTrace();
-			dump("ERROR", e.toString());
+			logger.error( e.toString());
 			sendOgcExceptionBuiltInResponse(resp,generateOgcException("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
 		}
 	}
@@ -2181,7 +2181,7 @@ public class WFSProxyServlet extends ProxyServlet {
 					NodeList nl = documentMaster.getElementsByTagName("ServiceExceptionReport");
 					if (nl.item(0) != null)
 					{
-						dump("DEBUG","transform begin exception response writting");
+						logger.trace("transform begin exception response writting");
 						DOMImplementationLS implLS = null;
 						if (documentMaster.getImplementation().hasFeature("LS", "3.0")) 
 						{
@@ -2222,7 +2222,7 @@ public class WFSProxyServlet extends ProxyServlet {
 						sortie.setEncoding("UTF-8");
 						sortie.setByteStream(out);
 						serialiseur.write(documentMaster, sortie);
-						dump("DEBUG","transform end exception response writting");
+						logger.trace("transform end exception response writting");
 						return out;
 					}	
 				}
@@ -2231,7 +2231,7 @@ public class WFSProxyServlet extends ProxyServlet {
 		catch (Exception ex)
 		{
 			ex.printStackTrace();
-			dump("ERROR", ex.getMessage());
+			logger.error(ex.getMessage());
 			return null;
 		}
 		return null;
@@ -2241,7 +2241,7 @@ public class WFSProxyServlet extends ProxyServlet {
 	{
 		try
 		{
-			dump("DEBUG","filterServersResponseFiles begin");
+			logger.trace("filterServersResponseFiles begin");
 			Set<Map.Entry<Integer,String>> r =  wfsFilePathList.entrySet();
 			Map<Integer,String> toRemove = new TreeMap<Integer, String>();
 			
@@ -2295,13 +2295,13 @@ public class WFSProxyServlet extends ProxyServlet {
 //					}
 //				}
 //			}
-			dump("DEBUG","filterServersResponseFiles end");
+			logger.trace("filterServersResponseFiles end");
 			return true;
 		}
 		catch (Exception ex)
 		{
 			ex.printStackTrace();
-			dump("ERROR", ex.getMessage());
+			logger.error( ex.getMessage());
 			return false;
 		}
 	}
@@ -2325,7 +2325,7 @@ public class WFSProxyServlet extends ProxyServlet {
 				//Traitement des réponses de type exception OGC
 				//Le stream retourné contient les exceptions concaténées et mises en forme pour être retournées 
 				//directement au client
-				dump("INFO","Exception(s) returned by remote server(s) are sent to client.");
+				logger.debug("Exception(s) returned by remote server(s) are sent to client.");
 				ByteArrayOutputStream exceptionOutputStream = buildResponseForOgcServiceException();
 				sendHttpServletResponse(req,resp,exceptionOutputStream,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
 				return;
@@ -2349,12 +2349,12 @@ public class WFSProxyServlet extends ProxyServlet {
 			// défini! -> voir fin de la fct
 			// transform
 			if (!xsltFile.exists()) {
-				dump("User postreatment file " + xsltFile.toString() + " does not exist");
+				logger.trace("User postreatment file " + xsltFile.toString() + " does not exist");
 				xsltFile = new File(globalXsltPath);
 				if (xsltFile.exists()) {
 					isPostTreat = true;
 				} else {
-					dump("Global postreatment file " + xsltFile.toString() + " does not exist");
+					logger.trace("Global postreatment file " + xsltFile.toString() + " does not exist");
 				}
 			} else {
 				isPostTreat = true;
@@ -2396,7 +2396,7 @@ public class WFSProxyServlet extends ProxyServlet {
 						if(!("100").equalsIgnoreCase(responseVersion))
 						{
 							//If one of the response version is different than 1.0.0, then the request is rejected
-							dump("ERROR", "One of the remote servers can not answer in WFS version 1.0.0. The request is rejected.");
+							logger.error( "One of the remote servers can not answer in WFS version 1.0.0. The request is rejected.");
 							sendOgcExceptionBuiltInResponse(resp,generateOgcException("One of the remote servers can not answer in WFS version 1.0.0.","NoApplicableCode","",requestedVersion));
 							return;
 						}
@@ -2421,7 +2421,7 @@ public class WFSProxyServlet extends ProxyServlet {
 					InputSource inputSource = new InputSource( in);
 					
 					//Application de la transformation XSLT pour la réécriture des métadonnées du service 
-					dump("DEBUG","transform begin apply XSLT on service metadata");
+					logger.trace("transform begin apply XSLT on service metadata");
 					File tempFileCapaWithMetadata = createTempFile("transform_MDGetCapabilities_" + UUID.randomUUID().toString(), ".xml");
 					FileOutputStream tempServiceMD = new FileOutputStream(tempFileCapaWithMetadata);
 					StringBuffer sb = buildServiceMetadataCapabilitiesXSLT(null);
@@ -2436,7 +2436,7 @@ public class WFSProxyServlet extends ProxyServlet {
 					tempServiceMD.close();
 					
 					tempFile = tempFileCapaWithMetadata;
-					dump("DEBUG","transform end apply XSLT on service metadata");
+					logger.trace("transform end apply XSLT on service metadata");
 
 				} else if (currentOperation.equalsIgnoreCase("DescribeFeatureType")) {
 					if (hasPolicy) {
@@ -2486,7 +2486,7 @@ public class WFSProxyServlet extends ProxyServlet {
 							ComplexType[] ct = schema.getComplexTypes();
 							// Debug tb 09.06.2009
 							org.geotools.xml.schema.Element[] el = schema.getElements();
-							dump("transform_DescribeFeature_ComplexType: " + ct.length);
+							logger.trace("transform_DescribeFeature_ComplexType: " + ct.length);
 							// Fin de Debug
 
 							for (int i = 0; i < ct.length; i++) {
@@ -2547,7 +2547,7 @@ public class WFSProxyServlet extends ProxyServlet {
 								// Log le timing avant transformation
 								DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
 								Date d = new Date();
-								dump("SYSTEM", "DescribeFeatureTypeBeginTransfoDateTime", dateFormat.format(d));
+								logger.info( "DescribeFeatureTypeBeginTransfoDateTime="+ dateFormat.format(d));
 								// Fin de debug
 								xml = new BufferedInputStream(new FileInputStream(wfsFilePathList.get(j)));
 								tempFile = createTempFile("transform_DescribeFeatureType" + UUID.randomUUID().toString(), ".xml");
@@ -2562,7 +2562,7 @@ public class WFSProxyServlet extends ProxyServlet {
 								// Debug de 15.06.2009
 								// Log le timing après transformation
 								d = new Date();
-								dump("SYSTEM", "DescribeFeatureTypeEndTransfoDateTime", dateFormat.format(d));
+								logger.info("DescribeFeatureTypeEndTransfoDateTime="+ dateFormat.format(d));
 								// Fin de debug
 								// Debug tb 12.05.2009
 							} else {
@@ -2584,9 +2584,9 @@ public class WFSProxyServlet extends ProxyServlet {
 									tempFileDescribeType.add(tempFile);
 								} catch (Exception e) {
 									e.printStackTrace();
-									dump("transform_DescribeFeatureType_BufferedOutputStream ERROR", e.getMessage() + " " + e.getLocalizedMessage() + " "
+									logger.error("transform_DescribeFeatureType_BufferedOutputStream ERROR="+ e.getMessage() + " " + e.getLocalizedMessage() + " "
 											+ e.getCause());
-									dump("transform_DescribeFeatureType_BufferedOutputStream ERROR", e.toString());
+									logger.error("transform_DescribeFeatureType_BufferedOutputStream ERROR="+ e.toString());
 								}
 							}
 							// Fin de Debug
@@ -2628,7 +2628,7 @@ public class WFSProxyServlet extends ProxyServlet {
 
 							String srsSource = null;
 
-							dump("GetFeature begin srsName extract");
+							logger.trace("GetFeature begin srsName extract");
 							if (dis.ready() && dis.markSupported()) {
 								dis.mark(bufSize + 1);
 								while (dis.read(cbuf, 0, bufSize) != -1) {
@@ -2704,13 +2704,13 @@ public class WFSProxyServlet extends ProxyServlet {
 								}
 							}
 							dis.close();
-							dump("GetFeature end srsName extract");
+							logger.trace("GetFeature end srsName extract");
 
 							// fin de Debug
 
 							// Remplissage de tempFile avec la
 							// réponse*******************************************
-							dump("GetFeature begin to fill tempFile");
+							logger.trace("GetFeature begin to fill tempFile");
 							String tempFileName = "transform_GetFeature" + UUID.randomUUID().toString();
 							tempFile = createTempFile(tempFileName, ".xml");
 							tempFos = new FileOutputStream(tempFile);
@@ -2740,10 +2740,10 @@ public class WFSProxyServlet extends ProxyServlet {
 								tempFos.close();
 							} catch (Exception e) {
 								e.printStackTrace();
-								dump("transform_GetFeature_BufferedOutputStream ERROR", e.getMessage() + " " + e.getLocalizedMessage() + " " + e.getCause());
-								dump("transform_GetFeature_BufferedOutputStream ERROR", e.toString());
+								logger.error("transform_GetFeature_BufferedOutputStream ERROR="+ e.getMessage() + " " + e.getLocalizedMessage() + " " + e.getCause());
+								logger.error("transform_GetFeature_BufferedOutputStream ERROR="+ e.toString());
 							}
-							dump("GetFeature end to fill tempFile");
+							logger.trace("GetFeature end to fill tempFile");
 							// Fin de remplissage de tempFile avec la réponse
 
 							// Application du filtrage LocalFilter géométrique:
@@ -2751,7 +2751,7 @@ public class WFSProxyServlet extends ProxyServlet {
 							// droits*******************************************
 
 							// Récupération de localFilter
-							dump("GetFeature begin to apply localFilter");
+							logger.trace("GetFeature begin to apply localFilter");
 							String filter = null;
 							if (featureTypePathList.size() > 0) {
 								// Si localFilter est actif mais not Set ->
@@ -2807,7 +2807,7 @@ public class WFSProxyServlet extends ProxyServlet {
 									File tempFile2 = createTempFile("transform_GetFeature_2_" + UUID.randomUUID().toString(), ".xml");
 									tempFos = new FileOutputStream(tempFile2);
 									if (filter != null) {
-										dump(filter);
+										logger.trace(filter);
 									}
 
 									// Application du filtrage LocalFilter
@@ -2841,7 +2841,7 @@ public class WFSProxyServlet extends ProxyServlet {
 									// Debug tb 15.06.2009
 								}
 							}
-							dump("GetFeature end to apply localFilter");
+							logger.trace("GetFeature end to apply localFilter");
 							// Fin de Debug
 
 							// Fin de l'application du filtrage LocalFilter
@@ -2856,7 +2856,7 @@ public class WFSProxyServlet extends ProxyServlet {
 							// Filtrage de l'attribut geom si ajouté uniquement
 							// pour les besoins de localFilter
 							for (int a = 0; a < WFSProxyGeomAttributesList.size(); a++) {
-								dump("GetFeature begin to apply geomRemover");
+								logger.trace("GetFeature begin to apply geomRemover");
 								if (WFSProxyGeomAttributesList.get(a).getRequestServerIndex() == serversIndex.get(iFileServer)) {
 									// Le test qui suit n'a aucune utilité car
 									// le proxy actuel ne prend pas en charge
@@ -2876,7 +2876,7 @@ public class WFSProxyServlet extends ProxyServlet {
 										// Log le timing avant transformation
 										DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
 										Date d = new Date();
-										dump("SYSTEM", "GetFeatureTypeGeomBeginTransfoDateTime", dateFormat.format(d));
+										logger.info("GetFeatureTypeGeomBeginTransfoDateTime="+ dateFormat.format(d));
 
 										// Création du fichier résultat de la
 										// prochaine transformation
@@ -2905,10 +2905,10 @@ public class WFSProxyServlet extends ProxyServlet {
 										// geom
 										// Log le timing après transformation
 										d = new Date();
-										dump("SYSTEM", "GetFeatureTypeGeomEndTransfoDateTime", dateFormat.format(d));
+										logger.info("GetFeatureTypeGeomEndTransfoDateTime="+ dateFormat.format(d));
 									}
 								}
-								dump("GetFeature end to apply geomRemover");
+								logger.trace("GetFeature end to apply geomRemover");
 							}
 							// Fin de l'application du filtrage de l'attribut
 							// géom: la réponse à la requête a été filtrée
@@ -2924,7 +2924,7 @@ public class WFSProxyServlet extends ProxyServlet {
 						// réponse: isWFSGetFeatureRenameFtEdit = true
 						if (wfsFilePathList.size() > 1) {
 							// Fin de Debug
-							dump("GetFeature begin to merge servers Results");
+							logger.trace("GetFeature begin to merge servers Results");
 							// Appel à la fonction d'application de la
 							// transformation XSLT finale (contenu de
 							// "WFSGetFeatureRenameFt")
@@ -2938,7 +2938,7 @@ public class WFSProxyServlet extends ProxyServlet {
 							// utilisable!!! -> "internal serveur error" lorsque
 							// trop de résultats
 							tempFile = mergeGetFeatures(tempGetFeatureFile, tFactory, transformer);
-							dump("GetFeature end to merge servers Results");
+							logger.trace("GetFeature end to merge servers Results");
 							// Debug tb 13.05.2009
 						}
 						// Fin de Debug
@@ -2994,7 +2994,7 @@ public class WFSProxyServlet extends ProxyServlet {
 				 * and write the response
 				 */
 				if (isPostTreat) {
-					dump("GetFeature begin to apply user xslt");
+					logger.trace("GetFeature begin to apply user xslt");
 					PrintWriter out = resp.getWriter();
 					transformer = tFactory.newTransformer(new StreamSource(xsltFile)); // Voir
 					// definition
@@ -3014,7 +3014,7 @@ public class WFSProxyServlet extends ProxyServlet {
 					tempFile.delete();
 					out.close();
 					// the job is done. we can go out
-					dump("GetFeature end to apply user xslt");
+					logger.trace("GetFeature end to apply user xslt");
 					return;
 				}
 			}
@@ -3066,15 +3066,15 @@ public class WFSProxyServlet extends ProxyServlet {
 				is.close();
 			} catch (Exception e) {
 				e.printStackTrace();
-				dump("BufferedOutputStream ERROR", e.getMessage() + " " + e.getLocalizedMessage() + " " + e.getCause());
-				dump("BufferedOutputStream ERROR", e.toString());
+				logger.error("BufferedOutputStream ERROR="+ e.getMessage() + " " + e.getLocalizedMessage() + " " + e.getCause());
+				logger.error("BufferedOutputStream ERROR="+ e.toString());
 			} finally {
 				DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
 				Date d = new Date();
-				dump("SYSTEM", "ClientResponseDateTime", dateFormat.format(d));
+				logger.info("ClientResponseDateTime="+ dateFormat.format(d));
 
 				if (tempFile != null) {
-					dump("SYSTEM", "ClientResponseLength", tempFile.length());
+					logger.error("ClientResponseLength="+ tempFile.length());
 					tempFile.delete();
 				}
 			}
@@ -3082,12 +3082,12 @@ public class WFSProxyServlet extends ProxyServlet {
 		}catch (SAXParseException e)
 		{
 			e.printStackTrace();
-			dump("ERROR", e.getMessage());
+			logger.error(e.getMessage());
 			sendOgcExceptionBuiltInResponse(resp,generateOgcException("Response format not recognized. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
 		} 
 		catch (Exception e) {
 			e.printStackTrace();
-			dump("Transform ERROR", e.toString());
+			logger.error("Transform ERROR="+ e.toString());
 			sendOgcExceptionBuiltInResponse(resp,generateOgcException("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
 		}
 	}
@@ -3158,7 +3158,7 @@ public class WFSProxyServlet extends ProxyServlet {
 				implLS = (DOMImplementationLS) enregistreur.getDOMImplementation("LS 3.0");
 			}
 			if (implLS == null) {
-				dump("Error", "DOM Load and Save not Supported. Multiple server is not allowed");
+				logger.error("DOM Load and Save not Supported. Multiple server is not allowed");
 				return fMaster;
 			}
 			NodeList nlMaster = documentMaster.getElementsByTagNameNS("http://www.opengis.net/wfs", "FeatureCollection");
@@ -3186,7 +3186,7 @@ public class WFSProxyServlet extends ProxyServlet {
 			return f;
 		} catch (Exception e) {
 			e.printStackTrace();
-			dump("mergeGetFeatures ERROR", e.getMessage());
+			logger.error("mergeGetFeatures ERROR="+ e.getMessage());
 			return null;
 		}
 	}
@@ -3208,7 +3208,7 @@ public class WFSProxyServlet extends ProxyServlet {
 				implLS = (DOMImplementationLS) enregistreur.getDOMImplementation("LS 3.0");
 			}
 			if (implLS == null) {
-				dump("Error", "DOM Load and Save not Supported. Multiple server is not allowed");
+				logger.error("DOM Load and Save not Supported. Multiple server is not allowed");
 				return fMaster;
 			}
 			NodeList nlMaster = documentMaster.getElementsByTagNameNS("http://www.w3.org/2001/XMLSchema", "schema");
@@ -3263,7 +3263,7 @@ public class WFSProxyServlet extends ProxyServlet {
 			return f;
 		} catch (Exception e) {
 			e.printStackTrace();
-			dump("ERROR", e.getMessage());
+			logger.error( e.getMessage());
 			return null;
 		}
 	}
@@ -3286,7 +3286,7 @@ public class WFSProxyServlet extends ProxyServlet {
 				implLS = (DOMImplementationLS) enregistreur.getDOMImplementation("LS 3.0");
 			}
 			if (implLS == null) {
-				dump("Error", "DOM Load and Save not Supported. Multiple server is not allowed");
+				logger.error("DOM Load and Save not Supported. Multiple server is not allowed");
 				return fMaster;
 			}
 			NodeList nlMaster = documentMaster.getElementsByTagNameNS("http://www.opengis.net/wfs", "FeatureTypeList");
@@ -3317,7 +3317,7 @@ public class WFSProxyServlet extends ProxyServlet {
 			return f;
 		} catch (Exception e) {
 			e.printStackTrace();
-			dump("ERROR", e.getMessage());
+			logger.error(e.getMessage());
 			return null;
 		}
 	}
@@ -3408,7 +3408,7 @@ public class WFSProxyServlet extends ProxyServlet {
 			// Log le timing avant transformation
 			DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
 			Date d = new Date();
-			dump("SYSTEM", "LocalFilterBeginTransfoDateTime", dateFormat.format(d));
+			logger.info("LocalFilterBeginTransfoDateTime="+ dateFormat.format(d));
 			// Fin de debug
 
 			Filter filter = null;
@@ -3540,12 +3540,12 @@ public class WFSProxyServlet extends ProxyServlet {
 
 			// Log le timing après transformation
 			d = new Date();
-			dump("SYSTEM", "LocalFilterEndTransfoDateTime", dateFormat.format(d));
+			logger.info("LocalFilterEndTransfoDateTime="+ dateFormat.format(d));
 			// Fin de debug
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			dump("FilterFC ERROR", e.getMessage());
+			logger.error("FilterFC ERROR="+ e.getMessage());
 		}
 
 	}

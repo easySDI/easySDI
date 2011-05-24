@@ -224,7 +224,7 @@ public class CGPProxyServlet extends ProxyServlet {
 	    return filterTypeOgc;
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    dump("ERROR",e.getMessage());
+	    logger.error(e.getMessage());
 	}
 	return null;
     }
@@ -553,7 +553,7 @@ public class CGPProxyServlet extends ProxyServlet {
 	    .getValue();
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    dump("ERROR",e.getMessage());
+	    logger.error(e.getMessage());
 	    throw e;
 	}
 
@@ -570,7 +570,7 @@ public class CGPProxyServlet extends ProxyServlet {
 	    return req;
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    dump("ERROR",e.getMessage());
+	    logger.error(e.getMessage());
 	    throw e;
 	}
 
@@ -591,7 +591,7 @@ public class CGPProxyServlet extends ProxyServlet {
 	    return req;
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    dump("ERROR",e.getMessage());
+	    logger.error(e.getMessage());
 	    throw e;
 	}
 
@@ -638,7 +638,7 @@ public class CGPProxyServlet extends ProxyServlet {
 	    return null;	
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    dump("ERROR",e.getMessage());
+	    logger.error(e.getMessage());
 	    throw e;
 	}
 
@@ -806,7 +806,7 @@ public class CGPProxyServlet extends ProxyServlet {
 		    transformToExtentGm03Small(identificationInfoGm03.getExtent(),mDDataIdentificationTypeIso.getExtent());
 		}
 	    } else {
-		dump("|" + abstractMDIdentificationIso.getName() + "|");
+	    	logger.info("|" + abstractMDIdentificationIso.getName() + "|");
 	    }
 	}
 
@@ -1147,7 +1147,7 @@ public class CGPProxyServlet extends ProxyServlet {
 		    //transformToExtentGm03Small(identificationInfoGm03.getExtent(),mDDataIdentificationTypeIso.getExtent());	
 		}
 	    } else {
-		dump("|" + abstractMDIdentificationIso.getName() + "|");
+	    	logger.info("|" + abstractMDIdentificationIso.getName() + "|");
 	    }
 	}
 
@@ -1439,7 +1439,7 @@ public class CGPProxyServlet extends ProxyServlet {
 	    return b;
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    dump("ERROR",e.getMessage());
+	    logger.error(e.getMessage());
 	    throw (new Exception(e));
 	}
     }
@@ -1472,7 +1472,7 @@ public class CGPProxyServlet extends ProxyServlet {
 	    while ((input = in.readLine()) != null) {
 		request = request + input;
 	    }
-	    dump("SYSTEM","Request",request);	
+	    logger.info("Request="+request);	
 
 	    String filePath = sendData("POST", getRemoteServerUrl(0), request);	    
 
@@ -1534,7 +1534,7 @@ public class CGPProxyServlet extends ProxyServlet {
 		String classString="none";
 		while (it.hasNext()) {
 		    try {
-			dump("COUNT", String.valueOf(i));
+		    	logger.info("COUNT="+ String.valueOf(i));
 			Object o = it.next();
 			if (o instanceof GM03CoreCore){
 			    classString= "GM03CoreCore";
@@ -1546,7 +1546,7 @@ public class CGPProxyServlet extends ProxyServlet {
 			i++;
 		    } catch (Exception e) {
 			e.printStackTrace();
-			dump("ERROR",e.getMessage());
+			logger.error(e.getMessage());
 		    }
 		}
 		if (classString.equals("GM03CoreCore")){
@@ -1571,12 +1571,12 @@ public class CGPProxyServlet extends ProxyServlet {
 		marshaller.marshal(envelopeSoap, resp.getOutputStream());
 
 	    } else {
-		dump("Error on the remore host");
+	    	logger.error("Error on the remore host");
 	    }
 
 	} catch (Exception e) {
 	    e.printStackTrace();
-	    dump("ERROR",e.getMessage());
+	    logger.error(e.getMessage());
 	}
 	
     }

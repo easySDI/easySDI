@@ -169,7 +169,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 		catch (Exception e) 
 		{
 			e.printStackTrace();
-			dump("ERROR", e.getMessage());
+			logger.error( e.getMessage());
 			// If something goes wrong, an empty stylesheet is returned.
 			StringBuffer sb = new StringBuffer();
 			return sb.append("<xsl:stylesheet version=\"1.00\" " +
@@ -199,7 +199,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			boolean isPostTreat = false;
 			if (!xsltFile.exists()) 
 			{
-				dump("Postreatment file " + xsltFile.toString() + "does not exist");
+				logger.trace("Postreatment file " + xsltFile.toString() + "does not exist");
 				xsltFile = new File(globalXsltPath);
 				if (xsltFile.exists()) 
 				{
@@ -207,7 +207,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				} 
 				else 
 				{
-					dump("Postreatment file " + xsltFile.toString() + "does not exist");
+					logger.trace("Postreatment file " + xsltFile.toString() + "does not exist");
 				}
 			} 
 			else 
@@ -240,7 +240,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					transformer.transform(new StreamSource(xml), new StreamResult(tempFos));
 					tempFos.close();
 
-					dump("DEBUG","transform begin apply XSLT on service metadata");
+					logger.trace("transform begin apply XSLT on service metadata");
 					InputStream in = new BufferedInputStream(new FileInputStream(tempFile));
 					InputSource inputSource = new InputSource( in);
 					
@@ -260,7 +260,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					tempServiceMD.close();
 					
 					tempFile = tempFileCapaWithMetadata;
-					dump("DEBUG","transform end apply XSLT on service metadata");
+					logger.trace("transform end apply XSLT on service metadata");
 				}
 				else if("GetRecords".equals(currentOperation) || "GetRecordById".equals(currentOperation) || "DescribeRecord".equals(currentOperation))
 				{
@@ -271,7 +271,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					} 
 					else 
 					{
-						dump("DEBUG",currentOperation+" - Start apply XSLT on response.");
+						logger.trace(currentOperation+" - Start apply XSLT on response.");
 						tempFile = createTempFile(UUID.randomUUID().toString(), ".xml");
 						tempFos = new FileOutputStream(tempFile);
 	
@@ -282,7 +282,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 						// Write the result in a temporary file
 						transformer.transform(new StreamSource(xml), new StreamResult(tempFos));
 						tempFos.close();
-						dump("DEBUG",currentOperation+" - End apply XSLT on response.");
+						logger.trace(currentOperation+" - End apply XSLT on response.");
 					}
 				}
 				else
@@ -336,10 +336,10 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				is.close();
 				DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
 				Date d = new Date();
-				dump("SYSTEM", "ClientResponseDateTime", dateFormat.format(d));
+				logger.info("ClientResponseDateTime="+ dateFormat.format(d));
 				if (tempFile != null) 
 				{
-					dump("SYSTEM", "ClientResponseLength", tempFile.length());
+					logger.info("ClientResponseLength="+ tempFile.length());
 					tempFile.delete();
 				}
 			}
@@ -347,14 +347,14 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 		catch (SAXParseException e)
 		{
 			e.printStackTrace();
-			dump("ERROR", e.getMessage());
+			logger.error(e.getMessage());
 			resp.setHeader("easysdi-proxy-error-occured", "true");
 			sendOgcExceptionBuiltInResponse(resp,generateOgcException("Response format not recognized. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
 		} 
 		catch (Exception e) 
 		{
 			e.printStackTrace();
-			dump("ERROR", e.toString());
+			logger.error(e.toString());
 			resp.setHeader("easysdi-proxy-error-occured", "true");
 			sendOgcExceptionBuiltInResponse(resp,generateOgcException("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
 		}
@@ -432,8 +432,8 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					continue;
 				}
 			}
-			dump("SYSTEM","Request",req.getQueryString());
-			dump("SYSTEM", "RequestOperation", currentOperation);
+			logger.info("Request="+req.getQueryString());
+			logger.info("RequestOperation="+ currentOperation);
 			
 			//Generate OGC exception if current operation is not allowed
 			if(handleNotAllowedOperation(currentOperation,resp))
@@ -446,7 +446,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			//GetRecordById
 			if(currentOperation.equalsIgnoreCase("GetRecordById"))
 			{
-				dump("INFO","Start - Data Accessibility");
+				logger.trace("Start - Data Accessibility");
 				CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy, getJoomlaProvider());
 				if(!cswDataManager.isAllDataAccessible())
 				{
@@ -465,7 +465,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 						return;
 					}
 				}
-				dump("INFO","End - Data Accessibility");
+				logger.trace("End - Data Accessibility");
 				
 			}
 			//GetRecords
@@ -518,7 +518,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			{
 				if( content.equalsIgnoreCase("") || content.equalsIgnoreCase("complete"))
 				{
-					dump("INFO","Start - Complete metadata");
+					logger.trace("Start - Complete metadata");
 					//Build complete metadata
 					CSWProxyMetadataContentManager cswManager = new CSWProxyMetadataContentManager(this);
 					if ( !cswManager.buildCompleteMetadata(filePathList.get(0)))
@@ -526,7 +526,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 						sendOgcExceptionBuiltInResponse(resp, generateOgcException("Request can not be completed. "+cswManager.GetLastError(), "NoApplicableCode", "", requestedVersion));
 						return;
 					}
-					dump("INFO","End - Complete metadata");
+					logger.trace("End - Complete metadata");
 				}
 			}
 			
@@ -536,13 +536,13 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 		} 
 		catch (AvailabilityPeriodException e) 
 		{
-			dump("ERROR", e.getMessage());
+			logger.error( e.getMessage());
 			sendOgcExceptionBuiltInResponse(resp,generateOgcException(e.getMessage(),"OperationNotSupported","request",requestedVersion));
 		} 
 		catch (Exception e) 
 		{
 			e.printStackTrace();
-			dump("ERROR", e.toString());
+			logger.error( e.toString());
 			resp.setHeader("easysdi-proxy-error-occured", "true");
 			sendOgcExceptionBuiltInResponse(resp,generateOgcException(e.getMessage(),"NoApplicableCode","request",requestedVersion));
 		}
@@ -587,7 +587,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 //	        dump("DEBUG","End new way");
 	       //End Debug - HVH - 05.01.2011 
 			
-			dump("SYSTEM","Request",param.toString().replace('\n',' ').replace('\r',' '));
+	        logger.info("Request="+param.toString().replace('\n',' ').replace('\r',' '));
 			
 			xr.parse(new InputSource(new InputStreamReader(new ByteArrayInputStream(param.toString().getBytes()))));
 
@@ -598,7 +598,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			
 			String currentOperation = rh.getOperation();
 			
-			dump("SYSTEM", "RequestOperation", currentOperation);
+			logger.info("RequestOperation="+ currentOperation);
 			
 			//Generate OGC exception if current operation is not allowed
 			if(handleNotAllowedOperation(currentOperation,resp))
@@ -641,10 +641,10 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				} finally {
 					DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
 					Date d = new Date();
-					dump("SYSTEM", "ClientResponseDateTime", dateFormat.format(d));
+					logger.info( "ClientResponseDateTime="+ dateFormat.format(d));
 					if (os != null) 
 					{
-						dump("SYSTEM", "ClientResponseLength", os.toString().length());
+						logger.info("ClientResponseLength="+ os.toString().length());
 					}
 					os.flush();
 					os.close();
@@ -655,7 +655,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			//GetRecordById
 			else if(currentOperation.equalsIgnoreCase("GetRecordById"))
 			{
-				dump("INFO","Start - Data Accessibility");
+				logger.trace("Start - Data Accessibility");
 				CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy, getJoomlaProvider());
 				String dataId = rh.getRecordId();
 				if(!cswDataManager.isAllDataAccessible())
@@ -683,7 +683,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 						param.replace(start, end, dataId);
 					}
 				}
-				dump("INFO","End - Data Accessibility");
+				logger.trace("End - Data Accessibility");
 				
 //				dump("INFO","Start - Get response");
 				List<String> filePathList = new Vector<String>();
@@ -692,7 +692,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 //				dump("INFO","End - Get response");
 				if( rh.getContent().equalsIgnoreCase("") || rh.getContent().equalsIgnoreCase("complete"))
 				{
-					dump("INFO","Start - Complete metadata");
+					logger.trace("Start - Complete metadata");
 					//Build complete metadata
 					CSWProxyMetadataContentManager cswManager = new CSWProxyMetadataContentManager(this);
 					if ( !cswManager.buildCompleteMetadata(filePathList.get(0)))
@@ -700,7 +700,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 						sendOgcExceptionBuiltInResponse(resp, generateOgcException("Request can not be completed. "+cswManager.GetLastError(), "NoApplicableCode", "", requestedVersion));
 						return;
 					}
-					dump("INFO","End - Complete metadata");
+					logger.trace("End - Complete metadata");
 					
 				}
 				//Transform the request response
@@ -709,7 +709,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			//GetRecords
 			else if(currentOperation.equalsIgnoreCase("GetRecords"))
 			{
-				dump("INFO","Start - Data Accessibility");
+				logger.trace("Start - Data Accessibility");
 				CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy, getJoomlaProvider());
 				if(!cswDataManager.isAllDataAccessible())
 				{
@@ -721,7 +721,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 						return;
 					}
 				}
-				dump("INFO","End - Data Accessibility");
+				logger.trace("End - Data Accessibility");
 				
 //				dump("INFO","Start - Get response");
 				List<String> filePathList = new Vector<String>();
@@ -730,7 +730,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 //				dump("INFO","End - Get response");
 				if( rh.getContent().equalsIgnoreCase("") || rh.getContent().equalsIgnoreCase("complete"))
 				{
-					dump("INFO","Start - Complete metadata");
+					logger.trace("Start - Complete metadata");
 					//Build complete metadata
 					CSWProxyMetadataContentManager cswManager = new CSWProxyMetadataContentManager(this);
 					if ( !cswManager.buildCompleteMetadata(filePathList.get(0)))
@@ -738,7 +738,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 						sendOgcExceptionBuiltInResponse(resp, generateOgcException("Request can not be completed. "+cswManager.GetLastError(), "NoApplicableCode", "", requestedVersion));
 						return;
 					}
-					dump("INFO","End - Complete metadata");
+					logger.trace("End - Complete metadata");
 					
 				}
 				//Transform the request response
@@ -756,19 +756,19 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 		} 
 		catch (AvailabilityPeriodException e) 
 		{
-			dump("ERROR", e.getMessage());
+			logger.error( e.getMessage());
 			sendOgcExceptionBuiltInResponse(resp,generateOgcException(e.getMessage(),"OperationNotSupported","request",requestedVersion));
 		}
 		catch (SAXParseException e)
 		{
-			dump("ERROR", e.toString());
+			logger.error(e.toString());
 			resp.setHeader("easysdi-proxy-error-occured", "true");
 			sendOgcExceptionBuiltInResponse(resp,generateOgcException("The query syntax is invalid","NoApplicableCode","",requestedVersion));
 		}
 		catch (Exception e) 
 		{
 			e.printStackTrace();
-			dump("ERROR", e.toString());
+			logger.error( e.toString());
 			resp.setHeader("easysdi-proxy-error-occured", "true");
 			sendOgcExceptionBuiltInResponse(resp,generateOgcException("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
 		}

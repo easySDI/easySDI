@@ -56,18 +56,18 @@ public class WMSProxyServerGetCapabilitiesThread extends Thread {
 	public void run() {
 
 		try {
-			servlet.dump("DEBUG", "Thread Server: " + remoteServerInfo.getUrl() + " work begin");
+			servlet.logger.trace("Thread Server: " + remoteServerInfo.getUrl() + " work begin");
 			
 			String filePath = servlet.sendData("GET", remoteServerInfo.getUrl(), paramUrlBase);
 
 			synchronized (servlet.wmsGetCapabilitiesResponseFilePathMap) {
-				servlet.dump("requestPreTraitementGET save response from thread server " + remoteServerInfo.getUrl());
+				servlet.logger.trace("requestPreTraitementGET save response from thread server " + remoteServerInfo.getUrl());
 				servlet.wmsGetCapabilitiesResponseFilePathMap.put(remoteServerInfo.getAlias(), filePath);
 			}
 			
 		} catch (Exception e) {
 			resp.setHeader("easysdi-proxy-error-occured", "true");
-			servlet.dump("ERROR", "Server Thread " + remoteServerInfo.getUrl() + " :" + e.getMessage());
+			servlet.logger.error("Server Thread " + remoteServerInfo.getUrl() + " :" + e.getMessage());
 			e.printStackTrace();
 		}
 

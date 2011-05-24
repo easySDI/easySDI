@@ -108,7 +108,7 @@ public class CSWProxyServlet extends ProxyServlet {
 	}
 	
 	protected StringBuffer generateOgcException(String errorMessage, String code, String locator, String version) {
-		dump("ERROR", errorMessage);
+		logger.error(errorMessage);
 		StringBuffer sb = new StringBuffer("<?xml version='1.0' encoding='utf-8'?>\n");
 		sb.append("<ows:ExceptionReport xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" version=\"1.0.0\" xsi:schemaLocation=\"http://www.opengis.net/ows http://schemas.opengis.net/ows/1.0.0/owsExceptionReport.xsd\">\n");
 //		sb.append("<ows:ExceptionReport version=\"1.0.0\" >\n");
@@ -147,17 +147,17 @@ public class CSWProxyServlet extends ProxyServlet {
 					if (ServiceSupportedOperations.contains(CSWOperation[i]) && isOperationAllowed(CSWOperation[i])) 
 					{
 						permitedOperations.add(CSWOperation[i]);
-						dump(CSWOperation[i] + " is permitted");
+						logger.trace(CSWOperation[i] + " is permitted");
 					} else {
 						deniedOperations.add(CSWOperation[i]);
-						dump(CSWOperation[i] + " is denied");
+						logger.trace(CSWOperation[i] + " is denied");
 					}
 			}
 
 			return generateXSLTForCSWCapabilities200(url, deniedOperations, permitedOperations);
 		} catch (Exception e) {
 			e.printStackTrace();
-			dump("ERROR", e.getMessage());
+			logger.error( e.getMessage());
 		}
 
 		// If something goes wrong, an empty stylesheet is returned.
@@ -443,7 +443,7 @@ public class CSWProxyServlet extends ProxyServlet {
 			return CSWCapabilities200;
 		} catch (Exception e) {
 			e.printStackTrace();
-			dump("ERROR", e.getMessage());
+			logger.error(e.getMessage());
 		}
 
 		// If something goes wrong, an empty stylesheet is returned.
@@ -468,12 +468,12 @@ public class CSWProxyServlet extends ProxyServlet {
 				File xsltFile = new File(userXsltPath);
 				boolean isPostTreat = false;
 				if (!xsltFile.exists()) {
-					dump("Postreatment file " + xsltFile.toString() + "does not exist");
+					logger.trace("Postreatment file " + xsltFile.toString() + "does not exist");
 					xsltFile = new File(globalXsltPath);
 					if (xsltFile.exists()) {
 						isPostTreat = true;
 					} else {
-						dump("Postreatment file " + xsltFile.toString() + "does not exist");
+						logger.trace("Postreatment file " + xsltFile.toString() + "does not exist");
 					}
 				} else {
 					isPostTreat = true;
@@ -502,7 +502,7 @@ public class CSWProxyServlet extends ProxyServlet {
 						transformer.transform(new StreamSource(xml), new StreamResult(tempFos));
 						tempFos.close();
 
-						dump("DEBUG","transform begin apply XSLT on service metadata");
+						logger.trace("transform begin apply XSLT on service metadata");
 						InputStream in = new BufferedInputStream(new FileInputStream(tempFile));
 						InputSource inputSource = new InputSource( in);
 						
@@ -522,7 +522,7 @@ public class CSWProxyServlet extends ProxyServlet {
 						tempServiceMD.close();
 						
 						tempFile = tempFileCapaWithMetadata;
-						dump("DEBUG","transform end apply XSLT on service metadata");
+						logger.trace("transform end apply XSLT on service metadata");
 						
 						
 					} else {
@@ -584,10 +584,10 @@ public class CSWProxyServlet extends ProxyServlet {
 					is.close();
 					DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
 					Date d = new Date();
-					dump("SYSTEM", "ClientResponseDateTime", dateFormat.format(d));
+					logger.info("ClientResponseDateTime="+ dateFormat.format(d));
 
 					if (tempFile != null) {
-						dump("SYSTEM", "ClientResponseLength", tempFile.length());
+						logger.info("ClientResponseLength="+ tempFile.length());
 						tempFile.delete();
 					}
 
@@ -595,7 +595,7 @@ public class CSWProxyServlet extends ProxyServlet {
 
 			} catch (Exception e) {
 				e.printStackTrace();
-				dump("ERROR", e.toString());
+				logger.error( e.toString());
 				resp.setHeader("easysdi-proxy-error-occured", "true");
 				sendOgcExceptionBuiltInResponse(resp,generateOgcException("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
 			}
@@ -609,7 +609,7 @@ public class CSWProxyServlet extends ProxyServlet {
 				os.close();
 			} catch (Exception e) {
 				e.printStackTrace();
-				dump("ERROR", e.toString());
+				logger.error( e.toString());
 				resp.setHeader("easysdi-proxy-error-occured", "true");
 				sendOgcExceptionBuiltInResponse(resp,generateOgcException("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
 			}
@@ -686,13 +686,13 @@ public class CSWProxyServlet extends ProxyServlet {
 		} 
 		catch (AvailabilityPeriodException e) 
 		{
-			dump("ERROR", e.getMessage());
+			logger.error( e.getMessage());
 			sendOgcExceptionBuiltInResponse(resp,generateOgcException(e.getMessage(),"OperationNotSupported ","request",requestedVersion));
 		} 
 		catch (Exception e) 
 		{
 			e.printStackTrace();
-			dump("ERROR", e.toString());
+			logger.error( e.toString());
 			resp.setHeader("easysdi-proxy-error-occured", "true");
 			sendOgcExceptionBuiltInResponse(resp,generateOgcException("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
 		}
@@ -715,7 +715,7 @@ public class CSWProxyServlet extends ProxyServlet {
 			String input;
 			BufferedReader in = new BufferedReader(new InputStreamReader(req.getInputStream()));
 			while ((input = in.readLine()) != null) {
-				dump(input);
+				logger.debug(input);
 				param.append(input);
 			}
 
@@ -798,7 +798,7 @@ public class CSWProxyServlet extends ProxyServlet {
 			}
 		} catch (AvailabilityPeriodException e) 
 		{
-			dump("ERROR", e.getMessage());
+			logger.error( e.getMessage());
 			sendOgcExceptionBuiltInResponse(resp,generateOgcException(e.getMessage(),"OperationNotSupported ","request",requestedVersion));
 //			resp.setStatus(401);
 //			try {
@@ -808,7 +808,7 @@ public class CSWProxyServlet extends ProxyServlet {
 //			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			dump("ERROR", e.toString());
+			logger.error( e.toString());
 			resp.setHeader("easysdi-proxy-error-occured", "true");
 			sendOgcExceptionBuiltInResponse(resp,generateOgcException("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
 		}
@@ -859,7 +859,7 @@ public class CSWProxyServlet extends ProxyServlet {
 		catch (Exception e) 
 		{
 			e.printStackTrace();
-			dump("ERROR", e.getMessage());
+			logger.error( e.getMessage());
 		}
 
 		// If something goes wrong, an empty stylesheet is returned.

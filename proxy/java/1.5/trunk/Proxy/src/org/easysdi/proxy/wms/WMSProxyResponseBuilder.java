@@ -84,7 +84,7 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public Boolean CapabilitiesOperationsFiltering(String filePath, String href) {
-		servlet.dump("INFO","transform - Start - Capabilities operations filtering");
+		servlet.logger.trace("transform - Start - Capabilities operations filtering");
 		try{
 			SAXBuilder sxb = new SAXBuilder();
 	    	//Retrieve allowed and denied operations from the policy
@@ -96,11 +96,11 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 						&& servlet.isOperationAllowed(ProxyServlet.ServiceOperations.get(i))) 
 				{
 					permitedOperations.add(ProxyServlet.ServiceOperations.get(i));
-					servlet.dump("INFO",ProxyServlet.ServiceOperations.get(i) + " is permitted");
+					servlet.logger.trace(ProxyServlet.ServiceOperations.get(i) + " is permitted");
 				} else 
 				{
 					deniedOperations.add(ProxyServlet.ServiceOperations.get(i));
-					servlet.dump("INFO",ProxyServlet.ServiceOperations.get(i) + " is denied");
+					servlet.logger.trace(ProxyServlet.ServiceOperations.get(i) + " is denied");
 				}
 			}
 				
@@ -186,7 +186,7 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 	    	
     	   XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
            sortie.output(docParent, new FileOutputStream(filePath));
-           servlet.dump("INFO","transform - End - Capabilities operations filtering");
+           servlet.logger.trace("transform - End - Capabilities operations filtering");
            return true;
 		}
 		catch (Exception ex){
@@ -201,7 +201,7 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 	@SuppressWarnings({ "rawtypes", "unused" })
 	@Override
 	public Boolean CapabilitiesContentsFiltering(HashMap<String, String> wmsGetCapabilitiesResponseFilePath, String href) throws NoSuchAuthorityCodeException{
-		servlet.dump("INFO","transform - Start - Capabilities contents filtering");
+		servlet.logger.trace("transform - Start - Capabilities contents filtering");
 	    try
 	    {
 	    	CoordinateReferenceSystem wgsCRS = CRS.decode("EPSG:4326");
@@ -280,7 +280,7 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 	    	   XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
 	           sortie.output(docParent, new FileOutputStream(filePath));
 	    	}
-	    	servlet.dump("INFO","transform - End - Capabilities contents filtering");
+	    	servlet.logger.trace("transform - End - Capabilities contents filtering");
            return true;
 	    }catch (NoSuchAuthorityCodeException e){
 	    	throw e;
@@ -296,7 +296,7 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 	@SuppressWarnings({ "unused" })
 	@Override
 	public Boolean CapabilitiesMerging(HashMap<String, String> wmsGetCapabilitiesResponseFilePath) {
-		servlet.dump("INFO","transform - Start - Capabilities merging");
+		servlet.logger.trace("transform - Start - Capabilities merging");
 		if (wmsGetCapabilitiesResponseFilePath.size() == 0)
 		{
 			setLastException(new Exception("No response file"));
@@ -346,7 +346,7 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 			
 			XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
 	        sortie.output(documentMaster, new FileOutputStream(fileMasterPath));
-	        servlet.dump("INFO","transform - End - Capabilities merging");
+	        servlet.logger.trace("transform - End - Capabilities merging");
 			return true;
 		} catch (Exception ex) {
 			setLastException(ex);
@@ -359,7 +359,7 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 	 */
 	@Override
 	public Boolean CapabilitiesServiceMetadataWriting(String filePath,String href) {
-		servlet.dump("INFO","transform - Start - Capabilities metadata writing");
+		servlet.logger.trace("transform - Start - Capabilities metadata writing");
 		try
 		{
 			Config config = servlet.getConfiguration();
@@ -478,7 +478,7 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 			XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
 	        sortie.output(document, new FileOutputStream(filePath));
 
-	        servlet.dump("INFO","transform - End - Capabilities metadata writing");
+	        servlet.logger.trace("transform - End - Capabilities metadata writing");
 			return true;
 		}
 		catch (Exception ex)

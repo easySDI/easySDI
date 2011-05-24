@@ -56,11 +56,11 @@ public class WMTSProxyServlet extends ProxyServlet{
 			HttpServletResponse resp) {
 		StringBuffer out;
 		try {
-			dump("INFO", "HTTP POST method is not supported.");
+			logger.info("HTTP POST method is not supported.");
 			out = owsExceptionReport.generateExceptionReport("HTTP POST method is not supported.",OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
 			sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		} catch (IOException e) {
-			dump("ERROR", e.toString());
+			logger.error( e.toString());
 			e.printStackTrace();
 		}
 		
@@ -82,7 +82,7 @@ public class WMTSProxyServlet extends ProxyServlet{
 			if((configuration.getExceptionMode().equals("restrictive") && asRemoteServerServiceException) || 
 					(configuration.getExceptionMode().equals("permissive") && wmtsFilePathTable.size() == 0))
 			{
-				dump("INFO","Exception(s) returned by remote server(s) are sent to client.");
+				logger.info("Exception(s) returned by remote server(s) are sent to client.");
 				responseContentType ="text/xml; charset=utf-8";
 				sendHttpServletResponse(req,resp,owsExceptionManager.buildResponseForRemoteOgcException(ogcExceptionFilePathTable), "text/xml; charset=utf-8", responseStatusCode);
 				return;
@@ -119,7 +119,7 @@ public class WMTSProxyServlet extends ProxyServlet{
 				
 				if(!docBuilder.CapabilitiesContentsFiltering(wmtsFilePathTable))
 				{
-					dump("ERROR",docBuilder.getLastException().toString());
+					logger.error(docBuilder.getLastException().toString());
 					StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
 					sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 					return;
@@ -127,7 +127,7 @@ public class WMTSProxyServlet extends ProxyServlet{
 				
 				if(!docBuilder.CapabilitiesOperationsFiltering(wmtsFilePathTable.get(rs.getAlias()), getServletUrl(req)))
 				{
-					dump("ERROR",docBuilder.getLastException().toString());
+					logger.error(docBuilder.getLastException().toString());
 					StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
 					sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 					return;
@@ -135,7 +135,7 @@ public class WMTSProxyServlet extends ProxyServlet{
 				
 				if(!docBuilder.CapabilitiesMerging(wmtsFilePathTable))
 				{
-					dump("ERROR",docBuilder.getLastException().toString());
+					logger.error(docBuilder.getLastException().toString());
 					StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
 					sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 					return;
@@ -143,7 +143,7 @@ public class WMTSProxyServlet extends ProxyServlet{
 				
 				if(!docBuilder.CapabilitiesServiceMetadataWriting(wmtsFilePathTable.get(rs.getAlias()),getServletUrl(req)))
 				{
-					dump("ERROR",docBuilder.getLastException().toString());
+					logger.error(docBuilder.getLastException().toString());
 					StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
 					sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 					return;
@@ -159,7 +159,7 @@ public class WMTSProxyServlet extends ProxyServlet{
 		}
 		catch (Exception e){
 			e.printStackTrace();
-			dump("ERROR", e.toString());
+			logger.error( e.toString());
 			resp.setHeader("easysdi-proxy-error-occured", "true");
 			StringBuffer out;
 			try {
@@ -167,7 +167,7 @@ public class WMTSProxyServlet extends ProxyServlet{
 				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			} catch (IOException e1) {
 				e1.printStackTrace();
-				dump("ERROR", e1.toString());
+				logger.error( e1.toString());
 			}
 		}
 	}
@@ -177,7 +177,7 @@ public class WMTSProxyServlet extends ProxyServlet{
 	 */
 	@Override
 	protected StringBuffer generateOgcException(String errorMessage, String code, String locator, String version) {
-		dump("ERROR", errorMessage);
+		logger.error( errorMessage);
 		
 		StringBuffer sb = new StringBuffer("<?xml version='1.0' encoding='utf-8' ?>");
 		sb.append("<ExceptionReport xmlns=\"http://www.opengis.net/ows/1.1\" " +
