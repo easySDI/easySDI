@@ -48,6 +48,8 @@ public class ConfigFileHandler extends DefaultHandler {
 	private String logPrefix = "";
 	private String logExtension = "";
 	private String logPeriod = "";
+	private String classLogger = "org.easysdi.proxy.log.ProxyLogger";
+	private String logLevel = "INFO";
 	private String toleranceDistance = "0";
 	private boolean isAuthorization = false;
 	private boolean isTransaction = false;
@@ -226,7 +228,7 @@ public class ConfigFileHandler extends DefaultHandler {
 		if (qName.equals("config")) {
 			isConfig = false;
 			if (isTheGoodId) {
-				config = new org.easysdi.xml.documents.Config(id, remoteServer, policyFile, logFile);
+				config = new org.easysdi.xml.documents.Config(id, remoteServer, policyFile, logFile, classLogger,logLevel);
 				config.setXsltPath(xsltPathUrl);
 				config.setLogDateFormat(logDateFormat);
 				config.setServletClass(servletClass);
@@ -409,6 +411,14 @@ public class ConfigFileHandler extends DefaultHandler {
 
 		if (isTheGoodId && isConfig && isLogConfig && qName.equals("date-format")) {
 			logDateFormat = data;
+		}
+		
+		if (isTheGoodId && isConfig && isLogConfig && qName.equals("logger")) {
+			classLogger = data;
+		}
+		
+		if (isTheGoodId && isConfig && isLogConfig && qName.equals("log-level")) {
+			logLevel = data;
 		}
 		
 		if (isTheGoodId && isConfig && isServiceMetadata && qName.equals("Title")) {

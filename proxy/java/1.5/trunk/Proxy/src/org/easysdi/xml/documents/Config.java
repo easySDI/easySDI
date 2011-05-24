@@ -34,6 +34,8 @@ public class Config implements Serializable{
 	private List<RemoteServerInfo> remoteServer;
 	private String policyFile;
 	private String logFile;
+	private String classLogger;
+	private String logLevel;
 	private String xsltPath;
 	private String logDateFormat = Config.DEFAULT_DATE_FORMAT;
 	private String servletClass = "";
@@ -106,12 +108,14 @@ public class Config implements Serializable{
 	 * @param password
 	 * @param logFile
 	 */
-	public Config(String id, List<RemoteServerInfo> remoteServer, String policyFile, String logFile) {
+	public Config(String id, List<RemoteServerInfo> remoteServer, String policyFile, String logFile, String classLogger, String logLevel) {
 		super();
 		this.id = id;
 		this.remoteServer = remoteServer;
 		this.policyFile = policyFile;
 		this.logFile = logFile;
+		this.classLogger=classLogger;
+		this.logLevel=logLevel;
 	}
 
 	public String getLogFile() {
@@ -299,6 +303,27 @@ public class Config implements Serializable{
 	 */
 	public OWSServiceMetadata getOwsServiceMetadata() {
 		return owsServiceMetadata;
+	}
+
+	/**
+	 * @param classLogger the classLogger to set
+	 */
+	public void setClassLogger(String classLogger) {
+		this.classLogger = classLogger;
+	}
+
+	/**
+	 * @return the classLogger
+	 */
+	public String getClassLogger() {
+		return classLogger;
+	}
+	
+	/**
+	 * @return the logLevel
+	 */
+	public String getLogLevel() {
+		return logLevel;
 	}
 
 }

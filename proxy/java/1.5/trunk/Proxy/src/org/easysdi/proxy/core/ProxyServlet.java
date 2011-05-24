@@ -224,35 +224,7 @@ public abstract class ProxyServlet extends HttpServlet {
 	 */
 	public ProxyServlet() {
 		super();
-//		String loggerClassName = "org.apache.log4j.Logger";
-		String loggerClassName = "org.easysdi.proxy.log.ProxyLogger";
-		org.apache.log4j.Level level = org.apache.log4j.Level.DEBUG; 
-		Class<?> classe;
-		try {
-			classe = Class.forName(loggerClassName);
-			 Method method = classe.getMethod("getLogger",new Class [] {Class.forName ("java.lang.String")} );
-			logger = (Logger) method.invoke(null,new Object[]{"ProxyLogger"});
-			logger.setLevel(level);
-			
-		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
 	}
 
 	
@@ -406,6 +378,36 @@ public abstract class ProxyServlet extends HttpServlet {
 	 */
 	public void setConfiguration(org.easysdi.xml.documents.Config conf) {
 		configuration = conf;
+//		String loggerClassName = "org.apache.log4j.Logger";
+//		String loggerClassName = "org.easysdi.proxy.log.ProxyLogger";
+		String loggerClassName = configuration.getClassLogger();
+		org.apache.log4j.Level level = org.apache.log4j.Level.toLevel(configuration.getLogLevel()); 
+		Class<?> classe;
+		try {
+			classe = Class.forName(loggerClassName);
+			 Method method = classe.getMethod("getLogger",new Class [] {Class.forName ("java.lang.String")} );
+			logger = (Logger) method.invoke(null,new Object[]{"ProxyLogger"});
+			logger.setLevel(level);
+			
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		if (logger instanceof ProxyLogger){
 			((ProxyLogger)logger).setDateFormat(configuration.getLogDateFormat());
 			((ProxyLogger)logger).setLogFile(configuration.getLogFile());
