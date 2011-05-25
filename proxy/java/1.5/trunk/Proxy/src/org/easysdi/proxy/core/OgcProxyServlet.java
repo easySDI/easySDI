@@ -163,12 +163,12 @@ public class OgcProxyServlet extends HttpServlet {
 
 			}
 		} catch (Exception e) {
-			StringBuffer out = new OWS200ExceptionReport().generateExceptionReport(e.getMessage(), OWSExceptionReport.CODE_NO_APPLICABLE_CODE, null, null) ;
-			servletResponse.setContentType("text/xml");
-			servletResponse.setContentLength(out.length());
+			StringBuffer out = new OWS200ExceptionReport().generateExceptionReport(e.toString(), OWSExceptionReport.CODE_NO_APPLICABLE_CODE, null, null) ;
+			resp.setContentType("text/xml");
+			resp.setContentLength(out.length());
 			OutputStream os;
 			try {
-				os = servletResponse.getOutputStream();
+				os = resp.getOutputStream();
 				os.write(out.toString().getBytes());
 				os.flush();
 				os.close();

@@ -3,6 +3,10 @@
  */
 package org.easysdi.proxy.wms;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -12,10 +16,16 @@ import javax.servlet.http.HttpServletRequest;
 import org.easysdi.proxy.core.ProxyServletRequest;
 import org.easysdi.proxy.exception.ProxyServletException;
 import org.easysdi.proxy.exception.VersionNotSupportedException;
+import org.easysdi.xml.handler.CswRequestHandler;
+import org.easysdi.xml.handler.WMSRequestHandler;
 import org.geotools.referencing.CRS;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
 
 
 /**
@@ -265,9 +275,38 @@ public class WMSProxyServletRequest extends ProxyServletRequest {
 	}
 
 	
-//	public void parseRequestPOST () {
-//		
-//	}
+	public void parseRequestPOST () {
+		XMLReader xr;
+		try {
+			xr = XMLReaderFactory.createXMLReader();
+			WMSRequestHandler rh = new WMSRequestHandler();
+			xr.setContentHandler(rh);
+
+			StringBuffer param = new StringBuffer();
+			xr.parse(new InputSource(new InputStreamReader(new ByteArrayInputStream(param.toString().getBytes()))));
+
+			version = rh.getVersion();
+			requestedVersion = version;
+			width = rh.getWidth();
+			height = rh.getHeight();
+			format = rh.getFormat();
+			srsName = rh.getCRS();
+			bbox = rh.getLowerCorner().replace(" ", ",")+rh.getUpperCorner().replace(" ", ",");
+			String sb = new String();
+			for (String s : rh.getLayers())
+			{
+			    sb+=s+",";
+			}
+			layers = sb.substring(0, sb.length()-1);
+		} catch (SAXException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
 	
 	/**
 	 * @throws ProxyServletException

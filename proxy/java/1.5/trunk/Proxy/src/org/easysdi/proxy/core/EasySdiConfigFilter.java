@@ -5,9 +5,12 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.security.Principal;
 
 import javax.servlet.FilterChain;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -21,8 +24,14 @@ import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
 
+import org.easysdi.proxy.csw.CSWExceptionReport;
+import org.easysdi.proxy.ows.OWSExceptionReport;
+import org.easysdi.proxy.ows.v200.OWS200ExceptionReport;
 import org.easysdi.proxy.policy.Policy;
 import org.easysdi.proxy.policy.PolicySet;
+import org.easysdi.proxy.wfs.WFSExceptionReport;
+import org.easysdi.proxy.wms.v130.WMSExceptionReport130;
+import org.easysdi.proxy.wmts.v100.WMTS100ExceptionReport;
 import org.easysdi.xml.documents.Config;
 import org.easysdi.xml.handler.ConfigFileHandler;
 import org.slf4j.Logger;
@@ -50,6 +59,49 @@ public class EasySdiConfigFilter extends GenericFilterBean {
 	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
 		final HttpServletRequest request = (HttpServletRequest) req;
 		final HttpServletResponse response = (HttpServletResponse) res;
+		
+		if( request.getPathInfo() == null ||  request.getPathInfo().equals("/")){
+			String destination = "index.jsp";
+			 
+			response.setContentType("text/plain");
+		        response.setStatus(response.SC_NOT_FOUND);
+		        response.setHeader("Location", destination);
+			return;
+		}
+		
+		if(request.getMethod().equalsIgnoreCase("GET")){
+			if(request.getParameter("request") == null && request.getParameter("REQUEST") == null && request.getParameter("Request") == null){
+				StringBuffer out = new StringBuffer() ;
+				out = new OWS200ExceptionReport().generateExceptionReport("Could not determine proxy request from http request.", OWSExceptionReport.CODE_MISSING_PARAMETER_VALUE, "request") ;
+				
+				response.setContentType("text/xml; charset=utf-8");
+				response.setContentLength(out.length());
+					
+				OutputStream os;
+				os = response.getOutputStream();
+				os.write(out.toString().getBytes());
+				os.flush();
+				os.close();
+				return;
+			}
+		}else{
+			int i = request.getContentLength() ;
+			if(request.getContentLength() == 0){
+				StringBuffer out = new StringBuffer() ;
+				out = new OWS200ExceptionReport().generateExceptionReport("Could not determine proxy request from http request.", OWSExceptionReport.CODE_MISSING_PARAMETER_VALUE, "request") ;
+				
+				response.setContentType("text/xml; charset=utf-8");
+				response.setContentLength(out.length());
+					
+				OutputStream os;
+				os = response.getOutputStream();
+				os.write(out.toString().getBytes());
+				os.flush();
+				os.close();
+				return;
+			}
+		}
+		
 		if ("/ogc".equals(request.getServletPath())) {
 			String servletName = request.getPathInfo().substring(1);
 			Config configuration;
