@@ -3,16 +3,36 @@
 <log4j:configuration debug="true"
 	xmlns:log4j='http://jakarta.apache.org/log4j/'>
 
-	<appender name="consoleAppender" class="org.apache.log4j.ConsoleAppender">
+<appender name="consoleAppender" class="org.apache.log4j.ConsoleAppender">
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d{ABSOLUTE} %5p %c{1}:%L - %m%n"/>
+    </layout>
+  </appender>
+  
+	<appender name="logFileAppender" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="append" value="true" />
+    	<param name="file" value="C:\\logs\\easysdi.log"/>
+    	<param name="datePattern" value="'.'yyyy-MM-dd" />
 		<layout class="org.apache.log4j.PatternLayout">
-			<param name="ConversionPattern" value="%d{ABSOLUTE} [%t] %-5p %c{1} - %m%n" />
+			<param name="ConversionPattern" value="%d{ABSOLUTE} [%t] %-5p %C{6} (%F:%L) - %m%n" />
 		</layout>
 	</appender>
 
+	<logger name="OgcProxyServlet">
+    	<level value="trace" />
+    	<appender-ref ref="consoleAppender"/>
+  	</logger>
+  	<logger name="ProxyLogger">
+    	<level value="trace" />
+    	<appender-ref ref="logFileAppender"/>
+  	</logger>
 	<root>
 		<level value="info" />
 		<appender-ref ref="consoleAppender" />
 	</root>
+	
+	
+
 
 </log4j:configuration>
 
