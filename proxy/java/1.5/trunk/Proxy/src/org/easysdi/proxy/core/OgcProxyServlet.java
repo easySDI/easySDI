@@ -153,11 +153,16 @@ public class OgcProxyServlet extends HttpServlet {
 	 * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
 	 */
 	public void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		servletResponse = resp;
 		ProxyServlet obj = null;
 		try {
 			obj = createProxy(req.getPathInfo().substring(1), req, resp);
-			waitWhenConnectionsExceed(req, obj.getConfiguration().getMaxRequestNumber());
-
+			double maxRequestNumber = -1;
+			if (obj != null)
+				maxRequestNumber = obj.getConfiguration().getMaxRequestNumber();
+			
+			waitWhenConnectionsExceed(req, maxRequestNumber);
+			
 			if (obj != null) {
 				obj.doPost(req, resp);
 
@@ -208,26 +213,35 @@ public class OgcProxyServlet extends HttpServlet {
 						
 			//Parse the request into a ProxyServletRequestObject
 			ProxyServletRequest request = null;
+			String requestClassName;
 			try{
-				String requestClassName = className + "Request";
+				requestClassName = className + "Request";
 				Class<?> requestClasse = Class.forName(requestClassName);
 				Constructor<?> requestConstructeur = requestClasse.getConstructor(new Class [] {Class.forName ("javax.servlet.http.HttpServletRequest")});
 				request = (ProxyServletRequest) requestConstructeur.newInstance(req);
 			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
+				//Class request does not exist, keep going on (it can be the case for old version connector)
 			} catch (NoSuchMethodException e) {
-				e.printStackTrace();
+				//The constructor does not exist, keep going on
 			} catch (InstantiationException e) {
-				e.printStackTrace();
+				//Problem parsing the request
+				sendException(new ProxyServletException("Problem parsing request: "+e.toString()), configuration.getServletClass(), null);
+				return null;
 			} catch (IllegalAccessException e) {
-				e.printStackTrace();
+				//Problem parsing the request
+				sendException(new ProxyServletException("Problem parsing request: "+e.toString()), configuration.getServletClass(), null);
+				return null;
 			} catch (java.lang.reflect.InvocationTargetException e) {
-				e.printStackTrace();
+				//Problem parsing the request
+				sendException(new ProxyServletException("Problem parsing request: "+e.getCause().getCause().toString()), configuration.getServletClass(), null);
+				return null;
 			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-			} catch (ProxyServletException e){
-				sendException(e, className, null);
-				e.printStackTrace();
+				//Problem parsing the request
+				sendException(new ProxyServletException("Problem parsing request: "+e.toString()), configuration.getServletClass(), null);
+				return null;
+			} catch (ProxyServletException e) {
+				sendException(e, configuration.getServletClass(), null);
+				return null;
 			}
 			
 			//Get the correct CSWProxyServlet class name according to the EasySDI version currently running
@@ -240,6 +254,10 @@ public class OgcProxyServlet extends HttpServlet {
 			String reqVersion= null;
 			if(request != null){
 				reqVersion = request.getVersion();
+				if(reqVersion == null && request.getOperation().equalsIgnoreCase("GetCapabilities"))
+				{
+					reqVersion="1.1.1";
+				}
 				className += reqVersion.replaceAll("\\.", "");
 			}
 			
@@ -297,7 +315,7 @@ public class OgcProxyServlet extends HttpServlet {
 			code = OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE;
 			locator = "service";
 		}else {
-			errorMessage = e.getMessage();
+			errorMessage = e.toString();
 			code = OWSExceptionReport.CODE_NO_APPLICABLE_CODE;
 			locator = null;
 		}

@@ -93,26 +93,28 @@ public abstract class ProxyServletRequest {
 		return version;
 	}
 	
-	public  ProxyServletRequest (HttpServletRequest req){
+	public  ProxyServletRequest (HttpServletRequest req) throws Throwable{
 		request= req;
 		parseRequest();
 	}
 	
-	protected  void parseRequest () {
+	protected  void parseRequest () throws Throwable {
 		String method = request.getMethod();
 		try {
 			Method m = this.getClass().getMethod("parseRequest"+method, (Class[])null);
 			m.invoke(this, (Object[]) null);
+		} catch (ProxyServletException e){
+			throw e;
 		} catch (SecurityException e) {
-			e.printStackTrace();
+			throw e;
 		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
+			throw e;
 		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
+			throw e;
 		} catch (IllegalAccessException e) {
-			e.printStackTrace();
+			throw e;
 		} catch (InvocationTargetException e) {
-			e.printStackTrace();
+			throw e;
 		}
 	}
 }

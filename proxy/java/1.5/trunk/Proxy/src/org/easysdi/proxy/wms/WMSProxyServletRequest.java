@@ -269,8 +269,9 @@ public class WMSProxyServletRequest extends ProxyServletRequest {
 
 	/**
 	 * @param request
+	 * @throws Throwable 
 	 */
-	public WMSProxyServletRequest(HttpServletRequest req) {
+	public WMSProxyServletRequest(HttpServletRequest req) throws Throwable {
 		super(req);
 	}
 
@@ -283,9 +284,18 @@ public class WMSProxyServletRequest extends ProxyServletRequest {
 			xr.setContentHandler(rh);
 
 			StringBuffer param = new StringBuffer();
-			xr.parse(new InputSource(new InputStreamReader(new ByteArrayInputStream(param.toString().getBytes()))));
+			String input;
+			BufferedReader in = new BufferedReader(new InputStreamReader(request.getInputStream()));
+			while ((input = in.readLine()) != null) {
+				param.append(input);
+			}
 
+			xr.parse(new InputSource(new InputStreamReader(new ByteArrayInputStream(param.toString().getBytes()))));
+			
 			version = rh.getVersion();
+			if (version.equalsIgnoreCase("1.0.0")) {
+				throw new VersionNotSupportedException(version);
+			}
 			requestedVersion = version;
 			width = rh.getWidth();
 			height = rh.getHeight();
@@ -299,11 +309,9 @@ public class WMSProxyServletRequest extends ProxyServletRequest {
 			}
 			layers = sb.substring(0, sb.length()-1);
 		} catch (SAXException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new ProxyServletException(e.getMessage());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new ProxyServletException(e.getMessage());
 		}
 		
 	}
@@ -330,7 +338,7 @@ public class WMSProxyServletRequest extends ProxyServletRequest {
 				try {
 					value = URLEncoder.encode(request.getParameter(key),"UTF-8");
 				} catch (UnsupportedEncodingException e) {
-					throw new ProxyServletException(e);
+					throw new ProxyServletException(e.toString());
 				}
 			}
 

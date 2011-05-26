@@ -291,6 +291,15 @@ public class WMSProxyServlet extends ProxyServlet {
 				return;
 			}
 			
+			//Check if the WIDTH and HEIGHT parameters value are allowed by the policy
+			if (!isSizeInTheRightRange(Integer.parseInt(((WMSProxyServletRequest)getProxyRequest()).getWidth()), Integer.parseInt(((WMSProxyServletRequest)getProxyRequest()).getHeight())))
+			{
+				logger.info(OWSExceptionReport.TEXT_INVALID_PARAMETER_VALUE+" Request ImageSize out of bounds, see the policy definition.");
+				StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_PARAMETER_VALUE+" Request ImageSize out of bounds, see the policy definition.",OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE,"WIDTH");
+				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
+				return;
+			}
+			
 			//Check the validity of the GetMapRequest :
 			//This processing is out of this method because it is also used in the GetFeatureInfo request
 			List <Object> r = checkGetMapRequestValidity(req,resp);
@@ -317,6 +326,7 @@ public class WMSProxyServlet extends ProxyServlet {
 					writer.dispose();
 				}
 				sendHttpServletResponse(req, resp,out,responseContentType, HttpServletResponse.SC_OK);
+				return;
 			}
 			
 			//Get the remote server informations
@@ -358,8 +368,17 @@ public class WMSProxyServlet extends ProxyServlet {
 				transformGetMap(req, resp);
 				logger.debug("requestPreTraitementGET end transform");
 			} else {
-				// TODO : generate an empty response 
-				
+				//Generate an empty image
+				BufferedImage imgOut = generateEmptyImage(getProxyRequest().getWidth(), getProxyRequest().getHeight(), getProxyRequest().getFormat(), true, resp);
+				Iterator<ImageWriter> iter = ImageIO.getImageWritersByMIMEType(responseContentType);
+				ByteArrayOutputStream out = new ByteArrayOutputStream();
+				if (iter.hasNext()) {
+					ImageWriter writer = (ImageWriter) iter.next();
+					writer.setOutput(out);
+					writer.write(imgOut);
+					writer.dispose();
+				}
+				sendHttpServletResponse(req, resp,out,responseContentType, HttpServletResponse.SC_OK);
 			}
 		}catch(Exception e){
 			resp.setHeader("easysdi-proxy-error-occured", "true");
@@ -795,12 +814,15 @@ public class WMSProxyServlet extends ProxyServlet {
 				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 				return;
 			}
-			sendHttpServletResponse(req,resp, outResult,responseContentType, responseStatusCode);
+			
+			//TODO : apply XSLT transformation
+			
+			sendHttpServletResponse(req,resp, applyUserXSLT(outResult),responseContentType, responseStatusCode);
 			
 		}catch (Exception e){
 			resp.setHeader("easysdi-proxy-error-occured", "true");
 			e.printStackTrace();
-			logger.error(e.getMessage());
+			logger.error(e.toString());
 			StringBuffer out;
 			try {
 				out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
@@ -810,6 +832,47 @@ public class WMSProxyServlet extends ProxyServlet {
 				e1.printStackTrace();
 			}
 			return;
+		}
+	}
+	
+	private ByteArrayOutputStream applyUserXSLT (ByteArrayOutputStream response){
+		String userXsltPath = getConfiguration().getXsltPath();
+		if (SecurityContextHolder.getContext().getAuthentication() != null) {
+			userXsltPath = userXsltPath + "/" + SecurityContextHolder.getContext().getAuthentication().getName() + "/";
+		}
+
+		userXsltPath = userXsltPath + "/" + getProxyRequest().getVersion() + "/" + getProxyRequest().getOperation() + ".xsl";
+		String globalXsltPath = getConfiguration().getXsltPath() + "/" + getProxyRequest().getVersion() + "/" + getProxyRequest().getOperation() + ".xsl";
+		
+		ByteArrayOutputStream result = new ByteArrayOutputStream();
+		File xsltFile = new File(userXsltPath);
+		if (!xsltFile.exists()) {
+			logger.debug("Postreatment file " + xsltFile.toString() + "does not exist");
+			xsltFile = new File(globalXsltPath);
+		} 
+		
+		if (xsltFile.exists() && isXML(responseContentType)) {
+			logger.debug("transform begin userTransform xslt");
+
+			Transformer transformer = null;
+			TransformerFactory tFactory = TransformerFactory.newInstance();
+			try {
+				transformer = tFactory.newTransformer(new StreamSource(xsltFile));
+				InputStream is = new java.io.ByteArrayInputStream(response.toByteArray());
+
+				StreamSource attach = new StreamSource(is);
+				transformer.transform(attach, new StreamResult(result));
+			} catch (TransformerConfigurationException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (TransformerException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			logger.debug("transform end userTransform xslt");
+			return result;
+		}else{
+			return response;
 		}
 	}
 	

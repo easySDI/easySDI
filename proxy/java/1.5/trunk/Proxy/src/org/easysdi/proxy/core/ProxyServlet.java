@@ -1207,7 +1207,7 @@ public abstract class ProxyServlet extends HttpServlet {
 			return false;
 
 		if (responseContentType.startsWith(XML) || responseContentType.startsWith(XML_OGC_WMS) || responseContentType.startsWith(XML_OGC_EXCEPTION)
-				|| responseContentType.startsWith(APPLICATION_XML))
+				|| responseContentType.startsWith(APPLICATION_XML) || responseContentType.contains("gml"))
 			return true;
 		return false;
 

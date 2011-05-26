@@ -25,6 +25,7 @@ import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
 
 import org.easysdi.proxy.csw.CSWExceptionReport;
+import org.easysdi.proxy.exception.PolicyNotFoundException;
 import org.easysdi.proxy.ows.OWSExceptionReport;
 import org.easysdi.proxy.ows.v200.OWS200ExceptionReport;
 import org.easysdi.proxy.policy.Policy;
@@ -108,12 +109,16 @@ public class EasySdiConfigFilter extends GenericFilterBean {
 			try {
 				configuration = setConfig(servletName);
 				setPolicySet(configuration, request, servletName);
-			} catch (SAXException e) {
+			} catch (Exception e) {
 				logger.error("Error occurred during " + servletName + " config initialization", e);
-				e.printStackTrace();
-			} catch (JAXBException e) {
-				logger.error("Error occurred during " + servletName + " config initialization", e);
-				e.printStackTrace();
+				StringBuffer out = new OWS200ExceptionReport().generateExceptionReport("Error occurred during " + servletName + " config initialization : "+e.toString(), OWSExceptionReport.CODE_MISSING_PARAMETER_VALUE, "request") ;
+				response.setContentType("text/xml; charset=utf-8");
+				response.setContentLength(out.length());
+				OutputStream os = response.getOutputStream();
+				os.write(out.toString().getBytes());
+				os.flush();
+				os.close();
+				return;
 			}
 		}
 		chain.doFilter(request, response);
@@ -145,7 +150,7 @@ public class EasySdiConfigFilter extends GenericFilterBean {
 		return configuration;
 	}
 
-	private void setPolicySet(Config configuration, HttpServletRequest req, String servletName) throws JAXBException, FileNotFoundException {
+	private void setPolicySet(Config configuration, HttpServletRequest req, String servletName) throws JAXBException, FileNotFoundException, PolicyNotFoundException {
 		String filePath = new File(configuration.getPolicyFile()).getAbsolutePath();
 		File policyF = new File(filePath).getAbsoluteFile();
 		long plastmodified = policyF.lastModified();
@@ -177,6 +182,8 @@ public class EasySdiConfigFilter extends GenericFilterBean {
 				policyE = new Element(servletName + user + "policyFile", policy);
 				policyE.setVersion(plastmodified);
 				configCache.put(policyE);
+			}else{
+				throw new PolicyNotFoundException("No policy found for user.");
 			}
 		}
 	}
