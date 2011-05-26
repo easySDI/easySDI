@@ -863,11 +863,26 @@ echo $pane->endPanel();
 			</table>
 			</fieldset>
 	
-			<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_LOG CONFIG'); ?></legend>
+			<fieldset class="adminform"><legend><?php echo JText::_( 'PROXY_CONFIG_XSLT_PATH'); ?></legend>
 			<table class="admintable">
 				<tr>
-					<td class="key"><?php echo JText::_( 'PROXY_CONFIG_LOG_FILE_NAME'); ?></td>
-					<td><b>[<?php echo JText::_( 'EASYSDI_PREFIX'); ?>].[YYYYMMDD].[<?php echo JText::_( 'EASYSDI_SUFFIX'); ?>].[<?php echo JText::_( 'EASYSDI_EXTENSION'); ?>]</b></td>
+					<td><input name="xsltPath" type="text" size=100
+						value="<?php echo $config->{"xslt-path"}->{"url"}; ?>"></td>
+				</tr>
+			</table>
+			</fieldset>
+			<fieldset class="adminform"><legend><?php echo JText::_( 'PROXY_CONFIG_LOG'); ?></legend>
+			<table class="admintable">
+				
+				<tr>
+					<td colspan = "2">
+						<table class="admintable">
+							<tr>
+								<td class="key"><?php echo JText::_( 'PROXY_CONFIG_LOG_FILE_NAME'); ?></td>
+								<td><b>[<?php echo JText::_( 'EASYSDI_PREFIX'); ?>].[YYYYMMDD].[<?php echo JText::_( 'EASYSDI_SUFFIX'); ?>].[<?php echo JText::_( 'EASYSDI_EXTENSION'); ?>]</b></td>
+							</tr>
+						</table>
+					</td>
 				</tr>
 				<tr>
 					<td colspan = "2">
@@ -889,6 +904,48 @@ echo $pane->endPanel();
 								value="<?php  echo $config->{"log-config"}->{"file-structure"}->{"extension"};?>"></td>
 						</tr>
 					</table>
+					</td>
+				</tr>
+				<tr>
+					<td colspan = "2">
+						<table class="admintable">
+							<tr>
+								<td class="key"><?php echo JText::_( 'PROXY_CONFIG_LOG_MODE'); ?></td>
+								<td><select name="logger">
+									<option <?php if (strcmp($config->{"log-config"}->{"logger"},"org.apache.log4j.Logger")==0){echo "selected";} ?>
+										value="org.apache.log4j.Logger"><?php echo JText::_( 'PROXY_CONFIG_LOG_MODE_LOG4J'); ?></option>
+									<option <?php if (strcmp($config->{"log-config"}->{"logger"},"org.easysdi.proxy.log")==0){echo "selected";} ?>
+										value="org.easysdi.proxy.log.ProxyLogger"><?php echo JText::_( 'PROXY_CONFIG_LOG_MODE_EASYSDI'); ?></option>
+								</select></td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td colspan = "2">
+						<table class="admintable">
+							<tr>
+								<td class="key"><?php echo JText::_( 'PROXY_CONFIG_LOG_LEVEL'); ?></td>
+								<td><select name="logLevel">
+									<option <?php if (strcmp($config->{"log-config"}->{"log-level"},"OFF")==0){echo "selected";} ?>
+										value="OFF">OFF</option>
+									<option <?php if (strcmp($config->{"log-config"}->{"log-level"},"FATAL")==0){echo "selected";} ?>
+										value="FATAL">FATAL</option>
+									<option <?php if (strcmp($config->{"log-config"}->{"log-level"},"ERROR")==0){echo "selected";} ?>
+										value="ERROR">ERROR</option>
+									<option <?php if (strcmp($config->{"log-config"}->{"log-level"},"WARN")==0){echo "selected";} ?>
+										value="WARN">WARN</option>
+									<option <?php if (strcmp($config->{"log-config"}->{"log-level"},"INFO")==0){echo "selected";} ?>
+										value="INFO">INFO</option>
+									<option <?php if (strcmp($config->{"log-config"}->{"log-level"},"DEBUG")==0){echo "selected";} ?>
+										value="DEBUG">DEBUG</option>
+									<option <?php if (strcmp($config->{"log-config"}->{"log-level"},"TRACE")==0){echo "selected";} ?>
+										value="TRACE">TRACE</option>
+									<option <?php if (strcmp($config->{"log-config"}->{"log-level"},"ALL")==0){echo "selected";} ?>
+										value="TRACE">ALL</option>
+								</select></td>
+							</tr>
+						</table>
 					</td>
 				</tr>
 				<tr>
@@ -1978,15 +2035,12 @@ function submitbutton(pressbutton)
 	    		//"?" Not found then use ? instead of &
 	    		$separator = "?";  
 			}
-
 			$xmlCapa = simplexml_load_file($urlWithPassword.$separator."REQUEST=GetCapabilities&version=1.1.1&SERVICE=WMS");
-			
 			if ($xmlCapa === false){
 					global $mainframe;		
-							$mainframe->enqueueMessage(JText::_('EASYSDI_UNABLE TO RETRIEVE THE CAPABILITIES OF THE REMOTE SERVER' )." - ".$urlWithPassword,'error');
-			}
-			else{			
-			foreach ($thePolicy->Servers->Server as $policyServer){			
+					$mainframe->enqueueMessage(JText::_('EASYSDI_UNABLE TO RETRIEVE THE CAPABILITIES OF THE REMOTE SERVER' )." - ".$urlWithPassword,'error');
+			}else{			
+				foreach ($thePolicy->Servers->Server as $policyServer){			
 				if (strcmp($policyServer->url,$remoteServer->url)==0){
 					$theServer  = $policyServer;
 				}
@@ -2044,7 +2098,7 @@ function submitbutton(pressbutton)
 						<td align="left"><?php echo $layer->Name; ?></td>
 						</tr>
 						<tr >
-						<td colspan="2" align="left">"<?php if (!(strpos($layer->{'Title'},":")===False)) {echo substr($layer->{'Title'},strrpos($layer->{'Title'}, ":")+1);}else{echo $layer->Title;}?>"
+						<td colspan="2" align="left">"<?php echo $layer->Title;?>"
 							</td>
 						</tr>
 					</table>		

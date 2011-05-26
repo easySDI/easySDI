@@ -996,9 +996,14 @@ function saveConfig($xml,$configFilePath){
 
 			//Servlet class
 			$servletClass = JRequest::getVar("servletClass");
-			
-			//Log file
 			$config->{'servlet-class'}=$servletClass;
+			
+			//XSLT repository
+			$config->{"xslt-path"}->{"url"} = JRequest::getVar("xsltPath");
+
+			//Log file
+			$config->{'log-config'}->{'logger'}=JRequest::getVar("logger");
+			$config->{'log-config'}->{'log-level'}=JRequest::getVar("logLevel");
 			$logPath= JRequest::getVar("logPath");
 			$logSuffix= JRequest::getVar("logSuffix");
 			$logPrefix= JRequest::getVar("logPrefix");
