@@ -875,7 +875,8 @@ public abstract class ProxyServlet extends HttpServlet {
 			}
 			
 			InputStream in = null;
-			if(hpcon.getResponseCode() >= 400)
+			int code = hpcon.getResponseCode();
+			if( code >= 400)
 			{
 				in = hpcon.getErrorStream();
 			}
@@ -883,6 +884,11 @@ public abstract class ProxyServlet extends HttpServlet {
 			{
 				in = hpcon.getInputStream();
 			}
+//			try {
+//				in = hpcon.getInputStream();
+//			} catch (IOException e) {
+//				in = hpcon.getErrorStream();
+//			}
 			
 			resp.setContentType(hpcon.getContentType());
 			resp.setStatus(hpcon.getResponseCode());
@@ -891,14 +897,22 @@ public abstract class ProxyServlet extends HttpServlet {
 			
 			//BufferedOutputStream os = new BufferedOutputStream(resp.getOutputStream());
 			OutputStream os = resp.getOutputStream();
-			byte[] buf = new byte[in.available()];
-			int nread;
-			while ((nread = in.read(buf)) != -1) {
-				os.write(buf, 0, nread);
+			
+			//in can be null.eg : when response code is >= 400, the error stream can be null
+			if(in == null){
 				os.flush();
+				os.close();
+			}else{
+				byte[] buf = new byte[in.available()];
+				int nread;
+				while ((nread = in.read(buf)) != -1) {
+					os.write(buf, 0, nread);
+					os.flush();
+				}
+				os.close();
+				in.close();
 			}
-			os.close();
-			in.close();
+			
 			
 			logger.info("RemoteResponseToRequestUrl="+ sUrl);
 			dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());

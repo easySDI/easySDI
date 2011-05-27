@@ -332,6 +332,43 @@ public class WMSProxyServlet extends ProxyServlet {
 			//Get the remote server informations
 			Hashtable<String, RemoteServerInfo> remoteServersTable = getRemoteServerHastable();
 			
+			//Find if request is candidate to direct streaming
+			//getLayerFilter(getRemoteServerInfo(response.getValue().getAlias()).getUrl(),getProxyRequest().getLayers().split(",")[response.getKey()]),
+			if(remoteServerToCall.size() == 1){
+				Boolean isCandidateToStreaming = true;
+				RemoteServerInfo RS = (RemoteServerInfo)remoteServersTable.get(remoteServerToCall.get(0));
+				Iterator<Entry<Integer, ProxyLayer>> itLK = layerTableToKeep.entrySet().iterator();
+				while(itLK.hasNext()){
+					Entry<Integer, ProxyLayer> layer = itLK.next();
+					if(getLayerFilter(RS.getUrl(), layer.getValue().getName()) != null){
+						isCandidateToStreaming = false;
+						break;
+					}
+				}
+				if(isCandidateToStreaming){
+					//Request can be send with direct streaming
+					Iterator<Entry<Integer, ProxyLayer>> itPL = layerTableToKeep.entrySet().iterator();
+					String layerList ="";
+					String styleList ="";
+					while(itPL.hasNext()){
+						Entry<Integer, ProxyLayer> layer = itPL.next();
+						layerList += layer.getValue().getName() +",";
+						styleList += layerStyleMap.get(layer.getKey()) +",";
+					}
+					
+					String layersUrl = "&LAYERS=" + layerList.substring(0, layerList.length()-1);
+					String stylesUrl = "&STYLES=" + styleList.substring(0, styleList.length()-1);
+					
+					//Set TRANSPARENT to TRUE if not present
+					String paramUrl = getProxyRequest().getUrlParameters();
+					if (paramUrl.toUpperCase().indexOf("TRANSPARENT=") == -1)
+						paramUrl += "TRANSPARENT=TRUE&";
+					
+					sendDataDirectStream(resp,"GET", RS.getUrl(), paramUrl + layersUrl + stylesUrl);
+					return;
+				}
+			}
+			
 			//Loop on the remote server to send the request 
 			List<WMSProxyServerGetMapThread> serverThreadList = new Vector<WMSProxyServerGetMapThread>();
 			for(int k = 0; k<remoteServerToCall.size();k++){
@@ -516,11 +553,31 @@ public class WMSProxyServlet extends ProxyServlet {
 					Entry<Integer, ProxyLayer> entry =  i.next();
 					if(entry.getValue().getAlias().equals(layer.getAlias()) && entry.getValue().getName().equals(layer.getName())){
 						layerTableToKeep.put(k, layer);
-						remoteServerToCall.add(RS.getAlias());
+						if(!remoteServerToCall.contains(RS.getAlias()))
+							remoteServerToCall.add(RS.getAlias());
 					}
 				}
 			}
 			
+			//Find if request is candidate to direct streaming
+			if(remoteServerToCall.size() == 1 && (getConfiguration().getXsltPath() == null||getConfiguration().getXsltPath().trim() =="" ) ){
+				//Request can be send with direct streaming
+				Iterator<Entry<Integer, ProxyLayer>> itQPL = layerTableToKeep.entrySet().iterator();
+				String queryLayerList ="";
+				String styleList ="";
+				while(itQPL.hasNext()){
+					Entry<Integer, ProxyLayer> layer = itQPL.next();
+					queryLayerList += layer.getValue().getName() +",";
+					styleList += layerStyleMap.get(layer.getKey()) +",";
+				}
+				
+				
+				String queryLayersUrl = "&QUERY_LAYERS=" + queryLayerList.substring(0, queryLayerList.length()-1);
+				String layersUrl = "&LAYERS=" + queryLayerList.substring(0, queryLayerList.length()-1);
+				String stylesUrl = "&STYLES=" + styleList.substring(0, styleList.length()-1);
+				sendDataDirectStream(resp, "GET", ((RemoteServerInfo)remoteServersTable.get(remoteServerToCall.get(0))).getUrl(), getProxyRequest().getUrlParameters() + queryLayersUrl + "&" + layersUrl + "&" + stylesUrl);
+				return;
+			}
 			
 			//Send the request to the remote servers
 			//Loop on the remote server to send the request 
@@ -815,8 +872,7 @@ public class WMSProxyServlet extends ProxyServlet {
 				return;
 			}
 			
-			//TODO : apply XSLT transformation
-			
+			//apply XSLT transformation if needed before send back to client the response
 			sendHttpServletResponse(req,resp, applyUserXSLT(outResult),responseContentType, responseStatusCode);
 			
 		}catch (Exception e){
