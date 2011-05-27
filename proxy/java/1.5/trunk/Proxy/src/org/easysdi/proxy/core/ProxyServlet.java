@@ -414,9 +414,14 @@ public abstract class ProxyServlet extends HttpServlet {
 		}else{
 			DailyRollingFileAppender appender = (DailyRollingFileAppender)logger.getAppender("logFileAppender");
 			appender.setFile(configuration.getLogFile());
+//			if(configuration.)
+			//TODO setDatePattern must receive the period rolling value, not the date pattern
 			appender.setDatePattern(configuration.getLogDateFormat());
 			PatternLayout layout = (PatternLayout) appender.getLayout();
-			layout.setConversionPattern("%d{"+configuration.getLogDateFormat()+"} %-5p [%t] (%F:%L) - %m%n");
+			String conversionPattern = layout.getConversionPattern();
+			conversionPattern = conversionPattern.replaceFirst("%d{[*]}", "%d{"+configuration.getLogDateFormat()+"}");
+			layout.setConversionPattern(conversionPattern);
+//			layout.setConversionPattern("%d{"+configuration.getLogDateFormat()+"} %-5p [%t] (%F:%L) - %m%n");
 		}
 	}
 

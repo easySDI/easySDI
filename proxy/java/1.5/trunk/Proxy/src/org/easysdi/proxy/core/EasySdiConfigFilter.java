@@ -62,11 +62,17 @@ public class EasySdiConfigFilter extends GenericFilterBean {
 		final HttpServletResponse response = (HttpServletResponse) res;
 		
 		if( request.getPathInfo() == null ||  request.getPathInfo().equals("/")){
-			String destination = "index.jsp";
-			 
-			response.setContentType("text/plain");
-		        response.setStatus(response.SC_NOT_FOUND);
-		        response.setHeader("Location", destination);
+			StringBuffer out = new StringBuffer() ;
+			out = new OWS200ExceptionReport().generateExceptionReport("Could not determine request from http request.", OWSExceptionReport.CODE_MISSING_PARAMETER_VALUE, "[config]") ;
+			
+			response.setContentType("text/xml; charset=utf-8");
+			response.setContentLength(out.length());
+				
+			OutputStream os;
+			os = response.getOutputStream();
+			os.write(out.toString().getBytes());
+			os.flush();
+			os.close();
 			return;
 		}
 		
