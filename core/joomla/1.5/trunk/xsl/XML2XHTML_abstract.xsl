@@ -8,15 +8,17 @@ xmlns:gmd="http://www.isotc211.org/2005/gmd"
 xmlns:gco="http://www.isotc211.org/2005/gco"
 xmlns:xlink="http://www.w3.org/1999/xlink"
 xmlns:ext="http://www.depth.ch/2008/ext"
+xmlns:sdi="http://www.depth.ch/sdi"
 >
 
-	<!-- Encodage des résultats -->
+    <!-- Encodage des résultats -->
     <xsl:output encoding="utf-8"/>
     <xsl:output method="html"/>
 
- 
-
-
+     <!-- Tree containing links and actions upon the object -->
+     <xsl:template match="sdi:Metadata">
+     </xsl:template>
+    
 <xsl:template match="gmd:MD_Metadata">
 
 <!-- Title of the metadata -->
@@ -32,10 +34,15 @@ xmlns:ext="http://www.depth.ch/2008/ext"
 	<td>Fournisseur: __ref_2$s</td>
  </tr>
  <tr>
- 	<td>Fiche créée le __ref_3$s, mise à jour le __ref_4$s</td>
- </tr>
- <tr>
- 	<td>Appel externe à Joomla: __ref_7$s</td>
+     <td>
+        <script>
+	var cDate = Date.parse("__ref_3$s");
+	var uDate = Date.parse("__ref_4$s");
+	var fcDate = cDate == null ? "-" : cDate.toString("dd.MM.yyyy à HH:mm:ss");
+	var fuDate = uDate == null ? "-" : uDate.toString("dd.MM.yyyy à HH:mm:ss");
+	document.write("Fiche créée le "+fcDate+", mise à jour le "+fuDate);
+	</script>
+     </td>
  </tr>
 </table>
 <!-- The buttons links -->
@@ -43,7 +50,7 @@ __ref_5$s
 <!-- The menu links -->
 __ref_6$s
 <!-- <h3>Identification</h3> -->
-<hr/>
+<br/>
 
 <table class="descr"  >
 <!--<tr valign="top"><td class="title">Id : </td> <td><xsl:value-of disable-output-escaping="yes" select="./gmd:fileIdentifier/gco:CharacterString"/></td></tr>
@@ -118,6 +125,7 @@ while(true){
 		hlinks[i].setAttribute('target', '_blank');
 	i++;
 }
+
 </script>
 
 </xsl:template>
@@ -188,4 +196,5 @@ while(true){
 				</xsl:otherwise>
 			</xsl:choose>
 	</xsl:template>
+	
 </xsl:stylesheet>
