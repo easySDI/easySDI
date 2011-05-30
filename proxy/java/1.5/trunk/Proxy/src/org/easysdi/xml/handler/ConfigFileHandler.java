@@ -245,6 +245,7 @@ public class ConfigFileHandler extends DefaultHandler {
 				config.setExceptionMode(exceptionMode);
 				config.setOgcSearchFilter(ogcSearchFilter);
 				config.setOwsServiceMetadata(owsServiceMetadata);
+				config.setPeriod(logPeriod);
 			}
 			isTheGoodId = false;
 		}

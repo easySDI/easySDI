@@ -17,31 +17,26 @@
 
 package org.easysdi.proxy.core;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Constructor;
 import java.security.Principal;
 import java.util.HashMap;
-
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBException;
-
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
-
 import org.easysdi.proxy.csw.CSWExceptionReport;
 import org.easysdi.proxy.exception.PolicyNotFoundException;
 import org.easysdi.proxy.exception.ProxyServletException;
 import org.easysdi.proxy.ows.OWSExceptionReport;
 import org.easysdi.proxy.ows.v200.OWS200ExceptionReport;
 import org.easysdi.proxy.wfs.WFSExceptionReport;
-import org.easysdi.proxy.wms.WMSExceptionReport;
 import org.easysdi.proxy.wms.v130.WMSExceptionReport130;
 import org.easysdi.proxy.wmts.v100.WMTS100ExceptionReport;
 import org.easysdi.proxy.policy.Policy;
@@ -73,8 +68,7 @@ public class OgcProxyServlet extends HttpServlet {
 	private JoomlaProvider joomlaProvider;
 	private Logger logger = LoggerFactory.getLogger("OgcProxyServlet");
 	private HttpServletResponse servletResponse;
-	private HttpServletRequest servletRequest;
-
+	
 	public static HashMap<String, Double> executionCount = new HashMap<String, Double>();
 
 
@@ -116,6 +110,7 @@ public class OgcProxyServlet extends HttpServlet {
 				obj.doGet(req, resp);
 			}
 		} catch (Exception e) {
+			logger.error("Error occured processing doGet: ",e);
 			StringBuffer out = new OWS200ExceptionReport().generateExceptionReport(e.getMessage(), OWSExceptionReport.CODE_NO_APPLICABLE_CODE, null, null) ;
 			servletResponse.setContentType("text/xml");
 			servletResponse.setContentLength(out.length());
@@ -126,7 +121,7 @@ public class OgcProxyServlet extends HttpServlet {
 				os.flush();
 				os.close();
 			} catch (IOException ex) {
-				ex.printStackTrace();
+				logger.error("Error occured processing doGet: ",ex);
 			} 
 		} finally {
 			/**
@@ -138,17 +133,6 @@ public class OgcProxyServlet extends HttpServlet {
 		}
 	}
 	
-	private StringBuffer generateOgcError(String errorMessage) {
-		StringBuffer sb = new StringBuffer("<?xml version='1.0' encoding='utf-8' ?>");
-		sb
-				.append("<ServiceExceptionReport xmlns=\"http://www.opengis.net/ogc\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.opengis.net/ogc\" version=\"1.2.0\">");
-		sb.append("<ServiceException>");
-		sb.append(errorMessage);
-		sb.append("</ServiceException>");
-		sb.append("</ServiceExceptionReport>");
-		return sb;
-	}
-
 	/* (non-Javadoc)
 	 * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
 	 */
@@ -168,6 +152,7 @@ public class OgcProxyServlet extends HttpServlet {
 
 			}
 		} catch (Exception e) {
+			logger.error("Error occured processing doPost: ",e);
 			StringBuffer out = new OWS200ExceptionReport().generateExceptionReport(e.toString(), OWSExceptionReport.CODE_NO_APPLICABLE_CODE, null, null) ;
 			resp.setContentType("text/xml");
 			resp.setContentLength(out.length());
@@ -178,7 +163,7 @@ public class OgcProxyServlet extends HttpServlet {
 				os.flush();
 				os.close();
 			} catch (IOException ex) {
-				ex.printStackTrace();
+				logger.error("Error occured processing doPost: ",ex);
 			} 
 		} finally {
 			/**
@@ -203,8 +188,10 @@ public class OgcProxyServlet extends HttpServlet {
 		// Voir org.easysdi.proxy.core.EasySdiConfigFilter.java
 		try {
 			Element configE = configCache.get(servletName + "configFile");
-			if (configE == null)
-				logger.error(servletName + " config not found !");
+			if (configE == null){
+				logger.error(servletName + " config not found ! Servlet can not be created.");
+				return null;
+			}
 
 			configuration = (Config) configE.getValue();
 
@@ -225,21 +212,26 @@ public class OgcProxyServlet extends HttpServlet {
 				//The constructor does not exist, keep going on
 			} catch (InstantiationException e) {
 				//Problem parsing the request
+				logger.error("Problem parsing request in OgcProxyServlet: ",e);
 				sendException(new ProxyServletException("Problem parsing request: "+e.toString()), configuration.getServletClass(), null);
 				return null;
 			} catch (IllegalAccessException e) {
 				//Problem parsing the request
+				logger.error("Problem parsing request in OgcProxyServlet: ",e);
 				sendException(new ProxyServletException("Problem parsing request: "+e.toString()), configuration.getServletClass(), null);
 				return null;
 			} catch (java.lang.reflect.InvocationTargetException e) {
 				//Problem parsing the request
+				logger.error("Problem parsing request in OgcProxyServlet: ",e);
 				sendException(new ProxyServletException("Problem parsing request: "+e.getCause().getCause().toString()), configuration.getServletClass(), null);
 				return null;
 			} catch (IllegalArgumentException e) {
 				//Problem parsing the request
+				logger.error("Problem parsing request in OgcProxyServlet: ",e);
 				sendException(new ProxyServletException("Problem parsing request: "+e.toString()), configuration.getServletClass(), null);
 				return null;
 			} catch (ProxyServletException e) {
+				logger.error("ProxyServletException in OgcProxyServlet: ",e);
 				sendException(e, configuration.getServletClass(), null);
 				return null;
 			}
@@ -266,7 +258,13 @@ public class OgcProxyServlet extends HttpServlet {
 			Constructor<?> constructeur = classe.getConstructor();
 			ProxyServlet ps = (ProxyServlet) constructeur.newInstance();
 			//Set the configuration
-			ps.setConfiguration(configuration);
+			try {
+				ps.setConfiguration(configuration);
+			} catch (Exception e) {
+				logger.error("Problem occured in configuration parsing and/or logging settings.",e);
+				sendException(new ProxyServletException("Problem occured in configuration parsing and/or logging settings."), configuration.getServletClass(), null);
+				return null;
+			}
 			//Set the request object
 			ps.setProxyRequest(request);
 
@@ -284,12 +282,14 @@ public class OgcProxyServlet extends HttpServlet {
 			} else {
 				// If no policy found, return an OGC Exception and quit.
 //				ps.sendOgcExceptionBuiltInResponse(resp, ps.generateOgcException("No policy found.", "NoApplicableCode", null, ""));
+				logger.error("No policy found!");
 				sendException(new PolicyNotFoundException(PolicyNotFoundException.NO_POLICY_FOUND), configuration.getServletClass(), reqVersion);
 			}
 			return ps;
 
 		} catch (Exception e) {
 			//Enable to instanciate the request proxy servlet class due to bad service or bad version parameter
+			logger.error("Invalid service and/or version.",e);
 			sendException(new ProxyServletException("Invalid service and/or version."), configuration.getServletClass(), null);
 			return null;
 		} 
@@ -343,7 +343,7 @@ public class OgcProxyServlet extends HttpServlet {
 			os.flush();
 			os.close();
 		} catch (IOException e1) {
-			e1.printStackTrace();
+			logger.error("Error occured trying to send exception to client.",e1);
 		}
 	}
 	/***

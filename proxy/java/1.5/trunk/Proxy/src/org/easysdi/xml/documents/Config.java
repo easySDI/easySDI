@@ -29,7 +29,7 @@ public class Config implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = -4599947106473181240L;
-	private static String DEFAULT_DATE_FORMAT = "yyyy/MM/dd HH:mm:ss";
+	private static String DEFAULT_DATE_FORMAT = "dd/MM/yyyy HH:mm:ss:SSS";
 	private String id;
 	private List<RemoteServerInfo> remoteServer;
 	private String policyFile;
@@ -52,6 +52,7 @@ public class Config implements Serializable{
 	private String exceptionMode = "permissive";
 	private String ogcSearchFilter=null;
 	private OWSServiceMetadata owsServiceMetadata = null;
+	private String period = "";
 
 	/**
 	 * @param ogcSearchFilter the ogcSearchFilter to set
@@ -324,6 +325,20 @@ public class Config implements Serializable{
 	 */
 	public String getLogLevel() {
 		return logLevel;
+	}
+
+	/**
+	 * @return the period
+	 */
+	public String getPeriod() {
+		return period;
+	}
+
+	/**
+	 * @param period the period to set
+	 */
+	public void setPeriod(String period) {
+		this.period = period;
 	}
 
 }

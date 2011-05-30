@@ -375,53 +375,48 @@ public abstract class ProxyServlet extends HttpServlet {
 	/**
 	 * Set the current config
 	 * @param conf
+	 * @throws ClassNotFoundException 
+	 * @throws InvocationTargetException 
+	 * @throws IllegalAccessException 
+	 * @throws IllegalArgumentException 
+	 * @throws NoSuchMethodException 
+	 * @throws SecurityException 
 	 */
-	public void setConfiguration(org.easysdi.xml.documents.Config conf) {
+	public void setConfiguration(org.easysdi.xml.documents.Config conf) throws ClassNotFoundException, IllegalArgumentException, IllegalAccessException, InvocationTargetException, SecurityException, NoSuchMethodException {
 		configuration = conf;
-//		String loggerClassName = "org.apache.log4j.Logger";
-//		String loggerClassName = "org.easysdi.proxy.log.ProxyLogger";
 		String loggerClassName = configuration.getClassLogger();
 		org.apache.log4j.Level level = org.apache.log4j.Level.toLevel(configuration.getLogLevel()); 
 		Class<?> classe;
-		try {
-			classe = Class.forName(loggerClassName);
-			 Method method = classe.getMethod("getLogger",new Class [] {Class.forName ("java.lang.String")} );
-			logger = (Logger) method.invoke(null,new Object[]{"ProxyLogger"});
-			logger.setLevel(level);
+		
+		classe = Class.forName(loggerClassName);
+		Method method = classe.getMethod("getLogger",new Class [] {Class.forName ("java.lang.String")} );
+		logger = (Logger) method.invoke(null,new Object[]{"ProxyLogger"});
+		logger.setLevel(level);
 			
-		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		
 		if (logger instanceof ProxyLogger){
 			((ProxyLogger)logger).setDateFormat(configuration.getLogDateFormat());
 			((ProxyLogger)logger).setLogFile(configuration.getLogFile());
 		}else{
 			DailyRollingFileAppender appender = (DailyRollingFileAppender)logger.getAppender("logFileAppender");
 			appender.setFile(configuration.getLogFile());
-//			if(configuration.)
-			//TODO setDatePattern must receive the period rolling value, not the date pattern
-			appender.setDatePattern(configuration.getLogDateFormat());
+			//DatePattern receive the period rolling value
+			if(configuration.getPeriod().equalsIgnoreCase("daily"))
+				appender.setDatePattern("'.'yyyy-MM-dd");
+			else if(configuration.getPeriod().equalsIgnoreCase("monthly"))
+				appender.setDatePattern("'.'yyyy-MM");
+			else if(configuration.getPeriod().equalsIgnoreCase("weekly"))
+				appender.setDatePattern("'.'yyyy-ww");
+			else 
+				appender.setDatePattern("'.'yyyy-MM-dd");
+			
 			PatternLayout layout = (PatternLayout) appender.getLayout();
 			String conversionPattern = layout.getConversionPattern();
-			conversionPattern = conversionPattern.replaceFirst("%d{[*]}", "%d{"+configuration.getLogDateFormat()+"}");
-			layout.setConversionPattern(conversionPattern);
-//			layout.setConversionPattern("%d{"+configuration.getLogDateFormat()+"} %-5p [%t] (%F:%L) - %m%n");
+			int start = conversionPattern.indexOf("%d{")+3;
+			int end = conversionPattern.indexOf("}", start);
+			
+			String result = conversionPattern.substring(0,start) + configuration.getLogDateFormat() + conversionPattern.substring(end);
+			layout.setConversionPattern(result);
 		}
 	}
 
@@ -1995,12 +1990,12 @@ public abstract class ProxyServlet extends HttpServlet {
 		}
 		Date currentDate = new Date();
 		if (fromDate != null)
-			if (currentDate.before(fromDate))
+			if (currentDate.compareTo(fromDate) <0)
 				throw new AvailabilityPeriodException(AvailabilityPeriodException.CURRENT_DATE_BEFORE_SERVICE_FROM_DATE);
 		// return false;
 
 		if (toDate != null)
-			if (!currentDate.before(toDate))
+			if (currentDate.compareTo(toDate) > 0)
 				throw new AvailabilityPeriodException(AvailabilityPeriodException.CURRENT_DATE_AFTER_SERVICE_TO_DATE);
 		// return false;
 
@@ -2184,7 +2179,6 @@ public abstract class ProxyServlet extends HttpServlet {
 		catch (Exception e) 
 		{
 			resp.setHeader("easysdi-proxy-error-occured", "true");
-			e.printStackTrace();
 			logger.error(e.getMessage());
 		}
 	}
@@ -2233,14 +2227,13 @@ public abstract class ProxyServlet extends HttpServlet {
 					logger.info("ClientResponseLength="+ tempOut.length());
 			}
 	
-			DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
-			Date d = new Date();
-			logger.info("ClientResponseDateTime="+ dateFormat.format(d));
+//			DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
+//			Date d = new Date();
+//			logger.info("ClientResponseDateTime="+ dateFormat.format(d));
 		} 
 		catch (Exception e) 
 		{
 			resp.setHeader("easysdi-proxy-error-occured", "true");
-			e.printStackTrace();
 			logger.error(e.getMessage());
 		}
 	}

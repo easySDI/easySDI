@@ -207,7 +207,6 @@ public class WMSProxyServerGetMapThread extends Thread {
 		} catch (Exception e) {
 			resp.setHeader("easysdi-proxy-error-occured", "true");
 			servlet.logger.error( "Server Thread " + remoteServer.getUrl() + " :" + e.getMessage());
-			e.printStackTrace();
 		}			
 	}
 }
