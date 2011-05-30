@@ -94,9 +94,8 @@ public class WMSProxyServerGetFeatureInfoThread extends Thread {
 				servlet.wmsGetFeatureInfoResponseFilePathMap.put(layers.firstKey(),response );
 			}
 		} catch (Exception e) {
-//			resp.setHeader("easysdi-proxy-error-occured", "true");
-//			dump("ERROR", "Server Thread " + getRemoteServerUrl(j) + " :" + e.getMessage());
-			e.printStackTrace();
+			resp.setHeader("easysdi-proxy-error-occured", "true");
+			servlet.logger.error("Server Thread " + remoteServer.getUrl() + " :" + e.getMessage());
 		}
 	}
 }

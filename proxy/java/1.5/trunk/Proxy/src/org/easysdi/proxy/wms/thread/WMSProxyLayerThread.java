@@ -66,7 +66,6 @@ public class WMSProxyLayerThread extends Thread {
 		} catch (Exception e) {
 			resp.setHeader("easysdi-proxy-error-occured", "true");
 			servlet.logger.error( "Server " + remoteServer.getUrl() + " Layers group Thread " + "" + " :" + e.getMessage());
-			e.printStackTrace();
 		}
 	}
 }
