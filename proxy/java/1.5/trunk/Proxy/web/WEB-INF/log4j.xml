@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
-<log4j:configuration debug="true"
-	xmlns:log4j='http://jakarta.apache.org/log4j/'>
-
-<appender name="consoleAppender" class="org.apache.log4j.ConsoleAppender">
-    <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{ABSOLUTE} %5p %c{1}:%L - %m%n"/>
-    </layout>
-  </appender>
+<log4j:configuration debug="true" xmlns:log4j='http://jakarta.apache.org/log4j/'>
+	
+	<appender name="rootAppender" class="org.apache.log4j.RollingFileAppender">
+		<param name="append" value="true" />
+    	<param name="file" value="${catalina.home}/logs/easysdi-proxy.log"/>
+    	<param name="MaxFileSize" value="1MB"/>
+    	<param name="MaxBackupIndex" value="10"/>
+    	<layout class="org.apache.log4j.PatternLayout">
+      		<param name="ConversionPattern" value="%d{ABSOLUTE} %5p %c{1}:%L - %m%n"/>
+    	</layout>
+  	</appender>
   
 	<appender name="logFileAppender" class="org.apache.log4j.DailyRollingFileAppender">
 		<param name="append" value="true" />
@@ -19,20 +22,18 @@
 	</appender>
 
 	<logger name="OgcProxyServlet">
-    	<level value="trace" />
-    	<appender-ref ref="consoleAppender"/>
+    	<level value="info" />
+    	<appender-ref ref="rootAppender"/>
   	</logger>
+  	
   	<logger name="ProxyLogger">
-    	<level value="trace" />
+    	<level value="info" />
     	<appender-ref ref="logFileAppender"/>
   	</logger>
+	
 	<root>
 		<level value="info" />
-		<appender-ref ref="consoleAppender" />
+		<appender-ref ref="rootAppender" />
 	</root>
-	
-	
-
-
 </log4j:configuration>
 
