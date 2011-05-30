@@ -209,7 +209,6 @@ class displayManager{
 							 INNER JOIN #__sdi_objecttype ot ON ot.id=o.objecttype_id 
 							 WHERE m.guid='".$id."'");
 		$objecttype = $database->loadResult();
-		
 		if ($type == "abstract")
 		{
 			$style = new DomDocument();
@@ -545,6 +544,8 @@ class displayManager{
 		$doc .= '</Diffusion></Metadata>';
 		
 		$document = new DomDocument();
+		
+		
 		$document->loadXML($doc);
 		
 		$style = new DomDocument();
@@ -568,7 +569,7 @@ class displayManager{
 		displayManager::DisplayMetadata($style,$document);
 	}
 	
-function DisplayMetadata ($xslStyle, $xml)
+	function DisplayMetadata ($xslStyle, $xml)
 	{
 //		$enableFavorites = config_easysdi::getValue("ENABLE_FAVORITES", 1);
 		$option = JRequest::getVar('option');
@@ -649,6 +650,7 @@ function DisplayMetadata ($xslStyle, $xml)
 					INNER JOIN #__sdi_object o ON o.id = ov.object_id 
 					WHERE m.guid = '".$id."'";
 		$db->setQuery($query);
+		
 		$product_creation_date = $db->loadResult();
 		//$product_creation_date = date(config_easysdi::getValue("DATETIME_FORMAT", "d-m-Y H:i:s"), strtotime($temp));
 		
@@ -781,12 +783,13 @@ function DisplayMetadata ($xslStyle, $xml)
 		if ($type <> 'diffusion')
 			$xml = displayManager::constructXML($xml, $db, $language, $id, $notJoomlaCall, $type, $context);
 		
-//		echo htmlspecialchars($xml->saveXML())."<br>";break;
+		//echo htmlspecialchars($xml->saveXML())."<br>";break;
 		
 		$processor->importStylesheet($xslStyle);
 		$xmlToHtml = $processor->transformToXml($xml);
 		
-		$myHtml="";
+		$myHtml = "<script type=\"text/javascript\" src=\"/administrator/components/com_easysdi_core/common/date.js\"></script>";
+		//$myHtml="";
 		// Toolbar build from EasySDIV1
 		if ($toolbar==1){
 			$buttonsHtml .= "<table align=\"right\"><tr align='right'>";
@@ -857,52 +860,50 @@ function DisplayMetadata ($xslStyle, $xml)
 //				
 //			}";
 			
-//			//Manage display class
-//			/* Onglets abstract et complete*/
-//			$myHtml .= "window.addEvent('domready', function() {
-//			
-//			document.getElementById('catalogPanel1').addEvent( 'click' , function() { 
-//				window.open('./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=$id&type=abstract', '_self');
-//			});
-//			document.getElementById('catalogPanel2').addEvent( 'click' , function() { 
-//				window.open('./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=$id&type=complete', '_self');
-//			});
-//			
-//			task = '$task';
-//			type = '$type';
-//			
-//			";
-//			/* Onglet diffusion, si et seulement si le shop est install� et que l'objet est diffusable*/
-//			if ($shopExist)
-//			{
-//				$myHtml .= "
-//				document.getElementById('catalogPanel3').addEvent( 'click' , function() { 
-//					window.open('./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=$id&type=diffusion', '_self');
-//				});
-//				
-//				document.getElementById('catalogPanel3').className = 'closed';
-//				
-//				if(task == 'showMetadata' & type == 'diffusion'){
-//	        		document.getElementById('catalogPanel3').className = 'open';
-//				}
-//				";
-//			}
+			//Manage display class
+			/* Onglets abstract et complete*/
+			$myHtml .= "window.addEvent('domready', function() {
+		
+			document.getElementById('catalogPanel1').addEvent( 'click' , function() { 
+				window.open('./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=$id&type=abstract', '_self');
+			});
+			document.getElementById('catalogPanel2').addEvent( 'click' , function() { 
+				window.open('./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=$id&type=complete', '_self');
+			});
+			
+			task = '$task';
+			type = '$type';
+			
+			";
+			/* Onglet diffusion, si et seulement si le shop est installé et que l'objet est diffusable*/
+			if ($shopExist)
+			{
+				$myHtml .= "
+				document.getElementById('catalogPanel3').addEvent( 'click' , function() { 
+					window.open('./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=$id&type=diffusion', '_self');
+				});
+				
+				document.getElementById('catalogPanel3').className = 'closed';
+				
+				if(task == 'showMetadata' & type == 'diffusion'){
+	        		document.getElementById('catalogPanel3').className = 'open';
+				}
+				";
+			}
 			
 			/* Boutons */
-//			$myHtml .= "
-//
-//			
-//	
-//			document.getElementById('catalogPanel1').className = 'closed';
-//			document.getElementById('catalogPanel2').className = 'closed';
-//			
-//			if(task == 'showMetadata' & type == 'abstract'){
-//	        	document.getElementById('catalogPanel1').className = 'open';
-//			}
-//			if(task == 'showMetadata' & type == 'complete'){
-//	        	document.getElementById('catalogPanel2').className = 'open';
-//			}
-//			});\n"; 
+			$myHtml .= "
+
+			document.getElementById('catalogPanel1').className = 'closed';
+			document.getElementById('catalogPanel2').className = 'closed';
+			
+			if(task == 'showMetadata' & type == 'abstract'){
+	        	document.getElementById('catalogPanel1').className = 'open';
+			}
+			if(task == 'showMetadata' & type == 'complete'){
+	        	document.getElementById('catalogPanel2').className = 'open';
+			}
+			});\n"; 
 		
 			$myHtml .= "</script>";
 
@@ -912,23 +913,31 @@ function DisplayMetadata ($xslStyle, $xml)
 		//be changed to "%%".
 		$xmlToHtml = str_replace("%", "%%", $xmlToHtml);
 		$xmlToHtml = str_replace("__ref_", "%", $xmlToHtml);
-		
+				
 		$myHtml .= $xmlToHtml;
 		
 		// Construction  of creation date, update date and account logo [from EasySDIV1]
 		$logoWidth = config_easysdi::getValue("logo_width");
 		$logoHeight = config_easysdi::getValue("logo_height");
 		
+		/*
+		echo "poduct_creation:". $product_creation_date;
 		$temp = explode(" ", $product_creation_date);
 		$temp = explode("-", $temp[0]);
-		//$product_creation_date = $temp[2].".".$temp[1].".".$temp[0];
+		$product_creation_date = $temp[2].".".$temp[1].".".$temp[0];
 		$product_creation_date="";
 		$temp = explode(" ", $product_update_date);
 		$temp = explode("-", $temp[0]);
 		if ($product_update_date <> "-")
 			//$product_update_date = $temp[2].".".$temp[1].".".$temp[0];
 			$product_update_date="";
+		*/	
+			
+			
 		$img='<img width="$'.$logoWidth.'" height="'.$logoHeight.'" src="'.$account_logo.'">';
+		
+		
+		
 		printf($myHtml, $img, $supplier, $product_creation_date, $product_update_date, $buttonsHtml, $menuLinkHtml, $notJoomlaCall);
 		
 			
@@ -2096,7 +2105,7 @@ function DisplayMetadata ($xslStyle, $xml)
 		$XMLSdi->appendChild($XMLExternalApp);
 		
 		//$doc->save("C:\RecorderWebGIS\oto_".$fileIdentifier.".xml");
-		
+		                     
 		return $doc;
 	}
 	
