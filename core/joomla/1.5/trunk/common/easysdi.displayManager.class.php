@@ -276,7 +276,38 @@ class displayManager{
 			$doc .= '<Metadata><Diffusion><fileIdentifier><CharacterString>'.$id.'</CharacterString></fileIdentifier>';
 			$doc .= '<gmd:identificationInfo xmlns:gmd="http://www.isotc211.org/2005/gmd"><gmd:MD_DataIdentification><gmd:citation><gmd:CI_Citation><gmd:title><gmd:LocalisedCharacterString>'.$title.'</gmd:LocalisedCharacterString></gmd:title></gmd:CI_Citation></gmd:citation></gmd:MD_DataIdentification></gmd:identificationInfo>';
 			
-			/*$query = "SELECT DISTINCT #__easysdi_product_properties_definition.text as PropDef ,
+			/*
+			 * Append properties like this:
+			 Assign differents messages when a metadata doesn't have diffusion property or when the product is not published.
+			<Properties isProductPublished=0/1 count=2>
+				<Property>
+					<PropertyName>SystÃ¨me d'exploitation</PropertyName>
+					<PropertyValue>
+						<value>Mac</value>
+					</PropertyValue>
+					<PropertyValue>
+						<value>Windows</value>
+					</PropertyValue>
+				</Property>
+				<Property>
+					<PropertyName>Type de dÃ©coupe</PropertyName>
+					<PropertyValue>
+						<value>Compris entiÃ¨rement dans la surface de sÃ©lection</value>
+					</PropertyValue>
+					<PropertyValue>
+						<value>Compris entiÃ¨rement ou partiellement dans la surface de
+							sÃ©lection</value>
+					</PropertyValue>
+					<PropertyValue>
+						<value>DÃ©coupÃ© selon la surface de sÃ©lection</value>
+					</PropertyValue>
+				</Property>
+			</Properties>
+			*/
+			
+			
+			/* V1
+			$query = "SELECT DISTINCT #__easysdi_product_properties_definition.text as PropDef ,
 						#__easysdi_product_properties_definition.translation as PropTranslation
 						from #__easysdi_product_properties_definition 
 						INNER JOIN 
@@ -288,9 +319,9 @@ class displayManager{
 	 							where product_id IN (select id from #__easysdi_product where metadata_id = '".$id."')) T 
 	 					ON #__easysdi_product_properties_definition.id=T.properties_id
 	 					WHERE #__easysdi_product_properties_definition.published = 1 ";
-			
-			$database->setQuery($query);
-			$rows = $database->loadObjectList();		
+						*/
+						
+						/* V1
 			foreach ($rows as $row)
 			{
 				$valueProp = JText::_($row->PropTranslation);
@@ -319,7 +350,68 @@ class displayManager{
 				
 				$doc.= "</Property>";
 			}
-		*/
+			*/
+			
+			
+			
+			/* V2			
+			$query = "SELECT DISTINCT #__sdi_property.name as PropDef ,
+						#__sdi_translation.label as PropTranslation
+						from #__sdi_property, #__sdi_translation, #__sdi_language
+						INNER JOIN 
+						(
+						
+						select propertyvalue_id, #__sdi_propertyvalue.name, #__sdi_propertyvalue.property_id 
+								from #__sdi_product_property 
+								INNER JOIN #__sdi_propertyvalue 
+								ON #__sdi_product_property.propertyvalue_id=#__sdi_propertyvalue.id
+	 							where product_id IN (select #__sdi_product.id 
+								                     from #__sdi_product, #__sdi_objectversion, #__sdi_metadata
+										     where #__sdi_product.objectversion_id=#__sdi_objectversion.id AND
+										           #__sdi_objectversion.metadata_id = #__sdi_metadata.id AND #__sdi_metadata.guid = '".$id."')) T 
+	 					
+						ON id=T.property_id
+						WHERE #__sdi_property.guid=#__sdi_translation.element_guid AND #__sdi_language.code='".substr($language, -2)."' AND #__sdi_property.published = 1 ";
+
+			$database->setQuery($query);
+			$rows = $database->loadObjectList();
+			
+			foreach ($rows as $row)
+			{
+				$valueProp = JText::_($row->PropTranslation);
+				$doc .= "<Property><PropertyName>$valueProp</PropertyName>";
+				
+				
+				$subQuery = "SELECT  #__sdi_property.name as PropDef, T.label as ValueDef 
+						  from #__sdi_property
+						  INNER JOIN 
+						  (     
+						        select #__sdi_product_property.propertyvalue_id, #__sdi_propertyvalue.name, #__sdi_propertyvalue.property_id, #__sdi_translation.label  
+						 	from #__sdi_product_property, #__sdi_property, #__sdi_language, #__sdi_translation, #__sdi_propertyvalue
+	 						where #__sdi_product_property.propertyvalue_id = #__sdi_propertyvalue.id AND #__sdi_property.guid = #__sdi_translation.element_guid AND #__sdi_language.code = '".substr($language, -2)."' AND product_id IN (
+							                        select #__sdi_product.id 
+								                from #__sdi_product, #__sdi_objectversion, #__sdi_metadata
+										where #__sdi_product.objectversion_id=#__sdi_objectversion.id AND
+										#__sdi_objectversion.metadata_id = #__sdi_metadata.id AND #__sdi_metadata.guid = '".$id."'
+									     )
+						 ) T 
+	 					 ON id=T.property_id 
+	 					 Where #__sdi_property.name = '".addslashes($row->PropDef)."'";
+				
+				$database->setQuery($subQuery);
+				$results = $database->loadObjectList();
+				
+				foreach ($results as $result)
+				{
+					$value = JText::_($result->ValueDef);
+					$doc.="<PropertyValue><value>$value</value></PropertyValue>";
+				}
+				
+				$doc.= "</Property>";
+			}
+			*/
+			
+			
 			$doc .= '</Diffusion></Metadata>';
 			
 			$document = new DomDocument();
