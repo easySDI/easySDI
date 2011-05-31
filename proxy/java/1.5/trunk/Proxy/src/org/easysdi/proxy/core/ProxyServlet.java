@@ -383,7 +383,10 @@ public abstract class ProxyServlet extends HttpServlet {
 	 * @throws SecurityException 
 	 */
 	public void setConfiguration(org.easysdi.xml.documents.Config conf) throws ClassNotFoundException, IllegalArgumentException, IllegalAccessException, InvocationTargetException, SecurityException, NoSuchMethodException {
+		//Set the configuration
 		configuration = conf;
+		
+		//Set the logger
 		String loggerClassName = configuration.getClassLogger();
 		org.apache.log4j.Level level = org.apache.log4j.Level.toLevel(configuration.getLogLevel()); 
 		Class<?> classe;
@@ -418,6 +421,9 @@ public abstract class ProxyServlet extends HttpServlet {
 			String result = conversionPattern.substring(0,start) + configuration.getLogDateFormat() + conversionPattern.substring(end);
 			layout.setConversionPattern(result);
 		}
+		
+		//Log initilization informations
+		logger.info("Config="+configuration.getId());
 	}
 
 	/**
@@ -1303,6 +1309,7 @@ public abstract class ProxyServlet extends HttpServlet {
 
 	public void setPolicy(Policy p) {
 		this.policy = p;
+		logger.info("Policy="+this.policy.getId());
 	}
 
 	/**

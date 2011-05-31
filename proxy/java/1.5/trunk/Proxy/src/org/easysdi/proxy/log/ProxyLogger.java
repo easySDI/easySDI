@@ -77,7 +77,7 @@ public class ProxyLogger extends Logger {
 	 */
 	@Override
 	public void trace(Object message) {
-		this.log(Level.DEBUG, message);
+		this.log(Level.TRACE, message);
 	}
 
 	/* (non-Javadoc)
@@ -85,7 +85,7 @@ public class ProxyLogger extends Logger {
 	 */
 	@Override
 	public void debug(Object message) {
-		this.log(Level.INFO, message);
+		this.log(Level.DEBUG, message);
 	}
 
 	/* (non-Javadoc)

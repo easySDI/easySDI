@@ -60,9 +60,7 @@ public class WMSProxyServlet130 extends WMSProxyServlet {
 	 * @see org.easysdi.proxy.wms.WMSProxyServlet#requestPreTreatmentGetCapabilities(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
 	 */
 	@Override
-	public void requestPreTreatmentGetCapabilities(HttpServletRequest req,
-			HttpServletResponse resp) {
-		// TODO Auto-generated method stub
+	public void requestPreTreatmentGetCapabilities(HttpServletRequest req, HttpServletResponse resp) {
 		super.requestPreTreatmentGetCapabilities(req, resp);
 	}
 
@@ -106,7 +104,7 @@ public class WMSProxyServlet130 extends WMSProxyServlet {
 			StringBuffer out;
 			try {
 				out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
-				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
 			} catch (IOException e1) {
 				logger.error( e1.getMessage());
 				e1.printStackTrace();

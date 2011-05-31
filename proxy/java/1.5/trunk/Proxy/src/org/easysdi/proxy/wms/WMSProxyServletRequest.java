@@ -240,6 +240,13 @@ public class WMSProxyServletRequest extends ProxyServletRequest {
 
 
 	/**
+	 * @param format the format to set
+	 */
+	public void setFormat(String format) {
+		this.format = format;
+	}
+
+	/**
 	 * @param info_format the info_format to set
 	 */
 	public void setInfo_format(String info_format) {
@@ -342,7 +349,7 @@ public class WMSProxyServletRequest extends ProxyServletRequest {
 				}
 			}
 
-			if (!key.equalsIgnoreCase("QUERY_LAYERS") && !key.equalsIgnoreCase("LAYERS") && !key.equalsIgnoreCase("STYLES")) {
+			if (!key.equalsIgnoreCase("FORMAT") && !key.equalsIgnoreCase("QUERY_LAYERS") && !key.equalsIgnoreCase("LAYERS") && !key.equalsIgnoreCase("STYLES")) {
 				urlParameters = urlParameters + key + "=" + value + "&";
 			}
 
@@ -404,5 +411,12 @@ public class WMSProxyServletRequest extends ProxyServletRequest {
 		if(version == null && wmtver != null){
 			version = wmtver;
 		}
+		
+		//If FORMAT is provided for a GetCapabilities (1.3.0 only)
+		//Overwrite it to have text/xml, the only format supported to rewrite Getcapabilities response
+		if(operation.equalsIgnoreCase("GetCapabilities") && format != null && !format.equalsIgnoreCase("text/xml")){
+			format = "text/xml";
+		}
+		urlParameters = urlParameters + "FORMAT=" + format + "&";
 	}
 }
