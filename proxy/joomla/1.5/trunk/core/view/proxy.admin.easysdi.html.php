@@ -964,7 +964,7 @@ echo $pane->endPanel();
 								<td><select name="logger">
 									<option <?php if (strcmp($config->{"log-config"}->{"logger"},"org.apache.log4j.Logger")==0){echo "selected";} ?>
 										value="org.apache.log4j.Logger"><?php echo JText::_( 'PROXY_CONFIG_LOG_MODE_LOG4J'); ?></option>
-									<option <?php if (strcmp($config->{"log-config"}->{"logger"},"org.easysdi.proxy.log")==0){echo "selected";} ?>
+									<option <?php if (strcmp($config->{"log-config"}->{"logger"},"org.easysdi.proxy.log.ProxyLogger")==0){echo "selected";} ?>
 										value="org.easysdi.proxy.log.ProxyLogger"><?php echo JText::_( 'PROXY_CONFIG_LOG_MODE_EASYSDI'); ?></option>
 								</select></td>
 							</tr>
@@ -1013,23 +1013,6 @@ echo $pane->endPanel();
 									<option <?php if (strcmp($config->{"log-config"}->{"file-structure"}->{"period"},"annualy")==0){echo "selected";} ?>
 										value="annually"><?php echo JText::_( 'EASYSDI_ANNUALLY'); ?></option>
 								</select></td>
-							</tr>
-						</table>
-					</td>
-				</tr>
-				<tr>
-					<td colspan = "2">
-						<table class="admintable">
-							<tr>
-								<td class="key"><?php echo JText::_( 'PROXY_CONFIG_LOG_DATE_FORMAT'); ?></td>
-								<td>
-									<select name="dateFormat" id="dateFormat" ">
-									<option <?php if ($config->{"log-config"}->{"date-format"} == "dd/MM/yyyy HH:mm:ss"){echo "selected";}?>
-										value="dd/MM/yyyy HH:mm:ss">dd/MM/yyyy HH:mm:ss</option>
-									<option <?php if ($config->{"log-config"}->{"date-format"} == "dd/MM/yyyy HH:mm:ss:SSS"){echo "selected";}?>
-										value="dd/MM/yyyy HH:mm:ss:SSS">dd/MM/yyyy HH:mm:ss:SSS</option>
-								</select>
-								</td>
 							</tr>
 						</table>
 					</td>
