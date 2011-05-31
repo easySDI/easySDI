@@ -129,7 +129,7 @@ function activateLayer(server,layerName){
 		document.getElementById('LocalFilter@'+server+'@'+layerName).disabled=false;
 		
 	}else{
-		document.getElementById('AllLayers@'+nb).checked = false;
+		document.getElementById('AllLayers@'+server).checked = false;
 		document.getElementById('scaleMin@'+server+'@'+layerName).disabled=true;
 		document.getElementById('scaleMin@'+server+'@'+layerName).value ="";
 		document.getElementById('scaleMax@'+server+'@'+layerName).disabled=true;
@@ -158,9 +158,9 @@ function disableServersLayers ()
 		while (document.getElementById('layer@'+nb+'@'+iLay) != null)
 		{
 			document.getElementById('layer@'+nb+'@'+iLay).checked = check;
-			document.getElementById('scaleMin@'+nb+'@'+iLay).disabled=check;
-			document.getElementById('scaleMax@'+nb+'@'+iLay).disabled=check;
-			document.getElementById('LocalFilter@'+nb+'@'+iLay).disabled=check;
+			document.getElementById('scaleMin@'+nb+'@'+iLay).disabled=!check;
+			document.getElementById('scaleMax@'+nb+'@'+iLay).disabled=!check;
+			document.getElementById('LocalFilter@'+nb+'@'+iLay).disabled=!check;
 			iLay ++;
 		}
 		iLay = 0;

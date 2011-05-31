@@ -186,7 +186,20 @@ echo $pane->endPanel();
 		return "";
 	}
 
+	function getWMSLayerLocalFilter($theServer,$layer){
 
+		if (count($theServer->Layers->Layer)==0) return "";
+
+
+		foreach ($theServer->Layers->Layer as $theLayer )
+		{
+				if (strcmp($theLayer->{'Name'},$layer)==0)
+				{
+					return $theLayer->{'Filter'};
+				}
+			}
+		return "";
+	}
 
 	function getLayerMinScale($theServer,$layer){
 		if (count($theServer->Layers->Layer)==0) return "";
@@ -212,7 +225,28 @@ echo $pane->endPanel();
 		return "";
 	}
 
-
+	function getWMSLayerMinScale($theServer,$layer){
+		if (count($theServer->Layers->Layer)==0) return "";
+		foreach ($theServer->Layers->Layer as $theLayer )
+		{
+				if (strcmp($theLayer->{'Name'},$layer)==0)
+				{
+					return $theLayer->ScaleMin;
+				}
+			}
+		return "";
+	}
+	function getWMSLayerMaxScale($theServer,$layer){
+		if (count($theServer->Layers->Layer)==0) return "";
+		foreach ($theServer->Layers->Layer as $theLayer )
+		{
+				if (strcmp($theLayer->{'Name'},$layer)==0)
+				{
+					return $theLayer->ScaleMax;
+				}
+			}
+		return "";
+	}
 	function isLayerChecked($theServer,$layer){
 
 		if (strcasecmp($theServer->{"Layers"}['All'],"true")==0) return true;
@@ -231,6 +265,22 @@ echo $pane->endPanel();
 	
 	function isWMTSLayerChecked($theServer,$layer){
 
+		if (strcasecmp($theServer->{"Layers"}['All'],"true")==0) return true;
+
+		if (count($theServer->Layers->Layer)==0) return false;
+
+		foreach ($theServer->Layers->Layer as $theLayer )
+		{
+				if (strcmp($theLayer->{'Name'},$layer)==0)
+				{
+					return true;
+				}
+			}
+		return false;
+	}
+	
+	function isWMSLayerChecked($theServer,$layer){
+	
 		if (strcasecmp($theServer->{"Layers"}['All'],"true")==0) return true;
 
 		if (count($theServer->Layers->Layer)==0) return false;
@@ -2035,11 +2085,12 @@ function submitbutton(pressbutton)
 	    		//"?" Not found then use ? instead of &
 	    		$separator = "?";  
 			}
-			$xmlCapa = simplexml_load_file($urlWithPassword.$separator."REQUEST=GetCapabilities&version=1.1.1&SERVICE=WMS");
+			$xmlCapa = simplexml_load_file($urlWithPassword.$separator."REQUEST=GetCapabilities&SERVICE=WMS");
 			if ($xmlCapa === false){
 					global $mainframe;		
 					$mainframe->enqueueMessage(JText::_('EASYSDI_UNABLE TO RETRIEVE THE CAPABILITIES OF THE REMOTE SERVER' )." - ".$urlWithPassword,'error');
-			}else{			
+			}else{	
+					
 				foreach ($thePolicy->Servers->Server as $policyServer){			
 				if (strcmp($policyServer->url,$remoteServer->url)==0){
 					$theServer  = $policyServer;
@@ -2084,37 +2135,56 @@ function submitbutton(pressbutton)
 			</tr>
 			<?php
 			$layernum = 0;
-			foreach ($xmlCapa->xpath('//Layer') as $layer){
-				if ($layer->{'Name'} !=null){
-					if (strlen($layer->{'Name'})>0 ){?>
+			$namespaces = $xmlCapa->getDocNamespaces();
+			$dom_capa = dom_import_simplexml ($xmlCapa);
+			//WMS 1.3.0
+    		$layers = $dom_capa->getElementsByTagNameNS($namespaces[''],'Layer');
+    		if($layers->length == 0)
+    		{
+    			//WMS 1.1.1 and 1.1.0
+    			$layers = $dom_capa->getElementsByTagName('Layer');
+    		}
+    		
+    		foreach ( $layers as $layer){
+    			//WMS 1.3.0
+				$title = $layer->getElementsByTagNameNS($namespaces[''],'Title')->item(0)->nodeValue ;
+				$name = $layer->getElementsByTagNameNS($namespaces[''],'Name')->item(0)->nodeValue ;
+				if($title == null){
+					//WMS 1.1.1 and 1.1.0
+					$title = $layer->getElementsByTagName('Title')->item(0)->nodeValue ;
+					$name = $layer->getElementsByTagName('Name')->item(0)->nodeValue ;
+				}
+				if($name != null){
+					if (strlen($name)>0 ){
+					?>
 			<tr>
 				<td class="key" >
 					<table width ="100%" height="100%" >
 						<tr valign="top" >
-						<td width="15"><input onClick="activateLayer('<?php echo $iServer ; ?>','<?php echo $layernum; ?>')" <?php if( HTML_proxy::isLayerChecked($theServer,$layer) || strcasecmp($theServer->Layers['All'],'True')==0) echo ' checked';?> type="checkbox"
+						<td width="15"><input onClick="activateLayer('<?php echo $iServer ; ?>','<?php echo $layernum; ?>')" <?php if( HTML_proxy::isWMSLayerChecked($theServer,$name) || strcasecmp($theServer->Layers['All'],'True')==0) echo ' checked';?> type="checkbox"
 							id="layer@<?php echo $iServer; ?>@<?php echo $layernum;?>" 
 							name="layer@<?php echo $iServer; ?>@<?php echo $layernum;?>"
-							value="<?php echo $layer->Name;?>"></td>
-						<td align="left"><?php echo $layer->Name; ?></td>
+						value="<?php echo $name;?>"></td>
+						<td align="left"><?php echo $name; ?></td>
 						</tr>
 						<tr >
-						<td colspan="2" align="left">"<?php echo $layer->Title;?>"
+						<td colspan="2" align="left">"<?php echo $title;?>"
 							</td>
 						</tr>
 					</table>		
 				</td>
-				<td align="center"><input <?php if(! HTML_proxy::isLayerChecked($theServer,$layer)) {echo 'disabled';}?> <?php if (strcasecmp($theServer->Layers['All'],'True')==0 ) echo ' disabled '; ?> type="text" size="10"
+				<td align="center"><input <?php if(! HTML_proxy::isWMSLayerChecked($theServer,$name)) {echo 'disabled';}?> <?php if (strcasecmp($theServer->Layers['All'],'True')==0 ) echo ' disabled '; ?> type="text" size="10"
 					id="scaleMin@<?php echo $iServer; ?>@<?php echo $layernum;?>" 
 					name="scaleMin@<?php echo $iServer; ?>@<?php echo $layernum;?>"
-					value="<?php echo HTML_proxy::getLayerMinScale($theServer,$layer); ?>"></td>
-				<td align="center"><input <?php if(! HTML_proxy::isLayerChecked($theServer,$layer)) {echo 'disabled';}?> <?php if (strcasecmp($theServer->Layers['All'],'True')==0 ) echo ' disabled '; ?> type="text" size="10"
+					value="<?php echo HTML_proxy::getWMSLayerMinScale($theServer,$name); ?>"></td>
+				<td align="center"><input <?php if(! HTML_proxy::isWMSLayerChecked($theServer,$name)) {echo 'disabled';}?> <?php if (strcasecmp($theServer->Layers['All'],'True')==0 ) echo ' disabled '; ?> type="text" size="10"
 					id="scaleMax@<?php echo $iServer; ?>@<?php echo $layernum?>" 
 					name="scaleMax@<?php echo $iServer; ?>@<?php echo $layernum;?>"
-					value="<?php echo HTML_proxy::getLayerMaxScale($theServer,$layer); ?>"></td>
-				<td><textarea <?php if(! HTML_proxy::isLayerChecked($theServer,$layer)) {echo 'disabled';}?> <?php if (strcasecmp($theServer->Layers['All'],'True')==0 ) echo ' disabled '; ?> rows="3" cols="60"
+					value="<?php echo HTML_proxy::getWMSLayerMaxScale($theServer,$name); ?>"></td>
+				<td><textarea <?php if(! HTML_proxy::isWMSLayerChecked($theServer,$name)) {echo 'disabled';}?> <?php if (strcasecmp($theServer->Layers['All'],'True')==0 ) echo ' disabled '; ?> rows="3" cols="60"
 					id="LocalFilter@<?php echo $iServer; ?>@<?php echo $layernum;?>" 
 					name="LocalFilter@<?php echo $iServer; ?>@<?php echo $layernum;?>"> 
-					<?php $localFilter = HTML_proxy ::getLayerLocalFilter($theServer,$layer); if (!(strlen($localFilter)>	0)){} else {echo $localFilter;} ?></textarea></td>
+					<?php $localFilter = HTML_proxy ::getWMSLayerLocalFilter($theServer,$name); if (!(strlen($localFilter)>	0)){} else {echo $localFilter;} ?></textarea></td>
 			<td><input type="hidden" id="BBOX@<?php echo $iServer; ?>@<?php echo $layernum;?>" name="BBOX@<?php echo $iServer; ?>@<?php echo $layernum;?>" value=""></td>
 			</tr>
 			<?php 
