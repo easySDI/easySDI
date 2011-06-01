@@ -2084,7 +2084,7 @@ function submitbutton(pressbutton)
 
 	<input type="hidden" name="remoteServer<?php echo $iServer;?>" id="remoteServer<?php echo $iServer;?>" value="<?php echo $remoteServer->url ?>">
 	<fieldset class="adminform" id="fsServer<?php echo $iServer;?>" >
-		<legend><?php echo JText::_( 'EASYSDI_WMS_SERVER'); ?> <?php echo $remoteServer->url ?></legend>
+		<legend><?php echo JText::_( 'EASYSDI_WMS_SERVER'); ?> <?php echo $remoteServer->alias ;?> (<?php echo $remoteServer->url; ?>)</legend>
 		<table class="admintable">
 			<tr>
 				<td class="key"><?php echo JText::_( 'EASYSDI_WFS_SERVER_PREFIXE'); ?> </td>		
