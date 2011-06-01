@@ -40,6 +40,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
  */
 public class ProxyLogger extends Logger {
 
+
+
 	private static Logger rootLogger;
 	private List<String> lLogs = new Vector<String>();
 	private  String logDateFormat;
@@ -103,53 +105,53 @@ public class ProxyLogger extends Logger {
 	public void fatal(Object message) {
 		this.log(Level.FATAL, message);
 	}
+	
+	/* (non-Javadoc)
+	 * @see org.apache.log4j.Category#warn(java.lang.Object)
+	 */
+	@Override
+	public void warn(Object message) {
+		this.log(Level.WARN, message);
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.apache.log4j.Category#debug(java.lang.Object, java.lang.Throwable)
+	 */
+	@Override
+	public void debug(Object message, Throwable t) {
+		this.log(Level.DEBUG, message + " - " + t.toString());
+	}
+
+	/* (non-Javadoc)
+	 * @see org.apache.log4j.Category#error(java.lang.Object, java.lang.Throwable)
+	 */
+	@Override
+	public void error(Object message, Throwable t) {
+		this.log(Level.ERROR, message + " - " + t.toString());
+	}
+
+	/* (non-Javadoc)
+	 * @see org.apache.log4j.Category#fatal(java.lang.Object, java.lang.Throwable)
+	 */
+	@Override
+	public void fatal(Object message, Throwable t) {
+		this.log(Level.FATAL, message + " - " + t.toString());
+	}
+
+	/* (non-Javadoc)
+	 * @see org.apache.log4j.Category#info(java.lang.Object, java.lang.Throwable)
+	 */
+	@Override
+	public void info(Object message, Throwable t) {
+		this.log(Level.INFO, message + " - " + t.toString());
+	}
 
 	/* (non-Javadoc)
 	 * @see org.apache.log4j.Category#info(java.lang.Object)
 	 */
 	@Override
 	public void info(Object message) {
-		String name = null;
-		String text = null;
-		
-		if(!Level.INFO.isGreaterOrEqual(level))
-			return;
-		
-		if(message == null)
-			text = "null";
-		if(message instanceof Object[] ){
-			name = ((String[])message)[0];
-			text = ((String[])message)[1];
-		}else{
-			text = message.toString();
-			if(text.contains("=")){
-				name = text.substring(0,text.indexOf("="));
-				text = text.substring(text.indexOf("=")+1);
-			}
-		}		
-		
-		StringBuffer sb = new StringBuffer();
-
-		DateFormat dateFormat = new SimpleDateFormat(this.logDateFormat);
-		Date d = new Date();
-
-		sb.append("<logEntry time=\"" + dateFormat.format(d) + "\" severity=\"SYSTEM\"");
-		if (name != null) {
-			sb.append(" name=\"");
-			sb.append(name);
-			sb.append("\"");
-		}
-		sb.append(">");
-		sb.append("<![CDATA[");
-		sb.append(text);
-		sb.append("]]>");
-		sb.append("</logEntry>");
-
-		synchronized (lLogs) {
-			if (lLogs == null)
-				lLogs = new Vector<String>();
-			lLogs.add(sb.toString());
-		}
+		this.log(Level.INFO, message);
 	}
 
 	/* (non-Javadoc)
@@ -213,13 +215,7 @@ public class ProxyLogger extends Logger {
 		this.level = level;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.apache.log4j.Category#warn(java.lang.Object)
-	 */
-	@Override
-	public void warn(Object message) {
-		this.log(Level.WARN, message);
-	}
+	
 
 	public void writeInLog(String date, HttpServletRequest req) {
 		boolean newLog = false;

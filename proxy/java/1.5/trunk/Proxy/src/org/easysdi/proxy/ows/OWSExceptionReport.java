@@ -21,9 +21,11 @@ import java.io.IOException;
 public interface OWSExceptionReport {
 
 	public static final String CODE_OPERATION_NOT_SUPPORTED 		= "OperationNotSupported";
+	public static final String CODE_OPERATION_NOT_ALLOWED 			= "OperationNotAllowed";
 	public static final String CODE_MISSING_PARAMETER_VALUE 		= "MissingParameterValue";
 	public static final String CODE_INVALID_PARAMETER_VALUE 		= "InvalidParameterValue";
 	public static final String CODE_VERSION_NEGOTIATION_FAILED 		= "VersionNegotiationFailed";
+	public static final String CODE_MULTISERVER_VERSION_NEGOTIATION_FAILED 		= "MultiServerVersionNegotiationFailed";
 	public static final String CODE_INVALID_UPDATE_SEQUENCE 		= "InvalidUpdateSequence";
 	public static final String CODE_OPTION_NOT_SUPPORTED 			= "OptionNotSupported";
 	public static final String CODE_NO_APPLICABLE_CODE 				= "NoApplicableCode";
@@ -47,7 +49,7 @@ public interface OWSExceptionReport {
 	public static final String TEXT_INVALID_SERVICE_NAME 			= "Invalid service name given in the SERVICE parameter.";
 	public static final String TEXT_ERROR_IN_EASYSDI_PROXY 			= "Error in EasySDI Proxy. Consult the proxy log for more details.";
 	public static final String TEXT_NO_RESULT_RECEIVED_BY_PROXY		= "Error in EasySDI Proxy. EasySDI Proxy didn't receive any result from remote server.";
-	public static final String TEXT_VERSION_NEGOCIATION_FAILED		= "Remote servers did not respond with the same WMS protocol version : version number negociation in multi server context failed.";
+	public static final String TEXT_MULTISERVER_VERSION_NEGOCIATION_FAILED		= "Remote servers did not respond with the same WMS protocol version : version number negociation in multi server context failed.";
 	public static final String TEXT_INVALID_PARAMETER_VALUE 		= "Invalid parameter value given in the request.";
 	
 	public static final String TEXT_MISSING_PARAMETER_VALUE			= "Parameter is missing.";
@@ -61,6 +63,8 @@ public interface OWSExceptionReport {
 	public static final String TEXT_CURRENT_UPDATE_SEQUENCE			= "Value of UpdateSequence parameter is equal to current value of service metadata update sequence number.";
 	public static final String TEXT_MISSING_DIMENSION_VALUE			= "Request does not include a sample dimension value, and the server did not declare a default value for that dimension.";
 	public static final String TEXT_INVALID_DIMENSION_VALUE			= "Request contains an invalid sample dimension value.";
+	
+	public static final String TEXT_EXCEPTION_ERROR					= "Error sending exception.";
 	
 	public StringBuffer generateExceptionReport (String errorMessage, String code, String locator) throws IOException;
 	

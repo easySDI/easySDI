@@ -194,7 +194,7 @@ public class WMSProxyServlet extends ProxyServlet {
 			if(!isOperationAllowedByPolicy(getProxyRequest().getOperation()))
 			{
 				logger.error( OWSExceptionReport.TEXT_OPERATION_NOT_ALLOWED);
-				StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_OPERATION_NOT_ALLOWED,OWSExceptionReport.CODE_OPERATION_NOT_SUPPORTED,"REQUEST");
+				StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_OPERATION_NOT_ALLOWED,OWSExceptionReport.CODE_OPERATION_NOT_ALLOWED,"REQUEST");
 				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
 				return;
 			}
@@ -211,7 +211,7 @@ public class WMSProxyServlet extends ProxyServlet {
 				out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
 				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
 			} catch (IOException e1) {
-				logger.error( configuration.getServletClass() + ".requestPreTreatmentGET : ", e1);
+				logger.error( OWSExceptionReport.TEXT_EXCEPTION_ERROR, e1);
 			}
 		}
 	}
@@ -265,7 +265,7 @@ public class WMSProxyServlet extends ProxyServlet {
 				out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
 				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
 			} catch (IOException e1) {
-				logger.error( OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY, e1);
+				logger.error( OWSExceptionReport.TEXT_EXCEPTION_ERROR, e1);
 			}
 			return;
 		}
@@ -404,7 +404,7 @@ public class WMSProxyServlet extends ProxyServlet {
 				logger.trace("requestPreTraitementGET end transform");
 			} else {
 				//Generate an empty image
-				logger.debug("WMSProxyServlet.requestPreTreatmentGetMap : no response from remote servers, generate an empty image");
+				logger.debug(configuration.getServletClass() + ".requestPreTreatmentGetMap : no response from remote servers, generate an empty image");
 				BufferedImage imgOut = generateEmptyImage(getProxyRequest().getWidth(), getProxyRequest().getHeight(), getProxyRequest().getFormat(), true, resp);
 				Iterator<ImageWriter> iter = ImageIO.getImageWritersByMIMEType(responseContentType);
 				ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -418,13 +418,13 @@ public class WMSProxyServlet extends ProxyServlet {
 			}
 		}catch(Exception e){
 			resp.setHeader("easysdi-proxy-error-occured", "true");
-			logger.error("WMSProxyServlet.requestPreTreatmentGetMap: ", e);
+			logger.error(configuration.getServletClass() + ".requestPreTreatmentGetMap: ", e);
 			StringBuffer out;
 			try {
 				out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
 				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
 			} catch (IOException e1) {
-				logger.error(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY, e1);
+				logger.error(OWSExceptionReport.TEXT_EXCEPTION_ERROR, e1);
 			}
 			return;
 		}
@@ -474,13 +474,13 @@ public class WMSProxyServlet extends ProxyServlet {
 						
 		} catch (Exception e) {
 			resp.setHeader("easysdi-proxy-error-occured", "true");
-			logger.error("WMSProxyServlet.requestPreTreatmentGetLegendGraphic: ", e);
+			logger.error(configuration.getServletClass() + ".requestPreTreatmentGetLegendGraphic: ", e);
 			StringBuffer out;
 			try {
 				out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
 				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
 			} catch (IOException e1) {
-				logger.error(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY, e1);
+				logger.error(OWSExceptionReport.TEXT_EXCEPTION_ERROR, e1);
 			}
 			return;
 		}
@@ -627,20 +627,20 @@ public class WMSProxyServlet extends ProxyServlet {
 				transformGetFeatureInfo( req, resp);
 				logger.trace("requestPreTreatmentGetFeatureInfo end transform");
 			} else {
-				logger.debug("WMSProxyServlet.requestPreTreatmentGetFeatureInfo : no response from remote servers, generate an empty response");
+				logger.debug(configuration.getServletClass() + ".requestPreTreatmentGetFeatureInfo : no response from remote servers, generate an empty response");
 				ByteArrayOutputStream out = new ByteArrayOutputStream();
 				sendHttpServletResponse(req, resp,out,responseContentType, HttpServletResponse.SC_OK);
 			}
 			
 		} catch (Exception e) {
 			resp.setHeader("easysdi-proxy-error-occured", "true");
-			logger.error("WMSProxyServlet.requestPreTreatmentGetFeatureInfo: ", e);
+			logger.error(configuration.getServletClass() + ".requestPreTreatmentGetFeatureInfo: ", e);
 			StringBuffer out;
 			try {
 				out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
 				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
 			} catch (IOException e1) {
-				logger.error(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY, e1);
+				logger.error(OWSExceptionReport.TEXT_EXCEPTION_ERROR, e1);
 			}
 			return;
 		}
@@ -675,8 +675,8 @@ public class WMSProxyServlet extends ProxyServlet {
 			
 			//Check if all the responses are in the same WMS protocol version
 			if(!isAllGetCapabilitiesResponseSameVersion(wmsGetCapabilitiesResponseFilePathMap)){
-				logger.error(OWSExceptionReport.TEXT_VERSION_NEGOCIATION_FAILED);
-				StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_VERSION_NEGOCIATION_FAILED,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,null);
+				logger.error(OWSExceptionReport.TEXT_MULTISERVER_VERSION_NEGOCIATION_FAILED);
+				StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_MULTISERVER_VERSION_NEGOCIATION_FAILED,OWSExceptionReport.CODE_MULTISERVER_VERSION_NEGOTIATION_FAILED,null);
 				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
 				return;
 			}
@@ -745,13 +745,13 @@ public class WMSProxyServlet extends ProxyServlet {
 
 		} catch (Exception e) {
 			resp.setHeader("easysdi-proxy-error-occured", "true");
-			logger.error("WMSProxyServlet.transformGetCapabilities: ", e);
+			logger.error(configuration.getServletClass() + ".transformGetCapabilities: ", e);
 			StringBuffer out;
 			try {
 				out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
 				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
 			} catch (IOException e1) {
-				logger.error(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY, e1);
+				logger.error(OWSExceptionReport.TEXT_EXCEPTION_ERROR, e1);
 			}
 			return;
 		}
@@ -824,13 +824,13 @@ public class WMSProxyServlet extends ProxyServlet {
 			sendHttpServletResponse(req,resp, out,responseContentType, responseStatusCode);
 		}catch (Exception e){
 			resp.setHeader("easysdi-proxy-error-occured", "true");
-			logger.error("WMSProxyServlet.transformGetMap: ", e);
+			logger.error(configuration.getServletClass() + ".transformGetMap: ", e);
 			StringBuffer out;
 			try {
 				out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
 				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
 			} catch (IOException e1) {
-				logger.error(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY, e1);
+				logger.error(OWSExceptionReport.TEXT_EXCEPTION_ERROR, e1);
 			}
 			return;
 		}
@@ -869,13 +869,13 @@ public class WMSProxyServlet extends ProxyServlet {
 			
 		}catch (Exception e){
 			resp.setHeader("easysdi-proxy-error-occured", "true");
-			logger.error("WMSProxyServlet.transformGetFeatureInfo: ", e);
+			logger.error(configuration.getServletClass() + ".transformGetFeatureInfo: ", e);
 			StringBuffer out;
 			try {
 				out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
 				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
 			} catch (IOException e1) {
-				logger.error(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY, e1);
+				logger.error(OWSExceptionReport.TEXT_EXCEPTION_ERROR, e1);
 			}
 			return;
 		}
@@ -1295,7 +1295,7 @@ public class WMSProxyServlet extends ProxyServlet {
 			}
 		} catch (Exception e) {
 			resp.setHeader("easysdi-proxy-error-occured", "true");
-			logger.error("WMSProxyServlet.filterImage: ",e);
+			logger.error(configuration.getServletClass() + ".filterImage: ",e);
 		}
 		return null;
 	}
@@ -1336,7 +1336,7 @@ public class WMSProxyServlet extends ProxyServlet {
 				}
 			} catch (Exception e) {
 				resp.setHeader("easysdi-proxy-error-occured", "true");
-				logger.error("WMSProxyServlet.imageFiltering: ",e);
+				logger.error(configuration.getServletClass() + ".imageFiltering: ",e);
 			}
 
 			final GeometryAttributeType geom = new GeometricAttributeType("Geom", Geometry.class, false, null, crs, null);
@@ -1386,7 +1386,7 @@ public class WMSProxyServlet extends ProxyServlet {
 			return dimg;
 		} catch (Exception e) {
 			resp.setHeader("easysdi-proxy-error-occured", "true");
-			logger.error("WMSProxyServlet.imageFiltering: ",e);
+			logger.error(configuration.getServletClass() + ".imageFiltering: ",e);
 		}
 
 		return imageSource;

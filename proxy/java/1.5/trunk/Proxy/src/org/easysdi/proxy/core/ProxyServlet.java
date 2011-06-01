@@ -401,7 +401,35 @@ public abstract class ProxyServlet extends HttpServlet {
 			((ProxyLogger)logger).setDateFormat(configuration.getLogDateFormat());
 			((ProxyLogger)logger).setLogFile(configuration.getLogFile());
 		}else{
+//			DailyRollingFileAppender newAppender = new DailyRollingFileAppender();
+//			newAppender.setName(configuration.getId());
+//			newAppender.setLayout(new PatternLayout("%d{"+configuration.getLogDateFormat()+"} [%t] %-5p %C{6} (%F:%L) - %m%n"));
+//			String logFile = configuration.getLogFile();
+//			File fLogFile= null;
+//			if (logFile != null) {
+//				fLogFile = new File(logFile);
+//				if (!fLogFile.exists()) {
+//					try {
+//						fLogFile.createNewFile();
+//					} catch (IOException e) {
+//						// TODO Auto-generated catch block
+//						e.printStackTrace();
+//					}
+//				}
+//			}
+//			newAppender.setFile(configuration.getLogFile());
+//			if(configuration.getPeriod().equalsIgnoreCase("daily"))
+//				newAppender.setDatePattern("'.'yyyy-MM-dd-HH-mm");
+//			else if(configuration.getPeriod().equalsIgnoreCase("monthly"))
+//				newAppender.setDatePattern("'.'yyyy-MM");
+//			else if(configuration.getPeriod().equalsIgnoreCase("weekly"))
+//				newAppender.setDatePattern("'.'yyyy-ww");
+//			else 
+//				newAppender.setDatePattern("'.'yyyy-MM-dd");
+//			logger.addAppender(newAppender);
 			DailyRollingFileAppender appender = (DailyRollingFileAppender)logger.getAppender("logFileAppender");
+			appender.setBufferedIO(true);
+			appender.setAppend(true);
 			appender.setFile(configuration.getLogFile());
 			//DatePattern receive the period rolling value
 			if(configuration.getPeriod().equalsIgnoreCase("daily"))
@@ -413,6 +441,7 @@ public abstract class ProxyServlet extends HttpServlet {
 			else 
 				appender.setDatePattern("'.'yyyy-MM-dd");
 			
+			appender.activateOptions();
 			PatternLayout layout = (PatternLayout) appender.getLayout();
 			String conversionPattern = layout.getConversionPattern();
 			int start = conversionPattern.indexOf("%d{")+3;
@@ -420,6 +449,7 @@ public abstract class ProxyServlet extends HttpServlet {
 			
 			String result = conversionPattern.substring(0,start) + configuration.getLogDateFormat() + conversionPattern.substring(end);
 			layout.setConversionPattern(result);
+			
 		}
 		
 		//Log initilization informations
