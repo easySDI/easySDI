@@ -115,7 +115,18 @@ public class EasySdiConfigFilter extends GenericFilterBean {
 			try {
 				configuration = setConfig(servletName);
 				setPolicySet(configuration, request, servletName);
-			} catch (Exception e) {
+			}catch (PolicyNotFoundException e) {
+				logger.error("Error occurred during " + servletName + " config initialization", e);
+				StringBuffer out = new OWS200ExceptionReport().generateExceptionReport(e.toString(), OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "") ;
+				response.setContentType("text/xml; charset=utf-8");
+				response.setContentLength(out.length());
+				OutputStream os = response.getOutputStream();
+				os.write(out.toString().getBytes());
+				os.flush();
+				os.close();
+				return;
+			} 
+			catch (Exception e) {
 				logger.error("Error occurred during " + servletName + " config initialization", e);
 				StringBuffer out = new OWS200ExceptionReport().generateExceptionReport("Error occurred during " + servletName + " config initialization : "+e.toString(), OWSExceptionReport.CODE_MISSING_PARAMETER_VALUE, "request") ;
 				response.setContentType("text/xml; charset=utf-8");
