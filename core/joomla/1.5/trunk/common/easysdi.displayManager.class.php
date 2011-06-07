@@ -127,45 +127,138 @@ class displayManager{
 			$doc .= '<?xml version="1.0"?>';
 			$doc .= '<Metadata><Diffusion><fileIdentifier><CharacterString>'.$id.'</CharacterString></fileIdentifier>';
 			$doc .= '<gmd:identificationInfo xmlns:gmd="http://www.isotc211.org/2005/gmd"><gmd:MD_DataIdentification><gmd:citation><gmd:CI_Citation><gmd:title><gmd:LocalisedCharacterString>'.$title.'</gmd:LocalisedCharacterString></gmd:title></gmd:CI_Citation></gmd:citation></gmd:MD_DataIdentification></gmd:identificationInfo>';
-			/*$query = "SELECT DISTINCT #__easysdi_product_properties_definition.text as PropDef 
-						from #__easysdi_product_properties_definition 
-						INNER JOIN 
-						(select property_value_id, #__easysdi_product_properties_values_definition.text,properties_id 
-								from #__easysdi_product_property 
-								INNER JOIN #__easysdi_product_properties_values_definition 
-								ON #__easysdi_product_property.property_value_id=#__easysdi_product_properties_values_definition.id
-	 							where product_id IN (select id from #__easysdi_product where metadata_id = '".$id."')) T 
-	 					ON #__easysdi_product_properties_definition.id=T.properties_id";
 			
-			$database->setQuery($query);
-			$rows = $database->loadObjectList();		
-			foreach ($rows as $row)
+			//select selected properties
+			$selected = array();
+			$query = "SELECT propertyvalue_id as value FROM #__sdi_product_property WHERE product_id=".$prod_id;	
+			$database->setQuery( $query );
+			$selected = $database->loadResultArray();
+			
+			if ($database->getErrorNum()) {						
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");					 			
+			}
+			
+			$product = new product( $database );
+			$product->load( $prod_id );
+			
+			//Version
+			$version_id = JRequest::getVar('objectversion_id', 0 );
+			if($version_id == 0)
+			{
+				$version_id = $product->objectversion_id;
+			}
+			$version = new objectversion($database);
+			$version->load($version_id);
+			
+			$supplier = new account($database);
+			$object = new object ($database);
+			$object_id = JRequest::getVar('object_id', 0 );
+			if($object_id==0)
+			{
+				$object_id=$version->object_id;
+			}
+			else
+			{
+				if($object_id <> $version->object_id)
+				{
+					$version_id=0;
+					$version->load($version_id);
+				}
+			}
+			if($object_id<>0)
 			{
 				
-				$doc .= "<Property><PropertyName>$row->PropDef</PropertyName>";
-				
-				
-				$subQuery = "SELECT  #__easysdi_product_properties_definition.text as PropDef, T.text as ValueDef 
-						  from #__easysdi_product_properties_definition 
-						  INNER JOIN 
-						  (select property_value_id, #__easysdi_product_properties_values_definition.text,properties_id 
-						 	from #__easysdi_product_property 
-							INNER JOIN #__easysdi_product_properties_values_definition 
-						 	ON #__easysdi_product_property.property_value_id=#__easysdi_product_properties_values_definition.id
-	 						where product_id IN (select id from #__easysdi_product where metadata_id = '".$id."') ) T 
-	 					 ON #__easysdi_product_properties_definition.id=T.properties_id 
-	 					 Where #__easysdi_product_properties_definition.text = '".addslashes($row->PropDef)."'";
-				
-				$database->setQuery($subQuery);
-				$results = $database->loadObjectList();
-				foreach ($results as $result)
+				$object->load($object_id);
+				$supplier->load($object->account_id);
+			}
+			
+			$objecttype_id = JRequest::getVar('objecttype_id', 0 );
+			if($objecttype_id==0)
+			{
+				if($object_id<>0)
 				{
-					$doc.="<PropertyValue><value>$result->ValueDef</value></PropertyValue>";
+					$objecttype_id=$object->objecttype_id;
+				}
+			}
+			else
+			{
+				if($objecttype_id <>$object->objecttype_id)
+				{
+					$object_id=0;
+					$object->load($object_id);
+					$supplier->load(0);
+					$version_id=0;
+					$version->load($version_id);
+				}
+			}
+			
+			$lang =& JFactory::getLanguage();
+			$condition="";
+			if($supplier->id)
+			{
+				$condition = " OR p.account_id = $supplier->id ";
+			}
+			
+			$queryProperties = "SELECT p.id as property_id, 
+									   t.label as text,
+									   p.type as type,
+									   p.mandatory as mandatory 
+								FROM #__sdi_language l, 
+									#__sdi_list_codelang cl,
+									#__sdi_property p 
+									LEFT OUTER JOIN #__sdi_translation t ON p.guid=t.element_guid 
+								WHERE t.language_id=l.id AND l.codelang_id=cl.id AND cl.code='".$lang->_lang."' 
+								AND p.published =1 
+								AND (p.account_id = 0 $condition)
+								order by p.ordering";
+			$database->setQuery( $queryProperties);
+			$propertiesList = $database->loadObjectList();
+			if ($database->getErrorNum()) 
+			{						
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");					 			
+			}
+			
+			$doc .= '<Properties isProductPublished="'.$product->published.'" count="'.count($propertiesList).'">';
+			foreach ($propertiesList as $curProperty)
+			{
+				$propertiesValueList = array();
+				$query = "SELECT a.id as value, t.label as text 
+							FROM 
+								#__sdi_list_codelang cl,
+								#__sdi_language l,
+								#__sdi_propertyvalue a 
+							LEFT OUTER JOIN #__sdi_translation t ON a.guid=t.element_guid 
+						WHERE t.language_id=l.id AND l.codelang_id=cl.id AND cl.code='".$lang->_lang."' 
+							AND a.property_id =".$curProperty->property_id." 
+							order by a.ordering";				 
+				$database->setQuery( $query );
+				$propertiesValueList = $database->loadObjectList();
+				if ($database->getErrorNum()) 
+				{						
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");					 			
 				}
 				
-				$doc.= "</Property>";
+				$count = 0;
+				foreach($propertiesValueList as $propertyValue){
+				   	if (in_array($propertyValue->value, $selected)){
+				   		$count ++;
+				   	}
+				}
+				
+				if($count > 0){
+				   $doc .= '<Property>';
+				   $doc .= '<PropertyName>'.$curProperty->text.'</PropertyName>';
+				   foreach($propertiesValueList as $propertyValue){
+				   	if (in_array($propertyValue->value, $selected)){
+				   		$doc .= '<PropertyValue>';
+				   		$doc .= '<value>'.$propertyValue->text.'</value>';
+				   		$doc .= '</PropertyValue>';
+				   	}
+				   }
+				   $doc .= '</Property>';
+				}
 			}
-			*/
+			$doc .= '</Properties>';
 			$doc .= '</Diffusion></Metadata>';
 			
 			$xml = new DomDocument();
@@ -261,7 +354,14 @@ class displayManager{
 		}
 		else if ($type == "diffusion")
 		{
+			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_shop'.DS.'core'.DS.'model'.DS.'product.easysdi.class.php');
+			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_catalog'.DS.'core'.DS.'model'.DS.'object.easysdi.class.php');
+			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_catalog'.DS.'core'.DS.'model'.DS.'objectversion.easysdi.class.php');
+			
 			$title;
+			
+			$database->setQuery("SELECT id FROM #__sdi_metadata WHERE guid=".$id);
+			$prod_id = $database->loadResult();
 			
 			$titleQuery = "  SELECT o.name 
 						 FROM #__sdi_metadata m
@@ -273,145 +373,141 @@ class displayManager{
 			
 			$doc = '';
 			$doc .= '<?xml version="1.0"?>';
+			$doc .= '';
 			$doc .= '<Metadata><Diffusion><fileIdentifier><CharacterString>'.$id.'</CharacterString></fileIdentifier>';
 			$doc .= '<gmd:identificationInfo xmlns:gmd="http://www.isotc211.org/2005/gmd"><gmd:MD_DataIdentification><gmd:citation><gmd:CI_Citation><gmd:title><gmd:LocalisedCharacterString>'.$title.'</gmd:LocalisedCharacterString></gmd:title></gmd:CI_Citation></gmd:citation></gmd:MD_DataIdentification></gmd:identificationInfo>';
 			
-			/*
-			 * Append properties like this:
-			 Assign differents messages when a metadata doesn't have diffusion property or when the product is not published.
-			<Properties isProductPublished=0/1 count=2>
-				<Property>
-					<PropertyName>SystÃ¨me d'exploitation</PropertyName>
-					<PropertyValue>
-						<value>Mac</value>
-					</PropertyValue>
-					<PropertyValue>
-						<value>Windows</value>
-					</PropertyValue>
-				</Property>
-				<Property>
-					<PropertyName>Type de dÃ©coupe</PropertyName>
-					<PropertyValue>
-						<value>Compris entiÃ¨rement dans la surface de sÃ©lection</value>
-					</PropertyValue>
-					<PropertyValue>
-						<value>Compris entiÃ¨rement ou partiellement dans la surface de
-							sÃ©lection</value>
-					</PropertyValue>
-					<PropertyValue>
-						<value>DÃ©coupÃ© selon la surface de sÃ©lection</value>
-					</PropertyValue>
-				</Property>
-			</Properties>
-			*/
+			//select selected properties
+			$selected = array();
+			$query = "SELECT propertyvalue_id as value FROM #__sdi_product_property WHERE product_id=".$prod_id;	
+			$database->setQuery( $query );
+			$selected = $database->loadResultArray();
 			
+			if ($database->getErrorNum()) {						
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");					 			
+			}
 			
-			/* V1
-			$query = "SELECT DISTINCT #__easysdi_product_properties_definition.text as PropDef ,
-						#__easysdi_product_properties_definition.translation as PropTranslation
-						from #__easysdi_product_properties_definition 
-						INNER JOIN 
-						(select property_value_id, #__easysdi_product_properties_values_definition.text,
-								properties_id 
-								from #__easysdi_product_property 
-								INNER JOIN #__easysdi_product_properties_values_definition 
-								ON #__easysdi_product_property.property_value_id=#__easysdi_product_properties_values_definition.id
-	 							where product_id IN (select id from #__easysdi_product where metadata_id = '".$id."')) T 
-	 					ON #__easysdi_product_properties_definition.id=T.properties_id
-	 					WHERE #__easysdi_product_properties_definition.published = 1 ";
-						*/
-						
-						/* V1
-			foreach ($rows as $row)
+			$product = new product( $database );
+			$product->load( $prod_id );
+			
+			//Version
+			$version_id = JRequest::getVar('objectversion_id', 0 );
+			if($version_id == 0)
 			{
-				$valueProp = JText::_($row->PropTranslation);
-				$doc .= "<Property><PropertyName>$valueProp</PropertyName>";
-				
-				
-				$subQuery = "SELECT  #__easysdi_product_properties_definition.text as PropDef, T.translation as ValueDef 
-						  from #__easysdi_product_properties_definition 
-						  INNER JOIN 
-						  (select property_value_id, #__easysdi_product_properties_values_definition.text,
-						  #__easysdi_product_properties_values_definition.translation,properties_id 
-						 	from #__easysdi_product_property 
-							INNER JOIN #__easysdi_product_properties_values_definition 
-						 	ON #__easysdi_product_property.property_value_id=#__easysdi_product_properties_values_definition.id
-	 						where product_id IN (select id from #__easysdi_product where metadata_id = '".$id."') ) T 
-	 					 ON #__easysdi_product_properties_definition.id=T.properties_id 
-	 					 Where #__easysdi_product_properties_definition.text = '".addslashes($row->PropDef)."'";
-				
-				$database->setQuery($subQuery);
-				$results = $database->loadObjectList();
-				foreach ($results as $result)
+				$version_id = $product->objectversion_id;
+			}
+			$version = new objectversion($database);
+			$version->load($version_id);
+			
+			$supplier = new account($database);
+			$object = new object ($database);
+			$object_id = JRequest::getVar('object_id', 0 );
+			if($object_id==0)
+			{
+				$object_id=$version->object_id;
+			}
+			else
+			{
+				if($object_id <> $version->object_id)
 				{
-					$value = JText::_($result->ValueDef);
-					$doc.="<PropertyValue><value>$value</value></PropertyValue>";
+					$version_id=0;
+					$version->load($version_id);
+				}
+			}
+			if($object_id<>0)
+			{
+				
+				$object->load($object_id);
+				$supplier->load($object->account_id);
+			}
+			
+			$objecttype_id = JRequest::getVar('objecttype_id', 0 );
+			if($objecttype_id==0)
+			{
+				if($object_id<>0)
+				{
+					$objecttype_id=$object->objecttype_id;
+				}
+			}
+			else
+			{
+				if($objecttype_id <>$object->objecttype_id)
+				{
+					$object_id=0;
+					$object->load($object_id);
+					$supplier->load(0);
+					$version_id=0;
+					$version->load($version_id);
+				}
+			}
+			
+			$lang =& JFactory::getLanguage();
+			$condition="";
+			if($supplier->id)
+			{
+				$condition = " OR p.account_id = $supplier->id ";
+			}
+			
+			$queryProperties = "SELECT p.id as property_id, 
+									   t.label as text,
+									   p.type as type,
+									   p.mandatory as mandatory 
+								FROM #__sdi_language l, 
+									#__sdi_list_codelang cl,
+									#__sdi_property p 
+									LEFT OUTER JOIN #__sdi_translation t ON p.guid=t.element_guid 
+								WHERE t.language_id=l.id AND l.codelang_id=cl.id AND cl.code='".$lang->_lang."' 
+								AND p.published =1 
+								AND (p.account_id = 0 $condition)
+								order by p.ordering";
+			$database->setQuery( $queryProperties);
+			$propertiesList = $database->loadObjectList();
+			if ($database->getErrorNum()) 
+			{						
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");					 			
+			}
+			
+			$doc .= '<Properties isProductPublished="'.$product->published.'" count="'.count($propertiesList).'">';
+			foreach ($propertiesList as $curProperty)
+			{
+				$propertiesValueList = array();
+				$query = "SELECT a.id as value, t.label as text 
+							FROM 
+								#__sdi_list_codelang cl,
+								#__sdi_language l,
+								#__sdi_propertyvalue a 
+							LEFT OUTER JOIN #__sdi_translation t ON a.guid=t.element_guid 
+						WHERE t.language_id=l.id AND l.codelang_id=cl.id AND cl.code='".$lang->_lang."' 
+							AND a.property_id =".$curProperty->property_id." 
+							order by a.ordering";				 
+				$database->setQuery( $query );
+				$propertiesValueList = $database->loadObjectList();
+				if ($database->getErrorNum()) 
+				{						
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");					 			
 				}
 				
-				$doc.= "</Property>";
-			}
-			*/
-			
-			
-			
-			/* V2			
-			$query = "SELECT DISTINCT #__sdi_property.name as PropDef ,
-						#__sdi_translation.label as PropTranslation
-						from #__sdi_property, #__sdi_translation, #__sdi_language
-						INNER JOIN 
-						(
-						
-						select propertyvalue_id, #__sdi_propertyvalue.name, #__sdi_propertyvalue.property_id 
-								from #__sdi_product_property 
-								INNER JOIN #__sdi_propertyvalue 
-								ON #__sdi_product_property.propertyvalue_id=#__sdi_propertyvalue.id
-	 							where product_id IN (select #__sdi_product.id 
-								                     from #__sdi_product, #__sdi_objectversion, #__sdi_metadata
-										     where #__sdi_product.objectversion_id=#__sdi_objectversion.id AND
-										           #__sdi_objectversion.metadata_id = #__sdi_metadata.id AND #__sdi_metadata.guid = '".$id."')) T 
-	 					
-						ON id=T.property_id
-						WHERE #__sdi_property.guid=#__sdi_translation.element_guid AND #__sdi_language.code='".substr($language, -2)."' AND #__sdi_property.published = 1 ";
-
-			$database->setQuery($query);
-			$rows = $database->loadObjectList();
-			
-			foreach ($rows as $row)
-			{
-				$valueProp = JText::_($row->PropTranslation);
-				$doc .= "<Property><PropertyName>$valueProp</PropertyName>";
-				
-				
-				$subQuery = "SELECT  #__sdi_property.name as PropDef, T.label as ValueDef 
-						  from #__sdi_property
-						  INNER JOIN 
-						  (     
-						        select #__sdi_product_property.propertyvalue_id, #__sdi_propertyvalue.name, #__sdi_propertyvalue.property_id, #__sdi_translation.label  
-						 	from #__sdi_product_property, #__sdi_property, #__sdi_language, #__sdi_translation, #__sdi_propertyvalue
-	 						where #__sdi_product_property.propertyvalue_id = #__sdi_propertyvalue.id AND #__sdi_property.guid = #__sdi_translation.element_guid AND #__sdi_language.code = '".substr($language, -2)."' AND product_id IN (
-							                        select #__sdi_product.id 
-								                from #__sdi_product, #__sdi_objectversion, #__sdi_metadata
-										where #__sdi_product.objectversion_id=#__sdi_objectversion.id AND
-										#__sdi_objectversion.metadata_id = #__sdi_metadata.id AND #__sdi_metadata.guid = '".$id."'
-									     )
-						 ) T 
-	 					 ON id=T.property_id 
-	 					 Where #__sdi_property.name = '".addslashes($row->PropDef)."'";
-				
-				$database->setQuery($subQuery);
-				$results = $database->loadObjectList();
-				
-				foreach ($results as $result)
-				{
-					$value = JText::_($result->ValueDef);
-					$doc.="<PropertyValue><value>$value</value></PropertyValue>";
+				$count = 0;
+				foreach($propertiesValueList as $propertyValue){
+				   	if (in_array($propertyValue->value, $selected)){
+				   		$count ++;
+				   	}
 				}
 				
-				$doc.= "</Property>";
+				if($count > 0){
+				   $doc .= '<Property>';
+				   $doc .= '<PropertyName>'.$curProperty->text.'</PropertyName>';
+				   foreach($propertiesValueList as $propertyValue){
+				   	if (in_array($propertyValue->value, $selected)){
+				   		$doc .= '<PropertyValue>';
+				   		$doc .= '<value>'.$propertyValue->text.'</value>';
+				   		$doc .= '</PropertyValue>';
+				   	}
+				   }
+				   $doc .= '</Property>';
+				}
 			}
-			*/
-			
-			
+			$doc .= '</Properties>';
 			$doc .= '</Diffusion></Metadata>';
 			
 			$document = new DomDocument();
