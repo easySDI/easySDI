@@ -434,10 +434,9 @@ class HTML_product {
 									
 								case "text":
 									if ($curProperty->mandatory == 0 ){
-										
-									$propertiesValueList1[] = JHTML::_('select.option','-1', JText::_("SHOP_PROPERTY_NONE") );
-									$propertiesValueList = array_merge( $propertiesValueList , $propertiesValueList1  );
-										
+										$propertiesTemp1[] = JHTML::_('select.option','-1', JText::_("SHOP_PROPERTY_NONE"));
+										$propertiesTemp2[] = JHTML::_('select.option',$propertiesValueList[0]->value, JText::_("SHOP_PROPERTY_YES"));
+										$propertiesValueList = array_merge( $propertiesTemp1 , $propertiesTemp2);
 									}
 									?>
 									<td><?php echo JHTML::_("select.genericlist",$propertiesValueList, 'property_id[]', '', 'value', 'text', $selected ); ?></td>
