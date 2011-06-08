@@ -4116,11 +4116,12 @@ class ADMIN_metadata {
 		
 		//$fp = fopen('/home/users/depthch/easysdi/proxy/logs/xmlBodyApresDecode.xml', 'w');
 		//$fp = fopen('C:\RecorderWebGIS\xmlBodyApresDecode.xml', 'w');
+		/*
 		$filename = JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'xml'.DS.'tmp'.DS.'sendedrequest.xml';
 		$fp = fopen($filename, 'w');
 		fwrite($fp, $xmlBody);
 		fclose($fp);
-		
+		*/
 		
 		$database =& JFactory::getDBO(); 
 		
