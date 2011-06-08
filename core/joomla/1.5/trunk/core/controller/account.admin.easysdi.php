@@ -414,7 +414,7 @@ class ADMIN_account {
 			$database->setQuery("SELECT count(*) FROM #__users WHERE username = '".$rowUser->username."'");
 			$total = $database->loadResult();
 			if($total > 0){
-				$mainframe->enqueueMessage(JText::_("EASYSDI_ACCOUNT_ALREADY_EXISTS"),"ERROR");
+				$mainframe->enqueueMessage(JText::_("CORE_ACCOUNT_ALREADY_EXISTS"),"ERROR");
 				$mainframe->redirect("index.php?option=$option&task=ctrlPanelAccountManager" );
 			}
 		}
@@ -424,7 +424,7 @@ class ADMIN_account {
 			$database->setQuery("SELECT count(*) FROM #__users WHERE email = '".$_POST['user_email']."'");
 			$total = $database->loadResult();
 			if($total > 0){
-				$mainframe->enqueueMessage(JText::_("EASYSDI_EMAIL_ALREADY_REGISTRED"),"ERROR");
+				$mainframe->enqueueMessage(JText::_("CORE_EMAIL_ALREADY_REGISTRED"),"ERROR");
 				$mainframe->redirect("index.php?option=$option&task=ctrlPanelAccountManager" );
 			}
 		}
