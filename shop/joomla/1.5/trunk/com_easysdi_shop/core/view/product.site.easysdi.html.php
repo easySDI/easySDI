@@ -657,22 +657,22 @@ class HTML_product{
 		
 		?>	
 		<div id="page">
-		<h1 class="contentheading"><?php echo JText::_("SHOP_LIST_PRODUCT"); ?></h1>
+		<h2 class="contentheading"><?php echo JText::_("SHOP_LIST_PRODUCT"); ?></h2>
 		<div class="contentin">
-		<h2> <?php echo JText::_("CORE_SEARCH_CRITERIA_TITLE"); ?></h2>
+		<h3> <?php echo JText::_("CORE_SEARCH_CRITERIA_TITLE"); ?></h3>
 		<form action="index.php" method="POST" id="productListForm" name="productListForm">
 		<div class="row">
 			 <div class="row">
 			 	<label for="searchObjectName"><?php echo JText::_("SHOP_PRODUCT_FILTER_PRODUCTNAME");?></label>
 			 	<input type="text" name="searchProduct" value="<?php echo $search;?>" class="inputboxSearchProduct text full" />
 			 </div>
-			 <div class="row">
+			 <div class="row2">
 				<input type="submit" id="search_product" name="search_product" class="submit" value ="<?php echo JText::_("CORE_SEARCH_BUTTON"); ?>" onClick="document.getElementById('productListForm').task.value='listProduct';document.getElementById('productListForm').submit();"/>
 				<input type="submit" id="newProductBtn" name="newProductBtn" class="submit" value ="<?php echo JText::_("SHOP_NEW_PRODUCT"); ?>" onClick="document.getElementById('productListForm').task.value='newProduct';document.getElementById('productListForm').submit();"/>
 			</div>	 
 		 </div>
 	<div class="searchresults">
-	<h2><?php echo JText::_("CORE_SEARCH_RESULTS_TITLE"); ?></h2>
+	<h3><?php echo JText::_("CORE_SEARCH_RESULTS_TITLE"); ?></h3>
 	<script>
 		function suppressProduct_click(url){
 			conf = confirm('<?php echo JText::_("SHOP_CONFIRM_PRODUCT_DELETE"); ?>');
