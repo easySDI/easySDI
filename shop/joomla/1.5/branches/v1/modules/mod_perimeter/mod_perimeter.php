@@ -231,17 +231,23 @@ if ($curstep == "2")
 					if (isFreeSelectionPerimeter)
 					{
 						//disable pointer button
-						pointControl.displayClass="olControlDrawFeaturePointDisable";
+						if(pointControl != null)
+							pointControl.displayClass="olControlDrawFeaturePointDisable";
 						//show modify feature ctrl
-						modifyFeatureControl.displayClass="olControlModifyFeature";
-						panelEdition.redraw();
+						if(modifyFeatureControl != null)
+							modifyFeatureControl.displayClass="olControlModifyFeature";
+						if(panelEdition != null)
+							panelEdition.redraw();
 					}else
 					{
 						//show pointer button
-						pointControl.displayClass="olControlDrawFeaturePoint";
+						if(pointControl != null)
+							pointControl.displayClass="olControlDrawFeaturePoint";
 						//hide modify feature ctrl
-						modifyFeatureControl.displayClass="olControlModifyFeatureDisable";
-						panelEdition.redraw();
+						if(modifyFeatureControl != null)
+							modifyFeatureControl.displayClass="olControlModifyFeatureDisable";
+						if(panelEdition != null)
+							panelEdition.redraw();
 					}
 					
 					//Refresh content of manual perimeter
