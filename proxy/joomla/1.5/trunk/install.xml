@@ -1,7 +1,7 @@
 <?xml version="1.0"  ?>
 <install version="1.5" type="component">
 	<name>EasySDI_proxy</name>
-	<version>2.1.1</version>
+	<version>2.1.2</version>
 	<releaseDate>2011-04-07</releaseDate>
     <releaseType>Major update</releaseType>
 	<creationDate>January 2011</creationDate>
