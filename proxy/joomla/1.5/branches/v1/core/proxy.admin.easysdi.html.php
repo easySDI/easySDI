@@ -777,7 +777,7 @@ echo $pane->endPane();
 
 <form name='adminForm' action='index.php' method='GET'>
 	<input type='hidden' name='option' id='option' value='<?php echo $option;?>'>
-	<input type='hidden' name='task' id='task' value='<?php echo $task; ?>'>
+	<input type='hidden' name='task' id='task' value='editPolicyList'>
 	<input type='hidden' name='configId' id='configId' value='<?php echo $configId;?>'>
 	<input type="hidden" name="boxchecked" value="0" />
 	<input type='hidden' name='serviceType' id='serviceType' value="<?php echo JRequest::getVar('serviceType');?>" >
