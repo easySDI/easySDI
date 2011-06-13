@@ -1027,7 +1027,7 @@ echo $pane->endPanel();
 		$option = JRequest::getVar('option');
 		$configId = JRequest::getVar("configId");
 		$policyId = JRequest::getVar("policyId");
-		$task = JRequest::getVar("task");
+//		$task = JRequest::getVar("task");
 		
 		$limitstart = JRequest::getVar('limitstart',0);
 		$limit = JRequest::getVar('limit',$mainframe->getCfg('list_limit'));
@@ -1183,7 +1183,7 @@ echo $pane->endPanel();
 	</tfoot>
 </table>
 	<input type='hidden' name='option' id='option' value='<?php echo $option;?>'>
-	<input type='hidden' name='task' id='task' value='<?php echo $task; ?>'>
+	<input type='hidden' name='task' id='task' value='editPolicyList'>
 	<input type='hidden' name='configId'id='configId' value='<?php echo $configId;?>'>
 	<input type="hidden" name="boxchecked" value="<?php echo ($_POST['policyId'] or $isChecked)?1:0;?>" />
 	<input type='hidden' name='serviceType' id='serviceType' value="<?php echo JRequest::getVar('serviceType');?>" >
