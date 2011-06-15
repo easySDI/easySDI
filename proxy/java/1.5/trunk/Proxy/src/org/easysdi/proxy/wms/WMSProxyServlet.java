@@ -337,7 +337,7 @@ public class WMSProxyServlet extends ProxyServlet {
 				Iterator<Entry<Integer, ProxyLayer>> itLK = layerTableToKeep.entrySet().iterator();
 				while(itLK.hasNext()){
 					Entry<Integer, ProxyLayer> layer = itLK.next();
-					if(getLayerFilter(RS.getUrl(), layer.getValue().getName()) != null){
+					if(getLayerFilter(RS.getUrl(), layer.getValue().getPrefixedName()) != null){
 						isCandidateToStreaming = false;
 						break;
 					}
@@ -350,7 +350,7 @@ public class WMSProxyServlet extends ProxyServlet {
 					String styleList ="";
 					while(itPL.hasNext()){
 						Entry<Integer, ProxyLayer> layer = itPL.next();
-						layerList += layer.getValue().getName() +",";
+						layerList += layer.getValue().getPrefixedName() +",";
 						styleList += layerStyleMap.get(layer.getKey()) +",";
 					}
 					
@@ -462,7 +462,7 @@ public class WMSProxyServlet extends ProxyServlet {
 			RemoteServerInfo RS = (RemoteServerInfo)remoteServersTable.get(layer.getAlias());
 			
 			//Check the availaibility of the requested LAYERS 
-			if( RS == null || !isLayerAllowed(layer.getName(), RS.getUrl())){
+			if( RS == null || !isLayerAllowed(layer.getPrefixedName(), RS.getUrl())){
 				logger.error( OWSExceptionReport.TEXT_INVALID_LAYER_NAME+layerAsString+" is not allowed");
 				StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_LAYER_NAME,OWSExceptionReport.CODE_LAYER_NOT_DEFINED,"LAYER");
 				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
@@ -538,7 +538,7 @@ public class WMSProxyServlet extends ProxyServlet {
 				RemoteServerInfo RS = (RemoteServerInfo)remoteServersTable.get(layer.getAlias());
 				
 				//Check the availaibility of the requested QUERY_LAYERS 
-				if( RS == null || !isLayerAllowed(layer.getName(), RS.getUrl())){
+				if( RS == null || !isLayerAllowed(layer.getPrefixedName(), RS.getUrl())){
 					logger.info( OWSExceptionReport.TEXT_INVALID_LAYER_NAME+layerArray.get(k)+" is not allowed");
 					StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_LAYER_NAME,OWSExceptionReport.CODE_LAYER_NOT_DEFINED,"QUERY_LAYERS");
 					sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
@@ -547,7 +547,7 @@ public class WMSProxyServlet extends ProxyServlet {
 				Iterator<Entry<Integer,ProxyLayer>> i = layerTableToKeepFromGetMap.entrySet().iterator();
 				while(i.hasNext()){
 					Entry<Integer, ProxyLayer> entry =  i.next();
-					if(entry.getValue().getAlias().equals(layer.getAlias()) && entry.getValue().getName().equals(layer.getName())){
+					if(entry.getValue().getAlias().equals(layer.getAlias()) && entry.getValue().getPrefixedName().equals(layer.getPrefixedName())){
 						layerTableToKeep.put(k, layer);
 						if(!remoteServerToCall.contains(RS.getAlias()))
 							remoteServerToCall.add(RS.getAlias());
@@ -564,7 +564,7 @@ public class WMSProxyServlet extends ProxyServlet {
 				String styleList ="";
 				while(itQPL.hasNext()){
 					Entry<Integer, ProxyLayer> layer = itQPL.next();
-					queryLayerList += layer.getValue().getName() +",";
+					queryLayerList += layer.getValue().getPrefixedName() +",";
 					styleList += layerStyleMap.get(layer.getKey()) +",";
 				}
 				
@@ -1186,7 +1186,7 @@ public class WMSProxyServlet extends ProxyServlet {
 			RemoteServerInfo RS = (RemoteServerInfo)remoteServersTable.get(layer.getAlias());
 			
 			//Check the availaibility of the requested LAYERS 
-			if( RS == null || !isLayerAllowed(layer.getName(), RS.getUrl())){
+			if( RS == null || !isLayerAllowed(layer.getPrefixedName(), RS.getUrl())){
 				logger.error( OWSExceptionReport.TEXT_INVALID_LAYER_NAME+layerName+" is not allowed");
 				StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_LAYER_NAME+layerName,OWSExceptionReport.CODE_LAYER_NOT_DEFINED,"LAYERS");
 				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
@@ -1194,7 +1194,7 @@ public class WMSProxyServlet extends ProxyServlet {
 			}
 			
 			//Check if the scale is available
-			if (isLayerInScale(layer.getName(), RS.getUrl(), RendererUtilities.calculateOGCScale(rEnvelope, Integer.parseInt(((WMSProxyServletRequest)getProxyRequest()).getWidth()), null))) {
+			if (isLayerInScale(layer.getPrefixedName(), RS.getUrl(), RendererUtilities.calculateOGCScale(rEnvelope, Integer.parseInt(((WMSProxyServletRequest)getProxyRequest()).getWidth()), null))) {
 				//Layer to keep in the request
 				layerTableToKeep.put(layerOrdered.getKey(),layer);
 				//Servers to call to complete the request

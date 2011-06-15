@@ -24,11 +24,18 @@ public class ProxyLayer {
 	
 	private String alias;
 	private String name;
+	private String prefix;
+	private String prefixedName;
 	
 	public ProxyLayer (String requestedLayer)
 	{
 		if(requestedLayer != null)
 		{
+			if(requestedLayer.contains(":"))
+			{
+				this.setPrefix(requestedLayer.substring(0, requestedLayer.indexOf(":")));
+				requestedLayer = requestedLayer.substring(requestedLayer.indexOf(":",0)+1);
+			}
 			if(requestedLayer.contains("_"))
 			{
 				this.setAlias(requestedLayer.substring(0, requestedLayer.indexOf("_")));
@@ -37,6 +44,11 @@ public class ProxyLayer {
 			else
 			{
 				this.setName(requestedLayer);
+			}
+			if(this.getPrefix() !=null ){
+				this.setPrefixedName(this.getPrefix() +":" + this.getName());
+			}else{
+				this.setPrefixedName(this.getName());
 			}
 		}
 	}
@@ -67,6 +79,34 @@ public class ProxyLayer {
 	 */
 	public String getName() {
 		return name;
+	}
+
+	/**
+	 * @param prefixe the prefixe to set
+	 */
+	public void setPrefix(String prefix) {
+		this.prefix = prefix;
+	}
+
+	/**
+	 * @return the prefixe
+	 */
+	public String getPrefix() {
+		return prefix;
+	}
+
+	/**
+	 * @param prefixedName the prefixedName to set
+	 */
+	public void setPrefixedName(String prefixedName) {
+		this.prefixedName = prefixedName;
+	}
+
+	/**
+	 * @return the prefixedName
+	 */
+	public String getPrefixedName() {
+		return prefixedName;
 	}
 
 }

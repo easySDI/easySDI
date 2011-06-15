@@ -71,7 +71,7 @@ public class WMSProxyServerGetFeatureInfoThread extends Thread {
 			String styleList ="";
 			while(itPL.hasNext()){
 				Entry<Integer, ProxyLayer> layer = itPL.next();
-				layerList += layer.getValue().getName() +",";
+				layerList += layer.getValue().getPrefixedName() +",";
 				styleList += styles.get(layer.getKey()) +",";
 			}
 			
@@ -79,7 +79,7 @@ public class WMSProxyServerGetFeatureInfoThread extends Thread {
 			String queryLayerList ="";
 			while(itQPL.hasNext()){
 				Entry<Integer, ProxyLayer> layer = itQPL.next();
-				queryLayerList += layer.getValue().getName() +",";
+				queryLayerList += layer.getValue().getPrefixedName() +",";
 			}
 			
 			String queryLayersUrl = "&QUERY_LAYERS=" + queryLayerList.substring(0, queryLayerList.length()-1);

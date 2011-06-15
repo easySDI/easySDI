@@ -240,7 +240,12 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 		    		{
 		    			//Rewrite Layer name with alias prefix
 		    			String name = nameElement.getText();
-		    			nameElement.setText(fileEntry.getKey()+"_"+name); 
+		    			//Keep the prefix before the alias
+		    			if(name.contains(":")){
+		    				nameElement.setText(name.substring(0, name.indexOf(":"))+":"+fileEntry.getKey()+"_"+name.substring(name.indexOf(":",0)+1));
+		    			}else{
+		    				nameElement.setText(fileEntry.getKey()+"_"+name);
+		    			}
 		    					    			
 		    			//Get the remote server URL
 		    			String serverUrl = servlet.getRemoteServerInfo(fileEntry.getKey()).getUrl();
@@ -605,7 +610,7 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 	    			ProxyLayer proxyLayer = new ProxyLayer(layerName);
 	    			
 	    			
-	    			Layer currentLayer = server.getLayers().getLayerByName(proxyLayer.getName());
+	    			Layer currentLayer = server.getLayers().getLayerByName(proxyLayer.getPrefixedName());
 	    			
 	    			//Not the right server
 	    			if(currentLayer == null)

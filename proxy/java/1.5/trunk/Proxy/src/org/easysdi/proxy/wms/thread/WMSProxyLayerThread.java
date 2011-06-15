@@ -44,7 +44,7 @@ public class WMSProxyLayerThread extends Thread {
 			String styleList ="";
 			while(itPL.hasNext()){
 				Entry<Integer, ProxyLayer> layer = itPL.next();
-				layerList += layer.getValue().getName() +",";
+				layerList += layer.getValue().getPrefixedName() +",";
 				styleList += styles.get(layer.getKey()) +",";
 			}
 			

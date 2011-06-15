@@ -64,7 +64,7 @@ public class WMTS100ProxyServlet extends WMTSProxyServlet{
 					paramUrlBase = paramUrlBase + key + "=" + value + "&";
 				}
 				else if (key.equalsIgnoreCase("Layer")){
-					paramUrlBase = paramUrlBase + key + "=" +  new ProxyLayer(value).getName() + "&" ;
+					paramUrlBase = paramUrlBase + key + "=" +  new ProxyLayer(value).getPrefixedName() + "&" ;
 				}
 				else{
 					paramUrlBase = paramUrlBase + key + "=" + value + "&";
@@ -242,7 +242,7 @@ public class WMTS100ProxyServlet extends WMTSProxyServlet{
 				RemoteServerInfo RS = (RemoteServerInfo)htRemoteServer.get(pLayer.getAlias());
 				
 				//Check layer
-				if( RS == null || !isLayerAllowed(pLayer.getName(), RS.getUrl())){
+				if( RS == null || !isLayerAllowed(pLayer.getPrefixedName(), RS.getUrl())){
 					StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_LAYER_NAME+layer,OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE,"layer");
 					sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
 					return;

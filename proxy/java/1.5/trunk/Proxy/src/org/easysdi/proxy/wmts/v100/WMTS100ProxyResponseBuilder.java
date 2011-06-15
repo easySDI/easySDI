@@ -200,7 +200,13 @@ public class WMTS100ProxyResponseBuilder extends WMTSProxyResponseBuilder {
 		    		{
 		    			//Rewrite Layer name with alias prefix
 		    			String name = idElement.getText();
-		    			idElement.setText(fileEntry.getKey()+"_"+name); 
+		    			//Keep the prefix before the alias
+		    			if(name.contains(":")){
+		    				idElement.setText(name.substring(0, name.indexOf(":"))+":"+fileEntry.getKey()+"_"+name.substring(name.indexOf(":",0)+1));
+		    			}else{
+		    				idElement.setText(fileEntry.getKey()+"_"+name);
+		    			}
+//		    			idElement.setText(fileEntry.getKey()+"_"+name); 
 		    		}
 		    	}
 		    	
