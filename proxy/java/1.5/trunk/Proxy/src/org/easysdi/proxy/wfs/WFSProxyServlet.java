@@ -2029,7 +2029,9 @@ public class WFSProxyServlet extends ProxyServlet {
 			if ("TYPENAME".equalsIgnoreCase(keyValue[0])) {
 				paramFields[i] = keyValue[0] + "=";
 				for (int j = 0; j < featureTypeListToKeep.size(); j++) {
-					paramFields[i] = paramFields[i] + policyServerPrefix + ":" + featureTypeListToKeep.get(j) + ",";
+//					paramFields[i] = paramFields[i] + policyServerPrefix + ":" + featureTypeListToKeep.get(j) + ",";
+					//Don't need to add the prefix : it is already int he featuretype name
+					paramFields[i] = paramFields[i] + featureTypeListToKeep.get(j) + ",";
 				}
 				if (paramFields[i].endsWith(",")) {
 					paramFields[i] = paramFields[i].substring(0, paramFields[i].length() - 1);
@@ -2044,7 +2046,9 @@ public class WFSProxyServlet extends ProxyServlet {
 			{
 				paramFields[i] = keyValue[0] + "=";
 				for (int j = 0; j < attributeListToKeepPerFT.size(); j++) {
-					paramFields[i] = paramFields[i] + policyServerPrefix + ":" + attributeListToKeepPerFT.get(j) + ",";
+//					paramFields[i] = paramFields[i] + policyServerPrefix + ":" + attributeListToKeepPerFT.get(j) + ",";
+					//Don't need to add the prefix : it is already int he featuretype name
+					paramFields[i] = paramFields[i] + attributeListToKeepPerFT.get(j) + ",";
 				}
 
 				// Au cas: localFilter is Set et geom Attribut absent de
@@ -2079,7 +2083,8 @@ public class WFSProxyServlet extends ProxyServlet {
 
 							// Ajoute l'attribut géométrique à la requête
 							// utilisateur
-							paramFields[i] = paramFields[i] + policyServerPrefix + ":" + geomAttribut + ",";
+//							paramFields[i] = paramFields[i] + policyServerPrefix + ":" + geomAttribut + ",";
+							paramFields[i] = paramFields[i] + geomAttribut + ",";
 						}
 
 						attributeIndex += attributeListToKeepNbPerFT.get(j);
@@ -2102,7 +2107,8 @@ public class WFSProxyServlet extends ProxyServlet {
 		String propertyNameParam = "propertyName=";
 		if (!hasPropertyName && "GetFeature".equalsIgnoreCase(operation) && !isPolicyAll) {
 			for (int j = 0; j < attributeListToKeepPerFT.size(); j++) {
-				propertyNameParam = propertyNameParam + policyServerPrefix + ":" + attributeListToKeepPerFT.get(j) + ",";
+//				propertyNameParam = propertyNameParam + policyServerPrefix + ":" + attributeListToKeepPerFT.get(j) + ",";
+				propertyNameParam = propertyNameParam + attributeListToKeepPerFT.get(j) + ",";
 			}
 
 			// Au cas: localFilter is Set et geom Attribut absent de
@@ -2137,7 +2143,8 @@ public class WFSProxyServlet extends ProxyServlet {
 
 						// Ajoute l'attribut géométrique à la requête
 						// utilisateur
-						propertyNameParam = propertyNameParam + policyServerPrefix + ":" + geomAttribut + ",";
+//						propertyNameParam = propertyNameParam + policyServerPrefix + ":" + geomAttribut + ",";
+						propertyNameParam = propertyNameParam + geomAttribut + ",";
 					}
 
 					attributeIndex += attributeListToKeepNbPerFT.get(j);
@@ -2273,7 +2280,7 @@ public class WFSProxyServlet extends ProxyServlet {
 				Map.Entry<Integer,String> entry = (Map.Entry<Integer,String>)itR.next();
 				
 				ogcExceptionFilePathList.put(entry.getKey(), entry.getValue());
-				wfsFilePathList.remove(entry.getValue());
+				wfsFilePathList.remove(entry.getKey());
 			}
 //			int end = wfsFilePathList.size();
 //			for (int iFilePath = 0; iFilePath < end; iFilePath++) 
