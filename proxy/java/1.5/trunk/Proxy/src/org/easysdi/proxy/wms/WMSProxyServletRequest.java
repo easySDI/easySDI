@@ -35,6 +35,11 @@ import org.xml.sax.helpers.XMLReaderFactory;
 public class WMSProxyServletRequest extends ProxyServletRequest {
 
 	/**
+	 * Store the body of the POST request
+	 */
+	private StringBuffer bodyRequest;
+	
+	/**
 	 * 
 	 */
 	private String bbox;
@@ -117,6 +122,20 @@ public class WMSProxyServletRequest extends ProxyServletRequest {
 	 */
 	private String wmtver;
 	
+	/**
+	 * @param bodyRequest the bodyRequest to set
+	 */
+	public void setBodyRequest(StringBuffer bodyRequest) {
+		this.bodyRequest = bodyRequest;
+	}
+
+	/**
+	 * @return the bodyRequest
+	 */
+	public StringBuffer getBodyRequest() {
+		return bodyRequest;
+	}
+
 	/**
 	 * @return the bbox
 	 */
@@ -297,6 +316,9 @@ public class WMSProxyServletRequest extends ProxyServletRequest {
 				param.append(input);
 			}
 
+			//Store the body request
+			this.setBodyRequest(param);
+			
 			xr.parse(new InputSource(new InputStreamReader(new ByteArrayInputStream(param.toString().getBytes()))));
 			
 			version = rh.getVersion();

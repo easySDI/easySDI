@@ -26,11 +26,14 @@ public class ProxyLayer {
 	private String name;
 	private String prefix;
 	private String prefixedName;
+	private String aliasName;
 	
 	public ProxyLayer (String requestedLayer)
 	{
 		if(requestedLayer != null)
 		{
+			setAliasName(requestedLayer);
+			
 			if(requestedLayer.contains(":"))
 			{
 				this.setPrefix(requestedLayer.substring(0, requestedLayer.indexOf(":")));
@@ -107,6 +110,20 @@ public class ProxyLayer {
 	 */
 	public String getPrefixedName() {
 		return prefixedName;
+	}
+
+	/**
+	 * @param aliasName the aliasName to set
+	 */
+	public void setAliasName(String aliasName) {
+		this.aliasName = aliasName;
+	}
+
+	/**
+	 * @return the aliasName
+	 */
+	public String getAliasName() {
+		return aliasName;
 	}
 
 }

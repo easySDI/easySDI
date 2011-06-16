@@ -57,12 +57,18 @@ public abstract class ProxyServletRequest {
 	protected String service;
 	
 	/**
+	 * @return the request
+	 */
+	public HttpServletRequest getRequest() {
+		return request;
+	}
+	
+	/**
 	 * @return the urlParameters
 	 */
 	public String getUrlParameters() {
 		return urlParameters;
 	}
-
 
 	/**
 	 * @return the operation
@@ -70,7 +76,6 @@ public abstract class ProxyServletRequest {
 	public String getOperation() {
 		return operation;
 	}
-
 
 	/**
 	 * @return the requestedVersion

@@ -26,8 +26,10 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.net.URI;
@@ -48,7 +50,6 @@ import javax.imageio.ImageWriter;
 import javax.imageio.stream.MemoryCacheImageOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
@@ -57,6 +58,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import org.easysdi.jdom.filter.ElementNamedLayerFilter;
 import org.easysdi.proxy.core.ProxyLayer;
 import org.easysdi.proxy.core.ProxyRemoteServerResponse;
 import org.easysdi.proxy.core.ProxyServlet;
@@ -80,14 +82,17 @@ import org.geotools.referencing.NamedIdentifier;
 import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.xml.DocumentFactory;
 import org.integratedmodelling.geospace.gis.FeatureRasterizer;
+import org.jdom.Document;
+import org.jdom.Element;
 import org.jdom.JDOMException;
+import org.jdom.Namespace;
 import org.jdom.input.SAXBuilder;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKTReader;
@@ -326,76 +331,23 @@ public class WMSProxyServlet extends ProxyServlet {
 				return;
 			}
 			
-			//Get the remote server informations
-			Hashtable<String, RemoteServerInfo> remoteServersTable = getRemoteServerHastable();
-			
-			//Find if request is candidate to direct streaming
-			//getLayerFilter(getRemoteServerInfo(response.getValue().getAlias()).getUrl(),getProxyRequest().getLayers().split(",")[response.getKey()]),
-			if(remoteServerToCall.size() == 1){
-				Boolean isCandidateToStreaming = true;
-				RemoteServerInfo RS = (RemoteServerInfo)remoteServersTable.get(remoteServerToCall.get(0));
-				Iterator<Entry<Integer, ProxyLayer>> itLK = layerTableToKeep.entrySet().iterator();
-				while(itLK.hasNext()){
-					Entry<Integer, ProxyLayer> layer = itLK.next();
-					if(getLayerFilter(RS.getUrl(), layer.getValue().getPrefixedName()) != null){
-						isCandidateToStreaming = false;
-						break;
-					}
-				}
-				if(isCandidateToStreaming){
-					logger.debug("WMSProxyServlet.requestPreTreatmentGetMap : request is streamed.");
-					//Request can be send with direct streaming
-					Iterator<Entry<Integer, ProxyLayer>> itPL = layerTableToKeep.entrySet().iterator();
-					String layerList ="";
-					String styleList ="";
-					while(itPL.hasNext()){
-						Entry<Integer, ProxyLayer> layer = itPL.next();
-						layerList += layer.getValue().getPrefixedName() +",";
-						styleList += layerStyleMap.get(layer.getKey()) +",";
-					}
-					
-					String layersUrl = "&LAYERS=" + layerList.substring(0, layerList.length()-1);
-					String stylesUrl = "&STYLES=" + styleList.substring(0, styleList.length()-1);
-					
-					//Set TRANSPARENT to TRUE if not present
-					String paramUrl = getProxyRequest().getUrlParameters();
-					if (paramUrl.toUpperCase().indexOf("TRANSPARENT=") == -1)
-						paramUrl += "TRANSPARENT=TRUE&";
-					
-					sendDataDirectStream(resp,"GET", RS.getUrl(), paramUrl + layersUrl + stylesUrl);
+			//Send the request
+			if(req.getMethod().equalsIgnoreCase("GET")){
+				if(!requestSendingGetMapGET(req,resp,remoteServerToCall,layerTableToKeep,layerStyleMap))
 					return;
-				}
+			}else{
+				if(!requestSendingGetMapPOST(req,resp,remoteServerToCall,layerTableToKeep,layerStyleMap))
+					return;
 			}
-			
-			//Loop on the remote server to send the request 
-			List<WMSProxyServerGetMapThread> serverThreadList = new Vector<WMSProxyServerGetMapThread>();
-			for(int k = 0; k<remoteServerToCall.size();k++){
-				TreeMap<Integer, ProxyLayer> layerByServerTable = new TreeMap<Integer, ProxyLayer>();
-				RemoteServerInfo RS = (RemoteServerInfo)remoteServersTable.get(remoteServerToCall.get(k));
-				Iterator<Entry<Integer, ProxyLayer>> itLK = layerTableToKeep.entrySet().iterator();
-				//Build a list of the layers for the current remote server
-				while(itLK.hasNext()){
-					Entry<Integer, ProxyLayer> layerOrdered = itLK.next();
-					if(((ProxyLayer)layerOrdered.getValue()).getAlias().equals(RS.getAlias())){
-						layerByServerTable.put(layerOrdered.getKey(), layerOrdered.getValue());
-					}
-				}
-				//New Thread to request this remote server
-				WMSProxyServerGetMapThread s = new WMSProxyServerGetMapThread(	this,
-																				getProxyRequest().getUrlParameters(), 
-																				layerByServerTable, 
-																				layerStyleMap,
-																				RS,
-																				resp);
-	
-				s.start();
-				serverThreadList.add(s);
-			}	
-			
-			// Wait for thread results
-			for (int i = 0; i < serverThreadList.size(); i++) {
-				serverThreadList.get(i).join();
-			}
+//			Method m = this.getClass().getMethod("requestSendingGetMap"+req.getMethod(), new Class[]{Class.forName ("javax.servlet.http.HttpServletRequest"), 
+//																									 Class.forName ("javax.servlet.http.HttpServletResponse"),
+//																									 Class.forName ("java.util.ArrayList"),
+//																									 Class.forName ("java.util.TreeMap"),
+//																									 Class.forName ("java.util.TreeMap")});
+//			if(!(Boolean)m.invoke(this, new Object[] {req,resp,remoteServerToCall,layerTableToKeep,layerStyleMap}))
+//				return;
+//			if(!requestSendingGetMapGET(req,resp,remoteServerToCall,layerTableToKeep,layerStyleMap))
+//				return;
 			
 			//Post Treatment
 			if (wmsGetMapResponseFilePathMap.size() > 0) {
@@ -643,6 +595,169 @@ public class WMSProxyServlet extends ProxyServlet {
 				logger.error(OWSExceptionReport.TEXT_EXCEPTION_ERROR, e1);
 			}
 			return;
+		}
+	}
+	
+	public boolean requestSendingGetMapGET(HttpServletRequest req, HttpServletResponse resp, ArrayList <String> remoteServerToCall, TreeMap<Integer,ProxyLayer> layerTableToKeep, TreeMap<Integer,String> layerStyleMap){
+		try{
+			//Get the remote server informations
+			Hashtable<String, RemoteServerInfo> remoteServersTable = getRemoteServerHastable();
+			
+			//Find if request is candidate to direct streaming
+			//getLayerFilter(getRemoteServerInfo(response.getValue().getAlias()).getUrl(),getProxyRequest().getLayers().split(",")[response.getKey()]),
+			if(remoteServerToCall.size() == 1){
+				Boolean isCandidateToStreaming = true;
+				RemoteServerInfo RS = (RemoteServerInfo)remoteServersTable.get(remoteServerToCall.get(0));
+				Iterator<Entry<Integer, ProxyLayer>> itLK = layerTableToKeep.entrySet().iterator();
+				while(itLK.hasNext()){
+					Entry<Integer, ProxyLayer> layer = itLK.next();
+					if(getLayerFilter(RS.getUrl(), layer.getValue().getPrefixedName()) != null){
+						isCandidateToStreaming = false;
+						break;
+					}
+				}
+				if(isCandidateToStreaming){
+					logger.debug("WMSProxyServlet.requestSendingGetMapGET : request is streamed.");
+					//Request can be send with direct streaming
+					Iterator<Entry<Integer, ProxyLayer>> itPL = layerTableToKeep.entrySet().iterator();
+					String layerList ="";
+					String styleList ="";
+					while(itPL.hasNext()){
+						Entry<Integer, ProxyLayer> layer = itPL.next();
+						layerList += layer.getValue().getPrefixedName() +",";
+						styleList += layerStyleMap.get(layer.getKey()) +",";
+					}
+					
+					String layersUrl = "&LAYERS=" + layerList.substring(0, layerList.length()-1);
+					String stylesUrl = "&STYLES=" + styleList.substring(0, styleList.length()-1);
+					
+					//Set TRANSPARENT to TRUE if not present
+					String paramUrl = getProxyRequest().getUrlParameters();
+					if (paramUrl.toUpperCase().indexOf("TRANSPARENT=") == -1)
+						paramUrl += "TRANSPARENT=TRUE&";
+					
+					sendDataDirectStream(resp,"GET", RS.getUrl(), paramUrl + layersUrl + stylesUrl);
+					return true;
+				}
+			}
+			
+			//Loop on the remote server to send the request 
+			List<WMSProxyServerGetMapThread> serverThreadList = new Vector<WMSProxyServerGetMapThread>();
+			for(int k = 0; k<remoteServerToCall.size();k++){
+				TreeMap<Integer, ProxyLayer> layerByServerTable = new TreeMap<Integer, ProxyLayer>();
+				RemoteServerInfo RS = (RemoteServerInfo)remoteServersTable.get(remoteServerToCall.get(k));
+				Iterator<Entry<Integer, ProxyLayer>> itLK = layerTableToKeep.entrySet().iterator();
+				//Build a list of the layers for the current remote server
+				while(itLK.hasNext()){
+					Entry<Integer, ProxyLayer> layerOrdered = itLK.next();
+					if(((ProxyLayer)layerOrdered.getValue()).getAlias().equals(RS.getAlias())){
+						layerByServerTable.put(layerOrdered.getKey(), layerOrdered.getValue());
+					}
+				}
+				//New Thread to request this remote server
+				WMSProxyServerGetMapThread s = new WMSProxyServerGetMapThread(	this,
+																				getProxyRequest().getUrlParameters(), 
+																				layerByServerTable, 
+																				layerStyleMap,
+																				RS,
+																				resp);
+	
+				s.start();
+				serverThreadList.add(s);
+			}	
+			
+			// Wait for thread results
+			for (int i = 0; i < serverThreadList.size(); i++) {
+				serverThreadList.get(i).join();
+			}
+			
+			return true;
+			
+		} catch (Exception e) {
+			resp.setHeader("easysdi-proxy-error-occured", "true");
+			logger.error(configuration.getServletClass() +  ".requestSendingGetMapGET: ", e);
+			StringBuffer out;
+			try {
+				out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
+				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
+			} catch (IOException e1) {
+				logger.error(OWSExceptionReport.TEXT_EXCEPTION_ERROR, e1);
+			}
+			return false;
+		}
+	}
+	
+	public boolean requestSendingGetMapPOST(HttpServletRequest req, HttpServletResponse resp, ArrayList <String> remoteServerToCall, TreeMap<Integer,ProxyLayer> layerTableToKeep, TreeMap<Integer,String> layerStyleMap){
+		try{
+			//Get the remote server informations
+			Hashtable<String, RemoteServerInfo> remoteServersTable = getRemoteServerHastable();
+			
+			//Find if request is candidate to direct streaming
+			//getLayerFilter(getRemoteServerInfo(response.getValue().getAlias()).getUrl(),getProxyRequest().getLayers().split(",")[response.getKey()]),
+			if(remoteServerToCall.size() == 1){
+				Boolean isCandidateToStreaming = true;
+				RemoteServerInfo RS = (RemoteServerInfo)remoteServersTable.get(remoteServerToCall.get(0));
+				Iterator<Entry<Integer, ProxyLayer>> itLK = layerTableToKeep.entrySet().iterator();
+				while(itLK.hasNext()){
+					Entry<Integer, ProxyLayer> layer = itLK.next();
+					if(getLayerFilter(RS.getUrl(), layer.getValue().getPrefixedName()) != null){
+						isCandidateToStreaming = false;
+						break;
+					}
+				}
+				if(isCandidateToStreaming){
+					logger.debug("WMSProxyServlet.requestSendingGetMapPOST : request is streamed.");
+					//Request can be send with direct streaming
+					StringBuffer request = rewriteGetMapRequestPOST(layerTableToKeep);
+					
+					sendDataDirectStream(resp,"POST", RS.getUrl(), request.toString());
+					return true;
+				}
+			}
+			
+			//Loop on the remote server to send the request 
+			List<WMSProxyServerGetMapThread> serverThreadList = new Vector<WMSProxyServerGetMapThread>();
+			for(int k = 0; k<remoteServerToCall.size();k++){
+				TreeMap<Integer, ProxyLayer> layerByServerTable = new TreeMap<Integer, ProxyLayer>();
+				RemoteServerInfo RS = (RemoteServerInfo)remoteServersTable.get(remoteServerToCall.get(k));
+				Iterator<Entry<Integer, ProxyLayer>> itLK = layerTableToKeep.entrySet().iterator();
+				//Build a list of the layers for the current remote server
+				while(itLK.hasNext()){
+					Entry<Integer, ProxyLayer> layerOrdered = itLK.next();
+					if(((ProxyLayer)layerOrdered.getValue()).getAlias().equals(RS.getAlias())){
+						layerByServerTable.put(layerOrdered.getKey(), layerOrdered.getValue());
+					}
+				}
+				//New Thread to request this remote server
+				WMSProxyServerGetMapThread s = new WMSProxyServerGetMapThread(	this,
+																				getProxyRequest().getUrlParameters(), 
+																				layerByServerTable, 
+																				layerStyleMap,
+																				RS,
+																				resp);
+	
+				s.start();
+				serverThreadList.add(s);
+			}	
+			
+			// Wait for thread results
+			for (int i = 0; i < serverThreadList.size(); i++) {
+				serverThreadList.get(i).join();
+			}
+			
+			return true;
+			
+		} catch (Exception e) {
+			resp.setHeader("easysdi-proxy-error-occured", "true");
+			logger.error(configuration.getServletClass() +  ".requestSendingGetMapPOST: ", e);
+			StringBuffer out;
+			try {
+				out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
+				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
+			} catch (IOException e1) {
+				logger.error(OWSExceptionReport.TEXT_EXCEPTION_ERROR, e1);
+			}
+			return false;
 		}
 	}
 
@@ -995,6 +1110,8 @@ public class WMSProxyServlet extends ProxyServlet {
 			logger.error(e.getMessage());
 		} catch (ParserConfigurationException e) {
 			logger.error(e.getMessage());
+		} catch (JDOMException e) {
+			logger.error(e.getMessage());
 		}
 		return remoteServerExceptionFiles;
 	}
@@ -1039,6 +1156,8 @@ public class WMSProxyServlet extends ProxyServlet {
 			logger.error(e.getMessage());
 		} catch (ParserConfigurationException e) {
 			logger.error(e.getMessage());
+		} catch (JDOMException e) {
+			logger.error(e.getMessage());
 		}
 		return remoteServerExceptionFiles;
 	}
@@ -1050,20 +1169,24 @@ public class WMSProxyServlet extends ProxyServlet {
 	 * @throws SAXException
 	 * @throws IOException
 	 * @throws ParserConfigurationException
+	 * @throws JDOMException 
 	 */
-	private boolean isRemoteServerResponseException(String path) throws SAXException, IOException, ParserConfigurationException{
+	private boolean isRemoteServerResponseException(String path) throws SAXException, IOException, ParserConfigurationException, JDOMException{
 		String ext = (path.lastIndexOf(".")==-1)?"":path.substring(path.lastIndexOf(".")+1,path.length());
 		if (ext.equals("xml"))
 		{
-			DocumentBuilderFactory db = DocumentBuilderFactory.newInstance();
-			Document documentMaster = db.newDocumentBuilder().parse(new File(path));
+			SAXBuilder sxb = new SAXBuilder();
+			Document documentMaster = sxb.build(new File(path));
+//			DocumentBuilderFactory db = DocumentBuilderFactory.newInstance();
+	//		Document documentMaster = db.newDocumentBuilder().parse(new File(path));
 			if (documentMaster != null) 
 			{
-				NodeList nl = documentMaster.getElementsByTagName("ServiceExceptionReport");
-				if (nl.item(0) != null)
-				{
-					return true;
-				}
+				return documentMaster.getRootElement().getName().equalsIgnoreCase("ServiceExceptionReport");
+//				NodeList nl = documentMaster.getElementsByTagName("ServiceExceptionReport");
+//				if (nl.item(0) != null)
+//				{
+//					return true;
+//				}
 			}
 		}
 		return false;
@@ -1157,7 +1280,7 @@ public class WMSProxyServlet extends ProxyServlet {
 		String[] c = ((WMSProxyServletRequest)getProxyRequest()).getBbox().split(",");
 		ReferencedEnvelope rEnvelope;
 		try {
-			rEnvelope = new ReferencedEnvelope(Double.parseDouble(c[0]), Double.parseDouble(c[2]), Double.parseDouble(c[1]), Double.parseDouble(c[3]), CRS.decode(((WMSProxyServletRequest)getProxyRequest()).getSrsName()));
+			rEnvelope = new ReferencedEnvelope(((WMSProxyServletRequest)getProxyRequest()).getX1(), ((WMSProxyServletRequest)getProxyRequest()).getX2(), ((WMSProxyServletRequest)getProxyRequest()).getY1(), ((WMSProxyServletRequest)getProxyRequest()).getY2(), CRS.decode(((WMSProxyServletRequest)getProxyRequest()).getSrsName()));
 		}catch (Exception ex) {
 			logger.error(OWSExceptionReport.TEXT_INVALID_SRS);
 			StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_SRS,OWSExceptionReport.CODE_INVALID_SRS,"SRS");
@@ -1392,8 +1515,78 @@ public class WMSProxyServlet extends ProxyServlet {
 		return imageSource;
 	}
 	
-		@Override
+	@Override
 	protected StringBuffer generateOgcException(String errorMessage,String code, String locator, String version) {
+		return null;
+	}	 
+		
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	protected StringBuffer rewriteGetMapRequestPOST (TreeMap<Integer,ProxyLayer> layerTableToKeep){
+		SAXBuilder sxb = new SAXBuilder();
+		Document document;
+		
+		try {
+			document = sxb.build(new ByteArrayInputStream(getProxyRequest().getBodyRequest().toString().getBytes()));
+		
+			List<Element> toRemove = new ArrayList<Element>();
+			List<Element> toRewrite = new ArrayList<Element>();
+			Boolean toKeep = false;
+			
+			Namespace nsSLD =  Namespace.getNamespace("sld","http://www.opengis.net/sld");
+			Namespace nsSE =  Namespace.getNamespace("se","http://www.opengis.net/se");
+			
+			Element racine = document.getRootElement();
+			Iterator ilNamedLayer = racine.getDescendants(new ElementNamedLayerFilter());
+			
+			while(ilNamedLayer.hasNext()){
+				Element namedLayer = (Element)ilNamedLayer.next();
+				List<Element> lName = namedLayer.getChildren();
+				Iterator<Element> ilName = lName.iterator();
+				while (ilName.hasNext()){
+					Element elementName = ilName.next();
+					if(elementName.getName().equals("Name")){
+						Iterator<Entry<Integer, ProxyLayer>> itLK = layerTableToKeep.entrySet().iterator();
+						while(itLK.hasNext()){
+							Entry<Integer, ProxyLayer> layerOrdered = itLK.next();
+							if(((ProxyLayer)layerOrdered.getValue()).getAliasName().equals(elementName.getText())){
+								//Keep the layer in the request
+								toRewrite.add(elementName);
+								toKeep = true;
+								break;
+							}
+						}
+						if(!toKeep){
+							toRemove.add(namedLayer);
+						}
+						toKeep = false;
+					}
+				}
+				
+				Iterator<Element> iToRemove = toRemove.iterator();
+				while(iToRemove.hasNext()){
+					Element element = iToRemove.next();
+					racine.removeContent(element);
+				}
+				
+				Iterator<Element> iToRewrite = toRewrite.iterator();
+				while(iToRewrite.hasNext()){
+					Element element = iToRewrite.next();
+					ProxyLayer proxyLayer = new ProxyLayer(element.getText());
+					element.setText(proxyLayer.getPrefixedName());
+				}
+			}
+			
+			 XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
+	         String out = sortie.outputString(document);
+			return new StringBuffer(out);
+		
+		} catch (JDOMException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return null;
 	}
 }
