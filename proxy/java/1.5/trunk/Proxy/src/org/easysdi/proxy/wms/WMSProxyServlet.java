@@ -319,7 +319,7 @@ public class WMSProxyServlet extends ProxyServlet {
 			if(layerTableToKeep.size() == 0){
 				logger.debug("WMSProxyServlet.requestPreTreatmentGetMap : no layers allowed, generate an empty image");
 				BufferedImage imgOut = generateEmptyImage(getProxyRequest().getWidth(), getProxyRequest().getHeight(), getProxyRequest().getFormat(), true, resp);
-				Iterator<ImageWriter> iter = ImageIO.getImageWritersByMIMEType(responseContentType);
+				Iterator<ImageWriter> iter = ImageIO.getImageWritersByMIMEType(getProxyRequest().getFormat());
 				ByteArrayOutputStream out = new ByteArrayOutputStream();
 				if (iter.hasNext()) {
 					ImageWriter writer = (ImageWriter) iter.next();
@@ -327,7 +327,7 @@ public class WMSProxyServlet extends ProxyServlet {
 					writer.write(imgOut);
 					writer.dispose();
 				}
-				sendHttpServletResponse(req, resp,out,responseContentType, HttpServletResponse.SC_OK);
+				sendHttpServletResponse(req, resp,out,getProxyRequest().getFormat(), HttpServletResponse.SC_OK);
 				return;
 			}
 			
@@ -348,7 +348,6 @@ public class WMSProxyServlet extends ProxyServlet {
 //				return;
 //			if(!requestSendingGetMapGET(req,resp,remoteServerToCall,layerTableToKeep,layerStyleMap))
 //				return;
-			
 			//Post Treatment
 			if (wmsGetMapResponseFilePathMap.size() > 0) {
 				logger.trace("requestPreTraitementGET begin transform");
@@ -358,7 +357,8 @@ public class WMSProxyServlet extends ProxyServlet {
 				//Generate an empty image
 				logger.debug(configuration.getServletClass() + ".requestPreTreatmentGetMap : no response from remote servers, generate an empty image");
 				BufferedImage imgOut = generateEmptyImage(getProxyRequest().getWidth(), getProxyRequest().getHeight(), getProxyRequest().getFormat(), true, resp);
-				Iterator<ImageWriter> iter = ImageIO.getImageWritersByMIMEType(responseContentType);
+				String t = getProxyRequest().getFormat();
+				Iterator<ImageWriter> iter = ImageIO.getImageWritersByMIMEType(getProxyRequest().getFormat());
 				ByteArrayOutputStream out = new ByteArrayOutputStream();
 				if (iter.hasNext()) {
 					ImageWriter writer = (ImageWriter) iter.next();
@@ -366,7 +366,7 @@ public class WMSProxyServlet extends ProxyServlet {
 					writer.write(imgOut);
 					writer.dispose();
 				}
-				sendHttpServletResponse(req, resp,out,responseContentType, HttpServletResponse.SC_OK);
+				sendHttpServletResponse(req, resp,out,getProxyRequest().getFormat(), HttpServletResponse.SC_OK);
 			}
 		}catch(Exception e){
 			resp.setHeader("easysdi-proxy-error-occured", "true");
@@ -637,7 +637,7 @@ public class WMSProxyServlet extends ProxyServlet {
 						paramUrl += "TRANSPARENT=TRUE&";
 					
 					sendDataDirectStream(resp,"GET", RS.getUrl(), paramUrl + layersUrl + stylesUrl);
-					return true;
+					return false;
 				}
 			}
 			
@@ -711,7 +711,7 @@ public class WMSProxyServlet extends ProxyServlet {
 					StringBuffer request = rewriteGetMapRequestPOST(layerTableToKeep);
 					
 					sendDataDirectStream(resp,"POST", RS.getUrl(), request.toString());
-					return true;
+					return false;
 				}
 			}
 			

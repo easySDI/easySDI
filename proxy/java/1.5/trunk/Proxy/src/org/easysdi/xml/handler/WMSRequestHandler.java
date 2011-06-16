@@ -12,6 +12,9 @@ public class WMSRequestHandler extends DefaultHandler {
 	private boolean isFirst = true;
 	private boolean isStyledLayerDescriptor;
 	private boolean isBoundingBox;
+	private boolean isCoord;
+	private boolean isX;
+	private boolean isY;
 	private boolean isOutPut;
 	private boolean isNamedLayer;
 	private List<String> layers = new ArrayList<String>();
@@ -19,12 +22,17 @@ public class WMSRequestHandler extends DefaultHandler {
 	private String operation = "";
 	private String version = "";
 	private String CRS = ""; 
+	private String srsName = "";
 	private String lowerCorner;
 	private String upperCorner;
+	private String minX = "";
+	private String minY = "";
+	private String maxX = "";
+	private String maxY = "";
 	private String width;
 	private String height;
 	private String format;
-	private String transparent;
+	private String transparent;  
 	private String exceptions;
 	
 	/* (non-Javadoc)
@@ -39,6 +47,13 @@ public class WMSRequestHandler extends DefaultHandler {
 	 */
 	@Override
 	public void endDocument() throws SAXException {
+		if(CRS == "" && srsName != ""){
+			CRS = srsName;
+		}
+		if(lowerCorner == null && minX != ""){
+			lowerCorner = minX + " " + minY;
+			upperCorner = maxX + " " + maxY;
+		}
 	}
 
 	/* (non-Javadoc)
@@ -58,7 +73,11 @@ public class WMSRequestHandler extends DefaultHandler {
 			isNamedLayer = true;
 		}
 		if(!isFirst && localName.equals("BoundingBox")){
+			srsName = attributes.getValue("srsName");
 			isBoundingBox = true;
+		}
+		if(!isFirst && isBoundingBox && localName.equals("coord")){
+			isCoord = true;
 		}
 		if(!isFirst && localName.equals("Output")){
 			isOutPut = true;
@@ -87,11 +106,26 @@ public class WMSRequestHandler extends DefaultHandler {
 		if(!isFirst && localName.equals("BoundingBox")){
 			isBoundingBox = false;
 		}
+		if(!isFirst && localName.equals("coord")){
+			isCoord = false;
+		}
 		if(!isFirst && isBoundingBox && localName.equals("LowerCorner")){
 			lowerCorner = data;
 		}
 		if(!isFirst && isBoundingBox && localName.equals("UpperCorner")){
 			upperCorner = data;
+		}
+		if(!isFirst && isBoundingBox && isCoord && localName.equals("X")){
+			if(minX == "")
+				minX = data;
+			else
+				maxX = data;
+		}
+		if(!isFirst && isBoundingBox && isCoord && localName.equals("Y")){
+			if(minY == "")
+				minY = data;
+			else
+				maxY = data;
 		}
 		if(!isFirst && localName.equals("Output")){
 			isOutPut = false;

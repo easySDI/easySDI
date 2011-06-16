@@ -223,7 +223,7 @@ public class OgcProxyServlet extends HttpServlet {
 			} catch (java.lang.reflect.InvocationTargetException e) {
 				//Problem parsing the request
 				logger.error("Problem parsing request in OgcProxyServlet: ",e);
-				sendException(new ProxyServletException("Problem parsing request: "+e.getCause().getCause().toString()), configuration.getServletClass(), null);
+//				sendException(new ProxyServletException("Problem parsing request: "+e.getCause().getCause().toString()), configuration.getServletClass(), null);
 				return null;
 			} catch (IllegalArgumentException e) {
 				//Problem parsing the request
@@ -331,7 +331,7 @@ public class OgcProxyServlet extends HttpServlet {
 			}else if (servletClass.equalsIgnoreCase("CSWProxyServlet")){
 				out = new CSWExceptionReport().generateExceptionReport(errorMessage, code, locator,version);
 			}else{
-				out = new OWS200ExceptionReport().generateExceptionReport(e.getMessage(), OWSExceptionReport.CODE_NO_APPLICABLE_CODE, null, null) ;
+				out = new OWS200ExceptionReport().generateExceptionReport(e.toString(), OWSExceptionReport.CODE_NO_APPLICABLE_CODE, null, null) ;
 			}
 		
 			servletResponse.setContentType("text/xml; charset=utf-8");
@@ -342,6 +342,7 @@ public class OgcProxyServlet extends HttpServlet {
 			os.write(out.toString().getBytes());
 			os.flush();
 			os.close();
+			logger.error( "OgcProxyServlet sends exception", e.toString());
 		} catch (IOException e1) {
 			logger.error("Error occured trying to send exception to client.",e1);
 		}

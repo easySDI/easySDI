@@ -52,7 +52,7 @@ public abstract class ProxyResponseBuilder {
 	/**
 	 * TExt message used for exception aggregation
 	 */
-	public static final String TEXT_SERVER_ALIAS = "Server %s returns : ";
+	public static final String TEXT_SERVER_ALIAS = "Server %s returned : ";
 	
 	/**
 	 * @param proxyServlet

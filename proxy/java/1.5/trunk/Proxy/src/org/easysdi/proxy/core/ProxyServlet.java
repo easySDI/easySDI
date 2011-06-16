@@ -18,7 +18,6 @@ package org.easysdi.proxy.core;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -778,14 +777,21 @@ public abstract class ProxyServlet extends HttpServlet {
 			// getting the response is required to force the request, otherwise
 			// it might not even be sent at all
 			InputStream in = null;
-   
-			if(hpcon.getResponseCode() >= 400)
-			{
+			String responseExtensionContentType=null;
+			
+			if(hpcon.getResponseCode() == 401){
+				//Unauthorized : the authentication provided was rejected by the remote server
+				//This HTTP error is translated into an OGC exception to be returned (if the Exception management mode allowed it)
+				//to the client
+				StringBuffer response = owsExceptionReport.generateExceptionReport("HTTP 401 - Unauthorized.", OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "");
+				in = new ByteArrayInputStream(response.toString().getBytes());
+				//Set the ContentType according to the new content of the response 
+				responseExtensionContentType = "text/xml";
+			}else if(hpcon.getResponseCode() >= 400){
 				in = hpcon.getErrorStream();
 				responseStatusCode = hpcon.getResponseCode();
 			}
-			else
-			{
+			else{
 				if (hpcon.getContentEncoding() != null && hpcon.getContentEncoding().indexOf("gzip") != -1) 
 				{
 					in = new GZIPInputStream(hpcon.getInputStream());
@@ -797,8 +803,7 @@ public abstract class ProxyServlet extends HttpServlet {
 			}
 
 			responseContentType = hpcon.getContentType();
-			String responseExtensionContentType=null;
-			if(hpcon.getContentType() != null)
+			if(hpcon.getContentType() != null && responseExtensionContentType == null)
 			{
 				responseExtensionContentType = hpcon.getContentType().split(";")[0];
 				responseContentTypeList.add(responseExtensionContentType);

@@ -66,6 +66,8 @@ public interface OWSExceptionReport {
 	
 	public static final String TEXT_EXCEPTION_ERROR					= "Error sending exception.";
 	
+	public static final String TEXT_ERROR_HHTP_401_UNAUTHORIZED		= "Error sending exception.";
+	
 	public StringBuffer generateExceptionReport (String errorMessage, String code, String locator) throws IOException;
 	
 }

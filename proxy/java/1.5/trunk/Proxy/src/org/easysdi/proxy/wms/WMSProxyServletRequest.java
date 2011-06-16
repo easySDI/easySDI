@@ -8,6 +8,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URLEncoder;
@@ -320,7 +321,7 @@ public class WMSProxyServletRequest extends ProxyServletRequest {
 			this.setBodyRequest(param);
 			
 			xr.parse(new InputSource(new InputStreamReader(new ByteArrayInputStream(param.toString().getBytes()))));
-			
+			operation = rh.getOperation();
 			version = rh.getVersion();
 			if (version.equalsIgnoreCase("1.0.0")) {
 				throw new VersionNotSupportedException(version);
@@ -330,7 +331,7 @@ public class WMSProxyServletRequest extends ProxyServletRequest {
 			height = rh.getHeight();
 			format = rh.getFormat();
 			srsName = rh.getCRS();
-			bbox = rh.getLowerCorner().replace(" ", ",")+rh.getUpperCorner().replace(" ", ",");
+			bbox = rh.getLowerCorner().replace(" ", ",")+ ","+rh.getUpperCorner().replace(" ", ",");
 			String sb = new String();
 			for (String s : rh.getLayers())
 			{
