@@ -25,6 +25,7 @@ import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
 
 import org.easysdi.proxy.csw.CSWExceptionReport;
+import org.easysdi.proxy.exception.NoAnonymousPolicyFoundException;
 import org.easysdi.proxy.exception.PolicyNotFoundException;
 import org.easysdi.proxy.ows.OWSExceptionReport;
 import org.easysdi.proxy.ows.v200.OWS200ExceptionReport;
@@ -111,11 +112,17 @@ public class EasySdiConfigFilter extends GenericFilterBean {
 		
 		if ("/ogc".equals(request.getServletPath())) {
 			String servletName = request.getPathInfo().substring(1);
-			Config configuration;
+			Config configuration = null;
 			try {
 				configuration = setConfig(servletName);
 				setPolicySet(configuration, request, servletName);
-			}catch (PolicyNotFoundException e) {
+			}catch (NoAnonymousPolicyFoundException e) {
+				logger.error("Error occurred during " + servletName + " config initialization", e);
+				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+				response.setHeader("WWW-Authenticate", "Basic realm=\"EasySDI-Proxy-"+configuration.getId()+"\"");
+				response.flushBuffer();
+				return;
+			} catch (PolicyNotFoundException e) {
 				logger.error("Error occurred during " + servletName + " config initialization", e);
 				StringBuffer out = new OWS200ExceptionReport().generateExceptionReport(e.toString(), OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "") ;
 				response.setContentType("text/xml; charset=utf-8");
@@ -167,7 +174,7 @@ public class EasySdiConfigFilter extends GenericFilterBean {
 		return configuration;
 	}
 
-	private void setPolicySet(Config configuration, HttpServletRequest req, String servletName) throws JAXBException, FileNotFoundException, PolicyNotFoundException {
+	private void setPolicySet(Config configuration, HttpServletRequest req, String servletName) throws JAXBException, FileNotFoundException, PolicyNotFoundException, NoAnonymousPolicyFoundException {
 		String filePath = new File(configuration.getPolicyFile()).getAbsolutePath();
 		File policyF = new File(filePath).getAbsoluteFile();
 		long plastmodified = policyF.lastModified();
@@ -200,7 +207,14 @@ public class EasySdiConfigFilter extends GenericFilterBean {
 				policyE.setVersion(plastmodified);
 				configCache.put(policyE);
 			}else{
-				throw new PolicyNotFoundException("No policy found for user.");
+				if (req.getUserPrincipal() == null){
+					//Spring Anonymous user is used to perform this request, but not policy defined for it
+					throw new NoAnonymousPolicyFoundException("No anomnymous policy found.");
+					
+				}else{
+					//No policy found for the authenticated user, return an ogc exception.
+					throw new PolicyNotFoundException("No policy found for user.");
+				}
 			}
 		}
 	}

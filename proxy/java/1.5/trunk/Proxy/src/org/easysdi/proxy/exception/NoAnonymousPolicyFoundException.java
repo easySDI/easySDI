@@ -20,13 +20,15 @@ package org.easysdi.proxy.exception;
  * @author DEPTH SA
  *
  */
-public class PolicyNotFoundException extends RuntimeException{
+public class NoAnonymousPolicyFoundException extends RuntimeException {
 
-	private static final long serialVersionUID = 4979269297236189882L;
-	public static final String NO_POLICY_FOUND = "No policy found";
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1614722650632132707L;
 	
-	public PolicyNotFoundException (String message)
-	{
+	public NoAnonymousPolicyFoundException(String message) {
 		super(message);
 	}
+
 }
