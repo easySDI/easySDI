@@ -64,11 +64,10 @@ public class EasySdiConfigFilter extends GenericFilterBean {
 		
 		if( request.getPathInfo() == null ||  request.getPathInfo().equals("/")){
 			StringBuffer out = new StringBuffer() ;
+			logger.error("Could not determine proxy request from http request. Proxy CONFIG ID is missing.");
 			out = new OWS200ExceptionReport().generateExceptionReport("Could not determine request from http request.", OWSExceptionReport.CODE_MISSING_PARAMETER_VALUE, "[config]") ;
-			
 			response.setContentType("text/xml; charset=utf-8");
 			response.setContentLength(out.length());
-				
 			OutputStream os;
 			os = response.getOutputStream();
 			os.write(out.toString().getBytes());
@@ -79,12 +78,11 @@ public class EasySdiConfigFilter extends GenericFilterBean {
 		
 		if(request.getMethod().equalsIgnoreCase("GET")){
 			if(request.getParameter("request") == null && request.getParameter("REQUEST") == null && request.getParameter("Request") == null){
+				logger.error("Could not determine proxy request from http request. Parameter REQUEST is missing.");
 				StringBuffer out = new StringBuffer() ;
 				out = new OWS200ExceptionReport().generateExceptionReport("Could not determine proxy request from http request.", OWSExceptionReport.CODE_MISSING_PARAMETER_VALUE, "request") ;
-				
 				response.setContentType("text/xml; charset=utf-8");
 				response.setContentLength(out.length());
-					
 				OutputStream os;
 				os = response.getOutputStream();
 				os.write(out.toString().getBytes());
@@ -96,6 +94,7 @@ public class EasySdiConfigFilter extends GenericFilterBean {
 			int i = request.getContentLength() ;
 			if(request.getContentLength() == 0){
 				StringBuffer out = new StringBuffer() ;
+				logger.error("Could not determine proxy request from http request. Parameter REQUEST is missing.");
 				out = new OWS200ExceptionReport().generateExceptionReport("Could not determine proxy request from http request.", OWSExceptionReport.CODE_MISSING_PARAMETER_VALUE, "request") ;
 				
 				response.setContentType("text/xml; charset=utf-8");
@@ -117,13 +116,13 @@ public class EasySdiConfigFilter extends GenericFilterBean {
 				configuration = setConfig(servletName);
 				setPolicySet(configuration, request, servletName);
 			}catch (NoAnonymousPolicyFoundException e) {
-				logger.error("Error occurred during " + servletName + " config initialization", e);
+				logger.error("Error occurred during " + servletName + " config initialization : "+ e.toString());
 				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-				response.setHeader("WWW-Authenticate", "Basic realm=\"EasySDI-Proxy-"+configuration.getId()+"\"");
-				response.flushBuffer();
+				response.setHeader("WWW-Authenticate", "Basic realm=\"EasySDI Proxy "+configuration.getId()+"\"");
+				response.sendError(HttpServletResponse.SC_UNAUTHORIZED,e.toString());
 				return;
 			} catch (PolicyNotFoundException e) {
-				logger.error("Error occurred during " + servletName + " config initialization", e);
+				logger.error("Error occurred during " + servletName + " config initialization : " + e.toString());
 				StringBuffer out = new OWS200ExceptionReport().generateExceptionReport(e.toString(), OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "") ;
 				response.setContentType("text/xml; charset=utf-8");
 				response.setContentLength(out.length());
@@ -134,7 +133,7 @@ public class EasySdiConfigFilter extends GenericFilterBean {
 				return;
 			} 
 			catch (Exception e) {
-				logger.error("Error occurred during " + servletName + " config initialization", e);
+				logger.error("Error occurred during " + servletName + " config initialization : " + e.toString());
 				StringBuffer out = new OWS200ExceptionReport().generateExceptionReport("Error occurred during " + servletName + " config initialization : "+e.toString(), OWSExceptionReport.CODE_MISSING_PARAMETER_VALUE, "request") ;
 				response.setContentType("text/xml; charset=utf-8");
 				response.setContentLength(out.length());
@@ -151,14 +150,14 @@ public class EasySdiConfigFilter extends GenericFilterBean {
 	private Config setConfig(String servletName) throws SAXException, IOException {
 		Config configuration = null;
 		String configFile = getServletContext().getInitParameter("configFile");
-//		logger.debug("Config file " + configFile);
+		logger.debug("Config file " + configFile);
 		File configF = new File(configFile).getAbsoluteFile();
 		long lastmodified = configF.lastModified();
 		Element configE = configCache.get(servletName + "configFile");
 		if (configE != null && configE.getVersion() != lastmodified)
 			configE = null;
 		if (configE == null) {
-//			logger.info("Loading " + servletName + " config");
+			logger.debug("Loading " + servletName + " config");
 			XMLReader xr = XMLReaderFactory.createXMLReader();
 			ConfigFileHandler confHandler = new ConfigFileHandler(servletName);
 			InputStream is = new java.io.FileInputStream(configFile);
@@ -168,7 +167,7 @@ public class EasySdiConfigFilter extends GenericFilterBean {
 			configE = new Element(servletName + "configFile", configuration);
 			configE.setVersion(lastmodified);
 			configCache.put(configE);
-//			logger.info("Config for " + servletName + " is loaded into cache");
+			logger.debug("Config for " + servletName + " is loaded into cache");
 		} else
 			configuration = (Config) configE.getValue();
 		return configuration;
@@ -187,8 +186,10 @@ public class EasySdiConfigFilter extends GenericFilterBean {
 		Principal principal = SecurityContextHolder.getContext().getAuthentication();
 		//Principal principal = req.getUserPrincipal();
 		
-		if (principal != null)
+		if (principal != null){
 			user = principal.getName();
+			logger.debug("Authentication : "+user);
+		}
 
 		Element policyE = configCache.get(servletName + user + "policyFile");
 

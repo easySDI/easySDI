@@ -151,5 +151,6 @@
 	<classpathentry kind="lib" path="lib/ehcache-core-2.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/ehcache-web-2.0.1.jar" sourcepath="C:/Documents and Settings/HVH/.m2/repository/net/sf/ehcache/ehcache-web/2.0.1/ehcache-web-2.0.1-sources.jar"/>
 	<classpathentry kind="lib" path="lib/gt2-wfs-2.4.1.jar"/>
+	<classpathentry kind="lib" path="lib/gt2-epsg-extension-2.4.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -86,6 +86,7 @@ public class OgcProxyServlet extends HttpServlet {
 			configCache = cm.getCache("configCache");
 		}
 		System.setProperty("org.geotools.referencing.forceXY", "true");
+		logger.info("OgcProxyServlet initialization done.");
 	}
 
 	
@@ -110,7 +111,7 @@ public class OgcProxyServlet extends HttpServlet {
 				obj.doGet(req, resp);
 			}
 		} catch (Exception e) {
-			logger.error("Error occured processing doGet: ",e);
+			logger.error("Error occured processing doGet: "+e.getMessage());
 			StringBuffer out = new OWS200ExceptionReport().generateExceptionReport(e.getMessage(), OWSExceptionReport.CODE_NO_APPLICABLE_CODE, null, null) ;
 			servletResponse.setContentType("text/xml");
 			servletResponse.setContentLength(out.length());
@@ -152,7 +153,7 @@ public class OgcProxyServlet extends HttpServlet {
 
 			}
 		} catch (Exception e) {
-			logger.error("Error occured processing doPost: ",e);
+			logger.error("Error occured processing doPost: "+e.getMessage());
 			StringBuffer out = new OWS200ExceptionReport().generateExceptionReport(e.toString(), OWSExceptionReport.CODE_NO_APPLICABLE_CODE, null, null) ;
 			resp.setContentType("text/xml");
 			resp.setContentLength(out.length());
@@ -285,6 +286,7 @@ public class OgcProxyServlet extends HttpServlet {
 				logger.error("No policy found!");
 				sendException(new PolicyNotFoundException(PolicyNotFoundException.NO_POLICY_FOUND), configuration.getServletClass(), reqVersion);
 			}
+			logger.info("OgcProxyServlet Proxy Servlet creation done.");
 			return ps;
 
 		} catch (Exception e) {
