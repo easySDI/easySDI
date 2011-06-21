@@ -1035,7 +1035,7 @@ function com_install(){
 					  `id` bigint(20) NOT NULL AUTO_INCREMENT,
 					  `guid` varchar(36) NOT NULL,
 					  `code` varchar(20),
-					  `name` varchar(50) NOT NULL,
+					  `name` varchar(100) NOT NULL,
 					  `description` varchar(100),
 					  `created` datetime NOT NULL,
 					  `updated` datetime,
