@@ -482,7 +482,7 @@ function com_install(){
 					`id`  bigint(20) NOT NULL AUTO_INCREMENT ,
 					`guid`  varchar(36) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
 					`code`  varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
-					`name`  varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+					`name`  varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
 					`description`  varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
 					`created`  datetime NOT NULL ,
 					`updated`  datetime NULL DEFAULT NULL ,
