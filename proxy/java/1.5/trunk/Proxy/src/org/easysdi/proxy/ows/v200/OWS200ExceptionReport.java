@@ -16,7 +16,6 @@
  */
 package org.easysdi.proxy.ows.v200;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import org.easysdi.proxy.ows.OWSExceptionReport;

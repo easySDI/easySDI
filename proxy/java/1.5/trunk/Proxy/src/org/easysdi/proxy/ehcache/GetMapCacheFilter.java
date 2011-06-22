@@ -39,7 +39,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 public class GetMapCacheFilter extends SimpleCachingHeadersPageCachingFilter {
 
-	private static final Logger LOG = LoggerFactory.getLogger(GetMapCacheFilter.class);
+	private Logger logger = LoggerFactory.getLogger("EasySdiConfigFilter");
 	private Cache configCache;
 	private ProxyCacheEntryFactory cacheFactory = new ProxyCacheEntryFactory();
 	private String operationValue = null;
@@ -226,21 +226,18 @@ public class GetMapCacheFilter extends SimpleCachingHeadersPageCachingFilter {
 			Element element = blockingCache.get(key);
 			if (element == null || element.getObjectValue() == null) {
 				try {
+					logger.debug("Page is not cached. Build the response, cache it, and it send it to client.");
 					// Page is not cached - build the response, cache it, and
 					// send to client
 					pageInfo = buildPage(request, response, chain);
 					if (pageInfo.isOk() && !response.containsHeader("easysdi-proxy-error-occured")) {
-						if (LOG.isDebugEnabled()) {
-							LOG.debug("PageInfo ok. Adding to cache " + blockingCache.getName() + " with key " + key);
-						}
+							logger.debug("PageInfo ok. Adding to cache " + blockingCache.getName() + " with key " + key);
 						if (cacheAllowed) {
 							blockingCache.put(new Element(key, pageInfo));
 							blockingCache.flush();
 						}
 					} else {
-						if (LOG.isDebugEnabled()) {
-							LOG.debug("PageInfo was not ok(200). Putting null into cache " + blockingCache.getName() + " with key " + key);
-						}
+						logger.debug("PageInfo was not ok(200). Putting null into cache " + blockingCache.getName() + " with key " + key);
 						blockingCache.put(new Element(key, null));
 						blockingCache.flush();
 					}
@@ -254,6 +251,7 @@ public class GetMapCacheFilter extends SimpleCachingHeadersPageCachingFilter {
 					throw new Exception(throwable);
 				}
 			} else {
+				logger.debug("Page is already cached. Send it to client.");
 				pageInfo = (PageInfo) element.getObjectValue();
 			}
 		} catch (LockTimeoutException e) {

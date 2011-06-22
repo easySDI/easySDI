@@ -46,6 +46,8 @@ public interface OWSExceptionReport {
 	public static final String TEXT_OPERATION_NOT_ALLOWED			= "Request is for an operation that is not allowed by this server security options.";
 	public static final String TEXT_VERSION_NOT_SUPPORTED			= "Version not supported.";
 	public static final String TEXT_INVALID_LAYER_NAME 				= "Invalid layer name given in the LAYER parameter : ";
+	public static final String TEXT_INVALID_QUERY_LAYERS_NAME 		= "Invalid layer name given in the QUERY_LAYERs parameter : ";
+	public static final String TEXT_INVALID_LAYERS_NAME 			= "Invalid layer name given in the LAYERS parameter : ";
 	public static final String TEXT_INVALID_SERVICE_NAME 			= "Invalid service name given in the SERVICE parameter.";
 	public static final String TEXT_ERROR_IN_EASYSDI_PROXY 			= "Error in EasySDI Proxy. Consult the proxy log for more details.";
 	public static final String TEXT_NO_RESULT_RECEIVED_BY_PROXY		= "Error in EasySDI Proxy. EasySDI Proxy didn't receive any result from remote server.";

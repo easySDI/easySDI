@@ -31,6 +31,7 @@ import java.util.Vector;
 import java.util.Map.Entry;
 
 import org.easysdi.jdom.filter.AttributeXlinkFilter;
+import org.easysdi.jdom.filter.ElementExceptionFilter;
 import org.easysdi.jdom.filter.ElementFormatFilter;
 import org.easysdi.jdom.filter.ElementLayerFilter;
 import org.easysdi.jdom.filter.ElementServiceExceptionFilter;
@@ -39,6 +40,8 @@ import org.easysdi.proxy.core.ProxyLayer;
 import org.easysdi.proxy.core.ProxyRemoteServerResponse;
 import org.easysdi.proxy.core.ProxyResponseBuilder;
 import org.easysdi.proxy.core.ProxyServlet;
+import org.easysdi.proxy.ows.OWSExceptionManager;
+import org.easysdi.proxy.ows.v200.OWS200ExceptionManager;
 import org.easysdi.proxy.policy.BoundingBox;
 import org.easysdi.proxy.policy.Layer;
 import org.easysdi.proxy.policy.Server;
@@ -75,6 +78,7 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 	
 	public WMSProxyResponseBuilder(ProxyServlet proxyServlet) {
 		super(proxyServlet);
+		nsOWS = Namespace.getNamespace("http://www.opengis.net/ows");
 		nsXLINK = Namespace.getNamespace("xlink","http://www.w3.org/1999/xlink");
 	}
 	
@@ -526,6 +530,27 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 			    		Element serviceException = (Element)iSEL.next();
 			    		serviceException.setText( String.format(TEXT_SERVER_ALIAS, key) + serviceException.getText());
 			    	}
+			    	
+			    	if(serviceExceptionList.size() == 0)
+			    	{
+			    		//This WMS Exception should contain serviceException element according to the service specifications (see OGC documentation)
+			    		//But, it can also contain ows:Exception element define in the OWS common specification (see OGC documentation)
+			    		//Get the serviceows:Exception element if serviceException does not exist
+			    		Filter exceptionFilter = new ElementExceptionFilter();
+			    		Iterator<Element> iE = racineParent.getDescendants(exceptionFilter);
+						while (iE.hasNext()){
+							Element serviceException = (Element)iE.next();
+							serviceExceptionList.add(serviceException);
+						}
+						
+						//Add the server alias in the exception text
+						Iterator<Element> iEL = serviceExceptionList.iterator();
+				    	while (iEL.hasNext()){
+				    		Element serviceException = (Element)iEL.next();
+				    		Element exceptionText = serviceException.getChild("ExceptionText",nsOWS );
+				    		exceptionText.setText( String.format(TEXT_SERVER_ALIAS, key) + exceptionText.getText());
+				    	}
+			    	}
 			    	continue;
 				}
 				
@@ -549,17 +574,41 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 		    		if(serviceException.getParent().removeContent(serviceException)){
 		    			racineParent.addContent(serviceException);
 		    		}else{
-		    			//TODO :error
+		    			servlet.logger.error("WMSProxyResponseBuilder.ExceptionAggregation can not correctly rewrite exception.");
 		    		}
+		    	}
+		    	
+		    	if(serviceExceptionList.size() == 0)
+		    	{
+		    		//This WMS Exception should contain serviceException element according to the service specifications (see OGC documentation)
+		    		//But, it can also contain ows:Exception element define in the OWS common specification (see OGC documentation)
+		    		//Get the serviceows:Exception element if serviceException does not exist
+		    		Filter exceptionFilter = new ElementExceptionFilter();
+		    		Iterator<Element> iE = racine.getDescendants(exceptionFilter);
+					while (iE.hasNext()){
+						Element serviceException = (Element)iE.next();
+						serviceExceptionList.add(serviceException);
+					}
+					
+					//Add the server alias in the exception text
+					Iterator<Element> iEL = serviceExceptionList.iterator();
+			    	while (iEL.hasNext()){
+			    		Element serviceException = (Element)iEL.next();
+			    		Element exceptionText = serviceException.getChild("ExceptionText",nsOWS );
+			    		exceptionText.setText( String.format(TEXT_SERVER_ALIAS, key) + exceptionText.getText());
+			    		if(serviceException.getParent().removeContent(serviceException)){
+			    			racineParent.addContent(serviceException);
+			    		}else{
+			    			servlet.logger.error("WMSProxyResponseBuilder.ExceptionAggregation can not correctly rewrite exception.");
+			    		}
+			    	}
 		    	}
 		    	
 				
 			} catch (JDOMException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				servlet.logger.error("WMSProxyResponseBuilder.ExceptionAggregation - ",e);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				servlet.logger.error("WMSProxyResponseBuilder.ExceptionAggregation - ",e);			
 			}
 		}
 		
@@ -568,8 +617,7 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 		try {
 			sortie.output(docParent, out);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			servlet.logger.error("WMSProxyResponseBuilder.ExceptionAggregation - ",e);
 		}
 		return out;
 	}

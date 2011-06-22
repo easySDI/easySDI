@@ -38,6 +38,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -66,6 +67,7 @@ import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.log4j.DailyRollingFileAppender;
+import org.apache.log4j.FileAppender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.easysdi.proxy.exception.AvailabilityPeriodException;
@@ -87,6 +89,7 @@ import org.geotools.xml.XMLHandlerHints;
 import org.jdom.Document;
 import org.jdom.Namespace;
 import org.jdom.input.SAXBuilder;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -400,32 +403,6 @@ public abstract class ProxyServlet extends HttpServlet {
 			((ProxyLogger)logger).setDateFormat(configuration.getLogDateFormat());
 			((ProxyLogger)logger).setLogFile(configuration.getLogFile());
 		}else{
-//			DailyRollingFileAppender newAppender = new DailyRollingFileAppender();
-//			newAppender.setName(configuration.getId());
-//			newAppender.setLayout(new PatternLayout("%d{"+configuration.getLogDateFormat()+"} [%t] %-5p %C{6} (%F:%L) - %m%n"));
-//			String logFile = configuration.getLogFile();
-//			File fLogFile= null;
-//			if (logFile != null) {
-//				fLogFile = new File(logFile);
-//				if (!fLogFile.exists()) {
-//					try {
-//						fLogFile.createNewFile();
-//					} catch (IOException e) {
-//						// TODO Auto-generated catch block
-//						e.printStackTrace();
-//					}
-//				}
-//			}
-//			newAppender.setFile(configuration.getLogFile());
-//			if(configuration.getPeriod().equalsIgnoreCase("daily"))
-//				newAppender.setDatePattern("'.'yyyy-MM-dd-HH-mm");
-//			else if(configuration.getPeriod().equalsIgnoreCase("monthly"))
-//				newAppender.setDatePattern("'.'yyyy-MM");
-//			else if(configuration.getPeriod().equalsIgnoreCase("weekly"))
-//				newAppender.setDatePattern("'.'yyyy-ww");
-//			else 
-//				newAppender.setDatePattern("'.'yyyy-MM-dd");
-//			logger.addAppender(newAppender);
 			DailyRollingFileAppender appender = (DailyRollingFileAppender)logger.getAppender("logFileAppender");
 			appender.setBufferedIO(true);
 			appender.setAppend(true);
@@ -489,8 +466,17 @@ public abstract class ProxyServlet extends HttpServlet {
 			requestPreTreatmentPOST(req, resp);
 		} finally {
 			deleteTempFileList();
+			//To flush log with log4j we need to set the param immediateFlush to 'true'
+			//AND add a new entry to the log :  all the entries buffered during request execution are written into the log.
+			//We set immediateFlush to false for performance reason (see log4j documentation).
+			//We add the same extra entry in the ProxyLogger log to keep the content of the two kind of log equivalent.
 			if (logger instanceof ProxyLogger){
+				((ProxyLogger)logger).info("ProxyServlet done.");
 				((ProxyLogger)logger).writeInLog(dateFormat.format(d), req);
+			} else{
+				((FileAppender)logger.getAppender("logFileAppender")).setImmediateFlush(true);
+				logger.info("ProxyServlet done.");
+				((FileAppender)logger.getAppender("logFileAppender")).setImmediateFlush(false);
 			}
 		}
 	}
@@ -514,8 +500,17 @@ public abstract class ProxyServlet extends HttpServlet {
 			requestPreTreatmentGET(req, resp);
 		} finally {
 			deleteTempFileList();
+			//To flush log with log4j we need to set the param immediateFlush to 'true'
+			//AND add a new entry to the log :  all the entries buffered during request execution are written into the log.
+			//We set immediateFlush to false for performance reason (see log4j documentation).
+			//We add the same extra entry in the ProxyLogger log to keep the content of the two kind of log equivalent.
 			if (logger instanceof ProxyLogger){
+				((ProxyLogger)logger).info("ProxyServlet done.");
 				((ProxyLogger)logger).writeInLog(dateFormat.format(d), req);
+			} else{
+				((FileAppender)logger.getAppender("logFileAppender")).setImmediateFlush(true);
+				logger.info("ProxyServlet done.");
+				((FileAppender)logger.getAppender("logFileAppender")).setImmediateFlush(false);
 			}
 		}
 	}
@@ -2018,8 +2013,10 @@ public abstract class ProxyServlet extends HttpServlet {
 			throw new AvailabilityPeriodException(AvailabilityPeriodException.SERVICE_IS_NULL);
 		// return false;
 		SimpleDateFormat sdf = new SimpleDateFormat(p.getMask());
+		Calendar calendar = Calendar.getInstance(); 
 		Date fromDate = null;
 		Date toDate = null;
+		
 		try {
 			if (p.getFrom() != null)
 				fromDate = sdf.parse(p.getFrom().getDate());
@@ -2037,6 +2034,11 @@ public abstract class ProxyServlet extends HttpServlet {
 		// return false;
 
 		if (toDate != null)
+			//toDate contains hh:mm:ss, so it is like 01:01:2011 00:00:00
+			//To include the toDate in the validity period, we add a day to compare to the current date.
+			calendar.setTime(toDate);
+			calendar.add(Calendar.DAY_OF_MONTH, 1);
+			toDate = calendar.getTime();
 			if (currentDate.compareTo(toDate) > 0)
 				throw new AvailabilityPeriodException(AvailabilityPeriodException.CURRENT_DATE_AFTER_SERVICE_TO_DATE);
 		// return false;
@@ -2255,6 +2257,9 @@ public abstract class ProxyServlet extends HttpServlet {
 				if(responseCode.equals(HttpServletResponse.SC_INTERNAL_SERVER_ERROR)){
 					resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, tempOut.toString());
 				}
+//				else if(responseCode > 400){
+//					resp.sendError(responseCode, tempOut.toString());
+//				}
 				else if (tempOut != null)
 					os.write(tempOut.toString().getBytes());
 				logger.trace("transform end response writting");

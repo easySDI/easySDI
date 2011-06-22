@@ -192,7 +192,7 @@ public class WMSProxyServlet extends ProxyServlet {
 			{
 				logger.error(OWSExceptionReport.TEXT_OPERATION_NOT_SUPPORTED);
 				StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_OPERATION_NOT_SUPPORTED,OWSExceptionReport.CODE_OPERATION_NOT_SUPPORTED,"REQUEST");
-				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
+				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
 				return;
 			}
 			//Generate OGC exception and send it to the client if current operation is not allowed by the loaded policy
@@ -200,7 +200,7 @@ public class WMSProxyServlet extends ProxyServlet {
 			{
 				logger.error( OWSExceptionReport.TEXT_OPERATION_NOT_ALLOWED);
 				StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_OPERATION_NOT_ALLOWED,OWSExceptionReport.CODE_OPERATION_NOT_ALLOWED,"REQUEST");
-				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
+				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
 				return;
 			}
 
@@ -288,7 +288,7 @@ public class WMSProxyServlet extends ProxyServlet {
 			{
 				logger.error( "LAYERS "+OWSExceptionReport.TEXT_MISSING_PARAMETER_VALUE);
 				StringBuffer out = owsExceptionReport.generateExceptionReport("LAYERS "+OWSExceptionReport.TEXT_MISSING_PARAMETER_VALUE,OWSExceptionReport.CODE_MISSING_PARAMETER_VALUE,"LAYERS");
-				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
+				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
 				return;
 			}
 			
@@ -297,7 +297,7 @@ public class WMSProxyServlet extends ProxyServlet {
 			{
 				logger.error(OWSExceptionReport.TEXT_INVALID_PARAMETER_VALUE+" Request ImageSize out of bounds, see the policy definition.");
 				StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_PARAMETER_VALUE+" Request ImageSize out of bounds, see the policy definition.",OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE,"WIDTH");
-				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
+				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
 				return;
 			}
 			
@@ -393,7 +393,7 @@ public class WMSProxyServlet extends ProxyServlet {
 			{
 				logger.error("LAYER "+OWSExceptionReport.TEXT_MISSING_PARAMETER_VALUE);
 				StringBuffer out = owsExceptionReport.generateExceptionReport("LAYER "+OWSExceptionReport.TEXT_MISSING_PARAMETER_VALUE,OWSExceptionReport.CODE_MISSING_PARAMETER_VALUE,"LAYER");
-				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
+				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
 				return;
 			}
 			
@@ -406,7 +406,7 @@ public class WMSProxyServlet extends ProxyServlet {
 			if(layer.getAlias() == null){
 				logger.error(OWSExceptionReport.TEXT_INVALID_LAYER_NAME+" missing alias prefix for "+layerAsString);
 				StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_LAYER_NAME,OWSExceptionReport.CODE_LAYER_NOT_DEFINED,"LAYER");
-				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
+				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
 				return;
 			}
 			
@@ -417,12 +417,12 @@ public class WMSProxyServlet extends ProxyServlet {
 			if( RS == null || !isLayerAllowed(layer.getPrefixedName(), RS.getUrl())){
 				logger.error( OWSExceptionReport.TEXT_INVALID_LAYER_NAME+layerAsString+" is not allowed");
 				StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_LAYER_NAME,OWSExceptionReport.CODE_LAYER_NOT_DEFINED,"LAYER");
-				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
+				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
 				return;
 			}
-			
+
 			//Send the request to the remote server and send back the response directly to client
-			sendDataDirectStream(resp,"GET", RS.getUrl(), getProxyRequest().getUrlParameters());
+			sendDataDirectStream(resp,"GET", RS.getUrl(), getProxyRequest().getUrlParameters() + "&LAYER="+layer.getPrefixedName());
 						
 		} catch (Exception e) {
 			resp.setHeader("easysdi-proxy-error-occured", "true");
@@ -480,9 +480,9 @@ public class WMSProxyServlet extends ProxyServlet {
 				ProxyLayer layer = new ProxyLayer(layerArray.get(k));
 				if(layer.getAlias() == null)
 				{
-					logger.error( OWSExceptionReport.TEXT_INVALID_LAYER_NAME+" missing alias prefix for "+layerArray.get(k));
-					StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_LAYER_NAME,OWSExceptionReport.CODE_LAYER_NOT_DEFINED,"QUERY_LAYERS");
-					sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
+					logger.error( OWSExceptionReport.TEXT_INVALID_QUERY_LAYERS_NAME+" missing alias prefix for "+layerArray.get(k));
+					StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_QUERY_LAYERS_NAME,OWSExceptionReport.CODE_LAYER_NOT_DEFINED,"QUERY_LAYERS");
+					sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
 					return;
 				}
 				
@@ -490,10 +490,16 @@ public class WMSProxyServlet extends ProxyServlet {
 				RemoteServerInfo RS = (RemoteServerInfo)remoteServersTable.get(layer.getAlias());
 				
 				//Check the availaibility of the requested QUERY_LAYERS 
-				if( RS == null || !isLayerAllowed(layer.getPrefixedName(), RS.getUrl())){
-					logger.info( OWSExceptionReport.TEXT_INVALID_LAYER_NAME+layerArray.get(k)+" is not allowed");
-					StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_LAYER_NAME,OWSExceptionReport.CODE_LAYER_NOT_DEFINED,"QUERY_LAYERS");
-					sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
+				if( RS == null ){
+					logger.info( OWSExceptionReport.TEXT_INVALID_QUERY_LAYERS_NAME+layerArray.get(k)+". Prefix is unknown.");
+					StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_QUERY_LAYERS_NAME,OWSExceptionReport.CODE_LAYER_NOT_DEFINED,"QUERY_LAYERS");
+					sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
+					return ;
+				}
+				if(  !isLayerAllowed(layer.getPrefixedName(), RS.getUrl())){
+					logger.info( OWSExceptionReport.TEXT_INVALID_QUERY_LAYERS_NAME+layerArray.get(k)+" is not allowed");
+					StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_QUERY_LAYERS_NAME,OWSExceptionReport.CODE_LAYER_NOT_DEFINED,"QUERY_LAYERS");
+					sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
 					return ;
 				}
 				Iterator<Entry<Integer,ProxyLayer>> i = layerTableToKeepFromGetMap.entrySet().iterator();
@@ -728,9 +734,10 @@ public class WMSProxyServlet extends ProxyServlet {
 						layerByServerTable.put(layerOrdered.getKey(), layerOrdered.getValue());
 					}
 				}
+				
 				//New Thread to request this remote server
 				WMSProxyServerGetMapThread s = new WMSProxyServerGetMapThread(	this,
-																				getProxyRequest().getUrlParameters(), 
+																				getProxyRequest().getBodyRequest().toString(), 
 																				layerByServerTable, 
 																				layerStyleMap,
 																				RS,
@@ -1177,16 +1184,14 @@ public class WMSProxyServlet extends ProxyServlet {
 		{
 			SAXBuilder sxb = new SAXBuilder();
 			Document documentMaster = sxb.build(new File(path));
-//			DocumentBuilderFactory db = DocumentBuilderFactory.newInstance();
-	//		Document documentMaster = db.newDocumentBuilder().parse(new File(path));
 			if (documentMaster != null) 
 			{
-				return documentMaster.getRootElement().getName().equalsIgnoreCase("ServiceExceptionReport");
-//				NodeList nl = documentMaster.getElementsByTagName("ServiceExceptionReport");
-//				if (nl.item(0) != null)
-//				{
-//					return true;
-//				}
+				//ServiceExceptionReport is the root element name for WMS, WFS exception
+				//ExceptionReport is the root element for OWS, WMTS, CSW exception
+				if(documentMaster.getRootElement().getName().equalsIgnoreCase("ServiceExceptionReport") || documentMaster.getRootElement().getName().equalsIgnoreCase("ExceptionReport"))
+					return true;
+				else
+					return false;
 			}
 		}
 		return false;
@@ -1236,7 +1241,7 @@ public class WMSProxyServlet extends ProxyServlet {
 		{
 			logger.error(OWSExceptionReport.TEXT_INVALID_DIMENSION_VALUE);
 			StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_DIMENSION_VALUE,OWSExceptionReport.CODE_INVALID_DIMENSION_VALUE,"WIDTH");
-			sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
+			sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
 			return null;
 		}
 		
@@ -1248,7 +1253,7 @@ public class WMSProxyServlet extends ProxyServlet {
 		if(((WMSProxyServletRequest)getProxyRequest()).getLayers()==null){
 			logger.error("LAYERS "+OWSExceptionReport.TEXT_MISSING_PARAMETER_VALUE);
 			StringBuffer out = owsExceptionReport.generateExceptionReport("LAYERS "+OWSExceptionReport.TEXT_MISSING_PARAMETER_VALUE,OWSExceptionReport.CODE_MISSING_PARAMETER_VALUE,"LAYERS");
-			sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
+			sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
 			return null;
 		}
 			
@@ -1284,7 +1289,7 @@ public class WMSProxyServlet extends ProxyServlet {
 		}catch (Exception ex) {
 			logger.error(OWSExceptionReport.TEXT_INVALID_SRS);
 			StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_SRS,OWSExceptionReport.CODE_INVALID_SRS,"SRS");
-			sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
+			sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
 			return null;
 		}
 		
@@ -1300,19 +1305,25 @@ public class WMSProxyServlet extends ProxyServlet {
 			ProxyLayer layer = new ProxyLayer(layerName);
 			if(layer.getAlias() == null)
 			{
-				logger.error(OWSExceptionReport.TEXT_INVALID_LAYER_NAME+" missing alias prefix for "+layerName);
-				StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_LAYER_NAME +layerName,OWSExceptionReport.CODE_LAYER_NOT_DEFINED,"LAYERS");
-				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
+				logger.error(OWSExceptionReport.TEXT_INVALID_LAYERS_NAME+" missing alias prefix for "+layerName);
+				StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_LAYERS_NAME +layerName,OWSExceptionReport.CODE_LAYER_NOT_DEFINED,"LAYERS");
+				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
 				return null;
 			}
 			//Find the remote server concerning by the current layer
 			RemoteServerInfo RS = (RemoteServerInfo)remoteServersTable.get(layer.getAlias());
 			
 			//Check the availaibility of the requested LAYERS 
-			if( RS == null || !isLayerAllowed(layer.getPrefixedName(), RS.getUrl())){
-				logger.error( OWSExceptionReport.TEXT_INVALID_LAYER_NAME+layerName+" is not allowed");
-				StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_LAYER_NAME+layerName,OWSExceptionReport.CODE_LAYER_NOT_DEFINED,"LAYERS");
-				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
+			if( RS == null ){
+				logger.error( OWSExceptionReport.TEXT_INVALID_LAYERS_NAME+layerName+". Prefix is unknown");
+				StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_LAYERS_NAME+layerName,OWSExceptionReport.CODE_LAYER_NOT_DEFINED,"LAYERS");
+				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
+				return null;
+			}
+			if( !isLayerAllowed(layer.getPrefixedName(), RS.getUrl())){
+				logger.error( OWSExceptionReport.TEXT_INVALID_LAYERS_NAME+layerName+" is not allowed");
+				StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_LAYERS_NAME+layerName,OWSExceptionReport.CODE_LAYER_NOT_DEFINED,"LAYERS");
+				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
 				return null;
 			}
 			

@@ -64,8 +64,8 @@ public class EasySdiConfigFilter extends GenericFilterBean {
 		
 		if( request.getPathInfo() == null ||  request.getPathInfo().equals("/")){
 			StringBuffer out = new StringBuffer() ;
-			logger.error("Could not determine proxy request from http request. Proxy CONFIG ID is missing.");
-			out = new OWS200ExceptionReport().generateExceptionReport("Could not determine request from http request.", OWSExceptionReport.CODE_MISSING_PARAMETER_VALUE, "[config]") ;
+			logger.error("Could not determine proxy request from http request. Service name is missing.");
+			out = new OWS200ExceptionReport().generateExceptionReport("Could not determine request from http request. Service name is missing.", OWSExceptionReport.CODE_MISSING_PARAMETER_VALUE, "service") ;
 			response.setContentType("text/xml; charset=utf-8");
 			response.setContentLength(out.length());
 			OutputStream os;
@@ -80,7 +80,7 @@ public class EasySdiConfigFilter extends GenericFilterBean {
 			if(request.getParameter("request") == null && request.getParameter("REQUEST") == null && request.getParameter("Request") == null){
 				logger.error("Could not determine proxy request from http request. Parameter REQUEST is missing.");
 				StringBuffer out = new StringBuffer() ;
-				out = new OWS200ExceptionReport().generateExceptionReport("Could not determine proxy request from http request.", OWSExceptionReport.CODE_MISSING_PARAMETER_VALUE, "request") ;
+				out = new OWS200ExceptionReport().generateExceptionReport("Could not determine proxy request from http request. Parameter REQUEST is missing.", OWSExceptionReport.CODE_MISSING_PARAMETER_VALUE, "request") ;
 				response.setContentType("text/xml; charset=utf-8");
 				response.setContentLength(out.length());
 				OutputStream os;
@@ -95,7 +95,7 @@ public class EasySdiConfigFilter extends GenericFilterBean {
 			if(request.getContentLength() == 0){
 				StringBuffer out = new StringBuffer() ;
 				logger.error("Could not determine proxy request from http request. Parameter REQUEST is missing.");
-				out = new OWS200ExceptionReport().generateExceptionReport("Could not determine proxy request from http request.", OWSExceptionReport.CODE_MISSING_PARAMETER_VALUE, "request") ;
+				out = new OWS200ExceptionReport().generateExceptionReport("Could not determine proxy request from http request. Parameter REQUEST is missing.", OWSExceptionReport.CODE_MISSING_PARAMETER_VALUE, "request") ;
 				
 				response.setContentType("text/xml; charset=utf-8");
 				response.setContentLength(out.length());
@@ -114,6 +114,17 @@ public class EasySdiConfigFilter extends GenericFilterBean {
 			Config configuration = null;
 			try {
 				configuration = setConfig(servletName);
+				if(configuration == null){
+					logger.error("Error occurred during " + servletName + " config initialization : service does not exist.");
+					StringBuffer out = new OWS200ExceptionReport().generateExceptionReport("Error occurred during " + servletName + " config initialization : service does not exist.", OWSExceptionReport.CODE_MISSING_PARAMETER_VALUE, "request") ;
+					response.setContentType("text/xml; charset=utf-8");
+					response.setContentLength(out.length());
+					OutputStream os = response.getOutputStream();
+					os.write(out.toString().getBytes());
+					os.flush();
+					os.close();
+					return;
+				}
 				setPolicySet(configuration, request, servletName);
 			}catch (NoAnonymousPolicyFoundException e) {
 				logger.error("Error occurred during " + servletName + " config initialization : "+ e.toString());

@@ -109,18 +109,21 @@ public class WMSProxyLayerThread extends Thread {
 				}
 			}
 			
-			Iterator<Element> iToRemove = toRemove.iterator();
-			while(iToRemove.hasNext()){
-				Element element = iToRemove.next();
-				racine.removeContent(element);
-			}
-			
 			Iterator<Element> iToRewrite = toRewrite.iterator();
 			while(iToRewrite.hasNext()){
 				Element element = iToRewrite.next();
 				ProxyLayer proxyLayer = new ProxyLayer(element.getText());
 				element.setText(proxyLayer.getPrefixedName());
 			}
+			
+			//toRemove.clear();
+			toRewrite.clear();
+		}
+		Iterator<Element> iToRemove = toRemove.iterator();
+		while(iToRemove.hasNext()){
+			Element element = iToRemove.next();
+			element.getParentElement().removeContent(element);
+			//racine.removeContent(element);
 		}
 		
 		 XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());

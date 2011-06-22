@@ -16,10 +16,10 @@
  */
 package org.easysdi.proxy.ows.v10;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import org.easysdi.proxy.ows.OWSExceptionReport;
+
 
 /**
  * @author DEPTH SA
