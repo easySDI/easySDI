@@ -36,7 +36,8 @@
 			<filename>easysdi_shop.php</filename>
 			<filename>license.txt</filename>
 			<folder>core</folder>
-			<folder>views</folder>		
+			<folder>views</folder>
+			<folder>img</folder>	
 		</files>
 
 </install>
