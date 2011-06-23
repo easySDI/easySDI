@@ -218,7 +218,7 @@ if ($curstep == "2")
 						if(modifyFeatureControl != null)
 							modifyFeatureControl.displayClass="olControlModifyFeature";
 						if(panelEdition != null)
-							panelEdition.redraw();
+							try{panelEdition.redraw();}catch(err){}
 					}else
 					{
 						//show pointer button
@@ -228,7 +228,7 @@ if ($curstep == "2")
 						if(modifyFeatureControl != null)
 							modifyFeatureControl.displayClass="olControlModifyFeatureDisable";
 						if(panelEdition != null)
-							panelEdition.redraw();
+							try{panelEdition.redraw();}catch(err){}
 					}
 					
 					//Refresh content of manual perimeter
