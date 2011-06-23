@@ -362,7 +362,6 @@ public class WPSServlet extends HttpServlet {
 			ResultSet rs = stmt.executeQuery(query);
 
 			StringBuffer res = new StringBuffer();
-			res.append("<!-- Response for user: "+userName+" -->");
 			res.append("<easysdi:orders xmlns:easysdi=\"http://www.easysdi.org\">");
 			List<String> orderIdList = new Vector<String>();
 			while (rs.next()) 
