@@ -45,6 +45,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Vector;
 import java.util.Random;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -86,6 +87,9 @@ public class WPSServlet extends HttpServlet {
 	private String senderEmail = "webmaster@depth.ch";
 
 	private String senderName = "Depth SA";
+	
+	Logger logger = Logger.getLogger(WPSServlet.class.toString());
+
 
 	public void init(ServletConfig config) throws ServletException {
 		String conn = config.getInitParameter("connexionString");
@@ -285,7 +289,7 @@ public class WPSServlet extends HttpServlet {
 
 	private String executeGetOrders (net.opengis.wps._1_0.Execute execute){
 		Connection conn = null;
-
+		logger.info("execute get order called");
 		try {
 
 			List lInputs = execute.getDataInputs().getInput();
@@ -314,8 +318,8 @@ public class WPSServlet extends HttpServlet {
 			if (userName == null){		    
 				return error("PARTNERNOTDEFINED","paremeter containaing the partner id is not defined");
 			}
-
-			System.out.println("logged with:"+CurrentUser.getCurrentPrincipal());
+			
+			logger.info("logged with:"+CurrentUser.getCurrentPrincipal());
 
 			net.opengis.wps._1_0.ObjectFactory of = new net.opengis.wps._1_0.ObjectFactory();
 			ExecuteResponse er = of.createExecuteResponse();
@@ -340,13 +344,11 @@ public class WPSServlet extends HttpServlet {
 
 			po.getOutput().add(odt);
 
-
 			er.setProcessOutputs(po);
 
 			/* Get connection from spring */
 			Class.forName(getJdbcDriver()).newInstance();
 			conn =  DriverManager.getConnection(getConnexionString());
-
 			
 			Statement stmt = conn.createStatement();
 
@@ -355,34 +357,27 @@ public class WPSServlet extends HttpServlet {
 			"WHERE opl.order_id = o.id AND osl.id=o.status_id AND osl.code = '"+statusToRead+"' AND o.user_id = p.user_id "+
 			"and opl.product_id = prod.id AND prod.objectversion_id = ov.id AND ov.object_id=ob.id AND ob.account_id = part.id AND part.user_id = u.id AND u.username='"+userName+"'";
 
-			//System.out.println("query getOrder:"+query);
+			logger.info("query getOrder with:"+query);
 
 			ResultSet rs = stmt.executeQuery(query);
 
 			StringBuffer res = new StringBuffer();
-			res.append("<easysdi:orders 	xmlns:easysdi=\"http://www.easysdi.org\">");
+			res.append("<easysdi:orders xmlns:easysdi=\"http://www.easysdi.org\">");
 			List<String> orderIdList = new Vector<String>();
 			while (rs.next()) 
 			{
 				String order_id = rs.getString("order_id");
 
-				//System.out.println("GetOders, sending order->"+order_id);
+				logger.info("GetOders, sending order->"+order_id);
 
 				orderIdList.add(order_id);
-				//String remark = rs.getString("remark");
-				//String provider_id = rs.getString("provider_id");
 
 				String name = rs.getString("name");
 
 				int type = rs.getInt("type_id");
-				//String order_update = rs.getString("order_update");
 				String third_party = rs.getString("thirdparty_id");
-				//String archived = rs.getString("archived");
-				//String RESPONSE_DATE = rs.getString("RESPONSE_DATE");
-				//String RESPONSE_SEND = rs.getString("RESPONSE_SEND");
 				String account_id = rs.getString("accountId");
 				String root_id = rs.getString("root_id");
-				//String status = rs.getString("orderCode");
 				int buffer = 0;
 				buffer = rs.getInt("buffer");
 
@@ -722,7 +717,7 @@ public class WPSServlet extends HttpServlet {
 
 				ResultSet rsProducts = stmtProducts.executeQuery(query);
 
-				//System.out.println(query);
+				logger.info("product query->"+query);
 
 				while(rsProducts.next()){
 					res.append("<easysdi:PRODUCT>\n");
@@ -736,9 +731,7 @@ public class WPSServlet extends HttpServlet {
 
 					query = "SELECT pv.code as value, prop.code as code FROM "+getJP()+"sdi_order_property oprop, "+getJP()+"sdi_propertyvalue pv, "+getJP()+"sdi_order_product op,  "+getJP()+"sdi_property prop  "+
 					"where  op.order_id = "+order_id+" and op.id = oprop.orderproduct_id and prop.id = pv.property_id and oprop.propertyvalue_id = pv.id and op.product_id = " + rsProducts.getString("product_id");
-
-					//System.out.println(query); 
-
+					
 					ResultSet rsProp = stmtProp.executeQuery(query);
 
 					while(rsProp.next()){
@@ -771,6 +764,7 @@ public class WPSServlet extends HttpServlet {
 				Random randomGenerator = new Random();
 				int randomInt = randomGenerator.nextInt(100000);
 				File f = new File(System.getProperty("java.io.tmpdir")+"/"+"get_orders"+randomInt);
+				System.out.println(System.getProperty("java.io.tmpdir"));
 				FileWriter fw = new FileWriter(f,true);
 				fw.write(res.toString());
 				fw.close();
@@ -778,7 +772,6 @@ public class WPSServlet extends HttpServlet {
 			catch (Exception ex){
 				ex.printStackTrace();
 			}
-
 
 			try{   
 
@@ -898,7 +891,6 @@ public class WPSServlet extends HttpServlet {
 			// handle any errors	   
 			ex.printStackTrace();
 		}
-
 
 		return error("ERROR","An error just occured");
 	}
