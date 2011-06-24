@@ -2,8 +2,11 @@
 <web-app xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
 	version="2.4">
-	<display-name>Easysdi Publish WPS server</display-name>
-
+	<display-name>Publish</display-name>
+	<context-param>
+		<param-name>webAppRootKey</param-name>
+		<param-value>Publish.root</param-value>
+	</context-param>
 	<context-param>
 		<param-name>log4jConfigLocation</param-name>
 		<param-value>/WEB-INF/log4j.properties</param-value>
@@ -27,7 +30,7 @@
 			<param-value>conf/services_metadata.xml</param-value> </init-param
 		-->
 	</servlet>
-	
+
 	<servlet>
 		<servlet-name>serviceConfig</servlet-name>
 		<servlet-class>org.easysdi.publish.gui.config.WPSServletConfig</servlet-class>
@@ -55,7 +58,7 @@
 		<servlet-name>services</servlet-name>
 		<url-pattern>/services/*</url-pattern>
 	</servlet-mapping>
-	
+
 	<servlet-mapping>
 		<servlet-name>serviceConfig</servlet-name>
 		<url-pattern>/services/config/*</url-pattern>
@@ -65,11 +68,9 @@
 		<filter-name>springSecurityFilterChain</filter-name>
 		<url-pattern>/services/*</url-pattern>
 	</filter-mapping>
-	
-	<!-- 
-	<filter-mapping>
-		<filter-name>springSecurityFilterChain</filter-name>
-		<url-pattern>/services/config/*</url-pattern>
-	</filter-mapping>
-     -->
+
+	<!--
+		<filter-mapping> <filter-name>springSecurityFilterChain</filter-name>
+		<url-pattern>/services/config/*</url-pattern> </filter-mapping>
+	-->
 </web-app>
