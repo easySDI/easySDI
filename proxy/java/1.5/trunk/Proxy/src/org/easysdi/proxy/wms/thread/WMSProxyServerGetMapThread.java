@@ -167,14 +167,14 @@ public class WMSProxyServerGetMapThread extends Thread {
 				
 				if(continuousLayers.size()==1){
 					//Send the request
-					servlet.logger.trace("requestPreTraitementGET send request multiLayer to thread server " + remoteServer.getUrl());
+					servlet.logger.trace("WMSProxyServerGetMapThread send request multiLayer to thread server " + remoteServer.getUrl());
 					WMSProxyLayerThread th = new WMSProxyLayerThread(servlet,paramUrlBase,continuousLayers,styles, remoteServer,resp);
 					th.start();
 					layerThreadList.add(th);
 				}else if(continuousLayers.size()>1){
 					if(isGeographicFilterEqual){
 						//Send all the layer in the same request : layers are in the same order than in the request and the geographic filter are the same
-						servlet.logger.trace("requestPreTraitementGET send request multiLayer to thread server " + remoteServer.getUrl());
+						servlet.logger.trace("WMSProxyServerGetMapThread send request multiLayer to thread server " + remoteServer.getUrl());
 						WMSProxyLayerThread th = new WMSProxyLayerThread(servlet,paramUrlBase,continuousLayers,styles, remoteServer,resp);
 						th.start();
 						layerThreadList.add(th);
@@ -185,7 +185,7 @@ public class WMSProxyServerGetMapThread extends Thread {
 							Entry<Integer, ProxyLayer> layer = itLToS.next();
 							TreeMap<Integer, ProxyLayer> temp = new TreeMap<Integer, ProxyLayer>();
 							temp.put(layer.getKey(), layer.getValue());
-							servlet.logger.trace("requestPreTraitementGET send request singleLayer to thread server " + remoteServer.getUrl());
+							servlet.logger.trace("WMSProxyServerGetMapThread send request singleLayer to thread server " + remoteServer.getUrl());
 							WMSProxyLayerThread th = new WMSProxyLayerThread(servlet,paramUrlBase,temp,styles, remoteServer,resp);
 							th.start();
 							layerThreadList.add(th);

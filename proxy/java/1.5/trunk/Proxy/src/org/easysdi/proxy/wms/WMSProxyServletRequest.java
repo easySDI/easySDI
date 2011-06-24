@@ -323,7 +323,7 @@ public class WMSProxyServletRequest extends ProxyServletRequest {
 			xr.parse(new InputSource(new InputStreamReader(new ByteArrayInputStream(param.toString().getBytes()))));
 			operation = rh.getOperation();
 			version = rh.getVersion();
-			if (version.equalsIgnoreCase("1.0.0")) {
+			if (version != null && version.equalsIgnoreCase("1.0.0")) {
 				throw new VersionNotSupportedException(version);
 			}
 			requestedVersion = version;
@@ -331,13 +331,16 @@ public class WMSProxyServletRequest extends ProxyServletRequest {
 			height = rh.getHeight();
 			format = rh.getFormat();
 			srsName = rh.getCRS();
-			bbox = rh.getLowerCorner().replace(" ", ",")+ ","+rh.getUpperCorner().replace(" ", ",");
-			String sb = new String();
-			for (String s : rh.getLayers())
-			{
-			    sb+=s+",";
+			if(rh.getLowerCorner() != null)
+				bbox = rh.getLowerCorner().replace(" ", ",")+ ","+rh.getUpperCorner().replace(" ", ",");
+			if(rh.getLayers() != null && rh.getLayers().size()!= 0){
+				String sb = new String();
+				for (String s : rh.getLayers())
+				{
+				    sb+=s+",";
+				}
+				layers = sb.substring(0, sb.length()-1);
 			}
-			layers = sb.substring(0, sb.length()-1);
 		} catch (SAXException e) {
 			throw new ProxyServletException(e.getMessage());
 		} catch (IOException e) {

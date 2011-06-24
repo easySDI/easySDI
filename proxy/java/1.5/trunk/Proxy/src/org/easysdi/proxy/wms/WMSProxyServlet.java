@@ -233,8 +233,13 @@ public class WMSProxyServlet extends ProxyServlet {
 			
 			while(it.hasNext())
 			{
+				String requestContent=null;
+				if(getProxyRequest().getRequest().getMethod().equalsIgnoreCase("GET"))
+					requestContent = getProxyRequest().getUrlParameters();
+				else
+					requestContent = getProxyRequest().getBodyRequest().toString();
 				WMSProxyServerGetCapabilitiesThread s = new WMSProxyServerGetCapabilitiesThread(this,
-																								getProxyRequest().getUrlParameters(), 
+																								requestContent, 
 																								it.next().getValue(), 
 																								resp);
 	

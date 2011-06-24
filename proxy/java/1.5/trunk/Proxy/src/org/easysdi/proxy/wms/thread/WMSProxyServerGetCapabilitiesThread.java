@@ -58,7 +58,7 @@ public class WMSProxyServerGetCapabilitiesThread extends Thread {
 		try {
 			servlet.logger.trace("Thread Server: " + remoteServerInfo.getUrl() + " work begin");
 			
-			String filePath = servlet.sendData("GET", remoteServerInfo.getUrl(), paramUrlBase);
+			String filePath = servlet.sendData(servlet.getProxyRequest().getRequest().getMethod(), remoteServerInfo.getUrl(), paramUrlBase);
 
 			synchronized (servlet.wmsGetCapabilitiesResponseFilePathMap) {
 				servlet.logger.trace("requestPreTraitementGET save response from thread server " + remoteServerInfo.getUrl());

@@ -782,6 +782,14 @@ public abstract class ProxyServlet extends HttpServlet {
 				in = new ByteArrayInputStream(response.toString().getBytes());
 				//Set the ContentType according to the new content of the response 
 				responseExtensionContentType = "text/xml";
+			} else if (hpcon.getResponseCode() == 405){
+				//Method Not Allowed : The method specified in the Request-Line is not allowed for the resource identified by the Request-URI. 
+				//This HTTP error is translated into an OGC exception to be returned (if the Exception management mode allowed it)
+				//to the client
+				StringBuffer response = owsExceptionReport.generateExceptionReport("HTTP 405 - Method Not Allowed : "+method, OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "");
+				in = new ByteArrayInputStream(response.toString().getBytes());
+				//Set the ContentType according to the new content of the response 
+				responseExtensionContentType = "text/xml";
 			}else if(hpcon.getResponseCode() >= 400){
 				in = hpcon.getErrorStream();
 				responseStatusCode = hpcon.getResponseCode();
