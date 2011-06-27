@@ -1999,7 +1999,7 @@ class HTML_account {
 		<tr>
 				<td>
 					<fieldset class="fieldset_properties">
-						<legend><?php echo JText::_('EASYSDI_ACCOUNTPROFILE_TITLE'); ?></legend>
+						<legend><?php echo JText::_('CORE_ACCOUNTPROFILE_TITLE'); ?></legend>
 						<table border="0" cellpadding="3" cellspacing="0">
 							<tr>
 <?php
