@@ -132,7 +132,7 @@ class ADMIN_publish {
 		$crs_rows = $database->loadObjectList() ;
 		
 		//load partner list
-		$database->setQuery( "SELECT a.id as value, j.name as text FROM #__sdi_account a, #__users j where a.user_id = j.id;" );
+		$database->setQuery( "SELECT a.id as value, j.name as text FROM #__sdi_account a, #__users j where a.user_id = j.id order by j.name ASC;" );
 		$partner_list = $database->loadObjectList();
 
 		//
