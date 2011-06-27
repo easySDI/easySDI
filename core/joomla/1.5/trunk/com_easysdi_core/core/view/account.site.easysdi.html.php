@@ -362,7 +362,7 @@ class HTML_account {
 						
 						userTree::buildTreeView($src_list[0], true);
 					}
-		//			HTML_Account::print_child($src_list );				
+					//HTML_Account::print_child($src_list );				
 ?>
 				</fieldset>		
 				</td>
@@ -1759,7 +1759,7 @@ class HTML_account {
 			$src_list = $database->loadObjectList();
 			if(count($src_list) != 0)
 			{	
-				userTree::buildTreeView($src_list[0], false);
+				userTree::buildTreeView($src_list[0], true);
 			}	
 			//HTML_account::print_child($src_list );
 			
@@ -2074,15 +2074,13 @@ class HTML_account {
 		
 	<?php	
 		$query = "SELECT *, up.id as account_id FROM #__sdi_account up, #__users u where up.id = '$rowAccount->id' AND up.user_id = u.id ORDER BY up.id";
-			
-			
 		$database->setQuery( $query );
 		$user = JFactory::getUser();
 		$src_list = $database->loadObjectList();
 			
 		if(count($src_list) != 0)
 		{	
-			userTree::buildTreeView($src_list[0], false);
+			userTree::buildTreeView($src_list[0], true);
 		}
 		//HTML_account::print_child($src_list );
 ?>
