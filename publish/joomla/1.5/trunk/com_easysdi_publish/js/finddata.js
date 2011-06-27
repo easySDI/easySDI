@@ -173,6 +173,9 @@ function validateFs_click()
 	diffusionServerName = $('diffusionServerName').value;
 	FeatureSourceId = $('featureSourceGuid').value == 0 ? 'none' : $('featureSourceGuid').value;
 	URLFile = '';
+	var servAdr = $('servAdr').value;
+	if(servAdr.substr(-1)!="/")
+		servAdr += "/";
 	//alert($('fileList').value);
 	fileList = $('fileList').value.split(",");
 	for (var i = 0; i < fileList.length; i++){
@@ -182,9 +185,9 @@ function validateFs_click()
 		temp = fileList[i].split("/");
 		temp[temp.length - 1] = rawurlencode(temp[temp.length - 1]);
 		if($('baseUrl').value == "/")
-			URLFile +=  $('servAdr').value+temp.join("/");
+			URLFile +=  servAdr+temp.join("/");
 		else
-			URLFile +=  $('servAdr').value+$('baseUrl').value+temp.join("/");
+			URLFile += servAdr+$('baseUrl').value+temp.join("/");
 	}
 	value = $('transfScriptId').options[$('transfScriptId').selectedIndex].value;
 	scriptName = value == 0 ? 'none' : $('transfScriptId').options[$('transfScriptId').selectedIndex].value;
@@ -321,6 +324,11 @@ function searchds_click(){
 	$('errorMsg').style.display = 'none';
 	$('errorMsg').style.visibilty = 'hidden';
 	$('datasets').options.length = 0;
+	
+	var servAdr = $('servAdr').value;
+	if(servAdr.substr(-1)!="/")
+		servAdr += "/";
+	
 	fileList = $('fileList').value.split(",");
 	var fileI = 0;
 	for (fileI = 0; fileI < fileList.length; fileI++){
@@ -330,9 +338,9 @@ function searchds_click(){
 		temp = fileList[fileI].split("/");
 		temp[temp.length - 1] = rawurlencode(temp[temp.length - 1]);
 		if($('baseUrl').value == "/")
-			URLFile +=  $('servAdr').value+temp.join("/");
+			URLFile +=  servAdr+temp.join("/");
 		else
-			URLFile +=  $('servAdr').value+$('baseUrl').value+temp.join("/");
+			URLFile +=  servAdr+$('baseUrl').value+temp.join("/");
 	}
 	if(fileI == 0)
 		alert("Please select and unpload file(s) first.")
