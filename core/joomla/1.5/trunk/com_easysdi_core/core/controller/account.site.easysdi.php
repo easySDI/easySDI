@@ -283,7 +283,6 @@ class SITE_account {
 		}
 
 		$types = array_merge( $types, $db->loadObjectList() );
-
 		HTML_account::listAccount( $rows, $search, $option, $rowAccount->id,$types,$type);
 	}
 
