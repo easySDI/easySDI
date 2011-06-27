@@ -88,11 +88,11 @@ class userTree
 				<?php
 			}
 			$query = "SELECT * FROM #__sdi_account up, 
-									#__users u 
+					  #__users u 
 					  where up.id != up.parent_id  
-					  AND up.parent_id = '$childUser->id' 
+					  AND up.parent_id = '$childUser->account_id' 
 					  AND up.user_id = u.id 
-					  ORDER BY u.name";						
+					  ORDER BY u.name";
 			$database->setQuery( $query );
 			$src_list = $database->loadObjectList();
 			if (count ($src_list)>0){
