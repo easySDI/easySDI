@@ -108,8 +108,8 @@ foreach ($_SERVER as $k => $v){
          $k = str_replace(' ', '-', ucwords(strtolower($k)));	 
 	       if($k == "Accept-Encoding"){
 		        //comment following lines to disable gzip
-		        self::$requ_headers[] = $k.":".$v;
-		        fwrite(self::$fh, $k.":".$v."\n");
+		        //self::$requ_headers[] = $k.":".$v;
+		        //fwrite(self::$fh, $k.":".$v."\n");
 	       }else{
 	         self::$requ_headers[] = $k.":".$v;
 	         fwrite(self::$fh, $k.":".$v."\n");
@@ -196,20 +196,16 @@ $url = str_replace("servletPublish", $url_wps['scheme']."://".$url_wps['host']."
 		     }
 		        
 		     //don't send empty header
-	       if(trim($h) != ""){
-	          fwrite(self::$fh, "sending->".$h);
-	          if($output)
-	          	header($h);
-	       }
-		  /* 
-           if(substr($h, 0, 6) != "HTTP/1" && $h!="\r\n"){
-	            fwrite(self::$fh, "sending->".$h);
-	            header($h);
-           }else{
-           	  header($h);
-              fwrite(self::$fh, "not sending->".$h);
-           }
-      */
+		     if(trim($h) != ""){
+			//Only send Content-Type header, if sending HTTP 1.1 OK
+			//It causes a bug if response length > 8000 char
+		     	if (substr($h, 0, 12) == "Content-Type")
+	       	        {
+		           fwrite(self::$fh, "sending->".$h);
+		     	   header($h);
+		     	}
+	       	     }
+
 	   //remove the headers form the curl response text
 	   $HTML = str_replace(trim($h), "", $HTML);
   	}
