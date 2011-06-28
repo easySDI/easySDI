@@ -83,7 +83,7 @@ class HTML_cpanel {
 							<button type="submit" class="searchButton" > <?php echo JText::_("SHOP_SEARCH_BUTTON"); ?></button>
 						</td>
 						<td>
-							<button id="newQuery" type="button" onClick="document.getElementById('ordersListForm').Itemid.value='<?php echo $redirectURL; ?>';document.getElementById('ordersListForm').view.value='shop';document.getElementById('ordersListForm').submit();" ><?php echo JText::_("SHOP_ORDER_NEW_QUERY"); ?></button>
+							<button id="newQuery" type="button" onClick="document.getElementById('ordersListForm').task.value=''; document.getElementById('ordersListForm').Itemid.value='<?php echo $redirectURL; ?>';document.getElementById('ordersListForm').view.value='shop';document.getElementById('ordersListForm').submit();" ><?php echo JText::_("SHOP_ORDER_NEW_QUERY"); ?></button>
 						</td>
 					</tr>
 				</table>
