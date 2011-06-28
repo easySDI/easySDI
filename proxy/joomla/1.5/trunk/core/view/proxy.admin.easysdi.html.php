@@ -332,7 +332,7 @@ echo $pane->endPanel();
 	 * @param unknown_type $option
 	 * @param unknown_type $task
 	 */
-	function editConfigWFS($xml,$new, $configId,$availableServletList, $option, $task)
+	function editConfigWFS($xml,$new, $configId,$availableServletList,$availableVersion, $option, $task)
 	{
 		?><form name='adminForm' id='adminForm' action='index.php' method='POST'>
 			<input type='hidden' name='serviceType' id='serviceType' value="<?php echo JRequest::getVar('serviceType');?>" >
@@ -345,13 +345,14 @@ echo $pane->endPanel();
 			foreach ($xml->config as $config) {
 				if (strcmp($config['id'],$configId)==0){
 					$servletClass=$config->{'servlet-class'};
+					$servletVersion=$config->{'servlet-version'};
 					$keywordString = "";
 					foreach ($config->{"service-metadata"}->{'KeywordList'}->Keyword as $keyword)
 					{
 						$keywordString .= $keyword .",";
 					}
 					$keywordString = substr($keywordString, 0, strlen($keywordString)-1) ;
-					HTML_proxy::genericServletInformationsHeader ($config, $configId, "org.easysdi.proxy.wfs.WFSProxyServlet", $availableServletList)
+					HTML_proxy::genericServletInformationsHeader ($config, $configId, "org.easysdi.proxy.wfs.WFSProxyServlet", $availableServletList,$availableVersion,$servletVersion)
 					?>
 					<fieldset class="adminform" id="service_metadata" ><legend><?php echo JText::_( 'PROXY_CONFIG_FS_SERVICE_METADATA'); ?></legend>
 					<table class="admintable" >
@@ -398,7 +399,7 @@ echo $pane->endPanel();
 	 * @param unknown_type $option
 	 * @param unknown_type $task
 	 */
-	function editConfigWMS($xml,$new, $configId,$availableServletList, $option, $task)
+	function editConfigWMS($xml,$new, $configId,$availableServletList, $availableVersion,$option, $task)
 	{
 		?><form name='adminForm' id='adminForm' action='index.php' method='POST'>
 			<input type='hidden' name='serviceType' id='serviceType' value="<?php echo JRequest::getVar('serviceType');?>" >
@@ -411,6 +412,7 @@ echo $pane->endPanel();
 			foreach ($xml->config as $config) {
 				if (strcmp($config['id'],$configId)==0){
 					$servletClass=$config->{'servlet-class'};
+					$servletVersion=$config->{'servlet-version'};
 					$keywordString = "";
 					foreach ($config->{"service-metadata"}->{'KeywordList'}->Keyword as $keyword)
 					{
@@ -418,7 +420,7 @@ echo $pane->endPanel();
 					}
 					$keywordString = substr($keywordString, 0, strlen($keywordString)-1) ;
 
-					HTML_proxy::genericServletInformationsHeader ($config, $configId, "org.easysdi.proxy.wms.WMSProxyServlet", $availableServletList)
+					HTML_proxy::genericServletInformationsHeader ($config, $configId, "org.easysdi.proxy.wms.WMSProxyServlet", $availableServletList,$availableVersion,$servletVersion)
 					?>
 		
 			<fieldset class="adminform" id="service_metadata" ><legend><?php echo JText::_( 'PROXY_CONFIG_FS_SERVICE_METADATA'); ?></legend>
@@ -520,7 +522,7 @@ echo $pane->endPanel();
 	 * @param unknown_type $option
 	 * @param unknown_type $task
 	 */
-	function editConfigCSW($xml,$new, $configId,$availableServletList, $option, $task)
+	function editConfigCSW($xml,$new, $configId,$availableServletList,$availableVersion, $option, $task)
 	{
 		?>
 
@@ -535,6 +537,7 @@ echo $pane->endPanel();
 			foreach ($xml->config as $config) {
 			if (strcmp($config['id'],$configId)==0){
 				$servletClass=$config->{'servlet-class'};
+				$servletVersion=$config->{'servlet-version'};
 				$keywordString = "";
 				foreach ($config->{"service-metadata"}->{'KeywordList'}->Keyword as $keyword)
 				{
@@ -542,7 +545,7 @@ echo $pane->endPanel();
 				}
 				$keywordString = substr($keywordString, 0, strlen($keywordString)-1) ;
 				
-				HTML_proxy::genericServletInformationsHeader ($config, $configId, "org.easysdi.proxy.csw.CSWProxyServlet", $availableServletList)
+				HTML_proxy::genericServletInformationsHeader ($config, $configId, "org.easysdi.proxy.csw.CSWProxyServlet", $availableServletList,$availableVersion,$servletVersion)
 		?>
 			<fieldset class="adminform" id="ogcSearchFilterFS"><legend><?php echo JText::_( 'PROXY_CONFIG_CSW_OGC_SEARCH_FILTER' );?></legend>
 			<table class="admintable">
@@ -660,7 +663,7 @@ echo $pane->endPanel();
 	 * @param unknown_type $option
 	 * @param unknown_type $task
 	 */
-	function editConfigWMTS100($xml,$new, $configId,$availableServletList, $option, $task)
+	function editConfigWMTS100($xml,$new, $configId,$availableServletList,$availableVersion, $option, $task)
 	{
 		?>
 
@@ -675,6 +678,7 @@ echo $pane->endPanel();
 			foreach ($xml->config as $config) {
 			if (strcmp($config['id'],$configId)==0){
 				$servletClass=$config->{'servlet-class'};
+				$servletVersion=$config->{'servlet-version'};
 				$keywordString = "";
 				foreach ($config->{"service-metadata"}->{"ServiceIdentification"}->{'KeywordList'}->Keyword as $keyword)
 				{
@@ -682,7 +686,7 @@ echo $pane->endPanel();
 				}
 				$keywordString = substr($keywordString, 0, strlen($keywordString)-1) ;
 				
-				HTML_proxy::genericServletInformationsHeader ($config, $configId, "org.easysdi.proxy.wmts.v100.WMTS100ProxyServlet", $availableServletList)
+				HTML_proxy::genericServletInformationsHeader ($config, $configId, "org.easysdi.proxy.wmts.v100.WMTS100ProxyServlet", $availableServletList,$availableVersion,$servletVersion)
 		?>
 			
 			<fieldset class="adminform" id="service_metadata" ><legend><?php echo JText::_( 'PROXY_CONFIG_FS_SERVICE_METADATA'); ?></legend>
@@ -799,7 +803,7 @@ echo $pane->endPanel();
 	 * - host translator
 	 * @param unknown_type $config
 	 */
-	function genericServletInformationsHeader ($config, $configId, $servletClass, $availableServletList)
+	function genericServletInformationsHeader ($config, $configId, $servletClass, $availableServletList,$availableVersion,$servletVersion)
 	{
 		?>
 		<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_CONFIG ID' );?></legend>
@@ -816,6 +820,10 @@ echo $pane->endPanel();
 				<tr>
 					<td>
 					<?php echo JHTML::_("select.genericlist",$availableServletList, 'servletClass', 'size="1" onChange="submit()"', 'value', 'text', $servletClass ); ?>
+					</td>
+					<td><?php echo JText::_( 'EASYSDI_GETCAPABILITIES_VERSION' );?></td>
+					<td>
+					<?php echo JHTML::_("select.genericlist",$availableVersion, 'servletVersion', 'size="1" ', 'value', 'text', $servletVersion ); ?>
 					</td>
 				</tr>
 			</table>
@@ -1204,6 +1212,7 @@ echo $pane->endPanel();
 
 				$policyFile = $config->{'authorization'}->{'policy-file'};
 				$servletClass =  $config->{'servlet-class'};
+				$servletVersion =  $config->{'servlet-version'};
 				
 			if (!file_exists($policyFile)){
 					global $mainframe;		
@@ -1436,16 +1445,16 @@ function submitbutton(pressbutton)
 
 			<?php 
 			if (strcmp($servletClass,"org.easysdi.proxy.wfs.WFSProxyServlet")==0){
-				HTML_proxy::generateWFSHTML($config,$thePolicy);
+				HTML_proxy::generateWFSHTML($config,$thePolicy,$servletVersion);
 			}
 			else if (strcmp($servletClass,"org.easysdi.proxy.wms.WMSProxyServlet")==0 ){
-				HTML_proxy::generateWMSHTML($config,$thePolicy);  }
+				HTML_proxy::generateWMSHTML($config,$thePolicy,$servletVersion);  }
 				
 			else if (strcmp($servletClass,"org.easysdi.proxy.csw.CSWProxyServlet")==0 ){					
-				HTML_proxy::generateCSWHTML($config,$thePolicy, $rowsVisibility, $rowsStatus, $rowsObjectTypes);  
+				HTML_proxy::generateCSWHTML($config,$thePolicy, $rowsVisibility, $rowsStatus, $rowsObjectTypes,$servletVersion);  
 			}
 			else if (strcmp($servletClass,"org.easysdi.proxy.wmts.v100.WMTS100ProxyServlet")==0 ){					
-				HTML_proxy::generateWMTS100HTML($config,$thePolicy);  
+				HTML_proxy::generateWMTS100HTML($config,$thePolicy,$servletVersion);  
 			}
 			break;
 			}		
@@ -1461,7 +1470,7 @@ function submitbutton(pressbutton)
 	 * @param XML $config
 	 * @param XML $thePolicy
 	 */
-	function generateWMTS100HTML($config,$thePolicy){
+	function generateWMTS100HTML($config,$thePolicy,$servletVersion){
 	?>
 	<script>
 		function disableOperationCheckBoxes()
@@ -1540,7 +1549,11 @@ function submitbutton(pressbutton)
 	    		$separator = "?";  
 			}
 
-			$xmlCapa = simplexml_load_file($urlWithPassword.$separator."REQUEST=GetCapabilities&version=1.0.0&SERVICE=WMTS");
+			if($servletVersion != ""){
+				$xmlCapa = simplexml_load_file($urlWithPassword.$separator."REQUEST=GetCapabilities&version=".$servletVersion."&SERVICE=WMTS");
+			}else{
+				$xmlCapa = simplexml_load_file($urlWithPassword.$separator."REQUEST=GetCapabilities&SERVICE=WMTS");
+			}
 			
 			if ($xmlCapa === false){
 					global $mainframe;		
@@ -1632,7 +1645,7 @@ function submitbutton(pressbutton)
 	 * @param XML  $config
 	 * @param XML $thePolicy
 	 */
-	function generateCSWHTML($config,$thePolicy, $rowsVisibility, $rowsStatus, $rowsObjectTypes)
+	function generateCSWHTML($config,$thePolicy, $rowsVisibility, $rowsStatus, $rowsObjectTypes,$servletVersion)
 	{
 	?>
 		<script>
@@ -1909,7 +1922,7 @@ function submitbutton(pressbutton)
 	 * @param XML  $config
 	 * @param XML $thePolicy
 	 */
-	function generateWMSHTML($config,$thePolicy){
+	function generateWMSHTML($config,$thePolicy,$servletVersion){
 	?>
 	<script>
 	function disableOperationCheckBoxes()
@@ -2068,10 +2081,18 @@ function submitbutton(pressbutton)
 	    		//"?" Not found then use ? instead of &
 	    		$separator = "?";  
 			}
-			$xmlCapa = simplexml_load_file($urlWithPassword.$separator."REQUEST=GetCapabilities&SERVICE=WMS");
+			
+			if($servletVersion != ""){
+				$completeurl = $urlWithPassword.$separator."REQUEST=GetCapabilities&version=".$servletVersion."&SERVICE=WMS";
+				$xmlCapa = simplexml_load_file($urlWithPassword.$separator."REQUEST=GetCapabilities&version=".$servletVersion."&SERVICE=WMS");
+			}else{
+				$completeurl = $urlWithPassword.$separator."REQUEST=GetCapabilities&SERVICE=WMS";
+				$xmlCapa = simplexml_load_file($urlWithPassword.$separator."REQUEST=GetCapabilities&SERVICE=WMS");
+			}
+			
 			if ($xmlCapa === false){
 					global $mainframe;		
-					$mainframe->enqueueMessage(JText::_('EASYSDI_UNABLE TO RETRIEVE THE CAPABILITIES OF THE REMOTE SERVER' )." - ".$urlWithPassword,'error');
+					$mainframe->enqueueMessage(JText::_('EASYSDI_UNABLE TO RETRIEVE THE CAPABILITIES OF THE REMOTE SERVER' )." - ".$completeurl,'error');
 			}else{	
 					
 				foreach ($thePolicy->Servers->Server as $policyServer){			
@@ -2193,7 +2214,7 @@ function submitbutton(pressbutton)
 	 * @param XML  $config
 	 * @param XML $thePolicy
 	 */
-	function generateWFSHTML($config,$thePolicy)
+	function generateWFSHTML($config,$thePolicy,$servletVersion)
 	{
 		?>
 		<script>
@@ -2293,7 +2314,13 @@ function submitbutton(pressbutton)
 	    		$separator = "?";  
 			}
 			
-			$xmlCapa = simplexml_load_file($urlWithPassword.$separator."REQUEST=GetCapabilities&version=1.0.0&SERVICE=WFS");
+				
+				if($servletVersion != ""){
+					$xmlCapa = simplexml_load_file($urlWithPassword.$separator."REQUEST=GetCapabilities&version=".$servletVersion."&SERVICE=WFS");
+				}else{
+					$xmlCapa = simplexml_load_file($urlWithPassword.$separator."REQUEST=GetCapabilities&SERVICE=WFS");
+				}
+				
 			if ($xmlCapa === false){
 					global $mainframe;		
 							$mainframe->enqueueMessage(JText::_(  'EASYSDI_UNABLE TO RETRIEVE THE CAPABILITIES OF THE REMOTE SERVER' ),'error');

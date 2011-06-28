@@ -86,25 +86,51 @@ class ADMIN_proxy
 		 	$availableServletList[] = JHTML::_('select.option', $key, $value);
 		 endforeach;
 		 
+		 
 		if($servletClass == "org.easysdi.proxy.wms.WMSProxyServlet" )
 		{
-			HTML_proxy::editConfigWMS($xml, $new, $configId, $availableServletList, $option,$task);
+			$availableVersion = array(""=> "", "1.1.0" => "1.1.0","1.1.1" => "1.1.1","1.3.0" => "1.3.0" );
+			$availableVersionList = array();
+			foreach($availableVersion as $key=>$value) :
+			 	$availableVersionList[] = JHTML::_('select.option', $key, $value);
+			 endforeach;
+			HTML_proxy::editConfigWMS($xml, $new, $configId, $availableServletList,$availableVersionList, $option,$task);
 		}
 		else if($servletClass == "org.easysdi.proxy.wmts.v100.WMTSProxyServlet" )
 		{
-			HTML_proxy::editConfigWMTS($xml, $new, $configId, $availableServletList, $option,$task);
+			$availableVersion = array(""=> "","1.0.0" => "1.0.0");
+			$availableVersionList = array();
+			foreach($availableVersion as $key=>$value) :
+			 	$availableVersionList[] = JHTML::_('select.option', $key, $value);
+			 endforeach;
+			HTML_proxy::editConfigWMTS($xml, $new, $configId, $availableServletList,$availableVersionList, $option,$task);
 		}
 		else if($servletClass == "org.easysdi.proxy.csw.CSWProxyServlet" )
 		{
-			HTML_proxy::editConfigCSW($xml, $new, $configId, $availableServletList, $option,$task);
+			$availableVersion = array(""=> "","2.0.0" => "2.0.0");
+			$availableVersionList = array();
+			foreach($availableVersion as $key=>$value) :
+			 	$availableVersionList[] = JHTML::_('select.option', $key, $value);
+			 endforeach;
+			HTML_proxy::editConfigCSW($xml, $new, $configId, $availableServletList,$availableVersionList, $option,$task);
 		}
 		else if($servletClass == "org.easysdi.proxy.wmts.v100.WMTS100ProxyServlet" )
 		{
-			HTML_proxy::editConfigWMTS100($xml, $new, $configId, $availableServletList, $option,$task);
+			$availableVersion = array(""=> "","1.0.0" => "1.0.0");
+			$availableVersionList = array();
+			foreach($availableVersion as $key=>$value) :
+			 	$availableVersionList[] = JHTML::_('select.option', $key, $value);
+			 endforeach;
+			HTML_proxy::editConfigWMTS100($xml, $new, $configId, $availableServletList,$availableVersionList, $option,$task);
 		}	
 		else 
 		{
-			HTML_proxy::editConfigWFS($xml, $new, $configId, $availableServletList, $option,$task);	
+			$availableVersion = array(""=> "","1.0.0" => "1.0.0");
+			$availableVersionList = array();
+			foreach($availableVersion as $key=>$value) :
+			 	$availableVersionList[] = JHTML::_('select.option', $key, $value);
+			 endforeach;
+			HTML_proxy::editConfigWFS($xml, $new, $configId, $availableServletList, $availableVersionList,$option,$task);	
 		} 
 	}
 	
@@ -997,6 +1023,9 @@ function saveConfig($xml,$configFilePath){
 			//Servlet class
 			$servletClass = JRequest::getVar("servletClass");
 			$config->{'servlet-class'}=$servletClass;
+			//GetCapabilities version
+			$servletVersion = JRequest::getVar("servletVersion");
+			$config->{'servlet-version'}=$servletVersion;
 			
 			//XSLT repository
 			$config->{"xslt-path"}->{"url"} = JRequest::getVar("xsltPath");
