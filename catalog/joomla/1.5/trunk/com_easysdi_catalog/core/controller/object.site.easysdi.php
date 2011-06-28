@@ -73,8 +73,10 @@ class SITE_object {
 		$option=JRequest::getVar("option");
 		
 		$context	= $option.'.listObject';
-		$limit		= $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
-		$limitstart	= $mainframe->getUserStateFromRequest($context.'limitstart', 'limitstart', 0, 'int');
+		//$limit		= $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
+		//$limitstart	= $mainframe->getUserStateFromRequest($context.'limitstart', 'limitstart', 0, 'int');
+		$limit = JRequest::getVar('limit', 20 );
+		$limitstart = JRequest::getVar('limitstart', 0 );
 		//echo $limit." - ".$limitstart."<br>";
 		// In case limit has been changed, adjust limitstart accordingly
 		$limitstart = ( $limit != 0 ? (floor($limitstart / $limit) * $limit) : 0 );
