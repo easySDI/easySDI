@@ -367,7 +367,7 @@ if ($curstep == "2")
 		</fieldset>
 		<!-- Buffer -->
 		<fieldset id="bufferRegion">
-		<legend><?php echo JText::_('EASYSDI_BUFFER');?></legend>
+		<legend><?php echo JText::_('SHOP_PERIMETER_BUFFER');?></legend>
 		<table>
 		<tr>
 		<td>
