@@ -2690,51 +2690,6 @@ div#editMetadata{
 	padding-right:2px;	
 }
 
-div#archiveMetadata:hover{
-	cursor:pointer;
-}
-
-div#archiveMetadata{
-	background-color:transparent;
-	background-image:url(../icons/silk/folder_database.png);
-	background-position:0 0;
-	background-repeat:no-repeat;
-	height:16px;
-	width:16px;
-	padding-left:2px;
-	padding-right:2px;	
-}
-
-div#invalidateMetadata:hover{
-	cursor:pointer;
-}
-
-div#invalidateMetadata{
-	background-color:transparent;
-	background-image:url(../icons/silk/arrow_undo.png);
-	background-position:0 0;
-	background-repeat:no-repeat;
-	height:16px;
-	width:16px;
-	padding-left:2px;
-	padding-right:2px;	
-}
-
-div#historyAssignMetadata:hover{
-	cursor:pointer;
-}
-
-div#historyAssignMetadata{
-	background-color:transparent;
-	background-image:url(../icons/silk/calendar.png);
-	background-position:0 0;
-	background-repeat:no-repeat;
-	height:16px;
-	width:16px;	
-	padding-left:2px;
-	padding-right:2px;	
-}
-
 .box-table .metadataActions{
 	width:80px;
 }
@@ -2816,30 +2771,9 @@ div#manageObjectVersionLink:hover{
 	cursor:pointer;
 }
 
-div#manageObjectVersionLink{
-	background-color:transparent;
-	background-image:url(../icons/silk/link_edit.png);
-	background-position:0 0;
-	background-repeat:no-repeat;
-	height:16px;
-	width:16px;
-	padding-left:2px;
-	padding-right:2px;	
-}
 
 div#viewObjectVersionLink:hover{
 	cursor:pointer;
-}
-
-div#viewObjectVersionLink{
-	background-color:transparent;
-	background-image:url(../icons/silk/link.png);
-	background-position:0 0;
-	background-repeat:no-repeat;
-	height:16px;
-	width:16px;
-	padding-left:2px;
-	padding-right:2px;	
 }
 
 .box-table .objectversionActions{
