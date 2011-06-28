@@ -699,7 +699,7 @@ class HTML_cpanel {
 	<?php	
 	}
 	
-	function orderReportRecap ($id,$isfrontEnd, $isForProvider,$rowOrder, $perimeterRows, $user_name="", $third_name="" , $rowsProduct, $isInMemory)
+	function orderReportRecap ($id,$isfrontEnd, $isForProvider,$rowOrder, $perimeterRows, $user_name="", $root_name="", $third_name="" , $rowsProduct, $isInMemory)
 	{
 		global $mainframe;
 		$db =& JFactory::getDBO();
@@ -831,7 +831,12 @@ class HTML_cpanel {
 		<?php echo JText::_("SHOP_ORDER_RECAP_NAME"); ?>
 		</td>
 		<td>
-		<?php echo $user_name; ?>
+		<?php 
+		      if($root_name == "")
+		          echo $user_name;
+		      else
+		          echo $user_name." (".trim($root_name).")";
+	        ?>
 		</td>
 		</tr>
 		<tr>
