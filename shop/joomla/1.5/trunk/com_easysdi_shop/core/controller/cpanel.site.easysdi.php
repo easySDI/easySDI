@@ -1186,9 +1186,20 @@ class SITE_cpanel {
 				return;
 			}
 		}
+		
+		//user name
 		$queryUser = "SELECT name FROM #__users WHERE id = $user";
 		$db->setQuery($queryUser );
 		$user_name =  $db->loadResult();
+		
+		//root name
+		$root_name = "";
+		if($account->root_id != null)
+		{
+			$queryUser = "SELECT name FROM #__users WHERE id =(SELECT user_id FROM #__sdi_account where id= $account->root_id)";
+			$db->setQuery($queryUser);
+			$root_name =  $db->loadResult();
+		}
 		
 		$third_name ='';
 		//Third name
@@ -1251,7 +1262,7 @@ class SITE_cpanel {
 			return;
 		}
 		
-		HTML_cpanel::orderReportRecap($id, $isfrontEnd, $isForProvider, $rowOrder, $perimeterRows, $user_name, $third_name, $rowsProduct, $isInMemory);
+		HTML_cpanel::orderReportRecap($id, $isfrontEnd, $isForProvider, $rowOrder, $perimeterRows, $user_name, $root_name, $third_name, $rowsProduct, $isInMemory);
 	}
 
 	
