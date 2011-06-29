@@ -35,8 +35,7 @@ function modEasysdiMenuXMLCallback(&$node, $args)
 		foreach ($node->children() as $child)
 		{
 		  //Right management for easysdi
-	
-		      if (($child->attributes('access') > $user->get('aid', 0)) or !(userManagerRightESDY::menuRight($child->_children[0]->_attributes['href'], $user)))
+	          if (($child->attributes('access') > $user->get('aid', 0)) or !(userManagerRightESDY::menuRight($child->_children[0]->_attributes['href'], $user)))
 		      $node->removeChild($child);
 		      	    
 		}
@@ -138,7 +137,7 @@ class userManagerRightESDY
 			$account->load($user->id);	
 			
 			//Is the URL from ESDY
-			if (preg_match("/(com_easysdi_core|com_easysdi_shop|com_easysdi_catalog)/i", $url)) 
+			if (preg_match("/(com_easysdi_publish|com_easysdi_core|com_easysdi_shop|com_easysdi_catalog)/i", $url)) 
 			{
 				preg_match('/task=([a-z]+)&/i', $url, $tasks);
 				$task = $tasks[1];
@@ -189,6 +188,12 @@ class userManagerRightESDY
 //					$enableFavorites = config_easysdi::getValue("ENABLE_FAVORITES", 1);
 //					return (userManagerRightESDY::hasRight($account->id,"FAVORITE") && $enableFavorites == 1);
 					return (userManagerRightESDY::hasRight($account->id,"FAVORITE"));
+				}
+				elseif ($task=="gettingStarted") 
+				{
+//					$enableFavorites = config_easysdi::getValue("ENABLE_FAVORITES", 1);
+//					return (userManagerRightESDY::hasRight($account->id,"FAVORITE") && $enableFavorites == 1);
+					return (userManagerRightESDY::hasRight($account->id,"GEOSERVICE_DATA_MANA") or userManagerRightESDY::hasRight($account->id,"GEOSERVICE_MANAGER"));
 				}
 				else 
 				{
