@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html. 
  */
-
+		//error_reporting(E_ALL); ini_set('display_errors', '1');
 class displayManager{
 	
 	function getCSWresult ()
@@ -45,6 +45,7 @@ class displayManager{
 	
 	function getMetadata(&$xml)
 	{	
+		global  $mainframe;
 		$database =& JFactory::getDBO();
 		$user =& JFactory::getUser();
 		//$language = $user->getParam('language', '');
@@ -53,7 +54,6 @@ class displayManager{
 		
 		$type =  JRequest::getVar('type', 'abstract');
 		$xml = "";
-		
 		$id = JRequest::getVar('id');
 		
 		// R�pertoire des fichiers xsl, s'il y en a un
@@ -113,6 +113,9 @@ class displayManager{
 		}
 		else if ($type == "diffusion")
 		{
+			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_shop'.DS.'core'.DS.'model'.DS.'product.easysdi.class.php');
+			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_catalog'.DS.'core'.DS.'model'.DS.'object.easysdi.class.php');
+			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_catalog'.DS.'core'.DS.'model'.DS.'objectversion.easysdi.class.php');
 			$title = "";
 			
 			$titleQuery = "  SELECT o.name 
@@ -130,6 +133,8 @@ class displayManager{
 			
 			//select selected properties
 			$selected = array();
+			$database->setQuery("SELECT id FROM #__sdi_metadata WHERE guid=".$id);
+			$prod_id = $database->loadResult();
 			$query = "SELECT propertyvalue_id as value FROM #__sdi_product_property WHERE product_id=".$prod_id;	
 			$database->setQuery( $query );
 			$selected = $database->loadResultArray();
@@ -260,7 +265,7 @@ class displayManager{
 			}
 			$doc .= '</Properties>';
 			$doc .= '</Diffusion></Metadata>';
-			
+						
 			$xml = new DomDocument();
 			$xml->loadXML($doc);
 		}	
@@ -1641,9 +1646,9 @@ class displayManager{
 		
 		//$processor->importStylesheet($style);
 		//$myHtml = $processor->transformToXml($cswResults);
-	
+			
 		$myHTML = displayManager::buildXHTML($style, $cswResults);
-		displayManager::exportPDFfile($myHtml);
+		displayManager::exportPDFfile($myHTML);
 	}
 	
 	function exportPDFfile($myHtml) 
@@ -1749,7 +1754,9 @@ class displayManager{
 		//Problem with loadHTML() and encoding : work around method
 		$pageDom = new DomDocument();
    		$searchPage = mb_convert_encoding($myHtml, 'HTML-ENTITIES', "UTF-8");
+		
 		@$pageDom->loadHTML($searchPage);
+		
 		$result = $processor->transformToXml($pageDom);
 		//$exportpdf_url = config_easysdi::getValue("EXPORT_PDF_URL");
 		$exportpdf_url = config_easysdi::getValue("JAVA_BRIDGE_URL");
@@ -1764,7 +1771,6 @@ class displayManager{
 			//avoid JavaBrigde to fail
 			
 			file_put_contents($fopfotmp, $result);
-
 			//G�n�ration du document PDF sous forme de fichier
 			$res = "";
 			//Url to the export pdf servlet
