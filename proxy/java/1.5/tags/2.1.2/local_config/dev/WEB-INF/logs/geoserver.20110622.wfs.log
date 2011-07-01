@@ -1,0 +1,398 @@
+<Log><LogRequest user="spring2a2d595e6ed9a0b24f027f2b63b134d6" requestTime="22/06/2011 18:01:01"> 
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="Config"><![CDATA[Geoserver-wfs]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="Policy"><![CDATA[geoserver-wfs-policy]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="user"><![CDATA[spring2a2d595e6ed9a0b24f027f2b63b134d6]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="requestTime"><![CDATA[22/06/2011 18:01:01]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteAddr"><![CDATA[127.0.0.1]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteUser"><![CDATA[null]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="QueryString"><![CDATA[service=WFS&request=GetCapabilities&version=1.0.0]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RequestURL"><![CDATA[http://localhost:8070/proxy/ogc/Geoserver-wfs]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteRequestUrl"><![CDATA[http://localhost/geoserver/sf/ows]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteRequest"><![CDATA[service=WFS&request=GetCapabilities&version=1.0.0&]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteRequestLength"><![CDATA[50]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteRequestDateTime"><![CDATA[22/06/2011 18:01:01]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteResponseToRequestUrl"><![CDATA[http://localhost/geoserver/sf/ows?service=WFS&request=GetCapabilities&version=1.0.0&]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteResponseLength"><![CDATA[14199]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteResponseDateTime"><![CDATA[22/06/2011 18:01:01]]></logEntry>
+<logEntry time="22/06/2011 18:01:03" severity="INFO" name="ClientResponseDateTime"><![CDATA[22/06/2011 18:01:03]]></logEntry>
+<logEntry time="22/06/2011 18:01:03" severity="ERROR" name="ClientResponseLength"><![CDATA[17024]]></logEntry>
+<logEntry time="22/06/2011 18:01:03" severity="INFO"><![CDATA[ProxyServlet done.]]></logEntry>
+</LogRequest>
+<LogRequest user="spring2a2d595e6ed9a0b24f027f2b63b134d6" requestTime="22/06/2011 18:02:21"> 
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="Config"><![CDATA[Geoserver-wfs]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="Policy"><![CDATA[geoserver-wfs-policy]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="user"><![CDATA[spring2a2d595e6ed9a0b24f027f2b63b134d6]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="requestTime"><![CDATA[22/06/2011 18:01:01]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteAddr"><![CDATA[127.0.0.1]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteUser"><![CDATA[null]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="QueryString"><![CDATA[service=WFS&request=GetCapabilities&version=1.0.0]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RequestURL"><![CDATA[http://localhost:8070/proxy/ogc/Geoserver-wfs]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteRequestUrl"><![CDATA[http://localhost/geoserver/sf/ows]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteRequest"><![CDATA[service=WFS&request=GetCapabilities&version=1.0.0&]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteRequestLength"><![CDATA[50]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteRequestDateTime"><![CDATA[22/06/2011 18:01:01]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteResponseToRequestUrl"><![CDATA[http://localhost/geoserver/sf/ows?service=WFS&request=GetCapabilities&version=1.0.0&]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteResponseLength"><![CDATA[14199]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteResponseDateTime"><![CDATA[22/06/2011 18:01:01]]></logEntry>
+<logEntry time="22/06/2011 18:01:03" severity="INFO" name="ClientResponseDateTime"><![CDATA[22/06/2011 18:01:03]]></logEntry>
+<logEntry time="22/06/2011 18:01:03" severity="ERROR" name="ClientResponseLength"><![CDATA[17024]]></logEntry>
+<logEntry time="22/06/2011 18:01:03" severity="INFO"><![CDATA[ProxyServlet done.]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="Config"><![CDATA[Geoserver-wfs]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="Policy"><![CDATA[geoserver-wfs-policy]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="user"><![CDATA[spring2a2d595e6ed9a0b24f027f2b63b134d6]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="requestTime"><![CDATA[22/06/2011 18:02:21]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="RemoteAddr"><![CDATA[127.0.0.1]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="RemoteUser"><![CDATA[null]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="QueryString"><![CDATA[null]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="RequestURL"><![CDATA[http://localhost:8070/proxy/ogc/Geoserver-wfs]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="Request"><![CDATA[<GetCapabilities  service="WFS" version="1.0.0" xsi:schemaLocation="http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd" xmlns:wfs="http://www.opengis.net/wfs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="ERROR"><![CDATA[This request has no authorized results!]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO"><![CDATA[ProxyServlet done.]]></logEntry>
+</LogRequest>
+<LogRequest user="spring2a2d595e6ed9a0b24f027f2b63b134d6" requestTime="22/06/2011 18:02:21"> 
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="Config"><![CDATA[Geoserver-wfs]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="Policy"><![CDATA[geoserver-wfs-policy]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="user"><![CDATA[spring2a2d595e6ed9a0b24f027f2b63b134d6]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="requestTime"><![CDATA[22/06/2011 18:01:01]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteAddr"><![CDATA[127.0.0.1]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteUser"><![CDATA[null]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="QueryString"><![CDATA[service=WFS&request=GetCapabilities&version=1.0.0]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RequestURL"><![CDATA[http://localhost:8070/proxy/ogc/Geoserver-wfs]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteRequestUrl"><![CDATA[http://localhost/geoserver/sf/ows]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteRequest"><![CDATA[service=WFS&request=GetCapabilities&version=1.0.0&]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteRequestLength"><![CDATA[50]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteRequestDateTime"><![CDATA[22/06/2011 18:01:01]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteResponseToRequestUrl"><![CDATA[http://localhost/geoserver/sf/ows?service=WFS&request=GetCapabilities&version=1.0.0&]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteResponseLength"><![CDATA[14199]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteResponseDateTime"><![CDATA[22/06/2011 18:01:01]]></logEntry>
+<logEntry time="22/06/2011 18:01:03" severity="INFO" name="ClientResponseDateTime"><![CDATA[22/06/2011 18:01:03]]></logEntry>
+<logEntry time="22/06/2011 18:01:03" severity="ERROR" name="ClientResponseLength"><![CDATA[17024]]></logEntry>
+<logEntry time="22/06/2011 18:01:03" severity="INFO"><![CDATA[ProxyServlet done.]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="Config"><![CDATA[Geoserver-wfs]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="Policy"><![CDATA[geoserver-wfs-policy]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="user"><![CDATA[spring2a2d595e6ed9a0b24f027f2b63b134d6]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="requestTime"><![CDATA[22/06/2011 18:02:21]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="RemoteAddr"><![CDATA[127.0.0.1]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="RemoteUser"><![CDATA[null]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="QueryString"><![CDATA[null]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="RequestURL"><![CDATA[http://localhost:8070/proxy/ogc/Geoserver-wfs]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="Request"><![CDATA[<GetCapabilities  service="WFS" version="1.0.0" xsi:schemaLocation="http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd" xmlns:wfs="http://www.opengis.net/wfs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="ERROR"><![CDATA[This request has no authorized results!]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO"><![CDATA[ProxyServlet done.]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="Config"><![CDATA[Geoserver-wfs]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="Policy"><![CDATA[geoserver-wfs-policy]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="user"><![CDATA[spring2a2d595e6ed9a0b24f027f2b63b134d6]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="requestTime"><![CDATA[22/06/2011 18:02:21]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="RemoteAddr"><![CDATA[127.0.0.1]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="RemoteUser"><![CDATA[null]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="QueryString"><![CDATA[null]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="RequestURL"><![CDATA[http://localhost:8070/proxy/ogc/Geoserver-wfs]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="Request"><![CDATA[]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="ERROR"><![CDATA[org.xml.sax.SAXParseException: Premature end of file.]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="ERROR"><![CDATA[Error in EasySDI Proxy. Consult the proxy log for more details.]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="ClientResponseDateTime"><![CDATA[22/06/2011 18:02:21]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="ClientResponseLength"><![CDATA[370]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO"><![CDATA[ProxyServlet done.]]></logEntry>
+</LogRequest>
+<LogRequest user="spring2a2d595e6ed9a0b24f027f2b63b134d6" requestTime="22/06/2011 18:02:54"> 
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="Config"><![CDATA[Geoserver-wfs]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="Policy"><![CDATA[geoserver-wfs-policy]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="user"><![CDATA[spring2a2d595e6ed9a0b24f027f2b63b134d6]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="requestTime"><![CDATA[22/06/2011 18:01:01]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteAddr"><![CDATA[127.0.0.1]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteUser"><![CDATA[null]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="QueryString"><![CDATA[service=WFS&request=GetCapabilities&version=1.0.0]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RequestURL"><![CDATA[http://localhost:8070/proxy/ogc/Geoserver-wfs]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteRequestUrl"><![CDATA[http://localhost/geoserver/sf/ows]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteRequest"><![CDATA[service=WFS&request=GetCapabilities&version=1.0.0&]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteRequestLength"><![CDATA[50]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteRequestDateTime"><![CDATA[22/06/2011 18:01:01]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteResponseToRequestUrl"><![CDATA[http://localhost/geoserver/sf/ows?service=WFS&request=GetCapabilities&version=1.0.0&]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteResponseLength"><![CDATA[14199]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteResponseDateTime"><![CDATA[22/06/2011 18:01:01]]></logEntry>
+<logEntry time="22/06/2011 18:01:03" severity="INFO" name="ClientResponseDateTime"><![CDATA[22/06/2011 18:01:03]]></logEntry>
+<logEntry time="22/06/2011 18:01:03" severity="ERROR" name="ClientResponseLength"><![CDATA[17024]]></logEntry>
+<logEntry time="22/06/2011 18:01:03" severity="INFO"><![CDATA[ProxyServlet done.]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="Config"><![CDATA[Geoserver-wfs]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="Policy"><![CDATA[geoserver-wfs-policy]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="user"><![CDATA[spring2a2d595e6ed9a0b24f027f2b63b134d6]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="requestTime"><![CDATA[22/06/2011 18:02:21]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="RemoteAddr"><![CDATA[127.0.0.1]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="RemoteUser"><![CDATA[null]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="QueryString"><![CDATA[null]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="RequestURL"><![CDATA[http://localhost:8070/proxy/ogc/Geoserver-wfs]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="Request"><![CDATA[<GetCapabilities  service="WFS" version="1.0.0" xsi:schemaLocation="http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd" xmlns:wfs="http://www.opengis.net/wfs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="ERROR"><![CDATA[This request has no authorized results!]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO"><![CDATA[ProxyServlet done.]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="Config"><![CDATA[Geoserver-wfs]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="Policy"><![CDATA[geoserver-wfs-policy]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="user"><![CDATA[spring2a2d595e6ed9a0b24f027f2b63b134d6]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="requestTime"><![CDATA[22/06/2011 18:02:21]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="RemoteAddr"><![CDATA[127.0.0.1]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="RemoteUser"><![CDATA[null]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="QueryString"><![CDATA[null]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="RequestURL"><![CDATA[http://localhost:8070/proxy/ogc/Geoserver-wfs]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="Request"><![CDATA[]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="ERROR"><![CDATA[org.xml.sax.SAXParseException: Premature end of file.]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="ERROR"><![CDATA[Error in EasySDI Proxy. Consult the proxy log for more details.]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="ClientResponseDateTime"><![CDATA[22/06/2011 18:02:21]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="ClientResponseLength"><![CDATA[370]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO"><![CDATA[ProxyServlet done.]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="Config"><![CDATA[Geoserver-wfs]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="Policy"><![CDATA[geoserver-wfs-policy]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="user"><![CDATA[spring2a2d595e6ed9a0b24f027f2b63b134d6]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="requestTime"><![CDATA[22/06/2011 18:02:54]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="RemoteAddr"><![CDATA[127.0.0.1]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="RemoteUser"><![CDATA[null]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="QueryString"><![CDATA[null]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="RequestURL"><![CDATA[http://localhost:8070/proxy/ogc/Geoserver-wfs]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="Request"><![CDATA[<GetCapabilities  service="WFS" version="1.0.0" xsi:schemaLocation="http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd" xmlns:wfs="http://www.opengis.net/wfs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="ERROR"><![CDATA[This request has no authorized results!]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO"><![CDATA[ProxyServlet done.]]></logEntry>
+</LogRequest>
+<LogRequest user="spring2a2d595e6ed9a0b24f027f2b63b134d6" requestTime="22/06/2011 18:02:54"> 
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="Config"><![CDATA[Geoserver-wfs]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="Policy"><![CDATA[geoserver-wfs-policy]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="user"><![CDATA[spring2a2d595e6ed9a0b24f027f2b63b134d6]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="requestTime"><![CDATA[22/06/2011 18:01:01]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteAddr"><![CDATA[127.0.0.1]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteUser"><![CDATA[null]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="QueryString"><![CDATA[service=WFS&request=GetCapabilities&version=1.0.0]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RequestURL"><![CDATA[http://localhost:8070/proxy/ogc/Geoserver-wfs]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteRequestUrl"><![CDATA[http://localhost/geoserver/sf/ows]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteRequest"><![CDATA[service=WFS&request=GetCapabilities&version=1.0.0&]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteRequestLength"><![CDATA[50]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteRequestDateTime"><![CDATA[22/06/2011 18:01:01]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteResponseToRequestUrl"><![CDATA[http://localhost/geoserver/sf/ows?service=WFS&request=GetCapabilities&version=1.0.0&]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteResponseLength"><![CDATA[14199]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteResponseDateTime"><![CDATA[22/06/2011 18:01:01]]></logEntry>
+<logEntry time="22/06/2011 18:01:03" severity="INFO" name="ClientResponseDateTime"><![CDATA[22/06/2011 18:01:03]]></logEntry>
+<logEntry time="22/06/2011 18:01:03" severity="ERROR" name="ClientResponseLength"><![CDATA[17024]]></logEntry>
+<logEntry time="22/06/2011 18:01:03" severity="INFO"><![CDATA[ProxyServlet done.]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="Config"><![CDATA[Geoserver-wfs]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="Policy"><![CDATA[geoserver-wfs-policy]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="user"><![CDATA[spring2a2d595e6ed9a0b24f027f2b63b134d6]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="requestTime"><![CDATA[22/06/2011 18:02:21]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="RemoteAddr"><![CDATA[127.0.0.1]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="RemoteUser"><![CDATA[null]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="QueryString"><![CDATA[null]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="RequestURL"><![CDATA[http://localhost:8070/proxy/ogc/Geoserver-wfs]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="Request"><![CDATA[<GetCapabilities  service="WFS" version="1.0.0" xsi:schemaLocation="http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd" xmlns:wfs="http://www.opengis.net/wfs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="ERROR"><![CDATA[This request has no authorized results!]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO"><![CDATA[ProxyServlet done.]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="Config"><![CDATA[Geoserver-wfs]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="Policy"><![CDATA[geoserver-wfs-policy]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="user"><![CDATA[spring2a2d595e6ed9a0b24f027f2b63b134d6]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="requestTime"><![CDATA[22/06/2011 18:02:21]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="RemoteAddr"><![CDATA[127.0.0.1]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="RemoteUser"><![CDATA[null]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="QueryString"><![CDATA[null]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="RequestURL"><![CDATA[http://localhost:8070/proxy/ogc/Geoserver-wfs]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="Request"><![CDATA[]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="ERROR"><![CDATA[org.xml.sax.SAXParseException: Premature end of file.]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="ERROR"><![CDATA[Error in EasySDI Proxy. Consult the proxy log for more details.]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="ClientResponseDateTime"><![CDATA[22/06/2011 18:02:21]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="ClientResponseLength"><![CDATA[370]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO"><![CDATA[ProxyServlet done.]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="Config"><![CDATA[Geoserver-wfs]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="Policy"><![CDATA[geoserver-wfs-policy]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="user"><![CDATA[spring2a2d595e6ed9a0b24f027f2b63b134d6]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="requestTime"><![CDATA[22/06/2011 18:02:54]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="RemoteAddr"><![CDATA[127.0.0.1]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="RemoteUser"><![CDATA[null]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="QueryString"><![CDATA[null]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="RequestURL"><![CDATA[http://localhost:8070/proxy/ogc/Geoserver-wfs]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="Request"><![CDATA[<GetCapabilities  service="WFS" version="1.0.0" xsi:schemaLocation="http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd" xmlns:wfs="http://www.opengis.net/wfs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="ERROR"><![CDATA[This request has no authorized results!]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO"><![CDATA[ProxyServlet done.]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="Config"><![CDATA[Geoserver-wfs]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="Policy"><![CDATA[geoserver-wfs-policy]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="user"><![CDATA[spring2a2d595e6ed9a0b24f027f2b63b134d6]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="requestTime"><![CDATA[22/06/2011 18:02:54]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="RemoteAddr"><![CDATA[127.0.0.1]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="RemoteUser"><![CDATA[null]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="QueryString"><![CDATA[null]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="RequestURL"><![CDATA[http://localhost:8070/proxy/ogc/Geoserver-wfs]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="Request"><![CDATA[]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="ERROR"><![CDATA[org.xml.sax.SAXParseException: Premature end of file.]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="ERROR"><![CDATA[Error in EasySDI Proxy. Consult the proxy log for more details.]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="ClientResponseDateTime"><![CDATA[22/06/2011 18:02:54]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="ClientResponseLength"><![CDATA[370]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO"><![CDATA[ProxyServlet done.]]></logEntry>
+</LogRequest>
+<LogRequest user="spring2a2d595e6ed9a0b24f027f2b63b134d6" requestTime="22/06/2011 18:03:03"> 
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="Config"><![CDATA[Geoserver-wfs]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="Policy"><![CDATA[geoserver-wfs-policy]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="user"><![CDATA[spring2a2d595e6ed9a0b24f027f2b63b134d6]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="requestTime"><![CDATA[22/06/2011 18:01:01]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteAddr"><![CDATA[127.0.0.1]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteUser"><![CDATA[null]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="QueryString"><![CDATA[service=WFS&request=GetCapabilities&version=1.0.0]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RequestURL"><![CDATA[http://localhost:8070/proxy/ogc/Geoserver-wfs]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteRequestUrl"><![CDATA[http://localhost/geoserver/sf/ows]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteRequest"><![CDATA[service=WFS&request=GetCapabilities&version=1.0.0&]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteRequestLength"><![CDATA[50]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteRequestDateTime"><![CDATA[22/06/2011 18:01:01]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteResponseToRequestUrl"><![CDATA[http://localhost/geoserver/sf/ows?service=WFS&request=GetCapabilities&version=1.0.0&]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteResponseLength"><![CDATA[14199]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteResponseDateTime"><![CDATA[22/06/2011 18:01:01]]></logEntry>
+<logEntry time="22/06/2011 18:01:03" severity="INFO" name="ClientResponseDateTime"><![CDATA[22/06/2011 18:01:03]]></logEntry>
+<logEntry time="22/06/2011 18:01:03" severity="ERROR" name="ClientResponseLength"><![CDATA[17024]]></logEntry>
+<logEntry time="22/06/2011 18:01:03" severity="INFO"><![CDATA[ProxyServlet done.]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="Config"><![CDATA[Geoserver-wfs]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="Policy"><![CDATA[geoserver-wfs-policy]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="user"><![CDATA[spring2a2d595e6ed9a0b24f027f2b63b134d6]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="requestTime"><![CDATA[22/06/2011 18:02:21]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="RemoteAddr"><![CDATA[127.0.0.1]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="RemoteUser"><![CDATA[null]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="QueryString"><![CDATA[null]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="RequestURL"><![CDATA[http://localhost:8070/proxy/ogc/Geoserver-wfs]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="Request"><![CDATA[<GetCapabilities  service="WFS" version="1.0.0" xsi:schemaLocation="http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd" xmlns:wfs="http://www.opengis.net/wfs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="ERROR"><![CDATA[This request has no authorized results!]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO"><![CDATA[ProxyServlet done.]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="Config"><![CDATA[Geoserver-wfs]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="Policy"><![CDATA[geoserver-wfs-policy]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="user"><![CDATA[spring2a2d595e6ed9a0b24f027f2b63b134d6]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="requestTime"><![CDATA[22/06/2011 18:02:21]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="RemoteAddr"><![CDATA[127.0.0.1]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="RemoteUser"><![CDATA[null]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="QueryString"><![CDATA[null]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="RequestURL"><![CDATA[http://localhost:8070/proxy/ogc/Geoserver-wfs]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="Request"><![CDATA[]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="ERROR"><![CDATA[org.xml.sax.SAXParseException: Premature end of file.]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="ERROR"><![CDATA[Error in EasySDI Proxy. Consult the proxy log for more details.]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="ClientResponseDateTime"><![CDATA[22/06/2011 18:02:21]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="ClientResponseLength"><![CDATA[370]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO"><![CDATA[ProxyServlet done.]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="Config"><![CDATA[Geoserver-wfs]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="Policy"><![CDATA[geoserver-wfs-policy]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="user"><![CDATA[spring2a2d595e6ed9a0b24f027f2b63b134d6]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="requestTime"><![CDATA[22/06/2011 18:02:54]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="RemoteAddr"><![CDATA[127.0.0.1]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="RemoteUser"><![CDATA[null]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="QueryString"><![CDATA[null]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="RequestURL"><![CDATA[http://localhost:8070/proxy/ogc/Geoserver-wfs]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="Request"><![CDATA[<GetCapabilities  service="WFS" version="1.0.0" xsi:schemaLocation="http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd" xmlns:wfs="http://www.opengis.net/wfs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="ERROR"><![CDATA[This request has no authorized results!]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO"><![CDATA[ProxyServlet done.]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="Config"><![CDATA[Geoserver-wfs]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="Policy"><![CDATA[geoserver-wfs-policy]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="user"><![CDATA[spring2a2d595e6ed9a0b24f027f2b63b134d6]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="requestTime"><![CDATA[22/06/2011 18:02:54]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="RemoteAddr"><![CDATA[127.0.0.1]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="RemoteUser"><![CDATA[null]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="QueryString"><![CDATA[null]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="RequestURL"><![CDATA[http://localhost:8070/proxy/ogc/Geoserver-wfs]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="Request"><![CDATA[]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="ERROR"><![CDATA[org.xml.sax.SAXParseException: Premature end of file.]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="ERROR"><![CDATA[Error in EasySDI Proxy. Consult the proxy log for more details.]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="ClientResponseDateTime"><![CDATA[22/06/2011 18:02:54]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="ClientResponseLength"><![CDATA[370]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO"><![CDATA[ProxyServlet done.]]></logEntry>
+<logEntry time="22/06/2011 18:03:03" severity="INFO" name="Config"><![CDATA[Geoserver-wfs]]></logEntry>
+<logEntry time="22/06/2011 18:03:03" severity="INFO" name="Policy"><![CDATA[geoserver-wfs-policy]]></logEntry>
+<logEntry time="22/06/2011 18:03:03" severity="INFO" name="user"><![CDATA[spring2a2d595e6ed9a0b24f027f2b63b134d6]]></logEntry>
+<logEntry time="22/06/2011 18:03:03" severity="INFO" name="requestTime"><![CDATA[22/06/2011 18:03:03]]></logEntry>
+<logEntry time="22/06/2011 18:03:03" severity="INFO" name="RemoteAddr"><![CDATA[127.0.0.1]]></logEntry>
+<logEntry time="22/06/2011 18:03:03" severity="INFO" name="RemoteUser"><![CDATA[null]]></logEntry>
+<logEntry time="22/06/2011 18:03:03" severity="INFO" name="QueryString"><![CDATA[null]]></logEntry>
+<logEntry time="22/06/2011 18:03:03" severity="INFO" name="RequestURL"><![CDATA[http://localhost:8070/proxy/ogc/Geoserver-wfs]]></logEntry>
+<logEntry time="22/06/2011 18:03:15" severity="INFO" name="Request"><![CDATA[<GetCapabilities  service="WFS" version="1.0.0" xsi:schemaLocation="http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd" xmlns:wfs="http://www.opengis.net/wfs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>]]></logEntry>
+<logEntry time="22/06/2011 18:03:43" severity="ERROR"><![CDATA[This request has no authorized results!]]></logEntry>
+<logEntry time="22/06/2011 18:03:49" severity="INFO"><![CDATA[ProxyServlet done.]]></logEntry>
+</LogRequest>
+<LogRequest user="spring2a2d595e6ed9a0b24f027f2b63b134d6" requestTime="22/06/2011 18:03:49"> 
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="Config"><![CDATA[Geoserver-wfs]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="Policy"><![CDATA[geoserver-wfs-policy]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="user"><![CDATA[spring2a2d595e6ed9a0b24f027f2b63b134d6]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="requestTime"><![CDATA[22/06/2011 18:01:01]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteAddr"><![CDATA[127.0.0.1]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteUser"><![CDATA[null]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="QueryString"><![CDATA[service=WFS&request=GetCapabilities&version=1.0.0]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RequestURL"><![CDATA[http://localhost:8070/proxy/ogc/Geoserver-wfs]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteRequestUrl"><![CDATA[http://localhost/geoserver/sf/ows]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteRequest"><![CDATA[service=WFS&request=GetCapabilities&version=1.0.0&]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteRequestLength"><![CDATA[50]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteRequestDateTime"><![CDATA[22/06/2011 18:01:01]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteResponseToRequestUrl"><![CDATA[http://localhost/geoserver/sf/ows?service=WFS&request=GetCapabilities&version=1.0.0&]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteResponseLength"><![CDATA[14199]]></logEntry>
+<logEntry time="22/06/2011 18:01:01" severity="INFO" name="RemoteResponseDateTime"><![CDATA[22/06/2011 18:01:01]]></logEntry>
+<logEntry time="22/06/2011 18:01:03" severity="INFO" name="ClientResponseDateTime"><![CDATA[22/06/2011 18:01:03]]></logEntry>
+<logEntry time="22/06/2011 18:01:03" severity="ERROR" name="ClientResponseLength"><![CDATA[17024]]></logEntry>
+<logEntry time="22/06/2011 18:01:03" severity="INFO"><![CDATA[ProxyServlet done.]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="Config"><![CDATA[Geoserver-wfs]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="Policy"><![CDATA[geoserver-wfs-policy]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="user"><![CDATA[spring2a2d595e6ed9a0b24f027f2b63b134d6]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="requestTime"><![CDATA[22/06/2011 18:02:21]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="RemoteAddr"><![CDATA[127.0.0.1]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="RemoteUser"><![CDATA[null]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="QueryString"><![CDATA[null]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="RequestURL"><![CDATA[http://localhost:8070/proxy/ogc/Geoserver-wfs]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="Request"><![CDATA[<GetCapabilities  service="WFS" version="1.0.0" xsi:schemaLocation="http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd" xmlns:wfs="http://www.opengis.net/wfs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="ERROR"><![CDATA[This request has no authorized results!]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO"><![CDATA[ProxyServlet done.]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="Config"><![CDATA[Geoserver-wfs]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="Policy"><![CDATA[geoserver-wfs-policy]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="user"><![CDATA[spring2a2d595e6ed9a0b24f027f2b63b134d6]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="requestTime"><![CDATA[22/06/2011 18:02:21]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="RemoteAddr"><![CDATA[127.0.0.1]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="RemoteUser"><![CDATA[null]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="QueryString"><![CDATA[null]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="RequestURL"><![CDATA[http://localhost:8070/proxy/ogc/Geoserver-wfs]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="Request"><![CDATA[]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="ERROR"><![CDATA[org.xml.sax.SAXParseException: Premature end of file.]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="ERROR"><![CDATA[Error in EasySDI Proxy. Consult the proxy log for more details.]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="ClientResponseDateTime"><![CDATA[22/06/2011 18:02:21]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO" name="ClientResponseLength"><![CDATA[370]]></logEntry>
+<logEntry time="22/06/2011 18:02:21" severity="INFO"><![CDATA[ProxyServlet done.]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="Config"><![CDATA[Geoserver-wfs]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="Policy"><![CDATA[geoserver-wfs-policy]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="user"><![CDATA[spring2a2d595e6ed9a0b24f027f2b63b134d6]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="requestTime"><![CDATA[22/06/2011 18:02:54]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="RemoteAddr"><![CDATA[127.0.0.1]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="RemoteUser"><![CDATA[null]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="QueryString"><![CDATA[null]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="RequestURL"><![CDATA[http://localhost:8070/proxy/ogc/Geoserver-wfs]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="Request"><![CDATA[<GetCapabilities  service="WFS" version="1.0.0" xsi:schemaLocation="http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd" xmlns:wfs="http://www.opengis.net/wfs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="ERROR"><![CDATA[This request has no authorized results!]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO"><![CDATA[ProxyServlet done.]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="Config"><![CDATA[Geoserver-wfs]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="Policy"><![CDATA[geoserver-wfs-policy]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="user"><![CDATA[spring2a2d595e6ed9a0b24f027f2b63b134d6]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="requestTime"><![CDATA[22/06/2011 18:02:54]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="RemoteAddr"><![CDATA[127.0.0.1]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="RemoteUser"><![CDATA[null]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="QueryString"><![CDATA[null]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="RequestURL"><![CDATA[http://localhost:8070/proxy/ogc/Geoserver-wfs]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="Request"><![CDATA[]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="ERROR"><![CDATA[org.xml.sax.SAXParseException: Premature end of file.]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="ERROR"><![CDATA[Error in EasySDI Proxy. Consult the proxy log for more details.]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="ClientResponseDateTime"><![CDATA[22/06/2011 18:02:54]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO" name="ClientResponseLength"><![CDATA[370]]></logEntry>
+<logEntry time="22/06/2011 18:02:54" severity="INFO"><![CDATA[ProxyServlet done.]]></logEntry>
+<logEntry time="22/06/2011 18:03:03" severity="INFO" name="Config"><![CDATA[Geoserver-wfs]]></logEntry>
+<logEntry time="22/06/2011 18:03:03" severity="INFO" name="Policy"><![CDATA[geoserver-wfs-policy]]></logEntry>
+<logEntry time="22/06/2011 18:03:03" severity="INFO" name="user"><![CDATA[spring2a2d595e6ed9a0b24f027f2b63b134d6]]></logEntry>
+<logEntry time="22/06/2011 18:03:03" severity="INFO" name="requestTime"><![CDATA[22/06/2011 18:03:03]]></logEntry>
+<logEntry time="22/06/2011 18:03:03" severity="INFO" name="RemoteAddr"><![CDATA[127.0.0.1]]></logEntry>
+<logEntry time="22/06/2011 18:03:03" severity="INFO" name="RemoteUser"><![CDATA[null]]></logEntry>
+<logEntry time="22/06/2011 18:03:03" severity="INFO" name="QueryString"><![CDATA[null]]></logEntry>
+<logEntry time="22/06/2011 18:03:03" severity="INFO" name="RequestURL"><![CDATA[http://localhost:8070/proxy/ogc/Geoserver-wfs]]></logEntry>
+<logEntry time="22/06/2011 18:03:15" severity="INFO" name="Request"><![CDATA[<GetCapabilities  service="WFS" version="1.0.0" xsi:schemaLocation="http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd" xmlns:wfs="http://www.opengis.net/wfs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>]]></logEntry>
+<logEntry time="22/06/2011 18:03:43" severity="ERROR"><![CDATA[This request has no authorized results!]]></logEntry>
+<logEntry time="22/06/2011 18:03:49" severity="INFO"><![CDATA[ProxyServlet done.]]></logEntry>
+<logEntry time="22/06/2011 18:03:49" severity="INFO" name="Config"><![CDATA[Geoserver-wfs]]></logEntry>
+<logEntry time="22/06/2011 18:03:49" severity="INFO" name="Policy"><![CDATA[geoserver-wfs-policy]]></logEntry>
+<logEntry time="22/06/2011 18:03:49" severity="INFO" name="user"><![CDATA[spring2a2d595e6ed9a0b24f027f2b63b134d6]]></logEntry>
+<logEntry time="22/06/2011 18:03:49" severity="INFO" name="requestTime"><![CDATA[22/06/2011 18:03:49]]></logEntry>
+<logEntry time="22/06/2011 18:03:49" severity="INFO" name="RemoteAddr"><![CDATA[127.0.0.1]]></logEntry>
+<logEntry time="22/06/2011 18:03:49" severity="INFO" name="RemoteUser"><![CDATA[null]]></logEntry>
+<logEntry time="22/06/2011 18:03:49" severity="INFO" name="QueryString"><![CDATA[null]]></logEntry>
+<logEntry time="22/06/2011 18:03:49" severity="INFO" name="RequestURL"><![CDATA[http://localhost:8070/proxy/ogc/Geoserver-wfs]]></logEntry>
+<logEntry time="22/06/2011 18:03:50" severity="INFO" name="Request"><![CDATA[]]></logEntry>
+<logEntry time="22/06/2011 18:03:50" severity="ERROR"><![CDATA[org.xml.sax.SAXParseException: Premature end of file.]]></logEntry>
+<logEntry time="22/06/2011 18:03:50" severity="ERROR"><![CDATA[Error in EasySDI Proxy. Consult the proxy log for more details.]]></logEntry>
+<logEntry time="22/06/2011 18:03:50" severity="INFO" name="ClientResponseDateTime"><![CDATA[22/06/2011 18:03:50]]></logEntry>
+<logEntry time="22/06/2011 18:03:50" severity="INFO" name="ClientResponseLength"><![CDATA[370]]></logEntry>
+<logEntry time="22/06/2011 18:03:50" severity="INFO"><![CDATA[ProxyServlet done.]]></logEntry>
+</LogRequest>

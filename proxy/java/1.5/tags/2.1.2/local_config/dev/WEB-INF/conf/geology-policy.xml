@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PolicySet>
+	<Policy Id="geology" ConfigId="Geology">
+		<Servers All="false"><Server><url>http://geoservices.brgm.fr/geologie</url><Prefix>g</Prefix><Namespace>g</Namespace><Metadata></Metadata><Layers All="false"><Layer><Name>GEOLOGIE</Name><BoundingBox SRS="EPSG:4326" minx="-118.150181" miny="-70.434783" maxx="7.788232" maxy="54.782609"/><Filter>&lt;gml:Polygon xmlns:gml="http://www.opengis.net/gml" srsName="EPSG:4326"&gt;&#13;
+        &lt;gml:outerBoundaryIs&gt;&#13;
+             &lt;gml:LinearRing&gt;                    &#13;
+         &lt;gml:coordinates&gt;-118.150180627375,-70.4347826086957 -118.150180627375,54.7826086956521 7.78823212402305,54.7826086956521 7.78823212402305,-70.4347826086957 -118.150180627375,-70.4347826086957&lt;/gml:coordinates&gt;&#13;
+             &lt;/gml:LinearRing&gt;&#13;
+        &lt;/gml:outerBoundaryIs&gt;&#13;
+  &lt;/gml:Polygon&gt;</Filter></Layer><Layer><Name>SCAN_F_GEOL1M</Name><BoundingBox SRS="EPSG:4326" minx="-118.150181" miny="-70.434783" maxx="7.788232" maxy="54.782609"/><Filter>&lt;gml:Polygon xmlns:gml="http://www.opengis.net/gml" srsName="EPSG:4326"&gt;&#13;
+        &lt;gml:outerBoundaryIs&gt;&#13;
+             &lt;gml:LinearRing&gt;                    &#13;
+         &lt;gml:coordinates&gt;-118.150180627375,-70.4347826086957 -118.150180627375,54.7826086956521 7.78823212402305,54.7826086956521 7.78823212402305,-70.4347826086957 -118.150180627375,-70.4347826086957&lt;/gml:coordinates&gt;&#13;
+             &lt;/gml:LinearRing&gt;&#13;
+        &lt;/gml:outerBoundaryIs&gt;&#13;
+  &lt;/gml:Polygon&gt;</Filter></Layer></Layers><FeatureTypes></FeatureTypes></Server><Server><url>http://geoservices.brgm.fr/risques</url><Prefix>2</Prefix><Namespace>2</Namespace><Metadata></Metadata><Layers All="false"><Layer><Name>RISQUES</Name><BoundingBox SRS="EPSG:4326" minx="-118.150181" miny="-70.434783" maxx="7.788232" maxy="54.782609"/><Filter>&lt;gml:Polygon xmlns:gml="http://www.opengis.net/gml" srsName="EPSG:4326"&gt;&#13;
+        &lt;gml:outerBoundaryIs&gt;&#13;
+             &lt;gml:LinearRing&gt;                    &#13;
+         &lt;gml:coordinates&gt;-118.150180627375,-70.4347826086957 -118.150180627375,54.7826086956521 7.78823212402305,54.7826086956521 7.78823212402305,-70.4347826086957 -118.150180627375,-70.4347826086957&lt;/gml:coordinates&gt;&#13;
+             &lt;/gml:LinearRing&gt;&#13;
+        &lt;/gml:outerBoundaryIs&gt;&#13;
+  &lt;/gml:Polygon&gt;</Filter></Layer></Layers><FeatureTypes></FeatureTypes></Server></Servers>
+		<Subjects All="true"></Subjects>
+		<Operations All="true"></Operations>
+		<AvailabilityPeriod>
+			<Mask>d-mm-yyyy</Mask>
+			<From><Date>28-01-2008</Date></From>
+			<To><Date>28-01-2108</Date></To>
+		</AvailabilityPeriod>
+		<ImageSize><Minimum><Width>10</Width><Height>1000</Height></Minimum><Maximum><Width>10</Width><Height>1000</Height></Maximum></ImageSize>
+	</Policy>
+</PolicySet>

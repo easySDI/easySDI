@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PolicySet>
+<Policy Id="rwgiswms-policy" ConfigId="rwgiswms"><Servers All="true"/><Subjects All="true"/><Operations All="true"/><AvailabilityPeriod><Mask>dd-MM-yyyy</Mask><From><Date>28-01-2008</Date></From><To><Date>28-01-2108</Date></To></AvailabilityPeriod><ImageSize/></Policy><Policy Id="rwgis-policy" ConfigId="rwgis"><Servers All="true"></Servers><Subjects All="true"></Subjects><Operations All="true"></Operations><AvailabilityPeriod><Mask>dd-MM-yyyy</Mask><From><Date>28-01-2008</Date></From><To><Date>28-01-2108</Date></To></AvailabilityPeriod></Policy></PolicySet>

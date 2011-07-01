@@ -1,0 +1,992 @@
+22/06/2011 14:32:22 [btpool0-1 been through org.easysdi.proxy.ehcache.GetMapCacheFilter]  INFO - Config=GeoServer
+22/06/2011 14:32:22 [btpool0-1 been through org.easysdi.proxy.ehcache.GetMapCacheFilter]  INFO - Policy=Geoserver-policy
+22/06/2011 14:32:22 [btpool0-1 been through org.easysdi.proxy.ehcache.GetMapCacheFilter]  INFO - user=spring2a2d595e6ed9a0b24f027f2b63b134d6
+22/06/2011 14:32:22 [btpool0-1 been through org.easysdi.proxy.ehcache.GetMapCacheFilter]  INFO - requestTime=22/06/2011 14:32:22
+22/06/2011 14:32:22 [btpool0-1 been through org.easysdi.proxy.ehcache.GetMapCacheFilter]  INFO - RemoteAddr=127.0.0.1
+22/06/2011 14:32:22 [btpool0-1 been through org.easysdi.proxy.ehcache.GetMapCacheFilter]  INFO - RemoteUser=null
+22/06/2011 14:32:22 [btpool0-1 been through org.easysdi.proxy.ehcache.GetMapCacheFilter]  INFO - QueryString=request=GetLegendGraphic&service=WMS&version=1.1.1&layer=nurc%3Anurc_Img_Sample&exceptions=application%2Fvnd.ogc.se_inimage&format=image%2Fpng&srs=EPSG%3A26713&BBOX=589434.4971235897%2C4913947.342298816%2C609518.2117427464%2C4928071.049965891&width=25&height=25&transparent=true
+22/06/2011 14:32:22 [btpool0-1 been through org.easysdi.proxy.ehcache.GetMapCacheFilter]  INFO - RequestURL=http://localhost:8070/proxy/ogc/GeoServer
+22/06/2011 14:32:22 [btpool0-1 been through org.easysdi.proxy.ehcache.GetMapCacheFilter]  INFO - RemoteRequestUrl=http://localhost/geoserver/nurc/wms
+22/06/2011 14:32:22 [btpool0-1 been through org.easysdi.proxy.ehcache.GetMapCacheFilter]  INFO - RemoteRequest=service=WMS&BBOX=589434.4971235897,4913947.342298816,609518.2117427464,4928071.049965891&srs=EPSG:26713&width=25&height=25&transparent=true&exceptions=application%2Fvnd.ogc.se_inimage&request=GetLegendGraphic&version=1.1.1&FORMAT=image%2Fpng&&LAYER=nurc:Img_Sample
+22/06/2011 14:32:22 [btpool0-1 been through org.easysdi.proxy.ehcache.GetMapCacheFilter]  INFO - RemoteRequestLength=264
+22/06/2011 14:32:22 [btpool0-1 been through org.easysdi.proxy.ehcache.GetMapCacheFilter]  INFO - RemoteRequestDateTime=22/06/2011 14:32:22
+22/06/2011 14:32:22 [btpool0-1 been through org.easysdi.proxy.ehcache.GetMapCacheFilter]  INFO - RemoteResponseToRequestUrl=http://localhost/geoserver/nurc/wms?service=WMS&BBOX=589434.4971235897,4913947.342298816,609518.2117427464,4928071.049965891&srs=EPSG:26713&width=25&height=25&transparent=true&exceptions=application%2Fvnd.ogc.se_inimage&request=GetLegendGraphic&version=1.1.1&FORMAT=image%2Fpng&&LAYER=nurc:Img_Sample
+22/06/2011 14:32:22 [btpool0-1 been through org.easysdi.proxy.ehcache.GetMapCacheFilter]  INFO - RemoteResponseDateTime=22/06/2011 14:32:22
+22/06/2011 14:32:22 [btpool0-1 been through org.easysdi.proxy.ehcache.GetMapCacheFilter]  INFO - ProxyServlet done.
+22/06/2011 16:19:15 [btpool0-1]  INFO - Config=GeoServer
+22/06/2011 16:19:15 [btpool0-1]  INFO - Policy=Geoserver-policy
+22/06/2011 16:19:15 [btpool0-1]  INFO - user=hvanhoecke
+22/06/2011 16:19:15 [btpool0-1]  INFO - requestTime=22/06/2011 16:19:15
+22/06/2011 16:19:15 [btpool0-1]  INFO - RemoteAddr=127.0.0.1
+22/06/2011 16:19:15 [btpool0-1]  INFO - RemoteUser=hvanhoecke
+22/06/2011 16:19:15 [btpool0-1]  INFO - QueryString=null
+22/06/2011 16:19:15 [btpool0-1]  INFO - RequestURL=http://localhost:8070/proxy/ogc/GeoServer
+22/06/2011 16:19:28 [Thread-11]  INFO - RemoteRequestUrl=http://localhost/geoserver/nurc/wms
+22/06/2011 16:19:28 [Thread-11]  INFO - RemoteRequest=<?xml version="1.0" encoding="UTF-8"?>
+<GetMap xmlns="http://www.opengis.net/sld" xmlns:gml="http://www.opengis.net/gml" xmlns:wms="http://www.opengis.net/wms" xmlns:ogc="http://www.opengis.net/ogc" xmlns:ows="http://www.opengis.net/ows" xmlns:se="http://www.opengis.net/se" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/sld GetMap.xsd" version="1.3.0">
+  <StyledLayerDescriptor version="1.1.0">
+    <NamedLayer>
+      <se:Name>nurc:Sample</se:Name>
+      <NamedStyle>
+        <se:Name>default</se:Name>
+      </NamedStyle>
+    </NamedLayer>
+    <NamedLayer>
+      <se:Name>sf:sf_roads</se:Name>
+      <NamedStyle>
+        <se:Name>default</se:Name>
+      </NamedStyle>
+    </NamedLayer>
+  </StyledLayerDescriptor>
+  <CRS>EPSG:26713</CRS>
+  <BoundingBox crs="http://www.opengis.net/gml/srs/epsg.xml#4326">
+    <ows:LowerCorner>589434.0 4971235897</ows:LowerCorner>
+    <ows:UpperCorner>4913947.342298816 4928071.049965891</ows:UpperCorner>
+  </BoundingBox>
+  <Output>
+    <Size>
+      <Width>1024</Width>
+      <Height>512</Height>
+    </Size>
+    <wms:Format>image/png</wms:Format>
+    <Transparent>false</Transparent>
+  </Output>
+  <Exceptions>XML</Exceptions>
+</GetMap>
+
+
+22/06/2011 16:19:28 [Thread-11]  INFO - RemoteRequestLength=1257
+22/06/2011 16:19:28 [Thread-11]  INFO - RemoteRequestDateTime=22/06/2011 16:19:28
+22/06/2011 16:19:28 [Thread-11] DEBUG -  tmpDir :  C:\Users\Helene\AppData\Local\Temp\
+22/06/2011 16:19:28 [Thread-11]  INFO - RemoteResponseToRequestUrl=http://localhost/geoserver/nurc/wms
+22/06/2011 16:19:28 [Thread-11]  INFO - RemoteResponseLength=467
+22/06/2011 16:19:28 [Thread-11]  INFO - RemoteResponseDateTime=22/06/2011 16:19:28
+22/06/2011 16:19:57 [Thread-12]  INFO - RemoteRequestUrl=http://localhost/geoserver/sf/wms
+22/06/2011 16:19:57 [Thread-12]  INFO - RemoteRequest=<?xml version="1.0" encoding="UTF-8"?>
+<GetMap xmlns="http://www.opengis.net/sld" xmlns:gml="http://www.opengis.net/gml" xmlns:wms="http://www.opengis.net/wms" xmlns:ogc="http://www.opengis.net/ogc" xmlns:ows="http://www.opengis.net/ows" xmlns:se="http://www.opengis.net/se" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/sld GetMap.xsd" version="1.3.0">
+  <StyledLayerDescriptor version="1.1.0">
+    <NamedLayer>
+      <se:Name>nurc:nurc_Arc_Sample</se:Name>
+      <NamedStyle>
+        <se:Name>default</se:Name>
+      </NamedStyle>
+    </NamedLayer>
+    <NamedLayer>
+      <se:Name>sf:roads</se:Name>
+      <NamedStyle>
+        <se:Name>default</se:Name>
+      </NamedStyle>
+    </NamedLayer>
+  </StyledLayerDescriptor>
+  <CRS>EPSG:26713</CRS>
+  <BoundingBox crs="http://www.opengis.net/gml/srs/epsg.xml#4326">
+    <ows:LowerCorner>589434.0 4971235897</ows:LowerCorner>
+    <ows:UpperCorner>4913947.342298816 4928071.049965891</ows:UpperCorner>
+  </BoundingBox>
+  <Output>
+    <Size>
+      <Width>1024</Width>
+      <Height>512</Height>
+    </Size>
+    <wms:Format>image/png</wms:Format>
+    <Transparent>false</Transparent>
+  </Output>
+  <Exceptions>XML</Exceptions>
+</GetMap>
+
+
+22/06/2011 16:19:57 [Thread-12]  INFO - RemoteRequestLength=1263
+22/06/2011 16:19:57 [Thread-12]  INFO - RemoteRequestDateTime=22/06/2011 16:19:57
+22/06/2011 16:19:57 [Thread-12] DEBUG -  tmpDir :  C:\Users\Helene\AppData\Local\Temp\
+22/06/2011 16:19:57 [Thread-12]  INFO - RemoteResponseToRequestUrl=http://localhost/geoserver/sf/wms
+22/06/2011 16:19:57 [Thread-12]  INFO - RemoteResponseLength=467
+22/06/2011 16:19:57 [Thread-12]  INFO - RemoteResponseDateTime=22/06/2011 16:19:57
+22/06/2011 16:20:03 [btpool0-1]  INFO - ClientResponseDateTime=22/06/2011 16:20:03
+22/06/2011 16:20:03 [btpool0-1]  INFO - ClientResponseLength=0
+22/06/2011 16:20:03 [btpool0-1]  INFO - ClientResponseDateTime=22/06/2011 16:20:03
+22/06/2011 16:20:03 [btpool0-1]  WARN - temporary file file:/C:/Users/Helene/AppData/Local/Temp/sendData_d2edccf0-2231-4619-b7f4-7f10ff48d2ca1965461349757235547.xml is not deleted
+22/06/2011 16:20:03 [btpool0-1]  WARN - temporary file file:/C:/Users/Helene/AppData/Local/Temp/sendData_6daddb1f-7163-4c5c-9e8a-faca19a464ca6481553184717271196.xml is not deleted
+22/06/2011 16:20:03 [btpool0-1]  INFO - ProxyServlet done.
+22/06/2011 16:21:13 [btpool0-1]  INFO - Config=GeoServer
+22/06/2011 16:21:13 [btpool0-1]  INFO - Policy=Geoserver-policy
+22/06/2011 16:21:13 [btpool0-1]  INFO - user=hvanhoecke
+22/06/2011 16:21:13 [btpool0-1]  INFO - requestTime=22/06/2011 16:21:13
+22/06/2011 16:21:13 [btpool0-1]  INFO - RemoteAddr=127.0.0.1
+22/06/2011 16:21:13 [btpool0-1]  INFO - RemoteUser=hvanhoecke
+22/06/2011 16:21:13 [btpool0-1]  INFO - QueryString=null
+22/06/2011 16:21:13 [btpool0-1]  INFO - RequestURL=http://localhost:8070/proxy/ogc/GeoServer
+22/06/2011 16:21:13 [Thread-15]  INFO - RemoteRequestUrl=http://localhost/geoserver/nurc/wms
+22/06/2011 16:21:13 [Thread-15]  INFO - RemoteRequest=<?xml version="1.0" encoding="UTF-8"?>
+<GetMap xmlns="http://www.opengis.net/sld" xmlns:gml="http://www.opengis.net/gml" xmlns:wms="http://www.opengis.net/wms" xmlns:ogc="http://www.opengis.net/ogc" xmlns:ows="http://www.opengis.net/ows" xmlns:se="http://www.opengis.net/se" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/sld GetMap.xsd" version="1.3.0">
+  <StyledLayerDescriptor version="1.1.0">
+    <NamedLayer>
+      <se:Name>nurc:Sample</se:Name>
+      <NamedStyle>
+        <se:Name>default</se:Name>
+      </NamedStyle>
+    </NamedLayer>
+    <NamedLayer>
+      <se:Name>sf:sf_roads</se:Name>
+      <NamedStyle>
+        <se:Name>default</se:Name>
+      </NamedStyle>
+    </NamedLayer>
+  </StyledLayerDescriptor>
+  <CRS>EPSG:26713</CRS>
+  <BoundingBox crs="http://www.opengis.net/gml/srs/epsg.xml#4326">
+    <ows:LowerCorner>589434.0 4971235897</ows:LowerCorner>
+    <ows:UpperCorner>4913947.342298816 4928071.049965891</ows:UpperCorner>
+  </BoundingBox>
+  <Output>
+    <Size>
+      <Width>1024</Width>
+      <Height>512</Height>
+    </Size>
+    <wms:Format>image/png</wms:Format>
+    <Transparent>false</Transparent>
+  </Output>
+  <Exceptions>XML</Exceptions>
+</GetMap>
+
+
+22/06/2011 16:21:13 [Thread-15]  INFO - RemoteRequestLength=1257
+22/06/2011 16:21:13 [Thread-15]  INFO - RemoteRequestDateTime=22/06/2011 16:21:13
+22/06/2011 16:21:13 [Thread-16]  INFO - RemoteRequestUrl=http://localhost/geoserver/sf/wms
+22/06/2011 16:21:13 [Thread-16]  INFO - RemoteRequest=<?xml version="1.0" encoding="UTF-8"?>
+<GetMap xmlns="http://www.opengis.net/sld" xmlns:gml="http://www.opengis.net/gml" xmlns:wms="http://www.opengis.net/wms" xmlns:ogc="http://www.opengis.net/ogc" xmlns:ows="http://www.opengis.net/ows" xmlns:se="http://www.opengis.net/se" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/sld GetMap.xsd" version="1.3.0">
+  <StyledLayerDescriptor version="1.1.0">
+    <NamedLayer>
+      <se:Name>nurc:nurc_Arc_Sample</se:Name>
+      <NamedStyle>
+        <se:Name>default</se:Name>
+      </NamedStyle>
+    </NamedLayer>
+    <NamedLayer>
+      <se:Name>sf:roads</se:Name>
+      <NamedStyle>
+        <se:Name>default</se:Name>
+      </NamedStyle>
+    </NamedLayer>
+  </StyledLayerDescriptor>
+  <CRS>EPSG:26713</CRS>
+  <BoundingBox crs="http://www.opengis.net/gml/srs/epsg.xml#4326">
+    <ows:LowerCorner>589434.0 4971235897</ows:LowerCorner>
+    <ows:UpperCorner>4913947.342298816 4928071.049965891</ows:UpperCorner>
+  </BoundingBox>
+  <Output>
+    <Size>
+      <Width>1024</Width>
+      <Height>512</Height>
+    </Size>
+    <wms:Format>image/png</wms:Format>
+    <Transparent>false</Transparent>
+  </Output>
+  <Exceptions>XML</Exceptions>
+</GetMap>
+
+
+22/06/2011 16:21:13 [Thread-16]  INFO - RemoteRequestLength=1263
+22/06/2011 16:21:13 [Thread-16]  INFO - RemoteRequestDateTime=22/06/2011 16:21:13
+22/06/2011 16:21:13 [Thread-15] DEBUG -  tmpDir :  C:\Users\Helene\AppData\Local\Temp\
+22/06/2011 16:21:13 [Thread-15]  INFO - RemoteResponseToRequestUrl=http://localhost/geoserver/nurc/wms
+22/06/2011 16:21:13 [Thread-15]  INFO - RemoteResponseLength=467
+22/06/2011 16:21:13 [Thread-15]  INFO - RemoteResponseDateTime=22/06/2011 16:21:13
+22/06/2011 16:21:13 [Thread-16] DEBUG -  tmpDir :  C:\Users\Helene\AppData\Local\Temp\
+22/06/2011 16:21:13 [Thread-16]  INFO - RemoteResponseToRequestUrl=http://localhost/geoserver/sf/wms
+22/06/2011 16:21:13 [Thread-16]  INFO - RemoteResponseLength=467
+22/06/2011 16:21:13 [Thread-16]  INFO - RemoteResponseDateTime=22/06/2011 16:21:13
+22/06/2011 16:21:14 [btpool0-1]  INFO - ClientResponseDateTime=22/06/2011 16:21:14
+22/06/2011 16:21:14 [btpool0-1]  INFO - ClientResponseLength=0
+22/06/2011 16:21:14 [btpool0-1]  INFO - ClientResponseDateTime=22/06/2011 16:21:14
+22/06/2011 16:21:14 [btpool0-1]  WARN - temporary file file:/C:/Users/Helene/AppData/Local/Temp/sendData_988a69e0-910a-4995-b676-5cc68a0ca35c1868918840847463878.xml is not deleted
+22/06/2011 16:21:14 [btpool0-1]  WARN - temporary file file:/C:/Users/Helene/AppData/Local/Temp/sendData_a5bd7029-913f-47a6-ae0f-08dbe8c5dbb46707803903027126989.xml is not deleted
+22/06/2011 16:21:14 [btpool0-1]  INFO - ProxyServlet done.
+22/06/2011 16:24:07 [btpool0-1]  INFO - Config=GeoServer
+22/06/2011 16:24:07 [btpool0-1]  INFO - Policy=Geoserver-policy
+22/06/2011 16:24:07 [btpool0-1]  INFO - user=hvanhoecke
+22/06/2011 16:24:07 [btpool0-1]  INFO - requestTime=22/06/2011 16:24:07
+22/06/2011 16:24:07 [btpool0-1]  INFO - RemoteAddr=127.0.0.1
+22/06/2011 16:24:07 [btpool0-1]  INFO - RemoteUser=hvanhoecke
+22/06/2011 16:24:07 [btpool0-1]  INFO - QueryString=null
+22/06/2011 16:24:07 [btpool0-1]  INFO - RequestURL=http://localhost:8070/proxy/ogc/GeoServer
+22/06/2011 16:24:09 [Thread-11]  INFO - RemoteRequestUrl=http://localhost/geoserver/nurc/wms
+22/06/2011 16:24:09 [Thread-11]  INFO - RemoteRequest=<?xml version="1.0" encoding="UTF-8"?>
+<GetMap xmlns="http://www.opengis.net/sld" xmlns:gml="http://www.opengis.net/gml" xmlns:wms="http://www.opengis.net/wms" xmlns:ogc="http://www.opengis.net/ogc" xmlns:ows="http://www.opengis.net/ows" xmlns:se="http://www.opengis.net/se" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/sld GetMap.xsd" version="1.3.0">
+  <StyledLayerDescriptor version="1.1.0">
+    <NamedLayer>
+      <se:Name>nurc:Sample</se:Name>
+      <NamedStyle>
+        <se:Name>default</se:Name>
+      </NamedStyle>
+    </NamedLayer>
+    <NamedLayer>
+      <se:Name>sf:sf_roads</se:Name>
+      <NamedStyle>
+        <se:Name>default</se:Name>
+      </NamedStyle>
+    </NamedLayer>
+  </StyledLayerDescriptor>
+  <CRS>EPSG:26713</CRS>
+  <BoundingBox crs="http://www.opengis.net/gml/srs/epsg.xml#4326">
+    <ows:LowerCorner>589434.0 4971235897</ows:LowerCorner>
+    <ows:UpperCorner>4913947.342298816 4928071.049965891</ows:UpperCorner>
+  </BoundingBox>
+  <Output>
+    <Size>
+      <Width>1024</Width>
+      <Height>512</Height>
+    </Size>
+    <wms:Format>image/png</wms:Format>
+    <Transparent>false</Transparent>
+  </Output>
+  <Exceptions>XML</Exceptions>
+</GetMap>
+
+
+22/06/2011 16:24:09 [Thread-11]  INFO - RemoteRequestLength=1257
+22/06/2011 16:24:09 [Thread-11]  INFO - RemoteRequestDateTime=22/06/2011 16:24:09
+22/06/2011 16:24:09 [Thread-12]  INFO - RemoteRequestUrl=http://localhost/geoserver/sf/wms
+22/06/2011 16:24:09 [Thread-12]  INFO - RemoteRequest=<?xml version="1.0" encoding="UTF-8"?>
+<GetMap xmlns="http://www.opengis.net/sld" xmlns:gml="http://www.opengis.net/gml" xmlns:wms="http://www.opengis.net/wms" xmlns:ogc="http://www.opengis.net/ogc" xmlns:ows="http://www.opengis.net/ows" xmlns:se="http://www.opengis.net/se" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/sld GetMap.xsd" version="1.3.0">
+  <StyledLayerDescriptor version="1.1.0">
+    <NamedLayer>
+      <se:Name>nurc:nurc_Arc_Sample</se:Name>
+      <NamedStyle>
+        <se:Name>default</se:Name>
+      </NamedStyle>
+    </NamedLayer>
+    <NamedLayer>
+      <se:Name>sf:roads</se:Name>
+      <NamedStyle>
+        <se:Name>default</se:Name>
+      </NamedStyle>
+    </NamedLayer>
+  </StyledLayerDescriptor>
+  <CRS>EPSG:26713</CRS>
+  <BoundingBox crs="http://www.opengis.net/gml/srs/epsg.xml#4326">
+    <ows:LowerCorner>589434.0 4971235897</ows:LowerCorner>
+    <ows:UpperCorner>4913947.342298816 4928071.049965891</ows:UpperCorner>
+  </BoundingBox>
+  <Output>
+    <Size>
+      <Width>1024</Width>
+      <Height>512</Height>
+    </Size>
+    <wms:Format>image/png</wms:Format>
+    <Transparent>false</Transparent>
+  </Output>
+  <Exceptions>XML</Exceptions>
+</GetMap>
+
+
+22/06/2011 16:24:09 [Thread-12]  INFO - RemoteRequestLength=1263
+22/06/2011 16:24:09 [Thread-12]  INFO - RemoteRequestDateTime=22/06/2011 16:24:09
+22/06/2011 16:24:09 [Thread-12] DEBUG -  tmpDir :  C:\Users\Helene\AppData\Local\Temp\
+22/06/2011 16:24:09 [Thread-12]  INFO - RemoteResponseToRequestUrl=http://localhost/geoserver/sf/wms
+22/06/2011 16:24:09 [Thread-12]  INFO - RemoteResponseLength=467
+22/06/2011 16:24:09 [Thread-12]  INFO - RemoteResponseDateTime=22/06/2011 16:24:09
+22/06/2011 16:24:09 [Thread-11] DEBUG -  tmpDir :  C:\Users\Helene\AppData\Local\Temp\
+22/06/2011 16:24:09 [Thread-11]  INFO - RemoteResponseToRequestUrl=http://localhost/geoserver/nurc/wms
+22/06/2011 16:24:09 [Thread-11]  INFO - RemoteResponseLength=467
+22/06/2011 16:24:09 [Thread-11]  INFO - RemoteResponseDateTime=22/06/2011 16:24:09
+22/06/2011 16:24:10 [btpool0-1]  INFO - ClientResponseDateTime=22/06/2011 16:24:10
+22/06/2011 16:24:10 [btpool0-1]  INFO - ClientResponseLength=0
+22/06/2011 16:24:10 [btpool0-1]  INFO - ClientResponseDateTime=22/06/2011 16:24:10
+22/06/2011 16:24:10 [btpool0-1]  WARN - temporary file file:/C:/Users/Helene/AppData/Local/Temp/sendData_f1468f0d-18f3-46f9-b072-118bdb8434ad6977023690234878731.xml is not deleted
+22/06/2011 16:24:10 [btpool0-1]  WARN - temporary file file:/C:/Users/Helene/AppData/Local/Temp/sendData_d928a795-8cfe-40e9-ad93-ebd73f39d74a3225414747293474024.xml is not deleted
+22/06/2011 16:24:10 [btpool0-1]  INFO - ProxyServlet done.
+22/06/2011 16:31:49 [btpool0-1]  INFO - Config=GeoServer
+22/06/2011 16:31:49 [btpool0-1]  INFO - Policy=Geoserver-policy
+22/06/2011 16:31:49 [btpool0-1]  INFO - user=hvanhoecke
+22/06/2011 16:31:49 [btpool0-1]  INFO - requestTime=22/06/2011 16:31:49
+22/06/2011 16:31:49 [btpool0-1]  INFO - RemoteAddr=127.0.0.1
+22/06/2011 16:31:49 [btpool0-1]  INFO - RemoteUser=hvanhoecke
+22/06/2011 16:31:49 [btpool0-1]  INFO - QueryString=null
+22/06/2011 16:31:49 [btpool0-1]  INFO - RequestURL=http://localhost:8070/proxy/ogc/GeoServer
+22/06/2011 16:32:50 [Thread-10]  INFO - RemoteRequestUrl=http://localhost/geoserver/nurc/wms
+22/06/2011 16:32:50 [Thread-10]  INFO - RemoteRequest=<?xml version="1.0" encoding="UTF-8"?>
+<GetMap xmlns="http://www.opengis.net/sld" xmlns:gml="http://www.opengis.net/gml" xmlns:wms="http://www.opengis.net/wms" xmlns:ogc="http://www.opengis.net/ogc" xmlns:ows="http://www.opengis.net/ows" xmlns:se="http://www.opengis.net/se" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/sld GetMap.xsd" version="1.3.0">
+  <StyledLayerDescriptor version="1.1.0">
+    <NamedLayer>
+      <se:Name>nurc:Arc_Sample</se:Name>
+      <NamedStyle>
+        <se:Name>default</se:Name>
+      </NamedStyle>
+    </NamedLayer>
+    <NamedLayer>
+      <se:Name>sf:sf_roads</se:Name>
+      <NamedStyle>
+        <se:Name>default</se:Name>
+      </NamedStyle>
+    </NamedLayer>
+  </StyledLayerDescriptor>
+  <CRS>EPSG:26713</CRS>
+  <BoundingBox crs="http://www.opengis.net/gml/srs/epsg.xml#4326">
+    <ows:LowerCorner>589434.0 4971235897</ows:LowerCorner>
+    <ows:UpperCorner>4913947.342298816 4928071.049965891</ows:UpperCorner>
+  </BoundingBox>
+  <Output>
+    <Size>
+      <Width>1024</Width>
+      <Height>512</Height>
+    </Size>
+    <wms:Format>image/png</wms:Format>
+    <Transparent>false</Transparent>
+  </Output>
+  <Exceptions>XML</Exceptions>
+</GetMap>
+
+
+22/06/2011 16:32:50 [Thread-10]  INFO - RemoteRequestLength=1261
+22/06/2011 16:32:50 [Thread-10]  INFO - RemoteRequestDateTime=22/06/2011 16:32:50
+22/06/2011 16:32:50 [Thread-10] DEBUG -  tmpDir :  C:\Users\Helene\AppData\Local\Temp\
+22/06/2011 16:32:50 [Thread-10]  INFO - RemoteResponseToRequestUrl=http://localhost/geoserver/nurc/wms
+22/06/2011 16:32:50 [Thread-10]  INFO - RemoteResponseLength=467
+22/06/2011 16:32:50 [Thread-10]  INFO - RemoteResponseDateTime=22/06/2011 16:32:50
+22/06/2011 16:32:55 [Thread-12]  INFO - RemoteRequestUrl=http://localhost/geoserver/sf/wms
+22/06/2011 16:32:55 [Thread-12]  INFO - RemoteRequest=<?xml version="1.0" encoding="UTF-8"?>
+<GetMap xmlns="http://www.opengis.net/sld" xmlns:gml="http://www.opengis.net/gml" xmlns:wms="http://www.opengis.net/wms" xmlns:ogc="http://www.opengis.net/ogc" xmlns:ows="http://www.opengis.net/ows" xmlns:se="http://www.opengis.net/se" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/sld GetMap.xsd" version="1.3.0">
+  <StyledLayerDescriptor version="1.1.0">
+    <NamedLayer>
+      <se:Name>nurc:nurc_Arc_Sample</se:Name>
+      <NamedStyle>
+        <se:Name>default</se:Name>
+      </NamedStyle>
+    </NamedLayer>
+    <NamedLayer>
+      <se:Name>sf:roads</se:Name>
+      <NamedStyle>
+        <se:Name>default</se:Name>
+      </NamedStyle>
+    </NamedLayer>
+  </StyledLayerDescriptor>
+  <CRS>EPSG:26713</CRS>
+  <BoundingBox crs="http://www.opengis.net/gml/srs/epsg.xml#4326">
+    <ows:LowerCorner>589434.0 4971235897</ows:LowerCorner>
+    <ows:UpperCorner>4913947.342298816 4928071.049965891</ows:UpperCorner>
+  </BoundingBox>
+  <Output>
+    <Size>
+      <Width>1024</Width>
+      <Height>512</Height>
+    </Size>
+    <wms:Format>image/png</wms:Format>
+    <Transparent>false</Transparent>
+  </Output>
+  <Exceptions>XML</Exceptions>
+</GetMap>
+
+
+22/06/2011 16:32:55 [Thread-12]  INFO - RemoteRequestLength=1263
+22/06/2011 16:32:55 [Thread-12]  INFO - RemoteRequestDateTime=22/06/2011 16:32:55
+22/06/2011 16:32:55 [Thread-12] DEBUG -  tmpDir :  C:\Users\Helene\AppData\Local\Temp\
+22/06/2011 16:32:55 [Thread-12]  INFO - RemoteResponseToRequestUrl=http://localhost/geoserver/sf/wms
+22/06/2011 16:32:55 [Thread-12]  INFO - RemoteResponseLength=467
+22/06/2011 16:32:55 [Thread-12]  INFO - RemoteResponseDateTime=22/06/2011 16:32:55
+22/06/2011 16:32:56 [btpool0-1]  INFO - ClientResponseDateTime=22/06/2011 16:32:56
+22/06/2011 16:32:56 [btpool0-1]  INFO - ClientResponseLength=0
+22/06/2011 16:32:56 [btpool0-1]  INFO - ClientResponseDateTime=22/06/2011 16:32:56
+22/06/2011 16:32:56 [btpool0-1]  WARN - temporary file file:/C:/Users/Helene/AppData/Local/Temp/sendData_375e3c77-d4b5-4111-a516-4507fc4600382602780857951333372.xml is not deleted
+22/06/2011 16:32:56 [btpool0-1]  WARN - temporary file file:/C:/Users/Helene/AppData/Local/Temp/sendData_6896c67f-05b3-4a7d-b111-79614220e9596498432019430536079.xml is not deleted
+22/06/2011 16:32:56 [btpool0-1]  INFO - ProxyServlet done.
+22/06/2011 16:33:06 [btpool0-2]  INFO - Config=GeoServer
+22/06/2011 16:33:06 [btpool0-2]  INFO - Policy=Geoserver-policy
+22/06/2011 16:33:06 [btpool0-2]  INFO - user=hvanhoecke
+22/06/2011 16:33:06 [btpool0-2]  INFO - requestTime=22/06/2011 16:33:06
+22/06/2011 16:33:06 [btpool0-2]  INFO - RemoteAddr=127.0.0.1
+22/06/2011 16:33:06 [btpool0-2]  INFO - RemoteUser=hvanhoecke
+22/06/2011 16:33:06 [btpool0-2]  INFO - QueryString=null
+22/06/2011 16:33:06 [btpool0-2]  INFO - RequestURL=http://localhost:8070/proxy/ogc/GeoServer
+22/06/2011 16:33:08 [Thread-15]  INFO - RemoteRequestUrl=http://localhost/geoserver/nurc/wms
+22/06/2011 16:33:08 [Thread-15]  INFO - RemoteRequest=<?xml version="1.0" encoding="UTF-8"?>
+<GetMap xmlns="http://www.opengis.net/sld" xmlns:gml="http://www.opengis.net/gml" xmlns:wms="http://www.opengis.net/wms" xmlns:ogc="http://www.opengis.net/ogc" xmlns:ows="http://www.opengis.net/ows" xmlns:se="http://www.opengis.net/se" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/sld GetMap.xsd" version="1.3.0">
+  <StyledLayerDescriptor version="1.1.0">
+    <NamedLayer>
+      <se:Name>nurc:Arc_Sample</se:Name>
+      <NamedStyle>
+        <se:Name>default</se:Name>
+      </NamedStyle>
+    </NamedLayer>
+    <NamedLayer>
+      <se:Name>sf:sf_roads</se:Name>
+      <NamedStyle>
+        <se:Name>default</se:Name>
+      </NamedStyle>
+    </NamedLayer>
+  </StyledLayerDescriptor>
+  <CRS>EPSG:26713</CRS>
+  <BoundingBox crs="http://www.opengis.net/gml/srs/epsg.xml#4326">
+    <ows:LowerCorner>589434.0 4971235897</ows:LowerCorner>
+    <ows:UpperCorner>4913947.342298816 4928071.049965891</ows:UpperCorner>
+  </BoundingBox>
+  <Output>
+    <Size>
+      <Width>1024</Width>
+      <Height>512</Height>
+    </Size>
+    <wms:Format>image/png</wms:Format>
+    <Transparent>false</Transparent>
+  </Output>
+  <Exceptions>XML</Exceptions>
+</GetMap>
+
+
+22/06/2011 16:33:08 [Thread-15]  INFO - RemoteRequestLength=1261
+22/06/2011 16:33:08 [Thread-15]  INFO - RemoteRequestDateTime=22/06/2011 16:33:08
+22/06/2011 16:33:08 [Thread-15] DEBUG -  tmpDir :  C:\Users\Helene\AppData\Local\Temp\
+22/06/2011 16:33:08 [Thread-15]  INFO - RemoteResponseToRequestUrl=http://localhost/geoserver/nurc/wms
+22/06/2011 16:33:08 [Thread-15]  INFO - RemoteResponseLength=467
+22/06/2011 16:33:08 [Thread-15]  INFO - RemoteResponseDateTime=22/06/2011 16:33:08
+22/06/2011 16:33:09 [Thread-17]  INFO - RemoteRequestUrl=http://localhost/geoserver/sf/wms
+22/06/2011 16:33:09 [Thread-17]  INFO - RemoteRequest=<?xml version="1.0" encoding="UTF-8"?>
+<GetMap xmlns="http://www.opengis.net/sld" xmlns:gml="http://www.opengis.net/gml" xmlns:wms="http://www.opengis.net/wms" xmlns:ogc="http://www.opengis.net/ogc" xmlns:ows="http://www.opengis.net/ows" xmlns:se="http://www.opengis.net/se" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/sld GetMap.xsd" version="1.3.0">
+  <StyledLayerDescriptor version="1.1.0">
+    <NamedLayer>
+      <se:Name>nurc:nurc_Arc_Sample</se:Name>
+      <NamedStyle>
+        <se:Name>default</se:Name>
+      </NamedStyle>
+    </NamedLayer>
+    <NamedLayer>
+      <se:Name>sf:roads</se:Name>
+      <NamedStyle>
+        <se:Name>default</se:Name>
+      </NamedStyle>
+    </NamedLayer>
+  </StyledLayerDescriptor>
+  <CRS>EPSG:26713</CRS>
+  <BoundingBox crs="http://www.opengis.net/gml/srs/epsg.xml#4326">
+    <ows:LowerCorner>589434.0 4971235897</ows:LowerCorner>
+    <ows:UpperCorner>4913947.342298816 4928071.049965891</ows:UpperCorner>
+  </BoundingBox>
+  <Output>
+    <Size>
+      <Width>1024</Width>
+      <Height>512</Height>
+    </Size>
+    <wms:Format>image/png</wms:Format>
+    <Transparent>false</Transparent>
+  </Output>
+  <Exceptions>XML</Exceptions>
+</GetMap>
+
+
+22/06/2011 16:33:09 [Thread-17]  INFO - RemoteRequestLength=1263
+22/06/2011 16:33:09 [Thread-17]  INFO - RemoteRequestDateTime=22/06/2011 16:33:09
+22/06/2011 16:33:09 [Thread-17] DEBUG -  tmpDir :  C:\Users\Helene\AppData\Local\Temp\
+22/06/2011 16:33:09 [Thread-17]  INFO - RemoteResponseToRequestUrl=http://localhost/geoserver/sf/wms
+22/06/2011 16:33:09 [Thread-17]  INFO - RemoteResponseLength=467
+22/06/2011 16:33:09 [Thread-17]  INFO - RemoteResponseDateTime=22/06/2011 16:33:09
+22/06/2011 16:33:09 [btpool0-2]  INFO - ClientResponseDateTime=22/06/2011 16:33:09
+22/06/2011 16:33:09 [btpool0-2]  INFO - ClientResponseLength=0
+22/06/2011 16:33:09 [btpool0-2]  INFO - ClientResponseDateTime=22/06/2011 16:33:09
+22/06/2011 16:33:09 [btpool0-2]  WARN - temporary file file:/C:/Users/Helene/AppData/Local/Temp/sendData_bd2f8931-193e-406c-b6c0-7f0b8ef1c45e2436113532493611029.xml is not deleted
+22/06/2011 16:33:09 [btpool0-2]  WARN - temporary file file:/C:/Users/Helene/AppData/Local/Temp/sendData_21938ccd-38c9-4eec-b8b0-65a9131ad5758627867816238293339.xml is not deleted
+22/06/2011 16:33:09 [btpool0-2]  INFO - ProxyServlet done.
+22/06/2011 16:35:55 [btpool0-3]  INFO - Config=GeoServer
+22/06/2011 16:35:55 [btpool0-3]  INFO - Policy=Geoserver-policy
+22/06/2011 16:35:55 [btpool0-3]  INFO - user=hvanhoecke
+22/06/2011 16:35:55 [btpool0-3]  INFO - requestTime=22/06/2011 16:35:55
+22/06/2011 16:35:55 [btpool0-3]  INFO - RemoteAddr=127.0.0.1
+22/06/2011 16:35:55 [btpool0-3]  INFO - RemoteUser=hvanhoecke
+22/06/2011 16:35:55 [btpool0-3]  INFO - QueryString=null
+22/06/2011 16:35:55 [btpool0-3]  INFO - RequestURL=http://localhost:8070/proxy/ogc/GeoServer
+22/06/2011 16:35:59 [Thread-21]  INFO - RemoteRequestUrl=http://localhost/geoserver/nurc/wms
+22/06/2011 16:35:59 [Thread-21]  INFO - RemoteRequest=<?xml version="1.0" encoding="UTF-8"?>
+<GetMap xmlns="http://www.opengis.net/sld" xmlns:gml="http://www.opengis.net/gml" xmlns:wms="http://www.opengis.net/wms" xmlns:ogc="http://www.opengis.net/ogc" xmlns:ows="http://www.opengis.net/ows" xmlns:se="http://www.opengis.net/se" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/sld GetMap.xsd" version="1.3.0">
+  <StyledLayerDescriptor version="1.1.0">
+    <NamedLayer>
+      <se:Name>nurc:Arc_Sample</se:Name>
+      <NamedStyle>
+        <se:Name>default</se:Name>
+      </NamedStyle>
+    </NamedLayer>
+    <NamedLayer>
+      <se:Name>sf:sf_roads</se:Name>
+      <NamedStyle>
+        <se:Name>default</se:Name>
+      </NamedStyle>
+    </NamedLayer>
+  </StyledLayerDescriptor>
+  <CRS>EPSG:26713</CRS>
+  <BoundingBox crs="http://www.opengis.net/gml/srs/epsg.xml#4326">
+    <ows:LowerCorner>589434.0 4971235897</ows:LowerCorner>
+    <ows:UpperCorner>4913947.342298816 4928071.049965891</ows:UpperCorner>
+  </BoundingBox>
+  <Output>
+    <Size>
+      <Width>1024</Width>
+      <Height>512</Height>
+    </Size>
+    <wms:Format>image/png</wms:Format>
+    <Transparent>false</Transparent>
+  </Output>
+  <Exceptions>XML</Exceptions>
+</GetMap>
+
+
+22/06/2011 16:35:59 [Thread-21]  INFO - RemoteRequestLength=1261
+22/06/2011 16:35:59 [Thread-21]  INFO - RemoteRequestDateTime=22/06/2011 16:35:59
+22/06/2011 16:35:59 [Thread-22]  INFO - RemoteRequestUrl=http://localhost/geoserver/sf/wms
+22/06/2011 16:35:59 [Thread-22]  INFO - RemoteRequest=<?xml version="1.0" encoding="UTF-8"?>
+<GetMap xmlns="http://www.opengis.net/sld" xmlns:gml="http://www.opengis.net/gml" xmlns:wms="http://www.opengis.net/wms" xmlns:ogc="http://www.opengis.net/ogc" xmlns:ows="http://www.opengis.net/ows" xmlns:se="http://www.opengis.net/se" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/sld GetMap.xsd" version="1.3.0">
+  <StyledLayerDescriptor version="1.1.0">
+    <NamedLayer>
+      <se:Name>nurc:nurc_Arc_Sample</se:Name>
+      <NamedStyle>
+        <se:Name>default</se:Name>
+      </NamedStyle>
+    </NamedLayer>
+    <NamedLayer>
+      <se:Name>sf:roads</se:Name>
+      <NamedStyle>
+        <se:Name>default</se:Name>
+      </NamedStyle>
+    </NamedLayer>
+  </StyledLayerDescriptor>
+  <CRS>EPSG:26713</CRS>
+  <BoundingBox crs="http://www.opengis.net/gml/srs/epsg.xml#4326">
+    <ows:LowerCorner>589434.0 4971235897</ows:LowerCorner>
+    <ows:UpperCorner>4913947.342298816 4928071.049965891</ows:UpperCorner>
+  </BoundingBox>
+  <Output>
+    <Size>
+      <Width>1024</Width>
+      <Height>512</Height>
+    </Size>
+    <wms:Format>image/png</wms:Format>
+    <Transparent>false</Transparent>
+  </Output>
+  <Exceptions>XML</Exceptions>
+</GetMap>
+
+
+22/06/2011 16:35:59 [Thread-22]  INFO - RemoteRequestLength=1263
+22/06/2011 16:35:59 [Thread-22]  INFO - RemoteRequestDateTime=22/06/2011 16:35:59
+22/06/2011 16:35:59 [Thread-21] DEBUG -  tmpDir :  C:\Users\Helene\AppData\Local\Temp\
+22/06/2011 16:35:59 [Thread-21]  INFO - RemoteResponseToRequestUrl=http://localhost/geoserver/nurc/wms
+22/06/2011 16:35:59 [Thread-21]  INFO - RemoteResponseLength=467
+22/06/2011 16:35:59 [Thread-21]  INFO - RemoteResponseDateTime=22/06/2011 16:35:59
+22/06/2011 16:35:59 [Thread-22] DEBUG -  tmpDir :  C:\Users\Helene\AppData\Local\Temp\
+22/06/2011 16:35:59 [Thread-22]  INFO - RemoteResponseToRequestUrl=http://localhost/geoserver/sf/wms
+22/06/2011 16:35:59 [Thread-22]  INFO - RemoteResponseLength=467
+22/06/2011 16:35:59 [Thread-22]  INFO - RemoteResponseDateTime=22/06/2011 16:35:59
+22/06/2011 16:35:59 [btpool0-3]  INFO - ClientResponseDateTime=22/06/2011 16:35:59
+22/06/2011 16:35:59 [btpool0-3]  INFO - ClientResponseLength=0
+22/06/2011 16:35:59 [btpool0-3]  INFO - ClientResponseDateTime=22/06/2011 16:35:59
+22/06/2011 16:35:59 [btpool0-3]  WARN - temporary file file:/C:/Users/Helene/AppData/Local/Temp/sendData_e6044787-4710-43ca-94eb-c3d245f30dae1590816567032905600.xml is not deleted
+22/06/2011 16:35:59 [btpool0-3]  WARN - temporary file file:/C:/Users/Helene/AppData/Local/Temp/sendData_99c7a798-04d5-4e69-83a2-08f6ef130dfd6688744548316773244.xml is not deleted
+22/06/2011 16:35:59 [btpool0-3]  INFO - ProxyServlet done.
+22/06/2011 16:38:22 [btpool0-1]  INFO - Config=GeoServer
+22/06/2011 16:38:22 [btpool0-1]  INFO - Policy=Geoserver-policy
+22/06/2011 16:38:22 [btpool0-1]  INFO - user=hvanhoecke
+22/06/2011 16:38:22 [btpool0-1]  INFO - requestTime=22/06/2011 16:38:22
+22/06/2011 16:38:22 [btpool0-1]  INFO - RemoteAddr=127.0.0.1
+22/06/2011 16:38:22 [btpool0-1]  INFO - RemoteUser=hvanhoecke
+22/06/2011 16:38:22 [btpool0-1]  INFO - QueryString=null
+22/06/2011 16:38:22 [btpool0-1]  INFO - RequestURL=http://localhost:8070/proxy/ogc/GeoServer
+22/06/2011 16:38:36 [Thread-11]  INFO - RemoteRequestUrl=http://localhost/geoserver/sf/wms
+22/06/2011 16:38:36 [Thread-11]  INFO - RemoteRequest=<?xml version="1.0" encoding="UTF-8"?>
+<GetMap xmlns="http://www.opengis.net/sld" xmlns:gml="http://www.opengis.net/gml" xmlns:wms="http://www.opengis.net/wms" xmlns:ogc="http://www.opengis.net/ogc" xmlns:ows="http://www.opengis.net/ows" xmlns:se="http://www.opengis.net/se" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/sld GetMap.xsd" version="1.3.0">
+  <StyledLayerDescriptor version="1.1.0">
+    <NamedLayer>
+      <se:Name>sf:roads</se:Name>
+      <NamedStyle>
+        <se:Name>default</se:Name>
+      </NamedStyle>
+    </NamedLayer>
+  </StyledLayerDescriptor>
+  <CRS>EPSG:26713</CRS>
+  <BoundingBox crs="http://www.opengis.net/gml/srs/epsg.xml#4326">
+    <ows:LowerCorner>589434.0 4971235897</ows:LowerCorner>
+    <ows:UpperCorner>4913947.342298816 4928071.049965891</ows:UpperCorner>
+  </BoundingBox>
+  <Output>
+    <Size>
+      <Width>1024</Width>
+      <Height>512</Height>
+    </Size>
+    <wms:Format>image/png</wms:Format>
+    <Transparent>false</Transparent>
+  </Output>
+  <Exceptions>XML</Exceptions>
+</GetMap>
+
+
+22/06/2011 16:38:36 [Thread-11]  INFO - RemoteRequestLength=1102
+22/06/2011 16:38:36 [Thread-11]  INFO - RemoteRequestDateTime=22/06/2011 16:38:36
+22/06/2011 16:38:36 [Thread-11] DEBUG -  tmpDir :  C:\Users\Helene\AppData\Local\Temp\
+22/06/2011 16:38:36 [Thread-11]  INFO - RemoteResponseToRequestUrl=http://localhost/geoserver/sf/wms
+22/06/2011 16:38:36 [Thread-11]  INFO - RemoteResponseLength=467
+22/06/2011 16:38:36 [Thread-11]  INFO - RemoteResponseDateTime=22/06/2011 16:38:36
+22/06/2011 16:38:51 [Thread-12]  INFO - RemoteRequestUrl=http://localhost/geoserver/nurc/wms
+22/06/2011 16:38:51 [Thread-12]  INFO - RemoteRequest=<?xml version="1.0" encoding="UTF-8"?>
+<GetMap xmlns="http://www.opengis.net/sld" xmlns:gml="http://www.opengis.net/gml" xmlns:wms="http://www.opengis.net/wms" xmlns:ogc="http://www.opengis.net/ogc" xmlns:ows="http://www.opengis.net/ows" xmlns:se="http://www.opengis.net/se" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/sld GetMap.xsd" version="1.3.0">
+  <StyledLayerDescriptor version="1.1.0">
+    <NamedLayer>
+      <se:Name>nurc:Arc_Sample</se:Name>
+      <NamedStyle>
+        <se:Name>default</se:Name>
+      </NamedStyle>
+    </NamedLayer>
+  </StyledLayerDescriptor>
+  <CRS>EPSG:26713</CRS>
+  <BoundingBox crs="http://www.opengis.net/gml/srs/epsg.xml#4326">
+    <ows:LowerCorner>589434.0 4971235897</ows:LowerCorner>
+    <ows:UpperCorner>4913947.342298816 4928071.049965891</ows:UpperCorner>
+  </BoundingBox>
+  <Output>
+    <Size>
+      <Width>1024</Width>
+      <Height>512</Height>
+    </Size>
+    <wms:Format>image/png</wms:Format>
+    <Transparent>false</Transparent>
+  </Output>
+  <Exceptions>XML</Exceptions>
+</GetMap>
+
+
+22/06/2011 16:38:51 [Thread-12]  INFO - RemoteRequestLength=1109
+22/06/2011 16:38:51 [Thread-12]  INFO - RemoteRequestDateTime=22/06/2011 16:38:51
+22/06/2011 16:38:51 [Thread-12] DEBUG -  tmpDir :  C:\Users\Helene\AppData\Local\Temp\
+22/06/2011 16:38:51 [Thread-12]  INFO - RemoteResponseToRequestUrl=http://localhost/geoserver/nurc/wms
+22/06/2011 16:38:51 [Thread-12]  INFO - RemoteResponseLength=467
+22/06/2011 16:38:51 [Thread-12]  INFO - RemoteResponseDateTime=22/06/2011 16:38:51
+22/06/2011 16:38:54 [btpool0-1]  INFO - ClientResponseDateTime=22/06/2011 16:38:54
+22/06/2011 16:38:54 [btpool0-1]  INFO - ClientResponseLength=0
+22/06/2011 16:38:54 [btpool0-1]  INFO - ClientResponseDateTime=22/06/2011 16:38:54
+22/06/2011 16:38:54 [btpool0-1]  WARN - temporary file file:/C:/Users/Helene/AppData/Local/Temp/sendData_f37f4d2c-b2bf-411c-a8a7-9871d3cada2a5903819404315938527.xml is not deleted
+22/06/2011 16:38:54 [btpool0-1]  WARN - temporary file file:/C:/Users/Helene/AppData/Local/Temp/sendData_3f2a3cd6-593f-4749-847c-51fc7f2d5ce01314462618115432939.xml is not deleted
+22/06/2011 16:38:54 [btpool0-1]  INFO - ProxyServlet done.
+22/06/2011 16:39:46 [btpool0-1]  INFO - Config=GeoServer
+22/06/2011 16:39:46 [btpool0-1]  INFO - Policy=Geoserver-policy
+22/06/2011 16:39:46 [btpool0-1]  INFO - user=hvanhoecke
+22/06/2011 16:39:46 [btpool0-1]  INFO - requestTime=22/06/2011 16:39:46
+22/06/2011 16:39:46 [btpool0-1]  INFO - RemoteAddr=127.0.0.1
+22/06/2011 16:39:46 [btpool0-1]  INFO - RemoteUser=hvanhoecke
+22/06/2011 16:39:46 [btpool0-1]  INFO - QueryString=null
+22/06/2011 16:39:46 [btpool0-1]  INFO - RequestURL=http://localhost:8070/proxy/ogc/GeoServer
+22/06/2011 16:39:46 [Thread-16]  INFO - RemoteRequestUrl=http://localhost/geoserver/sf/wms
+22/06/2011 16:39:46 [Thread-16]  INFO - RemoteRequest=<?xml version="1.0" encoding="UTF-8"?>
+<GetMap xmlns="http://www.opengis.net/sld" xmlns:gml="http://www.opengis.net/gml" xmlns:wms="http://www.opengis.net/wms" xmlns:ogc="http://www.opengis.net/ogc" xmlns:ows="http://www.opengis.net/ows" xmlns:se="http://www.opengis.net/se" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/sld GetMap.xsd" version="1.3.0">
+  <StyledLayerDescriptor version="1.1.0">
+    <NamedLayer>
+      <se:Name>sf:roads</se:Name>
+      <NamedStyle>
+        <se:Name>default</se:Name>
+      </NamedStyle>
+    </NamedLayer>
+  </StyledLayerDescriptor>
+  <CRS>EPSG:26713</CRS>
+  <BoundingBox crs="http://www.opengis.net/gml/srs/epsg.xml#4326">
+    <ows:LowerCorner>589434.0 4971235897</ows:LowerCorner>
+    <ows:UpperCorner>4913947.342298816 4928071.049965891</ows:UpperCorner>
+  </BoundingBox>
+  <Output>
+    <Size>
+      <Width>1024</Width>
+      <Height>512</Height>
+    </Size>
+    <wms:Format>image/png</wms:Format>
+    <Transparent>false</Transparent>
+  </Output>
+  <Exceptions>XML</Exceptions>
+</GetMap>
+
+
+22/06/2011 16:39:46 [Thread-16]  INFO - RemoteRequestLength=1102
+22/06/2011 16:39:46 [Thread-16]  INFO - RemoteRequestDateTime=22/06/2011 16:39:46
+22/06/2011 16:39:46 [Thread-17]  INFO - RemoteRequestUrl=http://localhost/geoserver/nurc/wms
+22/06/2011 16:39:46 [Thread-17]  INFO - RemoteRequest=<?xml version="1.0" encoding="UTF-8"?>
+<GetMap xmlns="http://www.opengis.net/sld" xmlns:gml="http://www.opengis.net/gml" xmlns:wms="http://www.opengis.net/wms" xmlns:ogc="http://www.opengis.net/ogc" xmlns:ows="http://www.opengis.net/ows" xmlns:se="http://www.opengis.net/se" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/sld GetMap.xsd" version="1.3.0">
+  <StyledLayerDescriptor version="1.1.0">
+    <NamedLayer>
+      <se:Name>nurc:Arc_Sample</se:Name>
+      <NamedStyle>
+        <se:Name>default</se:Name>
+      </NamedStyle>
+    </NamedLayer>
+  </StyledLayerDescriptor>
+  <CRS>EPSG:26713</CRS>
+  <BoundingBox crs="http://www.opengis.net/gml/srs/epsg.xml#4326">
+    <ows:LowerCorner>589434.0 4971235897</ows:LowerCorner>
+    <ows:UpperCorner>4913947.342298816 4928071.049965891</ows:UpperCorner>
+  </BoundingBox>
+  <Output>
+    <Size>
+      <Width>1024</Width>
+      <Height>512</Height>
+    </Size>
+    <wms:Format>image/png</wms:Format>
+    <Transparent>false</Transparent>
+  </Output>
+  <Exceptions>XML</Exceptions>
+</GetMap>
+
+
+22/06/2011 16:39:46 [Thread-17]  INFO - RemoteRequestLength=1109
+22/06/2011 16:39:46 [Thread-17]  INFO - RemoteRequestDateTime=22/06/2011 16:39:46
+22/06/2011 16:39:46 [Thread-16] DEBUG -  tmpDir :  C:\Users\Helene\AppData\Local\Temp\
+22/06/2011 16:39:46 [Thread-16]  INFO - RemoteResponseToRequestUrl=http://localhost/geoserver/sf/wms
+22/06/2011 16:39:46 [Thread-16]  INFO - RemoteResponseLength=467
+22/06/2011 16:39:46 [Thread-16]  INFO - RemoteResponseDateTime=22/06/2011 16:39:46
+22/06/2011 16:39:46 [Thread-17] DEBUG -  tmpDir :  C:\Users\Helene\AppData\Local\Temp\
+22/06/2011 16:39:46 [Thread-17]  INFO - RemoteResponseToRequestUrl=http://localhost/geoserver/nurc/wms
+22/06/2011 16:39:46 [Thread-17]  INFO - RemoteResponseLength=467
+22/06/2011 16:39:46 [Thread-17]  INFO - RemoteResponseDateTime=22/06/2011 16:39:46
+22/06/2011 16:40:20 [btpool0-1]  INFO - ClientResponseDateTime=22/06/2011 16:40:20
+22/06/2011 16:40:20 [btpool0-1]  INFO - ClientResponseLength=0
+22/06/2011 16:40:20 [btpool0-1]  INFO - ClientResponseDateTime=22/06/2011 16:40:20
+22/06/2011 16:40:20 [btpool0-1]  WARN - temporary file file:/C:/Users/Helene/AppData/Local/Temp/sendData_17c54f33-03fb-452a-a6e6-95989f1f27192256565028969841662.xml is not deleted
+22/06/2011 16:40:20 [btpool0-1]  WARN - temporary file file:/C:/Users/Helene/AppData/Local/Temp/sendData_5d81d43c-908f-40cd-9bcb-65511cb481214471681329138525259.xml is not deleted
+22/06/2011 16:40:20 [btpool0-1]  INFO - ProxyServlet done.
+22/06/2011 17:10:42 [btpool0-1]  INFO - Config=GeoServer
+22/06/2011 17:10:42 [btpool0-1]  INFO - Policy=Geoserver-policy
+22/06/2011 17:10:42 [btpool0-1]  INFO - user=hvanhoecke
+22/06/2011 17:10:42 [btpool0-1]  INFO - requestTime=22/06/2011 17:10:42
+22/06/2011 17:10:42 [btpool0-1]  INFO - RemoteAddr=127.0.0.1
+22/06/2011 17:10:42 [btpool0-1]  INFO - RemoteUser=hvanhoecke
+22/06/2011 17:10:42 [btpool0-1]  INFO - QueryString=null
+22/06/2011 17:10:42 [btpool0-1]  INFO - RequestURL=http://localhost:8070/proxy/ogc/GeoServer
+22/06/2011 17:10:44 [Thread-11]  INFO - RemoteRequestUrl=http://localhost/geoserver/nurc/wms
+22/06/2011 17:10:44 [Thread-11]  INFO - RemoteRequest=<?xml version="1.0" encoding="UTF-8"?>
+<GetMap xmlns="http://www.opengis.net/sld" xmlns:gml="http://www.opengis.net/gml" xmlns:wms="http://www.opengis.net/wms" xmlns:ogc="http://www.opengis.net/ogc" xmlns:ows="http://www.opengis.net/ows" xmlns:se="http://www.opengis.net/se" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/sld GetMap.xsd" version="1.3.0">
+  <StyledLayerDescriptor version="1.1.0">
+    <NamedLayer>
+      <se:Name>nurc:Arc_Sample</se:Name>
+      <NamedStyle>
+        <se:Name>default</se:Name>
+      </NamedStyle>
+    </NamedLayer>
+  </StyledLayerDescriptor>
+  <CRS>EPSG:26713</CRS>
+  <BoundingBox crs="http://www.opengis.net/gml/srs/epsg.xml#4326">
+    <ows:LowerCorner>589434.0 4971235897</ows:LowerCorner>
+    <ows:UpperCorner>4913947.342298816 4928071.049965891</ows:UpperCorner>
+  </BoundingBox>
+  <Output>
+    <Size>
+      <Width>1024</Width>
+      <Height>512</Height>
+    </Size>
+    <wms:Format>image/png</wms:Format>
+    <Transparent>false</Transparent>
+  </Output>
+  <Exceptions>XML</Exceptions>
+</GetMap>
+
+
+22/06/2011 17:10:44 [Thread-11]  INFO - RemoteRequestLength=1109
+22/06/2011 17:10:44 [Thread-11]  INFO - RemoteRequestDateTime=22/06/2011 17:10:44
+22/06/2011 17:10:44 [Thread-12]  INFO - RemoteRequestUrl=http://localhost/geoserver/sf/wms
+22/06/2011 17:10:44 [Thread-12]  INFO - RemoteRequest=<?xml version="1.0" encoding="UTF-8"?>
+<GetMap xmlns="http://www.opengis.net/sld" xmlns:gml="http://www.opengis.net/gml" xmlns:wms="http://www.opengis.net/wms" xmlns:ogc="http://www.opengis.net/ogc" xmlns:ows="http://www.opengis.net/ows" xmlns:se="http://www.opengis.net/se" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/sld GetMap.xsd" version="1.3.0">
+  <StyledLayerDescriptor version="1.1.0">
+    <NamedLayer>
+      <se:Name>sf:roads</se:Name>
+      <NamedStyle>
+        <se:Name>default</se:Name>
+      </NamedStyle>
+    </NamedLayer>
+  </StyledLayerDescriptor>
+  <CRS>EPSG:26713</CRS>
+  <BoundingBox crs="http://www.opengis.net/gml/srs/epsg.xml#4326">
+    <ows:LowerCorner>589434.0 4971235897</ows:LowerCorner>
+    <ows:UpperCorner>4913947.342298816 4928071.049965891</ows:UpperCorner>
+  </BoundingBox>
+  <Output>
+    <Size>
+      <Width>1024</Width>
+      <Height>512</Height>
+    </Size>
+    <wms:Format>image/png</wms:Format>
+    <Transparent>false</Transparent>
+  </Output>
+  <Exceptions>XML</Exceptions>
+</GetMap>
+
+
+22/06/2011 17:10:44 [Thread-12]  INFO - RemoteRequestLength=1102
+22/06/2011 17:10:44 [Thread-12]  INFO - RemoteRequestDateTime=22/06/2011 17:10:44
+22/06/2011 17:10:44 [Thread-12] DEBUG -  tmpDir :  C:\Users\Helene\AppData\Local\Temp\
+22/06/2011 17:10:44 [Thread-12]  INFO - RemoteResponseToRequestUrl=http://localhost/geoserver/sf/wms
+22/06/2011 17:10:44 [Thread-12]  INFO - RemoteResponseLength=467
+22/06/2011 17:10:44 [Thread-12]  INFO - RemoteResponseDateTime=22/06/2011 17:10:44
+22/06/2011 17:10:44 [Thread-11] DEBUG -  tmpDir :  C:\Users\Helene\AppData\Local\Temp\
+22/06/2011 17:10:44 [Thread-11]  INFO - RemoteResponseToRequestUrl=http://localhost/geoserver/nurc/wms
+22/06/2011 17:10:44 [Thread-11]  INFO - RemoteResponseLength=467
+22/06/2011 17:10:44 [Thread-11]  INFO - RemoteResponseDateTime=22/06/2011 17:10:44
+22/06/2011 17:11:13 [btpool0-1]  INFO - Exception(s) returned by remote server(s) are sent to client.
+22/06/2011 17:12:40 [btpool0-1]  INFO - ClientResponseDateTime=22/06/2011 17:12:40
+22/06/2011 17:12:40 [btpool0-1]  INFO - ClientResponseLength=472
+22/06/2011 17:12:40 [btpool0-1]  INFO - ClientResponseDateTime=22/06/2011 17:12:40
+22/06/2011 17:12:43 [btpool0-1] DEBUG - temporary file file:/C:/Users/Helene/AppData/Local/Temp/sendData_720f16d4-143d-48a7-973c-88b4f66f2bb21302854223621109590.xml is deleted
+22/06/2011 17:12:43 [btpool0-1] DEBUG - temporary file file:/C:/Users/Helene/AppData/Local/Temp/sendData_4cb95f2b-a9e2-49f8-9859-0a472027e0f05177507105100455602.xml is deleted
+22/06/2011 17:12:43 [btpool0-1]  INFO - ProxyServlet done.
+22/06/2011 17:17:07 [btpool0-1]  INFO - Config=GeoServer
+22/06/2011 17:17:07 [btpool0-1]  INFO - Policy=Geoserver-policy
+22/06/2011 17:17:07 [btpool0-1]  INFO - user=hvanhoecke
+22/06/2011 17:17:07 [btpool0-1]  INFO - requestTime=22/06/2011 17:17:07
+22/06/2011 17:17:07 [btpool0-1]  INFO - RemoteAddr=127.0.0.1
+22/06/2011 17:17:07 [btpool0-1]  INFO - RemoteUser=hvanhoecke
+22/06/2011 17:17:07 [btpool0-1]  INFO - QueryString=null
+22/06/2011 17:17:07 [btpool0-1]  INFO - RequestURL=http://localhost:8070/proxy/ogc/GeoServer
+22/06/2011 17:17:09 [Thread-11]  INFO - RemoteRequestUrl=http://localhost/geoserver/nurc/wms
+22/06/2011 17:17:09 [Thread-11]  INFO - RemoteRequest=<?xml version="1.0" encoding="UTF-8"?>
+<GetMap xmlns="http://www.opengis.net/sld" xmlns:gml="http://www.opengis.net/gml" xmlns:wms="http://www.opengis.net/wms" xmlns:ogc="http://www.opengis.net/ogc" xmlns:ows="http://www.opengis.net/ows" xmlns:se="http://www.opengis.net/se" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/sld GetMap.xsd" version="1.3.0">
+  <StyledLayerDescriptor version="1.1.0">
+    <NamedLayer>
+      <se:Name>nurc:Arc_Sample</se:Name>
+      <NamedStyle>
+        <se:Name>default</se:Name>
+      </NamedStyle>
+    </NamedLayer>
+  </StyledLayerDescriptor>
+  <CRS>EPSG:26713</CRS>
+  <BoundingBox crs="http://www.opengis.net/gml/srs/epsg.xml#4326">
+    <ows:LowerCorner>589434.0 4971235897</ows:LowerCorner>
+    <ows:UpperCorner>4913947.342298816 4928071.049965891</ows:UpperCorner>
+  </BoundingBox>
+  <Output>
+    <Size>
+      <Width>1024</Width>
+      <Height>512</Height>
+    </Size>
+    <wms:Format>image/png</wms:Format>
+    <Transparent>false</Transparent>
+  </Output>
+  <Exceptions>XML</Exceptions>
+</GetMap>
+
+
+22/06/2011 17:17:09 [Thread-11]  INFO - RemoteRequestLength=1109
+22/06/2011 17:17:09 [Thread-11]  INFO - RemoteRequestDateTime=22/06/2011 17:17:09
+22/06/2011 17:17:09 [Thread-12]  INFO - RemoteRequestUrl=http://localhost/geoserver/sf/wms
+22/06/2011 17:17:09 [Thread-12]  INFO - RemoteRequest=<?xml version="1.0" encoding="UTF-8"?>
+<GetMap xmlns="http://www.opengis.net/sld" xmlns:gml="http://www.opengis.net/gml" xmlns:wms="http://www.opengis.net/wms" xmlns:ogc="http://www.opengis.net/ogc" xmlns:ows="http://www.opengis.net/ows" xmlns:se="http://www.opengis.net/se" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/sld GetMap.xsd" version="1.3.0">
+  <StyledLayerDescriptor version="1.1.0">
+    <NamedLayer>
+      <se:Name>sf:roads</se:Name>
+      <NamedStyle>
+        <se:Name>default</se:Name>
+      </NamedStyle>
+    </NamedLayer>
+  </StyledLayerDescriptor>
+  <CRS>EPSG:26713</CRS>
+  <BoundingBox crs="http://www.opengis.net/gml/srs/epsg.xml#4326">
+    <ows:LowerCorner>589434.0 4971235897</ows:LowerCorner>
+    <ows:UpperCorner>4913947.342298816 4928071.049965891</ows:UpperCorner>
+  </BoundingBox>
+  <Output>
+    <Size>
+      <Width>1024</Width>
+      <Height>512</Height>
+    </Size>
+    <wms:Format>image/png</wms:Format>
+    <Transparent>false</Transparent>
+  </Output>
+  <Exceptions>XML</Exceptions>
+</GetMap>
+
+
+22/06/2011 17:17:09 [Thread-12]  INFO - RemoteRequestLength=1102
+22/06/2011 17:17:09 [Thread-12]  INFO - RemoteRequestDateTime=22/06/2011 17:17:09
+22/06/2011 17:17:09 [Thread-12] DEBUG -  tmpDir :  C:\Users\Helene\AppData\Local\Temp\
+22/06/2011 17:17:09 [Thread-12]  INFO - RemoteResponseToRequestUrl=http://localhost/geoserver/sf/wms
+22/06/2011 17:17:09 [Thread-12]  INFO - RemoteResponseLength=467
+22/06/2011 17:17:09 [Thread-12]  INFO - RemoteResponseDateTime=22/06/2011 17:17:09
+22/06/2011 17:17:09 [Thread-11] DEBUG -  tmpDir :  C:\Users\Helene\AppData\Local\Temp\
+22/06/2011 17:17:09 [Thread-11]  INFO - RemoteResponseToRequestUrl=http://localhost/geoserver/nurc/wms
+22/06/2011 17:17:09 [Thread-11]  INFO - RemoteResponseLength=467
+22/06/2011 17:17:09 [Thread-11]  INFO - RemoteResponseDateTime=22/06/2011 17:17:09
+22/06/2011 17:17:15 [btpool0-1]  INFO - Exception(s) returned by remote server(s) are sent to client.
+22/06/2011 17:17:38 [btpool0-1]  INFO - ClientResponseDateTime=22/06/2011 17:17:38
+22/06/2011 17:17:38 [btpool0-1]  INFO - ClientResponseLength=497
+22/06/2011 17:17:38 [btpool0-1]  INFO - ClientResponseDateTime=22/06/2011 17:17:38
+22/06/2011 17:17:39 [btpool0-1] DEBUG - temporary file file:/C:/Users/Helene/AppData/Local/Temp/sendData_0b8ff4b8-d469-4df2-a2a6-62823f5d8c0b6157900487295534929.xml is deleted
+22/06/2011 17:17:39 [btpool0-1] DEBUG - temporary file file:/C:/Users/Helene/AppData/Local/Temp/sendData_a92276af-3423-4bfd-8987-1116067a5c884677728782373683703.xml is deleted
+22/06/2011 17:17:39 [btpool0-1]  INFO - ProxyServlet done.
+22/06/2011 17:23:29 [btpool0-1]  INFO - Config=GeoServer
+22/06/2011 17:23:29 [btpool0-1]  INFO - Policy=Geoserver-policy
+22/06/2011 17:23:29 [btpool0-1]  INFO - user=hvanhoecke
+22/06/2011 17:23:29 [btpool0-1]  INFO - requestTime=22/06/2011 17:23:29
+22/06/2011 17:23:29 [btpool0-1]  INFO - RemoteAddr=127.0.0.1
+22/06/2011 17:23:29 [btpool0-1]  INFO - RemoteUser=hvanhoecke
+22/06/2011 17:23:29 [btpool0-1]  INFO - QueryString=null
+22/06/2011 17:23:29 [btpool0-1]  INFO - RequestURL=http://localhost:8070/proxy/ogc/GeoServer
+22/06/2011 17:23:31 [Thread-11]  INFO - RemoteRequestUrl=http://localhost/geoserver/nurc/wms
+22/06/2011 17:23:31 [Thread-11]  INFO - RemoteRequest=<?xml version="1.0" encoding="UTF-8"?>
+<GetMap xmlns="http://www.opengis.net/sld" xmlns:gml="http://www.opengis.net/gml" xmlns:wms="http://www.opengis.net/wms" xmlns:ogc="http://www.opengis.net/ogc" xmlns:ows="http://www.opengis.net/ows" xmlns:se="http://www.opengis.net/se" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/sld GetMap.xsd" version="1.3.0">
+  <StyledLayerDescriptor version="1.1.0">
+    <NamedLayer>
+      <se:Name>nurc:Arc_Sample</se:Name>
+      <NamedStyle>
+        <se:Name>default</se:Name>
+      </NamedStyle>
+    </NamedLayer>
+  </StyledLayerDescriptor>
+  <CRS>EPSG:26713</CRS>
+  <BoundingBox crs="http://www.opengis.net/gml/srs/epsg.xml#4326">
+    <ows:LowerCorner>589434.0 4971235897</ows:LowerCorner>
+    <ows:UpperCorner>4913947.342298816 4928071.049965891</ows:UpperCorner>
+  </BoundingBox>
+  <Output>
+    <Size>
+      <Width>1024</Width>
+      <Height>512</Height>
+    </Size>
+    <wms:Format>image/png</wms:Format>
+    <Transparent>false</Transparent>
+  </Output>
+  <Exceptions>XML</Exceptions>
+</GetMap>
+
+
+22/06/2011 17:23:31 [Thread-11]  INFO - RemoteRequestLength=1109
+22/06/2011 17:23:31 [Thread-11]  INFO - RemoteRequestDateTime=22/06/2011 17:23:31
+22/06/2011 17:23:31 [Thread-12]  INFO - RemoteRequestUrl=http://localhost/geoserver/sf/wms
+22/06/2011 17:23:31 [Thread-12]  INFO - RemoteRequest=<?xml version="1.0" encoding="UTF-8"?>
+<GetMap xmlns="http://www.opengis.net/sld" xmlns:gml="http://www.opengis.net/gml" xmlns:wms="http://www.opengis.net/wms" xmlns:ogc="http://www.opengis.net/ogc" xmlns:ows="http://www.opengis.net/ows" xmlns:se="http://www.opengis.net/se" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/sld GetMap.xsd" version="1.3.0">
+  <StyledLayerDescriptor version="1.1.0">
+    <NamedLayer>
+      <se:Name>sf:roads</se:Name>
+      <NamedStyle>
+        <se:Name>default</se:Name>
+      </NamedStyle>
+    </NamedLayer>
+  </StyledLayerDescriptor>
+  <CRS>EPSG:26713</CRS>
+  <BoundingBox crs="http://www.opengis.net/gml/srs/epsg.xml#4326">
+    <ows:LowerCorner>589434.0 4971235897</ows:LowerCorner>
+    <ows:UpperCorner>4913947.342298816 4928071.049965891</ows:UpperCorner>
+  </BoundingBox>
+  <Output>
+    <Size>
+      <Width>1024</Width>
+      <Height>512</Height>
+    </Size>
+    <wms:Format>image/png</wms:Format>
+    <Transparent>false</Transparent>
+  </Output>
+  <Exceptions>XML</Exceptions>
+</GetMap>
+
+
+22/06/2011 17:23:31 [Thread-12]  INFO - RemoteRequestLength=1102
+22/06/2011 17:23:31 [Thread-12]  INFO - RemoteRequestDateTime=22/06/2011 17:23:31
+22/06/2011 17:23:31 [Thread-12] DEBUG -  tmpDir :  C:\Users\Helene\AppData\Local\Temp\
+22/06/2011 17:23:31 [Thread-12]  INFO - RemoteResponseToRequestUrl=http://localhost/geoserver/sf/wms
+22/06/2011 17:23:31 [Thread-12]  INFO - RemoteResponseLength=467
+22/06/2011 17:23:31 [Thread-12]  INFO - RemoteResponseDateTime=22/06/2011 17:23:31
+22/06/2011 17:23:31 [Thread-11] DEBUG -  tmpDir :  C:\Users\Helene\AppData\Local\Temp\
+22/06/2011 17:23:31 [Thread-11]  INFO - RemoteResponseToRequestUrl=http://localhost/geoserver/nurc/wms
+22/06/2011 17:23:31 [Thread-11]  INFO - RemoteResponseLength=467
+22/06/2011 17:23:31 [Thread-11]  INFO - RemoteResponseDateTime=22/06/2011 17:23:31
+22/06/2011 17:23:31 [btpool0-1]  INFO - Exception(s) returned by remote server(s) are sent to client.
+22/06/2011 17:23:31 [btpool0-1]  INFO - ClientResponseDateTime=22/06/2011 17:23:31
+22/06/2011 17:23:31 [btpool0-1]  INFO - ClientResponseLength=669
+22/06/2011 17:23:31 [btpool0-1]  INFO - ClientResponseDateTime=22/06/2011 17:23:31
+22/06/2011 17:23:31 [btpool0-1] DEBUG - temporary file file:/C:/Users/Helene/AppData/Local/Temp/sendData_58eaefd0-2ad9-4033-a233-e7c6861fc43d3311616795883427684.xml is deleted
+22/06/2011 17:23:31 [btpool0-1] DEBUG - temporary file file:/C:/Users/Helene/AppData/Local/Temp/sendData_ae434551-1490-46c6-8eca-8a82d1f916d7816007586346520989.xml is deleted
+22/06/2011 17:23:31 [btpool0-1]  INFO - ProxyServlet done.

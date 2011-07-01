@@ -1,0 +1,94 @@
+<Log><LogRequest user="hvanhoecke" requestTime="29/06/2011 09:29:51"> 
+<logEntry time="29/06/2011 09:29:51" severity="DEBUG"><![CDATA[Thread Server: http://nsidc.org/cgi-bin/atlas_north work begin]]></logEntry>
+<logEntry time="29/06/2011 09:29:51" severity="SYSTEM" name="RemoteRequestUrl"><![CDATA[http://nsidc.org/cgi-bin/atlas_north]]></logEntry>
+<logEntry time="29/06/2011 09:29:51" severity="SYSTEM" name="RemoteRequest"><![CDATA[service=WMS&request=GetCapabilities&]]></logEntry>
+<logEntry time="29/06/2011 09:29:51" severity="SYSTEM" name="RemoteRequestLength"><![CDATA[36]]></logEntry>
+<logEntry time="29/06/2011 09:29:51" severity="SYSTEM" name="RemoteRequestDateTime"><![CDATA[29/06/2011 09:29:51]]></logEntry>
+<logEntry time="29/06/2011 09:29:52" severity="INFO"><![CDATA[ tmpDir :  C:\Users\Helene\AppData\Local\Temp\]]></logEntry>
+<logEntry time="29/06/2011 09:29:54" severity="SYSTEM" name="RemoteResponseToRequestUrl"><![CDATA[http://nsidc.org/cgi-bin/atlas_north?service=WMS&request=GetCapabilities&]]></logEntry>
+<logEntry time="29/06/2011 09:29:54" severity="SYSTEM" name="RemoteResponseLength"><![CDATA[312184]]></logEntry>
+<logEntry time="29/06/2011 09:29:54" severity="SYSTEM" name="RemoteResponseDateTime"><![CDATA[29/06/2011 09:29:54]]></logEntry>
+<logEntry time="29/06/2011 09:29:54" severity="INFO"><![CDATA[requestPreTraitementGET save response capabilities from thread server http://nsidc.org/cgi-bin/atlas_north]]></logEntry>
+<logEntry time="29/06/2011 09:29:54" severity="DEBUG"><![CDATA[Thread Server: http://nsidc.org/cgi-bin/atlas_north work finished]]></logEntry>
+<logEntry time="29/06/2011 09:29:54" severity="INFO"><![CDATA[requestPreTraitementGET begin transform]]></logEntry>
+<logEntry time="29/06/2011 09:29:54" severity="DEBUG"><![CDATA[filterServerResponseFile begin]]></logEntry>
+<logEntry time="29/06/2011 09:29:55" severity="DEBUG"><![CDATA[filterServerResponseFile end]]></logEntry>
+<logEntry time="29/06/2011 09:29:55" severity="INFO"><![CDATA[Postreatment file \hvanhoecke\000\GetCapabilities.xsldoes not exist]]></logEntry>
+<logEntry time="29/06/2011 09:29:55" severity="INFO"><![CDATA[Postreatment file \000\GetCapabilities.xsldoes not exist]]></logEntry>
+<logEntry time="29/06/2011 09:29:55" severity="INFO"><![CDATA[transform begin GetCapabilities operation]]></logEntry>
+<logEntry time="29/06/2011 09:29:55" severity="INFO"><![CDATA[GetCapabilities is permitted]]></logEntry>
+<logEntry time="29/06/2011 09:29:55" severity="INFO"><![CDATA[GetMap is permitted]]></logEntry>
+<logEntry time="29/06/2011 09:29:55" severity="INFO"><![CDATA[GetFeatureInfo is permitted]]></logEntry>
+<logEntry time="29/06/2011 09:29:55" severity="INFO"><![CDATA[DescribeLayer is denied]]></logEntry>
+<logEntry time="29/06/2011 09:29:55" severity="INFO"><![CDATA[GetLegendGraphic is permitted]]></logEntry>
+<logEntry time="29/06/2011 09:29:55" severity="INFO"><![CDATA[PutStyles is denied]]></logEntry>
+<logEntry time="29/06/2011 09:29:55" severity="INFO"><![CDATA[GetStyles is denied]]></logEntry>
+<logEntry time="29/06/2011 09:29:56" severity="INFO"><![CDATA[transform begin xslt transform to response file 0]]></logEntry>
+<logEntry time="29/06/2011 09:29:56" severity="INFO"><![CDATA[transform end xslt transform to response file 0]]></logEntry>
+<logEntry time="29/06/2011 09:29:56" severity="INFO"><![CDATA[transform begin mergeCapabilities]]></logEntry>
+<logEntry time="29/06/2011 09:29:57" severity="INFO"><![CDATA[transform end mergeCapabilities]]></logEntry>
+<logEntry time="29/06/2011 09:29:57" severity="DEBUG"><![CDATA[transform begin apply XSLT on service metadata]]></logEntry>
+<logEntry time="29/06/2011 09:29:57" severity="DEBUG"><![CDATA[transform end apply XSLT on service metadata]]></logEntry>
+<logEntry time="29/06/2011 09:29:57" severity="INFO"><![CDATA[transform end GetCapabilities operation]]></logEntry>
+<logEntry time="29/06/2011 09:29:57" severity="DEBUG"><![CDATA[Start - Rewrite BBOX]]></logEntry>
+<logEntry time="29/06/2011 09:29:58" severity="DEBUG"><![CDATA[End - Rewrite BBOX]]></logEntry>
+<logEntry time="29/06/2011 09:29:58" severity="INFO"><![CDATA[transform begin response writting]]></logEntry>
+<logEntry time="29/06/2011 09:29:58" severity="INFO"><![CDATA[transform end response writting]]></logEntry>
+<logEntry time="29/06/2011 09:29:58" severity="SYSTEM" name="ClientResponseDateTime"><![CDATA[29/06/2011 09:29:58]]></logEntry>
+<logEntry time="29/06/2011 09:29:58" severity="SYSTEM" name="ClientResponseLength"><![CDATA[317616]]></logEntry>
+<logEntry time="29/06/2011 09:29:58" severity="SYSTEM" name="ClientResponseDateTime"><![CDATA[29/06/2011 09:29:58]]></logEntry>
+<logEntry time="29/06/2011 09:29:58" severity="INFO"><![CDATA[requestPreTraitementGET end transform]]></logEntry>
+<logEntry time="29/06/2011 09:29:58" severity="INFO"><![CDATA[temporary file file:/C:/Users/Helene/AppData/Local/Temp/sendData_220b0645-0d4a-4d1a-8aaf-78794562d0267751802593960013420.xml is deleted]]></logEntry>
+<logEntry time="29/06/2011 09:29:58" severity="INFO"><![CDATA[temporary file file:/C:/Users/Helene/AppData/Local/Temp/transform_GetCapabilities_bb313c66-d052-4adc-b16a-db2557844ed66613928004513097178.xml is deleted]]></logEntry>
+<logEntry time="29/06/2011 09:29:58" severity="SYSTEM" name="RemoteAddr"><![CDATA[127.0.0.1]]></logEntry>
+<logEntry time="29/06/2011 09:29:58" severity="SYSTEM" name="RemoteUser"><![CDATA[hvanhoecke]]></logEntry>
+<logEntry time="29/06/2011 09:29:58" severity="SYSTEM" name="QueryString"><![CDATA[request=GetCapabilities&service=WMS]]></logEntry>
+<logEntry time="29/06/2011 09:29:58" severity="SYSTEM" name="RequestURL"><![CDATA[http://localhost:8070/proxy/ogc/Cryosphere111]]></logEntry>
+</LogRequest>
+<LogRequest user="spring2a2d595e6ed9a0b24f027f2b63b134d6" requestTime="29/06/2011 09:31:02"> 
+<logEntry time="29/06/2011 09:31:02" severity="DEBUG"><![CDATA[Thread Server: http://nsidc.org/cgi-bin/atlas_north work begin]]></logEntry>
+<logEntry time="29/06/2011 09:31:02" severity="SYSTEM" name="RemoteRequestUrl"><![CDATA[http://nsidc.org/cgi-bin/atlas_north]]></logEntry>
+<logEntry time="29/06/2011 09:31:02" severity="SYSTEM" name="RemoteRequest"><![CDATA[service=WMS&request=GetCapabilities&version=1.1.1&]]></logEntry>
+<logEntry time="29/06/2011 09:31:02" severity="SYSTEM" name="RemoteRequestLength"><![CDATA[50]]></logEntry>
+<logEntry time="29/06/2011 09:31:02" severity="SYSTEM" name="RemoteRequestDateTime"><![CDATA[29/06/2011 09:31:02]]></logEntry>
+<logEntry time="29/06/2011 09:31:03" severity="INFO"><![CDATA[ tmpDir :  C:\Users\Helene\AppData\Local\Temp\]]></logEntry>
+<logEntry time="29/06/2011 09:31:22" severity="SYSTEM" name="RemoteResponseToRequestUrl"><![CDATA[http://nsidc.org/cgi-bin/atlas_north?service=WMS&request=GetCapabilities&version=1.1.1&]]></logEntry>
+<logEntry time="29/06/2011 09:31:22" severity="SYSTEM" name="RemoteResponseLength"><![CDATA[312184]]></logEntry>
+<logEntry time="29/06/2011 09:31:22" severity="SYSTEM" name="RemoteResponseDateTime"><![CDATA[29/06/2011 09:31:22]]></logEntry>
+<logEntry time="29/06/2011 09:31:22" severity="INFO"><![CDATA[requestPreTraitementGET save response capabilities from thread server http://nsidc.org/cgi-bin/atlas_north]]></logEntry>
+<logEntry time="29/06/2011 09:31:22" severity="DEBUG"><![CDATA[Thread Server: http://nsidc.org/cgi-bin/atlas_north work finished]]></logEntry>
+<logEntry time="29/06/2011 09:31:22" severity="INFO"><![CDATA[requestPreTraitementGET begin transform]]></logEntry>
+<logEntry time="29/06/2011 09:31:22" severity="DEBUG"><![CDATA[filterServerResponseFile begin]]></logEntry>
+<logEntry time="29/06/2011 09:31:23" severity="DEBUG"><![CDATA[filterServerResponseFile end]]></logEntry>
+<logEntry time="29/06/2011 09:31:23" severity="INFO"><![CDATA[Postreatment file \spring2a2d595e6ed9a0b24f027f2b63b134d6\111\GetCapabilities.xsldoes not exist]]></logEntry>
+<logEntry time="29/06/2011 09:31:23" severity="INFO"><![CDATA[Postreatment file \111\GetCapabilities.xsldoes not exist]]></logEntry>
+<logEntry time="29/06/2011 09:31:23" severity="INFO"><![CDATA[transform begin GetCapabilities operation]]></logEntry>
+<logEntry time="29/06/2011 09:31:23" severity="INFO"><![CDATA[GetCapabilities is permitted]]></logEntry>
+<logEntry time="29/06/2011 09:31:23" severity="INFO"><![CDATA[GetMap is permitted]]></logEntry>
+<logEntry time="29/06/2011 09:31:23" severity="INFO"><![CDATA[GetFeatureInfo is permitted]]></logEntry>
+<logEntry time="29/06/2011 09:31:23" severity="INFO"><![CDATA[DescribeLayer is denied]]></logEntry>
+<logEntry time="29/06/2011 09:31:23" severity="INFO"><![CDATA[GetLegendGraphic is permitted]]></logEntry>
+<logEntry time="29/06/2011 09:31:23" severity="INFO"><![CDATA[PutStyles is denied]]></logEntry>
+<logEntry time="29/06/2011 09:31:23" severity="INFO"><![CDATA[GetStyles is denied]]></logEntry>
+<logEntry time="29/06/2011 09:31:23" severity="INFO"><![CDATA[transform begin xslt transform to response file 0]]></logEntry>
+<logEntry time="29/06/2011 09:31:24" severity="INFO"><![CDATA[transform end xslt transform to response file 0]]></logEntry>
+<logEntry time="29/06/2011 09:31:24" severity="INFO"><![CDATA[transform begin mergeCapabilities]]></logEntry>
+<logEntry time="29/06/2011 09:31:24" severity="INFO"><![CDATA[transform end mergeCapabilities]]></logEntry>
+<logEntry time="29/06/2011 09:31:24" severity="DEBUG"><![CDATA[transform begin apply XSLT on service metadata]]></logEntry>
+<logEntry time="29/06/2011 09:31:24" severity="DEBUG"><![CDATA[transform end apply XSLT on service metadata]]></logEntry>
+<logEntry time="29/06/2011 09:31:24" severity="INFO"><![CDATA[transform end GetCapabilities operation]]></logEntry>
+<logEntry time="29/06/2011 09:31:24" severity="DEBUG"><![CDATA[Start - Rewrite BBOX]]></logEntry>
+<logEntry time="29/06/2011 09:31:24" severity="DEBUG"><![CDATA[End - Rewrite BBOX]]></logEntry>
+<logEntry time="29/06/2011 09:31:24" severity="INFO"><![CDATA[transform begin response writting]]></logEntry>
+<logEntry time="29/06/2011 09:31:24" severity="INFO"><![CDATA[transform end response writting]]></logEntry>
+<logEntry time="29/06/2011 09:31:24" severity="SYSTEM" name="ClientResponseDateTime"><![CDATA[29/06/2011 09:31:24]]></logEntry>
+<logEntry time="29/06/2011 09:31:24" severity="SYSTEM" name="ClientResponseLength"><![CDATA[317616]]></logEntry>
+<logEntry time="29/06/2011 09:31:24" severity="SYSTEM" name="ClientResponseDateTime"><![CDATA[29/06/2011 09:31:24]]></logEntry>
+<logEntry time="29/06/2011 09:31:24" severity="INFO"><![CDATA[requestPreTraitementGET end transform]]></logEntry>
+<logEntry time="29/06/2011 09:31:24" severity="INFO"><![CDATA[temporary file file:/C:/Users/Helene/AppData/Local/Temp/sendData_0a2ebefa-dd89-4ae0-a83f-bcbade164ff53307966246651631513.xml is deleted]]></logEntry>
+<logEntry time="29/06/2011 09:31:24" severity="INFO"><![CDATA[temporary file file:/C:/Users/Helene/AppData/Local/Temp/transform_GetCapabilities_c1879dec-1bf4-4894-8198-c3505d93c3e1500448900415075519.xml is deleted]]></logEntry>
+<logEntry time="29/06/2011 09:31:24" severity="SYSTEM" name="RemoteAddr"><![CDATA[127.0.0.1]]></logEntry>
+<logEntry time="29/06/2011 09:31:24" severity="SYSTEM" name="RemoteUser"><![CDATA[null]]></logEntry>
+<logEntry time="29/06/2011 09:31:24" severity="SYSTEM" name="QueryString"><![CDATA[request=GetCapabilities&service=WMS&version=1.1.1]]></logEntry>
+<logEntry time="29/06/2011 09:31:25" severity="SYSTEM" name="RequestURL"><![CDATA[http://localhost:8070/proxy/ogc/Cryosphere111]]></logEntry>
+</LogRequest>

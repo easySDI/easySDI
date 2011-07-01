@@ -1,0 +1,193 @@
+<Log><LogRequest user="spring2a2d595e6ed9a0b24f027f2b63b134d6" requestTime="29/06/2011 14:21:07"> 
+<logEntry time="29/06/2011 14:21:07" severity="SYSTEM" name="Request"><![CDATA[]]></logEntry>
+<logEntry time="29/06/2011 14:21:07" severity="ERROR"><![CDATA[org.xml.sax.SAXParseException: Premature end of file.]]></logEntry>
+<logEntry time="29/06/2011 14:21:07" severity="ERROR"><![CDATA[Error in EasySDI Proxy. Consult the proxy log for more details.]]></logEntry>
+<logEntry time="29/06/2011 14:21:07" severity="SYSTEM" name="ClientResponseDateTime"><![CDATA[29/06/2011 14:21:07]]></logEntry>
+<logEntry time="29/06/2011 14:21:07" severity="SYSTEM" name="ClientResponseLength"><![CDATA[370]]></logEntry>
+<logEntry time="29/06/2011 14:21:07" severity="SYSTEM" name="RemoteAddr"><![CDATA[127.0.0.1]]></logEntry>
+<logEntry time="29/06/2011 14:21:07" severity="SYSTEM" name="RemoteUser"><![CDATA[null]]></logEntry>
+<logEntry time="29/06/2011 14:21:07" severity="SYSTEM" name="QueryString"><![CDATA[null]]></logEntry>
+<logEntry time="29/06/2011 14:21:07" severity="SYSTEM" name="RequestURL"><![CDATA[http://localhost:8070/proxy/ogc/rwgis-wfs]]></logEntry>
+</LogRequest>
+<LogRequest user="spring2a2d595e6ed9a0b24f027f2b63b134d6" requestTime="29/06/2011 14:21:14"> 
+<logEntry time="29/06/2011 14:21:14" severity="SYSTEM" name="Request"><![CDATA[<wfs:Transaction xmlns:wfs="http://www.opengis.net/wfs" service="WFS" version="1.0.0" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/WFS-transaction.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><wfs:Insert><feature:f_gis_cache_comment xmlns:feature="http://www.easysdi.org/eai"><feature:comment>test</feature:comment><feature:userid>63</feature:userid><feature:username>Hélène Van Hoecke</feature:username><feature:enteredon>2011-06-29T14:12:04+02:00</feature:enteredon><feature:isinstats>false</feature:isinstats><feature:unit_guid>TDSS00291000000QE</feature:unit_guid></feature:f_gis_cache_comment></wfs:Insert></wfs:Transaction>]]></logEntry>
+<logEntry time="29/06/2011 14:21:46" severity="ERROR"><![CDATA[This request has no authorized results!]]></logEntry>
+<logEntry time="29/06/2011 14:21:46" severity="SYSTEM" name="RemoteAddr"><![CDATA[127.0.0.1]]></logEntry>
+<logEntry time="29/06/2011 14:21:46" severity="SYSTEM" name="RemoteUser"><![CDATA[null]]></logEntry>
+<logEntry time="29/06/2011 14:21:46" severity="SYSTEM" name="QueryString"><![CDATA[null]]></logEntry>
+<logEntry time="29/06/2011 14:21:46" severity="SYSTEM" name="RequestURL"><![CDATA[http://localhost:8070/proxy/ogc/rwgis-wfs]]></logEntry>
+</LogRequest>
+<LogRequest user="spring2a2d595e6ed9a0b24f027f2b63b134d6" requestTime="29/06/2011 14:40:51"> 
+<logEntry time="29/06/2011 14:40:51" severity="SYSTEM" name="Request"><![CDATA[]]></logEntry>
+<logEntry time="29/06/2011 14:40:51" severity="ERROR"><![CDATA[org.xml.sax.SAXParseException: Premature end of file.]]></logEntry>
+<logEntry time="29/06/2011 14:40:51" severity="ERROR"><![CDATA[Error in EasySDI Proxy. Consult the proxy log for more details.]]></logEntry>
+<logEntry time="29/06/2011 14:40:51" severity="SYSTEM" name="ClientResponseDateTime"><![CDATA[29/06/2011 14:40:51]]></logEntry>
+<logEntry time="29/06/2011 14:40:51" severity="SYSTEM" name="ClientResponseLength"><![CDATA[370]]></logEntry>
+<logEntry time="29/06/2011 14:40:51" severity="SYSTEM" name="RemoteAddr"><![CDATA[127.0.0.1]]></logEntry>
+<logEntry time="29/06/2011 14:40:51" severity="SYSTEM" name="RemoteUser"><![CDATA[null]]></logEntry>
+<logEntry time="29/06/2011 14:40:51" severity="SYSTEM" name="QueryString"><![CDATA[null]]></logEntry>
+<logEntry time="29/06/2011 14:40:51" severity="SYSTEM" name="RequestURL"><![CDATA[http://localhost:8070/proxy/ogc/rwgis-wfs]]></logEntry>
+</LogRequest>
+<LogRequest user="spring2a2d595e6ed9a0b24f027f2b63b134d6" requestTime="29/06/2011 14:42:04"> 
+<logEntry time="29/06/2011 14:42:04" severity="SYSTEM" name="Request"><![CDATA[]]></logEntry>
+<logEntry time="29/06/2011 14:42:04" severity="ERROR"><![CDATA[org.xml.sax.SAXParseException: Premature end of file.]]></logEntry>
+<logEntry time="29/06/2011 14:42:04" severity="ERROR"><![CDATA[Error in EasySDI Proxy. Consult the proxy log for more details.]]></logEntry>
+<logEntry time="29/06/2011 14:42:04" severity="SYSTEM" name="ClientResponseDateTime"><![CDATA[29/06/2011 14:42:04]]></logEntry>
+<logEntry time="29/06/2011 14:42:04" severity="SYSTEM" name="ClientResponseLength"><![CDATA[370]]></logEntry>
+<logEntry time="29/06/2011 14:42:04" severity="SYSTEM" name="RemoteAddr"><![CDATA[127.0.0.1]]></logEntry>
+<logEntry time="29/06/2011 14:42:04" severity="SYSTEM" name="RemoteUser"><![CDATA[null]]></logEntry>
+<logEntry time="29/06/2011 14:42:04" severity="SYSTEM" name="QueryString"><![CDATA[null]]></logEntry>
+<logEntry time="29/06/2011 14:42:04" severity="SYSTEM" name="RequestURL"><![CDATA[http://localhost:8070/proxy/ogc/rwgis-wfs]]></logEntry>
+</LogRequest>
+<LogRequest user="spring2a2d595e6ed9a0b24f027f2b63b134d6" requestTime="29/06/2011 15:00:57"> 
+<logEntry time="29/06/2011 15:00:57" severity="SYSTEM" name="Request"><![CDATA[]]></logEntry>
+<logEntry time="29/06/2011 15:00:57" severity="ERROR"><![CDATA[org.xml.sax.SAXParseException: Premature end of file.]]></logEntry>
+<logEntry time="29/06/2011 15:00:57" severity="ERROR"><![CDATA[Error in EasySDI Proxy. Consult the proxy log for more details.]]></logEntry>
+<logEntry time="29/06/2011 15:00:57" severity="SYSTEM" name="ClientResponseDateTime"><![CDATA[29/06/2011 15:00:57]]></logEntry>
+<logEntry time="29/06/2011 15:00:57" severity="SYSTEM" name="ClientResponseLength"><![CDATA[370]]></logEntry>
+<logEntry time="29/06/2011 15:00:57" severity="SYSTEM" name="RemoteAddr"><![CDATA[127.0.0.1]]></logEntry>
+<logEntry time="29/06/2011 15:00:57" severity="SYSTEM" name="RemoteUser"><![CDATA[null]]></logEntry>
+<logEntry time="29/06/2011 15:00:57" severity="SYSTEM" name="QueryString"><![CDATA[null]]></logEntry>
+<logEntry time="29/06/2011 15:00:57" severity="SYSTEM" name="RequestURL"><![CDATA[http://localhost:8070/proxy/ogc/rwgis-wfs]]></logEntry>
+</LogRequest>
+<LogRequest user="spring2a2d595e6ed9a0b24f027f2b63b134d6" requestTime="29/06/2011 15:01:51"> 
+<logEntry time="29/06/2011 15:01:51" severity="SYSTEM" name="Request"><![CDATA[]]></logEntry>
+<logEntry time="29/06/2011 15:01:51" severity="ERROR"><![CDATA[org.xml.sax.SAXParseException: Premature end of file.]]></logEntry>
+<logEntry time="29/06/2011 15:01:51" severity="ERROR"><![CDATA[Error in EasySDI Proxy. Consult the proxy log for more details.]]></logEntry>
+<logEntry time="29/06/2011 15:01:51" severity="SYSTEM" name="ClientResponseDateTime"><![CDATA[29/06/2011 15:01:51]]></logEntry>
+<logEntry time="29/06/2011 15:01:51" severity="SYSTEM" name="ClientResponseLength"><![CDATA[370]]></logEntry>
+<logEntry time="29/06/2011 15:01:51" severity="SYSTEM" name="RemoteAddr"><![CDATA[127.0.0.1]]></logEntry>
+<logEntry time="29/06/2011 15:01:51" severity="SYSTEM" name="RemoteUser"><![CDATA[null]]></logEntry>
+<logEntry time="29/06/2011 15:01:51" severity="SYSTEM" name="QueryString"><![CDATA[null]]></logEntry>
+<logEntry time="29/06/2011 15:01:51" severity="SYSTEM" name="RequestURL"><![CDATA[http://localhost:8070/proxy/ogc/rwgis-wfs]]></logEntry>
+</LogRequest>
+<LogRequest user="spring2a2d595e6ed9a0b24f027f2b63b134d6" requestTime="29/06/2011 15:01:48"> 
+<logEntry time="29/06/2011 15:01:48" severity="SYSTEM" name="Request"><![CDATA[<wfs:Transaction xmlns:wfs="http://www.opengis.net/wfs" service="WFS" version="1.0.0" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/WFS-transaction.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><wfs:Insert><feature:f_gis_cache_comment xmlns:feature="http://www.easysdi.org/eai"><feature:comment>test</feature:comment><feature:userid>63</feature:userid><feature:username>Hélène Van Hoecke</feature:username><feature:enteredon>2011-06-29T14:12:04+02:00</feature:enteredon><feature:isinstats>false</feature:isinstats><feature:unit_guid>TDSS00291000000QE</feature:unit_guid></feature:f_gis_cache_comment></wfs:Insert></wfs:Transaction>]]></logEntry>
+<logEntry time="29/06/2011 15:01:50" severity="SYSTEM" name="RemoteRequestUrl"><![CDATA[http://map.mnhn.lu:8081/proxy_depth/ogc/rwgis]]></logEntry>
+<logEntry time="29/06/2011 15:01:50" severity="SYSTEM" name="RemoteRequest"><![CDATA[<wfs:Transaction xmlns:wfs="http://www.opengis.net/wfs" service="WFS" version="1.0.0" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/WFS-transaction.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><wfs:Insert><feature:f_gis_cache_comment xmlns:feature="http://www.easysdi.org/eai"><feature:comment>test</feature:comment><feature:userid>63</feature:userid><feature:username>Hélène Van Hoecke</feature:username><feature:enteredon>2011-06-29T14:12:04+02:00</feature:enteredon><feature:isinstats>false</feature:isinstats><feature:unit_guid>TDSS00291000000QE</feature:unit_guid></feature:f_gis_cache_comment></wfs:Insert></wfs:Transaction>]]></logEntry>
+<logEntry time="29/06/2011 15:01:50" severity="SYSTEM" name="RemoteRequestLength"><![CDATA[682]]></logEntry>
+<logEntry time="29/06/2011 15:01:50" severity="SYSTEM" name="RemoteRequestDateTime"><![CDATA[29/06/2011 15:01:50]]></logEntry>
+<logEntry time="29/06/2011 15:02:07" severity="ERROR"><![CDATA[java.io.IOException: Closed]]></logEntry>
+<logEntry time="29/06/2011 15:02:08" severity="ERROR"><![CDATA[Error in EasySDI Proxy. Consult the proxy log for more details.]]></logEntry>
+<logEntry time="29/06/2011 15:02:08" severity="SYSTEM" name="ClientResponseDateTime"><![CDATA[29/06/2011 15:02:08]]></logEntry>
+<logEntry time="29/06/2011 15:02:08" severity="SYSTEM" name="ClientResponseLength"><![CDATA[370]]></logEntry>
+<logEntry time="29/06/2011 15:02:09" severity="SYSTEM" name="RemoteAddr"><![CDATA[127.0.0.1]]></logEntry>
+<logEntry time="29/06/2011 15:02:09" severity="SYSTEM" name="RemoteUser"><![CDATA[null]]></logEntry>
+<logEntry time="29/06/2011 15:02:09" severity="SYSTEM" name="QueryString"><![CDATA[null]]></logEntry>
+<logEntry time="29/06/2011 15:02:09" severity="SYSTEM" name="RequestURL"><![CDATA[http://localhost:8070/proxy/ogc/rwgis-wfs]]></logEntry>
+</LogRequest>
+<LogRequest user="spring2a2d595e6ed9a0b24f027f2b63b134d6" requestTime="29/06/2011 15:02:47"> 
+<logEntry time="29/06/2011 15:02:47" severity="SYSTEM" name="Request"><![CDATA[]]></logEntry>
+<logEntry time="29/06/2011 15:02:47" severity="ERROR"><![CDATA[org.xml.sax.SAXParseException: Premature end of file.]]></logEntry>
+<logEntry time="29/06/2011 15:02:47" severity="ERROR"><![CDATA[Error in EasySDI Proxy. Consult the proxy log for more details.]]></logEntry>
+<logEntry time="29/06/2011 15:02:47" severity="SYSTEM" name="ClientResponseDateTime"><![CDATA[29/06/2011 15:02:47]]></logEntry>
+<logEntry time="29/06/2011 15:02:47" severity="SYSTEM" name="ClientResponseLength"><![CDATA[370]]></logEntry>
+<logEntry time="29/06/2011 15:02:47" severity="SYSTEM" name="RemoteAddr"><![CDATA[127.0.0.1]]></logEntry>
+<logEntry time="29/06/2011 15:02:47" severity="SYSTEM" name="RemoteUser"><![CDATA[null]]></logEntry>
+<logEntry time="29/06/2011 15:02:47" severity="SYSTEM" name="QueryString"><![CDATA[null]]></logEntry>
+<logEntry time="29/06/2011 15:02:47" severity="SYSTEM" name="RequestURL"><![CDATA[http://localhost:8070/proxy/ogc/rwgis-wfs]]></logEntry>
+</LogRequest>
+<LogRequest user="spring2a2d595e6ed9a0b24f027f2b63b134d6" requestTime="29/06/2011 15:02:28"> 
+<logEntry time="29/06/2011 15:02:28" severity="SYSTEM" name="Request"><![CDATA[<wfs:Transaction xmlns:wfs="http://www.opengis.net/wfs" service="WFS" version="1.0.0" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/WFS-transaction.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><wfs:Insert><feature:f_gis_cache_comment xmlns:feature="http://www.easysdi.org/eai"><feature:comment>test</feature:comment><feature:userid>63</feature:userid><feature:username>Hélène Van Hoecke</feature:username><feature:enteredon>2011-06-29T14:12:04+02:00</feature:enteredon><feature:isinstats>false</feature:isinstats><feature:unit_guid>TDSS00291000000QE</feature:unit_guid></feature:f_gis_cache_comment></wfs:Insert></wfs:Transaction>]]></logEntry>
+<logEntry time="29/06/2011 15:02:31" severity="SYSTEM" name="RemoteRequestUrl"><![CDATA[http://map.mnhn.lu:8081/proxy_depth/ogc/rwgis]]></logEntry>
+<logEntry time="29/06/2011 15:02:31" severity="SYSTEM" name="RemoteRequest"><![CDATA[<wfs:Transaction xmlns:wfs="http://www.opengis.net/wfs" service="WFS" version="1.0.0" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/WFS-transaction.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><wfs:Insert><feature:f_gis_cache_comment xmlns:feature="http://www.easysdi.org/eai"><feature:comment>test</feature:comment><feature:userid>63</feature:userid><feature:username>Hélène Van Hoecke</feature:username><feature:enteredon>2011-06-29T14:12:04+02:00</feature:enteredon><feature:isinstats>false</feature:isinstats><feature:unit_guid>TDSS00291000000QE</feature:unit_guid></feature:f_gis_cache_comment></wfs:Insert></wfs:Transaction>]]></logEntry>
+<logEntry time="29/06/2011 15:02:31" severity="SYSTEM" name="RemoteRequestLength"><![CDATA[682]]></logEntry>
+<logEntry time="29/06/2011 15:02:31" severity="SYSTEM" name="RemoteRequestDateTime"><![CDATA[29/06/2011 15:02:31]]></logEntry>
+<logEntry time="29/06/2011 15:02:49" severity="ERROR"><![CDATA[java.io.IOException: Closed]]></logEntry>
+<logEntry time="29/06/2011 15:02:49" severity="ERROR"><![CDATA[Error in EasySDI Proxy. Consult the proxy log for more details.]]></logEntry>
+<logEntry time="29/06/2011 15:02:49" severity="SYSTEM" name="ClientResponseDateTime"><![CDATA[29/06/2011 15:02:49]]></logEntry>
+<logEntry time="29/06/2011 15:02:49" severity="SYSTEM" name="ClientResponseLength"><![CDATA[370]]></logEntry>
+<logEntry time="29/06/2011 15:02:49" severity="SYSTEM" name="RemoteAddr"><![CDATA[127.0.0.1]]></logEntry>
+<logEntry time="29/06/2011 15:02:49" severity="SYSTEM" name="RemoteUser"><![CDATA[null]]></logEntry>
+<logEntry time="29/06/2011 15:02:49" severity="SYSTEM" name="QueryString"><![CDATA[null]]></logEntry>
+<logEntry time="29/06/2011 15:02:49" severity="SYSTEM" name="RequestURL"><![CDATA[http://localhost:8070/proxy/ogc/rwgis-wfs]]></logEntry>
+</LogRequest>
+<LogRequest user="spring2a2d595e6ed9a0b24f027f2b63b134d6" requestTime="29/06/2011 15:03:25"> 
+<logEntry time="29/06/2011 15:03:25" severity="SYSTEM" name="Request"><![CDATA[]]></logEntry>
+<logEntry time="29/06/2011 15:03:25" severity="ERROR"><![CDATA[org.xml.sax.SAXParseException: Premature end of file.]]></logEntry>
+<logEntry time="29/06/2011 15:03:25" severity="ERROR"><![CDATA[Error in EasySDI Proxy. Consult the proxy log for more details.]]></logEntry>
+<logEntry time="29/06/2011 15:03:25" severity="SYSTEM" name="ClientResponseDateTime"><![CDATA[29/06/2011 15:03:25]]></logEntry>
+<logEntry time="29/06/2011 15:03:25" severity="SYSTEM" name="ClientResponseLength"><![CDATA[370]]></logEntry>
+<logEntry time="29/06/2011 15:03:25" severity="SYSTEM" name="RemoteAddr"><![CDATA[127.0.0.1]]></logEntry>
+<logEntry time="29/06/2011 15:03:25" severity="SYSTEM" name="RemoteUser"><![CDATA[null]]></logEntry>
+<logEntry time="29/06/2011 15:03:25" severity="SYSTEM" name="QueryString"><![CDATA[null]]></logEntry>
+<logEntry time="29/06/2011 15:03:25" severity="SYSTEM" name="RequestURL"><![CDATA[http://localhost:8070/proxy/ogc/rwgis-wfs]]></logEntry>
+</LogRequest>
+<LogRequest user="spring2a2d595e6ed9a0b24f027f2b63b134d6" requestTime="29/06/2011 15:03:03"> 
+<logEntry time="29/06/2011 15:03:03" severity="SYSTEM" name="Request"><![CDATA[<wfs:Transaction xmlns:wfs="http://www.opengis.net/wfs" service="WFS" version="1.0.0" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/WFS-transaction.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><wfs:Insert><feature:f_gis_cache_comment xmlns:feature="http://www.easysdi.org/eai"><feature:comment>test</feature:comment><feature:userid>63</feature:userid><feature:username>Hélène Van Hoecke</feature:username><feature:enteredon>2011-06-29T14:12:04+02:00</feature:enteredon><feature:isinstats>false</feature:isinstats><feature:unit_guid>TDSS00291000000QE</feature:unit_guid></feature:f_gis_cache_comment></wfs:Insert></wfs:Transaction>]]></logEntry>
+<logEntry time="29/06/2011 15:03:05" severity="SYSTEM" name="RemoteRequestUrl"><![CDATA[http://map.mnhn.lu:8081/proxy_depth/ogc/rwgis]]></logEntry>
+<logEntry time="29/06/2011 15:03:05" severity="SYSTEM" name="RemoteRequest"><![CDATA[<wfs:Transaction xmlns:wfs="http://www.opengis.net/wfs" service="WFS" version="1.0.0" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/WFS-transaction.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><wfs:Insert><feature:f_gis_cache_comment xmlns:feature="http://www.easysdi.org/eai"><feature:comment>test</feature:comment><feature:userid>63</feature:userid><feature:username>Hélène Van Hoecke</feature:username><feature:enteredon>2011-06-29T14:12:04+02:00</feature:enteredon><feature:isinstats>false</feature:isinstats><feature:unit_guid>TDSS00291000000QE</feature:unit_guid></feature:f_gis_cache_comment></wfs:Insert></wfs:Transaction>]]></logEntry>
+<logEntry time="29/06/2011 15:03:05" severity="SYSTEM" name="RemoteRequestLength"><![CDATA[682]]></logEntry>
+<logEntry time="29/06/2011 15:03:05" severity="SYSTEM" name="RemoteRequestDateTime"><![CDATA[29/06/2011 15:03:05]]></logEntry>
+<logEntry time="29/06/2011 15:03:57" severity="ERROR"><![CDATA[java.io.IOException: Closed]]></logEntry>
+<logEntry time="29/06/2011 15:03:57" severity="ERROR"><![CDATA[Error in EasySDI Proxy. Consult the proxy log for more details.]]></logEntry>
+<logEntry time="29/06/2011 15:03:57" severity="SYSTEM" name="ClientResponseDateTime"><![CDATA[29/06/2011 15:03:57]]></logEntry>
+<logEntry time="29/06/2011 15:03:57" severity="SYSTEM" name="ClientResponseLength"><![CDATA[370]]></logEntry>
+<logEntry time="29/06/2011 15:03:57" severity="SYSTEM" name="RemoteAddr"><![CDATA[127.0.0.1]]></logEntry>
+<logEntry time="29/06/2011 15:03:57" severity="SYSTEM" name="RemoteUser"><![CDATA[null]]></logEntry>
+<logEntry time="29/06/2011 15:03:57" severity="SYSTEM" name="QueryString"><![CDATA[null]]></logEntry>
+<logEntry time="29/06/2011 15:03:57" severity="SYSTEM" name="RequestURL"><![CDATA[http://localhost:8070/proxy/ogc/rwgis-wfs]]></logEntry>
+</LogRequest>
+<LogRequest user="spring2a2d595e6ed9a0b24f027f2b63b134d6" requestTime="29/06/2011 15:04:20"> 
+<logEntry time="29/06/2011 15:04:20" severity="SYSTEM" name="Request"><![CDATA[]]></logEntry>
+<logEntry time="29/06/2011 15:04:20" severity="ERROR"><![CDATA[org.xml.sax.SAXParseException: Premature end of file.]]></logEntry>
+<logEntry time="29/06/2011 15:04:20" severity="ERROR"><![CDATA[Error in EasySDI Proxy. Consult the proxy log for more details.]]></logEntry>
+<logEntry time="29/06/2011 15:04:20" severity="SYSTEM" name="ClientResponseDateTime"><![CDATA[29/06/2011 15:04:20]]></logEntry>
+<logEntry time="29/06/2011 15:04:20" severity="SYSTEM" name="ClientResponseLength"><![CDATA[370]]></logEntry>
+<logEntry time="29/06/2011 15:04:20" severity="SYSTEM" name="RemoteAddr"><![CDATA[127.0.0.1]]></logEntry>
+<logEntry time="29/06/2011 15:04:20" severity="SYSTEM" name="RemoteUser"><![CDATA[null]]></logEntry>
+<logEntry time="29/06/2011 15:04:20" severity="SYSTEM" name="QueryString"><![CDATA[null]]></logEntry>
+<logEntry time="29/06/2011 15:04:20" severity="SYSTEM" name="RequestURL"><![CDATA[http://localhost:8070/proxy/ogc/rwgis-wfs]]></logEntry>
+</LogRequest>
+<LogRequest user="spring2a2d595e6ed9a0b24f027f2b63b134d6" requestTime="29/06/2011 15:04:03"> 
+<logEntry time="29/06/2011 15:04:03" severity="SYSTEM" name="Request"><![CDATA[<wfs:Transaction xmlns:wfs="http://www.opengis.net/wfs" service="WFS" version="1.0.0" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/WFS-transaction.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><wfs:Insert><feature:f_gis_cache_comment xmlns:feature="http://www.easysdi.org/eai"><feature:comment>test</feature:comment><feature:userid>63</feature:userid><feature:username>Hélène Van Hoecke</feature:username><feature:enteredon>2011-06-29T14:12:04+02:00</feature:enteredon><feature:isinstats>false</feature:isinstats><feature:unit_guid>TDSS00291000000QE</feature:unit_guid></feature:f_gis_cache_comment></wfs:Insert></wfs:Transaction>]]></logEntry>
+<logEntry time="29/06/2011 15:04:06" severity="SYSTEM" name="RemoteRequestUrl"><![CDATA[http://map.mnhn.lu:8081/proxy_depth/ogc/rwgis]]></logEntry>
+<logEntry time="29/06/2011 15:04:06" severity="SYSTEM" name="RemoteRequest"><![CDATA[<wfs:Transaction xmlns:wfs="http://www.opengis.net/wfs" service="WFS" version="1.0.0" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/WFS-transaction.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><wfs:Insert><feature:f_gis_cache_comment xmlns:feature="http://www.easysdi.org/eai"><feature:comment>test</feature:comment><feature:userid>63</feature:userid><feature:username>Hélène Van Hoecke</feature:username><feature:enteredon>2011-06-29T14:12:04+02:00</feature:enteredon><feature:isinstats>false</feature:isinstats><feature:unit_guid>TDSS00291000000QE</feature:unit_guid></feature:f_gis_cache_comment></wfs:Insert></wfs:Transaction>]]></logEntry>
+<logEntry time="29/06/2011 15:04:06" severity="SYSTEM" name="RemoteRequestLength"><![CDATA[682]]></logEntry>
+<logEntry time="29/06/2011 15:04:06" severity="SYSTEM" name="RemoteRequestDateTime"><![CDATA[29/06/2011 15:04:06]]></logEntry>
+<logEntry time="29/06/2011 15:04:56" severity="ERROR"><![CDATA[java.io.IOException: Closed]]></logEntry>
+<logEntry time="29/06/2011 15:04:56" severity="ERROR"><![CDATA[Error in EasySDI Proxy. Consult the proxy log for more details.]]></logEntry>
+<logEntry time="29/06/2011 15:04:56" severity="SYSTEM" name="ClientResponseDateTime"><![CDATA[29/06/2011 15:04:56]]></logEntry>
+<logEntry time="29/06/2011 15:04:56" severity="SYSTEM" name="ClientResponseLength"><![CDATA[370]]></logEntry>
+<logEntry time="29/06/2011 15:04:59" severity="SYSTEM" name="RemoteAddr"><![CDATA[127.0.0.1]]></logEntry>
+<logEntry time="29/06/2011 15:04:59" severity="SYSTEM" name="RemoteUser"><![CDATA[null]]></logEntry>
+<logEntry time="29/06/2011 15:04:59" severity="SYSTEM" name="QueryString"><![CDATA[null]]></logEntry>
+<logEntry time="29/06/2011 15:04:59" severity="SYSTEM" name="RequestURL"><![CDATA[http://localhost:8070/proxy/ogc/rwgis-wfs]]></logEntry>
+</LogRequest>
+<LogRequest user="spring2a2d595e6ed9a0b24f027f2b63b134d6" requestTime="29/06/2011 15:05:09"> 
+<logEntry time="29/06/2011 15:05:09" severity="SYSTEM" name="Request"><![CDATA[<wfs:Transaction xmlns:wfs="http://www.opengis.net/wfs" service="WFS" version="1.0.0" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/WFS-transaction.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><wfs:Insert><feature:f_gis_cache_comment xmlns:feature="http://www.easysdi.org/eai"><feature:comment>test</feature:comment><feature:userid>63</feature:userid><feature:username>Hélène Van Hoecke</feature:username><feature:enteredon>2011-06-29T14:12:04+02:00</feature:enteredon><feature:isinstats>false</feature:isinstats><feature:unit_guid>TDSS00291000000QE</feature:unit_guid></feature:f_gis_cache_comment></wfs:Insert></wfs:Transaction>]]></logEntry>
+<logEntry time="29/06/2011 15:05:11" severity="SYSTEM" name="RemoteRequestUrl"><![CDATA[http://map.mnhn.lu:8081/proxy_depth/ogc/rwgis]]></logEntry>
+<logEntry time="29/06/2011 15:05:11" severity="SYSTEM" name="RemoteRequest"><![CDATA[<wfs:Transaction xmlns:wfs="http://www.opengis.net/wfs" service="WFS" version="1.0.0" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/WFS-transaction.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><wfs:Insert><feature:f_gis_cache_comment xmlns:feature="http://www.easysdi.org/eai"><feature:comment>test</feature:comment><feature:userid>63</feature:userid><feature:username>Hélène Van Hoecke</feature:username><feature:enteredon>2011-06-29T14:12:04+02:00</feature:enteredon><feature:isinstats>false</feature:isinstats><feature:unit_guid>TDSS00291000000QE</feature:unit_guid></feature:f_gis_cache_comment></wfs:Insert></wfs:Transaction>]]></logEntry>
+<logEntry time="29/06/2011 15:05:11" severity="SYSTEM" name="RemoteRequestLength"><![CDATA[682]]></logEntry>
+<logEntry time="29/06/2011 15:05:11" severity="SYSTEM" name="RemoteRequestDateTime"><![CDATA[29/06/2011 15:05:11]]></logEntry>
+<logEntry time="29/06/2011 15:05:12" severity="ERROR"><![CDATA[java.io.IOException: Closed]]></logEntry>
+<logEntry time="29/06/2011 15:05:12" severity="ERROR"><![CDATA[Error in EasySDI Proxy. Consult the proxy log for more details.]]></logEntry>
+<logEntry time="29/06/2011 15:05:12" severity="SYSTEM" name="ClientResponseDateTime"><![CDATA[29/06/2011 15:05:12]]></logEntry>
+<logEntry time="29/06/2011 15:05:12" severity="SYSTEM" name="ClientResponseLength"><![CDATA[370]]></logEntry>
+<logEntry time="29/06/2011 15:05:12" severity="SYSTEM" name="RemoteAddr"><![CDATA[127.0.0.1]]></logEntry>
+<logEntry time="29/06/2011 15:05:12" severity="SYSTEM" name="RemoteUser"><![CDATA[null]]></logEntry>
+<logEntry time="29/06/2011 15:05:12" severity="SYSTEM" name="QueryString"><![CDATA[null]]></logEntry>
+<logEntry time="29/06/2011 15:05:12" severity="SYSTEM" name="RequestURL"><![CDATA[http://localhost:8070/proxy/ogc/rwgis-wfs]]></logEntry>
+</LogRequest>
+<LogRequest user="spring2a2d595e6ed9a0b24f027f2b63b134d6" requestTime="29/06/2011 15:05:12"> 
+<logEntry time="29/06/2011 15:05:12" severity="SYSTEM" name="Request"><![CDATA[]]></logEntry>
+<logEntry time="29/06/2011 15:05:12" severity="ERROR"><![CDATA[org.xml.sax.SAXParseException: Premature end of file.]]></logEntry>
+<logEntry time="29/06/2011 15:05:12" severity="ERROR"><![CDATA[Error in EasySDI Proxy. Consult the proxy log for more details.]]></logEntry>
+<logEntry time="29/06/2011 15:05:12" severity="SYSTEM" name="ClientResponseDateTime"><![CDATA[29/06/2011 15:05:12]]></logEntry>
+<logEntry time="29/06/2011 15:05:12" severity="SYSTEM" name="ClientResponseLength"><![CDATA[370]]></logEntry>
+<logEntry time="29/06/2011 15:05:12" severity="SYSTEM" name="RemoteAddr"><![CDATA[127.0.0.1]]></logEntry>
+<logEntry time="29/06/2011 15:05:12" severity="SYSTEM" name="RemoteUser"><![CDATA[null]]></logEntry>
+<logEntry time="29/06/2011 15:05:12" severity="SYSTEM" name="QueryString"><![CDATA[null]]></logEntry>
+<logEntry time="29/06/2011 15:05:12" severity="SYSTEM" name="RequestURL"><![CDATA[http://localhost:8070/proxy/ogc/rwgis-wfs]]></logEntry>
+</LogRequest>
+<LogRequest user="spring2a2d595e6ed9a0b24f027f2b63b134d6" requestTime="29/06/2011 15:09:18"> 
+<logEntry time="29/06/2011 15:09:18" severity="SYSTEM" name="Request"><![CDATA[]]></logEntry>
+<logEntry time="29/06/2011 15:09:18" severity="ERROR"><![CDATA[org.xml.sax.SAXParseException: Premature end of file.]]></logEntry>
+<logEntry time="29/06/2011 15:09:18" severity="ERROR"><![CDATA[Error in EasySDI Proxy. Consult the proxy log for more details.]]></logEntry>
+<logEntry time="29/06/2011 15:09:18" severity="SYSTEM" name="ClientResponseDateTime"><![CDATA[29/06/2011 15:09:18]]></logEntry>
+<logEntry time="29/06/2011 15:09:18" severity="SYSTEM" name="ClientResponseLength"><![CDATA[370]]></logEntry>
+<logEntry time="29/06/2011 15:09:18" severity="SYSTEM" name="RemoteAddr"><![CDATA[127.0.0.1]]></logEntry>
+<logEntry time="29/06/2011 15:09:18" severity="SYSTEM" name="RemoteUser"><![CDATA[null]]></logEntry>
+<logEntry time="29/06/2011 15:09:18" severity="SYSTEM" name="QueryString"><![CDATA[null]]></logEntry>
+<logEntry time="29/06/2011 15:09:18" severity="SYSTEM" name="RequestURL"><![CDATA[http://localhost:8070/proxy/ogc/rwgis-wfs]]></logEntry>
+</LogRequest>

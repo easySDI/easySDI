@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PolicySet>
+  <Policy Id="wfs-open-policy" ConfigId="wfs_open">
+    <Servers All="true">
+      <Server>
+        <url>http://www.sig-pyrenees.net/proxy/ogc/wfs_open</url>
+        <Prefix>open</Prefix>
+        <Namespace>open</Namespace>
+        <FeatureTypes All="false">
+          <FeatureType>
+            <Name>apem:EPCI</Name>
+            <Attributes All="true" />
+          </FeatureType>
+          <FeatureType>
+            <Name>apen:FG</Name>
+            <Attributes All="true" />
+          </FeatureType>
+          <FeatureType>
+            <Name>apem:Parc_national</Name>
+            <Attributes All="true" />
+          </FeatureType>
+          <FeatureType>
+            <Name>apem:pole_touristique</Name>
+            <Attributes All="true" />
+          </FeatureType>
+          <FeatureType>
+            <Name>apem:Region</Name>
+            <Attributes All="true" />
+          </FeatureType>
+          <FeatureType>
+            <Name>apem:canton</Name>
+            <Attributes All="true" />
+          </FeatureType>
+          <FeatureType>
+            <Name>apem:chateau</Name>
+            <Attributes All="true" />
+          </FeatureType>
+          <FeatureType>
+            <Name>apem:commune/Name>
+            <Attributes All="true" />
+          </FeatureType>
+          <FeatureType>
+            <Name>apem:pays</Name>
+            <Attributes All="true" />
+          </FeatureType>
+        </FeatureTypes>
+      </Server>
+    </Servers>
+    <Subjects All="true" />
+    <Operations All="true" />
+    <AvailabilityPeriod>
+      <Mask>d-mm-yyyy</Mask>
+      <From>
+        <Date>28-01-2008</Date>
+      </From>
+      <To>
+        <Date>28-01-2108</Date>
+      </To>
+    </AvailabilityPeriod>
+  </Policy>
+</PolicySet>
