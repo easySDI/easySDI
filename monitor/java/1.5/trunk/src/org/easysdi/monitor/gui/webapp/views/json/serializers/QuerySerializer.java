@@ -51,6 +51,7 @@ public class QuerySerializer {
         final QueryConfiguration queryConfig = query.getConfig();
         jsonQuery.put("id", query.getQueryId());
         jsonQuery.put("name", queryConfig.getQueryName());
+        jsonQuery.put("soapUrl", queryConfig.getQuerySoapUrl());
         jsonQuery.put("status", query.getStatus().getDisplayString(locale));
         jsonQuery.put("statusCode", query.getStatusValue().name());
         jsonQuery.put("serviceMethod", queryConfig.getMethod().getName());

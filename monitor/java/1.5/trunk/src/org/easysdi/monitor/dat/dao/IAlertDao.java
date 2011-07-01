@@ -32,4 +32,18 @@ public interface IAlertDao {
      */
     List<Alert> getAlertsForJob(long jobId, boolean onlyRss);
 
+
+    /**
+     * Fetches the alerts that a given job triggered.
+     * 
+     * @param   jobId   the long identifying the job
+     * @param   onlyRss <code>true</code> to fetch only the alerts marked for
+     *                  RSS exposure
+     * @param	start   This is the start of paginated query
+     * @param	limit	This is the limit of paginated query
+     * @return          a list containing the found alerts
+     */
+	List<Alert> getAlertsForJob(long jobId, boolean onlyRss, Integer start,
+			Integer limit);
+
 }

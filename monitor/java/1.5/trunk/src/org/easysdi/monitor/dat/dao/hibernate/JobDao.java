@@ -91,21 +91,64 @@ public class JobDao extends HibernateDaoSupport implements IJobDao {
         if (null != alertsEnabled) {
             search.add(Restrictions.eq("config.alertsActivated", 
                                        alertsEnabled));
-        }
+        }       
 
+     
         final HibernateTemplate hibernateTemplate = this.getHibernateTemplate();
+  
         final List<Job> result 
             = this.typeJobResultList(hibernateTemplate.findByCriteria(search));
 
         if (null == result) {
             return new LinkedList<Job>();
-        }
+        }         
 
         return result;
     }
 
 
 
+    /**
+     * {@inheritDoc}
+     */
+    public List<Job> findJobs(Boolean automatic, Boolean realTimeAllowed,
+                    Boolean published, Boolean alertsEnabled, Integer pageStart, Integer pageLimit) {
+
+        // Criteria search =
+        // SessionUtil.getCurrentSession().createCriteria(Job.class);
+        final DetachedCriteria search = DetachedCriteria.forClass(Job.class);
+
+        if (null != automatic) {
+            search.add(Restrictions.eq("config.automatic", automatic));
+        }
+
+        if (null != realTimeAllowed) {
+            search.add(Restrictions.eq("config.realTimeAllowed",
+                                       realTimeAllowed));
+        }
+
+        if (null != published) {
+            search.add(Restrictions.eq("config.published", published));
+        }
+
+        if (null != alertsEnabled) {
+            search.add(Restrictions.eq("config.alertsActivated", 
+                                       alertsEnabled));
+        }
+        
+        search.getExecutableCriteria(this.getSession()).setMaxResults(pageLimit).setFirstResult(pageStart);
+     
+        final HibernateTemplate hibernateTemplate = this.getHibernateTemplate();
+  
+        final List<Job> result 
+            = this.typeJobResultList(hibernateTemplate.findByCriteria(search));
+
+        if (null == result) {
+            return new LinkedList<Job>();
+        }         
+
+        return result;
+    }
     /**
      * {@inheritDoc}
      */

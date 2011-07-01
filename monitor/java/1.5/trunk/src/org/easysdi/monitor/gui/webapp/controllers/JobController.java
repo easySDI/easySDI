@@ -157,6 +157,8 @@ public class JobController extends AbstractMonitorController {
                              @PathVariable String identifyString)
         throws MonitorInterfaceException {
 
+
+    		
         final ModelAndView result = new ModelAndView("job");
         final Job job = this.getJobProtected(identifyString, request, response);
 

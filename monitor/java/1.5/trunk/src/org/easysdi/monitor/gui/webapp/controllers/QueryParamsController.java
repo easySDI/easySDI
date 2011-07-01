@@ -101,9 +101,7 @@ public class QueryParamsController extends AbstractMonitorController {
         }
         if(!found)
         	System.out.println("no parameter found!");
-        
-        
-        
+                 
         
         
         final Query query = this.getQuery(jobIdString, queryIdString);

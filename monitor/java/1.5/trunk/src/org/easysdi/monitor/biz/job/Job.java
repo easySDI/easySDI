@@ -722,6 +722,22 @@ public class Job {
 
 
     /**
+     * Gets the alerts raised for this job.
+     * 
+     * @param   onlyRss <code>true</code> to get only the alerts exposed to this
+     *                  job's RSS feed
+     * @param	start   This is the start of paginated query
+     * @param	limit	This is the limit of paginated query
+     * @return          a list containing the alerts for this job
+     */
+    public List<Alert> getAlerts(boolean onlyRss, Integer start, Integer limit) {
+        
+        return AlertDaoHelper.getDaoObject().getAlertsForJob(this.getJobId(),
+                                                             onlyRss, start, limit);
+        
+    }
+
+    /**
      * Get one of this job's actions from its identifier.
      * 
      * @param   actionId    the long uniquely identifying the action

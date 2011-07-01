@@ -26,6 +26,7 @@ public class QueryInfo {
     private ServiceMethod method;
     private String        name;
     private Job           parentJob;
+    private String 		  soapUrl;
     
     
     
@@ -105,7 +106,27 @@ public class QueryInfo {
         return this.name;
     }
 
+    /**
+     * Defines the soapUrlof this query.
+     * 
+     * @param   querySoapUrl the query soapUrl
+     */
+    private void setSoapUrl(String querySoapUrl) {
 
+    
+        this.soapUrl = querySoapUrl;
+    }
+
+
+
+    /**
+     * Gets the new soapUrl of this query.
+     * 
+     * @return  the query soapUrl
+     */
+    private String getSoapUrl() {
+        return this.soapUrl;
+    }
 
     /**
      * Defines the job that this query defines.
@@ -151,6 +172,9 @@ public class QueryInfo {
         newQueryInfo.setParentJob(parentJob);
 
         final String nameString = requestParams.get("name");
+        final String soapActionString = requestParams.get("soapUrl");
+        
+        newQueryInfo.setSoapUrl(soapActionString);
         
         if (enforceMandatory || !StringTools.isNullOrEmpty(nameString)) {
             newQueryInfo.setName(nameString);
@@ -188,6 +212,10 @@ public class QueryInfo {
         if (null != this.getMethod()) {
             config.setMethod(this.getMethod());
         }
+        
+        if (null != this.getSoapUrl()) {
+            config.setQuerySoapUrl(this.getSoapUrl());
+        }
 
         return query.persist();
     }
@@ -201,7 +229,7 @@ public class QueryInfo {
      */
     public Query createQuery() {
         final Query newQuery = new Query(this.getParentJob(), this.getName(),
-                                         this.getMethod());
+                                         this.getMethod(), this.getSoapUrl());
 
         if (newQuery.isValid()) {
 

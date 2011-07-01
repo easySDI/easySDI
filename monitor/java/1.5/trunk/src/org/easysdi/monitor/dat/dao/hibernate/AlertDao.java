@@ -58,4 +58,22 @@ public class AlertDao extends HibernateDaoSupport implements IAlertDao {
 
         return this.getHibernateTemplate().findByCriteria(search);
     }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+	public List<Alert> getAlertsForJob(long jobId, boolean onlyRss,
+			Integer start, Integer limit) {
+    	final DetachedCriteria search = DetachedCriteria.forClass(Alert.class);
+
+        search.add(Restrictions.eq("parentJob.jobId", jobId));
+
+        if (onlyRss) {
+            search.add(Restrictions.eq("exposedToRss", true));
+        }
+        search.getExecutableCriteria(this.getSession()).setMaxResults(limit).setFirstResult(start);
+        return this.getHibernateTemplate().findByCriteria(search);
+	}
 }

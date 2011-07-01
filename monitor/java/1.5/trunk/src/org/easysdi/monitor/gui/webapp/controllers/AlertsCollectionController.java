@@ -66,9 +66,28 @@ public class AlertsCollectionController extends AbstractMonitorController {
             result.addObject("jobId", job.getJobId());
             onlyRss = true;
         }
+        
+        Integer start;
+		Integer limit;
+		try {
+			start = Integer.parseInt( request.getParameter("start"));
+			limit = Integer.parseInt( request.getParameter("limit"));
+		} catch (NumberFormatException e) {
+			// TODO Auto-generated catch block
+			start = null;
+			limit = null;
+			e.printStackTrace();
+		}
 
         result.addObject("message", "alertsCollection.details.success");
-        result.addObject("alertsCollection", job.getAlerts(onlyRss));
+        
+        if((start !=null) &&(limit!=null)){
+        	result.addObject("alertsCollection", job.getAlerts(onlyRss, start, limit));
+        	 result.addObject("count",  job.getAlerts(onlyRss).size());
+        }
+        else{
+        	result.addObject("alertsCollection", job.getAlerts(onlyRss));
+        }
 
         return result;
     }

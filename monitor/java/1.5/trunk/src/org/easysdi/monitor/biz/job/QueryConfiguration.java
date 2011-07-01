@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.deegree.portal.owswatch.ConfigurationsException;
+import org.deegree.portal.owswatch.Constants;
 import org.deegree.portal.owswatch.ServiceConfiguration;
 import org.easysdi.monitor.dat.dao.IServiceDao;
 import org.easysdi.monitor.dat.dao.ServiceDaoHelper;
@@ -28,6 +29,8 @@ public class QueryConfiguration {
     private long            methodId;
 
     private String          name;
+    
+    private String          soapUrl;
 
     private Set<QueryParam> params = new HashSet<QueryParam>();
 
@@ -81,6 +84,22 @@ public class QueryConfiguration {
         this.setMethod(newMethod);
     }
 
+    /**
+     * Creates a new query configuration.
+     * 
+     * @param   newParentJob    the job which the query is attached to
+     * @param   newParentQuery  the query that this object configures
+     * @param   queryName       the name that identifies the query
+     * @param   newMethod       the service method object
+     */
+    public QueryConfiguration(Job newParentJob, Query newParentQuery,
+                              String queryName, ServiceMethod newMethod, String soapUrl) {
+        this.setQuery(newParentQuery);
+        this.setParentJob(newParentJob);
+        this.setQueryName(queryName);
+        this.setMethod(newMethod);
+        this.setSoapUrl(soapUrl);
+    }
 
 
     /**
@@ -284,8 +303,52 @@ public class QueryConfiguration {
         this.params = queryParams;
     }
 
+    /**
+     * Defines the soapUrl of this query.
+     * <p>
+     * <i><b>Note:</b> This method is intended for internal use (persistance)
+     * and shouldn't be called directly. 
+     * 
+     * @param   querySoapUrl    the soapUrl that this query is identified by
+     */
+    @SuppressWarnings("unused")
+    private void setSoapUrl(String querySoapUrl) {
+        this.soapUrl = querySoapUrl;
+    }
 
 
+    /**
+     * Defines the soapUrl of this query.
+     * 
+     * @param   querySoapUrl    the soapUrl that this query is identified by
+     */
+    public void setQuerySoapUrl(String querySoapUrl) {
+    	setSoapUrl( querySoapUrl);
+    }
+
+    /**
+     * Gets the soapUrl of this query.
+     * <p>
+     * <i><b>Note:</b> This method is intended for internal use (persistance)
+     * and shouldn't be called directly. P
+     * 
+     * @return  the soapUrl that identifies this query
+     */
+    @SuppressWarnings("unused")
+    private String getSoapUrl() {
+        return this.soapUrl;
+    }
+
+    
+    /**
+     * Gets the name identifying this query.
+     * 
+     * @return  the name that identifies this query
+     * @see     QueryConfiguration#setQueryName(String)
+     */
+    public String getQuerySoapUrl() {
+        return this.soapUrl;
+    }
     /**
      * Gets the parameters to be used by this query.
      * 
@@ -371,6 +434,37 @@ public class QueryConfiguration {
 
     }
 
+    /**
+     * Generates a custom configuration object suitable for soap/get/post requests, so it can be
+     * polled.
+     * 
+     * @return  the owsWatch-compatible service configuration
+     */
+    public CustomServiceConfiguration toCustomConfig() {
+    	CustomServiceConfiguration customConfig;
+        final JobConfiguration parentJobConfig 
+            = this.getParentJob().getConfig();
+
+        try {
+        	customConfig = new CustomServiceConfiguration(
+                    (int) this.getQuery().getQueryId(), this.name,
+                    parentJobConfig.getHttpMethod().getName(),
+                    parentJobConfig.getUrl(), true,
+                    parentJobConfig.getTestInterval(),
+                    parentJobConfig.getTimeout(), this.getCustomParams());
+            
+        	customConfig.setUserCreds(parentJobConfig.getLogin(),
+                                   parentJobConfig.getPassword());
+
+        } catch (ConfigurationsException e) {
+            this.logger.error(
+                "An error occurred while the OWS configuration was generated.", 
+                e);
+            customConfig = null;
+        }
+
+        return customConfig;
+    }
 
 
     /**
@@ -460,6 +554,43 @@ public class QueryConfiguration {
         return queryParams;
     }
 
+    /**
+     * Generates custom query parameters.Basically we return all params
+     * 
+     * @return  a properties object containing the owsWatch-compatible 
+     *          parameters for this query
+     */
+    public Properties getCustomParams() {
+        final Properties queryParams = new Properties();
+        final ServiceType serviceType 
+            = this.getParentJob().getConfig().getServiceType();
+        final String serviceTypeName = serviceType.getName();
+        final String serviceTypeVersion = serviceType.getVersion();
+        final String serviceMethodName = this.getMethod().getName();
+        final String soapUrl = this.getQuerySoapUrl();
+        
+        queryParams.put("SERVICE", serviceTypeName);
+        queryParams.put("VERSION", serviceTypeVersion);
+        queryParams.put("REQUEST", serviceMethodName);
+        queryParams.put(Constants.XML_REQUEST, ""); // this has to be added otherwise serviceconfiguration will throw exception
+        queryParams.put(CustomQueryConstants.SOAPURL, soapUrl);
+
+
+
+ 
+        final Iterator<QueryParam> paramsIterator 
+        = this.getParams().iterator();
+
+        while (paramsIterator.hasNext()) {
+        	final QueryParam currentParam = paramsIterator.next();
+        	queryParams.put(currentParam.getName(), 
+        			currentParam.getValue());
+        }
+
+
+
+        return queryParams;
+    }
 
 
     /**

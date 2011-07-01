@@ -23,8 +23,10 @@
 		<component name="config" class="QueryConfiguration" lazy="false">
 			<parent name="query" />
 			<property name="name" type="string" length="45" column="NAME" lazy="false"></property>
+			<property name="soapUrl" type="string" length="250" column="SOAP_URL" lazy="false"></property>
 			<many-to-one name="parentJob" class="Job" column="ID_JOB" lazy="false"></many-to-one>
 			<property name="methodId" type="long" column="ID_SERVICE_METHOD" lazy="false"></property>
+			
 			<set name="params" table="query_params" inverse="true" lazy="false" cascade="all-delete-orphan">
 				<key column="ID_QUERY"></key>
 				<one-to-many class="QueryParam" />

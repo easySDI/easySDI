@@ -29,7 +29,7 @@ import org.springframework.web.servlet.ModelAndView;
  */
 @Controller
 @RequestMapping({ "/jobs/{jobIdString}/queries/{queryIdString}/logs",
-                  "/adminJobs/{jobIdString}/queries/{queryIdString}/logs" })
+                  "/adminJobs/{jobIdString}/queries/{queryIdString}/logs"})
 public class QueryRawLogController extends AbstractMonitorController {
 
     /**
@@ -181,4 +181,6 @@ public class QueryRawLogController extends AbstractMonitorController {
             
         return result;
     }
+    
+  
 }

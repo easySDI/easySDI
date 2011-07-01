@@ -24,7 +24,8 @@ import org.springframework.web.servlet.ModelAndView;
  */
 @Controller
 @RequestMapping({ "/jobs/{jobIdString}/queries/{queryIdString}",
-                  "/adminJobs/{jobIdString}/queries/{queryIdString}" })
+                  "/adminJobs/{jobIdString}/queries/{queryIdString}"}
+                  )
 public class QueryController extends AbstractMonitorController {
 
     /**
@@ -122,7 +123,8 @@ public class QueryController extends AbstractMonitorController {
     public ModelAndView modify(HttpServletRequest request,
                                HttpServletResponse response,
                                @PathVariable String jobIdString,
-                               @PathVariable String queryIdString)
+                               @PathVariable String queryIdString
+                              )
         throws MonitorInterfaceException {
 
         this.enforceRole(SecurityConstants.ADMIN_ROLE, request, response);
@@ -153,6 +155,7 @@ public class QueryController extends AbstractMonitorController {
     }
 
 
+  
 
     /**
      * Displays the details of a query.
@@ -181,17 +184,24 @@ public class QueryController extends AbstractMonitorController {
     public ModelAndView show(HttpServletRequest request,
                              HttpServletResponse response,
                              @PathVariable String jobIdString,
-                             @PathVariable String queryIdString)
+                             @PathVariable String queryIdString
+                            
+                           )
         throws MonitorInterfaceException {
 
         final ModelAndView result = new ModelAndView("query");
-
+        
         final Query query = this.getQueryProtected(jobIdString, queryIdString,
                                                    request, response);
 
         result.addObject("message", "query.details.success");
-        result.addObject(query);
+        result.addObject(query);  
+       
 
         return result;
     }
+    
+  
+    
+    
 }

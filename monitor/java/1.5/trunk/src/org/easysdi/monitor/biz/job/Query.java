@@ -84,6 +84,7 @@ public class Query {
         this.setConfig(newConfig);
     }
 
+    
 
 
     /**
@@ -102,6 +103,22 @@ public class Query {
         this.setConfig(newConfig);
     }
 
+
+    /**
+     * Creates a new query.
+     * 
+     * @param   parentJob   the job that this query is attached to
+     * @param   queryName   the name of the query. (This must be unique among 
+     *                      all queries for a given job.)
+     * @param   method      the service method object
+     */
+    public Query(Job parentJob, String queryName, ServiceMethod method, String soapUrl) {
+        this();
+        this.setStatus(StatusValue.NOT_TESTED);
+        final QueryConfiguration newConfig 
+            = new QueryConfiguration(parentJob, this, queryName, method, soapUrl);
+        this.setConfig(newConfig);
+    }
 
 
     /**
@@ -155,7 +172,18 @@ public class Query {
         return this.owsConfig;
     }
 
+    /**
+     * Gets this query's  configuration object. This will be used by normal get/post and soap requests
+     * 
+     * @return  the  service configuration object
+     * @see     ServiceConfiguration
+     */
+    private ServiceConfiguration getCustom_SOAP_GET_POST_Config() {
+        this.setOwsConfig(this.getConfig().toCustomConfig());
 
+        return this.owsConfig;
+    }
+    
 
     /**
      * Defines the owsWatch service invoker for this query.
@@ -340,8 +368,26 @@ public class Query {
     public QueryResult execute(boolean resultLogging) {
         final MonitorServiceLog thisOwsLogger = this.getOwsLogger();
         thisOwsLogger.setResultLogged(resultLogging);
-        this.setOwsInvoker(new ServiceInvoker(this.getOwsConfig(), 
+        
+        final ServiceType serviceType 
+        = this.getConfig().getParentJob().getConfig().getServiceType();
+        final String serviceTypeName = serviceType.getName();
+        final String serviceMethodName = this.getConfig().getMethod().getName();
+        if((serviceTypeName.equals(CustomQueryConstants.ALL)) && 
+        		(serviceMethodName.equals(CustomQueryConstants.SOAP_1_1)||
+        		serviceMethodName.equals(CustomQueryConstants.SOAP_1_2)||
+        		serviceMethodName.equals(CustomQueryConstants.HTTP_POST)||
+        		serviceMethodName.equals(CustomQueryConstants.HTTP_GET)
+        		)){
+        	// execute non ows queries.
+        	this.setOwsInvoker(new CustomQueryInvoker(this.getCustom_SOAP_GET_POST_Config(), 
+                    thisOwsLogger));
+        }        	
+        else{
+                    
+        	this.setOwsInvoker(new ServiceInvoker(this.getOwsConfig(), 
                                               thisOwsLogger));
+        }
         this.getOwsInvoker().executeTest();
 
         final QueryResult result = thisOwsLogger.getLastResult();

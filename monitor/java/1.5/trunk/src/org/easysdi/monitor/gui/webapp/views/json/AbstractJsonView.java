@@ -84,7 +84,9 @@ public abstract class AbstractJsonView extends AbstractView {
         root.put("success", this.isSuccess());
         root.put("message", this.getResponseMessage(model, locale));
         root.put("data", this.getResponseData(model, locale));
-        
+        // this check is carried out in case we are returning results for a paginated query.
+        if(model.containsKey("count"))
+        	root.put("count", model.get("count").toString());
         
         try {
             return mapper.writeValueAsString(root);

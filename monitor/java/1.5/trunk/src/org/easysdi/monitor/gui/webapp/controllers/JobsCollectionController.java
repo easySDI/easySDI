@@ -128,6 +128,21 @@ public class JobsCollectionController extends AbstractMonitorController {
             = BooleanUtil.parseBooleanStringWithNull(
                      requestParams.get("triggersAlerts"));
         
+        
+        Integer start;
+		Integer limit;
+		try {
+			start = Integer.parseInt(requestParams.get("start"));
+			limit = Integer.parseInt(requestParams.get("limit"));
+		} catch (NumberFormatException e) {
+			// TODO Auto-generated catch block
+			start = null;
+			limit = null;
+			e.printStackTrace();
+		}
+        
+    
+        
         final boolean useAdminCollection 
             = this.isAdminRequest(request); 
         
@@ -137,9 +152,19 @@ public class JobsCollectionController extends AbstractMonitorController {
         
         final Boolean onlyPublic = (useAdminCollection) ? null : true;
 
-        result.addObject("jobList", 
-                         new JobsCollection().findJobs(automatic, realTime,
-                                                       onlyPublic, alert));
+        // the if section is for carrying out the pagination queries.
+        if((start !=null) &&(limit!=null)){
+	        result.addObject("jobList", 
+	                         new JobsCollection().findJobs(automatic, realTime,
+	                                                       onlyPublic, alert, start, limit));
+	        result.addObject("count",  new JobsCollection().findJobs(automatic, realTime,
+	                onlyPublic, alert).size());
+        }
+        else{
+        	 result.addObject("jobList", 
+                     new JobsCollection().findJobs(automatic, realTime,
+                                                   onlyPublic, alert));
+        }
         result.addObject("message", "jobsCollection.details.success");
 
         return result;

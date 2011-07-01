@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.easysdi.monitor.gui.webapp.MonitorInterfaceException;
+
 import org.springframework.web.servlet.View;
 
 /**
@@ -40,9 +41,13 @@ public abstract class AbstractView implements View {
                              HttpServletResponse response) 
         throws MonitorInterfaceException {
 
+ 
+    	
         final String viewContent = this.generateViewContent(model, request);
         response.setContentType(this.getContentType());
         response.setCharacterEncoding("UTF-8");
+   
+
         this.writeResponse(viewContent, response);
     }
     

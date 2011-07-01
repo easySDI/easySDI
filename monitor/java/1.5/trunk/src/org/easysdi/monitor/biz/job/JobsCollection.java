@@ -49,7 +49,30 @@ public class JobsCollection {
                                                  published, alertsEnabled);
 
     }
+    /**
+     * Looks for jobs meeting some criteria.
+     * <p>
+     * Each parameter can be <code>null</code> if its value is indifferent. 
+     * 
+     * @param   automatic           whether the jobs searched are automatic
+     * @param   realTimeAllowed     whether the jobs searched can be executed
+     *                              on demand 
+     * @param   published           whether the jobs searched are accessible
+     *                              to anybody
+     * @param   alertsEnabled       whether the job triggers alerts
+     * @param   pageStart       start of pagination, thats the index of the first item to fetch
+     * @param   pageLimit       limit of pagination, thats the number of results to fetch from pageStart.   
+     * @return                      a list containing the jobs meeting the 
+     *                              criteria
+     */
 
+    public List<Job> findJobs(Boolean automatic, Boolean realTimeAllowed,
+            Boolean published, Boolean alertsEnabled, Integer pageStart, Integer pageLimit) {
+
+    	return JobDaoHelper.getJobDao().findJobs(automatic, realTimeAllowed,
+                               published, alertsEnabled, pageStart, pageLimit);
+
+    }
 
 
     /**

@@ -34,6 +34,26 @@ public interface IJobDao {
     List<Job> findJobs(Boolean automatic, Boolean realTimeAllowed, 
                        Boolean published, Boolean alertsEnabled);
 
+    /**
+     * Finds jobs matching the given criteria with pagination constraints
+     * <p>
+     * Each parameter can be set to <code>null</code> if it must be ignored.
+     * 
+     * @param   automatic       <code>true</code> to fetch only the jobs that 
+     *                          are executed automatically
+     * @param   realTimeAllowed <code>true</code> to fetch only the jobs which
+     *                          can be executed on demand
+     * @param   published       <code>true</code> to fetch only the jobs that
+     *                          are exposed to all users
+     * @param   alertsEnabled   <code>true</code> to fetch only the jobs that
+     *                          trigger an alert when their status change
+     * @param   pageStart       start of pagination, thats the index of the first item to fetch
+     * @param   pageLimit       limit of pagination, thats the number of results to fetch from pageStart.                                             
+     * @return                  a list containing the jobs matching the criteria
+     */
+
+     List<Job> findJobs(Boolean automatic, Boolean realTimeAllowed,
+            Boolean published, Boolean alertsEnabled, Integer pageStart, Integer pageLimit) ;
 
 
     /**
