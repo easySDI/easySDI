@@ -47,6 +47,7 @@ class MonitorViewmain extends JView
   $document->addScript('components/com_easysdi_monitor/lib/Highcharts-2.0.3/js/highcharts.js');
   $document->addScript('components/com_easysdi_monitor/lib/Highcharts-2.0.3/js/modules/exporting.js');
   $document->addScript('components/com_easysdi_monitor/lib/ext/examples/ux/RowEditor.js');
+  $document->addScript('components/com_easysdi_monitor/lib/ext/examples/ux/RowExpander.js');
   $document->addScript('components/com_easysdi_monitor/ApplicationSettings.js');
   
   //minified files -> use for prod

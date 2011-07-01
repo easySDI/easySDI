@@ -19,6 +19,7 @@ Ext.namespace("EasySDI_Mon");
    //Url to the proxy for cross scripting
    //You normally do not have to change this!
    EasySDI_Mon.proxy = '../index.php?option=com_easysdi_monitor&view=proxy&proxy_url=';
+   EasySDI_Mon.proxyserverside = '?option=com_easysdi_monitor&view=proxy&proxy_url=';
    
    //EasySDI_Mon.proxy = '/web2/administrator/components/com_easysdi_monitor/views/proxy/tmpl/default.php?proxy_url=';
    
@@ -42,3 +43,5 @@ Ext.namespace("EasySDI_Mon");
    //private collection: adminJobs
    //public collection:  jobs
    EasySDI_Mon.DefaultJobCollection = 'jobs';
+   EasySDI_Mon.MonitorRoot = "index.php?option=com_easysdi_monitor";
+   //EasySDI_Mon.DefaultExportCollection = 'exportTypes';

@@ -1,4 +1,4 @@
-/**
+	/**
  * EasySDI, a solution to implement easily any spatial data infrastructure
  * Copyright (C) EasySDI Community 
  * For more information : www.easysdi.org
@@ -40,7 +40,7 @@ Ext.onReady(function(){
 		proxy: proxy,
 		writer: writer,
 		//fields:['serviceMethod', 'status', 'name', 'params']
-		fields:[{name:'serviceMethod'},{name: 'status'},{name: 'name'},{name: 'statusCode'},{name: 'params'},
+		fields:[{name:'serviceMethod'},{name: 'status'},{name: 'name'},{name: 'statusCode'},{name: 'params'},{name: 'soapUrl'},
 		        {name:'queryValidationSettings',mapping:'queryValidationSettings'},{name:'id',mapping:'queryValidationSettings.id'},{name:'useSizeValidation',mapping:'queryValidationSettings.useSizeValidation'},
 		        {name:'normSize',mapping:'queryValidationSettings.normSize'},{name:'normSizeTolerance',mapping:'queryValidationSettings.normSizeTolerance'},
 		        {name:'useTimeValidation',mapping:'queryValidationSettings.useTimeValidation'}, {name:'normTime',mapping:'queryValidationSettings.normTime'},
@@ -72,16 +72,22 @@ Ext.onReady(function(){
 	]);
 
 	function paramsRenderer(value) {
+		debugger ;
 		if(value == null)
 			return "";
 		if(!value.constructor)
 			return "";
 		if (value.constructor.toString().indexOf("Array") == -1)
-			return value;
+			return value;		
 		else{
 			var str = '';
 			for (var i=0; i<value.length; i++){
-				str += value[i].name+"="+value[i].value;
+				if(value[i].value.indexOf(":Envelope>")!=-1){
+					str = Ext.util.Format.htmlEncode(value[i].value);
+					break; // we do not care about any other params in case we are dealing with a soap envelope
+				}
+				else
+					str += value[i].name+"="+value[i].value;
 				if(i<value.length-1)
 					str += "&";
 			}
@@ -89,6 +95,46 @@ Ext.onReady(function(){
 		}
 	}
 
+	
+	var reqOptionsHandler = function(){
+
+		return{
+			
+			doLoadTypeOptions : function(method, type){
+				
+				if(type== "all"){
+						return EasySDI_Mon.ServiceMethodStore[type+method];						
+				}	
+				else{
+					return EasySDI_Mon.ServiceMethodStore[type];
+					
+				}	
+
+			},
+		    enableSOAP :function (combo, fieldToToggle ){
+		    	
+		    	if(Ext.getCmp(fieldToToggle)){
+			    	Ext.getCmp(fieldToToggle).el.up('.x-form-item').setDisplayed(false);
+			    	Ext.getCmp(fieldToToggle).allowBlank = true;
+		    	}
+		    	
+				if(!combo)
+					return null;
+				if(!combo.value)
+					return null;
+			
+				if(combo.value.toLowerCase().indexOf("soap")!=-1){
+					if(combo.value.toLowerCase().indexOf("1.1")!=-1){
+						Ext.getCmp(fieldToToggle).el.up('.x-form-item').setDisplayed(true);
+						Ext.getCmp(fieldToToggle).allowBlank = false;
+					}
+				}
+				
+			}	
+		
+		}
+	}();
+	
 	var _reqGrid = new Ext.grid.GridPanel({
 		id:'ReqGrid',
 		loadMask:true,
@@ -151,6 +197,9 @@ Ext.onReady(function(){
 		if (!rec) {
 			return false;
 		}
+		debugger;
+		options = reqOptionsHandler.doLoadTypeOptions(Ext.getCmp('JobGrid').getSelectionModel().getSelected().get('httpMethod').toLowerCase(), Ext.getCmp('JobGrid').getSelectionModel().getSelected().get('serviceType').toLowerCase());
+
 		
 		var reqP = new Ext.FormPanel({
 					id: 'newReqPanel',
@@ -185,18 +234,30 @@ Ext.onReady(function(){
 						valueField:     'name',
 						store:          new Ext.data.SimpleStore({
 							fields : ['name'],
-							data : EasySDI_Mon.ServiceMethodStore[Ext.getCmp('JobGrid').getSelectionModel().getSelected().get('serviceType').toLowerCase()]
+							data : options
+								//reqOptionsHandler.doLoadTypeOptions(Ext.getCmp('JobGrid').getSelectionModel().getSelected().get('httpMethod'), Ext.getCmp('JobGrid').getSelectionModel().getSelected().get('serviceType'))
+
+						//	data : EasySDI_Mon.ServiceMethodStore[Ext.getCmp('JobGrid').getSelectionModel().getSelected().get('serviceType').toLowerCase()]
 						}),
 						listeners: {
-							'change': enableNormSave		
+							'change': enableNormSave
+							//'select': reqOptionsHandler.enableSOAP(this, "reqSoapAction")
 						}
+					},					
+					{
+						id: 'reqSoapAction',
+						fieldLabel: EasySDI_Mon.lang.getLocal('soap action'),
+						xtype: 'textfield',
+						name: 'soapUrl'
+						
+						
 					},{
 						fieldLabel: EasySDI_Mon.lang.getLocal('grid header params'),
 						name: 'params',
 						height:200,
 						allowBlank:true,
-						xtype: 'textarea',
-						allowBlank: true
+						xtype: 'textarea'
+						
 					}],
 					buttons: [{
 						formBind:true,
@@ -230,6 +291,8 @@ Ext.onReady(function(){
 					}]
 				});
 
+		
+		
 		var reqNorm = new Ext.FormPanel({
 					id: 'newNormPanel',
 					monitorValid:true,
@@ -378,8 +441,10 @@ Ext.onReady(function(){
 								var u = new _reqGrid.store.recordType(EasySDI_Mon.DefaultReq);
 								for (var el in fields){
 									u.set(el, fields[el]);
-									if(el == "params")
+									if(el == "params"){
+										debugger;
 									   fieldParams = fields[el];
+									}
 								}
 								for(var el in fields2)
 								{
@@ -437,6 +502,8 @@ Ext.onReady(function(){
 			]
 		});
 		win.show();
+		Ext.getCmp("reqSoapAction").el.up('.x-form-item').setDisplayed(false);
+		Ext.getCmp("sMComboxID").on('select', function(){reqOptionsHandler.enableSOAP(Ext.getCmp("sMComboxID"), "reqSoapAction")} );
 	}
 
 	/**
@@ -450,12 +517,20 @@ Ext.onReady(function(){
 
 		var params = rec.get('params');
 		var strParams = '';
-		for (var i=0; i<params.length; i++){
-			strParams += params[i].name+"="+params[i].value;
-			if(i<params.length-1)
-				strParams += "&";
-		}
+		strParams = Ext.util.Format.htmlDecode(paramsRenderer(params));
+//		for (var i=0; i<params.length; i++){
+//			if(value[i].value.indexOf("<soap:Envelope")!=-1){
+//				str = value[i].value;
+//				break; // we do not care about any other params in case we are dealing with a soap envelope
+//			}else
+//				strParams += params[i].name+"="+params[i].value;
+//			
+//			if(i<params.length-1)
+//				strParams += "&";
+//		}
 		
+		options = reqOptionsHandler.doLoadTypeOptions(Ext.getCmp('JobGrid').getSelectionModel().getSelected().get('httpMethod').toLowerCase(), Ext.getCmp('JobGrid').getSelectionModel().getSelected().get('serviceType').toLowerCase());
+
 		var reqP = new Ext.FormPanel({
 				id: 'editReqPanel',
 				labelWidth: 90,
@@ -474,6 +549,7 @@ Ext.onReady(function(){
 					disabled:true
 				
 				},{
+					id : 'reqServiceMethodComboEdit',
 					xtype:          'combo',
 					mode:           'local',
 					value:          rec.get('serviceMethod'),
@@ -487,8 +563,21 @@ Ext.onReady(function(){
 					valueField:     'name',
 					store:          new Ext.data.SimpleStore({
 						fields : ['name'],
-						data : EasySDI_Mon.ServiceMethodStore[Ext.getCmp('JobGrid').getSelectionModel().getSelected().get('serviceType').toLowerCase()]
-					})
+						data :options
+						//data : EasySDI_Mon.ServiceMethodStore[Ext.getCmp('JobGrid').getSelectionModel().getSelected().get('serviceType').toLowerCase()]
+					}),
+					listeners:{
+						
+						//'select': reqOptionsHandler.enableSOAP(this, "reqSoapActionEdit")
+					}
+				},					
+				{
+					id: 'reqSoapActionEdit',
+					fieldLabel: EasySDI_Mon.lang.getLocal('soap action'),
+					value:   rec.get('soapUrl'),
+					xtype: 'textfield',
+					name: 'soapUrl'
+					
 				},{
 					fieldLabel: EasySDI_Mon.lang.getLocal('grid header params'),
 					value: strParams,
@@ -513,6 +602,7 @@ Ext.onReady(function(){
 					   rec.beginEdit();
 					   rec.set('serviceMethod', fields.serviceMethod);
 					   rec.set('params', fields.params);
+					   rec.set('soapUrl', fields.soapUrl);
 					   for(var el in fieldsValiation)
 					   {
 							rec.set(el, fieldsValiation[el]);
@@ -688,6 +778,7 @@ Ext.onReady(function(){
 									   var r = rec;
 									   rec.beginEdit();
 									   rec.set('serviceMethod', fields.serviceMethod);
+									   
 									   rec.set('params', fields.params);
 									   for(var el in fieldsValiation)
 									   {
@@ -749,6 +840,9 @@ Ext.onReady(function(){
 			]
 		});	
 		win.show();
+		//Ext.getCmp("reqSoapActionEdit").el.up('.x-form-item').setDisplayed(false);
+		reqOptionsHandler.enableSOAP(Ext.getCmp("reqServiceMethodComboEdit"), "reqSoapActionEdit");
+		Ext.getCmp("reqServiceMethodComboEdit").on('select', function(){reqOptionsHandler.enableSOAP(Ext.getCmp("reqServiceMethodComboEdit"), "reqSoapActionEdit")} );
   }  
   
   function createMethodParams (proxy, action, result, res, rs) {
@@ -758,7 +852,10 @@ Ext.onReady(function(){
 	      var jobRec = Ext.getCmp('JobGrid').getSelectionModel().getSelected();
 			  var jobName = jobRec.get('name');
 				var name = rs.get('name');
-	      
+	 
+		if(res.raw.data.serviceMethod.toLowerCase().indexOf("soap")!=-1)
+			fieldParams ="soapenvelope="+encodeURIComponent(fieldParams);
+		
 	      Ext.Ajax.request({
 					loadMask: true,
 					method: 'POST',

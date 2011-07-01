@@ -1,456 +1,5982 @@
-/*
+ /**
+ * EasySDI, a solution to implement easily any spatial data infrastructure
+ * Copyright (C) EasySDI Community 
+ * For more information : www.easysdi.org
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html.
+ */
+Ext.namespace("EasySDI_Mon");
+Ext.onReady(function(){
+   // Ext.BLANK_IMAGE_URL = 'images/s.gif';
+    Ext.QuickTips.init();
 
-  OpenLayers.js -- OpenLayers Map Viewer Library
 
-  Copyright 2005-2010 OpenLayers Contributors, released under the Clear BSD
-  license. Please see http://svn.openlayers.org/trunk/openlayers/license.txt
-  for the full text of the license.
 
-  Includes compressed code under the following licenses:
+	var editor = new Ext.ux.grid.RowEditor({
+		saveText: EasySDI_Mon.lang.getLocal('grid action update'),
+		cancelText: EasySDI_Mon.lang.getLocal('grid action cancel'),
+		clicksToEdit: 2,
+		 listeners: {
+             afteredit: syncStore
+         }
+	});
+	
+	  EasySDI_Mon.MonitorRoot = "index.php?option=com_easysdi_monitor";
+	  EasySDI_Mon.ExportTypeStore =  [['CSV'],['HTML'],['XHTML']];
 
-  (For uncompressed versions of the code used please see the
-  OpenLayers SVN repository: <http://openlayers.org/>)
+    var expportConfig = Ext.data.Record.create([
+     'id','exportName', 'exportType','exportDesc', 'xsltUrl'      
+    ]);
+ 
+    var store = new Ext.data.Store({
+        api: {
+            create :  EasySDI_Mon.MonitorRoot+"&task=create",
+            read : EasySDI_Mon.MonitorRoot+"&task=read",
+            update: EasySDI_Mon.MonitorRoot+"&task=update",
+            destroy: EasySDI_Mon.MonitorRoot+"&task=delete"
+        },
+        reader: new Ext.data.JsonReader({
+            root: 'rows',
+            totalProperty: 'results',
+            idProperty: 'id'
+        }, expportConfig),
+        writer: new Ext.data.JsonWriter({
+            writeAllFields: true
+        }),
+        autoLoad: false,
+        autoSave: false     
+      
+    });
+    
+    function syncStore(rowEditor, changes, r, rowIndex) {
+        store.save();
+        
+        var task = new Ext.util.DelayedTask(function(){ 
+        	_exportGrid.getBottomToolbar().doRefresh();
+        });
+        task.delay(1000); 
 
+
+       
+    }
+
+
+    var expander = new Ext.ux.grid.RowExpander({
+        tpl : new Ext.Template(
+           
+            '<p>{exportDesc}</p>'
+        ),
+        enableCaching:false
+    });
+
+	
+    var _exportGrid = new Ext.grid.GridPanel({
+       id:'testGrid',
+      
+       loadMask:true,
+		region:'center',
+		stripeRows: true,
+        title:   EasySDI_Mon.lang.getLocal('export type config'), 
+        store: store,
+        sm: new Ext.grid.RowSelectionModel({
+            singleSelect: true
+        }),
+        columns: [expander,
+                  {header: EasySDI_Mon.lang.getLocal('name'), dataIndex: 'exportName', width:100,	
+                	  id :'name-col'  , 
+              		sortable: true,
+            		editable:true,
+            		editor: {
+            		xtype: 'textfield',
+            		allowBlank: false,
+            	         		
+            		}},
+                  {header: EasySDI_Mon.lang.getLocal('exporttype'), dataIndex: 'exportType', width:100,
+            				editor: {
+            				xtype: 'combo',
+            				store: new Ext.data.SimpleStore({
+            					fields: ['name'],
+            					data : EasySDI_Mon.ExportTypeStore
+            				}),
+            				displayField:'name',
+            				typeAhead: true,
+            				mode: 'local',
+            				triggerAction: 'all',
+            				emptyText:'',
+            				selectOnFocus:true
+            		}},
+                  {header: EasySDI_Mon.lang.getLocal('desc'), dataIndex: 'exportDesc', width:270,
+            				editor: {
+	              			xtype: 'textfield',
+	              			allowBlank: false
+	              }},
+                  {header: EasySDI_Mon.lang.getLocal('xsltUrl'), dataIndex: 'xsltUrl',width:270,
+            					editor: {
+            					xtype: 'textfield',
+            					allowBlank: true
+            	  }}                 
+              ]  , 
+              plugins: [editor, expander],
+	tbar: [{
+		iconCls:'icon-service-add',
+		text: EasySDI_Mon.lang.getLocal('grid action add'),
+		handler: onAddExportConfig
+	},'-',{
+		iconCls:'icon-service-rem',
+		ref: '../removeBtn',
+		text: EasySDI_Mon.lang.getLocal('grid action rem'),
+		handler: onDeleteExportConfig
+	}], 
+	bbar: new Ext.PagingToolbar({
+		pageSize: 15,
+		store: store,
+		displayInfo: true,
+		displayMsg: EasySDI_Mon.lang.getLocal('paging display msg'),
+		emptyMsg: EasySDI_Mon.lang.getLocal('paging empty msg')
+	}),
+	autoExpandColumn :'name-col',
+	collapsible: true,
+    animCollapse: false
+
+
+
+    });
+    
+    _exportGrid.getBottomToolbar().doLoad();
+    
+    function onAddExportConfig(btn, ev) {
+    	
+    	//create default record
+		var u = new _exportGrid.store.recordType();
+
+		//Open a window for entering job's first values
+		var win = new  Ext.Window({
+			width:380,
+			autoScroll:true,
+			modal:true,
+			title:EasySDI_Mon.lang.getLocal('new export config'),
+			items: [
+			        new Ext.FormPanel({
+			        	labelWidth: 90, // label settings here cascade unless overridden
+			        	monitorValid:true,
+			        	ref: 'exportPanel',
+			        	region:'center',
+			        	bodyStyle:'padding:5px 5px 0',
+			        	autoHeight:true,
+			        	frame:true,
+			        	defaults: {width: 200},
+			        	defaultType: 'textfield',
+			        	autoHeight:true,
+			        	items: [{
+			        		fieldLabel: 'Export config name',			        		
+			        		name: 'exportName',
+			        		allowBlank:false,
+			        		
+			        	},{
+			        		xtype:          'combo',
+			        		mode:           'local',			        		
+			        		triggerAction:  'all',
+			        		forceSelection: true,
+			        		editable:       false,
+			        		fieldLabel:     EasySDI_Mon.lang.getLocal('export config type'),
+			        		name:           'exportType',
+			        		displayField:   'name',
+			        		valueField:     'name',
+			        		store:          new Ext.data.SimpleStore({
+			        			fields : ['name'],
+			        			data   :  EasySDI_Mon.ExportTypeStore
+			        		})
+			        	},{
+			        		fieldLabel: 'xsltUrl',			        	
+			        		name: 'xsltUrl',
+			        		allowBlank:false,
+			        		xtype: 'textfield',
+			        		allowBlank: false
+			        	},{
+			        		fieldLabel: 'description',			        		
+			        		name: 'exportDesc',
+			        		allowBlank:false,
+			        		xtype: 'textfield'
+			        		
+			        	}],
+			        	buttons: [{
+			        		text: EasySDI_Mon.lang.getLocal('grid action ok'),
+			        		//If validation fails disable the button
+			        		formBind:true,
+			        		handler: function(){
+			        		editor.stopEditing();
+			        		var fields = win.exportPanel.getForm().getFieldValues();
+			        		var plop = u;
+			        		u.set('exportName', fields.exportName);
+			        		u.set('exportType', fields.exportType);
+			        		u.set('exportDesc', fields.exportDesc);
+			        		u.set('xsltUrl', fields.xsltUrl);			        		
+			        		_exportGrid.store.insert(0, u);
+			        		syncStore();
+			        		win.close();
+			        		//editor.startEditing(0);
+			        		//Also create a request getCap for this job
+			        		//Ext.data.DataProxy.addListener('write', afterJobInserted);
+			        	}
+			        	},{
+			        		text: EasySDI_Mon.lang.getLocal('grid action cancel'),
+			        		handler: function(){
+			        		win.close();
+			        	}
+			        	}]
+			        })
+			        ]
+		});
+
+		win.show();
+    	
+    }
+    
+    function onDeleteExportConfig(btn, ev) {
+        var sm = _exportGrid.getSelectionModel(),
+        sel = sm.getSelected();
+        if (sm.hasSelection()){
+        Ext.Msg.show({
+            title: EasySDI_Mon.lang.getLocal('Remove Export Config'), 
+            buttons: Ext.MessageBox.YESNOCANCEL,
+            msg:  EasySDI_Mon.lang.getLocal('remove') +" "+sel.data.exportName+'?',
+            fn: function(btn){
+                if (btn == 'yes'){
+                	_exportGrid.getStore().remove(sel);
+                	syncStore();
+                }
+            }
+        });
+    }
+    	
+    	
+    }
+});/**
+ * EasySDI, a solution to implement easily any spatial data infrastructure
+ * Copyright (C) EasySDI Community 
+ * For more information : www.easysdi.org
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html.
+ */
+Ext.namespace("EasySDI_Mon");
+
+Ext.onReady(function(){
+	Ext.QuickTips.init();
+
+	var url = String.format("./components/com_easysdi_monitor/lib/ext/src/locale/ext-lang-{0}.js", EasySDI_Mon.locale);
+	Ext.Ajax.request({
+		url: url,
+		success: function(response, opts){
+		eval(response.responseText);
+	},
+	failure: function(){
+		Ext.Msg.alert('Failure', EasySDI_Mon.lang.getLocal('error_lang')+' "'+EasySDI_Mon.locale+'"');
+	},
+	scope: this 
+	});
+
+});/**
+ * EasySDI, a solution to implement easily any spatial data infrastructure
+ * Copyright (C) EasySDI Community 
+ * For more information : www.easysdi.org
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html.
+ */
+
+Ext.form.VTypes['jobnameMask'] = /[a-z0-9_-]/i;
+var alphanummore = /^[a-zA-Z0-9_-]+$/;
+Ext.form.VTypes['alphanummore'] = function(v)
+{   
+	return alphanummore.test(v);
+}
+
+Ext.form.VTypes['jobname'] = function(v)
+{   
+	if(Ext.form.VTypes['alphanummore'](v)){
+		if( Ext.getCmp('JobGrid').store.getById(v)){
+			Ext.form.VTypes['jobnameText'] = EasySDI_Mon.lang.getLocal('jobname already exists');
+			return false;
+		}
+		if(v.toUpperCase() == 'ALL'){
+			Ext.form.VTypes['jobnameText'] = EasySDI_Mon.lang.getLocal('error reserved keyword');
+			return false;
+		}
+		return true;
+	}else{
+		Ext.form.VTypes['jobnameText'] = EasySDI_Mon.lang.getLocal('error ressource name');
+		return false;
+	}	
+	return true;
+}
+
+Ext.form.VTypes['reqname'] = function(v)
+{   
+	if(Ext.form.VTypes['alphanum'](v)){
+		if( Ext.getCmp('ReqGrid').store.getById(v)){
+			Ext.form.VTypes['reqnameText'] = EasySDI_Mon.lang.getLocal('reqname already exists');
+			return false;
+		}
+		if(v.toUpperCase() == 'ALL'){
+			Ext.form.VTypes['reqnameText'] = EasySDI_Mon.lang.getLocal('error reserved keyword');
+			return false;
+		}
+		return true;
+	}else{
+		Ext.form.VTypes['reqnameText'] = EasySDI_Mon.lang.getLocal('error ressource name');
+		return false;
+	}
+	return true;
+}
+/*!
+ * Ext JS Library 3.2.1
+ * Copyright(c) 2006-2010 Ext JS, Inc.
+ * licensing@extjs.com
+ * http://www.extjs.com/license
+ */
+/**
+ * Ext.App
+ * @extends Ext.util.Observable
+ * @author Chris Scott
+ */
+Ext.App = function(config) {
+
+    // set up StateProvider
+    this.initStateProvider();
+
+    // array of views
+    this.views = [];
+
+    Ext.apply(this, config);
+    if (!this.api.actions) { this.api.actions = {}; }
+
+    // init when onReady fires.
+    Ext.onReady(this.onReady, this);
+
+    Ext.App.superclass.constructor.apply(this, arguments);
+}
+Ext.extend(Ext.App, Ext.util.Observable, {
+
+    /***
+     * response status codes.
+     */
+    STATUS_EXCEPTION :          'exception',
+    STATUS_VALIDATION_ERROR :   "validation",
+    STATUS_ERROR:               "error",
+    STATUS_NOTICE:              "notice",
+    STATUS_OK:                  "ok",
+    STATUS_HELP:                "help",
+
+    /**
+     * @cfg {Object} api
+     * remoting api.  should be defined in your own config js.
+     */
+    api: {
+        url: null,
+        type: null,
+        actions: {}
+    },
+
+    // private, ref to message-box Element.
+    msgCt : null,
+
+    // @protected, onReady, executes when Ext.onReady fires.
+    onReady : function() {
+        // create the msgBox container.  used for App.setAlert
+        this.msgCt = Ext.DomHelper.insertFirst(document.body, {id:'msg-div'}, true);
+        this.msgCt.setStyle('position', 'absolute');
+        this.msgCt.setStyle('z-index', 9999);
+        this.msgCt.setWidth(300);
+    },
+
+    initStateProvider : function() {
+        /*
+         * set days to be however long you think cookies should last
+         */
+        var days = '';        // expires when browser closes
+        if(days){
+            var date = new Date();
+            date.setTime(date.getTime()+(days*24*60*60*1000));
+            var exptime = "; expires="+date.toGMTString();
+        } else {
+            var exptime = null;
+        }
+
+        // register provider with state manager.
+        Ext.state.Manager.setProvider(new Ext.state.CookieProvider({
+            path: '/',
+            expires: exptime,
+            domain: null,
+            secure: false
+        }));
+    },
+
+    /**
+     * registerView
+     * register an application view component.
+     * @param {Object} view
+     */
+    registerView : function(view) {
+        this.views.push(view);
+    },
+
+    /**
+     * getViews
+     * return list of registered views
+     */
+    getViews : function() {
+        return this.views;
+    },
+
+    /**
+     * registerActions
+     * registers new actions for API
+     * @param {Object} actions
+     */
+    registerActions : function(actions) {
+        Ext.apply(this.api.actions, actions);
+    },
+
+    /**
+     * getAPI
+     * return Ext Remoting api
+     */
+    getAPI : function() {
+        return this.api;
+    },
+
+    /***
+     * setAlert
+     * show the message box.  Aliased to addMessage
+     * @param {String} msg
+     * @param {Bool} status
+     */
+    setAlert : function(status, msg) {
+        this.addMessage(status, msg);
+    },
+
+    /***
+     * adds a message to queue.
+     * @param {String} msg
+     * @param {Bool} status
+     */
+    addMessage : function(status, msg) {
+        var delay = 3;    // <-- default delay of msg box is 1 second.
+        if (status == false) {
+            delay = 5;    // <-- when status is error, msg box delay is 3 seconds.
+        }
+        // add some smarts to msg's duration (div by 13.3 between 3 & 9 seconds)
+        if(msg)
+        {
+		    delay = msg.length / 13.3;
+		    if (delay < 3) {
+		        delay = 3;
+		    }
+		    else if (delay > 9) {
+		        delay = 9;
+		    }
+        }
+
+        this.msgCt.alignTo(document, 't-t');
+        Ext.DomHelper.append(this.msgCt, {html:this.buildMessageBox(status, String.format.apply(String, Array.prototype.slice.call(arguments, 1)))}, true).slideIn('t').pause(delay).ghost("t", {remove:true});
+    },
+
+    /***
+     * buildMessageBox
+     */
+    buildMessageBox : function(title, msg) {
+        switch (title) {
+            case true:
+                title = EasySDI_Mon.lang.getLocal(this.STATUS_OK);
+                break;
+            case false:
+                title = EasySDI_Mon.lang.getLocal(this.STATUS_ERROR);
+                break;
+        }
+        return [
+            '<div class="app-msg">',
+            '<div class="x-box-tl"><div class="x-box-tr"><div class="x-box-tc"></div></div></div>',
+            '<div class="x-box-ml"><div class="x-box-mr"><div class="x-box-mc"><h3 class="x-icon-text icon-status-' + title + '">', title, '</h3>', msg, '</div></div></div>',
+            '<div class="x-box-bl"><div class="x-box-br"><div class="x-box-bc"></div></div></div>',
+            '</div>'
+        ].join('');
+    },
+
+    /**
+     * decodeStatusIcon
+     * @param {Object} status
+     */
+    decodeStatusIcon : function(status) {
+        var iconCls = '';
+        switch (status) {
+            case true:
+            case this.STATUS_OK:
+                iconCls = this.ICON_OK;           
+                break;
+            case this.STATUS_NOTICE:
+                iconCls = this.ICON_NOTICE;
+                break;
+            case false:
+            case this.STATUS_ERROR:
+                iconCls = this.ICON_ERROR;
+                break;
+            case this.STATUS_HELP:
+                iconCls = this.ICON_HELP;
+                break;
+        }
+        return iconCls;
+    },
+
+    /***
+     * setViewState, alias for Ext.state.Manager.set
+     * @param {Object} key
+     * @param {Object} value
+     */
+    setViewState : function(key, value) {
+        Ext.state.Manager.set(key, value);
+    },
+
+    /***
+     * getViewState, aliaz for Ext.state.Manager.get
+     * @param {Object} cmd
+     */
+    getViewState : function(key) {
+        return Ext.state.Manager.get(key);
+    },
+
+    /**
+     * t
+     * translation function.  needs to be implemented.  simply echos supplied word back currently.
+     * @param {String} to translate
+     * @return {String} translated.
+     */
+    t : function(words) {
+        return words;
+    },
+
+    handleResponse : function(res) {
+        if (res.type == this.STATUS_EXCEPTION) {
+            return this.handleException(res);
+        }
+        if (res.message.length > 0) {
+            this.setAlert(res.status, res.message);
+        }
+    },
+
+    handleException : function(res) {
+        Ext.MessageBox.alert(res.type.toUpperCase(), res.message);
+    }
+});/**
+ * EasySDI, a solution to implement easily any spatial data infrastructure
+ * Copyright (C) EasySDI Community 
+ * For more information : www.easysdi.org
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html.
+ */
+Ext.namespace("EasySDI_Mon");
+
+Ext.BLANK_IMAGE_URL = './components/com_easysdi_monitor/lib/ext/resources/images/default/s.gif';	
+//use not utc time to prevent time shift in graphs
+Highcharts.setOptions({
+	global: {
+		useUTC: false
+	}
+});
+
+Ext.onReady(function(){
+   
+   EasySDI_Mon.ServiceMethodStore = { 
+       wms: [
+              ['GetCapabilities'],
+   	   ['GetMap']
+   	 ],
+       wfs: [
+              ['GetCapabilities'],
+   	   ['GetFeature']
+   	 ],
+       wmts: [
+              ['GetCapabilities'],
+   	   ['GetTile']
+   	 ],
+       csw: [
+              ['GetCapabilities'],
+   	   ['GetRecordById'],
+   	   ['GetRecords']
+   	 ],
+       sos: [
+              ['GetCapabilities'],
+   	   ['DescribeSensor']
+   	 ],
+       wcs: [
+              ['GetCapabilities'],
+   	   ['GetCoverage']
+   	 ],
+   	allpost: [
+     	    ['GetCapabilities'],
+     	    ['GetMap'],
+     	    ['GetFeature'],
+     	    ['GetTile'],
+     	    ['GetRecordById'],
+ 	        ['GetRecords'],
+ 	        ['DescribeSensor'],
+ 	        ['GetCoverage'],
+    	    ['SOAP 1.1'],
+ 	        ['SOAP 1.2 '],
+ 	        ['HTTP POST']
+	     ], 
+	     
+	allget: [
+	 	     	    ['GetCapabilities'],
+	 	     	    ['GetMap'],
+	 	     	    ['GetFeature'],
+	 	     	    ['GetTile'],
+	 	     	    ['GetRecordById'],
+	 	 	        ['GetRecords'],
+	 	 	        ['DescribeSensor'],
+	 	 	        ['GetCoverage'],
+	 	 	        ['HTTP GET']
+	 		 ]/*,
+   	 all: [
+      	    ['GetCapabilities'],
+   	          ['GetMap'],
+           ['GetFeature'],
+   	      ['GetTile'],
+   		  ['GetRecordById'],
+   	          ['GetRecords'],
+   		  ['DescribeSensor'],
+   		  ['GetCoverage']
+  	       ]*/
+   }
+   
+   EasySDI_Mon.ExportTypeStore = [ ['CSW'], ['HTML'], ['XHTML']];
+   
+   EasySDI_Mon.HttpMethodStore = [
+                             ['GET'],
+   		          ['POST']
+   		       ];
+   
+   EasySDI_Mon.OgcServiceStore = [
+   		         ['WMS'],
+   			 ['WFS'],
+   			 ['WMTS'],
+   			 ['CSW'],
+   			 ['SOS'],
+   			 ['WCS'],
+   			 ['ALL']
+   		       ];
+   
+   EasySDI_Mon.RepPeriodStore = [
+   		         [EasySDI_Mon.lang.getLocal('today'),'today'],
+   			 [EasySDI_Mon.lang.getLocal('yesterday'),'yesterday'],
+   			 [EasySDI_Mon.lang.getLocal('last week'),'lastweek'],
+   			 [EasySDI_Mon.lang.getLocal('this month'),'thismonth'],
+   			 [EasySDI_Mon.lang.getLocal('past 6 months'),'past6months'],
+   			 [EasySDI_Mon.lang.getLocal('past year'),'pastyear'],
+   			 [EasySDI_Mon.lang.getLocal('Enter period...'),'period'],
+   			 [EasySDI_Mon.lang.getLocal('all'),'All']
+   		       ];
+   
+   EasySDI_Mon.ToleranceStore = [
+         ['0','0%'],['5','5%'],['10','10%'],['15','15%'],['20','20%'],['25','25%'],['40','40%'],['50','50%'],['75','75%'],['100','100%']
+   ];
+   
+   /*Used in report for select between aggLogs and logs */
+   EasySDI_Mon.DaysForUsingLogs = 6;                      
+   		       
+   EasySDI_Mon.DefaultJob = {
+   		name:'',
+   		httpMethod:'GET',
+   		serviceType:'WMS',
+   		url:'http://',
+   		login:'',
+   		password:'',
+   		testInterval:3600,
+   		timeout:5,
+   		isPublic:true,
+   		isAutomatic:true,
+   		allowsRealTime:true,
+   		triggersAlerts:true,
+   		slaStartTime:'08:00:00',
+   		slaEndTime:'18:00:00',
+   		httpErrors:true,
+   		bizErrors:true
+   };
+   
+   EasySDI_Mon.DefaultReq = {
+   		name:'',
+   		serviceMethod:'',
+   		params:''
+   };
+   
+   EasySDI_Mon.DefaultGetCapReq = {
+   		name:'',
+   		serviceMethod:''
+   };
+   
+   EasySDI_Mon.DefaultOverviewPage = {
+		   name:'',
+		   isPublic:''
+   };
+   
+   EasySDI_Mon.DefaultPageCombo = {
+		   name: ''
+   };
+   
+   EasySDI_Mon.YesNoCombo = [[EasySDI_Mon.lang.getLocal('YES'), 'Y'],[EasySDI_Mon.lang.getLocal('NO'), 'N']];
+   
+   /*common renderers*/
+   
+   EasySDI_Mon.TrueFalseRenderer = function(value) {
+	 if(value == 'true')
+            return '<table width="100%"><tr><td align="center"><div class="icon-gridrenderer-boolean-true"/></td></tr></table>';
+         else if(value == true)
+            return '<table width="100%"><tr><td align="center"><div class="icon-gridrenderer-boolean-true"/></td></tr></table>';
+         else
+            return '<table width="100%"><tr><td align="center"><div class="icon-gridrenderer-boolean-false"/></td></tr></table>';  
+   };
+   
+   EasySDI_Mon.StatusRenderer = function(status){
+              switch (status){
+                 case 'AVAILABLE':
+                       return '<table'+' title="'+EasySDI_Mon.lang.getLocal('available')+'" '+'width="100%"><tr><td align="center"><div class="icon-gridrenderer-available"/></td></tr></table>';
+                 break;
+                 case 'OUT_OF_ORDER':
+                       return '<table'+' title="'+EasySDI_Mon.lang.getLocal('failure')+'" '+'width="100%"><tr><td align="center"><div class="icon-gridrenderer-failure"/></td></tr></table>';
+                 break;
+                 case 'UNAVAILABLE':
+                       return '<table'+' title="'+EasySDI_Mon.lang.getLocal('unavailable')+'" '+'width="100%"><tr><td align="center"><div class="icon-gridrenderer-unavailable"/></td></tr></table>';
+                 break;
+   	             case 'NOT_TESTED':
+                       return '<table'+' title="'+EasySDI_Mon.lang.getLocal('untested-unknown')+'" '+'width="100%"><tr><td align="center"><div class="icon-gridrenderer-untested"/></td></tr></table>';
+                 break;
+                 default: 
+                    return status;
+                 break;
+            }
+   };
+   
+   EasySDI_Mon.AlertStatusRenderer = function (newStatus, scope, row) {
+      var oldStatus = row.get('oldStatusCode');
+             switch (newStatus){
+                case 'AVAILABLE':
+   	            if(oldStatus == 'OUT_OF_ORDER')
+                      return '<div'+' title="'+EasySDI_Mon.lang.getLocal('title failure-to-available')+'" '+'class="icon-gridrenderer-failure-to-available"/>';
+                if(oldStatus == 'UNAVAILABLE')
+                      return '<div'+' title="'+EasySDI_Mon.lang.getLocal('title unavailable-to-available')+'" '+'class="icon-gridrenderer-unavailable-to-available"/>';
+                if(oldStatus == 'NOT_TESTED')
+                      return '<div'+' title="'+EasySDI_Mon.lang.getLocal('title untested-to-available')+'" '+'class="icon-gridrenderer-untested-to-available"/>';
+                break;
+                case 'OUT_OF_ORDER':
+   	            if(oldStatus == 'AVAILABLE')
+                      return '<div'+' title="'+EasySDI_Mon.lang.getLocal('title available-to-failure')+'" '+'class="icon-gridrenderer-available-to-failure"/>';
+                if(oldStatus == 'UNAVAILABLE')
+                      return '<div'+' title="'+EasySDI_Mon.lang.getLocal('title unavailable-to-failure')+'" '+'class="icon-gridrenderer-unavailable-to-failure"/>';
+                if(oldStatus == 'NOT_TESTED')
+                      return '<div'+' title="'+EasySDI_Mon.lang.getLocal('title untested-to-failure')+'" '+'class="icon-gridrenderer-untested-to-failure"/>';
+                break;
+                case 'UNAVAILABLE':
+   	            if(oldStatus == 'OUT_OF_ORDER')
+                      return '<div'+' title="'+EasySDI_Mon.lang.getLocal('title failure-to-unavailable')+'" '+'class="icon-gridrenderer-failure-to-unavailable"/>';
+                if(oldStatus == 'AVAILABLE')
+                      return '<div'+' title="'+EasySDI_Mon.lang.getLocal('title available-to-unavailable')+'" '+'class="icon-gridrenderer-available-to-unavailable"/>';
+                if(oldStatus == 'NOT_TESTED')
+                      return '<div'+' title="'+EasySDI_Mon.lang.getLocal('title untested-to-unavailable')+'" '+'class="icon-gridrenderer-untested-to-unavailable"/>';
+                break;
+                default: 
+                   return newStatus;
+                break;
+            }
+   };
+   
+   EasySDI_Mon.DelayRenderer = function(value){
+      return Math.round(value * 1000);
+   };
+   
+   EasySDI_Mon.DateTimeRenderer = function (value){
+      return Ext.util.Format.date(value, EasySDI_Mon.dateTimeFormat);
+   };
+   
+   EasySDI_Mon.DateRenderer = function (value){
+      return Ext.util.Format.date(value, EasySDI_Mon.dateFormat);
+   };
+   
+   EasySDI_Mon.CurrentJobCollection = EasySDI_Mon.DefaultJobCollection;
+   
+   EasySDI_Mon.JobCollectionStore = [
+   		         [EasySDI_Mon.lang.getLocal('job collection public'),'jobs'],
+   			 [EasySDI_Mon.lang.getLocal('job collection private'),'adminJobs']
+   		       ];
+   
+   EasySDI_Mon.App = new Ext.App({});
+   
+    // Listen to all DataProxy beforewrite events
+    //
+    //Ext.data.DataProxy.addListener('beforewrite', function(proxy, action) {
+    //	EasySDI_Mon.App.setAlert(EasySDI_Mon.App.STATUS_NOTICE, "Before " + action);
+    //});
+    ////
+    // all write events
+    //
+    Ext.data.DataProxy.addListener('write', function(proxy, action, result, res, rs) {
+        EasySDI_Mon.App.setAlert(true, res.raw.message);
+    });
+    
+    Ext.data.DataProxy.addListener('delete', function(proxy, action, result, res, rs) {
+        EasySDI_Mon.App.setAlert(true, res.raw.message);
+    });
+    
+    ////
+    // all exception events
+    //
+    Ext.data.DataProxy.addListener('exception', function(proxy, type, action, options, res) {
+		    if(res.raw != null)
+		            EasySDI_Mon.App.setAlert(false,  res.raw.message);
+		    else
+			    EasySDI_Mon.App.setAlert(false,  'status:'+res.status+' message:'+res.statusText);
+    });
+   
+});
+
+/**
+ * EasySDI, a solution to implement easily any spatial data infrastructure
+ * Copyright (C) EasySDI Community 
+ * For more information : www.easysdi.org
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html.
+ */
+
+Ext.namespace("EasySDI_Mon");
+
+Ext.onReady(function() {
+	Ext.QuickTips.init();
+
+	var proxy = new Ext.data.HttpProxy({
+		
+		url: EasySDI_Mon.proxy+EasySDI_Mon.DefaultJobCollection
+	});
+
+	var writer = new Ext.data.JsonWriter({
+		encode: false   // <-- don't return encoded JSON -- causes Ext.Ajax#request to send data using jsonData config rather than HTTP params
+	}); 
+
+	var store = new Ext.data.JsonStore({
+		root: 'data',
+		id: 'name',
+		idProperty : 'data.id',
+		totalProperty :'count',
+		//autoSave: true,
+		restful:true,
+		proxy: proxy,
+		writer: writer,
+		fields:['status', 'statusCode', 'httpMethod', 'testInterval', 'bizErrors', 'isPublic', 'allowsRealTime', 'httpErrors', 'serviceType', 'password', 'url' ,'id' ,'slaEndTime', 'name', 'queries', 'login', 'triggersAlerts', 'timeout', 'isAutomatic', 'slaStartTime', {name: 'lastStatusUpdate', type: 'date', dateFormat: 'Y-m-d H:i:s'},'saveResponse']
+	});
+
+
+	var editor = new Ext.ux.grid.RowEditor({
+		saveText: EasySDI_Mon.lang.getLocal('grid action update'),
+		cancelText: EasySDI_Mon.lang.getLocal('grid action cancel'),
+		clicksToEdit: 2
+	});
+
+
+	var cm = new Ext.grid.ColumnModel([{
+		header:EasySDI_Mon.lang.getLocal('grid header name'),
+		dataIndex:"name",
+		width:100,
+		sortable: true,
+		editable:false,
+		editor: {
+		xtype: 'textfield',
+		allowBlank: false,
+		vtype: 'alphanum'
+	}
+	},{
+		header:EasySDI_Mon.lang.getLocal('grid header method'),
+		dataIndex:"httpMethod",
+		width:50,
+		editor: {
+		xtype: 'combo',
+		store: new Ext.data.SimpleStore({
+			fields: ['name'],
+			data :EasySDI_Mon.HttpMethodStore
+		}),
+		displayField:'name',
+		typeAhead: true,
+		mode: 'local',
+		triggerAction: 'all',
+		emptyText:'',
+		selectOnFocus:true
+	}
+	},{
+		header:EasySDI_Mon.lang.getLocal('grid header type'),
+		dataIndex:"serviceType",
+		width:50,
+		editor: {
+		xtype: 'combo',
+		store: new Ext.data.SimpleStore({
+			fields: ['name'],
+			data : EasySDI_Mon.OgcServiceStore
+		}),
+		displayField:'name',
+		typeAhead: true,
+		mode: 'local',
+		triggerAction: 'all',
+		emptyText:'',
+		selectOnFocus:true
+	}
+	},{
+		header:EasySDI_Mon.lang.getLocal('grid header url'),
+		id:'url',
+		dataIndex:"url",
+		width:270,
+		editor: {
+		xtype: 'textfield',
+		allowBlank: false
+			}
+	},{
+		header:EasySDI_Mon.lang.getLocal('grid header interval'),
+		dataIndex:"testInterval",
+		width:60,
+		editor: {
+		xtype: 'numberfield',
+		allowBlank: false,
+		minValue: 1
+	}
+	},{
+		header:EasySDI_Mon.lang.getLocal('grid header isauto'),
+		dataIndex:"isAutomatic",
+		width:30,
+		//trueText: 'true',
+		//falseText: 'false',
+		renderer: EasySDI_Mon.TrueFalseRenderer,
+		editor: {
+		xtype: 'checkbox'
+	}
+	}
+	/*
+	,{
+	header:EasySDI_Mon.lang.getLocal('grid header triggersAlerts'),
+	dataIndex:"triggersAlerts",
+	width:40,
+	//trueText: 'true',
+        //falseText: 'false',
+	renderer: EasySDI_Mon.TrueFalseRenderer,
+        editor: {
+                xtype: 'checkbox'
+           }
+        }
+	 */
+
+	/*
+    ,{
+	header:"Status",
+	dataIndex:"status",
+	width:40,
+	renderer: function (status){
+           switch (status){
+              case 'Disponible':
+                    return '<div class="icon-gridrenderer-available"/>';
+              break;
+              case 'En dérangement':
+                    return '<div class="icon-gridrenderer-failure"/>';
+              break;
+              case 'Indisponible':
+                    return '<div class="icon-gridrenderer-unavailable"/>';
+              break;
+	      case 'Non testé':
+                    return '<div class="icon-gridrenderer-untested"/>';
+              break;
+              default: 
+                 return status;
+              break;
+          }
+	}
+	}
+	 */
+	]);
+
+	var _jobGrid = new Ext.grid.GridPanel({
+		id:'JobGrid',
+		loadMask:true,
+		region:'center',
+		plugins: [editor],
+		stripeRows: true,
+		autoExpandColumn: 'url',
+		tbar: [{
+			iconCls:'icon-service-add',
+			text: EasySDI_Mon.lang.getLocal('grid action add'),
+			handler: onAdd
+		},'-',{
+			iconCls:'icon-service-rem',
+			ref: '../removeBtn',
+			text: EasySDI_Mon.lang.getLocal('grid action rem'),
+			disabled: true,
+			handler: onDelete
+		}],
+		title:EasySDI_Mon.lang.getLocal('job list'),
+		//Ext.getCmp('AlertGrid').getEl()
+		store:store,
+		cm:cm,
+		sm: new Ext.grid.RowSelectionModel({
+			singleSelect: true,
+			listeners: {
+			rowselect: function(sm, row, rec) {
+			Ext.getCmp("jobAdvForm").getForm().loadRecord(rec);
+		}
+		}
+		}),
+		bbar: new Ext.PagingToolbar({
+			pageSize: 15,
+			store: store,
+			displayInfo: true,
+			displayMsg: EasySDI_Mon.lang.getLocal('paging display msg'),
+			emptyMsg: EasySDI_Mon.lang.getLocal('paging empty msg')
+		})
+		/*
+		,
+		// paging bar on the bottom
+		bbar: new Ext.PagingToolbar({
+			pageSize: 15,
+			store: store,
+			displayInfo: true,
+			displayMsg: EasySDI_Mon.lang.getLocal('paging display msg'),
+			emptyMsg: EasySDI_Mon.lang.getLocal('paging empty msg')
+		})
+		*/
+	});
+	//_jobGrid.loadMask = new Ext.LoadMask(_jobGrid.getEl(), {msg:EasySDI_Mon.lang.getLocal('message wait')});
+
+
+	/**
+	 * onAdd
+	 */
+	function onAdd(btn, ev) {
+
+		//create default record
+		var u = new _jobGrid.store.recordType(EasySDI_Mon.DefaultJob);
+
+		//Open a window for entering job's first values
+		var win = new  Ext.Window({
+			width:380,
+			autoScroll:true,
+			modal:true,
+			title:EasySDI_Mon.lang.getLocal('title new job'),
+			items: [
+			        new Ext.FormPanel({
+			        	labelWidth: 90, // label settings here cascade unless overridden
+			        	monitorValid:true,
+			        	ref: 'jobPanel',
+			        	region:'center',
+			        	bodyStyle:'padding:5px 5px 0',
+			        	autoHeight:true,
+			        	frame:true,
+			        	defaults: {width: 200},
+			        	defaultType: 'textfield',
+			        	autoHeight:true,
+			        	items: [{
+			        		fieldLabel: EasySDI_Mon.lang.getLocal('grid header name'),
+			        		value: u.data['name'],
+			        		name: 'name',
+			        		allowBlank:false,
+			        		vtype: 'jobname'
+			        	},{
+			        		xtype:          'combo',
+			        		mode:           'local',
+			        		value:          u.data['httpMethod'],
+			        		triggerAction:  'all',
+			        		forceSelection: true,
+			        		editable:       false,
+			        		fieldLabel:     EasySDI_Mon.lang.getLocal('grid header method'),
+			        		name:           'httpMethod',
+			        		displayField:   'name',
+			        		valueField:     'name',
+			        		store:          new Ext.data.SimpleStore({
+			        			fields : ['name'],
+			        			data   : EasySDI_Mon.HttpMethodStore
+			        		})
+			        	},{
+			        		xtype:          'combo',
+			        		mode:           'local',
+			        		value:          u.data['serviceType'],
+			        		triggerAction:  'all',
+			        		forceSelection: true,
+			        		editable:       false,
+			        		fieldLabel:     EasySDI_Mon.lang.getLocal('grid header type'),
+			        		name:           'serviceType',
+			        		displayField:   'name',
+			        		valueField:     'name',
+			        		store:          new Ext.data.SimpleStore({
+			        			fields : ['name'],
+			        			data : EasySDI_Mon.OgcServiceStore
+			        		})
+			        	},{
+			        		fieldLabel: EasySDI_Mon.lang.getLocal('grid header url'),
+			        		value: u.data['url'],
+			        		name: 'url',
+			        		allowBlank:false,
+			        		xtype: 'textfield',
+			        		allowBlank: false
+			        					        	},{
+			        		fieldLabel: EasySDI_Mon.lang.getLocal('grid header interval'),
+			        		value: u.data['testInterval'],
+			        		name: 'testInterval',
+			        		allowBlank:false,
+			        		xtype: 'numberfield',
+			        		minValue: 1
+			        	},{
+			        		xtype: 'checkbox',
+			        		fieldLabel: EasySDI_Mon.lang.getLocal('grid header isauto'),
+			        		name: 'isAutomatic',
+			        		checked: u.data['isAutomatic']
+			        	},{
+			        		xtype: 'checkbox',
+			        		fieldLabel: EasySDI_Mon.lang.getLocal('grid header ispublic'),
+			        		name: 'isPublic',
+			        		checked: u.data['isPublic']
+			        	}],
+			        	buttons: [{
+			        		text: EasySDI_Mon.lang.getLocal('grid action ok'),
+			        		//If validation fails disable the button
+			        		formBind:true,
+			        		handler: function(){
+			        		editor.stopEditing();
+			        		var fields = win.jobPanel.getForm().getFieldValues();
+			        		var plop = u;
+			        		u.set('name', fields.name);
+			        		u.set('httpMethod', fields.httpMethod);
+			        		u.set('serviceType', fields.serviceType);
+			        		u.set('url', fields.url);
+			        		u.set('testInterval', fields.testInterval);
+			        		u.set('isAutomatic', fields.isAutomatic);
+			        		u.set('isPublic', fields.isPublic);
+			        		_jobGrid.store.insert(0, u);
+			        		win.close();
+			        		//editor.startEditing(0);
+			        		//Also create a request getCap for this job
+			        		Ext.data.DataProxy.addListener('write', afterJobInserted);
+			        	}
+			        	},{
+			        		text: EasySDI_Mon.lang.getLocal('grid action cancel'),
+			        		handler: function(){
+			        		win.close();
+			        	}
+			        	}]
+			        })
+			        ]
+		});
+
+		win.show();
+	}
+
+	/**
+	 * addGetCap
+	 */
+	function afterJobInserted(proxy, action, result, res, rs){
+
+		Ext.data.DataProxy.removeListener('write', afterJobInserted);
+		Ext.data.DataProxy.addListener('write', afterReqInserted);
+		var reqGrid = Ext.getCmp('ReqGrid');
+		reqGrid.store.proxy.setUrl(EasySDI_Mon.proxy+'/jobs/'+result[0].name+'/queries');
+		var u = new reqGrid.store.recordType(EasySDI_Mon.DefaultGetCapReq);
+		u.set('name', 'GetCap');
+		u.set('serviceMethod', 'GetCapabilities');
+		reqGrid.store.insert(0, u);
+		reqGrid.store.save();
+		//If the job has been added to the other collection than the current,
+		//we need to refresh the grid
+		if((Ext.getCmp('jobCbCollection').getValue() == 'jobs' && result[0].isPublic == false)||
+				(Ext.getCmp('jobCbCollection').getValue() == 'adminJobs' && result[0].isPublic == true))
+			store.load();
+
+	}
+
+	function afterReqInserted(proxy, action, result, res, rs){
+		Ext.data.DataProxy.removeListener('write', afterReqInserted);
+		//Select the new row Row
+		_jobGrid.getSelectionModel().selectFirstRow();
+		_jobGrid.getView().focusRow(0);
+	}
+
+	/**
+	 * onDelete
+	 */
+	function onDelete() {
+		var rec = _jobGrid.getSelectionModel().getSelected();
+		if (!rec) {
+			return false;
+		}
+		Ext.MessageBox.confirm(EasySDI_Mon.lang.getLocal('confirm'), String.format(EasySDI_Mon.lang.getLocal('confirm suppress job'), rec.get('name')), function(btn){
+			if (btn == 'no')
+				return false;
+			else
+				_jobGrid.store.remove(rec);
+		});
+	}
+
+	/**
+	 * onShowAdvancedTab
+	 */
+	function onShowAdvancedTab() {
+
+	}
+
+	//dataStore.on('add', alert("add"));
+	//dataStore.on('remove', alert("remove"));
+	//dataStore.on('update', alert("update"));
+
+	//grid.render('jobGrid');
+	store.load();
+
+	_jobGrid.getSelectionModel().on('selectionchange', function(sm){
+		_jobGrid.removeBtn.setDisabled(sm.getCount() < 1);
+		if(sm.getCount() < 1)
+			_advForm.updateAdv.disable();
+		else
+			_advForm.updateAdv.enable();
+
+	});
+
+
+	//Advanced edition form
+	var _advForm = new Ext.FormPanel({
+		id: 'jobAdvForm',
+		title: EasySDI_Mon.lang.getLocal('advanced'),
+		// labelAlign: 'top',
+		frame:true,
+		//bodyStyle:'padding:5px 5px 0',
+		// width: 400,
+		autoHeight:true, // To fit for extra checkbox
+		labelWidth: 100,
+		autoWidth:true,
+		region:'center',
+		items: [{
+			layout:'column',
+			items:[{
+				columnWidth:.5,
+				layout: 'form',
+				items: [{
+					xtype:'textfield',
+					fieldLabel: EasySDI_Mon.lang.getLocal('grid header login'),
+					name: 'login',
+					allowBlank:true,
+					anchor:'95%'
+				},{
+					xtype:'textfield',
+					fieldLabel: EasySDI_Mon.lang.getLocal('grid header password'),
+					name: 'password',
+					allowBlank:true,
+					anchor:'95%'
+				}]
+			},{
+				columnWidth:.5,
+				layout: 'form',
+				items: [{
+					xtype:'timefield',
+					fieldLabel: EasySDI_Mon.lang.getLocal('grid header sla start'),
+					name: 'slaStartTime',
+					minValue: '7:00',
+					maxValue: '18:00',
+					increment: 30,
+					format: 'H:i:s',
+					anchor:'95%'
+				},{
+					xtype:'timefield',
+					fieldLabel: EasySDI_Mon.lang.getLocal('grid header sla end'),
+					name: 'slaEndTime',
+					minValue: '7:00',
+					maxValue: '18:00',
+					increment: 30,
+					format: 'H:i:s',
+					anchor:'95%'
+				}]
+			}]
+		},{
+			xtype: 'checkbox',
+			fieldLabel: EasySDI_Mon.lang.getLocal('grid header isrealtime'),
+			name: 'allowsRealTime',
+			trueText: 'true',
+			falseText: 'false'
+		},{
+			xtype: 'numberfield',
+			minValue: 1,
+			fieldLabel: EasySDI_Mon.lang.getLocal('grid header timeout'),
+			name: 'timeout',
+			width: 40
+		},{
+			xtype: 'checkbox',
+			fieldLabel: EasySDI_Mon.lang.getLocal('grid header triggersAlerts'),
+			name: 'triggersAlerts',
+			trueText: 'true',
+			falseText: 'false'
+		},{
+			xtype:'checkbox',
+			fieldLabel: EasySDI_Mon.lang.getLocal('grid header httperrors'),
+			name: 'httpErrors',
+			trueText: 'true',
+			falseText: 'false'
+		},{
+			xtype:'checkbox',
+			fieldLabel: EasySDI_Mon.lang.getLocal('grid header ogcerrors'),
+			name: 'bizErrors',
+			trueText: 'true',
+			falseText: 'false'
+		},{
+			xtype:'checkbox',
+			fieldLabel: EasySDI_Mon.lang.getLocal('grid header ispublic'),
+			name: 'isPublic',
+			trueText: 'true',
+			falseText: 'false'
+		},{
+			xtype:'checkbox',
+			fieldLabel: EasySDI_Mon.lang.getLocal('grid header saveresponse'),
+			name: 'saveResponse',
+			trueText: 'true',
+			falseText: 'false'
+		}
+
+		],
+		buttons: [{
+			text: EasySDI_Mon.lang.getLocal('grid action update'),
+			ref: '../updateAdv',
+			disabled: true,
+			handler: function(){
+			var rec = _jobGrid.getSelectionModel().getSelected();
+			if (!rec) {
+				return false;
+			}
+			//rec = store.getById(rec.get('name'));
+			//get form values
+			var fields = _advForm.getForm().getFieldValues();
+			//update rec values
+			rec.beginEdit();
+			for (var el in fields){
+				rec.set(el, fields[el]);
+			}
+			rec.endEdit();
+			rec.store.save();
+			//reload the store because isPublic might changed
+			Ext.data.DataProxy.addListener('write', afterStoreUpdated);
+		}
+		}]
+	});
+
+	function afterStoreUpdated(proxy, action, result, res, rs){
+
+		Ext.data.DataProxy.removeListener('write', afterStoreUpdated);
+		store.load();
+	}
+
+
+
+
+});		/**
+ * EasySDI, a solution to implement easily any spatial data infrastructure
+ * Copyright (C) EasySDI Community 
+ * For more information : www.easysdi.org
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html.
+ */
+
+Ext.namespace("EasySDI_Mon");
+
+Ext.onReady(function(){
+  
+  var fieldParams = null;
+  
+	var proxy = new Ext.data.HttpProxy({
+		url: '?'
+	});
+
+	var writer = new Ext.data.JsonWriter({
+		encode: false   // <-- don't return encoded JSON -- causes Ext.Ajax#request to send data using jsonData config rather than HTTP params
+	}); 
+
+	var store = new Ext.data.JsonStore({
+		//Will be used when writing JSON to the server as the root element
+		//if not set: {"undefined":{"url":"blah","id":"plop"}}
+		root: 'data',
+		id: 'name',
+		autoSave: false,
+		//url:'jobs/vd-wms-fonds2/queries',
+		restful:true,
+		proxy: proxy,
+		writer: writer,
+		//fields:['serviceMethod', 'status', 'name', 'params']
+		fields:[{name:'serviceMethod'},{name: 'status'},{name: 'name'},{name: 'statusCode'},{name: 'params'},{name: 'soapUrl'},
+		        {name:'queryValidationSettings',mapping:'queryValidationSettings'},{name:'id',mapping:'queryValidationSettings.id'},{name:'useSizeValidation',mapping:'queryValidationSettings.useSizeValidation'},
+		        {name:'normSize',mapping:'queryValidationSettings.normSize'},{name:'normSizeTolerance',mapping:'queryValidationSettings.normSizeTolerance'},
+		        {name:'useTimeValidation',mapping:'queryValidationSettings.useTimeValidation'}, {name:'normTime',mapping:'queryValidationSettings.normTime'},
+		        {name:'useXpathValidation',mapping:'queryValidationSettings.useXpathValidation'},
+		        {name:'xpathExpression',mapping:'queryValidationSettings.xpathExpression'}, {name:'expectedXpathOutput',mapping:'queryValidationSettings.expectedXpathOutput'},
+		        {name:'queryValidationResult', mapping: 'queryValidationResult'},{name:'sizeValidationResult', mapping: 'queryValidationResult.sizeValidationResult'},
+		        {name:'responseSize', mapping: 'queryValidationResult.responseSize'},
+		        {name:'timeValidationResult', mapping: 'queryValidationResult.timeValidationResult'},{name:'deliveryTime', mapping: 'queryValidationResult.deliveryTime'},
+		        {name:'xpathValidationResult', mapping: 'queryValidationResult.xpathValidationResult'},{name:'xpathValidationOutput', mapping: 'queryValidationResult.xpathValidationOutput'}        
+		]
+	});
+
+	var cm = new Ext.grid.ColumnModel([{
+		header:EasySDI_Mon.lang.getLocal('grid header name'),
+		dataIndex:"name",
+		width:50,
+		sortable: true
+	},{
+		header:EasySDI_Mon.lang.getLocal('grid header method'),
+		dataIndex:"serviceMethod",
+		width:100,
+		displayField:'method'
+	},{
+		header:EasySDI_Mon.lang.getLocal('grid header params'),
+		dataIndex:"params",
+		renderer: paramsRenderer,
+		width:320
+	}
+	]);
+
+	function paramsRenderer(value) {
+		debugger ;
+		if(value == null)
+			return "";
+		if(!value.constructor)
+			return "";
+		if (value.constructor.toString().indexOf("Array") == -1)
+			return value;		
+		else{
+			var str = '';
+			for (var i=0; i<value.length; i++){
+				if(value[i].value.indexOf(":Envelope>")!=-1){
+					str = Ext.util.Format.htmlEncode(value[i].value);
+					break; // we do not care about any other params in case we are dealing with a soap envelope
+				}
+				else
+					str += value[i].name+"="+value[i].value;
+				if(i<value.length-1)
+					str += "&";
+			}
+			return str;
+		}
+	}
+
+	
+	var reqOptionsHandler = function(){
+
+		return{
+			
+			doLoadTypeOptions : function(method, type){
+				
+				if(type== "all"){
+						return EasySDI_Mon.ServiceMethodStore[type+method];						
+				}	
+				else{
+					return EasySDI_Mon.ServiceMethodStore[type];
+					
+				}	
+
+			},
+		    enableSOAP :function (combo, fieldToToggle ){
+		    	
+		    	if(Ext.getCmp(fieldToToggle)){
+			    	Ext.getCmp(fieldToToggle).el.up('.x-form-item').setDisplayed(false);
+			    	Ext.getCmp(fieldToToggle).allowBlank = true;
+		    	}
+		    	
+				if(!combo)
+					return null;
+				if(!combo.value)
+					return null;
+			
+				if(combo.value.toLowerCase().indexOf("soap")!=-1){
+					if(combo.value.toLowerCase().indexOf("1.1")!=-1){
+						Ext.getCmp(fieldToToggle).el.up('.x-form-item').setDisplayed(true);
+						Ext.getCmp(fieldToToggle).allowBlank = false;
+					}
+				}
+				
+			}	
+		
+		}
+	}();
+	
+	var _reqGrid = new Ext.grid.GridPanel({
+		id:'ReqGrid',
+		loadMask:true,
+		region:'center',
+		frame:true,
+		border:true,
+		autoHeight:true,
+		tbar: [{
+			//iconCls: 'icon-user-add',
+			ref: '../addBtn',
+			text: EasySDI_Mon.lang.getLocal('grid action add'),
+			disabled: true,
+			handler: onAdd
+		},'-',{
+			//iconCls: 'icon-user-add',
+			ref: '../editBtn',
+			text: EasySDI_Mon.lang.getLocal('grid action edit'),
+			disabled: true,
+			handler: onEdit
+		},'-',{
+			//iconCls: 'icon-user-delete',
+			ref: '../removeBtn',
+			text: EasySDI_Mon.lang.getLocal('grid action rem'),
+			disabled: true,
+			handler: onDelete
+		}],
+		//el:"productGrid",
+		//width:700,
+		//height:500,
+		//title:"Liste des jobs",
+		//loadMask:new Ext.LoadMask(Ext.getBody(), {msg:EasySDI_Mon.lang.getLocal('message wait')}),
+		store:store,
+		cm:cm,
+		sm: new Ext.grid.RowSelectionModel({
+			singleSelect: true,
+			listeners: {
+			rowselect: function(sm, row, rec) {
+			Ext.getCmp("jobAdvForm").getForm().loadRecord(rec);
+		}
+		}
+		})
+	});
+	
+	function enableNormSave()
+	{
+		if(Ext.getCmp('reqTextID').getValue() != "" && Ext.getCmp('sMComboxID').getValue() != "")
+		{
+					Ext.getCmp('saveNormBtnID').enable();
+		}else
+		{
+					Ext.getCmp('saveNormBtnID').disable();
+		}
+	}
+
+	/**
+	 * onAdd
+	 */
+	function onAdd(btn, ev) {
+		var rec = Ext.getCmp('JobGrid').getSelectionModel().getSelected();
+		if (!rec) {
+			return false;
+		}
+		debugger;
+		options = reqOptionsHandler.doLoadTypeOptions(Ext.getCmp('JobGrid').getSelectionModel().getSelected().get('httpMethod').toLowerCase(), Ext.getCmp('JobGrid').getSelectionModel().getSelected().get('serviceType').toLowerCase());
+
+		
+		var reqP = new Ext.FormPanel({
+					id: 'newReqPanel',
+					labelWidth: 90,
+					monitorValid:true,
+					bodyStyle:'padding:5px 5px 0',
+					frame:true,
+					height: 370,
+					defaults: {width: 290},
+					defaultType: 'textfield',
+					items: [{
+						id: 'reqTextID',
+						fieldLabel: EasySDI_Mon.lang.getLocal('grid header name'),
+						xtype: 'textfield',
+						name: 'name',
+						allowBlank:false,
+						vtype: 'reqname',
+						listeners: {
+							'invalid': enableNormSave,
+							'valid': enableNormSave		
+						}
+					},{
+						id: 'sMComboxID',
+						xtype:          'combo',
+						mode:           'local',
+						triggerAction:  'all',
+						allowBlank:false,
+						forceSelection: true,
+						fieldLabel:      EasySDI_Mon.lang.getLocal('grid header method'),
+						name:           'serviceMethod',
+						displayField:   'name',
+						valueField:     'name',
+						store:          new Ext.data.SimpleStore({
+							fields : ['name'],
+							data : options
+								//reqOptionsHandler.doLoadTypeOptions(Ext.getCmp('JobGrid').getSelectionModel().getSelected().get('httpMethod'), Ext.getCmp('JobGrid').getSelectionModel().getSelected().get('serviceType'))
+
+						//	data : EasySDI_Mon.ServiceMethodStore[Ext.getCmp('JobGrid').getSelectionModel().getSelected().get('serviceType').toLowerCase()]
+						}),
+						listeners: {
+							'change': enableNormSave
+							//'select': reqOptionsHandler.enableSOAP(this, "reqSoapAction")
+						}
+					},					
+					{
+						id: 'reqSoapAction',
+						fieldLabel: EasySDI_Mon.lang.getLocal('soap action'),
+						xtype: 'textfield',
+						name: 'soapUrl'
+						
+						
+					},{
+						fieldLabel: EasySDI_Mon.lang.getLocal('grid header params'),
+						name: 'params',
+						height:200,
+						allowBlank:true,
+						xtype: 'textarea'
+						
+					}],
+					buttons: [{
+						formBind:true,
+						text: EasySDI_Mon.lang.getLocal('grid action ok'),
+						handler: function(){
+						var name = rec.get('name');
+						proxy.setUrl(EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+name+'/queries');
+						var fields = Ext.getCmp('newReqPanel').getForm().getFieldValues();
+						var fields2 = Ext.getCmp('newNormPanel').getForm().getFieldValues();
+						var u = new _reqGrid.store.recordType(EasySDI_Mon.DefaultReq);
+						for (var el in fields){
+							u.set(el, fields[el]);
+							if(el == "params")
+							   fieldParams = fields[el];
+						}
+						for(var el in fields2)
+						{
+							u.set(el, fields2[el]);
+						}
+						_reqGrid.store.insert(0, u);
+						Ext.data.DataProxy.addListener('write', createMethodParams);
+						store.save();
+						win.close();
+
+					}
+					},{
+						text: EasySDI_Mon.lang.getLocal('grid action cancel'),
+						handler: function(){
+						win.close();
+					}
+					}]
+				});
+
+		
+		
+		var reqNorm = new Ext.FormPanel({
+					id: 'newNormPanel',
+					monitorValid:true,
+					frame:true,
+					labelWidth: 150,
+					autoWidth:true,
+					height: 370,
+					region:'center',
+					items: [
+					{
+					layout:'column',
+						items:[
+						{	
+							layout: 'form',
+							items: [{
+								xtype: 'checkbox',
+								fieldLabel: EasySDI_Mon.lang.getLocal('norm request size validation'),
+								name: 'useSizeValidation',
+								trueText: 'true',
+								checked: rec.get('useSizeValidation') ? true :false,
+								falseText: 'false',
+								handler: function(com){
+										if(com.checked)
+										{
+											Ext.getCmp('normSize').enable();
+											Ext.getCmp('normSizeTolerance').enable();
+										}else
+										{
+											Ext.getCmp('normSize').disable();
+											Ext.getCmp('normSizeTolerance').disable();
+										}
+								},
+								columnWidth: 1.0
+							},
+							{
+								id: 'normSize',
+								xtype: 'numberfield',
+								minValue: 0,
+								disabled: rec.get('useSizeValidation') ? false :true,
+								fieldLabel: EasySDI_Mon.lang.getLocal('norm request norm size'),
+								name: 'normSize',
+								width: 80,
+								columnWidth: 1.0
+							},
+							{
+								id: 'normSizeTolerance',
+								xtype:          'combo',
+								mode:           'local',
+								triggerAction:  'all',
+								editable: false,
+								disabled: rec.get('useSizeValidation') ? false :true,
+								allowBlank:false,
+								forceSelection: true,
+								fieldLabel:     EasySDI_Mon.lang.getLocal('norm request size tolerance'),
+								name:           'normSizeTolerance',
+								displayField:   'value',
+								valueField:     'normSizeTolerance',
+								store:          new Ext.data.SimpleStore({
+									fields : ['normSizeTolerance','value'],
+									data : EasySDI_Mon.ToleranceStore
+								}),
+								columnWidth: 1.0
+							},
+							{
+								xtype: 'checkbox',
+								fieldLabel: EasySDI_Mon.lang.getLocal('norm request time validation'),
+								name: 'useTimeValidation',
+								trueText: 'true',
+								checked: rec.get('useTimeValidation') ? true: false,
+								falseText: 'false',
+								handler: function(com){
+									if(com.checked)
+									{
+										Ext.getCmp('normTime').enable();
+									}else
+									{
+										Ext.getCmp('normTime').disable();
+									}
+								},
+								columnWidth: 1.0
+							},
+							{
+								id:'normTime',
+								xtype: 'numberfield',
+								minValue: 0,
+								disabled: rec.get('useTimeValidation') ? false: true,
+								fieldLabel: EasySDI_Mon.lang.getLocal('norm request norm time'),
+								name: 'normTime',
+								width: 80,
+								columnWidth: 1.0
+							},
+							{
+								xtype: 'checkbox',
+								fieldLabel: EasySDI_Mon.lang.getLocal('norm request xpath validation'),
+								name: 'useXpathValidation',	
+								handler: function(com){
+									if(com.checked)
+									{
+										Ext.getCmp('xpathExpression').enable();
+										Ext.getCmp('expectedXpathOutput').enable();
+									}else
+									{
+										Ext.getCmp('xpathExpression').disable();
+										Ext.getCmp('expectedXpathOutput').disable();
+									}
+								},
+								trueText: 'true',
+								falseText: 'false',
+								columnWidth: 1.0
+							},
+							{
+								id: 'expectedXpathOutput',
+								xtype: 'textarea',
+								height:60,
+								fieldLabel: EasySDI_Mon.lang.getLocal('norm request norm xpath result'),
+								name: 'expectedXpathOutput',
+								allowBlank: true,
+								disabled: rec.get('useXpathValidation') ? false: true,
+								width: 250,
+								columnWidth: 1.0
+							},
+							{
+								id: 'xpathExpression',
+								xtype: 'textarea',
+								height:60,
+								name: 'xpathExpression',
+								fieldLabel: EasySDI_Mon.lang.getLocal('norm request xpath'),
+								allowBlank:true,
+								disabled: rec.get('useXpathValidation') ? false: true,
+								width: 250,
+								columnWidth: 1.0
+							},
+							{
+								html: '<a href="http://www.w3schools.com/xpath/xpath_syntax.asp" target="_blank">'+EasySDI_Mon.lang.getLocal('norm request help xpathsyntax')+'</a>'
+							}
+							],
+							buttons: [{
+								id:'saveNormBtnID',
+								formBind:true,
+								text: EasySDI_Mon.lang.getLocal('grid action ok'),
+								handler: function(){
+								var name = rec.get('name');
+								proxy.setUrl(EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+name+'/queries');
+								var fields = Ext.getCmp('newReqPanel').getForm().getFieldValues();
+								var fields2 = Ext.getCmp('newNormPanel').getForm().getFieldValues();
+								var u = new _reqGrid.store.recordType(EasySDI_Mon.DefaultReq);
+								for (var el in fields){
+									u.set(el, fields[el]);
+									if(el == "params"){
+										debugger;
+									   fieldParams = fields[el];
+									}
+								}
+								for(var el in fields2)
+								{
+									u.set(el, fields2[el]);
+								}
+								_reqGrid.store.insert(0, u);
+								Ext.data.DataProxy.addListener('write', createMethodParams);
+								store.save();
+								win.close();
+
+							}
+							},{
+								text: EasySDI_Mon.lang.getLocal('grid action cancel'),
+								handler: function(){
+								win.close();
+							}
+							}]
+						}
+						]}
+						]
+				});
+			
+		requestParmPanel = {
+			title: 'Request',
+			xtype: 'panel',
+			height: 370,
+			border:false,
+			items: [reqP]
+		};
+		
+		requestNormPanel = {
+			title: 'Norm values',
+			xtype: 'panel',
+			height: 370,
+			border:false,
+			items: [reqNorm]
+		};
+		
+		//Open a window for entering job's first values
+		var win = new  Ext.Window({
+			title:EasySDI_Mon.lang.getLocal('new request'),
+			width:450,
+			height: 450,
+			autoScroll:true,
+			modal:true,
+			resizable:false,
+			items: [
+			new Ext.TabPanel({
+			id: 'card-tabs-panel2',
+			activeTab: 0,
+				items:[
+					requestParmPanel,
+					requestNormPanel 
+				]})
+			]
+		});
+		win.show();
+		Ext.getCmp("reqSoapAction").el.up('.x-form-item').setDisplayed(false);
+		Ext.getCmp("sMComboxID").on('select', function(){reqOptionsHandler.enableSOAP(Ext.getCmp("sMComboxID"), "reqSoapAction")} );
+	}
+
+	/**
+	 * onEdit
+	 */
+	function onEdit() {
+		var rec = _reqGrid.getSelectionModel().getSelected();
+		if (!rec) {
+			return false;
+		}
+
+		var params = rec.get('params');
+		var strParams = '';
+		strParams = Ext.util.Format.htmlDecode(paramsRenderer(params));
+//		for (var i=0; i<params.length; i++){
+//			if(value[i].value.indexOf("<soap:Envelope")!=-1){
+//				str = value[i].value;
+//				break; // we do not care about any other params in case we are dealing with a soap envelope
+//			}else
+//				strParams += params[i].name+"="+params[i].value;
+//			
+//			if(i<params.length-1)
+//				strParams += "&";
+//		}
+		
+		options = reqOptionsHandler.doLoadTypeOptions(Ext.getCmp('JobGrid').getSelectionModel().getSelected().get('httpMethod').toLowerCase(), Ext.getCmp('JobGrid').getSelectionModel().getSelected().get('serviceType').toLowerCase());
+
+		var reqP = new Ext.FormPanel({
+				id: 'editReqPanel',
+				labelWidth: 90,
+				height: 370,
+				monitorValid:true,
+				bodyStyle:'padding:5px 5px 0',
+				frame:true,
+				defaults: {width: 290},
+				defaultType: 'textfield',
+				items: [{
+					fieldLabel: EasySDI_Mon.lang.getLocal('grid header name'),
+					xtype: 'textfield',
+					value: rec.get('name'),
+					name: 'name',
+					allowBlank:false,
+					disabled:true
+				
+				},{
+					id : 'reqServiceMethodComboEdit',
+					xtype:          'combo',
+					mode:           'local',
+					value:          rec.get('serviceMethod'),
+					triggerAction:  'all',
+					allowBlank:false,
+					forceSelection: true,
+					editable:       false,
+					fieldLabel:      EasySDI_Mon.lang.getLocal('grid header method'),
+					name:           'serviceMethod',
+					displayField:   'name',
+					valueField:     'name',
+					store:          new Ext.data.SimpleStore({
+						fields : ['name'],
+						data :options
+						//data : EasySDI_Mon.ServiceMethodStore[Ext.getCmp('JobGrid').getSelectionModel().getSelected().get('serviceType').toLowerCase()]
+					}),
+					listeners:{
+						
+						//'select': reqOptionsHandler.enableSOAP(this, "reqSoapActionEdit")
+					}
+				},					
+				{
+					id: 'reqSoapActionEdit',
+					fieldLabel: EasySDI_Mon.lang.getLocal('soap action'),
+					value:   rec.get('soapUrl'),
+					xtype: 'textfield',
+					name: 'soapUrl'
+					
+				},{
+					fieldLabel: EasySDI_Mon.lang.getLocal('grid header params'),
+					value: strParams,
+					name: 'params',
+					height:200,
+					allowBlank:true,
+					xtype: 'textarea'
+				}],
+				buttons: [{
+					formBind:true,
+					text: EasySDI_Mon.lang.getLocal('grid action ok'),
+					handler: function(){
+					   var jobRec = Ext.getCmp('JobGrid').getSelectionModel().getSelected();
+					   var jobName = jobRec.get('name');
+					   var name = rec.get('name');
+					   //Change the proxy to the good url
+					   proxy.setUrl(EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+jobName+'/queries');
+					   var fields = Ext.getCmp('editReqPanel').getForm().getFieldValues();
+					   var fieldsValiation = Ext.getCmp('editNormPanel').getForm().getFieldValues(); 
+					   //Avoids commit to each "set()"
+					   var r = rec;
+					   rec.beginEdit();
+					   rec.set('serviceMethod', fields.serviceMethod);
+					   rec.set('params', fields.params);
+					   rec.set('soapUrl', fields.soapUrl);
+					   for(var el in fieldsValiation)
+					   {
+							rec.set(el, fieldsValiation[el]);
+					   }
+					   rec.endEdit();
+					   fieldParams = fields.params;
+					   //after save, save the params
+					   Ext.data.DataProxy.addListener('write', createMethodParams);
+					   store.save();
+					   win.close();
+				}
+				},{
+					text: EasySDI_Mon.lang.getLocal('grid action cancel'),
+					handler: function(){
+					win.close();
+				}
+				}]
+			});
+
+		var reqNorm = new Ext.FormPanel({
+					id: 'editNormPanel',
+					monitorValid:true,
+					frame:true,
+					labelWidth: 150,
+					autoWidth:true,
+					height: 370,
+					region:'center',
+					items: [
+					{
+					layout:'column',
+						items:[
+						{	
+							layout: 'form',
+							items: [{
+								xtype: 'checkbox',
+								fieldLabel: EasySDI_Mon.lang.getLocal('norm request size validation'),
+								name: 'useSizeValidation',
+								trueText: 'true',
+								falseText: 'false',
+								checked: rec.get('useSizeValidation') ? true :false,
+								handler: function(com){
+										if(com.checked)
+										{
+											Ext.getCmp('normSize').enable();
+											Ext.getCmp('normSizeTolerance').enable();
+										}else
+										{
+											Ext.getCmp('normSize').disable();
+											Ext.getCmp('normSizeTolerance').disable();
+										}
+								},
+								columnWidth: 1.0
+							},
+							{
+								id: 'normSize',
+								xtype: 'numberfield',
+								minValue: 0,
+								disabled: rec.get('useSizeValidation') ? false :true,
+								fieldLabel: EasySDI_Mon.lang.getLocal('norm request norm size'),
+								name: 'normSize',
+								width: 80,
+								value: rec.get('normSize'),
+								columnWidth: 1.0
+							},
+							{
+								id: 'normSizeTolerance',
+								xtype:          'combo',
+								mode:           'local',
+								triggerAction:  'all',
+								editable: false,
+								disabled: rec.get('useSizeValidation') ? false :true,
+								allowBlank:false,
+								value: rec.get('normSizeTolerance') ? rec.get('normSizeTolerance'):'5',
+								forceSelection: true,
+								fieldLabel:     EasySDI_Mon.lang.getLocal('norm request size tolerance'),
+								name:           'normSizeTolerance',
+								displayField:   'value',
+								valueField:     'normSizeTolerance',
+								store:          new Ext.data.SimpleStore({
+									fields : ['normSizeTolerance','value'],
+									data : EasySDI_Mon.ToleranceStore
+								}),
+								columnWidth: 1.0
+							},
+							{
+								xtype: 'checkbox',
+								fieldLabel: EasySDI_Mon.lang.getLocal('norm request time validation'),
+								name: 'useTimeValidation',
+								trueText: 'true',
+								checked: rec.get('useTimeValidation') ? true: false,
+								falseText: 'false',
+								handler: function(com){
+									if(com.checked)
+									{
+										Ext.getCmp('normTime').enable();
+									}else
+									{
+										Ext.getCmp('normTime').disable();
+									}
+								},
+								columnWidth: 1.0
+							},
+							{
+								id:'normTime',
+								xtype: 'numberfield',
+								minValue: 0,
+								disabled: rec.get('useTimeValidation') ? false: true,
+								fieldLabel: EasySDI_Mon.lang.getLocal('norm request norm time'),
+								name: 'normTime',
+								width: 80,
+								value: rec.get('normTime'),
+								columnWidth: 1.0
+							},
+							{
+								xtype: 'checkbox',
+								fieldLabel: EasySDI_Mon.lang.getLocal('norm request xpath validation'),
+								name: 'useXpathValidation',	
+								checked: rec.get('useXpathValidation') ? true: false,
+								handler: function(com){
+									if(com.checked)
+									{
+										Ext.getCmp('xpathExpression').enable();
+										Ext.getCmp('expectedXpathOutput').enable();
+									}else
+									{
+										Ext.getCmp('xpathExpression').disable();
+										Ext.getCmp('expectedXpathOutput').disable();
+									}
+								},
+								trueText: 'true',
+								falseText: 'false',
+								columnWidth: 1.0
+							},
+							{
+								id: 'expectedXpathOutput',
+								xtype: 'textarea',
+								fieldLabel: EasySDI_Mon.lang.getLocal('norm request norm xpath result'),
+								name: 'expectedXpathOutput',
+								allowBlank: true,
+								value: rec.get('expectedXpathOutput') ? rec.get('expectedXpathOutput') : '',
+								disabled: rec.get('useXpathValidation') ? false: true,
+								height:60,
+								width: 250,
+								columnWidth: 1.0
+							},
+							{
+								id: 'xpathExpression',
+								xtype: 'textarea',
+								height:60,
+								name: 'xpathExpression',
+								fieldLabel: EasySDI_Mon.lang.getLocal('norm request xpath'),
+								allowBlank:true,
+								value: rec.get('xpathExpression') ? rec.get('xpathExpression') : '',
+								disabled: rec.get('useXpathValidation') ? false: true,
+								width: 250,
+								columnWidth: 1.0
+							},
+							{
+								html: '<a href="http://www.w3schools.com/xpath/xpath_syntax.asp" target="_blank">'+EasySDI_Mon.lang.getLocal('norm request help xpathsyntax')+'</a>'
+							}],
+							buttons: [{
+								formBind:true,
+								text: EasySDI_Mon.lang.getLocal('grid action ok'),
+								handler: function(){
+									 var jobRec = Ext.getCmp('JobGrid').getSelectionModel().getSelected();
+									   var jobName = jobRec.get('name');
+									   var name = rec.get('name');
+									   //Change the proxy to the good url
+									   proxy.setUrl(EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+jobName+'/queries');
+									   var fields = Ext.getCmp('editReqPanel').getForm().getFieldValues();
+									   var fieldsValiation = Ext.getCmp('editNormPanel').getForm().getFieldValues(); 
+									   //Avoids commit to each "set()"
+									   var r = rec;
+									   rec.beginEdit();
+									   rec.set('serviceMethod', fields.serviceMethod);
+									   
+									   rec.set('params', fields.params);
+									   for(var el in fieldsValiation)
+									   {
+											rec.set(el, fieldsValiation[el]);
+									   }
+									   rec.endEdit();
+									   rec.endEdit();
+									   fieldParams = fields.params;
+									   //after save, save the params
+									   Ext.data.DataProxy.addListener('write', createMethodParams);
+									   store.save();
+									   win.close();
+									  
+									}// end handler
+							},{
+								text: EasySDI_Mon.lang.getLocal('grid action cancel'),
+								handler: function(){
+									win.close();
+							  }
+							}]
+							
+						}
+						]}
+					]
+				});
+			
+		requestParmPanel = {
+			title: 'Request',
+			xtype: 'panel',
+			height: 370,
+			border:false,
+			items: [reqP]
+		};
+		
+		requestNormPanel = {
+			title: 'Norm values',
+			xtype: 'panel',
+			height: 370,
+			border:false,
+			items: [reqNorm]
+		};
+	
+		//Open a window for entering job's first values
+		win = new  Ext.Window({
+		title:EasySDI_Mon.lang.getLocal('edit request'),
+			width:450,
+			height: 450,
+			autoScroll:true,
+			modal:true,
+			resizable:false,
+			items: [
+			new Ext.TabPanel({
+			id: 'card-tabs-panel2',
+			activeTab: 0,
+				items:[
+					requestParmPanel,
+					requestNormPanel 
+				]})
+			]
+		});	
+		win.show();
+		//Ext.getCmp("reqSoapActionEdit").el.up('.x-form-item').setDisplayed(false);
+		reqOptionsHandler.enableSOAP(Ext.getCmp("reqServiceMethodComboEdit"), "reqSoapActionEdit");
+		Ext.getCmp("reqServiceMethodComboEdit").on('select', function(){reqOptionsHandler.enableSOAP(Ext.getCmp("reqServiceMethodComboEdit"), "reqSoapActionEdit")} );
+  }  
+  
+  function createMethodParams (proxy, action, result, res, rs) {
+  	
+	      Ext.data.DataProxy.removeListener('write', createMethodParams);      
+	      
+	      var jobRec = Ext.getCmp('JobGrid').getSelectionModel().getSelected();
+			  var jobName = jobRec.get('name');
+				var name = rs.get('name');
+	 
+		if(res.raw.data.serviceMethod.toLowerCase().indexOf("soap")!=-1)
+			fieldParams ="soapenvelope="+encodeURIComponent(fieldParams);
+		
+	      Ext.Ajax.request({
+					loadMask: true,
+					method: 'POST',
+				  params: fieldParams,
+				  url: EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+jobName+'/queries/'+name+"/params",
+				  success: function(response){
+				  	reloadReqGrid();
+				  },
+				  failure: function(response){
+			          EasySDI_Mon.App.setAlert(false,  EasySDI_Mon.lang.getLocal('error meth params')+'. '+'status:'+response.status+' message:'+response.statusText);
+				  }
+				});
+	        
+	      var paramsTemp = "";
+		  if(rs.data.id)
+		  {
+			  paramsTemp = '{"data":{"id":"'+rs.data.id+'","useSizeValidation":"'+rs.data.useSizeValidation+'","normSize":"'+rs.data.normSize+'","normSizeTolerance": "'+rs.data.normSizeTolerance+'","useTimeValidation":"'+rs.data.useTimeValidation+'","normTime":"'+rs.data.normTime+'","useXpathValidation":"'+rs.data.useXpathValidation+'","xpathExpression":"'+rs.data.xpathExpression+'","expectedXpathOutput": "'+rs.data.expectedXpathOutput+'"}}';
+		  }else{
+			  paramsTemp = '{"data":{"useSizeValidation":"'+rs.data.useSizeValidation+'","normSize":"'+rs.data.normSize+'","normSizeTolerance": "'+rs.data.normSizeTolerance+'","useTimeValidation":"'+rs.data.useTimeValidation+'","normTime":"'+rs.data.normTime+'","useXpathValidation":"'+rs.data.useXpathValidation+'","xpathExpression":"'+rs.data.xpathExpression+'","expectedXpathOutput": "'+rs.data.expectedXpathOutput+'"}}';
+		  }
+	      Ext.Ajax.request({
+					loadMask: true,
+					method: 'PUT',// BOTH insert/update
+					headers: {
+					'Content-Type': 'application/json'
+				},
+				params: paramsTemp,
+				url: EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+jobName+'/queries/'+name+'/validationSettings',
+				success: function(response){
+					reloadReqGrid();
+				},
+				failure: function(response){
+					 EasySDI_Mon.App.setAlert(false,  EasySDI_Mon.lang.getLocal('error meth params')+'. '+'status:'+response.status+' message:'+response.statusText);
+				}
+		});	
+	}
+  
+	/**
+	 * onDelete
+	 */
+	function onDelete() {
+		var jobRec = Ext.getCmp('JobGrid').getSelectionModel().getSelected();
+		var jobName = jobRec.get('name');
+		var rec = _reqGrid.getSelectionModel().getSelected();
+		var name = rec.get('name');
+		proxy.setUrl(EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+jobName+'/queries');
+		if (!rec) {
+			return false;
+		}
+
+		Ext.MessageBox.confirm(EasySDI_Mon.lang.getLocal('confirm'), String.format(EasySDI_Mon.lang.getLocal('confirm suppress req'), rec.get('name')), function(btn){
+			if (btn == 'no')
+				return false;
+			else
+				_reqGrid.store.remove(rec);
+				store.save();
+		});
+	}
+
+	//double click on a cell -> Update
+	_reqGrid.on('rowdblclick', function(grid, rowIndex) {
+		var record = grid.store.getAt(rowIndex);
+		if (record) {
+			onEdit();
+		}
+	});
+
+	Ext.getCmp('JobGrid').getSelectionModel().on('selectionchange', function(sm){
+		reloadReqGrid();
+	});
+
+
+  function reloadReqGrid(){
+  //There is no job selected
+    var sm = Ext.getCmp('JobGrid').getSelectionModel();
+		if(sm.getCount() < 1){
+			_reqGrid.addBtn.setDisabled(true);
+		}
+		else
+			//A job has been selected, load the grid
+		{
+			_reqGrid.addBtn.setDisabled(false);
+
+			var rec = Ext.getCmp('JobGrid').getSelectionModel().getSelected();
+			var name = rec.get('name');
+			var serviceType = rec.get('serviceType');
+			//Change the proxy to the good url
+			if(rec.get('isPublic') == true){
+				proxy.setUrl(EasySDI_Mon.proxy+'/jobs/'+name+'/queries');
+			}else{
+				proxy.setUrl(EasySDI_Mon.proxy+'/adminJobs/'+name+'/queries');
+			}
+			store.load();
+		}
+  }
+
+
+
+	_reqGrid.getSelectionModel().on('selectionchange', function(sm){
+		_reqGrid.removeBtn.setDisabled(sm.getCount() < 1);
+		_reqGrid.editBtn.setDisabled(sm.getCount() < 1);
+	});
+
+});/**
+ * EasySDI, a solution to implement easily any spatial data infrastructure
+ * Copyright (C) EasySDI Community 
+ * For more information : www.easysdi.org
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html.
+ */
+
+Ext.namespace("EasySDI_Mon");
+
+Ext.onReady(function(){
+
+	var rssRec;
+	var emailRec;
+	var rssCrVal='';
+	var emailCrVal='';
+	var emailTxtCrVal='';
+
+	var proxy = new Ext.data.HttpProxy({
+		url: EasySDI_Mon.proxy
+	});
+
+	var writer = new Ext.data.JsonWriter({
+		encode: false   // <-- don't return encoded JSON -- causes Ext.Ajax#request to send data using jsonData config rather than HTTP params
+	});
+
+	var store = new Ext.data.JsonStore({
+		id: 'actionId',
+		//if the store is not coupled with a form or grid, use autosave=flase and call store.save().
+		autoSave: false,
+		root: 'data',
+		restful:true,
+		proxy: proxy,
+		writer: writer,
+		fields:['actionId', 'type', 'target']
+	});
+
+	var _alertForm = new Ext.FormPanel({
+		id:'AlertForm',
+		title: EasySDI_Mon.lang.getLocal('alerts'),
+		labelWidth: 90,
+		region:'center',
+		bodyStyle:'padding:5px 5px 0',
+		autoHeight:true,
+		frame:true,
+		defaults: {width: 200},
+		defaultType: 'textfield',
+		items: [{
+			xtype:'combo',
+			mode:'local',
+			ref: 'cbEmail',
+			disabled:true,
+			triggerAction:  'all',
+			forceSelection: true,
+			editable:       false,
+			fieldLabel:     EasySDI_Mon.lang.getLocal('grid header email'),
+			name:           'email',
+			displayField:   'name',
+			valueField:     'value',
+			store:          new Ext.data.SimpleStore({
+				fields : ['name', 'value'],
+				data : EasySDI_Mon.YesNoCombo
+			})
+		},{
+			fieldLabel: '',
+			disabled:true,
+			ref: 'txtEmail',
+			//value: strParams,
+			name: 'email_list',
+			allowBlank:true,
+			xtype: 'textarea'
+		},{
+			xtype:'combo',
+			mode:'local',
+			ref: 'cbRss',
+			iconCls:'icon-service-add',
+			disabled:true,
+			triggerAction:  'all',
+			forceSelection: true,
+			editable:       false,
+			fieldLabel:     EasySDI_Mon.lang.getLocal('grid header rss'),
+			name:           'rss',
+			displayField:   'name',
+			valueField:     'value',
+			store:          new Ext.data.SimpleStore({
+				fields : ['name', 'value'],
+				data : EasySDI_Mon.YesNoCombo
+			})
+		},{
+			xtype:'button',
+			ref: 'btnRss',
+			iconCls:'icon-rss',
+			disabled:true,
+			fieldLabel:     EasySDI_Mon.lang.getLocal('rss link'),
+			width:20
+		}],
+		buttons: [{
+			text: EasySDI_Mon.lang.getLocal('grid action update'),
+			disabled:true,
+			ref: '../btnUpdate',
+			handler: function(){
+			var rec = Ext.getCmp('JobGrid').getSelectionModel().getSelected();
+			var name = rec.get('name');
+			proxy.setUrl(EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+name+'/actions');
+			proxy.api.destroy.url = EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+name+'/actions';
+			proxy.api.create.url = EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+name+'/actions';
+			var fields = _alertForm.getForm().getFieldValues();
+			//Rss notification
+			if(fields.rss == 'Y'){
+				//create record if it does not exit
+				if(rssRec == null){
+					//create a new record
+					var u = new store.recordType({
+						type: 'RSS',
+						target: ''
+					});
+					store.insert(0, u);
+					rssCrVal = 'Y';
+				}
+			}
+			else
+			{
+				if(rssRec != null){
+					//drop record
+					store.remove(rssRec);
+					rssCrVal = 'N';
+				}
+			}
+
+			//User requests Email notification
+			if(fields.email == 'Y'){
+				//if it doesn't exist yet, create a record
+				if(emailRec == null){
+					var u = new store.recordType({
+						type: 'E-MAIL',
+						target: fields.email_list
+					});
+					store.insert(0, u);
+					emailCrVal = 'Y';
+				}else{
+					//if it already exit, update the target
+					emailRec.set('target', fields.email_list);
+					emailTxtCrVal = fields.email_list;
+				}
+			}
+			//User doesn't requests Email notification
+			else
+			{
+				//drop record if it exist
+				if(emailRec != null){
+					store.remove(emailRec);
+					emailCrVal = 'N';
+				}
+			}
+			Ext.data.DataProxy.addListener('write', afterUpdate);
+			store.save();
+			_alertForm.btnUpdate.setDisabled(true);
+		}//end update
+		}]
+	});
+
+  //reload the store after update
+  function afterUpdate(proxy, action, result, res, rs){
+		Ext.data.DataProxy.removeListener('write', afterUpdate);
+		var rec = Ext.getCmp('JobGrid').getSelectionModel().getSelected();
+		var name = rec.get('name');
+		proxy.setUrl(EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+name+'/actions');
+		proxy.api.read.url = EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+name+'/actions';
+		store.load();
+	}
+
+	Ext.getCmp('JobGrid').getSelectionModel().on('selectionchange', function(sm){
+		//There is no job selected
+		if(sm.getCount() < 1){
+			_alertForm.cbRss.setDisabled(true);
+			_alertForm.cbEmail.setDisabled(true);
+			_alertForm.txtEmail.setDisabled(true);
+			_alertForm.btnUpdate.setDisabled(true);
+		}
+		else
+			//A job has been selected, load the grid
+		{
+			_alertForm.cbRss.setDisabled(false);
+			_alertForm.cbEmail.setDisabled(false);
+			_alertForm.txtEmail.setDisabled(false);
+
+			var rec = Ext.getCmp('JobGrid').getSelectionModel().getSelected();
+			var name = rec.get('name');
+			//var serviceType = rec.get('serviceType');
+			//Change the proxy to the good url
+			if(rec.get('isPublic') == true)
+				proxy.setUrl(EasySDI_Mon.proxy+'/jobs/'+name+'/actions');
+			else
+				proxy.setUrl(EasySDI_Mon.proxy+'/adminJobs/'+name+'/actions');
+
+			store.load();
+		}
+	});
+
+	store.on("load", function(store) {
+		//Get the first occurence of type E-Mail and RSS
+		var jobRec = Ext.getCmp('JobGrid').getSelectionModel().getSelected();
+		var jobName = jobRec.get('name');
+		rssRec = store.getAt(store.findExact('type', 'RSS'));
+		emailRec =  store.getAt(store.findExact('type', 'E-MAIL'));
+		//Set the value in the form
+		_alertForm.txtEmail.setValue('');
+		if(rssRec == null){
+			_alertForm.btnRss.setDisabled(true);
+			_alertForm.btnRss.handler = null;
+			_alertForm.cbRss.setValue('N');
+			rssCrVal = 'N';
+		}else{
+			_alertForm.btnRss.setDisabled(false);
+			_alertForm.btnRss.handler = function(){
+				window.open(EasySDI_Mon.proxy+'/jobs/'+jobName+'/alerts&alt=rss',EasySDI_Mon.lang.getLocal('rss title')+": "+jobName);
+			};
+			_alertForm.cbRss.setValue('Y');
+			rssCrVal = 'Y';
+		}
+		if(emailRec == null){
+			_alertForm.cbEmail.setValue('N');
+			emailCrVal = 'N';
+		}else{
+			_alertForm.cbEmail.setValue('Y');
+			emailCrVal = 'Y';
+			_alertForm.txtEmail.setValue(emailRec.get('target'));
+			emailTxtCrVal = emailRec.get('target');
+		}
+	});
+
+	//Some ennoying event handler for the update button
+	_alertForm.cbRss.on("change", function(field, newValue, oldValue) {
+		if(newValue == 'N')
+			_alertForm.btnRss.setDisabled(true);
+		else
+			_alertForm.btnRss.setDisabled(false);
+
+		if(newValue != rssCrVal || _alertForm.cbEmail.getValue() != emailCrVal || _alertForm.txtEmail.getValue() != emailTxtCrVal)
+			_alertForm.btnUpdate.setDisabled(false);
+		else
+			_alertForm.btnUpdate.setDisabled(true);
+	});
+
+	_alertForm.cbEmail.on("change", function(field, newValue, oldValue) {
+		if(newValue != emailCrVal || _alertForm.cbRss.getValue() != rssCrVal || _alertForm.txtEmail.getValue() != emailTxtCrVal)
+			_alertForm.btnUpdate.setDisabled(false);
+		else
+			_alertForm.btnUpdate.setDisabled(true);
+	});
+
+	_alertForm.txtEmail.on("change", function(field, newValue, oldValue) {
+		if(newValue != emailTxtCrVal || _alertForm.cbEmail.getValue() != emailCrVal || _alertForm.cbRss.getValue() != rssCrVal)
+			_alertForm.btnUpdate.setDisabled(false);
+		else
+			_alertForm.btnUpdate.setDisabled(true);
+	});
+
+});/**
+ * EasySDI, a solution to implement easily any spatial data infrastructure
+ * Copyright (C) EasySDI Community 
+ * For more information : www.easysdi.org
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html.
+ */
+
+Ext.namespace("EasySDI_Mon");
+
+EasySDI_Mon.chart1;
+EasySDI_Mon.chart2;
+
+var aStores = Array();
+var tickInterval;
+var jobRecord;
+
+EasySDI_Mon.clearCharts = function() {
+	if(EasySDI_Mon.chart1 != null){
+		EasySDI_Mon.chart1.destroy();
+		EasySDI_Mon.chart1 = null;
+	}
+
+	if(EasySDI_Mon.chart2 != null){
+		EasySDI_Mon.chart2.destroy();
+		EasySDI_Mon.chart2 = null;
+	}
+
+	//clean the stores
+	for ( var storeName in aStores)
+	{
+		if(typeof aStores[storeName] != 'function'){
+			if(aStores[storeName] != null)
+				aStores[storeName].destroy();
+		}
+	}
+
+	aStores = Array();
+};
+
+Ext.onReady(function() {
+
+	var myMask = new Ext.LoadMask(Ext.getBody(), {msg:EasySDI_Mon.lang.getLocal('message wait')});
+	var jobComboStore = new Ext.data.SimpleStore({
+		id:'jobId'
+			,fields:[
+			         {name: 'name'}
+			         ],
+			         data:[]
+	});
+
+	var methodComboStore = new Ext.data.JsonStore({
+		id:'id',
+		root:'data',
+		restful:true,
+		proxy: new Ext.data.HttpProxy({
+			url: '?'
+		}),
+		fields:[
+		        {id: 'id'},
+		        {name: 'name'}
+		        ]
+	,
+	data:{'data': [{'name':'All','value':'All'}]}
+	});
+
+ var exportConfig = Ext.data.Record.create(['id','exportName', 'exportType','exportDesc', 'xsltUrl' ]);
+//  var exportTypeStore = new Ext.data.Store({
+//	  proxy: new Ext.data.HttpProxy({  url :EasySDI_Mon.MonitorRoot+"&task=read"	}),
+//	  root :'rows',
+//	  fields :['id','exportName', 'exportType','exportDesc', 'xsltUrl']
+//	//  autoload : true 
+//	  
+//  });
+ var exportTypeStore = new Ext.data.Store({
+	  id:'exportTypeStore',
+	  proxy: new Ext.data.HttpProxy({  url :EasySDI_Mon.MonitorRoot+"&task=read"	}),
+     reader: new Ext.data.JsonReader({
+         root: 'rows',
+         totalProperty: 'results',
+         idProperty: 'id'
+     }, exportConfig)
+     //autoLoad: true
+ });
+ exportTypeStore.load();
+
+ var body = Ext.getBody();
+ var frame = body.createChild({
+	 tag:'iframe'
+		 ,cls:'x-hidden'
+			 ,id:'iframe'
+				 ,name:'iframe'
+ });
+
+ var exportForm = body.createChild({
+	 tag:'form'
+		 ,cls:'x-hidden'
+			 ,id:'form'
+				 ,action:EasySDI_Mon.MonitorRoot+"&task=requestExportData"
+				 ,method:'POST'
+				 ,target:'iframe'
+ });
+  
+	/*
+	 * Menu 
+	 */
+	// this is a singleton that manages the export report buttons
+	var exportReportHandler = function(){
+
+		return{
+			
+			doLoadExportTypes : function(btn){
+				if (!btn.menu){
+				btn.menu = new Ext.menu.Menu();
+
+				exportTypeStore.each(function(r) {
+				
+					 var action = new Ext.Action({
+						 	id:r.data['id'],
+					        text: r.data['exportName'],
+					        handler: exportReportHandler.requestExportData	
+					       
+					    });
+
+				 btn.menu.add(action)
+				});
+				}
+				
+				btn.showMenu();
+	
+
+			},
+			getExportTypes : function(btn){
+				alert("getExportTypes");
+				
+			},
+			setExportTypesAsBtnItems : function(btn){
+				alert("setExportTypesAsBtnItems");
+			},
+			requestExportData :function(btn){
+				exportTypeId = btn.id;			
+			
+				urls = mtnBtnView_click(true);
+				dataUrls= [urls.join(',')]
+				var params = {exportID: exportTypeId, proxyUrls: dataUrls};
+				exportForm.dom.action = exportForm.dom.action+'&' + Ext.urlEncode(params);
+				exportForm.dom.submit();
+			
+
+				myMask.hide();
+				
+			}
+		
+			
+		}
+	}();
+
+	var reportMenu = new Ext.Panel({
+		id: 'ReportMenu',
+		layout: 'table',
+		region: 'center',
+		height: 50,
+		frame:true,
+		layoutConfig:{columns:8},
+		border:false,
+		defaults: {
+			border: false,
+			bodyStyle:'padding:5px 5px'
+		}, 
+		collapsible:false,
+		items: [{
+			html:EasySDI_Mon.lang.getLocal('job')+':'
+		},{
+			items:[{
+				xtype:          'combo',
+				mode:           'local',
+				id:             'repCbJobs',
+				triggerAction:  'all',
+				forceSelection: true,
+				editable:       false,
+				fieldLabel:     'Job',
+				name:           'jobComboFilter',
+				displayField:   'name',
+				valueField:     'name',
+				emptyText: EasySDI_Mon.lang.getLocal('combo select a job'),
+				store:jobComboStore
+			}]
+		},{
+			html:EasySDI_Mon.lang.getLocal('report request select')+':'
+		},{
+			items:[{
+				xtype:          'combo',
+				mode:           'local',
+				id:             'repCbMeth',
+				value:          'All',
+				triggerAction:  'all',
+				forceSelection: true,
+				editable:       false,
+				fieldLabel:     'Job',
+				name:           'reqComboFilter',
+				displayField:   'name',
+				valueField:     'name',
+				emptyText:EasySDI_Mon.lang.getLocal('combo select a method'),
+				store:methodComboStore
+			}]
+		},{
+			html:EasySDI_Mon.lang.getLocal('period')+':'
+		},{
+			xtype: 'combo',
+			mode: 'local',
+			id: 'repCbPeriod',
+			triggerAction: 'all',
+			forceSelection: true,
+			editable:       false,
+			name:           'repCbPeriod',
+			emptyText: EasySDI_Mon.lang.getLocal('combo select a period'),
+			displayField:   'name',
+			valueField:     'value',
+			value: 'today',
+			store:          new Ext.data.SimpleStore({
+				fields : ['name', 'value'],
+				data : EasySDI_Mon.RepPeriodStore
+			}),
+			width: 200
+		},
+		{
+			items:[{
+				id: 'mtnBtnView',
+				xtype:'button',
+				handler: function(){
+				   mtnBtnView_click();
+			        },
+				listeners: {
+                                    click: function() {
+				        mtnBtnView_click();
+                                    }
+                                },
+			        text:  EasySDI_Mon.lang.getLocal('action view')
+			}		
+			]
+		},
+		{	items:[{
+			id: 'exportBtn',
+			xtype:'splitbutton',			
+		    text: 	EasySDI_Mon.lang.getLocal('export report data'),
+		    handler : exportReportHandler.doLoadExportTypes	,
+		    listeners :{
+		    	arrowclick : exportReportHandler.doLoadExportTypes
+		    }
+			
+			}]
+		},
+		{},
+		{},
+		{},
+		{},
+		{},
+		{
+			items:[
+			new Ext.FormPanel({
+					id: 'periodeDatePanel',
+					layout:'table',
+					layoutConfig:{columns:2},
+					hidden: true,
+			items:[		
+			{
+				id: 'minDatePicker',
+				xtype: 'datefield',
+				name: 'minDatePicker',
+				cellCls: 'ReportTableCell',
+				width: 100,
+				format: 'Y-m-d'
+			},
+			{
+				id: 'maxDatePicker',
+				xtype: 'datefield',
+				name: 'maxDatePicker',
+				maxValue: new Date().format('Y-m-d'),
+				cellCls: 'ReportTableCell',
+				width: 100,
+				format: 'Y-m-d'
+			}
+			]
+			})
+			]
+		}
+		/*
+	     ,{
+		     html:' or from: '
+	     },{
+             items:[{
+		id: 'reqMinDate',
+                xtype: 'datefield',
+		format: 'd-m-Y',
+		//value: new Date(),
+		allowBlank:false,
+		editable:false,
+		//altFormats: 'Y-m-d',
+                timeWidth:60
+              }]
+             },{
+		     html:' to: '
+	     },{
+             items:[{
+		id: 'reqMaxDate',
+                xtype: 'datefield',
+		format: 'd-m-Y',
+		//value: new Date(),
+		allowBlank:false,
+		editable:false,
+		//altFormats: 'Y-m-d',
+                timeWidth:60
+              }]
+             }
+		 */
+		/*,{
+			items:[{
+				id: 'mtnBtnView',
+				xtype:'button',
+				handler: function(){
+				   mtnBtnView_click();
+			        },
+				listeners: {
+                                    click: function() {
+				        mtnBtnView_click();
+                                    }
+                                },
+			        text: EasySDI_Mon.lang.getLocal('action view')
+			}]
+		}*/
+		]
+	});
+	//load the menu items
+	//debugger;
+
+
+	/*****
+	 * Event Handlers 
+	 *****/
+
+	//Initialize this store from the job grid store
+	Ext.getCmp('JobGrid').store.on('load', function() {
+		refreshComboValuesFromJobStore();
+	});
+
+	Ext.getCmp('JobGrid').store.on('write', function() {
+		refreshComboValuesFromJobStore();
+	});
+
+	function refreshComboValuesFromJobStore(){
+		var aRec = Ext.getCmp('JobGrid').store.getRange();
+		jobComboStore.removeAll();
+		for ( var i=0; i< aRec.length; i++ )
+		{
+			var u = new jobComboStore.recordType({name:''});
+			u.set('name', aRec[i].get('name'));
+			jobComboStore.insert(0, u);
+			//jobComboStore.add(aRec[i]);
+		}
+	}
+	
+	Ext.getCmp('repCbPeriod').on('select',function(cmd,rec)
+			{
+				var name;
+				if(rec == null){
+				   name = Ext.getCmp('repCbPeriod').getValue();
+				}else{
+				   name = rec.get("value");
+				}
+				
+				if(name && name == "period")
+				{
+					Ext.getCmp('periodeDatePanel').setVisible(true);
+				}else
+				{
+					Ext.getCmp('periodeDatePanel').setVisible(false);
+				}
+	});
+	
+	Ext.getCmp('repCbJobs').on('select', function(cmb, rec){
+		//refresh method store
+		var name;
+		if(rec == null){
+		   name = Ext.getCmp('repCbJobs').getValue();
+		}else{
+		   name = rec.get("name");
+		}		
+		myMask.show();
+		methodComboStore.proxy.setUrl(EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+name+'/queries');
+		methodComboStore.load();
+		//pick timout for threshold in graphic.
+		jobRecord = Ext.getCmp('JobGrid').store.getAt( Ext.getCmp('JobGrid').store.findExact('name', name));
+		//refresh log grid as soon as the method store is loaded
+		/*
+             var minDate = Ext.getCmp('mtnMinDate').getValue().format('Y-m-d');
+	     var p = logDailyStore.proxy;
+	     logDailyStore.proxy.api.read.url=EasySDI_Mon.proxy+'/jobs/'+rec.id+'/logs?minDate='+minDate;
+	     logDailyStore.proxy.conn.url=EasySDI_Mon.proxy+'/jobs/'+rec.id+'/logs?minDate='+minDate;
+             logDailyStore.load();
+
+		 */
+	});
+
+
+	methodComboStore.on('load', function() {
+		myMask.hide();
+		methodComboStore.addListener('add', methodComboStoreOnAdd);
+		methodComboStore.add(new methodComboStore.recordType({name:'All',value:'All'}));
+	});
+
+
+	function methodComboStoreOnAdd(store, rec){
+		methodComboStore.removeListener('add', methodComboStoreOnAdd);
+		Ext.getCmp('repCbMeth').setValue(rec[0].get('value'));
+	}
+
+	//
+        function mtnBtnView_click(getUrlOnly){
+		//clean up the stores and the graphs
+		EasySDI_Mon.clearCharts();
+
+		var selJob = Ext.getCmp('repCbJobs').getValue();
+		var selMet = Ext.getCmp('repCbMeth').getValue();
+		var selPer = Ext.getCmp('repCbPeriod').getValue();
+
+		if(selJob == ""){
+			Ext.MessageBox.alert(EasySDI_Mon.lang.getLocal('error'), EasySDI_Mon.lang.getLocal('report select job'));
+			return false;
+		}else if(selMet == ""){
+			Ext.MessageBox.alert(EasySDI_Mon.lang.getLocal('error'), EasySDI_Mon.lang.getLocal('report select method'));
+			return false;
+		}else if(selPer == ""){
+			Ext.MessageBox.alert(EasySDI_Mon.lang.getLocal('error'), EasySDI_Mon.lang.getLocal('report select period'));
+			return false;
+		}
+		myMask.show();
+		var logRes;
+		var today = new Date();
+		var minDate = new Date();
+		//1st january 1970
+		minDate.setTime(0);
+		//today
+		var maxDate = new Date();
+		//Pick log ressource regarding the period
+
+		switch (selPer){
+		case "today":
+			minDate = today;
+			maxDate = today;
+			logRes = "logs";
+			//two hours
+			tickInterval = 2 * 3600 * 1000;
+			break;
+		case "yesterday":
+			var yesterday= new Date();
+			yesterday.setDate(today.getDate()-1);
+			minDate = yesterday;
+			maxDate = today;
+			logRes = "logs";
+			//two hours
+			tickInterval = 4 * 3600 * 1000;
+			break;
+		case "lastweek":
+			var lastweek= new Date();
+			lastweek.setDate(today.getDate()-7);
+			minDate = lastweek;
+			maxDate = new Date();
+			logRes = "aggLogs";
+			//a day
+			tickInterval = 24 * 3600 * 1000;
+			break;
+		case "thismonth":
+			var thismonth= new Date();
+			thismonth.setDate(1);
+			minDate = thismonth;
+			maxDate = new Date();
+			logRes = "aggLogs";
+			//a week
+			tickInterval = 7 * 24 * 3600 * 1000;
+			break;
+		case "past6months":
+			var past6months= new Date();
+			past6months.setMonth(today.getMonth()-5);
+			past6months.setDate(1);
+			minDate = past6months;
+			maxDate = new Date();
+			logRes = "aggLogs";
+			//a month
+			tickInterval = 4 * 7 * 24 * 3600 * 1000;
+			break;
+		case "pastyear":
+			var pastyear= new Date();
+			pastyear.setYear(today.getYear()-1);
+			pastyear.setDate(1);
+			minDate = pastyear;
+			maxDate = new Date();
+			logRes = "aggLogs";
+			//a month
+			tickInterval = 4 * 7 * 24 * 3600 * 1000;
+			break;
+		case "period":
+			var minPeriod = Ext.getCmp('minDatePicker').getValue();
+			var maxPeriod = Ext.getCmp('maxDatePicker').getValue();
+			if(maxPeriod == "" || minPeriod == "")
+			{
+				Ext.MessageBox.alert(EasySDI_Mon.lang.getLocal('error'), EasySDI_Mon.lang.getLocal('report enter period'));
+				myMask.hide();
+				return false;
+			}
+			minDate = minPeriod;
+			maxDate = maxPeriod;
+			if(!maxDate || !minDate || (maxDate < minDate))
+			{
+				Ext.MessageBox.alert(EasySDI_Mon.lang.getLocal('error'), EasySDI_Mon.lang.getLocal('report invalid period'));
+				myMask.hide();
+				return false;
+			}
+			
+			// find days
+			var ms = minDate.getElapsed(maxDate);
+			var r = ms % 86400000;
+			var days = (ms - r) / 86400000;
+			days++;
+			if(days <= EasySDI_Mon.DaysForUsingLogs)
+			{
+				logRes = "logs";
+			}else
+			{
+				logRes = "aggLogs";
+			}
+						
+			tickInterval = findtickInterval(days);
+			break;
+		case "All":
+			logRes = "aggLogs";
+			//a month
+			tickInterval = 4 * 7 * 24 * 3600 * 1000;
+			break;
+		default : 'All';
+		}
+
+		var aMethods = Array();
+		if(selMet == "All"){
+			var aRec = methodComboStore.getRange();
+			for ( var i=0; i< aRec.length; i++ ){
+				if(aRec[i].get('name') != "All")
+					aMethods.push(aRec[i].get('name'));
+			}
+		}else{
+			aMethods.push(selMet);
+		}
+
+		//get the logs into a store. 1 store / method
+		var loadedStores = 0;
+		
+		
+		if(null!=getUrlOnly){
+		
+			urls =[];
+			for ( var i=0; i< aMethods.length; i++ ){
+
+				var fields = null;
+				if(logRes == "aggLogs")
+					fields = ['h24Availability', 'slaNbBizErrors','h24NbConnErrors','h24MeanRespTime','slaMeanRespTime','h24NbBizErrors','slaAvalabilty','slaNbConnErrors', {name: 'date', type: 'date', dateFormat: 'Y-m-d'}];
+				else
+					fields = [{name: 'time', type: 'date', dateFormat: 'Y-m-d H:i:s'}, 'message', 'httpCode', 'status', 'statusCode', 'delay','size']
+
+				urls.push(	EasySDI_Mon.proxyserverside+EasySDI_Mon.CurrentJobCollection+'/'+selJob+'/queries/'+aMethods[i]+'/'+logRes+'?minDate='+minDate.format('Y-m-d')+'&maxDate='+maxDate.format('Y-m-d'));
+			}
+			return urls;
+			
+		}
+			
+		for ( var i=0; i< aMethods.length; i++ ){
+
+			var fields = null;
+			if(logRes == "aggLogs")
+				fields = ['h24Availability', 'slaNbBizErrors','h24NbConnErrors','h24MeanRespTime','slaMeanRespTime','h24NbBizErrors','slaAvalabilty','slaNbConnErrors', {name: 'date', type: 'date', dateFormat: 'Y-m-d'}];
+			else
+				fields = [{name: 'time', type: 'date', dateFormat: 'Y-m-d H:i:s'}, 'message', 'httpCode', 'status', 'statusCode', 'delay','size']
+
+			aStores[aMethods[i]] = new Ext.data.JsonStore({
+				root:'data',
+				autoLoad: true,
+				totalProperty:'totalCount',
+				restful:true,
+				proxy: new Ext.data.HttpProxy({
+					url: EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+selJob+'/queries/'+aMethods[i]+'/'+logRes+'?minDate='+minDate.format('Y-m-d')+'&maxDate='+maxDate.format('Y-m-d')
+				}),
+				fields:fields,
+				listeners: {
+				load: function(){
+				loadedStores ++;
+				//Wait that all stores are loaded
+				if(loadedStores == aMethods.length){
+					var b = aStores;
+					myMask.hide();
+					onDataReady(aStores, logRes);
+				}
+			}
+			}
+			});
+		}
+	}
+    
+    function findtickInterval(days)
+	{
+		var ticks = 0;
+		if(days == 1)
+		{
+			ticks = 2 * 3600 * 1000;
+		}else if(days == 2)
+		{
+			ticks = 4 * 3600 * 1000;
+		}else if(days < 8 )
+		{
+			ticks = 24 * 3600 * 1000;
+		}else if(days < 32)
+		{
+			ticks = 7 * 24 * 3600 * 1000;
+		}else
+		{
+			ticks = 4 * 7 * 24 * 3600 * 1000;
+		}
+		return ticks;
+	}
+        
+	//called when all stores are loaded
+	function onDataReady(aStores, logRes){
+
+		//output the graphs
+		EasySDI_Mon.chart1 = EasySDI_Mon.drawResponseTimeGraph('container1', aStores, logRes, tickInterval, jobRecord);
+		if(logRes == 'logs')
+			EasySDI_Mon.chart2 = EasySDI_Mon.drawHealthGraphRaw('container2', aStores, logRes);
+		else{
+			EasySDI_Mon.chart2 = EasySDI_Mon.drawHealthGraphAgg('container2', aStores, logRes);
+			//EasySDI_Mon.chart3 = EasySDI_Mon.drawHealthLineGraph('container3', aStores, logRes, tickInterval);
+		}
+
+	}
+
+});/**
+ * EasySDI, a solution to implement easily any spatial data infrastructure
+ * Copyright (C) EasySDI Community 
+ * For more information : www.easysdi.org
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html.
+ */
+
+Ext.namespace("EasySDI_Mon");
+
+Ext.onReady(function() {
+
+	var store = new Ext.data.SimpleStore({
+		id:'jobId',
+		fields:[
+		        {name: 'newStatusCode'}
+		        ,{name: 'oldStatusCode'}
+		        ,{name: 'cause'}
+		        ,{name: 'httpCode'}
+		        ,{name: 'responseDelay'}
+		        ,{name: 'isExposedToRss', type: 'boolean'}
+		        ,{name: 'jobId', type: 'int'}
+		        ,{name: 'dateTime', type: 'date', dateFormat: 'Y-m-d H:i:s'}
+		        ],
+		        data:[]
+	});
+
+	//store.loadData(mydata);
+
+	var jobComboStore = new Ext.data.SimpleStore({
+		id:'jobId',
+		fields:[
+		        {name: 'name'}
+		        ],
+		data:['All']
+	});
+
+
+
+	//Initialize this store from the job grid store
+	Ext.getCmp('JobGrid').store.on('load', function() {
+		refreshComboValuesFromJobStore();
+	});
+
+	Ext.getCmp('JobGrid').store.on('write', function() {
+		refreshComboValuesFromJobStore();
+	});
+
+	function refreshComboValuesFromJobStore(){
+		var aRec = Ext.getCmp('JobGrid').store.getRange();
+		jobComboStore.removeAll();
+		for ( var i=0; i< aRec.length; i++ )
+		{
+			var u = new jobComboStore.recordType({name:''});
+			u.set('name', aRec[i].get('name'));
+			jobComboStore.insert(0, u);
+		}
+		var u = new jobComboStore.recordType({name:'All'});
+		jobComboStore.insert(0, u);
+	}
+
+	var cm = new Ext.grid.ColumnModel([{
+		header:EasySDI_Mon.lang.getLocal('job'),
+		dataIndex:"jobId",
+		width:100,
+		renderer: function (value) {
+		//return the job name from its id from the job store. Isn't it beautiful?
+		return Ext.getCmp('JobGrid').store.getAt(Ext.getCmp('JobGrid').store.findExact('id', value)).get('name');
+	},
+	sortable: true
+	},{
+		header:EasySDI_Mon.lang.getLocal('status'),
+		dataIndex:"newStatusCode",
+		width:64,
+		renderer: function (newStatus, scope, row){
+		return EasySDI_Mon.AlertStatusRenderer(newStatus, scope, row);
+	}
+	},{
+		header:EasySDI_Mon.lang.getLocal('cause'),
+		dataIndex:"cause",
+		width:100
+	},{
+	  header:EasySDI_Mon.lang.getLocal('delay'),
+	  dataIndex:"responseDelay",
+	  width:60,
+	  renderer: EasySDI_Mon.DelayRenderer
+	},{
+	  header:EasySDI_Mon.lang.getLocal('grid header httpcode'),
+	  dataIndex:"httpCode",
+	  width:60
+	},{
+		header:EasySDI_Mon.lang.getLocal('grid header dateTime'),
+		dataIndex:"dateTime",
+		width:150,
+		sortable: true,
+		renderer: EasySDI_Mon.DateTimeRenderer
+	}
+	]);
+
+	var _alertsGrid = new Ext.grid.GridPanel({
+		id:'AlertGrid',
+		region:'center',
+		stripeRows: true,
+		title: EasySDI_Mon.lang.getLocal('alert list'),
+		loadMask:new Ext.LoadMask(Ext.getBody(), {msg:EasySDI_Mon.lang.getLocal('message wait')}),
+		store:store,
+		cm:cm,
+		// paging bar on the bottom
+		/*
+      No pagination because arraystore do not support load.
 */
+       bbar: new Ext.PagingToolbar({
+	    ref:'../gridPag',
+            pageSize: 15,
+            store: store,
+            displayInfo: true,
+            displayMsg: 'Affichage alertes {0} à {1} de {2}',
+            emptyMsg: "Aucun job à afficher"
+        }),
+		 
+		tbar: [{
+			xtype:          'combo',
+			mode:           'local',
+			ref:             '../cbJobs',
+			//value:          rec.get('serviceMethod'),
+			triggerAction:  'all',
+			forceSelection: true,
+			editable:       false,
+			fieldLabel:     EasySDI_Mon.lang.getLocal('job'),
+			name:           'jobComboFilter',
+			displayField:   'name',
+			valueField:     'name',
+			emptyText: EasySDI_Mon.lang.getLocal('combo select a job'),
+			store:jobComboStore
+			/*
+	    listeners: {
+               select: function(cmb, rec) {
+                  alert(rec.id);
+               }
+             }
+			 */
+		}, '-',{
+			id: 'btnLatestAlerts',
+			ref:'../btnLatestAlerts',
+			iconCls:'icon-only-newest-alert',
+			text: EasySDI_Mon.lang.getLocal('only latest alerts'),
+			enableToggle: true,
+			toggleHandler: function (item, pressed){
+			//clear the store
+			store.removeAll();
+			//trigger the job alerts loading either for one or all jobs
+			
+			if(_alertsGrid.cbJobs.getValue() == 'All'){
+				var arrRec = jobComboStore.getRange();
+				for ( var i=0; i< arrRec.length; i++ ){
+					//create a store for all jobs and get their alerts
+					if(arrRec[i].get('name') != 'All')
+					   loadAlertData(arrRec[i].get('name'), i+1, arrRec.length);
+				}
+			}else{
+				if(_alertsGrid.cbJobs.getValue() != ""){
+					loadAlertData(_alertsGrid.cbJobs.getValue(), 1, 1);
+				}
+			}
+		}
+		}]
+	});
 
-/* Contains portions of Prototype.js:
- *
- * Prototype JavaScript framework, version 1.4.0
- *  (c) 2005 Sam Stephenson <sam@conio.net>
- *
- *  Prototype is freely distributable under the terms of an MIT-style license.
- *  For details, see the Prototype web site: http://prototype.conio.net/
- *
- *--------------------------------------------------------------------------*/
+	_alertsGrid.cbJobs.on('select', function(cmb, rec) {
 
-/**  
-*  
-*  Contains portions of Rico <http://openrico.org/>
-* 
-*  Copyright 2005 Sabre Airline Solutions  
-*  
-*  Licensed under the Apache License, Version 2.0 (the "License"); you
-*  may not use this file except in compliance with the License. You
-*  may obtain a copy of the License at
-*  
-*         http://www.apache.org/licenses/LICENSE-2.0  
-*  
-*  Unless required by applicable law or agreed to in writing, software
-*  distributed under the License is distributed on an "AS IS" BASIS,
-*  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
-*  implied. See the License for the specific language governing
-*  permissions and limitations under the License. 
-*
-**/
+		//clear the store
+		store.removeAll();
+		
+		if(rec.get('name') != 'All'){
+		   loadAlertData(rec.get('name'), 1, 1);
+		}else{
+		   var arrRec = jobComboStore.getRange();
+       
+		   for ( var i=0; i< arrRec.length; i++ ){
+		   	  if(arrRec[i].get('name') != 'All')
+		   	     //create a store for all jobs and get their alerts
+		   	     loadAlertData(arrRec[i].get('name'), i+1, arrRec.length);
+		   }
+		}
+	});
 
-/**
- * Contains XMLHttpRequest.js <http://code.google.com/p/xmlhttprequest/>
- * Copyright 2007 Sergey Ilinsky (http://www.ilinsky.com)
+
+	function loadAlertData(jobName, current, total){
+		var myMask = new Ext.LoadMask(Ext.getCmp('AlertGrid').getEl(), {msg:EasySDI_Mon.lang.getLocal('message wait')});
+		myMask.show();
+		if(total == 1){
+			store.removeAll();
+		var newStore = new Ext.data.JsonStore({
+			//id: 'jobId',
+			root: 'data',			
+			proxy: new Ext.data.HttpProxy({
+				url: EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+jobName+'/alerts'
+			}),
+			restful:true,
+			idProperty : 'id',
+			totalProperty :'count',
+			fields:['newStatusCode', 'oldStatusCode', 'cause', 'httpCode', 'responseDelay', 'isExposedToRss', 'jobId', {name: 'dateTime', type: 'date', dateFormat: 'Y-m-d H:i:s'}],
+			listeners :{
+				load: function(){
+
+					store.removeAll();
+					var aRec = this.getRange();
+					if(_alertsGrid.btnLatestAlerts.pressed){
+						//If there is at least one record
+						if(aRec.length > 0)
+							store.add(aRec[aRec.length - 1]);
+					}else{
+						for ( var j=0; j< aRec.length; j++ )
+						{
+							//feed the grid store with the collected alerts
+							store.add(aRec[j]);
+						}
+					}
+				}
+			}
+		});
+			component = Ext.getCmp('AlertGrid');
+			if(component.getBottomToolbar()){
+				component.getBottomToolbar().show();
+				component.getBottomToolbar().bindStore(newStore);
+				component.getBottomToolbar().doRefresh();
+			}
+			
+			
+			myMask.hide();
+		
+		}
+		else{		
+				component = Ext.getCmp('AlertGrid');
+				if(component.getBottomToolbar())
+					component.getBottomToolbar().hide();
+				
+				var newStore = new Ext.data.JsonStore({
+					//id: 'jobId',
+					root: 'data',
+					autoLoad: true,
+					proxy: new Ext.data.HttpProxy({
+						url: EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+jobName+'/alerts'
+					}),
+					restful:true,
+					fields:['newStatusCode', 'oldStatusCode', 'cause', 'httpCode', 'responseDelay', 'isExposedToRss', 'jobId', {name: 'dateTime', type: 'date', dateFormat: 'Y-m-d H:i:s'}],
+					listeners: {
+					load: function(){
+					
+					var aRec = this.getRange();
+					if(_alertsGrid.btnLatestAlerts.pressed){
+						//If there is at least one record
+						if(aRec.length > 0)
+							store.add(aRec[aRec.length - 1]);
+					}else{
+						for ( var j=0; j< aRec.length; j++ )
+						{
+							//feed the grid store with the collected alerts
+							store.add(aRec[j]);
+						}
+					}
+					if(current == total)
+						myMask.hide();
+				}
+				}
+				});
+		}
+		
+	
+			
+			
+		}
+		
+	}
+
+);/**
+ * EasySDI, a solution to implement easily any spatial data infrastructure
+ * Copyright (C) EasySDI Community 
+ * For more information : www.easysdi.org
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * http://www.apache.org/licenses/LICENSE-2.0
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html.
  */
 
-/**
- * Contains portions of Gears <http://code.google.com/apis/gears/>
+Ext.namespace("EasySDI_Mon");
+
+Ext.onReady(function() {
+	
+	/**
+	* Property: editmode
+	* 
+	**/
+	var editmode = true;
+	
+	/**
+	 * Function: findMainURL
+	 * Detects url for public overview page.
+	 */
+	function findMainURL(name)
+	{
+		var mainURL = window.location.protocol + "//" + window.location.host;
+		var pathArray = window.location.pathname.split( '/' );
+		for (var i = 0; i < pathArray.length; i++ ) {
+			if(pathArray[i] != "" && pathArray[i] != "/" )
+			{
+				if(pathArray[i].toLowerCase().indexOf("joomla") > -1)
+				{
+					mainURL += "/";
+					mainURL += pathArray[i];
+					break;
+				}else
+				{
+					mainURL += "/";
+					mainURL += pathArray[i];
+				}
+			}
+		}
+		mainURL += "/";
+		mainURL += "overview.php?name="+name
+		return mainURL;
+	}
+
+	
+	// proxy api for overview pages
+	var proxyOverview = new Ext.data.HttpProxy({
+		   api: {
+		        read    : EasySDI_Mon.proxy+'overviews',
+		        create  : EasySDI_Mon.proxy+'overviews',
+		        update  : EasySDI_Mon.proxy+'overviews',
+		        destroy : EasySDI_Mon.proxy+'overviews'
+		    }
+	});
+	
+	// proxy api for last requests 
+	var proxyTableOverview = new Ext.data.HttpProxy({
+		api: {
+		    read    : '?',
+	        create  : '?',
+	        update  : '?',
+	        destroy : '?'
+	    }
+	});
+	
+	
+	var writer = new Ext.data.JsonWriter({
+		encode: false   // <-- don't return encoded JSON -- causes Ext.Ajax#request to send data using jsonData config rather than HTTP params
+	}); 
+		
+	/*Data Stores*/
+	/**
+	 * JsonStore: overviewPageStore
+	 * For holding overview pages
+	 */
+	var overviewPageStore = new Ext.data.JsonStore({
+		id:'name',
+		root: 'data',
+		restful:true,
+		fields:['name','isPublic'],
+		proxy: proxyOverview,
+		writer: writer
+	});
+	
+	/**
+	 * SimpleStore: pageComboStore
+	 * Used for overviewpages in combobox
+	 * */
+	var pageComboStore = new Ext.data.SimpleStore({
+		id:0,
+		fields:['name'],
+		data:[]
+	});
+	
+	// Store for request table data
+	var overviewTableStore = new Ext.data.JsonStore({
+		id: 'queryId',
+		root: 'data',
+		restful:true,
+		proxy: proxyTableOverview,
+		writer: writer,
+		fields:[{name: 'overviewId'},{name:'queryId'},{name:'isPublic'},
+				{name:'query',mapping:'query'},{name:'id', mapping:'query.id'},
+				{name:'name', mapping:'query.name'},{name:'status', mapping:'query.status'},
+				{name:'statusCode', mapping:'query.statusCode'},{name:'serviceMethod', mapping:'query.serviceMethod'},
+				{name: 'queryValidationResult',mapping: 'query.queryValidationResult'},{name: 'id',mapping: 'query.queryValidationResult.id'},
+				{name: 'sizeValidationResult',mapping: 'query.queryValidationResult.sizeValidationResult'},{name: 'responseSize',mapping: 'query.queryValidationResult.responseSize'},
+				{name: 'timeValidationResult',mapping: 'query.queryValidationResult.timeValidationResult'},{name: 'deliveryTime',mapping: 'query.queryValidationResult.deliveryTime'},
+				{name: 'xpathValidationResult',mapping: 'query.queryValidationResult.xpathValidationResult'},{name: 'xpathValidationOutput',mapping: 'query.queryValidationResult.xpathValidationOutput'},
+				{name: 'queryValidationSettings',mapping: 'query.queryValidationSettings'},{name: 'id',mapping: 'query.queryValidationSettings.id'},
+				{name: 'useSizeValidation',mapping: 'query.queryValidationSettings.useSizeValidation'},{name: 'normSize',mapping: 'query.queryValidationSettings.normSize'},
+				{name: 'normSizeTolerance',mapping: 'query.queryValidationSettings.normSizeTolerance'},{name: 'useTimeValidation',mapping: 'query.queryValidationSettings.useTimeValidation'},
+				{name: 'normTime',mapping: 'query.queryValidationSettings.normTime'},{name: 'useXpathValidation',mapping: 'query.queryValidationSettings.useXpathValidation'},
+				{name: 'xpathExpression',mapping: 'query.queryValidationSettings.xpathExpression'},{name: 'expectedXpathOutput',mapping: 'query.queryValidationSettings.expectedXpathOutput'},	
+				{name:'lastQueryResult',mapping:'lastQueryResult'},{name:'picture_url',mapping:'lastQueryResult.picture_url'},
+				{name:'xml_result',mapping:'lastQueryResult.xml_result'},{name:'text_result',mapping:'lastQueryResult.text_result'}
+			]
+	});
+	
+	var controlsORP = {
+			xtype: 'fieldset',
+			id: 'overviewFs',
+			region: 'north',
+			height: 80,
+			layout:'table',
+			layoutConfig:{columns:6},
+			defaults: {
+				bodyStyle:'padding:5px'
+			}, 
+			collapsible:false,
+			title: '',
+			items:[
+			{
+					items:[{
+						xtype:          'combo',
+						mode:           'local',
+						id:             'overviewcomboOVP',
+						triggerAction:  'all',
+						forceSelection: true,
+						editable:       false,
+						name:           'overviewComboFilter',
+						displayField:   'name',
+						valueField:     'name',
+						emptyText: EasySDI_Mon.lang.getLocal('combo select a overviewpage'),
+						store:pageComboStore
+					}]
+			
+			},
+			{
+				id: 'modeswitch',
+				xtype: 'button',
+				text: EasySDI_Mon.lang.getLocal('overview switch mode view'),
+				disabled: false,
+				handler: function()
+				{
+					var btn = Ext.getCmp('modeswitch');
+					if(editmode)
+					{
+						editmode = false;
+						btn.setText(EasySDI_Mon.lang.getLocal('overview switch mode edit'));
+					}else
+					{
+						editmode = true;
+						btn.setText(EasySDI_Mon.lang.getLocal('overview switch mode view'));
+					}
+					var pagename = Ext.getCmp('overviewcomboOVP').getValue();
+					if(pagename && pagename != "")
+					{
+						overviewTableStore.proxy.api.read.url = EasySDI_Mon.proxy+'overviews/'+pagename+'/queries';
+						overviewTableStore.load();
+					}
+				}
+			},       
+			{
+				id: 'newbtnResponsePage',
+				xtype:'button',
+				text: 'New',
+				disabled:false,
+				handler: function(){
+					//Open a window for entering create a new overview response page
+					var win = new  Ext.Window({
+						width:200,
+						autoScroll:false,
+						modal:true,
+						title: EasySDI_Mon.lang.getLocal('overview panel title'),
+						items: [ 
+						        new Ext.FormPanel({
+						        	labelWidth: 35, // label settings here cascade unless overridden
+						        	monitorValid:true,
+						        	ref: 'overviewpagePanel',
+						        	region:'center',
+						        	bodyStyle:'padding:5px 5px 0',
+						        	autoHeight:true,
+						        	frame:true,
+						        	defaults: {width: 200},
+						        	defaultType: 'textfield',
+						        	autoHeight:true,
+						        	items: [
+					        	        {
+					        	        	fieldLabel: EasySDI_Mon.lang.getLocal('overview label pagename'),
+					        	        	value: '',
+					        	        	name: 'name',
+					        	        	allowBlank:false,
+					        	        	xtype: 'textfield',
+					        	        	width: 120
+					        	        }
+					        	        ],
+					        	        buttons: [{
+					        	        	text: EasySDI_Mon.lang.getLocal('grid action ok'),
+					        	        	handler: function()
+					        	        	{
+					        	        		var fields = win.overviewpagePanel.getForm().getFieldValues();
+					        	        		var index = overviewPageStore.find('name',fields.name);  
+					        	        		// ONLY CREATED IF NAME DOES NOT EXIST 
+					        	        		if(index < 0)
+					        	        		{
+					        	        			var u = new overviewPageStore.recordType({name:'',isPublic:'0'});
+					        	        			u.set('name', fields.name);
+					        	        			u.set('isPublic', '0');
+					        	        			overviewPageStore.insert(0, u);  	    			 
+					        	        			win.close();
+					        	        		}else
+					        	        		{
+					        	        			// TODO Language
+					        	        			alert('The pagename already exist: '+fields.name);
+					        	        		}
+					        	        	}
+					        	        },{
+					        	        	text: EasySDI_Mon.lang.getLocal('grid action cancel'),
+					        	        	handler: function(){
+					        	        		win.close();
+					        	        	}
+							        	}]
+							        })
+							        ]
+						});
+					// open add Window
+					win.show();	
+				}
+				
+			},
+			{
+				id: 'delbtnResponsePage',
+				xtype:'button',
+				text: 'Delete',
+				disabled:false,
+				handler: function(){
+					if(confirm('Do you want to delete: '+Ext.getCmp('overviewcomboOVP').getValue()))
+					{				
+						var name = Ext.getCmp('overviewcomboOVP').getValue();
+						if(name != '')
+						{
+							// Delete URL
+							var index = -1;
+							index = overviewPageStore.find('name',name);
+							if(index > -1)
+							{
+								try
+								{
+									overviewPageStore.remove(overviewPageStore.getAt(index));
+									refreshComboValuesFromOverviewStore();
+									resetPage();
+								}catch(e)
+								{
+									alert(e);
+								}
+							}				    
+						}	
+					}
+				}
+			},
+			{
+				html:'',
+				colspan:2
+			},
+			{	
+				items:[
+					new Ext.FormPanel({
+					layout:'table',
+					layoutConfig:{columns:2},
+					defaults: {
+					bodyStyle:'padding:5px'
+					}, 
+					items:[
+					{
+						xtype: 'checkbox',
+						id: 'checkpublic',
+						checked: false,
+						hidden: true,
+						handler: function(){
+							var alink = document.getElementById("apublicLink");
+							var name = Ext.getCmp('overviewcomboOVP').getValue();
+							var index = overviewPageStore.find('name',name);
+							if(index > -1)
+							{	
+								var isPublicChecked = overviewPageStore.getAt(index).get('isPublic');
+								if(Ext.getCmp('checkpublic').checked)
+								{
+									if(isPublicChecked == '0')
+									{
+										overviewPageStore.getAt(index).set('isPublic','1');
+										alink.href = findMainURL(name);
+										alink.innerHTML = findMainURL(name);
+										toggleLink(true,true);
+									}
+								}else
+								{
+									if(isPublicChecked == '1'){
+										overviewPageStore.getAt(index).set('isPublic','0');
+										toggleLink(true,true);
+									}
+								}
+							}
+						}
+				  },
+				  {			  
+						hidden: true,
+						id:'linkPublic',
+						html: 'Public <a id="apublicLink" href="'+findMainURL('')+'" target="blank">'+findMainURL('')+'</a>'
+				  }]
+				  })
+				],
+				colspan:6
+			}
+			]
+			
+	}// end control
+	
+	// View and edit Table 
+	var controlTable = 
+	{
+			xtype: 'panel',
+			id: 'requestTable',
+			region: 'center',
+			height:350,
+			autoScroll: true,
+			hidden: true,
+		//	layout:'table',
+		//	layoutConfig:{columns:3},
+			defaults: {
+				bodyStyle:'padding:5px',
+				//width:320,//280 
+				height:300 //260
+			}, 
+			//collapsible:false,
+			title: ''		
+	};
+	
+	// Panel
+	var responseoverviewPanel = new Ext.Panel({
+		id:'ResponseOverviewPanel',
+		region:'center',
+		layout: 'border',
+		border:true,
+		frame:true,
+		items: [
+		        controlsORP,
+		        controlTable
+		]
+	});
+	
+	// Default load
+	overviewPageStore.load();
+	
+	function resetPage()
+	{
+		Ext.getCmp('overviewcomboOVP').clearValue();
+		Ext.getCmp('requestTable').removeAll();;
+		toggleLink(false,false);
+	}
+	
+	function toggleLink(modeCheck,modeLink)
+	{
+		Ext.getCmp('checkpublic').setVisible(modeCheck);
+		Ext.getCmp('linkPublic').setVisible(modeLink);
+	}
+	
+	/*****
+	 *
+	 * Event Handlers 
+	 *
+	 *****/
+	
+	function refreshComboValuesFromOverviewStore(){
+		var aRec = overviewPageStore.getRange();	
+		// Clear list
+		pageComboStore.removeAll();
+		// add new list
+		for ( var i=0; i< aRec.length; i++ )
+		{
+			var u = new pageComboStore.recordType({name:''});
+			u.set('name', aRec[i].get('name'));
+			pageComboStore.insert(0, u);
+		}
+	}
+	
+	function createView()
+	{
+		var name = Ext.getCmp('overviewcomboOVP').getValue();
+		var index = overviewPageStore.find('name',name);
+		if(index > -1)
+		{
+			var rec = overviewPageStore.getAt(index);
+			var alink = document.getElementById("apublicLink");
+			var name = Ext.getCmp('overviewcomboOVP').getValue();
+			alink.href = findMainURL(name);
+			alink.innerHTML = findMainURL(name);
+			toggleLink(true,true);
+	
+			if(rec.get('isPublic') == 1)
+			{			
+				Ext.getCmp('checkpublic').setValue(true);
+			}else
+			{
+				Ext.getCmp('checkpublic').setValue(false);
+			}
+		}else
+		{
+			toggleLink(false,false);
+		}
+		
+		// Create tableview
+		var table = Ext.getCmp('requestTable');
+		try
+		{
+			// Remove all items from fieldSet
+			table.removeAll();
+			table.setVisible(true);
+			// remove cells from table
+			for (row = 0; row <= table.getLayout().currentRow; row++) {
+				
+				var tr = table.getLayout().getRow(row);
+				while(tr.children.length > 0)
+				{
+					var child = tr.children[tr.children.length-1];
+					tr.removeChild(child);
+				}
+			}
+			table.layout.currentRow = 0;
+			table.layout.currentColumn = 0;
+			table.layout.cells = [];
+			table.doLayout();
+		}catch(e)
+		{
+		}
+		
+		// Get request data
+		var aRec = overviewTableStore.getRange();
+		for ( var i=0; i< aRec.length; i++ )
+		{	
+			var content_type = aRec[i].get('serviceMethod');
+			var controls;
+			if(editmode)
+			{
+				controls = createTable(aRec[i],content_type.toLowerCase());
+				table.add(controls);
+			}else
+			{
+				if( aRec[i].get('isPublic') == 1)
+				{
+					controls = createTable(aRec[i],content_type.toLowerCase());
+					table.add(controls);
+				}
+			}
+		}
+		
+		for(var i = 0;i < table.items.items.length;i++)
+		{
+			table.items.items[i].addClass('Div_overview_request');
+		}
+		
+		table.doLayout();
+	}
+	
+	function createTable(rec,type)
+	{
+		var tHeaderColor = 'OverviewTableCellsOk';
+		var dTime = Math.round(rec.get('deliveryTime') * 1000);
+		var nTime = rec.get('normTime');
+		var tCellColor = 'OverviewTableCellsOk';
+		if(!rec.get('useTimeValidation'))
+		{
+			tCellColor = 'OverviewTableCellsOk';
+		}else if(!rec.get('timeValidationResult'))
+		{
+			tCellColor = 'OverviewTableCellsFailed';
+		}
+		
+		var sSize = rec.get('responseSize');
+		var nSize = rec.get('normSize');
+		var sCellColor = 'OverviewTableCellsOk';
+		if(!rec.get('useSizeValidation'))
+		{
+			sCellColor = 'OverviewTableCellsOk';
+		}else if(!rec.get('sizeValidationResult')) 
+		{
+			sCellColor = 'OverviewTableCellsError';
+		}
+	    
+		var oFound = rec.get('xpathValidationOutput');
+		var oNorm = rec.get('normOutput'); 
+		var oCellColor = 'OverviewTableCellsOk';
+		if(!rec.get('useXpathValidation'))
+		{
+			oCellColor = 'OverviewTableCellsOk';
+		}else if(!rec.get('xpathValidationResult'))
+		{
+			oCellColor = 'OverviewTableCellsError';
+		}
+		var reqError = false;
+		if(dTime < 0 || rec.get('statusCode').toLowerCase() == 'unavailable')
+		{
+			reqError = true;
+			tHeaderColor = 'OverviewTableCellsError';
+			tCellColor = 'OverviewTableCellsError';
+			sCellColor = 'OverviewTableCellsError';
+			oCellColor = 'OverviewTableCellsError';
+		}
+		
+		var controls;
+		switch(type)
+		{
+		case "gettile":
+		case "getmap":
+			controls = {
+				items: 
+				[
+			        new Ext.FormPanel(
+			        {
+			        	id: 'tablepagePanel',
+			        	region:'north',
+			        	layout:'table',
+			        	layoutConfig:{columns:2},
+					    defaults: {
+					    },
+					    items:
+					    [
+	        	       {
+	        	    	   	xtype: 'label',
+	        	        	value: '',
+	        	        	name: 'service_label',
+							text: EasySDI_Mon.lang.getLocal('overview label service name'),
+							cls: 'OverviewLabel',
+							cellCls: tHeaderColor
+						},
+	        	        {
+	        	           	xtype: 'label',
+	        	        	value: '',
+	        	        	name: 'service_name',
+							
+							text: rec.get('name'),
+							cellCls: tHeaderColor
+	        	        },
+						{
+							xtype: 'label',
+	        	        	value: '',
+	        	        	name: 'Size_label',
+							text: EasySDI_Mon.lang.getLocal('overview label size'),
+							cls: 'OverviewLabel',
+							cellCls: sCellColor
+						},
+						{
+							xtype: 'label',
+	        	        	value: '',
+	        	        	name: 'size',
+							text: rec.get('responseSize')+ EasySDI_Mon.lang.getLocal('overview label bytes'),
+							cellCls: sCellColor
+						},
+						{
+							xtype: 'label',
+	        	        	value: '',
+	        	        	name: 'norm_label',
+							text: EasySDI_Mon.lang.getLocal('overview label norm size'),
+							cls: 'OverviewLabel',
+							cellCls: sCellColor
+						},
+						{
+							xtype: 'label',
+	        	        	value: '',
+	        	        	name: 'norm',
+							text: rec.get('normSize') ? rec.get('normSize') + EasySDI_Mon.lang.getLocal('overview label bytes'): '',
+							cellCls: sCellColor
+						},
+						{
+							xtype: 'label',
+	        	        	value: '',
+	        	        	name: 'Deliverytime_label',
+							text: EasySDI_Mon.lang.getLocal('overview label delivery time'),
+							cls: 'OverviewLabel',
+							cellCls: tCellColor
+						},
+						{
+							xtype: 'label',
+	        	        	value: '',
+	        	        	name: 'Deliverytime',
+							text:  Math.round(rec.get('deliveryTime') * 1000)+EasySDI_Mon.lang.getLocal('overview label ms'),
+							cellCls: tCellColor
+						},
+						{
+							xtype: 'label',
+	        	        	value: '',
+	        	        	name: 'Normtime_label',
+							text: EasySDI_Mon.lang.getLocal('overview label norm time'),
+							cls: 'OverviewLabel',
+							cellCls: tCellColor
+						},
+						{
+							xtype: 'label',
+	        	        	value: '',
+	        	        	name: 'Normtime_label',
+							text: rec.get('normTime') ? rec.get('normTime')+EasySDI_Mon.lang.getLocal('overview label ms'):'',
+							cellCls: tCellColor
+						},
+						{
+							width: rec.get('picture_url') ? 142: 300,
+							height: 142,
+							html: rec.get('picture_url') && !reqError ? '<img src='+rec.get('picture_url')+' alt="missing image" style="border:1px solid;" width="140" height="140" />': '<textarea class="Text_area_result" >'+rec.get('text_result')+'</textarea>',
+							colspan: 2,
+							cellCls: 'OverviewTableCellsImg'
+						},
+						{
+							xtype: 'checkbox',
+							id: 'check_'+rec.get('queryId'),
+							inputValue: rec.get('queryId'),
+							hidden: editmode ? false:true,
+							checked: rec.get('isPublic') == 1? true: false,
+							handler: function(com){
+								var index = overviewTableStore.find('queryId',com.inputValue);
+								if(index > -1)
+								{						
+									if(com.checked)
+									{
+										overviewTableStore.getAt(index).set('isPublic','1');
+									}else
+									{
+										overviewTableStore.getAt(index).set('isPublic','0');
+									}
+								}
+							},
+	        	        	cellCls: 'OverviewTableCellsInludeBox'
+						},
+						{
+							hidden: editmode ? false:true,
+							html: EasySDI_Mon.lang.getLocal('overview label include'),
+							cellCls: 'OverviewTableCellsInludeText'
+						}
+						]
+			        })// End form panel
+        		]     
+			}// end control 
+			break;
+		case "getfeature":
+		case "getrecords":
+		case "getrecordbyid":
+		case "getcapabilities":
+			controls = {
+				items: 
+				[
+				 	new Ext.FormPanel(
+			        {
+			        	id: 'tablepagePanel',
+			        	region:'north',
+			        	layout:'table',
+			        	layoutConfig:{columns:2},
+					    defaults: {
+					    },
+					    items:
+					    [
+	        	        {
+	        	    	   	xtype: 'label',
+	        	        	value: '',
+	        	        	name: 'service_label',
+							text: EasySDI_Mon.lang.getLocal('overview label service name'),
+							cls: 'OverviewLabel',
+							cellCls: tHeaderColor
+						},
+	        	        {
+	        	           	xtype: 'label',
+	        	        	value: '',
+	        	        	name: 'service_name',
+							text: rec.get('name'),
+							cellCls: tHeaderColor
+	        	        },
+	        	        {
+							xtype: 'label',
+	        	        	value: '',
+	        	        	name: 'foundOutput_label',
+							text: EasySDI_Mon.lang.getLocal('overview label foundoutput'),
+							cls: 'OverviewLabel',
+							cellCls: oCellColor
+						},
+						{
+							xtype: 'label',
+	        	        	value: '',
+	        	        	name: 'xpathValidationOutput',
+							text: rec.get('xpathValidationOutput'),
+							cellCls: oCellColor
+						},
+						{
+							xtype: 'label',
+	        	        	value: '',
+	        	        	name: 'norm_label',
+							text: EasySDI_Mon.lang.getLocal('overview label normoutput'),
+							cls: 'OverviewLabel',
+							cellCls: oCellColor
+						},
+						{
+							xtype: 'label',
+	        	        	value: '',
+	        	        	name: 'expectedXpathOutput',
+							text: rec.get('expectedXpathOutput'),
+							cellCls: oCellColor
+						},
+						{
+							xtype: 'label',
+	        	        	value: '',
+	        	        	name: 'Deliverytime_label',
+							text: EasySDI_Mon.lang.getLocal('overview label delivery time'),
+							cls: 'OverviewLabel',
+							cellCls: tCellColor
+						},
+						{
+							xtype: 'label',
+	        	        	value: '',
+	        	        	name: 'Deliverytime',
+							text: Math.round(rec.get('deliveryTime') * 1000)+EasySDI_Mon.lang.getLocal('overview label ms'),
+							cellCls: tCellColor
+						},
+						{
+							xtype: 'label',
+	        	        	value: '',
+	        	        	name: 'Normtime_label',
+							text: EasySDI_Mon.lang.getLocal('overview label norm time'),
+							cls: 'OverviewLabel',
+							cellCls: tCellColor
+						},
+						{
+							xtype: 'label',
+	        	        	value: '',
+	        	        	name: 'Normtime_label',
+							text: rec.get('normTime') ? rec.get('normTime') + EasySDI_Mon.lang.getLocal('overview label ms'): '',
+							cellCls: tCellColor
+						},
+						{
+							xtype: 'textarea',
+							autoScroll: true,
+							width: 300,//180,
+							height:140,
+							style: 'border:1px solid;',
+							readOnly: true,
+							value: rec.get('xml_result')?rec.get('xml_result') :rec.get('text_result'),
+							colspan: 2,
+							cellCls: 'OverviewTableCells'
+						},
+						{
+							xtype: 'checkbox',
+							id: 'check_'+rec.get('queryId'),
+							inputValue: rec.get('queryId'),
+							hidden: editmode ? false:true,
+							checked: rec.get('isPublic') == 1? true: false,
+							handler: function(com){
+								var index = overviewTableStore.find('queryId',com.inputValue);
+								if(index > -1)
+								{
+									if(com.checked)
+									{
+										overviewTableStore.getAt(index).set('isPublic','1');
+									}else
+									{
+										overviewTableStore.getAt(index).set('isPublic','0');
+									}								
+								}
+							},
+	        	        	cellCls: 'OverviewTableCellsInludeBox'
+						},
+						{
+							hidden: editmode ? false:true,
+							html: EasySDI_Mon.lang.getLocal('overview label include'),
+							cellCls: 'OverviewTableCellsInludeText'
+						}
+						]
+			        })// End form panel
+        		]     
+			}// end control
+			break;
+		default: 
+			break;
+		}// end switch		
+		return controls;
+	}
+	
+	/* Events */
+	/**
+	* Select of page in combox
+	*/
+	Ext.getCmp('overviewcomboOVP').on('select', function(cmb, rec){
+		overviewTableStore.proxy.api.update.url = EasySDI_Mon.proxy+'overviews/'+rec.data.name+'/queries';
+		overviewTableStore.proxy.api.read.url = EasySDI_Mon.proxy+'overviews/'+rec.data.name+'/queries';
+		overviewTableStore.load();
+	});
+	
+	overviewPageStore.on('load', function() {
+		refreshComboValuesFromOverviewStore();
+	});
+	
+	overviewPageStore.on('add',function(store, records, index )
+	{
+		refreshComboValuesFromOverviewStore();
+	});
+	
+	// Table store events
+	overviewTableStore.on('load', function()
+	{
+		createView();
+	});
+	
+});/**
+ * EasySDI, a solution to implement easily any spatial data infrastructure
+ * Copyright (C) EasySDI Community 
+ * For more information : www.easysdi.org
  *
- * Copyright 2007, Google Inc.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- *  1. Redistributions of source code must retain the above copyright notice,
- *     this list of conditions and the following disclaimer.
- *  2. Redistributions in binary form must reproduce the above copyright notice,
- *     this list of conditions and the following disclaimer in the documentation
- *     and/or other materials provided with the distribution.
- *  3. Neither the name of Google Inc. nor the names of its contributors may be
- *     used to endorse or promote products derived from this software without
- *     specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR IMPLIED
- * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
- * EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
- * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
- * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
- * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
- * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Sets up google.gears.*, which is *the only* supported way to access Gears.
- *
- * Circumvent this file at your own risk!
- *
- * In the future, Gears may automatically define google.gears.* without this
- * file. Gears may use these objects to transparently fix bugs and compatibility
- * issues. Applications that use the code below will continue to work seamlessly
- * when that happens.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html.
  */
-Ext.namespace("EasySDI_Mon");Ext.onReady(function(){Ext.QuickTips.init();var url=String.format("./components/com_easysdi_monitor/lib/ext/src/locale/ext-lang-{0}.js",EasySDI_Mon.locale);Ext.Ajax.request({url:url,success:function(response,opts){eval(response.responseText);},failure:function(){Ext.Msg.alert('Failure',EasySDI_Mon.lang.getLocal('error_lang')+' "'+EasySDI_Mon.locale+'"');},scope:this});});Ext.form.VTypes['jobnameMask']=/[a-z0-9_-]/i;var alphanummore=/^[a-zA-Z0-9_-]+$/;Ext.form.VTypes['alphanummore']=function(v)
-{return alphanummore.test(v);}
-Ext.form.VTypes['jobname']=function(v)
-{if(Ext.form.VTypes['alphanummore'](v)){if(Ext.getCmp('JobGrid').store.getById(v)){Ext.form.VTypes['jobnameText']=EasySDI_Mon.lang.getLocal('jobname already exists');return false;}
-if(v.toUpperCase()=='ALL'){Ext.form.VTypes['jobnameText']=EasySDI_Mon.lang.getLocal('error reserved keyword');return false;}
-return true;}else{Ext.form.VTypes['jobnameText']=EasySDI_Mon.lang.getLocal('error ressource name');return false;}
-return true;}
-Ext.form.VTypes['reqname']=function(v)
-{if(Ext.form.VTypes['alphanum'](v)){if(Ext.getCmp('ReqGrid').store.getById(v)){Ext.form.VTypes['reqnameText']=EasySDI_Mon.lang.getLocal('reqname already exists');return false;}
-if(v.toUpperCase()=='ALL'){Ext.form.VTypes['reqnameText']=EasySDI_Mon.lang.getLocal('error reserved keyword');return false;}
-return true;}else{Ext.form.VTypes['reqnameText']=EasySDI_Mon.lang.getLocal('error ressource name');return false;}
-return true;}
-Ext.App=function(config){this.initStateProvider();this.views=[];Ext.apply(this,config);if(!this.api.actions){this.api.actions={};}
-Ext.onReady(this.onReady,this);Ext.App.superclass.constructor.apply(this,arguments);}
-Ext.extend(Ext.App,Ext.util.Observable,{STATUS_EXCEPTION:'exception',STATUS_VALIDATION_ERROR:"validation",STATUS_ERROR:"error",STATUS_NOTICE:"notice",STATUS_OK:"ok",STATUS_HELP:"help",api:{url:null,type:null,actions:{}},msgCt:null,onReady:function(){this.msgCt=Ext.DomHelper.insertFirst(document.body,{id:'msg-div'},true);this.msgCt.setStyle('position','absolute');this.msgCt.setStyle('z-index',9999);this.msgCt.setWidth(300);},initStateProvider:function(){var days='';if(days){var date=new Date();date.setTime(date.getTime()+(days*24*60*60*1000));var exptime="; expires="+date.toGMTString();}else{var exptime=null;}
-Ext.state.Manager.setProvider(new Ext.state.CookieProvider({path:'/',expires:exptime,domain:null,secure:false}));},registerView:function(view){this.views.push(view);},getViews:function(){return this.views;},registerActions:function(actions){Ext.apply(this.api.actions,actions);},getAPI:function(){return this.api;},setAlert:function(status,msg){this.addMessage(status,msg);},addMessage:function(status,msg){var delay=3;if(status==false){delay=5;}
-if(msg)
-{delay=msg.length/13.3;if(delay<3){delay=3;}
-else if(delay>9){delay=9;}}
-this.msgCt.alignTo(document,'t-t');Ext.DomHelper.append(this.msgCt,{html:this.buildMessageBox(status,String.format.apply(String,Array.prototype.slice.call(arguments,1)))},true).slideIn('t').pause(delay).ghost("t",{remove:true});},buildMessageBox:function(title,msg){switch(title){case true:title=EasySDI_Mon.lang.getLocal(this.STATUS_OK);break;case false:title=EasySDI_Mon.lang.getLocal(this.STATUS_ERROR);break;}
-return['<div class="app-msg">','<div class="x-box-tl"><div class="x-box-tr"><div class="x-box-tc"></div></div></div>','<div class="x-box-ml"><div class="x-box-mr"><div class="x-box-mc"><h3 class="x-icon-text icon-status-'+title+'">',title,'</h3>',msg,'</div></div></div>','<div class="x-box-bl"><div class="x-box-br"><div class="x-box-bc"></div></div></div>','</div>'].join('');},decodeStatusIcon:function(status){iconCls='';switch(status){case true:case this.STATUS_OK:iconCls=this.ICON_OK;break;case this.STATUS_NOTICE:iconCls=this.ICON_NOTICE;break;case false:case this.STATUS_ERROR:iconCls=this.ICON_ERROR;break;case this.STATUS_HELP:iconCls=this.ICON_HELP;break;}
-return iconCls;},setViewState:function(key,value){Ext.state.Manager.set(key,value);},getViewState:function(key){return Ext.state.Manager.get(key);},t:function(words){return words;},handleResponse:function(res){if(res.type==this.STATUS_EXCEPTION){return this.handleException(res);}
-if(res.message.length>0){this.setAlert(res.status,res.message);}},handleException:function(res){Ext.MessageBox.alert(res.type.toUpperCase(),res.message);}});Ext.namespace("EasySDI_Mon");Ext.BLANK_IMAGE_URL='./components/com_easysdi_monitor/lib/ext/resources/images/default/s.gif';Highcharts.setOptions({global:{useUTC:false}});Ext.onReady(function(){EasySDI_Mon.ServiceMethodStore={wms:[['GetCapabilities'],['GetMap']],wfs:[['GetCapabilities'],['GetFeature']],wmts:[['GetCapabilities'],['GetTile']],csw:[['GetCapabilities'],['GetRecordById'],['GetRecords']],sos:[['GetCapabilities'],['DescribeSensor']],wcs:[['GetCapabilities'],['GetCoverage']],all:[['GetCapabilities'],['GetMap'],['GetFeature'],['GetTile'],['GetRecordById'],['GetRecords'],['DescribeSensor'],['GetCoverage']]}
-EasySDI_Mon.HttpMethodStore=[['GET'],['POST']];EasySDI_Mon.OgcServiceStore=[['WMS'],['WFS'],['WMTS'],['CSW'],['SOS'],['WCS'],['ALL']];EasySDI_Mon.RepPeriodStore=[[EasySDI_Mon.lang.getLocal('today'),'today'],[EasySDI_Mon.lang.getLocal('yesterday'),'yesterday'],[EasySDI_Mon.lang.getLocal('last week'),'lastweek'],[EasySDI_Mon.lang.getLocal('this month'),'thismonth'],[EasySDI_Mon.lang.getLocal('past 6 months'),'past6months'],[EasySDI_Mon.lang.getLocal('past year'),'pastyear'],[EasySDI_Mon.lang.getLocal('Enter period...'),'period'],[EasySDI_Mon.lang.getLocal('all'),'All']];EasySDI_Mon.ToleranceStore=[['0','0%'],['5','5%'],['10','10%'],['15','15%'],['20','20%'],['25','25%'],['40','40%'],['50','50%'],['75','75%'],['100','100%']];EasySDI_Mon.DaysForUsingLogs=6;EasySDI_Mon.DefaultJob={name:'',httpMethod:'GET',serviceType:'WMS',url:'http://',login:'',password:'',testInterval:3600,timeout:5,isPublic:true,isAutomatic:true,allowsRealTime:true,triggersAlerts:true,slaStartTime:'08:00:00',slaEndTime:'18:00:00',httpErrors:true,bizErrors:true};EasySDI_Mon.DefaultReq={name:'',serviceMethod:'',params:''};EasySDI_Mon.DefaultGetCapReq={name:'',serviceMethod:''};EasySDI_Mon.DefaultOverviewPage={name:'',isPublic:''};EasySDI_Mon.DefaultPageCombo={name:''};EasySDI_Mon.YesNoCombo=[[EasySDI_Mon.lang.getLocal('YES'),'Y'],[EasySDI_Mon.lang.getLocal('NO'),'N']];EasySDI_Mon.TrueFalseRenderer=function(value){if(value=='true')
-return'<table width="100%"><tr><td align="center"><div class="icon-gridrenderer-boolean-true"/></td></tr></table>';else if(value==true)
-return'<table width="100%"><tr><td align="center"><div class="icon-gridrenderer-boolean-true"/></td></tr></table>';else
-return'<table width="100%"><tr><td align="center"><div class="icon-gridrenderer-boolean-false"/></td></tr></table>';};EasySDI_Mon.StatusRenderer=function(status){switch(status){case'AVAILABLE':return'<table'+' title="'+EasySDI_Mon.lang.getLocal('available')+'" '+'width="100%"><tr><td align="center"><div class="icon-gridrenderer-available"/></td></tr></table>';break;case'OUT_OF_ORDER':return'<table'+' title="'+EasySDI_Mon.lang.getLocal('failure')+'" '+'width="100%"><tr><td align="center"><div class="icon-gridrenderer-failure"/></td></tr></table>';break;case'UNAVAILABLE':return'<table'+' title="'+EasySDI_Mon.lang.getLocal('unavailable')+'" '+'width="100%"><tr><td align="center"><div class="icon-gridrenderer-unavailable"/></td></tr></table>';break;case'NOT_TESTED':return'<table'+' title="'+EasySDI_Mon.lang.getLocal('untested-unknown')+'" '+'width="100%"><tr><td align="center"><div class="icon-gridrenderer-untested"/></td></tr></table>';break;default:return status;break;}};EasySDI_Mon.AlertStatusRenderer=function(newStatus,scope,row){var oldStatus=row.get('oldStatusCode');switch(newStatus){case'AVAILABLE':if(oldStatus=='OUT_OF_ORDER')
-return'<div'+' title="'+EasySDI_Mon.lang.getLocal('title failure-to-available')+'" '+'class="icon-gridrenderer-failure-to-available"/>';if(oldStatus=='UNAVAILABLE')
-return'<div'+' title="'+EasySDI_Mon.lang.getLocal('title unavailable-to-available')+'" '+'class="icon-gridrenderer-unavailable-to-available"/>';if(oldStatus=='NOT_TESTED')
-return'<div'+' title="'+EasySDI_Mon.lang.getLocal('title untested-to-available')+'" '+'class="icon-gridrenderer-untested-to-available"/>';break;case'OUT_OF_ORDER':if(oldStatus=='AVAILABLE')
-return'<div'+' title="'+EasySDI_Mon.lang.getLocal('title available-to-failure')+'" '+'class="icon-gridrenderer-available-to-failure"/>';if(oldStatus=='UNAVAILABLE')
-return'<div'+' title="'+EasySDI_Mon.lang.getLocal('title unavailable-to-failure')+'" '+'class="icon-gridrenderer-unavailable-to-failure"/>';if(oldStatus=='NOT_TESTED')
-return'<div'+' title="'+EasySDI_Mon.lang.getLocal('title untested-to-failure')+'" '+'class="icon-gridrenderer-untested-to-failure"/>';break;case'UNAVAILABLE':if(oldStatus=='OUT_OF_ORDER')
-return'<div'+' title="'+EasySDI_Mon.lang.getLocal('title failure-to-unavailable')+'" '+'class="icon-gridrenderer-failure-to-unavailable"/>';if(oldStatus=='AVAILABLE')
-return'<div'+' title="'+EasySDI_Mon.lang.getLocal('title available-to-unavailable')+'" '+'class="icon-gridrenderer-available-to-unavailable"/>';if(oldStatus=='NOT_TESTED')
-return'<div'+' title="'+EasySDI_Mon.lang.getLocal('title untested-to-unavailable')+'" '+'class="icon-gridrenderer-untested-to-unavailable"/>';break;default:return value;break;}};EasySDI_Mon.DelayRenderer=function(value){return Math.round(value*1000);};EasySDI_Mon.DateTimeRenderer=function(value){return Ext.util.Format.date(value,EasySDI_Mon.dateTimeFormat);};EasySDI_Mon.DateRenderer=function(value){return Ext.util.Format.date(value,EasySDI_Mon.dateFormat);};EasySDI_Mon.CurrentJobCollection=EasySDI_Mon.DefaultJobCollection;EasySDI_Mon.JobCollectionStore=[[EasySDI_Mon.lang.getLocal('job collection public'),'jobs'],[EasySDI_Mon.lang.getLocal('job collection private'),'adminJobs']];EasySDI_Mon.App=new Ext.App({});Ext.data.DataProxy.addListener('write',function(proxy,action,result,res,rs){EasySDI_Mon.App.setAlert(true,res.raw.message);});Ext.data.DataProxy.addListener('delete',function(proxy,action,result,res,rs){EasySDI_Mon.App.setAlert(true,res.raw.message);});Ext.data.DataProxy.addListener('exception',function(proxy,type,action,options,res){if(res.raw!=null)
-EasySDI_Mon.App.setAlert(false,res.raw.message);else
-EasySDI_Mon.App.setAlert(false,'status:'+res.status+' message:'+res.statusText);});});Ext.namespace("EasySDI_Mon");Ext.onReady(function(){Ext.QuickTips.init();var proxy=new Ext.data.HttpProxy({url:EasySDI_Mon.proxy+EasySDI_Mon.DefaultJobCollection});var writer=new Ext.data.JsonWriter({encode:false});var store=new Ext.data.JsonStore({root:'data',id:'name',restful:true,proxy:proxy,writer:writer,fields:['status','statusCode','httpMethod','testInterval','bizErrors','isPublic','allowsRealTime','httpErrors','serviceType','password','url','id','slaEndTime','name','queries','login','triggersAlerts','timeout','isAutomatic','slaStartTime',{name:'lastStatusUpdate',type:'date',dateFormat:'Y-m-d H:i:s'},'saveResponse']});var editor=new Ext.ux.grid.RowEditor({saveText:EasySDI_Mon.lang.getLocal('grid action update'),cancelText:EasySDI_Mon.lang.getLocal('grid action cancel'),clicksToEdit:2});var cm=new Ext.grid.ColumnModel([{header:EasySDI_Mon.lang.getLocal('grid header name'),dataIndex:"name",width:100,sortable:true,editable:false,editor:{xtype:'textfield',allowBlank:false,vtype:'alphanum'}},{header:EasySDI_Mon.lang.getLocal('grid header method'),dataIndex:"httpMethod",width:50,editor:{xtype:'combo',store:new Ext.data.SimpleStore({fields:['name'],data:EasySDI_Mon.HttpMethodStore}),displayField:'name',typeAhead:true,mode:'local',triggerAction:'all',emptyText:'',selectOnFocus:true}},{header:EasySDI_Mon.lang.getLocal('grid header type'),dataIndex:"serviceType",width:50,editor:{xtype:'combo',store:new Ext.data.SimpleStore({fields:['name'],data:EasySDI_Mon.OgcServiceStore}),displayField:'name',typeAhead:true,mode:'local',triggerAction:'all',emptyText:'',selectOnFocus:true}},{header:EasySDI_Mon.lang.getLocal('grid header url'),id:'url',dataIndex:"url",width:270,editor:{xtype:'textfield',allowBlank:false}},{header:EasySDI_Mon.lang.getLocal('grid header interval'),dataIndex:"testInterval",width:60,editor:{xtype:'numberfield',allowBlank:false,minValue:1}},{header:EasySDI_Mon.lang.getLocal('grid header isauto'),dataIndex:"isAutomatic",width:30,renderer:EasySDI_Mon.TrueFalseRenderer,editor:{xtype:'checkbox'}}]);var _jobGrid=new Ext.grid.GridPanel({id:'JobGrid',loadMask:true,region:'center',plugins:[editor],stripeRows:true,autoExpandColumn:'url',tbar:[{iconCls:'icon-service-add',text:EasySDI_Mon.lang.getLocal('grid action add'),handler:onAdd},'-',{iconCls:'icon-service-rem',ref:'../removeBtn',text:EasySDI_Mon.lang.getLocal('grid action rem'),disabled:true,handler:onDelete}],title:EasySDI_Mon.lang.getLocal('job list'),store:store,cm:cm,sm:new Ext.grid.RowSelectionModel({singleSelect:true,listeners:{rowselect:function(sm,row,rec){Ext.getCmp("jobAdvForm").getForm().loadRecord(rec);}}})});function onAdd(btn,ev){var u=new _jobGrid.store.recordType(EasySDI_Mon.DefaultJob);var win=new Ext.Window({width:380,autoScroll:true,modal:true,title:EasySDI_Mon.lang.getLocal('title new job'),items:[new Ext.FormPanel({labelWidth:90,monitorValid:true,ref:'jobPanel',region:'center',bodyStyle:'padding:5px 5px 0',autoHeight:true,frame:true,defaults:{width:200},defaultType:'textfield',autoHeight:true,items:[{fieldLabel:EasySDI_Mon.lang.getLocal('grid header name'),value:u.data['name'],name:'name',allowBlank:false,vtype:'jobname'},{xtype:'combo',mode:'local',value:u.data['httpMethod'],triggerAction:'all',forceSelection:true,editable:false,fieldLabel:EasySDI_Mon.lang.getLocal('grid header method'),name:'httpMethod',displayField:'name',valueField:'name',store:new Ext.data.SimpleStore({fields:['name'],data:EasySDI_Mon.HttpMethodStore})},{xtype:'combo',mode:'local',value:u.data['serviceType'],triggerAction:'all',forceSelection:true,editable:false,fieldLabel:EasySDI_Mon.lang.getLocal('grid header type'),name:'serviceType',displayField:'name',valueField:'name',store:new Ext.data.SimpleStore({fields:['name'],data:EasySDI_Mon.OgcServiceStore})},{fieldLabel:EasySDI_Mon.lang.getLocal('grid header url'),value:u.data['url'],name:'url',allowBlank:false,xtype:'textfield',allowBlank:false},{fieldLabel:EasySDI_Mon.lang.getLocal('grid header interval'),value:u.data['testInterval'],name:'testInterval',allowBlank:false,xtype:'numberfield',minValue:1},{xtype:'checkbox',fieldLabel:EasySDI_Mon.lang.getLocal('grid header isauto'),name:'isAutomatic',checked:u.data['isAutomatic']},{xtype:'checkbox',fieldLabel:EasySDI_Mon.lang.getLocal('grid header ispublic'),name:'isPublic',checked:u.data['isPublic']}],buttons:[{text:EasySDI_Mon.lang.getLocal('grid action ok'),formBind:true,handler:function(){editor.stopEditing();var fields=win.jobPanel.getForm().getFieldValues();var plop=u;u.set('name',fields.name);u.set('httpMethod',fields.httpMethod);u.set('serviceType',fields.serviceType);u.set('url',fields.url);u.set('testInterval',fields.testInterval);u.set('isAutomatic',fields.isAutomatic);u.set('isPublic',fields.isPublic);_jobGrid.store.insert(0,u);win.close();Ext.data.DataProxy.addListener('write',afterJobInserted);}},{text:EasySDI_Mon.lang.getLocal('grid action cancel'),handler:function(){win.close();}}]})]});win.show();}
-function afterJobInserted(proxy,action,result,res,rs){Ext.data.DataProxy.removeListener('write',afterJobInserted);Ext.data.DataProxy.addListener('write',afterReqInserted);var reqGrid=Ext.getCmp('ReqGrid');reqGrid.store.proxy.setUrl(EasySDI_Mon.proxy+'/jobs/'+result[0].name+'/queries');u=new reqGrid.store.recordType(EasySDI_Mon.DefaultGetCapReq);u.set('name','GetCap');u.set('serviceMethod','GetCapabilities');_reqGrid.store.insert(0,u);_reqGrid.store.save();if((Ext.getCmp('jobCbCollection').getValue()=='jobs'&&result[0].isPublic==false)||(Ext.getCmp('jobCbCollection').getValue()=='adminJobs'&&result[0].isPublic==true))
-store.load();}
-function afterReqInserted(proxy,action,result,res,rs){Ext.data.DataProxy.removeListener('write',afterReqInserted);_jobGrid.getSelectionModel().selectFirstRow();_jobGrid.getView().focusRow(0);}
-function onDelete(){var rec=_jobGrid.getSelectionModel().getSelected();if(!rec){return false;}
-Ext.MessageBox.confirm(EasySDI_Mon.lang.getLocal('confirm'),String.format(EasySDI_Mon.lang.getLocal('confirm suppress job'),rec.get('name')),function(btn){if(btn=='no')
-return false;else
-_jobGrid.store.remove(rec);});}
-function onShowAdvancedTab(){}
-store.load();_jobGrid.getSelectionModel().on('selectionchange',function(sm){_jobGrid.removeBtn.setDisabled(sm.getCount()<1);if(sm.getCount()<1)
-_advForm.updateAdv.disable();else
-_advForm.updateAdv.enable();});_advForm=new Ext.FormPanel({id:'jobAdvForm',title:EasySDI_Mon.lang.getLocal('advanced'),frame:true,autoHeight:true,labelWidth:100,autoWidth:true,region:'center',items:[{layout:'column',items:[{columnWidth:.5,layout:'form',items:[{xtype:'textfield',fieldLabel:EasySDI_Mon.lang.getLocal('grid header login'),name:'login',allowBlank:true,anchor:'95%'},{xtype:'textfield',fieldLabel:EasySDI_Mon.lang.getLocal('grid header password'),name:'password',allowBlank:true,anchor:'95%'}]},{columnWidth:.5,layout:'form',items:[{xtype:'timefield',fieldLabel:EasySDI_Mon.lang.getLocal('grid header sla start'),name:'slaStartTime',minValue:'7:00',maxValue:'18:00',increment:30,format:'H:i:s',anchor:'95%'},{xtype:'timefield',fieldLabel:EasySDI_Mon.lang.getLocal('grid header sla end'),name:'slaEndTime',minValue:'7:00',maxValue:'18:00',increment:30,format:'H:i:s',anchor:'95%'}]}]},{xtype:'checkbox',fieldLabel:EasySDI_Mon.lang.getLocal('grid header isrealtime'),name:'allowsRealTime',trueText:'true',falseText:'false'},{xtype:'numberfield',minValue:1,fieldLabel:EasySDI_Mon.lang.getLocal('grid header timeout'),name:'timeout',width:40},{xtype:'checkbox',fieldLabel:EasySDI_Mon.lang.getLocal('grid header triggersAlerts'),name:'triggersAlerts',trueText:'true',falseText:'false'},{xtype:'checkbox',fieldLabel:EasySDI_Mon.lang.getLocal('grid header httperrors'),name:'httpErrors',trueText:'true',falseText:'false'},{xtype:'checkbox',fieldLabel:EasySDI_Mon.lang.getLocal('grid header ogcerrors'),name:'bizErrors',trueText:'true',falseText:'false'},{xtype:'checkbox',fieldLabel:EasySDI_Mon.lang.getLocal('grid header ispublic'),name:'isPublic',trueText:'true',falseText:'false'},{xtype:'checkbox',fieldLabel:EasySDI_Mon.lang.getLocal('grid header saveresponse'),name:'saveResponse',trueText:'true',falseText:'false'}],buttons:[{text:EasySDI_Mon.lang.getLocal('grid action update'),ref:'../updateAdv',disabled:true,handler:function(){var rec=_jobGrid.getSelectionModel().getSelected();if(!rec){return false;}
-var fields=_advForm.getForm().getFieldValues();rec.beginEdit();for(var el in fields){rec.set(el,fields[el]);}
-rec.endEdit();rec.store.save();Ext.data.DataProxy.addListener('write',afterStoreUpdated);}}]});function afterStoreUpdated(proxy,action,result,res,rs){Ext.data.DataProxy.removeListener('write',afterStoreUpdated);store.load();}});Ext.namespace("EasySDI_Mon");Ext.onReady(function(){var fieldParams=null;var proxy=new Ext.data.HttpProxy({url:'?'});var writer=new Ext.data.JsonWriter({encode:false});var store=new Ext.data.JsonStore({root:'data',id:'name',autoSave:false,restful:true,proxy:proxy,writer:writer,fields:[{name:'serviceMethod'},{name:'status'},{name:'name'},{name:'statusCode'},{name:'params'},{name:'queryValidationSettings',mapping:'queryValidationSettings'},{name:'id',mapping:'queryValidationSettings.id'},{name:'useSizeValidation',mapping:'queryValidationSettings.useSizeValidation'},{name:'normSize',mapping:'queryValidationSettings.normSize'},{name:'normSizeTolerance',mapping:'queryValidationSettings.normSizeTolerance'},{name:'useTimeValidation',mapping:'queryValidationSettings.useTimeValidation'},{name:'normTime',mapping:'queryValidationSettings.normTime'},{name:'useXpathValidation',mapping:'queryValidationSettings.useXpathValidation'},{name:'xpathExpression',mapping:'queryValidationSettings.xpathExpression'},{name:'expectedXpathOutput',mapping:'queryValidationSettings.expectedXpathOutput'},{name:'queryValidationResult',mapping:'queryValidationResult'},{name:'sizeValidationResult',mapping:'queryValidationResult.sizeValidationResult'},{name:'responseSize',mapping:'queryValidationResult.responseSize'},{name:'timeValidationResult',mapping:'queryValidationResult.timeValidationResult'},{name:'deliveryTime',mapping:'queryValidationResult.deliveryTime'},{name:'xpathValidationResult',mapping:'queryValidationResult.xpathValidationResult'},{name:'xpathValidationOutput',mapping:'queryValidationResult.xpathValidationOutput'}]});var cm=new Ext.grid.ColumnModel([{header:EasySDI_Mon.lang.getLocal('grid header name'),dataIndex:"name",width:50,sortable:true},{header:EasySDI_Mon.lang.getLocal('grid header method'),dataIndex:"serviceMethod",width:100,displayField:'method'},{header:EasySDI_Mon.lang.getLocal('grid header params'),dataIndex:"params",renderer:paramsRenderer,width:320}]);function paramsRenderer(value){if(value==null)
-return"";if(!value.constructor)
-return"";if(value.constructor.toString().indexOf("Array")==-1)
-return value;else{var str='';for(var i=0;i<value.length;i++){str+=value[i].name+"="+value[i].value;if(i<value.length-1)
-str+="&";}
-return str;}}
-_reqGrid=new Ext.grid.GridPanel({id:'ReqGrid',loadMask:true,region:'center',frame:true,border:true,autoHeight:true,tbar:[{ref:'../addBtn',text:EasySDI_Mon.lang.getLocal('grid action add'),disabled:true,handler:onAdd},'-',{ref:'../editBtn',text:EasySDI_Mon.lang.getLocal('grid action edit'),disabled:true,handler:onEdit},'-',{ref:'../removeBtn',text:EasySDI_Mon.lang.getLocal('grid action rem'),disabled:true,handler:onDelete}],store:store,cm:cm,sm:new Ext.grid.RowSelectionModel({singleSelect:true,listeners:{rowselect:function(sm,row,rec){Ext.getCmp("jobAdvForm").getForm().loadRecord(rec);}}})});function enableNormSave()
-{if(Ext.getCmp('reqTextID').getValue()!=""&&Ext.getCmp('sMComboxID').getValue()!="")
-{Ext.getCmp('saveNormBtnID').enable();}else
-{Ext.getCmp('saveNormBtnID').disable();}}
-function onAdd(btn,ev){var rec=Ext.getCmp('JobGrid').getSelectionModel().getSelected();if(!rec){return false;}
-var reqP=new Ext.FormPanel({id:'newReqPanel',labelWidth:90,monitorValid:true,bodyStyle:'padding:5px 5px 0',frame:true,height:370,defaults:{width:290},defaultType:'textfield',items:[{id:'reqTextID',fieldLabel:EasySDI_Mon.lang.getLocal('grid header name'),xtype:'textfield',name:'name',allowBlank:false,vtype:'reqname',listeners:{'invalid':enableNormSave,'valid':enableNormSave}},{id:'sMComboxID',xtype:'combo',mode:'local',triggerAction:'all',allowBlank:false,forceSelection:true,fieldLabel:EasySDI_Mon.lang.getLocal('grid header method'),name:'serviceMethod',displayField:'name',valueField:'name',store:new Ext.data.SimpleStore({fields:['name'],data:EasySDI_Mon.ServiceMethodStore[Ext.getCmp('JobGrid').getSelectionModel().getSelected().get('serviceType').toLowerCase()]}),listeners:{'change':enableNormSave}},{fieldLabel:EasySDI_Mon.lang.getLocal('grid header params'),name:'params',height:200,allowBlank:true,xtype:'textarea',allowBlank:true}],buttons:[{formBind:true,text:EasySDI_Mon.lang.getLocal('grid action ok'),handler:function(){var name=rec.get('name');proxy.setUrl(EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+name+'/queries');var fields=Ext.getCmp('newReqPanel').getForm().getFieldValues();var fields2=Ext.getCmp('newNormPanel').getForm().getFieldValues();var u=new _reqGrid.store.recordType(EasySDI_Mon.DefaultReq);for(var el in fields){u.set(el,fields[el]);if(el=="params")
-fieldParams=fields[el];}
-for(var el in fields2)
-{u.set(el,fields2[el]);}
-_reqGrid.store.insert(0,u);Ext.data.DataProxy.addListener('write',createMethodParams);store.save();win.close();}},{text:EasySDI_Mon.lang.getLocal('grid action cancel'),handler:function(){win.close();}}]});var reqNorm=new Ext.FormPanel({id:'newNormPanel',monitorValid:true,frame:true,labelWidth:150,autoWidth:true,height:370,region:'center',items:[{layout:'column',items:[{layout:'form',items:[{xtype:'checkbox',fieldLabel:EasySDI_Mon.lang.getLocal('norm request size validation'),name:'useSizeValidation',trueText:'true',checked:rec.get('useSizeValidation')?true:false,falseText:'false',handler:function(com){if(com.checked)
-{Ext.getCmp('normSize').enable();Ext.getCmp('normSizeTolerance').enable();}else
-{Ext.getCmp('normSize').disable();Ext.getCmp('normSizeTolerance').disable();}},columnWidth:1.0},{id:'normSize',xtype:'numberfield',minValue:0,disabled:rec.get('useSizeValidation')?false:true,fieldLabel:EasySDI_Mon.lang.getLocal('norm request norm size'),name:'normSize',width:80,columnWidth:1.0},{id:'normSizeTolerance',xtype:'combo',mode:'local',triggerAction:'all',editable:false,disabled:rec.get('useSizeValidation')?false:true,allowBlank:false,forceSelection:true,fieldLabel:EasySDI_Mon.lang.getLocal('norm request size tolerance'),name:'normSizeTolerance',displayField:'value',valueField:'normSizeTolerance',store:new Ext.data.SimpleStore({fields:['normSizeTolerance','value'],data:EasySDI_Mon.ToleranceStore}),columnWidth:1.0},{xtype:'checkbox',fieldLabel:EasySDI_Mon.lang.getLocal('norm request time validation'),name:'useTimeValidation',trueText:'true',checked:rec.get('useTimeValidation')?true:false,falseText:'false',handler:function(com){if(com.checked)
-{Ext.getCmp('normTime').enable();}else
-{Ext.getCmp('normTime').disable();}},columnWidth:1.0},{id:'normTime',xtype:'numberfield',minValue:0,disabled:rec.get('useTimeValidation')?false:true,fieldLabel:EasySDI_Mon.lang.getLocal('norm request norm time'),name:'normTime',width:80,columnWidth:1.0},{xtype:'checkbox',fieldLabel:EasySDI_Mon.lang.getLocal('norm request xpath validation'),name:'useXpathValidation',handler:function(com){if(com.checked)
-{Ext.getCmp('xpathExpression').enable();Ext.getCmp('expectedXpathOutput').enable();}else
-{Ext.getCmp('xpathExpression').disable();Ext.getCmp('expectedXpathOutput').disable();}},trueText:'true',falseText:'false',columnWidth:1.0},{id:'expectedXpathOutput',xtype:'textarea',height:60,fieldLabel:EasySDI_Mon.lang.getLocal('norm request norm xpath result'),name:'expectedXpathOutput',allowBlank:true,disabled:rec.get('useXpathValidation')?false:true,width:250,columnWidth:1.0},{id:'xpathExpression',xtype:'textarea',height:60,name:'xpathExpression',fieldLabel:EasySDI_Mon.lang.getLocal('norm request xpath'),allowBlank:true,disabled:rec.get('useXpathValidation')?false:true,width:250,columnWidth:1.0},{html:'<a href="http://www.w3schools.com/xpath/xpath_syntax.asp" target="_blank">'+EasySDI_Mon.lang.getLocal('norm request help xpathsyntax')+'</a>'}],buttons:[{id:'saveNormBtnID',formBind:true,text:EasySDI_Mon.lang.getLocal('grid action ok'),handler:function(){var name=rec.get('name');proxy.setUrl(EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+name+'/queries');var fields=Ext.getCmp('newReqPanel').getForm().getFieldValues();var fields2=Ext.getCmp('newNormPanel').getForm().getFieldValues();var u=new _reqGrid.store.recordType(EasySDI_Mon.DefaultReq);for(var el in fields){u.set(el,fields[el]);if(el=="params")
-fieldParams=fields[el];}
-for(var el in fields2)
-{u.set(el,fields2[el]);}
-_reqGrid.store.insert(0,u);Ext.data.DataProxy.addListener('write',createMethodParams);store.save();win.close();}},{text:EasySDI_Mon.lang.getLocal('grid action cancel'),handler:function(){win.close();}}]}]}]});requestParmPanel={title:'Request',xtype:'panel',height:370,border:false,items:[reqP]};requestNormPanel={title:'Norm values',xtype:'panel',height:370,border:false,items:[reqNorm]};win=new Ext.Window({title:EasySDI_Mon.lang.getLocal('new request'),width:450,height:450,autoScroll:true,modal:true,resizable:false,items:[new Ext.TabPanel({id:'card-tabs-panel2',activeTab:0,items:[requestParmPanel,requestNormPanel]})]});win.show();}
-function onEdit(){var rec=_reqGrid.getSelectionModel().getSelected();if(!rec){return false;}
-var params=rec.get('params');var strParams='';for(var i=0;i<params.length;i++){strParams+=params[i].name+"="+params[i].value;if(i<params.length-1)
-strParams+="&";}
-var reqP=new Ext.FormPanel({id:'editReqPanel',labelWidth:90,height:370,monitorValid:true,bodyStyle:'padding:5px 5px 0',frame:true,defaults:{width:290},defaultType:'textfield',items:[{fieldLabel:EasySDI_Mon.lang.getLocal('grid header name'),xtype:'textfield',value:rec.get('name'),name:'name',allowBlank:false,disabled:true},{xtype:'combo',mode:'local',value:rec.get('serviceMethod'),triggerAction:'all',allowBlank:false,forceSelection:true,editable:false,fieldLabel:EasySDI_Mon.lang.getLocal('grid header method'),name:'serviceMethod',displayField:'name',valueField:'name',store:new Ext.data.SimpleStore({fields:['name'],data:EasySDI_Mon.ServiceMethodStore[Ext.getCmp('JobGrid').getSelectionModel().getSelected().get('serviceType').toLowerCase()]})},{fieldLabel:EasySDI_Mon.lang.getLocal('grid header params'),value:strParams,name:'params',height:200,allowBlank:true,xtype:'textarea'}],buttons:[{formBind:true,text:EasySDI_Mon.lang.getLocal('grid action ok'),handler:function(){var jobRec=Ext.getCmp('JobGrid').getSelectionModel().getSelected();var jobName=jobRec.get('name');var name=rec.get('name');proxy.setUrl(EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+jobName+'/queries');var fields=Ext.getCmp('editReqPanel').getForm().getFieldValues();var fieldsValiation=Ext.getCmp('editNormPanel').getForm().getFieldValues();var r=rec;rec.beginEdit();rec.set('serviceMethod',fields.serviceMethod);rec.set('params',fields.params);for(var el in fieldsValiation)
-{rec.set(el,fieldsValiation[el]);}
-rec.endEdit();fieldParams=fields.params;Ext.data.DataProxy.addListener('write',createMethodParams);store.save();win.close();}},{text:EasySDI_Mon.lang.getLocal('grid action cancel'),handler:function(){win.close();}}]});var reqNorm=new Ext.FormPanel({id:'editNormPanel',monitorValid:true,frame:true,labelWidth:150,autoWidth:true,height:370,region:'center',items:[{layout:'column',items:[{layout:'form',items:[{xtype:'checkbox',fieldLabel:EasySDI_Mon.lang.getLocal('norm request size validation'),name:'useSizeValidation',trueText:'true',falseText:'false',checked:rec.get('useSizeValidation')?true:false,handler:function(com){if(com.checked)
-{Ext.getCmp('normSize').enable();Ext.getCmp('normSizeTolerance').enable();}else
-{Ext.getCmp('normSize').disable();Ext.getCmp('normSizeTolerance').disable();}},columnWidth:1.0},{id:'normSize',xtype:'numberfield',minValue:0,disabled:rec.get('useSizeValidation')?false:true,fieldLabel:EasySDI_Mon.lang.getLocal('norm request norm size'),name:'normSize',width:80,value:rec.get('normSize'),columnWidth:1.0},{id:'normSizeTolerance',xtype:'combo',mode:'local',triggerAction:'all',editable:false,disabled:rec.get('useSizeValidation')?false:true,allowBlank:false,value:rec.get('normSizeTolerance')?rec.get('normSizeTolerance'):'5',forceSelection:true,fieldLabel:EasySDI_Mon.lang.getLocal('norm request size tolerance'),name:'normSizeTolerance',displayField:'value',valueField:'normSizeTolerance',store:new Ext.data.SimpleStore({fields:['normSizeTolerance','value'],data:EasySDI_Mon.ToleranceStore}),columnWidth:1.0},{xtype:'checkbox',fieldLabel:EasySDI_Mon.lang.getLocal('norm request time validation'),name:'useTimeValidation',trueText:'true',checked:rec.get('useTimeValidation')?true:false,falseText:'false',handler:function(com){if(com.checked)
-{Ext.getCmp('normTime').enable();}else
-{Ext.getCmp('normTime').disable();}},columnWidth:1.0},{id:'normTime',xtype:'numberfield',minValue:0,disabled:rec.get('useTimeValidation')?false:true,fieldLabel:EasySDI_Mon.lang.getLocal('norm request norm time'),name:'normTime',width:80,value:rec.get('normTime'),columnWidth:1.0},{xtype:'checkbox',fieldLabel:EasySDI_Mon.lang.getLocal('norm request xpath validation'),name:'useXpathValidation',checked:rec.get('useXpathValidation')?true:false,handler:function(com){if(com.checked)
-{Ext.getCmp('xpathExpression').enable();Ext.getCmp('expectedXpathOutput').enable();}else
-{Ext.getCmp('xpathExpression').disable();Ext.getCmp('expectedXpathOutput').disable();}},trueText:'true',falseText:'false',columnWidth:1.0},{id:'expectedXpathOutput',xtype:'textarea',fieldLabel:EasySDI_Mon.lang.getLocal('norm request norm xpath result'),name:'expectedXpathOutput',allowBlank:true,value:rec.get('expectedXpathOutput')?rec.get('expectedXpathOutput'):'',disabled:rec.get('useXpathValidation')?false:true,height:60,width:250,columnWidth:1.0},{id:'xpathExpression',xtype:'textarea',height:60,name:'xpathExpression',fieldLabel:EasySDI_Mon.lang.getLocal('norm request xpath'),allowBlank:true,value:rec.get('xpathExpression')?rec.get('xpathExpression'):'',disabled:rec.get('useXpathValidation')?false:true,width:250,columnWidth:1.0},{html:'<a href="http://www.w3schools.com/xpath/xpath_syntax.asp" target="_blank">'+EasySDI_Mon.lang.getLocal('norm request help xpathsyntax')+'</a>'}],buttons:[{formBind:true,text:EasySDI_Mon.lang.getLocal('grid action ok'),handler:function(){var jobRec=Ext.getCmp('JobGrid').getSelectionModel().getSelected();var jobName=jobRec.get('name');var name=rec.get('name');proxy.setUrl(EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+jobName+'/queries');var fields=Ext.getCmp('editReqPanel').getForm().getFieldValues();var fieldsValiation=Ext.getCmp('editNormPanel').getForm().getFieldValues();var r=rec;rec.beginEdit();rec.set('serviceMethod',fields.serviceMethod);rec.set('params',fields.params);for(var el in fieldsValiation)
-{rec.set(el,fieldsValiation[el]);}
-rec.endEdit();rec.endEdit();fieldParams=fields.params;Ext.data.DataProxy.addListener('write',createMethodParams);store.save();win.close();}},{text:EasySDI_Mon.lang.getLocal('grid action cancel'),handler:function(){win.close();}}]}]}]});requestParmPanel={title:'Request',xtype:'panel',height:370,border:false,items:[reqP]};requestNormPanel={title:'Norm values',xtype:'panel',height:370,border:false,items:[reqNorm]};win=new Ext.Window({title:EasySDI_Mon.lang.getLocal('edit request'),width:450,height:450,autoScroll:true,modal:true,resizable:false,items:[new Ext.TabPanel({id:'card-tabs-panel2',activeTab:0,items:[requestParmPanel,requestNormPanel]})]});win.show();}
-function createMethodParams(proxy,action,result,res,rs){Ext.data.DataProxy.removeListener('write',createMethodParams);var jobRec=Ext.getCmp('JobGrid').getSelectionModel().getSelected();var jobName=jobRec.get('name');var name=rs.get('name');Ext.Ajax.request({loadMask:true,method:'POST',params:fieldParams,url:EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+jobName+'/queries/'+name+"/params",success:function(response){reloadReqGrid();},failure:function(response){EasySDI_Mon.App.setAlert(false,EasySDI_Mon.lang.getLocal('error meth params')+'. '+'status:'+response.status+' message:'+response.statusText);}});var paramsTemp="";if(rs.data.id)
-{paramsTemp='{"data":{"id":"'+rs.data.id+'","useSizeValidation":"'+rs.data.useSizeValidation+'","normSize":"'+rs.data.normSize+'","normSizeTolerance": "'+rs.data.normSizeTolerance+'","useTimeValidation":"'+rs.data.useTimeValidation+'","normTime":"'+rs.data.normTime+'","useXpathValidation":"'+rs.data.useXpathValidation+'","xpathExpression":"'+rs.data.xpathExpression+'","expectedXpathOutput": "'+rs.data.expectedXpathOutput+'"}}';}else{paramsTemp='{"data":{"useSizeValidation":"'+rs.data.useSizeValidation+'","normSize":"'+rs.data.normSize+'","normSizeTolerance": "'+rs.data.normSizeTolerance+'","useTimeValidation":"'+rs.data.useTimeValidation+'","normTime":"'+rs.data.normTime+'","useXpathValidation":"'+rs.data.useXpathValidation+'","xpathExpression":"'+rs.data.xpathExpression+'","expectedXpathOutput": "'+rs.data.expectedXpathOutput+'"}}';}
-Ext.Ajax.request({loadMask:true,method:'PUT',headers:{'Content-Type':'application/json'},params:paramsTemp,url:EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+jobName+'/queries/'+name+'/validationSettings',success:function(response){reloadReqGrid();},failure:function(response){EasySDI_Mon.App.setAlert(false,EasySDI_Mon.lang.getLocal('error meth params')+'. '+'status:'+response.status+' message:'+response.statusText);}});}
-function onDelete(){var jobRec=Ext.getCmp('JobGrid').getSelectionModel().getSelected();var jobName=jobRec.get('name');var rec=_reqGrid.getSelectionModel().getSelected();var name=rec.get('name');proxy.setUrl(EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+jobName+'/queries');if(!rec){return false;}
-Ext.MessageBox.confirm(EasySDI_Mon.lang.getLocal('confirm'),String.format(EasySDI_Mon.lang.getLocal('confirm suppress req'),rec.get('name')),function(btn){if(btn=='no')
-return false;else
-_reqGrid.store.remove(rec);store.save();});}
-_reqGrid.on('rowdblclick',function(grid,rowIndex){var record=grid.store.getAt(rowIndex);if(record){onEdit();}});Ext.getCmp('JobGrid').getSelectionModel().on('selectionchange',function(sm){reloadReqGrid();});function reloadReqGrid(){var sm=Ext.getCmp('JobGrid').getSelectionModel();if(sm.getCount()<1){_reqGrid.addBtn.setDisabled(true);}
-else
-{_reqGrid.addBtn.setDisabled(false);var rec=Ext.getCmp('JobGrid').getSelectionModel().getSelected();var name=rec.get('name');var serviceType=rec.get('serviceType');if(rec.get('isPublic')==true){proxy.setUrl(EasySDI_Mon.proxy+'/jobs/'+name+'/queries');}else{proxy.setUrl(EasySDI_Mon.proxy+'/adminJobs/'+name+'/queries');}
-store.load();}}
-_reqGrid.getSelectionModel().on('selectionchange',function(sm){_reqGrid.removeBtn.setDisabled(sm.getCount()<1);_reqGrid.editBtn.setDisabled(sm.getCount()<1);});});Ext.namespace("EasySDI_Mon");Ext.onReady(function(){var rssRec;var emailRec;var rssCrVal='';var emailCrVal='';var emailTxtCrVal='';var proxy=new Ext.data.HttpProxy({url:EasySDI_Mon.proxy});var writer=new Ext.data.JsonWriter({encode:false});var store=new Ext.data.JsonStore({id:'actionId',autoSave:false,root:'data',restful:true,proxy:proxy,writer:writer,fields:['actionId','type','target']});_alertForm=new Ext.FormPanel({id:'AlertForm',title:EasySDI_Mon.lang.getLocal('alerts'),labelWidth:90,region:'center',bodyStyle:'padding:5px 5px 0',autoHeight:true,frame:true,defaults:{width:200},defaultType:'textfield',items:[{xtype:'combo',mode:'local',ref:'cbEmail',disabled:true,triggerAction:'all',forceSelection:true,editable:false,fieldLabel:EasySDI_Mon.lang.getLocal('grid header email'),name:'email',displayField:'name',valueField:'value',store:new Ext.data.SimpleStore({fields:['name','value'],data:EasySDI_Mon.YesNoCombo})},{fieldLabel:'',disabled:true,ref:'txtEmail',name:'email_list',allowBlank:true,xtype:'textarea'},{xtype:'combo',mode:'local',ref:'cbRss',iconCls:'icon-service-add',disabled:true,triggerAction:'all',forceSelection:true,editable:false,fieldLabel:EasySDI_Mon.lang.getLocal('grid header rss'),name:'rss',displayField:'name',valueField:'value',store:new Ext.data.SimpleStore({fields:['name','value'],data:EasySDI_Mon.YesNoCombo})},{xtype:'button',ref:'btnRss',iconCls:'icon-rss',disabled:true,fieldLabel:EasySDI_Mon.lang.getLocal('rss link'),width:20}],buttons:[{text:EasySDI_Mon.lang.getLocal('grid action update'),disabled:true,ref:'../btnUpdate',handler:function(){var rec=Ext.getCmp('JobGrid').getSelectionModel().getSelected();var name=rec.get('name');proxy.setUrl(EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+name+'/actions');proxy.api.destroy.url=EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+name+'/actions';proxy.api.create.url=EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+name+'/actions';var fields=_alertForm.getForm().getFieldValues();if(fields.rss=='Y'){if(rssRec==null){var u=new store.recordType({type:'RSS',target:''});store.insert(0,u);rssCrVal='Y';}}
-else
-{if(rssRec!=null){store.remove(rssRec);rssCrVal='N';}}
-if(fields.email=='Y'){if(emailRec==null){var u=new store.recordType({type:'E-MAIL',target:fields.email_list});store.insert(0,u);emailCrVal='Y';}else{emailRec.set('target',fields.email_list);emailTxtCrVal=fields.email_list;}}
-else
-{if(emailRec!=null){store.remove(emailRec);emailCrVal='N';}}
-Ext.data.DataProxy.addListener('write',afterUpdate);store.save();_alertForm.btnUpdate.setDisabled(true);}}]});function afterUpdate(proxy,action,result,res,rs){Ext.data.DataProxy.removeListener('write',afterUpdate);var rec=Ext.getCmp('JobGrid').getSelectionModel().getSelected();var name=rec.get('name');proxy.setUrl(EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+name+'/actions');proxy.api.read.url=EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+name+'/actions';store.load();}
-Ext.getCmp('JobGrid').getSelectionModel().on('selectionchange',function(sm){if(sm.getCount()<1){_alertForm.cbRss.setDisabled(true);_alertForm.cbEmail.setDisabled(true);_alertForm.txtEmail.setDisabled(true);_alertForm.btnUpdate.setDisabled(true);}
-else
-{_alertForm.cbRss.setDisabled(false);_alertForm.cbEmail.setDisabled(false);_alertForm.txtEmail.setDisabled(false);var rec=Ext.getCmp('JobGrid').getSelectionModel().getSelected();var name=rec.get('name');if(rec.get('isPublic')==true)
-proxy.setUrl(EasySDI_Mon.proxy+'/jobs/'+name+'/actions');else
-proxy.setUrl(EasySDI_Mon.proxy+'/adminJobs/'+name+'/actions');store.load();}});store.on("load",function(store){var jobRec=Ext.getCmp('JobGrid').getSelectionModel().getSelected();var jobName=jobRec.get('name');rssRec=store.getAt(store.findExact('type','RSS'));emailRec=store.getAt(store.findExact('type','E-MAIL'));_alertForm.txtEmail.setValue('');if(rssRec==null){_alertForm.btnRss.setDisabled(true);_alertForm.btnRss.handler=null;_alertForm.cbRss.setValue('N');rssCrVal='N';}else{_alertForm.btnRss.setDisabled(false);_alertForm.btnRss.handler=function(){window.open(EasySDI_Mon.proxy+'/jobs/'+jobName+'/alerts&alt=rss',EasySDI_Mon.lang.getLocal('rss title')+": "+jobName);};_alertForm.cbRss.setValue('Y');rssCrVal='Y';}
-if(emailRec==null){_alertForm.cbEmail.setValue('N');emailCrVal='N';}else{_alertForm.cbEmail.setValue('Y');emailCrVal='Y';_alertForm.txtEmail.setValue(emailRec.get('target'));emailTxtCrVal=emailRec.get('target');}});_alertForm.cbRss.on("change",function(field,newValue,oldValue){if(newValue=='N')
-_alertForm.btnRss.setDisabled(true);else
-_alertForm.btnRss.setDisabled(false);if(newValue!=rssCrVal||_alertForm.cbEmail.getValue()!=emailCrVal||_alertForm.txtEmail.getValue()!=emailTxtCrVal)
-_alertForm.btnUpdate.setDisabled(false);else
-_alertForm.btnUpdate.setDisabled(true);});_alertForm.cbEmail.on("change",function(field,newValue,oldValue){if(newValue!=emailCrVal||_alertForm.cbRss.getValue()!=rssCrVal||_alertForm.txtEmail.getValue()!=emailTxtCrVal)
-_alertForm.btnUpdate.setDisabled(false);else
-_alertForm.btnUpdate.setDisabled(true);});_alertForm.txtEmail.on("change",function(field,newValue,oldValue){if(newValue!=emailTxtCrVal||_alertForm.cbEmail.getValue()!=emailCrVal||_alertForm.cbRss.getValue()!=rssCrVal)
-_alertForm.btnUpdate.setDisabled(false);else
-_alertForm.btnUpdate.setDisabled(true);});});Ext.namespace("EasySDI_Mon");EasySDI_Mon.chart1;EasySDI_Mon.chart2;var aStores=Array();var tickInterval;var jobRecord;EasySDI_Mon.clearCharts=function(){if(EasySDI_Mon.chart1!=null){EasySDI_Mon.chart1.destroy();EasySDI_Mon.chart1=null;}
-if(EasySDI_Mon.chart2!=null){EasySDI_Mon.chart2.destroy();EasySDI_Mon.chart2=null;}
-for(var storeName in aStores)
-{if(typeof aStores[storeName]!='function'){if(aStores[storeName]!=null)
-aStores[storeName].destroy();}}
-aStores=Array();};Ext.onReady(function(){var myMask=new Ext.LoadMask(Ext.getBody(),{msg:EasySDI_Mon.lang.getLocal('message wait')});var jobComboStore=new Ext.data.SimpleStore({id:'jobId',fields:[{name:'name'}],data:[]});var methodComboStore=new Ext.data.JsonStore({id:'id',root:'data',restful:true,proxy:new Ext.data.HttpProxy({url:'?'}),fields:[{id:'id'},{name:'name'}],data:{'data':[{'name':'All','value':'All'}]}});var reportMenu=new Ext.Panel({id:'ReportMenu',layout:'table',region:'center',height:50,frame:true,layoutConfig:{columns:7},border:false,defaults:{border:false,bodyStyle:'padding:5px 5px'},collapsible:false,items:[{html:EasySDI_Mon.lang.getLocal('job')+':'},{items:[{xtype:'combo',mode:'local',id:'repCbJobs',triggerAction:'all',forceSelection:true,editable:false,fieldLabel:'Job',name:'jobComboFilter',displayField:'name',valueField:'name',emptyText:EasySDI_Mon.lang.getLocal('combo select a job'),store:jobComboStore}]},{html:EasySDI_Mon.lang.getLocal('report request select')+':'},{items:[{xtype:'combo',mode:'local',id:'repCbMeth',value:'All',triggerAction:'all',forceSelection:true,editable:false,fieldLabel:'Job',name:'reqComboFilter',displayField:'name',valueField:'name',emptyText:EasySDI_Mon.lang.getLocal('combo select a method'),store:methodComboStore}]},{html:EasySDI_Mon.lang.getLocal('period')+':'},{xtype:'combo',mode:'local',id:'repCbPeriod',triggerAction:'all',forceSelection:true,editable:false,name:'repCbPeriod',emptyText:EasySDI_Mon.lang.getLocal('combo select a period'),displayField:'name',valueField:'value',value:'today',store:new Ext.data.SimpleStore({fields:['name','value'],data:EasySDI_Mon.RepPeriodStore}),width:200},{items:[{id:'mtnBtnView',xtype:'button',handler:function(){mtnBtnView_click();},listeners:{click:function(){mtnBtnView_click();}},text:EasySDI_Mon.lang.getLocal('action view')}]},{},{},{},{},{},{items:[new Ext.FormPanel({id:'periodeDatePanel',layout:'table',layoutConfig:{columns:2},hidden:true,items:[{id:'minDatePicker',xtype:'datefield',name:'minDatePicker',cellCls:'ReportTableCell',width:100,format:'Y-m-d'},{id:'maxDatePicker',xtype:'datefield',name:'maxDatePicker',maxValue:new Date().format('Y-m-d'),cellCls:'ReportTableCell',width:100,format:'Y-m-d'}]})]}]});Ext.getCmp('JobGrid').store.on('load',function(){refreshComboValuesFromJobStore();});Ext.getCmp('JobGrid').store.on('write',function(){refreshComboValuesFromJobStore();});function refreshComboValuesFromJobStore(){var aRec=Ext.getCmp('JobGrid').store.getRange();jobComboStore.removeAll();for(var i=0;i<aRec.length;i++)
-{var u=new jobComboStore.recordType({name:''});u.set('name',aRec[i].get('name'));jobComboStore.insert(0,u);}}
-Ext.getCmp('repCbPeriod').on('select',function(cmd,rec)
-{var name;if(rec==null){name=Ext.getCmp('repCbPeriod').getValue();}else{name=rec.get("value");}
-if(name&&name=="period")
-{Ext.getCmp('periodeDatePanel').setVisible(true);}else
-{Ext.getCmp('periodeDatePanel').setVisible(false);}});Ext.getCmp('repCbJobs').on('select',function(cmb,rec){var name;if(rec==null){name=Ext.getCmp('repCbJobs').getValue();}else{name=rec.get("name");}
-myMask.show();methodComboStore.proxy.setUrl(EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+name+'/queries');methodComboStore.load();jobRecord=Ext.getCmp('JobGrid').store.getAt(Ext.getCmp('JobGrid').store.findExact('name',name));});methodComboStore.on('load',function(){myMask.hide();methodComboStore.addListener('add',methodComboStoreOnAdd);methodComboStore.add(new methodComboStore.recordType({name:'All',value:'All'}));});function methodComboStoreOnAdd(store,rec){methodComboStore.removeListener('add',methodComboStoreOnAdd);Ext.getCmp('repCbMeth').setValue(rec[0].get('value'));}
-function mtnBtnView_click(){EasySDI_Mon.clearCharts();var selJob=Ext.getCmp('repCbJobs').getValue();var selMet=Ext.getCmp('repCbMeth').getValue();var selPer=Ext.getCmp('repCbPeriod').getValue();if(selJob==""){Ext.MessageBox.alert(EasySDI_Mon.lang.getLocal('error'),EasySDI_Mon.lang.getLocal('report select job'));return false;}else if(selMet==""){Ext.MessageBox.alert(EasySDI_Mon.lang.getLocal('error'),EasySDI_Mon.lang.getLocal('report select method'));return false;}else if(selPer==""){Ext.MessageBox.alert(EasySDI_Mon.lang.getLocal('error'),EasySDI_Mon.lang.getLocal('report select period'));return false;}
-myMask.show();var logRes;var today=new Date();var minDate=new Date();minDate.setTime(0);var maxDate=new Date();switch(selPer){case"today":minDate=today;maxDate=today;logRes="logs";tickInterval=2*3600*1000;break;case"yesterday":var yesterday=new Date();yesterday.setDate(today.getDate()-1);minDate=yesterday;maxDate=today;logRes="logs";tickInterval=4*3600*1000;break;case"lastweek":var lastweek=new Date();lastweek.setDate(today.getDate()-7);minDate=lastweek;maxDate=new Date();logRes="aggLogs";tickInterval=24*3600*1000;break;case"thismonth":var thismonth=new Date();thismonth.setDate(1);minDate=thismonth;maxDate=new Date();logRes="aggLogs";tickInterval=7*24*3600*1000;break;case"past6months":var past6months=new Date();past6months.setMonth(today.getMonth()-5);past6months.setDate(1);minDate=past6months;maxDate=new Date();logRes="aggLogs";tickInterval=4*7*24*3600*1000;break;case"pastyear":var pastyear=new Date();pastyear.setYear(today.getYear()-1);pastyear.setDate(1);minDate=pastyear;maxDate=new Date();logRes="aggLogs";tickInterval=4*7*24*3600*1000;break;case"period":var minPeriod=Ext.getCmp('minDatePicker').getValue();var maxPeriod=Ext.getCmp('maxDatePicker').getValue();if(maxPeriod==""||minPeriod=="")
-{Ext.MessageBox.alert(EasySDI_Mon.lang.getLocal('error'),EasySDI_Mon.lang.getLocal('report enter period'));myMask.hide();return false;}
-minDate=minPeriod;maxDate=maxPeriod;if(!maxDate||!minDate||(maxDate<minDate))
-{Ext.MessageBox.alert(EasySDI_Mon.lang.getLocal('error'),EasySDI_Mon.lang.getLocal('report invalid period'));myMask.hide();return false;}
-var ms=minDate.getElapsed(maxDate);var r=ms%86400000;var days=(ms-r)/86400000;days++;if(days<=EasySDI_Mon.DaysForUsingLogs)
-{logRes="logs";}else
-{logRes="aggLogs";}
-tickInterval=findtickInterval(days);break;case"All":logRes="aggLogs";tickInterval=4*7*24*3600*1000;break;default:'All';}
-var aMethods=Array();if(selMet=="All"){var aRec=methodComboStore.getRange();for(var i=0;i<aRec.length;i++){if(aRec[i].get('name')!="All")
-aMethods.push(aRec[i].get('name'));}}else{aMethods.push(selMet);}
-var loadedStores=0;for(var i=0;i<aMethods.length;i++){var fields=null;if(logRes=="aggLogs")
-fields=['h24Availability','slaNbBizErrors','h24NbConnErrors','h24MeanRespTime','slaMeanRespTime','h24NbBizErrors','slaAvalabilty','slaNbConnErrors',{name:'date',type:'date',dateFormat:'Y-m-d'}];else
-fields=[{name:'time',type:'date',dateFormat:'Y-m-d H:i:s'},'message','httpCode','status','statusCode','delay','size']
-aStores[aMethods[i]]=new Ext.data.JsonStore({root:'data',autoLoad:true,totalProperty:'totalCount',restful:true,proxy:new Ext.data.HttpProxy({url:EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+selJob+'/queries/'+aMethods[i]+'/'+logRes+'?minDate='+minDate.format('Y-m-d')+'&maxDate='+maxDate.format('Y-m-d')}),fields:fields,listeners:{load:function(){loadedStores++;if(loadedStores==aMethods.length){var b=aStores;myMask.hide();onDataReady(aStores,logRes);}}}});}}
-function findtickInterval(days)
-{var ticks=0;if(days==1)
-{ticks=2*3600*1000;}else if(days==2)
-{ticks=4*3600*1000;}else if(days<8)
-{ticks=24*3600*1000;}else if(days<32)
-{ticks=7*24*3600*1000;}else
-{ticks=4*7*24*3600*1000;}
-return ticks;}
-function onDataReady(aStores,logRes){EasySDI_Mon.chart1=EasySDI_Mon.drawResponseTimeGraph('container1',aStores,logRes,tickInterval,jobRecord);if(logRes=='logs')
-EasySDI_Mon.chart2=EasySDI_Mon.drawHealthGraphRaw('container2',aStores,logRes);else{EasySDI_Mon.chart2=EasySDI_Mon.drawHealthGraphAgg('container2',aStores,logRes);}}});Ext.namespace("EasySDI_Mon");Ext.onReady(function(){var store=new Ext.data.SimpleStore({id:'jobId',fields:[{name:'newStatusCode'},{name:'oldStatusCode'},{name:'cause'},{name:'httpCode'},{name:'responseDelay'},{name:'isExposedToRss',type:'boolean'},{name:'jobId',type:'int'},{name:'dateTime',type:'date',dateFormat:'Y-m-d H:i:s'}],data:[]});var jobComboStore=new Ext.data.SimpleStore({id:'jobId',fields:[{name:'name'}],data:['All']});Ext.getCmp('JobGrid').store.on('load',function(){refreshComboValuesFromJobStore();});Ext.getCmp('JobGrid').store.on('write',function(){refreshComboValuesFromJobStore();});function refreshComboValuesFromJobStore(){var aRec=Ext.getCmp('JobGrid').store.getRange();jobComboStore.removeAll();for(var i=0;i<aRec.length;i++)
-{var u=new jobComboStore.recordType({name:''});u.set('name',aRec[i].get('name'));jobComboStore.insert(0,u);}
-var u=new jobComboStore.recordType({name:'All'});jobComboStore.insert(0,u);}
-var cm=new Ext.grid.ColumnModel([{header:EasySDI_Mon.lang.getLocal('job'),dataIndex:"jobId",width:100,renderer:function(value){return Ext.getCmp('JobGrid').store.getAt(Ext.getCmp('JobGrid').store.findExact('id',value)).get('name');},sortable:true},{header:EasySDI_Mon.lang.getLocal('status'),dataIndex:"newStatusCode",width:64,renderer:function(newStatus,scope,row){return EasySDI_Mon.AlertStatusRenderer(newStatus,scope,row);}},{header:EasySDI_Mon.lang.getLocal('cause'),dataIndex:"cause",width:100},{header:EasySDI_Mon.lang.getLocal('delay'),dataIndex:"responseDelay",width:60,renderer:EasySDI_Mon.DelayRenderer},{header:EasySDI_Mon.lang.getLocal('grid header httpcode'),dataIndex:"httpCode",width:60},{header:EasySDI_Mon.lang.getLocal('grid header dateTime'),dataIndex:"dateTime",width:150,sortable:true,renderer:EasySDI_Mon.DateTimeRenderer}]);_alertsGrid=new Ext.grid.GridPanel({id:'AlertGrid',region:'center',stripeRows:true,title:EasySDI_Mon.lang.getLocal('alert list'),loadMask:new Ext.LoadMask(Ext.getBody(),{msg:EasySDI_Mon.lang.getLocal('message wait')}),store:store,cm:cm,tbar:[{xtype:'combo',mode:'local',ref:'../cbJobs',triggerAction:'all',forceSelection:true,editable:false,fieldLabel:EasySDI_Mon.lang.getLocal('job'),name:'jobComboFilter',displayField:'name',valueField:'name',emptyText:EasySDI_Mon.lang.getLocal('combo select a job'),store:jobComboStore},'-',{id:'btnLatestAlerts',ref:'../btnLatestAlerts',iconCls:'icon-only-newest-alert',text:EasySDI_Mon.lang.getLocal('only latest alerts'),enableToggle:true,toggleHandler:function(item,pressed){store.removeAll();if(_alertsGrid.cbJobs.getValue()=='All'){var arrRec=jobComboStore.getRange();for(var i=0;i<arrRec.length;i++){if(arrRec[i].get('name')!='All')
-loadAlertData(arrRec[i].get('name'),i+1,arrRec.length);}}else{if(_alertsGrid.cbJobs.getValue()!=""){loadAlertData(_alertsGrid.cbJobs.getValue(),1,1);}}}}]});_alertsGrid.cbJobs.on('select',function(cmb,rec){store.removeAll();if(rec.get('name')!='All'){loadAlertData(rec.get('name'),1,1);}else{var arrRec=jobComboStore.getRange();for(var i=0;i<arrRec.length;i++){if(arrRec[i].get('name')!='All')
-loadAlertData(arrRec[i].get('name'),i+1,arrRec.length);}}});function loadAlertData(jobName,current,total){var myMask=new Ext.LoadMask(Ext.getCmp('AlertGrid').getEl(),{msg:EasySDI_Mon.lang.getLocal('message wait')});myMask.show();new Ext.data.JsonStore({root:'data',autoLoad:true,proxy:new Ext.data.HttpProxy({url:EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+jobName+'/alerts'}),restful:true,fields:['newStatusCode','oldStatusCode','cause','httpCode','responseDelay','isExposedToRss','jobId',{name:'dateTime',type:'date',dateFormat:'Y-m-d H:i:s'}],listeners:{load:function(){var aRec=this.getRange();if(_alertsGrid.btnLatestAlerts.pressed){if(aRec.length>0)
-store.add(aRec[aRec.length-1]);}else{for(var j=0;j<aRec.length;j++)
-{store.add(aRec[j]);}}
-if(current==total)
-myMask.hide();}}});}});Ext.namespace("EasySDI_Mon");Ext.onReady(function(){var _loadMsk=new Ext.LoadMask(Ext.getBody(),{msg:EasySDI_Mon.lang.getLocal('message wait')})
-var cm=new Ext.grid.ColumnModel([{header:EasySDI_Mon.lang.getLocal('status'),dataIndex:"statusCode",width:50,renderer:EasySDI_Mon.StatusRenderer},{header:EasySDI_Mon.lang.getLocal('grid header name'),dataIndex:"name",width:100,sortable:true,editable:false},{header:EasySDI_Mon.lang.getLocal('grid header type'),dataIndex:"serviceType",width:50,sortable:true,editable:false},{header:EasySDI_Mon.lang.getLocal('grid header url'),dataIndex:"url",width:270},{header:EasySDI_Mon.lang.getLocal('grid header isrealtime short'),dataIndex:"allowsRealTime",width:60,trueText:'true',falseText:'false',renderer:EasySDI_Mon.TrueFalseRenderer},{header:EasySDI_Mon.lang.getLocal('grid header isauto'),dataIndex:"isAutomatic",width:70,trueText:'true',falseText:'false',renderer:EasySDI_Mon.TrueFalseRenderer},{header:EasySDI_Mon.lang.getLocal('grid header triggersAlerts'),dataIndex:"triggersAlerts",width:80,trueText:'true',falseText:'false',renderer:EasySDI_Mon.TrueFalseRenderer},{header:EasySDI_Mon.lang.getLocal('grid header lastJobStatusUpdateTime'),dataIndex:"lastStatusUpdate",width:150,sortable:true,renderer:EasySDI_Mon.DateTimeRenderer}]);_jobStateGrid=new Ext.grid.GridPanel({id:'JobStateGrid',loadMask:true,region:'center',stripeRows:true,tbar:[{iconCls:'icon-service-execute',ref:'../executeBtn',disabled:true,text:EasySDI_Mon.lang.getLocal('action execute'),handler:onRealTimeExecute},'-',{iconCls:'icon-service-refresh',ref:'../majBtn',text:EasySDI_Mon.lang.getLocal('grid action update'),disabled:false,handler:function(){Ext.getCmp('JobGrid').store.load();}},'-',{iconCls:'icon-service-view-alerts',ref:'../viewAlertsBtn',text:EasySDI_Mon.lang.getLocal('action view alerts'),disabled:true,handler:function(){Ext.getCmp('card-tabs-panel').setActiveTab(3);var rec=_jobStateGrid.getSelectionModel().getSelected();Ext.getCmp('AlertGrid').cbJobs.setValue(rec.get('name'));}},'-',{iconCls:'icon-service-view-reports',ref:'../viewReportsBtn',text:EasySDI_Mon.lang.getLocal('action view reports'),disabled:true,handler:function(){Ext.getCmp('card-tabs-panel').setActiveTab(2);var rec=_jobStateGrid.getSelectionModel().getSelected();Ext.getCmp('repCbJobs').setValue(rec.get('name'));Ext.getCmp('repCbMeth').store.addListener('load',methCmbStoreLoaded);Ext.getCmp('repCbJobs').fireEvent('select');}}],title:EasySDI_Mon.lang.getLocal('job list'),loadMask:_loadMsk,store:Ext.getCmp('JobGrid').store,cm:cm});function methCmbStoreLoaded(){Ext.getCmp('repCbMeth').store.removeListener('load',methCmbStoreLoaded);Ext.getCmp('mtnBtnView').fireEvent('click');}
-function onRealTimeExecute(btn,ev){var rec=_jobStateGrid.getSelectionModel().getSelected();if(!rec){return false;}
-if(!rec.get('allowsRealTime')){Ext.MessageBox.alert(EasySDI_Mon.lang.getLocal('msg alert'),EasySDI_Mon.lang.getLocal('paging empty msg'),null);return false;}
-new Ext.Window({id:'win'+rec.get('name'),width:450,autoScroll:true,title:EasySDI_Mon.lang.getLocal('msg real time execute summary')+' '+rec.get('name'),items:[new Ext.FormPanel({id:'formPanel'+rec.get('name'),labelWidth:90,region:'center',bodyStyle:'padding:5px 5px 0',frame:true,autoHeight:true,items:[{fieldLabel:EasySDI_Mon.lang.getLocal('grid header name'),xtype:'textfield',name:'jobName'},{fieldLabel:EasySDI_Mon.lang.getLocal('grid header type'),xtype:'textfield',name:'serviceType'},{fieldLabel:EasySDI_Mon.lang.getLocal('grid header method'),xtype:'textfield',name:'httpMethod'},{fieldLabel:EasySDI_Mon.lang.getLocal('grid header url'),width:260,xtype:'textfield',name:'url'},{fieldLabel:EasySDI_Mon.lang.getLocal('status'),xtype:'textfield',name:'status'},{fieldLabel:EasySDI_Mon.lang.getLocal('cause'),width:260,xtype:'textfield',name:'statusCause'},{xtype:'fieldset',collapsible:true,collapsed:true,height:'auto',title:EasySDI_Mon.lang.getLocal('requests'),items:[new Ext.Panel({title:EasySDI_Mon.lang.getLocal('requests'),layout:'border',border:true,frame:true,height:100,items:[new Ext.grid.GridPanel({id:'qrGrid'+rec.get('name'),region:'center',autoScroll:true,height:100,store:new Ext.data.JsonStore({autoDestroy:true,fields:[{name:'queryName'},{name:'httpCode'},{name:'message'},{name:'requestTime'},{name:'responseDelay',type:'float'},{name:'serviceExceptionCode'},{name:'status'},{name:'statusCode'},{name:'testedUrl'}],data:[]}),cm:new Ext.grid.ColumnModel([{header:EasySDI_Mon.lang.getLocal('grid header name'),dataIndex:"queryName",width:100,sortable:true,renderer:function(value,scope,row){return'<a href="'+row.get('testedUrl')+'" target="_blank">'+value+'</a>';}},{header:EasySDI_Mon.lang.getLocal('status'),dataIndex:"statusCode",width:45,renderer:EasySDI_Mon.StatusRenderer},{header:EasySDI_Mon.lang.getLocal('delay'),dataIndex:"responseDelay",width:60,renderer:EasySDI_Mon.DelayRenderer},{header:EasySDI_Mon.lang.getLocal('grid header httpcode'),dataIndex:"httpCode",width:60},{header:EasySDI_Mon.lang.getLocal('grid header ogccode'),dataIndex:"serviceExceptionCode",width:60},{header:EasySDI_Mon.lang.getLocal('grid header message'),dataIndex:"message",width:100}])})]})]}],buttons:[{text:EasySDI_Mon.lang.getLocal('grid action close'),handler:function(){Ext.getCmp('win'+rec.get('name')).close();}}]})]}).show();var myMask=new Ext.LoadMask(Ext.getCmp('win'+rec.get('name')).getEl(),{msg:EasySDI_Mon.lang.getLocal('message wait')});myMask.show();Ext.Ajax.request({loadMask:true,url:EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+rec.get('name')+'/status',success:function(response){myMask.hide();var jsonResp=Ext.util.JSON.decode(response.responseText);Ext.getCmp('formPanel'+rec.get('name')).getForm().setValues(jsonResp.data);Ext.getCmp('qrGrid'+rec.get('name')).store.loadData(jsonResp.data.queriesResults);},failure:function(response){myMask.hide();}});}
-_jobStateGrid.getSelectionModel().on('selectionchange',function(sm){_jobStateGrid.executeBtn.setDisabled(sm.getCount()<1);_jobStateGrid.viewAlertsBtn.setDisabled(sm.getCount()<1);_jobStateGrid.viewReportsBtn.setDisabled(sm.getCount()<1);});});Ext.namespace("EasySDI_Mon");Ext.onReady(function(){var eLogType={"daily":0,"aggregate":1};var logDailyStore=new Ext.data.JsonStore({id:'name',totalProperty:'totalCount',root:'rows',restful:true,proxy:new Ext.data.HttpProxy({url:'?'}),fields:['message',{name:'time',type:'date',dateFormat:'Y-m-d H:i:s'},'httpCode','status','delay','queryId'],defaultParamNames:{start:'startIndex',limit:'maxResults',sort:'sort',dir:'dir'}});var logDailyCm=new Ext.grid.ColumnModel([{header:EasySDI_Mon.lang.getLocal('grid header method'),dataIndex:"queryId",width:100,sortable:true,editable:false,renderer:function(value){if(methodComboStore.getById(value)!=null)
-return methodComboStore.getById(value).get('name');}},{header:EasySDI_Mon.lang.getLocal('grid header httpcode'),dataIndex:"httpCode",width:50},{header:EasySDI_Mon.lang.getLocal('grid header status'),dataIndex:"status",width:50,renderer:EasySDI_Mon.StatusRenderer},{header:EasySDI_Mon.lang.getLocal('grid header message'),dataIndex:"message",width:150},{header:EasySDI_Mon.lang.getLocal('grid header delay'),dataIndex:"delay",width:50,renderer:EasySDI_Mon.DelayRenderer},{header:EasySDI_Mon.lang.getLocal('grid header dateTime'),dataIndex:"time",sortable:true,width:150,renderer:EasySDI_Mon.DateTimeRenderer}]);_jobDailyGrid=new Ext.grid.GridPanel({id:'JobDailyGrid',loadMask:true,region:'center',frame:true,store:logDailyStore,cm:logDailyCm,bbar:new Ext.PagingToolbar({pageSize:15,store:logDailyStore,displayInfo:true,displayMsg:EasySDI_Mon.lang.getLocal('paging display msg'),emptyMsg:EasySDI_Mon.lang.getLocal('paging empty msg')})});dailyGridPanel={title:EasySDI_Mon.lang.getLocal('daily logs'),xtype:'panel',layout:'border',region:'center',border:false,items:[_jobDailyGrid]};var viewGridTabs=new Ext.TabPanel({id:'card-tabs-panel',activeTab:0,defaults:{bodyStyle:'padding:15px'},items:[dailyGridPanel,{title:'plip',html:'foo',region:'center'}]});var cardGridPanel=new Ext.Panel({region:'center',layout:'card',activeItem:0,border:false,items:[viewGridTabs]});var vlFs={xtype:'fieldset',region:'center',layout:'border',collapsible:true,collapsed:true,title:EasySDI_Mon.lang.getLocal('logs preview'),items:[cardGridPanel]}
-var jobComboStore=new Ext.data.SimpleStore({id:'jobId',fields:[{name:'name'}],data:[]});var methodComboStore=new Ext.data.JsonStore({id:'id',restful:true,root:'data',proxy:new Ext.data.HttpProxy({url:'?'}),fields:[{id:'id'},{name:'name'}],data:{'data':[{name:'All',value:'All'}]}});var clFs={xtype:'fieldset',id:'clearLogsFs',region:'north',height:140,layout:'table',layoutConfig:{columns:5},defaults:{bodyStyle:'padding:5px 5px'},collapsible:false,title:EasySDI_Mon.lang.getLocal('clear logs'),items:[{html:EasySDI_Mon.lang.getLocal('job')},{html:EasySDI_Mon.lang.getLocal('grid header method')},{html:EasySDI_Mon.lang.getLocal('younger or equal than'),colspan:3},{items:[{xtype:'combo',mode:'local',id:'mtnCbJobs',triggerAction:'all',forceSelection:true,editable:false,name:'jobComboFilter',displayField:'name',valueField:'name',emptyText:EasySDI_Mon.lang.getLocal('combo select a job'),store:jobComboStore}]},{items:[{xtype:'combo',mode:'local',id:'mtnCbMeth',value:'All',triggerAction:'all',forceSelection:true,editable:false,name:'jobComboFilter',displayField:'name',valueField:'name',emptyText:EasySDI_Mon.lang.getLocal('combo select a method'),store:methodComboStore}]},{items:[{id:'mtnMaxDate',xtype:'datefield',format:'d-m-Y',value:new Date(),allowBlank:false,editable:false,timeWidth:60}]},{items:[{id:'mtnDelDaily',xtype:'button',disabled:true,handler:function(){var text;var selJob=Ext.getCmp('mtnCbJobs').getValue();var selMet=Ext.getCmp('mtnCbMeth').getValue();var maxDate=Ext.getCmp('mtnMaxDate').getValue().format('Y-m-d');var isAll=selJob=='All'?true:false;if(isAll)
-text=String.format(EasySDI_Mon.lang.getLocal('confirm suppress all raw logs detail'),EasySDI_Mon.DateRenderer(maxDate));else if(selMet!='All')
-text=String.format(EasySDI_Mon.lang.getLocal('confirm suppress raw log meth detail'),selJob,selMet,EasySDI_Mon.DateRenderer(maxDate));else
-text=String.format(EasySDI_Mon.lang.getLocal('confirm suppress raw log detail'),selJob,EasySDI_Mon.DateRenderer(maxDate));Ext.MessageBox.confirm(EasySDI_Mon.lang.getLocal('confirm'),text,function(btn){if(btn=='no')
-return false;else
-clearLogs(eLogType.daily,isAll)});},text:EasySDI_Mon.lang.getLocal('action clear raw logs')}]},{items:[{id:'mtnDelAgg',xtype:'button',disabled:true,handler:function(){var text;var selJob=Ext.getCmp('mtnCbJobs').getValue();var selMet=Ext.getCmp('mtnCbMeth').getValue();var maxDate=Ext.getCmp('mtnMaxDate').getValue().format('Y-m-d');var isAll=selJob=='All'?true:false;if(isAll)
-text=String.format(EasySDI_Mon.lang.getLocal('confirm suppress all agg logs detail'),EasySDI_Mon.DateRenderer(maxDate));else if(selMet!='All')
-text=String.format(EasySDI_Mon.lang.getLocal('confirm suppress agg log meth detail'),selJob,selMet,EasySDI_Mon.DateRenderer(maxDate));else
-text=String.format(EasySDI_Mon.lang.getLocal('confirm suppress agg log detail'),selJob,EasySDI_Mon.DateRenderer(maxDate));Ext.MessageBox.confirm(EasySDI_Mon.lang.getLocal('confirm'),text,function(btn){if(btn=='no')
-return false;else
-clearLogs(eLogType.aggregate,isAll)});},text:EasySDI_Mon.lang.getLocal('action clear agg logs')}]}]}
-var maintenancePanel=new Ext.Panel({id:'MaintenancePanel',region:'center',layout:'border',border:false,frame:true,items:[clFs,{html:'',region:'center'}]});Ext.getCmp('JobGrid').store.on('load',function(){refreshComboValuesFromJobStore();});Ext.getCmp('JobGrid').store.on('write',function(){refreshComboValuesFromJobStore();});function refreshComboValuesFromJobStore(){var aRec=Ext.getCmp('JobGrid').store.getRange();jobComboStore.removeAll();for(var i=0;i<aRec.length;i++)
-{var u=new jobComboStore.recordType({name:''});u.set('name',aRec[i].get('name'));jobComboStore.insert(0,u);}
-jobComboStore.insert(0,new jobComboStore.recordType({name:'All'}));}
-Ext.getCmp('mtnCbJobs').on('select',function(cmb,rec){methodComboStore.removeAll();if(rec.get('name')!='All'){methodComboStore.proxy.setUrl(EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+rec.get('name')+'/queries');methodComboStore.load();}else{methodComboStore.insert(0,new methodComboStore.recordType({name:'All',value:'All'}));}});methodComboStore.on('load',function(){methodComboStore.insert(0,new methodComboStore.recordType({name:'All',value:'All'}));});function clearLogs(type,all){var selJob=Ext.getCmp('mtnCbJobs').getValue();var selMet=Ext.getCmp('mtnCbMeth').getValue();var maxDate=Ext.getCmp('mtnMaxDate').getValue().format('Y-m-d');var selType=type==eLogType.daily?'logs':'aggLogs';var arrJob=Array();if(all){var aRec=jobComboStore.getRange();for(var j=0;j<aRec.length;j++)
-arrJob.push(aRec[j].get('name'));}else{if(selJob!='')
-arrJob.push(selJob);}
-var myMask=new Ext.LoadMask(Ext.getCmp('clearLogsFs').getEl(),{msg:EasySDI_Mon.lang.getLocal('message wait')});myMask.show();var counter=arrJob.length;for(var j=0;j<arrJob.length;j++){if(selMet=='All'||selMet==''){Ext.Ajax.request({loadMask:true,method:'DELETE',headers:{'Content-Type':'application/json'},params:'{"data":{"maxDate":"'+maxDate+'"}}',url:EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+arrJob[j]+'/'+selType,success:function(response){counter--;doResponse(response,counter,myMask);},failure:function(response){counter--;doResponse(response,counter,myMask);}});}else{Ext.Ajax.request({loadMask:true,method:'DELETE',headers:{'Content-Type':'application/json'},params:'{"data":{"maxDate":"'+maxDate+'"}}',url:EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+arrJob[j]+'/queries/'+selMet+'/'+selType,success:function(response){counter--;doResponse(response,counter,myMask);},failure:function(response){counter--;doResponse(response,counter,myMask);}});}}}
-function doResponse(response,counter,myMask){if(counter==0)
-myMask.hide();var jsonResp=Ext.util.JSON.decode(response.responseText);if(jsonResp.error!=null)
-EasySDI_Mon.App.setAlert(EasySDI_Mon.App.STATUS_ERROR,jsonResp.error);if(!jsonResp.message!=null)
-EasySDI_Mon.App.setAlert(EasySDI_Mon.App.STATUS_NOTICE,jsonResp.message);}
-Ext.getCmp('mtnCbJobs').on("select",function(field,newValue,oldValue){Ext.getCmp('mtnDelDaily').setDisabled(false);Ext.getCmp('mtnDelAgg').setDisabled(false);});});Ext.namespace("EasySDI_Mon");Ext.onReady(function(){var editmode=true;function findMainURL(name)
-{var mainURL=window.location.protocol+"//"+window.location.host;var pathArray=window.location.pathname.split('/');for(var i=0;i<pathArray.length;i++){if(pathArray[i]!=""&&pathArray[i]!="/")
-{if(pathArray[i].toLowerCase().indexOf("joomla")>-1)
-{mainURL+="/";mainURL+=pathArray[i];break;}else
-{mainURL+="/";mainURL+=pathArray[i];}}}
-mainURL+="/";mainURL+="overview.php?name="+name
-return mainURL;}
-var proxyOverview=new Ext.data.HttpProxy({api:{read:EasySDI_Mon.proxy+'overviews',create:EasySDI_Mon.proxy+'overviews',update:EasySDI_Mon.proxy+'overviews',destroy:EasySDI_Mon.proxy+'overviews'}});var proxyTableOverview=new Ext.data.HttpProxy({api:{read:'?',create:'?',update:'?',destroy:'?'}});var writer=new Ext.data.JsonWriter({encode:false});var overviewPageStore=new Ext.data.JsonStore({id:'name',root:'data',restful:true,fields:['name','isPublic'],proxy:proxyOverview,writer:writer});var pageComboStore=new Ext.data.SimpleStore({id:0,fields:['name'],data:[]});var overviewTableStore=new Ext.data.JsonStore({id:'queryId',root:'data',restful:true,proxy:proxyTableOverview,writer:writer,fields:[{name:'overviewId'},{name:'queryId'},{name:'isPublic'},{name:'query',mapping:'query'},{name:'id',mapping:'query.id'},{name:'name',mapping:'query.name'},{name:'status',mapping:'query.status'},{name:'statusCode',mapping:'query.statusCode'},{name:'serviceMethod',mapping:'query.serviceMethod'},{name:'queryValidationResult',mapping:'query.queryValidationResult'},{name:'id',mapping:'query.queryValidationResult.id'},{name:'sizeValidationResult',mapping:'query.queryValidationResult.sizeValidationResult'},{name:'responseSize',mapping:'query.queryValidationResult.responseSize'},{name:'timeValidationResult',mapping:'query.queryValidationResult.timeValidationResult'},{name:'deliveryTime',mapping:'query.queryValidationResult.deliveryTime'},{name:'xpathValidationResult',mapping:'query.queryValidationResult.xpathValidationResult'},{name:'xpathValidationOutput',mapping:'query.queryValidationResult.xpathValidationOutput'},{name:'queryValidationSettings',mapping:'query.queryValidationSettings'},{name:'id',mapping:'query.queryValidationSettings.id'},{name:'useSizeValidation',mapping:'query.queryValidationSettings.useSizeValidation'},{name:'normSize',mapping:'query.queryValidationSettings.normSize'},{name:'normSizeTolerance',mapping:'query.queryValidationSettings.normSizeTolerance'},{name:'useTimeValidation',mapping:'query.queryValidationSettings.useTimeValidation'},{name:'normTime',mapping:'query.queryValidationSettings.normTime'},{name:'useXpathValidation',mapping:'query.queryValidationSettings.useXpathValidation'},{name:'xpathExpression',mapping:'query.queryValidationSettings.xpathExpression'},{name:'expectedXpathOutput',mapping:'query.queryValidationSettings.expectedXpathOutput'},{name:'lastQueryResult',mapping:'lastQueryResult'},{name:'picture_url',mapping:'lastQueryResult.picture_url'},{name:'xml_result',mapping:'lastQueryResult.xml_result'},{name:'text_result',mapping:'lastQueryResult.text_result'}]});var controlsORP={xtype:'fieldset',id:'overviewFs',region:'north',height:80,layout:'table',layoutConfig:{columns:6},defaults:{bodyStyle:'padding:5px'},collapsible:false,title:'',items:[{items:[{xtype:'combo',mode:'local',id:'overviewcomboOVP',triggerAction:'all',forceSelection:true,editable:false,name:'overviewComboFilter',displayField:'name',valueField:'name',emptyText:EasySDI_Mon.lang.getLocal('combo select a overviewpage'),store:pageComboStore}]},{id:'modeswitch',xtype:'button',text:EasySDI_Mon.lang.getLocal('overview switch mode view'),disabled:false,handler:function()
-{var btn=Ext.getCmp('modeswitch');if(editmode)
-{editmode=false;btn.setText(EasySDI_Mon.lang.getLocal('overview switch mode edit'));}else
-{editmode=true;btn.setText(EasySDI_Mon.lang.getLocal('overview switch mode view'));}
-var pagename=Ext.getCmp('overviewcomboOVP').getValue();if(pagename&&pagename!="")
-{overviewTableStore.proxy.api.read.url=EasySDI_Mon.proxy+'overviews/'+pagename+'/queries';overviewTableStore.load();}}},{id:'newbtnResponsePage',xtype:'button',text:'New',disabled:false,handler:function(){var win=new Ext.Window({width:200,autoScroll:false,modal:true,title:EasySDI_Mon.lang.getLocal('overview panel title'),items:[new Ext.FormPanel({labelWidth:35,monitorValid:true,ref:'overviewpagePanel',region:'center',bodyStyle:'padding:5px 5px 0',autoHeight:true,frame:true,defaults:{width:200},defaultType:'textfield',autoHeight:true,items:[{fieldLabel:EasySDI_Mon.lang.getLocal('overview label pagename'),value:'',name:'name',allowBlank:false,xtype:'textfield',width:120}],buttons:[{text:EasySDI_Mon.lang.getLocal('grid action ok'),handler:function()
-{var fields=win.overviewpagePanel.getForm().getFieldValues();var index=overviewPageStore.find('name',fields.name);if(index<0)
-{var u=new overviewPageStore.recordType({name:'',isPublic:'0'});u.set('name',fields.name);u.set('isPublic','0');overviewPageStore.insert(0,u);win.close();}else
-{alert('The pagename already exist: '+fields.name);}}},{text:EasySDI_Mon.lang.getLocal('grid action cancel'),handler:function(){win.close();}}]})]});win.show();}},{id:'delbtnResponsePage',xtype:'button',text:'Delete',disabled:false,handler:function(){if(confirm('Do you want to delete: '+Ext.getCmp('overviewcomboOVP').getValue()))
-{var name=Ext.getCmp('overviewcomboOVP').getValue();if(name!='')
-{var index=-1;index=overviewPageStore.find('name',name);if(index>-1)
-{try
-{overviewPageStore.remove(overviewPageStore.getAt(index));refreshComboValuesFromOverviewStore();resetPage();}catch(e)
-{alert(e);}}}}}},{html:'',colspan:2},{items:[new Ext.FormPanel({layout:'table',layoutConfig:{columns:2},defaults:{bodyStyle:'padding:5px'},items:[{xtype:'checkbox',id:'checkpublic',checked:false,hidden:true,handler:function(){var alink=document.getElementById("apublicLink");var name=Ext.getCmp('overviewcomboOVP').getValue();var index=overviewPageStore.find('name',name);if(index>-1)
-{var isPublicChecked=overviewPageStore.getAt(index).get('isPublic');if(Ext.getCmp('checkpublic').checked)
-{if(isPublicChecked=='0')
-{overviewPageStore.getAt(index).set('isPublic','1');alink.href=findMainURL(name);alink.innerHTML=findMainURL(name);toggleLink(true,true);}}else
-{if(isPublicChecked=='1'){overviewPageStore.getAt(index).set('isPublic','0');toggleLink(true,true);}}}}},{hidden:true,id:'linkPublic',html:'Public <a id="apublicLink" href="'+findMainURL('')+'" target="blank">'+findMainURL('')+'</a>'}]})],colspan:6}]}
-var controlTable={xtype:'panel',id:'requestTable',region:'center',height:350,autoScroll:true,hidden:true,defaults:{bodyStyle:'padding:5px',height:300},title:''};var responseoverviewPanel=new Ext.Panel({id:'ResponseOverviewPanel',region:'center',layout:'border',border:true,frame:true,items:[controlsORP,controlTable]});overviewPageStore.load();function resetPage()
-{Ext.getCmp('overviewcomboOVP').clearValue();Ext.getCmp('requestTable').removeAll();;toggleLink(false,false);}
-function toggleLink(modeCheck,modeLink)
-{Ext.getCmp('checkpublic').setVisible(modeCheck);Ext.getCmp('linkPublic').setVisible(modeLink);}
-function refreshComboValuesFromOverviewStore(){var aRec=overviewPageStore.getRange();pageComboStore.removeAll();for(var i=0;i<aRec.length;i++)
-{var u=new pageComboStore.recordType({name:''});u.set('name',aRec[i].get('name'));pageComboStore.insert(0,u);}}
-function createView()
-{var name=Ext.getCmp('overviewcomboOVP').getValue();var index=overviewPageStore.find('name',name);if(index>-1)
-{var rec=overviewPageStore.getAt(index);var alink=document.getElementById("apublicLink");var name=Ext.getCmp('overviewcomboOVP').getValue();alink.href=findMainURL(name);alink.innerHTML=findMainURL(name);toggleLink(true,true);if(rec.get('isPublic')==1)
-{Ext.getCmp('checkpublic').setValue(true);}else
-{Ext.getCmp('checkpublic').setValue(false);}}else
-{toggleLink(false,false);}
-var table=Ext.getCmp('requestTable');try
-{table.removeAll();table.setVisible(true);for(row=0;row<=table.getLayout().currentRow;row++){var tr=table.getLayout().getRow(row);while(tr.children.length>0)
-{var child=tr.children[tr.children.length-1];tr.removeChild(child);}}
-table.layout.currentRow=0;table.layout.currentColumn=0;table.layout.cells=[];table.doLayout();}catch(e)
-{}
-var aRec=overviewTableStore.getRange();for(var i=0;i<aRec.length;i++)
-{var content_type=aRec[i].get('serviceMethod');var controls;if(editmode)
-{controls=createTable(aRec[i],content_type.toLowerCase());table.add(controls);}else
-{if(aRec[i].get('isPublic')==1)
-{controls=createTable(aRec[i],content_type.toLowerCase());table.add(controls);}}}
-for(var i=0;i<table.items.items.length;i++)
-{table.items.items[i].addClass('Div_overview_request');}
-table.doLayout();}
-function createTable(rec,type)
-{var tHeaderColor='OverviewTableCellsOk';var dTime=Math.round(rec.get('deliveryTime')*1000);var nTime=rec.get('normTime');var tCellColor='OverviewTableCellsOk';if(!rec.get('useTimeValidation'))
-{tCellColor='OverviewTableCellsOk';}else if(!rec.get('timeValidationResult'))
-{tCellColor='OverviewTableCellsFailed';}
-var sSize=rec.get('responseSize');var nSize=rec.get('normSize');var sCellColor='OverviewTableCellsOk';if(!rec.get('useSizeValidation'))
-{sCellColor='OverviewTableCellsOk';}else if(!rec.get('sizeValidationResult'))
-{sCellColor='OverviewTableCellsError';}
-var oFound=rec.get('xpathValidationOutput');var oNorm=rec.get('normOutput');var oCellColor='OverviewTableCellsOk';if(!rec.get('useXpathValidation'))
-{oCellColor='OverviewTableCellsOk';}else if(!rec.get('xpathValidationResult'))
-{oCellColor='OverviewTableCellsError';}
-var reqError=false;if(dTime<0||rec.get('statusCode').toLowerCase()=='unavailable')
-{reqError=true;tHeaderColor='OverviewTableCellsError';tCellColor='OverviewTableCellsError';sCellColor='OverviewTableCellsError';oCellColor='OverviewTableCellsError';}
-var controls;switch(type)
-{case"gettile":case"getmap":controls={items:[new Ext.FormPanel({id:'tablepagePanel',region:'north',layout:'table',layoutConfig:{columns:2},defaults:{},items:[{xtype:'label',value:'',name:'service_label',text:EasySDI_Mon.lang.getLocal('overview label service name'),cls:'OverviewLabel',cellCls:tHeaderColor},{xtype:'label',value:'',name:'service_name',text:rec.get('name'),cellCls:tHeaderColor},{xtype:'label',value:'',name:'Size_label',text:EasySDI_Mon.lang.getLocal('overview label size'),cls:'OverviewLabel',cellCls:sCellColor},{xtype:'label',value:'',name:'size',text:rec.get('responseSize')+EasySDI_Mon.lang.getLocal('overview label bytes'),cellCls:sCellColor},{xtype:'label',value:'',name:'norm_label',text:EasySDI_Mon.lang.getLocal('overview label norm size'),cls:'OverviewLabel',cellCls:sCellColor},{xtype:'label',value:'',name:'norm',text:rec.get('normSize')?rec.get('normSize')+EasySDI_Mon.lang.getLocal('overview label bytes'):'',cellCls:sCellColor},{xtype:'label',value:'',name:'Deliverytime_label',text:EasySDI_Mon.lang.getLocal('overview label delivery time'),cls:'OverviewLabel',cellCls:tCellColor},{xtype:'label',value:'',name:'Deliverytime',text:Math.round(rec.get('deliveryTime')*1000)+EasySDI_Mon.lang.getLocal('overview label ms'),cellCls:tCellColor},{xtype:'label',value:'',name:'Normtime_label',text:EasySDI_Mon.lang.getLocal('overview label norm time'),cls:'OverviewLabel',cellCls:tCellColor},{xtype:'label',value:'',name:'Normtime_label',text:rec.get('normTime')?rec.get('normTime')+EasySDI_Mon.lang.getLocal('overview label ms'):'',cellCls:tCellColor},{width:rec.get('picture_url')?142:300,height:142,html:rec.get('picture_url')&&!reqError?'<img src='+rec.get('picture_url')+' alt="missing image" style="border:1px solid;" width="140" height="140" />':'<textarea class="Text_area_result" >'+rec.get('text_result')+'</textarea>',colspan:2,cellCls:'OverviewTableCellsImg'},{xtype:'checkbox',id:'check_'+rec.get('queryId'),inputValue:rec.get('queryId'),hidden:editmode?false:true,checked:rec.get('isPublic')==1?true:false,handler:function(com){var index=overviewTableStore.find('queryId',com.inputValue);if(index>-1)
-{if(com.checked)
-{overviewTableStore.getAt(index).set('isPublic','1');}else
-{overviewTableStore.getAt(index).set('isPublic','0');}}},cellCls:'OverviewTableCellsInludeBox'},{hidden:editmode?false:true,html:EasySDI_Mon.lang.getLocal('overview label include'),cellCls:'OverviewTableCellsInludeText'}]})]}
-break;case"getfeature":case"getrecords":case"getrecordbyid":case"getcapabilities":controls={items:[new Ext.FormPanel({id:'tablepagePanel',region:'north',layout:'table',layoutConfig:{columns:2},defaults:{},items:[{xtype:'label',value:'',name:'service_label',text:EasySDI_Mon.lang.getLocal('overview label service name'),cls:'OverviewLabel',cellCls:tHeaderColor},{xtype:'label',value:'',name:'service_name',text:rec.get('name'),cellCls:tHeaderColor},{xtype:'label',value:'',name:'foundOutput_label',text:EasySDI_Mon.lang.getLocal('overview label foundoutput'),cls:'OverviewLabel',cellCls:oCellColor},{xtype:'label',value:'',name:'xpathValidationOutput',text:rec.get('xpathValidationOutput'),cellCls:oCellColor},{xtype:'label',value:'',name:'norm_label',text:EasySDI_Mon.lang.getLocal('overview label normoutput'),cls:'OverviewLabel',cellCls:oCellColor},{xtype:'label',value:'',name:'expectedXpathOutput',text:rec.get('expectedXpathOutput'),cellCls:oCellColor},{xtype:'label',value:'',name:'Deliverytime_label',text:EasySDI_Mon.lang.getLocal('overview label delivery time'),cls:'OverviewLabel',cellCls:tCellColor},{xtype:'label',value:'',name:'Deliverytime',text:Math.round(rec.get('deliveryTime')*1000)+EasySDI_Mon.lang.getLocal('overview label ms'),cellCls:tCellColor},{xtype:'label',value:'',name:'Normtime_label',text:EasySDI_Mon.lang.getLocal('overview label norm time'),cls:'OverviewLabel',cellCls:tCellColor},{xtype:'label',value:'',name:'Normtime_label',text:rec.get('normTime')?rec.get('normTime')+EasySDI_Mon.lang.getLocal('overview label ms'):'',cellCls:tCellColor},{xtype:'textarea',autoScroll:true,width:300,height:140,style:'border:1px solid;',readOnly:true,value:rec.get('xml_result')?rec.get('xml_result'):rec.get('text_result'),colspan:2,cellCls:'OverviewTableCells'},{xtype:'checkbox',id:'check_'+rec.get('queryId'),inputValue:rec.get('queryId'),hidden:editmode?false:true,checked:rec.get('isPublic')==1?true:false,handler:function(com){var index=overviewTableStore.find('queryId',com.inputValue);if(index>-1)
-{if(com.checked)
-{overviewTableStore.getAt(index).set('isPublic','1');}else
-{overviewTableStore.getAt(index).set('isPublic','0');}}},cellCls:'OverviewTableCellsInludeBox'},{hidden:editmode?false:true,html:EasySDI_Mon.lang.getLocal('overview label include'),cellCls:'OverviewTableCellsInludeText'}]})]}
-break;default:break;}
-return controls;}
-Ext.getCmp('overviewcomboOVP').on('select',function(cmb,rec){overviewTableStore.proxy.api.update.url=EasySDI_Mon.proxy+'overviews/'+rec.data.name+'/queries';overviewTableStore.proxy.api.read.url=EasySDI_Mon.proxy+'overviews/'+rec.data.name+'/queries';overviewTableStore.load();});overviewPageStore.on('load',function(){refreshComboValuesFromOverviewStore();});overviewPageStore.on('add',function(store,records,index)
-{refreshComboValuesFromOverviewStore();});overviewTableStore.on('load',function()
-{createView();});});Ext.namespace("EasySDI_Mon");EasySDI_Mon.chart1;EasySDI_Mon.chart2;var aStores=Array();var tickInterval;var jobRecord;EasySDI_Mon.clearCharts=function(){if(EasySDI_Mon.chart1!=null){EasySDI_Mon.chart1.destroy();EasySDI_Mon.chart1=null;}
-if(EasySDI_Mon.chart2!=null){EasySDI_Mon.chart2.destroy();EasySDI_Mon.chart2=null;}
-for(var storeName in aStores)
-{if(typeof aStores[storeName]!='function'){if(aStores[storeName]!=null)
-aStores[storeName].destroy();}}
-aStores=Array();};Ext.onReady(function(){var myMask=new Ext.LoadMask(Ext.getBody(),{msg:EasySDI_Mon.lang.getLocal('message wait')});var jobComboStore=new Ext.data.SimpleStore({id:'jobId',fields:[{name:'name'}],data:[]});var methodComboStore=new Ext.data.JsonStore({id:'id',root:'data',restful:true,proxy:new Ext.data.HttpProxy({url:'?'}),fields:[{id:'id'},{name:'name'}],data:{'data':[{'name':'All','value':'All'}]}});var reportMenu=new Ext.Panel({id:'ReportMenu',layout:'table',region:'center',height:50,frame:true,layoutConfig:{columns:7},border:false,defaults:{border:false,bodyStyle:'padding:5px 5px'},collapsible:false,items:[{html:EasySDI_Mon.lang.getLocal('job')+':'},{items:[{xtype:'combo',mode:'local',id:'repCbJobs',triggerAction:'all',forceSelection:true,editable:false,fieldLabel:'Job',name:'jobComboFilter',displayField:'name',valueField:'name',emptyText:EasySDI_Mon.lang.getLocal('combo select a job'),store:jobComboStore}]},{html:EasySDI_Mon.lang.getLocal('report request select')+':'},{items:[{xtype:'combo',mode:'local',id:'repCbMeth',value:'All',triggerAction:'all',forceSelection:true,editable:false,fieldLabel:'Job',name:'reqComboFilter',displayField:'name',valueField:'name',emptyText:EasySDI_Mon.lang.getLocal('combo select a method'),store:methodComboStore}]},{html:EasySDI_Mon.lang.getLocal('period')+':'},{xtype:'combo',mode:'local',id:'repCbPeriod',triggerAction:'all',forceSelection:true,editable:false,name:'repCbPeriod',emptyText:EasySDI_Mon.lang.getLocal('combo select a period'),displayField:'name',valueField:'value',value:'today',store:new Ext.data.SimpleStore({fields:['name','value'],data:EasySDI_Mon.RepPeriodStore}),width:200},{items:[{id:'mtnBtnView',xtype:'button',handler:function(){mtnBtnView_click();},listeners:{click:function(){mtnBtnView_click();}},text:EasySDI_Mon.lang.getLocal('action view')}]},{},{},{},{},{},{items:[new Ext.FormPanel({id:'periodeDatePanel',layout:'table',layoutConfig:{columns:2},hidden:true,items:[{id:'minDatePicker',xtype:'datefield',name:'minDatePicker',cellCls:'ReportTableCell',width:100,format:'Y-m-d'},{id:'maxDatePicker',xtype:'datefield',name:'maxDatePicker',maxValue:new Date().format('Y-m-d'),cellCls:'ReportTableCell',width:100,format:'Y-m-d'}]})]}]});Ext.getCmp('JobGrid').store.on('load',function(){refreshComboValuesFromJobStore();});Ext.getCmp('JobGrid').store.on('write',function(){refreshComboValuesFromJobStore();});function refreshComboValuesFromJobStore(){var aRec=Ext.getCmp('JobGrid').store.getRange();jobComboStore.removeAll();for(var i=0;i<aRec.length;i++)
-{var u=new jobComboStore.recordType({name:''});u.set('name',aRec[i].get('name'));jobComboStore.insert(0,u);}}
-Ext.getCmp('repCbPeriod').on('select',function(cmd,rec)
-{var name;if(rec==null){name=Ext.getCmp('repCbPeriod').getValue();}else{name=rec.get("value");}
-if(name&&name=="period")
-{Ext.getCmp('periodeDatePanel').setVisible(true);}else
-{Ext.getCmp('periodeDatePanel').setVisible(false);}});Ext.getCmp('repCbJobs').on('select',function(cmb,rec){var name;if(rec==null){name=Ext.getCmp('repCbJobs').getValue();}else{name=rec.get("name");}
-myMask.show();methodComboStore.proxy.setUrl(EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+name+'/queries');methodComboStore.load();jobRecord=Ext.getCmp('JobGrid').store.getAt(Ext.getCmp('JobGrid').store.findExact('name',name));});methodComboStore.on('load',function(){myMask.hide();methodComboStore.addListener('add',methodComboStoreOnAdd);methodComboStore.add(new methodComboStore.recordType({name:'All',value:'All'}));});function methodComboStoreOnAdd(store,rec){methodComboStore.removeListener('add',methodComboStoreOnAdd);Ext.getCmp('repCbMeth').setValue(rec[0].get('value'));}
-function mtnBtnView_click(){EasySDI_Mon.clearCharts();var selJob=Ext.getCmp('repCbJobs').getValue();var selMet=Ext.getCmp('repCbMeth').getValue();var selPer=Ext.getCmp('repCbPeriod').getValue();if(selJob==""){Ext.MessageBox.alert(EasySDI_Mon.lang.getLocal('error'),EasySDI_Mon.lang.getLocal('report select job'));return false;}else if(selMet==""){Ext.MessageBox.alert(EasySDI_Mon.lang.getLocal('error'),EasySDI_Mon.lang.getLocal('report select method'));return false;}else if(selPer==""){Ext.MessageBox.alert(EasySDI_Mon.lang.getLocal('error'),EasySDI_Mon.lang.getLocal('report select period'));return false;}
-myMask.show();var logRes;var today=new Date();var minDate=new Date();minDate.setTime(0);var maxDate=new Date();switch(selPer){case"today":minDate=today;maxDate=today;logRes="logs";tickInterval=2*3600*1000;break;case"yesterday":var yesterday=new Date();yesterday.setDate(today.getDate()-1);minDate=yesterday;maxDate=today;logRes="logs";tickInterval=4*3600*1000;break;case"lastweek":var lastweek=new Date();lastweek.setDate(today.getDate()-7);minDate=lastweek;maxDate=new Date();logRes="aggLogs";tickInterval=24*3600*1000;break;case"thismonth":var thismonth=new Date();thismonth.setDate(1);minDate=thismonth;maxDate=new Date();logRes="aggLogs";tickInterval=7*24*3600*1000;break;case"past6months":var past6months=new Date();past6months.setMonth(today.getMonth()-5);past6months.setDate(1);minDate=past6months;maxDate=new Date();logRes="aggLogs";tickInterval=4*7*24*3600*1000;break;case"pastyear":var pastyear=new Date();pastyear.setYear(today.getYear()-1);pastyear.setDate(1);minDate=pastyear;maxDate=new Date();logRes="aggLogs";tickInterval=4*7*24*3600*1000;break;case"period":var minPeriod=Ext.getCmp('minDatePicker').getValue();var maxPeriod=Ext.getCmp('maxDatePicker').getValue();if(maxPeriod==""||minPeriod=="")
-{Ext.MessageBox.alert(EasySDI_Mon.lang.getLocal('error'),EasySDI_Mon.lang.getLocal('report enter period'));myMask.hide();return false;}
-minDate=minPeriod;maxDate=maxPeriod;if(!maxDate||!minDate||(maxDate<minDate))
-{Ext.MessageBox.alert(EasySDI_Mon.lang.getLocal('error'),EasySDI_Mon.lang.getLocal('report invalid period'));myMask.hide();return false;}
-var ms=minDate.getElapsed(maxDate);var r=ms%86400000;var days=(ms-r)/86400000;days++;if(days<=EasySDI_Mon.DaysForUsingLogs)
-{logRes="logs";}else
-{logRes="aggLogs";}
-tickInterval=findtickInterval(days);break;case"All":logRes="aggLogs";tickInterval=4*7*24*3600*1000;break;default:'All';}
-var aMethods=Array();if(selMet=="All"){var aRec=methodComboStore.getRange();for(var i=0;i<aRec.length;i++){if(aRec[i].get('name')!="All")
-aMethods.push(aRec[i].get('name'));}}else{aMethods.push(selMet);}
-var loadedStores=0;for(var i=0;i<aMethods.length;i++){var fields=null;if(logRes=="aggLogs")
-fields=['h24Availability','slaNbBizErrors','h24NbConnErrors','h24MeanRespTime','slaMeanRespTime','h24NbBizErrors','slaAvalabilty','slaNbConnErrors',{name:'date',type:'date',dateFormat:'Y-m-d'}];else
-fields=[{name:'time',type:'date',dateFormat:'Y-m-d H:i:s'},'message','httpCode','status','statusCode','delay','size']
-aStores[aMethods[i]]=new Ext.data.JsonStore({root:'data',autoLoad:true,totalProperty:'totalCount',restful:true,proxy:new Ext.data.HttpProxy({url:EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+selJob+'/queries/'+aMethods[i]+'/'+logRes+'?minDate='+minDate.format('Y-m-d')+'&maxDate='+maxDate.format('Y-m-d')}),fields:fields,listeners:{load:function(){loadedStores++;if(loadedStores==aMethods.length){var b=aStores;myMask.hide();onDataReady(aStores,logRes);}}}});}}
-function findtickInterval(days)
-{var ticks=0;if(days==1)
-{ticks=2*3600*1000;}else if(days==2)
-{ticks=4*3600*1000;}else if(days<8)
-{ticks=24*3600*1000;}else if(days<32)
-{ticks=7*24*3600*1000;}else
-{ticks=4*7*24*3600*1000;}
-return ticks;}
-function onDataReady(aStores,logRes){EasySDI_Mon.chart1=EasySDI_Mon.drawResponseTimeGraph('container1',aStores,logRes,tickInterval,jobRecord);if(logRes=='logs')
-EasySDI_Mon.chart2=EasySDI_Mon.drawHealthGraphRaw('container2',aStores,logRes);else{EasySDI_Mon.chart2=EasySDI_Mon.drawHealthGraphAgg('container2',aStores,logRes);}}});Ext.namespace("EasySDI_Mon");EasySDI_Mon.mainPanel=2;Ext.onReady(function(){var appPanel
-var item2=new Ext.Panel({title:EasySDI_Mon.lang.getLocal('requests'),layout:'fit',border:false,frame:true,items:[Ext.getCmp('ReqGrid')]});var accordion=new Ext.Panel({region:'east',split:true,width:'40%',layout:'accordion',frame:"true",items:[Ext.getCmp('jobAdvForm'),item2,Ext.getCmp('AlertForm')]});jobPanel={title:EasySDI_Mon.lang.getLocal('jobs'),frame:true,xtype:'panel',layout:'border',region:'center',border:false,items:[accordion,Ext.getCmp('JobGrid')]};reportPanel={id:'reportPanel',title:EasySDI_Mon.lang.getLocal('reports'),xtype:'panel',layout:'border',region:'center',border:false,items:[Ext.getCmp('ReportMenu')]};alertPanel={title:EasySDI_Mon.lang.getLocal('alerts'),xtype:'panel',layout:'border',region:'center',border:false,items:[Ext.getCmp('AlertGrid')]};statePanel={title:EasySDI_Mon.lang.getLocal('state'),xtype:'panel',layout:'border',region:'center',border:false,items:[Ext.getCmp('JobStateGrid')]};maintenancePanel={title:EasySDI_Mon.lang.getLocal('maintenance'),xtype:'panel',layout:'border',region:'center',border:false,items:[Ext.getCmp('MaintenancePanel')]};responseoverviewPanel={title:EasySDI_Mon.lang.getLocal('responseoverview'),xtype:'panel',layout:'border',region:'center',border:false,items:[Ext.getCmp('ResponseOverviewPanel')]};var cardTabs=new Ext.TabPanel({id:'card-tabs-panel',activeTab:EasySDI_Mon.defaultTab,defaults:{bodyStyle:'padding:15px'},items:[statePanel,jobPanel,reportPanel,alertPanel,maintenancePanel,responseoverviewPanel]});var appPanel=new Ext.Panel({id:'appPanel',frame:true,anchor:'50%',region:'center',layout:'card',margins:'2 5 5 0',activeItem:0,border:true,items:[cardTabs]});EasySDI_Mon.mainPanel=new Ext.Panel({height:EasySDI_Mon.appHeight,id:'mainPanel',xtype:'panel',renderTo:"tabsContainer",layout:'border',border:false,frame:false,items:[new Ext.Panel({region:'north',height:35,id:'JobCollectionPanel',ref:'JobCollectionPanel',border:false,frame:false,layout:'table',layoutConfig:{columns:2},items:[{html:EasySDI_Mon.lang.getLocal('job collection')+':',handleMouseEvents:false,border:false},{xtype:'combo',border:false,mode:'local',id:'jobCbCollection',triggerAction:'all',forceSelection:true,editable:false,value:EasySDI_Mon.DefaultJobCollection,name:'jobCbCollection',displayField:'name',valueField:'value',store:new Ext.data.SimpleStore({fields:['name','value'],data:EasySDI_Mon.JobCollectionStore})}]}),appPanel]});Ext.getCmp('jobCbCollection').on('select',function(cmb,rec){var store=Ext.getCmp('JobGrid').store;EasySDI_Mon.CurrentJobCollection=rec.data.value;store.proxy.setUrl(EasySDI_Mon.proxy+rec.data.value);store.proxy.api.create.url=EasySDI_Mon.proxy+rec.data.value;store.proxy.api.destroy.url=EasySDI_Mon.proxy+rec.data.value;store.proxy.api.read.url=EasySDI_Mon.proxy+rec.data.value;store.proxy.api.update.url=EasySDI_Mon.proxy+rec.data.value;store.load();});if(cardTabs.getActiveTab().id=='reportPanel')
-Ext.getCmp('mainPanel').setHeight(150);cardTabs.on('tabchange',function(cardTab,panel){if(panel.id=='reportPanel'){Ext.getCmp('mainPanel').setHeight(150);}else{EasySDI_Mon.clearCharts();var OrigTB=document.getElementById('element-box');var c=document.getElementById('container1');if(c.firstChild!=null)
-c.removeChild(c.firstChild);c=document.getElementById('container2');if(c.firstChild!=null)
-c.removeChild(c.firstChild);c=document.getElementById('container3');if(c.firstChild!=null)
-c.removeChild(c.firstChild);Ext.getCmp('mainPanel').setHeight(EasySDI_Mon.appHeight);}});Ext.EventManager.onWindowResize(function(){appPanel.setWidth(Ext.getDom('tabsContainer').clientWidth);EasySDI_Mon.mainPanel.JobCollectionPanel.setWidth(Ext.getDom('tabsContainer').clientWidth);});try
-{Ext.getDom('toolbar-help').getChildren()[0].setAttribute("onClick","window.open('http://forge.easysdi.org/wiki/monitor')");}catch(e)
-{}});Ext.namespace("EasySDI_Mon");EasySDI_Mon.drawHealthGraphRaw=function(container,aStores,logRes){var options={chart:{renderTo:container,defaultSeriesType:'column'},title:{text:EasySDI_Mon.lang.getLocal('service health')},xAxis:{categories:[]},yAxis:{min:0,max:100,title:{text:EasySDI_Mon.lang.getLocal('percentage')}},legend:{backgroundColor:'#FFFFFF',reversed:true},tooltip:{formatter:function(){return''+
-this.series.name+': '+this.y+'%';}},plotOptions:{series:{stacking:'normal'}},series:[]};var avSeries={name:EasySDI_Mon.lang.getLocal('available'),data:[],color:'#7dff9c'};var unavSeries={name:EasySDI_Mon.lang.getLocal('unavailable'),data:[],color:'#ff7f7f'};var fSeries={name:EasySDI_Mon.lang.getLocal('failure'),data:[],color:'#e2ff1d'};var otherSeries={name:EasySDI_Mon.lang.getLocal('untested-unknown'),data:[],color:'#b3b3b3'};var otherSeries;for(var storeName in aStores)
-{if(typeof aStores[storeName]!='function'){options.xAxis.categories.push(storeName);}}
-var avCount=0;var unavCount=0;var fCount=0;var otherCount=0;for(var storeName in aStores)
-{if(typeof aStores[storeName]!='function'){var aRec=aStores[storeName].getRange();for(var i=0;i<aRec.length;i++)
-{var status=aRec[i].get('statusCode');switch(status){case'AVAILABLE':avCount++;break;case'OUT_OF_ORDER':fCount++;break;case'UNAVAILABLE':unavCount++;break;case'NOT_TESTED':otherCount++;break;default:otherCount++;break;}}
-avSeries.data.push(Math.round((avCount/aRec.length)*100));unavSeries.data.push(Math.round((unavCount/aRec.length)*100));fSeries.data.push(Math.round((fCount/aRec.length)*100));otherSeries.data.push(Math.round((otherCount/aRec.length)*100));}}
-options.series.push(otherSeries);options.series.push(unavSeries);options.series.push(fSeries);options.series.push(avSeries);chart=new Highcharts.Chart(options);return chart;};Ext.namespace("EasySDI_Mon");EasySDI_Mon.drawHealthGraphAgg=function(container,aStores,logRes){var options={chart:{renderTo:container,defaultSeriesType:'column'},title:{text:EasySDI_Mon.lang.getLocal('service health summary')},xAxis:{categories:[]},yAxis:{min:0,max:100,title:{text:EasySDI_Mon.lang.getLocal('percentage')}},legend:{backgroundColor:'#FFFFFF',reversed:true},tooltip:{formatter:function(){return''+
-this.series.name+': '+this.y+'%';}},plotOptions:{series:{stacking:'normal'}},series:[]};var avSeries={name:EasySDI_Mon.lang.getLocal('available'),data:[],color:'#7dff9c'};for(var storeName in aStores)
-{if(typeof aStores[storeName]!='function'){options.xAxis.categories.push(storeName+EasySDI_Mon.lang.getLocal('h24 suffix'));options.xAxis.categories.push(storeName+EasySDI_Mon.lang.getLocal('sla suffix'));}}
-var avCountH24;var avCountSLA;for(var storeName in aStores)
-{if(typeof aStores[storeName]!='function'){var aRec=aStores[storeName].getRange();avCountH24=0;avCountSLA=0;for(var i=0;i<aRec.length;i++)
-{avCountH24+=aRec[i].get('h24Availability');avCountSLA+=aRec[i].get('slaAvalabilty');}
-avSeries.data.push(Math.round(avCountH24/aRec.length));avSeries.data.push(Math.round(avCountSLA/aRec.length));}}
-options.series.push(avSeries);chart=new Highcharts.Chart(options);return chart;};Ext.namespace("EasySDI_Mon");EasySDI_Mon.drawHealthLineGraph=function(container,aStores,logRes,tickInterval){var options={chart:{renderTo:container,marginRight:130,zoomType:'x'},title:{text:EasySDI_Mon.lang.getLocal('service health'),x:-20},xAxis:{title:EasySDI_Mon.lang.getLocal('grid header dateTime'),type:'datetime',maxZoom:tickInterval/10,tickInterval:tickInterval},yAxis:{title:{text:EasySDI_Mon.lang.getLocal('percentage')}},tooltip:{formatter:function(){return'<b>'+this.series.name+'</b><br/>'+
-new Date(this.x).format('d-m-Y')+': '+this.y+'[%]';}},legend:{layout:'vertical',align:'right',verticalAlign:'top',x:-10,y:100,borderWidth:0},series:[]};var series;for(var storeName in aStores)
-{if(typeof aStores[storeName]!='function'){var aRec=aStores[storeName].getRange();series={data:[]};series.name=storeName+EasySDI_Mon.lang.getLocal('h24 suffix');for(var i=0;i<aRec.length;i++)
-{series.data.push([aRec[i].get('date').getTime(),Math.round(aRec[i].get('h24Availability'))]);}
-options.series.push(series);series={data:[]};series.name=storeName+EasySDI_Mon.lang.getLocal('sla suffix');for(var i=0;i<aRec.length;i++)
-{series.data.push([aRec[i].get('date').getTime(),Math.round(aRec[i].get('slaAvalabilty'))]);}
-options.series.push(series);}}
-chart=new Highcharts.Chart(options);return chart;};Ext.namespace("EasySDI_Mon");EasySDI_Mon.drawResponseTimeGraph=function(container,aStores,logRes,tickInterval,jobRecord){var options={colors:['#000000','#414141','#7b7b7b','#874900','#855720','#7e5e39','#7e6c57'],chart:{renderTo:container,marginRight:130,zoomType:'x'},title:{text:EasySDI_Mon.lang.getLocal('response time graph title'),x:-20},xAxis:{title:EasySDI_Mon.lang.getLocal('dateTime'),type:'datetime',maxZoom:tickInterval/10,tickInterval:tickInterval},yAxis:{title:{text:EasySDI_Mon.lang.getLocal('response time')+' '+EasySDI_Mon.lang.getLocal('ms suffix')},min:0,max:jobRecord.get('timeout')*1000*1.3333333,minorGridLineWidth:0,gridLineWidth:0,alternateGridColor:null,plotBands:[{from:0,to:jobRecord.get('timeout')*1000,color:'rgba(68, 170, 213, 0.1)'}]},labels:{items:[{html:EasySDI_Mon.lang.getLocal('area within timeout'),style:{left:'10px',top:'240px'}}]},tooltip:{formatter:function(){var tip="<b>"+this.series.name+"</b><br/>"+
-new Date(this.x).format('d-m-Y H:i:s')+" -> "+this.y+EasySDI_Mon.lang.getLocal('ms suffix')+" <br/>";if(this.point.log=="aggLogs")
-{tip+="<b>"+EasySDI_Mon.lang.getLocal('tooltip H24_AVAILABILITY')+":</b> "+Math.round(this.point.data.data.h24Availability)+"%<br/>";tip+="<b>"+EasySDI_Mon.lang.getLocal('tooltip H24_NB_CONN_ERRORS')+":</b> "+this.point.data.data.h24NbConnErrors+"<br/>";tip+="<b>"+EasySDI_Mon.lang.getLocal('tooltip H24_NB_BIZ_ERRORS')+":</b> "+this.point.data.data.h24NbBizErrors+"<br/>";}else
-{tip+="<b>"+EasySDI_Mon.lang.getLocal('tooltip response size')+"</b>: "+Math.round(this.point.data.data.size)+" bytes<br/>";if(this.point.data.data.statusCode.toLowerCase()=="unavailable")
-{tip+="<b>"+EasySDI_Mon.lang.getLocal('tooltip http statuscode')+"</b>: "+this.point.data.data.httpCode+"<br/>";tip+="<b>"+EasySDI_Mon.lang.getLocal('tooltip response message')+"</b>: "+this.point.data.data.message+"<br/>";}
-if(this.point.data.data.statusCode.toLowerCase()=="out_of_order")
-{tip+="<b>"+EasySDI_Mon.lang.getLocal('tooltip response message')+"</b>: "+this.point.data.data.message;}}
-return tip;}},legend:{layout:'vertical',align:'right',verticalAlign:'top',x:-10,y:100,borderWidth:0},series:[]};var series;for(var storeName in aStores)
-{if(typeof aStores[storeName]!='function'){var aRec=aStores[storeName].getRange();series={data:[]};series.name=storeName+'[h24]';for(var i=0;i<aRec.length;i++)
-{if(logRes=='aggLogs')
-{var point={x:aRec[i].get('date').getTime(),y:Math.round(aRec[i].get('h24MeanRespTime')*1000)!=-1?Math.round(aRec[i].get('h24MeanRespTime')*1000):0,data:aRec[i],log:logRes};series.data.push(point);}
-else{var status=aRec[i].get('statusCode');var color;switch(status){case'AVAILABLE':color='#7dff9c';break;case'OUT_OF_ORDER':color='#e2ff1d';break;case'UNAVAILABLE':color='#ff7f7f';break;case'NOT_TESTED':color='#b3b3b3';break;default:color='#b3b3b3';break;}
-var point={x:aRec[i].get('time').getTime(),y:Math.round(aRec[i].get('delay')*1000)!=-1?Math.round(aRec[i].get('delay')*1000):0,marker:{fillColor:color},data:aRec[i],log:logRes};series.data.push(point);}}
-options.series.push(series);if(logRes=='aggLogs'){series={data:[]};series.name=storeName+EasySDI_Mon.lang.getLocal('sla suffix');for(var i=0;i<aRec.length;i++)
-{var point={x:aRec[i].get('date').getTime(),y:Math.round(aRec[i].get('slaMeanRespTime')*1000)!=-1?Math.round(aRec[i].get('slaMeanRespTime')*1000):0,data:aRec[i],log:logRes};series.data.push(point);}
-options.series.push(series);}}}
-chart=new Highcharts.Chart(options);return chart;};Ext.namespace("EasySDI_Mon");jQuery(function(){jQuery('#demo-menu a').each(function(){var linkedExample=/[?&]example=([^&#]*)/.exec(this.href)[1];if(linkedExample==example)this.parentNode.className='active';});jQuery('#styleswitcher a').each(function(){var linkedTheme=/[?&]theme=([^&#]*)/.exec(this.href)[1];if(linkedTheme==EasySDI_Mon.theme)this.parentNode.className='active';});jQuery(document).keydown(function(e){var anchor;if(e.keyCode==39){anchor=document.getElementById('next-example');}
-else
-if(e.keyCode==37){anchor=document.getElementById('previous-example');}
-if(anchor)
-location.href=anchor.href;})});EasySDI_Mon.viewOptions=function(btn,example){var options=demo[example].options,s='';function clean(str){return str.replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-function doLevel(level,obj){jQuery.each(obj,function(member,value){var indent='';for(var j=0;j<level;j++)indent+=' ';if(typeof value=='string')
-s+=indent+member+": '"+clean(value)+"',\n";else if(typeof value=='number')
-s+=indent+member+": "+value+",\n";else if(typeof value=='function')
-s+=indent+member+": "+clean(value.toString())+",\n";else if(jQuery.isArray(value)){s+=indent+member+": [";$.each(value,function(member,value){if(typeof value=='string')
-s+="'"+clean(value)+"', ";else if(typeof value=='number')
-s+=value+", ";else if(typeof value=='object'){s+=indent+"{\n";doLevel(level+1,value);s+=indent+"}, ";}});s=s.replace(/, $/,'');s+="],\n";}
-else if(typeof value=='object'){s+=indent+member+": {\n";doLevel(level+1,value);s+=indent+"},\n";}});};doLevel(0,options);s=s.replace(/,\n([\s]?)}/g,'\n$1}');s=s.replace(/,\n$/,'');hs.htmlExpand(btn,{width:1000,align:'center',dimmingOpacity:.1,allowWidthReduction:true,headingText:'Configuration options',wrapperClassName:'titlebar',maincontentText:'<pre style="margin: 0">'+s+'</pre>'});};EasySDI_Mon.oldDefault={colors:['#058DC7','#50B432','#ED561B','#DDDF00','#24CBE5','#64E572','#FF9655','#FFF263','#6AF9C4'],chart:{backgroundColor:{linearGradient:[0,0,500,500],stops:[[0,'rgb(255, 255, 255)'],[1,'rgb(240, 240, 255)']]},borderWidth:2,plotBackgroundColor:'rgba(255, 255, 255, .9)',plotShadow:true,plotBorderWidth:1},title:{style:{color:'#000',font:'bold 16px "Trebuchet MS", Verdana, sans-serif'}},subtitle:{style:{color:'#666666',font:'bold 12px "Trebuchet MS", Verdana, sans-serif'}},xAxis:{gridLineWidth:1,lineColor:'#000',tickColor:'#000',labels:{style:{color:'#000',font:'11px Trebuchet MS, Verdana, sans-serif'}},title:{style:{color:'#333',fontWeight:'bold',fontSize:'12px',fontFamily:'Trebuchet MS, Verdana, sans-serif'}}},yAxis:{alternateGridColor:null,minorTickInterval:'auto',lineColor:'#000',lineWidth:1,tickWidth:1,tickColor:'#000',labels:{style:{color:'#000',font:'11px Trebuchet MS, Verdana, sans-serif'}},title:{style:{color:'#333',fontWeight:'bold',fontSize:'12px',fontFamily:'Trebuchet MS, Verdana, sans-serif'}}},legend:{itemStyle:{font:'9pt Trebuchet MS, Verdana, sans-serif',color:'black'},itemHoverStyle:{color:'#039'},itemHiddenStyle:{color:'gray'}},labels:{style:{color:'#99b'}}};EasySDI_Mon.themes={'default':{},skies:jQuery.extend(true,null,EasySDI_Mon.oldDefault,{colors:["#514F78","#42A07B","#9B5E4A","#72727F","#1F949A","#82914E","#86777F","#42A07B"],chart:{className:'skies',backgroundColor:null,borderWidth:0,plotBackgroundImage:'/demo/gfx/skies.jpg',plotBackgroundColor:{linearGradient:[0,0,250,500],stops:[[0,'rgba(255, 255, 255, 1)'],[1,'rgba(255, 255, 255, 0)']]}},title:{style:{color:'#3E576F',font:'16px Lucida Grande, Lucida Sans Unicode, Verdana, Arial, Helvetica, sans-serif'}},subtitle:{style:{color:'#6D869F',font:'12px Lucida Grande, Lucida Sans Unicode, Verdana, Arial, Helvetica, sans-serif'}},xAxis:{gridLineWidth:0,lineColor:'#C0D0E0',tickColor:'#C0D0E0',labels:{style:{color:'#666',fontWeight:'bold'}},title:{style:{color:'#666',font:'12px Lucida Grande, Lucida Sans Unicode, Verdana, Arial, Helvetica, sans-serif'}}},yAxis:{alternateGridColor:'rgba(255, 255, 255, .5)',minorTickInterval:null,lineColor:'#C0D0E0',tickColor:'#C0D0E0',labels:{style:{color:'#666',fontWeight:'bold'}},title:{style:{color:'#666',font:'12px Lucida Grande, Lucida Sans Unicode, Verdana, Arial, Helvetica, sans-serif'}}},legend:{itemStyle:{color:'#3E576F'},itemHoverStyle:{color:'black'},itemHiddenStyle:{color:'silver'}},labels:{style:{color:'#3E576F'}}}),grid:EasySDI_Mon.oldDefault,minimal:{colors:["#4572A7","#AA4643","#89A54E","#80699B","#3D96AE","#DB843D","#92A8CD","#A47D7C","#B5CA92"],chart:{backgroundColor:null,borderWidth:0,plotBackgroundColor:null,plotShadow:false,plotBorderWidth:0},title:{style:{color:'#3E576F',font:'16px Lucida Grande, Lucida Sans Unicode, Verdana, Arial, Helvetica, sans-serif'}},subtitle:{style:{color:'#6D869F',font:'12px Lucida Grande, Lucida Sans Unicode, Verdana, Arial, Helvetica, sans-serif'}},xAxis:{gridLineWidth:0,lineColor:'#C0D0E0',tickColor:'#C0D0E0',labels:{style:{color:'#666',fontWeight:'bold'}},title:{style:{color:'#6D869F',font:'bold 12px Lucida Grande, Lucida Sans Unicode, Verdana, Arial, Helvetica, sans-serif'}}},yAxis:{alternateGridColor:null,minorTickInterval:null,lineWidth:0,tickWidth:0,labels:{style:{color:'#666',fontWeight:'bold'}},title:{style:{color:'#6D869F',font:'bold 12px Lucida Grande, Lucida Sans Unicode, Verdana, Arial, Helvetica, sans-serif'}}},legend:{itemStyle:{color:'#3E576F'},itemHoverStyle:{color:'black'},itemHiddenStyle:{color:'silver'}},labels:{style:{color:'#3E576F'}}},gray:{colors:["#DDDF0D","#7798BF","#55BF3B","#DF5353","#aaeeee","#ff0066","#eeaaee","#55BF3B","#DF5353","#7798BF","#aaeeee"],chart:{backgroundColor:{linearGradient:[0,0,0,400],stops:[[0,'rgb(96, 96, 96)'],[1,'rgb(16, 16, 16)']]},borderWidth:0,borderRadius:15,plotBackgroundColor:null,plotShadow:false,plotBorderWidth:0},title:{style:{color:'#FFF',font:'16px Lucida Grande, Lucida Sans Unicode, Verdana, Arial, Helvetica, sans-serif'}},subtitle:{style:{color:'#DDD',font:'12px Lucida Grande, Lucida Sans Unicode, Verdana, Arial, Helvetica, sans-serif'}},xAxis:{gridLineWidth:0,lineColor:'#999',tickColor:'#999',labels:{style:{color:'#999',fontWeight:'bold'}},title:{style:{color:'#AAA',font:'bold 12px Lucida Grande, Lucida Sans Unicode, Verdana, Arial, Helvetica, sans-serif'}}},yAxis:{alternateGridColor:null,minorTickInterval:null,gridLineColor:'rgba(255, 255, 255, .1)',lineWidth:0,tickWidth:0,labels:{style:{color:'#999',fontWeight:'bold'}},title:{style:{color:'#AAA',font:'bold 12px Lucida Grande, Lucida Sans Unicode, Verdana, Arial, Helvetica, sans-serif'}}},legend:{itemStyle:{color:'#CCC'},itemHoverStyle:{color:'#FFF'},itemHiddenStyle:{color:'#333'}},labels:{style:{color:'#CCC'}},tooltip:{backgroundColor:{linearGradient:[0,0,0,50],stops:[[0,'rgba(96, 96, 96, .8)'],[1,'rgba(16, 16, 16, .8)']]},borderWidth:0,style:{color:'#FFF'}},plotOptions:{line:{dataLabels:{color:'#CCC'},marker:{lineColor:'#333'}},spline:{marker:{lineColor:'#333'}},scatter:{marker:{lineColor:'#333'}}},toolbar:{itemStyle:{color:'#CCC'}},navigation:{buttonOptions:{backgroundColor:{linearGradient:[0,0,0,20],stops:[[0.4,'#606060'],[0.6,'#333333']]},borderColor:'#000000',symbolStroke:'#C0C0C0',hoverSymbolStroke:'#FFFFFF'}},exporting:{buttons:{exportButton:{symbolFill:'#55BE3B'},printButton:{symbolFill:'#7797BE'}}},legendBackgroundColor:'rgba(48, 48, 48, 0.8)',legendBackgroundColorSolid:'rgb(70, 70, 70)',dataLabelsColor:'#444',maskColor:'rgba(255,255,255,0.3)'},'dark-blue':jQuery.extend(true,null,EasySDI_Mon.oldDefault,{colors:["#DDDF0D","#55BF3B","#DF5353","#7798BF","#aaeeee","#ff0066","#eeaaee","#55BF3B","#DF5353","#7798BF","#aaeeee"],chart:{backgroundColor:{linearGradient:[0,0,250,500],stops:[[0,'rgb(48, 48, 96)'],[1,'rgb(0, 0, 0)']]},borderColor:'#000000',className:'dark-container',plotBackgroundColor:'rgba(255, 255, 255, .1)',plotBorderColor:'#CCCCCC',plotShadow:false},title:{style:{color:'#C0C0C0'}},xAxis:{gridLineColor:'#333333',labels:{style:{color:'#A0A0A0'}},lineColor:'#A0A0A0',tickColor:'#A0A0A0',title:{style:{color:'#C0C0C0'}}},yAxis:{gridLineColor:'#333333',labels:{style:{color:'#A0A0A0'}},lineColor:'#A0A0A0',minorTickInterval:null,tickColor:'#A0A0A0',title:{style:{color:'#C0C0C0'}}},legend:{style:{color:'#A0A0A0'}},tooltip:{backgroundColor:'rgba(0, 0, 0, 0.75)',style:{color:'#F0F0F0'}},toolbar:{itemStyle:{color:'silver'}},plotOptions:{line:{dataLabels:{color:'#CCC'},marker:{lineColor:'#333'}},spline:{marker:{lineColor:'#333'}},scatter:{marker:{lineColor:'#333'}}},legend:{itemStyle:{color:'#CCC'},itemHoverStyle:{color:'#FFF'},itemHiddenStyle:{color:'#444'}},credits:{style:{color:'#666'}},labels:{style:{color:'#CCC'}},navigation:{buttonOptions:{backgroundColor:{linearGradient:[0,0,0,20],stops:[[0.4,'#606060'],[0.6,'#333333']]},borderColor:'#000000',symbolStroke:'#C0C0C0',hoverSymbolStroke:'#FFFFFF'}},exporting:{buttons:{exportButton:{symbolFill:'#55BE3B'},printButton:{symbolFill:'#7797BE'}}},legendBackgroundColor:'rgba(0, 0, 0, 0.5)',legendBackgroundColorSolid:'rgb(35, 35, 70)',dataLabelsColor:'#444',maskColor:'rgba(255,255,255,0.3)'})};EasySDI_Mon.themes['dark-green']=jQuery.extend(true,null,EasySDI_Mon.themes['dark-blue'],{chart:{backgroundColor:{linearGradient:[0,0,250,500],stops:[[0,'rgb(48, 96, 48)'],[1,'rgb(0, 0, 0)']]}}});EasySDI_Mon.highchartsOptions=Highcharts.setOptions(EasySDI_Mon.themes[EasySDI_Mon.theme]);
+
+Ext.namespace("EasySDI_Mon");
+
+Ext.onReady(function() {
+
+
+	/**
+	 * Renderer for the GridPanel
+	 */
+var proxy = new Ext.data.HttpProxy({
+		
+		url: EasySDI_Mon.proxy+EasySDI_Mon.DefaultJobCollection
+	});
+
+	var writer = new Ext.data.JsonWriter({
+		encode: false   // <-- don't return encoded JSON -- causes Ext.Ajax#request to send data using jsonData config rather than HTTP params
+	}); 
+
+	var store = new Ext.data.JsonStore({
+		root: 'data',
+		id: 'name',
+		idProperty : 'data.id',
+		totalProperty :'count',
+		autoLoad: true,
+		restful:true,
+		proxy: proxy,
+		writer: writer,
+		fields:['status', 'statusCode', 'httpMethod', 'testInterval', 'bizErrors', 'isPublic', 'allowsRealTime', 'httpErrors', 'serviceType', 'password', 'url' ,'id' ,'slaEndTime', 'name', 'queries', 'login', 'triggersAlerts', 'timeout', 'isAutomatic', 'slaStartTime', {name: 'lastStatusUpdate', type: 'date', dateFormat: 'Y-m-d H:i:s'},'saveResponse']
+	});
+
+
+
+	var _loadMsk = new Ext.LoadMask(Ext.getBody(), {msg:EasySDI_Mon.lang.getLocal('message wait')})
+	var cm = new Ext.grid.ColumnModel([{
+		header:EasySDI_Mon.lang.getLocal('status'),
+		dataIndex:"statusCode",
+		width:50,
+		renderer: EasySDI_Mon.StatusRenderer
+	},{
+		header:EasySDI_Mon.lang.getLocal('grid header name'),
+		dataIndex:"name",
+		width:100,
+		sortable: true,
+		editable:false
+	},{
+		header:EasySDI_Mon.lang.getLocal('grid header type'),
+		dataIndex:"serviceType",
+		width:50,
+		sortable: true,
+		editable:false
+	},{
+		header:EasySDI_Mon.lang.getLocal('grid header url'),
+		dataIndex:"url",
+		width:270
+	},{
+		header:EasySDI_Mon.lang.getLocal('grid header isrealtime short'),
+		dataIndex:"allowsRealTime",
+		width:60,
+		trueText: 'true',
+		falseText: 'false',
+		renderer: EasySDI_Mon.TrueFalseRenderer
+	},{
+		header:EasySDI_Mon.lang.getLocal('grid header isauto'),
+		dataIndex:"isAutomatic",
+		width:70,
+		trueText: 'true',
+		falseText: 'false',
+		renderer: EasySDI_Mon.TrueFalseRenderer
+	},{
+		header:EasySDI_Mon.lang.getLocal('grid header triggersAlerts'),
+		dataIndex:"triggersAlerts",
+		width:80,
+		trueText: 'true',
+		falseText: 'false',
+		renderer: EasySDI_Mon.TrueFalseRenderer
+	},{
+	  header:EasySDI_Mon.lang.getLocal('grid header lastJobStatusUpdateTime'),
+	  dataIndex:"lastStatusUpdate",
+	  width:150,
+	  sortable: true,
+	  renderer: EasySDI_Mon.DateTimeRenderer
+	}
+	/*
+	,{
+	header:EasySDI_Mon.lang.getLocal('grid header dateTime'),
+	dataIndex:"time",
+	width:150,
+	sortable: true,
+	renderer: EasySDI_Mon.DateTimeRenderer
+	}*/
+
+	]);
+
+	var _jobStateGrid = new Ext.grid.GridPanel({
+		id:'JobStateGrid',
+		loadMask:true,
+		region:'center',
+		stripeRows: true,
+		tbar: [{
+			iconCls:'icon-service-execute',
+			ref: '../executeBtn',
+			disabled: true,
+			text: EasySDI_Mon.lang.getLocal('action execute'),
+			handler: onRealTimeExecute
+		}
+		,'-',{
+			iconCls:'icon-service-refresh',
+			ref: '../majBtn',
+			text: EasySDI_Mon.lang.getLocal('grid action update'),
+			disabled: false,
+			handler: function(){
+			Ext.getCmp('JobGrid').store.load();
+		}
+		},'-',{
+			iconCls:'icon-service-view-alerts',
+			ref: '../viewAlertsBtn',
+			text: EasySDI_Mon.lang.getLocal('action view alerts'),
+			disabled: true,
+			handler: function(){
+			Ext.getCmp('card-tabs-panel').setActiveTab(3);
+			var rec = _jobStateGrid.getSelectionModel().getSelected();
+			Ext.getCmp('AlertGrid').cbJobs.setValue(rec.get('name'));
+		}
+		},'-',{
+			iconCls:'icon-service-view-reports',
+			ref: '../viewReportsBtn',
+			text: EasySDI_Mon.lang.getLocal('action view reports'),
+			disabled: true,
+			handler: function(){
+			Ext.getCmp('card-tabs-panel').setActiveTab(2);
+			var rec = _jobStateGrid.getSelectionModel().getSelected();
+			Ext.getCmp('repCbJobs').setValue(rec.get('name'));
+			Ext.getCmp('repCbMeth').store.addListener('load', methCmbStoreLoaded);
+			Ext.getCmp('repCbJobs').fireEvent('select');
+			
+                        //Ext.getCmp('mtnBtnView').fireEvent('click');
+			//EasySDI_Mon.mtnBtnView_click();
+	        }
+		}
+		],
+
+		title:EasySDI_Mon.lang.getLocal('job list'),
+		loadMask:_loadMsk,
+		store:store,
+		cm:cm,
+		/*
+       sm: new Ext.grid.RowSelectionModel({
+           singleSelect: true,
+           listeners: {
+               rowselect: function(sm, row, rec) {
+                   Ext.getCmp("jobAdvForm").getForm().loadRecord(rec);
+               }
+           }
+       }),
+		*/
+		// paging bar on the bottom
+		bbar: new Ext.PagingToolbar({
+			pageSize: 15,
+			store: store,
+			displayInfo: true,
+			displayMsg: EasySDI_Mon.lang.getLocal('paging display msg'),
+			emptyMsg: EasySDI_Mon.lang.getLocal('paging empty msg')
+		})
+		 
+	});
+	
+	function methCmbStoreLoaded(){
+	    Ext.getCmp('repCbMeth').store.removeListener('load', methCmbStoreLoaded);
+	    Ext.getCmp('mtnBtnView').fireEvent('click');
+	}
+
+	function onRealTimeExecute(btn, ev){
+		var rec = _jobStateGrid.getSelectionModel().getSelected();
+		if (!rec) {
+			return false;
+		}
+
+		if(!rec.get('allowsRealTime')){
+			Ext.MessageBox.alert(EasySDI_Mon.lang.getLocal('msg alert'), EasySDI_Mon.lang.getLocal('paging empty msg'), null);
+			return false;
+		}
+
+		new  Ext.Window({
+			id: 'win'+rec.get('name'),
+			width:450,
+			autoScroll:true,
+			//modal:true,
+			title:EasySDI_Mon.lang.getLocal('msg real time execute summary')+' '+rec.get('name'),
+			items: [new Ext.FormPanel({
+				id: 'formPanel'+rec.get('name'),
+				labelWidth: 90, // label settings here cascade unless overridden
+				region:'center',
+				bodyStyle:'padding:5px 5px 0',
+				frame:true,
+				autoHeight:true,
+				items: [{
+					fieldLabel: EasySDI_Mon.lang.getLocal('grid header name'),
+					// disabled:true,
+					xtype: 'textfield',
+					name: 'jobName'
+				},
+				{
+					fieldLabel: EasySDI_Mon.lang.getLocal('grid header type'),
+					xtype: 'textfield',
+					name: 'serviceType'
+				},
+				{
+					fieldLabel: EasySDI_Mon.lang.getLocal('grid header method'),
+					xtype: 'textfield',
+					name: 'httpMethod'
+				},
+				{
+					fieldLabel: EasySDI_Mon.lang.getLocal('grid header url'),
+					width:260,
+					xtype: 'textfield',
+					name: 'url'
+				},
+				{
+					fieldLabel: EasySDI_Mon.lang.getLocal('status'),
+					xtype: 'textfield',
+					name: 'status'
+				},
+				{
+					fieldLabel: EasySDI_Mon.lang.getLocal('cause'),
+					width:260,
+					xtype: 'textfield',
+					name: 'statusCause'
+				},{
+					xtype: 'fieldset',
+					//defaults:{anchor:'-20'},
+					collapsible: true,
+					collapsed: true,
+					height: 'auto',
+					title: EasySDI_Mon.lang.getLocal('requests'),
+					//bodyStyle:'margin:15px',
+					items:[
+					       new Ext.Panel({
+					    	   title: EasySDI_Mon.lang.getLocal('requests'),
+					    	   layout: 'border',
+					    	   border:true,
+					    	   frame:true,
+					    	   height:100,
+					    	   items: [
+					    	           new Ext.grid.GridPanel({
+					    	        	   id:'qrGrid'+rec.get('name'),
+					    	        	   region: 'center',
+					    	        	   autoScroll:true,
+					    	        	   height:100,
+					    	        	   store: new Ext.data.JsonStore({
+					    	        		   autoDestroy: true,
+					    	        		   fields:[
+					    	        		           {name: 'queryName'}
+					    	        		           ,{name: 'httpCode'}
+					    	        		           ,{name: 'message'}
+					    	        		           ,{name: 'requestTime'}
+					    	        		           ,{name: 'responseDelay', type: 'float'}
+					    	        		           ,{name: 'serviceExceptionCode'}
+					    	        		           ,{name: 'status'}
+					    	        		           ,{name: 'statusCode'}
+					    	        		           ,{name: 'testedUrl'}
+					    	        		           ],
+					    	        		           data:[]
+					    	        	   }),
+					    	        	   cm:new Ext.grid.ColumnModel([{
+					    	        		   header:EasySDI_Mon.lang.getLocal('grid header name'),
+					    	        		   dataIndex:"queryName",
+					    	        		   width:100,
+					    	        		   sortable: true,
+					    	        		   renderer: function (value, scope, row){
+					    	        		   return '<a href="'+row.get('testedUrl')+'" target="_blank">'+value+'</a>';
+					    	        	   }
+					    	        	   },{
+					    	        		   header:EasySDI_Mon.lang.getLocal('status'),
+					    	        		   dataIndex:"statusCode",
+					    	        		   width:45,
+					    	        		   renderer:EasySDI_Mon.StatusRenderer					    	        	   
+					    	        	   },{
+					    	        		   header:EasySDI_Mon.lang.getLocal('delay'),
+					    	        		   dataIndex:"responseDelay",
+					    	        		   width:60,
+					    	        		   renderer: EasySDI_Mon.DelayRenderer
+					    	        	   },{
+					    	        		   header:EasySDI_Mon.lang.getLocal('grid header httpcode'),
+					    	        		   dataIndex:"httpCode",
+					    	        		   width:60
+					    	        	   },{
+					    	        		   header:EasySDI_Mon.lang.getLocal('grid header ogccode'),
+					    	        		   dataIndex:"serviceExceptionCode",
+					    	        		   width:60
+					    	        	   },{
+					    	        		   header:EasySDI_Mon.lang.getLocal('grid header message'),
+					    	        		   dataIndex:"message",
+					    	        		   width:100
+					    	        	   }
+					    	        	   ])
+					    	           })
+					    	           ]
+					       })
+					       ]//end fieldset items
+				}],
+				buttons: [{
+					text: EasySDI_Mon.lang.getLocal('grid action close'),
+					handler: function(){
+					Ext.getCmp('win'+rec.get('name')).close();
+				}
+				}]
+			})]
+		}).show();
+
+		var myMask = new Ext.LoadMask(Ext.getCmp('win'+rec.get('name')).getEl(), {msg:EasySDI_Mon.lang.getLocal('message wait')});
+		myMask.show();
+		Ext.Ajax.request({
+			loadMask: true,
+			url: EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+rec.get('name')+'/status',
+			success: function(response){
+			myMask.hide();
+			var jsonResp = Ext.util.JSON.decode(response.responseText);
+			Ext.getCmp('formPanel'+rec.get('name')).getForm().setValues(jsonResp.data);
+			Ext.getCmp('qrGrid'+rec.get('name')).store.loadData(jsonResp.data.queriesResults);
+		},
+		failure: function(response){
+			myMask.hide();
+		}
+		});
+
+	}
+
+	_jobStateGrid.getSelectionModel().on('selectionchange', function(sm){
+		_jobStateGrid.executeBtn.setDisabled(sm.getCount() < 1);
+		_jobStateGrid.viewAlertsBtn.setDisabled(sm.getCount() < 1);
+		_jobStateGrid.viewReportsBtn.setDisabled(sm.getCount() < 1);
+
+	});
+
+
+});/**
+ * EasySDI, a solution to implement easily any spatial data infrastructure
+ * Copyright (C) EasySDI Community 
+ * For more information : www.easysdi.org
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html.
+ */
+
+Ext.namespace("EasySDI_Mon");
+
+Ext.onReady(function() {
+	var eLogType = {"daily" : 0, "aggregate" : 1};
+
+	/**
+	 *  View logs section
+	 */
+
+
+	/*
+	 *  The daily grid
+	 */
+	var logDailyStore = new Ext.data.JsonStore({
+		id: 'name',
+		totalProperty:'totalCount',
+		//If totalCount implemented, then it's mandatory to define the root!
+		root:'rows',
+		restful:true,
+		proxy: new Ext.data.HttpProxy({
+			url: '?'
+		}),
+		fields:['message', {name: 'time', type: 'date', dateFormat: 'Y-m-d H:i:s'}, 'httpCode', 'status', 'delay', 'queryId'],
+		defaultParamNames:{
+		start : 'startIndex',
+		limit : 'maxResults',
+		sort : 'sort',
+		dir : 'dir'
+	}
+	});
+
+	// var _loadMsk = new Ext.LoadMask(Ext.getBody(), {msg:"Attendre svp..."})
+	var logDailyCm = new Ext.grid.ColumnModel([{
+		header:EasySDI_Mon.lang.getLocal('grid header method'),
+		dataIndex:"queryId",
+		width:100,
+		sortable: true,
+		editable:false,
+		renderer: function (value) {
+		if(methodComboStore.getById(value) != null)
+			return methodComboStore.getById(value).get('name');
+	}
+	},{
+		header:EasySDI_Mon.lang.getLocal('grid header httpcode'),
+		dataIndex:"httpCode",
+		width:50
+	},{
+		header:EasySDI_Mon.lang.getLocal('grid header status'),
+		dataIndex:"status",
+		width:50,
+		renderer: EasySDI_Mon.StatusRenderer
+	},{
+		header:EasySDI_Mon.lang.getLocal('grid header message'),
+		dataIndex:"message",
+		width:150
+	},{
+		header:EasySDI_Mon.lang.getLocal('grid header delay'),
+		dataIndex:"delay",
+		width:50,
+		renderer: EasySDI_Mon.DelayRenderer
+	},{
+		header:EasySDI_Mon.lang.getLocal('grid header dateTime'),
+		dataIndex:"time",
+		sortable: true,
+		width:150,
+		renderer: EasySDI_Mon.DateTimeRenderer
+	}]);
+
+
+	var _jobDailyGrid = new Ext.grid.GridPanel({
+		id:'JobDailyGrid',
+		loadMask:true,
+		region:'center',
+		frame:true,
+		store:logDailyStore,
+		cm:logDailyCm,
+		// paging bar on the bottom
+		bbar: new Ext.PagingToolbar({
+			pageSize: 15,
+			store: logDailyStore,
+			displayInfo: true,
+			displayMsg: EasySDI_Mon.lang.getLocal('paging display msg'),
+			emptyMsg: EasySDI_Mon.lang.getLocal('paging empty msg')
+		})
+	});
+
+	var dailyGridPanel = {
+			title: EasySDI_Mon.lang.getLocal('daily logs'),
+			xtype: 'panel',
+			layout: 'border',
+			region: 'center',
+			border:false,
+			items: [_jobDailyGrid]
+	};
+
+	var viewGridTabs = new Ext.TabPanel({
+		//xtype: 'tabpanel',
+		id: 'card-tabs-panel',
+		//plain: true, //remove the header border
+		//  height: 'auto',
+		activeTab: 0,
+		defaults: {bodyStyle: 'padding:15px'},
+		items:[ 
+		       dailyGridPanel,
+		       {title:'plip',html:'foo',region:'center'}
+		       //,
+		       //_jobAggregateGrid
+		       ]
+	});
+
+
+	var cardGridPanel = new Ext.Panel({
+		// id: 'content-panel',
+		//height:200,
+		//width:600,
+		region: 'center', // this is what makes this panel into a region within the containing layout
+		layout: 'card',
+		//margins: '2 5 5 0',
+		activeItem: 0,
+		border: false,
+		items: [viewGridTabs]
+	});
+
+	var vlFs = {
+			xtype: 'fieldset',
+			region: 'center',
+			layout: 'border',
+			collapsible: true,
+			collapsed: true,
+			//height: 'auto',
+			title: EasySDI_Mon.lang.getLocal('logs preview'),
+			//height:230,
+			// html:'fooo!!'
+			items:[
+			       cardGridPanel
+			       //,
+			       //{frame:true, border:true,title:'plip',html:'foo',region:'center'}
+			       ]
+	}
+
+
+
+	/**
+	 *  Clear logs section
+	 */
+
+
+	var jobComboStore = new Ext.data.SimpleStore({
+		id:'jobId',
+		fields:[
+		        {name: 'name'}
+		        ],
+		        data:[]
+	});
+
+	var methodComboStore = new Ext.data.JsonStore({
+		id:'id',
+		restful:true,
+		root:'data',
+		proxy: new Ext.data.HttpProxy({
+			url: '?'
+		}),
+		fields:[
+		        {id: 'id'},
+		        {name: 'name'}
+		        ],
+		        data:{'data':[{name:'All',value:'All'}]}
+	});
+
+
+	var clFs = {
+			xtype: 'fieldset',
+			id: 'clearLogsFs',
+			region: 'north',
+			height: 140,
+			layout:'table',
+			layoutConfig:{columns:5},
+			defaults: {
+				bodyStyle:'padding:5px 5px'
+			}, 
+			collapsible:false,
+			title: EasySDI_Mon.lang.getLocal('clear logs'),
+			items:[ {
+				html:EasySDI_Mon.lang.getLocal('job')
+			},{
+				html:EasySDI_Mon.lang.getLocal('grid header method')
+			},{
+				html:EasySDI_Mon.lang.getLocal('younger or equal than'),
+				colspan:3
+			},{
+				items:[{
+					xtype:          'combo',
+					mode:           'local',
+					id:             'mtnCbJobs',
+					//value:          rec.get('serviceMethod'),
+					triggerAction:  'all',
+					forceSelection: true,
+					editable:       false,
+					//fieldLabel:     'Job',
+					name:           'jobComboFilter',
+					displayField:   'name',
+					valueField:     'name',
+					emptyText: EasySDI_Mon.lang.getLocal('combo select a job'),
+					store:jobComboStore
+				}]
+			},{
+				items:[{
+					xtype:          'combo',
+					mode:           'local',
+					id:             'mtnCbMeth',
+					value:          'All',
+					triggerAction:  'all',
+					forceSelection: true,
+					editable:       false,
+					//fieldLabel:     'Job',
+					name:           'jobComboFilter',
+					displayField:   'name',
+					valueField:     'name',
+					emptyText:EasySDI_Mon.lang.getLocal('combo select a method'),
+					store:methodComboStore
+				}]
+			},{
+				items:[{
+					id: 'mtnMaxDate',
+					xtype: 'datefield',
+					format: 'd-m-Y',
+					value: new Date(),
+					allowBlank:false,
+					editable:false,
+					//altFormats: 'Y-m-d',
+					timeWidth:60
+				}]
+			},{
+				items:[{
+					id: 'mtnDelDaily',
+					xtype:'button',
+					disabled:true,
+					handler: function(){
+					var text;
+					var selJob = Ext.getCmp('mtnCbJobs').getValue();
+					var selMet = Ext.getCmp('mtnCbMeth').getValue();     
+					var maxDate = Ext.getCmp('mtnMaxDate').getValue().format('Y-m-d');
+					var isAll =  selJob == 'All' ? true : false;
+
+					if(isAll)
+						text = String.format(EasySDI_Mon.lang.getLocal('confirm suppress all raw logs detail'), EasySDI_Mon.DateRenderer(maxDate));
+					else if(selMet != 'All')
+						text = String.format(EasySDI_Mon.lang.getLocal('confirm suppress raw log meth detail'), selJob, selMet, EasySDI_Mon.DateRenderer(maxDate));
+					else
+						text = String.format(EasySDI_Mon.lang.getLocal('confirm suppress raw log detail'), selJob, EasySDI_Mon.DateRenderer(maxDate));
+
+					Ext.MessageBox.confirm(EasySDI_Mon.lang.getLocal('confirm'), text, function(btn){
+						if (btn == 'no')
+							return false;
+						else
+							clearLogs(eLogType.daily, isAll)
+					});
+				},
+				text: EasySDI_Mon.lang.getLocal('action clear raw logs')
+				}]
+			},{
+				items:[{
+					id: 'mtnDelAgg',
+					xtype:'button',
+					disabled:true,
+					handler: function(){
+					var text;
+					var selJob = Ext.getCmp('mtnCbJobs').getValue();
+					var selMet = Ext.getCmp('mtnCbMeth').getValue();     
+					var maxDate = Ext.getCmp('mtnMaxDate').getValue().format('Y-m-d');
+					var isAll =  selJob == 'All' ? true : false;
+
+					if(isAll)
+						text = String.format(EasySDI_Mon.lang.getLocal('confirm suppress all agg logs detail'), EasySDI_Mon.DateRenderer(maxDate));
+					else if(selMet != 'All')
+						text = String.format(EasySDI_Mon.lang.getLocal('confirm suppress agg log meth detail'), selJob, selMet, EasySDI_Mon.DateRenderer(maxDate));
+					else
+						text = String.format(EasySDI_Mon.lang.getLocal('confirm suppress agg log detail'), selJob, EasySDI_Mon.DateRenderer(maxDate));
+
+					Ext.MessageBox.confirm(EasySDI_Mon.lang.getLocal('confirm'), text, function(btn){
+						if (btn == 'no')
+							return false;
+						else
+							clearLogs(eLogType.aggregate, isAll)
+					});
+				},
+				text: EasySDI_Mon.lang.getLocal('action clear agg logs')
+				}]
+			}]
+	}
+
+	var maintenancePanel = new Ext.Panel({
+		id:'MaintenancePanel',
+		region:'center',
+		layout: 'border',
+		border:false,
+		frame:true,
+		items: [clFs,
+		        {html:'', region:'center'}
+		//For now we don't view the logs
+		//  , 
+		//   vlFs
+		]
+	});
+
+
+
+	/*****
+	 *
+	 * Event Handlers 
+	 *
+	 *****/
+	//Initialize this store from the job grid store
+	Ext.getCmp('JobGrid').store.on('load', function() {
+		refreshComboValuesFromJobStore();
+	});
+
+	Ext.getCmp('JobGrid').store.on('write', function() {
+		refreshComboValuesFromJobStore();
+	});
+
+	function refreshComboValuesFromJobStore(){
+		var aRec = Ext.getCmp('JobGrid').store.getRange();
+		jobComboStore.removeAll();
+		for ( var i=0; i< aRec.length; i++ )
+		{
+			var u = new jobComboStore.recordType({name:''});
+			u.set('name', aRec[i].get('name'));
+			jobComboStore.insert(0, u);
+			//jobComboStore.add(aRec[i]);
+		}
+		jobComboStore.insert(0, new jobComboStore.recordType({name:'All'}));
+	}
+
+	Ext.getCmp('mtnCbJobs').on('select', function(cmb, rec){
+		//refresh method store
+		methodComboStore.removeAll();
+		if(rec.get('name') != 'All'){
+			methodComboStore.proxy.setUrl(EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+rec.get('name')+'/queries');
+			methodComboStore.load();
+		}else{
+			methodComboStore.insert(0, new methodComboStore.recordType({name:'All',value:'All'}));
+		}
+
+		//refresh log grid as soon as the method store is loaded
+		/*
+      methodComboStore.on('load', function() {
+         var maxDate = Ext.getCmp('mtnMaxDate').getValue().format('Y-m-d');
+	 var p = logDailyStore.proxy;
+	 logDailyStore.proxy.api.read.url=EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+rec.get('name')+'/logs?maxDate='+maxDate;
+	 logDailyStore.proxy.conn.url=EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+rec.get('name')+'/logs?maxDate='+maxDate;
+         logDailyStore.load();
+      });
+		 */
+	});
+
+	methodComboStore.on('load', function() {
+		methodComboStore.insert(0, new methodComboStore.recordType({name:'All',value:'All'}));
+	});
+
+	/* type: daily/aggregate*/
+	function clearLogs(type, all){
+		var selJob = Ext.getCmp('mtnCbJobs').getValue();
+		var selMet = Ext.getCmp('mtnCbMeth').getValue();     
+		var maxDate = Ext.getCmp('mtnMaxDate').getValue().format('Y-m-d');
+		var selType = type == eLogType.daily ? 'logs' : 'aggLogs';
+		var arrJob = Array();
+
+		//get jobs to delete
+		if(all){
+			var aRec = jobComboStore.getRange();
+			for(var j=0; j< aRec.length; j++ )
+				arrJob.push(aRec[j].get('name'));
+		}else{
+			if(selJob != '')
+				arrJob.push(selJob);
+		}
+
+		var myMask = new Ext.LoadMask(Ext.getCmp('clearLogsFs').getEl(), {msg:EasySDI_Mon.lang.getLocal('message wait')});
+		myMask.show();
+		var counter = arrJob.length;
+		for( var j=0; j< arrJob.length; j++ ){
+			if(selMet == 'All' || selMet == ''){
+				Ext.Ajax.request({
+					loadMask: true,
+					method: 'DELETE',
+					headers: {
+					'Content-Type': 'application/json'
+				},
+				params: '{"data":{"maxDate":"'+maxDate+'"}}',
+				url: EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+arrJob[j]+'/'+selType,
+				success: function(response){
+					counter --;
+					doResponse(response, counter, myMask);
+				},
+				failure: function(response){
+					counter --;
+					doResponse(response, counter, myMask);
+				}
+				});
+			}else{
+				Ext.Ajax.request({
+					loadMask: true,
+					method: 'DELETE',
+					headers: {
+					'Content-Type': 'application/json'
+				},
+				params: '{"data":{"maxDate":"'+maxDate+'"}}',
+				url: EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+arrJob[j]+'/queries/'+selMet+'/'+selType,
+				success: function(response){
+					counter --;
+					doResponse(response, counter, myMask);
+				},
+				failure: function(response){
+					counter --;
+					doResponse(response, counter, myMask);
+				}
+				});
+			}
+		}
+	}
+
+	function doResponse(response, counter, myMask){
+		if(counter == 0)
+			myMask.hide();
+		var jsonResp = Ext.util.JSON.decode(response.responseText);
+		if(jsonResp.error != null)
+			EasySDI_Mon.App.setAlert(EasySDI_Mon.App.STATUS_ERROR, jsonResp.error);
+		if(!jsonResp.message != null)
+			EasySDI_Mon.App.setAlert(EasySDI_Mon.App.STATUS_NOTICE, jsonResp.message);
+	}
+
+	Ext.getCmp('mtnCbJobs').on("select", function(field, newValue, oldValue) {
+		Ext.getCmp('mtnDelDaily').setDisabled(false);
+		Ext.getCmp('mtnDelAgg').setDisabled(false);
+	});
+
+
+
+});/**
+ * EasySDI, a solution to implement easily any spatial data infrastructure
+ * Copyright (C) EasySDI Community 
+ * For more information : www.easysdi.org
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html.
+ */
+
+Ext.namespace("EasySDI_Mon");
+/**
+ * Main application Panel
+ */
+
+EasySDI_Mon.mainPanel = 2;
+Ext.onReady(function() {
+
+	var appPanel
+
+	var item2 = new Ext.Panel({
+		title: EasySDI_Mon.lang.getLocal('requests'),
+		layout: 'fit',
+		border:false,
+		frame:true,
+		items: [Ext.getCmp('ReqGrid')]
+	});
+
+	var accordion = new Ext.Panel({
+		region:'east',
+		//margins:'5 5 5 0',
+		split:true,
+		width: '40%',
+		layout:'accordion',
+		frame:"true",
+		items: [Ext.getCmp('jobAdvForm'), item2, Ext.getCmp('AlertForm')]
+	});
+
+	//Job panel
+	var jobPanel = {
+			title: EasySDI_Mon.lang.getLocal('jobs'),
+			frame:true,
+			xtype: 'panel',
+			layout: 'border',
+			region: 'center',
+			border:false,
+			items: [accordion, Ext.getCmp('JobGrid')]
+	};
+
+	var reportPanel = {
+			id:'reportPanel',
+			title: EasySDI_Mon.lang.getLocal('reports'),
+			xtype: 'panel',
+			layout: 'border',
+			region: 'center',
+			border:false,
+			items: [
+			        Ext.getCmp('ReportMenu')
+			        ]
+	};
+
+	var alertPanel = {
+			title:EasySDI_Mon.lang.getLocal('alerts'),
+			xtype: 'panel',
+			layout: 'border',
+			region: 'center',
+			border: false,
+			items: [Ext.getCmp('AlertGrid')]
+	};
+
+	var statePanel = {
+			title:EasySDI_Mon.lang.getLocal('state'),
+			xtype: 'panel',
+			layout: 'border',
+			region: 'center',
+			border:false,
+			items: [Ext.getCmp('JobStateGrid')]
+	};
+
+	var maintenancePanel = {
+			title:EasySDI_Mon.lang.getLocal('maintenance'),
+			xtype: 'panel',
+			layout: 'border',
+			region: 'center',
+			border:false,
+			items: [Ext.getCmp('MaintenancePanel')]
+	};
+	
+	responseoverviewPanel = {
+			title:EasySDI_Mon.lang.getLocal('responseoverview'),
+			xtype: 'panel',
+			layout: 'border',
+			region: 'center',
+			border:false,
+			items: [Ext.getCmp('ResponseOverviewPanel')]
+	};
+	exportPanel = {
+			title:EasySDI_Mon.lang.getLocal('export'),
+			xtype: 'panel',
+			layout: 'border',
+			region: 'center',
+			border:false,
+			items: [Ext.getCmp('testGrid')]
+	};
+
+	var cardTabs = new Ext.TabPanel({
+		id: 'card-tabs-panel',
+		activeTab: EasySDI_Mon.defaultTab,
+		defaults: {bodyStyle: 'padding:15px'},
+		items:[
+		       statePanel,
+		       jobPanel,
+		       reportPanel,
+		       alertPanel,
+		       maintenancePanel,
+		       responseoverviewPanel, exportPanel
+		       ]
+	});
+
+
+	var appPanel = new Ext.Panel({
+		id: 'appPanel',
+		frame:true,
+		anchor: '50%',
+		region: 'center', // this is what makes this panel into a region within the containing layout
+		layout: 'card',
+		margins: '2 5 5 0',
+		activeItem: 0,
+		border: true,
+		items: [cardTabs]
+	});
+
+	EasySDI_Mon.mainPanel = new Ext.Panel({
+		height:EasySDI_Mon.appHeight,
+		id: 'mainPanel',
+		xtype: 'panel',
+		renderTo: "tabsContainer",
+		layout: 'border',
+		border:false,
+		frame:false,
+		items: [
+		        new Ext.Panel({
+		        	region:'north',
+		        	height:35,
+		        	id:'JobCollectionPanel',
+		        	ref:'JobCollectionPanel',
+		        	border:false,
+		        	frame:false,
+		        	//margins:'0 0 0 0',
+		        	layout:'table',
+		        	layoutConfig:{columns:2},
+		        	items: [{
+		        		html:EasySDI_Mon.lang.getLocal('job collection')+':',
+		        		handleMouseEvents: false,
+		        		border:false
+		        	},{
+		        		xtype: 'combo',
+		        		border:false,
+		        		mode: 'local',
+		        		id: 'jobCbCollection',
+		        		triggerAction: 'all',
+		        		forceSelection: true,
+		        		editable:       false,
+		        		value:          EasySDI_Mon.DefaultJobCollection,
+		        		name:           'jobCbCollection',
+		        		displayField:   'name',
+		        		valueField:     'value',
+		        		store:          new Ext.data.SimpleStore({
+		        			fields : ['name', 'value'],
+		        			data : EasySDI_Mon.JobCollectionStore
+		        		})
+		        	}]
+		        }),
+		        appPanel
+		        ]
+	});
+
+	//handler for job collection combo
+
+	Ext.getCmp('jobCbCollection').on('select', function(cmb, rec){
+		var store = Ext.getCmp('JobGrid').store;
+		EasySDI_Mon.CurrentJobCollection = rec.data.value;
+		store.proxy.setUrl(EasySDI_Mon.proxy+rec.data.value);
+		//change the api if you require other stuffs than "get"
+		store.proxy.api.create.url = EasySDI_Mon.proxy+rec.data.value;
+		store.proxy.api.destroy.url = EasySDI_Mon.proxy+rec.data.value;
+		store.proxy.api.read.url = EasySDI_Mon.proxy+rec.data.value;
+		store.proxy.api.update.url = EasySDI_Mon.proxy+rec.data.value;
+		store.load();
+	});
+
+	if(cardTabs.getActiveTab().id == 'reportPanel')
+		Ext.getCmp('mainPanel').setHeight(150);
+
+	cardTabs.on('tabchange', function(cardTab, panel){
+		if(panel.id == 'reportPanel'){
+			Ext.getCmp('mainPanel').setHeight(150);
+		}else{
+			EasySDI_Mon.clearCharts();
+
+			var OrigTB = document.getElementById('element-box');
+			var c = document.getElementById('container1');
+			if(c.firstChild != null)
+				c.removeChild(c.firstChild);
+			c = document.getElementById('container2');
+			if(c.firstChild != null)
+				c.removeChild(c.firstChild);
+			c = document.getElementById('container3');
+			if(c.firstChild != null)
+				c.removeChild(c.firstChild);
+
+			Ext.getCmp('mainPanel').setHeight(EasySDI_Mon.appHeight);
+		}
+	});
+
+
+	//Resize when the browser window size changes
+	Ext.EventManager.onWindowResize( function(){ 
+		appPanel.setWidth(Ext.getDom('tabsContainer').clientWidth);
+		EasySDI_Mon.mainPanel.JobCollectionPanel.setWidth(Ext.getDom('tabsContainer').clientWidth);
+	});
+
+	//Touille the help link
+	try
+	{
+		Ext.getDom('toolbar-help').getChildren()[0].setAttribute("onClick","window.open('http://forge.easysdi.org/wiki/monitor')");
+	}catch(e)
+	{
+		// ERROR IE 7
+	}
+	
+
+	/* Note: if Joomla menu appears under the app, you need to adapt the css for #menu li ul (prop z-index)*/
+	//We remove the default Joomla admin submenu till we use Ext TabPanel.
+	//var OrigTB = document.getElementById('toolbar-box');
+	//var parentNode = document.getElementById('toolbar-box').parentNode;
+	//parentNode.removeChild(OrigTB);
+}); /**
+ * EasySDI, a solution to implement easily any spatial data infrastructure
+ * Copyright (C) EasySDI Community 
+ * For more information : www.easysdi.org
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html.
+ */
+ 
+Ext.namespace("EasySDI_Mon");
+
+EasySDI_Mon.drawHealthGraphRaw = function(container, aStores, logRes){
+	     //Prepare graph options
+	     var options = {
+                chart: {
+			renderTo: container,
+			defaultSeriesType: 'column'
+		},
+		title: {
+			text: EasySDI_Mon.lang.getLocal('service health')
+		},
+		xAxis: {
+			categories: []
+		},
+		yAxis: {
+			min: 0,
+			max: 100,
+			title: {
+				text: EasySDI_Mon.lang.getLocal('percentage')
+			}
+		},
+		legend: {
+			backgroundColor: '#FFFFFF',
+			reversed: true
+		},
+		tooltip: {
+			formatter: function() {
+				return ''+
+					 this.series.name +': '+ this.y +'%';
+			}
+		},
+		plotOptions: {
+			series: {
+				stacking: 'normal'
+			}
+		},
+		       series: []
+	     };
+	     
+	     //prepare graph data
+
+	     var avSeries = {
+                name: EasySDI_Mon.lang.getLocal('available'),
+                data: [],
+                color: '#7dff9c'
+             };
+             var unavSeries = {
+                name: EasySDI_Mon.lang.getLocal('unavailable'),
+                data: [],
+                color: '#ff7f7f'
+             };
+             var fSeries = {
+                name: EasySDI_Mon.lang.getLocal('failure'),
+                data: [],
+                color: '#e2ff1d'
+             };
+             var otherSeries = {
+                name: EasySDI_Mon.lang.getLocal('untested-unknown'),
+                data: [],
+                color: '#b3b3b3'
+             };
+	     //contains untested and unknown
+	     var otherSeries;
+	     //push categories
+	     for ( var storeName in aStores)
+             {
+		 if(typeof aStores[storeName] != 'function'){
+		    options.xAxis.categories.push(storeName);
+		 }
+	     }
+	     
+	     var avCount = 0;
+             var unavCount = 0;
+             var fCount = 0;
+             var otherCount = 0;
+	     //push series
+             for ( var storeName in aStores)
+             {
+		 if(typeof aStores[storeName] != 'function'){
+	            var aRec = aStores[storeName].getRange();
+		    
+                    //push percentiles
+                    for ( var i=0; i< aRec.length; i++ )
+                    {   
+			var status = aRec[i].get('statusCode');
+			switch (status){
+                             case 'AVAILABLE':
+                                   avCount++;
+                             break;
+                             case 'OUT_OF_ORDER':
+                                   fCount++;
+                             break;
+                             case 'UNAVAILABLE':
+                                   unavCount++;
+                             break;
+	                           case 'NOT_TESTED':
+                                   otherCount++;
+                             break;
+                             default: 
+                                   otherCount++;
+                             break;
+                        }
+		    }
+		    
+		    avSeries.data.push(Math.round((avCount/aRec.length)*100));
+		    unavSeries.data.push(Math.round((unavCount/aRec.length)*100));
+		    fSeries.data.push(Math.round((fCount/aRec.length)*100));
+		    otherSeries.data.push(Math.round((otherCount/aRec.length)*100));
+		    
+		 }
+	     }
+	     
+	    //push this series
+	    options.series.push(otherSeries);
+	    options.series.push(unavSeries);
+	    options.series.push(fSeries);
+	    options.series.push(avSeries);
+	    
+	    //Output the graph
+	    var chart = new Highcharts.Chart(options);
+	    return chart;
+	  };/**
+ * EasySDI, a solution to implement easily any spatial data infrastructure
+ * Copyright (C) EasySDI Community 
+ * For more information : www.easysdi.org
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html.
+ */
+
+Ext.namespace("EasySDI_Mon");
+
+EasySDI_Mon.drawHealthGraphAgg = function (container, aStores, logRes){
+	//Prepare graph options
+	var options = {
+		chart: {
+			renderTo: container,
+			defaultSeriesType: 'column'
+		},
+		title: {
+			text: EasySDI_Mon.lang.getLocal('service health summary')
+		},
+		xAxis: {
+			categories: []
+		},
+		yAxis: {
+			min: 0,
+			max: 100,
+			title: {
+			text: EasySDI_Mon.lang.getLocal('percentage')
+		}
+		},
+		legend: {
+			backgroundColor: '#FFFFFF',
+			reversed: true
+		},
+		tooltip: {
+			formatter: function() {
+			return ''+
+			this.series.name +': '+ this.y +'%';
+		}
+		},
+		plotOptions: {
+			series: {
+			stacking: 'normal'
+		}
+		},
+		series: []
+	};
+
+	//prepare graph data
+
+	var avSeries = {
+			name: EasySDI_Mon.lang.getLocal('available'),
+			data: [],
+			color: '#7dff9c'
+	};
+
+	//push categories
+	for ( var storeName in aStores)
+	{
+		if(typeof aStores[storeName] != 'function'){
+			options.xAxis.categories.push(storeName+EasySDI_Mon.lang.getLocal('h24 suffix'));
+			options.xAxis.categories.push(storeName+EasySDI_Mon.lang.getLocal('sla suffix'));
+		}
+	}
+
+	var avCountH24;
+	var avCountSLA;
+	//push series
+	for ( var storeName in aStores)
+	{
+		if(typeof aStores[storeName] != 'function'){
+			var aRec = aStores[storeName].getRange();
+			avCountH24 = 0;
+			avCountSLA = 0;
+			//push percentiles
+			for ( var i=0; i< aRec.length; i++ )
+			{   
+				avCountH24 += aRec[i].get('h24Availability');
+				avCountSLA += aRec[i].get('slaAvalabilty');
+			}
+			avSeries.data.push(Math.round(avCountH24/aRec.length));
+			avSeries.data.push(Math.round(avCountSLA/aRec.length));
+		}
+	}
+
+	options.series.push(avSeries);
+
+	//Output the graph
+	var chart = new Highcharts.Chart(options);
+	return chart;
+};/**
+ * EasySDI, a solution to implement easily any spatial data infrastructure
+ * Copyright (C) EasySDI Community 
+ * For more information : www.easysdi.org
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html.
+ */
+
+Ext.namespace("EasySDI_Mon");
+
+EasySDI_Mon.drawHealthLineGraph = function(container, aStores, logRes, tickInterval){
+	//Prepare graph options
+	var options = {
+		chart: {
+				renderTo: container,
+				marginRight: 130,
+				zoomType: 'x'
+			//,
+			//defaultSeriesType: 'spline'
+		},
+		title: {
+			text: EasySDI_Mon.lang.getLocal('service health'),
+			x: -20 //center
+		},
+		xAxis: {
+			title: EasySDI_Mon.lang.getLocal('grid header dateTime'),
+			type: 'datetime',
+			maxZoom: tickInterval / 10,
+			// one day interval
+			tickInterval: tickInterval
+		},
+		yAxis: {
+			title: {
+			text:EasySDI_Mon.lang.getLocal('percentage')
+		}
+		},
+		tooltip: {
+			formatter: function() {
+			return '<b>'+ this.series.name +'</b><br/>'+
+			new Date(this.x).format('d-m-Y') +': '+ this.y +'[%]';
+		}
+		},
+		legend: {
+			layout: 'vertical',
+			align: 'right',
+			verticalAlign: 'top',
+			x: -10,
+			y: 100,
+			borderWidth: 0
+		},
+		series: []
+	};
+
+	//prepare graph data
+	var series;
+	for ( var storeName in aStores)
+	{
+		if(typeof aStores[storeName] != 'function'){
+			var aRec = aStores[storeName].getRange();
+			series = {data: []};
+			//H24
+			series.name = storeName+EasySDI_Mon.lang.getLocal('h24 suffix');
+			for ( var i=0; i< aRec.length; i++ )
+			{   
+				series.data.push([aRec[i].get('date').getTime(), Math.round(aRec[i].get('h24Availability'))]);
+			}
+			options.series.push(series);
+
+			//SLA
+			series = {data: []};
+			series.name = storeName+EasySDI_Mon.lang.getLocal('sla suffix');
+			for ( var i=0; i< aRec.length; i++ )
+			{   
+				series.data.push([aRec[i].get('date').getTime(), Math.round(aRec[i].get('slaAvalabilty'))]);
+			}
+			options.series.push(series);
+
+		}
+	}
+
+	//Output the graph
+	var chart = new Highcharts.Chart(options);
+	return chart;
+
+};/**
+ * EasySDI, a solution to implement easily any spatial data infrastructure
+ * Copyright (C) EasySDI Community 
+ * For more information : www.easysdi.org
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html.
+ */
+
+Ext.namespace("EasySDI_Mon");
+
+EasySDI_Mon.drawResponseTimeGraph = function (container, aStores, logRes, tickInterval, jobRecord){
+	//Prepare graph options
+	var options = {
+		colors: [
+			         '#000000', 
+			         '#414141', 
+			         '#7b7b7b', 
+			         '#874900', 
+			         '#855720', 
+			         '#7e5e39', 
+			         '#7e6c57'
+			         ],
+	    chart: {
+			renderTo: container,
+			marginRight: 130,
+			zoomType: 'x'
+			//,
+			//defaultSeriesType: 'spline'
+		},
+		title: {
+			text: EasySDI_Mon.lang.getLocal('response time graph title'),
+			x: -20 //center
+		},
+		xAxis: {
+			title: EasySDI_Mon.lang.getLocal('dateTime'),
+			type: 'datetime',
+			maxZoom: tickInterval / 10,
+			// one day interval
+			tickInterval: tickInterval
+		},
+		yAxis: {
+			title: {
+			text:EasySDI_Mon.lang.getLocal('response time')+' '+EasySDI_Mon.lang.getLocal('ms suffix')
+		}
+		,
+		min: 0, // set to -1 to show tooltip for errors 
+		//Sets the maxY to 4/3 the timeout
+		max: jobRecord.get('timeout')*1000*1.3333333,
+		minorGridLineWidth: 0, 
+		gridLineWidth: 0,
+		alternateGridColor: null,
+		plotBands: [{ // Available
+			from: 0,
+			//set a colored area for the timout value
+			to: jobRecord.get('timeout')*1000,
+			color: 'rgba(68, 170, 213, 0.1)'
+		}]},
+		labels: {
+			items: [{
+				html: EasySDI_Mon.lang.getLocal('area within timeout'),
+				style: {
+				left: '10px',
+				top: '240px'
+			}
+			}]
+		},
+		tooltip: {
+			formatter: function() {
+				var tip =  
+					"<b>"+ this.series.name +"</b><br/>"+
+					new Date(this.x).format('d-m-Y H:i:s') +" -> "+ this.y + EasySDI_Mon.lang.getLocal('ms suffix')+" <br/>";
+					
+					if(this.point.log == "aggLogs")
+					{
+						tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip H24_AVAILABILITY')+":</b> "+Math.round(this.point.data.data.h24Availability)+"%<br/>";
+						tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip H24_NB_CONN_ERRORS')+":</b> "+this.point.data.data.h24NbConnErrors+"<br/>";
+						tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip H24_NB_BIZ_ERRORS')+":</b> "+this.point.data.data.h24NbBizErrors+"<br/>";
+					}else
+					{
+						tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip response size')+"</b>: "+Math.round(this.point.data.data.size)+" bytes<br/>";
+						if(this.point.data.data.statusCode.toLowerCase() == "unavailable")
+						{
+							tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip http statuscode')+"</b>: "+ this.point.data.data.httpCode+"<br/>";
+							tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip response message')+"</b>: "+ this.point.data.data.message+"<br/>";
+						}
+						if(this.point.data.data.statusCode.toLowerCase() == "out_of_order")// failed
+						{
+							tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip response message')+"</b>: "+ this.point.data.data.message;
+						}
+					}
+				return tip;
+			}
+		},
+		legend: {
+			layout: 'vertical',
+			align: 'right',
+			verticalAlign: 'top',
+			x: -10,
+			y: 100,
+			borderWidth: 0
+		},
+		series: []
+	};
+
+	//prepare graph data
+	var series;
+	for ( var storeName in aStores)
+	{
+		if(typeof aStores[storeName] != 'function'){
+			var aRec = aStores[storeName].getRange();
+			series = {data: []};
+			//add h24 or delay response time
+			series.name = storeName+'[h24]';
+			for ( var i=0; i< aRec.length; i++ )
+			{   
+				if(logRes == 'aggLogs')
+				{
+					var point = {
+							x: aRec[i].get('date').getTime(),
+							y: Math.round(aRec[i].get('h24MeanRespTime') * 1000) != -1 ? Math.round(aRec[i].get('h24MeanRespTime') * 1000) : 0,
+							data: aRec[i],
+							log: logRes
+						};
+					series.data.push(point);
+					//series.data.push([aRec[i].get('date').getTime(), Math.round(aRec[i].get('h24MeanRespTime') * 1000)]);
+				}
+				else{
+					var status = aRec[i].get('statusCode');
+					var color;
+					switch (status){
+                    case 'AVAILABLE':
+						color = '#7dff9c';
+						break;
+                    case 'OUT_OF_ORDER':
+						color = '#e2ff1d';
+						break;
+                    case 'UNAVAILABLE':
+						color = '#ff7f7f';
+						break;
+                    case 'NOT_TESTED':
+						color = '#b3b3b3';
+						break;
+					default: 
+						color = '#b3b3b3';
+						break;
+					}
+					var point = {
+							x: aRec[i].get('time').getTime(),
+							y: Math.round(aRec[i].get('delay') * 1000) != -1 ? Math.round(aRec[i].get('delay') * 1000) : 0,
+							marker: {
+								fillColor: color
+							},
+							data: aRec[i], // record info for tooltip
+							log: logRes
+					};
+					series.data.push(point);
+					//series.data.push([aRec[i].get('time').getTime(), Math.round(aRec[i].get('delay') * 1000)]);
+				}
+			}
+			//push this serie
+			options.series.push(series);
+
+			//add also sla response time for aggregate logs only
+			if(logRes == 'aggLogs'){
+				series = {data: []};
+				series.name = storeName+EasySDI_Mon.lang.getLocal('sla suffix');
+				for ( var i=0; i< aRec.length; i++ )
+				{   
+					var point = {
+							x: aRec[i].get('date').getTime(),
+							y: Math.round(aRec[i].get('slaMeanRespTime') * 1000) != -1 ? Math.round(aRec[i].get('slaMeanRespTime') * 1000) : 0,
+							data: aRec[i],
+							log: logRes
+					};
+					series.data.push(point);				
+					//series.data.push([aRec[i].get('date').getTime(), Math.round(aRec[i].get('slaMeanRespTime') * 1000)]);
+				}
+				options.series.push(series);
+			}
+
+		}
+	}
+
+	//Output the graph
+	var chart = new Highcharts.Chart(options);
+	return chart;
+};

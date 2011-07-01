@@ -73,10 +73,96 @@ Ext.onReady(function() {
 	data:{'data': [{'name':'All','value':'All'}]}
 	});
 
+ var exportConfig = Ext.data.Record.create(['id','exportName', 'exportType','exportDesc', 'xsltUrl' ]);
+//  var exportTypeStore = new Ext.data.Store({
+//	  proxy: new Ext.data.HttpProxy({  url :EasySDI_Mon.MonitorRoot+"&task=read"	}),
+//	  root :'rows',
+//	  fields :['id','exportName', 'exportType','exportDesc', 'xsltUrl']
+//	//  autoload : true 
+//	  
+//  });
+ var exportTypeStore = new Ext.data.Store({
+	  id:'exportTypeStore',
+	  proxy: new Ext.data.HttpProxy({  url :EasySDI_Mon.MonitorRoot+"&task=read"	}),
+     reader: new Ext.data.JsonReader({
+         root: 'rows',
+         totalProperty: 'results',
+         idProperty: 'id'
+     }, exportConfig)
+     //autoLoad: true
+ });
+ exportTypeStore.load();
 
+ var body = Ext.getBody();
+ var frame = body.createChild({
+	 tag:'iframe'
+		 ,cls:'x-hidden'
+			 ,id:'iframe'
+				 ,name:'iframe'
+ });
+
+ var exportForm = body.createChild({
+	 tag:'form'
+		 ,cls:'x-hidden'
+			 ,id:'form'
+				 ,action:EasySDI_Mon.MonitorRoot+"&task=requestExportData"
+				 ,method:'POST'
+				 ,target:'iframe'
+ });
+  
 	/*
 	 * Menu 
 	 */
+	// this is a singleton that manages the export report buttons
+	var exportReportHandler = function(){
+
+		return{
+			
+			doLoadExportTypes : function(btn){
+				if (!btn.menu){
+				btn.menu = new Ext.menu.Menu();
+
+				exportTypeStore.each(function(r) {
+				
+					 var action = new Ext.Action({
+						 	id:r.data['id'],
+					        text: r.data['exportName'],
+					        handler: exportReportHandler.requestExportData	
+					       
+					    });
+
+				 btn.menu.add(action)
+				});
+				}
+				
+				btn.showMenu();
+	
+
+			},
+			getExportTypes : function(btn){
+				alert("getExportTypes");
+				
+			},
+			setExportTypesAsBtnItems : function(btn){
+				alert("setExportTypesAsBtnItems");
+			},
+			requestExportData :function(btn){
+				exportTypeId = btn.id;			
+			
+				urls = mtnBtnView_click(true);
+				dataUrls= [urls.join(',')]
+				var params = {exportID: exportTypeId, proxyUrls: dataUrls};
+				exportForm.dom.action = exportForm.dom.action+'&' + Ext.urlEncode(params);
+				exportForm.dom.submit();
+			
+
+				myMask.hide();
+				
+			}
+		
+			
+		}
+	}();
 
 	var reportMenu = new Ext.Panel({
 		id: 'ReportMenu',
@@ -84,7 +170,7 @@ Ext.onReady(function() {
 		region: 'center',
 		height: 50,
 		frame:true,
-		layoutConfig:{columns:7},
+		layoutConfig:{columns:8},
 		border:false,
 		defaults: {
 			border: false,
@@ -158,7 +244,19 @@ Ext.onReady(function() {
 				        mtnBtnView_click();
                                     }
                                 },
-			        text: EasySDI_Mon.lang.getLocal('action view')
+			        text:  EasySDI_Mon.lang.getLocal('action view')
+			}		
+			]
+		},
+		{	items:[{
+			id: 'exportBtn',
+			xtype:'splitbutton',			
+		    text: 	EasySDI_Mon.lang.getLocal('export report data'),
+		    handler : exportReportHandler.doLoadExportTypes	,
+		    listeners :{
+		    	arrowclick : exportReportHandler.doLoadExportTypes
+		    }
+			
 			}]
 		},
 		{},
@@ -241,11 +339,14 @@ Ext.onReady(function() {
 		}*/
 		]
 	});
+	//load the menu items
+	//debugger;
 
 
 	/*****
 	 * Event Handlers 
 	 *****/
+
 	//Initialize this store from the job grid store
 	Ext.getCmp('JobGrid').store.on('load', function() {
 		refreshComboValuesFromJobStore();
@@ -323,7 +424,7 @@ Ext.onReady(function() {
 	}
 
 	//
-        function mtnBtnView_click(){
+        function mtnBtnView_click(getUrlOnly){
 		//clean up the stores and the graphs
 		EasySDI_Mon.clearCharts();
 
@@ -460,6 +561,25 @@ Ext.onReady(function() {
 
 		//get the logs into a store. 1 store / method
 		var loadedStores = 0;
+		
+		
+		if(null!=getUrlOnly){
+		
+			urls =[];
+			for ( var i=0; i< aMethods.length; i++ ){
+
+				var fields = null;
+				if(logRes == "aggLogs")
+					fields = ['h24Availability', 'slaNbBizErrors','h24NbConnErrors','h24MeanRespTime','slaMeanRespTime','h24NbBizErrors','slaAvalabilty','slaNbConnErrors', {name: 'date', type: 'date', dateFormat: 'Y-m-d'}];
+				else
+					fields = [{name: 'time', type: 'date', dateFormat: 'Y-m-d H:i:s'}, 'message', 'httpCode', 'status', 'statusCode', 'delay','size']
+
+				urls.push(	EasySDI_Mon.proxyserverside+EasySDI_Mon.CurrentJobCollection+'/'+selJob+'/queries/'+aMethods[i]+'/'+logRes+'?minDate='+minDate.format('Y-m-d')+'&maxDate='+maxDate.format('Y-m-d'));
+			}
+			return urls;
+			
+		}
+			
 		for ( var i=0; i< aMethods.length; i++ ){
 
 			var fields = null;

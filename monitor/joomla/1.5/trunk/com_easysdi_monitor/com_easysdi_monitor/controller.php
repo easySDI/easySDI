@@ -20,6 +20,7 @@
 defined( '_JEXEC' ) or die( 'Restricted access' );
 
 jimport('joomla.application.component.controller');
+jimport("joomla.html.pagination");
 
 class MonitorController extends JController
 {
@@ -32,4 +33,125 @@ class MonitorController extends JController
 	{
 		parent::display();
 	}
+	
+	function create(){
+		$database=& JFactory::getDBO(); 
+		$User =& JFactory::getUser();		
+		$usertype= strtolower($User->usertype);	  	
+		$row =	json_decode(JRequest::getVar("rows"));	
+	  	if(strpos($usertype, "admin")=== FALSE){
+			echo "{success:false, error:user is not admin}";
+			die();
+		}
+		$saveSql = "INSERT INTO #__sdi_monitor_exports
+		 (exportName, exportType, xsltUrl,exportDesc)
+			VALUES ('".$row->exportName."','". $row->exportType."','".$row->xsltUrl."','".$row->exportDesc."')";
+		try{
+			
+			$database->setQuery($saveSql);
+			$rows = $database->loadObjectList();
+			echo "{success:true}";
+					
+		
+		}
+		catch(Exception $e){
+			echo "{success:false, error:".$e->getTraceAsString()."}";
+		}
+		die();
+		
+	
+	}
+	function read(){
+		
+		//echo "read";
+	//	die();
+		$database=& JFactory::getDBO(); 
+		$User =& JFactory::getUser();		
+		$usertype= strtolower($User->usertype);	  		
+	  	if(strpos($usertype, "admin")=== FALSE){
+			echo "{success:false, error:user is not admin}";
+			die();
+		}
+		
+		$limit		=  JRequest::getVar('limit', 15);
+		$limitstart	=  JRequest::getVar('start', 0);
+		//get the total
+		$query = "select count(*)  from #__sdi_monitor_exports";
+		$database->setQuery($query);
+		$total = $database->loadResult();
+		$pagination = new JPagination($total,$limitstart,$limit);
+		
+		$selectsql = "select * from #__sdi_monitor_exports order by id desc";
+		
+		try{
+			
+			$database->setQuery( $selectsql, $pagination->limitstart, $pagination->limit);
+			$rows = $database->loadObjectList();
+			echo "{success:true,results:".$total.",rows:".json_encode($rows)."}";
+					
+		
+		}
+		catch(Exception $e){
+			echo "{success:false, error:".$e->getTraceAsString()."}";
+		}
+		die();
+	
+	}
+	function update(){
+		//"id":"1","exportName":"name1","exportType":"csw","exportDesc":"desc111","xsltUrl":"url1"
+		$database=& JFactory::getDBO(); 
+		$User =& JFactory::getUser();
+		$usertype= strtolower($User->usertype);	  	
+		$row =	json_decode(JRequest::getVar("rows"));
+	  	if(strpos($usertype, "admin")=== FALSE){
+			echo "{success:false, error:user is not admin}";
+			die();
+		}
+		$updateSql = "UPDATE			 #__sdi_monitor_exports 
+						SET				 exportName='".$row->exportName."' 
+										, exportType='".$row->exportType."'
+										, exportDesc='".$row->exportDesc."'													
+										, xsltUrl='".$row->xsltUrl."'									
+					    WHERE id = ".$row->id;
+		$database->setQuery($updateSql);
+		$result =$database->query();
+		if ($database->getErrorNum()) {
+				
+			echo "{success:false, error:".$e->getTraceAsString()."}";
+			die();
+		
+		}
+		echo "{success:true}";
+		die();
+	
+		
+	
+	}
+	function delete(){
+		
+		$database=& JFactory::getDBO(); 
+		$User =& JFactory::getUser();		
+		$usertype= strtolower($User->usertype);	
+		$id =	JRequest::getVar("rows");  		
+	  	if(strpos($usertype, "admin")=== FALSE){
+			echo "{success:false, error:user is not admin}";
+			die();
+		}
+	
+		$deletesql ="DELETE FROM #__sdi_monitor_exports where id =".$id;
+		$database->setQuery($deletesql);
+		$result =$database->query();
+		if ($database->getErrorNum()) {
+				
+			echo "{success:false, error:".$e->getTraceAsString()."}";
+			die();
+		
+		}
+		echo "{success:true}";
+		die();
+		
+		
+	
+	}
+	
 }

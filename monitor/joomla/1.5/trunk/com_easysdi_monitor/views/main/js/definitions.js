@@ -1,4 +1,4 @@
- /**
+/**
  * EasySDI, a solution to implement easily any spatial data infrastructure
  * Copyright (C) EasySDI Community 
  * For more information : www.easysdi.org
@@ -51,7 +51,32 @@ Ext.onReady(function(){
        wcs: [
               ['GetCapabilities'],
    	   ['GetCoverage']
-   	 ]/*,
+   	 ],
+   	allpost: [
+     	    ['GetCapabilities'],
+     	    ['GetMap'],
+     	    ['GetFeature'],
+     	    ['GetTile'],
+     	    ['GetRecordById'],
+ 	        ['GetRecords'],
+ 	        ['DescribeSensor'],
+ 	        ['GetCoverage'],
+    	    ['SOAP 1.1'],
+ 	        ['SOAP 1.2 '],
+ 	        ['HTTP POST']
+	     ], 
+	     
+	allget: [
+	 	     	    ['GetCapabilities'],
+	 	     	    ['GetMap'],
+	 	     	    ['GetFeature'],
+	 	     	    ['GetTile'],
+	 	     	    ['GetRecordById'],
+	 	 	        ['GetRecords'],
+	 	 	        ['DescribeSensor'],
+	 	 	        ['GetCoverage'],
+	 	 	        ['HTTP GET']
+	 		 ]/*,
    	 all: [
       	    ['GetCapabilities'],
    	          ['GetMap'],
@@ -64,6 +89,8 @@ Ext.onReady(function(){
   	       ]*/
    }
    
+   EasySDI_Mon.ExportTypeStore = [ ['CSW'], ['HTML'], ['XHTML']];
+   
    EasySDI_Mon.HttpMethodStore = [
                              ['GET'],
    		          ['POST']
@@ -75,8 +102,8 @@ Ext.onReady(function(){
    			 ['WMTS'],
    			 ['CSW'],
    			 ['SOS'],
-   			 ['WCS']/*,
-   			 ['ALL']*/
+   			 ['WCS'],
+   			 ['ALL']
    		       ];
    
    EasySDI_Mon.RepPeriodStore = [

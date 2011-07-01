@@ -101,6 +101,14 @@ Ext.onReady(function() {
 			border:false,
 			items: [Ext.getCmp('ResponseOverviewPanel')]
 	};
+	exportPanel = {
+			title:EasySDI_Mon.lang.getLocal('export'),
+			xtype: 'panel',
+			layout: 'border',
+			region: 'center',
+			border:false,
+			items: [Ext.getCmp('testGrid')]
+	};
 
 	var cardTabs = new Ext.TabPanel({
 		id: 'card-tabs-panel',
@@ -112,9 +120,10 @@ Ext.onReady(function() {
 		       reportPanel,
 		       alertPanel,
 		       maintenancePanel,
-		       responseoverviewPanel
+		       responseoverviewPanel, exportPanel
 		       ]
 	});
+
 
 	var appPanel = new Ext.Panel({
 		id: 'appPanel',

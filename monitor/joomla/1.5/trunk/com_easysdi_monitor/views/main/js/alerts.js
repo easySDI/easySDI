@@ -117,7 +117,7 @@ Ext.onReady(function() {
 		// paging bar on the bottom
 		/*
       No pagination because arraystore do not support load.
-
+*/
        bbar: new Ext.PagingToolbar({
 	    ref:'../gridPag',
             pageSize: 15,
@@ -126,7 +126,7 @@ Ext.onReady(function() {
             displayMsg: 'Affichage alertes {0} à {1} de {2}',
             emptyMsg: "Aucun job à afficher"
         }),
-		 */
+		 
 		tbar: [{
 			xtype:          'combo',
 			mode:           'local',
@@ -197,34 +197,89 @@ Ext.onReady(function() {
 	function loadAlertData(jobName, current, total){
 		var myMask = new Ext.LoadMask(Ext.getCmp('AlertGrid').getEl(), {msg:EasySDI_Mon.lang.getLocal('message wait')});
 		myMask.show();
-		new Ext.data.JsonStore({
+		if(total == 1){
+			store.removeAll();
+		var newStore = new Ext.data.JsonStore({
 			//id: 'jobId',
-			root: 'data',
-			autoLoad: true,
+			root: 'data',			
 			proxy: new Ext.data.HttpProxy({
 				url: EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+jobName+'/alerts'
 			}),
 			restful:true,
+			idProperty : 'id',
+			totalProperty :'count',
 			fields:['newStatusCode', 'oldStatusCode', 'cause', 'httpCode', 'responseDelay', 'isExposedToRss', 'jobId', {name: 'dateTime', type: 'date', dateFormat: 'Y-m-d H:i:s'}],
-			listeners: {
-			load: function(){
-			var aRec = this.getRange();
-			if(_alertsGrid.btnLatestAlerts.pressed){
-				//If there is at least one record
-				if(aRec.length > 0)
-					store.add(aRec[aRec.length - 1]);
-			}else{
-				for ( var j=0; j< aRec.length; j++ )
-				{
-					//feed the grid store with the collected alerts
-					store.add(aRec[j]);
+			listeners :{
+				load: function(){
+
+					store.removeAll();
+					var aRec = this.getRange();
+					if(_alertsGrid.btnLatestAlerts.pressed){
+						//If there is at least one record
+						if(aRec.length > 0)
+							store.add(aRec[aRec.length - 1]);
+					}else{
+						for ( var j=0; j< aRec.length; j++ )
+						{
+							//feed the grid store with the collected alerts
+							store.add(aRec[j]);
+						}
+					}
 				}
 			}
-			if(current == total)
-				myMask.hide();
-		}
-		}
 		});
+			component = Ext.getCmp('AlertGrid');
+			if(component.getBottomToolbar()){
+				component.getBottomToolbar().show();
+				component.getBottomToolbar().bindStore(newStore);
+				component.getBottomToolbar().doRefresh();
+			}
+			
+			
+			myMask.hide();
+		
+		}
+		else{		
+				component = Ext.getCmp('AlertGrid');
+				if(component.getBottomToolbar())
+					component.getBottomToolbar().hide();
+				
+				var newStore = new Ext.data.JsonStore({
+					//id: 'jobId',
+					root: 'data',
+					autoLoad: true,
+					proxy: new Ext.data.HttpProxy({
+						url: EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+jobName+'/alerts'
+					}),
+					restful:true,
+					fields:['newStatusCode', 'oldStatusCode', 'cause', 'httpCode', 'responseDelay', 'isExposedToRss', 'jobId', {name: 'dateTime', type: 'date', dateFormat: 'Y-m-d H:i:s'}],
+					listeners: {
+					load: function(){
+					
+					var aRec = this.getRange();
+					if(_alertsGrid.btnLatestAlerts.pressed){
+						//If there is at least one record
+						if(aRec.length > 0)
+							store.add(aRec[aRec.length - 1]);
+					}else{
+						for ( var j=0; j< aRec.length; j++ )
+						{
+							//feed the grid store with the collected alerts
+							store.add(aRec[j]);
+						}
+					}
+					if(current == total)
+						myMask.hide();
+				}
+				}
+				});
+		}
+		
+	
+			
+			
+		}
+		
 	}
 
-});
+);

@@ -23,6 +23,27 @@ Ext.onReady(function() {
 	/**
 	 * Renderer for the GridPanel
 	 */
+var proxy = new Ext.data.HttpProxy({
+		
+		url: EasySDI_Mon.proxy+EasySDI_Mon.DefaultJobCollection
+	});
+
+	var writer = new Ext.data.JsonWriter({
+		encode: false   // <-- don't return encoded JSON -- causes Ext.Ajax#request to send data using jsonData config rather than HTTP params
+	}); 
+
+	var store = new Ext.data.JsonStore({
+		root: 'data',
+		id: 'name',
+		idProperty : 'data.id',
+		totalProperty :'count',
+		autoLoad: true,
+		restful:true,
+		proxy: proxy,
+		writer: writer,
+		fields:['status', 'statusCode', 'httpMethod', 'testInterval', 'bizErrors', 'isPublic', 'allowsRealTime', 'httpErrors', 'serviceType', 'password', 'url' ,'id' ,'slaEndTime', 'name', 'queries', 'login', 'triggersAlerts', 'timeout', 'isAutomatic', 'slaStartTime', {name: 'lastStatusUpdate', type: 'date', dateFormat: 'Y-m-d H:i:s'},'saveResponse']
+	});
+
 
 
 	var _loadMsk = new Ext.LoadMask(Ext.getBody(), {msg:EasySDI_Mon.lang.getLocal('message wait')})
@@ -136,8 +157,8 @@ Ext.onReady(function() {
 
 		title:EasySDI_Mon.lang.getLocal('job list'),
 		loadMask:_loadMsk,
-		store:Ext.getCmp('JobGrid').store,
-		cm:cm
+		store:store,
+		cm:cm,
 		/*
        sm: new Ext.grid.RowSelectionModel({
            singleSelect: true,
@@ -147,16 +168,16 @@ Ext.onReady(function() {
                }
            }
        }),
-		
+		*/
 		// paging bar on the bottom
 		bbar: new Ext.PagingToolbar({
 			pageSize: 15,
-			store: Ext.getCmp('JobGrid').store,
+			store: store,
 			displayInfo: true,
 			displayMsg: EasySDI_Mon.lang.getLocal('paging display msg'),
 			emptyMsg: EasySDI_Mon.lang.getLocal('paging empty msg')
 		})
-		 */
+		 
 	});
 	
 	function methCmbStoreLoaded(){

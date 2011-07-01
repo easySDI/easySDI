@@ -16,9 +16,35 @@
 		<mkdir dir="${projet.out.dir}" />
 	</target>
 	<target name="minify" description="Compression">
+		
+		<concat destfile="script/Monitor.js">
+		<filelist dir="views/main/js">
+			<file name="exportType.js"/>
+			 <file name="language.js"/>
+			        <file name="vtypes.js"/>
+			        <file name="app/App.js"/>
+			        <file name="definitions.js"/>
+			        <file name="jobManager.js"/>
+			        <file name="jobRequest.js"/>
+			        <file name="jobAlert.js"/>
+			        <file name="reports.js"/>
+			        <file name="alerts.js"/>
+					<file name="responseoverview.js" />
+			        <file name="state.js"/>
+			        <file name="maintenance.js"/>
+			        <file name="monitor.js"/>
+			        <file name="graphs/healthGraphRaw.js"/>
+			        <file name="graphs/healthGraphAgg.js"/>
+			        <file name="graphs/healthLineGraph.js"/>
+			        <file name="graphs/responseTimeGraph.js"/>
+					
+		</filelist>
+		</concat>
+
+
 		<echo>Checking code syntax and minifying.</echo>
-		<jscomp compilationLevel="whitespace" warning="verbose" 
-            debug="false" output="script/Monitor.js">
+		<!--<jscomp compilationLevel="whitespace" warning="verbose" 
+            debug="true" output="script/Monitor.js">
       <sources dir="views/main/js">
         <file name="language.js"/>
         <file name="vtypes.js"/>
@@ -38,7 +64,7 @@
         <file name="graphs/healthLineGraph.js"/>
         <file name="graphs/responseTimeGraph.js"/>
       </sources>
-    </jscomp>
+    </jscomp>-->
 	</target>
 	<target name="compression" description="Compression">
 		<jar compress="true" jarfile="${projet.out.dir}/com_easysdi_monitor.zip"

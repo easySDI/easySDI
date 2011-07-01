@@ -21,6 +21,7 @@ Ext.onReady(function() {
 	Ext.QuickTips.init();
 
 	var proxy = new Ext.data.HttpProxy({
+		
 		url: EasySDI_Mon.proxy+EasySDI_Mon.DefaultJobCollection
 	});
 
@@ -31,6 +32,8 @@ Ext.onReady(function() {
 	var store = new Ext.data.JsonStore({
 		root: 'data',
 		id: 'name',
+		idProperty : 'data.id',
+		totalProperty :'count',
 		//autoSave: true,
 		restful:true,
 		proxy: proxy,
@@ -191,6 +194,13 @@ Ext.onReady(function() {
 			Ext.getCmp("jobAdvForm").getForm().loadRecord(rec);
 		}
 		}
+		}),
+		bbar: new Ext.PagingToolbar({
+			pageSize: 15,
+			store: store,
+			displayInfo: true,
+			displayMsg: EasySDI_Mon.lang.getLocal('paging display msg'),
+			emptyMsg: EasySDI_Mon.lang.getLocal('paging empty msg')
 		})
 		/*
 		,

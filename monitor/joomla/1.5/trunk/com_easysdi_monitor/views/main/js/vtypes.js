@@ -37,7 +37,7 @@ Ext.form.VTypes['jobname'] = function(v)
 	}else{
 		Ext.form.VTypes['jobnameText'] = EasySDI_Mon.lang.getLocal('error ressource name');
 		return false;
-	}
+	}	
 	return true;
 }
 

@@ -308,20 +308,30 @@ Ext.ux.grid.RowEditor = Ext.extend(Ext.Panel, {
     },
 
     onRowClick: function(g, rowIndex, e){
-        if(this.clicksToEdit == 'auto'){
-            var li = this.lastClickIndex;
-            this.lastClickIndex = rowIndex;
-            if(li != rowIndex && !this.isVisible()){
-                return;
-            }
-        }
-        this.startEditing(rowIndex, false);
-        this.doFocus.defer(this.focusDelay, this, [e.getPoint()]);
+    	try{
+	    	if (!Ext.get(g.view.findCell(e.getTarget())).is("[class*=expander]")){
+		        if(this.clicksToEdit == 'auto'){
+		            var li = this.lastClickIndex;
+		            this.lastClickIndex = rowIndex;
+		            if(li != rowIndex && !this.isVisible()){
+		                return;
+		            }
+		        }
+		        this.startEditing(rowIndex, false);
+		        this.doFocus.defer(this.focusDelay, this, [e.getPoint()]);
+	    	}
+    	}
+    	catch(err){}
     },
 
     onRowDblClick: function(g, rowIndex, e){
-        this.startEditing(rowIndex, false);
-        this.doFocus.defer(this.focusDelay, this, [e.getPoint()]);
+    	try{
+    	if (!Ext.get(g.view.findCell(e.getTarget())).is("[class*=expander]")){
+	        this.startEditing(rowIndex, false);
+	        this.doFocus.defer(this.focusDelay, this, [e.getPoint()]);
+    	}
+    	}
+    	catch(err){}
     },
 
     onRender: function(){
