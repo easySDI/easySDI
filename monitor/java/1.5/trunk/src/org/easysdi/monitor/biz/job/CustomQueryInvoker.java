@@ -14,19 +14,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Properties;
 
-import javax.xml.soap.MessageFactory;
-import javax.xml.soap.MimeHeaders;
-import javax.xml.soap.Name;
-import javax.xml.soap.SOAPConnection;
-import javax.xml.soap.SOAPConnectionFactory;
-import javax.xml.soap.SOAPEnvelope;
-import javax.xml.soap.SOAPException;
-import javax.xml.soap.SOAPHeader;
-import javax.xml.soap.SOAPMessage;
-import javax.xml.soap.SOAPPart;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
@@ -53,7 +40,7 @@ public class CustomQueryInvoker extends ServiceInvoker{
 		super(serviceconfig, serviceLog);
 		// TODO Auto-generated constructor stub
 	}
-	private SOAPMessage soap_reponse ;
+
 	private InputStream soap_stream_response;
 	private String ContentType;
 

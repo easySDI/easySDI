@@ -10,21 +10,7 @@ import java.io.InputStreamReader;
 import java.io.Serializable;
 
 import javax.imageio.ImageIO;
-import javax.xml.soap.MessageFactory;
-import javax.xml.soap.SOAPBody;
-import javax.xml.soap.SOAPEnvelope;
-import javax.xml.soap.SOAPException;
-import javax.xml.soap.SOAPFault;
-import javax.xml.soap.SOAPHeader;
-import javax.xml.soap.SOAPMessage;
-import javax.xml.soap.SOAPPart;
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
+
 
 import org.apache.commons.httpclient.HttpConnection;
 import org.apache.commons.httpclient.HttpMethodBase;
@@ -40,70 +26,7 @@ public class CustomValidator extends AbstractValidator implements Serializable {
 	 */
 	private static final long serialVersionUID = 2335714763916219298L;
 	
-	// this one is for soap responses.
-	public ValidatorResponse validateAnswer( SOAPMessage response, int statusCode ){
-		//process for xml
-        String lastMessage = null;
-        Status status = null;
-        String xml = null;
-        InputStream stream = null;
-        ValidatorResponse rs = null;
-        
-		SOAPBody body;
-		try {
-			body = response.getSOAPBody();
-			// Check if SOAPFault is present in the message
-			
-			if ( body.hasFault() ) {
-				SOAPFault newFault = body.getFault();
-				String f_code = newFault.getFaultCode();
-				String f_string = newFault.getFaultString();
-				String f_actor = newFault.getFaultActor();			
-			
-				status = Status.RESULT_STATE_BAD_RESPONSE;
-				lastMessage = "Fault code :"+f_code+"\n";
-				lastMessage += "Fault string :"+f_string+"\n";
 
-				if(null != f_actor)
-					lastMessage += "Fault actor :"+f_actor+"\n";
-				//return new ValidatorResponse( lastMessage, status );
-				rs = new ValidatorResponse( lastMessage, status );
-			}
-			else{		
-						
-				// Get reply content
-				Source sc = response.getSOAPPart().getContent();
-				stream = copyStream(  new ByteArrayInputStream(sc.toString().getBytes())); 
-		        stream.reset();
-		        xml = parseStream( stream );
-				// Set output transformation
-		        status = Status.RESULT_STATE_AVAILABLE;
-		        lastMessage = "correct response received";
-		        //return new ValidatorResponse( lastMessage, status );
-		        rs = new ValidatorResponse( lastMessage, status );
-		        rs.setData(xml);
-		       
-
-				
-				
-			}
-		} catch (SOAPException e) {
-			
-			status = Status.RESULT_STATE_BAD_RESPONSE;
-            lastMessage = e.getMessage();
-            rs = new ValidatorResponse( lastMessage, status );
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			status = Status.RESULT_STATE_ERROR_UNKNOWN;
-            lastMessage = e.getMessage();
-            rs = new ValidatorResponse( lastMessage, status );
-		}
-		 return rs;
-
-	
-		
-		
-	}
 
 	//process image or xml
     public ValidatorResponse validateAnswer( HttpMethodBase method, int statusCode ) {
