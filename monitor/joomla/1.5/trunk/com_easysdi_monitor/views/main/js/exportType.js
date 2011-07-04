@@ -63,7 +63,7 @@ Ext.onReady(function(){
         var task = new Ext.util.DelayedTask(function(){ 
         	_exportGrid.getBottomToolbar().doRefresh();
         });
-        task.delay(1000); 
+        task.delay(2000); 
 
 
        
@@ -197,10 +197,9 @@ Ext.onReady(function(){
 			        		})
 			        	},{
 			        		fieldLabel: 'xsltUrl',			        	
-			        		name: 'xsltUrl',
-			        		allowBlank:false,
+			        		name: 'xsltUrl',			        		
 			        		xtype: 'textfield',
-			        		allowBlank: false
+			        		allowBlank: true
 			        	},{
 			        		fieldLabel: 'description',			        		
 			        		name: 'exportDesc',

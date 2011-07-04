@@ -28,7 +28,9 @@
 			<folder>script</folder>
 			<folder>views</folder>
 		  <folder>lib</folder>
+		 
 		</files>
+	
 		
 		<languages folder="language/admin">
 			<language tag="fr-FR">fr-FR.com_easysdi_monitor.ini</language>
