@@ -997,6 +997,15 @@ public class WFSProxyServlet extends ProxyServlet {
 					// Fin d'ajout du "remoteFilter"
 				}
 
+				//Quick fix : not support multi-server request!
+				if("Transaction".equalsIgnoreCase(currentOperation)){
+					logger.debug("Transaction Operation.");
+					filePath = sendData("POST", getRemoteServerUrl(iServer), param);
+					logger.debug("Transaction response :"+filePath);
+					wfsFilePathList.put(iServer, filePath);
+					logger.debug("End transaction operation.");
+				}
+				
 				// Exécution de la requête utilisateur modifiée au serveur en
 				// cours ->s'il y a plusieurs serveurs, alors cet appel se fait
 				// plus d'une fois!!!

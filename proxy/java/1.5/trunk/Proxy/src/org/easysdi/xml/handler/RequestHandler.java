@@ -41,6 +41,7 @@ public class RequestHandler extends DefaultHandler {
 	private Boolean isElementQName = false; // To be sure to avoid "\t\t"
 											// characters
 	private List propertyName = new Vector();
+	private String elementLocalName= "";
 	// Fin de debug
 	private boolean hasFilter = false;
 
@@ -77,6 +78,7 @@ public class RequestHandler extends DefaultHandler {
 		// Debug tb 04.06.2009
 		elementQName = qName; // N�cessaire pour utilsation dans la m�thode
 								// "characters"
+		elementLocalName = localName;
 		isElementQName = false;
 		// Fin de debug
 
@@ -153,7 +155,7 @@ public class RequestHandler extends DefaultHandler {
 		// Debug tb 11.09.2009
 		// String [] s = elementQName.split(":");
 		// String tmpFT = s[s.length-1];
-		String tmpFT = elementQName;
+		String tmpFT = elementLocalName;
 		if (tmpFT.equals("PropertyName") && !isElementQName && !isInFilterElement) {
 			propertyName.add(donnees);
 			isElementQName = true;
