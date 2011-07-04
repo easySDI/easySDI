@@ -144,7 +144,6 @@ public abstract class ProxyServlet extends HttpServlet {
 	/**
 	 * WMTS response files
 	 */
-	public Hashtable<String, String> wmtsFilePathTable = new Hashtable<String, String>();
 	public Hashtable<String, String> ogcExceptionFilePathTable = new Hashtable<String, String>();
 	
 	/**
@@ -202,7 +201,7 @@ public abstract class ProxyServlet extends HttpServlet {
 	/**
 	 * 
 	 */
-	protected OWSExceptionReport owsExceptionReport;
+	public OWSExceptionReport owsExceptionReport;
 	
 	/**
 	 * Value of the version parameter received in the request
@@ -1356,6 +1355,7 @@ public abstract class ProxyServlet extends HttpServlet {
 	 * @param currentOperation
 	 * @param resp
 	 */
+	@Deprecated
 	protected boolean handleNotAllowedOperation (String currentOperation, HttpServletResponse resp)
 	{
 		//IF operation is not supported by the current version of the proxy
@@ -2235,7 +2235,7 @@ public abstract class ProxyServlet extends HttpServlet {
 		}
 	}
 	
-	protected void sendHttpServletResponse (HttpServletRequest req, HttpServletResponse resp, StringBuffer tempOut, String responseContentType, Integer responseCode)
+	public void sendHttpServletResponse (HttpServletRequest req, HttpServletResponse resp, StringBuffer tempOut, String responseContentType, Integer responseCode)
 	{
 		try
 		{

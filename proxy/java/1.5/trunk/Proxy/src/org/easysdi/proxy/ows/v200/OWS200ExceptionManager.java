@@ -1,23 +1,124 @@
+/**
+ * EasySDI, a solution to implement easily any spatial data infrastructure
+ * Copyright (C) EasySDI Community
+ * For more information : www.easysdi.org
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or 
+ * any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html. 
+ */
 package org.easysdi.proxy.ows.v200;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.util.Collection;
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
+import java.util.Map.Entry;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.easysdi.jdom.filter.ElementExceptionReportFilter;
+import org.easysdi.proxy.core.ProxyRemoteServerResponse;
+import org.easysdi.proxy.core.ProxyServlet;
 import org.easysdi.proxy.ows.OWSExceptionManager;
 import org.jdom.Document;
 import org.jdom.Element;
+import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
+import org.xml.sax.SAXException;
 
-
+/**
+ * @author DEPTH SA
+ *
+ */
 public class OWS200ExceptionManager implements OWSExceptionManager {
+	
+	/**
+	 * Get the exception files return by the remote servers.
+	 * @param remoteServerResponseFile
+	 * @return
+	 */
+	public HashMap<String, String> getRemoteServerExceptionResponse (ProxyServlet servlet,HashMap<String, String> remoteServerResponseFile)
+	{
+		HashMap<String, String> toRemove = new HashMap<String, String>();
+		HashMap<String, String> remoteServerExceptionFiles = new HashMap<String, String>();
+		
+		try{
+			Iterator<Entry<String,String>> it = remoteServerResponseFile.entrySet().iterator();
+			while(it.hasNext()){
+				Entry<String,String> entry = it.next();
+				String path  = entry.getValue();
+				if(path == null || path.length() == 0)
+					continue;
+				
+				//Check if the response is an XML exception
+				if(isRemoteServerResponseException(path)){
+					toRemove.put(entry.getKey(), path);
+				}
+			}
+			
+			Iterator<Entry<String,String>> itR = toRemove.entrySet().iterator();
+			while(itR.hasNext())
+			{
+				Entry<String, String> entry = itR.next();
+				remoteServerExceptionFiles.put(entry.getKey(),entry.getValue());
+				remoteServerResponseFile.remove(entry.getKey());
+			}
+			
+			return remoteServerExceptionFiles;
+		} catch (SAXException e) {
+			servlet.logger.error(e.getMessage());
+		} catch (IOException e) {
+			servlet.logger.error(e.getMessage());
+		} catch (ParserConfigurationException e) {
+			servlet.logger.error(e.getMessage());
+		} catch (JDOMException e) {
+			servlet.logger.error(e.getMessage());
+		}
+		return remoteServerExceptionFiles;
+	}
+	
+	/**
+	 * Return if the file at the given path is an XML OGC exception file.
+	 * @param path
+	 * @return
+	 * @throws SAXException
+	 * @throws IOException
+	 * @throws ParserConfigurationException
+	 * @throws JDOMException 
+	 */
+	private boolean isRemoteServerResponseException(String path) throws SAXException, IOException, ParserConfigurationException, JDOMException{
+		String ext = (path.lastIndexOf(".")==-1)?"":path.substring(path.lastIndexOf(".")+1,path.length());
+		if (ext.equals("xml"))
+		{
+			SAXBuilder sxb = new SAXBuilder();
+			Document documentMaster = sxb.build(new File(path));
+			if (documentMaster != null) 
+			{
+				//ServiceExceptionReport is the root element name for WMS, WFS exception
+				//ExceptionReport is the root element for OWS, WMTS, CSW exception
+				if(documentMaster.getRootElement().getName().equalsIgnoreCase("ServiceExceptionReport") || documentMaster.getRootElement().getName().equalsIgnoreCase("ExceptionReport"))
+					return true;
+				else
+					return false;
+			}
+		}
+		return false;
+	}
 	
 	public boolean filterResponseAndExceptionFiles(Hashtable<String,String> serverResponses, Hashtable<String, String> serverExceptions) throws Exception
 	{

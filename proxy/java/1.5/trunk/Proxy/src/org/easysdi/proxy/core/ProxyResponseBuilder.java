@@ -96,6 +96,14 @@ public abstract class ProxyResponseBuilder {
 	
 	/**
 	 * Remove the unauthorized Layers (defined in the policy) from the GetCapabilities responses.
+	 * @param filePathList : List of the file path of the remote server responses
+	 * @return true if the GetCapabilities was succesfully updated, false otherwise
+	 * If returns false, the caller should call getLastException() to get the catched exception.
+	 */
+	public abstract Boolean CapabilitiesContentsFiltering (HashMap<String, String> filePathList) throws NoSuchAuthorityCodeException; 
+	
+	/**
+	 * Remove the unauthorized Layers (defined in the policy) from the GetCapabilities responses.
 	 * @param filePathList : File paths of the remote server responses
 	 * @return true if the GetCapabilities was succesfully updated, false otherwise
 	 * If returns false, the caller should call getLastException() to get the catched exception.

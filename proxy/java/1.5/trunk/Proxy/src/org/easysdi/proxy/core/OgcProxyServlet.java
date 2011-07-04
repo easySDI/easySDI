@@ -38,7 +38,7 @@ import org.easysdi.proxy.ows.OWSExceptionReport;
 import org.easysdi.proxy.ows.v200.OWS200ExceptionReport;
 import org.easysdi.proxy.wfs.WFSExceptionReport;
 import org.easysdi.proxy.wms.v130.WMSExceptionReport130;
-import org.easysdi.proxy.wmts.v100.WMTS100ExceptionReport;
+import org.easysdi.proxy.wmts.v100.WMTSExceptionReport100;
 import org.easysdi.proxy.policy.Policy;
 import org.easysdi.security.JoomlaProvider;
 import org.easysdi.xml.documents.Config;
@@ -329,7 +329,7 @@ public class OgcProxyServlet extends HttpServlet {
 			}else if (servletClass.equalsIgnoreCase("WFSProxyServlet")){
 				out = new WFSExceptionReport().generateExceptionReport(errorMessage, code, locator,version);
 			}else if (servletClass.equalsIgnoreCase("WMST100ProxyServlet")){
-				out = new WMTS100ExceptionReport().generateExceptionReport(errorMessage, code, locator,version);
+				out = new WMTSExceptionReport100().generateExceptionReport(errorMessage, code, locator,version);
 			}else if (servletClass.equalsIgnoreCase("CSWProxyServlet")){
 				out = new CSWExceptionReport().generateExceptionReport(errorMessage, code, locator,version);
 			}else{

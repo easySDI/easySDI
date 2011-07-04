@@ -45,6 +45,7 @@ import org.jdom.filter.Filter;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
+import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
@@ -341,5 +342,13 @@ public class WMSProxyResponseBuilder130 extends WMSProxyResponseBuilder {
 	@Override
 	protected Element getNewElementFormat (){
 		return new Element("Format", nsWMS);
+	}
+
+	@Override
+	public Boolean CapabilitiesContentsFiltering(
+			HashMap<String, String> filePathList)
+			throws NoSuchAuthorityCodeException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

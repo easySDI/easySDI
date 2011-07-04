@@ -6,11 +6,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.security.Principal;
-
 import javax.servlet.FilterChain;
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -19,21 +16,15 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
-
-import org.easysdi.proxy.csw.CSWExceptionReport;
 import org.easysdi.proxy.exception.NoAnonymousPolicyFoundException;
 import org.easysdi.proxy.exception.PolicyNotFoundException;
 import org.easysdi.proxy.ows.OWSExceptionReport;
 import org.easysdi.proxy.ows.v200.OWS200ExceptionReport;
 import org.easysdi.proxy.policy.Policy;
 import org.easysdi.proxy.policy.PolicySet;
-import org.easysdi.proxy.wfs.WFSExceptionReport;
-import org.easysdi.proxy.wms.v130.WMSExceptionReport130;
-import org.easysdi.proxy.wmts.v100.WMTS100ExceptionReport;
 import org.easysdi.xml.documents.Config;
 import org.easysdi.xml.handler.ConfigFileHandler;
 import org.slf4j.Logger;

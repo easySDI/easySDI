@@ -24,11 +24,13 @@ import org.jdom.filter.Filter;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
+import org.opengis.referencing.NoSuchAuthorityCodeException;
+
 import com.google.common.collect.Multimap;
 
-public class WMTS100ProxyResponseBuilder extends WMTSProxyResponseBuilder {
+public class WMTSProxyResponseBuilder100 extends WMTSProxyResponseBuilder {
 
-	public WMTS100ProxyResponseBuilder(WMTSProxyServlet proxyServlet) {
+	public WMTSProxyResponseBuilder100(WMTSProxyServlet proxyServlet) {
 		super(proxyServlet);
 		nsWMTS = Namespace.getNamespace("http://www.opengis.net/wmts/1.0");
 	}
@@ -139,7 +141,7 @@ public class WMTS100ProxyResponseBuilder extends WMTSProxyResponseBuilder {
 	 * Filter the contents of the capabilities :
 	 * - allowed layers
 	 */
-	public Boolean CapabilitiesContentsFiltering (Hashtable<String, String> filePathList ){
+	public Boolean CapabilitiesContentsFiltering (HashMap<String, String> filePathList ){
 		servlet.logger.trace("transform - Start - Capabilities contents filtering");
 	    try
 	    {
@@ -451,6 +453,14 @@ public class WMTS100ProxyResponseBuilder extends WMTSProxyResponseBuilder {
 
 	@Override
 	public Boolean CapabilitiesMerging(HashMap<String, String> filePathList) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Boolean CapabilitiesContentsFiltering(
+			Hashtable<String, String> filePathList)
+			throws NoSuchAuthorityCodeException {
 		// TODO Auto-generated method stub
 		return null;
 	}

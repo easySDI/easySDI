@@ -16,8 +16,11 @@
  */
 package org.easysdi.proxy.wms.v111;
 
+import java.util.HashMap;
+
 import org.easysdi.proxy.core.ProxyServlet;
 import org.easysdi.proxy.wms.WMSProxyResponseBuilder;
+import org.opengis.referencing.NoSuchAuthorityCodeException;
 
 /**
  * @author DEPTH SA
@@ -30,5 +33,13 @@ public class WMSProxyResponseBuilder111 extends WMSProxyResponseBuilder {
 	 */
 	public WMSProxyResponseBuilder111(ProxyServlet proxyServlet) {
 		super(proxyServlet);
+	}
+
+	@Override
+	public Boolean CapabilitiesContentsFiltering(
+			HashMap<String, String> filePathList)
+			throws NoSuchAuthorityCodeException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
