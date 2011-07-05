@@ -686,7 +686,7 @@ echo $pane->endPanel();
 				}
 				$keywordString = substr($keywordString, 0, strlen($keywordString)-1) ;
 				
-				HTML_proxy::genericServletInformationsHeader ($config, $configId, "org.easysdi.proxy.wmts.v100.WMTS100ProxyServlet", $availableServletList,$availableVersion,$servletVersion)
+				HTML_proxy::genericServletInformationsHeader ($config, $configId, "org.easysdi.proxy.wmts.WMTSProxyServlet", $availableServletList,$availableVersion,$servletVersion)
 		?>
 			
 			<fieldset class="adminform" id="service_metadata" ><legend><?php echo JText::_( 'PROXY_CONFIG_FS_SERVICE_METADATA'); ?></legend>
@@ -1453,7 +1453,7 @@ function submitbutton(pressbutton)
 			else if (strcmp($servletClass,"org.easysdi.proxy.csw.CSWProxyServlet")==0 ){					
 				HTML_proxy::generateCSWHTML($config,$thePolicy, $rowsVisibility, $rowsStatus, $rowsObjectTypes,$servletVersion);  
 			}
-			else if (strcmp($servletClass,"org.easysdi.proxy.wmts.v100.WMTS100ProxyServlet")==0 ){					
+			else if (strcmp($servletClass,"org.easysdi.proxy.wmts.WMTSProxyServlet")==0 ){					
 				HTML_proxy::generateWMTS100HTML($config,$thePolicy,$servletVersion);  
 			}
 			break;
@@ -2633,7 +2633,7 @@ function submitbutton(pressbutton)
 					{
 						echo "WMS";
 					}
-					else if($config->{'servlet-class'} == "org.easysdi.proxy.wmts.v100.WMTS100ProxyServlet")
+					else if($config->{'servlet-class'} == "org.easysdi.proxy.wmts.WMTSProxyServlet")
 					{
 						echo "WMTS100";
 					}
@@ -2653,7 +2653,7 @@ function submitbutton(pressbutton)
 				//echo "<b>".WMS."  </b>";
 				echo "<b>WMS</b>";
 			}
-			else if($config->{'servlet-class'} == "org.easysdi.proxy.wmts.v100.WMTS100ProxyServlet")
+			else if($config->{'servlet-class'} == "org.easysdi.proxy.wmts.WMTSProxyServlet")
 			{
 				echo "<b>WMTS100</b>";
 			}

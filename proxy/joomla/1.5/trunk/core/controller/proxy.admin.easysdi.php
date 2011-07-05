@@ -79,7 +79,7 @@ class ADMIN_proxy
 		
 		$availableServlet = array("org.easysdi.proxy.wfs.WFSProxyServlet" => "org.easysdi.proxy.wfs.WFSProxyServlet", 
 								  "org.easysdi.proxy.wms.WMSProxyServlet" => "org.easysdi.proxy.wms.WMSProxyServlet", 
-								  "org.easysdi.proxy.wmts.v100.WMTS100ProxyServlet" => "org.easysdi.proxy.wmts.v100.WMTS100ProxyServlet", 
+								  "org.easysdi.proxy.wmts.WMTSProxyServlet" => "org.easysdi.proxy.wmts.WMTSProxyServlet", 
 								  "org.easysdi.proxy.csw.CSWProxyServlet" => "org.easysdi.proxy.csw.CSWProxyServlet");
 		$availableServletList = array();
 		 foreach($availableServlet as $key=>$value) :
@@ -96,7 +96,7 @@ class ADMIN_proxy
 			 endforeach;
 			HTML_proxy::editConfigWMS($xml, $new, $configId, $availableServletList,$availableVersionList, $option,$task);
 		}
-		else if($servletClass == "org.easysdi.proxy.wmts.v100.WMTSProxyServlet" )
+		else if($servletClass == "org.easysdi.proxy.wmts.WMTSProxyServlet" )
 		{
 			$availableVersion = array(""=> "","1.0.0" => "1.0.0");
 			$availableVersionList = array();
@@ -114,7 +114,7 @@ class ADMIN_proxy
 			 endforeach;
 			HTML_proxy::editConfigCSW($xml, $new, $configId, $availableServletList,$availableVersionList, $option,$task);
 		}
-		else if($servletClass == "org.easysdi.proxy.wmts.v100.WMTS100ProxyServlet" )
+		else if($servletClass == "org.easysdi.proxy.wmts.WMTSProxyServlet" )
 		{
 			$availableVersion = array(""=> "","1.0.0" => "1.0.0");
 			$availableVersionList = array();
@@ -736,7 +736,7 @@ function savePolicy($xml){
 				
 				if (strcasecmp($servletClass, 'org.easysdi.proxy.csw.CSWProxyServlet') == 0 )
 					$theServer->Metadata ="";
-				if (strcasecmp($servletClass, 'org.easysdi.proxy.wms.WMSProxyServlet') == 0 || strcasecmp($servletClass, 'org.easysdi.proxy.wmts.v100.WMTS100ProxyServlet') == 0) 
+				if (strcasecmp($servletClass, 'org.easysdi.proxy.wms.WMSProxyServlet') == 0 || strcasecmp($servletClass, 'org.easysdi.proxy.wmts.WMTSProxyServlet') == 0) 
 					$theServer->Layers ="";
 				if (strcasecmp($servletClass, 'org.easysdi.proxy.wfs.WFSProxyServlet') == 0 )
 					$theServer->FeatureTypes="";
@@ -788,7 +788,7 @@ function savePolicy($xml){
 				
 				if (strcasecmp($servletClass, 'org.easysdi.proxy.csw.CSWProxyServlet') == 0 )
 					$theServer->Metadata ="";
-				if (strcasecmp($servletClass, 'org.easysdi.proxy.wms.WMSProxyServlet') == 0 || strcasecmp($servletClass, 'org.easysdi.proxy.wmts.v100.WMTS100ProxyServlet') == 0)
+				if (strcasecmp($servletClass, 'org.easysdi.proxy.wms.WMSProxyServlet') == 0 || strcasecmp($servletClass, 'org.easysdi.proxy.wmts.WMTSProxyServlet') == 0)
 					$theServer->Layers ="";
 				if (strcasecmp($servletClass, 'org.easysdi.proxy.wfs.WFSProxyServlet') == 0 )
 					$theServer->FeatureTypes="";
@@ -1095,7 +1095,7 @@ function saveConfig($xml,$configFilePath){
 			$config->{"authorization"}->{"policy-file"}=$policyFile;
 			
 			//Service metadata
-			if (strcmp($servletClass,"org.easysdi.proxy.wmts.v100.WMTS100ProxyServlet")==0 )
+			if (strcmp($servletClass,"org.easysdi.proxy.wmts.WMTSProxyServlet")==0 )
 			{
 				$config = ADMIN_proxy::serviceMetadataOWS($config);
 			}
