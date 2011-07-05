@@ -116,14 +116,6 @@ public abstract class ProxyResponseBuilder {
 	 * @return true if the GetCapabilities was succesfully merged, false otherwise
 	 * If returns false, the caller should call getLastException() to get the catched exception.
 	 */
-	public abstract Boolean CapabilitiesMerging(Hashtable<String, String> filePathList);
-	
-	/**
-	 * Merge all the remote servers GetCapabilities response into one single file
-	 * @param filePathList : File paths of the remote server responses 
-	 * @return true if the GetCapabilities was succesfully merged, false otherwise
-	 * If returns false, the caller should call getLastException() to get the catched exception.
-	 */
 	public abstract Boolean CapabilitiesMerging(HashMap<String, String> filePathList);
 	
 	/**

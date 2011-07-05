@@ -21,13 +21,11 @@ import java.net.URLEncoder;
 import java.util.Enumeration;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.easysdi.proxy.core.ProxyLayer;
 import org.easysdi.proxy.core.ProxyServletRequest;
 import org.easysdi.proxy.exception.ProxyServletException;
 import org.easysdi.proxy.exception.VersionNotSupportedException;
-import org.easysdi.proxy.ows.OWSExceptionReport;
 
 /**
  * @author DEPTH SA
@@ -35,17 +33,60 @@ import org.easysdi.proxy.ows.OWSExceptionReport;
  */
 public class WMTSProxyServletRequest extends ProxyServletRequest {
 
-	private String acceptVersions = "";
-	private String sections = "";
-	private String updateSequence = "";
-	private String acceptFormats = "";
-	private String layer = "";
-	private String style = "";
-	private String format ="";
-	private String tileMatrixSet = "";
-	private String tileMatrix = "";
-	private String tileRow = "";
-	private String tileCol = "";
+    /**
+     * 
+     */
+    private String acceptVersions;
+    
+    /**
+     * 
+     */
+    private String sections;
+    
+    /**
+     * 
+     */
+    private String updateSequence;
+    
+    /**
+     * 
+     */
+    private String acceptFormats;
+    
+    /**
+     * 
+     */
+    private String layer;
+    
+    /**
+     * 
+     */
+    private String style;
+    
+    /**
+     * 
+     */
+    private String format;
+    
+    /**
+     * 
+     */
+    private String tileMatrixSet;
+    
+    /**
+     * 
+     */
+    private String tileMatrix;
+    
+    /**
+     * 
+     */
+    private String tileRow;
+    
+    /**
+     * 
+     */
+    private String tileCol;
 	
 	/**
 	 * @param tileCol the tileCol to set
@@ -213,18 +254,29 @@ public class WMTSProxyServletRequest extends ProxyServletRequest {
 	
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void parseRequestGET () throws ProxyServletException{
-		Enumeration<String> parameterNames = request.getParameterNames();
-		
-		while (parameterNames.hasMoreElements()) {
-			String key = (String) parameterNames.nextElement();
-			String value = null;
+	    Enumeration<String> parameterNames = request.getParameterNames();
+	    
+	    while (parameterNames.hasMoreElements()) {
+		String key = (String) parameterNames.nextElement();
+		String value = null;
 			
-			try {
-				value = URLEncoder.encode(request.getParameter(key), "UTF-8");
-			} catch (UnsupportedEncodingException e) {
-				throw new ProxyServletException(e.toString());
-			}
+		if (	   key.equalsIgnoreCase("LAYER") 
+			|| key.equalsIgnoreCase("STYLE")
+			|| key.equalsIgnoreCase("TILEMATRIX") 
+			|| key.equalsIgnoreCase("TILEMATRIXSET") 
+			|| key.equalsIgnoreCase("TILEROW")
+			|| key.equalsIgnoreCase("TILECOL")) {
+		    value = request.getParameter(key);
+		} else {
+		    try {
+        		value = URLEncoder.encode(request.getParameter(key),"UTF-8");
+		    } catch (UnsupportedEncodingException e) {
+        		throw new ProxyServletException(e.toString());
+		    }
+		}
+			
 			if (key.equalsIgnoreCase("acceptVersions")){
 				value = "1.0.0";
 				urlParameters = urlParameters + key + "=" + value + "&";
@@ -274,51 +326,43 @@ public class WMTSProxyServletRequest extends ProxyServletRequest {
 			}
 			else if (key.equalsIgnoreCase("sections"))
 			{
-				setSections(request.getParameter(key));
+				sections = request.getParameter(key);
 			}
 			else if (key.equalsIgnoreCase("updateSequence"))
 			{
-				setUpdateSequence(request.getParameter(key));
+				updateSequence = request.getParameter(key);
 			}
 			else if (key.equalsIgnoreCase("acceptFormats"))
 			{
-				setAcceptFormats(request.getParameter(key));
+				acceptFormats = request.getParameter(key);
 			}
 			else if (key.equalsIgnoreCase("Layer"))
 			{
-				setLayer(request.getParameter(key));
-//				pLayer = new ProxyLayer(layer);
-				//TODO:check this in the WMTSProxyServlet
-//				if(pLayer.getAlias() == null)
-//				{
-//					StringBuffer out = owsExceptionReport.generateExceptionReport("Invalid layer name given in the LAYER parameter : "+layer,OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE,"layer");
-//					sendHttpServletResponse(request, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
-//					return;
-//				}
+				layer = request.getParameter(key);
 			}
 			else if (key.equalsIgnoreCase("Style"))
 			{
-				setStyle(request.getParameter(key));
+				style = request.getParameter(key);
 			}
 			else if (key.equalsIgnoreCase("Format"))
 			{
-				setFormat(request.getParameter(key));
+				format = request.getParameter(key);
 			}
 			else if (key.equalsIgnoreCase("TileMatrixSet"))
 			{
-				setTileMatrixSet(request.getParameter(key));
+				tileMatrixSet = request.getParameter(key);
 			}
 			else if (key.equalsIgnoreCase("TileMatrix"))
 			{
-				setTileMatrix(request.getParameter(key));
+				tileMatrix = request.getParameter(key);
 			}
 			else if (key.equalsIgnoreCase("TileRow"))
 			{
-				setTileRow(request.getParameter(key));
+				tileRow = request.getParameter(key);
 			}
 			else if (key.equalsIgnoreCase("TileCol"))
 			{
-				setTileCol(request.getParameter(key));
+				tileCol = request.getParameter(key);
 			}
 		}
 		

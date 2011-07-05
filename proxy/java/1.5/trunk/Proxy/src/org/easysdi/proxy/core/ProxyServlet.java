@@ -89,7 +89,6 @@ import org.geotools.xml.XMLHandlerHints;
 import org.jdom.Document;
 import org.jdom.Namespace;
 import org.jdom.input.SAXBuilder;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -112,15 +111,13 @@ public abstract class ProxyServlet extends HttpServlet {
 	private static final String JPG = "image/jpg";
 	private static final String JPEG = "image/jpeg";
 	private static final String TIFF = "image/tiff";
-	private static final String HTML = "text/html";
-	private static final String PLAIN = "text/plain";
 	private static final String BMP = "image/bmp";
 	protected static final String XML = "text/xml";
 	protected static final String APPLICATION_XML = "application/xml";
 	protected static final String XML_OGC_WMS = "application/vnd.ogc.wms_xml";
 	protected static final String XML_OGC_EXCEPTION = "application/vnd.ogc.se_xml";
 	protected static final String SVG = "image/svg+xml";
-	private List<String> temporaryFileList = new Vector();
+	private List<String> temporaryFileList = new Vector<String>();
 
 	/**
 	 * Configuration loaded to complete the request
@@ -191,7 +188,7 @@ public abstract class ProxyServlet extends HttpServlet {
 	/**
 	 * 
 	 */
-	private List<String> lLogs = new Vector<String>();
+	//private List<String> lLogs = new Vector<String>();
 	
 	/**
 	 * 
@@ -218,6 +215,9 @@ public abstract class ProxyServlet extends HttpServlet {
 	 */
 	protected ProxyServletRequest proxyRequest;
 	
+	/**
+	 * Logger
+	 */
 	public Logger logger;
 	
 	/**
@@ -368,9 +368,9 @@ public abstract class ProxyServlet extends HttpServlet {
 	 * Get the policy file path
 	 * @return file path
 	 */
-	protected String getPolicyFilePath() {
-		return configuration.getPolicyFile();
-	}
+//	protected String getPolicyFilePath() {
+//		return configuration.getPolicyFile();
+//	}
 
 	
 	/**
@@ -439,12 +439,12 @@ public abstract class ProxyServlet extends HttpServlet {
 	 * @param req
 	 * @return
 	 */
-	protected String getPolicyFile(ServletConfig config) {
-		String policyFile = (String) config.getInitParameter("policy-file");
-		if (policyFile == null)
-			policyFile = "policy.xml";
-		return policyFile;
-	}
+//	protected String getPolicyFile(ServletConfig config) {
+//		String policyFile = (String) config.getInitParameter("policy-file");
+//		if (policyFile == null)
+//			policyFile = "policy.xml";
+//		return policyFile;
+//	}
 
 	/* (non-Javadoc)
 	 * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
@@ -535,6 +535,7 @@ public abstract class ProxyServlet extends HttpServlet {
 	 * 
 	 *  WFS version 1.1 uses tags <ExceptionReport> and subTag <Exception>
 	 */
+	@Deprecated
 	protected ByteArrayOutputStream buildResponseForOgcServiceException ()
 	{
 		try 
@@ -644,6 +645,7 @@ public abstract class ProxyServlet extends HttpServlet {
 	 * @param resp
 	 * @param ogcException
 	 */
+	@Deprecated
 	public void sendOgcExceptionBuiltInResponse (HttpServletResponse resp,StringBuffer ogcException)
 	{
 		try {
@@ -668,6 +670,7 @@ public abstract class ProxyServlet extends HttpServlet {
 		}
 	}
 	
+	@Deprecated
 	public void sendProxyBuiltInResponse (HttpServletResponse resp,StringBuffer xmlResponse)
 	{
 		try {
@@ -1006,6 +1009,7 @@ public abstract class ProxyServlet extends HttpServlet {
 	 * @param parameterFileName The name of the file that will be published in
 	 * the request
 	 */
+	@Deprecated
 	protected StringBuffer sendFile(String urlstr, String filePath, String loginServiceUrl, String parameterName, String parameterFileName) {
 		try {
 			InputStream is = new FileInputStream(filePath);
@@ -1016,6 +1020,7 @@ public abstract class ProxyServlet extends HttpServlet {
 		return new StringBuffer();
 	}
 
+	@Deprecated
 	protected StringBuffer sendFile(String urlstr, InputStream in, String loginServiceUrl, String parameterName, String parameterFileName) {
 
 		try {
@@ -1082,6 +1087,13 @@ public abstract class ProxyServlet extends HttpServlet {
 		return new StringBuffer();
 	}
 
+	/**
+	 * Onnla used in CSW
+	 * @param urlstr
+	 * @param param
+	 * @param loginServiceUrl
+	 * @return
+	 */
 	protected StringBuffer sendFile(String urlstr, StringBuffer param, String loginServiceUrl) {
 
 		try {
@@ -1118,54 +1130,57 @@ public abstract class ProxyServlet extends HttpServlet {
 		return new StringBuffer();
 	}
 
-	protected StringBuffer send(String urlstr, String loginServiceUrl) {
-		try {
-
-			String cookie = null;
-			if (loginServiceUrl != null) {
-				cookie = geonetworkLogIn(loginServiceUrl);
-			}
-
-			URL url = new URL(urlstr);
-			HttpURLConnection hpcon = null;
-
-			hpcon = (HttpURLConnection) url.openConnection();
-			hpcon.setRequestMethod("GET");
-			if (cookie != null) {
-				hpcon.addRequestProperty("Cookie", cookie);
-			}
-
-			hpcon.setUseCaches(false);
-			hpcon.setDoInput(true);
-
-			hpcon.setDoOutput(false);
-
-			// getting the response is required to force the request, otherwise
-			// it might not even be sent at all
-			InputStream in = null;
-
-			if (hpcon.getContentEncoding() != null && hpcon.getContentEncoding().indexOf("gzip") != -1) {
-				in = new GZIPInputStream(hpcon.getInputStream());
-			} else {
-				in = hpcon.getInputStream();
-			}
-
-			BufferedReader br = new BufferedReader(new InputStreamReader(in));
-
-			String input;
-			StringBuffer response = new StringBuffer();
-			while ((input = br.readLine()) != null) {
-				response.append(input);
-			}
-			return response;
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return new StringBuffer();
-	}
+//	protected StringBuffer send(String urlstr, String loginServiceUrl) {
+//		try {
+//
+//			String cookie = null;
+//			if (loginServiceUrl != null) {
+//				cookie = geonetworkLogIn(loginServiceUrl);
+//			}
+//
+//			URL url = new URL(urlstr);
+//			HttpURLConnection hpcon = null;
+//
+//			hpcon = (HttpURLConnection) url.openConnection();
+//			hpcon.setRequestMethod("GET");
+//			if (cookie != null) {
+//				hpcon.addRequestProperty("Cookie", cookie);
+//			}
+//
+//			hpcon.setUseCaches(false);
+//			hpcon.setDoInput(true);
+//
+//			hpcon.setDoOutput(false);
+//
+//			// getting the response is required to force the request, otherwise
+//			// it might not even be sent at all
+//			InputStream in = null;
+//
+//			if (hpcon.getContentEncoding() != null && hpcon.getContentEncoding().indexOf("gzip") != -1) {
+//				in = new GZIPInputStream(hpcon.getInputStream());
+//			} else {
+//				in = hpcon.getInputStream();
+//			}
+//
+//			BufferedReader br = new BufferedReader(new InputStreamReader(in));
+//
+//			String input;
+//			StringBuffer response = new StringBuffer();
+//			while ((input = br.readLine()) != null) {
+//				response.append(input);
+//			}
+//			return response;
+//
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		return new StringBuffer();
+//	}
 
 	
+	/**
+	 * TODO : move to WMS
+	 */
 	protected boolean isAcceptingTransparency(String responseContentType) {
 		boolean isTransparent = false;
 		if (responseContentType == null)
@@ -1224,6 +1239,11 @@ public abstract class ProxyServlet extends HttpServlet {
 		return ext;
 	}
 
+	/**
+	 * @param name
+	 * @param ext
+	 * @return
+	 */
 	protected File createTempFile(String name, String ext) {
 		try {
 			File f = File.createTempFile(name, ext);
@@ -1236,6 +1256,9 @@ public abstract class ProxyServlet extends HttpServlet {
 
 	}
 
+	/**
+	 * 
+	 */
 	protected void deleteTempFileList() {
 
 		try {
@@ -1259,6 +1282,10 @@ public abstract class ProxyServlet extends HttpServlet {
 
 	}
 
+	/**
+	 * @param responseContentType
+	 * @return
+	 */
 	protected boolean isXML(String responseContentType) {
 		if (responseContentType == null)
 			return false;
@@ -1631,28 +1658,29 @@ public abstract class ProxyServlet extends HttpServlet {
 	 * @param layer
 	 * @return
 	 */
-	protected String getLayerBbox(String url, String layer) {
-		if (policy == null)
-			return null;
-
-		List<Server> serverList = policy.getServers().getServer();
-
-		for (int i = 0; i < serverList.size(); i++) {
-			if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
-				List<Layer> layerList = serverList.get(i).getLayers().getLayer();
-				for (int j = 0; j < layerList.size(); j++) {
-					if (layer.equals(layerList.get(j).getName())) {
-						if (layerList.get(j).getLatLonBoundingBox() == null)
-							return null;
-						return layerList.get(j).getLatLonBoundingBox();
-					}
-				}
-			}
-		}
-		return null;
-	}
+//	protected String getLayerBbox(String url, String layer) {
+//		if (policy == null)
+//			return null;
+//
+//		List<Server> serverList = policy.getServers().getServer();
+//
+//		for (int i = 0; i < serverList.size(); i++) {
+//			if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
+//				List<Layer> layerList = serverList.get(i).getLayers().getLayer();
+//				for (int j = 0; j < layerList.size(); j++) {
+//					if (layer.equals(layerList.get(j).getName())) {
+//						if (layerList.get(j).getLatLonBoundingBox() == null)
+//							return null;
+//						return layerList.get(j).getLatLonBoundingBox();
+//					}
+//				}
+//			}
+//		}
+//		return null;
+//	}
 
 	/**
+	 * TODO : move to WMS
 	 * Detects if the layer is an allowed or not against the rule.
 	 * 
 	 * @param layer
@@ -1726,6 +1754,7 @@ public abstract class ProxyServlet extends HttpServlet {
 	}
 
 	/**
+	 * TODO : move to WFS
 	 * Detects if the attribute of a feature type is allowed or not against the
 	 * rule.
 	 * 
@@ -1835,28 +1864,31 @@ public abstract class ProxyServlet extends HttpServlet {
 		return false;
 	}
 
-	protected String getLayerFilter(String layer) {
-		if (policy == null)
-			return null;
-		if (layer == null)
-			return null;
+//	protected String getLayerFilter(String layer) {
+//		if (policy == null)
+//			return null;
+//		if (layer == null)
+//			return null;
+//
+//		List<Server> serverList = policy.getServers().getServer();
+//
+//		for (int i = 0; i < serverList.size(); i++) {
+//			List<Layer> layerList = serverList.get(i).getLayers().getLayer();
+//			for (int j = 0; j < layerList.size(); j++) {
+//				// Is a specific feature type allowed ?
+//				if (layer.equals(layerList.get(j).getName())) {
+//					if (layerList.get(j).getFilter() == null)
+//						return null;
+//					return layerList.get(j).getFilter().getContent();
+//				}
+//			}
+//		}
+//		return null;
+//	}
 
-		List<Server> serverList = policy.getServers().getServer();
-
-		for (int i = 0; i < serverList.size(); i++) {
-			List<Layer> layerList = serverList.get(i).getLayers().getLayer();
-			for (int j = 0; j < layerList.size(); j++) {
-				// Is a specific feature type allowed ?
-				if (layer.equals(layerList.get(j).getName())) {
-					if (layerList.get(j).getFilter() == null)
-						return null;
-					return layerList.get(j).getFilter().getContent();
-				}
-			}
-		}
-		return null;
-	}
-
+	/**
+	 * TODO : move to WMS
+	 */
 	public String getLayerFilter(String url, String layer) {
 		if (policy == null)
 			return null;
@@ -1879,6 +1911,11 @@ public abstract class ProxyServlet extends HttpServlet {
 		return null;
 	}
 
+	/**
+	 * TODO move to WFS
+	 * @param url
+	 * @return
+	 */
 	protected String getServerNamespace(String url) {
 		if (policy == null)
 			return null;
@@ -1894,6 +1931,11 @@ public abstract class ProxyServlet extends HttpServlet {
 		return null;
 	}
 
+	/**
+	 * TODO move to WFS
+	 * @param url
+	 * @return
+	 */
 	protected String getServerPrefix(String url) {
 		if (policy == null)
 			return null;
@@ -1909,6 +1951,11 @@ public abstract class ProxyServlet extends HttpServlet {
 		return null;
 	}
 
+	/**
+	 * TODO move to WFS
+	 * @param url
+	 * @return
+	 */
 	protected String getFeatureTypeLocalFilter(String url, String ft) {
 
 		if (policy == null)
@@ -1934,6 +1981,11 @@ public abstract class ProxyServlet extends HttpServlet {
 		return null;
 	}
 
+	/**
+	 * TODO move to WFS
+	 * @param url
+	 * @return
+	 */
 	protected String getFeatureTypeRemoteFilter(String url, String ft) {
 
 		if (policy == null)
@@ -1958,6 +2010,13 @@ public abstract class ProxyServlet extends HttpServlet {
 		return null;
 	}
 
+	
+	/**
+	 * TODO move to WMS
+	 * @param currentWidth
+	 * @param currentHeight
+	 * @return
+	 */
 	protected boolean isSizeInTheRightRange(int currentWidth, int currentHeight) {
 
 		if (policy == null)
@@ -1990,24 +2049,24 @@ public abstract class ProxyServlet extends HttpServlet {
 		return false;
 	}
 
-	protected String getServerFilter(String url) {
-		if (policy == null)
-			return null;
-		List<Server> serverList = policy.getServers().getServer();
-
-		for (int i = 0; i < serverList.size(); i++) {
-
-			if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
-
-				if (serverList.get(i).getFilter() == null)
-					return null;
-				return serverList.get(i).getFilter().getContent();
-
-			}
-
-		}
-		return null;
-	}
+//	protected String getServerFilter(String url) {
+//		if (policy == null)
+//			return null;
+//		List<Server> serverList = policy.getServers().getServer();
+//
+//		for (int i = 0; i < serverList.size(); i++) {
+//
+//			if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
+//
+//				if (serverList.get(i).getFilter() == null)
+//					return null;
+//				return serverList.get(i).getFilter().getContent();
+//
+//			}
+//
+//		}
+//		return null;
+//	}
 
 	/**
 	 * If the current date is not in the right date range returns an error
@@ -2054,6 +2113,11 @@ public abstract class ProxyServlet extends HttpServlet {
 		return true;
 	}
 
+	/**
+	 * TOD move to CSW
+	 * @param url
+	 * @return
+	 */
 	protected List<String> getAttributesNotAllowedInMetadata(String url) {
 		List<String> attrList = new Vector<String>();
 
@@ -2079,34 +2143,37 @@ public abstract class ProxyServlet extends HttpServlet {
 		return attrList;
 	}
 
-	protected boolean isAttributeAllowedForMetadata(String url, String attribute) {
-		if (policy == null)
-			return false;
-		if (policy.getAvailabilityPeriod() != null) {
-			if (isDateAvaillable(policy.getAvailabilityPeriod()) == false)
-				return false;
-		}
+//	protected boolean isAttributeAllowedForMetadata(String url, String attribute) {
+//		if (policy == null)
+//			return false;
+//		if (policy.getAvailabilityPeriod() != null) {
+//			if (isDateAvaillable(policy.getAvailabilityPeriod()) == false)
+//				return false;
+//		}
+//
+//		List<Server> serverList = policy.getServers().getServer();
+//
+//		for (int i = 0; i < serverList.size(); i++) {
+//			// Is the server overloaded?
+//			if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
+//				if (serverList.get(i).getMetadata().getAttributes().isAll())
+//					return true;
+//				List<Attribute> attrList = serverList.get(i).getMetadata().getAttributes().getAttribute();
+//				for (int j = 0; j < attrList.size(); j++) {
+//					if (attribute.equals(attrList.get(j).getContent())) {
+//						return true;
+//					}
+//				}
+//			}
+//		}
+//
+//		// in any other case the attribute is not allowed
+//		return false;
+//	}
 
-		List<Server> serverList = policy.getServers().getServer();
-
-		for (int i = 0; i < serverList.size(); i++) {
-			// Is the server overloaded?
-			if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
-				if (serverList.get(i).getMetadata().getAttributes().isAll())
-					return true;
-				List<Attribute> attrList = serverList.get(i).getMetadata().getAttributes().getAttribute();
-				for (int j = 0; j < attrList.size(); j++) {
-					if (attribute.equals(attrList.get(j).getContent())) {
-						return true;
-					}
-				}
-			}
-		}
-
-		// in any other case the attribute is not allowed
-		return false;
-	}
-
+	/**
+	 * TODO move to CSW
+	 */
 	protected boolean areAllAttributesAllowedForMetadata(String url) {
 		if (policy == null)
 			return false;
@@ -2135,6 +2202,7 @@ public abstract class ProxyServlet extends HttpServlet {
 	}
 
 	/**
+	 * TODO : move to WFS
 	 * Open a wfs GetFeature response file and load xsd schema correctly. See
 	 * remote-server-list element in config.xml for credentials.
 	 * 

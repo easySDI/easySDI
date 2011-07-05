@@ -20,10 +20,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 import javax.servlet.http.HttpServletRequest;
@@ -97,59 +97,9 @@ public class WMTSProxyServlet extends ProxyServlet{
 				return;
 			}
 			
+			Method preTreatmentMethod = this.getClass().getMethod("requestPreTreatment"+getProxyRequest().getOperation(), new Class [] {Class.forName ("javax.servlet.http.HttpServletRequest"), Class.forName ("javax.servlet.http.HttpServletResponse")});
+			preTreatmentMethod.invoke(this ,new Object[] {req,resp});
 			
-			
-//			//Servers define in config.xml
-//			Hashtable<String, RemoteServerInfo> htRemoteServer = getRemoteServerHastable();
-//			List<WMTSProxyServerGetCapabilitiesThread> serverThreadList = new Vector<WMTSProxyServerGetCapabilitiesThread>();
-//
-//			if (getProxyRequest().getOperation().equalsIgnoreCase("getcapabilities")) {
-//				Enumeration<RemoteServerInfo> enumRS =  htRemoteServer.elements();
-//				while (enumRS.hasMoreElements())
-//				{
-//					RemoteServerInfo rs = (RemoteServerInfo)enumRS.nextElement();
-//					WMTSProxyServerGetCapabilitiesThread s = new WMTSProxyServerGetCapabilitiesThread( this,getProxyRequest().getUrlParameters(),rs , resp);
-//					s.start();
-//					serverThreadList.add(s);
-//				}
-//			}
-//			else if(getProxyRequest().getOperation().equalsIgnoreCase("gettile"))
-//			{
-//				//Find the remote server concerning by the current request
-//				ProxyLayer pLayer = new ProxyLayer(((WMTSProxyServletRequest)getProxyRequest()).getLayer());
-//				
-//				if(pLayer.getAlias() == null)
-//				{
-//					logger.error( OWSExceptionReport.TEXT_INVALID_LAYER_NAME+pLayer.getAliasName());
-//					StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_LAYER_NAME+pLayer.getAliasName(),OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE,"LAYER");
-//					sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
-//					return;
-//				}
-//				RemoteServerInfo RS = (RemoteServerInfo)htRemoteServer.get(pLayer.getAlias());
-//				
-//				//Check layer
-//				if( RS == null || !isLayerAllowed(pLayer.getPrefixedName(), RS.getUrl())){
-//					StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_LAYER_NAME+pLayer.getAliasName(),OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE,"LAYER");
-//					sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
-//					return;
-//				}
-//				
-//				sendDataDirectStream(resp,"GET", RS.getUrl(), getProxyRequest().getUrlParameters());
-//				return;
-//			}
-//			
-//			for (int i = 0; i < serverThreadList.size(); i++) {
-//				serverThreadList.get(i).join();
-//			}
-//			if (wmtsGetCapabilitiesResponseFilePathMap.size() > 0) {
-//				//Post treatment
-//				logger.trace("requestPreTraitementGET begin transform");
-//				transform(requestedVersion, getProxyRequest().getOperation(), req, resp);
-//				logger.trace("requestPreTraitementGET end transform");
-//			} else {
-//				logger.info( "This request has no authorized results. Generate an empty response.");
-//				sendProxyBuiltInResponse(resp,generateEmptyResponse(getProxyRequest().getOperation()));
-//			}
 		}
 		catch (Exception e)
 		{
@@ -194,11 +144,18 @@ public class WMTSProxyServlet extends ProxyServlet{
 			if (wmtsGetCapabilitiesResponseFilePathMap.size() > 0) {
 				//Post treatment
 				logger.trace("requestPreTraitementGET begin transform");
-				transform(requestedVersion, getProxyRequest().getOperation(), req, resp);
+				transformGetCapabilities(requestedVersion, getProxyRequest().getOperation(), req, resp);
 				logger.trace("requestPreTraitementGET end transform");
 			} else {
-				logger.info( "This request has no authorized results. Generate an empty response.");
-				sendProxyBuiltInResponse(resp,generateEmptyResponse(getProxyRequest().getOperation()));
+				StringBuffer out;
+				try {
+					logger.error(OWSExceptionReport.TEXT_NO_RESULT_RECEIVED_BY_PROXY);
+					out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_NO_RESULT_RECEIVED_BY_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
+					sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
+				} catch (IOException e) {
+					logger.error( configuration.getServletClass() + ".requestPreTreatmentGetCapabilities : ", e);
+				}
+				return;
 			}
 		}catch(Exception e){
 			resp.setHeader("easysdi-proxy-error-occured", "true");
@@ -218,7 +175,6 @@ public class WMTSProxyServlet extends ProxyServlet{
 		try{
 			//Servers define in config.xml
 			Hashtable<String, RemoteServerInfo> htRemoteServer = getRemoteServerHastable();
-			List<WMTSProxyServerGetCapabilitiesThread> serverThreadList = new Vector<WMTSProxyServerGetCapabilitiesThread>();
 			
 			//Find the remote server concerning by the current request
 			ProxyLayer pLayer = new ProxyLayer(((WMTSProxyServletRequest)getProxyRequest()).getLayer());
@@ -263,7 +219,7 @@ public class WMTSProxyServlet extends ProxyServlet{
 	 * @param req
 	 * @param resp
 	 */
-	public void transform(String version, String operation, HttpServletRequest req, HttpServletResponse resp) {
+	public void transformGetCapabilities(String version, String operation, HttpServletRequest req, HttpServletResponse resp) {
 		
 		try{
 			//Get the responses which are OGC exception (XML)
@@ -326,7 +282,7 @@ public class WMTSProxyServlet extends ProxyServlet{
 				{
 					logger.error(docBuilder.getLastException().toString());
 					StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
-					sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+					sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
 					return;
 				}
 				
@@ -334,7 +290,7 @@ public class WMTSProxyServlet extends ProxyServlet{
 				{
 					logger.error(docBuilder.getLastException().toString());
 					StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
-					sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+					sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
 					return;
 				}
 				
@@ -342,7 +298,7 @@ public class WMTSProxyServlet extends ProxyServlet{
 				{
 					logger.error(docBuilder.getLastException().toString());
 					StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
-					sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+					sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
 					return;
 				}
 				
@@ -350,7 +306,7 @@ public class WMTSProxyServlet extends ProxyServlet{
 				{
 					logger.error(docBuilder.getLastException().toString());
 					StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
-					sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+					sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
 					return;
 				}
 				
@@ -384,14 +340,5 @@ public class WMTSProxyServlet extends ProxyServlet{
 	@Deprecated
 	protected StringBuffer generateOgcException(String errorMessage, String code, String locator, String version) {
 		return null;
-	}
-	
-	protected StringBuffer generateEmptyResponse (String operation)
-	{
-		StringBuffer sb = new StringBuffer("<?xml version='1.0' encoding='utf-8' ?>");
-		
-		return sb;
-	}
-
-	
+	}	
 }

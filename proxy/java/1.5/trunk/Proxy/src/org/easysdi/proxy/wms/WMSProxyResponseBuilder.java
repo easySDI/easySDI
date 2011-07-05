@@ -966,13 +966,5 @@ public abstract class WMSProxyResponseBuilder extends ProxyResponseBuilder{
 	@Override
 	public Boolean CapabilitiesContentsFiltering(Hashtable<String, String> filePathList)throws NoSuchAuthorityCodeException {
 		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.easysdi.proxy.core.ProxyResponseBuilder#CapabilitiesMerging(java.util.Hashtable)
-	 */
-	@Override
-	public Boolean CapabilitiesMerging(Hashtable<String, String> filePathList) {
-		return null;
-	}
+	}	
 }

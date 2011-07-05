@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -228,7 +229,7 @@ public class WMTSProxyResponseBuilder100 extends WMTSProxyResponseBuilder {
 	/**
 	 * Merge the capabilities into one single file
 	 */
-	public Boolean CapabilitiesMerging(Hashtable<String,String> filePathList)
+	public Boolean CapabilitiesMerging(HashMap<String, String> filePathList)
 	{
 		servlet.logger.trace("transform - Start - Capabilities merging");
 		if (filePathList.size() == 0)
@@ -248,10 +249,11 @@ public class WMTSProxyResponseBuilder100 extends WMTSProxyResponseBuilder {
 			Element racineMaster = documentMaster.getRootElement();
 			Element contentsMaster=  ((Element)racineMaster.getDescendants(layerFilter).next()).getParentElement();
 			
-			Enumeration<String> enumFile = filePathList.elements();
-			while (enumFile.hasMoreElements())
+			Collection<String> enumFile = filePathList.values();
+			Iterator<String> it = enumFile.iterator();
+			while (it.hasNext())
 			{
-				String nfile = enumFile.nextElement();
+				String nfile = it.next();
 				if(nfile.equals(fileMasterPath))
 					continue;
 				Document documentChild = null;
@@ -451,12 +453,7 @@ public class WMTSProxyResponseBuilder100 extends WMTSProxyResponseBuilder {
 		return null;
 	}
 
-	@Override
-	public Boolean CapabilitiesMerging(HashMap<String, String> filePathList) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
+	
 	@Override
 	public Boolean CapabilitiesContentsFiltering(
 			Hashtable<String, String> filePathList)
