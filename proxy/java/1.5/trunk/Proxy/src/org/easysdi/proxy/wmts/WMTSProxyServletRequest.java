@@ -71,6 +71,11 @@ public class WMTSProxyServletRequest extends ProxyServletRequest {
     /**
      * 
      */
+    private String infoFormat;
+    
+    /**
+     * 
+     */
     private String tileMatrixSet;
     
     /**
@@ -87,6 +92,16 @@ public class WMTSProxyServletRequest extends ProxyServletRequest {
      * 
      */
     private String tileCol;
+    
+    /**
+     * 
+     */
+    private String i;
+    
+    /**
+     * 
+     */
+    private String j;
 	
 	/**
 	 * @param tileCol the tileCol to set
@@ -243,6 +258,48 @@ public class WMTSProxyServletRequest extends ProxyServletRequest {
 	}
 
 	/**
+	 * @param infoFormat the infoFormat to set
+	 */
+	public void setInfoFormat(String infoFormat) {
+	    this.infoFormat = infoFormat;
+	}
+
+	/**
+	 * @return the infoFormat
+	 */
+	public String getInfoFormat() {
+	    return infoFormat;
+	}
+
+	/**
+	 * @param i the i to set
+	 */
+	public void setI(String i) {
+	    this.i = i;
+	}
+
+	/**
+	 * @return the i
+	 */
+	public String getI() {
+	    return i;
+	}
+
+	/**
+	 * @param j the j to set
+	 */
+	public void setJ(String j) {
+	    this.j = j;
+	}
+
+	/**
+	 * @return the j
+	 */
+	public String getJ() {
+	    return j;
+	}
+
+	/**
 	 * @param req
 	 * @throws Throwable
 	 */
@@ -363,6 +420,18 @@ public class WMTSProxyServletRequest extends ProxyServletRequest {
 			else if (key.equalsIgnoreCase("TileCol"))
 			{
 				tileCol = request.getParameter(key);
+			}
+			else if (key.equalsIgnoreCase("I"))
+			{
+				i = request.getParameter(key);
+			}
+			else if (key.equalsIgnoreCase("J"))
+			{
+				j = request.getParameter(key);
+			}
+			else if (key.equalsIgnoreCase("INFOFORMAT"))
+			{
+				infoFormat = request.getParameter(key);
 			}
 		}
 		

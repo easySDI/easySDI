@@ -60,6 +60,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
@@ -87,6 +94,7 @@ import org.geotools.xml.DocumentFactory;
 import org.geotools.xml.SchemaFactory;
 import org.geotools.xml.XMLHandlerHints;
 import org.jdom.Document;
+import org.jdom.JDOMException;
 import org.jdom.Namespace;
 import org.jdom.input.SAXBuilder;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -96,6 +104,7 @@ import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 import org.w3c.dom.ls.DOMImplementationLS;
 import org.w3c.dom.ls.LSOutput;
 import org.w3c.dom.ls.LSSerializer;
+import org.xml.sax.SAXException;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -2360,4 +2369,108 @@ public abstract class ProxyServlet extends HttpServlet {
 			logger.error(e.getMessage());
 		}
 	}
+	
+	/**
+	 * Return if the file at the given path is an XML OGC exception file.
+	 * @param path
+	 * @return
+	 * @throws SAXException
+	 * @throws IOException
+	 * @throws ParserConfigurationException
+	 * @throws JDOMException 
+	 */
+	public boolean isRemoteServerResponseException(String path) throws SAXException, IOException, ParserConfigurationException, JDOMException{
+		String ext = (path.lastIndexOf(".")==-1)?"":path.substring(path.lastIndexOf(".")+1,path.length());
+		if (ext.equals("xml"))
+		{
+			SAXBuilder sxb = new SAXBuilder();
+			Document documentMaster = sxb.build(new File(path));
+			if (documentMaster != null) 
+			{
+				//ServiceExceptionReport is the root element name for WMS, WFS exception
+				//ExceptionReport is the root element for OWS, WMTS, CSW exception
+				if(documentMaster.getRootElement().getName().equalsIgnoreCase("ServiceExceptionReport") || documentMaster.getRootElement().getName().equalsIgnoreCase("ExceptionReport"))
+					return true;
+				else
+					return false;
+			}
+		}
+		return false;
+	}
+	
+	public ByteArrayOutputStream applyUserXSLT (ByteArrayOutputStream response){
+		String userXsltPath = getConfiguration().getXsltPath();
+		if (SecurityContextHolder.getContext().getAuthentication() != null) {
+			userXsltPath = userXsltPath + "/" + SecurityContextHolder.getContext().getAuthentication().getName() + "/";
+		}
+
+		userXsltPath = userXsltPath + "/" + getProxyRequest().getVersion() + "/" + getProxyRequest().getOperation() + ".xsl";
+		String globalXsltPath = getConfiguration().getXsltPath() + "/" + getProxyRequest().getVersion() + "/" + getProxyRequest().getOperation() + ".xsl";
+		
+		ByteArrayOutputStream result = new ByteArrayOutputStream();
+		File xsltFile = new File(userXsltPath);
+		if (!xsltFile.exists()) {
+			logger.trace("Postreatment file " + xsltFile.toString() + "does not exist");
+			xsltFile = new File(globalXsltPath);
+		} 
+		
+		if (xsltFile.exists() && isXML(responseContentType)) {
+			logger.trace("transform begin userTransform xslt");
+
+			Transformer transformer = null;
+			TransformerFactory tFactory = TransformerFactory.newInstance();
+			try {
+				transformer = tFactory.newTransformer(new StreamSource(xsltFile));
+				InputStream is = new java.io.ByteArrayInputStream(response.toByteArray());
+
+				StreamSource attach = new StreamSource(is);
+				transformer.transform(attach, new StreamResult(result));
+			} catch (TransformerConfigurationException e1) {
+				logger.error(e1.getMessage());
+			} catch (TransformerException e) {
+				logger.error(e.getMessage());
+			}
+			logger.trace("transform end userTransform xslt");
+			return result;
+		}else{
+			return response;
+		}
+	}
+	
+	public File applyUserXSLT (File response){
+		String userXsltPath = getConfiguration().getXsltPath();
+		if (SecurityContextHolder.getContext().getAuthentication() != null) {
+			userXsltPath = userXsltPath + "/" + SecurityContextHolder.getContext().getAuthentication().getName() + "/";
+		}
+
+		userXsltPath = userXsltPath + "/" + getProxyRequest().getVersion() + "/" + getProxyRequest().getOperation() + ".xsl";
+		String globalXsltPath = getConfiguration().getXsltPath() + "/" + getProxyRequest().getVersion() + "/" + getProxyRequest().getOperation() + ".xsl";
+		
+		File result = new File (response.getPath()+".xml");
+		File xsltFile = new File(userXsltPath);
+		if (!xsltFile.exists()) {
+			logger.trace("Postreatment file " + xsltFile.toString() + "does not exist");
+			xsltFile = new File(globalXsltPath);
+		} 
+		
+		if (xsltFile.exists() && isXML(responseContentType)) {
+			logger.trace("transform begin userTransform xslt");
+
+			Transformer transformer = null;
+			TransformerFactory tFactory = TransformerFactory.newInstance();
+			try {
+				transformer = tFactory.newTransformer(new StreamSource(xsltFile));
+				transformer.transform(new StreamSource(response), new StreamResult(result));
+			} catch (TransformerConfigurationException e1) {
+				logger.error(e1.getMessage());
+			} catch (TransformerException e) {
+				logger.error(e.getMessage());
+			}
+			logger.trace("transform end userTransform xslt");
+			return result;
+		}else{
+			return response;
+		}
+	}
+	
 }

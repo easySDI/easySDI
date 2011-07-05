@@ -1008,80 +1008,6 @@ public class WMSProxyServlet extends ProxyServlet {
 		}
 	}
 	
-	private ByteArrayOutputStream applyUserXSLT (ByteArrayOutputStream response){
-		String userXsltPath = getConfiguration().getXsltPath();
-		if (SecurityContextHolder.getContext().getAuthentication() != null) {
-			userXsltPath = userXsltPath + "/" + SecurityContextHolder.getContext().getAuthentication().getName() + "/";
-		}
-
-		userXsltPath = userXsltPath + "/" + getProxyRequest().getVersion() + "/" + getProxyRequest().getOperation() + ".xsl";
-		String globalXsltPath = getConfiguration().getXsltPath() + "/" + getProxyRequest().getVersion() + "/" + getProxyRequest().getOperation() + ".xsl";
-		
-		ByteArrayOutputStream result = new ByteArrayOutputStream();
-		File xsltFile = new File(userXsltPath);
-		if (!xsltFile.exists()) {
-			logger.trace("Postreatment file " + xsltFile.toString() + "does not exist");
-			xsltFile = new File(globalXsltPath);
-		} 
-		
-		if (xsltFile.exists() && isXML(responseContentType)) {
-			logger.trace("transform begin userTransform xslt");
-
-			Transformer transformer = null;
-			TransformerFactory tFactory = TransformerFactory.newInstance();
-			try {
-				transformer = tFactory.newTransformer(new StreamSource(xsltFile));
-				InputStream is = new java.io.ByteArrayInputStream(response.toByteArray());
-
-				StreamSource attach = new StreamSource(is);
-				transformer.transform(attach, new StreamResult(result));
-			} catch (TransformerConfigurationException e1) {
-				logger.error(e1.getMessage());
-			} catch (TransformerException e) {
-				logger.error(e.getMessage());
-			}
-			logger.trace("transform end userTransform xslt");
-			return result;
-		}else{
-			return response;
-		}
-	}
-	
-	private File applyUserXSLT (File response){
-		String userXsltPath = getConfiguration().getXsltPath();
-		if (SecurityContextHolder.getContext().getAuthentication() != null) {
-			userXsltPath = userXsltPath + "/" + SecurityContextHolder.getContext().getAuthentication().getName() + "/";
-		}
-
-		userXsltPath = userXsltPath + "/" + getProxyRequest().getVersion() + "/" + getProxyRequest().getOperation() + ".xsl";
-		String globalXsltPath = getConfiguration().getXsltPath() + "/" + getProxyRequest().getVersion() + "/" + getProxyRequest().getOperation() + ".xsl";
-		
-		File result = new File (response.getPath()+".xml");
-		File xsltFile = new File(userXsltPath);
-		if (!xsltFile.exists()) {
-			logger.trace("Postreatment file " + xsltFile.toString() + "does not exist");
-			xsltFile = new File(globalXsltPath);
-		} 
-		
-		if (xsltFile.exists() && isXML(responseContentType)) {
-			logger.trace("transform begin userTransform xslt");
-
-			Transformer transformer = null;
-			TransformerFactory tFactory = TransformerFactory.newInstance();
-			try {
-				transformer = tFactory.newTransformer(new StreamSource(xsltFile));
-				transformer.transform(new StreamSource(response), new StreamResult(result));
-			} catch (TransformerConfigurationException e1) {
-				logger.error(e1.getMessage());
-			} catch (TransformerException e) {
-				logger.error(e.getMessage());
-			}
-			logger.trace("transform end userTransform xslt");
-			return result;
-		}else{
-			return response;
-		}
-	}
 	
 	/**
 	 * Get the exception files return by the remote servers.
@@ -1174,33 +1100,7 @@ public class WMSProxyServlet extends ProxyServlet {
 		return remoteServerExceptionFiles;
 	}
 	
-	/**
-	 * Return if the file at the given path is an XML OGC exception file.
-	 * @param path
-	 * @return
-	 * @throws SAXException
-	 * @throws IOException
-	 * @throws ParserConfigurationException
-	 * @throws JDOMException 
-	 */
-	private boolean isRemoteServerResponseException(String path) throws SAXException, IOException, ParserConfigurationException, JDOMException{
-		String ext = (path.lastIndexOf(".")==-1)?"":path.substring(path.lastIndexOf(".")+1,path.length());
-		if (ext.equals("xml"))
-		{
-			SAXBuilder sxb = new SAXBuilder();
-			Document documentMaster = sxb.build(new File(path));
-			if (documentMaster != null) 
-			{
-				//ServiceExceptionReport is the root element name for WMS, WFS exception
-				//ExceptionReport is the root element for OWS, WMTS, CSW exception
-				if(documentMaster.getRootElement().getName().equalsIgnoreCase("ServiceExceptionReport") || documentMaster.getRootElement().getName().equalsIgnoreCase("ExceptionReport"))
-					return true;
-				else
-					return false;
-			}
-		}
-		return false;
-	}
+	
 	
 	public boolean isAllGetCapabilitiesResponseSameVersion (HashMap<String, String> wmsGetCapabilitiesResponse){
 		

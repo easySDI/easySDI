@@ -191,7 +191,7 @@ public class WMTSProxyServlet extends ProxyServlet{
 			//Check layer
 			if( RS == null || !isLayerAllowed(pLayer.getPrefixedName(), RS.getUrl())){
 				StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_LAYER_NAME+pLayer.getAliasName(),OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE,"LAYER");
-				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
+				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
 				return;
 			}
 			
@@ -201,6 +201,51 @@ public class WMTSProxyServlet extends ProxyServlet{
 		}catch(Exception e){
 			resp.setHeader("easysdi-proxy-error-occured", "true");
 			logger.error( configuration.getServletClass() + ".requestPreTreatmentGetCapabilities : ", e);
+			StringBuffer out;
+			try {
+				out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
+				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
+			} catch (IOException e1) {
+				logger.error( OWSExceptionReport.TEXT_EXCEPTION_ERROR, e1);
+			}
+			return;
+		}
+	}
+	
+	public void requestPreTreatmentGetFeatureInfo (HttpServletRequest req, HttpServletResponse resp){
+		try{
+			//Servers define in config.xml
+			Hashtable<String, RemoteServerInfo> htRemoteServer = getRemoteServerHastable();
+			
+			//Find the remote server concerning by the current request
+			ProxyLayer pLayer = new ProxyLayer(((WMTSProxyServletRequest)getProxyRequest()).getLayer());
+			
+			if(pLayer.getAlias() == null)
+			{
+				logger.error( OWSExceptionReport.TEXT_INVALID_LAYER_NAME+pLayer.getAliasName());
+				StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_LAYER_NAME+pLayer.getAliasName(),OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE,"LAYER");
+				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
+				return;
+			}
+			RemoteServerInfo RS = (RemoteServerInfo)htRemoteServer.get(pLayer.getAlias());
+			
+			//Check layer
+			if( RS == null || !isLayerAllowed(pLayer.getPrefixedName(), RS.getUrl())){
+				StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_LAYER_NAME+pLayer.getAliasName(),OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE,"LAYER");
+				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
+				return;
+			}
+			if((getConfiguration().getXsltPath() == null||getConfiguration().getXsltPath().trim() =="" )){
+			    sendDataDirectStream(resp,"GET", RS.getUrl(), getProxyRequest().getUrlParameters());
+			    return;
+			}else{
+			    String tempFile = sendData("GET", RS.getUrl(), getProxyRequest().getUrlParameters());
+			    transformGetFeatureInfo(req, resp, tempFile);
+			    
+			}
+		}catch(Exception e){
+			resp.setHeader("easysdi-proxy-error-occured", "true");
+			logger.error( configuration.getServletClass() + ".requestPreTreatmentGetFeatureInfo : ", e);
 			StringBuffer out;
 			try {
 				out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
@@ -330,6 +375,39 @@ public class WMTSProxyServlet extends ProxyServlet{
 				e1.printStackTrace();
 				logger.error( e1.toString());
 			}
+		}
+	}
+	
+	public void transformGetFeatureInfo (HttpServletRequest req, HttpServletResponse resp, String responseFile){
+		try{
+		    FileInputStream fis = new FileInputStream(responseFile);
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			byte[] buf = new byte[1024];
+			for (int readNum; (readNum = fis.read(buf)) != -1;) {
+			    bos.write(buf, 0, readNum); 
+			}
+		    //If the response is an OGC exception, the XSLT transformation is not applied
+		    //the response is send to the client
+			if(isRemoteServerResponseException(responseFile)){
+				logger.info("Exception returned by remote server is sent to client.");
+				sendHttpServletResponse(req,resp,bos, "text/xml; charset=utf-8", HttpServletResponse.SC_OK);
+				return;
+			}
+			
+			//apply XSLT transformation if needed before send back to client the response
+			sendHttpServletResponse(req,resp, applyUserXSLT(bos),responseContentType, responseStatusCode);
+			
+		}catch (Exception e){
+			resp.setHeader("easysdi-proxy-error-occured", "true");
+			logger.error(configuration.getServletClass() + ".transformGetFeatureInfo: ", e);
+			StringBuffer out;
+			try {
+				out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
+				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
+			} catch (IOException e1) {
+				logger.error(OWSExceptionReport.TEXT_EXCEPTION_ERROR, e1);
+			}
+			return;
 		}
 	}
 
