@@ -682,7 +682,7 @@ Ext.onReady(function(){
   	       ]*/
    }
    
-   EasySDI_Mon.ExportTypeStore = [ ['CSW'], ['HTML'], ['XHTML']];
+   EasySDI_Mon.ExportTypeStore = [ ['CSV'], ['HTML'], ['XHTML']];
    
    EasySDI_Mon.HttpMethodStore = [
                              ['GET'],
@@ -2761,9 +2761,14 @@ Ext.onReady(function() {
 		return{
 			
 			doLoadExportTypes : function(btn){
+				exportTypeStore.load();
 				if (!btn.menu){
 				btn.menu = new Ext.menu.Menu();
-
+				}
+				else{
+					btn.menu.removeAll();
+				}
+				
 				exportTypeStore.each(function(r) {
 				
 					 var action = new Ext.Action({
@@ -2775,7 +2780,8 @@ Ext.onReady(function() {
 
 				 btn.menu.add(action)
 				});
-				}
+				
+				
 				
 				btn.showMenu();
 	
