@@ -200,6 +200,21 @@ echo $pane->endPanel();
 			}
 		return "";
 	}
+	
+function getWMTSLayerLocalFilter($theServer,$layer){
+
+		if (count($theServer->Layers->Layer)==0) return "";
+
+
+		foreach ($theServer->Layers->Layer as $theLayer )
+		{
+				if (strcmp($theLayer->{'Name'},$layer)==0)
+				{
+					return $theLayer->{'Filter'};
+				}
+			}
+		return "";
+	}
 
 	function getLayerMinScale($theServer,$layer){
 		if (count($theServer->Layers->Layer)==0) return "";
@@ -1454,7 +1469,7 @@ function submitbutton(pressbutton)
 				HTML_proxy::generateCSWHTML($config,$thePolicy, $rowsVisibility, $rowsStatus, $rowsObjectTypes,$servletVersion);  
 			}
 			else if (strcmp($servletClass,"org.easysdi.proxy.wmts.WMTSProxyServlet")==0 ){					
-				HTML_proxy::generateWMTS100HTML($config,$thePolicy,$servletVersion);  
+				HTML_proxy::generateWMTSHTML($config,$thePolicy,$servletVersion);  
 			}
 			break;
 			}		
@@ -1470,7 +1485,7 @@ function submitbutton(pressbutton)
 	 * @param XML $config
 	 * @param XML $thePolicy
 	 */
-	function generateWMTS100HTML($config,$thePolicy,$servletVersion){
+	function generateWMTSHTML($config,$thePolicy,$servletVersion){
 	?>
 	<script>
 		function disableOperationCheckBoxes()
@@ -1510,10 +1525,14 @@ function submitbutton(pressbutton)
 				</tr>	
 				<tr>
 					<td></td>
-					<td><input type="checkBox" name="operation[]" id="oGetFeatureInfo" value="GetFeatureInfo"  disabled>
-					<i><?php echo JText::_( 'PROXY_CONFIG_OPERATION_GETFEATUREINFO'); ?></i></td>
+					<td><input type="checkBox" name="operation[]" id="oGetFeatureInfo" value="GetFeatureInfo" <?php if (strcasecmp($checkedO,'checked')==0){echo 'disabled checked';} ?>
+						<?php foreach ($thePolicy->Operations->Operation as $operation)
+							{
+								if(strcasecmp($operation->Name,'GetFeatureInfo')==0) echo 'checked';			
+							}?>
+						><?php echo JText::_( 'PROXY_CONFIG_OPERATION_GETFEATUREINFO'); ?>
+					</td>
 				</tr>
-
 			</table>
 		</fieldset>
 
@@ -1586,46 +1605,122 @@ function submitbutton(pressbutton)
 			</tr>
 		</table>
 		<br>
-		<table width ="100%"  class="admintable" id="remoteServerTable@<?php echo $iServer; ?>" <?php if (strcasecmp($thePolicy->Servers['All'],'True')==0 ) echo "style='display:none'"; ?>>
+		<table  width ="100%"  class="admintable" id="remoteServerTable@<?php echo $iServer; ?>" <?php if (strcasecmp($thePolicy->Servers['All'],'True')==0 ) echo "style='display:none'"; ?>>
 			<tr>
 				<td colspan="1"><input type="checkBox" name="AllLayers@<?php echo $iServer; ?>" id="AllLayers@<?php echo $iServer; ?>" value="All" <?php if (strcasecmp($theServer->Layers['All'],'True')==0 ) echo ' checked '; ?> onclick="disableWMTSLayers(<?php echo $iServer; ?>);"><?php echo JText::_( 'PROXY_CONFIG_LAYER_ALL'); ?></td>
 			</tr>
-			<tr>
-				<th><b><?php echo JText::_( 'PROXY_CONFIG_LAYER_ID'); ?></b></th>
-			</tr>
+			
 			
 			<?php
 			$layernum = 0;
 			$namespaces = $xmlCapa->getDocNamespaces();
 			$dom_capa = dom_import_simplexml ($xmlCapa);
 			
-    		$layers = $dom_capa->getElementsByTagNameNS($namespaces[''],'Layer');
-			foreach ( $layers as $layer){
-				$identifiers = $layer->getElementsByTagNameNS($namespaces['ows'],'Identifier');
-				foreach ( $identifiers as $identifier){
-					if($identifier->parentNode->nodeName == "Layer")
-					{
-						$title = $identifier->parentNode->getElementsByTagNameNS($namespaces['ows'],'Title')->item(0)->nodeValue;
-					?>
-					<tr>
-						<td class="key" >
-							<table width ="100%" height="100%" >
-								<tr valign="top" >
-								<td width="15"><input  
-									<?php if( HTML_proxy::isWMTSLayerChecked($theServer,$identifier->nodeValue) || strcasecmp($theServer->Layers['All'],'True')==0) echo ' checked';?> type="checkbox"
-									id="layer@<?php echo $iServer; ?>@<?php echo $layernum;?>" 
-									name="layer@<?php echo $iServer; ?>@<?php echo $layernum;?>"
-									value="<?php echo $identifier->nodeValue;?>"></td>
-								<td align="left"><?php echo $identifier->nodeValue; ?> ( <?php echo $title;?> )</td>
-								</tr>
-							</table>		
-						</td>
-						
-					</tr>
-					<?php  
-					$layernum += 1;
+			//Get the TileMatrixSet definition
+			$contents = $dom_capa->getElementsByTagNameNS($namespaces[''],'Contents')->item(0);
+			$tileMatrixSets = $contents->getElementsByTagName('TileMatrixSet');
+			$describedTileMatrixSets = array();
+			foreach ( $tileMatrixSets as $tileMatrixSet){
+				//Get the TileMatrix definition
+				if($tileMatrixSet->parentNode->nodeName == "Contents" )
+				{
+					$tileMatrixSetIdentifier = $tileMatrixSet->getElementsByTagNameNS($namespaces['ows'],'Identifier')->item(0)->nodeValue;
+					$tileMatrices = $tileMatrixSet->getElementsByTagName('TileMatrix');
+					$describedTileMatrices = array();
+					for($tm = 0; $tm<$tileMatrices->length; $tm++){
+						$tileMatrix = $tileMatrices->item($tm); 
+						$tileMatrixIdentifier = $tileMatrix->getElementsByTagNameNS($namespaces['ows'],'Identifier')->item(0)->nodeValue;
+						$tileMatrixScaleDenominator = $tileMatrix->getElementsByTagName('ScaleDenominator')->item(0)->nodeValue;
+						$describedTileMatrices[$tileMatrixIdentifier] = $tileMatrixScaleDenominator;
+					}
+					$describedTileMatrixSets[$tileMatrixSetIdentifier] = $describedTileMatrices;
+					
 				}
 			}
+			
+    		$layers = $dom_capa->getElementsByTagNameNS($namespaces[''],'Layer');
+    		
+			foreach ( $layers as $layer){
+				$identifiers = $layer->getElementsByTagNameNS($namespaces['ows'],'Identifier');
+				$TileMatrixSetLinks = $layer->getElementsByTagName('TileMatrixSetLink');
+			 		$identifier = $identifiers->item(0); 
+		    		if($identifier->parentNode->nodeName == "Layer")
+					{
+						$title = $identifier->parentNode->getElementsByTagNameNS($namespaces['ows'],'Title')->item(0)->nodeValue;
+						?>
+						<tr>
+						<td>
+						<fieldset class="adminform" id="fsLayer@<?php echo $iServer;?>@<?php echo $layernum;?>" >
+							<legend>
+								<input  
+										<?php if( HTML_proxy::isWMTSLayerChecked($theServer,$identifier->nodeValue) || strcasecmp($theServer->Layers['All'],'True')==0) echo ' checked';?> type="checkbox"
+										id="layer@<?php echo $iServer; ?>@<?php echo $layernum;?>" 
+										name="layer@<?php echo $iServer; ?>@<?php echo $layernum;?>"
+										value="<?php echo $identifier->nodeValue;?>">
+										<?php echo $identifier->nodeValue; ?> ( <?php echo $title;?> )
+							</legend>
+							<table>
+								<tr>
+									<th><?php echo JText::_( 'PROXY_CONFIG_GEOGRAPHIC_FILTER'); ?></th>
+									<th><?php echo JText::_( 'PROXY_CONFIG_TILEMATRIXSET_ID'); ?></th>
+								</tr>
+								<tr>
+									<td>
+									<textarea <?php if(! HTML_proxy::isWMTSLayerChecked($theServer,$identifier->nodeValue)) {echo 'disabled';}?> <?php if (strcasecmp($theServer->Layers['All'],'True')==0 ) echo ' disabled '; ?> rows="3" cols="60"
+										id="LocalFilter@<?php echo $iServer; ?>@<?php echo $layernum;?>" 
+										name="LocalFilter@<?php echo $iServer; ?>@<?php echo $layernum;?>"> 
+										<?php $localFilter = HTML_proxy ::getWMTSLayerLocalFilter($theServer,$name); if (!(strlen($localFilter)>	0)){} else {echo $localFilter;} ?>
+										</textarea>
+									</td>
+									<td>
+										<table width ="100%">
+										<tr>
+										<th></th>
+										<th><?php echo JText::_( 'PROXY_CONFIG_TILEMATRIX_MAX_SCALE_DENOMINATOR'); ?></th>
+										<th><?php echo JText::_( 'PROXY_CONFIG_TILEMATRIX_MIN_SCALE_DENOMINATOR'); ?></th>
+										</tr>
+											<?php 
+											for($id = 0; $id<$TileMatrixSetLinks->length; $id++){ 
+												$availableTileMatrix =  array();
+												$availableTileMatrixList = array();
+												$tileMatrixSet = $TileMatrixSetLinks->item($id);
+												$tileMatrixSetIds = $tileMatrixSet->getElementsByTagName('TileMatrixSet');
+												?>
+												<tr>
+												<td width ="14%">
+												<?php
+												$tileMatrixSetId = $tileMatrixSetIds->item(0)->nodeValue; 
+												echo $tileMatrixSetId;?>
+												</td>
+												<td width ="43%">
+												<?php 
+												$availableTileMatrix = $describedTileMatrixSets[$tileMatrixSetId];
+												foreach($availableTileMatrix as $key=>$value) :
+					 									 $availableTileMatrixList[] = JHTML::_('select.option', $key, $key." [ ".$value." ]");
+					 							endforeach;
+					 							$availableTileMatrixList = array_merge(array(JHTML::_('select.option', JText::_( 'PROXY_CONFIG_SCALE_DENOMINATOR_DEFAULT'), JText::_( 'PROXY_CONFIG_SCALE_DENOMINATOR_DEFAULT'))), $availableTileMatrixList);
+					 							echo JHTML::_("select.genericlist",$availableTileMatrixList, 'maxScaleDenominator@'.$iServer."@".$layernum."@".$tileMatrixSetId, 'size="1" ', 'value', 'text', $maxScaleDenominator ); 
+					 							?>
+												</td>
+												<td width ="43%">
+												<?php 
+												echo JHTML::_("select.genericlist",$availableTileMatrixList, 'minScaleDenominator@'.$iServer."@".$layernum."@".$tileMatrixSetId, 'size="1" ', 'value', 'text', $minScaleDenominator );
+												?>
+												</td>
+												</tr>
+												<?php 
+											}
+											?>
+										</table>
+									</td>
+								</tr>
+							</table>
+						</fieldset>
+					</td>
+				</tr>
+				<?php  
+				$layernum += 1;
+				}
 			}?>
 		</table>
 		<input type="hidden" id="countLayer<?php echo $iServer; ?>" value="<?php echo $layernum; ?>">

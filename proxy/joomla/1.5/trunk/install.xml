@@ -1,9 +1,9 @@
 <?xml version="1.0"  ?>
 <install version="1.5" type="component">
 	<name>EasySDI_proxy</name>
-	<version>2.1.2</version>
-	<releaseDate>2011-04-07</releaseDate>
-    <releaseType>Major update</releaseType>
+	<version>2.2.0</version>
+	<releaseDate>2011-06-28</releaseDate>
+    <releaseType>Minor update</releaseType>
 	<creationDate>January 2011</creationDate>
 	<author>Depth.ch</author>
 	<authorEmail>easysdi@depth.ch</authorEmail>
