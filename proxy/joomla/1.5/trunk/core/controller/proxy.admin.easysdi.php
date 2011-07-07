@@ -489,6 +489,32 @@ function saveComponentConfig($xmlConfig,$componentConfigFilePath){
 }
 
 function savePolicy($xml){
+	
+	$servletClass = JRequest::getVar("servletClass");
+	
+	$params = ADMIN_proxy::savePolicyCommonParts($xml);
+	
+	if (strcasecmp($servletClass, 'org.easysdi.proxy.wms.WMSProxyServlet') == 0 )
+	{
+		ADMIN_proxy::savePolicyWMS($params[2]);	
+	}else if (strcasecmp($servletClass, 'org.easysdi.proxy.wmts.WMTSProxyServlet') == 0 ){
+		ADMIN_proxy::savePolicyWMTS($params[2]);
+	}else if (strcasecmp($servletClass, 'org.easysdi.proxy.wfs.WFSProxyServlet') == 0 ){
+		ADMIN_proxy::savePolicyWFS($params[2]);
+	}else if (strcasecmp($servletClass, 'org.easysdi.proxy.csw.CSWProxyServlet') == 0 ){
+		ADMIN_proxy::savePolicyCSW($params[2]);
+	}
+
+	//Save to file
+	$params[1]->asXML($params[0]);
+}
+
+/**
+ * 
+ * Save the informations common to all OWS connector
+ * @param unknown_type $xml
+ */
+function savePolicyCommonParts ($xml){
 	global $mainframe;
 	
 	$params = JRequest::get();
@@ -577,22 +603,6 @@ function savePolicy($xml){
 	$thePolicy->AvailabilityPeriod->From->Date =$dateFrom;
 	$thePolicy->AvailabilityPeriod->To->Date =$dateTo;
 	
-	if (strcasecmp($servletClass, 'org.easysdi.proxy.wms.WMSProxyServlet') == 0 )
-	{
-		//Image size
-		$thePolicy->ImageSize="";
-		if(strlen($minHeight)>0 && strlen($minWidth>0) )
-		{
-			$thePolicy->ImageSize->Minimum->Width = $minWidth;
-			$thePolicy->ImageSize->Minimum->Height = $minHeight;
-		}
-		if(strlen($maxHeight)>0 && strlen($maxWidth>0) )
-		{
-			$thePolicy->ImageSize->Maximum->Width = $maxWidth;
-			$thePolicy->ImageSize->Maximum->Height = $maxHeight;
-		}
-	}
-	
 	//Users and Roles
 	if (is_array($allUsers))
 	{
@@ -641,78 +651,31 @@ function savePolicy($xml){
 			}
 		}
 	}
-	
-	if (strcasecmp($servletClass, 'org.easysdi.proxy.csw.CSWProxyServlet') == 0 )
+
+	$result = array(0 => $policyFile,1=> $xmlConfigFile, 2=>$thePolicy);
+	return $result;
+}
+
+/**
+ * 
+ * Save the informations of a WMS policy
+ * @param unknown_type $thePolicy
+ */
+function savePolicyWMS($thePolicy){
+	$params = JRequest::get();
+	//Image size
+	$thePolicy->ImageSize="";
+	if(strlen($minHeight)>0 && strlen($minWidth>0) )
 	{
-		//Visibility
-		$AllVisibilities = JRequest::getVar("AllVisibilities","");
-		if (is_array($AllVisibilities))
-		{
-			$thePolicy->ObjectVisibilities="";
-			$thePolicy->ObjectVisibilities['All']="true";
-		}
-		else
-		{
-			$thePolicy->ObjectVisibilities="";
-			$thePolicy->ObjectVisibilities['All']="false";
-			$visibilitiesList = JRequest::getVar("visibility");
-			if (sizeof($visibilitiesList)>0)
-			{
-				foreach($visibilitiesList as $visibility)
-				{
-					$node = $thePolicy->ObjectVisibilities->addChild(Visibility,$visibility);
-				}
-			}
-		}
-		
-		//Status
-		$AllStatus = JRequest::getVar("AllStatus","");
-		if (is_array($AllStatus))
-		{
-			$thePolicy->ObjectStatus="";
-			$thePolicy->ObjectStatus['All']="true";
-		}
-		else
-		{
-			$thePolicy->ObjectStatus="";
-			$thePolicy->ObjectStatus['All']="false";
-			$statusList = JRequest::getVar("status");
-			if (sizeof($statusList)>0)
-			{
-				foreach($statusList as $status)
-				{
-					$node = $thePolicy->ObjectStatus->addChild(Status,$status);
-					if (strcasecmp($status, 'published')==0)
-					{
-						$versionMode = JRequest::getVar("objectversion_mode","last");
-						$node[version] = $versionMode;
-					}
-				}
-			}
-		}
-		
-		//ObjectType
-		$AllObjectType = JRequest::getVar("AllObjectType","");
-		if (is_array($AllObjectType))
-		{
-			$thePolicy->ObjectTypes="";
-			$thePolicy->ObjectTypes['All']="true";
-		}
-		else
-		{
-			$thePolicy->ObjectTypes="";
-			$thePolicy->ObjectTypes['All']="false";
-			$ObjectTypesList = JRequest::getVar("objectType");
-			if (sizeof($ObjectTypesList)>0)
-			{
-				foreach($ObjectTypesList as $objecttype)
-				{
-					$node = $thePolicy->ObjectTypes->addChild(ObjectType,$objecttype);
-				}
-			}
-		}
+		$thePolicy->ImageSize->Minimum->Width = $minWidth;
+		$thePolicy->ImageSize->Minimum->Height = $minHeight;
 	}
-			
+	if(strlen($maxHeight)>0 && strlen($maxWidth>0) )
+	{
+		$thePolicy->ImageSize->Maximum->Width = $maxWidth;
+		$thePolicy->ImageSize->Maximum->Height = $maxHeight;
+	}
+	
 	//Servers
 	$AllServer = JRequest::getVar("AllServers","");
 	if (is_array($AllServer))
@@ -734,23 +697,10 @@ function savePolicy($xml){
 				$serverNamespace = JRequest::getVar("serverNamespace$i","");
 				$theServer->Namespace = $serverNamespace;
 				
-				if (strcasecmp($servletClass, 'org.easysdi.proxy.csw.CSWProxyServlet') == 0 )
-					$theServer->Metadata ="";
-				if (strcasecmp($servletClass, 'org.easysdi.proxy.wms.WMSProxyServlet') == 0 || strcasecmp($servletClass, 'org.easysdi.proxy.wmts.WMTSProxyServlet') == 0) 
-					$theServer->Layers ="";
-				if (strcasecmp($servletClass, 'org.easysdi.proxy.wfs.WFSProxyServlet') == 0 )
-					$theServer->FeatureTypes="";
+				$theServer->Layers ="";
 				
 				while (list($key, $val) = each($params )) 
 				{
-					if (!(strpos($key,"featuretype@$i")===false))
-					{
-							$theServer->FeatureTypes['All']='true';
-							$theFeatureType = $theServer->FeatureTypes->addChild('FeatureType');
-							$theFeatureType->Name=$val;
-							$theFeatureType->Attributes['All']="true";
-					}
-	
 					if (!(strpos($key,"layer@$i")===false))
 					{
 						$theServer->Layers['All']='true';
@@ -765,7 +715,7 @@ function savePolicy($xml){
 				break;
 			}
 		}
-	}
+	}	
 	else
 	{
 		//All servers not checked
@@ -786,15 +736,205 @@ function savePolicy($xml){
 				$serverNamespace = JRequest::getVar("serverNamespace$i","");
 				$theServer->Namespace = $serverNamespace;
 				
-				if (strcasecmp($servletClass, 'org.easysdi.proxy.csw.CSWProxyServlet') == 0 )
-					$theServer->Metadata ="";
-				if (strcasecmp($servletClass, 'org.easysdi.proxy.wms.WMSProxyServlet') == 0 || strcasecmp($servletClass, 'org.easysdi.proxy.wmts.WMTSProxyServlet') == 0)
-					$theServer->Layers ="";
-				if (strcasecmp($servletClass, 'org.easysdi.proxy.wfs.WFSProxyServlet') == 0 )
-					$theServer->FeatureTypes="";
-				$foundParamToExclude = false;
+				$theServer->Layers ="";
 				$foundLayer = false;
-				$foundFeatureType = false;
+				
+				while (list($key, $val) = each($params )) 
+				{
+					if (!(strpos($key,"layer@$i")===false))
+					{
+						$AllLayers = JRequest::getVar("AllLayers@$i","");
+						if(strlen($AllLayers)>0)
+						{
+							//All layers checked
+							$foundLayer = true;
+							$theServer->Layers['All']='true';
+							$theLayer = $theServer->Layers->addChild('Layer');
+							$theLayer->Name =$val;
+						}	
+						else
+						{
+							//All layer not checked
+							$foundLayer = true;
+							$theServer->Layers['All']='false';
+							$theLayer = $theServer->Layers->addChild('Layer');
+							$len =strlen("layer@$i")+1;
+							$lentot = strlen ($key);
+							
+							$layernum = substr($key,($lentot-$len ) *-1);
+							$theLayer->Name =$val;
+							
+							//WMS : scale
+							$scaleMin = JRequest::getVar("scaleMin@$i@$layernum");
+							if (strlen($scaleMin)>0)
+							{
+								$theLayer->ScaleMin = $scaleMin;
+							}
+								$scaleMax = JRequest::getVar("scaleMax@$i@$layernum");
+							if (strlen($scaleMax)>0)
+							{
+								$theLayer->ScaleMax = $scaleMax;
+							}
+		
+							$localFilter = JRequest::getVar("LocalFilter@$i@$layernum",null,'defaut','none',JREQUEST_ALLOWRAW);
+							
+							//WMS : write BBOX in the policy file
+							if (strlen($localFilter)>0 && strcasecmp($servletClass, 'org.easysdi.proxy.wms.WMSProxyServlet') == 0 )
+							{
+								//BBOX
+								$bbox = JRequest::getVar("BBOX@$i@$layernum");
+								$v = strpos($bbox,",");
+								$theLayer->BoundingBox['SRS'] = substr($bbox,0,$v);
+								$bbox = substr($bbox,$v+1);
+								$v = strpos($bbox,",");
+								$theLayer->BoundingBox['minx'] = substr($bbox,0,$v);
+								$bbox = substr($bbox,$v+1);
+								$v = strpos($bbox,",");
+								$theLayer->BoundingBox['miny'] = substr($bbox,0,$v);
+								$bbox = substr($bbox,$v+1);
+								$v = strpos($bbox,",");
+								$theLayer->BoundingBox['maxx'] = substr($bbox,0,$v);
+								$theLayer->BoundingBox['maxy'] = substr($bbox,$v+1);
+								$theLayer->Filter = $localFilter;
+							}
+						}
+					}
+					
+				}
+				if($foundLayer == false && strcasecmp($servletClass, 'org.easysdi.proxy.wms.WMSProxyServlet') == 0)
+				{
+					$theServer->Layers['All']='false';
+				}
+				reset($params);
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
+}
+
+/**
+ * 
+ * SAve the informations of a CSW policy
+ * @param unknown_type $thePolicy
+ */
+function savePolicyCSW($thePolicy){
+	$params = JRequest::get();
+	//Visibility
+	$AllVisibilities = JRequest::getVar("AllVisibilities","");
+	if (is_array($AllVisibilities))
+	{
+		$thePolicy->ObjectVisibilities="";
+		$thePolicy->ObjectVisibilities['All']="true";
+	}
+	else
+	{
+		$thePolicy->ObjectVisibilities="";
+		$thePolicy->ObjectVisibilities['All']="false";
+		$visibilitiesList = JRequest::getVar("visibility");
+		if (sizeof($visibilitiesList)>0)
+		{
+			foreach($visibilitiesList as $visibility)
+			{
+				$node = $thePolicy->ObjectVisibilities->addChild(Visibility,$visibility);
+			}
+		}
+	}
+	
+	//Status
+	$AllStatus = JRequest::getVar("AllStatus","");
+	if (is_array($AllStatus))
+	{
+		$thePolicy->ObjectStatus="";
+		$thePolicy->ObjectStatus['All']="true";
+	}
+	else
+	{
+		$thePolicy->ObjectStatus="";
+		$thePolicy->ObjectStatus['All']="false";
+		$statusList = JRequest::getVar("status");
+		if (sizeof($statusList)>0)
+		{
+			foreach($statusList as $status)
+			{
+				$node = $thePolicy->ObjectStatus->addChild(Status,$status);
+				if (strcasecmp($status, 'published')==0)
+				{
+					$versionMode = JRequest::getVar("objectversion_mode","last");
+					$node[version] = $versionMode;
+				}
+			}
+		}
+	}
+	
+	//ObjectType
+	$AllObjectType = JRequest::getVar("AllObjectType","");
+	if (is_array($AllObjectType))
+	{
+		$thePolicy->ObjectTypes="";
+		$thePolicy->ObjectTypes['All']="true";
+	}
+	else
+	{
+		$thePolicy->ObjectTypes="";
+		$thePolicy->ObjectTypes['All']="false";
+		$ObjectTypesList = JRequest::getVar("objectType");
+		if (sizeof($ObjectTypesList)>0)
+		{
+			foreach($ObjectTypesList as $objecttype)
+			{
+				$node = $thePolicy->ObjectTypes->addChild(ObjectType,$objecttype);
+			}
+		}
+	}
+	
+	//Servers
+	$AllServer = JRequest::getVar("AllServers","");
+	if (is_array($AllServer))
+	{
+		//All servers checked
+		$thePolicy->Servers['All']="true";
+		$thePolicy->Servers="";
+		for($i=0;;$i++)
+		{
+			$remoteServer = JRequest::getVar("remoteServer$i","");
+			$remoteServerPolicy="";
+			
+			if(strlen($remoteServer)>0)
+			{
+				$theServer = $thePolicy->Servers->addChild('Server');
+				$theServer->url=$remoteServer;
+				$serverPrefixe = JRequest::getVar("serverPrefixe$i","");
+				$theServer->Prefix =$serverPrefixe;
+				$serverNamespace = JRequest::getVar("serverNamespace$i","");
+				$theServer->Namespace = $serverNamespace;
+				$theServer->Metadata ="";
+			}
+			else
+			{
+				break;
+			}
+		}
+	}	
+	else
+	{
+		//All servers not checked
+		$thePolicy->Servers['All']="false";
+		$thePolicy->Servers="";
+		
+		for ($i=0;;$i++)
+		{
+			$remoteServer = JRequest::getVar("remoteServer$i","");
+			$remoteServerPolicy="";
+	
+			if (strlen($remoteServer)>0)
+			{
+				$theServer = $thePolicy->Servers->addChild('Server');
+				$theServer->url=$remoteServer;
+				$theServer->Metadata ="";
+				$foundParamToExclude = false;
 				
 				while (list($key, $val) = each($params )) 
 				{
@@ -811,8 +951,96 @@ function savePolicy($xml){
 							$theServer->Metadata->Attributes->Exclude->addChild('Attribute',$val);
 						}
 					 	$foundParamToExclude=true;
-					}
+					}				
+				}
+				if ($foundParamToExclude==false && strcasecmp($servletClass, 'org.easysdi.proxy.csw.CSWProxyServlet') == 0 )
+				{			  
+					$theServer->Metadata['All']='true';
+					$theServer->Metadata->Attributes['All']='true';								
+				}
+				
+				reset($params);
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
+}
+
+/**
+ * 
+ * Save the information of a WFS policy
+ * @param unknown_type $thePolicy
+ */
+function savePolicyWFS($thePolicy){
+	$params = JRequest::get();
+	//Servers
+	$AllServer = JRequest::getVar("AllServers","");
+	if (is_array($AllServer))
+	{
+		//All servers checked
+		$thePolicy->Servers['All']="true";
+		$thePolicy->Servers="";
+		for($i=0;;$i++)
+		{
+			$remoteServer = JRequest::getVar("remoteServer$i","");
+			$remoteServerPolicy="";
+			
+			if(strlen($remoteServer)>0)
+			{
+				$theServer = $thePolicy->Servers->addChild('Server');
+				$theServer->url=$remoteServer;
+				$serverPrefixe = JRequest::getVar("serverPrefixe$i","");
+				$theServer->Prefix =$serverPrefixe;
+				$serverNamespace = JRequest::getVar("serverNamespace$i","");
+				$theServer->Namespace = $serverNamespace;
+				
+				$theServer->FeatureTypes="";
+				
+				while (list($key, $val) = each($params )) 
+				{
+					if (!(strpos($key,"featuretype@$i")===false))
+					{
+							$theServer->FeatureTypes['All']='true';
+							$theFeatureType = $theServer->FeatureTypes->addChild('FeatureType');
+							$theFeatureType->Name=$val;
+							$theFeatureType->Attributes['All']="true";
+					}				
+				}
+				reset($params);
+			}
+			else
+			{
+				break;
+			}
+		}
+	}	else
+	{
+		//All servers not checked
+		$thePolicy->Servers['All']="false";
+		$thePolicy->Servers="";
+		
+		for ($i=0;;$i++)
+		{
+			$remoteServer = JRequest::getVar("remoteServer$i","");
+			$remoteServerPolicy="";
 	
+			if (strlen($remoteServer)>0)
+			{
+				$theServer = $thePolicy->Servers->addChild('Server');
+				$theServer->url=$remoteServer;
+				$serverPrefixe = JRequest::getVar("serverPrefixe$i","");
+				$theServer->Prefix =$serverPrefixe;
+				$serverNamespace = JRequest::getVar("serverNamespace$i","");
+				$theServer->Namespace = $serverNamespace;
+				
+				$theServer->FeatureTypes="";
+				$foundFeatureType = false;
+				
+				while (list($key, $val) = each($params )) 
+				{
 					if (!(strpos($key,"featuretype@$i")===false))
 					{
 						$AllFeatureTypes = JRequest::getVar("AllFeatureTypes@$i","");
@@ -830,12 +1058,12 @@ function savePolicy($xml){
 							$theServer->FeatureTypes['All']='false';
 							$theFeatureType = $theServer->FeatureTypes->addChild('FeatureType');
 							$theFeatureType->Name=$val;
-								$len =strlen("featuretype@$i")+1;
-								$lentot = strlen ($key);
-								$ftnum = substr($key,($lentot-$len ) *-1);
+							$len =strlen("featuretype@$i")+1;
+							$lentot = strlen ($key);
+							$ftnum = substr($key,($lentot-$len ) *-1);
 		
 							//Attribute to keep
-								$attributeList = JRequest::getVar("AttributeList@$i@$ftnum","");
+							$attributeList = JRequest::getVar("AttributeList@$i@$ftnum","");
 							if(strlen($attributeList)>0)
 							{
 								$theFeatureType->Attributes['All']="false";
@@ -872,7 +1100,92 @@ function savePolicy($xml){
 							}
 						}
 					}
+				}
+				if($foundFeatureType == false && strcasecmp($servletClass, 'org.easysdi.proxy.wfs.WFSProxyServlet') == 0)
+				{
+					$theServer->FeatureTypes['All']='false';
+				}
+				reset($params);
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
+}
+
+/**
+ * 
+ * Save the information of a WMTs policy
+ * @param unknown_type $thePolicy
+ */
+function savePolicyWMTS($thePolicy){
+	$params = JRequest::get();
+	//Servers
+	$AllServer = JRequest::getVar("AllServers","");
+	if (is_array($AllServer))
+	{
+		//All servers checked
+		$thePolicy->Servers['All']="true";
+		$thePolicy->Servers="";
+		for($i=0;;$i++)
+		{
+			$remoteServer = JRequest::getVar("remoteServer$i","");
+			$remoteServerPolicy="";
+			
+			if(strlen($remoteServer)>0)
+			{
+				$theServer = $thePolicy->Servers->addChild('Server');
+				$theServer->url=$remoteServer;
+				$serverPrefixe = JRequest::getVar("serverPrefixe$i","");
+				$theServer->Prefix =$serverPrefixe;
+				$serverNamespace = JRequest::getVar("serverNamespace$i","");
+				$theServer->Namespace = $serverNamespace;
+				
+				$theServer->Layers ="";
+				
+				while (list($key, $val) = each($params )) 
+				{
+					if (!(strpos($key,"layer@$i")===false))
+					{
+						$theServer->Layers['All']='true';
+						$theLayer = $theServer->Layers->addChild('Layer');
+						$theLayer->Name =$val;
+					}
+				}
+				reset($params);
+			}
+			else
+			{
+				break;
+			}
+		}
+	}	else
+	{
+		//All servers not checked
+		$thePolicy->Servers['All']="false";
+		$thePolicy->Servers="";
+		
+		for ($i=0;;$i++)
+		{
+			$remoteServer = JRequest::getVar("remoteServer$i","");
+			$remoteServerPolicy="";
 	
+			if (strlen($remoteServer)>0)
+			{
+				$theServer = $thePolicy->Servers->addChild('Server');
+				$theServer->url=$remoteServer;
+				$serverPrefixe = JRequest::getVar("serverPrefixe$i","");
+				$theServer->Prefix =$serverPrefixe;
+				$serverNamespace = JRequest::getVar("serverNamespace$i","");
+				$theServer->Namespace = $serverNamespace;
+				
+				$theServer->Layers ="";
+				$foundLayer = false;
+				
+				while (list($key, $val) = each($params )) 
+				{
 					if (!(strpos($key,"layer@$i")===false))
 					{
 						$AllLayers = JRequest::getVar("AllLayers@$i","");
@@ -896,55 +1209,93 @@ function savePolicy($xml){
 							$layernum = substr($key,($lentot-$len ) *-1);
 							$theLayer->Name =$val;
 							
-							$scaleMin = JRequest::getVar("scaleMin@$i@$layernum");
-							if (strlen($scaleMin)>0)
-							{
-								$theLayer->ScaleMin = $scaleMin;
+							//geographical restriction
+							$localFilter = JRequest::getVar("LocalFilter@$i@$layernum",null,'defaut','none',JREQUEST_ALLOWRAW);
+							
+							//min scale denominator restriction
+							$nbTileMatrixSetPerLayer = JRequest::getVar("countTileMatrixSet@$i@$layernum",null,'defaut','none',JREQUEST_ALLOWRAW);
+							$listMinScaleDenominatorTileMatrixId = array();
+							for($j = 0 ; $j < $nbTileMatrixSetPerLayer ; $j++ ){
+								$tileMatrixSetId = JRequest::getVar("TileMatrixSetId@$i@$layernum@$j",null,'defaut','none',JREQUEST_ALLOWRAW);
+								$minScaleDenominator = JRequest::getVar("minScaleDenominator@$i@$layernum@$j",null,'defaut','none',JREQUEST_ALLOWRAW);
+								$listMinScaleDenominatorTileMatrixId[$tileMatrixSetId]=$minScaleDenominator;
 							}
-								$scaleMax = JRequest::getVar("scaleMax@$i@$layernum");
-							if (strlen($scaleMax)>0)
-							{
-								$theLayer->ScaleMax = $scaleMax;
-							}
-		
-								$localFilter = JRequest::getVar("LocalFilter@$i@$layernum",null,'defaut','none',JREQUEST_ALLOWRAW);
-		
-							if (strlen($localFilter)>0)
-							{
-								//BBOX
-								$bbox = JRequest::getVar("BBOX@$i@$layernum");
-								$v = strpos($bbox,",");
-								$theLayer->BoundingBox['SRS'] = substr($bbox,0,$v);
-								$bbox = substr($bbox,$v+1);
-								$v = strpos($bbox,",");
-								$theLayer->BoundingBox['minx'] = substr($bbox,0,$v);
-								$bbox = substr($bbox,$v+1);
-								$v = strpos($bbox,",");
-								$theLayer->BoundingBox['miny'] = substr($bbox,0,$v);
-								$bbox = substr($bbox,$v+1);
-								$v = strpos($bbox,",");
-								$theLayer->BoundingBox['maxx'] = substr($bbox,0,$v);
-								$theLayer->BoundingBox['maxy'] = substr($bbox,$v+1);
-								$theLayer->Filter = $localFilter;
-							}
+							
+							$confObject = JFactory::getApplication();
+							$tmpPath = $confObject->getCfg('tmp_path');
+							$xmlCapa = simplexml_load_file($tmpPath."/wmts_tmp.xml");
+							
+							$namespaces = $xmlCapa->getDocNamespaces();
+							$dom_capa = dom_import_simplexml ($xmlCapa);
+							$contents = $dom_capa->getElementsByTagNameNS($namespaces[''],'Contents')->item(0);
+							$tileMatrixSets = $contents->getElementsByTagName('TileMatrixSet');
+							
+							foreach($listMinScaleDenominatorTileMatrixId as $key=>$value) :
+								foreach ( $tileMatrixSets as $tileMatrixSet){
+									//Get the TileMatrix definition
+									if($tileMatrixSet->parentNode->nodeName == "Contents" )
+									{
+										$tileMatrixSetIdentifier = $tileMatrixSet->getElementsByTagNameNS($namespaces['ows'],'Identifier')->item(0)->nodeValue;
+										
+										if($tileMatrixSetIdentifier == $key){
+											$theTileMatrixSet = $theLayer->addChild(TileMatrixSet);
+											$theTileMatrixSet['id'] =$key;
+											
+											$tileMatrices = $tileMatrixSet->getElementsByTagName('TileMatrix');
+											
+											if($value == "service-value"){
+												//On n'enleve pas de TileMatrix
+												if(!$localFilter){
+													//Pas de filtre geographique la TileMatrixSet est conservée tel quel
+													$theTileMatrixSet['all'] ='true';
+												}else{
+													//Un filtre geographique est défini, les TileMatrix doivent être redefinies
+												}
+											}else{
+												//On doit enlever les TileMatrix avec scaleDenominator <
+												if(!$localFilter){
+													//Pas de filtre géographique, on ne reecrit pas les tileMatrix
+													for($tm = 0; $tm<$tileMatrices->length; $tm++){
+														$tileMatrix = $tileMatrices->item($tm); 
+														$tileMatrixIdentifier = $tileMatrix->getElementsByTagNameNS($namespaces['ows'],'Identifier')->item(0)->nodeValue;
+														$theTileMatrix = $theTileMatrixSet->addChild(TileMatrix);
+														$theTileMatrix['id']= $tileMatrixIdentifier;
+														$theTileMatrix['all']= 'true';
+														
+														if($value == $tileMatrixIdentifier ){
+															break;
+														}
+													}
+												}else{
+													//Avec filtre géographique, les tileMatrix conservées doivent être réécrites
+													for($tm = 0; $tm<$tileMatrices->length; $tm++){
+														$tileMatrix = $tileMatrices->item($tm); 
+														$tileMatrixIdentifier = $tileMatrix->getElementsByTagNameNS($namespaces['ows'],'Identifier')->item(0)->nodeValue;
+														$tileMatrixScaleDenominator = $tileMatrix->getElementsByTagName('ScaleDenominator')->item(0)->nodeValue;
+														$theTileMatrix = $theTileMatrixSet->addChild(TileMatrix);
+														$theTileMatrix['id']= $tileMatrixIdentifier;
+														$theTileMatrix['all']= 'false';
+															
+														//Calcul des colmin calmax rowmin rowmax
+														
+														if($value == $tileMatrixIdentifier ){
+															break;
+														}
+													}
+												}
+											}
+										}						
+									}
+								}
+ 							endforeach;
 						}
 					}
 					
 				}
-				if($foundFeatureType == false && strcasecmp($servletClass, 'org.easysdi.proxy.wfs.WFSProxyServlet') == 0)
-				{
-					$theServer->FeatureTypes['All']='false';
-				}
-				if($foundLayer == false && strcasecmp($servletClass, 'org.easysdi.proxy.wms.WMSProxyServlet') == 0)
+				if($foundLayer == false )
 				{
 					$theServer->Layers['All']='false';
-			}
-				if ($foundParamToExclude==false && strcasecmp($servletClass, 'org.easysdi.proxy.csw.CSWProxyServlet') == 0 )
-				{			  
-					$theServer->Metadata['All']='true';
-					$theServer->Metadata->Attributes['All']='true';								
 				}
-				
 				reset($params);
 			}
 			else
@@ -953,9 +1304,13 @@ function savePolicy($xml){
 			}
 		}
 	}
-	$xmlConfigFile->asXML($policyFile);
 }
-
+/**
+ * 
+ * Get attributes list
+ * @param unknown_type $attributes
+ * @param unknown_type $attributesArray
+ */
 function getAttributesList($attributes, &$attributesArray)
 {
 	if($attributes)
@@ -975,6 +1330,12 @@ function getAttributesList($attributes, &$attributesArray)
 	
 }
 
+/**
+ * 
+ * Save configuration file
+ * @param unknown_type $xml
+ * @param unknown_type $configFilePath
+ */
 function saveConfig($xml,$configFilePath){
 	$configId = JRequest::getVar("configId","New Config");
 	$newConfigId = JRequest::getVar("newConfigId",$configId);

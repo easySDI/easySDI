@@ -1574,11 +1574,17 @@ function submitbutton(pressbutton)
 				$xmlCapa = simplexml_load_file($urlWithPassword.$separator."REQUEST=GetCapabilities&SERVICE=WMTS");
 			}
 			
+			
 			if ($xmlCapa === false){
 					global $mainframe;		
 							$mainframe->enqueueMessage(JText::_('EASYSDI_UNABLE TO RETRIEVE THE CAPABILITIES OF THE REMOTE SERVER' )." - ".$urlWithPassword,'error');
 			}
 			else{			
+				//Save to file
+				$confObject = JFactory::getApplication();
+				$tmpPath = $confObject->getCfg('tmp_path');
+				$xmlCapa->asXML($tmpPath."/wmts_tmp.xml");
+				
 			foreach ($thePolicy->Servers->Server as $policyServer){			
 				if (strcmp($policyServer->url,$remoteServer->url)==0){
 					$theServer  = $policyServer;
@@ -1691,6 +1697,7 @@ function submitbutton(pressbutton)
 												<?php
 												$tileMatrixSetId = $tileMatrixSetIds->item(0)->nodeValue; 
 												echo $tileMatrixSetId;?>
+												<input type="hidden" name="TileMatrixSetId@<?php echo $iServer; ?>@<?php echo $layernum; ?>@<?php echo $id; ?>" id="TileMatrixSetId@<?php echo $iServer; ?>@<?php echo $layernum; ?>@<?php echo $id; ?>" value="<?php echo $tileMatrixSetId; ?>">
 												</td>
 												<td width ="43%">
 												<?php 
@@ -1698,13 +1705,13 @@ function submitbutton(pressbutton)
 												foreach($availableTileMatrix as $key=>$value) :
 					 									 $availableTileMatrixList[] = JHTML::_('select.option', $key, $key." [ ".$value." ]");
 					 							endforeach;
-					 							$availableTileMatrixList = array_merge(array(JHTML::_('select.option', JText::_( 'PROXY_CONFIG_SCALE_DENOMINATOR_DEFAULT'), JText::_( 'PROXY_CONFIG_SCALE_DENOMINATOR_DEFAULT'))), $availableTileMatrixList);
-					 							echo JHTML::_("select.genericlist",$availableTileMatrixList, 'maxScaleDenominator@'.$iServer."@".$layernum."@".$tileMatrixSetId, 'size="1" ', 'value', 'text', $maxScaleDenominator ); 
+					 							$availableTileMatrixList = array_merge(array(JHTML::_('select.option', 'service-value', JText::_( 'PROXY_CONFIG_SCALE_DENOMINATOR_DEFAULT'))), $availableTileMatrixList);
+					 							echo JHTML::_("select.genericlist",$availableTileMatrixList, 'maxScaleDenominator@'.$iServer."@".$layernum."@".$id, 'size="1" ', 'value', 'text', $maxScaleDenominatortileMatrixId ); 
 					 							?>
 												</td>
 												<td width ="43%">
 												<?php 
-												echo JHTML::_("select.genericlist",$availableTileMatrixList, 'minScaleDenominator@'.$iServer."@".$layernum."@".$tileMatrixSetId, 'size="1" ', 'value', 'text', $minScaleDenominator );
+												echo JHTML::_("select.genericlist",$availableTileMatrixList, 'minScaleDenominator@'.$iServer."@".$layernum."@".$id, 'size="1" ', 'value', 'text', $minScaleDenominatortileMatrixId );
 												?>
 												</td>
 												</tr>
@@ -1715,9 +1722,11 @@ function submitbutton(pressbutton)
 									</td>
 								</tr>
 							</table>
+							<input type="hidden" name="countTileMatrixSet@<?php echo $iServer; ?>@<?php echo $layernum; ?>" id="countTileMatrixSet@<?php echo $iServer; ?>@<?php echo $layernum; ?>" value="<?php echo $TileMatrixSetLinks->length; ?>">
 						</fieldset>
 					</td>
 				</tr>
+				
 				<?php  
 				$layernum += 1;
 				}
