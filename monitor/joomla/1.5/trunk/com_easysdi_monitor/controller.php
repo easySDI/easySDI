@@ -262,7 +262,7 @@ class MonitorController extends JController
 	
 	function jsonToXml($json){
 		//include_once("XML/Serializer.php");
-		include_once(JPATH_COMPONENT_ADMINISTRATOR.DS."lib".DS."xml".DS."Serializer.php");
+		include_once(JPATH_COMPONENT_ADMINISTRATOR.DS."lib".DS."XML".DS."Serializer.php");
 	
 	    $options = array (
 	      'addDecl' => TRUE,
