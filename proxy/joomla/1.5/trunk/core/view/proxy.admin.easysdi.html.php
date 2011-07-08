@@ -1669,22 +1669,32 @@ function submitbutton(pressbutton)
 								<tr>
 									<th><?php echo JText::_( 'PROXY_CONFIG_GEOGRAPHIC_FILTER'); ?></th>
 									<th><?php echo JText::_( 'PROXY_CONFIG_TILEMATRIXSET_ID'); ?></th>
+									<th><?php echo JText::_( 'PROXY_CONFIG_TILEMATRIX_MIN_SCALE_DENOMINATOR'); ?></th>
 								</tr>
 								<tr>
 									<td>
-									<textarea <?php if(! HTML_proxy::isWMTSLayerChecked($theServer,$identifier->nodeValue)) {echo 'disabled';}?> <?php if (strcasecmp($theServer->Layers['All'],'True')==0 ) echo ' disabled '; ?> rows="3" cols="60"
-										id="LocalFilter@<?php echo $iServer; ?>@<?php echo $layernum;?>" 
-										name="LocalFilter@<?php echo $iServer; ?>@<?php echo $layernum;?>"> 
-										<?php $localFilter = HTML_proxy ::getWMTSLayerLocalFilter($theServer,$name); if (!(strlen($localFilter)>	0)){} else {echo $localFilter;} ?>
-										</textarea>
+									<table>
+									<tr>
+										<td><?php echo JText::_( 'PROXY_CONFIG_BBOX_MINX'); ?>
+										<input type="text" name="bboxminx@<?php echo $iServer; ?>@<?php echo $layernum; ?>" id="bboxminx@<?php echo $iServer; ?>@<?php echo $layernum; ?>" value="">
+										</td>
+										<td><?php echo JText::_( 'PROXY_CONFIG_BBOX_MAXX'); ?>
+										<input type="text" name="bboxmaxx@<?php echo $iServer; ?>@<?php echo $layernum; ?>" id="bboxmaxx@<?php echo $iServer; ?>@<?php echo $layernum; ?>" value="">
+										</td>
+									</tr>
+									<tr>
+										<td><?php echo JText::_( 'PROXY_CONFIG_BBOX_MINY'); ?>
+										<input type="text" name="bboxminy@<?php echo $iServer; ?>@<?php echo $layernum; ?>" id="bboxminy@<?php echo $iServer; ?>@<?php echo $layernum; ?>" value="">
+										</td>
+										<td><?php echo JText::_( 'PROXY_CONFIG_BBOX_MAXY'); ?>
+										<input type="text" name="bboxmaxy@<?php echo $iServer; ?>@<?php echo $layernum; ?>" id="bboxmaxy@<?php echo $iServer; ?>@<?php echo $layernum; ?>" value="">
+										</td>
+									</tr>
+									</table>
 									</td>
-									<td>
+									<td colspan="2">
 										<table width ="100%">
-										<tr>
-										<th></th>
-										<th><?php echo JText::_( 'PROXY_CONFIG_TILEMATRIX_MAX_SCALE_DENOMINATOR'); ?></th>
-										<th><?php echo JText::_( 'PROXY_CONFIG_TILEMATRIX_MIN_SCALE_DENOMINATOR'); ?></th>
-										</tr>
+										
 											<?php 
 											for($id = 0; $id<$TileMatrixSetLinks->length; $id++){ 
 												$availableTileMatrix =  array();
@@ -1699,19 +1709,14 @@ function submitbutton(pressbutton)
 												echo $tileMatrixSetId;?>
 												<input type="hidden" name="TileMatrixSetId@<?php echo $iServer; ?>@<?php echo $layernum; ?>@<?php echo $id; ?>" id="TileMatrixSetId@<?php echo $iServer; ?>@<?php echo $layernum; ?>@<?php echo $id; ?>" value="<?php echo $tileMatrixSetId; ?>">
 												</td>
-												<td width ="43%">
+												<td width ="86%">
 												<?php 
 												$availableTileMatrix = $describedTileMatrixSets[$tileMatrixSetId];
 												foreach($availableTileMatrix as $key=>$value) :
-					 									 $availableTileMatrixList[] = JHTML::_('select.option', $key, $key." [ ".$value." ]");
+					 									 $availableTileMatrixList[] = JHTML::_('select.option', $key." [ ".$value." ]", $key." [ ".$value." ]");
 					 							endforeach;
 					 							$availableTileMatrixList = array_merge(array(JHTML::_('select.option', 'service-value', JText::_( 'PROXY_CONFIG_SCALE_DENOMINATOR_DEFAULT'))), $availableTileMatrixList);
-					 							echo JHTML::_("select.genericlist",$availableTileMatrixList, 'maxScaleDenominator@'.$iServer."@".$layernum."@".$id, 'size="1" ', 'value', 'text', $maxScaleDenominatortileMatrixId ); 
-					 							?>
-												</td>
-												<td width ="43%">
-												<?php 
-												echo JHTML::_("select.genericlist",$availableTileMatrixList, 'minScaleDenominator@'.$iServer."@".$layernum."@".$id, 'size="1" ', 'value', 'text', $minScaleDenominatortileMatrixId );
+					 							echo JHTML::_("select.genericlist",$availableTileMatrixList, 'minScaleDenominator@'.$iServer."@".$layernum."@".$id, 'size="1" ', 'value', 'text', $minScaleDenominatortileMatrixId );
 												?>
 												</td>
 												</tr>
