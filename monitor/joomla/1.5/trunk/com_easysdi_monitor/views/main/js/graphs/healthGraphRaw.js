@@ -17,7 +17,7 @@
  
 Ext.namespace("EasySDI_Mon");
 
-EasySDI_Mon.drawHealthGraphRaw = function(container, aStores, logRes){
+EasySDI_Mon.drawHealthGraphRaw = function(container, aStores, logRes,useSla){
 	     //Prepare graph options
 	     var options = {
                 chart: {
@@ -81,51 +81,76 @@ EasySDI_Mon.drawHealthGraphRaw = function(container, aStores, logRes){
 	     var otherSeries;
 	     //push categories
 	     for ( var storeName in aStores)
-             {
-		 if(typeof aStores[storeName] != 'function'){
-		    options.xAxis.categories.push(storeName);
-		 }
+         {
+	    	 if(typeof aStores[storeName] != 'function'){
+	    		 options.xAxis.categories.push(storeName);
+	    	 }
 	     }
 	     
-	     var avCount = 0;
-             var unavCount = 0;
-             var fCount = 0;
-             var otherCount = 0;
-	     //push series
-             for ( var storeName in aStores)
-             {
-		 if(typeof aStores[storeName] != 'function'){
+	    var avCount = 0;
+        var unavCount = 0;
+        var fCount = 0;
+        var otherCount = 0;
+	    
+        //push series
+        for ( var storeName in aStores)
+        {
+        	// Reset for each method
+        	avCount = 0;
+            unavCount = 0;
+            fCount = 0;
+            otherCount = 0;
+            
+        	if(typeof aStores[storeName] != 'function'){
 	            var aRec = aStores[storeName].getRange();
-		    
+	        	var summaryCount = 0;
                     //push percentiles
                     for ( var i=0; i< aRec.length; i++ )
                     {   
-			var status = aRec[i].get('statusCode');
-			switch (status){
-                             case 'AVAILABLE':
-                                   avCount++;
-                             break;
-                             case 'OUT_OF_ORDER':
-                                   fCount++;
-                             break;
-                             case 'UNAVAILABLE':
-                                   unavCount++;
-                             break;
-	                           case 'NOT_TESTED':
-                                   otherCount++;
-                             break;
-                             default: 
-                                   otherCount++;
-                             break;
-                        }
-		    }
+                    	if(aRec[i].get('avCount'))
+                    	{
+                    		avCount+=aRec[i].get('avCount');
+                    		fCount+=aRec[i].get('fCount');
+                    		unavCount+=aRec[i].get('unavCount');
+                    		otherCount+=aRec[i].get('otherCount');
+                    		summaryCount = avCount + fCount +unavCount + otherCount;
+                    	}else
+                    	{
+                    		var status = aRec[i].get('statusCode');
+	                    	switch (status){
+	                             case 'AVAILABLE':
+	                                   avCount++;
+	                             break;
+	                             case 'OUT_OF_ORDER':
+	                                   fCount++;
+	                             break;
+	                             case 'UNAVAILABLE':
+	                                   unavCount++;
+	                             break;
+		                         case 'NOT_TESTED':
+	                                   otherCount++;
+	                             break;
+	                             default: 
+	                                   otherCount++;
+	                             break;
+	                        	}
+                    	}
+                    }
+        			if(summaryCount > 0)
+					{
+						avSeries.data.push(Math.round((avCount/summaryCount)*100));
+						unavSeries.data.push(Math.round((unavCount/summaryCount)*100));
+						fSeries.data.push(Math.round((fCount/summaryCount)*100));
+						otherSeries.data.push(Math.round((otherCount/summaryCount)*100));
+					}else
+					{
+						avSeries.data.push(Math.round((avCount/aRec.length)*100));
+						unavSeries.data.push(Math.round((unavCount/aRec.length)*100));
+						fSeries.data.push(Math.round((fCount/aRec.length)*100));
+						otherSeries.data.push(Math.round((otherCount/aRec.length)*100));
+                    }
 		    
-		    avSeries.data.push(Math.round((avCount/aRec.length)*100));
-		    unavSeries.data.push(Math.round((unavCount/aRec.length)*100));
-		    fSeries.data.push(Math.round((fCount/aRec.length)*100));
-		    otherSeries.data.push(Math.round((otherCount/aRec.length)*100));
-		    
-		 }
+        	}
 	     }
 	     
 	    //push this series

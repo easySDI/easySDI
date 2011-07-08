@@ -122,7 +122,7 @@ Ext.onReady(function(){
    ];
    
    /*Used in report for select between aggLogs and logs */
-   EasySDI_Mon.DaysForUsingLogs = 6;                      
+   EasySDI_Mon.DaysForUsingLogs = 3;                      
    		       
    EasySDI_Mon.DefaultJob = {
    		name:'',
@@ -140,7 +140,31 @@ Ext.onReady(function(){
    		slaStartTime:'08:00:00',
    		slaEndTime:'18:00:00',
    		httpErrors:true,
-   		bizErrors:true
+   		bizErrors:true,
+   		saveResponse:false,
+   		runSimultaneous:false
+   };
+   
+   EasySDI_Mon.DefaultSla = {
+			name: '',
+			excludeWorst: true,
+			measureTimeToFirst: true
+	   };
+	   
+   EasySDI_Mon.DefaultPeriod = {
+			name: '',
+			isMonday: false,
+			isTuesday: false,
+			isWednesday: false,
+			isThursday: false,
+			isFriday: false,
+			isSaturday: false,
+			isSunday: false,
+			isHolidays: false,
+			slaStartTime: '00:00:00',
+			slaEndTime: '24:00:00',
+			isInclude: true,
+			date: ''
    };
    
    EasySDI_Mon.DefaultReq = {
@@ -258,6 +282,16 @@ Ext.onReady(function(){
     ////
     // all write events
     //
+   
+   EasySDI_Mon.EventComponent =  Ext.extend(Ext.util.Observable, {
+	    constructor : function() {
+	      this.addEvents('updatedSla');
+	      EasySDI_Mon.EventComponent.superclass.constructor.call(this);
+	    }
+	  });
+	  
+   	EasySDI_Mon.SlaUpdateEvent = new EasySDI_Mon.EventComponent();
+   
     Ext.data.DataProxy.addListener('write', function(proxy, action, result, res, rs) {
         EasySDI_Mon.App.setAlert(true, res.raw.message);
     });

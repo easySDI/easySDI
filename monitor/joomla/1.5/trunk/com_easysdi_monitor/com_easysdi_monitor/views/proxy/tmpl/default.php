@@ -27,6 +27,8 @@ global $fh;
 global $requ_headers;
 global $resp_header;
 
+// Used for image/data handler
+$req_Content = "";
 
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 $monitorUrl = config_easysdi::getValue("MONITOR_URL");
@@ -131,13 +133,29 @@ foreach ($_GET as $key => $value){
 	}
 	$i++;
 }
+
+$indexStrStart = strrpos($url,"contenttype");
+if(!($indexStrStart === false))
+{	
+	$tempStr = substr($url,$indexStrStart,strlen($url)-1);	
+	$indexStrEnd = strpos($tempStr,"&");
+	if($indexStrEnd === false)
+	{
+		$req_Content = substr($tempStr,0,strlen($tempStr)-1);	
+	}else
+	{
+		$req_Content = substr($tempStr,0,$indexStrEnd);
+	}
+	$req_Content = substr($req_Content,strpos($req_Content,"=")+1,strlen($req_Content)-1);
+}
+
   fwrite($fh, "-----------------------------\n");
   fwrite($fh, "resulting url:".$url."\n");
   fwrite($fh, "\n");
     
 
   fwrite($fh, "getfile\n");
-  $HTML = getFile($url);
+  $HTML = getFile($url,$req_Content);
   fwrite($fh, "end getfile\n");
   
   fwrite($fh, "Raw response:-->".$HTML."<--\n");
@@ -221,7 +239,7 @@ function read_header($url, $str) {
 }
 
 //Retrieves a file from the web.
-function getFile($fileLoc)
+function getFile($fileLoc,$req_Content)
 {
      global $requ_headers;
      global $fh;
@@ -249,6 +267,17 @@ function getFile($fileLoc)
 	       fwrite($fh, "Auth with: ".$_SERVER['PHP_AUTH_USER'].':'.$_SERVER['PHP_AUTH_PW']."\n");
          curl_setopt($ch, CURLOPT_USERPWD, $_SERVER['PHP_AUTH_USER'].':'.$_SERVER['PHP_AUTH_PW']);
      }
+   if($verb == "GET" && $req_Content !== '' && strpos($req_Content,"image") !== false)
+     {
+		// Imagehandler
+		header("Content-type: ".$req_Content);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+		curl_setopt($ch, CURLOPT_HEADER, 0);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_BINARYTRANSFER,1);
+        curl_setopt ($ch, CURLOPT_FAILONERROR, 1);
+     }else
      if($verb == "GET"){
 	      fwrite($fh, "GET:".$fileLoc."\n");
 	      //curl_setopt($ch, CURLOPT_BINARYTRANSFER, 1);

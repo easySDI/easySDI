@@ -72,7 +72,7 @@ Ext.onReady(function(){
 	]);
 
 	function paramsRenderer(value) {
-		debugger ;
+	
 		if(value == null)
 			return "";
 		if(!value.constructor)
@@ -197,7 +197,7 @@ Ext.onReady(function(){
 		if (!rec) {
 			return false;
 		}
-		debugger;
+		
 		options = reqOptionsHandler.doLoadTypeOptions(Ext.getCmp('JobGrid').getSelectionModel().getSelected().get('httpMethod').toLowerCase(), Ext.getCmp('JobGrid').getSelectionModel().getSelected().get('serviceType').toLowerCase());
 
 		
@@ -442,7 +442,7 @@ Ext.onReady(function(){
 								for (var el in fields){
 									u.set(el, fields[el]);
 									if(el == "params"){
-										debugger;
+									
 									   fieldParams = fields[el];
 									}
 								}

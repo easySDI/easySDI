@@ -17,7 +17,7 @@
 
 Ext.namespace("EasySDI_Mon");
 
-EasySDI_Mon.drawHealthGraphAgg = function (container, aStores, logRes){
+EasySDI_Mon.drawHealthGraphAgg = function (container, aStores, logRes,useSla,showInspireGraph){
 	//Prepare graph options
 	var options = {
 		chart: {
@@ -63,33 +63,74 @@ EasySDI_Mon.drawHealthGraphAgg = function (container, aStores, logRes){
 			color: '#7dff9c'
 	};
 
+
 	//push categories
 	for ( var storeName in aStores)
 	{
 		if(typeof aStores[storeName] != 'function'){
-			options.xAxis.categories.push(storeName+EasySDI_Mon.lang.getLocal('h24 suffix'));
-			options.xAxis.categories.push(storeName+EasySDI_Mon.lang.getLocal('sla suffix'));
+			if(useSla)
+			{
+				if(!showInspireGraph)
+				{
+					options.xAxis.categories.push(storeName);//+EasySDI_Mon.lang.getLocal('h1 suffix'));
+				}else
+				{
+					options.xAxis.categories.push(storeName);//+EasySDI_Mon.lang.getLocal('inspire suffix'));
+				}
+			}else
+			{
+				options.xAxis.categories.push(storeName+EasySDI_Mon.lang.getLocal('h24 suffix'));
+				options.xAxis.categories.push(storeName+EasySDI_Mon.lang.getLocal('sla suffix'));
+			}
 		}
 	}
 
 	var avCountH24;
 	var avCountSLA;
-	//push series
-	for ( var storeName in aStores)
+	if(useSla)
 	{
-		if(typeof aStores[storeName] != 'function'){
-			var aRec = aStores[storeName].getRange();
-			avCountH24 = 0;
-			avCountSLA = 0;
-			//push percentiles
-			for ( var i=0; i< aRec.length; i++ )
-			{   
-				avCountH24 += aRec[i].get('h24Availability');
-				avCountSLA += aRec[i].get('slaAvalabilty');
+		//push series
+		for ( var storeName in aStores)
+		{
+			if(typeof aStores[storeName] != 'function'){
+				var aRec = aStores[storeName].getRange();
+				avCountH24 = 0;
+				avCountSLA = 0;
+	
+				//push percentiles
+				for ( var i=0; i< aRec.length; i++ )
+				{   
+					avCountH24 += aRec[i].get('h1Availability');
+					avCountSLA += aRec[i].get('inspireAvailability');				
+				}
+		      
+				if(!showInspireGraph)
+				{
+					avSeries.data.push(Math.round(avCountH24/aRec.length));
+				}else{
+					avSeries.data.push(Math.round(avCountSLA/aRec.length));
+				}
 			}
-			avSeries.data.push(Math.round(avCountH24/aRec.length));
-			avSeries.data.push(Math.round(avCountSLA/aRec.length));
 		}
+	}else
+	{
+				//push series
+				for ( var storeName in aStores)
+				{
+					if(typeof aStores[storeName] != 'function'){
+						var aRec = aStores[storeName].getRange();
+						avCountH24 = 0;
+						avCountSLA = 0;
+						//push percentiles
+						for ( var i=0; i< aRec.length; i++ )
+						{   
+							avCountH24 += aRec[i].get('h24Availability');
+							avCountSLA += aRec[i].get('slaAvalabilty');
+						}
+						avSeries.data.push(Math.round(avCountH24/aRec.length));
+						avSeries.data.push(Math.round(avCountSLA/aRec.length));
+					}
+				}
 	}
 
 	options.series.push(avSeries);

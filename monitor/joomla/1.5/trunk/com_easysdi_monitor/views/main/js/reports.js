@@ -73,7 +73,13 @@ Ext.onReady(function() {
 	data:{'data': [{'name':'All','value':'All'}]}
 	});
 
- var exportConfig = Ext.data.Record.create(['id','exportName', 'exportType','exportDesc', 'xsltUrl' ]);
+	var slaComboStore = new Ext.data.SimpleStore({
+		id: 'idSlaStore',
+		fields:[{name: 'name',id:'id'}],
+		data:[]
+	});
+	
+	var exportConfig = Ext.data.Record.create(['id','exportName', 'exportType','exportDesc', 'xsltUrl' ]);
 //  var exportTypeStore = new Ext.data.Store({
 //	  proxy: new Ext.data.HttpProxy({  url :EasySDI_Mon.MonitorRoot+"&task=read"	}),
 //	  root :'rows',
@@ -176,7 +182,7 @@ Ext.onReady(function() {
 		region: 'center',
 		height: 50,
 		frame:true,
-		layoutConfig:{columns:8},
+		layoutConfig:{columns:10},
 		border:false,
 		defaults: {
 			border: false,
@@ -239,6 +245,26 @@ Ext.onReady(function() {
 			width: 200
 		},
 		{
+			html:EasySDI_Mon.lang.getLocal('report sla')+':'
+		},
+		{
+			// New sla store
+			items:[{
+				xtype:          'combo',
+				mode:           'local',
+				id:             'repCbSla',
+				triggerAction:  'all',
+				forceSelection: true,
+				editable:       false,
+				fieldLabel:     'Sla',
+				name:           'slaComboFilter',
+				displayField:   'name',
+				valueField:     'id',
+				emptyText: EasySDI_Mon.lang.getLocal('report combo select a sla'),
+				store:  slaComboStore
+			}]
+		},
+		{
 			items:[{
 				id: 'mtnBtnView',
 				xtype:'button',
@@ -299,50 +325,6 @@ Ext.onReady(function() {
 			})
 			]
 		}
-		/*
-	     ,{
-		     html:' or from: '
-	     },{
-             items:[{
-		id: 'reqMinDate',
-                xtype: 'datefield',
-		format: 'd-m-Y',
-		//value: new Date(),
-		allowBlank:false,
-		editable:false,
-		//altFormats: 'Y-m-d',
-                timeWidth:60
-              }]
-             },{
-		     html:' to: '
-	     },{
-             items:[{
-		id: 'reqMaxDate',
-                xtype: 'datefield',
-		format: 'd-m-Y',
-		//value: new Date(),
-		allowBlank:false,
-		editable:false,
-		//altFormats: 'Y-m-d',
-                timeWidth:60
-              }]
-             }
-		 */
-		/*,{
-			items:[{
-				id: 'mtnBtnView',
-				xtype:'button',
-				handler: function(){
-				   mtnBtnView_click();
-			        },
-				listeners: {
-                                    click: function() {
-				        mtnBtnView_click();
-                                    }
-                                },
-			        text: EasySDI_Mon.lang.getLocal('action view')
-			}]
-		}*/
 		]
 	});
 	//load the menu items
@@ -361,6 +343,13 @@ Ext.onReady(function() {
 	Ext.getCmp('JobGrid').store.on('write', function() {
 		refreshComboValuesFromJobStore();
 	});
+	
+	/**
+	 * Handels event fired when sla store is updated
+	 * */
+	EasySDI_Mon.SlaUpdateEvent.on('updatedSla', function() {
+		refreshComboValuesFromSlaStore();
+	});
 
 	function refreshComboValuesFromJobStore(){
 		var aRec = Ext.getCmp('JobGrid').store.getRange();
@@ -371,6 +360,27 @@ Ext.onReady(function() {
 			u.set('name', aRec[i].get('name'));
 			jobComboStore.insert(0, u);
 			//jobComboStore.add(aRec[i]);
+		}
+	}
+	
+	function refreshComboValuesFromSlaStore(){
+		var sGrid = Ext.getCmp('SlaGrid');
+		if(sGrid)
+		{
+			var aRec = Ext.getCmp('SlaGrid').store.getRange();
+			slaComboStore.removeAll();
+			var u = new slaComboStore.recordType({name:'',id:''});
+			for ( var i=0; i< aRec.length; i++ )
+			{
+				u = new slaComboStore.recordType({name:'',id:''});
+				u.set('id',aRec[i].id);
+				u.set('name',aRec[i].get('name'));
+				slaComboStore.insert(0,u);
+			}
+			u = new slaComboStore.recordType({ name:'',id:''});
+			u.set('id','0');
+			u.set('name','Default');
+			slaComboStore.insert(0,u);
 		}
 	}
 	
@@ -558,63 +568,130 @@ Ext.onReady(function() {
 		if(selMet == "All"){
 			var aRec = methodComboStore.getRange();
 			for ( var i=0; i< aRec.length; i++ ){
-				if(aRec[i].get('name') != "All")
+				//if(aRec[i].get('name') != "All")
 					aMethods.push(aRec[i].get('name'));
 			}
 		}else{
 			aMethods.push(selMet);
 		}
-
+		// Use advanced SLA
+		var useSla = Ext.getCmp('repCbSla').getValue() != "" &&  Ext.getCmp('repCbSla').getValue() != "0" ? true: false;
+		
 		//get the logs into a store. 1 store / method
 		var loadedStores = 0;
 		
-		
 		if(null!=getUrlOnly){
-		
+			
 			urls =[];
 			for ( var i=0; i< aMethods.length; i++ ){
 
 				var fields = null;
 				if(logRes == "aggLogs")
-					fields = ['h24Availability', 'slaNbBizErrors','h24NbConnErrors','h24MeanRespTime','slaMeanRespTime','h24NbBizErrors','slaAvalabilty','slaNbConnErrors', {name: 'date', type: 'date', dateFormat: 'Y-m-d'}];
-				else
-					fields = [{name: 'time', type: 'date', dateFormat: 'Y-m-d H:i:s'}, 'message', 'httpCode', 'status', 'statusCode', 'delay','size']
-
+				{
+					if(useSla)
+					{
+						fields = ['h1Availability', 'inspireNbBizErrors','h1NbConnErrors','h1MeanRespTime','inspireMeanRespTime','h1NbBizErrors','inspireAvailability','inspireNbConnErrors','inspireMaxRespTime','h1MaxRespTime','inspireMinRespTime','h1MinRespTime', {name: 'date', type: 'date', dateFormat: 'Y-m-d H:i:s'}];
+					}else
+					{
+						fields = ['h24Availability', 'slaNbBizErrors','h24NbConnErrors','h24MeanRespTime','slaMeanRespTime','h24NbBizErrors','slaAvailability','slaNbConnErrors','slaMaxRespTime','h24MaxRespTime','slaMinRespTime','h24MinRespTime', {name: 'date', type: 'date', dateFormat: 'Y-m-d'}];
+					}
+				}else
+				{
+					if(aMethods[i] == "All")
+					{
+						fields = [{name: 'time', type: 'date', dateFormat: 'Y-m-d H:i:s'}, 'message', 'httpCode', 'status', 'statusCode', 'delay','size','avCount','unavCount','fCount','otherCount','maxTime'];
+					}else
+					{
+						fields = [{name: 'time', type: 'date', dateFormat: 'Y-m-d H:i:s'}, 'message', 'httpCode', 'status', 'statusCode', 'delay','size']
+					}
+				}
 				urls.push(	EasySDI_Mon.proxyserverside+EasySDI_Mon.CurrentJobCollection+'/'+selJob+'/queries/'+aMethods[i]+'/'+logRes+'?minDate='+minDate.format('Y-m-d')+'&maxDate='+maxDate.format('Y-m-d'));
 			}
-			return urls;
-			
+			return urls;	
 		}
 			
 		for ( var i=0; i< aMethods.length; i++ ){
 
 			var fields = null;
 			if(logRes == "aggLogs")
-				fields = ['h24Availability', 'slaNbBizErrors','h24NbConnErrors','h24MeanRespTime','slaMeanRespTime','h24NbBizErrors','slaAvalabilty','slaNbConnErrors', {name: 'date', type: 'date', dateFormat: 'Y-m-d'}];
-			else
-				fields = [{name: 'time', type: 'date', dateFormat: 'Y-m-d H:i:s'}, 'message', 'httpCode', 'status', 'statusCode', 'delay','size']
-
-			aStores[aMethods[i]] = new Ext.data.JsonStore({
-				root:'data',
-				autoLoad: true,
-				totalProperty:'totalCount',
-				restful:true,
-				proxy: new Ext.data.HttpProxy({
-					url: EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+selJob+'/queries/'+aMethods[i]+'/'+logRes+'?minDate='+minDate.format('Y-m-d')+'&maxDate='+maxDate.format('Y-m-d')
-				}),
-				fields:fields,
-				listeners: {
-				load: function(){
-				loadedStores ++;
-				//Wait that all stores are loaded
-				if(loadedStores == aMethods.length){
-					var b = aStores;
-					myMask.hide();
-					onDataReady(aStores, logRes);
+			{
+				if(useSla)
+				{
+					fields = ['h1Availability', 'inspireNbBizErrors','h1NbConnErrors','h1MeanRespTime','inspireMeanRespTime','h1NbBizErrors','inspireAvailability','inspireNbConnErrors','inspireMaxRespTime','h1MaxRespTime','inspireMinRespTime','h1MinRespTime', {name: 'date', type: 'date', dateFormat: 'Y-m-d H:i:s'}];
+				}else
+				{
+					fields = ['h24Availability', 'slaNbBizErrors','h24NbConnErrors','h24MeanRespTime','slaMeanRespTime','h24NbBizErrors','slaAvailability','slaNbConnErrors','slaMaxRespTime','h24MaxRespTime','slaMinRespTime','h24MinRespTime', {name: 'date', type: 'date', dateFormat: 'Y-m-d'}];
+				}
+				
+				
+			}else
+			{
+				if(aMethods[i] == "All")
+				{
+					fields = [{name: 'time', type: 'date', dateFormat: 'Y-m-d H:i:s'}, 'message', 'httpCode', 'status', 'statusCode', 'delay','size','avCount','unavCount','fCount','otherCount','maxTime'];
+				}else
+				{
+					fields = [{name: 'time', type: 'date', dateFormat: 'Y-m-d H:i:s'}, 'message', 'httpCode', 'status', 'statusCode', 'delay','size']
 				}
 			}
+			
+			var slaParam = "";
+			var slaID = -1;
+			if(useSla)
+			{
+				slaParam = "&useSla="+ Ext.getCmp('repCbSla').getValue();
+				slaID = Ext.getCmp('repCbSla').getValue();
 			}
-			});
+			
+			// If All selected get summery graph for all the job methods
+			if(aMethods[i] == "All")
+			{
+				var summeryGraph = EasySDI_Mon.lang.getLocal('graph summery');
+				aStores[summeryGraph] = new Ext.data.JsonStore({
+					root:'data',
+					autoLoad: true,
+					totalProperty:'totalCount',
+					restful:true,
+					proxy: new Ext.data.HttpProxy({
+						url: EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+selJob+'/'+logRes+'?minDate='+minDate.format('Y-m-d')+'&maxDate='+maxDate.format('Y-m-d')+slaParam
+					}),
+					fields:fields,
+					listeners: {
+					load: function(){
+					loadedStores ++;
+					//Wait that all stores are loaded
+					if(loadedStores == aMethods.length){
+						var b = aStores;
+						myMask.hide();
+						onDataReady(aStores, logRes,useSla,slaID);
+					}
+				}
+				}
+				});
+			}else
+			{
+				aStores[aMethods[i]] = new Ext.data.JsonStore({
+					root:'data',
+					autoLoad: true,
+					totalProperty:'totalCount',
+					restful:true,
+					proxy: new Ext.data.HttpProxy({
+						url: EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+selJob+'/queries/'+aMethods[i]+'/'+logRes+'?minDate='+minDate.format('Y-m-d')+'&maxDate='+maxDate.format('Y-m-d')+slaParam
+					}),
+					fields:fields,
+					listeners: {
+						load: function(){
+							loadedStores ++;
+							//Wait that all stores are loaded
+							if(loadedStores == aMethods.length){
+								var b = aStores;
+								myMask.hide();
+								onDataReady(aStores, logRes,useSla,slaID);
+							}
+						}
+					}
+				});
+			}
 		}
 	}
     
@@ -641,14 +718,32 @@ Ext.onReady(function() {
 	}
         
 	//called when all stores are loaded
-	function onDataReady(aStores, logRes){
-
+	function onDataReady(aStores, logRes,useSla,slaID){
+		
+		if(useSla)
+		{
+			var slaGrid = Ext.getCmp('SlaGrid');
+			if(slaGrid)
+			{
+				var rec = slaGrid.store.getById(slaID);
+				if(rec)
+				{
+					var showInspireGraph = false; 
+					if(rec.get('isExcludeWorst') == 1)
+					{
+						showInspireGraph = true;
+					}
+				}
+			}
+		}
+		
 		//output the graphs
-		EasySDI_Mon.chart1 = EasySDI_Mon.drawResponseTimeGraph('container1', aStores, logRes, tickInterval, jobRecord);
+		EasySDI_Mon.chart1 = EasySDI_Mon.drawResponseTimeGraph('container1', aStores, logRes, tickInterval, jobRecord,useSla,showInspireGraph);
 		if(logRes == 'logs')
-			EasySDI_Mon.chart2 = EasySDI_Mon.drawHealthGraphRaw('container2', aStores, logRes);
-		else{
-			EasySDI_Mon.chart2 = EasySDI_Mon.drawHealthGraphAgg('container2', aStores, logRes);
+		{
+			EasySDI_Mon.chart2 = EasySDI_Mon.drawHealthGraphRaw('container2', aStores, logRes,useSla);
+		}else{
+			EasySDI_Mon.chart2 = EasySDI_Mon.drawHealthGraphAgg('container2', aStores, logRes,useSla,showInspireGraph);
 			//EasySDI_Mon.chart3 = EasySDI_Mon.drawHealthLineGraph('container3', aStores, logRes, tickInterval);
 		}
 

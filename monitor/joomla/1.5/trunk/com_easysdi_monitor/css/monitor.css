@@ -249,3 +249,7 @@ background-repeat:no-repeat;
 	float:left;
 	min-width:270px;
 }
+
+.grey-frame .x-panel-body {
+    background-color: #E8E8E8;
+}

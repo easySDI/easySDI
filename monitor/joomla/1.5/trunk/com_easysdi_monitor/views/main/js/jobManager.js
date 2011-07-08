@@ -38,7 +38,7 @@ Ext.onReady(function() {
 		restful:true,
 		proxy: proxy,
 		writer: writer,
-		fields:['status', 'statusCode', 'httpMethod', 'testInterval', 'bizErrors', 'isPublic', 'allowsRealTime', 'httpErrors', 'serviceType', 'password', 'url' ,'id' ,'slaEndTime', 'name', 'queries', 'login', 'triggersAlerts', 'timeout', 'isAutomatic', 'slaStartTime', {name: 'lastStatusUpdate', type: 'date', dateFormat: 'Y-m-d H:i:s'},'saveResponse']
+		fields:['status', 'statusCode', 'httpMethod', 'testInterval', 'bizErrors', 'isPublic', 'allowsRealTime', 'httpErrors', 'serviceType', 'password', 'url' ,'id' ,'slaEndTime', 'name', 'queries', 'login', 'triggersAlerts', 'timeout', 'isAutomatic', 'slaStartTime', {name: 'lastStatusUpdate', type: 'date', dateFormat: 'Y-m-d H:i:s'},'saveResponse','runSimultaneous']
 	});
 
 
@@ -502,6 +502,14 @@ Ext.onReady(function() {
 			name: 'saveResponse',
 			trueText: 'true',
 			falseText: 'false'
+		},
+		{
+			xtype:'checkbox',
+			fieldLabel: EasySDI_Mon.lang.getLocal('grid header runSimultaneous'),
+			name: 'runSimultaneous',
+			trueText: 'true',
+			falseText: 'false'
+			
 		}
 
 		],

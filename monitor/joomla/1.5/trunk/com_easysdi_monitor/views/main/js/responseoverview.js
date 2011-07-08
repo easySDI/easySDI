@@ -123,8 +123,10 @@ Ext.onReady(function() {
 				{name: 'normSizeTolerance',mapping: 'query.queryValidationSettings.normSizeTolerance'},{name: 'useTimeValidation',mapping: 'query.queryValidationSettings.useTimeValidation'},
 				{name: 'normTime',mapping: 'query.queryValidationSettings.normTime'},{name: 'useXpathValidation',mapping: 'query.queryValidationSettings.useXpathValidation'},
 				{name: 'xpathExpression',mapping: 'query.queryValidationSettings.xpathExpression'},{name: 'expectedXpathOutput',mapping: 'query.queryValidationSettings.expectedXpathOutput'},	
-				{name:'lastQueryResult',mapping:'lastQueryResult'},{name:'picture_url',mapping:'lastQueryResult.picture_url'},
-				{name:'xml_result',mapping:'lastQueryResult.xml_result'},{name:'text_result',mapping:'lastQueryResult.text_result'}
+				{name:'lastQueryResult',mapping:'lastQueryResult'},
+				/*{name:'picture_url',mapping:'lastQueryResult.picture_url'},
+				{name:'xml_result',mapping:'lastQueryResult.xml_result'},*/{name:'text_result',mapping:'lastQueryResult.text_result'},
+				{name: 'content_type',mapping:'lastQueryResult.content_type'}
 			]
 	});
 	
@@ -527,7 +529,7 @@ Ext.onReady(function() {
 			sCellColor = 'OverviewTableCellsError';
 			oCellColor = 'OverviewTableCellsError';
 		}
-		
+		var dataurl = EasySDI_Mon.proxy+'image/lastoverview/'+rec.get('queryId')+'?contenttype='+rec.get('content_type');
 		var controls;
 		switch(type)
 		{
@@ -623,9 +625,9 @@ Ext.onReady(function() {
 							cellCls: tCellColor
 						},
 						{
-							width: rec.get('picture_url') ? 142: 300,
+							width: 142,
 							height: 142,
-							html: rec.get('picture_url') && !reqError ? '<img src='+rec.get('picture_url')+' alt="missing image" style="border:1px solid;" width="140" height="140" />': '<textarea class="Text_area_result" >'+rec.get('text_result')+'</textarea>',
+							html: rec.get('queryId') && !reqError ? '<img src='+dataurl+' alt="missing image" style="border:1px solid;" width="140" height="140" />': '<a href="'+dataurl+'" target="_blank">'+EasySDI_Mon.lang.getLocal('overview text datalink')+'</a>', //'<textarea class="Text_area_result" >'+rec.get('text_result')+'</textarea>',
 							colspan: 2,
 							cellCls: 'OverviewTableCellsImg'
 						},
@@ -664,6 +666,7 @@ Ext.onReady(function() {
 		case "getrecords":
 		case "getrecordbyid":
 		case "getcapabilities":
+		default: 	
 			controls = {
 				items: 
 				[
@@ -753,13 +756,9 @@ Ext.onReady(function() {
 							cellCls: tCellColor
 						},
 						{
-							xtype: 'textarea',
-							autoScroll: true,
-							width: 300,//180,
-							height:140,
-							style: 'border:1px solid;',
-							readOnly: true,
-							value: rec.get('xml_result')?rec.get('xml_result') :rec.get('text_result'),
+							html: '<a href="'+dataurl+'" target="_blank">'+EasySDI_Mon.lang.getLocal('overview text datalink')+'</a>', //'<textarea class="Text_area_result" >'+rec.get('text_result')+'</textarea>',
+							width: 300,
+							height:30,
 							colspan: 2,
 							cellCls: 'OverviewTableCells'
 						},
@@ -793,9 +792,6 @@ Ext.onReady(function() {
 			        })// End form panel
         		]     
 			}// end control
-			break;
-		default: 
-			break;
 		}// end switch		
 		return controls;
 	}

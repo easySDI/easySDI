@@ -41,6 +41,10 @@
 	<files folder="com_easysdi_monitor">
 		<filename>easysdi_monitor.php</filename>
 		<filename>controller.php</filename>
+		<filename>Overview.php</filename>
+		<filename>Overview.js</filename>
+		<!-- TO REPLACE WITH SERVER AUTH -->
+		<filename>CheckAccess.php</filename>
 		<folder>views</folder>
 	</files>
 	

@@ -17,7 +17,7 @@
 
 Ext.namespace("EasySDI_Mon");
 
-EasySDI_Mon.drawResponseTimeGraph = function (container, aStores, logRes, tickInterval, jobRecord){
+EasySDI_Mon.drawResponseTimeGraph = function (container, aStores, logRes, tickInterval, jobRecord,useSla,showInspireGraph){
 	//Prepare graph options
 	var options = {
 		colors: [
@@ -52,7 +52,7 @@ EasySDI_Mon.drawResponseTimeGraph = function (container, aStores, logRes, tickIn
 			text:EasySDI_Mon.lang.getLocal('response time')+' '+EasySDI_Mon.lang.getLocal('ms suffix')
 		}
 		,
-		min: 0, // set to -1 to show tooltip for errors 
+		min: 0, 
 		//Sets the maxY to 4/3 the timeout
 		max: jobRecord.get('timeout')*1000*1.3333333,
 		minorGridLineWidth: 0, 
@@ -81,20 +81,61 @@ EasySDI_Mon.drawResponseTimeGraph = function (container, aStores, logRes, tickIn
 					
 					if(this.point.log == "aggLogs")
 					{
-						tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip H24_AVAILABILITY')+":</b> "+Math.round(this.point.data.data.h24Availability)+"%<br/>";
-						tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip H24_NB_CONN_ERRORS')+":</b> "+this.point.data.data.h24NbConnErrors+"<br/>";
-						tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip H24_NB_BIZ_ERRORS')+":</b> "+this.point.data.data.h24NbBizErrors+"<br/>";
+						if(useSla)
+						{
+							if(this.point.normalGraph)
+							{
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip AVAILABILITY')+":</b> "+Math.round(this.point.data.data.h1Availability)+"%<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip NB_CONN_ERRORS')+":</b> "+this.point.data.data.h1NbConnErrors+"<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip NB_BIZ_ERRORS')+":</b> "+this.point.data.data.h1NbBizErrors+"<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip MaxRespTime')+"</b> -> "+Math.round(this.point.data.data.h1MaxRespTime * 1000) + EasySDI_Mon.lang.getLocal('ms suffix')+"<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip MinRespTime')+"</b> -> "+Math.round(this.point.data.data.h1MinRespTime * 1000) + EasySDI_Mon.lang.getLocal('ms suffix')+"<br/>";
+							}else
+							{
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip AVAILABILITY')+":</b> "+Math.round(this.point.data.data.inspireAvailability)+"%<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip NB_CONN_ERRORS')+":</b> "+this.point.data.data.inspireNbConnErrors+"<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip NB_BIZ_ERRORS')+":</b> "+this.point.data.data.inspireNbBizErrors+"<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip MaxRespTime')+"</b> -> "+Math.round(this.point.data.data.inspireMaxRespTime * 1000) + EasySDI_Mon.lang.getLocal('ms suffix')+"<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip MinRespTime')+"</b> -> "+Math.round(this.point.data.data.inspireMinRespTime * 1000) + EasySDI_Mon.lang.getLocal('ms suffix')+"<br/>";	
+							}
+						}
+						else
+						{
+							if(this.point.normalGraph)
+							{
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip AVAILABILITY')+":</b> "+Math.round(this.point.data.data.h24Availability)+"%<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip NB_CONN_ERRORS')+":</b> "+this.point.data.data.h24NbConnErrors+"<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip NB_BIZ_ERRORS')+":</b> "+this.point.data.data.h24NbBizErrors+"<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip MaxRespTime')+"</b> -> "+Math.round(this.point.data.data.h24MaxRespTime * 1000) + EasySDI_Mon.lang.getLocal('ms suffix')+"<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip MinRespTime')+"</b> -> "+Math.round(this.point.data.data.h24MinRespTime * 1000) + EasySDI_Mon.lang.getLocal('ms suffix')+"<br/>";		
+							}else
+							{
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip AVAILABILITY')+":</b> "+Math.round(this.point.data.data.slaAvailability)+"%<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip NB_CONN_ERRORS')+":</b> "+this.point.data.data.slaNbConnErrors+"<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip NB_BIZ_ERRORS')+":</b> "+this.point.data.data.slaNbBizErrors+"<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip MaxRespTime')+"</b> -> "+Math.round(this.point.data.data.slaMaxRespTime * 1000) + EasySDI_Mon.lang.getLocal('ms suffix')+"<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip MinRespTime')+"</b> -> "+Math.round(this.point.data.data.slaMinRespTime * 1000) + EasySDI_Mon.lang.getLocal('ms suffix')+"<br/>";	
+				
+							}
+						}
 					}else
 					{
 						tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip response size')+"</b>: "+Math.round(this.point.data.data.size)+" bytes<br/>";
-						if(this.point.data.data.statusCode.toLowerCase() == "unavailable")
+						// Test for summmary
+						if(this.point.data.data.maxTime)
 						{
-							tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip http statuscode')+"</b>: "+ this.point.data.data.httpCode+"<br/>";
-							tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip response message')+"</b>: "+ this.point.data.data.message+"<br/>";
-						}
-						if(this.point.data.data.statusCode.toLowerCase() == "out_of_order")// failed
+						 	tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip MaxRespTime')+"</b>: "+ Math.round(this.point.data.data.maxTime * 1000) + EasySDI_Mon.lang.getLocal('ms suffix')+"<br/>";	
+						}else
 						{
-							tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip response message')+"</b>: "+ this.point.data.data.message;
+							if(this.point.data.data.statusCode.toLowerCase() == "unavailable")
+							{
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip http statuscode')+"</b>: "+ this.point.data.data.httpCode+"<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip response message')+"</b>: "+ this.point.data.data.message+"<br/>";
+							}
+							if(this.point.data.data.statusCode.toLowerCase() == "out_of_order")// failed
+							{
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip response message')+"</b>: "+ this.point.data.data.message;
+							}
 						}
 					}
 				return tip;
@@ -119,19 +160,47 @@ EasySDI_Mon.drawResponseTimeGraph = function (container, aStores, logRes, tickIn
 			var aRec = aStores[storeName].getRange();
 			series = {data: []};
 			//add h24 or delay response time
-			series.name = storeName+'[h24]';
+			if(useSla)
+			{
+				series.name = storeName;//+EasySDI_Mon.lang.getLocal('h1 suffix');
+			}else
+			{
+				series.name = storeName+'[h24]';
+			}
+			
 			for ( var i=0; i< aRec.length; i++ )
 			{   
 				if(logRes == 'aggLogs')
 				{
-					var point = {
-							x: aRec[i].get('date').getTime(),
-							y: Math.round(aRec[i].get('h24MeanRespTime') * 1000) != -1 ? Math.round(aRec[i].get('h24MeanRespTime') * 1000) : 0,
-							data: aRec[i],
-							log: logRes
-						};
-					series.data.push(point);
-					//series.data.push([aRec[i].get('date').getTime(), Math.round(aRec[i].get('h24MeanRespTime') * 1000)]);
+					var point;
+					if(useSla)
+					{
+						point = {
+								x: aRec[i].get('date').getTime(),
+								y: Math.round(aRec[i].get('h1MeanRespTime') * 1000) != -1 ? Math.round(aRec[i].get('h1MeanRespTime') * 1000) : 0,
+								data: aRec[i],
+								log: logRes,
+								normalGraph: true
+							};
+					}else
+					{
+						point = {
+								x: aRec[i].get('date').getTime(),
+								y: Math.round(aRec[i].get('h24MeanRespTime') * 1000) != -1 ? Math.round(aRec[i].get('h24MeanRespTime') * 1000) : 0,
+								data: aRec[i],
+								log: logRes,
+								normalGraph: true
+							};
+					}
+					if(useSla && showInspireGraph)
+					{
+						// No need to push this graph
+					}else
+					{
+						series.data.push(point);
+					}
+					
+				
 				}
 				else{
 					var status = aRec[i].get('statusCode');
@@ -160,31 +229,71 @@ EasySDI_Mon.drawResponseTimeGraph = function (container, aStores, logRes, tickIn
 								fillColor: color
 							},
 							data: aRec[i], // record info for tooltip
-							log: logRes
+							log: logRes,
+							normalGraph: true
 					};
 					series.data.push(point);
 					//series.data.push([aRec[i].get('time').getTime(), Math.round(aRec[i].get('delay') * 1000)]);
 				}
 			}
 			//push this serie
-			options.series.push(series);
-
-			//add also sla response time for aggregate logs only
+			if(useSla && showInspireGraph && logRes == 'aggLogs')
+			{
+				// No need to push this graph
+			}else
+			{
+				options.series.push(series);
+			}
+			
 			if(logRes == 'aggLogs'){
 				series = {data: []};
-				series.name = storeName+EasySDI_Mon.lang.getLocal('sla suffix');
+				if(useSla)
+				{
+					series.name = storeName; // +EasySDI_Mon.lang.getLocal('inspire suffix');
+				}else
+				{
+					series.name = storeName+EasySDI_Mon.lang.getLocal('sla suffix');
+				}
+				
 				for ( var i=0; i< aRec.length; i++ )
 				{   
-					var point = {
-							x: aRec[i].get('date').getTime(),
-							y: Math.round(aRec[i].get('slaMeanRespTime') * 1000) != -1 ? Math.round(aRec[i].get('slaMeanRespTime') * 1000) : 0,
-							data: aRec[i],
-							log: logRes
-					};
-					series.data.push(point);				
+					var point;
+					if(useSla)
+					{
+						point = {
+								x: aRec[i].get('date').getTime(),
+								y: Math.round(aRec[i].get('inspireMeanRespTime') * 1000) != -1 ? Math.round(aRec[i].get('inspireMeanRespTime') * 1000) : 0,
+								data: aRec[i],
+								log: logRes,
+								normalGraph: false
+						};
+					}else
+					{
+						point = {
+								x: aRec[i].get('date').getTime(),
+								y: Math.round(aRec[i].get('slaMeanRespTime') * 1000) != -1 ? Math.round(aRec[i].get('slaMeanRespTime') * 1000) : 0,
+								data: aRec[i],
+								log: logRes,
+								normalGraph: false
+						};
+					}
+					if(useSla && !showInspireGraph)
+					{
+						// No need to push this graph
+					}else
+					{
+						series.data.push(point);
+					}
+									
 					//series.data.push([aRec[i].get('date').getTime(), Math.round(aRec[i].get('slaMeanRespTime') * 1000)]);
 				}
-				options.series.push(series);
+				if(useSla && !showInspireGraph)
+				{
+					// No need to push this graph
+				}else{
+					options.series.push(series);
+				}
+				
 			}
 
 		}

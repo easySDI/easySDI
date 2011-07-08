@@ -22,6 +22,7 @@ Ext.onReady(function() {
 	var store = new Ext.data.SimpleStore({
 		id:'jobId',
 		fields:[
+		        {name: 'alertId'},
 		        {name: 'newStatusCode'}
 		        ,{name: 'oldStatusCode'}
 		        ,{name: 'cause'}
@@ -29,7 +30,8 @@ Ext.onReady(function() {
 		        ,{name: 'responseDelay'}
 		        ,{name: 'isExposedToRss', type: 'boolean'}
 		        ,{name: 'jobId', type: 'int'}
-		        ,{name: 'dateTime', type: 'date', dateFormat: 'Y-m-d H:i:s'}
+		        ,{name: 'dateTime', type: 'date', dateFormat: 'Y-m-d H:i:s'},
+		        {name: 'content_type'}
 		        ],
 		        data:[]
 	});
@@ -103,6 +105,15 @@ Ext.onReady(function() {
 		width:150,
 		sortable: true,
 		renderer: EasySDI_Mon.DateTimeRenderer
+	},
+	{
+		header:EasySDI_Mon.lang.getLocal('grid header responseview'),
+		dataIndex: "alertId",
+		width:100,
+		 renderer: function (value, scope, row){
+			 var response_url = EasySDI_Mon.proxy+'image/alert/'+value+'?contenttype='+row.data.content_type;
+			 return '<a href="'+response_url+'" target="_blank">'+EasySDI_Mon.lang.getLocal('grid alert view')+'</a>';
+		 }
 	}
 	]);
 
@@ -208,7 +219,7 @@ Ext.onReady(function() {
 			restful:true,
 			idProperty : 'id',
 			totalProperty :'count',
-			fields:['newStatusCode', 'oldStatusCode', 'cause', 'httpCode', 'responseDelay', 'isExposedToRss', 'jobId', {name: 'dateTime', type: 'date', dateFormat: 'Y-m-d H:i:s'}],
+			fields:['newStatusCode', 'oldStatusCode', 'cause', 'httpCode', 'responseDelay', 'isExposedToRss', 'jobId', {name: 'dateTime', type: 'date', dateFormat: 'Y-m-d H:i:s'},'alertId','content_type'],
 			listeners :{
 				load: function(){
 

@@ -53,6 +53,7 @@ Ext.onReady(function() {
 			border:false,
 			items: [accordion, Ext.getCmp('JobGrid')]
 	};
+	
 
 	var reportPanel = {
 			id:'reportPanel',
@@ -101,6 +102,17 @@ Ext.onReady(function() {
 			border:false,
 			items: [Ext.getCmp('ResponseOverviewPanel')]
 	};
+	
+	slaPanel = {
+			title: EasySDI_Mon.lang.getLocal('sla'),
+			frame:true,
+			xtype: 'panel',
+			layout: 'border',
+			region: 'center',
+			border:false,
+			items: [Ext.getCmp('SlaGrid')]
+	};
+	
 	exportPanel = {
 			title:EasySDI_Mon.lang.getLocal('export'),
 			xtype: 'panel',
@@ -120,7 +132,9 @@ Ext.onReady(function() {
 		       reportPanel,
 		       alertPanel,
 		       maintenancePanel,
-		       responseoverviewPanel, exportPanel
+		       responseoverviewPanel,
+		       slaPanel,
+		       exportPanel
 		       ]
 	});
 

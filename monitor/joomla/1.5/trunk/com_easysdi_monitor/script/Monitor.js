@@ -335,6 +335,25 @@ Ext.form.VTypes['jobname'] = function(v)
 	return true;
 }
 
+Ext.form.VTypes['slaname'] = function(v)
+{   
+	if(Ext.form.VTypes['alphanummore'](v)){
+		if( Ext.getCmp('SlaGrid').store.getById(v)){
+			Ext.form.VTypes['slanameText'] = EasySDI_Mon.lang.getLocal('slaname already exists');
+			return false;
+		}
+		/*if(v.toUpperCase() == 'ALL'){
+			Ext.form.VTypes['jobnameText'] = EasySDI_Mon.lang.getLocal('error reserved keyword');
+			return false;
+		}*/
+		return true;
+	}else{
+		Ext.form.VTypes['slanameText'] = EasySDI_Mon.lang.getLocal('error ressource name');
+		return false;
+	}
+	return true;
+}
+
 Ext.form.VTypes['reqname'] = function(v)
 {   
 	if(Ext.form.VTypes['alphanum'](v)){
@@ -353,6 +372,8 @@ Ext.form.VTypes['reqname'] = function(v)
 	}
 	return true;
 }
+
+
 /*!
  * Ext JS Library 3.2.1
  * Copyright(c) 2006-2010 Ext JS, Inc.
@@ -715,7 +736,7 @@ Ext.onReady(function(){
    ];
    
    /*Used in report for select between aggLogs and logs */
-   EasySDI_Mon.DaysForUsingLogs = 6;                      
+   EasySDI_Mon.DaysForUsingLogs = 3;                      
    		       
    EasySDI_Mon.DefaultJob = {
    		name:'',
@@ -733,7 +754,31 @@ Ext.onReady(function(){
    		slaStartTime:'08:00:00',
    		slaEndTime:'18:00:00',
    		httpErrors:true,
-   		bizErrors:true
+   		bizErrors:true,
+   		saveResponse:false,
+   		runSimultaneous:false
+   };
+   
+   EasySDI_Mon.DefaultSla = {
+			name: '',
+			excludeWorst: true,
+			measureTimeToFirst: true
+	   };
+	   
+   EasySDI_Mon.DefaultPeriod = {
+			name: '',
+			isMonday: false,
+			isTuesday: false,
+			isWednesday: false,
+			isThursday: false,
+			isFriday: false,
+			isSaturday: false,
+			isSunday: false,
+			isHolidays: false,
+			slaStartTime: '00:00:00',
+			slaEndTime: '24:00:00',
+			isInclude: true,
+			date: ''
    };
    
    EasySDI_Mon.DefaultReq = {
@@ -851,6 +896,16 @@ Ext.onReady(function(){
     ////
     // all write events
     //
+   
+   EasySDI_Mon.EventComponent =  Ext.extend(Ext.util.Observable, {
+	    constructor : function() {
+	      this.addEvents('updatedSla');
+	      EasySDI_Mon.EventComponent.superclass.constructor.call(this);
+	    }
+	  });
+	  
+   	EasySDI_Mon.SlaUpdateEvent = new EasySDI_Mon.EventComponent();
+   
     Ext.data.DataProxy.addListener('write', function(proxy, action, result, res, rs) {
         EasySDI_Mon.App.setAlert(true, res.raw.message);
     });
@@ -911,7 +966,7 @@ Ext.onReady(function() {
 		restful:true,
 		proxy: proxy,
 		writer: writer,
-		fields:['status', 'statusCode', 'httpMethod', 'testInterval', 'bizErrors', 'isPublic', 'allowsRealTime', 'httpErrors', 'serviceType', 'password', 'url' ,'id' ,'slaEndTime', 'name', 'queries', 'login', 'triggersAlerts', 'timeout', 'isAutomatic', 'slaStartTime', {name: 'lastStatusUpdate', type: 'date', dateFormat: 'Y-m-d H:i:s'},'saveResponse']
+		fields:['status', 'statusCode', 'httpMethod', 'testInterval', 'bizErrors', 'isPublic', 'allowsRealTime', 'httpErrors', 'serviceType', 'password', 'url' ,'id' ,'slaEndTime', 'name', 'queries', 'login', 'triggersAlerts', 'timeout', 'isAutomatic', 'slaStartTime', {name: 'lastStatusUpdate', type: 'date', dateFormat: 'Y-m-d H:i:s'},'saveResponse','runSimultaneous']
 	});
 
 
@@ -1375,6 +1430,14 @@ Ext.onReady(function() {
 			name: 'saveResponse',
 			trueText: 'true',
 			falseText: 'false'
+		},
+		{
+			xtype:'checkbox',
+			fieldLabel: EasySDI_Mon.lang.getLocal('grid header runSimultaneous'),
+			name: 'runSimultaneous',
+			trueText: 'true',
+			falseText: 'false'
+			
 		}
 
 		],
@@ -1486,7 +1549,7 @@ Ext.onReady(function(){
 	]);
 
 	function paramsRenderer(value) {
-		debugger ;
+	
 		if(value == null)
 			return "";
 		if(!value.constructor)
@@ -1611,7 +1674,7 @@ Ext.onReady(function(){
 		if (!rec) {
 			return false;
 		}
-		debugger;
+		
 		options = reqOptionsHandler.doLoadTypeOptions(Ext.getCmp('JobGrid').getSelectionModel().getSelected().get('httpMethod').toLowerCase(), Ext.getCmp('JobGrid').getSelectionModel().getSelected().get('serviceType').toLowerCase());
 
 		
@@ -1856,7 +1919,7 @@ Ext.onReady(function(){
 								for (var el in fields){
 									u.set(el, fields[el]);
 									if(el == "params"){
-										debugger;
+									
 									   fieldParams = fields[el];
 									}
 								}
@@ -2659,6 +2722,1097 @@ Ext.onReady(function(){
 
 Ext.namespace("EasySDI_Mon");
 
+Ext.onReady(function() {
+
+	/**
+	* Property: editmode
+	* Handles the period add/edit mode
+	**/
+	var periodeditmode = false;
+	
+	/**
+	 * Proxy api for sla
+	 */
+	var proxySla = new Ext.data.HttpProxy({
+		   api: {
+		        read    : EasySDI_Mon.proxy+'sla',
+		        create  : EasySDI_Mon.proxy+'sla',
+		        update  : EasySDI_Mon.proxy+'sla',
+		        destroy : EasySDI_Mon.proxy+'sla'
+		    }
+	});
+	
+	/**
+	 * Proxy api for holidays
+	 */ 
+	var proxyHoliday = new Ext.data.HttpProxy({
+		   api: {
+		        read    : EasySDI_Mon.proxy+'holidays',
+		        create  : EasySDI_Mon.proxy+'holidays',
+		        update  : EasySDI_Mon.proxy+'holidays',
+		        destroy : EasySDI_Mon.proxy+'holidays'
+		    }
+	});
+	
+	/**
+	 * Proxy api for period
+	 */
+	var proxyPeriod = new Ext.data.HttpProxy({
+		api: {
+			read	: '?',
+			create	: '?',
+			update	: '?',
+			destroy	: '?'
+		}
+	});
+	
+	var writer = new Ext.data.JsonWriter({
+		encode: false   // <-- don't return encoded JSON -- causes Ext.Ajax#request to send data using jsonData config rather than HTTP params
+	});
+	
+	/**
+	 * JsonStore: 
+	 * For sla
+	 */
+	var slaStore = new Ext.data.JsonStore({
+		id:'id',
+		root: 'data',
+		restful:true,
+		fields:['name','isExcludeWorst','isMeasureTimeToFirst'],
+		proxy: proxySla,
+		writer: writer
+	});
+	
+	/**
+	 * JsonStore
+	 * For holiday
+	 */
+	var holidayStore = new Ext.data.JsonStore({
+		id: 'id',
+		root: 'data',
+		restful: true,
+		fields:['name',{name :'date',type: 'date',dateFormat: 'Y-m-d H:i:s' }],
+		proxy: proxyHoliday,
+		writer: writer
+	});
+
+	
+	/**
+	 * JsonStore
+	 * For period
+	 */
+	var periodStore = new Ext.data.JsonStore({
+		id:'id',
+		root: 'data',
+		restful: true,
+		autoSave: false,
+		fields:['name','isMonday','isTuesday','isWednesday','isThursday','isFriday',
+		        'isSaturday','isSunday','isHolidays','slaStartTime','slaEndTime','isInclude',
+		        {name :'date',type: 'date',dateFormat: 'Y-m-d H:i:s' }],
+		proxy: proxyPeriod,
+		writer: writer
+	});
+	
+	/**
+	 * Editor for sla row
+	 */
+	var editor = new Ext.ux.grid.RowEditor({
+		saveText: EasySDI_Mon.lang.getLocal('grid action update'),
+		cancelText: EasySDI_Mon.lang.getLocal('grid action cancel'),
+		clicksToEdit: 2
+	});
+	
+	/**
+	 * Editor for holiday row
+	 */
+	var editorHoliday = new Ext.ux.grid.RowEditor({
+		saveText: EasySDI_Mon.lang.getLocal('grid action update'),
+		cancelText: EasySDI_Mon.lang.getLocal('grid action cancel'),
+		clicksToEdit: 2
+	});
+	
+	/**
+	 * ColumnModel for sla
+	 */
+	var cmSla = new Ext.grid.ColumnModel([
+	    {
+		header:EasySDI_Mon.lang.getLocal('grid header name'),
+		dataIndex:"name",
+		width:100,
+		sortable: true,
+		editable:true,
+		editor: {
+			xtype: 'textfield',
+			allowBlank: false,
+			vtype: 'alphanum'
+			}
+		},{
+			header:EasySDI_Mon.lang.getLocal('grid header inspire'),
+			dataIndex:"isExcludeWorst",
+			width:100,
+			renderer: EasySDI_Mon.TrueFalseRenderer,
+			editor: {
+				xtype: 'checkbox'
+		}
+	},
+	{
+		header:EasySDI_Mon.lang.getLocal('grid header measureTime'),
+		dataIndex:"isMeasureTimeToFirst",
+		width:120,
+		renderer: EasySDI_Mon.TrueFalseRenderer,
+		editor: {
+			xtype: 'checkbox'
+		}
+	}
+	]);
+	
+	/**
+	 * Grid for sla
+	 */
+	var _slaGrid = new Ext.grid.GridPanel({
+		id:'SlaGrid',
+		loadMask:true,
+		region:'center',
+		plugins: [editor],
+		stripeRows: true,
+		tbar: [{
+			iconCls:'icon-service-add',
+			text: EasySDI_Mon.lang.getLocal('grid action add'),
+			handler: onAdd
+		},'-',{
+			iconCls:'icon-service-rem',
+			ref: '../removeBtn',
+			text: EasySDI_Mon.lang.getLocal('grid action rem'),
+			disabled: true,
+			handler: onDelete
+		},'-',{
+			text: 'Add/edit periods',
+			ref: '../editPeriodBtn',
+			disabled: true,
+			handler: onEditPeriods
+		},'-',{
+			text: 'Holidays',
+			handler: onEditHolidays
+		}
+		],
+		title:EasySDI_Mon.lang.getLocal('sla list'),
+		store:slaStore,
+		cm:cmSla,
+		sm: new Ext.grid.RowSelectionModel({
+			singleSelect: true,
+			listeners: {
+				rowselect: function(sm, row, rec) {
+				}
+			}
+		})
+	});
+	
+	/**
+	 * onAdd for sla grid
+	 */
+	function onAdd(btn, ev) {
+
+		//create default record
+		var u = new _slaGrid.store.recordType(EasySDI_Mon.DefaultSla);
+
+		var win = new  Ext.Window({
+			width:380,
+			autoScroll:true,
+			modal:true,
+			title:EasySDI_Mon.lang.getLocal('title new sla'),
+			items: [
+			        new Ext.FormPanel({
+			        	labelWidth: 1,
+			        	monitorValid:true,
+			        	ref: 'slaPanel',
+			        	region:'center',
+			        	bodyStyle:'padding:5px 5px 0',
+			        	autoHeight:true,
+			        	frame:true,
+			        	autoHeight:true,
+			        	items: [{
+			        			xtype: 'fieldset',
+			        			title: EasySDI_Mon.lang.getLocal('field slaname title'),
+			        			autoHeight: true,
+			        			anchor: '95%',
+			        			items:[{
+			        				xtype: 'textfield',
+					        		value: u.data['name'],
+					        		name: 'name',
+					        		width: 280,
+					        		allowBlank:false,
+					        		vtype: 'slaname' // validate name
+			        			}]
+			        	},
+			        	{
+							layout:'column',
+							items:[
+							{
+								xtype: 'fieldset',
+								title: EasySDI_Mon.lang.getLocal('field worstexclude title'),
+								columnWidth:.5,
+								layout: 'form',
+								height: 100,
+								items: [{
+									boxLabel: EasySDI_Mon.lang.getLocal('grid header excludeWorst'),
+			        				xtype: 'checkbox',
+					        		name: 'isExcludeWorst',
+					        		checked: u.data['isExcludeWorst']
+								}]
+							},
+							{
+								columnWidth:.5,
+								layout: 'form',
+								items: [{
+								xtype: 'fieldset',
+			        			title: EasySDI_Mon.lang.getLocal('field slameasure title'),
+			        			height: 80,
+			        			defaultType: 'radio',
+			        			items:[{
+			        				 name: 'isMeasureTimeToFirst',
+			        				 boxLabel: EasySDI_Mon.lang.getLocal('sla firstbyte boxlabel'),
+			        				 checked: u.data['isMeasureTimeToFirst'],
+			        				 fieldLabel: '',
+		        	                 labelSeparator: '',
+									 xtype: 'radio'
+			        			},
+			        			{
+			        				name: 'isMeasureTimeToFirst',
+			        				boxLabel: EasySDI_Mon.lang.getLocal('sla lastbyte boxlabel'),
+			        				checked: true,
+			        				fieldLabel: '',
+									xtype: 'radio',
+		        	                labelSeparator: ''
+			        			}]
+								}]
+									
+							}]
+			        	}
+			        	],
+			        	buttons: [{
+			        		text: EasySDI_Mon.lang.getLocal('grid action ok'),
+			        		//If validation fails disable the button
+			        		formBind:true,
+			        		handler: function(){
+			        		editor.stopEditing();
+			        		var fields = win.slaPanel.getForm().getFieldValues();
+			        		var u = new slaStore.recordType({name:'','isExcludeWorst': '0','isMeasureTimeToFirst':'0'});
+    	        			
+			        		u.set('name', fields.name);
+			        		u.set('isExcludeWorst', fields.isExcludeWorst);
+			        		if(fields.isMeasureTimeToFirst[0])
+			        		{
+			        			u.set('isMeasureTimeToFirst', true);
+			        		}else
+			        		{
+			        			u.set('isMeasureTimeToFirst', false);
+			        		}
+			        		_slaGrid.store.insert(0, u);
+			        		win.close();
+			        	}
+			        	},{
+			        		text: EasySDI_Mon.lang.getLocal('grid action cancel'),
+			        		handler: function(){
+			        		win.close();
+			        	}
+			        	}]
+			        })
+			        ]
+		});
+		win.show();
+	}
+	
+	/**
+	 * onDelete for sla grid
+	 */
+	function onDelete(btn, ev) {
+		var rec = _slaGrid.getSelectionModel().getSelected();
+		if (!rec) {
+			return false;
+		}
+		Ext.MessageBox.confirm(EasySDI_Mon.lang.getLocal('confirm'), String.format(EasySDI_Mon.lang.getLocal('confirm suppress sla'), rec.get('name')), function(btn){
+			if (btn == 'no')
+			{
+				return false;
+			}
+			else
+			{
+				_slaGrid.store.remove(rec);
+			}
+		});
+	}
+	
+	/**
+	 * Select event handler for sla grid row
+	 */
+	_slaGrid.getSelectionModel().on('selectionchange', function(sm){
+		_slaGrid.removeBtn.setDisabled(sm.getCount() < 1);
+		_slaGrid.editPeriodBtn.setDisabled(sm.getCount() < 1);
+	});
+	
+	/**
+	 * Click event for editPeriods
+	 */
+	function onEditPeriods(btn, ev) 
+	{
+		var rec = _slaGrid.getSelectionModel().getSelected();
+		if(rec)
+		{
+			// Set proxy URL with select SLA
+			periodStore.proxy.api.create.url = EasySDI_Mon.proxy+'sla/'+rec.id+'/period';
+			periodStore.proxy.api.destroy.url = EasySDI_Mon.proxy+'sla/'+rec.id+'/period';
+			periodStore.proxy.api.update.url = EasySDI_Mon.proxy+'sla/'+rec.id+'/period';
+			periodStore.proxy.api.read.url = EasySDI_Mon.proxy+'sla/'+rec.id+'/period';
+			periodStore.load();
+		}
+	}
+	
+	/**
+	 * Click event for Holidays 
+	 */
+	function onEditHolidays()
+	{
+		// Load the holidayStore
+		holidayStore.load();
+	}
+	
+	function formatDate(value){
+        return value ? value.dateFormat('Y-m-d') : '';
+    }
+	
+	/**
+	 * ColumnModel for holiday
+	 */
+	var cmHoliday = new Ext.grid.ColumnModel([
+    {
+		header:EasySDI_Mon.lang.getLocal('grid header name'),
+		dataIndex:"name",
+		width:100,
+		sortable: true,
+		editable:true,
+		editor: {
+			xtype: 'textfield',
+			allowBlank: true
+		}
+	},{
+		header:EasySDI_Mon.lang.getLocal('grid header holidydate'),
+		dataIndex:"date",
+		sortable: true,
+		width:120,
+		renderer: formatDate,
+		editor: {
+			id: 'holidayDatePicker',
+			xtype: 'datefield',
+			name: 'date',
+			allowBlank: false,
+			format: 'Y-m-d'
+			}
+		}
+  	]);
+	
+	/**
+	 * Load event for holiday store 
+	 */
+	holidayStore.on('load', function() 
+	{
+		/**
+		 * Grid for holidays
+		 */
+		var _holidayGrid = new Ext.grid.GridPanel({
+			id:'HolidayGrid',
+			loadMask:true,
+			height: 200,
+			region:'center',
+			plugins: [editorHoliday],
+			stripeRows: true,
+			tbar: [{
+				iconCls:'icon-service-add',
+				text: EasySDI_Mon.lang.getLocal('grid action add'),
+				handler: onAddHoliday
+			},'-',{
+				iconCls:'icon-service-rem',
+				ref: '../removeBtnHoliday',
+				text: EasySDI_Mon.lang.getLocal('grid action rem'),
+				disabled: true,
+				handler: onDeleteHoliday
+			}
+			],
+			store:holidayStore,
+			cm:cmHoliday,
+			sm: new Ext.grid.RowSelectionModel({
+				singleSelect: true,
+				listeners: {
+					rowselect: function(sm, row, rec) {
+					}
+				}
+			})
+		});
+		
+		var newHolidayPanel = new Ext.FormPanel({
+			id: 'holidayPanel',
+			hidden: true,
+			monitorValid:true,
+			region:'center',
+			autoHeight:true,
+			frame:true,
+			items:[{
+			       layout: 'form',
+			       items:[
+			       {
+			    	   fieldLabel: EasySDI_Mon.lang.getLocal('holiday textfield label name'),
+			    	   id: 'holidayName',
+			    	   allowBlank:true,
+			    	   xtype: 'textfield',
+			    	   name: 'name',
+			    	   width: 120
+			       },
+			       {
+			    	   fieldLabel: EasySDI_Mon.lang.getLocal('holiday datepicker label date'),
+			    	   id: 'holidayDatePicker',
+			    	   xtype: 'datefield',
+			    	   name: 'date',
+			    	   width: 120,
+			    	   format: 'Y-m-d H:i:s'
+			       }],
+			       buttons: [{
+		        		text: EasySDI_Mon.lang.getLocal('grid action ok'),
+		        		formBind:true,
+		        		handler: function(){
+		        			editorHoliday.stopEditing();
+		        			var fields = Ext.getCmp('holidayPanel').getForm().getFieldValues();
+		        			var u = new holidayStore.recordType({name:'','date': '2000-01-01'});
+		        			u.set('name', fields.name);
+		        			u.set('date', fields.date);
+		        			_holidayGrid.store.insert(0, u);
+		        			// Remove add form
+		        			Ext.getCmp('holidayPanel').setVisible(false);
+		        			Ext.getCmp('holidayPanel').doLayout();
+		        		}
+		        	},{
+		        		text: EasySDI_Mon.lang.getLocal('grid action cancel'),
+		        		handler: function(){
+		        			Ext.getCmp('holidayPanel').setVisible(false);
+		        			Ext.getCmp('holidayPanel').doLayout();
+		        		}
+		        	}]
+			}]
+		});
+		
+		/**
+		 * Select eventhandler for holiday grid row
+		 */
+		_holidayGrid.getSelectionModel().on('selectionchange', function(sm){
+			_holidayGrid.removeBtnHoliday.setDisabled(sm.getCount() < 1);
+		});
+		
+		function onAddHoliday()
+		{
+			Ext.getCmp('holidayPanel').setVisible(true);
+			Ext.getCmp('holidayPanel').doLayout();
+		}
+		
+		/**
+		 * Event for deleting a holiday
+		 */
+		function onDeleteHoliday()
+		{
+			var rec = _holidayGrid.getSelectionModel().getSelected();
+			if (!rec) {
+				return false;
+			}
+			Ext.MessageBox.confirm(EasySDI_Mon.lang.getLocal('confirm'), String.format(EasySDI_Mon.lang.getLocal('confirm suppress holiday'), rec.get('name')), function(btn){
+				if (btn == 'no')
+				{
+					return false;
+				}
+				else
+				{
+					_holidayGrid.store.remove(rec);
+				}
+			});
+		}
+			
+		var win = new  Ext.Window({
+			width:400,
+			autoScroll:true,
+			modal:true,
+			shadow: false,
+			title:EasySDI_Mon.lang.getLocal('title new holiday'),
+        	items: [_holidayGrid,newHolidayPanel]
+		});
+		
+		win.show();
+	});
+	
+	/**
+	 * Load event for period store
+	 */
+	periodStore.on('load', function()
+	{
+		// Default period values
+		var m = new _slaGrid.store.recordType(EasySDI_Mon.DefaultPeriod);
+		
+		var cmPeriod = new Ext.grid.ColumnModel([
+	    {
+	  		dataIndex:"name",
+	  		width:200,
+	  		sortable:false,
+	  		editable:false
+	  	}]);
+		
+		var topPeriodPanel = new Ext.FormPanel({
+			id: 'topPeridPanel',
+			monitorValid:true,
+			region:'center',
+			autoHeight:true,
+			frame:true,
+			items: [{
+				xtype: 'fieldset',
+				title: EasySDI_Mon.lang.getLocal('field period title'),
+				autoHeight: true,
+				anchor: '95%',
+				items:[{
+					layout:'column',
+					items:[
+					{
+						columnWidth:.75,
+						layout: 'form',
+						items:[{
+							xtype: 'grid',
+							id: 'periodGrid',
+							loadMast: true,
+							height: 100,
+							hideHeaders:true,
+							autoScroll:true,
+							width: 240,
+							region: 'left',
+							frame : true,
+							stripeRows: true,
+							store:periodStore,
+							cm:cmPeriod,
+							sm: new Ext.grid.RowSelectionModel({
+							singleSelect: true,
+							listeners: {
+								rowselect: function(sm, row, rec) {
+									var periodform = Ext.getCmp('periodmodifyPanel').getForm();
+									periodform.setValues({name: rec.get('name')});
+									periodform.setValues({isMonday: rec.get('isMonday')});
+									periodform.setValues({isTuesday: rec.get('isTuesday')});
+									periodform.setValues({isWednesday: rec.get('isWednesday')});
+									periodform.setValues({isThursday: rec.get('isThursday')});
+									periodform.setValues({isFriday: rec.get('isFriday')});
+									periodform.setValues({isSaturday: rec.get('isSaturday')});
+									periodform.setValues({isSunday: rec.get('isSunday')});
+									periodform.setValues({isHolidays: rec.get('isHolidays')});
+									periodform.setValues({slaStartTime: rec.get('slaStartTime')});
+									periodform.setValues({slaEndTime: rec.get('slaEndTime')});
+									periodform.setValues({date: rec.get('date')});
+									Ext.getCmp('checkInclude').setValue(rec.get('isInclude'));
+									Ext.getCmp('checkExclude').setValue(!rec.get('isInclude'));
+									// Check if period is a date or general rule
+									if(rec.get('date') && rec.get('date') != "")
+									{
+										Ext.getCmp('specificdate').setValue(true);
+									}else
+									{
+										Ext.getCmp('generalrule').setValue(true);
+									}
+								}
+							}
+							})
+						}]
+					},
+					{
+						columnWidth:.25,
+						layout: 'form',
+						items:[{
+							id: 'editperiodBtn',
+							xtype: 'button',
+							disabled: true,
+							text: EasySDI_Mon.lang.getLocal('button period edit'),
+							width: 80,
+							handler: function(){
+								periodeditmode = true;
+								Ext.getCmp('periodmodifyPanel').setVisible(true);
+								// handle layout for form
+								Ext.getCmp('periodmodifyPanel').doLayout();
+							},
+							style: 'padding:4px'
+						},
+						{
+							xtype: 'button',
+							text: EasySDI_Mon.lang.getLocal('button period add'),
+							width: 80,
+							handler: function(){
+								// Clear select rows
+								Ext.getCmp('periodGrid').getSelectionModel().clearSelections();
+								periodeditmode = false;
+								Ext.getCmp('periodmodifyPanel').getForm().reset();
+								Ext.getCmp('periodmodifyPanel').setVisible(true);
+								// handle layout for form
+								Ext.getCmp('periodmodifyPanel').doLayout();
+								
+							},
+							style: 'padding:4px'	
+						}
+						,{
+							id:'deleteperiodbtn',
+							xtype: 'button',
+							disabled: true,
+							text: EasySDI_Mon.lang.getLocal('button period delete'),
+							width: 80,
+							handler: function(){
+								var rec = Ext.getCmp('periodGrid').getSelectionModel().getSelected();
+								if (!rec) {
+									return false;
+								}
+								Ext.MessageBox.confirm(EasySDI_Mon.lang.getLocal('confirm'), String.format(EasySDI_Mon.lang.getLocal('confirm delete period'), rec.get('name')), function(btn){
+									if (btn == 'no')
+									{
+										return false;
+									}
+									else
+									{
+										Ext.getCmp('periodmodifyPanel').getForm().reset();
+										Ext.getCmp('periodmodifyPanel').setVisible(false);
+										Ext.getCmp('periodmodifyPanel').doLayout();
+										Ext.getCmp('periodGrid').store.remove(rec);
+										Ext.getCmp('periodGrid').store.save();// Auto save no used
+									}
+								});
+							},
+							style: 'padding:4px'	
+						}
+						]
+					}
+					]
+    			}]
+			}]
+		});
+		
+		var periodEditPanel = new Ext.FormPanel({
+			id: 'periodmodifyPanel',
+			monitorValid:true,
+			labelWidth: 1,
+			region:'center',
+			frame:true,
+			hidden: true,
+			ref: 'periodPanel',
+			autoHeight:true,
+			items:[{
+        			xtype: 'fieldset',
+        			title: EasySDI_Mon.lang.getLocal('field editperiod name title'),
+        			autoHeight: true,
+        			anchor: '95%',
+        			items:[{
+        				id: 'periodname',
+        				xtype: 'textfield',
+		        		value: m.data['name'],
+		        		name: 'name',
+		        		width: '90%',
+		        		allowBlank:false
+        			}]
+    			},
+    			{
+    				xtype: 'fieldset',
+        			title: EasySDI_Mon.lang.getLocal('field editperiod include/exclude title'),
+        			items:[{
+						layout:'column',
+						style: 'padding-left:100px',
+						width: 250,
+        				items:[{
+							columnWidth:.5,
+							xtype: 'radio',
+							id:'checkInclude',
+							name: 'isInclude',
+							boxLabel: EasySDI_Mon.lang.getLocal('period isInclude boxlabel'),
+							labelSeparator: '',
+							checked: m.data['isInclude']
+        					},{
+							columnWidth:.5,
+							xtype: 'radio',
+							id:'checkExclude',
+							name: 'isInclude',
+							boxLabel: EasySDI_Mon.lang.getLocal('period isExclude boxlabel'),
+							labelSeparator: '',
+							checked: !m.data['isInclude']
+        					}]
+        			}]		
+    			},
+    			{
+    				xtype: 'fieldset',
+    				title: EasySDI_Mon.lang.getLocal('field period date'),
+    					items:[{
+    						layout:'column',
+    						items:[
+    						{
+    							columnWidth:.5,
+    							layout: 'form',
+    							items:[{
+    								id:'specificdate',
+    								xtype: 'radio',
+    								name: 'datetype',
+    								boxLabel: EasySDI_Mon.lang.getLocal('period specifie date boxlabel'),
+    								labelSeparator: '',
+    								checked: false,
+    								handler: function(control)
+    								{
+    									if(control.checked)
+    									{
+    										Ext.getCmp('periodDatePicker').setDisabled(false);
+    									}
+    								}
+    							}]
+    						},
+    						{
+    							columnWidth:.5,
+    							layout: 'form',
+    							items:[{
+    								   fieldLabel: '', 
+    						    	   id: 'periodDatePicker',
+    						    	   disabled: true,
+    						    	   xtype: 'datefield',
+    						    	   name: 'date',
+    						    	   width: 100,
+    						    	   format: 'Y-m-d',
+    						    	   value: new Date() // current date
+    							}]
+    						}]
+    					},
+    					{
+    						id: 'generalrule',
+    						xtype: 'radio',
+    						name: 'datetype',
+							boxLabel: EasySDI_Mon.lang.getLocal('period general rule boxlabel'),
+							labelSeparator: '',
+							checked: true,
+							handler: function(control)
+							{
+								if(control.checked)
+								{
+									Ext.getCmp('periodDatePicker').setDisabled(true);
+								}
+							}
+    					},
+    					{
+							layout:'column',
+							style: 'padding-left:40px',
+							width: 350,
+							items:[
+	        				{
+								id: 'mondayCheck',
+								xtype: 'checkbox',
+	        					boxLabel: EasySDI_Mon.lang.getLocal('period monday boxlabel'),
+	        					name: 'isMonday',
+								columnWidth:.2
+	        				},
+	        				{
+								id: 'tuesdayCheck',
+								xtype: 'checkbox',
+	        					boxLabel: EasySDI_Mon.lang.getLocal('period tuesday boxlabel'),
+	        					name: 'isTuesday',
+								columnWidth:.2
+								
+	        				},
+	        				{
+								xtype: 'checkbox',
+	        					boxLabel: EasySDI_Mon.lang.getLocal('period wednesday boxlabel'),
+	        					name: 'isWednesday',
+								columnWidth:.2
+	        				},
+	        				{
+								xtype: 'checkbox',
+	        					boxLabel: EasySDI_Mon.lang.getLocal('period thursday boxlabel'),
+	        					name: 'isThursday',
+								columnWidth:.2
+	        				},
+	        				{
+								xtype: 'checkbox',
+	        					boxLabel: EasySDI_Mon.lang.getLocal('period friday boxlabel'),
+	        					name: 'isFriday',
+								columnWidth:.2
+	        				}
+	        				]
+    					},
+    					{
+    						layout:'column',
+    						style: 'padding-left:120px',
+    						width: 240,
+							items:[
+	        				{
+								columnWidth:.5,
+								xtype: 'checkbox',
+	        					boxLabel: EasySDI_Mon.lang.getLocal('period saturday boxlabel'),
+	        					name: 'isSaturday'
+	        				},
+	        				{
+								columnWidth:.5,
+								xtype: 'checkbox',
+	        					boxLabel: EasySDI_Mon.lang.getLocal('period sunday boxlabel'),
+	        					name: 'isSunday'
+							}]
+    					},
+    					{
+							xtype: 'checkbox',
+							boxLabel: EasySDI_Mon.lang.getLocal('period holiday boxlabel'),
+							name: 'isHolidays',
+							labelStyle:'padding-left:140px'  					
+    					}
+    					]
+    			},
+    			{
+					xtype: 'fieldset',
+        			title: EasySDI_Mon.lang.getLocal('period timerinterval'),
+        			autoHeight: true,
+					items:[{
+						layout:'column',
+						style: 'padding-left:40px',
+						width: 300,
+						items:[{
+							columnWidth:.5,
+							layout: 'form',
+							items:[{
+								id: 'slatimeStart',
+								xtype:'timefield',
+								fieldLabel: EasySDI_Mon.lang.getLocal('period slatime start'),
+								name: 'slaStartTime',
+								minValue: '00:00:00',
+								maxValue: '23:00:00',
+								value: '00:00:00',
+								increment: 60,
+								format: 'H:i:s',
+								labelStyle: 'width:30px',
+								width: 80,
+								allowBlank:false
+							}]
+						},
+						{
+							columnWidth:.5,
+							layout: 'form',
+							items:[{
+								id: 'slatimeEnd',
+								xtype:'timefield',
+								fieldLabel: EasySDI_Mon.lang.getLocal('period slatime end'),
+								name: 'slaEndTime',
+								minValue: '00:00:00',
+								maxValue: '23:00:00',
+								value: '00:00:00',
+								increment: 60,
+								format: 'H:i:s',
+								labelStyle: 'width:20px',
+								width: 80,
+								allowBlank:false
+							}]
+						}]
+					}]		
+				},
+				{
+					layout:'column',
+					style: 'padding-left:100px',
+					width: 250,
+					items:[{
+						columnWidth:.5,
+						layout: 'form',
+						items:[{
+							xtype: 'button',
+							width: 70,
+							text: EasySDI_Mon.lang.getLocal('period save btn'),
+							formBind:true,
+							handler: function(){
+								var fields = Ext.getCmp('periodmodifyPanel').getForm().getFieldValues();
+								if(fields)
+								{
+									// Check time
+									var minSlatime = fields.slaStartTime;
+									var maxSlatime = fields.slaEndTime;
+									if(maxSlatime == "" || minSlatime == "")
+									{
+										Ext.MessageBox.alert(EasySDI_Mon.lang.getLocal('error'), EasySDI_Mon.lang.getLocal('period sla timepicket'));
+										return false;
+									}
+									// Check date
+									var dateStr = "";
+									if(fields.datetype[0])
+									{
+										if(fields.date == "")
+										{
+											Ext.MessageBox.alert(EasySDI_Mon.lang.getLocal('error'), EasySDI_Mon.lang.getLocal('period date empty error'));
+											return false;
+										}
+										try
+										{
+											var dt = new Date();
+											dt = fields.date;
+											dateStr = dt.format('Y-m-d')
+										}catch(e)
+										{
+											Ext.MessageBox.alert(EasySDI_Mon.lang.getLocal('error'), EasySDI_Mon.lang.getLocal('period date format error'));
+											return false;
+										}
+									}
+
+									if(periodeditmode)
+									{
+										var rec = Ext.getCmp('periodGrid').getSelectionModel().getSelected();
+										if (!rec) {
+											return false;
+										}
+									
+										
+										rec.beginEdit();
+										rec.set('name',fields.name);
+										rec.set('slaStartTime', fields.slaStartTime);
+										rec.set('slaEndTime', fields.slaEndTime);
+										rec.set('isInclude', fields.isInclude[0]);
+										if(fields.datetype[0])
+										{
+											rec.set('isMonday', '0');
+											rec.set('isTuesday', '0');
+											rec.set('isWednesday', '0');
+											rec.set('isThursday', '0');
+											rec.set('isFriday', '0');
+											rec.set('isSaturday', '0');
+											rec.set('isSunday', '0');
+											rec.set('isHolidays', '0');
+											rec.set('date',dateStr);
+										
+										}else
+										{
+											rec.set('isMonday', fields.isMonday);
+											rec.set('isTuesday', fields.isTuesday);
+											rec.set('isWednesday', fields.isWednesday);
+											rec.set('isThursday', fields.isThursday);
+											rec.set('isFriday', fields.isFriday);
+											rec.set('isSaturday', fields.isSaturday);
+											rec.set('isSunday', fields.isSunday);
+											rec.set('isHolidays', fields.isHolidays);
+											rec.set('date', '');
+										}
+										rec.endEdit();
+										Ext.getCmp('periodGrid').store.save(); // Auto save not used
+									}else
+									{
+										// Create new period
+										var u = new periodStore.recordType({name:'','isMonday':'0','isTuesday':'0','isWednesday':'0',
+										'isThursday':'0','isFriday':'0','isSaturday':'0','isSunday':'0','isHolidays':'0',
+										'slaStartTime':'00:00:00','slaEndTime':'00:00:00','isInclude':'1','date':''})				
+																				
+										u.set('name', fields.name);
+										u.set('isInclude', fields.isInclude[0]);
+										u.set('slaStartTime', fields.slaStartTime);
+										u.set('slaEndTime', fields.slaEndTime);
+										// Use specific date
+										if(fields.datetype[0])
+										{
+											u.set('date', dateStr);
+										}else
+										{
+											u.set('isMonday', fields.isMonday);
+											u.set('isTuesday', fields.isTuesday);
+											u.set('isWednesday', fields.isWednesday);
+											u.set('isThursday', fields.isThursday);
+											u.set('isFriday', fields.isFriday);
+											u.set('isSaturday', fields.isSaturday);
+											u.set('isSunday', fields.isSunday);
+											u.set('isHolidays', fields.isHolidays);
+											u.set('date', '');	
+										}
+										Ext.getCmp('periodGrid').store.insert(0, u);
+										Ext.getCmp('periodGrid').store.save(); // Auto save not used
+									}
+									// Hidden panel again
+									Ext.getCmp('periodmodifyPanel').setVisible(false);
+									Ext.getCmp('periodmodifyPanel').doLayout();
+								}
+							}
+						}]
+					},
+					{
+						columnWidth:.5,
+						layout: 'form',
+						items:[{
+							xtype: 'button',
+							width: 70,
+							text: EasySDI_Mon.lang.getLocal('period cancel btn'),
+							handler: function(){
+								Ext.getCmp('periodmodifyPanel').setVisible(false);
+								Ext.getCmp('periodmodifyPanel').doLayout();
+							}
+						}]
+					}]
+				}
+    		]
+		});
+		
+		var btnClose = new Ext.Button({
+			text: EasySDI_Mon.lang.getLocal('period close btn'),
+			width: 70,
+			style:'float:right;',
+			handler: function(){
+				win.close();
+			}
+		});
+		
+		var win = new  Ext.Window({
+			width:400,
+			autoScroll:true,
+			shadow: false,
+			modal:true,
+			title:EasySDI_Mon.lang.getLocal('title period window'),
+			items: [topPeriodPanel,periodEditPanel,btnClose]
+		});
+		
+		// Selectchange eventhandler for period grid
+		Ext.getCmp('periodGrid').getSelectionModel().on('selectionchange', function(sm){
+			Ext.getCmp('deleteperiodbtn').setDisabled(sm.getCount() < 1);
+			Ext.getCmp('editperiodBtn').setDisabled(sm.getCount() < 1);
+			if(sm.getCount() > 0)
+			{
+				periodeditmode = true;
+			}
+		});
+		
+		win.show();
+	});
+	
+
+	/*
+	 * Eventhandler for load of the sla store
+	 * Fires event updatedSla to given message that sla have been updated
+	 * */
+	Ext.getCmp('SlaGrid').store.on('load', function() {
+		EasySDI_Mon.SlaUpdateEvent.fireEvent('updatedSla');
+	});
+	
+	/*
+	 * Eventhandler for write of the sla store
+	 * Fires event updatedSla to given message that sla have been updated
+	 * */
+	Ext.getCmp('SlaGrid').store.on('write', function() {
+		EasySDI_Mon.SlaUpdateEvent.fireEvent('updatedSla');
+	});
+	
+	// Load sla store
+	slaStore.load();
+});/**
+ * EasySDI, a solution to implement easily any spatial data infrastructure
+ * Copyright (C) EasySDI Community 
+ * For more information : www.easysdi.org
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html.
+ */
+
+Ext.namespace("EasySDI_Mon");
+
 EasySDI_Mon.chart1;
 EasySDI_Mon.chart2;
 
@@ -2715,7 +3869,13 @@ Ext.onReady(function() {
 	data:{'data': [{'name':'All','value':'All'}]}
 	});
 
- var exportConfig = Ext.data.Record.create(['id','exportName', 'exportType','exportDesc', 'xsltUrl' ]);
+	var slaComboStore = new Ext.data.SimpleStore({
+		id: 'idSlaStore',
+		fields:[{name: 'name',id:'id'}],
+		data:[]
+	});
+	
+	var exportConfig = Ext.data.Record.create(['id','exportName', 'exportType','exportDesc', 'xsltUrl' ]);
 //  var exportTypeStore = new Ext.data.Store({
 //	  proxy: new Ext.data.HttpProxy({  url :EasySDI_Mon.MonitorRoot+"&task=read"	}),
 //	  root :'rows',
@@ -2818,7 +3978,7 @@ Ext.onReady(function() {
 		region: 'center',
 		height: 50,
 		frame:true,
-		layoutConfig:{columns:8},
+		layoutConfig:{columns:10},
 		border:false,
 		defaults: {
 			border: false,
@@ -2881,6 +4041,26 @@ Ext.onReady(function() {
 			width: 200
 		},
 		{
+			html:EasySDI_Mon.lang.getLocal('report sla')+':'
+		},
+		{
+			// New sla store
+			items:[{
+				xtype:          'combo',
+				mode:           'local',
+				id:             'repCbSla',
+				triggerAction:  'all',
+				forceSelection: true,
+				editable:       false,
+				fieldLabel:     'Sla',
+				name:           'slaComboFilter',
+				displayField:   'name',
+				valueField:     'id',
+				emptyText: EasySDI_Mon.lang.getLocal('report combo select a sla'),
+				store:  slaComboStore
+			}]
+		},
+		{
 			items:[{
 				id: 'mtnBtnView',
 				xtype:'button',
@@ -2941,50 +4121,6 @@ Ext.onReady(function() {
 			})
 			]
 		}
-		/*
-	     ,{
-		     html:' or from: '
-	     },{
-             items:[{
-		id: 'reqMinDate',
-                xtype: 'datefield',
-		format: 'd-m-Y',
-		//value: new Date(),
-		allowBlank:false,
-		editable:false,
-		//altFormats: 'Y-m-d',
-                timeWidth:60
-              }]
-             },{
-		     html:' to: '
-	     },{
-             items:[{
-		id: 'reqMaxDate',
-                xtype: 'datefield',
-		format: 'd-m-Y',
-		//value: new Date(),
-		allowBlank:false,
-		editable:false,
-		//altFormats: 'Y-m-d',
-                timeWidth:60
-              }]
-             }
-		 */
-		/*,{
-			items:[{
-				id: 'mtnBtnView',
-				xtype:'button',
-				handler: function(){
-				   mtnBtnView_click();
-			        },
-				listeners: {
-                                    click: function() {
-				        mtnBtnView_click();
-                                    }
-                                },
-			        text: EasySDI_Mon.lang.getLocal('action view')
-			}]
-		}*/
 		]
 	});
 	//load the menu items
@@ -3003,6 +4139,13 @@ Ext.onReady(function() {
 	Ext.getCmp('JobGrid').store.on('write', function() {
 		refreshComboValuesFromJobStore();
 	});
+	
+	/**
+	 * Handels event fired when sla store is updated
+	 * */
+	EasySDI_Mon.SlaUpdateEvent.on('updatedSla', function() {
+		refreshComboValuesFromSlaStore();
+	});
 
 	function refreshComboValuesFromJobStore(){
 		var aRec = Ext.getCmp('JobGrid').store.getRange();
@@ -3013,6 +4156,27 @@ Ext.onReady(function() {
 			u.set('name', aRec[i].get('name'));
 			jobComboStore.insert(0, u);
 			//jobComboStore.add(aRec[i]);
+		}
+	}
+	
+	function refreshComboValuesFromSlaStore(){
+		var sGrid = Ext.getCmp('SlaGrid');
+		if(sGrid)
+		{
+			var aRec = Ext.getCmp('SlaGrid').store.getRange();
+			slaComboStore.removeAll();
+			var u = new slaComboStore.recordType({name:'',id:''});
+			for ( var i=0; i< aRec.length; i++ )
+			{
+				u = new slaComboStore.recordType({name:'',id:''});
+				u.set('id',aRec[i].id);
+				u.set('name',aRec[i].get('name'));
+				slaComboStore.insert(0,u);
+			}
+			u = new slaComboStore.recordType({ name:'',id:''});
+			u.set('id','0');
+			u.set('name','Default');
+			slaComboStore.insert(0,u);
 		}
 	}
 	
@@ -3200,63 +4364,130 @@ Ext.onReady(function() {
 		if(selMet == "All"){
 			var aRec = methodComboStore.getRange();
 			for ( var i=0; i< aRec.length; i++ ){
-				if(aRec[i].get('name') != "All")
+				//if(aRec[i].get('name') != "All")
 					aMethods.push(aRec[i].get('name'));
 			}
 		}else{
 			aMethods.push(selMet);
 		}
-
+		// Use advanced SLA
+		var useSla = Ext.getCmp('repCbSla').getValue() != "" &&  Ext.getCmp('repCbSla').getValue() != "0" ? true: false;
+		
 		//get the logs into a store. 1 store / method
 		var loadedStores = 0;
 		
-		
 		if(null!=getUrlOnly){
-		
+			
 			urls =[];
 			for ( var i=0; i< aMethods.length; i++ ){
 
 				var fields = null;
 				if(logRes == "aggLogs")
-					fields = ['h24Availability', 'slaNbBizErrors','h24NbConnErrors','h24MeanRespTime','slaMeanRespTime','h24NbBizErrors','slaAvalabilty','slaNbConnErrors', {name: 'date', type: 'date', dateFormat: 'Y-m-d'}];
-				else
-					fields = [{name: 'time', type: 'date', dateFormat: 'Y-m-d H:i:s'}, 'message', 'httpCode', 'status', 'statusCode', 'delay','size']
-
+				{
+					if(useSla)
+					{
+						fields = ['h1Availability', 'inspireNbBizErrors','h1NbConnErrors','h1MeanRespTime','inspireMeanRespTime','h1NbBizErrors','inspireAvailability','inspireNbConnErrors','inspireMaxRespTime','h1MaxRespTime','inspireMinRespTime','h1MinRespTime', {name: 'date', type: 'date', dateFormat: 'Y-m-d H:i:s'}];
+					}else
+					{
+						fields = ['h24Availability', 'slaNbBizErrors','h24NbConnErrors','h24MeanRespTime','slaMeanRespTime','h24NbBizErrors','slaAvailability','slaNbConnErrors','slaMaxRespTime','h24MaxRespTime','slaMinRespTime','h24MinRespTime', {name: 'date', type: 'date', dateFormat: 'Y-m-d'}];
+					}
+				}else
+				{
+					if(aMethods[i] == "All")
+					{
+						fields = [{name: 'time', type: 'date', dateFormat: 'Y-m-d H:i:s'}, 'message', 'httpCode', 'status', 'statusCode', 'delay','size','avCount','unavCount','fCount','otherCount','maxTime'];
+					}else
+					{
+						fields = [{name: 'time', type: 'date', dateFormat: 'Y-m-d H:i:s'}, 'message', 'httpCode', 'status', 'statusCode', 'delay','size']
+					}
+				}
 				urls.push(	EasySDI_Mon.proxyserverside+EasySDI_Mon.CurrentJobCollection+'/'+selJob+'/queries/'+aMethods[i]+'/'+logRes+'?minDate='+minDate.format('Y-m-d')+'&maxDate='+maxDate.format('Y-m-d'));
 			}
-			return urls;
-			
+			return urls;	
 		}
 			
 		for ( var i=0; i< aMethods.length; i++ ){
 
 			var fields = null;
 			if(logRes == "aggLogs")
-				fields = ['h24Availability', 'slaNbBizErrors','h24NbConnErrors','h24MeanRespTime','slaMeanRespTime','h24NbBizErrors','slaAvalabilty','slaNbConnErrors', {name: 'date', type: 'date', dateFormat: 'Y-m-d'}];
-			else
-				fields = [{name: 'time', type: 'date', dateFormat: 'Y-m-d H:i:s'}, 'message', 'httpCode', 'status', 'statusCode', 'delay','size']
-
-			aStores[aMethods[i]] = new Ext.data.JsonStore({
-				root:'data',
-				autoLoad: true,
-				totalProperty:'totalCount',
-				restful:true,
-				proxy: new Ext.data.HttpProxy({
-					url: EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+selJob+'/queries/'+aMethods[i]+'/'+logRes+'?minDate='+minDate.format('Y-m-d')+'&maxDate='+maxDate.format('Y-m-d')
-				}),
-				fields:fields,
-				listeners: {
-				load: function(){
-				loadedStores ++;
-				//Wait that all stores are loaded
-				if(loadedStores == aMethods.length){
-					var b = aStores;
-					myMask.hide();
-					onDataReady(aStores, logRes);
+			{
+				if(useSla)
+				{
+					fields = ['h1Availability', 'inspireNbBizErrors','h1NbConnErrors','h1MeanRespTime','inspireMeanRespTime','h1NbBizErrors','inspireAvailability','inspireNbConnErrors','inspireMaxRespTime','h1MaxRespTime','inspireMinRespTime','h1MinRespTime', {name: 'date', type: 'date', dateFormat: 'Y-m-d H:i:s'}];
+				}else
+				{
+					fields = ['h24Availability', 'slaNbBizErrors','h24NbConnErrors','h24MeanRespTime','slaMeanRespTime','h24NbBizErrors','slaAvailability','slaNbConnErrors','slaMaxRespTime','h24MaxRespTime','slaMinRespTime','h24MinRespTime', {name: 'date', type: 'date', dateFormat: 'Y-m-d'}];
+				}
+				
+				
+			}else
+			{
+				if(aMethods[i] == "All")
+				{
+					fields = [{name: 'time', type: 'date', dateFormat: 'Y-m-d H:i:s'}, 'message', 'httpCode', 'status', 'statusCode', 'delay','size','avCount','unavCount','fCount','otherCount','maxTime'];
+				}else
+				{
+					fields = [{name: 'time', type: 'date', dateFormat: 'Y-m-d H:i:s'}, 'message', 'httpCode', 'status', 'statusCode', 'delay','size']
 				}
 			}
+			
+			var slaParam = "";
+			var slaID = -1;
+			if(useSla)
+			{
+				slaParam = "&useSla="+ Ext.getCmp('repCbSla').getValue();
+				slaID = Ext.getCmp('repCbSla').getValue();
 			}
-			});
+			
+			// If All selected get summery graph for all the job methods
+			if(aMethods[i] == "All")
+			{
+				var summeryGraph = EasySDI_Mon.lang.getLocal('graph summery');
+				aStores[summeryGraph] = new Ext.data.JsonStore({
+					root:'data',
+					autoLoad: true,
+					totalProperty:'totalCount',
+					restful:true,
+					proxy: new Ext.data.HttpProxy({
+						url: EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+selJob+'/'+logRes+'?minDate='+minDate.format('Y-m-d')+'&maxDate='+maxDate.format('Y-m-d')+slaParam
+					}),
+					fields:fields,
+					listeners: {
+					load: function(){
+					loadedStores ++;
+					//Wait that all stores are loaded
+					if(loadedStores == aMethods.length){
+						var b = aStores;
+						myMask.hide();
+						onDataReady(aStores, logRes,useSla,slaID);
+					}
+				}
+				}
+				});
+			}else
+			{
+				aStores[aMethods[i]] = new Ext.data.JsonStore({
+					root:'data',
+					autoLoad: true,
+					totalProperty:'totalCount',
+					restful:true,
+					proxy: new Ext.data.HttpProxy({
+						url: EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+selJob+'/queries/'+aMethods[i]+'/'+logRes+'?minDate='+minDate.format('Y-m-d')+'&maxDate='+maxDate.format('Y-m-d')+slaParam
+					}),
+					fields:fields,
+					listeners: {
+						load: function(){
+							loadedStores ++;
+							//Wait that all stores are loaded
+							if(loadedStores == aMethods.length){
+								var b = aStores;
+								myMask.hide();
+								onDataReady(aStores, logRes,useSla,slaID);
+							}
+						}
+					}
+				});
+			}
 		}
 	}
     
@@ -3283,14 +4514,32 @@ Ext.onReady(function() {
 	}
         
 	//called when all stores are loaded
-	function onDataReady(aStores, logRes){
-
+	function onDataReady(aStores, logRes,useSla,slaID){
+		
+		if(useSla)
+		{
+			var slaGrid = Ext.getCmp('SlaGrid');
+			if(slaGrid)
+			{
+				var rec = slaGrid.store.getById(slaID);
+				if(rec)
+				{
+					var showInspireGraph = false; 
+					if(rec.get('isExcludeWorst') == 1)
+					{
+						showInspireGraph = true;
+					}
+				}
+			}
+		}
+		
 		//output the graphs
-		EasySDI_Mon.chart1 = EasySDI_Mon.drawResponseTimeGraph('container1', aStores, logRes, tickInterval, jobRecord);
+		EasySDI_Mon.chart1 = EasySDI_Mon.drawResponseTimeGraph('container1', aStores, logRes, tickInterval, jobRecord,useSla,showInspireGraph);
 		if(logRes == 'logs')
-			EasySDI_Mon.chart2 = EasySDI_Mon.drawHealthGraphRaw('container2', aStores, logRes);
-		else{
-			EasySDI_Mon.chart2 = EasySDI_Mon.drawHealthGraphAgg('container2', aStores, logRes);
+		{
+			EasySDI_Mon.chart2 = EasySDI_Mon.drawHealthGraphRaw('container2', aStores, logRes,useSla);
+		}else{
+			EasySDI_Mon.chart2 = EasySDI_Mon.drawHealthGraphAgg('container2', aStores, logRes,useSla,showInspireGraph);
 			//EasySDI_Mon.chart3 = EasySDI_Mon.drawHealthLineGraph('container3', aStores, logRes, tickInterval);
 		}
 
@@ -3320,6 +4569,7 @@ Ext.onReady(function() {
 	var store = new Ext.data.SimpleStore({
 		id:'jobId',
 		fields:[
+		        {name: 'alertId'},
 		        {name: 'newStatusCode'}
 		        ,{name: 'oldStatusCode'}
 		        ,{name: 'cause'}
@@ -3327,7 +4577,8 @@ Ext.onReady(function() {
 		        ,{name: 'responseDelay'}
 		        ,{name: 'isExposedToRss', type: 'boolean'}
 		        ,{name: 'jobId', type: 'int'}
-		        ,{name: 'dateTime', type: 'date', dateFormat: 'Y-m-d H:i:s'}
+		        ,{name: 'dateTime', type: 'date', dateFormat: 'Y-m-d H:i:s'},
+		        {name: 'content_type'}
 		        ],
 		        data:[]
 	});
@@ -3401,6 +4652,15 @@ Ext.onReady(function() {
 		width:150,
 		sortable: true,
 		renderer: EasySDI_Mon.DateTimeRenderer
+	},
+	{
+		header:EasySDI_Mon.lang.getLocal('grid header responseview'),
+		dataIndex: "alertId",
+		width:100,
+		 renderer: function (value, scope, row){
+			 var response_url = EasySDI_Mon.proxy+'image/alert/'+value+'?contenttype='+row.data.content_type;
+			 return '<a href="'+response_url+'" target="_blank">'+EasySDI_Mon.lang.getLocal('grid alert view')+'</a>';
+		 }
 	}
 	]);
 
@@ -3506,7 +4766,7 @@ Ext.onReady(function() {
 			restful:true,
 			idProperty : 'id',
 			totalProperty :'count',
-			fields:['newStatusCode', 'oldStatusCode', 'cause', 'httpCode', 'responseDelay', 'isExposedToRss', 'jobId', {name: 'dateTime', type: 'date', dateFormat: 'Y-m-d H:i:s'}],
+			fields:['newStatusCode', 'oldStatusCode', 'cause', 'httpCode', 'responseDelay', 'isExposedToRss', 'jobId', {name: 'dateTime', type: 'date', dateFormat: 'Y-m-d H:i:s'},'alertId','content_type'],
 			listeners :{
 				load: function(){
 
@@ -3705,8 +4965,10 @@ Ext.onReady(function() {
 				{name: 'normSizeTolerance',mapping: 'query.queryValidationSettings.normSizeTolerance'},{name: 'useTimeValidation',mapping: 'query.queryValidationSettings.useTimeValidation'},
 				{name: 'normTime',mapping: 'query.queryValidationSettings.normTime'},{name: 'useXpathValidation',mapping: 'query.queryValidationSettings.useXpathValidation'},
 				{name: 'xpathExpression',mapping: 'query.queryValidationSettings.xpathExpression'},{name: 'expectedXpathOutput',mapping: 'query.queryValidationSettings.expectedXpathOutput'},	
-				{name:'lastQueryResult',mapping:'lastQueryResult'},{name:'picture_url',mapping:'lastQueryResult.picture_url'},
-				{name:'xml_result',mapping:'lastQueryResult.xml_result'},{name:'text_result',mapping:'lastQueryResult.text_result'}
+				{name:'lastQueryResult',mapping:'lastQueryResult'},
+				/*{name:'picture_url',mapping:'lastQueryResult.picture_url'},
+				{name:'xml_result',mapping:'lastQueryResult.xml_result'},*/{name:'text_result',mapping:'lastQueryResult.text_result'},
+				{name: 'content_type',mapping:'lastQueryResult.content_type'}
 			]
 	});
 	
@@ -4109,7 +5371,7 @@ Ext.onReady(function() {
 			sCellColor = 'OverviewTableCellsError';
 			oCellColor = 'OverviewTableCellsError';
 		}
-		
+		var dataurl = EasySDI_Mon.proxy+'image/lastoverview/'+rec.get('queryId')+'?contenttype='+rec.get('content_type');
 		var controls;
 		switch(type)
 		{
@@ -4205,9 +5467,9 @@ Ext.onReady(function() {
 							cellCls: tCellColor
 						},
 						{
-							width: rec.get('picture_url') ? 142: 300,
+							width: 142,
 							height: 142,
-							html: rec.get('picture_url') && !reqError ? '<img src='+rec.get('picture_url')+' alt="missing image" style="border:1px solid;" width="140" height="140" />': '<textarea class="Text_area_result" >'+rec.get('text_result')+'</textarea>',
+							html: rec.get('queryId') && !reqError ? '<img src='+dataurl+' alt="missing image" style="border:1px solid;" width="140" height="140" />': '<a href="'+dataurl+'" target="_blank">'+EasySDI_Mon.lang.getLocal('overview text datalink')+'</a>', //'<textarea class="Text_area_result" >'+rec.get('text_result')+'</textarea>',
 							colspan: 2,
 							cellCls: 'OverviewTableCellsImg'
 						},
@@ -4246,6 +5508,7 @@ Ext.onReady(function() {
 		case "getrecords":
 		case "getrecordbyid":
 		case "getcapabilities":
+		default: 	
 			controls = {
 				items: 
 				[
@@ -4335,13 +5598,9 @@ Ext.onReady(function() {
 							cellCls: tCellColor
 						},
 						{
-							xtype: 'textarea',
-							autoScroll: true,
-							width: 300,//180,
-							height:140,
-							style: 'border:1px solid;',
-							readOnly: true,
-							value: rec.get('xml_result')?rec.get('xml_result') :rec.get('text_result'),
+							html: '<a href="'+dataurl+'" target="_blank">'+EasySDI_Mon.lang.getLocal('overview text datalink')+'</a>', //'<textarea class="Text_area_result" >'+rec.get('text_result')+'</textarea>',
+							width: 300,
+							height:30,
 							colspan: 2,
 							cellCls: 'OverviewTableCells'
 						},
@@ -4375,9 +5634,6 @@ Ext.onReady(function() {
 			        })// End form panel
         		]     
 			}// end control
-			break;
-		default: 
-			break;
 		}// end switch		
 		return controls;
 	}
@@ -5269,6 +6525,7 @@ Ext.onReady(function() {
 			border:false,
 			items: [accordion, Ext.getCmp('JobGrid')]
 	};
+	
 
 	var reportPanel = {
 			id:'reportPanel',
@@ -5317,6 +6574,17 @@ Ext.onReady(function() {
 			border:false,
 			items: [Ext.getCmp('ResponseOverviewPanel')]
 	};
+	
+	slaPanel = {
+			title: EasySDI_Mon.lang.getLocal('sla'),
+			frame:true,
+			xtype: 'panel',
+			layout: 'border',
+			region: 'center',
+			border:false,
+			items: [Ext.getCmp('SlaGrid')]
+	};
+	
 	exportPanel = {
 			title:EasySDI_Mon.lang.getLocal('export'),
 			xtype: 'panel',
@@ -5336,7 +6604,9 @@ Ext.onReady(function() {
 		       reportPanel,
 		       alertPanel,
 		       maintenancePanel,
-		       responseoverviewPanel, exportPanel
+		       responseoverviewPanel,
+		       slaPanel,
+		       exportPanel
 		       ]
 	});
 
@@ -5477,7 +6747,7 @@ Ext.onReady(function() {
  
 Ext.namespace("EasySDI_Mon");
 
-EasySDI_Mon.drawHealthGraphRaw = function(container, aStores, logRes){
+EasySDI_Mon.drawHealthGraphRaw = function(container, aStores, logRes,useSla){
 	     //Prepare graph options
 	     var options = {
                 chart: {
@@ -5541,51 +6811,76 @@ EasySDI_Mon.drawHealthGraphRaw = function(container, aStores, logRes){
 	     var otherSeries;
 	     //push categories
 	     for ( var storeName in aStores)
-             {
-		 if(typeof aStores[storeName] != 'function'){
-		    options.xAxis.categories.push(storeName);
-		 }
+         {
+	    	 if(typeof aStores[storeName] != 'function'){
+	    		 options.xAxis.categories.push(storeName);
+	    	 }
 	     }
 	     
-	     var avCount = 0;
-             var unavCount = 0;
-             var fCount = 0;
-             var otherCount = 0;
-	     //push series
-             for ( var storeName in aStores)
-             {
-		 if(typeof aStores[storeName] != 'function'){
+	    var avCount = 0;
+        var unavCount = 0;
+        var fCount = 0;
+        var otherCount = 0;
+	    
+        //push series
+        for ( var storeName in aStores)
+        {
+        	// Reset for each method
+        	avCount = 0;
+            unavCount = 0;
+            fCount = 0;
+            otherCount = 0;
+            
+        	if(typeof aStores[storeName] != 'function'){
 	            var aRec = aStores[storeName].getRange();
-		    
+	        	var summaryCount = 0;
                     //push percentiles
                     for ( var i=0; i< aRec.length; i++ )
                     {   
-			var status = aRec[i].get('statusCode');
-			switch (status){
-                             case 'AVAILABLE':
-                                   avCount++;
-                             break;
-                             case 'OUT_OF_ORDER':
-                                   fCount++;
-                             break;
-                             case 'UNAVAILABLE':
-                                   unavCount++;
-                             break;
-	                           case 'NOT_TESTED':
-                                   otherCount++;
-                             break;
-                             default: 
-                                   otherCount++;
-                             break;
-                        }
-		    }
+                    	if(aRec[i].get('avCount'))
+                    	{
+                    		avCount+=aRec[i].get('avCount');
+                    		fCount+=aRec[i].get('fCount');
+                    		unavCount+=aRec[i].get('unavCount');
+                    		otherCount+=aRec[i].get('otherCount');
+                    		summaryCount = avCount + fCount +unavCount + otherCount;
+                    	}else
+                    	{
+                    		var status = aRec[i].get('statusCode');
+	                    	switch (status){
+	                             case 'AVAILABLE':
+	                                   avCount++;
+	                             break;
+	                             case 'OUT_OF_ORDER':
+	                                   fCount++;
+	                             break;
+	                             case 'UNAVAILABLE':
+	                                   unavCount++;
+	                             break;
+		                         case 'NOT_TESTED':
+	                                   otherCount++;
+	                             break;
+	                             default: 
+	                                   otherCount++;
+	                             break;
+	                        	}
+                    	}
+                    }
+        			if(summaryCount > 0)
+					{
+						avSeries.data.push(Math.round((avCount/summaryCount)*100));
+						unavSeries.data.push(Math.round((unavCount/summaryCount)*100));
+						fSeries.data.push(Math.round((fCount/summaryCount)*100));
+						otherSeries.data.push(Math.round((otherCount/summaryCount)*100));
+					}else
+					{
+						avSeries.data.push(Math.round((avCount/aRec.length)*100));
+						unavSeries.data.push(Math.round((unavCount/aRec.length)*100));
+						fSeries.data.push(Math.round((fCount/aRec.length)*100));
+						otherSeries.data.push(Math.round((otherCount/aRec.length)*100));
+                    }
 		    
-		    avSeries.data.push(Math.round((avCount/aRec.length)*100));
-		    unavSeries.data.push(Math.round((unavCount/aRec.length)*100));
-		    fSeries.data.push(Math.round((fCount/aRec.length)*100));
-		    otherSeries.data.push(Math.round((otherCount/aRec.length)*100));
-		    
-		 }
+        	}
 	     }
 	     
 	    //push this series
@@ -5616,7 +6911,7 @@ EasySDI_Mon.drawHealthGraphRaw = function(container, aStores, logRes){
 
 Ext.namespace("EasySDI_Mon");
 
-EasySDI_Mon.drawHealthGraphAgg = function (container, aStores, logRes){
+EasySDI_Mon.drawHealthGraphAgg = function (container, aStores, logRes,useSla,showInspireGraph){
 	//Prepare graph options
 	var options = {
 		chart: {
@@ -5662,33 +6957,74 @@ EasySDI_Mon.drawHealthGraphAgg = function (container, aStores, logRes){
 			color: '#7dff9c'
 	};
 
+
 	//push categories
 	for ( var storeName in aStores)
 	{
 		if(typeof aStores[storeName] != 'function'){
-			options.xAxis.categories.push(storeName+EasySDI_Mon.lang.getLocal('h24 suffix'));
-			options.xAxis.categories.push(storeName+EasySDI_Mon.lang.getLocal('sla suffix'));
+			if(useSla)
+			{
+				if(!showInspireGraph)
+				{
+					options.xAxis.categories.push(storeName);//+EasySDI_Mon.lang.getLocal('h1 suffix'));
+				}else
+				{
+					options.xAxis.categories.push(storeName);//+EasySDI_Mon.lang.getLocal('inspire suffix'));
+				}
+			}else
+			{
+				options.xAxis.categories.push(storeName+EasySDI_Mon.lang.getLocal('h24 suffix'));
+				options.xAxis.categories.push(storeName+EasySDI_Mon.lang.getLocal('sla suffix'));
+			}
 		}
 	}
 
 	var avCountH24;
 	var avCountSLA;
-	//push series
-	for ( var storeName in aStores)
+	if(useSla)
 	{
-		if(typeof aStores[storeName] != 'function'){
-			var aRec = aStores[storeName].getRange();
-			avCountH24 = 0;
-			avCountSLA = 0;
-			//push percentiles
-			for ( var i=0; i< aRec.length; i++ )
-			{   
-				avCountH24 += aRec[i].get('h24Availability');
-				avCountSLA += aRec[i].get('slaAvalabilty');
+		//push series
+		for ( var storeName in aStores)
+		{
+			if(typeof aStores[storeName] != 'function'){
+				var aRec = aStores[storeName].getRange();
+				avCountH24 = 0;
+				avCountSLA = 0;
+	
+				//push percentiles
+				for ( var i=0; i< aRec.length; i++ )
+				{   
+					avCountH24 += aRec[i].get('h1Availability');
+					avCountSLA += aRec[i].get('inspireAvailability');				
+				}
+		      
+				if(!showInspireGraph)
+				{
+					avSeries.data.push(Math.round(avCountH24/aRec.length));
+				}else{
+					avSeries.data.push(Math.round(avCountSLA/aRec.length));
+				}
 			}
-			avSeries.data.push(Math.round(avCountH24/aRec.length));
-			avSeries.data.push(Math.round(avCountSLA/aRec.length));
 		}
+	}else
+	{
+				//push series
+				for ( var storeName in aStores)
+				{
+					if(typeof aStores[storeName] != 'function'){
+						var aRec = aStores[storeName].getRange();
+						avCountH24 = 0;
+						avCountSLA = 0;
+						//push percentiles
+						for ( var i=0; i< aRec.length; i++ )
+						{   
+							avCountH24 += aRec[i].get('h24Availability');
+							avCountSLA += aRec[i].get('slaAvalabilty');
+						}
+						avSeries.data.push(Math.round(avCountH24/aRec.length));
+						avSeries.data.push(Math.round(avCountSLA/aRec.length));
+					}
+				}
 	}
 
 	options.series.push(avSeries);
@@ -5808,7 +7144,7 @@ EasySDI_Mon.drawHealthLineGraph = function(container, aStores, logRes, tickInter
 
 Ext.namespace("EasySDI_Mon");
 
-EasySDI_Mon.drawResponseTimeGraph = function (container, aStores, logRes, tickInterval, jobRecord){
+EasySDI_Mon.drawResponseTimeGraph = function (container, aStores, logRes, tickInterval, jobRecord,useSla,showInspireGraph){
 	//Prepare graph options
 	var options = {
 		colors: [
@@ -5843,7 +7179,7 @@ EasySDI_Mon.drawResponseTimeGraph = function (container, aStores, logRes, tickIn
 			text:EasySDI_Mon.lang.getLocal('response time')+' '+EasySDI_Mon.lang.getLocal('ms suffix')
 		}
 		,
-		min: 0, // set to -1 to show tooltip for errors 
+		min: 0, 
 		//Sets the maxY to 4/3 the timeout
 		max: jobRecord.get('timeout')*1000*1.3333333,
 		minorGridLineWidth: 0, 
@@ -5872,20 +7208,61 @@ EasySDI_Mon.drawResponseTimeGraph = function (container, aStores, logRes, tickIn
 					
 					if(this.point.log == "aggLogs")
 					{
-						tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip H24_AVAILABILITY')+":</b> "+Math.round(this.point.data.data.h24Availability)+"%<br/>";
-						tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip H24_NB_CONN_ERRORS')+":</b> "+this.point.data.data.h24NbConnErrors+"<br/>";
-						tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip H24_NB_BIZ_ERRORS')+":</b> "+this.point.data.data.h24NbBizErrors+"<br/>";
+						if(useSla)
+						{
+							if(this.point.normalGraph)
+							{
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip AVAILABILITY')+":</b> "+Math.round(this.point.data.data.h1Availability)+"%<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip NB_CONN_ERRORS')+":</b> "+this.point.data.data.h1NbConnErrors+"<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip NB_BIZ_ERRORS')+":</b> "+this.point.data.data.h1NbBizErrors+"<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip MaxRespTime')+"</b> -> "+Math.round(this.point.data.data.h1MaxRespTime * 1000) + EasySDI_Mon.lang.getLocal('ms suffix')+"<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip MinRespTime')+"</b> -> "+Math.round(this.point.data.data.h1MinRespTime * 1000) + EasySDI_Mon.lang.getLocal('ms suffix')+"<br/>";
+							}else
+							{
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip AVAILABILITY')+":</b> "+Math.round(this.point.data.data.inspireAvailability)+"%<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip NB_CONN_ERRORS')+":</b> "+this.point.data.data.inspireNbConnErrors+"<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip NB_BIZ_ERRORS')+":</b> "+this.point.data.data.inspireNbBizErrors+"<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip MaxRespTime')+"</b> -> "+Math.round(this.point.data.data.inspireMaxRespTime * 1000) + EasySDI_Mon.lang.getLocal('ms suffix')+"<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip MinRespTime')+"</b> -> "+Math.round(this.point.data.data.inspireMinRespTime * 1000) + EasySDI_Mon.lang.getLocal('ms suffix')+"<br/>";	
+							}
+						}
+						else
+						{
+							if(this.point.normalGraph)
+							{
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip AVAILABILITY')+":</b> "+Math.round(this.point.data.data.h24Availability)+"%<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip NB_CONN_ERRORS')+":</b> "+this.point.data.data.h24NbConnErrors+"<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip NB_BIZ_ERRORS')+":</b> "+this.point.data.data.h24NbBizErrors+"<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip MaxRespTime')+"</b> -> "+Math.round(this.point.data.data.h24MaxRespTime * 1000) + EasySDI_Mon.lang.getLocal('ms suffix')+"<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip MinRespTime')+"</b> -> "+Math.round(this.point.data.data.h24MinRespTime * 1000) + EasySDI_Mon.lang.getLocal('ms suffix')+"<br/>";		
+							}else
+							{
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip AVAILABILITY')+":</b> "+Math.round(this.point.data.data.slaAvailability)+"%<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip NB_CONN_ERRORS')+":</b> "+this.point.data.data.slaNbConnErrors+"<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip NB_BIZ_ERRORS')+":</b> "+this.point.data.data.slaNbBizErrors+"<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip MaxRespTime')+"</b> -> "+Math.round(this.point.data.data.slaMaxRespTime * 1000) + EasySDI_Mon.lang.getLocal('ms suffix')+"<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip MinRespTime')+"</b> -> "+Math.round(this.point.data.data.slaMinRespTime * 1000) + EasySDI_Mon.lang.getLocal('ms suffix')+"<br/>";	
+				
+							}
+						}
 					}else
 					{
 						tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip response size')+"</b>: "+Math.round(this.point.data.data.size)+" bytes<br/>";
-						if(this.point.data.data.statusCode.toLowerCase() == "unavailable")
+						// Test for summmary
+						if(this.point.data.data.maxTime)
 						{
-							tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip http statuscode')+"</b>: "+ this.point.data.data.httpCode+"<br/>";
-							tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip response message')+"</b>: "+ this.point.data.data.message+"<br/>";
-						}
-						if(this.point.data.data.statusCode.toLowerCase() == "out_of_order")// failed
+						 	tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip MaxRespTime')+"</b>: "+ Math.round(this.point.data.data.maxTime * 1000) + EasySDI_Mon.lang.getLocal('ms suffix')+"<br/>";	
+						}else
 						{
-							tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip response message')+"</b>: "+ this.point.data.data.message;
+							if(this.point.data.data.statusCode.toLowerCase() == "unavailable")
+							{
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip http statuscode')+"</b>: "+ this.point.data.data.httpCode+"<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip response message')+"</b>: "+ this.point.data.data.message+"<br/>";
+							}
+							if(this.point.data.data.statusCode.toLowerCase() == "out_of_order")// failed
+							{
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip response message')+"</b>: "+ this.point.data.data.message;
+							}
 						}
 					}
 				return tip;
@@ -5910,19 +7287,47 @@ EasySDI_Mon.drawResponseTimeGraph = function (container, aStores, logRes, tickIn
 			var aRec = aStores[storeName].getRange();
 			series = {data: []};
 			//add h24 or delay response time
-			series.name = storeName+'[h24]';
+			if(useSla)
+			{
+				series.name = storeName;//+EasySDI_Mon.lang.getLocal('h1 suffix');
+			}else
+			{
+				series.name = storeName+'[h24]';
+			}
+			
 			for ( var i=0; i< aRec.length; i++ )
 			{   
 				if(logRes == 'aggLogs')
 				{
-					var point = {
-							x: aRec[i].get('date').getTime(),
-							y: Math.round(aRec[i].get('h24MeanRespTime') * 1000) != -1 ? Math.round(aRec[i].get('h24MeanRespTime') * 1000) : 0,
-							data: aRec[i],
-							log: logRes
-						};
-					series.data.push(point);
-					//series.data.push([aRec[i].get('date').getTime(), Math.round(aRec[i].get('h24MeanRespTime') * 1000)]);
+					var point;
+					if(useSla)
+					{
+						point = {
+								x: aRec[i].get('date').getTime(),
+								y: Math.round(aRec[i].get('h1MeanRespTime') * 1000) != -1 ? Math.round(aRec[i].get('h1MeanRespTime') * 1000) : 0,
+								data: aRec[i],
+								log: logRes,
+								normalGraph: true
+							};
+					}else
+					{
+						point = {
+								x: aRec[i].get('date').getTime(),
+								y: Math.round(aRec[i].get('h24MeanRespTime') * 1000) != -1 ? Math.round(aRec[i].get('h24MeanRespTime') * 1000) : 0,
+								data: aRec[i],
+								log: logRes,
+								normalGraph: true
+							};
+					}
+					if(useSla && showInspireGraph)
+					{
+						// No need to push this graph
+					}else
+					{
+						series.data.push(point);
+					}
+					
+				
 				}
 				else{
 					var status = aRec[i].get('statusCode');
@@ -5951,31 +7356,71 @@ EasySDI_Mon.drawResponseTimeGraph = function (container, aStores, logRes, tickIn
 								fillColor: color
 							},
 							data: aRec[i], // record info for tooltip
-							log: logRes
+							log: logRes,
+							normalGraph: true
 					};
 					series.data.push(point);
 					//series.data.push([aRec[i].get('time').getTime(), Math.round(aRec[i].get('delay') * 1000)]);
 				}
 			}
 			//push this serie
-			options.series.push(series);
-
-			//add also sla response time for aggregate logs only
+			if(useSla && showInspireGraph && logRes == 'aggLogs')
+			{
+				// No need to push this graph
+			}else
+			{
+				options.series.push(series);
+			}
+			
 			if(logRes == 'aggLogs'){
 				series = {data: []};
-				series.name = storeName+EasySDI_Mon.lang.getLocal('sla suffix');
+				if(useSla)
+				{
+					series.name = storeName; // +EasySDI_Mon.lang.getLocal('inspire suffix');
+				}else
+				{
+					series.name = storeName+EasySDI_Mon.lang.getLocal('sla suffix');
+				}
+				
 				for ( var i=0; i< aRec.length; i++ )
 				{   
-					var point = {
-							x: aRec[i].get('date').getTime(),
-							y: Math.round(aRec[i].get('slaMeanRespTime') * 1000) != -1 ? Math.round(aRec[i].get('slaMeanRespTime') * 1000) : 0,
-							data: aRec[i],
-							log: logRes
-					};
-					series.data.push(point);				
+					var point;
+					if(useSla)
+					{
+						point = {
+								x: aRec[i].get('date').getTime(),
+								y: Math.round(aRec[i].get('inspireMeanRespTime') * 1000) != -1 ? Math.round(aRec[i].get('inspireMeanRespTime') * 1000) : 0,
+								data: aRec[i],
+								log: logRes,
+								normalGraph: false
+						};
+					}else
+					{
+						point = {
+								x: aRec[i].get('date').getTime(),
+								y: Math.round(aRec[i].get('slaMeanRespTime') * 1000) != -1 ? Math.round(aRec[i].get('slaMeanRespTime') * 1000) : 0,
+								data: aRec[i],
+								log: logRes,
+								normalGraph: false
+						};
+					}
+					if(useSla && !showInspireGraph)
+					{
+						// No need to push this graph
+					}else
+					{
+						series.data.push(point);
+					}
+									
 					//series.data.push([aRec[i].get('date').getTime(), Math.round(aRec[i].get('slaMeanRespTime') * 1000)]);
 				}
-				options.series.push(series);
+				if(useSla && !showInspireGraph)
+				{
+					// No need to push this graph
+				}else{
+					options.series.push(series);
+				}
+				
 			}
 
 		}

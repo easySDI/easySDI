@@ -41,6 +41,25 @@ Ext.form.VTypes['jobname'] = function(v)
 	return true;
 }
 
+Ext.form.VTypes['slaname'] = function(v)
+{   
+	if(Ext.form.VTypes['alphanummore'](v)){
+		if( Ext.getCmp('SlaGrid').store.getById(v)){
+			Ext.form.VTypes['slanameText'] = EasySDI_Mon.lang.getLocal('slaname already exists');
+			return false;
+		}
+		/*if(v.toUpperCase() == 'ALL'){
+			Ext.form.VTypes['jobnameText'] = EasySDI_Mon.lang.getLocal('error reserved keyword');
+			return false;
+		}*/
+		return true;
+	}else{
+		Ext.form.VTypes['slanameText'] = EasySDI_Mon.lang.getLocal('error ressource name');
+		return false;
+	}
+	return true;
+}
+
 Ext.form.VTypes['reqname'] = function(v)
 {   
 	if(Ext.form.VTypes['alphanum'](v)){
@@ -59,3 +78,5 @@ Ext.form.VTypes['reqname'] = function(v)
 	}
 	return true;
 }
+
+
