@@ -1,18 +1,13 @@
 package org.easysdi.monitor.biz.job;
 
-import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Calendar;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Properties;
+
 
 
 import org.apache.commons.httpclient.Credentials;
@@ -25,6 +20,7 @@ import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.commons.httpclient.params.HttpMethodParams;
+import org.deegree.framework.util.StringTools;
 import org.deegree.ogcwebservices.OGCWebServiceException;
 import org.deegree.portal.owswatch.ServiceConfiguration;
 import org.deegree.portal.owswatch.ServiceInvoker;
@@ -43,7 +39,13 @@ public class CustomQueryInvoker extends ServiceInvoker{
 
 	private InputStream soap_stream_response;
 	private String ContentType;
-
+	
+	// Used for multi threading
+	private long startTimeSync;
+	private HttpClient client_SimRun;
+	private HttpMethodBase method_SimRun;
+	private String ogcWebServiceExceptionMsg = "";
+	
 	/**
 	 * 
 	 */
@@ -198,6 +200,7 @@ public class CustomQueryInvoker extends ServiceInvoker{
 
 		
 	}
+	
 	private int executeSimpleSOAP_1_2_Client() throws IOException{
 			
 			int statusCode = 0 ;
@@ -236,5 +239,122 @@ public class CustomQueryInvoker extends ServiceInvoker{
 			
 		}
 
+	/**
+	 * Method: setupHTTPClient
+	 * Build the http request
+	 * Used for multi threading 
+	 */
+    @Override
+	public void setupHTTPClient()
+	{
+	  	try
+    	{
+    		this.method_SimRun = this.getServiceConfig().getHttpMethodBase();
+    	}catch(OGCWebServiceException e)
+    	{
+    		this.ogcWebServiceExceptionMsg = e.getLocalizedMessage();
+    	}
+    	Credentials creds = this.getServiceConfig().getUserCreds();
+		
+    	HttpClient client = new HttpClient();
+		HttpConnectionManagerParams cmParams = client.getHttpConnectionManager().getParams();
+		cmParams.setConnectionTimeout( this.getServiceConfig().getTimeout() * 1000 );
+		client.getHttpConnectionManager().setParams( cmParams );
+		// Provide custom retry handler is necessary
+		if(this.method_SimRun !=null) // in case of a soap request we are not using httpmethodbase but a an http connection class.
+			this.method_SimRun.getParams().setParameter( HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler( 2, false ) );
+
+		if (null != creds) {
+
+			try {
+				URI methodUri =this.method_SimRun.getURI();
+				client.getState().setCredentials(new AuthScope(methodUri.getHost(), methodUri.getPort()), creds);
+			} catch (URIException e) {
+				System.err.println(String.format("An exception was thrown while getting HTTP method URI : %1$s", 
+						e.getMessage()));
+			}
+		}
+		this.client_SimRun = client;  
+	}
 	
+    /**
+     * Method executeHttpMethodSimRun
+     * Execute the SOAP request
+     * Used for multi threading
+     */
+    @Override
+	public void executeHttpMethodSimRun()
+	{
+		// CALLED when running multithread
+		ValidatorResponse response = null;
+		try {
+			 if(!StringTools.isNullOrEmpty(this.ogcWebServiceExceptionMsg))
+        	 {
+        		 throw new OGCWebServiceException(this.ogcWebServiceExceptionMsg);
+        	 }
+			int statusCode =0;
+			String queryHttpMethodType = this.getServiceConfig().getHttpMethod();
+			String queryRequestMethodName = this.getServiceConfig().getProperties().getProperty("REQUEST");
+			String queryServiceType = this.getServiceConfig().getServiceType();
+				
+			if(queryServiceType.equalsIgnoreCase(CustomQueryConstants.ALL)){
+				
+				if(queryHttpMethodType.equalsIgnoreCase(CustomQueryConstants.GET) && queryRequestMethodName.equals(CustomQueryConstants.HTTP_GET))
+					statusCode = executeSimpleGetRequest(this.method_SimRun, this.client_SimRun);
+				else if(queryHttpMethodType.equalsIgnoreCase(CustomQueryConstants.POST) && queryRequestMethodName.equals(CustomQueryConstants.HTTP_POST))
+					statusCode = executeSimplePostRequest(this.method_SimRun, this.client_SimRun);
+				else if(queryHttpMethodType.equalsIgnoreCase(CustomQueryConstants.POST) && queryRequestMethodName.contains(CustomQueryConstants.SOAP_1_1))							
+					statusCode = executeSimpleSOAP_1_1_Client();
+				else if(queryHttpMethodType.equalsIgnoreCase(CustomQueryConstants.POST) && queryRequestMethodName.contains(CustomQueryConstants.SOAP_1_2))					
+					statusCode = executeSimpleSOAP_1_2_Client();
+				else
+					throw new OGCWebServiceException( "Unknown query requested. Execution not implemented"+
+							"\n HHTP Method :"+queryHttpMethodType +
+							"\n SERVICE Type  :" +queryServiceType +
+							"\n Request Name  :" +queryRequestMethodName
+							
+					);
+			}
+			long lapse = System.currentTimeMillis() - this.startTimeSync;
+			if((queryServiceType.equalsIgnoreCase(CustomQueryConstants.ALL)) && (!queryRequestMethodName.contains(CustomQueryConstants.SOAP))){
+				response = ((CustomValidator) this.getServiceConfig().getValidator()).validateAnswer( this.method_SimRun, statusCode );
+			
+			}else{
+				response = ((CustomValidator) this.getServiceConfig().getValidator()).validateAnswer(ContentType, soap_stream_response, statusCode );
+				
+			}
+		
+			response.setLastLapse( lapse );
+			Calendar date = Calendar.getInstance();
+			date.setTimeInMillis( this.startTimeSync );
+			response.setLastTest( date.getTime() );
+		} catch ( Exception e ) {
+			response = new ValidatorResponse( "Page Unavailable: " + e.getLocalizedMessage(),
+			Status.RESULT_STATE_PAGE_UNAVAILABLE );
+			response.setLastLapse( -1 );
+			response.setLastTest( Calendar.getInstance().getTime() );
+		} finally {
+			if(null !=this.method_SimRun)
+				this.method_SimRun.releaseConnection();
+		}
+		this.getServiceLog().addMessage(response, this.getServiceConfig() );
+	}
+	
+	/**
+	 * @return the startTimeSync
+	 */
+    @Override
+	public long getStartTimeSync() {
+		return startTimeSync;
+	}
+
+	/**
+	 * @param startTimeSync the startTimeSync to set
+	 */
+    @Override	
+	public void setStartTimeSync(long startTimeSync) {
+		this.startTimeSync = startTimeSync;
+	}
+
+
 }

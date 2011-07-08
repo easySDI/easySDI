@@ -93,13 +93,24 @@ public class Job {
      */
     public JobResult executeAllQueries(boolean resultLogged) {
         final JobResult jobResult = new JobResult(this);
-
+        
+       
         if (this.hasQueries()) {
-
-            for (Query query : this.getQueries().values()) {
-                final QueryResult queryResult = query.execute(resultLogged);
-                jobResult.addQueryResult(queryResult);
-            }
+            if(this.config.isRunSimultaneous())
+            {          	
+            	 List<QueryResult> list = Query.executeSimultaneous(this.queries,resultLogged);
+            	 for(QueryResult result : list)
+            	 {
+            		jobResult.addQueryResult(result); 
+            	 }
+            }else
+            {
+            	for (Query query : this.getQueries().values()) {
+            	
+            		final QueryResult queryResult = query.execute(resultLogged);
+            		jobResult.addQueryResult(queryResult);
+            	}
+        	}
 
         } else {
             jobResult.defineAsNoQuery();
@@ -368,7 +379,7 @@ public class Job {
             if (this.getConfig().isAutomatic()
                 && this.getConfig().isAlertsActivated()) {
                 final Alert alert = Alert.create(oldStatus, newStatus,
-                                                 result.getStatusCause(), result.getResponseDelay(), result.getHttpCode(), this);
+                                                 result.getStatusCause(), result.getResponseDelay(), result.getHttpCode(), this,null,"");
                 
                 this.triggerActions(alert);
             }

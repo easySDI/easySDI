@@ -4,14 +4,18 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.easysdi.monitor.biz.job.Query;
+import org.easysdi.monitor.biz.logging.RawLogEntry;
+
 import org.easysdi.monitor.biz.logging.LogManager;
 import org.easysdi.monitor.gui.webapp.LogSearchParams;
+import org.easysdi.monitor.gui.webapp.LogSlaHelper;
 import org.easysdi.monitor.gui.webapp.MonitorInterfaceException;
 import org.easysdi.monitor.gui.webapp.security.SecurityConstants;
 import org.springframework.stereotype.Controller;
@@ -38,8 +42,6 @@ public class QueryRawLogController extends AbstractMonitorController {
     public QueryRawLogController() {
         
     }
-    
-    
     
     /**
      * Deletes a given query's raw logs up to a date.
@@ -155,29 +157,43 @@ public class QueryRawLogController extends AbstractMonitorController {
 
         if ((null != altParam && altParam.equals("csv"))
             || (null != contentType && contentType.equals("text/csv"))) {
-
             viewName = "rawLogsCsv";
         }
-
+        
         final ModelAndView result = new ModelAndView(viewName);
         final Query query = this.getQueryProtected(jobIdString, queryIdString,
                                                    request, response);
         final LogManager logManager = new LogManager(query);
-
-        result.addObject("message", "log.details.success");
-        result.addObject("rawLogsCollection",
-                         logManager.getRawLogsSubset(
-                             searchParams.getMinDate(), 
-                             searchParams.getMaxDate(), 
-                             searchParams.getMaxResults(), 
-                             searchParams.getStartIndex()));
         
+        Set<RawLogEntry> rawLog;
+   
+        // Use sla for get report
+        if(requestParams.get("useSla") != null)
+        {
+        	// Get raw log
+        	rawLog = logManager.getRawLogsSubset(searchParams.getMinDate(), 
+                    searchParams.getMaxDate(),searchParams.getMaxResults(), 
+                    searchParams.getStartIndex());
+        	rawLog = LogSlaHelper.getRawlogForSla(requestParams.get("useSla"), rawLog,false);
+        }else
+        {
+        	rawLog = logManager.getRawLogsSubset(
+                    searchParams.getMinDate(), 
+                    searchParams.getMaxDate(), 
+                    searchParams.getMaxResults(), 
+                    searchParams.getStartIndex());
+        }
+       
+       	result.addObject("message", "log.details.success");
+        result.addObject("rawLogsCollection",rawLog);
+        // TODO Get total count for rawlog in period
         result.addObject("noPagingCount", 
                  logManager.getRawLogsItemsNumber(searchParams.getMinDate(), 
                                                   searchParams.getMaxDate(), 
                                                   null, null));
 
         result.addObject("addQueryId", false);
+        result.addObject("isSummary",false);
             
         return result;
     }

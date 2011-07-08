@@ -76,4 +76,34 @@ public class AlertDao extends HibernateDaoSupport implements IAlertDao {
         search.getExecutableCriteria(this.getSession()).setMaxResults(limit).setFirstResult(start);
         return this.getHibernateTemplate().findByCriteria(search);
 	}
+    
+    
+    /**
+     * {@inheritDoc}
+     */
+    public Alert getAlertById(long alertId) {
+
+        if (1 > alertId) {
+            throw new IllegalArgumentException("Invalid alert identifier");
+        }
+
+        return this.getHibernateTemplate().get(Alert.class, alertId);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public Alert getAlertFromIdString(String identifyString) {
+
+        try {
+            final long alertId = Long.parseLong(identifyString);
+
+            return this.getAlertById(alertId);
+
+        } catch (NumberFormatException e) {
+
+            return null;
+        }
+    }
+    
 }

@@ -42,7 +42,7 @@ public final class RawLogSerializer {
      *                          information
      */
     public static JsonNode serialize(RawLogEntry entry, Boolean addQueryId,
-                                       Locale locale, ObjectMapper mapper) {
+                                       Locale locale, ObjectMapper mapper,Boolean isSummary) {
 
         final ObjectNode jsonEntry = mapper.createObjectNode();
         final SimpleDateFormat dateFormat 
@@ -62,6 +62,14 @@ public final class RawLogSerializer {
         jsonEntry.put("delay", entry.getResponseDelay());
         jsonEntry.put("httpCode", ((null != entry.getHttpCode()) 
                                   ? entry.getHttpCode().toString() : ""));
+        if(isSummary)
+        {
+        	jsonEntry.put("avCount",entry.getAvCount());
+        	jsonEntry.put("unavCount",entry.getUnavCount());
+        	jsonEntry.put("fCount",entry.getfCount());
+        	jsonEntry.put("otherCount",entry.getOtherCount());
+        	jsonEntry.put("maxTime",entry.getMaxTime());
+        }
 
         return jsonEntry;
     }

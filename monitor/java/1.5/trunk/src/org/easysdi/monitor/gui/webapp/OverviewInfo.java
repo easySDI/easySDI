@@ -8,22 +8,6 @@ import java.util.Map;
 import org.deegree.framework.util.BooleanUtil;
 import org.easysdi.monitor.biz.job.Overview;
 
-/*import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.deegree.framework.util.DateUtil;
-import org.deegree.framework.util.StringTools;
-import org.easysdi.monitor.biz.job.AbstractValueObject;
-import org.easysdi.monitor.biz.job.HttpMethod;
-import org.easysdi.monitor.biz.job.Job;
-import org.easysdi.monitor.biz.job.JobConfiguration;
-import org.easysdi.monitor.biz.job.ServiceType;
-*/
 /**
  * @author BERG3428
  *

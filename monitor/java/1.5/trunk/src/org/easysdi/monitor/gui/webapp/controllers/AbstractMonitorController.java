@@ -17,12 +17,16 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.easysdi.monitor.biz.alert.AbstractAction;
 import org.easysdi.monitor.biz.job.Job;
 import org.easysdi.monitor.biz.job.Overview;
+import org.easysdi.monitor.biz.job.Period;
+import org.easysdi.monitor.biz.job.Sla;
+import org.easysdi.monitor.biz.job.Holiday;
 import org.easysdi.monitor.biz.job.Query;
 import org.easysdi.monitor.biz.logging.LogManager;
 import org.easysdi.monitor.biz.logging.RawLogEntry;
 import org.easysdi.monitor.gui.i18n.Messages;
 import org.easysdi.monitor.gui.webapp.AppContext;
 import org.easysdi.monitor.gui.webapp.LogSearchParams;
+import org.easysdi.monitor.gui.webapp.LogSlaHelper;
 import org.easysdi.monitor.gui.webapp.MonitorInterfaceException;
 import org.easysdi.monitor.gui.webapp.security.SecurityConstants;
 import org.easysdi.monitor.gui.webapp.security.SecurityHelper;
@@ -220,6 +224,45 @@ public abstract class AbstractMonitorController {
 
         return overview;
     }
+    
+    /**
+     * Gets a sla from an identifying string (without role enforcing).
+     * 
+     * @param   idString                    a string containing either the sla's
+     *                                      identifier or its name
+     * @return                              the sla
+     * @throws  MonitorInterfaceException   no overview matches the identifying 
+     *                                      string
+     */
+    protected Sla getSla(String idString) throws MonitorInterfaceException {
+        final Sla sla = Sla.getFromIdString(idString);
+        if (null == sla) {
+            throw new MonitorInterfaceException("sla doesn't exist",
+                                                "sla.notExist");
+        }
+        return sla;
+    }
+    
+    protected Holiday getHoliday(String idString) throws MonitorInterfaceException{
+    	final Holiday holiday = Holiday.getFromIdString(idString);
+    	if(holiday == null)
+    	{
+    		throw new MonitorInterfaceException("Holiday doesn't exist",
+            "holiday.notExist");
+    	}
+    	return holiday;
+    }
+    
+    protected Period getPeriod(String idString) throws MonitorInterfaceException
+    {
+    	final Period period = Period.getFromIdString(idString);
+    	if(period == null)
+    	{
+    		   throw new MonitorInterfaceException("period doesn't exist",
+               "period.notExist");
+    	}
+    	return period;
+    }
 
     /**
      * Gets a query from an identifying string (without role enforcing).
@@ -363,14 +406,26 @@ public abstract class AbstractMonitorController {
      *                                      </ul>
      */
     protected Set<RawLogEntry> getJobRawLogs(
-              Job job, LogSearchParams searchParams) 
+              Job job, LogSearchParams searchParams,Map<String, String> requestParams) 
         throws MonitorInterfaceException {
         
         final LogManager logManager = new LogManager(job);
+        Set<RawLogEntry> rawLog;
         
-        return logManager.getRawLogsSubset(
-                searchParams.getMinDate(), searchParams.getMaxDate(),
-                searchParams.getMaxResults(), searchParams.getStartIndex());
+        if(requestParams.get("useSla") != null)
+        {
+        	rawLog = logManager.getRawLogsSubset(searchParams.getMinDate(), 
+                    searchParams.getMaxDate(),searchParams.getMaxResults(), 
+                    searchParams.getStartIndex());
+        	// Get rawlog for sla
+        	rawLog = LogSlaHelper.getRawlogForSla(requestParams.get("useSla"), rawLog,true);
+        }else
+        {
+        	rawLog = logManager.getRawLogsSubset(
+                    searchParams.getMinDate(), searchParams.getMaxDate(),
+                    searchParams.getMaxResults(), searchParams.getStartIndex());		
+        } 
+        return rawLog;
     }
     
     
@@ -405,10 +460,11 @@ public abstract class AbstractMonitorController {
         throws MonitorInterfaceException {
         
         final LogManager logManager = new LogManager(job);
-        
-        return logManager.getRawLogsItemsNumber(searchParams.getMinDate(),
-                                                searchParams.getMaxDate(),
-                                                null, null);
+       
+    	return logManager.getRawLogsItemsNumber(searchParams.getMinDate(),
+                searchParams.getMaxDate(),
+                null, null);
+       
     }
                 
     
@@ -473,13 +529,17 @@ public abstract class AbstractMonitorController {
             = this.getRequestParametersMap(request);
         final LogSearchParams searchParams 
             = LogSearchParams.createFromParametersMap(requestParams);
-
+        
+        // Needs fix with paging for sla
+        long totalPagingCount = this.getJobRawLogsNoPagingCount(job, searchParams);
+        
+        Set<RawLogEntry> rawLog = this.getJobRawLogs(job, searchParams,requestParams);
+        
         result.addObject("message", "log.details.success");
-        result.addObject("rawLogsCollection", 
-                         this.getJobRawLogs(job, searchParams));
-        result.addObject("noPagingCount", 
-                         this.getJobRawLogsNoPagingCount(job, searchParams));
+        result.addObject("rawLogsCollection", rawLog);
+        result.addObject("noPagingCount", totalPagingCount);
         result.addObject("addQueryId", true);
+        result.addObject("isSummary",true);
 
         return result;
     }

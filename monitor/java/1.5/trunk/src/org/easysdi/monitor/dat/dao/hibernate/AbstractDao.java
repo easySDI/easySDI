@@ -29,10 +29,21 @@ abstract class AbstractDao extends HibernateDaoSupport {
             throw new IllegalArgumentException(
                     "Null object can't be persisted.");
         }
-
+        
         try {
-            this.getHibernateTemplate().saveOrUpdate(object);
-            
+        	
+        	//this.getHibernateTemplate().getSessionFactory().get
+        	//Session session = this.getSessionFactory().openSession();
+        	//session.beginTransaction();
+        	//session.saveOrUpdate(object);
+            //session.getTransaction().commit();
+            //session.clear();
+           // session.close();
+        	
+        	this.getHibernateTemplate().saveOrUpdate(object);
+        	this.getHibernateTemplate().flush();
+        	//this.getHibernateTemplate().saveOrUpdate(object);
+            //this.getSession().flush();
             return true;
 
         } catch (DataAccessException e) {
@@ -40,6 +51,9 @@ abstract class AbstractDao extends HibernateDaoSupport {
                   "An error occurred while an object was persisted.", 
                   e);
             return false;
+        }catch(Exception e)
+        {
+        	return false;
         }
     }
     

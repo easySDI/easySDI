@@ -30,18 +30,21 @@ public class WMTSGetTileValidator extends AbstractValidator implements Serializa
         String contentType = method.getResponseHeader( "Content-Type" ).getValue();
         String lastMessage = null;
         Status status = null;
-
-        if ( !contentType.contains( "image" ) ) {
-            if ( !contentType.contains( "xml" ) ) {
-                status = Status.RESULT_STATE_UNEXPECTED_CONTENT;
-                lastMessage = StringTools.concat( 100, "Error: Response Content is ", contentType, " not image" );
-                return new ValidatorResponse( lastMessage, status );
-            } else {
-                return validateXmlServiceException( method );
-            }
-        }
-
+        byte[] responseAsBytes = null;
         try {
+        	if ( !contentType.contains( "image" ) ) {
+        		if ( !contentType.contains( "xml" ) ) {
+                	status = Status.RESULT_STATE_UNEXPECTED_CONTENT;
+                	lastMessage = StringTools.concat( 100, "Error: Response Content is ", contentType, " not image" );
+                	responseAsBytes = method.getResponseBody();
+                	return new ValidatorResponse( lastMessage, status,responseAsBytes,method.getResponseContentLength(), contentType );
+                
+            	} else {
+            		return validateXmlServiceException( method );
+            	}
+        	}
+
+      
             InputStream stream = copyStream( method.getResponseBodyAsStream() );
             stream.reset();
             BufferedImage image = ImageIO.read(stream);
@@ -57,13 +60,12 @@ public class WMTSGetTileValidator extends AbstractValidator implements Serializa
             ImageIO.write(image,imageformat, baos);
             //close
             baos.flush();
-            byte[] imageAsBytes = baos.toByteArray();
+            responseAsBytes = baos.toByteArray();
             baos.close();
           
             status = Status.RESULT_STATE_AVAILABLE;
             lastMessage = status.getStatusMessage();
-            return new ValidatorResponse( lastMessage, status,imageAsBytes);
-            //return new ValidatorResponse( lastMessage, status );
+            return new ValidatorResponse( lastMessage, status,responseAsBytes,method.getResponseContentLength(),contentType);
         } catch ( Exception e ) {
             status = Status.RESULT_STATE_SERVICE_UNAVAILABLE;
             lastMessage = e.getLocalizedMessage();

@@ -65,6 +65,14 @@ public class JobDefaultsSerializer {
         jsonParamsCollection.put(
                  "triggersAlerts", 
                  paramsMap.get("TRIGGERS_ALERTS").getStringValue());
+        jsonParamsCollection.put(
+        		"runSimultaneous",
+        		paramsMap.get("RUN_SIMULATANEOUS").getStringValue());
+        jsonParamsCollection.put(
+        		"saveResponse",
+        		paramsMap.get("SAVE_RESPONSE").getStringValue());
+       
+        
 
         return jsonParamsCollection;
     }

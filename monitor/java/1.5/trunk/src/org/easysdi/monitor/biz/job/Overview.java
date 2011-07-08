@@ -1,18 +1,9 @@
 package org.easysdi.monitor.biz.job;
 
-//import java.util.Collection;
-//import java.util.Collections;
-//import java.util.HashSet;
-//import java.util.List;
-
 import java.util.Map;
-//import java.util.Set;
 
 import org.deegree.framework.util.StringTools;
 import org.easysdi.monitor.dat.dao.OverviewDaoHelper;
-
-//import javax.crypto.Mac;
-
 
 public class Overview {
 	private long overviewID;
@@ -20,8 +11,6 @@ public class Overview {
 	private Map<Long,OverviewQuery> overviewQueries;
 	private boolean isPublic;
 	
-
-
 	/**
      * No-argument constructor.
     */
@@ -151,6 +140,5 @@ public class Overview {
     public boolean persist() {
 
         return OverviewDaoHelper.getOverviewDao().persistOverview(this);
-
     }
 }

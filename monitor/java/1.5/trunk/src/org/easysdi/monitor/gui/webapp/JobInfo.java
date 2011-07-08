@@ -56,6 +56,7 @@ public final class JobInfo {
     private Integer      timeout;
     private String       url;
     private Boolean		 saveResponse;
+    private Boolean      runSimultaneous;
 
 
     
@@ -549,9 +550,39 @@ public final class JobInfo {
         this.password = newPassword;
     }
 
+    
+
+    /**
+     * Gets the jobs queries runs in simultaneous mode.
+     * <p>
+     * This property is ignored if the job isn't automatically executed.
+     * 
+     * @return <code>true</code> if job has to save last reposne
+     */
+	private Boolean getRunSimultaneous() {
+		return runSimultaneous;
+	}
+
 
 
     /**
+     * Defines if this jobs queries should be executed in 
+     * a simultaneous mode
+     * 
+     * @param runSimultaneous <ul>
+     *                          <li><code>"true"</code> if this jobs queries should 
+     *                          be executed in 
+     * 							a simultaneous mode</li>
+     *                          <li><code>"false"</code> if it shouldn't</li>
+     *                          </ul>
+     */
+	private void setRunSimultaneous(String runSimultaneous) {
+		this.runSimultaneous = BooleanUtil.parseBooleanStringWithNull(runSimultaneous);
+	}
+
+
+
+	/**
      * Defines if the job should be publicly accessible.
      * 
      * @param   publishedString <ul>
@@ -778,6 +809,7 @@ public final class JobInfo {
         newJobInfo.setPassword(requestParams.get("password"));
         newJobInfo.setPublished(requestParams.get("isPublic"));
         newJobInfo.setSaveResponse(requestParams.get("saveResponse"));
+        newJobInfo.setRunSimultaneous(requestParams.get("runSimultaneous"));
         newJobInfo.setRealTimeAllowed(requestParams.get("allowsRealTime"));
 
         JobInfo.copyValueToConfig(newJobInfo, "setServiceType", 
@@ -898,6 +930,9 @@ public final class JobInfo {
         
         JobInfo.copyValueToConfig(config, "setSaveResponse", this.getSaveResponse(), 
                 false, "saveResponse", false);
+        
+        JobInfo.copyValueToConfig(config,"setRunSimultaneous",this.getRunSimultaneous(),
+        		false,"runSimultaneous",false);
         
         JobInfo.copyValueToConfig(config, "setRealTimeAllowed", 
                                   this.isRealTimeAllowed(), false, 

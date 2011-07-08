@@ -75,8 +75,7 @@ public class OverviewController extends AbstractMonitorController {
 
         final ModelAndView result = new ModelAndView("message");
         final Overview overview = this.getOverview(identifyString);
-        result.addObject("overview",
-                overview);
+        result.addObject("overview",overview);
 
 		result.addObject("message", "overviews.details.success");
 		   

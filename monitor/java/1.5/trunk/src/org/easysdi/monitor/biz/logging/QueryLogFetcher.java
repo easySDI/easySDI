@@ -2,6 +2,7 @@ package org.easysdi.monitor.biz.logging;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -156,4 +157,52 @@ public class QueryLogFetcher implements ILogFetcher {
                 new Long[] {this.getParentQuery().getQueryId()}, minDate, 
                 maxDate, maxResults, startIndex);
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public Map<Date, AbstractAggregateHourLogEntry> fetchAggregHourLogs()
+    {
+    	return this.fetchAggregHourLogsSubset(null,null,null,null);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public Map<Date, AbstractAggregateHourLogEntry> fetchAggregHourLogsSubset(Calendar minDate,
+            Calendar maxDate, Integer maxResults, Integer startIndex)
+    {
+    	   try {
+
+               return LogDaoHelper.getLogDao().fetchAggregHourLogs(
+                      ParentType.QUERY, this.getParentQuery().getQueryId(),
+                      minDate, maxDate, maxResults, startIndex);
+
+           } catch (LogFetcherException e) {
+               this.logger.error(
+                        "An error occurred while the logs were fetched.", e);
+               return null;
+
+           }
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public long getAggregateHourLogsItemsNumber(Calendar minDate, Calendar maxDate,
+                    Integer maxResults, Integer startIndex) {
+
+        return LogDaoHelper.getLogDao().getAggregateHourLogsItemsNumber(
+                ParentType.QUERY, this.getParentQuery().getQueryId(), minDate, 
+                maxDate, maxResults, startIndex);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public List<Calendar> fetchMaxMinDateLog(){
+        return LogDaoHelper.getLogDao().getRawlogMaxMinDate(
+    		new Long[] {this.getParentQuery().getQueryId()});
+    }
+    
 }

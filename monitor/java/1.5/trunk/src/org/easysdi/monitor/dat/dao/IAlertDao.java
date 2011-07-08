@@ -31,7 +31,20 @@ public interface IAlertDao {
      * @return          a list containing the found alerts
      */
     List<Alert> getAlertsForJob(long jobId, boolean onlyRss);
-
+    
+    /**
+     * Fetches the alert from a unique id 
+     * @param alertId
+     * @return the alert with the given id
+     */
+    Alert getAlertById(long alertId);
+    
+    /**
+     * Fetches the alert from a unique id 
+     * @param alertId
+     * @return the alert with the given id
+     */
+    Alert getAlertFromIdString(String identifyString);
 
     /**
      * Fetches the alerts that a given job triggered.

@@ -14,17 +14,12 @@
 				<param name="increment_size">1</param>
 			</generator>
 		</id>
+	<property name="data" type="binary" column="DATA" />
+	<property name="contentType" type="text" column="CONTENT_TYPE" />
 	<property name="pictureUrl" type="string" lazy="false" column="PICTURE_URL" />
 	<property name="xmlResult" type="string" lazy="false" column="XML_RESULT" />
 	<property name="textResult" type="string" lazy="false" column="TEXT_RESULT" />
 	<property name="queryid" type="long" lazy="false" column="ID_QUERY" />
-	
-	<!-- <map name="overview_queries" table="overview_queries" lazy="false" cascade="all-delete-orphan"
-			inverse="true">
-			<key column="ID_OVERVIEW_PAGE" not-null="true"></key>
-			<map-key type="long" column="ID_OVERVIEW_QUERY"></map-key>
-		<one-to-many class="OverviewQueries" />
-	</map> -->
 		
 	</class>
 </hibernate-mapping>

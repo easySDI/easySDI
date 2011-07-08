@@ -143,7 +143,8 @@ public class EmailConfig {
      * 
      * @param   newSmtpUserName the SMTP host user name
      */
-    private void setSmtpUserName(String newSmtpUserName) {
+    @SuppressWarnings("unused")
+	private void setSmtpUserName(String newSmtpUserName) {
         this.smtpUserName = newSmtpUserName;
     }
 

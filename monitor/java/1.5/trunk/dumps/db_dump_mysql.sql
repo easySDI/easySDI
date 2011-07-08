@@ -2,8 +2,8 @@
 -- version 3.2.4
 -- http://www.phpmyadmin.net
 --
--- Host: localhost Database monitor
--- Generation Time: Mar 24, 2011 at 09:19 
+-- Host: localhost
+-- Generation Time: Jul 07, 2011 at 09:13 
 -- Server version: 5.1.41
 -- PHP Version: 5.3.1
 
@@ -24,7 +24,7 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 --
 -- Table structure for table `actions`
 --
-
+DROP TABLE IF EXISTS `actions`;
 CREATE TABLE IF NOT EXISTS `actions` (
   `ID_ACTION` int(10) unsigned NOT NULL,
   `ID_JOB` int(10) unsigned NOT NULL,
@@ -36,43 +36,26 @@ CREATE TABLE IF NOT EXISTS `actions` (
   KEY `FK_ACTION_TYPE` (`ID_ACTION_TYPE`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
---
--- Dumping data for table `actions`
---
-
-LOCK TABLES `actions` WRITE;
-/*!40000 ALTER TABLE `actions` DISABLE KEYS */;
-/*!40000 ALTER TABLE `actions` ENABLE KEYS */;
-UNLOCK TABLES;
-
 -- --------------------------------------------------------
 
 --
 -- Table structure for table `action_types`
 --
-
+DROP TABLE IF EXISTS `action_types`;
 CREATE TABLE IF NOT EXISTS `action_types` (
   `ID_ACTION_TYPE` int(10) unsigned NOT NULL,
   `NAME` varchar(45) NOT NULL,
   PRIMARY KEY (`ID_ACTION_TYPE`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
---
--- Dumping data for table `action_types`
---
-
-LOCK TABLES `action_types` WRITE;
-/*!40000 ALTER TABLE `action_types` DISABLE KEYS */;
-INSERT INTO `action_types` VALUES (1,'E-MAIL'),(2,'RSS');
-/*!40000 ALTER TABLE `action_types` ENABLE KEYS */;
-UNLOCK TABLES;
-
+INSERT INTO `action_types` VALUES ('1', 'E-MAIL');
+INSERT INTO `action_types` VALUES ('2', 'RSS');
 -- --------------------------------------------------------
 
 --
 -- Table structure for table `alerts`
 --
-
+DROP TABLE IF EXISTS `alerts`;
 CREATE TABLE IF NOT EXISTS `alerts` (
   `ID_ALERT` int(10) unsigned NOT NULL,
   `ID_JOB` int(10) unsigned NOT NULL,
@@ -83,51 +66,48 @@ CREATE TABLE IF NOT EXISTS `alerts` (
   `EXPOSE_RSS` tinyint(1) NOT NULL,
   `RESPONSE_DELAY` float NOT NULL,
   `HTTP_CODE` int(10) unsigned DEFAULT NULL,
+  `IMAGE` mediumblob,
+  `CONTENT_TYPE` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`ID_ALERT`),
   KEY `FK_ALERTS_JOB` (`ID_JOB`),
   KEY `FK_ALERTS_OLD_STATUS` (`ID_OLD_STATUS`),
   KEY `FK_ALERTS_NEW_STATUS` (`ID_NEW_STATUS`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
---
--- Dumping data for table `alerts`
---
+-- --------------------------------------------------------
 
-LOCK TABLES `alerts` WRITE;
-/*!40000 ALTER TABLE `alerts` DISABLE KEYS */;
-/*!40000 ALTER TABLE `alerts` ENABLE KEYS */;
-UNLOCK TABLES;
+--
+-- Table structure for table `holidays`
+--
+DROP TABLE IF EXISTS `holidays`;
+CREATE TABLE IF NOT EXISTS `holidays` (
+  `ID_HOLIDAYS` int(10) unsigned NOT NULL,
+  `NAME` varchar(45) DEFAULT NULL,
+  `DATE` datetime NOT NULL,
+  PRIMARY KEY (`ID_HOLIDAYS`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
 --
 -- Table structure for table `http_methods`
 --
-
+DROP TABLE IF EXISTS `http_methods`;
 CREATE TABLE IF NOT EXISTS `http_methods` (
   `ID_HTTP_METHOD` int(10) unsigned NOT NULL,
   `NAME` varchar(10) NOT NULL,
   PRIMARY KEY (`ID_HTTP_METHOD`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
---
--- Dumping data for table `http_methods`
---
-
-LOCK TABLES `http_methods` WRITE;
-/*!40000 ALTER TABLE `http_methods` DISABLE KEYS */;
-INSERT INTO `http_methods` (`ID_HTTP_METHOD`, `NAME`) VALUES
-(1, 'GET'),
-(2, 'POST');
-/*!40000 ALTER TABLE `http_methods` ENABLE KEYS */;
-UNLOCK TABLES;
+INSERT INTO `http_methods` VALUES ('1', 'GET');
+INSERT INTO `http_methods` VALUES ('2', 'POST');
 
 -- --------------------------------------------------------
 
 --
 -- Table structure for table `jobs`
 --
-
+DROP TABLE IF EXISTS `jobs`;
 CREATE TABLE IF NOT EXISTS `jobs` (
   `ID_JOB` int(10) unsigned NOT NULL,
   `NAME` varchar(45) NOT NULL,
@@ -149,6 +129,7 @@ CREATE TABLE IF NOT EXISTS `jobs` (
   `SLA_END_TIME` datetime NOT NULL,
   `STATUS_UPDATE_TIME` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `SAVE_RESPONSE` tinyint(1) NOT NULL DEFAULT '0',
+  `RUN_SIMULTANEOUS` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`ID_JOB`),
   UNIQUE KEY `UNIQUE_NAME` (`NAME`) USING BTREE,
   KEY `FK_JOBS_SERVICE_TYPE` (`ID_SERVICE_TYPE`),
@@ -156,21 +137,37 @@ CREATE TABLE IF NOT EXISTS `jobs` (
   KEY `FK_JOBS_STATUS` (`ID_STATUS`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
---
--- Dumping data for table `jobs`
---
+-- --------------------------------------------------------
 
-LOCK TABLES `jobs` WRITE;
-/*!40000 ALTER TABLE `jobs` DISABLE KEYS */;
-/*!40000 ALTER TABLE `jobs` ENABLE KEYS */;
-UNLOCK TABLES;
+--
+-- Table structure for table `job_agg_hour_log_entries`
+--
+DROP TABLE IF EXISTS `job_agg_hour_log_entries`;
+CREATE TABLE IF NOT EXISTS `job_agg_hour_log_entries` (
+  `DATE_LOG` datetime NOT NULL,
+  `ID_JOB` int(10) unsigned NOT NULL,
+  `H1_MEAN_RESP_TIME` float NOT NULL,
+  `H1_MEAN_RESP_TIME_INSPIRE` float NOT NULL,
+  `H1_AVAILABILITY` float NOT NULL,
+  `H1_AVAILABILITY_INSPIRE` float NOT NULL,
+  `H1_NB_BIZ_ERRORS` int(10) unsigned NOT NULL,
+  `H1_NB_BIZ_ERRORS_INSPIRE` int(10) unsigned NOT NULL,
+  `H1_NB_CONN_ERRORS` int(10) unsigned NOT NULL,
+  `H1_NB_CONN_ERRORS_INSPIRE` int(10) unsigned NOT NULL,
+  `H1_MAX_RESP_TIME` float NOT NULL DEFAULT '0',
+  `H1_MIN_RESP_TIME` float NOT NULL DEFAULT '0',
+  `H1_MAX_RESP_TIME_INSPIRE` float NOT NULL DEFAULT '0',
+  `H1_MIN_RESP_TIME_INSPIRE` float NOT NULL DEFAULT '0',
+  PRIMARY KEY (`DATE_LOG`,`ID_JOB`),
+  KEY `FK_JOB_AGG_HOUR_LOG_ENTRIES_JOB` (`ID_JOB`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
 --
 -- Table structure for table `job_agg_log_entries`
 --
-
+DROP TABLE IF EXISTS `job_agg_log_entries`;
 CREATE TABLE IF NOT EXISTS `job_agg_log_entries` (
   `DATE_LOG` datetime NOT NULL,
   `ID_JOB` int(10) unsigned NOT NULL,
@@ -182,25 +179,20 @@ CREATE TABLE IF NOT EXISTS `job_agg_log_entries` (
   `H24_NB_BIZ_ERRORS` int(10) unsigned NOT NULL,
   `SLA_NB_CONN_ERRORS` int(10) unsigned NOT NULL,
   `H24_NB_CONN_ERRORS` int(10) unsigned NOT NULL,
+  `H24_MAX_RESP_TIME` float NOT NULL DEFAULT '0',
+  `H24_MIN_RESP_TIME` float NOT NULL DEFAULT '0',
+  `SLA_MAX_RESP_TIME` float NOT NULL DEFAULT '0',
+  `SLA_MIN_RESP_TIME` float NOT NULL DEFAULT '0',
   PRIMARY KEY (`DATE_LOG`,`ID_JOB`),
   KEY `FK_JOB_AGG_LOG_ENTRIES_JOB` (`ID_JOB`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Dumping data for table `job_agg_log_entries`
---
-
-LOCK TABLES `job_agg_log_entries` WRITE;
-/*!40000 ALTER TABLE `job_agg_log_entries` DISABLE KEYS */;
-/*!40000 ALTER TABLE `job_agg_log_entries` ENABLE KEYS */;
-UNLOCK TABLES;
 
 -- --------------------------------------------------------
 
 --
 -- Table structure for table `job_defaults`
 --
-
+DROP TABLE IF EXISTS `job_defaults`;
 CREATE TABLE IF NOT EXISTS `job_defaults` (
   `ID_PARAM` int(10) unsigned NOT NULL,
   `COLUMN_NAME` varchar(45) NOT NULL,
@@ -209,95 +201,71 @@ CREATE TABLE IF NOT EXISTS `job_defaults` (
   PRIMARY KEY (`ID_PARAM`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
---
--- Dumping data for table `job_defaults`
---
-
-LOCK TABLES `job_defaults` WRITE;
-/*!40000 ALTER TABLE `job_defaults` DISABLE KEYS */;
-INSERT INTO `job_defaults` (`ID_PARAM`, `COLUMN_NAME`, `STRING_VALUE`, `VALUE_TYPE`) VALUES
-(1, 'IS_PUBLIC', 'false', 'bool'),
-(2, 'IS_AUTOMATIC', 'false', 'bool'),
-(3, 'ALLOWS_REALTIME', 'true', 'bool'),
-(4, 'TRIGGERS_ALERTS', 'false', 'bool'),
-(5, 'TEST_INTERVAL', '3600', 'int'),
-(6, 'TIMEOUT', '30', 'int'),
-(7, 'BUSINESS_ERRORS', 'true', 'bool'),
-(8, 'HTTP_ERRORS', 'true', 'bool'),
-(9, 'SLA_START_TIME', '08:00:00', 'time'),
-(10, 'SLA_END_TIME', '18:00:00', 'time');
-/*!40000 ALTER TABLE `job_defaults` ENABLE KEYS */;
-UNLOCK TABLES;
+INSERT INTO `job_defaults` VALUES ('1', 'IS_PUBLIC', 'false', 'bool');
+INSERT INTO `job_defaults` VALUES ('2', 'IS_AUTOMATIC', 'false', 'bool');
+INSERT INTO `job_defaults` VALUES ('3', 'ALLOWS_REALTIME', 'true', 'bool');
+INSERT INTO `job_defaults` VALUES ('4', 'TRIGGERS_ALERTS', 'false', 'bool');
+INSERT INTO `job_defaults` VALUES ('5', 'TEST_INTERVAL', '3600', 'int');
+INSERT INTO `job_defaults` VALUES ('6', 'TIMEOUT', '30', 'int');
+INSERT INTO `job_defaults` VALUES ('7', 'BUSINESS_ERRORS', 'true', 'bool');
+INSERT INTO `job_defaults` VALUES ('8', 'HTTP_ERRORS', 'true', 'bool');
+INSERT INTO `job_defaults` VALUES ('9', 'SLA_START_TIME', '08:00:00', 'time');
+INSERT INTO `job_defaults` VALUES ('10', 'SLA_END_TIME', '18:00:00', 'time');
+INSERT INTO `job_defaults` VALUES ('11', 'RUN_SIMULATANEOUS', 'false', 'bool');
+INSERT INTO `job_defaults` VALUES ('12', 'SAVE_RESPONSE', 'false', 'bool');
 
 -- --------------------------------------------------------
 
 --
 -- Table structure for table `last_ids`
 --
-
+DROP TABLE IF EXISTS `last_ids`;
 CREATE TABLE IF NOT EXISTS `last_ids` (
   `TABLE_NAME` varchar(255) NOT NULL,
   `LAST_ID` int(10) NOT NULL DEFAULT '0',
   PRIMARY KEY (`TABLE_NAME`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
---
--- Dumping data for table `last_ids`
---
-
-LOCK TABLES `last_ids` WRITE;
-/*!40000 ALTER TABLE `last_ids` DISABLE KEYS */;
-INSERT INTO `last_ids` (`TABLE_NAME`, `LAST_ID`) VALUES
-('ACTIONS', 2),
-('ALERTS', 128),
-('HTTP_METHODS', 3),
-('JOBS', 24),
-('JOB_DEFAULTS', 11),
-('LAST_QUERY_RESULTS', 31),
-('LOG_ENTRIES', 850),
-('OVERVIEW_PAGE', 18),
-('OVERVIEW_QUERIES', 8),
-('QUERIES', 56),
-('QUERY_VALIDATION_RESULTS', 6),
-('QUERY_VALIDATION_SETTINGS', 23),
-('SERVICE_METHODS', 10),
-('SERVICE_TYPES', 8),
-('STATUSES', 5);
-/*!40000 ALTER TABLE `last_ids` ENABLE KEYS */;
-UNLOCK TABLES;
-
+INSERT INTO `last_ids` VALUES ('ACTIONS', '2');
+INSERT INTO `last_ids` VALUES ('ALERTS', '161');
+INSERT INTO `last_ids` VALUES ('HTTP_METHODS', '3');
+INSERT INTO `last_ids` VALUES ('JOBS', '45');
+INSERT INTO `last_ids` VALUES ('JOB_DEFAULTS', '11');
+INSERT INTO `last_ids` VALUES ('LAST_QUERY_RESULTS', '39');
+INSERT INTO `last_ids` VALUES ('LOG_ENTRIES', '1046');
+INSERT INTO `last_ids` VALUES ('OVERVIEW_PAGE', '18');
+INSERT INTO `last_ids` VALUES ('OVERVIEW_QUERIES', '8');
+INSERT INTO `last_ids` VALUES ('QUERIES', '94');
+INSERT INTO `last_ids` VALUES ('QUERY_VALIDATION_RESULTS', '12');
+INSERT INTO `last_ids` VALUES ('QUERY_VALIDATION_SETTINGS', '48');
+INSERT INTO `last_ids` VALUES ('SERVICE_METHODS', '10');
+INSERT INTO `last_ids` VALUES ('SERVICE_TYPES', '8');
+INSERT INTO `last_ids` VALUES ('STATUSES', '5');
+			
 -- --------------------------------------------------------
 
 --
 -- Table structure for table `last_query_results`
 --
-
+DROP TABLE IF EXISTS `last_query_results`;
 CREATE TABLE IF NOT EXISTS `last_query_results` (
   `ID_LAST_QUERY_RESULT` int(10) unsigned NOT NULL,
   `ID_QUERY` int(10) unsigned NOT NULL,
-  `PICTURE` blob,
+  `DATA` mediumblob,
   `XML_RESULT` mediumtext,
   `TEXT_RESULT` mediumtext,
   `PICTURE_URL` varchar(1000) DEFAULT NULL,
+  `CONTENT_TYPE` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`ID_LAST_QUERY_RESULT`),
   KEY `FK_LAST_QUERY_QUERY` (`ID_QUERY`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Dumping data for table `last_query_results`
---
-
-LOCK TABLES `last_query_results` WRITE;
-/*!40000 ALTER TABLE `last_query_results` DISABLE KEYS */;
-/*!40000 ALTER TABLE `last_query_results` ENABLE KEYS */;
-UNLOCK TABLES;
 
 -- --------------------------------------------------------
 
 --
 -- Table structure for table `log_entries`
 --
-
+DROP TABLE IF EXISTS `log_entries`;
 CREATE TABLE IF NOT EXISTS `log_entries` (
   `ID_LOG_ENTRY` int(10) unsigned NOT NULL,
   `ID_QUERY` int(10) unsigned NOT NULL,
@@ -314,21 +282,12 @@ CREATE TABLE IF NOT EXISTS `log_entries` (
   KEY `IX_LOG_ENTRIES_ID_QUERY_REQUEST_TIME` (`ID_QUERY`,`REQUEST_TIME`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
---
--- Dumping data for table `log_entries`
---
-
-LOCK TABLES `log_entries` WRITE;
-/*!40000 ALTER TABLE `log_entries` DISABLE KEYS */;
-/*!40000 ALTER TABLE `log_entries` ENABLE KEYS */;
-UNLOCK TABLES;
-
 -- --------------------------------------------------------
 
 --
 -- Table structure for table `overview_page`
 --
-
+DROP TABLE IF EXISTS `overview_page`;
 CREATE TABLE IF NOT EXISTS `overview_page` (
   `ID_OVERVIEW_PAGE` int(10) unsigned NOT NULL,
   `NAME` varchar(255) NOT NULL,
@@ -337,21 +296,12 @@ CREATE TABLE IF NOT EXISTS `overview_page` (
   UNIQUE KEY `URL_UNIQUE` (`NAME`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
---
--- Dumping data for table `overview_page`
---
-
-LOCK TABLES `overview_page` WRITE;
-/*!40000 ALTER TABLE `overview_page` DISABLE KEYS */;
-/*!40000 ALTER TABLE `overview_page` ENABLE KEYS */;
-UNLOCK TABLES;
-
 -- --------------------------------------------------------
 
 --
 -- Table structure for table `overview_queries`
 --
-
+DROP TABLE IF EXISTS `overview_queries`;
 CREATE TABLE IF NOT EXISTS `overview_queries` (
   `ID_OVERVIEW_QUERY` int(10) unsigned NOT NULL,
   `ID_OVERVIEW_PAGE` int(10) unsigned NOT NULL,
@@ -362,48 +312,90 @@ CREATE TABLE IF NOT EXISTS `overview_queries` (
   KEY `FK_OVERVIEWQUERY_LASTRESULT` (`ID_QUERY`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- --------------------------------------------------------
+
 --
--- Dumping data for table `overview_queries`
+-- Table structure for table `overview_query_view`
 --
 
-LOCK TABLES `overview_queries` WRITE;
-/*!40000 ALTER TABLE `overview_queries` DISABLE KEYS */;
-/*!40000 ALTER TABLE `overview_queries` ENABLE KEYS */;
-UNLOCK TABLES;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `monitor`.`overview_query_view` AS select (select count(0) AS `count(0)` from `monitor`.`overview_queries` where ((`monitor`.`overview_queries`.`ID_QUERY` = `q`.`ID_QUERY`) and (`monitor`.`overview_queries`.`ID_OVERVIEW_PAGE` = `p`.`ID_OVERVIEW_PAGE`))) AS `QUERY_IS_PUBLIC`,`p`.`ID_OVERVIEW_PAGE` AS `ID_OVERVIEW_PAGE`,`p`.`NAME` AS `NAME_OVERVIEW_PAGE`,`q`.`ID_QUERY` AS `ID_QUERY`,`q`.`NAME` AS `NAME_QUERY`,`l`.`ID_LAST_QUERY_RESULT` AS `ID_LAST_QUERY_RESULT` from ((`monitor`.`queries` `q` left join `monitor`.`last_query_results` `l` on((`q`.`ID_QUERY` = `l`.`ID_QUERY`))) join `monitor`.`overview_page` `p`) where `q`.`ID_JOB` in (select `monitor`.`jobs`.`ID_JOB` AS `ID_JOB` from `monitor`.`jobs` where (`monitor`.`jobs`.`SAVE_RESPONSE` = 1));
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `periods`
+--
+DROP TABLE IF EXISTS `periods`;
+CREATE TABLE IF NOT EXISTS `periods` (
+  `ID_PERIODS` int(10) unsigned NOT NULL,
+  `ID_SLA` int(10) unsigned NOT NULL,
+  `NAME` varchar(45) DEFAULT NULL,
+  `MONDAY` tinyint(1) DEFAULT '0',
+  `TUESDAY` tinyint(1) DEFAULT '0',
+  `WEDNESDAY` tinyint(1) DEFAULT '0',
+  `THURSDAY` tinyint(1) DEFAULT '0',
+  `FRIDAY` tinyint(1) DEFAULT '0',
+  `SATURDAY` tinyint(1) DEFAULT '0',
+  `SUNDAY` tinyint(1) DEFAULT '0',
+  `HOLIDAYS` tinyint(1) DEFAULT '0',
+  `SLA_START_TIME` time NOT NULL,
+  `SLA_END_TIME` time NOT NULL,
+  `INCLUDE` tinyint(1) DEFAULT '0',
+  `DATE` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`ID_PERIODS`),
+  KEY `FK_PERIODS_SLA` (`ID_SLA`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
 --
 -- Table structure for table `queries`
 --
-
+DROP TABLE IF EXISTS `queries`;
 CREATE TABLE IF NOT EXISTS `queries` (
   `ID_QUERY` int(10) unsigned NOT NULL,
   `ID_JOB` int(10) unsigned NOT NULL,
   `ID_SERVICE_METHOD` int(10) unsigned NOT NULL,
   `ID_STATUS` int(10) unsigned NOT NULL DEFAULT '4',
   `NAME` varchar(45) NOT NULL,
+  `SOAP_URL` varchar(250) DEFAULT NULL,
   PRIMARY KEY (`ID_QUERY`),
   KEY `FK_QUERIES_METHOD` (`ID_SERVICE_METHOD`),
   KEY `FK_QUERIES_JOB` (`ID_JOB`),
   KEY `FK_QUERIES_STATUS` (`ID_STATUS`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
---
--- Dumping data for table `queries`
---
+-- --------------------------------------------------------
 
-LOCK TABLES `queries` WRITE;
-/*!40000 ALTER TABLE `queries` DISABLE KEYS */;
-/*!40000 ALTER TABLE `queries` ENABLE KEYS */;
-UNLOCK TABLES;
+--
+-- Table structure for table `query_agg_hour_log_entries`
+--
+DROP TABLE IF EXISTS `query_agg_hour_log_entries`;
+CREATE TABLE IF NOT EXISTS `query_agg_hour_log_entries` (
+  `DATE_LOG` datetime NOT NULL,
+  `ID_QUERY` int(10) unsigned NOT NULL,
+  `H1_MEAN_RESP_TIME` float NOT NULL,
+  `H1_MEAN_RESP_TIME_INSPIRE` float NOT NULL,
+  `H1_AVAILABILITY` float NOT NULL,
+  `H1_AVAILABILITY_INSPIRE` float NOT NULL,
+  `H1_NB_BIZ_ERRORS` int(10) unsigned NOT NULL,
+  `H1_NB_BIZ_ERRORS_INSPIRE` int(10) unsigned NOT NULL,
+  `H1_NB_CONN_ERRORS` int(10) unsigned NOT NULL,
+  `H1_NB_CONN_ERRORS_INSPIRE` int(10) unsigned NOT NULL,
+  `H1_MAX_RESP_TIME` float NOT NULL DEFAULT '0',
+  `H1_MIN_RESP_TIME` float NOT NULL DEFAULT '0',
+  `H1_MAX_RESP_TIME_INSPIRE` float NOT NULL DEFAULT '0',
+  `H1_MIN_RESP_TIME_INSPIRE` float NOT NULL DEFAULT '0',
+  PRIMARY KEY (`DATE_LOG`,`ID_QUERY`),
+  KEY `FK_QUERY_AGG_HOUR_LOG_ENTRIES_QUERY` (`ID_QUERY`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
 --
 -- Table structure for table `query_agg_log_entries`
 --
-
+DROP TABLE IF EXISTS `query_agg_log_entries`;
 CREATE TABLE IF NOT EXISTS `query_agg_log_entries` (
   `DATE_LOG` datetime NOT NULL,
   `ID_QUERY` int(10) unsigned NOT NULL,
@@ -415,25 +407,20 @@ CREATE TABLE IF NOT EXISTS `query_agg_log_entries` (
   `H24_NB_BIZ_ERRORS` int(10) unsigned NOT NULL,
   `SLA_NB_CONN_ERRORS` int(10) unsigned NOT NULL,
   `H24_NB_CONN_ERRORS` int(10) unsigned NOT NULL,
+  `H24_MAX_RESP_TIME` float NOT NULL DEFAULT '0',
+  `H24_MIN_RESP_TIME` float NOT NULL DEFAULT '0',
+  `SLA_MAX_RESP_TIME` float NOT NULL DEFAULT '0',
+  `SLA_MIN_RESP_TIME` float NOT NULL DEFAULT '0',
   PRIMARY KEY (`DATE_LOG`,`ID_QUERY`),
   KEY `FK_QUERY_AGG_LOG_ENTRIES_QUERY` (`ID_QUERY`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Dumping data for table `query_agg_log_entries`
---
-
-LOCK TABLES `query_agg_log_entries` WRITE;
-/*!40000 ALTER TABLE `query_agg_log_entries` DISABLE KEYS */;
-/*!40000 ALTER TABLE `query_agg_log_entries` ENABLE KEYS */;
-UNLOCK TABLES;
 
 -- --------------------------------------------------------
 
 --
 -- Table structure for table `query_params`
 --
-
+DROP TABLE IF EXISTS `query_params`;
 CREATE TABLE IF NOT EXISTS `query_params` (
   `ID_QUERY` int(10) unsigned NOT NULL,
   `NAME` varchar(45) NOT NULL,
@@ -441,21 +428,12 @@ CREATE TABLE IF NOT EXISTS `query_params` (
   PRIMARY KEY (`ID_QUERY`,`NAME`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
---
--- Dumping data for table `query_params`
---
-
-LOCK TABLES `query_params` WRITE;
-/*!40000 ALTER TABLE `query_params` DISABLE KEYS */;
-/*!40000 ALTER TABLE `query_params` ENABLE KEYS */;
-UNLOCK TABLES;
-
 -- --------------------------------------------------------
 
 --
 -- Table structure for table `query_validation_results`
 --
-
+DROP TABLE IF EXISTS `query_validation_results`;
 CREATE TABLE IF NOT EXISTS `query_validation_results` (
   `ID_QUERY_VALIDATION_RESULT` int(11) NOT NULL,
   `ID_QUERY` int(10) unsigned NOT NULL,
@@ -469,21 +447,12 @@ CREATE TABLE IF NOT EXISTS `query_validation_results` (
   KEY `fk_query_validation_results_queries1` (`ID_QUERY`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
---
--- Dumping data for table `query_validation_results`
---
-
-LOCK TABLES `query_validation_results` WRITE;
-/*!40000 ALTER TABLE `query_validation_results` DISABLE KEYS */;
-/*!40000 ALTER TABLE `query_validation_results` ENABLE KEYS */;
-UNLOCK TABLES;
-
 -- --------------------------------------------------------
 
 --
 -- Table structure for table `query_validation_settings`
 --
-
+DROP TABLE IF EXISTS `query_validation_settings`;
 CREATE TABLE IF NOT EXISTS `query_validation_settings` (
   `ID_QUERY_VALIDATION_SETTINGS` int(10) NOT NULL,
   `ID_QUERY` int(10) unsigned NOT NULL,
@@ -499,21 +468,12 @@ CREATE TABLE IF NOT EXISTS `query_validation_settings` (
   KEY `fk_query_validation_settings_queries1` (`ID_QUERY`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
---
--- Dumping data for table `query_validation_settings`
---
-
-LOCK TABLES `query_validation_settings` WRITE;
-/*!40000 ALTER TABLE `query_validation_settings` DISABLE KEYS */;
-/*!40000 ALTER TABLE `query_validation_settings` ENABLE KEYS */;
-UNLOCK TABLES;
-
 -- --------------------------------------------------------
 
 --
 -- Table structure for table `roles`
 --
-
+DROP TABLE IF EXISTS `roles`;
 CREATE TABLE IF NOT EXISTS `roles` (
   `ID_ROLE` int(10) unsigned NOT NULL,
   `NAME` varchar(45) NOT NULL,
@@ -521,44 +481,40 @@ CREATE TABLE IF NOT EXISTS `roles` (
   PRIMARY KEY (`ID_ROLE`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
---
--- Dumping data for table `roles`
---
-
-LOCK TABLES `roles` WRITE;
-/*!40000 ALTER TABLE `roles` DISABLE KEYS */;
-INSERT INTO `roles` VALUES (1,'ROLE_ADMIN',1),(2,'ROLE_USER',3);
-/*!40000 ALTER TABLE `roles` ENABLE KEYS */;
-UNLOCK TABLES;
+	INSERT INTO `roles` VALUES ('1', 'ROLE_ADMIN', '1');
+	INSERT INTO `roles` VALUES ('2', 'ROLE_USER', '3');
 
 -- --------------------------------------------------------
 
 --
 -- Table structure for table `service_methods`
 --
-
+DROP TABLE IF EXISTS `service_methods`;
 CREATE TABLE IF NOT EXISTS `service_methods` (
   `ID_SERVICE_METHOD` int(10) unsigned NOT NULL,
   `NAME` varchar(45) NOT NULL,
   PRIMARY KEY (`ID_SERVICE_METHOD`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
---
--- Dumping data for table `service_methods`
---
-
-LOCK TABLES `service_methods` WRITE;
-/*!40000 ALTER TABLE `service_methods` DISABLE KEYS */;
-INSERT INTO `service_methods` VALUES (1,'GetCapabilities'),(2,'GetMap'),(3,'GetFeature'),(4,'GetRecordById'),(5,'GetTile'),(6,'GetRecords'),(7,'GetCoverage'),(8,'DescribeSensor');
-/*!40000 ALTER TABLE `service_methods` ENABLE KEYS */;
-UNLOCK TABLES;
-
+INSERT INTO `service_methods` VALUES ('1', 'GetCapabilities');
+INSERT INTO `service_methods` VALUES ('2', 'GetMap');
+INSERT INTO `service_methods` VALUES ('3', 'GetFeature');
+INSERT INTO `service_methods` VALUES ('4', 'GetRecordById');
+INSERT INTO `service_methods` VALUES ('5', 'GetTile');
+INSERT INTO `service_methods` VALUES ('6', 'GetRecords');
+INSERT INTO `service_methods` VALUES ('7', 'GetCoverage');
+INSERT INTO `service_methods` VALUES ('8', 'DescribeSensor');
+INSERT INTO `service_methods` VALUES ('9', 'SOAP 1.1');
+INSERT INTO `service_methods` VALUES ('10', 'SOAP 1.2');
+INSERT INTO `service_methods` VALUES ('11', 'HTTP POST');
+INSERT INTO `service_methods` VALUES ('12', 'HTTP GET');
+			
 -- --------------------------------------------------------
 
 --
 -- Table structure for table `service_types`
 --
-
+DROP TABLE IF EXISTS `service_types`;
 CREATE TABLE IF NOT EXISTS `service_types` (
   `ID_SERVICE_TYPE` int(10) unsigned NOT NULL,
   `NAME` varchar(20) NOT NULL,
@@ -566,22 +522,20 @@ CREATE TABLE IF NOT EXISTS `service_types` (
   PRIMARY KEY (`ID_SERVICE_TYPE`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
---
--- Dumping data for table `service_types`
---
-
-LOCK TABLES `service_types` WRITE;
-/*!40000 ALTER TABLE `service_types` DISABLE KEYS */;
-INSERT INTO `service_types` VALUES (1,'WMS','1.1.1'),(2,'WFS','1.1.0'),(4,'WMTS','1.0.0'),(5,'CSW','2.0.2'),(6,'SOS','1.0.0'),(7,'WCS','1.0.0');
-/*!40000 ALTER TABLE `service_types` ENABLE KEYS */;
-UNLOCK TABLES;
+INSERT INTO `service_types` VALUES ('1', 'WMS', '1.1.1');
+INSERT INTO `service_types` VALUES ('2', 'WFS', '1.1.0');
+INSERT INTO `service_types` VALUES ('4', 'WMTS', '1.0.0');
+INSERT INTO `service_types` VALUES ('5', 'CSW', '2.0.2');
+INSERT INTO `service_types` VALUES ('6', 'SOS', '1.0.0');
+INSERT INTO `service_types` VALUES ('7', 'WCS', '1.0.0');
+INSERT INTO `service_types` VALUES ('8', 'ALL', '0');
 
 -- --------------------------------------------------------
 
 --
 -- Table structure for table `service_types_methods`
 --
-
+DROP TABLE IF EXISTS `service_types_methods`;
 CREATE TABLE IF NOT EXISTS `service_types_methods` (
   `ID_SERVICE_TYPE` int(10) unsigned NOT NULL,
   `ID_SERVICE_METHOD` int(10) unsigned NOT NULL,
@@ -589,44 +543,69 @@ CREATE TABLE IF NOT EXISTS `service_types_methods` (
   KEY `FK_SERVICE_TYPES_METHODS_METHOD` (`ID_SERVICE_METHOD`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
---
--- Dumping data for table `service_types_methods`
---
+INSERT INTO `service_types_methods` VALUES ('1', '1');
+INSERT INTO `service_types_methods` VALUES ('2', '1');
+INSERT INTO `service_types_methods` VALUES ('4', '1');
+INSERT INTO `service_types_methods` VALUES ('5', '1');
+INSERT INTO `service_types_methods` VALUES ('6', '1');
+INSERT INTO `service_types_methods` VALUES ('7', '1');
+INSERT INTO `service_types_methods` VALUES ('8', '1');
+INSERT INTO `service_types_methods` VALUES ('1', '2');
+INSERT INTO `service_types_methods` VALUES ('8', '2');
+INSERT INTO `service_types_methods` VALUES ('2', '3');
+INSERT INTO `service_types_methods` VALUES ('8', '3');
+INSERT INTO `service_types_methods` VALUES ('5', '4');
+INSERT INTO `service_types_methods` VALUES ('8', '4');
+INSERT INTO `service_types_methods` VALUES ('4', '5');
+INSERT INTO `service_types_methods` VALUES ('8', '5');
+INSERT INTO `service_types_methods` VALUES ('5', '6');
+INSERT INTO `service_types_methods` VALUES ('8', '6');
+INSERT INTO `service_types_methods` VALUES ('7', '7');
+INSERT INTO `service_types_methods` VALUES ('8', '7');
+INSERT INTO `service_types_methods` VALUES ('6', '8');
+INSERT INTO `service_types_methods` VALUES ('8', '8');
+INSERT INTO `service_types_methods` VALUES ('8', '9');
+INSERT INTO `service_types_methods` VALUES ('8', '10');
+INSERT INTO `service_types_methods` VALUES ('8', '11');
+INSERT INTO `service_types_methods` VALUES ('8', '12');
 
-LOCK TABLES `service_types_methods` WRITE;
-/*!40000 ALTER TABLE `service_types_methods` DISABLE KEYS */;
-INSERT INTO `service_types_methods` VALUES (1,1),(2,1),(4,1),(5,1),(6,1),(7,1),(1,2),(2,3),(5,4),(4,5),(5,6),(7,7),(6,8);
-/*!40000 ALTER TABLE `service_types_methods` ENABLE KEYS */;
-UNLOCK TABLES;
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `sla`
+--
+DROP TABLE IF EXISTS `sla`;
+CREATE TABLE IF NOT EXISTS `sla` (
+  `ID_SLA` int(10) unsigned NOT NULL,
+  `NAME` varchar(45) NOT NULL,
+  `EXCLUDE_WORST` tinyint(1) DEFAULT '0',
+  `MEASURE_TIME_TO_FIRST` tinyint(1) DEFAULT '0',
+  PRIMARY KEY (`ID_SLA`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
 --
 -- Table structure for table `statuses`
 --
-
+DROP TABLE IF EXISTS `statuses`;
 CREATE TABLE IF NOT EXISTS `statuses` (
   `ID_STATUS` int(10) unsigned NOT NULL,
   `NAME` varchar(45) NOT NULL,
   PRIMARY KEY (`ID_STATUS`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
---
--- Dumping data for table `statuses`
---
-
-LOCK TABLES `statuses` WRITE;
-/*!40000 ALTER TABLE `statuses` DISABLE KEYS */;
-INSERT INTO `statuses` VALUES (1,'AVAILABLE'),(2,'OUT_OF_ORDER'),(3,'UNAVAILABLE'),(4,'NOT_TESTED');
-/*!40000 ALTER TABLE `statuses` ENABLE KEYS */;
-UNLOCK TABLES;
+INSERT INTO `statuses` VALUES ('1', 'AVAILABLE');
+INSERT INTO `statuses` VALUES ('2', 'OUT_OF_ORDER');
+INSERT INTO `statuses` VALUES ('3', 'UNAVAILABLE');
+INSERT INTO `statuses` VALUES ('4', 'NOT_TESTED');
 
 -- --------------------------------------------------------
 
 --
 -- Table structure for table `users`
 --
-
+DROP TABLE IF EXISTS `users`;
 CREATE TABLE IF NOT EXISTS `users` (
   `LOGIN` varchar(45) NOT NULL,
   `PASSWORD` varchar(45) NOT NULL,
@@ -639,32 +618,10 @@ CREATE TABLE IF NOT EXISTS `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `users`
---
-
-LOCK TABLES `users` WRITE;
-/*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES ('admin','adm',1,NULL,1,0),('user','usr',2,NULL,1,0);
-/*!40000 ALTER TABLE `users` ENABLE KEYS */;
-UNLOCK TABLES;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `overview_query_view`
---
-
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `overview_query_view` AS select (select count(0) AS `count(0)` from `overview_queries` where ((`overview_queries`.`ID_QUERY` = `q`.`ID_QUERY`) and (`overview_queries`.`ID_OVERVIEW_PAGE` = `p`.`ID_OVERVIEW_PAGE`))) AS `QUERY_IS_PUBLIC`,`p`.`ID_OVERVIEW_PAGE` AS `ID_OVERVIEW_PAGE`,`p`.`NAME` AS `NAME_OVERVIEW_PAGE`,`q`.`ID_QUERY` AS `ID_QUERY`,`q`.`NAME` AS `NAME_QUERY`,`l`.`ID_LAST_QUERY_RESULT` AS `ID_LAST_QUERY_RESULT` from ((`queries` `q` left join `last_query_results` `l` on((`q`.`ID_QUERY` = `l`.`ID_QUERY`))) join `overview_page` `p`) where `q`.`ID_JOB` in (select `jobs`.`ID_JOB` AS `ID_JOB` from `jobs` where (`jobs`.`SAVE_RESPONSE` = 1));
-
---
--- Dumping data for table `overview_query_view`
---
-
-
---
 -- Constraints for dumped tables
 --
-
+INSERT INTO `users` VALUES ('Admin', 'adm', '1', null, '1', '0');
+INSERT INTO `users` VALUES ('user', 'usr', '2', null, '1', '0');
 --
 -- Constraints for table `actions`
 --
@@ -688,6 +645,11 @@ ALTER TABLE `jobs`
   ADD CONSTRAINT `FK_JOBS_SERVICE_TYPE` FOREIGN KEY (`ID_SERVICE_TYPE`) REFERENCES `service_types` (`ID_SERVICE_TYPE`),
   ADD CONSTRAINT `FK_JOBS_STATUS` FOREIGN KEY (`ID_STATUS`) REFERENCES `statuses` (`ID_STATUS`);
 
+--
+-- Constraints for table `job_agg_hour_log_entries`
+--
+ALTER TABLE `job_agg_hour_log_entries`
+  ADD CONSTRAINT `FK_JOB_AGG_HOUR_LOG_ENTRIES_JOB` FOREIGN KEY (`ID_JOB`) REFERENCES `jobs` (`ID_JOB`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `job_agg_log_entries`
@@ -716,12 +678,24 @@ ALTER TABLE `overview_queries`
   ADD CONSTRAINT `FK_OW_QUERY_PAGE` FOREIGN KEY (`ID_OVERVIEW_PAGE`) REFERENCES `overview_page` (`ID_OVERVIEW_PAGE`) ON DELETE CASCADE ON UPDATE NO ACTION;
 
 --
+-- Constraints for table `periods`
+--
+ALTER TABLE `periods`
+  ADD CONSTRAINT `FK_PERIODS_SLA` FOREIGN KEY (`ID_SLA`) REFERENCES `sla` (`ID_SLA`) ON DELETE CASCADE ON UPDATE NO ACTION;
+
+--
 -- Constraints for table `queries`
 --
 ALTER TABLE `queries`
   ADD CONSTRAINT `FK_QUERIES_JOB` FOREIGN KEY (`ID_JOB`) REFERENCES `jobs` (`ID_JOB`) ON DELETE CASCADE,
   ADD CONSTRAINT `FK_QUERIES_METHOD` FOREIGN KEY (`ID_SERVICE_METHOD`) REFERENCES `service_methods` (`ID_SERVICE_METHOD`),
   ADD CONSTRAINT `FK_QUERIES_STATUS` FOREIGN KEY (`ID_STATUS`) REFERENCES `statuses` (`ID_STATUS`);
+
+--
+-- Constraints for table `query_agg_hour_log_entries`
+--
+ALTER TABLE `query_agg_hour_log_entries`
+  ADD CONSTRAINT `FK_QUERY_AGG_HOUR_LOG_ENTRIES_QUERY` FOREIGN KEY (`ID_QUERY`) REFERENCES `queries` (`ID_QUERY`) ON DELETE CASCADE ON UPDATE NO ACTION;
 
 --
 -- Constraints for table `query_agg_log_entries`

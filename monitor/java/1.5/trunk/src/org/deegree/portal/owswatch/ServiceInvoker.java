@@ -48,6 +48,7 @@ import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.commons.httpclient.params.HttpMethodParams;
+import org.deegree.framework.util.StringTools;
 import org.deegree.ogcwebservices.OGCWebServiceException;
 
 /**
@@ -69,7 +70,17 @@ public class ServiceInvoker extends Thread implements Serializable {
     private ServiceConfiguration serviceConfig = null;
 
     private ServiceLog serviceLog = null;
-
+    
+    private long startTimeSync;
+    
+    private boolean simultaneousRun = false;
+    
+    private HttpClient client_SimRun;
+    
+    private HttpMethodBase method_SimRun;
+    
+    private String ogcWebServiceExceptionMsg = "";
+    
     /**
      * @param serviceconfig
      * @param serviceLog
@@ -94,7 +105,13 @@ public class ServiceInvoker extends Thread implements Serializable {
      */
     @Override
     public void run() {
-        executeTest();
+        if(this.simultaneousRun)
+        {
+        	executeHttpMethodSimRun();
+        }else
+        {
+        	executeTest();
+        }
     }
 
     /**
@@ -117,6 +134,8 @@ public class ServiceInvoker extends Thread implements Serializable {
 
         serviceLog.addMessage( tmpResponse, serviceConfig );
     }
+    
+    
 
     /**
      * Executes a HTTP method
@@ -164,9 +183,12 @@ public class ServiceInvoker extends Thread implements Serializable {
         
         ValidatorResponse response = null;
         try {
+        	// Start time
             long startTime = System.currentTimeMillis();
-            int statusCode = client.executeMethod( method );
+            int statusCode = client.executeMethod( method );     
+            // End time
             long lapse = System.currentTimeMillis() - startTime;
+        
             response = serviceConfig.getValidator().validateAnswer( method, statusCode );
 
             response.setLastLapse( lapse );
@@ -179,6 +201,67 @@ public class ServiceInvoker extends Thread implements Serializable {
             method.releaseConnection();
         }
         return response;
+    }
+    
+    public void setupHTTPClient()
+    {
+    	try
+    	{
+    		this.method_SimRun = serviceConfig.getHttpMethodBase();
+    	}catch(OGCWebServiceException e)
+    	{
+    		this.ogcWebServiceExceptionMsg = e.getLocalizedMessage();
+    	}
+    	
+    	Credentials creds = serviceConfig.getUserCreds();
+    	
+    	HttpClient client = new HttpClient();
+        HttpConnectionManagerParams cmParams = client.getHttpConnectionManager().getParams();
+        cmParams.setConnectionTimeout( serviceConfig.getTimeout() * 1000 );
+        client.getHttpConnectionManager().setParams( cmParams );
+        // Provide custom retry handler is necessary
+        this.method_SimRun.getParams().setParameter( HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler( 2, false ) );
+        
+        if (null != creds) {
+			try {
+				URI methodUri = this.method_SimRun.getURI();
+	        	client.getState().setCredentials(new AuthScope(methodUri.getHost(), methodUri.getPort()), creds);
+			} catch (URIException e) {
+				System.err.println(String.format("An exception was thrown while getting HTTP method URI : %1$s", 
+												 e.getMessage()));
+			}
+        }
+        this.client_SimRun = client;  
+    }
+    
+    /**
+    *
+    */
+    public void executeHttpMethodSimRun()
+    {
+    	 ValidatorResponse tmpResponse = null;
+         try {
+        	 if(!StringTools.isNullOrEmpty(this.ogcWebServiceExceptionMsg))
+        	 {
+        		 throw new OGCWebServiceException(this.ogcWebServiceExceptionMsg);
+        	 }
+    		 int statusCode = this.client_SimRun.executeMethod(this.method_SimRun );
+    		 long lapse = System.currentTimeMillis() - this.startTimeSync;
+    		 tmpResponse = serviceConfig.getValidator().validateAnswer( this.method_SimRun, statusCode );
+    		 tmpResponse.setLastLapse( lapse );
+    		 Calendar date = Calendar.getInstance();
+    		 date.setTimeInMillis( this.startTimeSync );
+    		 tmpResponse.setLastTest( date.getTime() );
+         }catch(Exception e)
+         {
+        	tmpResponse = new ValidatorResponse( "Page Unavailable: " + e.getLocalizedMessage(),
+			Status.RESULT_STATE_PAGE_UNAVAILABLE );
+    	   	tmpResponse.setLastLapse( -1 );
+    	   	tmpResponse.setLastTest( Calendar.getInstance().getTime() );
+         }finally {
+        	 this.method_SimRun.releaseConnection();
+         }
+         serviceLog.addMessage( tmpResponse, serviceConfig );
     }
 
     /**
@@ -194,4 +277,38 @@ public class ServiceInvoker extends Thread implements Serializable {
     public ServiceLog getServiceLog() {
         return serviceLog;
     }
+
+	/**
+	 * @return the startTimeSync
+	 */
+	public long getStartTimeSync() {
+		return startTimeSync;
+	}
+
+	/**
+	 * @return the simultaneousRun
+	 */
+	public boolean isSimultaneousRun() {
+		return simultaneousRun;
+	}
+
+	/**
+	 * @param startTimeSync the startTimeSync to set
+	 */
+	public void setStartTimeSync(long startTimeSync) {
+		this.startTimeSync = startTimeSync;
+	}
+
+	/**
+	 * @param simultaneousRun the simultaneousRun to set
+	 */
+	public void setSimultaneousRun(boolean simultaneousRun) {
+		this.simultaneousRun = simultaneousRun;
+	}
+	
+	
+	
+	
+    
+	
 }

@@ -48,6 +48,8 @@
 			<property name="timeout" column="TIMEOUT" type="integer" lazy="false"></property>
 			<property name="url" column="SERVICE_URL" type="string" length="255" lazy="false"></property>
 			<property name="saveResponse" column="SAVE_RESPONSE" type="boolean" lazy="false"></property>
+			<property name="runSimultaneous" column="RUN_SIMULTANEOUS" type="boolean" lazy="false"></property>
+			
 		</component>
 	</class>
 </hibernate-mapping>

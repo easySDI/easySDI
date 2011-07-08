@@ -4,10 +4,9 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.codehaus.jackson.JsonNode;
-import org.easysdi.monitor.biz.job.QueryValidationResult;
+
 import org.easysdi.monitor.biz.job.QueryValidationSettings;
 import org.easysdi.monitor.gui.webapp.MonitorInterfaceException;
-import org.easysdi.monitor.gui.webapp.views.json.serializers.QueryValidationResultSerializer;
 import org.easysdi.monitor.gui.webapp.views.json.serializers.QueryValidationSettingsSerializer;
 
 public class QueryValidationSettingsView extends AbstractJsonView {

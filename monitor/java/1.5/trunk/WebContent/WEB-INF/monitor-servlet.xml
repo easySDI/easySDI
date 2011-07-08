@@ -114,6 +114,11 @@
 				<value>org/easysdi/monitor/dat/job/OverviewLastQuery.hbm.xml</value>
 				<value>org/easysdi/monitor/dat/job/QueryValidationResult.hbm.xml</value>
 				<value>org/easysdi/monitor/dat/job/QueryValidationSettings.hbm.xml</value>
+				<value>org/easysdi/monitor/dat/job/Sla.hbm.xml</value>
+				<value>org/easysdi/monitor/dat/job/Period.hbm.xml</value>
+				<value>org/easysdi/monitor/dat/job/Holiday.hbm.xml</value>
+				<value>org/easysdi/monitor/dat/logging/JobAggregateHourLogEntry.hbm.xml</value>
+				<value>org/easysdi/monitor/dat/logging/QueryAggregateHourLogEntry.hbm.xml</value>
 		
 			</list>
 		</property>
@@ -188,17 +193,17 @@
 	
 	 <bean id="overviewDao" class="org.easysdi.monitor.dat.dao.hibernate.OverviewDao">
 		<constructor-arg ref="hibernateSessionFactory" />
-		<property name="txManager" ref="transactionManager"></property>
+	<!-- 	<property name="txManager" ref="transactionManager"></property> -->
 	</bean>
 
     <bean id="overviewQueryDao" class="org.easysdi.monitor.dat.dao.hibernate.OverviewQueryDao">
 		<constructor-arg ref="hibernateSessionFactory" />
-		<property name="txManager" ref="transactionManager"></property>
+		<!-- <property name="txManager" ref="transactionManager"></property> -->
 	</bean>
 
     <bean id="overviewQueryViewDao" class="org.easysdi.monitor.dat.dao.hibernate.OverviewQueryViewDao">
 		<constructor-arg ref="hibernateSessionFactory" />
-		<property name="txManager" ref="transactionManager"></property>
+	<!-- 	<property name="txManager" ref="transactionManager"></property> -->
 	</bean>
 	
 	<bean id="lastLogDao" class="org.easysdi.monitor.dat.dao.hibernate.LastLogDao">
@@ -213,6 +218,15 @@
 		<constructor-arg ref="hibernateSessionFactory" />
 	</bean>
 	
+	<bean id="slaDao" class="org.easysdi.monitor.dat.dao.hibernate.SlaDao">
+		<constructor-arg ref="hibernateSessionFactory" />
+	</bean>
+	<bean id="periodDao" class="org.easysdi.monitor.dat.dao.hibernate.PeriodDao">
+		<constructor-arg ref="hibernateSessionFactory" />
+	</bean>
+	<bean id="holidayDao" class="org.easysdi.monitor.dat.dao.hibernate.HolidayDao">
+		<constructor-arg ref="hibernateSessionFactory" />
+	</bean>
 	
 	
 	<!-- Scheduler beans -->

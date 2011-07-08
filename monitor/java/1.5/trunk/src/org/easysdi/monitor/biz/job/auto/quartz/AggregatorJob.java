@@ -1,14 +1,14 @@
 package org.easysdi.monitor.biz.job.auto.quartz;
 
 import org.easysdi.monitor.biz.job.JobsCollection;
-import org.easysdi.monitor.dat.dao.IJobDao;
-import org.easysdi.monitor.dat.dao.JobDaoHelper;
+//import org.easysdi.monitor.dat.dao.IJobDao;
+//import org.easysdi.monitor.dat.dao.JobDaoHelper;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.StatefulJob;
 import org.springframework.scheduling.quartz.QuartzJobBean;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+//import org.springframework.transaction.TransactionStatus;
+//import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 /**
  * The scheduled task responsible for the daily aggregation of raw logs. 
@@ -39,16 +39,17 @@ public class AggregatorJob extends QuartzJobBean implements StatefulJob {
     protected void executeInternal(JobExecutionContext context)
         throws JobExecutionException {
 
-        final IJobDao jobDao = JobDaoHelper.getJobDao();
-
-        jobDao.getTxTemplate().execute(new TransactionCallbackWithoutResult() {
-
+        //final IJobDao jobDao = JobDaoHelper.getJobDao();
+        new JobsCollection().aggregateLogs();
+       /* jobDao.getTxTemplate().execute(new TransactionCallbackWithoutResult() {
+    	   
+        	
             @Override
             public void doInTransactionWithoutResult(TransactionStatus status) {
 
                 new JobsCollection().aggregateLogs();
             }
-        });
+        });*/
     }
 
 }

@@ -40,6 +40,7 @@ public final class JobConfiguration {
     private int         timeout;
     private String      url;
     private boolean		saveResponse;
+    private boolean 	runSimultaneous;
 
 
 
@@ -577,9 +578,34 @@ public final class JobConfiguration {
      */
     public boolean getSaveResponse() {
         return this.saveResponse;
-    }  
+    } 
+    
+    
 
     /**
+     * Gets if the jobs queries should run simultaneous
+     * 
+	 * @return  <code>true</code> if jobs queries should be run 
+	 * simultaneous
+	 */
+	public boolean isRunSimultaneous() {
+		return runSimultaneous;
+	}
+
+
+
+	/**
+	 * Sets if the jobs queries should be run simultaneous
+	 * @param   runSimultaneous  <code>true</code> to allow jobs queries to be executed 
+	 * in simultaneous mode with the same start time.
+	 */
+	public void setRunSimultaneous(boolean runSimultaneous) {
+		this.runSimultaneous = runSimultaneous;
+	}
+
+
+
+	/**
      * Defines how much time an answer can take before considering the job as 
      * out of order.
      * 
@@ -738,6 +764,10 @@ public final class JobConfiguration {
             this.defineProperty(defaultParams, "SAVE_RESPONSE", 
                     this.getClass().getMethod("setSaveResponse", 
                                               boolean.class));
+            
+            this.defineProperty(defaultParams, "RUN_SIMULTANEOUS",
+            		this.getClass().getMethod("setRunSimultaneous",
+            								boolean.class));
             
             this.defineProperty(defaultParams, "BUSINESS_ERRORS", 
                            this.getClass().getMethod("setBizErrorChecked", 

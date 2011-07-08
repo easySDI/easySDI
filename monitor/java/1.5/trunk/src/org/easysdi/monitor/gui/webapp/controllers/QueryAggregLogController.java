@@ -12,9 +12,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.easysdi.monitor.biz.job.Query;
+import org.easysdi.monitor.biz.logging.AbstractAggregateHourLogEntry;
 import org.easysdi.monitor.biz.logging.AbstractAggregateLogEntry;
 import org.easysdi.monitor.biz.logging.LogManager;
 import org.easysdi.monitor.gui.webapp.LogSearchParams;
+import org.easysdi.monitor.gui.webapp.LogSlaHelper;
 import org.easysdi.monitor.gui.webapp.MonitorInterfaceException;
 import org.easysdi.monitor.gui.webapp.security.SecurityConstants;
 import org.springframework.stereotype.Controller;
@@ -41,9 +43,7 @@ public class QueryAggregLogController extends AbstractMonitorController {
     public QueryAggregLogController() {
         
     }
-    
-    
-    
+     
     /**
      * Deletes a given query's aggregate logs up to a date.
      * <p>
@@ -105,12 +105,10 @@ public class QueryAggregLogController extends AbstractMonitorController {
         }
 
         logManager.purgeAggregateLogs(maxDate);
-
+        logManager.purgeAggregateHourLogs(maxDate);
         result.addObject("message", "log.purge.success");
         return result;
     }
-
-
 
     /**
      * Shows a given query's aggregate logs.
@@ -157,8 +155,17 @@ public class QueryAggregLogController extends AbstractMonitorController {
 
         if ((null != altParam && altParam.equals("csv"))
             || (null != contentType && contentType.equals("text/csv"))) {
-
-            viewName = "aggregLogsCsv";
+        	
+        	if(requestParams.get("useSla") != null)
+        	{
+        		viewName = "aggregHourLogsCsv";
+        	}else
+        	{
+        		viewName = "aggregLogsCsv";
+        	}
+        }else if(requestParams.get("useSla") != null)
+        {
+        	viewName = "aggregHourLogsJson";
         }
 
         final ModelAndView result = new ModelAndView(viewName);
@@ -166,24 +173,42 @@ public class QueryAggregLogController extends AbstractMonitorController {
         final Query query = this.getQueryProtected(jobIdString, queryIdString, 
                                                    request, response);
         final LogManager logManager = new LogManager(query);
-        Map<Date, AbstractAggregateLogEntry> logEntries 
-            = logManager.getAggregLogsSubset(searchParams.getMinDate(),
+        Map<Date, AbstractAggregateHourLogEntry> logHourEntries;
+        Map<Date, AbstractAggregateLogEntry> logEntries;
+        
+        if(requestParams.get("useSla") != null)
+        {
+        	logHourEntries = logManager.getAggregHourLogsSubset(searchParams.getMinDate(),
+                    searchParams.getMaxDate(),
+                    searchParams.getMaxResults(),
+                    searchParams.getStartIndex());
+        	logHourEntries = LogSlaHelper.getAggHourLogForSla(requestParams.get("useSla"), logHourEntries);
+        	
+        	result.addObject("noPagingCount", 
+                    logManager.getAggregateHourLogsItemsNumber(
+                           searchParams.getMinDate(), searchParams.getMaxDate(), 
+                           null, null));
+        	result.addObject("message", "log.details.success");
+        	result.addObject("aggregHourLogsCollection", logHourEntries.values());
+        	return result;
+        }else
+        {
+        	logEntries = logManager.getAggregLogsSubset(searchParams.getMinDate(),
                                              searchParams.getMaxDate(),
                                              searchParams.getMaxResults(),
                                              searchParams.getStartIndex());
-
-        if (null == logEntries) {
-            logEntries = new LinkedHashMap<Date, AbstractAggregateLogEntry>();
-        }
         
-        result.addObject("noPagingCount", 
-                 logManager.getAggregateLogsItemsNumber(
-                        searchParams.getMinDate(), searchParams.getMaxDate(), 
-                        null, null));
-
-        result.addObject("message", "log.details.success");
-        result.addObject("aggregLogsCollection", logEntries.values());
-
-        return result;
+        	  if (null == logEntries) {
+                  logEntries = new LinkedHashMap<Date, AbstractAggregateLogEntry>();
+              }
+        	  
+              result.addObject("noPagingCount", 
+                      logManager.getAggregateLogsItemsNumber(
+                             searchParams.getMinDate(), searchParams.getMaxDate(), 
+                             null, null));
+             result.addObject("message", "log.details.success");
+             result.addObject("aggregLogsCollection", logEntries.values());
+             return result;
+        }
     }
 }

@@ -13,5 +13,11 @@ public interface ILogAggregator {
      * Aggregates the raw logs into daily summaries.
      */
     void aggregateRawLogs();
+    
+    /**
+     * Aggregates the raw logs into hourly summaries.
+     */
+    void aggregateHourRawLogs();
+    
 
 }

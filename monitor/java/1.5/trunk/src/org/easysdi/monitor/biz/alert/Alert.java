@@ -2,6 +2,7 @@ package org.easysdi.monitor.biz.alert;
 
 import java.util.Calendar;
 
+import org.deegree.framework.util.StringTools;
 import org.easysdi.monitor.biz.job.Job;
 import org.easysdi.monitor.biz.job.Status;
 import org.easysdi.monitor.biz.job.Status.StatusValue;
@@ -25,6 +26,8 @@ public class Alert {
     private Calendar time;
     private float    responseDelay;
     private Integer  httpCode;
+    private byte[] 	 imageError;
+    private String contentType;  
 
 
 
@@ -49,8 +52,27 @@ public class Alert {
 	public void setHttpCode(Integer httpCode) {
 		this.httpCode = httpCode;
 	}
-
-
+	
+	public byte[] getImageError()
+	{
+		return this.imageError;
+	}
+	
+	public void setImageError(byte[] image)
+	{
+		this.imageError = image;
+	}
+	
+	public void setContentType(String contentType)
+	{
+		this.contentType = contentType;
+	}
+	
+	public String getContentType()
+	{
+		return this.contentType;
+	}
+	
 
 	/**
      * No-argument constructor, used by the persistance mechanism.
@@ -72,7 +94,8 @@ public class Alert {
      * @param   alertTime       the time of the alert
      */
     private Alert(StatusValue oldJobStatus, StatusValue newJobStatus, 
-                  String alertCause, Job job, Calendar alertTime, float responseDelay, Integer httpCode) {
+                  String alertCause, Job job, Calendar alertTime, float responseDelay, Integer httpCode,byte[] image, 
+                  String contentType) {
 
         this();
         this.setCause(alertCause);
@@ -82,6 +105,8 @@ public class Alert {
         this.setTime(alertTime);
         this.setResponseDelay(responseDelay);
         this.setHttpCode(httpCode);
+        this.setImageError(image);
+        this.setContentType(contentType);
     }
 
 
@@ -322,12 +347,22 @@ public class Alert {
      * @return              the new alert
      */
     public static Alert create(StatusValue oldStatus, StatusValue newStatus,
-                    String cause, float responseDelay, Integer httpCode, Job parentJob) {
-        final Alert alert = new Alert(oldStatus, newStatus, cause, parentJob,
-                                Calendar.getInstance(), responseDelay, httpCode);
+                    String cause, float responseDelay, Integer httpCode, Job parentJob,byte[] image,String contentType) {
+        
+    	final Alert alert = new Alert(oldStatus, newStatus, cause, parentJob,
+                                Calendar.getInstance(), responseDelay, httpCode,image,contentType);
+        
         AlertDaoHelper.getDaoObject().persist(alert);
-
         return alert;
+    }
+    
+    public static Alert getFromIdString(String idString)
+    {
+        if (StringTools.isNullOrEmpty(idString)) {
+            throw new IllegalArgumentException(
+                   "Alert identifier string can't be null or empty.");
+        }
+        return AlertDaoHelper.getDaoObject().getAlertFromIdString(idString);
     }
 
 }

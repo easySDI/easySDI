@@ -11,17 +11,13 @@ package org.easysdi.monitor.dat.dao;
 public class QueryDaoHelper {
 
     private static IQueryDao queryDao;
-    
-    
-    
+   
     /**
      * Dummy constructor to prevent instantiation.
      */
-    private QueryDaoHelper() {
-        
+    private QueryDaoHelper() {    
         throw new UnsupportedOperationException(
             "This class can't be instantiated.");
-        
     }
 
 

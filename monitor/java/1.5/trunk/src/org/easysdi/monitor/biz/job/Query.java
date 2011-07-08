@@ -1,6 +1,10 @@
 package org.easysdi.monitor.biz.job;
 
 import java.io.IOException;
+import java.util.ArrayList;
+
+import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.deegree.framework.util.StringTools;
@@ -384,16 +388,82 @@ public class Query {
                     thisOwsLogger));
         }        	
         else{
-                    
+        	// TODO handle ALL FIND method
+            // if(serviceTypeName.equals(CustomQueryConstants.ALL))
+            {
+             }        
         	this.setOwsInvoker(new ServiceInvoker(this.getOwsConfig(), 
                                               thisOwsLogger));
         }
+    
+        	
         this.getOwsInvoker().executeTest();
 
         final QueryResult result = thisOwsLogger.getLastResult();
         this.setStatus(result.getStatusValue());
-
         return result;
+    }
+    
+    /**
+     * 
+     * @param queries
+     * @return
+     */
+    public static List<QueryResult> executeSimultaneous(Map<Long, Query> queries, boolean resultLogging)
+    {
+    	List<QueryResult> result = new ArrayList<QueryResult>(); 
+    	for (Query query : queries.values()) {
+    		MonitorServiceLog thisOwsLogger = query.getOwsLogger();
+    		thisOwsLogger.setResultLogged(resultLogging);
+    		 final ServiceType serviceType = query.getConfig().getParentJob().getConfig().getServiceType();
+    	     final String serviceTypeName = serviceType.getName();
+    	     final String serviceMethodName = query.getConfig().getMethod().getName();
+    		 if((serviceTypeName.equals(CustomQueryConstants.ALL)) && 
+    	        		(serviceMethodName.equals(CustomQueryConstants.SOAP_1_1)||
+    	        		serviceMethodName.equals(CustomQueryConstants.SOAP_1_2)||
+    	        		serviceMethodName.equals(CustomQueryConstants.HTTP_POST)||
+    	        		serviceMethodName.equals(CustomQueryConstants.HTTP_GET)
+    	        		))
+    		 {
+    			// execute non ows queries.
+	        	query.setOwsInvoker(new CustomQueryInvoker(query.getCustom_SOAP_GET_POST_Config(),thisOwsLogger));
+	        	query.getOwsInvoker().setSimultaneousRun(true);
+	        	query.getOwsInvoker().setupHTTPClient();
+    		 }else
+    		 {
+    			 query.setOwsInvoker(new ServiceInvoker(query.getOwsConfig(), thisOwsLogger));
+    			 query.getOwsInvoker().setSimultaneousRun(true);
+    			 query.getOwsInvoker().setupHTTPClient();
+    		 }
+    	}
+    	
+    	// Start all query with with the same start time
+    	long startTime = System.currentTimeMillis();
+    	for(Query query : queries.values())
+    	{
+    		query.getOwsInvoker().setStartTimeSync(startTime);
+    		query.getOwsInvoker().start();
+    		
+    	}
+   	
+    	for(Query query : queries.values())
+    	{
+    		// Wait for thread to died
+    		int i = 0;
+    		while(query.getOwsInvoker().isAlive() && i < 60)
+    		{
+    			try {
+    					i++;
+    					Thread.sleep(1000);
+    			    } catch (InterruptedException iex) 
+    			    {	    	
+    			    }
+    		}
+    		QueryResult lastResult = query.owsLogger.getLastResult();
+    		result.add(lastResult);
+    		query.setStatus(lastResult.getStatusValue());
+    	}
+    	return result;
     }
 
 

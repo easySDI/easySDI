@@ -132,20 +132,21 @@ IOverviewQueryViewDao {
 	
 	public List<OverviewQueryView> getOverviewQueriesFromOverviewIdString(
 			String overviewId) {
-		long oId = 0;
+		//long oId = 0;
 
 		if (null == overviewId || overviewId.equals("")) {
 			throw new IllegalArgumentException(
 			"Overview id can't be null or empty");
 		}
-		try{
+		return GetOverviewQueriesByOverviewName(overviewId);
+		/*try{
 			oId = Long.parseLong(overviewId);
 			return GetOverviewQueriesByOverviewId(oId);
 		}
 		catch(NumberFormatException e)
 		{
-			return GetOverviewQueriesByOverviewName(overviewId);
-		}
+			;
+		}*/
 	}
 
 }

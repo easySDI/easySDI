@@ -1,8 +1,10 @@
 package org.easysdi.monitor.dat.dao.hibernate;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -10,17 +12,24 @@ import java.util.Map;
 import java.util.Set;
 
 import org.deegree.framework.util.DateUtil;
+import org.easysdi.monitor.biz.logging.AbstractAggregateHourLogEntry;
 import org.easysdi.monitor.biz.logging.AbstractAggregateLogEntry;
+import org.easysdi.monitor.biz.logging.JobAggregateHourLogEntry;
 import org.easysdi.monitor.biz.logging.JobAggregateLogEntry;
+import org.easysdi.monitor.biz.logging.QueryAggregateHourLogEntry;
 import org.easysdi.monitor.biz.logging.QueryAggregateLogEntry;
 import org.easysdi.monitor.biz.logging.RawLogEntry;
 import org.easysdi.monitor.dat.dao.ILogDao;
 import org.easysdi.monitor.dat.dao.LogDaoHelper;
+
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+
+
 
 /**
  * Executes log-related persistance operations through Hibernate.
@@ -42,7 +51,6 @@ public class LogDao extends AbstractDao implements ILogDao {
     }
 
 
-
     /**
      * {@inheritDoc}
      */
@@ -51,7 +59,16 @@ public class LogDao extends AbstractDao implements ILogDao {
         return this.deleteObject(aggregateLog);
 
     }
+    
+    /**
+     * {@inheritDoc}
+     * Deletes hour log
+     */
+    public boolean deleteAggregHourLog(AbstractAggregateHourLogEntry aggregateLog) {
 
+        return this.deleteObject(aggregateLog);
+
+    }
 
 
     /**
@@ -62,7 +79,6 @@ public class LogDao extends AbstractDao implements ILogDao {
         return this.deleteObject(rawLog);
     
     }
-
 
 
     /**
@@ -80,7 +96,6 @@ public class LogDao extends AbstractDao implements ILogDao {
 
         return this.createAggregLogMap(type, queryResult);
     }
-    
     
     
     /**
@@ -245,10 +260,9 @@ public class LogDao extends AbstractDao implements ILogDao {
         
         final int maxResultsNumber = this.processInteger(maxResults, 0, -1);
         final int startFrom = this.processInteger(startIndex, 1, 0);
-
+        
         return this.getHibernateTemplate().findByCriteria(criteria, startFrom,
                                                           maxResultsNumber);
-
     }
     
     
@@ -315,12 +329,12 @@ public class LogDao extends AbstractDao implements ILogDao {
         final DetachedCriteria search 
             = this.buildRawLogSearchCriteria(queryIds, minDate, maxDate, 
                                              "requestTime");
+        
         final List<?> queryResult 
             = this.fetchSearchResult(search, maxResults, startIndex);
 
         return this.createRawLogSet(queryResult);
     }
-
 
 
     /**
@@ -343,18 +357,15 @@ public class LogDao extends AbstractDao implements ILogDao {
     }
 
 
-
     /**
      * {@inheritDoc}
      */
     public boolean persistAggregLog(AbstractAggregateLogEntry aggregateLog) {
-
-        return this.persistObject(aggregateLog);
+    	return this.persistObject(aggregateLog);
         
     }
 
-
-
+    
     /**
      * {@inheritDoc}
      */
@@ -363,7 +374,6 @@ public class LogDao extends AbstractDao implements ILogDao {
         return this.persistObject(rawLog);
 
     }
-
 
 
     /**
@@ -388,7 +398,6 @@ public class LogDao extends AbstractDao implements ILogDao {
     }
 
 
-
     /**
      * {@inheritDoc}
      */
@@ -402,7 +411,6 @@ public class LogDao extends AbstractDao implements ILogDao {
         
         return this.getItemsNumber(criteria, maxResults, startIndex);
     }
-
 
 
     /**
@@ -420,5 +428,173 @@ public class LogDao extends AbstractDao implements ILogDao {
                                              "requestTime");
     
         return this.getItemsNumber(criteria, maxResults, startIndex);
+    }
+    
+    /**
+ 
+    * {@inheritDoc}
+     */
+    public boolean persistAggregHourLog(AbstractAggregateHourLogEntry aggregateLog) {
+        if (null == aggregateLog) {
+            throw new IllegalArgumentException(
+                    "Null object can't be persisted.");
+        }
+            
+    	return this.persistObject(aggregateLog);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public Map<Date,AbstractAggregateHourLogEntry> fetchAggregHourLogs(ParentType type,
+            long parentId, Calendar minDate, Calendar maxDate, Integer maxResults, Integer startIndex) {
+    	
+    	final DetachedCriteria criteria = this.buildAggregateHourLogSearchCriteria(type, parentId, minDate, maxDate);
+
+    	final List<?> queryResult = this.fetchSearchResult(criteria, maxResults, startIndex);
+    	return this.createAggregHourLogMap(type, queryResult);
+    }
+    
+    /**
+     * Builds a set of criteria for searching aggregate hour log items.
+     * 
+     * @param   parentType      the type of the aggregate logs parent 
+     * @param   parentId        the identifier of the aggregate logs parent
+     * @param   minDate         the date from which the aggregate logs are 
+     *                          fetched
+     * @param   maxDate         the date up to which the aggregate logs are 
+     *                          fetched
+     * @return                  a criteria object
+     */
+    private DetachedCriteria buildAggregateHourLogSearchCriteria(
+                    ParentType parentType, long parentId, Calendar minDate, 
+                    Calendar maxDate) {
+
+        DetachedCriteria search;
+
+        switch (parentType) {
+
+            case JOB:
+                search = DetachedCriteria.forClass(JobAggregateHourLogEntry.class);
+                search.add(Restrictions.eq("jobId", parentId));
+                break;
+
+            case QUERY:
+                search 
+                    = DetachedCriteria.forClass(QueryAggregateHourLogEntry.class);
+                search.add(Restrictions.eq("queryId", parentId));
+                break;
+
+            default:
+                throw new IllegalArgumentException(String.format(
+                        "Unknown parent type '%1$s'", parentType.toString()));
+        }
+        
+        return this.addDateCriteria(search, minDate, maxDate, "logDate");
+    }
+    
+    /**
+     * Transforms a list of results into an aggregate hour logs map.
+     * 
+     * @param   parentType  the type of parent for the log (job, query)
+     * @param   queryResult the list containing the aggregate log entries
+     * @return              a map of aggregate hour log results
+     */
+    private Map<Date, AbstractAggregateHourLogEntry> createAggregHourLogMap(
+            ParentType parentType, List<?> queryResult) {
+        
+        final Map<Date, AbstractAggregateHourLogEntry> fetchedLogs 
+            = new LinkedHashMap<Date, AbstractAggregateHourLogEntry>();
+
+        for (Object resultObject : queryResult) {
+            AbstractAggregateHourLogEntry logEntry = null;
+
+            switch (parentType) {
+
+                case JOB:
+
+                    if (resultObject instanceof JobAggregateHourLogEntry) {
+                        logEntry = (JobAggregateHourLogEntry) resultObject;
+                    }
+
+                    break;
+
+                case QUERY:
+
+                    if (resultObject instanceof QueryAggregateHourLogEntry) {
+                        logEntry = (QueryAggregateHourLogEntry) resultObject;
+                    }
+
+                    break;
+
+                default:
+                    throw new UnsupportedOperationException(
+                            "Invalid log parent type.");
+            }
+            // TODO fix Don't trunk cate
+            if (null != logEntry) {
+               /* fetchedLogs.put(
+                        DateUtil.truncateTime(logEntry.getLogDate()).getTime(),
+                        logEntry);*/
+            	fetchedLogs.put(
+                        logEntry.getLogDate().getTime(),
+                        logEntry);
+            }
+        }
+        queryResult.clear();
+        return fetchedLogs;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public long getAggregateHourLogsItemsNumber(
+                    ParentType parentType, long parentId, Calendar minDate,
+                    Calendar maxDate, Integer maxResults, Integer startIndex) {
+
+        final DetachedCriteria criteria 
+            = this.buildAggregateHourLogSearchCriteria(parentType, parentId, 
+                                                   minDate, maxDate);
+        
+        return this.getItemsNumber(criteria, maxResults, startIndex);
+    } 
+    
+    public List<Calendar> getRawlogMaxMinDate(Long[] queryIds)
+    {
+    	List<Calendar> dates =  new ArrayList<Calendar>();
+    	if(queryIds == null || queryIds.length < 1)
+    	{
+    		return dates;
+    	}
+		final DetachedCriteria criteria = DetachedCriteria.forClass(RawLogEntry.class);
+		criteria.add(Restrictions.in("queryId", queryIds));
+		criteria.addOrder(Order.desc("requestTime"));
+		ProjectionList proList = Projections.projectionList();
+		proList.add(Projections.max("requestTime"));
+		proList.add(Projections.min("requestTime"));
+		criteria.setProjection(proList);
+		final List<?> result = this.getHibernateTemplate().findByCriteria(criteria);
+		 
+    	 Iterator<?> itr = result.iterator();
+    	 if (!itr.hasNext()) {
+    		 return dates;
+    	 }
+    	 while (itr.hasNext()) {         
+			 Object[] row = (Object[]) itr.next();          
+			 for (int i = 0; i < row.length; i++)
+			 {
+				 if(i == 0)
+				 {
+					 Calendar maxDate = (Calendar) row[0];
+					 dates.add(maxDate);
+				 }
+				 if(i == 1)
+				 {
+					 Calendar minDate = (Calendar) row[1];
+					 dates.add(minDate);
+				 }
+			 }
+    	 }
+    	 return dates;
     }
 }

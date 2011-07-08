@@ -1,24 +1,33 @@
 package org.easysdi.monitor.biz.logging;
 
-import java.io.ByteArrayInputStream;
-import java.io.FileOutputStream;
+//import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
+//import java.io.InputStream;
+//import java.util.Properties;
+import java.util.Set;
 
 import java.util.Iterator;
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
+//import javax.imageio.ImageIO;
+//import javax.imageio.ImageReader;
+//import javax.imageio.stream.ImageInputStream;
 
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
+import javax.xml.parsers.*;
+import javax.xml.namespace.NamespaceContext;
+import org.w3c.dom.Document;
+import com.sun.org.apache.xml.internal.utils.PrefixResolver;
+import com.sun.org.apache.xml.internal.utils.PrefixResolverDefault;
 
 import org.apache.log4j.Logger;
 import org.deegree.portal.owswatch.ServiceConfiguration;
 import org.deegree.portal.owswatch.ServiceLog;
 import org.deegree.portal.owswatch.Status;
 import org.deegree.portal.owswatch.ValidatorResponse;
+import org.easysdi.monitor.biz.alert.AbstractAction;
+import org.easysdi.monitor.biz.alert.Alert;
+import org.easysdi.monitor.biz.job.Job;
+import org.easysdi.monitor.biz.job.JobConfiguration;
 import org.easysdi.monitor.biz.job.QueryResult;
 import org.easysdi.monitor.biz.job.QueryValidationResult;
 import org.easysdi.monitor.biz.job.QueryValidationSettings;
@@ -27,7 +36,6 @@ import org.easysdi.monitor.dat.dao.LogDaoHelper;
 import org.easysdi.monitor.biz.job.OverviewLastQueryResult;
 import org.easysdi.monitor.biz.job.Status.StatusValue;
 import org.easysdi.monitor.dat.dao.LastLogDaoHelper;
-import org.xml.sax.InputSource;
 
 /**
  * Processes the result of a owsWatch query polling.
@@ -80,27 +88,26 @@ public class MonitorServiceLog extends ServiceLog {
     
         Float deliveryTime = null;
 		Float responseSize = null;
-		String xmlData = null;
+		
 	
         this.setLastResult(result);
 
         if (this.isResultLogged()) {
             final RawLogEntry logEntry = result.createRawLogEntry();
                    
-            // Save last log
-			long queryID = result.getQueryId();
-
-			// Does a log already exist
-			OverviewLastQueryResult lastQueryEntry = LastLogDaoHelper
-			.getLastLogDao().exist(queryID);
-
-			//String serviceType = serviceConfig.getServiceType().toLowerCase();
-			String requestType = serviceConfig.getRequestType().toLowerCase();
+            
 			boolean error = false;
 			if (response.getStatus() != Status.RESULT_STATE_AVAILABLE) {
 				// Error
 				error = true;
 			}
+			
+			String requestType = serviceConfig.getRequestType().toLowerCase();
+			
+			long queryID = result.getQueryId();
+
+			// Does a log already exist
+			OverviewLastQueryResult lastQueryEntry = LastLogDaoHelper.getLastLogDao().exist(queryID);
 
 			if (lastQueryEntry == null) {
 				lastQueryEntry = new OverviewLastQueryResult();
@@ -110,40 +117,20 @@ public class MonitorServiceLog extends ServiceLog {
 
 			// Error request
 			if (error) {
-				lastQueryEntry.setXmlResult("");
 				lastQueryEntry.setTextResult(response.getMessage());
+				lastQueryEntry.setData(response.getData());
+				lastQueryEntry.setContentType(response.getContentType());
 			} else {
-				// Image request
 				if (requestType.equalsIgnoreCase("getmap") || requestType.equalsIgnoreCase("gettile")) {
-
-					//Save received image in file system:
-					byte[] imgBytes  = response.getImage();
-					String imageType = determineImageType(imgBytes);
-					// FIXME replace with image handler
-					String strFilePath = this.getProperties().getProperty("imagefolderLocal")+queryID + imageType;
-
-					try{
-						FileOutputStream fos = new FileOutputStream(strFilePath);
-						fos.write(imgBytes);
-						fos.flush();
-						fos.close();
-					}
-					catch(IOException e)
-					{
-						logger.fatal("Could not write last query result image to " +strFilePath);
-					}
-
-					String tempUrl = this.getProperties().getProperty("imageFolderUrlPath")+queryID + imageType;
-
-					lastQueryEntry.setPictureUrl(tempUrl);
-					responseSize = (float)response.getImage().length;
-				}
-				if (requestType.equalsIgnoreCase("getcapabilities") || requestType.equalsIgnoreCase("getfeature") ||
-					requestType.equalsIgnoreCase("getrecordbyid") || requestType.equalsIgnoreCase("getrecords") ||
-					requestType.equalsIgnoreCase("getcoverage") || requestType.equalsIgnoreCase("describesensor") ) {
-					lastQueryEntry.setXmlResult(response.getData());
-					responseSize = (float)response.getData().length();
-					xmlData = response.getData();
+					lastQueryEntry.setData(response.getData());
+					lastQueryEntry.setContentType(response.getContentType());
+					// TO check response size for different image types
+					responseSize = (float) response.getResponseLength();
+				}else
+				{
+						responseSize = response.getData() != null? response.getData().length: 0.0F;
+						lastQueryEntry.setData(response.getData());
+						lastQueryEntry.setContentType(response.getContentType());
 				}
 
 				QueryValidationResult validationResult = result.getParentQuery().getQueryValidationResult();
@@ -159,16 +146,7 @@ public class MonitorServiceLog extends ServiceLog {
 				QueryValidationSettings validationSettings = result.getParentQuery().getQueryValidationSettings();
 				if(validationSettings != null)
 				{
-					if(validationSettings.isUseSizeValidation() && validationSettings.getNormSize() != null)
-					{
-						float max = validationSettings.getNormSize() + (validationSettings.getNormSize() * validationSettings.getNormSizeTolerance() / 100); 
-						float min = validationSettings.getNormSize() - (validationSettings.getNormSize() * validationSettings.getNormSizeTolerance() / 100);
-						if(responseSize < min || responseSize > max){
-							logEntry.setMessage("Size validation fail");
-							logEntry.setStatus(StatusValue.UNAVAILABLE);// TODO create new type
-							validationResult.setSizeValidationResult(false);
-						}			
-					}
+					// 1) Time validation
 					if(validationSettings.isUseTimeValidation() && validationSettings.getNormTime() != null)
 					{
 						if(validationSettings.getNormTime() < (deliveryTime *1000)){
@@ -177,19 +155,58 @@ public class MonitorServiceLog extends ServiceLog {
 							validationResult.setTimeValidationResult(false);
 						}
 					}
+					
+					// 2) Size validation 
+					if(validationSettings.isUseSizeValidation() && validationSettings.getNormSize() != null)
+					{
+						float max = validationSettings.getNormSize() + (validationSettings.getNormSize() * validationSettings.getNormSizeTolerance() / 100); 
+						float min = validationSettings.getNormSize() - (validationSettings.getNormSize() * validationSettings.getNormSizeTolerance() / 100);
+						if(responseSize < min || responseSize > max){
+							logEntry.setMessage("Size validation fail");
+							logEntry.setStatus(StatusValue.UNAVAILABLE);
+							validationResult.setSizeValidationResult(false);
+						}			
+					}
+				
+					// 3) XPath validation
 					if(validationSettings.isUseXpathValidation() && validationSettings.getExpectedXpathOutput() != null)
 					{
 						String xpathValidationOutput = "";
-
-						InputStream is = new ByteArrayInputStream(xmlData.getBytes()); 
-						XPath xpath = XPathFactory.newInstance().newXPath();
-						InputSource inputSource = new InputSource(is);
 						try
 						{
-							xpathValidationOutput = xpath.evaluate
-							(validationSettings.getXpathExpression(), inputSource);
-						}
-						catch(Exception e)
+							DocumentBuilderFactory xmlFact = DocumentBuilderFactory.newInstance();
+				            xmlFact.setNamespaceAware(false);
+				            DocumentBuilder builder = xmlFact.newDocumentBuilder();
+				            Document doc = builder.parse(new java.io.ByteArrayInputStream(response.getData()));
+							
+				            final PrefixResolver resolver = new PrefixResolverDefault(doc.getDocumentElement());
+				            NamespaceContext ctx = new NamespaceContext() {
+				            	public String getNamespaceURI(String prefix) {
+				            		return resolver.getNamespaceForPrefix(prefix);
+				            	}
+				            	@SuppressWarnings("unchecked")
+								public Iterator getPrefixes(String val) {			            	
+	        	                    return null;
+				            	}
+				            	public String getPrefix(String uri) {
+				            		return null;
+				            	}
+				            };
+							 
+							XPath xpath = XPathFactory.newInstance().newXPath();
+							xpath.setNamespaceContext(ctx);
+							try
+							{
+								xpathValidationOutput = xpath.evaluate(validationSettings.getXpathExpression(), doc);
+							}
+							catch(Exception e)
+							{
+								logEntry.setMessage("Xpath evaluation failed");
+								logEntry.setStatus(StatusValue.UNAVAILABLE);
+								xpathValidationOutput = "Xpath evaluation failed";
+								validationResult.setXpathValidationResult(false);
+							}
+						}catch(Exception e)
 						{
 							logEntry.setMessage("Xpath evaluation failed");
 							logEntry.setStatus(StatusValue.UNAVAILABLE);
@@ -199,7 +216,7 @@ public class MonitorServiceLog extends ServiceLog {
 
 						validationResult.setXpathValidationOutput(xpathValidationOutput);
 						if(validationSettings.getExpectedXpathOutput().compareTo(xpathValidationOutput)!= 0){
-							logEntry.setMessage("Xpath result not equel to norm output");
+							logEntry.setMessage(xpathValidationOutput);
 							logEntry.setStatus(StatusValue.UNAVAILABLE);
 							validationResult.setXpathValidationResult(false);
 						}
@@ -207,8 +224,10 @@ public class MonitorServiceLog extends ServiceLog {
 				}
 				validationResult.setResponseSize(responseSize);
 				validationResult.setDeliveryTime(deliveryTime);	
+						
 				try
-				{
+				{	
+					// Create/Update validation result
 					if(!validationResult.persist())
 					{
 						this.logger.error("An exception was thrown while saving validationResult");
@@ -220,43 +239,46 @@ public class MonitorServiceLog extends ServiceLog {
 				
 			}
 			
+			try
+			{
+				JobConfiguration jobConfig = result.getParentQuery().getConfig().getParentJob().getConfig();
+				if(jobConfig.isAlertsActivated() && (logEntry.getStatusValue().equals(StatusValue.UNAVAILABLE) || 
+						logEntry.getStatusValue().equals((StatusValue.OUT_OF_ORDER))))
+				{			
+					final Alert alert = Alert.create(result.getParentQuery().getConfig().getParentJob().getStatusValue() ,
+						logEntry.getStatusValue(), logEntry.getMessage(), logEntry.getResponseDelay(),null 
+						,result.getParentQuery().getConfig().getParentJob(),response.getData(),response.getContentType());
+
+					this.triggerActions(alert,result.getParentQuery().getConfig().getParentJob());
+				}
+			}catch(Exception e)
+			{
+				this.logger.error("An exception was thrown while saving alert: "+e.getMessage());
+			}
+			
 			// Save raw log	
             if (!LogDaoHelper.getLogDao().persistRawLog(logEntry)) {
-                this.logger.error(
-                       "An exception was thrown while saving a log entry");
+                this.logger.error("An exception was thrown while saving a log entry");
             }
             
-        	// Save or update row
+        	// Save or update last log
 			if (!LastLogDaoHelper.getLastLogDao().create(lastQueryEntry)) {
-				this.logger
-				.error("An exception was thrown while saving a last log entry");
+				this.logger.error("An exception was thrown while saving a last log entry");
 			}
         }
     }
+    
+    private void triggerActions(Alert alert,Job parentJob) {
+        final Set<AbstractAction> actionsSet = parentJob.getActions();
 
-    /**
-     * Finds image type
-     * @param imageData
-     * @return
-     */
-	private String determineImageType(byte[] imageData)
-	{
-		String formatName = "";
-		try
-		{
-			ImageInputStream iis = ImageIO.createImageInputStream(new ByteArrayInputStream(imageData));
-			Iterator<ImageReader> iter = ImageIO.getImageReaders(iis);
-			if (iter.hasNext()) {
-				ImageReader reader = (ImageReader)iter.next();
-				formatName = "."+ reader.getFormatName();
-				reader.dispose();
-			}
-		}catch(Exception e)
-		{
-			formatName = ".jpg";
-		}
-		return formatName;
-	}
+        if (null != actionsSet) {
+
+            for (AbstractAction action : actionsSet) {
+                action.trigger(alert);
+            }
+        }
+    }
+
 
     /**
      * Defines whether the query results must be logged.
@@ -305,21 +327,4 @@ public class MonitorServiceLog extends ServiceLog {
 
     }
     
-    /**
-     * Gets image config settings
-     * @return
-     */
-	private Properties getProperties()  {
-		String configFileName = "image-config.properties";
-		Properties properties = new Properties();
-		try {
-			final InputStream propStream 
-			= this.getClass().getClassLoader().getResourceAsStream(
-					configFileName);
-			properties.load(propStream);
-		} catch (IOException e) {
-			logger.fatal("Could not open configuration file " + configFileName);
-		}
-		return properties;
-	}
 }

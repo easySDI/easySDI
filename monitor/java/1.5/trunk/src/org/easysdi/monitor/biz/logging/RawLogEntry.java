@@ -19,7 +19,7 @@ import org.easysdi.monitor.dat.dao.QueryDaoHelper;
  * @version 1.1, 2010-04-30
  *
  */
-public class RawLogEntry {
+public class RawLogEntry implements Comparable<RawLogEntry> {
 
     private Integer  httpCode;
     private Long     logEntryId;
@@ -31,6 +31,12 @@ public class RawLogEntry {
     private String   serviceExceptionCode;
     private Status   status;
     private float    responseSize;
+    private float maxTime;
+    private int avCount = 0;
+    private int fCount = 0;
+    private int unavCount = 0;
+    private int otherCount = 0;
+    
 
     
     
@@ -402,10 +408,110 @@ public class RawLogEntry {
     public StatusValue getStatusValue() {
         return ((this.status != null) ? this.status.getStatusValue() : null);
     }
-
-
-
+    
     /**
+     * Gets the maxTime for a date
+     * This method is only used when crate a summary report
+	 * @return the maxTime
+	 */
+	public float getMaxTime() {
+		return maxTime;
+	}
+	
+	
+	
+	/**
+	 * Sets the maxTime
+	 * This method is only used when crate a summary report 
+	 * @param maxTime the maxTime to set
+	 */
+	public void setMaxTime(float maxTime) {
+		this.maxTime = maxTime;
+	}
+	
+	
+
+	/**
+	 * Gets the AVAILABLE count
+	 * @return the avCount
+	 */
+	public int getAvCount() {
+		return avCount;
+	}
+
+
+
+	/**
+	 * Sets the AVAILABLE count
+	 * @param avCount the avCount to set
+	 */
+	public void setAvCount(int avCount) {
+		this.avCount = avCount;
+	}
+
+
+
+	/**
+	 * Gets the OUT_OF_ORDER count
+	 * @return the fCount
+	 */
+	public int getfCount() {
+		return fCount;
+	}
+
+
+
+	/**
+	 * Set the OUT_OF_ORDER count 
+	 * @param fCount the fCount to set
+	 */
+	public void setfCount(int fCount) {
+		this.fCount = fCount;
+	}
+
+
+
+	/**
+	 * Gets UNAVAILABLE count
+	 * @return the unavCount
+	 */
+	public int getUnavCount() {
+		return unavCount;
+	}
+
+
+
+	/**
+	 * Sets the UNAVAILABLE count
+	 * @param unavCount the unavCount to set
+	 */
+	public void setUnavCount(int unavCount) {
+		this.unavCount = unavCount;
+	}
+
+
+
+	/**
+	 * Gets the NOT_TESTED count
+	 * @return the otherCount
+	 */
+	public int getOtherCount() {
+		return otherCount;
+	}
+
+
+
+	/**
+	 * Sets the NOT_TESTED count
+	 * @param otherCount the otherCount to set
+	 */
+	public void setOtherCount(int otherCount) {
+		this.otherCount = otherCount;
+	}
+
+
+
+	/**
      * Checks if this query execution resulted in a business error.
      * 
      * @return  <code>true</code> if this log entry is a business error
@@ -456,4 +562,25 @@ public class RawLogEntry {
 	public float getResponseSize() {
 		return responseSize;
 	}
+	
+	/**
+	 * CompareTo RawLogEntry after responseDelay with
+	 * the shortes time first
+	 */
+	public int compareTo(RawLogEntry obj) {
+		int result;
+		if(this.getResponseDelay() > obj.getResponseDelay())
+		{
+			result = 1;
+		}else if(this.getResponseDelay() == obj.getResponseDelay())
+		{
+			result = 0;
+			
+		}else
+		{
+			result = -1;
+		}
+		return result;
+	}
+	
 }

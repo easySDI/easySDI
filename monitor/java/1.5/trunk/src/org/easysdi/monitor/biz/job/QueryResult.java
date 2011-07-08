@@ -71,14 +71,14 @@ public class QueryResult {
         this.setHttpMethod(testedHttpMethod);
         this.setStatusAndMessageFromOws(owsResponse);
         this.setServiceExceptionCode(owsResponse.getServiceExceptionCode());
-        if(owsResponse.getImage() != null)
+        if(owsResponse.getData() != null)
         {
-        	this.setSize(owsResponse.getImage().length);
+        	this.setSize(owsResponse.getData().length);
         }
-        else if(owsResponse.getData()!= null)
+        /*else if(owsResponse.getData()!= null)
         {
         	this.setSize(owsResponse.getData().getBytes().length);
-        }
+        }*/
         else
         {
         	this.setSize(owsResponse.toString().length());        

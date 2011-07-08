@@ -2,7 +2,6 @@ package org.easysdi.monitor.biz.job;
 
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,7 +11,6 @@ import java.io.Serializable;
 import javax.imageio.ImageIO;
 
 
-import org.apache.commons.httpclient.HttpConnection;
 import org.apache.commons.httpclient.HttpMethodBase;
 import org.deegree.framework.util.StringTools;
 import org.deegree.portal.owswatch.Status;
@@ -39,8 +37,17 @@ public class CustomValidator extends AbstractValidator implements Serializable {
         InputStream stream = null;
         
     	if ( !isValidHttpResponse( statusCode ) ) {
-    		rs =  validateErrorHttpResponse( statusCode );
+    		rs = validateErrorHttpResponse( statusCode );
     		rs.setHttpStatusCode(500);
+    		try
+    		{
+    			rs.setData(method.getResponseBody());
+    			rs.setContentType(contentType);
+    		}catch(IOException e)
+    		{
+    			rs.setData(new byte[0]);
+    			rs.setContentType("");
+    		}
     		return rs;
     	}
 
@@ -49,6 +56,8 @@ public class CustomValidator extends AbstractValidator implements Serializable {
     		lastMessage = "No response received";
     		rs = new ValidatorResponse( lastMessage, status );
     		rs.setHttpStatusCode(500);
+    		rs.setContentType("");
+    		rs.setData(new byte[0]);
     		return rs;
     	}
 
@@ -77,7 +86,7 @@ public class CustomValidator extends AbstractValidator implements Serializable {
 
         		  status = Status.RESULT_STATE_AVAILABLE;
         		  lastMessage = status.getStatusMessage();
-        		  rs = new ValidatorResponse( lastMessage, status,imageAsBytes);	
+        		  rs = new ValidatorResponse( lastMessage, status,imageAsBytes,method.getResponseContentLength(),contentType);	
         		  rs.setHttpStatusCode(200);
         		  return rs;
         	  }
@@ -87,7 +96,9 @@ public class CustomValidator extends AbstractValidator implements Serializable {
                    stream.reset();
                    xml = parseStream( stream );
                    rs = validateCustomXML(xml, false);
-                   return rs ;
+                   rs.setContentType(contentType);
+                   rs.setData(xml.getBytes());
+                   return rs;
         	  }else { // whatever response it is, json/html/plain i.e not image or xml.
         		  InputStreamReader reader = new InputStreamReader(  method.getResponseBodyAsStream() );
         		  BufferedReader bufReader = new BufferedReader( reader );
@@ -103,17 +114,20 @@ public class CustomValidator extends AbstractValidator implements Serializable {
         		  String html = builder.toString();
         		  status = Status.RESULT_STATE_AVAILABLE;
         		  lastMessage = "Html response received";
-        		  rs = new ValidatorResponse( lastMessage, status);	
-        		  rs.setData(html);
+        		  rs = new ValidatorResponse( lastMessage, status);
+        		  rs.setContentType(contentType);
+        		  rs.setData(html.getBytes());
         		  rs.setHttpStatusCode(200);
         		  return rs;
         		  
         	  }
-            //return new ValidatorResponse( lastMessage, status );
+         
         } catch ( Exception e ) {
             status = Status.RESULT_STATE_SERVICE_UNAVAILABLE;
             lastMessage = e.getLocalizedMessage();
             rs = new ValidatorResponse( lastMessage, status);
+            rs.setContentType("");
+            rs.setData(lastMessage.getBytes());
             rs.setHttpStatusCode(500);
             return rs;
         }
@@ -131,6 +145,8 @@ public class CustomValidator extends AbstractValidator implements Serializable {
     	if ( !isValidHttpResponse( statusCode ) ) {
     		rs =  validateErrorHttpResponse( statusCode );
     		rs.setHttpStatusCode(500);
+    		rs.setContentType(ContentType);
+            rs.setData(new byte[0]);
     		return rs ;
     	}
 
@@ -139,6 +155,8 @@ public class CustomValidator extends AbstractValidator implements Serializable {
     		lastMessage = "No response received";
     		rs = new ValidatorResponse( lastMessage, status );
     		rs.setHttpStatusCode(500);
+    		rs.setContentType(ContentType);
+            rs.setData(lastMessage.getBytes());
     		return rs ;
     	}
 
@@ -163,12 +181,15 @@ public class CustomValidator extends AbstractValidator implements Serializable {
     		if ( !ContentType.contains( "xml" ) ) {
     			status = Status.RESULT_STATE_UNEXPECTED_CONTENT;    			
     			lastMessage = StringTools.concat( 100, "Error: Response Content is ", ContentType, " not xml" , "Reponse received is", xml);
-    			return new ValidatorResponse( lastMessage, status );
+    			rs = new ValidatorResponse( lastMessage, status );
+    			rs.setContentType(ContentType);
+    			rs.setData(lastMessage.getBytes());
+    			return rs;
     		} 
     		   	   
     		rs = validateCustomXML(xml, true);
-    	
-    		rs.setData(xml);              
+    		rs.setContentType(ContentType);
+    		rs.setData(xml.getBytes());              
 
     		return rs;
 
@@ -178,7 +199,10 @@ public class CustomValidator extends AbstractValidator implements Serializable {
     		// TODO Auto-generated catch block
     		status = Status.RESULT_STATE_BAD_RESPONSE;
     		lastMessage = "The following error occured :"+ e.getMessage();
-    		return new ValidatorResponse( lastMessage, status );
+    		rs = new ValidatorResponse( lastMessage, status );
+    		rs.setContentType("");
+    		rs.setData(lastMessage.getBytes());
+    		return rs;
     	}
     	
 

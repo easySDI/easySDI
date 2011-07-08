@@ -13,8 +13,8 @@ public class AggregateStats {
     private float meanRespTime;
     private int   nbBizErrors;
     private int   nbConnErrors;
-    
-    
+	private float maxRespTime;
+	private float minRespTime;  
     
     /**
      * Creates a new set of aggregate stats.
@@ -89,8 +89,6 @@ public class AggregateStats {
         return this.nbBizErrors;
     }
 
-
-
     /**
      * Defines how many connection errors occurred in the period.
      * 
@@ -99,8 +97,6 @@ public class AggregateStats {
     public void setNbConnErrors(int newNbConnErrors) {
         this.nbConnErrors = newNbConnErrors;
     }
-
-
 
     /**
      * Gets how many connection errors occurred in the period.
@@ -111,4 +107,40 @@ public class AggregateStats {
         return this.nbConnErrors;
     }
 
+	/**
+	 * Gets the max response time it took to respond.
+	 * 
+	 * @return the maxRespTime
+	 */
+	public float getMaxRespTime() {
+		return maxRespTime;
+	}
+
+	/**
+     * Defines the max response time in the period.
+     * 
+     * @param maxRespTime the maxRespTime to set
+    */
+	public void setMaxRespTime(float maxRespTime) {
+		this.maxRespTime = maxRespTime;
+	}
+
+	/**
+	 * Gets the min response time it took to respond.
+	 * 
+	 * @return the minRespTime
+	 */
+	public float getMinRespTime() {
+		return minRespTime;
+	}
+	
+	/**
+     * Defines the min response time in the period.
+     * 
+     * @param minRespTime the minRespTime to set
+    */
+	public void setMinRespTime(float minRespTime) {
+		this.minRespTime = minRespTime;
+	}
+    
 }

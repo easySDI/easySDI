@@ -27,5 +27,14 @@
 	<bean id="overviewQueryCollection" class="org.easysdi.monitor.gui.webapp.views.json.OverviewQueryViewCollectionView" />
 	<bean id="queryValidationSettings" class="org.easysdi.monitor.gui.webapp.views.json.QueryValidationSettingsView" />
 	<bean id="queryValidationResult" class="org.easysdi.monitor.gui.webapp.views.json.QueryValidationResultView" />
+	<bean id="sla" class="org.easysdi.monitor.gui.webapp.views.json.SlaView" />
+	<bean id="slaCollection" class="org.easysdi.monitor.gui.webapp.views.json.SlaCollectionView" />
+	<bean id="holiday" class="org.easysdi.monitor.gui.webapp.views.json.HolidayView" />
+	<bean id="holidayCollection" class="org.easysdi.monitor.gui.webapp.views.json.HolidayCollectionView" />
+	<bean id="period" class="org.easysdi.monitor.gui.webapp.views.json.PeriodView" />
+	<bean id="periodCollection" class="org.easysdi.monitor.gui.webapp.views.json.PeriodCollectionView" />
+	<bean id="aggregHourLogsCsv" class="org.easysdi.monitor.gui.webapp.views.csv.AggregHourLogView" />
+	<bean id="aggregHourLogsJson" class="org.easysdi.monitor.gui.webapp.views.json.AggregHourLogView" />
+		
 	
 </beans>

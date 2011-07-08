@@ -39,7 +39,7 @@ public class JobDefaultsInfo {
     private Integer      testInterval;
     private Integer      timeout;
     private Boolean		 saveResponse;
-    
+    private Boolean      runSimultaneous;
     
 
     /**
@@ -194,7 +194,33 @@ public class JobDefaultsInfo {
     private Boolean getSaveResponse() {
         return this.saveResponse;
     }
+    /**
+     * Gets the jobs queries runs in simultaneous mode.
+     * <p>
+     * This property is ignored if the job isn't automatically executed.
+     * 
+     * @return <code>true</code> if job has to save last reposne
+     */
+	private Boolean getRunSimultaneous() {
+		return runSimultaneous;
+	}
 
+
+
+    /**
+     * Defines if this jobs queries should be executed in 
+     * a simultaneous mode
+     * 
+     * @param runSimultaneous <ul>
+     *                          <li><code>"true"</code> if this jobs queries should 
+     *                          be executed in 
+     * 							a simultaneous mode</li>
+     *                          <li><code>"false"</code> if it shouldn't</li>
+     *                          </ul>
+     */
+	private void setRunSimultaneous(String runSimultaneous) {
+		this.runSimultaneous = BooleanUtil.parseBooleanStringWithNull(runSimultaneous);
+	}
     /**
      * Defines whether jobs can be executed on demand by default.
      * 
@@ -423,6 +449,7 @@ public class JobDefaultsInfo {
         jobDefaultsInfo.setSlaStartTime(requestParams.get("slaStartTime"));
         jobDefaultsInfo.setTestInterval(requestParams.get("testInterval"));
         jobDefaultsInfo.setTimeout(requestParams.get("timeout"));
+        jobDefaultsInfo.setRunSimultaneous(requestParams.get("runSimultaneous"));
 
         return jobDefaultsInfo;
     }
@@ -461,6 +488,8 @@ public class JobDefaultsInfo {
                                     this.getTestInterval());
         success &= this.updateParam(defaultsMap.get("TIMEOUT"), 
                                     this.getTimeout());
+        success &= this.updateParam(defaultsMap.get("runSimultaneous"), 
+        		this.getRunSimultaneous());
 
         return success;
     }

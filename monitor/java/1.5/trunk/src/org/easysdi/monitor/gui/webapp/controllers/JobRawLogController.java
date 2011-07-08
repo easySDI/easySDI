@@ -131,6 +131,9 @@ public class JobRawLogController extends AbstractMonitorController {
                              @PathVariable String idString)
         throws MonitorInterfaceException {
 
+    	
+    	
+    	
         return this.generateJobRawLogResult(request, response, idString);
     }
 }

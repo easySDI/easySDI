@@ -1,15 +1,13 @@
 package org.easysdi.monitor.biz.job;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
+
 import java.util.Enumeration;
 import java.util.Properties;
 
 import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.StringRequestEntity;
-import org.deegree.framework.util.StringTools;
+
 import org.deegree.ogcwebservices.OGCWebServiceException;
 import org.deegree.portal.owswatch.ConfigurationsException;
 import org.deegree.portal.owswatch.ServiceConfiguration;

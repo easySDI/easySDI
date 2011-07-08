@@ -52,6 +52,11 @@ public final class AggregLogSerializer {
         elements.add(Float.toString(slaStats.getNbBizErrors()));
         elements.add(Float.toString(h24Stats.getNbConnErrors()));
         elements.add(Float.toString(slaStats.getNbConnErrors()));
+        elements.add(Float.toString(h24Stats.getMaxRespTime()));
+        elements.add(Float.toString(slaStats.getMaxRespTime()));
+        elements.add(Float.toString(h24Stats.getMinRespTime()));
+        elements.add(Float.toString(slaStats.getMinRespTime()));
+      
 
         return StringUtils.join(elements.iterator(), fieldSeparator);
     }

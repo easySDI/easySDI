@@ -18,10 +18,11 @@ public class QueryValidationResultDao extends AbstractDao implements
 		if (null == queryValidationResult) {
 			throw new IllegalArgumentException("queryValidationResult can't be null");
 		}
-
+		
 		try {
+			
 			this.getHibernateTemplate().saveOrUpdate(queryValidationResult);
-			this.getHibernateTemplate().flush();
+		
 			return true;
 
 		} catch (DataAccessException e) {

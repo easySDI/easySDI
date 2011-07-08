@@ -66,9 +66,11 @@ public class ValidatorResponse implements Serializable {
 
     private Status status = null;
     
-    private byte[] image = null;
+    private long responseLength;
 
-    private String data = null;
+    private byte[] data = null;
+    
+    private String contentType = null;
 
     /**
      * Constructor
@@ -114,41 +116,45 @@ public class ValidatorResponse implements Serializable {
      * @param status
      * @param image
      */
-    public ValidatorResponse(String message,Status status,byte[] image)
+    public ValidatorResponse(String message,Status status,byte[] data,long length,String contentType)
     {
     	this(message,status);
-    	this.setImage(image);
+    	this.setData(data);
+    	this.setResponseLength(length);
+    	this.setContentType(contentType);
     }
-    
-    /**
-	 * @return the image
-	 */
-	public byte[] getImage() {
-		return image;
-	}
-
-	/**
-	 * @param image the image to set
-	 */
-	public void setImage(byte[] image) {
-		this.image = image;
-	}
 	
     /**
 	 * @return the data
 	 */
-	public String getData() {
+	public byte[] getData() {
 		return data;
 	}
 
 	/**
 	 * @param data the data to set
 	 */
-	public void setData(String data) {
+	public void setData(byte[] data) {
 		this.data = data;
 	}
+	
+	
     
     /**
+	 * @return the contentType
+	 */
+	public String getContentType() {
+		return contentType;
+	}
+
+	/**
+	 * @param contentType the contentType to set
+	 */
+	public void setContentType(String contentType) {
+		this.contentType = contentType;
+	}
+
+	/**
      * Defines the returned HTTP status code.
      * 
      * @param   newStatusCode   the returned HTTP status code
@@ -242,4 +248,13 @@ public class ValidatorResponse implements Serializable {
         this.status = status;
     }
 
+	public long getResponseLength() {
+		return responseLength;
+	}
+
+	public void setResponseLength(long responseLength) {
+		this.responseLength = responseLength;
+	}
+    
+    
 }

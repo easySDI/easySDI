@@ -19,56 +19,41 @@ public class OverviewSerializer {
 	   private Overview overview;
 	    
 	    /**
-	     * Creates a new JSON job transformer.
+	     * Creates a new JSON overview transformer.
 	     * 
-	     * @param   theJob  the job to represent in JSON
+	     * @param   theOverview  the overview to represent in JSON
 	     */
 	    public OverviewSerializer(Overview theOverview) {
 	        this.setOverview(theOverview);
 	    }
 	    
-	    
-
 	    public JsonNode serialize(boolean includeQueries, boolean includeQueryParams, Locale locale, ObjectMapper mapper) 
 	    {
-        
-	        final ObjectNode jsonOverview = mapper.createObjectNode();
-	        
+	        final ObjectNode jsonOverview = mapper.createObjectNode();     
 	        jsonOverview.put("id", this.getOverview().getOverviewID());
 	        jsonOverview.put("name",this.getOverview().getName());
 	        jsonOverview.put("isPublic",this.getOverview().isIsPublic());
-	        
-	        
-	       /* if (includeQueries) {
-	            jsonJob.put("queries", 
-	                        this.buildQueriesArray(includeQueryParams, locale, 
-	                                               mapper));
-	        }*/
 	        return jsonOverview;
 	    }
-
-	    
+    
 	    /**
-	     * Defines the job to represent.
+	     * Defines the overview to represent.
 	     * 
-	     * @param   newJob the job to represent in JSON
+	     * @param   newOverview the  to represent in JSON
 	     */
 	    private void setOverview(Overview newOverview) {
-
 	        if (null == newOverview) {
 	            throw new IllegalArgumentException("Overview can't be null");
 	        }
-
 	        this.overview = newOverview;
 	    }
 
 	    /**
-	     * Gets the job to represent.
+	     * Gets the overview to represent.
 	     * 
-	     * @return  the job to represent in JSON
+	     * @return  the overview to represent in JSON
 	     */
 	    private Overview getOverview() {
 	        return this.overview;
 	    }
-	
 }

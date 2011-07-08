@@ -311,7 +311,6 @@ public class QueryConfiguration {
      * 
      * @param   querySoapUrl    the soapUrl that this query is identified by
      */
-    @SuppressWarnings("unused")
     private void setSoapUrl(String querySoapUrl) {
         this.soapUrl = querySoapUrl;
     }

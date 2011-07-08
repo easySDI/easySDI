@@ -399,8 +399,6 @@ public class DateUtil {
     	return newDate;
     }
     
-    
-    
     private static Map<Integer, Integer> splitTimeString(String timeString) {
     	Map<Integer, Integer> timeParts = new HashMap<Integer, Integer>();
     	StringTokenizer timeSplitter = new StringTokenizer(timeString, ":");
@@ -436,7 +434,12 @@ public class DateUtil {
     	return timeParts;
     }
     
-    
+    /**
+     * Compares two calendar dates without the time part 
+     * @param date1
+     * @param date2
+     * @return result for time comparing
+     */
     public static int compareWithoutTime(Calendar date1, Calendar date2) {
     	Integer year1 = date1.get(Calendar.YEAR);
     	Integer year2 = date2.get(Calendar.YEAR);
@@ -460,8 +463,6 @@ public class DateUtil {
     	return day1.compareTo(day2);
     }
     
-    
-
     private DateUtil() {
         // Prevent instantiation
     }

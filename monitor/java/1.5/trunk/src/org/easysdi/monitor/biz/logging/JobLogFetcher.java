@@ -6,6 +6,7 @@ package org.easysdi.monitor.biz.logging;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -68,6 +69,35 @@ public class JobLogFetcher implements ILogFetcher {
     public Map<Date, AbstractAggregateLogEntry> fetchAggregLogs() {
         return this.fetchAggregLogsSubset(null, null, null, null);
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public Map<Date, AbstractAggregateHourLogEntry> fetchAggregHourLogs()
+    {
+    	return this.fetchAggregHourLogsSubset(null,null,null,null);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public Map<Date, AbstractAggregateHourLogEntry> fetchAggregHourLogsSubset(Calendar minDate,
+            Calendar maxDate, Integer maxResults, Integer startIndex)
+    {
+    	  try {
+
+              return LogDaoHelper.getLogDao().fetchAggregHourLogs(
+                      ParentType.JOB, this.getParentJob().getJobId(), minDate,
+                      maxDate, maxResults, startIndex);
+
+          } catch (LogFetcherException e) {
+              this.logger.error(
+                     "An error occurred while the aggregate logs were fetched.", 
+                     e);
+              return null;
+
+          }
+    }
 
 
 
@@ -102,6 +132,8 @@ public class JobLogFetcher implements ILogFetcher {
     public Set<RawLogEntry> fetchRawLogs() {
         return this.fetchRawLogsSubset(null, null, null, null);
     }
+    
+
 
 
 
@@ -126,8 +158,6 @@ public class JobLogFetcher implements ILogFetcher {
 
         }
     }
-
-
 
     /**
      * {@inheritDoc}
@@ -166,4 +196,26 @@ public class JobLogFetcher implements ILogFetcher {
                 queriesIds.toArray(new Long[queriesIds.size()]), minDate, 
                 maxDate, maxResults, startIndex);
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public long getAggregateHourLogsItemsNumber(Calendar minDate, Calendar maxDate,
+                    Integer maxResults, Integer startIndex) {
+
+        return LogDaoHelper.getLogDao().getAggregateHourLogsItemsNumber(
+                ParentType.JOB, this.getParentJob().getJobId(), minDate, 
+                maxDate, maxResults, startIndex);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public List<Calendar> fetchMaxMinDateLog(){
+    	final Set<Long> queriesIds = this.getParentJob().getQueriesIds();
+    	
+        return LogDaoHelper.getLogDao().getRawlogMaxMinDate(
+                queriesIds.toArray(new Long[queriesIds.size()]));
+    }
+    
 }

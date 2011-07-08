@@ -51,12 +51,14 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.httpclient.HttpMethodBase;
 import org.deegree.framework.log.ILogger;
 import org.deegree.framework.log.LoggerFactory;
-import org.deegree.framework.util.StringTools;
+
 import org.deegree.framework.xml.XMLParsingException;
 import org.deegree.framework.xml.XMLTools;
 import org.deegree.portal.owswatch.Status;
 import org.deegree.portal.owswatch.ValidatorResponse;
 import org.w3c.dom.Document;
+
+
 
 /**
  * Abstract class implementing the method validate.
@@ -112,11 +114,17 @@ public abstract class AbstractValidator implements Validator {
         Status status = null;
 
         String contentType = method.getResponseHeader( "Content-Type" ).getValue();
-        if ( !contentType.contains( "xml" ) ) {
+        /*if ( !contentType.contains( "xml" ) ) {
             status = Status.RESULT_STATE_UNEXPECTED_CONTENT;
             lastMessage = StringTools.concat( 100, "Error: Response Content is ", contentType, " not xml" );
-            return new ValidatorResponse( lastMessage, status );
-        }
+            try
+            {
+            	return new ValidatorResponse( lastMessage, status,method.getResponseBody(),method.getResponseContentLength(),contentType);
+            }catch(IOException e)
+            {
+            	return new ValidatorResponse( lastMessage, status );
+            }
+        }*/
 
         String xml = null;
         InputStream stream = null;
@@ -136,15 +144,14 @@ public abstract class AbstractValidator implements Validator {
             return new ValidatorResponse( lastMessage, status );
         }
         if ( xml.contains( "ServiceException" ) ) {
-            return validateXmlServiceException( stream );
+            return validateXmlServiceException( stream, method);
         }
         // If its an xml, and there's no service exception, then don't really parse the xml,
         // we assume that its well formed, since there might be huge xmls, which would take time to be parsed
         status = Status.RESULT_STATE_AVAILABLE;
         lastMessage = status.getStatusMessage();
-        //return new ValidatorResponse( lastMessage, status );
-        ValidatorResponse response = new ValidatorResponse( lastMessage, status );
-        response.setData(xml);
+        ValidatorResponse response = new ValidatorResponse( lastMessage, status,xml.getBytes(),method.getResponseContentLength(),contentType );
+        response.setData(xml.getBytes());
         return response;
     }
 
@@ -158,7 +165,7 @@ public abstract class AbstractValidator implements Validator {
     protected ValidatorResponse validateXmlServiceException( HttpMethodBase method ) {
         try {
             return this.validateXmlServiceException(copyStream(
-                                           method.getResponseBodyAsStream()));
+                                           method.getResponseBodyAsStream()),method);
         } catch (IOException e) {
             Status status = Status.RESULT_STATE_INVALID_XML;
             String lastMessage = "Error: MalFormed XML Response";
@@ -166,7 +173,7 @@ public abstract class AbstractValidator implements Validator {
         }
     }
     
-    protected ValidatorResponse validateXmlServiceException( InputStream stream ) {
+    protected ValidatorResponse validateXmlServiceException( InputStream stream, HttpMethodBase method ) {
         Document doc = null;
         String exceptionCode = null;
         String lastMessage = null;
@@ -174,6 +181,7 @@ public abstract class AbstractValidator implements Validator {
         try {
             stream.reset();
             doc = instantiateParser().parse( stream );
+            stream.reset();
         } catch ( Exception e ) {
             status = Status.RESULT_STATE_INVALID_XML;
             lastMessage = "Error: MalFormed XML Response";
@@ -187,7 +195,15 @@ public abstract class AbstractValidator implements Validator {
             exceptionCode = XMLTools.getNodeAsString(
                                     doc.getDocumentElement(), 
                                     "./ServiceException/@code", null, "" );
-            return new ValidatorResponse( lastMessage, status, exceptionCode );
+            ValidatorResponse response = new ValidatorResponse( lastMessage, status, exceptionCode );
+            response.setContentType(method.getResponseHeader( "Content-Type" ).getValue());
+            response.setResponseLength(method.getResponseContentLength());
+            
+          
+            String str=stream.toString();
+            byte[] responseAsBytes = str.getBytes();
+            response.setData(responseAsBytes);
+            return response; 
         } catch ( XMLParsingException e ) {
             status = Status.RESULT_STATE_SERVICE_UNAVAILABLE;
             lastMessage = status.getStatusMessage();

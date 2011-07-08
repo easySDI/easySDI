@@ -41,7 +41,7 @@ public class AlertSerializer {
         final ObjectNode jsonAlert = mapper.createObjectNode();
         final SimpleDateFormat dateFormat 
             = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        
+        jsonAlert.put("alertId", alert.getAlertId());
         jsonAlert.put("oldStatus",
                       alert.getOldStatus().getDisplayString(locale));
         jsonAlert.put("oldStatusCode",
@@ -54,7 +54,14 @@ public class AlertSerializer {
         jsonAlert.put("isExposedToRss", alert.isExposedToRss());
         jsonAlert.put("dateTime", dateFormat.format(alert.getTime().getTime()));
         jsonAlert.put("cause", alert.getCause());
-        jsonAlert.put("httpCode", alert.getHttpCode());
+        jsonAlert.put("content_type",alert.getContentType());
+        if(alert.getHttpCode() != null)
+        {
+        	jsonAlert.put("httpCode", alert.getHttpCode());
+        }else
+        {
+        	jsonAlert.put("httpCode", "");
+        }
         jsonAlert.put("responseDelay", alert.getResponseDelay());
 
         return jsonAlert;

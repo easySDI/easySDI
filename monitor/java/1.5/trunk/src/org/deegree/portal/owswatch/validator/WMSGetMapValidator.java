@@ -71,23 +71,25 @@ public class WMSGetMapValidator extends AbstractValidator implements Serializabl
      */
     @Override
     protected ValidatorResponse processAnswer( HttpMethodBase method ) {
-
         String contentType = method.getResponseHeader( "Content-Type" ).getValue();
         String lastMessage = null;
         Status status = null;
-
+        byte[] responseAsBytes = null;
+        try {
+        	
         if ( !contentType.contains( "image" ) ) {
             if ( !contentType.contains( "xml" ) ) {
                 status = Status.RESULT_STATE_UNEXPECTED_CONTENT;
                 lastMessage = StringTools.concat( 100, "Error: Response Content is ", contentType, " not image" );
-                return new ValidatorResponse( lastMessage, status );
+                responseAsBytes = method.getResponseBody();
+                return new ValidatorResponse( lastMessage, status,responseAsBytes,method.getResponseContentLength(), contentType );
             } else {
                 return validateXmlServiceException( method );
             }
         }
 
-        try {
-            InputStream stream = copyStream( method.getResponseBodyAsStream() );
+       
+            InputStream stream = copyStream( method.getResponseBodyAsStream());
             stream.reset();
             BufferedImage image = ImageIO.read( stream );
             String imageformat = "jpg";
@@ -102,17 +104,16 @@ public class WMSGetMapValidator extends AbstractValidator implements Serializabl
             ImageIO.write(image,imageformat, baos);
             //close
             baos.flush();
-            byte[] imageAsBytes = baos.toByteArray();
+            responseAsBytes = baos.toByteArray();
             baos.close();
           
             status = Status.RESULT_STATE_AVAILABLE;
             lastMessage = status.getStatusMessage();
-            return new ValidatorResponse( lastMessage, status,imageAsBytes);
-            //return new ValidatorResponse( lastMessage, status );
+            return new ValidatorResponse( lastMessage, status,responseAsBytes,method.getResponseContentLength(),contentType);
         } catch ( Exception e ) {
             status = Status.RESULT_STATE_SERVICE_UNAVAILABLE;
-            lastMessage = e.getLocalizedMessage();
-            return new ValidatorResponse( lastMessage, status );
+            lastMessage = e.getLocalizedMessage();         
+            return new ValidatorResponse( lastMessage, status);
         }
     }
 }

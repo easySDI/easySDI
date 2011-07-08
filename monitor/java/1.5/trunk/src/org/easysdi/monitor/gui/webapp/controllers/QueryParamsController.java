@@ -72,7 +72,8 @@ public class QueryParamsController extends AbstractMonitorController {
      *                                      saving the query parameters</li>
      *                                      </ul>   
      */
-    @RequestMapping(method = RequestMethod.POST)
+    @SuppressWarnings("unchecked")
+	@RequestMapping(method = RequestMethod.POST)
     public ModelAndView create(HttpServletRequest request,
                                HttpServletResponse response,
                                @PathVariable String jobIdString,

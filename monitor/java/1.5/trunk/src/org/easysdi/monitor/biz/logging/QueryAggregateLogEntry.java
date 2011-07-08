@@ -18,7 +18,7 @@ import org.easysdi.monitor.biz.util.HashCodeConstants;
 public class QueryAggregateLogEntry extends AbstractAggregateLogEntry implements
                 Serializable {
 
-    private static final long serialVersionUID = 426114429754090472L;
+    private static final long serialVersionUID = 426114429754090300L;
     private long              queryId;
     
     

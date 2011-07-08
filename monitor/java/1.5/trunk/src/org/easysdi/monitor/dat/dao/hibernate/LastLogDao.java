@@ -3,18 +3,18 @@
  */
 package org.easysdi.monitor.dat.dao.hibernate;
 
-//import org.easysdi.monitor.dat.dao.LogDaoHelper;
+
 import java.util.LinkedList;
 import java.util.List;
 
 import org.easysdi.monitor.biz.job.OverviewLastQueryResult;
+
 import org.easysdi.monitor.dat.dao.ILastLogDao;
 import org.easysdi.monitor.dat.dao.LastLogDaoHelper;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.DetachedCriteria;
-//import org.hibernate.criterion.Order;
-//import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.dao.DataAccessException;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 
 
@@ -52,7 +52,19 @@ public class LastLogDao extends AbstractDao implements ILastLogDao {
     */
     public boolean create(OverviewLastQueryResult lastresult)
     {
-    	return this.persistObject(lastresult);
+	       if (null == lastresult) {
+	            throw new IllegalArgumentException("Query lastresult can't be null");
+	        }
+
+	        try {
+	        	this.getHibernateTemplate().saveOrUpdate(lastresult);
+	            return true;
+	        } catch (DataAccessException e) {
+	            return false;
+	        }catch(Exception e)
+	        {
+	        	return false;
+	        }
     }
     
     /**

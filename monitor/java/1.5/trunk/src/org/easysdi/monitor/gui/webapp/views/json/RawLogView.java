@@ -56,6 +56,7 @@ public class RawLogView extends AbstractJsonView {
             final Set<RawLogEntry> logsCollection 
                 = (Set<RawLogEntry>) model.get("rawLogsCollection");
             final Boolean addQueryId = (Boolean) model.get("addQueryId");
+            final Boolean isSummary = (Boolean) model.get("isSummary");
             final Long noPagingCount = (Long) model.get("noPagingCount");
             final ObjectMapper mapper = this.getObjectMapper();
             this.getRootObjectNode().put("noPagingCount", noPagingCount);
@@ -63,7 +64,7 @@ public class RawLogView extends AbstractJsonView {
             for (RawLogEntry logEntry : logsCollection) {
                 rowsCollection.add(RawLogSerializer.serialize(logEntry,
                                                               addQueryId,
-                                                              locale, mapper));
+                                                              locale, mapper,isSummary));
             }
             
             return rowsCollection;

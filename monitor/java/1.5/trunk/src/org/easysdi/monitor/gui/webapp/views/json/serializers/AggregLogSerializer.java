@@ -49,6 +49,12 @@ public class AggregLogSerializer {
         jsonEntry.put("h24Availability", h24Stats.getAvailability());
         jsonEntry.put("slaMeanRespTime", slaStats.getMeanRespTime());
         jsonEntry.put("h24MeanRespTime", h24Stats.getMeanRespTime());
+        
+        jsonEntry.put("slaMaxRespTime", slaStats.getMaxRespTime());
+        jsonEntry.put("h24MaxRespTime", h24Stats.getMaxRespTime());
+        jsonEntry.put("slaMinRespTime", slaStats.getMinRespTime());
+        jsonEntry.put("h24MinRespTime", h24Stats.getMinRespTime());
+        
         jsonEntry.put("date", dateFormat.format(entry.getLogDate().getTime()));
 
         return jsonEntry;

@@ -75,9 +75,7 @@ public class QueryCollectionController extends AbstractMonitorController {
             if (null != newQuery) {
                 result.addObject("message", "query.create.success");
                 result.addObject(newQuery);
-
                 return result;
-
             }
 
         } catch (IllegalArgumentException e) {
