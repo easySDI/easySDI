@@ -209,16 +209,18 @@ public class JobLogAggregator extends AbstractLogAggregator {
 	                		
 	                		inspireHourRawLogs = this.fetchSetRawLogsSubset(timeStart, timeEnd, inspireRawLogs);
 	                		
-	                		AggregateStats h1Stats = this.calculateHourStats(dailyRawLogs, timeStart, timeEnd,this.getLogManager());
-	                	    
-	                	    AggregateStats inspireStats = this.calculateHourStats(inspireHourRawLogs, timeStart, timeEnd,this.getLogManager());
+	                		if(dailyRawLogs.size() > 0)
+			            	{ 
+	                			AggregateStats h1Stats = this.calculateHourStats(dailyRawLogs, timeStart, timeEnd,this.getLogManager());
+	                	    	AggregateStats inspireStats = this.calculateHourStats(inspireHourRawLogs, timeStart, timeEnd,this.getLogManager());
 	                 	    
-	                	    // Create aggregLog
-	                	    JobAggregateHourLogEntry aggregLog = new JobAggregateHourLogEntry
-	                 	    (logFetcher.getParentJob(),timeStart, h1Stats,inspireStats);
+	                	    	// Create aggregLog
+	                	    	JobAggregateHourLogEntry aggregLog = new JobAggregateHourLogEntry
+	                 	    	(logFetcher.getParentJob(),timeStart, h1Stats,inspireStats);
 	                     
-	                 	    LogDaoHelper.getLogDao().persistAggregHourLog(aggregLog);
-	                 	    allAggregateHourLogs.put(dateRawLog.getTime(), aggregLog);
+	                 	    	LogDaoHelper.getLogDao().persistAggregHourLog(aggregLog);
+	                 	    	allAggregateHourLogs.put(dateRawLog.getTime(), aggregLog);
+			            	}
 	                	}
                   	}
                   	

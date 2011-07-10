@@ -200,19 +200,23 @@ public class QueryLogAggregator extends AbstractLogAggregator {
 		            		// Fetch log data for hour
 		            		dailyRawLogs = logFetcher.fetchRawLogsSubset(timeStart,timeEnd, null, null);
 		            		
-		            		// Create method to get from set inspire
+		            		// Method to get from set inspire
 		            		inspireHourRawLogs = this.fetchSetRawLogsSubset(timeStart, timeEnd, inspireRawLogs);
 		            		
-		            		AggregateStats h1Stats = this.calculateHourStats(dailyRawLogs, timeStart, timeEnd,this.getLogManager());
-		            	    
-		            	    AggregateStats inspireStats = this.calculateHourStats(inspireHourRawLogs, timeStart, timeEnd,this.getLogManager());
-		             	    
-		            	    // Create aggregLog
-		            	    QueryAggregateHourLogEntry aggregLog = new QueryAggregateHourLogEntry
-		             	    (logFetcher.getParentQuery(),timeStart, h1Stats,inspireStats);
+		            		//  Only create states if any data
+		            		if(dailyRawLogs.size() > 0)
+			            	{   
+			            	 		
+		            			AggregateStats h1Stats = this.calculateHourStats(dailyRawLogs, timeStart, timeEnd,this.getLogManager());
+		            			AggregateStats inspireStats = this.calculateHourStats(inspireHourRawLogs, timeStart, timeEnd,this.getLogManager());		             	    
+		            	   
+		            			// Create aggregLog
+		            			QueryAggregateHourLogEntry aggregLog = new QueryAggregateHourLogEntry
+		            			(logFetcher.getParentQuery(),timeStart, h1Stats,inspireStats);
 		                 
-		             	    LogDaoHelper.getLogDao().persistAggregHourLog(aggregLog);
-		             	    allAggregateHourLogs.put(dateRawLog.getTime(), aggregLog);
+		            			LogDaoHelper.getLogDao().persistAggregHourLog(aggregLog);
+		            			allAggregateHourLogs.put(dateRawLog.getTime(), aggregLog);
+			            	}
 		            	}
 	            	}
             	}
