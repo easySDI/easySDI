@@ -185,7 +185,7 @@ if(!($indexStrStart === false))
 		     	}
 	       	     }
 	   //remove the headers form the curl response text
-	   $HTML = str_replace($h, "", $HTML);
+	   $HTML = str_replace(trim($h), "", $HTML);
   	}
   fwrite($fh, "-----------------------------\n");
   fwrite($fh, "\n");
