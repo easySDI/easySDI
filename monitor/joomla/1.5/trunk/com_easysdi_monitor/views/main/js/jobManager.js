@@ -34,11 +34,19 @@ Ext.onReady(function() {
 		id: 'name',
 		idProperty : 'data.id',
 		totalProperty :'count',
+		remoteSort : true,
 		//autoSave: true,
 		restful:true,
 		proxy: proxy,
 		writer: writer,
+		sortInfo :{
+			field :'name',
+			direction :"DESC"
+			
+		},
 		fields:['status', 'statusCode', 'httpMethod', 'testInterval', 'bizErrors', 'isPublic', 'allowsRealTime', 'httpErrors', 'serviceType', 'password', 'url' ,'id' ,'slaEndTime', 'name', 'queries', 'login', 'triggersAlerts', 'timeout', 'isAutomatic', 'slaStartTime', {name: 'lastStatusUpdate', type: 'date', dateFormat: 'Y-m-d H:i:s'},'saveResponse','runSimultaneous']
+	
+	
 	});
 
 
@@ -395,7 +403,8 @@ Ext.onReady(function() {
 	//dataStore.on('update', alert("update"));
 
 	//grid.render('jobGrid');
-	store.load();
+	store.setDefaultSort("name", "ASC");
+	store.load({params:{start:0, limit:15}});
 
 	_jobGrid.getSelectionModel().on('selectionchange', function(sm){
 		_jobGrid.removeBtn.setDisabled(sm.getCount() < 1);

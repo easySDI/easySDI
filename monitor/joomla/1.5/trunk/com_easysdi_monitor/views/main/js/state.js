@@ -36,11 +36,16 @@ var proxy = new Ext.data.HttpProxy({
 		root: 'data',
 		id: 'name',
 		idProperty : 'data.id',
-		totalProperty :'count',
-		autoLoad: true,
+		totalProperty :'count',		
 		restful:true,
 		proxy: proxy,
 		writer: writer,
+		remoteSort : true,
+		sortInfo :{
+			field :'lastStatusUpdate',
+			direction :"DESC"
+			
+		},
 		fields:['status', 'statusCode', 'httpMethod', 'testInterval', 'bizErrors', 'isPublic', 'allowsRealTime', 'httpErrors', 'serviceType', 'password', 'url' ,'id' ,'slaEndTime', 'name', 'queries', 'login', 'triggersAlerts', 'timeout', 'isAutomatic', 'slaStartTime', {name: 'lastStatusUpdate', type: 'date', dateFormat: 'Y-m-d H:i:s'},'saveResponse']
 	});
 
@@ -341,6 +346,8 @@ var proxy = new Ext.data.HttpProxy({
 
 	}
 
+	store.setDefaultSort("lastStatusUpdate", "DESC");
+	store.load({params:{start:0, limit:15}});
 	_jobStateGrid.getSelectionModel().on('selectionchange', function(sm){
 		_jobStateGrid.executeBtn.setDisabled(sm.getCount() < 1);
 		_jobStateGrid.viewAlertsBtn.setDisabled(sm.getCount() < 1);

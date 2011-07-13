@@ -192,34 +192,48 @@ Ext.onReady(function() {
 		store.removeAll();
 		
 		if(rec.get('name') != 'All'){
-		   loadAlertData(rec.get('name'), 1, 1);
+		   loadAlertData(rec.get('name'), 1, 1, false);
 		}else{
-		   var arrRec = jobComboStore.getRange();
-       
-		   for ( var i=0; i< arrRec.length; i++ ){
-		   	  if(arrRec[i].get('name') != 'All')
-		   	     //create a store for all jobs and get their alerts
-		   	     loadAlertData(arrRec[i].get('name'), i+1, arrRec.length);
-		   }
+			 loadAlertData(null, 1, 1, true);
+
 		}
 	});
 
 
-	function loadAlertData(jobName, current, total){
+
+	function loadAlertData(jobName, current, total, getAll){
 		var myMask = new Ext.LoadMask(Ext.getCmp('AlertGrid').getEl(), {msg:EasySDI_Mon.lang.getLocal('message wait')});
 		myMask.show();
-		if(total == 1){
-			store.removeAll();
+	
+		proxyUrl ="";
+		if((null == jobName)&&(getAll == true))			
+			proxyUrl =  EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/all/alerts'+"&all=true";
+		else if((null != jobName)&&(getAll == false))				
+			proxyUrl = EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+jobName+'/alerts';
+		else{
+			console.log("No job name provided");
+			return false;
+		}
+		
+				
+		store.removeAll();
 		var newStore = new Ext.data.JsonStore({
+			
 			//id: 'jobId',
 			root: 'data',			
 			proxy: new Ext.data.HttpProxy({
-				url: EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+jobName+'/alerts'
+				
+				url: proxyUrl
 			}),
 			restful:true,
 			idProperty : 'id',
 			totalProperty :'count',
-			fields:['newStatusCode', 'oldStatusCode', 'cause', 'httpCode', 'responseDelay', 'isExposedToRss', 'jobId', {name: 'dateTime', type: 'date', dateFormat: 'Y-m-d H:i:s'},'alertId','content_type'],
+			remoteSort : true,
+			fields:['newStatusCode', 'oldStatusCode', 'cause', 'httpCode', 'responseDelay', 'isExposedToRss', 'jobId', {name: 'dateTime',  type: 'date', dateFormat: 'Y-m-d H:i:s'},'alertId','content_type'],
+			sortInfo:{
+				field : "dateTime",
+				direction : "DESC"
+			},
 			listeners :{
 				load: function(){
 
@@ -239,7 +253,11 @@ Ext.onReady(function() {
 				}
 			}
 		});
+			
 			component = Ext.getCmp('AlertGrid');
+			var colModel = component.getColumnModel();
+			component.reconfigure(newStore, colModel);
+			
 			if(component.getBottomToolbar()){
 				component.getBottomToolbar().show();
 				component.getBottomToolbar().bindStore(newStore);
@@ -247,48 +265,8 @@ Ext.onReady(function() {
 			}
 			
 			
-			myMask.hide();
-		
-		}
-		else{		
-				component = Ext.getCmp('AlertGrid');
-				if(component.getBottomToolbar())
-					component.getBottomToolbar().hide();
+			myMask.hide();		
 				
-				var newStore = new Ext.data.JsonStore({
-					//id: 'jobId',
-					root: 'data',
-					autoLoad: true,
-					proxy: new Ext.data.HttpProxy({
-						url: EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+jobName+'/alerts'
-					}),
-					restful:true,
-					fields:['newStatusCode', 'oldStatusCode', 'cause', 'httpCode', 'responseDelay', 'isExposedToRss', 'jobId', {name: 'dateTime', type: 'date', dateFormat: 'Y-m-d H:i:s'}],
-					listeners: {
-					load: function(){
-					
-					var aRec = this.getRange();
-					if(_alertsGrid.btnLatestAlerts.pressed){
-						//If there is at least one record
-						if(aRec.length > 0)
-							store.add(aRec[aRec.length - 1]);
-					}else{
-						for ( var j=0; j< aRec.length; j++ )
-						{
-							//feed the grid store with the collected alerts
-							store.add(aRec[j]);
-						}
-					}
-					if(current == total)
-						myMask.hide();
-				}
-				}
-				});
-		}
-		
-	
-			
-			
 		}
 		
 	}
