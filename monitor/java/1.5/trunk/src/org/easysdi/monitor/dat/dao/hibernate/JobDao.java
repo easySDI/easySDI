@@ -11,6 +11,7 @@ import org.easysdi.monitor.dat.dao.IJobDao;
 import org.easysdi.monitor.dat.dao.JobDaoHelper;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.dao.DataAccessException;
 import org.springframework.orm.hibernate3.HibernateTemplate;
@@ -112,7 +113,7 @@ public class JobDao extends HibernateDaoSupport implements IJobDao {
      * {@inheritDoc}
      */
     public List<Job> findJobs(Boolean automatic, Boolean realTimeAllowed,
-                    Boolean published, Boolean alertsEnabled, Integer pageStart, Integer pageLimit) {
+                    Boolean published, Boolean alertsEnabled, Integer pageStart, Integer pageLimit , String sortField, String direction) {
 
         // Criteria search =
         // SessionUtil.getCurrentSession().createCriteria(Job.class);
@@ -136,6 +137,27 @@ public class JobDao extends HibernateDaoSupport implements IJobDao {
                                        alertsEnabled));
         }
         
+        
+        
+        if(sortField.equalsIgnoreCase("name"))
+    		sortField = "config.jobName";
+        else if(sortField.equalsIgnoreCase("lastStatusUpdate"))
+    		sortField = "statusUpdateTime";
+        else if(sortField.equalsIgnoreCase("serviceType"))
+    		sortField = "config.serviceTypeId";
+        else
+        	sortField = "config."+sortField;
+        
+        if((!sortField.equals("")) && (!direction.equals(""))){
+        	if(direction.equals("ASC"))
+        		search.addOrder(Order.asc(sortField)); 
+        	else if(direction.equals("DESC"))
+        		search.addOrder(Order.desc(sortField)); 
+        	else
+        	{}
+        	
+        }
+        	
         search.getExecutableCriteria(this.getSession()).setMaxResults(pageLimit).setFirstResult(pageStart);
      
         final HibernateTemplate hibernateTemplate = this.getHibernateTemplate();

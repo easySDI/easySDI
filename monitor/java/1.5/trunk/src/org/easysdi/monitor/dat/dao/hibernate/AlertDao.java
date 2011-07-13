@@ -7,6 +7,7 @@ import org.easysdi.monitor.dat.dao.AlertDaoHelper;
 import org.easysdi.monitor.dat.dao.IAlertDao;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
@@ -65,7 +66,7 @@ public class AlertDao extends HibernateDaoSupport implements IAlertDao {
      */
     @SuppressWarnings("unchecked")
 	public List<Alert> getAlertsForJob(long jobId, boolean onlyRss,
-			Integer start, Integer limit) {
+			Integer start, Integer limit, String sortField, String direction) {
     	final DetachedCriteria search = DetachedCriteria.forClass(Alert.class);
 
         search.add(Restrictions.eq("parentJob.jobId", jobId));
@@ -73,6 +74,22 @@ public class AlertDao extends HibernateDaoSupport implements IAlertDao {
         if (onlyRss) {
             search.add(Restrictions.eq("exposedToRss", true));
         }
+        if((!sortField.equals("")) && (!direction.equals(""))){
+        	
+        	if(sortField.equalsIgnoreCase("dateTime"))
+        		sortField = "time";
+        	if(sortField.equalsIgnoreCase("jobId"))
+        		sortField = "parentJob.jobId";
+        		
+        	if(direction.equals("ASC"))
+        		search.addOrder(Order.asc(sortField)); 
+        	else if(direction.equals("DESC"))
+        		search.addOrder(Order.desc(sortField)); 
+        	else
+        	{}
+        	
+        }
+        
         search.getExecutableCriteria(this.getSession()).setMaxResults(limit).setFirstResult(start);
         return this.getHibernateTemplate().findByCriteria(search);
 	}
@@ -106,4 +123,50 @@ public class AlertDao extends HibernateDaoSupport implements IAlertDao {
         }
     }
     
+
+
+
+	@SuppressWarnings("unchecked")
+	public List<Alert> getAlertsForAllJobs(boolean onlyRss, Integer start,
+			Integer limit, String sortField, String direction) {
+		final DetachedCriteria search = DetachedCriteria.forClass(Alert.class);
+
+
+
+        if (onlyRss) {
+            search.add(Restrictions.eq("exposedToRss", true));
+        }
+        if((!sortField.equals("")) && (!direction.equals(""))){
+        	
+        	if(sortField.equalsIgnoreCase("dateTime"))
+        		sortField = "time";
+        	if(sortField.equalsIgnoreCase("jobId"))
+        		sortField = "parentJob.config.name";
+        		
+        	if(direction.equals("ASC"))
+        		search.addOrder(Order.asc(sortField)); 
+        	else if(direction.equals("DESC"))
+        		search.addOrder(Order.desc(sortField)); 
+        	else
+        	{}
+        	
+        }
+        
+        search.getExecutableCriteria(this.getSession()).setMaxResults(limit).setFirstResult(start);
+        return this.getHibernateTemplate().findByCriteria(search);
+	}
+
+
+
+	@SuppressWarnings("unchecked")
+	public List<Alert> getAlertsForAllJobs(boolean onlyRss) {
+		 final DetachedCriteria search = DetachedCriteria.forClass(Alert.class);
+	     
+
+	        if (onlyRss) {
+	            search.add(Restrictions.eq("exposedToRss", true));
+	        }
+
+	        return this.getHibernateTemplate().findByCriteria(search);
+	}
 }

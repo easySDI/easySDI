@@ -48,12 +48,14 @@ public interface IJobDao {
      * @param   alertsEnabled   <code>true</code> to fetch only the jobs that
      *                          trigger an alert when their status change
      * @param   pageStart       start of pagination, thats the index of the first item to fetch
-     * @param   pageLimit       limit of pagination, thats the number of results to fetch from pageStart.                                             
+     * @param   pageLimit       limit of pagination, thats the number of results to fetch from pageStart.   
+     * @param   pageLimit       limit of pagination, thats the number of results to fetch from pageStart.   
+     * @param   sortField      	field to sort by                                          
      * @return                  a list containing the jobs matching the criteria
      */
 
      List<Job> findJobs(Boolean automatic, Boolean realTimeAllowed,
-            Boolean published, Boolean alertsEnabled, Integer pageStart, Integer pageLimit) ;
+            Boolean published, Boolean alertsEnabled, Integer pageStart, Integer pageLimit, String sortField, String direction) ;
 
 
     /**

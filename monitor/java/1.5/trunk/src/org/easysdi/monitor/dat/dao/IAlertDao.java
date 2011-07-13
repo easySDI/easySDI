@@ -54,9 +54,20 @@ public interface IAlertDao {
      *                  RSS exposure
      * @param	start   This is the start of paginated query
      * @param	limit	This is the limit of paginated query
+     * @param	sortField	This is the field to sort by
+     * @param	direction	This is the direction to sort by
      * @return          a list containing the found alerts
      */
 	List<Alert> getAlertsForJob(long jobId, boolean onlyRss, Integer start,
-			Integer limit);
+			Integer limit, String sortField, String direction);
+
+
+
+	List<Alert> getAlertsForAllJobs(boolean onlyRss, Integer start, Integer limit,
+			String sortField, String direction);
+
+
+
+	List<Alert> getAlertsForAllJobs(boolean onlyRss);
 
 }

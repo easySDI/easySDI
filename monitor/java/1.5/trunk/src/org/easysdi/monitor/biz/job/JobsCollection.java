@@ -62,15 +62,17 @@ public class JobsCollection {
      * @param   alertsEnabled       whether the job triggers alerts
      * @param   pageStart       start of pagination, thats the index of the first item to fetch
      * @param   pageLimit       limit of pagination, thats the number of results to fetch from pageStart.   
+     * @param   sortField      	field to sort by
+     * @param   direction       direction of sort   
      * @return                      a list containing the jobs meeting the 
      *                              criteria
      */
 
     public List<Job> findJobs(Boolean automatic, Boolean realTimeAllowed,
-            Boolean published, Boolean alertsEnabled, Integer pageStart, Integer pageLimit) {
+            Boolean published, Boolean alertsEnabled, Integer pageStart, Integer pageLimit, String sortField, String direction) {
 
     	return JobDaoHelper.getJobDao().findJobs(automatic, realTimeAllowed,
-                               published, alertsEnabled, pageStart, pageLimit);
+                               published, alertsEnabled, pageStart, pageLimit,   sortField,  direction);
 
     }
 

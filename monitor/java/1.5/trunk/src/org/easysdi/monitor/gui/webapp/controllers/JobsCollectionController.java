@@ -129,19 +129,28 @@ public class JobsCollectionController extends AbstractMonitorController {
                      requestParams.get("triggersAlerts"));
         
         
-        Integer start;
-		Integer limit;
+        Integer start =null;
+		Integer limit =null;
+		String sortField ="";;
+		String direction="";
 		try {
 			start = Integer.parseInt(requestParams.get("start"));
 			limit = Integer.parseInt(requestParams.get("limit"));
+			sortField = requestParams.get("sort");
+			direction = requestParams.get("dir");
 		} catch (NumberFormatException e) {
 			// TODO Auto-generated catch block
 			start = null;
 			limit = null;
+			sortField = "";
+			direction = "";
 			e.printStackTrace();
 		}
         
-    
+		if(null== sortField)
+			sortField = "";
+		if(null== direction)
+			direction = "";
         
         final boolean useAdminCollection 
             = this.isAdminRequest(request); 
@@ -156,7 +165,7 @@ public class JobsCollectionController extends AbstractMonitorController {
         if((start !=null) &&(limit!=null)){
 	        result.addObject("jobList", 
 	                         new JobsCollection().findJobs(automatic, realTime,
-	                                                       onlyPublic, alert, start, limit));
+	                                                       onlyPublic, alert, start, limit, sortField, direction));
 	        result.addObject("count",  new JobsCollection().findJobs(automatic, realTime,
 	                onlyPublic, alert).size());
         }

@@ -739,12 +739,14 @@ public class Job {
      *                  job's RSS feed
      * @param	start   This is the start of paginated query
      * @param	limit	This is the limit of paginated query
+     * @param	sortField	The field to sort by
+     * @param	direction	The direction to sort by
      * @return          a list containing the alerts for this job
      */
-    public List<Alert> getAlerts(boolean onlyRss, Integer start, Integer limit) {
+    public List<Alert> getAlerts(boolean onlyRss, Integer start, Integer limit, String sortField, String direction) {
         
         return AlertDaoHelper.getDaoObject().getAlertsForJob(this.getJobId(),
-                                                             onlyRss, start, limit);
+                                                             onlyRss, start, limit, sortField, direction );
         
     }
 
