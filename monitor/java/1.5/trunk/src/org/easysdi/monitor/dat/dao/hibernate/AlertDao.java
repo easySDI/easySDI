@@ -141,7 +141,7 @@ public class AlertDao extends HibernateDaoSupport implements IAlertDao {
         	if(sortField.equalsIgnoreCase("dateTime"))
         		sortField = "time";
         	if(sortField.equalsIgnoreCase("jobId"))
-        		sortField = "parentJob.config.name";
+        		sortField = "parentJob.config.jobName";
         		
         	if(direction.equals("ASC"))
         		search.addOrder(Order.asc(sortField)); 
