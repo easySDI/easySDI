@@ -314,13 +314,6 @@ CREATE TABLE IF NOT EXISTS `overview_queries` (
 
 -- --------------------------------------------------------
 
---
--- Table structure for table `overview_query_view`
---
-
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `monitor`.`overview_query_view` AS select (select count(0) AS `count(0)` from `monitor`.`overview_queries` where ((`monitor`.`overview_queries`.`ID_QUERY` = `q`.`ID_QUERY`) and (`monitor`.`overview_queries`.`ID_OVERVIEW_PAGE` = `p`.`ID_OVERVIEW_PAGE`))) AS `QUERY_IS_PUBLIC`,`p`.`ID_OVERVIEW_PAGE` AS `ID_OVERVIEW_PAGE`,`p`.`NAME` AS `NAME_OVERVIEW_PAGE`,`q`.`ID_QUERY` AS `ID_QUERY`,`q`.`NAME` AS `NAME_QUERY`,`l`.`ID_LAST_QUERY_RESULT` AS `ID_LAST_QUERY_RESULT` from ((`monitor`.`queries` `q` left join `monitor`.`last_query_results` `l` on((`q`.`ID_QUERY` = `l`.`ID_QUERY`))) join `monitor`.`overview_page` `p`) where `q`.`ID_JOB` in (select `monitor`.`jobs`.`ID_JOB` AS `ID_JOB` from `monitor`.`jobs` where (`monitor`.`jobs`.`SAVE_RESPONSE` = 1));
-
--- --------------------------------------------------------
 
 --
 -- Table structure for table `periods`
@@ -616,6 +609,13 @@ CREATE TABLE IF NOT EXISTS `users` (
   PRIMARY KEY (`LOGIN`),
   KEY `FK_USERS_ROLE` (`ID_ROLE`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+--
+-- Table structure for table `overview_query_view`
+--
+DROP VIEW IF EXISTS `overview_query_view`;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `overview_query_view` AS select (select count(0) AS `count(0)` from `overview_queries` where ((`overview_queries`.`ID_QUERY` = `q`.`ID_QUERY`) and (`overview_queries`.`ID_OVERVIEW_PAGE` = `p`.`ID_OVERVIEW_PAGE`))) AS `QUERY_IS_PUBLIC`,`p`.`ID_OVERVIEW_PAGE` AS `ID_OVERVIEW_PAGE`,`p`.`NAME` AS `NAME_OVERVIEW_PAGE`,`q`.`ID_QUERY` AS `ID_QUERY`,`q`.`NAME` AS `NAME_QUERY`,`l`.`ID_LAST_QUERY_RESULT` AS `ID_LAST_QUERY_RESULT` from ((`queries` `q` left join `last_query_results` `l` on((`q`.`ID_QUERY` = `l`.`ID_QUERY`))) join `overview_page` `p`) where `q`.`ID_JOB` in (select `jobs`.`ID_JOB` AS `ID_JOB` from `jobs` where (`jobs`.`SAVE_RESPONSE` = 1));
 
 --
 -- Constraints for dumped tables
