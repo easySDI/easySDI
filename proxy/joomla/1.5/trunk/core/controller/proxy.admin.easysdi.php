@@ -1201,31 +1201,36 @@ function savePolicyWMTS($thePolicy){
 							$theLayer->Name =$val;
 							
 							//geographical restriction
-							$bboxminx = JRequest::getVar("bboxminx@$i@$layernum",null,'defaut','none',JREQUEST_ALLOWRAW);
-							$bboxmaxx = JRequest::getVar("bboxmaxx@$i@$layernum",null,'defaut','none',JREQUEST_ALLOWRAW);
-							$bboxminy = JRequest::getVar("bboxminy@$i@$layernum",null,'defaut','none',JREQUEST_ALLOWRAW);
-							$bboxmaxy = JRequest::getVar("bboxmaxy@$i@$layernum",null,'defaut','none',JREQUEST_ALLOWRAW);
+							$bboxminx = JRequest::getVar("bboxminx@$i@$layernum",null,'defaut','FLOAT',JREQUEST_ALLOWRAW);
+							$bboxmaxx = JRequest::getVar("bboxmaxx@$i@$layernum",null,'defaut','FLOAT',JREQUEST_ALLOWRAW);
+							$bboxminy = JRequest::getVar("bboxminy@$i@$layernum",null,'defaut','FLOAT',JREQUEST_ALLOWRAW);
+							$bboxmaxy = JRequest::getVar("bboxmaxy@$i@$layernum",null,'defaut','FLOAT',JREQUEST_ALLOWRAW);
 							
-							$theLayer->bboxminx =$bboxminx;
-							$theLayer->bboxmaxx =$bboxmaxx;
-							$theLayer->bboxminy =$bboxminy;
-							$theLayer->bboxmaxy =$bboxmaxy;
+							if($bboxminx != null){
+								$theLayer->bboxminx =$bboxminx;
+								$theLayer->bboxmaxx =$bboxmaxx;
+								$theLayer->bboxminy =$bboxminy;
+								$theLayer->bboxmaxy =$bboxmaxy;
+							}
 							
 							//min scale denominator restriction
 							$nbTileMatrixSetPerLayer = JRequest::getVar("countTileMatrixSet@$i@$layernum",null,'defaut','none',JREQUEST_ALLOWRAW);
 							$listMinScaleDenominatorTileMatrixSetId = array();
 							$listBBOXTileMatrixSetId = array();
 							$listTileMatrixSetIndex=array();
+							$listTileMatrixSetCRSUnits=array();
 							for($j = 0 ; $j <= $nbTileMatrixSetPerLayer ; $j++ ){
 								$tileMatrixSetId = JRequest::getVar("TileMatrixSetId@$i@$layernum@$j",null,'defaut','none',JREQUEST_ALLOWRAW);
 								$minScaleDenominator = JRequest::getVar("minScaleDenominator@$i@$layernum@$j",null,'defaut','none',JREQUEST_ALLOWRAW);
-								$minScaleDenominator = substr($minScaleDenominator, strpos($minScaleDenominator, "[")+2, (strlen($minScaleDenominator)-2) - (strpos($minScaleDenominator, "[")+2));
+								if($minScaleDenominator != "service-value")
+									$minScaleDenominator = substr($minScaleDenominator, strpos($minScaleDenominator, "[")+2, (strlen($minScaleDenominator)-2) - (strpos($minScaleDenominator, "[")+2));
 								$listMinScaleDenominatorTileMatrixSetId[$tileMatrixSetId]=$minScaleDenominator;
 								$listBBOXTileMatrixSetId[$tileMatrixSetId]=array('minx'=>JRequest::getVar("bboxminx@$i@$layernum@$j",null,'defaut','none',JREQUEST_ALLOWRAW),
 																				 'maxx'=>JRequest::getVar("bboxmaxx@$i@$layernum@$j",null,'defaut','none',JREQUEST_ALLOWRAW),
 																				 'miny'=>JRequest::getVar("bboxminy@$i@$layernum@$j",null,'defaut','none',JREQUEST_ALLOWRAW),
 																				 'maxy'=>JRequest::getVar("bboxmaxy@$i@$layernum@$j",null,'defaut','none',JREQUEST_ALLOWRAW)	);
 								$listTileMatrixSetIndex[$tileMatrixSetId]=$j;
+								$listTileMatrixSetCRSUnits[$tileMatrixSetId]=JRequest::getVar("unitCRS@$i@$layernum@$j",null,'defaut','none',JREQUEST_ALLOWRAW);
 							}
 							
 							$confObject = JFactory::getApplication();
@@ -1237,92 +1242,45 @@ function savePolicyWMTS($thePolicy){
 							$contents = $dom_capa->getElementsByTagNameNS($namespaces[''],'Contents')->item(0);
 							$tileMatrixSets = $contents->getElementsByTagName('TileMatrixSet');
 							
+							//Layer has filter
+							$hasFilter = false;
 							foreach($listMinScaleDenominatorTileMatrixSetId as $key=>$value) :
 								foreach ( $tileMatrixSets as $tileMatrixSet){
 									//Get the TileMatrix definition
 									if($tileMatrixSet->parentNode->nodeName == "Contents" )
 									{
 										$tileMatrixSetIdentifier = $tileMatrixSet->getElementsByTagNameNS($namespaces['ows'],'Identifier')->item(0)->nodeValue;
+										$tileMatrixSetSupportedCRS = $tileMatrixSet->getElementsByTagNameNS($namespaces['ows'],'SupportedCRS')->item(0)->nodeValue;
 										
 										if($tileMatrixSetIdentifier == $key){
 											$theTileMatrixSet = $theLayer->addChild(TileMatrixSet);
 											$theTileMatrixSet['id'] =$key;
-											$theTileMatrixSet->minScaleDenominator = $value;
+											
 											
 											$tileMatrices = $tileMatrixSet->getElementsByTagName('TileMatrix');
 											
 											if($value == "service-value"){
 												//On n'enleve pas de TileMatrix
-												if(!$bboxminx){
+												if($bboxminx == null){
 													//Pas de filtre geographique la TileMatrixSet est conservée tel quel
 													$theTileMatrixSet['all'] ='true';
-													
 												}else{
+													$hasFilter = true;
 													//Un filtre geographique est défini, les TileMatrix doivent être redefinies
 													for($tm = 0; $tm<$tileMatrices->length; $tm++){
 														$tileMatrix = $tileMatrices->item($tm); 
 														$tileMatrixIdentifier = $tileMatrix->getElementsByTagNameNS($namespaces['ows'],'Identifier')->item(0)->nodeValue;
 														$tileMatrixScaleDenominator = $tileMatrix->getElementsByTagName('ScaleDenominator')->item(0)->nodeValue;
 														
-														$theTileMatrix = $theTileMatrixSet->addChild(TileMatrix);
-														$theTileMatrix['id']= $tileMatrixIdentifier;
-														$theTileMatrix['all']= 'false';
-														//Calcul des colmin colmax rowmin rowmax
-														$topLeftCorner = $tileMatrix->getElementsByTagName('TopLeftCorner')->item(0)->nodeValue;
-														$topLeftCornerX = substr($topLeftCorner, 0, strpos($topLeftCorner," "));
-														$topLeftCornerY = substr($topLeftCorner, strpos($topLeftCorner," ")+1);
-														$tileWidth = $tileMatrix->getElementsByTagName('TileWidth')->item(0)->nodeValue;
-														$tileHeight = $tileMatrix->getElementsByTagName('TileHeight')->item(0)->nodeValue;
-														$matrixWidth = $tileMatrix->getElementsByTagName('MatrixWidth')->item(0)->nodeValue;
-														$matrixHeight = $tileMatrix->getElementsByTagName('MatrixHeight')->item(0)->nodeValue;
-
-														$bboxCRS = $listBBOXTileMatrixSetId[$tileMatrixSetIdentifier];
-																													
-														$pixelSpan = $tileMatrixScaleDenominator *0.00028 / 111319.49;
-														$tileSpanX = $tileWidth * $pixelSpan;
-														$tileSpanY = $tileHeight * $pixelSpan;
-														$tileMatrixMaxX = $topLeftCornerX + $tileSpanX * $matrixWidth;
-														$tileMatrixMinY = $topLeftCornerY - $tileSpanY * $matrixHeight;
-														$epsilon = 0.000001;
-														
-														$tileMinCol = floor(($bboxCRS[minx] - $topLeftCornerX)/$tileSpanX + $epsilon);
-														$tileMaxCol = floor(($bboxCRS[maxx] - $topLeftCornerX)/$tileSpanX - $epsilon);
-														$tileMinRow = floor(($topLeftCornerY - $bboxCRS[maxy])/$tileSpanY + $epsilon);
-														$tileMaxRow = floor(($topLeftCornerY - $bboxCRS[miny])/$tileSpanY - $epsilon);
-														
-														if($tileMinCol < 0){
-															$tileMinCol = 0;
-														}
-														if($tileMaxCol >= $matrixWidth){
-															$tileMaxCol = $matrixWidth -1;
-														}
-														if($tileMinRow < 0){
-															$tileMinRow = 0;
-														}
-														if($tileMaxRow >= $matrixHeight){
-															$tileMaxRow = $matrixHeight -1;
-														}
-																
-														if($tileMatrixMaxX < $bboxCRS[minx] 
-															|| $tileMatrixMinY < $bboxCRS[maxy]
-															|| $topLeftCornerY > $bboxCRS[miny] 
-															|| $topLeftCornerX > $bboxCRS[maxx]){
-															//No intersection
-															$theTileMatrix['none'] = 'true';
-														}
-														else{
-															$theTileMatrix->TileMinCol = $tileMinCol;
-															$theTileMatrix->TileMaxCol = $tileMaxCol;
-															$theTileMatrix->TileMinRow = $tileMinRow;
-															$theTileMatrix->TileMaxRow = $tileMaxRow;
-														}
-														
+														ADMIN_proxy::addAuthorizedTiles($theTileMatrixSet,$tileMatrixIdentifier, $tileMatrix, $tileMatrixSetSupportedCRS, $listBBOXTileMatrixSetId, $listTileMatrixSetCRSUnits, $tileMatrixSetIdentifier, $tileMatrixScaleDenominator);
 													}
 												}
 											}else{
+												$hasFilter=true;
+												$theTileMatrixSet->minScaleDenominator = $value;
 												$theTileMatrixSet['all'] ='false';
 												//On doit enlever les TileMatrix avec scaleDenominator <
-												if(!$bboxminx){
+												if($bboxminx == null){
 													//Pas de filtre géographique, on ne reecrit pas les tileMatrix
 													for($tm = 0; $tm<$tileMatrices->length; $tm++){
 														$tileMatrix = $tileMatrices->item($tm); 
@@ -1342,66 +1300,19 @@ function savePolicyWMTS($thePolicy){
 														$tileMatrixScaleDenominator = $tileMatrix->getElementsByTagName('ScaleDenominator')->item(0)->nodeValue;
 														
 														if($tileMatrixScaleDenominator >= $value){
-															$theTileMatrix = $theTileMatrixSet->addChild(TileMatrix);
-															$theTileMatrix['id']= $tileMatrixIdentifier;
-															$theTileMatrix['all']= 'false';
-															//Calcul des colmin colmax rowmin rowmax
-															$topLeftCorner = $tileMatrix->getElementsByTagName('TopLeftCorner')->item(0)->nodeValue;
-															$topLeftCornerX = substr($topLeftCorner, 0, strpos($topLeftCorner," "));
-															$topLeftCornerY = substr($topLeftCorner, strpos($topLeftCorner," ")+1);
-															$tileWidth = $tileMatrix->getElementsByTagName('TileWidth')->item(0)->nodeValue;
-															$tileHeight = $tileMatrix->getElementsByTagName('TileHeight')->item(0)->nodeValue;
-															$matrixWidth = $tileMatrix->getElementsByTagName('MatrixWidth')->item(0)->nodeValue;
-															$matrixHeight = $tileMatrix->getElementsByTagName('MatrixHeight')->item(0)->nodeValue;
-
-															$bboxCRS = $listBBOXTileMatrixSetId[$tileMatrixSetIdentifier];
-																														
-															$pixelSpan = $tileMatrixScaleDenominator *0.00028 / 111319.49;
-															$tileSpanX = $tileWidth * $pixelSpan;
-															$tileSpanY = $tileHeight * $pixelSpan;
-															$tileMatrixMaxX = $topLeftCornerX + $tileSpanX * $matrixWidth;
-															$tileMatrixMinY = $topLeftCornerY - $tileSpanY * $matrixHeight;
-															$epsilon = 0.000001;
-															
-															$tileMinCol = floor(($bboxCRS[minx] - $topLeftCornerX)/$tileSpanX + $epsilon);
-															$tileMaxCol = floor(($bboxCRS[maxx] - $topLeftCornerX)/$tileSpanX - $epsilon);
-															$tileMinRow = floor(($topLeftCornerY - $bboxCRS[maxy])/$tileSpanY + $epsilon);
-															$tileMaxRow = floor(($topLeftCornerY - $bboxCRS[miny])/$tileSpanY - $epsilon);
-															
-															if($tileMinCol < 0){
-																$tileMinCol = 0;
-															}
-															if($tileMaxCol >= $matrixWidth){
-																$tileMaxCol = $matrixWidth -1;
-															}
-															if($tileMinRow < 0){
-																$tileMinRow = 0;
-															}
-															if($tileMaxRow >= $matrixHeight){
-																$tileMaxRow = $matrixHeight -1;
-															}
-															
-															if($tileMatrixMaxX < $bboxCRS[minx] 
-																|| $tileMatrixMinY < $bboxCRS[maxy]
-																|| $topLeftCornerY > $bboxCRS[miny] 
-																|| $topLeftCornerX > $bboxCRS[maxx]){
-																//No intersection
-																$theTileMatrix['none'] = 'true';
-															}
-															else{
-																$theTileMatrix->TileMinCol = $tileMinCol;
-																$theTileMatrix->TileMaxCol = $tileMaxCol;
-																$theTileMatrix->TileMinRow = $tileMinRow;
-																$theTileMatrix->TileMaxRow = $tileMaxRow;
-															}
+															ADMIN_proxy::addAuthorizedTiles($theTileMatrixSet,$tileMatrixIdentifier, $tileMatrix, $tileMatrixSetSupportedCRS, $listBBOXTileMatrixSetId, $listTileMatrixSetCRSUnits, $tileMatrixSetIdentifier, $tileMatrixScaleDenominator);
 														}
 													}
 												}
 											}
+											
 										}						
 									}
 								}
  							endforeach;
+ 							if(!$hasFilter){
+ 								
+ 							}
 						}
 					}
 					
@@ -1417,6 +1328,109 @@ function savePolicyWMTS($thePolicy){
 				break;
 			}
 		}
+	}
+}
+
+
+/**
+ * Calculate the range of tiles allowed by the BBOX filter
+ * Algorithm given by OGC 07-057r2 document (page 9).
+ * @param unknown_type $theTileMatrixSet : Element of the policy document describing the TileMatrixSet
+ * @param unknown_type $tileMatrixIdentifier : identifier of the TileMatrix
+ * @param unknown_type $tileMatrix : Element of the GetCapabilities document describing the TileMatrix
+ * @param unknown_type $tileMatrixSetSupportedCRS : CRS of the TileMatrixSet
+ * @param unknown_type $listBBOXTileMatrixSetId : list of the BBOX filter defined in the submited form. Accessible by the TileMatrixSetId
+ * @param unknown_type $listTileMatrixSetCRSUnits : list of the CRS units get from the submited form. Accessible by the TileMatrixSetId
+ * @param unknown_type $tileMatrixSetIdentifier : identifier of the TileMatrixSet
+ * @param unknown_type $tileMatrixScaleDenominator : ScaleDenominator of the TileMatrix
+ */
+function addAuthorizedTiles($theTileMatrixSet,$tileMatrixIdentifier, $tileMatrix, $tileMatrixSetSupportedCRS, $listBBOXTileMatrixSetId, $listTileMatrixSetCRSUnits, $tileMatrixSetIdentifier, $tileMatrixScaleDenominator){
+	
+	
+	//Get TileMatrix informations
+	$tileWidth = $tileMatrix->getElementsByTagName('TileWidth')->item(0)->nodeValue;
+	$tileHeight = $tileMatrix->getElementsByTagName('TileHeight')->item(0)->nodeValue;
+	$matrixWidth = $tileMatrix->getElementsByTagName('MatrixWidth')->item(0)->nodeValue;
+	$matrixHeight = $tileMatrix->getElementsByTagName('MatrixHeight')->item(0)->nodeValue;
+
+	//Get BBOX filter define for this layer
+	$bboxCRS = $listBBOXTileMatrixSetId[$tileMatrixSetIdentifier];
+	//Get the unit of the TileMatrixSet CRS 
+	$CRSunits = $listTileMatrixSetCRSUnits[$tileMatrixSetIdentifier];
+	
+	//Calculate the meterPerUnit parameter
+	$meterPerUnit = 111319.49;
+	if($CRSunits == "m" || $CRSunits == "metre")
+		$meterPerUnit = 1;
+	if($CRSunits == "grad")
+		$meterPerUnit = 100187.54;
+	if($CRSunits == "degree" || $CRSunits == "Degree")
+		$meterPerUnit = 111319.49;
+	if($CRSunits == "rad" || $CRSunits == "radian" || $CRSunits == "Radian")
+		$meterPerUnit = 6378137;
+
+	//Get the East and North coordinates of the top left corner of the TileMatrix.
+	//
+	//EPSG authority CRS definition (see : www.epsg-registry.org):
+	//- Geographic CRS give the topLeftCorner as <TopLeftCorner>North East</TopLeftCorner>
+	//- Projected CRS give the topLeftCorner as <TopLeftCorner>East North</TopLeftCorner>
+	//OGC authority CRS defnition (see : OGC 07-057r7 document)
+	//- all CRS give the topLeftCorner as <TopLeftCorner>East North</TopLeftCorner>
+	//Others authorities are not supported.
+	$topLeftCorner = $tileMatrix->getElementsByTagName('TopLeftCorner')->item(0)->nodeValue;
+	if(strpos($CRSunits,'m') && strpos($tileMatrixSetSupportedCRS,'EPSG')){
+		$topLeftCornerY = substr($topLeftCorner, 0, strpos($topLeftCorner," "));
+		$topLeftCornerX = substr($topLeftCorner, strpos($topLeftCorner," ")+1);
+	}else{
+		$topLeftCornerX = substr($topLeftCorner, 0, strpos($topLeftCorner," "));
+		$topLeftCornerY = substr($topLeftCorner, strpos($topLeftCorner," ")+1);
+	}
+	
+	//Calculate TileMatrix dimensions
+	$pixelSpan = $tileMatrixScaleDenominator *0.00028 / $meterPerUnit;
+	$tileSpanX = $tileWidth * $pixelSpan;
+	$tileSpanY = $tileHeight * $pixelSpan;
+	$tileMatrixMaxX = $topLeftCornerX + $tileSpanX * $matrixWidth;
+	$tileMatrixMinY = $topLeftCornerY - $tileSpanY * $matrixHeight;
+	$epsilon = 0.000001;
+	
+	//Calculate the range of tileset indexes included in the BBOX filter
+	$tileMinCol = floor(($bboxCRS[minx] - $topLeftCornerX)/$tileSpanX + $epsilon);
+	$tileMaxCol = floor(($bboxCRS[maxx] - $topLeftCornerX)/$tileSpanX - $epsilon);
+	$tileMinRow = floor(($topLeftCornerY - $bboxCRS[maxy])/$tileSpanY + $epsilon);
+	$tileMaxRow = floor(($topLeftCornerY - $bboxCRS[miny])/$tileSpanY - $epsilon);
+	
+	//Error control to avoid requesting empty tiles
+	if($tileMinCol < 0){
+		$tileMinCol = 0;
+	}
+	if($tileMaxCol >= $matrixWidth){
+		$tileMaxCol = $matrixWidth -1;
+	}
+	if($tileMinRow < 0){
+		$tileMinRow = 0;
+	}
+	if($tileMaxRow >= $matrixHeight){
+		$tileMaxRow = $matrixHeight -1;
+	}
+	
+	//Control if the BBOX filter and the TileMatrix extent intersect each other
+	if($tileMatrixMaxX < $bboxCRS[minx] 
+		|| $tileMatrixMinY > $bboxCRS[maxy]
+		|| $topLeftCornerY < $bboxCRS[miny] 
+		|| $topLeftCornerX > $bboxCRS[maxx]){
+		//No intersection : none of the Tile is allowed
+		//$theTileMatrix['none'] = 'true';
+	}
+	else{
+		$theTileMatrix = $theTileMatrixSet->addChild(TileMatrix);
+		$theTileMatrix['id']= $tileMatrixIdentifier;
+		$theTileMatrix['all']= 'false';
+		//Intersection 
+		$theTileMatrix->TileMinCol = $tileMinCol;
+		$theTileMatrix->TileMaxCol = $tileMaxCol;
+		$theTileMatrix->TileMinRow = $tileMinRow;
+		$theTileMatrix->TileMaxRow = $tileMaxRow;
 	}
 }
 /**

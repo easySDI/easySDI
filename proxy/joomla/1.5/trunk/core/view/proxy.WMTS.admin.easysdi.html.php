@@ -257,6 +257,7 @@ class HTML_proxyWMTS {
 	?>
 	<script>
 
+	var waitFor = 0;
 	function submitbutton(pressbutton)
 	{
 		if(pressbutton=='cancelPolicy')
@@ -278,19 +279,35 @@ class HTML_proxyWMTS {
 						for (var k = 0 ; k <= countTileMatrixSet ; k++){
 							var CRS = document.getElementById('tmsCRS@'+i+'@'+j+'@'+k).value;
 
+							if(CRS == null){
+								CRS = 'EPSG:4326';
+							}
+							//if TileMatrixSet CRS is urn:ogc:def:crs:OGC:1.3:CRS84 :
+							//proj4js does not support OGC authority crs so replace it by the corresponding EPSG:4326
+							if(CRS.lastIndexOf("CRS84")!=-1){
+								CRS = 'EPSG:4326';
+							}
+							
 							var source = new Proj4js.Proj('EPSG:4326');
 							var dest = new Proj4js.Proj(CRS);     
-							
+							waitFor += 1;
 							checkProjLoaded(i,j,k, bboxminx, bboxminy,bboxmaxx,bboxmaxy, source, dest)
 						}
 					}	
 				}
 			}
-			submitform(pressbutton);
+			submitWhenAllBBOXCalculated(pressbutton);
 
 		}
 	}
 
+	function submitWhenAllBBOXCalculated (pressbutton){
+		if(waitFor== 0)
+			submitform(pressbutton);
+		else
+			window.setTimeout(Proj4js.bind(submitWhenAllBBOXCalculated, this, pressbutton), 500);
+	}
+	
 	function calculateBBOX(i,j,k, bboxminx, bboxminy,bboxmaxx,bboxmaxy, source, dest){
 		var pLowerEastCorner = new Proj4js.Point(new Array(bboxminx,bboxminy));   
 		Proj4js.transform(source, dest, pLowerEastCorner);
@@ -305,13 +322,17 @@ class HTML_proxyWMTS {
 
 	function checkProjLoaded(i,j,k, bboxminx, bboxminy,bboxmaxx,bboxmaxy, source, dest) {
 	    if (!source.readyToUse || !dest.readyToUse) {
-	      window.setTimeout(Proj4js.bind(checkProjLoaded,  i,j,k, bboxminx, bboxminy,bboxmaxx,bboxmaxy, source, dest), 500);
+	      window.setTimeout(Proj4js.bind(checkProjLoaded, this, i,j,k, bboxminx, bboxminy,bboxmaxx,bboxmaxy, source, dest), 500);
 	    } else {
+		    waitFor -= 1;
+		    document.getElementById('unitCRS@'+i+'@'+j+'@'+k).value = dest.units;
 	    	calculateBBOX(i,j,k, bboxminx, bboxminy,bboxmaxx,bboxmaxy, source, dest);
 	    }
 	  
 	}
-		function disableOperationCheckBoxes()
+
+	
+	function disableOperationCheckBoxes()
 		{
 			var check = document.getElementById('AllOperations').checked;
 			
@@ -419,21 +440,6 @@ class HTML_proxyWMTS {
 	<input type="hidden" name="remoteServer<?php echo $iServer;?>" id="remoteServer<?php echo $iServer;?>" value="<?php echo $remoteServer->url ?>">
 	<fieldset class="adminform" id="fsServer<?php echo $iServer;?>" >
 		<legend><?php echo JText::_( 'PROXY_CONFOG_WMTS_SERVER'); ?> <?php echo $remoteServer->alias ;?> (<?php echo $remoteServer->url; ?>)</legend>
-		<table class="admintable">
-			<tr>
-				<td class="key"><?php echo JText::_( 'EASYSDI_WFS_SERVER_PREFIXE'); ?> </td>		
-				<td>
-				<input type="text" size ="100"   name="serverPrefixe<?php echo $iServer; ?>" id="serverPrefixe<?php echo $iServer; ?>" value="<?php echo $theServer->Prefix; ?>">
-				</td>
-			</tr>
-			<tr>
-				<td class="key"><?php echo JText::_( 'EASYSDI_WFS_SERVER_NAMESPACE'); ?></td>
-				<td>
-				<input type="text" size ="100"  name="serverNamespace<?php echo $iServer; ?>" id="serverNamespace<?php echo $iServer; ?>" value="<?php echo $theServer->Namespace; ?>">
-				</td>
-			</tr>
-		</table>
-		<br>
 		<table  width ="100%"  class="admintable" id="remoteServerTable@<?php echo $iServer; ?>" <?php if (strcasecmp($thePolicy->Servers['All'],'True')==0 ) echo "style='display:none'"; ?>>
 			<tr>
 				<td colspan="1"><input type="checkBox" name="AllLayers@<?php echo $iServer; ?>" id="AllLayers@<?php echo $iServer; ?>" value="All" <?php if (strcasecmp($theServer->Layers['All'],'True')==0 ) echo ' checked '; ?> onclick="disableWMTSLayers(<?php echo $iServer; ?>);"><?php echo JText::_( 'PROXY_CONFIG_LAYER_ALL'); ?></td>
@@ -549,6 +555,7 @@ class HTML_proxyWMTS {
 					 							echo JHTML::_("select.genericlist",$availableTileMatrixList, 'minScaleDenominator@'.$iServer."@".$layernum."@".$id, 'size="1" ', 'value', 'text', $selectedDenominator );
 												?>
 												<input type="hidden" name="tmsCRS@<?php echo $iServer; ?>@<?php echo $layernum; ?>@<?php echo $id; ?>" id="tmsCRS@<?php echo $iServer; ?>@<?php echo $layernum; ?>@<?php echo $id; ?>" value="<?php echo $describedTileMatrixSetsCRS[$tileMatrixSetId]; ?>">
+												<input type="hidden" name="unitCRS@<?php echo $iServer; ?>@<?php echo $layernum; ?>@<?php echo $id; ?>" id="unitCRS@<?php echo $iServer; ?>@<?php echo $layernum; ?>@<?php echo $id; ?>" value="">
 												<input type="hidden" name="bboxmaxx@<?php echo $iServer; ?>@<?php echo $layernum; ?>@<?php echo $id; ?>" id="bboxmaxx@<?php echo $iServer; ?>@<?php echo $layernum; ?>@<?php echo $id; ?>" value="">
 												<input type="hidden" name="bboxminx@<?php echo $iServer; ?>@<?php echo $layernum; ?>@<?php echo $id; ?>" id="bboxminx@<?php echo $iServer; ?>@<?php echo $layernum; ?>@<?php echo $id; ?>" value="">
 												<input type="hidden" name="bboxmaxy@<?php echo $iServer; ?>@<?php echo $layernum; ?>@<?php echo $id; ?>" id="bboxmaxy@<?php echo $iServer; ?>@<?php echo $layernum; ?>@<?php echo $id; ?>" value="">
