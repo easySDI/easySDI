@@ -89,7 +89,7 @@ Ext.onReady(function(){
   	       ]*/
    }
    
-   EasySDI_Mon.ExportTypeStore = [ ['CSV'], ['HTML'], ['XHTML']];
+
    
    EasySDI_Mon.HttpMethodStore = [
                              ['GET'],

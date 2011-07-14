@@ -31,7 +31,7 @@ Ext.onReady(function(){
 	});
 	
 	  EasySDI_Mon.MonitorRoot = "index.php?option=com_easysdi_monitor";
-	  EasySDI_Mon.ExportTypeStore =  [['CSV'],['HTML'],['XHTML']];
+	  EasySDI_Mon.ExportTypeStore =  [['CSV'],['XML'],['XHTML']];
 
     var expportConfig = Ext.data.Record.create([
      'id','exportName', 'exportType','exportDesc', 'xsltUrl'      
