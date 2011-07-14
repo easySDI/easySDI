@@ -247,7 +247,7 @@ function editXQueryReport($rows){
 							<table><tbody><tr>
 									<td class="td_left"> <?php echo JText::_("CATALOG_XQUERY_ENTEROGC"); ?>	</td>
 									<td class="td_middle"></td>
-									<td class="td_right"> <textarea name ="ogcfilter" class="text_area  textarea_size" ></textarea></td>
+									<td class="td_right"> <textarea name ="ogcfilter" class="text_area  textarea_size" ><?php echo $row->ogcfilter  ?></textarea></td>
 							 		</tr></tbody>							 	
 							</table>
 			</fieldset>
