@@ -216,13 +216,30 @@ function disableLayers(iServ)
 function disableWMTSLayers(iServ)
 {
 	var iLay = 0;
+//	var display = "none";
 	var check = document.getElementById('AllLayers@'+iServ).checked;
+	/*if(check){
+		display="block";
+	}*/
 	
 	while (document.getElementById('layer@'+iServ+'@'+iLay) != null)
 	{
 		document.getElementById('layer@'+iServ+'@'+iLay).checked = check;
+		document.getElementById('layer@'+iServ+'@'+iLay).disabled = check;
+		document.getElementById('fsLayer@'+iServ+'@'+iLay).disabled = check;
+		document.getElementById('tableLayer@'+iServ+'@'+iLay).style.display = "none";
 		iLay ++;
 	}
+}
+
+function enableTableLayer(iServ,iLay)
+{
+	var check = document.getElementById('layer@'+iServ+'@'+iLay).checked;
+	var display = "none";
+	if(check){
+		display="block";
+	}
+	document.getElementById('tableLayer@'+iServ+'@'+iLay).style.display = display;
 }
 
 function disableWMTSServersLayers ()

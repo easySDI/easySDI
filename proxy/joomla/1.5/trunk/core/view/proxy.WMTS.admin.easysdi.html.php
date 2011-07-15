@@ -442,7 +442,15 @@ class HTML_proxyWMTS {
 		<legend><?php echo JText::_( 'PROXY_CONFOG_WMTS_SERVER'); ?> <?php echo $remoteServer->alias ;?> (<?php echo $remoteServer->url; ?>)</legend>
 		<table  width ="100%"  class="admintable" id="remoteServerTable@<?php echo $iServer; ?>" <?php if (strcasecmp($thePolicy->Servers['All'],'True')==0 ) echo "style='display:none'"; ?>>
 			<tr>
-				<td colspan="1"><input type="checkBox" name="AllLayers@<?php echo $iServer; ?>" id="AllLayers@<?php echo $iServer; ?>" value="All" <?php if (strcasecmp($theServer->Layers['All'],'True')==0 ) echo ' checked '; ?> onclick="disableWMTSLayers(<?php echo $iServer; ?>);"><?php echo JText::_( 'PROXY_CONFIG_LAYER_ALL'); ?></td>
+				<td colspan="1">
+					<input type="checkBox" 
+						   name="AllLayers@<?php echo $iServer; ?>" 
+						   id="AllLayers@<?php echo $iServer; ?>" 
+						   value="All" <?php if (strcasecmp($theServer->Layers['All'],'True')==0 ) 
+						   echo ' checked '; ?> 
+						   onclick="disableWMTSLayers(<?php echo $iServer; ?>);">
+						   <?php echo JText::_( 'PROXY_CONFIG_LAYER_ALL'); ?>
+				</td>
 			</tr>
 			
 			
@@ -491,13 +499,26 @@ class HTML_proxyWMTS {
 						<fieldset class="adminform" id="fsLayer@<?php echo $iServer;?>@<?php echo $layernum;?>" >
 							<legend>
 								<input  
-										<?php if( HTML_proxyWMTS::isWMTSLayerChecked($theServer,$identifier->nodeValue) || strcasecmp($theServer->Layers['All'],'True')==0) echo ' checked';?> type="checkbox"
+										<?php 
+										if( HTML_proxyWMTS::isWMTSLayerChecked($theServer,$identifier->nodeValue) || strcasecmp($theServer->Layers['All'],'True')==0) echo ' checked'; 
+										if(strcasecmp($theServer->Layers['All'],'True')==0) echo ' disabled ';
+										?> 
+										type="checkbox"
 										id="layer@<?php echo $iServer; ?>@<?php echo $layernum;?>" 
 										name="layer@<?php echo $iServer; ?>@<?php echo $layernum;?>"
-										value="<?php echo $identifier->nodeValue;?>">
+										value="<?php echo $identifier->nodeValue;?>"
+										onclick="enableTableLayer(<?php echo $iServer;?>,<?php echo $layernum;?>);"
+										>
 										<?php echo $identifier->nodeValue; ?> ( <?php echo $title;?> )
 							</legend>
-							<table>
+							<table id="tableLayer@<?php echo $iServer;?>@<?php echo $layernum;?>" 
+								<?php 
+									if(!HTML_proxyWMTS::isWMTSLayerChecked($theServer,$identifier->nodeValue) || strcasecmp($theServer->Layers['All'],'True')==0){
+										 echo ' style="display: none;" ';
+									}else{
+										 echo ' style="display: block;" ';
+									}
+								?> >
 								<tr>
 									<th><?php echo JText::_( 'PROXY_CONFIG_GEOGRAPHIC_FILTER'); ?></th>
 									<th><?php echo JText::_( 'PROXY_CONFIG_TILEMATRIXSET_ID'); ?></th>

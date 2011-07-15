@@ -1129,12 +1129,7 @@ function savePolicyWMTS($thePolicy){
 			{
 				$theServer = $thePolicy->Servers->addChild('Server');
 				$theServer->url=$remoteServer;
-				$serverPrefixe = JRequest::getVar("serverPrefixe$i","");
-				$theServer->Prefix =$serverPrefixe;
-				$serverNamespace = JRequest::getVar("serverNamespace$i","");
-				$theServer->Namespace = $serverNamespace;
-				
-				$theServer->Layers ="";
+				/*$theServer->Layers ="";
 				
 				while (list($key, $val) = each($params )) 
 				{
@@ -1144,7 +1139,7 @@ function savePolicyWMTS($thePolicy){
 						$theLayer = $theServer->Layers->addChild('Layer');
 						$theLayer->Name =$val;
 					}
-				}
+				}*/
 				reset($params);
 			}
 			else
@@ -1167,31 +1162,22 @@ function savePolicyWMTS($thePolicy){
 			{
 				$theServer = $thePolicy->Servers->addChild('Server');
 				$theServer->url=$remoteServer;
-				$serverPrefixe = JRequest::getVar("serverPrefixe$i","");
-				$theServer->Prefix =$serverPrefixe;
-				$serverNamespace = JRequest::getVar("serverNamespace$i","");
-				$theServer->Namespace = $serverNamespace;
-				
 				$theServer->Layers ="";
-				$foundLayer = false;
-				
-				while (list($key, $val) = each($params )) 
+				$AllLayers = JRequest::getVar("AllLayers@$i","");
+				if(strlen($AllLayers)>0)
 				{
-					if (!(strpos($key,"layer@$i")===false))
+					//All layers checked
+					$theServer->Layers['All']='true';
+					//$theLayer = $theServer->Layers->addChild('Layer');
+					//$theLayer->Name =$val;
+				}	
+				else
+				{
+					//All layer not checked
+					while (list($key, $val) = each($params )) 
 					{
-						$AllLayers = JRequest::getVar("AllLayers@$i","");
-						if(strlen($AllLayers)>0)
+						if (!(strpos($key,"layer@$i")===false))
 						{
-							//All layers checked
-							$foundLayer = true;
-							$theServer->Layers['All']='true';
-							$theLayer = $theServer->Layers->addChild('Layer');
-							$theLayer->Name =$val;
-						}	
-						else
-						{
-							//All layer not checked
-							$foundLayer = true;
 							$theServer->Layers['All']='false';
 							$theLayer = $theServer->Layers->addChild('Layer');
 							$len =strlen("layer@$i")+1;
@@ -1200,12 +1186,13 @@ function savePolicyWMTS($thePolicy){
 							$layernum = substr($key,($lentot-$len ) *-1);
 							$theLayer->Name =$val;
 							
-							//geographical restriction
+							//Get geographical restriction
 							$bboxminx = JRequest::getVar("bboxminx@$i@$layernum",null,'defaut','FLOAT',JREQUEST_ALLOWRAW);
 							$bboxmaxx = JRequest::getVar("bboxmaxx@$i@$layernum",null,'defaut','FLOAT',JREQUEST_ALLOWRAW);
 							$bboxminy = JRequest::getVar("bboxminy@$i@$layernum",null,'defaut','FLOAT',JREQUEST_ALLOWRAW);
 							$bboxmaxy = JRequest::getVar("bboxmaxy@$i@$layernum",null,'defaut','FLOAT',JREQUEST_ALLOWRAW);
 							
+							//If a geographical restriction is define, put it in the policy file that it can be retreive to fill the edition form of the policy 
 							if($bboxminx != null){
 								$theLayer->bboxminx =$bboxminx;
 								$theLayer->bboxmaxx =$bboxmaxx;
@@ -1213,30 +1200,39 @@ function savePolicyWMTS($thePolicy){
 								$theLayer->bboxmaxy =$bboxmaxy;
 							}
 							
-							//min scale denominator restriction
+							//Get min scale denominator restriction
 							$nbTileMatrixSetPerLayer = JRequest::getVar("countTileMatrixSet@$i@$layernum",null,'defaut','none',JREQUEST_ALLOWRAW);
 							$listMinScaleDenominatorTileMatrixSetId = array();
 							$listBBOXTileMatrixSetId = array();
 							$listTileMatrixSetIndex=array();
 							$listTileMatrixSetCRSUnits=array();
+							//Loop throw the the TileMatrixSets linked to the current layer
 							for($j = 0 ; $j <= $nbTileMatrixSetPerLayer ; $j++ ){
+								//TileMatrixSetId
 								$tileMatrixSetId = JRequest::getVar("TileMatrixSetId@$i@$layernum@$j",null,'defaut','none',JREQUEST_ALLOWRAW);
+								//Selected minScaleDenominator
 								$minScaleDenominator = JRequest::getVar("minScaleDenominator@$i@$layernum@$j",null,'defaut','none',JREQUEST_ALLOWRAW);
+								//If a specific minScaleDenominator is selected, process the posted value to extract the numeric value of the scale denominator
+								//NB : posted value is "TileMatrixId [ scaleDenominator ]"
 								if($minScaleDenominator != "service-value")
 									$minScaleDenominator = substr($minScaleDenominator, strpos($minScaleDenominator, "[")+2, (strlen($minScaleDenominator)-2) - (strpos($minScaleDenominator, "[")+2));
+								
+								//Fill array with the selected scaleDenominator
 								$listMinScaleDenominatorTileMatrixSetId[$tileMatrixSetId]=$minScaleDenominator;
+								//Fill array with the geographical filter in the tileMatrixSet CRS (transformation was previously done by proj4js in the edition form)
 								$listBBOXTileMatrixSetId[$tileMatrixSetId]=array('minx'=>JRequest::getVar("bboxminx@$i@$layernum@$j",null,'defaut','none',JREQUEST_ALLOWRAW),
 																				 'maxx'=>JRequest::getVar("bboxmaxx@$i@$layernum@$j",null,'defaut','none',JREQUEST_ALLOWRAW),
 																				 'miny'=>JRequest::getVar("bboxminy@$i@$layernum@$j",null,'defaut','none',JREQUEST_ALLOWRAW),
 																				 'maxy'=>JRequest::getVar("bboxmaxy@$i@$layernum@$j",null,'defaut','none',JREQUEST_ALLOWRAW)	);
 								$listTileMatrixSetIndex[$tileMatrixSetId]=$j;
+								//Fill array with the CRS unit get from the proj4js CRS definition, will be used in tile accessibility computation
 								$listTileMatrixSetCRSUnits[$tileMatrixSetId]=JRequest::getVar("unitCRS@$i@$layernum@$j",null,'defaut','none',JREQUEST_ALLOWRAW);
 							}
 							
+							//Load the saved GetCapabilities file
 							$confObject = JFactory::getApplication();
 							$tmpPath = $confObject->getCfg('tmp_path');
 							$xmlCapa = simplexml_load_file($tmpPath."/wmts_tmp.xml");
-							
 							$namespaces = $xmlCapa->getDocNamespaces();
 							$dom_capa = dom_import_simplexml ($xmlCapa);
 							$contents = $dom_capa->getElementsByTagNameNS($namespaces[''],'Contents')->item(0);
@@ -1255,15 +1251,13 @@ function savePolicyWMTS($thePolicy){
 										if($tileMatrixSetIdentifier == $key){
 											$theTileMatrixSet = $theLayer->addChild(TileMatrixSet);
 											$theTileMatrixSet['id'] =$key;
-											
-											
 											$tileMatrices = $tileMatrixSet->getElementsByTagName('TileMatrix');
 											
 											if($value == "service-value"){
 												//On n'enleve pas de TileMatrix
 												if($bboxminx == null){
 													//Pas de filtre geographique la TileMatrixSet est conservée tel quel
-													$theTileMatrixSet['all'] ='true';
+													$theTileMatrixSet['All'] ='true';
 												}else{
 													$hasFilter = true;
 													//Un filtre geographique est défini, les TileMatrix doivent être redefinies
@@ -1278,7 +1272,7 @@ function savePolicyWMTS($thePolicy){
 											}else{
 												$hasFilter=true;
 												$theTileMatrixSet->minScaleDenominator = $value;
-												$theTileMatrixSet['all'] ='false';
+												$theTileMatrixSet['All'] ='false';
 												//On doit enlever les TileMatrix avec scaleDenominator <
 												if($bboxminx == null){
 													//Pas de filtre géographique, on ne reecrit pas les tileMatrix
@@ -1289,7 +1283,7 @@ function savePolicyWMTS($thePolicy){
 														if($tileMatrixScaleDenominator >= $value){
 															$theTileMatrix = $theTileMatrixSet->addChild(TileMatrix);
 															$theTileMatrix['id']= $tileMatrixIdentifier;
-															$theTileMatrix['all']= 'true';
+															$theTileMatrix['All']= 'true';
 														}
 													}
 												}else{
@@ -1311,15 +1305,12 @@ function savePolicyWMTS($thePolicy){
 								}
  							endforeach;
  							if(!$hasFilter){
- 								
+ 								$theLayer['All'] = 'true';
+ 							}else{
+ 								$theLayer['All'] = 'false';
  							}
 						}
 					}
-					
-				}
-				if($foundLayer == false )
-				{
-					$theServer->Layers['All']='false';
 				}
 				reset($params);
 			}
