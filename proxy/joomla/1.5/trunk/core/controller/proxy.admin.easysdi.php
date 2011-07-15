@@ -1234,7 +1234,9 @@ function savePolicyWMTS($thePolicy){
 							//Load the saved GetCapabilities file
 							$confObject = JFactory::getApplication();
 							$tmpPath = $confObject->getCfg('tmp_path');
-							$xmlCapa = simplexml_load_file($tmpPath."/wmts_tmp.xml");
+							$tmpName = JRequest::getVar("capaServer@$i",null,'defaut','string',JREQUEST_ALLOWRAW);
+							$tmpFile = $tmpPath."/".$tmpName.".xml";
+							$xmlCapa = simplexml_load_file($tmpFile);
 							$namespaces = $xmlCapa->getDocNamespaces();
 							$dom_capa = dom_import_simplexml ($xmlCapa);
 							$contents = $dom_capa->getElementsByTagNameNS($namespaces[''],'Contents')->item(0);
@@ -1314,6 +1316,7 @@ function savePolicyWMTS($thePolicy){
  							}
 						}
 					}
+					unlink($tmpFile);
 				}
 				reset($params);
 			}

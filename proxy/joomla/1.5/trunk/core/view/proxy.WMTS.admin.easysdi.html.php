@@ -428,7 +428,9 @@ class HTML_proxyWMTS {
 				//Save to file
 				$confObject = JFactory::getApplication();
 				$tmpPath = $confObject->getCfg('tmp_path');
-				$xmlCapa->asXML($tmpPath."/wmts_tmp.xml");
+				$tmpName = "wmts".md5(time().rand());
+				$tmpFile = $tmpPath."/".$tmpName.".xml";
+				$xmlCapa->asXML($tmpFile);
 				
 			foreach ($thePolicy->Servers->Server as $policyServer){			
 				if (strcmp($policyServer->url,$remoteServer->url)==0){
@@ -438,7 +440,8 @@ class HTML_proxyWMTS {
 			}
 			?>
 
-	<input type="hidden" name="remoteServer<?php echo $iServer;?>" id="remoteServer<?php echo $iServer;?>" value="<?php echo $remoteServer->url ?>">
+	<input type="hidden" name="capaServer@<?php echo $iServer;?>" id="capaServer@<?php echo $iServer;?>" value="<?php echo $tmpName; ?>">
+	<input type="hidden" name="remoteServer<?php echo $iServer;?>" id="remoteServer<?php echo $iServer;?>" value="<?php echo $remoteServer->url ;?>">
 	<fieldset class="adminform" id="fsServer<?php echo $iServer;?>" >
 		<legend><?php echo JText::_( 'PROXY_CONFOG_WMTS_SERVER'); ?> <?php echo $remoteServer->alias ;?> (<?php echo $remoteServer->url; ?>)</legend>
 		<table  width ="100%"  class="admintable" id="remoteServerTable@<?php echo $iServer; ?>" <?php if (strcasecmp($thePolicy->Servers['All'],'True')==0 ) echo "style='display:none'"; ?>>
