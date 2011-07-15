@@ -78,6 +78,7 @@ class HTML_proxyWMTS {
 				$bbox['miny'] = $theLayer->{bboxminy};
 				$bbox['maxx'] = $theLayer->{bboxmaxx};
 				$bbox['maxy'] = $theLayer->{bboxmaxy};
+				$bbox['spatial-operator'] = $theLayer->{spatialoperator};
 				return $bbox;
 			}
 		}
@@ -519,35 +520,74 @@ class HTML_proxyWMTS {
 										 echo ' style="display: block;" ';
 									}
 								?> >
-								<tr>
-									<th><?php echo JText::_( 'PROXY_CONFIG_GEOGRAPHIC_FILTER'); ?></th>
-									<th><?php echo JText::_( 'PROXY_CONFIG_TILEMATRIXSET_ID'); ?></th>
-									<th><?php echo JText::_( 'PROXY_CONFIG_TILEMATRIX_MIN_SCALE_DENOMINATOR'); ?></th>
-								</tr>
+								
 								<tr>
 									<td>
 									<table>
-									<tr>
-										<td><?php echo JText::_( 'PROXY_CONFIG_BBOX_MINX'); ?>
-										<input type="text" name="bboxminx@<?php echo $iServer; ?>@<?php echo $layernum; ?>" id="bboxminx@<?php echo $iServer; ?>@<?php echo $layernum; ?>" value="<?php echo $bboxLayer['minx'];?>">
-										</td>
-										<td><?php echo JText::_( 'PROXY_CONFIG_BBOX_MAXX'); ?>
-										<input type="text" name="bboxmaxx@<?php echo $iServer; ?>@<?php echo $layernum; ?>" id="bboxmaxx@<?php echo $iServer; ?>@<?php echo $layernum; ?>" value="<?php echo $bboxLayer['maxx'];?>">
-										</td>
-									</tr>
-									<tr>
-										<td><?php echo JText::_( 'PROXY_CONFIG_BBOX_MINY'); ?>
-										<input type="text" name="bboxminy@<?php echo $iServer; ?>@<?php echo $layernum; ?>" id="bboxminy@<?php echo $iServer; ?>@<?php echo $layernum; ?>" value="<?php echo $bboxLayer['miny'];?>">
-										</td>
-										<td><?php echo JText::_( 'PROXY_CONFIG_BBOX_MAXY'); ?>
-										<input type="text" name="bboxmaxy@<?php echo $iServer; ?>@<?php echo $layernum; ?>" id="bboxmaxy@<?php echo $iServer; ?>@<?php echo $layernum; ?>" value="<?php echo $bboxLayer['maxy'];?>">
-										</td>
-									</tr>
+										<tr>
+											<th colspan="4">
+												<?php echo JText::_( 'PROXY_CONFIG_GEOGRAPHIC_FILTER'); ?>	
+											</th>
+										</tr>
+										<tr>
+											<td>
+											</td>
+											<td align="right">
+												<?php echo JText::_( 'PROXY_CONFIG_BBOX_MAXY'); ?>
+											</td>
+											<td>
+												<input type="text" name="bboxmaxy@<?php echo $iServer; ?>@<?php echo $layernum; ?>" id="bboxmaxy@<?php echo $iServer; ?>@<?php echo $layernum; ?>" value="<?php echo $bboxLayer['maxy'];?>">
+											</td>
+											<td>
+											</td>
+											<td>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<?php echo JText::_( 'PROXY_CONFIG_BBOX_MINX'); ?>
+											</td>
+											<td>
+												<input type="text" name="bboxminx@<?php echo $iServer; ?>@<?php echo $layernum; ?>" id="bboxminx@<?php echo $iServer; ?>@<?php echo $layernum; ?>" value="<?php echo $bboxLayer['minx'];?>">
+											</td>
+											<td align="right">
+												<?php echo JText::_( 'PROXY_CONFIG_BBOX_MAXX'); ?>
+											</td>
+											<td>
+												<input type="text" name="bboxmaxx@<?php echo $iServer; ?>@<?php echo $layernum; ?>" id="bboxmaxx@<?php echo $iServer; ?>@<?php echo $layernum; ?>" value="<?php echo $bboxLayer['maxx'];?>">
+											</td>
+											<td>
+												
+											</td>
+										</tr>
+										<tr>
+											<td>
+											</td>
+											<td align="right">
+												<?php echo JText::_( 'PROXY_CONFIG_BBOX_MINY'); ?>
+											</td>
+											<td>
+												<input type="text" name="bboxminy@<?php echo $iServer; ?>@<?php echo $layernum; ?>" id="bboxminy@<?php echo $iServer; ?>@<?php echo $layernum; ?>" value="<?php echo $bboxLayer['miny'];?>">
+											</td>
+											<td>
+											</td>
+											<td>
+											</td>
+										</tr>
+										<tr>
+											<td colspan="4">
+												<input type="radio" name="spatial-operator@<?php echo $iServer; ?>@<?php echo $layernum; ?>" value="touch"  <?php if($bboxLayer['spatial-operator'] != "within"  ) echo " checked ";?>> Touch  
+												<input type="radio" name="spatial-operator@<?php echo $iServer; ?>@<?php echo $layernum; ?>" value="within" <?php if($bboxLayer['spatial-operator'] == "within") echo " checked ";?>> Within 
+											</td>
+										</tr>
 									</table>
 									</td>
-									<td colspan="2">
+									<td valign="top"  colspan="2">
 										<table width ="100%">
-										
+											<tr>
+												<th><?php echo JText::_( 'PROXY_CONFIG_TILEMATRIXSET_ID'); ?></th>
+												<th><?php echo JText::_( 'PROXY_CONFIG_TILEMATRIX_MIN_SCALE_DENOMINATOR'); ?></th>
+											</tr>
 											<?php 
 											for($id = 0; $id<$TileMatrixSetLinks->length; $id++){ 
 												$availableTileMatrix =  array();
@@ -556,13 +596,13 @@ class HTML_proxyWMTS {
 												$tileMatrixSetIds = $tileMatrixSet->getElementsByTagName('TileMatrixSet');
 												?>
 												<tr>
-												<td width ="14%">
+												<td valign="top"  width ="14%">
 												<?php
 												$tileMatrixSetId = $tileMatrixSetIds->item(0)->nodeValue; 
 												echo $tileMatrixSetId;?>
 												<input type="hidden" name="TileMatrixSetId@<?php echo $iServer; ?>@<?php echo $layernum; ?>@<?php echo $id; ?>" id="TileMatrixSetId@<?php echo $iServer; ?>@<?php echo $layernum; ?>@<?php echo $id; ?>" value="<?php echo $tileMatrixSetId; ?>">
 												</td>
-												<td width ="86%">
+												<td valign="top"  width ="86%">
 												<?php 
 												$availableTileMatrix = $describedTileMatrixSets[$tileMatrixSetId];
 												$selectedDenominator = HTML_proxyWMTS::getWMTSTileMatrixSetMinScaleDenominator($theServer,$identifier->nodeValue,$tileMatrixSetId);

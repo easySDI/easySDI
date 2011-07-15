@@ -1191,6 +1191,7 @@ function savePolicyWMTS($thePolicy){
 							$bboxmaxx = JRequest::getVar("bboxmaxx@$i@$layernum",null,'defaut','FLOAT',JREQUEST_ALLOWRAW);
 							$bboxminy = JRequest::getVar("bboxminy@$i@$layernum",null,'defaut','FLOAT',JREQUEST_ALLOWRAW);
 							$bboxmaxy = JRequest::getVar("bboxmaxy@$i@$layernum",null,'defaut','FLOAT',JREQUEST_ALLOWRAW);
+							$spatialoperator = JRequest::getVar("spatial-operator@$i@$layernum",null,'defaut','string',JREQUEST_ALLOWRAW);
 							
 							//If a geographical restriction is define, put it in the policy file that it can be retreive to fill the edition form of the policy 
 							if($bboxminx != null){
@@ -1198,6 +1199,7 @@ function savePolicyWMTS($thePolicy){
 								$theLayer->bboxmaxx =$bboxmaxx;
 								$theLayer->bboxminy =$bboxminy;
 								$theLayer->bboxmaxy =$bboxmaxy;
+								$theLayer->spatialoperator = $spatialoperator;
 							}
 							
 							//Get min scale denominator restriction
@@ -1254,28 +1256,29 @@ function savePolicyWMTS($thePolicy){
 											$tileMatrices = $tileMatrixSet->getElementsByTagName('TileMatrix');
 											
 											if($value == "service-value"){
-												//On n'enleve pas de TileMatrix
+												//All the TileMatrixSet scale are keept
 												if($bboxminx == null){
-													//Pas de filtre geographique la TileMatrixSet est conservée tel quel
+													//No geographic filter, the TileMatrixSet is keept entirely
 													$theTileMatrixSet['All'] ='true';
 												}else{
+													//Geographic filter id defined, tiles outside the bbox extend have to be excluded
 													$hasFilter = true;
-													//Un filtre geographique est défini, les TileMatrix doivent être redefinies
+													$theTileMatrixSet['All'] ='false';
 													for($tm = 0; $tm<$tileMatrices->length; $tm++){
 														$tileMatrix = $tileMatrices->item($tm); 
 														$tileMatrixIdentifier = $tileMatrix->getElementsByTagNameNS($namespaces['ows'],'Identifier')->item(0)->nodeValue;
 														$tileMatrixScaleDenominator = $tileMatrix->getElementsByTagName('ScaleDenominator')->item(0)->nodeValue;
 														
-														ADMIN_proxy::addAuthorizedTiles($theTileMatrixSet,$tileMatrixIdentifier, $tileMatrix, $tileMatrixSetSupportedCRS, $listBBOXTileMatrixSetId, $listTileMatrixSetCRSUnits, $tileMatrixSetIdentifier, $tileMatrixScaleDenominator);
+														ADMIN_proxy::addAuthorizedTiles($theTileMatrixSet,$tileMatrixIdentifier, $tileMatrix, $tileMatrixSetSupportedCRS, $listBBOXTileMatrixSetId, $listTileMatrixSetCRSUnits, $tileMatrixSetIdentifier, $tileMatrixScaleDenominator,$spatialoperator);
 													}
 												}
 											}else{
+												//A minimum scale denominator is defined, lower value have to be excluded
 												$hasFilter=true;
 												$theTileMatrixSet->minScaleDenominator = $value;
 												$theTileMatrixSet['All'] ='false';
-												//On doit enlever les TileMatrix avec scaleDenominator <
 												if($bboxminx == null){
-													//Pas de filtre géographique, on ne reecrit pas les tileMatrix
+													//No geographic filter, the TileMatrix are keept entirely
 													for($tm = 0; $tm<$tileMatrices->length; $tm++){
 														$tileMatrix = $tileMatrices->item($tm); 
 														$tileMatrixIdentifier = $tileMatrix->getElementsByTagNameNS($namespaces['ows'],'Identifier')->item(0)->nodeValue;
@@ -1287,14 +1290,14 @@ function savePolicyWMTS($thePolicy){
 														}
 													}
 												}else{
-													//Avec filtre géographique, les tileMatrix conservées doivent être réécrites
+													//Geographic filter id defined, tiles outside the bbox extend have to be excluded
 													for($tm = 0; $tm<$tileMatrices->length; $tm++){
 														$tileMatrix = $tileMatrices->item($tm); 
 														$tileMatrixIdentifier = $tileMatrix->getElementsByTagNameNS($namespaces['ows'],'Identifier')->item(0)->nodeValue;
 														$tileMatrixScaleDenominator = $tileMatrix->getElementsByTagName('ScaleDenominator')->item(0)->nodeValue;
 														
 														if($tileMatrixScaleDenominator >= $value){
-															ADMIN_proxy::addAuthorizedTiles($theTileMatrixSet,$tileMatrixIdentifier, $tileMatrix, $tileMatrixSetSupportedCRS, $listBBOXTileMatrixSetId, $listTileMatrixSetCRSUnits, $tileMatrixSetIdentifier, $tileMatrixScaleDenominator);
+															ADMIN_proxy::addAuthorizedTiles($theTileMatrixSet,$tileMatrixIdentifier, $tileMatrix, $tileMatrixSetSupportedCRS, $listBBOXTileMatrixSetId, $listTileMatrixSetCRSUnits, $tileMatrixSetIdentifier, $tileMatrixScaleDenominator,$spatialoperator);
 														}
 													}
 												}
@@ -1335,7 +1338,7 @@ function savePolicyWMTS($thePolicy){
  * @param unknown_type $tileMatrixSetIdentifier : identifier of the TileMatrixSet
  * @param unknown_type $tileMatrixScaleDenominator : ScaleDenominator of the TileMatrix
  */
-function addAuthorizedTiles($theTileMatrixSet,$tileMatrixIdentifier, $tileMatrix, $tileMatrixSetSupportedCRS, $listBBOXTileMatrixSetId, $listTileMatrixSetCRSUnits, $tileMatrixSetIdentifier, $tileMatrixScaleDenominator){
+function addAuthorizedTiles($theTileMatrixSet,$tileMatrixIdentifier, $tileMatrix, $tileMatrixSetSupportedCRS, $listBBOXTileMatrixSetId, $listTileMatrixSetCRSUnits, $tileMatrixSetIdentifier, $tileMatrixScaleDenominator,$spatialoperator){
 	
 	
 	//Get TileMatrix informations
@@ -1386,20 +1389,45 @@ function addAuthorizedTiles($theTileMatrixSet,$tileMatrixIdentifier, $tileMatrix
 	$epsilon = 0.000001;
 	
 	//Calculate the range of tileset indexes included in the BBOX filter
-	$tileMinCol = floor(($bboxCRS[minx] - $topLeftCornerX)/$tileSpanX + $epsilon);
-	$tileMaxCol = floor(($bboxCRS[maxx] - $topLeftCornerX)/$tileSpanX - $epsilon);
-	$tileMinRow = floor(($topLeftCornerY - $bboxCRS[maxy])/$tileSpanY + $epsilon);
-	$tileMaxRow = floor(($topLeftCornerY - $bboxCRS[miny])/$tileSpanY - $epsilon);
+	if($spatialoperator == "touch"){
+		$tileMinCol = floor(($bboxCRS[minx] - $topLeftCornerX)/$tileSpanX + $epsilon);
+		$tileMaxCol = floor(($bboxCRS[maxx] - $topLeftCornerX)/$tileSpanX - $epsilon);
+		$tileMinRow = floor(($topLeftCornerY - $bboxCRS[maxy])/$tileSpanY + $epsilon);
+		$tileMaxRow = floor(($topLeftCornerY - $bboxCRS[miny])/$tileSpanY - $epsilon);
+	}else{
+		$tileMinCol = ceil(($bboxCRS[minx] - $topLeftCornerX)/$tileSpanX + $epsilon);
+		$tileMaxCol = floor(($bboxCRS[maxx] - $topLeftCornerX)/$tileSpanX - $epsilon) -1;
+		$tileMinRow = ceil(($topLeftCornerY - $bboxCRS[maxy])/$tileSpanY + $epsilon) ;
+		$tileMaxRow = floor(($topLeftCornerY - $bboxCRS[miny])/$tileSpanY - $epsilon) -1;
+	}
 	
 	//Error control to avoid requesting empty tiles
 	if($tileMinCol < 0){
 		$tileMinCol = 0;
+	}
+	if($tileMaxCol < 0){
+		return;
+	}
+	if($tileMinCol > $tileMaxCol){
+		return;
+	}
+	if($tileMinCol >= $matrixWidth){
+		return;
 	}
 	if($tileMaxCol >= $matrixWidth){
 		$tileMaxCol = $matrixWidth -1;
 	}
 	if($tileMinRow < 0){
 		$tileMinRow = 0;
+	}
+	if($tileMaxRow < 0){
+		return;
+	}
+	if($tileMinRow > $tileMaxRow){
+		return;
+	}
+	if($tileMinRow >= $matrixHeight){
+		return;
 	}
 	if($tileMaxRow >= $matrixHeight){
 		$tileMaxRow = $matrixHeight -1;
@@ -1416,7 +1444,7 @@ function addAuthorizedTiles($theTileMatrixSet,$tileMatrixIdentifier, $tileMatrix
 	else{
 		$theTileMatrix = $theTileMatrixSet->addChild(TileMatrix);
 		$theTileMatrix['id']= $tileMatrixIdentifier;
-		$theTileMatrix['all']= 'false';
+		$theTileMatrix['All']= 'false';
 		//Intersection 
 		$theTileMatrix->TileMinCol = $tileMinCol;
 		$theTileMatrix->TileMaxCol = $tileMaxCol;
