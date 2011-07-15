@@ -11,6 +11,7 @@ import java.io.Serializable;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
@@ -46,6 +47,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "Layer")
 public class Layer implements Serializable {
 
+    	@XmlAttribute(name = "All")
+	protected Boolean all = false;
 	@XmlElement(name = "Name", required = true)
 	protected String name;
 	@XmlElement(name = "ScaleMin")

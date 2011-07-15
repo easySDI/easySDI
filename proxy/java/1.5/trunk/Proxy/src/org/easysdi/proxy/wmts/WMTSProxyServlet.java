@@ -32,6 +32,8 @@ import org.easysdi.proxy.core.ProxyLayer;
 import org.easysdi.proxy.core.ProxyServlet;
 import org.easysdi.proxy.ows.OWSExceptionManager;
 import org.easysdi.proxy.ows.OWSExceptionReport;
+import org.easysdi.proxy.policy.Layer;
+import org.easysdi.proxy.policy.Server;
 import org.easysdi.proxy.wmts.thread.WMTSProxyServerGetCapabilitiesThread;
 import org.easysdi.xml.documents.RemoteServerInfo;
 
@@ -419,4 +421,44 @@ public class WMTSProxyServlet extends ProxyServlet{
 	protected StringBuffer generateOgcException(String errorMessage, String code, String locator, String version) {
 		return null;
 	}	
+	
+	protected boolean isTileAllowed (WMTSProxyServletRequest proxyRequest, String serverUrl){
+	    String layer = proxyRequest.getLayer();
+	    String tileMatrixSet = proxyRequest.getTileMatrixSet();
+	    String tileMatrix = proxyRequest.getTileMatrix();
+	    String tileRow = proxyRequest.getTileRow();
+	    String tileCol = proxyRequest.getTileCol();
+	    
+	    //If no policy loaded, return false
+	    if (policy == null)
+		return false;
+	    
+	    //If the policy period of validity is expired, return null
+	    if (policy.getAvailabilityPeriod() != null) {
+    		if (isDateAvaillable(policy.getAvailabilityPeriod()) == false)
+    			return false;
+	    }
+    
+	    //If one of the mandatory parameters is missing, return false
+	    if (layer == null || tileMatrixSet == null || tileMatrix == null || tileRow == null || tileCol == null)
+    		return false;
+	    
+	    if(policy.getServers().isAll())
+		return true;
+	    
+	    List<Server> serverList = policy.getServers().getServer();
+	    for (int i = 0; i < serverList.size(); i++) {
+		if (serverUrl.equalsIgnoreCase(serverList.get(i).getUrl())) {
+		    if (serverList.get(i).getLayers().isAll())
+			return true;
+		    List<Layer> layerList = serverList.get(i).getLayers().getLayer();
+		    for (int j = 0; j < layerList.size(); j++) {
+			if (layer.equals(layerList.get(j).getName()))
+			   return true;
+			}
+		    }
+		}
+	    
+	    return false;
+	}
 }
