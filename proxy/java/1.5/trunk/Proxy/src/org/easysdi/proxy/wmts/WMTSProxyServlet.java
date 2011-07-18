@@ -34,7 +34,10 @@ import org.easysdi.proxy.ows.OWSExceptionManager;
 import org.easysdi.proxy.ows.OWSExceptionReport;
 import org.easysdi.proxy.policy.Layer;
 import org.easysdi.proxy.policy.Server;
+import org.easysdi.proxy.policy.TileMatrix;
+import org.easysdi.proxy.policy.TileMatrixSet;
 import org.easysdi.proxy.wmts.thread.WMTSProxyServerGetCapabilitiesThread;
+import org.easysdi.proxy.wmts.v100.WMTSExceptionReport100;
 import org.easysdi.xml.documents.RemoteServerInfo;
 
 /**
@@ -43,8 +46,16 @@ import org.easysdi.xml.documents.RemoteServerInfo;
  */
 public class WMTSProxyServlet extends ProxyServlet{
 
-	private static final long serialVersionUID = 1982682293133286643L;
+    private static final long serialVersionUID = 1982682293133286643L;
+	
+	/**
+	 * 
+	 */
 	protected WMTSProxyResponseBuilder docBuilder; 
+	
+	/**
+	 * 
+	 */
 	protected OWSExceptionManager owsExceptionManager;
 	
 	/**
@@ -53,9 +64,19 @@ public class WMTSProxyServlet extends ProxyServlet{
 	 */
 	public HashMap<String, String> wmtsGetCapabilitiesResponseFilePathMap = new HashMap<String, String>();
 		
+	/**
+	 * 
+	 */
 	public WMTSProxyServlet() {
 		super();
 		
+	}
+	
+	/**
+	 * @return the proxyRequest
+	 */
+	public WMTSProxyServletRequest getProxyRequest() {
+		return (WMTSProxyServletRequest)proxyRequest;
 	}
 
 	/* (non-Javadoc)
@@ -63,16 +84,7 @@ public class WMTSProxyServlet extends ProxyServlet{
 	 */
 	@Override
 	protected void requestPreTreatmentPOST(HttpServletRequest req,HttpServletResponse resp) {
-		StringBuffer out;
-		try {
-			logger.info("HTTP POST method is not supported.");
-			out = owsExceptionReport.generateExceptionReport("HTTP POST method is not supported.",OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
-			sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-		} catch (IOException e) {
-			logger.error( e.toString());
-			e.printStackTrace();
-		}
-		
+	    requestPreTreatmentGET(req,resp);
 	}
 
 	/* (non-Javadoc)
@@ -135,7 +147,14 @@ public class WMTSProxyServlet extends ProxyServlet{
 			while (enumRS.hasMoreElements())
 			{
 				RemoteServerInfo rs = (RemoteServerInfo)enumRS.nextElement();
-				WMTSProxyServerGetCapabilitiesThread s = new WMTSProxyServerGetCapabilitiesThread( this,getProxyRequest().getUrlParameters(),rs , resp);
+				
+				String requestContent=null;
+				if(getProxyRequest().getRequest().getMethod().equalsIgnoreCase("GET"))
+					requestContent = getProxyRequest().getUrlParameters();
+				else
+					requestContent = getProxyRequest().getBodyRequest().toString();
+				
+				WMTSProxyServerGetCapabilitiesThread s = new WMTSProxyServerGetCapabilitiesThread( this,requestContent,rs , resp);
 				s.start();
 				serverThreadList.add(s);
 			}
@@ -191,13 +210,39 @@ public class WMTSProxyServlet extends ProxyServlet{
 			RemoteServerInfo RS = (RemoteServerInfo)htRemoteServer.get(pLayer.getAlias());
 			
 			//Check layer
-			if( RS == null || !isLayerAllowed(pLayer.getPrefixedName(), RS.getUrl())){
+			if( RS == null ){
 				StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_LAYER_NAME+pLayer.getAliasName(),OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE,"LAYER");
 				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
 				return;
 			}
 			
-			sendDataDirectStream(resp,"GET", RS.getUrl(), getProxyRequest().getUrlParameters());
+			//Check if the requested tile is allowed
+			String tileAllowed = isTileAllowed((WMTSProxyServletRequest)getProxyRequest(), RS.getUrl());
+			if(!tileAllowed.equalsIgnoreCase("true")){
+			    String locator = null;
+			    String message = null;
+			    String code = null;
+			    if(tileAllowed.equalsIgnoreCase("TileRow")|| tileAllowed.equalsIgnoreCase("TileCol")){
+				locator = tileAllowed;
+				code = WMTSExceptionReport100.CODE_TILE_OUT_OF_RANGE;
+				message = tileAllowed + " is out of range." ;
+			    }else{
+				locator = tileAllowed;
+				code = OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE;
+				message = OWSExceptionReport.TEXT_INVALID_PARAMETER_VALUE;
+			    }
+			    StringBuffer out = owsExceptionReport.generateExceptionReport(message,code,locator);
+			    sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
+			    return;
+			}
+			
+			String requestContent=null;
+			if(getProxyRequest().getRequest().getMethod().equalsIgnoreCase("GET"))
+				requestContent = getProxyRequest().getUrlParameters();
+			else
+				requestContent = getProxyRequest().getBodyRequest().toString();
+			
+			sendDataDirectStream(resp,getProxyRequest().getRequest().getMethod(), RS.getUrl(), requestContent);
 			return;
 			
 		}catch(Exception e){
@@ -232,18 +277,38 @@ public class WMTSProxyServlet extends ProxyServlet{
 			RemoteServerInfo RS = (RemoteServerInfo)htRemoteServer.get(pLayer.getAlias());
 			
 			//Check layer
-			if( RS == null || !isLayerAllowed(pLayer.getPrefixedName(), RS.getUrl())){
+			if( RS == null ){
 				StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_LAYER_NAME+pLayer.getAliasName(),OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE,"LAYER");
 				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
 				return;
 			}
+			
+			//Check if the requested tile is allowed
+			String tileAllowed = isTileAllowed((WMTSProxyServletRequest)getProxyRequest(), RS.getUrl());
+			if(!tileAllowed.equalsIgnoreCase("true")){
+			    String locator = null;
+			    String message = null;
+			    String code = null;
+			    if(tileAllowed.equalsIgnoreCase("TileRow")|| tileAllowed.equalsIgnoreCase("TileCol")){
+				locator = tileAllowed;
+				code = WMTSExceptionReport100.CODE_TILE_OUT_OF_RANGE;
+				message = tileAllowed + " is out of range." ;
+			    }else{
+				locator = tileAllowed;
+				code = OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE;
+				message = OWSExceptionReport.TEXT_INVALID_PARAMETER_VALUE;
+			    }
+			    StringBuffer out = owsExceptionReport.generateExceptionReport(message,code,locator);
+			    sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
+			    return;
+			}
+			
 			if((getConfiguration().getXsltPath() == null||getConfiguration().getXsltPath().trim() =="" )){
 			    sendDataDirectStream(resp,"GET", RS.getUrl(), getProxyRequest().getUrlParameters());
 			    return;
 			}else{
 			    String tempFile = sendData("GET", RS.getUrl(), getProxyRequest().getUrlParameters());
 			    transformGetFeatureInfo(req, resp, tempFile);
-			    
 			}
 		}catch(Exception e){
 			resp.setHeader("easysdi-proxy-error-occured", "true");
@@ -283,42 +348,6 @@ public class WMTSProxyServlet extends ProxyServlet{
 				return;
 			}
 		
-//			//Filter remote servers responses 
-//			Boolean asRemoteServerServiceException = owsExceptionManager.filterResponseAndExceptionFiles(wmtsGetCapabilitiesResponseFilePathMap, ogcExceptionFilePathTable);
-//
-//			//Manage exception acccording to servlet configuration 
-//			if((configuration.getExceptionMode().equals("restrictive") && asRemoteServerServiceException) || 
-//					(configuration.getExceptionMode().equals("permissive") && wmtsFilePathTable.size() == 0))
-//			{
-//				logger.info("Exception(s) returned by remote server(s) are sent to client.");
-//				responseContentType ="text/xml; charset=utf-8";
-//				sendHttpServletResponse(req,resp,owsExceptionManager.buildResponseForRemoteOgcException(ogcExceptionFilePathTable), "text/xml; charset=utf-8", responseStatusCode);
-//				return;
-//			}
-			
-			// Vérifie et prépare l'application d'un fichier xslt utilisateur
-//			String userXsltPath = getConfiguration().getXsltPath();
-//			if (SecurityContextHolder.getContext().getAuthentication() != null) {
-//				userXsltPath = userXsltPath + "/" + SecurityContextHolder.getContext().getAuthentication().getName() + "/";
-//			}
-//			
-//			userXsltPath = userXsltPath + "/" + version + "/" + operation + ".xsl";
-//			String globalXsltPath = getConfiguration().getXsltPath() + "/" + version + "/" + operation + ".xsl";
-//			
-//			File xsltFile = new File(userXsltPath);
-//			boolean isPostTreat = false;
-//			if (!xsltFile.exists()) {
-//				dump("Postreatment file " + xsltFile.toString() + "does not exist");
-//				xsltFile = new File(globalXsltPath);
-//				if (xsltFile.exists()) {
-//					isPostTreat = true;
-//				} else {
-//					dump("Postreatment file " + xsltFile.toString() + "does not exist");
-//				}
-//			} else {
-//				isPostTreat = true;
-//			}
-
 			ByteArrayOutputStream tempOut = new ByteArrayOutputStream(); 
 			
 			if ("GetCapabilities".equalsIgnoreCase(operation)) 
@@ -362,7 +391,8 @@ public class WMTSProxyServlet extends ProxyServlet{
 				reader.read(data, 0, reader.available());
 				tempOut.write(data);
 				reader.close();
-				sendHttpServletResponse(req,resp, tempOut,responseContentType, responseStatusCode);
+				//Send response to client after applying XSLT transformation id needed
+				sendHttpServletResponse(req,resp, applyUserXSLT(tempOut),responseContentType, responseStatusCode);
 			}
 		}
 		catch (Exception e){
@@ -422,43 +452,147 @@ public class WMTSProxyServlet extends ProxyServlet{
 		return null;
 	}	
 	
-	protected boolean isTileAllowed (WMTSProxyServletRequest proxyRequest, String serverUrl){
+	/**
+	 * return if the tile is allowed or not according to the policy restriction
+	 * @param proxyRequest : the request object
+	 * @param serverUrl : url of the remote server
+	 * @return 
+	 */
+	protected String isTileAllowed (WMTSProxyServletRequest proxyRequest, String serverUrl){
 	    String layer = proxyRequest.getLayer();
+	    ProxyLayer pLayer = new ProxyLayer(layer);
 	    String tileMatrixSet = proxyRequest.getTileMatrixSet();
 	    String tileMatrix = proxyRequest.getTileMatrix();
-	    String tileRow = proxyRequest.getTileRow();
-	    String tileCol = proxyRequest.getTileCol();
+	    Integer tileRow = Integer.parseInt( proxyRequest.getTileRow());
+	    Integer tileCol = Integer.parseInt( proxyRequest.getTileCol());
 	    
 	    //If no policy loaded, return false
 	    if (policy == null)
-		return false;
+		return "policy";
 	    
 	    //If the policy period of validity is expired, return null
 	    if (policy.getAvailabilityPeriod() != null) {
     		if (isDateAvaillable(policy.getAvailabilityPeriod()) == false)
-    			return false;
+    		    return "availability";
 	    }
     
 	    //If one of the mandatory parameters is missing, return false
-	    if (layer == null || tileMatrixSet == null || tileMatrix == null || tileRow == null || tileCol == null)
-    		return false;
+	    if (layer == null) 
+    		return "Layer";
+	    if (tileMatrixSet == null )
+		return "TileMatrixSet";
+	    if(tileMatrix == null)
+	    	return "tileMatrix";
+	    if( tileRow == null ) 
+		return "tileRow";
+	    if (tileCol == null)
+		return "tileCol";
 	    
 	    if(policy.getServers().isAll())
-		return true;
+		return "true";
 	    
 	    List<Server> serverList = policy.getServers().getServer();
+	    boolean isServerFound = false;
 	    for (int i = 0; i < serverList.size(); i++) {
 		if (serverUrl.equalsIgnoreCase(serverList.get(i).getUrl())) {
+		    isServerFound = true;
 		    if (serverList.get(i).getLayers().isAll())
-			return true;
+			return "true";
 		    List<Layer> layerList = serverList.get(i).getLayers().getLayer();
+		    boolean isLayerFound = false;
 		    for (int j = 0; j < layerList.size(); j++) {
-			if (layer.equals(layerList.get(j).getName()))
-			   return true;
+			if (pLayer.getName().equals(layerList.get(j).getName())){
+			    isLayerFound = true;
+			    if( layerList.get(j).isAll())
+			       return "true";
+			   List<TileMatrixSet> lTileMatrixSet = layerList.get(j).getTileMatrixSet();
+			   boolean isTileMatrixSetFound = false;
+			   for(int k = 0 ; k <lTileMatrixSet.size() ; k++){
+			       if(lTileMatrixSet.get(k).getId().equals(tileMatrixSet)){
+				   isTileMatrixSetFound = true;
+				   if(lTileMatrixSet.get(k).isAll())
+				       return "true";
+				   List<TileMatrix> lTileMatrix = lTileMatrixSet.get(k).getTileMatrix();
+				   boolean isTileMatrixFound = false; 
+				   for(int l = 0 ; l < lTileMatrix.size(); l++){
+				       if(lTileMatrix.get(l).getId().equals(tileMatrix)){
+					   isTileMatrixFound = true;
+					   if(lTileMatrix.get(l).isAll())
+					       return "true";
+					   Integer minCol = Integer.parseInt( lTileMatrix.get(l).getTileMinCol() );
+					   Integer maxCol = Integer.parseInt(lTileMatrix.get(l).getTileMaxCol());
+					   Integer minRow = Integer.parseInt(lTileMatrix.get(l).getTileMinRow());
+					   Integer maxRow = Integer.parseInt(lTileMatrix.get(l).getTileMaxRow());
+					   if(tileRow <= maxRow && tileRow >= minRow && tileCol <= maxCol && tileCol >= minCol )
+					       return "true";
+					   else{
+					       if(tileRow > maxRow || tileRow < minRow)
+						   return "tileRow";
+					       if(tileCol > maxCol || tileCol < minCol)
+						   return "tileCol";
+					   }
+				       }
+				   }
+				   if(!isTileMatrixFound){
+				       //TileMatrix is not allowed
+				       return "TileMatrix";
+				   }
+			       }
+			   }
+			   if(!isTileMatrixSetFound){
+			       //tileMatrixSet is not allowed
+			       return "TileMatrixSet";
+			   }
 			}
 		    }
+		    if(!isLayerFound){
+			//layer is not allowed
+			return "Layer";
+		    }
 		}
-	    
-	    return false;
+	    }
+	    if(!isServerFound){
+		//Server is not allowed
+		return "Server";
+	    }
+	    return "false";
+	}
+	
+	/**
+	 * Detects if the layer is allowed or not against the rule.
+	 * 
+	 * @param layer
+	 *            The layer to test
+	 * @param url
+	 *            the url of the remote server.
+	 * @return true if the layer is allowed, false if not
+	 */
+	public boolean isLayerAllowed(String layer, String url) {
+		if (policy == null)
+			return false;
+		if (policy.getAvailabilityPeriod() != null) {
+			if (isDateAvaillable(policy.getAvailabilityPeriod()) == false)
+				return false;
+		}
+
+		if (layer == null)
+			return false;
+
+		if(policy.getServers().isAll())
+		    return true;
+		
+		List<Server> serverList = policy.getServers().getServer();
+		for (int i = 0; i < serverList.size(); i++) {
+			if (url.equalsIgnoreCase(serverList.get(i).getUrl())) {
+			    if(serverList.get(i).getLayers().isAll())
+				return true;
+			    List<Layer> layerList = serverList.get(i).getLayers().getLayer();
+			    for (int j = 0; j < layerList.size(); j++) {
+				if (layer.equals(layerList.get(j).getName()))
+				    return true;
+			    }
+			}
+		}
+		return false;
 	}
 }

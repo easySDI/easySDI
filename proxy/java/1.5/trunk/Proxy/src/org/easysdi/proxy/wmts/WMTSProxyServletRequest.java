@@ -16,6 +16,9 @@
  */
 package org.easysdi.proxy.wmts;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Enumeration;
@@ -33,6 +36,11 @@ import org.easysdi.proxy.exception.VersionNotSupportedException;
  */
 public class WMTSProxyServletRequest extends ProxyServletRequest {
 
+    /**
+     * Store the body of the POST request
+     */
+    private StringBuffer bodyRequest;
+    
     /**
      * 
      */
@@ -300,6 +308,20 @@ public class WMTSProxyServletRequest extends ProxyServletRequest {
 	}
 
 	/**
+	 * @param bodyRequest the bodyRequest to set
+	 */
+	public void setBodyRequest(StringBuffer bodyRequest) {
+		this.bodyRequest = bodyRequest;
+	}
+
+	/**
+	 * @return the bodyRequest
+	 */
+	public StringBuffer getBodyRequest() {
+		return bodyRequest;
+	}
+	
+	/**
 	 * @param req
 	 * @throws Throwable
 	 */
@@ -308,7 +330,64 @@ public class WMTSProxyServletRequest extends ProxyServletRequest {
 	}
 
 	public void parseRequestPOST () {
-	
+	    try {
+		StringBuffer param = new StringBuffer();
+		String input;
+		BufferedReader in;
+		in = new BufferedReader(new InputStreamReader(request.getInputStream()));
+		while ((input = in.readLine()) != null) {
+		     		     
+		     String[] value = input.split("=");
+		     if (value[0].equalsIgnoreCase("service")){
+			 service = value[1];
+		     }else if(value[0].equalsIgnoreCase("request")){
+			 operation = value[1];
+		     }else if(value[0].equalsIgnoreCase("layer")){
+			 ProxyLayer pLayer = new ProxyLayer (value[1]);
+			 input = pLayer.getPrefixedName();
+			 layer = value[1];
+		     }else if(value[0].equalsIgnoreCase("version")){
+			 version = value[1];
+		     }else if(value[0].equalsIgnoreCase("sections")){
+			 sections = value[1];
+		     }else if(value[0].equalsIgnoreCase("updatesequence")){
+			 updateSequence = value[1];
+		     }else if(value[0].equalsIgnoreCase("acceptFormats")){
+			 acceptFormats = value[1];
+		     }else if(value[0].equalsIgnoreCase("acceptVersions")){
+			 acceptVersions = value[1];
+		     }else if(value[0].equalsIgnoreCase("style")){
+			 style = value[1];
+		     }else if(value[0].equalsIgnoreCase("format")){
+			 format = value[1];
+		     }else if(value[0].equalsIgnoreCase("TileMatrixset")){
+			 tileMatrixSet = value[1];
+		     }else if(value[0].equalsIgnoreCase("TileMatrix")){
+			 tileMatrix = value[1];
+		     }else if(value[0].equalsIgnoreCase("tileRow")){
+			 tileRow = value[1];
+		     }else if(value[0].equalsIgnoreCase("tileCol")){
+			 tileCol = value[1];
+		     }else if(value[0].equalsIgnoreCase("I")){
+			 i = value[1];
+		     }else if(value[0].equalsIgnoreCase("J")){
+			 j = value[1];
+		     }else if(value[0].equalsIgnoreCase("infoformat")){
+			 infoFormat = value[1];
+		     }
+			 
+		     param.append(input);
+		     param.append("\r");
+		}
+		
+		//Store the body request
+		this.setBodyRequest(param);
+		
+	    } catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	    }
+	   
 	}
 	
 	@SuppressWarnings("unchecked")

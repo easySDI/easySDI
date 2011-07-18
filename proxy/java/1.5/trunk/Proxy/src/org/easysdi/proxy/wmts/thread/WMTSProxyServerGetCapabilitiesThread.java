@@ -45,9 +45,9 @@ public class WMTSProxyServerGetCapabilitiesThread extends Thread {
 		try {
 			
 			servlet.logger.trace( "Thread Server: " + remoteServer.getUrl() + " work begin");
-			String filePath = servlet.sendData("GET", remoteServer.getUrl(), paramUrl);
+			String filePath = servlet.sendData(servlet.getProxyRequest().getRequest().getMethod(), remoteServer.getUrl(), paramUrl);
 			synchronized (servlet.wmtsGetCapabilitiesResponseFilePathMap) {
-				servlet.logger.trace("requestPreTraitementGET save response from thread server " + remoteServer.getUrl());
+				servlet.logger.trace("WMTSProxyServerGetCapabilitiesThread save response from thread server " + remoteServer.getUrl());
 				servlet.wmtsGetCapabilitiesResponseFilePathMap.put(remoteServer.getAlias(), filePath);
 			}
 			servlet.logger.trace( "Thread Server: " + remoteServer.getUrl() + " work finished");
