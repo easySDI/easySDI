@@ -210,6 +210,9 @@ public class WMTSProxyResponseBuilder100 extends WMTSProxyResponseBuilder {
 		    				idElement.setText(fileEntry.getKey()+"_"+name);
 		    			}
 //		    			idElement.setText(fileEntry.getKey()+"_"+name); 
+		    			
+		    			//Remove the <ResourceURL> element which are not supported by the proxy and not mandatory in the OGC standard
+		    			layerElement.removeChildren("ResourceURL",localNsWMTS);
 		    		}
 		    	}
 		    	

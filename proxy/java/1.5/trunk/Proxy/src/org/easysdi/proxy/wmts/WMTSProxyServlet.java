@@ -413,33 +413,32 @@ public class WMTSProxyServlet extends ProxyServlet{
 	public void transformGetFeatureInfo (HttpServletRequest req, HttpServletResponse resp, String responseFile){
 		try{
 		    FileInputStream fis = new FileInputStream(responseFile);
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			byte[] buf = new byte[1024];
-			for (int readNum; (readNum = fis.read(buf)) != -1;) {
-			    bos.write(buf, 0, readNum); 
-			}
+		    ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		    byte[] buf = new byte[1024];
+		    for (int readNum; (readNum = fis.read(buf)) != -1;) {
+			bos.write(buf, 0, readNum); 
+		    }
 		    //If the response is an OGC exception, the XSLT transformation is not applied
 		    //the response is send to the client
-			if(isRemoteServerResponseException(responseFile)){
-				logger.info("Exception returned by remote server is sent to client.");
-				sendHttpServletResponse(req,resp,bos, "text/xml; charset=utf-8", HttpServletResponse.SC_OK);
-				return;
-			}
-			
-			//apply XSLT transformation if needed before send back to client the response
-			sendHttpServletResponse(req,resp, applyUserXSLT(bos),responseContentType, responseStatusCode);
-			
-		}catch (Exception e){
-			resp.setHeader("easysdi-proxy-error-occured", "true");
-			logger.error(configuration.getServletClass() + ".transformGetFeatureInfo: ", e);
-			StringBuffer out;
-			try {
-				out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
-				sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
-			} catch (IOException e1) {
-				logger.error(OWSExceptionReport.TEXT_EXCEPTION_ERROR, e1);
-			}
+		    if(isRemoteServerResponseException(responseFile)){
+			logger.info("Exception returned by remote server is sent to client.");
+			sendHttpServletResponse(req,resp,bos, "text/xml; charset=utf-8", HttpServletResponse.SC_OK);
 			return;
+		    }
+			
+		    //apply XSLT transformation if needed before send back to client the response
+		    sendHttpServletResponse(req,resp, applyUserXSLT(bos),responseContentType, responseStatusCode);
+		}catch (Exception e){
+		    resp.setHeader("easysdi-proxy-error-occured", "true");
+		    logger.error(configuration.getServletClass() + ".transformGetFeatureInfo: ", e);
+		    StringBuffer out;
+		    try {
+			out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
+			sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
+		    } catch (IOException e1) {
+			logger.error(OWSExceptionReport.TEXT_EXCEPTION_ERROR, e1);
+		    }
+		    return;
 		}
 	}
 
@@ -560,7 +559,10 @@ public class WMTSProxyServlet extends ProxyServlet{
 	
 	/**
 	 * Detects if the layer is allowed or not against the rule.
-	 * 
+	 * Overwrite the generic ProxyServlet method because in WMTS policy file, 
+	 * when all layer are allowed for a server or all servers are allowed
+	 * the name of the layer are not stored.
+	 * This is a difference with the others policy files, which contain all the layer name allowed 
 	 * @param layer
 	 *            The layer to test
 	 * @param url
