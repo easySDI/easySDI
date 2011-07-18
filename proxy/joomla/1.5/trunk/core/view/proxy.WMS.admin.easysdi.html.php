@@ -75,8 +75,8 @@ class HTML_proxyWMS {
 	}
 	function getWMSLayerMaxScale($theServer,$layer){
 		if (count($theServer->Layers->Layer)==0) return "";
-		foreach ($theServer->Layers->Layer as $theLayer )
-		{
+			foreach ($theServer->Layers->Layer as $theLayer )
+			{
 				if (strcmp($theLayer->{'Name'},$layer)==0)
 				{
 					return $theLayer->ScaleMax;
@@ -567,7 +567,7 @@ class HTML_proxyWMS {
 				<td align="center"><input <?php if(! HTML_proxyWMS::isWMSLayerChecked($theServer,$name)) {echo 'disabled';}?> <?php if (strcasecmp($theServer->Layers['All'],'True')==0 ) echo ' disabled '; ?> type="text" size="10"
 					id="scaleMin@<?php echo $iServer; ?>@<?php echo $layernum;?>" 
 					name="scaleMin@<?php echo $iServer; ?>@<?php echo $layernum;?>"
-					value="<?php echo HTML_proxy::getWMSLayerMinScale($theServer,$name); ?>"></td>
+					value="<?php echo HTML_proxyWMS::getWMSLayerMinScale($theServer,$name); ?>"></td>
 				<td align="center"><input <?php if(! HTML_proxyWMS::isWMSLayerChecked($theServer,$name)) {echo 'disabled';}?> <?php if (strcasecmp($theServer->Layers['All'],'True')==0 ) echo ' disabled '; ?> type="text" size="10"
 					id="scaleMax@<?php echo $iServer; ?>@<?php echo $layernum?>" 
 					name="scaleMax@<?php echo $iServer; ?>@<?php echo $layernum;?>"

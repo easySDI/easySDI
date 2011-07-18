@@ -770,7 +770,7 @@ function savePolicyWMS($thePolicy){
 							$localFilter = JRequest::getVar("LocalFilter@$i@$layernum",null,'defaut','none',JREQUEST_ALLOWRAW);
 							
 							//WMS : write BBOX in the policy file
-							if (strlen($localFilter)>0 && strcasecmp($servletClass, 'org.easysdi.proxy.wms.WMSProxyServlet') == 0 )
+							if (strlen($localFilter)>0  )
 							{
 								//BBOX
 								$bbox = JRequest::getVar("BBOX@$i@$layernum");
@@ -792,7 +792,7 @@ function savePolicyWMS($thePolicy){
 					}
 					
 				}
-				if($foundLayer == false && strcasecmp($servletClass, 'org.easysdi.proxy.wms.WMSProxyServlet') == 0)
+				if($foundLayer == false )
 				{
 					$theServer->Layers['All']='false';
 				}
@@ -944,7 +944,7 @@ function savePolicyCSW($thePolicy){
 					 	$foundParamToExclude=true;
 					}				
 				}
-				if ($foundParamToExclude==false && strcasecmp($servletClass, 'org.easysdi.proxy.csw.CSWProxyServlet') == 0 )
+				if ($foundParamToExclude==false  )
 				{			  
 					$theServer->Metadata['All']='true';
 					$theServer->Metadata->Attributes['All']='true';								
@@ -1092,7 +1092,7 @@ function savePolicyWFS($thePolicy){
 						}
 					}
 				}
-				if($foundFeatureType == false && strcasecmp($servletClass, 'org.easysdi.proxy.wfs.WFSProxyServlet') == 0)
+				if($foundFeatureType == false )
 				{
 					$theServer->FeatureTypes['All']='false';
 				}
@@ -1195,11 +1195,18 @@ function savePolicyWMTS($thePolicy){
 							
 							//If a geographical restriction is define, put it in the policy file that it can be retreive to fill the edition form of the policy 
 							if($bboxminx != null){
-								$theLayer->bboxminx =$bboxminx;
+								//BBOX
+								$theLayer->BoundingBox['SRS'] = "EPSG:4326";
+								$theLayer->BoundingBox['minx'] = $bboxminx;
+								$theLayer->BoundingBox['miny'] = $bboxminy;
+								$theLayer->BoundingBox['maxx'] = $bboxmaxx;
+								$theLayer->BoundingBox['maxy'] = $bboxmaxy;
+								$theLayer->BoundingBox['spatialoperator'] = $spatialoperator;
+								/*$theLayer->bboxminx =$bboxminx;
 								$theLayer->bboxmaxx =$bboxmaxx;
 								$theLayer->bboxminy =$bboxminy;
 								$theLayer->bboxmaxy =$bboxmaxy;
-								$theLayer->spatialoperator = $spatialoperator;
+								$theLayer->spatialoperator = $spatialoperator;*/
 							}
 							
 							//Get min scale denominator restriction

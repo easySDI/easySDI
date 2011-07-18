@@ -74,11 +74,11 @@ class HTML_proxyWMTS {
 			if (strcmp($theLayer->{'Name'},$layer)==0)
 			{
 				$bbox = array();
-				$bbox['minx'] = $theLayer->{bboxminx};
-				$bbox['miny'] = $theLayer->{bboxminy};
-				$bbox['maxx'] = $theLayer->{bboxmaxx};
-				$bbox['maxy'] = $theLayer->{bboxmaxy};
-				$bbox['spatial-operator'] = $theLayer->{spatialoperator};
+				$bbox['minx'] = $theLayer->BoundingBox['minx'];
+				$bbox['miny'] = $theLayer->BoundingBox['miny'];
+				$bbox['maxx'] = $theLayer->BoundingBox['maxx'];
+				$bbox['maxy'] = $theLayer->BoundingBox['maxy'];
+				$bbox['spatial-operator'] = $theLayer->BoundingBox['spatialoperator'];
 				return $bbox;
 			}
 		}
