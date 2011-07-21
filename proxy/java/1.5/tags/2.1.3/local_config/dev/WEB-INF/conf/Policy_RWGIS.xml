@@ -1,0 +1,1194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PolicySet>
+	<Policy Id="rwgiswms-policy" ConfigId="rwgiswms">
+		<Servers All="true">
+			<Server>
+				<url>http://RWGIS-VAL-DATA:8080/geoserver/wms</url>
+				<Prefix>eai</Prefix>
+				<Namespace>http://www.easysdi.org</Namespace>
+				<Metadata All="true">
+					<Attributes All="true"/>
+				</Metadata>
+				<Layers All="true">
+					<Layer>
+						<Name>eai:f_vw_simple_occurrence_private_geom_grid_one_km_lux</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:f_vw_simple_occurrence_public_geom_grid_one_km_lux</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:f_vw_adv_occurrence_public</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:f_vw_simple_occurrence_public_geom_orig</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:f_vw_simple_occurrence_private_geom_grid_four_km_lux</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:f_joined_features</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:f_vw_simple_occurrence_public_geom_grid_ten_km_lux</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:f_vw_simple_occurrence_private_geom_grid_two_km_lux</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:f_vw_simple_occurrence_private_geom_grid_five_km_lux</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:f_vw_simple_occurrence_public_geom_grid_four_km_bel</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:f_vw_simple_occurrence_public_geom_grid_two_km_lux</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:f_vw_simple_occurrence_public_geom_grid_one_km_bel</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:f_vw_simple_occurrence_private_geom_grid_one_km_bel</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:f_vw_simple_occurrence_private_geom_orig</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:f_vw_simple_occurrence_private_geom_grid_ten_km_lux</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:f_vw_adv_occurrence_private</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:f_vw_simple_occurrence_private_geom_grid_four_km_bel</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:f_vw_simple_occurrence_public_geom_grid_five_km_lux</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:f_vw_simple_occurrence_private</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:f_vw_simple_occurrence_public_geom_grid_four_km_lux</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:rec_sect</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:OBS99</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:Natura200706</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:Natura200610</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:ResForetIntAdmin</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:grid10km</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:grid1km</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:grid2km</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:grid4km</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:grid5km</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:ifbl01x01</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:ifbl04x04</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:ReservesNaturelles</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:f_vw_all_units_geom_orig</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:f_vw_em_occurrence_private_legal</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:f_vw_em_occurrence_private_red</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:f_vw_simple_occurrence_public</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:Arc_Sample</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:Img_Sample</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:mosaic</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:Pk50095</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:sfdem</Name>
+					</Layer>
+				</Layers>
+			</Server>
+		</Servers>
+		<Subjects All="true">
+			<User>proxy_depth</User>
+		</Subjects>
+		<Operations All="true"/>
+		<AvailabilityPeriod>
+			<Mask>dd-MM-yyyy</Mask>
+			<From>
+				<Date>28-01-2008</Date>
+			</From>
+			<To>
+				<Date>28-01-2108</Date>
+			</To>
+		</AvailabilityPeriod>
+		<ImageSize>
+			<Minimum>
+				<Width>50</Width>
+				<Height>50</Height>
+			</Minimum>
+			<Maximum>
+				<Width>2500</Width>
+				<Height>2500</Height>
+			</Maximum>
+		</ImageSize>
+	</Policy>
+	<Policy Id="rwgis-policy" ConfigId="rwgis">
+		<Servers All="false">
+			<Server>
+				<url>http://RWGIS-VAL-DATA:8080/geoserver/wfs</url>
+				<Prefix>eai</Prefix>
+				<Namespace>http://www.easysdi.org/eai</Namespace>
+				<Metadata All="true">
+					<Attributes All="true"/>
+				</Metadata>
+				<FeatureTypes All="true">
+					<FeatureType>
+						<Name>eai:f_gis_cache_taxon_designation_type</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_vw_simple_occurrence_private_geom_grid_one_km_lux</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_vw_simple_occurrence_public_geom_grid_one_km_lux</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_vw_adv_occurrence_public</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_vw_simple_occurrence_public_geom_orig</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_gis_cache_taxon_list</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_vw_simple_occurrence_private_geom_grid_four_km_lux</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_joined_features</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_vw_simple_occurrence_public_geom_grid_ten_km_lux</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_vw_adv_biotope</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_vw_simple_occurrence_private_geom_grid_two_km_lux</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_vw_simple_occurrence_private_geom_grid_five_km_lux</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_vw_simple_taxon</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_vw_search_taxon</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_gis_cache_survey_keyword</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_gis_cache_comment</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_vw_simple_biotope</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_vw_simple_occurrence_public_geom_grid_four_km_bel</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_vw_simple_occurrence_public_geom_grid_two_km_lux</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_vw_simple_occurrence_public_geom_grid_one_km_bel</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_vw_simple_occurrence_private_geom_grid_one_km_bel</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_vw_simple_occurrence_private_geom_orig</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_gis_cache_biotope_classification</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_vw_simple_occurrence_private_geom_grid_ten_km_lux</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_gis_cache_survey</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_vw_adv_occurrence_private</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_vw_distinct_taxon</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_gis_cache_biotope_designation_type</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_vw_simple_occurrence_private_geom_grid_four_km_bel</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_vw_simple_occurrence_public_geom_grid_five_km_lux</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_gis_cache_survey_operator</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_vw_adv_taxon</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_vw_simple_occurrence_private</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_vw_simple_occurrence_public_geom_grid_four_km_lux</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:rec_sect</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:OBS99</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:Natura200706</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:Natura200610</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:ResForetIntAdmin</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:grid10km</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:grid1km</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:grid2km</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:grid4km</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:grid5km</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:ifbl01x01</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:ifbl04x04</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:ReservesNaturelles</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_vw_simple_occurrence_public</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_vw_taxon_designation_type</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+				</FeatureTypes>
+			</Server>
+		</Servers>
+		<Subjects All="false">
+			<User>proxy_depth</User>
+		</Subjects>
+		<Operations All="true"/>
+		<AvailabilityPeriod>
+			<Mask>dd-MM-yyyy</Mask>
+			<From>
+				<Date>28-01-2008</Date>
+			</From>
+			<To>
+				<Date>28-01-2108</Date>
+			</To>
+		</AvailabilityPeriod>
+	</Policy>
+	<Policy Id="geoportail_ortho_wms-policy" ConfigId="geoportail_ortho_wms">
+		<Servers All="false">
+			<Server>
+				<url>http://wssec.geoportail.lu/ortho_2007_rvb</url>
+				<Prefix>iwms</Prefix>
+				<Namespace>http://www.ionicsoft.com/wms</Namespace>
+				<Layers All="true">
+					<Layer>
+						<Name>PYRAMID_ORTHO_2007_RVB</Name>
+					</Layer>
+					<Layer>
+						<Name>PYRAMID_ORTHO_2007_RVB</Name>
+					</Layer>
+					<Layer>
+						<Name>PYRAMID_ORTHO_2007_RVB</Name>
+					</Layer>
+					<Layer>
+						<Name>PYRAMID_ORTHO_2007_RVB</Name>
+					</Layer>
+				</Layers>
+			</Server>
+		</Servers>
+		<Subjects All="true"/>
+		<Operations All="true"/>
+		<AvailabilityPeriod>
+			<Mask>dd-MM-yyyy</Mask>
+			<From>
+				<Date>28-01-2008</Date>
+			</From>
+			<To>
+				<Date>28-01-2108</Date>
+			</To>
+		</AvailabilityPeriod>
+		<ImageSize/>
+	</Policy>
+	<Policy Id="policy_auto_topo" ConfigId="geoportail_auto_topo_wms">
+		<Servers All="false">
+			<Server>
+				<url>http://wssec.geoportail.lu/auto_topo</url>
+				<Prefix>iwms</Prefix>
+				<Namespace>http://www.ionicsoft.com/wms</Namespace>
+				<Metadata All="true">
+					<Attributes All="true"/>
+				</Metadata>
+				<Layers All="false">
+					<Layer>
+						<Name>ALL</Name>
+					</Layer>
+				</Layers>
+			</Server>
+		</Servers>
+		<Subjects All="false">
+			<User>proxy_depth</User>
+			<User>hvanhoecke</User>
+		</Subjects>
+		<Operations All="true"/>
+		<AvailabilityPeriod>
+			<Mask>dd-mm-yyyy</Mask>
+			<From>
+				<Date>28-01-2008</Date>
+			</From>
+			<To>
+				<Date>28-01-2108</Date>
+			</To>
+		</AvailabilityPeriod>
+		<ImageSize>
+			<Minimum>
+				<Width>50</Width>
+				<Height>50</Height>
+			</Minimum>
+			<Maximum>
+				<Width>2500</Width>
+				<Height>2500</Height>
+			</Maximum>
+		</ImageSize>
+	</Policy>
+	<Policy Id="geoportail_ortho_2010-policy" ConfigId="geoportail_ortho_wms_2010">
+		<Servers All="true">
+			<Server>
+				<url>http://ogc.mnhn.lu/geoportail_ortho_wms_2010</url>
+				<Prefix>iwms</Prefix>
+				<Namespace>http://www.ionicsoft.com/wms</Namespace>
+				<Metadata All="true">
+					<Attributes All="true"/>
+				</Metadata>
+				<Layers All="False">
+					<Layer>
+						<Name>ALL</Name>
+					</Layer>
+				</Layers>
+			</Server>
+		</Servers>
+		<Subjects All="false">
+			<User>proxy_depth</User>
+		</Subjects>
+		<Operations All="true"/>
+		<AvailabilityPeriod>
+			<Mask>dd-MM-yyyy</Mask>
+			<From>
+				<Date>28-01-2008</Date>
+			</From>
+			<To>
+				<Date>28-01-2108</Date>
+			</To>
+		</AvailabilityPeriod>
+		<ImageSize>
+			<Minimum>
+				<Width>50</Width>
+				<Height>50</Height>
+			</Minimum>
+			<Maximum>
+				<Width>2500</Width>
+				<Height>2500</Height>
+			</Maximum>
+		</ImageSize>
+	</Policy>
+	<Policy Id="policy_bdltc_wfs" ConfigId="geoportail_bdltc_wfs">
+		<Servers All="true">
+			<Server>
+				<url>http://wssec.geoportail.lu/wfs/BDLTC</url>
+				<Metadata All="true">
+					<Attributes All="true"/>
+				</Metadata>
+				<Layers All="true">
+					<Layer>
+						<Name>COURS_EAU</Name>
+					</Layer>
+					<Layer>
+						<Name>RIVIERE</Name>
+					</Layer>
+					<Layer>
+						<Name>RUISSEAU</Name>
+					</Layer>
+					<Layer>
+						<Name>ZONE_HUMID</Name>
+					</Layer>
+				</Layers>
+			</Server>
+		</Servers>
+		<Subjects All="true">
+			<User>proxy_depth</User>
+		</Subjects>
+		<Operations All="true"/>
+		<AvailabilityPeriod>
+			<Mask>dd-mm-yyyy</Mask>
+			<From>
+				<Date>28-01-2008</Date>
+			</From>
+			<To>
+				<Date>28-01-2108</Date>
+			</To>
+		</AvailabilityPeriod>
+		<ImageSize/>
+	</Policy>
+	<Policy Id="policy_bdltc_wms" ConfigId="geoportail_bdltc_wms">
+		<Servers All="false">
+			<Server>
+				<url>http://wssec.geoportail.lu/MS_BDLTC</url>
+				<Prefix>iwms</Prefix>
+				<Namespace>http://www.ionicsoft.com/wms</Namespace>
+				<Metadata All="true">
+					<Attributes All="true"/>
+				</Metadata>
+				<Layers All="False">
+					<Layer>
+						<Name>BD-L-TC</Name>
+					</Layer>
+					<Layer>
+						<Name>BARRAGE</Name>
+					</Layer>
+					<Layer>
+						<Name>COURS_EAU</Name>
+					</Layer>
+					<Layer>
+						<Name>RIVIERE</Name>
+					</Layer>
+					<Layer>
+						<Name>RUISSEAU</Name>
+					</Layer>
+					<Layer>
+						<Name>SURF_HYDRO</Name>
+					</Layer>
+					<Layer>
+						<Name>TOPONYME</Name>
+					</Layer>
+					<Layer>
+						<Name>ZONE_HUMID</Name>
+					</Layer>
+				</Layers>
+			</Server>
+		</Servers>
+		<Subjects All="false">
+			<User>proxy_depth</User>
+		</Subjects>
+		<Operations All="true"/>
+		<AvailabilityPeriod>
+			<Mask>dd-mm-yyyy</Mask>
+			<From>
+				<Date>28-01-2008</Date>
+			</From>
+			<To>
+				<Date>28-01-2108</Date>
+			</To>
+		</AvailabilityPeriod>
+		<ImageSize/>
+	</Policy>
+	<Policy Id="policy_pcn_wms" ConfigId="geoportail_pcn_wms">
+		<Servers All="false">
+			<Server>
+				<url>http://wssec.geoportail.lu/MS_PCN</url>
+				<Prefix>iwms</Prefix>
+				<Namespace>http://www.ionicsoft.com/wms</Namespace>
+				<Metadata All="true">
+					<Attributes All="true"/>
+				</Metadata>
+				<Layers All="False">
+					<Layer>
+						<Name>PCN</Name>
+					</Layer>
+					<Layer>
+						<Name>PCNBATBDTOPO_S</Name>
+					</Layer>
+					<Layer>
+						<Name>PCNTOP_T</Name>
+					</Layer>
+					<Layer>
+						<Name>PARCELLES_CLES</Name>
+					</Layer>
+					<Layer>
+						<Name>PCNBAT_S</Name>
+					</Layer>
+					<Layer>
+						<Name>PCNLIM_S_COMMUNES_CADASTRALES_TEXTES</Name>
+					</Layer>
+					<Layer>
+						<Name>PCNLIM_S_SECTIONS_CADASTRALES_TEXTES</Name>
+					</Layer>
+					<Layer>
+						<Name>PCNLIM_S_COMMUNES_CADASTRALES</Name>
+					</Layer>
+					<Layer>
+						<Name>PCNLIM_S_SECTIONS_CADASTRALES</Name>
+					</Layer>
+					<Layer>
+						<Name>PCNLIM_S</Name>
+					</Layer>
+					<Layer>
+						<Name>PARCELLES</Name>
+					</Layer>
+				</Layers>
+			</Server>
+		</Servers>
+		<Subjects All="false">
+			<User>proxy_depth</User>
+		</Subjects>
+		<Operations All="true"/>
+		<AvailabilityPeriod>
+			<Mask>dd-mm-yyyy</Mask>
+			<From>
+				<Date>28-01-2008</Date>
+			</From>
+			<To>
+				<Date>28-01-2108</Date>
+			</To>
+		</AvailabilityPeriod>
+		<ImageSize/>
+	</Policy>
+	<Policy Id="policy_pl5_wms" ConfigId="geoportail_pl5_wms">
+		<Servers All="false">
+			<Server>
+				<url>http://wssec.geoportail.lu/pl5</url>
+				<Prefix>iwms</Prefix>
+				<Namespace>http://www.ionicsoft.com/wms</Namespace>
+				<Metadata All="true">
+					<Attributes All="true"/>
+				</Metadata>
+				<Layers All="False">
+					<Layer>
+						<Name>PL5</Name>
+					</Layer>
+				</Layers>
+			</Server>
+		</Servers>
+		<Subjects All="false">
+			<User>proxy_depth</User>
+		</Subjects>
+		<Operations All="true"/>
+		<AvailabilityPeriod>
+			<Mask>dd-mm-yyyy</Mask>
+			<From>
+				<Date>28-01-2008</Date>
+			</From>
+			<To>
+				<Date>28-01-2108</Date>
+			</To>
+		</AvailabilityPeriod>
+		<ImageSize/>
+	</Policy>
+	<Policy Id="rwgiswmsmenv_policy" ConfigId="rwgiswmsmenv">
+		<Servers All="false">
+			<Server>
+				<url>http://RWGIS-VAL-DATA:8080/geoserver/wms</url>
+				<Prefix>eai</Prefix>
+				<Namespace>eai http://www.easysdi.org/eai</Namespace>
+				<Metadata All="true">
+					<Attributes All="true"/>
+				</Metadata>
+				<Layers All="False">
+					<Layer>
+						<Name>eai:f_vw_simple_occurrence_public</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:f_vw_simple_occurrence_private_geom_grid_one_km_lux</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:f_vw_simple_occurrence_public_geom_grid_one_km_lux</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:f_vw_adv_occurrence_public</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:f_vw_simple_occurrence_public_geom_orig</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:f_vw_simple_occurrence_private_geom_grid_four_km_lux</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:f_vw_simple_occurrence_public_geom_grid_ten_km_lux</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:f_vw_simple_occurrence_private_geom_grid_two_km_lux</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:f_vw_simple_occurrence_private_geom_grid_five_km_lux</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:f_vw_simple_occurrence_public_geom_grid_four_km_bel</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:f_vw_simple_occurrence_public_geom_grid_two_km_lux</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:f_vw_simple_occurrence_public_geom_grid_one_km_bel</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:f_vw_simple_occurrence_private_geom_grid_one_km_bel</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:f_vw_simple_occurrence_private_geom_orig</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:f_vw_simple_occurrence_private_geom_grid_ten_km_lux</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:f_vw_adv_occurrence_private</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:f_vw_simple_occurrence_private_geom_grid_four_km_bel</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:f_vw_simple_occurrence_public_geom_grid_five_km_lux</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:f_vw_simple_occurrence_private</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:f_vw_simple_occurrence_public_geom_grid_four_km_lux</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:rec_sect</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:OBS99</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:Natura200706</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:Natura200610</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:ResForetIntAdmin</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:grid10km</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:grid1km</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:grid2km</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:grid4km</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:grid5km</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:ifbl01x01</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:ifbl04x04</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:ReservesNaturelles</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:Arc_Sample</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:Img_Sample</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:mosaic</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:Pk50095</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:sfdem</Name>
+					</Layer>
+				</Layers>
+			</Server>
+		</Servers>
+		<Subjects All="false">
+			<User>proxy_depth</User>
+		</Subjects>
+		<Operations All="true"/>
+		<AvailabilityPeriod>
+			<Mask>dd-mm-yyyy</Mask>
+			<From>
+				<Date>28-01-2008</Date>
+			</From>
+			<To>
+				<Date>28-01-2108</Date>
+			</To>
+		</AvailabilityPeriod>
+		<ImageSize/>
+	</Policy>
+	<Policy Id="rwgiswmsworld_policy" ConfigId="rwgiswmsworld">
+		<Servers All="false">
+			<Server>
+				<url>http://RWGIS-VAL-DATA:8080/geoserver/wms</url>
+				<Prefix>eai</Prefix>
+				<Namespace>eai http://www.easysdi.org/eai</Namespace>
+				<Metadata All="true">
+					<Attributes All="true"/>
+				</Metadata>
+				<Layers All="true">
+					<Layer>
+						<Name>eai:f_vw_simple_occurrence_public</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:f_vw_simple_occurrence_private_geom_grid_one_km_lux</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:f_vw_simple_occurrence_public_geom_grid_one_km_lux</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:f_vw_adv_occurrence_public</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:f_vw_simple_occurrence_public_geom_orig</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:f_vw_simple_occurrence_private_geom_grid_four_km_lux</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:f_vw_simple_occurrence_public_geom_grid_ten_km_lux</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:f_vw_simple_occurrence_private_geom_grid_two_km_lux</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:f_vw_simple_occurrence_private_geom_grid_five_km_lux</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:f_vw_simple_occurrence_public_geom_grid_four_km_bel</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:f_vw_simple_occurrence_public_geom_grid_two_km_lux</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:f_vw_simple_occurrence_public_geom_grid_one_km_bel</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:f_vw_simple_occurrence_private_geom_grid_one_km_bel</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:f_vw_simple_occurrence_private_geom_orig</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:f_vw_simple_occurrence_private_geom_grid_ten_km_lux</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:f_vw_adv_occurrence_private</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:f_vw_simple_occurrence_private_geom_grid_four_km_bel</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:f_vw_simple_occurrence_public_geom_grid_five_km_lux</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:f_vw_simple_occurrence_private</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:f_vw_simple_occurrence_public_geom_grid_four_km_lux</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:rec_sect</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:OBS99</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:Natura200706</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:Natura200610</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:ResForetIntAdmin</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:grid10km</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:grid1km</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:grid2km</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:grid4km</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:grid5km</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:ifbl01x01</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:ifbl04x04</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:ReservesNaturelles</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:Arc_Sample</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:Img_Sample</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:mosaic</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:Pk50095</Name>
+					</Layer>
+					<Layer>
+						<Name>eai:sfdem</Name>
+					</Layer>
+				</Layers>
+			</Server>
+		</Servers>
+		<Subjects All="false">
+			<User>proxy_depth</User>
+		</Subjects>
+		<Operations All="true"/>
+		<AvailabilityPeriod>
+			<Mask>dd-mm-yyyy</Mask>
+			<From>
+				<Date>28-01-2008</Date>
+			</From>
+			<To>
+				<Date>28-01-2108</Date>
+			</To>
+		</AvailabilityPeriod>
+		<ImageSize/>
+	</Policy>
+	<Policy Id="rwgiswfsworld-policy" ConfigId="rwgiswfsworld">
+		<Servers All="false">
+			<Server>
+				<url>http://RWGIS-VAL-DATA:8080/geoserver/wfs</url>
+				<Prefix>eai</Prefix>
+				<Namespace>http://www.easysdi.org/eai</Namespace>
+				<Metadata All="true">
+					<Attributes All="true"/>
+				</Metadata>
+				<FeatureTypes All="true">
+					<FeatureType>
+						<Name>eai:f_gis_cache_taxon_designation_type</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_vw_simple_occurrence_private_geom_grid_one_km_lux</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_vw_simple_occurrence_public_geom_grid_one_km_lux</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_vw_adv_occurrence_public</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_vw_simple_occurrence_public_geom_orig</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_gis_cache_taxon_list</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_vw_simple_occurrence_private_geom_grid_four_km_lux</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_joined_features</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_vw_simple_occurrence_public_geom_grid_ten_km_lux</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_vw_adv_biotope</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_vw_simple_occurrence_private_geom_grid_two_km_lux</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_vw_simple_occurrence_private_geom_grid_five_km_lux</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_vw_simple_taxon</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_vw_search_taxon</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_gis_cache_survey_keyword</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_gis_cache_comment</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_vw_simple_biotope</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_vw_simple_occurrence_public_geom_grid_four_km_bel</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_vw_simple_occurrence_public_geom_grid_two_km_lux</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_vw_simple_occurrence_public_geom_grid_one_km_bel</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_vw_simple_occurrence_private_geom_grid_one_km_bel</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_vw_simple_occurrence_private_geom_orig</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_gis_cache_biotope_classification</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_vw_simple_occurrence_private_geom_grid_ten_km_lux</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_gis_cache_survey</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_vw_adv_occurrence_private</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_vw_distinct_taxon</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_gis_cache_biotope_designation_type</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_vw_simple_occurrence_private_geom_grid_four_km_bel</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_vw_simple_occurrence_public_geom_grid_five_km_lux</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_gis_cache_survey_operator</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_vw_adv_taxon</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_vw_simple_occurrence_private</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_vw_simple_occurrence_public_geom_grid_four_km_lux</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:rec_sect</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:OBS99</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:Natura200706</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:Natura200610</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:ResForetIntAdmin</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:grid10km</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:grid1km</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:grid2km</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:grid4km</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:grid5km</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:ifbl01x01</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:ifbl04x04</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:ReservesNaturelles</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_vw_simple_occurrence_public</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+					<FeatureType>
+						<Name>eai:f_vw_taxon_designation_type</Name>
+						<Attributes All="true"/>
+					</FeatureType>
+				</FeatureTypes>
+			</Server>
+		</Servers>
+		<Subjects All="true">
+			<User>proxy_depth</User>
+		</Subjects>
+		<Operations All="true"/>
+		<AvailabilityPeriod>
+			<Mask>dd-MM-yyyy</Mask>
+			<From>
+				<Date>28-01-2008</Date>
+			</From>
+			<To>
+				<Date>28-01-2108</Date>
+			</To>
+		</AvailabilityPeriod>
+	</Policy>
+</PolicySet>

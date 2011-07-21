@@ -1,0 +1,32 @@
+<Log><LogRequest user="spring2a2d595e6ed9a0b24f027f2b63b134d6" requestTime="21/07/2011 11:29:45"> 
+<logEntry time="21/07/2011 11:29:45" severity="SYSTEM" name="RemoteRequestUrl"><![CDATA[http://wssec.geoportail.lu/wfs/BDLTC]]></logEntry>
+<logEntry time="21/07/2011 11:29:45" severity="SYSTEM" name="RemoteRequest"><![CDATA[request=GetCapabilities&service=WFS&version=1.0.0&]]></logEntry>
+<logEntry time="21/07/2011 11:29:45" severity="SYSTEM" name="RemoteRequestLength"><![CDATA[50]]></logEntry>
+<logEntry time="21/07/2011 11:29:45" severity="SYSTEM" name="RemoteRequestDateTime"><![CDATA[21/07/2011 11:29:45]]></logEntry>
+<logEntry time="21/07/2011 11:29:45" severity="INFO"><![CDATA[ tmpDir :  C:\Users\Helene\AppData\Local\Temp\]]></logEntry>
+<logEntry time="21/07/2011 11:29:45" severity="SYSTEM" name="RemoteResponseToRequestUrl"><![CDATA[http://wssec.geoportail.lu/wfs/BDLTC?request=GetCapabilities&service=WFS&version=1.0.0&]]></logEntry>
+<logEntry time="21/07/2011 11:29:45" severity="SYSTEM" name="RemoteResponseLength"><![CDATA[5893]]></logEntry>
+<logEntry time="21/07/2011 11:29:45" severity="SYSTEM" name="RemoteResponseDateTime"><![CDATA[21/07/2011 11:29:45]]></logEntry>
+<logEntry time="21/07/2011 11:29:45" severity="DEBUG"><![CDATA[filterServersResponseFiles begin]]></logEntry>
+<logEntry time="21/07/2011 11:29:45" severity="DEBUG"><![CDATA[filterServersResponseFiles end]]></logEntry>
+<logEntry time="21/07/2011 11:29:45" severity="INFO"><![CDATA[User postreatment file null\spring2a2d595e6ed9a0b24f027f2b63b134d6\100\GetCapabilities.xsl does not exist]]></logEntry>
+<logEntry time="21/07/2011 11:29:45" severity="INFO"><![CDATA[Global postreatment file null\100\GetCapabilities.xsl does not exist]]></logEntry>
+<logEntry time="21/07/2011 11:29:45" severity="INFO"><![CDATA[GetCapabilities is permitted]]></logEntry>
+<logEntry time="21/07/2011 11:29:45" severity="INFO"><![CDATA[DescribeFeatureType is permitted]]></logEntry>
+<logEntry time="21/07/2011 11:29:45" severity="INFO"><![CDATA[GetFeature is permitted]]></logEntry>
+<logEntry time="21/07/2011 11:29:45" severity="INFO"><![CDATA[Transaction is permitted]]></logEntry>
+<logEntry time="21/07/2011 11:29:45" severity="INFO"><![CDATA[LockFeature is denied]]></logEntry>
+<logEntry time="21/07/2011 11:29:45" severity="INFO"><![CDATA[GetGmlObject is denied]]></logEntry>
+<logEntry time="21/07/2011 11:29:45" severity="INFO"><![CDATA[GetFeatureWithLock is denied]]></logEntry>
+<logEntry time="21/07/2011 11:29:46" severity="DEBUG"><![CDATA[transform begin apply XSLT on service metadata]]></logEntry>
+<logEntry time="21/07/2011 11:29:46" severity="DEBUG"><![CDATA[transform end apply XSLT on service metadata]]></logEntry>
+<logEntry time="21/07/2011 11:29:46" severity="SYSTEM" name="ClientResponseDateTime"><![CDATA[21/07/2011 11:29:46]]></logEntry>
+<logEntry time="21/07/2011 11:29:46" severity="SYSTEM" name="ClientResponseLength"><![CDATA[3954]]></logEntry>
+<logEntry time="21/07/2011 11:29:46" severity="INFO"><![CDATA[temporary file file:/C:/Users/Helene/AppData/Local/Temp/sendData_1123e5de-bd94-4b2b-b70d-65c46d0665777153898392138777467.xml is deleted]]></logEntry>
+<logEntry time="21/07/2011 11:29:46" severity="INFO"><![CDATA[temporary file file:/C:/Users/Helene/AppData/Local/Temp/transform_GetCapabilitiesecc870b3-3f67-46a0-aae4-1552c0fd422f27856207287883398.xml is deleted]]></logEntry>
+<logEntry time="21/07/2011 11:29:46" severity="INFO"><![CDATA[temporary file file:/C:/Users/Helene/AppData/Local/Temp/mergeCapabilities_f_ca57d781-de13-4f6f-954d-77ac7da746d47960601323689309940.xml is deleted]]></logEntry>
+<logEntry time="21/07/2011 11:29:46" severity="SYSTEM" name="RemoteAddr"><![CDATA[127.0.0.1]]></logEntry>
+<logEntry time="21/07/2011 11:29:46" severity="SYSTEM" name="RemoteUser"><![CDATA[null]]></logEntry>
+<logEntry time="21/07/2011 11:29:46" severity="SYSTEM" name="QueryString"><![CDATA[request=GetCapabilities&service=WFS&version=1.0.0]]></logEntry>
+<logEntry time="21/07/2011 11:29:46" severity="SYSTEM" name="RequestURL"><![CDATA[http://localhost:8070/proxy/ogc/geoportail_bdltc_wfs]]></logEntry>
+</LogRequest>
