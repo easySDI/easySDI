@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<PolicySet>
-  
-<Policy Id="easysdi_csw_policy" ConfigId="easysdi_csw"><Servers All="false"><Server><url>http://demo.depth.ch:8084/geonetwork/srv/en/csw</url><Prefix></Prefix><Namespace></Namespace><Metadata All="true"><Attributes All="true"/></Metadata><Layers></Layers><FeatureTypes></FeatureTypes></Server></Servers><Subjects All="true"></Subjects><Operations All="true"></Operations><AvailabilityPeriod><Mask>d-mm-yyyy</Mask><From><Date>28-01-2008</Date></From><To><Date>28-01-2108</Date></To></AvailabilityPeriod><ImageSize></ImageSize><ObjectVisibilities All="true"></ObjectVisibilities><ObjectStatus All="true"></ObjectStatus><ObjectTypes All="true"></ObjectTypes></Policy></PolicySet>
