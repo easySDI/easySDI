@@ -277,6 +277,7 @@ public class WMTSProxyResponseBuilder100 extends WMTSProxyResponseBuilder {
 					Iterator<Element> itmschild = contentsChild.getDescendants(new ElementTileMatrixSetFilter());
 					while (itmschild.hasNext())
 					{
+					    //TODO : vérifier que la TileMatrixSet n'est pas déjà défini dans le xml (wellknown...)
 						Element child = (Element)((Element)itmschild.next()).clone();
 						contentsMaster.addContent(child);
 					}

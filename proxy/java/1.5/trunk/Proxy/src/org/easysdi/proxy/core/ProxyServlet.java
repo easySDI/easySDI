@@ -831,9 +831,9 @@ public abstract class ProxyServlet extends HttpServlet {
 
 			FileOutputStream tempFos = new FileOutputStream(tempFile);
 
-			byte[] buf = new byte[in.available()];
+			byte[] buf = new byte[1024];
 			int nread;
-			while ((nread = in.read(buf)) != -1) {
+			while ((nread = in.read(buf)) >= 0) {
 				tempFos.write(buf, 0, nread);
 			}
 
@@ -1105,7 +1105,7 @@ public abstract class ProxyServlet extends HttpServlet {
 	 */
 	protected StringBuffer sendFile(String urlstr, StringBuffer param, String loginServiceUrl) {
 
-		try {
+	    	try {
 			DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
 			Date d = new Date();
 			logger.info("RemoteRequestUrl="+ urlstr);

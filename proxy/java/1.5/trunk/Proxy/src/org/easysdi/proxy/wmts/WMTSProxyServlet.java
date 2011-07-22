@@ -16,18 +16,28 @@
  */
 package org.easysdi.proxy.wmts;
 
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
+
+import javax.imageio.ImageIO;
+import javax.imageio.ImageWriter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.easysdi.jdom.filter.ElementTileMatrixSetFilter;
 import org.easysdi.proxy.core.ProxyLayer;
 import org.easysdi.proxy.core.ProxyServlet;
 import org.easysdi.proxy.ows.OWSExceptionManager;
@@ -39,6 +49,10 @@ import org.easysdi.proxy.policy.TileMatrixSet;
 import org.easysdi.proxy.wmts.thread.WMTSProxyServerGetCapabilitiesThread;
 import org.easysdi.proxy.wmts.v100.WMTSExceptionReport100;
 import org.easysdi.xml.documents.RemoteServerInfo;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.Namespace;
+import org.jdom.input.SAXBuilder;
 
 /**
  * @author Depth SA
@@ -219,21 +233,34 @@ public class WMTSProxyServlet extends ProxyServlet{
 			//Check if the requested tile is allowed
 			String tileAllowed = isTileAllowed((WMTSProxyServletRequest)getProxyRequest(), RS.getUrl());
 			if(!tileAllowed.equalsIgnoreCase("true")){
-			    String locator = null;
-			    String message = null;
-			    String code = null;
-			    if(tileAllowed.equalsIgnoreCase("TileRow")|| tileAllowed.equalsIgnoreCase("TileCol")){
-				locator = tileAllowed;
-				code = WMTSExceptionReport100.CODE_TILE_OUT_OF_RANGE;
-				message = tileAllowed + " is out of range." ;
-			    }else{
-				locator = tileAllowed;
-				code = OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE;
-				message = OWSExceptionReport.TEXT_INVALID_PARAMETER_VALUE;
+			    //the tile is not allowed, a blank image is returned.
+			    logger.debug("WMTSProxyServlet.requestPreTreatmentGetTile : tile is not allowed, generate an empty image");
+			    BufferedImage imgOut = generateEmptyImage(RS.getUrl(), getProxyRequest().getFormat());
+			    Iterator<ImageWriter> iter = ImageIO.getImageWritersByMIMEType(getProxyRequest().getFormat());
+			    ByteArrayOutputStream out = new ByteArrayOutputStream();
+			    if (iter.hasNext()) {
+				ImageWriter writer = (ImageWriter) iter.next();
+				writer.setOutput(out);
+				writer.write(imgOut);
+				writer.dispose();
 			    }
-			    StringBuffer out = owsExceptionReport.generateExceptionReport(message,code,locator);
-			    sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
+			    sendHttpServletResponse(req, resp,out,getProxyRequest().getFormat(), HttpServletResponse.SC_OK);
 			    return;
+//			    String locator = null;
+//			    String message = null;
+//			    String code = null;
+//			    if(tileAllowed.equalsIgnoreCase("TileRow")|| tileAllowed.equalsIgnoreCase("TileCol")){
+//				locator = tileAllowed;
+//				code = WMTSExceptionReport100.CODE_TILE_OUT_OF_RANGE;
+//				message = tileAllowed + " is out of range." ;
+//			    }else{
+//				locator = tileAllowed;
+//				code = OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE;
+//				message = OWSExceptionReport.TEXT_INVALID_PARAMETER_VALUE;
+//			    }
+//			    StringBuffer out = owsExceptionReport.generateExceptionReport(message,code,locator);
+//			    sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
+//			    return;
 			}
 			
 			String requestContent=null;
@@ -596,5 +623,84 @@ public class WMTSProxyServlet extends ProxyServlet{
 			}
 		}
 		return false;
+	}
+	
+	/**
+	 * Generate an empty image
+	 * @param width
+	 * @param height
+	 * @param format
+	 * @param isTransparent
+	 * @param j
+	 * @param resp
+	 */
+	private BufferedImage generateEmptyImage(String remoteServerUrl, String format) {
+	    try {
+		String encoding = null;
+		if (getUsername(remoteServerUrl) != null && getPassword(remoteServerUrl) != null) {
+			String userPassword = getUsername(remoteServerUrl) + ":" + getPassword(remoteServerUrl);
+			encoding = new sun.misc.BASE64Encoder().encode(userPassword.getBytes());
+
+		}
+		URL url = new URL(remoteServerUrl+"?request=GetCapabilities&service=WMTS");
+		HttpURLConnection hpcon = null;
+		hpcon = (HttpURLConnection) url.openConnection();
+		hpcon.setRequestMethod("GET");
+		if (encoding != null) {
+			hpcon.setRequestProperty("Authorization", "Basic " + encoding);
+		}
+		hpcon.setUseCaches(false);
+		hpcon.setDoInput(true);
+		hpcon.setDoOutput(false);
+		
+		InputStream in = null;
+		in = hpcon.getInputStream();
+		
+		String width = null;
+		String height = null;
+		
+		SAXBuilder sxb = new SAXBuilder();
+		Document  docParent = sxb.build(in);
+		Element racine = docParent.getRootElement();
+		Namespace nsWMTS = racine.getNamespace();
+		Namespace nsOWS = null;
+		List lns = racine.getAdditionalNamespaces();
+	    	Iterator ilns = lns.iterator();
+	    	while (ilns.hasNext())
+	    	{
+	    		Namespace ns = (Namespace)ilns.next();
+	    		if(ns.getPrefix().equalsIgnoreCase("ows"))
+	    			nsOWS = ns;
+	    	}
+		Element contentsChild = (Element)racine.getChild("Contents", nsWMTS);
+		Iterator<Element> itmschild = contentsChild.getDescendants(new ElementTileMatrixSetFilter());
+		while (itmschild.hasNext())
+		{
+		    Element tms = (Element)itmschild.next();
+		    Element tmsId = tms.getChild("Identifier", nsOWS);
+		    if(tmsId.getValue().equalsIgnoreCase(getProxyRequest().getTileMatrixSet())){
+			Iterator<Element> ltm = tms.getChildren("TileMatrix", nsWMTS).iterator();
+			while (ltm.hasNext()){
+			    Element tm = ltm.next();
+			    Element tmId = tm.getChild("Identifier", nsOWS);
+			    if(tmId.getValue().equalsIgnoreCase(getProxyRequest().getTileMatrix())){
+				width = tm.getChild("TileWidth", nsWMTS).getValue();
+				height = tm.getChild("TileHeight", nsWMTS).getValue();
+				break;
+			    }
+			}
+		    }
+		}
+		
+		BufferedImage imgOut = null;
+					
+		imgOut = new BufferedImage((int) Double.parseDouble(width), (int) Double.parseDouble(height), BufferedImage.BITMASK);
+		
+		 return imgOut;
+	    } catch (Exception e) {
+		logger.error("GenerateEmptyImage: ",e);
+		return null;
+	    } 
+	   
 	}
 }
