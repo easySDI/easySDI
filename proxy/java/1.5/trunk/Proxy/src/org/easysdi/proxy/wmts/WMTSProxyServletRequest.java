@@ -40,479 +40,516 @@ public class WMTSProxyServletRequest extends ProxyServletRequest {
      * Store the body of the POST request
      */
     private StringBuffer bodyRequest;
-    
+
     /**
      * 
      */
     private String acceptVersions;
-    
+
     /**
      * 
      */
     private String sections;
-    
+
     /**
      * 
      */
     private String updateSequence;
-    
+
     /**
      * 
      */
     private String acceptFormats;
-    
+
     /**
      * 
      */
     private String layer;
-    
+
+    /**
+     * 
+     */
+    private ProxyLayer pLayer;
     /**
      * 
      */
     private String style;
-    
+
     /**
      * 
      */
     private String format;
-    
+
     /**
      * 
      */
     private String infoFormat;
-    
+
     /**
      * 
      */
     private String tileMatrixSet;
-    
+
+    /**
+     * 
+     */
+    private WMTSProxyTileMatrixSet pTileMatrixSet;
     /**
      * 
      */
     private String tileMatrix;
-    
+
     /**
      * 
      */
     private String tileRow;
-    
+
     /**
      * 
      */
     private String tileCol;
-    
+
     /**
      * 
      */
     private String i;
-    
+
     /**
      * 
      */
     private String j;
-	
-	/**
-	 * @param tileCol the tileCol to set
-	 */
-	public void setTileCol(String tileCol) {
-		this.tileCol = tileCol;
-	}
 
-	/**
-	 * @return the tileCol
-	 */
-	public String getTileCol() {
-		return tileCol;
-	}
+    /**
+     * @param tileCol the tileCol to set
+     */
+    public void setTileCol(String tileCol) {
+	this.tileCol = tileCol;
+    }
 
-	/**
-	 * @param tileRow the tileRow to set
-	 */
-	public void setTileRow(String tileRow) {
-		this.tileRow = tileRow;
-	}
+    /**
+     * @return the tileCol
+     */
+    public String getTileCol() {
+	return tileCol;
+    }
 
-	/**
-	 * @return the tileRow
-	 */
-	public String getTileRow() {
-		return tileRow;
-	}
+    /**
+     * @param tileRow the tileRow to set
+     */
+    public void setTileRow(String tileRow) {
+	this.tileRow = tileRow;
+    }
 
-	/**
-	 * @param tileMatrix the tileMatrix to set
-	 */
-	public void setTileMatrix(String tileMatrix) {
-		this.tileMatrix = tileMatrix;
-	}
+    /**
+     * @return the tileRow
+     */
+    public String getTileRow() {
+	return tileRow;
+    }
 
-	/**
-	 * @return the tileMatrix
-	 */
-	public String getTileMatrix() {
-		return tileMatrix;
-	}
+    /**
+     * @param tileMatrix the tileMatrix to set
+     */
+    public void setTileMatrix(String tileMatrix) {
+	this.tileMatrix = tileMatrix;
+    }
 
-	/**
-	 * @param tileMatrixSet the tileMatrixSet to set
-	 */
-	public void setTileMatrixSet(String tileMatrixSet) {
-		this.tileMatrixSet = tileMatrixSet;
-	}
+    /**
+     * @return the tileMatrix
+     */
+    public String getTileMatrix() {
+	return tileMatrix;
+    }
 
-	/**
-	 * @return the tileMatrixSet
-	 */
-	public String getTileMatrixSet() {
-		return tileMatrixSet;
-	}
+    /**
+     * @param tileMatrixSet the tileMatrixSet to set
+     */
+    public void setTileMatrixSet(String tileMatrixSet) {
+	this.tileMatrixSet = tileMatrixSet;
+    }
 
-	/**
-	 * @param format the format to set
-	 */
-	public void setFormat(String format) {
-		this.format = format;
-	}
+    /**
+     * @return the tileMatrixSet
+     */
+    public String getTileMatrixSet() {
+	return tileMatrixSet;
+    }
 
-	/**
-	 * @return the format
-	 */
-	public String getFormat() {
-		return format;
-	}
+    /**
+     * @param pTileMatrixSet the pTileMatrixSet to set
+     */
+    public void setpTileMatrixSet(WMTSProxyTileMatrixSet pTileMatrixSet) {
+	this.pTileMatrixSet = pTileMatrixSet;
+    }
 
-	/**
-	 * @param style the style to set
-	 */
-	public void setStyle(String style) {
-		this.style = style;
-	}
+    /**
+     * @return the pTileMatrixSet
+     */
+    public WMTSProxyTileMatrixSet getpTileMatrixSet() {
+	return pTileMatrixSet;
+    }
 
-	/**
-	 * @return the style
-	 */
-	public String getStyle() {
-		return style;
-	}
+    /**
+     * @param format the format to set
+     */
+    public void setFormat(String format) {
+	this.format = format;
+    }
 
-	/**
-	 * @param layer the layer to set
-	 */
-	public void setLayer(String layer) {
-		this.layer = layer;
-	}
+    /**
+     * @return the format
+     */
+    public String getFormat() {
+	return format;
+    }
 
-	/**
-	 * @return the layer
-	 */
-	public String getLayer() {
-		return layer;
-	}
+    /**
+     * @param style the style to set
+     */
+    public void setStyle(String style) {
+	this.style = style;
+    }
 
-	/**
-	 * @param acceptFormats the acceptFormats to set
-	 */
-	public void setAcceptFormats(String acceptFormats) {
-		this.acceptFormats = acceptFormats;
-	}
+    /**
+     * @return the style
+     */
+    public String getStyle() {
+	return style;
+    }
 
-	/**
-	 * @return the acceptFormats
-	 */
-	public String getAcceptFormats() {
-		return acceptFormats;
-	}
+    /**
+     * @param layer the layer to set
+     */
+    public void setLayer(String layer) {
+	this.layer = layer;
+    }
 
-	/**
-	 * @param updateSequence the updateSequence to set
-	 */
-	public void setUpdateSequence(String updateSequence) {
-		this.updateSequence = updateSequence;
-	}
+    /**
+     * @return the layer
+     */
+    public String getLayer() {
+	return layer;
+    }
 
-	/**
-	 * @return the updateSequence
-	 */
-	public String getUpdateSequence() {
-		return updateSequence;
-	}
+    /**
+     * @param pLayer the pLayer to set
+     */
+    public void setpLayer(ProxyLayer pLayer) {
+	this.pLayer = pLayer;
+    }
 
-	/**
-	 * @param sections the sections to set
-	 */
-	public void setSections(String sections) {
-		this.sections = sections;
-	}
+    /**
+     * @return the pLayer
+     */
+    public ProxyLayer getpLayer() {
+	return pLayer;
+    }
 
-	/**
-	 * @return the sections
-	 */
-	public String getSections() {
-		return sections;
-	}
+    /**
+     * @param acceptFormats the acceptFormats to set
+     */
+    public void setAcceptFormats(String acceptFormats) {
+	this.acceptFormats = acceptFormats;
+    }
 
-	/**
-	 * @param acceptVersions the acceptVersions to set
-	 */
-	public void setAcceptVersions(String acceptVersions) {
-		this.acceptVersions = acceptVersions;
-	}
+    /**
+     * @return the acceptFormats
+     */
+    public String getAcceptFormats() {
+	return acceptFormats;
+    }
 
-	/**
-	 * @return the acceptVersions
-	 */
-	public String getAcceptVersions() {
-		return acceptVersions;
-	}
+    /**
+     * @param updateSequence the updateSequence to set
+     */
+    public void setUpdateSequence(String updateSequence) {
+	this.updateSequence = updateSequence;
+    }
 
-	/**
-	 * @param infoFormat the infoFormat to set
-	 */
-	public void setInfoFormat(String infoFormat) {
-	    this.infoFormat = infoFormat;
-	}
+    /**
+     * @return the updateSequence
+     */
+    public String getUpdateSequence() {
+	return updateSequence;
+    }
 
-	/**
-	 * @return the infoFormat
-	 */
-	public String getInfoFormat() {
-	    return infoFormat;
-	}
+    /**
+     * @param sections the sections to set
+     */
+    public void setSections(String sections) {
+	this.sections = sections;
+    }
 
-	/**
-	 * @param i the i to set
-	 */
-	public void setI(String i) {
-	    this.i = i;
-	}
+    /**
+     * @return the sections
+     */
+    public String getSections() {
+	return sections;
+    }
 
-	/**
-	 * @return the i
-	 */
-	public String getI() {
-	    return i;
-	}
+    /**
+     * @param acceptVersions the acceptVersions to set
+     */
+    public void setAcceptVersions(String acceptVersions) {
+	this.acceptVersions = acceptVersions;
+    }
 
-	/**
-	 * @param j the j to set
-	 */
-	public void setJ(String j) {
-	    this.j = j;
-	}
+    /**
+     * @return the acceptVersions
+     */
+    public String getAcceptVersions() {
+	return acceptVersions;
+    }
 
-	/**
-	 * @return the j
-	 */
-	public String getJ() {
-	    return j;
-	}
+    /**
+     * @param infoFormat the infoFormat to set
+     */
+    public void setInfoFormat(String infoFormat) {
+	this.infoFormat = infoFormat;
+    }
 
-	/**
-	 * @param bodyRequest the bodyRequest to set
-	 */
-	public void setBodyRequest(StringBuffer bodyRequest) {
-		this.bodyRequest = bodyRequest;
-	}
+    /**
+     * @return the infoFormat
+     */
+    public String getInfoFormat() {
+	return infoFormat;
+    }
 
-	/**
-	 * @return the bodyRequest
-	 */
-	public StringBuffer getBodyRequest() {
-		return bodyRequest;
-	}
-	
-	/**
-	 * @param req
-	 * @throws Throwable
-	 */
-	public WMTSProxyServletRequest(HttpServletRequest req) throws Throwable {
-		super(req);
-	}
+    /**
+     * @param i the i to set
+     */
+    public void setI(String i) {
+	this.i = i;
+    }
 
-	public void parseRequestPOST () {
-	    try {
-		StringBuffer param = new StringBuffer();
-		String input;
-		BufferedReader in;
-		in = new BufferedReader(new InputStreamReader(request.getInputStream()));
-		while ((input = in.readLine()) != null) {
-		     		     
-		     String[] value = input.split("=");
-		     if (value[0].equalsIgnoreCase("service")){
-			 service = value[1];
-		     }else if(value[0].equalsIgnoreCase("request")){
-			 operation = value[1];
-		     }else if(value[0].equalsIgnoreCase("layer")){
-			 ProxyLayer pLayer = new ProxyLayer (value[1]);
-			 input = pLayer.getPrefixedName();
-			 layer = value[1];
-		     }else if(value[0].equalsIgnoreCase("version")){
-			 version = value[1];
-		     }else if(value[0].equalsIgnoreCase("sections")){
-			 sections = value[1];
-		     }else if(value[0].equalsIgnoreCase("updatesequence")){
-			 updateSequence = value[1];
-		     }else if(value[0].equalsIgnoreCase("acceptFormats")){
-			 acceptFormats = value[1];
-		     }else if(value[0].equalsIgnoreCase("acceptVersions")){
-			 acceptVersions = value[1];
-		     }else if(value[0].equalsIgnoreCase("style")){
-			 style = value[1];
-		     }else if(value[0].equalsIgnoreCase("format")){
-			 format = value[1];
-		     }else if(value[0].equalsIgnoreCase("TileMatrixset")){
-			 tileMatrixSet = value[1];
-		     }else if(value[0].equalsIgnoreCase("TileMatrix")){
-			 tileMatrix = value[1];
-		     }else if(value[0].equalsIgnoreCase("tileRow")){
-			 tileRow = value[1];
-		     }else if(value[0].equalsIgnoreCase("tileCol")){
-			 tileCol = value[1];
-		     }else if(value[0].equalsIgnoreCase("I")){
-			 i = value[1];
-		     }else if(value[0].equalsIgnoreCase("J")){
-			 j = value[1];
-		     }else if(value[0].equalsIgnoreCase("infoformat")){
-			 infoFormat = value[1];
-		     }
-			 
-		     param.append(input);
-		     param.append("\r");
+    /**
+     * @return the i
+     */
+    public String getI() {
+	return i;
+    }
+
+    /**
+     * @param j the j to set
+     */
+    public void setJ(String j) {
+	this.j = j;
+    }
+
+    /**
+     * @return the j
+     */
+    public String getJ() {
+	return j;
+    }
+
+    /**
+     * @param bodyRequest the bodyRequest to set
+     */
+    public void setBodyRequest(StringBuffer bodyRequest) {
+	this.bodyRequest = bodyRequest;
+    }
+
+    /**
+     * @return the bodyRequest
+     */
+    public StringBuffer getBodyRequest() {
+	return bodyRequest;
+    }
+
+    /**
+     * @param req
+     * @throws Throwable
+     */
+    public WMTSProxyServletRequest(HttpServletRequest req) throws Throwable {
+	super(req);
+    }
+
+    public void parseRequestPOST ()throws ProxyServletException {
+	try {
+	    StringBuffer param = new StringBuffer();
+	    String input;
+	    BufferedReader in;
+	    in = new BufferedReader(new InputStreamReader(request.getInputStream()));
+	    while ((input = in.readLine()) != null) {
+
+		String[] value = input.split("=");
+		if (value[0].equalsIgnoreCase("service")){
+		    service = value[1];
+		}else if(value[0].equalsIgnoreCase("request")){
+		    operation = value[1];
+		}else if(value[0].equalsIgnoreCase("layer")){
+		    pLayer = new ProxyLayer (value[1]);
+		    input = pLayer.getPrefixedName();
+		    layer = value[1];
+		}else if(value[0].equalsIgnoreCase("version")){
+		    version = value[1];
+		}else if(value[0].equalsIgnoreCase("sections")){
+		    sections = value[1];
+		}else if(value[0].equalsIgnoreCase("updatesequence")){
+		    updateSequence = value[1];
+		}else if(value[0].equalsIgnoreCase("acceptFormats")){
+		    acceptFormats = value[1];
+		}else if(value[0].equalsIgnoreCase("acceptVersions")){
+		    acceptVersions = value[1];
+		}else if(value[0].equalsIgnoreCase("style")){
+		    style = value[1];
+		}else if(value[0].equalsIgnoreCase("format")){
+		    format = value[1];
+		}else if(value[0].equalsIgnoreCase("TileMatrixset")){
+		    pTileMatrixSet = new WMTSProxyTileMatrixSet(value[1]);
+		    input = pTileMatrixSet.getName();
+		    tileMatrixSet = value[1];
+		}else if(value[0].equalsIgnoreCase("TileMatrix")){
+		    tileMatrix = value[1];
+		}else if(value[0].equalsIgnoreCase("tileRow")){
+		    tileRow = value[1];
+		}else if(value[0].equalsIgnoreCase("tileCol")){
+		    tileCol = value[1];
+		}else if(value[0].equalsIgnoreCase("I")){
+		    i = value[1];
+		}else if(value[0].equalsIgnoreCase("J")){
+		    j = value[1];
+		}else if(value[0].equalsIgnoreCase("infoformat")){
+		    infoFormat = value[1];
 		}
-		
-		//Store the body request
-		this.setBodyRequest(param);
-		
-	    } catch (IOException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
+
+		param.append(input);
+		param.append("\r");
 	    }
-	   
+
+	    //Store the body request
+	    this.setBodyRequest(param);
+
+	} catch (IOException e) {
+	    throw new ProxyServletException(e.toString());
 	}
-	
-	@SuppressWarnings("unchecked")
-	public void parseRequestGET () throws ProxyServletException{
-	    Enumeration<String> parameterNames = request.getParameterNames();
-	    
-	    while (parameterNames.hasMoreElements()) {
-		String key = (String) parameterNames.nextElement();
-		String value = null;
-			
-		if (	   key.equalsIgnoreCase("LAYER") 
-			|| key.equalsIgnoreCase("STYLE")
-			|| key.equalsIgnoreCase("TILEMATRIX") 
-			|| key.equalsIgnoreCase("TILEMATRIXSET") 
-			|| key.equalsIgnoreCase("TILEROW")
-			|| key.equalsIgnoreCase("TILECOL")) {
-		    value = request.getParameter(key);
-		} else {
-		    try {
-        		value = URLEncoder.encode(request.getParameter(key),"UTF-8");
-		    } catch (UnsupportedEncodingException e) {
-        		throw new ProxyServletException(e.toString());
-		    }
+
+    }
+
+    /**
+     * @throws ProxyServletException
+     */
+    @SuppressWarnings("unchecked")
+    public void parseRequestGET () throws ProxyServletException{
+	Enumeration<String> parameterNames = request.getParameterNames();
+
+	while (parameterNames.hasMoreElements()) {
+	    String key = (String) parameterNames.nextElement();
+	    String value = null;
+
+	    if (   key.equalsIgnoreCase("LAYER") 
+		    || key.equalsIgnoreCase("STYLE")
+		    || key.equalsIgnoreCase("TILEMATRIX") 
+		    || key.equalsIgnoreCase("TILEMATRIXSET") 
+		    || key.equalsIgnoreCase("TILEROW")
+		    || key.equalsIgnoreCase("TILECOL")) {
+		value = request.getParameter(key);
+	    } else {
+		try {
+		    value = URLEncoder.encode(request.getParameter(key),"UTF-8");
+		} catch (UnsupportedEncodingException e) {
+		    throw new ProxyServletException(e.toString());
 		}
-			
-			if (key.equalsIgnoreCase("acceptVersions")){
-				value = "1.0.0";
-				urlParameters = urlParameters + key + "=" + value + "&";
-			}
-			else if (key.equalsIgnoreCase("Layer")){
-				urlParameters = urlParameters + key + "=" +  new ProxyLayer(value).getPrefixedName() + "&" ;
-			}
-			else{
-				urlParameters = urlParameters + key + "=" + value + "&";
-			}
-			
-			if (key.equalsIgnoreCase("service") )
-			{
-				service = request.getParameter(key);
-//				if(!service.equalsIgnoreCase("WMTS"))
-//				{
-//					logger.info( "Service requested is not WMTS.");
-//					StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_SERVICE_NAME,OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE,"service");
-//					sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
-//					return;
-//				}
-			}
-			else if (key.equalsIgnoreCase("request"))
-			{
-				operation = request.getParameter(key);
-			}
-			else if (key.equalsIgnoreCase("acceptVersions"))
-			{
-				setAcceptVersions(request.getParameter(key));
-				if(getAcceptVersions().contains("1.0.0"))
-				{
-					setAcceptVersions("1.0.0");
-					requestedVersion = "1.0.0";
-				}
-				else
-				{
-					throw new VersionNotSupportedException(getAcceptVersions());
-				}
-			}
-			else if (key.equalsIgnoreCase("version"))
-			{
-				version = request.getParameter(key);
-				if(!version.equalsIgnoreCase("1.0.0"))
-				{
-					throw new VersionNotSupportedException(version);
-				}
-			}
-			else if (key.equalsIgnoreCase("sections"))
-			{
-				sections = request.getParameter(key);
-			}
-			else if (key.equalsIgnoreCase("updateSequence"))
-			{
-				updateSequence = request.getParameter(key);
-			}
-			else if (key.equalsIgnoreCase("acceptFormats"))
-			{
-				acceptFormats = request.getParameter(key);
-			}
-			else if (key.equalsIgnoreCase("Layer"))
-			{
-				layer = request.getParameter(key);
-			}
-			else if (key.equalsIgnoreCase("Style"))
-			{
-				style = request.getParameter(key);
-			}
-			else if (key.equalsIgnoreCase("Format"))
-			{
-				format = request.getParameter(key);
-			}
-			else if (key.equalsIgnoreCase("TileMatrixSet"))
-			{
-				tileMatrixSet = request.getParameter(key);
-			}
-			else if (key.equalsIgnoreCase("TileMatrix"))
-			{
-				tileMatrix = request.getParameter(key);
-			}
-			else if (key.equalsIgnoreCase("TileRow"))
-			{
-				tileRow = request.getParameter(key);
-			}
-			else if (key.equalsIgnoreCase("TileCol"))
-			{
-				tileCol = request.getParameter(key);
-			}
-			else if (key.equalsIgnoreCase("I"))
-			{
-				i = request.getParameter(key);
-			}
-			else if (key.equalsIgnoreCase("J"))
-			{
-				j = request.getParameter(key);
-			}
-			else if (key.equalsIgnoreCase("INFOFORMAT"))
-			{
-				infoFormat = request.getParameter(key);
-			}
+	    }
+
+	    if (key.equalsIgnoreCase("acceptVersions")){
+		value = "1.0.0";
+		urlParameters = urlParameters + key + "=" + value + "&";
+	    }
+	    else if (key.equalsIgnoreCase("Layer")){
+		urlParameters = urlParameters + key + "=" +  new ProxyLayer(value).getPrefixedName() + "&" ;
+	    }else if (key.equalsIgnoreCase("TileMatrixSet")){
+		urlParameters = urlParameters + key + "=" +  new WMTSProxyTileMatrixSet(value).getName() + "&" ;
+	    }
+	    else{
+		urlParameters = urlParameters + key + "=" + value + "&";
+	    }
+
+	    if (key.equalsIgnoreCase("service") )
+	    {
+		service = request.getParameter(key);
+	    }
+	    else if (key.equalsIgnoreCase("request"))
+	    {
+		operation = request.getParameter(key);
+	    }
+	    else if (key.equalsIgnoreCase("acceptVersions"))
+	    {
+		setAcceptVersions(request.getParameter(key));
+		if(getAcceptVersions().contains("1.0.0"))
+		{
+		    setAcceptVersions("1.0.0");
+		    requestedVersion = "1.0.0";
 		}
-		
+		else
+		{
+		    throw new VersionNotSupportedException(getAcceptVersions());
+		}
+	    }
+	    else if (key.equalsIgnoreCase("version"))
+	    {
+		version = request.getParameter(key);
+		if(!version.equalsIgnoreCase("1.0.0"))
+		{
+		    throw new VersionNotSupportedException(version);
+		}
+	    }
+	    else if (key.equalsIgnoreCase("sections"))
+	    {
+		sections = request.getParameter(key);
+	    }
+	    else if (key.equalsIgnoreCase("updateSequence"))
+	    {
+		updateSequence = request.getParameter(key);
+	    }
+	    else if (key.equalsIgnoreCase("acceptFormats"))
+	    {
+		acceptFormats = request.getParameter(key);
+	    }
+	    else if (key.equalsIgnoreCase("Layer"))
+	    {
+		layer = request.getParameter(key);
+		pLayer = new ProxyLayer(layer);
+	    }
+	    else if (key.equalsIgnoreCase("Style"))
+	    {
+		style = request.getParameter(key);
+	    }
+	    else if (key.equalsIgnoreCase("Format"))
+	    {
+		format = request.getParameter(key);
+	    }
+	    else if (key.equalsIgnoreCase("TileMatrixSet"))
+	    {
+		tileMatrixSet = request.getParameter(key);
+		pTileMatrixSet = new WMTSProxyTileMatrixSet(tileMatrixSet);
+	    }
+	    else if (key.equalsIgnoreCase("TileMatrix"))
+	    {
+		tileMatrix = request.getParameter(key);
+	    }
+	    else if (key.equalsIgnoreCase("TileRow"))
+	    {
+		tileRow = request.getParameter(key);
+	    }
+	    else if (key.equalsIgnoreCase("TileCol"))
+	    {
+		tileCol = request.getParameter(key);
+	    }
+	    else if (key.equalsIgnoreCase("I"))
+	    {
+		i = request.getParameter(key);
+	    }
+	    else if (key.equalsIgnoreCase("J"))
+	    {
+		j = request.getParameter(key);
+	    }
+	    else if (key.equalsIgnoreCase("INFOFORMAT"))
+	    {
+		infoFormat = request.getParameter(key);
+	    }
 	}
+
+    }
 }

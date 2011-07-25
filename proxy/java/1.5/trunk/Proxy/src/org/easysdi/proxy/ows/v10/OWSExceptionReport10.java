@@ -25,7 +25,7 @@ import org.easysdi.proxy.ows.OWSExceptionReport;
  * @author DEPTH SA
  *
  */
-public class OWSExceptionReport10 implements OWSExceptionReport {
+public class OWSExceptionReport10 extends OWSExceptionReport {
 
 	public StringBuffer generateExceptionReport(String errorMessage,String code, String locator) throws IOException {
 			return generateExceptionReport(errorMessage, code, locator, "1.0.0");

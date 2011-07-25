@@ -25,7 +25,7 @@ import org.easysdi.proxy.ows.OWSExceptionReport;
  * @author DEPTH SA
  *
  */
-public class OWS200ExceptionReport implements OWSExceptionReport {
+public class OWS200ExceptionReport extends OWSExceptionReport {
 
 	/* 
 	 * @see org.easysdi.proxy.ows.OWSExceptionReport#generateExceptionReport(java.lang.String, java.lang.String, java.lang.String)
@@ -60,5 +60,4 @@ public class OWS200ExceptionReport implements OWSExceptionReport {
 		
 		return sb;
 	}
-
 }

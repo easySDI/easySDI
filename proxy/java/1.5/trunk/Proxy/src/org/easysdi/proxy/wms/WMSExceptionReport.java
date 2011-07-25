@@ -22,7 +22,7 @@ import org.easysdi.proxy.ows.OWSExceptionReport;
  * @author DEPTH SA
  *
  */
-public abstract class WMSExceptionReport implements OWSExceptionReport {
+public abstract class WMSExceptionReport extends OWSExceptionReport {
 
 
 	public StringBuffer getServiceExceptionBody (String errorMessage,String code, String locator){

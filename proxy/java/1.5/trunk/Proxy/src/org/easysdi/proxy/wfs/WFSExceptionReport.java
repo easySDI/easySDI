@@ -12,7 +12,7 @@ import org.easysdi.proxy.ows.OWSExceptionReport;
  * @author Helene
  *
  */
-public class WFSExceptionReport implements OWSExceptionReport {
+public class WFSExceptionReport extends OWSExceptionReport {
 
 	/* (non-Javadoc)
 	 * @see org.easysdi.proxy.ows.OWSExceptionReport#generateExceptionReport(java.lang.String, java.lang.String, java.lang.String)

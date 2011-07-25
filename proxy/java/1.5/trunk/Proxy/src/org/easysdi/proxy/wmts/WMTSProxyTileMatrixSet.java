@@ -14,44 +14,40 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html. 
  */
-package org.easysdi.proxy.core;
+package org.easysdi.proxy.wmts;
 
 /**
  * @author DEPTH SA
  *
  */
-public class ProxyLayer {
+public class WMTSProxyTileMatrixSet {
 
+    /**
+     * 
+     */
     private String alias;
+    /**
+     * 
+     */
     private String name;
-    private String prefix;
-    private String prefixedName;
+    /**
+     * 
+     */
     private String aliasName;
-
-    public ProxyLayer (String requestedLayer)
+    
+    public WMTSProxyTileMatrixSet (String requestedTileMatrixSet)
     {
-	if(requestedLayer != null)
+	if(requestedTileMatrixSet != null)
 	{
-	    setAliasName(requestedLayer);
-
-	    if(requestedLayer.contains(":"))
+	    setAliasName(requestedTileMatrixSet);
+	    if(requestedTileMatrixSet.contains("_"))
 	    {
-		this.setPrefix(requestedLayer.substring(0, requestedLayer.indexOf(":")));
-		requestedLayer = requestedLayer.substring(requestedLayer.indexOf(":",0)+1);
-	    }
-	    if(requestedLayer.contains("_"))
-	    {
-		this.setAlias(requestedLayer.substring(0, requestedLayer.indexOf("_")));
-		this.setName(requestedLayer.substring(requestedLayer.indexOf("_",0)+1));
+		this.setAlias(requestedTileMatrixSet.substring(0, requestedTileMatrixSet.indexOf("_")));
+		this.setName(requestedTileMatrixSet.substring(requestedTileMatrixSet.indexOf("_",0)+1));
 	    }
 	    else
 	    {
-		this.setName(requestedLayer);
-	    }
-	    if(this.getPrefix() !=null ){
-		this.setPrefixedName(this.getPrefix() +":" + this.getName());
-	    }else{
-		this.setPrefixedName(this.getName());
+		this.setName(requestedTileMatrixSet);
 	    }
 	}
     }
@@ -82,34 +78,6 @@ public class ProxyLayer {
      */
     public String getName() {
 	return name;
-    }
-
-    /**
-     * @param prefixe the prefixe to set
-     */
-    public void setPrefix(String prefix) {
-	this.prefix = prefix;
-    }
-
-    /**
-     * @return the prefixe
-     */
-    public String getPrefix() {
-	return prefix;
-    }
-
-    /**
-     * @param prefixedName the prefixedName to set
-     */
-    public void setPrefixedName(String prefixedName) {
-	this.prefixedName = prefixedName;
-    }
-
-    /**
-     * @return the prefixedName
-     */
-    public String getPrefixedName() {
-	return prefixedName;
     }
 
     /**
