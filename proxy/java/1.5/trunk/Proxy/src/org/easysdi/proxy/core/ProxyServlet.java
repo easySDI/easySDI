@@ -719,16 +719,15 @@ public abstract class ProxyServlet extends HttpServlet {
     public String sendData(String method, String urlstr, String parameters) {
 	try {
 	    HttpURLConnection hpcon = SendToRemoteServer(method,urlstr, parameters);
-	    
+
 	    InputStream in = null;
 	    String responseExtensionContentType=null;
 
 	    //HTTP Code handling
 	    int httpCode = hpcon.getResponseCode() ;
 	    responseStatusCode = httpCode;
-	    
 	    if(httpCode>= 400 && httpCode <500){
-		//HHTP code 4xx are keeped because they can contain exception information usefull for the client
+		//Response with HTTP code 4xx are keeped because they can contain exception information usefull for the client
 		logger.info("Remote server '"+urlstr+"' returns HTTP CODE "+httpCode+" to request ["+parameters+"]");
 		try{
 		    in = hpcon.getInputStream();
@@ -762,7 +761,7 @@ public abstract class ProxyServlet extends HttpServlet {
 	    responseContentType = hpcon.getContentType();
 	    if(hpcon.getContentType() != null && responseExtensionContentType == null){
 		//Used to store the current response contentType
- 		responseExtensionContentType = hpcon.getContentType().split(";")[0];
+		responseExtensionContentType = hpcon.getContentType().split(";")[0];
 		//Used to store all the remote server response ContentType : 
 		//needed to separate exception contentType (eg : text/xml)
 		//from valid response contentType (eg : image/png)
@@ -788,7 +787,7 @@ public abstract class ProxyServlet extends HttpServlet {
 	    DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
 	    Date d = new Date();
 	    logger.info("RemoteResponseDateTime="+ dateFormat.format(d));
-	    
+
 	    return tempFile.toString();
 
 	}catch (SSLHandshakeException e){
@@ -815,12 +814,17 @@ public abstract class ProxyServlet extends HttpServlet {
 	HttpURLConnection hpcon = SendToRemoteServer(method,sUrl, parameters);
 	InputStream in = null;
 	int code = hpcon.getResponseCode();
-	if( code >= 400)
-	{
-	    in = hpcon.getErrorStream();
-	}
-	else
-	{
+	if( code >= 400){
+	    //Response has a HTTP code error
+	    //Try to get the response in the inputStream
+	    //If failed, get the errorStream
+	    try{
+		in = hpcon.getInputStream();
+	    }catch (IOException e){
+		in = hpcon.getErrorStream();
+	    }
+	}else{
+	    //HTTP code < 400
 	    in = hpcon.getInputStream();
 	}
 	resp.setContentType(hpcon.getContentType());
@@ -918,9 +922,9 @@ public abstract class ProxyServlet extends HttpServlet {
 	    } else {
 		hpcon.setDoOutput(false);
 	    }
-	    
+
 	    return hpcon;
-	    
+
 	}catch (Exception e){
 	    return null;
 	}
@@ -2170,16 +2174,16 @@ public abstract class ProxyServlet extends HttpServlet {
 	    //Exception file can be sent with content txpe text/plain and temporarly store under .txt extension
 	    try{
 		SAXBuilder sxb = new SAXBuilder();
-		    Document documentMaster = sxb.build(new File(path));
-		    if (documentMaster != null) 
-		    {
-			//ServiceExceptionReport is the root element name for WMS, WFS exception
-			//ExceptionReport is the root element for OWS, WMTS, CSW exception
-			if(documentMaster.getRootElement().getName().equalsIgnoreCase("ServiceExceptionReport") || documentMaster.getRootElement().getName().equalsIgnoreCase("ExceptionReport"))
-			    return true;
-			else
-			    return false;
-		    }
+		Document documentMaster = sxb.build(new File(path));
+		if (documentMaster != null) 
+		{
+		    //ServiceExceptionReport is the root element name for WMS, WFS exception
+		    //ExceptionReport is the root element for OWS, WMTS, CSW exception
+		    if(documentMaster.getRootElement().getName().equalsIgnoreCase("ServiceExceptionReport") || documentMaster.getRootElement().getName().equalsIgnoreCase("ExceptionReport"))
+			return true;
+		    else
+			return false;
+		}
 	    }catch(JDOMException e){
 		return false;
 	    }
@@ -2188,40 +2192,45 @@ public abstract class ProxyServlet extends HttpServlet {
     }
 
     public ByteArrayOutputStream applyUserXSLT (ByteArrayOutputStream response){
-	String userXsltPath = getConfiguration().getXsltPath();
-	if (SecurityContextHolder.getContext().getAuthentication() != null) {
-	    userXsltPath = userXsltPath + "/" + SecurityContextHolder.getContext().getAuthentication().getName() + "/";
-	}
-
-	userXsltPath = userXsltPath + "/" + getProxyRequest().getVersion() + "/" + getProxyRequest().getOperation() + ".xsl";
-	String globalXsltPath = getConfiguration().getXsltPath() + "/" + getProxyRequest().getVersion() + "/" + getProxyRequest().getOperation() + ".xsl";
-
-	ByteArrayOutputStream result = new ByteArrayOutputStream();
-	File xsltFile = new File(userXsltPath);
-	if (!xsltFile.exists()) {
-	    logger.trace("Postreatment file " + xsltFile.toString() + "does not exist");
-	    xsltFile = new File(globalXsltPath);
-	} 
-
-	if (xsltFile.exists() && isXML(responseContentType)) {
-	    logger.trace("transform begin userTransform xslt");
-
-	    Transformer transformer = null;
-	    TransformerFactory tFactory = TransformerFactory.newInstance();
-	    try {
-		transformer = tFactory.newTransformer(new StreamSource(xsltFile));
-		InputStream is = new java.io.ByteArrayInputStream(response.toByteArray());
-
-		StreamSource attach = new StreamSource(is);
-		transformer.transform(attach, new StreamResult(result));
-	    } catch (TransformerConfigurationException e1) {
-		logger.error(e1.getMessage());
-	    } catch (TransformerException e) {
-		logger.error(e.getMessage());
-	    }
-	    logger.trace("transform end userTransform xslt");
-	    return result;
-	}else{
+	try{
+        	String userXsltPath = getConfiguration().getXsltPath();
+        	if (SecurityContextHolder.getContext().getAuthentication() != null) {
+        	    userXsltPath = userXsltPath + "/" + SecurityContextHolder.getContext().getAuthentication().getName() + "/";
+        	}
+        
+        	userXsltPath = userXsltPath + "/" + getProxyRequest().getVersion() + "/" + getProxyRequest().getOperation() + ".xsl";
+        	String globalXsltPath = getConfiguration().getXsltPath() + "/" + getProxyRequest().getVersion() + "/" + getProxyRequest().getOperation() + ".xsl";
+        
+        	ByteArrayOutputStream result = new ByteArrayOutputStream();
+        	File xsltFile = new File(userXsltPath);
+        	if (!xsltFile.exists()) {
+        	    logger.trace("Postreatment file " + xsltFile.toString() + "does not exist");
+        	    xsltFile = new File(globalXsltPath);
+        	} 
+        
+        	if (xsltFile.exists() && isXML(responseContentType)) {
+        	    logger.trace("transform begin userTransform xslt");
+        
+        	    Transformer transformer = null;
+        	    TransformerFactory tFactory = TransformerFactory.newInstance();
+        	    try {
+        		transformer = tFactory.newTransformer(new StreamSource(xsltFile));
+        		InputStream is = new java.io.ByteArrayInputStream(response.toByteArray());
+        
+        		StreamSource attach = new StreamSource(is);
+        		transformer.transform(attach, new StreamResult(result));
+        	    } catch (TransformerConfigurationException e1) {
+        		logger.error(e1.getMessage());
+        	    } catch (TransformerException e) {
+        		logger.error(e.getMessage());
+        	    }
+        	    logger.trace("transform end userTransform xslt");
+        	    return result;
+        	}else{
+        	    return response;
+        	}
+	}catch (Exception e){
+	    //If the XSLT transform can not be done, return the initial response 
 	    return response;
 	}
     }

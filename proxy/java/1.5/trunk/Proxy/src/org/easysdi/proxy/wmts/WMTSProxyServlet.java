@@ -309,7 +309,7 @@ public class WMTSProxyServlet extends ProxyServlet{
 	    if(!tileAllowed.equalsIgnoreCase("true")){
 		//The tile is not allowed, an empty response is sent
 		ByteArrayOutputStream out = null;
-		sendHttpServletResponse(req, resp,out,getProxyRequest().getFormat(), HttpServletResponse.SC_OK);
+		sendHttpServletResponse(req, resp,out,getProxyRequest().getInfoFormat(), HttpServletResponse.SC_OK);
 		return;
 	    }
 
