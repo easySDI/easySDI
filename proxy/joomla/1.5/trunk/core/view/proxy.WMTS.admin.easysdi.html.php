@@ -339,8 +339,10 @@ class HTML_proxyWMTS {
 			
 			document.getElementById('oGetCapabilities').disabled=check;
 			document.getElementById('oGetTile').disabled=check;
+			document.getElementById('oGetFeatureInfo').disabled=check;
 			document.getElementById('oGetCapabilities').checked=check;
 			document.getElementById('oGetTile').checked=check;
+			document.getElementById('oGetFeatureInfo').checked=check;
 		}
 		</script>
 		<fieldset class="adminform"><legend><?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_OPERATION'); ?></legend>
