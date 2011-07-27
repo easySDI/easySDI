@@ -124,6 +124,7 @@ public abstract class ProxyServlet extends HttpServlet {
     private static final String TIFF = "image/tiff";
     private static final String BMP = "image/bmp";
     protected static final String XML = "text/xml";
+    protected static final String TXT = "text/plain";
     protected static final String APPLICATION_XML = "application/xml";
     protected static final String XML_OGC_WMS = "application/vnd.ogc.wms_xml";
     protected static final String XML_OGC_EXCEPTION = "application/vnd.ogc.se_xml";
@@ -485,7 +486,7 @@ public abstract class ProxyServlet extends HttpServlet {
 		((ProxyLogger)logger).writeInLog(dateFormat.format(d), req);
 	    } else{
 		((FileAppender)logger.getAppender("logFileAppender")).setImmediateFlush(true);
-		logger.info("ProxyServlet done.");
+		logger.info("----------------------------------------------------------------------------------");
 		((FileAppender)logger.getAppender("logFileAppender")).setImmediateFlush(false);
 	    }
 	}
@@ -519,7 +520,7 @@ public abstract class ProxyServlet extends HttpServlet {
 		((ProxyLogger)logger).writeInLog(dateFormat.format(d), req);
 	    } else{
 		((FileAppender)logger.getAppender("logFileAppender")).setImmediateFlush(true);
-		logger.info("ProxyServlet done.");
+		logger.info("----------------------------------------------------------------------------------");
 		((FileAppender)logger.getAppender("logFileAppender")).setImmediateFlush(false);
 	    }
 	}
@@ -719,70 +720,76 @@ public abstract class ProxyServlet extends HttpServlet {
 	try {
 	    HttpURLConnection hpcon = SendToRemoteServer(method,urlstr, parameters);
 	    
-	    // getting the response is required to force the request, otherwise
-	    // it might not even be sent at all
 	    InputStream in = null;
 	    String responseExtensionContentType=null;
 
+	    //HTTP Code handling
 	    int httpCode = hpcon.getResponseCode() ;
-	    if(httpCode>= 400){
-		//All HTTP error are translated into OGC exceptions to be returned (if the Exception management mode allowed it)
-		//to the client
+	    responseStatusCode = httpCode;
+	    if(httpCode>= 400 && httpCode <500){
+		logger.info("Remote server '"+urlstr+"' returns HTTP CODE "+httpCode+" to request ["+parameters+"]");
+		try{
+		    in = hpcon.getInputStream();
+		}catch (IOException e){
+		    in = hpcon.getErrorStream();
+		}
+	    }else if (httpCode >=500){
+		logger.info("Remote server '"+urlstr+"' returns HTTP CODE "+httpCode+" to request ["+parameters+"]");
+		//All HTTP error with code > 500 are translated into OGC exceptions to be returned to the client (if the Exception management mode allowed it)
 		StringBuffer response = owsExceptionReport.generateExceptionReport(owsExceptionReport.getHttpCodeDescription(String.valueOf(httpCode)), OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "");
 		in = new ByteArrayInputStream(response.toString().getBytes());
 		//Set the ContentType according to the new content of the response 
 		responseExtensionContentType = "text/xml";
-	    } else{
-		if (hpcon.getContentEncoding() != null && hpcon.getContentEncoding().indexOf("gzip") != -1) 
-		{
+		responseStatusCode = HttpServletResponse.SC_OK;
+	    }else{
+		//Http Code < 400
+		if (hpcon.getContentEncoding() != null && hpcon.getContentEncoding().indexOf("gzip") != -1) {
 		    in = new GZIPInputStream(hpcon.getInputStream());
 		    logger.trace( "return of the remote server is zipped");
-		} else 
-		{
+		} else {
 		    in = hpcon.getInputStream();
 		}
 	    }
 
+	    //Content type handling
 	    responseContentType = hpcon.getContentType();
-	    if(hpcon.getContentType() != null && responseExtensionContentType == null)
-	    {
+	    if(hpcon.getContentType() != null && responseExtensionContentType == null){
+		//Used to store the current response contentType
 		responseExtensionContentType = hpcon.getContentType().split(";")[0];
+		//Used to store all the remote server response ContentType : 
+		//needed to separate exception contentType (eg : text/xml)
+		//from valid response contentType (eg : image/png)
 		responseContentTypeList.add(responseExtensionContentType);
 	    }
 
-
+	    //Temp file writing
 	    String tmpDir = System.getProperty("java.io.tmpdir");
 	    logger.debug(" tmpDir :  " + tmpDir);
-
 	    File tempFile = createTempFile("sendData_" + UUID.randomUUID().toString(), getExtension(responseExtensionContentType));
-
 	    FileOutputStream tempFos = new FileOutputStream(tempFile);
-
 	    byte[] buf = new byte[1024];
 	    int nread;
 	    while ((nread = in.read(buf)) >= 0) {
 		tempFos.write(buf, 0, nread);
 	    }
-
 	    tempFos.flush();
 	    tempFos.close();
 	    in.close();
+
 	    logger.info("RemoteResponseToRequestUrl="+ urlstr);
 	    logger.info("RemoteResponseLength="+ tempFile.length());
-
 	    DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
 	    Date d = new Date();
 	    logger.info("RemoteResponseDateTime="+ dateFormat.format(d));
+	    
 	    return tempFile.toString();
 
-	}catch (SSLHandshakeException e)
-	{
+	}catch (SSLHandshakeException e){
 	    e.printStackTrace();
 	    logger.error("Unable to find valid certification. "+e.getCause().toString());
 	    return null;
 
-	}
-	catch (Exception e) {
+	}catch (Exception e) {
 	    e.printStackTrace();
 	    return null;
 	}
@@ -1129,8 +1136,10 @@ public abstract class ProxyServlet extends HttpServlet {
 	    ext = ".tiff";
 	} else if (responseContentType.startsWith(BMP)) {
 	    ext = ".bmp";
+	} else if (responseContentType.startsWith(TXT)) {
+	    ext = ".txt";
 	} else {
-	    logger.debug("unkwnon content type" + responseContentType);
+	    logger.debug("unkwnon content type " + responseContentType);
 	}
 
 	return ext;
@@ -2103,10 +2112,10 @@ public abstract class ProxyServlet extends HttpServlet {
 			resp.setHeader("Content-Disposition", "attachment; filename=download." + ext);
 		    }
 		}
-		if(responseCode.equals(HttpServletResponse.SC_INTERNAL_SERVER_ERROR)){
+		/*if(responseCode.equals(HttpServletResponse.SC_INTERNAL_SERVER_ERROR)){
 		    resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, tempOut.toString());
 		}
-		else if (tempOut != null)
+		else*/ if (tempOut != null)
 		    os.write(tempOut.toString().getBytes());
 		logger.trace("transform end response writting");
 	    } finally {
@@ -2149,6 +2158,23 @@ public abstract class ProxyServlet extends HttpServlet {
 		    return true;
 		else
 		    return false;
+	    }
+	}else if (ext.equals("txt")){
+	    //Exception file can be sent with content txpe text/plain and temporarly store under .txt extension
+	    try{
+		SAXBuilder sxb = new SAXBuilder();
+		    Document documentMaster = sxb.build(new File(path));
+		    if (documentMaster != null) 
+		    {
+			//ServiceExceptionReport is the root element name for WMS, WFS exception
+			//ExceptionReport is the root element for OWS, WMTS, CSW exception
+			if(documentMaster.getRootElement().getName().equalsIgnoreCase("ServiceExceptionReport") || documentMaster.getRootElement().getName().equalsIgnoreCase("ExceptionReport"))
+			    return true;
+			else
+			    return false;
+		    }
+	    }catch(JDOMException e){
+		return false;
 	    }
 	}
 	return false;

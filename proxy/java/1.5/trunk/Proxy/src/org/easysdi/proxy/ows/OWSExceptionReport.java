@@ -42,8 +42,13 @@ public class OWSExceptionReport implements OWSIExceptionReport {
 	    String text = "HTTP_CODE_"+code;
 	    Class clas = this.getClass();
 	    Field f = clas.getField(text);
+	    if(f == null)
+		return null;
 	    Object o = f.get(this);
-	    return o.toString();
+	    if(o !=  null){
+		return o.toString();
+	    }
+	    return null;
 	} catch (SecurityException e) {
 	    e.printStackTrace();
 	} catch (NoSuchFieldException e) {

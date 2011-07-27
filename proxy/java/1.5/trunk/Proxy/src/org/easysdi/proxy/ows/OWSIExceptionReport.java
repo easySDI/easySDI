@@ -20,7 +20,6 @@ import java.io.IOException;
 
 public interface OWSIExceptionReport {
 
-    //HTTP Code
     public static final String HTTP_CODE_400					= "HTTP 400 - Bad request.";
     public static final String HTTP_CODE_401					= "HTTP 401 - Unauthorized.";
     public static final String HTTP_CODE_402					= "HTTP 402 - Payment Required.";
@@ -28,8 +27,33 @@ public interface OWSIExceptionReport {
     public static final String HTTP_CODE_404					= "HTTP 404 - Not Found.";
     public static final String HTTP_CODE_405					= "HTTP 405 - Method Not Allowed.";
     public static final String HTTP_CODE_406					= "HTTP 406 - Not Acceptable.";
-    public static final String HTTP_CODE_500					= "HTTP 500 - Internal Error.";
+    public static final String HTTP_CODE_407					= "HTTP 407 - Proxy Authentication Required.";
+    public static final String HTTP_CODE_408					= "HTTP 408 - Request Time-out.";
+    public static final String HTTP_CODE_409					= "HTTP 409 - Conflict.";
+    public static final String HTTP_CODE_410					= "HTTP 410 - Gone.";
+    public static final String HTTP_CODE_411					= "HTTP 411 - Length Required.";
+    public static final String HTTP_CODE_412					= "HTTP 412 - Precondition Failed.";
+    public static final String HTTP_CODE_413					= "HTTP 413 - Request Entity Too Large.";
+    public static final String HTTP_CODE_414					= "HTTP 414 - Request-URI Too Long.";
+    public static final String HTTP_CODE_415					= "HTTP 415 - Unsupported Media Type.";
+    public static final String HTTP_CODE_416					= "HTTP 416 - Requested range unsatisfiable.";
+    public static final String HTTP_CODE_417					= "HTTP 417 - Expectation failed.";
+    public static final String HTTP_CODE_418					= "HTTP 418 - I’m a teapot.";
+    public static final String HTTP_CODE_422					= "HTTP 422 - Unprocessable entity.";
+    public static final String HTTP_CODE_423					= "HTTP 423 - Locked.";
+    public static final String HTTP_CODE_424					= "HTTP 424 - Method failure.";
+    public static final String HTTP_CODE_425					= "HTTP 425 - Unordered Collection.";
+    public static final String HTTP_CODE_426					= "HTTP 426 - Upgrade Required.";
+    public static final String HTTP_CODE_449					= "HTTP 449 - Retry With.";
+    public static final String HTTP_CODE_450					= "HTTP 450 - Blocked by Windows Parental Controls.";
+    public static final String HTTP_CODE_500					= "HTTP 500 - Internal Server Error.";
     public static final String HTTP_CODE_501					= "HTTP 501 - Not implemented.";
+    public static final String HTTP_CODE_502					= "HTTP 502 - Bad Gateway.";
+    public static final String HTTP_CODE_503					= "HTTP 503 - Service Unavailable.";
+    public static final String HTTP_CODE_504					= "HTTP 504 - Gateway Time-out.";
+    public static final String HTTP_CODE_505					= "HTTP 505 - HTTP Version not supported.";
+    public static final String HTTP_CODE_507					= "HTTP 507 - Insufficient storage.";
+    public static final String HTTP_CODE_509					= "HTTP 509 - Bandwidth Limit Exceeded.";
     
     public static final String CODE_OPERATION_NOT_SUPPORTED 			= "OperationNotSupported";
     public static final String CODE_OPERATION_NOT_ALLOWED 			= "OperationNotAllowed";

@@ -355,6 +355,7 @@ public class WMSProxyServletRequest extends ProxyServletRequest {
 			
 			String value = "";
 			if (	   key.equalsIgnoreCase("LAYER") 
+					|| key.equalsIgnoreCase("FORMAT") 
 					|| key.equalsIgnoreCase("QUERY_LAYERS") 
 					|| key.equalsIgnoreCase("LAYERS") 
 					|| key.equalsIgnoreCase("STYLES")
@@ -438,6 +439,10 @@ public class WMSProxyServletRequest extends ProxyServletRequest {
 		if(operation.equalsIgnoreCase("GetCapabilities") && format != null && !format.equalsIgnoreCase("text/xml")){
 			format = "text/xml";
 		}
-		urlParameters = urlParameters + "FORMAT=" + format + "&";
+		try {
+		    urlParameters = urlParameters + "FORMAT=" + URLEncoder.encode(format,"UTF-8") + "&";
+		} catch (UnsupportedEncodingException e) {
+		    throw new ProxyServletException(e.toString());
+		}
 	}
 }

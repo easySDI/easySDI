@@ -101,7 +101,7 @@ public class OWS200ExceptionManager implements OWSExceptionManager {
 	 * @throws ParserConfigurationException
 	 * @throws JDOMException 
 	 */
-	private boolean isRemoteServerResponseException(String path) throws SAXException, IOException, ParserConfigurationException, JDOMException{
+	public boolean isRemoteServerResponseException(String path) throws SAXException, IOException, ParserConfigurationException, JDOMException{
 		String ext = (path.lastIndexOf(".")==-1)?"":path.substring(path.lastIndexOf(".")+1,path.length());
 		if (ext.equals("xml"))
 		{

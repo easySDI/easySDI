@@ -3,6 +3,7 @@ package org.easysdi.proxy.wmts.v100;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -19,6 +20,7 @@ import org.easysdi.xml.documents.*;
 import org.jdom.Content;
 import org.jdom.Document;
 import org.jdom.Element;
+import org.jdom.JDOMException;
 import org.jdom.Namespace;
 import org.jdom.Parent;
 import org.jdom.filter.Filter;
@@ -177,7 +179,7 @@ public class WMTSProxyResponseBuilder100 extends WMTSProxyResponseBuilder {
 		    Element courant = (Element)iLayer.next();
 		    layerList.add(courant);
 		}
-		
+
 		//Modification of the selected Elements
 		Iterator<Element> iLLayer = layerList.iterator();
 		while (iLLayer.hasNext())
@@ -203,7 +205,7 @@ public class WMTSProxyResponseBuilder100 extends WMTSProxyResponseBuilder {
 
 			//Remove the <ResourceURL> element which are not supported by the proxy and not mandatory in the OGC standard
 			layerElement.removeChildren("ResourceURL",localNsWMTS);
-			
+
 			List<Element> lElementTileMatrixSetLink = layerElement.getChildren("TileMatrixSetLink", localNsWMTS);
 			Iterator<Element> iElementTileMatrixSetLink = lElementTileMatrixSetLink.iterator();
 			while (iElementTileMatrixSetLink.hasNext()){
@@ -214,7 +216,7 @@ public class WMTSProxyResponseBuilder100 extends WMTSProxyResponseBuilder {
 			}
 		    }
 		}
-		
+
 		//Rewrite TileMatrixSet identifier linked with the alias to avoid duplicate TilMatrixSet identifier when aggregate several remote server
 		Element elementContents = racine.getChild("Contents", localNsWMTS);
 		List<Element> lElementTileMatrixSet = elementContents.getChildren("TileMatrixSet", localNsWMTS);
@@ -225,7 +227,7 @@ public class WMTSProxyResponseBuilder100 extends WMTSProxyResponseBuilder {
 		    String tmsLinkIdentifier = elementTileMatrixSetIndentifier.getText();
 		    elementTileMatrixSetIndentifier.setText(fileEntry.getKey()+"_"+tmsLinkIdentifier);
 		}
-		
+
 		XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
 		sortie.output(docParent, new FileOutputStream(filePath));
 	    }
@@ -457,13 +459,103 @@ public class WMTSProxyResponseBuilder100 extends WMTSProxyResponseBuilder {
 
     @Override
     public ByteArrayOutputStream ExceptionAggregation(HashMap<String, String> remoteServerExceptionFiles) {
-	// TODO Auto-generated method stub
-	return null;
+	SAXBuilder sxb = new SAXBuilder();
+
+	Document docParent = null; 
+	Element racineParent = null;
+	for (String key : remoteServerExceptionFiles.keySet()) {
+	    String path = remoteServerExceptionFiles.get(key);
+	    try {
+		//Parent document
+		if(docParent == null){
+		    docParent = sxb.build(new File(path));
+		    racineParent = docParent.getRootElement();
+
+		    //Get the Exception elements of the parent document
+		    List<Element> exceptionList = new ArrayList<Element>();
+		    Filter exceptionFilter = new ElementExceptionFilter();
+		    Iterator<Element> iE = racineParent.getDescendants(exceptionFilter);
+		    while (iE.hasNext()){
+			Element exception = (Element)iE.next();
+			exceptionList.add(exception);
+		    }
+
+		    //Add the server alias in the exception text
+		    Iterator<Element> iEL = exceptionList.iterator();
+		    while (iEL.hasNext()){
+			Element exception = (Element)iEL.next();
+			Iterator<Element> iET = exception.getDescendants(new ElementExceptionTextFilter());
+			boolean found = false;
+			while (iET.hasNext()){
+			    Element exceptionText = (Element)iET.next();
+			    exceptionText.setText( String.format(TEXT_SERVER_ALIAS, key) + exceptionText.getText());
+			    found = true;
+			}
+			if(!found){
+			    //Element <Exception> does not have child element <ExceptionText>
+			    //One is created to indicate the remote server alias
+			    Element exceptionText = new Element("ExceptionText");
+			    exceptionText.setText(String.format(TEXT_SERVER_ALIAS, key) + "[no text].");
+			    exception.addContent(exceptionText);
+			}
+		    }
+		    continue;
+		}
+
+		//Child document
+		Document docChild = sxb.build(new File(path));
+		Element racine = docChild.getRootElement();
+		//Get the Exception elements of the child document
+		List<Element> exceptionList = new ArrayList<Element>();
+		Filter exceptionFilter = new ElementExceptionFilter();
+		Iterator<Element> iE = racineParent.getDescendants(exceptionFilter);
+		while (iE.hasNext()){
+			Element exception = (Element)iE.next();
+			exceptionList.add(exception);
+		}
+
+		//Add the server alias in the exception text
+		Iterator<Element> iEL = exceptionList.iterator();
+		    while (iEL.hasNext()){
+			Element exception = (Element)iEL.next();
+			Iterator<Element> iET = exception.getDescendants(new ElementExceptionTextFilter());
+			boolean found = false;
+			while (iET.hasNext()){
+			    Element exceptionText = (Element)iET.next();
+			    exceptionText.setText( String.format(TEXT_SERVER_ALIAS, key) + exceptionText.getText());
+			    found = true;
+			}
+			if(!found){
+			    //Element <Exception> does not have child element <ExceptionText>
+			    //One is created to indicate the remote server alias
+			    Element exceptionText = new Element("ExceptionText");
+			    exceptionText.setText(String.format(TEXT_SERVER_ALIAS, key) + "[no text].");
+			    exception.addContent(exceptionText);
+			}
+		    if(exception.getParent().removeContent(exception)){
+			racineParent.addContent(exception);
+		    }else{
+			servlet.logger.error("WMSProxyResponseBuilder.ExceptionAggregation can not correctly rewrite exception.");
+		    }
+		}	    } catch (JDOMException e) {
+		servlet.logger.error("WMSProxyResponseBuilder.ExceptionAggregation - ",e);
+	    } catch (IOException e) {
+		servlet.logger.error("WMSProxyResponseBuilder.ExceptionAggregation - ",e);			
+	    }
+	}
+
+	ByteArrayOutputStream out = new ByteArrayOutputStream();
+	XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
+	try {
+	    sortie.output(docParent, out);
+	} catch (IOException e) {
+	    servlet.logger.error("WMSProxyResponseBuilder.ExceptionAggregation - ",e);
+	}
+	return out;
     }
 
     @Override
     public Boolean CapabilitiesContentsFiltering(HashMap<String, String> filePathList,String href) {
-	// TODO Auto-generated method stub
 	return null;
     }
 
@@ -472,7 +564,6 @@ public class WMTSProxyResponseBuilder100 extends WMTSProxyResponseBuilder {
     public Boolean CapabilitiesContentsFiltering(
 	    Hashtable<String, String> filePathList)
     throws NoSuchAuthorityCodeException {
-	// TODO Auto-generated method stub
 	return null;
     }
 

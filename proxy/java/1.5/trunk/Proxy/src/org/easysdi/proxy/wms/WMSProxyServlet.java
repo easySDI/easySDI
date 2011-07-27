@@ -328,7 +328,7 @@ public class WMSProxyServlet extends ProxyServlet {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		if (iter.hasNext()) {
 		    ImageWriter writer = (ImageWriter) iter.next();
-		    writer.setOutput(out);
+		    writer.setOutput(javax.imageio.ImageIO.createImageOutputStream(out));
 		    writer.write(imgOut);
 		    writer.dispose();
 		}
@@ -367,7 +367,7 @@ public class WMSProxyServlet extends ProxyServlet {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		if (iter.hasNext()) {
 		    ImageWriter writer = (ImageWriter) iter.next();
-		    writer.setOutput(out);
+		    writer.setOutput(javax.imageio.ImageIO.createImageOutputStream(out));
 		    writer.write(imgOut);
 		    writer.dispose();
 		}

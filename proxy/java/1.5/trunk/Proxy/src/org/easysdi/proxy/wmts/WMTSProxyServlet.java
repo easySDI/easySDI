@@ -116,7 +116,7 @@ public class WMTSProxyServlet extends ProxyServlet{
 	    {
 		logger.error(OWSExceptionReport.TEXT_OPERATION_NOT_SUPPORTED);
 		StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_OPERATION_NOT_SUPPORTED ,OWSExceptionReport.CODE_OPERATION_NOT_SUPPORTED,"request");
-		sendHttpServletResponse(null, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
+		sendHttpServletResponse(null, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_NOT_IMPLEMENTED);
 		return;
 	    }
 	    //Generate OGC exception and send it to the client if current operation is not allowed by the loaded policy
@@ -124,7 +124,7 @@ public class WMTSProxyServlet extends ProxyServlet{
 	    {
 		logger.error( OWSExceptionReport.TEXT_OPERATION_NOT_ALLOWED);
 		StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_OPERATION_NOT_ALLOWED,OWSExceptionReport.CODE_OPERATION_NOT_ALLOWED,"REQUEST");
-		sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
+		sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
 		return;
 	    }
 
@@ -189,7 +189,7 @@ public class WMTSProxyServlet extends ProxyServlet{
 		try {
 		    logger.error(OWSExceptionReport.TEXT_NO_RESULT_RECEIVED_BY_PROXY);
 		    out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_NO_RESULT_RECEIVED_BY_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
-		    sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
+		    sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		} catch (IOException e) {
 		    logger.error( configuration.getServletClass() + ".requestPreTreatmentGetCapabilities : ", e);
 		}
@@ -201,7 +201,7 @@ public class WMTSProxyServlet extends ProxyServlet{
 	    StringBuffer out;
 	    try {
 		out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
-		sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
+		sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 	    } catch (IOException e1) {
 		logger.error( OWSExceptionReport.TEXT_EXCEPTION_ERROR, e1);
 	    }
@@ -221,7 +221,7 @@ public class WMTSProxyServlet extends ProxyServlet{
 	    {
 		logger.error( OWSExceptionReport.TEXT_INVALID_LAYER_NAME+pLayer.getAliasName());
 		StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_LAYER_NAME+pLayer.getAliasName(),OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE,"LAYER");
-		sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
+		sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
 		return;
 	    }
 	    RemoteServerInfo RS = (RemoteServerInfo)htRemoteServer.get(pLayer.getAlias());
@@ -229,7 +229,7 @@ public class WMTSProxyServlet extends ProxyServlet{
 	    //Check layer
 	    if( RS == null ){
 		StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_LAYER_NAME+pLayer.getAliasName(),OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE,"LAYER");
-		sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
+		sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
 		return;
 	    }
 
@@ -244,7 +244,7 @@ public class WMTSProxyServlet extends ProxyServlet{
 		    ByteArrayOutputStream out = new ByteArrayOutputStream();
 		    if (iter.hasNext()) {
 			ImageWriter writer = (ImageWriter) iter.next();
-			writer.setOutput(out);
+			writer.setOutput(javax.imageio.ImageIO.createImageOutputStream(out));
 			writer.write(imgOut);
 			writer.dispose();
 		    }
@@ -272,7 +272,7 @@ public class WMTSProxyServlet extends ProxyServlet{
 	    StringBuffer out;
 	    try {
 		out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
-		sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
+		sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 	    } catch (IOException e1) {
 		logger.error( OWSExceptionReport.TEXT_EXCEPTION_ERROR, e1);
 	    }
@@ -292,7 +292,7 @@ public class WMTSProxyServlet extends ProxyServlet{
 	    {
 		logger.error( OWSExceptionReport.TEXT_INVALID_LAYER_NAME+pLayer.getAliasName());
 		StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_LAYER_NAME+pLayer.getAliasName(),OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE,"LAYER");
-		sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
+		sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
 		return;
 	    }
 	    RemoteServerInfo RS = (RemoteServerInfo)htRemoteServer.get(pLayer.getAlias());
@@ -300,27 +300,16 @@ public class WMTSProxyServlet extends ProxyServlet{
 	    //Check layer
 	    if( RS == null ){
 		StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_INVALID_LAYER_NAME+pLayer.getAliasName(),OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE,"LAYER");
-		sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
+		sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_BAD_REQUEST);
 		return;
 	    }
 
 	    //Check if the requested tile is allowed
 	    String tileAllowed = isTileAllowed((WMTSProxyServletRequest)getProxyRequest(), RS.getUrl());
 	    if(!tileAllowed.equalsIgnoreCase("true")){
-		String locator = null;
-		String message = null;
-		String code = null;
-		if(tileAllowed.equalsIgnoreCase("TileRow")|| tileAllowed.equalsIgnoreCase("TileCol")){
-		    locator = tileAllowed;
-		    code = WMTSExceptionReport100.CODE_TILE_OUT_OF_RANGE;
-		    message = tileAllowed + " is out of range." ;
-		}else{
-		    locator = tileAllowed;
-		    code = OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE;
-		    message = OWSExceptionReport.TEXT_INVALID_PARAMETER_VALUE;
-		}
-		StringBuffer out = owsExceptionReport.generateExceptionReport(message,code,locator);
-		sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
+		//The tile is not allowed, an empty response is sent
+		ByteArrayOutputStream out = null;
+		sendHttpServletResponse(req, resp,out,getProxyRequest().getFormat(), HttpServletResponse.SC_OK);
 		return;
 	    }
 
@@ -337,7 +326,7 @@ public class WMTSProxyServlet extends ProxyServlet{
 	    StringBuffer out;
 	    try {
 		out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
-		sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
+		sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 	    } catch (IOException e1) {
 		logger.error( OWSExceptionReport.TEXT_EXCEPTION_ERROR, e1);
 	    }
@@ -365,7 +354,7 @@ public class WMTSProxyServlet extends ProxyServlet{
 		    (wmtsGetCapabilitiesResponseFilePathMap.size() == 0)){
 		logger.info("Exception(s) returned by remote server(s) are sent to client.");
 		ByteArrayOutputStream exceptionOutputStream = docBuilder.ExceptionAggregation(remoteServerExceptionFiles);
-		sendHttpServletResponse(req,resp,exceptionOutputStream, "text/xml; charset=utf-8", HttpServletResponse.SC_OK);
+		sendHttpServletResponse(req,resp,exceptionOutputStream, "text/xml; charset=utf-8", responseStatusCode);
 		return;
 	    }
 
@@ -379,7 +368,7 @@ public class WMTSProxyServlet extends ProxyServlet{
 		{
 		    logger.error(docBuilder.getLastException().toString());
 		    StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
-		    sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
+		    sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		    return;
 		}
 
@@ -387,7 +376,7 @@ public class WMTSProxyServlet extends ProxyServlet{
 		{
 		    logger.error(docBuilder.getLastException().toString());
 		    StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
-		    sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
+		    sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		    return;
 		}
 
@@ -395,7 +384,7 @@ public class WMTSProxyServlet extends ProxyServlet{
 		{
 		    logger.error(docBuilder.getLastException().toString());
 		    StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
-		    sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
+		    sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		    return;
 		}
 
@@ -403,7 +392,7 @@ public class WMTSProxyServlet extends ProxyServlet{
 		{
 		    logger.error(docBuilder.getLastException().toString());
 		    StringBuffer out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
-		    sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
+		    sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		    return;
 		}
 
@@ -443,7 +432,7 @@ public class WMTSProxyServlet extends ProxyServlet{
 	    //the response is send to the client
 	    if(isRemoteServerResponseException(responseFile)){
 		logger.info("Exception returned by remote server is sent to client.");
-		sendHttpServletResponse(req,resp,bos, "text/xml; charset=utf-8", HttpServletResponse.SC_OK);
+		sendHttpServletResponse(req,resp,bos, "text/xml; charset=utf-8", responseStatusCode);
 		return;
 	    }
 
@@ -455,7 +444,7 @@ public class WMTSProxyServlet extends ProxyServlet{
 	    StringBuffer out;
 	    try {
 		out = owsExceptionReport.generateExceptionReport(OWSExceptionReport.TEXT_ERROR_IN_EASYSDI_PROXY,OWSExceptionReport.CODE_NO_APPLICABLE_CODE,"");
-		sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_OK);
+		sendHttpServletResponse(req, resp,out,"text/xml; charset=utf-8", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 	    } catch (IOException e1) {
 		logger.error(OWSExceptionReport.TEXT_EXCEPTION_ERROR, e1);
 	    }
