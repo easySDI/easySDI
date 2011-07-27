@@ -1382,7 +1382,7 @@ function addAuthorizedTiles($theTileMatrixSet,$tileMatrixIdentifier, $tileMatrix
 	//- all CRS give the topLeftCorner as <TopLeftCorner>East North</TopLeftCorner>
 	//Others authorities are not supported.
 	$topLeftCorner = $tileMatrix->getElementsByTagName('TopLeftCorner')->item(0)->nodeValue;
-	if(strpos($CRSunits,'m') && strpos($tileMatrixSetSupportedCRS,'EPSG')){
+	if(!strpos($CRSunits,'m') && strpos($tileMatrixSetSupportedCRS,'EPSG')){
 		$topLeftCornerY = substr($topLeftCorner, 0, strpos($topLeftCorner," "));
 		$topLeftCornerX = substr($topLeftCorner, strpos($topLeftCorner," ")+1);
 	}else{
