@@ -482,22 +482,38 @@ public class WMTSProxyResponseBuilder100 extends WMTSProxyResponseBuilder {
 
 		    //Add the server alias in the exception text
 		    Iterator<Element> iEL = exceptionList.iterator();
+		    List<Element> exceptionTextToUpdate = new ArrayList<Element>();
+		    List<Element> exceptionToComplete = new ArrayList<Element>();
 		    while (iEL.hasNext()){
 			Element exception = (Element)iEL.next();
 			Iterator<Element> iET = exception.getDescendants(new ElementExceptionTextFilter());
 			boolean found = false;
 			while (iET.hasNext()){
-			    Element exceptionText = (Element)iET.next();
-			    exceptionText.setText( String.format(TEXT_SERVER_ALIAS, key) + exceptionText.getText());
+			    exceptionTextToUpdate.add((Element)iET.next());
+			    //			    Element exceptionText = (Element)iET.next();
+			    //			    exceptionText.setText( String.format(TEXT_SERVER_ALIAS, key) + exceptionText.getText());
 			    found = true;
 			}
 			if(!found){
 			    //Element <Exception> does not have child element <ExceptionText>
 			    //One is created to indicate the remote server alias
-			    Element exceptionText = new Element("ExceptionText");
-			    exceptionText.setText(String.format(TEXT_SERVER_ALIAS, key) + "[no text].");
-			    exception.addContent(exceptionText);
+			    exceptionToComplete.add(exception);
+			    //			    Element exceptionText = new Element("ExceptionText");
+			    //			    exceptionText.setText(String.format(TEXT_SERVER_ALIAS, key) + "[no text].");
+			    //			    exception.addContent(exceptionText);
 			}
+		    }
+		    Iterator<Element> iToUpdate = exceptionTextToUpdate.iterator();
+		    while (iToUpdate.hasNext()){
+			Element exceptionText = (Element)iToUpdate.next();
+			exceptionText.setText( String.format(TEXT_SERVER_ALIAS, key) + exceptionText.getText());
+		    }
+		    Iterator<Element> iToComplete = exceptionToComplete.iterator();
+		    while (iToComplete.hasNext()){
+			Element exception = (Element)iToComplete.next();
+			Element exceptionText = new Element("ExceptionText");
+			exceptionText.setText( String.format(TEXT_SERVER_ALIAS, key) + exceptionText.getText());
+			exception.addContent(exceptionText);
 		    }
 		    continue;
 		}
@@ -508,36 +524,54 @@ public class WMTSProxyResponseBuilder100 extends WMTSProxyResponseBuilder {
 		//Get the Exception elements of the child document
 		List<Element> exceptionList = new ArrayList<Element>();
 		Filter exceptionFilter = new ElementExceptionFilter();
-		Iterator<Element> iE = racineParent.getDescendants(exceptionFilter);
+		Iterator<Element> iE = racine.getDescendants(exceptionFilter);
 		while (iE.hasNext()){
-			Element exception = (Element)iE.next();
-			exceptionList.add(exception);
+		    Element exception = (Element)iE.next();
+		    exceptionList.add(exception);
 		}
 
 		//Add the server alias in the exception text
 		Iterator<Element> iEL = exceptionList.iterator();
-		    while (iEL.hasNext()){
-			Element exception = (Element)iEL.next();
-			Iterator<Element> iET = exception.getDescendants(new ElementExceptionTextFilter());
-			boolean found = false;
-			while (iET.hasNext()){
-			    Element exceptionText = (Element)iET.next();
-			    exceptionText.setText( String.format(TEXT_SERVER_ALIAS, key) + exceptionText.getText());
-			    found = true;
-			}
-			if(!found){
-			    //Element <Exception> does not have child element <ExceptionText>
-			    //One is created to indicate the remote server alias
-			    Element exceptionText = new Element("ExceptionText");
-			    exceptionText.setText(String.format(TEXT_SERVER_ALIAS, key) + "[no text].");
-			    exception.addContent(exceptionText);
-			}
+		List<Element> exceptionTextToUpdate = new ArrayList<Element>();
+		List<Element> exceptionToComplete = new ArrayList<Element>();
+		while (iEL.hasNext()){
+		    Element exception = (Element)iEL.next();
+		    Iterator<Element> iET = exception.getDescendants(new ElementExceptionTextFilter());
+		    boolean found = false;
+		    while (iET.hasNext()){
+			exceptionTextToUpdate.add((Element)iET.next());
+			//			    Element exceptionText = (Element)iET.next();
+			//			    exceptionText.setText( String.format(TEXT_SERVER_ALIAS, key) + exceptionText.getText());
+			found = true;
+		    }
+		    if(!found){
+			//Element <Exception> does not have child element <ExceptionText>
+			//One is created to indicate the remote server alias
+			exceptionToComplete.add(exception);
+			//			    Element exceptionText = new Element("ExceptionText");
+			//			    exceptionText.setText(String.format(TEXT_SERVER_ALIAS, key) + "[no text].");
+			//			    exception.addContent(exceptionText);
+		    }
 		    if(exception.getParent().removeContent(exception)){
 			racineParent.addContent(exception);
 		    }else{
 			servlet.logger.error("WMSProxyResponseBuilder.ExceptionAggregation can not correctly rewrite exception.");
 		    }
-		}	    } catch (JDOMException e) {
+		}	
+		Iterator<Element> iToUpdate = exceptionTextToUpdate.iterator();
+		while (iToUpdate.hasNext()){
+		    Element exceptionText = (Element)iToUpdate.next();
+		    exceptionText.setText( String.format(TEXT_SERVER_ALIAS, key) + exceptionText.getText());
+		}
+		Iterator<Element> iToComplete = exceptionToComplete.iterator();
+		    while (iToComplete.hasNext()){
+			Element exception = (Element)iToComplete.next();
+			Element exceptionText = new Element("ExceptionText");
+			exceptionText.setText( String.format(TEXT_SERVER_ALIAS, key) + exceptionText.getText());
+			exception.addContent(exceptionText);
+		    }
+		
+	    } catch (JDOMException e) {
 		servlet.logger.error("WMSProxyResponseBuilder.ExceptionAggregation - ",e);
 	    } catch (IOException e) {
 		servlet.logger.error("WMSProxyResponseBuilder.ExceptionAggregation - ",e);			

@@ -249,7 +249,15 @@ public class OgcProxyServlet extends HttpServlet {
 		reqVersion = request.getVersion();
 		if(reqVersion == null && request.getOperation().equalsIgnoreCase("GetCapabilities"))
 		{
-		    reqVersion="1.1.1";
+		    if(request.getService().equalsIgnoreCase("WMS"))
+			reqVersion="1.1.0";
+		    if(request.getService().equalsIgnoreCase("WFS"))
+			reqVersion="1.0.0";
+		    if(request.getService().equalsIgnoreCase("WMTS"))
+			reqVersion="1.0.0";
+		    if(request.getService().equalsIgnoreCase("CSW"))
+			reqVersion="2.0.0";
+		    request.setVersion(reqVersion);
 		}
 		className += reqVersion.replaceAll("\\.", "");
 	    }

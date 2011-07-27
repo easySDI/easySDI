@@ -290,6 +290,16 @@ public class WMSProxyServletRequest extends ProxyServletRequest {
 	}
 
 	/**
+	 * 
+	 */
+	public void setVersion(String  version) {
+	    if(this.bodyRequest != null){
+		this.bodyRequest.insert(this.bodyRequest.indexOf("<GetCapabilities")+17, "VERSION="+version+" ");
+	    }
+	    super.setVersion(version);
+	}
+	
+	/**
 	 * @param request
 	 * @throws Throwable 
 	 */
@@ -322,6 +332,7 @@ public class WMSProxyServletRequest extends ProxyServletRequest {
 				throw new VersionNotSupportedException(version);
 			}
 			requestedVersion = version;
+			service = rh.getService();
 			width = rh.getWidth();
 			height = rh.getHeight();
 			format = rh.getFormat();

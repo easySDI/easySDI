@@ -357,6 +357,14 @@ public class WMTSProxyServletRequest extends ProxyServletRequest {
 	return bodyRequest;
     }
 
+    	/**
+	 * 
+	 */
+	public void setVersion(String  version) {
+	    if(this.bodyRequest != null)
+		this.bodyRequest.append("VERSION="+version+"\r");
+	    super.setVersion(version);
+	}
     /**
      * @param req
      * @throws Throwable

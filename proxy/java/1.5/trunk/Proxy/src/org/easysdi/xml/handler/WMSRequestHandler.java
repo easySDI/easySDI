@@ -21,6 +21,7 @@ public class WMSRequestHandler extends DefaultHandler {
 	private String data = "";
 	private String operation = "";
 	private String version = "";
+	private String service = "";
 	private String CRS = ""; 
 	private String srsName = "";
 	private String lowerCorner;
@@ -64,6 +65,7 @@ public class WMSRequestHandler extends DefaultHandler {
 		if (isFirst) {
 			operation = localName;
 			version = attributes.getValue("version");
+			service = attributes.getValue("service");
 			isFirst = false;
 		}
 		if(!isFirst && localName.equals("StyledLayerDescriptor")){
@@ -166,6 +168,13 @@ public class WMSRequestHandler extends DefaultHandler {
 	 */
 	public String getVersion() {
 		return version;
+	}
+
+	/**
+	 * @return the service
+	 */
+	public String getService() {
+	    return service;
 	}
 
 	/**

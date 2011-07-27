@@ -726,12 +726,19 @@ public abstract class ProxyServlet extends HttpServlet {
 	    //HTTP Code handling
 	    int httpCode = hpcon.getResponseCode() ;
 	    responseStatusCode = httpCode;
+	    
 	    if(httpCode>= 400 && httpCode <500){
+		//HHTP code 4xx are keeped because they can contain exception information usefull for the client
 		logger.info("Remote server '"+urlstr+"' returns HTTP CODE "+httpCode+" to request ["+parameters+"]");
 		try{
 		    in = hpcon.getInputStream();
 		}catch (IOException e){
-		    in = hpcon.getErrorStream();
+		    //The response is contained in the error stream, this kind of response is translated into OGC exceptions to be returned to client
+		    StringBuffer response = owsExceptionReport.generateExceptionReport(owsExceptionReport.getHttpCodeDescription(String.valueOf(httpCode)), OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "");
+		    in = new ByteArrayInputStream(response.toString().getBytes());
+		    //Set the ContentType according to the new content of the response 
+		    responseExtensionContentType = "text/xml";
+		    responseStatusCode = HttpServletResponse.SC_OK;
 		}
 	    }else if (httpCode >=500){
 		logger.info("Remote server '"+urlstr+"' returns HTTP CODE "+httpCode+" to request ["+parameters+"]");
@@ -755,7 +762,7 @@ public abstract class ProxyServlet extends HttpServlet {
 	    responseContentType = hpcon.getContentType();
 	    if(hpcon.getContentType() != null && responseExtensionContentType == null){
 		//Used to store the current response contentType
-		responseExtensionContentType = hpcon.getContentType().split(";")[0];
+ 		responseExtensionContentType = hpcon.getContentType().split(";")[0];
 		//Used to store all the remote server response ContentType : 
 		//needed to separate exception contentType (eg : text/xml)
 		//from valid response contentType (eg : image/png)

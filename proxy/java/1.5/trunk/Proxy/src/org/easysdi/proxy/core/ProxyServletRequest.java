@@ -97,12 +97,28 @@ public abstract class ProxyServletRequest {
 	public String getVersion() {
 		return version;
 	}
+	/**
+	 * 
+	 */
+	public void setVersion(String  version) {
+	    this.version=version;
+	    urlParameters += "&VERSION="+version;
+	}
 	
+	/**
+	 * 
+	 * @param req
+	 * @throws Throwable
+	 */
 	public  ProxyServletRequest (HttpServletRequest req) throws Throwable{
 		request= req;
 		parseRequest();
 	}
 	
+	/**
+	 * 
+	 * @throws Throwable
+	 */
 	protected  void parseRequest () throws Throwable {
 		String method = request.getMethod();
 		try {
