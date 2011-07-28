@@ -19,7 +19,6 @@ package org.easysdi.proxy.wmts.thread;
 import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
 import org.easysdi.proxy.ows.OWSExceptionReport;
-import org.easysdi.proxy.wms.WMSProxyServlet;
 import org.easysdi.proxy.wmts.WMTSProxyServlet;
 import org.easysdi.xml.documents.RemoteServerInfo;
 

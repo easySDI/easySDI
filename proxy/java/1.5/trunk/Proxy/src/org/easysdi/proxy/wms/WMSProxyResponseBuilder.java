@@ -35,13 +35,10 @@ import org.easysdi.jdom.filter.ElementExceptionFilter;
 import org.easysdi.jdom.filter.ElementFormatFilter;
 import org.easysdi.jdom.filter.ElementLayerFilter;
 import org.easysdi.jdom.filter.ElementServiceExceptionFilter;
-import org.easysdi.jdom.filter.ElementServiceExceptionReportFilter;
 import org.easysdi.proxy.core.ProxyLayer;
 import org.easysdi.proxy.core.ProxyRemoteServerResponse;
 import org.easysdi.proxy.core.ProxyResponseBuilder;
 import org.easysdi.proxy.core.ProxyServlet;
-import org.easysdi.proxy.ows.OWSExceptionManager;
-import org.easysdi.proxy.ows.v200.OWS200ExceptionManager;
 import org.easysdi.proxy.policy.BoundingBox;
 import org.easysdi.proxy.policy.Layer;
 import org.easysdi.proxy.policy.Server;
@@ -60,11 +57,9 @@ import org.jdom.filter.Filter;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
-import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
-import org.opengis.referencing.operation.TransformException;
 
 import com.vividsolutions.jts.geom.Envelope;
 

@@ -47,166 +47,165 @@ import com.vividsolutions.jts.io.WKTReader;
  */
 public class WMSProxyServerGetMapThread extends Thread {
 
-	List<WMSProxyLayerThread> layerThreadList = new Vector<WMSProxyLayerThread>();
+    List<WMSProxyLayerThread> layerThreadList = new Vector<WMSProxyLayerThread>();
 
-	WMSProxyServlet servlet;
-	String paramUrlBase;
-	TreeMap<Integer, ProxyLayer> layers;
-	TreeMap<Integer, String> styles;
-	RemoteServerInfo remoteServer;
-	HttpServletResponse resp;
+    WMSProxyServlet servlet;
+    String paramUrlBase;
+    TreeMap<Integer, ProxyLayer> layers;
+    TreeMap<Integer, String> styles;
+    RemoteServerInfo remoteServer;
+    HttpServletResponse resp;
 
-	// **************************************************************************************
-	public WMSProxyServerGetMapThread(	WMSProxyServlet servlet, 
-										String paramUrlBase,
-										TreeMap<Integer, ProxyLayer> layers,
-										TreeMap<Integer, String> styles,
-										RemoteServerInfo remoteServer, 
-										HttpServletResponse resp) {
-		this.servlet = servlet;
-		this.paramUrlBase = paramUrlBase;
-		this.layers = layers;
-		this.styles = styles;
-		this.remoteServer = remoteServer;
-		this.resp = resp;
-	}
+    public WMSProxyServerGetMapThread(	WMSProxyServlet servlet, 
+	    String paramUrlBase,
+	    TreeMap<Integer, ProxyLayer> layers,
+	    TreeMap<Integer, String> styles,
+	    RemoteServerInfo remoteServer, 
+	    HttpServletResponse resp) {
+	this.servlet = servlet;
+	this.paramUrlBase = paramUrlBase;
+	this.layers = layers;
+	this.styles = styles;
+	this.remoteServer = remoteServer;
+	this.resp = resp;
+    }
 
-	public void run() {
+    public void run() {
 
-		try {
-			servlet.logger.trace( "Thread Server: " + remoteServer.getUrl() + " work begin");
-			
-			//Layer order
-			List<TreeMap<Integer, ProxyLayer>> layerGroupList = new ArrayList<TreeMap<Integer,ProxyLayer>>() ;
-			TreeMap<Integer, ProxyLayer> layerGroup = new TreeMap<Integer, ProxyLayer>();
-			Integer previous = -1;
-			Iterator<Integer> itKey = layers.keySet().iterator();
-			while (itKey.hasNext()){
-				Integer key = itKey.next();
-				if(previous == -1)
-				{
-					layerGroup.put(key, layers.get(key));
-				}else if(key == previous +1){
-					layerGroup.put(key, layers.get(key));
-				}else{
-					layerGroupList.add(layerGroup);
-					layerGroup = new TreeMap<Integer, ProxyLayer>();
-					layerGroup.put(key, layers.get(key));
-				}
-				previous = key;
+	try {
+	    servlet.logger.trace( "Thread Server: " + remoteServer.getUrl() + " work begin");
+
+	    //Layer order
+	    List<TreeMap<Integer, ProxyLayer>> layerGroupList = new ArrayList<TreeMap<Integer,ProxyLayer>>() ;
+	    TreeMap<Integer, ProxyLayer> layerGroup = new TreeMap<Integer, ProxyLayer>();
+	    Integer previous = -1;
+	    Iterator<Integer> itKey = layers.keySet().iterator();
+	    while (itKey.hasNext()){
+		Integer key = itKey.next();
+		if(previous == -1)
+		{
+		    layerGroup.put(key, layers.get(key));
+		}else if(key == previous +1){
+		    layerGroup.put(key, layers.get(key));
+		}else{
+		    layerGroupList.add(layerGroup);
+		    layerGroup = new TreeMap<Integer, ProxyLayer>();
+		    layerGroup.put(key, layers.get(key));
+		}
+		previous = key;
+	    }
+	    layerGroupList.add(layerGroup);
+
+
+	    //request BBOX to geometry
+	    //String requestBbox = servlet.getProxyRequest().getBbox();
+	    CoordinateReferenceSystem requestCRS = servlet.getProxyRequest().getCoordinateReferenceSystem();
+	    ReferencedEnvelope requestEnvelope = new ReferencedEnvelope(servlet.getProxyRequest().getX1(), 
+		    servlet.getProxyRequest().getX2(), 
+		    servlet.getProxyRequest().getY1(),
+		    servlet.getProxyRequest().getY2(), 
+		    requestCRS);
+	    GeometryConverterFactory factory = new GeometryConverterFactory();
+	    Geometry requestGeometry = (Geometry) factory.createConverter( Envelope.class, Geometry.class, null )
+	    .convert( requestEnvelope , Geometry.class);
+
+	    Iterator<TreeMap<Integer, ProxyLayer>> itLGL = layerGroupList.iterator();
+
+	    while (itLGL.hasNext()){
+		TreeMap<Integer, ProxyLayer> continuousLayers = itLGL.next();
+		Geometry previousPolygonFilter = null;
+		//Check if the filter on layer covered the requested BBOX
+		//If not, the layer is removed from the request
+		//In the same time, check if all the layer in a group have the same geographic filter
+		boolean isGeographicFilterEqual = true;
+		Iterator<Entry<Integer, ProxyLayer>> itL = continuousLayers.entrySet().iterator();
+		List<Integer> layerIndexToRemove = new ArrayList<Integer> ();
+		while (itL.hasNext()){
+		    Entry<Integer, ProxyLayer> layer = itL.next();
+
+		    //Compare the filter with the requested BBOX
+		    String filter = servlet.getLayerFilter(remoteServer.getUrl(), layer.getValue().getPrefixedName());
+		    if(filter == null || filter.length() == 0){
+			//No filter define on the layer : the layer has to be requested
+			continue;
+		    }
+		    InputStream bis = new ByteArrayInputStream(filter.getBytes());
+		    Object object = DocumentFactory.getInstance(bis, null, Level.WARNING);
+		    WKTReader wktReader = new WKTReader();
+		    Geometry polygonFilter = wktReader.read(object.toString());
+
+		    if(	polygonFilter.crosses(requestGeometry) ||
+			    requestGeometry.crosses(polygonFilter) ||
+			    polygonFilter.touches(requestGeometry) ||
+			    requestGeometry.touches(polygonFilter) ||
+			    polygonFilter.overlaps(requestGeometry)||
+			    requestGeometry.overlaps(polygonFilter)||
+			    polygonFilter.intersects(requestGeometry)||
+			    requestGeometry.intersects(polygonFilter)||
+			    polygonFilter.coveredBy(requestGeometry) ||
+			    polygonFilter.covers(requestGeometry)
+		    ){
+			//Filter crosses the requested BBOX : the layer has to be requested
+			//Check if the current filter is equal to the previous one
+			if(previousPolygonFilter != null){
+			    if(!polygonFilter.equalsExact(previousPolygonFilter))
+				isGeographicFilterEqual = false;
 			}
-			layerGroupList.add(layerGroup);
-			
-			
-			//request BBOX to geometry
-			//String requestBbox = servlet.getProxyRequest().getBbox();
-			CoordinateReferenceSystem requestCRS = servlet.getProxyRequest().getCoordinateReferenceSystem();
-			ReferencedEnvelope requestEnvelope = new ReferencedEnvelope(servlet.getProxyRequest().getX1(), 
-																		servlet.getProxyRequest().getX2(), 
-																		servlet.getProxyRequest().getY1(),
-																		servlet.getProxyRequest().getY2(), 
-																		requestCRS);
-			GeometryConverterFactory factory = new GeometryConverterFactory();
-			Geometry requestGeometry = (Geometry) factory.createConverter( Envelope.class, Geometry.class, null )
-											.convert( requestEnvelope , Geometry.class);
-			
-			Iterator<TreeMap<Integer, ProxyLayer>> itLGL = layerGroupList.iterator();
-			
-			while (itLGL.hasNext()){
-				TreeMap<Integer, ProxyLayer> continuousLayers = itLGL.next();
-				Geometry previousPolygonFilter = null;
-				//Check if the filter on layer covered the requested BBOX
-				//If not, the layer is removed from the request
-				//In the same time, check if all the layer in a group have the same geographic filter
-				boolean isGeographicFilterEqual = true;
-				Iterator<Entry<Integer, ProxyLayer>> itL = continuousLayers.entrySet().iterator();
-				List<Integer> layerIndexToRemove = new ArrayList<Integer> ();
-				while (itL.hasNext()){
-					Entry<Integer, ProxyLayer> layer = itL.next();
-					
-					//Compare the filter with the requested BBOX
-					String filter = servlet.getLayerFilter(remoteServer.getUrl(), layer.getValue().getPrefixedName());
-					if(filter == null || filter.length() == 0){
-						//No filter define on the layer : the layer has to be requested
-						continue;
-					}
-					InputStream bis = new ByteArrayInputStream(filter.getBytes());
-					Object object = DocumentFactory.getInstance(bis, null, Level.WARNING);
-					WKTReader wktReader = new WKTReader();
-					Geometry polygonFilter = wktReader.read(object.toString());
-					
-					if(	polygonFilter.crosses(requestGeometry) ||
-						requestGeometry.crosses(polygonFilter) ||
-						polygonFilter.touches(requestGeometry) ||
-						requestGeometry.touches(polygonFilter) ||
-						polygonFilter.overlaps(requestGeometry)||
-						requestGeometry.overlaps(polygonFilter)||
-						polygonFilter.intersects(requestGeometry)||
-						requestGeometry.intersects(polygonFilter)||
-						polygonFilter.coveredBy(requestGeometry) ||
-						polygonFilter.covers(requestGeometry)
-						){
-						//Filter crosses the requested BBOX : the layer has to be requested
-						//Check if the current filter is equal to the previous one
-						if(previousPolygonFilter != null){
-							if(!polygonFilter.equalsExact(previousPolygonFilter))
-								isGeographicFilterEqual = false;
-						}
-						previousPolygonFilter = polygonFilter;
-					}else{
-						//Filter do not crossed the requested BBOX : the layer has not to be requested
-						layerIndexToRemove.add(layer.getKey());
-					}
-				}
-				
-				//Remove from the layers list those who are not covered by the requested BBOX (due to policy geographix filter restriction)
-				for (int i = 0 ; i < layerIndexToRemove.size();i++)
-				{
-					continuousLayers.remove(layerIndexToRemove.get(i));
-				}
-				
-				if(continuousLayers.size()==1){
-					//Send the request
-					servlet.logger.trace("WMSProxyServerGetMapThread send request multiLayer to thread server " + remoteServer.getUrl());
-					WMSProxyLayerThread th = new WMSProxyLayerThread(servlet,paramUrlBase,continuousLayers,styles, remoteServer,resp);
-					th.start();
-					layerThreadList.add(th);
-				}else if(continuousLayers.size()>1){
-					if(isGeographicFilterEqual){
-						//Send all the layer in the same request : layers are in the same order than in the request and the geographic filter are the same
-						servlet.logger.trace("WMSProxyServerGetMapThread send request multiLayer to thread server " + remoteServer.getUrl());
-						WMSProxyLayerThread th = new WMSProxyLayerThread(servlet,paramUrlBase,continuousLayers,styles, remoteServer,resp);
-						th.start();
-						layerThreadList.add(th);
-					}else{
-						//Layers have to be requested separatly : geographic filter are not the same
-						Iterator<Entry<Integer, ProxyLayer>> itLToS = continuousLayers.entrySet().iterator();
-						while (itLToS.hasNext()){
-							Entry<Integer, ProxyLayer> layer = itLToS.next();
-							TreeMap<Integer, ProxyLayer> temp = new TreeMap<Integer, ProxyLayer>();
-							temp.put(layer.getKey(), layer.getValue());
-							servlet.logger.trace("WMSProxyServerGetMapThread send request singleLayer to thread server " + remoteServer.getUrl());
-							WMSProxyLayerThread th = new WMSProxyLayerThread(servlet,paramUrlBase,temp,styles, remoteServer,resp);
-							th.start();
-							layerThreadList.add(th);
-						}
-					}
-				}
-			}
-			
-			//Wait for thread answer
-			for (int i = 0; i < layerThreadList.size(); i++) {
-				layerThreadList.get(i).join();
-			}
+			previousPolygonFilter = polygonFilter;
+		    }else{
+			//Filter do not crossed the requested BBOX : the layer has not to be requested
+			layerIndexToRemove.add(layer.getKey());
+		    }
+		}
 
-			servlet.logger.trace("Thread Server: " + remoteServer.getUrl() + " work finished");
-		} catch (FactoryException e){
-			//CRS can not be determine with the given SRS code
-			resp.setHeader("easysdi-proxy-error-occured", "true");
-			servlet.logger.error( "Server Thread " + remoteServer.getUrl() + " :" + e.getMessage());
-		} catch (Exception e) {
-			resp.setHeader("easysdi-proxy-error-occured", "true");
-			servlet.logger.error( "Server Thread " + remoteServer.getUrl() + " :" + e.getMessage());
-		}			
-	}
+		//Remove from the layers list those who are not covered by the requested BBOX (due to policy geographix filter restriction)
+		for (int i = 0 ; i < layerIndexToRemove.size();i++)
+		{
+		    continuousLayers.remove(layerIndexToRemove.get(i));
+		}
+
+		if(continuousLayers.size()==1){
+		    //Send the request
+		    servlet.logger.trace("WMSProxyServerGetMapThread send request multiLayer to thread server " + remoteServer.getUrl());
+		    WMSProxyLayerThread th = new WMSProxyLayerThread(servlet,paramUrlBase,continuousLayers,styles, remoteServer,resp);
+		    th.start();
+		    layerThreadList.add(th);
+		}else if(continuousLayers.size()>1){
+		    if(isGeographicFilterEqual){
+			//Send all the layer in the same request : layers are in the same order than in the request and the geographic filter are the same
+			servlet.logger.trace("WMSProxyServerGetMapThread send request multiLayer to thread server " + remoteServer.getUrl());
+			WMSProxyLayerThread th = new WMSProxyLayerThread(servlet,paramUrlBase,continuousLayers,styles, remoteServer,resp);
+			th.start();
+			layerThreadList.add(th);
+		    }else{
+			//Layers have to be requested separatly : geographic filter are not the same
+			Iterator<Entry<Integer, ProxyLayer>> itLToS = continuousLayers.entrySet().iterator();
+			while (itLToS.hasNext()){
+			    Entry<Integer, ProxyLayer> layer = itLToS.next();
+			    TreeMap<Integer, ProxyLayer> temp = new TreeMap<Integer, ProxyLayer>();
+			    temp.put(layer.getKey(), layer.getValue());
+			    servlet.logger.trace("WMSProxyServerGetMapThread send request singleLayer to thread server " + remoteServer.getUrl());
+			    WMSProxyLayerThread th = new WMSProxyLayerThread(servlet,paramUrlBase,temp,styles, remoteServer,resp);
+			    th.start();
+			    layerThreadList.add(th);
+			}
+		    }
+		}
+	    }
+
+	    //Wait for thread answer
+	    for (int i = 0; i < layerThreadList.size(); i++) {
+		layerThreadList.get(i).join();
+	    }
+
+	    servlet.logger.trace("Thread Server: " + remoteServer.getUrl() + " work finished");
+	} catch (FactoryException e){
+	    //CRS can not be determine with the given SRS code
+	    resp.setHeader("easysdi-proxy-error-occured", "true");
+	    servlet.logger.error( "Server Thread " + remoteServer.getUrl() + " :" + e.getMessage());
+	} catch (Exception e) {
+	    resp.setHeader("easysdi-proxy-error-occured", "true");
+	    servlet.logger.error( "Server Thread " + remoteServer.getUrl() + " :" + e.getMessage());
+	}			
+    }
 }

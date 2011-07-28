@@ -145,8 +145,8 @@ public abstract class ProxyServlet extends HttpServlet {
     protected String responseContentType = null;
     protected List<String> responseContentTypeList = new ArrayList<String>();
     protected Integer responseStatusCode = HttpServletResponse.SC_OK;
-    protected String bbox = null;
-    protected String srsName = null;
+//    protected String bbox = null;
+//    protected String srsName = null;
     protected Map<Integer, String> wfsFilePathList = new TreeMap<Integer, String>();
     public Multimap<Integer, String> wmsFilePathList = HashMultimap.create();
 
@@ -732,8 +732,15 @@ public abstract class ProxyServlet extends HttpServlet {
 		try{
 		    in = hpcon.getInputStream();
 		}catch (IOException e){
+		    StringBuffer response = null;
 		    //The response is contained in the error stream, this kind of response is translated into OGC exceptions to be returned to client
-		    StringBuffer response = owsExceptionReport.generateExceptionReport(owsExceptionReport.getHttpCodeDescription(String.valueOf(httpCode)), OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "");
+		    if(owsExceptionReport == null){
+			//WFS and CSW not used yet an object owsExceptionReport to generate exception message
+			//Used the deprecated method to do that until WFS and CSW were updated
+			response = generateOgcException("HTTP Code "+String.valueOf(httpCode), OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", "");
+		    }else{
+			response = owsExceptionReport.generateExceptionReport(owsExceptionReport.getHttpCodeDescription(String.valueOf(httpCode)), OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "");
+		    }
 		    in = new ByteArrayInputStream(response.toString().getBytes());
 		    //Set the ContentType according to the new content of the response 
 		    responseExtensionContentType = "text/xml";
@@ -2008,7 +2015,7 @@ public abstract class ProxyServlet extends HttpServlet {
      *            xsd schema provider server password.
      * @return
      */
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     protected Object documentFactoryGetInstance(File file, String username, String password) {
 	// File schema = new File("src/main/webapp/schemas/eai/eai.xsd");
 	Map hints = new HashMap();

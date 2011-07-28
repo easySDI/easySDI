@@ -3,9 +3,7 @@ package org.easysdi.proxy.ows;
 import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.TreeMap;
 
-import org.easysdi.proxy.core.ProxyRemoteServerResponse;
 import org.easysdi.proxy.core.ProxyServlet;
 
 public interface OWSExceptionManager {

@@ -47,7 +47,6 @@ import org.easysdi.proxy.policy.Server;
 import org.easysdi.proxy.policy.TileMatrix;
 import org.easysdi.proxy.policy.TileMatrixSet;
 import org.easysdi.proxy.wmts.thread.WMTSProxyServerGetCapabilitiesThread;
-import org.easysdi.proxy.wmts.v100.WMTSExceptionReport100;
 import org.easysdi.xml.documents.RemoteServerInfo;
 import org.jdom.Document;
 import org.jdom.Element;

@@ -1,3 +1,19 @@
+/**
+ * EasySDI, a solution to implement easily any spatial data infrastructure
+ * Copyright (C) EasySDI Community
+ * For more information : www.easysdi.org
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or 
+ * any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html. 
+ */
 package org.easysdi.proxy.wmts.v100;
 
 import java.io.ByteArrayOutputStream;
@@ -6,7 +22,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -17,7 +32,6 @@ import org.easysdi.proxy.core.ProxyServlet;
 import org.easysdi.proxy.wmts.*;
 import org.easysdi.jdom.filter.*;
 import org.easysdi.xml.documents.*;
-import org.jdom.Content;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -29,8 +43,10 @@ import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
 
-import com.google.common.collect.Multimap;
-
+/**
+ * @author Depth SA
+ *
+ */
 public class WMTSProxyResponseBuilder100 extends WMTSProxyResponseBuilder {
 
     public WMTSProxyResponseBuilder100(WMTSProxyServlet proxyServlet) {
@@ -41,6 +57,7 @@ public class WMTSProxyResponseBuilder100 extends WMTSProxyResponseBuilder {
     /**
      * Filter the operations allowed
      */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public Boolean CapabilitiesOperationsFiltering (String filePath, String href ){
 	servlet.logger.trace("transform - Start - Capabilities operations filtering");
 	try{
@@ -68,7 +85,7 @@ public class WMTSProxyResponseBuilder100 extends WMTSProxyResponseBuilder {
 	    //get the namespaces
 	    nsWMTS = racine.getNamespace();
 	    List lns = racine.getAdditionalNamespaces();
-	    Iterator ilns = lns.iterator();
+	    Iterator<Namespace> ilns = lns.iterator();
 	    while (ilns.hasNext())
 	    {
 		Namespace ns = (Namespace)ilns.next();
@@ -144,7 +161,7 @@ public class WMTSProxyResponseBuilder100 extends WMTSProxyResponseBuilder {
      * Filter the contents of the capabilities :
      * - allowed layers
      */
-    @SuppressWarnings({ "unused", "unchecked" })
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public Boolean CapabilitiesContentsFiltering (HashMap<String, String> filePathList ){
 	servlet.logger.trace("transform - Start - Capabilities contents filtering");
 	try
@@ -244,6 +261,7 @@ public class WMTSProxyResponseBuilder100 extends WMTSProxyResponseBuilder {
     /**
      * Merge the capabilities into one single file
      */
+    @SuppressWarnings("unchecked")
     public Boolean CapabilitiesMerging(HashMap<String, String> filePathList)
     {
 	servlet.logger.trace("transform - Start - Capabilities merging");
@@ -277,19 +295,15 @@ public class WMTSProxyResponseBuilder100 extends WMTSProxyResponseBuilder {
 		    Element racineChild = documentChild.getRootElement();
 		    Namespace localNsWMTS = racineChild.getNamespace(); 
 		    Element contentsChild = (Element)racineChild.getChild("Contents", localNsWMTS);
-		    //					contentsMaster.addContent(contentsChild.cloneContent());
 		    Iterator<Element> ichild = contentsChild.getDescendants(new ElementLayerFilter());
-		    //					int masterLayersSize = contentsMaster.getContent(new ElementLayerFilter()).size()+1;
 		    while (ichild.hasNext())
 		    {
 			Element child = (Element)((Element)ichild.next()).clone();
 			contentsMaster.addContent(1, child);
-			//						masterLayersSize +=1;
 		    }
 		    Iterator<Element> itmschild = contentsChild.getDescendants(new ElementTileMatrixSetFilter());
 		    while (itmschild.hasNext())
 		    {
-			//TODO : vérifier que la TileMatrixSet n'est pas déjà défini dans le xml (wellknown...)
 			Element child = (Element)((Element)itmschild.next()).clone();
 			contentsMaster.addContent(child);
 		    }
@@ -457,6 +471,7 @@ public class WMTSProxyResponseBuilder100 extends WMTSProxyResponseBuilder {
 	}
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public ByteArrayOutputStream ExceptionAggregation(HashMap<String, String> remoteServerExceptionFiles) {
 	SAXBuilder sxb = new SAXBuilder();
@@ -595,9 +610,7 @@ public class WMTSProxyResponseBuilder100 extends WMTSProxyResponseBuilder {
 
 
     @Override
-    public Boolean CapabilitiesContentsFiltering(
-	    Hashtable<String, String> filePathList)
-    throws NoSuchAuthorityCodeException {
+    public Boolean CapabilitiesContentsFiltering(Hashtable<String, String> filePathList) throws NoSuchAuthorityCodeException {
 	return null;
     }
 

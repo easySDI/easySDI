@@ -65,6 +65,7 @@ import javax.xml.transform.stream.StreamSource;
 import org.apache.commons.httpclient.HttpURL;
 import org.easysdi.proxy.core.ProxyServlet;
 import org.easysdi.proxy.exception.AvailabilityPeriodException;
+import org.easysdi.proxy.ows.v200.OWS200ExceptionReport;
 import org.easysdi.security.JoomlaProvider;
 import org.easysdi.xml.documents.RemoteServerInfo;
 import org.easysdi.xml.handler.ConfigFileHandler;

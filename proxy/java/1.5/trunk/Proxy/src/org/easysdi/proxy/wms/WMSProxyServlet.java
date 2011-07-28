@@ -26,10 +26,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.net.URI;
@@ -51,12 +49,6 @@ import javax.imageio.stream.MemoryCacheImageOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
 
 import org.easysdi.jdom.filter.ElementNamedLayerFilter;
 import org.easysdi.proxy.core.ProxyLayer;
@@ -85,14 +77,12 @@ import org.integratedmodelling.geospace.gis.FeatureRasterizer;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
-import org.jdom.Namespace;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.xml.sax.SAXException;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKTReader;
@@ -362,7 +352,6 @@ public class WMSProxyServlet extends ProxyServlet {
 		//Generate an empty image
 		logger.debug(configuration.getServletClass() + ".requestPreTreatmentGetMap : no response from remote servers, generate an empty image");
 		BufferedImage imgOut = generateEmptyImage(getProxyRequest().getWidth(), getProxyRequest().getHeight(), getProxyRequest().getFormat(), true, resp);
-		String t = getProxyRequest().getFormat();
 		Iterator<ImageWriter> iter = ImageIO.getImageWritersByMIMEType(getProxyRequest().getFormat());
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		if (iter.hasNext()) {
@@ -927,7 +916,8 @@ public class WMSProxyServlet extends ProxyServlet {
 	    Iterator<Entry<Integer, ProxyRemoteServerResponse>> iR = wmsGetMapResponseFilePathMap.entrySet().iterator();
 	    while (iR.hasNext()){
 		Entry<Integer, ProxyRemoteServerResponse> response = iR.next(); 
-		BufferedImage image = filterImage(getLayerFilter(getRemoteServerInfo(response.getValue().getAlias()).getUrl(),getProxyRequest().getLayers().split(",")[response.getKey()]),
+		ProxyLayer pLayer = new ProxyLayer(getProxyRequest().getLayers().split(",")[response.getKey()]);
+		BufferedImage image = filterImage(getLayerFilter(getRemoteServerInfo(response.getValue().getAlias()).getUrl(),pLayer.getPrefixedName()),
 			response.getValue().getPath(),
 			isTransparent, 
 			resp);
@@ -1187,7 +1177,6 @@ public class WMSProxyServlet extends ProxyServlet {
 	}
 
 	//Get the BBOX parameter
-	String[] c = ((WMSProxyServletRequest)getProxyRequest()).getBbox().split(",");
 	ReferencedEnvelope rEnvelope;
 	try {
 	    rEnvelope = new ReferencedEnvelope(((WMSProxyServletRequest)getProxyRequest()).getX1(), ((WMSProxyServletRequest)getProxyRequest()).getX2(), ((WMSProxyServletRequest)getProxyRequest()).getY1(), ((WMSProxyServletRequest)getProxyRequest()).getY2(), CRS.decode(((WMSProxyServletRequest)getProxyRequest()).getSrsName()));
@@ -1284,7 +1273,7 @@ public class WMSProxyServlet extends ProxyServlet {
     private BufferedImage filterImage(String filter, String fileName, boolean isTransparent, HttpServletResponse resp) {
 	try {
 	    if (filter != null) {
-		String[] s = bbox.split(",");
+		String[] s = ((WMSProxyServletRequest)getProxyRequest()).getBbox().split(",");
 
 		InputStream bis = new ByteArrayInputStream(filter.getBytes());
 		System.setProperty("org.geotools.referencing.forceXY", "true");
@@ -1294,13 +1283,12 @@ public class WMSProxyServlet extends ProxyServlet {
 
 		Geometry polygon = wktReader.read(object.toString());
 
-		filter.indexOf("srsName");
 		String srs = filter.substring(filter.indexOf("srsName"));
 		srs = srs.substring(srs.indexOf("\"") + 1);
 		srs = srs.substring(0, srs.indexOf("\""));
 		polygon.setSRID(Integer.parseInt(srs.substring(5)));
 
-		CRSEnvelope bbox = new CRSEnvelope(srsName, Double.parseDouble(s[0]), Double.parseDouble(s[1]), Double.parseDouble(s[2]), Double
+		CRSEnvelope bbox = new CRSEnvelope(srs, Double.parseDouble(s[0]), Double.parseDouble(s[1]), Double.parseDouble(s[2]), Double
 			.parseDouble(s[3]));
 
 		// final WorldFileReader reader = new WorldFileReader(new
@@ -1448,8 +1436,8 @@ public class WMSProxyServlet extends ProxyServlet {
 	    List<Element> toRewrite = new ArrayList<Element>();
 	    Boolean toKeep = false;
 
-	    Namespace nsSLD =  Namespace.getNamespace("sld","http://www.opengis.net/sld");
-	    Namespace nsSE =  Namespace.getNamespace("se","http://www.opengis.net/se");
+	    //	    Namespace nsSLD =  Namespace.getNamespace("sld","http://www.opengis.net/sld");
+	    //	    Namespace nsSE =  Namespace.getNamespace("se","http://www.opengis.net/se");
 
 	    Element racine = document.getRootElement();
 	    Iterator ilNamedLayer = racine.getDescendants(new ElementNamedLayerFilter());
@@ -1497,10 +1485,8 @@ public class WMSProxyServlet extends ProxyServlet {
 	    return new StringBuffer(out);
 
 	} catch (JDOMException e) {
-	    // TODO Auto-generated catch block
 	    e.printStackTrace();
 	} catch (IOException e) {
-	    // TODO Auto-generated catch block
 	    e.printStackTrace();
 	}
 	return null;

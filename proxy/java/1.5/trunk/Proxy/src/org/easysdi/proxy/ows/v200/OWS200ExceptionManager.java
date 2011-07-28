@@ -24,13 +24,11 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.Map.Entry;
 
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.easysdi.jdom.filter.ElementExceptionReportFilter;
-import org.easysdi.proxy.core.ProxyRemoteServerResponse;
 import org.easysdi.proxy.core.ProxyServlet;
 import org.easysdi.proxy.ows.OWSExceptionManager;
 import org.jdom.Document;
@@ -204,6 +202,7 @@ public class OWS200ExceptionManager implements OWSExceptionManager {
 								Iterator<?> iExceptionList = exceptionList.iterator();
 								if (iExceptionList.hasNext())
 								{
+									@SuppressWarnings("unchecked")
 									List<Element> exceptionListChild = ((Element) iExceptionList.next()).cloneContent();
 									exceptionReport.addContent(exceptionListChild);
 								}

@@ -18,35 +18,22 @@ package org.easysdi.proxy.wms.v130;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Vector;
 
-import org.easysdi.jdom.filter.AttributeXlinkFilter;
-import org.easysdi.jdom.filter.ElementFormatFilter;
-import org.easysdi.jdom.filter.ElementLayerFilter;
 import org.easysdi.proxy.core.ProxyServlet;
-import org.easysdi.proxy.policy.BoundingBox;
 import org.easysdi.proxy.wms.WMSProxyResponseBuilder;
 import org.easysdi.xml.documents.Config;
-import org.easysdi.xml.documents.RemoteServerInfo;
 import org.easysdi.xml.documents.ServiceContactAdressInfo;
 import org.easysdi.xml.documents.ServiceContactInfo;
-import org.geotools.referencing.CRS;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.Namespace;
-import org.jdom.Parent;
-import org.jdom.filter.Filter;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * @author DEPTH SA
@@ -345,10 +332,9 @@ public class WMSProxyResponseBuilder130 extends WMSProxyResponseBuilder {
 	}
 
 	@Override
-	public Boolean CapabilitiesContentsFiltering(
-			HashMap<String, String> filePathList)
-			throws NoSuchAuthorityCodeException {
-		// TODO Auto-generated method stub
-		return null;
+	public Boolean CapabilitiesContentsFiltering(HashMap<String, String> filePathList) throws NoSuchAuthorityCodeException {
+	    return null;
 	}
+
+	
 }

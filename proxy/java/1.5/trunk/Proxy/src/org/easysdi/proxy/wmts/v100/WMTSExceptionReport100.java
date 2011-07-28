@@ -20,6 +20,10 @@ import java.io.IOException;
 
 import org.easysdi.proxy.ows.v200.OWS200ExceptionReport;
 
+/**
+ * @author Depth SA
+ *
+ */
 public class WMTSExceptionReport100 extends OWS200ExceptionReport{
 
 	public static final String CODE_TILE_OUT_OF_RANGE 				= "TileOutOfRange";

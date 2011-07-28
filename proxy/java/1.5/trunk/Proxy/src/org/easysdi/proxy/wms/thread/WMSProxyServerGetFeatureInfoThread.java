@@ -16,7 +16,6 @@
  */
 package org.easysdi.proxy.wms.thread;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TreeMap;
@@ -37,65 +36,65 @@ import org.easysdi.xml.documents.RemoteServerInfo;
  */
 public class WMSProxyServerGetFeatureInfoThread extends Thread {
 
-	List<WMSProxyLayerThread> layerThreadList = new Vector<WMSProxyLayerThread>();
+    List<WMSProxyLayerThread> layerThreadList = new Vector<WMSProxyLayerThread>();
 
-	WMSProxyServlet servlet;
-	String paramUrlBase;
-	TreeMap<Integer, ProxyLayer> queryLayers;
-	TreeMap<Integer, ProxyLayer> layers;
-	TreeMap<Integer, String> styles;
-	RemoteServerInfo remoteServer;
-	HttpServletResponse resp;
+    WMSProxyServlet servlet;
+    String paramUrlBase;
+    TreeMap<Integer, ProxyLayer> queryLayers;
+    TreeMap<Integer, ProxyLayer> layers;
+    TreeMap<Integer, String> styles;
+    RemoteServerInfo remoteServer;
+    HttpServletResponse resp;
 
-	public WMSProxyServerGetFeatureInfoThread(	WMSProxyServlet servlet, 
-												String paramUrlBase,
-												TreeMap<Integer, ProxyLayer> queryLayers,
-												TreeMap<Integer, ProxyLayer> layers,
-												TreeMap<Integer, String> styles,
-												RemoteServerInfo remoteServer, 
-												HttpServletResponse resp) {
-		this.servlet = servlet;
-		this.paramUrlBase = paramUrlBase;
-		this.queryLayers = queryLayers;
-		this.layers = layers;
-		this.styles = styles;
-		this.remoteServer = remoteServer;
-		this.resp = resp;
+    public WMSProxyServerGetFeatureInfoThread(	WMSProxyServlet servlet, 
+	    String paramUrlBase,
+	    TreeMap<Integer, ProxyLayer> queryLayers,
+	    TreeMap<Integer, ProxyLayer> layers,
+	    TreeMap<Integer, String> styles,
+	    RemoteServerInfo remoteServer, 
+	    HttpServletResponse resp) {
+	this.servlet = servlet;
+	this.paramUrlBase = paramUrlBase;
+	this.queryLayers = queryLayers;
+	this.layers = layers;
+	this.styles = styles;
+	this.remoteServer = remoteServer;
+	this.resp = resp;
+    }
+
+    public void run() {
+
+	try {
+	    Iterator<Entry<Integer, ProxyLayer>> itPL = layers.entrySet().iterator();
+	    String layerList ="";
+	    String styleList ="";
+	    while(itPL.hasNext()){
+		Entry<Integer, ProxyLayer> layer = itPL.next();
+		layerList += layer.getValue().getPrefixedName() +",";
+		styleList += styles.get(layer.getKey()) +",";
+	    }
+
+	    Iterator<Entry<Integer, ProxyLayer>> itQPL = queryLayers.entrySet().iterator();
+	    String queryLayerList ="";
+	    while(itQPL.hasNext()){
+		Entry<Integer, ProxyLayer> layer = itQPL.next();
+		queryLayerList += layer.getValue().getPrefixedName() +",";
+	    }
+
+	    String queryLayersUrl = "&QUERY_LAYERS=" + queryLayerList.substring(0, queryLayerList.length()-1);
+	    String layersUrl = "&LAYERS=" + layerList.substring(0, layerList.length()-1);
+	    String stylesUrl = "&STYLES=" + styleList.substring(0, styleList.length()-1);
+
+	    String filePath = servlet.sendData("GET", remoteServer.getUrl(), paramUrlBase + queryLayersUrl + "&" + layersUrl + "&" + stylesUrl);
+
+	    ProxyRemoteServerResponse response = new ProxyRemoteServerResponse(remoteServer.getAlias(), filePath);
+
+	    synchronized (servlet.wmsGetMapResponseFilePathMap) {
+		servlet.wmsGetFeatureInfoResponseFilePathMap.put(layers.firstKey(),response );
+	    }
+	} catch (Exception e) {
+	    resp.setHeader("easysdi-proxy-error-occured", "true");
+	    servlet.logger.error("Server Thread " + remoteServer.getUrl() + " :" + e.getMessage());
 	}
-
-	public void run() {
-
-		try {
-			Iterator<Entry<Integer, ProxyLayer>> itPL = layers.entrySet().iterator();
-			String layerList ="";
-			String styleList ="";
-			while(itPL.hasNext()){
-				Entry<Integer, ProxyLayer> layer = itPL.next();
-				layerList += layer.getValue().getPrefixedName() +",";
-				styleList += styles.get(layer.getKey()) +",";
-			}
-			
-			Iterator<Entry<Integer, ProxyLayer>> itQPL = queryLayers.entrySet().iterator();
-			String queryLayerList ="";
-			while(itQPL.hasNext()){
-				Entry<Integer, ProxyLayer> layer = itQPL.next();
-				queryLayerList += layer.getValue().getPrefixedName() +",";
-			}
-			
-			String queryLayersUrl = "&QUERY_LAYERS=" + queryLayerList.substring(0, queryLayerList.length()-1);
-			String layersUrl = "&LAYERS=" + layerList.substring(0, layerList.length()-1);
-			String stylesUrl = "&STYLES=" + styleList.substring(0, styleList.length()-1);
-			
-			String filePath = servlet.sendData("GET", remoteServer.getUrl(), paramUrlBase + queryLayersUrl + "&" + layersUrl + "&" + stylesUrl);
-			
-			ProxyRemoteServerResponse response = new ProxyRemoteServerResponse(remoteServer.getAlias(), filePath);
-			
-			synchronized (servlet.wmsGetMapResponseFilePathMap) {
-				servlet.wmsGetFeatureInfoResponseFilePathMap.put(layers.firstKey(),response );
-			}
-		} catch (Exception e) {
-			resp.setHeader("easysdi-proxy-error-occured", "true");
-			servlet.logger.error("Server Thread " + remoteServer.getUrl() + " :" + e.getMessage());
-		}
-	}
+    }
 }

@@ -36,6 +36,7 @@ public class OWSExceptionReport implements OWSIExceptionReport {
     /* (non-Javadoc)
      * @see org.easysdi.proxy.ows.OWSIExceptionReport#getHttpCodeDescription(java.lang.String)
      */
+    @SuppressWarnings("rawtypes")
     public String getHttpCodeDescription(String code) {
 	
 	try {
