@@ -86,7 +86,7 @@ class HTML_catalog{
 <h1 class="contentheading"><?php echo JText::_("CATALOG_SEARCH_TITLE"); ?></h1>
 <div class="contentin">
 
-<h2><?php echo JText::_("CATALOG_SEARCH_CRITERIA_TITLE"); ?></h2>
+<h3><?php echo JText::_("CATALOG_SEARCH_CRITERIA_TITLE"); ?></h3>
 
 <form name="catalog_search_form" id="catalog_search_form" method="GET" action="">
 	<input type="hidden" name="option" id="option" value="<?php echo JRequest::getVar('option' );?>" /> 
@@ -258,14 +258,15 @@ class HTML_catalog{
 							</div>
 							<?php
 							break;
+						/* Only accounts that have at least one md */
 						case "account_id":
 							/* Fonctionnement liste*/
 							$accounts = array();
 							$accounts[] = JHTML::_('select.option', '', '');
 							$query = "SELECT DISTINCT a.id as value, a.name as text 
-									  FROM #__sdi_account a 
-									  INNER JOIN #__users u ON u.id=a.user_id
-									  WHERE a.root_id IS NULL 
+									  FROM #__sdi_account a, #__sdi_object o, #__sdi_objectversion ov, #__users u 
+									  WHERE u.id=a.user_id AND a.id=o.account_id AND o.id=ov.object_id AND a.root_id IS NULL 
+									  ORDER BY a.name
 									  ";
 							$db->setQuery( $query);
 							$accounts = array_merge( $accounts, $db->loadObjectList() );
@@ -425,6 +426,7 @@ class HTML_catalog{
 <div id="divAdvancedSearch" class="row">
 	<?php
 
+	
 	foreach($listAdvancedFilters as $searchFilter)
 	{
 
@@ -744,7 +746,7 @@ default:
 		<label for="advSearchRadio" class="checkbox"><?php echo JText::_("CATALOG_SEARCH_TEXT_ADVANCED_CRITERIA"); ?></label>
 	</div>
 </div>
-<div class="row">
+<div class="row catalogActionButton">
 	<input type="submit" id="simple_search_button" name="simple_search_button" class="easysdi_search_button submit" value ="<?php echo JText::_("CATALOG_SEARCH_SEARCH_BUTTON"); ?>"/>
 	<input type="button" id="easysdi_clear_button" name="easysdi_clear_button" class="easysdi_clear_button submit" value ="<?php echo JText::_("CATALOG_SEARCH_CLEAR_BUTTON"); ?>"/>
 </div>
@@ -760,7 +762,7 @@ if($cswResults)
 {
 	?>
 	<div class="searchresults">
-	<h2><?php echo JText::_("CATALOG_SEARCH_RESULTS_TITLE"); ?></h2>
+	<h3><?php echo JText::_("CATALOG_SEARCH_RESULTS_TITLE"); ?></h3>
 	
 	<!-- Count of results -->
 	<p><strong><?php echo JText::_("CATALOG_SEARCH_NUMBER_OF_METADATA_FOUND");?></strong>&nbsp;<?php echo $total ?>&nbsp;</p>
