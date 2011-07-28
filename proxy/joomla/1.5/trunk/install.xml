@@ -2,7 +2,7 @@
 <install version="1.5" type="component">
 	<name>EasySDI_proxy</name>
 	<version>2.2.0</version>
-	<releaseDate>2011-06-28</releaseDate>
+	<releaseDate>2011-30-07</releaseDate>
     <releaseType>Minor update</releaseType>
 	<creationDate>January 2011</creationDate>
 	<author>Depth.ch</author>

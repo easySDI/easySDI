@@ -153,10 +153,7 @@ echo $pane->endPanel();
 					<td>
 					<?php echo JHTML::_("select.genericlist",$availableServletList, 'servletClass', 'size="1" onChange="submit()"', 'value', 'text', $servletClass ); ?>
 					</td>
-					<td><?php echo JText::_( 'EASYSDI_GETCAPABILITIES_VERSION' );?></td>
-					<td>
-					<?php echo JHTML::_("select.genericlist",$availableVersion, 'servletVersion', 'size="1" ', 'value', 'text', $servletVersion ); ?>
-					</td>
+					
 				</tr>
 			</table>
 			</fieldset>
