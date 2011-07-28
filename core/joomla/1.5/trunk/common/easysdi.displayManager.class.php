@@ -39,7 +39,6 @@ class displayManager{
 		$catalogUrlGetRecordById = "https://geoproxy.asitvd.ch/ogc/geonetwork?request=GetRecordById&service=CSW&version=2.0.1&elementSetName=full&id=158";	
 		*/
 		$cswResults = DOMDocument::load($catalogUrlGetRecordById);
-		
 		return $cswResults;
 	}
 	
@@ -79,7 +78,6 @@ class displayManager{
 		
 		if ($type == "abstract")
 		{
-			
 			$style = new DomDocument();
 			// Test des diff�rentes combinaisons possibles pour le nom de fichier, en allant
 			// de la plus restrictive � la plus basique
@@ -537,7 +535,6 @@ class displayManager{
 			{
 				$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_diffusion.xsl');
 			}
-			
 			displayManager::DisplayMetadata($style,$document);
 		}	
 		
@@ -780,7 +777,7 @@ class displayManager{
 		$product_creation_date;
 		$product_update_date;
 		$shopExist=0;
-		
+
 		// Si la page est appel�e depuis un autre environnement que Joomla
 		//print_r($_SERVER);echo "<br>";
 		$notJoomlaCall = 'true';
@@ -965,7 +962,8 @@ class displayManager{
 //		}
 		
 		$processor = new xsltProcessor();
-
+		
+		
 //		$isFavorite = 1;
 //		if(!in_array($id, $metadataListArray) && $enableFavorites == 1 && !$user->guest)
 //			$isFavorite = 0;
@@ -975,9 +973,7 @@ class displayManager{
 		$context = JRequest::getVar('context');
 		if ($type <> 'diffusion')
 			$xml = displayManager::constructXML($xml, $db, $language, $id, $notJoomlaCall, $type, $context);
-		
-		//echo htmlspecialchars($xml->saveXML())."<br>";break;
-		
+				
 		$processor->importStylesheet($xslStyle);
 		$xmlToHtml = $processor->transformToXml($xml);
 		
@@ -1261,7 +1257,6 @@ class displayManager{
 			$db->setQuery($query);
 			$shopExist = $db->loadResult();
 		}
-		
 		//Defines if the corresponding product is orderable.
 		$hasOrderableProduct = false;
 		
@@ -1420,7 +1415,6 @@ class displayManager{
 		//be changed to "%%".
 		$xmlToHtml = str_replace("%", "%%", $xmlToHtml);
 		$xmlToHtml = str_replace("__ref_", "%", $xmlToHtml);
-		
 		$myHtml .= $xmlToHtml;
 		
 		// Construction  of creation date, update date and account logo [from EasySDIV1]
@@ -1646,7 +1640,6 @@ class displayManager{
 		
 		//$processor->importStylesheet($style);
 		//$myHtml = $processor->transformToXml($cswResults);
-			
 		$myHTML = displayManager::buildXHTML($style, $cswResults);
 		displayManager::exportPDFfile($myHTML);
 	}
@@ -1681,7 +1674,7 @@ class displayManager{
 		//displayManager::getMetadata($cswResults);
 		
 		// R�cup�rer le type d'objet
-		/*$database->setQuery("SELECT ot.code 
+		$database->setQuery("SELECT ot.code 
 							 FROM #__sdi_metadata m
 							 INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
 							 INNER JOIN #__sdi_object o ON o.id = ov.object_id 
@@ -1736,13 +1729,13 @@ class displayManager{
 		$logoHeight = config_easysdi::getValue("logo_height");		
 		$img='<img width="'.$logoWidth.'" height="'.$logoHeight.'" src="'.JPATH_BASE.DS.$account_logo.'"/>';
 		
-		$myHtml = str_replace("__ref_1\$s", $img, $myHtml);
-		$myHtml = str_replace("__ref_2\$s", $supplier, $myHtml);
-		$myHtml = str_replace("__ref_3\$s", $object_creation_date, $myHtml);
-		$myHtml = str_replace("__ref_4\$s", $object_update_date, $myHtml);
-		$myHtml = str_replace("__ref_5\$s", "", $myHtml);
-		$myHtml = str_replace("__ref_6\$s", "", $myHtml);
-		*/
+		$myHtml = str_replace("%1\$s", $img, $myHtml);
+		$myHtml = str_replace("%2\$s", $supplier, $myHtml);
+		$myHtml = str_replace("%3\$s", $object_creation_date, $myHtml);
+		$myHtml = str_replace("%4\$s", $object_update_date, $myHtml);
+		$myHtml = str_replace("%5\$s", "", $myHtml);
+		$myHtml = str_replace("%6\$s", "", $myHtml);
+		
 		if($myHtml == "")
 			$myHtml = "<div/>";
 		
@@ -1775,7 +1768,6 @@ class displayManager{
 			$res = "";
 			//Url to the export pdf servlet
 			$url = $exportpdf_url."?cfg=fop.xml&fo=$tmp.fo&pdf=$tmp.pdf";
-			//echo $url;break;
 			$fp = fopen($url,"r");
 			while (!feof($fp)) {
 				$res .= fgets($fp, 4096);
@@ -1972,13 +1964,20 @@ class displayManager{
 		$logoWidth = config_easysdi::getValue("logo_width");
 		$logoHeight = config_easysdi::getValue("logo_height");
 	
-		// Nomdu fournisseur
+		// Nom du fournisseur
 		$query="SELECT u.name 
 				FROM #__sdi_account a 
 				INNER JOIN #__users u on a.user_id = u.id 
 				WHERE a.id = ".$account_id;
    		$db->setQuery($query);
    		$supplier= $db->loadResult();
+		
+		// Cr�er une entrée pour la config
+		$XMLConfig = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:config");
+		$XMLDescrLength = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:DescriptionLength", config_easysdi::getValue("DESCRIPTION_LENGTH"));
+		$XMLConfig->appendChild($XMLDescrLength);
+		$XMLSdi->appendChild($XMLConfig);
+		
 		
    		// Cr�er une entr�e pour le compte
 		$XMLAccount = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:account");
@@ -2113,6 +2112,7 @@ class displayManager{
 			$product = $db->loadObject();
 			
 			// Créer une entrée pour le produit, avec comme attributs la gratuité, la disponibilité et l'état de publication
+			// et si l'utilisateur à le droit de commande le prouit
 			if ($product)
 			{
 				$XMLProduct = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:product", $product->id);
@@ -2121,6 +2121,10 @@ class displayManager{
 				$XMLProduct->setAttribute('free', (int)$product->free);
 				$XMLProduct->setAttribute('file_size', $product->size);
 				$XMLProduct->setAttribute('file_type', $product->type);
+				if(SITE_shop::getProductListCount() > 0)
+					$XMLProduct->setAttribute('orderable', 1);
+				else
+					$XMLProduct->setAttribute('orderable', 0);
 			}
 			else
 			{
