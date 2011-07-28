@@ -17,12 +17,12 @@
     <!-- The folder in Joomla where are stored the fo and pdf tmp files -->
     <init-param>
     	<param-name>tmpfolder</param-name>
-		<param-value>/home/sites/joomla.asitvd.ch/web/administrator/components/com_easysdi_core/xml/tmp/</param-value>
+		<param-value>C:\\TEMP\\fo\\</param-value>
 	</init-param>
     <!-- The folder in Joomla where is stored the fop config file -->
 	<init-param>
     	<param-name>cfgfolder</param-name>
-		<param-value>/home/sites/joomla.asitvd.ch/web/administrator/components/com_easysdi_core/xml/config/</param-value>
+		<param-value>C:\\TEMP\\fo\\</param-value>
 	</init-param>
   </servlet>
   <servlet-mapping>

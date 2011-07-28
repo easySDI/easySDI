@@ -32,6 +32,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.logging.Logger;
 
 //JAXP
 import javax.xml.transform.Transformer;
@@ -43,6 +44,8 @@ import javax.xml.transform.sax.SAXResult;
 
 
 // FOP
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.fop.apps.FOUserAgent;
 import org.apache.fop.apps.Fop;
 import org.apache.fop.apps.FOPException;
@@ -58,6 +61,7 @@ public class FOPWrapper {
 
     // configure fopFactory as desired
     private FopFactory fopFactory = FopFactory.newInstance();
+    private static Log logger = LogFactory.getLog(FOPWrapper.class);
 
     /**
      * Converts an FO file to a PDF file using FOP
@@ -67,18 +71,12 @@ public class FOPWrapper {
      * @throws FOPException In case of a FOP problem
      */
     public String convert(String cfg, String fo, String pdf) throws IOException, FOPException {
+    	logger.info("converting");
         
-        OutputStream out = null;
+    	OutputStream out = null;
         String resp = "";
         //BufferedWriter bw = null;
         try {   
-        	//FileWriter fstream = new FileWriter("/home/sites/joomla.asitvd.ch/web/administrator/components/com_easysdi_core/xml/tmp/out");
-        	//FileWriter fstream = new FileWriter("C:\\TEMP\\fo\\out.txt");
-        	//bw = new BufferedWriter(fstream);
-            //bw.write("Output started...");
-            //bw.write("cfg:"+cfg);
-            //bw.write("fo:"+fo);
-            //bw.write("pdf:"+pdf);
             FOUserAgent foUserAgent = fopFactory.newFOUserAgent();
             // configure foUserAgent as desired
     
@@ -139,7 +137,8 @@ public class FOPWrapper {
         	 e.printStackTrace(printWriter);
         	 bw.write(writer.toString());
         	 */
-            return stack2string(e);
+        	logger.error(stack2string(e));
+            return e.getMessage();
         } finally {
         	/*
         	if(bw != null)
@@ -153,7 +152,7 @@ public class FOPWrapper {
         		File foTmp = new File(fo);
         		foTmp.delete();
         	} catch (Exception e) {
-                e.printStackTrace(System.err);
+        		logger.error(stack2string(e));
             }
         }
     }
@@ -163,7 +162,7 @@ public class FOPWrapper {
     	    StringWriter sw = new StringWriter();
     	    PrintWriter pw = new PrintWriter(sw);
     	    e.printStackTrace(pw);
-    	    return "------\r\n" + sw.toString() + "------\r\n";
+    	    return sw.toString();
     	  }
     	  catch(Exception e2) {
     	    return "bad stack2string";
@@ -180,9 +179,9 @@ public class FOPWrapper {
             System.out.println("Preparing...");
             
             //Setup input and output files            
-            String fofile = "C:\\TEMP\\fo\\2.xml";
+            String fofile = "C:\\TEMP\\fo\\509.fo";
             //File fofile = new File(baseDir, "../fo/pagination/franklin_2pageseqs.fo");
-            String pdffile = "C:\\TEMP\\fo\\2.pdf";
+            String pdffile = "C:\\TEMP\\fo\\509.pdf";
             String cfgfile = "C:\\TEMP\\fo\\fop.xml";
             
             System.out.println("Input: XSL-FO (" + fofile + ")");

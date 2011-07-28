@@ -2,6 +2,7 @@ package org.easysdi.exportpdf;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -11,6 +12,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.fop.apps.FOPException;
 import org.easysdi.exportpdf.wrapper.FOPWrapper;
 
@@ -22,12 +25,14 @@ public class PdfServlet  extends HttpServlet {
 	private String IMAGE_PATTERN = "([^\\s]+(\\.(?i)(xml|fo|pdf))$)";
 	private Pattern pattern;
 	private Matcher matcher;
+    private static Log logger = LogFactory.getLog(PdfServlet.class);
 
 
 	public void init(ServletConfig config) throws ServletException {
 		this.tmpFld = config.getInitParameter("tmpfolder");
 		this.cfgFld = config.getInitParameter("cfgfolder");
 		pattern = Pattern.compile(IMAGE_PATTERN);
+		logger.info("ExportPdf servlet initialized.");
 	}
 
 	@Override
@@ -73,11 +78,11 @@ public class PdfServlet  extends HttpServlet {
 						writer.println("Success");
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
-			writer.println("Error: "+e.getMessage());
+			writer.println("Error generating the pdf file.");
+			logger.error("IO Error: "+e.getMessage()+FOPWrapper.stack2string(e));
 		} catch (FOPException e) {
-			e.printStackTrace();
-			writer.println("Error: "+e.getMessage());
+			writer.println("Error generating the pdf file.");
+			logger.error("FOP Error: "+e.getMessage()+FOPWrapper.stack2string(e));
 		}finally{
 			if(writer != null)
 				writer.close();

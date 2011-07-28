@@ -18,7 +18,7 @@
 	    </fileset>
    </path>
 
-  <target name="createwar" depends="create-structure,copy-resources,compilation,compression,deleteResources,war" description="Main target">
+  <target name="createwar" depends="create-structure,copy-resources,compilation,compression,deleteTempResources,war,deleteResources" description="Main target">
     
   </target>
 
@@ -27,12 +27,12 @@
   	<mkdir dir="${projet.out.dir}" />
   	<mkdir dir="${projet.work.dir}" />
   	<mkdir dir="${projet.work.dir}/WEB-INF" />
-  	<mkdir dir="${projet.work.dir}/WEB-INF/classes" />
+  	<mkdir dir="${projet.work.dir}/WEB-INF/classes_work" />
   	<mkdir dir="${projet.work.dir}/WEB-INF/lib" />
   </target>  
 	
 	<target name="compression" description="Compression" >
-	    <jar jarfile="${projet.work.dir}/WEB-INF/lib/exportpdf.jar" basedir="${projet.work.dir}/WEB-INF/classes"  />			
+	    <jar jarfile="${projet.work.dir}/WEB-INF/lib/exportpdf.jar" basedir="${projet.work.dir}/WEB-INF/classes_work"  />			
 	</target>
 
 	
@@ -45,7 +45,7 @@
   	      </fileset>
   	    </copy>
   		
-  		<copy todir="${projet.work.dir}/WEB-INF/classes" >
+  		<copy todir="${projet.work.dir}/WEB-INF/classes_work" >
   	  	  	      <fileset dir="${projet.src.dir}" >
   	  	  	        <include name="**/*.xml"/>  	  	        
   	  	  	      </fileset>
@@ -54,17 +54,25 @@
   </target>
 	
   <target name="compilation" description="Compilation" >  	
-    <javac debug="on" srcdir="${projet.src.dir}" destdir="${projet.work.dir}/WEB-INF/classes" >
+    <javac debug="on" srcdir="${projet.src.dir}" destdir="${projet.work.dir}/WEB-INF/classes_work" >
     	<classpath refid="projet.classpath"/>
     </javac>
   	
   </target>
   
-	<target name="deleteResources" description="deleting temp ressources" >
+	<target name="deleteTempResources" description="deleting temp ressources" >
+			
+		<delete includeEmptyDirs="true">			
+			   <fileset dir="${projet.work.dir}/WEB-INF/classes_work" />
+		</delete>
+		</target>
+	
+	<target name="deleteResources" description="deleting ressources" >
 		
 	<delete includeEmptyDirs="true">			
-					      <fileset dir="${projet.work.dir}/WEB-INF/classes" />
-					</delete>
+			<fileset dir="${projet.work.dir}/WEB-INF" />
+		   	<fileset dir="${projet.work.dir}" />
+	</delete>
 	</target>
 	<target name="war" description="generate the war" >
 		<tstamp/>
