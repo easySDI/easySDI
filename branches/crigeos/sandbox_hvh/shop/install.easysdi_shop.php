@@ -851,6 +851,48 @@ function com_install(){
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 	}
+	if($version == "2.0.0"){
+		//
+		$query="CREATE TABLE IF NOT EXISTS `#__sdi_list_accessibility` (
+				  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+				  `guid` varchar(36) NOT NULL,
+				  `code` varchar(20),
+				  `name` varchar(50) NOT NULL,
+				  `description` varchar(100),
+				  `created` datetime NOT NULL,
+				  `updated` datetime,
+				  `createdby` bigint(20),
+				  `updatedby` bigint(20),
+				  `label` varchar(50),
+				  `ordering` bigint(20),
+				  PRIMARY KEY (`id`),
+				  UNIQUE KEY `guid` (`guid`),
+				  UNIQUE KEY `code` (`code`)
+				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		$query="INSERT INTO `#__sdi_list_accessibility` (`guid`, `code`, `name`, `label`, `description`, `created`, `createdby`) VALUES
+					('".helper_easysdi::getUniqueId()."', 'all', 'all', 'all', NULL, '".date('Y-m-d H:i:s')."', '".$user_id."'),
+					('".helper_easysdi::getUniqueId()."', 'ofRoot', 'ofRoot', 'ofRoot', NULL, '".date('Y-m-d H:i:s')."', '".$user_id."'),
+					('".helper_easysdi::getUniqueId()."', 'ofManager', 'ofManager', 'ofManager', NULL, '".date('Y-m-d H:i:s')."', '".$user_id."')";
+			$db->setQuery( $query);	
+			if (!$db->query()) 
+			{
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+		$version="2.0.1";
+		$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='SHOP'"; 
+		$db->setQuery( $query);	
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+	}
 	 
 	$query = "DELETE FROM #__components where `option`= 'com_easysdi_shop' ";
 	$db->setQuery( $query);
