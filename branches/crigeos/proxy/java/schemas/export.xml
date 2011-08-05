@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<ASIT-VD>
+	<metadata id="477" name="Cadastre - Données cadastrales Interlis-VD"
+		creation="19.10.2004" update="11.09.2007">
+		<class name="Identification">
+			<attribute name="Nom">Cadastre - Données cadastrales Interlis-VD
+			</attribute>
+			<attribute name="Description">Les données cadastrales sont issues de la
+				mensuration officielle. Elles comprennent notamment les biens-fonds
+				(parcelles et domaines publics), la couverture du sol (routes,
+				bâtiments, forêts, vignes, cours d'eau, etc...) ainsi que des objets
+				divers (murs, piscines, téleskis, etc...)
+</attribute>
+			<attribute name="Dernière mise à jour">20.02.2008</attribute>
+			<attribute name="Etendue géographique">Canton de Vaud</attribute>
+			<attribute name="Couverture spatiale">Partielle</attribute>
+			<attribute name="Synoptique">&lt;a
+				href="http://www.vd.ch/fileadmin/user_upload/organisation/dinf/sit/fichiers_pdf/avancement-bdco.pdf"
+				target="_blank"&gt;Etat d'avancement (carte
+				PDF)&lt;/a&gt;&lt;br&gt;&lt;a
+				href="http://www.geoplanet.vd.ch/geoplanet1.php?switch_id=switch_cadastre&amp;layer_select=cn,lim_adm,cad_distr_plans,etat_mensuration,contour_vd,complement_vd2&amp;recenter_scale=790000"
+				target="_blank"&gt;Etat d'avancement (guichet
+				cartographique)&lt;/a&gt; : dans onglet Thèmes, liste des couches
+				thématiques, choisir "Etat mensuration" ou "Thème complet".
+			</attribute>
+			<attribute name="Extrait"></attribute>
+			<attribute name="Sous-produits">Cadastre - Données cadastrales: Points
+			</attribute>
+			<attribute name="Thématique">Cadastre, aménagement</attribute>
+		</class>
+		<class name="Diffusion">
+			<attribute name="Conditions de diffusion">L'Office de l'information sur le territoire
+				(OIT) est le diffuseur officiel des données de la BDCO.
+				Des renseignements quant à la disponibilité et à la qualité des données
+				cadastrales peuvent être obtenus auprès de l'OIT (tél. 021/316.24.60
+				- email: info.oit@vd.ch) ou auprès des bureaux d´ingénieurs
+				géomètres du canton. </attribute>
+			<attribute name="Restriction d'utilisation">Les données livrées sont destinées aux
+				propres besoins de l´utilisateur. La rediffusion des données
+				cadastrales est interdite. Celui qui sciemment ou par négligence ne
+				respecte pas les conditions fixées pour la diffusion des données
+				cadastrales est punissable de l´amende prévue à l´art. 11 de la loi
+				sur le registre foncier, le cadastre et le système d´information sur
+				le territoire.
+				L´utilisateur au bénéfice d´un contrat d´utilisateur permanent peut livrer, à un
+				tiers, les données de la BDCO contenues dans le produit, uniquement
+				dans le cadre de ses propres activités.
+				L´utilisateur occasionnel peut livrer, à un tiers, les données de la BDCO
+				contenues dans le produit, uniquement dans le cadre du projet pour
+				lequel les données ont été commandées.
+				L´utilisateur peut livrer, dans le cadre de son activité, des produits graphiques
+				sur lesquels figurent ses propres données ainsi que celles contenues
+				dans le produit.
+				Les produits élaborés à partir des données de la BDCO doivent porter la
+				référence de la source cadastrale et indiquer la raison sociale
+				ainsi que la date d'émission du produit.
+				La reproduction et publication de données de la mensuration
+				officielle, au sens de l´Ordonnance fédérale sur la reproduction de
+				données de la mensuration officielle (ORDMO), font l´objet d´une
+				autorisation délivrée par l'OIT.
+				Les conditions détaillées d´utilisation des données cadastrales sont
+				exposées dans la norme OIT &lt;a
+				href="http://www.publications1-dinf.vd.ch/prod/dinf/publicationdinf1_p.nsf/NORM/AB33A0F2E5159579C125712B0044F3F6/$FILE/8401.pdf?OpenElement"&gt;8401&lt;/a&gt;.
+			</attribute>
+			<attribute name="Principes et mode de tarification">Pour les questions liées à la facturation :
+				tél. 021 316 24 60 ou info.oit@vd.ch
+				&lt;br&gt;
+				La TVA est facturée en sus
+				&lt;ul&gt;
+				&lt;b&gt;Utilisateurs occasionnels&lt;/b&gt;
+				&lt;ul&gt;&lt;u&gt;Principes de base&lt;/u&gt;
+				&lt;ul&gt;&lt;li&gt;Les données sont facturées au megabyte (MB) dans le format de
+				référence&lt;/li&gt;
+				&lt;li&gt;La norme OIT &lt;a
+				href="http://www.publications1-dinf.vd.ch/prod/dinf/publicationdinf1_p.nsf/NORM/DA74ECC7DA26843BC125712B00448A11/$FILE/8404.pdf?OpenElement"&gt;8404&lt;/a&gt;
+				fait foi&lt;/li&gt;&lt;/ul&gt;
+				&lt;br&gt;&lt;u&gt;Mode de calcul du prix d´une requête&lt;/u&gt;
+				&lt;ul&gt;&lt;em&gt;Prix de base&lt;/em&gt;&lt;ul&gt;&lt;li&gt;Emolument pour l'utilisation
+				des données (Eud), Fr. 500.-/MB dans le format de
+				référence&lt;/li&gt;
+				&lt;li&gt;Forfait de base par requête Fr. 25.-&lt;/li&gt;&lt;/ul&gt;
+				&lt;em&gt;Rabais&lt;/em&gt;
+				&lt;ul&gt;&lt;li&gt;Rabais client/usage appliqués sur l'Eud, cf. &lt;a
+				href="http://www.asit.vd.ch/references/Dtpat_sit/rab_acv.htm"&gt;tableau
+				des rabais ACV&lt;/a&gt;&lt;/li&gt;
+				&lt;li&gt;Rabais AOIT-VD appliqués sur l'Eud&lt;/li&gt;&lt;/ul&gt;
+				&lt;em&gt;Frais annexes&lt;/em&gt;
+				&lt;ul&gt;Les prix indiqués dans le &lt;a
+				href="http://www.asit.vd.ch/references/Dtpat_sit/frais_acv.htm"&gt;tableau
+				des frais annexes&lt;/a&gt; sont facturés en
+				sus&lt;/li&gt;&lt;/ul&gt;&lt;/ul&gt;&lt;/ul&gt;
+				&lt;br&gt;&lt;b&gt;Utilisateurs permanents&lt;/b&gt;
+				&lt;ul&gt;&lt;u&gt;Principes de base&lt;/u&gt;
+				&lt;ul&gt;&lt;li&gt;Un émolument de base est perçu à la conclusion
+				du contrat sur un périmètre défini. Il est calculé sur la base du
+				volume des données actuellement chargées dans la BDCO au prix de Fr.
+				200.-/MB dans le format de référence.&lt;/li&gt;
+				&lt;li&gt;La norme OIT &lt;a
+				href="http://www.publications1-dinf.vd.ch/prod/dinf/publicationdinf1_p.nsf/NORM/DA74ECC7DA26843BC125712B00448A11/$FILE/8404.pdf?OpenElement"&gt;8404&lt;/a&gt;
+				fait foi&lt;/li&gt;
+				&lt;li&gt;Une propooition de contrat peut être obtenue à l'OIT (021 316 24 60 ou
+				info.oit@oit.vd.ch)&lt;/li&gt;&lt;/ul&gt;
+				&lt;br&gt;&lt;u&gt;Mode de calcul du prix d'une requête&lt;/u&gt;
+				&lt;ul&gt;&lt;em&gt;Prix de base&lt;/em&gt;
+				&lt;ul&gt;&lt;li&gt;Forfait de base par requête Fr 25.-&lt;/li&gt;
+				&lt;li&gt;Emolument pour l'utilisation des données (Eud), Fr. 100.-/MB dans le format
+				de référence&lt;/li&gt;&lt;/ul&gt;
+				&lt;em&gt;Frais annexes&lt;/em&gt;
+				&lt;ul&gt;&lt;li&gt;Comme utilisateurs occasionnels</attribute>
+			<class name="Statut juridique">
+				<attribute name="Statut">Non légalisé</attribute>
+				<attribute name="Référence du document légal">Seul le plan du registre foncier (plan
+					cadastral) a la force juridique (art. 7 de l´Ordonnance fédérale
+					sur la mensuration officielle - OMO). Seules les copies graphiques
+					du plan du registre foncier portant la date, le sceau et la
+					signature d'un ingénieur géomètre breveté, offrent l´attestation
+					d´exactitude (art 37 de l´OMO). </attribute>
+			</class>
+		</class>
+		<class name="Gestion">
+			<class name="Acquisition">
+				<attribute name="Mode d'acquisition">Autre mode d'acquisition</attribute>
+				<attribute name="Description du mode d'acquisition">Les données cadastrales sont acquises soit
+					lors d´une nouvelle mensuration, soit par digitalisation des plans
+					cadastraux existants.</attribute>
+				<attribute name="Données sources"></attribute>
+			</class>
+			<class name="Mise à jour">
+				<attribute name="Type de mise à jour">Mise à jour en continu</attribute>
+				<attribute name="Fréquence">Hebdomadaire</attribute>
+				<attribute name="Remarques">La mise à jour comprend l'introduction de
+					nouvelles données (nouveaux lots de mensuration ou de numérisation)
+					et les données soumises à un système d'annonce (biens-fonds,
+					bâtiments, points fixes). Les mises à jour des biens-fonds
+					(parcelles) ne sont effectuées qu'après validation juridique par
+					les registres fonciers. </attribute>
+			</class>
+		</class>
+		<class name="Représentation">
+			<attribute name="Système de coordonnées">Coordonnées nationales suisses</attribute>
+			<attribute name="Echelle de référence"></attribute>
+			<attribute name="Précision">Dépend du type de zone mensurée ou du type
+				de plan cadastral digitalisé. Des renseignements relatifs à la
+				qualité et à la précision des données peuvent être obtenus auprès de
+				l'OIT ou auprès des bureaux d´ingénieurs géomètres du canton. Voir
+				aussi le synoptique de la qualité a priori des données cadastrales.
+				http://www.dinf.vd.ch/target/body/services/sit/pdf/qlte-cadastre7.pdf
+			</attribute>
+			<class name="Produit vecteur">
+				<attribute name="Type d'objet graphique">Mixte</attribute>
+				<attribute name="Cohérence topologique"></attribute>
+				<attribute name="Information altimétrique"></attribute>
+				<attribute name="Modèle de données">&lt;a
+					href="http://www.dinf.vd.ch/target/body/services/sit/documents/MD01MOVD_Version_1.2.6.zip"&gt;MD.01-MO-VD&lt;/a&gt;
+				</attribute>
+			</class>
+			<class name="Produit raster" />
+		</class>
+		<class name="Attribut">
+			<attribute name="Nom">Voir ci-dessous</attribute>
+			<attribute name="Description">Voir champ REPRESENTATION --&gt; PRODUIT
+				VECTEUR --&gt; MODELE DE DONNEES</attribute>
+			<attribute name="Type"></attribute>
+			<attribute name="Format"></attribute>
+			<attribute name="Statut"></attribute>
+		</class>
+		<class name="Contact">
+			<attribute name="Rôle">Gestionnaire</attribute>
+			<attribute name="Organisme">Canton de Vaud - Office de l'information
+				sur le territoire</attribute>
+			<attribute name="Nom">Roger Hug</attribute>
+			<attribute name="Adresse">Avenue de l'Université 3</attribute>
+			<attribute name="Localité">Lausanne</attribute>
+			<attribute name="Code postal">1014</attribute>
+			<attribute name="Pays">Suisse</attribute>
+			<attribute name="Téléphone">021 316 24 73</attribute>
+			<attribute name="Fax">021 316 24 84</attribute>
+			<attribute name="Email">roger.hug@vd.ch</attribute>
+		</class>
+		<class name="Contact">
+			<attribute name="Rôle">Responsable de diffusion</attribute>
+			<attribute name="Organisme">Canton de Vaud - Office de l'information
+				sur le territoire</attribute>
+			<attribute name="Nom">Isaline Jalade</attribute>
+			<attribute name="Adresse">Avenue de l'Université 3</attribute>
+			<attribute name="Localité">Lausanne</attribute>
+			<attribute name="Code postal">1014</attribute>
+			<attribute name="Pays">Suisse</attribute>
+			<attribute name="Téléphone">021 316 24 42</attribute>
+			<attribute name="Fax">021 316 24 84</attribute>
+			<attribute name="Email">isaline.jalade@vd.ch</attribute>
+		</class>
+		<class name="Contact">
+			<attribute name="Rôle">Point de contact</attribute>
+			<attribute name="Organisme">Canton de Vaud - Office de l'information
+				sur le territoire</attribute>
+			<attribute name="Nom">Pierre Vuagniaux</attribute>
+			<attribute name="Adresse">Avenue de l'Université 3</attribute>
+			<attribute name="Localité">Lausanne</attribute>
+			<attribute name="Code postal">1014</attribute>
+			<attribute name="Pays">Suisse</attribute>
+			<attribute name="Téléphone">021 316 24 71</attribute>
+			<attribute name="Fax">021 316 24 84</attribute>
+			<attribute name="Email">pierre.vuagniaux@vd.ch</attribute>
+		</class>
+	</metadata>
+</ASIT-VD>
