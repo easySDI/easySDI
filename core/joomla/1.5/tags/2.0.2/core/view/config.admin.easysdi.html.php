@@ -326,6 +326,16 @@ if ($catalogItem > 0){
 										<td>
 											<input class="text_area" type="text" size="50" name="catalog_mxqueryurl" value="<?php echo $catalogList['CATALOG_MXQUERYURL']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
 										</td>
+									</tr>									
+									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_MXQUERYPAGINATION' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_MXQUERYPAGINATION' ); ?>
+											</span>
+										</td>
+										<td>
+											<input class="text_area" type="text" size="50" name="catalog_mxquerypagination" value="<?php echo $catalogList['CATALOG_MXQUERYPAGINATION']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+										</td>
 									</tr>
 									</tbody>
 								</table>

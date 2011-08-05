@@ -21,6 +21,7 @@ class ADMIN_config {
 
 	function showConfig($option){
 		
+		
 		global  $mainframe;
 		$db =& JFactory::getDBO(); 
 		
@@ -254,6 +255,10 @@ class ADMIN_config {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
 			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['catalog_mxqueryurl'])."\" WHERE code = 'CATALOG_MXQUERYURL'");
+			if (!$database->query()) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['catalog_mxquerypagination'])."\" WHERE code = 'CATALOG_MXQUERYPAGINATION'");
 			if (!$database->query()) {			
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
