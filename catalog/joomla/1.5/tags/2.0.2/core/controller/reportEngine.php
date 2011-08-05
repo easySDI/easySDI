@@ -242,14 +242,14 @@ class reportEngine{
 				file_put_contents($tmpfile.'.html', $file);
 				reportEngine::setResponse($file, $tmpfile.'.html', 'text/html', 'report.html', strlen($file));
 				break;
-			case "pdf_makepdf":
+			case "makepdf":
 				$mpdf=new mPDF();
 				$mpdf->WriteHTML($file);
 				$mpdf->Output($tmpfile.'.pdf','F');
 				$file = $mpdf->Output('','S');
 				reportEngine::setResponse($file, $tmpfile.'.pdf', 'application/pdf', 'report.pdf', strlen($file));
 				break;
-			case "pdf_fop":
+			case "foppdf":
 				$exportpdf_url = config_easysdi::getValue("JAVA_BRIDGE_URL");
 	
 				if ($exportpdf_url )
@@ -323,7 +323,7 @@ class reportEngine{
 		}
 		
 		// Valeurs autorisées pour format: XML/CSV/RTF/XHTML/PDF
-		$formatValues = array ('xml', 'csv', 'rtf', 'xhtml', 'pdf_fop', 'pdf_makepdf');
+		$formatValues = array ('xml', 'csv', 'rtf', 'xhtml', 'foppdf', 'makepdf');
 		if (array_search($params['format'], $formatValues) === false)
 		{
 			// Retourner une erreur au format XML, format�e par un XSl
@@ -353,7 +353,7 @@ class reportEngine{
 			$processor = new xsltProcessor();
 			$processor->setParameter('', 'error_type', "LASTVERSIONINVALID");
 			$processor->setParameter('', 'user_language', $user->getParam('language', ''));
-				$processor->importStylesheet($style);
+			$processor->importStylesheet($style);
 			$xmlToHtml = $processor->transformToXml($xmlError);
 			file_put_contents($xmlToHtml, 'error.html');
 			reportEngine::setResponse($xmlToHtml, 'error.html', 'application/html', 'error.html');

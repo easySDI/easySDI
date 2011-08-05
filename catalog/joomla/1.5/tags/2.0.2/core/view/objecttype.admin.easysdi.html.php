@@ -198,21 +198,42 @@ class HTML_objecttype {
 						<fieldset id="labels">
 							<legend align="top"><?php echo JText::_("CORE_LABEL"); ?></legend>
 							<table>
-<?php
-foreach ($languages as $lang)
-{ 
-?>
-					<tr>
-					<td width=140><?php echo JText::_("CORE_".strtoupper($lang->code)); ?> : </td>
-					<td><input size="50" type="text" name ="label<?php echo "_".$lang->code;?>" value="<?php echo htmlspecialchars($labels[$lang->id])?>" maxlength="<?php echo $fieldsLength['label'];?>"></td>							
-					</tr>
-<?php
-}
-?>
+									<?php
+									foreach ($languages as $lang)
+									{ 
+									?>
+														<tr>
+														<td width=140><?php echo JText::_("CORE_".strtoupper($lang->code)); ?> : </td>
+														<td><input size="50" type="text" name ="label<?php echo "_".$lang->code;?>" value="<?php echo htmlspecialchars($labels[$lang->id])?>" maxlength="<?php echo $fieldsLength['label'];?>"></td>							
+														</tr>
+									<?php
+									}
+									?>
 							</table>
 						</fieldset>
 					</td>
 				</tr>
+				
+				<!-- Adding section to allow admin to configure extra parameters for sitemap url generation -->
+				<tr>
+					<td colspan="2">
+						<fieldset id="labels">
+							<legend align="top"><?php echo JText::_("CATALOG_SITEMAP_CONFIG_LABEL"); ?></legend>
+							<table>
+				
+								<tr>
+								<td width=140><?php echo JText::_("CATALOG_SITEMAP_EXTRAPARAMS") ?> : </td>
+								<td><input id="sitemapParams" onblur="updateSampleRobotUrl()" style="width:244px" type="text" name ="sitemapParams" value="<?php echo htmlspecialchars( $row->sitemapParams)?>" ></td>							
+								</tr>
+								<tr>
+									<td width=140><?php echo JText::_("CATALOG_SITEMAP_URLSAMPLE") ?> : </td>
+									<td><div id="sampleRobotUrl"></div></td>
+								</tr>
+							</table>
+						</fieldset>
+					</td>
+				</tr>
+				<!-- End of sitemap url configuration -->
 				<tr>
 					<td colspan=2>
 						<fieldset>
@@ -268,6 +289,9 @@ foreach ($languages as $lang)
 			</table>
 			<br></br>
 			<table border="0" cellpadding="3" cellspacing="0">
+			<script>
+				window.onload = updateSampleRobotUrl; 
+			</script>
 <?php
 $user =& JFactory::getUser();
 if ($row->created)

@@ -1392,7 +1392,8 @@ function com_install(){
 			$id = $db->loadResult();
 
 			$query = "INSERT INTO #__sdi_configuration (guid, code, name, description, created, createdby, label, value, module_id) VALUES
-				 ('".helper_easysdi::getUniqueId()."', 'CATALOG_MXQUERYURL', 'CATALOG_MXQUERYURL', null, '".date('Y-m-d H:i:s')."', '".$user_id."', null, 'http://localhost:8080/MXQuery', '".$id."')
+				 ('".helper_easysdi::getUniqueId()."', 'CATALOG_MXQUERYURL', 'CATALOG_MXQUERYURL', null, '".date('Y-m-d H:i:s')."', '".$user_id."', null, 'http://localhost:8080/MXQuery', '".$id."'),
+				 ('".helper_easysdi::getUniqueId()."', 'CATALOG_MXQUERYPAGINATION', 'CATALOG_MXQUERYPAGINATION', null, '".date('Y-m-d H:i:s')."', '".$user_id."', null, 100, '".$id."')		 
 				 ";
 			$db->setQuery( $query);
 			if (!$db->query())
@@ -1400,6 +1401,14 @@ function com_install(){
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 				return false;
 			}
+			
+			//adding sitemap Params column
+			$query="ALTER TABLE `#__sdi_objecttype` ADD sitemapParams varchar(1000)";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
 
 	
 			
