@@ -248,6 +248,16 @@ class ADMIN_product {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 		}
 		helper_easysdi::alter_array_value_with_JTEXT_($visibility_list);
+		
+		//Product accessibility
+		$accessibility_list = array();
+		$accessibility_list [] = JHTML::_('select.option','0', JText::_("SHOP_PRODUCT_ACCESSIBILITY") );
+		$database->setQuery( "SELECT id AS value,  label AS text FROM #__sdi_list_accessibility " );
+		$accessibility_list = array_merge($accessibility_list,$database->loadObjectList()) ;
+		if ($database->getErrorNum()) {
+			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+		}
+		helper_easysdi::alter_array_value_with_JTEXT_($accessibility_list);
 
 		//List of perimeters
 		$perimeter_list = array();
@@ -262,18 +272,64 @@ class ADMIN_product {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");					 			
 		}
 		
-		//Select all available easysdi Account
+		//Select all available EasySDI Account
 		$rowsAccount = array();
 		$rowsAccount[] = JHTML::_('select.option','0', JText::_("SHOP_LIST_ACCOUNT_SELECT" ));
 		$rowsAccount = array_merge($rowsAccount,account::getEasySDIAccountsList());
+		
+		$language =& JFactory::getLanguage();
+		//Get  profiles
+		$database->setQuery( "SELECT ap.code as value, t.label as text FROM #__sdi_language l, #__sdi_list_codelang cl, #__sdi_accountprofile ap LEFT OUTER JOIN #__sdi_translation t ON ap.guid=t.element_guid WHERE t.language_id=l.id AND l.codelang_id=cl.id AND cl.code='".$language->_lang."'" );
+		$rowsProfile = $database->loadObjectList();
+		if ($database->getErrorNum()) {
+			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");		
+		}
+		
+		
+		//Get users
+		$database->setQuery( "SELECT #__sdi_account.id as value, #__users.name as text 
+								FROM #__users 
+								INNER JOIN #__sdi_account 
+								ON  #__users.id = #__sdi_account.user_id ORDER BY text
+								
+								" );
+		$rowsUser = $database->loadObjectList();
+		if ($database->getErrorNum()) {
+			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");		
+		}
 			
+		$database->setQuery( "SELECT #__sdi_account.id as value 
+								FROM #__sdi_product_account 
+								INNER JOIN #__sdi_product 
+								ON  #__sdi_product.id = #__sdi_product_account.product_id
+								INNER JOIN #__sdi_account 
+								ON  #__sdi_account.id = #__sdi_product_account.account_id
+								WHERE #__sdi_product.id = ".$id." AND #__sdi_product_account.code='preview'" );
+		$userPreviewSelected = $database->loadObjectList();
+		if ($database->getErrorNum()) {
+			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");		
+		}
+		
+		$database->setQuery( "SELECT #__sdi_account.id as value 
+								FROM #__sdi_product_account 
+								INNER JOIN #__sdi_product 
+								ON  #__sdi_product.id = #__sdi_product_account.product_id
+								INNER JOIN #__sdi_account 
+								ON  #__sdi_account.id = #__sdi_product_account.account_id
+								WHERE #__sdi_product.id = ".$id." AND #__sdi_product_account.code='download'" );
+		$userDownloadSelected = $database->loadObjectList();
+		if ($database->getErrorNum()) {
+			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");		
+		}
+		
+		
 		if (strlen($catalogUrlBase )==0)
 		{
 			$mainframe->enqueueMessage("NO VALID CATALOG URL IS DEFINED","ERROR");
 		}
 		else
 		{
-			HTML_product::editProduct( $product,$version,$object_id,$objecttype_id,$supplier,$objecttype_list, $object_list,$version_list,$diffusion_list,$baseMap_list,$treatmentType_list,$visibility_list,$perimeter_list,$selected_perimeter,$catalogUrlBase,$rowsAccount,$id, $option );
+			HTML_product::editProduct( $product,$version,$object_id,$objecttype_id,$supplier,$objecttype_list, $object_list,$version_list,$diffusion_list,$baseMap_list,$treatmentType_list,$visibility_list,$accessibility_list,$perimeter_list,$selected_perimeter,$catalogUrlBase,$rowsAccount,$rowsUser,$userPreviewSelected,$userDownloadSelected,$id, $option );
 		}
 	}
 	
@@ -307,11 +363,20 @@ class ADMIN_product {
 		{
 			$product->treatmenttype_id = sdilist::getIdByCode('#__sdi_list_treatmenttype','AUTO' );
 		}
+		if($product->viewaccessibility_id == '0')
+		{
+			$product->viewaccessibility_id = null;
+		}
+		if($product->loadaccessibility_id == '0')
+		{
+			$product->loadaccessibility_id = null;
+		}
 		if (!$product->store()) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			$mainframe->redirect("index.php?option=$option&task=listProduct" );
 			exit();
 		}
+		
 
 		$product_perimeter = new product_perimeter($database);
 		if(!$product_perimeter->delete($product->id)){
@@ -362,6 +427,38 @@ class ADMIN_product {
 			$product_property->product_id=$product->id;
 			$product_property->propertyvalue_id=$properties_id;
 			if(!$product_property->store()){
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				$mainframe->redirect("index.php?option=$option&task=listProduct" );
+				exit();
+			}
+		}
+		
+		$product_account = new product_account($database);
+		if(!$product_account->delete($product->id)){
+			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			$mainframe->redirect("index.php?option=$option&task=listProduct" );
+			exit();
+		}
+
+		foreach( $_POST['userPreviewList'] as $accountpreview_id )
+		{
+			$product_account = new product_account($database);
+			$product_account->product_id=$product->id;
+			$product_account->account_id=$accountpreview_id;
+			$product_account->code='preview';
+			if(!$product_account->store()){
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				$mainframe->redirect("index.php?option=$option&task=listProduct" );
+				exit();
+			}
+		}
+		foreach( $_POST['userDownloadList'] as $accountdownload_id )
+		{
+			$product_account = new product_account($database);
+			$product_account->product_id=$product->id;
+			$product_account->account_id=$accountdownload_id;
+			$product_account->code='download';
+			if(!$product_account->store()){
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 				$mainframe->redirect("index.php?option=$option&task=listProduct" );
 				exit();

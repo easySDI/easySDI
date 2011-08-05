@@ -41,6 +41,8 @@ class product extends sdiTable
 	var $viewuser=null;
 	var $viewpassword=null;
 	var $viewaccount_id=null;
+	var $viewaccessibility_id=null;
+	var $loadaccessibility_id=null;
 		
 	// Class constructor
 	function __construct( &$db )

@@ -852,14 +852,14 @@ function com_install(){
 		}
 	}
 	if($version == "2.0.0"){
-		//
+		
 		$query="CREATE TABLE IF NOT EXISTS `#__sdi_list_accessibility` (
 				  `id` bigint(20) NOT NULL AUTO_INCREMENT,
 				  `guid` varchar(36) NOT NULL,
 				  `code` varchar(20),
-				  `name` varchar(50) NOT NULL,
+				  `name` varchar(50),
 				  `description` varchar(100),
-				  `created` datetime NOT NULL,
+				  `created` datetime,
 				  `updated` datetime,
 				  `createdby` bigint(20),
 				  `updatedby` bigint(20),
@@ -876,14 +876,73 @@ function com_install(){
 		}
 		
 		$query="INSERT INTO `#__sdi_list_accessibility` (`guid`, `code`, `name`, `label`, `description`, `created`, `createdby`) VALUES
-					('".helper_easysdi::getUniqueId()."', 'all', 'all', 'all', NULL, '".date('Y-m-d H:i:s')."', '".$user_id."'),
-					('".helper_easysdi::getUniqueId()."', 'ofRoot', 'ofRoot', 'ofRoot', NULL, '".date('Y-m-d H:i:s')."', '".$user_id."'),
-					('".helper_easysdi::getUniqueId()."', 'ofManager', 'ofManager', 'ofManager', NULL, '".date('Y-m-d H:i:s')."', '".$user_id."')";
-			$db->setQuery( $query);	
-			if (!$db->query()) 
-			{
-				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-			}
+					('".helper_easysdi::getUniqueId()."', 'all', 'all', 'Tout public', NULL, '".date('Y-m-d H:i:s')."', '".$user_id."'),
+					('".helper_easysdi::getUniqueId()."', 'ofRoot', 'ofRoot', 'Affiliés du compte racine', NULL, '".date('Y-m-d H:i:s')."', '".$user_id."'),
+					('".helper_easysdi::getUniqueId()."', 'ofManager', 'ofManager', 'Affiliés du gestionnaire', NULL, '".date('Y-m-d H:i:s')."', '".$user_id."')";
+		$db->setQuery( $query);	
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		$query="ALTER TABLE  `#__sdi_product` ADD viewaccessibility_id bigint (20)";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		$query="ALTER TABLE `#__sdi_product` ADD CONSTRAINT `#__sdi_product_pfk_va` FOREIGN KEY (`viewaccessibility_id`) REFERENCES `#__sdi_list_accessibility` (`id`);";
+		$db->setQuery( $query);	
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+		
+		$query="ALTER TABLE  `#__sdi_product` ADD loadaccessibility_id bigint (20)";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		$query="ALTER TABLE `#__sdi_product` ADD CONSTRAINT `#__sdi_product_pfk_dl` FOREIGN KEY (`loadaccessibility_id`) REFERENCES `#__sdi_list_accessibility` (`id`);";
+		$db->setQuery( $query);	
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+		
+		$query="CREATE TABLE IF NOT EXISTS `#__sdi_product_account` (
+				  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+				  `guid` varchar(36) NOT NULL,
+				  `code` varchar(20) NOT NULL,
+				  `name` varchar(50) ,
+				  `description` varchar(100),
+				  `created` datetime NOT NULL,
+				  `updated` datetime,
+				  `createdby` bigint(20),
+				  `updatedby` bigint(20),
+				  `label` varchar(50),
+				  `ordering` bigint(20),
+				  `account_id` bigint(20) NOT NULL,
+				  `product_id` bigint(20) NOT NULL,
+				  PRIMARY KEY (`id`),
+				  UNIQUE KEY `guid` (`guid`)
+				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		$query="ALTER TABLE `#__sdi_product_account` ADD CONSTRAINT `#__sdi_product_pfk_acc` FOREIGN KEY (`account_id`) REFERENCES `#__sdi_account` (`id`);";
+		$db->setQuery( $query);	
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+		
+		$query="ALTER TABLE `#__sdi_product_account` ADD CONSTRAINT `#__sdi_product_pfk_pd` FOREIGN KEY (`product_id`) REFERENCES `#__sdi_product` (`id`);";
+		$db->setQuery( $query);	
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
 			
 		$version="2.0.1";
 		$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='SHOP'"; 
