@@ -193,7 +193,18 @@ class product extends sdiTable
 		return $this->store();
 	}
 	
+	function isUserAllowedToView ($account_id){
+		if($this->viewaccessibility_id != null || $this->viewaccessibility_id != ''){
+			//Predefine accessibility is set
+		}else{
+			//Check if the current user or his root account is allowed to view the product
+		}
+		return false;
+	}
 
+	function isUserAllowedToLoad ($account_id){
+		return false;
+	}
 }
 
 ?>

@@ -19,7 +19,7 @@
 defined('_JEXEC') or die('Restricted access');
 class HTML_product{
 	
-	function editProduct($account,$product,$version,$supplier,$id,$accounts,$object_id, $objecttype_id,$objecttype_list,$object_list,$version_list,$diffusion_list,$baseMap_list,$treatmentType_list,$visibility_list,$perimeter_list,$rowsAccount,$option ){
+	function editProduct($account,$product,$version,$supplier,$id,$accounts,$object_id, $objecttype_id,$objecttype_list,$object_list,$version_list,$diffusion_list,$baseMap_list,$treatmentType_list,$visibility_list,$accessibility_list,$perimeter_list,$rowsAccount,$rowsUser,$userPreviewSelected,$userDownloadSelected,$option ){
 		global  $mainframe;
 		$database =& JFactory::getDBO(); 
 		$app	= &JFactory::getApplication();
@@ -214,6 +214,28 @@ class HTML_product{
 							
 						</table>
 					</fieldset>
+				</td>
+				
+			</tr>
+			<tr>
+				<td>
+					<fieldset class="fieldset_properties">
+						<legend><?php echo JText::_("SHOP_PRODUCT_FS_DIFFUSION_RIGHTS"); ?></legend>
+						<table  border="0" cellpadding="3" cellspacing="0">
+							<tr>
+								<td class="ptitle"><?php echo JText::_("SHOP_PRODUCT_DOWNLOAD_ACCESSIBILITY"); ?> : </td>
+								<td ><?php echo JHTML::_("select.genericlist",$accessibility_list, 'loadaccessibility_id', 'size="1" class="inputbox" onChange="javascript:accessibilityEnable(\'loadaccessibility_id\',\'userDownloadList\');"', 'value',  'text', $product->loadaccessibility_id ); ?></td>															
+							</tr>			
+							<tr>
+								<td class="ptitle"><?php echo JText::_( 'SHOP_PRODUCT_DOWNLOAD_ACCESSIBILITY_USER'); ?> </td>
+								<td ><?php
+								
+									if ($product->loadaccessibility_id != 0 || $product->loadaccessibility_id != "" || $product->loadaccessibility_id != null )  {$disabled = 'disabled';} else {$disabled = '';};
+								 echo JHTML::_("select.genericlist",$rowsUser, 'userDownloadList[]', 'size="15" multiple="true" class="selectbox" '.$disabled, 'value', 'text', $userDownloadSelected ); ?></td>
+							</tr>
+						</table>
+						
+					</fieldset>	
 				</td>
 			</tr>
 			
@@ -475,8 +497,44 @@ class HTML_product{
 				document.getElementById('viewaccount_id').value = '0';
 			}
 		}	
+		function accessibilityEnable(choice,list)
+		{
+			var form = document.productForm;
+			if (form.elements[choice].value=='0')
+			{
+				form.elements[list].disabled=false;
+			}
+			else
+			{
+				form.elements[list].disabled=true;
+				for (i = form.elements[list].length - 1; i>=0; i--) 
+				{
+					form.elements[list].options[i].selected = false;
+				}
+			}
+		}
 		</script>
 		<table width="100%" border="0" cellpadding="0" cellspacing="0">
+			<tr>
+				<td>
+					<fieldset class="fieldset_properties">
+						<legend><?php echo JText::_("SHOP_PRODUCT_FS_PREVIEW_RIGHTS"); ?></legend>
+						<table  border="0" cellpadding="3" cellspacing="0">
+							<tr>
+								<td class="ptitle"><?php echo JText::_("SHOP_PRODUCT_PREVIEW_ACCESSIBILITY"); ?> : </td>
+								<td ><?php echo JHTML::_("select.genericlist",$accessibility_list, 'viewaccessibility_id', 'size="1" class="inputbox"  onChange="javascript:accessibilityEnable(\'viewaccessibility_id\',\'userPreviewList\');"', 'value',  'text', $product->viewaccessibility_id ); ?></td>
+																							
+							</tr>			
+							<tr>
+								<td class="ptitle"><?php echo JText::_( 'SHOP_PRODUCT_PREVIEW_ACCESSIBILITY_USER'); ?> </td>
+								<td ><?php
+									if ($product->viewaccessibility_id != 0 || $product->viewaccessibility_id != "" || $product->viewaccessibility_id != null)   {$disabled = 'disabled';} else {$disabled = '';};
+								 echo JHTML::_("select.genericlist",$rowsUser, 'userPreviewList[]', 'size="15" multiple="true" class="selectbox" '.$disabled, 'value', 'text', $userPreviewSelected ); ?></td>
+							</tr>
+						</table>
+					</fieldset>	
+				</td>
+			</tr>
 			<tr>
 				<td>
 					<fieldset class="fieldset_properties">

@@ -876,9 +876,9 @@ function com_install(){
 		}
 		
 		$query="INSERT INTO `#__sdi_list_accessibility` (`guid`, `code`, `name`, `label`, `description`, `created`, `createdby`) VALUES
-					('".helper_easysdi::getUniqueId()."', 'all', 'all', 'Tout public', NULL, '".date('Y-m-d H:i:s')."', '".$user_id."'),
-					('".helper_easysdi::getUniqueId()."', 'ofRoot', 'ofRoot', 'Affiliés du compte racine', NULL, '".date('Y-m-d H:i:s')."', '".$user_id."'),
-					('".helper_easysdi::getUniqueId()."', 'ofManager', 'ofManager', 'Affiliés du gestionnaire', NULL, '".date('Y-m-d H:i:s')."', '".$user_id."')";
+					('".helper_easysdi::getUniqueId()."', 'all', 'all', 'SHOP_PRODUCT_ACCESSIBILITY_PUBLIC', NULL, '".date('Y-m-d H:i:s')."', '".$user_id."'),
+					('".helper_easysdi::getUniqueId()."', 'ofRoot', 'ofRoot', 'SHOP_PRODUCT_ACCESSIBILITY_SUPPLIER', NULL, '".date('Y-m-d H:i:s')."', '".$user_id."'),
+					('".helper_easysdi::getUniqueId()."', 'ofManager', 'ofManager', 'SHOP_PRODUCT_ACCESSIBILITY_MANAGER', NULL, '".date('Y-m-d H:i:s')."', '".$user_id."')";
 		$db->setQuery( $query);	
 		if (!$db->query()) 
 		{

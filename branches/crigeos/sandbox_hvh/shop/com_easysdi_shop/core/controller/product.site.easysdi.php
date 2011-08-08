@@ -63,6 +63,14 @@ class SITE_product {
 		{
 			$product->treatmenttype_id = sdilist::getIdByCode('#__sdi_list_treatmenttype','AUTO' );
 		}
+		if($product->viewaccessibility_id == '0')
+		{
+			$product->viewaccessibility_id = null;
+		}
+		if($product->loadaccessibility_id == '0')
+		{
+			$product->loadaccessibility_id = null;
+		}
 		if (!$product->store()) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			//$mainframe->redirect("index.php?option=$option&task=listProduct" );
@@ -126,6 +134,38 @@ class SITE_product {
 			if(!$product_property->store()){
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 				//$mainframe->redirect("index.php?option=$option&task=listProduct" );
+				$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listProduct'), false ));
+				exit();
+			}
+		}
+		
+		$product_account = new product_account($database);
+		if(!$product_account->delete($product->id)){
+			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listProduct'), false ));
+			exit();
+		}
+
+		foreach( $_POST['userPreviewList'] as $accountpreview_id )
+		{
+			$product_account = new product_account($database);
+			$product_account->product_id=$product->id;
+			$product_account->account_id=$accountpreview_id;
+			$product_account->code='preview';
+			if(!$product_account->store()){
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listProduct'), false ));
+				exit();
+			}
+		}
+		foreach( $_POST['userDownloadList'] as $accountdownload_id )
+		{
+			$product_account = new product_account($database);
+			$product_account->product_id=$product->id;
+			$product_account->account_id=$accountdownload_id;
+			$product_account->code='download';
+			if(!$product_account->store()){
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 				$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listProduct'), false ));
 				exit();
 			}
@@ -339,6 +379,16 @@ class SITE_product {
 		}
 		helper_easysdi::alter_array_value_with_JTEXT_($visibility_list);
 		
+		//Product accessibility
+		$accessibility_list = array();
+		$accessibility_list [] = JHTML::_('select.option','0', JText::_("SHOP_PRODUCT_ACCESSIBILITY") );
+		$database->setQuery( "SELECT id AS value,  label AS text FROM #__sdi_list_accessibility " );
+		$accessibility_list = array_merge($accessibility_list,$database->loadObjectList()) ;
+		if ($database->getErrorNum()) {
+			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+		}
+		helper_easysdi::alter_array_value_with_JTEXT_($accessibility_list);
+		
 		//List of available perimeters
 		$perimeter_list = array();
 		$perimeter = new perimeter( $database );
@@ -360,12 +410,53 @@ class SITE_product {
 							WHERE ( a.root_id = $account->id OR a.id = $account->id )  " );
 		$rowsAccount = array_merge($rowsAccount,$database->loadObjectList());
 		
+		//Get users
+		$database->setQuery( "SELECT #__sdi_account.id as value, #__users.name as text 
+								FROM #__users 
+								INNER JOIN #__sdi_account 
+								ON  #__users.id = #__sdi_account.user_id 
+								WHERE (#__sdi_account.root_id IS NULL
+								OR 
+								 #__sdi_account.root_id = $account->id
+								 OR #__sdi_account.id =  $account->id)
+								ORDER BY text
+								
+								" );
+		$rowsUser = $database->loadObjectList();
+		if ($database->getErrorNum()) {
+			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");		
+		}
+			
+		$database->setQuery( "SELECT #__sdi_account.id as value 
+								FROM #__sdi_product_account 
+								INNER JOIN #__sdi_product 
+								ON  #__sdi_product.id = #__sdi_product_account.product_id
+								INNER JOIN #__sdi_account 
+								ON  #__sdi_account.id = #__sdi_product_account.account_id
+								WHERE #__sdi_product.id = ".$id." AND #__sdi_product_account.code='preview'" );
+		$userPreviewSelected = $database->loadObjectList();
+		if ($database->getErrorNum()) {
+			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");		
+		}
+		
+		$database->setQuery( "SELECT #__sdi_account.id as value 
+								FROM #__sdi_product_account 
+								INNER JOIN #__sdi_product 
+								ON  #__sdi_product.id = #__sdi_product_account.product_id
+								INNER JOIN #__sdi_account 
+								ON  #__sdi_account.id = #__sdi_product_account.account_id
+								WHERE #__sdi_product.id = ".$id." AND #__sdi_product_account.code='download'" );
+		$userDownloadSelected = $database->loadObjectList();
+		if ($database->getErrorNum()) {
+			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");		
+		}
+		
 		$catalogUrlBase = config_easysdi::getValue("catalog_url");
 		
 		if (strlen($catalogUrlBase )==0){
 				$mainframe->enqueueMessage("NO VALID CATALOG URL IS DEFINED","ERROR");
 		}else{
-			HTML_product::editProduct( $account,$product,$version,$supplier,$id,$accounts,$object_id, $objecttype_id,$objecttype_list,$object_list,$version_list,$diffusion_list,$baseMap_list,$treatmentType_list,$visibility_list,$perimeter_list,$rowsAccount,$option );
+			HTML_product::editProduct( $account,$product,$version,$supplier,$id,$accounts,$object_id, $objecttype_id,$objecttype_list,$object_list,$version_list,$diffusion_list,$baseMap_list,$treatmentType_list,$visibility_list,$accessibility_list,$perimeter_list,$rowsAccount,$rowsUser,$userPreviewSelected,$userDownloadSelected,$option );
 		}
 	}
 	
