@@ -77,8 +77,8 @@
 	</listener>
 
 	<servlet-mapping>
-		<servlet-name>WPSServlet</servlet-name>
-		<url-pattern>/WPSServlet</url-pattern>
+		<servlet-name>wps</servlet-name>
+		<url-pattern>/wps</url-pattern>
 	</servlet-mapping>
 
 	<filter-mapping>
