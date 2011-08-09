@@ -162,10 +162,8 @@ class HTML_shop
 				}
 				$product = new product($db);
 				$product->load($row->id);
-				$isViewable = $product->isUserAllowedToView($account_id);
-				//var_dump($isViewable);
-				$isLoadable = $product->isUserAllowedToLoad($account_id);
-				//var_dump($isLoadable);
+				$isViewable = $product->isUserAllowedToView($account->id);
+				$isLoadable = $product->isUserAllowedToLoad($account->id);
 				
 				?>
 		<tr>
@@ -231,7 +229,7 @@ class HTML_shop
 			  <?php if ($hasPreview > 0 && $isViewable){ ?>
 			    <span class="mdviewproduct">
 			    <a class="modal" href="./index.php?tmpl=component&option=com_easysdi_shop&task=previewProduct&metadata_id=<?php echo $row->metadata_id;?>"
-			    rel="{handler:'iframe',size:{x:558,y:415}}"><?php echo JText::_("SHOP_SHOP_PREVIEW_PRODUCT"); ?></a></span>
+			    rel="{handler:'iframe',size:{x:560,y:580}}"><?php echo JText::_("SHOP_SHOP_PREVIEW_PRODUCT"); ?></a></span>
 			    <?php } ?>
 		      </td>
 			  <td class="shopNoAction">&nbsp;</td>
@@ -261,45 +259,7 @@ class HTML_shop
 	<?php
 	}
 
-	function  isProductDownLoadable ($product_id, $account_id){
-		$db =& JFactory::getDBO();
-	  	$query = "	SELECT a.code FROM #__sdi_list_accessibility a
-					INNER JOIN #__sdi_product p ON p.loadaccessibility_id = a.id
-					WHERE p.id = $product_id";
-		$db->setQuery( $query);
-		$accessibility = $db->loadResult();
-		if($accessibility == "all" ){
-			return true;
-		} else if($accessibility == "ofRoot" ){
-			//Product downloadable by supplier affiliates only	
-			$query = "	SELECT o.account_id FROM #__sdi_object o 
-						INNER JOIN #__sdi_objectversion v ON v.object_id = o.id
-						INNER JOIN #__sdi_product p ON p.objectversion_id = v.id 
-						WHERE p.id = $product_id";
-			$db->setQuery( $query);
-			$supplier_id = $db->loadResult();
-			if($supplier_id){
-				
-			}else{
-				return false;
-			}
-		} else if($accessibility == "ofManager" ){
-			//Product downloadable by manager affiliates only
 
-		} else{
-			//No default accessibility, find specific user right
-			$query = "	SELECT count(*) FROM #__sdi_product_account
-						WHERE account_id = $account_id
-						AND product_id = $product_id
-						AND code='download'";
-			$db->setQuery( $query);
-			$access = $db->loadResult();
-			if($access == 0)
-				return false;
-			else 
-				return true;
-		}
-	}
 	function orderPerimeter ($cid, $basemap, $basemap_contents, $option, $task,$step,$decimal_precision)
 	{
 		global  $mainframe;

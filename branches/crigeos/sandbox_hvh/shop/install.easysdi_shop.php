@@ -853,6 +853,13 @@ function com_install(){
 	}
 	if($version == "2.0.0"){
 		
+		$query="ALTER TABLE  `#__sdi_product` ADD viewextent varchar (100)";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
 		$query="CREATE TABLE IF NOT EXISTS `#__sdi_list_accessibility` (
 				  `id` bigint(20) NOT NULL AUTO_INCREMENT,
 				  `guid` varchar(36) NOT NULL,

@@ -36,6 +36,7 @@ class product extends sdiTable
 	var $viewminresolution=null;
 	var $viewmaxresolution=null;
 	var $viewprojection=null;
+	var $viewextent = null;
 	var $viewunit=null;
 	var $viewimgformat=null;
 	var $viewuser=null;
@@ -110,12 +111,14 @@ class product extends sdiTable
 				$this->_db->setQuery( "SELECT COUNT(*) FROM  #__sdi_product_file WHERE product_id = ".$this->id );
 				$result = $this->_db->loadResult();
 				if ($this->_db->getErrorNum()) {
+					$mainframe->enqueueMessage($this->_db->getErrorNum(), "ERROR");
 					return false;
 				}
 				if($result > 0)
 				{
 					$this->_db->setQuery( "UPDATE  #__sdi_product_file SET data='".$content."', filename='".$fileName."', size =".$size.", type='".$type."' WHERE product_id = ".$this->id );
 					if (!$this->_db->query()) {
+						$mainframe->enqueueMessage($this->_db->getErrorNum(), "ERROR");
 						return false;
 					}
 				}
@@ -123,17 +126,18 @@ class product extends sdiTable
 				{
 					$this->_db->setQuery( "INSERT INTO  #__sdi_product_file (filename, data,product_id, type, size) VALUES ('".$fileName."' ,'".$content."', ".$this->id.", '".$type."', ".$size." )" );
 					if (!$this->_db->query()) {
+						$mainframe->enqueueMessage($this->_db->getErrorNum(), "ERROR");
 						return false;
 					}
 				}
 			}
 			else
 			{
-				$this->available = 0; 
+				/*$this->available = 0; 
 				if(! parent::store())
 				{
 					return false;
-				}
+				}*/
 			}
 		}
 		return true;
@@ -141,6 +145,7 @@ class product extends sdiTable
 	
 	function getFileName()
 	{
+		global  $mainframe;	
 			$this->_db->setQuery( "SELECT filename FROM  #__sdi_product_file WHERE product_id = ".$this->id );
 			$filename = $this->_db->loadResult();
 			if ($this->_db->getErrorNum()) {
@@ -194,15 +199,165 @@ class product extends sdiTable
 	}
 	
 	function isUserAllowedToView ($account_id){
+		global  $mainframe;	
+		$account = new account( $this->_db );
+		$account->load( $account_id );
+		
 		if($this->viewaccessibility_id != null || $this->viewaccessibility_id != ''){
 			//Predefine accessibility is set
+			$this->_db->setQuery( "SELECT a.code FROM  #__sdi_list_accessibility a WHERE a.id = ".$this->viewaccessibility_id );
+			$code = $this->_db->loadResult();
+			if ($this->_db->getErrorNum()) {
+				return false;
+			}
+			
+			if($code == 'all'){
+				return true;
+			}else if ($code == 'ofRoot'){
+				//View is allowed for accounts affiliated to the product supplier
+				$this->_db->setQuery( "SELECT o.account_id FROM  #__sdi_object o 
+										INNER JOIN #__sdi_objectversion v ON v.object_id = o.id 
+										INNER JOIN #__sdi_product p ON p.objectversion_id = v.id
+										WHERE p.id = ".$this->id);
+				$supplier_id = $this->_db->loadResult();
+				if ($this->_db->getErrorNum()) {
+					$mainframe->enqueueMessage($this->_db->getErrorMsg());
+					return false;
+				}
+				if($supplier_id == $account->root_id){
+					return true;
+				}else{
+					return false;
+				}
+			}else if ($code == 'ofManager'){
+				//View is allowed for accounts affiliated to the product manager
+				$this->_db->setQuery( "SELECT m.account_id 
+										FROM #__sdi_product p 
+										INNER JOIN #__sdi_objectversion v ON p.objectversion_id = v.id
+										INNER JOIN #__sdi_object o ON o.id = v.object_id
+										INNER JOIN #__sdi_manager_object m ON m.object_id = o.id 
+										WHERE p.id = ".$this->id);
+				$managerAccount_id = $this->_db->loadResultArray();
+				if ($this->_db->getErrorNum()) {
+					$mainframe->enqueueMessage($this->_db->getErrorMsg());
+					return false;
+				}
+				foreach ($managerAccount_id as $manager_id){
+					if($manager_id == $account_id || $manager_id == $account->root_id ){
+						return true;
+					}
+					$manager = new account( $this->_db );
+					$manager->load( $manager_id );
+					$parentList = $manager->getParentList();
+					foreach ($parentList as $parent_id){
+						if($manager_id == $parent_id ){
+							return true;
+						}
+					}
+				}
+				return false;
+			}else{
+				return false;
+			}
 		}else{
 			//Check if the current user or his root account is allowed to view the product
+			$this->_db->setQuery( "SELECT pa.account_id FROM  #__sdi_product_account pa 
+										WHERE pa.product_id = ".$this->id.
+									" AND pa.code='preview'" );
+			$authorizedAccount_id = $this->_db->loadResultArray();
+			if ($this->_db->getErrorNum()) {
+				$mainframe->enqueueMessage($this->_db->getErrorMsg());
+				return false;
+			}
+			foreach ($authorizedAccount_id as $authorized_id){
+				if($authorized_id == $account_id || $authorized_id == $account->root_id){
+					return true;
+				}
+			}
+			return false;
 		}
 		return false;
 	}
 
 	function isUserAllowedToLoad ($account_id){
+		global  $mainframe;	
+		global  $mainframe;	
+		$account = new account( $this->_db );
+		$account->load( $account_id );
+		
+		if($this->loadaccessibility_id != null || $this->loadaccessibility_id != ''){
+			//Predefine accessibility is set
+			$this->_db->setQuery( "SELECT a.code FROM  #__sdi_list_accessibility a WHERE a.id = ".$this->loadaccessibility_id );
+			$code = $this->_db->loadResult();
+			if ($this->_db->getErrorNum()) {
+				return false;
+			}
+			
+			if($code == 'all'){
+				return true;
+			}else if ($code == 'ofRoot'){
+				//Download is allowed for accounts affiliated to the product supplier
+				$this->_db->setQuery( "SELECT o.account_id FROM  #__sdi_object o 
+										INNER JOIN #__sdi_objectversion v ON v.object_id = o.id 
+										INNER JOIN #__sdi_product p ON p.objectversion_id = v.id
+										WHERE p.id = ".$this->id);
+				$supplier_id = $this->_db->loadResult();
+				if ($this->_db->getErrorNum()) {
+					$mainframe->enqueueMessage($this->_db->getErrorMsg());
+					return false;
+				}
+				if($supplier_id == $account->root_id){
+					return true;
+				}else{
+					return false;
+				}
+			}else if ($code == 'ofManager'){
+				//Download is allowed for accounts affiliated to the product manager
+				$this->_db->setQuery( "SELECT m.account_id 
+										FROM #__sdi_product p 
+										INNER JOIN #__sdi_objectversion v ON p.objectversion_id = v.id
+										INNER JOIN #__sdi_object o ON o.id = v.object_id
+										INNER JOIN #__sdi_manager_object m ON m.object_id = o.id 
+										WHERE p.id = ".$this->id);
+				$managerAccount_id = $this->_db->loadResultArray();
+				if ($this->_db->getErrorNum()) {
+					$mainframe->enqueueMessage($this->_db->getErrorMsg());
+					return false;
+				}
+				foreach ($managerAccount_id as $manager_id){
+					if($manager_id == $account_id || $manager_id == $account->root_id ){
+						return true;
+					}
+					$manager = new account( $this->_db );
+					$manager->load( $manager_id );
+					$parentList = $manager->getParentList();
+					foreach ($parentList as $parent_id){
+						if($manager_id == $parent_id ){
+							return true;
+						}
+					}
+				}
+				return false;
+			}else{
+				return false;
+			}
+		}else{
+			//Check if the current user or his root account is allowed to download the product
+			$this->_db->setQuery( "SELECT pa.account_id FROM  #__sdi_product_account pa 
+										WHERE pa.product_id = ".$this->id.
+									" AND pa.code='download'" );
+			$authorizedAccount_id = $this->_db->loadResultArray();
+			if ($this->_db->getErrorNum()) {
+				$mainframe->enqueueMessage($this->_db->getErrorMsg());
+				return false;
+			}
+			foreach ($authorizedAccount_id as $authorized_id){
+				if($authorized_id == $account_id || $authorized_id == $account->root_id){
+					return true;
+				}
+			}
+			return false;
+		}
 		return false;
 	}
 }

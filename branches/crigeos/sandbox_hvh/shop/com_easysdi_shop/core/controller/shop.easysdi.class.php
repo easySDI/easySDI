@@ -1262,59 +1262,76 @@ function validateForm(toStep, fromStep){
 	
 	function downloadAvailableProduct($id)
 	{
-		global  $mainframe;
 		$option = JRequest::getVar('option');
 		$task = JRequest::getVar('task');
 		$view = JRequest::getVar('view');
 		$step = JRequest::getVar('step');
-	
-//		JPluginHelper::importPlugin('joomfish');
-		$client_lang = '';
-		$jfcookie = JRequest::getVar('jfcookie', null ,"COOKIE");
-		if (isset($jfcookie["lang"]) && $jfcookie["lang"] != "") 
-		{
-		   $client_lang = $jfcookie["lang"];
-		   $ar = explode("-",$client_lang);
-		   $client_lang = $ar[0];
+		
+		global  $mainframe;
+		$user = JFactory::getUser();
+		$db=& JFactory::getDBO(); 
+		$account = new accountByUserId( $db );
+		$account->load( $user->id );
+		$product = new product($db);
+		$product->load ($id);
+		
+		if(!$product->isUserAllowedToLoad($account->id)){
+			//User is not allowed to download this product
+			JError::raiseWarning( 100, JText::_("SHOP_MSG_NOT_ALLOWED_TO_DOWNLOAD_THIS_PRODUCT") );
+		}else{
+			$client_lang = '';
+			$jfcookie = JRequest::getVar('jfcookie', null ,"COOKIE");
+			if (isset($jfcookie["lang"]) && $jfcookie["lang"] != "") 
+			{
+			   $client_lang = $jfcookie["lang"];
+			   $ar = explode("-",$client_lang);
+			   $client_lang = $ar[0];
+			}
+			$key = config_easysdi::getValue("SHOP_CONFIGURATION_ARTICLE_TERMS_OF_USE");
+			$new_key = substr_replace($key, $client_lang." ", 22, 0);
+			JPluginHelper::importPlugin('content');
+			$row->text = $new_key;
+			$args = array( 1,&$row,&$params);
+			$dispatcher =& JDispatcher::getInstance();
+			$dispatcher->trigger('onPrepareContent', array(&$row,&$params,0));
+			$mainframe->addCustomHeadTag('<meta http-equiv="X-UA-Compatible" content="IE=Edge">');
+			HTML_shop::downloadAvailableProduct($id, $option, $task,$view,$step,$row);
 		}
-	
-		$key = config_easysdi::getValue("SHOP_CONFIGURATION_ARTICLE_TERMS_OF_USE");
-		
-		$new_key = substr_replace($key, $client_lang." ", 22, 0);
-//		echo ($new_key);
-		
-		JPluginHelper::importPlugin('content');
-		$row->text = $new_key;
-		$args = array( 1,&$row,&$params);
-		
-		$dispatcher =& JDispatcher::getInstance();
-		$dispatcher->trigger('onPrepareContent', array(&$row,&$params,0));
-		$mainframe->addCustomHeadTag('<meta http-equiv="X-UA-Compatible" content="IE=Edge">');
-		
-		HTML_shop::downloadAvailableProduct($id, $option, $task,$view,$step,$row);
 	}
 	
 	function doDownloadAvailableProduct(){
 
 		$database =& JFactory::getDBO();
 		$id = JRequest::getVar('product_id');
+		
+		global  $mainframe;
+		$user = JFactory::getUser();
+		$account = new accountByUserId( $database );
+		$account->load( $user->id );
+		$product = new product($database);
+		$product->load ($id);
+		
+		if(!$product->isUserAllowedToLoad($account->id)){
+			//User is not allowed to download this product
+			JError::raiseWarning( 100, JText::_("SHOP_MSG_NOT_ALLOWED_TO_DOWNLOAD_THIS_PRODUCT") );
+		}else{
+			$query = "SELECT data,filename FROM #__sdi_product_file where product_id = $id ";
+			$database->setQuery($query);
+			$row = $database->loadObject();
 	
-		$query = "SELECT data,filename FROM #__sdi_product_file where product_id = $id ";
-		$database->setQuery($query);
-		$row = $database->loadObject();
-
-		error_reporting(0);
-
-		ini_set('zlib.output_compression', 0);
-		header('Pragma: public');
-		header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
-		header('Content-Transfer-Encoding: none');
-		header("Content-Length: ".strlen($row->data));
-		header('Content-Type: application/octetstream; name="'.$row->filename.'"');
-		header('Content-Disposition: attachement; filename="'.$row->filename.'"');
-
-		echo $row->data;
-		die();
+			error_reporting(0);
+	
+			ini_set('zlib.output_compression', 0);
+			header('Pragma: public');
+			header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
+			header('Content-Transfer-Encoding: none');
+			header("Content-Length: ".strlen($row->data));
+			header('Content-Type: application/octetstream; name="'.$row->filename.'"');
+			header('Content-Disposition: attachement; filename="'.$row->filename.'"');
+	
+			echo $row->data;
+			die();
+		}
 	}
 }
 	?>

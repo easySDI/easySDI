@@ -573,6 +573,10 @@ class HTML_product{
 								</td>																						
 							</tr>
 							<tr>
+								<td class="ptitle"><?php echo JText::_("SHOP_MAXEXTENT"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="viewextent" value="<?php echo $product->viewextent; ?>" /></td>								
+							</tr>
+							<tr>
 								<td class="ptitle"><?php echo JText::_("SHOP_IMG_FORMAT"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="viewimgformat" value="<?php echo $product->viewimgformat; ?>" /></td>								
 							</tr>
