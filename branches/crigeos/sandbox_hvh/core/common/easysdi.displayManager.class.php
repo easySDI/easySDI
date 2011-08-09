@@ -2112,7 +2112,7 @@ class displayManager{
 			$product = $db->loadObject();
 			
 			// Créer une entrée pour le produit, avec comme attributs la gratuité, la disponibilité et l'état de publication
-			// et si l'utilisateur à le droit de commande le prouit
+			// et si l'utilisateur à le droit de commande le produit
 			if ($product)
 			{
 				$XMLProduct = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:product", $product->id);
@@ -2125,6 +2125,30 @@ class displayManager{
 					$XMLProduct->setAttribute('orderable', 1);
 				else
 					$XMLProduct->setAttribute('orderable', 0);
+				$query = "select count(*) from #__sdi_product p 
+										INNER JOIN #__sdi_product_file pf ON p.id=pf.product_id 
+										where  p.id = $product->id";
+				$db->setQuery( $query);
+				$hasProductFile = $db->loadResult();
+				if ($db->getErrorNum()) {
+					$hasProductFile = 0;
+				}
+				$user = JFactory::getUser();
+				$account = new accountByUserId( $database );
+				$account->load( $user->id );
+				if($product->published && $product->available && $hasProductFile > 0 && $product->isUserAllowedToLoad($account->id)){
+					//Link to download the product cf action
+				}
+				$query = "select count(*) from #__sdi_product p 
+										where p.viewurlwms != '' AND p.id = $product->id";
+				$db->setQuery( $query);
+				$hasPreview = $db->loadResult();
+				if ($db->getErrorNum()) {
+					$hasPreview = 0;
+				}
+				if($product->published && $hasPreview && $product->isUserAllowedToView($account->id)){
+					//link to preview the product cf action
+				}
 			}
 			else
 			{
