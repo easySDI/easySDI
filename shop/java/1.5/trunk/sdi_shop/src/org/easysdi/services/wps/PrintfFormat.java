@@ -25,7 +25,7 @@
 // information for the Java Technology.
 //
 
-package ch.depth.services.wps;
+package org.easysdi.services.wps;
 
 import java.util.Enumeration;
 import java.util.Vector;

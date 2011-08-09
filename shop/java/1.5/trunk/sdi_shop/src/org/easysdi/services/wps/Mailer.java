@@ -1,4 +1,4 @@
-package ch.depth.services.wps;
+package org.easysdi.services.wps;
 
 import java.util.*;
 import java.io.*;

@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html. 
  */
-package ch.depth.services.wps;
+package org.easysdi.services.wps;
 
 import java.io.FileWriter;
 import java.io.StringWriter;
@@ -64,11 +64,11 @@ import net.opengis.wps._1_0.StatusType;
 import net.opengis.wps._1_0.ExecuteResponse.ProcessOutputs;
 
 import org.easysdi.security.CurrentUser;
+import org.easysdi.services.wps.Base64Coder;
+import org.easysdi.services.wps.Mailer;
+import org.easysdi.services.wps.PrintfFormat;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
-import ch.depth.services.wps.Mailer;
-import ch.depth.services.wps.PrintfFormat;
-import ch.depth.services.wps.Base64Coder;
 
 public class WPSServlet extends HttpServlet {
 

@@ -1,4 +1,4 @@
-package ch.depth.services.wps;
+package org.easysdi.services.wps;
 /**
 * A Base64 Encoder/Decoder.
 *
