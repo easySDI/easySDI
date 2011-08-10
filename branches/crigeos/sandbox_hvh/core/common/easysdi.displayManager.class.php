@@ -2125,30 +2125,6 @@ class displayManager{
 					$XMLProduct->setAttribute('orderable', 1);
 				else
 					$XMLProduct->setAttribute('orderable', 0);
-				$query = "select count(*) from #__sdi_product p 
-										INNER JOIN #__sdi_product_file pf ON p.id=pf.product_id 
-										where  p.id = $product->id";
-				$db->setQuery( $query);
-				$hasProductFile = $db->loadResult();
-				if ($db->getErrorNum()) {
-					$hasProductFile = 0;
-				}
-				$user = JFactory::getUser();
-				$account = new accountByUserId( $database );
-				$account->load( $user->id );
-				if($product->published && $product->available && $hasProductFile > 0 && $product->isUserAllowedToLoad($account->id)){
-					//Link to download the product cf action
-				}
-				$query = "select count(*) from #__sdi_product p 
-										where p.viewurlwms != '' AND p.id = $product->id";
-				$db->setQuery( $query);
-				$hasPreview = $db->loadResult();
-				if ($db->getErrorNum()) {
-					$hasPreview = 0;
-				}
-				if($product->published && $hasPreview && $product->isUserAllowedToView($account->id)){
-					//link to preview the product cf action
-				}
 			}
 			else
 			{
@@ -2165,45 +2141,90 @@ class displayManager{
 		//Ajoute les actions disponibles
 		$XMLAction = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:action");
 		
+		//Export PDF
 		$XMLActionPDF = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:exportPDF");
 		$XMLActionPDF->setAttribute('id', 'exportPdf');
-		//$XMLActionPDFLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", '![CDATA[window.open(\'./index.php?tmpl=component&option=com_easysdi_core&task=exportPdf&id='.$fileIdentifier.'&type='.$type.'\', \'_self\');]]');
 		$XMLActionPDFLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", htmlentities(JRoute::_('./index.php?tmpl=component&option=com_easysdi_core&task=exportPdf&id='.$fileIdentifier.'&type='.$type.'&context='.$context)));
 		//$XMLActionPDFParams = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:params", '![CDATA[\'_self\']]');
 		$XMLActionPDF->appendChild($XMLActionPDFLink);
 		//$XMLActionPDF->appendChild($XMLActionPDFParams);
 		
+		//Export XML
 		$XMLActionXML = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:exportXML");
 		$XMLActionXML->setAttribute('id', 'exportXml');
-		//$XMLActionXMLLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", '![CDATA[window.open(\'./index.php?tmpl=component&format=raw&option=com_easysdi_core&task=exportXml&id='.$fileIdentifier.'&type='.$type.'\', \'_self\');]]');
-		//$XMLActionXMLLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", '![CDATA[\'./index.php?tmpl=component&format=raw&option=com_easysdi_core&task=exportXml&id='.$fileIdentifier.'&type='.$type.'\']]');
 		$XMLActionXMLLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", htmlentities(JRoute::_('./index.php?tmpl=component&format=raw&option=com_easysdi_core&task=exportXml&id='.$fileIdentifier.'&type='.$type.'&context='.$context)));
 		//$XMLActionXMLParams = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:params", '![CDATA[\'_self\']]');
 		$XMLActionXML->appendChild($XMLActionXMLLink);
 		//$XMLActionXML->appendChild($XMLActionXMLParams);
 		
+		//Print
 		$XMLActionPrint = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:print");
 		$XMLActionPrint->setAttribute('id', 'printMetadata');
-		//$XMLActionPrintLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", '![CDATA[window.open(\'./index.php?tmpl=component&option=com_easysdi_core&task=printMetadata&id='.$fileIdentifier.'&type='.$type.'&toolbar=0&print=1\',\'win2\',\'status=no,toolbar=no,scrollbars=yes,titlebar=no,menubar=no,resizable=yes,width=640,height=480,directories=no,location=no\');]]');
-		//$XMLActionPrintLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", '![CDATA[\'./index.php?tmpl=component&option=com_easysdi_core&task=printMetadata&id='.$fileIdentifier.'&type='.$type.'&toolbar=0&print=1\',\'win2\',\']]');
 		$XMLActionPrintLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", htmlentities(JRoute::_('./index.php?tmpl=component&option=com_easysdi_core&task=printMetadata&id='.$fileIdentifier.'&type='.$type.'&context='.$context.'&toolbar=0&print=1')));
 		//$XMLActionPrintParams = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:params", '![CDATA[\'status=no,toolbar=no,scrollbars=yes,titlebar=no,menubar=no,resizable=yes,width=640,height=480,directories=no,location=no\']]');
 		$XMLActionPrint->appendChild($XMLActionPrintLink);
 		//$XMLActionPrint->appendChild($XMLActionPrintParams);
 		
-		$XMLActionOrder = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:order");
-		$XMLActionOrder->setAttribute('id', 'orderProduct');
-		//$XMLActionOrderLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", '![CDATA[\'./index.php?option=com_easysdi_shop&task=shop\']]');
-		$XMLActionOrderLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", htmlentities(JRoute::_('./index.php?option=com_easysdi_shop&task=shop')));
-		//$XMLActionOrderParams = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:params", '![CDATA[\'_parent\']]');
-		$XMLActionOrder->appendChild($XMLActionOrderLink);
-		//$XMLActionOrder->appendChild($XMLActionOrderParams);
-		
+		if ($shopExist == 1)
+		{
+			//Order
+			$XMLActionOrder = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:order");
+			$XMLActionOrder->setAttribute('id', 'orderProduct');
+			$XMLActionOrderLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", htmlentities(JRoute::_('./index.php?option=com_easysdi_shop&task=shop')));
+			//$XMLActionOrderParams = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:params", '![CDATA[\'_parent\']]');
+			$XMLActionOrder->appendChild($XMLActionOrderLink);
+			//$XMLActionOrder->appendChild($XMLActionOrderParams);
+			
+			if ($product)
+			{
+				$product_object = new product ($db);
+				$product_object->load($product->id);
+				
+				$query = "select count(*) from #__sdi_product p 
+										INNER JOIN #__sdi_product_file pf ON p.id=pf.product_id 
+										where  p.id = $product->id";
+				$db->setQuery( $query);
+				$hasProductFile = $db->loadResult();
+				if ($db->getErrorNum()) {
+					$hasProductFile = 0;
+				}
+				$user = JFactory::getUser();
+				$account = new accountByUserId( $db );
+				$account->load( $user->id );
+				if($product_object->published && $product_object->available && $hasProductFile > 0 && $product_object->isUserAllowedToLoad($account->id)){
+					//Link to download the product 
+					$XMLActionDownloadProduct = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:downloadProduct");
+					$XMLActionDownloadProduct->setAttribute('id', 'downloadProduct');
+					$XMLActionDownloadProductLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", htmlentities(JRoute::_('./index.php?tmpl=component&option=com_easysdi_shop&task=downloadAvailableProduct&cid[]='.$product->id.'&toolbar=0&print=1')));
+					$XMLActionDownloadProduct->appendChild($XMLActionDownloadProductLink);
+				}
+				$query = "select count(*) from #__sdi_product p 
+										where p.viewurlwms != '' AND p.id = $product->id";
+				$db->setQuery( $query);
+				$hasPreview = $db->loadResult();
+				if ($db->getErrorNum()) {
+					$hasPreview = 0;
+				}
+				
+				if($product_object->published && $hasPreview && $product_object->isUserAllowedToView($account->id)){
+					//link to preview the product
+					$query = "select ov.metadata_id from #__sdi_objectversion ov 
+										INNER JOIN #__sdi_product p ON p.objectversion_id=ov.id 
+										where  p.id = $product->id";
+					$db->setQuery( $query);
+					$metadata_id = $db->loadResult();
+					$XMLActionPreviewProduct = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:previewProduct");
+					$XMLActionPreviewProduct->setAttribute('id', 'previewProduct'); 
+					$XMLActionPreviewProductLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", htmlentities(JRoute::_('./index.php?tmpl=component&option=com_easysdi_shop&task=previewProduct&metadata_id='.$metadata_id.'&toolbar=0&print=1')));
+					$XMLActionPreviewProduct->appendChild($XMLActionPreviewProductLink);
+				}
+			}
+		}
+		//Favorite
 //		$XMLActionAddToFavorite = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:addtofavorite");
 //		$XMLActionAddToFavorite->setAttribute('id', 'toggleFavorite');
 //		$XMLActionAddToFavoriteLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", '![CDATA[var req = new Ajax(\'./index.php?option=com_easysdi_shop&task=addFavorite&view=&metadata_guid='.$fileIdentifier.', {method: \'get\',onSuccess: function(){},onFailure: function(){}}).request();]]');	
 //		$XMLActionAddToFavorite->appendChild($XMLActionAddToFavoriteLink);
-//		
 //		$XMLActionRemoveFromFavorite = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:removefromfavorite");
 //		$XMLActionRemoveFromFavorite->setAttribute('id', 'toggleFavorite');
 //		$XMLActionRemoveFromFavoriteLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", '![CDATA[var req = new Ajax(\'./index.php?option=com_easysdi_shop&task=removeFavorite&view=&metadata_guid='.$fileIdentifier.', {method: \'get\',onSuccess: function(){},onFailure: function(){}}).request();]]');
@@ -2213,6 +2234,8 @@ class displayManager{
 		$XMLAction->appendChild($XMLActionXML);
 		$XMLAction->appendChild($XMLActionPrint);
 		$XMLAction->appendChild($XMLActionOrder);
+		$XMLAction->appendChild($XMLActionDownloadProduct);
+		$XMLAction->appendChild($XMLActionPreviewProduct);
 //		$XMLAction->appendChild($XMLActionAddToFavorite);
 //		$XMLAction->appendChild($XMLActionRemoveFromFavorite);
 		
@@ -2326,7 +2349,7 @@ class displayManager{
 		}
 		$XMLSdi->appendChild($XMLExternalApp);
 		
-		//$doc->save("C:\RecorderWebGIS\oto_".$fileIdentifier.".xml");
+		//$doc->save("C:/tmp/temp.xml");
 		                     
 		return $doc;
 	}
