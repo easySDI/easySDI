@@ -144,30 +144,48 @@ class HTML_preview{
                  map.addLayer(layer<?php echo $i; ?>);
 		<?php 
 		$i++;
-		} ?>                    
-		layerProduit = new OpenLayers.Layer.WMS( "<?php echo $id; ?>",
-                    "<?php echo $rowProduct->viewurlwms; ?>",
-                    {isBaseLayer:true,layers: '<?php echo $rowProduct->viewlayers; ?>', 
-                    	format : "<?php echo $rowProduct->viewimgformat; ?>",transparent: "true"},                                          
-                     {singleTile: "false"},                                                    
-                     { 
-                       
-                      maxExtent: new OpenLayers.Bounds(<?php echo $rowsBaseMap->maxextent; ?>),
-                      <?php if ($rowsBaseMap->projection == "EPSG:4326") {}else{ ?>                                          
-                      minScale: <?php echo $rowProduct->viewminresolution; ?>,
-                      maxScale: <?php echo $rowProduct->viewmaxresolution; ?>,
-                      <?php } ?>                 
-                     projection:"<?php echo $rowProduct->viewprojection; ?>",
-                      units: "<?php echo $rowProduct->viewunit; ?>",
-                      transparent: "true"
-                     }
-                    );
-                 
-                 layerProduit.alpha = setAlpha('image/png');
-                 map.addLayer(layerProduit);
-		
+		} ?>            
+		var layerProduit ;
+		if('<?php echo $rowProduct->viewurltype; ?>' == 'WMS'){        
 			
-	      map.zoomToExtent(new OpenLayers.Bounds(<?php echo $rowProduct->viewextent; ?>));
+			layerProduit = new OpenLayers.Layer.WMS( 
+					"<?php echo $rowProduct->id; ?>",
+                    "<?php echo $rowProduct->viewurlwms; ?>",
+                    {
+                        isBaseLayer:true,layers: '<?php echo $rowProduct->viewlayers; ?>', 
+                    	format : "<?php echo $rowProduct->viewimgformat; ?>",
+                    	transparent: "true"
+                    },                                          
+                    {singleTile: "false"},                                                    
+                    { 
+                      	maxExtent: new OpenLayers.Bounds(<?php echo $rowsBaseMap->maxextent; ?>),
+                      	<?php if ($rowsBaseMap->projection == "EPSG:4326") {}else{ ?>                                          
+                      	minScale: <?php echo $rowProduct->viewminresolution; ?>,
+                      	maxScale: <?php echo $rowProduct->viewmaxresolution; ?>,
+                      	<?php } ?>                 
+                     	projection:"<?php echo $rowProduct->viewprojection; ?>",
+                     	units: "<?php echo $rowProduct->viewunit; ?>",
+                    	transparent: "true"
+                    }
+             );
+		} else{
+			layerProduit = new OpenLayers.Layer.WMTS( 
+					name : '<?php echo $rowProduct->id; ?>',
+					isBaseLayer:true,
+                    url : '<?php echo $rowProduct->viewurlwms; ?>',
+                    format : '<?php echo $rowProduct->viewimgformat; ?>',
+                    transparent: 'true',  
+                    layer : '<?php echo $rowProduct->viewlayers; ?>', 
+                    style : '<?php echo $rowProduct->viewstyle; ?>',
+                    matrixSet :  '<?php echo $rowProduct->viewmatrixset; ?>',
+                    matrixIds :  '<?php echo $rowProduct->viewmatrix; ?>',
+                    maxResolution: 0.3521969032857032,
+                    numZoomLevels: 7
+                    );
+		}     
+          layerProduit.alpha = setAlpha('image/png');
+          map.addLayer(layerProduit);
+		  map.zoomToExtent(new OpenLayers.Bounds(<?php echo $rowProduct->viewextent; ?>));
 	      map.addControl(new OpenLayers.Control.Attribution());         
    		}
 		</script>

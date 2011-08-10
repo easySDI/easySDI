@@ -860,6 +860,34 @@ function com_install(){
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 		
+		$query="ALTER TABLE  `#__sdi_product` ADD viewurltype varchar (10)";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		$query="ALTER TABLE  `#__sdi_product` ADD viewmatrixset varchar (100)";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		$query="ALTER TABLE  `#__sdi_product` ADD viewmatrix varchar (100)";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		$query="ALTER TABLE  `#__sdi_product` ADD viewstyle varchar (100)";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
 		$query="CREATE TABLE IF NOT EXISTS `#__sdi_list_accessibility` (
 				  `id` bigint(20) NOT NULL AUTO_INCREMENT,
 				  `guid` varchar(36) NOT NULL,
