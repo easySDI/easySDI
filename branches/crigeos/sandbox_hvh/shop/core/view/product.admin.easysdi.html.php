@@ -57,7 +57,6 @@ class HTML_product {
 			{
 				document.getElementById('viewminresolution').disabled = false;
 				document.getElementById('viewmaxresolution').disabled = false;
-				document.getElementById('viewextent').disabled = false;
 				document.getElementById('viewmatrixset').disabled = true;
 				document.getElementById('viewmatrixset').value = null;
 				document.getElementById('viewmatrix').disabled = true;
@@ -67,8 +66,6 @@ class HTML_product {
 				document.getElementById('viewminresolution').value = null;
 				document.getElementById('viewmaxresolution').disabled = true;
 				document.getElementById('viewmaxresolution').value = null;
-				document.getElementById('viewextent').disabled = true;
-				document.getElementById('viewextent').value = null;
 				document.getElementById('viewmatrixset').disabled = false;
 				document.getElementById('viewmatrix').disabled = false;
 			}
@@ -314,7 +311,7 @@ class HTML_product {
 							</tr>
 							<tr>
 								<td class="key"><?php echo JText::_("SHOP_MAXEXTENT"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="viewextent" id="viewextent" value="<?php echo $product->viewextent; ?>" <?php if ($product->viewurltype != 'WMS') echo 'disabled'; ?> /></td>								
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="viewextent" id="viewextent" value="<?php echo $product->viewextent; ?>" /></td>								
 							</tr>						
 							<tr>
 								<td class="key"><?php echo JText::_("SHOP_MINRESOLUTION"); ?> : </td>

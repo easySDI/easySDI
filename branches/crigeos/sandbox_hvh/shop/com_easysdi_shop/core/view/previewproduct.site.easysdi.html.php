@@ -146,7 +146,9 @@ class HTML_preview{
 		$i++;
 		} ?>            
 		var layerProduit ;
-		if('<?php echo $rowProduct->viewurltype; ?>' == 'WMS'){        
+		<?php 
+		if($rowProduct->viewurltype == "WMS"){
+		?>
 			
 			layerProduit = new OpenLayers.Layer.WMS( 
 					"<?php echo $rowProduct->id; ?>",
@@ -168,7 +170,7 @@ class HTML_preview{
                     	transparent: "true"
                     }
              );
-		} else{
+		<?php }else{?>
 			layerProduit = new OpenLayers.Layer.WMTS( 
 					name : '<?php echo $rowProduct->id; ?>',
 					isBaseLayer:true,
@@ -179,10 +181,9 @@ class HTML_preview{
                     style : '<?php echo $rowProduct->viewstyle; ?>',
                     matrixSet :  '<?php echo $rowProduct->viewmatrixset; ?>',
                     matrixIds :  '<?php echo $rowProduct->viewmatrix; ?>',
-                    maxResolution: 0.3521969032857032,
-                    numZoomLevels: 7
+                    tileFullExtent : new OpenLayers.Bounds(<?php echo $rowProduct->viewextent; ?>)
                     );
-		}     
+		<?php }?>    
           layerProduit.alpha = setAlpha('image/png');
           map.addLayer(layerProduit);
 		  map.zoomToExtent(new OpenLayers.Bounds(<?php echo $rowProduct->viewextent; ?>));
