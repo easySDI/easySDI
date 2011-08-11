@@ -513,6 +513,24 @@ class HTML_product{
 				}
 			}
 		}
+		function ServiceFieldManagement(){
+			if (document.forms['productForm'].viewurltype.value == 'WMS')
+			{
+				document.getElementById('viewminresolution').disabled = false;
+				document.getElementById('viewmaxresolution').disabled = false;
+				document.getElementById('viewmatrixset').disabled = true;
+				document.getElementById('viewmatrixset').value = null;
+				document.getElementById('viewmatrix').disabled = true;
+				document.getElementById('viewmatrix').value = null;
+			}else{
+				document.getElementById('viewminresolution').disabled = true;
+				document.getElementById('viewminresolution').value = null;
+				document.getElementById('viewmaxresolution').disabled = true;
+				document.getElementById('viewmaxresolution').value = null;
+				document.getElementById('viewmatrixset').disabled = false;
+				document.getElementById('viewmatrix').disabled = false;
+			}
+		}
 		</script>
 		<table width="100%" border="0" cellpadding="0" cellspacing="0">
 			<tr>
@@ -543,7 +561,15 @@ class HTML_product{
 							<tr>
 								<td class="ptitle"><?php echo JText::_("SHOP_PREVIEW_BASEMAP"); ?> : </td>
 								<td><?php echo JHTML::_("select.genericlist",$baseMap_list, 'viewbasemap_id', 'size="1" class="inputbox"', 'value', 'text', $product->viewbasemap_id ); ?></td>																
-							</tr>							
+							</tr>		
+							<tr>
+								<td class="ptitle"><?php echo JText::_("SHOP_PREVIEW_URL_TYPE"); ?> : </td>
+								<td><select class="inputbox" name="viewurltype" id="viewurltype" onChange="javascript:ServiceFieldManagement();">								
+									<option <?php if($product->viewurltype == 'WMS') echo "selected" ; ?> value="WMS"> WMS</option>
+									<option <?php if($product->viewurltype == 'WMTS') echo "selected" ; ?> value="WMTS"> WMTS</option>
+								</select>
+								</td>								
+							</tr>						
 							<tr>
 								<td class="ptitle"><?php echo JText::_("SHOP_PREVIEW_WMS_URL"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="viewurlwms" value="<?php echo $product->viewurlwms; ?>" /></td>								
@@ -552,13 +578,10 @@ class HTML_product{
 								<td class="ptitle"><?php echo JText::_("SHOP_PREVIEW_LAYERS"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="viewlayers" value="<?php echo $product->viewlayers; ?>" /></td>								
 							</tr>							
+							
 							<tr>
-								<td class="ptitle"><?php echo JText::_("SHOP_MINRESOLUTION"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="viewminresolution" value="<?php echo $product->viewminresolution; ?>" /></td>								
-							</tr>
-							<tr>
-								<td class="ptitle"><?php echo JText::_("SHOP_MAXRESOLUTION"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="viewmaxresolution" value="<?php echo $product->viewmaxresolution; ?>" /></td>								
+								<td class="ptitle"><?php echo JText::_("SHOP_IMG_FORMAT"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="viewimgformat" value="<?php echo $product->viewimgformat; ?>" /></td>								
 							</tr>
 							<tr>
 								<td class="ptitle"><?php echo JText::_("SHOP_PROJECTION"); ?> : </td>
@@ -573,12 +596,28 @@ class HTML_product{
 								</td>																						
 							</tr>
 							<tr>
-								<td class="ptitle"><?php echo JText::_("SHOP_MAXEXTENT"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="viewextent" value="<?php echo $product->viewextent; ?>" /></td>								
+								<td class="ptitle"><?php echo JText::_("SHOP_PREVIEW_STYLE"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="viewstyle" id="viewstyle" value="<?php echo $product->viewstyle; ?>" /></td>								
 							</tr>
 							<tr>
-								<td class="ptitle"><?php echo JText::_("SHOP_IMG_FORMAT"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="viewimgformat" value="<?php echo $product->viewimgformat; ?>" /></td>								
+								<td class="ptitle"><?php echo JText::_("SHOP_MAXEXTENT"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="viewextent" id="viewextent" value="<?php echo $product->viewextent; ?>" /></td>								
+							</tr>
+							<tr>
+								<td class="ptitle"><?php echo JText::_("SHOP_MINRESOLUTION"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="viewminresolution" id="viewminresolution" value="<?php echo $product->viewminresolution; ?>" /></td>								
+							</tr>
+							<tr>
+								<td class="ptitle"><?php echo JText::_("SHOP_MAXRESOLUTION"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="viewmaxresolution" id="viewmaxresolution" value="<?php echo $product->viewmaxresolution; ?>" /></td>								
+							</tr>
+							<tr>
+								<td class="ptitle"><?php echo JText::_("SHOP_PREVIEW_MATRIXSET"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="viewmatrixset" id="viewmatrixset" value="<?php echo $product->viewmatrixset; ?>" <?php if ($product->viewurltype != 'WMTS') echo 'disabled'; ?> /></td>								
+							</tr>
+							<tr>
+								<td class="ptitle"><?php echo JText::_("SHOP_PREVIEW_MATRIX"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="viewmatrix" id="viewmatrix" value="<?php echo $product->viewmatrix; ?>" <?php if ($product->viewurltype != 'WMTS') echo 'disabled'; ?>/></td>								
 							</tr>
 						</table>
 					</fieldset>
