@@ -978,6 +978,18 @@ function com_install(){
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
 		}
+		
+		$query="SELECT id FROM #__sdi_list_module WHERE code = 'SHOP'";
+		$db->setQuery( $query);		
+		$module_id = $db->loadResult();
+		$query = "INSERT  INTO #__sdi_configuration (guid, code, name, description, created, createdby,  value, module_id) VALUES
+				('".helper_easysdi::getUniqueId()."', 'SHOP_CONFIGURATION_MAX_FILE_SIZE', 'SHOP_CONFIGURATION_MAX_FILE_SIZE', 'SHOP', '".date('Y-m-d H:i:s')."', '".$user_id."',  '32', '".$module_id."')";
+		$db->setQuery( $query);
+		if (!$db->query())
+		{	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			return false;
+		}
 			
 		$version="2.0.1";
 		$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='SHOP'"; 

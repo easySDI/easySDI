@@ -322,6 +322,12 @@ class ADMIN_product {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");		
 		}
 		
+		//Max file size to upload
+		$database->setQuery( "SELECT value FROM #__sdi_configuration WHERE code = 'SHOP_CONFIGURATION_MAX_FILE_SIZE'");
+		$product->maxFileSize = $database->loadResult();
+		if ($database->getErrorNum()) {			
+			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+		}
 		
 		if (strlen($catalogUrlBase )==0)
 		{
@@ -343,6 +349,39 @@ class ADMIN_product {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			$mainframe->redirect("index.php?option=$option&task=listProduct" );
 			exit();
+		}
+		
+		if(isset($_FILES['productfile']) && !empty($_FILES['productfile']['name'])) {
+			if ($_FILES['productfile']['error']) {    
+	          switch ($_FILES['productfile']['error']){    
+                   case 1: // UPLOAD_ERR_INI_SIZE    
+                   	$mainframe->enqueueMessage("Le fichier dépasse la limite autorisée par le serveur (fichier php.ini) !","ERROR");
+					$mainframe->redirect("index.php?option=$option&task=listProduct" );
+					exit();
+                       
+                   case 2: // UPLOAD_ERR_FORM_SIZE    
+                  	$mainframe->enqueueMessage("Le fichier dépasse la limite autorisée dans le formulaire HTML !","ERROR");
+					$mainframe->redirect("index.php?option=$option&task=listProduct" );
+					exit();
+                   
+                   case 3: // UPLOAD_ERR_PARTIAL    
+                   	$mainframe->enqueueMessage("L'envoi du fichier a été interrompu pendant le transfert !","ERROR");
+					$mainframe->redirect("index.php?option=$option&task=listProduct" );
+					exit();
+                   
+                   case 4: // UPLOAD_ERR_NO_FILE 
+                   	$mainframe->enqueueMessage( "Le fichier que vous avez envoyé a une taille nulle !","ERROR");
+					$mainframe->redirect("index.php?option=$option&task=listProduct" );
+					exit();   
+                       
+	          }    
+			}    
+			
+			if($_FILES['productfile']["size"] > JRequest::getVar("MAX_FILE_SIZE")){
+				$mainframe->enqueueMessage("SIZE ERROR","ERROR");
+				$mainframe->redirect("index.php?option=$option&task=listProduct" );
+				exit();
+			}
 		}
 		
 		$service_type = JRequest::getVar('service_type');

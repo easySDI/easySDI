@@ -214,7 +214,7 @@ class HTML_product {
 							</tr>
 							<tr>
 								<td class="key"><?php echo JText::_("SHOP_PRODUCT_UP_FILE") ;?></td>
-								<td colspan="2"><input type="file" name="productfile" id="productfile" <?php if( $product->available == 0 ) echo "disabled"; ?> ></td>
+								<td colspan="2"><input type="file" name="productfile" id="productfile" <?php if( $product->available == 0 ) echo "disabled"; ?> ><?php printf( JText::_("SHOP_PRODUCT_FILE_MAX_SIZE"),$product->maxFileSize); ?> </td>
 							</tr>
 							<tr>
 								<td class="key"><?php echo JText::_("SHOP_PRODUCT_TREATMENT"); ?> : </td>
@@ -586,6 +586,7 @@ class HTML_product {
 		<input type="hidden" name="created" value="<?php echo $product->created; ?>" />
 		<input type="hidden" name="checked_out" value="<?php echo $product->checked_out; ?>" />
 		<input type="hidden" name="checked_out_time" value="<?php echo $product->checked_out_time; ?>" />
+		 <input type="hidden" name="MAX_FILE_SIZE" value="<?php echo $product->maxFileSize; ?>"> 
 		</form>
 	<?php
 	}
