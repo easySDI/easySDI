@@ -41,7 +41,7 @@
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>wpsConfig</servlet-name>
-    <url-pattern>/wps/config/*</url-pattern>
+    <url-pattern>/wps/services/config/*</url-pattern>
   </servlet-mapping>
   <filter-mapping>
     <filter-name>springSecurityFilterChain</filter-name>
