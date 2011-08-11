@@ -171,17 +171,20 @@ class HTML_preview{
                     }
              );
 		<?php }else{?>
+		var matrixIds = new Array(26);
+	    for (var i=0; i<26; ++i) {
+	        matrixIds[i] = "EPSG:900913:" + i;
+	    }
 			layerProduit = new OpenLayers.Layer.WMTS( 
-					name : '<?php echo $rowProduct->id; ?>',
+					name : "<?php echo $rowProduct->id; ?>",
 					isBaseLayer:true,
-                    url : '<?php echo $rowProduct->viewurlwms; ?>',
-                    format : '<?php echo $rowProduct->viewimgformat; ?>',
+                    url : "<?php echo $rowProduct->viewurlwms; ?>",
+                    format : "<?php echo $rowProduct->viewimgformat; ?>",
                     transparent: 'true',  
                     layer : '<?php echo $rowProduct->viewlayers; ?>', 
                     style : '<?php echo $rowProduct->viewstyle; ?>',
                     matrixSet :  '<?php echo $rowProduct->viewmatrixset; ?>',
-                    matrixIds :  '<?php echo $rowProduct->viewmatrix; ?>',
-                    tileFullExtent : new OpenLayers.Bounds(<?php echo $rowProduct->viewextent; ?>)
+                    matrixIds :  matrixIds
                     );
 		<?php }?>    
           layerProduit.alpha = setAlpha('image/png');
