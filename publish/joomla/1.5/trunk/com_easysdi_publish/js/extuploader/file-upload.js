@@ -27,8 +27,8 @@ Ext.onReady(function(){
         items: [{
             xtype: 'fileuploadfield',
             id: 'form-file',
-            emptyText: 'Select a file',
-            fieldLabel: 'File',
+            emptyText: EasySDI_Pub.lang.getLocal('EASYSDI_PUBLISH_SELECT_FILE'),
+            fieldLabel: EasySDI_Pub.lang.getLocal('EASYSDI_PUBLISH_FILE'),
             name: 'Filedata',
             buttonText: '',
             buttonCfg: {

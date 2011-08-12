@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * EasySDI, a solution to implement easily any spatial data infrastructure
  * Copyright (C) 2009 Antoine Elbel & R�my Baud (aelbel@solnet.ch remy.baud@asitvd.ch)
@@ -21,6 +21,7 @@ jimport("joomla.html.pagination");
 jimport("joomla.html.pane");
 
 //require_once(JPATH_BASE.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'partner.site.easysdi.class.php');
+require_once( JPATH_COMPONENT.DS.'lang'.DS.'lang.php' );
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 
 //External classes
@@ -92,8 +93,7 @@ $view = JRequest::getVar('view');
 $wpsAddress = config_easysdi::getValue("WPS_PUBLISHER");
 		
 //Get the server list from the WPS
-$wpsConfig = $wpsAddress."/config";
-
+$wpsConfig = $wpsAddress."/services/config";
 //Get the config
 $query = "select * from #__sdi_publish_config";
 $database->setQuery( $query);
@@ -185,6 +185,7 @@ function getCurrentUser($wpsConfig){
 	$url = $wpsConfig."?operation=listPublicationServers";
 	$doc = SITE_proxy::fetch($url, false);
 	$xml = simplexml_load_string($doc);
+	
 	if($xml == null){                    
 		$mainframe->enqueueMessage(JText::_("EASYSDI_PUBLISH_ERROR_CONNECTING_TO_WPS"), "ERROR");
 		$mainframe->redirect("index.php");
@@ -194,11 +195,11 @@ function getCurrentUser($wpsConfig){
 	//retrieve general info of the logged user and config
 	$query = "select u.easysdi_user_id, u.publish_user_max_layers, u.publish_user_total_space, u.publish_user_diff_server_id, u.publish_user_diff_server_id from #__sdi_publish_user u, #__sdi_account p where u.easysdi_user_id=p.id AND p.user_id=".$joomlaUser->id;
 	$database->setQuery($query);
+	
 	$currentUser = $database->loadObjectList();
 		
 	//get the diffusor of the current user and update the currentUser object
 	$sid = $currentUser[0]->publish_user_diff_server_id;
-		
 	//echo "<pre>xml:";  print_r($xml);  echo "</pre>";
 	//exit;
 	$diffusor = $xml->xpath("//server[@id=$sid]");
@@ -214,7 +215,7 @@ function getCurrentUser($wpsConfig){
 		$mainframe->redirect("index.php?option=com_easysdi_publish&task=showError");
 		return;
 	}
-	
+		
 	return $currentUser[0];
 }
 

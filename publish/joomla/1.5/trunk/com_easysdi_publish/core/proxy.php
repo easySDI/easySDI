@@ -165,10 +165,7 @@ $url_wps = parse_url($wpsAddress);
 
 $wpsAddress = str_replace("//", "//".$joomlaUser->name.":".self::$pwd, $wpsAddress);
 
-$url = str_replace("servletPublish", $url_wps['scheme']."://".$url_wps['host'].":".$url_wps['port']."/OWSPublisher/services", $url);
-
-
-
+$url = str_replace("servletPublish", $url_wps['scheme']."://".$url_wps['host'].":".$url_wps['port']."/sdi_publish/wps/services", $url);
 
   fwrite(self::$fh, "-----------------------------\n");
   fwrite(self::$fh, "resulting url:".$url."\n");

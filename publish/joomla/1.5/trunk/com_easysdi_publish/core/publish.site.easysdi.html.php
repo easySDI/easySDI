@@ -78,7 +78,7 @@ class HTML_site {
 		
 			//Get the fs status from the server and update the featuresource object
 			//
-			$wpsConfig = $wpsPublish."/config";
+			$wpsConfig = $wpsPublish."/services/config";
 			$fsList = "";
 			$fsInProgress = Array();
 			
@@ -368,6 +368,9 @@ echo "<!-- end featuresource section -->";
 	                          	//User extensions
 					JHTML::script('color-picker.ux.js', 'components/com_easysdi_publish/js/styler/externals/ux/colorpicker/');
 					JHTML::script('ScaleLine.js', 'components/com_easysdi_publish/js/styler/externals/openlayers/Control/');
+
+					//language
+					JHTML::script('language.js', 'components/com_easysdi_publish/js/');
 
 /*				
 					JHTML::stylesheet('ext-all.css', 'components/com_easysdi_publish/js/styler/externals/ext/resources/css/');

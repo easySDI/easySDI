@@ -101,52 +101,52 @@ function validateForm(){
 	
 	//check file length
 	if($('fileList').value == ''){
-		errorMsg = "You must choose a file first";
+		errorMsg = EasySDI_Pub.lang.getLocal('EASYSDI_PUBLISH_ERROR_NO_FILE');
 		displayErr(errorMsg, $('form-file'));
 		return false;
 	}
 	
 	//check FS name
-	if($('featuresource_name').value == "" || $('featuresource_name').value == "New"){
-		errorMsg = "You must enter a Feature Source name";
+	if($('featuresource_name').value == "" || $('featuresource_name').value == EasySDI_Pub.lang.getLocal('EASYSDI_PUBLISH_NEW')){
+		errorMsg = EasySDI_Pub.lang.getLocal('EASYSDI_PUBLISH_ERROR_RES_NAME');
 		displayErr(errorMsg, $('featuresource_name'));
 		return false;
 	}
 	
 	if(!isAlphanumeric($('featuresource_name'))){
-		errorMsg = "The name can only contain letters and numbers";
+		errorMsg = EasySDI_Pub.lang.getLocal('EASYSDI_PUBLISH_ERROR_NAME_L_N');
 		displayErr(errorMsg, $('featuresource_name'));
 		return false;	
 	}
 	
 	if(!checkNameUnique($('featuresource_name').value) && $('task').value=='createFeatureSource'){
-		errorMsg = "There is already a Feature Source with the same name";
+		errorMsg = EasySDI_Pub.lang.getLocal('EASYSDI_PUBLISH_ERROR_SAME_RES_NAME');
 		displayErr(errorMsg, $('featuresource_name'));
 		return false;	
 	}
 	
 	//check length
 	if(!lengthRestriction($('featuresource_name'), 0, 20)){
-		errorMsg = "The Feature Source Name is too long, max 20 characters";
+		errorMsg = EasySDI_Pub.lang.getLocal('EASYSDI_PUBLISH_ERROR_FIELD_TOO_LONG')+" 20.";
 		displayErr(errorMsg, $('featuresource_name'));
 		return false;	
 	}
 		
 	if($('transfFormatId').options[$('transfFormatId').selectedIndex].value == 0 &&
 			$('transfScriptId').options[$('transfScriptId').selectedIndex].value == 0){
-		 errorMsg = "You must either choose a script or a file format.";
+		 errorMsg = EasySDI_Pub.lang.getLocal('EASYSDI_PUBLISH_ERROR_SCR_OR_FMT');
 		displayErr(errorMsg, $('transfFormatId'));
 		return false;	
 	}
 	
 	if($('datasets').options[$('datasets').selectedIndex].value == ""){
-		 errorMsg = "You must choose a supported dataset from the source file(s).";
+		 errorMsg = EasySDI_Pub.lang.getLocal('EASYSDI_PUBLISH_ERROR_DATASET');
 		displayErr(errorMsg, $('datasets'));
 		return false;	
 	}
 	
 	if($('projection').options[$('projection').selectedIndex].value == 0){
-		errorMsg = "You must choose a projection.";
+		errorMsg = EasySDI_Pub.lang.getLocal('EASYSDI_PUBLISH_ERROR_PROJECTION');
 		displayErr(errorMsg, $('projection'));
 		return false;
 	}
@@ -255,7 +255,7 @@ function validateFs_click()
 		failure: function(response){
 			$('errorMsg').style.display = 'block';
 			$('errorMsg').style.visibilty = 'visible';
-			$('errorMsg').innerHTML = "System error: returned status code " + xhr.status + " " + xhr.statusText + " please try again or contact the service provider for help.";
+			$('errorMsg').innerHTML = EasySDI_Pub.lang.getLocal('EASYSDI_PUBLISH_ERROR_SYS_1') +" "+ xhr.status + " " + xhr.statusText + " " + EasySDI_Pub.lang.getLocal('EASYSDI_PUBLISH_ERROR_SYS_2');
 		}
 
 	});
@@ -305,7 +305,7 @@ function doProgression(){
 				$('task').value = 'saveFeatureSource';
 				submitForm();
 			}else{
-			   alert("Error: Cannot read stat from feature source");
+			   alert(EasySDI_Pub.lang.getLocal('EASYSDI_PUBLISH_ERROR_SYS_STAT'));
 			}
 	    	},
 	    	failure: function(response){
@@ -343,7 +343,7 @@ function searchds_click(){
 			URLFile +=  servAdr+$('baseUrl').value+temp.join("/");
 	}
 	if(fileI == 0)
-		alert("Please select and unpload file(s) first.")
+		alert(EasySDI_Pub.lang.getLocal('EASYSDI_PUBLISH_ERROR_NO_FILE'))
 	
 	$('loadingImg').style.visibility = 'visible';
 	$('loadingImg').style.display = 'block';
@@ -360,8 +360,10 @@ function searchds_click(){
 		'Content-Type': 'application/json'
 		},
 		*/
-		params: {'files':URLFile,
-					'operation':'GetAvailableDatasetFromSource'},
+		params: {
+			'files':URLFile,
+			'operation':'GetAvailableDatasetFromSource'
+		},
 		success: function(response){
 			$('loadingImg').style.visibility = 'hidden';
 			//$('loadingImg').style.display = 'none';
@@ -422,7 +424,7 @@ function searchds_click(){
 		failure: function(response){
 			$('errorMsg').style.display = 'block';
 			$('errorMsg').style.visibilty = 'visible';
-			$('errorMsg').innerHTML = "System error: returned status code " + xhr.status + " " + xhr.statusText + " please try again or contact the service provider for help.";
+			$('errorMsg').innerHTML = EasySDI_Pub.lang.getLocal('EASYSDI_PUBLISH_ERROR_SYS_1') +" "+ xhr.status + " " + xhr.statusText + " " + EasySDI_Pub.lang.getLocal('EASYSDI_PUBLISH_ERROR_SYS_2');
 		}
 
 	});

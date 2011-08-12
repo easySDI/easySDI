@@ -102,7 +102,7 @@ class PUBLISH_Finddata {
 		}
 		else
 		{
-			$fsName = "New";	
+			$fsName = JText::_("\$EASYSDI_PUBLISH_NEW");
 		}
 		
 		JHTML::script('ext-base.js', 'components/com_easysdi_publish/js/extuploader/');
@@ -139,7 +139,7 @@ class PUBLISH_Finddata {
 				<div class="publish">
 					<!-- File choice -->
 						<fieldset style="width:460px;">
-						<legend><?php echo JText::_("EASYSDI_PUBLISH_CHOOSE_FILES"); ?> (<?php echo JText::_("EASYSDI_PUBLISH_MAX_FILE_SIZE"); ?>: <?php echo $maxFileSize; ?> <?php echo JText::_("EASYSDI_PUBLISH_MB"); ?>)</legend>
+						<legend><?php echo JText::_("EASYSDI_PUBLISH_CHOOSE_FILE"); ?> (<?php echo JText::_("EASYSDI_PUBLISH_MAX_FILE_SIZE"); ?>: <?php echo $maxFileSize; ?> <?php echo JText::_("EASYSDI_PUBLISH_MB"); ?>)</legend>
 						<div id="fi-form"></div>
 						<table>
 						   <tr>

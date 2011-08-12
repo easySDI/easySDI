@@ -38,6 +38,7 @@
 			<folder>js</folder>
 			<folder>img</folder>
 			<folder>css</folder>
+			<folder>lang</folder>
 	</files>
 	<languages folder="./language/site">
 		<language tag="fr-FR">fr-FR.com_easysdi_publish.ini</language>

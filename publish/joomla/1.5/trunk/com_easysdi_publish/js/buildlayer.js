@@ -71,7 +71,7 @@ function home_click()
 }
 
 function layer_name_change(){
-	if($('layerTitle').value == '' || $('layerTitle').value == 'New')
+	if($('layerTitle').value == '' || $('layerTitle').value == EasySDI_Pub.lang.getLocal('EASYSDI_PUBLISH_NEW_LAYER'))
 		$('layerTitle').value = $('layer_name').value;
 }
 
@@ -90,14 +90,14 @@ function validateForm(){
 	
 	
 	//check layer name
-	if($('layer_name').value == "" || $('layer_name').value == "New"){
-		errorMsg = "You must enter a Layer name";
+	if($('layer_name').value == "" || $('layer_name').value == EasySDI_Pub.lang.getLocal('EASYSDI_PUBLISH_NEW_LAYER')){
+		errorMsg = EasySDI_Pub.lang.getLocal('EASYSDI_PUBLISH_ERROR_RES_NAME');
 		displayErr(errorMsg, $('layer_name'));
 		return false;
 	}
 	
 	if(!isAlphanumeric($('layer_name'))){
-		errorMsg = "The name can only contain letters and numbers";
+		errorMsg = EasySDI_Pub.lang.getLocal('EASYSDI_PUBLISH_ERROR_NAME_L_N');
 		displayErr(errorMsg, $('layer_name'));
 		return false;	
 	}
@@ -105,7 +105,7 @@ function validateForm(){
 	//check layer name unique
 	
 	if(!checkNameUnique($('layer_name').value) && $('task').value=='createLayer'){
-		errorMsg = "There is already a Layer with the same name";
+		errorMsg = EasySDI_Pub.lang.getLocal('EASYSDI_PUBLISH_ERROR_SAME_RES_NAME');
 		displayErr(errorMsg, $('layer_name'));
 		return false;	
 	}
@@ -113,7 +113,7 @@ function validateForm(){
 	
 	//check the layer length
 	if(!lengthRestriction($('layer_name'), 0, 20)){
-		errorMsg = "The layer name is too long, max 20 characters";
+		errorMsg = EasySDI_Pub.lang.getLocal('EASYSDI_PUBLISH_ERROR_RES_NAME_TOO_LONG')+" 20";
 		displayErr(errorMsg, $('layer_name'));
 		return false;	
 	}
@@ -161,47 +161,47 @@ function validateForm(){
 	*/
 	//check layer title
 	if($('layerTitle').value == "" || $('layerTitle').value == "New"){
-		errorMsg = "You must enter a Layer title";
+		errorMsg = EasySDI_Pub.lang.getLocal('EASYSDI_PUBLISH_ERROR_RES_TITLE');
 		displayErr(errorMsg, $('layerTitle'));
 		return false;
 	}
 	
 	if(!isAlphanumeric($('layerTitle'))){
-		errorMsg = "The title can only contain letters and numbers";
+		errorMsg = EasySDI_Pub.lang.getLocal('EASYSDI_PUBLISH_ERROR_NAME_L_N');
 		displayErr(errorMsg, $('layerTitle'));
 		return false;	
 	}
 	
 	//check length
 	if(!lengthRestriction($('layerTitle'), 0, 20)){
-		errorMsg = "The title is too long, max 20 characters";
+		errorMsg = EasySDI_Pub.lang.getLocal('EASYSDI_PUBLISH_ERROR_FIELD_TOO_LONG')+"20";
 		displayErr(errorMsg, $('layerTitle'));
 		return false;	
 	}
 	
 	//check the layer description
 	if(!lengthRestriction($('layerDescription'), 0, 400)){
-		errorMsg = "The description is too long, max 400 characters";
+		errorMsg = EasySDI_Pub.lang.getLocal('EASYSDI_PUBLISH_ERROR_FIELD_TOO_LONG')+"400";
 		displayErr(errorMsg, $('layerDescription'));
 		return false;	
 	}
 	
 	//check the layer quality
 	if(!lengthRestriction($('layerQuality'), 0, 100)){
-		errorMsg = "The layer quality is too long, max 100 characters";
+		errorMsg = EasySDI_Pub.lang.getLocal('EASYSDI_PUBLISH_ERROR_FIELD_TOO_LONG')+"100";
 		displayErr(errorMsg, $('layerQuality'));
 		return false;	
 	}
 	
 	//check the keyword list
 	if(!lengthRestriction($('layerKeyword'), 0, 100)){
-		errorMsg = "The keyword list is too long, max 100 characters";
+		errorMsg = EasySDI_Pub.lang.getLocal('EASYSDI_PUBLISH_ERROR_FIELD_TOO_LONG')+"100";
 		displayErr(errorMsg, $('layerKeyword'));
 		return false;	
 	}
 	
-	if($('geometry').options[$('geometry').selectedIndex].value == 'choose geometry'){
-		errorMsg = "You must choose a geometry.";
+	if($('geometry').options[$('geometry').selectedIndex].value == EasySDI_Pub.lang.getLocal('EASYSDI_PUBLISH_SELECT_GEOMETRY')){
+		errorMsg = EasySDI_Pub.lang.getLocal('EASYSDI_PUBLISH_ERROR_GEOMETRY');
 		displayErr(errorMsg, $('geometry'));
 		return false;
 	}
@@ -362,17 +362,13 @@ function validateLayer_click()
 					//Submit the form for saving the values
 					$('task').value = 'saveLayer';
 					$('publish_form').submit();
-				}else{
-					$('errorMsg').style.display = 'block';
-					$('errorMsg').style.visibilty = 'visible';
-					$('errorMsg').innerHTML = "Something went wrong with the parser";
 				}
 			}
 		},
 		failure: function(response){
 			$('errorMsg').style.display = 'block';
 			$('errorMsg').style.visibilty = 'visible';
-			$('errorMsg').innerHTML = "System error: returned status code " + xhr.status + " " + xhr.statusText + " please try again or contact the service provider for help.";
+			$('errorMsg').innerHTML = EasySDI_Pub.lang.getLocal('EASYSDI_PUBLISH_ERROR_SYS_1') +" "+ xhr.status + " " + xhr.statusText + " " + EasySDI_Pub.lang.getLocal('EASYSDI_PUBLISH_ERROR_SYS_2');
 		}
 
 	});

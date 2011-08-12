@@ -60,8 +60,10 @@ class HTML_ctrlpanel {
 		$wpsAddress = config_easysdi::getValue("WPS_PUBLISHER");
 		
 		//Get the server list from the WPS
-		$wpsConfig = $wpsAddress."/config";
+		$wpsConfig = $wpsAddress."/services/config";
+		
 		$url = $wpsConfig."?operation=listPublicationServers";
+
 		$doc = SITE_proxy::fetch($url, false);
 		$xml = simplexml_load_string($doc);
 		

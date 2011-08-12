@@ -43,7 +43,7 @@ class SITE_publish {
                 
 		//get the url of the users diffusion server
 		//Get the server list from the WPS
-		$wpsConfig = $wpsPublish."/config";
+		$wpsConfig = $wpsPublish."/services/config";
 		$url = $wpsConfig."?operation=listPublicationServers";
 		$doc = SITE_proxy::fetch($url, false);
 		$xml = simplexml_load_string($doc);
@@ -318,7 +318,7 @@ class SITE_publish {
 		else{
 		  $row =$row[0];
 			//load fslist from the server and update fs object
-			$wpsConfig = $wpsAddress."/config";
+			$wpsConfig = $wpsAddress."/services/config";
 			$url = $wpsConfig."?operation=ListFeatureSources&list=".$guid;
 			$doc = SITE_proxy::fetch($url, false);
 			$xml = simplexml_load_string($doc);

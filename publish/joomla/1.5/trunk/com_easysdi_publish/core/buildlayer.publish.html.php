@@ -42,14 +42,14 @@ class PUBLISH_Buildlayer {
 		
 		//Geometry list
 		$geometry_list = array();
-		$geometry_list [] = JHTML::_('select.option','choose style', "");
+		$geometry_list [] = JHTML::_('select.option',JTEXT::_("\$EASYSDI_PUBLISH_SELECT_GEOMETRY"), "");
 		$geometry_list [] = JHTML::_('select.option','point', JTEXT::_("EASYSDI_PUBLISH_POINT"));
 		$geometry_list [] = JHTML::_('select.option','line', JTEXT::_("EASYSDI_PUBLISH_LINE"));
 		$geometry_list [] = JHTML::_('select.option','polygon', JTEXT::_("EASYSDI_PUBLISH_POLYGON"));
 		
 		//Retrieve layer name
 		$layerName;
-		$selectedGeometry = 'choose geometry';
+		$selectedGeometry = JTEXT::_("\$EASYSDI_PUBLISH_SELECT_GEOMETRY");
 		if($isUpdate)
 		{
 			$database->setQuery( "SELECT name FROM #__sdi_publish_layer where id=".$layerId);
@@ -60,17 +60,17 @@ class PUBLISH_Buildlayer {
 		}
 		else
 		{
-			$layerName = JRequest::getVar("layer_name", "New");	
+			$layerName = JRequest::getVar("layer_name", JTEXT::_("\$EASYSDI_PUBLISH_NEW_LAYER"));	
 		}
 		
 		//load fslist from the server to check status
-		$wpsConfig = $wpsPublish."/config";
+		$wpsConfig = $wpsPublish."/services/config";
 		$fsList = "";
 		foreach ($featureSources as $row)
 						$fsList .= $row->featureGUID.",";
 		$url = $wpsConfig."?operation=ListFeatureSources&list=".$fsList;
 		$doc = SITE_proxy::fetch($url, false);
-  	$xml = simplexml_load_string($doc);
+		$xml = simplexml_load_string($doc);
 		//$xml = simplexml_load_file($url);
 		$i=0;
 		$swlWhere = "";

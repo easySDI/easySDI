@@ -254,12 +254,12 @@ var Styler = Ext.extend(Ext.util.Observable, {
         });
 
         this.legendContainer = new Ext.Panel({
-            title: "Legend",
+            title: EasySDI_Pub.lang.getLocal('EASYSDI_PUBLISH_LEGEND'),
             height: 200,
             autoScroll: true,
             items: [{html: ""}],
             bbar: [{
-                text: "Add new",
+                text: EasySDI_Pub.lang.getLocal('EASYSDI_PUBLISH_ADD_NEW'),
                 iconCls: "add",
                 disabled: true,
                 handler: function() {
@@ -279,15 +279,15 @@ var Styler = Ext.extend(Ext.util.Observable, {
                 },
                 scope: this
             }, {
-                text: "Delete selected",
+                text: EasySDI_Pub.lang.getLocal('EASYSDI_PUBLISH_DELETE'),
                 iconCls: "delete",
                 disabled: true,
                 handler: function() {
                     var panel = this.getLegend();
                     var rule = panel.selectedRule;
-                    var message = "Are you sure you want to delete the " +
-                        panel.getRuleTitle(rule) + " rule?";
-                    Ext.Msg.confirm("Delete rule", message, function(yesno) {
+                    var message = EasySDI_Pub.lang.getLocal('EASYSDI_PUBLISH_DELETE') + " " +
+                        panel.getRuleTitle(rule);
+                    Ext.Msg.confirm(EasySDI_Pub.lang.getLocal('EASYSDI_PUBLISH_DELETE_RULE'), message, function(yesno) {
                         if(yesno == "yes") {
                             // TODO: fix this in GeoExt
                             // http://trac.geoext.org/ticket/347
@@ -304,7 +304,7 @@ var Styler = Ext.extend(Ext.util.Observable, {
                 },
                 scope: this
             },{
-		text: "View SLD",
+		text: EasySDI_Pub.lang.getLocal('EASYSDI_PUBLISH_VIEW_SLD'),
 		disabled: true,
                 handler: function() {
 			var format = new OpenLayers.Format.SLD({multipleSymbolizers: true});
@@ -325,7 +325,7 @@ var Styler = Ext.extend(Ext.util.Observable, {
             		        value: text
             		    }],
 			    bbar: [{
-            		        text: "save",
+            		        text: EasySDI_Pub.lang.getLocal('EASYSDI_PUBLISH_SAVE'),
             		        iconCls: "save",
             		        disabled: false,
             		        handler: function() {
@@ -369,7 +369,7 @@ var Styler = Ext.extend(Ext.util.Observable, {
         
         this.layersContainer = new Ext.Panel({
             autoScroll: true,
-            title: "Layers",
+            title: EasySDI_Pub.lang.getLocal('EASYSDI_PUBLISH_LAYERS'),
             anchor: "100%, -200"
             /*
             ,bbar: [{
@@ -736,9 +736,9 @@ var Styler = Ext.extend(Ext.util.Observable, {
      */
     showLegend: function(layer) {
         this.removeLegend();
-        this.legendContainer.setTitle("Legend: " + layer.name);
+        this.legendContainer.setTitle(EasySDI_Pub.lang.getLocal('EASYSDI_PUBLISH_LEGEND')+ " " + layer.name);
         var mask = new Ext.LoadMask(this.legendContainer.getEl(), {
-            msg: "Loading ...",
+            msg: EasySDI_Pub.lang.getLocal('EASYSDI_PUBLISH_LOADING'),
             removeMask: true
         });
         mask.show();
@@ -828,7 +828,7 @@ var Styler = Ext.extend(Ext.util.Observable, {
             legend.setCurrentScaleDenominator(this.map.getScale());
         }
 	
-        Ext.get('ScaleText').dom.innerHTML = "Scale: "+Math.round(this.map.getScale());
+        Ext.get('ScaleText').dom.innerHTML = EasySDI_Pub.lang.getLocal('EASYSDI_PUBLISH_SCALE')+": "+Math.round(this.map.getScale());
 	
     },
 
@@ -928,7 +928,7 @@ var Styler = Ext.extend(Ext.util.Observable, {
         }
         
         this.featureDlg = new Ext.Window({
-            title: "Feature: " + feature.fid || feature.id,
+            title: EasySDI_Pub.lang.getLocal('EASYSDI_PUBLISH_FEATURE') + feature.fid || feature.id,
             layout: "fit",
             resizable: false,
             width: 300,
@@ -940,7 +940,7 @@ var Styler = Ext.extend(Ext.util.Observable, {
                 autoHeight: true,
                 items: [{
                     xtype: "gx_vectorlegend",
-                    title: "Rules used to render this feature:",
+                    title: EasySDI_Pub.lang.getLocal('EASYSDI_PUBLISH_RULE_USED'),
                     bodyStyle: {paddingLeft: "5px"},
                     symbolType: this.getSymbolTypeFromFeature(feature),
                     rules: matchingRules,
@@ -954,7 +954,7 @@ var Styler = Ext.extend(Ext.util.Observable, {
                     }
                 }, {
                     xtype: "propertygrid",
-                    title: "Attributes of this feature:",
+                    title: EasySDI_Pub.lang.getLocal('EASYSDI_PUBLISH_FEAT_ATT'),
                     height: 270,
                     source: feature.attributes,
                     autoScroll: true,
@@ -987,7 +987,7 @@ var Styler = Ext.extend(Ext.util.Observable, {
             this.ruleDlg.destroy();
         }
         this.ruleDlg = new Ext.Window({
-            title: "Style: " + (rule.title || rule.name || "Untitled"),
+            title: EasySDI_Pub.lang.getLocal('EASYSDI_PUBLISH_STYLE') + " " + (rule.title || rule.name || "Untitled"),
             layout: "fit",
             x: this.windowPositions.ruleDlg.x,
             y: this.windowPositions.ruleDlg.y,
@@ -1042,7 +1042,7 @@ var Styler = Ext.extend(Ext.util.Observable, {
                 },
                 scope: this
             }, {
-                text: "save",
+                text: EasySDI_Pub.lang.getLocal('EASYSDI_PUBLISH_SAVE'),
                 iconCls: "save",
                 handler: function() {
                     this.saving = true;

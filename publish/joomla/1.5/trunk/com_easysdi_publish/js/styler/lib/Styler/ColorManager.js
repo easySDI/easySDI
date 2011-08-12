@@ -99,7 +99,7 @@ Ext.apply(Styler.ColorManager.prototype, {
                 autoHeight: false
             });
             Styler.ColorManager.pickerWin = new Ext.Window({
-                title: "Color Picker",
+                title: EasySDI_Pub.lang.getLocal('EASYSDI_PUBLISH_COLORPICKER'),
                 layout: "fit",
                 closeAction: "hide",
                 width: 405,
