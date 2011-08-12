@@ -5,8 +5,8 @@
   <property name="projet.src.dir" value="src"/>
   <property name="projet.work.dir" value="work"/>
   <property name="projet.out.dir" value="out"/>
-  <property name="projet.lib.dir" value="OWSPublisher/src/main/webapp/WEB-INF/lib"/>
-  <property name="projet.web.dir" value="OWSPublisher\\src\\main\\webapp\\WEB-INF\\"/>
+  <property name="projet.lib.dir" value="sdi_publish/src/main/webapp/WEB-INF/lib"/>
+  <property name="projet.web.dir" value="sdi_publish\\src\\main\\webapp\\WEB-INF\\"/>
   
    <path id="project.work.classpath">
 	    <fileset dir="${projet.work.dir}/WEB-INF/lib">
