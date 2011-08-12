@@ -77,6 +77,8 @@ class HTML_product {
 				document.getElementById('productfile').disabled = true;
 				document.getElementById('available').disabled = true;
 				document.getElementById('available').value = '0';
+				document.getElementById('deleteFileButton').disabled = true;
+				document.getElementById('linkFile').value = true;
 				document.getElementById('surfacemin').disabled = false;
 				document.getElementById('surfacemax').disabled = false;
 				document.getElementById('notification_email').disabled = false;
@@ -86,6 +88,8 @@ class HTML_product {
 			{
 				document.getElementById('productfile').disabled = true;
 				document.getElementById('available').disabled = false;
+				document.getElementById('deleteFileButton').disabled = true;
+				document.getElementById('linkFile').disabled = false;
 				document.getElementById('surfacemin').disabled = false;
 				document.getElementById('surfacemax').disabled = false;
 				document.getElementById('notification_email').disabled = false;
@@ -95,6 +99,8 @@ class HTML_product {
 			{
 				document.getElementById('productfile').disabled = false;
 				document.getElementById('available').disabled = false;
+				document.getElementById('deleteFileButton').disabled = false;
+				document.getElementById('linkFile').disabled = false;
 				document.getElementById('surfacemin').disabled = true;
 				document.getElementById('surfacemax').disabled = true;
 				document.getElementById('notification_email').disabled = true;
@@ -117,6 +123,15 @@ class HTML_product {
 					form.elements[list].options[i].selected = false;
 				}
 			}
+		}
+
+		function deleteFile (form){
+				
+			 if (confirm('<?php echo JText::_("SHOP_PRODUCT_MSG_CONFIRM_DELETE_FILE"); ?>')== true)
+			 {
+				 form.task.value='deleteProductFile';
+					form.submit();
+			 }
 		}
 		</script>			
 	<form enctype="multipart/form-data" action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
@@ -208,9 +223,15 @@ class HTML_product {
 									<option value="1" <?php if( $product->available == 1 ) echo "selected"; ?>><?php echo JText::_("CORE_YES"); ?></option>
 									</select>
 									</td>
-									<td><a target="RAW" href="./index.php?format=raw&option=<?php echo $option; ?>&task=downloadProduct&product_id=<?php echo $product->id?>">
-									<?php echo $product->getFileName();?></a></td>
-									
+							</tr>
+							<tr>
+								<td class="key"><?php echo JText::_("SHOP_PRODUCT_FILE_NAME") ;?></td>
+								<td>
+								<a id="linkFile" target="RAW" href="./index.php?format=raw&option=<?php echo $option; ?>&task=downloadProduct&product_id=<?php echo $product->id?>"><?php echo $product->getFileName();?> </a> 
+								</td>
+								<td>
+								<button type="button" id="deleteFileButton" onCLick="deleteFile(document.getElementById('adminForm'));" ><?php echo JText::_("SHOP_PRODUCT_DELETE_FILE"); ?></button>
+								</td>
 							</tr>
 							<tr>
 								<td class="key"><?php echo JText::_("SHOP_PRODUCT_UP_FILE") ;?></td>
@@ -579,6 +600,7 @@ class HTML_product {
 		echo $tabs->endPanel();		
 		echo $tabs->endPane();	
 		?>
+		deleteProductFile
 		<input type="hidden" name="id" value="<?php echo $product->id;?>">		
 		<input type="hidden" name="option" value="<?php echo $option; ?>" />
 		<input type="hidden" name="task" value="editProduct" />
@@ -586,7 +608,7 @@ class HTML_product {
 		<input type="hidden" name="created" value="<?php echo $product->created; ?>" />
 		<input type="hidden" name="checked_out" value="<?php echo $product->checked_out; ?>" />
 		<input type="hidden" name="checked_out_time" value="<?php echo $product->checked_out_time; ?>" />
-		 <input type="hidden" name="MAX_FILE_SIZE" value="<?php echo $product->maxFileSize; ?>"> 
+		 <input type="hidden" name="MAX_FILE_SIZE" value="<?php echo $product->maxFileSize; ?>">
 		</form>
 	<?php
 	}

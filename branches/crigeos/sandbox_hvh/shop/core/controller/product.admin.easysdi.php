@@ -102,6 +102,26 @@ class ADMIN_product {
 		HTML_product::listProduct( $rows,$filter_order_Dir, $filter_order, $search,$pageNav,$option);
 	}
 
+	function deleteProductFile( $id, $option ) {
+		global  $mainframe;
+		$user = JFactory::getUser();
+		$db =& JFactory::getDBO();
+		if($id == '0') $id = JRequest::getVar('id', 0 );
+		
+		$product = new product( $db );
+		$product->load( $id );
+				
+		$product->tryCheckOut($option,'listProduct');
+		
+		if($product){
+			$query = "DELETE FROM #__sdi_product_file WHERE product_id=".$id;
+			$db->setQuery($query);
+			$result = $db->query();
+		}
+		
+		$product->checkin();
+	}
+	
 	function editProduct( $id, $option ) {
 		global  $mainframe;
 		$user = JFactory::getUser();
@@ -352,7 +372,7 @@ class ADMIN_product {
 		}
 		
 		if(isset($_FILES['productfile']) && !empty($_FILES['productfile']['name'])) {
-			if ($_FILES['productfile']['error']) {    
+			/*if ($_FILES['productfile']['error']) {    
 	          switch ($_FILES['productfile']['error']){    
                    case 1: // UPLOAD_ERR_INI_SIZE    
                    	$mainframe->enqueueMessage("Le fichier dépasse la limite autorisée par le serveur (fichier php.ini) !","ERROR");
@@ -381,7 +401,7 @@ class ADMIN_product {
 				$mainframe->enqueueMessage("SIZE ERROR","ERROR");
 				$mainframe->redirect("index.php?option=$option&task=listProduct" );
 				exit();
-			}
+			}*/
 		}
 		
 		$service_type = JRequest::getVar('service_type');
