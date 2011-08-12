@@ -5,8 +5,8 @@
   <property name="projet.src.dir" value="src"/>
   <property name="projet.work.dir" value="work"/>
   <property name="projet.out.dir" value="out"/>
-  <property name="projet.lib.dir" value="OWSPublisher/src/main/webapp/WEB-INF/lib"/>
-  <property name="projet.web.dir" value="OWSPublisher\\src\\main\\webapp\\WEB-INF\\"/>
+  <property name="projet.lib.dir" value="sdi_publish/src/main/webapp/WEB-INF/lib"/>
+  <property name="projet.web.dir" value="sdi_publish\\src\\main\\webapp\\WEB-INF\\"/>
   
    <path id="project.work.classpath">
 	    <fileset dir="${projet.work.dir}/WEB-INF/lib">
@@ -35,7 +35,7 @@
   <target name="copy-resources">    
 		  <echo>Copy the resources into the working directory</echo>
   		<copy todir="${projet.work.dir}" >
-  	      <fileset dir="OWSPublisher/src/main/webapp" >
+  	      <fileset dir="sdi_publish/src/main/webapp" >
   	        <include name="**"/>
   	      </fileset>
   	  </copy>
@@ -48,13 +48,13 @@
  
   <target name="compilation" description="Compilation" >
   	<echo message="Compile EasySDI Publish." level="info" />	
-    <javac debug="on" srcdir="OWSPublisher/src/main/java" destdir="${projet.work.dir}/WEB-INF/classes">
+    <javac debug="on" srcdir="sdi_publish/src/main/java" destdir="${projet.work.dir}/WEB-INF/classes">
     	<classpath refid="project.work.classpath"/>
     </javac>
     
     <echo message="Copy additionnal XML ressources located in classes." level="info" />
     <copy todir="${projet.work.dir}/WEB-INF/classes" >
-  	  	  <fileset dir="OWSPublisher/src/main/java" >
+  	  	  <fileset dir="sdi_publish/src/main/java" >
   	  	  	  <include name="**/*.xml"/>  	  	        
   	  	  </fileset>
   	</copy>
@@ -77,7 +77,7 @@
   <target name="war" description="generate the war" >
 		<tstamp/>
 		<echo>Building the war file</echo>
-	    <war warfile="${projet.out.dir}/OWSPublisher.${DSTAMP}.${TSTAMP}.war" basedir="${projet.work.dir}" />
+	    <war warfile="${projet.out.dir}/sdi_publish.${DSTAMP}.${TSTAMP}.war" basedir="${projet.work.dir}" />
 	</target>
   
 	<target name="deleteResources" description="delete ressources" >
