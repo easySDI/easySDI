@@ -107,7 +107,7 @@ EasySDI_Mon.drawHealthGraphRaw = function(container, aStores, logRes,useSla){
                     //push percentiles
                     for ( var i=0; i< aRec.length; i++ )
                     {   
-                    	if(aRec[i].get('avCount'))
+                    	if(aRec[i].get('avCount') >= 0)
                     	{
                     		avCount+=aRec[i].get('avCount');
                     		fCount+=aRec[i].get('fCount');
