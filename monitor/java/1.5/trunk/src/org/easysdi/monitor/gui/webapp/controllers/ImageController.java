@@ -4,6 +4,7 @@
 package org.easysdi.monitor.gui.webapp.controllers;
 
 
+
 import java.io.OutputStream;
 
 
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+
 
 
 /**
@@ -75,8 +77,8 @@ public class ImageController{
     		
     			try
     	    	{
-    	    		out = response.getOutputStream();
-    	    	    out.write(data);
+    	    		out = response.getOutputStream();    	    	
+    	    		out.write(data);
     	    	    out.close();
     	    	}catch(Exception e)
     	    	{
@@ -94,6 +96,7 @@ public class ImageController{
     		contentType = result.getContentType();
     		if(contentType != null && contentType != "" && data != null)
     		{
+    			response.reset();
     			response.setContentType(contentType);
     			try
     			{

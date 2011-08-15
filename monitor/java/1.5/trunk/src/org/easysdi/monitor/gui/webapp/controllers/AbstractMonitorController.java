@@ -423,7 +423,8 @@ public abstract class AbstractMonitorController {
         {
         	rawLog = logManager.getRawLogsSubset(
                     searchParams.getMinDate(), searchParams.getMaxDate(),
-                    searchParams.getMaxResults(), searchParams.getStartIndex());		
+                    searchParams.getMaxResults(), searchParams.getStartIndex());
+        	rawLog = LogSlaHelper.getRawLogForDefault(rawLog, true);
         } 
         return rawLog;
     }

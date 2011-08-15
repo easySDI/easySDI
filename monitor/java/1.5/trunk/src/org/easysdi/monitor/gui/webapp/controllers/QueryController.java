@@ -2,10 +2,12 @@ package org.easysdi.monitor.gui.webapp.controllers;
 
 import java.util.Map;
 
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.easysdi.monitor.biz.job.Query;
+
 import org.easysdi.monitor.gui.webapp.MonitorInterfaceException;
 import org.easysdi.monitor.gui.webapp.QueryInfo;
 import org.easysdi.monitor.gui.webapp.security.SecurityConstants;
@@ -129,15 +131,14 @@ public class QueryController extends AbstractMonitorController {
 
         this.enforceRole(SecurityConstants.ADMIN_ROLE, request, response);
         final ModelAndView result = new ModelAndView("query");
-        final Map<String, String> requestParams
-            = this.getRequestParametersMap(request);
+        final Map<String, String> requestParams = this.getRequestParametersMap(request);
 
         try {
             final Query query = this.getQuery(jobIdString, queryIdString);
             final QueryInfo queryInfo 
                 = QueryInfo.createFromParametersMap(
                         requestParams, query.getConfig().getParentJob(), false);
-
+      
             if (queryInfo.modifyQueryConfig(query)) {
                 result.addObject("message", "query.modify.success");
                 result.addObject(query);

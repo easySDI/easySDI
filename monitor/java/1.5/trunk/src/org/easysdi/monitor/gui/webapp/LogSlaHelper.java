@@ -118,6 +118,109 @@ public final class LogSlaHelper {
     	return slaHourLogentries;
 	}
 	
+	public static Set<RawLogEntry> getRawLogForDefault(Set<RawLogEntry> rawLogs,boolean createSummary)
+	{
+		float maxReqTime = 0.0F;
+		float timeSummary = 0.0F;
+		int avCount = 0;
+		int fCount = 0;
+		int unavCount = 0;
+		int otherCount = 0;
+		int count = 0;
+		Set<RawLogEntry> summaryRawLogs = new LinkedHashSet<RawLogEntry>();
+		ArrayList<Date> dates = new ArrayList<Date>();
+		ArrayList<Long> list = new ArrayList<Long>();
+		HashMap<Date,ArrayList<Long>> foundIds = new HashMap<Date,ArrayList<Long>>(); 
+		
+		for(RawLogEntry log : rawLogs)
+		{
+			count = 0;
+			avCount = 0;
+			fCount = 0;
+			unavCount = 0;
+			otherCount = 0;
+			timeSummary = 0.0F;
+			if(log.getResponseDelay() > 0)
+			{
+				maxReqTime = log.getResponseDelay();
+			}else
+			{
+				maxReqTime = 0.0F;
+			}
+		
+			if(log.getStatusValue().name().equals("AVAILABLE"))
+			{
+				avCount++;
+			}else if(log.getStatusValue().name().equals("OUT_OF_ORDER")){
+				fCount++;
+			}else if(log.getStatusValue().name().equals("UNAVAILABLE"))
+			{
+				unavCount++;
+			}else if(log.getStatusValue().name().equals("NOT_TESTED"))
+			{
+				otherCount++;
+			}else
+			{
+				otherCount++;
+			}
+			list = new ArrayList<Long>();
+			list.add(log.getQueryId());
+			foundIds.put(log.getRequestTime().getTime(),list);
+			for(RawLogEntry log2 : rawLogs)
+			{
+				// Same time and not same object;
+				if(log.getRequestTime().getTime().equals(log2.getRequestTime().getTime()) && 
+				   !foundIds.get(log.getRequestTime().getTime()).contains(log2.getQueryId()))
+				{
+				
+					count++;
+					if(maxReqTime < log2.getResponseDelay())
+					{
+						maxReqTime = log2.getResponseDelay();
+					}
+					if(log2.getResponseDelay() > 0)
+					{
+						timeSummary += log2.getResponseDelay();
+					}
+					if(log2.getStatusValue().name().equals("AVAILABLE"))
+					{
+						avCount++;
+					}else if(log2.getStatusValue().name().equals("OUT_OF_ORDER")){
+						fCount++;
+					}else if(log2.getStatusValue().name().equals("UNAVAILABLE"))
+					{
+						unavCount++;
+					}else if(log2.getStatusValue().name().equals("NOT_TESTED"))
+					{
+						otherCount++;
+					}else
+					{
+						otherCount++;
+					}
+					foundIds.get(log.getRequestTime().getTime()).add(log2.getQueryId());
+				}
+			}
+			
+			if(count > 0)
+			{
+				timeSummary = timeSummary / count;
+				log.setResponseDelay(timeSummary);
+			}
+			if(!dates.contains(log.getRequestTime().getTime()))
+			{
+				log.setAvCount(avCount);
+				log.setOtherCount(otherCount);
+				log.setfCount(fCount);
+				log.setUnavCount(unavCount);
+				log.setMaxTime(maxReqTime);
+				log.setMessage("");
+				summaryRawLogs.add(log);
+			}
+			dates.add(log.getRequestTime().getTime());
+		}
+		return summaryRawLogs;
+	}
+	
 	/**
 	 * Filters a raw log set for a given sla
 	 * Can also be used to create a summary of a jobs queries
@@ -134,10 +237,10 @@ public final class LogSlaHelper {
     	Set<RawLogEntry> slaRawLogs = new LinkedHashSet<RawLogEntry>();
     	
     	Boolean useInspire = sla.isExcludeWorst();
-    	if(useInspire)
+    	/*if(useInspire)
     	{
     		rawLogs = helper.inspireRawLogs(rawLogs);
-    	}
+    	}*/
     	
     	boolean includeLog = false;
     	for(RawLogEntry log: rawLogs)
@@ -192,9 +295,15 @@ public final class LogSlaHelper {
     			slaRawLogs.add(log);
     		}
     	}
-  
+    	// Remove 10 %
+    
+    	
     	if(!createSummary)
     	{
+    		if(useInspire)
+        	{
+        		slaRawLogs = helper.inspireRawLogs(slaRawLogs);
+        	}
     		return slaRawLogs;
     	}
     	
@@ -297,8 +406,11 @@ public final class LogSlaHelper {
 			}
 			dates.add(log.getRequestTime().getTime());
 		}
-	
-    	return summaryRawLogs;
+		if(useInspire)
+    	{
+			summaryRawLogs = helper.inspireRawLogs(summaryRawLogs);
+    	}
+		return summaryRawLogs;
 	}
 	
 
