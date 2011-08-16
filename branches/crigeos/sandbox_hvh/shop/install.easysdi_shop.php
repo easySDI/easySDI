@@ -887,6 +887,12 @@ function com_install(){
 		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
+		$query="ALTER TABLE  `#__sdi_product` ADD pathfile varchar (500)";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
 		
 		$query="CREATE TABLE IF NOT EXISTS `#__sdi_list_accessibility` (
 				  `id` bigint(20) NOT NULL AUTO_INCREMENT,

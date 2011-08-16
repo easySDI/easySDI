@@ -75,6 +75,7 @@ class HTML_product {
 			if (document.forms['adminForm'].free.value == '0')
 			{
 				document.getElementById('productfile').disabled = true;
+				document.getElementById('pathfile').disabled = true;
 				document.getElementById('available').disabled = true;
 				document.getElementById('available').value = '0';
 				document.getElementById('deleteFileButton').disabled = true;
@@ -87,6 +88,7 @@ class HTML_product {
 			else if (document.forms['adminForm'].free.value == '1' && document.forms['adminForm'].available.value == '0')
 			{
 				document.getElementById('productfile').disabled = true;
+				document.getElementById('pathfile').disabled = true;
 				document.getElementById('available').disabled = false;
 				document.getElementById('deleteFileButton').disabled = true;
 				document.getElementById('linkFile').disabled = false;
@@ -98,6 +100,7 @@ class HTML_product {
 			else
 			{
 				document.getElementById('productfile').disabled = false;
+				document.getElementById('pathfile').disabled = false;
 				document.getElementById('available').disabled = false;
 				document.getElementById('deleteFileButton').disabled = false;
 				document.getElementById('linkFile').disabled = false;
@@ -130,7 +133,7 @@ class HTML_product {
 			 if (confirm('<?php echo JText::_("SHOP_PRODUCT_MSG_CONFIRM_DELETE_FILE"); ?>')== true)
 			 {
 				 form.task.value='deleteProductFile';
-					form.submit();
+				 form.submit();
 			 }
 		}
 		</script>			
@@ -212,7 +215,7 @@ class HTML_product {
 									<option value="0" <?php if( $product->free == 0 ) echo "selected"; ?> ><?php echo JText::_("CORE_NO"); ?></option>
 									<option value="1" <?php if( $product->free == 1 ) echo "selected"; ?>><?php echo JText::_("CORE_YES"); ?></option>
 									</select>
-									</td></td>								
+								</td>								
 							</tr>
 							<tr>
 								<td class="key"><?php echo JText::_("SHOP_PRODUCT_AVAILABLE"); ?> : </td>
@@ -238,6 +241,10 @@ class HTML_product {
 								<td colspan="2"><input type="file" name="productfile" id="productfile" <?php if( $product->available == 0 ) echo "disabled"; ?> ><?php printf( JText::_("SHOP_PRODUCT_FILE_MAX_SIZE"),$product->maxFileSize); ?> </td>
 							</tr>
 							<tr>
+								<td class="key"><?php echo JText::_("SHOP_PRODUCT_PATH_FILE") ;?></td>
+								<td colspan="2"><input class="inputbox" type="text" size="50" maxlength="100" name="pathfile"  id="pathfile" <?php  if( $product->available == 0 ) echo "disabled";?> value="<?php echo $product->pathfile; ?>" /></td>
+							</tr>
+							<tr>
 								<td class="key"><?php echo JText::_("SHOP_PRODUCT_TREATMENT"); ?> : </td>
 								<td colspan="2"><?php $disabled=''; if( $product->available == 1 ) $disabled='disabled'; echo JHTML::_("select.genericlist",$treatmentType_list, 'treatmenttype_id', 'size="1" class="inputbox" '.$disabled, 'value',  'text', $product->treatmenttype_id ); ?></td>															
 							</tr>
@@ -257,7 +264,7 @@ class HTML_product {
 						</table>
 					</fieldset>	
 				</td>
-				<td>
+				<td valign="top">
 					<fieldset>
 						<legend><?php echo JText::_("SHOP_PRODUCT_FS_DIFFUSION_RIGHTS"); ?></legend>
 						<table  border="0" cellpadding="3" cellspacing="0">
@@ -285,8 +292,7 @@ class HTML_product {
 		<br>
 		<table class="admintable" >
 			<tr>
-				
-				<td>
+				<td colspan="2">
 					<fieldset>
 						<legend><?php echo JText::_("SHOP_PRODUCT_FS_PREVIEW_DEFINITION"); ?></legend>
 						<table >			
@@ -353,14 +359,54 @@ class HTML_product {
 						</table>
 					</fieldset>
 				</td>
-				<td>
+				</tr>
+			<tr>
+				<td valign = "top">
+					<fieldset>
+					<legend><?php echo JText::_("SHOP_AUTHENTICATION"); ?></legend>
+						<table class="admintable" >
+						<tr>
+							<td >
+								<input type="radio" name="service_type" value="via_proxy" onclick="javascript:displayAuthentication();" <?php if ($product->viewaccount_id) echo "checked";?>>
+							</td>
+							<td class="key" colspan="2">
+								<?php echo JText::_("SHOP_AUTH_VIA_PROXY"); ?>
+							</td>
+						</tr>
+						<tr>
+							<td></td>
+							<td><?php echo JText::_("SHOP_EASYSDI_ACCOUNT"); ?> : </td>
+							<td><?php $enable = $product->viewaccount_id? "" : "disabled"  ; echo JHTML::_("select.genericlist",$rowsAccount, 'viewaccount_id', 'size="1" class="inputbox" onChange="" '.$enable , 'value', 'text',$product->viewaccount_id); ?></td>
+						</tr>
+						<tr>
+							<td >
+							 	<input type="radio" name="service_type" value="direct" onclick="javascript:displayAuthentication();" <?php if ($product->previewUser) echo "checked";?>> 
+						 	</td>
+						 	<td class="key" colspan="2">
+							 	 <?php echo JText::_("SHOP_AUTH_DIRECT"); ?>
+						 	</td>
+					 	</tr>
+						<tr>
+							<td></td>
+							<td><?php echo JText::_("SHOP_AUTH_USER"); ?> : </td>
+							<td><input <?php if (!$product->viewuser){echo "disabled";} ?> class="inputbox" type="text" size="50" maxlength="400" name="viewuser" id="viewuser" value="<?php echo $product->viewuser; ?>" /></td>							
+						</tr>							
+						<tr>
+							<td></td>
+							<td><?php echo JText::_("SHOP_AUTH_PASSWORD"); ?> : </td>
+							<td><input <?php if (!$product->viewuser){echo "disabled";} ?> class="inputbox" type="password" size="50" maxlength="400" name="viewpassword" id="viewpassword" value="<?php echo $product->viewpassword; ?>" /></td>							
+						</tr>
+						
+						</table>
+					</fieldset>	
+				</td>	
+				<td valign = "top">
 					<fieldset>
 						<legend><?php echo JText::_("SHOP_PRODUCT_FS_PREVIEW_RIGHTS"); ?></legend>
 						<table  border="0" cellpadding="3" cellspacing="0">
 							<tr>
 								<td class="key"><?php echo JText::_("SHOP_PRODUCT_PREVIEW_ACCESSIBILITY"); ?> : </td>
 								<td ><?php echo JHTML::_("select.genericlist",$accessibility_list, 'viewaccessibility_id', 'size="1" class="inputbox"  onChange="javascript:accessibilityEnable(\'viewaccessibility_id\',\'userPreviewList\');"', 'value',  'text', $product->viewaccessibility_id ); ?></td>
-																							
 							</tr>			
 							<tr>
 								<td class="key"><?php echo JText::_( 'SHOP_PRODUCT_PREVIEW_ACCESSIBILITY_USER'); ?> </td>
@@ -371,47 +417,6 @@ class HTML_product {
 						</table>
 					</fieldset>	
 				</td>
-			</tr>
-			<tr>
-				<td >
-				<fieldset>
-				<legend><?php echo JText::_("SHOP_AUTHENTICATION"); ?></legend>
-					<table class="admintable" >
-					<tr>
-						<td >
-							<input type="radio" name="service_type" value="via_proxy" onclick="javascript:displayAuthentication();" <?php if ($product->viewaccount_id) echo "checked";?>>
-						</td>
-						<td class="key" colspan="2">
-							<?php echo JText::_("SHOP_AUTH_VIA_PROXY"); ?>
-						</td>
-					</tr>
-					<tr>
-						<td></td>
-						<td><?php echo JText::_("SHOP_EASYSDI_ACCOUNT"); ?> : </td>
-						<td><?php $enable = $product->viewaccount_id? "" : "disabled"  ; echo JHTML::_("select.genericlist",$rowsAccount, 'viewaccount_id', 'size="1" class="inputbox" onChange="" '.$enable , 'value', 'text',$product->viewaccount_id); ?></td>
-					</tr>
-					<tr>
-						<td >
-						 	<input type="radio" name="service_type" value="direct" onclick="javascript:displayAuthentication();" <?php if ($product->previewUser) echo "checked";?>> 
-					 	</td>
-					 	<td class="key" colspan="2">
-						 	 <?php echo JText::_("SHOP_AUTH_DIRECT"); ?>
-					 	</td>
-				 	</tr>
-					<tr>
-						<td></td>
-						<td><?php echo JText::_("SHOP_AUTH_USER"); ?> : </td>
-						<td><input <?php if (!$product->viewuser){echo "disabled";} ?> class="inputbox" type="text" size="50" maxlength="400" name="viewuser" id="viewuser" value="<?php echo $product->viewuser; ?>" /></td>							
-					</tr>							
-					<tr>
-						<td></td>
-						<td><?php echo JText::_("SHOP_AUTH_PASSWORD"); ?> : </td>
-						<td><input <?php if (!$product->viewuser){echo "disabled";} ?> class="inputbox" type="password" size="50" maxlength="400" name="viewpassword" id="viewpassword" value="<?php echo $product->viewpassword; ?>" /></td>							
-					</tr>
-					
-					</table>
-				</fieldset>	
-				</td>	
 			</tr>			
 		</table>
 		<?php
@@ -600,7 +605,6 @@ class HTML_product {
 		echo $tabs->endPanel();		
 		echo $tabs->endPane();	
 		?>
-		deleteProductFile
 		<input type="hidden" name="id" value="<?php echo $product->id;?>">		
 		<input type="hidden" name="option" value="<?php echo $option; ?>" />
 		<input type="hidden" name="task" value="editProduct" />

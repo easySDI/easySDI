@@ -48,6 +48,7 @@ class product extends sdiTable
 	var $viewaccount_id				=null;
 	var $viewaccessibility_id		=null;
 	var $loadaccessibility_id		=null;
+	var $pathfile					=null;
 		
 	// Class constructor
 	function __construct( &$db )

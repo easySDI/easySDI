@@ -430,6 +430,10 @@ class ADMIN_product {
 		{
 			$product->loadaccessibility_id = null;
 		}
+		if($product->pathfile == '')
+		{
+			$product->pathfile = null;
+		}
 		if (!$product->store()) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			$mainframe->redirect("index.php?option=$option&task=listProduct" );
