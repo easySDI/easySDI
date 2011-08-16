@@ -55,7 +55,7 @@ class HTML_preview{
 		?>
 		<script
 			type="text/javascript"
-			src="./administrator/components/com_easysdi_shop/lib/openlayers2.8/lib/OpenLayers.js"></script>
+			src="./administrator/components/com_easysdi_shop/lib/openlayers-2.10/lib/OpenLayers.js"></script>
 		<script
 			type="text/javascript"
 			src="./administrator/components/com_easysdi_shop/lib/proj4js/lib/proj4js.js"></script>
@@ -171,26 +171,28 @@ class HTML_preview{
                     }
              );
 		<?php }else{?>
-		var matrixIds = new Array(26);
-	    for (var i=0; i<26; ++i) {
-	        matrixIds[i] = "EPSG:900913:" + i;
-	    }
-			layerProduit = new OpenLayers.Layer.WMTS( 
-					name : "<?php echo $rowProduct->id; ?>",
-					isBaseLayer:true,
-                    url : "<?php echo $rowProduct->viewurlwms; ?>",
-                    format : "<?php echo $rowProduct->viewimgformat; ?>",
-                    transparent: 'true',  
-                    layer : '<?php echo $rowProduct->viewlayers; ?>', 
-                    style : '<?php echo $rowProduct->viewstyle; ?>',
-                    matrixSet :  '<?php echo $rowProduct->viewmatrixset; ?>',
-                    matrixIds :  matrixIds
-                    );
+		 var matrixIds = new Array(26);
+		    for (var i=0; i<26; ++i) {
+		        matrixIds[i] = "EPSG:900913:" + i;
+		    }
+
+		    layerProduit = new OpenLayers.Layer.WMTS({
+		        name: "Medford Buildings",
+		        url: "http://v2.suite.opengeo.org/geoserver/gwc/service/wmts/",
+		        layer: "medford:buildings",
+		        matrixSet: "EPSG:900913",
+		        matrixIds: matrixIds,
+		        format: "image/png",
+		        style: "_null",
+		        opacity: 0.7,
+		        isBaseLayer: false
+		    }); 
 		<?php }?>    
           layerProduit.alpha = setAlpha('image/png');
           map.addLayer(layerProduit);
 		  map.zoomToExtent(new OpenLayers.Bounds(<?php echo $rowProduct->viewextent; ?>));
 	      map.addControl(new OpenLayers.Control.Attribution());         
+	      map.setCenter(new OpenLayers.LonLat(-13677832, 5213272), 13);
    		}
 		</script>
 		<div id="map" class="smallmap"></div>
