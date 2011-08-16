@@ -1727,7 +1727,7 @@ class displayManager{
 		
 		$logoWidth = config_easysdi::getValue("logo_width");
 		$logoHeight = config_easysdi::getValue("logo_height");		
-		$img='<img width="'.$logoWidth.'" height="'.$logoHeight.'" src="'.JPATH_BASE.DS.$account_logo.'"/>';
+		$img='<img width="'.$logoWidth.'" height="'.$logoHeight.'" src="'.$account_logo.'"/>';
 		
 		$myHtml = str_replace("%1\$s", $img, $myHtml);
 		$myHtml = str_replace("%2\$s", $supplier, $myHtml);
@@ -1779,10 +1779,9 @@ class displayManager{
 				$fp = fopen ($foptmp, 'r');
 				$result = fread($fp, filesize($foptmp));
 				fclose ($fp);
-					//ob_end_clean();
 				
-				unlink($foptmp);
-			
+				//ob_end_clean();
+				
 				error_reporting(0);
 				ini_set('zlib.output_compression', 0);
                         	
@@ -1795,6 +1794,8 @@ class displayManager{
 				header("Content-Length: ".filesize($foptmp));
 				
 				echo $result;
+				//clear tmp pdf file
+				unlink($foptmp);
 				//Very important, if you don't call this, the content-type will have no effect
 				die();
 			}else
