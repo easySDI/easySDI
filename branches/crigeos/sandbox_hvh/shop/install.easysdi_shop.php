@@ -874,7 +874,7 @@ function com_install(){
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 		
-		$query="ALTER TABLE  `#__sdi_product` ADD viewmatrix varchar (100)";
+		$query="ALTER TABLE  `#__sdi_product` ADD viewmatrix varchar (1000)";
 		$db->setQuery( $query);
 		if (!$db->query()) 
 		{

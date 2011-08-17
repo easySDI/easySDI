@@ -44,6 +44,7 @@ $language->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
 
 global $mainframe;
 $task = JRequest::getVar('task');
+$option = JRequest::getVar('option');
 $cid = JRequest::getVar ('cid', array(0) );
 if (!is_array( $cid )) {
 	$cid = array(0);
@@ -648,6 +649,7 @@ switch($task){
 		break;
 	case "downloadProduct":
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'product.admin.easysdi.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'product.easysdi.class.php');
 		
 		ADMIN_product::downloadProduct();
 		break;

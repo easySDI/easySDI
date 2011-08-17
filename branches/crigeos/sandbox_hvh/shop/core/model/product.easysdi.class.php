@@ -107,7 +107,7 @@ class product extends sdiTable
 		 		$fileName = $_FILES['productfile']["name"];
 		 		$tmpName =  $_FILES['productfile']["tmp_name"];
 		 		$type = strtolower(substr($fileName, strrpos($fileName, '.')+1)) ;
-  				$size = ($_FILES['productfile']["size"] / 1024) ;
+  				$size = ($_FILES['productfile']["size"] ) ;
 			 	$fp      = fopen($tmpName, 'r');
 			 	$content = fread($fp, filesize($tmpName));
 			 	$content = addslashes($content);
@@ -129,7 +129,8 @@ class product extends sdiTable
 				}
 				else
 				{
-					$this->_db->setQuery( "INSERT INTO  #__sdi_product_file (filename, data,product_id, type, size) VALUES ('".$fileName."' ,'".$content."', ".$this->id.", '".$type."', ".$size." )" );
+					$query =  "INSERT INTO  #__sdi_product_file (filename, data,product_id, type, size) VALUES ('".$fileName."' ,'".$content."', ".$this->id.", '".$type."', ".$size." )" ;
+					$this->_db->setQuery($query);
 					if (!$this->_db->query()) {
 						$mainframe->enqueueMessage($this->_db->getErrorNum(), "ERROR");
 						return false;
@@ -138,26 +139,66 @@ class product extends sdiTable
 			}
 			else
 			{
-				/*$this->available = 0; 
-				if(! parent::store())
-				{
+				$this->_db->setQuery( "SELECT COUNT(*) FROM  #__sdi_product_file WHERE product_id = ".$this->id );
+				$result = $this->_db->loadResult();
+				if ($this->_db->getErrorNum()) {
+					$mainframe->enqueueMessage($this->_db->getErrorNum(), "ERROR");
 					return false;
-				}*/
+				}
+				if($result == 0 && $this->pathfile == null){
+					$this->available = 0;
+					if(! parent::store())
+					{
+						return false;
+					}
+				}
 			}
 		}
 		return true;
 	}
 	
+	function getFile(){
+		
+		if ($this->pathfile != null){
+			if ($fd = fopen ($this->pathfile, "r")) {
+			    $fsize = filesize($this->pathfile);
+			    $buffer = fread($fd, $fsize);
+			    fclose ($fd);
+				return $buffer;
+			}
+		}else{
+			$this->_db->setQuery("SELECT data,filename FROM #__sdi_product_file where product_id = ".$this->id);
+			$row = $this->_db->loadObject();
+			return $row->data;
+		}
+		return null;
+	}
+	
+	function getFileExtension (){
+		if ($this->pathfile != null){
+			$path_parts = pathinfo($this->pathfile);
+			return $path_parts['extension'];
+		}else{
+			$this->_db->setQuery("SELECT type FROM #__sdi_product_file where product_id = ".$this->id);
+			return  $this->_db->loadResult();;
+		}
+		return null;
+	}
+	
 	function getFileName()
 	{
+		if ($this->pathfile != null){
+			return basename($this->pathfile);
+		}
+		
 		global  $mainframe;	
-			$this->_db->setQuery( "SELECT filename FROM  #__sdi_product_file WHERE product_id = ".$this->id );
-			$filename = $this->_db->loadResult();
-			if ($this->_db->getErrorNum()) {
-				$mainframe->enqueueMessage($this->_db->getErrorMsg());
-				return false;
-			}
-			return $filename;
+		$this->_db->setQuery( "SELECT filename FROM  #__sdi_product_file WHERE product_id = ".$this->id );
+		$filename = $this->_db->loadResult();
+		if ($this->_db->getErrorNum()) {
+			$mainframe->enqueueMessage($this->_db->getErrorMsg());
+			return false;
+		}
+		return $filename;
 	}
 	
 	function deleteProduct ()

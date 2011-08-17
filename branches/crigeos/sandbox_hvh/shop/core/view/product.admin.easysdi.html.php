@@ -142,6 +142,7 @@ class HTML_product {
 		echo $tabs->startPane("productPane");
 		echo $tabs->startPanel(JText::_("SHOP_GENERAL"),"productrPane");
 		?>		
+		<input type="hidden" name="MAX_FILE_SIZE" value="<?php echo $product->maxFileSize;?>000000">
 		<table class="admintable" border="0" cellpadding="0" cellspacing="0">
 			<tr>
 				<td colspan="2">
@@ -219,7 +220,6 @@ class HTML_product {
 							</tr>
 							<tr>
 								<td class="key"><?php echo JText::_("SHOP_PRODUCT_AVAILABLE"); ?> : </td>
-								
 									<td>
 									<select <?php if( $product->free == 0 ) echo "disabled"; ?> class="inputbox" name="available" id="available"  onChange="javascript:fieldManagement();">								
 									<option value="0" <?php if( $product->available == 0 ) echo "selected"; ?> ><?php echo JText::_("CORE_NO"); ?></option>
@@ -354,7 +354,7 @@ class HTML_product {
 							</tr>
 							<tr>
 								<td class="key"><?php echo JText::_("SHOP_PREVIEW_MATRIX"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="viewmatrix" id="viewmatrix" value="<?php echo $product->viewmatrix; ?>" <?php if ($product->viewurltype != 'WMTS') echo 'disabled'; ?>/></td>								
+								<td><input class="inputbox" type="text" size="50" maxlength="1000" name="viewmatrix" id="viewmatrix" value="<?php echo $product->viewmatrix; ?>" <?php if ($product->viewurltype != 'WMTS') echo 'disabled'; ?>/></td>								
 							</tr>
 						</table>
 					</fieldset>
@@ -612,7 +612,6 @@ class HTML_product {
 		<input type="hidden" name="created" value="<?php echo $product->created; ?>" />
 		<input type="hidden" name="checked_out" value="<?php echo $product->checked_out; ?>" />
 		<input type="hidden" name="checked_out_time" value="<?php echo $product->checked_out_time; ?>" />
-		 <input type="hidden" name="MAX_FILE_SIZE" value="<?php echo $product->maxFileSize; ?>">
 		</form>
 	<?php
 	}

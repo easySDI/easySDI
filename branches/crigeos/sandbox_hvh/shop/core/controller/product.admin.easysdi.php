@@ -114,9 +114,19 @@ class ADMIN_product {
 		$product->tryCheckOut($option,'listProduct');
 		
 		if($product){
-			$query = "DELETE FROM #__sdi_product_file WHERE product_id=".$id;
-			$db->setQuery($query);
-			$result = $db->query();
+			$db->setQuery("DELETE FROM #__sdi_product_file WHERE product_id=".$id);
+			$db->query();
+			if ($db->getErrorNum()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+				exit();
+			}
+			
+			$db->setQuery("UPDATE #__sdi_product SET pathfile=null WHERE id=".$id);
+			$db->query();
+			if ($db->getErrorNum()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+				exit();
+			}
 		}
 		
 		$product->checkin();
@@ -362,17 +372,17 @@ class ADMIN_product {
 	function saveProduct($returnList ,$option){
 		global  $mainframe;
 		$database=& JFactory::getDBO();
-		$option =  JRequest::getVar("option");
 		$product =&	 new product($database);
 
 		if (!$product->bind( $_POST )) {
-			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			$mainframe->redirect("index.php?option=$option&task=listProduct" );
-			exit();
+			return false;
 		}
 		
+		$product->tryCheckOut($option,'listProduct');
+		
 		if(isset($_FILES['productfile']) && !empty($_FILES['productfile']['name'])) {
-			/*if ($_FILES['productfile']['error']) {    
+			if ($_FILES['productfile']['error']) {    
 	          switch ($_FILES['productfile']['error']){    
                    case 1: // UPLOAD_ERR_INI_SIZE    
                    	$mainframe->enqueueMessage("Le fichier dépasse la limite autorisée par le serveur (fichier php.ini) !","ERROR");
@@ -392,60 +402,49 @@ class ADMIN_product {
                    case 4: // UPLOAD_ERR_NO_FILE 
                    	$mainframe->enqueueMessage( "Le fichier que vous avez envoyé a une taille nulle !","ERROR");
 					$mainframe->redirect("index.php?option=$option&task=listProduct" );
-					exit();   
+					exit(); 
                        
 	          }    
 			}    
 			
-			if($_FILES['productfile']["size"] > JRequest::getVar("MAX_FILE_SIZE")){
+			
+			if(filesize($_FILES['productfile']['tmp_name']) > JRequest::getVar("MAX_FILE_SIZE",0,'POST',INT)){
 				$mainframe->enqueueMessage("SIZE ERROR","ERROR");
 				$mainframe->redirect("index.php?option=$option&task=listProduct" );
-				exit();
-			}*/
+				return;
+			}
+			
 		}
 		
 		$service_type = JRequest::getVar('service_type');
-		if($service_type == "via_proxy")
-		{
+		if($service_type == "via_proxy"){
 			$product->viewuser = "";
 			$product->viewpassword = "";
-		}
-		else
-		{
+		}else{
 			$product->viewaccount_id="";
 		}
 		if($product->viewbasemap_id == '0')
-		{
 			$product->viewbasemap_id = null;
-		}
 		if($product->treatmenttype_id == null ||$product->treatmenttype_id == '')
-		{
 			$product->treatmenttype_id = sdilist::getIdByCode('#__sdi_list_treatmenttype','AUTO' );
-		}
 		if($product->viewaccessibility_id == '0')
-		{
 			$product->viewaccessibility_id = null;
-		}
 		if($product->loadaccessibility_id == '0')
-		{
 			$product->loadaccessibility_id = null;
-		}
 		if($product->pathfile == '')
-		{
 			$product->pathfile = null;
-		}
+		
 		if (!$product->store()) {
-			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			$mainframe->enqueueMessage("Product can not be store","ERROR");
 			$mainframe->redirect("index.php?option=$option&task=listProduct" );
-			exit();
+			return false;
 		}
 		
-
 		$product_perimeter = new product_perimeter($database);
 		if(!$product_perimeter->delete($product->id)){
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			$mainframe->redirect("index.php?option=$option&task=listProduct" );
-			exit();
+			return false;
 		}
 
 		foreach( $_POST['perimeter_id'] as $perimeter_id )
@@ -456,7 +455,7 @@ class ADMIN_product {
 			if(!$product_perimeter->store()){
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 				$mainframe->redirect("index.php?option=$option&task=listProduct" );
-				exit();
+				return false;
 			}
 		}
 
@@ -466,13 +465,13 @@ class ADMIN_product {
 			if(!$product_perimeter->loadById($product->id,$bufferPerimeterId)){
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 				$mainframe->redirect("index.php?option=$option&task=listProduct" );
-				exit();
+				return false;
 			}
 			$product_perimeter->buffer = 1;
 			if(!$product_perimeter->store()){
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 				$mainframe->redirect("index.php?option=$option&task=listProduct" );
-				exit();
+				return false;
 			}
 		}
 
@@ -480,7 +479,7 @@ class ADMIN_product {
 		if(!$product_property->delete($product->id)){
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			$mainframe->redirect("index.php?option=$option&task=listProduct" );
-			exit();
+			return false;
 		}
 
 		foreach( $_POST['property_id'] as $properties_id )
@@ -492,7 +491,7 @@ class ADMIN_product {
 			if(!$product_property->store()){
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 				$mainframe->redirect("index.php?option=$option&task=listProduct" );
-				exit();
+				return false;
 			}
 		}
 		
@@ -578,25 +577,24 @@ class ADMIN_product {
 
 	function downloadProduct(){
 
-		$database =& JFactory::getDBO();
-		$user = JFactory::getUser();
+		$db =& JFactory::getDBO();
 		$product_id = JRequest::getVar('product_id');
-		echo $product_id;
-		$query = "SELECT data,filename FROM #__sdi_product_file where product_id = $product_id ";
-		$database->setQuery($query);
-		$row = $database->loadObject();
-
+		$product = new product($db);
+		$product->load($product_id);
+		$file = $product->getFile();
+		$fileName = $product->getFileName();
+		
 		error_reporting(0);
 
 		ini_set('zlib.output_compression', 0);
 		header('Pragma: public');
 		header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
 		header('Content-Transfer-Encoding: none');
-		header("Content-Length: ".strlen($row->data));
-		header('Content-Type: application/octetstream; name="'.$row->filename.'"');
-		header('Content-Disposition: attachement; filename="'.$row->filename.'"');
+		header("Content-Length: ".strlen($file));
+		header('Content-Type: application/octetstream; name="'.$product->getFileExtension().'"');
+		header('Content-Disposition: attachement; filename="'.$fileName.'"');
 
-		echo $row->data;
+		echo $file;
 		die();
 	}
 	
