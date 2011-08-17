@@ -71,13 +71,7 @@
 				<include name="**/*.xml" />
 			</fileset>
 		</copy>
-		<copy
-			todir="C:\www\Server\crigeos\components\com_easysdi_core\views">
-			<fileset dir="./com_easysdi_catalog/core/view">
-				<include name="**/*.php" />
-				<include name="**/*.xml" />
-			</fileset>
-		</copy>
+		
 		<copy		   
 		   todir="C:\www\Server\crigeos\administrator\language\fr-FR">
 		     <fileset dir="./language/admin">
