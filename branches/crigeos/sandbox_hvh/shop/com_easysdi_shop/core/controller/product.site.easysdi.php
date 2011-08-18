@@ -254,6 +254,7 @@ class SITE_product {
 		//Product
 		$product = new product( $database );
 		$product->load( $id );
+		
 		$product->tryCheckOut($option,'listProduct');
 		
 		//Version
@@ -613,7 +614,7 @@ class SITE_product {
 		$product = new product( $db );
 		$product->load( $id );
 				
-		$product->tryCheckOut($option,'listProduct');
+		//$product->tryCheckOut($option,'listProduct');
 		
 		if($product){
 			$db->setQuery("DELETE FROM #__sdi_product_file WHERE product_id=".$id);
@@ -631,7 +632,7 @@ class SITE_product {
 			}
 		}
 		
-		$product->checkin();
+		//$product->checkin();
 	}
 	
 	function downloadFinalProduct(){
@@ -689,7 +690,6 @@ class SITE_product {
 		$product->bind(JRequest::get('post'));
 		$product->checkin();
 
-		//$mainframe->redirect("index.php?option=$option&task=listProduct" );
 		$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listProduct'), false ));
 	}
 }

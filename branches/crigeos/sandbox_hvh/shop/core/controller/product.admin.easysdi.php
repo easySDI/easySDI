@@ -111,7 +111,7 @@ class ADMIN_product {
 		$product = new product( $db );
 		$product->load( $id );
 				
-		$product->tryCheckOut($option,'listProduct');
+		//$product->tryCheckOut($option,'listProduct');
 		
 		if($product){
 			$db->setQuery("DELETE FROM #__sdi_product_file WHERE product_id=".$id);
@@ -129,7 +129,7 @@ class ADMIN_product {
 			}
 		}
 		
-		$product->checkin();
+		//$product->checkin();
 	}
 	
 	function editProduct( $id, $option ) {

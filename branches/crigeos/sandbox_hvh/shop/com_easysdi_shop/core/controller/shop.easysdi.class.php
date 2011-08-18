@@ -1315,9 +1315,8 @@ function validateForm(toStep, fromStep){
 			//User is not allowed to download this product
 			JError::raiseWarning( 100, JText::_("SHOP_MSG_NOT_ALLOWED_TO_DOWNLOAD_THIS_PRODUCT") );
 		}else{
-			$query = "SELECT data,filename FROM #__sdi_product_file where product_id = $id ";
-			$database->setQuery($query);
-			$row = $database->loadObject();
+			$file = $product->getFile();
+			$fileName = $product->getFileName();
 	
 			error_reporting(0);
 	
@@ -1325,11 +1324,11 @@ function validateForm(toStep, fromStep){
 			header('Pragma: public');
 			header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
 			header('Content-Transfer-Encoding: none');
-			header("Content-Length: ".strlen($row->data));
-			header('Content-Type: application/octetstream; name="'.$row->filename.'"');
-			header('Content-Disposition: attachement; filename="'.$row->filename.'"');
+			header("Content-Length: ".strlen($file));
+			header('Content-Type: application/octetstream; name="'.$product->getFileExtension().'"');
+			header('Content-Disposition: attachement; filename="'.$fileName.'"');
 	
-			echo $row->data;
+			echo $file;
 			die();
 		}
 	}
