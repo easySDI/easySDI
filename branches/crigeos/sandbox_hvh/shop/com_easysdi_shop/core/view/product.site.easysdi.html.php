@@ -26,15 +26,13 @@ class HTML_product{
 		$router = &$app->getRouter();
 		$router->setVars($_REQUEST);
 		
-		if($account->root_id == "")
-		{
+		if($account->root_id == ""){
 			$account->root_id = 0;
 		}
 		
 		JHTML::_('behavior.calendar');
 		$tabs =& JPANE::getInstance('Tabs');
 		?>
-		
 		<div id="page">
 		<?php if($id)
 		{ ?>
@@ -54,6 +52,7 @@ class HTML_product{
 		echo $tabs->startPanel(JText::_("SHOP_TEXT_GENERAL"),"productPane");
 		?>
 		<br/>
+		<input type="hidden" name="MAX_FILE_SIZE" value="<?php echo $product->maxFileSize;?>000000">
 		<table width="100%" border="0" cellpadding="0" cellspacing="0">
 			<tr>
 				<td>
@@ -112,6 +111,7 @@ class HTML_product{
 				<td>
 					<fieldset class="fieldset_properties">
 						<legend><?php echo JText::_("SHOP_PRODUCT_FS_DIFFUSION"); ?></legend>
+						
 						<script>
 						   function toggle_state(obj){
 						   	if(obj.checked){
@@ -133,8 +133,11 @@ class HTML_product{
 								if (document.forms['productForm'].free.value == '0')
 								{
 									document.getElementById('productfile').disabled = true;
+									document.getElementById('pathfile').disabled = true;
 									document.getElementById('available').disabled = true;
 									document.getElementById('available').value = '0';
+									document.getElementById('deleteFileButton').disabled = true;
+									document.getElementById('linkFile').value = true;
 									document.getElementById('surfacemin').disabled = false;
 									document.getElementById('surfacemax').disabled = false;
 									document.getElementById('notification').disabled = false;
@@ -143,7 +146,10 @@ class HTML_product{
 								else if (document.forms['productForm'].free.value == '1' && document.forms['productForm'].available.value == '0')
 								{
 									document.getElementById('productfile').disabled = true;
+									document.getElementById('pathfile').disabled = true;
 									document.getElementById('available').disabled = false;
+									document.getElementById('deleteFileButton').disabled = true;
+									document.getElementById('linkFile').disabled = false;
 									document.getElementById('surfacemin').disabled = false;
 									document.getElementById('surfacemax').disabled = false;
 									document.getElementById('notification').disabled = false;
@@ -152,12 +158,23 @@ class HTML_product{
 								else
 								{
 									document.getElementById('productfile').disabled = false;
+									document.getElementById('pathfile').disabled = false;
 									document.getElementById('available').disabled = false;
+									document.getElementById('deleteFileButton').disabled = false;
+									document.getElementById('linkFile').disabled = false;
 									document.getElementById('surfacemin').disabled = true;
 									document.getElementById('surfacemax').disabled = true;
 									document.getElementById('notification').disabled = true;
 									document.getElementById('treatmenttype_id').disabled = true;
 								}
+							}
+						   function deleteFile (form){
+								
+								 if (confirm('<?php echo JText::_("SHOP_PRODUCT_MSG_CONFIRM_DELETE_FILE"); ?>')== true)
+								 {
+									 form.task.value='deleteProductFile';
+									 form.submit();
+								 }
 							}
 						</script>
 						<table border="0" cellpadding="3" cellspacing="0">
@@ -172,28 +189,45 @@ class HTML_product{
 							</tr>
 							<tr>
 								<td class="ptitle"><?php echo JText::_("SHOP_PRODUCT_FREE"); ?> : </td>
-								<td colspan="2"><select class="inputbox" name="free" id="free"  onChange="javascript:fieldManagement();">								
+								<td colspan="2">
+									<select class="inputbox" name="free" id="free"  onChange="javascript:fieldManagement();">								
 									<option value="0" <?php if( $product->free == 0 ) echo "selected"; ?> ><?php echo JText::_("CORE_NO"); ?></option>
 									<option value="1" <?php if( $product->free == 1 ) echo "selected"; ?>><?php echo JText::_("CORE_YES"); ?></option>
 									</select>
-									</td></td>								
+								</td>								
 							</tr>
 							<tr>
 								<td class="ptitle"><?php echo JText::_("SHOP_PRODUCT_AVAILABLE"); ?> : </td>
-								
-									<td>
+								<td  colspan="2">
 									<select <?php if( $product->free == 0 ) echo "disabled"; ?> class="inputbox" name="available" id="available"  onChange="javascript:fieldManagement();">								
-									<option value="0" <?php if( $product->available == 0 ) echo "selected"; ?> ><?php echo JText::_("CORE_NO"); ?></option>
-									<option value="1" <?php if( $product->available == 1 ) echo "selected"; ?>><?php echo JText::_("CORE_YES"); ?></option>
+										<option value="0" <?php if( $product->available == 0 ) echo "selected"; ?> ><?php echo JText::_("CORE_NO"); ?></option>
+										<option value="1" <?php if( $product->available == 1 ) echo "selected"; ?>><?php echo JText::_("CORE_YES"); ?></option>
 									</select>
-									</td>
-									<td><a target="RAW" href="./index.php?option=<?php echo $option; ?>&task=downloadFinalProduct&product_id=<?php echo $product->id?>">
-									<?php echo $product->getFileName();?></a></td>
-									
+								</td>
+							</tr>
+							<tr>
+								<td class="ptitle"><?php echo JText::_("SHOP_PRODUCT_FILE_NAME") ;?></td>
+								<td>
+									<a id="linkFile" target="RAW" href="./index.php?format=raw&option=<?php echo $option; ?>&task=downloadFinalProduct&product_id=<?php echo $product->id?>">
+										<?php echo $product->getFileName();?> 
+									</a> 
+								</td>
+								<td class="buttonright">
+									<button type="button" id="deleteFileButton" onCLick="deleteFile(document.getElementById('productForm'));" >
+										<?php echo JText::_("SHOP_PRODUCT_DELETE_FILE"); ?>
+									</button>
+								</td>
 							</tr>
 							<tr>
 								<td class="ptitle"><?php echo JText::_("SHOP_PRODUCT_UP_FILE") ;?></td>
-								<td colspan="2"><input type="file" name="productfile" id="productfile" <?php if( $product->available == 0 ) echo "disabled"; ?> ></td>
+								<td colspan="2" >
+									<input type="file" name="productfile" id="productfile" <?php if( $product->available == 0 ) echo "disabled"; ?> >
+									<?php printf( JText::_("SHOP_PRODUCT_FILE_MAX_SIZE"),$product->maxFileSize); ?> 
+								</td>
+							</tr>
+							<tr>
+								<td class="ptitle"><?php echo JText::_("SHOP_PRODUCT_PATH_FILE") ;?></td>
+								<td colspan="2"><input class="inputbox" type="text" size="50" maxlength="100" name="pathfile"  id="pathfile" <?php  if( $product->available == 0 ) echo "disabled";?> value="<?php echo $product->pathfile; ?>" /></td>
 							</tr>
 							<tr>
 								<td class="ptitle"><?php echo JText::_("SHOP_PRODUCT_TREATMENT"); ?> : </td>

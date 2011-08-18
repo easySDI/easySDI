@@ -279,6 +279,22 @@ switch($task){
 	/*****************************************************************************************************************************
 	 * Product
 	 *****************************************************************************************************************************/
+	case "deleteProductFile":
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'product.easysdi.class.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'basemap.easysdi.class.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'perimeter.easysdi.class.php');
+		require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'product.site.easysdi.html.php');
+		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'product.site.easysdi.php');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_catalog'.DS.'core'.DS.'model'.DS.'objectversion.easysdi.class.php');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_catalog'.DS.'core'.DS.'model'.DS.'object.easysdi.class.php');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.displayManager.class.php');
+		
+		SITE_product::deleteProductFile($option);
+		$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=editProduct&id=".JRequest::getVar('id')."&limitstart=$limitstart&limit=$limit"), false));
+		break;
+		
 	case "showMetadata"	:
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.displayManager.class.php');
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
@@ -361,6 +377,7 @@ switch($task){
 		break;
 		
 	case "downloadFinalProduct":
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'product.easysdi.class.php');
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'product.site.easysdi.php');	
 		
 		SITE_product::downloadFinalProduct();

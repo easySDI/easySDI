@@ -379,8 +379,6 @@ class ADMIN_product {
 			return false;
 		}
 		
-		$product->tryCheckOut($option,'listProduct');
-		
 		if(isset($_FILES['productfile']) && !empty($_FILES['productfile']['name'])) {
 			if ($_FILES['productfile']['error']) {    
 	          switch ($_FILES['productfile']['error']){    
@@ -408,14 +406,12 @@ class ADMIN_product {
 	          }    
 			}    
 			
-			
 			if(filesize($_FILES['productfile']['tmp_name']) > JRequest::getVar("MAX_FILE_SIZE")){
 				//$mainframe->enqueueMessage(printf(JText::_("SHOP_PRODUCT_MAX_FILE_SIZE_ERROR"),JRequest::getVar("MAX_FILE_SIZE")),"ERROR");
 				$mainframe->enqueueMessage(JText::_("SHOP_PRODUCT_MAX_FILE_SIZE_ERROR"),"ERROR");
 				$mainframe->redirect("index.php?option=$option&task=editProduct&cid[]=$product->id" );
 				return;
 			}
-			
 		}
 		
 		$service_type = JRequest::getVar('service_type');
