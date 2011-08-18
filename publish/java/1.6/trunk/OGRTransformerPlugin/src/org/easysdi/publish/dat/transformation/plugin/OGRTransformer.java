@@ -68,10 +68,9 @@ public class OGRTransformer implements ITransformerAdapter {
 			String candidateExt = arrfileName[1].toLowerCase();
 			if(
 					candidateExt.equals("shp")
-					||candidateExt.equals("map")
 					||candidateExt.equals("gml")
 					||candidateExt.equals("mif")
-					||candidateExt.equals("tab")			
+					||candidateExt.equals("tab")
 			){
 				mainFileName =  fileName;
 				extension = arrfileName[1].toLowerCase();
