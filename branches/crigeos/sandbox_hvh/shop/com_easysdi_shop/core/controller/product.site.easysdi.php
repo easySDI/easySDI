@@ -57,23 +57,23 @@ class SITE_product {
 	          switch ($_FILES['productfile']['error']){    
                    case 1: // UPLOAD_ERR_INI_SIZE    
                    	$mainframe->enqueueMessage(JText::_("SHOP_PRODUCT_MAX_FILE_SIZE_UPLOAD_ERR_INI_SIZE"),"ERROR");
-					$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=editProduct&cid[]=$product->id" ),false));
+					$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=editProduct&id=$product->id" ),false));
 					return;
                        
                    case 2: // UPLOAD_ERR_FORM_SIZE    
                   	//$mainframe->enqueueMessage(printf(JText::_("SHOP_PRODUCT_MAX_FILE_SIZE_UPLOAD_ERR_FORM_SIZE"),JRequest::getVar("MAX_FILE_SIZE")),"ERROR");
                   	$mainframe->enqueueMessage(JText::_("SHOP_PRODUCT_MAX_FILE_SIZE_UPLOAD_ERR_FORM_SIZE"),"ERROR");
-					$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=editProduct&cid[]=$product->id" ),false));
+					$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=editProduct&id=$product->id" ),false));
 					return;
                    
                    case 3: // UPLOAD_ERR_PARTIAL    
                    	$mainframe->enqueueMessage(JText::_("SHOP_PRODUCT_MAX_FILE_SIZE_UPLOAD_ERR_PARTIAL"),"ERROR");
-					$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=editProduct&cid[]=$product->id" ), false));
+					$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=editProduct&id=$product->id" ), false));
 					return;
                    
                    case 4: // UPLOAD_ERR_NO_FILE 
                    	$mainframe->enqueueMessage(JText::_("SHOP_PRODUCT_MAX_FILE_SIZE_UPLOAD_ERR_NO_FILE"),"ERROR");
-					$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=editProduct&cid[]=$product->id" ),false));
+					$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=editProduct&id=$product->id" ),false));
 					return; 
                        
 	          }    
@@ -82,7 +82,7 @@ class SITE_product {
 			if(filesize($_FILES['productfile']['tmp_name']) > JRequest::getVar("MAX_FILE_SIZE")){
 				//$mainframe->enqueueMessage(printf(JText::_("SHOP_PRODUCT_MAX_FILE_SIZE_ERROR"),JRequest::getVar("MAX_FILE_SIZE")),"ERROR");
 				$mainframe->enqueueMessage(JText::_("SHOP_PRODUCT_MAX_FILE_SIZE_ERROR"),"ERROR");
-				$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=editProduct&cid[]=$product->id" ),false));
+				$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=editProduct&id=$product->id" ),false));
 				return;
 			}
 		}
@@ -666,10 +666,6 @@ class SITE_product {
 		$product->load($product_id);
 		$file = $product->getFile();
 		$fileName = $product->getFileName();
-		
-	/*	$query = "SELECT data,filename FROM #__sdi_product_file where product_id = $product_id ";
-		$db->setQuery($query);
-		$row = $db->loadObject();*/
 
 		error_reporting(0);
 

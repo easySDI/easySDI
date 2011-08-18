@@ -95,8 +95,15 @@ class product extends sdiTable
 				
 		if($this->available == 0 || $this->free == 0)
 		{
+			//The product is not avalaible, delete the product stored in the database
 			$this->_db->setQuery( "DELETE FROM  #__sdi_product_file WHERE product_id = ".$this->id );
 			if (!$this->_db->query()) {
+				return false;
+			}
+			//Clean the pathFile value
+			$this->pathfile = null;
+			if(! parent::store())
+			{
 				return false;
 			}
 		}
@@ -104,6 +111,7 @@ class product extends sdiTable
 		{
 			if(isset($_FILES['productfile']) && !empty($_FILES['productfile']['name'])) 
 		 	{
+		 		//A file was uploaded, store it in the database
 		 		$fileName = $_FILES['productfile']["name"];
 		 		$tmpName =  $_FILES['productfile']["tmp_name"];
 		 		$type = strtolower(substr($fileName, strrpos($fileName, '.')+1)) ;
@@ -136,9 +144,21 @@ class product extends sdiTable
 						return false;
 					}
 				}
+		 		$this->pathfile = null;
+				if(! parent::store())
+				{
+					return false;
+				}
+			}elseif ($this->pathfile != null){
+				//A local path file is defined, delete the file stored in the database
+				$this->_db->setQuery( "DELETE FROM  #__sdi_product_file WHERE product_id = ".$this->id );
+				if (!$this->_db->query()) {
+					return false;
+				}
 			}
 			else
 			{
+				//If no local file path and no file are defined, set the available attribute value to false
 				$this->_db->setQuery( "SELECT COUNT(*) FROM  #__sdi_product_file WHERE product_id = ".$this->id );
 				$result = $this->_db->loadResult();
 				if ($this->_db->getErrorNum()) {

@@ -212,7 +212,7 @@ class HTML_product{
 										<?php echo $product->getFileName();?> 
 									</a> 
 								</td>
-								<td class="buttonright">
+								<td align="right">
 									<button type="button" id="deleteFileButton" onCLick="deleteFile(document.getElementById('productForm'));" >
 										<?php echo JText::_("SHOP_PRODUCT_DELETE_FILE"); ?>
 									</button>
