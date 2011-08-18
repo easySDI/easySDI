@@ -385,32 +385,34 @@ class ADMIN_product {
 			if ($_FILES['productfile']['error']) {    
 	          switch ($_FILES['productfile']['error']){    
                    case 1: // UPLOAD_ERR_INI_SIZE    
-                   	$mainframe->enqueueMessage("Le fichier dépasse la limite autorisée par le serveur (fichier php.ini) !","ERROR");
-					$mainframe->redirect("index.php?option=$option&task=listProduct" );
-					exit();
+                   	$mainframe->enqueueMessage(JText::_("SHOP_PRODUCT_MAX_FILE_SIZE_UPLOAD_ERR_INI_SIZE"),"ERROR");
+					$mainframe->redirect("index.php?option=$option&task=editProduct&cid[]=$product->id" );
+					return;
                        
                    case 2: // UPLOAD_ERR_FORM_SIZE    
-                  	$mainframe->enqueueMessage("Le fichier dépasse la limite autorisée dans le formulaire HTML !","ERROR");
-					$mainframe->redirect("index.php?option=$option&task=listProduct" );
-					exit();
+                  	//$mainframe->enqueueMessage(printf(JText::_("SHOP_PRODUCT_MAX_FILE_SIZE_UPLOAD_ERR_FORM_SIZE"),JRequest::getVar("MAX_FILE_SIZE")),"ERROR");
+                  	$mainframe->enqueueMessage(JText::_("SHOP_PRODUCT_MAX_FILE_SIZE_UPLOAD_ERR_FORM_SIZE"),"ERROR");
+					$mainframe->redirect("index.php?option=$option&task=editProduct&cid[]=$product->id" );
+					return;
                    
                    case 3: // UPLOAD_ERR_PARTIAL    
-                   	$mainframe->enqueueMessage("L'envoi du fichier a été interrompu pendant le transfert !","ERROR");
-					$mainframe->redirect("index.php?option=$option&task=listProduct" );
-					exit();
+                   	$mainframe->enqueueMessage(JText::_("SHOP_PRODUCT_MAX_FILE_SIZE_UPLOAD_ERR_PARTIAL"),"ERROR");
+					$mainframe->redirect("index.php?option=$option&task=editProduct&cid[]=$product->id" );
+					return;
                    
                    case 4: // UPLOAD_ERR_NO_FILE 
-                   	$mainframe->enqueueMessage( "Le fichier que vous avez envoyé a une taille nulle !","ERROR");
-					$mainframe->redirect("index.php?option=$option&task=listProduct" );
-					exit(); 
+                   	$mainframe->enqueueMessage(JText::_("SHOP_PRODUCT_MAX_FILE_SIZE_UPLOAD_ERR_NO_FILE"),"ERROR");
+					$mainframe->redirect("index.php?option=$option&task=editProduct&cid[]=$product->id" );
+					return; 
                        
 	          }    
 			}    
 			
 			
-			if(filesize($_FILES['productfile']['tmp_name']) > JRequest::getVar("MAX_FILE_SIZE",0,'POST',INT)){
-				$mainframe->enqueueMessage("SIZE ERROR","ERROR");
-				$mainframe->redirect("index.php?option=$option&task=listProduct" );
+			if(filesize($_FILES['productfile']['tmp_name']) > JRequest::getVar("MAX_FILE_SIZE")){
+				//$mainframe->enqueueMessage(printf(JText::_("SHOP_PRODUCT_MAX_FILE_SIZE_ERROR"),JRequest::getVar("MAX_FILE_SIZE")),"ERROR");
+				$mainframe->enqueueMessage(JText::_("SHOP_PRODUCT_MAX_FILE_SIZE_ERROR"),"ERROR");
+				$mainframe->redirect("index.php?option=$option&task=editProduct&cid[]=$product->id" );
 				return;
 			}
 			
@@ -435,7 +437,6 @@ class ADMIN_product {
 			$product->pathfile = null;
 		
 		if (!$product->store()) {
-			$mainframe->enqueueMessage("Product can not be store","ERROR");
 			$mainframe->redirect("index.php?option=$option&task=listProduct" );
 			return false;
 		}
@@ -443,7 +444,7 @@ class ADMIN_product {
 		$product_perimeter = new product_perimeter($database);
 		if(!$product_perimeter->delete($product->id)){
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=listProduct" );
+			$mainframe->redirect("index.php?option=$option&task=editProduct&cid[]=$product->id" );
 			return false;
 		}
 
@@ -454,7 +455,7 @@ class ADMIN_product {
 			$product_perimeter->perimeter_id=$perimeter_id;
 			if(!$product_perimeter->store()){
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=listProduct" );
+				$mainframe->redirect("index.php?option=$option&task=editProduct&cid[]=$product->id" );
 				return false;
 			}
 		}
@@ -464,13 +465,13 @@ class ADMIN_product {
 			$product_perimeter = new product_perimeter($database);
 			if(!$product_perimeter->loadById($product->id,$bufferPerimeterId)){
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=listProduct" );
+				$mainframe->redirect("index.php?option=$option&task=editProduct&cid[]=$product->id" );
 				return false;
 			}
 			$product_perimeter->buffer = 1;
 			if(!$product_perimeter->store()){
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=listProduct" );
+				$mainframe->redirect("index.php?option=$option&task=editProduct&cid[]=$product->id" );
 				return false;
 			}
 		}
@@ -478,7 +479,7 @@ class ADMIN_product {
 		$product_property = new product_property($database);
 		if(!$product_property->delete($product->id)){
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=listProduct" );
+			$mainframe->redirect("index.php?option=$option&task=editProduct&cid[]=$product->id" );
 			return false;
 		}
 
@@ -490,7 +491,7 @@ class ADMIN_product {
 			$product_property->propertyvalue_id=$properties_id;
 			if(!$product_property->store()){
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=listProduct" );
+				$mainframe->redirect("index.php?option=$option&task=editProduct&cid[]=$product->id" );
 				return false;
 			}
 		}
@@ -498,7 +499,7 @@ class ADMIN_product {
 		$product_account = new product_account($database);
 		if(!$product_account->delete($product->id)){
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=listProduct" );
+			$mainframe->redirect("index.php?option=$option&task=editProduct&cid[]=$product->id" );
 			exit();
 		}
 
@@ -510,7 +511,7 @@ class ADMIN_product {
 			$product_account->code='preview';
 			if(!$product_account->store()){
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=listProduct" );
+				$mainframe->redirect("index.php?option=$option&task=editProduct&cid[]=$product->id" );
 				exit();
 			}
 		}
@@ -522,7 +523,7 @@ class ADMIN_product {
 			$product_account->code='download';
 			if(!$product_account->store()){
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=listProduct" );
+				$mainframe->redirect("index.php?option=$option&task=editProduct&cid[]=$product->id" );
 				exit();
 			}
 		}

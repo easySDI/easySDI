@@ -116,14 +116,14 @@ class product extends sdiTable
 				$this->_db->setQuery( "SELECT COUNT(*) FROM  #__sdi_product_file WHERE product_id = ".$this->id );
 				$result = $this->_db->loadResult();
 				if ($this->_db->getErrorNum()) {
-					$mainframe->enqueueMessage($this->_db->getErrorNum(), "ERROR");
+					$mainframe->enqueueMessage($this->_db->getErrorMsg(), "ERROR");
 					return false;
 				}
 				if($result > 0)
 				{
 					$this->_db->setQuery( "UPDATE  #__sdi_product_file SET data='".$content."', filename='".$fileName."', size =".$size.", type='".$type."' WHERE product_id = ".$this->id );
 					if (!$this->_db->query()) {
-						$mainframe->enqueueMessage($this->_db->getErrorNum(), "ERROR");
+						$mainframe->enqueueMessage($this->_db->getErrorMsg(), "ERROR");
 						return false;
 					}
 				}
@@ -132,7 +132,7 @@ class product extends sdiTable
 					$query =  "INSERT INTO  #__sdi_product_file (filename, data,product_id, type, size) VALUES ('".$fileName."' ,'".$content."', ".$this->id.", '".$type."', ".$size." )" ;
 					$this->_db->setQuery($query);
 					if (!$this->_db->query()) {
-						$mainframe->enqueueMessage($this->_db->getErrorNum(), "ERROR");
+						$mainframe->enqueueMessage($this->_db->getErrorMsg(), "ERROR");
 						return false;
 					}
 				}
@@ -142,7 +142,7 @@ class product extends sdiTable
 				$this->_db->setQuery( "SELECT COUNT(*) FROM  #__sdi_product_file WHERE product_id = ".$this->id );
 				$result = $this->_db->loadResult();
 				if ($this->_db->getErrorNum()) {
-					$mainframe->enqueueMessage($this->_db->getErrorNum(), "ERROR");
+					$mainframe->enqueueMessage($this->_db->getErrorMsg(), "ERROR");
 					return false;
 				}
 				if($result == 0 && $this->pathfile == null){
