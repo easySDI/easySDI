@@ -21,11 +21,9 @@ class SITE_catalog {
 	var $langList = array ();
 	
 	function listCatalogContent(){
-		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
+		//require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 		
 		global $mainframe;
-		$database =& JFactory::getDBO();
-		
 		$database =& JFactory::getDBO();
 		$user = JFactory::getUser();
 		$language =& JFactory::getLanguage();
