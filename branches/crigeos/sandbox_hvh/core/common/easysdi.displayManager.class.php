@@ -2165,8 +2165,14 @@ class displayManager{
 		$XMLActionPrint->appendChild($XMLActionPrintLink);
 		//$XMLActionPrint->appendChild($XMLActionPrintParams);
 		
+		$XMLAction->appendChild($XMLActionPDF);
+		$XMLAction->appendChild($XMLActionXML);
+		$XMLAction->appendChild($XMLActionPrint);
+	//	$XMLAction->appendChild($XMLActionOrder);
+		
 		if ($shopExist == 1)
 		{
+			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_shop'.DS.'core'.DS.'model'.DS.'product.easysdi.class.php');
 			//Order
 			$XMLActionOrder = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:order");
 			$XMLActionOrder->setAttribute('id', 'orderProduct');
@@ -2174,6 +2180,7 @@ class displayManager{
 			//$XMLActionOrderParams = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:params", '![CDATA[\'_parent\']]');
 			$XMLActionOrder->appendChild($XMLActionOrderLink);
 			//$XMLActionOrder->appendChild($XMLActionOrderParams);
+			$XMLAction->appendChild($XMLActionOrder);
 			
 			if ($product)
 			{
@@ -2195,8 +2202,9 @@ class displayManager{
 					//Link to download the product 
 					$XMLActionDownloadProduct = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:downloadProduct");
 					$XMLActionDownloadProduct->setAttribute('id', 'downloadProduct');
-					$XMLActionDownloadProductLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", htmlentities(JRoute::_('./index.php?tmpl=component&option=com_easysdi_shop&task=downloadAvailableProduct&cid[]='.$product->id.'&toolbar=0&print=1')));
+					$XMLActionDownloadProductLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", htmlentities(JRoute::_('./index.php?tmpl=component&option=com_easysdi_shop&task=downloadAvailableProduct&cid[]='.$product_object->id.'&toolbar=0&print=1')));
 					$XMLActionDownloadProduct->appendChild($XMLActionDownloadProductLink);
+					$XMLAction->appendChild($XMLActionDownloadProduct);
 				}
 				$query = "select count(*) from #__sdi_product p 
 										where p.viewurlwms != '' AND p.id = $product->id";
@@ -2217,6 +2225,7 @@ class displayManager{
 					$XMLActionPreviewProduct->setAttribute('id', 'previewProduct'); 
 					$XMLActionPreviewProductLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", htmlentities(JRoute::_('./index.php?tmpl=component&option=com_easysdi_shop&task=previewProduct&metadata_id='.$metadata_id.'&toolbar=0&print=1')));
 					$XMLActionPreviewProduct->appendChild($XMLActionPreviewProductLink);
+					$XMLAction->appendChild($XMLActionPreviewProduct);
 				}
 			}
 		}
@@ -2230,12 +2239,8 @@ class displayManager{
 //		$XMLActionRemoveFromFavoriteLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", '![CDATA[var req = new Ajax(\'./index.php?option=com_easysdi_shop&task=removeFavorite&view=&metadata_guid='.$fileIdentifier.', {method: \'get\',onSuccess: function(){},onFailure: function(){}}).request();]]');
 //		$XMLActionRemoveFromFavorite->appendChild($XMLActionRemoveFromFavoriteLink);
 		
-		$XMLAction->appendChild($XMLActionPDF);
-		$XMLAction->appendChild($XMLActionXML);
-		$XMLAction->appendChild($XMLActionPrint);
-		$XMLAction->appendChild($XMLActionOrder);
-		$XMLAction->appendChild($XMLActionDownloadProduct);
-		$XMLAction->appendChild($XMLActionPreviewProduct);
+		
+		
 //		$XMLAction->appendChild($XMLActionAddToFavorite);
 //		$XMLAction->appendChild($XMLActionRemoveFromFavorite);
 		
@@ -2349,7 +2354,7 @@ class displayManager{
 		}
 		$XMLSdi->appendChild($XMLExternalApp);
 		
-		//$doc->save("C:/tmp/temp.xml");
+		$doc->save("C:/tmp/temp.xml");
 		                     
 		return $doc;
 	}
