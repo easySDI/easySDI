@@ -142,7 +142,6 @@ public class Config {
 				String candidateExt = arrfileName[1].toLowerCase();
 				if(
 						candidateExt.equals("shp")
-						||candidateExt.equals("map")
 						||candidateExt.equals("gml")
 						||candidateExt.equals("mif")
 						||candidateExt.equals("tab")			
