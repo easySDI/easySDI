@@ -20,6 +20,203 @@
 defined('_JEXEC') or die('Restricted access');
 
 class HTML_account {
+	function createAccount($option, $titles, $countries){
+	?>
+	<script language="javascript" type="text/javascript">
+	function submitBlockUser()
+		{
+			var form = document.AccountForm;
+			if (form.elements['task'].value == "createBlockUser")
+			{
+				if(form.elements['password'].value != form.elements['password_chk'].value)
+				{
+					alert( <?php echo "'".JText::_("CORE_PASSWD_CHECK_INVALID")."'"; ?>);
+					return;
+				}
+				// do field validation
+				if (form.elements['name'].value == '' 
+					|| form.elements['username'].value == '' 
+					|| form.elements['email'].value == '' 
+					|| (form.elements['password'].value == '' && form.elements['id'].value =='')
+					|| form.elements['corporatename1[0]'].value == ''
+					|| form.elements['agentfirstname[0]'].value == ''
+					|| form.elements['agentfirstname[0]'].value == ''
+					|| form.elements['title_id[0]'].value == '0'
+				
+					|| form.elements['street1[0]'].value == ''
+					|| form.elements['locality[0]'].value == ''
+					|| form.elements['postalcode[0]'].value == ''
+					
+					)
+				{
+					alert( <?php echo "'".JText::_("CORE_REGISTER_MISSING_VALUES")."'"; ?>);
+				} else {
+					form.submit( );
+				}
+			}
+			
+			/*
+			
+			// do field validation
+			if (form.elements['name'].value == '' 
+				|| form.elements['username'].value == '' 
+				|| form.elements['user_email'].value == '' 
+				|| (form.elements['password'].value == '' && form.elements['id'].value =='')
+		        ){
+				alert( <?php echo "'".JText::_("CORE_REGISTER_MISSING_VALUES")."'"; ?>);
+			} else {
+				document.getElementById('AccountForm').submit();
+			}
+			
+			//for my account
+			if(!form.elements['address_corporate_name1']){
+				if(form.elements['address_corporate_name1[0]'].value == ''
+				|| form.elements['address_agent_firstname[0]'].value == ''
+				|| form.elements['address_agent_lastname[0]'].value == ''
+				|| form.elements['title_id[0]'].value == '0'
+				|| form.elements['address_street1[0]'].value == ''
+				|| form.elements['address_locality[0]'].value == ''
+				|| form.elements['address_postalcode[0]'].value == '')
+				{
+				  alert( <?php echo "'".JText::_("CORE_REGISTER_MISSING_VALUES")."'"; ?>);
+			        } else {
+				   document.getElementById('partnerForm').submit();
+			        }
+			//from new user registration
+			}else{
+			        if(form.elements['address_corporate_name1'].value == ''
+				|| form.elements['address_agent_firstname'].value == ''
+				|| form.elements['address_agent_lastname'].value == ''
+				|| form.elements['title_id'].value == '0'
+				|| form.elements['address_street1'].value == ''
+				|| form.elements['address_locality'].value == ''
+				|| form.elements['address_postalcode'].value == '')
+				{
+				   alert( <?php echo "'".JText::_("CORE_REGISTER_MISSING_VALUES")."'"; ?>);
+			        } else {
+				   document.getElementById('partnerForm').submit();
+			        }
+			
+			}
+			*/
+			
+		}
+		</script>
+	
+	
+	
+	
+		<div class="contentin">
+		<h2 class="contentheading"> <?php echo JText::_("CORE_REGISTER_ACCOUNT_TITLE"); ?></h2>
+		<form action="index.php" method="post" name="AccountForm" id="AccountForm" class="AccountForm">
+		<br>
+		<table width="100%">
+			<tr>
+				<td>
+					<fieldset>
+						<legend><?php echo JText::_("CORE_ACCOUNT_GEN_INFO"); ?></legend>
+						<table border="0" cellpadding="3" cellspacing="0">
+							<tr>
+							<?php	
+								//SITE_account::includeAccountExtension(0,'TOP','requestPartner',0);
+							?> 
+							</tr>
+							<tr>
+								<td class="ptitle"><?php echo JText::_("CORE_TEXT_ACCOUNT_NAME"); ?> : </td>
+								<td><input onblur="$('address_corporate_name1').value = this.value;" class="inputbox" type="text" size="50" maxlength="100" name="name" value="<?php echo $_POST["name"]; ?>" /> *</td>
+							</tr>
+							<tr>
+								<td class="ptitle"><?php echo JText::_("CORE_TEXT_USER"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="username" value="<?php echo $_POST["username"]; ?>" /> *</td>
+							</tr>
+							<tr>
+								<td class="ptitle"><?php echo JText::_("CORE_ACCOUNT_PASSWORD_LABEL"); ?> : </td>
+								<td><input class="inputbox" type="password" size="50" maxlength="100" name="password" value="<?php echo $_POST["password"]; ?>" /> *</td>
+							</tr>
+							<tr>
+								<td class="ptitle"><?php echo JText::_("CORE_ACCOUNT_PASSWORD_CHECK_LABEL"); ?> : </td>
+								<td><input class="inputbox" type="password" size="50" maxlength="100" name="password_chk" value="<?php echo $_POST["password_chk"]; ?>" /> *</td>
+							</tr>
+							<tr>
+								<td class="ptitle"><?php echo JText::_("CORE_ACCOUNT_EMAIL_LABEL"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="email" value="<?php echo $_POST["email"]; ?>" /> *</td>
+							</tr>																			
+						</table>
+					</fieldset>
+					<fieldset>
+						<legend><b><?php echo JText::_("CORE_TEXT_CONTACT_ADRESS"); ?></b></legend>
+		
+						<table border="0" cellpadding="3" cellspacing="0">			
+						<tr>
+							<td class="ptitle"><?php echo JText::_("CORE_TEXT_ORGANISATION"); ?> : </td>
+							<td><input class="inputbox" type="text" size="50" maxlength="100" id="address_corporate_name1" name="corporatename1[0]" value="<?php echo $_POST["corporatename1[0]"]; ?>"/> *</td>
+						</tr>
+						<tr>
+							<td class="ptitle"></td>
+							<td><input class="inputbox" type="text" size="50" maxlength="100" name="corporatename2[0]" value="<?php echo $_POST["corporatename2[0]"]; ?>" /></td>
+						</tr>
+						<tr>
+							<td class="ptitle"><?php echo JText::_("CORE_TEXT_CONTACT_TITLE"); ?> : </td>
+							<td><?php echo JHTML::_("select.genericlist",$titles, 'title_id[0]', 'size="1" class="inputbox"', 'value', 'text', $_POST["title_id[0]"] ); ?> *</td>
+						</tr>
+						<tr>
+							<td class="ptitle"><?php echo JText::_("CORE_ACCOUNT_FIRSTNAME_LABEL"); ?> : </td>
+							<td><input class="inputbox" type="text" size="50" maxlength="100" name="agentfirstname[0]" value="<?php echo $_POST["agentfirstname[0]"]; ?>" /> *</td>
+						</tr>
+						<tr>
+							<td class="ptitle"><?php echo JText::_("CORE_ACCOUNT_LASTNAME_LABEL"); ?> : </td>
+							<td><input class="inputbox" type="text" size="50" maxlength="100" name="agentlastname[0]" value="<?php echo $_POST["agentlastname[0]"]; ?>" /> *</td>
+						</tr>
+						<tr>
+							<td class="ptitle"><?php echo JText::_("CORE_ACCOUNT_FUNCTION_LABEL"); ?> : </td>
+							<td><input class="inputbox" type="text" size="50" maxlength="100" name="function[0]" value="<?php echo $_POST["function[0]"]; ?>" /></td>
+						</tr>
+						<tr>
+							<td class="ptitle"><?php echo JText::_("CORE_ACCOUNT_ADDRESS_LABEL"); ?> : </td>
+							<td><input class="inputbox" type="text" size="50" maxlength="100" name="street1[0]" value="<?php echo $_POST["street1[0]"]; ?>" /> *</td>
+						</tr>
+						<tr>
+							<td class="ptitle"></td>
+							<td><input class="inputbox" type="text" size="50" maxlength="100" name="street2[0]" value="<?php echo $_POST["street2[0]"]; ?>" /></td>
+						</tr>
+						<tr>
+							<td class="ptitle"><?php echo JText::_("CORE_ACCOUNT_POSTALCODE_LABEL"); ?> : </td>
+							<td><input class="inputbox" type="text" size="5" maxlength="5" name="postalcode[0]" value="<?php echo $_POST["postalcode[0]"]; ?>" /> *</td>
+						</tr>
+						<tr>
+							<td class="ptitle"><?php echo JText::_("CORE_ACCOUNT_LOCALITY_LABEL"); ?> : </td>
+							<td><input class="inputbox" type="text" size="50" maxlength="100" name="locality[0]" value="<?php echo $_POST["locality[0]"]; ?>" /> *</td>
+						</tr>
+						<tr>
+							<td class="ptitle"><?php echo JText::_("CORE_ACCOUNT_COUNTRY_LABEL"); ?> : </td>
+							<td><?php echo JHTML::_("select.genericlist",$countries, 'country_id[0]', 'size="1" class="inputbox"', 'value', 'text', 'CH' ); ?> *</td>
+						</tr>
+						<tr>
+							<td class="ptitle"><?php echo JText::_("CORE_ACCOUNT_PHONE_LABEL"); ?> : </td>
+							<td><input class="inputbox" type="text" size="50" maxlength="100" name="phone[0]" value="<?php echo $_POST["phone[0]"]; ?>" /></td>
+						</tr>
+						<tr>
+							<td class="ptitle"><?php echo JText::_("CORE_ACCOUNT_FAX_LABEL"); ?> : </td>
+							<td><input class="inputbox" type="text" size="50" maxlength="100" name="fax[0]" value="<?php echo $_POST["fax[0]"]; ?>" /></td>
+						</tr>
+					</table>
+				</fieldset>
+			</td>
+		</tr>
+	</table>		
+		<input type="hidden" name="type_id[]" value="2">
+		<input type="hidden" name="task" value="">
+		<input type="hidden" name="option" value="<?php echo $option; ?>">
+		<button type="button" onClick="document.getElementById('AccountForm').task.value='createBlockUser'; submitBlockUser();" ><?php echo JText::_("CORE_VALIDATE"); ?></button>
+	</form>
+	
+	</div>	
+		
+		
+		
+	<?php
+	}
+	
 	
 	function showAccount( $hasTheRightToEdit,$hasTheRightToManageHisOwnAffiliates,&$rowUser, &$rowAccount, $rowContact, $rowSubscription, $rowDelivery ,$option)
 	{
@@ -809,7 +1006,7 @@ class HTML_account {
 	}
 	
 	function listAccount( &$rows, $search, $option, $root_Account_id,$types,$type)
-	{				
+	{	
 		$database =& JFactory::getDBO();		 
 		$user =& JFactory::getUser();
 		$app	= &JFactory::getApplication();

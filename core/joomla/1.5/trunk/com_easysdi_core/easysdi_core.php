@@ -42,18 +42,19 @@ $option = JRequest::getVar('option');
 
 switch($task){	
 	case "createBlockUser":
+		include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'user'.DS.'helper.php');
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'account.site.easysdi.php');
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'account.site.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'account.easysdi.class.php');
 		
 		SITE_account::createBlockUser();
 		break;
-	case "createUser":
+	case "createAccount":
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'account.site.easysdi.php');
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'account.site.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'account.easysdi.class.php');
 		
-		SITE_account::createUser(0);
+		SITE_account::createAccount(0);
 		break;
 	case "createAffiliate":
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'account.site.easysdi.php');
