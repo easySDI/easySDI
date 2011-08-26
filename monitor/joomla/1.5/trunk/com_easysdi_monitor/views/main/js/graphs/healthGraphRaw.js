@@ -138,16 +138,16 @@ EasySDI_Mon.drawHealthGraphRaw = function(container, aStores, logRes,useSla){
                     }
         			if(summaryCount > 0)
 					{
-						avSeries.data.push(Math.round((avCount/summaryCount)*100));
-						unavSeries.data.push(Math.round((unavCount/summaryCount)*100));
-						fSeries.data.push(Math.round((fCount/summaryCount)*100));
-						otherSeries.data.push(Math.round((otherCount/summaryCount)*100));
+						avSeries.data.push(Math.round((avCount/summaryCount)*10000)/100);
+						unavSeries.data.push(Math.round((unavCount/summaryCount)*10000)/100);
+						fSeries.data.push(Math.round((fCount/summaryCount)*10000)/100);
+						otherSeries.data.push(Math.round((otherCount/summaryCount)*10000)/100);
 					}else
 					{
-						avSeries.data.push(Math.round((avCount/aRec.length)*100));
-						unavSeries.data.push(Math.round((unavCount/aRec.length)*100));
-						fSeries.data.push(Math.round((fCount/aRec.length)*100));
-						otherSeries.data.push(Math.round((otherCount/aRec.length)*100));
+						avSeries.data.push(Math.round((avCount/aRec.length)*10000)/100);
+						unavSeries.data.push(Math.round((unavCount/aRec.length)*10000)/100);
+						fSeries.data.push(Math.round((fCount/aRec.length)*10000)/100);
+						otherSeries.data.push(Math.round((otherCount/aRec.length)*10000)/100);
                     }
 		    
         	}

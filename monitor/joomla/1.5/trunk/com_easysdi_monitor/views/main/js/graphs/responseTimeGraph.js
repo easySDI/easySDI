@@ -85,14 +85,20 @@ EasySDI_Mon.drawResponseTimeGraph = function (container, aStores, logRes, tickIn
 						{
 							if(this.point.normalGraph)
 							{
-								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip AVAILABILITY')+":</b> "+Math.round(this.point.data.data.h1Availability)+"%<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip AVAILABILITY')+":</b> "+(Math.round(this.point.data.data.h1Availability *100)/100)+"%<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip UNAVAILABILITY')+":</b> "+(Math.round(this.point.data.data.h1Unavailability * 100)/100)+"%<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip FAILURE')+":</b> "+(Math.round(this.point.data.data.h1Failure * 100)/100)+"%<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip UNTESTED')+":</b> "+(Math.round(this.point.data.data.h1Untested * 100)/100)+"%<br/>";
 								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip NB_CONN_ERRORS')+":</b> "+this.point.data.data.h1NbConnErrors+"<br/>";
 								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip NB_BIZ_ERRORS')+":</b> "+this.point.data.data.h1NbBizErrors+"<br/>";
 								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip MaxRespTime')+"</b> -> "+Math.round(this.point.data.data.h1MaxRespTime * 1000) + EasySDI_Mon.lang.getLocal('ms suffix')+"<br/>";
 								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip MinRespTime')+"</b> -> "+Math.round(this.point.data.data.h1MinRespTime * 1000) + EasySDI_Mon.lang.getLocal('ms suffix')+"<br/>";
 							}else
 							{
-								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip AVAILABILITY')+":</b> "+Math.round(this.point.data.data.inspireAvailability)+"%<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip AVAILABILITY')+":</b> "+(Math.round(this.point.data.data.inspireAvailability * 100)/100)+"%<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip UNAVAILABILITY')+":</b> "+(Math.round(this.point.data.data.inspireUnavailability * 100)/100)+"%<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip FAILURE')+":</b> "+(Math.round(this.point.data.data.inspireFailure * 100)/100)+"%<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip UNTESTED')+":</b> "+(Math.round(this.point.data.data.inspireUntested * 100)/100)+"%<br/>";
 								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip NB_CONN_ERRORS')+":</b> "+this.point.data.data.inspireNbConnErrors+"<br/>";
 								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip NB_BIZ_ERRORS')+":</b> "+this.point.data.data.inspireNbBizErrors+"<br/>";
 								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip MaxRespTime')+"</b> -> "+Math.round(this.point.data.data.inspireMaxRespTime * 1000) + EasySDI_Mon.lang.getLocal('ms suffix')+"<br/>";
@@ -103,14 +109,20 @@ EasySDI_Mon.drawResponseTimeGraph = function (container, aStores, logRes, tickIn
 						{
 							if(this.point.normalGraph)
 							{
-								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip AVAILABILITY')+":</b> "+Math.round(this.point.data.data.h24Availability)+"%<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip AVAILABILITY')+":</b> "+(Math.round(this.point.data.data.h24Availability *100)/100)+"%<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip UNAVAILABILITY')+":</b> "+(Math.round(this.point.data.data.h24Unavailability *100)/100)+"%<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip FAILURE')+":</b> "+(Math.round(this.point.data.data.h24Failure * 100)/100)+"%<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip UNTESTED')+":</b> "+(Math.round(this.point.data.data.h24Untested * 100)/100)+"%<br/>";
 								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip NB_CONN_ERRORS')+":</b> "+this.point.data.data.h24NbConnErrors+"<br/>";
 								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip NB_BIZ_ERRORS')+":</b> "+this.point.data.data.h24NbBizErrors+"<br/>";
 								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip MaxRespTime')+"</b> -> "+Math.round(this.point.data.data.h24MaxRespTime * 1000) + EasySDI_Mon.lang.getLocal('ms suffix')+"<br/>";
 								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip MinRespTime')+"</b> -> "+Math.round(this.point.data.data.h24MinRespTime * 1000) + EasySDI_Mon.lang.getLocal('ms suffix')+"<br/>";		
 							}else
 							{
-								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip AVAILABILITY')+":</b> "+Math.round(this.point.data.data.slaAvailability)+"%<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip AVAILABILITY')+":</b> "+(Math.round(this.point.data.data.slaAvailability *100)/100)+"%<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip UNAVAILABILITY')+":</b> "+(Math.round(this.point.data.data.slaUnavailability *100)/100)+"%<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip FAILURE')+":</b> "+(Math.round(this.point.data.data.slaFailure *100)/100)+"%<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip UNTESTED')+":</b> "+(Math.round(this.point.data.data.slaUntested *100)/100)+"%<br/>";
 								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip NB_CONN_ERRORS')+":</b> "+this.point.data.data.slaNbConnErrors+"<br/>";
 								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip NB_BIZ_ERRORS')+":</b> "+this.point.data.data.slaNbBizErrors+"<br/>";
 								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip MaxRespTime')+"</b> -> "+Math.round(this.point.data.data.slaMaxRespTime * 1000) + EasySDI_Mon.lang.getLocal('ms suffix')+"<br/>";

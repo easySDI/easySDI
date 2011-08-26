@@ -62,7 +62,21 @@ EasySDI_Mon.drawHealthGraphAgg = function (container, aStores, logRes,useSla,sho
 			data: [],
 			color: '#7dff9c'
 	};
-
+    var unavSeries = {
+            name: EasySDI_Mon.lang.getLocal('unavailable'),
+            data: [],
+            color: '#ff7f7f'
+     };
+     var fSeries = {
+        name: EasySDI_Mon.lang.getLocal('failure'),
+        data: [],
+        color: '#e2ff1d'
+     };
+     var otherSeries = {
+        name: EasySDI_Mon.lang.getLocal('untested-unknown'),
+        data: [],
+        color: '#b3b3b3'
+     };
 
 	//push categories
 	for ( var storeName in aStores)
@@ -87,6 +101,12 @@ EasySDI_Mon.drawHealthGraphAgg = function (container, aStores, logRes,useSla,sho
 
 	var avCountH24;
 	var avCountSLA;
+	var unavCount;
+	var unavCountSP;
+	var fCount;
+	var fCountSP
+	var otherCount;
+	var otherCountSP;
 	if(useSla)
 	{
 		//push series
@@ -96,19 +116,37 @@ EasySDI_Mon.drawHealthGraphAgg = function (container, aStores, logRes,useSla,sho
 				var aRec = aStores[storeName].getRange();
 				avCountH24 = 0;
 				avCountSLA = 0;
-	
+				unavCount = 0;
+				unavCountSP = 0;
+				fCount = 0;
+				fCountSP = 0;
+				otherCount = 0;
+				otherCountSP = 0;
 				//push percentiles
 				for ( var i=0; i< aRec.length; i++ )
 				{   
 					avCountH24 += aRec[i].get('h1Availability');
-					avCountSLA += aRec[i].get('inspireAvailability');				
+					avCountSLA += aRec[i].get('inspireAvailability');
+					
+					unavCount += aRec[i].get('h1Unavailability');
+					unavCountSP += aRec[i].get('inspireUnavailability');
+					fCount += aRec[i].get('h1Failure');
+					fCountSP += aRec[i].get('inspireFailure');
+					otherCount += aRec[i].get('h1Untested');
+					otherCountSP += aRec[i].get('inspireUntested');
 				}
 		      
 				if(!showInspireGraph)
 				{
-					avSeries.data.push(Math.round(avCountH24/aRec.length));
+					avSeries.data.push(Math.round((avCountH24/aRec.length) * 100)/100);
+					unavSeries.data.push(Math.round((unavCount/aRec.length) * 100)/100);
+					fSeries.data.push(Math.round((fCount/aRec.length) * 100)/100);
+					otherSeries.data.push(Math.round((otherCount/aRec.length) * 100)/100);
 				}else{
-					avSeries.data.push(Math.round(avCountSLA/aRec.length));
+					avSeries.data.push(Math.round((avCountSLA/aRec.length) * 100)/100);
+					unavSeries.data.push(Math.round((unavCountSP/aRec.length) * 100)/100);
+					fSeries.data.push(Math.round((fCountSP/aRec.length) * 100)/100);
+					otherSeries.data.push(Math.round((otherCountSP/aRec.length) * 100)/100);
 				}
 			}
 		}
@@ -121,20 +159,41 @@ EasySDI_Mon.drawHealthGraphAgg = function (container, aStores, logRes,useSla,sho
 						var aRec = aStores[storeName].getRange();
 						avCountH24 = 0;
 						avCountSLA = 0;
+						unavCount = 0;
+						unavCountSP = 0;
+						fCount = 0;
+						fCountSP = 0;
+						otherCount = 0;
+						otherCountSP = 0;
 						//push percentiles
 						for ( var i=0; i< aRec.length; i++ )
 						{   
 							avCountH24 += aRec[i].get('h24Availability');
 							avCountSLA += aRec[i].get('slaAvalabilty');
+							unavCount += aRec[i].get('h24Unavailability');
+							unavCountSP += aRec[i].get('slaUnavailability');
+							fCount += aRec[i].get('h24Failure');
+							fCountSP += aRec[i].get('slaFailure');
+							otherCount += aRec[i].get('h24Untested');
+							otherCountSP += aRec[i].get('slaUntested');
 						}
-						avSeries.data.push(Math.round(avCountH24/aRec.length));
-						avSeries.data.push(Math.round(avCountSLA/aRec.length));
+						
+						avSeries.data.push(Math.round( (avCountH24/aRec.length) * 100)/100);
+						avSeries.data.push(Math.round((avCountSLA/aRec.length) * 100)/100);
+						unavSeries.data.push(Math.round((unavCount/aRec.length) * 100)/100);
+						unavSeries.data.push(Math.round((unavCountSP/aRec.length) * 100)/100);
+						fSeries.data.push(Math.round((fCount/aRec.length) * 100)/100);
+						fSeries.data.push(Math.round((fCountSP/aRec.length) * 100)/100);
+						otherSeries.data.push(Math.round((otherCount/aRec.length) * 100)/100);
+						otherSeries.data.push(Math.round((otherCountSP/aRec.length) * 100)/100);
 					}
 				}
 	}
 
+	options.series.push(otherSeries);
+	options.series.push(unavSeries);
+	options.series.push(fSeries);
 	options.series.push(avSeries);
-
 	//Output the graph
 	var chart = new Highcharts.Chart(options);
 	return chart;

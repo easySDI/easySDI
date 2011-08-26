@@ -31,7 +31,7 @@ Ext.onReady(function(){
 	});
 	
 	  EasySDI_Mon.MonitorRoot = "index.php?option=com_easysdi_monitor";
-	  EasySDI_Mon.ExportTypeStore =  [['CSV'],['HTML'],['XHTML']];
+	  EasySDI_Mon.ExportTypeStore =  [['CSV'],['XML'],['XHTML']];
 
     var expportConfig = Ext.data.Record.create([
      'id','exportName', 'exportType','exportDesc', 'xsltUrl'      
@@ -703,7 +703,7 @@ Ext.onReady(function(){
   	       ]*/
    }
    
-   EasySDI_Mon.ExportTypeStore = [ ['CSV'], ['HTML'], ['XHTML']];
+
    
    EasySDI_Mon.HttpMethodStore = [
                              ['GET'],
@@ -962,11 +962,19 @@ Ext.onReady(function() {
 		id: 'name',
 		idProperty : 'data.id',
 		totalProperty :'count',
+		remoteSort : true,
 		//autoSave: true,
 		restful:true,
 		proxy: proxy,
 		writer: writer,
+		sortInfo :{
+			field :'name',
+			direction :"DESC"
+			
+		},
 		fields:['status', 'statusCode', 'httpMethod', 'testInterval', 'bizErrors', 'isPublic', 'allowsRealTime', 'httpErrors', 'serviceType', 'password', 'url' ,'id' ,'slaEndTime', 'name', 'queries', 'login', 'triggersAlerts', 'timeout', 'isAutomatic', 'slaStartTime', {name: 'lastStatusUpdate', type: 'date', dateFormat: 'Y-m-d H:i:s'},'saveResponse','runSimultaneous']
+	
+	
 	});
 
 
@@ -1323,7 +1331,8 @@ Ext.onReady(function() {
 	//dataStore.on('update', alert("update"));
 
 	//grid.render('jobGrid');
-	store.load();
+	store.setDefaultSort("name", "ASC");
+	store.load({params:{start:0, limit:15}});
 
 	_jobGrid.getSelectionModel().on('selectionchange', function(sm){
 		_jobGrid.removeBtn.setDisabled(sm.getCount() < 1);
@@ -4386,10 +4395,10 @@ Ext.onReady(function() {
 				{
 					if(useSla)
 					{
-						fields = ['h1Availability', 'inspireNbBizErrors','h1NbConnErrors','h1MeanRespTime','inspireMeanRespTime','h1NbBizErrors','inspireAvailability','inspireNbConnErrors','inspireMaxRespTime','h1MaxRespTime','inspireMinRespTime','h1MinRespTime', {name: 'date', type: 'date', dateFormat: 'Y-m-d H:i:s'}];
+						fields = ['h1Availability', 'inspireNbBizErrors','h1NbConnErrors','h1MeanRespTime','inspireMeanRespTime','h1NbBizErrors','inspireAvailability','inspireNbConnErrors','inspireMaxRespTime','h1MaxRespTime','inspireMinRespTime','h1MinRespTime','h1Unavailability','inspireUnavailability','h1Failure','inspireFailure','h1Untested','inspireUntested', {name: 'date', type: 'date', dateFormat: 'Y-m-d H:i:s'}];
 					}else
 					{
-						fields = ['h24Availability', 'slaNbBizErrors','h24NbConnErrors','h24MeanRespTime','slaMeanRespTime','h24NbBizErrors','slaAvailability','slaNbConnErrors','slaMaxRespTime','h24MaxRespTime','slaMinRespTime','h24MinRespTime', {name: 'date', type: 'date', dateFormat: 'Y-m-d'}];
+						fields = ['h24Availability', 'slaNbBizErrors','h24NbConnErrors','h24MeanRespTime','slaMeanRespTime','h24NbBizErrors','slaAvailability','slaNbConnErrors','slaMaxRespTime','h24MaxRespTime','slaMinRespTime','h24MinRespTime','h24Unavailability','slaUnavailability','h24Failure','slaFailure','h24Untested','slaUntested', {name: 'date', type: 'date', dateFormat: 'Y-m-d'}];
 					}
 				}else
 				{
@@ -4413,10 +4422,10 @@ Ext.onReady(function() {
 			{
 				if(useSla)
 				{
-					fields = ['h1Availability', 'inspireNbBizErrors','h1NbConnErrors','h1MeanRespTime','inspireMeanRespTime','h1NbBizErrors','inspireAvailability','inspireNbConnErrors','inspireMaxRespTime','h1MaxRespTime','inspireMinRespTime','h1MinRespTime', {name: 'date', type: 'date', dateFormat: 'Y-m-d H:i:s'}];
+					fields = ['h1Availability', 'inspireNbBizErrors','h1NbConnErrors','h1MeanRespTime','inspireMeanRespTime','h1NbBizErrors','inspireAvailability','inspireNbConnErrors','inspireMaxRespTime','h1MaxRespTime','inspireMinRespTime','h1MinRespTime','h1Unavailability','inspireUnavailability','h1Failure','inspireFailure','h1Untested','inspireUntested', {name: 'date', type: 'date', dateFormat: 'Y-m-d H:i:s'}];
 				}else
 				{
-					fields = ['h24Availability', 'slaNbBizErrors','h24NbConnErrors','h24MeanRespTime','slaMeanRespTime','h24NbBizErrors','slaAvailability','slaNbConnErrors','slaMaxRespTime','h24MaxRespTime','slaMinRespTime','h24MinRespTime', {name: 'date', type: 'date', dateFormat: 'Y-m-d'}];
+					fields = ['h24Availability', 'slaNbBizErrors','h24NbConnErrors','h24MeanRespTime','slaMeanRespTime','h24NbBizErrors','slaAvailability','slaNbConnErrors','slaMaxRespTime','h24MaxRespTime','slaMinRespTime','h24MinRespTime','h24Unavailability','slaUnavailability','h24Failure','slaFailure','h24Untested','slaUntested', {name: 'date', type: 'date', dateFormat: 'Y-m-d'}];
 				}
 				
 				
@@ -4739,34 +4748,48 @@ Ext.onReady(function() {
 		store.removeAll();
 		
 		if(rec.get('name') != 'All'){
-		   loadAlertData(rec.get('name'), 1, 1);
+		   loadAlertData(rec.get('name'), 1, 1, false);
 		}else{
-		   var arrRec = jobComboStore.getRange();
-       
-		   for ( var i=0; i< arrRec.length; i++ ){
-		   	  if(arrRec[i].get('name') != 'All')
-		   	     //create a store for all jobs and get their alerts
-		   	     loadAlertData(arrRec[i].get('name'), i+1, arrRec.length);
-		   }
+			 loadAlertData(null, 1, 1, true);
+
 		}
 	});
 
 
-	function loadAlertData(jobName, current, total){
+
+	function loadAlertData(jobName, current, total, getAll){
 		var myMask = new Ext.LoadMask(Ext.getCmp('AlertGrid').getEl(), {msg:EasySDI_Mon.lang.getLocal('message wait')});
 		myMask.show();
-		if(total == 1){
-			store.removeAll();
+	
+		proxyUrl ="";
+		if((null == jobName)&&(getAll == true))			
+			proxyUrl =  EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/all/alerts'+"&all=true";
+		else if((null != jobName)&&(getAll == false))				
+			proxyUrl = EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+jobName+'/alerts';
+		else{
+			console.log("No job name provided");
+			return false;
+		}
+		
+				
+		store.removeAll();
 		var newStore = new Ext.data.JsonStore({
+			
 			//id: 'jobId',
 			root: 'data',			
 			proxy: new Ext.data.HttpProxy({
-				url: EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+jobName+'/alerts'
+				
+				url: proxyUrl
 			}),
 			restful:true,
 			idProperty : 'id',
 			totalProperty :'count',
-			fields:['newStatusCode', 'oldStatusCode', 'cause', 'httpCode', 'responseDelay', 'isExposedToRss', 'jobId', {name: 'dateTime', type: 'date', dateFormat: 'Y-m-d H:i:s'},'alertId','content_type'],
+			remoteSort : true,
+			fields:['newStatusCode', 'oldStatusCode', 'cause', 'httpCode', 'responseDelay', 'isExposedToRss', 'jobId', {name: 'dateTime',  type: 'date', dateFormat: 'Y-m-d H:i:s'},'alertId','content_type'],
+			sortInfo:{
+				field : "dateTime",
+				direction : "DESC"
+			},
 			listeners :{
 				load: function(){
 
@@ -4786,7 +4809,11 @@ Ext.onReady(function() {
 				}
 			}
 		});
+			
 			component = Ext.getCmp('AlertGrid');
+			var colModel = component.getColumnModel();
+			component.reconfigure(newStore, colModel);
+			
 			if(component.getBottomToolbar()){
 				component.getBottomToolbar().show();
 				component.getBottomToolbar().bindStore(newStore);
@@ -4794,48 +4821,8 @@ Ext.onReady(function() {
 			}
 			
 			
-			myMask.hide();
-		
-		}
-		else{		
-				component = Ext.getCmp('AlertGrid');
-				if(component.getBottomToolbar())
-					component.getBottomToolbar().hide();
+			myMask.hide();		
 				
-				var newStore = new Ext.data.JsonStore({
-					//id: 'jobId',
-					root: 'data',
-					autoLoad: true,
-					proxy: new Ext.data.HttpProxy({
-						url: EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+jobName+'/alerts'
-					}),
-					restful:true,
-					fields:['newStatusCode', 'oldStatusCode', 'cause', 'httpCode', 'responseDelay', 'isExposedToRss', 'jobId', {name: 'dateTime', type: 'date', dateFormat: 'Y-m-d H:i:s'}],
-					listeners: {
-					load: function(){
-					
-					var aRec = this.getRange();
-					if(_alertsGrid.btnLatestAlerts.pressed){
-						//If there is at least one record
-						if(aRec.length > 0)
-							store.add(aRec[aRec.length - 1]);
-					}else{
-						for ( var j=0; j< aRec.length; j++ )
-						{
-							//feed the grid store with the collected alerts
-							store.add(aRec[j]);
-						}
-					}
-					if(current == total)
-						myMask.hide();
-				}
-				}
-				});
-		}
-		
-	
-			
-			
 		}
 		
 	}
@@ -5701,11 +5688,16 @@ var proxy = new Ext.data.HttpProxy({
 		root: 'data',
 		id: 'name',
 		idProperty : 'data.id',
-		totalProperty :'count',
-		autoLoad: true,
+		totalProperty :'count',		
 		restful:true,
 		proxy: proxy,
 		writer: writer,
+		remoteSort : true,
+		sortInfo :{
+			field :'lastStatusUpdate',
+			direction :"DESC"
+			
+		},
 		fields:['status', 'statusCode', 'httpMethod', 'testInterval', 'bizErrors', 'isPublic', 'allowsRealTime', 'httpErrors', 'serviceType', 'password', 'url' ,'id' ,'slaEndTime', 'name', 'queries', 'login', 'triggersAlerts', 'timeout', 'isAutomatic', 'slaStartTime', {name: 'lastStatusUpdate', type: 'date', dateFormat: 'Y-m-d H:i:s'},'saveResponse']
 	});
 
@@ -6006,6 +5998,8 @@ var proxy = new Ext.data.HttpProxy({
 
 	}
 
+	store.setDefaultSort("lastStatusUpdate", "DESC");
+	store.load({params:{start:0, limit:15}});
 	_jobStateGrid.getSelectionModel().on('selectionchange', function(sm){
 		_jobStateGrid.executeBtn.setDisabled(sm.getCount() < 1);
 		_jobStateGrid.viewAlertsBtn.setDisabled(sm.getCount() < 1);
@@ -6837,7 +6831,7 @@ EasySDI_Mon.drawHealthGraphRaw = function(container, aStores, logRes,useSla){
                     //push percentiles
                     for ( var i=0; i< aRec.length; i++ )
                     {   
-                    	if(aRec[i].get('avCount'))
+                    	if(aRec[i].get('avCount') >= 0)
                     	{
                     		avCount+=aRec[i].get('avCount');
                     		fCount+=aRec[i].get('fCount');
@@ -6868,16 +6862,16 @@ EasySDI_Mon.drawHealthGraphRaw = function(container, aStores, logRes,useSla){
                     }
         			if(summaryCount > 0)
 					{
-						avSeries.data.push(Math.round((avCount/summaryCount)*100));
-						unavSeries.data.push(Math.round((unavCount/summaryCount)*100));
-						fSeries.data.push(Math.round((fCount/summaryCount)*100));
-						otherSeries.data.push(Math.round((otherCount/summaryCount)*100));
+						avSeries.data.push(Math.round((avCount/summaryCount)*10000)/100);
+						unavSeries.data.push(Math.round((unavCount/summaryCount)*10000)/100);
+						fSeries.data.push(Math.round((fCount/summaryCount)*10000)/100);
+						otherSeries.data.push(Math.round((otherCount/summaryCount)*10000)/100);
 					}else
 					{
-						avSeries.data.push(Math.round((avCount/aRec.length)*100));
-						unavSeries.data.push(Math.round((unavCount/aRec.length)*100));
-						fSeries.data.push(Math.round((fCount/aRec.length)*100));
-						otherSeries.data.push(Math.round((otherCount/aRec.length)*100));
+						avSeries.data.push(Math.round((avCount/aRec.length)*10000)/100);
+						unavSeries.data.push(Math.round((unavCount/aRec.length)*10000)/100);
+						fSeries.data.push(Math.round((fCount/aRec.length)*10000)/100);
+						otherSeries.data.push(Math.round((otherCount/aRec.length)*10000)/100);
                     }
 		    
         	}
@@ -6956,7 +6950,21 @@ EasySDI_Mon.drawHealthGraphAgg = function (container, aStores, logRes,useSla,sho
 			data: [],
 			color: '#7dff9c'
 	};
-
+    var unavSeries = {
+            name: EasySDI_Mon.lang.getLocal('unavailable'),
+            data: [],
+            color: '#ff7f7f'
+     };
+     var fSeries = {
+        name: EasySDI_Mon.lang.getLocal('failure'),
+        data: [],
+        color: '#e2ff1d'
+     };
+     var otherSeries = {
+        name: EasySDI_Mon.lang.getLocal('untested-unknown'),
+        data: [],
+        color: '#b3b3b3'
+     };
 
 	//push categories
 	for ( var storeName in aStores)
@@ -6981,6 +6989,12 @@ EasySDI_Mon.drawHealthGraphAgg = function (container, aStores, logRes,useSla,sho
 
 	var avCountH24;
 	var avCountSLA;
+	var unavCount;
+	var unavCountSP;
+	var fCount;
+	var fCountSP
+	var otherCount;
+	var otherCountSP;
 	if(useSla)
 	{
 		//push series
@@ -6990,19 +7004,37 @@ EasySDI_Mon.drawHealthGraphAgg = function (container, aStores, logRes,useSla,sho
 				var aRec = aStores[storeName].getRange();
 				avCountH24 = 0;
 				avCountSLA = 0;
-	
+				unavCount = 0;
+				unavCountSP = 0;
+				fCount = 0;
+				fCountSP = 0;
+				otherCount = 0;
+				otherCountSP = 0;
 				//push percentiles
 				for ( var i=0; i< aRec.length; i++ )
 				{   
 					avCountH24 += aRec[i].get('h1Availability');
-					avCountSLA += aRec[i].get('inspireAvailability');				
+					avCountSLA += aRec[i].get('inspireAvailability');
+					
+					unavCount += aRec[i].get('h1Unavailability');
+					unavCountSP += aRec[i].get('inspireUnavailability');
+					fCount += aRec[i].get('h1Failure');
+					fCountSP += aRec[i].get('inspireFailure');
+					otherCount += aRec[i].get('h1Untested');
+					otherCountSP += aRec[i].get('inspireUntested');
 				}
 		      
 				if(!showInspireGraph)
 				{
-					avSeries.data.push(Math.round(avCountH24/aRec.length));
+					avSeries.data.push(Math.round((avCountH24/aRec.length) * 100)/100);
+					unavSeries.data.push(Math.round((unavCount/aRec.length) * 100)/100);
+					fSeries.data.push(Math.round((fCount/aRec.length) * 100)/100);
+					otherSeries.data.push(Math.round((otherCount/aRec.length) * 100)/100);
 				}else{
-					avSeries.data.push(Math.round(avCountSLA/aRec.length));
+					avSeries.data.push(Math.round((avCountSLA/aRec.length) * 100)/100);
+					unavSeries.data.push(Math.round((unavCountSP/aRec.length) * 100)/100);
+					fSeries.data.push(Math.round((fCountSP/aRec.length) * 100)/100);
+					otherSeries.data.push(Math.round((otherCountSP/aRec.length) * 100)/100);
 				}
 			}
 		}
@@ -7015,20 +7047,41 @@ EasySDI_Mon.drawHealthGraphAgg = function (container, aStores, logRes,useSla,sho
 						var aRec = aStores[storeName].getRange();
 						avCountH24 = 0;
 						avCountSLA = 0;
+						unavCount = 0;
+						unavCountSP = 0;
+						fCount = 0;
+						fCountSP = 0;
+						otherCount = 0;
+						otherCountSP = 0;
 						//push percentiles
 						for ( var i=0; i< aRec.length; i++ )
 						{   
 							avCountH24 += aRec[i].get('h24Availability');
 							avCountSLA += aRec[i].get('slaAvalabilty');
+							unavCount += aRec[i].get('h24Unavailability');
+							unavCountSP += aRec[i].get('slaUnavailability');
+							fCount += aRec[i].get('h24Failure');
+							fCountSP += aRec[i].get('slaFailure');
+							otherCount += aRec[i].get('h24Untested');
+							otherCountSP += aRec[i].get('slaUntested');
 						}
-						avSeries.data.push(Math.round(avCountH24/aRec.length));
-						avSeries.data.push(Math.round(avCountSLA/aRec.length));
+						
+						avSeries.data.push(Math.round( (avCountH24/aRec.length) * 100)/100);
+						avSeries.data.push(Math.round((avCountSLA/aRec.length) * 100)/100);
+						unavSeries.data.push(Math.round((unavCount/aRec.length) * 100)/100);
+						unavSeries.data.push(Math.round((unavCountSP/aRec.length) * 100)/100);
+						fSeries.data.push(Math.round((fCount/aRec.length) * 100)/100);
+						fSeries.data.push(Math.round((fCountSP/aRec.length) * 100)/100);
+						otherSeries.data.push(Math.round((otherCount/aRec.length) * 100)/100);
+						otherSeries.data.push(Math.round((otherCountSP/aRec.length) * 100)/100);
 					}
 				}
 	}
 
+	options.series.push(otherSeries);
+	options.series.push(unavSeries);
+	options.series.push(fSeries);
 	options.series.push(avSeries);
-
 	//Output the graph
 	var chart = new Highcharts.Chart(options);
 	return chart;
@@ -7212,14 +7265,20 @@ EasySDI_Mon.drawResponseTimeGraph = function (container, aStores, logRes, tickIn
 						{
 							if(this.point.normalGraph)
 							{
-								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip AVAILABILITY')+":</b> "+Math.round(this.point.data.data.h1Availability)+"%<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip AVAILABILITY')+":</b> "+(Math.round(this.point.data.data.h1Availability *100)/100)+"%<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip UNAVAILABILITY')+":</b> "+(Math.round(this.point.data.data.h1Unavailability * 100)/100)+"%<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip FAILURE')+":</b> "+(Math.round(this.point.data.data.h1Failure * 100)/100)+"%<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip UNTESTED')+":</b> "+(Math.round(this.point.data.data.h1Untested * 100)/100)+"%<br/>";
 								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip NB_CONN_ERRORS')+":</b> "+this.point.data.data.h1NbConnErrors+"<br/>";
 								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip NB_BIZ_ERRORS')+":</b> "+this.point.data.data.h1NbBizErrors+"<br/>";
 								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip MaxRespTime')+"</b> -> "+Math.round(this.point.data.data.h1MaxRespTime * 1000) + EasySDI_Mon.lang.getLocal('ms suffix')+"<br/>";
 								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip MinRespTime')+"</b> -> "+Math.round(this.point.data.data.h1MinRespTime * 1000) + EasySDI_Mon.lang.getLocal('ms suffix')+"<br/>";
 							}else
 							{
-								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip AVAILABILITY')+":</b> "+Math.round(this.point.data.data.inspireAvailability)+"%<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip AVAILABILITY')+":</b> "+(Math.round(this.point.data.data.inspireAvailability * 100)/100)+"%<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip UNAVAILABILITY')+":</b> "+(Math.round(this.point.data.data.inspireUnavailability * 100)/100)+"%<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip FAILURE')+":</b> "+(Math.round(this.point.data.data.inspireFailure * 100)/100)+"%<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip UNTESTED')+":</b> "+(Math.round(this.point.data.data.inspireUntested * 100)/100)+"%<br/>";
 								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip NB_CONN_ERRORS')+":</b> "+this.point.data.data.inspireNbConnErrors+"<br/>";
 								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip NB_BIZ_ERRORS')+":</b> "+this.point.data.data.inspireNbBizErrors+"<br/>";
 								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip MaxRespTime')+"</b> -> "+Math.round(this.point.data.data.inspireMaxRespTime * 1000) + EasySDI_Mon.lang.getLocal('ms suffix')+"<br/>";
@@ -7230,14 +7289,20 @@ EasySDI_Mon.drawResponseTimeGraph = function (container, aStores, logRes, tickIn
 						{
 							if(this.point.normalGraph)
 							{
-								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip AVAILABILITY')+":</b> "+Math.round(this.point.data.data.h24Availability)+"%<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip AVAILABILITY')+":</b> "+(Math.round(this.point.data.data.h24Availability *100)/100)+"%<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip UNAVAILABILITY')+":</b> "+(Math.round(this.point.data.data.h24Unavailability *100)/100)+"%<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip FAILURE')+":</b> "+(Math.round(this.point.data.data.h24Failure * 100)/100)+"%<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip UNTESTED')+":</b> "+(Math.round(this.point.data.data.h24Untested * 100)/100)+"%<br/>";
 								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip NB_CONN_ERRORS')+":</b> "+this.point.data.data.h24NbConnErrors+"<br/>";
 								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip NB_BIZ_ERRORS')+":</b> "+this.point.data.data.h24NbBizErrors+"<br/>";
 								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip MaxRespTime')+"</b> -> "+Math.round(this.point.data.data.h24MaxRespTime * 1000) + EasySDI_Mon.lang.getLocal('ms suffix')+"<br/>";
 								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip MinRespTime')+"</b> -> "+Math.round(this.point.data.data.h24MinRespTime * 1000) + EasySDI_Mon.lang.getLocal('ms suffix')+"<br/>";		
 							}else
 							{
-								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip AVAILABILITY')+":</b> "+Math.round(this.point.data.data.slaAvailability)+"%<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip AVAILABILITY')+":</b> "+(Math.round(this.point.data.data.slaAvailability *100)/100)+"%<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip UNAVAILABILITY')+":</b> "+(Math.round(this.point.data.data.slaUnavailability *100)/100)+"%<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip FAILURE')+":</b> "+(Math.round(this.point.data.data.slaFailure *100)/100)+"%<br/>";
+								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip UNTESTED')+":</b> "+(Math.round(this.point.data.data.slaUntested *100)/100)+"%<br/>";
 								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip NB_CONN_ERRORS')+":</b> "+this.point.data.data.slaNbConnErrors+"<br/>";
 								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip NB_BIZ_ERRORS')+":</b> "+this.point.data.data.slaNbBizErrors+"<br/>";
 								tip+= "<b>"+EasySDI_Mon.lang.getLocal('tooltip MaxRespTime')+"</b> -> "+Math.round(this.point.data.data.slaMaxRespTime * 1000) + EasySDI_Mon.lang.getLocal('ms suffix')+"<br/>";

@@ -590,10 +590,10 @@ Ext.onReady(function() {
 				{
 					if(useSla)
 					{
-						fields = ['h1Availability', 'inspireNbBizErrors','h1NbConnErrors','h1MeanRespTime','inspireMeanRespTime','h1NbBizErrors','inspireAvailability','inspireNbConnErrors','inspireMaxRespTime','h1MaxRespTime','inspireMinRespTime','h1MinRespTime', {name: 'date', type: 'date', dateFormat: 'Y-m-d H:i:s'}];
+						fields = ['h1Availability', 'inspireNbBizErrors','h1NbConnErrors','h1MeanRespTime','inspireMeanRespTime','h1NbBizErrors','inspireAvailability','inspireNbConnErrors','inspireMaxRespTime','h1MaxRespTime','inspireMinRespTime','h1MinRespTime','h1Unavailability','inspireUnavailability','h1Failure','inspireFailure','h1Untested','inspireUntested', {name: 'date', type: 'date', dateFormat: 'Y-m-d H:i:s'}];
 					}else
 					{
-						fields = ['h24Availability', 'slaNbBizErrors','h24NbConnErrors','h24MeanRespTime','slaMeanRespTime','h24NbBizErrors','slaAvailability','slaNbConnErrors','slaMaxRespTime','h24MaxRespTime','slaMinRespTime','h24MinRespTime', {name: 'date', type: 'date', dateFormat: 'Y-m-d'}];
+						fields = ['h24Availability', 'slaNbBizErrors','h24NbConnErrors','h24MeanRespTime','slaMeanRespTime','h24NbBizErrors','slaAvailability','slaNbConnErrors','slaMaxRespTime','h24MaxRespTime','slaMinRespTime','h24MinRespTime','h24Unavailability','slaUnavailability','h24Failure','slaFailure','h24Untested','slaUntested', {name: 'date', type: 'date', dateFormat: 'Y-m-d'}];
 					}
 				}else
 				{
@@ -617,10 +617,10 @@ Ext.onReady(function() {
 			{
 				if(useSla)
 				{
-					fields = ['h1Availability', 'inspireNbBizErrors','h1NbConnErrors','h1MeanRespTime','inspireMeanRespTime','h1NbBizErrors','inspireAvailability','inspireNbConnErrors','inspireMaxRespTime','h1MaxRespTime','inspireMinRespTime','h1MinRespTime', {name: 'date', type: 'date', dateFormat: 'Y-m-d H:i:s'}];
+					fields = ['h1Availability', 'inspireNbBizErrors','h1NbConnErrors','h1MeanRespTime','inspireMeanRespTime','h1NbBizErrors','inspireAvailability','inspireNbConnErrors','inspireMaxRespTime','h1MaxRespTime','inspireMinRespTime','h1MinRespTime','h1Unavailability','inspireUnavailability','h1Failure','inspireFailure','h1Untested','inspireUntested', {name: 'date', type: 'date', dateFormat: 'Y-m-d H:i:s'}];
 				}else
 				{
-					fields = ['h24Availability', 'slaNbBizErrors','h24NbConnErrors','h24MeanRespTime','slaMeanRespTime','h24NbBizErrors','slaAvailability','slaNbConnErrors','slaMaxRespTime','h24MaxRespTime','slaMinRespTime','h24MinRespTime', {name: 'date', type: 'date', dateFormat: 'Y-m-d'}];
+					fields = ['h24Availability', 'slaNbBizErrors','h24NbConnErrors','h24MeanRespTime','slaMeanRespTime','h24NbBizErrors','slaAvailability','slaNbConnErrors','slaMaxRespTime','h24MaxRespTime','slaMinRespTime','h24MinRespTime','h24Unavailability','slaUnavailability','h24Failure','slaFailure','h24Untested','slaUntested', {name: 'date', type: 'date', dateFormat: 'Y-m-d'}];
 				}
 				
 				
