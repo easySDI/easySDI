@@ -55,6 +55,13 @@ public class AggregHourLogSerializer {
         jsonEntry.put("inspireMinRespTime", inspireStats.getMinRespTime());
         jsonEntry.put("h1MinRespTime", h1Stats.getMinRespTime());
         
+        jsonEntry.put("h1Unavailability", h1Stats.getUnavailability());
+        jsonEntry.put("inspireUnavailability",inspireStats.getUnavailability());
+        jsonEntry.put("h1Failure", h1Stats.getFailure());
+        jsonEntry.put("inspireFailure",inspireStats.getFailure());
+        jsonEntry.put("h1Untested", h1Stats.getUntested());
+        jsonEntry.put("inspireUntested",inspireStats.getUntested());
+        
         jsonEntry.put("date", dateFormat.format(entry.getLogDate().getTime()));
 
         return jsonEntry;

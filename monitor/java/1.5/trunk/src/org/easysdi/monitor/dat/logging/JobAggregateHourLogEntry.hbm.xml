@@ -15,6 +15,9 @@
 	  	<property name="nbConnErrors" type="int" column="H1_NB_CONN_ERRORS"></property>
 	  	<property name="maxRespTime" type="float" column="H1_MAX_RESP_TIME"></property>
 	  	<property name="minRespTime" type="float" column="H1_MIN_RESP_TIME"></property>
+	  	<property name="unavailability" type="float" column="H1_UNAVAILABILITY"></property>
+	  	<property name="failure" type="float" column="H1_FAILURE"></property>
+	  	<property name="untested" type="float" column="H1_UNTESTED"></property>
   	</component>
   	<component name="inspireStats" class="AggregateStats">
 	  	<property name="meanRespTime" type="float" column="H1_MEAN_RESP_TIME_INSPIRE"></property>
@@ -23,6 +26,9 @@
 	  	<property name="nbConnErrors" type="int" column="H1_NB_CONN_ERRORS_INSPIRE"></property>
 	  	<property name="maxRespTime" type="float" column="H1_MAX_RESP_TIME_INSPIRE"></property>
 	  	<property name="minRespTime" type="float" column="H1_MIN_RESP_TIME_INSPIRE"></property>
+	  	<property name="unavailability" type="float" column="H1_UNAVAILABILITY_INSPIRE"></property>
+  		<property name="failure" type="float" column="H1_FAILURE_INSPIRE"></property>
+  		<property name="untested" type="float" column="H1_UNTESTED_INSPIRE"></property>
   	</component>
   </class>
 </hibernate-mapping>

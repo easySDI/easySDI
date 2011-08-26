@@ -129,27 +129,21 @@ public class JobsCollection {
 
         for (Job job : this.getJobs()) {
             final LogManager jobLogManager = new LogManager(job);
-            //System.out.println("JOB: "+job.getConfig().getJobName());
-            jobLogManager.getLogAggregator().aggregateRawLogs();
-            
+            jobLogManager.getLogAggregator().aggregateRawLogs();     
             for (Query query : job.getQueriesList()) {
                 final LogManager queryLogManager = new LogManager(query);
-                //System.out.println("Query: "+query.getConfig().getQueryName());
                 queryLogManager.getLogAggregator().aggregateRawLogs();
             }
         }
-       
+    
         // Saves hourly aggregated logs
         for (Job job : this.getJobs()) {
             final LogManager jobLogManager = new LogManager(job);
-            //System.out.println("JOB: "+job.getConfig().getJobName());
             jobLogManager.getLogAggregator().aggregateHourRawLogs();
             for (Query query : job.getQueriesList()) {
                 final LogManager queryLogManager = new LogManager(query);
-                //System.out.println("Query: "+query.getConfig().getQueryName());
                 queryLogManager.getLogAggregator().aggregateHourRawLogs();
             }
         }
-        
     }
 }

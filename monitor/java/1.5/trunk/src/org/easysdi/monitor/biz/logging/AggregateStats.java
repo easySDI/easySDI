@@ -14,7 +14,11 @@ public class AggregateStats {
     private int   nbBizErrors;
     private int   nbConnErrors;
 	private float maxRespTime;
-	private float minRespTime;  
+	private float minRespTime;
+	private float unavailability;
+	private float failure;
+	private float untested;
+	
     
     /**
      * Creates a new set of aggregate stats.
@@ -142,5 +146,69 @@ public class AggregateStats {
 	public void setMinRespTime(float minRespTime) {
 		this.minRespTime = minRespTime;
 	}
+
+
+
+    /**
+     * Gets the percentage of unavailaibility.
+     * 
+     * @return the unavailability percentage
+     */
+	public float getUnavailability() {
+		return unavailability;
+	}
+
+
+
+	  /**
+     * Defines the percentage of unavailability.
+     * 
+     * @param  unavailability the unavailability percentage
+     */
+	public void setUnavailability(float unavailability) {
+		this.unavailability = unavailability;
+	}
+
+
+
+    /**
+     * Gets the percentage of failures.
+     * 
+     * @return the failures percentage
+     */
+	public float getFailure() {
+		return failure;
+	}
+
+
+
+	/**
+	 * Defines the percentage of the failures
+	 * @param failure the failures percentage
+	 */
+	public void setFailure(float failure) {
+		this.failure = failure;
+	}
+
+
+
+	/**
+	 * Gets the percentage of untested requests
+	 * @return the untested percentage
+	 */
+	public float getUntested() {
+		return untested;
+	}
+
+
+
+	/**
+	 * Defines the percentage for untested requests
+	 * @param untested the untested percentage
+	 */
+	public void setUntested(float untested) {
+		this.untested = untested;
+	}
     
+	
 }

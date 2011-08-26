@@ -54,6 +54,12 @@ public class AggregHourLogSerializer {
         elements.add(Float.toString(inspireStats.getMaxRespTime()));
         elements.add(Float.toString(h1Stats.getMinRespTime()));
         elements.add(Float.toString(inspireStats.getMinRespTime()));
+        elements.add(Float.toString(h1Stats.getUnavailability()));
+        elements.add(Float.toString(inspireStats.getUnavailability()));
+        elements.add(Float.toString(h1Stats.getFailure()));
+        elements.add(Float.toString(inspireStats.getFailure()));
+        elements.add(Float.toString(h1Stats.getUntested()));
+        elements.add(Float.toString(inspireStats.getUntested()));
         return StringUtils.join(elements.iterator(), fieldSeparator);
     }
 

@@ -74,6 +74,10 @@ public abstract class AbstractLogAggregator implements ILogAggregator {
 
         float totalRespTime = 0;
         float availHours = 0;
+        float unavailLogs = 0;
+        float failureLogs = 0;
+        float untestedLogs = 0;
+        final float sizeLog = logs.size();
         int nbBizErrors = 0;
         int nbConnErrors = 0;
         int nbSuccessQueries = 0;
@@ -109,7 +113,20 @@ public abstract class AbstractLogAggregator implements ILogAggregator {
             }
 
             if (StatusValue.AVAILABLE == logEntry.getStatusValue()) {
-                availHours += this.computeSpanHours(requestTime, spanEnd);
+                //availHours += this.computeSpanHours(requestTime, spanEnd);
+            	availHours += 1;
+            }
+            if(StatusValue.UNAVAILABLE == logEntry.getStatusValue())
+            {
+            	unavailLogs += 1;
+            }
+            if(StatusValue.OUT_OF_ORDER == logEntry.getStatusValue())
+            {
+            	failureLogs += 1;
+            }
+            if(StatusValue.NOT_TESTED == logEntry.getStatusValue())
+            {
+            	untestedLogs += 1;
             }
             spanEnd = (Calendar) requestTime.clone();
         }
@@ -119,7 +136,8 @@ public abstract class AbstractLogAggregator implements ILogAggregator {
        
         return this.buildStatsObject(nbSuccessQueries, totalRespTime, 
                                      availHours, totalSpanHours, nbBizErrors, 
-                                     nbConnErrors,minRespTime,maxRespTime);
+                                     nbConnErrors,minRespTime,maxRespTime,sizeLog,unavailLogs,failureLogs,untestedLogs
+                                     );
     }
     
     /**
@@ -141,6 +159,9 @@ public abstract class AbstractLogAggregator implements ILogAggregator {
 
         float totalRespTime = 0;
         float availLogs = 0;
+        float unavailLogs = 0;
+        float failureLogs = 0;
+        float untestedLogs = 0;
         final float sizeLog = logs.size();
         int nbBizErrors = 0;
         int nbConnErrors = 0;
@@ -174,10 +195,27 @@ public abstract class AbstractLogAggregator implements ILogAggregator {
             
             if (StatusValue.AVAILABLE == logEntry.getStatusValue()) {
                 availLogs += 1;
-              
             }
+            
+            if(StatusValue.UNAVAILABLE == logEntry.getStatusValue())
+            {
+            	unavailLogs += 1;
+            }
+            
+            if(StatusValue.OUT_OF_ORDER == logEntry.getStatusValue())
+            {
+            	failureLogs += 1;
+            }
+            
+            if(StatusValue.NOT_TESTED == logEntry.getStatusValue())
+            {
+            	untestedLogs +=1;
+            }
+            
+            
         }
-        return this.buildHourStatsObject(nbSuccessQueries, totalRespTime, availLogs, sizeLog, nbBizErrors, nbConnErrors,minRespTime,maxRespTime);
+        return this.buildHourStatsObject(nbSuccessQueries, totalRespTime, availLogs, sizeLog, nbBizErrors, nbConnErrors,minRespTime,maxRespTime,
+        		unavailLogs,failureLogs,untestedLogs);
     }
 
     /**
@@ -226,7 +264,8 @@ public abstract class AbstractLogAggregator implements ILogAggregator {
      */
     private AggregateStats buildHourStatsObject(int nbSuccessQueries, 
             float totalRespTime, float availLogs, float logSize,
-            int nbBizErrors, int nbConnErrors, float minRespTime, float maxRespTime) {
+            int nbBizErrors, int nbConnErrors, float minRespTime, float maxRespTime,
+            float unavailLogs, float failureLogs, float untestedLogs) {
         
         final AggregateStats stats = new AggregateStats();
         if (0 < nbSuccessQueries) {
@@ -235,11 +274,21 @@ public abstract class AbstractLogAggregator implements ILogAggregator {
             stats.setMeanRespTime(0F);
         }
         float availRatio = 0F;
+        float unavailRation = 0F;
+        float failureRation = 0F;
+        float untestedRation = 0F;
         if(logSize > 0)
         {
         	availRatio = availLogs / logSize;
+        	unavailRation = unavailLogs / logSize;
+        	failureRation = failureLogs / logSize;
+        	unavailRation = unavailLogs / logSize; 
         }
         stats.setAvailability(availRatio * AbstractLogAggregator.TOTAL_PERCENT);
+        stats.setUnavailability(unavailRation * AbstractLogAggregator.TOTAL_PERCENT);
+        stats.setFailure(failureRation * AbstractLogAggregator.TOTAL_PERCENT);
+        stats.setUntested(untestedRation * AbstractLogAggregator.TOTAL_PERCENT); 
+        
         stats.setNbBizErrors(nbBizErrors);
         stats.setNbConnErrors(nbConnErrors);
         if(0 < maxRespTime)
@@ -277,8 +326,9 @@ public abstract class AbstractLogAggregator implements ILogAggregator {
      * @return                      the aggregate stats object
      */
     private AggregateStats buildStatsObject(int nbSuccessQueries, 
-            float totalRespTime, float availHours, float totalSpanHours,
-            int nbBizErrors, int nbConnErrors, float minRespTime, float maxRespTime) {
+            float totalRespTime, float availLogs, float totalSpanHours,
+            int nbBizErrors, int nbConnErrors, float minRespTime, float maxRespTime,float logSize,
+            float unavailLogs, float failureLogs, float untestedLogs) {
         
         final AggregateStats stats = new AggregateStats();
         
@@ -288,8 +338,23 @@ public abstract class AbstractLogAggregator implements ILogAggregator {
             stats.setMeanRespTime(0F);
         }
         
-        final float availRatio = availHours / totalSpanHours;
+        //final float availRatio = availHours / totalSpanHours;
+        float availRatio = 0F;
+        float unavailRation = 0F;
+        float failureRation = 0F;
+        float untestedRation = 0F;
+        if(logSize > 0)
+        {
+        	availRatio = availLogs / logSize;
+        	unavailRation = unavailLogs / logSize;
+        	failureRation = failureLogs / logSize;
+        	unavailRation = unavailLogs / logSize; 
+        }
         stats.setAvailability(availRatio * AbstractLogAggregator.TOTAL_PERCENT);
+        stats.setUnavailability(unavailRation * AbstractLogAggregator.TOTAL_PERCENT);
+        stats.setFailure(failureRation * AbstractLogAggregator.TOTAL_PERCENT);
+        stats.setUntested(untestedRation * AbstractLogAggregator.TOTAL_PERCENT); 
+        
         stats.setNbBizErrors(nbBizErrors);
         stats.setNbConnErrors(nbConnErrors);
         if(0 < maxRespTime)
