@@ -39,17 +39,17 @@
 		</xsl:variable>
 		<xsl:variable name="filetype">
 			<xsl:value-of select="./sdi:Metadata/sdi:product/@file_type" />
+		</xsl:variable>		
+		<xsl:variable name="orderproduct">
+			<xsl:value-of select="./sdi:Metadata/sdi:action/sdi:order/sdi:link" />
 		</xsl:variable>
-		<xsl:if test="./sdi:Metadata/sdi:action/sdi:downloadProduct/sdi:link">
-			<xsl:variable name="downloadProduct">
-				<xsl:value-of select="./sdi:Metadata/sdi:action/sdi:downloadProduct/sdi:link" />
-			</xsl:variable>
-		</xsl:if>
-		<xsl:if test="./sdi:Metadata/sdi:action/sdi:previewProduct/sdi:link">
-			<xsl:variable name="previewProduct">
-				<xsl:value-of select="./sdi:Metadata/sdi:action/sdi:previewProduct/sdi:link" />
-			</xsl:variable>
-		</xsl:if>
+		<xsl:variable name="downloadProduct">
+			<xsl:value-of select="./sdi:Metadata/sdi:action/sdi:downloadProduct/sdi:link" />
+		</xsl:variable>
+		<xsl:variable name="previewProduct">
+			<xsl:value-of select="./sdi:Metadata/sdi:action/sdi:previewProduct/sdi:link" />
+		</xsl:variable>
+		
 		<!-- Helpers -->
 		<xsl:variable name="smallcase" select="'abcdefghijklmnopqrstuvwxyz'" />
 		<xsl:variable name="uppercase" select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ'" />
@@ -74,7 +74,6 @@
 									<xsl:when test="$logo ='geoproduct'">
 										<xsl:attribute name="class">metadata-logo-3-de</xsl:attribute>
 									</xsl:when>
-
 									<xsl:otherwise>
 										<xsl:attribute name="class">metadata-logo-0</xsl:attribute>
 									</xsl:otherwise>
@@ -91,7 +90,6 @@
 									<xsl:when test="$logo ='geoproduct'">
 										<xsl:attribute name="class">metadata-logo-3-en</xsl:attribute>
 									</xsl:when>
-
 									<xsl:otherwise>
 										<xsl:attribute name="class">metadata-logo-0</xsl:attribute>
 									</xsl:otherwise>
@@ -108,7 +106,6 @@
 									<xsl:when test="$logo ='geoproduct'">
 										<xsl:attribute name="class">metadata-logo-3-fr</xsl:attribute>
 									</xsl:when>
-
 									<xsl:otherwise>
 										<xsl:attribute name="class">metadata-logo-0</xsl:attribute>
 									</xsl:otherwise>
@@ -229,7 +226,8 @@
 											<xsl:attribute name="title">Detaillierte Informationen zu: <xsl:value-of
 												disable-output-escaping="yes"
 												select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString" /></xsl:attribute>
-											<xsl:attribute name="class">intern</xsl:attribute>
+											<xsl:attribute name="class">modal</xsl:attribute>	
+														<xsl:attribute name="rel">{handler:'iframe',size:{x:650,y:600}}</xsl:attribute>
 											<xsl:attribute name="href">index.php?tmpl=index&amp;option=com_easysdi_catalog&amp;Itemid=2&amp;context=geocatalog&amp;toolbar=1&amp;task=showMetadata&amp;type=complete&amp;id=<xsl:value-of
 												select="./gmd:MD_Metadata/gmd:fileIdentifier/gco:CharacterString" /></xsl:attribute>
 											<xsl:text>Detaillierte Informationen</xsl:text>
@@ -242,30 +240,39 @@
 										<xsl:when test="$logo ='map'">
 											<span class="metadata-link">
 												<xsl:element name="a">
-													<xsl:attribute name="class">extern</xsl:attribute>
+													<xsl:attribute name="class">intern</xsl:attribute>
 													<xsl:attribute name="target">_blank</xsl:attribute>
-													<xsl:attribute name="href"><xsl:value-of
-														select="./gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine/gmd:CI_OnlineResource/gmd:linkage/gco:CharacterString" /></xsl:attribute>
-													<xsl:text>Karte anzeigen</xsl:text>
+													<xsl:attribute name="href"><xsl:value-of select="./gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine/gmd:CI_OnlineResource/gmd:linkage/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale='#FR']" /></xsl:attribute>
+													<xsl:text>Map view</xsl:text>
 												</xsl:element>
 											</span>
 										</xsl:when>
 										<xsl:when test="$logo ='geoproduct'">
-											<xsl:if test="string-length($filetype) = 3">
+											<xsl:if test="string-length($downloadProduct) > 0">
 												<span class="metadata-link">
 													<a>
-														<xsl:attribute name="class">zip</xsl:attribute>
-														<xsl:attribute name="href">index.php?tmpl=index&amp;option=com_easysdi_shop&amp;task=downloadAvailableProduct&amp;cid=<xsl:value-of
-															select="./gmd:MD_Metadata/gmd:fileIdentifier/gco:CharacterString" /></xsl:attribute>
-														<xsl:text>Herunterladen</xsl:text>
+														<xsl:attribute name="class">modal</xsl:attribute>	
+														<xsl:attribute name="rel">{handler:'iframe',size:{x:650,y:600}}</xsl:attribute>
+														<xsl:attribute name="href"><xsl:value-of  select="$downloadProduct" /></xsl:attribute>
+														<xsl:text>Télécharger </xsl:text>
 													</a>
-													<span class="info">
+												</span>
+												<span class="info">
 														<xsl:text> (</xsl:text>
 														<xsl:value-of select="translate($filetype,$smallcase,$uppercase)" />
 														<xsl:text>, </xsl:text>
 														<xsl:value-of select="$filesize" />
-														<xsl:text> KB)</xsl:text>
+														<xsl:text> Ko)</xsl:text>
 													</span>
+											</xsl:if>
+											<xsl:if test="string-length($previewProduct) > 0">
+												<span class="metadata-link">
+													<a>
+														<xsl:attribute name="class">modal</xsl:attribute>	
+														<xsl:attribute name="rel">{handler:'iframe',size:{x:650,y:600}}</xsl:attribute>
+														<xsl:attribute name="href"><xsl:value-of  select="$previewProduct" /></xsl:attribute>
+														<xsl:text>Prévisualiser</xsl:text>
+													</a>
 												</span>
 											</xsl:if>
 										</xsl:when>
@@ -274,70 +281,11 @@
 								<xsl:when test="$language='fr-FR'">
 									<span class="metadata-link">
 										<a>
-											<xsl:attribute name="title">des informations détaillées : <xsl:value-of
-												disable-output-escaping="yes"
-												select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString" /></xsl:attribute>
-											<xsl:attribute name="class">intern</xsl:attribute>
-											<xsl:attribute name="href">index.php?tmpl=index&amp;option=com_easysdi_catalog&amp;Itemid=2&amp;context=geocatalog&amp;toolbar=1&amp;task=showMetadata&amp;type=complete&amp;id=<xsl:value-of
-												select="./gmd:MD_Metadata/gmd:fileIdentifier/gco:CharacterString" /></xsl:attribute>
-											<xsl:text>Vue détaillée</xsl:text>
-										</a>
-									</span>
-									<xsl:choose>
-										<xsl:when test="$logo ='layer'">
-											<xsl:text />
-										</xsl:when>
-										<xsl:when test="$logo ='map'">
-											<span class="metadata-link">
-												<xsl:element name="a">
-													<xsl:attribute name="class">intern</xsl:attribute>
-													<xsl:attribute name="target">_blank</xsl:attribute>
-													<xsl:attribute name="href"><xsl:value-of
-														select="./gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine/gmd:CI_OnlineResource/gmd:linkage/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale='#FR']" /></xsl:attribute>
-													<xsl:text>Afficher la carte</xsl:text>
-												</xsl:element>
-											</span>
-										</xsl:when>
-										<xsl:when test="$logo ='geoproduct'">
-											<xsl:if test="string-length($filetype) = 3">
-													<xsl:if test="$downloadProduct != null">
-        												<span class="metadata-link">
-        												<a>
-															<xsl:attribute name="class">zip</xsl:attribute>
-															<xsl:attribute name="href"><xsl:value-of select="$downloadProduct" /></xsl:attribute>
-															<xsl:text>Télécharger</xsl:text>
-														</a>
-														<span class="info">
-														<xsl:text> (</xsl:text>
-														<xsl:value-of select="translate($filetype,$smallcase,$uppercase)" />
-														<xsl:text>, </xsl:text>
-														<xsl:value-of select="$filesize" />
-														<xsl:text> Ko)</xsl:text>
-														</span>
-														</span>
-													</xsl:if>
-													<xsl:if test="$previewProduct != null">
-													<span class="metadata-link">
-														<a>
-															<xsl:attribute name="title">Prévisualiser</xsl:attribute>
-															<xsl:attribute name="href"><xsl:value-of select="$previewProduct" /></xsl:attribute>
-															<xsl:text>Prévisualiser</xsl:text>
-														</a>
-														</span>
-													</xsl:if>
-											</xsl:if>
-										</xsl:when>
-									</xsl:choose>
-								</xsl:when>
-								<xsl:when test="$language='en-GB'">
-									<span class="metadata-link">
-										<a>
-											<xsl:attribute name="title">des informations détaillées : <xsl:value-of
-												disable-output-escaping="yes"
-												select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString" /></xsl:attribute>
-											<xsl:attribute name="class">intern</xsl:attribute>
-											<xsl:attribute name="href">index.php?tmpl=index&amp;option=com_easysdi_catalog&amp;Itemid=2&amp;context=geocatalog&amp;toolbar=1&amp;task=showMetadata&amp;type=complete&amp;id=<xsl:value-of
-												select="./gmd:MD_Metadata/gmd:fileIdentifier/gco:CharacterString" /></xsl:attribute>
+											<xsl:attribute name="title">des informations détaillées : <xsl:value-of disable-output-escaping="yes" select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString" />
+											</xsl:attribute>
+											<xsl:attribute name="class">modal</xsl:attribute>	
+											<xsl:attribute name="rel">{handler:'iframe',size:{x:650,y:600}}</xsl:attribute>
+											<xsl:attribute name="href">index.php?tmpl=component&amp;option=com_easysdi_catalog&amp;Itemid=2&amp;context=geocatalog&amp;toolbar=1&amp;task=showMetadata&amp;type=complete&amp;id=<xsl:value-of select="./gmd:MD_Metadata/gmd:fileIdentifier/gco:CharacterString" /></xsl:attribute>
 											<xsl:text>Details</xsl:text>
 										</a>
 									</span>
@@ -350,20 +298,97 @@
 												<xsl:element name="a">
 													<xsl:attribute name="class">intern</xsl:attribute>
 													<xsl:attribute name="target">_blank</xsl:attribute>
-													<xsl:attribute name="href"><xsl:value-of
-														select="./gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine/gmd:CI_OnlineResource/gmd:linkage/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale='#FR']" /></xsl:attribute>
+													<xsl:attribute name="href"><xsl:value-of select="./gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine/gmd:CI_OnlineResource/gmd:linkage/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale='#FR']" /></xsl:attribute>
 													<xsl:text>Map view</xsl:text>
 												</xsl:element>
 											</span>
 										</xsl:when>
 										<xsl:when test="$logo ='geoproduct'">
-											<xsl:if test="string-length($filetype) = 3">
+											<xsl:choose>
+												<xsl:when test="string-length($downloadProduct) > 0">
+													
+														<span class="metadata-link">
+															<a>
+																<xsl:attribute name="class">modal</xsl:attribute>	
+																<xsl:attribute name="rel">{handler:'iframe',size:{x:650,y:600}}</xsl:attribute>
+																<xsl:attribute name="href">
+																	<xsl:value-of  select="$downloadProduct" />
+																</xsl:attribute>
+																<xsl:text>Télécharger </xsl:text>
+															</a>
+														</span>
+														<span class="info">
+															<xsl:text> (</xsl:text>
+															<xsl:value-of select="translate($filetype,$smallcase,$uppercase)" />
+															<xsl:text>, </xsl:text>
+															<xsl:value-of select="$filesize" />
+															<xsl:text> Ko)</xsl:text>
+														</span>
+													
+												</xsl:when >
+												<xsl:otherwise>
+													
+													<span class="metadata-link">
+														<a>
+															<xsl:attribute name="class">icon default</xsl:attribute>
+															<xsl:attribute name="href">
+																<xsl:value-of select="$orderproduct" />
+															</xsl:attribute>
+															<xsl:text>Commander</xsl:text>
+														</a>
+													</span>
+													
+												</xsl:otherwise >
+											</xsl:choose>
+											<xsl:if test="string-length($previewProduct) > 0">
 												<span class="metadata-link">
 													<a>
-														<xsl:attribute name="class">zip</xsl:attribute>
-														<xsl:attribute name="href">index.php?tmpl=index&amp;option=com_easysdi_shop&amp;task=downloadAvailableProduct&amp;cid=<xsl:value-of
-															select="./gmd:MD_Metadata/gmd:fileIdentifier/gco:CharacterString" /></xsl:attribute>
-														<xsl:text>Download</xsl:text>
+														<xsl:attribute name="class">modal</xsl:attribute>	
+														<xsl:attribute name="rel">{handler:'iframe',size:{x:650,y:600}}</xsl:attribute>
+														<xsl:attribute name="href"><xsl:value-of  select="$previewProduct" /></xsl:attribute>
+														<xsl:text>Prévisualiser</xsl:text>
+													</a>
+												</span>
+											</xsl:if>
+										</xsl:when>
+									</xsl:choose>
+								</xsl:when>
+								<xsl:when test="$language='en-GB'">
+									<span class="metadata-link">
+										<a>
+											<xsl:attribute name="title">des informations détaillées : 
+												<xsl:value-of disable-output-escaping="yes" select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString" />
+											</xsl:attribute>
+											<xsl:attribute name="class">modal</xsl:attribute>	
+														<xsl:attribute name="rel">{handler:'iframe',size:{x:650,y:600}}</xsl:attribute>
+											<xsl:attribute name="href">index.php?tmpl=index&amp;option=com_easysdi_catalog&amp;Itemid=2&amp;context=geocatalog&amp;toolbar=1&amp;task=showMetadata&amp;type=complete&amp;id=
+												<xsl:value-of select="./gmd:MD_Metadata/gmd:fileIdentifier/gco:CharacterString" />
+											</xsl:attribute>
+											<xsl:text>Details</xsl:text>
+										</a>
+									</span>
+									<xsl:choose>
+										<xsl:when test="$logo ='layer'">
+											<xsl:text />
+										</xsl:when>
+										<xsl:when test="$logo ='map'">
+											<span class="metadata-link">
+												<xsl:element name="a">
+													<xsl:attribute name="class">intern</xsl:attribute>
+													<xsl:attribute name="target">_blank</xsl:attribute>
+													<xsl:attribute name="href"><xsl:value-of select="./gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine/gmd:CI_OnlineResource/gmd:linkage/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale='#FR']" /></xsl:attribute>
+													<xsl:text>Map view</xsl:text>
+												</xsl:element>
+											</span>
+										</xsl:when>
+										<xsl:when test="$logo ='geoproduct'">
+											<xsl:if test="string-length($downloadProduct) > 0">
+												<span class="metadata-link">
+													<a>
+														<xsl:attribute name="class">modal</xsl:attribute>	
+														<xsl:attribute name="rel">{handler:'iframe',size:{x:650,y:600}}</xsl:attribute>
+														<xsl:attribute name="href"><xsl:value-of  select="$downloadProduct" /></xsl:attribute>
+														<xsl:text>Télécharger </xsl:text>
 													</a>
 													<span class="info">
 														<xsl:text> (</xsl:text>
@@ -372,6 +397,16 @@
 														<xsl:value-of select="$filesize" />
 														<xsl:text> Ko)</xsl:text>
 													</span>
+												</span>
+											</xsl:if>
+											<xsl:if test="string-length($previewProduct) > 0">
+												<span class="metadata-link">
+													<a>
+														<xsl:attribute name="class">modal</xsl:attribute>	
+														<xsl:attribute name="rel">{handler:'iframe',size:{x:650,y:600}}</xsl:attribute>
+														<xsl:attribute name="href"><xsl:value-of  select="$previewProduct" /></xsl:attribute>
+														<xsl:text>Prévisualiser</xsl:text>
+													</a>
 												</span>
 											</xsl:if>
 										</xsl:when>
