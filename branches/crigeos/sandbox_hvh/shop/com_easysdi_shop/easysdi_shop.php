@@ -42,9 +42,9 @@ $limit= JRequest::getVar('limit');
 $furnisher_id= JRequest::getVar('furnisher_id');
 $freetextcriteria = JRequest::getVar('freetextcriteria');
 
-$cid = JRequest::getVar ('cid', array(0) );
+$cid = JRequest::getVar ('cid');
 if (!is_array( $cid )) {
-	$cid = array(0);
+	$cid[0] = JRequest::getVar ('cid');
 }
 
 switch($task){

@@ -1131,6 +1131,7 @@ function validateForm(toStep, fromStep){
 							AND p.available=0 
 							";
 		$query  = $query .SITE_shop::buildProductListQueryFilter();
+		
 		$db->setQuery( $query);
 		$total = $db->loadResult();		
 		return $total;
@@ -1212,9 +1213,11 @@ function validateForm(toStep, fromStep){
 		}
 		else
 		{
+			
 			//User logged, display products according to users's rights
 			if(userManager::hasRight($account->id,"REQUEST_EXTERNAL"))
 			{
+				
 				if(userManager::hasRight($account->id,"REQUEST_INTERNAL"))
 				{
 					$filter .= " AND (p.visibility_id=$public
@@ -1237,6 +1240,7 @@ function validateForm(toStep, fromStep){
 			}
 			else
 			{
+				
 				if(userManager::hasRight($account->id,"REQUEST_INTERNAL"))
 				{
 					$filter .= " AND (p.visibility_id =$private AND
@@ -1257,6 +1261,7 @@ function validateForm(toStep, fromStep){
 				}
 			}
 		}
+		
 		return $filter;
 	}
 	
