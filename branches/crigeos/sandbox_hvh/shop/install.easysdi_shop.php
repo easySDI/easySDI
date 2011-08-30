@@ -852,7 +852,29 @@ function com_install(){
 		}
 	}
 	if($version == "2.0.0"){
+		//Base map content
+		$query="ALTER TABLE  `#__sdi_basemapcontent` ADD matrixset varchar (100)";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
 		
+		$query="ALTER TABLE  `#__sdi_basemapcontent` ADD matrixids varchar (1000)";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		$query="ALTER TABLE  `#__sdi_basemapcontent` ADD style varchar (100)";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		//Product preview
 		$query="ALTER TABLE  `#__sdi_product` ADD viewextent varchar (100)";
 		$db->setQuery( $query);
 		if (!$db->query()) 

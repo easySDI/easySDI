@@ -84,21 +84,24 @@ class basemap extends sdiTable
 
 class basemap_content extends sdiTable
 {	
-	var $basemap_id=null;	
-	var $url=null;
-	var $urltype=null;
-	var $singletile=null;
-	var $maxextent=null;	
-	var $minresolution=null;
-	var $maxresolution=null;
-	var $projection=null;
-	var $unit=null;
-	var $layers=null;
-	var $imgformat=null;
-	var $attribution=null;
-	var $user = null;
-	var $password = null;
-	var $account_id = null;
+	var $basemap_id				=null;	
+	var $url					=null;
+	var $urltype				=null;
+	var $singletile				=null;
+	var $maxextent				=null;	
+	var $minresolution			=null;
+	var $maxresolution			=null;
+	var $projection				=null;
+	var $unit					=null;
+	var $layers					=null;
+	var $imgformat				=null;
+	var $attribution			=null;
+	var $matrixset 				=null;
+	var $matrixids 				=null;
+	var $style	 				=null;
+	var $user 					=null;
+	var $password 				=null;
+	var $account_id 			=null;
 	
 	// Class constructor
 	function __construct( &$db )

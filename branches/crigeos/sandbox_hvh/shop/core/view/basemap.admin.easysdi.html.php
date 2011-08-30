@@ -47,6 +47,27 @@ class HTML_basemap {
 				document.getElementById('account_id').disabled = true;
 				document.getElementById('account_id').value = '0';
 			}
+		}
+		function ServiceFieldManagement(){
+			if (document.forms['adminForm'].urltype.value != 'WMTS')
+			{
+				document.getElementById('minresolution').disabled = false;
+				document.getElementById('maxresolution').disabled = false;
+				document.getElementById('singletile').disabled = false;
+				document.getElementById('matrixset').disabled = true;
+				document.getElementById('matrixset').value = null;
+				document.getElementById('matrixids').disabled = true;
+				document.getElementById('matrixids').value = null;
+			}else{
+				document.getElementById('minresolution').disabled = true;
+				document.getElementById('minresolution').value = null;
+				document.getElementById('maxresolution').disabled = true;
+				document.getElementById('maxresolution').value = null;
+				document.getElementById('singletile').disabled = true;
+				document.getElementById('singletile').value = null;
+				document.getElementById('matrixset').disabled = false;
+				document.getElementById('matrixids').disabled = false;
+			}
 		}		
 		</script>
 	<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
@@ -71,10 +92,33 @@ class HTML_basemap {
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="description" value="<?php echo $rowBasemap->description; ?>" /></td>							
 							</tr>	
 							<tr>
+								<td class="key"><?php echo JText::_("SHOP_BASEMAP_URL_TYPE"); ?> : </td>
+								<td><select class="inputbox" name="urltype" onChange="javascript:ServiceFieldManagement();" >
+										<option value="WMS" <?php if($rowBasemap->urltype == 'WMS') echo "selected" ; ?>><?php echo JText::_("SHOP_WMS"); ?></option>
+										<option value="WFS" <?php if($rowBasemap->urltype == 'WFS') echo "selected" ; ?>><?php echo JText::_("SHOP_WFS"); ?></option>
+										<option value="WMTS" <?php if($rowBasemap->urltype == 'WMTS') echo "selected" ; ?>><?php echo JText::_("SHOP_WMTS"); ?></option>
+								</select>
+								</td>															
+							</tr>
+							<tr>
+								<td class="key"><?php echo JText::_("SHOP_URL"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="url" value="<?php echo $rowBasemap->url; ?>" /></td>							
+							</tr>
+							<tr>
+								<td class="key"><?php echo JText::_("SHOP_BASEMAP_LAYERS"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="300" name="layers" value="<?php echo $rowBasemap->layers; ?>" /></td>							
+							</tr>
+							<tr>
+								<td class="key"><?php echo JText::_("SHOP_IMG_FORMAT"); ?> : </td>
+								<td>
+									<input class="inputbox" name="imgformat" type="text" size="50" maxlength="100" value="<?php echo $rowBasemap->imgformat; ?>" />									
+								</td>
+								<td>ex : image/png</td>															
+							</tr>
+							<tr>
 								<td class="key"><?php echo JText::_("SHOP_PROJECTION"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="projection" value="<?php echo $rowBasemap->projection; ?>" /></td>
 							</tr>
-							
 							<tr>							
 								<td class="key"><?php echo JText::_("SHOP_UNIT"); ?> : </td>
 								<td><select class="inputbox" name="unit" >
@@ -84,63 +128,44 @@ class HTML_basemap {
 								</select>
 								</td>
 							</tr>
-							<tr>							
-								<td class="key"><?php echo JText::_("SHOP_BASEMAP_MINRESOLUTION"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="minresolution" value="<?php echo $rowBasemap->minresolution; ?>" /></td>							
-							</tr>
-							<tr>							
-								<td class="key"><?php echo JText::_("SHOP_BASEMAP_MAXRESOLUTION"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="maxresolution" value="<?php echo $rowBasemap->maxresolution; ?>" /></td>							
+							<tr>
+								<td class="key"><?php echo JText::_("SHOP_BASEMAP_STYLE"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="style" id="style" value="<?php echo $rowBasemap->style; ?>" /></td>								
 							</tr>
 							<tr>
-							
 								<td class="key"><?php echo JText::_("SHOP_BASEMAP_MAXEXTENT"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="maxextent" value="<?php echo $rowBasemap->maxextent; ?>" /></td>							
 							</tr>
-							<tr>
-							
-								<td class="key"><?php echo JText::_("SHOP_URL"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="url" value="<?php echo $rowBasemap->url; ?>" /></td>							
+							<tr>							
+								<td class="key"><?php echo JText::_("SHOP_BASEMAP_MINRESOLUTION"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="minresolution" id="minresolution" value="<?php echo $rowBasemap->minresolution; ?>" <?php if ($rowBasemap->urltype == 'WMTS') echo 'disabled'; ?> /></td>							
 							</tr>
-							<tr>
-							
-								<td class="key"><?php echo JText::_("SHOP_BASEMAP_URL_TYPE"); ?> : </td>
-								<td><select class="inputbox" name="urltype" >
-										<option value="WMS" <?php if($rowBasemap->urltype == 'WMS') echo "selected" ; ?>><?php echo JText::_("SHOP_WMS"); ?></option>
-										<option value="WMS" <?php if($rowBasemap->urltype == 'WFS') echo "selected" ; ?>><?php echo JText::_("SHOP_WFS"); ?></option>
-								</select>
-								</td>															
-							</tr>
-							<tr>
-								<td class="key"><?php echo JText::_("SHOP_IMG_FORMAT"); ?> : </td>
-								<td>
-									<input class="inputbox" name="imgformat" type="text" size="50" maxlength="100" value="<?php echo $rowBasemap->imgformat; ?>" />									
-								</td>
-								<td>ex : image/png</td>															
+							<tr>							
+								<td class="key"><?php echo JText::_("SHOP_BASEMAP_MAXRESOLUTION"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="maxresolution" id="maxresolution" value="<?php echo $rowBasemap->maxresolution; ?>" <?php if ($rowBasemap->urltype == 'WMTS') echo 'disabled'; ?> /> </td>							
 							</tr>
 							<tr>							
 								<td class="key"><?php echo JText::_("SHOP_BASEMAP_SINGLE_TILE"); ?> : </td>
-								<td><select class="inputbox" name="singletile" >
+								<td><select class="inputbox" name="singletile"   id="singletile"  <?php if ($rowBasemap->urltype == 'WMTS') echo 'disabled'; ?> />
 										<option value="0" <?php if($rowBasemap->singletile == '0') echo "selected" ; ?>><?php echo JText::_("CORE_TRUE"); ?></option>
 										<option value="1" <?php if($rowBasemap->singletile == '1') echo "selected" ; ?>><?php echo JText::_("CORE_FALSE"); ?></option>
 								</select>
 								</td>															
 							</tr>
 							<tr>
-							
-								<td class="key"><?php echo JText::_("SHOP_BASEMAP_LAYERS"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="300" name="layers" value="<?php echo $rowBasemap->layers; ?>" /></td>							
-							</tr>
-							
-							<tr>
-							
 								<td class="key"><?php echo JText::_("SHOP_BASEMAP_ATTRIBUTION"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="attribution" value="<?php echo $rowBasemap->attribution; ?>" /></td>							
 							</tr>
-							<br>
-										
+							<tr>
+								<td class="key"><?php echo JText::_("SHOP_BASEMAP_MATRIXSET"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="matrixset" id="matrixset" value="<?php echo $rowBasemap->matrixset; ?>" <?php if ($rowBasemap->urltype != 'WMTS') echo 'disabled'; ?> /></td>								
+							</tr>
+							<tr>
+								<td class="key"><?php echo JText::_("SHOP_BASEMAP_MATRIX"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="1000" name="matrixids" id="matrixids" value="<?php echo $rowBasemap->matrixids; ?>" <?php if ($rowBasemap->urltype != 'WMTS') echo 'disabled'; ?>/></td>								
+							</tr>
+							<br>		
 						</table>
-
 					</fieldset>
 					<fieldset>
 						<legend><?php echo JText::_("SHOP_AUTHENTICATION"); ?></legend>
@@ -231,11 +256,11 @@ class HTML_basemap {
 			<tr>					 			
 				<th class='title'><?php echo JText::_("CORE_SHARP"); ?></th>
 				<th class='title'><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows); ?>);" /></th>
-				<th class='title'><a href="javascript:tableOrder('listBasemapContent', 'id');" title="Click to sort by this column"><?php echo JText::_("CORE_ID"); ?></th>
-				<th class='title'><a href="javascript:tableOrder('listBasemapContent', 'name');" title="Click to sort by this column"><?php echo JText::_("CORE_NAME"); ?></th>				
-				<th class='title'><a href="javascript:tableOrder('listBasemapContent', 'description');" title="Click to sort by this column"><?php echo JText::_("CORE_DESCRIPTION"); ?></th>
+				<th class='title'><a href="javascript:tableOrder('listBasemapContent', 'id');" title="Click to sort by this column"><?php echo JText::_("CORE_ID"); ?></a></th>
+				<th class='title'><a href="javascript:tableOrder('listBasemapContent', 'name');" title="Click to sort by this column"><?php echo JText::_("CORE_NAME"); ?></a></th>				
+				<th class='title'><a href="javascript:tableOrder('listBasemapContent', 'description');" title="Click to sort by this column"><?php echo JText::_("CORE_DESCRIPTION"); ?></a></th>
 				<th class='title'><a href="javascript:tableOrder('listBasemapContent', 'url');" title="Click to sort by this column"><?php echo JText::_("SHOP_URL"); ?></a></th>
-				<th class='title'><a href="javascript:tableOrder('listBasemapContent', 'ordering');" title="Click to sort by this column"><?php echo JText::_("SHOP_BASEMAPCONTENT_ORDER"); ?></th>
+				<th class='title'><a href="javascript:tableOrder('listBasemapContent', 'ordering');" title="Click to sort by this column"><?php echo JText::_("SHOP_BASEMAPCONTENT_ORDER"); ?></a></th>
 			</tr>
 		</thead>
 		<tbody>		

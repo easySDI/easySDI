@@ -91,24 +91,7 @@ defined('_JEXEC') or die('Restricted access');
 					text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_PROJECTION");?>"; 
 					index = 1;	
 				}
-				if (form.elements['minresolution'].value == '')
-				{
-					if(index != 0)text += ", ";
-					text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_MINRESOLUTION");?>"; 
-					index = 1;	
-				}
-				if (form.elements['maxresolution'].value == '')
-				{
-					if(index != 0)text += ", ";
-					text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_MAXRESOLUTION");?>";
-					index = 1;	
-				}
-				if (form.elements['maxextent'].value == '')
-				{
-					if(index != 0)text += ", ";
-					text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_MAXEXTENT");?>";
-					index = 1;	
-				}
+				
 				if (form.elements['url'].value == '')
 				{
 					if(index != 0)text += ", ";
