@@ -2039,19 +2039,20 @@ class displayManager{
 			{
 				$product_object = new product ($db);
 				$product_object->load($product->id);
+				$productFileName = $product_object->getFileName();
 				
-				$query = "select count(*) from #__sdi_product p 
+				/*$query = "select count(*) from #__sdi_product p 
 										INNER JOIN #__sdi_product_file pf ON p.id=pf.product_id 
 										where  p.id = $product->id";
 				$db->setQuery( $query);
 				$hasProductFile = $db->loadResult();
 				if ($db->getErrorNum()) {
 					$hasProductFile = 0;
-				}
+				}*/
 				$user = JFactory::getUser();
 				$account = new accountByUserId( $db );
 				$account->load( $user->id );
-				if($product_object->published && $product_object->available && $hasProductFile > 0 && $product_object->isUserAllowedToLoad($account->id)){
+				if($product_object->published && $product_object->available && strlen($productFileName) > 0 && $product_object->isUserAllowedToLoad($account->id)){
 					//Link to download the product 
 					$XMLActionDownloadProduct = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:downloadProduct");
 					$XMLActionDownloadProduct->setAttribute('id', 'downloadProduct');

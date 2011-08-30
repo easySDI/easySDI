@@ -248,23 +248,39 @@
 											</span>
 										</xsl:when>
 										<xsl:when test="$logo ='geoproduct'">
-											<xsl:if test="string-length($downloadProduct) > 0">
-												<span class="metadata-link">
-													<a>
-														<xsl:attribute name="class">modal</xsl:attribute>	
-														<xsl:attribute name="rel">{handler:'iframe',size:{x:650,y:600}}</xsl:attribute>
-														<xsl:attribute name="href"><xsl:value-of  select="$downloadProduct" /></xsl:attribute>
-														<xsl:text>Télécharger </xsl:text>
-													</a>
-												</span>
-												<span class="info">
-														<xsl:text> (</xsl:text>
-														<xsl:value-of select="translate($filetype,$smallcase,$uppercase)" />
-														<xsl:text>, </xsl:text>
-														<xsl:value-of select="$filesize" />
-														<xsl:text> Ko)</xsl:text>
-													</span>
-											</xsl:if>
+											<xsl:choose>
+												<xsl:when test="string-length($downloadProduct) > 0">
+														<span class="metadata-link">
+															<a>
+																<xsl:attribute name="class">modal</xsl:attribute>	
+																<xsl:attribute name="rel">{handler:'iframe',size:{x:650,y:600}}</xsl:attribute>
+																<xsl:attribute name="href">
+																	<xsl:value-of  select="$downloadProduct" />
+																</xsl:attribute>
+																<xsl:text>Télécharger </xsl:text>
+															</a>
+														</span>
+														<span class="info">
+															<xsl:text> (</xsl:text>
+															<xsl:value-of select="translate($filetype,$smallcase,$uppercase)" />
+															<xsl:text>, </xsl:text>
+															<xsl:value-of select="$filesize" />
+															<xsl:text> Ko)</xsl:text>
+														</span>
+													
+												</xsl:when >
+												<xsl:otherwise>													
+													<span class="metadata-link">
+														<a>
+															<xsl:attribute name="class">icon default</xsl:attribute>
+															<xsl:attribute name="href">
+																<xsl:value-of select="$orderproduct" />
+															</xsl:attribute>
+															<xsl:text>Commander</xsl:text>
+														</a>
+													</span>													
+												</xsl:otherwise >
+											</xsl:choose>
 											<xsl:if test="string-length($previewProduct) > 0">
 												<span class="metadata-link">
 													<a>
@@ -306,7 +322,6 @@
 										<xsl:when test="$logo ='geoproduct'">
 											<xsl:choose>
 												<xsl:when test="string-length($downloadProduct) > 0">
-													
 														<span class="metadata-link">
 															<a>
 																<xsl:attribute name="class">modal</xsl:attribute>	
@@ -326,8 +341,7 @@
 														</span>
 													
 												</xsl:when >
-												<xsl:otherwise>
-													
+												<xsl:otherwise>													
 													<span class="metadata-link">
 														<a>
 															<xsl:attribute name="class">icon default</xsl:attribute>
@@ -336,8 +350,7 @@
 															</xsl:attribute>
 															<xsl:text>Commander</xsl:text>
 														</a>
-													</span>
-													
+													</span>													
 												</xsl:otherwise >
 											</xsl:choose>
 											<xsl:if test="string-length($previewProduct) > 0">
@@ -382,23 +395,39 @@
 											</span>
 										</xsl:when>
 										<xsl:when test="$logo ='geoproduct'">
-											<xsl:if test="string-length($downloadProduct) > 0">
-												<span class="metadata-link">
-													<a>
-														<xsl:attribute name="class">modal</xsl:attribute>	
-														<xsl:attribute name="rel">{handler:'iframe',size:{x:650,y:600}}</xsl:attribute>
-														<xsl:attribute name="href"><xsl:value-of  select="$downloadProduct" /></xsl:attribute>
-														<xsl:text>Télécharger </xsl:text>
-													</a>
-													<span class="info">
-														<xsl:text> (</xsl:text>
-														<xsl:value-of select="translate($filetype,$smallcase,$uppercase)" />
-														<xsl:text>, </xsl:text>
-														<xsl:value-of select="$filesize" />
-														<xsl:text> Ko)</xsl:text>
-													</span>
-												</span>
-											</xsl:if>
+											<xsl:choose>
+												<xsl:when test="string-length($downloadProduct) > 0">
+														<span class="metadata-link">
+															<a>
+																<xsl:attribute name="class">modal</xsl:attribute>	
+																<xsl:attribute name="rel">{handler:'iframe',size:{x:650,y:600}}</xsl:attribute>
+																<xsl:attribute name="href">
+																	<xsl:value-of  select="$downloadProduct" />
+																</xsl:attribute>
+																<xsl:text>Télécharger </xsl:text>
+															</a>
+														</span>
+														<span class="info">
+															<xsl:text> (</xsl:text>
+															<xsl:value-of select="translate($filetype,$smallcase,$uppercase)" />
+															<xsl:text>, </xsl:text>
+															<xsl:value-of select="$filesize" />
+															<xsl:text> Ko)</xsl:text>
+														</span>
+													
+												</xsl:when >
+												<xsl:otherwise>													
+													<span class="metadata-link">
+														<a>
+															<xsl:attribute name="class">icon default</xsl:attribute>
+															<xsl:attribute name="href">
+																<xsl:value-of select="$orderproduct" />
+															</xsl:attribute>
+															<xsl:text>Commander</xsl:text>
+														</a>
+													</span>													
+												</xsl:otherwise >
+											</xsl:choose>
 											<xsl:if test="string-length($previewProduct) > 0">
 												<span class="metadata-link">
 													<a>
