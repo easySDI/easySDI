@@ -341,11 +341,11 @@ class HTML_product {
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="viewextent" id="viewextent" value="<?php echo $product->viewextent; ?>" /></td>								
 							</tr>						
 							<tr>
-								<td class="key"><?php echo JText::_("SHOP_MINRESOLUTION"); ?> : </td>
+								<td class="key"><?php echo JText::_("SHOP_MINSCALE"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="viewminresolution" id="viewminresolution" value="<?php echo $product->viewminresolution; ?>" <?php if ($product->viewurltype != 'WMS') echo 'disabled'; ?> /></td>								
 							</tr>
 							<tr>
-								<td class="key"><?php echo JText::_("SHOP_MAXRESOLUTION"); ?> : </td>
+								<td class="key"><?php echo JText::_("SHOP_MAXSCALE"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="viewmaxresolution"   id="viewmaxresolution"  value="<?php echo $product->viewmaxresolution; ?>" <?php if ($product->viewurltype != 'WMS') echo 'disabled'; ?> /></td>								
 							</tr>			
 							<tr>

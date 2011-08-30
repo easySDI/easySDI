@@ -6,7 +6,7 @@
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or 
+ * the Free Software Foundation, either version 3 of the License, or
  * any later version.
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -19,22 +19,25 @@
 
 class basemap extends sdiTable
 {	
-	var $projection=null;
-	var $unit=null;
-	var $minresolution=null;
-	var $maxresolution=null;
-	var $default=0;	
-	var $maxextent=null;
-	var $restrictedextent=null;
-	var $restrictedscales=null;
-	var $decimalprecision=null;
-	var $dfltfillcolor=null;
-	var $dfltstrkcolor=null;
-	var $dfltstrkwidth=null;
-	var $selectfillcolor=null;
-	var $selectstrkcolor=null;
-	var $tempfillcolor=null;
-	var $tempstrkcolor=null;
+	var $projection				=null;
+	var $unit					=null;
+	var $minresolution			=null;
+	var $maxresolution			=null;
+	var $default				=0;	
+	var $maxextent				=null;
+	var $restrictedextent		=null;
+	var $restrictedscales		=null;
+	var $decimalprecision		=null;
+	var $dfltfillcolor			=null;
+	var $dfltstrkcolor			=null;
+	var $dfltstrkwidth			=null;
+	var $selectfillcolor		=null;
+	var $selectstrkcolor		=null;
+	var $tempfillcolor			=null;
+	var $tempstrkcolor			=null;
+	var $minresol				=null;
+	var $maxresol				=null;
+	var $restrictedresol		=null;
 	
 	// Class constructor
 	function __construct( &$db )

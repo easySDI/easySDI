@@ -124,10 +124,10 @@ class HTML_perimeter {
 							</tr>
 							
 							<tr>
-								<td class="key"><?php echo JText::_("SHOP_MINRESOLUTION"); ?> : </td>
+								<td class="key"><?php echo JText::_("SHOP_MINSCALE"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="minresolution" value="<?php echo $rowPerimeter->minresolution; ?>" /></td>
 							</tr>							<tr>
-								<td class="key"><?php echo JText::_("SHOP_MAXRESOLUTION"); ?> : </td>
+								<td class="key"><?php echo JText::_("SHOP_MAXSCALE"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="maxresolution" value="<?php echo $rowPerimeter->maxresolution; ?>" /></td>
 							</tr>
 							

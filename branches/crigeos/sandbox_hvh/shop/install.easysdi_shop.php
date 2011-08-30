@@ -852,6 +852,26 @@ function com_install(){
 		}
 	}
 	if($version == "2.0.0"){
+		//Base Map
+		$query="ALTER TABLE  `#__sdi_basemap` ADD minresol varchar (100)";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		$query="ALTER TABLE  `#__sdi_basemap` ADD maxresol varchar (100)";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		$query="ALTER TABLE  `#__sdi_basemap` ADD restrictedresol varchar (500)";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
 		//Base map content
 		$query="ALTER TABLE  `#__sdi_basemapcontent` ADD matrixset varchar (100)";
 		$db->setQuery( $query);

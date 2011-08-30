@@ -370,42 +370,48 @@ class HTML_basemap {
 									<option <?php if($rowBasemap->unit == 'degrees') echo "selected" ; ?> value="degrees"> <?php echo JText::_("SHOP_DEGREES"); ?></option>
 								</select>
 								</td>
-
-							</tr>
-							<tr>							
-								<td class="key"><?php echo JText::_("SHOP_MINRESOLUTION"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="minresolution" value="<?php echo $rowBasemap->minresolution; ?>" /></td>							
-							</tr>
-							<tr>							
-								<td class="key"><?php echo JText::_("SHOP_MAXRESOLUTION"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="maxresolution" value="<?php echo $rowBasemap->maxresolution; ?>" /></td>							
 							</tr>
 							<tr>
-							
 								<td class="key"><?php echo JText::_("SHOP_MAXEXTENT"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="maxextent" value="<?php echo $rowBasemap->maxextent; ?>" /></td>							
 							</tr>
 							<tr>
-							
-								<td class="key"><?php echo JText::_("SHOP_BASEMAP_DECIMAL_PRECISION"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="50" name="decimalprecision" value="<?php echo $rowBasemap->decimalprecision; ?>" /></td>							
-							</tr>
-							<tr>
-							
 								<td class="key"><?php echo JText::_("SHOP_BASEMAP_MAXEXTEND_IS_RESTRICTIVE"); ?> : </td>
 								<td><select class="inputbox" name="restrictedextent" >
 										<option value="0" <?php if($rowBasemap->restrictedextent == '0') echo "selected" ; ?>><?php echo JText::_("CORE_FALSE"); ?></option>
 										<option value="1" <?php if($rowBasemap->restrictedextent == '1') echo "selected" ; ?>><?php echo JText::_("CORE_TRUE"); ?></option>
 								</select>
 								</td>															
-							</tr>	
+							</tr>
+							<tr>							
+								<td class="key"><?php echo JText::_("SHOP_MINSCALE"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="minresolution" value="<?php echo $rowBasemap->minresolution; ?>" /></td>							
+							</tr>
+							<tr>							
+								<td class="key"><?php echo JText::_("SHOP_MAXSCALE"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="maxresolution" value="<?php echo $rowBasemap->maxresolution; ?>" /></td>							
+							</tr>
 							<tr>
-							
 								<td class="key"><?php echo JText::_("SHOP_BASEMAP_RESTRICTEDSCALES"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="restrictedscales" value="<?php echo $rowBasemap->restrictedscales; ?>" /></td>							
 							</tr>
+							<tr>							
+								<td class="key"><?php echo JText::_("SHOP_MINRESOLUTION"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="minresol" value="<?php echo $rowBasemap->minresol; ?>" /></td>							
+							</tr>
+							<tr>							
+								<td class="key"><?php echo JText::_("SHOP_MAXRESOLUTION"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="maxresol" value="<?php echo $rowBasemap->maxresol; ?>" /></td>							
+							</tr>
 							<tr>
-							
+								<td class="key"><?php echo JText::_("SHOP_BASEMAP_RESTRICTEDRESOL"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="restrictedresol" value="<?php echo $rowBasemap->restrictedresol; ?>" /></td>							
+							</tr>
+							<tr>
+								<td class="key"><?php echo JText::_("SHOP_BASEMAP_DECIMAL_PRECISION"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="50" name="decimalprecision" value="<?php echo $rowBasemap->decimalprecision; ?>" /></td>							
+							</tr>
+							<tr>
 								<td class="key"><?php echo JText::_("SHOP_BASEMAP_IS_DEFAULT"); ?> : </td>
 								<td><select class="inputbox" name="default" >
 										<option value="0" <?php if($rowBasemap->default == '0') echo "selected" ; ?>><?php echo JText::_("CORE_FALSE"); ?></option>

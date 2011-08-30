@@ -93,18 +93,27 @@ class HTML_preview{
 		    		projection: new OpenLayers.Projection("<?php echo $rowsBaseMap->projection; ?>"),
 		            displayProjection: new OpenLayers.Projection("<?php echo $rowsBaseMap->projection; ?>"),
 		            units: "<?php echo $rowsBaseMap->unit; ?>",
-		<?php if ($rowsBaseMap->projection == "EPSG:4326") {}else{ ?>
-		            minScale: <?php echo $rowsBaseMap->minresolution; ?>,
-		            maxScale: <?php echo $rowsBaseMap->maxresolution; ?>,                
-					<?php } ?>
-		            maxExtent: new OpenLayers.Bounds(<?php echo $rowsBaseMap->maxextent; ?>)            
-		            });
-						  
-					baseLayerVector = new OpenLayers.Layer.Vector(
-		                "BackGround",
-		                {isBaseLayer: true,transparent: "true"}
-		            ); 
-					map.addLayer(baseLayerVector);
+					<?php 
+					if ($rowsBaseMap->projection == "EPSG:4326") {
+						
+					}else{ 
+						if(strlen($rowsBaseMap->minresolution)>0){?>
+	        				minScale: <?php echo $rowsBaseMap->minresolution; ?>,
+						<?php 
+						}
+						if(strlen($rowsBaseMap->maxresolution)>0){?>
+							maxScale: <?php echo $rowsBaseMap->maxresolution; ?>,                
+						<?php 
+						} 
+						?>
+			            maxExtent: new OpenLayers.Bounds(<?php echo $rowsBaseMap->maxextent; ?>)      ,
+			            maxResolution: 156543.0339  
+			        <?php
+					} 
+			        ?>    
+			        }
+	        );
+					
 		<?php
 		$query = "select * from #__sdi_basemapcontent where basemap_id = ".$rowsBaseMap->id." order by ordering"; 
 		$db->setQuery( $query);
@@ -116,8 +125,18 @@ class HTML_preview{
 					echo "</div>";
 		}
 		$i=0;
-		foreach ($rows as $row){				  
+		foreach ($rows as $row){
+			if($row->urltype != "WMTS"){				  
 		?>				
+
+		  	//Add a base layer for map with no WMTS layer
+			baseLayerVector = new OpenLayers.Layer.Vector(
+	            "BackGround",
+	            {isBaseLayer: true,transparent: "true"}
+	        ); 
+			map.addLayer(baseLayerVector);
+
+			//Build other base map contents
 			layer<?php echo $i; ?> = new OpenLayers.Layer.<?php echo $row->urltype; ?>( "<?php echo $row->name; ?>",
                     "<?php echo $row->url; ?>",
                     {layers: '<?php echo $row->layers; ?>', format : "<?php echo $row->imgformat; ?>",transparent: "true"},                                          
@@ -142,7 +161,28 @@ class HTML_preview{
                     } 
                     ?>
                  map.addLayer(layer<?php echo $i; ?>);
-		<?php 
+                 <?php 
+			}
+			else{
+				?>
+				var matrixIdsString = "<?php echo $row->matrixids; ?>";
+				var matrixIds = matrixIdsString.split(",");
+
+			    layer<?php echo $i; ?> = new OpenLayers.Layer.WMTS( {
+						name : "<?php echo $row->name; ?>",
+						isBaseLayer:true,
+	                    url : "<?php echo $row->url; ?>",
+	                    format : "<?php echo $row->imgformat; ?>",
+	                    transparent: 'true',  
+	                    layer : '<?php echo $row->layers; ?>', 
+	                    style : '<?php echo $row->style; ?>',
+	                    matrixSet :  '<?php echo $row->matrixset; ?>',
+	                    matrixIds :  matrixIds
+			    });
+			    map.addLayer(layer<?php echo $i; ?>);
+			    <?php 
+			}
+		
 		$i++;
 		} ?>            
 		var layerProduit ;
@@ -176,7 +216,7 @@ class HTML_preview{
 
 		    layerProduit = new OpenLayers.Layer.WMTS( {
 					name : "<?php echo $rowProduct->id; ?>",
-					isBaseLayer:true,
+					isBaseLayer:false,
                     url : "<?php echo $rowProduct->viewurlwms; ?>",
                     format : "<?php echo $rowProduct->viewimgformat; ?>",
                     transparent: 'true',  
@@ -188,7 +228,8 @@ class HTML_preview{
 		<?php }?>    
           layerProduit.alpha = setAlpha('image/png');
           map.addLayer(layerProduit);
-		  map.zoomToExtent(new OpenLayers.Bounds(<?php echo $rowProduct->viewextent; ?>));
+		  //map.zoomToExtent(new OpenLayers.Bounds(<?php echo $rowProduct->viewextent; ?>));
+		  map.setCenter(new OpenLayers.LonLat(-13677832, 5213272), 13);
 	      map.addControl(new OpenLayers.Control.Attribution());         
 	     
    		}
