@@ -180,12 +180,13 @@ class product extends sdiTable
 	function getFile(){
 		
 		if ($this->pathfile != null){
-			if ($fd = fopen ($this->pathfile, "r")) {
-			    $fsize = filesize($this->pathfile);
-			    $buffer = fread($fd, $fsize);
-			    fclose ($fd);
-				return $buffer;
+			$handle = fopen($this->pathfile, "r");
+			$contents = '';
+			while (!feof($handle)) {
+			  $contents .= fread($handle, 8192);
 			}
+			fclose($handle);
+			return $contents;
 		}else{
 			$this->_db->setQuery("SELECT data,filename FROM #__sdi_product_file where product_id = ".$this->id);
 			$row = $this->_db->loadObject();
