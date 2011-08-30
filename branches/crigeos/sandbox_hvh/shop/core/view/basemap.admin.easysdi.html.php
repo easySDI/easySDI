@@ -383,6 +383,23 @@ class HTML_basemap {
 								</select>
 								</td>															
 							</tr>
+							<tr>
+								<td class="key"><?php echo JText::_("SHOP_BASEMAP_DECIMAL_PRECISION"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="50" name="decimalprecision" value="<?php echo $rowBasemap->decimalprecision; ?>" /></td>							
+							</tr>
+							<tr>
+								<td class="key"><?php echo JText::_("SHOP_BASEMAP_IS_DEFAULT"); ?> : </td>
+								<td><select class="inputbox" name="default" >
+										<option value="0" <?php if($rowBasemap->default == '0') echo "selected" ; ?>><?php echo JText::_("CORE_FALSE"); ?></option>
+										<option value="1" <?php if($rowBasemap->default == '1') echo "selected" ; ?>><?php echo JText::_("CORE_TRUE"); ?></option>
+								</select>
+								</td>															
+							</tr>
+							<tr>
+								<td   colspan="2">
+									<input type="radio" id="mapRadioScale" name="mapResolutionOverScale" value="0" checked="checked" /> <?php echo JText::_("SHOP_TITLE_SCALE"); ?>	
+								</td>
+							</tr>
 							<tr>							
 								<td class="key"><?php echo JText::_("SHOP_MINSCALE"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="minresolution" value="<?php echo $rowBasemap->minresolution; ?>" /></td>							
@@ -394,6 +411,11 @@ class HTML_basemap {
 							<tr>
 								<td class="key"><?php echo JText::_("SHOP_BASEMAP_RESTRICTEDSCALES"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="restrictedscales" value="<?php echo $rowBasemap->restrictedscales; ?>" /></td>							
+							</tr>
+							<tr>
+								<td   colspan="2">
+									<input type="radio" id="mapRadioResolution" name="mapResolutionOverScale" value="1"  /> <?php echo JText::_("SHOP_TITLE_RESOLUTION"); ?>	
+								</td>
 							</tr>
 							<tr>							
 								<td class="key"><?php echo JText::_("SHOP_MINRESOLUTION"); ?> : </td>
@@ -407,18 +429,7 @@ class HTML_basemap {
 								<td class="key"><?php echo JText::_("SHOP_BASEMAP_RESTRICTEDRESOL"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="restrictedresol" value="<?php echo $rowBasemap->restrictedresol; ?>" /></td>							
 							</tr>
-							<tr>
-								<td class="key"><?php echo JText::_("SHOP_BASEMAP_DECIMAL_PRECISION"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="50" name="decimalprecision" value="<?php echo $rowBasemap->decimalprecision; ?>" /></td>							
-							</tr>
-							<tr>
-								<td class="key"><?php echo JText::_("SHOP_BASEMAP_IS_DEFAULT"); ?> : </td>
-								<td><select class="inputbox" name="default" >
-										<option value="0" <?php if($rowBasemap->default == '0') echo "selected" ; ?>><?php echo JText::_("CORE_FALSE"); ?></option>
-										<option value="1" <?php if($rowBasemap->default == '1') echo "selected" ; ?>><?php echo JText::_("CORE_TRUE"); ?></option>
-								</select>
-								</td>															
-							</tr>	
+								
 						</table>
 					</fieldset>
 				</td>
