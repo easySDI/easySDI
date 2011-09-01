@@ -91,7 +91,6 @@ class HTML_preview{
 		function initMap(){
 			map = new OpenLayers.Map('map', {
 		    		projection: new OpenLayers.Projection("<?php echo $rowsBaseMap->projection; ?>"),
-		            displayProjection: new OpenLayers.Projection("<?php echo $rowsBaseMap->projection; ?>"),
 		            units: "<?php echo $rowsBaseMap->unit; ?>",
 					<?php 
 					if ($rowsBaseMap->projection == "EPSG:4326") {
@@ -105,9 +104,29 @@ class HTML_preview{
 							maxScale: <?php echo $rowsBaseMap->maxresolution; ?>,                
 						<?php 
 						} 
+						if(strlen($rowsBaseMap->maxresol)>0){?>
+							maxResolution: <?php echo $rowsBaseMap->maxresol; ?>,
+						<?php 
+						}
+						if(strlen($rowsBaseMap->minresol)>0){?>
+							minResolution: <?php echo $rowsBaseMap->minresol; ?>,
+						<?php 
+						}
+						if(strlen($rowsBaseMap->restrictedresol)>0){?>
+							resolutions: [<?php echo $rowsBaseMap->restrictedresol; ?>],
+						<?php 
+						}
+						if($rowsBaseMap->restrictedextent==1){?>
+							restrictedExtent: new OpenLayers.Bounds(<?php echo $rowsBaseMap->maxextent; ?>),
+						<?php 
+						}
+						if(strlen($rowsBaseMap->restrictedscales)>0){?>
+							scales: [<?php echo $rowsBaseMap->restrictedscales ?>],
+						<?php 
+						}
 						?>
-			            maxExtent: new OpenLayers.Bounds(<?php echo $rowsBaseMap->maxextent; ?>)      ,
-			            maxResolution: 156543.0339  
+			            maxExtent: new OpenLayers.Bounds(<?php echo $rowsBaseMap->maxextent; ?>)      
+			           
 			        <?php
 					} 
 			        ?>    
@@ -228,9 +247,8 @@ class HTML_preview{
 		<?php }?>    
           layerProduit.alpha = setAlpha('image/png');
           map.addLayer(layerProduit);
-		  //map.zoomToExtent(new OpenLayers.Bounds(<?php echo $rowProduct->viewextent; ?>));
-		  map.setCenter(new OpenLayers.LonLat(-13677832, 5213272), 13);
-	      map.addControl(new OpenLayers.Control.Attribution());         
+		  map.zoomToExtent(new OpenLayers.Bounds(<?php echo $rowProduct->viewextent; ?>));
+		  map.addControl(new OpenLayers.Control.Attribution());         
 	     
    		}
 		</script>

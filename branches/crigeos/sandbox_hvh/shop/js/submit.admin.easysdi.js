@@ -1,9 +1,3 @@
-<?php
-
-defined('_JEXEC') or die('Restricted access');
-?>
-<script>
-		
 		function submitbutton(pressbutton)
 		{
 			var form = document.adminForm;
@@ -243,7 +237,7 @@ defined('_JEXEC') or die('Restricted access');
 			submitform( pressbutton );
 			
 		}
-
+		
 		function enableScale(enableScale){
 			if(enableScale){
 				document.getElementById('minresolution').disabled = false;
@@ -267,5 +261,3 @@ defined('_JEXEC') or die('Restricted access');
 				document.getElementById('restrictedresol').disabled = false;
 			}
 		}
-		
-</script>

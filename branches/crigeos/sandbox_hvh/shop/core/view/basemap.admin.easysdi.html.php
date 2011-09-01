@@ -397,37 +397,47 @@ class HTML_basemap {
 							</tr>
 							<tr>
 								<td   colspan="2">
-									<input type="radio" id="mapRadioScale" name="mapResolutionOverScale" value="0" checked="checked" /> <?php echo JText::_("SHOP_TITLE_SCALE"); ?>	
+								<?php
+								$isScale = true;	 
+								if ($rowBasemap->minresol != null || $rowBasemap->maxresol != null || $rowBasemap->restrictedresol != null )
+									$isScale = false;
+									 
+								?>
+									<input type="radio" id="mapRadioScale" name="mapResolutionOverScale" value="0" <?php if ($isScale) echo 'checked="checked"'; ?>   onClick="javascript:enableScale(true);"/> <?php echo JText::_("SHOP_TITLE_SCALE"); ?>	
 								</td>
 							</tr>
 							<tr>							
 								<td class="key"><?php echo JText::_("SHOP_MINSCALE"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="minresolution" value="<?php echo $rowBasemap->minresolution; ?>" /></td>							
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="minresolution" id="minresolution" <?php if(!$isScale) echo 'disabled'; ?> value="<?php echo $rowBasemap->minresolution; ?>" /></td>							
 							</tr>
 							<tr>							
 								<td class="key"><?php echo JText::_("SHOP_MAXSCALE"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="maxresolution" value="<?php echo $rowBasemap->maxresolution; ?>" /></td>							
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="maxresolution" id="maxresolution" <?php if(!$isScale) echo 'disabled'; ?> value="<?php echo $rowBasemap->maxresolution; ?>" /></td>							
 							</tr>
 							<tr>
 								<td class="key"><?php echo JText::_("SHOP_BASEMAP_RESTRICTEDSCALES"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="restrictedscales" value="<?php echo $rowBasemap->restrictedscales; ?>" /></td>							
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="restrictedscales" id="restrictedscales" <?php if(!$isScale) echo 'disabled'; ?> value="<?php echo $rowBasemap->restrictedscales; ?>" /></td>							
 							</tr>
 							<tr>
 								<td   colspan="2">
-									<input type="radio" id="mapRadioResolution" name="mapResolutionOverScale" value="1"  /> <?php echo JText::_("SHOP_TITLE_RESOLUTION"); ?>	
+									<input type="radio" id="mapRadioResolution" name="mapResolutionOverScale" value="1" <?php if(!$isScale) echo 'checked="checked"'; ?> onClick="javascript:enableScale(false);" /> <?php echo JText::_("SHOP_TITLE_RESOLUTION"); ?>	
+																		(<img src="<?php echo JURI::root(true);?>/includes/js/ThemeOffice/warning.png" style="vertical-align:top" alt="" /> 
+										<i><?php echo JText::_("SHOP_BASEMAP_RESOLUTION_INFO"); ?></i>)
+															
+								</td>
 								</td>
 							</tr>
 							<tr>							
 								<td class="key"><?php echo JText::_("SHOP_MINRESOLUTION"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="minresol" value="<?php echo $rowBasemap->minresol; ?>" /></td>							
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="minresol" id="minresol" <?php if($isScale) echo 'disabled'; ?> value="<?php echo $rowBasemap->minresol; ?>" /></td>							
 							</tr>
 							<tr>							
 								<td class="key"><?php echo JText::_("SHOP_MAXRESOLUTION"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="maxresol" value="<?php echo $rowBasemap->maxresol; ?>" /></td>							
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="maxresol" id="maxresol"   <?php if($isScale) echo 'disabled'; ?> value="<?php echo $rowBasemap->maxresol; ?>" /></td>							
 							</tr>
 							<tr>
 								<td class="key"><?php echo JText::_("SHOP_BASEMAP_RESTRICTEDRESOL"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="restrictedresol" value="<?php echo $rowBasemap->restrictedresol; ?>" /></td>							
+								<td><input class="inputbox" type="text" size="50" maxlength="100"  name="restrictedresol" id="restrictedresol"  <?php if($isScale) echo 'disabled'; ?> value="<?php echo $rowBasemap->restrictedresol; ?>" /></td>							
 							</tr>
 								
 						</table>

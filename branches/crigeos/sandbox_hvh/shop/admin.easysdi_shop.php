@@ -202,6 +202,7 @@ switch($task){
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'basemap.admin.easysdi.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'basemap.easysdi.class.php');
 		require_once (JPATH_COMPONENT_ADMINISTRATOR.DS.'js'.DS.'submit.admin.easysdi.php');
+	//	JHTML::script('submit.admin.easysdi.js', 'administrator/components/com_easysdi_shop/js/');
 				
 		TOOLBAR_basemap::_EDITBASEMAP();
 		ADMIN_basemap::editBasemap($cid[0],$option);
