@@ -176,6 +176,24 @@ class HTML_product{
 									 form.submit();
 								 }
 							}
+						   function ServiceFieldManagement(){
+								if (document.forms['productForm'].viewurltype.value == 'WMS')
+								{
+									document.getElementById('viewminresolution').disabled = false;
+									document.getElementById('viewmaxresolution').disabled = false;
+									document.getElementById('viewmatrixset').disabled = true;
+									document.getElementById('viewmatrixset').value = null;
+									document.getElementById('viewmatrix').disabled = true;
+									document.getElementById('viewmatrix').value = null;
+								}else{
+									document.getElementById('viewminresolution').disabled = true;
+									document.getElementById('viewminresolution').value = null;
+									document.getElementById('viewmaxresolution').disabled = true;
+									document.getElementById('viewmaxresolution').value = null;
+									document.getElementById('viewmatrixset').disabled = false;
+									document.getElementById('viewmatrix').disabled = false;
+								}
+							}
 						</script>
 						<table border="0" cellpadding="3" cellspacing="0">
 							<tr>							
@@ -547,24 +565,7 @@ class HTML_product{
 				}
 			}
 		}
-		function ServiceFieldManagement(){
-			if (document.forms['productForm'].viewurltype.value == 'WMS')
-			{
-				document.getElementById('viewminresolution').disabled = false;
-				document.getElementById('viewmaxresolution').disabled = false;
-				document.getElementById('viewmatrixset').disabled = true;
-				document.getElementById('viewmatrixset').value = null;
-				document.getElementById('viewmatrix').disabled = true;
-				document.getElementById('viewmatrix').value = null;
-			}else{
-				document.getElementById('viewminresolution').disabled = true;
-				document.getElementById('viewminresolution').value = null;
-				document.getElementById('viewmaxresolution').disabled = true;
-				document.getElementById('viewmaxresolution').value = null;
-				document.getElementById('viewmatrixset').disabled = false;
-				document.getElementById('viewmatrix').disabled = false;
-			}
-		}
+		
 		</script>
 		<table width="100%" border="0" cellpadding="0" cellspacing="0">
 			<tr>
