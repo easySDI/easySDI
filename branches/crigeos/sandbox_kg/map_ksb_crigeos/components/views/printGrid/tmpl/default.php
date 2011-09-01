@@ -26,13 +26,17 @@ JHTML::_('behavior.mootools');
 $headerstuff = $document->getHeadData();
 $headerstuff['scripts'] = array();
 $document->setHeadData($headerstuff);
-JHTML::script('OpenLayers.js', 'components/com_easysdi_map/externals/openlayers/');
+require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.jsLoaderUtil.php');
+$jsLoader =JSLOADER_UTIL::getInstance();
+
+JHTML::script('OpenLayers.js',  $jsLoader->getPath("map","openlayers"));// 'components/com_rwgis_map/externals/openlayers/');
 JHTML::script('SortableWFS.js', 'components/com_easysdi_map/classes/');
 // Now the component specific JavaScript
-JHTML::script('ext-base.js', 'components/com_easysdi_map/externals/ext/adapter/ext/');
-JHTML::script('ext-all-debug.js', 'components/com_easysdi_map/externals/ext/');
+JHTML::script('ext-base.js',  $jsLoader->getPath("map","ext","/adapter/ext/"));// 'components/com_rwgis_map/externals/ext/adapter/ext/');
+JHTML::script('ext-all.js',  $jsLoader->getPath("map","ext"));//'components/com_rwgis_map/externals/ext/');
+
 JHTML::script('i18n.js', 'components/com_easysdi_map/classes/');
-JHTML::script('printGrid.js', 'components/com_easysdi_map/views/printGrid/tmpl/');
+JHTML::script('printGrid.js', 'components/com_easysdi_map/views/printgrid/tmpl/');
 require(JPATH_COMPONENT.DS.'php'.DS.'lang.php');
 require(JPATH_COMPONENT.DS.'php'.DS.'params.php');
 

@@ -26,6 +26,7 @@ class EasySDI_mapViewPrintMap extends JView {
 	/**
 	 * Display method for the Map view.
 	 */
+
 }
 
 ?>

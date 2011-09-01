@@ -17,6 +17,8 @@
  */
 
 defined('_JEXEC') or die('Restricted access');
+require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.jsLoaderUtil.php');
+
 
 class HTML_overlay
 {
@@ -119,7 +121,9 @@ class HTML_overlay
 	function editOverlay( $overlay_content,$createUser, $updateUser,$rowsGroup,$fieldsLength, $option )
 	{
 		global  $mainframe;
-		JHTML::script('jquery-1.3.2.min.js', 'components/com_easysdi_map/externals/jquery/');
+		$jsLoader =JSLOADER_UTIL::getInstance();
+		
+		JHTML::script('jquery-1.3.2.min.js',  $jsLoader->getPath("map","jquery"));//'components/com_easysdi_map/externals/jquery/');
 		if ($overlay_content->id != 0)
 		{
 			JToolBarHelper::title( JText::_("MAP_OVERLAY_CONTENT_EDIT").': <small><small>['. JText::_("CORE_EDIT").']</small></small>', 'addedit.png' );

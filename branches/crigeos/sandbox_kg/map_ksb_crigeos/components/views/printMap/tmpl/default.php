@@ -16,6 +16,10 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html.
  */
 ?>
+<?php 
+require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.jsLoaderUtil.php');
+$jsLoader =JSLOADER_UTIL::getInstance();
+?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd" >
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
@@ -27,8 +31,8 @@
 <script type="text/javascript" src="components/com_easysdi_map/externals/ext/adapter/ext/ext-base.js"></script>
 <script type="text/javascript" src="components/com_easysdi_map/externals/ext/ext-all.js"></script>
 <script type="text/javascript" src="components/com_easysdi_map/externals/jquery/jquery-1.3.2.min.js"></script>
-<script type="text/javascript" src="components/com_easysdi_map/externals/jquery/jquery-ui-1.7.2.custom.min.js"></script>
-<link rel="stylesheet" href="components/com_easysdi_map/externals/jquery/css/jquery-ui-1.7.2.custom.css" type="text/css" />
+<script type="text/javascript" src="<?php  echo $jsLoader->getPath("map","jqueryui") ?>/jquery-ui-1.7.2.custom.min.js"></script>
+<link rel="stylesheet" href="<?php  echo $jsLoader->getPath("map","jqueryui") ?>/css/jquery-ui-1.7.2.custom.css" type="text/css" />
 <script type="text/javascript" src="components/com_easysdi_map/externals/json/json.js"></script>
 <script type="text/javascript" src="components/com_easysdi_map/externals/openlayers/OpenLayers.js"></script>
 <!--<script type="text/javascript" src="components/com_easysdi_map/externals/OpenLayers-2.8/lib/OpenLayers.js"></script>-->
