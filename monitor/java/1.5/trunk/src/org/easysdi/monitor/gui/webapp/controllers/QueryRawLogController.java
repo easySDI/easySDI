@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.easysdi.monitor.biz.job.Query;
+import org.easysdi.monitor.biz.job.Sla;
 import org.easysdi.monitor.biz.logging.RawLogEntry;
 
 import org.easysdi.monitor.biz.logging.LogManager;
@@ -159,22 +160,23 @@ public class QueryRawLogController extends AbstractMonitorController {
             || (null != contentType && contentType.equals("text/csv"))) {
             viewName = "rawLogsCsv";
         }
+    
         
         final ModelAndView result = new ModelAndView(viewName);
         final Query query = this.getQueryProtected(jobIdString, queryIdString,
                                                    request, response);
         final LogManager logManager = new LogManager(query);
-        
+       
         Set<RawLogEntry> rawLog;
-   
-        // Use sla for get report
+        String slaName = "Default";
         if(requestParams.get("useSla") != null)
         {
-        	// Get raw log
         	rawLog = logManager.getRawLogsSubset(searchParams.getMinDate(), 
                     searchParams.getMaxDate(),searchParams.getMaxResults(), 
                     searchParams.getStartIndex());
         	rawLog = LogSlaHelper.getRawlogForSla(requestParams.get("useSla"), rawLog,false);
+        	
+        	slaName = Sla.getFromIdString(requestParams.get("useSla")).getName();
         }else
         {
         	rawLog = logManager.getRawLogsSubset(
@@ -183,10 +185,17 @@ public class QueryRawLogController extends AbstractMonitorController {
                     searchParams.getMaxResults(), 
                     searchParams.getStartIndex());
         }
+        
+        if(requestParams.get("export") != null)
+        {
+        	result.addObject("getExport", true);
+        	result.addObject("Jobname",query.getConfig().getParentJob().getConfig().getJobName());
+        	result.addObject("Queryname",query.getConfig().getQueryName());
+        	result.addObject("Slaname",slaName);
+        }
        
        	result.addObject("message", "log.details.success");
         result.addObject("rawLogsCollection",rawLog);
-        // TODO Get total count for rawlog in period
         result.addObject("noPagingCount", 
                  logManager.getRawLogsItemsNumber(searchParams.getMinDate(), 
                                                   searchParams.getMaxDate(), 

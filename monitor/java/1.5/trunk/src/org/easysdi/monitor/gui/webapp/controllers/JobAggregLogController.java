@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.easysdi.monitor.biz.job.Job;
+import org.easysdi.monitor.biz.job.Sla;
 import org.easysdi.monitor.biz.logging.AbstractAggregateHourLogEntry;
 import org.easysdi.monitor.biz.logging.AbstractAggregateLogEntry;
 import org.easysdi.monitor.biz.logging.LogManager;
@@ -165,6 +166,7 @@ public class JobAggregLogController extends AbstractMonitorController {
         final LogManager logManager = new LogManager(job);
         Map<Date, AbstractAggregateHourLogEntry> logHourEntries;
         Map<Date, AbstractAggregateLogEntry> logEntries;
+        String slaName = "Default";
         if(requestParams.get("useSla") != null)
         {
         	// TODO with paging
@@ -178,7 +180,7 @@ public class JobAggregLogController extends AbstractMonitorController {
                            null, null));
         	result.addObject("message", "log.details.success");
         	result.addObject("aggregHourLogsCollection", logHourEntries.values());
-        	return result;
+        	slaName = Sla.getFromIdString(requestParams.get("useSla")).getName();
         }else
         {
         	logEntries = logManager.getAggregLogsSubset(searchParams.getMinDate(),
@@ -193,7 +195,16 @@ public class JobAggregLogController extends AbstractMonitorController {
                            null, null));
         	result.addObject("message", "log.details.success");
         	result.addObject("aggregLogsCollection", logEntries.values());
-        	return result;
-        }        
+       
+        }
+        
+        if(requestParams.get("export") != null)
+        {
+        	result.addObject("getExport", true);
+        	result.addObject("Jobname",job.getConfig().getJobName());
+        	result.addObject("Queryname","");
+        	result.addObject("Slaname",slaName);
+        }
+     	return result;
     }
 }

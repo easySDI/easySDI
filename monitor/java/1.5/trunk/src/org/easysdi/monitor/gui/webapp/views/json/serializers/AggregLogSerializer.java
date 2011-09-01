@@ -66,4 +66,47 @@ public class AggregLogSerializer {
 
         return jsonEntry;
     }
+    
+    /**
+     * Generates the JSON representation of an aggregate log entry.
+     * 
+     * @param   entry   the aggregate log entry to represent
+     * @param   mapper  the JSON object used to map the data to JSON nodes
+     * @return          the JSON node containing the data for the entry
+     */
+    public static JsonNode serialize(AbstractAggregateLogEntry entry, 
+                                     ObjectMapper mapper,String jobName,
+                                     String queryName) {
+        final ObjectNode jsonEntry = mapper.createObjectNode();
+
+        final AggregateStats h24Stats = entry.getH24Stats();
+        final AggregateStats slaStats = entry.getSlaStats();
+        final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        jsonEntry.put("jobname", jobName);
+        jsonEntry.put("slaname", "Default");
+        jsonEntry.put("date", dateFormat.format(entry.getLogDate().getTime()));
+        if(queryName != "")
+        {
+        	jsonEntry.put("requestname",queryName);
+        }
+        jsonEntry.put("slaavailability", slaStats.getAvailability());
+        jsonEntry.put("slaunavailability",slaStats.getUnavailability());
+        jsonEntry.put("slafailure",slaStats.getFailure());
+        jsonEntry.put("slauntested",slaStats.getUntested());
+        jsonEntry.put("h24availability", h24Stats.getAvailability());
+        jsonEntry.put("h24unavailability", h24Stats.getUnavailability());
+        jsonEntry.put("h24failure", h24Stats.getFailure());
+        jsonEntry.put("h24untested", h24Stats.getUntested());
+        jsonEntry.put("slamaxresponsetime", slaStats.getMaxRespTime());
+        jsonEntry.put("slaminresponsetime", slaStats.getMinRespTime());
+        jsonEntry.put("slameanresponsetime", slaStats.getMeanRespTime());
+        jsonEntry.put("h24maxresponsetime", h24Stats.getMaxRespTime());
+        jsonEntry.put("h24minresponsetime", h24Stats.getMinRespTime());
+        jsonEntry.put("h24meanresponsetime", h24Stats.getMeanRespTime());
+        jsonEntry.put("slaconnerrors", slaStats.getNbConnErrors());
+        jsonEntry.put("h24connerrors", h24Stats.getNbConnErrors());
+        jsonEntry.put("slabizerrors", slaStats.getNbBizErrors());
+        jsonEntry.put("h24bizerrors", h24Stats.getNbBizErrors());
+        return jsonEntry;
+    }
 }

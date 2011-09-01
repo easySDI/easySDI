@@ -33,23 +33,48 @@ public class AggregHourLogView extends AbstractJsonView {
     throws MonitorInterfaceException {
 
         if (model.containsKey("aggregHourLogsCollection")) {
-            final Collection<AbstractAggregateHourLogEntry> logsCollection 
+        	if(model.containsKey("getExport") && model.containsKey("Slaname") 
+        	&& model.containsKey("Jobname") && model.containsKey("Queryname"))
+        	{
+        	
+        		final Collection<AbstractAggregateHourLogEntry> logsCollection 
                 = (Collection<AbstractAggregateHourLogEntry>) model.get(
                         "aggregHourLogsCollection");
-            final Long noPagingCount = (Long) model.get("noPagingCount");
-            final ObjectMapper mapper = this.getObjectMapper();
-            this.getRootObjectNode().put("noPagingCount", noPagingCount);
-            final ArrayNode jsonLogsCollection = mapper.createArrayNode();
-
-            for (AbstractAggregateHourLogEntry logEntry : logsCollection) {
+            	final Long noPagingCount = (Long) model.get("noPagingCount");
+            
+    			final String slaName = (String)model.get("Slaname");
+    			final String jobName = (String)model.get("Jobname");
+    			final String queryName = (String)model.get("Queryname");
+            
+            	final ObjectMapper mapper = this.getObjectMapper();
+            	this.getRootObjectNode().put("noPagingCount", noPagingCount);
+            	final ArrayNode jsonLogsCollection = mapper.createArrayNode();
+            
+            	for (AbstractAggregateHourLogEntry logEntry : logsCollection) {
+                jsonLogsCollection.add(AggregHourLogSerializer.serialize(logEntry, 
+                                                                     mapper,jobName,queryName,
+                                                                     slaName));
+            	}
+            
+            	return jsonLogsCollection;
+        	}
+        	else
+        	{
+        		final Collection<AbstractAggregateHourLogEntry> logsCollection 
+                = (Collection<AbstractAggregateHourLogEntry>) model.get(
+                        "aggregHourLogsCollection");
+        		final Long noPagingCount = (Long) model.get("noPagingCount");              
+            	final ObjectMapper mapper = this.getObjectMapper();
+            	this.getRootObjectNode().put("noPagingCount", noPagingCount);
+            	final ArrayNode jsonLogsCollection = mapper.createArrayNode();
+            
+            	for (AbstractAggregateHourLogEntry logEntry : logsCollection) {
                 jsonLogsCollection.add(AggregHourLogSerializer.serialize(logEntry, 
                                                                      mapper));
-            }
-            
-            return jsonLogsCollection;
-
-        }
-            
+            	}
+            	return jsonLogsCollection;
+        	}
+        }   
         throw new MonitorInterfaceException("An internal error occurred",
                                             "internal.error");
 	}

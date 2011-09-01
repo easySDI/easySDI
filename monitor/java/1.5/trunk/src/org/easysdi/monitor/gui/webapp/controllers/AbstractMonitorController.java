@@ -417,7 +417,6 @@ public abstract class AbstractMonitorController {
         	rawLog = logManager.getRawLogsSubset(searchParams.getMinDate(), 
                     searchParams.getMaxDate(),searchParams.getMaxResults(), 
                     searchParams.getStartIndex());
-        	// Get rawlog for sla
         	rawLog = LogSlaHelper.getRawlogForSla(requestParams.get("useSla"), rawLog,true);
         }else
         {
@@ -425,7 +424,7 @@ public abstract class AbstractMonitorController {
                     searchParams.getMinDate(), searchParams.getMaxDate(),
                     searchParams.getMaxResults(), searchParams.getStartIndex());
         	rawLog = LogSlaHelper.getRawLogForDefault(rawLog, true);
-        } 
+        }
         return rawLog;
     }
     
@@ -535,6 +534,18 @@ public abstract class AbstractMonitorController {
         long totalPagingCount = this.getJobRawLogsNoPagingCount(job, searchParams);
         
         Set<RawLogEntry> rawLog = this.getJobRawLogs(job, searchParams,requestParams);
+        String slaName = "Default";
+        if(requestParams.get("useSla") != null)
+        {
+        	slaName = Sla.getFromIdString(requestParams.get("useSla")).getName();
+        }
+        if(requestParams.get("export") != null)
+        {
+        	result.addObject("getExport", true);
+        	result.addObject("Jobname",job.getConfig().getJobName());
+        	result.addObject("Queryname","");
+        	result.addObject("Slaname",slaName);
+        }
         
         result.addObject("message", "log.details.success");
         result.addObject("rawLogsCollection", rawLog);

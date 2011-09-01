@@ -66,4 +66,61 @@ public class AggregHourLogSerializer {
 
         return jsonEntry;
     }
+    
+    /**
+     * Generates the JSON representation of an aggregate log entry.
+     * 
+     * @param   entry   the aggregate log entry to represent
+     * @param   mapper  the JSON object used to map the data to JSON nodes
+     * @return          the JSON node containing the data for the entry
+     */
+    public static JsonNode serialize(AbstractAggregateHourLogEntry entry, 
+                                     ObjectMapper mapper,String jobName,
+                                     String queryName,String slaName) {
+        
+    	final ObjectNode jsonEntry = mapper.createObjectNode();
+
+        final AggregateStats h1Stats = entry.getH1Stats();
+        final AggregateStats inspireStats = entry.getInspireStats();
+        final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        if(slaName.toLowerCase().equals("default"))
+        {
+        	jsonEntry.put("jobname",jobName);
+        	jsonEntry.put("slaname",slaName);
+        	jsonEntry.put("date", dateFormat.format(entry.getLogDate().getTime()));
+        	if(queryName != "")
+        	{
+        		jsonEntry.put("requestname",queryName);
+        	}
+        	jsonEntry.put("availability", h1Stats.getAvailability());
+        	jsonEntry.put("unavailability", h1Stats.getUnavailability());
+        	jsonEntry.put("failure", h1Stats.getFailure());
+        	jsonEntry.put("untested", h1Stats.getUntested());
+        	jsonEntry.put("maxresponsetime", h1Stats.getMaxRespTime());
+        	jsonEntry.put("minresponsetime", h1Stats.getMinRespTime());
+        	jsonEntry.put("meanresponsetime", h1Stats.getMeanRespTime());
+        	jsonEntry.put("connerrors", h1Stats.getNbConnErrors());
+        	jsonEntry.put("bizerrors", h1Stats.getNbBizErrors());
+        }else
+        {
+        	
+           	jsonEntry.put("jobname",jobName);
+        	jsonEntry.put("slaname",slaName);
+        	jsonEntry.put("date", dateFormat.format(entry.getLogDate().getTime()));
+        	if(queryName != "")
+        	{
+        		jsonEntry.put("requestname",queryName);
+        	}
+        	jsonEntry.put("availability", inspireStats.getAvailability());
+        	jsonEntry.put("unavailability",inspireStats.getUnavailability());
+        	jsonEntry.put("failure",inspireStats.getFailure());
+        	jsonEntry.put("untested",inspireStats.getUntested());
+        	jsonEntry.put("maxresponsetime", inspireStats.getMaxRespTime());
+        	jsonEntry.put("minresponsetime", inspireStats.getMinRespTime());
+        	jsonEntry.put("meanresponsetime", inspireStats.getMeanRespTime());
+        	jsonEntry.put("connerrors", inspireStats.getNbConnErrors());	
+        	jsonEntry.put("bizerrors", inspireStats.getNbBizErrors());
+        }
+        return jsonEntry;
+    }
 }

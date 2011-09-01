@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.easysdi.monitor.biz.job.Query;
+import org.easysdi.monitor.biz.job.Sla;
 import org.easysdi.monitor.biz.logging.AbstractAggregateHourLogEntry;
 import org.easysdi.monitor.biz.logging.AbstractAggregateLogEntry;
 import org.easysdi.monitor.biz.logging.LogManager;
@@ -176,6 +177,7 @@ public class QueryAggregLogController extends AbstractMonitorController {
         Map<Date, AbstractAggregateHourLogEntry> logHourEntries;
         Map<Date, AbstractAggregateLogEntry> logEntries;
         
+        String slaName = "Default";
         if(requestParams.get("useSla") != null)
         {
         	logHourEntries = logManager.getAggregHourLogsSubset(searchParams.getMinDate(),
@@ -183,6 +185,7 @@ public class QueryAggregLogController extends AbstractMonitorController {
                     searchParams.getMaxResults(),
                     searchParams.getStartIndex());
         	logHourEntries = LogSlaHelper.getAggHourLogForSla(requestParams.get("useSla"), logHourEntries);
+        	slaName = Sla.getFromIdString(requestParams.get("useSla")).getName();
         	
         	result.addObject("noPagingCount", 
                     logManager.getAggregateHourLogsItemsNumber(
@@ -190,7 +193,7 @@ public class QueryAggregLogController extends AbstractMonitorController {
                            null, null));
         	result.addObject("message", "log.details.success");
         	result.addObject("aggregHourLogsCollection", logHourEntries.values());
-        	return result;
+        	
         }else
         {
         	logEntries = logManager.getAggregLogsSubset(searchParams.getMinDate(),
@@ -208,7 +211,16 @@ public class QueryAggregLogController extends AbstractMonitorController {
                              null, null));
              result.addObject("message", "log.details.success");
              result.addObject("aggregLogsCollection", logEntries.values());
-             return result;
         }
+        
+        if(requestParams.get("export") != null)
+        {
+        	result.addObject("getExport", true);
+        	result.addObject("Jobname",query.getConfig().getParentJob().getConfig().getJobName());
+        	result.addObject("Queryname",query.getConfig().getQueryName());
+        	result.addObject("Slaname",slaName);
+        }
+        
+        return result;
     }
 }

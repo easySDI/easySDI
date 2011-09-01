@@ -52,23 +52,43 @@ public class AggregLogView extends AbstractJsonView {
         throws MonitorInterfaceException {
 
         if (model.containsKey("aggregLogsCollection")) {
-            final Collection<AbstractAggregateLogEntry> logsCollection 
+            
+        	if(model.containsKey("getExport") && model.containsKey("Jobname") 
+        			&& model.containsKey("Queryname"))
+            {
+            	final Collection<AbstractAggregateLogEntry> logsCollection 
                 = (Collection<AbstractAggregateLogEntry>) model.get(
                         "aggregLogsCollection");
-            final Long noPagingCount = (Long) model.get("noPagingCount");
-            final ObjectMapper mapper = this.getObjectMapper();
-            this.getRootObjectNode().put("noPagingCount", noPagingCount);
-            final ArrayNode jsonLogsCollection = mapper.createArrayNode();
+            	final Long noPagingCount = (Long) model.get("noPagingCount");
+        		final String jobName = (String)model.get("Jobname");
+    			final String queryName = (String)model.get("Queryname");
+    			
+            	final ObjectMapper mapper = this.getObjectMapper();
+            	this.getRootObjectNode().put("noPagingCount", noPagingCount);
+            	final ArrayNode jsonLogsCollection = mapper.createArrayNode();
 
-            for (AbstractAggregateLogEntry logEntry : logsCollection) {
-                jsonLogsCollection.add(AggregLogSerializer.serialize(logEntry, 
+            	for (AbstractAggregateLogEntry logEntry : logsCollection) {
+            		jsonLogsCollection.add(AggregLogSerializer.serialize(logEntry, 
+                                                       mapper,jobName,queryName));
+            	}    
+            	return jsonLogsCollection;
+            }else
+            {
+            	final Collection<AbstractAggregateLogEntry> logsCollection 
+                = (Collection<AbstractAggregateLogEntry>) model.get(
+                        "aggregLogsCollection");
+            	final Long noPagingCount = (Long) model.get("noPagingCount");
+            	final ObjectMapper mapper = this.getObjectMapper();
+            	this.getRootObjectNode().put("noPagingCount", noPagingCount);
+            	final ArrayNode jsonLogsCollection = mapper.createArrayNode();
+
+            	for (AbstractAggregateLogEntry logEntry : logsCollection) {
+            		jsonLogsCollection.add(AggregLogSerializer.serialize(logEntry, 
                                                                      mapper));
+            	}    
+            	return jsonLogsCollection;
             }
-            
-            return jsonLogsCollection;
-
-        }
-            
+        }         
         throw new MonitorInterfaceException("An internal error occurred",
                                             "internal.error");
     }

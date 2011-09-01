@@ -50,26 +50,40 @@ public class RawLogView extends AbstractJsonView {
     protected JsonNode getResponseData(Map<String, ?> model, Locale locale) 
         throws MonitorInterfaceException {
 
-        if (model.containsKey("rawLogsCollection")
-            && model.containsKey("addQueryId")) {
+        if (model.containsKey("rawLogsCollection") && model.containsKey("addQueryId")) {
             
-            final Set<RawLogEntry> logsCollection 
-                = (Set<RawLogEntry>) model.get("rawLogsCollection");
-            final Boolean addQueryId = (Boolean) model.get("addQueryId");
-            final Boolean isSummary = (Boolean) model.get("isSummary");
-            final Long noPagingCount = (Long) model.get("noPagingCount");
-            final ObjectMapper mapper = this.getObjectMapper();
-            this.getRootObjectNode().put("noPagingCount", noPagingCount);
-            final ArrayNode rowsCollection = mapper.createArrayNode();
-            for (RawLogEntry logEntry : logsCollection) {
-                rowsCollection.add(RawLogSerializer.serialize(logEntry,
-                                                              addQueryId,
+        	if(model.containsKey("getExport") && model.containsKey("Slaname") && model.containsKey("Jobname") && model.containsKey("Queryname"))
+        	{
+        		final Set<RawLogEntry> logsCollection  = (Set<RawLogEntry>) model.get("rawLogsCollection");
+        		final Boolean addQueryId = (Boolean) model.get("addQueryId");
+        		final Boolean getExport = (Boolean) model.get("getExport");
+        		final Boolean isSummary = (Boolean) model.get("isSummary");
+        		final String slaName = (String)model.get("Slaname");
+        		final String jobName = (String)model.get("Jobname");
+        		final String queryName = (String)model.get("Queryname");
+        		final ObjectMapper mapper = this.getObjectMapper();  
+        		final ArrayNode rowsCollection = mapper.createArrayNode();
+        		for (RawLogEntry logEntry : logsCollection) {
+        			rowsCollection.add(RawLogSerializer.serialize(logEntry,addQueryId,getExport,slaName,jobName,queryName,
                                                               locale, mapper,isSummary));
-            }
-            
-            return rowsCollection;
-        }
-        
+        		}     
+        		return rowsCollection;
+        	}else
+        	{
+        		final Set<RawLogEntry> logsCollection  = (Set<RawLogEntry>) model.get("rawLogsCollection");
+        		final Boolean addQueryId = (Boolean) model.get("addQueryId");
+        		final Boolean isSummary = (Boolean) model.get("isSummary");
+        		final Long noPagingCount = (Long) model.get("noPagingCount");
+        		final ObjectMapper mapper = this.getObjectMapper();
+        		this.getRootObjectNode().put("noPagingCount", noPagingCount);
+        		final ArrayNode rowsCollection = mapper.createArrayNode();
+        		for (RawLogEntry logEntry : logsCollection) {
+        			rowsCollection.add(RawLogSerializer.serialize(logEntry,addQueryId,
+                                                              locale, mapper,isSummary));
+        		}     
+        		return rowsCollection;
+        	}
+        }     
         throw new MonitorInterfaceException("An internal error occurred",
                                             "internal.error");
     }
