@@ -183,9 +183,20 @@ class MonitorController extends JController
 			$xml->loadXML($xmlData);
 			$xsl = new DOMDocument;
 			if($row["xsltUrl"]!="")
-			$xsl->loadXML($this->getS2S($row["xsltUrl"]));
-			else
-			$xsl->load(JPATH_COMPONENT_ADMINISTRATOR.DS."views".DS."main".DS."tmpl".DS."xsl".DS."default.xsl");
+			{
+				$xsl->loadXML($this->getS2S($row["xsltUrl"]));
+			}else
+			{
+				if( $row["exportType"] == "XML"){
+					$xsl->load(JPATH_COMPONENT_ADMINISTRATOR.DS."views".DS."main".DS."tmpl".DS."xsl".DS."defaultXML.xsl");
+				}else if($row["exportType"] == "XHTML")
+				{
+					$xsl->load(JPATH_COMPONENT_ADMINISTRATOR.DS."views".DS."main".DS."tmpl".DS."xsl".DS."defaultXHTML.xsl");
+				}else // default csv
+				{
+					$xsl->load(JPATH_COMPONENT_ADMINISTRATOR.DS."views".DS."main".DS."tmpl".DS."xsl".DS."default.xsl");
+				}
+			}
 
 			// Configure the transformer
 			$proc = new XSLTProcessor;
@@ -243,7 +254,8 @@ class MonitorController extends JController
 		curl_setopt($ch, CURLOPT_URL, $url);	
 	 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
 	  	curl_setopt($ch, CURLOPT_COOKIE, $cookies);		
-	
+		// TODO fix problem with login
+		curl_setopt($ch, CURLOPT_USERPWD, "admin:adm");
 	
   		curl_setopt($ch, CURLOPT_POST, false);
   		  

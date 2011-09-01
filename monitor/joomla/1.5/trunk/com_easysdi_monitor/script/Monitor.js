@@ -4390,7 +4390,7 @@ Ext.onReady(function() {
 			urls =[];
 			for ( var i=0; i< aMethods.length; i++ ){
 
-				var fields = null;
+			/*	var fields = null;
 				if(logRes == "aggLogs")
 				{
 					if(useSla)
@@ -4409,8 +4409,19 @@ Ext.onReady(function() {
 					{
 						fields = [{name: 'time', type: 'date', dateFormat: 'Y-m-d H:i:s'}, 'message', 'httpCode', 'status', 'statusCode', 'delay','size']
 					}
+				}*/
+				var slaParam = "";
+				if(useSla)
+				{
+					slaParam = "&useSla="+ Ext.getCmp('repCbSla').getValue();
 				}
-				urls.push(	EasySDI_Mon.proxyserverside+EasySDI_Mon.CurrentJobCollection+'/'+selJob+'/queries/'+aMethods[i]+'/'+logRes+'?minDate='+minDate.format('Y-m-d')+'&maxDate='+maxDate.format('Y-m-d'));
+				if(aMethods[i] == "All")
+				{
+					urls.push( EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+selJob+'/'+logRes+'?minDate='+minDate.format('Y-m-d')+'&maxDate='+maxDate.format('Y-m-d')+'&export=true'+ slaParam);
+				}else
+				{
+					urls.push(	EasySDI_Mon.proxyserverside+EasySDI_Mon.CurrentJobCollection+'/'+selJob+'/queries/'+aMethods[i]+'/'+logRes+'?minDate='+minDate.format('Y-m-d')+'&maxDate='+maxDate.format('Y-m-d')+'&export=true'+slaParam);	
+				}
 			}
 			return urls;	
 		}
