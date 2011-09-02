@@ -11,15 +11,11 @@ defined('_JEXEC') or die('Restricted access');
 			var index = 0;
 			if (pressbutton == "deleteBasemap")
 			{
-//				if (form.elements['countRelatedBasemapContent'].value != '0' && form.elements['countRelatedBasemapContent'].value != '')
-//				{
 					var answer = confirm  ('<?php echo JText::_("SHOP_BASEMAP_MESSAGE_DELETE_CONTENT");?>' );
 					if (answer)
 						submitform( pressbutton );
 					else
 						return;
-//				}
-//				submitform( pressbutton );
 			}
 			if (pressbutton == "deleteProperties")
 			{
@@ -40,18 +36,6 @@ defined('_JEXEC') or die('Restricted access');
 				{
 					if(index != 0)text += ", ";
 					text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_PROJECTION");?>"; 
-					index = 1;	
-				}
-				if (form.elements['minresolution'].value == '')
-				{
-					if(index != 0)text += ", ";
-					text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_MINRESOLUTION");?>"; 
-					index = 1;	
-				}
-				if (form.elements['maxresolution'].value == '')
-				{
-					if(index != 0)text += ", ";
-					text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_MAXRESOLUTION");?>";
 					index = 1;	
 				}
 				if (form.elements['maxextent'].value == '')
@@ -91,24 +75,7 @@ defined('_JEXEC') or die('Restricted access');
 					text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_PROJECTION");?>"; 
 					index = 1;	
 				}
-				if (form.elements['minresolution'].value == '')
-				{
-					if(index != 0)text += ", ";
-					text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_MINRESOLUTION");?>"; 
-					index = 1;	
-				}
-				if (form.elements['maxresolution'].value == '')
-				{
-					if(index != 0)text += ", ";
-					text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_MAXRESOLUTION");?>";
-					index = 1;	
-				}
-				if (form.elements['maxextent'].value == '')
-				{
-					if(index != 0)text += ", ";
-					text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_MAXEXTENT");?>";
-					index = 1;	
-				}
+				
 				if (form.elements['url'].value == '')
 				{
 					if(index != 0)text += ", ";
@@ -195,66 +162,6 @@ defined('_JEXEC') or die('Restricted access');
 					text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_NAME");?>";	
 					index = 1;			
 				} 
-//				if (form.elements['urlwfs'].value == '')
-//				{
-//					if(index != 0)text += ", ";
-//					text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_URLWFS");?>"; 
-//					index = 1;	
-//				}
-//				if (form.elements['featuretype'].value == '')
-//				{
-//					if(index != 0)text += ", ";
-//					text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_FEATURETYPE");?>"; 
-//					index = 1;	
-//				}
-//				if (form.elements['urlwms'].value == '')
-//				{
-//					if(index != 0)text += ", ";
-//					text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_URLWMS");?>"; 
-//					index = 1;	
-//				}
-//				if (form.elements['minresolution'].value == '')
-//				{
-//					if(index != 0)text += ", ";
-//					text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_MINRESOLUTION");?>"; 
-//					index = 1;	
-//				}
-//				if (form.elements['maxresolution'].value == '')
-//				{
-//					if(index != 0)text += ", ";
-//					text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_MAXRESOLUTION");?>";
-//					index = 1;	
-//				}
-//				if (form.elements['imgformat'].value == '')
-//				{
-//					if(index != 0)text += ", ";
-//					text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_IMGFORMAT");?>";
-//					index = 1;	
-//				}
-//				if (form.elements['layername'].value == '')
-//				{
-//					if(index != 0)text += ", ";
-//					text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_LAYERNAME");?>";
-//					index = 1;	
-//				}
-//				if (form.elements['fieldarea'].value == '')
-//				{
-//					if(index != 0)text += ", ";
-//					text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_FIELDAREA");?>";
-//					index = 1;	
-//				}
-//				if (form.elements['fieldname'].value == '')
-//				{
-//					if(index != 0)text += ", ";
-//					text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_FIELDNAME");?>";
-//					index = 1;	
-//				}
-//				if (form.elements['fieldid'].value == '')
-//				{
-//					if(index != 0)text += ", ";
-//					text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_FIELDID");?>";
-//					index = 1;	
-//				}
 				if (form.elements['code'].value == '')
 				{
 					if(index != 0)text += ", ";
@@ -335,6 +242,30 @@ defined('_JEXEC') or die('Restricted access');
 			
 			submitform( pressbutton );
 			
+		}
+
+		function enableScale(enableScale){
+			if(enableScale){
+				document.getElementById('minresolution').disabled = false;
+				document.getElementById('maxresolution').disabled = false;
+				document.getElementById('restrictedscales').disabled = false;
+				document.getElementById('minresol').disabled = true;
+				document.getElementById('maxresol').disabled = true;
+				document.getElementById('restrictedresol').disabled = true;
+				document.getElementById('minresol').value = null;
+				document.getElementById('maxresol').value = null;
+				document.getElementById('restrictedresol').value = null;
+			}else{
+				document.getElementById('minresolution').disabled = true;
+				document.getElementById('maxresolution').disabled = true;
+				document.getElementById('restrictedscales').disabled = true;
+				document.getElementById('minresolution').value = null;
+				document.getElementById('maxresolution').value = null;
+				document.getElementById('restrictedscales').value = null;
+				document.getElementById('minresol').disabled = false;
+				document.getElementById('maxresol').disabled = false;
+				document.getElementById('restrictedresol').disabled = false;
+			}
 		}
 		
 </script>

@@ -26,8 +26,7 @@ class SITE_product {
 		
 		//Check user's rights
 		$user = JFactory::getUser();
-		if(!userManager::isUserAllowed($user,"PRODUCT"))
-		{
+		if(!userManager::isUserAllowed($user,"PRODUCT")){
 			return;
 		}
 		
@@ -49,23 +48,66 @@ class SITE_product {
 
 		if (!$product->bind( $_POST )) {			
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			//$mainframe->redirect("index.php?option=$option&task=listProduct" );
 			$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listProduct'), false ));
 			exit();
 		}
 		
-		if($product->viewbasemap_id == '0')
-		{
-			$product->viewbasemap_id = null;
+		if(isset($_FILES['productfile']) && !empty($_FILES['productfile']['name'])) {
+			if ($_FILES['productfile']['error']) {    
+	          switch ($_FILES['productfile']['error']){    
+                   case 1: // UPLOAD_ERR_INI_SIZE    
+                   	$mainframe->enqueueMessage(JText::_("SHOP_PRODUCT_MAX_FILE_SIZE_UPLOAD_ERR_INI_SIZE"),"ERROR");
+					$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=editProduct&id=$product->id" ),false));
+					return;
+                       
+                   case 2: // UPLOAD_ERR_FORM_SIZE    
+                  	//$mainframe->enqueueMessage(printf(JText::_("SHOP_PRODUCT_MAX_FILE_SIZE_UPLOAD_ERR_FORM_SIZE"),JRequest::getVar("MAX_FILE_SIZE")),"ERROR");
+                  	$mainframe->enqueueMessage(JText::_("SHOP_PRODUCT_MAX_FILE_SIZE_UPLOAD_ERR_FORM_SIZE"),"ERROR");
+					$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=editProduct&id=$product->id" ),false));
+					return;
+                   
+                   case 3: // UPLOAD_ERR_PARTIAL    
+                   	$mainframe->enqueueMessage(JText::_("SHOP_PRODUCT_MAX_FILE_SIZE_UPLOAD_ERR_PARTIAL"),"ERROR");
+					$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=editProduct&id=$product->id" ), false));
+					return;
+                   
+                   case 4: // UPLOAD_ERR_NO_FILE 
+                   	$mainframe->enqueueMessage(JText::_("SHOP_PRODUCT_MAX_FILE_SIZE_UPLOAD_ERR_NO_FILE"),"ERROR");
+					$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=editProduct&id=$product->id" ),false));
+					return; 
+                       
+	          }    
+			}    
+			
+			if(filesize($_FILES['productfile']['tmp_name']) > JRequest::getVar("MAX_FILE_SIZE")){
+				//$mainframe->enqueueMessage(printf(JText::_("SHOP_PRODUCT_MAX_FILE_SIZE_ERROR"),JRequest::getVar("MAX_FILE_SIZE")),"ERROR");
+				$mainframe->enqueueMessage(JText::_("SHOP_PRODUCT_MAX_FILE_SIZE_ERROR"),"ERROR");
+				$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&task=editProduct&id=$product->id" ),false));
+				return;
+			}
 		}
 		
-		if($product->treatmenttype_id == null ||$product->treatmenttype_id == '')
-		{
-			$product->treatmenttype_id = sdilist::getIdByCode('#__sdi_list_treatmenttype','AUTO' );
+		
+		$service_type = JRequest::getVar('service_type');
+		if($service_type == "via_proxy"){
+			$product->viewuser = "";
+			$product->viewpassword = "";
+		}else{
+			$product->viewaccount_id="";
 		}
+		if($product->viewbasemap_id == '0')
+			$product->viewbasemap_id = null;
+		if($product->treatmenttype_id == null ||$product->treatmenttype_id == '')
+			$product->treatmenttype_id = sdilist::getIdByCode('#__sdi_list_treatmenttype','AUTO' );
+		if($product->viewaccessibility_id == '0')
+			$product->viewaccessibility_id = null;
+		if($product->loadaccessibility_id == '0')
+			$product->loadaccessibility_id = null;
+		if($product->pathfile == '')
+			$product->pathfile = null;
+		
 		if (!$product->store()) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			//$mainframe->redirect("index.php?option=$option&task=listProduct" );
 			$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listProduct'), false ));
 			exit();
 		}
@@ -73,7 +115,6 @@ class SITE_product {
 		$product_perimeter = new product_perimeter($database);
 		if(!$product_perimeter->delete($product->id)){
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			//$mainframe->redirect("index.php?option=$option&task=listProduct" );
 			$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listProduct'), false ));
 			exit();
 		}
@@ -85,7 +126,6 @@ class SITE_product {
 			$product_perimeter->perimeter_id=$perimeter_id;
 			if(!$product_perimeter->store()){
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				//$mainframe->redirect("index.php?option=$option&task=listProduct" );
 				$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listProduct'), false ));
 				exit();
 			}
@@ -96,14 +136,12 @@ class SITE_product {
 			$product_perimeter = new product_perimeter($database);
 			if(!$product_perimeter->loadById($product->id,$bufferPerimeterId)){
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				//$mainframe->redirect("index.php?option=$option&task=listProduct" );
 				$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listProduct'), false ));
 				exit();
 			}
 			$product_perimeter->buffer = 1;
 			if(!$product_perimeter->store()){
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				//$mainframe->redirect("index.php?option=$option&task=listProduct" );
 				$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listProduct'), false ));
 				exit();
 			}
@@ -112,7 +150,6 @@ class SITE_product {
 		$product_property = new product_property($database);
 		if(!$product_property->delete($product->id)){
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			//$mainframe->redirect("index.php?option=$option&task=listProduct" );
 			$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listProduct'), false ));
 			exit();
 		}
@@ -125,7 +162,38 @@ class SITE_product {
 			$product_property->propertyvalue_id=$properties_id;
 			if(!$product_property->store()){
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				//$mainframe->redirect("index.php?option=$option&task=listProduct" );
+				$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listProduct'), false ));
+				exit();
+			}
+		}
+		
+		$product_account = new product_account($database);
+		if(!$product_account->delete($product->id)){
+			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listProduct'), false ));
+			exit();
+		}
+
+		foreach( $_POST['userPreviewList'] as $accountpreview_id )
+		{
+			$product_account = new product_account($database);
+			$product_account->product_id=$product->id;
+			$product_account->account_id=$accountpreview_id;
+			$product_account->code='preview';
+			if(!$product_account->store()){
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listProduct'), false ));
+				exit();
+			}
+		}
+		foreach( $_POST['userDownloadList'] as $accountdownload_id )
+		{
+			$product_account = new product_account($database);
+			$product_account->product_id=$product->id;
+			$product_account->account_id=$accountdownload_id;
+			$product_account->code='download';
+			if(!$product_account->store()){
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 				$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listProduct'), false ));
 				exit();
 			}
@@ -158,7 +226,6 @@ class SITE_product {
 			if ($product->id == 0)$mainframe->enqueueMessage(JText::_("SHOP_MESSAGE_PRODUCT_CREATION_SUCCESS"),"INFO");
 			$limitstart = JRequest::getVar("limitstart");
 			$limit = JRequest::getVar("limit");
-			//$mainframe->redirect("index.php?option=$option&task=listProduct&limitstart=$limitstart&limit=$limit" );
 			$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listProduct&limitstart='.$limitstart.'&limit='.$limit), false ));
 		}	
 	}
@@ -172,24 +239,22 @@ class SITE_product {
 		if(!$account->root_id)$account->root_id ='0';
 		
 		//Check user's rights
-		if(!userManager::isUserAllowed($user,"PRODUCT"))
-		{
+		if(!userManager::isUserAllowed($user,"PRODUCT")){
 			return;
 		}
 		
 		//Check task
-		if (!$isNew)
-		{
+		if (!$isNew){
 			$id = JRequest::getVar('id');
 		}
-		else 
-		{
+		else {
 			$id=0;
 		}
 		
 		//Product
 		$product = new product( $database );
 		$product->load( $id );
+		
 		$product->tryCheckOut($option,'listProduct');
 		
 		//Version
@@ -339,6 +404,16 @@ class SITE_product {
 		}
 		helper_easysdi::alter_array_value_with_JTEXT_($visibility_list);
 		
+		//Product accessibility
+		$accessibility_list = array();
+		$accessibility_list [] = JHTML::_('select.option','0', JText::_("SHOP_PRODUCT_ACCESSIBILITY") );
+		$database->setQuery( "SELECT id AS value,  label AS text FROM #__sdi_list_accessibility " );
+		$accessibility_list = array_merge($accessibility_list,$database->loadObjectList()) ;
+		if ($database->getErrorNum()) {
+			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+		}
+		helper_easysdi::alter_array_value_with_JTEXT_($accessibility_list);
+		
 		//List of available perimeters
 		$perimeter_list = array();
 		$perimeter = new perimeter( $database );
@@ -360,12 +435,60 @@ class SITE_product {
 							WHERE ( a.root_id = $account->id OR a.id = $account->id )  " );
 		$rowsAccount = array_merge($rowsAccount,$database->loadObjectList());
 		
+		//Get users
+		$database->setQuery( "SELECT #__sdi_account.id as value, #__users.name as text 
+								FROM #__users 
+								INNER JOIN #__sdi_account 
+								ON  #__users.id = #__sdi_account.user_id 
+								WHERE (#__sdi_account.root_id IS NULL
+								OR 
+								 #__sdi_account.root_id = $account->id
+								 OR #__sdi_account.id =  $account->id)
+								ORDER BY text
+								
+								" );
+		$rowsUser = $database->loadObjectList();
+		if ($database->getErrorNum()) {
+			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");		
+		}
+			
+		$database->setQuery( "SELECT #__sdi_account.id as value 
+								FROM #__sdi_product_account 
+								INNER JOIN #__sdi_product 
+								ON  #__sdi_product.id = #__sdi_product_account.product_id
+								INNER JOIN #__sdi_account 
+								ON  #__sdi_account.id = #__sdi_product_account.account_id
+								WHERE #__sdi_product.id = ".$id." AND #__sdi_product_account.code='preview'" );
+		$userPreviewSelected = $database->loadObjectList();
+		if ($database->getErrorNum()) {
+			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");		
+		}
+		
+		$database->setQuery( "SELECT #__sdi_account.id as value 
+								FROM #__sdi_product_account 
+								INNER JOIN #__sdi_product 
+								ON  #__sdi_product.id = #__sdi_product_account.product_id
+								INNER JOIN #__sdi_account 
+								ON  #__sdi_account.id = #__sdi_product_account.account_id
+								WHERE #__sdi_product.id = ".$id." AND #__sdi_product_account.code='download'" );
+		$userDownloadSelected = $database->loadObjectList();
+		if ($database->getErrorNum()) {
+			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");		
+		}
+		
+		//Max file size to upload
+		$database->setQuery( "SELECT value FROM #__sdi_configuration WHERE code = 'SHOP_CONFIGURATION_MAX_FILE_SIZE'");
+		$product->maxFileSize = $database->loadResult();
+		if ($database->getErrorNum()) {			
+			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+		}
+		
 		$catalogUrlBase = config_easysdi::getValue("catalog_url");
 		
 		if (strlen($catalogUrlBase )==0){
 				$mainframe->enqueueMessage("NO VALID CATALOG URL IS DEFINED","ERROR");
 		}else{
-			HTML_product::editProduct( $account,$product,$version,$supplier,$id,$accounts,$object_id, $objecttype_id,$objecttype_list,$object_list,$version_list,$diffusion_list,$baseMap_list,$treatmentType_list,$visibility_list,$perimeter_list,$rowsAccount,$option );
+			HTML_product::editProduct( $account,$product,$version,$supplier,$id,$accounts,$object_id, $objecttype_id,$objecttype_list,$object_list,$version_list,$diffusion_list,$baseMap_list,$treatmentType_list,$visibility_list,$accessibility_list,$perimeter_list,$rowsAccount,$rowsUser,$userPreviewSelected,$userDownloadSelected,$option );
 		}
 	}
 	
@@ -473,35 +596,77 @@ class SITE_product {
 				}
 	}
 	
-	function downloadFinalProduct(){
-
-		$database =& JFactory::getDBO();
-		$product_id = JRequest::getVar('product_id');
-		
+	function deleteProductFile($option ) {
+		global  $mainframe;
+		$db =& JFactory::getDBO();
 		$user = JFactory::getUser();
-		$account = new accountByUserId($database);
-		$account->load($user->id);		
+		$account = new accountByUserId($db);
+		$account->load($user->id);
 		
 		//Check user's rights
 		if(!userManager::isUserAllowed($user,"PRODUCT"))
 		{
 			return;
 		}
+		
+		$id = JRequest::getVar('id', 0 );
+		
+		$product = new product( $db );
+		$product->load( $id );
+				
+		//$product->tryCheckOut($option,'listProduct');
+		
+		if($product){
+			$db->setQuery("DELETE FROM #__sdi_product_file WHERE product_id=".$id);
+			$db->query();
+			if ($db->getErrorNum()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+				exit();
+			}
+			
+			$db->setQuery("UPDATE #__sdi_product SET pathfile=null WHERE id=".$id);
+			$db->query();
+			if ($db->getErrorNum()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+				exit();
+			}
+		}
+		
+		//$product->checkin();
+	}
+	
+	function downloadFinalProduct(){
+		global $mainframe;
+		$db =& JFactory::getDBO();
+		$product_id = JRequest::getVar('product_id');
+		
+		$user = JFactory::getUser();
+		$account = new accountByUserId($db);
+		$account->load($user->id);		
+		
+		//Check user's rights
+		if(!userManager::isUserAllowed($user,"PRODUCT")){
+			$mainframe->enqueueMessage(JText::_("SHOP_MSG_NOT_ALLOWED_TO_MANAGE"),"ERROR");
+			return;
+		}
+		//Check if the current user is manager of the product
 		$query = "SELECT COUNT(*) FROM #__sdi_manager_object 
 						WHERE object_id IN (SELECT v.object_id FROM #__sdi_objectversion v 
 																INNER JOIN #__sdi_product p ON p.objectversion_id = v.id 
 																WHERE p.id = $product_id )
 						AND account_id = $account->id";
-		$database->setQuery($query);
-		$result = $database->loadResult();
-		if($result < 1)
-		{
+		$db->setQuery($query);
+		$result = $db->loadResult();
+		if($result < 1){
+			$mainframe->enqueueMessage(JText::_("SHOP_MSG_NOT_ALLOWED_TO_MANAGE"),"ERROR");
 			return;
 		}
 		
-		$query = "SELECT data,filename FROM #__sdi_product_file where product_id = $product_id ";
-		$database->setQuery($query);
-		$row = $database->loadObject();
+		//Return the product
+		$product = new product($db);
+		$product->load($product_id);
+		$file = $product->getFile();
+		$fileName = $product->getFileName();
 
 		error_reporting(0);
 
@@ -509,11 +674,11 @@ class SITE_product {
 		header('Pragma: public');
 		header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
 		header('Content-Transfer-Encoding: none');
-		header("Content-Length: ".strlen($row->data));
-		header('Content-Type: application/octetstream; name="'.$row->filename.'"');
-		header('Content-Disposition: attachement; filename="'.$row->filename.'"');
+		header("Content-Length: ".strlen($file));
+		header('Content-Type: application/octetstream; name="'.$product->getFileExtension().'"');
+		header('Content-Disposition: attachement; filename="'.$fileName.'"');
 
-		echo $row->data;
+		echo $file;
 		die();
 	}
 
@@ -525,7 +690,6 @@ class SITE_product {
 		$product->bind(JRequest::get('post'));
 		$product->checkin();
 
-		//$mainframe->redirect("index.php?option=$option&task=listProduct" );
 		$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listProduct'), false ));
 	}
 }

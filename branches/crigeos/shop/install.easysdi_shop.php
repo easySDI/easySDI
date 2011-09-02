@@ -851,6 +851,202 @@ function com_install(){
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 	}
+	if($version == "2.0.0"){
+		//Base Map
+		$query="ALTER TABLE  `#__sdi_basemap` ADD minresol varchar (100)";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		$query="ALTER TABLE  `#__sdi_basemap` ADD maxresol varchar (100)";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		$query="ALTER TABLE  `#__sdi_basemap` ADD restrictedresol varchar (500)";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		//Base map content
+		$query="ALTER TABLE  `#__sdi_basemapcontent` ADD matrixset varchar (100)";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		$query="ALTER TABLE  `#__sdi_basemapcontent` ADD matrixids varchar (1000)";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		$query="ALTER TABLE  `#__sdi_basemapcontent` ADD style varchar (100)";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		//Product preview
+		$query="ALTER TABLE  `#__sdi_product` ADD viewextent varchar (100)";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		$query="ALTER TABLE  `#__sdi_product` ADD viewurltype varchar (10)";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		$query="ALTER TABLE  `#__sdi_product` ADD viewmatrixset varchar (100)";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		$query="ALTER TABLE  `#__sdi_product` ADD viewmatrix varchar (1000)";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		$query="ALTER TABLE  `#__sdi_product` ADD viewstyle varchar (100)";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		$query="ALTER TABLE  `#__sdi_product` ADD pathfile varchar (500)";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		$query="CREATE TABLE IF NOT EXISTS `#__sdi_list_accessibility` (
+				  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+				  `guid` varchar(36) NOT NULL,
+				  `code` varchar(20),
+				  `name` varchar(50),
+				  `description` varchar(100),
+				  `created` datetime,
+				  `updated` datetime,
+				  `createdby` bigint(20),
+				  `updatedby` bigint(20),
+				  `label` varchar(50),
+				  `ordering` bigint(20),
+				  PRIMARY KEY (`id`),
+				  UNIQUE KEY `guid` (`guid`),
+				  UNIQUE KEY `code` (`code`)
+				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		$query="INSERT INTO `#__sdi_list_accessibility` (`guid`, `code`, `name`, `label`, `description`, `created`, `createdby`) VALUES
+					('".helper_easysdi::getUniqueId()."', 'all', 'all', 'SHOP_PRODUCT_ACCESSIBILITY_PUBLIC', NULL, '".date('Y-m-d H:i:s')."', '".$user_id."'),
+					('".helper_easysdi::getUniqueId()."', 'ofRoot', 'ofRoot', 'SHOP_PRODUCT_ACCESSIBILITY_SUPPLIER', NULL, '".date('Y-m-d H:i:s')."', '".$user_id."'),
+					('".helper_easysdi::getUniqueId()."', 'ofManager', 'ofManager', 'SHOP_PRODUCT_ACCESSIBILITY_MANAGER', NULL, '".date('Y-m-d H:i:s')."', '".$user_id."')";
+		$db->setQuery( $query);	
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		$query="ALTER TABLE  `#__sdi_product` ADD viewaccessibility_id bigint (20)";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		$query="ALTER TABLE `#__sdi_product` ADD CONSTRAINT `#__sdi_product_pfk_va` FOREIGN KEY (`viewaccessibility_id`) REFERENCES `#__sdi_list_accessibility` (`id`);";
+		$db->setQuery( $query);	
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+		
+		$query="ALTER TABLE  `#__sdi_product` ADD loadaccessibility_id bigint (20)";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		$query="ALTER TABLE `#__sdi_product` ADD CONSTRAINT `#__sdi_product_pfk_dl` FOREIGN KEY (`loadaccessibility_id`) REFERENCES `#__sdi_list_accessibility` (`id`);";
+		$db->setQuery( $query);	
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+		
+		$query="CREATE TABLE IF NOT EXISTS `#__sdi_product_account` (
+				  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+				  `guid` varchar(36) NOT NULL,
+				  `code` varchar(20) NOT NULL,
+				  `name` varchar(50) ,
+				  `description` varchar(100),
+				  `created` datetime NOT NULL,
+				  `updated` datetime,
+				  `createdby` bigint(20),
+				  `updatedby` bigint(20),
+				  `label` varchar(50),
+				  `ordering` bigint(20),
+				  `account_id` bigint(20) NOT NULL,
+				  `product_id` bigint(20) NOT NULL,
+				  PRIMARY KEY (`id`),
+				  UNIQUE KEY `guid` (`guid`)
+				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
+		$db->setQuery( $query);
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		$query="ALTER TABLE `#__sdi_product_account` ADD CONSTRAINT `#__sdi_product_pfk_acc` FOREIGN KEY (`account_id`) REFERENCES `#__sdi_account` (`id`);";
+		$db->setQuery( $query);	
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+		
+		$query="ALTER TABLE `#__sdi_product_account` ADD CONSTRAINT `#__sdi_product_pfk_pd` FOREIGN KEY (`product_id`) REFERENCES `#__sdi_product` (`id`);";
+		$db->setQuery( $query);	
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");	
+		}
+		
+		$query="SELECT id FROM #__sdi_list_module WHERE code = 'SHOP'";
+		$db->setQuery( $query);		
+		$module_id = $db->loadResult();
+		$query = "INSERT  INTO #__sdi_configuration (guid, code, name, description, created, createdby,  value, module_id) VALUES
+				('".helper_easysdi::getUniqueId()."', 'SHOP_CONFIGURATION_MAX_FILE_SIZE', 'SHOP_CONFIGURATION_MAX_FILE_SIZE', 'SHOP', '".date('Y-m-d H:i:s')."', '".$user_id."',  '32', '".$module_id."')";
+		$db->setQuery( $query);
+		if (!$db->query())
+		{	
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			return false;
+		}
+			
+		$version="2.0.1";
+		$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='SHOP'"; 
+		$db->setQuery( $query);	
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+	}
 	 
 	$query = "DELETE FROM #__components where `option`= 'com_easysdi_shop' ";
 	$db->setQuery( $query);

@@ -22,6 +22,7 @@ class HTML_shop
 {
 	function searchProducts ($suppliers,$account, $account_id, $user,$rows,$public,$countMD,$total, $limitstart, $limit,$option,$task,$view, $step)
 	{
+		
 		$db =& JFactory::getDBO();
 		?>
 		<div class="contentin">
@@ -159,6 +160,11 @@ class HTML_shop
 				if ($db->getErrorNum()) {
 					$hasProductFile = 0;
 				}
+				$product = new product($db);
+				$product->load($row->id);
+				$isViewable = $product->isUserAllowedToView($account->id);
+				$isLoadable = $product->isUserAllowedToLoad($account->id);
+				
 				?>
 		<tr>
 			 <td class="imgHolder" rowspan=3>
@@ -192,8 +198,9 @@ class HTML_shop
 					</a></span>
 			  </td>
 			  <?php 
-			  if($isAvailable  && $hasProductFile>0)
+			  if($isAvailable  && $hasProductFile>0 && $isLoadable)
 			  {
+			  	
 			  	?>
 			  	 <td class="mdActionDownloadProduct"><span class="mdviewfile">
 			  	
@@ -219,10 +226,10 @@ class HTML_shop
 			  ?>
 			 
 			  <td class="mdActionViewProduct">
-			  <?php if ($hasPreview > 0){ ?>
+			  <?php if ($hasPreview > 0 && $isViewable){ ?>
 			    <span class="mdviewproduct">
 			    <a class="modal" href="./index.php?tmpl=component&option=com_easysdi_shop&task=previewProduct&metadata_id=<?php echo $row->metadata_id;?>"
-			    rel="{handler:'iframe',size:{x:558,y:415}}"><?php echo JText::_("SHOP_SHOP_PREVIEW_PRODUCT"); ?></a></span>
+			    rel="{handler:'iframe',size:{x:560,y:580}}"><?php echo JText::_("SHOP_SHOP_PREVIEW_PRODUCT"); ?></a></span>
 			    <?php } ?>
 		      </td>
 			  <td class="shopNoAction">&nbsp;</td>
@@ -251,6 +258,7 @@ class HTML_shop
 		</div>
 	<?php
 	}
+
 
 	function orderPerimeter ($cid, $basemap, $basemap_contents, $option, $task,$step,$decimal_precision)
 	{

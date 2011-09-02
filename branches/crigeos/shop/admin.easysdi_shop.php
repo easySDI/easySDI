@@ -44,6 +44,7 @@ $language->load('com_easysdi_shop', JPATH_ADMINISTRATOR);
 
 global $mainframe;
 $task = JRequest::getVar('task');
+$option = JRequest::getVar('option');
 $cid = JRequest::getVar ('cid', array(0) );
 if (!is_array( $cid )) {
 	$cid = array(0);
@@ -201,6 +202,7 @@ switch($task){
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'basemap.admin.easysdi.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'basemap.easysdi.class.php');
 		require_once (JPATH_COMPONENT_ADMINISTRATOR.DS.'js'.DS.'submit.admin.easysdi.php');
+	//	JHTML::script('submit.admin.easysdi.js', 'administrator/components/com_easysdi_shop/js/');
 				
 		TOOLBAR_basemap::_EDITBASEMAP();
 		ADMIN_basemap::editBasemap($cid[0],$option);
@@ -629,8 +631,26 @@ switch($task){
 	/*****************************************************************************************************************************
 	 * Product
 	 *****************************************************************************************************************************/
+	case "deleteProductFile":
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'product.toolbar.easysdi.html.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'product.admin.easysdi.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'product.easysdi.class.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'basemap.easysdi.class.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'perimeter.easysdi.class.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'product.admin.easysdi.html.php');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_catalog'.DS.'core'.DS.'model'.DS.'objectversion.easysdi.class.php');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_catalog'.DS.'core'.DS.'model'.DS.'object.easysdi.class.php');
+		require_once (JPATH_COMPONENT_ADMINISTRATOR.DS.'js'.DS.'submit.admin.easysdi.php');
+		
+		TOOLBAR_product::_EDITPRODUCT();
+		ADMIN_product::deleteProductFile($cid[0],$option);
+		ADMIN_product::editProduct($cid[0],$option);
+		break;
 	case "downloadProduct":
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'product.admin.easysdi.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'product.easysdi.class.php');
 		
 		ADMIN_product::downloadProduct();
 		break;
@@ -638,7 +658,8 @@ switch($task){
 	case "saveProduct":		
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'product.toolbar.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'product.admin.easysdi.php');
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'product.easysdi.class.php');	
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'product.easysdi.class.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'productaccount.easysdi.class.php');	
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'productperimeter.easysdi.class.php');		
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'productproperty.easysdi.class.php');
 			
