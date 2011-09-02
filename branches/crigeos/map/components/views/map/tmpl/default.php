@@ -24,26 +24,28 @@ JHTML::_('behavior.mootools');
 $headerstuff = $document->getHeadData();
 $headerstuff['scripts'] = array();
 $document->setHeadData($headerstuff);
-
+require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.jsLoaderUtil.php');
+$jsLoader =JSLOADER_UTIL::getInstance();
 // Include the ext library. Replace with ext-all.js for production
 JHTML::stylesheet('ext-all.css', 'components/com_easysdi_map/externals/ext/resources/css/');
-JHTML::script('ext-base.js', 'components/com_easysdi_map/externals/ext/adapter/ext/');
-JHTML::script('ext-all.js', 'components/com_easysdi_map/externals/ext/');
+JHTML::script('ext-base-debug.js', $jsLoader->getPath("map","ext","/adapter/ext/"));//'components/com_rwgis_map/externals/ext/adapter/ext/');
+JHTML::script('ext-all-debug.js', $jsLoader->getPath("map","ext"));//'components/com_rwgis_map/externals/ext/');
 // And JQuery
-JHTML::script('jquery-1.3.2.min.js', 'components/com_easysdi_map/externals/jquery/');
-JHTML::script('jquery-ui-1.7.2.custom.min.js', 'components/com_easysdi_map/externals/jquery/');
+JHTML::script('jquery-1.3.2.min.js',  $jsLoader->getPath("map","jquery"));
+JHTML::script('jquery-ui-1.7.2.custom.min.js',  $jsLoader->getPath("map","jqueryui"));
 JHTML::script('jquery.download.js', 'components/com_easysdi_map/views/map/js/');
-JHTML::stylesheet('jquery-ui-1.7.2.custom.css', 'components/com_easysdi_map/externals/jquery/css/');
+JHTML::stylesheet('jquery-ui-1.7.2.custom.css',  $jsLoader->getPath("map","jqueryui", "/css/"));
 JHTML::stylesheet('getFeatureInfo.css', 'components/com_easysdi_map/resource/xslt/');
 // And OpenLayers
-JHTML::script('OpenLayers.js', 'components/com_easysdi_map/externals/openlayers/');
+JHTML::script('OpenLayers.js', $jsLoader->getPath("map","openlayers", "/lib/"));//'components/com_rwgis_map/externals/openlayers/');
 //JHTML::script('OpenLayers.js', 'Lib/');
 JHTML::script('SortableWFS.js', 'components/com_easysdi_map/classes/');
 JHTML::script('getfeatureinfo.js', 'components/com_easysdi_map/classes/');
-JHTML::script('proj4js-compressed.js', 'components/com_easysdi_map/externals/proj4js/');
+JHTML::script('proj4js-compressed.js', $jsLoader->getPath("map", "proj4js"));
 //JHTML::script('EPSG27572.js', 'components/com_easysdi_map/externals/proj4js/lib/defs/');
 // And the GeoExt library
-JHTML::script('GeoExt.js', 'components/com_easysdi_map/externals/geoext/lib/');
+JHTML::script('SingleFile.js',  $jsLoader->getPath("map","geoext", "/lib/GeoExt/"));
+JHTML::script('GeoExt.js',  $jsLoader->getPath("map", "geoext", "/script/"));//'components/com_rwgis_map/externals/geoext/lib/');
 // Now the component specific JavaScript
 JHTML::script('core.js', 'components/com_easysdi_map/classes/');
 JHTML::script('i18n.js', 'components/com_easysdi_map/classes/');
@@ -79,7 +81,7 @@ JHTML::script('Ext.ux.form.SearchField.js', 'components/com_easysdi_map/elements
 require(JPATH_COMPONENT.DS.'php'.DS.'lang.php');
 require(JPATH_COMPONENT.DS.'php'.DS.'params.php');
 //JSON library
-JHTML::script('json.js', 'components/com_easysdi_map/externals/json/');
+JHTML::script('json.js',  $jsLoader->getPath("map","json"));
 
 JHTML::script('StyledLayerDescriptor.js', 'components/com_easysdi_map/classes/');
 

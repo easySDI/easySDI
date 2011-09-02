@@ -24,14 +24,17 @@ JHTML::_('behavior.mootools');
 $headerstuff = $document->getHeadData();
 $headerstuff['scripts'] = array();
 $document->setHeadData($headerstuff);
+require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.jsLoaderUtil.php');
+$jsLoader =JSLOADER_UTIL::getInstance();
 
-JHTML::script('ext-base.js', 'components/com_easysdi_map/externals/ext/adapter/ext/');
-JHTML::script('ext-all-debug.js', 'components/com_easysdi_map/externals/ext/');
+JHTML::script('ext-base.js', $jsLoader->getPath("map","ext","/adapter/ext/"));//'components/com_rwgis_map/externals/ext/adapter/ext/');
+JHTML::script('ext-all.js', $jsLoader->getPath("map","ext"));//'components/com_rwgis_map/externals/ext/');
 // And OpenLayers
-JHTML::script('OpenLayers.js', 'components/com_easysdi_map/externals/openlayers/');
-JHTML::script('proj4js-compressed.js', 'administrator/components/com_easysdi_core/common/lib/js/proj4js/');
+JHTML::script('OpenLayers.js',  $jsLoader->getPath("map","openlayers"));//'components/com_rwgis_map/externals/openlayers/');
+JHTML::script('proj4js-compressed.js', $jsLoader->getPath("map", "proj4js"));//'components/com_rwgis_map/externals/proj4js/');
 // GeoExt
-JHTML::script('GeoExt.js', 'components/com_easysdi_map/externals/geoext/lib/');
+JHTML::script('SingleFile.js',  $jsLoader->getPath("map","geoext", "/lib/GeoExt/"));
+JHTML::script('GeoExt.js',  $jsLoader->getPath("map","geoext", "/script/"));// 'components/com_rwgis_map/externals/geoext/lib/');
 // Now the component specific JavaScript
 JHTML::script('core.js', 'components/com_easysdi_map/classes/');
 JHTML::script('i18n.js', 'components/com_easysdi_map/classes/');
