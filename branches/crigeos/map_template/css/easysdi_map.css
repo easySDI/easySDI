@@ -88,6 +88,9 @@ height:100%;
 
 .polygonBtn{
 	background-image: url("../images/draw_polygon_off.png") !Important;
+	 width:25px !Important;
+  height :25px !Important;
+  background-repeat:no-repeat !Important;
 }
 
 .pointBtn{
