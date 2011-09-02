@@ -369,6 +369,16 @@ if ($shopItem > 0){
 									</tr>
 									<tr>
 										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_SHOP_MAX_FILE_SIZE' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_SHOP_MAX_FILE_SIZE' ); ?>
+											</span>
+										</td>
+										<td>
+											<input class="text_area" type="text" size="10" name="max_file_size" value="<?php echo $shopList['SHOP_CONFIGURATION_MAX_FILE_SIZE']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+										</td>
+									</tr>
+									<tr>
+										<td valign="top" class="key">
 											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_SHOP_ARCHIVE_DELAY' ); ?>">
 												<?php echo JText::_( 'CORE_CONFIGURATION_SHOP_ARCHIVE_DELAY' ); ?>
 											</span>

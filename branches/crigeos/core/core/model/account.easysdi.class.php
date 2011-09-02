@@ -60,6 +60,40 @@ class account extends JTable
 		$database->setQuery( "SELECT p.id as value, u.name as text FROM #__users u INNER JOIN #__sdi_account p ON u.id = p.user_id " );
 		return  $database->loadObjectList();
 	}
+	
+	function getParentList(){
+		$resultList =  array();
+		
+		$root_id = $this->root_id;
+		
+		//Current account is root
+		if($root_id == null){
+			$resultList[]=$this->id;
+			return $resultList;
+		}
+		
+		$parent_id = null;
+		$account_id = $this->id;
+		
+		while ($account_id != $root_id){
+			$parent_id = account::getParentId($account_id);
+			$resultList[]=$parent_id;
+			$account_id = $parent_id;
+		}
+		return $resultList;
+	}
+	
+	static function getParentId ($account_id){
+		global  $mainframe;	
+		$db =& JFactory::getDBO();
+		$db->setQuery( "SELECT parent_id FROM #__sdi_account WHERE id = ".$account_id);
+		$parent_id = $db->loadResult();
+		if ($db->getErrorNum()) {
+			$mainframe->enqueueMessage($db->getErrorMsg());
+			return null;
+		}
+		return $parent_id;
+	}
 
 }
 

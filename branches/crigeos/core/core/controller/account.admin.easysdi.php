@@ -58,7 +58,7 @@ class ADMIN_account {
 		}
 	
 
-		// D�compte des enregistrements totaux
+		// Decompte des enregistrements totaux
 		if ($type == '') {
 			$query = "SELECT COUNT(*) FROM #__users,#__sdi_account WHERE #__users.id=#__sdi_account.user_id AND #__sdi_account.root_id IS NULL";
 		} else {
@@ -95,7 +95,7 @@ class ADMIN_account {
 		HTML_account::listAccount($use_pagination, $rows, $pageNav, $search, $option, $type, $profile, $category, $payment);
 	}
 
-	// Cr�ation d'enregistrement (id = 0)
+	// Creation d'enregistrement (id = 0)
 	// ou modification de l'enregistrement id = n
 	function editRootAccount($id, $option) {
 		if($id=='')
@@ -172,7 +172,7 @@ class ADMIN_account {
 		HTML_account::editRootAccount( $rowUser, $rowAccount, $rowContact, $rowSubscription, $rowDelivery, $rowsProfile, $rowsAccountProfile, $option );
 	}
 
-	// Cr�ation d'enregistrement (id = 0)
+	// Creation d'enregistrement (id = 0)
 	// ou modification de l'enregistrement id = n
 	function editAffiliateAccount( $id, $option ) {		
 		// if $id is empty, situation is : refresh page after change the joomla account
@@ -253,8 +253,8 @@ class ADMIN_account {
 		$database =& JFactory::getDBO();
 		
 		if (!is_array( $cid ) || count( $cid ) < 1) {
-			//echo "<script> alert('S�lectionnez un enregistrement � supprimer'); window.history.go(-1);</script>\n";
-			$mainframe->enqueueMessage("S�lectionnez un enregistrement � supprimer","error");
+			//echo "<script> alert('Selectionnez un enregistrement e supprimer'); window.history.go(-1);</script>\n";
+			$mainframe->enqueueMessage("Selectionnez un enregistrement e supprimer","error");
 			$mainframe->redirect("index.php?option=$option&task=listAccount" );
 			exit;
 		}
@@ -263,7 +263,7 @@ class ADMIN_account {
 			$account = new account( $database );
 			$account->load( $account_id );
 		
-			// Vider les entr�es de la table #__sdi_address
+			// Vider les entrees de la table #__sdi_address
 			$database->setQuery("DELETE FROM #__sdi_address WHERE account_id=".$account_id);
 			//echo $database->getQuery()."<br>";
 			if (!$database->query())
@@ -272,7 +272,7 @@ class ADMIN_account {
 			}
 			
 			
-			// Vider les entr�es de la table #__sdi_account_accountprofile
+			// Vider les entrees de la table #__sdi_account_accountprofile
 			$database->setQuery("DELETE FROM #__sdi_account_accountprofile WHERE account_id=".$account_id);
 			//echo $database->getQuery()."<br>";
 			if (!$database->query())
@@ -280,7 +280,7 @@ class ADMIN_account {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
 			
-			// Vider les entr�es de la table #__sdi_actor
+			// Vider les entrees de la table #__sdi_actor
 			$database->setQuery("DELETE FROM #__sdi_actor WHERE account_id=".$account_id);
 			//echo $database->getQuery()."<br>";
 			if (!$database->query())
@@ -297,7 +297,7 @@ class ADMIN_account {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 				$mainframe->redirect("index.php?option=$option&task=listAccount" );
 			}
-			/* Contrairement � la V1, ne pas supprimer le compte Joomla associ� */
+			/* Contrairement e la V1, ne pas supprimer le compte Joomla associe */
 			/*if (!$user->delete()) {
 				//echo "<script> alert('".$user->getError()."'); window.history.go(-1); </script>\n";
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -316,8 +316,8 @@ class ADMIN_account {
 		$database =& JFactory::getDBO();
 
 		if (!is_array( $cid ) || count( $cid ) < 1) {
-			//echo "<script> alert('S�lectionnez un enregistrement � exporter'); window.history.go(-1);</script>\n";
-			$mainframe->enqueueMessage('S�lectionnez un enregistrement � exporter','error');
+			//echo "<script> alert('Selectionnez un enregistrement e exporter'); window.history.go(-1);</script>\n";
+			$mainframe->enqueueMessage('Selectionnez un enregistrement e exporter','error');
 			$mainframe->redirect("index.php?option=$option&task=listAccount" );
 			exit;
 		}
@@ -471,7 +471,7 @@ class ADMIN_account {
 			$rowAccount->code = sprintf( '%04x%04x-%04x-%04x-%04x-%04x%04x%04x', mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0x0fff ) | 0x4000, mt_rand( 0, 0x3fff ) | 0x8000, mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ) );
 		}*/
 		
-		// G�n�rer un guid
+		// Generer un guid
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 		if ($rowAccount->guid == null)
 			$rowAccount->guid = helper_easysdi::getUniqueId();
@@ -535,7 +535,7 @@ class ADMIN_account {
 			$rowAddress->fax=$_POST['fax'][$index];
 			$rowAddress->email=$_POST['email'][$index];
 	
-			// G�n�rer un guid
+			// Generer un guid
 			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 			if ($rowAddress->guid == null)
 				$rowAddress->guid = helper_easysdi::getUniqueId();
