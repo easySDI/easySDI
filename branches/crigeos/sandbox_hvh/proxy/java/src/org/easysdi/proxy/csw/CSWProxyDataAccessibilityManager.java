@@ -9,6 +9,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import org.easysdi.jdom.filter.ElementConstraintFilter;
 import org.easysdi.proxy.policy.Policy;
 import org.easysdi.proxy.policy.Status;
 import org.easysdi.security.JoomlaProvider;
@@ -491,7 +493,7 @@ public class CSWProxyDataAccessibilityManager {
 	    	Element elementAnd = null;
 	    	Element elementOr = null;
 	    	
-	    	Filter filtre = new CSWProxyMetadataConstraintFilter();
+	    	Filter filtre = new ElementConstraintFilter();
 	    	Iterator it= docParent.getDescendants(filtre);
 			  
 	    	

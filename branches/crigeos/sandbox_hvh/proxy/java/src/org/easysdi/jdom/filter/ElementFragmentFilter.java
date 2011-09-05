@@ -23,10 +23,16 @@ import org.jdom.filter.*;
  * @author DEPTH SA
  *
  */
-public class ElementExceptionFilter implements Filter
+public class ElementFragmentFilter implements Filter
 {
 	private static final long serialVersionUID = 1L;
+	private String _fragment;
 	
+	public ElementFragmentFilter(String fragment)
+	{
+		super();
+		_fragment = fragment;
+	}
 	
 	public boolean matches(Object ob)
       {
@@ -35,7 +41,7 @@ public class ElementExceptionFilter implements Filter
 
          //Filter to use against Elements
          Element element = (Element)ob;
-         if(element.getName().equals("Exception"))
+         if(element.getQualifiedName().equals(_fragment))
          {
         	 return true;
          }

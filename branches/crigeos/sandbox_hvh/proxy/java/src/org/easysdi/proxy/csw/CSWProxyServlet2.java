@@ -18,8 +18,6 @@ package org.easysdi.proxy.csw;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -28,37 +26,19 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.io.StringBufferInputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 import java.util.UUID;
 import java.util.Vector;
-import java.util.zip.CRC32;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -66,21 +46,20 @@ import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.commons.httpclient.HttpURL;
-import org.easysdi.proxy.core.ProxyServlet;
+import org.easysdi.jdom.filter.ElementMD_MetadataFilter;
+import org.easysdi.jdom.filter.ElementSearchResultsFilter;
 import org.easysdi.proxy.exception.AvailabilityPeriodException;
-import org.easysdi.security.JoomlaProvider;
 import org.easysdi.xml.documents.RemoteServerInfo;
-import org.easysdi.xml.handler.ConfigFileHandler;
 import org.easysdi.xml.handler.CswRequestHandler;
-import org.easysdi.xml.handler.GeonetworkSearchResultHandler;
-import org.easysdi.xml.handler.PolicyHandler;
-import org.easysdi.xml.handler.RequestHandler;
+import org.jdom.Document;
 import org.jdom.Element;
+import org.jdom.JDOMException;
+import org.jdom.Namespace;
+import org.jdom.filter.Filter;
 import org.jdom.input.SAXBuilder;
-import org.jdom.xpath.XPath;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
@@ -89,16 +68,6 @@ import org.xml.sax.helpers.XMLReaderFactory;
 public class CSWProxyServlet2 extends CSWProxyServlet {
 
 	private static final long serialVersionUID = 1L;
-//	private List<String> recordsToKeep = new ArrayList<String>();
-//	private List<String> recordsToRemove = new ArrayList<String>();
-//	private List<String> recordsReturned = new ArrayList <String>();
-//	
-//	private String requestedOutputSchema;
-//	private String requestedResutlType;
-//	private String requestedElementSetName;
-	
-//	public static final List<String> cswOutputSchemas = Arrays.asList("http://www.opengis.net/cat/csw/2.0.2","csw:Record","csw:IsoRecord");
-//	public static final List<String> gmdOutputSchemas = Arrays.asList("http://www.isotc211.org/2005/gmd");
 	
 	/** 
 	 * 
@@ -182,6 +151,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 	/**
 	 * 
 	 */
+	@SuppressWarnings("unchecked")
 	public void transform(String version, String currentOperation, HttpServletRequest req, HttpServletResponse resp, List<String> filePathList) 
 	{
 		try 
@@ -284,6 +254,93 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 						tempFos.close();
 						logger.trace(currentOperation+" - End apply XSLT on response.");
 					}
+					
+					if("GetRecordById".equals(currentOperation) ){
+						//If the current config is used to harvest remote catalog (see config file : <harvesting-config>true</harvesting-config>),
+						//add dynamically an XML node (and its namespace definition) to the metadata to indicate that this metadata was haversting
+						SAXBuilder sb = new SAXBuilder();
+	
+						Document doc = null;
+				        try {
+				            doc = sb.build(tempFile);
+				            Element racine = doc.getRootElement();
+				            
+				            //Get the metadata element from the complete response file
+				            List<Element> metadataListStorage = new ArrayList<Element> ();
+				            Iterator<Element> metadataIterator = racine.getChildren().iterator();
+				            while(metadataIterator.hasNext()){
+				            	Element metadata = metadataIterator.next();
+				            	metadataListStorage.add(metadata);
+				            }
+				            
+				            //Add a new node to the metadata element
+				            //<gmd:MD_Metadata xmlns:sdi="http://www.easysdi.org/2011/sdi">
+				            //<sdi:platform harvested="true" />
+				            //</gmd:MD_Metadata>
+				            Iterator<Element> metadataStorageIterator = metadataListStorage.iterator();
+				            while (metadataStorageIterator.hasNext()){
+				            	Element metadata = metadataStorageIterator.next();
+				            	Namespace nsSDI = Namespace.getNamespace("sdi", "http://www.easysdi.org/2011/sdi");
+				            	metadata.addNamespaceDeclaration(nsSDI);
+				            	Element e = new Element("platform", nsSDI);
+				            	e.setAttribute("harvested", "true");
+				            	metadata.addContent(e);
+				            }
+				            
+				            XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
+				            sortie.output(doc, new FileOutputStream(tempFile));
+				        }
+				        catch (JDOMException e) {
+				            e.printStackTrace();
+				        }
+				        catch (IOException e) {
+				            e.printStackTrace();
+				        }
+					}
+					if("GetRecords".equals(currentOperation) ){
+						//If the current config is used to harvest remote catalog (see config file : <harvesting-config>true</harvesting-config>),
+						//add dynamically an XML node (and its namespace definition) to the metadata to indicate that this metadata was haversting
+						SAXBuilder sb = new SAXBuilder();
+	
+						Document doc = null;
+				        try {
+				            doc = sb.build(tempFile);
+				            Element racine = doc.getRootElement();
+				            
+				            //Get the metadata element from the complete response file
+				            List<Element> resultListStorage = new ArrayList<Element> ();
+				            Iterator<Element> resultIterator = racine.getDescendants(new ElementSearchResultsFilter());
+				            while(resultIterator.hasNext()){
+				            	Element result = resultIterator.next();
+				            	resultListStorage.addAll(result.getChildren());
+				            }
+				            
+				            //Add a new node to the metadata element
+				            //<gmd:MD_Metadata xmlns:sdi="http://www.easysdi.org/2011/sdi">
+				            //<sdi:platform harvested="true" />
+				            //</gmd:MD_Metadata>
+				            Iterator<Element> resultStorageIterator = resultListStorage.iterator();
+				            Element result = null;
+				            Namespace nsSDI = Namespace.getNamespace("sdi","http://www.easysdi.org/2011/sdi") ;
+				            while (resultStorageIterator.hasNext()){
+				            	result = resultStorageIterator.next();
+				            	Element e = new Element("platform", nsSDI);
+				            	e.setAttribute("harvested", "true");
+				            	result.addContent(e);
+				            }
+				            if(result != null)
+				            	result.getParentElement().addNamespaceDeclaration(nsSDI);
+				            
+				            XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
+				            sortie.output(doc, new FileOutputStream(tempFile));
+				        }
+				        catch (JDOMException e) {
+				            e.printStackTrace();
+				        }
+				        catch (IOException e) {
+				            e.printStackTrace();
+				        }
+					}
 				}
 				else
 				{
@@ -312,23 +369,19 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			resp.setContentLength((int) tempFile.length());
 			OutputStream os = resp.getOutputStream();
 			InputStream is = new FileInputStream(tempFile);
-			
-			//Debug - HVH - 05.01.2011 : writing in outputstream optimized
-//			int byteRead;
 			try 
 			{
-				byte[] buffer = new byte[is.available()]; 
+				/*byte[] buffer = new byte[is.available()]; 
 		        int bytesRead;
 		        while ((bytesRead = is.read(buffer)) != -1)
 		        {
 		            os.write(buffer, 0, bytesRead);
-		        }
-//				while ((byteRead = is.read()) != -1) 
-//				{
-//					os.write(byteRead);
-//					
-//				}
-		      //End Debug - HVH - 05.01.2011
+		        }*/
+		        byte[] buf = new byte[1024];
+			    int nread;
+			    while ((nread = is.read(buf)) >= 0) {
+			    	os.write(buf, 0, nread);
+			    }
 			} 
 			finally 
 			{
