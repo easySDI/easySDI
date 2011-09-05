@@ -21,7 +21,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<?php echo $this->language; ?>" lang="<?php echo $this->language; ?>" >
 <head>
 <!--<meta http-equiv="X-UA-Compatible" content="IE=7.5" />-->
-<link rel="stylesheet" href="<?php echo $this->baseurl ?>/templates/easysdi_map/css/reset.css" type="text/css" />
+<!-- <link rel="stylesheet" href="<?php echo $this->baseurl ?>/templates/easysdi_map/css/reset.css" type="text/css" />-->
 <jdoc:include type="head" />
 <link rel="stylesheet" href="<?php echo $this->baseurl ?>/components/com_easysdi_map/externals/ext/resources/css/ext-all.css" type="text/css" />
 <link rel="stylesheet" href="<?php echo $this->baseurl ?>/components/com_easysdi_map/externals/ext/resources/css/xtheme-<?php echo $this->params->get('extThemeVariation'); ?>.css" type="text/css" />
@@ -40,7 +40,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 
 </head>
 <body id="page_bg" class="color_<?php echo $this->params->get('colorVariation'); ?> bg_<?php echo $this->params->get('backgroundVariation');?>">
-<div id="map">
+<div id="map"><div class="loader"><br><br><br><img src="templates/easysdi_map/images/loader.gif">&nbsp;<b>Chargement...</b></div>
 </div>
 </body>
 </html>
