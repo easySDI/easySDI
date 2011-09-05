@@ -299,7 +299,7 @@ class HTML_account {
 			</tr>
 			<tr>
 				<td><?php echo JText::_("CORE_ACCOUNT_WEBSITE_LABEL"); ?> :</td>
-				<td><input class="inputbox" type="text" size="50" maxlength="100"
+				<td><input class="inputbox" type="text" size="50" maxlength="200"
 					name="url" value="<?php echo $rowAccount->url; ?>" /></td>
 			</tr>
 

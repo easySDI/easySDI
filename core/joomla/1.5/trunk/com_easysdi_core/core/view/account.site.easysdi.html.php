@@ -1184,7 +1184,7 @@ class HTML_account {
 							</tr>
 							<tr>
 								<td class="ptitle"><?php echo JText::_("CORE_ACCOUNT_WEBSITE_LABEL"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="url" value="<?php echo $rowAccount->url; ?>" /></td>
+								<td><input class="inputbox" type="text" size="50" maxlength="200" name="url" value="<?php echo $rowAccount->url; ?>" /></td>
 							</tr>
 							<tr>
 								<td class="ptitle"><?php echo JText::_("CORE_ACCOUNT_REGISTER_LABEL"); ?> : </td>
@@ -1632,7 +1632,7 @@ class HTML_account {
 							</tr>
 							<tr>
 								<td><?php echo JText::_("CORE_ACCOUNT_WEBSITE_LABEL"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="url" value="<?php echo $rowAccount->url; ?>" /></td>
+								<td><input class="inputbox" type="text" size="50" maxlength="200" name="url" value="<?php echo $rowAccount->url; ?>" /></td>
 							</tr>
 							
 							<?php 
@@ -2082,7 +2082,7 @@ class HTML_account {
 							</tr>
 							<tr>
 								<td><?php echo JText::_("CORE_ACCOUNT_WEBSITE_LABEL"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="url" value="<?php echo $rowAccount->url; ?>" /></td>
+								<td><input class="inputbox" type="text" size="50" maxlength="200" name="url" value="<?php echo $rowAccount->url; ?>" /></td>
 							</tr>
 							<tr>
 								<td class="ptitle"><?php echo JText::_("CORE_ACCOUNT_REGISTER_LABEL"); ?> : </td>
