@@ -29,7 +29,8 @@ $document->setHeadData($headerstuff);
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.jsLoaderUtil.php');
 $jsLoader =JSLOADER_UTIL::getInstance();
 
-JHTML::script('OpenLayers.js',  $jsLoader->getPath("map","openlayers"));// 'components/com_rwgis_map/externals/openlayers/');
+JHTML::script('SingleFile.js', $jsLoader->getPath("map","openlayers", "/lib/OpenLayers/"));
+JHTML::script('OpenLayers.js', $jsLoader->getPath("map","openlayers"));// 'components/com_rwgis_map/externals/openlayers/');
 JHTML::script('SortableWFS.js', 'components/com_easysdi_map/classes/');
 // Now the component specific JavaScript
 JHTML::script('ext-base.js',  $jsLoader->getPath("map","ext","/adapter/ext/"));// 'components/com_rwgis_map/externals/ext/adapter/ext/');

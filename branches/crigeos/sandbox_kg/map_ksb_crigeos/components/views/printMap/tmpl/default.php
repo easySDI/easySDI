@@ -27,15 +27,15 @@ $jsLoader =JSLOADER_UTIL::getInstance();
 <!-- <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" /> -->
 <meta http-equiv="Content-Style-Type" content="text/css" />
 <meta http-equiv="content-type" content="text/html;charset=utf-8" />
-<link rel="stylesheet" href="components/com_easysdi_map/externals/ext/resources/css/ext-all.css" type="text/css" />
-<script type="text/javascript" src="components/com_easysdi_map/externals/ext/adapter/ext/ext-base.js"></script>
-<script type="text/javascript" src="components/com_easysdi_map/externals/ext/ext-all.js"></script>
-<script type="text/javascript" src="components/com_easysdi_map/externals/jquery/jquery-1.3.2.min.js"></script>
-<script type="text/javascript" src="<?php  echo $jsLoader->getPath("map","jqueryui") ?>/jquery-ui-1.7.2.custom.min.js"></script>
-<link rel="stylesheet" href="<?php  echo $jsLoader->getPath("map","jqueryui") ?>/css/jquery-ui-1.7.2.custom.css" type="text/css" />
-<script type="text/javascript" src="components/com_easysdi_map/externals/json/json.js"></script>
-<script type="text/javascript" src="components/com_easysdi_map/externals/openlayers/OpenLayers.js"></script>
-<!--<script type="text/javascript" src="components/com_easysdi_map/externals/OpenLayers-2.8/lib/OpenLayers.js"></script>-->
+<link rel="stylesheet" href="<?php  echo $jsLoader->getPath("map","ext")?>/resources/css/ext-all.css" type="text/css" />
+<script type="text/javascript" src="<?php  echo  $jsLoader->getPath("map","ext","/adapter/ext/")?>/ext-base.js"></script>
+<script type="text/javascript" src="<?php  echo  $jsLoader->getPath("map","ext")?>/ext-all.js"></script>
+<script type="text/javascript" src="<?php  echo $jsLoader->getPath("map","jquery")?>/jquery-1.3.2.min.js"></script>
+<script type="text/javascript" src="<?php  echo $jsLoader->getPath("map","jqueryui")?>/jquery-ui-1.7.2.custom.min.js"></script>
+<link rel="stylesheet" href="<?php  echo $jsLoader->getPath("map","jqueryui")?>/css/jquery-ui-1.7.2.custom.css" type="text/css" />
+<script type="text/javascript" src="<?php  echo $jsLoader->getPath("map","json")?>/json.js"></script>
+<script type="text/javascript" src="<?php echo $jsLoader->getPath("map","openlayers", "/lib/OpenLayers/")?>/SingleFile.js"></script>
+<script type="text/javascript" src="<?php echo $jsLoader->getPath("map","openlayers")?>/OpenLayers.js"></script>
 <script type="text/javascript" src="components/com_easysdi_map/classes/core.js"></script>
 <script type="text/javascript" src="components/com_easysdi_map/classes/i18n.js"></script>
 <script type="text/javascript" src="components/com_easysdi_map/views/printMap/tmpl/standard_layout.js"></script>

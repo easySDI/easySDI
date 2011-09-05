@@ -43,6 +43,29 @@ _addBaseLayer = function(layer) {
 
 		if (layer.maxExtent != undefined)
 			options.maxExtent = layer.maxExtent;
+		else if (thisMap.maxExtent != undefined)
+			options.maxExtent= thisMap.maxExtent;
+		else{}
+				
+		if (layer.minScale != undefined)
+			options.minScale = options.minScale;
+		else if (thisMap.minScale !=undefined)
+			options.minScale= thisMap.minScale;
+		else{}
+		
+		if (layer.maxScale != undefined)
+			options.maxScale = layer.maxScale;
+		else if (thisMap.maxScale !=undefined)
+			options.maxScale= thisMap.maxScale;
+		else{}
+		
+		if (layer.resolutions != undefined)
+			options.resolutions = layer.resolutions;
+		else{
+			options.minResolution ="auto";
+			options.maxResolution ="auto";
+		}
+			
 
 		var WMSoptions = {
 			LAYERS : layer.layers,
@@ -78,8 +101,34 @@ _addLayers = function(layer) {
 				}
 				if (layer.units != undefined)
 					options.units = layer.units;
+
+				if (layer.projection != undefined)
+					options.projection = layer.projection;
+
 				if (layer.maxExtent != undefined)
 					options.maxExtent = layer.maxExtent;
+				else if (thisMap.maxExtent != undefined)
+					options.maxExtent= thisMap.maxExtent;
+				else{}
+						
+				if (layer.minScale != undefined)
+					options.minScale = options.minScale;
+				else if (thisMap.minScale !=undefined)
+					options.minScale= thisMap.minScale;
+				else{}
+				
+				if (layer.maxScale != undefined)
+					options.maxScale = layer.maxScale;
+				else if (thisMap.maxScale !=undefined)
+					options.maxScale= thisMap.maxScale;
+				else{}
+				
+				if (layer.resolutions != undefined)
+					options.resolutions = layer.resolutions;
+				else{
+					options.minResolution ="auto";
+					options.maxResolution ="auto";
+				}
 
 				var WMSoptions = {
 					LAYERS : layer.layers,

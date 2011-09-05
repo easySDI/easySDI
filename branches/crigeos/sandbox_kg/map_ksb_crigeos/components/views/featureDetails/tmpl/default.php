@@ -30,7 +30,8 @@ $jsLoader =JSLOADER_UTIL::getInstance();
 JHTML::script('ext-base.js', $jsLoader->getPath("map","ext","/adapter/ext/"));//'components/com_rwgis_map/externals/ext/adapter/ext/');
 JHTML::script('ext-all.js', $jsLoader->getPath("map","ext"));//'components/com_rwgis_map/externals/ext/');
 // And OpenLayers
-JHTML::script('OpenLayers.js',  $jsLoader->getPath("map","openlayers"));//'components/com_rwgis_map/externals/openlayers/');
+JHTML::script('SingleFile.js', $jsLoader->getPath("map","openlayers", "/lib/OpenLayers/"));
+JHTML::script('OpenLayers.js', $jsLoader->getPath("map","openlayers"));//'components/com_rwgis_map/externals/openlayers/');
 JHTML::script('proj4js-compressed.js', $jsLoader->getPath("map", "proj4js"));//'components/com_rwgis_map/externals/proj4js/');
 // GeoExt
 JHTML::script('SingleFile.js',  $jsLoader->getPath("map","geoext", "/lib/GeoExt/"));
@@ -39,7 +40,7 @@ JHTML::script('GeoExt.js',  $jsLoader->getPath("map","geoext", "/script/"));// '
 JHTML::script('core.js', 'components/com_easysdi_map/classes/');
 JHTML::script('i18n.js', 'components/com_easysdi_map/classes/');
 JHTML::script('featureDetailsHelper.js', 'components/com_easysdi_map/classes/');
-JHTML::script('sortableWFS.js', 'components/com_easysdi_map/classes/');
+JHTML::script('SortableWFS.js', 'components/com_easysdi_map/classes/');
 JHTML::script('report_base.js', 'components/com_easysdi_map/elements/');
 require(JPATH_COMPONENT.DS.'php'.DS.'lang.php');
 require(JPATH_COMPONENT.DS.'php'.DS.'params.php');
