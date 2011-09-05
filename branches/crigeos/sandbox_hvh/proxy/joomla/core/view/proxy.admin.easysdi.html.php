@@ -153,7 +153,12 @@ echo $pane->endPanel();
 					<td>
 					<?php echo JHTML::_("select.genericlist",$availableServletList, 'servletClass', 'size="1" onChange="submit()"', 'value', 'text', $servletClass ); ?>
 					</td>
-					
+					<?php if ($servletClass == "org.easysdi.proxy.csw.CSWProxyServlet"){?>
+					<td>
+						<?php echo JText::_( 'EASYSDI_SERVLET_CSW_HARVESTING' );?>
+						<input type="checkbox" name="harvestingConfig" value="1" <?php if($config->{"harvesting-config"}=="true"){echo "checked";}?> />
+					</td>
+					<?php }?>
 				</tr>
 			</table>
 			</fieldset>

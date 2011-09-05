@@ -1597,9 +1597,14 @@ function saveConfig($xml,$configFilePath){
 				}
 			}
 						
-			//Ogc search filter
+			//Harvesting and Ogc search filter
 			if (strcmp($servletClass,"org.easysdi.proxy.csw.CSWProxyServlet")==0 )
 			{
+				$harvesting = JRequest::getVar("harvestingConfig",0);
+				if($harvesting == 1)
+					$config->{"harvesting-config"}="true";
+				else 
+					$config->{"harvesting-config"}="false";
 				$ogcSearchFilter = JRequest::getVar("ogcSearchFilter","");
 				$config->{"ogc-search-filter"}=$ogcSearchFilter;
 			}
