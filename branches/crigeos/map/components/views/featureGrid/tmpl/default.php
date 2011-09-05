@@ -32,6 +32,7 @@ $jsLoader =JSLOADER_UTIL::getInstance();
 JHTML::script('ext-base.js',  $jsLoader->getPath("map","ext","/adapter/ext/"));//components/com_rwgis_map/externals/ext/adapter/ext/');
 JHTML::script('ext-all.js', $jsLoader->getPath("map","ext"));//'components/com_rwgis_map/externals/ext/');
 // And OpenLayers
+JHTML::script('SingleFile.js', $jsLoader->getPath("map","openlayers", "/lib/OpenLayers/"));
 JHTML::script('OpenLayers.js', $jsLoader->getPath("map","openlayers"));//'components/com_rwgis_map/externals/openlayers/');
 JHTML::script('proj4js-compressed.js', $jsLoader->getPath("map","proj4js"));//'components/com_rwgis_map/externals/proj4js/');
 // GeoExt

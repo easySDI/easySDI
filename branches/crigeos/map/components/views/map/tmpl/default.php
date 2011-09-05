@@ -28,8 +28,8 @@ require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'commo
 $jsLoader =JSLOADER_UTIL::getInstance();
 // Include the ext library. Replace with ext-all.js for production
 JHTML::stylesheet('ext-all.css', 'components/com_easysdi_map/externals/ext/resources/css/');
-JHTML::script('ext-base-debug.js', $jsLoader->getPath("map","ext","/adapter/ext/"));//'components/com_rwgis_map/externals/ext/adapter/ext/');
-JHTML::script('ext-all-debug.js', $jsLoader->getPath("map","ext"));//'components/com_rwgis_map/externals/ext/');
+JHTML::script('ext-base.js', $jsLoader->getPath("map","ext","/adapter/ext/"));//'components/com_rwgis_map/externals/ext/adapter/ext/');
+JHTML::script('ext-all.js', $jsLoader->getPath("map","ext"));//'components/com_rwgis_map/externals/ext/');
 // And JQuery
 JHTML::script('jquery-1.3.2.min.js',  $jsLoader->getPath("map","jquery"));
 JHTML::script('jquery-ui-1.7.2.custom.min.js',  $jsLoader->getPath("map","jqueryui"));
@@ -37,7 +37,8 @@ JHTML::script('jquery.download.js', 'components/com_easysdi_map/views/map/js/');
 JHTML::stylesheet('jquery-ui-1.7.2.custom.css',  $jsLoader->getPath("map","jqueryui", "/css/"));
 JHTML::stylesheet('getFeatureInfo.css', 'components/com_easysdi_map/resource/xslt/');
 // And OpenLayers
-JHTML::script('OpenLayers.js', $jsLoader->getPath("map","openlayers", "/lib/"));//'components/com_rwgis_map/externals/openlayers/');
+JHTML::script('SingleFile.js', $jsLoader->getPath("map","openlayers", "/lib/OpenLayers/"));
+JHTML::script('OpenLayers.js', $jsLoader->getPath("map","openlayers"));//'components/com_rwgis_map/externals/openlayers/');
 //JHTML::script('OpenLayers.js', 'Lib/');
 JHTML::script('SortableWFS.js', 'components/com_easysdi_map/classes/');
 JHTML::script('getfeatureinfo.js', 'components/com_easysdi_map/classes/');
@@ -53,7 +54,7 @@ JHTML::script('i18n.js', 'components/com_easysdi_map/classes/');
 JHTML::script('triggerManager.js', 'components/com_easysdi_map/classes/');
 JHTML::script('featureDetailsHelper.js', 'components/com_easysdi_map/classes/');
 JHTML::script('searchManager.js', 'components/com_easysdi_map/classes/');
-JHTML::script('sortableWFS.js', 'components/com_easysdi_map/classes/');
+JHTML::script('SortableWFS.js', 'components/com_easysdi_map/classes/');
 JHTML::script('dialog.js', 'components/com_easysdi_map/classes/');
 JHTML::script('TristateCheckboxNode.js', 'components/com_easysdi_map/classes/');
 JHTML::script('TristateCheckboxNodeUI.js', 'components/com_easysdi_map/classes/');
