@@ -215,7 +215,7 @@ function checkProxyLayerPermissions($doCheck, $type, $name, $valid_wms_layers, $
 
 
 // Export layer objects from the base layers table.
-$query = "SELECT l.* from #__sdi_baselayer l  order by l.ordering ASC;";
+$query = "SELECT l.* from #__sdi_baselayer l where l.published=1 order by l.ordering ASC;";
 $db->setQuery($query);
 $result = $db->loadAssocList();
 $s .= "SData.baseLayers = [";
@@ -266,7 +266,7 @@ if($i == 0){
 }
 
 // Export overlay groups objects from the __sdi_overlaygroup table.
-$query = "SELECT * from #__sdi_overlaygroup g order by g.ordering asc;";
+$query = "SELECT * from #__sdi_overlaygroup g where g.published=1 order by g.ordering asc;";
 $db->setQuery($query);
 $result = $db->loadAssocList();
 
@@ -285,7 +285,7 @@ if (!is_null($result)) {
 $s .= "];\n";
 
 // Export overlays objects from the __sdi_overlay table.
-$query = "SELECT * from #__sdi_overlay o order by o.ordering DESC;";
+$query = "SELECT * from #__sdi_overlay o where o.published=1 order by o.ordering DESC;";
 $db->setQuery($query);
 $result = $db->loadAssocList();
 

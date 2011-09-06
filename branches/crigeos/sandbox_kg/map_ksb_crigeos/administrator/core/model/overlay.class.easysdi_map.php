@@ -45,6 +45,7 @@ class overlay extends sdiTable
 	var $metadataurl=null;
 	var $minresolution=null;
 	var $maxresolution=null;
+	var $published=null;
 	
 	// Class constructor
 	function __construct( &$db )
@@ -56,6 +57,7 @@ class overlay extends sdiTable
 class overlayGroup extends sdiTable
 {
 	var $open=false;
+	var $published=null;
 
 	// Class constructor
 	function __construct( &$db )

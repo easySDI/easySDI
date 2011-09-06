@@ -51,6 +51,8 @@ class HTML_overlay
 					<th width="20" class='title'><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows); ?>);" /></th>
 					<th width="190" class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_OVERLAY_NAME"), 'name', @$filter_order_Dir, @$filter_order); ?></th>
 					<th width="180" class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_OVERLAY_GROUP"), 'group_id', @$filter_order_Dir, @$filter_order); ?></th>
+					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_PUBLISHED"), 'published', @$filter_order_Dir, @$filter_order); ?></th>					
+					
 					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_OVERLAY_LAYERS"), 'layers', @$filter_order_Dir, @$filter_order); ?></th>
 					<?php 
 					if ( $filter_group_id != -1){?>
@@ -74,7 +76,10 @@ class HTML_overlay
 					<td><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->id; ?>" onclick="isChecked(this.checked);" /></td>
 					<td><a href="#edit" onclick="return listItemTask('cb<?php echo $i;?>','editOverlay')"><?php echo stripcslashes($row->name); ?></a></td>
 					<td><?php echo $row->group_name; ?></td>
+					<td> <?php echo JHTML::_('grid.published',$row,$i, 'tick.png', 'publish_x.png', 'overlay_'); ?></td>
 					<td><?php echo $row->layers; ?></td>
+					
+					
 					
 					<td width="100px" align="right" >
 					<?php  $ordering = ($filter_order == 'ordering')  ? true : false;
@@ -215,6 +220,11 @@ class HTML_overlay
 						<td class="key"><?php echo JText::_("MAP_OVERLAY_NAME"); ?></td>
 						<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['name'];?>" name="name" id="name"
 							value="<?php echo stripcslashes($overlay_content->name); ?>" /></td>
+					</tr>
+					
+					<tr>
+						<td class="key"><?php echo JText::_("CORE_PUBLISHED"); ?> : </td>
+						<td><?php echo JHTML::_('select.booleanlist', 'published', '',  $overlay_content->published); ?> </td>																
 					</tr>
 					<tr>
 						<td class="key"><?php echo JText::_("MAP_OVERLAY_CONTENT_GROUP"); ?></td>
@@ -395,6 +405,8 @@ class HTML_overlay
 					<th width="20" class='title'><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows); ?>);" /></th>
 					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_OVERLAY_GROUP_NAME"), 'name', @$filter_order_Dir, @$filter_order); ?></th>
 					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_OVERLAY_GROUP_DESCRIPTION"), 'description', @$filter_order_Dir, @$filter_order); ?></th>
+					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_PUBLISHED"), 'published', @$filter_order_Dir, @$filter_order); ?></th>					
+					
 					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_OVERLAY_GROUP_OPEN"), 'open', @$filter_order_Dir, @$filter_order); ?></th>
 					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_OVERLAY_GROUP_ORDER"), 'ordering', @$filter_order_Dir, @$filter_order); ?>
 					<?php echo JHTML::_('grid.order',  $rows, 'filesave.png', 'saveOrderOverlayGroup' ); ?></th>
@@ -412,6 +424,9 @@ class HTML_overlay
 					<td><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->id; ?>" onclick="isChecked(this.checked);" /></td>
 					<td><a href="#edit" onclick="return listItemTask('cb<?php echo $i;?>','editOverlayGroup')"><?php echo $row->name; ?></a></td>
 					<td><?php echo $row->description; ?></a></td>
+					<td> <?php echo JHTML::_('grid.published',$row,$i, 'tick.png', 'publish_x.png', 'overlaygroup_'); ?></td>
+					
+					
 					<td><?php if($row->open == 1){echo JText::_("MAP_YES");}else{echo JText::_("MAP_NO");} ?></td>
 					<td width="100px" align="right" >
 					<?php  $ordering = ($filter_order == 'ordering')  ? true : false;
@@ -473,6 +488,10 @@ class HTML_overlay
 					<tr>
 						<td class="key"><?php echo JText::_("MAP_OVERLAY_GROUP_NAME"); ?> :</td>
 						<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['name'];?>" name="name" value="<?php echo $overlay_group->name; ?>" /></td>
+					</tr>
+					<tr>
+						<td class="key"><?php echo JText::_("CORE_PUBLISHED"); ?> : </td>
+						<td><?php echo JHTML::_('select.booleanlist', 'published', '',  $overlay_group->published); ?> </td>																
 					</tr>
 					<tr>
 						<td class="key"><?php echo JText::_("MAP_OVERLAY_GROUP_DESCRIPTION"); ?> :</td>
