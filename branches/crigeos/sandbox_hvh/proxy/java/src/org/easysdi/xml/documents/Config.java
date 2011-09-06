@@ -53,6 +53,7 @@ public class Config implements Serializable{
 	private String ogcSearchFilter=null;
 	private OWSServiceMetadata owsServiceMetadata = null;
 	private String period = "";
+	private Boolean isHarvestingConfig = false;
 
 	/**
 	 * @param ogcSearchFilter the ogcSearchFilter to set
@@ -339,6 +340,20 @@ public class Config implements Serializable{
 	 */
 	public void setPeriod(String period) {
 		this.period = period;
+	}
+
+	/**
+	 * @return the isHarvestingConfig
+	 */
+	public Boolean getIsHarvestingConfig() {
+		return isHarvestingConfig;
+	}
+
+	/**
+	 * @param isHarvestingConfig the isHarvestingConfig to set
+	 */
+	public void setIsHarvestingConfig(Boolean isHarvestingConfig) {
+		this.isHarvestingConfig = isHarvestingConfig;
 	}
 
 }

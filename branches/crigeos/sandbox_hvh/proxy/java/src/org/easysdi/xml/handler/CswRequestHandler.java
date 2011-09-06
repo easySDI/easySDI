@@ -31,23 +31,20 @@ public class CswRequestHandler extends DefaultHandler {
     private String version ="";
     private boolean isFirst= true;
     private String data ="";
-    private List typeName= new Vector();
+    private List<String> typeName= new Vector<String>();
     private boolean hasFilter= false;
     private boolean isInInsert = false;
     private boolean isInDelete = false;
-    private boolean isInUpdate = false;
     private boolean hasInsert = false;
     private boolean hasDelete = false;
     private boolean hasUpdate = false;
     private boolean isInFileIdentifier=false;
     private boolean isInMetadata=false;
-    private boolean isInCharacterString=false;
     private boolean isPropertyNameFileIdentifier =false; 
-    private List<String> MdToInsertList =new Vector();
-    private List<String> MdToDeleteList =new Vector();
+    private List<String> MdToInsertList =new Vector<String>();
+    private List<String> MdToDeleteList =new Vector<String>();
     private boolean isInPropertyIsEqualTo=false; 
     private String recordId ="";
-
     private String nameSpace ="";
     private String resultType ="";
     private String outputSchema ="";
@@ -216,14 +213,11 @@ public class CswRequestHandler extends DefaultHandler {
 	
 		if (localName.equals("Insert")){
 		    if ("Transaction".equalsIgnoreCase(operation) && "CSW".equalsIgnoreCase(service)){
-			hasInsert=true;
-			isInInsert = true;
+		    	hasInsert=true;
+		    	isInInsert = true;
 		    }
 		}
 	
-		if (isInFileIdentifier && isInMetadata && localName.equals("CharacterString")){
-		    isInCharacterString =true;
-		}
 		if (isInMetadata&&localName.equals("fileIdentifier")){
 		    isInFileIdentifier = true;
 		}
@@ -246,8 +240,7 @@ public class CswRequestHandler extends DefaultHandler {
 		
 		if (localName.equals("Update")){
 		    if ("Transaction".equalsIgnoreCase(operation) && "CSW".equalsIgnoreCase(service)){
-			hasUpdate=true;
-			isInUpdate= true;
+		    	hasUpdate=true;
 		    }
 		}
 	}
@@ -276,8 +269,6 @@ public class CswRequestHandler extends DefaultHandler {
 		   isInPropertyIsEqualTo = false; 
 		}
 	
-
-	
 	//Requested by the DescribeFeatureType
 	if (localName.equals("TypeName")){		
 	    typeName.add(data.substring(data.indexOf(":") + 1));
@@ -288,24 +279,18 @@ public class CswRequestHandler extends DefaultHandler {
 
 	if (localName.equals("Delete")){
 	    if ("Transaction".equalsIgnoreCase(operation) && "CSW".equalsIgnoreCase(service)){
-		isInDelete = false;
+	    	isInDelete = false;
 	    }
 	}
 
 	if (localName.equals("Insert")){
 	    if ("Transaction".equalsIgnoreCase(operation) && "CSW".equalsIgnoreCase(service)){
-		isInInsert = false;
-	    }	    	    
-	}
-	if (localName.equals("Update")){
-	    if ("Transaction".equalsIgnoreCase(operation) && "CSW".equalsIgnoreCase(service)){
-		isInUpdate = false;
+	    	isInInsert = false;
 	    }	    	    
 	}
 
 	if (isInFileIdentifier && isInMetadata && localName.equals("CharacterString")){
 	     MdToInsertList.add(data);
-	     isInCharacterString = false;
 	}
 	if (localName.equals("fileIdentifier")){
 	    isInFileIdentifier = false;
@@ -314,8 +299,6 @@ public class CswRequestHandler extends DefaultHandler {
 	if (localName.equals("MD_Metadata")){
 	    isInMetadata=true;
 	}
-
-	
 	
 	if (isInPropertyIsEqualTo && localName.equals("PropertyName")){
 	
@@ -351,7 +334,7 @@ public class CswRequestHandler extends DefaultHandler {
     }
 
     /**
-     * Actions � r�aliser sur les donn�es
+     * Actions à réaliser sur les données
      */
     public void characters(char[] caracteres, int debut, 
 	    int longueur) throws SAXException {
@@ -363,12 +346,12 @@ public class CswRequestHandler extends DefaultHandler {
 
     }
 
-    public List getTypeName() {	    
-	return typeName;
+    public List<String> getTypeName() {	    
+    	return typeName;
     }
 
-    public void setTypeName(List typeName) {
-	this.typeName = typeName;
+    public void setTypeName(List<String> typeName) {
+    	this.typeName = typeName;
     }
 
 }
