@@ -33,12 +33,11 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 		config.layout = "border";
 		config.items = [ this.GeoExtMapPanel ];
 
-		if (componentDisplayOption.LocalisationEnable || componentDisplayOption.ToolBarEnable) {
+		
 			config.items.push(this._getToolbar());
-		}
-		if (componentDisplayOption.AnnotationEnable || componentDisplayOption.CoordinateEnable) {
+		
 			config.items.push(this._getToolbarSouth());
-		}
+		
 
 		EasySDI_Map.MapPanel.superclass.constructor.apply(this, arguments);
 	},
@@ -338,6 +337,8 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 		var options = {
 			controls : [],
 			layers : []
+			
+
 		};
 
 		if (componentParams.projection != '')
@@ -462,9 +463,19 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 		// Register a handler for pan or zoom, so we can update history
 		// buttons
 		this.map.events.register('moveend', this, this._onMapMoveEnd);
+		//this.map.events.register("preaddlayer", this, this.onPreAddLayer);
+		//this.map.events.register("addlayer", this, this.onLayerAdded);
+
 		// TODO DEREGISTER THIS EVENT
 	},
-
+	onPreAddLayer :function(evt) {
+	    console.log("Adding layer" );
+	}, 
+	
+	onLayerAdded : function(evt) {
+		console.log("layeradded " );
+	},
+	
 	// Test : to remove.
 	addGetFeatureCtrl : function() {
 		/**
@@ -615,6 +626,7 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 	 * Hide the loading progress popup.
 	 */
 	_hideMsg : function(layer) {
+		debugger;
 		Ext.Msg.hide();
 		// we only want to do this once on initial load, not when the
 		// map view
@@ -763,44 +775,21 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 			// settings
 			menu : projMenu
 		});
+		
+		return new Ext.Toolbar( {
+			region : "south",
+			autoHeight : true,
+			items : [ this.rectangleButton, this.polygonButton, this.pointButton, this.pathButton, this.modifyFeatureButton,
+					this.selectFeatureButton, {
+						iconCls : 'styleChooserBtn',
+						menu : {
+							items : styleDropDownItems
+						}
+					}, {
+						xtype : 'tbfill'
+					}, this.projMenuButton, new Ext.Toolbar.Item(mouseposDiv) ]
+		});
 
-		if (componentDisplayOption.AnnotationEnable && componentDisplayOption.CoordinateEnable) {
-			return new Ext.Toolbar( {
-				region : "south",
-				autoHeight : true,
-				items : [ this.rectangleButton, this.polygonButton, this.pointButton, this.pathButton, this.modifyFeatureButton,
-						this.selectFeatureButton, {
-							iconCls : 'styleChooserBtn',
-							menu : {
-								items : styleDropDownItems
-							}
-						}, {
-							xtype : 'tbfill'
-						}, this.projMenuButton, new Ext.Toolbar.Item(mouseposDiv) ]
-			});
-		} else if (componentDisplayOption.AnnotationEnable && !componentDisplayOption.CoordinateEnable) {
-			return new Ext.Toolbar( {
-				region : "south",
-				autoHeight : true,
-				items : [ this.rectangleButton, this.polygonButton, this.pointButton, this.pathButton, this.modifyFeatureButton,
-						this.selectFeatureButton, {
-							iconCls : 'styleChooserBtn',
-							menu : {
-								items : styleDropDownItems
-							}
-						} ]
-			});
-		} else if (!componentDisplayOption.AnnotationEnable && componentDisplayOption.CoordinateEnable) {
-			return new Ext.Toolbar( {
-				region : "south",
-				autoHeight : true,
-				items : [ {
-					xtype : 'tbfill'
-				}, this.projMenuButton, new Ext.Toolbar.Item(mouseposDiv) ]
-			});
-		} else {
-			return null;
-		}
 	},
 
 	/**
@@ -884,6 +873,8 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 			componentParams.localisationInputWidth = 200;
 		else
 			componentParams.localisationInputWidth = parseInt(componentParams.localisationInputWidth);
+		
+		if(componentDisplayOption.locAutocompleteEnable ){
 		this.locAutocomplete = new Ext.form.ComboBox( {
 			id : 'localisationInputWidth',
 			store : this.locStore,
@@ -897,8 +888,14 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 			selectOnFocus : true,
 			minChars : componentParams.autocompleteNumChars
 		});
-
 		this.locAutocomplete.on('select', this._onZoomToLocation);
+		
+		}else{
+			this.locAutocomplete = {xtype:'tbspacer'}
+			
+		}
+
+		
 		/*
 		 * this.zoomButton = new Ext.Toolbar.Button( { tooltip :
 		 * EasySDI_Map.lang.getLocal('MP_ZOOM_TTIP'), iconCls : "x-btn-icon
@@ -1011,51 +1008,26 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 
 		// Build toolbar according to component display options
 		// localisation AND toolbar
-		if (componentDisplayOption.LocalisationEnable && componentDisplayOption.ToolBarEnable) {
-			return new Ext.Toolbar( {
-				region : "north",
-				autoHeight : true,
-				items : [ this.previousButton, this.nextButton, {
-					xtype : 'tbseparator'
-				}, this.zoomInBoxButton, this.zoomOutBoxButton, this.zoomToMaxExtentButton, this.navButton, this.getFeatureButton, {
-					xtype : 'tbseparator'
-				}, EasySDI_Map.lang.getLocal('1:'), this.zoomToScaleField, {
-					xtype : 'tbseparator'
-				},
-				// this.selectButton,
-						this.saveMapButton, this.printMapButton, this.pdfButton, {
-							xtype : 'tbfill'
-						}, EasySDI_Map.lang.getLocal('MP_ZOOM'), this.locAutocomplete
+		
+		return new Ext.Toolbar( {
+			region : "north",
+			autoHeight : true,
+			items : [ this.previousButton, this.nextButton, {
+				xtype : 'tbseparator'
+			}, this.zoomInBoxButton, this.zoomOutBoxButton, this.zoomToMaxExtentButton, this.navButton, this.getFeatureButton, {
+				xtype : 'tbseparator'
+			}, EasySDI_Map.lang.getLocal('1:'), this.zoomToScaleField, {
+				xtype : 'tbseparator'
+			},
+			// this.selectButton,
+					this.saveMapButton, this.printMapButton, this.pdfButton, {
+						xtype : 'tbfill'
+					}, componentDisplayOption.locAutocompleteEnable ? EasySDI_Map.lang.getLocal('MP_ZOOM'):{xtype:'tbspacer'}	, this.locAutocomplete
 
-				]
-			});
-		}
-		// Only toolbar
-		if (componentDisplayOption.ToolBarEnable && !componentDisplayOption.LocalisationEnable) {
-			return new Ext.Toolbar( {
-				region : "north",
-				autoHeight : true,
-				items : [ this.previousButton, this.nextButton, {
-					xtype : 'tbseparator'
-				}, this.zoomInBoxButton, this.zoomOutBoxButton, this.zoomToMaxExtentButton, this.navButton, this.getFeatureButton, {
-					xtype : 'tbseparator'
-				}, EasySDI_Map.lang.getLocal('1:'), this.zoomToScaleField, {
-					xtype : 'tbseparator'
-				},
-				// this.selectButton,
-						this.saveMapButton, this.printMapButton ]
-			});
-		}
-		// Only localisation
-		if (componentDisplayOption.LocalisationEnable && !componentDisplayOption.ToolBarEnable) {
-			return new Ext.Toolbar( {
-				region : "north",
-				autoHeight : true,
-				items : [ {
-					xtype : 'tbfill'
-				}, EasySDI_Map.lang.getLocal('MP_ZOOM'), this.locAutocomplete ]
-			});
-		}
+			]
+		});
+		
+		
 
 	},
 

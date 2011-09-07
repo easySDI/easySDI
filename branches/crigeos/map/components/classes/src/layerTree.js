@@ -220,7 +220,31 @@ EasySDI_Map.LayerTree = Ext.extend(Ext.data.Tree, {
 	this.isFirstLoad = true;
 
 	this._layerStore.map.events.register('moveend', this, this._onMapMoveEnd);
-},
+	
+
+	this._layerStore.map.events.register("changelayer", this, this.onPreAddLayer);
+	this._layerStore.map.events.register("loadend", this, this.onLayerAdded);
+
+	
+	_loadMask = new Ext.LoadMask(Ext.getBody(), {msg:EasySDI_Map.lang.getLocal('LOADER')});
+	
+
+	// TODO DEREGISTER THIS EVENT
+	},
+	_loadMask :null,
+	onPreAddLayer :function(evt) {
+		if(evt.layer.visibility)
+			_loadMask.show();
+		else
+			_loadMask.hide();
+	}, 
+	
+	onLayerAdded : function(evt) {
+		_loadMask.hide();
+		
+	},
+
+
 
 /**
  * After a map zoom, update treeNode aspect according to the visibility (visible
@@ -354,8 +378,9 @@ this._loadState();
 },
 
 refreshLegend : function() {
-	
+
 this.trigger('refreshLegend', true);
+
 },
 
 /**
@@ -476,6 +501,7 @@ _addBaseLayer : function(layer, i) {
 	// var l = new OpenLayers.Layer.WMS(layer.name,
 	// componentParams.proxyURL.asString + "&url=" + layer.url, WMSoptions, {
 	var l = new OpenLayers.Layer.WMS(layer.name, layer.url, WMSoptions, extraOptions);
+	l.events.register('loadend', null, this.onLayerAdded);
 
 	if (layer.cache)
 		l.params.CACHE = true;
@@ -639,6 +665,9 @@ _addOverlayLayer : function(layer) {
 	}
 
 	l.setVisibility(false);
+	l.events.register('loadend', null, this.onLayerAdded);
+//	l.events.register('removelayer', null, this.onLayerRemoved(l.getVisibility()));
+	
 	// this._layerStore.add(this.reader.readRecords( [ l ]).records);
 	this._layerStore.map.addLayer(l);
 	// this._layerStore.map.setLayerIndex(l, 0);
@@ -730,6 +759,8 @@ _addOverlayLayer : function(layer) {
 	
 	this.refreshLegend();
 },
+
+
 
 /**
  * Save the state of the Map to database using WMC. We are primarily interested

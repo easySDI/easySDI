@@ -719,6 +719,128 @@ function com_install()
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 	}
+	if ($version == "2.0.1")
+	{
+		// Update component version
+	
+		$query="ALTER TABLE #__sdi_baselayer MODIFY name varchar(100)"; 
+		$db->setQuery( $query);	
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		$query="ALTER TABLE #__sdi_overlay MODIFY name varchar(100)"; 
+		$db->setQuery( $query);	
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		$query="ALTER TABLE #__sdi_overlaygroup MODIFY name varchar(100)"; 
+		$db->setQuery( $query);	
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		$query="ALTER TABLE #__sdi_baselayer ADD published tinyint(1) NOT NULL DEFAULT 1"; 
+		$db->setQuery( $query);	
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		$query="ALTER TABLE #__sdi_overlay ADD published tinyint(1) NOT NULL DEFAULT 1"; 
+		$db->setQuery( $query);	
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		$query="ALTER TABLE #__sdi_overlaygroup ADD published tinyint(1) NOT NULL DEFAULT 1"; 
+		$db->setQuery( $query);	
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		$query="ALTER TABLE #__sdi_mapdisplayoption  MODIFY name varchar(100)"; 
+		$db->setQuery( $query);	
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		$query="ALTER TABLE #__sdi_mapdisplayoption  MODIFY code varchar(100)"; 
+		$db->setQuery( $query);	
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		$query="delete  from #__sdi_mapdisplayoption where code in ('MAP_LOCALISATION', 'MAP_TOOLBAR', 'MAP_ANNOTATION')";
+		$db->setQuery( $query);	
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		$query ="INSERT INTO #__sdi_mapdisplayoption (guid,name,created,createdby,checked_out,code, object,enable) VALUES ('".helper_easysdi::getUniqueId()."', 'locAutocomplete','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'MAP_locAutocomplete','locAutocomplete','1');
+		
+		INSERT INTO #__sdi_mapdisplayoption (guid,name,created,createdby,checked_out,code, object,enable) VALUES ('".helper_easysdi::getUniqueId()."', 'previousButton','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'MAP_previousButton','previousButton','1');
+		
+		INSERT INTO #__sdi_mapdisplayoption (guid,name,created,createdby,checked_out,code, object,enable) VALUES ('".helper_easysdi::getUniqueId()."', 'nextButton','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'MAP_nextButton','nextButton','1');
+		
+		INSERT INTO #__sdi_mapdisplayoption (guid,name,created,createdby,checked_out,code, object,enable) VALUES ('".helper_easysdi::getUniqueId()."', 'navButton','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'MAP_navButton','navButton','1');
+		
+		INSERT INTO #__sdi_mapdisplayoption (guid,name,created,createdby,checked_out,code, object,enable) VALUES ('".helper_easysdi::getUniqueId()."', 'selectButton','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'MAP_selectButton','selectButton','1');
+		
+		INSERT INTO #__sdi_mapdisplayoption (guid,name,created,createdby,checked_out,code, object,enable) VALUES ('".helper_easysdi::getUniqueId()."', 'zoomInBoxButton','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'MAP_zoomInBoxButton','zoomInBoxButton','1');
+		
+		INSERT INTO #__sdi_mapdisplayoption (guid,name,created,createdby,checked_out,code, object,enable) VALUES ('".helper_easysdi::getUniqueId()."', 'zoomOutBoxButton','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'MAP_zoomOutBoxButton','zoomOutBoxButton','1');
+		
+		INSERT INTO #__sdi_mapdisplayoption (guid,name,created,createdby,checked_out,code, object,enable) VALUES ('".helper_easysdi::getUniqueId()."', 'zoomToScaleField','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'MAP_zoomToScaleField','zoomToScaleField','1');
+		
+		INSERT INTO #__sdi_mapdisplayoption (guid,name,created,createdby,checked_out,code, object,enable) VALUES ('".helper_easysdi::getUniqueId()."', 'zoomToMaxExtentButton','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'MAP_zoomToMaxExtentButton','zoomToMaxExtentButton','1');
+		
+		INSERT INTO #__sdi_mapdisplayoption (guid,name,created,createdby,checked_out,code, object,enable) VALUES ('".helper_easysdi::getUniqueId()."', 'printMapButton','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'MAP_printMapButton','printMapButton','1');
+		
+		INSERT INTO #__sdi_mapdisplayoption (guid,name,created,createdby,checked_out,code, object,enable) VALUES ('".helper_easysdi::getUniqueId()."', 'saveMapButton','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'MAP_saveMapButton','saveMapButton','1');
+		
+		INSERT INTO #__sdi_mapdisplayoption (guid,name,created,createdby,checked_out,code, object,enable) VALUES ('".helper_easysdi::getUniqueId()."', 'pdfButton','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'MAP_pdfButton','pdfButton','1');
+		
+		INSERT INTO #__sdi_mapdisplayoption (guid,name,created,createdby,checked_out,code, object,enable) VALUES ('".helper_easysdi::getUniqueId()."', 'getFeatureButton','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'MAP_getFeatureButton','getFeatureButton','1');
+		
+		INSERT INTO #__sdi_mapdisplayoption (guid,name,created,createdby,checked_out,code, object,enable) VALUES ('".helper_easysdi::getUniqueId()."', 'rectangleButton','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'MAP_rectangleButton','rectangleButton','1');
+		
+		INSERT INTO #__sdi_mapdisplayoption (guid,name,created,createdby,checked_out,code, object,enable) VALUES ('".helper_easysdi::getUniqueId()."', 'polygonButton','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'MAP_polygonButton','polygonButton','1');
+		
+		INSERT INTO #__sdi_mapdisplayoption (guid,name,created,createdby,checked_out,code, object,enable) VALUES ('".helper_easysdi::getUniqueId()."', 'pointButton','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'MAP_pointButton','pointButton','1');
+		
+		INSERT INTO #__sdi_mapdisplayoption (guid,name,created,createdby,checked_out,code, object,enable) VALUES ('".helper_easysdi::getUniqueId()."', 'modifyFeatureButton','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'MAP_modifyFeatureButton','modifyFeatureButton','1');
+		
+		INSERT INTO #__sdi_mapdisplayoption (guid,name,created,createdby,checked_out,code, object,enable) VALUES ('".helper_easysdi::getUniqueId()."', 'pathButton','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'MAP_pathButton','pathButton','1');
+		
+		INSERT INTO #__sdi_mapdisplayoption (guid,name,created,createdby,checked_out,code, object,enable) VALUES ('".helper_easysdi::getUniqueId()."', 'selectFeatureButton','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'MAP_selectFeatureButton','selectFeatureButton','1');";
+		
+		$queryArr = explode(";",$query);
+		for( $i = 0; $i< count($queryArr); $i++){
+				if(trim($queryArr[$i])!==""){
+					$db->setQuery(trim ($queryArr[$i]));
+					if (!$db->query())
+					{
+						$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+					}
+				}
+			
+		}
+		
+		$version="2.0.2";
+		$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='MAP'"; 
+		$db->setQuery( $query);	
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+	
+	
+	}
 
 	$query = "DELETE FROM #__components where `option`= 'com_easysdi_map'";
 	$db->setQuery( $query);
