@@ -774,6 +774,12 @@ function com_install()
 		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
+		$query="delete  from #__sdi_mapdisplayoption where code in ('MAP_LOCALISATION', 'MAP_TOOLBAR', 'MAP_ANNOTATION')";
+		$db->setQuery( $query);	
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
 		
 		$query ="INSERT INTO #__sdi_mapdisplayoption (guid,name,created,createdby,checked_out,code, object,enable) VALUES ('".helper_easysdi::getUniqueId()."', 'locAutocomplete','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'MAP_locAutocomplete','locAutocomplete','1');
 		
