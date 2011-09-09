@@ -2593,6 +2593,8 @@ class SITE_catalog {
 			//print_r($arrFilteredMd);echo "<hr>";
 			
 			$cswMdCond = "";
+			$cswMdCond.= "<ogc:Or>";
+			$cswMdCond.= "<ogc:And>";
 			foreach ($arrSearchableMd as $md_id)
 			{
 				//keep it so to keep the request "small"
@@ -2600,10 +2602,16 @@ class SITE_catalog {
 			}
 			if(count($arrSearchableMd) > 1)
 				$cswMdCond = "<ogc:Or>".$cswMdCond."</ogc:Or>";
+				
+			$cswMdCond .= "<ogc:PropertyIsEqualTo><ogc:PropertyName>harvested</ogc:PropertyName><ogc:Literal>false</ogc:Literal></ogc:PropertyIsEqualTo>\r\n";
+			$cswMdCond .= "</ogc:And>";
+			$cswMdCond .= "<ogc:PropertyIsEqualTo><ogc:PropertyName>harvested</ogc:PropertyName><ogc:Literal>true</ogc:Literal></ogc:PropertyIsEqualTo>\r\n";
+			$cswMdCond .= "</ogc:Or>";
 			
 			if((count($arrSearchableMd) == 0))
 			{
-				$condList[] = "<ogc:PropertyIsEqualTo><ogc:PropertyName>$ogcfilter_fileid</ogc:PropertyName><ogc:Literal>-1</ogc:Literal></ogc:PropertyIsEqualTo>\r\n";
+				//Add harvesting=false info
+				$condList[] = "<ogc:Or><ogc:And><ogc:PropertyIsEqualTo><ogc:PropertyName>$ogcfilter_fileid</ogc:PropertyName><ogc:Literal>-1</ogc:Literal></ogc:PropertyIsEqualTo>\r\n<ogc:PropertyIsEqualTo><ogc:PropertyName>harvested</ogc:PropertyName><ogc:Literal>false</ogc:Literal></ogc:PropertyIsEqualTo>\r\n</ogc:And><ogc:PropertyIsEqualTo><ogc:PropertyName>harvested</ogc:PropertyName><ogc:Literal>true</ogc:Literal></ogc:PropertyIsEqualTo>\r\n</ogc:Or>";
 				//echo "CondList Vide: <br>"; print_r($condList); echo"<br>";
 			}
 			
@@ -2622,11 +2630,15 @@ class SITE_catalog {
 			//echo count($arrFilteredMd)." and ".$countAdvancedFilters." or ".$countSimpleFilters." or ".count($condList)."<br>";
 			if((count($arrFilteredMd) == 0) and ($countAdvancedFilters <> 0 or $countSimpleFilters <> 0) and count($condList) == 0)
 			{
-				$condList[] = "<ogc:PropertyIsEqualTo><ogc:PropertyName>$ogcfilter_fileid</ogc:PropertyName><ogc:Literal>-1</ogc:Literal></ogc:PropertyIsEqualTo>\r\n";
+				//Add harvesting=false info
+				$condList[] = "<ogc:Or><ogc:And><ogc:PropertyIsEqualTo><ogc:PropertyName>$ogcfilter_fileid</ogc:PropertyName><ogc:Literal>-1</ogc:Literal></ogc:PropertyIsEqualTo>\r\n<ogc:PropertyIsEqualTo><ogc:PropertyName>harvested</ogc:PropertyName><ogc:Literal>false</ogc:Literal></ogc:PropertyIsEqualTo>\r\n</ogc:And><ogc:PropertyIsEqualTo><ogc:PropertyName>harvested</ogc:PropertyName><ogc:Literal>true</ogc:Literal></ogc:PropertyIsEqualTo>\r\n</ogc:Or>";
 				//echo "CondList Vide: <br>"; print_r($condList); echo"<br>";
 			}
 			else
 			{
+				//Add harvesting info
+				$cswMdCond.= "<ogc:Or>";
+				$cswMdCond.= "<ogc:And>";
 				foreach ($arrFilteredMd as $filteredMd)
 				{
 					if (count($filteredMd) > 1)
@@ -2639,7 +2651,10 @@ class SITE_catalog {
 					if (count($filteredMd) > 1)
 						$cswMdCond.= "</ogc:Or>";
 				}
-				
+				$cswMdCond .= "<ogc:PropertyIsEqualTo><ogc:PropertyName>harvested</ogc:PropertyName><ogc:Literal>false</ogc:Literal></ogc:PropertyIsEqualTo>\r\n";
+				$cswMdCond .= "</ogc:And>";
+				$cswMdCond .= "<ogc:PropertyIsEqualTo><ogc:PropertyName>harvested</ogc:PropertyName><ogc:Literal>true</ogc:Literal></ogc:PropertyIsEqualTo>\r\n";
+				$cswMdCond .= "</ogc:Or>";
 				// Si l'intersection des filtres est nulle, mais qu'il y avait bien des filtres, forcer la rechercher sur
 				// un guid inexistant pour être sûr qu'aucun résultat ne soit retourné
 											
@@ -2671,7 +2686,7 @@ class SITE_catalog {
 			$cswfilter .= $cswfilterCond;
 			$cswfilter .= "</ogc:Filter>\r\n";
 			
-			//echo "cswfilter:". htmlspecialchars($cswfilter);
+			echo "cswfilter:". htmlspecialchars($cswfilter);
 			
 			// BuildCSWRequest($maxRecords, $startPosition, $typeNames, $elementSetName, $constraintVersion, $filter, $sortBy, $sortOrder)
 			//$xmlBody = SITE_catalog::BuildCSWRequest(10, 1, "datasetcollection dataset application service", "full", "1.1.0", $cswfilter, $ogcsearchsorting, "ASC");
