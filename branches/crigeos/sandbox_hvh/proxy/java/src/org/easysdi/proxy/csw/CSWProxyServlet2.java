@@ -48,6 +48,7 @@ import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import org.easysdi.jdom.filter.ElementSDIPlatformFilter;
 import org.easysdi.jdom.filter.ElementSearchResultsFilter;
 import org.easysdi.jdom.filter.ElementTransactionTypeFilter;
 import org.easysdi.proxy.exception.AvailabilityPeriodException;
@@ -300,14 +301,23 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				            //<gmd:MD_Metadata xmlns:sdi="http://www.easysdi.org/2011/sdi">
 				            //<sdi:platform harvested="true" />
 				            //</gmd:MD_Metadata>
+				            //Or update the existing node if the remote catalog is driven by EasySDI too
 				            Iterator<Element> resultStorageIterator = resultListStorage.iterator();
 				            Element result = null;
 				            Namespace nsSDI = Namespace.getNamespace("sdi","http://www.easysdi.org/2011/sdi") ;
 				            while (resultStorageIterator.hasNext()){
 				            	result = resultStorageIterator.next();
-				            	Element e = new Element("platform", nsSDI);
-				            	e.setAttribute("harvested", "true");
-				            	result.addContent(e);
+				            	List<Element> platformElementList = result.getChildren("platform", nsSDI);
+				            	if(platformElementList.size() > 0 ){
+				            		//Update the existing node
+				            		Element e = platformElementList.get(0);
+					            	e.setAttribute("harvested", "true");
+				            	}else{
+				            		//Add a new node
+					            	Element e = new Element("platform", nsSDI);
+					            	e.setAttribute("harvested", "true");
+					            	result.addContent(e);
+				            	}
 				            }
 				            if(result != null)
 				            	result.getParentElement().addNamespaceDeclaration(nsSDI);
@@ -357,14 +367,23 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				            //<gmd:MD_Metadata xmlns:sdi="http://www.easysdi.org/2011/sdi">
 				            //<sdi:platform harvested="true" />
 				            //</gmd:MD_Metadata>
+				            //Or update the existing node if the remote catalog is driven by EasySDI too
 				            Iterator<Element> metadataStorageIterator = metadataListStorage.iterator();
 				            while (metadataStorageIterator.hasNext()){
 				            	Element metadata = metadataStorageIterator.next();
 				            	Namespace nsSDI = Namespace.getNamespace("sdi", "http://www.easysdi.org/2011/sdi");
 				            	metadata.addNamespaceDeclaration(nsSDI);
-				            	Element e = new Element("platform", nsSDI);
-				            	e.setAttribute("harvested", "true");
-				            	metadata.addContent(e);
+				            	List<Element> platformElementList = metadata.getChildren("platform", nsSDI);
+				            	if(platformElementList.size() > 0 ){
+				            		//Update the existing node
+				            		Element e = platformElementList.get(0);
+					            	e.setAttribute("harvested", "true");
+				            	}else{
+				            		//Add a new node
+					            	Element e = new Element("platform", nsSDI);
+					            	e.setAttribute("harvested", "true");
+					            	metadata.addContent(e);
+				            	}
 				            }
 				            
 				            XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
@@ -729,7 +748,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 		            	}
 		            }
 		            if(result != null)
-		            	result.getParentElement().addNamespaceDeclaration(nsSDI);
+		            	result.addNamespaceDeclaration(nsSDI);
 		            
 		            XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
 		            ByteArrayOutputStream out = new ByteArrayOutputStream ();

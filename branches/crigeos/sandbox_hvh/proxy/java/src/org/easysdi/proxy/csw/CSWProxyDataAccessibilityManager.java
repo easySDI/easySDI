@@ -475,6 +475,51 @@ public class CSWProxyDataAccessibilityManager {
 	 * @param param
 	 * @param ids
 	 * @return
+	 * 
+	 	<ogc:Filter xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml">
+			<ogc:And>
+				<ogc:Or>
+					<ogc:PropertyIsLike wildCard="%" singleChar="_" escapeChar="\">
+						<ogc:PropertyName>mainsearch_FR</ogc:PropertyName>
+						<ogc:Literal>%free%</ogc:Literal>
+					</ogc:PropertyIsLike>
+					<ogc:PropertyIsLike wildCard="%" singleChar="_" escapeChar="\">
+						<ogc:PropertyName>mainsearch_FR</ogc:PropertyName>
+						<ogc:Literal>%free%</ogc:Literal>
+					</ogc:PropertyIsLike>
+					<ogc:PropertyIsLike wildCard="%" singleChar="_" escapeChar="\">
+						<ogc:PropertyName>mainsearch_FR</ogc:PropertyName>
+						<ogc:Literal>%free%</ogc:Literal>
+					</ogc:PropertyIsLike>
+				</ogc:Or>
+				<ogc:PropertyIsLike wildCard="%" singleChar="_" escapeChar="\">
+					<ogc:PropertyName>titleFR</ogc:PropertyName>
+					<ogc:Literal>%title%</ogc:Literal>
+				</ogc:PropertyIsLike>
+				<ogc:Or>
+					<ogc:And>
+						<ogc:Or>
+							<ogc:PropertyIsEqualTo>
+								<ogc:PropertyName>fileId</ogc:PropertyName>
+								<ogc:Literal>a876b544-5be3-4250-93f8-d5852fe05256</ogc:Literal>
+							</ogc:PropertyIsEqualTo>
+							<ogc:PropertyIsEqualTo>
+								<ogc:PropertyName>fileId</ogc:PropertyName>
+								<ogc:Literal>a876b544-5be3-4250-93f8-d5852fe05256</ogc:Literal>
+							</ogc:PropertyIsEqualTo>
+						</ogc:Or>
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>harvested</ogc:PropertyName>
+							<ogc:Literal>false</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:And>
+					<ogc:PropertyIsEqualTo>
+						<ogc:PropertyName>harvested</ogc:PropertyName>
+						<ogc:Literal>true</ogc:Literal>
+					</ogc:PropertyIsEqualTo>
+				</ogc:Or>
+			</ogc:And>
+		</ogc:Filter> 
 	 */
 	public StringBuffer addFilterOnDataAccessible (String ogcSearchFilter, StringBuffer param)
 	{
@@ -525,8 +570,7 @@ public class CSWProxyDataAccessibilityManager {
 						elementConstraint.addContent(elementFilter);
 				}
 			}
-			
-			
+					
 			List<Element> filterChildren = elementFilter.getChildren();
 			for(int i = 0 ; i<filterChildren.size() ; i++)
 			{
@@ -556,23 +600,58 @@ public class CSWProxyDataAccessibilityManager {
 			elementAnd.addContent(elementOr);
 			List<Map<String,Object>> ids = getAccessibleDataIds();
 			
+			//<And>
+			//Add a "and" node
+			Element secondElementAnd = new Element ("And", nsOGC);
+			elementOr.addContent(secondElementAnd);
+			
+			//<Or>
+			//Add a "Or" node
+			Element secondElementOr = new Element("Or", nsOGC);
+			secondElementAnd.addContent(secondElementOr);
+			
 			//No Metadata accessible
-			if(ids == null)
-			{
-				return null;
-			}
-			for (int m = 0; m<ids.size() ; m++)
+			if(ids.size() == 0)
 			{
 				Element elementProperty = new Element("PropertyIsEqualTo", nsOGC);
-					elementOr.addContent(elementProperty);
+					secondElementOr.addContent(elementProperty);
 				Element elementName = new Element("PropertyName", nsOGC);
 					elementProperty.addContent(elementName);
 				elementName.setText(ogcSearchFilter);
 				Element elementLiteral = new Element("Literal", nsOGC);
 					elementProperty.addContent(elementLiteral);
-				elementLiteral.setText(ids.get(m).get("guid").toString());
+				elementLiteral.setText("-1");
+			}else{
+				for (int m = 0; m<ids.size() ; m++)
+				{
+					Element elementProperty = new Element("PropertyIsEqualTo", nsOGC);
+						secondElementOr.addContent(elementProperty);
+					Element elementName = new Element("PropertyName", nsOGC);
+						elementProperty.addContent(elementName);
+					elementName.setText(ogcSearchFilter);
+					Element elementLiteral = new Element("Literal", nsOGC);
+						elementProperty.addContent(elementLiteral);
+					elementLiteral.setText(ids.get(m).get("guid").toString());
+				}
 			}
 			
+			Element elementHarvestedValueFalse = new Element("PropertyIsEqualTo", nsOGC);
+			secondElementAnd.addContent(elementHarvestedValueFalse);
+			Element elementName = new Element("PropertyName", nsOGC);
+			elementHarvestedValueFalse.addContent(elementName);
+			elementName.setText("harvested");
+			Element elementLiteral = new Element("Literal", nsOGC);
+			elementHarvestedValueFalse.addContent(elementLiteral);
+			elementLiteral.setText("false");
+			
+			Element elementHarvestedValueTrue = new Element("PropertyIsEqualTo", nsOGC);
+			elementOr.addContent(elementHarvestedValueTrue);
+			Element elementName2 = new Element("PropertyName", nsOGC);
+			elementHarvestedValueTrue.addContent(elementName2);
+			elementName2.setText("harvested");
+			Element elementLiteral2 = new Element("Literal", nsOGC);
+			elementHarvestedValueTrue.addContent(elementLiteral2);
+			elementLiteral2.setText("true");
 			
 			//Return
 			XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
