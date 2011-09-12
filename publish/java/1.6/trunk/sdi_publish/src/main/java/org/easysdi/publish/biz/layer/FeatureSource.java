@@ -24,7 +24,6 @@ public class FeatureSource {
 	private String excCode;
 	private String excStackTrace;
 	
-
 	public void persist() {
         FeatureSourceDaoHelper.getFeatureSourceDao().persist(this);
     }
