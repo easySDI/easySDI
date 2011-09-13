@@ -2191,9 +2191,9 @@ class SITE_catalog {
 			else // Faire l'intersection
 				$arrSearchableMd = array_intersect($arrObjecttypeMd, $arrVersionMd);
 			
-			echo "arrObjecttypeMd<br>";print_r($arrObjecttypeMd);echo "<hr>";
+		/*	echo "arrObjecttypeMd<br>";print_r($arrObjecttypeMd);echo "<hr>";
 			echo "arrVersionMd<br>";print_r($arrVersionMd);echo "<hr>";
-			echo "arrSearchableMd<br>";print_r($arrSearchableMd);echo "<hr>";
+			echo "arrSearchableMd<br>";print_r($arrSearchableMd);echo "<hr>";*/
 			
 			// Objectname
 			if (count($arrObjectNameMd) <> 0) 
@@ -2269,7 +2269,7 @@ class SITE_catalog {
 						$arrFilteredMd[] = $intersect;
 				}
 			}
-			echo "arrFilteredMd<br>";print_r($arrFilteredMd);echo "<hr>";
+			//echo "arrFilteredMd<br>";print_r($arrFilteredMd);echo "<hr>";
 			
 			$cswMdCond = "";
 			//Le scope de recherche c'est:
@@ -2337,11 +2337,11 @@ class SITE_catalog {
 				//Si aucune md filtrées : on ne retourne que les harvestées
 				//$condList[] = "<ogc:Or><ogc:And><ogc:PropertyIsEqualTo><ogc:PropertyName>$ogcfilter_fileid</ogc:PropertyName><ogc:Literal>-1</ogc:Literal></ogc:PropertyIsEqualTo>\r\n<ogc:PropertyIsEqualTo><ogc:PropertyName>harvested</ogc:PropertyName><ogc:Literal>false</ogc:Literal></ogc:PropertyIsEqualTo>\r\n</ogc:And><ogc:PropertyIsEqualTo><ogc:PropertyName>harvested</ogc:PropertyName><ogc:Literal>true</ogc:Literal></ogc:PropertyIsEqualTo>\r\n</ogc:Or>";
 				$condList[] = "<ogc:PropertyIsEqualTo><ogc:PropertyName>harvested</ogc:PropertyName><ogc:Literal>true</ogc:Literal></ogc:PropertyIsEqualTo>\r\n";
-				echo "CondList Vide: <br>"; print_r($condList); echo"<hr>";
+			//	echo "CondList Vide: <br>"; print_r($condList); echo"<hr>";
 			}
 			else
 			{
-				echo "CondList pas Vide: <br>"; print_r($condList); echo"<hr>";
+				//echo "CondList pas Vide: <br>"; print_r($condList); echo"<hr>";
 				//Filtre système défini : on ajoute les Id correspondantes, on écarte les harvestées qui ne peuvent pas répondre à ces critères.
 				$cswMdCond.= "<ogc:And>";
 				foreach ($arrFilteredMd as $filteredMd)
@@ -2380,7 +2380,7 @@ class SITE_catalog {
 			$cswfilter .= $cswfilterCond;
 			$cswfilter .= "</ogc:Filter>\r\n";
 			
-			echo  htmlspecialchars($cswfilter);
+			//echo  htmlspecialchars($cswfilter);
 			
 			$xmlBody = SITE_catalog::BuildCSWRequest($limit, $limitstart+1, "results", "gmd:MD_Metadata", "full", "1.1.0", $cswfilter, $ogcsearchsorting, "ASC");
 			
