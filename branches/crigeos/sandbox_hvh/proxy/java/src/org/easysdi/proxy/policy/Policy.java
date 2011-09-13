@@ -46,10 +46,14 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "availabilityPeriod", "imageSize", "operations", "servers", "subjects","objectVisibilities", "objectStatus","objectTypes","geographicFilter" })
+@XmlType(name = "", propOrder = { "availabilityPeriod", "imageSize", "operations", "servers", "subjects","objectVisibilities", "objectStatus","objectTypes","geographicFilter", "includeHarvested" })
 @XmlRootElement(name = "Policy")
 public class Policy implements Serializable {
 
+	
+
+	@XmlElement(name = "IncludeHarvested")
+	protected Boolean includeHarvested;
 	@XmlElement(name = "GeographicFilter")
 	protected String geographicFilter;
 	@XmlElement(name = "ObjectVisibilities")
@@ -84,6 +88,8 @@ public class Policy implements Serializable {
 			hashCode += getObjectVisibilities().hashCode();
 		if (getObjectStatus() != null)
 			hashCode += getObjectStatus().hashCode();
+		if (includeHarvested != null)
+			hashCode += includeHarvested.hashCode();
 		if (geographicFilter != null)
 			hashCode += geographicFilter.hashCode();
 		if (availabilityPeriod != null)
@@ -105,6 +111,20 @@ public class Policy implements Serializable {
 		return hashCode;
 	}
 
+	/**
+	 * @return the includeHarvested
+	 */
+	public Boolean getIncludeHarvested() {
+		return includeHarvested;
+	}
+
+	/**
+	 * @param includeHarvested the includeHarvested to set
+	 */
+	public void setIncludeHarvested(Boolean includeHarvested) {
+		this.includeHarvested = includeHarvested;
+	}
+	
 	/**
 	 * @return the geographicFilter
 	 */

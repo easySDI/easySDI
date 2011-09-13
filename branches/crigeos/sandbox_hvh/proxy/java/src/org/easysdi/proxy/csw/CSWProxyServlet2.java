@@ -550,7 +550,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			{
 				logger.trace("Start - Data Accessibility");
 				CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy, getJoomlaProvider());
-				if(!cswDataManager.isAllDataAccessibleForGetRecordById())
+				if(!cswDataManager.isAllEasySDIDataAccessible())
 				{
 					String dataIDaccessible="";
 					if(!cswDataManager.isObjectAccessible(requestedId))
@@ -790,7 +790,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				logger.trace("Start - Data Accessibility");
 				CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy, getJoomlaProvider());
 				String dataId = rh.getRecordId();
-				if(!cswDataManager.isAllDataAccessibleForGetRecordById())
+				if(!cswDataManager.isAllEasySDIDataAccessible())
 				{
 					String dataIDaccessible="";
 					if(!cswDataManager.isObjectAccessible(dataId))
@@ -841,7 +841,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			{
 				logger.trace("Start - Data Accessibility");
 				CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy, getJoomlaProvider());
-				if(!cswDataManager.isAllDataAccessibleForGetRecords())
+				if(!cswDataManager.isAllDataAccessibleForGetRecords() || (policy.getGeographicFilter()!=null && policy.getGeographicFilter().length() != 0) || !policy.getIncludeHarvested())
 				{
 					//Add a filter on the data id in the request
 					param = cswDataManager.addFilterOnDataAccessible(configuration.getOgcSearchFilter(), param);
@@ -851,6 +851,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 						return;
 					}
 				}
+				//Add a filter on the data id in the request
 				logger.trace("End - Data Accessibility");
 				
 //				dump("INFO","Start - Get response");
