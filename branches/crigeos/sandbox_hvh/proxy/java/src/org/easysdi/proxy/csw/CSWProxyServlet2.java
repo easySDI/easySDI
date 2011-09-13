@@ -550,7 +550,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			{
 				logger.trace("Start - Data Accessibility");
 				CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy, getJoomlaProvider());
-				if(!cswDataManager.isAllDataAccessible())
+				if(!cswDataManager.isAllDataAccessibleForGetRecordById())
 				{
 					String dataIDaccessible="";
 					if(!cswDataManager.isObjectAccessible(requestedId))
@@ -790,7 +790,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				logger.trace("Start - Data Accessibility");
 				CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy, getJoomlaProvider());
 				String dataId = rh.getRecordId();
-				if(!cswDataManager.isAllDataAccessible())
+				if(!cswDataManager.isAllDataAccessibleForGetRecordById())
 				{
 					String dataIDaccessible="";
 					if(!cswDataManager.isObjectAccessible(dataId))
@@ -841,7 +841,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			{
 				logger.trace("Start - Data Accessibility");
 				CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy, getJoomlaProvider());
-				if(!cswDataManager.isAllDataAccessible())
+				if(!cswDataManager.isAllDataAccessibleForGetRecords())
 				{
 					//Add a filter on the data id in the request
 					param = cswDataManager.addFilterOnDataAccessible(configuration.getOgcSearchFilter(), param);

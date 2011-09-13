@@ -46,10 +46,12 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "availabilityPeriod", "imageSize", "operations", "servers", "subjects","objectVisibilities", "objectStatus","objectTypes"})
+@XmlType(name = "", propOrder = { "availabilityPeriod", "imageSize", "operations", "servers", "subjects","objectVisibilities", "objectStatus","objectTypes","geographicFilter" })
 @XmlRootElement(name = "Policy")
 public class Policy implements Serializable {
 
+	@XmlElement(name = "GeographicFilter")
+	protected String geographicFilter;
 	@XmlElement(name = "ObjectVisibilities")
 	protected ObjectVisibilities objectVisibilities;
 	@XmlElement(name = "ObjectTypes")
@@ -82,6 +84,8 @@ public class Policy implements Serializable {
 			hashCode += getObjectVisibilities().hashCode();
 		if (getObjectStatus() != null)
 			hashCode += getObjectStatus().hashCode();
+		if (geographicFilter != null)
+			hashCode += geographicFilter.hashCode();
 		if (availabilityPeriod != null)
 			hashCode += availabilityPeriod.hashCode();
 		if (imageSize != null)
@@ -101,6 +105,19 @@ public class Policy implements Serializable {
 		return hashCode;
 	}
 
+	/**
+	 * @return the geographicFilter
+	 */
+	public String getGeographicFilter() {
+		return geographicFilter;
+	}
+
+	/**
+	 * @param geographicFilter the geographicFilter to set
+	 */
+	public void setGeographicFilter(String geographicFilter) {
+		this.geographicFilter = geographicFilter;
+	}
 	/**
 	 * Gets the value of the availabilityPeriod property.
 	 * 

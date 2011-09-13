@@ -2,7 +2,9 @@ package org.easysdi.proxy.csw;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.io.Reader;
 import java.io.StringBufferInputStream;
+import java.io.StringReader;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -43,14 +45,33 @@ public class CSWProxyDataAccessibilityManager {
 	}
 
 	/**
-	 * 
+	 * Check if filters are defined in the loaded policy.
+	 * Included the geographic filter only usefull in a GetRecords operation 
 	 * @return
 	 */
-	public boolean isAllDataAccessible ()
+	public boolean isAllDataAccessibleForGetRecords ()
 	{
-		if(     (policy.getObjectVisibilities() == null || policy.getObjectVisibilities().isAll()) 
+		if( (policy.getObjectVisibilities() == null || policy.getObjectVisibilities().isAll()) 
 			&& (policy.getObjectTypes()== null || policy.getObjectTypes().isAll())
-			&& (policy.getObjectStatus()== null || policy.getObjectStatus().isAll()))
+			&& (policy.getObjectStatus()== null || policy.getObjectStatus().isAll())
+			&& (policy.getGeographicFilter() == null || policy.getGeographicFilter().length() == 0))
+		{
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * Check if filters are defined in the loaded policy.
+	 * Excluded the geographic filter only usefull in a GetRecords operation 
+	 * @return
+	 */
+	public boolean isAllDataAccessibleForGetRecordById ()
+	{
+		if( (policy.getObjectVisibilities() == null || policy.getObjectVisibilities().isAll()) 
+			&& (policy.getObjectTypes()== null || policy.getObjectTypes().isAll())
+			&& (policy.getObjectStatus()== null || policy.getObjectStatus().isAll())
+			)
 		{
 			return true;
 		}
@@ -592,27 +613,28 @@ public class CSWProxyDataAccessibilityManager {
 				}
 				elementFilter.addContent(elementAnd);
 			}
-			
-			
-			//<Or>
-			//Add the "Or" node
-			elementOr = new Element("Or", nsOGC);
-			elementAnd.addContent(elementOr);
+			//Get the list of authorized Ids
 			List<Map<String,Object>> ids = getAccessibleDataIds();
 			
-			//<And>
-			//Add a "and" node
 			Element secondElementAnd = new Element ("And", nsOGC);
-			elementOr.addContent(secondElementAnd);
 			
-			//<Or>
-			//Add a "Or" node
-			Element secondElementOr = new Element("Or", nsOGC);
-			secondElementAnd.addContent(secondElementOr);
-			
-			//No Metadata accessible
-			if(ids.size() == 0)
+			Boolean addHarvest = false;
+			//No Metadata accessible : set explicitly a fake metadata id in the request
+			if( !isAllDataAccessibleForGetRecordById() && (ids == null || ids.size() == 0))
 			{
+				//<Or>
+				//Add the "Or" node
+				elementOr = new Element("Or", nsOGC);
+				elementAnd.addContent(elementOr);
+				
+				//<And>
+				//Add a "and" node
+				elementOr.addContent(secondElementAnd);
+				
+				//<Or>
+				//Add a "Or" node
+				Element secondElementOr = new Element("Or", nsOGC);
+				secondElementAnd.addContent(secondElementOr);
 				Element elementProperty = new Element("PropertyIsEqualTo", nsOGC);
 					secondElementOr.addContent(elementProperty);
 				Element elementName = new Element("PropertyName", nsOGC);
@@ -621,7 +643,27 @@ public class CSWProxyDataAccessibilityManager {
 				Element elementLiteral = new Element("Literal", nsOGC);
 					elementProperty.addContent(elementLiteral);
 				elementLiteral.setText("-1");
-			}else{
+				
+			//	addHarvest = true;
+			} else if (isAllDataAccessibleForGetRecordById()  && (ids == null || ids.size() == 0) && (policy.getGeographicFilter()!=null || policy.getGeographicFilter().length() != 0)){
+				//There is only a geographical restriction defined in the policy
+				
+			}
+			else{
+				//<Or>
+				//Add the "Or" node
+				elementOr = new Element("Or", nsOGC);
+				elementAnd.addContent(elementOr);
+				
+				//<And>
+				//Add a "and" node
+				elementOr.addContent(secondElementAnd);
+				
+				//<Or>
+				//Add a "Or" node
+				Element secondElementOr = new Element("Or", nsOGC);
+				secondElementAnd.addContent(secondElementOr);
+				//Add the list of authorized Ids
 				for (int m = 0; m<ids.size() ; m++)
 				{
 					Element elementProperty = new Element("PropertyIsEqualTo", nsOGC);
@@ -633,25 +675,45 @@ public class CSWProxyDataAccessibilityManager {
 						elementProperty.addContent(elementLiteral);
 					elementLiteral.setText(ids.get(m).get("guid").toString());
 				}
+
+				Element elementHarvestedValueFalse = new Element("PropertyIsEqualTo", nsOGC);
+				secondElementAnd.addContent(elementHarvestedValueFalse);
+				Element elementName = new Element("PropertyName", nsOGC);
+				elementHarvestedValueFalse.addContent(elementName);
+				elementName.setText("harvested");
+				Element elementLiteral = new Element("Literal", nsOGC);
+				elementHarvestedValueFalse.addContent(elementLiteral);
+				elementLiteral.setText("false");
 			}
 			
-			Element elementHarvestedValueFalse = new Element("PropertyIsEqualTo", nsOGC);
-			secondElementAnd.addContent(elementHarvestedValueFalse);
-			Element elementName = new Element("PropertyName", nsOGC);
-			elementHarvestedValueFalse.addContent(elementName);
-			elementName.setText("harvested");
-			Element elementLiteral = new Element("Literal", nsOGC);
-			elementHarvestedValueFalse.addContent(elementLiteral);
-			elementLiteral.setText("false");
-			
-			Element elementHarvestedValueTrue = new Element("PropertyIsEqualTo", nsOGC);
-			elementOr.addContent(elementHarvestedValueTrue);
-			Element elementName2 = new Element("PropertyName", nsOGC);
-			elementHarvestedValueTrue.addContent(elementName2);
-			elementName2.setText("harvested");
-			Element elementLiteral2 = new Element("Literal", nsOGC);
-			elementHarvestedValueTrue.addContent(elementLiteral2);
-			elementLiteral2.setText("true");
+			//Add condition on Harvested attribute value if needed : if
+		/*	if(addHarvest){
+				Element elementHarvestedValueFalse = new Element("PropertyIsEqualTo", nsOGC);
+				secondElementAnd.addContent(elementHarvestedValueFalse);
+				Element elementName = new Element("PropertyName", nsOGC);
+				elementHarvestedValueFalse.addContent(elementName);
+				elementName.setText("harvested");
+				Element elementLiteral = new Element("Literal", nsOGC);
+				elementHarvestedValueFalse.addContent(elementLiteral);
+				elementLiteral.setText("false");
+				/*
+				Element elementHarvestedValueTrue = new Element("PropertyIsEqualTo", nsOGC);
+				elementOr.addContent(elementHarvestedValueTrue);
+				Element elementName2 = new Element("PropertyName", nsOGC);
+				elementHarvestedValueTrue.addContent(elementName2);
+				elementName2.setText("harvested");
+				Element elementLiteral2 = new Element("Literal", nsOGC);
+				elementHarvestedValueTrue.addContent(elementLiteral2);
+				elementLiteral2.setText("true");*/
+		/*	}*/
+
+			//Add a geographic filter if one defined in the loaded policy
+			if(policy.getGeographicFilter() != null && policy.getGeographicFilter().length()!= 0){
+				SAXBuilder builder = new SAXBuilder();
+				Reader in = new StringReader(policy.getGeographicFilter());
+				Document filterDoc = builder.build(in);
+				elementAnd.addContent(filterDoc.getRootElement().detach());
+			}
 			
 			//Return
 			XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
