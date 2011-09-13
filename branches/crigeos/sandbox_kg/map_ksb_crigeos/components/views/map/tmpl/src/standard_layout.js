@@ -120,7 +120,7 @@ EasySDI_Map.RwgLayout = Ext
 						// was initialized
 						// this.mapPanel.zoomToScaleField can be null if the
 						// toolbar is not displayed
-						if (componentDisplayOption.ToolBarEnable) {
+						if (componentDisplayOption.zoomToScaleFieldEnable) {
 							var keyMap = new Ext.KeyMap(this.mapPanel.zoomToScaleField.id, [ {
 								key : Ext.EventObject.ENTER,
 								fn : function() {

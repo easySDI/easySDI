@@ -418,9 +418,9 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 			this.map.addControl(ovControl);
 		}
 
-		if (componentDisplayOption.ToolBarEnable) {
+		//if (componentDisplayOption.ToolBarEnable) {
 			this.map.addControl(new OpenLayers.Control.PanZoomBar());
-		}
+		//}
 
 		// Add navigation history control. We'll hook our own toolbar
 		// buttons to
@@ -463,18 +463,11 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 		// Register a handler for pan or zoom, so we can update history
 		// buttons
 		this.map.events.register('moveend', this, this._onMapMoveEnd);
-		//this.map.events.register("preaddlayer", this, this.onPreAddLayer);
-		//this.map.events.register("addlayer", this, this.onLayerAdded);
+	
 
 		// TODO DEREGISTER THIS EVENT
 	},
-	onPreAddLayer :function(evt) {
-	    console.log("Adding layer" );
-	}, 
-	
-	onLayerAdded : function(evt) {
-		console.log("layeradded " );
-	},
+
 	
 	// Test : to remove.
 	addGetFeatureCtrl : function() {
@@ -626,7 +619,7 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 	 * Hide the loading progress popup.
 	 */
 	_hideMsg : function(layer) {
-		debugger;
+
 		Ext.Msg.hide();
 		// we only want to do this once on initial load, not when the
 		// map view
@@ -1288,33 +1281,44 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 	 * controls.
 	 */
 	_updateCtrlBtns : function() {
-		if (this.navButton.pressed) {
-			this.navCtrl.activate();
-			// this.getFeatureInfoCtrl.activate();
-		} else {
-			this.navCtrl.deactivate();
-			// this.getFeatureInfoCtrl.deactivate();
+		if(componentDisplayOption.navButtonEnable ){
+			if (this.navButton.pressed) {
+				this.navCtrl.activate();
+				// this.getFeatureInfoCtrl.activate();
+			} else {
+				this.navCtrl.deactivate();
+				// this.getFeatureInfoCtrl.deactivate();
+			}
 		}
-		if (this.selectButton.pressed) {
-			this.selectFeatureCtrl.activate();
-		} else {
-			this.selectFeatureCtrl.deactivate();
+		if(componentDisplayOption.selectButtonEnable ){
+			if (this.selectButton.pressed) {
+				this.selectFeatureCtrl.activate();
+			} else {
+				this.selectFeatureCtrl.deactivate();
+			}
 		}
-		if (this.zoomInBoxButton.pressed) {
-			this.zoomInBoxCtrl.activate();
-		} else {
-			this.zoomInBoxCtrl.deactivate();
+		if(componentDisplayOption.zoomInBoxButtonEnable ){
+			if (this.zoomInBoxButton.pressed) {
+				this.zoomInBoxCtrl.activate();
+			} else {
+				this.zoomInBoxCtrl.deactivate();
+			}
 		}
-		if (this.zoomOutBoxButton.pressed) {
-			this.zoomOutBoxCtrl.activate();
-		} else {
-			this.zoomOutBoxCtrl.deactivate();
+		if(componentDisplayOption.zoomOutBoxButtonEnable ){
+			if (this.zoomOutBoxButton.pressed) {
+				this.zoomOutBoxCtrl.activate();
+			} else {
+				this.zoomOutBoxCtrl.deactivate();
+			}
 		}
-		if (this.printMapButton.pressed) {
-			window.open(componentParams.componentUrl + '&view=printMap&mapPanel=' + this._encodeCurrentMap() + '&mapPanelHeight='
-					+ this.map.getCurrentSize().h + '&mapPanelWidth=' + this.map.getCurrentSize().w, '_blank');
-			this.printMapButton.toggle(false);
+		if(componentDisplayOption.printMapButtonEnable ){
+			if (this.printMapButton.pressed) {
+				window.open(componentParams.componentUrl + '&view=printMap&mapPanel=' + this._encodeCurrentMap() + '&mapPanelHeight='
+						+ this.map.getCurrentSize().h + '&mapPanelWidth=' + this.map.getCurrentSize().w, '_blank');
+				this.printMapButton.toggle(false);
+			}
 		}
+		if(componentDisplayOption.saveMapButtonEnable ){
 		if (this.saveMapButton.pressed) {
 			var popup = new EasySDI_Map.Dlg.SaveAsPopup( {
 				mapPanel : this
@@ -1324,49 +1328,65 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 			// this._getOneImageMapURL());
 			this.saveMapButton.toggle(false);
 		}
-		if (this.pdfButton.pressed) {
-			var popup = new EasySDI_Map.Dlg.InputPDFTitle( {
-				mapPanel : this
-			});
-			popup.show();
-			this.pdfButton.toggle(false);
 		}
-		if (componentDisplayOption.AnnotationEnable) {
+		if(componentDisplayOption.pdfButtonEnable ){
+			if (this.pdfButton.pressed) {
+				var popup = new EasySDI_Map.Dlg.InputPDFTitle( {
+					mapPanel : this
+				});
+				popup.show();
+				this.pdfButton.toggle(false);
+			}
+		}
+
+		if(componentDisplayOption.rectangleButtonEnable ){
 			if (this.rectangleButton.pressed) {
 				this.rectControl.activate();
 			} else {
 				this.rectControl.deactivate();
 			}
+		}
+		if(componentDisplayOption.polygonButtonEnable ){
 			if (this.polygonButton.pressed) {
 				this.polyControl.activate();
 			} else {
 				this.polyControl.deactivate();
 			}
+		}
+		if(componentDisplayOption.pointButtonEnable ){
 			if (this.pointButton.pressed) {
 				this.pointControl.activate();
 			} else {
 				this.pointControl.deactivate();
 			}
+		}
+		if(componentDisplayOption.modifyFeatureButtonEnable ){
 			if (this.modifyFeatureButton.pressed) {
 				this.modifyFeatureControl.activate();
 			} else {
 				this.modifyFeatureControl.deactivate();
 			}
+		}
+		if(componentDisplayOption.pathButtonEnable ){
 			if (this.pathButton.pressed) {
 				this.pathControl.activate();
 			} else {
 				this.pathControl.deactivate();
 			}
+		}
+		if(componentDisplayOption.selectFeatureButtonEnable ){
 			if (this.selectFeatureButton.pressed) {
 				this.selectControl.activate();
 			} else {
 				this.selectControl.deactivate();
 			}
 		}
-		if (this.getFeatureButton.pressed) {
-			this.getFeatureCtrl.activate();
-		} else {
-			this.getFeatureCtrl.deactivate();
+		if(componentDisplayOption.getFeatureButtonEnable ){
+			if (this.getFeatureButton.pressed) {
+				this.getFeatureCtrl.activate();
+			} else {
+				this.getFeatureCtrl.deactivate();
+			}
 		}
 	},
 
