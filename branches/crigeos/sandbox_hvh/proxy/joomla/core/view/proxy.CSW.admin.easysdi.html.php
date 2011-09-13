@@ -398,6 +398,22 @@ class HTML_proxyCSW {
 			</table>
 		</fieldset>
 	
+		<fieldset class="adminform"><legend><?php echo JText::_( 'PROXY_CONFIG_CSW_GEOGRAPHICAL_FILTER'); ?> 
+			<a class="modal" href="./index.php?option=com_easysdi_proxy&tmpl=component&task=helpGeoGraphicalFilter" rel="{handler:'iframe',size:{x:600,y:320}}"> 	
+						<img class="helpTemplate" 
+						     src="../templates/easysdi/icons/silk/help.png" 
+							 alt="<?php echo JText::_("PROXY_CONFIG_CSW_GEOGRAPHICAL_FILTER_TEMPLATE") ?>" />	
+					</a></legend>
+			<table class="admintable">
+				<tr>
+					<td >
+						<textarea rows="8" cols="80" id="GeographicFilter" name="GeographicFilter" >
+						<?php if (strcmp($thePolicy->GeographicFilter,"")!=0){echo $thePolicy->GeographicFilter;}?>
+						</textarea>
+					</td>
+				</tr>
+			</table>
+		</fieldset>
 		<?php
 		$remoteServerList = $config->{'remote-server-list'};
 		$iServer=0;

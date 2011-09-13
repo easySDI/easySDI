@@ -958,6 +958,8 @@ function savePolicyCSW($thePolicy){
 			}
 		}
 	}
+	$GeographicFilter = JRequest::getVar("GeographicFilter","",'defaut','none',JREQUEST_ALLOWRAW);
+	$thePolicy->GeographicFilter=$GeographicFilter;
 }
 
 /**
