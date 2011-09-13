@@ -42,6 +42,7 @@ class baseLayer extends sdiTable
 	var $defaultvisibility=null;
 	var $defaultopacity=null;
 	var $metadataurl=null;
+	var $published=null;
 	
 	// Class constructor
 	function __construct( &$db )

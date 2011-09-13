@@ -43,6 +43,7 @@ class HTML_baselayer
 					<th width="20" class='title'><?php echo JText::_("MAP_BASELAYER_SHARP"); ?></th>
 					<th width="20" class='title'><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows); ?>);" /></th>
 					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_BASELAYER_NAME"), 'name', @$filter_order_Dir, @$filter_order); ?></th>
+					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_PUBLISHED"), 'published', @$filter_order_Dir, @$filter_order); ?></th>					
 					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_BASELAYER_DESCRIPTION"), 'description', @$filter_order_Dir, @$filter_order); ?></th>
 					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_BASELAYER_URL"), 'url', @$filter_order_Dir, @$filter_order); ?></th>
 					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_BASELAYER_LAYERS"), 'layers', @$filter_order_Dir, @$filter_order); ?></th>
@@ -63,6 +64,7 @@ class HTML_baselayer
 					<td align="center"><?php echo $i+$pageNav->limitstart+1;?></td>
 					<td><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->id; ?>" onclick="isChecked(this.checked);" /></td>
 					<td><a href="#edit" onclick="return listItemTask('cb<?php echo $i;?>','editBaseLayer')"><?php echo stripcslashes($row->name); ?></a></td>
+					<td> <?php echo JHTML::_('grid.published',$row,$i, 'tick.png', 'publish_x.png', 'baselayer_'); ?></td>
 					<td><?php echo $row->description; ?></td>
 					<td><?php echo $row->url; ?></td>
 					<td><?php echo $row->layers; ?></td>
@@ -205,6 +207,10 @@ class HTML_baselayer
 						<td class="key"><?php echo JText::_("MAP_BASELAYER_NAME"); ?></td>
 						<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['name'];?>" name="name" id="name" value="<?php echo stripslashes($baseLayer->name); ?>" /></td>
 					</tr>
+						<tr>
+							<td class="key"><?php echo JText::_("CORE_PUBLISHED"); ?> : </td>
+							<td><?php echo JHTML::_('select.booleanlist', 'published', '',  $baseLayer->published); ?> </td>																
+						</tr>
 					<tr>
 						<td class="key"><?php echo JText::_("MAP_BASELAYER_DESCRIPTION"); ?></td>
 						<td><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['description'];?>" name="description" id="description" value="<?php echo stripslashes($baseLayer->description); ?>" /></td>

@@ -418,9 +418,9 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 			this.map.addControl(ovControl);
 		}
 
-		if (componentDisplayOption.ToolBarEnable) {
+		//if (componentDisplayOption.ToolBarEnable) {
 			this.map.addControl(new OpenLayers.Control.PanZoomBar());
-		}
+		//}
 
 		// Add navigation history control. We'll hook our own toolbar
 		// buttons to
@@ -463,18 +463,11 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 		// Register a handler for pan or zoom, so we can update history
 		// buttons
 		this.map.events.register('moveend', this, this._onMapMoveEnd);
-		//this.map.events.register("preaddlayer", this, this.onPreAddLayer);
-		//this.map.events.register("addlayer", this, this.onLayerAdded);
+	
 
 		// TODO DEREGISTER THIS EVENT
 	},
-	onPreAddLayer :function(evt) {
-	    console.log("Adding layer" );
-	}, 
-	
-	onLayerAdded : function(evt) {
-		console.log("layeradded " );
-	},
+
 	
 	// Test : to remove.
 	addGetFeatureCtrl : function() {
@@ -626,7 +619,7 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 	 * Hide the loading progress popup.
 	 */
 	_hideMsg : function(layer) {
-		debugger;
+
 		Ext.Msg.hide();
 		// we only want to do this once on initial load, not when the
 		// map view
@@ -681,10 +674,9 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 		// Annotation toolbar
 		// Get the annotation styles to populate the dropdown list
 		var styleDropDownItems = this._createAnnotationStyleDropDownItems();
-
+		if(componentDisplayOption.rectangleButtonEnable ){
 		this.rectangleButton = new Ext.Toolbar.Button( {
 			iconCls : 'rectangleBtn',
-
 			minWidth : 26,
 			enableToggle : true,
 			toggleGroup : 'mapCtrl',
@@ -692,6 +684,12 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 			handler : this._updateCtrlBtns,
 			scope : this
 		});
+		}else{
+			this.rectangleButton ={
+					xtype :'tbspacer'
+			}
+		}
+		if(componentDisplayOption.polygonButtonEnable ){
 		this.polygonButton = new Ext.Toolbar.Button( {
 			iconCls : 'polygonBtn',
 			minWidth : 26,
@@ -701,6 +699,13 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 			handler : this._updateCtrlBtns,
 			scope : this
 		});
+		}else{
+			this.polygonButton ={
+					xtype :'tbspacer'
+			}
+		}
+		
+		if(componentDisplayOption.pointButtonEnable ){
 		this.pointButton = new Ext.Toolbar.Button( {
 			iconCls : 'pointBtn',
 			minWidth : 26,
@@ -710,6 +715,13 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 			handler : this._updateCtrlBtns,
 			scope : this
 		});
+		}else{
+			this.pointButton ={
+					xtype :'tbspacer'
+			}
+		}
+		
+		if(componentDisplayOption.modifyFeatureButtonEnable ){
 		this.modifyFeatureButton = new Ext.Toolbar.Button( {
 			iconCls : 'modifyFeatureBtn',
 			minWidth : 26,
@@ -719,6 +731,13 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 			handler : this._updateCtrlBtns,
 			scope : this
 		});
+		}else{
+			this.modifyFeatureButton ={
+					xtype :'tbspacer'
+			}
+		}
+		
+		if(componentDisplayOption.modifyFeatureButtonEnable ){
 		this.pathButton = new Ext.Toolbar.Button( {
 			iconCls : 'pathBtn',
 			minWidth : 26,
@@ -728,6 +747,13 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 			handler : this._updateCtrlBtns,
 			scope : this
 		});
+		}else{
+			this.pathButton ={
+					xtype :'tbspacer'
+			}
+		}
+		
+		if(componentDisplayOption.selectFeatureButtonEnable ){
 		this.selectFeatureButton = new Ext.Toolbar.Button( {
 			iconCls : 'deleteFeatureBtn',
 			minWidth : 26,
@@ -737,6 +763,11 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 			handler : this._updateCtrlBtns,
 			scope : this
 		});
+		}else{
+			this.selectFeatureButton ={
+					xtype :'tbspacer'
+			}
+		}
 
 		// Position toolbar
 		var mouseposDiv = document.createElement("div");
@@ -903,6 +934,7 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 		 */
 
 		// General tool bar items
+		if(componentDisplayOption.previousButtonEnable ){
 		this.previousButton = new Ext.Toolbar.Button( {
 			iconCls : 'previousBtn',
 			tooltip : EasySDI_Map.lang.getLocal('MP_HIST_BACK_TTIP'),
@@ -910,7 +942,13 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 				this.navHistoryCtrl.previousTrigger();
 			},
 			scope : this
-		});
+		});}
+		else{
+			this.previousButton = {xtype:'tbspacer'}
+			
+		}
+		
+		if(componentDisplayOption.nextButtonEnable ){
 		this.nextButton = new Ext.Toolbar.Button( {
 			iconCls : 'nextBtn',
 			tooltip : EasySDI_Map.lang.getLocal('MP_HIST_NEXT_TTIP'),
@@ -919,6 +957,12 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 			},
 			scope : this
 		});
+		}else{
+			this.nextButton = {xtype:'tbspacer'}
+			
+		}
+		
+		if(componentDisplayOption.navButtonEnable ){
 		this.navButton = new Ext.Toolbar.Button( {
 			iconCls : 'navBtn',
 			tooltip : EasySDI_Map.lang.getLocal('MP_PAN_TTIP'),
@@ -928,7 +972,12 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 			handler : this._updateCtrlBtns,
 			scope : this,
 			pressed : true
-		});
+		});}else{
+			this.navButton = {xtype:'tbspacer'}
+			
+		}
+		
+		if(componentDisplayOption.selectButtonEnable ){
 		this.selectButton = new Ext.Toolbar.Button( {
 			iconCls : 'selectBtn',
 			enableToggle : true,
@@ -936,7 +985,11 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 			allowDepress : false,
 			handler : this._updateCtrlBtns,
 			scope : this
-		});
+		});}else{
+			this.selectButton = {xtype:'tbspacer'}			
+		}
+		
+		if(componentDisplayOption.zoomInBoxButtonEnable ){
 		this.zoomInBoxButton = new Ext.Toolbar.Button( {
 			iconCls : 'zoomInBoxBtn',
 			tooltip : EasySDI_Map.lang.getLocal('MP_ZOOM_IN_TTIP'),
@@ -945,7 +998,11 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 			allowDepress : false,
 			handler : this._updateCtrlBtns,
 			scope : this
-		});
+		});}else{
+			this.zoomInBoxButton = {xtype:'tbspacer'}			
+		}
+		
+		if(componentDisplayOption.zoomOutBoxButtonEnable ){
 		this.zoomOutBoxButton = new Ext.Toolbar.Button( {
 			iconCls : 'zoomOutBoxBtn',
 			tooltip : EasySDI_Map.lang.getLocal('MP_ZOOM_OUT_TTIP'),
@@ -954,14 +1011,22 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 			allowDepress : false,
 			handler : this._updateCtrlBtns,
 			scope : this
-		});
+		});}else{
+			this.zoomOutBoxButton = {xtype:'tbspacer'}			
+		}
+		
+		if(componentDisplayOption.zoomToScaleFieldEnable ){
 		this.zoomToScaleField = new Ext.form.TextField( {
 			height : 20,
 			width : 50,
 			tooltip : EasySDI_Map.lang.getLocal('MP_ZOOM_TO_SCALE_TTIP'),
 			readOnly : false,
 			enableKeyEvents : true
-		});
+		});}else{
+			this.zoomToScaleField = {xtype:'tbspacer'}			
+		}
+		
+		if(componentDisplayOption.zoomToMaxExtentButtonEnable ){
 		this.zoomToMaxExtentButton = new Ext.Toolbar.Button( {
 			iconCls : 'zoomToScaleBtn',
 			tooltip : EasySDI_Map.lang.getLocal('MP_ZOOM_TO_EXTENT_TTIP'),
@@ -972,6 +1037,11 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 			},
 			scope : this
 		});
+		}else{
+			this.zoomToMaxExtentButton = {xtype:'tbspacer'}			
+		}
+		
+		if(componentDisplayOption.printMapButtonEnable ){
 		this.printMapButton = new Ext.Toolbar.Button( {
 			iconCls : 'printMapBtn',
 			tooltip : EasySDI_Map.lang.getLocal('MP_PRINT_VERSION_TTIP'),
@@ -979,7 +1049,11 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 			allowDepress : false,
 			handler : this._updateCtrlBtns,
 			scope : this
-		});
+		});}else{
+			this.printMapButton = {xtype:'tbspacer'}			
+		}
+		
+		if(componentDisplayOption.saveMapButtonEnable ){
 		this.saveMapButton = new Ext.Toolbar.Button( {
 			iconCls : 'saveMapBtn',
 			tooltip : EasySDI_Map.lang.getLocal('MP_SAVE_AS_IMAGE_TTIP'),
@@ -987,7 +1061,11 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 			allowDepress : false,
 			handler : this._updateCtrlBtns,
 			scope : this
-		});
+		});}else{
+			this.saveMapButton = {xtype:'tbspacer'}	
+		}
+		
+		if(componentDisplayOption.pdfButtonEnable ){
 		this.pdfButton = new Ext.Toolbar.Button( {
 			iconCls : 'pdfBtn',
 			tooltip : EasySDI_Map.lang.getLocal('MP_PDF'),
@@ -995,7 +1073,11 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 			allowDepress : false,
 			handler : this._updateCtrlBtns,
 			scope : this
-		});
+		});}else{
+			this.pdfButton = {xtype:'tbspacer'}	
+		}
+		
+		if(componentDisplayOption.getFeatureButtonEnable ){
 		this.getFeatureButton = new Ext.Toolbar.Button( {
 			iconCls : 'selectBtn',
 			tooltip : EasySDI_Map.lang.getLocal('MP_SELECT_BUTTON_TOOLTIP'),
@@ -1004,7 +1086,10 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 			allowDepress : false,
 			handler : this._updateCtrlBtns,
 			scope : this
-		});
+		});}else{
+			
+			this.getFeatureButton  = {xtype:'tbspacer'}	
+		}
 
 		// Build toolbar according to component display options
 		// localisation AND toolbar
@@ -1196,33 +1281,44 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 	 * controls.
 	 */
 	_updateCtrlBtns : function() {
-		if (this.navButton.pressed) {
-			this.navCtrl.activate();
-			// this.getFeatureInfoCtrl.activate();
-		} else {
-			this.navCtrl.deactivate();
-			// this.getFeatureInfoCtrl.deactivate();
+		if(componentDisplayOption.navButtonEnable ){
+			if (this.navButton.pressed) {
+				this.navCtrl.activate();
+				// this.getFeatureInfoCtrl.activate();
+			} else {
+				this.navCtrl.deactivate();
+				// this.getFeatureInfoCtrl.deactivate();
+			}
 		}
-		if (this.selectButton.pressed) {
-			this.selectFeatureCtrl.activate();
-		} else {
-			this.selectFeatureCtrl.deactivate();
+		if(componentDisplayOption.selectButtonEnable ){
+			if (this.selectButton.pressed) {
+				this.selectFeatureCtrl.activate();
+			} else {
+				this.selectFeatureCtrl.deactivate();
+			}
 		}
-		if (this.zoomInBoxButton.pressed) {
-			this.zoomInBoxCtrl.activate();
-		} else {
-			this.zoomInBoxCtrl.deactivate();
+		if(componentDisplayOption.zoomInBoxButtonEnable ){
+			if (this.zoomInBoxButton.pressed) {
+				this.zoomInBoxCtrl.activate();
+			} else {
+				this.zoomInBoxCtrl.deactivate();
+			}
 		}
-		if (this.zoomOutBoxButton.pressed) {
-			this.zoomOutBoxCtrl.activate();
-		} else {
-			this.zoomOutBoxCtrl.deactivate();
+		if(componentDisplayOption.zoomOutBoxButtonEnable ){
+			if (this.zoomOutBoxButton.pressed) {
+				this.zoomOutBoxCtrl.activate();
+			} else {
+				this.zoomOutBoxCtrl.deactivate();
+			}
 		}
-		if (this.printMapButton.pressed) {
-			window.open(componentParams.componentUrl + '&view=printMap&mapPanel=' + this._encodeCurrentMap() + '&mapPanelHeight='
-					+ this.map.getCurrentSize().h + '&mapPanelWidth=' + this.map.getCurrentSize().w, '_blank');
-			this.printMapButton.toggle(false);
+		if(componentDisplayOption.printMapButtonEnable ){
+			if (this.printMapButton.pressed) {
+				window.open(componentParams.componentUrl + '&view=printMap&mapPanel=' + this._encodeCurrentMap() + '&mapPanelHeight='
+						+ this.map.getCurrentSize().h + '&mapPanelWidth=' + this.map.getCurrentSize().w, '_blank');
+				this.printMapButton.toggle(false);
+			}
 		}
+		if(componentDisplayOption.saveMapButtonEnable ){
 		if (this.saveMapButton.pressed) {
 			var popup = new EasySDI_Map.Dlg.SaveAsPopup( {
 				mapPanel : this
@@ -1232,49 +1328,65 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 			// this._getOneImageMapURL());
 			this.saveMapButton.toggle(false);
 		}
-		if (this.pdfButton.pressed) {
-			var popup = new EasySDI_Map.Dlg.InputPDFTitle( {
-				mapPanel : this
-			});
-			popup.show();
-			this.pdfButton.toggle(false);
 		}
-		if (componentDisplayOption.AnnotationEnable) {
+		if(componentDisplayOption.pdfButtonEnable ){
+			if (this.pdfButton.pressed) {
+				var popup = new EasySDI_Map.Dlg.InputPDFTitle( {
+					mapPanel : this
+				});
+				popup.show();
+				this.pdfButton.toggle(false);
+			}
+		}
+
+		if(componentDisplayOption.rectangleButtonEnable ){
 			if (this.rectangleButton.pressed) {
 				this.rectControl.activate();
 			} else {
 				this.rectControl.deactivate();
 			}
+		}
+		if(componentDisplayOption.polygonButtonEnable ){
 			if (this.polygonButton.pressed) {
 				this.polyControl.activate();
 			} else {
 				this.polyControl.deactivate();
 			}
+		}
+		if(componentDisplayOption.pointButtonEnable ){
 			if (this.pointButton.pressed) {
 				this.pointControl.activate();
 			} else {
 				this.pointControl.deactivate();
 			}
+		}
+		if(componentDisplayOption.modifyFeatureButtonEnable ){
 			if (this.modifyFeatureButton.pressed) {
 				this.modifyFeatureControl.activate();
 			} else {
 				this.modifyFeatureControl.deactivate();
 			}
+		}
+		if(componentDisplayOption.pathButtonEnable ){
 			if (this.pathButton.pressed) {
 				this.pathControl.activate();
 			} else {
 				this.pathControl.deactivate();
 			}
+		}
+		if(componentDisplayOption.selectFeatureButtonEnable ){
 			if (this.selectFeatureButton.pressed) {
 				this.selectControl.activate();
 			} else {
 				this.selectControl.deactivate();
 			}
 		}
-		if (this.getFeatureButton.pressed) {
-			this.getFeatureCtrl.activate();
-		} else {
-			this.getFeatureCtrl.deactivate();
+		if(componentDisplayOption.getFeatureButtonEnable ){
+			if (this.getFeatureButton.pressed) {
+				this.getFeatureCtrl.activate();
+			} else {
+				this.getFeatureCtrl.deactivate();
+			}
 		}
 	},
 

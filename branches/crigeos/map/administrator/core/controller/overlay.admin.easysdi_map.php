@@ -20,6 +20,98 @@ defined('_JEXEC') or die('Restricted access');
 
 class ADMIN_overlay
 {
+	function changeContent( $state = 0 )
+	{
+		global $mainframe;
+		
+		// Initialize variables
+		$db		= & JFactory::getDBO();
+		
+		$cid = JRequest::getVar('cid', array());
+		JArrayHelper::toInteger($cid);
+		$option	= JRequest::getCmd( 'option' );
+		$task	= JRequest::getCmd( 'task' );
+		$total	= count($cid);
+		$cids	= implode(',', $cid);
+		
+		$query = 'UPDATE #__sdi_overlay' .
+				' SET published = '. (int) $state .
+				' WHERE id IN ( '. $cids .' )';
+		$db->setQuery($query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			$mainframe->redirect("index.php?option=$option&task=listOverlay" );
+			exit();
+		}
+
+		
+
+		switch ($state)
+		{
+			case 1 :
+				$msg = $total." ".JText::sprintf('Item(s) successfully Published');
+				break;
+
+			case 0 :
+			default :
+				$msg = $total." ".JText::sprintf('Item(s) successfully Unpublished');
+				break;
+		}
+
+		$cache = & JFactory::getCache('com_easysdi_map');
+		$cache->clean();
+		
+		$mainframe->enqueueMessage($msg,"SUCCESS");
+		$mainframe->redirect("index.php?option=$option&task=overlay" );
+		exit();
+	}
+	
+	function changeGroupContent( $state = 0 )
+	{
+		global $mainframe;
+		
+		// Initialize variables
+		$db		= & JFactory::getDBO();
+		
+		$cid = JRequest::getVar('cid', array());
+		JArrayHelper::toInteger($cid);
+		$option	= JRequest::getCmd( 'option' );
+		$task	= JRequest::getCmd( 'task' );
+		$total	= count($cid);
+		$cids	= implode(',', $cid);
+		
+		$query = 'UPDATE #__sdi_overlaygroup' .
+				' SET published = '. (int) $state .
+				' WHERE id IN ( '. $cids .' )';
+		$db->setQuery($query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			$mainframe->redirect("index.php?option=$option&task=listOverlayGroup" );
+			exit();
+		}
+
+		
+
+		switch ($state)
+		{
+			case 1 :
+				$msg = $total." ".JText::sprintf('Item(s) successfully Published');
+				break;
+
+			case 0 :
+			default :
+				$msg = $total." ".JText::sprintf('Item(s) successfully Unpublished');
+				break;
+		}
+
+		$cache = & JFactory::getCache('com_easysdi_map');
+		$cache->clean();
+		
+		$mainframe->enqueueMessage($msg,"SUCCESS");
+		$mainframe->redirect("index.php?option=$option&task=overlayGroup" );
+		exit();
+	}
+	
 	function listOverlay ($option)
 	{
 		global  $mainframe;
