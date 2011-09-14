@@ -303,6 +303,11 @@ class ADMIN_config {
 			if (!$database->query()) {			
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['max_file_size'])."\" WHERE code = 'SHOP_CONFIGURATION_MAX_FILE_SIZE'");
+			if (!$database->query()) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			
 		}
 		
 		// Sauvegarde des cl�s PROXY

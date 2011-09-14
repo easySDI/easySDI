@@ -3,14 +3,11 @@
 
 	<property name="projet.out.dir" value="out" />
 
-
-	<target name="com_easysdi" depends="create-structure,compression"
+	<target name="package" depends="create-structure,compression"
 		description="Main target">
-
 	</target>
 
-	<target name="create-structure">
-		<echo>Creating the working directory structure</echo>
+	<target name="create-structure" description="Creating the working directory structure">
 		<delete>
 			<fileset dir="${projet.out.dir}" includes="*" />
 		</delete>
@@ -85,6 +82,4 @@
 		     </fileset>
 		    </copy>
 	</target>
-
-
 </project>

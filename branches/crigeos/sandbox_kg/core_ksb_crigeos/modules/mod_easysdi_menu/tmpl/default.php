@@ -128,6 +128,7 @@ class userManagerRightESDY
 	
 	static function menuRight($url,$user) {
 	
+	
 		//Is the user from ESDY project
 		if(userManagerRightESDY::isEasySDIUser($user))
 		{
@@ -136,10 +137,11 @@ class userManagerRightESDY
 			$account->load($user->id);	
 			
 			//Is the URL from ESDY
-			if (preg_match("/(com_easysdi_)/i", $url)) 
+			if (preg_match("/(com_easysdi_publish|com_easysdi_core|com_easysdi_shop|com_easysdi_catalog)/i", $url)) 
 			{
 				preg_match('/task=([a-z]+)&/i', $url, $tasks);
 				$task = $tasks[1];
+				
 				if ($task=="listOrders") 
 				{
 					return (userManagerRightESDY::hasRight($account->id,"REQUEST_INTERNAL") 
@@ -206,7 +208,7 @@ class userManagerRightESDY
 	//Not a EasySDI user, so hide the declared here EasySDI entires
 		else
 		{
-			if (preg_match("/(com_easysdi_)/i", $url)) 
+			if (preg_match("/(com_easysdi_core|com_easysdi_shop|com_easysdi_catalog)/i", $url)) 
 			{
 				preg_match('/task=([a-z]+)&/i', $url, $tasks);
 				$task = $tasks[1];

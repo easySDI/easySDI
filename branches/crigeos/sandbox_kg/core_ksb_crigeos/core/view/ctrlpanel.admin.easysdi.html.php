@@ -132,8 +132,7 @@ class HTML_ctrlpanel {
 						   <tr>
 						      <td>
 						          <a href="http://de.siteof.de" target="_blank">Extended Menu for Joomla - version: 1.0.6</a>,&nbsp;
-						          <a href="" target="_blank">dTree 2.05</a>,&nbsp;
-						          <a href="http://www.mpdf1.com/mpdf/" target="_blank">mPDF V5.0</a>
+						          <a href="" target="_blank">dTree 2.05..</a>
 						      </td>
 						   </tr>
 						   <tr>

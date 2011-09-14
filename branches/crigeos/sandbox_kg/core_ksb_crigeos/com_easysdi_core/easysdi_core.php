@@ -42,19 +42,18 @@ $option = JRequest::getVar('option');
 
 switch($task){	
 	case "createBlockUser":
-		include_once(JPATH_LIBRARIES.DS.'joomla'.DS.'user'.DS.'helper.php');
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'account.site.easysdi.php');
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'account.site.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'account.easysdi.class.php');
 		
 		SITE_account::createBlockUser();
 		break;
-	case "createAccount":
+	case "createUser":
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'account.site.easysdi.php');
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'account.site.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'account.easysdi.class.php');
 		
-		SITE_account::createAccount(0);
+		SITE_account::createUser(0);
 		break;
 	case "createAffiliate":
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'account.site.easysdi.php');
@@ -114,7 +113,6 @@ switch($task){
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_catalog'.DS.'core'.DS.'model'.DS.'metadata.easysdi.class.php');
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_catalog'.DS.'core'.DS.'model'.DS.'objectversion.easysdi.class.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'account.easysdi.class.php');
-		require_once(JPATH_SITE.DS.'components'.DS.'com_easysdi_shop'.DS.'core'.DS.'controller'.DS.'shop.easysdi.class.php');
 		displayManager::showMetadata();
 		break;
 	case "showAnyMetadata"	:

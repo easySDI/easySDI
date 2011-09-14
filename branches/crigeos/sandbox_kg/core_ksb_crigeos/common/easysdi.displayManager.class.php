@@ -14,34 +14,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html. 
  */
-		//error_reporting(E_ALL); ini_set('display_errors', '1');
 class displayManager{
 	
+	/**
+	 * 
+	 */
 	function getCSWresult ()
 	{
 		$database =& JFactory::getDBO();
-		
 		$id = JRequest::getVar('id');
-		/*$metadata_guid = "select guid from #__sdi_metadata WHERE id=".$id;
-		$database->setQuery($metadata_guid);
-		$metadata_guid = $database->loadResult();*/
 		$metadata_guid = $id;
-		
 		$catalogUrlBase = config_easysdi::getValue("catalog_url");
-		
 		$catalogUrlCapabilities = $catalogUrlBase."?request=GetCapabilities&service=CSW";
 		$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&content=COMPLETE&id=".$metadata_guid;
-		
-		/*
-		$id=158;
-		$catalogUrlBase = "https://geoproxy.asitvd.ch/ogc/geonetwork";
-		$catalogUrlCapabilities = "https://geoproxy.asitvd.ch/ogc/geonetwork?request=GetCapabilities&service=CSW";
-		$catalogUrlGetRecordById = "https://geoproxy.asitvd.ch/ogc/geonetwork?request=GetRecordById&service=CSW&version=2.0.1&elementSetName=full&id=158";	
-		*/
 		$cswResults = DOMDocument::load($catalogUrlGetRecordById);
 		return $cswResults;
 	}
 	
+	/**
+	 * 
+	 */
 	function getMetadata(&$xml)
 	{	
 		global  $mainframe;
@@ -270,15 +262,15 @@ class displayManager{
 		
 	}
 	
+	/**
+	 * 
+	 */
 	function showMetadata()
 	{	
 		$database =& JFactory::getDBO();
 		$user =& JFactory::getUser();
-		//$language = $user->getParam('language', '');
 		$lg = &JFactory::getLanguage();
 		$language = $lg->_lang;
-		//print_r($lg); 
-		//echo $language;
 		
 		$type =  JRequest::getVar('type', 'abstract');
 		$xml = "";
@@ -540,6 +532,9 @@ class displayManager{
 		
 	}
 	
+	/**
+	 * 
+	 */
 	function showAbstractMetadata()
 	{	
 		$database =& JFactory::getDBO();
@@ -593,6 +588,10 @@ class displayManager{
 		$xml = displayManager::getCSWresult();
 		displayManager::DisplayMetadata($style,$xml);
 	}
+	
+	/**
+	 * 
+	 */
 	function showCompleteMetadata ()
 	{
 		$database =& JFactory::getDBO();
@@ -647,6 +646,10 @@ class displayManager{
 		
 		displayManager::DisplayMetadata($style,$xml);
 	}
+	
+	/**
+	 * 
+	 */
 	function showDiffusionMetadata ()
 	{
 		$database =& JFactory::getDBO();
@@ -759,9 +762,11 @@ class displayManager{
 		displayManager::DisplayMetadata($style,$document);
 	}
 	
+	/**
+	 * 
+	 */
 	function DisplayMetadata ($xslStyle, $xml)
 	{
-//		$enableFavorites = config_easysdi::getValue("ENABLE_FAVORITES", 1);
 		$option = JRequest::getVar('option');
 		$task = JRequest::getVar('task');
 		$type = JRequest::getVar('type', 'abstract');
@@ -778,32 +783,29 @@ class displayManager{
 		$product_update_date;
 		$shopExist=0;
 
-		// Si la page est appel�e depuis un autre environnement que Joomla
-		//print_r($_SERVER);echo "<br>";
+		// Si la page est appelée depuis un autre environnement que Joomla
 		$notJoomlaCall = 'true';
 		if (array_key_exists('HTTP_REFERER', $_SERVER))
 		{
-			// Emplacement depuis lequel l'adresse a �t� appel�e
+			// Emplacement depuis lequel l'adresse a été appelée
 			$httpReferer = parse_url($_SERVER['HTTP_REFERER']);
 			$caller = $httpReferer['scheme']."://".$httpReferer['host'].$httpReferer['path'];
 			//echo $caller."<br>";
 			
-			// Adresse appel�e
+			// Adresse appelée
 			$scheme = "http";
 			if ($_SERVER['HTTPS'] and $_SERVER['HTTPS'] <> "off")
 				$scheme .= "s";
 			$current = $scheme."://".$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME'];
-			//echo $current;
 			
-			// Si l'adresse courante ne fait pas partie du m�me site que l'adresse appelante, 
-			// on consid�re que c'est un appel direct
+			// Si l'adresse courante ne fait pas partie du même site que l'adresse appelante, 
+			// on considére que c'est un appel direct
 			if ($caller == $current)
 				$notJoomlaCall = 'false';
 		}
 			
-		$db =& JFactory::getDBO();
-		
 		$user = JFactory::getUser();
+		
 		$current_account = new accountByUserId($db);
 		if (!$user->guest){
 			$current_account->load($user->id);
@@ -840,9 +842,7 @@ class displayManager{
 					INNER JOIN #__sdi_object o ON o.id = ov.object_id 
 					WHERE m.guid = '".$id."'";
 		$db->setQuery($query);
-		
 		$product_creation_date = $db->loadResult();
-		//$product_creation_date = date(config_easysdi::getValue("DATETIME_FORMAT", "d-m-Y H:i:s"), strtotime($temp));
 		
 		$query = "	SELECT o.updated 
 					FROM #__sdi_metadata m
@@ -851,7 +851,6 @@ class displayManager{
 					WHERE m.guid = '".$id."'";
 		$db->setQuery($query);
 		$product_update_date = $db->loadResult();
-		//$product_update_date = $temp == '0000-00-00 00:00:00' ? '-' : date(config_easysdi::getValue("DATETIME_FORMAT", "d-m-Y H:i:s"), strtotime($temp));
 		if ($product_update_date == '0000-00-00 00:00:00')
 			$product_update_date = '-';
 				
@@ -870,122 +869,25 @@ class displayManager{
 			$shopExist = $db->loadResult();
 		}
 		
-		/*
-		//define an array of orderable associated product for the current user
-		$orderableProductsMd = null;
-		$filter = "";
-		$user = JFactory::getUser();
-		$partner = new partnerByUserId($db);
-		if (!$user->guest){
-			$partner->load($user->id);
-		}else{
-			$partner->partner_id = 0;
-		}
-        	
-		if($partner->partner_id == 0)
-		{
-			//No user logged, display only external products
-			$filter .= " AND (EXTERNAL=1) ";
-		}
-		else
-		{
-			//User logged, display products according to users's rights
-			if(userManager::hasRight($partner->partner_id,"REQUEST_EXTERNAL"))
-			{
-				if(userManager::hasRight($partner->partner_id,"REQUEST_INTERNAL"))
-				{
-					$filter .= " AND (p.EXTERNAL=1
-					OR
-					(p.INTERNAL =1 AND
-					(p.partner_id =  $partner->partner_id
-					OR
-					p.partner_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id )
-					OR 
-					p.partner_id IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id ))
-					OR
-					p.partner_id  IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = $partner->partner_id ) 
-					
-					))) ";
-				}
-				else
-				{
-					$filter .= " AND (p.EXTERNAL=1) ";
-				}
-			}
-			else
-			{
-				if(userManager::hasRight($partner->partner_id,"REQUEST_INTERNAL"))
-				{
-					$filter .= " AND (p.INTERNAL =1 AND
-					(p.partner_id =  $partner->partner_id
-					OR
-					p.partner_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id )
-					OR 
-					p.partner_id IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = (SELECT root_id FROM #__easysdi_community_partner WHERE partner_id = $partner->partner_id ))
-					OR
-					p.partner_id  IN (SELECT partner_id FROM #__easysdi_community_partner WHERE root_id = $partner->partner_id ) 
-					)) ";
-									
-				}
-				else
-				{
-					//no command right
-					$filter .= " AND (EXTERNAL = 10 AND INTERNAL = 10) ";
-				}
-			}
-		}
-		$query  = "SELECT metadata_id FROM #__easysdi_product p where published=1 and orderable = 1 ".$filter;
-		$db->setQuery($query);
-		$orderableProductsMd = $db->loadResultArray();
-		if ($db->getErrorNum()) {						
-					echo "<div class='alert'>";			
-					echo 			$db->getErrorMsg();
-					echo "</div>";
-		}*/
+
 		//Defines if the corresponding product is orderable.
 		$hasOrderableProduct = false;
 		
-		//load favorites
-//		$optionFavorite;
-//		$metadataListArray = array();
-//		if($current_account->id == 0)
-//			$optionFavorite = false;
-//		else if ($enableFavorites == 1){
-//			$query = "SELECT m.guid FROM #__sdi_metadata m WHERE m.id IN (SELECT metadata_id FROM #__sdi_favorite WHERE account_id = $current_account->id)";
-//			$db->setQuery($query);
-//			$metadataListArray = $db->loadResultArray();
-//			if ($db->getErrorNum()) {						
-//						echo "<div class='alert'>";			
-//						echo 			$db->getErrorMsg();
-//						echo "</div>";
-//			}
-//		}
-		
 		$processor = new xsltProcessor();
-		
-		
-//		$isFavorite = 1;
-//		if(!in_array($id, $metadataListArray) && $enableFavorites == 1 && !$user->guest)
-//			$isFavorite = 0;
-		
-//		if ($type <> 'diffusion')
-//			$xml = displayManager::constructXML($xml, $db, $language, $id, $notJoomlaCall,$isFavorite);
+
 		$context = JRequest::getVar('context');
+		
 		if ($type <> 'diffusion')
 			$xml = displayManager::constructXML($xml, $db, $language, $id, $notJoomlaCall, $type, $context);
-				
+			
 		$processor->importStylesheet($xslStyle);
 		$xmlToHtml = $processor->transformToXml($xml);
 		
+
 		$myHtml = "<script type=\"text/javascript\" src=\"/administrator/components/com_easysdi_core/common/date.js\"></script>";
-		//$myHtml="";
 		// Toolbar build from EasySDIV1
 		if ($toolbar==1){
 			$buttonsHtml .= "<table align=\"right\"><tr align='right'>";
-//			if(!in_array($id, $metadataListArray) && $enableFavorites == 1 && !$user->guest)
-//				$buttonsHtml .= "<td><div title=\"".JText::_("EASYSDI_ADD_TO_FAVORITE")."\" id=\"toggleFavorite\" class=\"addFavorite\" onclick=\"favoriteManagment();\"> </div></td>";
-//			if(in_array($id, $metadataListArray) && $enableFavorites == 1 && !$user->guest)
-//				$buttonsHtml .= "<td><div title=\"".JText::_("EASYSDI_REMOVE_FAVORITE")."\" id=\"toggleFavorite\" class=\"removeFavorite\" onclick=\"favoriteManagment();\"> </div></td>";
 			$buttonsHtml .= "<td><div title=\"".JText::_("EASYSDI_ACTION_EXPORTPDF")."\" id=\"exportPdf\" onclick=\"window.open('./index.php?tmpl=component&option=com_easysdi_core&task=exportPdf&id=$id&type=$type', '_self');\"> </div></td>
 					<td><div title=\"".JText::_("EASYSDI_ACTION_EXPORTXML")."\" id=\"exportXml\" onclick=\"window.open('./index.php?tmpl=component&format=raw&option=com_easysdi_core&task=exportXml&id=$id&type=$type', '_self');\"> </div></td>
 					<td><div title=\"".JText::_("EASYSDI_ACTION_PRINTMD")."\" id=\"printMetadata\" onclick=\"window.open('./index.php?tmpl=component&option=$option&task=$task&id=$id&type=$type&toolbar=0&print=1','win2','status=no,toolbar=no,scrollbars=yes,titlebar=no,menubar=no,resizable=yes,width=640,height=480,directories=no,location=no');\"> </div></td>";
@@ -1020,34 +922,6 @@ class displayManager{
 			//Define links for onclick event
 			$myHtml .= "<script>\n";
 			
-//			$myHtml .="
-//			function favoriteManagment ()
-//			{
-//			  var action = \"addFavorite\";
-//			   var title = Array();
-//			   title['CORE_REMOVE_FAVORITE']='".JText::_("CORE_REMOVE_FAVORITE")."';
-//			   title['CORE_ADD_TO_FAVORITE']='".JText::_("CORE_ADD_TO_FAVORITE")."';
-//				   
-//			   if(document.getElementById('toggleFavorite').className == \"removeFavorite\")
-//			      action = \"removeFavorite\";
-//				   
-//			   var req = new Ajax('./index.php?option=com_easysdi_shop&task='+action+'&view=&metadata_guid=$id', {
-//		           	method: 'get',
-//		           	onSuccess: function(){
-//				        if(document.getElementById('toggleFavorite').className == \"removeFavorite\"){
-//		           		   document.getElementById(\"toggleFavorite\").className = 'addFavorite';
-//			   		   document.getElementById(\"toggleFavorite\").title = title['EASYSDI_ADD_TO_FAVORITE'];
-//					}else{
-//					   document.getElementById(\"toggleFavorite\").className = 'removeFavorite';
-//			   		   document.getElementById(\"toggleFavorite\").title = title['EASYSDI_REMOVE_FAVORITE'];
-//					}
-//		           	},
-//		           	onFailure: function(){
-//		           		
-//		           	}
-//		           }).request();		
-//				
-//			}";
 			
 			//Manage display class
 			/* Onglets abstract et complete*/
@@ -1108,46 +982,15 @@ class displayManager{
 		// Construction  of creation date, update date and account logo [from EasySDIV1]
 		$logoWidth = config_easysdi::getValue("logo_width");
 		$logoHeight = config_easysdi::getValue("logo_height");
-		
-		/*
-		echo "poduct_creation:". $product_creation_date;
-		$temp = explode(" ", $product_creation_date);
-		$temp = explode("-", $temp[0]);
-		$product_creation_date = $temp[2].".".$temp[1].".".$temp[0];
-		$product_creation_date="";
-		$temp = explode(" ", $product_update_date);
-		$temp = explode("-", $temp[0]);
-		if ($product_update_date <> "-")
-			//$product_update_date = $temp[2].".".$temp[1].".".$temp[0];
-			$product_update_date="";
-		*/	
-			
 			
 		$img='<img width="$'.$logoWidth.'" height="'.$logoHeight.'" src="'.$account_logo.'">';
-		
-		
-		
 		printf($myHtml, $img, $supplier, $product_creation_date, $product_update_date, $buttonsHtml, $menuLinkHtml, $notJoomlaCall);
 		
-			
-		/***Add consultation informations*/
-		/*$db =& JFactory::getDBO();
-
-
-		$query = "select max(weight)+1 from #__easysdi_product  where metadata_id='$id'";
-		$db->setQuery( $query);
-		$maxHit = $db->loadResult();
-		if ($maxHit){
-			$query = "update #__easysdi_product set weight = $maxHit where metadata_id='$id' ";
-			$db->setQuery( $query);
-			if (!$db->query()) {
-				echo "<div class='alert'>";
-				echo $db->getErrorMsg();
-				echo "</div>";
-			}
-		}*/
 	}
 	
+	/**
+	 * 
+	 */
 	function buildXHTML ($xslStyle, $xml)
 	{
 //		$enableFavorites = config_easysdi::getValue("ENABLE_FAVORITES", 1);
@@ -1437,6 +1280,9 @@ class displayManager{
 		return $myHtml;
 	}
 	
+	/**
+	 * 
+	 */
 	function exportXml()
 	{
 		$database =& JFactory::getDBO();
@@ -1538,6 +1384,9 @@ class displayManager{
 		die();
 	}
 	
+	/**
+	 * 
+	 */
 	function exportPdf(){
 		$database =& JFactory::getDBO();
 		$user =& JFactory::getUser();
@@ -1644,6 +1493,9 @@ class displayManager{
 		displayManager::exportPDFfile($myHTML);
 	}
 	
+	/**
+	 * 
+	 */
 	function exportPDFfile($myHtml) 
 	{
 		global  $mainframe;
@@ -1727,7 +1579,7 @@ class displayManager{
 		
 		$logoWidth = config_easysdi::getValue("logo_width");
 		$logoHeight = config_easysdi::getValue("logo_height");		
-		$img='<img width="'.$logoWidth.'" height="'.$logoHeight.'" src="'.$account_logo.'"/>';
+		$img='<img width="'.$logoWidth.'" height="'.$logoHeight.'" src="'.JPATH_BASE.DS.$account_logo.'"/>';
 		
 		$myHtml = str_replace("%1\$s", $img, $myHtml);
 		$myHtml = str_replace("%2\$s", $supplier, $myHtml);
@@ -1779,9 +1631,10 @@ class displayManager{
 				$fp = fopen ($foptmp, 'r');
 				$result = fread($fp, filesize($foptmp));
 				fclose ($fp);
+					//ob_end_clean();
 				
-				//ob_end_clean();
-				
+				unlink($foptmp);
+			
 				error_reporting(0);
 				ini_set('zlib.output_compression', 0);
                         	
@@ -1794,8 +1647,6 @@ class displayManager{
 				header("Content-Length: ".filesize($foptmp));
 				
 				echo $result;
-				//clear tmp pdf file
-				unlink($foptmp);
 				//Very important, if you don't call this, the content-type will have no effect
 				die();
 			}else
@@ -1808,6 +1659,9 @@ class displayManager{
 		}
 	}
 	
+	/**
+	 * 
+	 */
 	function reportPdfError() //, $timer)
 	{
 		$res = urldecode(JRequest::getVar('res'));
@@ -1823,6 +1677,9 @@ class displayManager{
 		echo '</div>';
 	}
 	
+	/**
+	 * 
+	 */
 	function convertXML2FO($xml, $xslt, $fo) //, $timer)
 	{
 	// Transform path of fo and xslt files for javax.xml.transform.stream
@@ -1865,6 +1722,9 @@ class displayManager{
 		$out->close();		
 	}
 		
+	/**
+	 * 
+	 */
 	function convertFO2PDF($fo, $pdf) //, $timer)
 	{
 		try
@@ -1919,11 +1779,12 @@ class displayManager{
 			$out->close();
 	}
 	
-//	function constructXML($xml, $db, $language, $fileIdentifier, $notJoomlaCall,$isFavorite)
+	/**
+	 * 
+	 */
 	function constructXML($xml, $db, $language, $fileIdentifier, $notJoomlaCall, $type, $context)
 	{
 		$doc = new DomDocument('1.0', 'UTF-8');
-		//$doc = $xml;
 		$doc->formatOutput = true;
 	
 		$root = $xml->getElementsByTagName("MD_Metadata");
@@ -1935,13 +1796,9 @@ class displayManager{
 		$XMLNewRoot->appendChild($gmdRoot);
 	
 		$XMLSdi = $doc->createElementNS('http://www.depth.ch/sdi', 'sdi:Metadata');
-		//$XMLSdi->setAttributeNS('http://www.w3.org/2000/xmlns/' ,'xmlns:sdi', 'http://www.depth.ch/sdi');
 		$XMLSdi->setAttribute('user_lang', $language->_lang);
 		$XMLSdi->setAttribute('call_from_joomla', (int)!$notJoomlaCall);
-//		$XMLSdi->setAttribute('isFavorite', (int)$isFavorite);
 		$XMLNewRoot->appendChild($XMLSdi);
-		//$doc->appendChild($XMLSdi);
-		//print_r(htmlspecialchars($md->metadata->saveXML()));echo "<hr>";
 	
 		$queryAccountID = "	select o.account_id 
 							FROM #__sdi_metadata m
@@ -2102,6 +1959,7 @@ class displayManager{
 		
 		if ($shopExist == 1)
 		{
+			require_once(JPATH_SITE.DS.'components'.DS.'com_easysdi_shop'.DS.'core'.DS.'controller'.DS.'shop.easysdi.class.php');
 			$product = array();
 			$queryProduct = "	SELECT p.id, p.free, p.available, p.published, pf.size, pf.type 
 								FROM #__sdi_metadata m
@@ -2111,9 +1969,9 @@ class displayManager{
 								WHERE m.guid = '".$fileIdentifier."'";
 			$db->setQuery($queryProduct);
 			$product = $db->loadObject();
-			
+		
 			// Créer une entrée pour le produit, avec comme attributs la gratuité, la disponibilité et l'état de publication
-			// et si l'utilisateur à le droit de commande le prouit
+			// et si l'utilisateur à le droit de commande le produit
 			if ($product)
 			{
 				$XMLProduct = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:product", $product->id);
@@ -2122,10 +1980,12 @@ class displayManager{
 				$XMLProduct->setAttribute('free', (int)$product->free);
 				$XMLProduct->setAttribute('file_size', $product->size);
 				$XMLProduct->setAttribute('file_type', $product->type);
+				
 				if(SITE_shop::getProductListCount() > 0)
 					$XMLProduct->setAttribute('orderable', 1);
 				else
 					$XMLProduct->setAttribute('orderable', 0);
+				
 			}
 			else
 			{
@@ -2136,63 +1996,93 @@ class displayManager{
 				$XMLProduct->setAttribute('file_size', '');
 				$XMLProduct->setAttribute('file_type', '');
 			}
+			
 			$XMLSdi->appendChild($XMLProduct);
 		}
 		
 		//Ajoute les actions disponibles
 		$XMLAction = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:action");
 		
+		//Export PDF
 		$XMLActionPDF = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:exportPDF");
 		$XMLActionPDF->setAttribute('id', 'exportPdf');
-		//$XMLActionPDFLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", '![CDATA[window.open(\'./index.php?tmpl=component&option=com_easysdi_core&task=exportPdf&id='.$fileIdentifier.'&type='.$type.'\', \'_self\');]]');
 		$XMLActionPDFLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", htmlentities(JRoute::_('./index.php?tmpl=component&option=com_easysdi_core&task=exportPdf&id='.$fileIdentifier.'&type='.$type.'&context='.$context)));
-		//$XMLActionPDFParams = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:params", '![CDATA[\'_self\']]');
 		$XMLActionPDF->appendChild($XMLActionPDFLink);
-		//$XMLActionPDF->appendChild($XMLActionPDFParams);
 		
+		//Export XML
 		$XMLActionXML = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:exportXML");
 		$XMLActionXML->setAttribute('id', 'exportXml');
-		//$XMLActionXMLLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", '![CDATA[window.open(\'./index.php?tmpl=component&format=raw&option=com_easysdi_core&task=exportXml&id='.$fileIdentifier.'&type='.$type.'\', \'_self\');]]');
-		//$XMLActionXMLLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", '![CDATA[\'./index.php?tmpl=component&format=raw&option=com_easysdi_core&task=exportXml&id='.$fileIdentifier.'&type='.$type.'\']]');
 		$XMLActionXMLLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", htmlentities(JRoute::_('./index.php?tmpl=component&format=raw&option=com_easysdi_core&task=exportXml&id='.$fileIdentifier.'&type='.$type.'&context='.$context)));
-		//$XMLActionXMLParams = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:params", '![CDATA[\'_self\']]');
 		$XMLActionXML->appendChild($XMLActionXMLLink);
-		//$XMLActionXML->appendChild($XMLActionXMLParams);
 		
+		//Print
 		$XMLActionPrint = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:print");
 		$XMLActionPrint->setAttribute('id', 'printMetadata');
-		//$XMLActionPrintLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", '![CDATA[window.open(\'./index.php?tmpl=component&option=com_easysdi_core&task=printMetadata&id='.$fileIdentifier.'&type='.$type.'&toolbar=0&print=1\',\'win2\',\'status=no,toolbar=no,scrollbars=yes,titlebar=no,menubar=no,resizable=yes,width=640,height=480,directories=no,location=no\');]]');
-		//$XMLActionPrintLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", '![CDATA[\'./index.php?tmpl=component&option=com_easysdi_core&task=printMetadata&id='.$fileIdentifier.'&type='.$type.'&toolbar=0&print=1\',\'win2\',\']]');
 		$XMLActionPrintLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", htmlentities(JRoute::_('./index.php?tmpl=component&option=com_easysdi_core&task=printMetadata&id='.$fileIdentifier.'&type='.$type.'&context='.$context.'&toolbar=0&print=1')));
-		//$XMLActionPrintParams = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:params", '![CDATA[\'status=no,toolbar=no,scrollbars=yes,titlebar=no,menubar=no,resizable=yes,width=640,height=480,directories=no,location=no\']]');
 		$XMLActionPrint->appendChild($XMLActionPrintLink);
-		//$XMLActionPrint->appendChild($XMLActionPrintParams);
-		
-		$XMLActionOrder = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:order");
-		$XMLActionOrder->setAttribute('id', 'orderProduct');
-		//$XMLActionOrderLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", '![CDATA[\'./index.php?option=com_easysdi_shop&task=shop\']]');
-		$XMLActionOrderLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", htmlentities(JRoute::_('./index.php?option=com_easysdi_shop&task=shop')));
-		//$XMLActionOrderParams = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:params", '![CDATA[\'_parent\']]');
-		$XMLActionOrder->appendChild($XMLActionOrderLink);
-		//$XMLActionOrder->appendChild($XMLActionOrderParams);
-		
-//		$XMLActionAddToFavorite = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:addtofavorite");
-//		$XMLActionAddToFavorite->setAttribute('id', 'toggleFavorite');
-//		$XMLActionAddToFavoriteLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", '![CDATA[var req = new Ajax(\'./index.php?option=com_easysdi_shop&task=addFavorite&view=&metadata_guid='.$fileIdentifier.', {method: \'get\',onSuccess: function(){},onFailure: function(){}}).request();]]');	
-//		$XMLActionAddToFavorite->appendChild($XMLActionAddToFavoriteLink);
-//		
-//		$XMLActionRemoveFromFavorite = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:removefromfavorite");
-//		$XMLActionRemoveFromFavorite->setAttribute('id', 'toggleFavorite');
-//		$XMLActionRemoveFromFavoriteLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", '![CDATA[var req = new Ajax(\'./index.php?option=com_easysdi_shop&task=removeFavorite&view=&metadata_guid='.$fileIdentifier.', {method: \'get\',onSuccess: function(){},onFailure: function(){}}).request();]]');
-//		$XMLActionRemoveFromFavorite->appendChild($XMLActionRemoveFromFavoriteLink);
 		
 		$XMLAction->appendChild($XMLActionPDF);
 		$XMLAction->appendChild($XMLActionXML);
 		$XMLAction->appendChild($XMLActionPrint);
-		$XMLAction->appendChild($XMLActionOrder);
-//		$XMLAction->appendChild($XMLActionAddToFavorite);
-//		$XMLAction->appendChild($XMLActionRemoveFromFavorite);
 		
+		if ($shopExist == 1)
+		{
+			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_shop'.DS.'core'.DS.'model'.DS.'product.easysdi.class.php');
+			//Order
+			$XMLActionOrder = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:order");
+			$XMLActionOrder->setAttribute('id', 'orderProduct');
+			$XMLActionOrderLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", htmlentities(JRoute::_('./index.php?option=com_easysdi_shop&task=shop')));
+			$XMLActionOrder->appendChild($XMLActionOrderLink);
+			$XMLAction->appendChild($XMLActionOrder);
+			
+			if ($product)
+			{
+				$product_object = new product ($db);
+				$product_object->load($product->id);
+				$productFileName = $product_object->getFileName();
+				
+				/*$query = "select count(*) from #__sdi_product p 
+										INNER JOIN #__sdi_product_file pf ON p.id=pf.product_id 
+										where  p.id = $product->id";
+				$db->setQuery( $query);
+				$hasProductFile = $db->loadResult();
+				if ($db->getErrorNum()) {
+					$hasProductFile = 0;
+				}*/
+				$user = JFactory::getUser();
+				$account = new accountByUserId( $db );
+				$account->load( $user->id );
+				if($product_object->published && $product_object->available && strlen($productFileName) > 0 && $product_object->isUserAllowedToLoad($account->id)){
+					//Link to download the product 
+					$XMLActionDownloadProduct = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:downloadProduct");
+					$XMLActionDownloadProduct->setAttribute('id', 'downloadProduct');
+					$XMLActionDownloadProductLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", htmlentities(JRoute::_('./index.php?tmpl=component&option=com_easysdi_shop&task=downloadAvailableProduct&cid='.$product_object->id.'&toolbar=0&print=1')));
+					$XMLActionDownloadProduct->appendChild($XMLActionDownloadProductLink);
+					$XMLAction->appendChild($XMLActionDownloadProduct);
+				}
+				$query = "select count(*) from #__sdi_product p 
+										where p.viewurlwms != '' AND p.id = $product->id";
+				$db->setQuery( $query);
+				$hasPreview = $db->loadResult();
+				if ($db->getErrorNum()) {
+					$hasPreview = 0;
+				}
+				
+				if($product_object->published && $hasPreview && $product_object->isUserAllowedToView($account->id)){
+					//link to preview the product
+					$query = "select ov.metadata_id from #__sdi_objectversion ov 
+										INNER JOIN #__sdi_product p ON p.objectversion_id=ov.id 
+										where  p.id = $product->id";
+					$db->setQuery( $query);
+					$metadata_id = $db->loadResult();
+					$XMLActionPreviewProduct = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:previewProduct");
+					$XMLActionPreviewProduct->setAttribute('id', 'previewProduct'); 
+					$XMLActionPreviewProductLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", htmlentities(JRoute::_('./index.php?tmpl=component&option=com_easysdi_shop&task=previewProduct&metadata_id='.$metadata_id.'&toolbar=0&print=1')));
+					$XMLActionPreviewProduct->appendChild($XMLActionPreviewProductLink);
+					$XMLAction->appendChild($XMLActionPreviewProduct);
+				}
+			}
+		}
 		$XMLSdi->appendChild($XMLAction);
 		
 		//Ajoute les onglets disponibles
@@ -2224,14 +2114,9 @@ class displayManager{
 		// Stockage des liens parents et enfants
 		$rowMetadata = new metadataByGuid($db);
 		$rowMetadata->load($fileIdentifier);
-		
-		//print_r($rowMetadata);
-		
 		$rowObjectVersion = new objectversionByMetadata_id($db);
 		$rowObjectVersion->load($rowMetadata->id);
-		
-		//print_r($rowObjectVersion);
-		
+			
 		$childs=array();
 		$query = "SELECT m.guid as metadata_guid, o.name as objectname, ot.code as objecttype
 				 FROM #__sdi_metadata m
@@ -2241,7 +2126,6 @@ class displayManager{
 				 INNER JOIN #__sdi_objectversionlink ovl ON ov.id = ovl.child_id
 				 WHERE ovl.parent_id=".$rowObjectVersion->id;
 		$db->setQuery($query);
-		//echo $db->getQuery()."<br>";
 		$childs = $db->loadObjectList();
 		
 		$parents=array();
@@ -2253,7 +2137,6 @@ class displayManager{
 				 INNER JOIN #__sdi_objectversionlink ovl ON ov.id = ovl.parent_id
 				 WHERE ovl.child_id=".$rowObjectVersion->id;
 		$db->setQuery($query);
-		//echo $db->getQuery()."<br>";
 		$parents = $db->loadObjectList();
 		
 		$XMLLinks = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:links");
@@ -2282,7 +2165,6 @@ class displayManager{
 				 FROM #__sdi_application a
 				 WHERE a.object_id=".$object->id;
 		$db->setQuery($query);
-		//echo $db->getQuery()."<br>";
 		$apps = $db->loadObjectList();
 		
 		$XMLExternalApp = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:externalapplications");
@@ -2302,13 +2184,15 @@ class displayManager{
 			$XMLExternalApp->appendChild($XMLApp);
 		}
 		$XMLSdi->appendChild($XMLExternalApp);
-		
-		//$doc->save("C:\RecorderWebGIS\oto_".$fileIdentifier.".xml");
+			
+		//$doc->save("C:/tmp/temp1.xml");
 		                     
 		return $doc;
 	}
 	
-	// Add Itemid and lang to the url
+	/**
+	 *  Add Itemid and lang to the url
+	 */
 	function buildUrl($url)
 	{
 		if (JRequest::getVar('Itemid') and JRequest::getVar('Itemid') <> "")
