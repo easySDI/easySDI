@@ -70,7 +70,7 @@
 		<tstamp/>
 		<echo>Building the war file</echo>
 			
-	    <war warfile="${projet.out.dir}/wps.${DSTAMP}.${TSTAMP}.war" basedir="${projet.work.dir}" />
+	    <war warfile="${projet.out.dir}/sdi_shop.${DSTAMP}.${TSTAMP}.war" basedir="${projet.work.dir}" />
 	</target>
 	
 	

@@ -27,35 +27,6 @@
 	<servlet>
 		<servlet-name>wps</servlet-name>
 		<servlet-class>org.easysdi.services.wps.WPSServlet</servlet-class>
-
-		<init-param>
-			<param-name>connexionString</param-name>
-			<param-value>jdbc:mysql://localhost/asitvd6?user=root&amp;password=&amp;noDatetimeStringSync=true</param-value>
-		</init-param>
-		<init-param>
-			<param-name>joomlaPrefix</param-name>
-			<param-value>jos_</param-value>
-		</init-param>
-		<init-param>
-			<param-name>jdbcDriver</param-name>
-			<param-value>com.mysql.jdbc.Driver</param-value>
-		</init-param>
-		<init-param>
-			<param-name>platformName</param-name>
-			<param-value>EASYSDI</param-value>
-		</init-param>
-		<init-param>
-			<param-name>languageFile</param-name>
-			<param-value>C:\\wamp\\www\\web2\\language\\fr-FR\\fr-FR.com_easysdi_shop.ini</param-value>
-		</init-param>
-		<init-param>
-			<param-name>sender</param-name>
-			<param-value>support@asitvd.ch</param-value>
-		</init-param>
-		<init-param>
-			<param-name>senderTitle</param-name>
-			<param-value>ASIT VD</param-value>
-		</init-param>
 	</servlet>
 
 	<!--  activates security -->

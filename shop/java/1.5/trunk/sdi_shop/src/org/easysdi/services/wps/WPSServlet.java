@@ -42,12 +42,15 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Properties;
 import java.util.Vector;
 import java.util.Random;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -67,6 +70,12 @@ import org.easysdi.security.CurrentUser;
 import org.easysdi.services.wps.Base64Coder;
 import org.easysdi.services.wps.Mailer;
 import org.easysdi.services.wps.PrintfFormat;
+import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.springframework.web.servlet.support.RequestContextUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
@@ -74,31 +83,39 @@ public class WPSServlet extends HttpServlet {
 
 
 	//Connexion string to the joomla database
-	private String connexionString ="jdbc:mysql://localhost/joomla?user=root&password=root&noDatetimeStringSync=true";
+	private String connexionString = "";
 	//Joomla table prefix
-	private String joomlaPrefix = "jos_";
+	private String joomlaPrefix = "";
 	//Jdbc Driver to connect to Joomla 
-	private String jdbcDriver ="com.mysql.jdbc.Driver";
+	private String jdbcDriver ="";
 	//Name of the platform
-	private String platformName = "EASYSDI";
+	private String platformName = "";
 
-	private String languageFile = "C:\\www\\Site\\Joomla\\language\\fr-FR\\fr-FR.com_easysdi_shop.ini";
+	private String languageFile = "";
 
-	private String senderEmail = "webmaster@depth.ch";
+	private String senderEmail = "";
 
-	private String senderName = "Depth SA";
+	private String senderName = "";
 	
 	Logger logger = Logger.getLogger(WPSServlet.class.toString());
+	
+	private Properties prop = new Properties();
 
 
 	public void init(ServletConfig config) throws ServletException {
-		String conn = config.getInitParameter("connexionString");
-		String prefix = config.getInitParameter("joomlaPrefix");
-		String driver = config.getInitParameter("jdbcDriver");
-		String platform = config.getInitParameter("platformName");
-		String language = config.getInitParameter("languageFile");
-		String sender = config.getInitParameter("sender");
-		String senderTitle = config.getInitParameter("senderTitle");
+		//System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.NoOpLog");
+
+		ServletContext servletContext =config.getServletContext();
+		WebApplicationContext wac = WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext);
+	    JDataSource jds = (JDataSource)wac.getBean("jDataSource");
+		
+		String conn = jds.getJdbcUrl()+"?user="+jds.getJdbcUser()+"&password="+jds.getJdbcPwd()+"&noDatetimeStringSync=true";
+		String prefix = jds.getjPrefix();
+		String driver = jds.getJdbcDriver();
+		String platform = jds.getJplatformname();
+		String language = jds.getJlanguagefile();
+		String sender = jds.getjSender();
+		String senderTitle = jds.getjSenderTitle();
 
 		if (conn !=null && conn.length()>0){
 			connexionString= conn;
@@ -127,10 +144,11 @@ public class WPSServlet extends HttpServlet {
 		if (senderTitle !=null && senderTitle.length()>0){
 			senderName = senderTitle;
 		}
-
 	}
 
-
+	String getP(String s){
+		return prop.getProperty(s);
+	}
 
 	public void doPost(HttpServletRequest req, HttpServletResponse resp){    
 
@@ -143,7 +161,7 @@ public class WPSServlet extends HttpServlet {
 				String executeType = execute.getIdentifier().getValue();
 				if (executeType.equalsIgnoreCase("getOrders")){
 					resp.setContentType("text/xml");
-					resp.getOutputStream().write(executeGetOrders(execute).getBytes());
+					resp.getOutputStream().write(executeGetOrders(req, execute).getBytes());
 				}else{		
 					if (executeType.equalsIgnoreCase("setOrder")){
 						resp.setContentType("text/xml");
@@ -208,16 +226,17 @@ public class WPSServlet extends HttpServlet {
 						service = value;
 					}	    
 			}
-
-			if(operation == null){
+			int rand = new Random().nextInt(10000);
+			logger.info("Http Get, id:("+rand+"), returned");
+			if(operation == null){		
 				resp.setContentType("text/xml");
-				resp.getOutputStream().write(error("OPERATIONNOTDEFINED","No operation is not defined in GET method").getBytes());
+				resp.getOutputStream().write(error("OPERATIONNOTDEFINED","No operation is not defined in GET method. Response id ("+rand+")").getBytes());
 			}else if (operation.equalsIgnoreCase("GetCapabilities")){		
 				resp.setContentType("text/xml");		
 				resp.getOutputStream().write(getCapabilities(req).getBytes());
 			}else{
 				resp.setContentType("text/xml");
-				resp.getOutputStream().write(error("OPERATIONNOTDEFINED","This operation is not defined in GET method").getBytes());
+				resp.getOutputStream().write(error("OPERATIONNOTDEFINED","This operation is not defined in GET method. Response id ("+rand+")").getBytes());
 				// Type not allowed
 			}	    	 	    	
 
@@ -287,9 +306,9 @@ public class WPSServlet extends HttpServlet {
 
 
 
-	private String executeGetOrders (net.opengis.wps._1_0.Execute execute){
+	private String executeGetOrders (HttpServletRequest req, net.opengis.wps._1_0.Execute execute){
 		Connection conn = null;
-		logger.info("execute get order called");
+		logger.info("execute get order called by "+req.getRemoteHost());
 		try {
 
 			List lInputs = execute.getDataInputs().getInput();
@@ -367,13 +386,9 @@ public class WPSServlet extends HttpServlet {
 			while (rs.next()) 
 			{
 				String order_id = rs.getString("order_id");
-
 				logger.info("GetOders, sending order->"+order_id);
-
 				orderIdList.add(order_id);
-
 				String name = rs.getString("name");
-
 				int type = rs.getInt("type_id");
 				String third_party = rs.getString("thirdparty_id");
 				String account_id = rs.getString("accountId");
@@ -382,7 +397,6 @@ public class WPSServlet extends HttpServlet {
 				buffer = rs.getInt("buffer");
 
 				// Recuperation du rabais pour le fournisseur
-				/* TODO: hack asitvd */
 				int isRebate = 0;
 				String rebate = "0";
 

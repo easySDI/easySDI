@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <beans xmlns="http://www.springframework.org/schema/beans"
-    xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:security="http://www.springframework.org/schema/security"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
@@ -11,7 +11,51 @@
           http://www.springframework.org/schema/security
           http://www.springframework.org/schema/security/spring-security-3.0.xsd">
 
-	<context:property-placeholder location="/WEB-INF/wps-config.properties" />
+	<!--
+		<context:property-placeholder
+		location="/WEB-INF/wps-config.properties" />
+	-->
+
+	<bean id="propertyPlaceholderConfigurer"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>/WEB-INF/wps-config.properties</value>
+			</list>
+		</property>
+	</bean>
+
+
+	<!-- Class for reading properties within application -->
+	<bean id="jDataSource" class="org.easysdi.services.wps.JDataSource">
+		<property name="jdbcUrl">
+			<value>${joomla.jdbc.url}</value>
+		</property>
+		<property name="jdbcUser">
+			<value>${joomla.jdbc.user}</value>
+		</property>
+		<property name="jdbcPwd">
+			<value>${joomla.jdbc.password}</value>
+		</property>
+		<property name="jPrefix">
+			<value>${joomla.prefix}</value>
+		</property>
+		<property name="jdbcDriver">
+			<value>${joomla.jdbc.driver}</value>
+		</property>
+		<property name="jplatformname">
+			<value>${joomla.platformname}</value>
+		</property>
+		<property name="jlanguagefile">
+			<value>${joomla.languagefile}</value>
+		</property>
+		<property name="jSender">
+			<value>${joomla.sender}</value>
+		</property>
+		<property name="jSenderTitle">
+			<value>${joomla.sendertitle}</value>
+		</property>
+	</bean>
 
 	<!-- Hibernate beans -->
 	<bean id="joomlaDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
