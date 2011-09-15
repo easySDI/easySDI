@@ -253,9 +253,14 @@ class HTML_proxyCSW {
 		
 		<fieldset class="adminform"><legend><?php echo JText::_( 'PROXY_CONFIG_EASYSDI_MD_FILTER'); ?></legend>
 		<table class="admintable">
-				<tr>
-				<td valign="top">
-		<fieldset class="adminform"><legend><?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_OBJECTTYPE'); ?></legend>
+		<tr>
+		<th align="center"><?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_OBJECTTYPE'); ?></th>
+		<th align="center"><?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_VISIBILITY'); ?></th>
+		<th align="center"><?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_STATUS'); ?></th>
+		</tr>
+		<tr>
+		<td valign="top">
+		<fieldset class="adminform">
 			<table class="admintable">
 				<tr>
 					<td >
@@ -293,8 +298,8 @@ class HTML_proxyCSW {
 			</table>
 		</fieldset>
 		</td>
-					<td valign="top" >
-		<fieldset class="adminform"><legend><?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_VISIBILITY'); ?></legend>
+		<td valign="top" >
+		<fieldset class="adminform">
 			<table class="admintable">
 				<tr>
 					<td >
@@ -333,7 +338,7 @@ class HTML_proxyCSW {
 		</fieldset>
 		</td>
 		<td valign="top">
-		<fieldset class="adminform"><legend><?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_STATUS'); ?></legend>
+		<fieldset class="adminform">
 			<table class="admintable">
 				<tr>
 					<td >
