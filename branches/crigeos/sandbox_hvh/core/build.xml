@@ -29,7 +29,7 @@
 
 	<target name="sync" description="Copy from here to apache">
 		<copy
-			todir="C:\www\Server\sigpy\administrator\components\com_easysdi_core">
+			todir="C:\www\Server\crigeos\administrator\components\com_easysdi_core">
 			<fileset dir=".">
 				<include name="**/*.php" />
 				<include name="**/*.xsl" />
@@ -48,7 +48,7 @@
 			</fileset>
 		</copy>
 		<copy
-			todir="C:\www\Server\sigpy\components\com_easysdi_core">
+			todir="C:\www\Server\crigeos\components\com_easysdi_core">
 			<fileset dir="./com_easysdi_core">
 				<include name="**/*.php" />
 				<include name="**/*.xsl" />
@@ -64,19 +64,19 @@
 			</fileset>
 		</copy>
 		<copy		   
-		   todir="C:\www\Server\sigpy\administrator\language\fr-FR">
+			todir="C:\www\Server\crigeos\administrator\language\fr-FR">
 		     <fileset dir="./language/admin">
 		      <include name="**/fr-FR.com_easysdi_core.ini" />
 		     </fileset>
 		    </copy>
 		<copy		   
-		   todir="C:\www\Server\sigpy\administrator\language\en-GB">
+			todir="C:\www\Server\crigeos\administrator\language\en-GB">
 		     <fileset dir="./language/admin">
 		      <include name="**/en-GB.com_easysdi_core.ini" />
 		     </fileset>
 		    </copy>
 		<copy		   
-		   todir="C:\www\Server\sigpy\administrator\language\de-DE">
+			todir="C:\www\Server\crigeos\administrator\language\de-DE">
 		     <fileset dir="./language/admin">
 		      <include name="**/de-DE.com_easysdi_core.ini" />
 		     </fileset>
