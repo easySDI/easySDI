@@ -104,6 +104,21 @@ public class CSWProxyDataAccessibilityManager {
 	 */
 	public boolean isObjectAccessible (String dataId) 
 	{
+		//Is the requested Metadata managed by EasySDI
+		//OR is the requested metadata a harvested one?
+		try{
+			String query = "SELECT m.guid FROM "+ joomlaProvider.getPrefix() +"sdi_metadata m WHERE m.guid = '"+dataId+"'";
+			Map<String, Object> result= joomlaProvider.sjt.queryForMap(query);
+		}catch (IncorrectResultSizeDataAccessException ex)
+		{
+			//The metadata is harvested
+			//If the harvested are allowed, return true.
+			if(policy.getIncludeHarvested())
+				return true;
+			else
+				return false;
+		}
+		
 		if((policy.getObjectVisibilities() == null || policy.getObjectVisibilities().isAll())
 				&& (policy.getObjectTypes()== null || policy.getObjectTypes().isAll())
 				&& (policy.getObjectStatus()== null || policy.getObjectStatus().isAll()))

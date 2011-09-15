@@ -550,16 +550,20 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			{
 				logger.trace("Start - Data Accessibility");
 				CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy, getJoomlaProvider());
-				if(!cswDataManager.isAllEasySDIDataAccessible())
+				if(!cswDataManager.isAllEasySDIDataAccessible() || !policy.getIncludeHarvested())
 				{
 					String dataIDaccessible="";
 					if(!cswDataManager.isObjectAccessible(requestedId))
 					{
+						logger.info(requestedId+" - Requested metadata is not accessible regarding policy restriction. Method isObjectAccessible returned false.");
 						sendProxyBuiltInResponse(resp,cswDataManager.generateEmptyResponse(requestedVersion));
 						return;
 					}
-					if(!cswDataManager.isMetadataAccessible(requestedId))
+					if(!cswDataManager.isMetadataAccessible(requestedId)){
+						logger.info(requestedId+" - Requested metadata version is not accessible regarding policy restriction. Method isMetadataAccessible returned false.");
 						requestedId = cswDataManager.getMetadataVersionAccessible();
+						logger.info(requestedId+" - Requested metadata id was change by method getMetadataVersionAccessible.");
+					}
 					
 					if (requestedId == null)
 					{
@@ -570,20 +574,6 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				logger.trace("End - Data Accessibility");
 				
 			}
-			//GetRecords
-			//TODO : check the validity of this code for the support of the GET GetRecords
-//			else if(currentOperation.equalsIgnoreCase("GetRecords"))
-//			{
-////				dump("INFO","Start - Data Accessibility");
-////				CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy, getJoomlaProvider());
-////				if(!cswDataManager.isAllDataAccessible())
-////				{
-////					cswDataManager.getAccessibleDataIds();
-////					//Add a filter on the data id in the request
-//////					constraint = cswDataManager.addFilterOnDataAccessible(configuration.getOgcSearchFilter(), URLDecoder.decode(constraint, "UTF-8"));
-//////					dump("INFO", "GetRecords request send : "+constraint);
-////				}
-//			}
 			
 			// Build the request to dispatch
 			parameterNames = req.getParameterNames();
@@ -790,19 +780,24 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				logger.trace("Start - Data Accessibility");
 				CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy, getJoomlaProvider());
 				String dataId = rh.getRecordId();
-				if(!cswDataManager.isAllEasySDIDataAccessible())
+				if(!cswDataManager.isAllEasySDIDataAccessible() || !policy.getIncludeHarvested())
 				{
 					String dataIDaccessible="";
 					if(!cswDataManager.isObjectAccessible(dataId))
 					{
+						logger.info(dataId+" - Requested metadata is not accessible regarding policy restriction. Method isObjectAccessible returned false.");
 						sendProxyBuiltInResponse(resp,cswDataManager.generateEmptyResponse(requestedVersion));
 						return;
 					}
-					if(!cswDataManager.isMetadataAccessible(dataId))
+					if(!cswDataManager.isMetadataAccessible(dataId)){
+						logger.info(dataId+" - Requested metadata version is not accessible regarding policy restriction. Method isMetadataAccessible returned false.");
 						dataId = cswDataManager.getMetadataVersionAccessible();
+						logger.info(dataId+" - Requested metadata id was change by method getMetadataVersionAccessible.");
+					}
 					
 					if (dataId == null)
 					{
+						logger.debug("Metadata id is Null. Return an empty response");
 						sendProxyBuiltInResponse(resp,cswDataManager.generateEmptyResponse(requestedVersion));
 						return;
 					}
