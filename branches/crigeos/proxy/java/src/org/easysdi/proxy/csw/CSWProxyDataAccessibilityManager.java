@@ -2,13 +2,17 @@ package org.easysdi.proxy.csw;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.io.Reader;
 import java.io.StringBufferInputStream;
+import java.io.StringReader;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import org.easysdi.jdom.filter.ElementConstraintFilter;
 import org.easysdi.proxy.policy.Policy;
 import org.easysdi.proxy.policy.Status;
 import org.easysdi.security.JoomlaProvider;
@@ -41,19 +45,39 @@ public class CSWProxyDataAccessibilityManager {
 	}
 
 	/**
-	 * 
+	 * Check if filters are defined in the loaded policy.
+	 * Included the geographic filter only usefull in a GetRecords operation 
 	 * @return
 	 */
-	public boolean isAllDataAccessible ()
+	public boolean isAllDataAccessibleForGetRecords ()
 	{
-		if(     (policy.getObjectVisibilities() == null || policy.getObjectVisibilities().isAll()) 
+		if( (policy.getObjectVisibilities() == null || policy.getObjectVisibilities().isAll()) 
 			&& (policy.getObjectTypes()== null || policy.getObjectTypes().isAll())
-			&& (policy.getObjectStatus()== null || policy.getObjectStatus().isAll()))
+			&& (policy.getObjectStatus()== null || policy.getObjectStatus().isAll())
+			&& (policy.getGeographicFilter() == null || policy.getGeographicFilter().length() == 0))
 		{
 			return true;
 		}
 		return false;
 	}
+	
+	/**
+	 * Check if filters on the EASYSDI MD are defined in the loaded policy.
+	 *  
+	 * @return
+	 */
+	public boolean isAllEasySDIDataAccessible ()
+	{
+		if( (policy.getObjectVisibilities() == null || policy.getObjectVisibilities().isAll()) 
+			&& (policy.getObjectTypes()== null || policy.getObjectTypes().isAll())
+			&& (policy.getObjectStatus()== null || policy.getObjectStatus().isAll())
+			)
+		{
+			return true;
+		}
+		return false;
+	}
+	
 	
 	/**
 	 * @return the dataIdVersionAccessible
@@ -80,6 +104,21 @@ public class CSWProxyDataAccessibilityManager {
 	 */
 	public boolean isObjectAccessible (String dataId) 
 	{
+		//Is the requested Metadata managed by EasySDI
+		//OR is the requested metadata a harvested one?
+		try{
+			String query = "SELECT m.guid FROM "+ joomlaProvider.getPrefix() +"sdi_metadata m WHERE m.guid = '"+dataId+"'";
+			Map<String, Object> result= joomlaProvider.sjt.queryForMap(query);
+		}catch (IncorrectResultSizeDataAccessException ex)
+		{
+			//The metadata is harvested
+			//If the harvested are allowed, return true.
+			if(policy.getIncludeHarvested())
+				return true;
+			else
+				return false;
+		}
+		
 		if((policy.getObjectVisibilities() == null || policy.getObjectVisibilities().isAll())
 				&& (policy.getObjectTypes()== null || policy.getObjectTypes().isAll())
 				&& (policy.getObjectStatus()== null || policy.getObjectStatus().isAll()))
@@ -281,8 +320,8 @@ public class CSWProxyDataAccessibilityManager {
 		
 		
 		//Accessible objects
-		if((policy.getObjectVisibilities() != null && !policy.getObjectVisibilities().isAll()) 
-				|| (policy.getObjectTypes()!= null && !policy.getObjectTypes().isAll()))
+		if((policy.getObjectVisibilities() != null && policy.getObjectVisibilities().getVisibilities()!= null && policy.getObjectVisibilities().getVisibilities().size() != 0  && !policy.getObjectVisibilities().isAll()) 
+				|| (policy.getObjectTypes()!= null && policy.getObjectTypes().getObjectTypes() != null && policy.getObjectTypes().getObjectTypes().size() != 0 &&  !policy.getObjectTypes().isAll()))
 		{
 			String listVisibility = "";
 			if(policy.getObjectVisibilities() != null && !policy.getObjectVisibilities().isAll())
@@ -473,6 +512,51 @@ public class CSWProxyDataAccessibilityManager {
 	 * @param param
 	 * @param ids
 	 * @return
+	 * 
+	 	<ogc:Filter xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml">
+			<ogc:And>
+				<ogc:Or>
+					<ogc:PropertyIsLike wildCard="%" singleChar="_" escapeChar="\">
+						<ogc:PropertyName>mainsearch_FR</ogc:PropertyName>
+						<ogc:Literal>%free%</ogc:Literal>
+					</ogc:PropertyIsLike>
+					<ogc:PropertyIsLike wildCard="%" singleChar="_" escapeChar="\">
+						<ogc:PropertyName>mainsearch_FR</ogc:PropertyName>
+						<ogc:Literal>%free%</ogc:Literal>
+					</ogc:PropertyIsLike>
+					<ogc:PropertyIsLike wildCard="%" singleChar="_" escapeChar="\">
+						<ogc:PropertyName>mainsearch_FR</ogc:PropertyName>
+						<ogc:Literal>%free%</ogc:Literal>
+					</ogc:PropertyIsLike>
+				</ogc:Or>
+				<ogc:PropertyIsLike wildCard="%" singleChar="_" escapeChar="\">
+					<ogc:PropertyName>titleFR</ogc:PropertyName>
+					<ogc:Literal>%title%</ogc:Literal>
+				</ogc:PropertyIsLike>
+				<ogc:Or>
+					<ogc:And>
+						<ogc:Or>
+							<ogc:PropertyIsEqualTo>
+								<ogc:PropertyName>fileId</ogc:PropertyName>
+								<ogc:Literal>a876b544-5be3-4250-93f8-d5852fe05256</ogc:Literal>
+							</ogc:PropertyIsEqualTo>
+							<ogc:PropertyIsEqualTo>
+								<ogc:PropertyName>fileId</ogc:PropertyName>
+								<ogc:Literal>a876b544-5be3-4250-93f8-d5852fe05256</ogc:Literal>
+							</ogc:PropertyIsEqualTo>
+						</ogc:Or>
+						<ogc:PropertyIsEqualTo>
+							<ogc:PropertyName>harvested</ogc:PropertyName>
+							<ogc:Literal>false</ogc:Literal>
+						</ogc:PropertyIsEqualTo>
+					</ogc:And>
+					<ogc:PropertyIsEqualTo>
+						<ogc:PropertyName>harvested</ogc:PropertyName>
+						<ogc:Literal>true</ogc:Literal>
+					</ogc:PropertyIsEqualTo>
+				</ogc:Or>
+			</ogc:And>
+		</ogc:Filter> 
 	 */
 	public StringBuffer addFilterOnDataAccessible (String ogcSearchFilter, StringBuffer param)
 	{
@@ -491,7 +575,7 @@ public class CSWProxyDataAccessibilityManager {
 	    	Element elementAnd = null;
 	    	Element elementOr = null;
 	    	
-	    	Filter filtre = new CSWProxyMetadataConstraintFilter();
+	    	Filter filtre = new ElementConstraintFilter();
 	    	Iterator it= docParent.getDescendants(filtre);
 			  
 	    	
@@ -523,8 +607,7 @@ public class CSWProxyDataAccessibilityManager {
 						elementConstraint.addContent(elementFilter);
 				}
 			}
-			
-			
+					
 			List<Element> filterChildren = elementFilter.getChildren();
 			for(int i = 0 ; i<filterChildren.size() ; i++)
 			{
@@ -546,31 +629,125 @@ public class CSWProxyDataAccessibilityManager {
 				}
 				elementFilter.addContent(elementAnd);
 			}
-			
-			
-			//<Or>
-			//Add the "Or" node
-			elementOr = new Element("Or", nsOGC);
-			elementAnd.addContent(elementOr);
+			//Get the list of authorized Ids
 			List<Map<String,Object>> ids = getAccessibleDataIds();
 			
-			//No Metadata accessible
-			if(ids == null)
+			Element secondElementAnd = new Element ("And", nsOGC);
+			
+			//No Metadata accessible : set explicitly a fake metadata id in the request
+			if( !isAllEasySDIDataAccessible() && (ids == null || ids.size() == 0))
 			{
-				return null;
-			}
-			for (int m = 0; m<ids.size() ; m++)
-			{
+				//<Or>
+				//Add the "Or" node
+				elementOr = new Element("Or", nsOGC);
+				elementAnd.addContent(elementOr);
+				
+				//<And>
+				//Add a "and" node
+				elementOr.addContent(secondElementAnd);
+				
+				//<Or>
+				//Add a "Or" node
+				Element secondElementOr = new Element("Or", nsOGC);
+				secondElementAnd.addContent(secondElementOr);
 				Element elementProperty = new Element("PropertyIsEqualTo", nsOGC);
-					elementOr.addContent(elementProperty);
+					secondElementOr.addContent(elementProperty);
 				Element elementName = new Element("PropertyName", nsOGC);
 					elementProperty.addContent(elementName);
 				elementName.setText(ogcSearchFilter);
 				Element elementLiteral = new Element("Literal", nsOGC);
 					elementProperty.addContent(elementLiteral);
-				elementLiteral.setText(ids.get(m).get("guid").toString());
+				elementLiteral.setText("-1");
+				
+				Element elementHarvestedValueFalse = new Element("PropertyIsEqualTo", nsOGC);
+				secondElementAnd.addContent(elementHarvestedValueFalse);
+				Element elementName1 = new Element("PropertyName", nsOGC);
+				elementHarvestedValueFalse.addContent(elementName1);
+				elementName1.setText("harvested");
+				Element elementLiteral1 = new Element("Literal", nsOGC);
+				elementHarvestedValueFalse.addContent(elementLiteral1);
+				elementLiteral1.setText("false");
+				
+				if(policy.getIncludeHarvested()){
+					Element elementHarvestedValueTrue = new Element("PropertyIsEqualTo", nsOGC);
+					elementOr.addContent(elementHarvestedValueTrue);
+					Element elementName2 = new Element("PropertyName", nsOGC);
+					elementHarvestedValueTrue.addContent(elementName2);
+					elementName2.setText("harvested");
+					Element elementLiteral2 = new Element("Literal", nsOGC);
+					elementHarvestedValueTrue.addContent(elementLiteral2);
+					elementLiteral2.setText("true");
+				}
+			} else if (isAllEasySDIDataAccessible()  && (ids == null || ids.size() == 0) ){
+				//There is only a geographical restriction defined in the policy
+				
+				//If harvested MD have to be excluded
+				if(!policy.getIncludeHarvested()){
+					Element elementHarvestedValueFalse = new Element("PropertyIsEqualTo", nsOGC);
+					elementAnd.addContent(elementHarvestedValueFalse);
+					Element elementName = new Element("PropertyName", nsOGC);
+					elementHarvestedValueFalse.addContent(elementName);
+					elementName.setText("harvested");
+					Element elementLiteral = new Element("Literal", nsOGC);
+					elementHarvestedValueFalse.addContent(elementLiteral);
+					elementLiteral.setText("false");
+				}
 			}
-			
+			else{
+				//<Or>
+				//Add the "Or" node
+				elementOr = new Element("Or", nsOGC);
+				elementAnd.addContent(elementOr);
+				
+				//<And>
+				//Add a "and" node
+				elementOr.addContent(secondElementAnd);
+				
+				//<Or>
+				//Add a "Or" node
+				Element secondElementOr = new Element("Or", nsOGC);
+				secondElementAnd.addContent(secondElementOr);
+				//Add the list of authorized Ids
+				for (int m = 0; m<ids.size() ; m++)
+				{
+					Element elementProperty = new Element("PropertyIsEqualTo", nsOGC);
+						secondElementOr.addContent(elementProperty);
+					Element elementName = new Element("PropertyName", nsOGC);
+						elementProperty.addContent(elementName);
+					elementName.setText(ogcSearchFilter);
+					Element elementLiteral = new Element("Literal", nsOGC);
+						elementProperty.addContent(elementLiteral);
+					elementLiteral.setText(ids.get(m).get("guid").toString());
+				}
+
+				Element elementHarvestedValueFalse = new Element("PropertyIsEqualTo", nsOGC);
+				secondElementAnd.addContent(elementHarvestedValueFalse);
+				Element elementName = new Element("PropertyName", nsOGC);
+				elementHarvestedValueFalse.addContent(elementName);
+				elementName.setText("harvested");
+				Element elementLiteral = new Element("Literal", nsOGC);
+				elementHarvestedValueFalse.addContent(elementLiteral);
+				elementLiteral.setText("false");
+				
+				if(policy.getIncludeHarvested()){
+					Element elementHarvestedValueTrue = new Element("PropertyIsEqualTo", nsOGC);
+					elementOr.addContent(elementHarvestedValueTrue);
+					Element elementName2 = new Element("PropertyName", nsOGC);
+					elementHarvestedValueTrue.addContent(elementName2);
+					elementName2.setText("harvested");
+					Element elementLiteral2 = new Element("Literal", nsOGC);
+					elementHarvestedValueTrue.addContent(elementLiteral2);
+					elementLiteral2.setText("true");
+				}
+			}
+	
+			//Add a geographic filter if one defined in the loaded policy
+			if(policy.getGeographicFilter() != null && policy.getGeographicFilter().length()!= 0){
+				SAXBuilder builder = new SAXBuilder();
+				Reader in = new StringReader(policy.getGeographicFilter());
+				Document filterDoc = builder.build(in);
+				elementAnd.addContent(filterDoc.getRootElement().detach());
+			}
 			
 			//Return
 			XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());

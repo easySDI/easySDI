@@ -153,7 +153,12 @@ echo $pane->endPanel();
 					<td>
 					<?php echo JHTML::_("select.genericlist",$availableServletList, 'servletClass', 'size="1" onChange="submit()"', 'value', 'text', $servletClass ); ?>
 					</td>
-					
+					<?php if ($servletClass == "org.easysdi.proxy.csw.CSWProxyServlet"){?>
+					<td>
+						<?php echo JText::_( 'EASYSDI_SERVLET_CSW_HARVESTING' );?>
+						<input type="checkbox" name="harvestingConfig" value="1" <?php if($config->{"harvesting-config"}=="true"){echo "checked";}?> />
+					</td>
+					<?php }?>
 				</tr>
 			</table>
 			</fieldset>
@@ -958,6 +963,34 @@ echo $pane->endPanel();
 			<p>
 			<?php 
 			//echo JText::_(  'EASYSDI_HELP_TEMPLATE_FILTER_TYPE_QUERY_REM' );
+			?>
+			</p>
+			<?php
+		
+	}
+	
+	function helpGeoGraphicalFilter ()
+	{
+		?>
+		<h2>
+		<?php echo JText::_(  'EASYSDI_HELP_TEMPLATE_TITLE' ); ?>
+		</h2>
+		<h3>
+		<?php echo JText::_(  'EASYSDI_HELP_GEOGRAPHICAL_FILTER' ); ?>
+		</h3>
+		
+		
+		<textarea ROWS="8" COLS="75"><ogc:BBOX xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml">
+        <ogc:PropertyName>BoundingBox</ogc:PropertyName>
+          <gml:Envelope>
+            <gml:lowerCorner>-17 -34</gml:lowerCorner>
+            <gml:upperCorner>-16.5 -33.5</gml:upperCorner>
+          </gml:Envelope>
+</ogc:BBOX></textarea>
+		
+			<p>
+			<?php 
+			echo JText::_(  'EASYSDI_HELP_GEOGRAPHICAL_FILTER_REM' );
 			?>
 			</p>
 			<?php

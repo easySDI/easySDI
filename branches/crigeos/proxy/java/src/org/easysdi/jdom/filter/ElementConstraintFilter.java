@@ -23,7 +23,7 @@ import org.jdom.filter.*;
  * @author DEPTH SA
  *
  */
-public class ElementExceptionFilter implements Filter
+public class ElementConstraintFilter implements Filter
 {
 	private static final long serialVersionUID = 1L;
 	
@@ -35,7 +35,7 @@ public class ElementExceptionFilter implements Filter
 
          //Filter to use against Elements
          Element element = (Element)ob;
-         if(element.getName().equals("Exception"))
+         if(element.getQualifiedName().equals("csw:Constraint"))
          {
         	 return true;
          }

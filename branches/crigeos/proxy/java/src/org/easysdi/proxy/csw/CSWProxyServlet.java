@@ -18,8 +18,6 @@ package org.easysdi.proxy.csw;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -28,33 +26,21 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.io.StringBufferInputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 import java.util.UUID;
 import java.util.Vector;
-import java.util.zip.CRC32;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -62,20 +48,10 @@ import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.commons.httpclient.HttpURL;
 import org.easysdi.proxy.core.ProxyServlet;
 import org.easysdi.proxy.exception.AvailabilityPeriodException;
-import org.easysdi.proxy.ows.v200.OWS200ExceptionReport;
-import org.easysdi.security.JoomlaProvider;
 import org.easysdi.xml.documents.RemoteServerInfo;
-import org.easysdi.xml.handler.ConfigFileHandler;
 import org.easysdi.xml.handler.CswRequestHandler;
-import org.easysdi.xml.handler.GeonetworkSearchResultHandler;
-import org.easysdi.xml.handler.PolicyHandler;
-import org.easysdi.xml.handler.RequestHandler;
-import org.jdom.Element;
-import org.jdom.input.SAXBuilder;
-import org.jdom.xpath.XPath;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
@@ -112,7 +88,6 @@ public class CSWProxyServlet extends ProxyServlet {
 		logger.error(errorMessage);
 		StringBuffer sb = new StringBuffer("<?xml version='1.0' encoding='utf-8'?>\n");
 		sb.append("<ows:ExceptionReport xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" version=\"1.0.0\" xsi:schemaLocation=\"http://www.opengis.net/ows http://schemas.opengis.net/ows/1.0.0/owsExceptionReport.xsd\">\n");
-//		sb.append("<ows:ExceptionReport version=\"1.0.0\" >\n");
 		sb.append("\t<ows:Exception ");
 		if(code != null && code != "")
 		{
@@ -364,32 +339,6 @@ public class CSWProxyServlet extends ProxyServlet {
 			CSWCapabilities200.append("</ows:Post>");
 			CSWCapabilities200.append("</xsl:template>");
 
-//			Iterator<String> it = permitedOperations.iterator();
-//
-//			boolean first = true;
-//			while (it.hasNext()) {
-//				if (first) {
-//					CSWCapabilities200.append("<xsl:template match=\"ows:OperationsMetadata/ows:Operation\"></xsl:template>");
-//					first = false;
-//				}
-//				String text = it.next();
-//				if (text != null) {
-//					CSWCapabilities200.append("<xsl:template match=\"ows:OperationsMetadata/ows:Operation[@name='");
-//
-//					CSWCapabilities200.append(text);
-//
-//					CSWCapabilities200.append("']\">");
-//
-//					CSWCapabilities200.append("<!-- Copy the current node -->");
-//					CSWCapabilities200.append("<xsl:copy>");
-//					CSWCapabilities200.append("<!-- Including any attributes it has and any child nodes -->");
-//					CSWCapabilities200.append("<xsl:apply-templates select=\"@*|node()\"/>");
-//					CSWCapabilities200.append("</xsl:copy>");
-//
-//					CSWCapabilities200.append("</xsl:template>");
-//				}
-//			}
-
 			if (hasPolicy) {
 				if (!policy.getOperations().isAll() || deniedOperations.size() > 0) {
 					Iterator<String> it = permitedOperations.iterator();
@@ -423,13 +372,6 @@ public class CSWProxyServlet extends ProxyServlet {
 			{
 				CSWCapabilities200.append("<xsl:template match=\"ows:OperationsMetadata/ows:Operation\"></xsl:template>");
 			}
-//			it = deniedOperations.iterator();
-//			while (it.hasNext()) {
-//				CSWCapabilities200.append("<xsl:template match=\"ows:OperationsMetadata/ows:Operation[@name='");
-//				CSWCapabilities200.append(it.next());
-//				CSWCapabilities200.append("']\"></xsl:template>");
-//			}
-			
 
 			CSWCapabilities200.append("  <!-- Whenever you match any node or any attribute -->");
 			CSWCapabilities200.append("<xsl:template match=\"node()|@*\">");
@@ -801,12 +743,6 @@ public class CSWProxyServlet extends ProxyServlet {
 		{
 			logger.error( e.getMessage());
 			sendOgcExceptionBuiltInResponse(resp,generateOgcException(e.getMessage(),"OperationNotSupported ","request",requestedVersion));
-//			resp.setStatus(401);
-//			try {
-//				resp.getWriter().println(e.getMessage());
-//			} catch (IOException e1) {
-//				e1.printStackTrace();
-//			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error( e.toString());
@@ -930,41 +866,3 @@ public class CSWProxyServlet extends ProxyServlet {
 
 	}
 }
-
-/*
- * 
- * http://localhost:8082/geonetwork/srv/en/xml.search?any=8888
- * http://localhost:8082/geonetwork/srv/en/metadata.delete?id=903
- * 
- * 
- * 
- * <csw:Transaction service="CSW" version="2.0.0"
- * xmlns:csw="http://www.opengis.net/cat/csw"
- * xmlns:dc="http://www.purl.org/dc/elements/1.1/"
- * xmlns:ogc="http://www.opengis.net/ogc"> <csw:Delete typeName="csw:Record">
- * <csw:Constraint version="2.0.0"> <ogc:Filter> <ogc:PropertyIsEqualTo>
- * <ogc:PropertyName>/csw:Record/dc:contributor</ogc:PropertyName>
- * <ogc:Literal>Jane</ogc:Literal> </ogc:PropertyIsEqualTo> </ogc:Filter>
- * </csw:Constraint> </csw:Delete> </csw:Transaction>
- * 
- * 
- * <csw:TransactionResponse xmlns:csw="http://www.opengis.net/cat/csw"
- * xmlns:dc="http://www.purl.org/dc/elements/1.1/"
- * xmlns:dct="http://www.purl.org/dc/terms/"> <csw:TransactionSummary>
- * <csw:totalDeleted>1</csw:totalDeleted> </csw:TransactionSummary>
- * </csw:TransactionResponse>
- * 
- * 
- * 
- * <csw:Transaction service="CSW" version="2.0.0"
- * xmlns:csw="http://www.opengis.net/cat/csw" > <csw:Insert> <Record
- * xmlns="http://www.opengis.net/cat/csw"
- * xmlns:dc="http://www.purl.org/dc/elements/1.1/"
- * xmlns:dct="http://www.purl.org/dc/terms/"
- * xmlns:ows="http://www.opengis.net/ows" > <dc:contributor
- * scheme="http://www.example.com">John</dc:contributor> <dc:identifier
- * >REC-2</dc:identifier> <ows:WGS84BoundingBox crs="urn:opengis:crs:OGC:2:84"
- * dimensions="2"> <ows:LowerCorner>12 12</ows:LowerCorner> <ows:UpperCorner>102
- * 102</ows:UpperCorner> </ows:WGS84BoundingBox> </Record> </csw:Insert>
- * </csw:Transaction>
- */

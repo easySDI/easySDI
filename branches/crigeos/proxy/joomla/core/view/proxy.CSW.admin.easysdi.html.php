@@ -250,7 +250,56 @@ class HTML_proxyCSW {
 				</tr>
 			</table>
 		</fieldset>
-		<fieldset class="adminform"><legend><?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_VISIBILITY'); ?></legend>
+		
+		<fieldset class="adminform"><legend><?php echo JText::_( 'PROXY_CONFIG_EASYSDI_MD_FILTER'); ?></legend>
+		<table class="admintable">
+		<tr>
+		<th align="center"><?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_OBJECTTYPE'); ?></th>
+		<th align="center"><?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_VISIBILITY'); ?></th>
+		<th align="center"><?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_STATUS'); ?></th>
+		</tr>
+		<tr>
+		<td valign="top">
+		<fieldset class="adminform">
+			<table class="admintable">
+				<tr>
+					<td >
+						<?php if (strcasecmp($thePolicy->ObjectTypes['All'],'True')==0 || !$thePolicy->ObjectTypes ){$checkedC='checked';} ?>	
+						<input <?php echo $checkedC; ?>
+							   type="checkBox" 
+							   name="AllObjectType[]" 
+							   id="AllObjectType" 
+							   onclick="disableCheckBoxes('AllObjectType','objectType[]');">
+							   <?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_OBJECTTYPE_ALL'); ?>
+					</td>
+					<?php 
+					foreach ($rowsObjectTypes as $objectType)
+					{
+						?>
+						<td>
+						<input type="checkBox" 
+							   name="objectType[]" 
+							   id="<?php echo $objectType->value;?>" 
+							   value="<?php echo $objectType->value;?>" 
+							   <?php if (strcasecmp($checkedC,'checked')==0){echo 'disabled checked';} ?>
+							   <?php foreach ($thePolicy->ObjectTypes->ObjectType as $policyObjectType)
+							   {
+							   		if(strcasecmp($objectType->value,$policyObjectType)==0) echo 'checked';			
+							   }?>
+						><?php echo JText::_($objectType->text); ?>
+						</td>
+						</tr>
+						<tr>
+						<td></td>
+						<?php 
+					}
+					?>
+				</tr>
+			</table>
+		</fieldset>
+		</td>
+		<td valign="top" >
+		<fieldset class="adminform">
 			<table class="admintable">
 				<tr>
 					<td >
@@ -287,7 +336,9 @@ class HTML_proxyCSW {
 				</tr>
 			</table>
 		</fieldset>
-		<fieldset class="adminform"><legend><?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_STATUS'); ?></legend>
+		</td>
+		<td valign="top">
+		<fieldset class="adminform">
 			<table class="admintable">
 				<tr>
 					<td >
@@ -360,44 +411,42 @@ class HTML_proxyCSW {
 				</tr>
 			</table>
 		</fieldset>
-		<fieldset class="adminform"><legend><?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_OBJECTTYPE'); ?></legend>
+		</td>
+		
+		</tr>
+		</table>
+	</fieldset>
+	<fieldset class="adminform"><legend><?php echo JText::_( 'PROXY_CONFIG_HARVESTED_MD_FILTER'); ?></legend>
 			<table class="admintable">
 				<tr>
 					<td >
-						<?php if (strcasecmp($thePolicy->ObjectTypes['All'],'True')==0 || !$thePolicy->ObjectTypes ){$checkedC='checked';} ?>	
-						<input <?php echo $checkedC; ?>
-							   type="checkBox" 
-							   name="AllObjectType[]" 
-							   id="AllObjectType" 
-							   onclick="disableCheckBoxes('AllObjectType','objectType[]');">
-							   <?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_OBJECTTYPE_ALL'); ?>
+					<?php echo JText::_( 'PROXY_CONFIG_HARVESTED_MD_INCLUDE'); ?>
 					</td>
-					<?php 
-					foreach ($rowsObjectTypes as $objectType)
-					{
-						?>
-						<td>
-						<input type="checkBox" 
-							   name="objectType[]" 
-							   id="<?php echo $objectType->value;?>" 
-							   value="<?php echo $objectType->value;?>" 
-							   <?php if (strcasecmp($checkedC,'checked')==0){echo 'disabled checked';} ?>
-							   <?php foreach ($thePolicy->ObjectTypes->ObjectType as $policyObjectType)
-							   {
-							   		if(strcasecmp($objectType->value,$policyObjectType)==0) echo 'checked';			
-							   }?>
-						><?php echo JText::_($objectType->text); ?>
-						</td>
-						</tr>
-						<tr>
-						<td></td>
-						<?php 
-					}
-					?>
+					<td >
+					<input type="radio" name="IncludeHarvested" value="true" <?php if($thePolicy->IncludeHarvested != "false") echo "checked"; ?>> <?php echo JText::_( 'CORE_YES'); ?>
+					<input type="radio" name="IncludeHarvested" value="false" <?php if($thePolicy->IncludeHarvested == "false") echo "checked"; ?>> <?php echo JText::_( 'CORE_NO'); ?>
+					</td>
 				</tr>
 			</table>
 		</fieldset>
-	
+		
+		
+		<fieldset class="adminform"><legend><?php echo JText::_( 'PROXY_CONFIG_CSW_GEOGRAPHICAL_FILTER'); ?> 
+			<a class="modal" href="./index.php?option=com_easysdi_proxy&tmpl=component&task=helpGeoGraphicalFilter" rel="{handler:'iframe',size:{x:600,y:320}}"> 	
+						<img class="helpTemplate" 
+						     src="../templates/easysdi/icons/silk/help.png" 
+							 alt="<?php echo JText::_("PROXY_CONFIG_CSW_GEOGRAPHICAL_FILTER_TEMPLATE") ?>" />	
+					</a></legend>
+			<table class="admintable">
+				<tr>
+					<td >
+						<textarea rows="8" cols="80" id="GeographicFilter" name="GeographicFilter" >
+						<?php if (strcmp($thePolicy->GeographicFilter,"")!=0){echo $thePolicy->GeographicFilter;}?>
+						</textarea>
+					</td>
+				</tr>
+			</table>
+		</fieldset>
 		<?php
 		$remoteServerList = $config->{'remote-server-list'};
 		$iServer=0;

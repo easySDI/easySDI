@@ -31,6 +31,9 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 
+import org.easysdi.jdom.filter.AttributeXlinkFilter;
+import org.easysdi.jdom.filter.ElementExceptionReportFilter;
+import org.easysdi.jdom.filter.ElementFragmentFilter;
 import org.easysdi.proxy.core.ProxyServlet;
 import java.util.Iterator;
 import org.jdom.*;
@@ -71,7 +74,7 @@ public class CSWProxyMetadataContentManager
 			return;
 		}
 		
-		Filter filtre = new CSWProxyMetadataFragmentFilter(fragment);
+		Filter filtre = new ElementFragmentFilter(fragment);
 		Iterator it= elementChild.getDescendants(filtre);
 		  
 		while(it.hasNext())
@@ -90,7 +93,7 @@ public class CSWProxyMetadataContentManager
 	    	Document  docParent = sxb.build(new File(filePath));
 	    	Element racine = docParent.getRootElement();
 	      
-	    	Filter filtre = new CSWProxyMetadataContentFilter();
+	    	Filter filtre = new AttributeXlinkFilter();
 	    	
 	    	//We can not modify Elements while we loop over them with an iterator.
 	    	//We have to use a separate List storing the Elements we want to modify.	    	
@@ -125,7 +128,7 @@ public class CSWProxyMetadataContentManager
 				//Check if the response is an Ogc Exception
 				Document documentChild = sxb.build(xmlChild);
 				Element elementChild = documentChild.getRootElement();
-				Filter exceptionFilter = new CSWProxyMetadataExceptionFilter();
+				Filter exceptionFilter = new ElementExceptionReportFilter();
 				List  l = elementChild.getContent(exceptionFilter);
 				if(l.size() > 0)
 				{

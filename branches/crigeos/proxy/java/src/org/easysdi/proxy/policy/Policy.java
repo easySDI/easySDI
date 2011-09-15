@@ -46,10 +46,16 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "availabilityPeriod", "imageSize", "operations", "servers", "subjects","objectVisibilities", "objectStatus","objectTypes"})
+@XmlType(name = "", propOrder = { "availabilityPeriod", "imageSize", "operations", "servers", "subjects","objectVisibilities", "objectStatus","objectTypes","geographicFilter", "includeHarvested" })
 @XmlRootElement(name = "Policy")
 public class Policy implements Serializable {
 
+	
+
+	@XmlElement(name = "IncludeHarvested")
+	protected Boolean includeHarvested=false;
+	@XmlElement(name = "GeographicFilter")
+	protected String geographicFilter;
 	@XmlElement(name = "ObjectVisibilities")
 	protected ObjectVisibilities objectVisibilities;
 	@XmlElement(name = "ObjectTypes")
@@ -82,6 +88,10 @@ public class Policy implements Serializable {
 			hashCode += getObjectVisibilities().hashCode();
 		if (getObjectStatus() != null)
 			hashCode += getObjectStatus().hashCode();
+		if (includeHarvested != null)
+			hashCode += includeHarvested.hashCode();
+		if (geographicFilter != null)
+			hashCode += geographicFilter.hashCode();
 		if (availabilityPeriod != null)
 			hashCode += availabilityPeriod.hashCode();
 		if (imageSize != null)
@@ -101,6 +111,33 @@ public class Policy implements Serializable {
 		return hashCode;
 	}
 
+	/**
+	 * @return the includeHarvested
+	 */
+	public Boolean getIncludeHarvested() {
+		return includeHarvested;
+	}
+
+	/**
+	 * @param includeHarvested the includeHarvested to set
+	 */
+	public void setIncludeHarvested(Boolean includeHarvested) {
+		this.includeHarvested = includeHarvested;
+	}
+	
+	/**
+	 * @return the geographicFilter
+	 */
+	public String getGeographicFilter() {
+		return geographicFilter;
+	}
+
+	/**
+	 * @param geographicFilter the geographicFilter to set
+	 */
+	public void setGeographicFilter(String geographicFilter) {
+		this.geographicFilter = geographicFilter;
+	}
 	/**
 	 * Gets the value of the availabilityPeriod property.
 	 * 

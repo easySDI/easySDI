@@ -28,8 +28,6 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import com.sun.corba.se.impl.encoding.OSFCodeSetRegistry;
-
 
 public class ConfigFileHandler extends DefaultHandler {
 	private org.easysdi.xml.documents.Config config;
@@ -99,9 +97,6 @@ public class ConfigFileHandler extends DefaultHandler {
 	private String exceptionMode ="Permissive";
 	private boolean isException=false;
 	private String ogcSearchFilter="";
-	
-	private Boolean isKeywordList = false;
-	private Boolean isServiceIdentification = false;
 	private Boolean isServiceProvider = false;
 	private Boolean isResponsibleParty = false;
 	private Boolean isContact = false;
@@ -121,6 +116,7 @@ public class ConfigFileHandler extends DefaultHandler {
 	private OWSTelephone owsPhone = null;
 	private OWSServiceMetadata owsServiceMetadata = null;
 	private OWSServiceIdentification  owsServiceIdentification = null;
+	private Boolean isHarvestingConfig = false;
 	
 	
 	public ConfigFileHandler(String id) {
@@ -194,18 +190,12 @@ public class ConfigFileHandler extends DefaultHandler {
 			isException = true;
 		}
 		
-		if (isTheGoodId && isConfig && isServiceMetadata && qName.equals("KeywordList")) {
-			isKeywordList = true;
-			return;
-		}
+		
 		if (isTheGoodId && isConfig && isServiceMetadata && qName.equals("ServiceProvider")) {
 			isServiceProvider = true;
 			return;
 		}
-		if (isTheGoodId && isConfig && isServiceMetadata && qName.equals("ServiceIdentification")) {
-			isServiceIdentification = true;
-			return;
-		}
+		
 		if (isTheGoodId && isConfig && isServiceMetadata && isServiceProvider && qName.equals("ResponsibleParty")) {
 			isResponsibleParty = true;
 			return;
@@ -246,6 +236,7 @@ public class ConfigFileHandler extends DefaultHandler {
 				config.setOgcSearchFilter(ogcSearchFilter);
 				config.setOwsServiceMetadata(owsServiceMetadata);
 				config.setPeriod(logPeriod);
+				config.setIsHarvestingConfig(isHarvestingConfig);
 			}
 			isTheGoodId = false;
 		}
@@ -265,6 +256,9 @@ public class ConfigFileHandler extends DefaultHandler {
 
 		if (isTheGoodId && isConfig && qName.equals("servlet-class")) {
 			servletClass = data;
+		}
+		if (isTheGoodId && isConfig && qName.equals("harvesting-config")) {
+			isHarvestingConfig = Boolean.valueOf(data);
 		}
 		
 		if (isTheGoodId && isConfig && qName.equals("remote-server-list")) {
@@ -653,7 +647,6 @@ public class ConfigFileHandler extends DefaultHandler {
 			owsServiceIdentification.setFees(fees);
 			owsServiceIdentification.setKeywords(keywordList);
 			owsServiceIdentification.setTitle(title);
-			isServiceIdentification = false;
 		}
 		
 		if (isTheGoodId && isConfig && isServiceMetadata && qName.equals("ServiceProvider")) {
