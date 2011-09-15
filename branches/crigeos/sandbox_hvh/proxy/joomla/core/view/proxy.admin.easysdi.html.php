@@ -980,14 +980,13 @@ echo $pane->endPanel();
 		</h3>
 		
 		
-		<textarea ROWS="8" COLS="75"><gml:Polygon xmlns:gml="http://www.opengis.net/gml" srsName="EPSG:21781">
-  <gml:outerBoundaryIs>
-    <gml:LinearRing>                    
-      <gml:coordinates>470000,50000 470000,210000 600000,210000 600000,50000 470000,50000
-      </gml:coordinates>
-    </gml:LinearRing>
-  </gml:outerBoundaryIs>
-</gml:Polygon></textarea>
+		<textarea ROWS="8" COLS="75"><ogc:BBOX xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml">
+        <ogc:PropertyName>BoundingBox</ogc:PropertyName>
+          <gml:Envelope>
+            <gml:lowerCorner>-17 -34</gml:lowerCorner>
+            <gml:upperCorner>-16.5 -33.5</gml:upperCorner>
+          </gml:Envelope>
+</ogc:BBOX></textarea>
 		
 			<p>
 			<?php 
