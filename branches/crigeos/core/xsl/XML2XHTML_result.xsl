@@ -233,21 +233,7 @@
 											<xsl:text>Detaillierte Informationen</xsl:text>
 										</a>
 									</span>
-									<xsl:choose>
-										<xsl:when test="$logo ='layer'">
-											<xsl:text />
-										</xsl:when>
-										<xsl:when test="$logo ='map'">
-											<span class="metadata-link">
-												<xsl:element name="a">
-													<xsl:attribute name="class">intern</xsl:attribute>
-													<xsl:attribute name="target">_blank</xsl:attribute>
-													<xsl:attribute name="href"><xsl:value-of select="./gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine/gmd:CI_OnlineResource/gmd:linkage/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale='#FR']" /></xsl:attribute>
-													<xsl:text>Map view</xsl:text>
-												</xsl:element>
-											</span>
-										</xsl:when>
-										<xsl:when test="$logo ='geoproduct'">
+									
 											<xsl:choose>
 												<xsl:when test="string-length($downloadProduct) > 0">
 														<span class="metadata-link">
@@ -291,8 +277,7 @@
 													</a>
 												</span>
 											</xsl:if>
-										</xsl:when>
-									</xsl:choose>
+										
 								</xsl:when>
 								<xsl:when test="$language='fr-FR'">
 									<span class="metadata-link">
@@ -305,21 +290,7 @@
 											<xsl:text>Details</xsl:text>
 										</a>
 									</span>
-									<xsl:choose>
-										<xsl:when test="$logo ='layer'">
-											<xsl:text />
-										</xsl:when>
-										<xsl:when test="$logo ='map'">
-											<span class="metadata-link">
-												<xsl:element name="a">
-													<xsl:attribute name="class">intern</xsl:attribute>
-													<xsl:attribute name="target">_blank</xsl:attribute>
-													<xsl:attribute name="href"><xsl:value-of select="./gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine/gmd:CI_OnlineResource/gmd:linkage/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale='#FR']" /></xsl:attribute>
-													<xsl:text>Map view</xsl:text>
-												</xsl:element>
-											</span>
-										</xsl:when>
-										<xsl:when test="$logo ='geoproduct'">
+									
 											<xsl:choose>
 												<xsl:when test="string-length($downloadProduct) > 0">
 														<span class="metadata-link">
@@ -363,8 +334,7 @@
 													</a>
 												</span>
 											</xsl:if>
-										</xsl:when>
-									</xsl:choose>
+										
 								</xsl:when>
 								<xsl:when test="$language='en-GB'">
 									<span class="metadata-link">
@@ -380,21 +350,7 @@
 											<xsl:text>Details</xsl:text>
 										</a>
 									</span>
-									<xsl:choose>
-										<xsl:when test="$logo ='layer'">
-											<xsl:text />
-										</xsl:when>
-										<xsl:when test="$logo ='map'">
-											<span class="metadata-link">
-												<xsl:element name="a">
-													<xsl:attribute name="class">intern</xsl:attribute>
-													<xsl:attribute name="target">_blank</xsl:attribute>
-													<xsl:attribute name="href"><xsl:value-of select="./gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine/gmd:CI_OnlineResource/gmd:linkage/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale='#FR']" /></xsl:attribute>
-													<xsl:text>Map view</xsl:text>
-												</xsl:element>
-											</span>
-										</xsl:when>
-										<xsl:when test="$logo ='geoproduct'">
+									
 											<xsl:choose>
 												<xsl:when test="string-length($downloadProduct) > 0">
 														<span class="metadata-link">
@@ -438,8 +394,7 @@
 													</a>
 												</span>
 											</xsl:if>
-										</xsl:when>
-									</xsl:choose>
+										
 								</xsl:when>
 							</xsl:choose>
 							<div class="clear" />
