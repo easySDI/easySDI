@@ -102,9 +102,9 @@ class HTML_shop {
 		global  $mainframe;
 	
 	?>
-	<script type="text/javascript" src="./administrator/components/com_easysdi_core/common/lib/js/openlayers2.8/lib/OpenLayers.js"></script>
+	<script type="text/javascript" src="./administrator/components/com_easysdi_core/common/lib/js/openlayers2.11/lib/OpenLayers.js"></script>
 	<script type="text/javascript" src="./administrator/components/com_easysdi_core/common/lib/js/proj4js/lib/proj4js.js"></script>
-	<script type="text/javascript" src="./administrator/components/com_easysdi_core/common/lib/js/openlayers2.8/lib/OpenLayers/Control/LoadingPanel.js"></script>
+	<script type="text/javascript" src="./administrator/components/com_easysdi_core/common/lib/js/openlayers2.11/lib/OpenLayers/Control/LoadingPanel.js"></script>
 	
 	<script>
 	var map;

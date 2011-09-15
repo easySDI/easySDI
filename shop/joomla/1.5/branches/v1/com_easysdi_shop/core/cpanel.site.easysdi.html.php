@@ -1344,7 +1344,7 @@ class HTML_cpanel {
 	?>
 	<script
 	type="text/javascript"
-	src="./administrator/components/com_easysdi_core/common/lib/js/openlayers2.8/lib/OpenLayers.js"></script>
+	src="./administrator/components/com_easysdi_core/common/lib/js/openlayers2.11/lib/OpenLayers.js"></script>
 	
 	<script
 	type="text/javascript"
@@ -1357,7 +1357,7 @@ class HTML_cpanel {
 	{ ?>
 	<script
 	type="text/javascript"
-	src="./administrator/components/com_easysdi_core/common/lib/js/openlayers2.8/lib/OpenLayers.js"></script>
+	src="./administrator/components/com_easysdi_core/common/lib/js/openlayers2.11/lib/OpenLayers.js"></script>
 	
 	<script
 	type="text/javascript"
