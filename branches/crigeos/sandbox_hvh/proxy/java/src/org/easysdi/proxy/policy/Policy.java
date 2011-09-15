@@ -53,7 +53,7 @@ public class Policy implements Serializable {
 	
 
 	@XmlElement(name = "IncludeHarvested")
-	protected Boolean includeHarvested;
+	protected Boolean includeHarvested=false;
 	@XmlElement(name = "GeographicFilter")
 	protected String geographicFilter;
 	@XmlElement(name = "ObjectVisibilities")
