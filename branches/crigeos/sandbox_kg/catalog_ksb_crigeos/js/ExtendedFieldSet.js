@@ -209,6 +209,15 @@ Ext.override(Ext.form.FieldSet, {
 						 }
 						},{template:master});					
 		}
+		
+		if(cmps[0]){
+			
+			if((cmps[0].id.indexOf("gmd_EX_Extent")>=0)&&(cmps[0].id.indexOf("gmd_EX_GeographicBoundingBox")>=0)){
+				if((cmps[0].items.items.length ==4) && (isClone ==true))
+				addBBoxToFieldSet(cmps[0].id);
+			}
+		}
+
 		return cmps;								
 	},
 	/**
@@ -301,7 +310,13 @@ Ext.override(Ext.form.FieldSet, {
 			//console.log("Enfant " + i + ": " + child.getId());
 			if (!child.clone)
 			{
-				child.clones(1,this, false);
+		
+					if(child.clones)
+						child.clones(1,this, false);
+				/*	else if (child.GeoExtMapPanel){
+						child.cloneConfig(1,this, false);
+					}*/
+	
 				
 				if (child.minOccurs > 0 && child.xtype=='fieldset')
 				{

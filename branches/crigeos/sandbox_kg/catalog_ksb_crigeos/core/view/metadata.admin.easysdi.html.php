@@ -40,7 +40,23 @@ JHTML::script('FileUploadField.js', 'administrator/components/com_easysdi_catalo
 JHTML::script('shCore.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('shBrushXml.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('GemetClient.js', 'administrator/components/com_easysdi_catalog/js/');
+require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.jsLoaderUtil.php');
+$jsLoader =JSLOADER_UTIL::getInstance();
+JHTML::script('SingleFile.js', $jsLoader->getPath("map","openlayers", "/lib/OpenLayers/"));
+JHTML::script('OpenLayers.js', $jsLoader->getPath("map","openlayers"));
+JHTML::script('SingleFile.js',  $jsLoader->getPath("map","geoext", "/lib/GeoExt/"));
+JHTML::script('GeoExt.js',  $jsLoader->getPath("map", "geoext", "/script/"));
+?>
+  <!-- <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAjpkAC9ePGem0lIq5XcMiuhR_wWLPFku8Ix9i2SXYRVK3e45q1BQUd_beF8dtzKET_EteAjPdGDwqpQ" type="text/javascript"></script>
+ <script src="http://www.openlayers.org/api/OpenLayers.js"></script> 
+ <script src="http://dev.virtualearth.net/mapcontrol/v3/mapcontrol.js"></script>
+  <script src="http://api.maps.yahoo.com/ajaxymap?v=3.0&appid=euzuro-openlayers"></script>
+ --> 
+  <script src="http://clients.multimap.com/API/maps/1.1/metacarta_04"></script>
+ 
+  
 
+<?php
 
 class HTML_metadata {
 	var $javascript = "";
@@ -525,6 +541,7 @@ class HTML_metadata {
 						
 		// Stockage du path pour atteindre ce noeud du XML
 		$queryPath = $queryPath."/".$currentIsocode;
+	//	echo($currentIsocode."<br>") ;
 		
 		// Construire la liste d�roulante des p�rim�tres pr�d�finis si on est au bon endroit
 		//echo $this->catalogBoundaryIsocode." == ".$currentIsocode.", ".count($this->boundaries)."<br>";
@@ -3960,6 +3977,19 @@ class HTML_metadata {
 		}
 			//}
 		}
+		
+	/*	echo($currentIsocode."<br>") ;
+		if( strcasecmp($currentIsocode, "gmd:EX_GeographicBoundingBox") == 0){
+			echo($parentFieldsetName."<br>") ;
+			$this->javascript .="
+		".$parentFieldsetName.".add(createBBox(".$parentFieldsetName."));";
+
+		}
+		for($i ; $i< count($rowChilds);$i++)
+			echo "&nbsp;";*/
+		
+		
+		
 	}
 	function cleanText($text)
 	{

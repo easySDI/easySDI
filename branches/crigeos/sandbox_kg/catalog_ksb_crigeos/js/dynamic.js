@@ -380,6 +380,7 @@
 	
 	function createNumberField(id, label, mandatory, clone, master, min, max, value, defaultVal, allowdec, dec, dis, maxL, tip, dismissDelay, regex, mandatoryMsg, regexMsg)
 	{
+		debugger;
 		optional = !mandatory;
 		
 		//if (!clone) optional=true;
@@ -726,3 +727,200 @@
 		//sbs.addItems(value);
 		return sbs;
 	}
+	
+	BBoxPanel = Ext.extend(Ext.Panel, {
+
+		overviewWidth : 120,
+		overviewHeight : 80,
+		xtype: 'panel',
+		frame: true,
+		GeoExtMapPanel : null,
+		
+		constructor : function(id) {
+
+			mymap = this.createBBoxItem();
+			this.GeoExtMapPanel = new GeoExt.MapPanel( {
+				border : true,
+				map : mymap,
+				autoShow : true,
+				renderTo : id
+			});
+
+			BBoxPanel.superclass.constructor.apply(this, arguments);
+		},
+		createBBoxItem : function() {
+
+
+			OpenLayers.ProxyHost="/proxy/?url=";
+
+			var mymap = new OpenLayers.Map( 'map', {controls: [new OpenLayers.Control.PanZoomBar()]});
+
+			mymap.addControl(new OpenLayers.Control.MouseToolbar());
+			mymap.addControl(new OpenLayers.Control.MousePosition());
+			mymap.addControl(new OpenLayers.Control.Permalink());
+
+			var layer_switcher = new OpenLayers.Control.LayerSwitcher();
+			mymap.addControl(layer_switcher);
+			layer_switcher.maximizeControl();
+
+			var mm = new OpenLayers.Layer.MultiMap( "MultiMap", {minZoomLevel: 1});
+			var wms = new OpenLayers.Layer.WMS( "OpenLayers WMS", "http://labs.metacarta.com/wms/vmap0", {layers: 'basic'} );
+			
+			var markers = new OpenLayers.Layer.Markers("Markers");
+			markers.setVisibility(false);
+
+			//  map.addLayers([wms, jpl_wms, google, googles, googleh, ve, yahoo, markers, georss, mm]);
+			mymap.addLayers([wms]);
+
+			mymap.setCenter(new OpenLayers.LonLat(-71,42), 6);
+
+			mymap.events.register("click", mymap, function(e) {
+				markers.addMarker(new OpenLayers.Marker(this.getLonLatFromPixel(e.xy)));
+			});
+
+			return mymap;
+		}
+		
+		
+	});
+	
+	 function createBBox(id, fieldsetId) {
+
+
+		OpenLayers.ProxyHost="/proxy/?url=";
+
+		var mymap = new OpenLayers.Map( id, {controls: [new OpenLayers.Control.PanZoomBar()]});
+
+		mymap.addControl(new OpenLayers.Control.MouseToolbar());
+		mymap.addControl(new OpenLayers.Control.MousePosition());
+		mymap.addControl(new OpenLayers.Control.Permalink());
+
+		var layer_switcher = new OpenLayers.Control.LayerSwitcher();
+		mymap.addControl(layer_switcher);
+		layer_switcher.maximizeControl();
+
+		//var mm = new OpenLayers.Layer.MultiMap( "MultiMap", {minZoomLevel: 1});
+		var wms = new OpenLayers.Layer.WMS( "OpenLayers WMS", "http://labs.metacarta.com/wms/vmap0", {layers: 'basic'} );
+		
+		var markers = new OpenLayers.Layer.Markers("Markers");
+		markers.setVisibility(false);
+
+		//  map.addLayers([wms, jpl_wms, google, googles, googleh, ve, yahoo, markers, georss, mm]);
+		mymap.addLayers([wms]);
+
+		mymap.setCenter(new OpenLayers.LonLat(-71,42), 6);
+
+		mymap.events.register("click", mymap, function(e) {
+			markers.addMarker(new OpenLayers.Marker(this.getLonLatFromPixel(e.xy)));
+		});
+		
+		mymap.fieldsetId = fieldsetId;
+		return mymap ;
+
+	}
+	
+	
+	 function addBBoxToFieldSet(fieldsetId){
+		
+		console.log(fieldsetId +"registering started");	
+		
+		Ext.getCmp(fieldsetId).add( new Ext.Panel( {
+			id : fieldsetId+"_BBox",
+			width : 500,
+			height : 500,
+			xtype: 'panel',
+			frame: false,
+			style :{position:'relative',
+			top:'-100px',
+			left:'500px'
+			}
+			
+		}));		
+		
+		Ext.getCmp(fieldsetId).doLayout();
+		console.log("idBBox" +fieldsetId+"_BBox");	
+		map = createBBox(Ext.getCmp(fieldsetId+"_BBox").body.id, fieldsetId);
+		var updateManuallyTriggered = false ;
+		
+		var  updateMapExtent = function(){
+			updateManuallyTriggered = true;
+			var extent = new Array();
+
+			
+			Ext.each(Ext.getCmp(fieldsetId).items.items, function(item, index) {
+				if(item.id.indexOf("east")>=0){
+					
+					extent["east"]= item.getValue();
+					
+				}else if(item.id.indexOf("west")>=0){
+					
+					extent["west"]= item.getValue();		
+	
+				}else if(item.id.indexOf("south")>=0){
+					
+					extent["south"]= item.getValue();		
+	
+				}else if(item.id.indexOf("north")>=0){
+					
+					extent["north"]= item.getValue();		
+	
+				}else{}
+			});
+			
+			//left, bottom, right, top 
+			var currentBounds = new OpenLayers.Bounds(extent["west"],extent["south"],extent["east"],extent["north"]);
+			
+			map.zoomToExtent(currentBounds);
+			
+		};
+		
+		Ext.getCmp(fieldsetId).items.items[0].addListener("blur",  updateMapExtent, null);
+		Ext.getCmp(fieldsetId).items.items[1].addListener("blur",  updateMapExtent, null);
+		Ext.getCmp(fieldsetId).items.items[2].addListener("blur",  updateMapExtent, null);
+		Ext.getCmp(fieldsetId).items.items[3].addListener("blur",  updateMapExtent, null);
+		
+		map.events.register('moveend', null, function(ev){
+			
+			if(!updateManuallyTriggered){
+			
+				console.log(ev);
+					var extent = new Array();
+					var currentExtent = ev.object.layers[0].getExtent();
+					extent["south"] = currentExtent.bottom ;
+					extent["west"] = currentExtent.left ;
+					extent["north"] = currentExtent.top ;
+					extent["east"] = currentExtent.right ;
+					
+					console.log(Ext.getCmp(ev.object.fieldsetId).items);
+			
+					Ext.each(Ext.getCmp(ev.object.fieldsetId).items.items, function(item, index) {
+						if(item.id.indexOf("east")>=0){
+							
+							item.setValue(extent["east"]);
+							
+						}else if(item.id.indexOf("west")>=0){
+							
+							item.setValue(extent["west"]);				
+			
+						}else if(item.id.indexOf("south")>=0){
+							
+							item.setValue(extent["south"]);				
+			
+						}else if(item.id.indexOf("north")>=0){
+							
+							item.setValue(extent["north"]);				
+			
+						}else{}
+					});
+		}
+		else
+				updateManuallyTriggered = false;
+		});
+				
+	}
+	
+	
+
+		
+
+	
