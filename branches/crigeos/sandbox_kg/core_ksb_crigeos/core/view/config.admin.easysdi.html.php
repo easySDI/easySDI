@@ -981,6 +981,26 @@ $j(document).ready(function() {
 									</tbody>
 								</table>
 							</fieldset>	
+							
+									
+							<fieldset class="adminform">
+								<legend><?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_TITLE' ); ?></legend>
+								 
+								<table class="admintable" cellspacing="1">
+									<tbody>
+									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_TIP' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_LABEL' ); ?>
+											</span>
+										</td>
+										<td>
+											<textarea class="textarea resolutions" style="height: 200px; width: 500px;" name="defaultBboxConfig" maxlength="<?php echo $fieldsLength['value'];?>" /><?php echo $mapList['defaultBboxConfig']->value; ?></textarea>
+										</td>
+									</tr></tbody>
+								</table>
+							</fieldset>	
+							
 						</td>
 					</tr>
 				</table>
