@@ -305,6 +305,14 @@ class HTML_baselayer
 						<?php if ($baseLayer->resolutionoverscale == 1) echo "checked=\"checked\""; ?> /> <?php echo JText::_("MAP_BASE_RESOLUTIONS"); ?></td>
 					</tr>
 					<tr>
+						<td class="key"><?php echo JText::_( 'MAP_BASE_MIN_RESOLUTION' ); ?></td>
+						<td><input class="inputbox resolutions" type="text" size="100" name="minresolution" <?php if ($baseLayer->resolutionoverscale == 0) echo 'disabled' ?> value="<?php echo $baseLayer->minresolution; ?>" maxlength="100" /></td>
+					</tr>
+					<tr>
+						<td class="key"><?php echo JText::_( 'MAP_BASE_MAX_RESOLUTION' ); ?></td>
+						<td><input class="inputbox resolutions" type="text" size="100" name="maxresolution" <?php if ($baseLayer->resolutionoverscale == 0) echo 'disabled' ?> value="<?php echo $baseLayer->maxresolution; ?>" maxlength="100" /></td>
+					</tr>
+					<tr>
 						<td class="key"><?php echo JText::_("MAP_BASE_RESOLUTIONS"); ?></td>
 						<td style=""><textarea id="resolutions" class="textarea resolutions" style="height: 200px; width: 500px;" name="resolutions" size="100"
 							maxlength="4000" <?php if ($baseLayer->resolutionoverscale == 0) echo 'disabled' ?>><?php echo $baseLayer->resolutions; ?></textarea></td>

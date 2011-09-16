@@ -841,6 +841,46 @@ function com_install()
 	
 	
 	}
+	
+	if(version == "2.0.2"){
+		//Get the MAP component id
+		$query="SELECT id  FROM #__sdi_list_module WHERE code = 'MAP'";
+		$db->setQuery( $query);
+		$module_id = $db->loadResult();
+		if($module_id == null){
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		//Insert 2 new configuration entries : min resolution and max resolution
+		$query = "
+		INSERT INTO `#__sdi_configuration` (guid,code,name,description, created,createdby,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'mapMaxResolution', 'mapMaxResolution','Map maximum resolution','".date('Y-m-d H:i:s')."', '".$user_id."', null, '".$module_id."');
+		INSERT INTO `#__sdi_configuration` (guid,code,name,description, created,createdby,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'mapMinResolution','mapMinResolution','Map  minimum resolution','".date('Y-m-d H:i:s')."', '".$user_id."',  null,'".$module_id."');";
+		$db->setQuery( $query);	
+		if (!$db->query()){
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		//Add 2 resolution definition fields to baseLayer table
+		$query="ALTER TABLE  `#__sdi_baselayer` ADD minresolution varchar (100)";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		$query="ALTER TABLE  `#__sdi_baselayer` ADD maxresolution varchar (100)";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}	
+		
+		
+		//Update the component version
+		$version="2.0.3";
+		$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='MAP'"; 
+		$db->setQuery( $query);	
+		if (!$db->query()){
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+	}
 
 	$query = "DELETE FROM #__components where `option`= 'com_easysdi_map'";
 	$db->setQuery( $query);
