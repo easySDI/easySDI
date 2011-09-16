@@ -479,7 +479,14 @@ class ADMIN_config {
 			if (!$database->query()) {			
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
-			
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['mapMinResolution'])."\" WHERE code = 'mapMinResolution'");
+			if (!$database->query()) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['mapMaxResolution'])."\" WHERE code = 'mapMaxResolution'");
+			if (!$database->query()) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
 		}
 	}
 
