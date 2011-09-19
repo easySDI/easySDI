@@ -398,7 +398,13 @@ class ADMIN_metadata {
 		// - Pour chaque classe rencontr�e, ouvrir un niveau de hi�rarchie dans la treeview
 		// - Pour chaque attribut rencontr�, cr�er un champ de saisie du type rendertype de la relation entre la classe et l'attribut
 		//ADMIN_metadata::buildTree($root[0]->id, $xpathResults, $option);
-		HTML_metadata::editMetadata($rowObject->id, $root, $rowMetadata->guid, $xpathResults, $profile_id, $isManager, $isEditor, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $rowObject->name, $rowObjectVersion->title, $option);
+		
+        $query = "select value as config from #__sdi_configuration where code ='defaultBBoxConfig'";
+        $database->setQuery($query);
+		$defaultBBoxConfig = $database->loadResult();
+        
+        
+		HTML_metadata::editMetadata($rowObject->id, $root, $rowMetadata->guid, $xpathResults, $profile_id, $isManager, $isEditor, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $rowObject->name, $rowObjectVersion->title, $option, $defaultBBoxConfig);
 		//HTML_metadata::editMetadata($root, $id, $xpathResults, $option);
 		//HTML_metadata::editMetadata($rowMetadata, $metadatastates, $option);
 	

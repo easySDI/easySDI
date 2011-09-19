@@ -44,17 +44,14 @@ require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'commo
 $jsLoader =JSLOADER_UTIL::getInstance();
 JHTML::script('SingleFile.js', $jsLoader->getPath("map","openlayers", "/lib/OpenLayers/"));
 JHTML::script('OpenLayers.js', $jsLoader->getPath("map","openlayers"));
-JHTML::script('SingleFile.js',  $jsLoader->getPath("map","geoext", "/lib/GeoExt/"));
-JHTML::script('GeoExt.js',  $jsLoader->getPath("map", "geoext", "/script/"));
-?>
-  <!-- <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAjpkAC9ePGem0lIq5XcMiuhR_wWLPFku8Ix9i2SXYRVK3e45q1BQUd_beF8dtzKET_EteAjPdGDwqpQ" type="text/javascript"></script>
- <script src="http://www.openlayers.org/api/OpenLayers.js"></script> 
- <script src="http://dev.virtualearth.net/mapcontrol/v3/mapcontrol.js"></script>
-  <script src="http://api.maps.yahoo.com/ajaxymap?v=3.0&appid=euzuro-openlayers"></script>
- --> 
-  <script src="http://clients.multimap.com/API/maps/1.1/metacarta_04"></script>
+//JHTML::script('SingleFile.js',  $jsLoader->getPath("map","geoext", "/lib/GeoExt/"));
+//JHTML::script('GeoExt.js',  $jsLoader->getPath("map", "geoext", "/script/"));
+
  
+?>
   
+ 
+   <!--  <script src="http://clients.multimap.com/API/maps/1.1/metacarta_04"></script>-->
 
 <?php
 
@@ -73,7 +70,7 @@ class HTML_metadata {
 	var $parentGuid="";
 	
 	
-	function editMetadata($object_id, $root, $metadata_id, $xpathResults, $profile_id, $isManager, $isEditor, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $object_name, $version_title, $option)
+	function editMetadata($object_id, $root, $metadata_id, $xpathResults, $profile_id, $isManager, $isEditor, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $object_name, $version_title, $option, $defautBBoxConfig="")
 	{
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 		
@@ -148,7 +145,7 @@ class HTML_metadata {
 		$document->addStyleSheet($uri->base(true) . '/components/com_easysdi_catalog/templates/css/shCore.css');
 		$document->addStyleSheet($uri->base(true) . '/components/com_easysdi_catalog/templates/css/shThemeDefault.css');
 		
-		
+		$document->addStyleSheet($uri->base(true) . '/components/com_easysdi_catalog/templates/css/mapHelper.css');
 		
 		$url = 'index.php?option='.$option.'&task=saveMetadata';
 		$preview_url = 'index.php?option='.$option.'&task=previewXMLMetadata';
@@ -195,8 +192,13 @@ class HTML_metadata {
 			<input type="hidden" name="task" value="" />
 			<input type="hidden" name="object_id" value="<?php echo $object_id;?>" />
 			</form>
+	
+				<?php $document->addScriptDeclaration( $defautBBoxConfig )?>;
+			
 				<?php
 				$this->javascript .="
+						
+						
 						var domNode = Ext.DomQuery.selectNode('div#element-box div.m')
 						Ext.DomHelper.insertHtml('beforeEnd',domNode,'<div id=formContainer></div>');
 
