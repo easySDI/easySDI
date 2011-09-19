@@ -945,7 +945,7 @@
 			
 			
 			
-		/*	map.navButton = new Ext.Toolbar.Button( {
+			map.navButton = new Ext.Toolbar.Button( {
 				iconCls : 'navBtn',
 
 				enableToggle : true,
@@ -955,7 +955,7 @@
 				scope : map,
 				pressed : true
 			});
-			*/
+			
 		
 		
 			map.zoomInBoxButton = new Ext.Toolbar.Button( {
@@ -994,7 +994,7 @@
 				},
 				items : [ map.previousButton, map.nextButton, {
 					xtype : 'tbseparator'
-				}, map.zoomInBoxButton, map.zoomOutBoxButton
+				}, map.zoomInBoxButton, map.zoomOutBoxButton,map.navButton
 				]
 			});
 			
