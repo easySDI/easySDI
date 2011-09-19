@@ -159,32 +159,7 @@ class HTML_overlay
 		{
 			if(pressbutton == "saveOverlay")
 			{
-				if (document.getElementById('projection').value == "")
-				{	
-					alert ('<?php echo  JText::_( 'MAP_OVL_CT_PROJECTION_VALIDATION_ERROR');?>');	
-					return;
-				}
-				else if (false && $j('#resolutionoverscale0').attr('checked') && document.getElementById('minscale').value == "")
-				{
-					alert ('<?php echo  JText::_( 'MAP_OVL_CT_MIN_SCALE_VALIDATION_ERROR');?>');	
-					return;
-				}
-				else if (false && $j('#resolutionoverscale0').attr('checked') && document.getElementById('maxscale').value == "")
-				{
-					alert ('<?php echo  JText::_( 'MAP_OVL_CT_MAX_SCALE_VALIDATION_ERROR');?>');	
-					return;
-				}
-				else if ($j('#resolutionoverscale1').attr('checked') && document.getElementById('resolutions').value == "")
-				{
-					alert ('<?php echo  JText::_( 'MAP_OVL_CT_RESOLUTION_VALIDATION_ERROR');?>');	
-					return;
-				}
-				else if (false && document.getElementById('maxextent').value == "")
-				{
-					alert ('<?php echo  JText::_( 'MAP_OVL_CT_MAX_EXTENT_VALIDATION_ERROR');?>');	
-					return;
-				}
-				else if (document.getElementById('url').value == "")
+				if (document.getElementById('url').value == "")
 				{
 					alert ('<?php echo  JText::_( 'MAP_OVL_CT_URL_VALIDATION_ERROR');?>');	
 					return;
@@ -239,6 +214,7 @@ class HTML_overlay
 						<td class="key"><?php echo JText::_("MAP_OVERLAY_URL_TYPE"); ?></td>
 						<td><select class="inputbox" name="type">
 							<option value="WMS" <?php if($overlay_content->type == 'WMS') echo "selected" ; ?>><?php echo JText::_("MAP_WMS"); ?></option>
+							<option value="WMTS" <?php if($overlay_content->type == 'WMTS') echo "selected" ; ?>><?php echo JText::_("MAP_WMTS"); ?></option>
 							<option value="WFS" <?php if($overlay_content->type == 'WFS') echo "selected" ; ?>><?php echo JText::_("MAP_WFS"); ?></option>
 						</select></td>
 					</tr>
@@ -337,7 +313,14 @@ class HTML_overlay
 						<td style=""><textarea class="textarea resolutions" style="height: 200px; width: 500px;" id="resolutions" name="resolutions" size="100"
 							maxlength="4000" <?php if ($overlay_content->resolutionoverscale == 0) echo 'disabled' ?>><?php echo $overlay_content->resolutions; ?></textarea></td>
 					</tr>
-					
+					<tr>
+						<td class="key"><?php echo JText::_("MAP_BASE_MATRIX_SET"); ?></td>
+						<td colspan="2"><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['matrixset'];?>" name="matrixset" id="matrixset" value="<?php echo $overlay_content->matrixset; ?>" /></td>
+					</tr>
+					<tr>
+						<td class="key"><?php echo JText::_("MAP_BASE_MATRIX_IDS"); ?></td>
+						<td colspan="2"><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['matrixids'];?>" name="matrixids" id="matrixids" value="<?php echo $overlay_content->matrixids; ?>" /></td>
+					</tr>
 				</table>
 				</fieldset>
 				</td>

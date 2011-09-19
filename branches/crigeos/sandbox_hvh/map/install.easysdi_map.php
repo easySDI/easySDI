@@ -860,7 +860,7 @@ function com_install()
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 		
-		//Add 2 resolution definition fields to baseLayer table
+		//Add fields to baseLayer table
 		$query="ALTER TABLE  `#__sdi_baselayer` ADD minresolution varchar (100)";
 		$db->setQuery( $query);
 		if (!$db->query()) {
@@ -871,8 +871,40 @@ function com_install()
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}	
+		$query="ALTER TABLE  `#__sdi_baselayer` ADD type varchar (20)";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		$query="ALTER TABLE  `#__sdi_baselayer` ADD matrixset varchar (100)";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		$query="ALTER TABLE  `#__sdi_baselayer` ADD matrixids varchar (1000)";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
 		
+		//Add fields to overlay table
+		$query="ALTER TABLE  `#__sdi_overlay` ADD matrixset varchar (100)";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		$query="ALTER TABLE  `#__sdi_overlay` ADD matrixids varchar (1000)";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
 		
+		//rename field
+		$query="ALTER TABLE  `#__sdi_baselayer` RENAME COLUMN customStyle to customstyle";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
 		//Update the component version
 		$version="2.0.3";
 		$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='MAP'"; 
