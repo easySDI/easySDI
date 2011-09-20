@@ -1,5 +1,9 @@
 package org.easysdi.monitor.gui.webapp.views.json;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -27,7 +31,26 @@ public class RawLogView extends AbstractJsonView {
         
     }
     
-    
+    public class MyLogComparable implements Comparator<RawLogEntry>{
+    	   
+    	public int compare(RawLogEntry obj1, RawLogEntry obj2) 
+    	{   
+    		int result = 0;
+    		if(obj1.getRequestTime().getTime().before(obj2.getRequestTime().getTime()))
+    		{
+    			result = -1;
+    		}else if(obj1.getRequestTime().getTime().after(obj2.getRequestTime().getTime()))
+    		{
+    			result = 1;
+    		}else
+    		{
+    			result = 0;
+    		}
+    		return  result;  
+    	}
+    } 
+
+
 
     /**
      * Generates the JSON code for the raw log entry collection.
@@ -63,7 +86,10 @@ public class RawLogView extends AbstractJsonView {
         		final String queryName = (String)model.get("Queryname");
         		final ObjectMapper mapper = this.getObjectMapper();  
         		final ArrayNode rowsCollection = mapper.createArrayNode();
-        		for (RawLogEntry logEntry : logsCollection) {
+        		List<RawLogEntry> sortLogs = new ArrayList<RawLogEntry>(logsCollection);
+        		Collections.sort(sortLogs, new MyLogComparable());
+            	
+        		for (RawLogEntry logEntry : sortLogs) {
         			rowsCollection.add(RawLogSerializer.serialize(logEntry,addQueryId,getExport,slaName,jobName,queryName,
                                                               locale, mapper,isSummary));
         		}     

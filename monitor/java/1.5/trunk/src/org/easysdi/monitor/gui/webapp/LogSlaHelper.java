@@ -442,25 +442,25 @@ public final class LogSlaHelper {
 		boolean checked = false;
 		switch(day)
 		{
-			case 0:
+			case Calendar.SUNDAY:
 				checked = period.isSunday();
 				break;
-			case 1:
+			case Calendar.MONDAY:
 				checked = period.isMonday();
 				break;
-			case 2:
+			case Calendar.TUESDAY:
 				checked = period.isTuesday();
 				break;
-			case 3:
+			case Calendar.WEDNESDAY:
 				checked = period.isWednesday();
 				break;
-			case 4:
+			case Calendar.THURSDAY:
 				checked = period.isThursday();
 				break;
-			case 5:
+			case Calendar.FRIDAY:
 				checked = period.isFriday();
 				break;
-			case 6:
+			case Calendar.SATURDAY:
 				checked = period.isSaturday();
 				break; 
 		}

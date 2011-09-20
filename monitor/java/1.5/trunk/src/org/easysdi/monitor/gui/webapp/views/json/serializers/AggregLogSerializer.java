@@ -88,7 +88,10 @@ public class AggregLogSerializer {
         if(queryName != "")
         {
         	jsonEntry.put("requestname",queryName);
-        }
+        }else
+    	{
+    		jsonEntry.put("requestname","Summary");
+    	}
         jsonEntry.put("slaavailability", slaStats.getAvailability());
         jsonEntry.put("slaunavailability",slaStats.getUnavailability());
         jsonEntry.put("slafailure",slaStats.getFailure());

@@ -92,10 +92,10 @@ public final class RawLogSerializer {
         
         if(isSummary)
         {
-        	jsonEntry.put("Summery","Summery");
         	jsonEntry.put("jobname",jobName);
         	jsonEntry.put("slaname",slaName);// Only if used
         	jsonEntry.put("time",dateFormat.format(entry.getRequestTime().getTime()));
+         	jsonEntry.put("requestname","Summary");
         	jsonEntry.put("sizebytes", entry.getResponseSize());
         	jsonEntry.put("responsetime", entry.getResponseDelay());
         	jsonEntry.put("maxresponsetime",entry.getMaxTime());

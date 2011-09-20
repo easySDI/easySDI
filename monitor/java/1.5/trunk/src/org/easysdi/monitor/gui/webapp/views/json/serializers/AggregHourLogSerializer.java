@@ -91,6 +91,9 @@ public class AggregHourLogSerializer {
         	if(queryName != "")
         	{
         		jsonEntry.put("requestname",queryName);
+        	}else
+        	{
+        		jsonEntry.put("requestname","Summary");
         	}
         	jsonEntry.put("availability", h1Stats.getAvailability());
         	jsonEntry.put("unavailability", h1Stats.getUnavailability());
@@ -110,6 +113,9 @@ public class AggregHourLogSerializer {
         	if(queryName != "")
         	{
         		jsonEntry.put("requestname",queryName);
+        	}else
+        	{
+        		jsonEntry.put("requestname","Summary");
         	}
         	jsonEntry.put("availability", inspireStats.getAvailability());
         	jsonEntry.put("unavailability",inspireStats.getUnavailability());

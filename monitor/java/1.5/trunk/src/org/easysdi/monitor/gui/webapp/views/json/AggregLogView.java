@@ -1,16 +1,22 @@
 package org.easysdi.monitor.gui.webapp.views.json;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ArrayNode;
+
+
 import org.easysdi.monitor.biz.logging.AbstractAggregateLogEntry;
 import org.easysdi.monitor.gui.webapp.MonitorInterfaceException;
-import 
-    org.easysdi.monitor.gui.webapp.views.json.serializers.AggregLogSerializer;
+
+import org.easysdi.monitor.gui.webapp.views.json.serializers.AggregLogSerializer;
 
 /**
  * Displays a set of aggregate logs in JSON format.
@@ -28,7 +34,25 @@ public class AggregLogView extends AbstractJsonView {
         
     }
     
-
+    public class MyLogAggComparable implements Comparator<AbstractAggregateLogEntry>{
+  	   
+    	public int compare(AbstractAggregateLogEntry obj1, AbstractAggregateLogEntry obj2) 
+    	{   
+    		int result = 0;
+    		if(obj1.getLogDate().getTime().before(obj2.getLogDate().getTime()))
+    		{
+    			result = -1;
+    		}else if(obj1.getLogDate().getTime().after(obj2.getLogDate().getTime()))
+    		{
+    			result = 1;
+    		}else
+    		{
+    			result = 0;
+    		}
+    		return  result;  
+    	}
+    } 
+   
     
     /**
      * Generates the aggregate logs JSON.
@@ -66,7 +90,9 @@ public class AggregLogView extends AbstractJsonView {
             	final ObjectMapper mapper = this.getObjectMapper();
             	this.getRootObjectNode().put("noPagingCount", noPagingCount);
             	final ArrayNode jsonLogsCollection = mapper.createArrayNode();
-
+            	List<AbstractAggregateLogEntry> sortLogs = new ArrayList<AbstractAggregateLogEntry>(logsCollection);
+        		Collections.sort(sortLogs, new MyLogAggComparable());
+            
             	for (AbstractAggregateLogEntry logEntry : logsCollection) {
             		jsonLogsCollection.add(AggregLogSerializer.serialize(logEntry, 
                                                        mapper,jobName,queryName));

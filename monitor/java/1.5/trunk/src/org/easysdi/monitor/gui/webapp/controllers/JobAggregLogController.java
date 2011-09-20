@@ -104,7 +104,7 @@ public class JobAggregLogController extends AbstractMonitorController {
         }
 
         logManager.purgeAggregateLogs(maxDate);
-
+        logManager.purgeAggregateHourLogs(maxDate);
         result.addObject("message", "log.purge.success");
         return result;
     }

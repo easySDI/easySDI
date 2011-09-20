@@ -3,7 +3,11 @@
  */
 package org.easysdi.monitor.gui.webapp.views.json;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -11,6 +15,8 @@ import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ArrayNode;
 import org.easysdi.monitor.biz.logging.AbstractAggregateHourLogEntry;
+
+
 import org.easysdi.monitor.gui.webapp.MonitorInterfaceException;
 import org.easysdi.monitor.gui.webapp.views.json.serializers.AggregHourLogSerializer;
 
@@ -26,6 +32,25 @@ public class AggregHourLogView extends AbstractJsonView {
     public AggregHourLogView() {
         
     }
+    
+    public class MyLogAggHourComparable implements Comparator<AbstractAggregateHourLogEntry>{
+ 	   
+    	public int compare(AbstractAggregateHourLogEntry obj1, AbstractAggregateHourLogEntry obj2) 
+    	{   
+    		int result = 0;
+    		if(obj1.getLogDate().getTime().before(obj2.getLogDate().getTime()))
+    		{
+    			result = -1;
+    		}else if(obj1.getLogDate().getTime().after(obj2.getLogDate().getTime()))
+    		{
+    			result = 1;
+    		}else
+    		{
+    			result = 0;
+    		}
+    		return  result;  
+    	}
+    } 
     
 	@SuppressWarnings("unchecked")
 	@Override
@@ -49,8 +74,10 @@ public class AggregHourLogView extends AbstractJsonView {
             	final ObjectMapper mapper = this.getObjectMapper();
             	this.getRootObjectNode().put("noPagingCount", noPagingCount);
             	final ArrayNode jsonLogsCollection = mapper.createArrayNode();
-            
-            	for (AbstractAggregateHourLogEntry logEntry : logsCollection) {
+            	List<AbstractAggregateHourLogEntry> sortLogs = new ArrayList<AbstractAggregateHourLogEntry>(logsCollection);
+        		Collections.sort(sortLogs, new MyLogAggHourComparable());
+            	
+            	for (AbstractAggregateHourLogEntry logEntry : sortLogs) {
                 jsonLogsCollection.add(AggregHourLogSerializer.serialize(logEntry, 
                                                                      mapper,jobName,queryName,
                                                                      slaName));
