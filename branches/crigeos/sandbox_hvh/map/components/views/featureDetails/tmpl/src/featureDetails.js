@@ -264,20 +264,38 @@ filterText +
 
     this.sidePanel.add(this.mapPanel);
 
-    var WMSoptions = {      
-      basemapscontentid: baseLayer.id,
-      LAYERS: baseLayer.layers,
-      SERVICE: baseLayer.url_type,
-      VERSION: baseLayer.version,
-      STYLES: '',
-      SRS: baseLayer.projection,
-      FORMAT: baseLayer.imageFormat,
-      tiled: 'true'
-    };    
+    
+    var l = null;
+	switch (baseLayer.type.toUpperCase()) {
+	case 'WMTS':
+		var WMTSoptions = {
+			name : baseLayer.name,
+			url : baseLayer.url,
+			layer : baseLayer.layers,
+			matrixSet : baseLayer.matrixSet,
+			matrixIds : baseLayer.matrixIds,
+			style : baseLayer.style,
+			format : baseLayer.imageFormat
+		};
+		l = new OpenLayers.Layer.WMTS( WMTSoptions);
+		break;
+		
+	case 'WMS' :
+		var WMSoptions = {
+			basemapscontentid: baseLayer.id,
+			LAYERS : baseLayer.layers,
+			SERVICE : baseLayer.type,
+			VERSION : baseLayer.version,
+			STYLES : '',
+			SRS : baseLayer.projection,
+			FORMAT : baseLayer.imageFormat,
+			tiled: 'true'
+		};
+		
+		l = new OpenLayers.Layer.WMS(baseLayer.name, baseLayer.url,WMSoptions );
+		break;
+	}
 
-    var l = new OpenLayers.Layer.WMS(baseLayer.name, baseLayer.url,
-      WMSoptions
-    );
     this.mapPanel.map.addLayer(l);
 
     // Add a feature and layer to display this report item's geometry info

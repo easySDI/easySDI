@@ -503,7 +503,7 @@ _addBaseLayer : function(layer, i) {
 		extraOptions.url=layer.url;
 		extraOptions.layer=layer.layers;
 		extraOptions.matrixSet=layer.matrixSet;
-		extraOptions.matrixIds=layer.matrixIds
+		extraOptions.matrixIds=layer.matrixIds;
 		extraOptions.style=layer.style;
 		extraOptions.format=layer.imageFormat;
 		
