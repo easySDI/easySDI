@@ -144,12 +144,22 @@ class HTML_baselayer
 							$j(".WMTS").removeAttr('style');
 							$j('.WMS').attr("style","display:block");
 							$j('.WMTS').attr("style","display:none");
+
+							var select = document.getElementById('version');
+							select.options.length = 0; // clear out existing items
+							select.options.add(new Option("1.1.0", "1.1.0"));
+							select.options.add(new Option("1.1.1", "1.1.1"));
+							select.options.add(new Option("1.3.0", "1.3.0"));
 						}
 						else if (e.target.value =="WMTS"){
 							$j(".WMTS").removeAttr('style');
 							$j(".WMS").removeAttr('style');
 							$j('.WMTS').attr("style","display:block");
 							$j('.WMS').attr("style","display:none");
+
+							var select = document.getElementById('version');
+							select.options.length = 0; // clear out existing items
+							select.options.add(new Option("1.0.0", "1.0.0"));
 						}
 					}
 				);
@@ -186,10 +196,8 @@ class HTML_baselayer
 		<table>
 		<tr>
 			<td>
-			<fieldset><legend>General</legend>
-		<table border="0" cellpadding="0" cellspacing="0">
-			<tr>
-				<td valign="top">
+			<fieldset><legend><?php echo JText::_("MAP_BASELAYER_GENERAL"); ?></legend>
+		
 				<table class="admintable" >
 					<tr>
 						<td class="key"><?php echo JText::_("MAP_BASELAYER_NAME"); ?></td>
@@ -215,16 +223,21 @@ class HTML_baselayer
 								<option <?php if($baseLayer->type == 'WMTS') echo "selected" ; ?> value="WMTS"><?php echo "WMTS"; ?></option>
 							</select>
 						</td>
-						<td class="WMS" align="left" <?php if($baseLayer->type != 'WMTS') echo 'style="display:block"' ; else  echo 'style="display:none"'; ?>>
-							<select class="inputbox" name="version"  >
-								<option <?php if($baseLayer->version == '1.1.0') echo "selected" ; ?> value="1.1.0"><?php echo "1.1.0"; ?></option>
+						<td align="left" >
+							<select class="inputbox" id="version" name="version"  >
+							 <?php if($baseLayer->type != 'WMTS'){
+							 	?>
+							 	<option <?php if($baseLayer->version == '1.1.0') echo "selected" ; ?> value="1.1.0"><?php echo "1.1.0"; ?></option>
 								<option <?php if($baseLayer->version == '1.1.1') echo "selected" ; ?> value="1.1.1"><?php echo "1.1.1"; ?></option>
 								<option <?php if($baseLayer->version == '1.3.0') echo "selected" ; ?> value="1.3.0"><?php echo "1.3.0"; ?></option>
-							</select>
-						</td>
-						<td class="WMTS" align="left" <?php if($baseLayer->type == 'WMTS') echo 'style="display:block"' ; else  echo 'style="display:none"'; ?>>
-							<select class="inputbox" name="version" >
-								<option <?php if($baseLayer->version == '1.0.0') echo "selected" ; ?> value="1.0.0"><?php echo "1.0.0"; ?></option>
+							 	<?php 
+							 }else{
+							 	?>
+							 	<option <?php if($baseLayer->version == '1.0.0') echo "selected" ; ?> value="1.0.0"><?php echo "1.0.0"; ?></option>
+							 	<?php
+							 }
+							 ?>
+								
 							</select>
 						</td>
 					</tr>
@@ -244,7 +257,6 @@ class HTML_baselayer
 						</span>
 						</td>
 					</tr>
-					
 					<tr>
 						<td class="key"><?php echo JText::_("MAP_BASELAYER_VISIBILITY"); ?></td>
 						<td colspan="2"><input class="checkbox" name="defaultvisibility" value="1" type="checkbox" <?php if ($baseLayer->defaultvisibility == 1) echo "checked=\"checked\""; ?> /></td>
@@ -300,17 +312,13 @@ class HTML_baselayer
 							<textarea id="resolutions" class="textarea resolutions" style="height: 100px; width: 400px;" name="resolutions" <?php if ($baseLayer->resolutionoverscale == 0) echo 'disabled' ?>><?php echo $baseLayer->resolutions; ?></textarea>
 						</td>
 					</tr>
-					
 				</table>
 				
-				</td>
-			</tr>
-		</table>
 		</fieldset>
 	</td>
 	<td valign="top">
-		<fieldset class="WMS" <?php if($baseLayer->type != 'WMTS') echo 'style="display:block"' ; else  echo 'style="display:none"'; ?>><legend>Specific WMS</legend>
-			<table>
+		<fieldset class="WMS" <?php if($baseLayer->type != 'WMTS') echo 'style="display:block"' ; else  echo 'style="display:none"'; ?>><legend><?php echo JText::_("MAP_BASELAYER_SPECIFIC_WMS"); ?></legend>
+			<table class="admintable">
 				<tr>
 					<td class="key"><?php echo JText::_("MAP_BASELAYER_CUSTOM_STYLE_ENABLED"); ?></td>
 					<td colspan="2"><input class="checkbox" id="customstyle" name="customstyle" value="1" type="checkbox" <?php if ($baseLayer->customstyle == 1) echo "checked=\"checked\""; ?> /></td>
@@ -325,8 +333,8 @@ class HTML_baselayer
 				</tr>
 			</table>
 		</fieldset>
-		<fieldset class="WMTS" <?php if($baseLayer->type == 'WMTS') echo 'style="display:block"' ; else  echo 'style="display:none"'; ?>><legend>Specific WMTS</legend>
-			<table>
+		<fieldset class="WMTS" <?php if($baseLayer->type == 'WMTS') echo 'style="display:block"' ; else  echo 'style="display:none"'; ?>><legend><?php echo JText::_("MAP_BASELAYER_SPECIFIC_WMTS"); ?></legend>
+			<table class="admintable">
 				<tr>
 					<td class="key"><?php echo JText::_("MAP_BASELAYER_MATRIX_SET"); ?></td>
 					<td colspan="2"><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['matrixset'];?>" name="matrixset" id="matrixset" value="<?php echo $baseLayer->matrixset; ?>" /></td>

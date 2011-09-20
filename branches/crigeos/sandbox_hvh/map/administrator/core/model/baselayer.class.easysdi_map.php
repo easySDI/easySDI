@@ -48,6 +48,7 @@ class baseLayer extends sdiTable
 	var $type=null;
 	var $matrixset = null;
 	var $matrixids = null;
+	var $style = null;
 	
 	// Class constructor
 	function __construct( &$db )

@@ -886,6 +886,11 @@ function com_install()
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
+		$query="ALTER TABLE  `#__sdi_baselayer` ADD style varchar (1000)";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
 		
 		//Add fields to overlay table
 		$query="ALTER TABLE  `#__sdi_overlay` ADD matrixset varchar (100)";
@@ -894,6 +899,11 @@ function com_install()
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 		$query="ALTER TABLE  `#__sdi_overlay` ADD matrixids varchar (1000)";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		$query="ALTER TABLE  `#__sdi_overlay` ADD style varchar (1000)";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");

@@ -155,7 +155,7 @@ class ADMIN_overlay
 		// table ordering
 		$filter_order		= $mainframe->getUserStateFromRequest( "$option.filter_order",		'filter_order',		'id',	'cmd' );
 		$filter_order_Dir	= $mainframe->getUserStateFromRequest( "$option.filter_order_Dir",	'filter_order_Dir',	'ASC',		'word' );
-		if ($filter_order <> "name" && $filter_order <> "group_id" && $filter_order <> "ordering" && $filter_order <> "layers" )
+		if ($filter_order <> "name" && $filter_order <> "type" && $filter_order <> "group_id" && $filter_order <> "ordering" && $filter_order <> "layers" )
 		{
 			$filter_order		= "id";
 			$filter_order_Dir	= "ASC";

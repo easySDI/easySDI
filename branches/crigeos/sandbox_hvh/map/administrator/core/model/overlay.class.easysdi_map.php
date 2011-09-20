@@ -48,6 +48,7 @@ class overlay extends sdiTable
 	var $published=null;
 	var $matrixset = null;
 	var $matrixids = null;
+	var $style = null;
 	
 	// Class constructor
 	function __construct( &$db )
