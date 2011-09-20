@@ -499,21 +499,12 @@ _addBaseLayer : function(layer, i) {
 	var l = null;
 	switch (layer.type.toUpperCase()) {
 	case 'WMTS':
-		/*var WMTSoptions = {
-			name : layer.name,
-			url : layer.url,
-			layer : layer.layers,
-			matrixSet : layer.MatrixSet,
-			matrixIds : layer.matrixIds,
-			style : '',
-			format : layer.imageFormat
-		};*/
 		extraOptions.name=layer.name;
 		extraOptions.url=layer.url;
 		extraOptions.layer=layer.layers;
 		extraOptions.matrixSet=layer.matrixSet;
 		extraOptions.matrixIds=layer.matrixIds
-		extraOptions.style='default';
+		extraOptions.style=layer.style;
 		extraOptions.format=layer.imageFormat;
 		
 		l = new OpenLayers.Layer.WMTS( extraOptions);
@@ -748,21 +739,12 @@ _addOverlayLayer : function(layer) {
 			extraOptions.maxResolution ="auto";
 		}
 
-		/*var WMTSoptions = {
-				name : layer.name,
-				url : layer.url,
-				layer : layer.layers,
-				matrixSet : layer.MatrixSet,
-				matrixIds : layer.matrixIds,
-				style : '',
-				format : layer.imageFormat
-			};*/
 		extraOptions.name=layer.name;
 		extraOptions.url=layer.url;
 		extraOptions.layer=layer.layers;
 		extraOptions.matrixSet=layer.matrixSet;
 		extraOptions.matrixIds=layer.matrixIds
-		extraOptions.style='default';
+		extraOptions.style=layer.style;
 		extraOptions.format=layer.imageFormat;
 		
 		l = new OpenLayers.Layer.WMTS(extraOptions);

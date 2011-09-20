@@ -243,6 +243,11 @@ if (!is_null($result)) {
 		    imageFormat : '$l_imgformat',
 		    cache : $cache,
 		    customStyle : $customStyle,\n";
+			if ($l_style) {
+				$s .= "    style : \"$l_style\",\n";
+			}else{
+				$s .= "    style : \"default\",\n";
+			}
 			if ($l_singletile == 0){ $s .="    singletile : false,\n";}else{$s .="    singletile : true,\n";}
 			if ($l_maxextent) {
 				$s .= "    maxExtent : new OpenLayers.Bounds($l_maxextent),\n";
@@ -338,6 +343,11 @@ if (!is_null($result)) {
 			imageFormat : '$l_imgformat',
 			cache : $cache,
 			customStyle : $customStyle,\n";
+			if ($l_style) {
+				$s .= "    style : \"$l_style\",\n";
+			}else{
+				$s .= "    style : \"default\",\n";
+			}	
 			if ($l_singletile == 0){ $s .="singletile : false,\n";}else{$s .="singletile : true,\n";}
 			if ($l_maxextent) {
 				$s .= "    maxExtent : new OpenLayers.Bounds($l_maxextent),\n";
