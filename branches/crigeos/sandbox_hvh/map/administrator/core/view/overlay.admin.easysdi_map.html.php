@@ -200,6 +200,23 @@ class HTML_overlay
 		function submitbutton(pressbutton)
 		{
 			if(pressbutton == "saveOverlay"){
+				if(document.getElementById('type').value == "WMTS"){
+					document.getElementById('cache').checked = 0;
+					document.getElementById('singletile').checked = 0;
+					document.getElementById('customstyle').checked = 0;
+				}else if(document.getElementById('type').value == "WMS" ){
+					document.getElementById('matrixset').value = null;
+					document.getElementById('matrixids').value = null;
+					document.getElementById('style').value = null;
+				}else if (document.getElementById('type').value == "WFS"){
+					document.getElementById('matrixset').value = null;
+					document.getElementById('matrixids').value = null;
+					document.getElementById('style').value = null;
+					document.getElementById('cache').checked = 0;
+					document.getElementById('singletile').checked = 0;
+				}
+
+				
 				if (document.getElementById('url').value == ""){
 					alert ('<?php echo  JText::_( 'MAP_OVL_CT_URL_VALIDATION_ERROR');?>');	
 					return;
@@ -340,7 +357,7 @@ class HTML_overlay
 					<table class="admintable" >
 						<tr>
 							<td class="key"><?php echo JText::_("MAP_BASE_CACHE"); ?></td>
-							<td><input class="checkbox" name="cache" value="1" type="checkbox" <?php if ($overlay_content->cache == 1) echo "checked=\"checked\""; ?> /></td>
+							<td><input class="checkbox" name="cache" id="cache" value="1" type="checkbox" <?php if ($overlay_content->cache == 1) echo "checked=\"checked\""; ?> /></td>
 						</tr>
 						<tr>
 							<td class="key"><?php echo JText::_("MAP_OVERLAY_IMG_FORMAT"); ?></td>
@@ -352,12 +369,12 @@ class HTML_overlay
 						</tr>
 						<tr>
 							<td class="key"><?php echo JText::_("MAP_OVERLAY_TILE"); ?></td>
-							<td><input class="checkbox" name="singletile" value="1" type="checkbox"
+							<td><input class="checkbox" name="singletile" id="singletile" value="1" type="checkbox"
 							<?php if ($overlay_content->singletile == 1) echo "checked=\"checked\""; ?> /></td>
 						</tr>
 						<tr>
 							<td class="key"><?php echo JText::_("MAP_BASELAYER_CUSTOM_STYLE_ENABLED"); ?></td>
-							<td><input class="checkbox" name="customstyle" value="1" type="checkbox"
+							<td><input class="checkbox" name="customstyle" id="customstyle" value="1" type="checkbox"
 							<?php if ($overlay_content->customstyle == 1) echo "checked=\"checked\""; ?> /></td>
 						</tr>
 					</table>
@@ -378,11 +395,19 @@ class HTML_overlay
 						</tr>
 						<tr>
 							<td class="key"><?php echo JText::_("MAP_BASE_MATRIX_IDS"); ?></td>
-							<td colspan="2"><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['matrixids'];?>" name="matrixids" id="matrixids" value="<?php echo $overlay_content->matrixids; ?>" /></td>
+							<td colspan="2">
+							<span class="editlinktip hasTip" title="<?php echo JText::_("MAP_MATRIX_IDS_TOOLTIP"); ?>">
+								<input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['matrixids'];?>" name="matrixids" id="matrixids" value="<?php echo $overlay_content->matrixids; ?>" />
+							</span>
+							</td>
 						</tr>
 						<tr>
 							<td class="key"><?php echo JText::_("MAP_BASELAYER_STYLE"); ?></td>
-							<td colspan="2"><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['style'];?>" name="style" id="style" value="<?php echo $overlay_content->style; ?>" /></td>
+							<td colspan="2">
+							<span class="editlinktip hasTip" title="<?php echo JText::_("MAP_BASELAYER_STYLE_TOOLTIP"); ?>">
+								<input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['style'];?>" name="style" id="style" value="<?php echo $overlay_content->style; ?>" />
+							</span>s
+							</td>
 						</tr>
 					</table>
 				</fieldset>
@@ -390,7 +415,7 @@ class HTML_overlay
 					<table class="admintable">
 						<tr>
 							<td class="key"><?php echo JText::_("MAP_BASELAYER_CUSTOM_STYLE_ENABLED"); ?></td>
-							<td><input class="checkbox" name="customstyle" value="1" type="checkbox" <?php if ($overlay_content->customstyle == 1) echo "checked=\"checked\""; ?> /></td>
+							<td><input class="checkbox" id="customstyle" name="customstyle" value="1" type="checkbox" <?php if ($overlay_content->customstyle == 1) echo "checked=\"checked\""; ?> /></td>
 						</tr>
 					</table>
 				</fieldset>

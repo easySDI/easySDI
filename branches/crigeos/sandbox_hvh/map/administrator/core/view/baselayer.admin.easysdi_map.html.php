@@ -169,6 +169,7 @@ class HTML_baselayer
 				if (document.getElementById('type').value == "WMS"){
 					document.getElementById('matrixset').value = null;
 					document.getElementById('matrixids').value = null;
+					document.getElementById('style').value = null;
 				}else{
 					document.getElementById('cache').checked = 0;
 					document.getElementById('singletile').checked = 0;
@@ -341,11 +342,19 @@ class HTML_baselayer
 				</tr>
 				<tr>
 					<td class="key"><?php echo JText::_("MAP_BASELAYER_MATRIX_IDS"); ?></td>
-					<td colspan="2"><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['matrixids'];?>" name="matrixids" id="matrixids" value="<?php echo $baseLayer->matrixids; ?>" /></td>
+					<td colspan="2">
+					<span class="editlinktip hasTip" title="<?php echo JText::_("MAP_MATRIX_IDS_TOOLTIP"); ?>">
+					<input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['matrixids'];?>" name="matrixids" id="matrixids" value="<?php echo $baseLayer->matrixids; ?>" />
+					</span>
+					</td>
 				</tr>
 				<tr>
 					<td class="key"><?php echo JText::_("MAP_BASELAYER_STYLE"); ?></td>
-					<td colspan="2"><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['style'];?>" name="style" id="style" value="<?php echo $baseLayer->style; ?>" /></td>
+					<td colspan="2">
+					<span class="editlinktip hasTip" title="<?php echo JText::_("MAP_BASELAYER_STYLE_TOOLTIP"); ?>">
+					<input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['style'];?>" name="style" id="style" value="<?php echo $baseLayer->style; ?>" />
+					</span>
+					</td>
 				</tr>
 			</table>
 		</fieldset>
