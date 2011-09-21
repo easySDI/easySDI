@@ -22,7 +22,7 @@ class SITE_listPerim {
 	
 	function show(){
 		?>
-		<script type="text/javascript" src="./administrator/components/com_easysdi_shop/lib/openlayers2.8/lib/OpenLayers.js"></script>
+		<script type="text/javascript" src="./administrator/components/com_easysdi_shop/lib/openlayers2.11/lib/OpenLayers.js"></script>
 		<script>
 		
 		function trim (myString)

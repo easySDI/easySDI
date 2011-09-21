@@ -1215,7 +1215,7 @@ class HTML_cpanel {
 	?>
 	<script
 	type="text/javascript"
-	src="./administrator/components/com_easysdi_shop/lib/openlayers2.8/lib/OpenLayers.js"></script>
+	src="./administrator/components/com_easysdi_shop/lib/openlayers2.11/lib/OpenLayers.js"></script>
 	
 	<script
 	type="text/javascript"
