@@ -21,7 +21,6 @@ defined('_JEXEC') or die('Restricted access');
 class SITE_account {
 
 	function createBlockUser(){
-		ini_set('display_errors', 1);		
 		
 		global $mainframe;
 
