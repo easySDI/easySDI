@@ -67,17 +67,14 @@ class ADMIN_searchcriteria {
 		$pagination = new JPagination($total, $limitstart, $limit);
 
 		// Recherche des enregistrements selon les limites
-		$query = "SELECT sc.*, sc.label as system_label, sc_tab.ordering as cc_ordering, t.label as csw_label, c.name as criteriatype_name, c.label as criteriatype_label, tab.id as tab_id, tab.code as tab_code, tab.label as tab_label 
+		$query = "SELECT sc.*, sc.label as system_label, sc_tab.ordering as cc_ordering, c.name as criteriatype_name, c.label as criteriatype_label, tab.id as tab_id, tab.code as tab_code, tab.label as tab_label 
 				  FROM #__sdi_searchcriteria sc 
 				  LEFT OUTER JOIN #__sdi_relation_context rc ON rc.relation_id=sc.relation_id 
 				  INNER JOIN #__sdi_list_criteriatype c ON c.id=sc.criteriatype_id 
 				  LEFT OUTER JOIN #__sdi_searchcriteria_tab sc_tab ON (sc_tab.searchcriteria_id=sc.id AND sc_tab.context_id=".$context_id.")
-				  LEFT OUTER JOIN #__sdi_list_searchtab tab ON tab.id=sc_tab.tab_id 
-				  LEFT OUTER JOIN #__sdi_translation t ON t.element_guid=sc.guid
-				  LEFT OUTER JOIN #__sdi_language l ON t.language_id=l.id
-				  LEFT OUTER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id
+				  LEFT OUTER JOIN #__sdi_list_searchtab tab ON tab.id=sc_tab.tab_id 				
 				  WHERE (sc.criteriatype_id=1 )
-				  		OR (sc.criteriatype_id=3 AND sc.context_id =".$context_id." AND cl.code = '".$language->_lang."') 
+				  		OR (sc.criteriatype_id=3 AND sc.context_id =".$context_id." ) 
 				  		OR (sc.criteriatype_id=2 AND rc.context_id=".$context_id." )"
 					  ;
 		$query .= $orderby;

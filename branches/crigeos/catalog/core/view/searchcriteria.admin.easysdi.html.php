@@ -49,11 +49,11 @@ class HTML_searchcriteria {
 		foreach ($rows as $row)
 		{	
 			// Gestion du nom
-			if ($row->criteriatype_name=="system")
-				$name = JText::_($row->system_label);
+			/*if ($row->criteriatype_name=="system")
+				$name = $row->name;
 			else if ($row->criteriatype_name=="csw")
 				$name = JText::_($row->csw_label);
-			else	
+			else	*/
 				$name = $row->name;
 ?>
 			<tr>
