@@ -726,10 +726,10 @@ else
 					        			{
 					        				//verifies whether client validation is ok for any field that needs validation.
 					        				if(cmp.isValid){
-						        				if(!cmp.isValid()){														
+						        				if(!cmp.isValid()&& Ext.get(cmp.id)){														
 														form.getForm().fieldInvalid =true;														
 											
-													if(!document.getElementById(cmp.id)){														
+													if(!Ext.getCmp(cmp.id)){														
 															form.getForm().extValidationCorrupt =true;														
 													}
 												}
@@ -885,10 +885,10 @@ else
 							        			{
 							        				//verifies whether client validation is ok for any field that needs validation.
 							        				if(cmp.isValid){
-								        				if(!cmp.isValid()){														
+								        				if(!cmp.isValid()&& Ext.get(cmp.id)){														
 																form.getForm().fieldInvalid =true;														
 													
-															if(!document.getElementById(cmp.id)){														
+															if(!Ext.getCmp(cmp.id)){														
 																	form.getForm().extValidationCorrupt =true;														
 															}
 														}
@@ -1318,10 +1318,10 @@ else
 						        			{
 						        				//verifies whether client validation is ok for any field that needs validation.
 						        				if(cmp.isValid){
-							        				if(!cmp.isValid()){														
+							        				if(!cmp.isValid()&& Ext.get(cmp.id)){														
 															form.getForm().fieldInvalid =true;														
 												
-														if(!document.getElementById(cmp.id)){														
+														if(!Ext.getCmp(cmp.id)){														
 																form.getForm().extValidationCorrupt =true;														
 														}
 													}
@@ -1346,7 +1346,7 @@ else
 												form.getForm().submit({
 											    	scope: this,
 													method	: 'POST',
-													clientValidation: true,
+													clientValidation: false,
 													success: function(form, action) 
 													{
 														Ext.MessageBox.alert('".JText::_('CATALOG_UPDATEMETADATA_MSG_SUCCESS_TITLE')."', 
@@ -1381,7 +1381,7 @@ else
 																						form.getForm().submit({
 																				    	scope: this,
 																						method	: 'POST',
-																						clientValidation: true,
+																						clientValidation: false,
 																						success: function(form, action) 
 																						{
 																							Ext.MessageBox.alert('".JText::_('CATALOG_UPDATEMETADATA_MSG_SUCCESS_TITLE')."', 
