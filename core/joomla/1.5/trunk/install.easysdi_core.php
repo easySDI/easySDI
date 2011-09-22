@@ -1457,6 +1457,24 @@ function com_install(){
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 	}
+	if ($version == "2.1.1")
+	{
+		$query="ALTER TABLE #__sdi_accountprofile ADD COLUMN applyRebate TINYINT(1)";
+		$db->setQuery( $query);	
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		// Update component version
+		$version="2.1.1.1";
+		$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='CORE'"; 
+		$db->setQuery( $query);	
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+	}
 	
 	/**
 	 * Menu creation
