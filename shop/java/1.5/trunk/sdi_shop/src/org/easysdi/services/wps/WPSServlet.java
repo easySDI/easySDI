@@ -371,7 +371,7 @@ public class WPSServlet extends HttpServlet {
 			
 			Statement stmt = conn.createStatement();
 
-			String query = "SELECT DISTINCT o.id as order_id, o.name, o.type_id, o.thirdparty_id, p.id as accountId, p.root_id, o.buffer "+
+			String query = "SELECT DISTINCT o.id as order_id, u.id as user_id, o.name, o.type_id, o.thirdparty_id, p.id as accountId, p.root_id, o.buffer "+
 			"FROM "+getJP()+"sdi_order o, "+getJP()+"sdi_account p, "+getJP()+"sdi_list_orderstatus osl, "+getJP()+"sdi_order_product opl , "+getJP()+"sdi_product prod, "+getJP()+"sdi_account part, "+getJP()+"sdi_objectversion ov, "+getJP()+"sdi_object ob, "+getJP()+"users u "+
 			"WHERE opl.order_id = o.id AND osl.id=o.status_id AND osl.code = '"+statusToRead+"' AND o.user_id = p.user_id "+
 			"and opl.product_id = prod.id AND prod.objectversion_id = ov.id AND ov.object_id=ob.id AND ob.account_id = part.id AND part.user_id = u.id AND u.username='"+userName+"'";
@@ -391,6 +391,7 @@ public class WPSServlet extends HttpServlet {
 				String name = rs.getString("name");
 				int type = rs.getInt("type_id");
 				String third_party = rs.getString("thirdparty_id");
+				String user_id = rs.getString("user_id");
 				String account_id = rs.getString("accountId");
 				String root_id = rs.getString("root_id");
 				int buffer = 0;
@@ -400,10 +401,14 @@ public class WPSServlet extends HttpServlet {
 				int isRebate = 0;
 				String rebate = "0";
 
-				/* We let the rebate to "0" so the WPSClient continue to be compatible
+				
 				Statement stmtRebate = conn.createStatement();
-				ResultSet rsRebate = stmtRebate.executeQuery("SELECT isrebate, rebate FROM "+getJoomlaPrefix()+"sdi_account part, "+getJoomlaPrefix()+"users u WHERE u.id=part.user_id AND u.username='"+userName+"'");
-
+				//ResultSet rsRebate = stmtRebate.executeQuery("SELECT isrebate, rebate FROM "+getJoomlaPrefix()+"sdi_account part, "+getJoomlaPrefix()+"users u WHERE u.id=part.user_id AND u.username='"+userName+"'");
+				String qry = "SELECT ap.applyRebate as isrebate, part.rebate as rebate FROM "+getJP()+"sdi_account part, "+getJP()+"users u, "+getJP()+"sdi_accountprofile ap, "+getJP()+"sdi_account_accountprofile aap ";
+				qry += "WHERE part.id =aap.account_id AND aap.accountprofile_id=ap.id AND u.id=part.user_id AND u.username='"+userName+"'";
+					
+				ResultSet rsRebate = stmtRebate.executeQuery(qry);
+				
 				while(rsRebate.next()){
 					isRebate = rsRebate.getInt("isrebate");
 					rebate = rsRebate.getString("rebate");
@@ -411,23 +416,26 @@ public class WPSServlet extends HttpServlet {
 
 				rsRebate.close();
 				stmtRebate.close();
-				 */
+				 
 
-				// HACK ASIT-VD: Contrï¿½le de l'application ou pas du rabais selon
+				// Contrôle de l'application ou pas du rabais selon
 				// le profil du client qui passe la commande et/ou du tiers pour qui la commande est passï¿½e
 				boolean ApplicableRebate=false;
 
-				/* We let the rebate to "0" so the WPSClient continue to be compatible
 				Statement stmtProfile = conn.createStatement();
 				ResultSet rsProfile;
-				String qry="SELECT prof.profile_id, prof.profile_name as profile_name FROM "+getJoomlaPrefix()+"asitvd_community_partner part, "+getJoomlaPrefix()+"asitvd_community_profile prof WHERE prof.profile_id=part.profile_id AND part.partner_id='"+third_party+"'";
+				
+				//String qry="SELECT prof.profile_id, prof.profile_name as profile_name FROM "+getJoomlaPrefix()+"asitvd_community_partner part, "+getJoomlaPrefix()+"asitvd_community_profile prof WHERE prof.profile_id=part.profile_id AND part.partner_id='"+third_party+"'";
+				qry = "SELECT ap.id as profile_id, ap.name as profile_name FROM "+getJP()+"sdi_account part, "+getJP()+"sdi_accountprofile ap, "+getJP()+"sdi_account_accountprofile aap ";
+				qry += "WHERE part.id =aap.account_id AND aap.accountprofile_id=ap.id AND part.id='"+third_party+"'";
+				
 				if (!third_party.equalsIgnoreCase("0")){
 					rsProfile = stmtProfile.executeQuery(qry);
 				}
 				else {
 					int rootId = 0;
 					Statement stmtRootId = conn.createStatement();
-					ResultSet rsRootId = stmtRootId.executeQuery("SELECT root_id as root_id FROM "+getJoomlaPrefix()+"asitvd_community_partner where user_id='"+user_id+"'");
+					ResultSet rsRootId = stmtRootId.executeQuery("SELECT root_id as root_id FROM "+getJP()+"sdi_account where user_id='"+user_id+"'");
 					while(rsRootId.next()){
 						rootId = rsRootId.getInt("root_id");
 					}
@@ -437,16 +445,21 @@ public class WPSServlet extends HttpServlet {
 					if(root_id != null){
 						//Not a root
 						stmtRootId = conn.createStatement();
-						rsRootId = stmtRootId.executeQuery("SELECT user_id as root_id FROM "+getJoomlaPrefix()+"asitvd_community_partner where partner_id='"+root_id+"'");
+						rsRootId = stmtRootId.executeQuery("SELECT user_id as root_id FROM "+getJP()+"sdi_account where id='"+root_id+"'");
 						while(rsRootId.next()){
 							rootId = rsRootId.getInt("root_id");
 						}
 						rsRootId.close();
 						stmtRootId.close();
-						qry="SELECT prof.profile_id, prof.profile_name as profile_name FROM "+getJoomlaPrefix()+"asitvd_community_partner part, "+getJoomlaPrefix()+"asitvd_community_profile prof WHERE prof.profile_id=part.profile_id AND part.user_id='"+rootId+"'";
+						//qry="SELECT prof.profile_id, prof.profile_name as profile_name FROM "+getJP()+"sdi_account part, "+getJP()+"asitvd_community_profile prof WHERE prof.profile_id=part.profile_id AND part.user_id='"+rootId+"'";
+						qry = "SELECT ap.id as profile_id, ap.name as profile_name FROM "+getJP()+"sdi_account part, "+getJP()+"sdi_accountprofile ap, "+getJP()+"sdi_account_accountprofile aap ";
+						qry += "WHERE part.id =aap.account_id AND aap.accountprofile_id=ap.id AND part.user_id='"+rootId+"'";
+						
 						rsProfile = stmtProfile.executeQuery(qry);
 					}else{
-						qry="SELECT prof.profile_id, prof.profile_name as profile_name FROM "+getJoomlaPrefix()+"asitvd_community_partner part, "+getJoomlaPrefix()+"asitvd_community_profile prof WHERE prof.profile_id=part.profile_id AND part.user_id='"+user_id+"'";
+						//qry="SELECT prof.profile_id, prof.profile_name as profile_name FROM "+getJP()+"sdi_account part, "+getJP()+"asitvd_community_profile prof WHERE prof.profile_id=part.profile_id AND part.user_id='"+user_id+"'";
+						qry = "SELECT ap.id as profile_id, ap.name as profile_name FROM "+getJP()+"sdi_account part, "+getJP()+"sdi_accountprofile ap, "+getJP()+"sdi_account_accountprofile aap ";
+						qry += "WHERE part.id =aap.account_id AND aap.accountprofile_id=ap.id AND part.user_id='"+user_id+"'";
 						rsProfile = stmtProfile.executeQuery(qry);
 					}
 				}
@@ -455,8 +468,6 @@ public class WPSServlet extends HttpServlet {
 					if (rsProfile.getString("profile_name").equals("ASITVD_FOUNDER") || rsProfile.getString("profile_name").equals("ASITVD_MEMBER"))
 						ApplicableRebate=true;
 				}
-
-				 */
 
 				// Dï¿½but de la construction du fichier
 				res.append("<easysdi:order>\n");
@@ -674,9 +685,7 @@ public class WPSServlet extends HttpServlet {
 					res.append("<easysdi:TIERCE></easysdi:TIERCE>\n");  
 				}
 
-				//res.append("<easysdi:DISCOUNT>0</easysdi:DISCOUNT>\n");
 				// Insertion du rabais s'il y en a un, sinon 0
-				// HACK ASITVD: Insertion du rabais s'il est applicable selon le profil de l'utilisateur
 
 				if(isRebate==1 && ApplicableRebate==true){
 					res.append("<easysdi:REBATE>"+rebate+"</easysdi:REBATE>\n");		    
