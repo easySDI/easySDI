@@ -76,7 +76,7 @@ class ADMIN_searchcriteria {
 				  LEFT OUTER JOIN #__sdi_translation t ON t.element_guid=sc.guid
 				  LEFT OUTER JOIN #__sdi_language l ON t.language_id=l.id
 				  LEFT OUTER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id
-				  WHERE (sc.criteriatype_id=1 AND cl.code = '".$language->_lang."')
+				  WHERE (sc.criteriatype_id=1 )
 				  		OR (sc.criteriatype_id=3 AND sc.context_id =".$context_id." AND cl.code = '".$language->_lang."') 
 				  		OR (sc.criteriatype_id=2 AND rc.context_id=".$context_id." )"
 					  ;
@@ -122,12 +122,14 @@ class ADMIN_searchcriteria {
 				// R�cuperer tous les champs de tri et contr�ler qu'ils soient saisis
 				var filterEmpty = 0;
 				filterfields = document.getElementById('filterfields');
-				fields = filterfields.getElementsByTagName('input');
-				
-				for (var i = 0; i < fields.length; i++)
-				{
-					if (fields.item(i).value == "")
-						filterEmpty=1;
+				if(filterfields){
+					fields = filterfields.getElementsByTagName('input');
+					
+					for (var i = 0; i < fields.length; i++)
+					{
+						if (fields.item(i).value == "")
+							filterEmpty=1;
+					}
 				}
 				
 				// do field validation

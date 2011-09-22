@@ -726,3 +726,20 @@
 		//sbs.addItems(value);
 		return sbs;
 	}
+	
+	function addBBoxToFieldSet(fieldsetId){
+
+	
+		var mapHelper = new CatalogMapPanel(fieldsetId);
+		Ext.getCmp(fieldsetId).doLayout();
+		mapHelper.addMap();			
+		Ext.getCmp(fieldsetId).doLayout();
+		mapHelper.addToolbar();			
+		Ext.getCmp(fieldsetId).doLayout();
+	
+
+
+	}
+
+
+

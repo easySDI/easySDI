@@ -27,6 +27,7 @@ require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'
 					
 JHTML::script('ext-base.js', 'administrator/components/com_easysdi_catalog/ext/adapter/ext/');
 JHTML::script('ext-all.js', 'administrator/components/com_easysdi_catalog/ext/');
+JHTML::script('catalogMapPanel.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('dynamic.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('ExtendedButton.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('ExtendedField.js', 'administrator/components/com_easysdi_catalog/js/');
@@ -40,6 +41,12 @@ JHTML::script('FileUploadField.js', 'administrator/components/com_easysdi_catalo
 JHTML::script('shCore.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('shBrushXml.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('GemetClient.js', 'administrator/components/com_easysdi_catalog/js/');
+require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.jsLoaderUtil.php');
+$jsLoader =JSLOADER_UTIL::getInstance();
+JHTML::script('SingleFile.js', $jsLoader->getPath("map","openlayers", "/lib/OpenLayers/"));
+JHTML::script('OpenLayers.js', $jsLoader->getPath("map","openlayers"));
+//JHTML::script('SingleFile.js',  $jsLoader->getPath("map","geoext", "/lib/GeoExt/"));
+//JHTML::script('GeoExt.js',  $jsLoader->getPath("map", "geoext", "/script/"));
 
 class HTML_metadata {
 	var $javascript = "";
@@ -325,7 +332,7 @@ else
 	<?php
 	}
 	
-	function editMetadata($object_id, $root, $metadata_id, $xpathResults, $profile_id, $isManager, $isEditor, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $object_name, $version_title, $option)
+	function editMetadata($object_id, $root, $metadata_id, $xpathResults, $profile_id, $isManager, $isEditor, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $object_name, $version_title, $option, $defautBBoxConfig="")
 	{
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 		
@@ -403,6 +410,7 @@ else
 		
 		$document->addStyleSheet($uri->base(true) . '/administrator/components/com_easysdi_catalog/templates/css/shCore.css');
 		$document->addStyleSheet($uri->base(true) . '/administrator/components/com_easysdi_catalog/templates/css/shThemeDefault.css');
+		$document->addStyleSheet($uri->base(true) . '/administrator/components/com_easysdi_catalog/templates/css/mapHelper.css');
 		
 		$url = 'index.php?option='.$option.'&task=saveMetadata';
 		$preview_url = 'index.php?option='.$option.'&task=previewXMLMetadata';
@@ -465,6 +473,7 @@ else
 			</form>
 		</div>
 		</div>
+		<?php $document->addScriptDeclaration( $defautBBoxConfig )?>;
 				<?php
 				$this->javascript .="
 						var domNode = Ext.DomQuery.selectNode('div#editMdOutput')
