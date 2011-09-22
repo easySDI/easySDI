@@ -32,7 +32,14 @@
 					template: master,
 		            qTip: tip,
 		            qTipDelay: dismissDelay,
-		            isLanguageFieldset: isLanguageFieldset
+		            isLanguageFieldset: isLanguageFieldset,
+		            listeners :{
+		            	expand:function(){
+		            		console.log("expand listener");
+		            		if(!this.hasBBox)
+		            			addBBoxToFieldSet(this.id);
+		            	}
+		            }
 	        });
 		//if (navigator.appName == "Netscape")
 		//	console.log(id+" - "+clone+" - "+clones_count);
@@ -732,13 +739,28 @@
 	
 	function addBBoxToFieldSet(fieldsetId){
 
+		
 	
-		var mapHelper = new CatalogMapPanel(fieldsetId);
-		Ext.getCmp(fieldsetId).doLayout();
-		mapHelper.addMap();			
-		Ext.getCmp(fieldsetId).doLayout();
-		mapHelper.addToolbar();			
-		Ext.getCmp(fieldsetId).doLayout();
+		if(fieldsetId){			
+			if((fieldsetId.indexOf("gmd_EX_Extent")>=0)&&(fieldsetId.indexOf("gmd_EX_GeographicBoundingBox")>=0)){
+				if(Ext.getCmp(fieldsetId).items.items.length>=4){
+						if(!Ext.getCmp(fieldsetId).hasBBox){
+							
+							Ext.getCmp(fieldsetId).hasBBox = true;						
+							var mapHelper = new CatalogMapPanel(fieldsetId);
+							Ext.getCmp(fieldsetId).doLayout();
+							mapHelper.addMap();	
+							Ext.getCmp(fieldsetId).doLayout();
+							mapHelper.addToolbar();	
+							Ext.getCmp(fieldsetId).doLayout();
+							
+						}
+					
+				}
+					
+			}
+		}
+		
 	
 
 
