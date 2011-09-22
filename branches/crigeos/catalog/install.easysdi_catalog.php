@@ -1476,7 +1476,7 @@ function com_install(){
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}
 			
-			$query = "SELECT module_id FROM #__sdi_list_module  WHERE  m.code='CATALOG'";
+			$query = "SELECT id FROM #__sdi_list_module  WHERE  code='CATALOG'";
 			$db->setQuery( $query );
 			$module_id = $db->loadResult();
 		
