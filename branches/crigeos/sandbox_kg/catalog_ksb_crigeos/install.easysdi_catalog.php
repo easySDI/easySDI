@@ -1466,8 +1466,37 @@ function com_install(){
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}
 		}
+		if($version == "2.0.2")
+		{
+			
+			$query="ALTER TABLE #__sdi_configuration  MODIFY value varchar(1000)"; 
+			$db->setQuery( $query);	
+			if (!$db->query()) 
+			{
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			$query = "SELECT module_id FROM #__sdi_list_module  WHERE  m.code='CATALOG'";
+			$db->setQuery( $query );
+			$module_id = $db->loadResult();
 		
+			$query="INSERT INTO #__sdi_configuration (guid,code,name,description, created,createdby,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'defaultBboxConfig','defaultBboxConfig','default Bbox Config.','".date('Y-m-d H:i:s')."', '".$user_id."', '','".$module_id."')";
+			$db->setQuery( $query);	
+			if (!$db->query()) 
+			{
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+		
+			$version="2.0.3";
+			$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='CATALOG'";
+			$db->setQuery( $query);
+			if (!$db->query())
+			{
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
 
+		}
+	
 
 		/**
 		 * Copy View files in Core component to allow  Menu Item Manger to find entries

@@ -27,6 +27,7 @@ require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'
 					
 JHTML::script('ext-base.js', 'administrator/components/com_easysdi_catalog/ext/adapter/ext/');
 JHTML::script('ext-all.js', 'administrator/components/com_easysdi_catalog/ext/');
+JHTML::script('catalogMapPanel.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('dynamic.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('ExtendedButton.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('ExtendedField.js', 'administrator/components/com_easysdi_catalog/js/');
@@ -44,14 +45,12 @@ require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'commo
 $jsLoader =JSLOADER_UTIL::getInstance();
 JHTML::script('SingleFile.js', $jsLoader->getPath("map","openlayers", "/lib/OpenLayers/"));
 JHTML::script('OpenLayers.js', $jsLoader->getPath("map","openlayers"));
-//JHTML::script('SingleFile.js',  $jsLoader->getPath("map","geoext", "/lib/GeoExt/"));
-//JHTML::script('GeoExt.js',  $jsLoader->getPath("map", "geoext", "/script/"));
+
 
  
 ?>
   
- 
-   <!--  <script src="http://clients.multimap.com/API/maps/1.1/metacarta_04"></script>-->
+
 
 <?php
 

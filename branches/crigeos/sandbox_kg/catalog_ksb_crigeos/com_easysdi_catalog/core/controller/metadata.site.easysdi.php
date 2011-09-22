@@ -492,7 +492,14 @@ class SITE_metadata {
         	//$xpathResults->registerNamespace('bee','http://www.depth.ch/2008/bee');
         } 
         
-        HTML_metadata::editMetadata($rowObject->id, $root, $rowMetadata->guid, $xpathResults, $profile_id, $isManager, $isEditor, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $rowObject->name, $rowObjectVersion->title, $option);
+         $query = "select value as config from #__sdi_configuration where code ='defaultBBoxConfig'";
+        $database->setQuery($query);
+		$defaultBBoxConfig = $database->loadResult();
+        
+        
+		HTML_metadata::editMetadata($rowObject->id, $root, $rowMetadata->guid, $xpathResults, $profile_id, $isManager, $isEditor, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $rowObject->name, $rowObjectVersion->title, $option, $defaultBBoxConfig);
+        
+        
 		//HTML_metadata::editMetadata($root, $id, $xpathResults, $option);
 		//HTML_metadata::editMetadata($rowMetadata, $metadatastates, $option);
 	}

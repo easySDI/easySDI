@@ -210,11 +210,10 @@ Ext.override(Ext.form.FieldSet, {
 						},{template:master});					
 		}
 		
-		if(cmps[0]){
-			
+		if(cmps[0]){			
 			if((cmps[0].id.indexOf("gmd_EX_Extent")>=0)&&(cmps[0].id.indexOf("gmd_EX_GeographicBoundingBox")>=0)){
-				if((cmps[0].items.items.length ==4) && (isClone ==true))
-				addBBoxToFieldSet(cmps[0].id);
+				if((isClone ==true)&& (Ext.getCmp(cmps[0].id).items.items.length>=4))
+					addBBoxToFieldSet(cmps[0].id);
 			}
 		}
 

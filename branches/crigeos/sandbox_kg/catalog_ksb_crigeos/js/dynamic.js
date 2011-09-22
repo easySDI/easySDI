@@ -1,7 +1,7 @@
 	function createFieldSet(id, title, border, clone, collapsible, relation, dynamic, master, min, max, tip, dismissDelay, isLanguageFieldset)
 	{	
 		//if (title) title = title+" "+min+" - "+max;
-		debugger;
+		;
 		var collapsed = (relation && !clone) ? collapsed=true : collapsed = false;
 		var hidden = (max==1 && min==1 && !clone && relation) ? true : false;
 		if (master) master.clones_count=master.clones_count+1;
@@ -381,7 +381,7 @@
 	
 	function createNumberField(id, label, mandatory, clone, master, min, max, value, defaultVal, allowdec, dec, dis, maxL, tip, dismissDelay, regex, mandatoryMsg, regexMsg)
 	{
-		debugger;
+		;
 		optional = !mandatory;
 		
 		//if (!clone) optional=true;
@@ -520,7 +520,7 @@
 	{
 		//console.log(boundaries);
 		//console.log(paths);
-		debugger;
+		;
 		var store = new Ext.data.ArrayStore({
 						    //fields: ['id', 'key', 'translation'],
 							fields: ['id', 'key'],
@@ -730,284 +730,19 @@
 		return sbs;
 	}
 	
+	function addBBoxToFieldSet(fieldsetId){
 
-	 function createBBox(id, fieldsetId) {
-
-
-		OpenLayers.ProxyHost="/proxy/?url=";
-
-		var mymap = new OpenLayers.Map( id);
 	
-		//var mm = new OpenLayers.Layer.MultiMap( "MultiMap", {minZoomLevel: 1});
-		
-		//var wms = new OpenLayers.Layer.WMS( "OpenLayers WMS", "http://labs.metacarta.com/wms/vmap0", {layers: 'basic'} );
-		if(defaultBBoxConfig!=""){
-			
-			//for(var i= 0; i<defaultBBoxConfig.layers.length;i++)
-			mymap.addLayers(defaultBBoxConfig.layers);
-		}
-			// wms = new OpenLayers.Layer.WMS(defaultBBoxConfig.name,defaultBBoxConfig.url,{layers :defaultBBoxConfig.layers });
-		else
-			console.log("defaultBBoxConfig param is missing");
-		
+		var mapHelper = new CatalogMapPanel(fieldsetId);
+		Ext.getCmp(fieldsetId).doLayout();
+		mapHelper.addMap();			
+		Ext.getCmp(fieldsetId).doLayout();
+		mapHelper.addToolbar();			
+		Ext.getCmp(fieldsetId).doLayout();
 	
-		var ov_options = {};
-		
-			ov_options.maxExtent = defaultBBoxConfig.defaultExtent;
-			var ovControl = new OpenLayers.Control.OverviewMap( {
-				mapOptions :ov_options,
-				size : new OpenLayers.Size(100, 100)
-			});
-			// This forces the overview to never pan or zoom, since it
-			// is always
-			// suitable.
-			ovControl.isSuitableOverview = function() {
-				return true;
-			};
-			mymap.addControl(ovControl);
-		
 
-		
-		mymap.addControl(new OpenLayers.Control.PanZoomBar());		
-
-		mymap.navCtrl = new OpenLayers.Control.NavigationHistory();
-		
-		  
-          // parent control must be added to the map
-		  mymap.addControl(mymap.navCtrl);
-			// Zoom in
-		  mymap.zoomInBoxCtrl = new OpenLayers.Control.ZoomBox();
-			mymap.addControl( mymap.zoomInBoxCtrl);
-			// Zoom out
-			mymap.zoomOutBoxCtrl = new OpenLayers.Control.ZoomBox( {
-				out : true
-			});
-			mymap.addControl(mymap.zoomOutBoxCtrl);
-
-		
-		
-		mymap.updateManuallyTriggered = true;
-		mymap.zoomToExtent(new OpenLayers.Bounds(defaultBBoxConfig.defaultExtent.left,defaultBBoxConfig.defaultExtent.bottom,defaultBBoxConfig.defaultExtent.right,defaultBBoxConfig.defaultExtent.top));
-		
-		
-			
-		mymap.fieldsetId = fieldsetId;
-		return mymap ;
 
 	}
-	 
 
-	
-	
-	 function addBBoxToFieldSet(fieldsetId){
-		
-		console.log(fieldsetId +"registering started");	
-		
-		Ext.getCmp(fieldsetId).add( new Ext.Panel( {
-			id : fieldsetId+"_BBox",
-			width : 500,
-			height : 500,
-			xtype: 'panel',
-			frame: false,
-			style :{position:'relative',
-			top:'-100px',
-			left:'500px'
-			}
-			
-		}));		
-		Ext.getCmp(fieldsetId).doLayout();
-		console.log("idBBox" +fieldsetId+"_BBox");	
-		map = createBBox(Ext.getCmp(fieldsetId+"_BBox").body.id, fieldsetId);
-		var updateManuallyTriggered = false ;
-		
-		var  updateMapExtent = function(){
-			map.updateManuallyTriggered = true;
-			var extent = new Array();
 
-			
-			Ext.each(Ext.getCmp(fieldsetId).items.items, function(item, index) {
-				if(item.id.indexOf("east")>=0){
-					
-					extent["east"]= item.getValue();
-					
-				}else if(item.id.indexOf("west")>=0){
-					
-					extent["west"]= item.getValue();		
-	
-				}else if(item.id.indexOf("south")>=0){
-					
-					extent["south"]= item.getValue();		
-	
-				}else if(item.id.indexOf("north")>=0){
-					
-					extent["north"]= item.getValue();		
-	
-				}else{}
-			});
-			
-			//left, bottom, right, top 
-			var currentBounds = new OpenLayers.Bounds(extent["west"],extent["south"],extent["east"],extent["north"]);
-			
-			map.zoomToExtent(currentBounds);
-			
-		};
-		
-		Ext.getCmp(fieldsetId).items.items[0].addListener("change",  updateMapExtent, null);
-		Ext.getCmp(fieldsetId).items.items[1].addListener("change",  updateMapExtent, null);
-		Ext.getCmp(fieldsetId).items.items[2].addListener("change",  updateMapExtent, null);
-		Ext.getCmp(fieldsetId).items.items[3].addListener("change",  updateMapExtent, null);
-		
-		map.events.register('moveend', null, function(ev){
-			
-			if(!map.updateManuallyTriggered){
-			
-				console.log(ev);
-					var extent = new Array();
-					var currentExtent = ev.object.layers[0].getExtent();
-					extent["south"] = currentExtent.bottom ;
-					extent["west"] = currentExtent.left ;
-					extent["north"] = currentExtent.top ;
-					extent["east"] = currentExtent.right ;
-					
-					console.log(Ext.getCmp(ev.object.fieldsetId).items);
-			
-					Ext.each(Ext.getCmp(ev.object.fieldsetId).items.items, function(item, index) {
-						if(item.id.indexOf("east")>=0){
-							
-							item.setValue(extent["east"]);
-							
-						}else if(item.id.indexOf("west")>=0){
-							
-							item.setValue(extent["west"]);				
-			
-						}else if(item.id.indexOf("south")>=0){
-							
-							item.setValue(extent["south"]);				
-			
-						}else if(item.id.indexOf("north")>=0){
-							
-							item.setValue(extent["north"]);				
-			
-						}else{}
-					});
-		}
-		else
-				map.updateManuallyTriggered = false;
-		});
-		
-		
-		 map.updateCtrlBtns = function() {
-			if (map.navButton.pressed) {
-				map.navCtrl.activate();
-				// this.getFeatureInfoCtrl.activate();
-			} else {
-				map.navCtrl.deactivate();
-				// this.getFeatureInfoCtrl.deactivate();
-			}
-		
-			if (map.zoomInBoxButton.pressed) {
-				map.zoomInBoxCtrl.activate();
-			} else {
-				map.zoomInBoxCtrl.deactivate();
-			}
-			if (map.zoomOutBoxButton.pressed) {
-				map.zoomOutBoxCtrl.activate();
-			} else {
-				map.zoomOutBoxCtrl.deactivate();
-			}
-				
-		}
-		
-		 
-		  getToolbar = function() {
 
-			// General tool bar items
-		
-			map.previousButton = new Ext.Toolbar.Button( {
-				iconCls : 'previousBtn',
-
-				handler : function() {
-					map.navCtrl.previousTrigger();
-				},
-				scope : map
-			});
-			
-			
-		
-			map.nextButton = new Ext.Toolbar.Button( {
-				iconCls : 'nextBtn',
-
-				handler : function() {
-					map.navCtrl.nextTrigger();
-				},
-				scope : map
-			});
-			
-			
-			
-			map.navButton = new Ext.Toolbar.Button( {
-				iconCls : 'navBtn',
-
-				enableToggle : true,
-				toggleGroup : 'mapCtrl',
-				allowDepress : false,
-				handler : map.updateCtrlBtns,
-				scope : map,
-				pressed : true
-			});
-			
-		
-		
-			map.zoomInBoxButton = new Ext.Toolbar.Button( {
-				iconCls : 'zoomInBoxBtn',
-
-				enableToggle : true,
-				toggleGroup : 'mapCtrl',
-				allowDepress : false,
-				handler : map.updateCtrlBtns,
-				scope : map
-			});
-			
-			
-			map.zoomOutBoxButton = new Ext.Toolbar.Button( {
-				iconCls : 'zoomOutBoxBtn',
-
-				enableToggle : true,
-				toggleGroup : 'mapCtrl',
-				allowDepress : false,
-				handler : map.updateCtrlBtns,
-				scope : map
-			});
-			
-			
-			
-			
-			return new Ext.Toolbar( {
-				id : fieldsetId+"_BBoxPanel",
-				autoHeight : true,
-				width : 500,
-				height : 30,				
-				frame: false,
-				style :{position:'relative',			
-				left:'500px',
-				top:'-100px',
-				},
-				items : [ map.previousButton, map.nextButton, {
-					xtype : 'tbseparator'
-				}, map.zoomInBoxButton, map.zoomOutBoxButton,map.navButton
-				]
-			});
-			
-	
-		}
-		 
-		Ext.getCmp(fieldsetId).add(getToolbar());	
-			
-		Ext.getCmp(fieldsetId).doLayout();
-		 
-	
-	
-		}
-		
-
-	
