@@ -337,8 +337,6 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 		var options = {
 			controls : [],
 			layers : []
-			
-
 		};
 
 		if (componentParams.projection != '')
@@ -353,6 +351,10 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 			options.maxScale = componentParams.mapMaxScale;
 		if (componentParams.mapResolutions != '')
 			options.resolutions = componentParams.mapResolutions;
+		if (componentParams.mapMinResolution != '')
+			options.minResolution = componentParams.mapMinResolution;
+		if (componentParams.mapMaxResolution != '')
+			options.maxResolution = componentParams.mapMaxResolution;
 		if (componentParams.numZoomLevels != '')
 			options.numZoomLevels = componentParams.numZoomLevels;
 

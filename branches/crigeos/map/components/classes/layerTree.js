@@ -36,10 +36,15 @@ if(layer.maxScale!=undefined)
 extraOptions.maxScale=layer.maxScale;else if(this._layerStore.map.maxScale!=undefined)
 extraOptions.maxScale=this._layerStore.map.maxScale;else{}
 if(layer.resolutions!=undefined)
-extraOptions.resolutions=layer.resolutions;else{extraOptions.minResolution="auto";extraOptions.maxResolution="auto";}
-var WMSoptions={LAYERS:layer.layers,SERVICE:layer.url_type,VERSION:layer.version,STYLES:'',SRS:layer.projection,FORMAT:layer.imageFormat};if(layer.cache)
-WMSoptions.CACHE=true;var l=new OpenLayers.Layer.WMS(layer.name,layer.url,WMSoptions,extraOptions);l.events.register('loadend',null,this.onLayerAdded);if(layer.cache)
-l.params.CACHE=true;this._layerStore.map.addLayer(l);if(layer.defaultVisibility)
+extraOptions.resolutions=layer.resolutions;if(layer.minResolution!=undefined)
+extraOptions.minResolution=layer.minResolution;if(layer.maxResolution!=undefined)
+extraOptions.maxResolution=layer.maxResolution;if(layer.resolutions==undefined&&layer.minResolution==undefined&&layer.maxResolution==undefined){extraOptions.minResolution="auto";extraOptions.maxResolution="auto";}
+var l=null;switch(layer.type.toUpperCase()){case'WMTS':extraOptions.name=layer.name;extraOptions.url=layer.url;extraOptions.layer=layer.layers;extraOptions.matrixSet=layer.matrixSet;if(layer.matrixIds!=undefined)
+extraOptions.matrixIds=layer.matrixIds;if(layer.style!=undefined)
+extraOptions.style=layer.style;extraOptions.format=layer.imageFormat;l=new OpenLayers.Layer.WMTS(extraOptions);l.events.register('loadend',null,this.onLayerAdded);break;case'WMS':var WMSoptions={LAYERS:layer.layers,SERVICE:layer.type,VERSION:layer.version,STYLES:'',SRS:layer.projection,FORMAT:layer.imageFormat};if(layer.cache)
+WMSoptions.CACHE=true;l=new OpenLayers.Layer.WMS(layer.name,layer.url,WMSoptions,extraOptions);l.events.register('loadend',null,this.onLayerAdded);if(layer.cache)
+l.params.CACHE=true;break;}
+this._layerStore.map.addLayer(l);if(layer.defaultVisibility)
 this._layerStore.map.baseLayer=l;l.setVisibility(false);var mstyle='';var toolTip='';if(layer.metadataUrl.length>0)
 mstyle='metadataAvailable';if(this._layerStore.map.getScale()<layer.maxScale||this._layerStore.map.getScale()>layer.minScale){mstyle='hiddenLayer';toolTip=EasySDI_Map.lang.getLocal('LT_SCALE_RAGE_TOOLTIP')+layer.minScale+" - "+layer.maxScale;}
 var blConfig={id:'b'+layer.id,text:layer.name,cls:mstyle,iconCls:'baseLayer',allowDrag:false,checked:false,visibility:false,layer:l,map:tree._layerStore.map,uiProvider:Ext.tree.RadioNode,listeners:{'postcheckchange':function(){tree._saveState();}}};if(layer.metadataUrl){blConfig.href=layer.metadataUrl;blConfig.hrefTarget='_blank';}
@@ -60,9 +65,32 @@ if(layer.maxScale!=undefined)
 extraOptions.maxScale=layer.maxScale;else if(this._layerStore.map.maxScale!=undefined)
 extraOptions.maxScale=this._layerStore.map.maxScale;else{}
 if(layer.resolutions!=undefined)
-extraOptions.resolutions=layer.resolutions;else{extraOptions.minResolution="auto";extraOptions.maxResolution="auto";}
+extraOptions.resolutions=layer.resolutions;if(layer.minResolution!=undefined)
+extraOptions.minResolution=layer.minResolution;if(layer.maxResolution!=undefined)
+extraOptions.maxResolution=layer.maxResolution;if(layer.resolutions==undefined&&layer.minResolution==undefined&&layer.maxResolution==undefined){extraOptions.minResolution="auto";extraOptions.maxResolution="auto";}
 var WMSoptions={LAYERS:layer.layers,SERVICE:layer.url_type,VERSION:layer.version,STYLES:'',SRS:layer.projection,FORMAT:layer.imageFormat,TRANSPARENT:true};l=new OpenLayers.Layer.WMS(layer.name,layer.url,WMSoptions,extraOptions);if(layer.cache)
-l.params.CACHE=true;break;case'WFS':l=new OpenLayers.Layer.WFS(layer.name,layer.url,{typename:layer.layers});break;}
+l.params.CACHE=true;break;case'WFS':l=new OpenLayers.Layer.WFS(layer.name,layer.url,{typename:layer.layers});break;case'WMTS':var extraOptions={isBaseLayer:false,buffer:0,opacity:layer.defaultOpacity}
+if(layer.customStyle!=undefined)
+extraOptions.customStyle=layer.customStyle;if(layer.units!=undefined)
+extraOptions.units=layer.units;else if(extraOptions.units!=undefined)
+extraOptions.units=this._layerStore.map.units;else{}
+if(layer.maxExtent!=undefined)
+extraOptions.maxExtent=layer.maxExtent;else if(this._layerStore.map.maxExtent!=undefined)
+extraOptions.maxExtent=this._layerStore.map.maxExtent;else{}
+if(layer.minScale!=undefined)
+extraOptions.minScale=layer.minScale;else if(this._layerStore.map.minScale!=undefined)
+extraOptions.minScale=this._layerStore.map.minScale;else{}
+if(layer.maxScale!=undefined)
+extraOptions.maxScale=layer.maxScale;else if(this._layerStore.map.maxScale!=undefined)
+extraOptions.maxScale=this._layerStore.map.maxScale;else{}
+if(layer.resolutions!=undefined)
+extraOptions.resolutions=layer.resolutions;if(layer.minResolution!=undefined)
+extraOptions.minResolution=layer.minResolution;if(layer.maxResolution!=undefined)
+extraOptions.maxResolution=layer.maxResolution;if(layer.resolutions==undefined&&layer.minResolution==undefined&&layer.maxResolution==undefined){extraOptions.minResolution="auto";extraOptions.maxResolution="auto";}
+extraOptions.name=layer.name;extraOptions.url=layer.url;extraOptions.layer=layer.layers;extraOptions.matrixSet=layer.matrixSet;if(layer.matrixIds!=undefined)
+extraOptions.matrixIds=layer.matrixIds
+if(layer.style!=undefined)
+extraOptions.style=layer.style;extraOptions.format=layer.imageFormat;l=new OpenLayers.Layer.WMTS(extraOptions);break;}
 l.setVisibility(false);l.events.register('loadend',null,this.onLayerAdded);this._layerStore.map.addLayer(l);var mstyle='';var toolTip='';var metadataUrl='';var target='';if(layer.metadataUrl.length>0){mstyle='metadataAvailable';metadataUrl=layer.metadataUrl;target='_blank';}
 if(this._layerStore.map.getScale()<layer.maxScale||this._layerStore.map.getScale()>layer.minScale){mstyle='hiddenLayer';toolTip=EasySDI_Map.lang.getLocal('LT_SCALE_RAGE_TOOLTIP')+" "+layer.minScale+" - "+layer.maxScale;}
 var layerNode=new EasySDI_Map.StyledLayerNode({id:'o'+layer.id,text:layer.name,href:metadataUrl,hrefTarget:target,cls:mstyle,qtip:toolTip,iconCls:'overlayLayer',allowDrag:false,layer:l,map:tree._layerStore.map,listeners:{'postcheckchange':function(){tree._saveState();}}});if(styles&&typeof styles[layer.id]!="undefined"){if(typeof styles[layer.id].fillColor=="string"){layerNode.fillColor=styles[layer.id].fillColor;}

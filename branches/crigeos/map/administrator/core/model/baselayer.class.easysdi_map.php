@@ -26,7 +26,7 @@ class baseLayer extends sdiTable
 	var $layers=null;
 	var $projection=null;
 	var $imgformat=null;
-	var $customStyle=false;
+	var $customstyle=false;
 	var $maxextent=null;
 	var $extent=null;
 	var $minscale=null;
@@ -43,6 +43,12 @@ class baseLayer extends sdiTable
 	var $defaultopacity=null;
 	var $metadataurl=null;
 	var $published=null;
+	var $minresolution=null;
+	var $maxresolution=null;
+	var $type=null;
+	var $matrixset = null;
+	var $matrixids = null;
+	var $style = null;
 	
 	// Class constructor
 	function __construct( &$db )

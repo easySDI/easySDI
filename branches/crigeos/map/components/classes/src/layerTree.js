@@ -481,34 +481,57 @@ _addBaseLayer : function(layer, i) {
 	
 	if (layer.resolutions != undefined)
 		extraOptions.resolutions = layer.resolutions;
-	else{
+	
+
+	//New option used on WMTS layer
+	if (layer.minResolution != undefined)
+		extraOptions.minResolution = layer.minResolution;
+	
+	if (layer.maxResolution != undefined)
+		extraOptions.maxResolution = layer.maxResolution;
+	
+	
+	if (layer.resolutions == undefined && layer.minResolution == undefined && layer.maxResolution == undefined) {
 		extraOptions.minResolution ="auto";
 		extraOptions.maxResolution ="auto";
 	}
 		
-
-	var WMSoptions = {
-		LAYERS : layer.layers,
-		SERVICE : layer.url_type,
-		VERSION : layer.version,
-		STYLES : '',
-		SRS : layer.projection,
-		FORMAT : layer.imageFormat
-	};
-	if (layer.cache)
-		WMSoptions.CACHE = true;
-	// var l = new OpenLayers.Layer.WMS.Untiled(layer.name,
-	// var l = new OpenLayers.Layer.WMS(layer.name,
-	// componentParams.proxyURL.asString + "&url=" + layer.url, WMSoptions, {
-	var l = new OpenLayers.Layer.WMS(layer.name, layer.url, WMSoptions, extraOptions);
-	l.events.register('loadend', null, this.onLayerAdded);
-
-	if (layer.cache)
-		l.params.CACHE = true;
-
-	// this._layerStore.add(this.reader.readRecords( [ l ]).records);
+	var l = null;
+	switch (layer.type.toUpperCase()) {
+	case 'WMTS':
+		extraOptions.name=layer.name;
+		extraOptions.url=layer.url;
+		extraOptions.layer=layer.layers;
+		extraOptions.matrixSet=layer.matrixSet;
+		if(layer.matrixIds != undefined)
+			extraOptions.matrixIds=layer.matrixIds;
+		if(layer.style != undefined)
+			extraOptions.style=layer.style;
+		extraOptions.format=layer.imageFormat;
+		
+		l = new OpenLayers.Layer.WMTS( extraOptions);
+		l.events.register('loadend', null, this.onLayerAdded);
+		break;
+	case 'WMS' :
+		var WMSoptions = {
+			LAYERS : layer.layers,
+			SERVICE : layer.type,
+			VERSION : layer.version,
+			STYLES : '',
+			SRS : layer.projection,
+			FORMAT : layer.imageFormat
+		};
+		if (layer.cache)
+			WMSoptions.CACHE = true;
+		l = new OpenLayers.Layer.WMS(layer.name, layer.url, WMSoptions, extraOptions);
+		l.events.register('loadend', null, this.onLayerAdded);
+	
+		if (layer.cache)
+			l.params.CACHE = true;
+		break;
+	}
 	this._layerStore.map.addLayer(l);
-	// this._layerStore.map.setLayerIndex(l, 0);
+	
 	// At this point, the first basemap loaded will have been set up as the
 	// default map basemap, and
 	// its visibility set true: override this to prevent excess map fetches. (NB
@@ -633,7 +656,15 @@ _addOverlayLayer : function(layer) {
 		
 		if (layer.resolutions != undefined)
 			extraOptions.resolutions = layer.resolutions;
-		else{
+		
+		if (layer.minResolution != undefined)
+			extraOptions.minResolution = layer.minResolution;
+		
+		if (layer.maxResolution != undefined)
+			extraOptions.maxResolution = layer.maxResolution;
+		
+		
+		if (layer.resolutions == undefined && layer.minResolution == undefined && layer.maxResolution == undefined) {
 			extraOptions.minResolution ="auto";
 			extraOptions.maxResolution ="auto";
 		}
@@ -661,6 +692,67 @@ _addOverlayLayer : function(layer) {
 		l = new OpenLayers.Layer.WFS(layer.name, layer.url, {
 			typename : layer.layers
 		});
+		break;
+		
+	case 'WMTS':
+		var extraOptions = {
+			isBaseLayer : false,
+			buffer : 0,
+			opacity : layer.defaultOpacity
+		}
+		if (layer.customStyle != undefined)
+			extraOptions.customStyle = layer.customStyle;
+		if (layer.units != undefined)
+			extraOptions.units = layer.units;
+		else if (extraOptions.units != undefined)
+			extraOptions.units= this._layerStore.map.units;
+		else{}
+		
+		if (layer.maxExtent != undefined)
+			extraOptions.maxExtent = layer.maxExtent;	
+		else if (this._layerStore.map.maxExtent != undefined)
+			extraOptions.maxExtent= this._layerStore.map.maxExtent;
+		else{}
+		
+		if (layer.minScale != undefined)
+			extraOptions.minScale = layer.minScale;
+		else if (this._layerStore.map.minScale !=undefined)
+			extraOptions.minScale= this._layerStore.map.minScale;
+		else{}
+		
+		if (layer.maxScale != undefined)
+			extraOptions.maxScale = layer.maxScale;
+		else if (this._layerStore.map.maxScale !=undefined)
+			extraOptions.maxScale= this._layerStore.map.maxScale;
+		else{}
+		
+		if (layer.resolutions != undefined)
+			extraOptions.resolutions = layer.resolutions;
+		
+		if (layer.minResolution != undefined)
+			extraOptions.minResolution = layer.minResolution;
+		
+		if (layer.maxResolution != undefined)
+			extraOptions.maxResolution = layer.maxResolution;
+		
+		
+		if (layer.resolutions == undefined && layer.minResolution == undefined && layer.maxResolution == undefined) {
+			extraOptions.minResolution ="auto";
+			extraOptions.maxResolution ="auto";
+		}
+
+		extraOptions.name=layer.name;
+		extraOptions.url=layer.url;
+		extraOptions.layer=layer.layers;
+		extraOptions.matrixSet=layer.matrixSet;
+		if(layer.matrixIds != undefined)
+			extraOptions.matrixIds=layer.matrixIds
+		if(layer.style != undefined)
+			extraOptions.style=layer.style;
+		extraOptions.format=layer.imageFormat;
+		
+		l = new OpenLayers.Layer.WMTS(extraOptions);
+
 		break;
 	}
 

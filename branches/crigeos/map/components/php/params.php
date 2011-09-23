@@ -224,29 +224,42 @@ if (!is_null($result)) {
 	foreach ($result as $rec)
 	{
 		extract($rec, EXTR_PREFIX_ALL, "l");
+		
 		if(checkProxyLayerPermissions($doCheckProxyLayerPermissions, 'WMS', $l_layers, $valid_wms_layers, $valid_wfs_features)){ // All base layers are WMS
 			$cache=(($l_cache==1) ? 'true' : 'false');
 			$customStyle=(($l_customStyle==1) ? 'true' : 'false');
 			$i++;
 			$s .= "{
-    id : '$l_id',
-    name : '$l_name',
-    url : '$l_url',
-    version : '$l_version',
-    layers : '$l_layers',
-    projection : '$l_projection',
-	defaultVisibility : $l_defaultvisibility,	
-	defaultOpacity : $l_defaultopacity,
-	metadataUrl : '$l_metadataurl',
-    imageFormat : '$l_imgformat',
-    cache : $cache,
-    customStyle : $customStyle,\n";
+		    id : '$l_id',
+		    name : '$l_name',
+		    url : '$l_url',
+		    type : '$l_type',
+		    version : '$l_version',
+		    layers : '$l_layers',
+		    projection : '$l_projection',
+			defaultVisibility : $l_defaultvisibility,	
+			defaultOpacity : $l_defaultopacity,
+			metadataUrl : '$l_metadataurl',
+		    imageFormat : '$l_imgformat',
+		    cache : $cache,
+		    customStyle : $customStyle,\n";
+			if ($l_style) {
+				$s .= "    style : \"$l_style\",\n";
+			}else{
+				$s .= "    style : \"default\",\n";
+			}
 			if ($l_singletile == 0){ $s .="    singletile : false,\n";}else{$s .="    singletile : true,\n";}
 			if ($l_maxextent) {
 				$s .= "    maxExtent : new OpenLayers.Bounds($l_maxextent),\n";
 			}
 			if ($l_resolutionoverscale && $l_resolutions) {
-				$s .= "    resolutions : $l_resolutions,\n";
+				$s .= "    resolutions : [$l_resolutions],\n";
+			}
+			if ($l_resolutionoverscale && $l_maxresolution) {
+				$s .= "    maxResolution : $l_maxresolution,\n";
+			}
+			if ($l_resolutionoverscale && $l_minresolution) {
+				$s .= "    minResolution : $l_minresolution,\n";
 			}
 			if (!$l_resolutionoverscale && $l_minScale) {
 				$s .= "    minScale : $l_minScale,\n";
@@ -254,8 +267,20 @@ if (!is_null($result)) {
 			if (!$l_resolutionoverscale && $l_maxScale) {
 				$s .= "    maxScale : $l_maxScale,\n";
 			}
+			if ($l_matrixset) {
+				$s .= "    matrixSet : \"$l_matrixset\",\n";
+			}
+			if ($l_matrixids) {
+				$matrixIds = explode(",",$l_matrixids);
+				foreach ($matrixIds as &$value) {
+				    $value = '"'.$value.'"';
+				}
+				$matrixIdsString = implode(",",$matrixIds);
+				$matrixIdsString = "[".$matrixIdsString."]";
+				$s .= "    matrixIds : $matrixIdsString,\n";
+			}
 			$s .= "    units : '$l_unit'
-}";
+			}";
 			if ($i != count($result)) $s .= ",";
 		}
 	}
@@ -304,26 +329,31 @@ if (!is_null($result)) {
 			if ($done_first) $s .= ",";
 			$done_first=true;
 			$s .= "{
-    id : $l_id,
-    group : $l_group_id,
-    name : '$l_name',
-    url : '$l_url',
-    url_type: '$l_type',    
-    version : '$l_version',
-    layers : '$l_layers',
-    projection : '$l_projection',
-	defaultVisibility : $l_defaultvisibility,
-	defaultOpacity : $l_defaultopacity,
-	metadataUrl : '$l_metadataurl',
-	imageFormat : '$l_imgformat',
-	cache : $cache,
-	customStyle : $customStyle,\n";
+		    id : $l_id,
+		    group : $l_group_id,
+		    name : '$l_name',
+		    url : '$l_url',
+		    url_type: '$l_type',    
+		    version : '$l_version',
+		    layers : '$l_layers',
+		    projection : '$l_projection',
+			defaultVisibility : $l_defaultvisibility,
+			defaultOpacity : $l_defaultopacity,
+			metadataUrl : '$l_metadataurl',
+			imageFormat : '$l_imgformat',
+			cache : $cache,
+			customStyle : $customStyle,\n";
+			if ($l_style) {
+				$s .= "    style : \"$l_style\",\n";
+			}else{
+				$s .= "    style : \"default\",\n";
+			}	
 			if ($l_singletile == 0){ $s .="singletile : false,\n";}else{$s .="singletile : true,\n";}
 			if ($l_maxextent) {
 				$s .= "    maxExtent : new OpenLayers.Bounds($l_maxextent),\n";
 			}
 			if ($l_resolutionoverscale && $l_resolutions) {
-				$s .= "resolutions : $l_resolutions,\n";
+				$s .= "resolutions : [$l_resolutions],\n";
 			}
 			if (!$l_resolutionoverscale && $l_minscale) {
 				$s .= "minScale : $l_minscale,\n";
@@ -331,8 +361,20 @@ if (!is_null($result)) {
 			if (!$l_resolutionoverscale && $l_maxscale) {
 				$s .= "maxScale : $l_maxscale,\n";
 			}
+			if ($l_matrixset) {
+				$s .= "    matrixSet : \"$l_matrixset\",\n";
+			}
+			if ($l_matrixids) {
+				$matrixIds = explode(",",$l_matrixids);
+				foreach ($matrixIds as &$value) {
+				    $value = '"'.$value.'"';
+				}
+				$matrixIdsString = implode(",",$matrixIds);
+				$matrixIdsString = "[".$matrixIdsString."]";
+				$s .= "    matrixIds : $matrixIdsString,\n";
+			}
 			$s .= "units : '$l_unit'
-}";
+			}";
 			//if ($i != count($result)) $s .= ",";
 		} else {$s .= "// blocked access to $l_layers\n";}
 	}
@@ -441,7 +483,8 @@ $s .= "};\n\n";
  *   distinctResultsGrids - array of the distinct tabs that are available.
  */
 
-$query = "SELECT * from #__sdi_simplesearchtype;";
+$query = "SELECT * from #__sdi_simplesearchty
+pe;";
 $db->setQuery($query);
 $result = $db->loadAssocList();
 if (count($result)>0) {
@@ -737,7 +780,12 @@ if (!is_null($result)) {
 		extract($rec, EXTR_PREFIX_ALL, "l");
 		if($l_name == 'mapMaxExtent')
 			$s .= "	$l_name :  new OpenLayers.Bounds($l_value), ";
-		else
+		else if($l_name == 'mapResolutions' ){
+			if((trim($l_value))!= "")
+				$s .= "	$l_name :  [$l_value], ";
+			else 
+				$s .= "	$l_name : '',";
+		}else
 			$s .= "    $l_name : '$l_value',";
 		if(!is_null($l_description) && strlen($l_description) > 0) {
 			$s .= " // $l_description";
