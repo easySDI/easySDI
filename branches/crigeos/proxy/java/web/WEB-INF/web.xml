@@ -82,10 +82,7 @@
 		<url-pattern>/ogc/*</url-pattern>
 	</filter-mapping>
 
-	<filter-mapping>
-		<filter-name>springSecurityFilterChain</filter-name>
-		<url-pattern>/maptofop</url-pattern>
-	</filter-mapping>
+	
 
 	<welcome-file-list>
 		<welcome-file>index.jsp</welcome-file>
