@@ -39,7 +39,9 @@ if(layer.resolutions!=undefined)
 extraOptions.resolutions=layer.resolutions;if(layer.minResolution!=undefined)
 extraOptions.minResolution=layer.minResolution;if(layer.maxResolution!=undefined)
 extraOptions.maxResolution=layer.maxResolution;if(layer.resolutions==undefined&&layer.minResolution==undefined&&layer.maxResolution==undefined){extraOptions.minResolution="auto";extraOptions.maxResolution="auto";}
-var l=null;switch(layer.type.toUpperCase()){case'WMTS':extraOptions.name=layer.name;extraOptions.url=layer.url;extraOptions.layer=layer.layers;extraOptions.matrixSet=layer.matrixSet;extraOptions.matrixIds=layer.matrixIds;extraOptions.style=layer.style;extraOptions.format=layer.imageFormat;l=new OpenLayers.Layer.WMTS(extraOptions);l.events.register('loadend',null,this.onLayerAdded);break;case'WMS':var WMSoptions={LAYERS:layer.layers,SERVICE:layer.type,VERSION:layer.version,STYLES:'',SRS:layer.projection,FORMAT:layer.imageFormat};if(layer.cache)
+var l=null;switch(layer.type.toUpperCase()){case'WMTS':extraOptions.name=layer.name;extraOptions.url=layer.url;extraOptions.layer=layer.layers;extraOptions.matrixSet=layer.matrixSet;if(layer.matrixIds!=undefined)
+extraOptions.matrixIds=layer.matrixIds;if(layer.style!=undefined)
+extraOptions.style=layer.style;extraOptions.format=layer.imageFormat;l=new OpenLayers.Layer.WMTS(extraOptions);l.events.register('loadend',null,this.onLayerAdded);break;case'WMS':var WMSoptions={LAYERS:layer.layers,SERVICE:layer.type,VERSION:layer.version,STYLES:'',SRS:layer.projection,FORMAT:layer.imageFormat};if(layer.cache)
 WMSoptions.CACHE=true;l=new OpenLayers.Layer.WMS(layer.name,layer.url,WMSoptions,extraOptions);l.events.register('loadend',null,this.onLayerAdded);if(layer.cache)
 l.params.CACHE=true;break;}
 this._layerStore.map.addLayer(l);if(layer.defaultVisibility)
@@ -85,7 +87,9 @@ if(layer.resolutions!=undefined)
 extraOptions.resolutions=layer.resolutions;if(layer.minResolution!=undefined)
 extraOptions.minResolution=layer.minResolution;if(layer.maxResolution!=undefined)
 extraOptions.maxResolution=layer.maxResolution;if(layer.resolutions==undefined&&layer.minResolution==undefined&&layer.maxResolution==undefined){extraOptions.minResolution="auto";extraOptions.maxResolution="auto";}
-extraOptions.name=layer.name;extraOptions.url=layer.url;extraOptions.layer=layer.layers;extraOptions.matrixSet=layer.matrixSet;extraOptions.matrixIds=layer.matrixIds
+extraOptions.name=layer.name;extraOptions.url=layer.url;extraOptions.layer=layer.layers;extraOptions.matrixSet=layer.matrixSet;if(layer.matrixIds!=undefined)
+extraOptions.matrixIds=layer.matrixIds
+if(layer.style!=undefined)
 extraOptions.style=layer.style;extraOptions.format=layer.imageFormat;l=new OpenLayers.Layer.WMTS(extraOptions);break;}
 l.setVisibility(false);l.events.register('loadend',null,this.onLayerAdded);this._layerStore.map.addLayer(l);var mstyle='';var toolTip='';var metadataUrl='';var target='';if(layer.metadataUrl.length>0){mstyle='metadataAvailable';metadataUrl=layer.metadataUrl;target='_blank';}
 if(this._layerStore.map.getScale()<layer.maxScale||this._layerStore.map.getScale()>layer.minScale){mstyle='hiddenLayer';toolTip=EasySDI_Map.lang.getLocal('LT_SCALE_RAGE_TOOLTIP')+" "+layer.minScale+" - "+layer.maxScale;}

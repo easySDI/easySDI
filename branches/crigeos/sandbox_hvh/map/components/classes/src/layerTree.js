@@ -503,8 +503,10 @@ _addBaseLayer : function(layer, i) {
 		extraOptions.url=layer.url;
 		extraOptions.layer=layer.layers;
 		extraOptions.matrixSet=layer.matrixSet;
-		extraOptions.matrixIds=layer.matrixIds;
-		extraOptions.style=layer.style;
+		if(layer.matrixIds != undefined)
+			extraOptions.matrixIds=layer.matrixIds;
+		if(layer.style != undefined)
+			extraOptions.style=layer.style;
 		extraOptions.format=layer.imageFormat;
 		
 		l = new OpenLayers.Layer.WMTS( extraOptions);
@@ -743,8 +745,10 @@ _addOverlayLayer : function(layer) {
 		extraOptions.url=layer.url;
 		extraOptions.layer=layer.layers;
 		extraOptions.matrixSet=layer.matrixSet;
-		extraOptions.matrixIds=layer.matrixIds
-		extraOptions.style=layer.style;
+		if(layer.matrixIds != undefined)
+			extraOptions.matrixIds=layer.matrixIds
+		if(layer.style != undefined)
+			extraOptions.style=layer.style;
 		extraOptions.format=layer.imageFormat;
 		
 		l = new OpenLayers.Layer.WMTS(extraOptions);

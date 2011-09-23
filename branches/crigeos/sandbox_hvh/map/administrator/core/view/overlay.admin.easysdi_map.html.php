@@ -406,7 +406,7 @@ class HTML_overlay
 							<td colspan="2">
 							<span class="editlinktip hasTip" title="<?php echo JText::_("MAP_BASELAYER_STYLE_TOOLTIP"); ?>">
 								<input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['style'];?>" name="style" id="style" value="<?php echo $overlay_content->style; ?>" />
-							</span>s
+							</span>
 							</td>
 						</tr>
 					</table>
