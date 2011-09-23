@@ -751,6 +751,9 @@
 							mapHelper.addToolbar();	
 							Ext.getCmp(fieldsetId).doLayout();
 							
+							Ext.getCmp(fieldsetId).addListener("afterlayout", mapHelper.updateMapExtent, mapHelper);
+							Ext.getCmp(fieldsetId).doLayout();
+							
 						}
 					
 				}
