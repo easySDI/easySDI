@@ -879,6 +879,26 @@ $j(document).ready(function() {
 									</tr>
 									<tr>
 										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_MAP_MINRESOLUTION_TIP' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_MAP_MINRESOLUTION_LABEL' ); ?>
+											</span>
+										</td>
+										<td>
+											<input class="inputbox resolutions" type="text" size="100" name="mapMinResolution" <?php if ($mapList['mapResolutionOverScale']->value == 0) echo 'disabled' ?> value="<?php echo $mapList['mapMinResolution']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+										</td>
+									</tr>
+									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_MAP_MAXRESOLUTION_TIP' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_MAP_MAXRESOLUTION_LABEL' ); ?>
+											</span>
+										</td>
+										<td>
+											<input class="inputbox resolutions" type="text" size="100" name="mapMaxResolution" <?php if ($mapList['mapResolutionOverScale']->value == 0) echo 'disabled' ?> value="<?php echo $mapList['mapMaxResolution']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+										</td>
+									</tr>
+									<tr>
+										<td valign="top" class="key">
 											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_MAP_RESOLUTIONS_TIP' ); ?>">
 												<?php echo JText::_( 'CORE_CONFIGURATION_MAP_RESOLUTIONS_LABEL' ); ?>
 											</span>
