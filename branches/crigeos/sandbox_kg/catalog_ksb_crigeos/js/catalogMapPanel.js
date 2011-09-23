@@ -89,32 +89,44 @@ CatalogMapPanel = Ext.extend(Ext.Panel, {
 	updateMapExtent: function(){
 		this.updateManuallyTriggered = true;
 		var extent = new Array();
-
+		var extentInvalid = false ;
 
 		Ext.each(Ext.getCmp(this.fieldsetId).items.items, function(item, index) {
 			if(item.id.indexOf("east")>=0){
-
-				extent["east"]= item.getValue();
+				if(item.isValid())
+					extent["east"]= item.getValue();
+				else
+					extentInvalid = true;
 
 			}else if(item.id.indexOf("west")>=0){
-
-				extent["west"]= item.getValue();		
+				if(item.isValid())
+					extent["west"]= item.getValue();	
+				else					
+					extentInvalid = true;
 
 			}else if(item.id.indexOf("south")>=0){
-
-				extent["south"]= item.getValue();		
+				if(item.isValid())
+					extent["south"]= item.getValue();	
+				else
+					extentInvalid = true;
 
 			}else if(item.id.indexOf("north")>=0){
-
-				extent["north"]= item.getValue();		
+				if(item.isValid())
+					extent["north"]= item.getValue();	
+				else
+					extentInvalid = true;
 
 			}else{}
 		});
 
 		//left, bottom, right, top 
+		if(!extentInvalid){
 		var currentBounds = new OpenLayers.Bounds(extent["west"],extent["south"],extent["east"],extent["north"]);
 
 		this.map.zoomToExtent(currentBounds);
+		}else{
+			this.updateManuallyTriggered = false;
+		}
 
 	},
 

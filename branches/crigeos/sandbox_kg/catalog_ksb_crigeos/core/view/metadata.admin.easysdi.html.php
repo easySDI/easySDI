@@ -371,8 +371,16 @@ class HTML_metadata {
 							                {
 							                	myMask.show();
 							                 	var fields = new Array();
+							                 	form.getForm().fieldInvalid =false;	
 							        			form.cascade(function(cmp)
 							        			{
+										        	if(cmp.isValid){
+									        				if(!cmp.isValid()&& Ext.get(cmp.id)){														
+																	form.getForm().fieldInvalid =true;													
+														
+																
+															}
+													}
 								        			if (cmp.getId() == 'gmd_MD_Metadata-gmd_MD_DataIdentification__2-gmd_abstract__2-gmd_LocalisedCharacterString-fr-FR__1')
 						         					{
 						         						//alert(cmp.getId() + \" - \" + cmp.getValue());
@@ -389,36 +397,45 @@ class HTML_metadata {
 							         					}
 							         				}
 							        			});
-							        			var fieldsets = fields.join(' | ');
-							        			//alert(fieldsets);
-							        			form.getForm().setValues({fieldsets: fieldsets});
-							              		form.getForm().setValues({task: 'saveMetadata'});
-							                 	form.getForm().setValues({metadata_id: '".$metadata_id."'});
-							                 	form.getForm().setValues({object_id: '".$object_id."'});
-												form.getForm().submit({
-											    	scope: this,
-													method	: 'POST',
-													clientValidation: false,
-													success: function(form, action) 
-													{
-														// Retour � la page pr�c�dente
-														Ext.MessageBox.alert('".JText::_('CATALOG_SAVEMETADATA_MSG_SUCCESS_TITLE')."', 
-							                    						 '".JText::_('CATALOG_SAVEMETADATA_MSG_SUCCESS_TEXT')."',
-							                    						 function () {window.open ('./index.php?option=".$option."&Itemid=".JRequest::getVar('Itemid')."&lang=".JRequest::getVar('lang')."&task=cancelMetadata','_parent');});
-												
+							        			
+							        			if(!form.getForm().fieldInvalid) 
+					        					{	
+								        			var fieldsets = fields.join(' | ');
+								        			//alert(fieldsets);
+								        			form.getForm().setValues({fieldsets: fieldsets});
+								              		form.getForm().setValues({task: 'saveMetadata'});
+								                 	form.getForm().setValues({metadata_id: '".$metadata_id."'});
+								                 	form.getForm().setValues({object_id: '".$object_id."'});
+													form.getForm().submit({
+												    	scope: this,
+														method	: 'POST',
+														clientValidation: false,
+														success: function(form, action) 
+														{
+															// Retour � la page pr�c�dente
+															Ext.MessageBox.alert('".JText::_('CATALOG_SAVEMETADATA_MSG_SUCCESS_TITLE')."', 
+								                    						 '".JText::_('CATALOG_SAVEMETADATA_MSG_SUCCESS_TEXT')."',
+								                    						 function () {window.open ('./index.php?option=".$option."&Itemid=".JRequest::getVar('Itemid')."&lang=".JRequest::getVar('lang')."&task=cancelMetadata','_parent');});
 													
-														myMask.hide();
-													},
-													failure: function(form, action) 
-													{
-                        								if (action.result)
-															alert(action.result.errors.xml);
-														else
-															alert('Form save error');
-														myMask.hide();
-													},
-													url:'".$url."'
-												});
+														
+															myMask.hide();
+														},
+														failure: function(form, action) 
+														{
+	                        								if (action.result)
+																alert(action.result.errors.xml);
+															else
+																alert('Form save error');
+															myMask.hide();
+														},
+														url:'".$url."'
+													});
+												}
+												else{
+													alert('Please verify whether all required fields are present');
+													myMask.hide();
+												
+												}
 							        	}
 						        })
 							        
@@ -438,8 +455,19 @@ class HTML_metadata {
 						                {
 						                	myMask.show();
 						                 	var fields = new Array();
+						                 	form.getForm().fieldInvalid =false;		
 						        			form.cascade(function(cmp)
 						        			{
+						        			
+						        				if(cmp.isValid){
+									        				if(!cmp.isValid()&& Ext.get(cmp.id)){														
+																	form.getForm().fieldInvalid =true;														
+														
+																if(!Ext.getCmp(cmp.id)){														
+																		form.getForm().extValidationCorrupt =true;														
+																}
+															}
+												}
 							        			if (cmp.xtype=='fieldset')
 						         				{
 						         					if (cmp.clones_count)
@@ -448,34 +476,41 @@ class HTML_metadata {
 						        			});
 						        			var fieldsets = fields.join(' | ');
 						        			
-											form.getForm().setValues({fieldsets: fieldsets});
-						                 	form.getForm().setValues({task: 'updateMetadata'});
-						                 	form.getForm().setValues({metadata_id: '".$metadata_id."'});
-						                 	form.getForm().setValues({object_id: '".$object_id."'});
-											form.getForm().setValues({account_id: '".$account_id."'});
-											form.getForm().submit({
-										    	scope: this,
-												method	: 'POST',
-												clientValidation: true,
-												success: function(form, action) 
-												{
-													Ext.MessageBox.alert('".JText::_('CATALOG_UPDATEMETADATA_MSG_SUCCESS_TITLE')."', 
-							                    						 '".JText::_('CATALOG_UPDATEMETADATA_MSG_SUCCESS_TEXT')."',
-							                    						 function () {window.open ('./index.php?option=".$option."&Itemid=".JRequest::getVar('Itemid')."&lang=".JRequest::getVar('lang')."&task=cancelMetadata','_parent');});
-												
+						        			if (!form.getForm().fieldInvalid) 
+					        				{	
+												form.getForm().setValues({fieldsets: fieldsets});
+							                 	form.getForm().setValues({task: 'updateMetadata'});
+							                 	form.getForm().setValues({metadata_id: '".$metadata_id."'});
+							                 	form.getForm().setValues({object_id: '".$object_id."'});
+												form.getForm().setValues({account_id: '".$account_id."'});
+												form.getForm().submit({
+											    	scope: this,
+													method	: 'POST',
+													clientValidation: false,
+													success: function(form, action) 
+													{
+														Ext.MessageBox.alert('".JText::_('CATALOG_UPDATEMETADATA_MSG_SUCCESS_TITLE')."', 
+								                    						 '".JText::_('CATALOG_UPDATEMETADATA_MSG_SUCCESS_TEXT')."',
+								                    						 function () {window.open ('./index.php?option=".$option."&Itemid=".JRequest::getVar('Itemid')."&lang=".JRequest::getVar('lang')."&task=cancelMetadata','_parent');});
+													
+														myMask.hide();
+													},
+													failure: function(form, action) 
+													{
+	                        							if (action.result)
+															alert(action.result.errors.xml);
+														else
+															alert('Form update error');
+															
+														myMask.hide();
+													},
+													url:'".$update_url."'
+												});
+											}
+											else{
+													alert('Please verify whether all required fields are present');
 													myMask.hide();
-												},
-												failure: function(form, action) 
-												{
-                        							if (action.result)
-														alert(action.result.errors.xml);
-													else
-														alert('Form update error');
-														
-													myMask.hide();
-												},
-												url:'".$update_url."'
-											});
+											}
 							        	}})
 							        );
 						form.render();";

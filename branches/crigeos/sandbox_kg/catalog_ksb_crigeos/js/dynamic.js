@@ -1,7 +1,6 @@
 	function createFieldSet(id, title, border, clone, collapsible, relation, dynamic, master, min, max, tip, dismissDelay, isLanguageFieldset)
 	{	
 		//if (title) title = title+" "+min+" - "+max;
-		;
 		var collapsed = (relation && !clone) ? collapsed=true : collapsed = false;
 		var hidden = (max==1 && min==1 && !clone && relation) ? true : false;
 		if (master) master.clones_count=master.clones_count+1;
@@ -752,6 +751,9 @@
 							mapHelper.addMap();	
 							Ext.getCmp(fieldsetId).doLayout();
 							mapHelper.addToolbar();	
+							Ext.getCmp(fieldsetId).doLayout();
+							
+							Ext.getCmp(fieldsetId).addListener("afterlayout", mapHelper.updateMapExtent, mapHelper);
 							Ext.getCmp(fieldsetId).doLayout();
 							
 						}
