@@ -14,7 +14,7 @@
 		<mkdir dir="${projet.out.dir}" />
 	</target>
 
-	<target name="compression" description="Compression">
+	<target name="compression" description="Compression" depends="create-structure">
 		<jar compress="true" jarfile="${projet.out.dir}/com_easysdi_catalog.zip"
 			basedir="." excludes="out/** ; .cache/** ; .svn/** ; .settings/** ; *.project; .prefs" />
 	</target>
