@@ -612,6 +612,7 @@ class HTML_product {
 		<input type="hidden" name="created" value="<?php echo $product->created; ?>" />
 		<input type="hidden" name="checked_out" value="<?php echo $product->checked_out; ?>" />
 		<input type="hidden" name="checked_out_time" value="<?php echo $product->checked_out_time; ?>" />
+		<input type="hidden" id="productFileName" name="productFileName" value="<?php echo $product->getFileName();?>">
 		</form>
 	<?php
 	}
