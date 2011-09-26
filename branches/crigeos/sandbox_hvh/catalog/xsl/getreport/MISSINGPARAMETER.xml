@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<errorHandler>
+	<errorName>MISSINGPARAMETER</errorName>
+	<errorDescription>
+		<fr>
+			Un param&#232;tre est manquant
+		</fr>
+		<de>
+			Un param&#232;tre est manquant
+		</de>
+		<en>
+			Un param&#232;tre est manquant
+		</en>		
+	</errorDescription>
+</errorHandler>
