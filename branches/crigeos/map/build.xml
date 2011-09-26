@@ -85,6 +85,15 @@
 		<include name="**/*.txt" />
 		<include name="**/*.css" />
 		<include name="**/*.js" />
+	    <exclude name="external/ext/examples/**" />
+	    <exclude name="external/ext/CHANGES.html" />
+	    <exclude name="external/ext/INCLUDE_ORDER.txt" />
+	    <exclude name="external/geoext/examples/**" />
+	    <exclude name="external/geoext/tests/**" />
+	    <exclude name="external/proj4js/docs/**" />
+	    <exclude name="external/proj4js/demo/**" />
+	    <exclude name="external/proj4js/test/**" />
+		<exclude name="js_minifier/**" />
 	</fileset>
 	
 	<fileset id="lafrFR" dir="./administrator/language">
