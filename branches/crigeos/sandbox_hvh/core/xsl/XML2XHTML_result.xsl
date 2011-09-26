@@ -58,123 +58,39 @@
 			<div class="metadata-result">
 				<!-- Logo of the different geoproducts -->
 				<div class="metadata-logo">
+					<div><xsl:attribute name="class">metadata-logo-0</xsl:attribute></div>
 					<h4 class="hidden">
 						<xsl:value-of select="./sdi:Metadata/sdi:objecttype" />
 					</h4>
-					<div>
-						<xsl:choose>
-							<xsl:when test="$language='de-DE'">
-								<xsl:choose>
-									<xsl:when test="$logo ='layer'">
-										<xsl:attribute name="class">metadata-logo-1-de</xsl:attribute>
-									</xsl:when>
-									<xsl:when test="$logo ='map'">
-										<xsl:attribute name="class">metadata-logo-2-de</xsl:attribute>
-									</xsl:when>
-									<xsl:when test="$logo ='geoproduct'">
-										<xsl:attribute name="class">metadata-logo-3-de</xsl:attribute>
-									</xsl:when>
-									<xsl:otherwise>
-										<xsl:attribute name="class">metadata-logo-0</xsl:attribute>
-									</xsl:otherwise>
-								</xsl:choose>
-							</xsl:when>
-							<xsl:when test="$language='en-GB'">
-								<xsl:choose>
-									<xsl:when test="$logo ='layer'">
-										<xsl:attribute name="class">metadata-logo-1-en</xsl:attribute>
-									</xsl:when>
-									<xsl:when test="$logo ='map'">
-										<xsl:attribute name="class">metadata-logo-2-en</xsl:attribute>
-									</xsl:when>
-									<xsl:when test="$logo ='geoproduct'">
-										<xsl:attribute name="class">metadata-logo-3-en</xsl:attribute>
-									</xsl:when>
-									<xsl:otherwise>
-										<xsl:attribute name="class">metadata-logo-0</xsl:attribute>
-									</xsl:otherwise>
-								</xsl:choose>
-							</xsl:when>
-							<xsl:when test="$language='fr-FR'">
-								<xsl:choose>
-									<xsl:when test="$logo ='layer'">
-										<xsl:attribute name="class">metadata-logo-1-fr</xsl:attribute>
-									</xsl:when>
-									<xsl:when test="$logo ='map'">
-										<xsl:attribute name="class">metadata-logo-2-fr</xsl:attribute>
-									</xsl:when>
-									<xsl:when test="$logo ='geoproduct'">
-										<xsl:attribute name="class">metadata-logo-3-fr</xsl:attribute>
-									</xsl:when>
-									<xsl:otherwise>
-										<xsl:attribute name="class">metadata-logo-0</xsl:attribute>
-									</xsl:otherwise>
-								</xsl:choose>
-							</xsl:when>
-						</xsl:choose>
-
-					</div>
+					
 				</div>
 
 				<!-- Description of the Metadata -->
 				<div class="metadata-desc">
-					<xsl:choose>
-						<xsl:when test="$language='de-DE'">
-							<h3>
-								<xsl:value-of disable-output-escaping="yes"
-									select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString" />
-							</h3>
-							<xsl:variable name="abstract">
-								<xsl:value-of
-									select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:abstract/gco:CharacterString" />
-							</xsl:variable>
-							<p>
-								<xsl:value-of select="substring($abstract,1,200)" />
-								[...]
-							</p>
-						</xsl:when>
-						<xsl:when test="$language='fr-FR'">
-							<h3>
-								<xsl:value-of disable-output-escaping="yes"
-									select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale='#FR']" />
-							</h3>
-							<xsl:variable name="abstract">
-								<xsl:value-of
-									select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:abstract/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale='#FR']" />
-							</xsl:variable>
-							<p>
-								<xsl:value-of select="substring($abstract,1,200)" />
-								[...]
-							</p>
-						</xsl:when>
-						<xsl:when test="$language='en-GB'">
-							<h3>
-								<xsl:value-of disable-output-escaping="yes"
-									select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale='#GB']" />
-							</h3>
-							<xsl:variable name="abstract">
-								<xsl:value-of
-									select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:abstract/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale='#GB']" />
-							</xsl:variable>
-							<p>
-								<xsl:value-of select="substring($abstract,1,200)" />
-								[...]
-							</p>
-						</xsl:when>
-					</xsl:choose>
+					<h4>
+						<xsl:value-of disable-output-escaping="yes"
+							select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale='#FR']" />
+					</h4>
+					
+					<xsl:variable name="abstract">
+						<xsl:value-of
+							select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:abstract/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale='#FR']" />
+					</xsl:variable>
+					<p>
+						<xsl:value-of select="substring($abstract,1,200)" />
+						 [...]
+					</p>
+						
 					<!-- Metadata: Summary Information -->
 					<!-- Date -->
 					<div class="metadata-summary">
 						<span class="metadata-label">
 							<xsl:choose>
-								<xsl:when test="$language='de-DE'">
-									Datenstand:
-								</xsl:when>
 								<xsl:when test="$language='fr-FR'">
-									Date du jeu de données
+									Création / Mise à jour:
 								</xsl:when>
 								<xsl:when test="$language='en-GB'">
-									Data date
+									Data date:
 								</xsl:when>
 							</xsl:choose>
 						</span>
@@ -188,13 +104,6 @@
 						<div class="clear" />
 						<!-- Access rights -->
 						<xsl:choose>
-							<xsl:when test="$language='de-DE'">
-								<span class="metadata-label">Zugangsberechtigung:</span>
-								<span class="metadata-value">
-									<xsl:value-of
-										select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceConstraints/gmd:MD_Constraints/gmd:useLimitation/gco:CharacterString" />
-								</span>
-							</xsl:when>
 							<xsl:when test="$language='fr-FR'">
 								<span class="metadata-label">Accès:</span>
 								<span class="metadata-value">
@@ -220,65 +129,6 @@
 						<!-- Link und Download -->
 						<div class="metadata-links">
 							<xsl:choose>
-								<xsl:when test="$language='de-DE'">
-									<span class="metadata-link">
-										<a>
-											<xsl:attribute name="title">Detaillierte Informationen zu: <xsl:value-of
-												disable-output-escaping="yes"
-												select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString" /></xsl:attribute>
-											<xsl:attribute name="class">modal</xsl:attribute>	
-														<xsl:attribute name="rel">{handler:'iframe',size:{x:650,y:600}}</xsl:attribute>
-											<xsl:attribute name="href">index.php?tmpl=index&amp;option=com_easysdi_catalog&amp;Itemid=2&amp;context=geocatalog&amp;toolbar=1&amp;task=showMetadata&amp;type=complete&amp;id=<xsl:value-of
-												select="./gmd:MD_Metadata/gmd:fileIdentifier/gco:CharacterString" /></xsl:attribute>
-											<xsl:text>Detaillierte Informationen</xsl:text>
-										</a>
-									</span>
-									
-											<xsl:choose>
-												<xsl:when test="string-length($downloadProduct) > 0">
-														<span class="metadata-link">
-															<a>
-																<xsl:attribute name="class">modal</xsl:attribute>	
-																<xsl:attribute name="rel">{handler:'iframe',size:{x:650,y:600}}</xsl:attribute>
-																<xsl:attribute name="href">
-																	<xsl:value-of  select="$downloadProduct" />
-																</xsl:attribute>
-																<xsl:text>Télécharger </xsl:text>
-															</a>
-														</span>
-														<span class="info">
-															<xsl:text> (</xsl:text>
-															<xsl:value-of select="translate($filetype,$smallcase,$uppercase)" />
-															<xsl:text>, </xsl:text>
-															<xsl:value-of select="$filesize" />
-															<xsl:text> Ko)</xsl:text>
-														</span>
-													
-												</xsl:when >
-												<xsl:otherwise>													
-													<span class="metadata-link">
-														<a>
-															<xsl:attribute name="class">icon default</xsl:attribute>
-															<xsl:attribute name="href">
-																<xsl:value-of select="$orderproduct" />
-															</xsl:attribute>
-															<xsl:text>Commander</xsl:text>
-														</a>
-													</span>													
-												</xsl:otherwise >
-											</xsl:choose>
-											<xsl:if test="string-length($previewProduct) > 0">
-												<span class="metadata-link">
-													<a>
-														<xsl:attribute name="class">modal</xsl:attribute>	
-														<xsl:attribute name="rel">{handler:'iframe',size:{x:650,y:600}}</xsl:attribute>
-														<xsl:attribute name="href"><xsl:value-of  select="$previewProduct" /></xsl:attribute>
-														<xsl:text>Prévisualiser</xsl:text>
-													</a>
-												</span>
-											</xsl:if>
-										
-								</xsl:when>
 								<xsl:when test="$language='fr-FR'">
 									<span class="metadata-link">
 										<a>
@@ -290,51 +140,47 @@
 											<xsl:text>Details</xsl:text>
 										</a>
 									</span>
-									
-											<xsl:choose>
-												<xsl:when test="string-length($downloadProduct) > 0">
-														<span class="metadata-link">
-															<a>
-																<xsl:attribute name="class">modal</xsl:attribute>	
-																<xsl:attribute name="rel">{handler:'iframe',size:{x:650,y:600}}</xsl:attribute>
-																<xsl:attribute name="href">
-																	<xsl:value-of  select="$downloadProduct" />
-																</xsl:attribute>
-																<xsl:text>Télécharger </xsl:text>
-															</a>
-														</span>
-														<span class="info">
-															<xsl:text> (</xsl:text>
-															<xsl:value-of select="translate($filetype,$smallcase,$uppercase)" />
-															<xsl:text>, </xsl:text>
-															<xsl:value-of select="$filesize" />
-															<xsl:text> Ko)</xsl:text>
-														</span>
-													
-												</xsl:when >
-												<xsl:otherwise>													
-													<span class="metadata-link">
-														<a>
-															<xsl:attribute name="class">icon default</xsl:attribute>
-															<xsl:attribute name="href">
-																<xsl:value-of select="$orderproduct" />
-															</xsl:attribute>
-															<xsl:text>Commander</xsl:text>
-														</a>
-													</span>													
-												</xsl:otherwise >
-											</xsl:choose>
-											<xsl:if test="string-length($previewProduct) > 0">
+									<xsl:choose>
+										<xsl:when test="string-length($downloadProduct) > 0">
 												<span class="metadata-link">
 													<a>
 														<xsl:attribute name="class">modal</xsl:attribute>	
 														<xsl:attribute name="rel">{handler:'iframe',size:{x:650,y:600}}</xsl:attribute>
-														<xsl:attribute name="href"><xsl:value-of  select="$previewProduct" /></xsl:attribute>
-														<xsl:text>Prévisualiser</xsl:text>
+														<xsl:attribute name="href">
+															<xsl:value-of  select="$downloadProduct" />
+														</xsl:attribute>
+														<xsl:text>Télécharger </xsl:text>
+														
+														<xsl:text> (</xsl:text>
+														<xsl:value-of select="translate($filetype,$smallcase,$uppercase)" />
+														<xsl:text>, </xsl:text>
+														<xsl:value-of select="$filesize" />
+														<xsl:text> Ko)</xsl:text>
 													</a>
 												</span>
-											</xsl:if>
-										
+										</xsl:when >
+										<xsl:otherwise>													
+											<span class="metadata-link">
+												<a>
+													<xsl:attribute name="class">icon default</xsl:attribute>
+													<xsl:attribute name="href">
+														<xsl:value-of select="$orderproduct" />
+													</xsl:attribute>
+													<xsl:text>Commander</xsl:text>
+												</a>
+											</span>													
+										</xsl:otherwise >
+									</xsl:choose>
+									<xsl:if test="string-length($previewProduct) > 0">
+										<span class="metadata-link">
+											<a>
+												<xsl:attribute name="class">modal</xsl:attribute>	
+												<xsl:attribute name="rel">{handler:'iframe',size:{x:650,y:600}}</xsl:attribute>
+												<xsl:attribute name="href"><xsl:value-of  select="$previewProduct" /></xsl:attribute>
+												<xsl:text>Prévisualiser</xsl:text>
+											</a>
+										</span>
+									</xsl:if>
 								</xsl:when>
 								<xsl:when test="$language='en-GB'">
 									<span class="metadata-link">
@@ -350,51 +196,47 @@
 											<xsl:text>Details</xsl:text>
 										</a>
 									</span>
-									
-											<xsl:choose>
-												<xsl:when test="string-length($downloadProduct) > 0">
-														<span class="metadata-link">
-															<a>
-																<xsl:attribute name="class">modal</xsl:attribute>	
-																<xsl:attribute name="rel">{handler:'iframe',size:{x:650,y:600}}</xsl:attribute>
-																<xsl:attribute name="href">
-																	<xsl:value-of  select="$downloadProduct" />
-																</xsl:attribute>
-																<xsl:text>Télécharger </xsl:text>
-															</a>
-														</span>
-														<span class="info">
-															<xsl:text> (</xsl:text>
-															<xsl:value-of select="translate($filetype,$smallcase,$uppercase)" />
-															<xsl:text>, </xsl:text>
-															<xsl:value-of select="$filesize" />
-															<xsl:text> Ko)</xsl:text>
-														</span>
-													
-												</xsl:when >
-												<xsl:otherwise>													
-													<span class="metadata-link">
-														<a>
-															<xsl:attribute name="class">icon default</xsl:attribute>
-															<xsl:attribute name="href">
-																<xsl:value-of select="$orderproduct" />
-															</xsl:attribute>
-															<xsl:text>Commander</xsl:text>
-														</a>
-													</span>													
-												</xsl:otherwise >
-											</xsl:choose>
-											<xsl:if test="string-length($previewProduct) > 0">
+									<xsl:choose>
+										<xsl:when test="string-length($downloadProduct) > 0">
 												<span class="metadata-link">
 													<a>
 														<xsl:attribute name="class">modal</xsl:attribute>	
 														<xsl:attribute name="rel">{handler:'iframe',size:{x:650,y:600}}</xsl:attribute>
-														<xsl:attribute name="href"><xsl:value-of  select="$previewProduct" /></xsl:attribute>
-														<xsl:text>Prévisualiser</xsl:text>
+														<xsl:attribute name="href">
+															<xsl:value-of  select="$downloadProduct" />
+														</xsl:attribute>
+														<xsl:text>Télécharger </xsl:text>
+														
+														<xsl:text> (</xsl:text>
+														<xsl:value-of select="translate($filetype,$smallcase,$uppercase)" />
+														<xsl:text>, </xsl:text>
+														<xsl:value-of select="$filesize" />
+														<xsl:text> Ko)</xsl:text>
 													</a>
 												</span>
-											</xsl:if>
-										
+										</xsl:when >
+										<xsl:otherwise>													
+											<span class="metadata-link">
+												<a>
+													<xsl:attribute name="class">icon default</xsl:attribute>
+													<xsl:attribute name="href">
+														<xsl:value-of select="$orderproduct" />
+													</xsl:attribute>
+													<xsl:text>Commander</xsl:text>
+												</a>
+											</span>													
+										</xsl:otherwise >
+									</xsl:choose>
+									<xsl:if test="string-length($previewProduct) > 0">
+										<span class="metadata-link">
+											<a>
+												<xsl:attribute name="class">modal</xsl:attribute>	
+												<xsl:attribute name="rel">{handler:'iframe',size:{x:650,y:600}}</xsl:attribute>
+												<xsl:attribute name="href"><xsl:value-of  select="$previewProduct" /></xsl:attribute>
+												<xsl:text>Prévisualiser</xsl:text>
+											</a>
+										</span>
+									</xsl:if>
 								</xsl:when>
 							</xsl:choose>
 							<div class="clear" />
@@ -403,6 +245,7 @@
 				</div>
 				<div class="clear" />
 			</div>
+			<hr></hr>
 		</div>
 	</xsl:template>
 </xsl:stylesheet>
