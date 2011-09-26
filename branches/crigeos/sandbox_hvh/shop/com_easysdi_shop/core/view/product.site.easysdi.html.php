@@ -292,6 +292,7 @@ class HTML_product{
 			</tr>
 			
 		</table>
+		
 		<?php
 		echo $tabs->endPanel();
 		echo $tabs->startPanel(JText::_("SHOP_PRODUCT_PERIMETER"),"productPane");
@@ -715,6 +716,7 @@ class HTML_product{
 		<input type="hidden" name="checked_out_time" value="<?php echo $product->checked_out_time; ?>" />
 		<input type="hidden" id="Itemid" name="Itemid" value="<?php echo JRequest::getVar('Itemid'); ?>">
 		<input type="hidden" id="lang" name="lang" value="<?php echo JRequest::getVar('lang'); ?>">
+		<input type="hidden" id="productFileName" name="productFileName" value="<?php echo $product->getFileName();?>">
 		</form>
 		</div>
 		<div class="row">
@@ -757,7 +759,7 @@ class HTML_product{
 				text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_SURFACEMAX");?>";
 				index = 1;	
 			}
-			if (form.elements['available'].value == '1' && form.elements['productfile'].value == '' && form.elements['pathfile'].value == '')
+			if (form.elements['available'].value == '1' && form.elements['productfile'].value == '' && form.elements['pathfile'].value == '' && form.elements['productFileName'].value == '')
 			{
 				if(index != 0)text += ", ";
 				text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_PRODUCT_FILE");?>";
