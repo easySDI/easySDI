@@ -20,7 +20,21 @@
 	<target name="compression" description="Compression">
 
 		<jar compress="true" jarfile="${projet.out.dir}/com_easysdi_proxy.zip"
-			basedir="." excludes="config/** ; com_easysdi_proxy/** ; out/** , .cache/** , .svn/** , .settings/** , .project, .prefs, build.xml" />
+			basedir="." excludes="config/** ; 
+			                        com_easysdi_proxy/** ; 
+			                        lib/proj4js/demo/** ;
+			                        lib/proj4js/build/** ;
+			                        lib/proj4js/docs/** ;
+			                        lib/proj4js/test/** ;
+			                        lib/proj4js/test.html ; 
+			                        lib/proj4js/index.html ;
+			                        out/** , 
+			                        .cache/** , 
+			                        .svn/** , 
+			                        .settings/** , 
+			                        .project, 
+			                        .prefs, 
+			                        build.xml" />
 	</target>
 
 	<target name="sync" description="Copy from here to apache">
