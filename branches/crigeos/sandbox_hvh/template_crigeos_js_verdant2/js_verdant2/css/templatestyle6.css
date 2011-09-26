@@ -313,3 +313,64 @@ table.calendar tr td.calendarNavMonthNext a, table.calendar tr td.calendarNavMon
 table.calendar tr td.calendarToday {background: #76acd9;color:#fff;}
 /* User info block */
 div.userBlock {background: #173444 url(../images/style1/gradients.png) repeat-x 0 -113px;}
+
+
+/* Metadata result list */
+.metadata-logo {
+	float:left;
+	width:80px;
+	height:75px;
+}
+.metadata-logo div {
+	background-image: url(../images/metadata_logo_0.gif);
+	background-repeat: no-repeat;
+	width:65px;
+	height:75px;
+}
+.metadata-logo .metadata-logo-1 {
+	background-image: url(../images/metadata_logo_0.gif);
+}
+.metadata-logo .hidden {
+    visibility:hidden;
+}
+.metadata-links {
+	margin:0.5em 0em 0.5em 0em;
+	font:11px Tahoma;
+}
+.metadata-links span.metadata-link {
+	width:140px;
+	display:block;
+	float:left;
+}
+.metadata-result{
+    font-size: 12px;
+}
+.metadata-result .metadata-desc {
+	float:left;
+	width:420px;
+}
+.metadata-result .metadata-desc h4 {
+	margin:0px 0px 0.5em 0px !important;
+	color: #97B832;
+	font-size: 105%;
+}
+.metadata-result .metadata-desc p {
+	margin:0px 0px 0.5em 0px !important;	
+}
+.metadata-summary span.metadata-value, .metadata-summary span.metadata-label {
+	display:block;
+	float:left;
+	width:140px;
+	margin:0em 0em 0.2em 0em;
+	 color: #999999;
+    font-size: 11px;
+    line-height: 12px;
+}
+.metadata-summary span.metadata-value {
+	width:280px;
+}
+.metadata-label {
+	float:left;
+	width:100px;
+}
+
