@@ -14,17 +14,83 @@
 		<mkdir dir="${projet.out.dir}" />
 	</target>
 
-	<target name="compression" description="Compression">
-		<jar compress="true" jarfile="${projet.out.dir}/com_easysdi_core.zip"
-			basedir="." excludes=" build.xml ; 
-								   modules/** ; 
-								   out/** ; 
-							       .cache/** ; 
-								   .svn/** ; 
-								   .settings/** ; 
-							       .project; 
-			 					   .prefs; 
-								   .buildpath" />
+	<target name="compression-prod" description="Compression prod" depends="create-structure">
+		<jar compress="true" 
+			jarfile="${projet.out.dir}/prod/com_easysdi_core.zip"
+			basedir="." 
+			excludes=" common/ext/3.3.1/docs** ;
+			common/ext/3.3.1/examples/** ;
+			common/ext/3.3.1/src/** ;
+			common/ext/3.3.1/test/** ;
+			common/ext/3.3.1/welcome/** ;
+			common/ext/3.3.1/INCLUDE_ORDER.txt ;
+			common/ext/mapversion/examples/** ;
+			common/ext/mapversion/source/** ;
+			common/ext/mapversion/INCLUDE_ORDER.txt ;
+			common/ext/mapversion/CHANGES.html ;
+			common/geoext/1.0/docs/** ;
+			common/geoext/1.0/examples/** ;
+			common/geoext/mapversion/examples/** ;
+			common/geoext/mapversion/tests/** ;
+			common/openlayers/2.10/apidoc_config/** ;
+			common/openlayers/2.10/build/** ;
+			common/openlayers/2.10/doc/** ;
+			common/openlayers/2.10/doc_config/** ;
+			common/openlayers/2.10/examples/** ;
+			common/openlayers/2.10/lib/** ;
+			common/openlayers/2.10/tests/** ;
+			common/openlayers/2.10/tools/** ;
+			common/openlayers/2.10/news.txt ;
+			common/proj4js/demo/** ;
+			common/proj4js/docs/** ;
+			common/proj4js/test/** ;
+			build.xml ; 
+			modules/** ; 
+			out/** ; 
+			.cache/** ; 
+			.svn/** ; 
+			.settings/** ; 
+			.project; 
+			.prefs; 
+			.buildpath" />
+	</target>
+	
+    <target name="compression" description="Compression" depends="create-structure">
+		<jar compress="true" 
+		    jarfile="${projet.out.dir}/com_easysdi_core.zip"
+			basedir="." 
+			excludes=" common/ext/3.3.1/docs** ;
+			        common/ext/3.3.1/examples/** ;
+			        common/ext/3.3.1/test/** ;
+			        common/ext/3.3.1/welcome/** ;
+			        common/ext/3.3.1/INCLUDE_ORDER.txt ;
+			        common/ext/mapversion/examples/** ;
+			        common/ext/mapversion/INCLUDE_ORDER.txt ;
+			        common/ext/mapversion/CHANGES.html ;
+			        common/geoext/1.0/docs/** ;
+			        common/geoext/1.0/examples/** ;
+			        common/geoext/mapversion/examples/** ;
+			        common/geoext/mapversion/tests/** ;
+			        common/openlayers/2.10/apidoc_config/** ;
+			        common/openlayers/2.10/build/** ;
+			        common/openlayers/2.10/doc/** ;
+			        common/openlayers/2.10/doc_config/** ;
+			        common/openlayers/2.10/examples/** ;
+			        common/openlayers/2.10/tests/** ;
+			        common/openlayers/2.10/tools/** ;
+			        common/openlayers/2.10/news.txt ;
+			        common/proj4js/demo/** ;
+			        common/proj4js/docs/** ;
+			        common/proj4js/test/** ;
+			        build.xml ; 
+					modules/** ; 
+					out/** ; 
+					.cache/** ; 
+					.svn/** ; 
+					.settings/** ; 
+					.project; 
+			 		.prefs; 
+					.buildpath" />
 	</target>
 
 	<target name="sync" description="Copy from here to apache">
