@@ -842,7 +842,7 @@ function com_install()
 	
 	}
 	
-	if(version == "2.0.2"){
+	if($version == "2.0.2"){
 		//Get the MAP component id
 		$query="SELECT id  FROM #__sdi_list_module WHERE code = 'MAP'";
 		$db->setQuery( $query);
@@ -854,6 +854,13 @@ function com_install()
 		//Insert 2 new configuration entries : min resolution and max resolution
 		$query = "
 		INSERT INTO `#__sdi_configuration` (guid,code,name,description, created,createdby,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'mapMaxResolution', 'mapMaxResolution','Map maximum resolution','".date('Y-m-d H:i:s')."', '".$user_id."', null, '".$module_id."');
+		";
+		$db->setQuery( $query);	
+		if (!$db->query()){
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		$query = "
 		INSERT INTO `#__sdi_configuration` (guid,code,name,description, created,createdby,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'mapMinResolution','mapMinResolution','Map  minimum resolution','".date('Y-m-d H:i:s')."', '".$user_id."',  null,'".$module_id."');";
 		$db->setQuery( $query);	
 		if (!$db->query()){
@@ -910,7 +917,7 @@ function com_install()
 		}
 		
 		//rename field
-		$query="ALTER TABLE  `#__sdi_baselayer` RENAME COLUMN customStyle to customstyle";
+		$query="ALTER TABLE  `#__sdi_baselayer` CHANGE customStyle customstyle tinyint(1)";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");

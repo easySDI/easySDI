@@ -1,8 +1,8 @@
 <?xml version="1.0" ?>
 <install type="component" version="1.5">
 	<name>EasySDI_Map</name>
-	<version>2.0.1</version>
-	<releaseDate>2011-04-14</releaseDate>
+	<version>2.0.3</version>
+	<releaseDate>2011-09-26</releaseDate>
     <releaseType>Minor update</releaseType>
 	<creationDate>Mars 2011</creationDate>
 	<author>Depth.ch</author>

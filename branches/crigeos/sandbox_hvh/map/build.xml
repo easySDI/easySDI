@@ -93,6 +93,7 @@
 	    <exclude name="external/proj4js/docs/**" />
 	    <exclude name="external/proj4js/demo/**" />
 	    <exclude name="external/proj4js/test/**" />
+		<exclude name="js_minifier/**" />
 	</fileset>
 	
 	<fileset id="lafrFR" dir="./administrator/language">
