@@ -21,7 +21,6 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 	<xsl:output media-type="text/html" indent="yes" />
 
 	<xsl:template match="Metadata">
-
 		<!-- Variable Declaration -->
 		<xsl:variable name="logo">
 			<xsl:value-of select="./sdi:Metadata/sdi:objecttype/@code" />
@@ -35,7 +34,22 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 		<xsl:variable name="imgreplace">
 			<xsl:text>&lt;img src=</xsl:text>
 		</xsl:variable>
-
+		<xsl:variable name="title">
+			<xsl:value-of
+				select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString" />
+		</xsl:variable>
+		<xsl:variable name="title-fr">
+			<xsl:value-of disable-output-escaping="yes"
+							select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale='#FR']" />
+		</xsl:variable>
+		<xsl:variable name="abstract">
+			<xsl:value-of
+				select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:abstract/gco:CharacterString" />
+		</xsl:variable>	
+		<xsl:variable name="abstract-fr">
+			<xsl:value-of
+				select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:abstract/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale='#FR']" />
+		</xsl:variable>
 		<!-- File Variables -->
 		<xsl:variable name="published">
 			<xsl:value-of select="./sdi:Metadata/sdi:product/@published" />
@@ -114,102 +128,98 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 		<xsl:variable name="uppercase" select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ'" />
 
 		<!-- Title of the metadata -->
-		<div id="metadata-body">	
+		<div class="metadata-details">	
 			<xsl:choose>
 				<xsl:when test="$language='fr-FR'">
 					<h1>
-						<xsl:value-of disable-output-escaping="yes" select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale='#FR']" />
+						<xsl:value-of select="$title" />
 					</h1>
-					
-							<div class="metadata-box box news-small">
-									<div class="title">
-										<h2>Actions</h2>
-									</div>
-										<div class="body">	
-											
-												
-													<xsl:choose>
-														<xsl:when test="string-length($downloadProduct) > 0">
-															<p>
-																<span class="metadata-link">
-																	<a>
-																		<xsl:attribute name="class">modal</xsl:attribute>	
-																		<xsl:attribute name="rel">{handler:'iframe',size:{x:650,y:600}}</xsl:attribute>
-																		<xsl:attribute name="href">
-																			<xsl:value-of  select="$downloadProduct" />
-																		</xsl:attribute>
-																		<xsl:text>Télécharger </xsl:text>
-																	</a>
-																</span>
-																<span class="info">
-																	<xsl:text> (</xsl:text>
-																	<xsl:value-of select="translate($filetype,$smallcase,$uppercase)" />
-																	<xsl:text>, </xsl:text>
-																	<xsl:value-of select="$filesize" />
-																	<xsl:text> Ko)</xsl:text>
-																</span>
-															</p>
-														</xsl:when >
-														<xsl:otherwise>
-															<p>
-															<span class="metadata-link">
-																<a>
-																	<xsl:attribute name="class">icon default</xsl:attribute>
-																	<xsl:attribute name="href">
-																		<xsl:value-of select="$orderproduct" />
-																	</xsl:attribute>
-																	<xsl:text>Commander</xsl:text>
-																</a>
-															</span>
-															</p>
-														</xsl:otherwise >
-													</xsl:choose>
-													<xsl:if test="string-length($previewProduct) > 0">
-														<p>
-															<span class="metadata-link">
-																<a>
-																	<xsl:attribute name="class">modal</xsl:attribute>	
-																	<xsl:attribute name="rel">{handler:'iframe',size:{x:650,y:600}}</xsl:attribute>
-																	<xsl:attribute name="href">
-																		<xsl:value-of  select="$previewProduct" />
-																	</xsl:attribute>
-																	<xsl:text>Prévisualiser</xsl:text>
-																</a>
-															</span>
-														</p>
-													</xsl:if>	
-												
-											<p/>
+					<div class="metadata-box box news-small">
+							<div class="title">
+								<h2>Actions</h2>
+							</div>
+								<div class="body">	
+									<xsl:choose>
+										<xsl:when test="string-length($downloadProduct) > 0">
 											<p>
+												<span class="metadata-link">
+													<a>
+														<xsl:attribute name="class">modal</xsl:attribute>	
+														<xsl:attribute name="rel">{handler:'iframe',size:{x:650,y:600}}</xsl:attribute>
+														<xsl:attribute name="href">
+															<xsl:value-of  select="$downloadProduct" />
+														</xsl:attribute>
+														<xsl:text>Télécharger </xsl:text>
+													</a>
+												</span>
+												<span class="info">
+													<xsl:text> (</xsl:text>
+													<xsl:value-of select="translate($filetype,$smallcase,$uppercase)" />
+													<xsl:text>, </xsl:text>
+													<xsl:value-of select="$filesize" />
+													<xsl:text> Ko)</xsl:text>
+												</span>
+											</p>
+										</xsl:when >
+										<xsl:otherwise>
+											<p>
+											<span class="metadata-link">
 												<a>
 													<xsl:attribute name="class">icon default</xsl:attribute>
 													<xsl:attribute name="href">
-														<xsl:value-of select="$print" />
-													</xsl:attribute>Imprimer</a>
+														<xsl:value-of select="$orderproduct" />
+													</xsl:attribute>
+													<xsl:text>Commander</xsl:text>
+												</a>
+											</span>
 											</p>
-											<p>
+										</xsl:otherwise >
+									</xsl:choose>
+									<xsl:if test="string-length($previewProduct) > 0">
+										<p>
+											<span class="metadata-link">
 												<a>
-													<xsl:attribute name="class">icon default</xsl:attribute>
+													<xsl:attribute name="class">modal</xsl:attribute>	
+													<xsl:attribute name="rel">{handler:'iframe',size:{x:650,y:600}}</xsl:attribute>
 													<xsl:attribute name="href">
-														<xsl:value-of select="$exportXML" />
-													</xsl:attribute>XML</a>
-											</p>
-											<p>
-												<a>
-													<xsl:attribute name="class">icon default</xsl:attribute>
-													<xsl:attribute name="href">
-														<xsl:value-of select="$downloadPDF" />
-													</xsl:attribute>PDF</a>
-											</p>
-											
-										</div>
-									</div>
+														<xsl:value-of  select="$previewProduct" />
+													</xsl:attribute>
+													<xsl:text>Prévisualiser</xsl:text>
+												</a>
+											</span>
+										</p>
+									</xsl:if>	
+										
+									<p/>
+									<p>
+										<a>
+											<xsl:attribute name="class">icon default</xsl:attribute>
+											<xsl:attribute name="href">
+												<xsl:value-of select="$print" />
+											</xsl:attribute>Imprimer</a>
+									</p>
+									<p>
+										<a>
+											<xsl:attribute name="class">icon default</xsl:attribute>
+											<xsl:attribute name="href">
+												<xsl:value-of select="$exportXML" />
+											</xsl:attribute>XML</a>
+									</p>
+									<p>
+										<a>
+											<xsl:attribute name="class">icon default</xsl:attribute>
+											<xsl:attribute name="href">
+												<xsl:value-of select="$downloadPDF" />
+											</xsl:attribute>PDF</a>
+									</p>
+									
+								</div>
+							</div>
 							<div class="summary active">
 								<h2>Informations principales</h2>
 								<div class="metadata-maininfo">
-																	<xsl:call-template name="bildausschnitt">
+									<xsl:call-template name="bildausschnitt">
 									</xsl:call-template>
-
 									<p>
 										<xsl:value-of disable-output-escaping="yes" select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:abstract/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale='#FR']" />
 									</p>
@@ -227,17 +237,22 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 										</td>
 									</tr>
 									<tr>
-										<td width="30%">Accès:</td>
-										<td>
-											<xsl:value-of select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceConstraints/gmd:MD_Constraints/gmd:useLimitation/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale='#FR']" />
-										</td>
-									</tr>
-									<tr>
 										<td width="30%">Statut:</td>
 										<td>
 											<xsl:call-template name="ProgressCodeTemplateFR">
 												<xsl:with-param name="ProgressCode" select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:status/gmd:MD_ProgressCode/@codeListValue" />
 											</xsl:call-template>
+										</td>
+									</tr>
+									<tr>
+										<td width="30%">Mise à jour:</td>
+										<td>
+											<xsl:for-each select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:date">
+												<xsl:if test="gmd:CI_Date/gmd:dateType/gmd:CI_DateTypeCode/@codeListValue='creation'">
+													<xsl:apply-templates select="gmd:CI_Date/gmd:date" />
+													<br />
+												</xsl:if>
+											</xsl:for-each>
 										</td>
 									</tr>
 									<tr>
@@ -605,50 +620,6 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 			</xsl:choose>
 		</div>	 
 
-		<!-- Script for the open/close links -->
-		<script type="text/javascript">
-jQuery(document).ready(function(){
-
-	//Hide (Collapse) the toggle containers on load
-	jQuery(".section").hide(); 
-
-	//Switch the "Open" and "Close" state per click then slide up/down (depending on open/close state)
-	jQuery("h3.trigger").click(function(){
-	jQuery(this).toggleClass("active").next().slideToggle("slow");
-	return false; //Prevent the browser jump to the link anchor
-	});
-
-	//Show / Hide all (depending on open/close state)
-	jQuery(".showall").click(function(){
-
-
-    	if (jQuery("p.showall").is(".active")) {
-		    jQuery("h3.trigger").removeClass("active");
-		    jQuery(".section").slideUp("slow");
-
-	    }
-	    else{
-		    jQuery("h3.trigger").addClass("active");
-		    jQuery(".section").slideDown("slow");
-
-	     }
-
-
-    	jQuery(".showall").toggleClass("active");
-	return false; //Prevent the browser jump to the link anchor
-	});
-
-	//Switch the "Open" and "Close" state per click then slide up/down (depending on open/close state)
-	jQuery(".showsummary").click(function(){
-	jQuery(this).toggleClass("active").next().slideToggle("slow");
-	return false; //Prevent the browser jump to the link anchor
-	});
-
-
-
-});
-
-		</script>
 
 	</xsl:template>
 

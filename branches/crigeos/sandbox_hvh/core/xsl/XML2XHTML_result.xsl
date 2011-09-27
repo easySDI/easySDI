@@ -181,7 +181,6 @@
 											<xsl:attribute name="title">des informations détaillées : <xsl:value-of disable-output-escaping="yes" select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString" />
 											</xsl:attribute>
 											<xsl:attribute name="class">modal</xsl:attribute>	
-											
 											<xsl:attribute name="rel">{handler:'iframe',size:{x:650,y:600}}</xsl:attribute>
 											<xsl:attribute name="href">index.php?tmpl=component&amp;option=com_easysdi_catalog&amp;Itemid=2&amp;context=geocatalog&amp;toolbar=1&amp;task=showMetadata&amp;type=complete&amp;id=<xsl:value-of select="./gmd:MD_Metadata/gmd:fileIdentifier/gco:CharacterString" /></xsl:attribute>
 											<xsl:text>Details</xsl:text>
