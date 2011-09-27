@@ -23,9 +23,33 @@
 		<xsl:variable name="language">
 			<xsl:value-of select="./sdi:Metadata/@user_lang" />
 		</xsl:variable>
-		<xsl:variable name="zeitstand">
+		<xsl:variable name="title">
 			<xsl:value-of
-				select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:date/gmd:CI_Date[gmd:dateType/gmd:CI_DateTypeCode/@codeListValue='revision']/gmd:date/gco:Date" />
+				select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString" />
+		</xsl:variable>
+		<xsl:variable name="title-fr">
+			<xsl:value-of disable-output-escaping="yes"
+							select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale='#FR']" />
+		</xsl:variable>
+		<xsl:variable name="title-gb">
+			<xsl:value-of disable-output-escaping="yes"
+							select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale='#GB']" />
+		</xsl:variable>
+		<xsl:variable name="abstract">
+			<xsl:value-of
+				select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:abstract/gco:CharacterString" />
+		</xsl:variable>	
+		<xsl:variable name="abstract-fr">
+			<xsl:value-of
+				select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:abstract/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale='#FR']" />
+		</xsl:variable>	
+		<xsl:variable name="abstract-gb">
+			<xsl:value-of
+				select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:abstract/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale='#GB']" />
+		</xsl:variable>		
+		<xsl:variable name="creationDate">
+			<xsl:value-of
+				select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:date/gmd:CI_Date[gmd:dateType/gmd:CI_DateTypeCode/@codeListValue='creation']/gmd:date/gco:Date" />
 		</xsl:variable>
 		<!-- File Variables -->
 		<xsl:variable name="published">
@@ -62,32 +86,72 @@
 					<h4 class="hidden">
 						<xsl:value-of select="./sdi:Metadata/sdi:objecttype" />
 					</h4>
-					
 				</div>
-
 				<!-- Description of the Metadata -->
 				<div class="metadata-desc">
 					<h4>
-						<xsl:value-of disable-output-escaping="yes"
-							select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale='#FR']" />
+						<xsl:choose>
+							<xsl:when test="$language='fr-FR'">
+								<xsl:choose>
+									<xsl:when test="string-length($title-fr) > 0">
+										<xsl:value-of  select="$title-fr" />				
+									</xsl:when >
+									<xsl:otherwise>			
+										<xsl:value-of  select="$title" />										
+									</xsl:otherwise >
+								</xsl:choose>
+							</xsl:when>
+							<xsl:when test="$language='en-GB'">
+								<xsl:choose>
+									<xsl:when test="string-length($title-gb) > 0">
+										<xsl:value-of  select="$title-gb" />				
+									</xsl:when >
+									<xsl:otherwise>			
+										<xsl:value-of  select="$title" />										
+									</xsl:otherwise >
+								</xsl:choose>
+							</xsl:when>
+						</xsl:choose>
 					</h4>
-					
-					<xsl:variable name="abstract">
-						<xsl:value-of
-							select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:abstract/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale='#FR']" />
-					</xsl:variable>
 					<p>
-						<xsl:value-of select="substring($abstract,1,200)" />
+						<xsl:choose>
+							<xsl:when test="$language='fr-FR'">
+								<xsl:choose>
+									<xsl:when test="string-length($abstract-fr) > 0">
+										<xsl:value-of  select="substring($abstract-fr,1,200)" />				
+									</xsl:when >
+									<xsl:otherwise>			
+										<xsl:value-of  select="substring($abstract,1,200)" />										
+									</xsl:otherwise >
+								</xsl:choose>
+							</xsl:when>
+							<xsl:when test="$language='en-GB'">
+								<xsl:choose>
+									<xsl:when test="string-length($abstract-gb) > 0">
+										<xsl:value-of  select="substring($abstract-gb,1,200)" />				
+									</xsl:when >
+									<xsl:otherwise>			
+										<xsl:value-of  select="substring($abstract,1,200)" />										
+									</xsl:otherwise >
+								</xsl:choose>
+							</xsl:when>
+						</xsl:choose>
 						 [...]
 					</p>
 						
 					<!-- Metadata: Summary Information -->
+					
 					<!-- Date -->
 					<div class="metadata-summary">
+						<!-- Object type -->
+						<span class="metadata-label">Type:</span>
+						<span class="metadata-value">
+							<xsl:value-of select="./sdi:Metadata/sdi:objecttype" />
+						</span>
 						<span class="metadata-label">
 							<xsl:choose>
 								<xsl:when test="$language='fr-FR'">
-									Création / Mise à jour:
+									Création:
 								</xsl:when>
 								<xsl:when test="$language='en-GB'">
 									Data date:
@@ -95,30 +159,12 @@
 							</xsl:choose>
 						</span>
 						<span class="metadata-value">
-							<xsl:value-of select="date:day-in-month($zeitstand)" />
+							<xsl:value-of select="date:day-in-month($creationDate)" />
 							<xsl:text>.</xsl:text>
-							<xsl:value-of select="date:month-in-year($zeitstand)" />
+							<xsl:value-of select="date:month-in-year($creationDate)" />
 							<xsl:text>.</xsl:text>
-							<xsl:value-of select="date:year($zeitstand)" />&space;
+							<xsl:value-of select="date:year($creationDate)" />&space;
 						</span>
-						<div class="clear" />
-						<!-- Access rights -->
-						<xsl:choose>
-							<xsl:when test="$language='fr-FR'">
-								<span class="metadata-label">Accès:</span>
-								<span class="metadata-value">
-									<xsl:value-of
-										select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceConstraints/gmd:MD_Constraints/gmd:useLimitation/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale='#FR']" />
-								</span>
-							</xsl:when>
-							<xsl:when test="$language='en-GB'">
-								<span class="metadata-label">Access:</span>
-								<span class="metadata-value">
-									<xsl:value-of
-										select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceConstraints/gmd:MD_Constraints/gmd:useLimitation/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale='#GB']" />
-								</span>
-							</xsl:when>
-						</xsl:choose>
 						<div class="clear" />
 						<!-- Code -->
 						<span class="metadata-label">Code:</span>
@@ -135,6 +181,7 @@
 											<xsl:attribute name="title">des informations détaillées : <xsl:value-of disable-output-escaping="yes" select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString" />
 											</xsl:attribute>
 											<xsl:attribute name="class">modal</xsl:attribute>	
+											
 											<xsl:attribute name="rel">{handler:'iframe',size:{x:650,y:600}}</xsl:attribute>
 											<xsl:attribute name="href">index.php?tmpl=component&amp;option=com_easysdi_catalog&amp;Itemid=2&amp;context=geocatalog&amp;toolbar=1&amp;task=showMetadata&amp;type=complete&amp;id=<xsl:value-of select="./gmd:MD_Metadata/gmd:fileIdentifier/gco:CharacterString" /></xsl:attribute>
 											<xsl:text>Details</xsl:text>
@@ -144,25 +191,26 @@
 										<xsl:when test="string-length($downloadProduct) > 0">
 												<span class="metadata-link">
 													<a>
+														<xsl:attribute name="title">Téléchargement de : <xsl:value-of select="./sdi:Metadata/sdi:object/@object_name" /></xsl:attribute>
 														<xsl:attribute name="class">modal</xsl:attribute>	
 														<xsl:attribute name="rel">{handler:'iframe',size:{x:650,y:600}}</xsl:attribute>
 														<xsl:attribute name="href">
 															<xsl:value-of  select="$downloadProduct" />
 														</xsl:attribute>
 														<xsl:text>Télécharger </xsl:text>
-														
+													</a>
 														<xsl:text> (</xsl:text>
 														<xsl:value-of select="translate($filetype,$smallcase,$uppercase)" />
 														<xsl:text>, </xsl:text>
 														<xsl:value-of select="$filesize" />
 														<xsl:text> Ko)</xsl:text>
-													</a>
 												</span>
 										</xsl:when >
 										<xsl:otherwise>													
 											<span class="metadata-link">
 												<a>
-													<xsl:attribute name="class">icon default</xsl:attribute>
+													<xsl:attribute name="title">Accès à la commande</xsl:attribute>
+													<xsl:attribute name="class">modal</xsl:attribute>
 													<xsl:attribute name="href">
 														<xsl:value-of select="$orderproduct" />
 													</xsl:attribute>
@@ -174,6 +222,7 @@
 									<xsl:if test="string-length($previewProduct) > 0">
 										<span class="metadata-link">
 											<a>
+												<xsl:attribute name="title">Prévisualisation géographique de : <xsl:value-of select="./sdi:Metadata/sdi:object/@object_name" /></xsl:attribute>
 												<xsl:attribute name="class">modal</xsl:attribute>	
 												<xsl:attribute name="rel">{handler:'iframe',size:{x:650,y:600}}</xsl:attribute>
 												<xsl:attribute name="href"><xsl:value-of  select="$previewProduct" /></xsl:attribute>
@@ -200,12 +249,13 @@
 										<xsl:when test="string-length($downloadProduct) > 0">
 												<span class="metadata-link">
 													<a>
+														<xsl:attribute name="title">Download : <xsl:value-of select="./sdi:Metadata/sdi:object/@object_name" /></xsl:attribute>
 														<xsl:attribute name="class">modal</xsl:attribute>	
 														<xsl:attribute name="rel">{handler:'iframe',size:{x:650,y:600}}</xsl:attribute>
 														<xsl:attribute name="href">
 															<xsl:value-of  select="$downloadProduct" />
 														</xsl:attribute>
-														<xsl:text>Télécharger </xsl:text>
+														<xsl:text>Download </xsl:text>
 														
 														<xsl:text> (</xsl:text>
 														<xsl:value-of select="translate($filetype,$smallcase,$uppercase)" />
@@ -218,11 +268,12 @@
 										<xsl:otherwise>													
 											<span class="metadata-link">
 												<a>
+													<xsl:attribute name="title">Go to the shop</xsl:attribute>
 													<xsl:attribute name="class">icon default</xsl:attribute>
 													<xsl:attribute name="href">
 														<xsl:value-of select="$orderproduct" />
 													</xsl:attribute>
-													<xsl:text>Commander</xsl:text>
+													<xsl:text>Shop</xsl:text>
 												</a>
 											</span>													
 										</xsl:otherwise >
@@ -230,10 +281,11 @@
 									<xsl:if test="string-length($previewProduct) > 0">
 										<span class="metadata-link">
 											<a>
+												<xsl:attribute name="title">Geographic preview of : <xsl:value-of select="./sdi:Metadata/sdi:object/@object_name" /></xsl:attribute>
 												<xsl:attribute name="class">modal</xsl:attribute>	
 												<xsl:attribute name="rel">{handler:'iframe',size:{x:650,y:600}}</xsl:attribute>
 												<xsl:attribute name="href"><xsl:value-of  select="$previewProduct" /></xsl:attribute>
-												<xsl:text>Prévisualiser</xsl:text>
+												<xsl:text>Preview</xsl:text>
 											</a>
 										</span>
 									</xsl:if>
