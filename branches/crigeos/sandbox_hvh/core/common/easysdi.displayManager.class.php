@@ -926,46 +926,54 @@ class displayManager{
 			//Manage display class
 			/* Onglets abstract et complete*/
 			$myHtml .= "window.addEvent('domready', function() {
-		
-			document.getElementById('catalogPanel1').addEvent( 'click' , function() { 
-				window.open('./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=$id&type=abstract', '_self');
-			});
-			document.getElementById('catalogPanel2').addEvent( 'click' , function() { 
-				window.open('./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=$id&type=complete', '_self');
-			});
-			
-			task = '$task';
-			type = '$type';
-			
-			";
+							if(document.getElementById('catalogPanel1')!= undefined){
+								document.getElementById('catalogPanel1').addEvent( 'click' , function() { 
+									window.open('./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=$id&type=abstract', '_self');
+								});
+							}
+							if(document.getElementById('catalogPanel2')!= undefined){
+								document.getElementById('catalogPanel2').addEvent( 'click' , function() { 
+									window.open('./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=$id&type=complete', '_self');
+								});
+							}
+						task = '$task';
+						type = '$type';
+						
+						";
 			/* Onglet diffusion, si et seulement si le shop est installé et que l'objet est diffusable*/
 			if ($shopExist)
 			{
 				$myHtml .= "
-				document.getElementById('catalogPanel3').addEvent( 'click' , function() { 
-					window.open('./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=$id&type=diffusion', '_self');
-				});
-				
-				document.getElementById('catalogPanel3').className = 'closed';
-				
-				if(task == 'showMetadata' & type == 'diffusion'){
-	        		document.getElementById('catalogPanel3').className = 'open';
+				if(document.getElementById('catalogPanel3')!= undefined){
+					document.getElementById('catalogPanel3').addEvent( 'click' , function() { 
+						window.open('./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=$id&type=diffusion', '_self');
+					});
+					document.getElementById('catalogPanel3').className = 'closed';
+					
+					if(task == 'showMetadata' & type == 'diffusion'){
+		        		document.getElementById('catalogPanel3').className = 'open';
+					}
 				}
 				";
 			}
 			
 			/* Boutons */
 			$myHtml .= "
-
-			document.getElementById('catalogPanel1').className = 'closed';
-			document.getElementById('catalogPanel2').className = 'closed';
+			if(document.getElementById('catalogPanel1')!= undefined){
+				document.getElementById('catalogPanel1').className = 'closed';
+				if(task == 'showMetadata' & type == 'abstract'){
+		        	document.getElementById('catalogPanel1').className = 'open';
+				}
+			}
+			if(document.getElementById('catalogPanel2')!= undefined){
+				document.getElementById('catalogPanel2').className = 'closed';
+				if(task == 'showMetadata' & type == 'complete'){
+		        	document.getElementById('catalogPanel2').className = 'open';
+				}
+			}
 			
-			if(task == 'showMetadata' & type == 'abstract'){
-	        	document.getElementById('catalogPanel1').className = 'open';
-			}
-			if(task == 'showMetadata' & type == 'complete'){
-	        	document.getElementById('catalogPanel2').className = 'open';
-			}
+			
+			
 			});\n"; 
 		
 			$myHtml .= "</script>";
