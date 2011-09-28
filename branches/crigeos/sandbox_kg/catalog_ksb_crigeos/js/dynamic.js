@@ -738,14 +738,20 @@
 	
 	function addBBoxToFieldSet(fieldsetId){
 
+		if(!defaultBBoxConfig)
+			return;
 		
 	
 		if(fieldsetId){			
 			if((fieldsetId.indexOf("gmd_EX_Extent")>=0)&&(fieldsetId.indexOf("gmd_EX_GeographicBoundingBox")>=0)){
 				if(Ext.getCmp(fieldsetId).items.items.length>=4){
 						if(!Ext.getCmp(fieldsetId).hasBBox){
+							Ext.getCmp(fieldsetId).hasBBox = true;			
+							var coords = Ext.getCmp(fieldsetId).items.items ; 
 							
-							Ext.getCmp(fieldsetId).hasBBox = true;						
+										
+							
+										
 							var mapHelper = new CatalogMapPanel(fieldsetId);
 							Ext.getCmp(fieldsetId).doLayout();
 							mapHelper.addMap();	
@@ -755,6 +761,22 @@
 							
 							Ext.getCmp(fieldsetId).addListener("afterlayout", mapHelper.updateMapExtent, mapHelper);
 							Ext.getCmp(fieldsetId).doLayout();
+							
+							
+							for ( i =0; i< coords.length ;i++  ){
+								
+								if((coords[i].id.indexOf("east")>=0) || (coords[i].id.indexOf("west")>=0)|| 
+								(coords[i].id.indexOf("south")>=0)|| (coords[i].id.indexOf("north")>=0))								
+								{
+									Ext.get(coords[i].id).parent().parent().addClass("newCoord");
+									Ext.get(coords[i].id).parent().addClass("newCoordInputDiv");
+									Ext.get(coords[i].id).addClass("newCoordInput");
+									//coords[i].setValue(extent["east"]);
+
+								}
+								else{}
+								
+							}				
 							
 						}
 					
