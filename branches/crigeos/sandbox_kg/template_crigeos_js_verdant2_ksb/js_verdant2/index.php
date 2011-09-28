@@ -38,6 +38,7 @@ require( YOURBASEPATH.DS."/js/template.css.php");
 <link rel="stylesheet" href="<?php echo $this->baseurl ?>/templates/<?php echo $this->template ?>/css/screen.css" type="text/css" />
 <link rel="stylesheet" href="<?php echo $this->baseurl ?>/templates/<?php echo $this->template ?>/css/subsite.css" type="text/css" />
 <link rel="stylesheet" href="<?php echo $this->baseurl ?>/templates/<?php echo $this->template ?>/css/template<?php echo $style;?>.css" type="text/css" />
+ <link rel="stylesheet" href="<?php echo $this->baseurl ?>/templates/<?php echo $this->template ?>/css/dz_geo-editor.css" rel="stylesheet" type="text/css" /> 
 <script src="<?php echo $this->baseurl ?>/templates/<?php echo $this->template ?>/js/bgMax.min.js" type="text/javascript"></script> 
 <!--[if lte IE 6]>
 	<link rel="stylesheet" type="text/css" href="<?php echo $this->

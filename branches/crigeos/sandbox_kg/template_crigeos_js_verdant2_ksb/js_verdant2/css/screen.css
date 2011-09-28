@@ -994,7 +994,7 @@ p#url{
 #content-col-main form fieldset label, #content-col-main form fieldset div.label {
 	display: block;
 	float: left;
-	width: 158px;
+	width: auto !important;
 	padding-right: 10px;
 	text-align: right;
 }
@@ -2398,7 +2398,55 @@ fieldset #commune-list {
 	margin:0.75em 0;
 	padding:.05em 20px .05em 45px;
 	}
-	
+	element.style {
+    width: 662px;
+}
+
+
+#content-col-main form fieldset {
+	border: 1px solid  #97B832 !important;
+    border-width: 1px;
+    clear: both;
+    margin: 5px;
+    padding: 5px;
+}
+
+fieldset.x-panel-collapsed {
+	border-width: 1px !important;
+    padding-bottom: 0 !important;
+ 
+}
+
+.easysdi_shop_backend_combobox {
+  width: 350px !important;
+}
+
+.easysdi_shop_backend_textfield {
+  width: 400px;
+}/*
+#content-col-main table {
+    margin: 0 !important;
+    padding: 0 !important;
+    width : auto !important;
+
+}
+.newCoord {
+    background: none repeat scroll 0 0 yellow;
+    float: left !important;
+    height: 50px;
+    margin: 10px !important;
+    padding: 0 !important;
+    width: 100px;
+}
+.newCoordInputDiv {
+    padding: 0 !important;
+  	width : aito
+}
+
+.newCoordInput {
+    padding: 0 !important;
+  	width : 100px !important
+}*/
 	.inside3 {
 	background:none;
 	}
