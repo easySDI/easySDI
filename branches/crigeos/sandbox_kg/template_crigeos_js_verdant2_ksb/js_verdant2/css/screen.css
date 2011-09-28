@@ -2404,7 +2404,7 @@ fieldset #commune-list {
 
 
 #content-col-main form fieldset {
-	border: 1px solid  #97B832 !important;
+	border: 1px solid #B5B8C8 !important;
     border-width: 1px;
     clear: both;
     margin: 5px;
@@ -2447,6 +2447,23 @@ fieldset.x-panel-collapsed {
     padding: 0 !important;
   	width : 100px !important
 }*/
+
+#content-col-main form div textarea {
+    border: 1px solid #B5B8C8;
+    width: 400px !important;
+}
+.x-menu-date-item table {
+    padding: 0px !important;
+    margin: 0px!important;
+}
+
+.x-menu-date-item {
+   margin: 0 !important;
+    padding: 10px !important;
+}
+.x-date-menu .x-menu-list {
+    margin: 0 !important;
+}
 	.inside3 {
 	background:none;
 	}
