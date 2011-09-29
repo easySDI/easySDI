@@ -35,7 +35,10 @@ require( YOURBASEPATH.DS."/js/template.css.php");
 <jdoc:include type="head" />
 <link rel="stylesheet" href="<?php echo $this->baseurl ?>/templates/<?php echo $this->template ?>/css/core.css" type="text/css" />
 <link rel="stylesheet" href="<?php echo $this->baseurl ?>/templates/<?php echo $this->template ?>/css/layout.css" type="text/css" />
+<link rel="stylesheet" href="<?php echo $this->baseurl ?>/templates/<?php echo $this->template ?>/css/screen.css" type="text/css" />
+<link rel="stylesheet" href="<?php echo $this->baseurl ?>/templates/<?php echo $this->template ?>/css/subsite.css" type="text/css" />
 <link rel="stylesheet" href="<?php echo $this->baseurl ?>/templates/<?php echo $this->template ?>/css/template<?php echo $style;?>.css" type="text/css" />
+ <link rel="stylesheet" href="<?php echo $this->baseurl ?>/templates/<?php echo $this->template ?>/css/dz_geo-editor.css" rel="stylesheet" type="text/css" /> 
 <script src="<?php echo $this->baseurl ?>/templates/<?php echo $this->template ?>/js/bgMax.min.js" type="text/javascript"></script> 
 <!--[if lte IE 6]>
 	<link rel="stylesheet" type="text/css" href="<?php echo $this->
@@ -119,7 +122,7 @@ body {
 		<div id="main_area_wrapper" class="container_12 clearfix">
 			<div id="area_content" class="clearfix">
 				<!--Start of main content-->
-			  <div class="<?php echo $maingrid;?> maincontent">			    
+			  <div class="<?php echo $maingrid;?> maincontent" id="content-col-main">			    
 			      <jdoc:include type="message" />
 				  <jdoc:include type="modules" name="breadcrumb" style="raw" />
 			      <?php if($this->countModules('user2')) : ?>
