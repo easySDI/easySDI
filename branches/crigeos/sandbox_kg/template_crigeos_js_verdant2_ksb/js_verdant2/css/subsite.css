@@ -307,8 +307,9 @@ body#home #content-col-nav .box .body {
 }
 
 /* Formular-Elemente */
-#content-col-main form input.text, #content-col-main form textarea, #content-col-main form select, #content-col-main form input.inputbox {
-	border: 1px solid #97B832;
+#content-col-main form input.text, #content-col-main form textarea, #content-col-main form select, #content-col-main form input.inputbox,  #content-col-main form input#update_cal {
+	border: 1px solid #97B832; !important;
+	font-size : 1.1em !important
 }
 
 #content-col-main form input.readonly {
@@ -350,6 +351,12 @@ body#home #content-col-nav .box .body {
 
 #content-col-main form legend {
 	color:#212121;
+}
+
+#content-col-main form table img{
+	position : relative !important;
+	top : 5px
+	
 }
 
 /* Fusszeile */ 

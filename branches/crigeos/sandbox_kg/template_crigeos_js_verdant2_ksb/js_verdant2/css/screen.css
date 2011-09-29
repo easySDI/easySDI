@@ -2464,6 +2464,8 @@ fieldset.x-panel-collapsed {
 .x-date-menu .x-menu-list {
     margin: 0 !important;
 }
+
+
 	.inside3 {
 	background:none;
 	}
@@ -2476,3 +2478,60 @@ fieldset.x-panel-collapsed {
 	    margin: 0 0 0 20px ! important;
 	    padding: 0 !important;
 	}*/
+	
+	.mdActionOrder{
+	width:95px;
+}
+
+.mdActionViewFile
+{
+	width:95px;
+}
+
+.mdActionViewProduct
+{
+	width:145px;
+}
+
+.mdActionAddToCart
+{
+	width:125px;
+}
+.mdsearchresult .mdtitle{
+	font-weight: bold;
+}
+
+.mdsearchresult .mddescr{
+
+}
+
+.mdsearchresult .mdviewfile, .orderInfo .mdviewfile {
+	padding: 1px 3px;
+	border:1px solid #b9b9b9;
+	font-weight: bold;
+}
+
+.mdsearchresult .mdviewproduct{
+	padding: 1px 3px;
+	border:1px solid #b9b9b9;
+	font-weight: bold;
+}
+
+.catalog_controls,  .easysdi_search_button, .easysdi_clear_button{
+	
+	font-size : 1.1em !important;
+	
+}
+
+.contentin #orderForm table tbody tr td{
+	
+	padding-left : 37px;
+
+}
+
+.contentin .mdCatContent  tbody tr td , .contentin .searchCriteria tbody tr td {
+	
+	padding-left : 0px !important;
+
+}
+
