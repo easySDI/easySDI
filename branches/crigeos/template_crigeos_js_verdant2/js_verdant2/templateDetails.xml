@@ -35,6 +35,7 @@
 		<filename>templateDetails.xml</filename>
 		<filename>template_thumbnail.png</filename>
 		<folder>css/</folder>
+		<folder>media/</folder>
 		<folder>html/</folder>
 		<folder>js/</folder>
 		<folder>images/</folder>
