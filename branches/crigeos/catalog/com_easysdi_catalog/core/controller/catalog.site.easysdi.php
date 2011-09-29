@@ -209,21 +209,52 @@ class SITE_catalog {
 			}
 
 			// Construction du filtre sur la BBOX
-			if ($minX == "-180" && $minY == "-90" && $maxX == "180" && $maxY == "90")
-			{
-				$bboxfilter ="";
-			}
-			else
-			{
-				$bboxfilter ="<ogc:BBOX>
+			$selectedBoundary = JRequest::getVar('systemfilter_'.$searchFilter->guid,"");
+			if($selectedBoundary!=""){
+				
+					$definedBoundary = array();
+					$boundaryFilter ="";
+
+					//http://webhelp.esri.com/arcims/9.2/general/mergedProjects/wfs_connect/wfs_connector/using_filters.htm
+					//http://code.google.com/apis/picasaweb/docs/2.0/reference.html, west south, east north
+					$query = $db->setQuery( "SELECT * FROM #__sdi_boundary where guid =".$selectedBoundary) ;
+					$database->setQuery( $query);
+
+					$definedBoundary = $database->loadObject() ;
+
+					/*$boundaryFilter = "
+					 <ogc:BBOX>
+					 <ogc:PropertyName>gml:multiPointProperty</ogc:PropertyName>
+					 <gml:Box xmlns=\"http://www.opengis.net/cite/spatialTestSuite\" srsName=\"EPSG:4326\">
+					 <gml:coordinates>".$definedBoundary->westbound.",". $definedBoundary->southbound.",". $definedBoundary->eastbound.",".$definedBoundary->northbound."</gml:coordinates>
+					 </gml:Box>
+					 </ogc:BBOX>
+					 ";
+					 	
+					 */
+					if($definedBoundary){
+						$minY = $definedBoundary->southbound;
+						$minX = $definedBoundary->westbound;
+						$maxY = $definedBoundary->northbound;
+						$maxX =$definedBoundary->eastbound;
+							
+
+							
+						$bboxfilter ="<ogc:BBOX>
 								<ogc:PropertyName>ows:BoundingBox</ogc:PropertyName>
 								<gml:Envelope>
 									<gml:lowerCorner>$minY $minX</gml:lowerCorner>
 									<gml:upperCorner>$maxY $maxX</gml:upperCorner>
 								</gml:Envelope>
 							  </ogc:BBOX>";
+					}
 			}
-			
+			else				
+			{
+				$bboxfilter ="";
+			}
+		
+				
 			if ($bboxfilter <> "")
 				$condList[]=$bboxfilter;
 			// Listes qui vont potentiellement contenir des guid de métadonnées
@@ -631,6 +662,69 @@ class SITE_catalog {
 									// Réunir tous les critères
 									if($cswFreeFilters > 0)
 										$cswSimpleFilter = "<ogc:Or>".$cswTitle.$cswKeyword.$cswAbstract.$cswObjectName.$cswAccountId."</ogc:Or>";
+								}
+								break;
+								
+							/*case "definedBoundary":
+								//$objecttype_id = JRequest::getVar('objecttype_id');
+								$selectedBoundary = JRequest::getVar('systemfilter_'.$searchFilter->guid,"");
+								if($selectedBoundary!=""){
+									
+									$definedBoundary = array();		
+									$boundaryFilter ="";							
+									
+									if ($isDownloadable !=0 )
+									{								
+									//http://webhelp.esri.com/arcims/9.2/general/mergedProjects/wfs_connect/wfs_connector/using_filters.htm
+									//http://code.google.com/apis/picasaweb/docs/2.0/reference.html, west south, east north
+											$query = $db->setQuery( "SELECT * FROM #__sdi_boundary where guid =".$selectedBoundary) ;
+											$database->setQuery( $query);									
+											
+											$definedBoundary = $database->loadObjectList() ;
+												
+											$boundaryFilter = "
+											<ogc:BBOX>
+											<ogc:PropertyName>gml:multiPointProperty</ogc:PropertyName>
+											<gml:Box xmlns=\"http://www.opengis.net/cite/spatialTestSuite\" srsName=\"EPSG:4326\">
+											<gml:coordinates>".$definedBoundary->westbound.",". $definedBoundary->southbound.",". $definedBoundary->eastbound.",".$definedBoundary->northbound."</gml:coordinates>
+											</gml:Box>
+											</ogc:BBOX>
+											";							
+																			
+										
+										
+									}
+								}
+								break;*/
+								
+							case "isDownloadable":
+								//$objecttype_id = JRequest::getVar('objecttype_id');
+								$isDownloadable = JRequest::getVar('systemfilter_'.$searchFilter->guid, 0);
+								
+								// Construire la liste des guid à filtrer
+								$list_Downloadable_Id = array();
+								
+								//echo "objecttype_id: ".count($objecttype_id);
+								if ($isDownloadable !=0 )
+								{
+									//echo "<b>Cas1:</b><br>";
+									//$countSimpleFilters++;
+								
+										$query = "SELECT m.guid as metadata_id 
+												  FROM #__sdi_objectversion ov 
+												  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
+												  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
+												  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
+												  INNER JOIN #__sdi_product p ON ov.id=p.objectversion_id
+												  WHERE p.available = 1 and p.published=1"
+												.$mysqlFilter;
+										$database->setQuery( $query);									
+										
+										$list_Downloadable_Id = $database->loadObjectList() ;
+										
+																		
+									
+									
 								}
 								break;
 							case "objecttype":
@@ -1593,6 +1687,67 @@ class SITE_catalog {
 										$cswAdvancedFilter = "<ogc:Or>".$cswTitle.$cswKeyword.$cswAbstract.$cswObjectName.$cswAccountId."</ogc:Or>";
 								}
 								break;
+							case "isDownloadable":
+								//$objecttype_id = JRequest::getVar('objecttype_id');
+								$isDownloadable = JRequest::getVar('systemfilter_'.$searchFilter->guid, 0);
+								
+								// Construire la liste des guid à filtrer
+								$list_Downloadable_Id = array();
+								
+								//echo "objecttype_id: ".count($objecttype_id);
+								if ($isDownloadable !=0 )
+								{
+									//echo "<b>Cas1:</b><br>";
+									//$countSimpleFilters++;
+								
+										$query = "SELECT m.guid as metadata_id 
+												  FROM #__sdi_objectversion ov 
+												  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
+												  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
+												  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
+												  INNER JOIN #__sdi_product p ON ov.id=p.objectversion_id
+												  WHERE p.available = 1 and p.published=1"
+												.$mysqlFilter;
+										$database->setQuery( $query);									
+										
+										$list_Downloadable_Id = $database->loadObjectList() ;
+										
+																		
+									
+									
+								}
+								break;
+							/*case "definedBoundary":
+							//$objecttype_id = JRequest::getVar('objecttype_id');
+							$selectedBoundary = JRequest::getVar('systemfilter_'.$searchFilter->guid,"");
+							if($selectedBoundary!=""){
+								
+								$definedBoundary = array();		
+								$boundaryFilter ="";							
+								
+								if ($isDownloadable !=0 )
+								{								
+								//http://webhelp.esri.com/arcims/9.2/general/mergedProjects/wfs_connect/wfs_connector/using_filters.htm
+								//http://code.google.com/apis/picasaweb/docs/2.0/reference.html, west south, east north
+										$query = $db->setQuery( "SELECT * FROM #__sdi_boundary where guid =".$selectedBoundary) ;
+										$database->setQuery( $query);									
+										
+										$definedBoundary = $database->loadObjectList() ;
+											
+										$boundaryFilter = "
+										<ogc:BBOX>
+										<ogc:PropertyName>gml:multiPointProperty</ogc:PropertyName>
+										<gml:Box xmlns=\"http://www.opengis.net/cite/spatialTestSuite\" srsName=\"EPSG:4326\">
+										<gml:coordinates>".$definedBoundary->westbound.",". $definedBoundary->southbound.",". $definedBoundary->eastbound.",".$definedBoundary->northbound."</gml:coordinates>
+										</gml:Box>
+										</ogc:BBOX>
+										";							
+																		
+									
+									
+								}
+							}*/
+							break;
 							case "objecttype":
 								$objecttype_id = JRequest::getVar('systemfilter_'.$searchFilter->guid);
 								
@@ -2185,15 +2340,26 @@ class SITE_catalog {
 			 
 			//Build the filter
 			if (count($arrObjecttypeMd) == 0) // Pas de types d'objet
-				$arrSearchableMd = $arrVersionMd;
+			$arrSearchableMd = $arrVersionMd;
 			else if (count($arrVersionMd) == 0) // Pas de versions
-				$arrSearchableMd = $arrObjecttypeMd;
+			$arrSearchableMd = $arrObjecttypeMd;
 			else // Faire l'intersection
-				$arrSearchableMd = array_intersect($arrObjecttypeMd, $arrVersionMd);
+			$arrSearchableMd = array_intersect($arrObjecttypeMd, $arrVersionMd);
+				
+			$objectDownloadableIds =  Array();
+
+			if (count($list_Downloadable_Id)> 0){
+				foreach ($list_Downloadable_Id as $md_id)
+				{
+					$objectDownloadableIds[] = $md_id->metadata_id;
+				}
+					
+			 // Pas de types d'objet
+				$arrSearchableMd = array_intersect($arrSearchableMd, $objectDownloadableIds);
+			}
+				
 			
-		/*	echo "arrObjecttypeMd<br>";print_r($arrObjecttypeMd);echo "<hr>";
-			echo "arrVersionMd<br>";print_r($arrVersionMd);echo "<hr>";
-			echo "arrSearchableMd<br>";print_r($arrSearchableMd);echo "<hr>";*/
+		
 			
 			// Objectname
 			if (count($arrObjectNameMd) <> 0) 
@@ -2375,6 +2541,12 @@ class SITE_catalog {
 			//Don't put an <and> if no other condition is requested
 			if (count($condList) > 1) 
 				$cswfilterCond = "<ogc:And>\r\n".$cswfilterCond."</ogc:And>\r\n";
+				
+		/*	if($boundaryFilter){
+				if($boundaryFilter="")
+					$cswfilterCond = "<ogc:And>\r\n".$boundaryFilter."</ogc:And>\r\n";
+			}
+			*/
 			
 			$cswfilter = "<ogc:Filter xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:gml=\"http://www.opengis.net/gml\">\r\n";
 			$cswfilter .= $cswfilterCond;

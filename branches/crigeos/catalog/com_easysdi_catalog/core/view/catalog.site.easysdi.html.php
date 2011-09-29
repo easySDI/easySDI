@@ -82,11 +82,22 @@ class HTML_catalog{
 		$objecttypes = array_merge( $objecttypes, $db->loadObjectList() );
 		HTML_catalog::alter_array_value_with_Jtext($objecttypes);
 		?>
+		<script text="javascript">
+		function toggleMe(obj){
+			obj.value = (obj.checked)? 1:0 ;
+		};
+		function toggleChecked(id){
+			document.getElementById(id).checked = document.getElementById(id).value ? 1: 0;
+		}
+
+		
+		</script>
 <div id="page">
 <h1 class="contentheading"><?php echo JText::_("CATALOG_SEARCH_TITLE"); ?></h1>
 <div class="contentin">
 
 <h3><?php echo JText::_("CATALOG_SEARCH_CRITERIA_TITLE"); ?></h3>
+
 
 <form name="catalog_search_form" id="catalog_search_form" method="GET" action="">
 	<input type="hidden" name="option" id="option" value="<?php echo JRequest::getVar('option' );?>" /> 
@@ -227,13 +238,42 @@ class HTML_catalog{
 							
 							?>
 							<div class="row">
-								<div class="label"><?php echo JText::_($searchFilter->guid."_LABEL");?></div>
+								<div class="label">
+									<?php echo JText::_($searchFilter->guid."_LABEL");?>
+								</div>
 								<div class="checkbox">
-								<?php echo helper_easysdi::checkboxlist($objecttypes, 'systemfilter_'.$searchFilter->guid.'[]', 'size="1" class="inputbox checkbox" ', 'class="inputbox checkbox"', 'value', 'text', $selectedObjectType); ?>
+									<?php echo helper_easysdi::checkboxlist($objecttypes, 'systemfilter_'.$searchFilter->guid.'[]', 'size="1" class="inputbox checkbox" ', 'class="inputbox checkbox"', 'value', 'text', $selectedObjectType); ?>
 								</div>
 							</div>
 							<?php
 							break;
+							
+							case "definedBoundary":
+						
+								$boundaries = array();
+								$db->setQuery( "SELECT name, guid FROM #__sdi_boundary") ;
+								$boundaries = $db->loadObjectList() ;								
+								$selectedValue = trim(JRequest::getVar('systemfilter_'.$searchFilter->guid, ""));
+								?>
+
+							<div class="row">
+								<div class="label">
+								<?php echo JText::_($searchFilter->guid."_LABEL");?>
+								</div>
+								<div>
+								<select name="<?php echo 'systemfilter_'.$searchFilter->guid;?>" id="<?php echo 'systemfilter_'.$searchFilter->guid;?>">
+									<option value="" <?php if($selectedValue ==""){?> selected="selected" <?Php }?> 
+									
+									><?php echo JText::_("CATALOG_SEARCHCRITERIA_SELECTBOUNDARY");?></option>
+									<?php foreach ($boundaries as $boundary){
+								    ?> echo <option value="<?php echo JText::_($boundary->guid);?>" <?php if($selectedValue == trim($boundary->guid)){?> selected="selected" <?Php }?> ><?php echo JText::_($boundary->name);?></option>
+								   <?php }?>
+								</select>
+								</div>
+								
+							</div>					
+						<?php
+						break;
 						case "fulltext":
 							?>
 							<div class="row">
@@ -374,6 +414,24 @@ class HTML_catalog{
 							</div>
 							<?php
 							break;
+						case "isDownloadable":
+							?>
+							<div class="row">
+								<label for="<?php echo 'systemfilter_'.$searchFilter->guid;?>"><?php echo JText::_($searchFilter->guid."_LABEL");?></label>
+								<input type="checkbox" id="<?php echo 'systemfilter_'.$searchFilter->guid;?>"
+									name="<?php echo 'systemfilter_'.$searchFilter->guid;?>"
+									value="<?php echo JRequest::getVar('systemfilter_'.$searchFilter->guid, 0);?>"									
+									class="inputbox checkbox" 
+									onClick="toggleMe(this)"
+									<?php if( JRequest::getVar('systemfilter_'.$searchFilter->guid)==1){
+									echo "checked = true";
+									}									
+									?>	 />
+								
+							</div>
+							<?php					
+						break;
+							
 						default:
 							break;
 				}
@@ -552,6 +610,32 @@ class HTML_catalog{
 					</div>
 					<?php
 					break;
+					case "definedBoundary":
+						
+								$boundaries = array();
+								$db->setQuery( "SELECT name, guid FROM #__sdi_boundary") ;
+								$boundaries = $db->loadObjectList() ;								
+								$selectedValue = trim(JRequest::getVar('systemfilter_'.$searchFilter->guid, ""));
+								?>
+
+							<div class="row">
+								<div class="label">
+								<?php echo JText::_($searchFilter->guid."_LABEL");?>
+								</div>
+								<div>
+								<select name="<?php echo 'systemfilter_'.$searchFilter->guid;?>" id="<?php echo 'systemfilter_'.$searchFilter->guid;?>">
+									<option value="" <?php if($selectedValue ==""){?> selected="selected" <?Php }?> 
+									
+									><?php echo JText::_("CATALOG_SEARCHCRITERIA_SELECTBOUNDARY");?></option>
+									<?php foreach ($boundaries as $boundary){
+								    ?> echo <option value="<?php echo JText::_($boundary->guid);?>" <?php if($selectedValue == trim($boundary->guid)){?> selected="selected" <?Php }?> ><?php echo JText::_($boundary->name);?></option>
+								   <?php }?>
+								</select>
+								</div>
+								
+							</div>					
+						<?php
+						break;
 				case "fulltext":
 					?>
 					<div class="row">
@@ -562,6 +646,25 @@ class HTML_catalog{
 							class="inputbox text full" />
 					</div>
 					<?php
+					break;
+				case "isDownloadable":
+							?>
+							<div class="row">
+								<label for="<?php echo 'systemfilter_'.$searchFilter->guid;?>"><?php echo JText::_($searchFilter->guid."_LABEL");?></label>
+								<input type="checkbox" id="<?php echo 'systemfilter_'.$searchFilter->guid;?>"
+									name="<?php echo 'systemfilter_'.$searchFilter->guid;?>"
+									value="<?php echo JRequest::getVar('systemfilter_'.$searchFilter->guid);?>"									
+									class="inputbox checkbox" 
+									onClick="toggleMe(this)" 
+									<?php if( JRequest::getVar('systemfilter_'.$searchFilter->guid)==1){
+									echo "checked = true";
+									}									
+									?>	
+									/>
+									
+									
+							</div>
+							<?php					
 					break;
 				case "versions":
 					$selectedVersion = 0;

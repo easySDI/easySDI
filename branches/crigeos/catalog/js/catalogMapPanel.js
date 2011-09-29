@@ -10,11 +10,12 @@ CatalogMapPanel = Ext.extend(Ext.Panel, {
 			id : fieldsetId+"_BBox",
 			width : 500,
 			height : 500,
-			xtype: 'panel',
+			xtype: 'panel',			
 			frame: false,
 			style :{position:'relative',
-			top:'-75px',
-			left:'500px'
+			top:'30px',
+			left:'0px',
+			clear :'both'			
 			
 			}
 			
@@ -222,8 +223,9 @@ CatalogMapPanel = Ext.extend(Ext.Panel, {
 			height : 30,				
 			frame: false,
 			style :{position:'relative',			
-				left:'500px',
-				top:'-600px',
+				left:'0px',
+				top:'-500px',
+				clear :'both'
 			},
 			items : [ this.map.previousButton, this.map.nextButton, {
 				xtype : 'tbseparator'

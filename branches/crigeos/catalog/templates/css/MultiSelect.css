@@ -35,8 +35,11 @@
 }
 
 /* invalid fields */
+
 .ux-mselect-fieldset {
-	padding-bottom: 4px !important;
+    clear: both;
+    height: auto !important;
+    padding: 0 !important;
 }
 
 .ux-mselect-fieldset fieldset{
