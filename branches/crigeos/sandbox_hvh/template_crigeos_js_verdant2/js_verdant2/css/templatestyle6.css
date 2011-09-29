@@ -322,13 +322,12 @@ div.userBlock {background: #173444 url(../images/style1/gradients.png) repeat-x 
 	height:75px;
 }
 .metadata-logo div {
-	background-image: url(../images/metadata_logo_0.gif);
 	background-repeat: no-repeat;
 	width:65px;
 	height:75px;
 }
 .metadata-logo .metadata-logo-1 {
-	background-image: url(../images/metadata_logo_0.gif);
+	
 }
 .metadata-logo .hidden {
     visibility:hidden;
@@ -361,6 +360,42 @@ div.userBlock {background: #173444 url(../images/style1/gradients.png) repeat-x 
     color: #777777 !important;
     background-color: #222222 !important;
 }
+
+.metadata-links span.metadata-link  a.link{
+	text-decoration: none;
+	color: #444444 !important;
+    display: block;
+    font-size: 11px;
+    padding: 1px 1px 1px 1px;
+    background-color: #BBBCBD !important;
+    border-radius: 5px 5px 5px 5px;
+    line-height: 20px;
+    border: 0 none;
+    outline: 0 none;
+    margin:5px 50px 5px 0px;
+    text-align: center;
+}
+.metadata-links span.metadata-link a.link:hover {
+    color: #777777 !important;
+    background-color: #222222 !important;
+}
+
+.metadata-links span.metadata-link  div.link-off{
+	text-decoration: none;
+	color: #444444 !important;
+    display: block;
+    font-size: 11px;
+    padding: 1px 1px 1px 1px;
+    background-color: #BBBCBD !important;
+    border-radius: 5px 5px 5px 5px;
+    line-height: 20px;
+    border: 0 none;
+    outline: 0 none;
+    margin:5px 50px 5px 0px;
+    text-align: center;
+}
+
+
 .metadata-result{
     font-size: 12px;
 }
@@ -382,7 +417,7 @@ div.userBlock {background: #173444 url(../images/style1/gradients.png) repeat-x 
 	float:left;
 	width:140px;
 	margin:0em 0em 0.2em 0em;
-	 color: #999999;
+	color: #999999;
     font-size: 11px;
     line-height: 12px;
 }
@@ -395,11 +430,12 @@ div.userBlock {background: #173444 url(../images/style1/gradients.png) repeat-x 
 }
 
 /*Metadata details page*/
-.metadata-body h1{
-    color: #97B832;
-    font-size: 135%;
-    margin-bottom: 20px;
-    background: url("../images/style6/crigeos_site_bkgd.jpg") no-repeat scroll 0 0 #FFFFFF;
-    line-height: 1;
-    vertical-align: baseline;
+.metadata-details   .metadata-title h1{
+	font-size:110%;
 }
+
+.metadata-details .metadata-header .metadata-title h2{
+	font-size:110%;
+}
+
+.
