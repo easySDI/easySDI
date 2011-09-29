@@ -738,7 +738,7 @@
 	
 	function addBBoxToFieldSet(fieldsetId){
 
-		if(!defaultBBoxConfig)
+		if(typeof(defaultBBoxConfig) == "undefined")
 			return;
 		
 	
