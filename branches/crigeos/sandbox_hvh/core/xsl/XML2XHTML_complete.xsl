@@ -63,6 +63,10 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 		<xsl:variable name="filetype">
 			<xsl:value-of select="./sdi:Metadata/sdi:product/@file_type" />
 		</xsl:variable>
+		<xsl:variable name="datepublication">
+			<xsl:value-of
+				select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:date/gmd:CI_Date[gmd:dateType/gmd:CI_DateTypeCode/@codeListValue='publication']/gmd:date/gco:Date" />
+		</xsl:variable>
 
 		<!-- Download Links -->
 		<xsl:variable name="downloadPDF">
@@ -131,489 +135,333 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 		<div class="metadata-details">	
 			<xsl:choose>
 				<xsl:when test="$language='fr-FR'">
-					<h1>
-						<xsl:value-of select="$title" />
-					</h1>
-					<div class="metadata-box box news-small">
-							<div class="title">
-								<h2>Actions</h2>
-							</div>
-								<div class="body">	
-									<xsl:choose>
-										<xsl:when test="string-length($downloadProduct) > 0">
-											<p>
-												<span class="metadata-link">
-													<a>
-														<xsl:attribute name="class">modal</xsl:attribute>	
-														<xsl:attribute name="rel">{handler:'iframe',size:{x:650,y:600}}</xsl:attribute>
-														<xsl:attribute name="href">
-															<xsl:value-of  select="$downloadProduct" />
-														</xsl:attribute>
-														<xsl:text>Télécharger </xsl:text>
-													</a>
-												</span>
-												<span class="info">
-													<xsl:text> (</xsl:text>
-													<xsl:value-of select="translate($filetype,$smallcase,$uppercase)" />
-													<xsl:text>, </xsl:text>
-													<xsl:value-of select="$filesize" />
-													<xsl:text> Ko)</xsl:text>
-												</span>
-											</p>
-										</xsl:when >
-										<xsl:otherwise>
-											<p>
-											<span class="metadata-link">
-												<a>
-													<xsl:attribute name="class">icon default</xsl:attribute>
-													<xsl:attribute name="href">
-														<xsl:value-of select="$orderproduct" />
-													</xsl:attribute>
-													<xsl:text>Commander</xsl:text>
-												</a>
-											</span>
-											</p>
-										</xsl:otherwise >
-									</xsl:choose>
-									<xsl:if test="string-length($previewProduct) > 0">
-										<p>
-											<span class="metadata-link">
-												<a>
-													<xsl:attribute name="class">modal</xsl:attribute>	
-													<xsl:attribute name="rel">{handler:'iframe',size:{x:650,y:600}}</xsl:attribute>
-													<xsl:attribute name="href">
-														<xsl:value-of  select="$previewProduct" />
-													</xsl:attribute>
-													<xsl:text>Prévisualiser</xsl:text>
-												</a>
-											</span>
-										</p>
-									</xsl:if>	
-										
-									<p/>
-									<p>
+					<div class="metadata-header">
+						<div class="metadata-links">
+							<xsl:if test="string-length($downloadProduct) > 0">
+									<span class="metadata-link">
 										<a>
-											<xsl:attribute name="class">icon default</xsl:attribute>
+											<xsl:attribute name="class">modal</xsl:attribute>	
+											<xsl:attribute name="rel">{handler:'iframe',size:{x:650,y:600}}</xsl:attribute>
 											<xsl:attribute name="href">
-												<xsl:value-of select="$print" />
-											</xsl:attribute>Imprimer</a>
-									</p>
-									<p>
-										<a>
-											<xsl:attribute name="class">icon default</xsl:attribute>
-											<xsl:attribute name="href">
-												<xsl:value-of select="$exportXML" />
-											</xsl:attribute>XML</a>
-									</p>
-									<p>
-										<a>
-											<xsl:attribute name="class">icon default</xsl:attribute>
-											<xsl:attribute name="href">
-												<xsl:value-of select="$downloadPDF" />
-											</xsl:attribute>PDF</a>
-									</p>
-									
-								</div>
-							</div>
-							<div class="summary active">
-								<h2>Informations principales</h2>
-								<div class="metadata-maininfo">
-									<xsl:call-template name="bildausschnitt">
-									</xsl:call-template>
-									<p>
-										<xsl:value-of disable-output-escaping="yes" select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:abstract/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale='#FR']" />
-									</p>
-								</div>
-								<div class="clear"/>
-								<table class="alternative">
-									<tr>
-										<td width="30%">Type:</td>
-										<td>Géoproduit</td>
-									</tr>
-									<tr>
-										<td width="30%">Code:</td>
-										<td>
-											<xsl:value-of select="./sdi:Metadata/sdi:object/@object_name" />
-										</td>
-									</tr>
-									<tr>
-										<td width="30%">Statut:</td>
-										<td>
-											<xsl:call-template name="ProgressCodeTemplateFR">
-												<xsl:with-param name="ProgressCode" select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:status/gmd:MD_ProgressCode/@codeListValue" />
-											</xsl:call-template>
-										</td>
-									</tr>
-									<tr>
-										<td width="30%">Mise à jour:</td>
-										<td>
-											<xsl:for-each select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:date">
-												<xsl:if test="gmd:CI_Date/gmd:dateType/gmd:CI_DateTypeCode/@codeListValue='creation'">
-													<xsl:apply-templates select="gmd:CI_Date/gmd:date" />
-													<br />
-												</xsl:if>
-											</xsl:for-each>
-										</td>
-									</tr>
-									<tr>
-										<td width="30%">Mise à jour:</td>
-										<td>
-											<xsl:for-each select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:date">
-												<xsl:if test="gmd:CI_Date/gmd:dateType/gmd:CI_DateTypeCode/@codeListValue='revision'">
-													<xsl:apply-templates select="gmd:CI_Date/gmd:date" />
-													<br />
-												</xsl:if>
-											</xsl:for-each>
-										</td>
-									</tr>
-									<tr>
-										<td width="30%">Publication:</td>
-										<td>
-
-											<xsl:for-each select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:date">
-												<xsl:if test="gmd:CI_Date/gmd:dateType/gmd:CI_DateTypeCode/@codeListValue='publication'">
-													<xsl:apply-templates select="gmd:CI_Date/gmd:date" />
-													<br />
-												</xsl:if>
-											</xsl:for-each>
-										</td>
-									</tr>
-								</table>
-							</div>
-							<p/>
-						
-							<div class="section">	
-								<table class="alternative">
-									<tr>
-										<th colspan="2" scope="col">Plus d'informations</th>
-									</tr>
-									<tr>
-										<td width="30%">Appellation:</td>
-										<td>
-											<xsl:value-of disable-output-escaping="yes" select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:otherCitationDetails/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale='#FR']"/>
-										</td>
-									</tr>
-									<tr>
-										<td width="30%">Thématique:</td>
-										<td>		
-											<xsl:for-each select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:topicCategory">
-												<xsl:call-template name="categoryCodeTemplateFR">
-												</xsl:call-template>
-											</xsl:for-each>
-										</td>
-									</tr>
-									<tr>
-										<td width="30%">Mots-clés:</td>
-										<td>
-											<xsl:for-each select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:descriptiveKeywords/gmd:MD_Keywords/gmd:keyword">
-												<xsl:value-of disable-output-escaping="yes" select="gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale='#FR']"/>, 
-											</xsl:for-each>
-										</td>
-									</tr>
-									<tr>
-										<td width="30%">Lien vers les renseignements détaillés sur le produit</td>
-										<td>
-
-											<xsl:element name="a">
-												<xsl:attribute name="class">extern</xsl:attribute>
-												<xsl:attribute name="href">
-													<xsl:value-of  select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/bee:detailedInformation/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale='#FR']"/>
-												</xsl:attribute>
-												<xsl:value-of  select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/bee:detailedInformation/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale='#FR']"/>		
-											</xsl:element>
-
-										</td>
-									</tr>
-									<tr>
-										<td width="30%">Langue:</td>
-										<td>
-											<xsl:for-each select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:language">
-												<xsl:call-template name="languageISOCodeTemplateFR">
-													<xsl:with-param name="languageISOCode" select="gmd:LanguageCodeISO" />
-												</xsl:call-template>
-												<xsl:text>, </xsl:text>
-											</xsl:for-each>
-										</td>
-									</tr>
-
-									<tr>
-										<td width="30%">Coordonnées de l'étendue:</td>
-										<td>
-											<xsl:value-of  select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:description/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale='#FR']"/>
-										</td>
-									</tr>
-									<tr>
-										<td width="30%">Informations supplémentaires:</td>
-										<td>
-											<xsl:value-of  select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:supplementalInformation/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale='#FR']"/>
-										</td>
-									</tr>
-
-									<tr>
-										<th colspan="2" scope="col">Mise à jour</th>
-									</tr>
-									<tr>
-										<td width="30%">Fréquence de mise à jour:</td>
-										<td>
-											<xsl:call-template name="maintenanceTypeTemplateFR">
-												<xsl:with-param name="maintenanceTypeCode" select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceMaintenance/gmd:MD_MaintenanceInformation/gmd:maintenanceAndUpdateFrequency/gmd:MD_MaintenanceFrequencyCode/@codeListValue"/>
-											</xsl:call-template>
-										</td>
-									</tr>
-									<tr>
-										<td width="30%">Remarque sur la mise à jour:</td>
-										<td>
-											<xsl:value-of  select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceMaintenance/gmd:MD_MaintenanceInformation/gmd:maintenanceNote/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale='#FR']"/>
-										</td>
-									</tr>
-									<tr>
-										<td width="30%">Version:</td>
-										<td>Année: <xsl:value-of  select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/bee:version/bee:DD_DataDictionary/bee:versionYear/gco:Decimal"/>
-											<br />Version: <xsl:value-of  select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/bee:version/bee:DD_DataDictionary/bee:versionNumber/gco:Decimal"/>
-										</td>
-									</tr>
-									<tr>
-										<th colspan="2" scope="col">Modèle de données</th>
-									</tr>
-									<tr>
-										<td width="30%">Type du modèle de données:</td>
-										<td>
-											<xsl:value-of  select="./gmd:MD_Metadata/gmd:contentInfo/gmd:MD_FeatureCatalogueDescription/bee:modelType/bee:modelTypeCode/@codeListValue"/>
-										</td>
-									</tr>
-									<tr>
-										<td width="30%">Modèle de données:</td>
-										<td>
-											<xsl:element name="a">
-												<xsl:attribute name="class">extern</xsl:attribute>
-												<xsl:attribute name="href">
-													<xsl:value-of  select="./gmd:MD_Metadata/gmd:contentInfo/gmd:MD_FeatureCatalogueDescription/gmd:dataModel/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale='#FR']"/>
-												</xsl:attribute>
-												<xsl:value-of  select="./gmd:MD_Metadata/gmd:contentInfo/gmd:MD_FeatureCatalogueDescription/gmd:dataModel/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale='#FR']"/>
-											</xsl:element>					
-										</td>
-									</tr>
-									<tr>
-										<td width="30%">Résultats du Delta Checker:</td>
-										<td>
-											<xsl:element name="a">
-												<xsl:attribute name="class">extern</xsl:attribute>
-												<xsl:attribute name="href">
-													<xsl:value-of  select="./gmd:MD_Metadata/gmd:contentInfo/gmd:MD_FeatureCatalogueDescription/bee:deltacheckerReport/gco:CharacterString"/>
-												</xsl:attribute>
-												<xsl:value-of  select="./gmd:MD_Metadata/gmd:contentInfo/gmd:MD_FeatureCatalogueDescription/bee:deltacheckerReport/gco:CharacterString"/>
-											</xsl:element>					
-										</td>
-									</tr>
-									<tr>
-										<th colspan="2" scope="col">Règles topologique</th>
-									</tr>
-									<tr>
-										<td width="30%">Description:</td>
-										<td>
-											<xsl:for-each select="./gmd:MD_Metadata/gmd:dataQualityInfo/gmd:DQ_DataQuality/gmd:report/gmd:DQ_Element">
-												<xsl:value-of disable-output-escaping="yes" select="bee:topologyDescription/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale='#FR']"/>
-												<br />
-											</xsl:for-each>	
-										</td>
-									</tr>	
-									<tr>
-										<th colspan="2" scope="col">Contraintes légales</th>
-									</tr>	
-									<tr>
-										<td width="30%">Force légale:</td>
-										<td>
-											<xsl:value-of  select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceConstraints/gmd:MD_LegalConstraints/bee:legality/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale='#FR']"/>
-										</td>
-									</tr>	
-									<tr>
-										<td width="30%">Reproduction:</td>
-										<td>
-											<xsl:value-of  select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceConstraints/gmd:MD_LegalConstraints/bee:reproduction/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale='#FR']"/>
-										</td>
-									</tr>
-									<tr>
-										<td width="30%">Protection des données:</td>
-										<td>
-											<xsl:value-of  select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceConstraints/gmd:MD_LegalConstraints/bee:dataProtection/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale='#FR']"/>
-										</td>
-									</tr>
-
-									<tr>
-										<td width="30%">Conditions d'utilisation:</td>
-										<td>
-											<xsl:value-of  select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceConstraints/gmd:MD_LegalConstraints/gmd:otherConstraints/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale='#FR']"/>
-										</td>
-									</tr>	
-									<tr>
-										<th colspan="2" scope="col">Législation</th>
-									</tr>	
-									<xsl:for-each select="./gmd:MD_Metadata/gmd:legislationInformation/gmd:MD_Legislation">
-										<tr>
-											<td width="30%">Titre:</td>
-											<td>
-												<xsl:value-of  select="gmd:title/gmd:CI_Citation/gmd:title/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale='#FR']" />
-											</td>
-										</tr>
-										<tr>
-											<td width="30%">Appellation:</td>
-											<td>
-												<xsl:value-of  select="gmd:title/gmd:CI_Citation/gmd:otherCitationDetails/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale='#FR']" />
-											</td>
-										</tr>
-										<tr>
-											<td width="30%">Type de législation:</td>
-											<td>
-												<xsl:call-template name="legislationTypeTemplateFR">
-													<xsl:with-param name="legislationTypeCode" select="gmd:legislationType/gmd:CI_LegislationTypeCode/@codeListValue"/>
-												</xsl:call-template>
-											</td>
-										</tr>
-										<tr>
-											<td width="30%">Pays:</td>
-											<td>
-												<xsl:value-of  select="gmd:country/gmd:CountryCodeISO" />
-											</td>
-										</tr>
-										<tr>
-											<td width="30%">Langue:</td>
-											<td>
-												<xsl:call-template name="languageISOCodeTemplateFR">
-													<xsl:with-param name="languageISOCode" select="gmd:language/gmd:LanguageCodeISO" />
-												</xsl:call-template>
-											</td>
-										</tr>
-										<tr>
-											<td width="30%">Date:</td>
-											<td>
-												<xsl:for-each select="gmd:title/gmd:CI_Citation/gmd:date">
-													<xsl:apply-templates select="gmd:CI_Date/gmd:date" /> (<xsl:call-template name="dateTypeCodeTemplateFR">
-														<xsl:with-param name="dateTypeCode" select="gmd:CI_Date/gmd:dateType/gmd:CI_DateTypeCode/@codeListValue" />
-													</xsl:call-template>)<br />
-												</xsl:for-each>
-											</td>
-										</tr>
-									</xsl:for-each>
-									<tr>
-										<th colspan="2" scope="col">Informations sur la transmission des géodonnées</th>
-									</tr>
-									<xsl:for-each select="./gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine">
-										<tr>
-											<td width="30%">Description:</td>
-											<td>
-												<xsl:value-of  select="gmd:CI_OnlineResource/gmd:description/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale='#FR']" />
-											</td>
-										</tr>
-									</xsl:for-each>
-									<xsl:for-each select="./gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:distributionFormat/gmd:MD_Format">
-										<tr>
-											<td width="30%">Nom du format:</td>
-											<td>
-												<xsl:value-of  select="gmd:name/gco:CharacterString" />
-											</td>
-										</tr>
-										<tr>
-											<td width="30%">Version du format:</td>
-											<td>
-												<xsl:value-of  select="gmd:version/gco:CharacterString" />
-											</td>
-										</tr>		
-										<tr>
-											<td width="30%">Frais:</td>
-											<td>
-												<xsl:value-of select="gmd:distributorFormat/gmd:MD_Distributor/gmd:distributionOrderProcess/gmd:MD_StandardOrderProcess/gmd:orderingInstructions/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale='#FR']" />
-											</td>
-										</tr>
-									</xsl:for-each>
-									<tr>
-										<td width="30%">Remarques sur la diffusion des données:</td>
-										<td>
-											<xsl:value-of  select="./gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/bee:publicationRemark/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale='#FR']" />
-										</td>
-									</tr>
-								</table>
-							</div>
-							<div class="section">	
-								<table class="alternative">
-									<tr>
-										<th colspan="2" scope="col">Contacts</th>
-									</tr>
-
-									<xsl:for-each select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact">
-										<tr>
-											<xsl:call-template name="addressTemplateFR">
-											</xsl:call-template>
-										</tr>
-									</xsl:for-each>		
-								</table>
-							</div>
-
-
-							<!-- ************************ Relation ******************************* -->
-
-
-							<div class="section">
-
-								<xsl:call-template name="relationshipTableFR">
-								</xsl:call-template>
+												<xsl:value-of  select="$downloadProduct" />
+											</xsl:attribute>
+											<xsl:text>Télécharger </xsl:text>
+										</a>
+										<xsl:text> (</xsl:text>
+										<xsl:value-of select="translate($filetype,$smallcase,$uppercase)" />
+										<xsl:text>, </xsl:text>
+										<xsl:value-of select="$filesize" />
+										<xsl:text> Ko)</xsl:text>
+									</span>
+							</xsl:if >
+							<xsl:if test="string-length($previewProduct) > 0">
+								<span class="metadata-link">
+									<a>
+										<xsl:attribute name="class">modal</xsl:attribute>	
+										<xsl:attribute name="rel">{handler:'iframe',size:{x:650,y:600}}</xsl:attribute>
+										<xsl:attribute name="href">
+											<xsl:value-of  select="$previewProduct" />
+										</xsl:attribute>
+										<xsl:text>Prévisualiser</xsl:text>
+									</a>
+								</span>
+							</xsl:if>	
+							
+							<span class="metadata-link">
+								<a>
+									<xsl:attribute name="class">modal</xsl:attribute>
+									<xsl:attribute name="href">
+										<xsl:value-of select="$print" />
+									</xsl:attribute>Imprimer</a>
+							</span>
+							<span class="metadata-link">
+								<a>
+									<xsl:attribute name="class">modal</xsl:attribute>
+									<xsl:attribute name="href">
+										<xsl:value-of select="$exportXML" />
+									</xsl:attribute>XML</a>
+							</span>
+							<span class="metadata-link">
+								<a>
+									<xsl:attribute name="class">modal</xsl:attribute>
+									<xsl:attribute name="href">
+										<xsl:value-of select="$downloadPDF" />
+									</xsl:attribute>PDF</a>
+							</span>
+							
+						</div>
+					</div>
 					
-							</div>
-
-
-							<!-- ************************ Informations sur les métadonnéesen ******************************* -->
-
-							<div class="section">
-								<table class="alternative">
-									<tr>
-										<th colspan="2" scope="col">Informations sur les métadonnées</th>
-									</tr>
-
-									<xsl:for-each select="./gmd:MD_Metadata/gmd:contact">
-										<tr>
-											<xsl:call-template name="addressTemplateFR">
-											</xsl:call-template>
-										</tr>
+					<br></br>
+					<div class="metadata-title">
+						<h1>
+							<xsl:value-of select="$title" />
+						</h1>
+					</div>
+					
+					<div class="metadata-content">
+						<div class="metadata-maininfo">
+							<xsl:choose>
+								<xsl:when test="string-length($abstract-fr) > 0">
+									<xsl:value-of  select="substring($abstract-fr,1,200)" />				
+								</xsl:when >
+								<xsl:otherwise>			
+									<xsl:value-of  select="substring($abstract,1,200)" />										
+								</xsl:otherwise >
+							</xsl:choose>
+						</div>
+						<div class="clear"/>
+						<table class="alternative">
+							<tr>
+								<td width="30%">Type:</td>
+								<td><xsl:value-of select="$logo" /></td>
+							</tr>
+							<tr>
+								<td width="30%">Code:</td>
+								<td>
+									<xsl:value-of select="./sdi:Metadata/sdi:object/@object_name" />
+								</td>
+							</tr>
+							<tr>
+								<td width="30%">Statut:</td>
+								<td>
+									<xsl:call-template name="ProgressCodeTemplateFR">
+										<xsl:with-param name="ProgressCode" select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:status/gmd:MD_ProgressCode/@codeListValue" />
+									</xsl:call-template>
+								</td>
+							</tr>
+							<tr>
+								<td width="30%">Création:</td>
+								<td>
+									<xsl:value-of select="$datecreated" />
+								</td>
+							</tr>
+							<tr>
+								<td width="30%">Mise à jour:</td>
+								<td>
+									<xsl:value-of select="$dateupdated" />
+								</td>
+							</tr>
+							<tr>
+								<td width="30%">Publication:</td>
+								<td>
+									<xsl:value-of select="$datepublication" />
+								</td>
+							</tr>
+						</table>
+					</div>
+					
+					<p/>
+						
+					<div class="section">	
+						<table class="alternative">
+							<!-- ************************ Informations ******************************* -->
+							<tr>
+								<th colspan="2" scope="col">Plus d'informations</th>
+							</tr>
+							<tr>
+								<td width="30%">Appellation:</td>
+								<td>
+									<xsl:value-of disable-output-escaping="yes" select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:otherCitationDetails/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale='#FR']"/>
+								</td>
+							</tr>
+							<tr>
+								<td width="30%">Thématique:</td>
+								<td>		
+									<xsl:for-each select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:topicCategory">
+										<xsl:call-template name="categoryCodeTemplateFR">
+										</xsl:call-template>
 									</xsl:for-each>
-									<tr>
-										<td width="30%">Fichier mis à jour le:</td>
-										<td>
-											<xsl:value-of select="$dateupdated" />
-										</td>
-									</tr>
-									<tr>
-										<td width="30%">Fichier créé le:</td>
-										<td>
-											<xsl:value-of select="$datecreated" />
-										</td>
-									</tr>
-									<tr>
-										<td width="30%">ID de la métadonnée:</td>
-										<td>
-											<xsl:value-of disable-output-escaping="yes" select="./gmd:MD_Metadata/gmd:fileIdentifier/gco:CharacterString"/>
-										</td>
-									</tr>
-									<tr>
-										<td width="30%">Nom du standard de métadonnées:</td>
-										<td>
-											<xsl:value-of disable-output-escaping="yes" select="./gmd:MD_Metadata/gmd:metadataStandardName/gco:CharacterString" />
-										</td>
-									</tr>
-									<tr>
-										<td width="30%">Version du standard de métadonnées:</td>
-										<td>
-											<xsl:value-of disable-output-escaping="yes" select="./gmd:MD_Metadata/gmd:metadataStandardversion/gco:CharacterString" />
-										</td>
-									</tr>
-									<tr>
-										<td width="30%">Domaine des métadonnées:</td>
-										<td>
+								</td>
+							</tr>
+							<tr>
+								<td width="30%">Mots-clés:</td>
+								<td>
+									<xsl:for-each select="./gmd:MD_Metadata/gmd:descriptiveKeywords/gmd:MD_Keywords/gmd:keyword">
+										<xsl:value-of disable-output-escaping="yes" select="gco:CharacterString"/>, 
+									</xsl:for-each>
+								</td>
+							</tr>
+							<tr>
+								<td width="30%">Lien vers les renseignements détaillés sur le produit</td>
+								<td>
 
-											<xsl:value-of disable-output-escaping="yes" select="./gmd:MD_Metadata/gmd:hierarchyLevelName/gco:CharacterString" />
-										</td>
-									</tr>
+									<xsl:element name="a">
+										<xsl:attribute name="class">extern</xsl:attribute>
+										<xsl:attribute name="href">
+											<xsl:value-of  select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/bee:detailedInformation/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale='#FR']"/>
+										</xsl:attribute>
+										<xsl:value-of  select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/bee:detailedInformation/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale='#FR']"/>		
+									</xsl:element>
 
-								</table>
-							</div>
+								</td>
+							</tr>
+							<tr>
+								<td width="30%">Langue:</td>
+								<td>
+									<xsl:for-each select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:language">
+										<xsl:call-template name="languageISOCodeTemplateFR">
+											<xsl:with-param name="languageISOCode" select="gmd:LanguageCodeISO" />
+										</xsl:call-template>
+										<xsl:text>, </xsl:text>
+									</xsl:for-each>
+								</td>
+							</tr>
+
+							<tr>
+								<td width="30%">Coordonnées de l'étendue:</td>
+								<td>
+									<xsl:for-each select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent">
+										<xsl:value-of disable-output-escaping="yes" select="gmd:EX_Extent/gmd:description/gco:CharacterString"/> : 
+										<xsl:value-of disable-output-escaping="yes" select="gmd:EX_Extent/gmd:geographicElement/gmd:Ex_GeographicBoundingBox/gmd:westBoundLongitude/gco:Decimal"/>
+										<xsl:value-of disable-output-escaping="yes" select="gmd:EX_Extent/gmd:geographicElement/gmd:Ex_GeographicBoundingBox/gmd:eastBoundLongitude/gco:Decimal"/> 
+										<xsl:value-of disable-output-escaping="yes" select="gmd:EX_Extent/gmd:geographicElement/gmd:Ex_GeographicBoundingBox/gmd:southBoundLatitude/gco:Decimal"/> 
+										<xsl:value-of disable-output-escaping="yes" select="gmd:EX_Extent/gmd:geographicElement/gmd:Ex_GeographicBoundingBox/gmd:northBoundLatitude/gco:Decimal"/>  
+									</xsl:for-each>
+								</td>
+							</tr>
+							<tr>
+								<td width="30%">Informations supplémentaires:</td>
+								<td>
+									<xsl:value-of  select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:supplementalInformation/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale='#FR']"/>
+								</td>
+							</tr>
+
+							<!-- ************************ Maintenance ******************************* -->
+							<tr>
+								<th colspan="2" scope="col">Maintenance</th>
+							</tr>
+							<tr>
+								<td width="30%">Fréquence de mise à jour:</td>
+								<td>
+									<xsl:call-template name="maintenanceTypeTemplateFR">
+										<xsl:with-param name="maintenanceTypeCode" select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceMaintenance/gmd:MD_MaintenanceInformation/gmd:maintenanceAndUpdateFrequency/gmd:MD_MaintenanceFrequencyCode/@codeListValue"/>
+									</xsl:call-template>
+								</td>
+							</tr>
+							<tr>
+								<td width="30%">Date de la dernière mise à jour:</td>
+								<td>
+									<xsl:value-of  select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceMaintenance/gmd:MD_MaintenanceInformation/gmd:dateOfLastUpdate/gco:Date"/>
+								</td>
+							</tr>
+							<tr>
+								<td width="30%">Date de la prochaine mise à jour:</td>
+								<td>
+									<xsl:value-of  select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceMaintenance/gmd:MD_MaintenanceInformation/gmd:dateOfNextUpdate/gco:Date"/>
+								</td>
+							</tr>
+							<tr>
+								<td width="30%">Information sur la mise à jour:</td>
+								<td>
+									<xsl:value-of  select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceMaintenance/gmd:MD_MaintenanceInformation/gmd:maintenanceNote/gco:CharacterString"/>
+								</td>
+							</tr>
+							
+							<!-- ************************ Contraintes ******************************* -->
+							<tr>
+								<th colspan="2" scope="col">Contraintes</th>
+							</tr>
+							<tr>
+								<td width="30%">Contraintes d'accès:</td>
+								<td>
+									<xsl:for-each select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceConstraints/gmd:MD_LegalConstraints/gmd:accessConstraints/">
+										<xsl:call-template name="constraintsTypeTemplateFR">
+											<xsl:with-param name="constraintsTypeCode" select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceConstraints/gmd:MD_LegalConstraints/gmd:accessConstraints/gmd:MD_RestrictionCode/@codeListValue"/>
+										</xsl:call-template>  
+									</xsl:for-each>
+									
+								</td>
+							</tr>
+							<tr>
+								<td width="30%">Limitation d'utilisation de la ressource:</td>
+								<td>
+									<xsl:for-each select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceConstraints/gmd:MD_LegalConstraints/gmd:useLimitation/">
+										 <xsl:value-of  select="gco:characterstring"/>
+									</xsl:for-each>
+									
+								</td>
+							</tr>
+							<tr>
+								<td width="30%">Autres contraintes:</td>
+								<td>
+									<xsl:for-each select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceConstraints/gmd:MD_LegalConstraints/gmd:otherConstraints/">
+										 <xsl:value-of  select="gco:characterstring"/>
+									</xsl:for-each>
+								</td>
+							</tr>
+						</table>
+					</div>
+					
+					
+					<!-- ************************ Point of Contact ******************************* -->
+					<div class="section">	
+						<table class="alternative">
+							<tr>
+								<th colspan="2" scope="col">Contacts</th>
+							</tr>
+
+							<xsl:for-each select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact">
+								<tr>
+									<xsl:call-template name="addressTemplateFR">
+									</xsl:call-template>
+								</tr>
+							</xsl:for-each>		
+						</table>
+					</div>
+
+
+					<!-- ************************ Informations sur les métadonnées ******************************* -->
+					<div class="section">
+						<table class="alternative">
+							<tr>
+								<th colspan="2" scope="col">Informations sur les métadonnées</th>
+							</tr>
+							<xsl:for-each select="./gmd:MD_Metadata/gmd:contact">
+								<tr>
+									<xsl:call-template name="addressTemplateFR">
+									</xsl:call-template>
+								</tr>
+							</xsl:for-each>
+							<tr>
+								<td width="30%">Fichier mis à jour le:</td>
+								<td>
+									<xsl:value-of select="$dateupdated" />
+								</td>
+							</tr>
+							<tr>
+								<td width="30%">Fichier créé le:</td>
+								<td>
+									<xsl:value-of select="$datecreated" />
+								</td>
+							</tr>
+							<tr>
+								<td width="30%">ID de la métadonnée:</td>
+								<td>
+									<xsl:value-of disable-output-escaping="yes" select="./gmd:MD_Metadata/gmd:fileIdentifier/gco:CharacterString"/>
+								</td>
+							</tr>
+							<tr>
+								<td width="30%">Nom du standard de métadonnées:</td>
+								<td>
+									<xsl:value-of disable-output-escaping="yes" select="./gmd:MD_Metadata/gmd:metadataStandardName/gco:CharacterString" />
+								</td>
+							</tr>
+							<tr>
+								<td width="30%">Version du standard de métadonnées:</td>
+								<td>
+									<xsl:value-of disable-output-escaping="yes" select="./gmd:MD_Metadata/gmd:MetadataStandardVersion/gco:CharacterString" />
+								</td>
+							</tr>
+							<tr>
+								<td width="30%">Domaine des métadonnées:</td>
+								<td>
+									<xsl:value-of disable-output-escaping="yes" select="./gmd:MD_Metadata/gmd:hierarchyLevelName/gco:CharacterString" />
+								</td>
+							</tr>
+
+						</table>
+					</div>
 					<p>
 					</p>
 				</xsl:when>
@@ -1072,56 +920,6 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 		</xsl:choose>
 	</xsl:template>
 
-	<!-- Template MaintenanceFrequencyCode -->
-	<xsl:template name="maintenanceFrequencyCodeTemplate">
-		<xsl:param name="maintenanceFrequencyCode"/>
-		<xsl:choose>
-			<xsl:when test="$maintenanceFrequencyCode = 'continual'">
-				<xsl:text>Laufend</xsl:text>
-			</xsl:when>
-			<xsl:when test="$maintenanceFrequencyCode = 'daily'">
-				<xsl:text>TÃ¤glich</xsl:text>	
-			</xsl:when>		
-			<xsl:when test="$maintenanceFrequencyCode = 'weekly'">
-				<xsl:text>WÃ¶chentlich</xsl:text>
-			</xsl:when>
-			<xsl:when test="$maintenanceFrequencyCode = 'fortnightly'">
-				<xsl:text>VierzehntÃ¤glich</xsl:text>	
-			</xsl:when>	
-			<xsl:when test="$maintenanceFrequencyCode = 'monthly'">
-				<xsl:text>Monatlich</xsl:text>
-			</xsl:when>
-			<xsl:when test="$maintenanceFrequencyCode = 'quarterly'">
-				<xsl:text>VierteljÃ¤hrlich</xsl:text>	
-			</xsl:when>	
-			<xsl:when test="$maintenanceFrequencyCode = 'biannually'">
-				<xsl:text>HalbjÃ¤hrlich</xsl:text>
-			</xsl:when>
-			<xsl:when test="$maintenanceFrequencyCode = 'annually'">
-				<xsl:text>JÃ¤hrlich</xsl:text>	
-			</xsl:when>	
-			<xsl:when test="$maintenanceFrequencyCode = 'asNeeded'">
-				<xsl:text>Wenn NÃ¶tig</xsl:text>
-			</xsl:when>
-			<xsl:when test="$maintenanceFrequencyCode = 'irregular'">
-				<xsl:text>UnregelmÃ¤ssig</xsl:text>	
-			</xsl:when>	
-			<xsl:when test="$maintenanceFrequencyCode = 'notPlanned'">
-				<xsl:text>Nicht geplant</xsl:text>
-			</xsl:when>
-			<xsl:when test="$maintenanceFrequencyCode = 'unknown'">
-				<xsl:text>Unbekannt</xsl:text>	
-			</xsl:when>	
-			<xsl:when test="$maintenanceFrequencyCode = 'userDefined'">
-				<xsl:text>Benutzerdefiniert</xsl:text>
-			</xsl:when>	
-			<xsl:otherwise>
-				<xsl:value-of disable-output-escaping="yes" select="$maintenanceFrequencyCode" />
-			</xsl:otherwise>
-		</xsl:choose>
-	</xsl:template>
-
-
 	<xsl:template name="maintenanceTypeTemplateFR">
 		<xsl:param name="maintenanceTypeCode"/>
 		<xsl:choose>
@@ -1140,91 +938,38 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 		</xsl:choose>
 	</xsl:template>				
 
-	<xsl:template name="maintenanceTypeTemplate">
-		<xsl:param name="maintenanceTypeCode"/>
+	<xsl:template name="constraintsTypeTemplateFR">
+		<xsl:param name="constraintsTypeCode"/>
 		<xsl:choose>
-			<xsl:when test="$maintenanceTypeCode = 'continual'">
-				<xsl:text>Laufende NachfÃ¼hrung</xsl:text>
+			<xsl:when test="$constraintsTypeCode = 'copyright'">
+				<xsl:text>Droit d'auteur</xsl:text>
 			</xsl:when>
-			<xsl:when test="$maintenanceTypeCode = 'notPlanned'">
-				<xsl:text>Keine NachfÃ¼rhung geplant</xsl:text>
+			<xsl:when test="$constraintsTypeCode = 'patent'">
+				<xsl:text>Brevet</xsl:text>
 			</xsl:when>
-			<xsl:when test="$maintenanceTypeCode = 'unknown'">
-				<xsl:text>NachfÃ¼hrungsfrequenz ist unbekannt</xsl:text>	
-			</xsl:when>	
-			<xsl:otherwise>
-				<xsl:text>periodische NachfÃ¼hrung</xsl:text>
-			</xsl:otherwise>
-		</xsl:choose>
-	</xsl:template>
-
-
-	<xsl:template name="legislationTypeTemplateFR">
-		<xsl:param name="legislationTypeCode"/>
-		<xsl:choose>
-			<xsl:when test="$legislationTypeCode = 'bylawsPrivatLaw'">
-				<xsl:text>Statuts de droit privé</xsl:text>
+			<xsl:when test="$constraintsTypeCode = 'patentPending'">
+				<xsl:text>Brevet en instance</xsl:text>
 			</xsl:when>
-			<xsl:when test="$legislationTypeCode = 'bylawsPublicLaw'">
-				<xsl:text>Statuts de droit public</xsl:text>
+			<xsl:when test="$constraintsTypeCode = 'trademark'">
+				<xsl:text>Marque de com</xsl:text>
 			</xsl:when>
-			<xsl:when test="$legislationTypeCode = 'communalLaw'">
-				<xsl:text>Loi communale</xsl:text>
+			<xsl:when test="$constraintsTypeCode = 'licence'">
+				<xsl:text>Licence</xsl:text>
 			</xsl:when>
-			<xsl:when test="$legislationTypeCode = 'cantonalLaw'">
-				<xsl:text>Loi cantonale</xsl:text>
+			<xsl:when test="$constraintsTypeCode = 'intellectualPropertyRights'">
+				<xsl:text>Droit de propriété intellectuelle</xsl:text>
 			</xsl:when>
-			<xsl:when test="$legislationTypeCode = 'nationalLaw'">
-				<xsl:text>Loi nationale</xsl:text>
+			<xsl:when test="$constraintsTypeCode = 'restricted'">
+				<xsl:text>Restreint</xsl:text>
 			</xsl:when>
-			<xsl:when test="$legislationTypeCode = 'nationalDecree'">
-				<xsl:text>Décret national</xsl:text>
-			</xsl:when>
-			<xsl:when test="$legislationTypeCode = 'internationalObligation'">
-				<xsl:text>Obligation internationale</xsl:text>
-			</xsl:when>
-			<xsl:when test="$legislationTypeCode = 'otherLegalText'">
-				<xsl:text>Autre texte législatif</xsl:text>
+			<xsl:when test="$constraintsTypeCode = 'otherRestrictions'">
+				<xsl:text>Autres restrictions</xsl:text>
 			</xsl:when>
 			<xsl:otherwise>
-				<xsl:text>Inconnue</xsl:text>
+				<xsl:text>?</xsl:text>
 			</xsl:otherwise>
 		</xsl:choose>
-	</xsl:template>
-
-
-	<xsl:template name="legislationTypeTemplate">
-		<xsl:param name="legislationTypeCode"/>
-		<xsl:choose>
-			<xsl:when test="$legislationTypeCode = 'bylawsPrivatLaw'">
-				<xsl:text>Privat-rechtliche Statuten</xsl:text>
-			</xsl:when>
-			<xsl:when test="$legislationTypeCode = 'bylawsPublicLaw'">
-				<xsl:text>Ã–ffentlich-rechtliche Statuten</xsl:text>
-			</xsl:when>
-			<xsl:when test="$legislationTypeCode = 'communalLaw'">
-				<xsl:text>Kommunales Gesetz</xsl:text>
-			</xsl:when>
-			<xsl:when test="$legislationTypeCode = 'cantonalLaw'">
-				<xsl:text>Kantonales Gesetz</xsl:text>
-			</xsl:when>
-			<xsl:when test="$legislationTypeCode = 'nationalLaw'">
-				<xsl:text>Nationales Gesetz</xsl:text>
-			</xsl:when>
-			<xsl:when test="$legislationTypeCode = 'nationalDecree'">
-				<xsl:text>Nationale Verordnungl</xsl:text>
-			</xsl:when>
-			<xsl:when test="$legislationTypeCode = 'internationalObligation'">
-				<xsl:text>Internationales Abkommen</xsl:text>
-			</xsl:when>
-			<xsl:when test="$legislationTypeCode = 'otherLegalText'">
-				<xsl:text>Sonstiger Gesetzestext</xsl:text>
-			</xsl:when>
-			<xsl:otherwise>
-				<xsl:text>Unbekannt</xsl:text>
-			</xsl:otherwise>
-		</xsl:choose>
-	</xsl:template>
+	</xsl:template>				
 
 	<xsl:template name="languageISOCodeTemplateFR">
 		<xsl:param name="languageISOCode"/>
@@ -1248,157 +993,6 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 	</xsl:template>	
 
 
-	<xsl:template name="languageISOCodeTemplate">
-		<xsl:param name="languageISOCode"/>
-		<xsl:choose>
-			<xsl:when test="$languageISOCode = 'ger'">
-				<xsl:text>Deutsch</xsl:text>
-			</xsl:when>
-			<xsl:when test="$languageISOCode = 'fre'">
-				<xsl:text>FranzÃ¶sisch</xsl:text>
-			</xsl:when>
-			<xsl:when test="$languageISOCode = 'fra'">
-				<xsl:text>FranzÃ¶sisch</xsl:text>
-			</xsl:when>
-			<xsl:when test="$languageISOCode = 'eng'">
-				<xsl:text>Englisch</xsl:text>
-			</xsl:when>
-			<xsl:otherwise>
-				<xsl:text>Andere Sprache</xsl:text>
-			</xsl:otherwise>
-		</xsl:choose>
-	</xsl:template>	
-
-	<xsl:template name="SpatialRepresentationTypeTemplateFR">
-		<xsl:param name="SpatialRepresentationType"/>
-		<xsl:choose>
-			<xsl:when test="$SpatialRepresentationType = 'vector'">
-				<xsl:text>Données vectorielles</xsl:text>
-			</xsl:when>
-			<xsl:when test="$SpatialRepresentationType = 'grid'">
-				<xsl:text>Données tramées</xsl:text>
-			</xsl:when>
-			<xsl:when test="$SpatialRepresentationType = 'textTable'">
-				<xsl:text>Texte ou tableau</xsl:text>
-			</xsl:when>
-			<xsl:when test="$SpatialRepresentationType = 'tin'">
-				<xsl:text>Maillage triangulaire irrégulier</xsl:text>
-			</xsl:when>
-			<xsl:when test="$SpatialRepresentationType = 'stereoModel'">
-				<xsl:text>Vue tridimensionnelle résultant de deux clichés stéréoscopiques</xsl:text>
-			</xsl:when>
-			<xsl:when test="$SpatialRepresentationType = 'video'">
-				<xsl:text>Scène dâ€™un enregistrement vidéo</xsl:text>
-			</xsl:when>
-			<xsl:when test="$SpatialRepresentationType = 'paperMap'">
-				<xsl:text>Carte imprimée</xsl:text>
-			</xsl:when>
-			<xsl:otherwise>
-				<xsl:value-of select="$SpatialRepresentationType" />
-				<xsl:text> (Inconnue)</xsl:text>
-			</xsl:otherwise>
-		</xsl:choose>
-	</xsl:template>	
-
-	<xsl:template name="SpatialRepresentationTypeTemplate">
-		<xsl:param name="SpatialRepresentationType"/>
-		<xsl:choose>
-			<xsl:when test="$SpatialRepresentationType = 'vector'">
-				<xsl:text>Vektordaten</xsl:text>
-			</xsl:when>
-			<xsl:when test="$SpatialRepresentationType = 'grid'">
-				<xsl:text>Rasterdaten</xsl:text>
-			</xsl:when>
-			<xsl:when test="$SpatialRepresentationType = 'textTable'">
-				<xsl:text>Text oder Tabelle</xsl:text>
-			</xsl:when>
-			<xsl:when test="$SpatialRepresentationType = 'tin'">
-				<xsl:text>UnregelmÃ¤ssige Dreiecksvermaschung</xsl:text>
-			</xsl:when>
-			<xsl:when test="$SpatialRepresentationType = 'stereoModel'">
-				<xsl:text>3D-Sicht, entstanden aus 2 Stereobildern</xsl:text>
-			</xsl:when>
-			<xsl:when test="$SpatialRepresentationType = 'video'">
-				<xsl:text>Szene einer Videoaufnahme</xsl:text>
-			</xsl:when>
-			<xsl:when test="$SpatialRepresentationType = 'paperMap'">
-				<xsl:text>Gedruckte Karte</xsl:text>
-			</xsl:when>
-			<xsl:otherwise>
-				<xsl:value-of select="$SpatialRepresentationType" />
-				<xsl:text> (unbekanntes Format)</xsl:text>
-			</xsl:otherwise>
-		</xsl:choose>
-	</xsl:template>	
-
-	<xsl:template name="dataTypeTemplateFR">
-		<xsl:param name="dataType"/>
-		<xsl:choose>
-			<xsl:when test="$dataType = 'Pt'">
-				<xsl:text>Point</xsl:text>
-			</xsl:when>
-			<xsl:when test="$dataType = 'MR'">
-				<xsl:text>MosaÃ¯que de raster</xsl:text>
-			</xsl:when>
-			<xsl:when test="$dataType = 'CR'">
-				<xsl:text>Catalogue de raster</xsl:text>
-			</xsl:when>
-			<xsl:when test="$dataType = 'P'">
-				<xsl:text>Polygone</xsl:text>
-			</xsl:when>
-			<xsl:when test="$dataType = 'L'">
-				<xsl:text>Ligne</xsl:text>
-			</xsl:when>
-			<xsl:when test="$dataType = 'A'">
-				<xsl:text>Annotation</xsl:text>
-			</xsl:when>
-			<xsl:when test="$dataType = 'I'">
-				<xsl:text>Type inconnu</xsl:text>
-			</xsl:when>
-			<xsl:when test="$dataType = 'T'">
-				<xsl:text>Table</xsl:text>
-			</xsl:when>
-			<xsl:otherwise>
-				<xsl:text>Type inconnu</xsl:text>
-			</xsl:otherwise>
-		</xsl:choose>
-	</xsl:template>	
-
-
-	<xsl:template name="dataTypeTemplate">
-		<xsl:param name="dataType"/>
-		<xsl:choose>
-			<xsl:when test="$dataType = 'Pt'">
-				<xsl:text>Punkt</xsl:text>
-			</xsl:when>
-			<xsl:when test="$dataType = 'MR'">
-				<xsl:text>Rastermosaik</xsl:text>
-			</xsl:when>
-			<xsl:when test="$dataType = 'CR'">
-				<xsl:text>Rasterkatalog</xsl:text>
-			</xsl:when>
-			<xsl:when test="$dataType = 'P'">
-				<xsl:text>Polygon</xsl:text>
-			</xsl:when>
-			<xsl:when test="$dataType = 'L'">
-				<xsl:text>Linie</xsl:text>
-			</xsl:when>
-			<xsl:when test="$dataType = 'A'">
-				<xsl:text>Annotation</xsl:text>
-			</xsl:when>
-			<xsl:when test="$dataType = 'I'">
-				<xsl:text>Unbekannter Datentyp</xsl:text>
-			</xsl:when>
-			<xsl:when test="$dataType = 'T'">
-				<xsl:text>Tabelle</xsl:text>
-			</xsl:when>
-			<xsl:otherwise>
-				<xsl:text>Unbekannter Datentyp</xsl:text>
-			</xsl:otherwise>
-		</xsl:choose>
-	</xsl:template>	
-
-
 	<xsl:template name="dateTypeCodeTemplateFR">
 		<xsl:param name="dateTypeCode"/>
 		<xsl:choose>
@@ -1416,27 +1010,6 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>	
-
-
-	<xsl:template name="dateTypeCodeTemplate">
-		<xsl:param name="dateTypeCode"/>
-		<xsl:choose>
-			<xsl:when test="$dateTypeCode = 'publication'">
-				<xsl:text>Publikation</xsl:text>
-			</xsl:when>
-			<xsl:when test="$dateTypeCode = 'creation'">
-				<xsl:text>Erstellung</xsl:text>
-			</xsl:when>
-			<xsl:when test="$dateTypeCode = 'revision'">
-				<xsl:text>Ãœberarbeitung</xsl:text>
-			</xsl:when>
-			<xsl:otherwise>
-				<xsl:text>Unbekannter Datumstyp</xsl:text>
-			</xsl:otherwise>
-		</xsl:choose>
-	</xsl:template>			
-
-
 
 	<xsl:template name="RoleCodeTemplateFR">
 		<xsl:param name="RoleCode"/>
@@ -1486,116 +1059,7 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 		</xsl:choose>
 	</xsl:template>
 
-	<xsl:template name="RoleCodeTemplate">
-		<xsl:param name="RoleCode"/>
-		<xsl:choose>
-			<xsl:when test="$RoleCode = 'pointOfContact'">
-				<xsl:text>ZustÃ¤ndigkeit</xsl:text>
-			</xsl:when>
-			<xsl:when test="$RoleCode = 'resourceProvider'">
-				<xsl:text>Anbieter</xsl:text>
-			</xsl:when>
-			<xsl:when test="$RoleCode = 'custodian'">
-				<xsl:text>Verwalter</xsl:text>
-			</xsl:when>
-			<xsl:when test="$RoleCode = 'owner'">
-				<xsl:text>EigentÃ¼mer</xsl:text>
-			</xsl:when>
-			<xsl:when test="$RoleCode = 'user'">
-				<xsl:text>Anwender</xsl:text>
-			</xsl:when>
-			<xsl:when test="$RoleCode = 'distributor'">
-				<xsl:text>Vertreiber</xsl:text>
-			</xsl:when>
-			<xsl:when test="$RoleCode = 'originator'">
-				<xsl:text>Datenerzeuger</xsl:text>
-			</xsl:when>
-			<xsl:when test="$RoleCode = 'principalInvestigator'">
-				<xsl:text>Datenermittler</xsl:text>
-			</xsl:when>
-			<xsl:when test="$RoleCode = 'processor'">
-				<xsl:text>Bearbeiter</xsl:text>
-			</xsl:when>
-			<xsl:when test="$RoleCode = 'publisher'">
-				<xsl:text>Herausgeber</xsl:text>
-			</xsl:when>
-			<xsl:when test="$RoleCode = 'author'">
-				<xsl:text>Autor</xsl:text>
-			</xsl:when>
-			<xsl:when test="$RoleCode = 'editor'">
-				<xsl:text>Editor</xsl:text>
-			</xsl:when>
-			<xsl:when test="$RoleCode = 'partner'">
-				<xsl:text>Partner</xsl:text>
-			</xsl:when>
-			<xsl:otherwise>
-				<xsl:text>Undefiniert</xsl:text>
-			</xsl:otherwise>
-		</xsl:choose>
-	</xsl:template>
-
-	<xsl:template name="ProgressCodeTemplateFR">
-		<xsl:param name="ProgressCode"/>
-		<xsl:choose>
-			<xsl:when test="$ProgressCode = 'completed'">
-				<xsl:text>Production achevée</xsl:text>
-			</xsl:when>
-			<xsl:when test="$ProgressCode = 'historicalArchive'">
-				<xsl:text>Données archivées hors ligne</xsl:text>
-			</xsl:when>
-			<xsl:when test="$ProgressCode = 'obsolete'">
-				<xsl:text>Données ayant perdu toute actualité</xsl:text>
-			</xsl:when>
-			<xsl:when test="$ProgressCode = 'onGoing'">
-				<xsl:text>Données actualisées en continu</xsl:text>
-			</xsl:when>
-			<xsl:when test="$ProgressCode = 'planned'">
-				<xsl:text>Date de génération ou dâ€™actualisation prévue</xsl:text>
-			</xsl:when>
-			<xsl:when test="$ProgressCode = 'required'">
-				<xsl:text>Données à générer ou à actualiser</xsl:text>
-			</xsl:when>
-			<xsl:when test="$ProgressCode = 'underDevelopment'">
-				<xsl:text>Données en cours de traitement</xsl:text>
-			</xsl:when>													
-			<xsl:otherwise>
-				<xsl:text>Inconnue</xsl:text>
-			</xsl:otherwise>
-		</xsl:choose>
-	</xsl:template>
-
-
-	<xsl:template name="ProgressCodeTemplate">
-		<xsl:param name="ProgressCode"/>
-		<xsl:choose>
-			<xsl:when test="$ProgressCode = 'completed'">
-				<xsl:text>Produktion ist abgeschlossen</xsl:text>
-			</xsl:when>
-			<xsl:when test="$ProgressCode = 'historicalArchive'">
-				<xsl:text>Daten sind in offline archiviert</xsl:text>
-			</xsl:when>
-			<xsl:when test="$ProgressCode = 'obsolete'">
-				<xsl:text>Daten sind nicht mehr relevant</xsl:text>
-			</xsl:when>
-			<xsl:when test="$ProgressCode = 'onGoing'">
-				<xsl:text>Daten werden laufen aktualisiert</xsl:text>
-			</xsl:when>
-			<xsl:when test="$ProgressCode = 'planned'">
-				<xsl:text>Datum der Erstellung oder Aktualisierung ist geplant</xsl:text>
-			</xsl:when>
-			<xsl:when test="$ProgressCode = 'required'">
-				<xsl:text>Daten mÃ¼ssen erstellt oder aktualisiert werden</xsl:text>
-			</xsl:when>
-			<xsl:when test="$ProgressCode = 'underDevelopment'">
-				<xsl:text>Daten sind in Bearbeitung</xsl:text>
-			</xsl:when>													
-			<xsl:otherwise>
-				<xsl:text>Undefiniert</xsl:text>
-			</xsl:otherwise>
-		</xsl:choose>
-	</xsl:template>
-
-
+	
 
 
 	<!-- Template CategoryCode -->
@@ -1665,285 +1129,7 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 		</xsl:choose>
 	</xsl:template>
 
-	<xsl:template name="categoryCodeTemplate">
-		<xsl:param name="categoryCode"/>
-		<xsl:choose>
-			<xsl:when test="$categoryCode = 'farming'">
-				<xsl:text>Landwirtschaft</xsl:text>
-			</xsl:when>
-			<xsl:when test="$categoryCode = 'biota'">
-				<xsl:text>Biologie</xsl:text>	
-			</xsl:when>	
-			<xsl:when test="$categoryCode = 'bounderies'">
-				<xsl:text>Grenzen</xsl:text>	
-			</xsl:when>	
-			<xsl:when test="$categoryCode = 'climatologyMeteorologyAtmosphere'">
-				<xsl:text>Klimatologie / Meteorologie</xsl:text>	
-			</xsl:when>	
-			<xsl:when test="$categoryCode = 'economy'">
-				<xsl:text>Wirtschaft</xsl:text>	
-			</xsl:when>	
-			<xsl:when test="$categoryCode = 'elevation'">
-				<xsl:text>HÃ¶henangaben</xsl:text>	
-			</xsl:when>	
-			<xsl:when test="$categoryCode = 'environment'">
-				<xsl:text>Umwelt</xsl:text>	
-			</xsl:when>	
-			<xsl:when test="$categoryCode = 'geoscientificinformation'">
-				<xsl:text>Erdwissenschaft</xsl:text>	
-			</xsl:when>	
-			<xsl:when test="$categoryCode = 'health'">
-				<xsl:text>Gesundheit</xsl:text>	
-			</xsl:when>	
-			<xsl:when test="$categoryCode = 'imageryBaseMapsEarthCover'">
-				<xsl:text>Basiskarten; Bsp: Bodenbedeckung, Topographische Karten, Bilder, unklassifizierte Bilder, Anmerkungen, etc</xsl:text>	
-			</xsl:when>	
-			<xsl:when test="$categoryCode = 'intelligenceMilitary'">
-				<xsl:text>AufklÃ¤rung MilitÃ¤r</xsl:text>	
-			</xsl:when>	
-			<xsl:when test="$categoryCode = 'inlandWaters'">
-				<xsl:text>BinnengewÃ¤sser</xsl:text>	
-			</xsl:when>	
-			<xsl:when test="$categoryCode = 'location'">
-				<xsl:text>Ortsangaben</xsl:text>	
-			</xsl:when>			
-			<xsl:when test="$categoryCode = 'oceans'">
-				<xsl:text>Meere</xsl:text>	
-			</xsl:when>	
-			<xsl:when test="$categoryCode = 'planningCadastre'">
-				<xsl:text>Plaungskataster</xsl:text>	
-			</xsl:when>	
-			<xsl:when test="$categoryCode = 'society'">
-				<xsl:text>Gesellschaft</xsl:text>	
-			</xsl:when>	
-			<xsl:when test="$categoryCode = 'structure'">
-				<xsl:text>Konstruktion / Bauten</xsl:text>	
-			</xsl:when>	
-			<xsl:when test="$categoryCode = 'transportation'">
-				<xsl:text>Transport</xsl:text>	
-			</xsl:when>	
-			<xsl:when test="$categoryCode = 'utilitiesCommunication'">
-				<xsl:text>Strom / Ver- und Entsorgung</xsl:text>	
-			</xsl:when>	
-			<xsl:otherwise>
-				<xsl:text>Unbekannt</xsl:text>
-			</xsl:otherwise>
-		</xsl:choose>
-	</xsl:template>
-
-	<!-- SCOPECODE -->
-	<xsl:template name="ScopeCodeTemplate">
-		<xsl:param  name="ScopeCode" />
-		<xsl:choose>
-			<xsl:when test="$ScopeCode='attribut'">
-				<xsl:text>Attribut	</xsl:text>
-			</xsl:when>
-			<xsl:when test="$ScopeCode='attributeType'">
-				<xsl:text>Attributs-Typ</xsl:text>
-			</xsl:when>
-			<xsl:when test="$ScopeCode='collectionHardware'">
-				<xsl:text>Erfassungs-Hardware</xsl:text>
-			</xsl:when>
-			<xsl:when test="$ScopeCode='collectionSession'">
-				<xsl:text>Erfassungs-Session</xsl:text>
-			</xsl:when>
-			<xsl:when test="$ScopeCode='dataset'">
-				<xsl:text>Datenbestand</xsl:text>
-			</xsl:when>
-			<xsl:when test="$ScopeCode='series'">
-				<xsl:text>Serie</xsl:text>
-			</xsl:when>
-			<xsl:when test="$ScopeCode='nonGeographicDataset'">
-				<xsl:text>Nichtgeografischer Datenbestand</xsl:text>
-			</xsl:when>
-			<xsl:when test="$ScopeCode='dimensionGroup'">
-				<xsl:text>Dimensiongruppe</xsl:text>
-			</xsl:when>
-			<xsl:when test="$ScopeCode='feature'">
-				<xsl:text>Objekt</xsl:text>
-			</xsl:when>
-			<xsl:when test="$ScopeCode='featureType'">
-				<xsl:text>Objekttyp</xsl:text>
-			</xsl:when>
-			<xsl:when test="$ScopeCode='propertyType'">
-				<xsl:text>Merkmalstyp</xsl:text>
-			</xsl:when>
-			<xsl:when test="$ScopeCode='fieldSession'">
-				<xsl:text>Feldkampagne</xsl:text>
-			</xsl:when>
-			<xsl:when test="$ScopeCode='software'">
-				<xsl:text>Software</xsl:text>
-			</xsl:when>
-			<xsl:when test="$ScopeCode='service'">
-				<xsl:text>Dienstleitsung</xsl:text>
-			</xsl:when>
-			<xsl:when test="$ScopeCode='model'">
-				<xsl:text>Modell</xsl:text>
-			</xsl:when>
-			<xsl:when test="$ScopeCode='tile'">
-				<xsl:text>Kachel</xsl:text>
-			</xsl:when>
-			<xsl:when test="$ScopeCode='project'">
-				<xsl:text>Projekt</xsl:text>
-			</xsl:when>
-			<xsl:when test="$ScopeCode='stationSite'">
-				<xsl:text>Station</xsl:text>
-			</xsl:when>
-			<xsl:when test="$ScopeCode='publication'">
-				<xsl:text>Publikation</xsl:text>
-			</xsl:when>
-			<xsl:otherwise>
-				 			Kein definierter Metadatenbereich
-			</xsl:otherwise>
-		</xsl:choose>
-	</xsl:template>
-
-	<xsl:template name="ScopeCodeTemplateFR">
-		<xsl:param  name="ScopeCode" />
-		<xsl:choose>
-			<xsl:when test="$ScopeCode='attribut'">
-				<xsl:text>Attribut	</xsl:text>
-			</xsl:when>
-			<xsl:when test="$ScopeCode='attributeType'">
-				<xsl:text>Type d'attribut</xsl:text>
-			</xsl:when>
-			<xsl:when test="$ScopeCode='collectionHardware'">
-				<xsl:text>Equipement de saisie</xsl:text>
-			</xsl:when>
-			<xsl:when test="$ScopeCode='collectionSession'">
-				<xsl:text>Session de saisie</xsl:text>
-			</xsl:when>
-			<xsl:when test="$ScopeCode='dataset'">
-				<xsl:text>Jeu de données</xsl:text>
-			</xsl:when>
-			<xsl:when test="$ScopeCode='series'">
-				<xsl:text>Série</xsl:text>
-			</xsl:when>
-			<xsl:when test="$ScopeCode='nonGeographicDataset'">
-				<xsl:text>Jeu de données non géographique</xsl:text>
-			</xsl:when>
-			<xsl:when test="$ScopeCode='dimensionGroup'">
-				<xsl:text>Groupe de dimension</xsl:text>
-			</xsl:when>
-			<xsl:when test="$ScopeCode='feature'">
-				<xsl:text>Objet</xsl:text>
-			</xsl:when>
-			<xsl:when test="$ScopeCode='featureType'">
-				<xsl:text>Type d'objet</xsl:text>
-			</xsl:when>
-			<xsl:when test="$ScopeCode='propertyType'">
-				<xsl:text>Type de propriété</xsl:text>
-			</xsl:when>
-			<xsl:when test="$ScopeCode='fieldSession'">
-				<xsl:text>Campagne de terrain</xsl:text>
-			</xsl:when>
-			<xsl:when test="$ScopeCode='software'">
-				<xsl:text>Logiciel</xsl:text>
-			</xsl:when>
-			<xsl:when test="$ScopeCode='service'">
-				<xsl:text>Service</xsl:text>
-			</xsl:when>
-			<xsl:when test="$ScopeCode='model'">
-				<xsl:text>Modèle</xsl:text>
-			</xsl:when>
-			<xsl:when test="$ScopeCode='tile'">
-				<xsl:text>Elément dâ€™une mosaÃ¯que</xsl:text>
-			</xsl:when>
-			<xsl:when test="$ScopeCode='project'">
-				<xsl:text>Projet</xsl:text>
-			</xsl:when>
-			<xsl:when test="$ScopeCode='stationSite'">
-				<xsl:text>Station</xsl:text>
-			</xsl:when>
-			<xsl:when test="$ScopeCode='publication'">
-				<xsl:text>Publication</xsl:text>
-			</xsl:when>
-			<xsl:otherwise>
-				 			Inconnu
-			</xsl:otherwise>
-		</xsl:choose>
-	</xsl:template>
-
-	<!-- Relationen in einer Tabelle darstellen -->
-	<xsl:template name="relationshipTable">
-		<!-- Variable Declaration -->
-		<xsl:variable name="logo">
-			<xsl:value-of select="./sdi:Metadata/sdi:objecttype/@code" />
-		</xsl:variable>
-
-		<table class="alternative">
-			<tr>
-				<th colspan="2" scope="col">In Beziehung stehende Geoinformationen</th>
-
-			</tr>
-			
-					<xsl:for-each select="./sdi:Metadata/sdi:links/sdi:child">
-						<tr>
-							<td width="30%">
-								ZugehÃ¶rige Ebene: &space;
-							</td>
-							<td>
-								<xsl:call-template name="createLinkRelation">
-								</xsl:call-template>			  								
-							</td>
-						</tr>
-					</xsl:for-each>
-				
-		</table>
-	</xsl:template>
-
-
-	<!-- Relationen in einer Tabelle darstellen (FranzÃ¶sische Version) -->
-	<xsl:template name="relationshipTableFR">
-		<!-- Variable Declaration -->
-		<xsl:variable name="logo">
-			<xsl:value-of select="./sdi:Metadata/sdi:objecttype/@code" />
-		</xsl:variable>
-
-		<table class="alternative">
-			<tr>
-				<th colspan="2" scope="col">Géoinformations en relation</th>
-			</tr>
-			
-					<xsl:for-each select="./sdi:Metadata/sdi:links/sdi:child">
-						<tr>
-							<td width="30%">
-								
-			  								Couche représentée: &space;
-								
-							</td>
-							<td>
-								<xsl:call-template name="createLinkRelationFR">
-								</xsl:call-template>			  								
-							</td>
-						</tr>
-					</xsl:for-each>
-			
-		</table>
-	</xsl:template>
-
-
-
-
-	<!-- createLinkRelation -->
-
-	<xsl:template name="createLinkRelation">
-
-		<a>
-			<xsl:attribute name="title">Detaillierte Informationen zu: <xsl:value-of disable-output-escaping="yes" select="@object_name" />
-			</xsl:attribute>
-			<xsl:attribute name="class">intern</xsl:attribute>
-			<xsl:attribute name="href">index.php?tmpl=index&amp;option=com_easysdi_catalog&amp;Itemid=2&amp;context=geocatalog&amp;toolbar=1&amp;task=showMetadata&amp;type=complete&amp;id=<xsl:value-of select="@metadata_guid" />
-			</xsl:attribute>
-			<xsl:value-of disable-output-escaping="yes" select="@object_name" />
-			<xsl:text>: Detaillierte Informationen</xsl:text>
-		</a>
-
-	</xsl:template>
-
-
 	<xsl:template name="createLinkRelationFR">
-
 		<a>
 			<xsl:attribute name="title">Informations détailliées sur: <xsl:value-of disable-output-escaping="yes" select="@object_name" />
 			</xsl:attribute>
@@ -1953,31 +1139,9 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 			<xsl:value-of disable-output-escaping="yes" select="@object_name" />
 			<xsl:text>: Informations détailliées</xsl:text>
 		</a>
-
 	</xsl:template>
-
-	<!-- Bildausschnitt -->
-	<xsl:template name="bildausschnitt">
-		<xsl:variable name="bildquelle">
-			<xsl:value-of  select="./gmd:MD_Metadata/gmd:contentInfo/gmd:MD_FeatureCatalogueDescription/bee:section/gco:CharacterString"/>
-		</xsl:variable>
-		<xsl:if test="$bildquelle!=''">
-
-			<p class="metatada-imgcontainer">
-				<xsl:element name="img">
-					<xsl:attribute name="class">metadata-image</xsl:attribute>
-					<xsl:attribute name="src">
-						<xsl:value-of select="$bildquelle" />
-					</xsl:attribute>
-				</xsl:element>
-			</p>
-		</xsl:if>
-	</xsl:template>
-
 
 	<!-- string replacement -->
-
-
 	<xsl:template name="string-replace-all">
 		<xsl:param name="text" />
 		<xsl:param name="replace" />
@@ -1998,64 +1162,7 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 		</xsl:choose>
 	</xsl:template>
 
-	<!-- ADRESSE TEMPLATE -->
-	<xsl:template name="addressTemplate">
-		<td width="30%">
-			<xsl:call-template name="RoleCodeTemplate">
-				<xsl:with-param name="RoleCode" select="gmd:role/gmd:CI_RoleCode/@codeListValue" />
-			</xsl:call-template>:
-		</td>
-		<td>
-			<xsl:if test="gmd:CI_ResponsibleParty/gmd:organisationName/gco:CharacterString != ''">
-				<xsl:value-of select="gmd:CI_ResponsibleParty/gmd:organisationName/gco:CharacterString" />
-				<br />
-			</xsl:if>
-			<xsl:if test="gmd:CI_ResponsibleParty/gmd:address/gmd:addressLine/gco:CharacterString != ''">
-				<xsl:value-of select="gmd:CI_ResponsibleParty/gmd:address/gmd:addressLine/gco:CharacterString" />
-				<br />
-			</xsl:if>
-			<xsl:if test="gmd:CI_ResponsibleParty/gmd:address/gmd:postBox/gco:Decimal != ''">
-				  		Postfach <xsl:value-of select="gmd:CI_ResponsibleParty/gmd:address/gmd:postBox/gco:Decimal" />
-				<br />
-			</xsl:if>
-			<xsl:if test="gmd:CI_ResponsibleParty/gmd:address/gmd:streetName/gco:CharacterString != ''">
-				<xsl:value-of select="gmd:CI_ResponsibleParty/gmd:address/gmd:streetName/gco:CharacterString" />
-				<xsl:text>, </xsl:text>
-				<xsl:value-of select="gmd:CI_ResponsibleParty/gmd:address/gmd:postalCode/gco:CharacterString" />
-				<xsl:value-of select="gmd:CI_ResponsibleParty/gmd:address/gmd:city/gco:CharacterString" />
-				<br />
-			</xsl:if>
-			<xsl:if test="gmd:CI_ResponsibleParty/gmd:individualFirstName/gco:CharacterString != ''">
-				<xsl:value-of select="gmd:CI_ResponsibleParty/gmd:individualFirstName/gco:CharacterString" />
-				<xsl:text/>
-				<xsl:value-of select="gmd:CI_ResponsibleParty/gmd:individualLastName/gco:CharacterString" />
-				<br />
-			</xsl:if>
-			<xsl:if test="gmd:CI_ResponsibleParty/gmd:electronicalMailAddress/gco:CharacterString != ''">
-				<xsl:value-of select="gmd:CI_ResponsibleParty/gmd:electronicalMailAddress/gco:CharacterString" />
-				<br />
-			</xsl:if>
-			<xsl:for-each select="gmd:CI_ResponsibleParty/gmd:phone">
-				<xsl:if test="gmd:CI_Telephone[gmd:numberType/gmd:CI_NumberTypeCode/@codeListValue='directNumber']/gmd:number/gco:CharacterString != ''">
-					    	 		Direktwahl: <xsl:value-of select="gmd:CI_Telephone[gmd:numberType/gmd:CI_NumberTypeCode/@codeListValue='directNumber']/gmd:number/gco:CharacterString" />
-					<br />
-				</xsl:if>
-				<xsl:if test="gmd:CI_Telephone[gmd:numberType/gmd:CI_NumberTypeCode/@codeListValue='mainNumber']/gmd:number/gco:CharacterString != ''">
-					    	 		Hauptnummer: <xsl:value-of select="gmd:CI_Telephone[gmd:numberType/gmd:CI_NumberTypeCode/@codeListValue='mainNumber']/gmd:number/gco:CharacterString" />
-					<br />
-				</xsl:if>
-				<xsl:if test="gmd:CI_Telephone[gmd:numberType/gmd:CI_NumberTypeCode/@codeListValue='facsimile']/gmd:number/gco:CharacterString != ''">
-					    	 		Fax: <xsl:value-of select="gmd:CI_Telephone[gmd:numberType/gmd:CI_NumberTypeCode/@codeListValue='facsimile']/gmd:number/gco:CharacterString" />
-					<br />
-				</xsl:if>
-			</xsl:for-each>
-
-
-		</td>
-
-	</xsl:template>
-
-
+	
 	<!-- ADRESSE TEMPLATE FR -->
 	<xsl:template name="addressTemplateFR">
 		<td width="30%">
@@ -2107,13 +1214,6 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 					<br />
 				</xsl:if>
 			</xsl:for-each>
-
-
 		</td>
-
 	</xsl:template>
-
-
-
-
 </xsl:stylesheet>

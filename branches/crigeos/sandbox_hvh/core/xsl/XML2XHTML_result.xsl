@@ -20,6 +20,15 @@
 		<xsl:variable name="logo">
 			<xsl:value-of select="./sdi:Metadata/sdi:objecttype/@code" />
 		</xsl:variable>
+		<xsl:variable name="account-logo">
+			<xsl:value-of select="./sdi:Metadata/sdi:account/sdi:logo" />
+		</xsl:variable>
+		<xsl:variable name="account-logo-width">
+			<xsl:value-of select="./sdi:Metadata/sdi:account/sdi:logo/@width" />
+		</xsl:variable>
+		<xsl:variable name="account-logo-height">
+			<xsl:value-of select="./sdi:Metadata/sdi:account/sdi:logo/@height" />
+		</xsl:variable>
 		<xsl:variable name="language">
 			<xsl:value-of select="./sdi:Metadata/@user_lang" />
 		</xsl:variable>
@@ -70,6 +79,9 @@
 		<xsl:variable name="downloadProduct">
 			<xsl:value-of select="./sdi:Metadata/sdi:action/sdi:downloadProduct/sdi:link" />
 		</xsl:variable>
+		<xsl:variable name="downloadProductRight">
+			<xsl:value-of select="./sdi:Metadata/sdi:action/sdi:downloadProductRight/sdi:tooltip" />
+		</xsl:variable>
 		<xsl:variable name="previewProduct">
 			<xsl:value-of select="./sdi:Metadata/sdi:action/sdi:previewProduct/sdi:link" />
 		</xsl:variable>
@@ -82,7 +94,13 @@
 			<div class="metadata-result">
 				<!-- Logo of the different geoproducts -->
 				<div class="metadata-logo">
-					<div><xsl:attribute name="class">metadata-logo-0</xsl:attribute></div>
+					<div>
+						<img  alt="" title="">
+							<xsl:attribute name="src"><xsl:value-of select="$account-logo" /></xsl:attribute>	
+							<xsl:attribute name="width"><xsl:value-of select="$account-logo-width" /></xsl:attribute>	
+							<xsl:attribute name="height"><xsl:value-of select="$account-logo-height" /></xsl:attribute>	
+						</img>
+					</div>
 					<h4 class="hidden">
 						<xsl:value-of select="./sdi:Metadata/sdi:objecttype" />
 					</h4>
@@ -180,9 +198,9 @@
 										<a>
 											<xsl:attribute name="title">des informations détaillées : <xsl:value-of disable-output-escaping="yes" select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString" />
 											</xsl:attribute>
-											<xsl:attribute name="class">modal</xsl:attribute>	
-											<xsl:attribute name="rel">{handler:'iframe',size:{x:650,y:600}}</xsl:attribute>
-											<xsl:attribute name="href">index.php?tmpl=component&amp;option=com_easysdi_catalog&amp;Itemid=2&amp;context=geocatalog&amp;toolbar=1&amp;task=showMetadata&amp;type=complete&amp;id=<xsl:value-of select="./gmd:MD_Metadata/gmd:fileIdentifier/gco:CharacterString" /></xsl:attribute>
+											<xsl:attribute name="class">link</xsl:attribute>	
+											
+											<xsl:attribute name="href">index.php?option=com_easysdi_catalog&amp;Itemid=2&amp;context=geocatalog&amp;toolbar=1&amp;task=showMetadata&amp;type=complete&amp;id=<xsl:value-of select="./gmd:MD_Metadata/gmd:fileIdentifier/gco:CharacterString" /></xsl:attribute>
 											<xsl:text>Details</xsl:text>
 										</a>
 									</span>
@@ -205,18 +223,14 @@
 														<xsl:text> Ko)</xsl:text>
 												</span>
 										</xsl:when >
-										<xsl:otherwise>													
-											<span class="metadata-link">
-												<a>
-													<xsl:attribute name="title">Accès à la commande</xsl:attribute>
-													<xsl:attribute name="class">modal</xsl:attribute>
-													<xsl:attribute name="href">
-														<xsl:value-of select="$orderproduct" />
-													</xsl:attribute>
-													<xsl:text>Commander</xsl:text>
-												</a>
-											</span>													
-										</xsl:otherwise >
+										<xsl:when test="string-length($downloadProductRight) > 0">
+												<span class="metadata-link">
+													<div class="link-off">
+														<xsl:attribute name="title">Pour accéder au téléchargement, merci de contacter : <xsl:value-of select="$downloadProductRight" /></xsl:attribute>
+														<xsl:text>Téléchargement</xsl:text>
+													</div>
+												</span>
+										</xsl:when >
 									</xsl:choose>
 									<xsl:if test="string-length($previewProduct) > 0">
 										<span class="metadata-link">
@@ -236,8 +250,7 @@
 											<xsl:attribute name="title">des informations détaillées : 
 												<xsl:value-of disable-output-escaping="yes" select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString" />
 											</xsl:attribute>
-											<xsl:attribute name="class">modal</xsl:attribute>	
-														<xsl:attribute name="rel">{handler:'iframe',size:{x:650,y:600}}</xsl:attribute>
+											<xsl:attribute name="class">link</xsl:attribute>	
 											<xsl:attribute name="href">index.php?tmpl=index&amp;option=com_easysdi_catalog&amp;Itemid=2&amp;context=geocatalog&amp;toolbar=1&amp;task=showMetadata&amp;type=complete&amp;id=
 												<xsl:value-of select="./gmd:MD_Metadata/gmd:fileIdentifier/gco:CharacterString" />
 											</xsl:attribute>
@@ -264,18 +277,15 @@
 													</a>
 												</span>
 										</xsl:when >
-										<xsl:otherwise>													
-											<span class="metadata-link">
-												<a>
-													<xsl:attribute name="title">Go to the shop</xsl:attribute>
-													<xsl:attribute name="class">icon default</xsl:attribute>
-													<xsl:attribute name="href">
-														<xsl:value-of select="$orderproduct" />
-													</xsl:attribute>
-													<xsl:text>Shop</xsl:text>
-												</a>
-											</span>													
-										</xsl:otherwise >
+										<xsl:when test="string-length($downloadProductRight) > 0">
+												<span class="metadata-link">
+													<div class="link-off">
+														<xsl:attribute name="title">Pour accéder au téléchargement, merci de contacter : <xsl:value-of select="$downloadProductRight" /></xsl:attribute>
+														<xsl:text>Téléchargement</xsl:text>
+													</div>
+												</span>
+										</xsl:when >
+										
 									</xsl:choose>
 									<xsl:if test="string-length($previewProduct) > 0">
 										<span class="metadata-link">
