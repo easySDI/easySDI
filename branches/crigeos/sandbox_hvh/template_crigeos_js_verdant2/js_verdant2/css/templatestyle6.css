@@ -434,6 +434,11 @@ div.userBlock {background: #173444 url(../images/style1/gradients.png) repeat-x 
 	font-size:110%;
 }
 
+/*Metadata details page*/
+.metadata-details   .metadata-abstract {
+	font-size:100%;
+}
+
 .metadata-details .metadata-header .metadata-title h2{
 	font-size:110%;
 }
