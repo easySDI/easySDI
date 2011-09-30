@@ -126,144 +126,175 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 				</xsl:otherwise>
 			</xsl:choose>
 		</xsl:variable>
+	<xsl:variable name="datetimepublished">
+			<xsl:value-of select="./sdi:Metadata/sdi:object/@metadata_published" />
+		</xsl:variable>
+		<xsl:variable name="datepublished">
+			<xsl:choose>
+				<xsl:when test="$datetimepublished !='0000-00-00T00:00:00'">
+					<xsl:value-of select="date:day-in-month($datetimepublished)"/>
+					<xsl:text>.</xsl:text>
+					<xsl:value-of select="date:month-in-year($datetimepublished)"/>
+					<xsl:text>.</xsl:text>
+					<xsl:value-of select="date:year($datetimepublished)"/>
+					<xsl:text/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:text/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
 
 		<!-- Helpers -->
 		<xsl:variable name="smallcase" select="'abcdefghijklmnopqrstuvwxyz'" />
 		<xsl:variable name="uppercase" select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ'" />
 
 		<!-- Title of the metadata -->
-		<div class="metadata-details">	
-		
-		<a href="javascript:history.back()" class="intern icon back">Retour à la page précédente</a>
-		
-					<div class="metadata-header">
-						<div class="metadata-links">
-							<xsl:if test="string-length($downloadProduct) > 0">
-									<span class="metadata-link">
-										<a>
-											<xsl:attribute name="class">modal</xsl:attribute>	
-											<xsl:attribute name="rel">{handler:'iframe',size:{x:650,y:600}}</xsl:attribute>
-											<xsl:attribute name="href">
-												<xsl:value-of  select="$downloadProduct" />
-											</xsl:attribute>
-											<xsl:text>Télécharger </xsl:text>
-										</a>
-										<xsl:text> (</xsl:text>
-										<xsl:value-of select="translate($filetype,$smallcase,$uppercase)" />
-										<xsl:text>, </xsl:text>
-										<xsl:value-of select="$filesize" />
-										<xsl:text> Ko)</xsl:text>
-									</span>
-							</xsl:if >
-							<xsl:if test="string-length($previewProduct) > 0">
-								<span class="metadata-link">
-									<a>
-										<xsl:attribute name="class">modal</xsl:attribute>	
-										<xsl:attribute name="rel">{handler:'iframe',size:{x:650,y:600}}</xsl:attribute>
-										<xsl:attribute name="href">
-											<xsl:value-of  select="$previewProduct" />
-										</xsl:attribute>
-										<xsl:text>Prévisualiser</xsl:text>
-									</a>
-								</span>
-							</xsl:if>	
-							
-							<span class="metadata-link">
-								<a>
-									<xsl:attribute name="class">modal</xsl:attribute>
-									<xsl:attribute name="href">
-										<xsl:value-of select="$print" />
-									</xsl:attribute>Imprimer</a>
-							</span>
-							<span class="metadata-link">
-								<a>
-									<xsl:attribute name="class">modal</xsl:attribute>
-									<xsl:attribute name="href">
-										<xsl:value-of select="$exportXML" />
-									</xsl:attribute>XML</a>
-							</span>
-							<span class="metadata-link">
-								<a>
-									<xsl:attribute name="class">modal</xsl:attribute>
-									<xsl:attribute name="href">
-										<xsl:value-of select="$downloadPDF" />
-									</xsl:attribute>PDF</a>
-							</span>
-						</div>
-					</div>
+		<div class="metadata-sheet">	
+		<div class="back-metadata-result">
+			<a class="back" href="javascript:history.back()" >Retour à la page précédente</a>
+		</div>
 					
-					<br />
 					
+					
+			<div class="metadata-details">			
 					<div class="metadata-title">
 						<h1 class="details-title">
 							<xsl:value-of select="$title" />
 						</h1>
 					</div>
+									
+					<hr></hr>
 					
-					<div class="metadata-abstract">
-						<xsl:choose>
-							<xsl:when test="string-length($abstract-fr) > 0">
-								<xsl:value-of  select="substring($abstract-fr,1,200)" />				
-							</xsl:when >
-							<xsl:otherwise>			
-								<xsl:value-of  select="substring($abstract,1,200)" />										
-							</xsl:otherwise >
-						</xsl:choose>
-					</div>
-						
-					<div class="metadata-resume">
-						<table class="metadata-table">
-							<tr>
-								<td width="30%">Type:</td>
-								<td><xsl:value-of select="$logo" /></td>
-							</tr>
-							<tr>
-								<td width="30%">Code:</td>
-								<td>
-									<xsl:value-of select="./sdi:Metadata/sdi:object/@object_name" />
-								</td>
-							</tr>
-							<tr>
-								<td width="30%">Statut:</td>
-								<td>
-									<xsl:call-template name="ProgressCodeTemplateFR">
-										<xsl:with-param name="ProgressCode" select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:status/gmd:MD_ProgressCode/@codeListValue" />
-									</xsl:call-template>
-								</td>
-							</tr>
-							<tr>
-								<td width="30%">Création:</td>
-								<td>
-									<xsl:value-of select="$datecreated" />
-								</td>
-							</tr>
-							<tr>
-								<td width="30%">Mise à jour:</td>
-								<td>
-									<xsl:value-of select="$dateupdated" />
-								</td>
-							</tr>
-							<tr>
-								<td width="30%">Publication:</td>
-								<td>
-									<xsl:value-of select="$datepublication" />
-								</td>
-							</tr>
-						</table>
-					</div>
-					
+					<table class="metadata-header">
+						<tr>
+							<td >
+								<div class="metadata-abstract">
+									<p>
+									<xsl:choose>
+										<xsl:when test="string-length($abstract-fr) > 0">
+											<xsl:value-of  select="substring($abstract-fr,1,200)" />				
+										</xsl:when >
+										<xsl:otherwise>			
+											<xsl:value-of  select="substring($abstract,1,200)" />										
+										</xsl:otherwise >
+									</xsl:choose>
+									</p>
+								</div>
+							</td>
+							<td rowspan="2">
+									<div class="metadata-links">
+										<xsl:if test="string-length($downloadProduct) > 0">
+												<span class="metadata-link">
+													<a>
+														<xsl:attribute name="class">modal</xsl:attribute>	
+														<xsl:attribute name="rel">{handler:'iframe',size:{x:650,y:600}}</xsl:attribute>
+														<xsl:attribute name="href">
+															<xsl:value-of  select="$downloadProduct" />
+														</xsl:attribute>
+														<xsl:text>Télécharger </xsl:text>
+													</a>
+													<xsl:text> (</xsl:text>
+													<xsl:value-of select="translate($filetype,$smallcase,$uppercase)" />
+													<xsl:text>, </xsl:text>
+													<xsl:value-of select="$filesize" />
+													<xsl:text> Ko)</xsl:text>
+												</span>
+												<p></p>
+										</xsl:if >
+										<xsl:if test="string-length($previewProduct) > 0">
+											<span class="metadata-link">
+												<a>
+													<xsl:attribute name="class">modal</xsl:attribute>	
+													<xsl:attribute name="rel">{handler:'iframe',size:{x:650,y:600}}</xsl:attribute>
+													<xsl:attribute name="href">
+														<xsl:value-of  select="$previewProduct" />
+													</xsl:attribute>
+													<xsl:text>Prévisualiser</xsl:text>
+												</a>
+											</span>
+											<p></p>
+										</xsl:if>	
+										
+										<span class="metadata-link">
+											<a>
+												<xsl:attribute name="class">modal</xsl:attribute>
+												<xsl:attribute name="href">
+													<xsl:value-of select="$print" />
+												</xsl:attribute>
+												<xsl:text>Imprimer</xsl:text></a>
+										</span>
+										<p></p>
+										<span class="metadata-link">
+											<a>
+												<xsl:attribute name="class">modal</xsl:attribute>
+												<xsl:attribute name="href">
+													<xsl:value-of select="$exportXML" />
+												</xsl:attribute><xsl:text>XML</xsl:text></a>
+										</span>
+										<p></p>
+										<span class="metadata-link">
+											<a>
+												<xsl:attribute name="class">modal</xsl:attribute>
+												<xsl:attribute name="href">
+													<xsl:value-of select="$downloadPDF" />
+												</xsl:attribute><xsl:text>PDF</xsl:text></a>
+										</span>
+										<p></p>
+									</div>
+								
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<div class="metadata-resume">
+									<table class="metadata-table-short">
+										<tr>
+											<td width="30%">Type:</td>
+											<td><xsl:value-of select="$logo" /></td>
+										</tr>
+										<tr>
+											<td width="30%">Code:</td>
+											<td>
+												<xsl:value-of select="./sdi:Metadata/sdi:object/@object_name" />
+											</td>
+										</tr>
+										<tr>
+											<td width="30%">Création:</td>
+											<td>
+												<xsl:value-of select="$datecreated" />
+											</td>
+										</tr>
+										<tr>
+											<td width="30%">Mise à jour:</td>
+											<td>
+												<xsl:value-of select="$dateupdated" />
+											</td>
+										</tr>
+										<tr>
+											<td width="30%">Publication:</td>
+											<td>
+												<xsl:value-of select="$datetimepublished" />
+											</td>
+										</tr>
+									</table>
+								</div>
+							</td>
+							
+							
+						</tr>
+					</table>
 					
 						
 					<div class="metadata-content">	
-						<table class="metadata-table">
-							
+						<table  class="metadata-table">
 							<tr>
-								<th colspan="2" scope="col">Informations</th>
+								<th class="metadata-table-th" colspan="2" scope="col">Informations principales</th>
 							</tr>
 							
 							<tr>
-								<td width="30%">Thématique:</td>
-								<td>		
+								<td class="key" width="30%">Thématique:</td>
+								<td class="value">		
 									<xsl:for-each select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:topicCategory">
 										<xsl:call-template name="categoryCodeTemplateFR">
 											<xsl:with-param name="categoryCode" select="gmd:MD_topicCategoryCode" />
@@ -272,8 +303,8 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 								</td>
 							</tr>
 							<tr>
-								<td width="30%">Mots-clés:</td>
-								<td>
+								<td class="key" width="30%">Mots-clés:</td>
+								<td class="value">
 									<xsl:for-each select="./gmd:MD_Metadata/gmd:descriptiveKeywords/gmd:MD_Keywords/gmd:keyword">
 										<xsl:value-of disable-output-escaping="yes" select="gco:CharacterString"/>, 
 									</xsl:for-each>
@@ -347,10 +378,11 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 									</xsl:for-each>
 								</td>
 							</tr>
+							</table>
 							
-
+						<table class="metadata-table">
 							<tr>
-								<th colspan="2" scope="col">Maintenance</th>
+								<th class="metadata-table-th" colspan="2" scope="col">Maintenance</th>
 							</tr>
 							<tr>
 								<td width="30%">Fréquence de mise à jour:</td>
@@ -378,9 +410,11 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 									<xsl:value-of  select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceMaintenance/gmd:MD_MaintenanceInformation/gmd:maintenanceNote/gco:CharacterString"/>
 								</td>
 							</tr>
-							
+						</table>
+						
+						<table class="metadata-table">
 							<tr>
-								<th colspan="2" scope="col">Publication de la donnée</th>
+								<th class="metadata-table-th" colspan="2" scope="col">Publication de la donnée</th>
 							</tr>
 							<tr>
 								<td width="30%">Origine de la donnée:</td>
@@ -415,9 +449,11 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 									</xsl:for-each>
 								</td>
 							</tr>
+						</table>
 							
+						<table class="metadata-table">
 							<tr>
-								<th colspan="2" scope="col">Qualité de la donnée</th>
+								<th class="metadata-table-th" colspan="2" scope="col">Qualité de la donnée</th>
 							</tr>
 							
 							<xsl:for-each select="./gmd:MD_Metadata/gmd:dataQualityInfo">
@@ -458,8 +494,12 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 							</tr>
 							</xsl:for-each>
 							
+						</table>
+						
+						
+						<table class="metadata-table">
 							<tr>
-								<th colspan="2" scope="col">Contraintes</th>
+								<th class="metadata-table-th" colspan="2" scope="col">Contraintes</th>
 							</tr>
 							<xsl:for-each select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceConstraints">
 							<tr>
@@ -492,18 +532,13 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 							</tr>
 							</xsl:for-each>
 						</table>
-					</div>
-					
-					
-					
-					<div class="metadata-content">	
+						
 						<table class="metadata-table">
-							<tr>
-								<th colspan="2" scope="col">Contacts</th>
-							</tr>
-
 							<xsl:choose>
 								<xsl:when test="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact != ''">
+									<tr>
+										<th class="metadata-table-th" colspan="2" scope="col">Contacts</th>
+									</tr>
 									<xsl:for-each select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact">
 									<tr>
 										<xsl:call-template name="addressTemplateFR">
@@ -511,20 +546,11 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 									</tr>
 									</xsl:for-each>	
 								</xsl:when>
-								<xsl:otherwise>
-									<tr><td width="30%"></td><td></td></tr>
-								</xsl:otherwise>
 							</xsl:choose>
-							
 						</table>
-					</div>
-
-
-				
-					<div class="metadata-content">
 						<table class="metadata-table">
 							<tr>
-								<th colspan="2" scope="col">Informations système</th>
+								<th class="metadata-table-th" colspan="2" scope="col">Informations système</th>
 							</tr>
 							<xsl:for-each select="./gmd:MD_Metadata/gmd:contact">
 								<tr>
@@ -585,6 +611,9 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 							</xsl:for-each>
 						</table>
 					</div>
+					
+				</div>
+				
 		</div>	 
 
 
