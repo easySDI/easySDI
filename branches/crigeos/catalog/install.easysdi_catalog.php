@@ -1501,11 +1501,7 @@ function com_install(){
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}
 			
-			$query = "INSERT INTO `#__sdi_searchcriteria` (`guid`, `code`, `name`, `label`, `created`, `createdby`, `criteriatype_id`) VALUES
-				  ('".helper_easysdi::getUniqueId()."', 'isDownloadable', 'isDownloadable', 'CATALOG_SEARCHCRITERIA_SYSTEMFIELD_ISDOWNLOADABLE', '".date('Y-m-d H:i:s')."', ".$user_id.", 1), 
-				  ('".helper_easysdi::getUniqueId()."', 'definedBoundary', 'definedBoundary', 'CATALOG_SEARCHCRITERIA_SYSTEMFIELD_DEFINEDBOUNDARY', '".date('Y-m-d H:i:s')."', ".$user_id.", 1)";
-			
-			
+					
 			$query = "INSERT INTO `#__sdi_searchcriteria` (`guid`, `code`, `name`, `label`, `created`, `createdby`, `criteriatype_id`) VALUES
 				  ('".helper_easysdi::getUniqueId()."', 'definedBoundary', 'definedBoundary', 'CATALOG_SEARCHCRITERIA_SYSTEMFIELD_DEFINEDBOUNDARY', '".date('Y-m-d H:i:s')."', ".$user_id.", 1)";
 		
@@ -1518,6 +1514,30 @@ function com_install(){
 			}
 		
 			$version="2.0.4";
+			$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='CATALOG'";
+			$db->setQuery( $query);
+			if (!$db->query())
+			{
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+		}
+		if($version == "2.0.4")
+		{
+				
+			
+			$query = "INSERT INTO `#__sdi_searchcriteria` (`guid`, `code`, `name`, `label`, `created`, `createdby`, `criteriatype_id`) VALUES
+				  ('".helper_easysdi::getUniqueId()."', 'isDownloadable', 'isDownloadable', 'CATALOG_SEARCHCRITERIA_SYSTEMFIELD_ISDOWNLOADABLE', '".date('Y-m-d H:i:s')."', ".$user_id.", 1)";
+			
+							
+			$db->setQuery( $query);
+			
+			if (!$db->query())
+			{
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+				return false;
+			}
+		
+			$version="2.0.5";
 			$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='CATALOG'";
 			$db->setQuery( $query);
 			if (!$db->query())

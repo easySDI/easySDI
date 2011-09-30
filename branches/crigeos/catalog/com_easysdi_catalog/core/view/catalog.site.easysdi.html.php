@@ -265,7 +265,7 @@ class HTML_catalog{
 								<select name="<?php echo 'systemfilter_'.$searchFilter->guid;?>" id="<?php echo 'systemfilter_'.$searchFilter->guid;?>">
 									<option value="" <?php if($selectedValue ==""){?> selected="selected" <?Php }?> 
 									
-									><?php echo JText::_("CATALOG_SEARCHCRITERIA_SELECTBOUNDARY");?></option>
+									></option>
 									<?php foreach ($boundaries as $boundary){
 								    ?> echo <option value="<?php echo JText::_($boundary->guid);?>" <?php if($selectedValue == trim($boundary->guid)){?> selected="selected" <?Php }?> ><?php echo JText::_($boundary->name);?></option>
 								   <?php }?>
@@ -627,7 +627,7 @@ class HTML_catalog{
 								<select name="<?php echo 'systemfilter_'.$searchFilter->guid;?>" id="<?php echo 'systemfilter_'.$searchFilter->guid;?>">
 									<option value="" <?php if($selectedValue ==""){?> selected="selected" <?Php }?> 
 									
-									><?php echo JText::_("CATALOG_SEARCHCRITERIA_SELECTBOUNDARY");?></option>
+									></option>
 									<?php foreach ($boundaries as $boundary){
 								    ?> echo <option value="<?php echo JText::_($boundary->guid);?>" <?php if($selectedValue == trim($boundary->guid)){?> selected="selected" <?Php }?> ><?php echo JText::_($boundary->name);?></option>
 								   <?php }?>
