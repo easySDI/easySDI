@@ -67,6 +67,7 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 			<xsl:value-of
 				select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:date/gmd:CI_Date[gmd:dateType/gmd:CI_DateTypeCode/@codeListValue='publication']/gmd:date/gco:Date" />
 		</xsl:variable>
+		
 
 		<!-- Download Links -->
 		<xsl:variable name="downloadPDF">
@@ -107,8 +108,7 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 				</xsl:otherwise>
 			</xsl:choose>
 		</xsl:variable>
-
-		<xsl:variable name="datetimeupdated">
+	<xsl:variable name="datetimeupdated">
 			<xsl:value-of select="./sdi:Metadata/sdi:object/@metadata_updated" />
 		</xsl:variable>
 		<xsl:variable name="dateupdated">
@@ -133,8 +133,9 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 
 		<!-- Title of the metadata -->
 		<div class="metadata-details">	
-			<xsl:choose>
-				<xsl:when test="$language='fr-FR'">
+		
+		<a href="javascript:history.back()" class="intern icon back">Retour à la page précédente</a>
+		
 					<div class="metadata-header">
 						<div class="metadata-links">
 							<xsl:if test="string-length($downloadProduct) > 0">
@@ -188,30 +189,30 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 										<xsl:value-of select="$downloadPDF" />
 									</xsl:attribute>PDF</a>
 							</span>
-							
 						</div>
 					</div>
 					
-					<br></br>
+					<br />
+					
 					<div class="metadata-title">
-						<h1>
+						<h1 class="details-title">
 							<xsl:value-of select="$title" />
 						</h1>
 					</div>
 					
-					<div class="metadata-content">
-						<div class="metadata-maininfo">
-							<xsl:choose>
-								<xsl:when test="string-length($abstract-fr) > 0">
-									<xsl:value-of  select="substring($abstract-fr,1,200)" />				
-								</xsl:when >
-								<xsl:otherwise>			
-									<xsl:value-of  select="substring($abstract,1,200)" />										
-								</xsl:otherwise >
-							</xsl:choose>
-						</div>
-						<div class="clear"/>
-						<table class="alternative">
+					<div class="metadata-abstract">
+						<xsl:choose>
+							<xsl:when test="string-length($abstract-fr) > 0">
+								<xsl:value-of  select="substring($abstract-fr,1,200)" />				
+							</xsl:when >
+							<xsl:otherwise>			
+								<xsl:value-of  select="substring($abstract,1,200)" />										
+							</xsl:otherwise >
+						</xsl:choose>
+					</div>
+						
+					<div class="metadata-resume">
+						<table class="metadata-table">
 							<tr>
 								<td width="30%">Type:</td>
 								<td><xsl:value-of select="$logo" /></td>
@@ -251,25 +252,21 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 						</table>
 					</div>
 					
-					<p/>
+					
 						
-					<div class="section">	
-						<table class="alternative">
-							<!-- ************************ Informations ******************************* -->
+					<div class="metadata-content">	
+						<table class="metadata-table">
+							
 							<tr>
-								<th colspan="2" scope="col">Plus d'informations</th>
+								<th colspan="2" scope="col">Informations</th>
 							</tr>
-							<tr>
-								<td width="30%">Appellation:</td>
-								<td>
-									<xsl:value-of disable-output-escaping="yes" select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:otherCitationDetails/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale='#FR']"/>
-								</td>
-							</tr>
+							
 							<tr>
 								<td width="30%">Thématique:</td>
 								<td>		
 									<xsl:for-each select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:topicCategory">
 										<xsl:call-template name="categoryCodeTemplateFR">
+											<xsl:with-param name="categoryCode" select="gmd:MD_topicCategoryCode" />
 										</xsl:call-template>
 									</xsl:for-each>
 								</td>
@@ -282,20 +279,7 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 									</xsl:for-each>
 								</td>
 							</tr>
-							<tr>
-								<td width="30%">Lien vers les renseignements détaillés sur le produit</td>
-								<td>
-
-									<xsl:element name="a">
-										<xsl:attribute name="class">extern</xsl:attribute>
-										<xsl:attribute name="href">
-											<xsl:value-of  select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/bee:detailedInformation/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale='#FR']"/>
-										</xsl:attribute>
-										<xsl:value-of  select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/bee:detailedInformation/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale='#FR']"/>		
-									</xsl:element>
-
-								</td>
-							</tr>
+							
 							<tr>
 								<td width="30%">Langue:</td>
 								<td>
@@ -309,25 +293,62 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 							</tr>
 
 							<tr>
-								<td width="30%">Coordonnées de l'étendue:</td>
+								<td width="30%">Système de référence:</td>
+								<td>
+									<xsl:value-of  select="./gmd:MD_Metadata/gmd:sourcereferencesystem/gmd:md_referencesystem/gmd:referencesystemidentifier/gmd:rs_identifier/gmd:codespace/gco:CharacterString"/>
+								</td>
+							</tr>
+							
+							<tr>
+								<td width="30%">Emprise géographique:</td>
 								<td>
 									<xsl:for-each select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent">
-										<xsl:value-of disable-output-escaping="yes" select="gmd:EX_Extent/gmd:description/gco:CharacterString"/> : 
-										<xsl:value-of disable-output-escaping="yes" select="gmd:EX_Extent/gmd:geographicElement/gmd:Ex_GeographicBoundingBox/gmd:westBoundLongitude/gco:Decimal"/>
-										<xsl:value-of disable-output-escaping="yes" select="gmd:EX_Extent/gmd:geographicElement/gmd:Ex_GeographicBoundingBox/gmd:eastBoundLongitude/gco:Decimal"/> 
-										<xsl:value-of disable-output-escaping="yes" select="gmd:EX_Extent/gmd:geographicElement/gmd:Ex_GeographicBoundingBox/gmd:southBoundLatitude/gco:Decimal"/> 
-										<xsl:value-of disable-output-escaping="yes" select="gmd:EX_Extent/gmd:geographicElement/gmd:Ex_GeographicBoundingBox/gmd:northBoundLatitude/gco:Decimal"/>  
+										<table class="metadata-extent">
+											<tr>
+												<td colspan="3"><xsl:value-of disable-output-escaping="yes" select="gmd:EX_Extent/gmd:description/gco:CharacterString"/> : </td>
+											</tr>
+											<tr>
+												<td></td>
+												<td><xsl:value-of disable-output-escaping="yes" select="gmd:EX_Extent/gmd:geographicElement/gmd:Ex_GeographicBoundingBox/gmd:northBoundLatitude/gco:Decimal"/>  </td>
+												<td></td>
+											</tr>
+											<tr>
+												<td><xsl:value-of disable-output-escaping="yes" select="gmd:EX_Extent/gmd:geographicElement/gmd:Ex_GeographicBoundingBox/gmd:westBoundLongitude/gco:Decimal"/></td>
+												<td></td>
+												<td><xsl:value-of disable-output-escaping="yes" select="gmd:EX_Extent/gmd:geographicElement/gmd:Ex_GeographicBoundingBox/gmd:eastBoundLongitude/gco:Decimal"/> </td>
+											</tr>
+											<tr>
+												<td></td>
+												<td><xsl:value-of disable-output-escaping="yes" select="gmd:EX_Extent/gmd:geographicElement/gmd:Ex_GeographicBoundingBox/gmd:southBoundLatitude/gco:Decimal"/> </td>
+												<td></td>
+											</tr>
+										</table>
 									</xsl:for-each>
 								</td>
 							</tr>
 							<tr>
-								<td width="30%">Informations supplémentaires:</td>
+								<td width="30%">Résolution spatiale:</td>
 								<td>
-									<xsl:value-of  select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:supplementalInformation/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString[@locale='#FR']"/>
+									<xsl:for-each select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:spatialresolution">
+										<table class="metadata-resolution">
+											<xsl:for-each select="gmd:MD_Resolution/gco:Distance">
+												<tr>
+												<td>Distance au sol</td>
+												<td><xsl:value-of disable-output-escaping="yes" select="gco:Decimal"/>  </td>
+												</tr>
+											</xsl:for-each>
+											<xsl:for-each select="gmd:MD_Resolution/gmd:EquivalentScale">
+												<tr>
+												<td>Dénominateur d'échelle</td>
+												<td><xsl:value-of disable-output-escaping="yes" select="gmd:md_representativefraction/gmd:denominator/gco:integer"/>  </td>
+												</tr>
+											</xsl:for-each>
+										</table>
+									</xsl:for-each>
 								</td>
 							</tr>
+							
 
-							<!-- ************************ Maintenance ******************************* -->
 							<tr>
 								<th colspan="2" scope="col">Maintenance</th>
 							</tr>
@@ -340,13 +361,13 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 								</td>
 							</tr>
 							<tr>
-								<td width="30%">Date de la dernière mise à jour:</td>
+								<td width="30%">Dernière mise à jour:</td>
 								<td>
 									<xsl:value-of  select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceMaintenance/gmd:MD_MaintenanceInformation/gmd:dateOfLastUpdate/gco:Date"/>
 								</td>
 							</tr>
 							<tr>
-								<td width="30%">Date de la prochaine mise à jour:</td>
+								<td width="30%">Prochaine mise à jour:</td>
 								<td>
 									<xsl:value-of  select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceMaintenance/gmd:MD_MaintenanceInformation/gmd:dateOfNextUpdate/gco:Date"/>
 								</td>
@@ -358,14 +379,93 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 								</td>
 							</tr>
 							
-							<!-- ************************ Contraintes ******************************* -->
+							<tr>
+								<th colspan="2" scope="col">Publication de la donnée</th>
+							</tr>
+							<tr>
+								<td width="30%">Origine de la donnée:</td>
+								<td>
+									<xsl:call-template name="RoleCodeTemplateFR">
+										<xsl:with-param name="RoleCode" select="./gmd:MD_Metadata/gmd:distributioninfo/gmd:md_distribution/gmd:md_distributor/gmd:distributorcontact/gmd:ci_responsibleparty/gmd:role/gmd:ci_rolecode/@codeListValue"/>
+									</xsl:call-template>
+									<xsl:value-of  select="./gmd:MD_Metadata/gmd:distributioninfo/gmd:md_distribution/gmd:md_distributor/gmd:distributorcontact/gmd:ci_responsibleparty/gmd:organisationname"/>
+									<xsl:for-each select="./gmd:MD_Metadata/gmd:distributioninfo/gmd:md_distribution/gmd:md_distributor/gmd:distributorcontact/gmd:ci_responsibleparty/gmd:electronicmailadress">
+										<xsl:value-of  select="gco:CharacterString"/>
+									</xsl:for-each>
+								</td>
+							</tr>
+							<tr>
+								<td width="30%">Url de la métadonnée d'origine:</td>
+								<td>
+									<xsl:value-of  select="./gmd:MD_Metadata/gmd:distributioninfo/gmd:md_distribution/gmd:md_distributor/gmd:originalmetadata/gco:CharacterString"/>
+								</td>
+							</tr>
+							<tr>
+								<td width="30%">Format de la donnée:</td>
+								<td>
+									<xsl:value-of  select="./gmd:MD_Metadata/gmd:distributioninfo/gmd:md_distribution/gmd:md_distributor/gmd:storageformat/gco:CharacterString"/>
+								</td>
+							</tr>
+							<tr>
+								<td width="30%">Accès en ligne:</td>
+								<td>
+									<xsl:for-each select="./gmd:MD_Metadata/gmd:distributioninfo/gmd:md_distribution/gmd:transferoptions/gmd:md_digitaltransferoptions/gmd:online">
+										<xsl:value-of  select="gmd:ci_onlineresource/gmd:linkage/gmd:url"/>
+										(<xsl:value-of  select="gmd:ci_onlineresource/gmd:protocol/gco:CharacterString"/>)
+									</xsl:for-each>
+								</td>
+							</tr>
+							
+							<tr>
+								<th colspan="2" scope="col">Qualité de la donnée</th>
+							</tr>
+							
+							<xsl:for-each select="./gmd:MD_Metadata/gmd:dataQualityInfo">
+							<tr>
+								<td width="30%">Critère d'évaluation de la donnée:</td>
+								<td>
+									<table class="metadata-quality">
+										<tr>
+											<td>Norme</td>
+											<td>
+												<xsl:value-of  select="gmd:DQ_DataQuality/gmd:report/gmd:dq_domainconsistency/gmd:result/gmd:dq_conformanceresult/gmd:specification/gmd:CI_Citation/gmd:title/gco:CharacterString"/>
+												(<xsl:call-template name="dateTypeCodeTemplateFR">
+													<xsl:with-param name="dateTypeCode" select="gmd:DQ_DataQuality/gmd:report/gmd:dq_domainconsistency/gmd:result/gmd:dq_conformanceresult/gmd:specification/gmd:CI_Citation/gmd:date/gmd:CI_Date/gmd:date/gco:Datetype/gmd:CI_DateTypeCode/@codeListValue"/>
+												</xsl:call-template> :
+												<xsl:value-of  select="gmd:DQ_DataQuality/gmd:report/gmd:dq_domainconsistency/gmd:result/gmd:dq_conformanceresult/gmd:specification/gmd:CI_Citation/gmd:date/gmd:CI_Date/gmd:date/gco:Date"/>)
+												
+											</td>
+										</tr>
+										<tr>
+											<td>Explication</td>
+											<td>
+											</td>
+										</tr>
+										<tr>
+											<td>Conformité</td>
+											<td>
+											</td>
+										</tr>
+										
+									</table>
+								</td>
+							</tr>	
+							<tr>
+								<td width="30%">Qualité de la provenance:</td>
+								<td>
+									<xsl:value-of  select="gmd:DQ_DataQuality/gmd:lineage/gmd:statement/gco:CharacterString"/>
+								</td>
+							</tr>
+							</xsl:for-each>
+							
 							<tr>
 								<th colspan="2" scope="col">Contraintes</th>
 							</tr>
+							<xsl:for-each select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceConstraints">
 							<tr>
 								<td width="30%">Contraintes d'accès:</td>
 								<td>
-									<xsl:for-each select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceConstraints/gmd:MD_LegalConstraints/gmd:accessConstraints/">
+									<xsl:for-each select="gmd:MD_LegalConstraints/gmd:accessConstraints">
 										<xsl:call-template name="constraintsTypeTemplateFR">
 											<xsl:with-param name="constraintsTypeCode" select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceConstraints/gmd:MD_LegalConstraints/gmd:accessConstraints/gmd:MD_RestrictionCode/@codeListValue"/>
 										</xsl:call-template>  
@@ -376,8 +476,8 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 							<tr>
 								<td width="30%">Limitation d'utilisation de la ressource:</td>
 								<td>
-									<xsl:for-each select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceConstraints/gmd:MD_LegalConstraints/gmd:useLimitation/">
-										 <xsl:value-of  select="gco:characterstring"/>
+									<xsl:for-each select="gmd:MD_LegalConstraints/gmd:useLimitation">
+										 <xsl:value-of disable-output-escaping="yes"  select="gco:CharacterString"/>
 									</xsl:for-each>
 									
 								</td>
@@ -385,37 +485,46 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 							<tr>
 								<td width="30%">Autres contraintes:</td>
 								<td>
-									<xsl:for-each select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceConstraints/gmd:MD_LegalConstraints/gmd:otherConstraints/">
-										 <xsl:value-of  select="gco:characterstring"/>
+									<xsl:for-each select="gmd:MD_LegalConstraints/gmd:otherConstraints">
+										 <xsl:value-of disable-output-escaping="yes"  select="gco:CharacterString"/>
 									</xsl:for-each>
 								</td>
 							</tr>
+							</xsl:for-each>
 						</table>
 					</div>
 					
 					
-					<!-- ************************ Point of Contact ******************************* -->
-					<div class="section">	
-						<table class="alternative">
+					
+					<div class="metadata-content">	
+						<table class="metadata-table">
 							<tr>
 								<th colspan="2" scope="col">Contacts</th>
 							</tr>
 
-							<xsl:for-each select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact">
-								<tr>
-									<xsl:call-template name="addressTemplateFR">
-									</xsl:call-template>
-								</tr>
-							</xsl:for-each>		
+							<xsl:choose>
+								<xsl:when test="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact != ''">
+									<xsl:for-each select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact">
+									<tr>
+										<xsl:call-template name="addressTemplateFR">
+										</xsl:call-template>
+									</tr>
+									</xsl:for-each>	
+								</xsl:when>
+								<xsl:otherwise>
+									<tr><td width="30%"></td><td></td></tr>
+								</xsl:otherwise>
+							</xsl:choose>
+							
 						</table>
 					</div>
 
 
-					<!-- ************************ Informations sur les métadonnées ******************************* -->
-					<div class="section">
-						<table class="alternative">
+				
+					<div class="metadata-content">
+						<table class="metadata-table">
 							<tr>
-								<th colspan="2" scope="col">Informations sur les métadonnées</th>
+								<th colspan="2" scope="col">Informations système</th>
 							</tr>
 							<xsl:for-each select="./gmd:MD_Metadata/gmd:contact">
 								<tr>
@@ -454,18 +563,28 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 								</td>
 							</tr>
 							<tr>
-								<td width="30%">Domaine des métadonnées:</td>
+								<td width="30%">Hiérarchie:</td>
 								<td>
-									<xsl:value-of disable-output-escaping="yes" select="./gmd:MD_Metadata/gmd:hierarchyLevelName/gco:CharacterString" />
+									<xsl:call-template name="scopeCodeTemplateFR">
+										<xsl:with-param name="scopeCode" select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:hierarchyLevel/gmd:MD_ScopeCode"/>
+									</xsl:call-template>
 								</td>
 							</tr>
-
+							<xsl:for-each select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:date">
+								<tr>
+								<td>
+									<xsl:call-template name="dateTypeCodeTemplateFR">
+										<xsl:with-param name="dateTypeCode" select="gmd:CI_Date/gmd:dateType/gmd:CI_DateTypeCode/@codeListValue"/>
+									</xsl:call-template>
+									</td>
+								
+								<td>
+									<xsl:value-of disable-output-escaping="yes" select="gmd:CI_Date/gmd:date/gco:Date" />
+									</td>
+								</tr>
+							</xsl:for-each>
 						</table>
 					</div>
-					<p>
-					</p>
-				</xsl:when>
-			</xsl:choose>
 		</div>	 
 
 
@@ -491,8 +610,35 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 		<xsl:value-of disable-output-escaping="yes" select="date:day-in-month(gco:Date)"/>.<xsl:value-of disable-output-escaping="yes" select="date:month-in-year(gco:Date)"/>.<xsl:value-of disable-output-escaping="yes" select="date:year(gco:Date)"/>
 	</xsl:template>
 
-
-
+	<xsl:template name="ProgressCodeTemplateFR">
+		<xsl:param name="ProgressCode"/>
+		<xsl:choose>
+			<xsl:when test="$ProgressCode = 'completed'">
+				<xsl:text>Production achevée</xsl:text>
+			</xsl:when>
+			<xsl:when test="$ProgressCode = 'historicalArchive'">
+				<xsl:text>Données archivées hors ligne</xsl:text>
+			</xsl:when>
+			<xsl:when test="$ProgressCode = 'obsolete'">
+				<xsl:text>Données ayant perdu toute actualité</xsl:text>
+			</xsl:when>
+			<xsl:when test="$ProgressCode = 'onGoing'">
+				<xsl:text>Données actualisées en continu</xsl:text>
+			</xsl:when>
+			<xsl:when test="$ProgressCode = 'planned'">
+				<xsl:text>Date de génération ou dâ€™actualisation prévue</xsl:text>
+			</xsl:when>
+			<xsl:when test="$ProgressCode = 'required'">
+				<xsl:text>Données à générer ou à actualiser</xsl:text>
+			</xsl:when>
+			<xsl:when test="$ProgressCode = 'underDevelopment'">
+				<xsl:text>Données en cours de traitement</xsl:text>
+			</xsl:when>													
+			<xsl:otherwise>
+				<xsl:text>Inconnue</xsl:text>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
 	<!-- Template DataTypeCodeFR -->
 	<xsl:template name="DataTypeCodeTemplateFR">
 		<xsl:param name="DataTypeCode"/>
@@ -548,63 +694,6 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 		</xsl:choose>
 	</xsl:template>
 
-
-
-	<!-- Template DataTypeCode -->
-	<xsl:template name="DataTypeCodeTemplate">
-		<xsl:param name="DataTypeCode"/>
-		<xsl:choose>
-			<xsl:when test="$DataTypeCode = 'class'">
-				<xsl:text>Klasse</xsl:text>
-			</xsl:when>
-			<xsl:when test="$DataTypeCode = 'codelist'">
-				<xsl:text>Liste der Codes</xsl:text>	
-			</xsl:when>	
-			<xsl:when test="$DataTypeCode = 'enumeration'">
-				<xsl:text>AufzÃ¤hlung</xsl:text>	
-			</xsl:when>	
-			<xsl:when test="$DataTypeCode = 'codelistElement'">
-				<xsl:text>Auswahllistenelement</xsl:text>	
-			</xsl:when>		
-			<xsl:when test="$DataTypeCode = 'abstractClass'">
-				<xsl:text>Abstrakte Klasse</xsl:text>
-			</xsl:when>
-			<xsl:when test="$DataTypeCode = 'aggregatedClass'">
-				<xsl:text>Gesamtklasse</xsl:text>
-			</xsl:when>
-			<xsl:when test="$DataTypeCode = 'specifiedClass'">
-				<xsl:text>Spezifische Klasse</xsl:text>
-			</xsl:when>
-			<xsl:when test="$DataTypeCode = 'datatypeClass'">
-				<xsl:text>Datentypklasse</xsl:text>
-			</xsl:when>
-			<xsl:when test="$DataTypeCode = 'interfaceClass'">
-				<xsl:text>Schnittstellenklasse</xsl:text>
-			</xsl:when>
-			<xsl:when test="$DataTypeCode = 'unionClass'">
-				<xsl:text>Vereinigungsklasse</xsl:text>
-			</xsl:when>
-			<xsl:when test="$DataTypeCode = 'metaClass'">
-				<xsl:text>Metaklasse</xsl:text>
-			</xsl:when>
-			<xsl:when test="$DataTypeCode = 'typeClass'">
-				<xsl:text>Typenklasse</xsl:text>
-			</xsl:when>
-			<xsl:when test="$DataTypeCode = 'characterString'">
-				<xsl:text>Textfeld</xsl:text>
-			</xsl:when>
-			<xsl:when test="$DataTypeCode = 'integer'">
-				<xsl:text>Ganzzahl</xsl:text>
-			</xsl:when>
-			<xsl:when test="$DataTypeCode = 'association'">
-				<xsl:text>Beziehung</xsl:text>
-			</xsl:when>	
-			<xsl:otherwise>
-				<xsl:text>Unbekannt</xsl:text>
-			</xsl:otherwise>
-		</xsl:choose>
-	</xsl:template>
-
 	<!-- Template ObligationCodeFR -->
 	<xsl:template name="obligationCodeTemplateFR">
 		<xsl:param name="obligationCode"/>
@@ -624,26 +713,6 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 		</xsl:choose>
 	</xsl:template>
 
-
-	<!-- Template ObligationCode -->
-	<xsl:template name="obligationCodeTemplate">
-		<xsl:param name="obligationCode"/>
-		<xsl:choose>
-			<xsl:when test="$obligationCode = 'optional'">
-				<xsl:text>Optional</xsl:text>
-			</xsl:when>
-			<xsl:when test="$obligationCode = 'mandatory'">
-				<xsl:text>Obligatorisch</xsl:text>	
-			</xsl:when>	
-			<xsl:when test="$obligationCode = 'conditionnal'">
-				<xsl:text>AbhÃ¤ngig</xsl:text>	
-			</xsl:when>			
-			<xsl:otherwise>
-				<xsl:text>Unbekannt</xsl:text>
-			</xsl:otherwise>
-		</xsl:choose>
-	</xsl:template>
-
 	<!-- Template CompressionCode -->
 	<xsl:template name="CompressionCodeTemplateFR">
 		<xsl:param name="CompressionCode"/>
@@ -657,23 +726,6 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 
 			<xsl:otherwise>
 				<xsl:text>Inconnu</xsl:text>
-			</xsl:otherwise>
-		</xsl:choose>
-	</xsl:template>
-
-	<!-- Template CompressionCode -->
-	<xsl:template name="CompressionCodeTemplate">
-		<xsl:param name="CompressionCode"/>
-		<xsl:choose>
-			<xsl:when test="$CompressionCode = 'JPEG'">
-				<xsl:text>Verlustbehaftete JPEG-Komprimierung</xsl:text>
-			</xsl:when>
-			<xsl:when test="$CompressionCode = 'LZ77'">
-				<xsl:text>Verlustfreie Komprimierung nach dem Lempel-Ziv-Algorithmus</xsl:text>	
-			</xsl:when>	
-
-			<xsl:otherwise>
-				<xsl:text>Unbekannte Komprimierung</xsl:text>
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
@@ -773,103 +825,6 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 
 
 	</xsl:template>
-
-	<!-- Template CharacterSet -->
-	<xsl:template name="CharacterSetTemplate">
-		<xsl:param name="CharacterSetCode"/>
-		<xsl:choose>
-			<xsl:when test="$CharacterSetCode = 'usc2'">
-				<xsl:text>16-Bit Zeichensatz, universell, basierend auf ISO 10646</xsl:text>
-			</xsl:when>
-			<xsl:when test="$CharacterSetCode = 'usc4'">
-				<xsl:text>32-Bit Zeichensatz, universell, basierend auf ISO 10646</xsl:text>	
-			</xsl:when>	
-			<xsl:when test="$CharacterSetCode = 'utf7'">
-				<xsl:text>7-Bit Zeichensatz mit variabler GrÃ¶sse, universell, basierend auf ISO 10646</xsl:text>	
-			</xsl:when>
-			<xsl:when test="$CharacterSetCode = 'utf8'">
-				<xsl:text>8-Bit Zeichensatz mit variabler GrÃ¶sse, universell, basierend auf ISO 10646</xsl:text>	
-			</xsl:when>	
-			<xsl:when test="$CharacterSetCode = 'utf16'">
-				<xsl:text>16-Bit Zeichensatz mit variabler GrÃ¶sse, universell, basierend auf ISO 10646</xsl:text>	
-			</xsl:when>	
-			<xsl:when test="$CharacterSetCode = '8859part1'">
-				<xsl:text>ISO/IEC 8859-1, IT - 8-Bit Einzelbyte codierter graphischer Zeichensatz - Teil 1: Lateinisches Alphabet Nr. 1</xsl:text>	
-			</xsl:when>		
-			<xsl:when test="$CharacterSetCode = '8859part2'">
-				<xsl:text>ISO/IEC 8859-2, IT - 8-Bit Einzelbyte codierter graphischer Zeichensatz - Teil 2: Lateinisches Alphabet Nr. 2</xsl:text>	
-			</xsl:when>
-			<xsl:when test="$CharacterSetCode = '8859part3'">
-				<xsl:text>ISO/IEC 8859-3, IT - 8-Bit Einzelbyte codierter graphischer Zeichensatz - Teil 3: Lateinisches Alphabet Nr. 3</xsl:text>	
-			</xsl:when>	
-			<xsl:when test="$CharacterSetCode = '8859part4'">
-				<xsl:text>ISO/IEC 8859-4, IT - 8-Bit Einzelbyte codierter graphischer Zeichensatz - Teil 4: Lateinisches Alphabet Nr. 4</xsl:text>	
-			</xsl:when>		
-			<xsl:when test="$CharacterSetCode = '8859part5'">
-				<xsl:text>ISO/IEC 8859-5, IT - 8-Bit Einzelbyte codierter graphischer Zeichensatz - Teil 5: Lateinisch/ Kyrillisches Alphabet</xsl:text>	
-			</xsl:when>
-			<xsl:when test="$CharacterSetCode = '8859part6'">
-				<xsl:text>ISO/IEC 8859-6, IT - 8-Bit Einzelbyte codierter graphischer Zeichensatz - Teil 6: Lateinisch/ Arabisches Alphabet</xsl:text>	
-			</xsl:when>
-			<xsl:when test="$CharacterSetCode = '8859part7'">
-				<xsl:text>ISO/IEC 8859-7, IT - 8-Bit Einzelbyte codierter graphischer Zeichensatz - Teil 7: Lateinisch/ Griechisches Alphabet</xsl:text>	
-			</xsl:when>
-			<xsl:when test="$CharacterSetCode = '8859part8'">
-				<xsl:text>ISO/IEC 8859-8, IT - 8-Bit Einzelbyte codierter graphischer Zeichensatz - Teil 8: Lateinisch/ HebrÃ¤isch Alphabet</xsl:text>	
-			</xsl:when>	
-			<xsl:when test="$CharacterSetCode = '8859part9'">
-				<xsl:text>ISO/IEC 8859-9, IT - 8-Bit Einzelbyte codierter graphischer Zeichensatz - Teil 9: Lateinisches Alphabet Nr. 5</xsl:text>	
-			</xsl:when>
-			<xsl:when test="$CharacterSetCode = '8859part11'">
-				<xsl:text>ISO/IEC 8859-11, IT - 8-Bit Einzelbyte codierter graphischer Zeichensatz - Teil 11: Lateinisch/ ThailÃ¤ndisch Alphabet</xsl:text>	
-			</xsl:when>	
-			<xsl:when test="$CharacterSetCode = '8859part14'">
-				<xsl:text>ISO/IEC 8859-14, IT - 8-Bit Einzelbyte codierter graphischer Zeichensatz - Teil 14: Lateinisches Alphabet Nr. 8 (Keltisch)</xsl:text>	
-			</xsl:when>	
-			<xsl:when test="$CharacterSetCode = '8859part15'">
-				<xsl:text>ISO/IEC 8859-15, IT - 8-Bit Einzelbyte codierter graphischer Zeichensatz - Teil 15: Lateinisches Alphabet Nr. 9</xsl:text>	
-			</xsl:when>
-			<xsl:when test="$CharacterSetCode = 'jis'">
-				<xsl:text>Japanischer Codierungssatz fÃ¼r elektronische Transmission</xsl:text>	
-			</xsl:when>
-			<xsl:when test="$CharacterSetCode = 'shiftJIS'">
-				<xsl:text>Japanischer Codierungssatz fÃ¼r MS-DOS-Rechner</xsl:text>	
-			</xsl:when>
-			<xsl:when test="$CharacterSetCode = 'eucJP'">
-				<xsl:text>Japanischer Codierungssatz fÃ¼r UNIX-Rechner</xsl:text>	
-			</xsl:when>
-			<xsl:when test="$CharacterSetCode = 'usAscii'">
-				<xsl:text>ASCII-Code der Vereinigten Staaten (ISO 646 US)</xsl:text>	
-			</xsl:when>
-			<xsl:when test="$CharacterSetCode = 'ebcdic'">
-				<xsl:text>IBM-Mainframe Codierungssatz</xsl:text>	
-			</xsl:when>
-			<xsl:when test="$CharacterSetCode = 'eucKR'">
-				<xsl:text>Koreanischer Codierungssatz</xsl:text>	
-			</xsl:when>
-			<xsl:when test="$CharacterSetCode = 'big5'">
-				<xsl:text>Traditioneller chinesischer Codierungssatz, benutzt in Taiwan, Hong Kong und anderen Regionen</xsl:text>	
-			</xsl:when>
-			<xsl:when test="$CharacterSetCode = '8859part10'">
-				<xsl:text>ISO/IEC 8859-10, IT - 8-Bit Einzelbyte codierter graphischer Zeichensatz - Teil 10: Lateinisches Alphabet Nr. 6</xsl:text>	
-			</xsl:when>
-			<xsl:when test="$CharacterSetCode = '8859part13'">
-				<xsl:text>ISO/IEC 8859-13, IT - 8-Bit Einzelbyte codierter graphischer Zeichensatz - Teil 13: Lateinisches Alphabet Nr. 7</xsl:text>	
-			</xsl:when>
-			<xsl:when test="$CharacterSetCode = '8859part16'">
-				<xsl:text>ISO/IEC 8859-16, IT - 8-Bit Einzelbyte codierter graphischer Zeichensatz - Teil 16: Lateinisches Alphabet Nr. 10</xsl:text>	
-			</xsl:when>
-			<xsl:when test="$CharacterSetCode = 'GB2312'">
-				<xsl:text>Vereinfachter Chinesischer Zeichensatz</xsl:text>	
-			</xsl:when>		
-			<xsl:otherwise>
-				<xsl:text>Undefinierter Zeichensatz</xsl:text>
-			</xsl:otherwise>
-		</xsl:choose>
-
-
-	</xsl:template>
-
 
 	<!-- Template MaintenanceFrequencyCodeFR -->
 	<xsl:template name="maintenanceFrequencyCodeTemplateFR">
@@ -992,7 +947,6 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 		</xsl:choose>
 	</xsl:template>	
 
-
 	<xsl:template name="dateTypeCodeTemplateFR">
 		<xsl:param name="dateTypeCode"/>
 		<xsl:choose>
@@ -1006,7 +960,7 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 				<xsl:text>Révison</xsl:text>
 			</xsl:when>
 			<xsl:otherwise>
-				<xsl:text>Inconnue</xsl:text>
+				<xsl:text>Date non qualifiée</xsl:text>
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>	
@@ -1058,9 +1012,6 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
-
-	
-
 
 	<!-- Template CategoryCode -->
 	<xsl:template name="categoryCodeTemplateFR">
@@ -1161,7 +1112,6 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
-
 	
 	<!-- ADRESSE TEMPLATE FR -->
 	<xsl:template name="addressTemplateFR">
@@ -1215,5 +1165,63 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 				</xsl:if>
 			</xsl:for-each>
 		</td>
+	</xsl:template>
+	
+	<xsl:template name="scopeCodeTemplateFR">
+		<xsl:param name="scopeCode"/>
+		<xsl:choose>
+			<xsl:when test="$scopeCode = 'attribute'">
+				<xsl:text>Attribut</xsl:text>
+			</xsl:when>
+			<xsl:when test="$scopeCode = 'attributeType'">
+				<xsl:text>Type d'attribut</xsl:text>	
+			</xsl:when>	
+			<xsl:when test="$scopeCode = 'collectionHardware'">
+				<xsl:text>collectionHardware</xsl:text>	
+			</xsl:when>			
+			<xsl:when test="$scopeCode = 'collectionSession'">
+				<xsl:text>collectionSession</xsl:text>	
+			</xsl:when>	
+			<xsl:when test="$scopeCode = 'dataset'">
+				<xsl:text>dataset</xsl:text>	
+			</xsl:when>	
+			<xsl:when test="$scopeCode = 'series'">
+				<xsl:text>series</xsl:text>	
+			</xsl:when>	
+			<xsl:when test="$scopeCode = 'nonGeographicDataset'">
+				<xsl:text>nonGeographicDataset</xsl:text>	
+			</xsl:when>	
+			<xsl:when test="$scopeCode = 'dimensionGroup'">
+				<xsl:text>dimensionGroup</xsl:text>	
+			</xsl:when>	
+			<xsl:when test="$scopeCode = 'feature'">
+				<xsl:text>feature</xsl:text>	
+			</xsl:when>	
+			<xsl:when test="$scopeCode = 'featureType'">
+				<xsl:text>featureType</xsl:text>	
+			</xsl:when>	
+			<xsl:when test="$scopeCode = 'propertyType'">
+				<xsl:text>propertyType</xsl:text>	
+			</xsl:when>	
+			<xsl:when test="$scopeCode = 'fieldSession'">
+				<xsl:text>fieldSession</xsl:text>	
+			</xsl:when>	
+			<xsl:when test="$scopeCode = 'software'">
+				<xsl:text>software</xsl:text>	
+			</xsl:when>	
+			<xsl:when test="$scopeCode = 'service'">
+				<xsl:text>service</xsl:text>	
+			</xsl:when>	
+			<xsl:when test="$scopeCode = 'model'">
+				<xsl:text>model</xsl:text>	
+			</xsl:when>	
+			<xsl:when test="$scopeCode = 'tile'">
+				<xsl:text>tile</xsl:text>	
+			</xsl:when>	
+			
+			<xsl:otherwise>
+				<xsl:text/>
+			</xsl:otherwise>
+		</xsl:choose>
 	</xsl:template>
 </xsl:stylesheet>
