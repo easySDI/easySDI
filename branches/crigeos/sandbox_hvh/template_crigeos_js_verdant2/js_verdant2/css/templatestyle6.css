@@ -428,16 +428,23 @@ div.userBlock {background: #173444 url(../images/style1/gradients.png) repeat-x 
 /*Metadata details page*/
 .metadata-sheet{
 	margin:20px 40px 40px 40px !important;
+	background-color: white !important;
+	border-radius: 10px;
 }
-.back-metadata-result{
-}
+
 	
 .metadata-details{
 	margin:20px 40px 40px 40px !important;
 	font-size: 0.9em;
-	 line-height: 1.4em;
+	line-height: 1.4em;
 }
 
+.metadata-details .details-title {
+	color: #97B832;
+    font-size: 135%;
+    line-height: 1.4em;
+    margin-bottom: 20px;
+}
 
 .metadata-details   .metadata-abstract {
 	margin:20px 20px 20px 20px !important;
