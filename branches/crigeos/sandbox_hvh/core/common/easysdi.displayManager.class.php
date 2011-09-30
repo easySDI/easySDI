@@ -267,6 +267,8 @@ class displayManager{
 	 */
 	function showMetadata()
 	{	
+		JHTML::_('behavior.modal'); 
+		
 		$database =& JFactory::getDBO();
 		$user =& JFactory::getUser();
 		$lg = &JFactory::getLanguage();
@@ -2209,7 +2211,7 @@ class displayManager{
 		}
 		$XMLSdi->appendChild($XMLExternalApp);
 			
-		//$doc->save("C:/tmp/temp1.xml");
+		$doc->save("C:/tmp/temp1.xml");
 		                     
 		return $doc;
 	}

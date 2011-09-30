@@ -220,15 +220,6 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 											<a>
 												<xsl:attribute name="class">modal</xsl:attribute>
 												<xsl:attribute name="href">
-													<xsl:value-of select="$print" />
-												</xsl:attribute>
-												<xsl:text>Imprimer</xsl:text></a>
-										</span>
-										<p></p>
-										<span class="metadata-link">
-											<a>
-												<xsl:attribute name="class">modal</xsl:attribute>
-												<xsl:attribute name="href">
 													<xsl:value-of select="$exportXML" />
 												</xsl:attribute><xsl:text>XML</xsl:text></a>
 										</span>
