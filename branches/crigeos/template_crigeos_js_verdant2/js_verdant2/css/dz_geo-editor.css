@@ -373,13 +373,20 @@ div#deletableAffiliate:hover{
 
 /* Tabs Navigation */
 /* Copy of #global-nav a span */
-.geo-editor dl.tabs {
+.AccountForm dl.tabs {
     margin:0;
 }
 
+#affiliatePane.open{
+	background-color: #C8D9E9;
+	font-weight:bold;
+}
 
+#affiliatePane dl.tabs  {
+    margin:0;
+}
 
-.geo-editor dl.tabs dt {
+dl.tabs dt {
     display: block;
     padding: 5px;
     border-top:1px solid #97B7C8;
@@ -387,22 +394,83 @@ div#deletableAffiliate:hover{
     border-right:1px solid #97B7C8;
     margin:0px 3px 0px 0px;
     float:left;
-    background-color: #c8d9e9;
+
 }
 
-.geo-editor dl.tabs dt.open {
-	background-color: #FFF;
+.AccountForm  dl.tabs dt.open  {
+	background-color: #C8D9E9;
 	font-weight:bold;
 }
 
-.geo-editor dl.tabs dt span:hover {
+.AccountForm  dl.tabs dt span:hover {
 	text-decoration: underline;
 	color: #001BA1;
 }
 
-.geo-editor dd {
+.AccountForm  dd {
 	margin:0px 0px 20px 0px;
 	border:none;
+}
+.current {
+    display : block;
+    clear : both;
+    background-color: #C8D9E9;
+}
+
+.current dd{
+    border-bottom: 1px solid #ABABAB;
+    border-left: 1px solid #ABABAB;
+    border-right: 1px solid #ABABAB; 
+    margin-left:0px;
+}
+
+.AccountForm dd table {
+	border:none;
+	margin:0 !important;
+}
+/*--------------------------------------------------|
+| dTree 2.05 | www.destroydrop.com/javascript/tree/ |
+|---------------------------------------------------|
+| Copyright (c) 2002-2003 Geir Landry               |
+|--------------------------------------------------*/
+
+.dtree {
+	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	color: #666;
+	white-space: nowrap;
+	margin-top: 5px;
+	margin-left: 5px;
+	
+}
+.dtree img {
+	border: 0px;
+	vertical-align: middle;
+}
+.dtree a {
+	color: #333;
+	text-decoration: none;
+}
+.dtree a.node, .dtree a.nodeSel {
+	white-space: nowrap;
+	padding: 1px 2px 1px 2px;
+	
+}
+.dtree a.node:hover, .dtree a.nodeSel:hover {
+	color: #333;
+	text-decoration: underline;
+}
+.dtree a.nodeSel {
+	background-color: #c0d2ec;
+}
+.dtree .clip {
+	overflow: hidden;
+}
+
+.dtree table td {
+	float : left;
+	left : 0px;
+	
 }
 
 /* Form elements */
