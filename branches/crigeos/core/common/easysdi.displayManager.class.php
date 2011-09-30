@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySDI, a solution to implement easily any spatial data infrastructure
- * Copyright (C) 2008 DEPTH SA, Chemin dâ����Arche 40b, CH-1870 Monthey, easysdi@depth.ch 
+ * Copyright (C) 2008 DEPTH SA, Chemin dâééééArche 40b, CH-1870 Monthey, easysdi@depth.ch 
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,7 +47,7 @@ class displayManager{
 		$xml = "";
 		$id = JRequest::getVar('id');
 		
-		// R�pertoire des fichiers xsl, s'il y en a un
+		// Répertoire des fichiers xsl, s'il y en a un
 		$context = JRequest::getVar('context');
 		$xslFolder = ""; 
 		
@@ -59,7 +59,7 @@ class displayManager{
 		if ($xslFolder <> "")
 			$xslFolder = $xslFolder."/";
 		
-		// R�cup�rer le type d'objet
+		// Récupérer le type d'objet
 		$database->setQuery("SELECT ot.code 
 							 FROM #__sdi_metadata m
 							 INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
@@ -71,8 +71,8 @@ class displayManager{
 		if ($type == "abstract")
 		{
 			$style = new DomDocument();
-			// Test des diff�rentes combinaisons possibles pour le nom de fichier, en allant
-			// de la plus restrictive � la plus basique
+			// Test des différentes combinaisons possibles pour le nom de fichier, en allant
+			// de la plus restrictive é la plus basique
 			if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XML_'.$objecttype.'_abstract_'.$language.'.xsl'))
 			{
 				$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XML_'.$objecttype.'_abstract_'.$language.'.xsl');
@@ -267,6 +267,8 @@ class displayManager{
 	 */
 	function showMetadata()
 	{	
+		JHTML::_('behavior.modal'); 
+		
 		$database =& JFactory::getDBO();
 		$user =& JFactory::getUser();
 		$lg = &JFactory::getLanguage();
@@ -277,7 +279,7 @@ class displayManager{
 		
 		$id = JRequest::getVar('id');
 		
-		// R�pertoire des fichiers xsl, s'il y en a un
+		// Répertoire des fichiers xsl, s'il y en a un
 		$context = JRequest::getVar('context');
 		$xslFolder = ""; 
 		
@@ -289,7 +291,7 @@ class displayManager{
 		if ($xslFolder <> "")
 			$xslFolder = $xslFolder."/";
 		
-		// R�cup�rer le type d'objet
+		// Récupérer le type d'objet
 		$database->setQuery("SELECT ot.code 
 							 FROM #__sdi_metadata m
 							 INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
@@ -300,8 +302,8 @@ class displayManager{
 		if ($type == "abstract")
 		{
 			$style = new DomDocument();
-			// Test des diff�rentes combinaisons possibles pour le nom de fichier, en allant
-			// de la plus restrictive � la plus basique
+			// Test des différentes combinaisons possibles pour le nom de fichier, en allant
+			// de la plus restrictive é la plus basique
 			if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_abstract_'.$language.'.xsl'))
 			{
 				$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_abstract_'.$language.'.xsl');
@@ -326,8 +328,8 @@ class displayManager{
 		{
 			$style = new DomDocument();
 			
-			// Test des diff�rentes combinaisons possibles pour le nom de fichier, en allant
-			// de la plus restrictive � la plus basique
+			// Test des différentes combinaisons possibles pour le nom de fichier, en allant
+			// de la plus restrictive é la plus basique
 			if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_complete_'.$language.'.xsl'))
 			{
 				$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_complete_'.$language.'.xsl');
@@ -509,8 +511,8 @@ class displayManager{
 			$document->loadXML($doc);
 			
 			$style = new DomDocument();
-			// Test des diff�rentes combinaisons possibles pour le nom de fichier, en allant
-			// de la plus restrictive � la plus basique
+			// Test des différentes combinaisons possibles pour le nom de fichier, en allant
+			// de la plus restrictive é la plus basique
 			if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_diffusion_'.$language.'.xsl'))
 			{
 				$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_diffusion_'.$language.'.xsl');
@@ -545,7 +547,7 @@ class displayManager{
 		
 		$id = JRequest::getVar('id');
 		
-		// R�pertoire des fichiers xsl, s'il y en a un
+		// Répertoire des fichiers xsl, s'il y en a un
 		$context = JRequest::getVar('context');
 		$xslFolder = ""; 
 		
@@ -558,7 +560,7 @@ class displayManager{
 			$xslFolder = $xslFolder."/";
 		
 		
-		// R�cup�rer le type d'objet
+		// Récupérer le type d'objet
 		$database->setQuery("SELECT ot.code 
 							 FROM #__sdi_metadata m
 							 INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
@@ -568,8 +570,8 @@ class displayManager{
 		$objecttype = $database->loadResult();
 		
 		$style = new DomDocument();
-		// Test des diff�rentes combinaisons possibles pour le nom de fichier, en allant
-		// de la plus restrictive � la plus basique
+		// Test des différentes combinaisons possibles pour le nom de fichier, en allant
+		// de la plus restrictive é la plus basique
 		if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_abstract_'.$language.'.xsl'))
 		{
 			$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_abstract_'.$language.'.xsl');
@@ -602,7 +604,7 @@ class displayManager{
 		
 		$id = JRequest::getVar('id');
 		
-		// R�pertoire des fichiers xsl, s'il y en a un
+		// Répertoire des fichiers xsl, s'il y en a un
 		$context = JRequest::getVar('context');
 		$xslFolder = ""; 
 		
@@ -615,7 +617,7 @@ class displayManager{
 			$xslFolder = $xslFolder."/";
 		
 		
-		// R�cup�rer le type d'objet
+		// Récupérer le type d'objet
 		$database->setQuery("SELECT ot.code 
 							 FROM #__sdi_metadata m
 							 INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
@@ -625,8 +627,8 @@ class displayManager{
 		$objecttype = $database->loadResult();
 		
 		$style = new DomDocument();
-		// Test des diff�rentes combinaisons possibles pour le nom de fichier, en allant
-		// de la plus restrictive � la plus basique
+		// Test des différentes combinaisons possibles pour le nom de fichier, en allant
+		// de la plus restrictive é la plus basique
 		if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_complete_'.$language.'.xsl'))
 		{
 			$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_complete_'.$language.'.xsl');
@@ -660,7 +662,7 @@ class displayManager{
 		
 		$id = JRequest::getVar('id');
 		
-		// R�pertoire des fichiers xsl, s'il y en a un
+		// Répertoire des fichiers xsl, s'il y en a un
 		$context = JRequest::getVar('context');
 		$xslFolder = ""; 
 		
@@ -673,7 +675,7 @@ class displayManager{
 			$xslFolder = $xslFolder."/";
 		
 		
-		// R�cup�rer le type d'objet
+		// Récupérer le type d'objet
 		$database->setQuery("SELECT ot.code 
 							 FROM #__sdi_metadata m
 							 INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
@@ -742,8 +744,8 @@ class displayManager{
 		$document->loadXML($doc);
 		
 		$style = new DomDocument();
-		// Test des diff�rentes combinaisons possibles pour le nom de fichier, en allant
-		// de la plus restrictive � la plus basique
+		// Test des différentes combinaisons possibles pour le nom de fichier, en allant
+		// de la plus restrictive é la plus basique
 		if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_diffusion_'.$language.'.xsl'))
 		{
 			$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_diffusion_'.$language.'.xsl');
@@ -926,46 +928,54 @@ class displayManager{
 			//Manage display class
 			/* Onglets abstract et complete*/
 			$myHtml .= "window.addEvent('domready', function() {
-		
-			document.getElementById('catalogPanel1').addEvent( 'click' , function() { 
-				window.open('./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=$id&type=abstract', '_self');
-			});
-			document.getElementById('catalogPanel2').addEvent( 'click' , function() { 
-				window.open('./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=$id&type=complete', '_self');
-			});
-			
-			task = '$task';
-			type = '$type';
-			
-			";
+							if(document.getElementById('catalogPanel1')!= undefined){
+								document.getElementById('catalogPanel1').addEvent( 'click' , function() { 
+									window.open('./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=$id&type=abstract', '_self');
+								});
+							}
+							if(document.getElementById('catalogPanel2')!= undefined){
+								document.getElementById('catalogPanel2').addEvent( 'click' , function() { 
+									window.open('./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=$id&type=complete', '_self');
+								});
+							}
+						task = '$task';
+						type = '$type';
+						
+						";
 			/* Onglet diffusion, si et seulement si le shop est installé et que l'objet est diffusable*/
 			if ($shopExist)
 			{
 				$myHtml .= "
-				document.getElementById('catalogPanel3').addEvent( 'click' , function() { 
-					window.open('./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=$id&type=diffusion', '_self');
-				});
-				
-				document.getElementById('catalogPanel3').className = 'closed';
-				
-				if(task == 'showMetadata' & type == 'diffusion'){
-	        		document.getElementById('catalogPanel3').className = 'open';
+				if(document.getElementById('catalogPanel3')!= undefined){
+					document.getElementById('catalogPanel3').addEvent( 'click' , function() { 
+						window.open('./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=$id&type=diffusion', '_self');
+					});
+					document.getElementById('catalogPanel3').className = 'closed';
+					
+					if(task == 'showMetadata' & type == 'diffusion'){
+		        		document.getElementById('catalogPanel3').className = 'open';
+					}
 				}
 				";
 			}
 			
 			/* Boutons */
 			$myHtml .= "
-
-			document.getElementById('catalogPanel1').className = 'closed';
-			document.getElementById('catalogPanel2').className = 'closed';
+			if(document.getElementById('catalogPanel1')!= undefined){
+				document.getElementById('catalogPanel1').className = 'closed';
+				if(task == 'showMetadata' & type == 'abstract'){
+		        	document.getElementById('catalogPanel1').className = 'open';
+				}
+			}
+			if(document.getElementById('catalogPanel2')!= undefined){
+				document.getElementById('catalogPanel2').className = 'closed';
+				if(task == 'showMetadata' & type == 'complete'){
+		        	document.getElementById('catalogPanel2').className = 'open';
+				}
+			}
 			
-			if(task == 'showMetadata' & type == 'abstract'){
-	        	document.getElementById('catalogPanel1').className = 'open';
-			}
-			if(task == 'showMetadata' & type == 'complete'){
-	        	document.getElementById('catalogPanel2').className = 'open';
-			}
+			
+			
 			});\n"; 
 		
 			$myHtml .= "</script>";
@@ -1010,25 +1020,25 @@ class displayManager{
 		$product_update_date;
 		$shopExist=0;
 		
-		// Si la page est appel�e depuis un autre environnement que Joomla
+		// Si la page est appelée depuis un autre environnement que Joomla
 		//print_r($_SERVER);echo "<br>";
 		$notJoomlaCall = 'true';
 		if (array_key_exists('HTTP_REFERER', $_SERVER))
 		{
-			// Emplacement depuis lequel l'adresse a �t� appel�e
+			// Emplacement depuis lequel l'adresse a été appelée
 			$httpReferer = parse_url($_SERVER['HTTP_REFERER']);
 			$caller = $httpReferer['scheme']."://".$httpReferer['host'].$httpReferer['path'];
 			//echo $caller."<br>";
 			
-			// Adresse appel�e
+			// Adresse appelée
 			$scheme = "http";
 			if ($_SERVER['HTTPS'] and $_SERVER['HTTPS'] <> "off")
 				$scheme .= "s";
 			$current = $scheme."://".$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME'];
 			//echo $current;
 			
-			// Si l'adresse courante ne fait pas partie du m�me site que l'adresse appelante, 
-			// on consid�re que c'est un appel direct
+			// Si l'adresse courante ne fait pas partie du méme site que l'adresse appelante, 
+			// on considére que c'est un appel direct
 			if ($caller == $current)
 				$notJoomlaCall = 'false';
 		}
@@ -1218,7 +1228,7 @@ class displayManager{
 //			type = '$type';
 //			
 //			";
-//			/* Onglet diffusion, si et seulement si le shop est install� et que l'objet est diffusable*/
+//			/* Onglet diffusion, si et seulement si le shop est installé et que l'objet est diffusable*/
 //			if ($shopExist)
 //			{
 //				$myHtml .= "
@@ -1295,7 +1305,7 @@ class displayManager{
 		
 		$id = JRequest::getVar('id');
 		
-		// R�pertoire des fichiers xsl, s'il y en a un
+		// Répertoire des fichiers xsl, s'il y en a un
 		$context = JRequest::getVar('context');
 		$xslFolder = ""; 
 		
@@ -1311,7 +1321,7 @@ class displayManager{
 		$cswResults = new DomDocument();
 		displayManager::getMetadata($cswResults);
 		
-		// R�cup�rer le type d'objet
+		// Récupérer le type d'objet
 		$database->setQuery("SELECT ot.code 
 							 FROM #__sdi_metadata m
 							 INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
@@ -1323,8 +1333,8 @@ class displayManager{
 		if ($type == 'abstract')
 		{
 			$style = new DomDocument();
-			// Test des diff�rentes combinaisons possibles pour le nom de fichier, en allant
-			// de la plus restrictive � la plus basique
+			// Test des différentes combinaisons possibles pour le nom de fichier, en allant
+			// de la plus restrictive é la plus basique
 			if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XML_'.$objecttype.'_abstract_'.$language.'.xsl'))
 			{
 				$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XML_'.$objecttype.'_abstract_'.$language.'.xsl');
@@ -1398,7 +1408,7 @@ class displayManager{
 		
 		$id = JRequest::getVar('id');
 		
-		// R�pertoire des fichiers xsl, s'il y en a un
+		// Répertoire des fichiers xsl, s'il y en a un
 		$context = JRequest::getVar('context');
 		$xslFolder = ""; 
 		
@@ -1414,7 +1424,7 @@ class displayManager{
 		$cswResults = new DomDocument();
 		displayManager::getMetadata($cswResults);
 		
-		// R�cup�rer le type d'objet
+		// Récupérer le type d'objet
 		$database->setQuery("SELECT ot.code 
 							 FROM #__sdi_metadata m
 							 INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
@@ -1431,8 +1441,8 @@ class displayManager{
 		
 		if ($type == 'abstract')
 		{
-			// Test des diff�rentes combinaisons possibles pour le nom de fichier, en allant
-			// de la plus restrictive � la plus basique
+			// Test des différentes combinaisons possibles pour le nom de fichier, en allant
+			// de la plus restrictive é la plus basique
 			if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_abstract_'.$language.'.xsl'))
 			{
 				$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_abstract_'.$language.'.xsl');
@@ -1450,8 +1460,8 @@ class displayManager{
 		}
 		else if ($type == 'complete')
 		{
-			// Test des diff�rentes combinaisons possibles pour le nom de fichier, en allant
-			// de la plus restrictive � la plus basique
+			// Test des différentes combinaisons possibles pour le nom de fichier, en allant
+			// de la plus restrictive é la plus basique
 			if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_complete_'.$language.'.xsl'))
 			{
 				$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_complete_'.$language.'.xsl');
@@ -1469,8 +1479,8 @@ class displayManager{
 		}
 		else if ($type == 'diffusion')
 		{
-			// Test des diff�rentes combinaisons possibles pour le nom de fichier, en allant
-			// de la plus restrictive � la plus basique
+			// Test des différentes combinaisons possibles pour le nom de fichier, en allant
+			// de la plus restrictive é la plus basique
 			if (file_exists(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_diffusion_'.$language.'.xsl'))
 			{
 				$style->load(dirname(__FILE__).'/../xsl/'.$xslFolder.'XML2XHTML_'.$objecttype.'_diffusion_'.$language.'.xsl');
@@ -1509,7 +1519,7 @@ class displayManager{
 		
 		$id = JRequest::getVar('id');
 		
-		// R�pertoire des fichiers xsl, s'il y en a un
+		// Répertoire des fichiers xsl, s'il y en a un
 		$context = JRequest::getVar('context');
 		$xslFolder = ""; 
 		
@@ -1525,7 +1535,7 @@ class displayManager{
 		//$cswResults = new DomDocument();
 		//displayManager::getMetadata($cswResults);
 		
-		// R�cup�rer le type d'objet
+		// Récupérer le type d'objet
 		$database->setQuery("SELECT ot.code 
 							 FROM #__sdi_metadata m
 							 INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
@@ -1616,7 +1626,7 @@ class displayManager{
 			//avoid JavaBrigde to fail
 			
 			file_put_contents($fopfotmp, $result);
-			//G�n�ration du document PDF sous forme de fichier
+			//Génération du document PDF sous forme de fichier
 			$res = "";
 			//Url to the export pdf servlet
 			$url = $exportpdf_url."?cfg=fop.xml&fo=$tmp.fo&pdf=$tmp.pdf";
@@ -1697,15 +1707,15 @@ class displayManager{
 	
  		$xmlSystemId = "http://www.w3.org/TR/2000/REC-xml-20001006.xml";		
 		//Setup XSLT
-		//fwrite($timer, "\tCr�er factory : ".date("H:i:s")."\n");
+		//fwrite($timer, "\tCréer factory : ".date("H:i:s")."\n");
 		$factory = new java("javax.xml.transform.TransformerFactory");
 		$factory = $factory->newInstance();
-		//fwrite($timer, "\tFactory cr�e! : ".date("H:i:s")."\n");
+		//fwrite($timer, "\tFactory crée! : ".date("H:i:s")."\n");
 		$xsltStream = new java("javax.xml.transform.stream.StreamSource", $xslt);
 		//$xsltStream->setSystemId($xmlSystemId);
-		//fwrite($timer, "\tCr�er transformer : ".date("H:i:s")."\n");
+		//fwrite($timer, "\tCréer transformer : ".date("H:i:s")."\n");
 		$transformer = $factory->newTransformer($xsltStream);
-		//fwrite($timer, "\tTransformer cr��! : ".date("H:i:s")."\n");
+		//fwrite($timer, "\tTransformer créé! : ".date("H:i:s")."\n");
 		//Setup input for XSLT transformation
 		$src = new java("javax.xml.transform.stream.StreamSource", $xml);
 		//Resulting SAX events (the generated FO) must be piped through to FOP
@@ -1713,7 +1723,7 @@ class displayManager{
 		//Start XSLT transformation and FOP processing
 		//fwrite($timer, "\tTransformation : ".date("H:i:s")."\n");
 		$transformer->transform($src, $res);
-		//fwrite($timer, "\tTransformation termin�e : ".date("H:i:s")."\n");
+		//fwrite($timer, "\tTransformation terminée : ".date("H:i:s")."\n");
 	}
 	catch (JavaException $ex) {
 			echo "An exception occured: "; echo $ex; echo "<br>\n";
@@ -1731,14 +1741,14 @@ class displayManager{
 		{
 			$fop_mime_constants = new JavaClass('org.apache.fop.apps.MimeConstants');
 			// configure fopFactory as desired
-			//fwrite($timer, "\tCr�er FOP Factory : ".date("H:i:s")."\n");
+			//fwrite($timer, "\tCréer FOP Factory : ".date("H:i:s")."\n");
 			$fopFactory = new java("org.apache.fop.apps.FopFactory");
 			$fopFactory = $fopFactory->newInstance();
-			//fwrite($timer, "\tFOP Factory cr�e! : ".date("H:i:s")."\n");
+			//fwrite($timer, "\tFOP Factory crée! : ".date("H:i:s")."\n");
 			// configure foUserAgent as desired
-			//fwrite($timer, "\tCr�er FO User Agent: ".date("H:i:s")."\n");
+			//fwrite($timer, "\tCréer FO User Agent: ".date("H:i:s")."\n");
 			$foUserAgent = $fopFactory->newFOUserAgent();
-			//fwrite($timer, "\tFO User Agent cr��! : ".date("H:i:s")."\n");
+			//fwrite($timer, "\tFO User Agent créé! : ".date("H:i:s")."\n");
 			// Setup output
 			$pdf = new java("java.io.File", $pdf);
 			$pdf= $pdf->getAbsolutePath();
@@ -1747,15 +1757,15 @@ class displayManager{
 			$out = new java("java.io.BufferedOutputStream", $out);
 	
 			// Construct fop with desired output format
-			//fwrite($timer, "\tCr�er FOP: ".date("H:i:s")."\n");
+			//fwrite($timer, "\tCréer FOP: ".date("H:i:s")."\n");
 			$fop = $fopFactory->newFop($fop_mime_constants->MIME_PDF, $foUserAgent, $out);
-			//fwrite($timer, "\tFOP cr��! : ".date("H:i:s")."\n");
+			//fwrite($timer, "\tFOP créé! : ".date("H:i:s")."\n");
 			//Setup XSLT
-			//fwrite($timer, "\tCr�er Transformer Factory: ".date("H:i:s")."\n");
+			//fwrite($timer, "\tCréer Transformer Factory: ".date("H:i:s")."\n");
 			$factory = new java("javax.xml.transform.TransformerFactory");
 			$factory = $factory->newInstance();
 			$transformer = $factory->newTransformer();
-			//fwrite($timer, "\tTransformer Factory cr��! : ".date("H:i:s")."\n");
+			//fwrite($timer, "\tTransformer Factory créé! : ".date("H:i:s")."\n");
 			
 			// Set the value of a <param> in the stylesheet
 			$transformer->setParameter("versionParam", "2.0");
@@ -1764,13 +1774,13 @@ class displayManager{
 			$src = new java("javax.xml.transform.stream.StreamSource", $fo);
         
 			// Resulting SAX events (the generated FO) must be piped through to FOP
-			//fwrite($timer, "\tCr�er SAX: ".date("H:i:s")."\n");
+			//fwrite($timer, "\tCréer SAX: ".date("H:i:s")."\n");
 			$res = new java("javax.xml.transform.sax.SAXResult", $fop->getDefaultHandler());
-			//fwrite($timer, "\tSAX cr��! : ".date("H:i:s")."\n");
+			//fwrite($timer, "\tSAX créé! : ".date("H:i:s")."\n");
 			//Start XSLT transformation and FOP processing
 			//fwrite($timer, "\tTransformation : ".date("H:i:s")."\n");
 			$transformer->transform($src, $res);
-			//fwrite($timer, "\tTransformation termin�e : ".date("H:i:s")."\n");
+			//fwrite($timer, "\tTransformation terminée : ".date("H:i:s")."\n");
 		}
 		catch (JavaException $ex) {
 			echo "An exception occured: "; echo $ex; echo "<br>\n";
@@ -1830,26 +1840,26 @@ class displayManager{
    		$db->setQuery($query);
    		$supplier= $db->loadResult();
 		
-		// Cr�er une entrée pour la config
+		// Créer une entrée pour la config
 		$XMLConfig = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:config");
 		$XMLDescrLength = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:DescriptionLength", config_easysdi::getValue("DESCRIPTION_LENGTH"));
 		$XMLConfig->appendChild($XMLDescrLength);
 		$XMLSdi->appendChild($XMLConfig);
 		
 		
-   		// Cr�er une entr�e pour le compte
+   		// Créer une entrée pour le compte
 		$XMLAccount = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:account");
-		// Cr�er une entr�e pour le logo du compte
+		// Créer une entrée pour le logo du compte
 		$XMLALogo = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:logo", $account_logo);
 		$XMLALogo->setAttribute('width', $logoWidth);
 		$XMLALogo->setAttribute('height', $logoHeight);
 		$XMLAccount->appendChild($XMLALogo);
-		// Cr�er une entr�e pour le nom du fournisseur de l'objet
+		// Créer une entrée pour le nom du fournisseur de l'objet
 		$XMLASupplier = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:supplier", $supplier);
 		$XMLAccount->appendChild($XMLASupplier);
 		$XMLSdi->appendChild($XMLAccount);
 		
-		// R�cup�rer les informations de base sur l'objet, sa version et sa m�tadonn�e
+		// Récupérer les informations de base sur l'objet, sa version et sa métadonnée
 		$object=array();
 		$queryObject = "	select o.id, o.name, ov.title, v.code as metadata_visibility 
 							FROM #__sdi_metadata m
@@ -1860,7 +1870,18 @@ class displayManager{
 		$db->setQuery($queryObject);
 		$object = $db->loadObject();
 		
-		// Date de cr�ation de la m�tadonn�e
+		//Récupérer les managers de l'objet
+		$managerList=array();
+		$queryManager = "	select u.email, u.name
+							FROM #__sdi_object o
+							INNER JOIN #__sdi_manager_object m ON o.id = m.object_id
+							INNER JOIN #__sdi_account a ON a.id = m.account_id
+							INNER JOIN #__users u ON a.user_id = u.id
+							WHERE o.id = ".$object->id;
+		$db->setQuery($queryManager);
+		$managerList = $db->loadObjectList();
+		
+		// Date de création de la métadonnée
    		$query = "	SELECT m.created 
 					FROM #__sdi_metadata m
 					INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
@@ -1869,7 +1890,7 @@ class displayManager{
 		$db->setQuery($query);
 		$creation_date = $db->loadResult();
 		
-		// Derni�re mise � jour de la m�tadonn�e
+		// Derniére mise é jour de la métadonnée
 		$query = "	SELECT m.updated 
 					FROM #__sdi_metadata m
 					INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
@@ -1894,7 +1915,7 @@ class displayManager{
 			$update_date = $explodeDate[0]."T".$explodeDate[1];
 		} 
 		
-		// Cr�er une entr�e pour l'objet
+		// Créer une entrée pour l'objet
 		$XMLObject = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:object");
 		if ($object)
 		{
@@ -1914,9 +1935,9 @@ class displayManager{
 		}
 		$XMLSdi->appendChild($XMLObject);
 		
-		// R�cup�rer le type d'objet
+		// Récupérer le type d'objet
 		$objecttype = array();
-		// R�cup�rer le logo du type d'objet
+		// Récupérer le logo du type d'objet
 		$queryObjecttype = "SELECT ot.code, t.label, ot.logo 
 							FROM #__sdi_objecttype ot
 							INNER JOIN #__sdi_object o ON o.objecttype_id=ot.id
@@ -2041,14 +2062,6 @@ class displayManager{
 				$product_object->load($product->id);
 				$productFileName = $product_object->getFileName();
 				
-				/*$query = "select count(*) from #__sdi_product p 
-										INNER JOIN #__sdi_product_file pf ON p.id=pf.product_id 
-										where  p.id = $product->id";
-				$db->setQuery( $query);
-				$hasProductFile = $db->loadResult();
-				if ($db->getErrorNum()) {
-					$hasProductFile = 0;
-				}*/
 				$user = JFactory::getUser();
 				$account = new accountByUserId( $db );
 				$account->load( $user->id );
@@ -2059,6 +2072,19 @@ class displayManager{
 					$XMLActionDownloadProductLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", htmlentities(JRoute::_('./index.php?tmpl=component&option=com_easysdi_shop&task=downloadAvailableProduct&cid='.$product_object->id.'&toolbar=0&print=1')));
 					$XMLActionDownloadProduct->appendChild($XMLActionDownloadProductLink);
 					$XMLAction->appendChild($XMLActionDownloadProduct);
+				} else if($product_object->published && $product_object->available && strlen($productFileName) > 0 && !$product_object->isUserAllowedToLoad($account->id)){
+					//Contact to extend user rights  
+					$XMLActionDownloadProductRight = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:downloadProductRight");
+					$XMLActionDownloadProductRight->setAttribute('id', 'downloadProductRight');
+					$tooltipString = "";
+					foreach ($managerList as $value) {
+						$tooltipString .= $value->name." (".$value->email."), ";
+					}
+					$tooltipString = substr($tooltipString, 0,strlen($tooltipString)-2);
+					
+					$XMLActionDownloadProductLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:tooltip", $tooltipString);
+					$XMLActionDownloadProductRight->appendChild($XMLActionDownloadProductLink);
+					$XMLAction->appendChild($XMLActionDownloadProductRight);
 				}
 				$query = "select count(*) from #__sdi_product p 
 										where p.viewurlwms != '' AND p.id = $product->id";
@@ -2185,7 +2211,7 @@ class displayManager{
 		}
 		$XMLSdi->appendChild($XMLExternalApp);
 			
-		//$doc->save("C:/tmp/temp1.xml");
+		$doc->save("C:/tmp/temp1.xml");
 		                     
 		return $doc;
 	}
