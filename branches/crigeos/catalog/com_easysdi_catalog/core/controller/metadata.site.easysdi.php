@@ -492,9 +492,37 @@ class SITE_metadata {
         	//$xpathResults->registerNamespace('bee','http://www.depth.ch/2008/bee');
         } 
         
-         $query = "select value as config from #__sdi_configuration where code ='defaultBBoxConfig'";
+        $query = "select value as config from #__sdi_configuration where code ='defaultBBoxConfig'";
         $database->setQuery($query);
-		$defaultBBoxConfig = $database->loadResult();
+        $defaultLayerConfig = trim($database->loadResult());
+
+        $query = "select value as config from #__sdi_configuration where code ='defaultBBoxConfigExtentLeft'";
+        $database->setQuery($query);
+        $defaultExtentLeft = trim($database->loadResult());
+
+        $query = "select value as config from #__sdi_configuration where code ='defaultBBoxConfigExtentTop'";
+        $database->setQuery($query);
+        $defaultExtentTop = trim($database->loadResult());
+
+        $query = "select value as config from #__sdi_configuration where code ='defaultBBoxConfigExtentBottom'";
+        $database->setQuery($query);
+        $defaultExtentBottom = trim($database->loadResult());
+
+        $query = "select value as config from #__sdi_configuration where code ='defaultBBoxConfigExtentRight'";
+        $database->setQuery($query);
+        $defaultExtentRight = trim($database->loadResult());
+
+        if($defaultLayerConfig!="" &&  $defaultExtentLeft!="" && $defaultExtentBottom!="" &&  $defaultExtentTop!="" &&  $defaultExtentRight!="" ){
+			$defaultBBoxConfig  = "defaultBBoxConfig ={
+				getLayers : function(){
+						return new Array(new OpenLayers.Layer.".$defaultLayerConfig.")
+						},
+				defaultExtent:{left:".$defaultExtentLeft.",bottom:".$defaultExtentBottom.",right:".$defaultExtentRight.",top:".$defaultExtentTop."}
+			};";
+        }        
+        else{
+        	$defaultBBoxConfig = "";
+        }
         
         
 		HTML_metadata::editMetadata($rowObject->id, $root, $rowMetadata->guid, $xpathResults, $profile_id, $isManager, $isEditor, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $rowObject->name, $rowObjectVersion->title, $option, $defaultBBoxConfig);

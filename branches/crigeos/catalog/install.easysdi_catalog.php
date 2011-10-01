@@ -1545,6 +1545,36 @@ function com_install(){
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}
 		}
+		if($version == "2.0.5")
+		{
+				
+			
+			$query = "SELECT id FROM #__sdi_list_module  WHERE  code='CATALOG'";
+			$db->setQuery( $query );
+			$module_id = $db->loadResult();
+		
+			$query="INSERT INTO #__sdi_configuration (guid,code,name,description, created,createdby,value,module_id) VALUES  
+					('".helper_easysdi::getUniqueId()."', 'defaultBboxConfigExtentLeft','defaultBboxConfigExtentLeft','default Bbox ConfigExtent Left.','".date('Y-m-d H:i:s')."', '".$user_id."', '','".$module_id."'), 
+					('".helper_easysdi::getUniqueId()."', 'defaultBboxConfigExtentBottom','defaultBboxConfigExtentBottom','default Bbox ConfigExtent Bottom.','".date('Y-m-d H:i:s')."', '".$user_id."', '','".$module_id."'), 
+					('".helper_easysdi::getUniqueId()."', 'defaultBboxConfigExtentRight','defaultBboxConfigExtentRight','default Bbox ConfigExtent Right','".date('Y-m-d H:i:s')."', '".$user_id."', '','".$module_id."'), 
+					('".helper_easysdi::getUniqueId()."', 'defaultBboxConfigExtentTop','defaultBboxConfigExtentTop','default Bbox ConfigExtent Top.','".date('Y-m-d H:i:s')."', '".$user_id."', '','".$module_id."')";
+			
+			$db->setQuery( $query);	
+			
+			if (!$db->query()) 
+			{
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			
+			$version="2.0.6";
+			$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='CATALOG'";
+			$db->setQuery( $query);
+			if (!$db->query())
+			{
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+		}
 
 		/**
 		 * Copy View files in Core component to allow  Menu Item Manger to find entries
