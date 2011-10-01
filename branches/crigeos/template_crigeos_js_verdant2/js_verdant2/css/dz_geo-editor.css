@@ -397,7 +397,8 @@ dl.tabs dt {
 
 }
 
-.AccountForm  dl.tabs dt.open  {
+
+.AccountForm  dl.tabs dt.open, .editProductPane .open, #accountPane .open  {
 	background-color: #C8D9E9;
 	font-weight:bold;
 }
