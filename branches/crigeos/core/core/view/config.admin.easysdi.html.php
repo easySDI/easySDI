@@ -360,6 +360,47 @@ if ($catalogItem > 0){
 																</textarea>
 															</td>
 														</tr>
+														<tr>
+															<td valign="top" class="key">
+																<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_LEFT' ); ?>">
+																	<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_LEFT' ); ?>
+																</span>
+															</td>
+															<td>
+																<input class="text_area" type="text" size="100" name="defaultBboxConfigExtentLeft" value="<?php echo $catalogList['defaultBboxConfigExtentLeft']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+															</td>
+														</tr>
+														<tr>
+															<td valign="top" class="key">
+																<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_BOTTOM' ); ?>">
+																	<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_BOTTOM' ); ?>
+																</span>
+															</td>
+															<td>
+																<input class="text_area" type="text" size="100" name="defaultBboxConfigExtentBottom" value="<?php echo $catalogList['defaultBboxConfigExtentBottom']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+															</td>
+														</tr>
+														<tr>
+															<td valign="top" class="key">
+																<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_RIGHT' ); ?>">
+																	<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_RIGHT' ); ?>
+																</span>
+															</td>
+															<td>
+																<input class="text_area" type="text" size="100" name="defaultBboxConfigExtentRight" value="<?php echo $catalogList['defaultBboxConfigExtentRight']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+															</td>
+														</tr>
+														<tr>
+															<td valign="top" class="key">
+																<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_TOP' ); ?>">
+																	<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_TOP' ); ?>
+																</span>
+															</td>
+															<td>
+																<input class="text_area" type="text" size="100" name="defaultBboxConfigExtentTop" value="<?php echo $catalogList['defaultBboxConfigExtentTop']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+															</td>
+														</tr>
+																			
 													</tbody>
 												</table>
 											</fieldset>
