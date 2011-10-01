@@ -784,21 +784,23 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 		// Build a menu for the projections available
 		var projMenuItems = [];
 		Ext.each(componentParams.displayProjections, function(item, i) {
-			projMenuItems.push( {
+			projMenuItems.push( new Ext.menu.CheckItem ({
 				text : item.title,
 				checked : i === 0, // first item checked
-				group : 'proj',
-				checkHandler : this.onProjChecked,
+				group : 'proj',		
+				checkHandler : function(e){
+					this.onProjChecked(e);
+					},
 				scope : this,
 				stateId : i
-			});
+			}));
 		}, this);
 		var projMenu = {
 		
 			items : projMenuItems
 		};
 		this.projMenuButton = new Ext.Toolbar.Button( {
-			xtype:'tbbutton',
+
 			text : EasySDI_Map.lang.getLocal(projMenuItems[0].text), // TODO
 			// -
 			// read
@@ -807,6 +809,8 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 			// user
 			// settings
 			menu : projMenu
+			
+			
 		});
 		
 		return new Ext.Toolbar( {

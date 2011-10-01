@@ -43,7 +43,7 @@ JHTML::script('OpenLayers.js', $jsLoader->getPath("map","openlayers"));//'compon
 JHTML::script('SortableWFS.js', 'components/com_easysdi_map/classes/');
 JHTML::script('getfeatureinfo.js', 'components/com_easysdi_map/classes/');
 JHTML::script('proj4js-compressed.js', $jsLoader->getPath("map", "proj4js"));
-//JHTML::script('EPSG27572.js', 'components/com_easysdi_map/externals/proj4js/lib/defs/');
+JHTML::script('EPSG27582.js', $jsLoader->getPath("map", "proj4js","/lib/defs/"));
 // And the GeoExt library
 JHTML::script('SingleFile.js',  $jsLoader->getPath("map","geoext", "/lib/GeoExt/"));
 JHTML::script('GeoExt.js',  $jsLoader->getPath("map", "geoext", "/script/"));//'components/com_rwgis_map/externals/geoext/lib/');
