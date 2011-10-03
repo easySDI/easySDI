@@ -151,9 +151,7 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 
 		<!-- Title of the metadata -->
 		<div class="metadata-sheet">	
-		<div class="back-metadata-result">
-			<a class="back" href="javascript:history.back()" >Retour à la page précédente</a>
-		</div>
+		
 					
 					
 					
@@ -215,7 +213,7 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 											</span>
 											<p></p>
 										</xsl:if>	
-										
+																				
 										<span class="metadata-link">
 											<a>
 												<xsl:attribute name="class">modal</xsl:attribute>
