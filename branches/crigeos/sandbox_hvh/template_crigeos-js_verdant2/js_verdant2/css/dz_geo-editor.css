@@ -398,8 +398,8 @@ dl.tabs dt {
 }
 
 
-.AccountForm  dl.tabs dt.open, .editProductPane .open, #accountPane .open  {
-	background-color: #C8D9E9;
+.AccountForm  dl.tabs dt.open{
+	background-color: 		#DCDCDC;
 	font-weight:bold;
 }
 
@@ -412,10 +412,10 @@ dl.tabs dt {
 	margin:0px 0px 20px 0px;
 	border:none;
 }
-.current {
+ .AccountForm .current {
     display : block;
     clear : both;
-    background-color: #C8D9E9;
+    background-color: 	#DCDCDC;
 }
 
 .current dd{

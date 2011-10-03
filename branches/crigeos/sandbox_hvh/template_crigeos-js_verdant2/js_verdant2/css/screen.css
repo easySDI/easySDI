@@ -2051,7 +2051,7 @@ body.full .box.news-full, body.wide .box.news-full {
 
 
 /* Diverse generische Klassen */
-.hidden, hr, #header-search label {	
+.hidden,  #header-search label {	
 	position: absolute;
 	left: -1000px;
 	top: -1000px;
@@ -2499,22 +2499,48 @@ fieldset.x-panel-collapsed {
 }
 .mdsearchresult .mdtitle{
 	font-weight: bold;
+	color: #97B832;
+	font-size: 135%;
 }
 
 .mdsearchresult .mddescr{
 
 }
 
-.mdsearchresult .mdviewfile, .orderInfo .mdviewfile {
+.mdsearchresult , .orderInfo .mdviewfile {
 	padding: 1px 3px;
-	border:1px solid #b9b9b9;
-	font-weight: bold;
+	border-bottom:1px solid #b9b9b9;
+	
+}
+.mdsearchresult td {
+	
+	
+}
+.mdviewproduct a, .mdviewfile a{
+	text-decoration: none;
+	color: #444444 !important;
+    display: block;
+    font-size: 11px;
+    padding: 1px 1px 1px 1px;
+    background-color: #BBBCBD !important;
+    border-radius: 5px 5px 5px 5px;
+    line-height: 20px;
+    border: 0 none;
+    outline: 0 none;
+    margin:5px 5px 5px 0px;
+	padding:5px 5px 5px 5px;
+    text-align: center;
 }
 
-.mdsearchresult .mdviewproduct{
+ .mdviewproduct  a:hover, .mdviewfile a:hover {
+    color: #777777 !important;
+    background-color: #222222 !important;
+}
+
+.mdsearchresult {
 	padding: 1px 3px;
-	border:1px solid #b9b9b9;
-	font-weight: bold;
+	border-bottom:1px solid #b9b9b9;
+	
 }
 
 .catalog_controls,  .easysdi_search_button, .easysdi_clear_button{
