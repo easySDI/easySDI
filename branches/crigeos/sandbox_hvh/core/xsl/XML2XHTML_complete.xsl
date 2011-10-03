@@ -151,8 +151,8 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 
 		<!-- Title of the metadata -->
 		<div class="metadata-sheet">	
-		<div class="back-metadata-result">
-			<a class="back" href="javascript:history.back()" >Retour à la page précédente</a>
+		<div id="back-metadata-result">
+			<a class="back-link" href="javascript:history.back()" >Retour à la page précédente</a>
 		</div>
 					
 					
