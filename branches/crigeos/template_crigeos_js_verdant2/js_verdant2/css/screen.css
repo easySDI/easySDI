@@ -2,6 +2,7 @@
 
 /* Allgemeine Tag-Definitionen */
 body {
+	
 	background-image:  url("../media/bg-body.jpg");
 	background-repeat: repeat-y;
 	margin: 0;
@@ -2530,6 +2531,7 @@ fieldset.x-panel-collapsed {
     margin:5px 5px 5px 0px;
 	padding:5px 5px 5px 5px;
     text-align: center;
+   -moz-border-radius: 5px !important;
 }
 
  .mdviewproduct  a:hover, .mdviewfile a:hover {

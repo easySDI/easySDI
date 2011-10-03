@@ -427,11 +427,6 @@ div.userBlock {background: #173444 url(../images/style1/gradients.png) repeat-x 
 }
 
 /*Metadata details page*/
-.metadata-sheet{
-	margin:20px 40px 40px 40px !important;
-	background-color: white !important;
-	border-radius: 10px !important;
-}
 
 	
 .metadata-details{
@@ -870,6 +865,7 @@ div.userBlock {background: #173444 url(../images/style1/gradients.png) repeat-x 
     outline: 0 none;
     margin:5px 50px 5px 0px;
     text-align: center;
+    -moz-border-radius : 5px !important;
 }
 .metadata-links span.metadata-link a.modal:hover {
     color: #777777 !important;
@@ -889,6 +885,7 @@ div.userBlock {background: #173444 url(../images/style1/gradients.png) repeat-x 
     outline: 0 none;
     margin:5px 50px 5px 0px;
     text-align: center;
+    -moz-border-radius : 5px !important ; 
 }
 .metadata-links span.metadata-link a.link:hover {
     color: #777777 !important;
@@ -948,7 +945,6 @@ div.userBlock {background: #173444 url(../images/style1/gradients.png) repeat-x 
 /*Metadata details page*/
 .metadata-sheet{
 	margin:20px 40px 40px 40px !important;
-	background-color: white !important;
 	border-radius: 10px !important;
 }
 
@@ -1036,3 +1032,11 @@ div.userBlock {background: #173444 url(../images/style1/gradients.png) repeat-x 
 	color:black !important;
 }
 
+
+#menu .current {
+    clear: none;
+}
+
+#sbox-content body{
+background : #FFFFFF !important;
+}

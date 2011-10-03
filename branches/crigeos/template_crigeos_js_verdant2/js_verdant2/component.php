@@ -29,7 +29,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 	<link rel="stylesheet" href="<?php echo $this->baseurl ?>/templates/js_verdant2/css/templatestyle6.css" type="text/css" />
 
 </head>
-<body class="contentpane">
+<body class="contentpane" style="background:#FFFFFF !important">
 	<jdoc:include type="message" />
 	<jdoc:include type="component" />
 </body>
