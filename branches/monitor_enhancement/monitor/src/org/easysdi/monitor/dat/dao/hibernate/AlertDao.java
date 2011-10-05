@@ -5,11 +5,16 @@ import java.util.List;
 import org.easysdi.monitor.biz.alert.Alert;
 import org.easysdi.monitor.dat.dao.AlertDaoHelper;
 import org.easysdi.monitor.dat.dao.IAlertDao;
+
+
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.DetachedCriteria;
+
+
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
+
 
 /**
  * Provides alert persistance operations through Hibernate.
@@ -141,7 +146,7 @@ public class AlertDao extends HibernateDaoSupport implements IAlertDao {
         	if(sortField.equalsIgnoreCase("dateTime"))
         		sortField = "time";
         	if(sortField.equalsIgnoreCase("jobId"))
-        		sortField = "parentJob.config.jobName";
+        		sortField = "parentJob.jobId";
         		
         	if(direction.equals("ASC"))
         		search.addOrder(Order.asc(sortField)); 
