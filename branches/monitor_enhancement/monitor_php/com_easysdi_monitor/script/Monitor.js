@@ -4644,8 +4644,7 @@ Ext.onReady(function() {
 		renderer: function (value) {
 		//return the job name from its id from the job store. Isn't it beautiful?
 		return Ext.getCmp('JobGrid').store.getAt(Ext.getCmp('JobGrid').store.findExact('id', value)).get('name');
-	},
-	sortable: true
+		}
 	},{
 		header:EasySDI_Mon.lang.getLocal('status'),
 		dataIndex:"newStatusCode",
