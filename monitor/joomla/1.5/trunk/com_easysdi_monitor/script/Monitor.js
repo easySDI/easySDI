@@ -4644,8 +4644,7 @@ Ext.onReady(function() {
 		renderer: function (value) {
 		//return the job name from its id from the job store. Isn't it beautiful?
 		return Ext.getCmp('JobGrid').store.getAt(Ext.getCmp('JobGrid').store.findExact('id', value)).get('name');
-	},
-	sortable: true
+		}
 	},{
 		header:EasySDI_Mon.lang.getLocal('status'),
 		dataIndex:"newStatusCode",
@@ -4692,6 +4691,15 @@ Ext.onReady(function() {
 		loadMask:new Ext.LoadMask(Ext.getBody(), {msg:EasySDI_Mon.lang.getLocal('message wait')}),
 		store:store,
 		cm:cm,
+		listeners:{
+			
+			headerclick :function(grid, colnum){
+				if(grid.colModel.config[colnum].sortable == true)
+					this.getBottomToolbar().moveFirst();
+			}
+				
+		},
+
 		// paging bar on the bottom
 		/*
       No pagination because arraystore do not support load.
@@ -4719,37 +4727,7 @@ Ext.onReady(function() {
 			valueField:     'name',
 			emptyText: EasySDI_Mon.lang.getLocal('combo select a job'),
 			store:jobComboStore
-			/*
-	    listeners: {
-               select: function(cmb, rec) {
-                  alert(rec.id);
-               }
-             }
-			 */
-		}, '-',{
-			id: 'btnLatestAlerts',
-			ref:'../btnLatestAlerts',
-			iconCls:'icon-only-newest-alert',
-			text: EasySDI_Mon.lang.getLocal('only latest alerts'),
-			enableToggle: true,
-			toggleHandler: function (item, pressed){
-			//clear the store
-			store.removeAll();
-			//trigger the job alerts loading either for one or all jobs
 			
-			if(_alertsGrid.cbJobs.getValue() == 'All'){
-				var arrRec = jobComboStore.getRange();
-				for ( var i=0; i< arrRec.length; i++ ){
-					//create a store for all jobs and get their alerts
-					if(arrRec[i].get('name') != 'All')
-					   loadAlertData(arrRec[i].get('name'), i+1, arrRec.length);
-				}
-			}else{
-				if(_alertsGrid.cbJobs.getValue() != ""){
-					loadAlertData(_alertsGrid.cbJobs.getValue(), 1, 1);
-				}
-			}
-		}
 		}]
 	});
 
@@ -4806,17 +4784,13 @@ Ext.onReady(function() {
 
 					store.removeAll();
 					var aRec = this.getRange();
-					if(_alertsGrid.btnLatestAlerts.pressed){
-						//If there is at least one record
-						if(aRec.length > 0)
-							store.add(aRec[aRec.length - 1]);
-					}else{
+				
 						for ( var j=0; j< aRec.length; j++ )
 						{
 							//feed the grid store with the collected alerts
 							store.add(aRec[j]);
 						}
-					}
+					
 				}
 			}
 		});
