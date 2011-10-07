@@ -209,7 +209,13 @@ class SITE_catalog {
 			}
 
 			// Construction du filtre sur la BBOX
-			$selectedBoundary = JRequest::getVar('systemfilter_'.$searchFilter->guid,"");
+			
+			$query =  "SELECT * FROM #__sdi_searchcriteria where code ='definedBoundary'";
+			$database->setQuery( $query);
+
+			$boundaryFilter = $database->loadObject() ;
+			
+			$selectedBoundary = JRequest::getVar('systemfilter_'.$boundaryFilter->guid,"");
 			if($selectedBoundary!=""){
 				
 					$definedBoundary = array();
@@ -217,12 +223,12 @@ class SITE_catalog {
 
 					//http://webhelp.esri.com/arcims/9.2/general/mergedProjects/wfs_connect/wfs_connector/using_filters.htm
 					//http://code.google.com/apis/picasaweb/docs/2.0/reference.html, west south, east north
-					$query = $db->setQuery( "SELECT * FROM #__sdi_boundary where guid =".$selectedBoundary) ;
+					$query =  "SELECT * FROM #__sdi_boundary where guid ='".$selectedBoundary."'" ;
 					$database->setQuery( $query);
 
 					$definedBoundary = $database->loadObject() ;
 
-					/*$boundaryFilter = "
+				/*	$bboxfilter = "
 					 <ogc:BBOX>
 					 <ogc:PropertyName>gml:multiPointProperty</ogc:PropertyName>
 					 <gml:Box xmlns=\"http://www.opengis.net/cite/spatialTestSuite\" srsName=\"EPSG:4326\">
@@ -230,8 +236,8 @@ class SITE_catalog {
 					 </gml:Box>
 					 </ogc:BBOX>
 					 ";
-					 	
-					 */
+					 	*/
+					 
 					if($definedBoundary){
 						$minY = $definedBoundary->southbound;
 						$minX = $definedBoundary->westbound;
@@ -240,13 +246,14 @@ class SITE_catalog {
 							
 
 							
-						$bboxfilter ="<ogc:BBOX>
-								<ogc:PropertyName>ows:BoundingBox</ogc:PropertyName>
-								<gml:Envelope>
-									<gml:lowerCorner>$minY $minX</gml:lowerCorner>
-									<gml:upperCorner>$maxY $maxX</gml:upperCorner>
-								</gml:Envelope>
-							  </ogc:BBOX>";
+						$bboxfilter ="
+						 <ogc:BBOX>
+		                    <ogc:PropertyName>iso:BoundingBox</ogc:PropertyName>
+		                    <gml:Envelope xmlns:gml=\"http://www.opengis.net/gml\">
+		                        <gml:lowerCorner>".$minY." ".$minX."</gml:lowerCorner>
+		                        <gml:upperCorner>".$maxY." ". $maxX."</gml:upperCorner>
+		                    </gml:Envelope>
+		                </ogc:BBOX>";
 					}
 			}
 			else				
@@ -2648,7 +2655,7 @@ class SITE_catalog {
 		if($startPosition != 0)
 			$req .= "startPosition=\"".$startPosition."\" ";
 		
-		$req .= "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:gmd=\"http://www.isotc211.org/2005/gmd\" xsi:schemaLocation=\"http://www.opengis.net/cat/csw/2.0.2 http://schemas.opengis.net/csw/2.0.2/CSW-discovery.xsd\">\r\n";
+		$req .= "xmlns:ows=\"http://www.opengis.net/ows\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:gmd=\"http://www.isotc211.org/2005/gmd\" xsi:schemaLocation=\"http://www.opengis.net/cat/csw/2.0.2 http://schemas.opengis.net/csw/2.0.2/CSW-discovery.xsd\">\r\n";
 	
 		//Query section
 		//Types name
