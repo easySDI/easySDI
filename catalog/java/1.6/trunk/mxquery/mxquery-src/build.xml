@@ -287,7 +287,7 @@
 		</jar>
 	</target>	
 	
-	<target name="war" depends="jar">
+	<target name="war" depends="jar-15">
 		<echo message="Creating the war ... "/>
 		<mkdir dir="${war.dir}"/>
         <delete>
@@ -306,7 +306,7 @@
 		<copy file="${build.dir}/ch/ethz/mxquery/util/SingleSchemaExposer.class" todir="${utilservlet.dir}"/>
 		<copy file="${src.dir}/ch/ethz/mxquery/query/webservice/web.xml" todir="${webinf.dir}"/>
 		<copy file="${src.dir}/ch/ethz/mxquery/query/webservice/index.html" todir="${war.dir}"/>
-		<copy file="${dist.dir}/mxquery.jar" todir="${weblib.dir}"/>
+		<copy file="${dist.dir}/mxquery-15.jar" todir="${weblib.dir}"/>
 		<copy todir="${war.dir}"><fileset dir="${modules.dir}"/></copy>
 		<jar jarfile="${dist.dir}/MXQuery.war">
 			<fileset dir="${war.dir}"  includes="**/*.*"/>								
