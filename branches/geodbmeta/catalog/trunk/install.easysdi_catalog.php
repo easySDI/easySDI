@@ -1465,8 +1465,28 @@ function com_install(){
 			{
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}
+			
 		}
-		
+		if($version =="2.0.2"){			
+			
+	
+			
+			$query = "INSERT INTO #__sdi_list_attributetype (guid, code, name, description, created, createdby, label, defaultpattern, isocode, namespace_id) VALUES
+						('".helper_easysdi::getUniqueId()."', 'distance', 'distance', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'CATALOG_ATTRIBUTETYPE_DISTANCE', '[0-9\\.\\-]', 'Distance', 2)";	
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			else{
+				$version="2.0.3";
+				$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='CATALOG'";
+				$db->setQuery( $query);
+				if (!$db->query())
+				{
+					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+				}
+			}
+		}
 
 
 		/**
