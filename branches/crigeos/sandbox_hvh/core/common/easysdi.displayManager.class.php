@@ -2030,10 +2030,16 @@ class displayManager{
 		$XMLActionPDFLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", htmlentities(JRoute::_('./index.php?tmpl=component&option=com_easysdi_core&task=exportPdf&id='.$fileIdentifier.'&type='.$type.'&context='.$context)));
 		$XMLActionPDF->appendChild($XMLActionPDFLink);
 		
+		//Make PDF
+		$XMLActionmPDF = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:makePDF");
+		$XMLActionmPDF->setAttribute('id', 'makePdf');
+		$XMLActionmPDFLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", htmlentities(JRoute::_('./index.php?option=com_easysdi_catalog&task=getReport&format=makepdf&reporttype='.$type.'&lastVersion=yes&language='.$language->_lang.'&metadata_guid[]='.$fileIdentifier.'&metadatatype='.$type.'&context='.$context)));
+		$XMLActionmPDF->appendChild($XMLActionmPDFLink);
+		
 		//Export XML
 		$XMLActionXML = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:exportXML");
 		$XMLActionXML->setAttribute('id', 'exportXml');
-		$XMLActionXMLLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", htmlentities(JRoute::_('./index.php?tmpl=component&format=raw&option=com_easysdi_core&task=exportXml&id='.$fileIdentifier.'&type='.$type.'&context='.$context)));
+		$XMLActionXMLLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", htmlentities(JRoute::_('./index.php?format=raw&option=com_easysdi_core&task=exportXml&id='.$fileIdentifier.'&type='.$type.'&context='.$context)));
 		$XMLActionXML->appendChild($XMLActionXMLLink);
 		
 		//Print
@@ -2043,6 +2049,7 @@ class displayManager{
 		$XMLActionPrint->appendChild($XMLActionPrintLink);
 		
 		$XMLAction->appendChild($XMLActionPDF);
+		$XMLAction->appendChild($XMLActionmPDF);
 		$XMLAction->appendChild($XMLActionXML);
 		$XMLAction->appendChild($XMLActionPrint);
 		
