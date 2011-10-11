@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+<layout title="Base">
+<message>
+<![CDATA[Description of my layout.]]>
+</message>
+</layout>
+<state>
+<name>Easysdi Shop</name>
+<description>A description</description>
+  <url>
+    <param name="task" type="list" default="listOrders" label="Type" description="Type of menu">
+      <option value="listOrders">List Orders</option>
+      <option value="listProductMetadata">List Metadata</option>
+      <option value="listProduct">List Product</option>
+      <option value="listOrdersForProvider">Orders for Provider</option>
+      <option value="manageFavoriteProduct">Favorite Products</option>
+    </param>
+  </url>
+  <params>
+  </params>
+</state>
+</metadata>
