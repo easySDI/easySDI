@@ -34,9 +34,9 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 		config.items = [ this.GeoExtMapPanel ];
 
 		
-			config.items.push(this._getToolbar());
+		config.items.push(this._getToolbar());
 		
-			config.items.push(this._getToolbarSouth());
+		config.items.push(this._getToolbarSouth());
 		
 
 		EasySDI_Map.MapPanel.superclass.constructor.apply(this, arguments);
@@ -406,10 +406,15 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 		// this.map.addControl(new OpenLayers.Control.MousePosition());
 
 		// Adds an overview control to the map
+		//ov_options,
+		options.numZoomLevels = 1 ;
 		if (componentDisplayOption.MapOverviewEnable) {
-			var ovControl = new OpenLayers.Control.OverviewMap( {
-				mapOptions : ov_options,
-				size : new OpenLayers.Size(this.overviewWidth, this.overviewHeight)
+			
+	
+			var ovControl = new OpenLayers.Control.OverviewMap( {				
+				
+				maxRatio : 100000
+			
 			});
 			// This forces the overview to never pan or zoom, since it
 			// is always
@@ -417,7 +422,12 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 			ovControl.isSuitableOverview = function() {
 				return true;
 			};
+		
+
 			this.map.addControl(ovControl);
+			
+	        
+
 		}
 
 		//if (componentDisplayOption.ToolBarEnable) {
@@ -675,7 +685,14 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 	_getToolbarSouth : function() {
 		// Annotation toolbar
 		// Get the annotation styles to populate the dropdown list
-		var styleDropDownItems = this._createAnnotationStyleDropDownItems();
+		var styleDropDownItems;
+		if(componentDisplayOption.selectFeatureButtonEnable)
+			styleDropDownItems= this._createAnnotationStyleDropDownItems();
+		else
+			styleDropDownItems={
+					xtype :'tbspacer'
+			}
+		
 		if(componentDisplayOption.rectangleButtonEnable ){
 		this.rectangleButton = new Ext.Toolbar.Button( {
 			iconCls : 'rectangleBtn',
@@ -817,11 +834,13 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 			region : "south",
 			autoHeight : true,
 			items : [ this.rectangleButton, this.polygonButton, this.pointButton, this.pathButton, this.modifyFeatureButton,
-					this.selectFeatureButton, {
+					this.selectFeatureButton, componentDisplayOption.selectFeatureButtonEnable ? {
 						iconCls : 'styleChooserBtn',
 						menu : {
 							items : styleDropDownItems
 						}
+					} : {
+						xtype : 'tbfill'
 					}, {
 						xtype : 'tbfill'
 					}, this.projMenuButton, new Ext.Toolbar.Item(mouseposDiv) ]
@@ -1021,6 +1040,7 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 			this.zoomOutBoxButton = {xtype:'tbspacer'}			
 		}
 		
+		var showScale = true ;
 		if(componentDisplayOption.zoomToScaleFieldEnable ){
 		this.zoomToScaleField = new Ext.form.TextField( {
 			height : 20,
@@ -1029,6 +1049,7 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 			readOnly : false,
 			enableKeyEvents : true
 		});}else{
+			showScale= false;
 			this.zoomToScaleField = {xtype:'tbspacer'}			
 		}
 		
@@ -1107,7 +1128,7 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 				xtype : 'tbseparator'
 			}, this.zoomInBoxButton, this.zoomOutBoxButton, this.zoomToMaxExtentButton, this.navButton, this.getFeatureButton, {
 				xtype : 'tbseparator'
-			}, EasySDI_Map.lang.getLocal('1:'), this.zoomToScaleField, {
+			}, showScale ? EasySDI_Map.lang.getLocal('1:') : {xtype : 'tbfill'} , this.zoomToScaleField, {
 				xtype : 'tbseparator'
 			},
 			// this.selectButton,
