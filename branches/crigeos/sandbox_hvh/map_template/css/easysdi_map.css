@@ -525,3 +525,35 @@ div.x-view-selected {
 	width: 100%;  
 	text-align: center;
 }
+
+.x-btn-small tr {
+    float: left;
+    display: inline;
+    valign: center;
+}
+
+tr .x-btn-tl, tr .x-btn-tc, tr .x-btn-tr, tr .x-btn-bl, tr .x-btn-bc, tr .x-btn-br {
+    float: left;
+    display: inline;
+    width: 0px;
+}
+/*
+.x-toolbar-cell {
+    padding: 0px!important;
+    margin: 0px!important;
+    position: relative;
+    float: left;
+    display: inline;
+    height: auto;
+    vertical-align: middle;
+}*/
+
+.x-btn-icon .x-btn-center .x-btn-text {
+    background-position: center center;
+    background-repeat: no-repeat;
+    cursor: pointer;
+    height: 16px;
+    padding: 0;
+    white-space: nowrap;
+    width: 16px;
+}
