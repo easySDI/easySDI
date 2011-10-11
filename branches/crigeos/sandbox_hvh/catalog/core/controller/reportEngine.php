@@ -23,11 +23,11 @@ class reportEngine{
 		$user =& JFactory::getUser();
 		$database=& JFactory::getDBO();
 		
-		/* D�but du code de g�n�ration du rapport */
+		/* Début du code de génération du rapport */
 		$query="";
 		$results=array();
 		
-		// R�cup�ration des param�tres, en minuscules (sauf metadata_guid[] qu'on ne touche pas)
+		// Récupération des paramétres, en minuscules (sauf metadata_guid[] qu'on ne touche pas)
 		$params = array();
 		$objecttype_code = strtolower(JRequest::getVar ('metadatatype', ''));
 		$params['metadatatype'] = $objecttype_code;
@@ -44,11 +44,11 @@ class reportEngine{
 		$context = strtolower(JRequest::getVar ('context', ''));
 		$params['context'] = $context;
 		
-		// Contr�ler la validit� de la requ�te avant de la passer plus loin
+		// Contrôler la validité de la requête avant de la passer plus loin
 		if (!reportEngine::verifyRequest($params, $user))
 			exit;
 		
-		// Rassembler les guids de m�tadonn�es indiqu�s en une string de la forme (guid1, guid2, guid3, ..., guidn)
+		// Rassembler les guids de métadonnées indiqués en une string de la forme (guid1, guid2, guid3, ..., guidn)
 		$guids = "";
 		foreach ($metadata_guid as &$mg)
 		{
@@ -56,7 +56,7 @@ class reportEngine{
 		}
 		$guids = implode(",", $metadata_guid);
 		
-		// R�cup�rer tous les guids qui sont publics
+		// Récupérer tous les guids qui sont publics
 		$query = "	SELECT m.guid as metadata_guid, o.id as object_id
 					FROM #__sdi_metadata m
 					INNER JOIN #__sdi_objectversion ov ON ov.metadata_id=m.id
@@ -73,18 +73,18 @@ class reportEngine{
 			$query .= " AND m.guid IN (".$guids.")";
 		
 		
-		// Qui sont du type indiqu� dans le param�tre metadatatype
+		// Qui sont du type indiqué dans le paramétre metadatatype
 		$query .= " AND ot.code = '".$objecttype_code."'";
 		$database->setQuery($query);
 		$results = $database->loadObjectList();
 		//echo $database->getQuery()."<br>";		
 		
-		// Si c'est la derni�re version qui est demand�e, il faut faire des traitements suppl�mentaires
+		// Si c'est la derniére version qui est demandée, il faut faire des traitements supplémentaires
 		if ($lastVersion == "yes")
 		{
 			foreach ($results as &$result)
 			{
-				// Pour chaque m�tadonn�e qui a satisfait aux crit�res pr�c�dents, trouver sa derni�re version
+				// Pour chaque métadonnée qui a satisfait aux critéres précédents, trouver sa derniére version
 				$query = "SELECT m.guid as metadata_guid 
 									  FROM #__sdi_objectversion ov 
 									  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
@@ -110,25 +110,25 @@ class reportEngine{
 	
 			$filter = "<ogc:Filter xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:gml=\"http://www.opengis.net/gml\">".$filter."</ogc:Filter>";
 			
-			// Construire une requ�te Geonetwork GetRecords pour demander les métadonnées choisies pour le rapport
+			// Construire une requéte Geonetwork GetRecords pour demander les métadonnées choisies pour le rapport
 			$xmlBody = SITE_catalog::BuildCSWRequest(10, 1, "results", "gmd:MD_Metadata", "full", "1.1.0", $filter, "title", "ASC", 'COMPLETE');
 			
 			//echo htmlspecialchars($xmlBody);die();
 
-			// Envoi de la requ�te
+			// Envoi de la requéte
 			$catalogUrlBase = config_easysdi::getValue("catalog_url");
 			$xmlResponse = ADMIN_metadata::CURLRequest("POST", $catalogUrlBase,$xmlBody);
 			$cswResults = DOMDocument::loadXML($xmlResponse);
 
 			//echo htmlspecialchars($cswResults->saveXML())."<hr>";die();
 
-			// Traitement du retour CSW pour g�n�rer le rapport
+			// Traitement du retour CSW pour générer le rapport
 			if ($cswResults !=null and $cswResults !="")
 			{
-				// Contr�ler si le XML ne contient pas une erreur
+				// Contrôler si le XML ne contient pas une erreur
 				if ($cswResults->childNodes->item(0)->nodeName == "ows:ExceptionReport")
 				{
-					// Retourner une erreur au format XML, format�e par un XSl
+					// Retourner une erreur au format XML, formatée par un XSl
 					$xmlError = new DomDocument();
 					$style = new DomDocument();
 					$xmlError->load(JPATH_COMPONENT_ADMINISTRATOR.DS.'xsl'.DS.'getreport'.DS.'OWSEXCEPTION.xml');
@@ -203,7 +203,7 @@ class reportEngine{
 		}
 		else
 		{
-			// Retourner une erreur au format XML, format�e par un XSl
+			// Retourner une erreur au format XML, formatée par un XSl
 			$xmlError = new DomDocument();
 			$style = new DomDocument();
 			$xmlError->load(JPATH_COMPONENT_ADMINISTRATOR.DS.'xsl'.DS.'getreport'.DS.'NOMETADATA.xml');
@@ -261,7 +261,7 @@ class reportEngine{
 					//avoid JavaBrigde to fail
 					file_put_contents($fopfotmp, $file);
 					
-					//G�n�ration du document PDF sous forme de fichier
+					//Génération du document PDF sous forme de fichier
 					$res = "";
 					//Url to the export pdf servlet
 					$url = $exportpdf_url."?cfg=fop.xml&fo=$tmp.fo&pdf=$tmp.pdf";
@@ -296,7 +296,7 @@ class reportEngine{
 	
 	/*
 	 * Nom: verifyRequest
-	 * But: Contr�ler que la requ�te contient bien tous les param�tres requis et qu'ils ont les valeurs attendues
+	 * But: Contréler que la requéte contient bien tous les paramétres requis et qu'ils ont les valeurs attendues
 	 */
 	function verifyRequest($params, $user)
 	{
@@ -305,7 +305,7 @@ class reportEngine{
 		{
 			if ($param == '' or count($param) == 0)
 			{
-				// Retourner une erreur au format XML, format�e par un XSl
+				// Retourner une erreur au format XML, formatée par un XSl
 				$xmlError = new DomDocument();
 				$style = new DomDocument();
 				$xmlError->load(JPATH_COMPONENT_ADMINISTRATOR.DS.'xsl'.DS.'getreport'.DS.'MISSINGPARAMETER.xml');
@@ -326,7 +326,7 @@ class reportEngine{
 		$formatValues = array ('xml', 'csv', 'rtf', 'xhtml', 'foppdf', 'makepdf');
 		if (array_search($params['format'], $formatValues) === false)
 		{
-			// Retourner une erreur au format XML, format�e par un XSl
+			// Retourner une erreur au format XML, formatée par un XSl
 			$xmlError = new DomDocument();
 			$style = new DomDocument();
 			$xmlError->load(JPATH_COMPONENT_ADMINISTRATOR.DS.'xsl'.DS.'getreport'.DS.'FORMATINVALID.xml');
@@ -345,7 +345,7 @@ class reportEngine{
 		$lastversionValues = array ('yes', 'no');
 		if (array_search($params['lastVersion'], $lastversionValues) === false)
 		{
-			// Retourner une erreur au format XML, format�e par un XSl
+			// Retourner une erreur au format XML, formatée par un XSl
 			$xmlError = new DomDocument();
 			$style = new DomDocument();
 			$xmlError->load(JPATH_COMPONENT_ADMINISTRATOR.DS.'xsl'.DS.'getreport'.DS.'LASTVERSIONINVALID.xml');
