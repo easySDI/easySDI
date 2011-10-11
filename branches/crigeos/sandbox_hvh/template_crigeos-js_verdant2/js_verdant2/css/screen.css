@@ -2,6 +2,7 @@
 
 /* Allgemeine Tag-Definitionen */
 body {
+	
 	background-image:  url("../media/bg-body.jpg");
 	background-repeat: repeat-y;
 	margin: 0;
@@ -598,7 +599,7 @@ body.one-tab #content-col-nav ul {
 }
 
 
-/* Content-Bereich */
+
 #content-col-main {
 	float: left;
 	line-height: 18px;
@@ -632,33 +633,6 @@ body.error #content-col-main {
 	margin-bottom: 100px;
 }
 
-#content-col-main h1 {
-	margin: 0 0 25px 0;
-	padding: 0;
-	font-size: 1.5em;
-	font-weight: normal;
-	color: #323232;
-}
-
-#content-col-main h2 {
-	margin: 25px 0 10px 0;
-	padding: 0;
-	font-size: 1.3em;
-	font-weight: bold;
-	color: #323232;
-}
-
-#content-col-main h3 {
-	font-size: 1em;
-	margin: 20px 0 5px 0;
-	color: #484848;
-}
-
-#content-col-main h4 {
-	font-size: 0.90em;
-	margin: 15px 0 3px 0;
-	color: #484848;
-}
 
 #content-col-main p {
 	margin: 0 0 10px 0;
@@ -712,9 +686,7 @@ body.error #content-col-main {
 	border-right: 0;
 }
 
-#content-col-main td, #content-col-main th {
-	padding: 3px 5px;
-}
+
 
 #content-col-main table.alternative td, #content-col-main table.alternative th {
 	border-left: 0;
@@ -2466,31 +2438,18 @@ fieldset.x-panel-collapsed {
 }
 
 
-	.inside3 {
+.inside3 {
 	background:none;
-	}
-	/*.contentheading{	
-	    margin: 0 0 0 20px ! important;
-	    padding: 0 ! important;
-	}
+}
 	
-	.contentin h3{	
-	    margin: 0 0 0 20px ! important;
-	    padding: 0 !important;
-	}*/
-	
-	.mdActionOrder{
+.mdActionOrder{
 	width:95px;
 }
 
-.mdActionViewFile
+.mdActionViewFile , .mdActionViewProduct, .mdActionDownloadProduct
 {
 	width:95px;
-}
-
-.mdActionViewProduct
-{
-	width:145px;
+	padding-bottom:10px !important;
 }
 
 .mdActionAddToCart
@@ -2500,7 +2459,7 @@ fieldset.x-panel-collapsed {
 .mdsearchresult .mdtitle{
 	font-weight: bold;
 	color: #97B832;
-	font-size: 135%;
+	font-size: 1em;
 }
 
 .mdsearchresult .mddescr{
@@ -2509,39 +2468,15 @@ fieldset.x-panel-collapsed {
 
 .mdsearchresult , .orderInfo .mdviewfile {
 	padding: 1px 3px;
-	border-bottom:1px solid #b9b9b9;
-	
-}
-.mdsearchresult td {
-	
-	
-}
-.mdviewproduct a, .mdviewfile a{
-	text-decoration: none;
-	color: #444444 !important;
-    display: block;
-    font-size: 11px;
-    padding: 1px 1px 1px 1px;
-    background-color: #BBBCBD !important;
-    border-radius: 5px 5px 5px 5px;
-    line-height: 20px;
-    border: 0 none;
-    outline: 0 none;
-    margin:5px 5px 5px 0px;
-	padding:5px 5px 5px 5px;
-    text-align: center;
 }
 
- .mdviewproduct  a:hover, .mdviewfile a:hover {
-    color: #777777 !important;
-    background-color: #222222 !important;
+
+.mdsearchresult .separator {
+	border-top:1px solid #C8D9E9;
+	padding:10px;
+	border-bottom:1px solid #CCCCCC;
 }
 
-.mdsearchresult {
-	padding: 1px 3px;
-	border-bottom:1px solid #b9b9b9;
-	
-}
 
 .catalog_controls,  .easysdi_search_button, .easysdi_clear_button{
 	
@@ -2555,11 +2490,6 @@ fieldset.x-panel-collapsed {
 
 }
 
-.contentin .mdCatContent  tbody tr td , .contentin .searchCriteria tbody tr td {
-	
-	padding-left : 0px !important;
-
-}
 
 
 .contentin #ordersListForm td table {
