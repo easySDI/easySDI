@@ -338,6 +338,16 @@ if ($catalogItem > 0){
 										</td>
 									</tr>
 									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_THESAURUSRURL' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_THESAURUSRURL' ); ?>
+											</span>
+										</td>
+										<td>
+											<input class="text_area" type="text" size="50" name="thesaurusUrl" value="<?php echo $catalogList['thesaurusUrl']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+										</td>
+									</tr>
+									<tr>
 										<td valign="top" class="key" colspan="2">
 											<fieldset class="adminform">
 												<legend>
@@ -356,8 +366,7 @@ if ($catalogItem > 0){
 															<td><textarea class="textarea resolutions"
 																	style="height: 200px; width: 440px;"
 																	name="defaultBboxConfig"
-																	maxlength="<?php  echo $fieldsLength['value'];?>" /> <?php  echo $catalogList['defaultBboxConfig']->value; ?>
-																</textarea>
+																	maxlength="<?php  echo $fieldsLength['value'];?>" /><?php  echo trim($catalogList['defaultBboxConfig']->value);?></textarea>
 															</td>
 														</tr>
 														<tr>
@@ -367,7 +376,7 @@ if ($catalogItem > 0){
 																</span>
 															</td>
 															<td>
-																<input class="text_area" type="text" size="100" name="defaultBboxConfigExtentLeft" value="<?php echo $catalogList['defaultBboxConfigExtentLeft']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+																<input class="text_area" type="text" size="100" name="defaultBboxConfigExtentLeft" value="<?php echo trim($catalogList['defaultBboxConfigExtentLeft']->value); ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
 															</td>
 														</tr>
 														<tr>
@@ -377,7 +386,7 @@ if ($catalogItem > 0){
 																</span>
 															</td>
 															<td>
-																<input class="text_area" type="text" size="100" name="defaultBboxConfigExtentBottom" value="<?php echo $catalogList['defaultBboxConfigExtentBottom']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+																<input class="text_area" type="text" size="100" name="defaultBboxConfigExtentBottom" value="<?php echo trim($catalogList['defaultBboxConfigExtentBottom']->value); ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
 															</td>
 														</tr>
 														<tr>
@@ -387,7 +396,7 @@ if ($catalogItem > 0){
 																</span>
 															</td>
 															<td>
-																<input class="text_area" type="text" size="100" name="defaultBboxConfigExtentRight" value="<?php echo $catalogList['defaultBboxConfigExtentRight']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+																<input class="text_area" type="text" size="100" name="defaultBboxConfigExtentRight" value="<?php echo trim($catalogList['defaultBboxConfigExtentRight']->value); ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
 															</td>
 														</tr>
 														<tr>
@@ -397,7 +406,7 @@ if ($catalogItem > 0){
 																</span>
 															</td>
 															<td>
-																<input class="text_area" type="text" size="100" name="defaultBboxConfigExtentTop" value="<?php echo $catalogList['defaultBboxConfigExtentTop']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+																<input class="text_area" type="text" size="100" name="defaultBboxConfigExtentTop" value="<?php echo trim($catalogList['defaultBboxConfigExtentTop']->value); ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
 															</td>
 														</tr>
 																			

@@ -262,6 +262,39 @@ class ADMIN_config {
 			if (!$database->query()) {			
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes(trim($_POST['defaultBboxConfig']))."\" WHERE code = 'defaultBboxConfig'");
+			if (!$database->query()) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes(trim($_POST['defaultBboxConfigExtentLeft']))."\" WHERE code = 'defaultBboxConfigExtentLeft'");
+			if (!$database->query()) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes(trim($_POST['defaultBboxConfigExtentBottom']))."\" WHERE code = 'defaultBboxConfigExtentBottom'");
+			if (!$database->query()) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes(trim($_POST['defaultBboxConfigExtentRight']))."\" WHERE code = 'defaultBboxConfigExtentRight'");
+			if (!$database->query()) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes(trim($_POST['defaultBboxConfigExtentTop']))."\" WHERE code = 'defaultBboxConfigExtentTop'");
+			if (!$database->query()) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes(trim($_POST['mapMinResolution']))."\" WHERE code = 'mapMinResolution'");
+			if (!$database->query()) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes(trim($_POST['mapMaxResolution']))."\" WHERE code = 'mapMaxResolution'");
+			if (!$database->query()) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes(trim($_POST['thesaurusUrl']))."\" WHERE code = 'thesaurusUrl'");
+			if (!$database->query()) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
 		}
 		
 		// Sauvegarde des cl�s SHOP
@@ -479,35 +512,7 @@ class ADMIN_config {
 			if (!$database->query()) {			
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
-			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['defaultBboxConfig'])."\" WHERE code = 'defaultBboxConfig'");
-			if (!$database->query()) {			
-				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			}
-			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['defaultBboxConfigExtentLeft'])."\" WHERE code = 'defaultBboxConfigExtentLeft'");
-			if (!$database->query()) {			
-				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			}
-			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['defaultBboxConfigExtentBottom'])."\" WHERE code = 'defaultBboxConfigExtentBottom'");
-			if (!$database->query()) {			
-				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			}
-			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['defaultBboxConfigExtentRight'])."\" WHERE code = 'defaultBboxConfigExtentRight'");
-			if (!$database->query()) {			
-				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			}
-			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['defaultBboxConfigExtentTop'])."\" WHERE code = 'defaultBboxConfigExtentTop'");
-			if (!$database->query()) {			
-				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			}
 			
-			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['mapMinResolution'])."\" WHERE code = 'mapMinResolution'");
-			if (!$database->query()) {			
-				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			}
-			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['mapMaxResolution'])."\" WHERE code = 'mapMaxResolution'");
-			if (!$database->query()) {			
-				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			}
 		}
 	}
 
