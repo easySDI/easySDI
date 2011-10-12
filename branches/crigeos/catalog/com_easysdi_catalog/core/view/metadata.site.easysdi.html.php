@@ -24,7 +24,15 @@ defined('_JEXEC') or die('Restricted access');
 
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
-					
+//jimport( 'joomla.application.component.view' );
+?>
+<script>
+var thesaurusConfig = '<?php echo config_easysdi::getValue("thesaurusUrl");?>'
+
+</script>
+
+<?php
+
 JHTML::script('ext-base.js', 'administrator/components/com_easysdi_catalog/ext/adapter/ext/');
 JHTML::script('ext-all.js', 'administrator/components/com_easysdi_catalog/ext/');
 JHTML::script('catalogMapPanel.js', 'administrator/components/com_easysdi_catalog/js/');
@@ -2949,6 +2957,7 @@ else
 															      appPath: '".$uri->base(true)."/administrator/components/com_easysdi_catalog/js/',
 															      returnPath: false,
 															      returnInspire: true,
+															      thesaurusUrl:'".thesaurusConfig."',
 															      width: 300, 
 															      height:400,
 															      win_title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_THESAURUSGEMET_ALERT'))."',
@@ -4373,6 +4382,7 @@ else
 															      appPath: '".$uri->base(true)."/administrator/components/com_easysdi_catalog/js/',
 															      returnPath: false,
 															      returnInspire: true,
+															       thesaurusUrl:'".thesaurusConfig."',
 															      width: 300, 
 															      height:400,
 															      win_title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_THESAURUSGEMET_ALERT'))."',

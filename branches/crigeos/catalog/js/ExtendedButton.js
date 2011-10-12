@@ -113,6 +113,7 @@ Ext.override(Ext.Button, {
 											      appPath: thesMaster.appPath,
 											      returnPath: false,
 											      returnInspire: true,
+											      thesaurusUrl : thesaurusConfig,
 											      width: 300, 
 											      height:400,
 											      win_title: thesMaster.win_title,
