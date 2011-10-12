@@ -1472,20 +1472,54 @@ function com_install(){
 	
 			
 			$query = "INSERT INTO #__sdi_list_attributetype (guid, code, name, description, created, createdby, label, defaultpattern, isocode, namespace_id) VALUES
-						('".helper_easysdi::getUniqueId()."', 'distance', 'distance', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'CATALOG_ATTRIBUTETYPE_DISTANCE', '[0-9\\.\\-]', 'Distance', 2)";	
+						('".helper_easysdi::getUniqueId()."', 'distance', 'distance', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'CATALOG_ATTRIBUTETYPE_DISTANCE', '[0-9\\.\\-]', 'Distance', 2), 
+						('".helper_easysdi::getUniqueId()."', 'integer', 'integer', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'CATALOG_ATTRIBUTETYPE_INTEGER', '[0-9]', 'Integer', 2)";	
+			
+			$updateOk = false ;
 			$db->setQuery( $query);
 			if (!$db->query()) {
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}else{
+				$updateOk = true;
 			}
-			else{
-				$version="2.0.3";
-				$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='CATALOG'";
+		
+			if($updateOk){
+				$query = "select id from #__sdi_list_attributetype where code='distance'";
 				$db->setQuery( $query);
-				if (!$db->query())
-				{
-					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+				$id = $db->loadResult();
+				if($id){
+						
+					$query = "INSERT INTO #__sdi_list_renderattributetype (attributetype_id, rendertype_id) VALUES (".$id.",5)";
+					$db->setQuery( $query);
+					if (!$db->query()) {
+						$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+					}
+						
 				}
+				
+				$query = "select id from #__sdi_list_attributetype where code='integer'";
+				$db->setQuery( $query);
+				$id = $db->loadResult();
+				if($id){
+						
+					$query = "INSERT INTO #__sdi_list_renderattributetype (attributetype_id, rendertype_id) VALUES (".$id.",5)";
+					$db->setQuery( $query);
+					if (!$db->query()) {
+						$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+					}
+						
+				}
+
 			}
+			
+			$version="2.0.3";
+			$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='CATALOG'";
+			$db->setQuery( $query);
+			if (!$db->query())
+			{
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
 		}
 
 

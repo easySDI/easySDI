@@ -2224,6 +2224,10 @@ else
 								break;
 							// Number
 							case 4:
+								// gco-distance
+							case 12:
+								// gco-Integer
+							case 13:
 								// Traitement de la classe enfant
 								//echo "Recherche de ".$type_isocode." dans ".$attributeScope->nodeName."<br>";
 								//$node = $xpathResults->query($child->attribute_isocode."/".$type_isocode, $attributeScope);
@@ -2261,6 +2265,8 @@ else
 								}
 								
 								break;
+								
+							
 							// Date
 							case 5:
 								// Traitement de la classe enfant
@@ -3165,8 +3171,8 @@ else
 							case 3:
 								// Le else n'existe pas pour les langues
 								break;
-							// Number
-							case 4:
+							// Number//distance/integer
+							case 4:case 12:case 13:
 								// Selon le rendu de l'attribut, on fait des traitements diff�rents
 								switch ($child->rendertype_id)
 								{
@@ -3918,8 +3924,8 @@ else
 									break;
 							}
 							break;
-						// Number
-						case 4:
+						// Number // distance/integer
+						case 4:case 12:case 13:
 							// Selon le rendu de l'attribut, on fait des traitements diff�rents
 							switch ($child->rendertype_id)
 							{
