@@ -24,6 +24,7 @@ class HTML_preview{
 		$db =& JFactory::getDBO();
 		$query = "SELECT p.* FROM #__sdi_product p
 					   INNER JOIN #__sdi_objectversion ov
+					   ON p.objectversion_id = ov.id
 					   WHERE ov.metadata_id = '$id'"; 
 		$db->setQuery( $query);
 		$rowProduct = $db->loadObject();
@@ -190,6 +191,7 @@ class HTML_preview{
 			    layer<?php echo $i; ?> = new OpenLayers.Layer.WMTS( {
 						name : "<?php echo $row->name; ?>",
 						isBaseLayer:true,
+						maxExtent: new OpenLayers.Bounds(<?php echo $row->maxextent; ?>),
 	                    url : "<?php echo $row->url; ?>",
 	                    format : "<?php echo $row->imgformat; ?>",
 	                    transparent: 'true',  
@@ -213,7 +215,7 @@ class HTML_preview{
 					"<?php echo $rowProduct->id; ?>",
                     "<?php echo $rowProduct->viewurlwms; ?>",
                     {
-                        isBaseLayer:true,layers: '<?php echo $rowProduct->viewlayers; ?>', 
+                        isBaseLayer:false,layers: '<?php echo $rowProduct->viewlayers; ?>', 
                     	format : "<?php echo $rowProduct->viewimgformat; ?>",
                     	transparent: "true"
                     },                                          

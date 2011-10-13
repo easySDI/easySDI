@@ -437,7 +437,7 @@ class HTML_basemap {
 							</tr>
 							<tr>
 								<td class="key"><?php echo JText::_("SHOP_BASEMAP_RESTRICTEDRESOL"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100"  name="restrictedresol" id="restrictedresol"  <?php if($isScale) echo 'disabled'; ?> value="<?php echo $rowBasemap->restrictedresol; ?>" /></td>							
+								<td><input class="inputbox" type="text" size="50" maxlength="500"  name="restrictedresol" id="restrictedresol"  <?php if($isScale) echo 'disabled'; ?> value="<?php echo $rowBasemap->restrictedresol; ?>" /></td>							
 							</tr>
 								
 						</table>
