@@ -69,28 +69,7 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 		</xsl:variable>
 		
 
-		<!-- Download Links -->
-		<xsl:variable name="mPDF">
-			<xsl:value-of select="./sdi:Metadata/sdi:action/sdi:makePDF/sdi:link" />
-		</xsl:variable>
-		<xsl:variable name="downloadPDF">
-			<xsl:value-of select="./sdi:Metadata/sdi:action/sdi:exportPDF/sdi:link" />
-		</xsl:variable>
-		<xsl:variable name="exportXML">
-			<xsl:value-of select="./sdi:Metadata/sdi:action/sdi:exportXML/sdi:link" />
-		</xsl:variable>
-		<xsl:variable name="orderproduct">
-			<xsl:value-of select="./sdi:Metadata/sdi:action/sdi:order/sdi:link" />
-		</xsl:variable>
-		<xsl:variable name="print">
-			<xsl:value-of select="./sdi:Metadata/sdi:action/sdi:print/sdi:link" />
-		</xsl:variable>
-		<xsl:variable name="downloadProduct">
-			<xsl:value-of select="./sdi:Metadata/sdi:action/sdi:downloadProduct/sdi:link" />
-		</xsl:variable>
-		<xsl:variable name="previewProduct">
-			<xsl:value-of select="./sdi:Metadata/sdi:action/sdi:previewProduct/sdi:link" />
-		</xsl:variable>
+
 
 		<!-- Dates -->
 		<xsl:variable name="datetimecreated">
@@ -156,21 +135,14 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 		<html>
 
 <head>
-
-<link rel="stylesheet" href="/crigeos/templates/crigeos/css/screen.css" type="text/css" />
-<link rel="stylesheet" href="/crigeos/templates/crigeos/css/layout.css" type="text/css" />
-<link rel="stylesheet" href="/crigeos/templates/crigeos/css/subsite.css" type="text/css" />
-<link rel="stylesheet" href="/crigeos/templates/crigeos/css/dz_geo-editor.css"  type="text/css" /> 
-<link rel="stylesheet" href="/crigeos/templates/crigeos/css/templatestyle6.css" type="text/css" />
+<link rel="stylesheet"  href="/crigeos/templates/crigeos/css/templatestyle6.css" type="text/css" />
+<link rel="stylesheet"  href="/crigeos/templates/crigeos/css/screen.css" type="text/css" />
+<link rel="stylesheet"  href="/crigeos/templates/crigeos/css/layout.css" type="text/css" />
 <link rel="stylesheet" href="/crigeos/templates/crigeos/css/core.css" type="text/css" />
-
-
 </head>
 
 <body id="pdfbody" class="light static">
-
 	<div class="inside1">
-		
 			<div class="metadata-details">			
 					<div class="metadata-title">
 						<h1>
@@ -178,12 +150,14 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 						</h1>
 					</div>
 									
-					<hr></hr>
+					<hr width="100%" ></hr>
+					
 					
 					<table class="metadata-header">
 						<tr>
-							<td >
-								<div class="metadata-abstract">
+							<td width="80%">
+								<br></br>
+								<div  class="metadata-abstract">
 									<p>
 									<xsl:choose>
 										<xsl:when test="string-length($abstract-fr) > 0">
@@ -195,11 +169,15 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 									</xsl:choose>
 									</p>
 								</div>
+								
 							</td>
 							
 						</tr>
+						<tr></tr>
+						<tr></tr>
 						<tr>
 							<td>
+								<br></br>
 								<div class="metadata-resume">
 									<table class="metadata-table-short">
 										<tr>
@@ -242,7 +220,7 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 					<div class="metadata-content">	
 						<table  class="metadata-table">
 							<tr>
-								<th class="metadata-table-th" colspan="2" scope="col">Informations principales</th>
+								<th style="border-top-left-radius: 10px;border-top-right-radius: 10px;" class="metadata-table-th" colspan="2" scope="col">Informations principales</th>
 							</tr>
 							
 							<tr>
