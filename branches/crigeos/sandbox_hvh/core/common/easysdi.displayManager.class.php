@@ -2000,6 +2000,7 @@ class displayManager{
 				$XMLProduct->setAttribute('available', (int)$product->available);
 				$XMLProduct->setAttribute('free', (int)$product->free);
 				$XMLProduct->setAttribute('file_size', $product->size);
+				$XMLProduct->setAttribute('size_unit', 'Byte');
 				$XMLProduct->setAttribute('file_type', $product->type);
 				
 				if(SITE_shop::getProductListCount() > 0)
@@ -2015,6 +2016,7 @@ class displayManager{
 				$XMLProduct->setAttribute('available', (int)0);
 				$XMLProduct->setAttribute('free', (int)0);
 				$XMLProduct->setAttribute('file_size', '');
+				$XMLProduct->setAttribute('size_unit', '');
 				$XMLProduct->setAttribute('file_type', '');
 			}
 			

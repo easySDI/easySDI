@@ -219,7 +219,7 @@
 														<xsl:text> (</xsl:text>
 														<xsl:value-of select="translate($filetype,$smallcase,$uppercase)" />
 														<xsl:text>, </xsl:text>
-														<xsl:value-of select="$filesize" />
+														<xsl:value-of select="round($filesize*0.001)" />
 														<xsl:text> Ko)</xsl:text>
 												</span>
 										</xsl:when >
