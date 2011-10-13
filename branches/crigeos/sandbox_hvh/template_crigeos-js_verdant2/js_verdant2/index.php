@@ -37,7 +37,7 @@ require( YOURBASEPATH.DS."/js/template.css.php");
 <link rel="stylesheet" href="<?php echo $this->baseurl ?>/templates/<?php echo $this->template ?>/css/core.css" type="text/css" />
 <link rel="stylesheet" href="<?php echo $this->baseurl ?>/templates/<?php echo $this->template ?>/css/layout.css" type="text/css" />
 <link rel="stylesheet" href="<?php echo $this->baseurl ?>/templates/<?php echo $this->template ?>/css/subsite.css" type="text/css" />
-<link rel="stylesheet" href="<?php echo $this->baseurl ?>/templates/<?php echo $this->template ?>/css/dz_geo-editor.css" rel="stylesheet" type="text/css" /> 
+<link rel="stylesheet" href="<?php echo $this->baseurl ?>/templates/<?php echo $this->template ?>/css/dz_geo-editor.css" type="text/css" /> 
 <link rel="stylesheet" href="<?php echo $this->baseurl ?>/templates/<?php echo $this->template ?>/css/template<?php echo $style;?>.css" type="text/css" />
 <script src="<?php echo $this->baseurl ?>/templates/<?php echo $this->template ?>/js/bgMax.min.js" type="text/javascript"></script> 
 <!--[if lte IE 6]>

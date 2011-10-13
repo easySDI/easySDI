@@ -23,10 +23,12 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<?php echo $this->language; ?>" lang="<?php echo $this->language; ?>" dir="<?php echo $this->direction; ?>">
 <head>
 	<jdoc:include type="head" />
-	
-	<link rel="stylesheet" href="<?php echo $this->baseurl ?>/templates/js_verdant2/css/core.css" type="text/css" />
-	<link rel="stylesheet" href="<?php echo $this->baseurl ?>/templates/js_verdant2/css/layout.css" type="text/css" />
-	<link rel="stylesheet" href="<?php echo $this->baseurl ?>/templates/js_verdant2/css/templatestyle6.css" type="text/css" />
+	<link rel="stylesheet" href="<?php echo $this->baseurl ?>/templates/<?php echo $this->template ?>/css/screen.css" type="text/css" />
+	<link rel="stylesheet" href="<?php echo $this->baseurl ?>/templates/<?php echo $this->template ?>/css/core.css" type="text/css" />
+	<link rel="stylesheet" href="<?php echo $this->baseurl ?>/templates/<?php echo $this->template ?>/css/layout.css" type="text/css" />
+	<link rel="stylesheet" href="<?php echo $this->baseurl ?>/templates/<?php echo $this->template ?>/css/subsite.css" type="text/css" />
+	<link rel="stylesheet" href="<?php echo $this->baseurl ?>/templates/<?php echo $this->template ?>/css/dz_geo-editor.css" rel="stylesheet" type="text/css" /> 
+	<link rel="stylesheet" href="<?php echo $this->baseurl ?>/templates/<?php echo $this->template ?>/css/templatestyle6.css" type="text/css" />
 
 </head>
 <body class="contentpane" style="background:#FFFFFF !important">

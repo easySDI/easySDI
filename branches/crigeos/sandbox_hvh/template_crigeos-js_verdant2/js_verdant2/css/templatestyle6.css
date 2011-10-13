@@ -368,6 +368,7 @@ div.userBlock {background: #173444 url(../images/style1/gradients.png) repeat-x 
     outline: 0 none;
     margin:5px 50px 5px 0px;
     text-align: center;
+     -moz-border-radius : 5px !important ; 
 }
 
 .metadata-result{
@@ -412,15 +413,25 @@ div.userBlock {background: #173444 url(../images/style1/gradients.png) repeat-x 
 	font-size: 1em !important;
 	line-height: 1.4em !important;
 }
-.metadata-details .details-title {
+.metadata-details  h1 {
 	color: #97B832 !important;
     font-size: 135% !important;
     line-height: 1.4em !important;
     margin-bottom: 10px !important;
 	margin-top: 10px !important;
 }
-.metadata-details   .metadata-abstract {
+
+
+.metadata-abstract {
 	margin:20px 20px 20px 20px !important;
+	font-size: 100% !important;
+	vertical-align: baseline !important;
+	text-align: left !important;
+	line-height: 1.3em !important;
+	color: #444444 !important;
+}
+.metadata-abstract p{
+	margin-bottom: 20px !important;
 }
 .metadata-details   .metadata-resume {
 	color: #999999 !important;
@@ -455,11 +466,11 @@ div.userBlock {background: #173444 url(../images/style1/gradients.png) repeat-x 
 .metadata-table-short td{
 	border-bottom:1px solid #eee !important;
 	border-top:1px solid #eee !important;
-	width:100% !important;
+	 line-height: 1.3em;
 }
 .metadata-header td{
 	vertical-align:top !important;
-	width:100% !important;
+	padding: 0 10px 0 15px;
 }
 
 #back-metadata-result{
@@ -501,27 +512,6 @@ background : #FFFFFF !important;
    -moz-border-radius: 5px !important;
 }
 
-.metadata-links span.metadata-link {
-	width:140px;
-	display:block;
-	float:left;
-}
-
-.metadata-links span.metadata-link  a.link{
-	text-decoration: none;
-	color: #444444 !important;
-    display: block;
-    font-size: 11px;
-    padding: 1px 1px 1px 1px;
-    background-color: #BBBCBD !important;
-    border-radius: 5px 5px 5px 5px;
-    line-height: 20px;
-    border: 0 none;
-    outline: 0 none;
-    margin:5px 50px 5px 0px;
-    text-align: center;
-    -moz-border-radius : 5px !important ; 
-}
 
  .mdviewproduct  a:hover, .mdviewfile a:hover {
     color: #777777 !important;
@@ -531,4 +521,7 @@ background : #FFFFFF !important;
 #pdfbody{
 	background: white !important;
 }
+
+
+
 

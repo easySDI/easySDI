@@ -337,6 +337,8 @@ body.light #area_content .inside1 h1 {
 	font-size: 135%;
 	color: #97B832;
 }
+
+
 .inside3 {
 	display:block;
 	float:left;
@@ -729,4 +731,17 @@ body.dark #itemListLinks {
 #area_content .maincontent .contentpaneopen .articleheading h3 {
 	margin: 0px;
 	margin-bottom: 5px;
-}	
+}
+
+.tinymap {
+	width: 256px;
+	height: 256px;
+	border: 1px solid #ccc;
+}
+
+.smallmap {
+    width: 512px;
+    height: 512px;
+    border: 1px solid #ccc;
+}
+
