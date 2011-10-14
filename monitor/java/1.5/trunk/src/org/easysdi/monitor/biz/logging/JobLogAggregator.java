@@ -72,7 +72,7 @@ public class JobLogAggregator extends AbstractLogAggregator {
     public void aggregateRawLogs() {
         
     	List<Calendar> minmaxPeriod = this.getLogManager().getRawlogMinMax();
-    	if(minmaxPeriod.size() > 1)
+    	if(minmaxPeriod.size() > 1 && minmaxPeriod.get(0) != null && minmaxPeriod.get(1) != null)
     	{
     		Calendar dateRawLog = DateUtil.truncateTime(minmaxPeriod.get(1));
     		Calendar maxdate = DateUtil.setTime(minmaxPeriod.get(0),"23:59:59");
@@ -175,7 +175,7 @@ public class JobLogAggregator extends AbstractLogAggregator {
     public void aggregateHourRawLogs()
     {
     	List<Calendar> minmaxPeriod = this.getLogManager().getRawlogMinMax();
-    	if(minmaxPeriod.size() > 1)
+    	if(minmaxPeriod.size() > 1 && minmaxPeriod.get(0) != null && minmaxPeriod.get(1) != null)
     	{
     		Calendar dateRawLog = DateUtil.truncateTime(minmaxPeriod.get(1));
     		Calendar maxdate = DateUtil.setTime(minmaxPeriod.get(0),"23:59:59");
