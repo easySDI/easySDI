@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE install PUBLIC "-//Joomla! 1.5//DTD template 1.0//EN" "http://www.joomla.org/xml/dtd/1.5/template-install.dtd">
 <install version="1.5" type="template" method="upgrade">
-	<name>js_verdant2</name>
+	<name>crigeos</name>
 	<creationDate>March 2010</creationDate>
 	<author>Joomlashack</author>
 	<authorEmail>support@joomlashack.com</authorEmail>
@@ -40,6 +40,7 @@
 		<folder>html/</folder>
 		<folder>js/</folder>
 		<folder>images/</folder>
+		<folder>icons/</folder>
 </files>
 	<positions>
 		<position>menu</position>

@@ -47,7 +47,7 @@ blockquote {
 	margin: 15px 0;
 }
 
-/* Für die hervorhebung der Acronyme im IE */
+/* Fï¿½r die hervorhebung der Acronyme im IE */
 *+ html acronym {
 	border-bottom: 1px dotted #161616;
 }
@@ -85,7 +85,7 @@ a:focus {
 	}
 	
 	
-/*  ergänzung nach wegfall ICON styles*/
+/*  ergï¿½nzung nach wegfall ICON styles*/
 a.anchor, a.audio, a.back, a.default, a.erlaeuterungen, a.excel, span.exhausted, a.extern,
 a.hide, a.image, a.intern, a.more, a.movie, a.order, a.pdf, 
 a.powerpoint, a.rss, a.show, a.word, a.zip, a.zoom {
@@ -120,7 +120,7 @@ a.indent {
 	display: block;
 }
 
-/* Für die Darstellungesprobleme im IE mit der anzeige von Hintergrundbildern */
+/* Fï¿½r die Darstellungesprobleme im IE mit der anzeige von Hintergrundbildern */
 *+ html p a.anchor, *+ html p a.audio, *+ html p a.back, *+ html p a.default, *+ html p a.erlaeuterungen, *+ html p a.excel, *+ html span.exhausted, *+ html p a.extern,
 *+ html p a.hide, *+ html p a.image, *+ html p a.intern, *+ html p a.more, *+ html p a.movie, *+ html p a.order, *+ html p a.pdf, 
 *+ html p a.powerpoint, *+ html p a.rss, *+ html p a.show, *+ html p a.word, *+ html p a.zip, *+ html p a.zoom {
@@ -173,7 +173,7 @@ body.no-tabs #content-print {
 }
 
 .banner {
-	padding-top: 81px; /* Banner-Höhe */
+	padding-top: 81px; /* Banner-Hï¿½he */
 }
 
 body.one-tab #content-print {
@@ -195,7 +195,7 @@ body.one-tab #content-print {
 	color: #E3001A;
 }
 
-/* Identität-Bereich */
+/* Identitï¿½t-Bereich */
 #identity a {
 	text-decoration: none;
 }
@@ -565,7 +565,7 @@ body.one-tab #content-col-nav ul {
 }
 
 /* Ausblenden der 5 und 6 Ebene in der linken Navigation,
-	Redundanz für Accessibility mit Contentnavigation */
+	Redundanz fï¿½r Accessibility mit Contentnavigation */
 #content-col-nav ul ul ul {
 	position: absolute;
 	left: -1000px;
@@ -611,7 +611,7 @@ body.full #content-col-main  {
 	width: 933px !important;
 }
 
-/* Einspaltige Vorlage: Hack für Internet Explorer 6 */
+/* Einspaltige Vorlage: Hack fï¿½r Internet Explorer 6 */
 * html body.full #content-col-main {
 	margin-left:15px;
 }
@@ -633,6 +633,9 @@ body.error #content-col-main {
 	margin-bottom: 100px;
 }
 
+#content-col-main h2 {
+    margin: 25px 0 10px;
+}
 
 #content-col-main p {
 	margin: 0 0 10px 0;
@@ -786,7 +789,7 @@ body.full #content-col-context {
 	background:none !important;
 }
 
-/* Hack für Internet Explorer 6 */
+/* Hack fï¿½r Internet Explorer 6 */
 * html body.full #content-col-context { 
 	margin-left:12px; 
 }
@@ -798,7 +801,7 @@ body.wide #content-col-context {
 	background:none !important;
 }
 
-/* Hack für Internet Explorer 6 */
+/* Hack fï¿½r Internet Explorer 6 */
 * html body.wide #content-col-context { 
 	margin-left:117px; 
 }
@@ -928,6 +931,10 @@ p#url{
 	margin-bottom: 5px;
 }
 
+#content-col-main form .row td {
+	vertical-align:top;
+}
+
 #content-col-main form fieldset .no-label {
 	margin-left: 168px;	
 }
@@ -957,7 +964,7 @@ p#url{
 }
 
 #content-col-main form legend {
-	font-weight: normal;
+	font-weight:bold;
 	margin-bottom: 5px;
 	padding: 0 4px;
 	line-height: 15px;
@@ -1602,7 +1609,7 @@ body.wide .themelist table th.theme {
 	padding: 5px;
 }
 
-	/*ergänzung für ERZ ausgabe 
+	/*ergï¿½nzung fï¿½r ERZ ausgabe 
 	------------------------------------------------*/
 	.jobs-erz  table span {
 		display:block;
@@ -2042,7 +2049,7 @@ body.full .box.news-full, body.wide .box.news-full {
 	border: 0 !important;
 }
 
-/* Definitionen für Prozess-Schritte */
+/* Definitionen fï¿½r Prozess-Schritte */
 #process ul {
 	margin:0;
 	padding:0;
@@ -2087,7 +2094,7 @@ body.full .box.news-full, body.wide .box.news-full {
 .wide #process ul li.steps7 {width:12.75%;}
 
 
-/* Gemeindewähler */
+/* Gemeindewï¿½hler */
 #commune-current {
 	padding-left: 160px;
 }
@@ -2138,7 +2145,7 @@ fieldset #commune-list {
 * html fieldset #commune-selector {margin-left: -2px;}
 * html fieldset #commune-list div {margin-left: 4px;}
 
-/* Gemeindewähler ausserhalb Form > blindform*/
+/* Gemeindewï¿½hler ausserhalb Form > blindform*/
 
 .blindform #commune-current {
 	padding-left: 0px;
@@ -2181,7 +2188,7 @@ fieldset #commune-list {
 	padding:2px 0;
 }
 
-/* anzeige der Icons im Gemeindewähler unterbinden (MOS) */
+/* anzeige der Icons im Gemeindewï¿½hler unterbinden (MOS) */
 #commune-list li a {
 	background-image:none !important;
 	padding-left:0 !important;
@@ -2376,7 +2383,7 @@ fieldset #commune-list {
 
 
 #content-col-main form fieldset {
-	border: 1px solid #B5B8C8 !important;
+	border: 1px solid #97B832 !important;
     border-width: 1px;
     clear: both;
     margin: 5px;
