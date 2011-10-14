@@ -378,7 +378,7 @@ div#deletableAffiliate:hover{
 }
 
 #affiliatePane.open{
-	background-color: #C8D9E9;
+	background-color: #F0F0F0;
 	font-weight:bold;
 }
 
@@ -389,39 +389,38 @@ div#deletableAffiliate:hover{
 dl.tabs dt {
     display: block;
     padding: 5px;
-    border-top:1px solid #97B7C8;
-    border-left:1px solid #97B7C8;
-    border-right:1px solid #97B7C8;
+    border-top:1px solid #97B832;
+    border-left:1px solid #97B832;
+    border-right:1px solid #97B832;
     margin:0px 3px 0px 0px;
     float:left;
 
 }
 
 
-.AccountForm  dl.tabs dt.open{
-	background-color: 		#DCDCDC;
+.AccountForm  dl.tabs dt.open, .adminForm  dl.tabs dt.open, .productForm  dl.tabs dt.open{
+	background-color:#F0F0F0;
 	font-weight:bold;
 }
 
-.AccountForm  dl.tabs dt span:hover {
-	text-decoration: underline;
-	color: #001BA1;
+.AccountForm  dl.tabs dt span:hover, .adminForm  dl.tabs dt span:hover, .productForm  dl.tabs dt span:hover {
+	font-weight:bold;
 }
 
-.AccountForm  dd {
+.AccountForm  dd, .adminForm dd, .productForm dd {
 	margin:0px 0px 20px 0px;
 	border:none;
 }
- .AccountForm .current {
+ .AccountForm .current,.adminForm .current, .productForm .current {
     display : block;
     clear : both;
-    background-color: 	#DCDCDC;
+    background-color: #F0F0F0;
 }
 
 .current dd{
-    border-bottom: 1px solid #ABABAB;
-    border-left: 1px solid #ABABAB;
-    border-right: 1px solid #ABABAB; 
+	border-bottom: 1px solid #97B832;
+    border-left: 1px solid #97B832;
+    border-right: 1px solid #97B832; 
     margin-left:0px;
 }
 
@@ -602,7 +601,7 @@ dl.tabs dt {
 	width:300px !important;
 }
 
-/* Anpassen des Formulares für die Zeitstände */
+/* Anpassen des Formulares fï¿½r die Zeitstï¿½nde */
 .geo-editor div#viewLinksOutput {
 	background-color:#FFF;
 }
@@ -638,7 +637,7 @@ dl.tabs dt {
 .geo-editor img#x-form-date-trigger {
 	left:150px !important;
 }
-/* Ende Formular Zeitstände */
+/* Ende Formular Zeitstï¿½nde */
 
 /* dtree */
 .geo-editor div.dtree td:first-child {
