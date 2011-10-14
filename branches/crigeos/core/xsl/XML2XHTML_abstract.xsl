@@ -157,7 +157,7 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 					
 			<div class="metadata-details">			
 					<div class="metadata-title">
-						<h1 class="details-title">
+						<h1>
 							<xsl:value-of select="$title" />
 						</h1>
 					</div>
@@ -166,7 +166,7 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 					
 					<table class="metadata-header">
 						<tr>
-							<td >
+							<td width="80%">
 								<div class="metadata-abstract">
 									<p>
 									<xsl:choose>
@@ -185,7 +185,7 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 										<xsl:if test="string-length($downloadProduct) > 0">
 												<span class="metadata-link">
 													<a>
-														<xsl:attribute name="class">modal</xsl:attribute>	
+														<xsl:attribute name="class">link modal</xsl:attribute>	
 														<xsl:attribute name="rel">{handler:'iframe',size:{x:650,y:600}}</xsl:attribute>
 														<xsl:attribute name="href">
 															<xsl:value-of  select="$downloadProduct" />
@@ -195,7 +195,7 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 													<xsl:text> (</xsl:text>
 													<xsl:value-of select="translate($filetype,$smallcase,$uppercase)" />
 													<xsl:text>, </xsl:text>
-													<xsl:value-of select="$filesize" />
+													<xsl:value-of select="round($filesize*0.001)" />
 													<xsl:text> Ko)</xsl:text>
 												</span>
 												<p></p>
@@ -203,7 +203,7 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 										<xsl:if test="string-length($previewProduct) > 0">
 											<span class="metadata-link">
 												<a>
-													<xsl:attribute name="class">modal</xsl:attribute>	
+													<xsl:attribute name="class">link modal</xsl:attribute>	
 													<xsl:attribute name="rel">{handler:'iframe',size:{x:650,y:600}}</xsl:attribute>
 													<xsl:attribute name="href">
 														<xsl:value-of  select="$previewProduct" />
@@ -216,7 +216,7 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 																				
 										<span class="metadata-link">
 											<a>
-												<xsl:attribute name="class">modal</xsl:attribute>
+												<xsl:attribute name="class">link</xsl:attribute>
 												<xsl:attribute name="href">
 													<xsl:value-of select="$exportXML" />
 												</xsl:attribute><xsl:text>XML</xsl:text></a>
@@ -224,7 +224,7 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 										<p></p>
 										<span class="metadata-link">
 											<a>
-												<xsl:attribute name="class">modal</xsl:attribute>
+												<xsl:attribute name="class">link</xsl:attribute>
 												<xsl:attribute name="href">
 													<xsl:value-of select="$downloadPDF" />
 												</xsl:attribute><xsl:text>PDF</xsl:text></a>

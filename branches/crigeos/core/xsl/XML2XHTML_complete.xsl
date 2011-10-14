@@ -70,6 +70,9 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 		
 
 		<!-- Download Links -->
+		<xsl:variable name="mPDF">
+			<xsl:value-of select="./sdi:Metadata/sdi:action/sdi:makePDF/sdi:link" />
+		</xsl:variable>
 		<xsl:variable name="downloadPDF">
 			<xsl:value-of select="./sdi:Metadata/sdi:action/sdi:exportPDF/sdi:link" />
 		</xsl:variable>
@@ -159,7 +162,7 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 					
 			<div class="metadata-details">			
 					<div class="metadata-title">
-						<h1 class="details-title">
+						<h1>
 							<xsl:value-of select="$title" />
 						</h1>
 					</div>
@@ -168,7 +171,7 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 					
 					<table class="metadata-header">
 						<tr>
-							<td >
+							<td width="80%">
 								<div class="metadata-abstract">
 									<p>
 									<xsl:choose>
@@ -187,7 +190,7 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 										<xsl:if test="string-length($downloadProduct) > 0">
 												<span class="metadata-link">
 													<a>
-														<xsl:attribute name="class">modal</xsl:attribute>	
+														<xsl:attribute name="class">link modal</xsl:attribute>	
 														<xsl:attribute name="rel">{handler:'iframe',size:{x:650,y:600}}</xsl:attribute>
 														<xsl:attribute name="href">
 															<xsl:value-of  select="$downloadProduct" />
@@ -197,7 +200,7 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 													<xsl:text> (</xsl:text>
 													<xsl:value-of select="translate($filetype,$smallcase,$uppercase)" />
 													<xsl:text>, </xsl:text>
-													<xsl:value-of select="$filesize" />
+													<xsl:value-of select="round($filesize*0.001)" />
 													<xsl:text> Ko)</xsl:text>
 												</span>
 												<p></p>
@@ -205,7 +208,7 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 										<xsl:if test="string-length($previewProduct) > 0">
 											<span class="metadata-link">
 												<a>
-													<xsl:attribute name="class">modal</xsl:attribute>	
+													<xsl:attribute name="class">link modal</xsl:attribute>	
 													<xsl:attribute name="rel">{handler:'iframe',size:{x:650,y:600}}</xsl:attribute>
 													<xsl:attribute name="href">
 														<xsl:value-of  select="$previewProduct" />
@@ -218,7 +221,7 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 																				
 										<span class="metadata-link">
 											<a>
-												<xsl:attribute name="class">modal</xsl:attribute>
+												<xsl:attribute name="class">link</xsl:attribute>
 												<xsl:attribute name="href">
 													<xsl:value-of select="$exportXML" />
 												</xsl:attribute><xsl:text>XML</xsl:text></a>
@@ -226,9 +229,18 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 										<p></p>
 										<span class="metadata-link">
 											<a>
-												<xsl:attribute name="class">modal</xsl:attribute>
+												<xsl:attribute name="class">link</xsl:attribute>
 												<xsl:attribute name="href">
-													<xsl:value-of select="$downloadPDF" />
+													<xsl:value-of select="$mPDF" />
+													<xsl:text>&amp;metadatatype=</xsl:text>
+													<xsl:value-of select="$logo" />
+													<xsl:text>&amp;format=makepdf</xsl:text>
+													<xsl:text>&amp;metadata_guid[]=</xsl:text>
+													<xsl:value-of disable-output-escaping="yes" select="./gmd:MD_Metadata/gmd:fileIdentifier/gco:CharacterString"/>
+													<xsl:text>&amp;lastVersion=yes</xsl:text>
+													<xsl:text>&amp;reporttype=CRIGEOS</xsl:text>
+													<xsl:text>&amp;language=fr</xsl:text>
+													<xsl:text>&amp;context=geocatalog</xsl:text>
 												</xsl:attribute><xsl:text>PDF</xsl:text></a>
 										</span>
 										<p></p>

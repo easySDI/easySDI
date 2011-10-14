@@ -209,7 +209,7 @@
 												<span class="metadata-link">
 													<a>
 														<xsl:attribute name="title">Téléchargement de : <xsl:value-of select="./sdi:Metadata/sdi:object/@object_name" /></xsl:attribute>
-														<xsl:attribute name="class">modal</xsl:attribute>	
+														<xsl:attribute name="class">link modal</xsl:attribute>	
 														<xsl:attribute name="rel">{handler:'iframe',size:{x:650,y:600}}</xsl:attribute>
 														<xsl:attribute name="href">
 															<xsl:value-of  select="$downloadProduct" />
@@ -219,7 +219,7 @@
 														<xsl:text> (</xsl:text>
 														<xsl:value-of select="translate($filetype,$smallcase,$uppercase)" />
 														<xsl:text>, </xsl:text>
-														<xsl:value-of select="$filesize" />
+														<xsl:value-of select="round($filesize*0.001)" />
 														<xsl:text> Ko)</xsl:text>
 												</span>
 										</xsl:when >
@@ -236,7 +236,7 @@
 										<span class="metadata-link">
 											<a>
 												<xsl:attribute name="title">Prévisualisation géographique de : <xsl:value-of select="./sdi:Metadata/sdi:object/@object_name" /></xsl:attribute>
-												<xsl:attribute name="class">modal</xsl:attribute>	
+												<xsl:attribute name="class">link modal</xsl:attribute>	
 												<xsl:attribute name="rel">{handler:'iframe',size:{x:650,y:600}}</xsl:attribute>
 												<xsl:attribute name="href"><xsl:value-of  select="$previewProduct" /></xsl:attribute>
 												<xsl:text>Prévisualiser</xsl:text>
@@ -262,7 +262,7 @@
 												<span class="metadata-link">
 													<a>
 														<xsl:attribute name="title">Download : <xsl:value-of select="./sdi:Metadata/sdi:object/@object_name" /></xsl:attribute>
-														<xsl:attribute name="class">modal</xsl:attribute>	
+														<xsl:attribute name="class">link modal</xsl:attribute>	
 														<xsl:attribute name="rel">{handler:'iframe',size:{x:650,y:600}}</xsl:attribute>
 														<xsl:attribute name="href">
 															<xsl:value-of  select="$downloadProduct" />
@@ -291,7 +291,7 @@
 										<span class="metadata-link">
 											<a>
 												<xsl:attribute name="title">Geographic preview of : <xsl:value-of select="./sdi:Metadata/sdi:object/@object_name" /></xsl:attribute>
-												<xsl:attribute name="class">modal</xsl:attribute>	
+												<xsl:attribute name="class">link modal</xsl:attribute>	
 												<xsl:attribute name="rel">{handler:'iframe',size:{x:650,y:600}}</xsl:attribute>
 												<xsl:attribute name="href"><xsl:value-of  select="$previewProduct" /></xsl:attribute>
 												<xsl:text>Preview</xsl:text>
