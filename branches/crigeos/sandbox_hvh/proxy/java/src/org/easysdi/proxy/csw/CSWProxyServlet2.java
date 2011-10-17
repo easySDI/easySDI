@@ -170,6 +170,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 		// Write the result in a temporary file
 		transformer.transform(new StreamSource(xml), new StreamResult(tempFos));
 		tempFos.close();
+		xslt.close();
 		logger.trace("- End apply XSLT on response.");
 		return tempFile;
 	}
@@ -211,9 +212,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				isPostTreat = true;
 			}
 
-			// Transforms the results using a xslt before sending the
-			// response
-			// back
+			// Transforms the results using a xslt before sending the response back
 			InputStream xml = new FileInputStream(filePathList.get(0));
 			TransformerFactory tFactory = TransformerFactory.newInstance();
 
@@ -226,25 +225,26 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			{
 				if (currentOperation.equals("GetCapabilities")) 
 				{
+					//Remove unauthorized operation (according to policy file) from the capabilities document
+					logger.trace("Remove unauthorized operations from the capabilities document.");
 					tempFile = createTempFile(UUID.randomUUID().toString(), ".xml");
 					tempFos = new FileOutputStream(tempFile);
 					ByteArrayInputStream xslt = null;
 					xslt = new ByteArrayInputStream(buildCapabilitiesXSLT(req).toString().getBytes());
 					transformer = tFactory.newTransformer(new StreamSource(xslt));
-					// Write the result in a temporary file
 					transformer.transform(new StreamSource(xml), new StreamResult(tempFos));
+					tempFos.flush();
 					tempFos.close();
+					xslt.close();
 
-					logger.trace("transform begin apply XSLT on service metadata");
+					//Rewrite service metadata 
+					logger.trace("Rewrite service metadatas in the capabilities document.");
 					InputStream in = new BufferedInputStream(new FileInputStream(tempFile));
 					InputSource inputSource = new InputSource( in);
-					
-					//Application de la transformation XSLT pour la réécriture des métadonnées du service 
 					File tempFileCapaWithMetadata = createTempFile("transform_MDGetCapabilities_" + UUID.randomUUID().toString(), ".xml");
 					FileOutputStream tempServiceMD = new FileOutputStream(tempFileCapaWithMetadata);
 					StringBuffer sb = buildServiceMetadataCapabilitiesXSLT();
 					InputStream xslt_service = new ByteArrayInputStream(sb.toString().getBytes());
-				
 					XMLReader xmlReader = XMLReaderFactory.createXMLReader();
 					SAXSource saxSource = new SAXSource(xmlReader, inputSource);
 					transformer = tFactory.newTransformer(new StreamSource(xslt_service));
@@ -253,7 +253,9 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					transformer.transform(saxSource, new StreamResult(tempServiceMD));
 					tempServiceMD.flush();
 					tempServiceMD.close();
-					
+					in.close();
+					xslt_service.close();
+										
 					tempFile = tempFileCapaWithMetadata;
 					logger.trace("transform end apply XSLT on service metadata");
 				}
@@ -281,7 +283,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					
 					//If the current config is used to harvest remote catalog (see config file : <harvesting-config>true</harvesting-config>),
 					//add dynamically an XML node (and its namespace definition) to the metadata to indicate that this metadata was haversting
-					if(configuration.getIsHarvestingConfig()){
+					if(configuration.isHarvestingConfig()){
 						SAXBuilder sb = new SAXBuilder();
 	
 						Document doc = null;
@@ -324,6 +326,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				            
 				            XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
 				            sortie.output(doc, new FileOutputStream(tempFile));
+				            
 				        }
 				        catch (JDOMException e) {
 				            e.printStackTrace();
@@ -347,7 +350,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					
 					//If the current config is used to harvest remote catalog (see config file : <harvesting-config>true</harvesting-config>),
 					//add dynamically an XML node (and its namespace definition) to the metadata to indicate that this metadata was haversting
-					if(configuration.getIsHarvestingConfig()){
+					if(configuration.isHarvestingConfig()){
 						SAXBuilder sb = new SAXBuilder();
 	
 						Document doc = null;
@@ -402,6 +405,9 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					tempFile = new File(filePathList.get(0));
 				}
 
+				//Close the remote server temp file response
+				xml.close();
+				
 				/*
 				 * if a xslt file exists then post-treat the response
 				 */
@@ -542,7 +548,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				return ;
 			
 			//GetRecords is not supported in GET request
-			if(currentOperation.equalsIgnoreCase("GetRecords"))
+			if(currentOperation.equalsIgnoreCase("GetRecords") && !configuration.isHarvestingConfig())
 				sendOgcExceptionBuiltInResponse(resp,generateOgcException("Operation not supported in a GET request","OperationNotSupported ","request", requestedVersion));
 			
 			//GetRecordById
@@ -573,6 +579,16 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				}
 				logger.trace("End - Data Accessibility");
 				
+			}else if (currentOperation.equalsIgnoreCase("GetRecords")){
+				//Add filter on data accessible
+				
+				//Récupération du language de la contrainte exprimée dans l'URL
+				
+				//ajout de la liste des identifiants autorisés
+				
+				// ajout du filtre géographique
+				
+				//ajout du test sur le paramètre harvested SI la config n'est pas une config de harvesting
 			}
 			
 			// Build the request to dispatch
@@ -608,7 +624,9 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			
 			if(currentOperation.equalsIgnoreCase("GetRecords") || currentOperation.equalsIgnoreCase("GetRecordById"))
 			{
-				if( content.equalsIgnoreCase("") || content.equalsIgnoreCase("complete"))
+				//If the config is used to harvest remote servers, the metadatas are never completed.
+				//The completion process of metadatas is only available for EasySDI metadatas (metadatas created and managed by the solution)
+				if( (content.equalsIgnoreCase("") || content.equalsIgnoreCase("complete")) && !configuration.isHarvestingConfig())
 				{
 					logger.trace("Start - Complete metadata");
 					//Build complete metadata
@@ -698,7 +716,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			}
 
 			//Transaction
-			if(currentOperation.equalsIgnoreCase("Transaction") && !configuration.getIsHarvestingConfig()){
+			if(currentOperation.equalsIgnoreCase("Transaction") && !configuration.isHarvestingConfig()){
 				//If the transaction is INSERT OR UPDATE, add the specific node to indicate that the metadata is handle by EasySDI
 				//sdi:platform harvested="false"
 				if(rh.isTransactionInsert() || rh.isTransactionUpdate()){

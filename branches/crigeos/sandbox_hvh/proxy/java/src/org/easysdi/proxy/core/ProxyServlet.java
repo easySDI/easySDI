@@ -714,6 +714,7 @@ public abstract class ProxyServlet extends HttpServlet {
      * @param parameters : parameters to send to the remote server
      * @return a String containing the path to the file containing the response from the remote server
      * @throws IOException
+     * TODO use the server 'alias' as identifier in the method 'SendToRemoteServer' in place of the url string (this param is certainly not an identifier)
      */
 
     public String sendData(String method, String urlstr, String parameters) {
