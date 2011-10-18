@@ -1,35 +1,15 @@
 package org.easysdi.proxy.csw;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringBufferInputStream;
-import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 import java.util.zip.GZIPInputStream;
-
-
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathFactory;
 
 import org.easysdi.jdom.filter.AttributeXlinkFilter;
 import org.easysdi.jdom.filter.ElementExceptionReportFilter;
@@ -41,6 +21,7 @@ import org.jdom.filter.Filter;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
+import org.jdom.xpath.XPath;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -85,6 +66,7 @@ public class CSWProxyMetadataContentManager
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	public boolean  buildCompleteMetadata(String filePath )
 	{
 		SAXBuilder sxb = new SAXBuilder();
@@ -93,18 +75,29 @@ public class CSWProxyMetadataContentManager
 	    	Document  docParent = sxb.build(new File(filePath));
 	    	Element racine = docParent.getRootElement();
 	      
+	    	//Get all the attributes 'xlink:href'
 	    	Filter filtre = new AttributeXlinkFilter();
 	    	
 	    	//We can not modify Elements while we loop over them with an iterator.
 	    	//We have to use a separate List storing the Elements we want to modify.	    	
 	    	List<Element> elList = new ArrayList<Element>();	    	  
-	    	Iterator i= racine.getDescendants(filtre);
+	    	//Iterator<?> i= racine.getDescendants(filtre);
 	    	   
-	    	while(i.hasNext())
-	    	{
-	    	   Element courant = (Element)i.next();
-	    	   elList.add(courant);
-	    	}
+	    	XPath xpa = XPath.newInstance("//MD_Metadata[/platform@harvested='false']");   
+	    	List<Element> easysdMDList = (List<Element>)xpa.selectNodes(racine);
+	    	
+	    	for (Element element : easysdMDList) {
+	    		Iterator<?> i = element.getDescendants(filtre);
+	    		
+	    		while(i.hasNext())
+		    	{
+		    	   Element courant = (Element)i.next();
+		    	   elList.add(courant);
+		    	}
+			} 
+	    	
+	    	 
+	    	
 //	    	proxy.dump("DEBUG","Start - Loop on metadata");
 	    	//Modification of the selected Elements
 	    	for (int j = 0 ; j < elList.size(); j++)

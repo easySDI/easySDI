@@ -485,6 +485,8 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			String requestedId = "";
 			String constraint = "";
 			String content = "";
+			String constraintLanguage = null;
+			String constraint_language_version = null;
 
 			Enumeration<String> parameterNames = req.getParameterNames();
 			String paramUrl = "";
@@ -498,48 +500,34 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					requestedId = value;
 					continue;
 				}
-				if(key.equalsIgnoreCase("Request"))
-				{
-					// Gets the requested Operation
-					if (value.equalsIgnoreCase("capabilities")) 
-					{
+				if(key.equalsIgnoreCase("Request")){
+					if (value.equalsIgnoreCase("capabilities")){
 						currentOperation = "GetCapabilities";
-					} 
-					else 
-					{
+					} else{
 						currentOperation = value;
 					}
 					continue;
 				}
-				if (key.equalsIgnoreCase("version")) 
-				{
+				if (key.equalsIgnoreCase("version")){
 					requestedVersion = value;
 					continue;
 				}
-				//TODO : verify the syntax for those 3 attributes
-//				if (key.equalsIgnoreCase("OutputSchema")) 
-//				{
-//					requestedOutputSchema = value;
-//					continue;
-//				}
-//				if (key.equalsIgnoreCase("ResultType")) 
-//				{
-//					requestedResutlType = value;
-//					continue;
-//				}
-				if (key.equalsIgnoreCase("Constraint")) 
-				{
+
+				if (key.equalsIgnoreCase("Constraint")){
 					constraint = value;
 					continue;
 				}
-				
+				if(key.equalsIgnoreCase("constraintLanguage")){
+					constraintLanguage = value;
+					continue;
+				}
 				//Content specific vendor parameter
-				if(key.equalsIgnoreCase("content"))
-				{
+				if(key.equalsIgnoreCase("content")){
 					content = value;
 					continue;
 				}
 			}
+			
 			logger.info("Request="+req.getQueryString());
 			logger.info("RequestOperation="+ currentOperation);
 			
@@ -583,6 +571,24 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				//Add filter on data accessible
 				
 				//Récupération du language de la contrainte exprimée dans l'URL
+				if(constraintLanguage == null ){
+					//Use CQL_TEXT to build the constraint
+					constraintLanguage = "CQL_TEXT";
+					constraint_language_version = "1.0.1";
+						
+					//Add the constraintLanguage to the url
+					
+					
+				}else if (constraintLanguage.equalsIgnoreCase("CQL_TEXT")){
+					
+					
+				}else if (constraintLanguage.equalsIgnoreCase("FILTER")){
+					
+				}else{
+					//The constraint language specified in the request is not valid, or not yet supported by the proxy
+					sendOgcExceptionBuiltInResponse(resp, generateOgcException("The query language specified in parameter 'constraintLanguage' is not supported.", "OptionNotSupported", "", requestedVersion));
+					return;
+				}
 				
 				//ajout de la liste des identifiants autorisés
 				
@@ -604,7 +610,8 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				}
 				else if (key.equalsIgnoreCase("constraint"))
 				{
-					paramUrl = paramUrl + key + "=" + URLEncoder.encode(constraint, "UTF-8") + "&";
+					//paramUrl = paramUrl + key + "=" + URLEncoder.encode(constraint, "UTF-8") + "&";
+					paramUrl = paramUrl + key + "=" + constraint + "&";
 				}
 				else
 				{
