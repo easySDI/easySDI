@@ -549,11 +549,38 @@ tr .x-btn-tl, tr .x-btn-tc, tr .x-btn-tr, tr .x-btn-bl, tr .x-btn-bc, tr .x-btn-
 }*/
 
 .x-btn-icon .x-btn-center .x-btn-text {
-    background-position: center center;
-    background-repeat: no-repeat;
-    cursor: pointer;
-    height: 16px;
-    padding: 0;
-    white-space: nowrap;
-    width: 16px;
+	background-position: center center;
+	background-repeat: no-repeat;
+	cursor: pointer;
+	height: 16px;
+	padding: 0;
+	white-space: nowrap;
+	width: 16px;
 }
+
+
+.x-toolbar-ct {
+	width: 100%;
+}
+
+td.x-toolbar-left {
+	width: 50%;
+}
+td.x-toolbar-right {
+	width: 50%;
+}
+.x-toolbar-cell {
+	padding: 1px !important;
+
+}
+.olControlLoadingPanel {
+            background-image:url(../images/loadingPanel.gif);
+            position: relative !important;
+            width: 195px;
+            height: 11px;   
+            background-position:center;
+            background-repeat:no-repeat;
+            display: none;
+       
+            
+        }
