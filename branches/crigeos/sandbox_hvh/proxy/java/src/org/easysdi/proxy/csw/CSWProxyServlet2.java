@@ -845,11 +845,11 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					logger.trace("Start - Complete metadata");
 					//Build complete metadata
 					CSWProxyMetadataContentManager cswManager = new CSWProxyMetadataContentManager(this);
-					if ( !cswManager.buildCompleteMetadata(filePathList.get(0)))
+			/*		if ( !cswManager.buildCompleteMetadata(filePathList.get(0)))
 					{
 						sendOgcExceptionBuiltInResponse(resp, generateOgcException("Request can not be completed. "+cswManager.GetLastError(), "NoApplicableCode", "", requestedVersion));
 						return;
-					}
+					}*/
 					logger.trace("End - Complete metadata");
 					
 				}

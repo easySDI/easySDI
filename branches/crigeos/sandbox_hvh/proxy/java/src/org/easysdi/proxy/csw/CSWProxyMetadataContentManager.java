@@ -96,7 +96,11 @@ public class CSWProxyMetadataContentManager
 		    	}
 			} 
 	    	
-	    	 
+	    	/*while(i.hasNext())
+	    	{
+	    	   Element courant = (Element)i.next();
+	    	   elList.add(courant);
+	    	}*/
 	    	
 //	    	proxy.dump("DEBUG","Start - Loop on metadata");
 	    	//Modification of the selected Elements

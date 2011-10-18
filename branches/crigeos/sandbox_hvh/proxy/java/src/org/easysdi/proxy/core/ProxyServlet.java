@@ -750,7 +750,14 @@ public abstract class ProxyServlet extends HttpServlet {
 	    }else if (httpCode >=500){
 		logger.info("Remote server '"+urlstr+"' returns HTTP CODE "+httpCode+" to request ["+parameters+"]");
 		//All HTTP error with code > 500 are translated into OGC exceptions to be returned to the client (if the Exception management mode allowed it)
-		StringBuffer response = owsExceptionReport.generateExceptionReport(owsExceptionReport.getHttpCodeDescription(String.valueOf(httpCode)), OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "");
+		StringBuffer response = null;
+		if(owsExceptionReport == null){
+			//WFS and CSW not used yet an object owsExceptionReport to generate exception message
+			//Used the deprecated method to do that until WFS and CSW were updated
+			response = generateOgcException("HTTP Code "+String.valueOf(httpCode), OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "", "");
+		    }else{
+			response = owsExceptionReport.generateExceptionReport(owsExceptionReport.getHttpCodeDescription(String.valueOf(httpCode)), OWSExceptionReport.CODE_NO_APPLICABLE_CODE, "");
+		    }
 		in = new ByteArrayInputStream(response.toString().getBytes());
 		//Set the ContentType according to the new content of the response 
 		responseExtensionContentType = "text/xml";
