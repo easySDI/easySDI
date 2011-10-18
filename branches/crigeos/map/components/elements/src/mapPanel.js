@@ -405,34 +405,9 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 		// Adds mouse position coordinates
 		// this.map.addControl(new OpenLayers.Control.MousePosition());
 
-		// Adds an overview control to the map
-		//ov_options,
-		options.numZoomLevels = 1 ;
-		if (componentDisplayOption.MapOverviewEnable) {
-			
-	
-			var ovControl = new OpenLayers.Control.OverviewMap( {				
-				
-				maxRatio : 100000
-			
-			});
-			// This forces the overview to never pan or zoom, since it
-			// is always
-			// suitable.
-			ovControl.isSuitableOverview = function() {
-				return true;
-			};
 		
-
-			this.map.addControl(ovControl);
-			
-	        
-
-		}
-
-		//if (componentDisplayOption.ToolBarEnable) {
-			this.map.addControl(new OpenLayers.Control.PanZoomBar());
-		//}
+		this.map.addControl(new OpenLayers.Control.PanZoomBar());
+	
 
 		// Add navigation history control. We'll hook our own toolbar
 		// buttons to
@@ -475,9 +450,81 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 		// Register a handler for pan or zoom, so we can update history
 		// buttons
 		this.map.events.register('moveend', this, this._onMapMoveEnd);
+		
+		var loadingpanel = new OpenLayers.Control.LoadingPanel();
+		this.map.addControl(loadingpanel);
+		this.map.loadingPanel = loadingpanel;
+
 	
 
 		// TODO DEREGISTER THIS EVENT
+	},
+	
+	_addOverView: function(){
+		
+		if (componentDisplayOption.MapOverviewEnable) {		
+	
+			 var layer = this.map.baseLayer.clone();
+			 layer.map = null;
+			 layer.numZoomLevels = 1;
+			 layer.maxResolution = layer.resolutions[0]*5;			 
+			 layer.scales = null;			
+			 layer.minScale = null; 
+			 layer.maxScale = null; 
+			 layer.resolutions = [layer.maxResolution];
+			 layer.minResolution = layer.maxResolution;
+			 
+			 layer.options.numZoomLevels = 1;
+			 layer.options.maxResolution = layer.resolutions[0];			 
+			 layer.options.scales = null;			
+			 layer.options.minScale = null; 
+			 layer.options.maxScale = null; 
+			 layer.options.resolutions = [layer.maxResolution];
+			 layer.options.minResolution = layer.maxResolution;
+			 
+			 console.log("adding layer");
+			 console.log(layer);
+			
+			 
+			
+			var ovControl = new OpenLayers.Control.OverviewMap({
+				mapOptions :{
+					maxExtent : this.map.maxExtent,
+					minExtent : this.map.maxExtent,
+					maxResolution : layer.maxResolution,
+					minResolution : layer.maxResolution,
+					resolutions :[layer.maxResolution],
+					minScale : null,
+					maxScale : null,
+					scales :null,
+					numZoomLevels :1
+				},
+				layers : [layer]
+				
+			});
+			
+			// This forces the overview to never pan or zoom, since it
+			// is always
+			// suitable.
+			ovControl.isSuitableOverview = function() {
+				return true;
+			};
+		
+
+			this.map.addControl(ovControl);
+			ovControl.maximizeControl = function(e) {
+		        this.element.style.display = '';
+		        this.showToggle(false);
+		        if (e != null) {
+		            OpenLayers.Event.stop(e);                                            
+		        }
+		        this.ovmap.baseLayer.map.zoomToMaxExtent();
+		    };
+			
+	        
+
+		}
+		console.log("overviewadded");
 	},
 
 	

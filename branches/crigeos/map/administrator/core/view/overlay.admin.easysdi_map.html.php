@@ -204,6 +204,7 @@ class HTML_overlay
 					document.getElementById('cache').checked = 0;
 					document.getElementById('singletile').checked = 0;
 					document.getElementById('customstyle').checked = 0;
+					document.getElementById('imgformat').value = document.getElementById('imgformatWMTS').value ;
 				}else if(document.getElementById('type').value == "WMS" ){
 					document.getElementById('matrixset').value = null;
 					document.getElementById('matrixids').value = null;
@@ -233,6 +234,8 @@ class HTML_overlay
 				submitform(pressbutton);
 			}
 		}
+
+		
 		</script>
 		<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
 		<table>
@@ -385,7 +388,7 @@ class HTML_overlay
 							<td class="key"><?php echo JText::_("MAP_OVERLAY_IMG_FORMAT"); ?></td>
 							<td>
 							<span class="editlinktip hasTip" title="ex : image/png">
-								<input class="inputbox" name="imgformat" id="imgformat" type="text" size="100" maxlength="<?php echo $fieldsLength['imgformat'];?>" value="<?php echo $overlay_content->imgformat; ?>" />
+								<input class="inputbox" name="imgformatWMTS" id="imgformatWMTS" type="text" size="100" maxlength="<?php echo $fieldsLength['imgformat'];?>" value="<?php echo $overlay_content->imgformat; ?>" />
 							</span>
 							</td>
 						</tr>	

@@ -303,14 +303,14 @@ if (!is_null($result)) {
 		$i++;
 		extract($rec, EXTR_PREFIX_ALL, "l");
 		$open = (($l_open == 1) ? 'true' : 'false');
-		$s .= "{ id : $l_id, name : '$l_name', open: $open}";
+		$s .= "{ id : $l_id, name : ".json_encode($l_name).", open: $open}";
 		if ($i != count($result)) $s .= ",";
 	}
 };
 $s .= "];\n";
 
 // Export overlays objects from the __sdi_overlay table.
-$query = "SELECT * from #__sdi_overlay o where o.published=1 order by o.ordering DESC;";
+$query = "SELECT * from #__sdi_overlay o where o.published=1 order by o.group_id DESC, o.ordering DESC";
 $db->setQuery($query);
 $result = $db->loadAssocList();
 

@@ -70,6 +70,7 @@ JHTML::script('clickFeature.js', 'components/com_easysdi_map/classes/');
 JHTML::script('triggerTextBox.js', 'components/com_easysdi_map/classes/');
 JHTML::script('viewPort.js', 'components/com_easysdi_map/elements/');
 JHTML::script('layout_base.js', 'components/com_easysdi_map/elements/');
+JHTML::script('LoadingPanel.js', 'components/com_easysdi_map/elements/');
 JHTML::script('mapPanel.js', 'components/com_easysdi_map/elements/');
 JHTML::script('searchPanel.js', 'components/com_easysdi_map/elements/');
 JHTML::script('layerPanel.js', 'components/com_easysdi_map/elements/');
@@ -134,6 +135,7 @@ easySDImap = new EasySDI_Map.RwgLayout(
       {
         p.layerTree.loadLayers();
         p.legendPanel.refresh();
+        p.mapPanel._addOverView();
       },
       single:true
     }

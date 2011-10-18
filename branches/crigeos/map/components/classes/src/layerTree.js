@@ -193,6 +193,11 @@ EasySDI_Map.StyledLayerNode = Ext
 				});
 
 EasySDI_Map.LayerTree = Ext.extend(Ext.data.Tree, {
+	
+	loadEvents :[],
+	_loadMask :null,
+	loadStarted : false,
+	
 	constructor : function(config) {
 		EasySDI_Map.LayerTree.superclass.constructor.apply(this, arguments);
 		// We use a layer store to manage synchronicity between the map and the
@@ -220,29 +225,77 @@ EasySDI_Map.LayerTree = Ext.extend(Ext.data.Tree, {
 	this.isFirstLoad = true;
 
 	this._layerStore.map.events.register('moveend', this, this._onMapMoveEnd);
-	
 
 	this._layerStore.map.events.register("changelayer", this, this.onPreAddLayer);
-	this._layerStore.map.events.register("loadend", this, this.onLayerAdded);
+	this._layerStore.map.events.register("movestart", this, this.onMoveStarted);	
+	this._layerStore.map.events.register("loadstart", this, this.onMoveStarted)
+	this._layerStore.map.events.register("moveend", this, this.onMoveEnd);
+	
+/*	this._layerStore.map.events.register("loadstart", this, this.onMoveStarted);	
+	this._layerStore.map.events.register("loadend", this, this.onMoveEnd);*/
+	
 
 	
-	_loadMask = new Ext.LoadMask(Ext.getBody(), {msg:EasySDI_Map.lang.getLocal('LOADER')});
-	
 
+	
+	//_loadMask = new Ext.LoadMask(Ext.getBody(), {msg:EasySDI_Map.lang.getLocal('LOADER')});
+	
+	this._loadMask = this._layerStore.map.loadingPanel ; 
+	this._loadMask.activate();
 	// TODO DEREGISTER THIS EVENT
 	},
-	_loadMask :null,
+		
 	onPreAddLayer :function(evt) {
-		if(evt.layer.visibility)
-			_loadMask.show();
-		else
-			_loadMask.hide();
+		
+		console.log(evt.type);
+		if(evt.layer.visibility){
+			this._loadMask.maximizeControl();
+			this.loadEvents.push(evt.type) ;
+		}		
+		else{
+			this.onMoveEnd(evt)
+		}
 	}, 
 	
-	onLayerAdded : function(evt) {
-		_loadMask.hide();
+	onMoveStarted :function(evt) {
+		
+		this.loadEvents.push(evt.type) ;
+		this._loadMask.maximizeControl();			
+		
+	}, 
+	onMoveEnd :function(evt) {
+		console.log(evt.type);		
+		a = this.loadEvents.pop();
+		console.log(this.loadEvents);
+		if(this.loadEvents.length == 0)
+			this._loadMask.hide();
+		
+		/*(function() {
+			this.onLayerAdded(evt);
+		}.defer(500, this));*/
+			
 		
 	},
+	/*onLayerAdded : function(evt) {
+		
+		console.log(evt.type);
+		if(this.loadStarted !=true){
+			(function() {
+				this._loadMask.hide();
+			}.defer(500, this));
+			
+		
+			
+		}
+		else{
+			if(evt.type== "loadend"){
+				this._loadMask.hide();
+			}
+			this.loadStarted = false;
+		}
+		
+	},*/
+	
 
 
 
@@ -436,6 +489,7 @@ _addLayers : function() {
 	this.previousNode = null;
 	Ext.each(SData.baseLayers, this._addBaseLayer, this);
 	this.previousLayerNode = null;
+	
 	Ext.each(SData.overlayLayers, this._addOverlayLayer, this);
 	this._layerStore.map.zoomToExtent(componentParams.mapMaxExtent, true);
 },
@@ -510,7 +564,9 @@ _addBaseLayer : function(layer, i) {
 		extraOptions.format=layer.imageFormat;
 		
 		l = new OpenLayers.Layer.WMTS( extraOptions);
-		l.events.register('loadend', null, this.onLayerAdded);
+		
+		
+		
 		break;
 	case 'WMS' :
 		var WMSoptions = {
@@ -524,13 +580,21 @@ _addBaseLayer : function(layer, i) {
 		if (layer.cache)
 			WMSoptions.CACHE = true;
 		l = new OpenLayers.Layer.WMS(layer.name, layer.url, WMSoptions, extraOptions);
-		l.events.register('loadend', null, this.onLayerAdded);
-	
+		
+		
 		if (layer.cache)
 			l.params.CACHE = true;
 		break;
 	}
 	this._layerStore.map.addLayer(l);
+	
+	l.events.register("loadstart", this, this.onMoveStarted);		
+	l.events.register('loadend', this, this.onMoveEnd);
+	//l.events.register('moveend', this, this.onMoveEnd);
+	l.events.register('visibilitychanged', this, this.onMoveEnd);
+	
+	
+	
 	
 	// At this point, the first basemap loaded will have been set up as the
 	// default map basemap, and
@@ -607,12 +671,16 @@ _addBaseLayer : function(layer, i) {
 		});
 	}
 	;
+	
+
 },
 
 /**
  * Add a node and the associated layer for an overlay layer
  */
 _addOverlayLayer : function(layer) {
+	
+
 	// Store a reference to this object
 	var tree = this;
 	var styles = Ext.state.Manager.get('overlayLayerStyle', false);
@@ -757,11 +825,16 @@ _addOverlayLayer : function(layer) {
 	}
 
 	l.setVisibility(false);
-	l.events.register('loadend', null, this.onLayerAdded);
+	l.events.register("loadstart", this, this.onMoveStarted);	
+	l.events.register('loadend', this, this.onMoveEnd);
+	//l.events.register('moveend', this, this.onMoveEnd);
+	l.events.register('visibilitychanged', this, this.onMoveEnd);
 //	l.events.register('removelayer', null, this.onLayerRemoved(l.getVisibility()));
 	
 	// this._layerStore.add(this.reader.readRecords( [ l ]).records);
+	
 	this._layerStore.map.addLayer(l);
+	
 	// this._layerStore.map.setLayerIndex(l, 0);
 	var mstyle = '';
 	var toolTip = '';
