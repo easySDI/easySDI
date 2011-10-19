@@ -146,12 +146,36 @@ easySDImap = new EasySDI_Map.RwgLayout(
 			dismissDelay: 5000
 		});
   }
+  
+  function addCompanyHeader(){
+  var companyObject = [{
+         id : 'companyLogo',         
+         tag : 'a',
+         href :'".$this->baseurl."/index.php'
+      },{
+	     id : 'companyMessage',         
+         tag : 'div'
+      }];
+
+  var companyDivId = Ext.DomHelper.insertFirst(document.body, [{
+             id : 'companyBanner'
+          }]);
+ 
+  Ext.DomHelper.append(companyDivId, companyObject);
+  
+  }
 Ext.QuickTips.init();  
 Ext.onReady(function() {
-//$(document).ready(function() {
+
 	if ($.browser.msie)	setTimeout(loadMap, 2000);
 	else loadMap();
+	
+	addCompanyHeader();
+	setTimeout(\"easySDImap.doLayout()\",500);
+	
   });
+  
+  
 ";
 
 $document->addScriptDeclaration($readyJS);

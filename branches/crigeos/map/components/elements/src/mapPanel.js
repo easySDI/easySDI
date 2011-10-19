@@ -879,6 +879,7 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 		
 		return new Ext.Toolbar( {
 			region : "south",
+			id: "southToolbar",
 			autoHeight : true,
 			items : [ this.rectangleButton, this.polygonButton, this.pointButton, this.pathButton, this.modifyFeatureButton,
 					this.selectFeatureButton, componentDisplayOption.selectFeatureButtonEnable ? {

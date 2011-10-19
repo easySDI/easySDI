@@ -247,7 +247,7 @@ EasySDI_Map.LayerTree = Ext.extend(Ext.data.Tree, {
 		
 	onPreAddLayer :function(evt) {
 		
-		console.log(evt.type);
+	
 		if(evt.layer.visibility){
 			this._loadMask.maximizeControl();
 			this.loadEvents.push(evt.type) ;
@@ -264,7 +264,7 @@ EasySDI_Map.LayerTree = Ext.extend(Ext.data.Tree, {
 		
 	}, 
 	onMoveEnd :function(evt) {
-		console.log(evt.type);		
+		
 		a = this.loadEvents.pop();
 		console.log(this.loadEvents);
 		if(this.loadEvents.length == 0)
@@ -276,25 +276,7 @@ EasySDI_Map.LayerTree = Ext.extend(Ext.data.Tree, {
 			
 		
 	},
-	/*onLayerAdded : function(evt) {
-		
-		console.log(evt.type);
-		if(this.loadStarted !=true){
-			(function() {
-				this._loadMask.hide();
-			}.defer(500, this));
-			
-		
-			
-		}
-		else{
-			if(evt.type== "loadend"){
-				this._loadMask.hide();
-			}
-			this.loadStarted = false;
-		}
-		
-	},*/
+	
 	
 
 
