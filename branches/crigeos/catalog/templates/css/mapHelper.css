@@ -1,6 +1,6 @@
 
 .previousBtn {
-  background-image: url("../../../../../templates/easysdi_map/icons/silk/resultset_previous.png") !Important;
+  background-image: url("../images/resultset_previous.png") !Important;
   width:16px !Important;
   height :16px !Important;
   background-repeat:no-repeat !Important;
@@ -8,14 +8,14 @@
 }
 
 .nextBtn {
-  background-image: url("../../../../../templates/easysdi_map/icons/silk/resultset_next.png") !Important;
+  background-image: url("../images/resultset_next.png") !Important;
    width:16px !Important;
   height :16px !Important;
   background-repeat:no-repeat !Important;
 }
 
 .navBtn {
-  background-image: url("../../../../../templates/easysdi_map/icons/geosilk/pan.png") !Important;
+  background-image: url("../images/pan.png") !Important;
    width:16px !Important;
   height :16px !Important;
   background-repeat:no-repeat !Important;
