@@ -583,4 +583,23 @@ td.x-toolbar-right {
             display: none;
        
             
-        }
+}
+.x-toolbar-cell input {
+	height:16px!important;
+	top : 0px !important;
+	position: relative !important;
+	margin : 0px!important;
+	padding : 0px!important;
+
+}
+
+.x-toolbar-cell img {
+	height:16px!important;
+	top : 0px !important;
+	position: relative !important;
+	margin : 0px!important;
+	padding : 0px!important;
+	vertical-align:middle;
+
+
+}

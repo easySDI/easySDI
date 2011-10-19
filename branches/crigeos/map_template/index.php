@@ -25,10 +25,10 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 <jdoc:include type="head" />
 <link rel="stylesheet" href="<?php echo $this->baseurl ?>/components/com_easysdi_map/externals/ext/resources/css/ext-all.css" type="text/css" />
 <link rel="stylesheet" href="<?php echo $this->baseurl ?>/components/com_easysdi_map/externals/ext/resources/css/xtheme-<?php echo $this->params->get('extThemeVariation'); ?>.css" type="text/css" />
-<link rel="stylesheet" href="<?php echo $this->baseurl ?>/templates/easysdi_map/css/easysdi_map.css" type="text/css" />
+<link rel="stylesheet" href="<?php echo $this->baseurl ?>/templates/<?php echo $this->template ?>/css/easysdi_map.css" type="text/css" />
 <link rel="stylesheet" href="<?php echo $this->baseurl ?>/templates/system/css/system.css" type="text/css" />
 <link rel="stylesheet" href="<?php echo $this->baseurl ?>/templates/system/css/general.css" type="text/css" />
-<link rel="stylesheet" href="<?php echo $this->baseurl ?>/templates/easysdi_map/css/template.css" type="text/css" />
+<link rel="stylesheet" href="<?php echo $this->baseurl ?>/templates/<?php echo $this->template ?>/css/template.css" type="text/css" />
 <link rel="stylesheet" href="<?php echo $this->baseurl ?>/templates/easysdi/css/<?php echo $this->params->get('colorVariation'); ?>.css" type="text/css" />
 <link rel="stylesheet" href="<?php echo $this->baseurl ?>/templates/easysdi/css/<?php echo $this->params->get('backgroundVariation'); ?>_bg.css" type="text/css" />
 <!--[if lte IE 6]>
