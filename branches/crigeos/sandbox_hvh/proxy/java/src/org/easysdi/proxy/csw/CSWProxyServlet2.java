@@ -325,7 +325,9 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				            	result.getParentElement().addNamespaceDeclaration(nsSDI);
 				            
 				            XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
-				            sortie.output(doc, new FileOutputStream(tempFile));
+				            FileOutputStream outStream = new FileOutputStream(tempFile);
+				            sortie.output(doc, outStream);
+				            outStream.close();
 				            
 				        }
 				        catch (JDOMException e) {
@@ -390,7 +392,9 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				            }
 				            
 				            XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
-				            sortie.output(doc, new FileOutputStream(tempFile));
+				            FileOutputStream outStream = new FileOutputStream(tempFile);
+				            sortie.output(doc, outStream);
+				            outStream.close();
 				        }
 				        catch (JDOMException e) {
 				            e.printStackTrace();
@@ -575,12 +579,12 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					//Use CQL_TEXT to build the constraint
 					constraintLanguage = "CQL_TEXT";
 					constraint_language_version = "1.0.1";
-						
-					//Add the constraintLanguage to the url
-					
-					
-				}else if (constraintLanguage.equalsIgnoreCase("CQL_TEXT")){
-					
+				}
+				
+				if (constraintLanguage.equalsIgnoreCase("CQL_TEXT")){
+					//Add Geographical filter
+					CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy, getJoomlaProvider());
+					constraint = cswDataManager.addCQLFilterOnDataAccessible(configuration.getOgcSearchFilter(), constraint);
 					
 				}else if (constraintLanguage.equalsIgnoreCase("FILTER")){
 					
@@ -589,12 +593,6 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					sendOgcExceptionBuiltInResponse(resp, generateOgcException("The query language specified in parameter 'constraintLanguage' is not supported.", "OptionNotSupported", "", requestedVersion));
 					return;
 				}
-				
-				//ajout de la liste des identifiants autorisés
-				
-				// ajout du filtre géographique
-				
-				//ajout du test sur le paramètre harvested SI la config n'est pas une config de harvesting
 			}
 			
 			// Build the request to dispatch
@@ -612,6 +610,11 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				{
 					//paramUrl = paramUrl + key + "=" + URLEncoder.encode(constraint, "UTF-8") + "&";
 					paramUrl = paramUrl + key + "=" + constraint + "&";
+				}
+				else if (key.equalsIgnoreCase("constraint_language_version"))
+				{
+					//paramUrl = paramUrl + key + "=" + URLEncoder.encode(constraint, "UTF-8") + "&";
+					paramUrl = paramUrl + key + "=" + constraint_language_version + "&";
 				}
 				else
 				{
@@ -840,16 +843,18 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				List<String> filePathList = new Vector<String>();
 				String filePath = sendData("POST", getRemoteServerUrl(0), param.toString());
 				filePathList.add(filePath);
-				if( rh.getContent().equalsIgnoreCase("") || rh.getContent().equalsIgnoreCase("complete"))
+				if( (rh.getContent().equalsIgnoreCase("") || rh.getContent().equalsIgnoreCase("complete")) && !configuration.isHarvestingConfig())
 				{
+					//If the config is used to harvest remote servers, the metadatas are never completed.
+					//The completion process of metadatas is only available for EasySDI metadatas (metadatas created and managed by the solution)
 					logger.trace("Start - Complete metadata");
 					//Build complete metadata
 					CSWProxyMetadataContentManager cswManager = new CSWProxyMetadataContentManager(this);
-			/*		if ( !cswManager.buildCompleteMetadata(filePathList.get(0)))
+					if ( !cswManager.buildCompleteMetadata(filePathList.get(0)))
 					{
 						sendOgcExceptionBuiltInResponse(resp, generateOgcException("Request can not be completed. "+cswManager.GetLastError(), "NoApplicableCode", "", requestedVersion));
 						return;
-					}*/
+					}
 					logger.trace("End - Complete metadata");
 					
 				}

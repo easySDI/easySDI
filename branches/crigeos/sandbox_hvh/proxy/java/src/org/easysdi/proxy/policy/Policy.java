@@ -46,7 +46,7 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "availabilityPeriod", "imageSize", "operations", "servers", "subjects","objectVisibilities", "objectStatus","objectTypes","geographicFilter", "includeHarvested" })
+@XmlType(name = "", propOrder = { "availabilityPeriod", "imageSize", "operations", "servers", "subjects","objectVisibilities", "objectStatus","objectTypes","geographicFilter", "BBOXFilter", "includeHarvested" })
 @XmlRootElement(name = "Policy")
 public class Policy implements Serializable {
 
@@ -56,6 +56,8 @@ public class Policy implements Serializable {
 	protected Boolean includeHarvested=false;
 	@XmlElement(name = "GeographicFilter")
 	protected String geographicFilter;
+	@XmlElement(name = "BBOXFilter")
+	protected BBOXFilter BBOXFilter;
 	@XmlElement(name = "ObjectVisibilities")
 	protected ObjectVisibilities objectVisibilities;
 	@XmlElement(name = "ObjectTypes")

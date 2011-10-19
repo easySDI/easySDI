@@ -74,6 +74,7 @@ public class CSWProxyMetadataContentManager
 	    {
 	    	Document  docParent = sxb.build(new File(filePath));
 	    	Element racine = docParent.getRootElement();
+	    	
 	      
 	    	//Get all the attributes 'xlink:href'
 	    	Filter filtre = new AttributeXlinkFilter();
@@ -82,8 +83,11 @@ public class CSWProxyMetadataContentManager
 	    	//We have to use a separate List storing the Elements we want to modify.	    	
 	    	List<Element> elList = new ArrayList<Element>();	    	  
 	    	//Iterator<?> i= racine.getDescendants(filtre);
-	    	   
-	    	XPath xpa = XPath.newInstance("//MD_Metadata[/platform@harvested='false']");   
+	    	
+	    	//Get only the Metadata which are not harvested : the complete process is only available for the MD manage by the EasySDI solution
+	    	XPath xpa = XPath.newInstance("//gmd:MD_Metadata[sdi:platform/@harvested='false']");   
+	    	xpa.addNamespace("gmd", "http://www.isotc211.org/2005/gmd");
+	    	xpa.addNamespace("sdi", "http://www.easysdi.org/2011/sdi");
 	    	List<Element> easysdMDList = (List<Element>)xpa.selectNodes(racine);
 	    	
 	    	for (Element element : easysdMDList) {
@@ -152,8 +156,10 @@ public class CSWProxyMetadataContentManager
     	   }
 //	    	proxy.dump("DEBUG","End - Loop on metadata");
     	   XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
-           sortie.output(docParent, new FileOutputStream(filePath));
-           return true;
+    	   FileOutputStream outStream = new FileOutputStream(filePath);
+           sortie.output(docParent, outStream);
+           outStream.close();
+           return true;	
 	    }
 		catch (Exception ex )
 		{

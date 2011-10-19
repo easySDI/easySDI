@@ -5,6 +5,8 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringBufferInputStream;
 import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -763,4 +765,21 @@ public class CSWProxyDataAccessibilityManager {
 		}
 	}
 
+	public String addCQLFilterOnDataAccessible (String ogcSearchFilter, String filter){
+		try {
+			
+			//Add a geographic filter if one defined in the loaded policy
+			//if(policy.getGeographicFilter() != null && policy.getGeographicFilter().length()!= 0){
+				if(filter.length() > 0)
+					filter += URLEncoder.encode(" AND BBOX(BoundingBox,18033757.51,-2753408.1,19592230.38,-2154935.2,'urn:ogc:def:wkss:OGC:1.0:GoogleMapsCompatible') ", "UTF-8");
+				else
+					filter = URLEncoder.encode(" BBOX(BoundingBox,162,-24,176,-19,'urn:ogc:def:crs:OGC:1.3:CRS:84') ", "UTF-8");
+			//}
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+		return filter;
+	}
 }
