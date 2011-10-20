@@ -46,7 +46,7 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "availabilityPeriod", "imageSize", "operations", "servers", "subjects","objectVisibilities", "objectStatus","objectTypes","geographicFilter", "BBOXFilter", "includeHarvested" })
+@XmlType(name = "", propOrder = { "availabilityPeriod", "imageSize", "operations", "servers", "subjects","objectVisibilities", "objectStatus","objectTypes","geographicFilter","bboxFilter",  "includeHarvested" })
 @XmlRootElement(name = "Policy")
 public class Policy implements Serializable {
 
@@ -57,7 +57,7 @@ public class Policy implements Serializable {
 	@XmlElement(name = "GeographicFilter")
 	protected String geographicFilter;
 	@XmlElement(name = "BBOXFilter")
-	protected BBOXFilter BBOXFilter;
+	protected BBOXFilter bboxFilter;
 	@XmlElement(name = "ObjectVisibilities")
 	protected ObjectVisibilities objectVisibilities;
 	@XmlElement(name = "ObjectTypes")
@@ -81,36 +81,130 @@ public class Policy implements Serializable {
 	@XmlAttribute(name = "Id", required = true)
 	protected String id;
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
 	@Override
 	public int hashCode() {
-		int hashCode = 0;
-		if (getObjectTypes() != null)
-			hashCode += getObjectTypes().hashCode();
-		if (getObjectVisibilities() != null)
-			hashCode += getObjectVisibilities().hashCode();
-		if (getObjectStatus() != null)
-			hashCode += getObjectStatus().hashCode();
-		if (includeHarvested != null)
-			hashCode += includeHarvested.hashCode();
-		if (geographicFilter != null)
-			hashCode += geographicFilter.hashCode();
-		if (availabilityPeriod != null)
-			hashCode += availabilityPeriod.hashCode();
-		if (imageSize != null)
-			hashCode += imageSize.hashCode();
-		if (operations != null)
-			hashCode += operations.hashCode();
-		if (servers != null)
-			hashCode += servers.hashCode();
-		if (subjects != null)
-			hashCode += subjects.hashCode();
-		if (configId != null)
-			hashCode += configId.hashCode();
-		if (inherit != null)
-			hashCode += inherit.hashCode();
-		if (id != null)
-			hashCode += id.hashCode();
-		return hashCode;
+		final int prime = 31;
+		int result = 1;
+		result = prime
+				* result
+				+ ((availabilityPeriod == null) ? 0 : availabilityPeriod
+						.hashCode());
+		result = prime * result
+				+ ((bboxFilter == null) ? 0 : bboxFilter.hashCode());
+		result = prime * result
+				+ ((configId == null) ? 0 : configId.hashCode());
+		result = prime
+				* result
+				+ ((geographicFilter == null) ? 0 : geographicFilter.hashCode());
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result
+				+ ((imageSize == null) ? 0 : imageSize.hashCode());
+		result = prime
+				* result
+				+ ((includeHarvested == null) ? 0 : includeHarvested.hashCode());
+		result = prime * result + ((inherit == null) ? 0 : inherit.hashCode());
+		result = prime * result
+				+ ((objectStatus == null) ? 0 : objectStatus.hashCode());
+		result = prime * result
+				+ ((objectTypes == null) ? 0 : objectTypes.hashCode());
+		result = prime
+				* result
+				+ ((objectVisibilities == null) ? 0 : objectVisibilities
+						.hashCode());
+		result = prime * result
+				+ ((operations == null) ? 0 : operations.hashCode());
+		result = prime * result + ((servers == null) ? 0 : servers.hashCode());
+		result = prime * result
+				+ ((subjects == null) ? 0 : subjects.hashCode());
+		return result;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Policy other = (Policy) obj;
+		if (availabilityPeriod == null) {
+			if (other.availabilityPeriod != null)
+				return false;
+		} else if (!availabilityPeriod.equals(other.availabilityPeriod))
+			return false;
+		if (bboxFilter == null) {
+			if (other.bboxFilter != null)
+				return false;
+		} else if (!bboxFilter.equals(other.bboxFilter))
+			return false;
+		if (configId == null) {
+			if (other.configId != null)
+				return false;
+		} else if (!configId.equals(other.configId))
+			return false;
+		if (geographicFilter == null) {
+			if (other.geographicFilter != null)
+				return false;
+		} else if (!geographicFilter.equals(other.geographicFilter))
+			return false;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		if (imageSize == null) {
+			if (other.imageSize != null)
+				return false;
+		} else if (!imageSize.equals(other.imageSize))
+			return false;
+		if (includeHarvested == null) {
+			if (other.includeHarvested != null)
+				return false;
+		} else if (!includeHarvested.equals(other.includeHarvested))
+			return false;
+		if (inherit == null) {
+			if (other.inherit != null)
+				return false;
+		} else if (!inherit.equals(other.inherit))
+			return false;
+		if (objectStatus == null) {
+			if (other.objectStatus != null)
+				return false;
+		} else if (!objectStatus.equals(other.objectStatus))
+			return false;
+		if (objectTypes == null) {
+			if (other.objectTypes != null)
+				return false;
+		} else if (!objectTypes.equals(other.objectTypes))
+			return false;
+		if (objectVisibilities == null) {
+			if (other.objectVisibilities != null)
+				return false;
+		} else if (!objectVisibilities.equals(other.objectVisibilities))
+			return false;
+		if (operations == null) {
+			if (other.operations != null)
+				return false;
+		} else if (!operations.equals(other.operations))
+			return false;
+		if (servers == null) {
+			if (other.servers != null)
+				return false;
+		} else if (!servers.equals(other.servers))
+			return false;
+		if (subjects == null) {
+			if (other.subjects != null)
+				return false;
+		} else if (!subjects.equals(other.subjects))
+			return false;
+		return true;
 	}
 
 	/**
@@ -348,5 +442,19 @@ public class Policy implements Serializable {
 	 */
 	public void setId(String value) {
 		this.id = value;
+	}
+
+	/**
+	 * @return the bboxFilter
+	 */
+	public BBOXFilter getBboxFilter() {
+		return bboxFilter;
+	}
+
+	/**
+	 * @param bboxFilter the bboxFilter to set
+	 */
+	public void setBboxFilter(BBOXFilter bboxFilter) {
+		this.bboxFilter = bboxFilter;
 	}
 }

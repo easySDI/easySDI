@@ -499,8 +499,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			{
 				String key = (String) parameterNames.nextElement();
 				String value = URLEncoder.encode(req.getParameter(key),"UTF-8");
-				if(key.equalsIgnoreCase("id"))
-				{
+				if(key.equalsIgnoreCase("id")){
 					requestedId = value;
 					continue;
 				}
@@ -587,7 +586,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					constraint = cswDataManager.addCQLFilterOnDataAccessible(configuration.getOgcSearchFilter(), constraint);
 					
 				}else if (constraintLanguage.equalsIgnoreCase("FILTER")){
-					
+					//Inclure la portion d'XMl dans l'XML déjà présent dans la requête
 				}else{
 					//The constraint language specified in the request is not valid, or not yet supported by the proxy
 					sendOgcExceptionBuiltInResponse(resp, generateOgcException("The query language specified in parameter 'constraintLanguage' is not supported.", "OptionNotSupported", "", requestedVersion));
@@ -865,8 +864,11 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			else if(currentOperation.equalsIgnoreCase("GetRecords"))
 			{
 				logger.trace("Start - Data Accessibility");
+				//TODO : remplacer le geographicfilter par bboxfilter
 				CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy, getJoomlaProvider());
-				if(!cswDataManager.isAllDataAccessibleForGetRecords() || (policy.getGeographicFilter()!=null && policy.getGeographicFilter().length() != 0) || !policy.getIncludeHarvested())
+				if(		!cswDataManager.isAllDataAccessibleForGetRecords() || 
+						(policy.getGeographicFilter()!=null && policy.getGeographicFilter().length() != 0) || 
+						!policy.getIncludeHarvested())
 				{
 					//Add a filter on the data id in the request
 					param = cswDataManager.addFilterOnDataAccessible(configuration.getOgcSearchFilter(), param);

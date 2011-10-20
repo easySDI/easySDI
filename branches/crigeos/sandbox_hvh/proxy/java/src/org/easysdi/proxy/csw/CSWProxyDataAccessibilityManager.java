@@ -560,6 +560,8 @@ public class CSWProxyDataAccessibilityManager {
 			</ogc:And>
 		</ogc:Filter> 
 	 */
+	//TODO : le type de contrainte peut être soit XML soit CQL
+	//-> le support du CQl en POST n'est pas présent
 	public StringBuffer addFilterOnDataAccessible (String ogcSearchFilter, StringBuffer param)
 	{
 		Namespace nsCSW =  Namespace.getNamespace("http://www.opengis.net/cat/csw/2.0.2");
@@ -744,9 +746,16 @@ public class CSWProxyDataAccessibilityManager {
 			}
 	
 			//Add a geographic filter if one defined in the loaded policy
-			if(policy.getGeographicFilter() != null && policy.getGeographicFilter().length()!= 0){
+			/*if(policy.getGeographicFilter() != null && policy.getGeographicFilter().length()!= 0){
 				SAXBuilder builder = new SAXBuilder();
 				Reader in = new StringReader(policy.getGeographicFilter());
+				Document filterDoc = builder.build(in);
+				elementAnd.addContent(filterDoc.getRootElement().detach());
+			}*/
+			
+			if(policy.getBboxFilter() != null && policy.getBboxFilter().isValide()){
+				SAXBuilder builder = new SAXBuilder();
+				Reader in = new StringReader(buildOGCBBOXFilter());
 				Document filterDoc = builder.build(in);
 				elementAnd.addContent(filterDoc.getRootElement().detach());
 			}
@@ -765,16 +774,46 @@ public class CSWProxyDataAccessibilityManager {
 		}
 	}
 
+	/**
+	 * 	
+	 * <ogc:BBOX xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml">
+        <ogc:PropertyName>BoundingBox</ogc:PropertyName>
+          <gml:Envelope srsName="urn:x-ogc:def:crs:EPSG:4326">
+            <gml:lowerCorner>-180 -90</gml:lowerCorner>
+            <gml:upperCorner>180 90</gml:upperCorner>
+          </gml:Envelope>
+		</ogc:BBOX>
+	 * @return
+	 */
+	protected String buildOGCBBOXFilter(){
+		String filter = new String();
+		filter = "<ogc:BBOX xmlns:ogc='http://www.opengis.net/ogc' xmlns:gml='http://www.opengis.net/gml'>";
+		filter += "<ogc:PropertyName>BoundingBox</ogc:PropertyName>";
+		filter += "<gml:Envelope srsName='";
+		filter += policy.getBboxFilter().getCRS() + "'>";
+		filter += "<gml:lowerCorner>";
+		filter += policy.getBboxFilter().getMinx() + " ";
+		filter += policy.getBboxFilter().getMiny() + " ";
+		filter += "</gml:lowerCorner>";
+		filter += "<gml:upperCorner>";
+		filter += policy.getBboxFilter().getMaxx() + " ";
+		filter += policy.getBboxFilter().getMaxy() + " ";
+		filter += "</gml:upperCorner>";
+		filter += "</gml:Envelope>";
+		filter += "</ogc:BBOX>";
+		return filter;
+	}
+	
 	public String addCQLFilterOnDataAccessible (String ogcSearchFilter, String filter){
 		try {
 			
 			//Add a geographic filter if one defined in the loaded policy
-			//if(policy.getGeographicFilter() != null && policy.getGeographicFilter().length()!= 0){
+			if(policy.getBboxFilter() != null && policy.getBboxFilter().isValide()){
 				if(filter.length() > 0)
-					filter += URLEncoder.encode(" AND BBOX(BoundingBox,18033757.51,-2753408.1,19592230.38,-2154935.2,'urn:ogc:def:wkss:OGC:1.0:GoogleMapsCompatible') ", "UTF-8");
+					filter += URLEncoder.encode(" AND BBOX(BoundingBox,"+policy.getBboxFilter().getMinx()+","+policy.getBboxFilter().getMiny()+","+policy.getBboxFilter().getMaxx()+","+policy.getBboxFilter().getMaxy()+",'"+policy.getBboxFilter().getCRS()+"') ", "UTF-8");
 				else
-					filter = URLEncoder.encode(" BBOX(BoundingBox,162,-24,176,-19,'urn:ogc:def:crs:OGC:1.3:CRS:84') ", "UTF-8");
-			//}
+					filter = URLEncoder.encode(" BBOX(BoundingBox,"+policy.getBboxFilter().getMinx()+","+policy.getBboxFilter().getMiny()+","+policy.getBboxFilter().getMaxx()+","+policy.getBboxFilter().getMaxy()+",'"+policy.getBboxFilter().getCRS()+"') ", "UTF-8");
+			}
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
