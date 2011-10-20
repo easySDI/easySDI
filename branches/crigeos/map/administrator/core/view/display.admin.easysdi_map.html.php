@@ -58,7 +58,13 @@ class HTML_display
 		?>
 			<tr class="<?php echo "row$k"; ?>">
 				<td align="center"><?php echo $i+$pageNav->limitstart+1;?></td>
-				<td><?php echo JText::_($row->code); ?></td>
+				<td><?php echo JText::_($row->code); 
+				echo "&nbsp;&nbsp;&nbsp;" ;
+				if(strtoupper($row->code)=="MAP_PRINTMAPBUTTON"){
+				 echo JHTML::tooltip(JText::_("MAP_PRINTBUTTONINFO"), '', 'tooltip.png', '');
+				}
+				?>
+				</td>
 				<td><input type="checkbox"  id="isEnable<?php echo $row->id;?>" name="isEnable<?php echo $row->id;?>" value="" <?php if($row->enable == 1)echo " checked" ?> onChange="saveChanges(<?php echo $row->id; ?>);" /></td>
 			</tr>
 		<?php
