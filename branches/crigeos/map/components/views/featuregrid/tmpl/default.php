@@ -45,7 +45,7 @@ JHTML::script('pagination.js', 'components/com_easysdi_map/classes/');
 JHTML::script('report_base.js', 'components/com_easysdi_map/elements/');
 require(JPATH_COMPONENT.DS.'php'.DS.'lang.php');
 require(JPATH_COMPONENT.DS.'php'.DS.'params.php');
-JHTML::script('featureGrid.js', 'components/com_easysdi_map/views/featureGrid/tmpl/');
+JHTML::script('featureGrid.js', 'components/com_easysdi_map/views/featuregrid/tmpl/');
 
 // Execute the layout and pass the $POST filter variable down to the page.
 if (array_key_exists('body', $_POST)) {

@@ -44,7 +44,7 @@ JHTML::script('SortableWFS.js', 'components/com_easysdi_map/classes/');
 JHTML::script('report_base.js', 'components/com_easysdi_map/elements/');
 require(JPATH_COMPONENT.DS.'php'.DS.'lang.php');
 require(JPATH_COMPONENT.DS.'php'.DS.'params.php');
-JHTML::script('featureDetails.js', 'components/com_easysdi_map/views/featureDetails/tmpl/');
+JHTML::script('featureDetails.js', 'components/com_easysdi_map/views/featuredetails/tmpl/');
 
 // Execute the layout
 $readyJS = "Ext.onReady(function() {

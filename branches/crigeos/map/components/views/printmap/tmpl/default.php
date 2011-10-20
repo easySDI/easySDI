@@ -38,7 +38,7 @@ $jsLoader =JSLOADER_UTIL::getInstance();
 <script type="text/javascript" src="<?php echo $jsLoader->getPath("map","openlayers")?>/OpenLayers.js"></script>
 <script type="text/javascript" src="components/com_easysdi_map/classes/core.js"></script>
 <script type="text/javascript" src="components/com_easysdi_map/classes/i18n.js"></script>
-<script type="text/javascript" src="components/com_easysdi_map/views/printMap/tmpl/standard_layout.js"></script>
+<script type="text/javascript" src="components/com_easysdi_map/views/printmap/tmpl/standard_layout.js"></script>
 
 <?php
 $h = JRequest::getVar ('mapPanelHeight');
