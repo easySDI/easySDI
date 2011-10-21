@@ -468,14 +468,15 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 			 layer.map = null;
 			 layer.numZoomLevels = 1;
 			
-			 var wRes = this.map.maxExtent.getWidth() / this.overviewWidth;
-	         var hRes = this.map.maxExtent.getHeight() / this.overviewHeight;
+			 var wRes = this.map.baseLayer.maxExtent.getWidth() / this.overviewWidth;
+	         var hRes = this.map.baseLayer.maxExtent.getHeight() / this.overviewHeight;
 	         var  maxResolution = Math.max(wRes, hRes);
 			 layer.maxResolution = maxResolution;			 
 			 layer.scales = null;			
 			 layer.minScale = null; 
 			 layer.maxScale = null; 
 			 layer.resolutions = [maxResolution];
+			 layer.scales= null;
 			 layer.minResolution = maxResolution;
 			 
 			 layer.options.numZoomLevels = 1;
@@ -493,8 +494,8 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 			
 			var ovControl = new OpenLayers.Control.OverviewMap({
 				mapOptions :{
-					maxExtent : this.map.maxExtent,
-					minExtent : this.map.maxExtent,
+					maxExtent : this.map.baseLayer.maxExtent,
+					minExtent : this.map.baseLayer.maxExtent,
 					maxResolution : layer.maxResolution,
 					minResolution : layer.maxResolution,
 					resolutions :[layer.maxResolution],
@@ -503,10 +504,14 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 					scales :null,
 					numZoomLevels :1
 				},
-				layers : [layer],
-				size : new OpenLayers.Size(this.overviewWidth, this.overviewHeight)
+				layers : [layer]
+				
 				
 			});
+		//	ovControl.size = new OpenLayers.Size(this.overviewWidth, this.overviewHeight);
+			 console.log("ovcontrol layer");
+			 console.log(ovControl);
+			
 			
 			// This forces the overview to never pan or zoom, since it
 			// is always
@@ -911,6 +916,7 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 	 * Initialise the toolbar controls
 	 */
 	_getToolbar : function() {
+
 		// Toolbar items for localisation
 		if (SData.localisationLayers.length > 0) {
 			var storeObject = {
