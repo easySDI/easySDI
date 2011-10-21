@@ -930,6 +930,31 @@ function com_install()
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 	}
+	if($version=="2.0.3"){
+		
+		$query="INSERT INTO #__sdi_mapdisplayoption (guid,name,created,createdby,checked_out,code, object,enable) VALUES ('".helper_easysdi::getUniqueId()."', 'selectAnnotationStyleButton','".date('Y-m-d H:i:s')."', '".$user_id."',0,  'MAP_selectAnnotationStyleButton','selectAnnotationStyleButton','1')";
+		$db->setQuery($query);
+		if (!$db->query())
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+
+		$query="DELETE from #__sdi_mapdisplayoption where name='selectButton'";
+		$db->setQuery($query);
+		if (!$db->query())
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+
+		$version="2.0.4";
+		$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='MAP'";
+		$db->setQuery( $query);
+		if (!$db->query())
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+	}
 
 	$query = "DELETE FROM #__components where `option`= 'com_easysdi_map'";
 	$db->setQuery( $query);

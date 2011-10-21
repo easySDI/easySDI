@@ -467,20 +467,24 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 			 var layer = this.map.baseLayer.clone();
 			 layer.map = null;
 			 layer.numZoomLevels = 1;
-			 layer.maxResolution = layer.resolutions[0]*5;			 
+			
+			 var wRes = this.map.maxExtent.getWidth() / this.overviewWidth;
+	         var hRes = this.map.maxExtent.getHeight() / this.overviewHeight;
+	         var  maxResolution = Math.max(wRes, hRes);
+			 layer.maxResolution = maxResolution;			 
 			 layer.scales = null;			
 			 layer.minScale = null; 
 			 layer.maxScale = null; 
-			 layer.resolutions = [layer.maxResolution];
-			 layer.minResolution = layer.maxResolution;
+			 layer.resolutions = [maxResolution];
+			 layer.minResolution = maxResolution;
 			 
 			 layer.options.numZoomLevels = 1;
-			 layer.options.maxResolution = layer.resolutions[0];			 
+			 layer.options.maxResolution = maxResolution;			 
 			 layer.options.scales = null;			
 			 layer.options.minScale = null; 
 			 layer.options.maxScale = null; 
-			 layer.options.resolutions = [layer.maxResolution];
-			 layer.options.minResolution = layer.maxResolution;
+			 layer.options.resolutions = [maxResolution];
+			 layer.options.minResolution = maxResolution;
 			 
 			 console.log("adding layer");
 			 console.log(layer);
@@ -499,7 +503,8 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 					scales :null,
 					numZoomLevels :1
 				},
-				layers : [layer]
+				layers : [layer],
+				size : new OpenLayers.Size(this.overviewWidth, this.overviewHeight)
 				
 			});
 			
@@ -579,7 +584,7 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 		// during page setup so we ignore it (hence <2).
 		// this.previousButton can be null if the ToolBar is disable
 		// (componentDisplayOption.ToolBarEnable:false)
-		if (this.previousButton) {
+		if (this.previousButton.xtype != "tbspacer") {
 			this.previousButton.setDisabled(this.navHistoryCtrl.previousStack.length < 2);
 			this.nextButton.setDisabled(this.navHistoryCtrl.nextStack.length === 0);
 		}
@@ -733,12 +738,9 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 		// Annotation toolbar
 		// Get the annotation styles to populate the dropdown list
 		var styleDropDownItems;
-		if(componentDisplayOption.selectFeatureButtonEnable)
-			styleDropDownItems= this._createAnnotationStyleDropDownItems();
-		else
-			styleDropDownItems={
-					xtype :'tbspacer'
-			}
+		
+		styleDropDownItems= this._createAnnotationStyleDropDownItems();
+	
 		
 		if(componentDisplayOption.rectangleButtonEnable ){
 		this.rectangleButton = new Ext.Toolbar.Button( {
@@ -803,7 +805,7 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 			}
 		}
 		
-		if(componentDisplayOption.modifyFeatureButtonEnable ){
+		if(componentDisplayOption.pathButtonEnable ){
 		this.pathButton = new Ext.Toolbar.Button( {
 			iconCls : 'pathBtn',
 			minWidth : 26,
@@ -836,59 +838,68 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 		}
 
 		// Position toolbar
-		var mouseposDiv = document.createElement("div");
-		mouseposDiv.setAttribute('id', 'mapposition');
-		// Add a map listener that drops mouse position in the status
-		// bar.
-		this.mousePos = new OpenLayers.Control.MousePosition( {
-			div : mouseposDiv,
-			numDigits : 0
-		});
-		this.map.addControl(this.mousePos);
-		// Build a menu for the projections available
-		var projMenuItems = [];
-		Ext.each(componentParams.displayProjections, function(item, i) {
-			projMenuItems.push( new Ext.menu.CheckItem ({
-				text : item.title,
-				checked : i === 0, // first item checked
-				group : 'proj',		
-				checkHandler : function(e){
-					this.onProjChecked(e);
-					},
-				scope : this,
-				stateId : i
-			}));
-		}, this);
-		var projMenu = {
-		
-			items : projMenuItems
-		};
-		this.projMenuButton = new Ext.Toolbar.Button( {
+		if(componentDisplayOption.CoordinateEnable){
+			var mouseposDiv = document.createElement("div");
+			mouseposDiv.setAttribute('id', 'mapposition');
+			// Add a map listener that drops mouse position in the status
+			// bar.
+			this.mousePos = new OpenLayers.Control.MousePosition( {
+				div : mouseposDiv,
+				numDigits : 0
+			});
+			this.map.addControl(this.mousePos);
+			// Build a menu for the projections available
+			var projMenuItems = [];
 
-			text : EasySDI_Map.lang.getLocal(projMenuItems[0].text), // TODO
-			// -
-			// read
-			// this
-			// from
-			// user
-			// settings
-			menu : projMenu
+			Ext.each(componentParams.displayProjections, function(item, i) {
+				projMenuItems.push( new Ext.menu.CheckItem ({
+					text : item.title,
+					checked : i === 0, // first item checked
+					group : 'proj',		
+					checkHandler : function(e){
+						this.onProjChecked(e);
+					},
+					scope : this,
+					stateId : i
+				}));
+			}, this);
+			var projMenu = {
+
+					items : projMenuItems
+			};
+
+			this.projMenuButton = new Ext.Toolbar.Button( {
+
+				text : EasySDI_Map.lang.getLocal(projMenuItems[0].text), // TODO
+				// -
+				// read
+				// this
+				// from
+				// user
+				// settings
+				menu : projMenu
+
+
+			});
+		}else{
+			this.projMenuButton={
+					xtype :'tbspacer'
+			}
+		}
 			
-			
-		});
 		
 		return new Ext.Toolbar( {
 			region : "south",
 			id: "southToolbar",
 			autoHeight : true,
 			items : [ this.rectangleButton, this.polygonButton, this.pointButton, this.pathButton, this.modifyFeatureButton,
-					this.selectFeatureButton, componentDisplayOption.selectFeatureButtonEnable ? {
+					this.selectFeatureButton,  componentDisplayOption.selectAnnotationStyleButtonEnable ? {
 						iconCls : 'styleChooserBtn',
 						menu : {
 							items : styleDropDownItems
 						}
-					} : {
-						xtype : 'tbfill'
+					} :{
+						xtype :'tbspacer'
 					}, {
 						xtype : 'tbfill'
 					}, this.projMenuButton, new Ext.Toolbar.Item(mouseposDiv) ]
@@ -1050,7 +1061,7 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 			
 		}
 		
-		if(componentDisplayOption.selectButtonEnable ){
+	/*	if(componentDisplayOption.selectButtonEnable ){
 		this.selectButton = new Ext.Toolbar.Button( {
 			iconCls : 'selectBtn',
 			enableToggle : true,
@@ -1060,7 +1071,7 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 			scope : this
 		});}else{
 			this.selectButton = {xtype:'tbspacer'}			
-		}
+		}*/
 		
 		if(componentDisplayOption.zoomInBoxButtonEnable ){
 		this.zoomInBoxButton = new Ext.Toolbar.Button( {
@@ -1179,7 +1190,7 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 			}, showScale ? EasySDI_Map.lang.getLocal('1:') : {xtype : 'tbfill'} , this.zoomToScaleField, {
 				xtype : 'tbseparator'
 			},
-			// this.selectButton,
+		
 					this.saveMapButton, this.printMapButton, this.pdfButton, {
 						xtype : 'tbfill'
 					}, componentDisplayOption.locAutocompleteEnable ? EasySDI_Map.lang.getLocal('MP_ZOOM'):{xtype:'tbspacer'}	, this.locAutocomplete
@@ -1219,6 +1230,7 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 	 * the layer vector style
 	 */
 	_onAnnotationStyleSelect : function(item, checked) {
+	
 		// First call : initialization of the annotation toolbar
 		if (!item) {
 			// Select the first style by default
@@ -1301,53 +1313,69 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 			}
 
 			// Define the openlayers controls used for annotation
-			if (!this.rectControl) {
-				// Create the control
-				this.rectControl = new OpenLayers.Control.DrawFeature(this.vectors, OpenLayers.Handler.RegularPolygon);
-				this.rectControl.handler.setOptions( {
-					irregular : true
-				});
-				this.map.addControl(this.rectControl);
-			} else {
-				// Update the control that it can point to the right
-				// layer
-				this.rectControl.layer = this.vectors;
+			if(componentDisplayOption.rectangleButtonEnable ){
+				if (!this.rectControl) {
+					// Create the control
+					this.rectControl = new OpenLayers.Control.DrawFeature(this.vectors, OpenLayers.Handler.RegularPolygon);
+					this.rectControl.handler.setOptions( {
+						irregular : true
+					});
+					this.map.addControl(this.rectControl);
+				} else {
+					// Update the control that it can point to the right
+					// layer
+					this.rectControl.layer = this.vectors;
+				}
 			}
-			if (!this.polyControl) {
-				this.polyControl = new OpenLayers.Control.DrawFeature(this.vectors, OpenLayers.Handler.Polygon);
-				this.map.addControl(this.polyControl);
-			} else {
-				this.polyControl.layer = this.vectors;
+			if(componentDisplayOption.polygonButtonEnable ){
+				if (!this.polyControl) {
+					this.polyControl = new OpenLayers.Control.DrawFeature(this.vectors, OpenLayers.Handler.Polygon);
+					this.map.addControl(this.polyControl);
+				} else {
+					this.polyControl.layer = this.vectors;
+				}
 			}
-			if (!this.pointControl) {
-				this.pointControl = new OpenLayers.Control.DrawFeature(this.vectors, OpenLayers.Handler.Point);
-				this.map.addControl(this.pointControl);
-			} else {
-				this.pointControl.layer = this.vectors;
-			}
-			if (this.modifyFeatureControl) {
-				this.modifyFeatureControl.destroy();
-			}
-			this.modifyFeatureControl = new OpenLayers.Control.ModifyFeature(this.vectors);
-			this.map.addControl(this.modifyFeatureControl);
 
-			if (!this.pathControl) {
-				this.pathControl = new OpenLayers.Control.DrawFeature(this.vectors, OpenLayers.Handler.Path);
-				this.map.addControl(this.pathControl);
-			} else {
-				this.pathControl.layer = this.vectors;
+			if(componentDisplayOption.pointButtonEnable ){
+				if (!this.pointControl) {
+					this.pointControl = new OpenLayers.Control.DrawFeature(this.vectors, OpenLayers.Handler.Point);
+					this.map.addControl(this.pointControl);
+				} else {
+					this.pointControl.layer = this.vectors;
+				}
 			}
-			if (!this.selectControl) {
-				this.selectControl = new OpenLayers.Control.SelectFeature(this.vectorsLayersArray, {
-					box : true,
-					onSelect : function(feature) {
-						feature.destroy();
-					}
-				});
-				this.map.addControl(this.selectControl);
-			} else {
-				this.selectControl.layers = this.vectorsLayersArray;
+			
+			if(componentDisplayOption.modifyFeatureButtonEnable ){
+				if (this.modifyFeatureControl) {
+					this.modifyFeatureControl.destroy();
+				}
+
+				this.modifyFeatureControl = new OpenLayers.Control.ModifyFeature(this.vectors);
+				this.map.addControl(this.modifyFeatureControl);
 			}
+			if(componentDisplayOption.pathButtonEnable ){
+				if (!this.pathControl) {
+					this.pathControl = new OpenLayers.Control.DrawFeature(this.vectors, OpenLayers.Handler.Path);
+					this.map.addControl(this.pathControl);
+				} else {
+					this.pathControl.layer = this.vectors;
+				}
+			}
+			
+			if(componentDisplayOption.selectFeatureButtonEnable ){
+				if (!this.selectControl) {
+					this.selectControl = new OpenLayers.Control.SelectFeature(this.vectorsLayersArray, {
+						box : true,
+						onSelect : function(feature) {
+							feature.destroy();
+						}
+					});
+					this.map.addControl(this.selectControl);
+				} else {
+					this.selectControl.layers = this.vectorsLayersArray;
+				}
+			}
+			
 		}
 	},
 
