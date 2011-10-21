@@ -587,10 +587,10 @@ td.x-toolbar-right {
         }
 
 #companyBanner {
- background: url("../images/fond_map_crigeos.png") repeat scroll left center transparent;
-
+ 	background: url("../images/fond_map_crigeos.png") repeat scroll left center transparent;
     height: 7%;
     position: relative;
+    background-size : 100%;
 
 }
 
