@@ -30,7 +30,7 @@ require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'
 var thesaurusConfig = '<?php echo config_easysdi::getValue("thesaurusUrl");?>'
 
 </script>
-				
+<?php				
 JHTML::script('ext-base.js', 'administrator/components/com_easysdi_catalog/ext/adapter/ext/');
 JHTML::script('ext-all.js', 'administrator/components/com_easysdi_catalog/ext/');
 JHTML::script('catalogMapPanel.js', 'administrator/components/com_easysdi_catalog/js/');
