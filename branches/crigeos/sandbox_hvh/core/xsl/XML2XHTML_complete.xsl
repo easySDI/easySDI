@@ -300,7 +300,7 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 								<td class="value">		
 									<xsl:for-each select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:topicCategory">
 										<xsl:call-template name="categoryCodeTemplateFR">
-											<xsl:with-param name="categoryCode" select="gmd:MD_topicCategoryCode" />
+											<xsl:with-param name="categoryCode" select="gmd:MD_TopicCategoryCode" />
 										</xsl:call-template>
 									</xsl:for-each>
 								</td>
