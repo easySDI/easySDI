@@ -27,7 +27,7 @@ require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'
 //jimport( 'joomla.application.component.view' );
 ?>
 <script>
-var thesaurusConfig = '<?php echo config_easysdi::getValue("thesaurusUrl");?>'
+var thesaurusConfig = '<?php echo config_easysdi::getValue("thesaurusUrl");?>';
 
 </script>
 
