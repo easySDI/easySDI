@@ -42,5 +42,40 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 <body id="page_bg" class="color_<?php echo $this->params->get('colorVariation'); ?> bg_<?php echo $this->params->get('backgroundVariation');?>">
 <div id="map"><div class="loader"><br><br><br><img src="templates/easysdi_map/images/loader.gif">&nbsp;<b>Chargement...</b></div>
 </div>
+<script type="text/javascript">
+Ext.onReady(function(){
+	  var companyObject = [
+	  		{
+	         id : 'companyLogo',         
+	         tag : 'a',
+	         href :'<?php echo $this->baseurl?>/index.php'
+	      },{
+		     id : 'companyMessage',         
+	         tag : 'img',
+             src :'<?php echo $this->baseurl ?>/templates/<?php echo $this->template ?>/images/texte_map_crigeos.png'
+    	         
+	      }];
+	      
+	  var companyBackgroundImgObject = [
+	                                	{
+	                                 id : 'companyBackgroundImg',         
+	                                 tag : 'img',
+	                                 src :'<?php echo $this->baseurl ?>/templates/<?php echo $this->template ?>/images/fond_map_crigeos.png'
+	                                }];
+
+	  var companyDivId = Ext.DomHelper.insertFirst(document.body,   
+	  		[{
+	             id : 'companyBackgroundImg'
+	          },{
+	             id : 'companyBanner'
+	          }]);
+
+	  Ext.DomHelper.append(Ext.get('companyBanner'), companyObject);
+	  Ext.DomHelper.append(Ext.get('companyBackgroundImg'), companyBackgroundImgObject);
+	  
+	  } 
+);
+
+</script>
 </body>
 </html>
