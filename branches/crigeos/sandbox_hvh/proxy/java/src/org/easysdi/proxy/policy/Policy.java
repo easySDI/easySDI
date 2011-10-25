@@ -46,7 +46,7 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = { "availabilityPeriod", "imageSize", "operations", "servers", "subjects","objectVisibilities", "objectStatus","objectTypes","geographicFilter","bboxFilter",  "includeHarvested" })
+@XmlType(name = "", propOrder = { "availabilityPeriod", "imageSize", "operations", "servers", "subjects","objectVisibilities", "objectStatus","objectTypes","bboxFilter",  "includeHarvested" })
 @XmlRootElement(name = "Policy")
 public class Policy implements Serializable {
 
@@ -54,8 +54,6 @@ public class Policy implements Serializable {
 
 	@XmlElement(name = "IncludeHarvested")
 	protected Boolean includeHarvested=false;
-	@XmlElement(name = "GeographicFilter")
-	protected String geographicFilter;
 	@XmlElement(name = "BBOXFilter")
 	protected BBOXFilter bboxFilter;
 	@XmlElement(name = "ObjectVisibilities")
@@ -96,9 +94,6 @@ public class Policy implements Serializable {
 				+ ((bboxFilter == null) ? 0 : bboxFilter.hashCode());
 		result = prime * result
 				+ ((configId == null) ? 0 : configId.hashCode());
-		result = prime
-				* result
-				+ ((geographicFilter == null) ? 0 : geographicFilter.hashCode());
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result
 				+ ((imageSize == null) ? 0 : imageSize.hashCode());
@@ -149,11 +144,7 @@ public class Policy implements Serializable {
 				return false;
 		} else if (!configId.equals(other.configId))
 			return false;
-		if (geographicFilter == null) {
-			if (other.geographicFilter != null)
-				return false;
-		} else if (!geographicFilter.equals(other.geographicFilter))
-			return false;
+		
 		if (id == null) {
 			if (other.id != null)
 				return false;
@@ -221,19 +212,7 @@ public class Policy implements Serializable {
 		this.includeHarvested = includeHarvested;
 	}
 	
-	/**
-	 * @return the geographicFilter
-	 */
-	public String getGeographicFilter() {
-		return geographicFilter;
-	}
-
-	/**
-	 * @param geographicFilter the geographicFilter to set
-	 */
-	public void setGeographicFilter(String geographicFilter) {
-		this.geographicFilter = geographicFilter;
-	}
+	
 	/**
 	 * Gets the value of the availabilityPeriod property.
 	 * 

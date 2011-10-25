@@ -8,14 +8,12 @@
 
 package org.easysdi.proxy.policy;
 
-import java.math.BigInteger;
+import java.io.Serializable;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.easysdi.proxy.policy.BBOXFilter;
 
 
@@ -45,22 +43,25 @@ import org.easysdi.proxy.policy.BBOXFilter;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "crs",
-    "minx",
-    "miny",
-    "maxx",
-    "maxy"
-})
+@XmlType(name = "", propOrder = {"crs","minx","miny","maxx","maxy"})
 @XmlRootElement(name = "BBOXFilter")
-public class BBOXFilter {
+public class BBOXFilter implements Serializable{
 
-    @XmlElement(name = "CRS")
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2945381681841876745L;
+	@XmlElement(name = "CRS")
     protected String crs;
-    protected Integer minx;
-    protected Integer miny;
-    protected Integer maxx;
-    protected Integer maxy;
+    @XmlElement(name = "minx")
+    protected String minx;
+    @XmlElement(name = "miny")
+    protected String miny;
+    @XmlElement(name = "maxx")
+    protected String maxx;
+    @XmlElement(name = "maxy")
+    protected String maxy;
 
     public Boolean isValide (){
     	if(     crs != null && crs.length()>0 &&
@@ -75,9 +76,8 @@ public class BBOXFilter {
     			maxx == null &&
     			miny == null &&
     			maxy == null)
-    		return true;
-    	
-    	
+    		return false;
+    	    	
     	return false;
     }
     @Override
@@ -158,10 +158,10 @@ public class BBOXFilter {
      * 
      * @return
      *     possible object is
-     *     {@link BigInteger }
+     *     {@link BigString }
      *     
      */
-    public Integer getMinx() {
+    public String getMinx() {
         return minx;
     }
 
@@ -170,10 +170,10 @@ public class BBOXFilter {
      * 
      * @param value
      *     allowed object is
-     *     {@link BigInteger }
+     *     {@link BigString }
      *     
      */
-    public void setMinx(Integer value) {
+    public void setMinx(String value) {
         this.minx = value;
     }
 
@@ -182,10 +182,10 @@ public class BBOXFilter {
      * 
      * @return
      *     possible object is
-     *     {@link BigInteger }
+     *     {@link BigString }
      *     
      */
-    public Integer getMiny() {
+    public String getMiny() {
         return miny;
     }
 
@@ -194,10 +194,10 @@ public class BBOXFilter {
      * 
      * @param value
      *     allowed object is
-     *     {@link BigInteger }
+     *     {@link BigString }
      *     
      */
-    public void setMiny(Integer value) {
+    public void setMiny(String value) {
         this.miny = value;
     }
 
@@ -206,10 +206,10 @@ public class BBOXFilter {
      * 
      * @return
      *     possible object is
-     *     {@link BigInteger }
+     *     {@link BigString }
      *     
      */
-    public Integer getMaxx() {
+    public String getMaxx() {
         return maxx;
     }
 
@@ -218,10 +218,10 @@ public class BBOXFilter {
      * 
      * @param value
      *     allowed object is
-     *     {@link BigInteger }
+     *     {@link BigString }
      *     
      */
-    public void setMaxx(Integer value) {
+    public void setMaxx(String value) {
         this.maxx = value;
     }
 
@@ -230,10 +230,10 @@ public class BBOXFilter {
      * 
      * @return
      *     possible object is
-     *     {@link BigInteger }
+     *     {@link BigString }
      *     
      */
-    public Integer getMaxy() {
+    public String getMaxy() {
         return maxy;
     }
 
@@ -242,10 +242,10 @@ public class BBOXFilter {
      * 
      * @param value
      *     allowed object is
-     *     {@link BigInteger }
+     *     {@link BigString }
      *     
      */
-    public void setMaxy(Integer value) {
+    public void setMaxy(String value) {
         this.maxy = value;
     }
 

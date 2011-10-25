@@ -614,15 +614,22 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				else if (key.equalsIgnoreCase("constraint_language_version"))
 				{
 					//paramUrl = paramUrl + key + "=" + URLEncoder.encode(constraint, "UTF-8") + "&";
-					paramUrl = paramUrl + key + "=" + constraint_language_version + "&";
+					//paramUrl = paramUrl + key + "=" + constraint_language_version + "&";
+				}
+				else if (key.equalsIgnoreCase("constraintLanguage"))
+				{
+					
 				}
 				else
 				{
 					paramUrl = paramUrl + key + "=" + value + "&";
 				}
 			}
-			
-			paramUrl = paramUrl + "constraint=" + constraint + "&";
+			if(constraint != null && constraint.length()>0){
+				paramUrl = paramUrl + "constraint=" + constraint + "&";
+				paramUrl = paramUrl + "constraintLanguage=" + constraintLanguage + "&";
+				paramUrl = paramUrl + "constraint_language_version=" + constraint_language_version + "&";
+			}
 			
 			if(requestedVersion != null)
 				version = requestedVersion;

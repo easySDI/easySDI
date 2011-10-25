@@ -75,7 +75,7 @@ public class CSWProxyDataAccessibilityManager {
 		if( (policy.getObjectVisibilities() == null || policy.getObjectVisibilities().isAll()) 
 			&& (policy.getObjectTypes()== null || policy.getObjectTypes().isAll())
 			&& (policy.getObjectStatus()== null || policy.getObjectStatus().isAll())
-			&& (policy.getGeographicFilter() == null || policy.getGeographicFilter().length() == 0))
+			&& (policy.getBboxFilter() == null || policy.getBboxFilter().isValide() ))
 		{
 			return true;
 		}
