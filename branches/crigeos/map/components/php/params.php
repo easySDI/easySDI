@@ -310,7 +310,9 @@ if (!is_null($result)) {
 $s .= "];\n";
 
 // Export overlays objects from the __sdi_overlay table.
-$query = "SELECT * from #__sdi_overlay o where o.published=1 order by o.group_id DESC, o.ordering DESC";
+$query = "SELECT o.* from #__sdi_overlay o 
+inner join #__sdi_overlaygroup og on og.id = o.group_id
+where o.published=1 and og.published=1 order by og.ordering DESC,  o.ordering DESC";
 $db->setQuery($query);
 $result = $db->loadAssocList();
 
@@ -328,6 +330,7 @@ if (!is_null($result)) {
 			// add comma before all but the first
 			if ($done_first) $s .= ",";
 			$done_first=true;
+			$l_name = addslashes($l_name);
 			$s .= "{
 		    id : $l_id,
 		    group : $l_group_id,

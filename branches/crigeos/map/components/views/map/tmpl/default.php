@@ -147,30 +147,13 @@ easySDImap = new EasySDI_Map.RwgLayout(
 		});
   }
   
-  function addCompanyHeader(){
-  var companyObject = [{
-         id : 'companyLogo',         
-         tag : 'a',
-         href :'".$this->baseurl."/index.php'
-      },{
-	     id : 'companyMessage',         
-         tag : 'div'
-      }];
-
-  var companyDivId = Ext.DomHelper.insertFirst(document.body, [{
-             id : 'companyBanner'
-          }]);
  
-  Ext.DomHelper.append(companyDivId, companyObject);
-  
-  }
 Ext.QuickTips.init();  
 Ext.onReady(function() {
 
-	if ($.browser.msie)	setTimeout(loadMap, 2000);
+	if ($.browser.msie)	setTimeout(loadMap, 500);
 	else loadMap();
 	
-	addCompanyHeader();
 	setTimeout(\"easySDImap.doLayout()\",500);
 	
   });
