@@ -22,6 +22,7 @@ import java.io.Reader;
 import java.io.StringBufferInputStream;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -799,7 +800,7 @@ public class CSWProxyDataAccessibilityManager {
 		if(constraint != null && constraint.length() > 0 ){
 			//Add Geographical filter in the existing XML filter
 			SAXBuilder sxb = new SAXBuilder();
-			Document  docParent = sxb.build(new StringReader(constraint));
+			Document  docParent = sxb.build(new StringReader(URLDecoder.decode(constraint,"UTF-8")));
 	    	Element racine = docParent.getRootElement();
 	    	List<Element> filters = racine.removeContent();
 	    	Element and = new Element ("And",nsOGC );
@@ -808,6 +809,7 @@ public class CSWProxyDataAccessibilityManager {
 	    	Reader in = new StringReader(buildXMLBBOXFilter());
 			Document filterDoc = sxb.build(in);
 			and.addContent(filterDoc.getRootElement().detach());
+			racine.addContent(and);
 			
 			XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
 			ByteArrayOutputStream result =new ByteArrayOutputStream ();
