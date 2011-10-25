@@ -27,6 +27,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -539,6 +540,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				return ;
 			
 			//GetRecords is not supported in GET request
+			//EXCEPT for a configuration dedicated to the harvesting
 			if(currentOperation.equalsIgnoreCase("GetRecords") && !configuration.isHarvestingConfig())
 				sendOgcExceptionBuiltInResponse(resp,generateOgcException("Operation not supported in a GET request","OperationNotSupported ","request", requestedVersion));
 			
@@ -571,22 +573,21 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				logger.trace("End - Data Accessibility");
 				
 			}else if (currentOperation.equalsIgnoreCase("GetRecords")){
-				//Add filter on data accessible
-				
-				//Récupération du language de la contrainte exprimée dans l'URL
+				//Get the constraint language
 				if(constraintLanguage == null ){
 					//Use CQL_TEXT to build the constraint
 					constraintLanguage = "CQL_TEXT";
 					constraint_language_version = "1.0.1";
 				}
-				
+				CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy, getJoomlaProvider());
 				if (constraintLanguage.equalsIgnoreCase("CQL_TEXT")){
-					//Add Geographical filter
-					CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy, getJoomlaProvider());
-					constraint = cswDataManager.addCQLFilterOnDataAccessible(configuration.getOgcSearchFilter(), constraint);
+					//Add Geographical filter as CQL_TEXT additional parameter
+					constraint = cswDataManager.addCQLBBOXFilter(constraint);
 					
 				}else if (constraintLanguage.equalsIgnoreCase("FILTER")){
-					//Inclure la portion d'XMl dans l'XML déjà présent dans la requête
+					//Add Geographical filter
+					constraint = cswDataManager.addXMLBBOXFilter(constraint);
+					
 				}else{
 					//The constraint language specified in the request is not valid, or not yet supported by the proxy
 					sendOgcExceptionBuiltInResponse(resp, generateOgcException("The query language specified in parameter 'constraintLanguage' is not supported.", "OptionNotSupported", "", requestedVersion));
@@ -608,7 +609,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				else if (key.equalsIgnoreCase("constraint"))
 				{
 					//paramUrl = paramUrl + key + "=" + URLEncoder.encode(constraint, "UTF-8") + "&";
-					paramUrl = paramUrl + key + "=" + constraint + "&";
+					//paramUrl = paramUrl + key + "=" + constraint + "&";
 				}
 				else if (key.equalsIgnoreCase("constraint_language_version"))
 				{
@@ -620,6 +621,8 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					paramUrl = paramUrl + key + "=" + value + "&";
 				}
 			}
+			
+			paramUrl = paramUrl + "constraint=" + constraint + "&";
 			
 			if(requestedVersion != null)
 				version = requestedVersion;
@@ -657,13 +660,12 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 		{
 			logger.error( e.getMessage());
 			sendOgcExceptionBuiltInResponse(resp,generateOgcException(e.getMessage(),"OperationNotSupported","request",requestedVersion));
-		} 
-		catch (Exception e) 
+		}catch (Exception e) 
 		{
 			e.printStackTrace();
 			logger.error( e.toString());
 			resp.setHeader("easysdi-proxy-error-occured", "true");
-			sendOgcExceptionBuiltInResponse(resp,generateOgcException(e.getMessage(),"NoApplicableCode","request",requestedVersion));
+			sendOgcExceptionBuiltInResponse(resp,generateOgcException("CSWProxyServlet.requestPreTreatmentGET returns : "+ e.toString(),"NoApplicableCode","request",requestedVersion));
 		}
 	}
 
@@ -928,7 +930,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			e.printStackTrace();
 			logger.error( e.toString());
 			resp.setHeader("easysdi-proxy-error-occured", "true");
-			sendOgcExceptionBuiltInResponse(resp,generateOgcException("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
+			sendOgcExceptionBuiltInResponse(resp,generateOgcException("Error in EasySDI Proxy. Consult the proxy log for more details. CSWProxyServlet.requestPreTreatmentPOST returns : "+ e.toString(),"NoApplicableCode","",requestedVersion));
 		}
 	}
 }

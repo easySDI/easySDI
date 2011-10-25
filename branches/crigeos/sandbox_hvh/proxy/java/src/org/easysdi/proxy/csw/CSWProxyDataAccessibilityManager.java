@@ -1,6 +1,22 @@
+/**
+ * EasySDI, a solution to implement easily any spatial data infrastructure
+ * Copyright (C) 2008 DEPTH SA, Chemin d�Arche 40b, CH-1870 Monthey, easysdi@depth.ch 
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or 
+ * any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html. 
+ */
 package org.easysdi.proxy.csw;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringBufferInputStream;
@@ -29,7 +45,7 @@ import ch.interlis.interlis2.GM03V18.GM03ComprehensiveComprehensiveDQAbsoluteExt
 
 /**
  * Access the database to retreive accessible metadatas
- * and rewrite request to send to the CSW service
+ * and rewrite request to send to the CSW remote server
  * @author DEPTH SA
  *
  */
@@ -38,6 +54,8 @@ public class CSWProxyDataAccessibilityManager {
 	private Policy policy;
 	private JoomlaProvider joomlaProvider;
 	private String dataIdVersionAccessible;
+	Namespace nsCSW =  Namespace.getNamespace("http://www.opengis.net/cat/csw/2.0.2");
+	Namespace nsOGC =  Namespace.getNamespace("http://www.opengis.net/ogc");
 	
 	/**
 	 * @param dataIdVersionAccessible the dataIdVersionAccessible to set
@@ -564,8 +582,7 @@ public class CSWProxyDataAccessibilityManager {
 	//-> le support du CQl en POST n'est pas présent
 	public StringBuffer addFilterOnDataAccessible (String ogcSearchFilter, StringBuffer param)
 	{
-		Namespace nsCSW =  Namespace.getNamespace("http://www.opengis.net/cat/csw/2.0.2");
-		Namespace nsOGC =  Namespace.getNamespace("http://www.opengis.net/ogc");
+		
 		
 		SAXBuilder sxb = new SAXBuilder();
 		try 
@@ -744,18 +761,10 @@ public class CSWProxyDataAccessibilityManager {
 					elementLiteral2.setText("true");
 				}
 			}
-	
-			//Add a geographic filter if one defined in the loaded policy
-			/*if(policy.getGeographicFilter() != null && policy.getGeographicFilter().length()!= 0){
-				SAXBuilder builder = new SAXBuilder();
-				Reader in = new StringReader(policy.getGeographicFilter());
-				Document filterDoc = builder.build(in);
-				elementAnd.addContent(filterDoc.getRootElement().detach());
-			}*/
 			
 			if(policy.getBboxFilter() != null && policy.getBboxFilter().isValide()){
 				SAXBuilder builder = new SAXBuilder();
-				Reader in = new StringReader(buildOGCBBOXFilter());
+				Reader in = new StringReader(buildXMLBBOXFilter());
 				Document filterDoc = builder.build(in);
 				elementAnd.addContent(filterDoc.getRootElement().detach());
 			}
@@ -775,7 +784,64 @@ public class CSWProxyDataAccessibilityManager {
 	}
 
 	/**
-	 * 	
+	 * Complete an existing XML constraint with a BBOX filter 
+	 * or build a complete XML constraint with a BBOX filter
+	 * The returned constraint is used in a KVP GetRecords request
+	 * @param constraint
+	 * @return
+	 * @throws IOException 
+	 * @throws JDOMException 
+	 */
+	public String addXMLBBOXFilter(String constraint) throws JDOMException, IOException{
+		if(policy.getBboxFilter() == null || !policy.getBboxFilter().isValide())
+			return constraint;
+		
+		if(constraint != null && constraint.length() > 0 ){
+			//Add Geographical filter in the existing XML filter
+			SAXBuilder sxb = new SAXBuilder();
+			Document  docParent = sxb.build(new StringReader(constraint));
+	    	Element racine = docParent.getRootElement();
+	    	List<Element> filters = racine.removeContent();
+	    	Element and = new Element ("And",nsOGC );
+	    	and.addContent(filters);
+	    	
+	    	Reader in = new StringReader(buildXMLBBOXFilter());
+			Document filterDoc = sxb.build(in);
+			and.addContent(filterDoc.getRootElement().detach());
+			
+			XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
+			ByteArrayOutputStream result =new ByteArrayOutputStream ();
+	        sortie.output(docParent,result );
+	        
+	        constraint = result.toString();
+			
+		}else{
+			//Build the XML filter
+			constraint = buildXMLConstraint();
+		}
+		
+		return URLEncoder.encode(constraint, "UTF-8");
+	}
+	
+	/**
+	 * Build a complete XML constraint to use in a KVP GetRecords request
+	 * @return
+	 * @throws UnsupportedEncodingException
+	 */
+	public String buildXMLConstraint () throws UnsupportedEncodingException{
+		if(policy.getBboxFilter() == null || !policy.getBboxFilter().isValide())
+			return new String ();
+		
+		String constraint = new String();
+		constraint = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Filter xmlns='http://www.opengis.net/ogc' xmlns:gml='http://www.opengis.net/gml'>";
+		constraint += buildXMLBBOXFilter();
+		constraint += "</Filter>";
+		return constraint;
+	}
+	
+	/**
+	 * Build the XML BBOX filter corresponding to the policy restriction	
+	 * 
 	 * <ogc:BBOX xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml">
         <ogc:PropertyName>BoundingBox</ogc:PropertyName>
           <gml:Envelope srsName="urn:x-ogc:def:crs:EPSG:4326">
@@ -785,7 +851,7 @@ public class CSWProxyDataAccessibilityManager {
 		</ogc:BBOX>
 	 * @return
 	 */
-	protected String buildOGCBBOXFilter(){
+	protected String buildXMLBBOXFilter(){
 		String filter = new String();
 		filter = "<ogc:BBOX xmlns:ogc='http://www.opengis.net/ogc' xmlns:gml='http://www.opengis.net/gml'>";
 		filter += "<ogc:PropertyName>BoundingBox</ogc:PropertyName>";
@@ -804,21 +870,20 @@ public class CSWProxyDataAccessibilityManager {
 		return filter;
 	}
 	
-	public String addCQLFilterOnDataAccessible (String ogcSearchFilter, String filter){
-		try {
-			
-			//Add a geographic filter if one defined in the loaded policy
-			if(policy.getBboxFilter() != null && policy.getBboxFilter().isValide()){
-				if(filter.length() > 0)
-					filter += URLEncoder.encode(" AND BBOX(BoundingBox,"+policy.getBboxFilter().getMinx()+","+policy.getBboxFilter().getMiny()+","+policy.getBboxFilter().getMaxx()+","+policy.getBboxFilter().getMaxy()+",'"+policy.getBboxFilter().getCRS()+"') ", "UTF-8");
-				else
-					filter = URLEncoder.encode(" BBOX(BoundingBox,"+policy.getBboxFilter().getMinx()+","+policy.getBboxFilter().getMiny()+","+policy.getBboxFilter().getMaxx()+","+policy.getBboxFilter().getMaxy()+",'"+policy.getBboxFilter().getCRS()+"') ", "UTF-8");
-			}
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
-		}
-		return filter;
+	/**
+	 * Add to the KVP CQL filter the BBOX filter corresponding to the policy restriction
+	 * @param filter
+	 * @return
+	 */
+	public String addCQLBBOXFilter (String constraint) throws UnsupportedEncodingException{
+		if(policy.getBboxFilter() == null || !policy.getBboxFilter().isValide())
+			return constraint;
+		//Add a geographic filter if one defined in the loaded policy
+		
+		if(constraint.length() > 0)
+			constraint += URLEncoder.encode(" AND BBOX(BoundingBox,"+policy.getBboxFilter().getMinx()+","+policy.getBboxFilter().getMiny()+","+policy.getBboxFilter().getMaxx()+","+policy.getBboxFilter().getMaxy()+",'"+policy.getBboxFilter().getCRS()+"') ", "UTF-8");
+		else
+			constraint = URLEncoder.encode(" BBOX(BoundingBox,"+policy.getBboxFilter().getMinx()+","+policy.getBboxFilter().getMiny()+","+policy.getBboxFilter().getMaxx()+","+policy.getBboxFilter().getMaxy()+",'"+policy.getBboxFilter().getCRS()+"') ", "UTF-8");
+		return constraint;
 	}
 }
