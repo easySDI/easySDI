@@ -590,7 +590,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					
 				}else{
 					//The constraint language specified in the request is not valid, or not yet supported by the proxy
-					sendOgcExceptionBuiltInResponse(resp, generateOgcException("The query language specified in parameter 'constraintLanguage' is not supported.", "OptionNotSupported", "", requestedVersion));
+					sendOgcExceptionBuiltInResponse(resp, generateOgcException("The query language specified in parameter 'constraintLanguage' is not supported.", "InvalidParameterValue", "constraintLanguage", requestedVersion));
 					return;
 				}
 			}
