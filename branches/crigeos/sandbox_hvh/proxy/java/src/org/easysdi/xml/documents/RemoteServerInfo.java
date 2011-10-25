@@ -76,7 +76,7 @@ public class RemoteServerInfo implements Serializable{
 	    this.user = user;
 	    this.password = password;
 	    this.maxRecords = maxRecords;
-	    if(!loginService.equalsIgnoreCase(""))
+	    if(loginService != null && !loginService.equalsIgnoreCase(""))
 	    	this.loginService = loginService;
 //Debug tb 02.07.2009
 	    // Le probl�me avec cette ligne, c'est que WFSProxyServlet a �t� corrig� sur la base du bug existant
