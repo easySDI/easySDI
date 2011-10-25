@@ -866,10 +866,9 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			else if(currentOperation.equalsIgnoreCase("GetRecords"))
 			{
 				logger.trace("Start - Data Accessibility");
-				//TODO : remplacer le geographicfilter par bboxfilter
 				CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy, getJoomlaProvider());
 				if(		!cswDataManager.isAllDataAccessibleForGetRecords() || 
-						(policy.getGeographicFilter()!=null && policy.getGeographicFilter().length() != 0) || 
+						(policy.getBboxFilter() != null && policy.getBboxFilter().isValide()) || 
 						!policy.getIncludeHarvested())
 				{
 					//Add a filter on the data id in the request

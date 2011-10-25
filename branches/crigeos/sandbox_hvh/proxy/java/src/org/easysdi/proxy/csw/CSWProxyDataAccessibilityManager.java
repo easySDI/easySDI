@@ -583,8 +583,6 @@ public class CSWProxyDataAccessibilityManager {
 	//-> le support du CQl en POST n'est pas présent
 	public StringBuffer addFilterOnDataAccessible (String ogcSearchFilter, StringBuffer param)
 	{
-		
-		
 		SAXBuilder sxb = new SAXBuilder();
 		try 
 		{
