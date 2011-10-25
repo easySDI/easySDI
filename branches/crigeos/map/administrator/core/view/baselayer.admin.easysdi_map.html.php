@@ -24,8 +24,27 @@ class HTML_baselayer
 {
 	function listBaseLayer( $rows, $pageNav,$search, $filter_order_Dir, $filter_order, $option)
 	{
+		
 		JToolBarHelper::title(JText::_("MAP_LIST_BASELAYER"), 'map.png');
 		?>
+		<script>
+			function baselayer_overview(id, task){
+				debugger;
+				if(!isNaN(id)&& task!= "" ){
+					document.getElementById("overviewLayerId").value = id;
+					if(task =="setoverview")
+						document.getElementById("overviewLayerMode").value = 1;
+					if(task =="unsetoverview")
+						document.getElementById("overviewLayerMode").value = 0;
+					document.adminForm.submit();
+					
+				}
+				else
+					return
+				
+				
+			}
+		</script>
 		<form action="index.php" method="GET" name="adminForm">
 		<table width="100%">
 			<tr>
@@ -43,6 +62,7 @@ class HTML_baselayer
 					<th width="20" class='title'><?php echo JText::_("MAP_BASELAYER_SHARP"); ?></th>
 					<th width="20" class='title'><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows); ?>);" /></th>
 					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_BASELAYER_NAME"), 'name', @$filter_order_Dir, @$filter_order); ?></th>
+					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_BASELAYER_ISOVERVIEW"), 'published', @$filter_order_Dir, @$filter_order); ?></th>		
 					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_PUBLISHED"), 'published', @$filter_order_Dir, @$filter_order); ?></th>					
 					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_BASELAYER_DESCRIPTION"), 'description', @$filter_order_Dir, @$filter_order); ?></th>
 					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("MAP_BASELAYER_URL"), 'url', @$filter_order_Dir, @$filter_order); ?></th>
@@ -64,6 +84,7 @@ class HTML_baselayer
 					<td align="center"><?php echo $i+$pageNav->limitstart+1;?></td>
 					<td><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->id; ?>" onclick="isChecked(this.checked);" /></td>
 					<td><a href="#edit" onclick="return listItemTask('cb<?php echo $i;?>','editBaseLayer')"><?php echo stripcslashes($row->name); ?></a></td>
+					<td> <?php echo self::getOverviewSetting($row,$i, 'tick.png', 'publish_x.png', 'baselayer_'); ?></td>
 					<td> <?php echo JHTML::_('grid.published',$row,$i, 'tick.png', 'publish_x.png', 'baselayer_'); ?></td>
 					<td><?php echo $row->description; ?></td>
 					<td><?php echo $row->url; ?></td>
@@ -95,12 +116,14 @@ class HTML_baselayer
 			</tbody>
 			<tfoot>
 				<tr>
-					<td colspan="8"><?php echo $pageNav->getListFooter(); ?></td>
+					<td colspan="9"><?php echo $pageNav->getListFooter(); ?></td>
 				</tr>
 			</tfoot>
 		</table>
 		<input type="hidden" name="option" value="<?php echo $option; ?>" /> 
 		<input type="hidden" name="task" value="baseLayer" /> 
+		<input type="hidden" name="overviewLayerId" id="overviewLayerId"/> 
+		<input type="hidden" name="overviewLayerMode" id="overviewLayerMode"/> 
 		<input type="hidden" name="boxchecked" value="0" /> 
 		<input type="hidden" name="hidemainmenu" value="0">
 		<input type="hidden" name="filter_order_Dir" value="<?php echo $filter_order_Dir; ?>" />
@@ -204,6 +227,10 @@ class HTML_baselayer
 						<td class="key"><?php echo JText::_("MAP_BASELAYER_NAME"); ?></td>
 						<td colspan="2"><input class="inputbox" type="text" size="100" maxlength="<?php echo $fieldsLength['name'];?>" name="name" id="name" value="<?php echo stripslashes($baseLayer->name); ?>" /></td>
 					</tr>
+						<tr>
+							<td class="key"><?php echo JText::_("MAP_BASELAYER_ISOVERVIEW"); ?> : </td>
+							<td colspan="2"><?php echo JHTML::_('select.booleanlist', 'isoverviewlayer', '',  $baseLayer->isoverviewlayer); ?> </td>																
+						</tr>
 						<tr>
 							<td class="key"><?php echo JText::_("CORE_PUBLISHED"); ?> : </td>
 							<td colspan="2"><?php echo JHTML::_('select.booleanlist', 'published', '',  $baseLayer->published); ?> </td>																
@@ -401,6 +428,21 @@ class HTML_baselayer
 		<input type="hidden" name="updatedby" value="<?php echo $baseLayer->createdby; ?>" /> 
 		</form>
 		<?php
+	}
+	
+	function getOverviewSetting( &$row, $i, $imgY = 'tick.png', $imgX = 'publish_x.png', $prefix='' )
+	{
+		$img 	= $row->isoverviewlayer ? $imgY : $imgX;
+		$task 	= $row->isoverviewlayer ? 'unsetoverview' : 'setoverview';
+		$alt 	= $row->isoverviewlayer ? JText::_( 'MAP_OVERVIEWSET' ) : JText::_( 'MAP_OVERVIEWUNSET' );
+		$action = $row->isoverviewlayer ? JText::_( 'MAP_UNSETOVERVIEW' ) : JText::_( 'MAP_SETOVERVIEW' );
+
+		$href = '
+		<a href="javascript:void(0);" onclick="return baselayer_overview('. $row->id .',\''.$task .'\')" title="'. $action .'">
+		<img src="images/'. $img .'" border="0" alt="'. $alt .'" /></a>'
+		;
+
+		return $href;
 	}
 	
 	

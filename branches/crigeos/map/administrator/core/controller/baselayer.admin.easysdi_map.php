@@ -73,6 +73,36 @@ class ADMIN_baselayer
 		global  $mainframe;
 		$db =& JFactory::getDBO(); 
 		
+		$overviewLayerId	= JRequest::getCmd( 'overviewLayerId', '' );
+		$overviewLayerMode	= JRequest::getCmd( 'overviewLayerMode', '' );
+		
+		if(($overviewLayerId !='')&& ($overviewLayerMode!='')){
+			if($overviewLayerMode == 1){
+				$query ="UPDATE #__sdi_baselayer set isoverviewlayer =0";
+				$db->setQuery( $query );
+				if (!$db->query())
+				{
+					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+				}
+					
+				$query ="UPDATE #__sdi_baselayer set isoverviewlayer =1 where id =".$overviewLayerId;
+				$db->setQuery( $query );
+				if (!$db->query())
+				{
+					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+				}
+			}else if($overviewLayerMode == 0){
+				
+				$query ="UPDATE #__sdi_baselayer set isoverviewlayer =0 where id =".$overviewLayerId;
+				$db->setQuery( $query );
+				if (!$db->query())
+				{
+					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+				}
+			}		
+			
+		}
+		
 		$limit = $mainframe->getUserStateFromRequest( "viewlistlimit", 'limit', 10 );
 		$limitstart = $mainframe->getUserStateFromRequest( "view{$option}limitstart", 'limitstart', 0 );
 		
