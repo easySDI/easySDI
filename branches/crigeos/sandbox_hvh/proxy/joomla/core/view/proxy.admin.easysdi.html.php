@@ -799,11 +799,6 @@ echo $pane->endPanel();
 				//echo "<b>".CSW."  </b>";  
 				echo "<b>CSW</b>";
 			}
-//			else if($config->{'servlet-class'} == "org.easysdi.proxy.wfs.SimpleWFSProxyServlet")
-//			{
-//				//echo "<b>".WFS."  </b>";
-//				echo "<b>WFS</b>";
-//			}
 			else if($config->{'servlet-class'} == "org.easysdi.proxy.wfs.WFSProxyServlet")
 			{
 				//echo "<b>".WFS."  </b>";
