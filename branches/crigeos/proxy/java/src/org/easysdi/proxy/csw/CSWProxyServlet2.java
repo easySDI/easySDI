@@ -27,6 +27,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -170,6 +171,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 		// Write the result in a temporary file
 		transformer.transform(new StreamSource(xml), new StreamResult(tempFos));
 		tempFos.close();
+		xslt.close();
 		logger.trace("- End apply XSLT on response.");
 		return tempFile;
 	}
@@ -211,9 +213,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				isPostTreat = true;
 			}
 
-			// Transforms the results using a xslt before sending the
-			// response
-			// back
+			// Transforms the results using a xslt before sending the response back
 			InputStream xml = new FileInputStream(filePathList.get(0));
 			TransformerFactory tFactory = TransformerFactory.newInstance();
 
@@ -226,25 +226,26 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			{
 				if (currentOperation.equals("GetCapabilities")) 
 				{
+					//Remove unauthorized operation (according to policy file) from the capabilities document
+					logger.trace("Remove unauthorized operations from the capabilities document.");
 					tempFile = createTempFile(UUID.randomUUID().toString(), ".xml");
 					tempFos = new FileOutputStream(tempFile);
 					ByteArrayInputStream xslt = null;
 					xslt = new ByteArrayInputStream(buildCapabilitiesXSLT(req).toString().getBytes());
 					transformer = tFactory.newTransformer(new StreamSource(xslt));
-					// Write the result in a temporary file
 					transformer.transform(new StreamSource(xml), new StreamResult(tempFos));
+					tempFos.flush();
 					tempFos.close();
+					xslt.close();
 
-					logger.trace("transform begin apply XSLT on service metadata");
+					//Rewrite service metadata 
+					logger.trace("Rewrite service metadatas in the capabilities document.");
 					InputStream in = new BufferedInputStream(new FileInputStream(tempFile));
 					InputSource inputSource = new InputSource( in);
-					
-					//Application de la transformation XSLT pour la réécriture des métadonnées du service 
 					File tempFileCapaWithMetadata = createTempFile("transform_MDGetCapabilities_" + UUID.randomUUID().toString(), ".xml");
 					FileOutputStream tempServiceMD = new FileOutputStream(tempFileCapaWithMetadata);
 					StringBuffer sb = buildServiceMetadataCapabilitiesXSLT();
 					InputStream xslt_service = new ByteArrayInputStream(sb.toString().getBytes());
-				
 					XMLReader xmlReader = XMLReaderFactory.createXMLReader();
 					SAXSource saxSource = new SAXSource(xmlReader, inputSource);
 					transformer = tFactory.newTransformer(new StreamSource(xslt_service));
@@ -253,7 +254,9 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					transformer.transform(saxSource, new StreamResult(tempServiceMD));
 					tempServiceMD.flush();
 					tempServiceMD.close();
-					
+					in.close();
+					xslt_service.close();
+										
 					tempFile = tempFileCapaWithMetadata;
 					logger.trace("transform end apply XSLT on service metadata");
 				}
@@ -281,7 +284,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					
 					//If the current config is used to harvest remote catalog (see config file : <harvesting-config>true</harvesting-config>),
 					//add dynamically an XML node (and its namespace definition) to the metadata to indicate that this metadata was haversting
-					if(configuration.getIsHarvestingConfig()){
+					if(configuration.isHarvestingConfig()){
 						SAXBuilder sb = new SAXBuilder();
 	
 						Document doc = null;
@@ -323,7 +326,10 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				            	result.getParentElement().addNamespaceDeclaration(nsSDI);
 				            
 				            XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
-				            sortie.output(doc, new FileOutputStream(tempFile));
+				            FileOutputStream outStream = new FileOutputStream(tempFile);
+				            sortie.output(doc, outStream);
+				            outStream.close();
+				            
 				        }
 				        catch (JDOMException e) {
 				            e.printStackTrace();
@@ -347,7 +353,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					
 					//If the current config is used to harvest remote catalog (see config file : <harvesting-config>true</harvesting-config>),
 					//add dynamically an XML node (and its namespace definition) to the metadata to indicate that this metadata was haversting
-					if(configuration.getIsHarvestingConfig()){
+					if(configuration.isHarvestingConfig()){
 						SAXBuilder sb = new SAXBuilder();
 	
 						Document doc = null;
@@ -387,7 +393,9 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				            }
 				            
 				            XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
-				            sortie.output(doc, new FileOutputStream(tempFile));
+				            FileOutputStream outStream = new FileOutputStream(tempFile);
+				            sortie.output(doc, outStream);
+				            outStream.close();
 				        }
 				        catch (JDOMException e) {
 				            e.printStackTrace();
@@ -402,6 +410,9 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					tempFile = new File(filePathList.get(0));
 				}
 
+				//Close the remote server temp file response
+				xml.close();
+				
 				/*
 				 * if a xslt file exists then post-treat the response
 				 */
@@ -479,6 +490,8 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			String requestedId = "";
 			String constraint = "";
 			String content = "";
+			String constraintLanguage = null;
+			String constraint_language_version = null;
 
 			Enumeration<String> parameterNames = req.getParameterNames();
 			String paramUrl = "";
@@ -487,53 +500,38 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			{
 				String key = (String) parameterNames.nextElement();
 				String value = URLEncoder.encode(req.getParameter(key),"UTF-8");
-				if(key.equalsIgnoreCase("id"))
-				{
+				if(key.equalsIgnoreCase("id")){
 					requestedId = value;
 					continue;
 				}
-				if(key.equalsIgnoreCase("Request"))
-				{
-					// Gets the requested Operation
-					if (value.equalsIgnoreCase("capabilities")) 
-					{
+				if(key.equalsIgnoreCase("Request")){
+					if (value.equalsIgnoreCase("capabilities")){
 						currentOperation = "GetCapabilities";
-					} 
-					else 
-					{
+					} else{
 						currentOperation = value;
 					}
 					continue;
 				}
-				if (key.equalsIgnoreCase("version")) 
-				{
+				if (key.equalsIgnoreCase("version")){
 					requestedVersion = value;
 					continue;
 				}
-				//TODO : verify the syntax for those 3 attributes
-//				if (key.equalsIgnoreCase("OutputSchema")) 
-//				{
-//					requestedOutputSchema = value;
-//					continue;
-//				}
-//				if (key.equalsIgnoreCase("ResultType")) 
-//				{
-//					requestedResutlType = value;
-//					continue;
-//				}
-				if (key.equalsIgnoreCase("Constraint")) 
-				{
+
+				if (key.equalsIgnoreCase("Constraint")){
 					constraint = value;
 					continue;
 				}
-				
+				if(key.equalsIgnoreCase("constraintLanguage")){
+					constraintLanguage = value;
+					continue;
+				}
 				//Content specific vendor parameter
-				if(key.equalsIgnoreCase("content"))
-				{
+				if(key.equalsIgnoreCase("content")){
 					content = value;
 					continue;
 				}
 			}
+			
 			logger.info("Request="+req.getQueryString());
 			logger.info("RequestOperation="+ currentOperation);
 			
@@ -542,7 +540,8 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				return ;
 			
 			//GetRecords is not supported in GET request
-			if(currentOperation.equalsIgnoreCase("GetRecords"))
+			//EXCEPT for a configuration dedicated to the harvesting
+			if(currentOperation.equalsIgnoreCase("GetRecords") && !configuration.isHarvestingConfig())
 				sendOgcExceptionBuiltInResponse(resp,generateOgcException("Operation not supported in a GET request","OperationNotSupported ","request", requestedVersion));
 			
 			//GetRecordById
@@ -573,6 +572,27 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				}
 				logger.trace("End - Data Accessibility");
 				
+			}else if (currentOperation.equalsIgnoreCase("GetRecords")){
+				//Get the constraint language
+				if(constraintLanguage == null ){
+					//Use CQL_TEXT to build the constraint
+					constraintLanguage = "CQL_TEXT";
+					constraint_language_version = "1.0.1";
+				}
+				CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy, getJoomlaProvider());
+				if (constraintLanguage.equalsIgnoreCase("CQL_TEXT")){
+					//Add Geographical filter as CQL_TEXT additional parameter
+					constraint = cswDataManager.addCQLBBOXFilter(constraint);
+					
+				}else if (constraintLanguage.equalsIgnoreCase("FILTER")){
+					//Add Geographical filter
+					constraint = cswDataManager.addXMLBBOXFilter(constraint);
+					
+				}else{
+					//The constraint language specified in the request is not valid, or not yet supported by the proxy
+					sendOgcExceptionBuiltInResponse(resp, generateOgcException("The query language specified in parameter 'constraintLanguage' is not supported.", "InvalidParameterValue", "constraintLanguage", requestedVersion));
+					return;
+				}
 			}
 			
 			// Build the request to dispatch
@@ -588,12 +608,28 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				}
 				else if (key.equalsIgnoreCase("constraint"))
 				{
-					paramUrl = paramUrl + key + "=" + URLEncoder.encode(constraint, "UTF-8") + "&";
+					//paramUrl = paramUrl + key + "=" + URLEncoder.encode(constraint, "UTF-8") + "&";
+					//paramUrl = paramUrl + key + "=" + constraint + "&";
+				}
+				else if (key.equalsIgnoreCase("constraint_language_version"))
+				{
+					//paramUrl = paramUrl + key + "=" + URLEncoder.encode(constraint, "UTF-8") + "&";
+					//paramUrl = paramUrl + key + "=" + constraint_language_version + "&";
+				}
+				else if (key.equalsIgnoreCase("constraintLanguage"))
+				{
+					
 				}
 				else
 				{
 					paramUrl = paramUrl + key + "=" + value + "&";
 				}
+			}
+			if(constraint != null && constraint.length()>0){
+				paramUrl = paramUrl + "constraint=" + constraint + "&";
+				paramUrl = paramUrl + "constraintLanguage=" + constraintLanguage + "&";
+				if(constraint_language_version != null)
+					paramUrl = paramUrl + "constraint_language_version=" + constraint_language_version + "&";
 			}
 			
 			if(requestedVersion != null)
@@ -608,7 +644,9 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			
 			if(currentOperation.equalsIgnoreCase("GetRecords") || currentOperation.equalsIgnoreCase("GetRecordById"))
 			{
-				if( content.equalsIgnoreCase("") || content.equalsIgnoreCase("complete"))
+				//If the config is used to harvest remote servers, the metadatas are never completed.
+				//The completion process of metadatas is only available for EasySDI metadatas (metadatas created and managed by the solution)
+				if( (content.equalsIgnoreCase("") || content.equalsIgnoreCase("complete")) && !configuration.isHarvestingConfig())
 				{
 					logger.trace("Start - Complete metadata");
 					//Build complete metadata
@@ -630,13 +668,12 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 		{
 			logger.error( e.getMessage());
 			sendOgcExceptionBuiltInResponse(resp,generateOgcException(e.getMessage(),"OperationNotSupported","request",requestedVersion));
-		} 
-		catch (Exception e) 
+		}catch (Exception e) 
 		{
 			e.printStackTrace();
 			logger.error( e.toString());
 			resp.setHeader("easysdi-proxy-error-occured", "true");
-			sendOgcExceptionBuiltInResponse(resp,generateOgcException(e.getMessage(),"NoApplicableCode","request",requestedVersion));
+			sendOgcExceptionBuiltInResponse(resp,generateOgcException("CSWProxyServlet.requestPreTreatmentGET returns : "+ e.toString(),"NoApplicableCode","request",requestedVersion));
 		}
 	}
 
@@ -698,7 +735,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			}
 
 			//Transaction
-			if(currentOperation.equalsIgnoreCase("Transaction") && !configuration.getIsHarvestingConfig()){
+			if(currentOperation.equalsIgnoreCase("Transaction") && !configuration.isHarvestingConfig()){
 				//If the transaction is INSERT OR UPDATE, add the specific node to indicate that the metadata is handle by EasySDI
 				//sdi:platform harvested="false"
 				if(rh.isTransactionInsert() || rh.isTransactionUpdate()){
@@ -815,8 +852,10 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				List<String> filePathList = new Vector<String>();
 				String filePath = sendData("POST", getRemoteServerUrl(0), param.toString());
 				filePathList.add(filePath);
-				if( rh.getContent().equalsIgnoreCase("") || rh.getContent().equalsIgnoreCase("complete"))
+				if( (rh.getContent().equalsIgnoreCase("") || rh.getContent().equalsIgnoreCase("complete")) && !configuration.isHarvestingConfig())
 				{
+					//If the config is used to harvest remote servers, the metadatas are never completed.
+					//The completion process of metadatas is only available for EasySDI metadatas (metadatas created and managed by the solution)
 					logger.trace("Start - Complete metadata");
 					//Build complete metadata
 					CSWProxyMetadataContentManager cswManager = new CSWProxyMetadataContentManager(this);
@@ -836,7 +875,9 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			{
 				logger.trace("Start - Data Accessibility");
 				CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy, getJoomlaProvider());
-				if(!cswDataManager.isAllDataAccessibleForGetRecords() || (policy.getGeographicFilter()!=null && policy.getGeographicFilter().length() != 0) || !policy.getIncludeHarvested())
+				if(		!cswDataManager.isAllDataAccessibleForGetRecords() || 
+						(policy.getBboxFilter() != null && policy.getBboxFilter().isValide()) || 
+						!policy.getIncludeHarvested())
 				{
 					//Add a filter on the data id in the request
 					param = cswDataManager.addFilterOnDataAccessible(configuration.getOgcSearchFilter(), param);
@@ -896,7 +937,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			e.printStackTrace();
 			logger.error( e.toString());
 			resp.setHeader("easysdi-proxy-error-occured", "true");
-			sendOgcExceptionBuiltInResponse(resp,generateOgcException("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
+			sendOgcExceptionBuiltInResponse(resp,generateOgcException("Error in EasySDI Proxy. Consult the proxy log for more details. CSWProxyServlet.requestPreTreatmentPOST returns : "+ e.toString(),"NoApplicableCode","",requestedVersion));
 		}
 	}
 }

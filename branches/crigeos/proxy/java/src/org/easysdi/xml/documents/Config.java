@@ -345,7 +345,7 @@ public class Config implements Serializable{
 	/**
 	 * @return the isHarvestingConfig
 	 */
-	public Boolean getIsHarvestingConfig() {
+	public Boolean isHarvestingConfig() {
 		return isHarvestingConfig;
 	}
 

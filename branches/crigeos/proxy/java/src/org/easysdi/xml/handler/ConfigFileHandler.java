@@ -97,6 +97,9 @@ public class ConfigFileHandler extends DefaultHandler {
 	private String exceptionMode ="Permissive";
 	private boolean isException=false;
 	private String ogcSearchFilter="";
+	
+	private Boolean isKeywordList = false;
+	private Boolean isServiceIdentification = false;
 	private Boolean isServiceProvider = false;
 	private Boolean isResponsibleParty = false;
 	private Boolean isContact = false;
@@ -190,12 +193,18 @@ public class ConfigFileHandler extends DefaultHandler {
 			isException = true;
 		}
 		
-		
+		if (isTheGoodId && isConfig && isServiceMetadata && qName.equals("KeywordList")) {
+			isKeywordList = true;
+			return;
+		}
 		if (isTheGoodId && isConfig && isServiceMetadata && qName.equals("ServiceProvider")) {
 			isServiceProvider = true;
 			return;
 		}
-		
+		if (isTheGoodId && isConfig && isServiceMetadata && qName.equals("ServiceIdentification")) {
+			isServiceIdentification = true;
+			return;
+		}
 		if (isTheGoodId && isConfig && isServiceMetadata && isServiceProvider && qName.equals("ResponsibleParty")) {
 			isResponsibleParty = true;
 			return;
@@ -647,6 +656,7 @@ public class ConfigFileHandler extends DefaultHandler {
 			owsServiceIdentification.setFees(fees);
 			owsServiceIdentification.setKeywords(keywordList);
 			owsServiceIdentification.setTitle(title);
+			isServiceIdentification = false;
 		}
 		
 		if (isTheGoodId && isConfig && isServiceMetadata && qName.equals("ServiceProvider")) {

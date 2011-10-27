@@ -144,7 +144,7 @@ public class CSWProxyServlet extends ProxyServlet {
 	protected StringBuffer buildServiceMetadataCapabilitiesXSLT() 
 	{
 		StringBuffer serviceMetadataXSLT = new StringBuffer();
-		serviceMetadataXSLT.append("<xsl:stylesheet version=\"1.00\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">");
+		serviceMetadataXSLT.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?><xsl:stylesheet version=\"1.00\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">");
 		serviceMetadataXSLT.append("<xsl:output method=\"xml\" omit-xml-declaration=\"no\" version=\"1.0\" encoding=\"UTF-8\" indent=\"yes\"/>");
 		serviceMetadataXSLT.append("<xsl:strip-space elements=\"*\" />");
 		//Copy all
@@ -317,7 +317,7 @@ public class CSWProxyServlet extends ProxyServlet {
 		try {
 
 			StringBuffer CSWCapabilities200 = new StringBuffer();
-			CSWCapabilities200.append("<xsl:stylesheet version=\"1.00\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">");
+			CSWCapabilities200.append("<?xml version=\"1.0\" encoding=\"UTF-8\" ?><xsl:stylesheet version=\"1.00\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xmlns:ows=\"http://www.opengis.net/ows\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">");
 			CSWCapabilities200.append("<xsl:template match=\"ows:Get\">");
 			CSWCapabilities200.append("<ows:Get>");
 			CSWCapabilities200.append("<xsl:attribute name=\"xlink:href\">");
@@ -422,15 +422,11 @@ public class CSWProxyServlet extends ProxyServlet {
 					isPostTreat = true;
 				}
 
-				// Transforms the results using a xslt before sending the
-				// response
-				// back
+				// Transforms the results using a xslt before sending the response back
 				InputStream xml = new FileInputStream(filePathList.get(0));
 				TransformerFactory tFactory = TransformerFactory.newInstance();
-
 				File tempFile = null;
 				FileOutputStream tempFos = null;
-
 				Transformer transformer = null;
 
 				if (currentOperation != null) {
@@ -463,10 +459,10 @@ public class CSWProxyServlet extends ProxyServlet {
 						transformer.transform(saxSource, new StreamResult(tempServiceMD));
 						tempServiceMD.flush();
 						tempServiceMD.close();
+						xslt_service.close();
 						
 						tempFile = tempFileCapaWithMetadata;
-						logger.trace("transform end apply XSLT on service metadata");
-						
+						logger.trace("transform end GetCapabilities");
 						
 					} else {
 						if ("GetRecords".equals(currentOperation) || "GetRecordById".equals(currentOperation)) {
@@ -479,15 +475,12 @@ public class CSWProxyServlet extends ProxyServlet {
 								tempFile = createTempFile(UUID.randomUUID().toString(), ".xml");
 								tempFos = new FileOutputStream(tempFile);
 
-								InputStream xslt = null;
-								xslt = new ByteArrayInputStream(generateXSLTForMetadata().toString().getBytes());
-								// xslt = new FileInputStream(new
-								// File("d:\\xslt\\test.xsl"));
-
+								InputStream xslt = new ByteArrayInputStream(generateXSLTForMetadata().toString().getBytes());
 								transformer = tFactory.newTransformer(new StreamSource(xslt));
-								// Write the result in a temporary file
 								transformer.transform(new StreamSource(xml), new StreamResult(tempFos));
+								tempFos.flush();
 								tempFos.close();
+								xslt.close();
 							}
 
 						} else
