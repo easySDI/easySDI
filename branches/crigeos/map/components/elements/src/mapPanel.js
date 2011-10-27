@@ -463,11 +463,8 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 	_addOverView: function(){
 		
 		if (componentDisplayOption.MapOverviewEnable) {		
-	
-			
 			overviewLayer = this.createOverviewBaseLayer(SData.overviewLayer[0]);	
 			
-	
 			var bounds;
 			var viewSize = new OpenLayers.Size(200, 150)
 			if (SData.overviewLayer[0].projection != this.map.getProjection()) {
@@ -475,19 +472,18 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 						this.map.getProjectionObject(),
 						new OpenLayers.Projection(SData.overviewLayer[0].projection) );
 			} else {
-				bounds = this.map.getExtent();
+				bounds = this.map.maxExtent;
 			} 
-			overviewLayer.maxExtent = bounds;
-			overviewLayer.minExtent = bounds;
+			
 			
 			if(SData.overviewLayer[0].type =="WMS"){
-
+				overviewLayer.maxExtent = bounds;
+				overviewLayer.minExtent = bounds;
 				var wRes = bounds.getWidth() / viewSize.w;
 				var hRes = bounds.getHeight() / viewSize.h;
 				maxResolution = Math.max(wRes, hRes);
 			}
 			else{
-
 				maxResolution = overviewLayer.maxResolution;
 			}
 			
@@ -497,31 +493,7 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 			overviewLayer.scales = null;
 			overviewLayer.minScale = null;
 			overviewLayer.maxScale = null;
-			
 
-		
-			
-			/* ovControl = new OpenLayers.Control.OverviewMap({
-				mapOptions :{
-					maxExtent : bounds,
-					restrictedExtent : bounds,
-					minExtent : bounds,
-					maxResolution : overviewLayer.maxResolution,
-					minResolution : overviewLayer.maxResolution,
-					resolutions :[overviewLayer.maxResolution],
-					minScale : null,
-					maxScale : null,
-					scales :null,					
-					numZoomLevels :1,
-					projection :SData.overviewLayer[0].projection
-					
-				},
-				layers : [overviewLayer],
-				size : viewSize
-				
-				
-				
-			});*/
 			ovControl = new OpenLayers.Control.OverviewMap({
 				mapOptions :{
 					maxExtent : bounds,
@@ -539,15 +511,12 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 					
 				},
 				layers : [overviewLayer],
-				size : viewSize			
+				size : viewSize	
 				
 				
 			});
 			
 			 
-		
-			
-			
 			// This forces the overview to never pan or zoom, since it
 			// is always
 			// suitable.
@@ -1702,12 +1671,12 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 			extraOptions.units= this.map.units;
 		else{}
 		
-	/*	if (layer.maxExtent != undefined)
+		if (layer.maxExtent != undefined)
 			extraOptions.maxExtent = layer.maxExtent;	
 		else if (this.map.maxExtent != undefined)
 			extraOptions.maxExtent= this.map.maxExtent;
-		else{}*/
-		extraOptions.maxExtent = this.map.getExtent();
+		else{}
+		//extraOptions.maxExtent = this.map.getExtent();
 		
 		if (layer.minScale != undefined)
 			extraOptions.minScale = layer.minScale;
@@ -1750,7 +1719,7 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 			if(layer.style != undefined)
 				extraOptions.style=layer.style;
 			extraOptions.format=layer.imageFormat;
-		//extraOptions.matrix = null;
+		extraOptions.matrix = layer.matrix;
 		//	extraOptions.matrixIds = null;
 			
 			//extraOptions.tileFullExtent = true;

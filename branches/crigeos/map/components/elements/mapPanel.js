@@ -31,8 +31,8 @@ if(!this.element.offsets){this.element.offsets=OpenLayers.Util.pagePosition(this
 return new OpenLayers.Pixel((evt.clientX+this.element.scrolls[0])-this.element.offsets[0]-this.element.lefttop[0]
 -this.hack,(evt.clientY+this.element.scrolls[1])-this.element.offsets[1]-this.element.lefttop[1]-this.hack);}
 this.map.addControl(new OpenLayers.Control.ScaleLine());this.map.addControl(new OpenLayers.Control.PanZoomBar());this.navHistoryCtrl=new OpenLayers.Control.NavigationHistory();this.map.addControl(this.navHistoryCtrl);this.navCtrl=new OpenLayers.Control.Navigation();this.map.addControl(this.navCtrl);this.navCtrl.activate();this.selectFeatureCtrl=new OpenLayers.Control.SelectFeature(null,{clickout:true,toggle:true,multiple:false,hover:false,toggleKey:"ctrlKey",multipleKey:"shiftKey",box:true});this.zoomInBoxCtrl=new OpenLayers.Control.ZoomBox();this.map.addControl(this.zoomInBoxCtrl);this.zoomOutBoxCtrl=new OpenLayers.Control.ZoomBox({out:true});this.map.addControl(this.zoomOutBoxCtrl);this.map.addControl(this.selectFeatureCtrl);this.addGetFeatureCtrl();this.map.events.register('moveend',this,this._onMapMoveEnd);var loadingpanel=new OpenLayers.Control.LoadingPanel();this.map.addControl(loadingpanel);this.map.loadingPanel=loadingpanel;},_addOverView:function(){if(componentDisplayOption.MapOverviewEnable){overviewLayer=this.createOverviewBaseLayer(SData.overviewLayer[0]);var bounds;var viewSize=new OpenLayers.Size(200,150)
-if(SData.overviewLayer[0].projection!=this.map.getProjection()){bounds=this.map.getExtent().transform(this.map.getProjectionObject(),new OpenLayers.Projection(SData.overviewLayer[0].projection));}else{bounds=this.map.getExtent();}
-overviewLayer.maxExtent=bounds;overviewLayer.minExtent=bounds;if(SData.overviewLayer[0].type=="WMS"){var wRes=bounds.getWidth()/viewSize.w;var hRes=bounds.getHeight()/viewSize.h;maxResolution=Math.max(wRes,hRes);}
+if(SData.overviewLayer[0].projection!=this.map.getProjection()){bounds=this.map.getExtent().transform(this.map.getProjectionObject(),new OpenLayers.Projection(SData.overviewLayer[0].projection));}else{bounds=this.map.maxExtent;}
+if(SData.overviewLayer[0].type=="WMS"){overviewLayer.maxExtent=bounds;overviewLayer.minExtent=bounds;var wRes=bounds.getWidth()/viewSize.w;var hRes=bounds.getHeight()/viewSize.h;maxResolution=Math.max(wRes,hRes);}
 else{maxResolution=overviewLayer.maxResolution;}
 overviewLayer.minResolution=maxResolution
 overviewLayer.maxResolution=maxResolution;overviewLayer.resolutions=[maxResolution];overviewLayer.scales=null;overviewLayer.minScale=null;overviewLayer.maxScale=null;ovControl=new OpenLayers.Control.OverviewMap({mapOptions:{maxExtent:bounds,restrictedExtent:bounds,minExtent:bounds,maxResolution:maxResolution,minResolution:maxResolution,resolutions:[maxResolution],minScale:null,maxScale:null,scales:null,numZoomLevels:1,projection:SData.overviewLayer[0].projection,center:bounds.getCenterLonLat()},layers:[overviewLayer],size:viewSize});ovControl.isSuitableOverview=function(){return true;};this.map.addControl(ovControl);}},addGetFeatureCtrl:function(){this.getFeatureCtrl=new EasySDI_Map.WMSGetFeatureInfo({url:componentParams.componentUrl+'&view=getfeatureinfo',infoFormat:'text/html',queryVisible:true,format:new OpenLayers.Format.WMSGetFeatureInfo(),eventListeners:{getfeatureinfo:function(event){if(this.popup!=null)
@@ -108,7 +108,10 @@ if(layer.customStyle!=undefined)
 extraOptions.customStyle=layer.customStyle;if(layer.units!=undefined)
 extraOptions.units=layer.units;else if(extraOptions.units!=undefined)
 extraOptions.units=this.map.units;else{}
-extraOptions.maxExtent=this.map.getExtent();if(layer.minScale!=undefined)
+if(layer.maxExtent!=undefined)
+extraOptions.maxExtent=layer.maxExtent;else if(this.map.maxExtent!=undefined)
+extraOptions.maxExtent=this.map.maxExtent;else{}
+if(layer.minScale!=undefined)
 extraOptions.minScale=layer.minScale;else if(this.map.minScale!=undefined)
 extraOptions.minScale=this.map.minScale;else{}
 if(layer.maxScale!=undefined)
@@ -120,7 +123,7 @@ extraOptions.minResolution=layer.minResolution;if(layer.maxResolution!=undefined
 extraOptions.maxResolution=layer.maxResolution;if(layer.resolutions==undefined&&layer.minResolution==undefined&&layer.maxResolution==undefined){extraOptions.minResolution="auto";extraOptions.maxResolution="auto";}
 var l=null;switch(layer.type.toUpperCase()){case'WMTS':extraOptions.name=layer.name;extraOptions.url=layer.url;extraOptions.layer=layer.layers;extraOptions.matrixSet=layer.matrixSet;if(layer.matrixIds!=undefined)
 extraOptions.matrixIds=layer.matrixIds;if(layer.style!=undefined)
-extraOptions.style=layer.style;extraOptions.format=layer.imageFormat;l=new OpenLayers.Layer.WMTS(extraOptions);l.grid=[];l.map=null;break;case'WMS':var WMSoptions={LAYERS:layer.layers,SERVICE:layer.type,VERSION:layer.version,STYLES:'',SRS:layer.projection,FORMAT:layer.imageFormat};if(layer.cache)
+extraOptions.style=layer.style;extraOptions.format=layer.imageFormat;extraOptions.matrix=layer.matrix;l=new OpenLayers.Layer.WMTS(extraOptions);l.grid=[];l.map=null;break;case'WMS':var WMSoptions={LAYERS:layer.layers,SERVICE:layer.type,VERSION:layer.version,STYLES:'',SRS:layer.projection,FORMAT:layer.imageFormat};if(layer.cache)
 WMSoptions.CACHE=true;l=new OpenLayers.Layer.WMS(layer.name,layer.url,WMSoptions,extraOptions);if(layer.cache)
 l.params.CACHE=true;break;}
 console.log("overviewlayercreated");console.log(l.clone());return l;}});Ext.mixin(EasySDI_Map.MapPanel,EasySDI_Map.TriggerManager);
