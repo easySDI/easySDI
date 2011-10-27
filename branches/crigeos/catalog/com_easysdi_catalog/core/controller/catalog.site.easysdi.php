@@ -250,8 +250,8 @@ class SITE_catalog {
 						 <ogc:BBOX>
 		                    <ogc:PropertyName>iso:BoundingBox</ogc:PropertyName>
 		                    <gml:Envelope xmlns:gml=\"http://www.opengis.net/gml\">
-		                        <gml:lowerCorner>".$minY." ".$minX."</gml:lowerCorner>
-		                        <gml:upperCorner>".$maxY." ". $maxX."</gml:upperCorner>
+		                        <gml:lowerCorner>".$minX." ".$minY."</gml:lowerCorner>
+		                        <gml:upperCorner>".$maxX." ". $maxY."</gml:upperCorner>
 		                    </gml:Envelope>
 		                </ogc:BBOX>";
 					}
