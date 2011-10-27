@@ -488,11 +488,12 @@ class HTML_proxyCSW {
 			</legend>
 			<table class="admintable">
 				<tr>
-					<td colspan="4">
+					<td colspan="4" >
 						<b><?php echo JText::_( 'PROXY_CONFIG_CSW_GEOGRAPHIC_FILTER_CRS'); ?>   </b>	
-						<input type="text" size="35" maxlength="100" name="crsSource" id="crsSource" value="<?php echo $thePolicy->BBOXFilter['crsSource'];?>">
+						<input type="text" size="35" maxlength="100" name="crsSource" id="crsSource" title="<?php echo JText::_( 'PROXY_CONFIG_CSW_GEOGRAPHIC_FILTER_CRS_TITLE'); ?>" value="<?php echo $thePolicy->BBOXFilter['crsSource'];?>">
 					</td>
 				</tr>
+				<tr></tr>
 				<tr>
 					<td>
 					</td>
