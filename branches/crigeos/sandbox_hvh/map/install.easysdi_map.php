@@ -955,6 +955,23 @@ function com_install()
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 	}
+	if($version =="2.0.4"){
+		
+		$query="ALTER TABLE #__sdi_baselayer ADD isoverviewlayer tinyint(1) NOT NULL DEFAULT 0"; 
+		$db->setQuery( $query);	
+		if (!$db->query()) 
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+		
+		$version="2.0.5";
+		$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='MAP'";
+		$db->setQuery( $query);
+		if (!$db->query())
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+	}
 
 	$query = "DELETE FROM #__components where `option`= 'com_easysdi_map'";
 	$db->setQuery( $query);
