@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySDI, a solution to implement easily any spatial data infrastructure
- * Copyright (C) 2008 DEPTH SA, Chemin d’Arche 40b, CH-1870 Monthey, easysdi@depth.ch
+ * Copyright (C) 2008 DEPTH SA, Chemin dï¿½Arche 40b, CH-1870 Monthey, easysdi@depth.ch
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 
 </head>
 <body id="page_bg" class="color_<?php echo $this->params->get('colorVariation'); ?> bg_<?php echo $this->params->get('backgroundVariation');?>">
-<div id="map"><div class="loader"><br><br><br><img src="templates/easysdi_map/images/loader.gif">&nbsp;<b>Chargement...</b></div>
+<div id="map"><div class="loader"><br><br><br><img src="templates/<?php echo $this->template ?>/images/loader.gif">&nbsp;<b>Chargement...</b></div>
 </div>
 <script type="text/javascript">
 Ext.onReady(function(){
