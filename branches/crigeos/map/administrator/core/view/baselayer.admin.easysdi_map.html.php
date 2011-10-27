@@ -29,7 +29,7 @@ class HTML_baselayer
 		?>
 		<script>
 			function baselayer_overview(id, task){
-				debugger;
+			
 				if(!isNaN(id)&& task!= "" ){
 					document.getElementById("overviewLayerId").value = id;
 					if(task =="setoverview")

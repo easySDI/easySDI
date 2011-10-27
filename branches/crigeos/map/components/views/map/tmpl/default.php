@@ -123,6 +123,7 @@ JHTML::script($this->layoutJs, 'components/com_easysdi_map/views/map/tmpl/');
 
 $readyJS = "
 var easySDImap = null;
+var ovControl= null;
 function loadMap(){
 easySDImap = new EasySDI_Map.RwgLayout(
 {
