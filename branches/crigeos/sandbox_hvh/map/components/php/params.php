@@ -286,10 +286,84 @@ if (!is_null($result)) {
 	}
 }
 $s .= "];\n";
+
+
 if($i == 0){
 	$s .= "alert('Invalid configuration. No Base Layers are available.');\n";
 }
-
+// Export overviewlayer config
+$query = "SELECT l.* from #__sdi_baselayer l where isoverviewlayer = 1";
+$db->setQuery($query);
+$result = $db->loadAssocList();
+$s .= "SData.overviewLayer = [";
+$i = 0;
+if (!is_null($result)) {
+	foreach ($result as $rec)
+	{
+		extract($rec, EXTR_PREFIX_ALL, "l");
+		
+		if(checkProxyLayerPermissions($doCheckProxyLayerPermissions, 'WMS', $l_layers, $valid_wms_layers, $valid_wfs_features)){ // All base layers are WMS
+			$cache=(($l_cache==1) ? 'true' : 'false');
+			$customStyle=(($l_customStyle==1) ? 'true' : 'false');
+			$i++;
+			$s .= "{
+		    id : '$l_id',
+		    name : '$l_name',
+		    url : '$l_url',
+		    type : '$l_type',
+		    version : '$l_version',
+		    layers : '$l_layers',
+		    projection : '$l_projection',
+			defaultVisibility : $l_defaultvisibility,	
+			defaultOpacity : $l_defaultopacity,
+			isoverviewlayer : $l_isoverviewlayer,
+			metadataUrl : '$l_metadataurl',
+		    imageFormat : '$l_imgformat',
+		    cache : $cache,
+		    customStyle : $customStyle,\n";
+			if ($l_style) {
+				$s .= "    style : \"$l_style\",\n";
+			}else{
+				$s .= "    style : \"default\",\n";
+			}
+			if ($l_singletile == 0){ $s .="    singletile : false,\n";}else{$s .="    singletile : true,\n";}
+			if ($l_maxextent) {
+				$s .= "    maxExtent : new OpenLayers.Bounds($l_maxextent),\n";
+			}
+			if ($l_resolutionoverscale && $l_resolutions) {
+				$s .= "    resolutions : [$l_resolutions],\n";
+			}
+			if ($l_resolutionoverscale && $l_maxresolution) {
+				$s .= "    maxResolution : $l_maxresolution,\n";
+			}
+			if ($l_resolutionoverscale && $l_minresolution) {
+				$s .= "    minResolution : $l_minresolution,\n";
+			}
+			if (!$l_resolutionoverscale && $l_minScale) {
+				$s .= "    minScale : $l_minScale,\n";
+			}
+			if (!$l_resolutionoverscale && $l_maxScale) {
+				$s .= "    maxScale : $l_maxScale,\n";
+			}
+			if ($l_matrixset) {
+				$s .= "    matrixSet : \"$l_matrixset\",\n";
+			}
+			if ($l_matrixids) {
+				$matrixIds = explode(",",$l_matrixids);
+				foreach ($matrixIds as &$value) {
+				    $value = '"'.$value.'"';
+				}
+				$matrixIdsString = implode(",",$matrixIds);
+				$matrixIdsString = "[".$matrixIdsString."]";
+				$s .= "    matrixIds : $matrixIdsString,\n";
+			}
+			$s .= "    units : '$l_unit'
+			}";
+			if ($i != count($result)) $s .= ",";
+		}
+	}
+}
+$s .= "];\n";
 // Export overlay groups objects from the __sdi_overlaygroup table.
 $query = "SELECT * from #__sdi_overlaygroup g where g.published=1 order by g.ordering asc;";
 $db->setQuery($query);

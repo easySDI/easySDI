@@ -463,78 +463,78 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 	_addOverView: function(){
 		
 		if (componentDisplayOption.MapOverviewEnable) {		
-	
-			 var layer = this.map.baseLayer.clone();
-			 layer.map = null;
-			 layer.numZoomLevels = 1;
+			overviewLayer = this.createOverviewBaseLayer(SData.overviewLayer[0]);	
 			
-			 var wRes = this.map.baseLayer.maxExtent.getWidth() / this.overviewWidth;
-	         var hRes = this.map.baseLayer.maxExtent.getHeight() / this.overviewHeight;
-	         var  maxResolution = Math.max(wRes, hRes);
-			 layer.maxResolution = maxResolution;			 
-			 layer.scales = null;			
-			 layer.minScale = null; 
-			 layer.maxScale = null; 
-			 layer.resolutions = [maxResolution];
-			 layer.scales= null;
-			 layer.minResolution = maxResolution;
-			 
-			 layer.options.numZoomLevels = 1;
-			 layer.options.maxResolution = maxResolution;			 
-			 layer.options.scales = null;			
-			 layer.options.minScale = null; 
-			 layer.options.maxScale = null; 
-			 layer.options.resolutions = [maxResolution];
-			 layer.options.minResolution = maxResolution;
-			 
-			 console.log("adding layer");
-			 console.log(layer);
+			var bounds;
+			var viewSize = new OpenLayers.Size(200, 150)
+			if (SData.overviewLayer[0].projection != this.map.getProjection()) {
+				bounds = this.map.getExtent().transform(
+						this.map.getProjectionObject(),
+						new OpenLayers.Projection(SData.overviewLayer[0].projection) );
+			} else {
+				bounds = this.map.maxExtent;
+			} 
 			
-			 
 			
-			var ovControl = new OpenLayers.Control.OverviewMap({
+			if(SData.overviewLayer[0].type =="WMS"){
+				overviewLayer.maxExtent = bounds;
+				overviewLayer.minExtent = bounds;
+				var wRes = bounds.getWidth() / viewSize.w;
+				var hRes = bounds.getHeight() / viewSize.h;
+				maxResolution = Math.max(wRes, hRes);
+			}
+			else{
+				maxResolution = overviewLayer.maxResolution;
+			}
+			
+			overviewLayer.minResolution = maxResolution
+			overviewLayer.maxResolution = maxResolution;
+			overviewLayer.resolutions =[maxResolution];
+			overviewLayer.scales = null;
+			overviewLayer.minScale = null;
+			overviewLayer.maxScale = null;
+
+			ovControl = new OpenLayers.Control.OverviewMap({
 				mapOptions :{
-					maxExtent : this.map.baseLayer.maxExtent,
-					minExtent : this.map.baseLayer.maxExtent,
-					maxResolution : layer.maxResolution,
-					minResolution : layer.maxResolution,
-					resolutions :[layer.maxResolution],
+					maxExtent : bounds,
+					restrictedExtent : bounds,
+					minExtent : bounds,
+					maxResolution : maxResolution,
+					minResolution : maxResolution,
+					resolutions :[maxResolution],
 					minScale : null,
 					maxScale : null,
-					scales :null,
-					numZoomLevels :1
+					scales :null,					
+					numZoomLevels :1,
+					projection :SData.overviewLayer[0].projection,
+					center : bounds.getCenterLonLat()
+					
 				},
-				layers : [layer]
+				layers : [overviewLayer],
+				size : viewSize	
 				
 				
 			});
-		//	ovControl.size = new OpenLayers.Size(this.overviewWidth, this.overviewHeight);
-			 console.log("ovcontrol layer");
-			 console.log(ovControl);
 			
-			
+			 
 			// This forces the overview to never pan or zoom, since it
 			// is always
 			// suitable.
 			ovControl.isSuitableOverview = function() {
 				return true;
 			};
+			
 		
 
 			this.map.addControl(ovControl);
-			ovControl.maximizeControl = function(e) {
-		        this.element.style.display = '';
-		        this.showToggle(false);
-		        if (e != null) {
-		            OpenLayers.Event.stop(e);                                            
-		        }
-		        this.ovmap.baseLayer.map.zoomToMaxExtent();
-		    };
+			 
+			 
+			
 			
 	        
 
 		}
-		console.log("overviewadded");
+		
 	},
 
 	
@@ -1650,7 +1650,110 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 			this.mousePos.displayProjection = new OpenLayers.Projection(componentParams.displayProjections[item.stateId].name);
 			this.mousePos.numDigits = componentParams.displayProjections[item.stateId].numDigits;
 		}
+	},
+	
+	createOverviewBaseLayer : function(layer) {
+		// Store a reference to this object
+
+		
+		var extraOptions = {
+			isBaseLayer : true,
+			singleTile : layer.singletile,
+			buffer : 0,
+			opacity : layer.defaultOpacity,
+			projection : layer.projection
+		}
+		if (layer.customStyle != undefined)
+			extraOptions.customStyle = layer.customStyle;
+		if (layer.units != undefined)
+			extraOptions.units = layer.units;
+		else if (extraOptions.units != undefined)
+			extraOptions.units= this.map.units;
+		else{}
+		
+		if (layer.maxExtent != undefined)
+			extraOptions.maxExtent = layer.maxExtent;	
+		else if (this.map.maxExtent != undefined)
+			extraOptions.maxExtent= this.map.maxExtent;
+		else{}
+		//extraOptions.maxExtent = this.map.getExtent();
+		
+		if (layer.minScale != undefined)
+			extraOptions.minScale = layer.minScale;
+		else if (this.map.minScale !=undefined)
+			extraOptions.minScale= this.map.minScale;
+		else{}
+		
+		if (layer.maxScale != undefined)
+			extraOptions.maxScale = layer.maxScale;
+		else if (this.map.maxScale !=undefined)
+			extraOptions.maxScale= this.map.maxScale;
+		else{}
+		
+		if (layer.resolutions != undefined)
+			extraOptions.resolutions = layer.resolutions;
+		
+
+		//New option used on WMTS layer
+		if (layer.minResolution != undefined)
+			extraOptions.minResolution = layer.minResolution;
+		
+		if (layer.maxResolution != undefined)
+			extraOptions.maxResolution = layer.maxResolution;
+		
+		
+		if (layer.resolutions == undefined && layer.minResolution == undefined && layer.maxResolution == undefined) {
+			extraOptions.minResolution ="auto";
+			extraOptions.maxResolution ="auto";
+		}
+			
+		var l = null;
+		switch (layer.type.toUpperCase()) {
+		case 'WMTS':
+			extraOptions.name=layer.name;
+			extraOptions.url=layer.url;
+			extraOptions.layer=layer.layers;
+			extraOptions.matrixSet=layer.matrixSet;
+			if(layer.matrixIds != undefined)
+				extraOptions.matrixIds=layer.matrixIds;
+			if(layer.style != undefined)
+				extraOptions.style=layer.style;
+			extraOptions.format=layer.imageFormat;
+		extraOptions.matrix = layer.matrix;
+		//	extraOptions.matrixIds = null;
+			
+			//extraOptions.tileFullExtent = true;
+			l = new OpenLayers.Layer.WMTS( extraOptions);
+			l.grid = [];
+			l.map = null;
+			
+			
+			
+			break;
+		case 'WMS' :
+			var WMSoptions = {
+				LAYERS : layer.layers,
+				SERVICE : layer.type,
+				VERSION : layer.version,
+				STYLES : '',
+				SRS : layer.projection,
+				FORMAT : layer.imageFormat
+			};
+			if (layer.cache)
+				WMSoptions.CACHE = true;
+			l = new OpenLayers.Layer.WMS(layer.name, layer.url, WMSoptions, extraOptions);
+			
+			
+			if (layer.cache)
+				l.params.CACHE = true;
+			break;
+		}
+		console.log("overviewlayercreated");
+		console.log(l.clone());
+		
+		return l;
 	}
+
 
 });
 

@@ -220,6 +220,36 @@ class ADMIN_baselayer
 		global $mainframe;
 		$db=& JFactory::getDBO(); 
 		
+		$overviewLayerId	= JRequest::getCmd( 'id', '' );
+		$overviewLayerMode	= JRequest::getCmd( 'isoverviewlayer', '' );
+		
+		if(($overviewLayerId !='')&& ($overviewLayerMode!='')){
+			if($overviewLayerMode == 1){
+				$query ="UPDATE #__sdi_baselayer set isoverviewlayer =0";
+				$db->setQuery( $query );
+				if (!$db->query())
+				{
+					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+				}
+					
+				$query ="UPDATE #__sdi_baselayer set isoverviewlayer =1 where id =".$overviewLayerId;
+				$db->setQuery( $query );
+				if (!$db->query())
+				{
+					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+				}
+			}else if($overviewLayerMode == 0){
+				
+				$query ="UPDATE #__sdi_baselayer set isoverviewlayer =0 where id =".$overviewLayerId;
+				$db->setQuery( $query );
+				if (!$db->query())
+				{
+					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+				}
+			}		
+			
+		}
+		
 		$baseLayer =& new baseLayer($db);
 		if (!$baseLayer->bind( $_POST )) 
 		{
