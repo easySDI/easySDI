@@ -628,7 +628,8 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			if(constraint != null && constraint.length()>0){
 				paramUrl = paramUrl + "constraint=" + constraint + "&";
 				paramUrl = paramUrl + "constraintLanguage=" + constraintLanguage + "&";
-				paramUrl = paramUrl + "constraint_language_version=" + constraint_language_version + "&";
+				if(constraint_language_version != null)
+					paramUrl = paramUrl + "constraint_language_version=" + constraint_language_version + "&";
 			}
 			
 			if(requestedVersion != null)
