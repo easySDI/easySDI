@@ -77,10 +77,20 @@ CatalogMapPanel = Ext.extend(Ext.Panel, {
 		for (var i = 0; i < navCtrls.length; i++) {
 		navCtrls[i].disableZoomWheel();
 		}
-		Ext.getCmp(this.fieldsetId).items.items[0].addListener("change", this.updateMapExtent, this);
-		Ext.getCmp(this.fieldsetId).items.items[1].addListener("change", this.updateMapExtent, this);
-		Ext.getCmp(this.fieldsetId).items.items[2].addListener("change", this.updateMapExtent, this);
-		Ext.getCmp(this.fieldsetId).items.items[3].addListener("change", this.updateMapExtent, this);
+		
+		for (i= 0; i<Ext.getCmp(this.fieldsetId).items.length; i++){
+			if(	Ext.getCmp(this.fieldsetId).items.items[i].id.indexOf("east")>=0||
+					Ext.getCmp(this.fieldsetId).items.items[i].id.indexOf("west")>=0||
+					Ext.getCmp(this.fieldsetId).items.items[i].id.indexOf("north")>=0||
+					Ext.getCmp(this.fieldsetId).items.items[i].id.indexOf("south")>=0){
+				Ext.getCmp(this.fieldsetId).items.items[i].addListener("change", this.updateMapExtent, this);
+			
+			}
+			else if (Ext.getCmp(this.fieldsetId).items.items[0].id.indexOf("undaries")>=0){
+				Ext.getCmp(this.fieldsetId).items.items[i].addListener("select", this.updateMapExtent, this);
+			}
+			else{}
+		}
 
 		this.map.events.register('moveend', this, this.updateFieldset);
 
