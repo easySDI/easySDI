@@ -65,8 +65,9 @@
  *
  *  (end)
  */ 
-var ThesaurusReader = function(config){
 
+var ThesaurusReader = function(config){
+	
 	/*this.INSPIRE 	= "http://inspire.jrc.it/theme/";
 	
 	this.CONCEPT 	= "http://www.eionet.europa.eu/gemet/concept/";
@@ -86,8 +87,8 @@ var ThesaurusReader = function(config){
     	supergroup: "http://www.eionet.europa.eu/gemet/supergroup/"
     },
     'INSPIRE': {
-      concept:     	config.thesaurusUrl,
-    	theme:      config.thesaurusUrl,        
+      concept:     	thesaurusConfig,
+    	theme:      thesaurusConfig,        
     	group:   	null,
     	supergroup: null,
     	firstClick: true
@@ -104,7 +105,7 @@ var ThesaurusReader = function(config){
 	this.appPath	= "";
   if(config.appPath) this.appPath = config.appPath;
 	this.url   		= "http://www.eionet.europa.eu/gemet/";
-	//console.log(this.appPath);
+	
 	this.proxy 		= this.appPath+"proxy.php?url=";
 	//console.log(this.proxy);
 	this.lang 		= 'en';
@@ -125,11 +126,11 @@ var ThesaurusReader = function(config){
     this.theMask = null; 
     this.status = 0;
     
-    var termsStore = new Ext.data.Store({
+    var termsStore = new Ext.data.JsonStore({
         url: 'proxy.php',
         baseParams: {url: ''},
         language: this.lang,
-        reader: new Ext.data.JsonReader({
+        
             	root: 'results',
             	idProperty: 'term',
         		fields: [
@@ -137,7 +138,7 @@ var ThesaurusReader = function(config){
         			{name: 'term', mapping: 'preferredLabel.string'},
         			{name: 'definition', mapping: 'definition'}
         		]
-    	})
+ 
     });
     
     this.whisperCfg = function(obj, o){
@@ -163,7 +164,7 @@ var ThesaurusReader = function(config){
     		this.getById(node);
     }
 
-   var searchField = new Ext.form.ComboBox({
+   this.searchField = new Ext.form.ComboBox({
       store: termsStore,
       width: 150,
       minLength: 3,
@@ -189,8 +190,10 @@ var ThesaurusReader = function(config){
       root.getUI().getIconEl().className = "x-tree-node-icon";
       if(r.responseText){
         try{
+      
           var data = Ext.util.JSON.decode(r.responseText);
-          if(data.results)  this.drawBranch(root, data.results);
+	       
+          if(data)  this.drawBranch(root, data);
           root.expand();
         }catch(e){alert('Data error!');}
       }     
@@ -229,8 +232,8 @@ var ThesaurusReader = function(config){
       while(root.item(0)) root.removeChild(root.item(0));
       root.remove(true);
       
-      this.obj.searchField.clearValue();
-      this.obj.treePanel.topToolbar.hide();
+      this.searchField.clearValue();
+      this.treePanel.topToolbar.hide();
       
       this.getTopConcepts();
     }
@@ -240,24 +243,24 @@ var ThesaurusReader = function(config){
    * Runs thesaurus query by (sub)string. Ajax returns to drawTerms
    */     
     this.getByTerm = function(){
-	    this.obj.emptyTree();
-      this.obj.detailPanel.collapse();
-      this.obj.treePanel.topToolbar.hide();
+	    this.emptyTree();
+      this.detailPanel.collapse();
+      this.treePanel.topToolbar.hide();
       if(this.getValue().length < this.minLength) {
         Ext.Msg.alert(HS.i18n('Warning'), '&gt;= ' +this.minLength+' '+HS.i18n('characters required'));
         return false;
       }
-      if(!this.obj.theMask) this.obj.theMask = new Ext.LoadMask(this.obj.body);
-      this.obj.theMask.show();
-      this.obj.thesRoot.setText(HS.i18n('Found'));  
-	    var conceptURI = this.obj.thesauri[this.obj.selectThes.value].concept; 
+      if(!this.theMask) this.theMask = new Ext.LoadMask(this.body);
+      this.theMask.show();
+      this.thesRoot.setText(HS.i18n('Found'));  
+	    var conceptURI = this.thesauri[this.selectThes.value].concept; 
       Ext.Ajax.request({
-        url: this.obj.prepareRequest("getConceptsMatchingRegexByThesaurus?thesaurus_uri="+conceptURI+"&language="+this.obj.lang+"&regex="+this.getValue()),
-        //url: this.obj.prepareRequest("getConceptsMatchingKeyword?language="+this.obj.lang+"&search_mode=0&keyword="+this.getValue()),
+        url: this.prepareRequest("getConceptsMatchingRegexByThesaurus?thesaurus_uri="+conceptURI+"&language="+this.lang+"&regex="+this.getValue()),
+        //url: this.prepareRequest("getConceptsMatchingKeyword?language="+this.lang+"&search_mode=0&keyword="+this.getValue()),
         scope: this.obj,
-        options: {node: this.obj.thesRoot},
-        success: this.obj.drawTerms,
-        failure: this.obj.showError
+        options: {node: this.thesRoot},
+        success: this.drawTerms,
+        failure: this.showError
       })
     }
 
@@ -285,13 +288,15 @@ var ThesaurusReader = function(config){
    * Runs thesaurus getRelatedConcepts by id. Ajax returns to drawTermsId
    */     
     this.getById = function(theNode){
+    	
       if(!this.theMask) this.theMask = new Ext.LoadMask(this.body);
       this.data=theNode.attributes.termId;
   	  this.emptyTree();
   	  this.treePanel.topToolbar.show();
   	  this.thesRoot.setText(theNode.text);
       var theTitle = this.treePanel.topToolbar.items.item(2);
-      theTitle.getEl().innerHTML="<span class='thes-term'><b>"+theNode.text+"</b></span>";
+  	  Ext.fly(theTitle.id).update("<span class='thes-term'><b>"+theNode.text+"</b></span>", false);
+      this.treePanel.doLayout();
       if(theNode.attributes.data.definition){
         this.detailPanel.body.update(theNode.attributes.data.definition.string);  
         this.detailPanel.expand();
@@ -351,6 +356,7 @@ var ThesaurusReader = function(config){
     
 	/* returns selected term (all languages, with paths) */
 	this.returnTerm = function(obj){
+
 	if(obj.xtype != 'button') this.data=obj.attributes.termId;
     this.theMask.show();
     this.output = {terms:{}, uri:'', version:''};
@@ -377,10 +383,11 @@ var ThesaurusReader = function(config){
     
 	/* getConcept */
     this.getConceptBack = function(r,o){
-      if(r.responseText){
+    
+    	if(r.responseText){
         try{
+        
           var data = Ext.util.JSON.decode(r.responseText);
-          data = data.results;
           if(!data.preferredLabel) {
           	for(var i=0;i<data.length;i++){
           	  if(data[i].uri.indexOf(this.thesauri[this.selectThes.value].concept)>-1){
@@ -422,6 +429,7 @@ var ThesaurusReader = function(config){
     }
     
     this.returnTerms = function(r,o){
+    
     	var data = Ext.util.JSON.decode(r.responseText);
     	for(var i=0;i<data.length;i++){
     	  if(this.output.uri.indexOf(data[i].uri)>-1){
@@ -479,7 +487,8 @@ var ThesaurusReader = function(config){
       selectOnFocus:true,
       triggerAction: 'all',
       cls: 'thes-select',
-      mode:'local'
+      mode:'local', 
+      value: thesauri[0]
     });
 
     this.thesRoot = new Ext.tree.TreeNode({
@@ -509,11 +518,12 @@ var ThesaurusReader = function(config){
     	 scope:this}, 
     	"-", 
     	HS.i18n("Search")+': ', 
-    	searchField];
+    	this.searchField];
     config.items = [this.detailPanel, this.treePanel];
 
     ThesaurusReader.superclass.constructor.call(this,config);   
 
   }  
+
   
   Ext.extend(ThesaurusReader, Ext.Panel, {});

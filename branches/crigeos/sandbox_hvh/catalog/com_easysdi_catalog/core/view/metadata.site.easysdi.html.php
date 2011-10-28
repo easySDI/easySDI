@@ -48,7 +48,8 @@ JHTML::script('SuperBoxSelect.js', 'administrator/components/com_easysdi_catalog
 JHTML::script('FileUploadField.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('shCore.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('shBrushXml.js', 'administrator/components/com_easysdi_catalog/js/');
-JHTML::script('GemetClient.js', 'administrator/components/com_easysdi_catalog/js/');
+//JHTML::script('GemetClient.js', 'administrator/components/com_easysdi_catalog/js/');
+JHTML::script('GemetClient-uncompressed.js', 'administrator/components/com_easysdi_catalog/js/');
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.jsLoaderUtil.php');
 $jsLoader =JSLOADER_UTIL::getInstance();
 JHTML::script('SingleFile.js', $jsLoader->getPath("map","openlayers", "/lib/OpenLayers/"));
@@ -2957,7 +2958,7 @@ else
 															      appPath: '".$uri->base(true)."/administrator/components/com_easysdi_catalog/js/',
 															      returnPath: false,
 															      returnInspire: true,
-															      thesaurusUrl:'".thesaurusConfig."',
+															      thesaurusUrl:thesaurusConfig,
 															      width: 300, 
 															      height:400,
 															      win_title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_THESAURUSGEMET_ALERT'))."',
@@ -4382,7 +4383,7 @@ else
 															      appPath: '".$uri->base(true)."/administrator/components/com_easysdi_catalog/js/',
 															      returnPath: false,
 															      returnInspire: true,
-															       thesaurusUrl:'".thesaurusConfig."',
+															       thesaurusUrl:thesaurusConfig,
 															      width: 300, 
 															      height:400,
 															      win_title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_THESAURUSGEMET_ALERT'))."',
