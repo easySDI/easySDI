@@ -237,7 +237,7 @@
 											<a>
 												<xsl:attribute name="title">Prévisualisation géographique de : <xsl:value-of select="./sdi:Metadata/sdi:object/@object_name" /></xsl:attribute>
 												<xsl:attribute name="class">link modal</xsl:attribute>	
-												<xsl:attribute name="rel">{handler:'iframe',size:{x:650,y:600}}</xsl:attribute>
+												<xsl:attribute name="rel">{handler:'iframe',size:{x:650,y:500}}</xsl:attribute>
 												<xsl:attribute name="href"><xsl:value-of  select="$previewProduct" /></xsl:attribute>
 												<xsl:text>Prévisualiser</xsl:text>
 											</a>
