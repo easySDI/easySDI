@@ -26,7 +26,7 @@ require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'commo
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 //jimport( 'joomla.application.component.view' );
 ?>
-<?php if(JRequest::getVar('task') =="editMetadata"){?>
+<?php if((JRequest::getVar('task') =="editMetadata")||(JRequest::getVar('task') =="askForEditMetadata")){?>
 <script>
 var thesaurusConfig = '<?php echo config_easysdi::getValue("thesaurusUrl");?>'
 </script>
