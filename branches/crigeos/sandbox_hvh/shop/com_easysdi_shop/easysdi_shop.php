@@ -44,7 +44,7 @@ $freetextcriteria = JRequest::getVar('freetextcriteria');
 
 $cid = JRequest::getVar ('cid');
 if (!is_array( $cid )) {
-	$cid[0] = JRequest::getVar ('cid');
+	$cid = array($cid);
 }
 
 switch($task){
