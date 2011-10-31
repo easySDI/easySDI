@@ -2078,7 +2078,7 @@ class displayManager{
 					//Link to download the product 
 					$XMLActionDownloadProduct = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:downloadProduct");
 					$XMLActionDownloadProduct->setAttribute('id', 'downloadProduct');
-					$XMLActionDownloadProductLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", htmlentities(JRoute::_('./index.php?tmpl=component&option=com_easysdi_shop&task=downloadAvailableProduct&cid[]='.$product_object->id.'&toolbar=0&print=1')));
+					$XMLActionDownloadProductLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", htmlentities(JRoute::_('./index.php?tmpl=component&option=com_easysdi_shop&task=downloadAvailableProduct&cid='.$product_object->id.'&toolbar=0&print=1')));
 					$XMLActionDownloadProduct->appendChild($XMLActionDownloadProductLink);
 					$XMLAction->appendChild($XMLActionDownloadProduct);
 				} else if($product_object->published && $product_object->available && strlen($productFileName) > 0 && !$product_object->isUserAllowedToLoad($account->id)){
