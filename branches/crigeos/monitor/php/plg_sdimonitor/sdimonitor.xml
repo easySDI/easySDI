@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE install
+  PUBLIC "-//Joomla! 1.5//DTD plugin 1.0//EN" "http://www.joomla.org/xml/dtd/1.5/plugin-install.dtd">
+<install version="1.5" type="plugin" group="content">
+	<name>EasySDI Monitor Plugin</name>
+	<creationDate>10/01/2011</creationDate>
+	<author>asitvd.ch</author>
+	<license>GNU/GPL</license>
+	<version>2.0.0</version>
+	<authorEmail></authorEmail>
+	<authorUrl>http://www.asitvd.ch</authorUrl>
+	<copyright></copyright>
+	<description><![CDATA[OGC EasySDI Monitor Plugin, display service's status in an article<br />]]></description>
+	<!-- Main File Copy Section -->
+	<files>
+		<filename plugin="sdimonitor">sdimonitor.php</filename>
+		<filename plugin="sdimonitor">sdimonitor.xml</filename>
+	</files>
+	<params>
+		<!--
+		<param name="display_map_name" type="list" default="1" label="Display Map Name" description="Display Map Name above the map">
+			<option value="0">No</option>
+			<option value="1">Yes</option>
+		</param>
+		-->
+	</params>
+</install>
