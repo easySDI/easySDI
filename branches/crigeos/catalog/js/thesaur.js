@@ -81,31 +81,36 @@ var ThesaurusReader = function(config){
 
   this.thesauri = {
     'GEMET': {
+    	
     	concept:    "http://www.eionet.europa.eu/gemet/concept/",
     	theme:      "http://www.eionet.europa.eu/gemet/theme/",        
     	group:   	"http://www.eionet.europa.eu/gemet/group/",
-    	supergroup: "http://www.eionet.europa.eu/gemet/supergroup/"
+    	supergroup: "http://www.eionet.europa.eu/gemet/supergroup/",
+    	style: "thesaurusGemetOption"
+    
     },
     'INSPIRE': {
       concept:     	thesaurusConfig,
     	theme:      thesaurusConfig,        
     	group:   	null,
     	supergroup: null,
-    	firstClick: true
+    	firstClick: true,
+    	id: "thesaurusInspireOption"
       },
     '1GE': {
     	url:        "http://sensors.lesprojekt.cz:9673/gemet/",
         concept:    "http://www.onegeology-europe.eu/",
     	theme:      "http://www.onegeology-europe.eu/theme",        
     	group:   	null,
-    	supergroup: null    
+    	supergroup: null,
+    	id: "thesaurus1GEOption"
     }
   }
 
 	this.appPath	= "";
   if(config.appPath) this.appPath = config.appPath;
 	this.url   		= "http://www.eionet.europa.eu/gemet/";
-	
+	//console.log(this.appPath);
 	this.proxy 		= this.appPath+"proxy.php?url=";
 	//console.log(this.proxy);
 	this.lang 		= 'en';
@@ -190,7 +195,7 @@ var ThesaurusReader = function(config){
       root.getUI().getIconEl().className = "x-tree-node-icon";
       if(r.responseText){
         try{
-      
+        
           var data = Ext.util.JSON.decode(r.responseText);
 	       
           if(data)  this.drawBranch(root, data);
@@ -266,8 +271,9 @@ var ThesaurusReader = function(config){
 
 	/* NEW - Returnes top concepts for thesaurus */
 	this.getTopConcepts = function(){
-	  var conceptURI = this.thesauri[this.selectThes.value].concept;
-	  this.emptyTree();
+		
+	var conceptURI = this.thesauri[this.selectThes.value].concept;
+	this.emptyTree();
     this.treePanel.topToolbar.hide();
     this.detailPanel.body.update('');
     this.detailPanel.collapse();
@@ -452,8 +458,8 @@ var ThesaurusReader = function(config){
       split:true
     });
           
-    var tb = new Ext.Toolbar(
-    	[{xtype: 'button', 
+    var tb = new Ext.Toolbar({
+    	items:[{xtype: 'button', 
     	  text:HS.i18n("Use"), 
     	  icon:this.appPath+'img/drop-yes.gif', 
     	  cls:'x-btn-text-icon', 
@@ -462,7 +468,8 @@ var ThesaurusReader = function(config){
     	, '-'
     	, {xtype: 'label',
     		id: 'maToolbar',
-    		text: 'xxx'}]
+    		text: 'xxx'}],
+    	cls: 'thes-selectedword'}
     );
         
     this.treePanel = new Ext.tree.TreePanel({
@@ -477,7 +484,25 @@ var ThesaurusReader = function(config){
     var thesauri = new Array();
     for(th in this.thesauri) thesauri.push(th);  
     
-    this.selectThes = new Ext.form.ComboBox({
+    this.gemetButton = new Ext.Toolbar.Button( {
+    	icon:this.appPath+'img/eeaicon.gif', 
+		minWidth : 26,		
+		enableToggle : true,
+		handler : function(){this.updateCtrlBtns()},
+		scope : this,
+		xtype :'button'
+	});
+    
+    this.inspireButton = new Ext.Toolbar.Button( {
+    	icon:this.appPath+'img/inspire.gif', 
+		minWidth : 26,		
+		enableToggle : true,
+		handler : function(){this.updateCtrlBtns()},
+		scope : this,
+		xtype :'button'
+	});
+    
+    /*this.selectThes = new Ext.form.ComboBox({
       store: thesauri,
       //editable: false,
       width: 70,
@@ -488,8 +513,53 @@ var ThesaurusReader = function(config){
       triggerAction: 'all',
       cls: 'thes-select',
       mode:'local', 
-      value: thesauri[0]
-    });
+      value: thesauri[0],
+      listClass : "thesaurusCombo",
+      id: "thesaurusDropDown"
+     
+   
+    });*/
+    
+    this.selectThes = new Ext.form.ComboBox({
+        store: thesauri,
+        //editable: false,
+        width: 70,
+        stateful: true,
+        stateId: "thesaurus-selected",
+        typeAhead: true,
+        selectOnFocus:true,
+        triggerAction: 'all',
+        cls: 'thes-select',
+        mode:'local', 
+        value: thesauri[0],
+        listClass : "thesaurusCombo",
+        id: "thesaurusDropDown"
+       
+     
+      })
+    
+  /*  this.selectThesToolbar = new Ext.Toolbar( {	
+		
+		items : [  this.inspireButton, this.gemetButton]
+	});*/
+    
+    this.updateCtrlBtns = function() {		
+    
+			if (this.gemetButton.pressed) {				
+				
+				this.selectThes.value =  thesauri[0];
+				//this.gemetButton.pressed = false;
+				this.gemetButton.toggle();
+			}
+			
+			if (this.inspireButton.pressed) {				
+			
+				this.selectThes.value =  thesauri[1];
+				//this.inspireButton.pressed = false;
+				this.inspireButton.toggle();
+			}
+			this.getTopConcepts();
+		}
 
     this.thesRoot = new Ext.tree.TreeNode({
         draggable: true,
@@ -511,19 +581,19 @@ var ThesaurusReader = function(config){
     }, searchField);*/
 
     config.layout = 'border';
-    config.tbar = [
-    	this.selectThes, 
-    	{handler: function(){this.getTopConcepts();}, 
-    	 icon:this.appPath+'img/top.gif', cls:'x-btn-icon', tooltip: HS.i18n('Top concepts'),
-    	 scope:this}, 
+    config.cls = 'thes-topToolBar'	;
+    config.tbar =[
+    	this.inspireButton, this.gemetButton,     	 
     	"-", 
     	HS.i18n("Search")+': ', 
-    	this.searchField];
+    	this.searchField]
+    
     config.items = [this.detailPanel, this.treePanel];
 
-    ThesaurusReader.superclass.constructor.call(this,config);   
+    ThesaurusReader.superclass.constructor.call(this,config); 
+    
 
-  }  
+  }
 
   
   Ext.extend(ThesaurusReader, Ext.Panel, {});
