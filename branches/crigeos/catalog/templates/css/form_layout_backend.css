@@ -132,3 +132,6 @@ display : none   ;
     margin-bottom: 7px;
     padding-left: 15px;
 }
+.x-btn-tc {   
+    height: 0px !important;
+}
