@@ -33,7 +33,7 @@ class HTML_catalog{
 		$user =& JFactory::getUser();
 		$app =& JFactory::getApplication(); 
 		$templateDir = JURI::base() . 'templates/' . $app->getTemplate(); 
-		$easysdiTemplateDir =  JURI::base() . 'templates/easysdi/' ;
+		//$templateDir =  JURI::base() . 'templates/'.$this->template.'/' ;
 		
 		$listMaxLength = config_easysdi::getValue("CATALOG_SEARCH_MULTILIST_LENGTH");
 		
@@ -175,7 +175,7 @@ class HTML_catalog{
 					<label for="<?php echo 'filter_'.$searchFilter->guid;?>"><?php echo JText::_($searchFilter->relation_guid."_LABEL");?></label>
 					<?php echo JHTML::_("select.genericlist", $choicevalues, 'filter_'.$searchFilter->guid.'[]', 'class="inputbox text full" style="vertical-align:top" '.$multiple, 'value', 'text', JRequest::getVar('filter_'.$searchFilter->guid)); ?>
 					<a onclick="javascript:toggle_multi_select('<?php echo 'filter_'.$searchFilter->guid;?>', <?php echo $size;?>); return false;" href="#">
-						<img src="<?php echo $easysdiTemplateDir;?>/icons/silk/add.png" alt="Expand"/>
+						<img src="<?php echo $templateDir;?>/icons/silk/add.png" alt="Expand"/>
 					</a>
 				</div>
 				<?php
@@ -201,7 +201,7 @@ class HTML_catalog{
 					<label for="<?php echo 'filter_'.$searchFilter->guid;?>"><?php echo JText::_($searchFilter->relation_guid."_LABEL");?></label>
 					<?php echo JHTML::_("select.genericlist", $list, 'filter_'.$searchFilter->guid.'[]', 'class="inputbox text large" style="vertical-align:top " '.$multiple, 'value', 'text', JRequest::getVar('filter_'.$searchFilter->guid)); ?>
 					<a onclick="javascript:toggle_multi_select('<?php echo 'filter_'.$searchFilter->guid;?>', <?php echo $size;?>); return false;" href="#">
-						<img src="<?php echo $easysdiTemplateDir;?>/icons/silk/add.png" alt="Expand"/>
+						<img src="<?php echo $templateDir;?>/icons/silk/add.png" alt="Expand"/>
 					</a>
 				</div>
 				<?php
@@ -326,7 +326,7 @@ class HTML_catalog{
 								<label for="<?php echo $searchFilter->guid;?>"><?php echo JText::_($searchFilter->guid."_LABEL");?></label>
 								<?php echo JHTML::_("select.genericlist", $accounts, 'systemfilter_'.$searchFilter->guid.'[]', 'class="inputbox text large" style="vertical-align:top " '.$multiple, 'value', 'text', JRequest::getVar('systemfilter_'.$searchFilter->guid)); ?>
 										<a onclick="javascript:toggle_multi_select('<?php echo 'systemfilter_'.$searchFilter->guid;?>', <?php echo $size;?>); return false;" href="#">
-											<img src="<?php echo $easysdiTemplateDir;?>/icons/silk/add.png" alt="Expand"/>
+											<img src="<?php echo $templateDir;?>/icons/silk/add.png" alt="Expand"/>
 										</a>
 							</div>
 							<?php
@@ -378,7 +378,7 @@ class HTML_catalog{
 								<label for="<?php echo 'systemfilter_'.$searchFilter->guid; ?>"><?php echo JText::_($searchFilter->guid."_LABEL");?></label>
 								<?php echo JHTML::_("select.genericlist", $managers, 'systemfilter_'.$searchFilter->guid.'[]', 'class="inputbox text large" style="vertical-align:top " '.$multiple, 'value', 'text', JRequest::getVar('systemfilter_'.$searchFilter->guid)); ?>
 								<a onclick="javascript:toggle_multi_select('<?php echo 'systemfilter_'.$searchFilter->guid;?>', <?php echo $size;?>); return false;" href="#">
-									<img src="<?php echo $easysdiTemplateDir;?>/icons/silk/add.png" alt="Expand"/>
+									<img src="<?php echo $templateDir;?>/icons/silk/add.png" alt="Expand"/>
 								</a>
 							</div>
 							<?php
@@ -542,7 +542,7 @@ class HTML_catalog{
 					<label for="<?php echo 'filter_'.$searchFilter->guid;?>"><?php echo JText::_($searchFilter->relation_guid."_LABEL");?></label>
 					<?php echo JHTML::_("select.genericlist", $choicevalues, 'filter_'.$searchFilter->guid.'[]', 'class="inputbox text full" style="vertical-align:top " '.$multiple, 'value', 'text', JRequest::getVar('filter_'.$searchFilter->guid)); ?>
 					<a onclick="javascript:toggle_multi_select('<?php echo 'filter_'.$searchFilter->guid;?>', <?php echo $size;?>); return false;" href="#">
-						<img src="<?php echo $easysdiTemplateDir;?>/icons/silk/add.png" alt="Expand"/>
+						<img src="<?php echo $templateDir;?>/icons/silk/add.png" alt="Expand"/>
 					</a>
 				</div>
 				<?php
@@ -568,7 +568,7 @@ class HTML_catalog{
 					<label for="<?php echo 'filter_'.$searchFilter->guid;?>"><?php echo JText::_($searchFilter->relation_guid."_LABEL");?></label>
 					<?php echo JHTML::_("select.genericlist", $list, 'filter_'.$searchFilter->guid.'[]', 'class="inputbox text large" style="vertical-align:top " '.$multiple, 'value', 'text', JRequest::getVar('filter_'.$searchFilter->guid)); ?>
 					<a onclick="javascript:toggle_multi_select('<?php echo 'filter_'.$searchFilter->guid;?>', <?php echo $size;?>); return false;" href="#">
-						<img src="<?php echo $easysdiTemplateDir;?>/icons/silk/add.png" alt="Expand"/>
+						<img src="<?php echo $templateDir;?>/icons/silk/add.png" alt="Expand"/>
 					</a>
 				</div>
 				<?php
@@ -706,7 +706,7 @@ class HTML_catalog{
 						<label for="<?php echo 'systemfilter_'.$searchFilter->guid;?>"><?php echo JText::_($searchFilter->guid."_LABEL");?></label>
 						<?php echo JHTML::_("select.genericlist", $accounts, 'systemfilter_'.$searchFilter->guid.'[]', 'class="inputbox text large" style="vertical-align:top " '.$multiple, 'value', 'text', JRequest::getVar('systemfilter_'.$searchFilter->guid)); ?>
 								<a onclick="javascript:toggle_multi_select('<?php echo 'systemfilter_'.$searchFilter->guid;?>', <?php echo $size;?>); return false;" href="#">
-									<img src="<?php echo $easysdiTemplateDir;?>/icons/silk/add.png" alt="Expand"/>
+									<img src="<?php echo $templateDir;?>/icons/silk/add.png" alt="Expand"/>
 								</a>
 					</div>
 					<?php
@@ -758,7 +758,7 @@ class HTML_catalog{
 						<label for="<?php echo 'systemfilter_'.$searchFilter->guid; ?>"><?php echo JText::_($searchFilter->guid."_LABEL");?></label>
 						<?php echo JHTML::_("select.genericlist", $managers, 'systemfilter_'.$searchFilter->guid.'[]', 'class="inputbox text large" style="vertical-align:top " '.$multiple, 'value', 'text', JRequest::getVar('systemfilter_'.$searchFilter->guid)); ?>
 						<a onclick="javascript:toggle_multi_select('<?php echo 'systemfilter_'.$searchFilter->guid;?>', <?php echo $size;?>); return false;" href="#">
-							<img src="<?php echo $easysdiTemplateDir;?>/icons/silk/add.png" alt="Expand"/>
+							<img src="<?php echo $templateDir;?>/icons/silk/add.png" alt="Expand"/>
 						</a>
 					</div>
 					<?php

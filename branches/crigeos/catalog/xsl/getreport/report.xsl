@@ -135,10 +135,10 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 		<html>
 
 <head>
-<link rel="stylesheet"  href="/crigeos/templates/crigeos/css/templatestyle6.css" type="text/css" />
-<link rel="stylesheet"  href="/crigeos/templates/crigeos/css/screen.css" type="text/css" />
-<link rel="stylesheet"  href="/crigeos/templates/crigeos/css/layout.css" type="text/css" />
-<link rel="stylesheet" href="/crigeos/templates/crigeos/css/core.css" type="text/css" />
+<link rel="stylesheet"  href="/templates/crigeos/css/templatestyle6.css" type="text/css" />
+<link rel="stylesheet"  href="/templates/crigeos/css/screen.css" type="text/css" />
+<link rel="stylesheet"  href="/templates/crigeos/css/layout.css" type="text/css" />
+<link rel="stylesheet"  href="/templates/crigeos/css/core.css" type="text/css" />
 </head>
 
 <body id="pdfbody" class="light static">
