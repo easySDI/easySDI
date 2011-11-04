@@ -2035,7 +2035,7 @@ class displayManager{
 		//Make PDF
 		$XMLActionmPDF = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:makePDF");
 		$XMLActionmPDF->setAttribute('id', 'makePdf');
-		$XMLActionmPDFLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", htmlentities(JRoute::_('./index.php?option=com_easysdi_catalog&task=getReport&format=makepdf&reporttype='.$type.'&lastVersion=yes&language='.$language->_lang.'&metadata_guid[]='.$fileIdentifier.'&metadatatype='.$type.'&context='.$context)));
+		$XMLActionmPDFLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", htmlentities(JRoute::_('./index.php?option=com_easysdi_catalog&task=getReport&format=makepdf&reporttype='.$type.'&lastVersion=yes&language='.$language->_lang.'&metadata_guid='.$fileIdentifier.'&metadatatype='.$type.'&context='.$context)));
 		$XMLActionmPDF->appendChild($XMLActionmPDFLink);
 		
 		//Export XML
