@@ -605,8 +605,8 @@ OpenLayers.Format.WMC.v1_1_0_WithWFS = OpenLayers.Class(
       } else {
         treeRootNode = null;
       }
-      for(var i=0,len=context.layers.length;i<len;++i){
-        layer=context.layers[i];
+      for(var i=0,len=context.layersContext.length;i<len;++i){
+        layer=context.layersContext[i];
         if(layer.visibility && this._checkTree(layer, treeRootNode)) { // Only include layers that are visible and in restriction tree.
           if(layer instanceof OpenLayers.Layer.WMS){
             list.appendChild(this.write_wmc_Layer(layer));
