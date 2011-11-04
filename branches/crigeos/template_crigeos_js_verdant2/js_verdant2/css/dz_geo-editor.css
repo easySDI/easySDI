@@ -93,7 +93,7 @@ div#printme_body form {
 
 div#emptyPicto{
 	background-color:transparent;
-	background-image:url(../../easysdi/images/blank.gif);
+	background-image:url(../../crigeos/images/blank.gif);
 	background-position:0 0;
 	background-repeat:no-repeat;
 	height:16px;
@@ -109,7 +109,7 @@ div#editMetadata:hover{
 
 div#editMetadata{
 	background-color:transparent;
-	background-image:url(../../easysdi/icons/silk/pencil.png);
+	background-image:url(../../crigeos/icons/silk/pencil.png);
 	background-position:0 0;
 	background-repeat:no-repeat;
 	height:16px;
@@ -124,7 +124,7 @@ div#archiveMetadata:hover{
 
 div#archiveMetadata{
 	background-color:transparent;
-	background-image:url(../../easysdi/icons/silk/folder_database.png);
+	background-image:url(../../crigeos/icons/silk/folder_database.png);
 	background-position:0 0;
 	background-repeat:no-repeat;
 	height:16px;
@@ -139,7 +139,7 @@ div#invalidateMetadata:hover{
 
 div#invalidateMetadata{
 	background-color:transparent;
-	background-image:url(../../easysdi/icons/silk/arrow_undo.png);
+	background-image:url(../../crigeos/icons/silk/arrow_undo.png);
 	background-position:0 0;
 	background-repeat:no-repeat;
 	height:16px;
@@ -154,7 +154,7 @@ div#historyAssignMetadata:hover{
 
 div#historyAssignMetadata{
 	background-color:transparent;
-	background-image:url(../../easysdi/icons/silk/calendar.png);
+	background-image:url(../../crigeos/icons/silk/calendar.png);
 	background-position:0 0;
 	background-repeat:no-repeat;
 	height:16px;
@@ -177,7 +177,7 @@ div#listObjectVersion:hover {
 }
 div#listObjectVersion {
 	background-color:transparent;
-	background-image:url(../../easysdi/icons/silk/page_white_stack.png);
+	background-image:url(../../crigeos/icons/silk/page_white_stack.png);
 	background-position:0 0;
 	background-repeat:no-repeat;
 	height:16px;
@@ -192,7 +192,7 @@ div#editObject:hover{
 
 div#editObject{
 	background-color:transparent;
-	background-image:url(../../easysdi/icons/silk/pencil.png);
+	background-image:url(../../crigeos/icons/silk/pencil.png);
 	background-position:0 0;
 	background-repeat:no-repeat;
 	height:16px;
@@ -207,7 +207,7 @@ div#deleteObject:hover{
 
 div#deleteObject{
 	background-color:transparent;
-	background-image:url(../../easysdi/icons/silk/page_delete.png);
+	background-image:url(../../crigeos/icons/silk/page_delete.png);
 	background-position:0 0;
 	background-repeat:no-repeat;
 	height:16px;
@@ -231,7 +231,7 @@ div#editObjectVersion:hover{
 
 div#editObjectVersion{
 	background-color:transparent;
-	background-image:url(../../easysdi/icons/silk/pencil.png);
+	background-image:url(../../crigeos/icons/silk/pencil.png);
 	background-position:0 0;
 	background-repeat:no-repeat;
 	height:16px;
@@ -246,7 +246,7 @@ div#manageObjectVersionLink:hover{
 
 div#manageObjectVersionLink{
 	background-color:transparent;
-	background-image:url(../../easysdi/icons/silk/link_edit.png);
+	background-image:url(../../crigeos/icons/silk/link_edit.png);
 	background-position:0 0;
 	background-repeat:no-repeat;
 	height:16px;
@@ -261,7 +261,7 @@ div#viewObjectVersionLink:hover{
 
 div#viewObjectVersionLink{
 	background-color:transparent;
-	background-image:url(../../easysdi/icons/silk/link.png);
+	background-image:url(../../crigeos/icons/silk/link.png);
 	background-position:0 0;
 	background-repeat:no-repeat;
 	height:16px;
@@ -285,7 +285,7 @@ div#editProduct:hover{
 
 div#editProduct{
 	background-color:transparent;
-	background-image:url(../../easysdi/icons/silk/pencil.png);
+	background-image:url(../../crigeos/icons/silk/pencil.png);
 	background-position:0 0;
 	background-repeat:no-repeat;
 	height:16px;
@@ -300,7 +300,7 @@ div#editProductCheckedOut:hover{
 
 div#editProductCheckedOut{
 	background-color:transparent;
-	background-image:url(../../easysdi/icons/silk/lock_edit.png);
+	background-image:url(../../crigeos/icons/silk/lock_edit.png);
 	background-position:0 0;
 	background-repeat:no-repeat;
 	height:16px;
@@ -315,7 +315,7 @@ div#deleteProduct:hover{
 
 div#deleteProduct{
 	background-color:transparent;
-	background-image:url(../../easysdi/icons/silk/page_delete.png);
+	background-image:url(../../crigeos/icons/silk/page_delete.png);
 	background-position:0 0;
 	background-repeat:no-repeat;
 	height:16px;
@@ -339,7 +339,7 @@ div#editAffiliate:hover{
 
 div#editAffiliate{
 	background-color:transparent;
-	background-image:url(../../easysdi/icons/silk/pencil.png);
+	background-image:url(../../crigeos/icons/silk/pencil.png);
 	background-position:0 0;
 	background-repeat:no-repeat;
 	height:16px;
@@ -354,7 +354,7 @@ div#deletableAffiliate:hover{
 
 .deletableAffiliate{
 	background-color:transparent;
-	background-image:url(../../easysdi/icons/silk/page_delete.png);
+	background-image:url(../../crigeos/icons/silk/page_delete.png);
 	background-position:0 0;
 	background-repeat:no-repeat;
 	height:16px;

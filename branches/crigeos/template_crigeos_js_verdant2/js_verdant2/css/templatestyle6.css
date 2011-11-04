@@ -35,7 +35,7 @@ body {
 	-moz-box-shadow: 0 1px 3px rgba(0,0,0,0.5);
 	-webkit-box-shadow: 0 1px 3px rgba(0,0,0,0.5);
 	border-bottom: 1px solid rgba(0,0,0,0.25);
-	behavior: url('templates/js_verdant2/css/PIE.htc');
+	behavior: url('templates/crigeos/css/PIE.htc');
 }
 
 #menu ul li a {
@@ -90,7 +90,7 @@ ul#topmenu li a:hover {
 	border-radius:8px;
 	-moz-box-shadow: 0 0 10px #222;
 	-webkit-box-shadow: 0 0 10px #222;
-	behavior: url('templates/js_verdant2/css/PIE.htc');
+	behavior: url('templates/crigeos/css/PIE.htc');
 }
 #footerWrapper {
 	margin-top:20px;
@@ -129,7 +129,7 @@ body.light #menuWrapper2 {
 	border-radius:8px;
 	-moz-box-shadow: 0 0 10px #222;
 	-webkit-box-shadow: 0 0 10px #222;
-	behavior: url('templates/js_verdant2/css/PIE.htc');
+	behavior: url('templates/crigeos/css/PIE.htc');
 }
 .container_12 .push_1, .container_12 .push_2, .container_12 .push_3, .container_12 .push_4, .container_12 .push_5, .container_12 .push_6, .container_12 .push_7, .container_12 .push_8, .container_12 .push_9, .container_12 .push_10, .container_12 .push_11{
 	background-color:#ffffff;
@@ -139,7 +139,7 @@ body.light #menuWrapper2 {
 	border-radius:8px;
 	-moz-box-shadow: 0 0 10px #222;
 	-webkit-box-shadow: 0 0 10px #222;
-	behavior: url('templates/js_verdant2/css/PIE.htc');
+	behavior: url('templates/crigeos/css/PIE.htc');
 }
 #main_wrapper {
 	background-color: #222;

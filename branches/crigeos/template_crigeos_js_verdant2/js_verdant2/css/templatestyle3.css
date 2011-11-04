@@ -82,7 +82,7 @@ ul#topmenu li a:hover {
 	-moz-box-shadow: 0 1px 0px #9c5510;
 	box-shadow: 0 1px 0px #9c5510;
 	color: #fff;
-	behavior: url('templates/js_verdant2/css/PIE.htc');
+	behavior: url('templates/crigeos/css/PIE.htc');
 }
 
 #banner .module_body, #footer .module_body {
