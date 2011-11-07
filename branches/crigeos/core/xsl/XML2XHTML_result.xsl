@@ -96,9 +96,30 @@
 				<div class="metadata-logo">
 					<div>
 						<img  alt="" title="">
-							<xsl:attribute name="src"><xsl:value-of select="$account-logo" /></xsl:attribute>	
-							<xsl:attribute name="width"><xsl:value-of select="$account-logo-width" /></xsl:attribute>	
-							<xsl:attribute name="height"><xsl:value-of select="$account-logo-height" /></xsl:attribute>	
+							<xsl:choose>
+									<xsl:when test="string-length($account-logo) > 0">
+										<xsl:attribute name="src"><xsl:value-of select="$account-logo" /></xsl:attribute>	
+										<xsl:attribute name="width"><xsl:value-of select="$account-logo-width" /></xsl:attribute>	
+										<xsl:attribute name="height"><xsl:value-of select="$account-logo-height" /></xsl:attribute>					
+									</xsl:when >
+									<xsl:otherwise>			
+										<xsl:variable name="pointOfContact">
+											<xsl:value-of select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:electronicMailAddress/gco:CharacterString" />
+										</xsl:variable>	
+										<xsl:variable name="pointOfContactDomain">
+											<xsl:value-of  select="substring-after($pointOfContact,'@')" />
+										</xsl:variable>		
+										<xsl:attribute name="src">
+											<xsl:call-template name="ContactImgResource">
+												<xsl:with-param name="contact" select="$pointOfContactDomain" />
+											</xsl:call-template>
+										</xsl:attribute>	
+										<xsl:attribute name="width">60</xsl:attribute>	
+										<xsl:attribute name="height">60</xsl:attribute>						
+									</xsl:otherwise >
+								</xsl:choose>
+							
+							
 						</img>
 					</div>
 					<h4 class="hidden">
@@ -308,6 +329,20 @@
 			</div>
 			<hr></hr>
 		</div>
+	</xsl:template>
+		<xsl:template name="ContactImgResource">
+		<xsl:param name="contact"/>
+		<xsl:choose>
+			<xsl:when test="$contact = 'apem.asso.fr'">
+				<xsl:text>/home/crigeos/domains/ids-dev.crigeos.org/public_html/images/logo/apem.jpg</xsl:text>
+			</xsl:when>
+			<xsl:when test="$contact = 'gers.cci.fr'">
+				<xsl:text>/home/crigeos/domains/ids-dev.crigeos.org/public_html/images/logo/crigeos.png</xsl:text>	
+			</xsl:when>	
+			<xsl:otherwise>
+				<xsl:text>/home/crigeos/domains/ids-dev.crigeos.org/public_html/images/logo/logo.jpg</xsl:text>
+			</xsl:otherwise>
+		</xsl:choose>
 	</xsl:template>
 </xsl:stylesheet>
 

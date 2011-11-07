@@ -308,7 +308,7 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 							<tr>
 								<td class="key" width="30%">Mots-clés:</td>
 								<td class="value">
-									<xsl:for-each select="./gmd:MD_Metadata/gmd:descriptiveKeywords/gmd:MD_Keywords/gmd:keyword">
+									<xsl:for-each select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:descriptiveKeywords/gmd:MD_Keywords/gmd:keyword">
 										<xsl:value-of disable-output-escaping="yes" select="gco:CharacterString"/>, 
 									</xsl:for-each>
 								</td>
@@ -317,9 +317,9 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 							<tr>
 								<td width="30%">Langue:</td>
 								<td>
-									<xsl:for-each select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:language">
+									<xsl:for-each select="./gmd:MD_Metadata/gmd:language">
 										<xsl:call-template name="languageISOCodeTemplateFR">
-											<xsl:with-param name="languageISOCode" select="gmd:LanguageCodeISO" />
+											<xsl:with-param name="languageISOCode" select="gco:CharacterString" />
 										</xsl:call-template>
 										<xsl:text>, </xsl:text>
 									</xsl:for-each>
@@ -329,7 +329,7 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 							<tr>
 								<td width="30%">Système de référence:</td>
 								<td>
-									<xsl:value-of  select="./gmd:MD_Metadata/gmd:sourcereferencesystem/gmd:md_referencesystem/gmd:referencesystemidentifier/gmd:rs_identifier/gmd:codespace/gco:CharacterString"/>
+									<xsl:value-of  select="./gmd:MD_Metadata/gmd:referenceSystemInfo/gmd:MD_ReferenceSystem/gmd:referenceSystemIdentifier/gmd:RS_Identifier/gmd:code/gco:CharacterString"/>
 								</td>
 							</tr>
 							
@@ -343,17 +343,17 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 											</tr>
 											<tr>
 												<td></td>
-												<td><xsl:value-of disable-output-escaping="yes" select="gmd:EX_Extent/gmd:geographicElement/gmd:Ex_GeographicBoundingBox/gmd:northBoundLatitude/gco:Decimal"/>  </td>
+												<td><xsl:value-of disable-output-escaping="yes" select="gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:northBoundLatitude/gco:Decimal"/>  </td>
 												<td></td>
 											</tr>
 											<tr>
-												<td><xsl:value-of disable-output-escaping="yes" select="gmd:EX_Extent/gmd:geographicElement/gmd:Ex_GeographicBoundingBox/gmd:westBoundLongitude/gco:Decimal"/></td>
+												<td><xsl:value-of disable-output-escaping="yes" select="gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:westBoundLongitude/gco:Decimal"/></td>
 												<td></td>
-												<td><xsl:value-of disable-output-escaping="yes" select="gmd:EX_Extent/gmd:geographicElement/gmd:Ex_GeographicBoundingBox/gmd:eastBoundLongitude/gco:Decimal"/> </td>
+												<td><xsl:value-of disable-output-escaping="yes" select="gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:eastBoundLongitude/gco:Decimal"/> </td>
 											</tr>
 											<tr>
 												<td></td>
-												<td><xsl:value-of disable-output-escaping="yes" select="gmd:EX_Extent/gmd:geographicElement/gmd:Ex_GeographicBoundingBox/gmd:southBoundLatitude/gco:Decimal"/> </td>
+												<td><xsl:value-of disable-output-escaping="yes" select="gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:southBoundLatitude/gco:Decimal"/> </td>
 												<td></td>
 											</tr>
 										</table>
@@ -363,18 +363,17 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 							<tr>
 								<td width="30%">Résolution spatiale:</td>
 								<td>
-									<xsl:for-each select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:spatialresolution">
+									<xsl:for-each select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:spatialResolution">
 										<table class="metadata-resolution">
-											<xsl:for-each select="gmd:MD_Resolution/gco:Distance">
+											<xsl:for-each select="gmd:MD_Resolution/gmd:distance">
 												<tr>
-												<td>Distance au sol</td>
-												<td><xsl:value-of disable-output-escaping="yes" select="gco:Decimal"/>  </td>
+												<td><xsl:value-of disable-output-escaping="yes" select="gco:Distance"/>  </td>
 												</tr>
 											</xsl:for-each>
 											<xsl:for-each select="gmd:MD_Resolution/gmd:EquivalentScale">
 												<tr>
 												<td>Dénominateur d'échelle</td>
-												<td><xsl:value-of disable-output-escaping="yes" select="gmd:md_representativefraction/gmd:denominator/gco:integer"/>  </td>
+												<td><xsl:value-of disable-output-escaping="yes" select="gmd:MD_representativefraction/gmd:denominator/gco:integer"/>  </td>
 												</tr>
 											</xsl:for-each>
 										</table>
@@ -423,10 +422,10 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 								<td width="30%">Origine de la donnée:</td>
 								<td>
 									<xsl:call-template name="RoleCodeTemplateFR">
-										<xsl:with-param name="RoleCode" select="./gmd:MD_Metadata/gmd:distributioninfo/gmd:md_distribution/gmd:md_distributor/gmd:distributorcontact/gmd:ci_responsibleparty/gmd:role/gmd:ci_rolecode/@codeListValue"/>
+										<xsl:with-param name="RoleCode" select="./gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:distributor/gmd:MD_Distributor/gmd:distributorContact/gmd:CI_ResponsibleParty/gmd:role/gmd:CI_RoleCode/@codeListValue"/>
 									</xsl:call-template>
-									<xsl:value-of  select="./gmd:MD_Metadata/gmd:distributioninfo/gmd:md_distribution/gmd:md_distributor/gmd:distributorcontact/gmd:ci_responsibleparty/gmd:organisationname"/>
-									<xsl:for-each select="./gmd:MD_Metadata/gmd:distributioninfo/gmd:md_distribution/gmd:md_distributor/gmd:distributorcontact/gmd:ci_responsibleparty/gmd:electronicmailadress">
+									<xsl:value-of  select="./gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:distributor/gmd:MD_Distributor/gmd:distributorContact/gmd:CI_ResponsibleParty/gmd:organisationName"/>
+									<xsl:for-each select="./gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:distributor/gmd:MD_Distributor/gmd:distributorContact/gmd:CI_ResponsibleParty/gmd:electronicMailAdress">
 										<xsl:value-of  select="gco:CharacterString"/>
 									</xsl:for-each>
 								</td>
@@ -434,21 +433,17 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 							<tr>
 								<td width="30%">Url de la métadonnée d'origine:</td>
 								<td>
-									<xsl:value-of  select="./gmd:MD_Metadata/gmd:distributioninfo/gmd:md_distribution/gmd:md_distributor/gmd:originalmetadata/gco:CharacterString"/>
+									<xsl:value-of  select="./gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:distributor/gmd:MD_Distributor/gmd:originalMetadata/gco:CharacterString"/>
 								</td>
 							</tr>
-							<tr>
-								<td width="30%">Format de la donnée:</td>
-								<td>
-									<xsl:value-of  select="./gmd:MD_Metadata/gmd:distributioninfo/gmd:md_distribution/gmd:md_distributor/gmd:storageformat/gco:CharacterString"/>
-								</td>
-							</tr>
+							
 							<tr>
 								<td width="30%">Accès en ligne:</td>
 								<td>
-									<xsl:for-each select="./gmd:MD_Metadata/gmd:distributioninfo/gmd:md_distribution/gmd:transferoptions/gmd:md_digitaltransferoptions/gmd:online">
-										<xsl:value-of  select="gmd:ci_onlineresource/gmd:linkage/gmd:url"/>
-										(<xsl:value-of  select="gmd:ci_onlineresource/gmd:protocol/gco:CharacterString"/>)
+									<xsl:for-each select="./gmd:MD_Metadata/gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine">
+										<xsl:value-of  select="gmd:CI_OnlineResource/gmd:linkage/gmd:URL"/>
+										(<xsl:value-of  select="gmd:CI_OnlineResource/gmd:protocol/gco:CharacterString"/>)
+										<br></br>
 									</xsl:for-each>
 								</td>
 							</tr>
@@ -461,40 +456,24 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 							
 							<xsl:for-each select="./gmd:MD_Metadata/gmd:dataQualityInfo">
 							<tr>
-								<td width="30%">Critère d'évaluation de la donnée:</td>
 								<td>
 									<table class="metadata-quality">
 										<tr>
-											<td>Norme</td>
+											<td>Scope</td>
 											<td>
-												<xsl:value-of  select="gmd:DQ_DataQuality/gmd:report/gmd:dq_domainconsistency/gmd:result/gmd:dq_conformanceresult/gmd:specification/gmd:CI_Citation/gmd:title/gco:CharacterString"/>
-												(<xsl:call-template name="dateTypeCodeTemplateFR">
-													<xsl:with-param name="dateTypeCode" select="gmd:DQ_DataQuality/gmd:report/gmd:dq_domainconsistency/gmd:result/gmd:dq_conformanceresult/gmd:specification/gmd:CI_Citation/gmd:date/gmd:CI_Date/gmd:date/gco:Datetype/gmd:CI_DateTypeCode/@codeListValue"/>
-												</xsl:call-template> :
-												<xsl:value-of  select="gmd:DQ_DataQuality/gmd:report/gmd:dq_domainconsistency/gmd:result/gmd:dq_conformanceresult/gmd:specification/gmd:CI_Citation/gmd:date/gmd:CI_Date/gmd:date/gco:Date"/>)
-												
+												<xsl:value-of  select="gmd:DQ_DataQuality/gmd:scope/gmd:DQ_Scope/gmd:level/gmd:MD_ScopeCode/@codeListValue"/>
 											</td>
 										</tr>
 										<tr>
-											<td>Explication</td>
+											<td>Détails</td>
 											<td>
+												<xsl:value-of  select="gmd:DQ_DataQuality/gmd:lineage/gmd:LI_Lineage/gmd:statement/gco:CharacterString"/>
 											</td>
 										</tr>
-										<tr>
-											<td>Conformité</td>
-											<td>
-											</td>
-										</tr>
-										
 									</table>
 								</td>
 							</tr>	
-							<tr>
-								<td width="30%">Qualité de la provenance:</td>
-								<td>
-									<xsl:value-of  select="gmd:DQ_DataQuality/gmd:lineage/gmd:statement/gco:CharacterString"/>
-								</td>
-							</tr>
+							
 							</xsl:for-each>
 							
 						</table>
@@ -505,34 +484,47 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 								<th class="metadata-table-th" colspan="2" scope="col">Contraintes</th>
 							</tr>
 							<xsl:for-each select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceConstraints">
-							<tr>
-								<td width="30%">Contraintes d'accès:</td>
-								<td>
-									<xsl:for-each select="gmd:MD_LegalConstraints/gmd:accessConstraints">
-										<xsl:call-template name="constraintsTypeTemplateFR">
-											<xsl:with-param name="constraintsTypeCode" select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceConstraints/gmd:MD_LegalConstraints/gmd:accessConstraints/gmd:MD_RestrictionCode/@codeListValue"/>
-										</xsl:call-template>  
-									</xsl:for-each>
-									
-								</td>
-							</tr>
-							<tr>
-								<td width="30%">Limitation d'utilisation de la ressource:</td>
-								<td>
-									<xsl:for-each select="gmd:MD_LegalConstraints/gmd:useLimitation">
-										 <xsl:value-of disable-output-escaping="yes"  select="gco:CharacterString"/>
-									</xsl:for-each>
-									
-								</td>
-							</tr>
-							<tr>
-								<td width="30%">Autres contraintes:</td>
-								<td>
-									<xsl:for-each select="gmd:MD_LegalConstraints/gmd:otherConstraints">
-										 <xsl:value-of disable-output-escaping="yes"  select="gco:CharacterString"/>
-									</xsl:for-each>
-								</td>
-							</tr>
+								<tr>
+									<td width="30%">Contraintes d'accès:</td>
+									<td>
+										<xsl:for-each select="gmd:MD_LegalConstraints/gmd:accessConstraints">
+											<xsl:call-template name="constraintsTypeTemplateFR">
+												<xsl:with-param name="constraintsTypeCode" select="gmd:MD_RestrictionCode/@codeListValue"/>
+											</xsl:call-template>
+										</xsl:for-each>
+									</td>
+								</tr>
+								<tr>
+									<td width="30%">Limitation d'utilisation de la ressource:</td>
+									<td>
+										<xsl:for-each select="gmd:MD_LegalConstraints/gmd:useLimitation">
+											 <xsl:value-of disable-output-escaping="yes"  select="gco:CharacterString"/>
+										</xsl:for-each>
+										
+									</td>
+								</tr>
+								<tr>
+									<td width="30%">Contraintes de sécurité:</td>
+									<td>
+										<xsl:for-each select="gmd:MD_SecurityConstraints/gmd:classification">
+											 <xsl:value-of disable-output-escaping="yes"  select="gmd:MD_ClassificationCode/@codeListValue"/>
+										</xsl:for-each> - 
+										<xsl:for-each select="gmd:MD_SecurityConstraints/gmd:classificationSystem">
+											 <xsl:value-of disable-output-escaping="yes"  select="gco:CharacterString"/>
+										</xsl:for-each> - 
+										<xsl:for-each select="gmd:MD_SecurityConstraints/gmd:handlingDescription">
+											 <xsl:value-of disable-output-escaping="yes"  select="gco:CharacterString"/>
+										</xsl:for-each>
+									</td>
+								</tr>
+								<tr>
+									<td width="30%">Autres contraintes:</td>
+									<td>
+										<xsl:for-each select="gmd:MD_LegalConstraints/gmd:otherConstraints">
+											 <xsl:value-of disable-output-escaping="yes"  select="gco:CharacterString"/>
+										</xsl:for-each>
+									</td>
+								</tr>
 							</xsl:for-each>
 						</table>
 						
@@ -555,12 +547,7 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 							<tr>
 								<th class="metadata-table-th" colspan="2" scope="col">Informations système</th>
 							</tr>
-							<xsl:for-each select="./gmd:MD_Metadata/gmd:contact">
-								<tr>
-									<xsl:call-template name="addressTemplateFR">
-									</xsl:call-template>
-								</tr>
-							</xsl:for-each>
+							
 							<tr>
 								<td width="30%">Fichier mis à jour le:</td>
 								<td>
@@ -588,12 +575,14 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 							<tr>
 								<td width="30%">Version du standard de métadonnées:</td>
 								<td>
-									<xsl:value-of disable-output-escaping="yes" select="./gmd:MD_Metadata/gmd:MetadataStandardVersion/gco:CharacterString" />
+									<xsl:value-of disable-output-escaping="yes" select="./gmd:MD_Metadata/gmd:metadataStandardVersion/gco:CharacterString" />
 								</td>
 							</tr>
 							<tr>
 								<td width="30%">Hiérarchie:</td>
 								<td>
+									<xsl:value-of disable-output-escaping="yes" select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:hierarchyLevelName/gco:CharacterString" />
+									<br></br>
 									<xsl:call-template name="scopeCodeTemplateFR">
 										<xsl:with-param name="scopeCode" select="./gmd:MD_Metadata/gmd:identificationInfo/gmd:hierarchyLevel/gmd:MD_ScopeCode"/>
 									</xsl:call-template>
@@ -1157,19 +1146,18 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 				<xsl:value-of select="gmd:CI_ResponsibleParty/gmd:organisationName/gco:CharacterString" />
 				<br />
 			</xsl:if>
-			<xsl:if test="gmd:CI_ResponsibleParty/gmd:address/gmd:addressLine/gco:CharacterString != ''">
-				<xsl:value-of select="gmd:CI_ResponsibleParty/gmd:address/gmd:addressLine/gco:CharacterString" />
+			<xsl:if test="gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:deliveryPoint/gco:CharacterString != ''">
+				<xsl:value-of select="gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:deliveryPoint/gco:CharacterString" />
 				<br />
 			</xsl:if>
-			<xsl:if test="gmd:CI_ResponsibleParty/gmd:address/gmd:postBox/gco:Decimal != ''">
-				  		Boîte postale <xsl:value-of select="gmd:CI_ResponsibleParty/gmd:address/gmd:postBox/gco:Decimal" />
+			<xsl:if test="gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:postalCode/gco:CharacterString != ''">
+				  		Boîte postale <xsl:value-of select="gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:postalCode/gco:CharacterString" />
 				<br />
 			</xsl:if>
-			<xsl:if test="gmd:CI_ResponsibleParty/gmd:address/gmd:streetName/gco:CharacterString != ''">
-				<xsl:value-of select="gmd:CI_ResponsibleParty/gmd:address/gmd:streetName/gco:CharacterString" />
+			<xsl:if test="gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:city/gco:CharacterString != ''">
+				<xsl:value-of select="gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:city/gco:CharacterString" />
 				<xsl:text>, </xsl:text>
-				<xsl:value-of select="gmd:CI_ResponsibleParty/gmd:address/gmd:postalCode/gco:CharacterString" />
-				<xsl:value-of select="gmd:CI_ResponsibleParty/gmd:address/gmd:city/gco:CharacterString" />
+				<xsl:value-of select="gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:country/gco:CharacterString" />
 				<br />
 			</xsl:if>
 			<xsl:if test="gmd:CI_ResponsibleParty/gmd:individualFirstName/gco:CharacterString != ''">
@@ -1178,24 +1166,15 @@ xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date"
 				<xsl:value-of select="gmd:CI_ResponsibleParty/gmd:individualLastName/gco:CharacterString" />
 				<br />
 			</xsl:if>
-			<xsl:if test="gmd:CI_ResponsibleParty/gmd:electronicalMailAddress/gco:CharacterString != ''">
-				<xsl:value-of select="gmd:CI_ResponsibleParty/gmd:electronicalMailAddress/gco:CharacterString" />
+			<xsl:if test="gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:electronicalMailAddress/gco:CharacterString != ''">
+				<xsl:value-of select="gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:address/gmd:CI_Address/gmd:electronicalMailAddress/gco:CharacterString" />
 				<br />
 			</xsl:if>
-			<xsl:for-each select="gmd:CI_ResponsibleParty/gmd:phone">
-				<xsl:if test="gmd:CI_Telephone[gmd:numberType/gmd:CI_NumberTypeCode/@codeListValue='directNumber']/gmd:number/gco:CharacterString != ''">
-					    	 		Direct: <xsl:value-of select="gmd:CI_Telephone[gmd:numberType/gmd:CI_NumberTypeCode/@codeListValue='directNumber']/gmd:number/gco:CharacterString" />
-					<br />
-				</xsl:if>
-				<xsl:if test="gmd:CI_Telephone[gmd:numberType/gmd:CI_NumberTypeCode/@codeListValue='mainNumber']/gmd:number/gco:CharacterString != ''">
-					    	 		Numéro principale: <xsl:value-of select="gmd:CI_Telephone[gmd:numberType/gmd:CI_NumberTypeCode/@codeListValue='mainNumber']/gmd:number/gco:CharacterString" />
-					<br />
-				</xsl:if>
-				<xsl:if test="gmd:CI_Telephone[gmd:numberType/gmd:CI_NumberTypeCode/@codeListValue='facsimile']/gmd:number/gco:CharacterString != ''">
-					    	 		Télécopieur: <xsl:value-of select="gmd:CI_Telephone[gmd:numberType/gmd:CI_NumberTypeCode/@codeListValue='facsimile']/gmd:number/gco:CharacterString" />
-					<br />
-				</xsl:if>
-			</xsl:for-each>
+			<xsl:if test="gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:phone/gmd:voice/gco:CharacterString != ''">
+				Téléphone : <xsl:value-of select="gmd:CI_ResponsibleParty/gmd:contactInfo/gmd:CI_Contact/gmd:phone/gmd:voice/gco:CharacterString" />
+				<br />
+			</xsl:if>
+			
 		</td>
 	</xsl:template>
 	
