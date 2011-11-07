@@ -2458,7 +2458,7 @@ class SITE_catalog {
 			$cswMdCond = "<ogc:And>".$cswMdCond."</ogc:And>";
 			
 			//Si pas de type d'objet sélectionné mais qu'on n'est pas dans le cas du premier chargement de la page, on retourne aussi les données harvestées.
-			if ( array_key_exists('bboxMinX', $_REQUEST) && count($objecttype_id) == 0){
+			if (count($objecttype_id) == 0){
 				$cswMdCond .= "<ogc:PropertyIsEqualTo><ogc:PropertyName>harvested</ogc:PropertyName><ogc:Literal>true</ogc:Literal></ogc:PropertyIsEqualTo>\r\n";
 				$cswMdCond = "<ogc:Or>".$cswMdCond."</ogc:Or>";
 			}

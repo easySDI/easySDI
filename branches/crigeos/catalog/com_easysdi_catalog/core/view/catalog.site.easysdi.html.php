@@ -235,7 +235,7 @@ class HTML_catalog{
 							if (JRequest::getVar('systemfilter_'.$searchFilter->guid) and JRequest::getVar('systemfilter_'.$searchFilter->guid) <> "Array")
 								$selectedObjectType = JRequest::getVar('systemfilter_'.$searchFilter->guid);
 							else if (!JRequest::getVar('bboxMinX') or JRequest::getVar('systemfilter_'.$searchFilter->guid) == "Array")
-								$selectedObjectType = $objecttypes;
+								$selectedObjectType = array();
 							
 							?>
 							<div class="row">
