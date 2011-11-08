@@ -2457,17 +2457,17 @@ class SITE_catalog {
 			$cswMdCond .= "<ogc:PropertyIsEqualTo><ogc:PropertyName>harvested</ogc:PropertyName><ogc:Literal>false</ogc:Literal></ogc:PropertyIsEqualTo>\r\n";
 			$cswMdCond = "<ogc:And>".$cswMdCond."</ogc:And>";
 			
-			//Si pas de type d'objet sélectionné mais qu'on n'est pas dans le cas du premier chargement de la page, on retourne aussi les données harvestées.
-			if (count($objecttype_id) == 0){
+			//Si pas de type d'objet sélectionné et l'option téléchargeable non sélectionnée, on retourne aussi les données harvestées.
+			if (count($objecttype_id) == 0 && $isDownloadable == 0){
 				$cswMdCond .= "<ogc:PropertyIsEqualTo><ogc:PropertyName>harvested</ogc:PropertyName><ogc:Literal>true</ogc:Literal></ogc:PropertyIsEqualTo>\r\n";
 				$cswMdCond = "<ogc:Or>".$cswMdCond."</ogc:Or>";
 			}
 			
-			if((count($arrSearchableMd) == 0))
+			if(count($arrSearchableMd) == 0)
 			{
 				//Pas de metadonnées dans le tableau des Id à rechercher
-				//Si des types d'objet ont été sélectionnés, on doit écarter les données harvestées
-				if (count($objecttype_id) > 0){
+				//Si des types d'objet ont été sélectionnés ou l'option téléchargeable sélectionnée, on doit écarter les données harvestées
+				if (count($objecttype_id) > 0 || $isDownloadable != 0){
 				$condList[] = "<ogc:And>
 									<ogc:PropertyIsEqualTo>
 										<ogc:PropertyName>$ogcfilter_fileid</ogc:PropertyName>
@@ -2480,22 +2480,11 @@ class SITE_catalog {
 								</ogc:And>
 								";
 				}else{//Sinon on inclu les données harvestées
-				$condList[] = "<ogc:Or>
-								<ogc:And>
-									<ogc:PropertyIsEqualTo>
-										<ogc:PropertyName>$ogcfilter_fileid</ogc:PropertyName>
-										<ogc:Literal>-1</ogc:Literal>
-									</ogc:PropertyIsEqualTo>\r\n
-									<ogc:PropertyIsEqualTo>
-										<ogc:PropertyName>harvested</ogc:PropertyName>
-										<ogc:Literal>false</ogc:Literal>
-									</ogc:PropertyIsEqualTo>\r\n
-								</ogc:And>
-								<ogc:PropertyIsEqualTo>
+				$condList[] = "<ogc:PropertyIsEqualTo>
 									<ogc:PropertyName>harvested</ogc:PropertyName>
 									<ogc:Literal>true</ogc:Literal>
 								</ogc:PropertyIsEqualTo>\r\n
-							</ogc:Or>";
+							";
 				}
 			}
 			
@@ -2532,8 +2521,8 @@ class SITE_catalog {
 				$cswMdCond .= "<ogc:PropertyIsEqualTo><ogc:PropertyName>harvested</ogc:PropertyName><ogc:Literal>false</ogc:Literal></ogc:PropertyIsEqualTo>\r\n";
 				$cswMdCond .= "</ogc:And>";
 											
-				if(count($arrFilteredMd) > 1)
-					$cswMdCond = "<ogc:And>".$cswMdCond."</ogc:And>";
+				/*if(count($arrFilteredMd) > 1)
+					$cswMdCond = "<ogc:And>".$cswMdCond."</ogc:And>";*/
 				
 				if(count($arrFilteredMd) > 0)
 					$condList[] = $cswMdCond;
