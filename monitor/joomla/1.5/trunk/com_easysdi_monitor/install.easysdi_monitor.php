@@ -299,6 +299,8 @@ $migrateServletTablesQuery ="SET FOREIGN_KEY_CHECKS=0;
 			  `ID_STATUS` int(10) unsigned NOT NULL DEFAULT '4',
 			  `NAME` varchar(45) NOT NULL,
 			  `SOAP_URL` varchar(250) DEFAULT NULL,
+			  `QUERY_METHOD` varchar(20) DEFAULT '',
+			  `QUERY_SERVICE_TYPE` varchar(20) DEFAULT '',
 			  PRIMARY KEY (`ID_QUERY`),
 			  KEY `FK_QUERIES_METHOD` (`ID_SERVICE_METHOD`),
 			  KEY `FK_QUERIES_JOB` (`ID_JOB`),

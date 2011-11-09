@@ -105,6 +105,15 @@ Ext.onReady(function(){
    			 ['WCS'],
    			 ['ALL']
    		       ];
+   // Types use for setting for query when type All used
+   EasySDI_Mon.OgcServiceStoreAll = [
+	         ['WMS'],
+   			 ['WFS'],
+   			 ['WMTS'],
+   			 ['CSW'],
+   			 ['SOS'],
+   			 ['WCS']  	   
+   ];
    
    EasySDI_Mon.RepPeriodStore = [
    		         [EasySDI_Mon.lang.getLocal('today'),'today'],
@@ -170,8 +179,21 @@ Ext.onReady(function(){
    EasySDI_Mon.DefaultReq = {
    		name:'',
    		serviceMethod:'',
-   		params:''
+   		params:'',
+	   	soapUrl:'',
+	   	queryMethod:'',
+	   	queryServiceType: ''
    };
+   
+   /*
+   EasySDI_Mon.DefaultReqAll = {
+	   		name:'',
+	   		serviceMethod:'',
+	   		params:'',
+	   		soapUrl:'',
+	   		queryMethod:'',
+	   		queryServiceType: ''
+   };*/
    
    EasySDI_Mon.DefaultGetCapReq = {
    		name:'',
