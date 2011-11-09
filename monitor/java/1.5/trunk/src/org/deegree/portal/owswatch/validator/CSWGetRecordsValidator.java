@@ -87,9 +87,9 @@ public class CSWGetRecordsValidator extends AbstractValidator implements Seriali
 
         String xml = null;
         try {
-            InputStream stream = method.getResponseBodyAsStream();
-            stream.reset();
-            xml = parseStream( stream );
+        	InputStream stream = copyStream( method.getResponseBodyAsStream());
+        	stream.reset();
+        	xml = parseStream( stream );
         } catch ( IOException e ) {
             status = Status.RESULT_STATE_BAD_RESPONSE;
             lastMessage = status.getStatusMessage();
@@ -109,8 +109,8 @@ public class CSWGetRecordsValidator extends AbstractValidator implements Seriali
         // If its an xml, and there's no service exception, then don't really parse the xml,
         // we assume that its well formed, since there might be huge xmls, which would take time to be parsed
         status = Status.RESULT_STATE_AVAILABLE;
-        lastMessage = status.getStatusMessage();
-        return new ValidatorResponse( lastMessage, status );
+        lastMessage = status.getStatusMessage();     
+        return new ValidatorResponse( lastMessage, status,xml.getBytes(),method.getResponseContentLength(),contentType );
     }
 
     /*

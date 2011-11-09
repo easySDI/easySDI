@@ -167,6 +167,7 @@ public class ServiceInvoker extends Thread implements Serializable {
         HttpConnectionManagerParams cmParams = client.getHttpConnectionManager().getParams();
         cmParams.setConnectionTimeout( serviceConfig.getTimeout() * 1000 );
         client.getHttpConnectionManager().setParams( cmParams );
+        
         // Provide custom retry handler is necessary
         method.getParams().setParameter( HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler( 2, false ) );
         

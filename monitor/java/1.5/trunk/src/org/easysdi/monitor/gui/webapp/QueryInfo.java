@@ -27,6 +27,8 @@ public class QueryInfo {
     private String        name;
     private Job           parentJob;
     private String 		  soapUrl;
+    private String 		  queryMethod;
+    private String		  queryServiceType;	
     
     
     
@@ -127,8 +129,46 @@ public class QueryInfo {
     private String getSoapUrl() {
         return this.soapUrl;
     }
+    
+    
 
     /**
+	 * @return the queryMethod
+	 */
+	private String getQueryMethod() {
+		return queryMethod;
+	}
+
+
+
+	/**
+	 * @param queryMethod the queryMethod to set
+	 */
+	private void setQueryMethod(String queryMethod) {
+		this.queryMethod = queryMethod;
+	}
+
+
+
+	/**
+	 * @return the queryServiceType
+	 */
+	private String getQueryServiceType() {
+		return queryServiceType;
+	}
+
+
+
+	/**
+	 * @param queryServiceType the queryServiceType to set
+	 */
+	private void setQueryServiceType(String queryServiceType) {
+		this.queryServiceType = queryServiceType;
+	}
+
+
+
+	/**
      * Defines the job that this query defines.
      * 
      * @param   job the parent job 
@@ -173,9 +213,11 @@ public class QueryInfo {
 
         final String nameString = requestParams.get("name");
         final String soapActionString = requestParams.get("soapUrl");
-        
+        final String queryServiceTypeString = requestParams.get("queryServiceType");
+        final String queryMethodString = requestParams.get("queryMethod");
         newQueryInfo.setSoapUrl(soapActionString);
-        
+        newQueryInfo.setQueryMethod(queryMethodString);
+        newQueryInfo.setQueryServiceType(queryServiceTypeString);
         if (enforceMandatory || !StringTools.isNullOrEmpty(nameString)) {
             newQueryInfo.setName(nameString);
         }
@@ -216,7 +258,15 @@ public class QueryInfo {
         if (null != this.getSoapUrl()) {
             config.setQuerySoapUrl(this.getSoapUrl());
         }
-
+        
+        if (null != this.getQueryMethod()) {
+            config.setQueryMethod(this.queryMethod);
+        }
+        if (null != this.getQueryServiceType()) {
+            config.setQueryServiceType(this.queryServiceType); 
+        }
+        
+        
         return query.persist();
     }
 
@@ -229,7 +279,8 @@ public class QueryInfo {
      */
     public Query createQuery() {
         final Query newQuery = new Query(this.getParentJob(), this.getName(),
-                                         this.getMethod(), this.getSoapUrl());
+                                         this.getMethod(), this.getSoapUrl(),this.queryMethod,
+                                         this.queryServiceType);
 
         if (newQuery.isValid()) {
 

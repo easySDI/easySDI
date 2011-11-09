@@ -24,6 +24,8 @@
 			<parent name="query" />
 			<property name="name" type="string" length="45" column="NAME" lazy="false"></property>
 			<property name="soapUrl" type="string" length="250" column="SOAP_URL" lazy="false"></property>
+			<property name="queryMethod" type="string" length="20" column="QUERY_METHOD" lazy="false"></property>
+			<property name="queryServiceType" type="string" length="20" column="QUERY_SERVICE_TYPE" lazy="false"></property>
 			<many-to-one name="parentJob" class="Job" column="ID_JOB" lazy="false"></many-to-one>
 			<property name="methodId" type="long" column="ID_SERVICE_METHOD" lazy="false"></property>
 			

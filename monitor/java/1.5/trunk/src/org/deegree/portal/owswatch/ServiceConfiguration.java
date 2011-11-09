@@ -444,6 +444,7 @@ public class ServiceConfiguration implements Serializable {
 				try {
 					// In POST, the next line has to be added, otherwise POST
 					// does not work
+					
 					((PostMethod) method).setRequestEntity(new StringRequestEntity(
 							createHttpRequest(), "text/xml", "UTF-8"));
 				} catch (UnsupportedEncodingException e) {
@@ -496,7 +497,6 @@ public class ServiceConfiguration implements Serializable {
 	public Validator getValidator() throws ConfigurationsException {
 
 		if (validator == null) {
-
 			String validatorClassName = StringTools.concat(100, getClass().getPackage().getName(),
 															".validator.", serviceType,
 															requestType, "Validator");

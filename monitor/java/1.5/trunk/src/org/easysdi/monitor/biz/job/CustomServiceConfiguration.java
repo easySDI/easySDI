@@ -42,7 +42,7 @@ public class CustomServiceConfiguration extends ServiceConfiguration{
 
 	
 		HttpMethodBase method = null;
-		String queryHttpMethodType = getHttpMethod();
+		String queryHttpMethodType = getHttpMethod();  
 		String queryRequestMethodName = getProperties().getProperty("REQUEST");
 		String queryServiceType = getServiceType();
 			

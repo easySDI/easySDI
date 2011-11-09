@@ -59,6 +59,7 @@ public class CustomQueryInvoker extends ServiceInvoker{
 
         ValidatorResponse tmpResponse = null;
         try {
+        	
             HttpMethodBase method = this.getServiceConfig().getHttpMethodBase(); // this needs to be revised
             tmpResponse = executeHttpMethod(method, this.getServiceConfig().getUserCreds());
            

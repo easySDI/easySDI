@@ -116,11 +116,13 @@ public class Query {
      *                      all queries for a given job.)
      * @param   method      the service method object
      */
-    public Query(Job parentJob, String queryName, ServiceMethod method, String soapUrl) {
+    public Query(Job parentJob, String queryName, ServiceMethod method, String soapUrl,
+    		String queryMethod,String queryServiceType) {
         this();
         this.setStatus(StatusValue.NOT_TESTED);
         final QueryConfiguration newConfig 
-            = new QueryConfiguration(parentJob, this, queryName, method, soapUrl);
+        = new QueryConfiguration(parentJob, this, queryName, method, soapUrl,queryMethod,
+            		queryServiceType);
         this.setConfig(newConfig);
     }
 
@@ -375,6 +377,7 @@ public class Query {
         
         final ServiceType serviceType 
         = this.getConfig().getParentJob().getConfig().getServiceType();
+         
         final String serviceTypeName = serviceType.getName();
         final String serviceMethodName = this.getConfig().getMethod().getName();
         if((serviceTypeName.equals(CustomQueryConstants.ALL)) && 
@@ -387,11 +390,7 @@ public class Query {
         	this.setOwsInvoker(new CustomQueryInvoker(this.getCustom_SOAP_GET_POST_Config(), 
                     thisOwsLogger));
         }        	
-        else{
-        	// TODO handle ALL FIND method
-            // if(serviceTypeName.equals(CustomQueryConstants.ALL))
-            {
-             }        
+        else{       
         	this.setOwsInvoker(new ServiceInvoker(this.getOwsConfig(), 
                                               thisOwsLogger));
         }

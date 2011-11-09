@@ -37,7 +37,10 @@ public class QueryConfiguration {
     private Job             parentJob;
 
     private Query           query;
-
+    
+    private String			queryMethod;
+    
+    private String			queryServiceType;
 
 
     /**
@@ -93,12 +96,15 @@ public class QueryConfiguration {
      * @param   newMethod       the service method object
      */
     public QueryConfiguration(Job newParentJob, Query newParentQuery,
-                              String queryName, ServiceMethod newMethod, String soapUrl) {
+                              String queryName, ServiceMethod newMethod, String soapUrl,
+                              String queryMethod,String queryServiceType) {
         this.setQuery(newParentQuery);
         this.setParentJob(newParentJob);
         this.setQueryName(queryName);
         this.setMethod(newMethod);
         this.setSoapUrl(soapUrl);
+        this.setQueryMethod(queryMethod);
+        this.setQueryServiceType(queryServiceType);
     }
 
 
@@ -348,7 +354,45 @@ public class QueryConfiguration {
     public String getQuerySoapUrl() {
         return this.soapUrl;
     }
+    
+    
     /**
+	 * @return the queryMethod
+	 */
+	public String getQueryMethod() {
+		return queryMethod;
+	}
+
+
+
+	/**
+	 * @param queryMethod the queryMethod to set
+	 */
+	public void setQueryMethod(String queryMethod) {
+		this.queryMethod = queryMethod;
+	}
+
+
+
+	/**
+	 * @return the queryServiceType
+	 */
+	public String getQueryServiceType() {
+		return queryServiceType;
+	}
+
+
+
+	/**
+	 * @param queryServiceType the queryServiceType to set
+	 */
+	public void setQueryServiceType(String queryServiceType) {
+		this.queryServiceType = queryServiceType;
+	}
+
+
+
+	/**
      * Gets the parameters to be used by this query.
      * 
      * @return  a set containing the parameters for this query
@@ -445,13 +489,21 @@ public class QueryConfiguration {
             = this.getParentJob().getConfig();
 
         try {
+        	String httpMethod =  parentJobConfig.getHttpMethod().getName();
+        	if(!"".equals(this.getQuery().getConfig().getQueryMethod()))
+        	{
+        		httpMethod = this.getQuery().getConfig().getQueryMethod();
+        	}
         	customConfig = new CustomServiceConfiguration(
                     (int) this.getQuery().getQueryId(), this.name,
-                    parentJobConfig.getHttpMethod().getName(),
+                    httpMethod,
                     parentJobConfig.getUrl(), true,
                     parentJobConfig.getTestInterval(),
                     parentJobConfig.getTimeout(), this.getCustomParams());
-            
+        	
+        	
+        	
+        	
         	customConfig.setUserCreds(parentJobConfig.getLogin(),
                                    parentJobConfig.getPassword());
 
@@ -476,11 +528,16 @@ public class QueryConfiguration {
         ServiceConfiguration owsConfig;
         final JobConfiguration parentJobConfig 
             = this.getParentJob().getConfig();
-
+        String httpMethodQuery = parentJobConfig.getHttpMethod().getName();
+        if(!"".equals(this.getQueryMethod()))
+        {
+        	httpMethodQuery = this.getQueryMethod();
+        }
+        	
         try {
             owsConfig = new ServiceConfiguration(
                     (int) this.getQuery().getQueryId(), this.name,
-                    parentJobConfig.getHttpMethod().getName(),
+                    httpMethodQuery,
                     parentJobConfig.getUrl(), true,
                     parentJobConfig.getTestInterval(),
                     parentJobConfig.getTimeout(), this.getOwsParams());
@@ -510,12 +567,31 @@ public class QueryConfiguration {
         final Properties queryParams = new Properties();
         final ServiceType serviceType 
             = this.getParentJob().getConfig().getServiceType();
-        final String serviceTypeName = serviceType.getName();
-        final String serviceTypeVersion = serviceType.getVersion();
+        String serviceTypeName = serviceType.getName();
+        
+        if(serviceType.getName().equals("ALL") && !"".equals(this.queryServiceType))
+        {
+        	serviceTypeName = this.queryServiceType;
+        }
+        
+        String serviceTypeVersion = serviceType.getVersion();
+        // ALL type
+        if(serviceTypeVersion.equals("0"))
+        {
+        	QueryParam param = this.findParamCaseInsensitivity("version");
+        	if(param != null)
+        	{
+        		serviceTypeVersion = param.getValue();
+        	}
+        }
+        
         final String serviceMethodName = this.getMethod().getName();
-        final String httpMethod 
-            = this.getParentJob().getConfig().getHttpMethod().getName();
-
+        
+        String httpMethod = this.getParentJob().getConfig().getHttpMethod().getName();
+        if(serviceType.getName().equals("ALL") &&  !"".equals(this.queryMethod))
+        {
+        	httpMethod = this.queryMethod;
+        }
         queryParams.put("SERVICE", serviceTypeName);
         queryParams.put("VERSION", serviceTypeVersion);
         queryParams.put("REQUEST", serviceMethodName);
@@ -543,13 +619,21 @@ public class QueryConfiguration {
             
             if (null != xmlRequestParam) {
                 xmlRequest.append(xmlRequestParam.getValue());
-            }
+            }else
+            {
+            	final QueryParam cswParam = this.findParam("cswparam");
+            	if(cswParam != null)
+            	{
+            		final StringBuilder xmlRequest2 = new StringBuilder();
+            		xmlRequest2.append(cswParam.getValue());
+            		queryParams.put("XMLREQUEST", xmlRequest2.toString().replace("\"", "'"));
+            		return queryParams;
+            	}
+            }	
             
             xmlRequest.append(String.format("</%1$s>", serviceMethodName));
-            
             queryParams.put("XMLREQUEST", xmlRequest.toString());
         }
-
         return queryParams;
     }
 
@@ -682,6 +766,31 @@ public class QueryConfiguration {
                 final QueryParam currentParam = paramIterator.next();
 
                 if (currentParam.getName().equals(paramName)) {
+                    return currentParam;
+                }
+            }
+        }
+
+        return null;
+    }
+    
+    /**
+     * Finds a parameter among those defined for this query with case insensitivity.
+     * 
+     * @param   paramName    the searched parameter's name
+     * @return               the query parameter if it's been found or<br>
+     *                       <code>null</code> otherwise
+     */
+    public QueryParam findParamCaseInsensitivity(String paramName) {
+        final Set<QueryParam> paramsSet = this.getParams();
+
+        if (null != paramsSet) {
+            final Iterator<QueryParam> paramIterator = paramsSet.iterator();
+
+            while (paramIterator.hasNext()) {
+                final QueryParam currentParam = paramIterator.next();
+
+                if (currentParam.getName().toLowerCase().equals(paramName.toLowerCase())) {
                     return currentParam;
                 }
             }

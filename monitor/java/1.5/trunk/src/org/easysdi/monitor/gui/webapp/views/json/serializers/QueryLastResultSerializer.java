@@ -18,15 +18,11 @@ public class QueryLastResultSerializer {
 	public JsonNode serialize(Locale locale, ObjectMapper mapper) {
 		final ObjectNode jsonOverview = mapper.createObjectNode();
 		if(this.getLastResult() != null){
-			//jsonOverview.put("picture_url", this.getLastResult().getPictureUrl());
-			//jsonOverview.put("xml_result", this.getLastResult().getXmlResult());
 			jsonOverview.put("text_result", this.getLastResult().getTextResult());
 			jsonOverview.put("content_type", this.getLastResult().getContentType());
 		}
 		else
 		{
-			//jsonOverview.put("picture_url", (String)null);
-			//jsonOverview.put("xml_result", (String)null);
 			jsonOverview.put("text_result", (String)null);
 			jsonOverview.put("content_type", (String)null);
 		}

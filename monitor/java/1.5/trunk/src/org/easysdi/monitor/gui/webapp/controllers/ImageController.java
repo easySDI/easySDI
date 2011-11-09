@@ -22,6 +22,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 
 
+
+
+
 /**
  * @author berg3428
  *
@@ -93,6 +96,8 @@ public class ImageController{
     	{
     		OverviewLastQueryResult result = OverviewLastQueryResult.getFromIdString(idString);
     		data = result.getData();
+
+
     		contentType = result.getContentType();
     		if(contentType != null && contentType != "" && data != null)
     		{
