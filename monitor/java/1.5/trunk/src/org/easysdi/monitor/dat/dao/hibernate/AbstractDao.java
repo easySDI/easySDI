@@ -32,18 +32,9 @@ abstract class AbstractDao extends HibernateDaoSupport {
         
         try {
         	
-        	//this.getHibernateTemplate().getSessionFactory().get
-        	//Session session = this.getSessionFactory().openSession();
-        	//session.beginTransaction();
-        	//session.saveOrUpdate(object);
-            //session.getTransaction().commit();
-            //session.clear();
-           // session.close();
-        	
+       
         	this.getHibernateTemplate().saveOrUpdate(object);
-        	this.getHibernateTemplate().flush();
-        	//this.getHibernateTemplate().saveOrUpdate(object);
-            //this.getSession().flush();
+        	// DO not use flush
             return true;
 
         } catch (DataAccessException e) {
