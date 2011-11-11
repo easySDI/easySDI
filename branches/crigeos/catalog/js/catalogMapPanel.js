@@ -26,8 +26,10 @@ CatalogMapPanel = Ext.extend(Ext.Panel, {
 	addMap : function(){
 	
 		OpenLayers.ProxyHost="/proxy/?url=";
+	//	var maxBounds = new OpenLayers.Bounds(defaultBBoxConfig.defaultExtent.left,defaultBBoxConfig.defaultExtent.bottom,defaultBBoxConfig.defaultExtent.right,defaultBBoxConfig.defaultExtent.top);
 
-		this.map = new OpenLayers.Map(Ext.getCmp(this.id).body.id);
+
+		this.map = new OpenLayers.Map(Ext.getCmp(this.id).body.id, { controls: [] });
 
 		if(defaultBBoxConfig!=""){
 			var layerArray = defaultBBoxConfig.getLayers();//Ext.ux.util.clone(defaultBBoxConfig.layers);
@@ -36,22 +38,7 @@ CatalogMapPanel = Ext.extend(Ext.Panel, {
 		else
 			console.log("defaultBBoxConfig param is missing");
 
-
-		var ov_options = {};
-
-		ov_options.maxExtent = defaultBBoxConfig.defaultExtent;
-		var ovControl = new OpenLayers.Control.OverviewMap( {
-			mapOptions :ov_options,
-			size : new OpenLayers.Size(100, 100)
-		});
-		// This forces the overview to never pan or zoom, since it
-		// is always
-		// suitable.
-		ovControl.isSuitableOverview = function() {
-			return true;
-		};
-		this.map.addControl(ovControl);
-
+	
 		this.map.addControl(new OpenLayers.Control.PanZoomBar());		
 
 		this.map.navCtrl = new OpenLayers.Control.NavigationHistory();
@@ -100,6 +87,61 @@ CatalogMapPanel = Ext.extend(Ext.Panel, {
 
 	}, 	
 	
+	addOverView: function(){
+		
+		//this.map.maxExtent = new OpenLayers.Bounds(defaultBBoxConfig.defaultExtent.left,defaultBBoxConfig.defaultExtent.bottom,defaultBBoxConfig.defaultExtent.right,defaultBBoxConfig.defaultExtent.top);
+		//this.map.baseLayer.maxExtent = new OpenLayers.Bounds(defaultBBoxConfig.defaultExtent.left,defaultBBoxConfig.defaultExtent.bottom,defaultBBoxConfig.defaultExtent.right,defaultBBoxConfig.defaultExtent.top);
+
+		this.map.maxExtent = this.map.getExtent();
+		this.map.baseLayer.maxExtent = this.map.maxExtent;
+	
+			var bounds;
+			var viewSize = new OpenLayers.Size(180, 100);			
+			bounds = this.map.maxExtent;
+	
+			var overviewLayer = this.map.baseLayer.clone();
+			overviewLayer.map = null;
+			overviewLayer.maxExtent = bounds;
+			overviewLayer.minExtent = bounds;
+			var wRes = bounds.getWidth() / viewSize.w;
+			var hRes = bounds.getHeight() / viewSize.h;
+			maxResolution = Math.max(wRes, hRes);
+		//maxResolution =overviewLayer.maxResolution ; 
+			
+			/*overviewLayer.scales = null;
+			overviewLayer.minScale = null;
+			overviewLayer.maxScale = null;*/
+
+			ovControl = new OpenLayers.Control.OverviewMap({
+				mapOptions :{
+					maxExtent : bounds,
+					restrictedExtent : bounds,
+					maxResolution : maxResolution,
+					minExtent : bounds,	
+					minScale : null,
+					maxScale : null,
+					scales :null,					
+					numZoomLevels :1,				
+					center : bounds.getCenterLonLat()
+					
+				},
+				layers : [overviewLayer],
+				size : viewSize	
+				
+				
+			});
+			
+			 
+			// This forces the overview to never pan or zoom, since it
+			// is always
+			// suitable.
+			ovControl.isSuitableOverview = function() {
+				return true;
+			};		
+		
+			this.map.addControl(ovControl);
+		
+	},
 
 	updateMapExtent: function(){
 		this.updateManuallyTriggered = true;

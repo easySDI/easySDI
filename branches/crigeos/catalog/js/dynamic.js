@@ -767,6 +767,7 @@
 							
 							Ext.getCmp(fieldsetId).addListener("afterlayout", mapHelper.updateMapExtent, mapHelper);
 							Ext.getCmp(fieldsetId).doLayout();
+							mapHelper.addOverView();
 							
 							
 							for ( i =0; i< coords.length ;i++  ){
