@@ -525,7 +525,7 @@ div.x-view-selected {
 	width: 100%;  
 	text-align: center;
 }
-
+/*
 .x-btn-small tr {
     float: left;
     display: inline;
@@ -536,7 +536,7 @@ tr .x-btn-tl, tr .x-btn-tc, tr .x-btn-tr, tr .x-btn-bl, tr .x-btn-bc, tr .x-btn-
     float: left;
     display: inline;
     width: 0px;
-}
+}*/
 /*
 .x-toolbar-cell {
     padding: 0px!important;
@@ -581,7 +581,7 @@ td.x-toolbar-right {
             background-position:center;
             background-repeat:no-repeat;
             display: none;
-            top :97.5%!important;
+            top :93.5%!important;
        
             
         }
@@ -606,6 +606,9 @@ td.x-toolbar-right {
     z-index : 100;
     
 
+}
+.olControlScaleLine {
+	top : 87.5% !important;
 }
 
 #map {
@@ -668,4 +671,8 @@ td.x-toolbar-right {
 	vertical-align:middle;
 
 
+}
+
+#geoMap {
+	 top : 29px !important;
 }
