@@ -16,6 +16,8 @@
  */
 // no direct access
 defined( '_JEXEC' ) or die( 'Restricted access' );
+require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.jsLoaderUtil.php');
+$jsLoader =JSLOADER_UTIL::getInstance();
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<?php echo $this->language; ?>" lang="<?php echo $this->language; ?>" >
@@ -23,8 +25,8 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 <!--<meta http-equiv="X-UA-Compatible" content="IE=7.5" />-->
 <!-- <link rel="stylesheet" href="<?php echo $this->baseurl ?>/templates/easysdi_map/css/reset.css" type="text/css" />-->
 <jdoc:include type="head" />
-<link rel="stylesheet" href="<?php echo $this->baseurl ?>/components/com_easysdi_map/externals/ext/resources/css/ext-all.css" type="text/css" />
-<link rel="stylesheet" href="<?php echo $this->baseurl ?>/components/com_easysdi_map/externals/ext/resources/css/xtheme-<?php echo $this->params->get('extThemeVariation'); ?>.css" type="text/css" />
+<link rel="stylesheet" href="<?php echo $jsLoader->getPath("map","ext") ?>/resources/css/ext-all.css" type="text/css" />
+<link rel="stylesheet" href="<?php echo $jsLoader->getPath("map","ext") ?>/resources/css/xtheme-<?php echo $this->params->get('extThemeVariation'); ?>.css" type="text/css" />
 <link rel="stylesheet" href="<?php echo $this->baseurl ?>/templates/<?php echo $this->template ?>/css/easysdi_map.css" type="text/css" />
 <link rel="stylesheet" href="<?php echo $this->baseurl ?>/templates/system/css/system.css" type="text/css" />
 <link rel="stylesheet" href="<?php echo $this->baseurl ?>/templates/system/css/general.css" type="text/css" />
