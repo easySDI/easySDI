@@ -20,9 +20,11 @@
 /**
  * PHP script to emit component configuration into JavaScript.
  */
+require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.jsLoaderUtil.php');
+$jsLoader =JSLOADER_UTIL::getInstance();
 
 $s = "Ext.namespace('SData');\n";
-$s .= "Ext.BLANK_IMAGE_URL = '".JURI::base()."components/com_easysdi_map/externals/ext/resources/images/default/s.gif';\n";
+$s .= "Ext.BLANK_IMAGE_URL = '".$jsLoader->getPath("map","ext")."resources/images/default/s.gif';\n";
 $document->addScriptDeclaration($s);
 
 $db =& JFactory::getDBO();

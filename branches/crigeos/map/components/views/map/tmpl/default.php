@@ -27,9 +27,9 @@ $document->setHeadData($headerstuff);
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.jsLoaderUtil.php');
 $jsLoader =JSLOADER_UTIL::getInstance();
 // Include the ext library. Replace with ext-all.js for production
-JHTML::stylesheet('ext-all.css', 'components/com_easysdi_map/externals/ext/resources/css/');
-JHTML::script('ext-base.js', $jsLoader->getPath("map","ext","/adapter/ext/"));//'components/com_rwgis_map/externals/ext/adapter/ext/');
-JHTML::script('ext-all.js', $jsLoader->getPath("map","ext"));//'components/com_rwgis_map/externals/ext/');
+JHTML::stylesheet('ext-all.css', $jsLoader->getPath("map","ext","/resources/css/"));
+JHTML::script('ext-base.js', $jsLoader->getPath("map","ext","/adapter/ext/"));
+JHTML::script('ext-all.js', $jsLoader->getPath("map","ext"));
 // And JQuery
 JHTML::script('jquery-1.3.2.min.js',  $jsLoader->getPath("map","jquery"));
 JHTML::script('jquery-ui-1.7.2.custom.min.js',  $jsLoader->getPath("map","jqueryui"));
@@ -38,7 +38,7 @@ JHTML::stylesheet('jquery-ui-1.7.2.custom.css',  $jsLoader->getPath("map","jquer
 JHTML::stylesheet('getFeatureInfo.css', 'components/com_easysdi_map/resource/xslt/');
 // And OpenLayers
 JHTML::script('SingleFile.js', $jsLoader->getPath("map","openlayers", "/lib/OpenLayers/"));
-JHTML::script('OpenLayers.js', $jsLoader->getPath("map","openlayers"));//'components/com_rwgis_map/externals/openlayers/');
+JHTML::script('OpenLayers.js', $jsLoader->getPath("map","openlayers"));
 //JHTML::script('OpenLayers.js', 'Lib/');
 JHTML::script('SortableWFS.js', 'components/com_easysdi_map/classes/');
 JHTML::script('getfeatureinfo.js', 'components/com_easysdi_map/classes/');
@@ -46,7 +46,7 @@ JHTML::script('proj4js-compressed.js', $jsLoader->getPath("map", "proj4js"));
 JHTML::script('EPSG27582.js', $jsLoader->getPath("map", "proj4js","/lib/defs/"));
 // And the GeoExt library
 JHTML::script('SingleFile.js',  $jsLoader->getPath("map","geoext", "/lib/GeoExt/"));
-JHTML::script('GeoExt.js',  $jsLoader->getPath("map", "geoext", "/script/"));//'components/com_rwgis_map/externals/geoext/lib/');
+JHTML::script('GeoExt.js',  $jsLoader->getPath("map", "geoext", "/script/"));
 // Now the component specific JavaScript
 JHTML::script('core.js', 'components/com_easysdi_map/classes/');
 JHTML::script('i18n.js', 'components/com_easysdi_map/classes/');

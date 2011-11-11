@@ -30,16 +30,18 @@ require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'commo
 $jsLoader =JSLOADER_UTIL::getInstance();
 
 JHTML::script('SingleFile.js', $jsLoader->getPath("map","openlayers", "/lib/OpenLayers/"));
-JHTML::script('OpenLayers.js', $jsLoader->getPath("map","openlayers"));// 'components/com_rwgis_map/externals/openlayers/');
+JHTML::script('OpenLayers.js', $jsLoader->getPath("map","openlayers"));
 JHTML::script('SortableWFS.js', 'components/com_easysdi_map/classes/');
 // Now the component specific JavaScript
-JHTML::script('ext-base.js',  $jsLoader->getPath("map","ext","/adapter/ext/"));// 'components/com_rwgis_map/externals/ext/adapter/ext/');
-JHTML::script('ext-all.js',  $jsLoader->getPath("map","ext"));//'components/com_rwgis_map/externals/ext/');
+JHTML::script('ext-base.js',  $jsLoader->getPath("map","ext","/adapter/ext/"));
+JHTML::script('ext-all.js',  $jsLoader->getPath("map","ext"));
 
 JHTML::script('i18n.js', 'components/com_easysdi_map/classes/');
 JHTML::script('printGrid.js', 'components/com_easysdi_map/views/printgrid/tmpl/');
 require(JPATH_COMPONENT.DS.'php'.DS.'lang.php');
 require(JPATH_COMPONENT.DS.'php'.DS.'params.php');
+require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.jsLoaderUtil.php');
+$jsLoader =JSLOADER_UTIL::getInstance();
 
 // Execute the layout and pass the $POST filter variable down to the page.
 if (array_key_exists('body', $_POST)) {
@@ -69,5 +71,5 @@ if (array_key_exists('body', $_POST)) {
 	</div>
 </div>
 <div id="printreport" style="float: left; width: 100%">
-	<img src="components/com_easysdi_map/externals/ext/resources/images/default/shared/large-loading.gif" width="32" height="32" style="margin: 4em;" />	
+	<img src="<?php echo $jsLoader->getPath("map","ext")?>/resources/images/default/shared/large-loading.gif" width="32" height="32" style="margin: 4em;" />	
 </div>

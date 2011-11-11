@@ -30,8 +30,7 @@
 		<folder>assets</folder>
 		<folder>classes</folder>
 		<folder>controllers</folder>
-		<folder>elements</folder>
-		<folder>externals</folder>
+		<folder>elements</folder>		
 		<folder>models</folder>
 		<folder>php</folder>
 		<folder>resource</folder>

@@ -14,7 +14,7 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html.
  */
 
-Ext.BLANK_IMAGE_URL = "../../../externals/ext/resources/images/default/s.gif";
+//Ext.BLANK_IMAGE_URL = "../../../externals/ext/resources/images/default/s.gif";
 
 Ext.namespace("EasySDI_Map");
 

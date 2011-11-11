@@ -129,7 +129,7 @@ class HTML_overlay
 		global  $mainframe;
 		$jsLoader =JSLOADER_UTIL::getInstance();
 		
-		JHTML::script('jquery-1.3.2.min.js',  $jsLoader->getPath("map","jquery"));//'components/com_easysdi_map/externals/jquery/');
+		JHTML::script('jquery-1.3.2.min.js',  $jsLoader->getPath("map","jquery"));
 		if ($overlay_content->id != 0)
 		{
 			JToolBarHelper::title( JText::_("MAP_OVERLAY_CONTENT_EDIT").': <small><small>['. JText::_("CORE_EDIT").']</small></small>', 'addedit.png' );
