@@ -271,6 +271,8 @@ class SITE_catalog {
 			$arrManagersMd = array();
 			$arrCreatedMd = array();
 			$arrPublishedMd = array();
+			
+			$hasObjectTypeFilter = false;
 				
 			// Construction des filtres basés sur l'onglet simple
 			$cswSimpleFilter="";
@@ -735,6 +737,7 @@ class SITE_catalog {
 								}
 								break;
 							case "objecttype":
+								$hasObjectTypeFilter = true;
 								$objecttype_id = JRequest::getVar('systemfilter_'.$searchFilter->guid);
 								
 								// Construire la liste des guid à filtrer
@@ -1756,6 +1759,7 @@ class SITE_catalog {
 							}*/
 							break;
 							case "objecttype":
+								$hasObjectTypeFilter = true;
 								$objecttype_id = JRequest::getVar('systemfilter_'.$searchFilter->guid);
 								
 								// Construire la liste des guid à filtrer
@@ -2335,6 +2339,47 @@ class SITE_catalog {
 								break;
 						}
 					}
+				}
+			}
+			
+			//Pour inclure uniquement les types d'object du context même si le critère de recherche type d'objet n'est pas affiché
+			if(!$hasObjectTypeFilter ){
+				$objecttypes = array();
+				if ($context <> "")
+				{
+					// Récupérer tous les types d'objets du contexte
+					$database->setQuery("SELECT id FROM #__sdi_objecttype WHERE id IN
+										(SELECT co.objecttype_id 
+										FROM #__sdi_context_objecttype co
+										INNER JOIN #__sdi_context c ON c.id=co.context_id 
+										WHERE c.code = '".$context."')
+								   ORDER BY name");
+				}
+				else
+				{
+					// Récupérer tous les types d'objets définis
+					$database->setQuery("SELECT id FROM #__sdi_objecttype ORDER BY name");
+				}
+				$objecttypes = $database->loadResultArray();
+				
+				// Récupérer toutes les métadonnées de ces types d'objets
+				$query = "SELECT m.guid as metadata_id 
+						  FROM #__sdi_objectversion ov 
+						  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
+						  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
+						  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
+						  WHERE o.objecttype_id IN (".implode(",", $objecttypes).") "
+						.$mysqlFilter;
+				$database->setQuery( $query);
+				$list_id = $database->loadObjectList() ;
+				if ($database->getErrorNum())
+				{
+					$msg = $database->getErrorMsg();
+				}
+			
+				foreach ($list_id as $md_id)
+				{
+					$arrObjecttypeMd[] = $md_id->metadata_id;
 				}
 			}
 			
