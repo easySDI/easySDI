@@ -3,18 +3,19 @@
 define("USER_NOACCESS_ID", 71);
 define("ADMIN_TYPE", 0);
 define("USER_TYPE", 1);
-define("ADMIN_USER","kghoorbin");
-define("ADMIN_USER_THIERRY","tbussien");
+define("ADMIN_USER","bmagoniadmin");
+define("ADMIN_USER_HVANHOECKE","hvanhoecke");
 define("REG_USER_MAGONI","bmagoni");
 define("REG_USER_KIEGLER","pkiegler");
 define("REG_USER_MDROZ","mdrozedit");
 
-//user 71 peter kiegler => pkiegler/test , registered user
-//user 72 mdroz editor =>mdrozedit /test , registered user
+//user 75 peter kiegler => pkiegler/test , registered user
+//user 66 mdroz editor =>mdrozedit /test , registered user
 //user 81 bruno magoni manager => manager/test , registered user
-//user 82 thierry bussien => tbussien/test , registered user.
+//user 77 hvanhoecke => hvanhoecke/test , admin user.
+//user 62 bmagoniadmin => bmagoniadmin/test , admin user.
 
-class TEST{
+/*class TEST{
 	
 	
 	public static function main(){
@@ -26,7 +27,7 @@ class TEST{
 			echo "found: ".$match."\n";
 	
 }
-}
+}*/
 
 
 
@@ -88,10 +89,10 @@ class DBUTIL   {
 		//	"catalog_url": "localhost:8080/proxy/ogc/geonetwork",
 		//	"proxy_url" : "localhost:8080/proxy"
 	
-		$sql ="update jos_sdi_configuration set value= ".$propArray["catalog_mxquery_url"]." where name code ='CATALOG_MXQUERYURL'";
-		self::$dbcon->query($sql);
-		$sql ="update jos_sdi_configuration set value= ".$propArray["catalog_url"]." where name code ='CATALOG_URL'";
-		self::$dbcon->query($sql);
+		//$sql ="update jos_sdi_configuration set value= ".$propArray["catalog_mxquery_url"]." where name code ='CATALOG_MXQUERYURL'";
+	//	self::$dbcon->query($sql);
+		//$sql ="update jos_sdi_configuration set value= ".$propArray["catalog_url"]." where name code ='CATALOG_URL'";
+	//	self::$dbcon->query($sql);
 	
 	}
 	public static function getInstance()
@@ -222,7 +223,7 @@ class URLCON{
 	  	if($requestType==ADMIN_TYPE)
 	  		curl_setopt($ch,CURLOPT_URL , $propArray["geodbmeta_http_admin_root"]);
 	  	else
-	  		curl_setopt($ch,CURLOPT_URL , $propArray["geodbmeta_http_frontend_root"]);
+	  		curl_setopt($ch,CURLOPT_URL , $propArray["geodbmeta_http_frontend_loginroot"]);
 	  	
 	  	if ($user){
 		  	if( $requestType==ADMIN_TYPE)
@@ -255,9 +256,9 @@ class URLCON{
 
 	  	curl_close($ch);  	
 	  	
-//	  		$fp = fopen($user.'.html', 'w');
-//			fwrite($fp, $output);
-//			fclose($fp);
+// 	  		$fp = fopen($user.'.html', 'w');
+// 			fwrite($fp, $output);
+// 			fclose($fp);
 	  	
 	  	return $output;
 	}
@@ -338,8 +339,10 @@ class URLCON{
 	  		$output =  $e->getTraceAsString();
 	  	}
 
-	  	curl_close($ch);
-	  
+// 	  	curl_close($ch);
+// 	  	$fp = fopen($user.'request.html', 'w');
+// 	  	fwrite($fp, $output);
+// 	  	fclose($fp);
 		return $output;
 	}
 	
@@ -383,7 +386,7 @@ class URLCON{
 			foreach($propArray[$type] as $user){
 				$ch = curl_init();
 				if($type == "registered")
-					curl_setopt($ch,CURLOPT_URL , $propArray["geodbmeta_http_frontend_root"]);
+					curl_setopt($ch,CURLOPT_URL , $propArray["geodbmeta_http_frontend_loginroot"]);
 				else
 					curl_setopt($ch,CURLOPT_URL , $propArray["geodbmeta_http_admin_root"]); 	
 						
@@ -400,9 +403,9 @@ class URLCON{
 		
 			  	curl_close($ch);
 		
-	   $fp = fopen($user.'response.html', 'w');
-	fwrite($fp, $output);
-	fclose($fp);
+	  // $fp = fopen($user.'response.html', 'w');
+	//fwrite($fp, $output);
+	//fclose($fp);
 			   $indexofNameQuote = strrpos($output, "name=\"" );
 			   $indexofNameQuote += 6; // the length of name=" is 6.
 			   $indexofNextQuote = strpos($output, "\"",$indexofNameQuote );
@@ -439,13 +442,13 @@ class URLCON{
 	
 }
 
+/*
+if (!defined('PHPUnit_MAIN_METHOD')) {
+	$urlinstance =URLCON::getInstance();
+ //  $urlinstance->loginAsAdmin();
 
-//if (!defined('PHPUnit_MAIN_METHOD')) {
-//	$urlinstance =URLCON::getInstance();
-//  //  $urlinstance->loginAsAdmin();
-//
-//     echo "done";
-//}
+    echo "done";
+}*/
 ////
 //if (!defined('PHPUnit_MAIN_METHOD')) {
 //	$urlinstance =TESTPROPS::getInstance();  

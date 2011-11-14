@@ -1,14 +1,14 @@
 {
 	"db.hostname" : "localhost:3306",
-	"db.testdb" :"easysdi_test",
+	"db.testdb" :"easysdi_agi_depth_ch",
 	"db.username" :"root",
 	"db.password":"invulsion",
 	"catalog_mxquery_url" : "localhost:8080/MXQuery",
 	"catalog_url": "localhost:8080/proxy/ogc/geonetwork",
 	"proxy_url" : "localhost:8080/proxy",
-	"geodbmeta_http_frontend_root" : "http://localhost/sdiv2/index.php?option=com_user&view=login",
-	"geodbmeta_http_frontend_loginroot" : "http://localhost/sdiv2/index.php",
-	"geodbmeta_http_admin_root" : "http://localhost/sdiv2/administrator/index.php",
+	"geodbmeta_http_frontend_root" : "http://localhost/geodbmeta/index.php",
+	"geodbmeta_http_frontend_loginroot" : "http://localhost/geodbmeta/index.php?option=com_user&view=login",
+	"geodbmeta_http_admin_root" : "http://localhost/geodbmeta/administrator/index.php",
 	"users":{
 			"pkiegler":{
 				"login":"pkiegler",
@@ -16,9 +16,9 @@
 				
 			},
 			
-			"kghoorbin":{
-				"login":"kghoorbin",
-				"password":"kghoorbin"
+			"bmagoniadmin":{
+				"login":"bmagoniadmin",
+				"password":"test"
 			},
 			
 			"bmagoni":{
@@ -30,12 +30,12 @@
 				"password":"test"
 			},
 			
-			"tbussien":{
-				"login":"tbussien",
+			"hvanhoecke":{
+				"login":"hvanhoecke",
 				"password":"test"
 			}			
 	},
-	"admins":["kghoorbin","tbussien"] ,
+	"admins":["bmagoniadmin","hvanhoecke"] ,
 	"registered":["pkiegler", "bmagoni", "mdroz"]
 	
 }

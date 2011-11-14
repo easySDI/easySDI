@@ -10,7 +10,17 @@ class xqueryCreateReport extends PHPUnit_Framework_TestCase {
 	protected static $report_id =null;
 	protected function setUp() {
 		parent::setUp ();
-
+		/*$sql = "delete  from jos_sdi_xqueryreport";
+		$db = DBUTIL::getInstance();
+		$db->executeSQL($sql);
+		$sql = "delete  from jos_sdi_xqueryreportdmin";
+		$db = DBUTIL::getInstance();
+		$db->executeSQL($sql);
+		$sql = "delete  from jos_sdi_xqueryreportassignation";
+		$db = DBUTIL::getInstance();
+		$db->executeSQL($sql);*/
+	
+		
  }
  
  // this function tests create operation
@@ -49,9 +59,9 @@ class xqueryCreateReport extends PHPUnit_Framework_TestCase {
 	$params["option"] ="com_easysdi_catalog";	
 	$params["task"] ="saveXQueryReport";
 	$params["xsltUrl"] ="";
-	$params["metadataIdSql"] ="select guid from #__sdi_metadata";
+	$params["metadataIdSql"] ="select guid from #__sdi_metadata where id in (1, 2, 3, 4, 5)";
 	$params["ogcfilter"] ="nofilter";
-	$params["reportcode"] =	"for \$x in \$doc/csw:GetRecordsResponse/csw:SearchResults	return \$x/gmd:MD_Metadata/gmd:fileIdentifier/gco:CharacterString";
+	$params["reportcode"] =	"for \$x in \$doc/results	return \$x/gmd:MD_Metadata/gmd:fileIdentifier/gco:CharacterString";
 	
 	$params["description"] ="reportcode";
 	$params["applicationType"] =0;
@@ -69,7 +79,7 @@ class xqueryCreateReport extends PHPUnit_Framework_TestCase {
 	self::assertEquals(1, count($rows));
 		$report  = $rows[0];
 	
-	self::assertEquals("select guid from #__sdi_metadata", trim($report["sqlfilter"]));
+	self::assertEquals("select guid from #__sdi_metadata where id in (1, 2, 3, 4, 5)", trim($report["sqlfilter"]));
         
  }
  
@@ -82,11 +92,13 @@ class xqueryCreateReport extends PHPUnit_Framework_TestCase {
 	$params["task"] ="saveXQueryUserReportAccess";	
 	$params["cid"] =self::$report_id;
 	
-	// 81 = bruno magoni
-	// 82 = thierry bussien
-	// 72 = marcel droz
-	// 71 = peter kiegler
-	$usersToAdd = array(71,72,81,82);
+	
+	//user 75 peter kiegler => pkiegler/test , registered user
+	//user 66 mdroz editor =>mdrozedit /test , registered user
+	//user 81 bruno magoni manager => manager/test , registered user
+	//user 77 hvanhoecke => hvanhoecke/test , admin user.
+	//user 62 bmagoniadmin => bmagoniadmin/test , admin user.
+	$usersToAdd = array(66,75,77,81);
 	$usersToAddlist = join(";", $usersToAdd);	
 	$params["add"] =$usersToAddlist;
 
@@ -97,7 +109,7 @@ class xqueryCreateReport extends PHPUnit_Framework_TestCase {
 	$db = DBUTIL::getInstance();
 	$rows = $db->executeSQL($sql);
 	
-	$allUsers = array_merge($usersToAdd, array(123)); // 123 is test user kiran ghoorbin
+	$allUsers = array_merge( array(62),$usersToAdd); // 123 is test user kiran ghoorbin
 	self::assertEquals(5, count($rows)); // 4 added plus creator.
 		//$report  = $rows[0];
 	$i= 0;
@@ -116,23 +128,26 @@ class xqueryCreateReport extends PHPUnit_Framework_TestCase {
 	$params["task"] ="saveXQueryUserReportAccess";	
 	$params["cid"] =self::$report_id;
 	
-	// 81 = bruno magoni
-	// 82 = thierry bussien
-	// 72 = marcel droz
-	// 71 = peter kiegler
-	$usersToRemove = array(72,82);
+
+	
+	//user 75 peter kiegler => pkiegler/test , registered user
+	//user 66 mdroz editor =>mdrozedit /test , registered user
+	//user 81 bruno magoni manager => manager/test , registered user
+	//user 77 hvanhoecke => hvanhoecke/test , admin user.
+	//user 62 bmagoniadmin => bmagoniadmin/test , admin user.
+	$usersToRemove = array(66,77);
 	$usersToAddlist = join(";", $usersToRemove);	
 	$params["remove"] =$usersToAddlist;
 
 	$httpcon =URLCON::getInstance();
 	$httpcon->executeRequest($params, 0, ADMIN_USER);
-	$allUsers = array(71,81,123); // 123 is t
+	$allUsers = array(62,75,81); // 62 is test user bmagoniadmin
 	$sql = "select user_id from jos_sdi_xqueryreportassignation where report_id=".self::$report_id." order by user_id";
 	$db = DBUTIL::getInstance();
 	$rows = $db->executeSQL($sql);
 	
 
-	self::assertEquals(count($allUsers), count($rows)); // 4 added plus creator.
+	self::assertEquals(count($allUsers), count($rows)); 
 	
 	$i= 0;
 	foreach($rows as $row){
@@ -148,6 +163,8 @@ class xqueryCreateReport extends PHPUnit_Framework_TestCase {
  	
 	$params["option"] ="com_easysdi_catalog";	
 	$params["task"] ="provideXMLDataForXQueryReport";
+	$params['paginationstep']=10;
+	$params['startposition']=0;
 
 
 	$httpcon =URLCON::getInstance();
@@ -159,12 +176,14 @@ class xqueryCreateReport extends PHPUnit_Framework_TestCase {
 	$params["option"] ="com_easysdi_catalog";	
 	$params["task"] ="provideXMLDataForXQueryReport";
 	$params["cid"] =self::$report_id;
+	$params['paginationstep']=10;
+	$params['startposition']=0;
 
 
 	//another admin who is not explicitly mentionned to have access
 	$httpcon =URLCON::getInstance();
-	$response =$httpcon->executeRequest($params, 0, ADMIN_USER_THIERRY);
- //	echo "response2". $response ."\n";
+	$response =$httpcon->executeRequest($params, 0, ADMIN_USER_HVANHOECKE);
+ 	//echo "response another admin". $response ."\n";
 	self::assertTrue(simplexml_load_string(trim($response))!== FALSE, "this should be valid xml"); 	
 	
 	
@@ -173,10 +192,14 @@ class xqueryCreateReport extends PHPUnit_Framework_TestCase {
 	$params["option"] ="com_easysdi_catalog";	
 	$params["task"] ="provideXMLDataForXQueryReport";
 	$params["cid"] =self::$report_id;
+	$params['paginationstep']=10;
+	$params['startposition']=0;
 	$httpcon =URLCON::getInstance();
 	$response =$httpcon->executeRequest($params, 0, ADMIN_USER);
-	//echo "response3". $response ."\n";
+	//echo "response admin who created". $response ."\n";
 	self::assertTrue(simplexml_load_string(trim($response))!== FALSE, "This should be a valid xml" );
+	//		$fp = fopen('responseafterlogin.html', 'w');
+
 	
  }
  
@@ -190,15 +213,19 @@ class xqueryCreateReport extends PHPUnit_Framework_TestCase {
 	$params["option"] ="com_easysdi_catalog";	
 	$params["task"] ="processXQueryReport";	
 	$params["cid"] =self::$report_id;
+	$params['paginationstep']=10;
+	$params['startposition']=0;
 
 	$httpcon =URLCON::getInstance();
 	$response = $httpcon->executeRequest($params, 0, ADMIN_USER);
 	$response = trim($response);
-	//echo "response process".$response."\n";
+	
+	//echo "response process before 204".$response."\n";
  	//self::assertTrue(simplexml_load_string(trim($response))!== FALSE, "This should be a valid xml" );
 	self::assertTrue(stripos($response, "exception") ===FALSE, "This should be a valid response, no exception" );
 	self::assertTrue(stripos($response, "error")===FALSE, "This should be a valid response, no error" );
 	self::assertTrue(strlen($response)>0, "This should be a valid response not blank" );
+
  	
  	
  	//another admin of the company
@@ -206,15 +233,18 @@ class xqueryCreateReport extends PHPUnit_Framework_TestCase {
 	$params["option"] ="com_easysdi_catalog";	
 	$params["task"] ="processXQueryReport";	
 	$params["cid"] =self::$report_id;
+	$params['paginationstep']=10;
+	$params['startposition']=0;
 
 	$httpcon =URLCON::getInstance();
-	$response = $httpcon->executeRequest($params, 0, ADMIN_USER_THIERRY);
+	$response = $httpcon->executeRequest($params, 0, ADMIN_USER_HVANHOECKE);
 	$response = trim($response);
  	//self::assertTrue(simplexml_load_string(trim($response))!== FALSE, "This should be a valid xml" );
-
+		
 	self::assertTrue(stripos($response, "exception") ===FALSE, "This should be a valid response, no exception" );
 	self::assertTrue(stripos($response, "error")===FALSE, "This should be a valid response, no error" );
 	self::assertTrue(strlen($response)>0, "This should be a valid response, not blank" );
+
  }
  
  function testUserProvideXML(){
@@ -228,6 +258,9 @@ class xqueryCreateReport extends PHPUnit_Framework_TestCase {
 	$params["option"] ="com_easysdi_catalog";	
 	$params["task"] ="provideXMLDataForXQueryReport";
 	$params["cid"] =self::$report_id;
+	$params['paginationstep']=10;
+	$params['startposition']=0;
+	
 	$httpcon =URLCON::getInstance();
 	$response =$httpcon->executeRequest($params, 1, REG_USER_KIEGLER);
 
@@ -245,15 +278,18 @@ class xqueryCreateReport extends PHPUnit_Framework_TestCase {
 	$params["option"] ="com_easysdi_catalog";	
 	$params["task"] ="processXQueryReport";	
 	$params["cid"] =self::$report_id;
+	$params['paginationstep']=10;
+	$params['startposition']=0;
 
 	$httpcon =URLCON::getInstance();
 	$response=$httpcon->executeRequest($params, 1, REG_USER_KIEGLER);
-	
+//	echo "response process before 260".$response."\n";
 	//self::assertTrue(simplexml_load_string(trim($response))!== FALSE, "This should be a valid xml" );
 	self::assertTrue(stripos($response, "exception") ===FALSE, "This should be a valid response, no exception" );
 	self::assertTrue(stripos($response, "error")===FALSE, "This should be a valid response, no error" );
 	self::assertTrue(strlen($response)>0, "This should be a valid response, not blank" );
-	
+
+ 	
  	
  }
  
@@ -292,15 +328,15 @@ class xqueryCreateReport extends PHPUnit_Framework_TestCase {
 
   $suite = new PHPUnit_Framework_TestSuite( __CLASS__);
   PHPUnit_TextUI_TestRunner::run( $suite);
-//	self::testCreateNewReport();
-//	self::testAssignToUsers();
-//	self::testUpdateProperties();
-//	self::testRemoveUserAccess();
-//	self::testAdminProvideXML();
-//	self::testAdminExecuteQuery();
-//	self::testUserProvideXML();
-//	self::testUserProvideXML();
-//	self::testDeleteReport();
+ 	/*self::setUp();
+	self::testCreateNewReport();
+	self::testAssignToUsers();
+	self::testUpdateProperties();
+	self::testRemoveUserAccess();
+	self::testAdminProvideXML();
+	self::testAdminExecuteQuery();
+	self::testUserProvideXML();
+	self::testDeleteReport();*/
  }
 }
 
