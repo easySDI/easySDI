@@ -525,6 +525,10 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					constraintLanguage = value;
 					continue;
 				}
+				if(key.equalsIgnoreCase("constraint_language_version")){
+					constraint_language_version = value;
+					continue;
+				}
 				//Content specific vendor parameter
 				if(key.equalsIgnoreCase("content")){
 					content = value;
@@ -577,7 +581,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				if(constraintLanguage == null ){
 					//Use CQL_TEXT to build the constraint
 					constraintLanguage = "CQL_TEXT";
-					constraint_language_version = "1.0.1";
+					constraint_language_version = "1.1.0";
 				}
 				CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy, getJoomlaProvider());
 				if (constraintLanguage.equalsIgnoreCase("CQL_TEXT")){
