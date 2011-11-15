@@ -487,7 +487,7 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 				maxResolution = overviewLayer.maxResolution;
 			}
 			
-			overviewLayer.minResolution = maxResolution
+			overviewLayer.minResolution = maxResolution;
 			overviewLayer.maxResolution = maxResolution;
 			overviewLayer.resolutions =[maxResolution];
 			overviewLayer.scales = null;
@@ -1748,8 +1748,7 @@ EasySDI_Map.MapPanel = Ext.extend(Ext.Panel, {
 				l.params.CACHE = true;
 			break;
 		}
-		console.log("overviewlayercreated");
-		console.log(l.clone());
+	
 		
 		return l;
 	}

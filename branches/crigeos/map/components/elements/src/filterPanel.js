@@ -2021,10 +2021,7 @@ EasySDI_Map.FilterPanel	=	Ext.extend(Ext.Panel,	{
 			},
 		      listeners :{
 		    	  beforetabchange :function(tp,  newTab, oldTab){
-		    		 // console.log("beforetabchange");
 		    		
-		    		  //console.log("tab ="+newTab.el.id);
-		    		//  console.log("-----");
 		    		  var tabIds = tp.items.keys;
 		    		  for(var i in tabIds)
 		    		  {

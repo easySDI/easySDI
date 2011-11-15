@@ -122,5 +122,5 @@ PrintGrid.prototype._readFeatureInfo = function() {
       }
     }, this);
   }
-  console.log(this.attrs);
+ 
 }

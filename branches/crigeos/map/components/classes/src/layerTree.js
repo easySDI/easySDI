@@ -266,7 +266,7 @@ EasySDI_Map.LayerTree = Ext.extend(Ext.data.Tree, {
 	onMoveEnd :function(evt) {
 		
 		a = this.loadEvents.pop();
-		console.log(this.loadEvents);
+
 		if(this.loadEvents.length == 0)
 			this._loadMask.hide();
 		
