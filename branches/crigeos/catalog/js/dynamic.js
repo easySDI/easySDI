@@ -34,12 +34,12 @@
 		            isLanguageFieldset: isLanguageFieldset,
 		            listeners :{
 		            	expand:function(){
-		            		console.log("expand listener");
+		            		
 		            		if(!this.hasBBox)
 		            			addBBoxToFieldSet(this.id);
 		            	},
 		            	afterrender:function(){
-		            		console.log("afterrender");
+		            		
 		            		if(!this.collapsed){
 		            			this.collapse();
 		            			this.expand();
