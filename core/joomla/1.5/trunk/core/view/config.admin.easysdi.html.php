@@ -337,7 +337,85 @@ if ($catalogItem > 0){
 											<input class="text_area" type="text" size="50" name="catalog_mxquerypagination" value="<?php echo $catalogList['CATALOG_MXQUERYPAGINATION']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
 										</td>
 									</tr>
-									</tbody>
+									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_THESAURUSRURL' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_THESAURUSRURL' ); ?>
+											</span>
+										</td>
+										<td>
+											<input class="text_area" type="text" size="50" name="thesaurusUrl" value="<?php echo $catalogList['thesaurusUrl']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+										</td>
+									</tr>
+									<tr>
+										<td valign="top" class="key" colspan="2">
+											<fieldset class="adminform">
+												<legend>
+												<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_TITLE' ); ?>
+												</legend>
+
+												<table class="admintable" cellspacing="1">
+													<tbody>
+														<tr>
+															<td valign="top" class="key" 	style="width: 140px;"><span
+																class="editlinktip hasTip"
+																title="<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_TIP' ); ?>">
+																<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_LABEL' ); ?>
+															</span>
+															</td>
+															<td><textarea class="textarea resolutions"
+																	style="height: 200px; width: 440px;"
+																	name="defaultBboxConfig"
+																	maxlength="<?php  echo $fieldsLength['value'];?>" /><?php  echo trim($catalogList['defaultBboxConfig']->value);?></textarea>
+															</td>
+														</tr>
+														<tr>
+															<td valign="top" class="key">
+																<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_LEFT' ); ?>">
+																	<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_LEFT' ); ?>
+																</span>
+															</td>
+															<td>
+																<input class="text_area" type="text" size="100" name="defaultBboxConfigExtentLeft" value="<?php echo trim($catalogList['defaultBboxConfigExtentLeft']->value); ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+															</td>
+														</tr>
+														<tr>
+															<td valign="top" class="key">
+																<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_BOTTOM' ); ?>">
+																	<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_BOTTOM' ); ?>
+																</span>
+															</td>
+															<td>
+																<input class="text_area" type="text" size="100" name="defaultBboxConfigExtentBottom" value="<?php echo trim($catalogList['defaultBboxConfigExtentBottom']->value); ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+															</td>
+														</tr>
+														<tr>
+															<td valign="top" class="key">
+																<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_RIGHT' ); ?>">
+																	<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_RIGHT' ); ?>
+																</span>
+															</td>
+															<td>
+																<input class="text_area" type="text" size="100" name="defaultBboxConfigExtentRight" value="<?php echo trim($catalogList['defaultBboxConfigExtentRight']->value); ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+															</td>
+														</tr>
+														<tr>
+															<td valign="top" class="key">
+																<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_TOP' ); ?>">
+																	<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_TOP' ); ?>
+																</span>
+															</td>
+															<td>
+																<input class="text_area" type="text" size="100" name="defaultBboxConfigExtentTop" value="<?php echo trim($catalogList['defaultBboxConfigExtentTop']->value); ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+															</td>
+														</tr>
+																			
+													</tbody>
+												</table>
+											</fieldset>
+										</td>
+									</tr> 
+								</tbody>
 								</table>
 							</fieldset>	
 						</td>
@@ -365,6 +443,16 @@ if ($shopItem > 0){
 										</td>
 										<td>
 											<input class="text_area" type="text" size="100" name="proxyhost" value="<?php echo $shopList['SHOP_CONFIGURATION_PROXYHOST']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+										</td>
+									</tr>
+									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_SHOP_MAX_FILE_SIZE' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_SHOP_MAX_FILE_SIZE' ); ?>
+											</span>
+										</td>
+										<td>
+											<input class="text_area" type="text" size="10" name="max_file_size" value="<?php echo $shopList['SHOP_CONFIGURATION_MAX_FILE_SIZE']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
 										</td>
 									</tr>
 									<tr>
@@ -841,6 +929,26 @@ $j(document).ready(function() {
 									</tr>
 									<tr>
 										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_MAP_MINRESOLUTION_TIP' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_MAP_MINRESOLUTION_LABEL' ); ?>
+											</span>
+										</td>
+										<td>
+											<input class="inputbox resolutions" type="text" size="100" name="mapMinResolution" <?php if ($mapList['mapResolutionOverScale']->value == 0) echo 'disabled' ?> value="<?php echo $mapList['mapMinResolution']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+										</td>
+									</tr>
+									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_MAP_MAXRESOLUTION_TIP' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_MAP_MAXRESOLUTION_LABEL' ); ?>
+											</span>
+										</td>
+										<td>
+											<input class="inputbox resolutions" type="text" size="100" name="mapMaxResolution" <?php if ($mapList['mapResolutionOverScale']->value == 0) echo 'disabled' ?> value="<?php echo $mapList['mapMaxResolution']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+										</td>
+									</tr>
+									<tr>
+										<td valign="top" class="key">
 											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_MAP_RESOLUTIONS_TIP' ); ?>">
 												<?php echo JText::_( 'CORE_CONFIGURATION_MAP_RESOLUTIONS_LABEL' ); ?>
 											</span>
@@ -971,6 +1079,9 @@ $j(document).ready(function() {
 									</tbody>
 								</table>
 							</fieldset>	
+							
+						
+							
 						</td>
 					</tr>
 				</table>
