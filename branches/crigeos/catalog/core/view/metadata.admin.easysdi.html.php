@@ -26,7 +26,7 @@ require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'commo
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 //jimport( 'joomla.application.component.view' );
 ?>
-<?php if((JRequest::getVar('task') =="editMetadata")||(JRequest::getVar('task') =="askForEditMetadata")){?>
+<?php if((JRequest::getVar('task') =="editMetadata")||(JRequest::getVar('task') =="askForEditMetadata")|| (JRequest::getVar('task') =="importXMLMetadata")){?>
 <script>
 var thesaurusConfig = '<?php echo config_easysdi::getValue("thesaurusUrl");?>'
 </script>
@@ -203,7 +203,7 @@ class HTML_metadata {
 			<input type="hidden" name="object_id" value="<?php echo $object_id;?>" />
 			</form>
 	
-				<?php $document->addScriptDeclaration( $defautBBoxConfig )?>;
+				<?php $document->addScriptDeclaration( $defautBBoxConfig );?>
 			
 				<?php
 				$this->javascript .="
