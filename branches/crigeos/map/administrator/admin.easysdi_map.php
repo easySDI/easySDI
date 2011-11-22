@@ -38,7 +38,7 @@ require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'model'.DS.'account.easysdi.class.php');
 
 JHTML::_('stylesheet', 'common_easysdi_admin.css', 'administrator/components/com_easysdi_core/templates/css/');
-JHTML::_('stylesheet', 'easysdi.css', 'templates/easysdi/css/');
+//JHTML::_('stylesheet', 'easysdi.css', 'templates/easysdi/css/');
 
 global $mainframe;
 
