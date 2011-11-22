@@ -121,39 +121,55 @@ function listImportRef(&$rows, $page, $option,  $filter_order_Dir, $filter_order
 
 		?>
 		<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
-			<table border="0" cellpadding="3" cellspacing="0">	
+			<table border="0" cellpadding="3" cellspacing="0" class="admintable">	
 				<tr>
-					<td width=150><?php echo JText::_("CORE_NAME"); ?></td>
+					<td class="key" width=150><?php echo JText::_("CORE_NAME"); ?></td>
 					<td><input size="50" type="text" name ="name" value="<?php echo $row->name?>" maxlength="<?php echo $fieldsLength['name'];?>"> </td>							
 				</tr>
 				<tr>
-					<td><?php echo JText::_("CORE_DESCRIPTION"); ?></td>
+					<td class="key"><?php echo JText::_("CORE_DESCRIPTION"); ?></td>
 					<td><textarea rows="4" cols="50" name ="description" onkeypress="javascript:maxlength(this,<?php echo $fieldsLength['description'];?>);"><?php echo $row->description?></textarea></td>							
 				</tr>
 				<tr>
-					<td><?php echo JText::_("CATALOG_IMPORTREF_TAB"); ?></td>
+					<td class="key"><?php echo JText::_("CATALOG_IMPORTREF_TAB"); ?></td>
 					<td><?php echo JHTML::_('select.genericlist', $importtypeList, 'importtype_id', 'class="list" onchange="javascript:changeImporttypeVisibility(this.value);"', 'value', 'text', $row->importtype_id);?></td>							
 				</tr>
 			</table>
 			<div id = "div_importref_type" style="<?php echo $style; ?>">
-				<table border="0" cellpadding="3" cellspacing="0">	
+				<table border="0" cellpadding="3" cellspacing="0" class="admintable">	
 					<tr>
-						<td width=150><?php echo JText::_("CATALOG_IMPORTREF_PRETREATMENTXSLFILE"); ?></td>
+						<td class="key" width=150><?php echo JText::_("CATALOG_IMPORTREF_PRETREATMENTXSLFILE"); ?></td>
 						<td><input size="<?php echo $fieldsLength['pretreatmentxslfile'];?>" type="text" name ="pretreatmentxslfile" value="<?php echo $row->pretreatmentxslfile?>" maxlength="<?php echo $fieldsLength['pretreatmentxslfile'];?>"> </td>							
 					</tr>
 				</table>
 			</div>
-			<table border="0" cellpadding="3" cellspacing="0">	
+			<table border="0" cellpadding="3" cellspacing="0" class="admintable">	
 				<tr>
-					<td width=150><?php echo JText::_("CATALOG_IMPORTREF_XSLFILE"); ?></td>
+					<td class="key" width=150><?php echo JText::_("CATALOG_IMPORTREF_XSLFILE"); ?></td>
 					<td><input size="<?php echo $fieldsLength['xslfile'];?>" type="text" name ="xslfile" value="<?php echo $row->xslfile?>" maxlength="<?php echo $fieldsLength['xslfile'];?>"> </td>							
 				</tr>
 				<tr>
-					<td><?php echo JText::_("CATALOG_IMPORTREF_URL"); ?></td>
-					<td><input size="<?php echo $fieldsLength['url'];?>" type="text" name ="url" value="<?php echo $row->url?>" maxlength="<?php echo $fieldsLength['url'];?>"> </td>							
+					<td colspan="2">
+						<fieldset id="labels"><legend align="top"><?php echo JText::_("CATALOG_IMPORTREF_SERVICE_INFO"); ?></legend>
+							<table>
+								<tr>
+									<td class="key"><?php echo JText::_("CATALOG_IMPORTREF_URL"); ?></td>
+									<td><input size="<?php echo $fieldsLength['url'];?>" type="text" name ="url"  value="<?php echo $row->url?>" maxlength="<?php echo $fieldsLength['url'];?>"> </td>
+								</tr>
+								<tr>
+									<td class="key"><?php echo JText::_("CATALOG_IMPORTREF_VERSION"); ?></td>
+									<td><input size="<?php echo $fieldsLength['serviceversion'];?>" type="text" name ="serviceversion" value="<?php echo $row->serviceversion?>" maxlength="<?php echo $fieldsLength['serviceversion'];?>"> </td>
+								</tr>
+								<tr>
+									<td class="key"><?php echo JText::_("CATALOG_IMPORTREF_OUTPUTSCHEMA"); ?></td>
+									<td><input size="<?php echo $fieldsLength['outputschema'];?>" type="text"  name ="outputschema" value="<?php echo $row->outputschema?>" maxlength="<?php echo $fieldsLength['outputschema'];?>"> </td>
+								</tr>
+							</table>
+						</fieldset>
+					<td>
 				</tr>
 			</table>
-			<table border="0" cellpadding="3" cellspacing="0">
+			<table border="0" cellpadding="3" cellspacing="0" class="admintable">
 					<tr>
 					<td colspan="2">
 						<fieldset id="labels">
@@ -164,7 +180,7 @@ foreach ($languages as $lang)
 { 
 ?>
 					<tr>
-					<td WIDTH=140><?php echo JText::_("CORE_".strtoupper($lang->code)); ?></td>
+					<td class="key" WIDTH=140><?php echo JText::_("CORE_".strtoupper($lang->code)); ?></td>
 					<td><input size="50" type="text" name ="label<?php echo "_".$lang->code;?>" value="<?php echo htmlspecialchars($labels[$lang->id])?>" maxlength="<?php echo $fieldsLength['label'];?>"></td>							
 					</tr>
 <?php

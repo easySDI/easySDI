@@ -686,10 +686,15 @@ class HTML_catalog{
 					$accounts = array();
 					$accounts[] = JHTML::_('select.option', '', '');
 					$query = "SELECT DISTINCT a.id as value, a.name as text 
+									  FROM #__sdi_account a, #__sdi_object o, #__sdi_objectversion ov, #__users u 
+									  WHERE u.id=a.user_id AND a.id=o.account_id AND o.id=ov.object_id AND a.root_id IS NULL 
+									  ORDER BY a.name
+									  ";
+					/*$query = "SELECT DISTINCT a.id as value, a.name as text 
 							  FROM #__sdi_account a 
 							  INNER JOIN #__users u ON u.id=a.user_id
 							  WHERE a.root_id IS NULL 
-							  ";
+							  ";*/
 					$db->setQuery( $query);
 					$accounts = array_merge( $accounts, $db->loadObjectList() );
 				

@@ -3300,6 +3300,8 @@ class ADMIN_metadata {
 		$url = $_POST['url'];
 		$pretreatmentxslfile = $_POST['pretreatmentxslfile'];
 		$importtype = $_POST['importtype_id'];
+		$serviceversion = $_POST['serviceversion'];
+		$outputschema = $_POST['outputschema'];
 		
 		// R�cup�rer l'objet li� � cette m�tadonn�e
 		$rowObject = new object( $database );
@@ -3422,7 +3424,8 @@ class ADMIN_metadata {
 		
 		
 		$catalogBoundaryIsocode = config_easysdi::getValue("catalog_boundary_isocode");
-		$catalogUrlGetRecordById = $url."?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&content=CORE&id=".$importid;
+		//$catalogUrlGetRecordById = $url."?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&content=CORE&id=".$importid;
+		$catalogUrlGetRecordById = $url."?request=GetRecordById&service=CSW&elementSetName=full&version=".$serviceversion."&outputschema=".$outputschema."&content=CORE&id=".$importid;
 		
 		// En GET
 		//$xml = DOMDocument::load($catalogUrlGetRecordById);
@@ -3520,7 +3523,6 @@ class ADMIN_metadata {
 		
 		// Construction du DOMXPath � utiliser pour g�n�rer la vue d'�dition
 		$doc = new DOMDocument('1.0', 'UTF-8');
-		//$cswResults->save("C:\\RecorderWebGIS\\cswResult.xml");
 		
 		// Le document a �t� cr�� correctement et la balise csw:GetRecordByIdResponse a au moins un enfant => r�sultat retourn�
 		$controlPos = 0;

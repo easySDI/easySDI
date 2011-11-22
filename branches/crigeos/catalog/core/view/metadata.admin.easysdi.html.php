@@ -4341,6 +4341,16 @@ class HTML_metadata {
 														         value:'".html_Metadata::cleanText($importref->importtype_id)."' 
 														       },
 														       { 
+														         id:'serviceversion', 
+														         xtype: 'hidden',
+														         value:'".html_Metadata::cleanText($importref->serviceversion)."' 
+														       },
+														       { 
+														         id:'outputschema', 
+														         xtype: 'hidden',
+														         value:'".html_Metadata::cleanText($importref->outputschema)."' 
+														       },
+														       { 
 														         id:'task', 
 														         xtype: 'hidden',
 														         value:'importXMLMetadata' 
@@ -4456,6 +4466,16 @@ class HTML_metadata {
 														         id:'url', 
 														         xtype: 'hidden',
 														         value:'".html_Metadata::cleanText($importref->url)."' 
+														       },
+														       { 
+														         id:'serviceversion', 
+														         xtype: 'hidden',
+														         value:'".html_Metadata::cleanText($importref->serviceversion)."' 
+														       },
+														       { 
+														         id:'outputschema', 
+														         xtype: 'hidden',
+														         value:'".html_Metadata::cleanText($importref->outputschema)."' 
 														       },
 														       { 
 														         id:'task', 

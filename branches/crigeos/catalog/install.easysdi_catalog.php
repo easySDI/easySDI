@@ -1602,30 +1602,31 @@ function com_install(){
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}
 		}
+		if($version == "2.0.7"){
+			$query="ALTER TABLE `#__sdi_importref`
+  				ADD column serviceversion VARCHAR(10);
+				";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			$query="ALTER TABLE `#__sdi_importref`
+  				ADD column outputschema VARCHAR(100);
+				";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			$version="2.0.8";
+			$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='CATALOG'";
+			$db->setQuery( $query);
+			if (!$db->query()){
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+		}
 
-		/**
-		 * Copy View files in Core component to allow  Menu Item Manger to find entries
-		 */
-		/*	mkdir(JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'catalog', 0700);
-			mkdir(JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'catalog'.DS.'tmpl', 0700);
-			$file = JPATH_SITE.DS.'components'.DS.'com_easysdi_catalog'.DS.'views'.DS.'catalog'.DS.'metadata.xml';
-			$newfile = JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'catalog'.DS.'metadata.xml';
-			if (!copy($file, $newfile)) {
-			$mainframe->enqueueMessage("Failed to copy VIEWS file in Core component","ERROR");
-			return false;
-			}
-			$file = JPATH_SITE.DS.'components'.DS.'com_easysdi_catalog'.DS.'views'.DS.'catalog'.DS.'tmpl'.DS.'default.xml';
-			$newfile = JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'catalog'.DS.'tmpl'.DS.'default.xml';
-			if (!copy($file, $newfile)) {
-			$mainframe->enqueueMessage("Failed to copy VIEWS file in Core component","ERROR");
-			return false;
-			}
-			$file = JPATH_SITE.DS.'components'.DS.'com_easysdi_catalog'.DS.'views'.DS.'catalog'.DS.'tmpl'.DS.'default.php';
-			$newfile = JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'catalog'.DS.'tmpl'.DS.'default.php';
-			if (!copy($file, $newfile)) {
-			$mainframe->enqueueMessage("Failed to copy VIEWS file in Core component","ERROR");
-			return false;
-			}*/
 
 		$query = "DELETE FROM #__components where `option`= 'com_easysdi_catalog' ";
 		$db->setQuery( $query);

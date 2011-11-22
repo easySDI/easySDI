@@ -36,6 +36,8 @@ class importref extends JTable
 	var $url=null;
 	var $checked_out=null;
 	var $checked_out_time=null;
+	var $serviceversion=null;
+	var $outputschema=null;
 	
 	// Class constructor
 	function __construct( &$db )
