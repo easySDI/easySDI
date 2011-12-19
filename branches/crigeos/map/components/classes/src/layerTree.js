@@ -39,9 +39,7 @@ EasySDI_Map.BaseLayerNode = Ext.extend(GeoExt.tree.LayerNode, {
  * information, with methods to apply them to the layer and also persist the
  * information to a cookie.
  */
-EasySDI_Map.StyledLayerNode = Ext
-		.extend(
-				GeoExt.tree.LayerNode,
+EasySDI_Map.StyledLayerNode = Ext.extend(GeoExt.tree.LayerNode,
 				{
 					fillColor : null,
 
@@ -225,7 +223,6 @@ EasySDI_Map.LayerTree = Ext.extend(Ext.data.Tree, {
 	this.isFirstLoad = true;
 
 	this._layerStore.map.events.register('moveend', this, this._onMapMoveEnd);
-
 	this._layerStore.map.events.register("changelayer", this, this.onPreAddLayer);
 	this._layerStore.map.events.register("movestart", this, this.onMoveStarted);	
 	this._layerStore.map.events.register("loadstart", this, this.onMoveStarted)
@@ -233,11 +230,6 @@ EasySDI_Map.LayerTree = Ext.extend(Ext.data.Tree, {
 	
 /*	this._layerStore.map.events.register("loadstart", this, this.onMoveStarted);	
 	this._layerStore.map.events.register("loadend", this, this.onMoveEnd);*/
-	
-
-	
-
-	
 	//_loadMask = new Ext.LoadMask(Ext.getBody(), {msg:EasySDI_Map.lang.getLocal('LOADER')});
 	
 	this._loadMask = this._layerStore.map.loadingPanel ; 
@@ -246,40 +238,26 @@ EasySDI_Map.LayerTree = Ext.extend(Ext.data.Tree, {
 	},
 		
 	onPreAddLayer :function(evt) {
-		
-	
 		if(evt.layer.visibility){
 			this._loadMask.maximizeControl();
 			this.loadEvents.push(evt.type) ;
-		}		
-		else{
+		}else{
 			this.onMoveEnd(evt)
 		}
 	}, 
 	
 	onMoveStarted :function(evt) {
-		
 		this.loadEvents.push(evt.type) ;
 		this._loadMask.maximizeControl();			
 		
 	}, 
+	
 	onMoveEnd :function(evt) {
-		
 		a = this.loadEvents.pop();
-
 		if(this.loadEvents.length == 0)
 			this._loadMask.hide();
-		
-		/*(function() {
-			this.onLayerAdded(evt);
-		}.defer(500, this));*/
-			
-		
 	},
 	
-	
-
-
 
 /**
  * After a map zoom, update treeNode aspect according to the visibility (visible
@@ -291,6 +269,7 @@ _onMapMoveEnd : function() {
 	Ext.each(SData.overlayGroups, function(group) {
 		var nodes = this._overlays['overlay_' + group.id].childNodes;
 		Ext.each(nodes, function(node) {
+			//console.log(node);
 			this._updateNodeStyle(node);
 		}, this);
 	}, this);
@@ -310,94 +289,85 @@ _onMapMoveEnd : function() {
 _updateNodeStyle : function(node) {
 	if (!node.layer)
 		return;
+	
 	if (this._layerStore.map.getScale() < node.layer.maxScale || this._layerStore.map.getScale() > node.layer.minScale) {
-		// alert (node.layer.name +' is not visible : '+ node.layer.minScale + "
-	// - " + node.layer.maxScale);
-	// Layer is not visible at this scale/resolution
-	node.isInScaleRange = false;
-	// Remove link to metadata URL
-
-	// Add css class for not visible layer
-	node.getUI().addClass('hiddenLayer');
-	node.getUI().removeClass('metadataAvailable');
-	/*
-	 * if(node.getUI().getTextEl()) {
-	 * node.getUI().getTextEl().removeAttributeNS("ext", "href");
-	 * node.getUI().getTextEl().removeAttributeNS("ext", "hrefTarget"); }
-	 */
-	// Add css class for not visible layer Icon (-> not working)
-	var el = Ext.get(node.getUI().iconNode);
-	if (el)
-		el.addClass('hiddenLayerIcon');
-
-	// Add the tooltip displaying the range of scales/resolutions at
-	// which the layer is visible
-	if (node.getUI().getTextEl()) {
-		if (node.getUI().getTextEl().setAttributeNS) {
-			Ext.each(SData.overlayLayers, function(layer) {
-				if (layer.name == node.layer.name) {
-					node.getUI().getTextEl().setAttributeNS("ext", "qtip",
-							EasySDI_Map.lang.getLocal('LT_SCALE_RAGE_TOOLTIP') + " " + layer.minScale + " - " + layer.maxScale);
-					// node.getUI().getTextEl().setAttributeNS("ext",
-					// "qtip", node.layer.minScale + " - " +
-					// node.layer.maxScale);
-				}
-			}, this);
-		} else {
-			Ext.each(SData.overlayLayers, function(layer) {
-				if (layer.name == node.layer.name) {
-					node.getUI().getTextEl().setAttribute("ext:qtip",
-							EasySDI_Map.lang.getLocal('LT_SCALE_RAGE_TOOLTIP') + " " + layer.minScale + " - " + layer.maxScale);
-				}
-			}, this);
-			// node.getUI().getTextEl().setAttribute("ext:qtip",
-			// node.layer.minScale + " - " + node.layer.maxScale);
+		//Layer is not visible at this scale/resolution
+		//this boolean is used to render legend 
+		node.isInScaleRange = false;
+		// Remove link to metadata URL
+	
+		//Force the node to be rendered that we can update his style
+		if(node.rendered !== true){
+			node.ui.render(false);
+			node.rendered = true;
 		}
-	}
-
-} else {
-	// alert (node.layer.name +' is visible : '+ node.layer.minScale + " - " +
-	// node.layer.maxScale);
-	// Layer is visible at this scale
-	node.isInScaleRange = true;
-	// Remove the css class for not visible layer (in case it was added)
-	node.getUI().removeClass('hiddenLayer');
-	// Add the link to metadata Url if needed
-	Ext.each(SData.overlayLayers, function(layer) {
-		if (layer.name == node.layer.name) {
-			if (layer.metadataUrl.length > 0) {
-				node.getUI().addClass('metadataAvailable');
-				/*
-				 * if(node.getUI().getTextEl()) { //Add metadata url value
-				 * if(node.getUI().getTextEl().setAttributeNS) {
-				 * node.getUI().getTextEl().setAttributeNS("ext", "href",
-				 * layer.metadataUrl);
-				 * node.getUI().getTextEl().setAttributeNS("ext", "hrefTarget",
-				 * '_blank'); } else {
-				 * node.getUI().getTextEl().setAttribute("ext:href",
-				 * layer.metadataUrl);
-				 * node.getUI().getTextEl().setAttribute("ext:hrefTarget",
-				 * '_blank'); } }
-				 */
+		// Add css class for not visible layer
+		node.getUI().addClass('hiddenLayer');
+		node.getUI().removeClass('metadataAvailable');
+	
+		// Add css class for not visible layer Icon (-> not working)
+		var el = Ext.get(node.getUI().iconNode);
+		if (el)
+			el.addClass('hiddenLayerIcon');
+	
+		// Add the tooltip displaying the range of scales/resolutions at
+		// which the layer is visible
+		if (node.getUI().getTextEl()) {
+			if (node.getUI().getTextEl().setAttributeNS) {
+				Ext.each(SData.overlayLayers, function(layer) {
+					if (layer.name == node.layer.name) {
+						node.getUI().getTextEl().setAttributeNS("ext", "qtip",
+								EasySDI_Map.lang.getLocal('LT_SCALE_RAGE_TOOLTIP') + " " + layer.minScale + " - " + layer.maxScale);
+					}
+				}, this);
+			} else {
+				Ext.each(SData.overlayLayers, function(layer) {
+					if (layer.name == node.layer.name) {
+						node.getUI().getTextEl().setAttribute("ext:qtip",
+								EasySDI_Map.lang.getLocal('LT_SCALE_RAGE_TOOLTIP') + " " + layer.minScale + " - " + layer.maxScale);
+					}
+				}, this);
 			}
 		}
-	}, this);
-
-	// Remove css class for not visible layer Icon (-> not working)
-	var el = Ext.get(node.getUI().iconNode);
-	if (el)
-		el.removeClass('hiddenLayerIcon');
-
-	// Remove the tooltip displaying the range of scales/resolutions at
-	// which the layer is visible
-	if (node.getUI().getTextEl()) {
-		if (node.getUI().getTextEl().setAttributeNS) {
-			node.getUI().getTextEl().removeAttributeNS("ext", "qtip");
-		} else {
-			node.getUI().getTextEl().removeAttribute("ext:qtip");
+	} else {
+		// alert (node.layer.name +' is visible : '+ node.layer.minScale + " - " + 	 node.layer.maxScale);
+		// Layer is visible at this scale
+		node.isInScaleRange = true;
+		
+		//Force the node to be rendered that we can update his style
+		if(node.rendered !== true){
+			node.ui.render(false);
+			node.rendered = true;
+		}
+		
+		// Remove the css class for not visible layer (in case it was added)
+		node.getUI().removeClass('hiddenLayer');
+		console.log(node.getUI());
+		
+		// Add the link to metadata Url if needed
+		Ext.each(SData.overlayLayers, function(layer) {
+			if (layer.name == node.layer.name) {
+				if (layer.metadataUrl.length > 0) {
+					node.getUI().addClass('metadataAvailable');
+				}
+			}
+		}, this);
+	
+		// Remove css class for not visible layer Icon (-> not working)
+		var el = Ext.get(node.getUI().iconNode);
+		if (el)
+			el.removeClass('hiddenLayerIcon');
+	
+		// Remove the tooltip displaying the range of scales/resolutions at
+		// which the layer is visible
+		if (node.getUI().getTextEl()) {
+			if (node.getUI().getTextEl().setAttributeNS) {
+				node.getUI().getTextEl().removeAttributeNS("ext", "qtip");
+			} else {
+				node.getUI().getTextEl().removeAttribute("ext:qtip");
+			}
 		}
 	}
-}
 },
 
 /**
@@ -574,6 +544,7 @@ _addBaseLayer : function(layer, i) {
 	l.events.register('loadend', this, this.onMoveEnd);
 	//l.events.register('moveend', this, this.onMoveEnd);
 	l.events.register('visibilitychanged', this, this.onMoveEnd);
+	l.events.register('visibilitychanged', this, this._onMapMoveEnd);
 	
 	
 	
