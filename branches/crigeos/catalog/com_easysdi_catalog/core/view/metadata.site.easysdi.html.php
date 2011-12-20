@@ -51,7 +51,7 @@ JHTML::script('shBrushXml.js', 'administrator/components/com_easysdi_catalog/js/
 //JHTML::script('GemetClient-uncompressed.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('thesaur.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('HS.js', 'administrator/components/com_easysdi_catalog/js/');
-JHTML::script('translations.js', 'administrator/components/com_easysdi_catalog/js/');
+//JHTML::script('translations.js', 'administrator/components/com_easysdi_catalog/js/');
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.jsLoaderUtil.php');
 $jsLoader =JSLOADER_UTIL::getInstance();
 JHTML::script('SingleFile.js', $jsLoader->getPath("map","openlayers", "/lib/OpenLayers/"));
