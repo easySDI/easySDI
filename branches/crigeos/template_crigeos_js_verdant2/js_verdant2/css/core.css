@@ -745,3 +745,6 @@ body.dark #itemListLinks {
     border: 1px solid #ccc;
 }
 
+table.x-toolbar-ct, .x-toolbar-ct table {
+    margin-bottom: 0;
+}
