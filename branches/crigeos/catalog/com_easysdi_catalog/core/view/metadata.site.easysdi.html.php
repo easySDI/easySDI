@@ -26,7 +26,7 @@ require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'commo
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 //jimport( 'joomla.application.component.view' );
 ?>
-<?php if((JRequest::getVar('task') =="editMetadata")||(JRequest::getVar('task') =="askForEditMetadata")){?>
+<?php if((JRequest::getVar('task') =="editMetadata")||(JRequest::getVar('task') =="askForEditMetadata")||(JRequest::getVar('task') =="replicateMetadata")){?>
 <script>
 var thesaurusConfig = '<?php echo config_easysdi::getValue("thesaurusUrl");?>'
 </script>
@@ -5455,7 +5455,7 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 															     ,items:[ 
 															       { 
 															       	 xtype: 'fileuploadfield',
-														             id: 'xmlfile',
+															       	 id: 'xmlfile',
 														             name: 'xmlfile',
 														             fieldLabel: '".html_Metadata::cleanText(JText::_('CORE_METADATA_IMPORT_ALERT_UPLOAD_XMLFILE_LABEL'))."'
 															       },

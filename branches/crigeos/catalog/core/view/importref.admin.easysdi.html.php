@@ -150,7 +150,7 @@ function listImportRef(&$rows, $page, $option,  $filter_order_Dir, $filter_order
 				</tr>
 				<tr>
 					<td colspan="2">
-						<fieldset id="labels"><legend align="top"><?php echo JText::_("CATALOG_IMPORTREF_SERVICE_INFO"); ?></legend>
+						<fieldset id="serviceCSW"><legend align="top"><?php echo JText::_("CATALOG_IMPORTREF_SERVICE_INFO"); ?></legend>
 							<table>
 								<tr>
 									<td class="key"><?php echo JText::_("CATALOG_IMPORTREF_URL"); ?></td>
