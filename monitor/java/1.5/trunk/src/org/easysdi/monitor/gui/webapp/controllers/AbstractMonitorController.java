@@ -605,9 +605,12 @@ public abstract class AbstractMonitorController {
             {
                Map.Entry entry = (Map.Entry)iter.next() ;
                String   name   = (String)entry.getKey() ;
-               String[] params = (String[])entry.getValue() ;
-               for(int i=0; i<params.length; i++)
-            	   requestParameters.put(name, params[i]);
+        	   String[] params = (String[])entry.getValue() ;
+        	  if(!name.equals("Itemid"))
+        	  {
+        	   for(int i=0; i<params.length; i++)
+        		   requestParameters.put(name, params[i]);
+        	  }
             }
         }    
         
@@ -628,7 +631,6 @@ public abstract class AbstractMonitorController {
      * @param   request the HTTP request
      * @return          a map containing the first value of each parameter
      */
-    @SuppressWarnings("unchecked")
     private Map<String, String> getSingleValueRequestParametersMap(
                                                    HttpServletRequest request) {
 

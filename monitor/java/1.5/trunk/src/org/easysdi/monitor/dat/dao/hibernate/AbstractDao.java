@@ -31,11 +31,11 @@ abstract class AbstractDao extends HibernateDaoSupport {
         }
         
         try {
-        	
-       
-        	this.getHibernateTemplate().saveOrUpdate(object);
-        	// DO not use flush
-            return true;
+        		//this.getHibernateTemplate().setAlwaysUseNewSession(true);
+        		this.getHibernateTemplate().saveOrUpdate(object);
+        		this.getHibernateTemplate().flush();
+     
+        	return true;
 
         } catch (DataAccessException e) {
             this.logger.error(

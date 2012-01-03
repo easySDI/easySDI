@@ -64,7 +64,7 @@ public class JobDao extends HibernateDaoSupport implements IJobDao {
         return this.txTemplate;
     }
 
-
+ 
 
     /**
      * {@inheritDoc}
@@ -218,7 +218,7 @@ public class JobDao extends HibernateDaoSupport implements IJobDao {
         return this.typeJobResultList(hibernateTemplate.loadAll(Job.class));
 
     }
-
+    
 
     /**
      * Converts an Hibernate result into a strongly-typed job results list.
@@ -238,9 +238,9 @@ public class JobDao extends HibernateDaoSupport implements IJobDao {
 
         return jobsFound;
     }
-
-
-
+    
+  
+    
     /**
      * {@inheritDoc}
      */
@@ -255,6 +255,7 @@ public class JobDao extends HibernateDaoSupport implements IJobDao {
         }
 
         try {
+        	this.getHibernateTemplate().merge(job);
             this.getHibernateTemplate().saveOrUpdate(job);
             return true;
 

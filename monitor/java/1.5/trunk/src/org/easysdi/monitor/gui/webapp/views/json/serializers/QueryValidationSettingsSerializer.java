@@ -28,6 +28,7 @@ public class QueryValidationSettingsSerializer {
 		if(this.getQueryValidationSettings()==null)
 		{
 			jsonOverview.put("id", (String)null);
+			jsonOverview.put("queryID",(String)null);
 			jsonOverview.put("useSizeValidation", (String)null);
 			jsonOverview.put("normSize", (String)null);
 			jsonOverview.put("normSizeTolerance", (String)null);
@@ -39,7 +40,7 @@ public class QueryValidationSettingsSerializer {
 		}
 		else {
 			jsonOverview.put("id", this.getQueryValidationSettings().getQueryValidationSettingsId());
-
+			jsonOverview.put("queryID",this.getQueryValidationSettings().getQueryId());
 			if(this.getQueryValidationSettings().isUseSizeValidation() == null) {
 				jsonOverview.put("useSizeValidation", (String)null);
 			}

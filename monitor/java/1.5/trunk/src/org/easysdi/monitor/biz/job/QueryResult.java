@@ -36,7 +36,6 @@ public class QueryResult {
     private float           size;
 
 
-
     /**
      * No-argument constructor, used by the persistance mechanism.
      */
@@ -542,5 +541,4 @@ public class QueryResult {
 	public float getSize() {
 		return size;
 	}
-
 }

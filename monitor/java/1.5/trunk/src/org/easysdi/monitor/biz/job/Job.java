@@ -107,7 +107,7 @@ public class Job {
             {
             	for (Query query : this.getQueries().values()) {
             	
-            		final QueryResult queryResult = query.execute(resultLogged);
+            		final QueryResult queryResult = query.execute(resultLogged,false);
             		jobResult.addQueryResult(queryResult);
             	}
         	}
@@ -121,6 +121,12 @@ public class Job {
         }
 
         return jobResult;
+    }
+    
+    public QueryResult executeSingleQuery(Query query)
+    {
+    	final QueryResult queryResult = query.execute(false,true);
+    	return queryResult;
     }
 
 
@@ -384,6 +390,10 @@ public class Job {
                 this.triggerActions(alert);
             }
         }
+        
+        // Replaces the trigger transaction update
+        //this.updateStatusJob();
+        this.persist();
     }
 
 
@@ -594,7 +604,7 @@ public class Job {
         return JobDaoHelper.getJobDao().persistJob(this);
 
     }
-
+    
 
 
     /**
@@ -613,7 +623,7 @@ public class Job {
 
         final IJobDao jobDao = JobDaoHelper.getJobDao();
         final Job job = jobDao.getJobById(targetJobId);
-
+        
         if (null != job) {
             job.executeAllQueries(true);
         }

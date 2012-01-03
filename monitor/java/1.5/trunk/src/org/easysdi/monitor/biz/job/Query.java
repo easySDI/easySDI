@@ -371,9 +371,10 @@ public class Query {
      *                          should be kept in the logs
      * @return                  the result of this query's polling
      */
-    public QueryResult execute(boolean resultLogging) {
+    public QueryResult execute(boolean resultLogging, boolean testresult) {
         final MonitorServiceLog thisOwsLogger = this.getOwsLogger();
         thisOwsLogger.setResultLogged(resultLogging);
+        thisOwsLogger.setSaveTestResult(testresult);
         
         final ServiceType serviceType 
         = this.getConfig().getParentJob().getConfig().getServiceType();
@@ -447,7 +448,7 @@ public class Query {
    	
     	for(Query query : queries.values())
     	{
-    		// Wait for thread to died
+    		// Wait for thread to die
     		int i = 0;
     		while(query.getOwsInvoker().isAlive() && i < 60)
     		{

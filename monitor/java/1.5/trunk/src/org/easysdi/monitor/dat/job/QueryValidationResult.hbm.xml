@@ -18,10 +18,10 @@
 		</id>
 
 		<many-to-one name="parentQuery" class="Query" column="ID_QUERY"
-			lazy="false" insert="false" update="false"></many-to-one>
+			lazy="false" insert="false" update="false" cascade="all" unique="true"></many-to-one>
 
 
-		<property name="queryId" type="long" column="ID_QUERY" />
+		<property name="queryId" type="long" column="ID_QUERY" unique="true" />
 
 		<property name="sizeValidationResult" type="boolean" column="SIZE_VALIDATION_RESULT" />
 		<property name="responseSize" type="float" column="RESPONSE_SIZE" />

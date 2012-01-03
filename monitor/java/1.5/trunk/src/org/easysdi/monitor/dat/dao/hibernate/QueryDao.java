@@ -37,8 +37,14 @@ public class QueryDao extends HibernateDaoSupport implements IQueryDao {
         if (1 > queryId) {
             throw new IllegalArgumentException("Invalid query identifier");
         }
-
-        return this.getHibernateTemplate().load(Query.class, queryId);
+        try
+        {
+        	return this.getHibernateTemplate().load(Query.class, queryId);
+        }catch(Exception ex)
+        {
+        	System.out.println("Fejl: "+ex.getMessage());
+        }
+        return null;
     }
 
 

@@ -4,11 +4,9 @@ public class QueryValidationResultDaoHelper {
 
 	private static IQueryValidationResultDao dao;
 
-    private QueryValidationResultDaoHelper() {
-        
+    private QueryValidationResultDaoHelper() {  
         throw new UnsupportedOperationException(
-            "This class can't be instantiated.");
-        
+            "This class can't be instantiated."); 
     }
 	
 	public static void setDao(IQueryValidationResultDao dao) {
@@ -18,6 +16,5 @@ public class QueryValidationResultDaoHelper {
 	public static IQueryValidationResultDao getDao() {
 		return dao;
 	}
-	
 	
 }

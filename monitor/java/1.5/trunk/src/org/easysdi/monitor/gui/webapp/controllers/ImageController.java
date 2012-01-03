@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.easysdi.monitor.biz.alert.Alert;
 import org.easysdi.monitor.biz.job.OverviewLastQueryResult;
+import org.easysdi.monitor.biz.job.QueryTestResult;
 
 import org.easysdi.monitor.gui.webapp.MonitorInterfaceException;
 import org.springframework.stereotype.Controller;
@@ -76,8 +77,8 @@ public class ImageController{
     		
     		if(contentType != null && contentType != "" && data != null)
     		{
+    			response.reset();
     			response.setContentType(contentType);
-    		
     			try
     	    	{
     	    		out = response.getOutputStream();    	    	
@@ -96,10 +97,28 @@ public class ImageController{
     	{
     		OverviewLastQueryResult result = OverviewLastQueryResult.getFromIdString(idString);
     		data = result.getData();
-
-
     		contentType = result.getContentType();
     		if(contentType != null && contentType != "" && data != null)
+    		{
+    			response.reset();
+    			response.setContentType(contentType);
+    			try
+    			{
+    				out = response.getOutputStream();
+    	    	    out.write(data);
+    	    	    out.close();
+    			}catch(Exception e)
+    			{
+    				throw new MonitorInterfaceException(e.getMessage(),
+    	                    "image.stream.error",e);
+    			}
+    		}
+    	}else if(classTypeString.toLowerCase().equals("preview"))
+    	{
+    		QueryTestResult result = QueryTestResult.getFromIdString(idString);
+    		data = result.getData();
+    		contentType = result.getContentType();
+    		if(contentType != null && contentType != "" && data  != null)
     		{
     			response.reset();
     			response.setContentType(contentType);

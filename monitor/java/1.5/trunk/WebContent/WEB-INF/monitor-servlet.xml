@@ -119,7 +119,7 @@
 				<value>org/easysdi/monitor/dat/job/Holiday.hbm.xml</value>
 				<value>org/easysdi/monitor/dat/logging/JobAggregateHourLogEntry.hbm.xml</value>
 				<value>org/easysdi/monitor/dat/logging/QueryAggregateHourLogEntry.hbm.xml</value>
-		
+				<value>org/easysdi/monitor/dat/job/QueryTestResult.hbm.xml</value>
 			</list>
 		</property>
 		<property name="hibernateProperties">
@@ -132,6 +132,7 @@
 				<prop key="hibernate.c3p0.timeout">${hibernate.c3p0.maxIdleTime}</prop> 
 				<prop key="hibernate.c3p0.max_size">${hibernate.c3p0.maxPoolSize}</prop> 
 				<prop key="hibernate.c3p0.min_size">${hibernate.c3p0.minPoolSize}</prop>
+				
       		</props>
 		</property>
 	</bean>
@@ -227,7 +228,9 @@
 	<bean id="holidayDao" class="org.easysdi.monitor.dat.dao.hibernate.HolidayDao">
 		<constructor-arg ref="hibernateSessionFactory" />
 	</bean>
-	
+	<bean id="queryTestResultDao" class="org.easysdi.monitor.dat.dao.hibernate.QueryTestResultDao">
+		<constructor-arg ref="hibernateSessionFactory" />
+	</bean>
 	
 	<!-- Scheduler beans -->
 	<bean id="logAggregationJob" class="org.springframework.scheduling.quartz.JobDetailBean">

@@ -122,16 +122,17 @@ public class ServiceInvoker extends Thread implements Serializable {
 
         ValidatorResponse tmpResponse = null;
         try {
-            HttpMethodBase method = serviceConfig.getHttpMethodBase();
-            tmpResponse = executeHttpMethod(method, serviceConfig.getUserCreds());
+        	HttpMethodBase method = serviceConfig.getHttpMethodBase();
+        	tmpResponse = executeHttpMethod(method, serviceConfig.getUserCreds());
             method.releaseConnection();
         } catch ( OGCWebServiceException e ) {
-            tmpResponse = new ValidatorResponse( "Page Unavailable: " + e.getLocalizedMessage(),
-                                                 Status.RESULT_STATE_PAGE_UNAVAILABLE );
+        	String message = "Page Unavailable: " + e.getLocalizedMessage();
+            tmpResponse = new ValidatorResponse(message, Status.RESULT_STATE_PAGE_UNAVAILABLE );
+            tmpResponse.setContentType("text/plain");
+            tmpResponse.setData(message.getBytes());
             tmpResponse.setLastLapse( -1 );
             tmpResponse.setLastTest( Calendar.getInstance().getTime() );
         }
-
         serviceLog.addMessage( tmpResponse, serviceConfig );
     }
     

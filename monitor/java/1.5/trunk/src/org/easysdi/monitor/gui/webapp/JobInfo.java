@@ -858,6 +858,7 @@ public final class JobInfo {
 
         if (job.persist()) {            
             job.updateScheduleState();
+            System.out.println("Job:"+job.getConfig().getJobName()+" : "+job.getJobId()+" : "+job.getConfig().isAutomatic());
             return true;
         }
 

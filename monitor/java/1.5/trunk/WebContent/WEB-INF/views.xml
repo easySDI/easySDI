@@ -34,6 +34,6 @@
 	<bean id="period" class="org.easysdi.monitor.gui.webapp.views.json.PeriodView" />
 	<bean id="periodCollection" class="org.easysdi.monitor.gui.webapp.views.json.PeriodCollectionView" />
 	<bean id="aggregHourLogsCsv" class="org.easysdi.monitor.gui.webapp.views.csv.AggregHourLogView" />
-	<bean id="aggregHourLogsJson" class="org.easysdi.monitor.gui.webapp.views.json.AggregHourLogView" />	
-	
+	<bean id="aggregHourLogsJson" class="org.easysdi.monitor.gui.webapp.views.json.AggregHourLogView" />
+	<bean id="queryTestResult" class="org.easysdi.monitor.gui.webapp.views.json.QueryTestResultView" />	
 </beans>

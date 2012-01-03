@@ -13,6 +13,7 @@ import org.hibernate.criterion.DetachedCriteria;
 
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.dao.DataAccessException;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 
@@ -41,9 +42,25 @@ public class AlertDao extends HibernateDaoSupport implements IAlertDao {
      * {@inheritDoc}
      */
     public void persist(Alert alert) {
+    	try
+    	{
+    		if (null == alert) {
+               throw new IllegalArgumentException(
+                       "Null object can't be persisted.");
+    		}
+    		//this.getHibernateTemplate().setAlwaysUseNewSession(true);
+    		this.getHibernateTemplate().saveOrUpdate(alert);
+    		//this.getHibernateTemplate().flush();
 
-        this.getHibernateTemplate().saveOrUpdate(alert);
-
+    	} catch (DataAccessException e) {
+    		this.logger.error(
+    				"An error occurred while an alert was persisted.", 
+    				e);
+    		System.out.println(e.getMessage());
+    	}catch(Exception e)
+    	{
+    		System.out.println(e.getMessage());
+    	}    
     }
 
 

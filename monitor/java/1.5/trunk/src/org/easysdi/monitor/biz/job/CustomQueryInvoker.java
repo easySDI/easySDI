@@ -155,9 +155,7 @@ public class CustomQueryInvoker extends ServiceInvoker{
 	
 	private String getSoapEnvelope(){
 		// the last param added contains the soap envelope.
-	return this.getServiceConfig().getProperties().getProperty("soapenvelope");
-
-
+		return this.getServiceConfig().getProperties().getProperty("soapenvelope");
 	}
 	
 	private int executeSimpleSOAP_1_1_Client() throws IOException{
@@ -207,15 +205,17 @@ public class CustomQueryInvoker extends ServiceInvoker{
 			int statusCode = 0 ;
 			 HttpURLConnection con  = null;
 			 try {
-	
 				 URL oURL = new URL(this.getServiceConfig().getOnlineResource());
 				 con = (HttpURLConnection) oURL.openConnection();
 				 con.setRequestMethod("POST");
+				 //    "Content-type", "text/xml; charset=utf-8");
+				 //con.setRequestProperty("Content-type", "text/xml; charset=utf-8");
 				 con.setRequestProperty("Content-type", "application/soap+xml; charset=utf-8");	
 				 con.setDoOutput(true);
 				 con.setDoInput(true);	
 				 // Posting the SOAP request XML message
 				 OutputStream reqStream = con.getOutputStream();
+				 
 				 reqStream.write(getSoapEnvelope().getBytes());
 				 reqStream.flush();
 	
@@ -226,7 +226,7 @@ public class CustomQueryInvoker extends ServiceInvoker{
 	
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				//e.printStackTrace();
 				soap_stream_response=null; 
 				
 			}finally{

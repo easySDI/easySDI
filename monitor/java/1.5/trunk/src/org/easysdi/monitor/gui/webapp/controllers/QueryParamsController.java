@@ -85,7 +85,7 @@ public class QueryParamsController extends AbstractMonitorController {
 
         
         
-        Map map = request.getParameterMap() ;
+        /*Map map = request.getParameterMap() ;
         Set entries = map.entrySet() ;
         Iterator iter = entries.iterator() ;
         
@@ -96,15 +96,14 @@ public class QueryParamsController extends AbstractMonitorController {
            Map.Entry entry = (Map.Entry)iter.next() ;
            String   name   = (String)entry.getKey() ;
            String[] params = (String[])entry.getValue() ;
-           for(int i=0; i<params.length; i++)
+          for(int i=0; i<params.length; i++)
               System.out.println("name:"+name+", value:"+params[i]);
            found = true;
         }
         if(!found)
         	System.out.println("no parameter found!");
-                 
-        
-        
+        */
+                
         final Query query = this.getQuery(jobIdString, queryIdString);
         final QueryConfiguration config = query.getConfig();
         final Map<String, String> requestParams 

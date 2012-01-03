@@ -29,6 +29,7 @@ import org.easysdi.monitor.biz.alert.Alert;
 import org.easysdi.monitor.biz.job.Job;
 import org.easysdi.monitor.biz.job.JobConfiguration;
 import org.easysdi.monitor.biz.job.QueryResult;
+import org.easysdi.monitor.biz.job.QueryTestResult;
 import org.easysdi.monitor.biz.job.QueryValidationResult;
 import org.easysdi.monitor.biz.job.QueryValidationSettings;
 import org.easysdi.monitor.dat.dao.LogDaoHelper;
@@ -51,6 +52,7 @@ public class MonitorServiceLog extends ServiceLog {
     private final Logger logger = Logger.getLogger(MonitorServiceLog.class);
 
     private boolean           resultLogging;
+    private boolean           saveTestResult = false;
     private QueryResult       lastResult;
 
 
@@ -128,9 +130,9 @@ public class MonitorServiceLog extends ServiceLog {
 					responseSize = (float) response.getResponseLength();
 				}else
 				{
-						responseSize = response.getData() != null? response.getData().length: 0.0F;
-						lastQueryEntry.setData(response.getData());
-						lastQueryEntry.setContentType(response.getContentType());
+					responseSize = response.getData() != null? response.getData().length: 0.0F;
+					lastQueryEntry.setData(response.getData());
+					lastQueryEntry.setContentType(response.getContentType());
 				}
 
 				QueryValidationResult validationResult = result.getParentQuery().getQueryValidationResult();
@@ -195,17 +197,7 @@ public class MonitorServiceLog extends ServiceLog {
 							 
 							XPath xpath = XPathFactory.newInstance().newXPath();
 							xpath.setNamespaceContext(ctx);
-							try
-							{
-								xpathValidationOutput = xpath.evaluate(validationSettings.getXpathExpression(), doc);
-							}
-							catch(Exception e)
-							{
-								logEntry.setMessage("Xpath evaluation failed");
-								logEntry.setStatus(StatusValue.UNAVAILABLE);
-								xpathValidationOutput = "Xpath evaluation failed";
-								validationResult.setXpathValidationResult(false);
-							}
+							xpathValidationOutput = xpath.evaluate(validationSettings.getXpathExpression(), doc);
 						}catch(Exception e)
 						{
 							logEntry.setMessage("Xpath evaluation failed");
@@ -256,8 +248,10 @@ public class MonitorServiceLog extends ServiceLog {
 				this.logger.error("An exception was thrown while saving alert: "+e.getMessage());
 			}
 			
-			// Save raw log	
-            if (!LogDaoHelper.getLogDao().persistRawLog(logEntry)) {
+			
+			//System.out.println("BEFORE SAVE: "+logEntry.getQueryId()+" "+logEntry.getRequestTime());
+			// Save raw log	PROBLEM HERE WITH MANY REQUEST
+			if (!LogDaoHelper.getLogDao().persistRawLog(logEntry)) {
                 this.logger.error("An exception was thrown while saving a log entry");
             }
             
@@ -265,6 +259,36 @@ public class MonitorServiceLog extends ServiceLog {
 			if (!LastLogDaoHelper.getLastLogDao().create(lastQueryEntry)) {
 				this.logger.error("An exception was thrown while saving a last log entry");
 			}
+        }else
+        {
+        	if(this.saveTestResult)
+        	{
+        		QueryTestResult resultTest = new QueryTestResult();
+        		QueryValidationSettings validationSettings = result.getParentQuery().getQueryValidationSettings();
+        		resultTest.setQueryid(result.getQueryId());
+        		resultTest.setData(response.getData());
+        		resultTest.setContentType(response.getContentType());
+        		resultTest.setResponseDelay(result.getResponseDelay());
+        		if (serviceConfig.getRequestType().toLowerCase().equalsIgnoreCase("getmap") || serviceConfig.getRequestType().toLowerCase().equalsIgnoreCase("gettile")) {
+					responseSize = (float) response.getResponseLength();
+				}else
+				{
+					responseSize = response.getData() != null? response.getData().length: 0.0F;
+				}
+        		resultTest.setResponseSize(responseSize);
+        	
+        		if(validationSettings != null && validationSettings.isUseXpathValidation())
+        		{	
+        			resultTest.setXpathresult(xpathValidation(response.getData(),validationSettings.getXpathExpression()));
+        		}else
+        		{
+        			resultTest.setXpathresult("");
+        		}
+        		if(!resultTest.saveTestResult())
+        		{
+        			 this.logger.error("An exception was thrown while saving a query run test");
+        		}
+        	}
         }
     }
     
@@ -278,7 +302,46 @@ public class MonitorServiceLog extends ServiceLog {
             }
         }
     }
-
+    
+    /**
+     * Validate a xml for an expression
+     * @param xml
+     * @param expression
+     * @return
+     */
+    private String xpathValidation(byte[] xml,String expression)
+    {
+    	String xpathValidationOutput = "";
+    	try
+		{
+			DocumentBuilderFactory xmlFact = DocumentBuilderFactory.newInstance();
+            xmlFact.setNamespaceAware(false);
+            DocumentBuilder builder = xmlFact.newDocumentBuilder();
+            Document doc = builder.parse(new java.io.ByteArrayInputStream(xml));
+			
+            final PrefixResolver resolver = new PrefixResolverDefault(doc.getDocumentElement());
+            NamespaceContext ctx = new NamespaceContext() {
+            	public String getNamespaceURI(String prefix) {
+            		return resolver.getNamespaceForPrefix(prefix);
+            	}
+            	@SuppressWarnings("unchecked")
+				public Iterator getPrefixes(String val) {			            	
+                    return null;
+            	}
+            	public String getPrefix(String uri) {
+            		return null;
+            	}
+            };
+			 
+			XPath xpath = XPathFactory.newInstance().newXPath();
+			xpath.setNamespaceContext(ctx);
+			xpathValidationOutput = xpath.evaluate(expression, doc);
+		}catch(Exception e)
+		{
+			xpathValidationOutput = "Xpath evaluation failed";
+		}
+    	return xpathValidationOutput;
+    }
 
     /**
      * Defines whether the query results must be logged.
@@ -326,5 +389,27 @@ public class MonitorServiceLog extends ServiceLog {
         return this.lastResult;
 
     }
+
+
+
+	/**
+	 * Checks if query test result for a non auto should be saved
+	 * @return the saveTestResult
+	 */
+	public boolean isSaveTestResult() {
+		return saveTestResult;
+	}
+
+
+
+	/**
+	 * Sets if a non auto query test result should be saved
+	 * @param saveTestResult the saveTestResult to set
+	 */
+	public void setSaveTestResult(boolean saveTestResult) {
+		this.saveTestResult = saveTestResult;
+	}
+    
+
     
 }

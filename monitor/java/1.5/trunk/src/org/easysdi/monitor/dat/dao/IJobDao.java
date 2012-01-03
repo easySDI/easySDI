@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.easysdi.monitor.biz.job.Job;
 import org.easysdi.monitor.biz.job.JobDefaultParameter;
+import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.support.TransactionTemplate;
 
 /**
@@ -16,6 +17,7 @@ import org.springframework.transaction.support.TransactionTemplate;
  */
 public interface IJobDao {
 
+	 
     /**
      * Finds jobs matching the given criteria.
      * <p>
@@ -117,9 +119,7 @@ public interface IJobDao {
      * @return  the transaction template
      */
     TransactionTemplate getTxTemplate();
-
-
-
+    
     /**
      * Saves a job.
      * 
@@ -127,8 +127,6 @@ public interface IJobDao {
      * @return      <code>true</code> if the job was successfully saved
      */
     boolean persistJob(Job job);
-
-
 
     /**
      * Fetches a job from an identifying string.
@@ -140,7 +138,7 @@ public interface IJobDao {
      */
     Job getJobFromIdString(String identifyString);
 
-
+    
 
     /**
      * Saves a job default parameter.
