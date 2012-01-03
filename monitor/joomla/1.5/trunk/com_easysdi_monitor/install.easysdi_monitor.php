@@ -39,6 +39,16 @@ $migrateServletTablesQuery ="SET FOREIGN_KEY_CHECKS=0;
 			  KEY `FK_ACTION_TYPE` (`ID_ACTION_TYPE`)
 			) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 			
+			DROP TABLE IF EXISTS `query_test_result`;
+			CREATE TABLE `query_test_result` (
+			`ID_QUERY` int(11) unsigned NOT NULL,
+			`DATA` mediumblob,
+			`CONTENT_TYPE` varchar(45) DEFAULT NULL,
+			`XPATH_RESULT` varchar(200) DEFAULT NULL,
+			`RESPONSE_DELAY` float DEFAULT '0',
+			`RESPONSE_SIZE` float DEFAULT '0',
+			PRIMARY KEY (`ID_QUERY`)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8
 			
 			DROP TABLE IF EXISTS `action_types`;
 			CREATE TABLE `action_types` (
