@@ -222,7 +222,6 @@ Ext.onReady(function() {
 			        	ref: 'slaPanel',
 			        	region:'center',
 			        	bodyStyle:'padding:5px 5px 0',
-			        	autoHeight:true,
 			        	frame:true,
 			        	autoHeight:true,
 			        	items: [{

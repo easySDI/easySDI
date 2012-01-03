@@ -291,6 +291,7 @@ $migrateServletTablesQuery ="SET FOREIGN_KEY_CHECKS=0;
   				KEY `FK_PERIODS_SLA` (`ID_SLA`)
 			) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 			
+			
 			DROP TABLE IF EXISTS `queries`;
 			CREATE TABLE `queries` (
 			  `ID_QUERY` int(10) unsigned NOT NULL,

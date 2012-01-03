@@ -331,6 +331,7 @@ Ext.onReady(function() {
 			        		win.close();
 			        		//editor.startEditing(0);
 			        		//Also create a request getCap for this job
+			        		// Default parameter removed
 			        		Ext.data.DataProxy.addListener('write', afterJobInserted);
 			        	}
 			        	},{
@@ -352,6 +353,8 @@ Ext.onReady(function() {
 	function afterJobInserted(proxy, action, result, res, rs){
 
 		Ext.data.DataProxy.removeListener('write', afterJobInserted);
+		/*
+		// Don't add default request to job
 		Ext.data.DataProxy.addListener('write', afterReqInserted);
 		var reqGrid = Ext.getCmp('ReqGrid');
 		reqGrid.store.proxy.setUrl(EasySDI_Mon.proxy+'/jobs/'+result[0].name+'/queries');
@@ -360,6 +363,7 @@ Ext.onReady(function() {
 		u.set('serviceMethod', 'GetCapabilities');
 		reqGrid.store.insert(0, u);
 		reqGrid.store.save();
+		*/
 		//If the job has been added to the other collection than the current,
 		//we need to refresh the grid
 		if((Ext.getCmp('jobCbCollection').getValue() == 'jobs' && result[0].isPublic == false)||

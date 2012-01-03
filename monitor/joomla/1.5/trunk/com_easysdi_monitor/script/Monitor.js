@@ -1281,6 +1281,7 @@ Ext.onReady(function() {
 			        		win.close();
 			        		//editor.startEditing(0);
 			        		//Also create a request getCap for this job
+			        		// Default parameter removed
 			        		Ext.data.DataProxy.addListener('write', afterJobInserted);
 			        	}
 			        	},{
@@ -1302,6 +1303,8 @@ Ext.onReady(function() {
 	function afterJobInserted(proxy, action, result, res, rs){
 
 		Ext.data.DataProxy.removeListener('write', afterJobInserted);
+		/*
+		// Don't add default request to job
 		Ext.data.DataProxy.addListener('write', afterReqInserted);
 		var reqGrid = Ext.getCmp('ReqGrid');
 		reqGrid.store.proxy.setUrl(EasySDI_Mon.proxy+'/jobs/'+result[0].name+'/queries');
@@ -1310,6 +1313,7 @@ Ext.onReady(function() {
 		u.set('serviceMethod', 'GetCapabilities');
 		reqGrid.store.insert(0, u);
 		reqGrid.store.save();
+		*/
 		//If the job has been added to the other collection than the current,
 		//we need to refresh the grid
 		if((Ext.getCmp('jobCbCollection').getValue() == 'jobs' && result[0].isPublic == false)||
@@ -1528,7 +1532,9 @@ Ext.namespace("EasySDI_Mon");
 Ext.onReady(function(){
   
   var fieldParams = null;
-  
+  var testRun = false;
+  var showPreview = false;
+  var queryNameToUse = "";
 	var proxy = new Ext.data.HttpProxy({
 		url: '?'
 	});
@@ -1547,11 +1553,8 @@ Ext.onReady(function(){
 		restful:true,
 		proxy: proxy,
 		writer: writer,
-		//fields:['serviceMethod', 'status', 'name', 'params']
-		//fields:[{name:'serviceMethod'},{name: 'status'},{name: 'name'},{name: 'statusCode'},{name: 'params'},{name: 'soapUrl'},
-	
 		fields:[{name:'serviceMethod'},{name: 'status'},{name: 'name'},{name: 'statusCode'},{name: 'params'},{name: 'soapUrl'},{name: 'queryMethod'},{name:'queryServiceType'},
-		        {name:'queryValidationSettings',mapping:'queryValidationSettings'},{name:'id',mapping:'queryValidationSettings.id'},{name:'useSizeValidation',mapping:'queryValidationSettings.useSizeValidation'},
+		        {name:'queryValidationSettings',mapping:'queryValidationSettings'},{name:'id',mapping:'queryValidationSettings.id'},{name: 'queryID',mapping: 'queryValidationSettings.queryID'},{name:'useSizeValidation',mapping:'queryValidationSettings.useSizeValidation'},
 		        {name:'normSize',mapping:'queryValidationSettings.normSize'},{name:'normSizeTolerance',mapping:'queryValidationSettings.normSizeTolerance'},
 		        {name:'useTimeValidation',mapping:'queryValidationSettings.useTimeValidation'}, {name:'normTime',mapping:'queryValidationSettings.normTime'},
 		        {name:'useXpathValidation',mapping:'queryValidationSettings.useXpathValidation'},
@@ -1611,10 +1614,8 @@ Ext.onReady(function(){
 	
 	var reqOptionsHandler = function(){
 
-		return{
-			
+		return{	
 			doLoadTypeOptions : function(method, type){
-				
 				if(type== "all"){
 						return EasySDI_Mon.ServiceMethodStore[type+method];						
 				}	
@@ -1622,7 +1623,6 @@ Ext.onReady(function(){
 					return EasySDI_Mon.ServiceMethodStore[type];
 					
 				}	
-
 			},
 		    enableSOAP :function (combo, fieldToToggle ){
 		    	
@@ -1710,14 +1710,48 @@ Ext.onReady(function(){
 		})
 	});
 	
+	_reqGrid.store.on('load', function(store, records, options) {
+		if(showPreview)
+		{
+			_reqGrid.getSelectionModel().selectRow(_reqGrid.getStore().find("name",queryNameToUse,0,true,true));
+			queryNameToUse = "";
+			onEdit();
+		}
+	}, _reqGrid);
+	
 	function enableNormSave()
 	{
-		if(Ext.getCmp('reqTextID').getValue() != "" && Ext.getCmp('sMComboxID').getValue() != "")
+		if(Ext.getCmp('reqTextID').getValue() != "" && ((Ext.getCmp('sMComboxID') && Ext.getCmp('sMComboxID').getValue() != "")
+				|| (Ext.getCmp('reqServiceMethodComboEdit') && Ext.getCmp('reqServiceMethodComboEdit').getValue() != "" ) ))
 		{
 					Ext.getCmp('saveNormBtnID').enable();
+					if(Ext.getCmp('runTestNormBtnID'))
+					{
+						Ext.getCmp('runTestNormBtnID').enable();
+					}	
+					if(Ext.getCmp('runTestPreviewBtnID'))
+					{
+						Ext.getCmp('runTestPreviewBtnID').enable();
+					}
+					if(Ext.getCmp('runsaveTestBtnID'))
+					{
+						Ext.getCmp('runsaveTestBtnID').enable();
+					}
 		}else
 		{
 					Ext.getCmp('saveNormBtnID').disable();
+					if(Ext.getCmp('runTestNormBtnID'))
+					{
+						Ext.getCmp('runTestNormBtnID').disable();
+					}
+					if(Ext.getCmp('runTestPreviewBtnID'))
+					{
+						Ext.getCmp('runTestPreviewBtnID').disable();
+					}
+					if(Ext.getCmp('runsaveTestBtnID'))
+					{
+						Ext.getCmp('runsaveTestBtnID').disable();
+					}
 		}
 	}
 	
@@ -1811,7 +1845,10 @@ Ext.onReady(function(){
 		        		store:          new Ext.data.SimpleStore({
 		        			fields : ['name'],
 		        			data   : EasySDI_Mon.HttpMethodStore
-		        		})
+		        		}),
+						listeners: {
+							'change': enableNormSave
+						}
 					},
 					{
 						id: 'sTComboxID',
@@ -1838,60 +1875,27 @@ Ext.onReady(function(){
 						xtype: 'textarea'
 						
 					}],
-					buttons: [{
+					buttons: [
+		            {
+		            		formBind:true,
+		             		text: EasySDI_Mon.lang.getLocal('jobRequestTabTestBtn'),
+		             		handler: function(){
+		             			saveNewRequest(true,rec);
+		             		}
+					}, {
 						formBind:true,
 						text: EasySDI_Mon.lang.getLocal('grid action ok'),
 						handler: function(){
-						var name = rec.get('name');
-						proxy.setUrl(EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+name+'/queries');
-						var fields = Ext.getCmp('newReqPanel').getForm().getFieldValues();
-						var fields2 = Ext.getCmp('newNormPanel').getForm().getFieldValues();
-						var u = new _reqGrid.store.recordType(EasySDI_Mon.DefaultReq);
-						var simple = Ext.getCmp('JobGrid').getSelectionModel().getSelected().get('serviceType').toLowerCase() != 'all';
-						for (var el in fields){
-							if(el == "queryServiceType")
-							{
-								var value = Ext.getCmp('sMComboxID').getValue().toLowerCase();
-								if(value.indexOf("soap") != -1 || value.indexOf("http get") != -1 || value.indexOf("http post") != -1 || simple)
-								{
-									u.set(el, '');
-								}else
-								{
-									var temp = fields[el].toString();
-									u.set(el, temp.replace('[','').replace('[',''));
-								}
-								
-								
-							}else if(el == "queryMethod" && simple)
-							{
-								u.set(el, '');
-							}else
-							{
-								u.set(el, fields[el]);
-							}
-							if(el == "params")
-							   fieldParams = fields[el];
-						}
-						for(var el in fields2)
-						{
-							u.set(el, fields2[el]);
-						}
-						_reqGrid.store.insert(0, u);
-						Ext.data.DataProxy.addListener('write', createMethodParams);
-						store.save();
-						win.close();
-
+							saveNewRequest(false,rec);	
 					}
 					},{
 						text: EasySDI_Mon.lang.getLocal('grid action cancel'),
 						handler: function(){
-						win.close();
-					}
+							win.close();
+						}
 					}]
-				});
+		});
 
-		
-		
 		var reqNorm = new Ext.FormPanel({
 					id: 'newNormPanel',
 					monitorValid:true,
@@ -2030,64 +2034,171 @@ Ext.onReady(function(){
 								html: '<a href="http://www.w3schools.com/xpath/xpath_syntax.asp" target="_blank">'+EasySDI_Mon.lang.getLocal('norm request help xpathsyntax')+'</a>'
 							}
 							],
-							buttons: [{
-								id:'saveNormBtnID',
+							buttons: [
+					      	{
+					      		formBind:true,
+					      		id:'runTestNormBtnID',
+								text: EasySDI_Mon.lang.getLocal('jobRequestTabTestBtn'),
+								handler: function(){
+									saveNewRequest(true,rec);
+								}
+							},         
+							{
 								formBind:true,
+								id:'saveNormBtnID',
 								text: EasySDI_Mon.lang.getLocal('grid action ok'),
 								handler: function(){
-								var name = rec.get('name');
-								proxy.setUrl(EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+name+'/queries');
-								var fields = Ext.getCmp('newReqPanel').getForm().getFieldValues();
-								var fields2 = Ext.getCmp('newNormPanel').getForm().getFieldValues();
-								var u = new _reqGrid.store.recordType(EasySDI_Mon.DefaultReq);
-								var simple = Ext.getCmp('JobGrid').getSelectionModel().getSelected().get('serviceType').toLowerCase() != 'all';
-								for (var el in fields){
-									if(el == "queryServiceType")
-									{
-										var value = Ext.getCmp('sMComboxID').getValue().toLowerCase();
-										if(value.indexOf("soap") != -1 || value.indexOf("http get") != -1 || value.indexOf("http post") != -1 || simple)
-										{
-											u.set(el, '');
-										}else
-										{
-											var temp = fields[el].toString();
-											u.set(el, temp.replace('[','').replace('[',''));
-										}
-										
-										
-									}else if(el == "queryMethod" && simple)
-									{
-										u.set(el, '');
-									}else
-									{
-										u.set(el, fields[el]);
-									}
-									if(el == "params"){
-									
-									   fieldParams = fields[el];
-									}
-								}
-								for(var el in fields2)
-								{
-									u.set(el, fields2[el]);
-								}
-								_reqGrid.store.insert(0, u);
-								Ext.data.DataProxy.addListener('write', createMethodParams);
-								store.save();
-								win.close();
-
+									saveNewRequest(false,rec);
 							}
 							},{
 								text: EasySDI_Mon.lang.getLocal('grid action cancel'),
 								handler: function(){
-								win.close();
-							}
+									win.close();
+								}
 							}]
 						}
 						]}
 						]
 				});
+		
+		var previewNorm = new Ext.FormPanel({
+			id: 'newPreviewPanel',
+			monitorValid:true,
+			frame:true,
+			labelWidth: 50,
+			autoWidth:true,
+			height: 370,
+			region:'center',
+			items: [
+				{
+					id:'regNamePreview',
+					xtype: 'label',
+					text: '',
+					fieldLabel: 'Request',
+					height: 80
+				},
+				{
+				layout:'column',
+				items:[		
+							{
+								columnWidth:.2,
+								layout: 'form',
+								items:[
+								{
+									html: 'Size(Bytes)',
+									height: 30
+								},
+								{
+									html: 'Time(ms)',
+									height: 30
+								},
+								{
+									html: 'Xpath',
+									height: 30
+								}
+								]
+							},
+							{
+								columnWidth:.4,
+								layout: 'form',
+								items: [
+								{
+									id: 'normSizePreview',
+									xtype: 'textfield',
+									anchor:'95%',
+									disabled: true,
+									fieldLabel: EasySDI_Mon.lang.getLocal('preview request norm'),
+									name: 'normSizePreview'
+								},
+								{
+									id: 'normTimePreview',
+									xtype: 'textfield',
+									anchor:'95%',
+									disabled: true,
+									fieldLabel: EasySDI_Mon.lang.getLocal('preview request norm'),
+									name: 'normTimePreview'
+								},
+								{
+									id: 'xpathNormPreview',
+									xtype: 'textarea',
+									height:100,
+									name: 'xpathNormPreview',
+									fieldLabel: EasySDI_Mon.lang.getLocal('preview request norm'),
+									allowBlank:true,
+									disabled: true,
+									anchor:'95%',
+									value: ''
+								},
+								{
+									id: 'responseLinkPreview',
+									html: '',
+									anchor:'95%'
+								}
+								]
+							},
+							{
+								columnWidth:.4,
+								layout: 'form',
+								items:[
+							
+								{
+									id: 'resultSizePreview',
+									xtype: 'textfield',
+									fieldLabel: EasySDI_Mon.lang.getLocal('preview request result'),
+									name: 'resultSizePreview',
+									anchor:'95%'
+								},
+								{
+									id: 'resultTimePreview',
+									xtype: 'textfield',
+									anchor:'95%',
+									fieldLabel: EasySDI_Mon.lang.getLocal('preview request result'),
+									name: 'resultTimePreview'
+								},
+								{
+									id: 'xpathResultPreview',
+									xtype: 'textarea',
+									height:100,
+									fieldLabel: EasySDI_Mon.lang.getLocal('preview request result'),
+									name: 'xpathResultPreview',
+									allowBlank: true,
+									anchor:'95%',
+									value: ''
+								},
+								{
+									id: 'responseImagePreview',
+									anchor:'95%',
+									height: 142,
+									html: ''
+								}
+								]
+							}
+							]}
+							],
+							buttons: [
+							{
+								id:'runTestPreviewBtnID',
+								text: EasySDI_Mon.lang.getLocal('jobRequestTabTestBtn'),
+								handler: function(){
+									saveNewRequest(true,rec);
+								}
+							},         
+							{
+								id:'runsaveTestBtnID',
+								text: EasySDI_Mon.lang.getLocal('grid action ok'),
+								handler: function(){
+									saveNewRequest(false,rec);
+							}
+							},{
+								text: EasySDI_Mon.lang.getLocal('grid action cancel'),
+								handler: function(){
+									win.close();
+								}
+							}]
+					
 			
+		});
+		
 		requestParmPanel = {
 			title: 'Request',
 			xtype: 'panel',
@@ -2104,8 +2215,16 @@ Ext.onReady(function(){
 			items: [reqNorm]
 		};
 		
-		//Open a window for entering job's first values
+		requestPreviewPanel = {
+				title: 'Preview',
+				xtype: 'panel',
+				height: 370,
+				border:false,
+				items: [previewNorm]
+		};
+		
 		var win = new  Ext.Window({
+			id: 'winQuery',
 			title:EasySDI_Mon.lang.getLocal('new request'),
 			width:450,
 			height: 450,
@@ -2118,7 +2237,8 @@ Ext.onReady(function(){
 			activeTab: 0,
 				items:[
 					requestParmPanel,
-					requestNormPanel 
+					requestNormPanel,
+					requestPreviewPanel
 				]})
 			]
 		});
@@ -2166,6 +2286,7 @@ Ext.onReady(function(){
 				defaults: {width: 290},
 				defaultType: 'textfield',
 				items: [{
+					id: 'reqTextID',
 					fieldLabel: EasySDI_Mon.lang.getLocal('grid header name'),
 					xtype: 'textfield',
 					value: rec.get('name'),
@@ -2189,7 +2310,10 @@ Ext.onReady(function(){
 					store:          new Ext.data.SimpleStore({
 						fields : ['name'],
 						data :options
-					})
+					}),
+					listeners: {
+						'change': enableNormSave
+					}
 				},					
 				{
 					id: 'reqSoapActionEdit',
@@ -2214,7 +2338,10 @@ Ext.onReady(function(){
 	        		store:          new Ext.data.SimpleStore({
 	        			fields : ['name'],
 	        			data   : EasySDI_Mon.HttpMethodStore
-	        		})
+	        		}),
+	        		listeners: {
+						'change': enableNormSave
+					}
 				},
 				{
 					id: 'sTComboxIDEdit',
@@ -2241,51 +2368,18 @@ Ext.onReady(function(){
 					allowBlank:true,
 					xtype: 'textarea'
 				}],
-				buttons: [{
+				buttons: [
+		             {
+		            	formBind:true,
+	             		text: EasySDI_Mon.lang.getLocal('jobRequestTabTestBtn'),
+	             		handler: function(){
+	             			updateRequest(true,rec);
+	             		}
+					},{
 					formBind:true,
 					text: EasySDI_Mon.lang.getLocal('grid action ok'),
 					handler: function(){
-					   var jobRec = Ext.getCmp('JobGrid').getSelectionModel().getSelected();
-					   var jobName = jobRec.get('name');
-					   var name = rec.get('name');
-					   //Change the proxy to the good url
-					   proxy.setUrl(EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+jobName+'/queries');
-					   var fields = Ext.getCmp('editReqPanel').getForm().getFieldValues();
-					   var fieldsValiation = Ext.getCmp('editNormPanel').getForm().getFieldValues(); 
-					   var simple = Ext.getCmp('JobGrid').getSelectionModel().getSelected().get('serviceType').toLowerCase() != 'all';
-					   //Avoids commit to each "set()"
-					   var r = rec;
-					   rec.beginEdit();
-					   rec.set('serviceMethod', fields.serviceMethod);
-					   rec.set('params', fields.params);
-					   rec.set('soapUrl', fields.soapUrl);
-					   if(simple)
-					   {
-						   rec.set('queryMethod',''); 
-					   }else
-					   {
-						   rec.set('queryMethod',fields.queryMethod);
-					   }
-					   var value = fields.serviceMethod.toLowerCase();
-					   if(value.indexOf("soap") != -1 || value.indexOf("http get") != -1 || value.indexOf("http post") != -1 || simple)
-					   {
-						   rec.set('queryServiceType','');
-						}else
-						{
-							 rec.set('queryServiceType',fields.queryServiceType);
-						}
-					  
-					   
-					   for(var el in fieldsValiation)
-					   {
-							rec.set(el, fieldsValiation[el]);
-					   }
-					   rec.endEdit();
-					   fieldParams = fields.params;
-					   //after save, save the params
-					   Ext.data.DataProxy.addListener('write', createMethodParams);
-					   store.save();
-					   win.close();
+						updateRequest(false,rec);
 				}
 				},{
 					text: EasySDI_Mon.lang.getLocal('grid action cancel'),
@@ -2436,52 +2530,20 @@ Ext.onReady(function(){
 							{
 								html: '<a href="http://www.w3schools.com/xpath/xpath_syntax.asp" target="_blank">'+EasySDI_Mon.lang.getLocal('norm request help xpathsyntax')+'</a>'
 							}],
-							buttons: [{
-								formBind:true,
-								text: EasySDI_Mon.lang.getLocal('grid action ok'),
-								handler: function(){
-									 var jobRec = Ext.getCmp('JobGrid').getSelectionModel().getSelected();
-									   var jobName = jobRec.get('name');
-									   var name = rec.get('name');
-									   //Change the proxy to the good url
-									   proxy.setUrl(EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+jobName+'/queries');
-									   var fields = Ext.getCmp('editReqPanel').getForm().getFieldValues();
-									   var fieldsValiation = Ext.getCmp('editNormPanel').getForm().getFieldValues(); 
-									   var simple = Ext.getCmp('JobGrid').getSelectionModel().getSelected().get('serviceType').toLowerCase() != 'all';
-									   //Avoids commit to each "set()"
-									   var r = rec;
-									   rec.beginEdit();
-									   rec.set('serviceMethod', fields.serviceMethod);
-									   rec.set('soapUrl', fields.soapUrl);
-									   if(simple)
-									   {
-										   rec.set('queryMethod','');
-									   }else
-									   {
-										   rec.set('queryMethod',fields.queryMethod);
-									   }
-									   var value = fields.serviceMethod.toLowerCase();
-									   if(value.indexOf("soap") != -1 || value.indexOf("http get") != -1 || value.indexOf("http post") != -1 || simple)
-									   {
-										    rec.set('queryServiceType','');
-										}else
-										{
-											rec.set('queryServiceType',fields.queryServiceType);
-										}
-									   rec.set('params', fields.params);
-									   for(var el in fieldsValiation)
-									   {
-											rec.set(el, fieldsValiation[el]);
-									   }
-									   rec.endEdit();
-									   rec.endEdit();
-									   fieldParams = fields.params;
-									   //after save, save the params
-									   Ext.data.DataProxy.addListener('write', createMethodParams);
-									   store.save();
-									   win.close();
-									  
-									}// end handler
+							buttons: [
+						         {
+					        	 	id:'runTestNormBtnID',
+				             		text: EasySDI_Mon.lang.getLocal('jobRequestTabTestBtn'),
+				             		handler: function(){
+				             			updateRequest(true,rec);
+				             		}
+								},
+							    {
+									id:'saveNormBtnID',
+									text: EasySDI_Mon.lang.getLocal('grid action ok'),
+									handler: function(){
+										updateRequest(false,rec);
+									}
 							},{
 								text: EasySDI_Mon.lang.getLocal('grid action cancel'),
 								handler: function(){
@@ -2493,7 +2555,146 @@ Ext.onReady(function(){
 						]}
 					]
 				});
+		
+		var previewNorm = new Ext.FormPanel({
+			id: 'newPreviewPanel',
+			monitorValid:true,
+			frame:true,
+			labelWidth: 50,
+			autoWidth:true,
+			height: 370,
+			region:'center',
+			items: [
+				{
+					id:'regNamePreview',
+					xtype: 'label',
+					text:  rec.get('name'),
+					fieldLabel: 'Request',
+					height: 80
 			
+				},
+				{
+				layout:'column',
+				items:[		
+							{
+								columnWidth:.2,
+								layout: 'form',
+								items:[
+								{
+									html: 'Size(Bytes)',
+									height: 30
+								},
+								{
+									html: 'Time(ms)',
+									height: 30
+								},
+								{
+									html: 'Xpath',
+									height: 30
+								}
+								]
+							},
+							{
+								columnWidth:.4,
+								layout: 'form',
+								items: [
+								{
+									id: 'normSizePreview',
+									xtype: 'textfield',
+									anchor:'95%',
+									disabled: true,
+									fieldLabel: EasySDI_Mon.lang.getLocal('preview request norm'),
+									name: 'normSizePreview'
+								},
+								{
+									id: 'normTimePreview',
+									xtype: 'textfield',
+									anchor:'95%',
+									disabled: true,
+									fieldLabel: EasySDI_Mon.lang.getLocal('preview request norm'),
+									name: 'normTimePreview'
+								},
+								{
+									id: 'xpathNormPreview',
+									xtype: 'textarea',
+									height:100,
+									name: 'xpathNormPreview',
+									fieldLabel: EasySDI_Mon.lang.getLocal('preview request norm'),
+									allowBlank:true,
+									disabled: true,
+									anchor:'95%',
+									value: ''
+								},
+								{
+									id: 'responseLinkPreview',
+									html: '',
+									anchor:'95%'
+								}
+								]
+							},
+							{
+								columnWidth:.4,
+								layout: 'form',
+								items:[
+							
+								{
+									id: 'resultSizePreview',
+									xtype: 'textfield',
+									fieldLabel: EasySDI_Mon.lang.getLocal('preview request result'),
+									name: 'resultSizePreview',
+									anchor:'95%'
+								},
+								{
+									id: 'resultTimePreview',
+									xtype: 'textfield',
+									anchor:'95%',
+									fieldLabel: EasySDI_Mon.lang.getLocal('preview request result'),
+									name: 'resultTimePreview'
+								},
+								{
+									id: 'xpathResultPreview',
+									xtype: 'textarea',
+									height:100,
+									fieldLabel: EasySDI_Mon.lang.getLocal('preview request result'),
+									name: 'xpathResultPreview',
+									allowBlank: true,
+									anchor:'95%',
+									value: ''
+								},
+								{
+									id: 'responseImagePreview',
+									anchor:'95%',
+									height: 142,
+									html: ''
+								}
+								]
+							}
+							]}
+							],
+							buttons: [
+							{
+								id: 'runTestPreviewBtnID',
+								text: EasySDI_Mon.lang.getLocal('jobRequestTabTestBtn'),
+								handler: function(){
+									updateRequest(true,rec);
+								}
+							},   
+							{
+								id:'runsaveTestBtnID',
+								text: EasySDI_Mon.lang.getLocal('grid action ok'),
+								handler: function(){
+									updateRequest(false,rec);
+								}
+							},{
+							text: EasySDI_Mon.lang.getLocal('grid action cancel'),
+							handler: function(){
+								win.close();
+							}
+							}]
+					
+			
+		});
+		
 		requestParmPanel = {
 			title: 'Request',
 			xtype: 'panel',
@@ -2509,10 +2710,19 @@ Ext.onReady(function(){
 			border:false,
 			items: [reqNorm]
 		};
+		
+		requestPreviewPanel = {
+				title: 'Preview',
+				xtype: 'panel',
+				height: 370,
+				border:false,
+				items: [previewNorm]
+		};
 	
 		//Open a window for entering job's first values
 		win = new  Ext.Window({
-		title:EasySDI_Mon.lang.getLocal('edit request'),
+			id: 'winQuery',
+			title:EasySDI_Mon.lang.getLocal('edit request'),
 			width:450,
 			height: 450,
 			autoScroll:true,
@@ -2524,7 +2734,8 @@ Ext.onReady(function(){
 			activeTab: 0,
 				items:[
 					requestParmPanel,
-					requestNormPanel 
+					requestNormPanel,
+					requestPreviewPanel
 				]})
 			]
 		});	
@@ -2542,15 +2753,142 @@ Ext.onReady(function(){
 				changeMethods(rec.data.name,'reqServiceMethodComboEdit');
 			}
 		});
+		
+		if(showPreview)
+		{
+			showPreview = false;
+			runRequestTest(rec.data);
+		}
 	}  
-  
-  function createMethodParams (proxy, action, result, res, rs) {
-  	
-	      Ext.data.DataProxy.removeListener('write', createMethodParams);      
+	
+	/*
+	 * Update request
+	 * */
+	function updateRequest(runTest,rec)
+	{
+	   var jobRec = Ext.getCmp('JobGrid').getSelectionModel().getSelected();
+	   var jobName = jobRec.get('name');
+	   //Change the proxy to the good url
+	   proxy.setUrl(EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+jobName+'/queries');
+	   var fields = Ext.getCmp('editReqPanel').getForm().getFieldValues();
+	   var fieldsValiation = Ext.getCmp('editNormPanel').getForm().getFieldValues(); 
+	   var simple = Ext.getCmp('JobGrid').getSelectionModel().getSelected().get('serviceType').toLowerCase() != 'all';
+	   //Avoids commit to each "set()"
+	   var r = rec;
+	   rec.beginEdit();
+	   rec.set('serviceMethod', fields.serviceMethod);
+	   rec.set('soapUrl', fields.soapUrl);
+	   if(simple)
+	   {
+		   rec.set('queryMethod','');
+	   }else
+	   {
+		   rec.set('queryMethod',fields.queryMethod);
+	   }
+	   var value = fields.serviceMethod.toLowerCase();
+	   if(value.indexOf("soap") != -1 || value.indexOf("http get") != -1 || value.indexOf("http post") != -1 || simple)
+	   {
+		    rec.set('queryServiceType','');
+		}else
+		{
+			var temp = fields.queryServiceType.toString();
+			temp = temp.replace('[','').replace(']','');
+			rec.set('queryServiceType',temp);
+		}
+	
+	   rec.set('params', fields.params);
+	   for(var el in fieldsValiation)
+	   {
+			rec.set(el, fieldsValiation[el]);
+	   }
+	 
+	   rec.endEdit();
+	   fieldParams = fields.params;
+	   //after save, save the params
+	   Ext.data.DataProxy.addListener('write', createMethodParams);
+	   store.save();
+	   // 0 when not and bigger if not
+	  if(store.modified.length == 0)
+	  {
+		runRequestTest(r.data);
+	  }
+	
+	   if(runTest)
+	   {
+		   testRun = true;
+	   }else
+	   {
+		   testRun = false;
+		   Ext.getCmp('winQuery').close();
+	   }
+	     	
+	}
+	
+	/*
+	 * Save new request
+	 * */
+	function saveNewRequest(runTest,rec)
+	{
+		var name = rec.get('name');
+		proxy.setUrl(EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+name+'/queries');
+		var fields = Ext.getCmp('newReqPanel').getForm().getFieldValues();
+		var fields2 = Ext.getCmp('newNormPanel').getForm().getFieldValues();
+		
+		var simple = Ext.getCmp('JobGrid').getSelectionModel().getSelected().get('serviceType').toLowerCase() != 'all';
+		
+		var u = new _reqGrid.store.recordType(EasySDI_Mon.DefaultReq);
+		for (var el in fields)
+		{
+			if(el == "queryServiceType")
+			{
+				var value = Ext.getCmp('sMComboxID').getValue().toLowerCase();
+				if(value.indexOf("soap") != -1 || value.indexOf("http get") != -1 || value.indexOf("http post") != -1 || simple)
+				{
+					u.set(el, '');
+				}else
+				{
+					var temp = fields[el].toString();
+					u.set(el, temp.replace('[','').replace(']',''));
+				}
+				
+				
+			}else if(el == "queryMethod" && simple)
+			{
+				u.set(el, '');
+			}else
+			{
+				u.set(el, fields[el]);
+			}
+			if(el == "params"){
+			
+			   fieldParams = fields[el];
+			}
+		}
+		for(var el in fields2)
+		{
+			u.set(el, fields2[el]);
+		}
+		_reqGrid.store.insert(0, u);
+		Ext.data.DataProxy.addListener('write', createMethodParams);
+		store.save();
+	  if(runTest)
+	  {
+		  showPreview = true;  
+	  }
+	  else
+	  {
+		  showPreview = false;
+	  }
+	   Ext.getCmp('winQuery').close();
+	}	
+	
+	function createMethodParams (proxy, action, result, res, rs) {
+	  	
+        Ext.data.DataProxy.removeListener('write', createMethodParams);      
 	      
-	      var jobRec = Ext.getCmp('JobGrid').getSelectionModel().getSelected();
-			  var jobName = jobRec.get('name');
-				var name = rs.get('name');
+        var jobRec = Ext.getCmp('JobGrid').getSelectionModel().getSelected();
+		var jobName = jobRec.get('name');
+		var name = rs.get('name');
 	 
 		if(res.raw.data.serviceMethod.toLowerCase().indexOf("soap")!=-1)
 		{
@@ -2561,24 +2899,36 @@ Ext.onReady(function(){
 		{
 			queryMethod = res.data[0].queryMethod;
 		}
-		
+
 		if(res.raw.data.serviceMethod.toLowerCase().indexOf("getrecords")!=-1 && (queryMethod.toLowerCase() == "post" || (queryMethod.toLowerCase() != "get" && jobRec.get('httpMethod').toLowerCase().indexOf("post") != -1 )))
 		{
 			fieldParams ="cswparam="+encodeURIComponent(fieldParams);
 		}
-		
-	      Ext.Ajax.request({
-					loadMask: true,
-					method: 'POST',
-				  params: fieldParams,
-				  url: EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+jobName+'/queries/'+name+"/params",
-				  success: function(response){
-				  	reloadReqGrid();
-				  },
-				  failure: function(response){
-			          EasySDI_Mon.App.setAlert(false,  EasySDI_Mon.lang.getLocal('error meth params')+'. '+'status:'+response.status+' message:'+response.statusText);
-				  }
-				});
+		// Handling error when writing key word "format" with small
+		fieldParams = trim(fieldParams);
+		if(fieldParams.indexOf("format=") == 0)
+		{
+			fieldParams = fieldParams.replace("format=","FORMAT=");
+		}else
+		{
+			fieldParams = fieldParams.replace("&format=","&FORMAT=");
+		}
+		if(showPreview)
+		{
+			queryNameToUse = name;
+		}
+		Ext.Ajax.request({
+				loadMask: true,
+				method: 'POST',
+			  params: fieldParams,
+			  url: EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+jobName+'/queries/'+name+"/params",
+			  success: function(response){
+			  	//reloadReqGrid();
+			  },
+			  failure: function(response){
+		          EasySDI_Mon.App.setAlert(false,  EasySDI_Mon.lang.getLocal('error meth params')+'. '+'status:'+response.status+' message:'+response.statusText);
+			  }
+			});
 	        
 	      var paramsTemp = "";
 		  if(rs.data.id)
@@ -2589,20 +2939,96 @@ Ext.onReady(function(){
 		  }
 	      Ext.Ajax.request({
 					loadMask: true,
-					method: 'PUT',// BOTH insert/update
+					method: 'PUT',
 					headers: {
 					'Content-Type': 'application/json'
 				},
 				params: paramsTemp,
 				url: EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+jobName+'/queries/'+name+'/validationSettings',
 				success: function(response){
+					var jsonResp = Ext.util.JSON.decode(response.responseText);
 					reloadReqGrid();
+					if(testRun)
+					{
+						 runRequestTest(jsonResp.data);
+					}
 				},
 				failure: function(response){
 					 EasySDI_Mon.App.setAlert(false,  EasySDI_Mon.lang.getLocal('error meth params')+'. '+'status:'+response.status+' message:'+response.statusText);
 				}
 		});	
 	}
+  
+	function runRequestTest(data){
+  		var jobRec = Ext.getCmp('JobGrid').getSelectionModel().getSelected();
+ 		var jobName = jobRec.get('name'); 
+ 		var tab = Ext.getCmp('card-tabs-panel2');
+		var rec = data;
+		if(tab)
+		{
+			tab.setActiveTab(2);
+		}
+		var myMask = new Ext.LoadMask(Ext.getCmp('winQuery').getEl(), {msg:EasySDI_Mon.lang.getLocal('message wait')});
+		myMask.show();
+ 		Ext.Ajax.request({
+				loadMask: true,
+				method: 'get',
+				headers: {
+				'Content-Type': 'application/json'
+			},
+			url: EasySDI_Mon.proxy+EasySDI_Mon.CurrentJobCollection+'/'+jobName+'/queries/'+rec.queryID+'/preview',
+			success: function(response){
+				myMask.hide();
+				var jsonResp = Ext.util.JSON.decode(response.responseText);
+				if(jsonResp)
+				{
+					var dataurl = EasySDI_Mon.proxy+'image/preview/'+jsonResp.data.queryID+'?contenttype='+jsonResp.data.content_type;
+					Ext.getCmp('resultSizePreview').setValue(jsonResp.data.size);
+					Ext.getCmp('resultTimePreview').setValue(Math.round(jsonResp.data.time*1000));
+					Ext.getCmp('xpathResultPreview').setValue(jsonResp.data.xpath_result);
+					if(rec.useSizeValidation)
+					{
+						Ext.getCmp('normSizePreview').setValue(rec.normSize);
+					}else
+					{
+						Ext.getCmp('normSizePreview').setValue(EasySDI_Mon.lang.getLocal('preview request novalidation'));
+					}
+					if(rec.useTimeValidation)
+					{
+						Ext.getCmp('normTimePreview').setValue(rec.normTime);
+					}else
+					{
+						Ext.getCmp('normTimePreview').setValue(EasySDI_Mon.lang.getLocal('preview request novalidation'));
+					}
+					if(rec.useXpathValidation)
+					{
+						Ext.getCmp('xpathNormPreview').setValue(rec.expectedXpathOutput);
+					}else
+					{
+						Ext.getCmp('xpathNormPreview').setValue(EasySDI_Mon.lang.getLocal('preview request novalidation'));
+					}
+				
+					var testLink = Ext.getCmp('responseLinkPreview');
+					if(testLink)
+					{
+						testLink.el.dom.setHTML('<a href="'+dataurl+'" target="_blank">'+EasySDI_Mon.lang.getLocal('overview text datalink')+'</a>')
+					}
+					var testImage = Ext.getCmp('responseImagePreview');
+					if(jsonResp.data.content_type && jsonResp.data.content_type.toLowerCase().indexOf("image") != -1)
+					{
+						testImage.el.dom.setHTML('<img src='+dataurl+' alt="missing image" style="border:1px solid;" width="140" height="140" />');
+					}else
+					{
+						testImage.el.dom.setHTML('');
+					}
+				}
+			},
+			failure: function(response){
+				myMask.hide();
+				EasySDI_Mon.App.setAlert(false,  EasySDI_Mon.lang.getLocal('error meth params')+'. '+'status:'+response.status+' message:'+response.statusText);
+			}
+ 		});	
+  	}
   
 	/**
 	 * onDelete
@@ -2669,7 +3095,12 @@ Ext.onReady(function(){
 		_reqGrid.removeBtn.setDisabled(sm.getCount() < 1);
 		_reqGrid.editBtn.setDisabled(sm.getCount() < 1);
 	});
-
+	
+	function trim(s) {
+		s = s.replace(/(^\s*)|(\s*$)/gi,"");
+		s = s.replace(/[ ]{2,}/gi," ");
+	return s;
+	}
 });/**
  * EasySDI, a solution to implement easily any spatial data infrastructure
  * Copyright (C) EasySDI Community 
@@ -3161,7 +3592,6 @@ Ext.onReady(function() {
 			        	ref: 'slaPanel',
 			        	region:'center',
 			        	bodyStyle:'padding:5px 5px 0',
-			        	autoHeight:true,
 			        	frame:true,
 			        	autoHeight:true,
 			        	items: [{
@@ -4869,7 +5299,8 @@ Ext.onReady(function() {
 		renderer: function (value) {
 		//return the job name from its id from the job store. Isn't it beautiful?
 		return Ext.getCmp('JobGrid').store.getAt(Ext.getCmp('JobGrid').store.findExact('id', value)).get('name');
-		}
+	},
+	sortable: true
 	},{
 		header:EasySDI_Mon.lang.getLocal('status'),
 		dataIndex:"newStatusCode",
@@ -4916,15 +5347,6 @@ Ext.onReady(function() {
 		loadMask:new Ext.LoadMask(Ext.getBody(), {msg:EasySDI_Mon.lang.getLocal('message wait')}),
 		store:store,
 		cm:cm,
-		listeners:{
-			
-			headerclick :function(grid, colnum){
-				if(grid.colModel.config[colnum].sortable == true)
-					this.getBottomToolbar().moveFirst();
-			}
-				
-		},
-
 		// paging bar on the bottom
 		/*
       No pagination because arraystore do not support load.
@@ -4952,7 +5374,37 @@ Ext.onReady(function() {
 			valueField:     'name',
 			emptyText: EasySDI_Mon.lang.getLocal('combo select a job'),
 			store:jobComboStore
+			/*
+	    listeners: {
+               select: function(cmb, rec) {
+                  alert(rec.id);
+               }
+             }
+			 */
+		}, '-',{
+			id: 'btnLatestAlerts',
+			ref:'../btnLatestAlerts',
+			iconCls:'icon-only-newest-alert',
+			text: EasySDI_Mon.lang.getLocal('only latest alerts'),
+			enableToggle: true,
+			toggleHandler: function (item, pressed){
+			//clear the store
+			store.removeAll();
+			//trigger the job alerts loading either for one or all jobs
 			
+			if(_alertsGrid.cbJobs.getValue() == 'All'){
+				var arrRec = jobComboStore.getRange();
+				for ( var i=0; i< arrRec.length; i++ ){
+					//create a store for all jobs and get their alerts
+					if(arrRec[i].get('name') != 'All')
+					   loadAlertData(arrRec[i].get('name'), i+1, arrRec.length);
+				}
+			}else{
+				if(_alertsGrid.cbJobs.getValue() != ""){
+					loadAlertData(_alertsGrid.cbJobs.getValue(), 1, 1);
+				}
+			}
+		}
 		}]
 	});
 
@@ -5009,13 +5461,17 @@ Ext.onReady(function() {
 
 					store.removeAll();
 					var aRec = this.getRange();
-				
+					if(_alertsGrid.btnLatestAlerts.pressed){
+						//If there is at least one record
+						if(aRec.length > 0)
+							store.add(aRec[aRec.length - 1]);
+					}else{
 						for ( var j=0; j< aRec.length; j++ )
 						{
 							//feed the grid store with the collected alerts
 							store.add(aRec[j]);
 						}
-					
+					}
 				}
 			}
 		});
