@@ -255,7 +255,6 @@ public class JobDao extends HibernateDaoSupport implements IJobDao {
         }
 
         try {
-        	this.getHibernateTemplate().merge(job);
             this.getHibernateTemplate().saveOrUpdate(job);
             return true;
 
