@@ -958,6 +958,34 @@ function savePolicyCSW($thePolicy){
 			}
 		}
 	}
+	
+	//BBOX filter
+	$maxxDestination = JRequest::getVar("maxxDestination","",'defaut','none',JREQUEST_ALLOWRAW);
+	if($maxxDestination != ""){
+		$minxDestination = JRequest::getVar("minxDestination","",'defaut','none',JREQUEST_ALLOWRAW);
+		$maxyDestination = JRequest::getVar("maxyDestination","",'defaut','none',JREQUEST_ALLOWRAW);
+		$minyDestination = JRequest::getVar("minyDestination","",'defaut','none',JREQUEST_ALLOWRAW);
+		$crsSource = JRequest::getVar("crsSource","",'defaut','none',JREQUEST_ALLOWRAW);
+		$maxxSource = JRequest::getVar("maxx","",'defaut','none',JREQUEST_ALLOWRAW);
+		$minxSource = JRequest::getVar("minx","",'defaut','none',JREQUEST_ALLOWRAW);
+		$maxySource = JRequest::getVar("maxy","",'defaut','none',JREQUEST_ALLOWRAW);
+		$minySource = JRequest::getVar("miny","",'defaut','none',JREQUEST_ALLOWRAW);
+		
+		$thePolicy->BBOXFilter['crsSource']=$crsSource;
+		$thePolicy->BBOXFilter['minx']=$minxSource;
+		$thePolicy->BBOXFilter['miny']=$minySource;
+		$thePolicy->BBOXFilter['maxx']=$maxxSource;
+		$thePolicy->BBOXFilter['maxy']=$maxySource;
+		$thePolicy->BBOXFilter->CRS="urn:x-ogc:def:crs:EPSG:4326";
+		$thePolicy->BBOXFilter->minx=$minxDestination;
+		$thePolicy->BBOXFilter->miny=$minyDestination;
+		$thePolicy->BBOXFilter->maxx=$maxxDestination;
+		$thePolicy->BBOXFilter->maxy=$maxyDestination;
+	}else{
+		unset($thePolicy->BBOXFilter);
+	}
+	$IncludeHarvested = JRequest::getVar("IncludeHarvested","true",'defaut','none',JREQUEST_ALLOWRAW);
+	$thePolicy->IncludeHarvested=$IncludeHarvested;
 }
 
 /**
@@ -1597,9 +1625,14 @@ function saveConfig($xml,$configFilePath){
 				}
 			}
 						
-			//Ogc search filter
+			//Harvesting and Ogc search filter
 			if (strcmp($servletClass,"org.easysdi.proxy.csw.CSWProxyServlet")==0 )
 			{
+				$harvesting = JRequest::getVar("harvestingConfig",0);
+				if($harvesting == 1)
+					$config->{"harvesting-config"}="true";
+				else 
+					$config->{"harvesting-config"}="false";
 				$ogcSearchFilter = JRequest::getVar("ogcSearchFilter","");
 				$config->{"ogc-search-filter"}=$ogcSearchFilter;
 			}

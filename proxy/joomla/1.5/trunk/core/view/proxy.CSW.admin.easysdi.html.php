@@ -173,9 +173,62 @@ class HTML_proxyCSW {
 	{
 	?>
 		<script>
+		var waitFor = 0;
 		function submitbutton(pressbutton)
 		{
-			submitform(pressbutton);	
+			if(document.getElementById('crsSource').value == "" && 
+					document.getElementById ('maxx').value == "" && 
+					document.getElementById ('minx').value == "" && 
+					document.getElementById ('maxy').value == "" &&
+					document.getElementById ('miny').value == ""){
+				document.getElementById ('maxxDestination').value = "";
+				document.getElementById ('maxyDestination').value = "";
+				document.getElementById ('minxDestination').value = "";
+				document.getElementById ('minyDestination').value = "";
+				submitform(pressbutton);
+				return;
+			}
+			try{
+				var crsSource = document.getElementById('crsSource').value;
+				var maxx = document.getElementById ('maxx').value;
+				var minx = document.getElementById ('minx').value;
+				var maxy = document.getElementById ('maxy').value;
+				var miny = document.getElementById ('miny').value;
+				if(crsSource == "" || maxx == "" || maxy == "" || minx == "" || miny == ""){
+					alert ("Veuillez vérifier la définition de votre filtre géographique.");
+					return;
+				}
+				var source = new Proj4js.Proj(crsSource);
+				var dest = new Proj4js.Proj('EPSG:4326');
+				waitFor += 1;
+				checkProjLoaded(minx, miny,maxx,maxy, source, dest,pressbutton)
+			}catch (err){
+				alert ("Veuillez vérifier la définition de votre filtre géographique.");
+				return;
+			}	
+		}
+
+		function checkProjLoaded(minx, miny,maxx,maxy, source, dest,pressbutton) {
+		    if (!source.readyToUse || !dest.readyToUse) {
+		      window.setTimeout(Proj4js.bind(checkProjLoaded, this, minx, miny,maxx,maxy, source, dest,pressbutton), 500);
+		    } else {
+			    waitFor -= 1;
+			    calculateBBOX(minx, miny,maxx,maxy, source, dest,pressbutton);
+		    }
+		}
+
+		function calculateBBOX(minx, miny,maxx,maxy, source, dest,pressbutton){
+			var pLowerEastCorner = new Proj4js.Point(new Array(minx,miny));   
+			Proj4js.transform(source, dest, pLowerEastCorner);
+			var pUpperWestCorner = new Proj4js.Point(new Array(maxx,maxy));   
+			Proj4js.transform(source, dest, pUpperWestCorner);
+
+			document.getElementById ('maxxDestination').value = pUpperWestCorner.x;
+			document.getElementById ('maxyDestination').value = pUpperWestCorner.y;
+			document.getElementById ('minxDestination').value = pLowerEastCorner.x;
+			document.getElementById ('minyDestination').value = pLowerEastCorner.y;
+
+			submitform(pressbutton);
 		}
 		
 		function disableOperationCheckBoxes()
@@ -250,7 +303,56 @@ class HTML_proxyCSW {
 				</tr>
 			</table>
 		</fieldset>
-		<fieldset class="adminform"><legend><?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_VISIBILITY'); ?></legend>
+		
+		<fieldset class="adminform"><legend><?php echo JText::_( 'PROXY_CONFIG_EASYSDI_MD_FILTER'); ?></legend>
+		<table class="admintable">
+		<tr>
+		<th align="center"><?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_OBJECTTYPE'); ?></th>
+		<th align="center"><?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_VISIBILITY'); ?></th>
+		<th align="center"><?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_STATUS'); ?></th>
+		</tr>
+		<tr>
+		<td valign="top">
+		<fieldset class="adminform">
+			<table class="admintable">
+				<tr>
+					<td >
+						<?php if (strcasecmp($thePolicy->ObjectTypes['All'],'True')==0 || !$thePolicy->ObjectTypes ){$checkedC='checked';} ?>	
+						<input <?php echo $checkedC; ?>
+							   type="checkBox" 
+							   name="AllObjectType[]" 
+							   id="AllObjectType" 
+							   onclick="disableCheckBoxes('AllObjectType','objectType[]');">
+							   <?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_OBJECTTYPE_ALL'); ?>
+					</td>
+					<?php 
+					foreach ($rowsObjectTypes as $objectType)
+					{
+						?>
+						<td>
+						<input type="checkBox" 
+							   name="objectType[]" 
+							   id="<?php echo $objectType->value;?>" 
+							   value="<?php echo $objectType->value;?>" 
+							   <?php if (strcasecmp($checkedC,'checked')==0){echo 'disabled checked';} ?>
+							   <?php foreach ($thePolicy->ObjectTypes->ObjectType as $policyObjectType)
+							   {
+							   		if(strcasecmp($objectType->value,$policyObjectType)==0) echo 'checked';			
+							   }?>
+						><?php echo JText::_($objectType->text); ?>
+						</td>
+						</tr>
+						<tr>
+						<td></td>
+						<?php 
+					}
+					?>
+				</tr>
+			</table>
+		</fieldset>
+		</td>
+		<td valign="top" >
+		<fieldset class="adminform">
 			<table class="admintable">
 				<tr>
 					<td >
@@ -287,7 +389,9 @@ class HTML_proxyCSW {
 				</tr>
 			</table>
 		</fieldset>
-		<fieldset class="adminform"><legend><?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_STATUS'); ?></legend>
+		</td>
+		<td valign="top">
+		<fieldset class="adminform">
 			<table class="admintable">
 				<tr>
 					<td >
@@ -360,44 +464,87 @@ class HTML_proxyCSW {
 				</tr>
 			</table>
 		</fieldset>
-		<fieldset class="adminform"><legend><?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_OBJECTTYPE'); ?></legend>
+		</td>
+		
+		</tr>
+		</table>
+	</fieldset>
+	<fieldset class="adminform"><legend><?php echo JText::_( 'PROXY_CONFIG_HARVESTED_MD_FILTER'); ?></legend>
 			<table class="admintable">
 				<tr>
 					<td >
-						<?php if (strcasecmp($thePolicy->ObjectTypes['All'],'True')==0 || !$thePolicy->ObjectTypes ){$checkedC='checked';} ?>	
-						<input <?php echo $checkedC; ?>
-							   type="checkBox" 
-							   name="AllObjectType[]" 
-							   id="AllObjectType" 
-							   onclick="disableCheckBoxes('AllObjectType','objectType[]');">
-							   <?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_OBJECTTYPE_ALL'); ?>
+					<?php echo JText::_( 'PROXY_CONFIG_HARVESTED_MD_INCLUDE'); ?>
 					</td>
-					<?php 
-					foreach ($rowsObjectTypes as $objectType)
-					{
-						?>
-						<td>
-						<input type="checkBox" 
-							   name="objectType[]" 
-							   id="<?php echo $objectType->value;?>" 
-							   value="<?php echo $objectType->value;?>" 
-							   <?php if (strcasecmp($checkedC,'checked')==0){echo 'disabled checked';} ?>
-							   <?php foreach ($thePolicy->ObjectTypes->ObjectType as $policyObjectType)
-							   {
-							   		if(strcasecmp($objectType->value,$policyObjectType)==0) echo 'checked';			
-							   }?>
-						><?php echo JText::_($objectType->text); ?>
-						</td>
-						</tr>
-						<tr>
-						<td></td>
-						<?php 
-					}
-					?>
+					<td >
+					<input type="radio" name="IncludeHarvested" value="true" <?php if($thePolicy->IncludeHarvested != "false") echo "checked"; ?>> <?php echo JText::_( 'CORE_YES'); ?>
+					<input type="radio" name="IncludeHarvested" value="false" <?php if($thePolicy->IncludeHarvested == "false") echo "checked"; ?>> <?php echo JText::_( 'CORE_NO'); ?>
+					</td>
 				</tr>
 			</table>
 		</fieldset>
-	
+		
+		
+		<fieldset class="adminform"><legend><?php echo JText::_( 'PROXY_CONFIG_CSW_GEOGRAPHICAL_FILTER'); ?> 
+			</legend>
+			<table class="admintable">
+				<tr>
+					<td colspan="4" >
+						<b><?php echo JText::_( 'PROXY_CONFIG_CSW_GEOGRAPHIC_FILTER_CRS'); ?>   </b>	
+						<input type="text" size="35" maxlength="100" name="crsSource" id="crsSource" title="<?php echo JText::_( 'PROXY_CONFIG_CSW_GEOGRAPHIC_FILTER_CRS_TITLE'); ?>" value="<?php echo $thePolicy->BBOXFilter['crsSource'];?>">
+					</td>
+				</tr>
+				<tr></tr>
+				<tr>
+					<td>
+					</td>
+					<td align="right">
+						<?php echo JText::_( 'PROXY_CONFIG_BBOX_MAXY'); ?>
+					</td>
+					<td>
+						<input type="text" name="maxy" id="maxy" value="<?php echo $thePolicy->BBOXFilter['maxy'];?>">
+					</td>
+					<td>
+					</td>
+					<td>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<?php echo JText::_( 'PROXY_CONFIG_BBOX_MINX'); ?>
+					</td>
+					<td>
+						<input type="text" name="minx" id="minx" value="<?php echo $thePolicy->BBOXFilter['minx'];?>">
+					</td>
+					<td align="right">
+						<?php echo JText::_( 'PROXY_CONFIG_BBOX_MAXX'); ?>
+					</td>
+					<td>
+						<input type="text" name="maxx" id="maxx" value="<?php echo $thePolicy->BBOXFilter['maxx'];?>">
+					</td>
+					<td>
+						
+					</td>
+				</tr>
+				<tr>
+					<td>
+					</td>
+					<td align="right">
+						<?php echo JText::_( 'PROXY_CONFIG_BBOX_MINY'); ?>
+					</td>
+					<td>
+						<input type="text" name="miny" id="miny" value="<?php echo $thePolicy->BBOXFilter['miny'];?>">
+					</td>
+					<td>
+					</td>
+					<td>
+					</td>
+				</tr>
+			</table>
+			<input type="hidden" name="minyDestination"	id="minyDestination"    value="<?php echo $thePolicy->BBOXFilter->miny;?>">
+			<input type="hidden" name="minxDestination" id="minxDestination"	value="<?php echo $thePolicy->BBOXFilter->minx;?>">
+			<input type="hidden" name="maxyDestination" id="maxyDestination"	value="<?php echo $thePolicy->BBOXFilter->maxy;?>">
+			<input type="hidden" name="maxxDestination" id="maxxDestination"	value="<?php echo $thePolicy->BBOXFilter->maxx;?>">
+		</fieldset>
 		<?php
 		$remoteServerList = $config->{'remote-server-list'};
 		$iServer=0;
