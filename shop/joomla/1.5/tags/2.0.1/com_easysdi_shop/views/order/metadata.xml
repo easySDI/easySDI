@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+<layout title="Base">
+<message>
+<![CDATA[Description of my layout.]]>
+</message>
+</layout>
+<state>
+<name><![CDATA[STANDARD ORDER LAYOUT DESC]]></name>
+<description><![CDATA[STANDARD ORDER LAYOUT LONG DESC]]></description>
+  <url>
+    <param name="task" type="list" default="shop" label="Type" description="Type of menu" >
+      <option value="shop">Order</option>
+    </param>
+  </url>
+  <params>
+  </params>
+</state>
+</metadata>
