@@ -75,25 +75,31 @@ class reportEngine{
 		
 		// Qui sont du type indiqu� dans le param�tre metadatatype
 		$query .= " AND ot.code = '".$objecttype_code."'";
+		
 		$database->setQuery($query);
 		$results = $database->loadObjectList();
 		//echo $database->getQuery()."<br>";		
-		
+		//print_r($results);
 		// Si c'est la derni�re version qui est demand�e, il faut faire des traitements suppl�mentaires
 		if ($lastVersion == "yes")
 		{
-			foreach ($results as &$result)
+			foreach ($results as $key => &$result)
 			{
-				// Pour chaque m�tadonn�e qui a satisfait aux crit�res pr�c�dents, trouver sa derni�re version
+				//Pour chaque m�tadonn�e qui a satisfait aux crit�res pr�c�dents, trouver sa derni�re version
+				//Attention : et ne prendre en compte que les métadonnées publiées.
 				$query = "SELECT m.guid as metadata_guid 
 									  FROM #__sdi_objectversion ov 
 									  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
 									  WHERE ov.object_id=".$result->object_id." 
+									  AND m.metadatastate_id = (SELECT lm.id FROM #__sdi_list_metadatastate lm WHERE lm.code ='published' LIMIT 0,1)
 									  ORDER BY ov.created DESC";
-				
 				$database->setQuery($query);
 				//echo $database->getQuery()."<br>";
-				$result->metadata_guid = $database->loadResult();
+				if($database->loadResult()){
+					$result->metadata_guid = $database->loadResult();
+				}else{
+					unset($results[$key]);
+				}
 			}
 		}
 		//print_r($results);
