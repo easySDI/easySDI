@@ -431,34 +431,41 @@ class HTML_metadata {
 						        			});
 						        			var fieldsets = fields.join(' | ');
 						        			
-											form.getForm().setValues({fieldsets: fieldsets});
-						                 	form.getForm().setValues({task: 'updateMetadata'});
-						                 	form.getForm().setValues({metadata_id: '".$metadata_id."'});
-						                 	form.getForm().setValues({object_id: '".$object_id."'});
-											form.getForm().setValues({account_id: '".$account_id."'});
-											form.getForm().submit({
-										    	scope: this,
-												method	: 'POST',
-												clientValidation: true,
-												success: function(form, action) 
-												{
-													Ext.MessageBox.alert('".JText::_('CATALOG_UPDATEMETADATA_MSG_SUCCESS_TITLE')."', 
-							                    						 '".JText::_('CATALOG_UPDATEMETADATA_MSG_SUCCESS_TEXT')."',
-							                    						 function () {window.open ('./index.php?option=".$option."&Itemid=".JRequest::getVar('Itemid')."&lang=".JRequest::getVar('lang')."&task=cancelMetadata','_parent');});
-												
+						        			if (!form.getForm().fieldInvalid) 
+					        				{	
+												form.getForm().setValues({fieldsets: fieldsets});
+							                 	form.getForm().setValues({task: 'updateMetadata'});
+							                 	form.getForm().setValues({metadata_id: '".$metadata_id."'});
+							                 	form.getForm().setValues({object_id: '".$object_id."'});
+												form.getForm().setValues({account_id: '".$account_id."'});
+												form.getForm().submit({
+											    	scope: this,
+													method	: 'POST',
+													clientValidation: false,
+													success: function(form, action) 
+													{
+														Ext.MessageBox.alert('".JText::_('CATALOG_UPDATEMETADATA_MSG_SUCCESS_TITLE')."', 
+								                    						 '".JText::_('CATALOG_UPDATEMETADATA_MSG_SUCCESS_TEXT')."',
+								                    						 function () {window.open ('./index.php?option=".$option."&Itemid=".JRequest::getVar('Itemid')."&lang=".JRequest::getVar('lang')."&task=cancelMetadata','_parent');});
+													
+														myMask.hide();
+													},
+													failure: function(form, action) 
+													{
+	                        							if (action.result)
+															alert(action.result.errors.xml);
+														else
+															alert('Form update error');
+															
+														myMask.hide();
+													},
+													url:'".$update_url."'
+												});
+											}
+											else{
+													alert('Please verify whether all required fields are present');
 													myMask.hide();
-												},
-												failure: function(form, action) 
-												{
-                        							if (action.result)
-														alert(action.result.errors.xml);
-													else
-														alert('Form update error');
-														
-													myMask.hide();
-												},
-												url:'".$update_url."'
-											});
+											}
 							        	}})
 							        );
 						form.render();";
