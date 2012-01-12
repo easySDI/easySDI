@@ -39,6 +39,7 @@ import javax.xml.bind.annotation.XmlValue;
 @XmlRootElement(name = "Filter")
 public class Filter implements Serializable {
 
+	
 	@XmlValue
 	protected String content;
 

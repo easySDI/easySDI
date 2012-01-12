@@ -19,7 +19,6 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -28,59 +27,42 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.io.StringBufferInputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLDecoder;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 import java.util.UUID;
 import java.util.Vector;
-import java.util.zip.CRC32;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.commons.httpclient.HttpURL;
-import org.easysdi.proxy.core.ProxyServlet;
+import org.easysdi.jdom.filter.ElementSDIPlatformFilter;
+import org.easysdi.jdom.filter.ElementSearchResultsFilter;
+import org.easysdi.jdom.filter.ElementTransactionTypeFilter;
 import org.easysdi.proxy.exception.AvailabilityPeriodException;
-import org.easysdi.security.JoomlaProvider;
 import org.easysdi.xml.documents.RemoteServerInfo;
-import org.easysdi.xml.handler.ConfigFileHandler;
 import org.easysdi.xml.handler.CswRequestHandler;
-import org.easysdi.xml.handler.GeonetworkSearchResultHandler;
-import org.easysdi.xml.handler.PolicyHandler;
-import org.easysdi.xml.handler.RequestHandler;
+import org.jdom.Document;
 import org.jdom.Element;
+import org.jdom.JDOMException;
+import org.jdom.Namespace;
 import org.jdom.input.SAXBuilder;
-import org.jdom.xpath.XPath;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
@@ -89,16 +71,6 @@ import org.xml.sax.helpers.XMLReaderFactory;
 public class CSWProxyServlet2 extends CSWProxyServlet {
 
 	private static final long serialVersionUID = 1L;
-//	private List<String> recordsToKeep = new ArrayList<String>();
-//	private List<String> recordsToRemove = new ArrayList<String>();
-//	private List<String> recordsReturned = new ArrayList <String>();
-//	
-//	private String requestedOutputSchema;
-//	private String requestedResutlType;
-//	private String requestedElementSetName;
-	
-//	public static final List<String> cswOutputSchemas = Arrays.asList("http://www.opengis.net/cat/csw/2.0.2","csw:Record","csw:IsoRecord");
-//	public static final List<String> gmdOutputSchemas = Arrays.asList("http://www.isotc211.org/2005/gmd");
 	
 	/** 
 	 * 
@@ -180,8 +152,34 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 	}
 		
 	/**
+	 * Apply an XSLT transformation on the XML response to remove unauthorized attributes (according to policy file)
+	 * @param xml
+	 * @return transformed File
+	 * @throws TransformerException
+	 * @throws IOException
+	 */
+	protected File applyXSLTToRemoveAttribute (InputStream xml) throws TransformerException, IOException{
+		
+		logger.trace("Start apply XSLT on response.");
+		File tempFile = createTempFile(UUID.randomUUID().toString(), ".xml");
+		FileOutputStream tempFos = new FileOutputStream(tempFile);
+
+		InputStream xslt = null;
+		xslt = new ByteArrayInputStream(generateXSLTForMetadata().toString().getBytes());
+		TransformerFactory tFactory = TransformerFactory.newInstance();
+		Transformer transformer = tFactory.newTransformer(new StreamSource(xslt));
+		// Write the result in a temporary file
+		transformer.transform(new StreamSource(xml), new StreamResult(tempFos));
+		tempFos.close();
+		xslt.close();
+		logger.trace("- End apply XSLT on response.");
+		return tempFile;
+	}
+	
+	/**
 	 * 
 	 */
+	@SuppressWarnings("unchecked")
 	public void transform(String version, String currentOperation, HttpServletRequest req, HttpServletResponse resp, List<String> filePathList) 
 	{
 		try 
@@ -215,9 +213,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				isPostTreat = true;
 			}
 
-			// Transforms the results using a xslt before sending the
-			// response
-			// back
+			// Transforms the results using a xslt before sending the response back
 			InputStream xml = new FileInputStream(filePathList.get(0));
 			TransformerFactory tFactory = TransformerFactory.newInstance();
 
@@ -228,28 +224,28 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			
 			if (currentOperation != null) 
 			{
-
 				if (currentOperation.equals("GetCapabilities")) 
 				{
+					//Remove unauthorized operation (according to policy file) from the capabilities document
+					logger.trace("Remove unauthorized operations from the capabilities document.");
 					tempFile = createTempFile(UUID.randomUUID().toString(), ".xml");
 					tempFos = new FileOutputStream(tempFile);
 					ByteArrayInputStream xslt = null;
 					xslt = new ByteArrayInputStream(buildCapabilitiesXSLT(req).toString().getBytes());
 					transformer = tFactory.newTransformer(new StreamSource(xslt));
-					// Write the result in a temporary file
 					transformer.transform(new StreamSource(xml), new StreamResult(tempFos));
+					tempFos.flush();
 					tempFos.close();
+					xslt.close();
 
-					logger.trace("transform begin apply XSLT on service metadata");
+					//Rewrite service metadata 
+					logger.trace("Rewrite service metadatas in the capabilities document.");
 					InputStream in = new BufferedInputStream(new FileInputStream(tempFile));
 					InputSource inputSource = new InputSource( in);
-					
-					//Application de la transformation XSLT pour la réécriture des métadonnées du service 
 					File tempFileCapaWithMetadata = createTempFile("transform_MDGetCapabilities_" + UUID.randomUUID().toString(), ".xml");
 					FileOutputStream tempServiceMD = new FileOutputStream(tempFileCapaWithMetadata);
 					StringBuffer sb = buildServiceMetadataCapabilitiesXSLT();
 					InputStream xslt_service = new ByteArrayInputStream(sb.toString().getBytes());
-				
 					XMLReader xmlReader = XMLReaderFactory.createXMLReader();
 					SAXSource saxSource = new SAXSource(xmlReader, inputSource);
 					transformer = tFactory.newTransformer(new StreamSource(xslt_service));
@@ -258,11 +254,92 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					transformer.transform(saxSource, new StreamResult(tempServiceMD));
 					tempServiceMD.flush();
 					tempServiceMD.close();
-					
+					in.close();
+					xslt_service.close();
+										
 					tempFile = tempFileCapaWithMetadata;
 					logger.trace("transform end apply XSLT on service metadata");
 				}
-				else if("GetRecords".equals(currentOperation) || "GetRecordById".equals(currentOperation) || "DescribeRecord".equals(currentOperation))
+				else if ("DescribeRecord".equals(currentOperation)){
+					if (areAllAttributesAllowedForMetadata(getRemoteServerUrl(0)) ) 
+					{
+						// Keep the metadata as it is
+						tempFile = new File(filePathList.get(0));
+					} 
+					else 
+					{
+						tempFile = applyXSLTToRemoveAttribute(xml);
+					}
+				}
+				else if ("GetRecords".equals(currentOperation)){
+					if (areAllAttributesAllowedForMetadata(getRemoteServerUrl(0)) ) 
+					{
+						// Keep the metadata as it is
+						tempFile = new File(filePathList.get(0));
+					} 
+					else 
+					{
+						tempFile = applyXSLTToRemoveAttribute(xml);
+					}
+					
+					//If the current config is used to harvest remote catalog (see config file : <harvesting-config>true</harvesting-config>),
+					//add dynamically an XML node (and its namespace definition) to the metadata to indicate that this metadata was haversting
+					if(configuration.isHarvestingConfig()){
+						SAXBuilder sb = new SAXBuilder();
+	
+						Document doc = null;
+				        try {
+				            doc = sb.build(tempFile);
+				            Element racine = doc.getRootElement();
+				            
+				            //Get the metadata element from the complete response file
+				            List<Element> resultListStorage = new ArrayList<Element> ();
+				            Iterator<Element> resultIterator = racine.getDescendants(new ElementSearchResultsFilter());
+				            while(resultIterator.hasNext()){
+				            	Element result = resultIterator.next();
+				            	resultListStorage.addAll(result.getChildren());
+				            }
+				            
+				            //Add a new node to the metadata element
+				            //<gmd:MD_Metadata xmlns:sdi="http://www.easysdi.org/2011/sdi">
+				            //<sdi:platform harvested="true" />
+				            //</gmd:MD_Metadata>
+				            //Or update the existing node if the remote catalog is driven by EasySDI too
+				            Iterator<Element> resultStorageIterator = resultListStorage.iterator();
+				            Element result = null;
+				            Namespace nsSDI = Namespace.getNamespace("sdi","http://www.easysdi.org/2011/sdi") ;
+				            while (resultStorageIterator.hasNext()){
+				            	result = resultStorageIterator.next();
+				            	List<Element> platformElementList = result.getChildren("platform", nsSDI);
+				            	if(platformElementList.size() > 0 ){
+				            		//Update the existing node
+				            		Element e = platformElementList.get(0);
+					            	e.setAttribute("harvested", "true");
+				            	}else{
+				            		//Add a new node
+					            	Element e = new Element("platform", nsSDI);
+					            	e.setAttribute("harvested", "true");
+					            	result.addContent(e);
+				            	}
+				            }
+				            if(result != null)
+				            	result.getParentElement().addNamespaceDeclaration(nsSDI);
+				            
+				            XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
+				            FileOutputStream outStream = new FileOutputStream(tempFile);
+				            sortie.output(doc, outStream);
+				            outStream.close();
+				            
+				        }
+				        catch (JDOMException e) {
+				            e.printStackTrace();
+				        }
+				        catch (IOException e) {
+				            e.printStackTrace();
+				        }
+					}
+				}
+				else if( "GetRecordById".equals(currentOperation) )
 				{
 					if (areAllAttributesAllowedForMetadata(getRemoteServerUrl(0)) ) 
 					{
@@ -271,18 +348,61 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					} 
 					else 
 					{
-						logger.trace(currentOperation+" - Start apply XSLT on response.");
-						tempFile = createTempFile(UUID.randomUUID().toString(), ".xml");
-						tempFos = new FileOutputStream(tempFile);
+						tempFile = applyXSLTToRemoveAttribute(xml);
+					}
+					
+					//If the current config is used to harvest remote catalog (see config file : <harvesting-config>true</harvesting-config>),
+					//add dynamically an XML node (and its namespace definition) to the metadata to indicate that this metadata was haversting
+					if(configuration.isHarvestingConfig()){
+						SAXBuilder sb = new SAXBuilder();
 	
-						InputStream xslt = null;
-						xslt = new ByteArrayInputStream(generateXSLTForMetadata().toString().getBytes());
-
-						transformer = tFactory.newTransformer(new StreamSource(xslt));
-						// Write the result in a temporary file
-						transformer.transform(new StreamSource(xml), new StreamResult(tempFos));
-						tempFos.close();
-						logger.trace(currentOperation+" - End apply XSLT on response.");
+						Document doc = null;
+				        try {
+				            doc = sb.build(tempFile);
+				            Element racine = doc.getRootElement();
+				            
+				            //Get the metadata element from the complete response file
+				            List<Element> metadataListStorage = new ArrayList<Element> ();
+				            Iterator<Element> metadataIterator = racine.getChildren().iterator();
+				            while(metadataIterator.hasNext()){
+				            	Element metadata = metadataIterator.next();
+				            	metadataListStorage.add(metadata);
+				            }
+				            
+				            //Add a new node to the metadata element
+				            //<gmd:MD_Metadata xmlns:sdi="http://www.easysdi.org/2011/sdi">
+				            //<sdi:platform harvested="true" />
+				            //</gmd:MD_Metadata>
+				            //Or update the existing node if the remote catalog is driven by EasySDI too
+				            Iterator<Element> metadataStorageIterator = metadataListStorage.iterator();
+				            while (metadataStorageIterator.hasNext()){
+				            	Element metadata = metadataStorageIterator.next();
+				            	Namespace nsSDI = Namespace.getNamespace("sdi", "http://www.easysdi.org/2011/sdi");
+				            	metadata.addNamespaceDeclaration(nsSDI);
+				            	List<Element> platformElementList = metadata.getChildren("platform", nsSDI);
+				            	if(platformElementList.size() > 0 ){
+				            		//Update the existing node
+				            		Element e = platformElementList.get(0);
+					            	e.setAttribute("harvested", "true");
+				            	}else{
+				            		//Add a new node
+					            	Element e = new Element("platform", nsSDI);
+					            	e.setAttribute("harvested", "true");
+					            	metadata.addContent(e);
+				            	}
+				            }
+				            
+				            XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
+				            FileOutputStream outStream = new FileOutputStream(tempFile);
+				            sortie.output(doc, outStream);
+				            outStream.close();
+				        }
+				        catch (JDOMException e) {
+				            e.printStackTrace();
+				        }
+				        catch (IOException e) {
+				            e.printStackTrace();
+				        }
 					}
 				}
 				else
@@ -290,6 +410,9 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					tempFile = new File(filePathList.get(0));
 				}
 
+				//Close the remote server temp file response
+				xml.close();
+				
 				/*
 				 * if a xslt file exists then post-treat the response
 				 */
@@ -312,23 +435,13 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			resp.setContentLength((int) tempFile.length());
 			OutputStream os = resp.getOutputStream();
 			InputStream is = new FileInputStream(tempFile);
-			
-			//Debug - HVH - 05.01.2011 : writing in outputstream optimized
-//			int byteRead;
 			try 
 			{
-				byte[] buffer = new byte[is.available()]; 
-		        int bytesRead;
-		        while ((bytesRead = is.read(buffer)) != -1)
-		        {
-		            os.write(buffer, 0, bytesRead);
-		        }
-//				while ((byteRead = is.read()) != -1) 
-//				{
-//					os.write(byteRead);
-//					
-//				}
-		      //End Debug - HVH - 05.01.2011
+		        byte[] buf = new byte[1024];
+			    int nread;
+			    while ((nread = is.read(buf)) >= 0) {
+			    	os.write(buf, 0, nread);
+			    }
 			} 
 			finally 
 			{
@@ -377,6 +490,8 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			String requestedId = "";
 			String constraint = "";
 			String content = "";
+			String constraintLanguage = null;
+			String constraint_language_version = null;
 
 			Enumeration<String> parameterNames = req.getParameterNames();
 			String paramUrl = "";
@@ -385,53 +500,42 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			{
 				String key = (String) parameterNames.nextElement();
 				String value = URLEncoder.encode(req.getParameter(key),"UTF-8");
-				if(key.equalsIgnoreCase("id"))
-				{
+				if(key.equalsIgnoreCase("id")){
 					requestedId = value;
 					continue;
 				}
-				if(key.equalsIgnoreCase("Request"))
-				{
-					// Gets the requested Operation
-					if (value.equalsIgnoreCase("capabilities")) 
-					{
+				if(key.equalsIgnoreCase("Request")){
+					if (value.equalsIgnoreCase("capabilities")){
 						currentOperation = "GetCapabilities";
-					} 
-					else 
-					{
+					} else{
 						currentOperation = value;
 					}
 					continue;
 				}
-				if (key.equalsIgnoreCase("version")) 
-				{
+				if (key.equalsIgnoreCase("version")){
 					requestedVersion = value;
 					continue;
 				}
-				//TODO : verify the syntax for those 3 attributes
-//				if (key.equalsIgnoreCase("OutputSchema")) 
-//				{
-//					requestedOutputSchema = value;
-//					continue;
-//				}
-//				if (key.equalsIgnoreCase("ResultType")) 
-//				{
-//					requestedResutlType = value;
-//					continue;
-//				}
-				if (key.equalsIgnoreCase("Constraint")) 
-				{
+
+				if (key.equalsIgnoreCase("Constraint")){
 					constraint = value;
 					continue;
 				}
-				
+				if(key.equalsIgnoreCase("constraintLanguage")){
+					constraintLanguage = value;
+					continue;
+				}
+				if(key.equalsIgnoreCase("constraint_language_version")){
+					constraint_language_version = value;
+					continue;
+				}
 				//Content specific vendor parameter
-				if(key.equalsIgnoreCase("content"))
-				{
+				if(key.equalsIgnoreCase("content")){
 					content = value;
 					continue;
 				}
 			}
+			
 			logger.info("Request="+req.getQueryString());
 			logger.info("RequestOperation="+ currentOperation);
 			
@@ -440,7 +544,8 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				return ;
 			
 			//GetRecords is not supported in GET request
-			if(currentOperation.equalsIgnoreCase("GetRecords"))
+			//EXCEPT for a configuration dedicated to the harvesting
+			if(currentOperation.equalsIgnoreCase("GetRecords") && !configuration.isHarvestingConfig())
 				sendOgcExceptionBuiltInResponse(resp,generateOgcException("Operation not supported in a GET request","OperationNotSupported ","request", requestedVersion));
 			
 			//GetRecordById
@@ -448,16 +553,20 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			{
 				logger.trace("Start - Data Accessibility");
 				CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy, getJoomlaProvider());
-				if(!cswDataManager.isAllDataAccessible())
+				if(!cswDataManager.isAllEasySDIDataAccessible() || !policy.getIncludeHarvested())
 				{
 					String dataIDaccessible="";
 					if(!cswDataManager.isObjectAccessible(requestedId))
 					{
+						logger.info(requestedId+" - Requested metadata is not accessible regarding policy restriction. Method isObjectAccessible returned false.");
 						sendProxyBuiltInResponse(resp,cswDataManager.generateEmptyResponse(requestedVersion));
 						return;
 					}
-					if(!cswDataManager.isMetadataAccessible(requestedId))
+					if(!cswDataManager.isMetadataAccessible(requestedId)){
+						logger.info(requestedId+" - Requested metadata version is not accessible regarding policy restriction. Method isMetadataAccessible returned false.");
 						requestedId = cswDataManager.getMetadataVersionAccessible();
+						logger.info(requestedId+" - Requested metadata id was change by method getMetadataVersionAccessible.");
+					}
 					
 					if (requestedId == null)
 					{
@@ -467,21 +576,28 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				}
 				logger.trace("End - Data Accessibility");
 				
+			}else if (currentOperation.equalsIgnoreCase("GetRecords")){
+				//Get the constraint language
+				if(constraintLanguage == null ){
+					//Use CQL_TEXT to build the constraint
+					constraintLanguage = "CQL_TEXT";
+					constraint_language_version = "1.1.0";
+				}
+				CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy, getJoomlaProvider());
+				if (constraintLanguage.equalsIgnoreCase("CQL_TEXT")){
+					//Add Geographical filter as CQL_TEXT additional parameter
+					constraint = cswDataManager.addCQLBBOXFilter(constraint);
+					
+				}else if (constraintLanguage.equalsIgnoreCase("FILTER")){
+					//Add Geographical filter
+					constraint = cswDataManager.addXMLBBOXFilter(constraint);
+					
+				}else{
+					//The constraint language specified in the request is not valid, or not yet supported by the proxy
+					sendOgcExceptionBuiltInResponse(resp, generateOgcException("The query language specified in parameter 'constraintLanguage' is not supported.", "InvalidParameterValue", "constraintLanguage", requestedVersion));
+					return;
+				}
 			}
-			//GetRecords
-			//TODO : check the validity of this code for the support of the GET GetRecords
-//			else if(currentOperation.equalsIgnoreCase("GetRecords"))
-//			{
-////				dump("INFO","Start - Data Accessibility");
-////				CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy, getJoomlaProvider());
-////				if(!cswDataManager.isAllDataAccessible())
-////				{
-////					cswDataManager.getAccessibleDataIds();
-////					//Add a filter on the data id in the request
-//////					constraint = cswDataManager.addFilterOnDataAccessible(configuration.getOgcSearchFilter(), URLDecoder.decode(constraint, "UTF-8"));
-//////					dump("INFO", "GetRecords request send : "+constraint);
-////				}
-//			}
 			
 			// Build the request to dispatch
 			parameterNames = req.getParameterNames();
@@ -496,12 +612,28 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				}
 				else if (key.equalsIgnoreCase("constraint"))
 				{
-					paramUrl = paramUrl + key + "=" + URLEncoder.encode(constraint, "UTF-8") + "&";
+					//paramUrl = paramUrl + key + "=" + URLEncoder.encode(constraint, "UTF-8") + "&";
+					//paramUrl = paramUrl + key + "=" + constraint + "&";
+				}
+				else if (key.equalsIgnoreCase("constraint_language_version"))
+				{
+					//paramUrl = paramUrl + key + "=" + URLEncoder.encode(constraint, "UTF-8") + "&";
+					//paramUrl = paramUrl + key + "=" + constraint_language_version + "&";
+				}
+				else if (key.equalsIgnoreCase("constraintLanguage"))
+				{
+					
 				}
 				else
 				{
 					paramUrl = paramUrl + key + "=" + value + "&";
 				}
+			}
+			if(constraint != null && constraint.length()>0){
+				paramUrl = paramUrl + "constraint=" + constraint + "&";
+				paramUrl = paramUrl + "constraintLanguage=" + constraintLanguage + "&";
+				if(constraint_language_version != null)
+					paramUrl = paramUrl + "constraint_language_version=" + constraint_language_version + "&";
 			}
 			
 			if(requestedVersion != null)
@@ -516,7 +648,9 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			
 			if(currentOperation.equalsIgnoreCase("GetRecords") || currentOperation.equalsIgnoreCase("GetRecordById"))
 			{
-				if( content.equalsIgnoreCase("") || content.equalsIgnoreCase("complete"))
+				//If the config is used to harvest remote servers, the metadatas are never completed.
+				//The completion process of metadatas is only available for EasySDI metadatas (metadatas created and managed by the solution)
+				if( (content.equalsIgnoreCase("") || content.equalsIgnoreCase("complete")) && !configuration.isHarvestingConfig())
 				{
 					logger.trace("Start - Complete metadata");
 					//Build complete metadata
@@ -538,13 +672,12 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 		{
 			logger.error( e.getMessage());
 			sendOgcExceptionBuiltInResponse(resp,generateOgcException(e.getMessage(),"OperationNotSupported","request",requestedVersion));
-		} 
-		catch (Exception e) 
+		}catch (Exception e) 
 		{
 			e.printStackTrace();
 			logger.error( e.toString());
 			resp.setHeader("easysdi-proxy-error-occured", "true");
-			sendOgcExceptionBuiltInResponse(resp,generateOgcException(e.getMessage(),"NoApplicableCode","request",requestedVersion));
+			sendOgcExceptionBuiltInResponse(resp,generateOgcException("CSWProxyServlet.requestPreTreatmentGET returns : "+ e.toString(),"NoApplicableCode","request",requestedVersion));
 		}
 	}
 
@@ -553,30 +686,15 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 	/**
 	 * 
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void requestPreTreatmentPOST(HttpServletRequest req, HttpServletResponse resp) {
 		try {
-
+			//Read request
 			XMLReader xr = XMLReaderFactory.createXMLReader();
 			CswRequestHandler rh = new CswRequestHandler();
 			xr.setContentHandler(rh);
-
-			//Debug - HVH - 05.01.2011 : reading of the inputstream optimized
-//			dump("DEBUG","Start old way");
-//			StringBuffer param = new StringBuffer();
-//			String input;
-//			
-//			BufferedReader in = new BufferedReader(new InputStreamReader(req.getInputStream()));
-//			String request = "";
-//			while ((input = in.readLine()) != null) {
-////				dump(input);
-//				request += input;
-//				param.append(input);
-//			}
-//			dump("DEBUG","End old way");
-						
-//			dump("DEBUG","Start new way");
-//			req.setCharacterEncoding("UTF-8");
+			
 			BufferedReader r = req.getReader();
 			StringBuffer param = new StringBuffer();
 			char[] buf = new char[4 * 1024]; // 4Kchar buffer
@@ -584,26 +702,23 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 	        while ((len = r.read(buf, 0, buf.length)) != -1) {
 	        	param.append(buf, 0, len);
 	        }
-//	        dump("DEBUG","End new way");
-	       //End Debug - HVH - 05.01.2011 
 			
-	        logger.info("Request="+param.toString().replace('\n',' ').replace('\r',' '));
+			logger.info("Request="+param.toString().replace('\n',' ').replace('\r',' '));
+			InputStreamReader in = new InputStreamReader(new ByteArrayInputStream(param.toString().getBytes()));
+			xr.parse(new InputSource(in));
 			
-			xr.parse(new InputSource(new InputStreamReader(new ByteArrayInputStream(param.toString().getBytes()))));
-
 			String version = rh.getVersion();
 			requestedVersion = version;
 			if (version != null)
 				version = version.replaceAll("\\.", "");
-			
 			String currentOperation = rh.getOperation();
-			
 			logger.info("RequestOperation="+ currentOperation);
 			
 			//Generate OGC exception if current operation is not allowed
 			if(handleNotAllowedOperation(currentOperation,resp))
 				return;
 
+			//Check the value of the PARAMETER 'content'
 			String content = rh.getContent();
 			if( !content.equalsIgnoreCase("") && !content.equalsIgnoreCase("core") && !content.equalsIgnoreCase("complete"))
 			{
@@ -624,6 +739,55 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			}
 
 			//Transaction
+			if(currentOperation.equalsIgnoreCase("Transaction") && !configuration.isHarvestingConfig()){
+				//If the transaction is INSERT OR UPDATE, add the specific node to indicate that the metadata is handle by EasySDI
+				//sdi:platform harvested="false"
+				if(rh.isTransactionInsert() || rh.isTransactionUpdate()){
+					SAXBuilder sb = new SAXBuilder();
+					Document doc = sb.build(new InputStreamReader(new ByteArrayInputStream(param.toString().getBytes())));
+					
+					Element racine = doc.getRootElement();
+		            
+		            //Get the transaction type element (Update or Insert) from the complete response file
+		            List<Element> resultListStorage = new ArrayList<Element> ();
+		            Iterator<Element> resultIterator = racine.getDescendants(new ElementTransactionTypeFilter());
+		            while(resultIterator.hasNext()){
+		            	Element result = resultIterator.next();
+		            	resultListStorage.addAll(result.getChildren());
+		            	for(int i=resultListStorage.size()-1;i>=0;i--)
+		            	{
+		            		if (((Element)resultListStorage.get(i)).getName().equalsIgnoreCase("Constraint") || ((Element)resultListStorage.get(i)).getName().equalsIgnoreCase("RecordProperty")){
+		            			resultListStorage.remove(i);
+		            		}
+		            	}
+
+		            }
+		            
+		            //Add a new node to the metadata element
+		            //<gmd:MD_Metadata xmlns:sdi="http://www.easysdi.org/2011/sdi">
+		            //<sdi:platform harvested="false" />
+		            //</gmd:MD_Metadata>
+		            Iterator<Element> resultStorageIterator = resultListStorage.iterator();
+		            Element result = null;
+		            Namespace nsSDI = Namespace.getNamespace("sdi","http://www.easysdi.org/2011/sdi") ;
+		            while (resultStorageIterator.hasNext()){
+		            	result = resultStorageIterator.next();
+		            	if(result.getChild("harvested", nsSDI) == null){
+			            	Element e = new Element("platform", nsSDI);
+			            	e.setAttribute("harvested", "false");
+			            	result.addContent(e);
+		            	}
+		            }
+		            if(result != null)
+		            	result.addNamespaceDeclaration(nsSDI);
+		            
+		            XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
+		            ByteArrayOutputStream out = new ByteArrayOutputStream ();
+		            sortie.output(doc, out);
+		            param = new StringBuffer(out.toString("UTF-8"));
+				}
+			}
+			
 			if (currentOperation.equalsIgnoreCase("Transaction") && transactionType.equalsIgnoreCase("geonetwork")) 
 			{
 				// Send the xml
@@ -636,7 +800,6 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				try {
 					while ((byteRead = is.read()) != -1) {
 						os.write(byteRead);
-						// dump(byteRead);
 					}
 				} finally {
 					DateFormat dateFormat = new SimpleDateFormat(configuration.getLogDateFormat());
@@ -658,19 +821,24 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				logger.trace("Start - Data Accessibility");
 				CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy, getJoomlaProvider());
 				String dataId = rh.getRecordId();
-				if(!cswDataManager.isAllDataAccessible())
+				if(!cswDataManager.isAllEasySDIDataAccessible() || !policy.getIncludeHarvested())
 				{
 					String dataIDaccessible="";
 					if(!cswDataManager.isObjectAccessible(dataId))
 					{
+						logger.info(dataId+" - Requested metadata is not accessible regarding policy restriction. Method isObjectAccessible returned false.");
 						sendProxyBuiltInResponse(resp,cswDataManager.generateEmptyResponse(requestedVersion));
 						return;
 					}
-					if(!cswDataManager.isMetadataAccessible(dataId))
+					if(!cswDataManager.isMetadataAccessible(dataId)){
+						logger.info(dataId+" - Requested metadata version is not accessible regarding policy restriction. Method isMetadataAccessible returned false.");
 						dataId = cswDataManager.getMetadataVersionAccessible();
+						logger.info(dataId+" - Requested metadata id was change by method getMetadataVersionAccessible.");
+					}
 					
 					if (dataId == null)
 					{
+						logger.debug("Metadata id is Null. Return an empty response");
 						sendProxyBuiltInResponse(resp,cswDataManager.generateEmptyResponse(requestedVersion));
 						return;
 					}
@@ -685,13 +853,13 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				}
 				logger.trace("End - Data Accessibility");
 				
-//				dump("INFO","Start - Get response");
 				List<String> filePathList = new Vector<String>();
 				String filePath = sendData("POST", getRemoteServerUrl(0), param.toString());
 				filePathList.add(filePath);
-//				dump("INFO","End - Get response");
-				if( rh.getContent().equalsIgnoreCase("") || rh.getContent().equalsIgnoreCase("complete"))
+				if( (rh.getContent().equalsIgnoreCase("") || rh.getContent().equalsIgnoreCase("complete")) && !configuration.isHarvestingConfig())
 				{
+					//If the config is used to harvest remote servers, the metadatas are never completed.
+					//The completion process of metadatas is only available for EasySDI metadatas (metadatas created and managed by the solution)
 					logger.trace("Start - Complete metadata");
 					//Build complete metadata
 					CSWProxyMetadataContentManager cswManager = new CSWProxyMetadataContentManager(this);
@@ -711,7 +879,9 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			{
 				logger.trace("Start - Data Accessibility");
 				CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy, getJoomlaProvider());
-				if(!cswDataManager.isAllDataAccessible())
+				if(		!cswDataManager.isAllDataAccessibleForGetRecords() || 
+						(policy.getBboxFilter() != null && policy.getBboxFilter().isValide()) || 
+						!policy.getIncludeHarvested())
 				{
 					//Add a filter on the data id in the request
 					param = cswDataManager.addFilterOnDataAccessible(configuration.getOgcSearchFilter(), param);
@@ -721,6 +891,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 						return;
 					}
 				}
+				//Add a filter on the data id in the request
 				logger.trace("End - Data Accessibility");
 				
 //				dump("INFO","Start - Get response");
@@ -770,7 +941,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			e.printStackTrace();
 			logger.error( e.toString());
 			resp.setHeader("easysdi-proxy-error-occured", "true");
-			sendOgcExceptionBuiltInResponse(resp,generateOgcException("Error in EasySDI Proxy. Consult the proxy log for more details.","NoApplicableCode","",requestedVersion));
+			sendOgcExceptionBuiltInResponse(resp,generateOgcException("Error in EasySDI Proxy. Consult the proxy log for more details. CSWProxyServlet.requestPreTreatmentPOST returns : "+ e.toString(),"NoApplicableCode","",requestedVersion));
 		}
 	}
 }

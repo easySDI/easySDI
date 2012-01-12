@@ -25,10 +25,12 @@ import org.jdom.filter.Filter;
  * @author DEPTH SA
  *
  */
-public class AttributeXlinkFilter implements Filter{
+public class AttributeXlinkOfEasysdiMDFilter implements Filter{
 
 	private static final long serialVersionUID = 1L;
-	private static final  Namespace ns = Namespace.getNamespace("http://www.w3.org/1999/xlink");
+	private static final  Namespace nslink = Namespace.getNamespace("http://www.w3.org/1999/xlink");
+	private static final  Namespace nssdi = Namespace.getNamespace("sdi","http://www.easysdi.org/2011/sdi");
+	
 		
 	public boolean matches(Object ob)
 	  {
@@ -37,15 +39,36 @@ public class AttributeXlinkFilter implements Filter{
 	
 	     //Filter to use against Elements
 	     Element element = (Element)ob;
-	     Attribute xlink = element.getAttribute("href", ns);
+	     Attribute xlink = element.getAttribute("href", nslink);
 	     if(xlink != null)
 	     {
+	    	 
 	    	 return true;
 	     }
 	     else
 	     {
 	    	 return false;
 	     }
+/*	     if(element.getName().equals("MD_Metadata"))
+	     {
+	    	 Element platformElement = element.getChild("platform", nssdi);
+	    	 if(platformElement != null){
+	    		 Attribute harvestedAttribute = platformElement.getAttribute("harvested");
+	    		 if(harvestedAttribute.getValue().equalsIgnoreCase("true")){
+	    			 return false;
+	    		 }else{
+	    			 return true;
+	    		 }
+	    	 }else{
+	    		 //Metadata is not up to date with the current version of EasySDI 
+	    		 //TODO check what we have to do in this case
+	    		 return false;
+	    	 }
+	     }
+	     else
+	     {
+	    	 return false;
+	     }*/
 	  }
 
 }

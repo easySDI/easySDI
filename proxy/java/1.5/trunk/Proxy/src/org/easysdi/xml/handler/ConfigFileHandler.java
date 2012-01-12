@@ -28,8 +28,6 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import com.sun.corba.se.impl.encoding.OSFCodeSetRegistry;
-
 
 public class ConfigFileHandler extends DefaultHandler {
 	private org.easysdi.xml.documents.Config config;
@@ -121,6 +119,7 @@ public class ConfigFileHandler extends DefaultHandler {
 	private OWSTelephone owsPhone = null;
 	private OWSServiceMetadata owsServiceMetadata = null;
 	private OWSServiceIdentification  owsServiceIdentification = null;
+	private Boolean isHarvestingConfig = false;
 	
 	
 	public ConfigFileHandler(String id) {
@@ -246,6 +245,7 @@ public class ConfigFileHandler extends DefaultHandler {
 				config.setOgcSearchFilter(ogcSearchFilter);
 				config.setOwsServiceMetadata(owsServiceMetadata);
 				config.setPeriod(logPeriod);
+				config.setIsHarvestingConfig(isHarvestingConfig);
 			}
 			isTheGoodId = false;
 		}
@@ -265,6 +265,9 @@ public class ConfigFileHandler extends DefaultHandler {
 
 		if (isTheGoodId && isConfig && qName.equals("servlet-class")) {
 			servletClass = data;
+		}
+		if (isTheGoodId && isConfig && qName.equals("harvesting-config")) {
+			isHarvestingConfig = Boolean.valueOf(data);
 		}
 		
 		if (isTheGoodId && isConfig && qName.equals("remote-server-list")) {

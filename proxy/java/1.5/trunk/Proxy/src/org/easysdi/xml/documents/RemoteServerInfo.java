@@ -76,7 +76,8 @@ public class RemoteServerInfo implements Serializable{
 	    this.user = user;
 	    this.password = password;
 	    this.maxRecords = maxRecords;
-	    this.loginService = loginService;
+	    if(loginService != null && !loginService.equalsIgnoreCase(""))
+	    	this.loginService = loginService;
 //Debug tb 02.07.2009
 	    // Le probl�me avec cette ligne, c'est que WFSProxyServlet a �t� corrig� sur la base du bug existant
 	    //-> getPrefix ne retournais rien, donc c'est un splite sur ":" qui s'en charge maintenant.
