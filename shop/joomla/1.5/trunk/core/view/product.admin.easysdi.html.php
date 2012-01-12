@@ -24,7 +24,7 @@ defined('_JEXEC') or die('Restricted access');
 
 class HTML_product {
 
-	function editProduct($product,$version,$object_id,$objecttype_id,$supplier,$objecttype_list, $object_list,$version_list,$diffusion_list,$baseMap_list,$treatmentType_list,$visibility_list,$perimeter_list,$selected_perimeter,$catalogUrlBase,$rowsAccount,$id, $option ){
+	function editProduct($product,$version,$object_id,$objecttype_id,$supplier,$objecttype_list, $object_list,$version_list,$diffusion_list,$baseMap_list,$treatmentType_list,$visibility_list,$accessibility_list,$perimeter_list,$selected_perimeter,$catalogUrlBase,$rowsAccount,$rowsUser,$userPreviewSelected,$userDownloadSelected,$id, $option ){
 		global  $mainframe;
 		$database =& JFactory::getDBO(); 
 		JHTML::_('behavior.calendar');
@@ -51,14 +51,35 @@ class HTML_product {
 				document.getElementById('viewaccount_id').value = '0';
 			}
 		}		
-		
+
+		function ServiceFieldManagement(){
+			if (document.forms['adminForm'].viewurltype.value == 'WMS')
+			{
+				document.getElementById('viewminresolution').disabled = false;
+				document.getElementById('viewmaxresolution').disabled = false;
+				document.getElementById('viewmatrixset').disabled = true;
+				document.getElementById('viewmatrixset').value = null;
+				document.getElementById('viewmatrix').disabled = true;
+				document.getElementById('viewmatrix').value = null;
+			}else{
+				document.getElementById('viewminresolution').disabled = true;
+				document.getElementById('viewminresolution').value = null;
+				document.getElementById('viewmaxresolution').disabled = true;
+				document.getElementById('viewmaxresolution').value = null;
+				document.getElementById('viewmatrixset').disabled = false;
+				document.getElementById('viewmatrix').disabled = false;
+			}
+		}
 		function fieldManagement()
 		{
 			if (document.forms['adminForm'].free.value == '0')
 			{
 				document.getElementById('productfile').disabled = true;
+				document.getElementById('pathfile').disabled = true;
 				document.getElementById('available').disabled = true;
 				document.getElementById('available').value = '0';
+				document.getElementById('deleteFileButton').disabled = true;
+				document.getElementById('linkFile').value = true;
 				document.getElementById('surfacemin').disabled = false;
 				document.getElementById('surfacemax').disabled = false;
 				document.getElementById('notification_email').disabled = false;
@@ -67,7 +88,10 @@ class HTML_product {
 			else if (document.forms['adminForm'].free.value == '1' && document.forms['adminForm'].available.value == '0')
 			{
 				document.getElementById('productfile').disabled = true;
+				document.getElementById('pathfile').disabled = true;
 				document.getElementById('available').disabled = false;
+				document.getElementById('deleteFileButton').disabled = true;
+				document.getElementById('linkFile').disabled = false;
 				document.getElementById('surfacemin').disabled = false;
 				document.getElementById('surfacemax').disabled = false;
 				document.getElementById('notification_email').disabled = false;
@@ -76,12 +100,41 @@ class HTML_product {
 			else
 			{
 				document.getElementById('productfile').disabled = false;
+				document.getElementById('pathfile').disabled = false;
 				document.getElementById('available').disabled = false;
+				document.getElementById('deleteFileButton').disabled = false;
+				document.getElementById('linkFile').disabled = false;
 				document.getElementById('surfacemin').disabled = true;
 				document.getElementById('surfacemax').disabled = true;
 				document.getElementById('notification_email').disabled = true;
 				document.getElementById('treatmenttype_id').disabled = true;
 			}
+		}
+		
+		function accessibilityEnable(choice,list)
+		{
+			var form = document.adminForm;
+			if (form.elements[choice].value=='0')
+			{
+				form.elements[list].disabled=false;
+			}
+			else
+			{
+				form.elements[list].disabled=true;
+				for (i = form.elements[list].length - 1; i>=0; i--) 
+				{
+					form.elements[list].options[i].selected = false;
+				}
+			}
+		}
+
+		function deleteFile (form){
+				
+			 if (confirm('<?php echo JText::_("SHOP_PRODUCT_MSG_CONFIRM_DELETE_FILE"); ?>')== true)
+			 {
+				 form.task.value='deleteProductFile';
+				 form.submit();
+			 }
 		}
 		</script>			
 	<form enctype="multipart/form-data" action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
@@ -89,9 +142,10 @@ class HTML_product {
 		echo $tabs->startPane("productPane");
 		echo $tabs->startPanel(JText::_("SHOP_GENERAL"),"productrPane");
 		?>		
+		<input type="hidden" name="MAX_FILE_SIZE" value="<?php echo $product->maxFileSize;?>000000">
 		<table class="admintable" border="0" cellpadding="0" cellspacing="0">
 			<tr>
-				<td>
+				<td colspan="2">
 					<fieldset>
 						<legend><?php echo JText::_("SHOP_GENERAL"); ?></legend>
 						<table border="0" cellpadding="3" cellspacing="0">
@@ -141,6 +195,10 @@ class HTML_product {
 							
 							</table>
 					</fieldset>
+				</td>
+			</tr>
+			<tr>
+				<td>
 					<fieldset>
 						<legend><?php echo JText::_("SHOP_PRODUCT_FS_DIFFUSION"); ?></legend>
 						<table border="0" cellpadding="3" cellspacing="0">
@@ -148,7 +206,6 @@ class HTML_product {
 								<td class="key"><?php echo JText::_("SHOP_DIFFUSION_NAME"); ?> : </td>
 								<td colspan="2"><?php echo JHTML::_("select.genericlist",$diffusion_list, 'diffusion_id', 'size="1" class="inputbox"', 'value', 'text', $product->diffusion_id ); ?></td>								
 							</tr>
-							
 							<tr>
 								<td class="key"><?php echo JText::_("SHOP_PRODUCT_VISIBILITY"); ?> : </td>
 								<td colspan="2"><?php echo JHTML::_("select.genericlist",$visibility_list, 'visibility_id', 'size="1" class="inputbox"', 'value',  'text', $product->visibility_id ); ?></td>															
@@ -159,24 +216,33 @@ class HTML_product {
 									<option value="0" <?php if( $product->free == 0 ) echo "selected"; ?> ><?php echo JText::_("CORE_NO"); ?></option>
 									<option value="1" <?php if( $product->free == 1 ) echo "selected"; ?>><?php echo JText::_("CORE_YES"); ?></option>
 									</select>
-									</td></td>								
+								</td>								
 							</tr>
 							<tr>
 								<td class="key"><?php echo JText::_("SHOP_PRODUCT_AVAILABLE"); ?> : </td>
-								
 									<td>
 									<select <?php if( $product->free == 0 ) echo "disabled"; ?> class="inputbox" name="available" id="available"  onChange="javascript:fieldManagement();">								
 									<option value="0" <?php if( $product->available == 0 ) echo "selected"; ?> ><?php echo JText::_("CORE_NO"); ?></option>
 									<option value="1" <?php if( $product->available == 1 ) echo "selected"; ?>><?php echo JText::_("CORE_YES"); ?></option>
 									</select>
 									</td>
-									<td><a target="RAW" href="./index.php?format=raw&option=<?php echo $option; ?>&task=downloadProduct&product_id=<?php echo $product->id?>">
-									<?php echo $product->getFileName();?></a></td>
-									
+							</tr>
+							<tr>
+								<td class="key"><?php echo JText::_("SHOP_PRODUCT_FILE_NAME") ;?></td>
+								<td>
+								<a id="linkFile" target="RAW" href="./index.php?format=raw&option=<?php echo $option; ?>&task=downloadProduct&product_id=<?php echo $product->id?>"><?php echo $product->getFileName();?> </a> 
+								</td>
+								<td>
+								<button type="button" id="deleteFileButton" onCLick="deleteFile(document.getElementById('adminForm'));" ><?php echo JText::_("SHOP_PRODUCT_DELETE_FILE"); ?></button>
+								</td>
 							</tr>
 							<tr>
 								<td class="key"><?php echo JText::_("SHOP_PRODUCT_UP_FILE") ;?></td>
-								<td colspan="2"><input type="file" name="productfile" id="productfile" <?php if( $product->available == 0 ) echo "disabled"; ?> ></td>
+								<td colspan="2"><input type="file" name="productfile" id="productfile" <?php if( $product->available == 0 ) echo "disabled"; ?> ><?php printf( JText::_("SHOP_PRODUCT_FILE_MAX_SIZE"),$product->maxFileSize); ?> </td>
+							</tr>
+							<tr>
+								<td class="key"><?php echo JText::_("SHOP_PRODUCT_PATH_FILE") ;?></td>
+								<td colspan="2"><input class="inputbox" type="text" size="50" maxlength="100" name="pathfile"  id="pathfile" <?php  if( $product->available == 0 ) echo "disabled";?> value="<?php echo $product->pathfile; ?>" /></td>
 							</tr>
 							<tr>
 								<td class="key"><?php echo JText::_("SHOP_PRODUCT_TREATMENT"); ?> : </td>
@@ -198,6 +264,25 @@ class HTML_product {
 						</table>
 					</fieldset>	
 				</td>
+				<td valign="top">
+					<fieldset>
+						<legend><?php echo JText::_("SHOP_PRODUCT_FS_DIFFUSION_RIGHTS"); ?></legend>
+						<table  border="0" cellpadding="3" cellspacing="0">
+							<tr>
+								<td class="key"><?php echo JText::_("SHOP_PRODUCT_DOWNLOAD_ACCESSIBILITY"); ?> : </td>
+								<td ><?php echo JHTML::_("select.genericlist",$accessibility_list, 'loadaccessibility_id', 'size="1" class="inputbox" onChange="javascript:accessibilityEnable(\'loadaccessibility_id\',\'userDownloadList\');"', 'value',  'text', $product->loadaccessibility_id ); ?></td>															
+							</tr>			
+							<tr>
+								<td class="key"><?php echo JText::_( 'SHOP_PRODUCT_DOWNLOAD_ACCESSIBILITY_USER'); ?> </td>
+								<td ><?php
+								
+									if ($product->loadaccessibility_id != 0 || $product->loadaccessibility_id != "" || $product->loadaccessibility_id != null )  {$disabled = 'disabled';} else {$disabled = '';};
+								 echo JHTML::_("select.genericlist",$rowsUser, 'userDownloadList[]', 'size="15" multiple="true" class="selectbox" '.$disabled, 'value', 'text', $userDownloadSelected ); ?></td>
+							</tr>
+						</table>
+						
+					</fieldset>	
+				</td>
 			</tr>
 		</table>
 		<?php
@@ -207,13 +292,22 @@ class HTML_product {
 		<br>
 		<table class="admintable" >
 			<tr>
-				<td>
+				<td colspan="2">
 					<fieldset>
-						<table   >						
+						<legend><?php echo JText::_("SHOP_PRODUCT_FS_PREVIEW_DEFINITION"); ?></legend>
+						<table >			
 							<tr>
 								<td class="key"><?php echo JText::_("SHOP_PREVIEW_BASEMAP"); ?> : </td>
 								<td><?php echo JHTML::_("select.genericlist",$baseMap_list, 'viewbasemap_id', 'size="1" class="inputbox"', 'value', 'text', $product->viewbasemap_id ); ?></td>																
-							</tr>							
+							</tr>	
+							<tr>
+								<td class="key"><?php echo JText::_("SHOP_PREVIEW_URL_TYPE"); ?> : </td>
+								<td><select class="inputbox" name="viewurltype" id="viewurltype" onChange="javascript:ServiceFieldManagement();">								
+									<option <?php if($product->viewurltype == 'WMS') echo "selected" ; ?> value="WMS"> WMS</option>
+									<option <?php if($product->viewurltype == 'WMTS') echo "selected" ; ?> value="WMTS"> WMTS</option>
+								</select>
+								</td>								
+							</tr>						
 							<tr>
 								<td class="key"><?php echo JText::_("SHOP_PREVIEW_WMS_URL"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="viewurlwms" value="<?php echo $product->viewurlwms; ?>" /></td>								
@@ -221,15 +315,11 @@ class HTML_product {
 							<tr>
 								<td class="key"><?php echo JText::_("SHOP_PREVIEW_LAYERS"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="viewlayers" value="<?php echo $product->viewlayers; ?>" /></td>								
-							</tr>							
+							</tr>	
 							<tr>
-								<td class="key"><?php echo JText::_("SHOP_MINRESOLUTION"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="viewminresolution" value="<?php echo $product->viewminresolution; ?>" /></td>								
-							</tr>
-							<tr>
-								<td class="key"><?php echo JText::_("SHOP_MAXRESOLUTION"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="viewmaxresolution" value="<?php echo $product->viewmaxresolution; ?>" /></td>								
-							</tr>			
+								<td class="key"><?php echo JText::_("SHOP_IMG_FORMAT"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="viewimgformat" value="<?php echo $product->viewimgformat; ?>" /></td>								
+							</tr>	
 							<tr>
 								<td class="key"><?php echo JText::_("SHOP_PROJECTION"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="viewprojection" value="<?php echo $product->viewprojection; ?>" /></td>								
@@ -241,56 +331,92 @@ class HTML_product {
 									<option <?php if($product->viewunit == 'degrees') echo "selected" ; ?> value="degrees"> <?php echo JText::_("SHOP_DEGREES"); ?></option>
 								</select>
 								</td>																						
+							</tr>	
+							<tr>
+								<td class="key"><?php echo JText::_("SHOP_PREVIEW_STYLE"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="viewstyle" id="viewstyle" value="<?php echo $product->viewstyle; ?>" /></td>								
 							</tr>
 							<tr>
-								<td class="key"><?php echo JText::_("SHOP_IMG_FORMAT"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="viewimgformat" value="<?php echo $product->viewimgformat; ?>" /></td>								
+								<td class="key"><?php echo JText::_("SHOP_MAXEXTENT"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="viewextent" id="viewextent" value="<?php echo $product->viewextent; ?>" /></td>								
+							</tr>						
+							<tr>
+								<td class="key"><?php echo JText::_("SHOP_MINSCALE"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="viewminresolution" id="viewminresolution" value="<?php echo $product->viewminresolution; ?>" <?php if ($product->viewurltype != 'WMS') echo 'disabled'; ?> /></td>								
 							</tr>
-														
+							<tr>
+								<td class="key"><?php echo JText::_("SHOP_MAXSCALE"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="viewmaxresolution"   id="viewmaxresolution"  value="<?php echo $product->viewmaxresolution; ?>" <?php if ($product->viewurltype != 'WMS') echo 'disabled'; ?> /></td>								
+							</tr>			
+							<tr>
+								<td class="key"><?php echo JText::_("SHOP_PREVIEW_MATRIXSET"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="viewmatrixset" id="viewmatrixset" value="<?php echo $product->viewmatrixset; ?>" <?php if ($product->viewurltype != 'WMTS') echo 'disabled'; ?> /></td>								
+							</tr>
+							<tr>
+								<td class="key"><?php echo JText::_("SHOP_PREVIEW_MATRIX"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="1000" name="viewmatrix" id="viewmatrix" value="<?php echo $product->viewmatrix; ?>" <?php if ($product->viewurltype != 'WMTS') echo 'disabled'; ?>/></td>								
+							</tr>
 						</table>
 					</fieldset>
 				</td>
-			</tr>
+				</tr>
 			<tr>
-				<td >
-				<fieldset>
-				<legend><?php echo JText::_("SHOP_AUTHENTICATION"); ?></legend>
-					<table class="admintable" >
-					<tr>
-						<td >
-							<input type="radio" name="service_type" value="via_proxy" onclick="javascript:displayAuthentication();" <?php if ($product->viewaccount_id) echo "checked";?>>
-						</td>
-						<td class="key" colspan="2">
-							<?php echo JText::_("SHOP_AUTH_VIA_PROXY"); ?>
-						</td>
-					</tr>
-					<tr>
-						<td></td>
-						<td><?php echo JText::_("SHOP_EASYSDI_ACCOUNT"); ?> : </td>
-						<td><?php $enable = $product->viewaccount_id? "" : "disabled"  ; echo JHTML::_("select.genericlist",$rowsAccount, 'viewaccount_id', 'size="1" class="inputbox" onChange="" '.$enable , 'value', 'text',$product->viewaccount_id); ?></td>
-					</tr>
-					<tr>
-						<td >
-						 	<input type="radio" name="service_type" value="direct" onclick="javascript:displayAuthentication();" <?php if ($product->previewUser) echo "checked";?>> 
-					 	</td>
-					 	<td class="key" colspan="2">
-						 	 <?php echo JText::_("SHOP_AUTH_DIRECT"); ?>
-					 	</td>
-				 	</tr>
-					<tr>
-						<td></td>
-						<td><?php echo JText::_("SHOP_AUTH_USER"); ?> : </td>
-						<td><input <?php if (!$product->viewuser){echo "disabled";} ?> class="inputbox" type="text" size="50" maxlength="400" name="viewuser" id="viewuser" value="<?php echo $product->viewuser; ?>" /></td>							
-					</tr>							
-					<tr>
-						<td></td>
-						<td><?php echo JText::_("SHOP_AUTH_PASSWORD"); ?> : </td>
-						<td><input <?php if (!$product->viewuser){echo "disabled";} ?> class="inputbox" type="password" size="50" maxlength="400" name="viewpassword" id="viewpassword" value="<?php echo $product->viewpassword; ?>" /></td>							
-					</tr>
-					
-					</table>
-				</fieldset>	
+				<td valign = "top">
+					<fieldset>
+					<legend><?php echo JText::_("SHOP_AUTHENTICATION"); ?></legend>
+						<table class="admintable" >
+						<tr>
+							<td >
+								<input type="radio" name="service_type" value="via_proxy" onclick="javascript:displayAuthentication();" <?php if ($product->viewaccount_id) echo "checked";?>>
+							</td>
+							<td class="key" colspan="2">
+								<?php echo JText::_("SHOP_AUTH_VIA_PROXY"); ?>
+							</td>
+						</tr>
+						<tr>
+							<td></td>
+							<td><?php echo JText::_("SHOP_EASYSDI_ACCOUNT"); ?> : </td>
+							<td><?php $enable = $product->viewaccount_id? "" : "disabled"  ; echo JHTML::_("select.genericlist",$rowsAccount, 'viewaccount_id', 'size="1" class="inputbox" onChange="" '.$enable , 'value', 'text',$product->viewaccount_id); ?></td>
+						</tr>
+						<tr>
+							<td >
+							 	<input type="radio" name="service_type" value="direct" onclick="javascript:displayAuthentication();" <?php if ($product->previewUser) echo "checked";?>> 
+						 	</td>
+						 	<td class="key" colspan="2">
+							 	 <?php echo JText::_("SHOP_AUTH_DIRECT"); ?>
+						 	</td>
+					 	</tr>
+						<tr>
+							<td></td>
+							<td><?php echo JText::_("SHOP_AUTH_USER"); ?> : </td>
+							<td><input <?php if (!$product->viewuser){echo "disabled";} ?> class="inputbox" type="text" size="50" maxlength="400" name="viewuser" id="viewuser" value="<?php echo $product->viewuser; ?>" /></td>							
+						</tr>							
+						<tr>
+							<td></td>
+							<td><?php echo JText::_("SHOP_AUTH_PASSWORD"); ?> : </td>
+							<td><input <?php if (!$product->viewuser){echo "disabled";} ?> class="inputbox" type="password" size="50" maxlength="400" name="viewpassword" id="viewpassword" value="<?php echo $product->viewpassword; ?>" /></td>							
+						</tr>
+						
+						</table>
+					</fieldset>	
 				</td>	
+				<td valign = "top">
+					<fieldset>
+						<legend><?php echo JText::_("SHOP_PRODUCT_FS_PREVIEW_RIGHTS"); ?></legend>
+						<table  border="0" cellpadding="3" cellspacing="0">
+							<tr>
+								<td class="key"><?php echo JText::_("SHOP_PRODUCT_PREVIEW_ACCESSIBILITY"); ?> : </td>
+								<td ><?php echo JHTML::_("select.genericlist",$accessibility_list, 'viewaccessibility_id', 'size="1" class="inputbox"  onChange="javascript:accessibilityEnable(\'viewaccessibility_id\',\'userPreviewList\');"', 'value',  'text', $product->viewaccessibility_id ); ?></td>
+							</tr>			
+							<tr>
+								<td class="key"><?php echo JText::_( 'SHOP_PRODUCT_PREVIEW_ACCESSIBILITY_USER'); ?> </td>
+								<td ><?php
+									if ($product->viewaccessibility_id != 0 || $product->viewaccessibility_id != "" || $product->viewaccessibility_id != null)   {$disabled = 'disabled';} else {$disabled = '';};
+								 echo JHTML::_("select.genericlist",$rowsUser, 'userPreviewList[]', 'size="15" multiple="true" class="selectbox" '.$disabled, 'value', 'text', $userPreviewSelected ); ?></td>
+							</tr>
+						</table>
+					</fieldset>	
+				</td>
 			</tr>			
 		</table>
 		<?php
@@ -486,6 +612,7 @@ class HTML_product {
 		<input type="hidden" name="created" value="<?php echo $product->created; ?>" />
 		<input type="hidden" name="checked_out" value="<?php echo $product->checked_out; ?>" />
 		<input type="hidden" name="checked_out_time" value="<?php echo $product->checked_out_time; ?>" />
+		<input type="hidden" id="productFileName" name="productFileName" value="<?php echo $product->getFileName();?>">
 		</form>
 	<?php
 	}
