@@ -584,6 +584,74 @@ td.x-toolbar-right {
        
             
 }
+
+#companyBackgroundImg{
+	width:100%;
+	z-index : 0;
+	position : fixed;
+}
+/*#companyBanner {
+ 	background: url("../images/fond_map_crigeos.png") repeat scroll left center transparent;
+    height: 7%;
+    position: relative;
+    background-size : 100%;
+
+}*/
+#companyBanner {
+ 	
+    height: 50px;
+    position: relative;
+    width:100%;
+    z-index : 100;
+    
+
+}
+.olControlScaleLine {
+	top : 87.5% !important;
+}
+
+#map {
+
+    position: relative;
+    height : 95%;
+
+}
+
+#southToolbar {
+ top : 94% !important;
+ height:5% !important
+}
+
+#companyLogo{
+	
+		background: url(../images/logo_map_easysdi.png) no-repeat left center;
+		display : block;
+		height :100%;
+		width :330px;
+		
+}
+/*#companyMessage{
+	
+	background: url("../images/texte_map_crigeos.png") no-repeat scroll 0 0 transparent; 
+    height: 100%;
+    left: 65%;
+    position: relative;
+    top :-40px;
+    z-index :100;
+    
+    
+}*/
+#companyMessage{
+	
+	height: 100%;
+    float: right;
+    position: relative;
+    top :-50px;
+    z-index :100;
+    
+    
+}
+
 .x-toolbar-cell input {
 	height:16px!important;
 	top : 0px !important;
@@ -602,4 +670,8 @@ td.x-toolbar-right {
 	vertical-align:middle;
 
 
+}
+
+#geoMap {
+	 top : 29px !important;
 }
