@@ -38,7 +38,7 @@ require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'model'.DS.'account.easysdi.class.php');
 
 JHTML::_('stylesheet', 'common_easysdi_admin.css', 'administrator/components/com_easysdi_core/templates/css/');
-JHTML::_('stylesheet', 'easysdi.css', 'templates/easysdi/css/');
+//JHTML::_('stylesheet', 'easysdi.css', 'templates/easysdi/css/');
 
 global $mainframe;
 
@@ -172,6 +172,22 @@ switch($task)
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'overlay.class.easysdi_map.php');
 		ADMIN_overlay::cancelOverlay($option);		
 		break;
+		
+	case "overlay_publish":
+		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'overlay.admin.easysdi_map.html.php');
+		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'overlay.toolbar.easysdi_map.html.php');
+		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'overlay.admin.easysdi_map.php');
+		TOOLBAR_overlay::_LISTOVERLAY();
+		ADMIN_overlay::changeContent(1);
+		
+		break;
+	case "overlay_unpublish":
+		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'overlay.admin.easysdi_map.html.php');
+		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'overlay.toolbar.easysdi_map.html.php');
+		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'overlay.admin.easysdi_map.php');
+		TOOLBAR_overlay::_LISTOVERLAY();
+		ADMIN_overlay::changeContent(0);
+		break;
 	/**
 	 * Overlay Group
 	 */
@@ -237,6 +253,23 @@ switch($task)
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'overlay.class.easysdi_map.php');
 		ADMIN_overlay::cancelOverlayGroup($option);		
 		break;
+	case "overlaygroup_publish":
+		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'overlay.admin.easysdi_map.html.php');
+		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'overlay.toolbar.easysdi_map.html.php');
+		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'overlay.admin.easysdi_map.php');
+		TOOLBAR_overlay::_LISTOVERLAYGROUP();
+		ADMIN_overlay::changeGroupContent(1);
+		
+		break;
+	case "overlaygroup_unpublish":
+		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'overlay.admin.easysdi_map.html.php');
+		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'overlay.toolbar.easysdi_map.html.php');
+		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'overlay.admin.easysdi_map.php');
+		TOOLBAR_overlay::_LISTOVERLAYGROUP();
+		ADMIN_overlay::changeGroupContent(0);
+		break;	
+		
+		
 	/**
 	 * Result Grid
 	 */
@@ -575,6 +608,22 @@ switch($task)
 		TOOLBAR_baselayer::_LIST();
 		ADMIN_baselayer::listBaseLayer($option);
 		break;
+		
+	case "baselayer_publish":
+		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'baselayer.admin.easysdi_map.html.php');
+		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'baselayer.toolbar.easysdi_map.html.php');
+		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'baselayer.admin.easysdi_map.php');
+		TOOLBAR_baselayer::_LIST();
+		ADMIN_baselayer::changeContent(1);
+		
+		break;
+	case "baselayer_unpublish":
+		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'baselayer.admin.easysdi_map.html.php');
+		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'baselayer.toolbar.easysdi_map.html.php');
+		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'baselayer.admin.easysdi_map.php');
+		TOOLBAR_baselayer::_LIST();
+		ADMIN_baselayer::changeContent(0);
+		break;
 	case 'editBaseLayer' :
 	case 'newBaseLayer':
 		include(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'baselayer.admin.easysdi_map.html.php');
@@ -739,5 +788,6 @@ switch($task)
 		TOOLBAR_resources::_DEFAULT();
 		$mainframe->redirect("index.php?option=$option");
 		break;
+	
 }
 ?>

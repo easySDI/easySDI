@@ -20,9 +20,11 @@
 /**
  * PHP script to emit component configuration into JavaScript.
  */
+require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.jsLoaderUtil.php');
+$jsLoader =JSLOADER_UTIL::getInstance();
 
 $s = "Ext.namespace('SData');\n";
-$s .= "Ext.BLANK_IMAGE_URL = '".JURI::base()."components/com_easysdi_map/externals/ext/resources/images/default/s.gif';\n";
+$s .= "Ext.BLANK_IMAGE_URL = '".$jsLoader->getPath("map","ext")."resources/images/default/s.gif';\n";
 $document->addScriptDeclaration($s);
 
 $db =& JFactory::getDBO();
@@ -215,7 +217,7 @@ function checkProxyLayerPermissions($doCheck, $type, $name, $valid_wms_layers, $
 
 
 // Export layer objects from the base layers table.
-$query = "SELECT l.* from #__sdi_baselayer l  order by l.ordering ASC;";
+$query = "SELECT l.* from #__sdi_baselayer l where l.published=1 order by l.ordering ASC;";
 $db->setQuery($query);
 $result = $db->loadAssocList();
 $s .= "SData.baseLayers = [";
@@ -224,29 +226,42 @@ if (!is_null($result)) {
 	foreach ($result as $rec)
 	{
 		extract($rec, EXTR_PREFIX_ALL, "l");
+		
 		if(checkProxyLayerPermissions($doCheckProxyLayerPermissions, 'WMS', $l_layers, $valid_wms_layers, $valid_wfs_features)){ // All base layers are WMS
 			$cache=(($l_cache==1) ? 'true' : 'false');
 			$customStyle=(($l_customStyle==1) ? 'true' : 'false');
 			$i++;
 			$s .= "{
-    id : '$l_id',
-    name : '$l_name',
-    url : '$l_url',
-    version : '$l_version',
-    layers : '$l_layers',
-    projection : '$l_projection',
-	defaultVisibility : $l_defaultvisibility,	
-	defaultOpacity : $l_defaultopacity,
-	metadataUrl : '$l_metadataurl',
-    imageFormat : '$l_imgformat',
-    cache : $cache,
-    customStyle : $customStyle,\n";
+		    id : '$l_id',
+		    name : '$l_name',
+		    url : '$l_url',
+		    type : '$l_type',
+		    version : '$l_version',
+		    layers : '$l_layers',
+		    projection : '$l_projection',
+			defaultVisibility : $l_defaultvisibility,	
+			defaultOpacity : $l_defaultopacity,
+			metadataUrl : '$l_metadataurl',
+		    imageFormat : '$l_imgformat',
+		    cache : $cache,
+		    customStyle : $customStyle,\n";
+			if ($l_style) {
+				$s .= "    style : \"$l_style\",\n";
+			}else{
+				$s .= "    style : \"default\",\n";
+			}
 			if ($l_singletile == 0){ $s .="    singletile : false,\n";}else{$s .="    singletile : true,\n";}
 			if ($l_maxextent) {
 				$s .= "    maxExtent : new OpenLayers.Bounds($l_maxextent),\n";
 			}
 			if ($l_resolutionoverscale && $l_resolutions) {
-				$s .= "    resolutions : $l_resolutions,\n";
+				$s .= "    resolutions : [$l_resolutions],\n";
+			}
+			if ($l_resolutionoverscale && $l_maxresolution) {
+				$s .= "    maxResolution : $l_maxresolution,\n";
+			}
+			if ($l_resolutionoverscale && $l_minresolution) {
+				$s .= "    minResolution : $l_minresolution,\n";
 			}
 			if (!$l_resolutionoverscale && $l_minScale) {
 				$s .= "    minScale : $l_minScale,\n";
@@ -254,19 +269,105 @@ if (!is_null($result)) {
 			if (!$l_resolutionoverscale && $l_maxScale) {
 				$s .= "    maxScale : $l_maxScale,\n";
 			}
+			if ($l_matrixset) {
+				$s .= "    matrixSet : \"$l_matrixset\",\n";
+			}
+			if ($l_matrixids) {
+				$matrixIds = explode(",",$l_matrixids);
+				foreach ($matrixIds as &$value) {
+				    $value = '"'.$value.'"';
+				}
+				$matrixIdsString = implode(",",$matrixIds);
+				$matrixIdsString = "[".$matrixIdsString."]";
+				$s .= "    matrixIds : $matrixIdsString,\n";
+			}
 			$s .= "    units : '$l_unit'
-}";
+			}";
 			if ($i != count($result)) $s .= ",";
 		}
 	}
 }
 $s .= "];\n";
+
+
 if($i == 0){
 	$s .= "alert('Invalid configuration. No Base Layers are available.');\n";
 }
-
+// Export overviewlayer config
+$query = "SELECT l.* from #__sdi_baselayer l where isoverviewlayer = 1";
+$db->setQuery($query);
+$result = $db->loadAssocList();
+$s .= "SData.overviewLayer = [";
+$i = 0;
+if (!is_null($result)) {
+	foreach ($result as $rec)
+	{
+		extract($rec, EXTR_PREFIX_ALL, "l");
+		
+		if(checkProxyLayerPermissions($doCheckProxyLayerPermissions, 'WMS', $l_layers, $valid_wms_layers, $valid_wfs_features)){ // All base layers are WMS
+			$cache=(($l_cache==1) ? 'true' : 'false');
+			$customStyle=(($l_customStyle==1) ? 'true' : 'false');
+			$i++;
+			$s .= "{
+		    id : '$l_id',
+		    name : '$l_name',
+		    url : '$l_url',
+		    type : '$l_type',
+		    version : '$l_version',
+		    layers : '$l_layers',
+		    projection : '$l_projection',
+			defaultVisibility : $l_defaultvisibility,	
+			defaultOpacity : $l_defaultopacity,
+			isoverviewlayer : $l_isoverviewlayer,
+			metadataUrl : '$l_metadataurl',
+		    imageFormat : '$l_imgformat',
+		    cache : $cache,
+		    customStyle : $customStyle,\n";
+			if ($l_style) {
+				$s .= "    style : \"$l_style\",\n";
+			}else{
+				$s .= "    style : \"default\",\n";
+			}
+			if ($l_singletile == 0){ $s .="    singletile : false,\n";}else{$s .="    singletile : true,\n";}
+			if ($l_maxextent) {
+				$s .= "    maxExtent : new OpenLayers.Bounds($l_maxextent),\n";
+			}
+			if ($l_resolutionoverscale && $l_resolutions) {
+				$s .= "    resolutions : [$l_resolutions],\n";
+			}
+			if ($l_resolutionoverscale && $l_maxresolution) {
+				$s .= "    maxResolution : $l_maxresolution,\n";
+			}
+			if ($l_resolutionoverscale && $l_minresolution) {
+				$s .= "    minResolution : $l_minresolution,\n";
+			}
+			if (!$l_resolutionoverscale && $l_minScale) {
+				$s .= "    minScale : $l_minScale,\n";
+			}
+			if (!$l_resolutionoverscale && $l_maxScale) {
+				$s .= "    maxScale : $l_maxScale,\n";
+			}
+			if ($l_matrixset) {
+				$s .= "    matrixSet : \"$l_matrixset\",\n";
+			}
+			if ($l_matrixids) {
+				$matrixIds = explode(",",$l_matrixids);
+				foreach ($matrixIds as &$value) {
+				    $value = '"'.$value.'"';
+				}
+				$matrixIdsString = implode(",",$matrixIds);
+				$matrixIdsString = "[".$matrixIdsString."]";
+				$s .= "    matrixIds : $matrixIdsString,\n";
+			}
+			$s .= "    units : '$l_unit'
+			}";
+			if ($i != count($result)) $s .= ",";
+		}
+	}
+}
+$s .= "];\n";
 // Export overlay groups objects from the __sdi_overlaygroup table.
-$query = "SELECT * from #__sdi_overlaygroup g order by g.ordering asc;";
+$query = "SELECT * from #__sdi_overlaygroup g where g.published=1 order by g.ordering asc;";
 $db->setQuery($query);
 $result = $db->loadAssocList();
 
@@ -278,14 +379,16 @@ if (!is_null($result)) {
 		$i++;
 		extract($rec, EXTR_PREFIX_ALL, "l");
 		$open = (($l_open == 1) ? 'true' : 'false');
-		$s .= "{ id : $l_id, name : '$l_name', open: $open}";
+		$s .= "{ id : $l_id, name : ".json_encode($l_name).", open: $open}";
 		if ($i != count($result)) $s .= ",";
 	}
 };
 $s .= "];\n";
 
 // Export overlays objects from the __sdi_overlay table.
-$query = "SELECT * from #__sdi_overlay o order by o.ordering DESC;";
+$query = "SELECT o.* from #__sdi_overlay o 
+inner join #__sdi_overlaygroup og on og.id = o.group_id
+where o.published=1 and og.published=1 order by og.ordering DESC,  o.ordering DESC";
 $db->setQuery($query);
 $result = $db->loadAssocList();
 
@@ -303,27 +406,33 @@ if (!is_null($result)) {
 			// add comma before all but the first
 			if ($done_first) $s .= ",";
 			$done_first=true;
+			$l_name = addslashes($l_name);
 			$s .= "{
-    id : $l_id,
-    group : $l_group_id,
-    name : '$l_name',
-    url : '$l_url',
-    url_type: '$l_type',    
-    version : '$l_version',
-    layers : '$l_layers',
-    projection : '$l_projection',
-	defaultVisibility : $l_defaultvisibility,
-	defaultOpacity : $l_defaultopacity,
-	metadataUrl : '$l_metadataurl',
-	imageFormat : '$l_imgformat',
-	cache : $cache,
-	customStyle : $customStyle,\n";
+		    id : $l_id,
+		    group : $l_group_id,
+		    name : '$l_name',
+		    url : '$l_url',
+		    url_type: '$l_type',    
+		    version : '$l_version',
+		    layers : '$l_layers',
+		    projection : '$l_projection',
+			defaultVisibility : $l_defaultvisibility,
+			defaultOpacity : $l_defaultopacity,
+			metadataUrl : '$l_metadataurl',
+			imageFormat : '$l_imgformat',
+			cache : $cache,
+			customStyle : $customStyle,\n";
+			if ($l_style) {
+				$s .= "    style : \"$l_style\",\n";
+			}else{
+				$s .= "    style : \"default\",\n";
+			}	
 			if ($l_singletile == 0){ $s .="singletile : false,\n";}else{$s .="singletile : true,\n";}
 			if ($l_maxextent) {
 				$s .= "    maxExtent : new OpenLayers.Bounds($l_maxextent),\n";
 			}
 			if ($l_resolutionoverscale && $l_resolutions) {
-				$s .= "resolutions : $l_resolutions,\n";
+				$s .= "resolutions : [$l_resolutions],\n";
 			}
 			if (!$l_resolutionoverscale && $l_minscale) {
 				$s .= "minScale : $l_minscale,\n";
@@ -331,8 +440,20 @@ if (!is_null($result)) {
 			if (!$l_resolutionoverscale && $l_maxscale) {
 				$s .= "maxScale : $l_maxscale,\n";
 			}
+			if ($l_matrixset) {
+				$s .= "    matrixSet : \"$l_matrixset\",\n";
+			}
+			if ($l_matrixids) {
+				$matrixIds = explode(",",$l_matrixids);
+				foreach ($matrixIds as &$value) {
+				    $value = '"'.$value.'"';
+				}
+				$matrixIdsString = implode(",",$matrixIds);
+				$matrixIdsString = "[".$matrixIdsString."]";
+				$s .= "    matrixIds : $matrixIdsString,\n";
+			}
 			$s .= "units : '$l_unit'
-}";
+			}";
 			//if ($i != count($result)) $s .= ",";
 		} else {$s .= "// blocked access to $l_layers\n";}
 	}
@@ -441,7 +562,8 @@ $s .= "};\n\n";
  *   distinctResultsGrids - array of the distinct tabs that are available.
  */
 
-$query = "SELECT * from #__sdi_simplesearchtype;";
+$query = "SELECT * from #__sdi_simplesearchty
+pe;";
 $db->setQuery($query);
 $result = $db->loadAssocList();
 if (count($result)>0) {
@@ -737,7 +859,12 @@ if (!is_null($result)) {
 		extract($rec, EXTR_PREFIX_ALL, "l");
 		if($l_name == 'mapMaxExtent')
 			$s .= "	$l_name :  new OpenLayers.Bounds($l_value), ";
-		else
+		else if($l_name == 'mapResolutions' ){
+			if((trim($l_value))!= "")
+				$s .= "	$l_name :  [$l_value], ";
+			else 
+				$s .= "	$l_name : '',";
+		}else
 			$s .= "    $l_name : '$l_value',";
 		if(!is_null($l_description) && strlen($l_description) > 0) {
 			$s .= " // $l_description";

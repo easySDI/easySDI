@@ -23,10 +23,85 @@ defined('_JEXEC') or die('Restricted access');
 
 class ADMIN_baselayer 
 {
+	function changeContent( $state = 0 )
+	{
+		global $mainframe;
+		
+		// Initialize variables
+		$db		= & JFactory::getDBO();
+		
+		$cid = JRequest::getVar('cid', array());
+		JArrayHelper::toInteger($cid);
+		$option	= JRequest::getCmd( 'option' );
+		$task	= JRequest::getCmd( 'task' );
+		$total	= count($cid);
+		$cids	= implode(',', $cid);
+		
+		$query = 'UPDATE #__sdi_baselayer' .
+				' SET published = '. (int) $state .
+				' WHERE id IN ( '. $cids .' )';
+		$db->setQuery($query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			$mainframe->redirect("index.php?option=$option&task=listObject" );
+			exit();
+		}
+
+		
+
+		switch ($state)
+		{
+			case 1 :
+				$msg = $total." ".JText::sprintf('Item(s) successfully Published');
+				break;
+
+			case 0 :
+			default :
+				$msg = $total." ".JText::sprintf('Item(s) successfully Unpublished');
+				break;
+		}
+
+		$cache = & JFactory::getCache('com_easysdi_map');
+		$cache->clean();
+		
+		$mainframe->enqueueMessage($msg,"SUCCESS");
+		$mainframe->redirect("index.php?option=$option&task=baseLayer" );
+		exit();
+	}
 	function listBaseLayer ($option)
 	{
 		global  $mainframe;
 		$db =& JFactory::getDBO(); 
+		
+		$overviewLayerId	= JRequest::getCmd( 'overviewLayerId', '' );
+		$overviewLayerMode	= JRequest::getCmd( 'overviewLayerMode', '' );
+		
+		if(($overviewLayerId !='')&& ($overviewLayerMode!='')){
+			if($overviewLayerMode == 1){
+				$query ="UPDATE #__sdi_baselayer set isoverviewlayer =0";
+				$db->setQuery( $query );
+				if (!$db->query())
+				{
+					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+				}
+					
+				$query ="UPDATE #__sdi_baselayer set isoverviewlayer =1 where id =".$overviewLayerId;
+				$db->setQuery( $query );
+				if (!$db->query())
+				{
+					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+				}
+			}else if($overviewLayerMode == 0){
+				
+				$query ="UPDATE #__sdi_baselayer set isoverviewlayer =0 where id =".$overviewLayerId;
+				$db->setQuery( $query );
+				if (!$db->query())
+				{
+					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+				}
+			}		
+			
+		}
 		
 		$limit = $mainframe->getUserStateFromRequest( "viewlistlimit", 'limit', 10 );
 		$limitstart = $mainframe->getUserStateFromRequest( "view{$option}limitstart", 'limitstart', 0 );
@@ -144,6 +219,36 @@ class ADMIN_baselayer
 	{
 		global $mainframe;
 		$db=& JFactory::getDBO(); 
+		
+		$overviewLayerId	= JRequest::getCmd( 'id', '' );
+		$overviewLayerMode	= JRequest::getCmd( 'isoverviewlayer', '' );
+		
+		if(($overviewLayerId !='')&& ($overviewLayerMode!='')){
+			if($overviewLayerMode == 1){
+				$query ="UPDATE #__sdi_baselayer set isoverviewlayer =0";
+				$db->setQuery( $query );
+				if (!$db->query())
+				{
+					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+				}
+					
+				$query ="UPDATE #__sdi_baselayer set isoverviewlayer =1 where id =".$overviewLayerId;
+				$db->setQuery( $query );
+				if (!$db->query())
+				{
+					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+				}
+			}else if($overviewLayerMode == 0){
+				
+				$query ="UPDATE #__sdi_baselayer set isoverviewlayer =0 where id =".$overviewLayerId;
+				$db->setQuery( $query );
+				if (!$db->query())
+				{
+					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+				}
+			}		
+			
+		}
 		
 		$baseLayer =& new baseLayer($db);
 		if (!$baseLayer->bind( $_POST )) 
