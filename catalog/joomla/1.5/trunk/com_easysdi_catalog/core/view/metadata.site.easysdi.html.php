@@ -1077,7 +1077,7 @@ else
 																if(form.getForm().extValidationCorrupt){															
 																			Ext.Msg.show({
 																			   modal : true,														
-																			   title:'".JText::_('CATALOG_VALIDATEMETADATA_MSG_FAILURE_TITLE')."',
+																			   title:'".JText::_('CATALOG_PUBLISHMETADATA_MSG_FAILURE_TITLE')."',
 																			   msg: '".JText::_('CATALOG_PUBLISHMETADATA_MSG_EXTCORRUPT')."',
 																			   buttons: Ext.Msg.YESNO,
 								
@@ -1242,7 +1242,7 @@ else
 
 																		
 																	}else{
-																		Ext.MessageBox.alert('".JText::_('CATALOG_VALIDATEMETADATA_MSG_FAILURE_TITLE')."', '".JText::_('CATALOG_VALIDATEMETADATA_MSG_FAILURE_TEXT')."');
+																		Ext.MessageBox.alert('".JText::_('CATALOG_PUBLISHMETADATA_MSG_FAILURE_TITLE')."', '".JText::_('CATALOG_PUBLISHMETADATA_MSG_FAILURE_TEXT')."');
 																			
 																		myMask.hide();
 
@@ -1332,7 +1332,8 @@ else
 						                 	form.getForm().setValues({object_id: '".$object_id."'});
 						                 	form.getForm().setValues({account_id: '".$account_id."'});
 						                 	
-							            	if (!form.getForm().fieldInvalid) 
+											if (!form.getForm().fieldInvalid) 
+							            	//if ((!form.getForm().isInvalid) &&(!form.getForm().fieldInvalid) )
 						        			{
 												form.getForm().submit({
 											    	scope: this,
