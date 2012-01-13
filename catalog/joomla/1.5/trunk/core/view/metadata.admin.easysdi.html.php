@@ -24,9 +24,20 @@ defined('_JEXEC') or die('Restricted access');
 
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
-					
+//jimport( 'joomla.application.component.view' );
+?>
+<?php if((JRequest::getVar('task') =="editMetadata")||
+(JRequest::getVar('task') =="askForEditMetadata")|| 
+(JRequest::getVar('task') =="importXMLMetadata")|| 
+(JRequest::getVar('task') =="importCSWMetadata") ||(JRequest::getVar('task') =="replicateMetadata")){?>
+<script>
+var thesaurusConfig = '<?php echo config_easysdi::getValue("thesaurusUrl");?>';
+</script>
+<?php }
+			
 JHTML::script('ext-base.js', 'administrator/components/com_easysdi_catalog/ext/adapter/ext/');
 JHTML::script('ext-all.js', 'administrator/components/com_easysdi_catalog/ext/');
+JHTML::script('catalogMapPanel.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('dynamic.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('ExtendedButton.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('ExtendedField.js', 'administrator/components/com_easysdi_catalog/js/');
@@ -39,7 +50,15 @@ JHTML::script('SuperBoxSelect.js', 'administrator/components/com_easysdi_catalog
 JHTML::script('FileUploadField.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('shCore.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('shBrushXml.js', 'administrator/components/com_easysdi_catalog/js/');
-JHTML::script('GemetClient.js', 'administrator/components/com_easysdi_catalog/js/');
+//JHTML::script('GemetClient.js', 'administrator/components/com_easysdi_catalog/js/');
+//JHTML::script('GemetClient-uncompressed.js', 'administrator/components/com_easysdi_catalog/js/');
+JHTML::script('thesaur.js', 'administrator/components/com_easysdi_catalog/js/');
+JHTML::script('HS.js', 'administrator/components/com_easysdi_catalog/js/');
+//JHTML::script('translations.js', 'administrator/components/com_easysdi_catalog/js/');
+require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.jsLoaderUtil.php');
+$jsLoader =JSLOADER_UTIL::getInstance();
+JHTML::script('SingleFile.js', $jsLoader->getPath("map","openlayers", "/lib/OpenLayers/"));
+JHTML::script('OpenLayers.js', $jsLoader->getPath("map","openlayers"));
 
 
 class HTML_metadata {
@@ -57,7 +76,7 @@ class HTML_metadata {
 	var $parentGuid="";
 	
 	
-	function editMetadata($object_id, $root, $metadata_id, $xpathResults, $profile_id, $isManager, $isEditor, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $object_name, $version_title, $option)
+	function editMetadata($object_id, $root, $metadata_id, $xpathResults, $profile_id, $isManager, $isEditor, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $object_name, $version_title, $option, $defautBBoxConfig="")
 	{
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 		
@@ -132,7 +151,7 @@ class HTML_metadata {
 		$document->addStyleSheet($uri->base(true) . '/components/com_easysdi_catalog/templates/css/shCore.css');
 		$document->addStyleSheet($uri->base(true) . '/components/com_easysdi_catalog/templates/css/shThemeDefault.css');
 		
-		
+		$document->addStyleSheet($uri->base(true) . '/components/com_easysdi_catalog/templates/css/mapHelper.css');
 		
 		$url = 'index.php?option='.$option.'&task=saveMetadata';
 		$preview_url = 'index.php?option='.$option.'&task=previewXMLMetadata';
@@ -179,8 +198,13 @@ class HTML_metadata {
 			<input type="hidden" name="task" value="" />
 			<input type="hidden" name="object_id" value="<?php echo $object_id;?>" />
 			</form>
+	
+				<?php $document->addScriptDeclaration( $defautBBoxConfig );?>
+			
 				<?php
 				$this->javascript .="
+						
+						
 						var domNode = Ext.DomQuery.selectNode('div#element-box div.m')
 						Ext.DomHelper.insertHtml('beforeEnd',domNode,'<div id=formContainer></div>');
 
@@ -354,8 +378,16 @@ class HTML_metadata {
 							                {
 							                	myMask.show();
 							                 	var fields = new Array();
+							                 	form.getForm().fieldInvalid =false;	
 							        			form.cascade(function(cmp)
 							        			{
+										        	if(cmp.isValid){
+									        				if(!cmp.isValid()&& Ext.get(cmp.id)){														
+																	form.getForm().fieldInvalid =true;													
+														
+																
+															}
+													}
 								        			if (cmp.getId() == 'gmd_MD_Metadata-gmd_MD_DataIdentification__2-gmd_abstract__2-gmd_LocalisedCharacterString-fr-FR__1')
 						         					{
 						         						//alert(cmp.getId() + \" - \" + cmp.getValue());
@@ -372,36 +404,45 @@ class HTML_metadata {
 							         					}
 							         				}
 							        			});
-							        			var fieldsets = fields.join(' | ');
-							        			//alert(fieldsets);
-							        			form.getForm().setValues({fieldsets: fieldsets});
-							              		form.getForm().setValues({task: 'saveMetadata'});
-							                 	form.getForm().setValues({metadata_id: '".$metadata_id."'});
-							                 	form.getForm().setValues({object_id: '".$object_id."'});
-												form.getForm().submit({
-											    	scope: this,
-													method	: 'POST',
-													clientValidation: false,
-													success: function(form, action) 
-													{
-														// Retour � la page pr�c�dente
-														Ext.MessageBox.alert('".JText::_('CATALOG_SAVEMETADATA_MSG_SUCCESS_TITLE')."', 
-							                    						 '".JText::_('CATALOG_SAVEMETADATA_MSG_SUCCESS_TEXT')."',
-							                    						 function () {window.open ('./index.php?option=".$option."&Itemid=".JRequest::getVar('Itemid')."&lang=".JRequest::getVar('lang')."&task=cancelMetadata','_parent');});
-												
+							        			
+							        			if(!form.getForm().fieldInvalid) 
+					        					{	
+								        			var fieldsets = fields.join(' | ');
+								        			//alert(fieldsets);
+								        			form.getForm().setValues({fieldsets: fieldsets});
+								              		form.getForm().setValues({task: 'saveMetadata'});
+								                 	form.getForm().setValues({metadata_id: '".$metadata_id."'});
+								                 	form.getForm().setValues({object_id: '".$object_id."'});
+													form.getForm().submit({
+												    	scope: this,
+														method	: 'POST',
+														clientValidation: false,
+														success: function(form, action) 
+														{
+															// Retour � la page pr�c�dente
+															Ext.MessageBox.alert('".JText::_('CATALOG_SAVEMETADATA_MSG_SUCCESS_TITLE')."', 
+								                    						 '".JText::_('CATALOG_SAVEMETADATA_MSG_SUCCESS_TEXT')."',
+								                    						 function () {window.open ('./index.php?option=".$option."&Itemid=".JRequest::getVar('Itemid')."&lang=".JRequest::getVar('lang')."&task=cancelMetadata','_parent');});
 													
-														myMask.hide();
-													},
-													failure: function(form, action) 
-													{
-                        								if (action.result)
-															alert(action.result.errors.xml);
-														else
-															alert('Form save error');
-														myMask.hide();
-													},
-													url:'".$url."'
-												});
+														
+															myMask.hide();
+														},
+														failure: function(form, action) 
+														{
+	                        								if (action.result)
+																alert(action.result.errors.xml);
+															else
+																alert('Form save error');
+															myMask.hide();
+														},
+														url:'".$url."'
+													});
+												}
+												else{
+													alert('Please verify whether all required fields are present');
+													myMask.hide();
+												
+												}
 							        	}
 						        })
 							        
@@ -421,8 +462,19 @@ class HTML_metadata {
 						                {
 						                	myMask.show();
 						                 	var fields = new Array();
+						                 	form.getForm().fieldInvalid =false;		
 						        			form.cascade(function(cmp)
 						        			{
+						        			
+						        				if(cmp.isValid){
+									        				if(!cmp.isValid()&& Ext.get(cmp.id)){														
+																	form.getForm().fieldInvalid =true;														
+														
+																if(!Ext.getCmp(cmp.id)){														
+																		form.getForm().extValidationCorrupt =true;														
+																}
+															}
+												}
 							        			if (cmp.xtype=='fieldset')
 						         				{
 						         					if (cmp.clones_count)
@@ -532,6 +584,7 @@ class HTML_metadata {
 						
 		// Stockage du path pour atteindre ce noeud du XML
 		$queryPath = $queryPath."/".$currentIsocode;
+	//	echo($currentIsocode."<br>") ;
 		
 		// Construire la liste d�roulante des p�rim�tres pr�d�finis si on est au bon endroit
 		//echo $this->catalogBoundaryIsocode." == ".$currentIsocode.", ".count($this->boundaries)."<br>";
@@ -1838,6 +1891,7 @@ class HTML_metadata {
 															      appPath: '".$uri->base(true)."/components/com_easysdi_catalog/js/',
 															      returnPath: false,
 															      returnInspire: true,
+															      thesaurusUrl:thesaurusConfig,
 															      width: 300, 
 															      height:400,
 															      win_title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_THESAURUSGEMET_ALERT'))."',
@@ -1893,6 +1947,7 @@ class HTML_metadata {
 																			'show': function (animateTarget, cb, scope)
 																					{
 																						this.items.get(0).emptyAll();
+																					
 																						this.items.get(0).getTopConcepts(this.items.get(0).CONCEPT);
 																					}
 																			},
@@ -3273,6 +3328,7 @@ class HTML_metadata {
 															      appPath: '".$uri->base(true)."/components/com_easysdi_catalog/js/',
 															      returnPath: false,
 															      returnInspire: true,
+															      thesaurusUrl:thesaurusConfig,
 															      width: 300, 
 															      height:400,
 															      win_title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_THESAURUSGEMET_ALERT'))."',
@@ -3967,6 +4023,19 @@ class HTML_metadata {
 		}
 			//}
 		}
+		
+	/*	echo($currentIsocode."<br>") ;
+		if( strcasecmp($currentIsocode, "gmd:EX_GeographicBoundingBox") == 0){
+			echo($parentFieldsetName."<br>") ;
+			$this->javascript .="
+		".$parentFieldsetName.".add(createBBox(".$parentFieldsetName."));";
+
+		}
+		for($i ; $i< count($rowChilds);$i++)
+			echo "&nbsp;";*/
+		
+		
+		
 	}
 	function cleanText($text)
 	{
@@ -4273,6 +4342,16 @@ class HTML_metadata {
 														         value:'".html_Metadata::cleanText($importref->importtype_id)."' 
 														       },
 														       { 
+														         id:'serviceversion', 
+														         xtype: 'hidden',
+														         value:'".html_Metadata::cleanText($importref->serviceversion)."' 
+														       },
+														       { 
+														         id:'outputschema', 
+														         xtype: 'hidden',
+														         value:'".html_Metadata::cleanText($importref->outputschema)."' 
+														       },
+														       { 
 														         id:'task', 
 														         xtype: 'hidden',
 														         value:'importXMLMetadata' 
@@ -4388,6 +4467,16 @@ class HTML_metadata {
 														         id:'url', 
 														         xtype: 'hidden',
 														         value:'".html_Metadata::cleanText($importref->url)."' 
+														       },
+														       { 
+														         id:'serviceversion', 
+														         xtype: 'hidden',
+														         value:'".html_Metadata::cleanText($importref->serviceversion)."' 
+														       },
+														       { 
+														         id:'outputschema', 
+														         xtype: 'hidden',
+														         value:'".html_Metadata::cleanText($importref->outputschema)."' 
 														       },
 														       { 
 														         id:'task', 

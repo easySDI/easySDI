@@ -1465,12 +1465,10 @@ function com_install(){
 			{
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}
-			
 		}
-		if($version =="2.0.2"){			
-			
-	
-			
+		
+		if($version == "2.0.2")
+		{
 			$query = "INSERT INTO #__sdi_list_attributetype (guid, code, name, description, created, createdby, label, defaultpattern, isocode, namespace_id) VALUES
 						('".helper_easysdi::getUniqueId()."', 'distance', 'distance', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'CATALOG_ATTRIBUTETYPE_DISTANCE', '[0-9\\.\\-]', 'Distance', 2), 
 						('".helper_easysdi::getUniqueId()."', 'integer', 'integer', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'CATALOG_ATTRIBUTETYPE_INTEGER', '[0-9]', 'Integer', 2)";	
@@ -1511,7 +1509,15 @@ function com_install(){
 				}
 
 			}
+			$query="ALTER TABLE #__sdi_configuration  MODIFY value varchar(1000)"; 
+			$db->setQuery( $query);	
+			if (!$db->query()) 
+			{
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
 			
+		
+		
 			$version="2.0.3";
 			$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='CATALOG'";
 			$db->setQuery( $query);
@@ -1519,33 +1525,156 @@ function com_install(){
 			{
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}
-			
+
 		}
-
-
-		/**
-		 * Copy View files in Core component to allow  Menu Item Manger to find entries
-		 */
-		/*	mkdir(JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'catalog', 0700);
-			mkdir(JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'catalog'.DS.'tmpl', 0700);
-			$file = JPATH_SITE.DS.'components'.DS.'com_easysdi_catalog'.DS.'views'.DS.'catalog'.DS.'metadata.xml';
-			$newfile = JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'catalog'.DS.'metadata.xml';
-			if (!copy($file, $newfile)) {
-			$mainframe->enqueueMessage("Failed to copy VIEWS file in Core component","ERROR");
-			return false;
+		if($version == "2.0.3")
+		{
+		
+			$query = "SELECT id FROM #__sdi_list_module  WHERE  code='CATALOG'";
+			$db->setQuery( $query );
+			$module_id = $db->loadResult();
+		
+			$query="INSERT INTO #__sdi_configuration (guid,code,name,description, created,createdby,value,module_id) VALUES  ('".helper_easysdi::getUniqueId()."', 'defaultBboxConfig','defaultBboxConfig','default Bbox Config.','".date('Y-m-d H:i:s')."', '".$user_id."', '','".$module_id."')";
+			$db->setQuery( $query);	
+			if (!$db->query()) 
+			{
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}
-			$file = JPATH_SITE.DS.'components'.DS.'com_easysdi_catalog'.DS.'views'.DS.'catalog'.DS.'tmpl'.DS.'default.xml';
-			$newfile = JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'catalog'.DS.'tmpl'.DS.'default.xml';
-			if (!copy($file, $newfile)) {
-			$mainframe->enqueueMessage("Failed to copy VIEWS file in Core component","ERROR");
-			return false;
+			
+					
+			$query = "INSERT INTO `#__sdi_searchcriteria` (`guid`, `code`, `name`, `label`, `created`, `createdby`, `criteriatype_id`) VALUES
+				  ('".helper_easysdi::getUniqueId()."', 'definedBoundary', 'definedBoundary', 'CATALOG_SEARCHCRITERIA_SYSTEMFIELD_DEFINEDBOUNDARY', '".date('Y-m-d H:i:s')."', ".$user_id.", 1)";
+		
+			$db->setQuery( $query);
+			
+			if (!$db->query())
+			{
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+				return false;
 			}
-			$file = JPATH_SITE.DS.'components'.DS.'com_easysdi_catalog'.DS.'views'.DS.'catalog'.DS.'tmpl'.DS.'default.php';
-			$newfile = JPATH_SITE.DS.'components'.DS.'com_easysdi_core'.DS.'views'.DS.'catalog'.DS.'tmpl'.DS.'default.php';
-			if (!copy($file, $newfile)) {
-			$mainframe->enqueueMessage("Failed to copy VIEWS file in Core component","ERROR");
-			return false;
-			}*/
+		
+			$version="2.0.4";
+			$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='CATALOG'";
+			$db->setQuery( $query);
+			if (!$db->query())
+			{
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+		}
+		if($version == "2.0.4")
+		{
+				
+			
+			$query = "INSERT INTO `#__sdi_searchcriteria` (`guid`, `code`, `name`, `label`, `created`, `createdby`, `criteriatype_id`) VALUES
+				  ('".helper_easysdi::getUniqueId()."', 'isDownloadable', 'isDownloadable', 'CATALOG_SEARCHCRITERIA_SYSTEMFIELD_ISDOWNLOADABLE', '".date('Y-m-d H:i:s')."', ".$user_id.", 1)";
+			
+							
+			$db->setQuery( $query);
+			
+			if (!$db->query())
+			{
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+				return false;
+			}
+		
+			$version="2.0.5";
+			$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='CATALOG'";
+			$db->setQuery( $query);
+			if (!$db->query())
+			{
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+		}
+		if($version == "2.0.5")
+		{
+				
+			
+			$query = "SELECT id FROM #__sdi_list_module  WHERE  code='CATALOG'";
+			$db->setQuery( $query );
+			$module_id = $db->loadResult();
+		
+			$query="INSERT INTO #__sdi_configuration (guid,code,name,description, created,createdby,value,module_id) VALUES  
+					('".helper_easysdi::getUniqueId()."', 'defaultBboxConfigExtentLeft','defaultBboxConfigExtentLeft','default Bbox ConfigExtent Left.','".date('Y-m-d H:i:s')."', '".$user_id."', '','".$module_id."'), 
+					('".helper_easysdi::getUniqueId()."', 'defaultBboxConfigExtentBottom','defaultBboxConfigExtentBottom','default Bbox ConfigExtent Bottom.','".date('Y-m-d H:i:s')."', '".$user_id."', '','".$module_id."'), 
+					('".helper_easysdi::getUniqueId()."', 'defaultBboxConfigExtentRight','defaultBboxConfigExtentRight','default Bbox ConfigExtent Right','".date('Y-m-d H:i:s')."', '".$user_id."', '','".$module_id."'), 
+					('".helper_easysdi::getUniqueId()."', 'defaultBboxConfigExtentTop','defaultBboxConfigExtentTop','default Bbox ConfigExtent Top.','".date('Y-m-d H:i:s')."', '".$user_id."', '','".$module_id."')";
+			
+			$db->setQuery( $query);	
+			
+			if (!$db->query()) 
+			{
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			
+			$version="2.0.6";
+			$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='CATALOG'";
+			$db->setQuery( $query);
+			if (!$db->query())
+			{
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+		}
+		if($version == "2.0.6")
+		{
+				
+			
+			$query = "SELECT id FROM #__sdi_list_module  WHERE  code='CATALOG'";
+			$db->setQuery( $query );
+			$module_id = $db->loadResult();
+		
+			$query="INSERT INTO #__sdi_configuration (guid,code,name,description, created,createdby,value,module_id) VALUES  
+					('".helper_easysdi::getUniqueId()."', 'thesaurusUrl','thesaurusUrl','thesaurus Url.','".date('Y-m-d H:i:s')."', '".$user_id."', '','".$module_id."')";
+			
+			$db->setQuery( $query);	
+			
+			if (!$db->query()) 
+			{
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			
+			$version="2.0.7";
+			$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='CATALOG'";
+			$db->setQuery( $query);
+			if (!$db->query())
+			{
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+		}
+		if($version == "2.0.7"){
+			$query="ALTER TABLE `#__sdi_importref`
+  				ADD column serviceversion VARCHAR(10);
+				";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			$query="ALTER TABLE `#__sdi_importref`
+  				ADD column outputschema VARCHAR(100);
+				";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			$version="2.0.8";
+			$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='CATALOG'";
+			$db->setQuery( $query);
+			if (!$db->query()){
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+		}
+		if($version == "2.0.8"){
+			
+			$version="2.1.0";
+			$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='CATALOG'";
+			$db->setQuery( $query);
+			if (!$db->query()){
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+		}
 
 		$query = "DELETE FROM #__components where `option`= 'com_easysdi_catalog' ";
 		$db->setQuery( $query);

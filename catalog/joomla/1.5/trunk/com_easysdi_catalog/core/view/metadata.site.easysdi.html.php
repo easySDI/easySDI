@@ -24,9 +24,17 @@ defined('_JEXEC') or die('Restricted access');
 
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
-					
+//jimport( 'joomla.application.component.view' );
+?>
+<?php if((JRequest::getVar('task') =="editMetadata")||(JRequest::getVar('task') =="askForEditMetadata")||(JRequest::getVar('task') =="replicateMetadata")){?>
+<script>
+var thesaurusConfig = '<?php echo config_easysdi::getValue("thesaurusUrl");?>'
+</script>
+<?php }
+
 JHTML::script('ext-base.js', 'administrator/components/com_easysdi_catalog/ext/adapter/ext/');
 JHTML::script('ext-all.js', 'administrator/components/com_easysdi_catalog/ext/');
+JHTML::script('catalogMapPanel.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('dynamic.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('ExtendedButton.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('ExtendedField.js', 'administrator/components/com_easysdi_catalog/js/');
@@ -39,7 +47,17 @@ JHTML::script('SuperBoxSelect.js', 'administrator/components/com_easysdi_catalog
 JHTML::script('FileUploadField.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('shCore.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('shBrushXml.js', 'administrator/components/com_easysdi_catalog/js/');
-JHTML::script('GemetClient.js', 'administrator/components/com_easysdi_catalog/js/');
+//JHTML::script('GemetClient.js', 'administrator/components/com_easysdi_catalog/js/');
+//JHTML::script('GemetClient-uncompressed.js', 'administrator/components/com_easysdi_catalog/js/');
+JHTML::script('thesaur.js', 'administrator/components/com_easysdi_catalog/js/');
+JHTML::script('HS.js', 'administrator/components/com_easysdi_catalog/js/');
+//JHTML::script('translations.js', 'administrator/components/com_easysdi_catalog/js/');
+require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.jsLoaderUtil.php');
+$jsLoader =JSLOADER_UTIL::getInstance();
+JHTML::script('SingleFile.js', $jsLoader->getPath("map","openlayers", "/lib/OpenLayers/"));
+JHTML::script('OpenLayers.js', $jsLoader->getPath("map","openlayers"));
+//JHTML::script('SingleFile.js',  $jsLoader->getPath("map","geoext", "/lib/GeoExt/"));
+//JHTML::script('GeoExt.js',  $jsLoader->getPath("map", "geoext", "/script/"));
 
 class HTML_metadata {
 	var $javascript = "";
@@ -325,7 +343,7 @@ else
 	<?php
 	}
 	
-	function editMetadata($object_id, $root, $metadata_id, $xpathResults, $profile_id, $isManager, $isEditor, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $object_name, $version_title, $option)
+	function editMetadata($object_id, $root, $metadata_id, $xpathResults, $profile_id, $isManager, $isEditor, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $object_name, $version_title, $option, $defautBBoxConfig="")
 	{
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 		
@@ -403,6 +421,7 @@ else
 		
 		$document->addStyleSheet($uri->base(true) . '/administrator/components/com_easysdi_catalog/templates/css/shCore.css');
 		$document->addStyleSheet($uri->base(true) . '/administrator/components/com_easysdi_catalog/templates/css/shThemeDefault.css');
+		$document->addStyleSheet($uri->base(true) . '/administrator/components/com_easysdi_catalog/templates/css/mapHelper.css');
 		
 		$url = 'index.php?option='.$option.'&task=saveMetadata';
 		$preview_url = 'index.php?option='.$option.'&task=previewXMLMetadata';
@@ -465,6 +484,7 @@ else
 			</form>
 		</div>
 		</div>
+		<?php $document->addScriptDeclaration( $defautBBoxConfig )?>;
 				<?php
 				$this->javascript .="
 						var domNode = Ext.DomQuery.selectNode('div#editMdOutput')
@@ -2947,6 +2967,7 @@ else
 															      appPath: '".$uri->base(true)."/administrator/components/com_easysdi_catalog/js/',
 															      returnPath: false,
 															      returnInspire: true,
+															      thesaurusUrl:thesaurusConfig,
 															      width: 300, 
 															      height:400,
 															      win_title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_THESAURUSGEMET_ALERT'))."',
@@ -4371,6 +4392,7 @@ else
 															      appPath: '".$uri->base(true)."/administrator/components/com_easysdi_catalog/js/',
 															      returnPath: false,
 															      returnInspire: true,
+															       thesaurusUrl:thesaurusConfig,
 															      width: 300, 
 															      height:400,
 															      win_title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_THESAURUSGEMET_ALERT'))."',
@@ -5440,7 +5462,7 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 															     ,items:[ 
 															       { 
 															       	 xtype: 'fileuploadfield',
-														             id: 'xmlfile',
+															       	 id: 'xmlfile',
 														             name: 'xmlfile',
 														             fieldLabel: '".html_Metadata::cleanText(JText::_('CORE_METADATA_IMPORT_ALERT_UPLOAD_XMLFILE_LABEL'))."'
 															       },

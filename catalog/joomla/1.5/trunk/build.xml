@@ -3,21 +3,18 @@
 
 	<property name="projet.out.dir" value="out" />
 
-
-	<target name="com_easysdi" depends="create-structure,compression"
+	<target name="package" depends="create-structure,compression"
 		description="Main target">
-
 	</target>
 
-	<target name="create-structure">
-		<echo>Creating the working directory structure</echo>
+	<target name="create-structure" description="Creating the working directory structure">
 		<delete>
 			<fileset dir="${projet.out.dir}" includes="*" />
 		</delete>
 		<mkdir dir="${projet.out.dir}" />
 	</target>
 
-	<target name="compression" description="Compression">
+	<target name="compression" description="Compression" depends="create-structure">
 		<jar compress="true" jarfile="${projet.out.dir}/com_easysdi_catalog.zip"
 			basedir="." excludes="out/** ; .cache/** ; .svn/** ; .settings/** ; *.project; .prefs" />
 	</target>
@@ -74,6 +71,7 @@
 				<include name="**/*.xml" />
 			</fileset>
 		</copy>
+		
 		<copy
 			todir="C:\www\crigeos\components\com_easysdi_core\views">
 			<fileset dir="./com_easysdi_catalog/core/view">
@@ -100,6 +98,4 @@
 		     </fileset>
 		    </copy>
 	</target>
-	
-
 </project>

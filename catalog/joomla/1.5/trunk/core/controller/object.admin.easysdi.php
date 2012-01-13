@@ -857,7 +857,7 @@ class ADMIN_object {
 			}
 		}
 
-		$mainframe->redirect("index.php?option=$option&task=listObject" );
+		//$mainframe->redirect("index.php?option=$option&task=listObject" );
 	}
 	
 	

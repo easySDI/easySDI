@@ -398,7 +398,41 @@ class ADMIN_metadata {
 		// - Pour chaque classe rencontr�e, ouvrir un niveau de hi�rarchie dans la treeview
 		// - Pour chaque attribut rencontr�, cr�er un champ de saisie du type rendertype de la relation entre la classe et l'attribut
 		//ADMIN_metadata::buildTree($root[0]->id, $xpathResults, $option);
-		HTML_metadata::editMetadata($rowObject->id, $root, $rowMetadata->guid, $xpathResults, $profile_id, $isManager, $isEditor, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $rowObject->name, $rowObjectVersion->title, $option);
+		
+	  	$query = "select value as config from #__sdi_configuration where code ='defaultBBoxConfig'";
+        $database->setQuery($query);
+        $defaultLayerConfig = trim($database->loadResult());
+
+          $query = "select value as config from #__sdi_configuration where code ='defaultBBoxConfigExtentLeft'";
+        $database->setQuery($query);
+        $defaultExtentLeft = trim($database->loadResult());
+
+        $query = "select value as config from #__sdi_configuration where code ='defaultBBoxConfigExtentTop'";
+        $database->setQuery($query);
+        $defaultExtentTop = trim($database->loadResult());
+
+        $query = "select value as config from #__sdi_configuration where code ='defaultBBoxConfigExtentBottom'";
+        $database->setQuery($query);
+        $defaultExtentBottom = trim($database->loadResult());
+
+        $query = "select value as config from #__sdi_configuration where code ='defaultBBoxConfigExtentRight'";
+        $database->setQuery($query);
+        $defaultExtentRight = trim($database->loadResult());
+
+        if($defaultLayerConfig!="" &&  $defaultExtentLeft!="" && $defaultExtentBottom!="" &&  $defaultExtentTop!="" &&  $defaultExtentRight!="" ){
+			$defaultBBoxConfig  = "defaultBBoxConfig ={
+				getLayers : function(){
+						return new Array(new OpenLayers.Layer.".$defaultLayerConfig.")
+						},
+				defaultExtent:{left:".$defaultExtentLeft.",bottom:".$defaultExtentBottom.",right:".$defaultExtentRight.",top:".$defaultExtentTop."}
+			}";
+        }        
+        else{
+        	$defaultBBoxConfig = "";
+        }
+        
+        
+		HTML_metadata::editMetadata($rowObject->id, $root, $rowMetadata->guid, $xpathResults, $profile_id, $isManager, $isEditor, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $rowObject->name, $rowObjectVersion->title, $option, $defaultBBoxConfig);
 		//HTML_metadata::editMetadata($root, $id, $xpathResults, $option);
 		//HTML_metadata::editMetadata($rowMetadata, $metadatastates, $option);
 	
@@ -3266,6 +3300,8 @@ class ADMIN_metadata {
 		$url = $_POST['url'];
 		$pretreatmentxslfile = $_POST['pretreatmentxslfile'];
 		$importtype = $_POST['importtype_id'];
+		$serviceversion = $_POST['serviceversion'];
+		$outputschema = $_POST['outputschema'];
 		
 		// R�cup�rer l'objet li� � cette m�tadonn�e
 		$rowObject = new object( $database );
@@ -3388,7 +3424,8 @@ class ADMIN_metadata {
 		
 		
 		$catalogBoundaryIsocode = config_easysdi::getValue("catalog_boundary_isocode");
-		$catalogUrlGetRecordById = $url."?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&content=CORE&id=".$importid;
+		//$catalogUrlGetRecordById = $url."?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&content=CORE&id=".$importid;
+		$catalogUrlGetRecordById = $url."?request=GetRecordById&service=CSW&elementSetName=full&version=".$serviceversion."&outputschema=".$outputschema."&content=CORE&id=".$importid;
 		
 		// En GET
 		//$xml = DOMDocument::load($catalogUrlGetRecordById);
@@ -3486,7 +3523,6 @@ class ADMIN_metadata {
 		
 		// Construction du DOMXPath � utiliser pour g�n�rer la vue d'�dition
 		$doc = new DOMDocument('1.0', 'UTF-8');
-		//$cswResults->save("C:\\RecorderWebGIS\\cswResult.xml");
 		
 		// Le document a �t� cr�� correctement et la balise csw:GetRecordByIdResponse a au moins un enfant => r�sultat retourn�
 		$controlPos = 0;
