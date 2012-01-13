@@ -16,19 +16,21 @@
  */
 // no direct access
 defined( '_JEXEC' ) or die( 'Restricted access' );
+require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.jsLoaderUtil.php');
+$jsLoader =JSLOADER_UTIL::getInstance();
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<?php echo $this->language; ?>" lang="<?php echo $this->language; ?>" >
 <head>
 <!--<meta http-equiv="X-UA-Compatible" content="IE=7.5" />-->
-<link rel="stylesheet" href="<?php echo $this->baseurl ?>/templates/easysdi_map/css/reset.css" type="text/css" />
+<!-- <link rel="stylesheet" href="<?php echo $this->baseurl ?>/templates/easysdi_map/css/reset.css" type="text/css" />-->
 <jdoc:include type="head" />
-<link rel="stylesheet" href="<?php echo $this->baseurl ?>/components/com_easysdi_map/externals/ext/resources/css/ext-all.css" type="text/css" />
-<link rel="stylesheet" href="<?php echo $this->baseurl ?>/components/com_easysdi_map/externals/ext/resources/css/xtheme-<?php echo $this->params->get('extThemeVariation'); ?>.css" type="text/css" />
-<link rel="stylesheet" href="<?php echo $this->baseurl ?>/templates/easysdi_map/css/easysdi_map.css" type="text/css" />
+<link rel="stylesheet" href="<?php echo $jsLoader->getPath("map","ext") ?>/resources/css/ext-all.css" type="text/css" />
+<link rel="stylesheet" href="<?php echo $jsLoader->getPath("map","ext") ?>/resources/css/xtheme-<?php echo $this->params->get('extThemeVariation'); ?>.css" type="text/css" />
+<link rel="stylesheet" href="<?php echo $this->baseurl ?>/templates/<?php echo $this->template ?>/css/easysdi_map.css" type="text/css" />
 <link rel="stylesheet" href="<?php echo $this->baseurl ?>/templates/system/css/system.css" type="text/css" />
 <link rel="stylesheet" href="<?php echo $this->baseurl ?>/templates/system/css/general.css" type="text/css" />
-<link rel="stylesheet" href="<?php echo $this->baseurl ?>/templates/easysdi_map/css/template.css" type="text/css" />
+<link rel="stylesheet" href="<?php echo $this->baseurl ?>/templates/<?php echo $this->template ?>/css/template.css" type="text/css" />
 <link rel="stylesheet" href="<?php echo $this->baseurl ?>/templates/easysdi/css/<?php echo $this->params->get('colorVariation'); ?>.css" type="text/css" />
 <link rel="stylesheet" href="<?php echo $this->baseurl ?>/templates/easysdi/css/<?php echo $this->params->get('backgroundVariation'); ?>_bg.css" type="text/css" />
 <!--[if lte IE 6]>
@@ -40,7 +42,41 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 
 </head>
 <body id="page_bg" class="color_<?php echo $this->params->get('colorVariation'); ?> bg_<?php echo $this->params->get('backgroundVariation');?>">
-<div id="map">
+<div id="map"><div class="loader"><br><br><br><img src="templates/<?php echo $this->template ?>/images/loader.gif">&nbsp;<b>Chargement...</b></div>
 </div>
+<script type="text/javascript">
+Ext.onReady(function(){
+	  var companyObject = [
+	  		{
+	         id : 'companyLogo',         
+	         tag : 'a',
+	         href :'<?php echo $this->baseurl?>/index.php'
+	      },{
+		     id : 'companyMessage',         
+	         tag : 'img',
+             src :'<?php echo $this->baseurl ?>/templates/<?php echo $this->template ?>/images/texte_map_easysdi.png'
+    	         
+	      }];
+	      
+	  var companyBackgroundImgObject = [
+	                                	{
+	                                 id : 'companyBackgroundImg',         
+	                                 tag : 'img',
+	                                 src :'<?php echo $this->baseurl ?>/templates/<?php echo $this->template ?>/images/fond_map_easysdi.png'
+	                                }];
+
+	  var companyDivId = Ext.DomHelper.insertFirst(document.body,   
+	  		[{
+	             id : 'companyBackgroundImg'
+	          },{
+	             id : 'companyBanner'
+	          }]);
+
+	  Ext.DomHelper.append(Ext.get('companyBanner'), companyObject);
+	  Ext.DomHelper.append(Ext.get('companyBackgroundImg'), companyBackgroundImgObject);
+	  
+	  } 
+);
+</script>
 </body>
 </html>

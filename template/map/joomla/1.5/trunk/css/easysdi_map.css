@@ -3,118 +3,206 @@ height:100%;
 }
 .previousBtn {
   background-image: url("../icons/silk/resultset_previous.png") !Important;
+  width:16px !Important;
+  height :16px !Important;
+  background-repeat:no-repeat !Important;
+  
 }
 
 .nextBtn {
   background-image: url("../icons/silk/resultset_next.png") !Important;
+   width:16px !Important;
+  height :16px !Important;
+  background-repeat:no-repeat !Important;
 }
 
 .navBtn {
   background-image: url("../icons/geosilk/pan.png") !Important;
+   width:16px !Important;
+  height :16px !Important;
+  background-repeat:no-repeat !Important;
 }
 
 .selectBtn {
   background-image: url("../icons/silk/information.png") !Important;
+   width:16px !Important;
+  height :16px !Important;
+  background-repeat:no-repeat !Important;
 }
 
 .printMapBtn {
 	background-image: url("../icons/silk/printer.png") !Important;
+	 width:16px !Important;
+  height :16px !Important;
+  background-repeat:no-repeat !Important;
 }
 
 .pdfBtn {
 	background-image: url("../icons/silk/page_white_acrobat.png") !Important;
+	 width:16px !Important;
+  height :16px !Important;
+  background-repeat:no-repeat !Important;
 }
 
 .saveMapBtn {
 	background-image: url("../icons/silk/disk.png") !Important;
+	 width:16px !Important;
+  height :16px !Important;
+  background-repeat:no-repeat !Important;
 }
 
 .printLegendBtn {
 	background-image: url("../icons/silk/printer.png") !Important;
+	 width:16px !Important;
+  height :16px !Important;
+  background-repeat:no-repeat !Important;
 }
 
 .zoomInBoxBtn {
   background-image: url("../icons/silk/zoom_in.png") !Important;
+   width:16px !Important;
+  height :16px !Important;
+  background-repeat:no-repeat !Important;
 }
 
 .zoomOutBoxBtn {
   background-image: url("../icons/silk/zoom_out.png") !Important;
+   width:16px !Important;
+  height :16px !Important;
+  background-repeat:no-repeat !Important;
 }
 
 .zoomToScaleBtn{
 	background-image: url("../icons/silk/arrow_inout.png") !Important;
+	 width:16px !Important;
+  height :16px !Important;
+  background-repeat:no-repeat !Important;
 }
 
 .rectangleBtn{
 	background-image: url("../icons/silk/shape_square.png") !Important;
+	 width:25px !Important;
+  height :25px !Important;
+  background-repeat:no-repeat !Important;
 }
 
 .polygonBtn{
 	background-image: url("../images/draw_polygon_off.png") !Important;
+	 width:25px !Important;
+  height :25px !Important;
+  background-repeat:no-repeat !Important;
 }
 
 .pointBtn{
 	background-image: url("../images/draw_point_off.png") !Important;
+	 width:25px !Important;
+  height :25px !Important;
+  background-repeat:no-repeat !Important;
 }
 
 .pathBtn{
 	background-image: url("../images/draw_line_off.png") !Important;
+	 width:25px !Important;
+  height :25px !Important;
+  background-repeat:no-repeat !Important;
 }
 
 .modifyFeatureBtn{
 	background-image: url("../images/move_feature_off.png") !Important;
+	 width:25px !Important;
+  height :25px !Important;
+  background-repeat:no-repeat !Important;
 }
 
 .deleteFeatureBtn{
 	background-image: url("../icons/silk/bin_closed.png") !Important;
+	 width:25px !Important;
+  height :25px !Important;
+  background-repeat:no-repeat !Important;
 }
 
 .styleChooserBtn{
 	background-image: url("../icons/silk/color_swatch.png") !Important;
+	 width:25px !Important;
+  height :25px !Important;
+  background-repeat:no-repeat !Important;
 }
 
 .downArrow {
    background-image : url('../icons/silk/arrow_down.png') !Important;
+    width:16px !Important;
+  height :16px !Important;
+  background-repeat:no-repeat !Important;
 }
 
 .upArrow {
    background-image : url('../icons/silk/arrow_up.png') !Important;
+    width:16px !Important;
+  height :16px !Important;
+  background-repeat:no-repeat !Important;
 }
 
 .rightArrow {
    background-image : url('../icons/silk/arrow_right.png') !Important;
+    width:16px !Important;
+  height :16px !Important;
+  background-repeat:no-repeat !Important;
 }
 
 .leftArrow {
    background-image : url('../icons/silk/arrow_left.png') !Important;
+    width:16px !Important;
+  height :16px !Important;
+  background-repeat:no-repeat !Important;
 }
 
 .addSearchBtn {
   background-image : url('../icons/silk/add.png') !Important;
+   width:16px !Important;
+  height :16px !Important;
+  background-repeat:no-repeat !Important;
 }
 
 .clearSearchBtn {
   background-image : url('../icons/geosilk/erase.png') !Important;
+   width:16px !Important;
+  height :16px !Important;
+  background-repeat:no-repeat !Important;
 }
 
 .removeSearchBtn {
   background-image : url('../icons/silk/delete.png') !Important;
+   width:16px !Important;
+  height :16px !Important;
+  background-repeat:no-repeat !Important;
 }
 
 .saveBtn {
   background-image : url('../icons/silk/disk.png') !Important;
+   width:16px !Important;
+  height :16px !Important;
+  background-repeat:no-repeat !Important;
 }
 
 .loadBtn {
   background-image : url('../icons/silk/folder_page.png') !Important;
+   width:16px !Important;
+  height :16px !Important;
+  background-repeat:no-repeat !Important;
 }
 
 .zoom {
   background-image : url('../icons/silk/zoom.png') !Important;
+   width:16px !Important;
+  height :16px !Important;
+  background-repeat:no-repeat !Important;
 }
 
 .highlightFeature {
   background-image : url('../icons/silk/shape_move_forwards.png') !Important;
+   width:16px !Important;
+  height :16px !Important;
+  background-repeat:no-repeat !Important;
 }
 
 .commentAdd {
@@ -123,27 +211,45 @@ height:100%;
 
 .printBtn {
   background-image : url('../icons/silk/printer.png') !Important;
+   width:16px !Important;
+  height :16px !Important;
+  background-repeat:no-repeat !Important;
 }
 
 .rptBtn {
   background-image : url('../icons/silk/table.png') !Important;
+   width:16px !Important;
+  height :16px !Important;
+  background-repeat:no-repeat !Important;
 }
 
 .externalRpt {
   background-image : url('../icons/silk/report_go.png') !Important;
+   width:16px !Important;
+  height :16px !Important;
+  background-repeat:no-repeat !Important;
 }
 
 .folderLayer {
   background-image : url('../icons/geosilk/folder_layer.png') !Important;
+   width:16px !Important;
+  height :16px !Important;
+  background-repeat:no-repeat !Important;
 }
 
 .baseLayer {
   background: url('../icons/silk/map.png') no-repeat !Important;
+   width:16px !Important;
+  height :16px !Important;
+  background-repeat:no-repeat !Important;
   
 }
 
 .overlayLayer {
   background-image : url('../icons/silk/layers.png')  !Important;
+   width:16px !Important;
+  height :16px !Important;
+  background-repeat:no-repeat !Important;
 }
 
 .hiddenLayer a span {
@@ -154,6 +260,9 @@ height:100%;
 
 .hiddenLayerIcon a span {
 	background-image : url('../icons/silk/page_white_text_width.png') !Important;
+	 width:16px !Important;
+  height :16px !Important;
+  background-repeat:no-repeat !Important;
 }
 
 .metadataAvailable a span {
@@ -415,4 +524,154 @@ div.x-view-selected {
 {
 	width: 100%;  
 	text-align: center;
+}
+
+.x-btn-small tr {
+    float: left;
+    display: inline;
+    valign: center;
+}
+
+tr .x-btn-tl, tr .x-btn-tc, tr .x-btn-tr, tr .x-btn-bl, tr .x-btn-bc, tr .x-btn-br {
+    float: left;
+    display: inline;
+    width: 0px;
+}
+/*
+.x-toolbar-cell {
+    padding: 0px!important;
+    margin: 0px!important;
+    position: relative;
+    float: left;
+    display: inline;
+    height: auto;
+    vertical-align: middle;
+}*/
+
+.x-btn-icon .x-btn-center .x-btn-text {
+	background-position: center center;
+	background-repeat: no-repeat;
+	cursor: pointer;
+	height: 16px;
+	padding: 0;
+	white-space: nowrap;
+	width: 16px;
+}
+
+
+.x-toolbar-ct {
+	width: 100%;
+}
+
+td.x-toolbar-left {
+	width: 50%;
+}
+td.x-toolbar-right {
+	width: 50%;
+}
+.x-toolbar-cell {
+	padding: 1px !important;
+
+}
+.olControlLoadingPanel {
+            background-image:url(../images/loadingPanel.gif);
+            position: relative !important;
+            width: 195px;
+            height: 11px;   
+            background-position:center;
+            background-repeat:no-repeat;
+            display: none;
+       
+            
+}
+
+#companyBackgroundImg{
+	width:100%;
+	z-index : 0;
+	position : fixed;
+}
+/*#companyBanner {
+ 	background: url("../images/fond_map_crigeos.png") repeat scroll left center transparent;
+    height: 7%;
+    position: relative;
+    background-size : 100%;
+
+}*/
+#companyBanner {
+ 	
+    height: 50px;
+    position: relative;
+    width:100%;
+    z-index : 100;
+    
+
+}
+.olControlScaleLine {
+	top : 87.5% !important;
+}
+
+#map {
+
+    position: relative;
+    height : 95%;
+
+}
+
+#southToolbar {
+ top : 94% !important;
+ height:5% !important
+}
+
+#companyLogo{
+	
+		background: url(../images/logo_map_easysdi.png) no-repeat left center;
+		display : block;
+		height :100%;
+		width :330px;
+		
+}
+/*#companyMessage{
+	
+	background: url("../images/texte_map_crigeos.png") no-repeat scroll 0 0 transparent; 
+    height: 100%;
+    left: 65%;
+    position: relative;
+    top :-40px;
+    z-index :100;
+    
+    
+}*/
+#companyMessage{
+	
+	height: 100%;
+    float: right;
+    position: relative;
+    top :-50px;
+    z-index :100;
+    
+    
+}
+
+.x-toolbar-cell input {
+	height:16px!important;
+	top : 0px !important;
+	position: relative !important;
+	margin : 0px!important;
+	padding : 0px!important;
+
+}
+
+.x-toolbar-cell img {
+	height:16px!important;
+	top : 0px !important;
+	position: relative !important;
+	margin : 0px!important;
+	padding : 0px!important;
+	vertical-align:middle;
+
+
+}
+
+#geoMap {
+	 top : 29px !important;
 }
