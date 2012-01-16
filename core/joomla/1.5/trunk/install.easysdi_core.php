@@ -1029,12 +1029,8 @@ function com_install(){
 					('".helper_easysdi::getUniqueId()."', 'CORE_ACCOUNT_CONTACT_LIST_MISTERS', 'CORE_ACCOUNT_CONTACT_LIST_MISTERS', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'CORE_ACCOUNT_CONTACT_LIST_MISTERS', NULL),
 					('".helper_easysdi::getUniqueId()."', 'CORE_ACCOUNT_CONTACT_LIST_MISSES', 'CORE_ACCOUNT_CONTACT_LIST_MISSES', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'CORE_ACCOUNT_CONTACT_LIST_MISSES', NULL),
 					('".helper_easysdi::getUniqueId()."', 'CORE_ACCOUNT_CONTACT_LIST_MASTERS', 'CORE_ACCOUNT_CONTACT_LIST_MASTERS', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'CORE_ACCOUNT_CONTACT_LIST_MASTERS', NULL),
-					('".helper_easysdi::getUniqueId()."', 'CORE_ACCOUNT_CONTACT_LIST_MADAM_MISTER', 'CORE_ACCOUNT_CONTACT_LIST_MISSES_MISTERS', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'CORE_ACCOUNT_CONTACT_LIST_MISSES_MISTERS', NULL),
-					('".helper_easysdi::getUniqueId()."', 'CORE_ACCOUNT_CONTACT_LIST_MADAMS_MISTERS', 'CORE_ACCOUNT_CONTACT_LIST_MISSES_MISTERS', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'CORE_ACCOUNT_CONTACT_LIST_MISSES_MISTERS', NULL),
-					('".helper_easysdi::getUniqueId()."', 'CORE_ACCOUNT_CONTACT_LIST_MADAM_MISTERS', 'CORE_ACCOUNT_CONTACT_LIST_MISS_MISTERS', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'CORE_ACCOUNT_CONTACT_LIST_MISS_MISTERS', NULL),
-					('".helper_easysdi::getUniqueId()."', 'CORE_ACCOUNT_CONTACT_LIST_MADAMS_MISTER', 'CORE_ACCOUNT_CONTACT_LIST_MISSES_MISTER', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'CORE_ACCOUNT_CONTACT_LIST_MISSES_MISTER', NULL),				
-					('".helper_easysdi::getUniqueId()."', 'CORE_ACCOUNT_CONTACT_LIST_MADAM_MISTER', 'CORE_ACCOUNT_CONTACT_LIST_MADAM_MISTER', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'CORE_ACCOUNT_CONTACT_LIST_MADAM_MISTER', NULL),
-					('".helper_easysdi::getUniqueId()."', 'CORE_ACCOUNT_CONTACT_LIST_MADAMS_MISTERS', 'CORE_ACCOUNT_CONTACT_LIST_MADAMS_MISTERS', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'CORE_ACCOUNT_CONTACT_LIST_MADAMS_MISTERS', NULL),
+					('".helper_easysdi::getUniqueId()."', 'CORE_ACCOUNT_CONTACT_LIST_MISS_MISTERS', 'CORE_ACCOUNT_CONTACT_LIST_MISS_MISTERS', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'CORE_ACCOUNT_CONTACT_LIST_MISS_MISTERS', NULL),
+					('".helper_easysdi::getUniqueId()."', 'CORE_ACCOUNT_CONTACT_LIST_MISSES_MISTERS', 'CORE_ACCOUNT_CONTACT_LIST_MISSES_MISTERS', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'CORE_ACCOUNT_CONTACT_LIST_MISSES_MISTERS', NULL),
 					('".helper_easysdi::getUniqueId()."', 'CORE_ACCOUNT_CONTACT_LIST_MADAM_MISTERS', 'CORE_ACCOUNT_CONTACT_LIST_MADAM_MISTERS', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'CORE_ACCOUNT_CONTACT_LIST_MADAM_MISTERS', NULL),
 					('".helper_easysdi::getUniqueId()."', 'CORE_ACCOUNT_CONTACT_LIST_MADAMS_MISTER', 'CORE_ACCOUNT_CONTACT_LIST_MADAMS_MISTER', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'CORE_ACCOUNT_CONTACT_LIST_MADAMS_MISTER', NULL)";
 					$db->setQuery( $query);

@@ -664,7 +664,11 @@ if ($monitorItem > 0){
 <?php
 }
 	if ($mapItem > 0){
-		JHTML::script('jquery-1.3.2.min.js', 'components/com_easysdi_map/externals/jquery/');
+		
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.jsLoaderUtil.php');
+		$jsLoader =JSLOADER_UTIL::getInstance();
+		JHTML::script('jquery-1.3.2.min.js',  $jsLoader->getPath("map","jquery"));
+		
 ?>	
 <script>
 var $j = jQuery.noConflict();
