@@ -333,6 +333,21 @@ switch($task){
 		
 		HTML_proxy::helpGeoGraphicalFilter();
 		break;
+	case 'negociateVersionForServer' :
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'proxy.toolbar.easysdi.html.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'proxy.admin.easysdi.html.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'proxy.WMTS.admin.easysdi.html.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'proxy.WMS.admin.easysdi.html.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'proxy.CSW.admin.easysdi.html.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'proxy.WFS.admin.easysdi.html.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'proxy.admin.easysdi.php');
+		
+		$url = JRequest::getVar("url");
+		$user = JRequest::getVar("user");
+		$password = JRequest::getVar("password");
+		ADMIN_PROXY::negociateVersionForServer($url,$user,$password,$json);
+		die();
+		break;
 	case 'cancelConfigList':
 	case 'cancelComponentConfig':
 	default:

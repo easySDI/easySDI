@@ -52,6 +52,53 @@ function removeServer(servNo){
 	noeud.removeChild(fils);
 }
 
+var request;
+
+function negoVersionServer(servNo){
+	var url = document.getElementById("URL_"+servNo).value;
+	var user = document.getElementById("URL_"+servNo).value;
+	var password = document.getElementById("PASSWORD_"+servNo).value;
+	var service = document.getElementById("servletClass").value;
+    request = getHTTPObject();
+    request.onreadystatechange = sendData;
+    request.open("GET", "index.php?option=com_easysdi_proxy&task=negociateVersionForServer&url="+url+"&user="+user+"&password="+password+"&service="+service, true);
+    request.send(null);
+}
+
+function getHTTPObject(){
+    var xhr = false;
+    if (window.XMLHttpRequest){
+        xhr = new XMLHttpRequest();
+    } else if (window.ActiveXObject) {
+        try{
+            xhr = new ActiveXObject("Msxml2.XMLHTTP");
+        }catch(e){
+            try{
+                xhr = new ActiveXObject("Microsoft.XMLHTTP");
+            }catch(e){
+                xhr = false;
+            }
+        }
+    }
+    return xhr;
+}
+
+function sendData()
+{
+    // if request object received response
+    if(request.readyState == 4){
+		var JSONtext = request.responseText;
+		// convert received string to JavaScript object
+		var JSONobject = JSON.parse(JSONtext);
+ 		// notice how variables are used
+		var msg = "Number of errors: "+
+		"\n- "+JSONobject.version[0]+
+		"\n- "+JSONobject.version[1];
+ 
+		alert(msg);
+    }
+}
+
 function addNewServer(){
 	
 	var tr = document.createElement('tr');	
@@ -61,6 +108,8 @@ function addNewServer(){
 	var tdUrl = document.createElement('td');
 	var tdUser = document.createElement('td');
 	var tdPwd = document.createElement('td');	
+	var tdRemove = document.createElement('td');	
+	var tdNegociate = document.createElement('td');
 
 	var inputAlias = document.createElement('input');
 	inputAlias.size=20;
@@ -88,16 +137,29 @@ function addNewServer(){
 	tdUser.appendChild(inputUser);
 	tr.appendChild(tdUser);
 	tdPwd.appendChild(inputPassword);
+
+	tr.appendChild(tdPwd);
 	
+	var vButton = document.createElement('a');
+	vButton.setAttribute("onClick","javascript:negoVersionServer("+nbServer+");");
+	vButton.setAttribute("href","#");
+	var vImg = document.createElement ('img');
+	vImg.setAttribute("class","helpTemplate");
+	vImg.setAttribute("src","../templates/easysdi/icons/silk/arrow_switch.png");
+	vImg.setAttribute("alt","Version");
+	vButton.appendChild(vImg);
 	
 	var aButton = document.createElement('input');
 	aButton.type="button";
 	aButton.value="<?php echo JText::_( 'EASYSDI_REMOVE' ); ?>";
 	aButton.setAttribute("onClick","javascript:removeServer("+nbServer+");");
-		
-	tdPwd.appendChild(aButton);
+
+	tdNegociate.appendChild(vButton);
+	tdRemove.appendChild(aButton);
 	
-	tr.appendChild(tdPwd);
+	tr.appendChild(tdNegociate);
+	tr.appendChild(tdRemove);
+	
 	
 	document.getElementById("remoteServerTable").appendChild(tr);
 	

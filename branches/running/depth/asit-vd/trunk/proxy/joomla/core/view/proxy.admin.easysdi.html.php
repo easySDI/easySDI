@@ -137,6 +137,21 @@ echo $pane->endPanel();
 	 */
 	function genericServletInformationsHeader ($config, $configId, $servletClass, $availableServletList,$availableVersion,$servletVersion)
 	{
+		$service = null;
+		switch($servletClass){
+			case 'org.easysdi.proxy.csw.CSWProxyServlet':
+				$service = 'CSW';
+				break;
+			case "org.easysdi.proxy.wfs.WFSProxyServlet" :
+				$service = 'WFS';
+				break;
+			case "org.easysdi.proxy.wms.WMSProxyServlet" :
+				$service = 'WMS';
+				break;
+			case "org.easysdi.proxy.wmts.WMTSProxyServlet" :
+				$service = 'WMTS';
+				break;
+		}
 		?>
 		<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_CONFIG ID' );?></legend>
 			<table class="admintable">
@@ -179,21 +194,31 @@ echo $pane->endPanel();
 					<th><?php echo JText::_( 'EASYSDI_URL'); ?></th>
 					<th><?php echo JText::_( 'EASYSDI_USER'); ?></th>
 					<th><?php echo JText::_( 'EASYSDI_PASSWORD'); ?></th>
+					<th><?php echo JText::_( 'EASYSDI_VERSION'); ?></th>
 				</tr>
 				</thead>
-				<tbody id="remoteServerTable" ><?php
+				<tbody id="remoteServerTable" >
+				<?php
 				$remoteServerList = $config->{'remote-server-list'};
 				$iServer=0;
 				foreach ($remoteServerList->{'remote-server'} as $remoteServer){
 					?><tr id="remoteServerTableRow<?php echo $iServer;?>">
 							<td><input type="text" name="ALIAS_<?php echo $iServer;?>" id="ALIAS_<?php echo $iServer;?>" value="<?php echo $remoteServer->alias; ?>" size=20></td>
-							<td><input type="text" name="URL_<?php echo $iServer;?>" value="<?php echo $remoteServer->url; ?>" size=70></td>
-							<td><input name="USER_<?php echo $iServer;?>" type="text" value="<?php echo $remoteServer->user; ?>"></td>
-							<td><input name="PASSWORD_<?php echo $iServer;?>" type="password" value="<?php echo $remoteServer->password; ?>">	
-							<?php if ($iServer > 0){?>			
-							<input id="removeServerButton" type="button" onClick="javascript:removeServer(<?php echo $iServer;?>);" value="<?php echo JText::_( 'EASYSDI_REMOVE' ); ?>">
-							<?php }?>
+							<td><input type="text" id="URL_<?php echo $iServer;?>" name="URL_<?php echo $iServer;?>" value="<?php echo $remoteServer->url; ?>" size=70></td>
+							<td><input id="USER_<?php echo $iServer;?>" name="USER_<?php echo $iServer;?>" type="text" value="<?php echo $remoteServer->user; ?>"></td>
+							<td><input id="PASSWORD_<?php echo $iServer;?>" name="PASSWORD_<?php echo $iServer;?>" type="password" value="<?php echo $remoteServer->password; ?>">	</td>
+							<td>
+								<a href="#" onclick="javascript:negoVersionServer(<?php echo $iServer;?>);" >
+									<img class="helpTemplate" src="../templates/easysdi/icons/silk/arrow_switch.png" alt="<?php echo JText::_("EASYSDI_VERSION") ?>"/>
+								</a>
 							</td>
+							<td><?php HTML_proxy::getTableVersionForService ($remoteServer,$service)?></td>
+							<?php if ($iServer > 0){?>	
+							<td >		
+							<input id="removeServerButton" type="button" onClick="javascript:removeServer(<?php echo $iServer;?>);" value="<?php echo JText::_( 'EASYSDI_REMOVE' ); ?>">
+							</td>
+							<?php }?>
+							
 					</tr>
 					<?php if ($servletClass == "org.easysdi.proxy.csw.CSWProxyServlet"){?>
 					<tr>						
@@ -223,6 +248,32 @@ echo $pane->endPanel();
 			</script>
 			
 		<?php 
+	}
+	
+	function getTableVersionForService ($remoteServer,$service){
+		?>
+		<table>
+		<tr>
+		<?php 
+		switch ($service ){
+			case 'WFS' :
+				break;
+			case 'WMS' :
+				?>
+				<td width="20"><?php if ($remoteServer->{"versions"}->{"1.3.0"} == true)echo '1.3.0'; else echo ''; ?></td>
+				<td width="20"><?php if ($remoteServer->{"versions"}->{"1.3.0"} == true)echo '1.1.1'; else echo ''; ?></td>
+				<td width="20"><?php if ($remoteServer->{"versions"}->{"1.3.0"} == true)echo '1.1.0'; else echo ''; ?></td>
+				<?php 
+				break;
+			case 'WMTS' :
+				break;
+			case 'CSW' :
+				break;
+		}
+		?>
+		</tr>
+		</table>
+		<?php
 	}
 	
 	/**
