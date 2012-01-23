@@ -1,12 +1,12 @@
 <?php
 /*
-* G�n�ration du sitemap des m�tadonn�es visibles pour le public
+* Génération du sitemap des métadonnées visibles pour le public
 */
-	// Charger la configuration de Joomla pour un acc�s � la base de donn�es mysql
+	// Charger la configuration de Joomla pour un accès à la base de données mysql
 	require_once ('configuration.php');
 	$jconfig = new JConfig(); 
 	
-	// Connection � la base de donn�es
+	// Connection à la base de données
 	$db =& mysql_pconnect($jconfig->host, $jconfig->user, $jconfig->password);
 	if (!$db) 
 	{
@@ -14,22 +14,31 @@
 	}
 	$db_selected = mysql_select_db($jconfig->db, $db);
 	if (!$db_selected) {
-	   die ('Impossible de s�lectionner la base de donn�es : ' . mysql_error());
+	   die ('Impossible de sélectionner la base de données : ' . mysql_error());
 	}
 	
-	/* D�but du code de g�n�ration du sitemap.xml */
+	/* Début du code de génération du sitemap.xml */
 	
-	// URL d'acc�s � chaque m�tadonn�e
+	// URL d'accés à chaque métadonnée
 	if (isset($_SERVER['HTTPS']) && !empty($_SERVER['HTTPS']) && (strtolower($_SERVER['HTTPS']) != 'off')) {
 		$https = 's://';
 	} else {
 		$https = '://';
 	}
 	
-	$root = "http".$https.substr($_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME'], 0, strrpos($_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME'], '/'));
+	//Host
+	$http_host = null;
+	if($jconfig->live_site){
+		$http_host = $jconfig->live_site;
+	}else{
+		$http_host = $_SERVER['HTTP_HOST'];
+	}
+	
+	$root = "http".$https.substr($http_host.$_SERVER['SCRIPT_NAME'], 0, strrpos($http_host.$_SERVER['SCRIPT_NAME'], '/'));
+//$root = "http".$https.substr($_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME'], 0, strrpos($_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME'], '/'));
 //	$url = $root."/index.php?tmpl=component&amp;option=com_easysdi_catalog&amp;task=showMetadata&amp;type=complete&amp;id=";
 	
-	// Cr�ation d'un DOMDocument
+	// Création d'un DOMDocument
 	$XMLDoc = new DOMDocument('1.0', 'UTF-8');
 	$XMLDoc->formatOutput = true;
 	
@@ -38,7 +47,7 @@
 	$XMLDoc->appendChild($XMLRoot);
 	$XMLRoot->setAttribute('xmlns', "http://www.sitemaps.org/schemas/sitemap/0.9");
 	
-	// R�cup�rer toutes les m�tadonn�es dont le statut de publication est "public"
+	// Récupérer toutes les métadonnées dont le statut de publication est "public"
 	$mdList=array();
 	$query = "	SELECT m.guid, m.updated, ot.code, ot.sitemapParams
 				FROM #__sdi_metadata m
@@ -53,7 +62,7 @@
 	$query = replacePrefix($query, $jconfig->dbprefix);
 	$mdList = loadObjectList($query);
 	
-	// Parcours des m�tadonn�es pour la cr�ation de chaque noeud XML
+	// Parcours des métadonnées pour la création de chaque noeud XML
 	foreach ($mdList as $md)
 	{
 		// Noeud principal
@@ -61,22 +70,22 @@
 			$XMLUrl = $XMLDoc->createElement("url");
 			$XMLRoot->appendChild($XMLUrl);
 			
-			//URL de la fiche de m�tadonn�e compl�te d'EasySDI
+			//URL de la fiche de métadonnée complète d'EasySDI
 			$XMLLoc = $XMLDoc->createElement("loc", htmlspecialchars($root."/index.php?".$md->sitemapParams."&id=".$md->guid));
 			$XMLUrl->appendChild($XMLLoc);
 			
-			// Date modification de la m�tadonn�e
+			// Date modification de la métadonnée
 			$updated = $md->updated;
 			if ($updated <> "")
 				$updated = date('Y-m-d', strtotime($updated));
 			$XMLLastMod = $XMLDoc->createElement("lastmod", $updated);
 			$XMLUrl->appendChild($XMLLastMod);
 			
-			// Fr�quence de modification
+			// Fréquence de modification
 			$XMLChangeFreq = $XMLDoc->createElement("changefreq", "always");
 			$XMLUrl->appendChild($XMLChangeFreq);
 			
-			// Priorit�
+			// Priorité
 			$XMLPriority = $XMLDoc->createElement("priority", "0.5");
 			$XMLUrl->appendChild($XMLPriority);
 		}
@@ -85,10 +94,10 @@
 	// Affichage du sitemap.xml
 	echo $XMLDoc->saveXML();
 
-	// Fermeture de la connection � la base de donn�es
+	// Fermeture de la connection à la base de données
 	mysql_close($db);
 	
-	/* Fonctions pour all�ger le code ci-dessus*/
+	/* Fonctions pour alléger le code ci-dessus*/
 	
 	/** 
 	* Fonction reprise de database.php dans libraries\joomla\database\
@@ -171,7 +180,7 @@
 	}
 	
 	/*
-	* Construction d'un set de r�sultat sous forme d'objets, inspir� de loadObjectList dans 
+	* Construction d'un set de résultat sous forme d'objets, inspiré de loadObjectList dans 
 	* mysql.php de joomla, libraries\joomla\database\database\
 	*/
 	function loadObjectList($query)
@@ -179,8 +188,8 @@
 		$result = mysql_query($query);
 		if (!$result) 
 		{
-			$message  = 'Requ�te invalide : ' . mysql_error() . "\n";
-			$message .= 'Requ�te compl�te : ' . $query;
+			$message  = 'Requête invalide : ' . mysql_error() . "\n";
+			$message .= 'Requête complète : ' . $query;
 			die($message);
 		}
 		$array = array();
