@@ -158,7 +158,7 @@ class HTML_proxyWFS {
 						$keywordString .= $keyword .",";
 					}
 					$keywordString = substr($keywordString, 0, strlen($keywordString)-1) ;
-					HTML_proxy::genericServletInformationsHeader ($config, $configId, "org.easysdi.proxy.wfs.WFSProxyServlet", $availableServletList,$availableVersion,$servletVersion)
+					HTML_proxy::genericServletInformationsHeader ($config, $configId, "WFS", $availableServletList,$availableVersion,$servletVersion)
 					?>
 					<fieldset class="adminform" id="service_metadata" ><legend><?php echo JText::_( 'PROXY_CONFIG_FS_SERVICE_METADATA'); ?></legend>
 					<table class="admintable" >

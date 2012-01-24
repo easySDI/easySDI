@@ -3,3 +3,46 @@
 .icon-32-tool_f2 		{ background-image: url(../images/toolbar/icon-32-tool_f2.png); }
 
 /** header icons **/
+
+td.supported{
+	 background-color: #F6F6F6;
+    border-bottom: 1px solid #E9E9E9;
+    border-right: 1px solid #E9E9E9;
+    color: #666666;
+    font-weight: bold;
+    text-align: left;
+    width: 20px;
+	
+}
+td.unsupported{
+	background-color: #F6F6F6;
+    border-bottom: 1px solid #E9E9E9;
+    border-right: 1px solid #E9E9E9;
+    color: #666666;
+    text-decoration:line-through;
+    text-align: left;
+    width: 20px;
+	
+}
+td.unknown{
+	background-color: #B8B9BB;
+    border-bottom: 1px solid #E9E9E9;
+    border-right: 1px solid #E9E9E9;
+    color: #666666;
+    text-align: left;
+    width: 20px;
+	
+}
+.logo{
+	 width : 20px;
+}
+.checked{
+	 background-image: url(connect.png);
+	 width : 17px;
+	 heigth:17px;
+}
+.unchecked{
+	 background-image: url(../../../../../../templates/easysdi/icons/silk/connect.png);
+	 width : 17px;
+	 heigth:17px;
+}

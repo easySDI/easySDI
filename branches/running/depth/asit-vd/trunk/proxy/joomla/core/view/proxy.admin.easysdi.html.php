@@ -135,23 +135,8 @@ echo $pane->endPanel();
 	 * - host translator
 	 * @param unknown_type $config
 	 */
-	function genericServletInformationsHeader ($config, $configId, $servletClass, $availableServletList,$availableVersion,$servletVersion)
+	function genericServletInformationsHeader ($config, $configId, $servletClass, $availableServletList,$availableVersion,$servletVersion,$serviceType)
 	{
-		$service = null;
-		switch($servletClass){
-			case 'org.easysdi.proxy.csw.CSWProxyServlet':
-				$service = 'CSW';
-				break;
-			case "org.easysdi.proxy.wfs.WFSProxyServlet" :
-				$service = 'WFS';
-				break;
-			case "org.easysdi.proxy.wms.WMSProxyServlet" :
-				$service = 'WMS';
-				break;
-			case "org.easysdi.proxy.wmts.WMTSProxyServlet" :
-				$service = 'WMTS';
-				break;
-		}
 		?>
 		<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_CONFIG ID' );?></legend>
 			<table class="admintable">
@@ -166,7 +151,8 @@ echo $pane->endPanel();
 			<table class="admintable">
 				<tr>
 					<td>
-					<?php echo JHTML::_("select.genericlist",$availableServletList, 'servletClass', 'size="1" onChange="submit()"', 'value', 'text', $servletClass ); ?>
+					<?php 
+					echo JHTML::_("select.genericlist",$availableServletList, 'servletClass', 'size="1" onChange="submit()"', 'value', 'text', $servletClass ); ?>
 					</td>
 					<?php if ($servletClass == "org.easysdi.proxy.csw.CSWProxyServlet"){?>
 					<td>
@@ -207,12 +193,12 @@ echo $pane->endPanel();
 							<td><input type="text" id="URL_<?php echo $iServer;?>" name="URL_<?php echo $iServer;?>" value="<?php echo $remoteServer->url; ?>" size=70></td>
 							<td><input id="USER_<?php echo $iServer;?>" name="USER_<?php echo $iServer;?>" type="text" value="<?php echo $remoteServer->user; ?>"></td>
 							<td><input id="PASSWORD_<?php echo $iServer;?>" name="PASSWORD_<?php echo $iServer;?>" type="password" value="<?php echo $remoteServer->password; ?>">	</td>
-							<td>
-								<a href="#" onclick="javascript:negoVersionServer(<?php echo $iServer;?>);" >
-									<img class="helpTemplate" src="../templates/easysdi/icons/silk/arrow_switch.png" alt="<?php echo JText::_("EASYSDI_VERSION") ?>"/>
-								</a>
+							<td class="logo">
+							<div class = "checked" onClick="javascript:negoVersionServer(<?php echo $iServer;?>,'<?php echo $serviceType; ?>', '<?php echo str_replace('"','&quot;',json_encode ($availableVersion)); ?>')" >
+									
+							</div>
 							</td>
-							<td><?php HTML_proxy::getTableVersionForService ($remoteServer,$service)?></td>
+							<td><?php HTML_proxy::getTableVersionForService ($remoteServer,$servletClass,$availableVersion)?></td>
 							<?php if ($iServer > 0){?>	
 							<td >		
 							<input id="removeServerButton" type="button" onClick="javascript:removeServer(<?php echo $iServer;?>);" value="<?php echo JText::_( 'EASYSDI_REMOVE' ); ?>">
@@ -245,30 +231,32 @@ echo $pane->endPanel();
 			
 			<script>
 			var nbServer = <?php echo $iServer?>;
+			var service = '<?php echo $serviceType?>';
+			var availableVersions = <?php echo json_encode ($availableVersion); ?>;
 			</script>
 			
 		<?php 
 	}
 	
-	function getTableVersionForService ($remoteServer,$service){
-		?>
+	function getTableVersionForService ($remoteServer,$serviceType,$availableVersion){
+		$array_version = array();
+		foreach ($remoteServer->{"supported-versions"}->{"version"} as $version){
+			$array_version[]=$version;
+		}?>
 		<table>
 		<tr>
 		<?php 
-		switch ($service ){
-			case 'WFS' :
-				break;
-			case 'WMS' :
+		foreach ($availableVersion as $version){
+			if (in_array($version,$array_version)){
 				?>
-				<td width="20"><?php if ($remoteServer->{"versions"}->{"1.3.0"} == true)echo '1.3.0'; else echo ''; ?></td>
-				<td width="20"><?php if ($remoteServer->{"versions"}->{"1.3.0"} == true)echo '1.1.1'; else echo ''; ?></td>
-				<td width="20"><?php if ($remoteServer->{"versions"}->{"1.3.0"} == true)echo '1.1.0'; else echo ''; ?></td>
+				<td class="supported"><?php echo $version;?></td>
 				<?php 
-				break;
-			case 'WMTS' :
-				break;
-			case 'CSW' :
-				break;
+			}else{
+				?>
+				<td class="unsupported"><?php echo $version;?></td>
+				<?php
+			}
+			 
 		}
 		?>
 		</tr>

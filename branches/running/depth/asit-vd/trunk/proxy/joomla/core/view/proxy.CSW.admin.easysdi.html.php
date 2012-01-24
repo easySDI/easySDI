@@ -55,7 +55,7 @@ class HTML_proxyCSW {
 				}
 				$keywordString = substr($keywordString, 0, strlen($keywordString)-1) ;
 				
-				HTML_proxy::genericServletInformationsHeader ($config, $configId, "org.easysdi.proxy.csw.CSWProxyServlet", $availableServletList,$availableVersion,$servletVersion)
+				HTML_proxy::genericServletInformationsHeader ($config, $configId, "CSW", $availableServletList,$availableVersion,$servletVersion)
 		?>
 			<fieldset class="adminform" id="ogcSearchFilterFS"><legend><?php echo JText::_( 'PROXY_CONFIG_CSW_OGC_SEARCH_FILTER' );?></legend>
 			<table class="admintable">

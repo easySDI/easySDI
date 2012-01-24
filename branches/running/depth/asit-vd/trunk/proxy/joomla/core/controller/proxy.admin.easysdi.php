@@ -38,8 +38,7 @@ class ADMIN_proxy
 			
 		if (!$new){
 			$configId = JRequest::getVar("configId");
-			if($servletClass == "")
-			{
+			if($servletClass == ""){
 				foreach ($xml->config as $config) {
 					if (strcmp($config['id'],$configId)==0){
 						$servletClass = $config->{'servlet-class'};
@@ -74,7 +73,6 @@ class ADMIN_proxy
 
 			$config = $xml->addChild("config");
 			$config->addAttribute("id",$configId);
-			
 			$config->addChild("authorization")->addChild("policy-file");
 			$config->{'remote-server-list'}="";	
 			$remoteServer = $config->{'remote-server-list'}->addChild("remote-server");
@@ -83,51 +81,36 @@ class ADMIN_proxy
 			$remoteServer->password="";
 		}
 		
-		$availableServlet = array("org.easysdi.proxy.wfs.WFSProxyServlet" => "org.easysdi.proxy.wfs.WFSProxyServlet", 
-								  "org.easysdi.proxy.wms.WMSProxyServlet" => "org.easysdi.proxy.wms.WMSProxyServlet", 
-								  "org.easysdi.proxy.wmts.WMTSProxyServlet" => "org.easysdi.proxy.wmts.WMTSProxyServlet", 
-								  "org.easysdi.proxy.csw.CSWProxyServlet" => "org.easysdi.proxy.csw.CSWProxyServlet");
+		$availableService =  ogcservice::getOgcService();
 		$availableServletList = array();
-		 foreach($availableServlet as $key=>$value) :
-		 	$availableServletList[] = JHTML::_('select.option', $key, $value);
+		 foreach($availableService as $service) :
+		 	$availableServletList[] = JHTML::_('select.option', $service->servletclass, $service->servletclass);
 		 endforeach;
 		 
-		 
+		 $service = new ogcservice(JFactory::getDBO());
 		if($servletClass == "org.easysdi.proxy.wms.WMSProxyServlet" )
 		{
-			$availableVersion = array(""=> "", "1.1.0" => "1.1.0","1.1.1" => "1.1.1","1.3.0" => "1.3.0" );
-			$availableVersionList = array();
-			foreach($availableVersion as $key=>$value) :
-			 	$availableVersionList[] = JHTML::_('select.option', $key, $value);
-			 endforeach;
-			HTML_proxyWMS::editConfigWMS($xml, $new, $configId, $availableServletList,$availableVersionList, $option,$task);
+			$service->load('WMS');
+			$availableVersion = $service->getVersions();
+			HTML_proxyWMS::editConfigWMS($xml, $new, $configId, $availableServletList,$availableVersion, $option,$task);
 		}
 		else if($servletClass == "org.easysdi.proxy.wmts.WMTSProxyServlet" )
 		{
-			$availableVersion = array(""=> "","1.0.0" => "1.0.0");
-			$availableVersionList = array();
-			foreach($availableVersion as $key=>$value) :
-			 	$availableVersionList[] = JHTML::_('select.option', $key, $value);
-			 endforeach;
-			HTML_proxyWMTS::editConfigWMTS($xml, $new, $configId, $availableServletList,$availableVersionList, $option,$task);
+			$service->load('WMTS');
+			$availableVersion = $service->getVersions();
+			HTML_proxyWMTS::editConfigWMTS($xml, $new, $configId, $availableServletList,$availableVersion, $option,$task);
 		}
 		else if($servletClass == "org.easysdi.proxy.csw.CSWProxyServlet" )
 		{
-			$availableVersion = array(""=> "","2.0.0" => "2.0.0");
-			$availableVersionList = array();
-			foreach($availableVersion as $key=>$value) :
-			 	$availableVersionList[] = JHTML::_('select.option', $key, $value);
-			 endforeach;
-			HTML_proxyCSW::editConfigCSW($xml, $new, $configId, $availableServletList,$availableVersionList, $option,$task);
+			$service->load('CSW');
+			$availableVersion = $service->getVersions();
+			HTML_proxyCSW::editConfigCSW($xml, $new, $configId, $availableServletList,$availableVersion, $option,$task);
 		}
 		else 
 		{
-			$availableVersion = array(""=> "","1.0.0" => "1.0.0");
-			$availableVersionList = array();
-			foreach($availableVersion as $key=>$value) :
-			 	$availableVersionList[] = JHTML::_('select.option', $key, $value);
-			 endforeach;
-			HTML_proxyWFS::editConfigWFS($xml, $new, $configId, $availableServletList, $availableVersionList,$option,$task);	
+			$service->load('WFS');
+			$availableVersion = $service->getVersions();
+			HTML_proxyWFS::editConfigWFS($xml, $new, $configId, $availableServletList, $availableVersion,$option,$task);	
 		} 
 	}
 	
@@ -1790,58 +1773,49 @@ class ADMIN_proxy
 	
 	}
 		
-	function negociateVersionForServer($url,$user,$password,$json){
+	function negociateVersionForServer($url,$user,$password,$service,$availableVersions){
+		$supported_versions = array();
+		$versions_array = json_decode($availableVersions,true);
 		
-		/*$urlWithPassword = $url;
-			
+		$urlWithPassword = $url;
 		if (strlen($user)!=null && strlen($password)!=null){
 			if (strlen($user)>0 && strlen($password)>0){
-		
 				if (strpos($url,"http:")===False){
 					$urlWithPassword =  "https://".$user.":".$password."@".substr($url,8);
 				}else{
 					$urlWithPassword =  "http://".$user.":".$password."@".substr($url,7);
 				}
 			}
-		}*/
+		}
 		
-		// create response object
-		$json = array();
-		$json['version'] = array();
-		$json['version'][] = '1.0.0';
-		$json['version'][] = '1.1.1';
-		
-		// encode array $json to JSON string
-		$encoded = json_encode($json);
-		echo $encoded;
-		die();
-		/*$pos1 = stripos($urlWithPassword, "?");
+		$pos1 = stripos($urlWithPassword, "?");
 		$separator = "&";
 		if ($pos1 === false) {
 			//"?" Not found then use ? instead of &
 			$separator = "?";
 		}
+		
+		$completeurl = "";
+		foreach ($versions_array as $version){
+			$completeurl = $urlWithPassword.$separator."REQUEST=GetCapabilities&version=".$servletVersion."&SERVICE=".$service."&VERSION=".$version;
+			$xmlCapa = simplexml_load_file($completeurl);
 			
-		if($servletVersion != ""){
-			$completeurl = $urlWithPassword.$separator."REQUEST=GetCapabilities&version=".$servletVersion."&SERVICE=WMS";
-			$xmlCapa = simplexml_load_file($urlWithPassword.$separator."REQUEST=GetCapabilities&version=".$servletVersion."&SERVICE=WMS");
-		}else{
-			$completeurl = $urlWithPassword.$separator."REQUEST=GetCapabilities&SERVICE=WMS";
-			$xmlCapa = simplexml_load_file($urlWithPassword.$separator."REQUEST=GetCapabilities&SERVICE=WMS");
-		}
-			
-		if ($xmlCapa === false){
-			global $mainframe;
-			$mainframe->enqueueMessage(JText::_('EASYSDI_UNABLE TO RETRIEVE THE CAPABILITIES OF THE REMOTE SERVER' )." - ".$completeurl,'error');
-		}else{
-				
-			foreach ($thePolicy->Servers->Server as $policyServer){
-				if (strcmp($policyServer->url,$remoteServer->url)==0){
-					$theServer  = $policyServer;
+			if ($xmlCapa === false){
+				global $mainframe;
+				$mainframe->enqueueMessage(JText::_('EASYSDI_UNABLE TO RETRIEVE THE CAPABILITIES OF THE REMOTE SERVER' )." - ".$completeurl,'error');
+			}else{
+				foreach ($xmlCapa->attributes() as $key => $value){
+					if($key == 'version'){
+						if($value == $version)
+							$supported_versions[]=$version;
+					}
 				}
-					
 			}
-		}*/
+		}
+		
+		$encoded = json_encode($supported_versions);
+		echo $encoded;
+		die();
 	}
 		
 }
