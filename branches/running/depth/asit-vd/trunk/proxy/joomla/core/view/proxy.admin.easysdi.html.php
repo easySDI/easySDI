@@ -151,7 +151,6 @@ echo $pane->endPanel();
 			</table>
 			</fieldset>
 			<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_SERVLET TYPE' );?></legend>
-			
 			<table class="admintable">
 				<tr>
 					<td>
