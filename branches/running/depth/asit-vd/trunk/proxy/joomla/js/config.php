@@ -53,13 +53,16 @@ function removeServer(servNo){
 }
 
 var request;
+var currentServerIndex;
 
 function negoVersionServer(servNo,service,availableVersions){
 	var url = document.getElementById("URL_"+servNo).value;
 	var user = document.getElementById("URL_"+servNo).value;
 	var password = document.getElementById("PASSWORD_"+servNo).value;
+	currentServerIndex = servNo;
 	
     request = getHTTPObject();
+    document.getElementById("progress").style.visibility = "visible";
     request.onreadystatechange = sendData;
     request.open("GET", "index.php?option=com_easysdi_proxy&task=negociateVersionForServer&url="+url+"&user="+user+"&password="+password+"&service="+service+"&availableVersions="+availableVersions, true);
     request.send(null);
@@ -85,19 +88,40 @@ function getHTTPObject(){
 
 function sendData()
 {
+	
+    
     // if request object received response
     if(request.readyState == 4){
+    	document.getElementById("progress").style.visibility = "hidden";
 		var JSONtext = request.responseText;
-		// convert received string to JavaScript object
-		var JSONobject = JSON.parse(JSONtext);
- 		// notice how variables are used
-		var msg = "Versions supported: "+
-		"\n- "+JSONobject[0]+
-		"\n- "+JSONobject[1];
- 
-		alert(msg);
+		var unsupportedVersions = availableVersions;
+		var JSONobject = JSON.parse(JSONtext, function (key, value) {
+		    var type;
+		    if (value && typeof value === 'string') {
+		    	var version = document.getElementById(value+"_"+currentServerIndex);
+		    	version.setAttribute("class","supported");
+		    	document.getElementById(value+"_"+currentServerIndex+"_state").value = "supported";
+		    	unsupportedVersions = unsupportedVersions.remove(value);
+		    }
+		});
+		var len = unsupportedVersions.length;
+		for (var i = 0; i<len; i++) {
+			var version = document.getElementById(unsupportedVersions[i]+"_"+currentServerIndex);
+	    	version.setAttribute("class","unsupported");
+	    	document.getElementById(unsupportedVersions[i]+"_"+currentServerIndex+"_state").value = "unsupported";
+		}
     }
 }
+
+Array.prototype.remove = function(obj) {
+	  var a = [];
+	  for (var i=0; i<this.length; i++) {
+	    if (this[i] != obj) {
+	      a.push(this[i]);
+	    }
+	  }
+	  return a;
+	}
 
 function addNewServer(){
 	
@@ -148,8 +172,8 @@ function addNewServer(){
 	vButton.setAttribute("onClick","javascript:negoVersionServer("+nbServer+",'"+service+"','"+JSON.stringify(availableVersions)+"');");
 	vButton.setAttribute("href","#");
 	var vImg = document.createElement ('img');
-	vImg.setAttribute("class","unchecked");
-	vImg.setAttribute("src","");
+	vImg.setAttribute("class","helpTemplate");
+	vImg.setAttribute("src","../templates/easysdi/icons/silk/arrow_switch.png");
 	vImg.setAttribute("alt","Version");
 	vButton.appendChild(vImg);
 	tdNegociate.appendChild(vButton);
@@ -161,11 +185,19 @@ function addNewServer(){
 	for (var i = 0; i<len; i++) {
 		var tdVersionsTableTd = document.createElement('td');
 		tdVersionsTableTd.setAttribute("class","unknown");
+		tdVersionsTableTd.setAttribute("id",availableVersions[i]+"_"+nbServer);
 		var ta = document.createTextNode(availableVersions[i]);
 		tdVersionsTableTd.appendChild(ta);
+
+		var tdVersionsTableTdInput = document.createElement('input');
+		tdVersionsTableTdInput.setAttribute("type","hidden");
+		tdVersionsTableTdInput.setAttribute("name",availableVersions[i]+"_"+nbServer+"_state");
+		tdVersionsTableTdInput.setAttribute("id",availableVersions[i]+"_"+nbServer+"_state");
+		tdVersionsTableTdInput.setAttribute("value","unknown");
+		tdVersionsTableTd.appendChild(tdVersionsTableTdInput);
+		
 		tdVersionsTableTr.appendChild(tdVersionsTableTd);
 	}
-	
 	tdVersionsTable.appendChild(tdVersionsTableTr);
 	tdVersions.appendChild(tdVersionsTable);
 	tr.appendChild(tdVersions);
@@ -177,10 +209,7 @@ function addNewServer(){
 	tdRemove.appendChild(aButton);
 	tr.appendChild(tdRemove);
 	
-	
 	document.getElementById("remoteServerTable").appendChild(tr);
-	
-	
 	nbServer = nbServer + 1;
 }
 </script>

@@ -138,6 +138,10 @@ echo $pane->endPanel();
 	function genericServletInformationsHeader ($config, $configId, $servletClass, $availableServletList,$availableVersion,$servletVersion,$serviceType)
 	{
 		?>
+		<div id="progress">
+			<img id="progress_image"  src="components/com_easysdi_proxy/templates/images/ajax-loader.gif" alt=""> 
+			<p><?php echo JText::_( 'EASYSDI_PROXY_VERSION_NEGOCIATION' );?></p>
+		</div>
 		<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_CONFIG ID' );?></legend>
 			<table class="admintable">
 				<tr>
@@ -180,7 +184,7 @@ echo $pane->endPanel();
 					<th><?php echo JText::_( 'EASYSDI_URL'); ?></th>
 					<th><?php echo JText::_( 'EASYSDI_USER'); ?></th>
 					<th><?php echo JText::_( 'EASYSDI_PASSWORD'); ?></th>
-					<th><?php echo JText::_( 'EASYSDI_VERSION'); ?></th>
+					<th colspan="6"><?php echo JText::_( 'EASYSDI_VERSION'); ?></th>
 				</tr>
 				</thead>
 				<tbody id="remoteServerTable" >
@@ -193,12 +197,12 @@ echo $pane->endPanel();
 							<td><input type="text" id="URL_<?php echo $iServer;?>" name="URL_<?php echo $iServer;?>" value="<?php echo $remoteServer->url; ?>" size=70></td>
 							<td><input id="USER_<?php echo $iServer;?>" name="USER_<?php echo $iServer;?>" type="text" value="<?php echo $remoteServer->user; ?>"></td>
 							<td><input id="PASSWORD_<?php echo $iServer;?>" name="PASSWORD_<?php echo $iServer;?>" type="password" value="<?php echo $remoteServer->password; ?>">	</td>
-							<td class="logo">
-							<div class = "checked" onClick="javascript:negoVersionServer(<?php echo $iServer;?>,'<?php echo $serviceType; ?>', '<?php echo str_replace('"','&quot;',json_encode ($availableVersion)); ?>')" >
-									
-							</div>
+							<td>
+								<a href="#" onclick="javascript:negoVersionServer(<?php echo $iServer;?>,'<?php echo $serviceType; ?>', '<?php echo str_replace('"','&quot;',json_encode ($availableVersion)); ?>');" >
+									<img class="helpTemplate" src="../templates/easysdi/icons/silk/arrow_switch.png" alt="<?php echo JText::_("EASYSDI_VERSION") ?>"/>
+								</a>
 							</td>
-							<td><?php HTML_proxy::getTableVersionForService ($remoteServer,$servletClass,$availableVersion)?></td>
+							<td><?php HTML_proxy::getTableVersionForService ($iServer,$remoteServer,$servletClass,$availableVersion)?></td>
 							<?php if ($iServer > 0){?>	
 							<td >		
 							<input id="removeServerButton" type="button" onClick="javascript:removeServer(<?php echo $iServer;?>);" value="<?php echo JText::_( 'EASYSDI_REMOVE' ); ?>">
@@ -238,7 +242,7 @@ echo $pane->endPanel();
 		<?php 
 	}
 	
-	function getTableVersionForService ($remoteServer,$serviceType,$availableVersion){
+	function getTableVersionForService ($iServer,$remoteServer,$serviceType,$availableVersion){
 		$array_version = array();
 		foreach ($remoteServer->{"supported-versions"}->{"version"} as $version){
 			$array_version[]=$version;
@@ -249,11 +253,15 @@ echo $pane->endPanel();
 		foreach ($availableVersion as $version){
 			if (in_array($version,$array_version)){
 				?>
-				<td class="supported"><?php echo $version;?></td>
+				<td class="supported" id="<?php echo $version;?>_<?php echo $iServer;?>"><?php echo $version;?>
+				<input type='hidden' name="<?php echo $version;?>_<?php echo $iServer;?>_state" id="<?php echo $version;?>_<?php echo $iServer;?>_state" value="supported" >
+				</td>
 				<?php 
 			}else{
 				?>
-				<td class="unsupported"><?php echo $version;?></td>
+				<td class="unsupported" id="<?php echo $version;?>_<?php echo $iServer;?>"><?php echo $version;?>
+				<input type='hidden' name="<?php echo $version;?>_<?php echo $iServer;?>_state" id="<?php echo $version;?>_<?php echo $iServer;?>_state" value="unsupported" >
+				</td>
 				<?php
 			}
 			 

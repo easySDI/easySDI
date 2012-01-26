@@ -1584,6 +1584,10 @@ class ADMIN_proxy
 				$hostTranslator = JRequest::getVar("hostTranslator");
 				$config->{'host-translator'}=$hostTranslator;
 				
+				$service = new ogcservice(JFactory::getDBO());
+				$service->load(JRequest::getVar('serviceType'));
+				$availableVersion = $service->getVersions();
+								
 				//Remote server
 				$config->{'remote-server-list'}="";				
 				$i=0;
@@ -1611,6 +1615,18 @@ class ADMIN_proxy
 						$remoteServer->{'login-service'}=JRequest::getVar("login-service_".$i,"");
 						$geonetworktransaction  = $remoteServer->addChild("transaction");
 						$geonetworktransaction->{'type'}='geonetwork';
+					}
+					
+					$supportedVersionNode = $remoteServer->addChild("supported-versions");
+					foreach ($availableVersion as $version)
+					{
+						//dot in variable names are replaced by underscore character when form is posted 
+						//Service version contain dot, so : str_replace(".","_",$version)
+						$supportedVersion = JRequest::getVar(str_replace(".","_",$version)."_".$i."_state","");
+						
+ 						if(strcmp( $supportedVersion ,"supported") == 0 ){
+ 							$supportedVersionNode->addChild("version",$version);
+ 						}
 					}
 				}
 							

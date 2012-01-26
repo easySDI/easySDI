@@ -33,9 +33,13 @@ td.unknown{
     width: 20px;
 	
 }
-.logo{
-	 width : 20px;
+
+td.logo{
+	height:20px;
+    width: 20px;
+	 background-image: url(connect.png);
 }
+
 .checked{
 	 background-image: url(connect.png);
 	 width : 17px;
@@ -45,4 +49,13 @@ td.unknown{
 	 background-image: url(../../../../../../templates/easysdi/icons/silk/connect.png);
 	 width : 17px;
 	 heigth:17px;
+}
+#progress{
+	visibility:hidden; 
+	position:absolute; 
+	top:25%;left:35%;
+}
+#progress_image{
+	padding-left:60px;
+	padding-top:5px;
 }
