@@ -1521,7 +1521,15 @@ function com_install(){
 			}
 			
 		}
-
+		if($version =="2.0.3"){			
+			$version="2.0.5";
+			$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='CATALOG'";
+			$db->setQuery( $query);
+			if (!$db->query())
+			{
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+		}
 
 		/**
 		 * Copy View files in Core component to allow  Menu Item Manger to find entries
