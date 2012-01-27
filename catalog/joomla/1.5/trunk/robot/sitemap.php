@@ -29,12 +29,13 @@
 	//Host
 	$http_host = null;
 	if($jconfig->live_site){
-		$http_host = $jconfig->live_site;
+		$root = $jconfig->live_site;
 	}else{
 		$http_host = $_SERVER['HTTP_HOST'];
+		$root = "http".$https.substr($http_host.$_SERVER['SCRIPT_NAME'], 0, strrpos($http_host.$_SERVER['SCRIPT_NAME'], '/'));
 	}
 	
-	$root = "http".$https.substr($http_host.$_SERVER['SCRIPT_NAME'], 0, strrpos($http_host.$_SERVER['SCRIPT_NAME'], '/'));
+	
 //$root = "http".$https.substr($_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME'], 0, strrpos($_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME'], '/'));
 //	$url = $root."/index.php?tmpl=component&amp;option=com_easysdi_catalog&amp;task=showMetadata&amp;type=complete&amp;id=";
 	
