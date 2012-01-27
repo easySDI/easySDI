@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xml:base="http://www.springsource.org"  xmlns:dc="http://purl.org/dc/elements/1.1/">
+<channel>
+ <title>SpringSource.org</title>
+ <link>http://www.springsource.org</link>
+ <description>Welcome to the home of Spring, the leading platform to build and run enterprise Java applications. Led and sustained by SpringSource, Spring delivers significant benefits for many projects, increasing development productivity and runtime performance while improving test coverage and application quality.</description>
+ <language>en</language>
+<item>
+ <title>  This Week in Spring, January 17th, 2012</title>
+ <link>http://www.springsource.org/node/3366</link>
+ <description> &lt;P&gt; Welcome to another installment of &lt;EM&gt;This Week in Spring&lt;/EM&gt;. We&#039;ve got a lot of good content to look at this week, so  let&#039;s get on with it. &lt;/P&gt;
+ 
+
+ &lt;ol&gt; 
+		 &lt;LI&gt;Pssst. What are you guys doing this Thursday, the 19th?  
+			If you haven&#039;t already, may I suggest you register for    
+			the &lt;a href= &quot;http://www.springsource.org/node/3364&quot;&gt;Spring 3.1 webinar with Juergen Hoeller and Chris Beams&lt;/a&gt;? 
+			
+			
+			
+			If you&#039;re in Europe,  there&#039;s going to be a  webinar  at &lt;a href = &quot;https://vmwareevents.webex.com/vmwareevents/onstage/g.php?t=a&amp;d=663415641&quot;&gt;3PM GMT, or 4PM CEST&lt;/a&gt;, and if you&#039;re in North America, there&#039;s going to be a webinar at &lt;a href = &quot;https://vmwareevents.webex.com/vmwareevents/onstage/g.php?t=a&amp;d=668718779&quot;&gt;1PM EST or 10AM PST&lt;/a&gt;. 
+			 Don&#039;t be left out, this event&#039;s already seen the highest registration of any webinar thus far, so register now, and as usual, I hope to see you there. 
+			   &lt;/LI&gt;
+	
+		&lt;LI&gt; Another session from SpringOne2GX, on &lt;a href = &quot;http://www.springsource.org/node/3365&quot;&gt;Writing Applications for Cloud Foundry using Spring and MongoDB&lt;/a&gt;, has been posted.  The Spring material is presented by data expert Thomas Risberg and the Mongo material is presented by Jared Rosoff from 10gen.  &lt;/LI&gt;
+	&lt;LI&gt;  Willie Wheeler, author of Manning&#039;s &lt;EM&gt;Spring in Practice&lt;/EM&gt;, has put together a great blog post called &lt;a href =&quot;http://springinpractice.com/2012/01/14/calling-the-github-api-using-springs-resttemplate/&quot;&gt;Calling the GitHub API using Spring&#039;s &lt;CODE&gt;RestTemplate&lt;/CODE&gt;.&lt;/a&gt;    
+		
+		 Craig Walls, author of Manning&#039;s own &lt;EM&gt;Spring in Action&lt;/EM&gt; and lead of the &lt;a href =&quot;https://github.com/SpringSource/spring-social-github&quot;&gt;Spring Social Github project&lt;/a&gt; read this blog post and reached out to Willie. They started collaborating. A few &lt;a href =&quot;https://github.com/SpringSource/spring-social-github/pull/2&quot;&gt;pull requests&lt;/a&gt; later and that integrated, cleaned up idea and code is now in Spring Social Github &lt;CODE&gt;master&lt;/CODE&gt;, ready to be incorporated in the next release. That&#039;s three days from blog to &lt;CODE&gt;master&lt;/CODE&gt;! This is a great example of how powerful open source is. Don&#039;t hesitate &lt;a href= &quot;http://blog.springsource.org/2010/12/21/social-coding-in-spring-projects/&quot;&gt;to get involved&lt;/a&gt;, too!
+	 
+		  &lt;/LI&gt;  
+		
+			&lt;LI&gt; &lt;a href= &quot;http://blog.cloudfoundry.com/post/13481010498/simplified-application-deployment-with-cloud-foundry-manifest&quot;&gt;Cloud Foundry has just announced support for Manifests&lt;/a&gt;, which contain deployment information for an application.  These manifests can be used to remove many of the tedious interactive prompts encountered when deploying an application using the &lt;CODE&gt;vmc&lt;/CODE&gt; tool making deployments much more reproducible.  &lt;/LI&gt;    
+			
+			&lt;LI&gt; Additionally the Cloud Foundry group has also announced support for installing and running  the &lt;a href = &quot;http://blog.cloudfoundry.com/post/13481010538/java-reporting-engine-is-now-available-on-cloud-foundry-via-jasperreports&quot;&gt;Java-based Jasper Reports server as a service  on Cloud Foundry&lt;/a&gt;.   
+			 
+	&lt;LI&gt;
+		 Willie Wheeler&#039;s been busy, of late!  Some content from his  upcoming book is available on the internet.  In particular,  &lt;a href= &quot;http://www.java-tv.com/2012/01/16/creating-your-first-spring-web-mvc-application/&quot;&gt;Creating Your First Spring MVC applications&lt;/A&gt; is really good, and worth a read.  He also has another post, &lt;A href = &quot;http://springinpractice.com/2012/01/07/making-formselect-work-nicely-using-spring-3-formatters/&quot;&gt;
+		 Making &lt;CODE&gt;&amp;lt;form:select/&amp;gt;&lt;/CODE&gt; work nicely using Spring 3 Formatters&lt;/a&gt;, that is &lt;EM&gt;definitely&lt;/EM&gt; worth a read! It answers a very common question and shows the latest and greatest in best practices. Nice job, Willie!
+			
+			 &lt;/LI&gt;
+
+  
+	&lt;LI&gt;  The Rai Studies blog has a few great posts this week, including a post on &lt;a href = &quot;http://www.raistudies.com/spring/spring-mvc/ajax-spring-mvc-3-annonations-jquery/&quot;&gt;Using Spring MVC 3   with JQuery&#039;s Ajax support&lt;/a&gt;   and  a post on 
+		&lt;a href = &quot;http://www.raistudies.com/spring/spring-mvc/file-upload-spring-mvc-annotation/&quot;&gt;File Uploads Using Spring MVC 3&lt;/a&gt;. &lt;/li&gt;
+
+
+	&lt;li&gt; Possibly inspired by the &lt;a href = &quot;http://blog.springsource.org/2011/04/12/roo-cloud-foundry-productivity-in-the-cloud/&quot;&gt;Cloud Foundry add-on for Spring Roo&lt;/a&gt;, Shekhar Gulati at Xebia has cooked up another PaaS add-on, &lt;a href= &quot;http://xebee.xebia.in/2012/01/09/running-spring-java-mongodb-apps-on-openshift-express-using-spring-roo-openshift-express-addon/&quot;&gt;this time for Openshift&lt;/a&gt;. 
+		
+		
+		This is a great example of Spring Roo&#039;s powerful addon mechanism and the ecosystem thats grown up around it.   If Spring Roo doesn&#039;t have something for you, &lt;a href = &quot;http://code.google.com/p/spring-roo-openshift-express-addon/&quot;&gt;it&#039;s easy enough to extend it&lt;/a&gt;! Readers of this blog will recall that Shekhar wrote the great blogs introducing Spring Roo on his &lt;a href = &quot;http://www.ibm.com/developerworks/views/opensource/libraryview.jsp?search_by=introducing+spring+roo,&quot;&gt;IBM Developer Works series&lt;/a&gt;, which, if you didn&#039;t read it then, you should read now. 
+	  &lt;/LI&gt;
+		&lt;LI&gt; Ashish Sarin, author of the &lt;EM&gt;Spring Roo Cookbook&lt;/EM&gt;, has put some great content up on &lt;A href = &quot;http://spring-roo.blogspot.com/2012/01/view-and-add-dynamic-finder-methods.html&quot;&gt;Adding Dynamic Finder Methods in Spring Roo&lt;/a&gt;.  &lt;/li&gt; 
+	
+	  &lt;LI&gt;  The &lt;a href = &quot;http://www.tomcatexpert.com&quot;&gt;TomcatExpert.com&lt;/a&gt; site has a great &lt;a href = &quot;http://www.tomcatexpert.com/blog/2012/01/04/year-review-2011&quot;&gt;roundup of some of the  great content from 2011&lt;/a&gt;.  &lt;/LI&gt;
+		
+			&lt;LI&gt; Over on the Apache Tomcat mailing list comes news of &lt;A href= &quot;http://mail-archives.apache.org/mod_mbox/tomcat-announce/201201.mbox/%3C4F155CE2.3060301%40apache.org%3E&quot;&gt;an update to Apache Tomcat 6 and 7 designed to fix a severe DoS attack&lt;/a&gt;.  Please consult the post for information on the attack as well as the appropriate fixes.   &lt;/LI&gt;
+			  
+
+		&lt;/oL&gt;</description>
+ <comments>http://www.springsource.org/node/3366#comments</comments>
+ <category domain="http://www.springsource.org/taxonomy/term/4">News and Announcements</category>
+ <pubDate>Wed, 18 Jan 2012 00:08:40 +0000</pubDate>
+ <dc:creator>Josh Long</dc:creator>
+ <guid isPermaLink="false">3366 at http://www.springsource.org</guid>
+</item>
+<item>
+ <title>Video: SpringOne 2GX - Writing Applications for Cloud Foundry Using Spring and MongoDB</title>
+ <link>http://www.springsource.org/node/3365</link>
+ <description>&lt;p&gt; 
+&lt;div style=&quot;float: right; width:318px; padding: 10px&quot;&gt;
+&lt;a href=&quot;http://www.infoq.com/presentations/Writing-Applications-for-Cloud-Foundry-Using-Spring-and-MongoDB&quot;&gt;&lt;img height=&quot;237&quot; alt=&quot;SpringOne 2GX Video: Writing Applications for Cloud Foundry Using Spring and MongoDB&quot; width=&quot;318&quot; border=&quot;0&quot; src=&quot;http://www.springsource.org/files/SpringOne2GX2012CloudFoundrySpringMongoDB.png&quot; /&gt;&lt;/a&gt;
+&lt;/div&gt;
+
+Here is another session from SpringOne 2GX 2011. This one gives instructions for &lt;a href=&quot;http://www.infoq.com/presentations/Writing-Applications-for-Cloud-Foundry-Using-Spring-and-MongoDB&quot;&gt;Writing Applications for Cloud Foundry Using Spring and MongoDB&lt;/a&gt;. The Spring material is presented by data expert &lt;a href=&quot;http://blog.springsource.org/author/trisberg/&quot;&gt;Thomas Risberg&lt;/a&gt; and the Mongo material is presented by &lt;a href=&quot;https://twitter.com/#!/forjared&quot;&gt;Jared Rosoff&lt;/a&gt; from 10gen. The presentation provides a technical introduction to &lt;a href=&quot;http://cloudfoundry.com/signup?utm_source=springsource_web&amp;utm_medium=banner&amp;utm_campaign=cloudfoundry-signup&quot;&gt;Cloud Foundry&lt;/a&gt;, &lt;a href=&quot;http://www.mongodb.org/&quot;&gt;MongoDB&lt;/a&gt; and &lt;a href=&quot;/spring-data/mongodb&quot;&gt;Spring Data for MongoDB&lt;/a&gt; (including Mongo Template and Mongo Repository support). This is a great way to dive into noSQL and cloud at the same time!
+&lt;/p&gt;
+
+
+&lt;p&gt;Many thanks to &lt;a href=&quot;http://www.infoq.com&quot;&gt;InfoQ&lt;/a&gt; for coming to Chicago to record so many of the fantastic &lt;a href=&quot;http://www.infoq.com/springone_2gx_2011/&quot;&gt;SpringOne 2GX presentations&lt;/a&gt;.
+&lt;/p&gt;
+
+</description>
+ <comments>http://www.springsource.org/node/3365#comments</comments>
+ <category domain="http://www.springsource.org/taxonomy/term/4">News and Announcements</category>
+ <pubDate>Sat, 14 Jan 2012 02:49:13 +0000</pubDate>
+ <dc:creator>Adam Fitzgerald</dc:creator>
+ <guid isPermaLink="false">3365 at http://www.springsource.org</guid>
+</item>
+<item>
+ <title>Webinar: Modern Enterprise Java Architectures with Spring 3.1</title>
+ <link>http://www.springsource.org/node/3364</link>
+ <description>&lt;p&gt;In its 3.1 generation, the &lt;a href=&quot;/spring-core&quot;&gt;Spring Framework&lt;/a&gt; presents itself as a versatile open source platform for Java-based application architectures on any kind of deployment platform. This webinar on January 19th covers the key feature set in &lt;a href=&quot;http://www.springsource.com/download/community?project=Spring%20Framework&amp;amp;version=3.1.0.RELEASE&quot;&gt;Spring 3.1&lt;/a&gt;, from environment profiles and Java-based application configuration to declarative caching and Servlet 3.0 support. Spring 3.1&#039;s capabilities will be discussed in the context of current trends such as cloud computing and HTML 5, influencing the way enterprise Java applications will be built in 2012 and beyond.&lt;/p&gt;
+&lt;p&gt;Join &lt;a href=&quot;http://blog.springsource.org/author/juergenh/&quot;&gt;Juergen Hoeller&lt;/a&gt; and &lt;a href=&quot;http://blog.springsource.org/author/cbeams/&quot;&gt;Chris Beams&lt;/a&gt; for this great opportunity to learn all about the recent Spring 3.1 release:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Europe: &lt;a href=&quot;https://vmwareevents.webex.com/vmwareevents/onstage/g.php?t=a&amp;amp;d=663415641&quot;&gt;January 19, 3:00pm UK / 4:00pm Europe&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;North America: &lt;a href=&quot;https://vmwareevents.webex.com/vmwareevents/onstage/g.php?t=a&amp;amp;d=668718779&quot;&gt;January 19, 1:00pm EST / 10:00am PST&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+ <comments>http://www.springsource.org/node/3364#comments</comments>
+ <category domain="http://www.springsource.org/taxonomy/term/4">News and Announcements</category>
+ <pubDate>Fri, 13 Jan 2012 00:39:34 +0000</pubDate>
+ <dc:creator>Adam Fitzgerald</dc:creator>
+ <guid isPermaLink="false">3364 at http://www.springsource.org</guid>
+</item>
+<item>
+ <title>Video: SpringOne 2GX - Spring Tooling Update, New &amp; Noteworthy</title>
+ <link>http://www.springsource.org/node/3363</link>
+ <description>&lt;p&gt; 
+&lt;div style=&quot;float: right; width:316px; padding: 10px&quot;&gt;
+&lt;a href=&quot;http://www.infoq.com/presentations/Spring-Tooling-Update-New-Noteworthy&quot;&gt;&lt;img height=&quot;238&quot; alt=&quot;SpringOne 2GX Video: Spring Tooling Update&quot; width=&quot;316&quot; border=&quot;0&quot; src=&quot;http://www.springsource.org/files/SpringOne2GX2011SpringToolingUpdate.png&quot; /&gt;&lt;/a&gt;
+&lt;/div&gt;
+
+Yet another session from SpringOne 2GX 2011, Martin Lippert and Andy Clement provide us with a complete &lt;a href=&quot;http://www.infoq.com/presentations/Spring-Tooling-Update-New-Noteworthy&quot;&gt;update on Spring Tooling&lt;/a&gt; covering Spring 3.1 tooling, Groovy, Grails &amp; Gradle tools, Cloud Foundry tools and a peek at future tool work for the community. This video provides a great update for Spring/Groovy/Grails developers who are looking to learn about the newest Eclipse based development tool features. 
+&lt;/p&gt;
+
+
+&lt;p&gt;Many thanks to &lt;a href=&quot;http://www.infoq.com&quot;&gt;InfoQ&lt;/a&gt; for coming to Chicago to record so many of the fantastic &lt;a href=&quot;http://www.infoq.com/springone_2gx_2011/&quot;&gt;SpringOne 2GX presentations&lt;/a&gt;.
+&lt;/p&gt;
+
+</description>
+ <comments>http://www.springsource.org/node/3363#comments</comments>
+ <category domain="http://www.springsource.org/taxonomy/term/4">News and Announcements</category>
+ <pubDate>Thu, 12 Jan 2012 23:49:12 +0000</pubDate>
+ <dc:creator>Adam Fitzgerald</dc:creator>
+ <guid isPermaLink="false">3363 at http://www.springsource.org</guid>
+</item>
+<item>
+ <title>Video: SpringOne 2GX - Enterprise Integration–The Seriously Nasty Stuff</title>
+ <link>http://www.springsource.org/node/3362</link>
+ <description>&lt;p&gt; 
+&lt;div style=&quot;float: right; width:319px; padding: 10px&quot;&gt;
+&lt;a href=&quot;http://www.infoq.com/presentations/Enterprise-Integration&quot;&gt;&lt;img height=&quot;237&quot; alt=&quot;SpringOne 2GX Video: Enterprise Integration - the Seriously Nasty Stuff&quot; width=&quot;319&quot; border=&quot;0&quot; src=&quot;http://www.springsource.org/files/SpringOne2GX2011EnterpriseIntegrationSeriouslyNastyStuff.png&quot; /&gt;&lt;/a&gt;
+&lt;/div&gt;
+
+There were some amazing sessions at SpringOne 2GX 2011 and this one was no different. John Davies, co-founder and CTO of Incept5, talks about the challenges present in doing &lt;a href=&quot;http://www.infoq.com/presentations/Enterprise-Integration&quot;&gt;enterprise integration in large financial systems&lt;/a&gt;. John discusses the challenges specific to financial services which include massive volume, low latency and highly specialized data exchange formats. John then details specific places where enterprise integration can be successful and in particular where &lt;a href=&quot;http://www.springsource.org/spring-integration&quot;&gt;Spring Integration&lt;/a&gt; can provide great solutions.
+&lt;/p&gt;
+
+
+
+
+&lt;p&gt;Many thanks to &lt;a href=&quot;http://www.infoq.com&quot;&gt;InfoQ&lt;/a&gt; for coming to Chicago to record so many of the fantastic &lt;a href=&quot;http://www.infoq.com/springone_2gx_2011/&quot;&gt;SpringOne 2GX presentations&lt;/a&gt;.
+&lt;/p&gt;
+
+</description>
+ <comments>http://www.springsource.org/node/3362#comments</comments>
+ <category domain="http://www.springsource.org/taxonomy/term/4">News and Announcements</category>
+ <pubDate>Thu, 12 Jan 2012 21:27:40 +0000</pubDate>
+ <dc:creator>Adam Fitzgerald</dc:creator>
+ <guid isPermaLink="false">3362 at http://www.springsource.org</guid>
+</item>
+<item>
+ <title>This Week in Spring, January 10th, 2012</title>
+ <link>http://www.springsource.org/node/3361</link>
+ <description> 
+&lt;P&gt; 
+	
+	 Welcome back to another installment of &lt;EM&gt;This Week in Spring&lt;/EM&gt;! 
+	There&#039;s a lot to cover, so let&#039;s dive into it! 
+	&lt;/p&gt;
+	&lt;OL&gt;
+		&lt;LI&gt;  Always eager to help ring in the new year properly, Mark Fisher announced the &lt;a href  = &quot;http://blog.springsource.org/2012/01/09/spring-integration-2-1-is-now-ga/&quot;&gt;Spring Integration 2.1 GA&lt;/a&gt; yesterday.   
+			 The new release has &lt;EM&gt;everything&lt;/EM&gt;, and then some! It features new or revised support for a broad spectrum of technologies including AMQP, JDBC, GemFire, MongoDB, Redis, and much, much more. 
+			&lt;/LI&gt;
+			
+			&lt;LI&gt;Andy Clement and Martin Lippert&#039;s &lt;a href = &quot;http://www.infoq.com/presentations/Spring-Tooling-Update-New-Noteworthy&quot;&gt;update on the latest and greatest on the SpringSource Tool  Suite tooling&lt;/a&gt; from SpringOne2GX is up and available.  Check it out! 
+				
+				&lt;/LI&gt;
+		 &lt;LI&gt; Speaking of &lt;a href  = &quot;http://www.springsource.org/spring-integration&quot;&gt;Spring  Integration&lt;/a&gt;, fans of the art of integration should check out John Davies&#039; excellent talk on  &lt;a href=&quot;http://www.infoq.com/presentations/Enterprise-Integration&quot;&gt;how his company is employing Spring Integration  to build massively scalable applications&lt;/a&gt;.
+			 Take it from me - a hardened enterprise integration wonk - John Davies has been around in this industry for a &lt;EM&gt;looong&lt;/EM&gt; time, and he knows what he&#039;s talking about.  
+			&lt;/LI&gt;
+			
+			
+		&lt;LI&gt; The fine folks at &lt;a href =&quot;http://labs.bsb.com/&quot;&gt;BSB labs&lt;/a&gt;   have been playing with &lt;a href = &quot;http://labs.bsb.com/2011/12/spring-profiles-management-for-application-customization/&quot;&gt;Spring 3.1 profile  activation&lt;/a&gt;. The  blog entry comes complete with sample    code on GitHub!  &lt;/LI&gt;
+
+&lt;LI&gt;
+Blogger Matt Raible has an interesting blog illustrating the steps he took to get his ready-to-roll template application AppFuse, updated to the latest and greatest &lt;a href =&quot;http://raibledesigns.com/rd/entry/upgrading_appfuse_to_spring_security&quot;&gt;Spring 3.1 and Spring Security 3.1&lt;/a&gt;. Check it out!
+
+&lt;/LI&gt;
+
+&lt;LI&gt; The Java Developer Journal has an interesting piece on &lt;a href = &quot;http://java.sys-con.com/node/2123093&quot;&gt;how to defer the runtime cost of logging by using Spring&#039;s support for asynchronous execution&lt;/a&gt;. &lt;/LI&gt;
+
+		 &lt;LI&gt; Open source Java and, in particular, Tomcat, rule the day. Now, more than ever, people are rejecting heavy, monolithic application servers in favor of lightweight, singly focused applications that can be partitioned horizontally on both the front end and the backend. More often than not, they are choosing Tomcat to meet this requirement.  For more spiffy pie charts, check out   NewRelic blog, &lt;A href= &quot;http://blog.newrelic.com/2012/01/10/infographic-oss-java-wins-in-the-cloud-era/&quot;&gt;The Death of WebSphere and WebLogic App Servers? New Infographic shows the Rise of OSS Java&lt;/a&gt;.  &lt;/LI&gt;
+         
+		&lt;LI&gt;James Ward&#039;s SpringOne talk on &lt;a href = &quot;http://www.infoq.com/presentations/Running-Spring-Java-and-Scala-Apps-on-Heroku&quot;&gt;running Spring and Grails applications on Heroku&lt;/a&gt; from &lt;a href = &quot;http://www.springone2gx.com&quot;&gt;SpringOne2GX&lt;/a&gt; is now up on InfoQ. 
+			 Heroku is of course one more cloud on which Spring applications run portably. &lt;/LI&gt;
+
+
+			&lt;LI&gt; &lt;a href = &quot;https://github.com/SpringSource/spring-security&quot;&gt;Spring Security has moved to Github!&lt;/a&gt;  Spring Security project lead Luke Taylor sent out the   &lt;a href = &quot;https://twitter.com/#!/tekul/status/156872747442651137&quot;&gt;change-of-address Tweet&lt;/a&gt; this afternoon. Many of the Spring projects  have pretty uniformly moved to GitHub in the last year, and it&#039;s good to see Spring Security join the flock. &lt;/LI&gt; 
+			&lt;LI&gt; 
+				 Blogger &lt;EM&gt;Madytyoo&lt;/EM&gt; has an interesting blog on 
+				 using &lt;a href = &quot;http://blog.mylaensys.com/2012/01/sons-of-dhtmlx-and-spring-series.html&quot;&gt;
+					the DHTMLX project with the Spring framework&lt;/a&gt;.
+				 
+				
+				&lt;/LI&gt;&lt;LI&gt; Markus Eisele has written up a blog series on the &lt;EM&gt;Heroes of Java&lt;/EM&gt;.  
+
+   He did  &lt;a href = &quot;http://blog.eisele.net/2011/12/heroes-of-java-rod-johnson.html&quot;&gt;a very informative interview with SpringSource founder Rod Johnson&lt;/a&gt; for the latest installment in the series. 
+
+&lt;/LI&gt;
+	&lt;/OL&gt;</description>
+ <comments>http://www.springsource.org/node/3361#comments</comments>
+ <category domain="http://www.springsource.org/taxonomy/term/4">News and Announcements</category>
+ <pubDate>Wed, 11 Jan 2012 02:06:01 +0000</pubDate>
+ <dc:creator>Josh Long</dc:creator>
+ <guid isPermaLink="false">3361 at http://www.springsource.org</guid>
+</item>
+<item>
+ <title>This Week in Spring, January 3rd, 2012</title>
+ <link>http://www.springsource.org/node/3354</link>
+ <description> 
+
+&lt;P&gt; Happy new year! 
+	I hope your new year and holidays were amazing. 
+	And, welcome back to another installment of &lt;EM&gt;This Week in Spring&lt;/EM&gt;. 
+	
+	This year is going to be &lt;EM&gt;incredible&lt;/EM&gt;, so let&#039;s dive right into it.  
+	
+ 
+	
+	This week&#039;s  roundup features some content from the last few weeks. Particularly, we&#039;ve got content that InfoQ   put up     
+	from the &lt;a href = &quot;http://www.springone2gx.com&quot;&gt;SpringOne2GX 2011&lt;/a&gt; conference.  
+ Thank you &lt;a href=&quot;http://www.infoq.com&quot;&gt;InfoQ&lt;/a&gt; for sharing this great content, as usual. 
+
+&lt;OL&gt;
+	&lt;LI&gt; 
+	Garry Russel and David Turanski&#039;s SpringOne2GX presentation on implementing &lt;a href= &quot;http://www.infoq.com/presentations/Implementing-HA-Architectures-Spring-Integration&quot;&gt;highly available architectures using Spring Integration&lt;/a&gt; is now up on InfoQ. 
+		 &lt;/LI&gt;
+
+	&lt;LI&gt; Rob Winch demoes some of the &lt;A href = &quot;http://www.infoq.com/presentations/Spring-Security-3-1&quot;&gt;new features in Spring Security 3.1&lt;/a&gt;: multiple http elements, stateless authentication mode for RESTful services, Debug Filter, CAS support for proxy tickets, JAAS, etc.  This is another great presentation from SpringOne2GX 2011. 
+	   &lt;/LI&gt;
+
+	&lt;LI&gt; 
+		Rossen Stoyanchev&#039;s presentation at SpringOne2GX 2011 on the &lt;a href = &quot;http://www.infoq.com/presentations/Spring-MVC-3-1-Update&quot;&gt;new features in Spring MVC 3.1 is now up over at InfoQ&lt;/a&gt;.
+		 &lt;/LI&gt;
+
+		&lt;LI&gt; Community member and DevNexus organizer Gunnar Hillert has put together an awesome blog on a powerful, if underrated new feature in Spring 3.1: &lt;a href = &quot;http://hillert.blogspot.com/2011/12/method-validation-with-hibernate.html&quot;&gt;support for validating business service methods using JSR 303 and Spring&lt;/a&gt;. This support is manifest in the Spring MVC REST support for validating marshalled entities that are part of the request. But, as Gunnar explains, the 
+			 facility can be used generically in any service tier.   &lt;/LI&gt; 
+
+	&lt;LI&gt;  Blogger &lt;EM&gt;Mrabti&lt;/EM&gt; has the second part of his series
+		&lt;a href = &quot;http://crazygui.wordpress.com/2012/01/02/spring-gwt-software-architecture-for-scalable-applications-part-2/&quot;&gt;on using Spring and GWT together&lt;/a&gt;. Check it out to learn about his architecture and how he used &lt;a href =&quot;http://www.springsource.org/spring-roo&quot;&gt;Spring Roo&lt;/a&gt; and &lt;a href =&quot;http://www.springsource.org/spring-data&quot;&gt;Spring Data&lt;/a&gt; together. 
+		
+		  &lt;/LI&gt;
+	&lt;LI&gt; &lt;EM&gt;Pro Spring&lt;/EM&gt; co-author and Spring community member  Jan Machacek  
+		has put together a great blog on  &lt;a href= &quot;http://www.javaworld.com/javaworld/jw-12-2011/111228-learn-scala-with-specs2spring.html&quot;&gt;using the Specs2 Spring testing framework to test your Spring applications&lt;/a&gt;. Specs2 is a good way to
+						learn Scala, and to test your application.
+		 
+		   &lt;/LI&gt;
+	&lt;LI&gt;  
+		Tomasz Nurkiewicz has  put together a post on &lt;a href=&quot;http://nurkiewicz.blogspot.com/2011/12/enabling-jmx-in-hibernate-ehcache-qurtz.html&quot;&gt;exposing Hibernate&#039;s 
+		
+	 and EhCache&#039;s statistics using Spring&#039;s JMX exporters&lt;/a&gt;. The code&#039;s written in Scala, but should translate 
+	 naturally for those conversant in Java. One little niggle is that he subclasses classes	
+		to expose them, which doesn&#039;t quite feel right. Sure, it works, but it&#039;s probably not required. 
+		
+		In the case of the &lt;CODE&gt;javax.sql.DataSource&lt;/CODE&gt;, you can simply  reference it when configuring a &lt;a href=&quot;http://static.springsource.org/spring/docs/3.1.x/spring-framework-reference/htmlsingle/spring-framework-reference.html#jmx&quot;&gt;&lt;CODE&gt;org.springframework.jmx.export.MBeanExporter&lt;/CODE&gt;&lt;/a&gt;.   Obtaining the &lt;EM&gt;native&lt;/EM&gt; &lt;CODE&gt;EntityManagerFactory&lt;/CODE&gt; isn&#039;t difficult, either and shouldn&#039;t require a subclass, as the &lt;CODE&gt;AbstractEntityManagerFactoryBean&lt;/CODE&gt; base class exposes a public &lt;CODE&gt;nativeEntityManagerFactory&lt;/CODE&gt; field which might have worked instead. Anyway,  the concepts are interesting, and - in the end - the blog &lt;EM&gt;does&lt;/EM&gt; demonstrate  how to expose JMX information from objects that don&#039;t already expose them, so that&#039;s very cool. Nice job!
+		
+		 &lt;/LI&gt;
+	&lt;LI&gt; JavaCodeGeeks has an interesting post on using Spring to &lt;a href = &quot;http://www.javacodegeeks.com/2011/12/spring-mvc-and-rest-at-google-app.html&quot;&gt;build RESTful services on Google App Engine&lt;/a&gt;.  There&#039;s very little specific to Spring here (as that just works - after all, Spring&#039;s unparalleled in its ability to work on any cloud). Instead, this post covers the minutae of configuring Google App Engine and of configuring Maven, and so on. A worthy read if you&#039;re looking for the details.
+		 &lt;/LI&gt;
+		
+		
+ 
+	 &lt;LI&gt; Blogger  John Varghese has an interesting (if slightly not technical) write up 
+		 of  &lt;A href = &quot;http://softthoughtsbyjohn.blogspot.com/2011/12/enterprise-application-development.html&quot;&gt;enterprise application development with Spring Roo&lt;/a&gt;. 
+			&lt;/LI&gt;
+ 			
+	&lt;LI&gt; 	SpringSource founder and all around great guy Rod Johnson&#039;s presentation at QCon, 
+			&lt;A href=&quot;http://www.infoq.com/presentations/Things-I-Wish-I-d-Known&quot;&gt;Things I&#039;d Wish I&#039;d Known&lt;/A&gt;, 
+			is also up on InfoQ. Rod is a charming presenter and it&#039;s great to hear him talk about the  exhilarating  (if sometimes nerve-wracking) development of  SpringSource. 
+		 &lt;/LI&gt;
+ &lt;/OL&gt;
+	</description>
+ <comments>http://www.springsource.org/node/3354#comments</comments>
+ <category domain="http://www.springsource.org/taxonomy/term/4">News and Announcements</category>
+ <pubDate>Wed, 04 Jan 2012 01:38:28 +0000</pubDate>
+ <dc:creator>Josh Long</dc:creator>
+ <guid isPermaLink="false">3354 at http://www.springsource.org</guid>
+</item>
+<item>
+ <title>Video: SpringOne 2GX - Spring MVC 3.1 Update</title>
+ <link>http://www.springsource.org/node/3353</link>
+ <description>&lt;p&gt; 
+&lt;div style=&quot;float: right; width:319px; padding: 10px&quot;&gt;
+&lt;a href=&quot;http://www.infoq.com/presentations/Spring-MVC-3-1-Update&quot;&gt;&lt;img height=&quot;237&quot; alt=&quot;SpringOne 2GX Video: Spring MVC 3.1 Update&quot; width=&quot;319&quot; border=&quot;0&quot; src=&quot;http://www.springsource.org/files/SpringOne2GX2011SpringMVC3_1Update.png&quot; /&gt;&lt;/a&gt;
+&lt;/div&gt;
+
+Here is more great content from SpringOne 2GX 2011, this time a complete &lt;a href=&quot;http://www.infoq.com/presentations/Spring-MVC-3-1-Update&quot;&gt;update to Spring MVC 3.1&lt;/a&gt; covering URI variables, Redirect &amp; Flash attributes, UriComponentsBuilder, Multipart Request Support, and HDIV Integration. This video presentation is by &lt;a href=&quot;http://blog.springsource.org/author/rstoyanchev/&quot;&gt;Rossen Stoyanchev&lt;/a&gt;, one of the Spring experts who commits to Spring MVC and Spring Web Flow. 
+&lt;/p&gt;
+
+
+
+
+&lt;p&gt;Many thanks to &lt;a href=&quot;http://www.infoq.com&quot;&gt;InfoQ&lt;/a&gt; for coming to Chicago to record so many of the fantastic &lt;a href=&quot;http://www.infoq.com/springone_2gx_2011/&quot;&gt;SpringOne 2GX presentations&lt;/a&gt;.
+&lt;/p&gt;
+
+</description>
+ <comments>http://www.springsource.org/node/3353#comments</comments>
+ <category domain="http://www.springsource.org/taxonomy/term/4">News and Announcements</category>
+ <pubDate>Wed, 04 Jan 2012 00:18:10 +0000</pubDate>
+ <dc:creator>Adam Fitzgerald</dc:creator>
+ <guid isPermaLink="false">3353 at http://www.springsource.org</guid>
+</item>
+<item>
+ <title>Video: SpringOne 2GX - Getting Started With Spring Security 3.1</title>
+ <link>http://www.springsource.org/node/3352</link>
+ <description>&lt;p&gt; 
+&lt;div style=&quot;float: right; width:317px; padding: 10px&quot;&gt;
+&lt;a href=&quot;http://www.infoq.com/presentations/Spring-Security-3-1&quot;&gt;&lt;img height=&quot;238&quot; alt=&quot;SpringOne 2GX Video: Getting Started With Spring Security 3.1&quot; width=&quot;317&quot; border=&quot;0&quot; src=&quot;http://www.springsource.org/files/SpringOne2GX2011GettingStartedWithSpringSecurity.png&quot; /&gt;&lt;/a&gt;
+&lt;/div&gt;
+
+The new year is off to a phenomenal start with more great content from SpringOne 2GX 2011, this time a detailed introduction to &lt;a href=&quot;http://www.infoq.com/presentations/Spring-Security-3-1&quot;&gt;Getting Started with Spring Security 3.1&lt;/a&gt;. This video presentation is by Rob Winch, one of those amazing Spring community members that answers all kinds of questions on the &lt;a href=&quot;http://forum.springsource.org/&quot;&gt;community forums&lt;/a&gt;.  In this introduction Rob covers:
+&lt;/p&gt;
+
+&lt;p&gt;
+&lt;ul&gt;
+ &lt;li&gt;The basic authentication and authorization capabilities of Spring Security&lt;/li&gt;
+ &lt;li&gt;New features in the 3.1 release including &lt;/li&gt;
+    &lt;ul&gt;
+       &lt;li&gt;Stateless authentication for RESTful services&lt;/li&gt;
+       &lt;li&gt;More JAAS integration and support&lt;/li&gt;
+       &lt;li&gt;Support for multiple http elements&lt;/li&gt;
+    &lt;/ul&gt;
+ &lt;li&gt;Lots and lots of real application samples&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/p&gt;
+
+
+&lt;p&gt;Many thanks to &lt;a href=&quot;http://www.infoq.com&quot;&gt;InfoQ&lt;/a&gt; for coming to Chicago to record so many of the fantastic &lt;a href=&quot;http://www.infoq.com/springone_2gx_2011/&quot;&gt;SpringOne 2GX presentations&lt;/a&gt;.
+&lt;/p&gt;
+
+</description>
+ <comments>http://www.springsource.org/node/3352#comments</comments>
+ <category domain="http://www.springsource.org/taxonomy/term/4">News and Announcements</category>
+ <pubDate>Tue, 03 Jan 2012 23:50:30 +0000</pubDate>
+ <dc:creator>Adam Fitzgerald</dc:creator>
+ <guid isPermaLink="false">3352 at http://www.springsource.org</guid>
+</item>
+<item>
+ <title>Video: Interview with Graeme Rocher about Grails from JavaOne 2011</title>
+ <link>http://www.springsource.org/node/3351</link>
+ <description>&lt;p&gt; 
+&lt;div style=&quot;float: right; width:316px; padding: 10px&quot;&gt;
+&lt;a href=&quot;http://www.infoq.com/interviews/javaone2011-graeme-rocher-interview&quot;&gt;&lt;img height=&quot;236&quot; alt=&quot;Video Interview with Graeme Rocher at JavaOne 2011&quot; width=&quot;316&quot; border=&quot;0&quot; src=&quot;http://www.springsource.org/files/GraemeRocherInterviewAtJavaOne.png&quot; /&gt;&lt;/a&gt;
+&lt;/div&gt;
+
+In this new &lt;a href=&quot;http://www.infoq.com/interviews/javaone2011-graeme-rocher-interview&quot;&gt;video interview&lt;/a&gt; from &lt;a href=&quot;http://www.infoq.com&quot;&gt;InfoQ&lt;/a&gt;, &lt;a href=&quot;http://blog.springsource.org/author/grocher/&quot;&gt;Graeme Rocher&lt;/a&gt;, the creator of Grails, talks about planned new features in Grails 2.0, polyglot persistence, GORM and tool support for Grails. Of course, &lt;a href=&quot;http://blog.springsource.org/2011/12/15/grails-2-0-released/&quot;&gt;Grails 2.0 was released&lt;/a&gt; last month, but is fascinating to see how Graeme&#039;s thinking from earlier in the year wound up influencing the release. 
+&lt;/p&gt;
+
+
+&lt;p&gt;Many thanks to InfoQ for taking the time to talk to the Grails experts and providing this outstanding interview to the community.
+&lt;/p&gt;
+
+</description>
+ <comments>http://www.springsource.org/node/3351#comments</comments>
+ <category domain="http://www.springsource.org/taxonomy/term/4">News and Announcements</category>
+ <pubDate>Tue, 03 Jan 2012 23:19:00 +0000</pubDate>
+ <dc:creator>Adam Fitzgerald</dc:creator>
+ <guid isPermaLink="false">3351 at http://www.springsource.org</guid>
+</item>
+</channel>
+</rss>
