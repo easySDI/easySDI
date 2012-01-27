@@ -88,28 +88,67 @@ function getHTTPObject(){
 
 function sendData()
 {
-	
-    
     // if request object received response
     if(request.readyState == 4){
     	document.getElementById("progress").style.visibility = "hidden";
 		var JSONtext = request.responseText;
 		var unsupportedVersions = availableVersions;
+
+		//Set the supported versions
 		var JSONobject = JSON.parse(JSONtext, function (key, value) {
 		    var type;
 		    if (value && typeof value === 'string') {
 		    	var version = document.getElementById(value+"_"+currentServerIndex);
-		    	version.setAttribute("class","supported");
+		    	version.setAttribute("class","supportedversion");
 		    	document.getElementById(value+"_"+currentServerIndex+"_state").value = "supported";
 		    	unsupportedVersions = unsupportedVersions.remove(value);
 		    }
 		});
+
+		//Set the unsupported versions
 		var len = unsupportedVersions.length;
 		for (var i = 0; i<len; i++) {
 			var version = document.getElementById(unsupportedVersions[i]+"_"+currentServerIndex);
-	    	version.setAttribute("class","unsupported");
+	    	version.setAttribute("class","unsupportedversion");
 	    	document.getElementById(unsupportedVersions[i]+"_"+currentServerIndex+"_state").value = "unsupported";
 		}
+
+		//Set the negociated version
+		var supportedElementsArray = getElementsByValue('supported');
+		var supportedVersionByServer = new Array();
+		for (var i = 0; i < supportedElementsArray.length; i++ ){
+			var  id = supportedElementsArray[i];
+			var version = id.substring(0,id.indexOf("_", 0));
+			var server = id.substring(id.indexOf("_", 0)+1,id.indexOf("_", id.indexOf("_", 0)+1));
+			if(supportedVersionByServer[server] == undefined){
+				supportedVersionByServer[server] = new Array();
+			}
+			supportedVersionByServer[server][version]= version.replace(/\./g,'');
+			supportedVersionByServer[server].sort();
+			supportedVersionByServer[server].reverse();
+		}
+
+		var i = 0;
+		var v = 0;
+		var negotiatedVersion = supportedVersionByServer[i][v];
+		while (i < supportedVersionByServer.length)	{		
+			for(var j = 0 ; j < supportedVersionByServer[i].length ; j++){
+				if(negotiatedVersion == supportedVersionByServer[i][j]){
+					i= i++;
+					break;
+				}else{
+					if (j == supportedVersionByServer[i].length-1 && i == supportedVersionByServer.length-1){
+						negotiatedVersion = 0;
+					}
+					if (j == supportedVersionByServer[i].length-1){
+						v= v++;
+						i=0;
+						negotiatedVersion = supportedVersionByServer[i][v];
+					}
+				}
+			}
+		}
+   		 document.getElementById('negotiatedVersion').value = negotiatedVersion;
     }
 }
 
@@ -123,6 +162,47 @@ Array.prototype.remove = function(obj) {
 	  return a;
 	}
 
+/**
+* @function getElementsByValue
+* Finds elements in FORMs whose value property matches
+* the given value.
+*
+* @param val (string, required)
+* The value to search for.
+*
+* @param src (variable, optional)
+* Node reference or Id to an HTML tag to start searching in.
+*
+* @return array
+* An array of all matching elements.
+*/
+function getElementsByValue(val, src) {
+	var forms, fields;
+	var matches = [];
+	var i = j = forms_end = fields_end = 0;
+
+	if (document.getElementsByTagName) {
+		if (!src) {
+			src = document;
+		} else if (typeof(src) === 'string') {
+			src = document.getElementById(src);
+		}
+		forms = src.getElementsByTagName('form');
+
+		forms_end = forms.length;
+		for (i = 0; i < forms_end; i++) {
+			fields = forms[i].elements;
+			fields_end = fields.length
+			for (j = 0; j<fields_end ; j++) {
+				if (fields[j].value == val) {
+					matches.push(fields[j].id);
+				}
+			}
+		}
+	}
+	return matches;
+}
+	
 function addNewServer(){
 	
 	var tr = document.createElement('tr');	

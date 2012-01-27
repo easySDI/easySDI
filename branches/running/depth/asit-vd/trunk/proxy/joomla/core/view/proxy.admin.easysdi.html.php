@@ -163,6 +163,12 @@ echo $pane->endPanel();
 						<input type="checkbox" name="harvestingConfig" value="1" <?php if($config->{"harvesting-config"}=="true"){echo "checked";}?> />
 					</td>
 					<?php }?>
+					<th>
+					<?php echo JText::_( 'EASYSDI_PROXY_NEGOTIATED_VERSION' );?> : 
+					</th>
+					<td class="supportedversion" id="negotiatedVersion">
+					<?php echo $config->{'negotiated-version'};?>
+					</td>
 				</tr>
 			</table>
 			</fieldset>
@@ -252,13 +258,13 @@ echo $pane->endPanel();
 		foreach ($availableVersion as $version){
 			if (in_array($version,$array_version)){
 				?>
-				<td class="supported" id="<?php echo $version;?>_<?php echo $iServer;?>"><?php echo $version;?>
+				<td class="supportedversion" id="<?php echo $version;?>_<?php echo $iServer;?>"><?php echo $version;?>
 				<input type='hidden' name="<?php echo $version;?>_<?php echo $iServer;?>_state" id="<?php echo $version;?>_<?php echo $iServer;?>_state" value="supported" >
 				</td>
 				<?php 
 			}else{
 				?>
-				<td class="unsupported" id="<?php echo $version;?>_<?php echo $iServer;?>"><?php echo $version;?>
+				<td class="unsupportedversion" id="<?php echo $version;?>_<?php echo $iServer;?>"><?php echo $version;?>
 				<input type='hidden' name="<?php echo $version;?>_<?php echo $iServer;?>_state" id="<?php echo $version;?>_<?php echo $iServer;?>_state" value="unsupported" >
 				</td>
 				<?php

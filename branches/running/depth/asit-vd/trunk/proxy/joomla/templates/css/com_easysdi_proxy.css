@@ -4,7 +4,7 @@
 
 /** header icons **/
 
-td.supported{
+td.supportedversion{
 	 background-color: #F6F6F6;
     border-bottom: 1px solid #E9E9E9;
     border-right: 1px solid #E9E9E9;
@@ -14,7 +14,7 @@ td.supported{
     width: 20px;
 	
 }
-td.unsupported{
+td.unsupportedversion{
 	background-color: #F6F6F6;
     border-bottom: 1px solid #E9E9E9;
     border-right: 1px solid #E9E9E9;
