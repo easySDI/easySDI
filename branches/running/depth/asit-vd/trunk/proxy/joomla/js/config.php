@@ -116,6 +116,7 @@ function sendData()
 		//Set the negociated version
 		var supportedElementsArray = getElementsByValue('supported');
 		var supportedVersionByServer = new Array();
+		
 		for (var i = 0; i < supportedElementsArray.length; i++ ){
 			var  id = supportedElementsArray[i];
 			var version = id.substring(0,id.indexOf("_", 0));
@@ -123,7 +124,8 @@ function sendData()
 			if(supportedVersionByServer[server] == undefined){
 				supportedVersionByServer[server] = new Array();
 			}
-			supportedVersionByServer[server][version]= version.replace(/\./g,'');
+			var j = supportedVersionByServer[server].length;
+			supportedVersionByServer[server][j]= version.replace(/\./g,'');
 			supportedVersionByServer[server].sort();
 			supportedVersionByServer[server].reverse();
 		}
@@ -134,21 +136,21 @@ function sendData()
 		while (i < supportedVersionByServer.length)	{		
 			for(var j = 0 ; j < supportedVersionByServer[i].length ; j++){
 				if(negotiatedVersion == supportedVersionByServer[i][j]){
-					i= i++;
+					i= i + 1;
 					break;
 				}else{
 					if (j == supportedVersionByServer[i].length-1 && i == supportedVersionByServer.length-1){
 						negotiatedVersion = 0;
 					}
 					if (j == supportedVersionByServer[i].length-1){
-						v= v++;
+						v= v+1;
 						i=0;
 						negotiatedVersion = supportedVersionByServer[i][v];
 					}
 				}
 			}
 		}
-   		 document.getElementById('negotiatedVersion').value = negotiatedVersion;
+   		 document.getElementById('negotiatedVersion').innerHTML = negotiatedVersion;
     }
 }
 
