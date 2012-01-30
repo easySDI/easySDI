@@ -22,9 +22,9 @@ class ADMIN_proxy
 {
 	/**
 	 * 
-	 * Enter description here ...
-	 * @param unknown_type $xml
-	 * @param unknown_type $new
+	 * Edit configuration
+	 * @param object $xml
+	 * @param boolean $new
 	 */
 	function editConfig($xml,$new = false)
 	{
@@ -114,6 +114,12 @@ class ADMIN_proxy
 		} 
 	}
 	
+	/**
+	 * 
+	 * Edit policy 
+	 * @param object $xml
+	 * @param boolean $new
+	 */
 	function editPolicy ($xml, $new=false)
 	{
 		$database =& JFactory::getDBO(); 
@@ -171,7 +177,12 @@ class ADMIN_proxy
 		HTML_proxy::editPolicy($xml, $new, $rowsProfile, $rowsUser, $rowsVisibility, $rowsStatus, $rowsObjectTypes);
 	}
 	
-	
+	/**
+	 * 
+	 * Add a new policy
+	 * @param object $xml
+	 * @return object
+	 */
 	function addPolicy($xml){
 		$configId = JRequest::getVar("configId");
 	
@@ -204,6 +215,11 @@ class ADMIN_proxy
 		return $xml;
 	}
 
+	/**
+	 * Add a new configuration
+	 * @param object $xml
+	 * @return object
+	 */
 	function addConfig($xml){
 		$found = false;
 		$configId = "New Config";
@@ -237,6 +253,11 @@ class ADMIN_proxy
 		return $xml;
 	}
 	
+	/**
+	 * Order policy in configuration
+	 * @deprecated
+	 * @param object $xml
+	 */
 	function orderupPolicy($xml){
 		$configId = JRequest::getVar("configId");
 		$policyId = JRequest::getVar("policyId");
@@ -279,6 +300,11 @@ class ADMIN_proxy
 		}
 	}
 	
+	/**
+	 * Order policy in configuration
+	 * @deprecated
+	 * @param object $xml
+	 */
 	function orderdownPolicy($xml){
 		$configId = JRequest::getVar("configId");
 		$policyId = JRequest::getVar("policyId");
@@ -326,6 +352,10 @@ class ADMIN_proxy
 		}
 	}
 	
+	/**
+	 * Duplicate a policy definition
+	 * @param object $xml
+	 */
 	function copyPolicy($xml){
 		$configId = JRequest::getVar("configId");
 		$policyId = JRequest::getVar("policyId");
@@ -374,6 +404,12 @@ class ADMIN_proxy
 	
 	}
 	
+	/**
+	 * Delete policy
+	 * @param object $xml
+	 * @param String $configId
+	 * @param String $policyId
+	 */
 	function deletePolicy($xml,$configId,$policyId){
 		
 		foreach ($xml->config as $config) {
@@ -402,6 +438,11 @@ class ADMIN_proxy
 		}
 	}
 	
+	/**
+	 * Delete all policy of a specific configuration
+	 * @param object $xml
+	 * @param String $configId
+	 */
 	function deleteAllPolicy($xml,$configId){
 		
 		foreach ($xml->config as $config) {
@@ -432,6 +473,12 @@ class ADMIN_proxy
 	
 	}
 	
+	/**
+	 * Delete configuration
+	 * @param object $xml
+	 * @param String $configFilePath
+	 * @param String $configId
+	 */
 	function deleteConfig($xml,$configFilePath,$configId){
 		
 		foreach ($xml->config as $config) {
@@ -451,11 +498,14 @@ class ADMIN_proxy
 		}
 	}
 	
+	/**
+	 * 
+	 * Save
+	 * @param object $xmlConfig
+	 * @param String $componentConfigFilePath
+	 */
 	function saveComponentConfig($xmlConfig,$componentConfigFilePath){
 		$filePath = JRequest::getVar("filePath");
-	
-	
-	
 		$xmlConfig->proxy->configFilePath = $filePath;
 		$xmlConfig->asXML($componentConfigFilePath);
 	
@@ -465,9 +515,12 @@ class ADMIN_proxy
 			global $mainframe;
 			$mainframe->enqueueMessage(JText::_(  'EASYSDI_PLEASE VERIFY THE CONFIGURATION FILE PATH' ),'error');
 		}
-	
 	}
 	
+	/**
+	 * Save policy
+	 * @param object $xml
+	 */
 	function savePolicy($xml){
 		
 		$servletClass = JRequest::getVar("servletClass");
@@ -490,9 +543,8 @@ class ADMIN_proxy
 	}
 	
 	/**
-	 * 
-	 * Save the informations common to all OWS connector
-	 * @param unknown_type $xml
+	 * Save the policy informations common to all OWS connector
+	 * @param object $xml
 	 */
 	function savePolicyCommonParts ($xml){
 		global $mainframe;
@@ -637,9 +689,8 @@ class ADMIN_proxy
 	}
 	
 	/**
-	 * 
-	 * Save the informations of a WMS policy
-	 * @param unknown_type $thePolicy
+	 * Save the policy informations specific to a WMS connector
+	 * @param object $thePolicy
 	 */
 	function savePolicyWMS($thePolicy){
 		$params = JRequest::get();
@@ -796,9 +847,8 @@ class ADMIN_proxy
 	}
 	
 	/**
-	 * 
-	 * SAve the informations of a CSW policy
-	 * @param unknown_type $thePolicy
+	 * Save the policy informations specific to a CSW connector
+	 * @param object $thePolicy
 	 */
 	function savePolicyCSW($thePolicy){
 		$params = JRequest::get();
@@ -978,9 +1028,8 @@ class ADMIN_proxy
 	}
 	
 	/**
-	 * 
-	 * Save the information of a WFS policy
-	 * @param unknown_type $thePolicy
+	 * Save the policy informations specific to a WFS connector
+	 * @param object $thePolicy
 	 */
 	function savePolicyWFS($thePolicy){
 		$params = JRequest::get();
@@ -1124,9 +1173,8 @@ class ADMIN_proxy
 	}
 	
 	/**
-	 * 
-	 * Save the information of a WMTs policy
-	 * @param unknown_type $thePolicy
+	 * Save the policy informations specific to a WMTS connector
+	 * @param object $thePolicy
 	 */
 	function savePolicyWMTS($thePolicy){
 		$params = JRequest::get();
@@ -1479,8 +1527,8 @@ class ADMIN_proxy
 			$theTileMatrix->TileMaxRow = $tileMaxRow;
 		}
 	}
+	
 	/**
-	 * 
 	 * Get attributes list
 	 * @param unknown_type $attributes
 	 * @param unknown_type $attributesArray
@@ -1505,10 +1553,9 @@ class ADMIN_proxy
 	}
 	
 	/**
-	 * 
-	 * Save configuration file
-	 * @param unknown_type $xml
-	 * @param unknown_type $configFilePath
+	 * Save configuration 
+	 * @param object $xml
+	 * @param String $configFilePath
 	 */
 	function saveConfig($xml,$configFilePath){
 		$configId = JRequest::getVar("configId","New Config");
@@ -1668,9 +1715,8 @@ class ADMIN_proxy
 	}
 	
 	/**
-	 * 
 	 * Service metadata OWS 1.1.0 spécification
-	 * @param unknown_type $config
+	 * @param object $config
 	 */
 	function serviceMetadataOWS ($config)
 	{
@@ -1727,10 +1773,9 @@ class ADMIN_proxy
 	}
 	
 	/**
-	 * 
 	 * Service metadata WFS 1.0.0
-	 * @param unknown_type $config
-	 * @return unknown
+	 * @param object $config
+	 * @return object
 	 */
 	function serviceMetadataWFS ($config)
 	{
@@ -1781,8 +1826,8 @@ class ADMIN_proxy
 	}
 	
 	/**
-	 * Add a new XML node to store new Server informations
-	 * @param unknown_type $xml
+	 * Add a new Server to configuration
+	 * @param object $xml
 	 */
 	function addNewServer($xml){
 	
