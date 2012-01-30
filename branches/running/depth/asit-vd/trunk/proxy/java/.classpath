@@ -144,7 +144,6 @@
 	<classpathentry kind="lib" path="lib/org.springframework.core-3.0.2.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/org.springframework.expression-3.0.2.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/org.springframework.jdbc-3.0.2.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/org.springframework.spring-library-3.0.2.RELEASE.libd"/>
 	<classpathentry kind="lib" path="lib/org.springframework.transaction-3.0.2.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/org.springframework.web-3.0.2.RELEASE.jar" sourcepath="C:/Documents and Settings/HVH/.m2/repository/org/springframework/spring-web/3.0.2.RELEASE/spring-web-3.0.2.RELEASE-sources.jar"/>
 	<classpathentry kind="lib" path="lib/org.springframework.web.servlet-3.0.2.RELEASE.jar"/>

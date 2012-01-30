@@ -12,7 +12,7 @@
 				<LiteralData>
 			       <ows:DataType ows:reference="urn:ogc:def:dataType:OGC:1.0:String">String</ows:DataType>
 			    </LiteralData>
-			</Input>			<
+			</Input>			
 			<Input minOccurs="1" maxOccurs="1">
 				<ows:Identifier>filters</ows:Identifier>
 				<ows:Title>Filters</ows:Title>

@@ -15,11 +15,4 @@
 		<nature>org.eclipse.jdt.core.javanature</nature>
 		<nature>org.eclipse.wst.common.project.facet.core.nature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>local_config/dev/WEB-INF/conf/NewXMLSchema.xsd</name>
-			<type>1</type>
-			<location>C:/Source/Service/Proxy/local_config/dev/WEB-INF/conf/WMTSPolicy.xml</location>
-		</link>
-	</linkedResources>
 </projectDescription>

@@ -18,6 +18,7 @@ package org.easysdi.xml.handler;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -98,8 +99,6 @@ public class ConfigFileHandler extends DefaultHandler {
 	private boolean isException=false;
 	private String ogcSearchFilter="";
 	
-	private Boolean isKeywordList = false;
-	private Boolean isServiceIdentification = false;
 	private Boolean isServiceProvider = false;
 	private Boolean isResponsibleParty = false;
 	private Boolean isContact = false;
@@ -120,6 +119,8 @@ public class ConfigFileHandler extends DefaultHandler {
 	private OWSServiceMetadata owsServiceMetadata = null;
 	private OWSServiceIdentification  owsServiceIdentification = null;
 	private Boolean isHarvestingConfig = false;
+	private String negotiatedVersion = null;
+	private List<String> supportedVersions = new ArrayList<String>();
 	
 	
 	public ConfigFileHandler(String id) {
@@ -191,20 +192,14 @@ public class ConfigFileHandler extends DefaultHandler {
 		
 		if (isTheGoodId && isConfig && qName.equals("exception")) {
 			isException = true;
-		}
-		
-		if (isTheGoodId && isConfig && isServiceMetadata && qName.equals("KeywordList")) {
-			isKeywordList = true;
 			return;
 		}
+		
 		if (isTheGoodId && isConfig && isServiceMetadata && qName.equals("ServiceProvider")) {
 			isServiceProvider = true;
 			return;
 		}
-		if (isTheGoodId && isConfig && isServiceMetadata && qName.equals("ServiceIdentification")) {
-			isServiceIdentification = true;
-			return;
-		}
+
 		if (isTheGoodId && isConfig && isServiceMetadata && isServiceProvider && qName.equals("ResponsibleParty")) {
 			isResponsibleParty = true;
 			return;
@@ -246,6 +241,8 @@ public class ConfigFileHandler extends DefaultHandler {
 				config.setOwsServiceMetadata(owsServiceMetadata);
 				config.setPeriod(logPeriod);
 				config.setIsHarvestingConfig(isHarvestingConfig);
+				config.setNegotiatedVersion(negotiatedVersion);
+				config.setSupportedVersions(supportedVersions);
 			}
 			isTheGoodId = false;
 		}
@@ -268,6 +265,12 @@ public class ConfigFileHandler extends DefaultHandler {
 		}
 		if (isTheGoodId && isConfig && qName.equals("harvesting-config")) {
 			isHarvestingConfig = Boolean.valueOf(data);
+		}
+		if (isTheGoodId && isConfig && qName.equals("negotiated-version")) {
+			negotiatedVersion = data;
+		}
+		if (isTheGoodId && isConfig  && !isRemoteServerList && qName.equals("version")) {
+			supportedVersions.add(data);
 		}
 		
 		if (isTheGoodId && isConfig && qName.equals("remote-server-list")) {
@@ -451,34 +454,7 @@ public class ConfigFileHandler extends DefaultHandler {
 		if (isTheGoodId && isConfig && isServiceMetadata && qName.equals("AccessConstraints")) {
 			accessConstraints = data;			
 		}
-		
-//		if (isTheGoodId && isConfig && isServiceMetadata && isServiceIdentification && qName.equals("Title")) {
-//			title = data;
-//		}
-//		
-//		if (isTheGoodId && isConfig && isServiceMetadata && isServiceIdentification && qName.equals("Abstract")) {
-//			abst = data;
-//		}
-//		
-//		if (isTheGoodId && isConfig && isServiceMetadata && isServiceIdentification && qName.equals("Keyword")) {
-//			if(data != null && !"".equals(data))
-//			{
-//				if(keywordList == null)
-//				{
-//					keywordList = new Vector <String>();
-//				}
-//				keywordList.add(data);
-//			}
-//		}
-//	
-//		if (isTheGoodId && isConfig && isServiceMetadata && isServiceIdentification && qName.equals("Fees")) {
-//			fees = data;		
-//		}
-//		
-//		if (isTheGoodId && isConfig && isServiceMetadata && isServiceIdentification && qName.equals("AccessConstraints")) {
-//			accessConstraints = data;			
-//		}
-		
+
 		if (isTheGoodId && isConfig && isServiceMetadata && isContactInformation && qName.equals("ContactName")) {
 			contactName = data;
 		}
@@ -656,7 +632,6 @@ public class ConfigFileHandler extends DefaultHandler {
 			owsServiceIdentification.setFees(fees);
 			owsServiceIdentification.setKeywords(keywordList);
 			owsServiceIdentification.setTitle(title);
-			isServiceIdentification = false;
 		}
 		
 		if (isTheGoodId && isConfig && isServiceMetadata && qName.equals("ServiceProvider")) {

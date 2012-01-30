@@ -54,6 +54,8 @@ public class Config implements Serializable{
 	private OWSServiceMetadata owsServiceMetadata = null;
 	private String period = "";
 	private Boolean isHarvestingConfig = false;
+	private String negotiatedVersion = null;
+	private List<String> supportedVersions ;
 
 	/**
 	 * @param ogcSearchFilter the ogcSearchFilter to set
@@ -354,6 +356,34 @@ public class Config implements Serializable{
 	 */
 	public void setIsHarvestingConfig(Boolean isHarvestingConfig) {
 		this.isHarvestingConfig = isHarvestingConfig;
+	}
+
+	/**
+	 * @return the negotiatedVersion
+	 */
+	public String getNegotiatedVersion() {
+		return negotiatedVersion;
+	}
+
+	/**
+	 * @param negotiatedVersion the negotiatedVersion to set
+	 */
+	public void setNegotiatedVersion(String negotiatedVersion) {
+		this.negotiatedVersion = negotiatedVersion;
+	}
+	
+	/**
+	 * @return the supportedVersions
+	 */
+	public List<String> getSupportedVersions() {
+		return supportedVersions;
+	}
+
+	/**
+	 * @param supportedVersions the supportedVersions to set
+	 */
+	public void setSupportedVersions(List<String> supportedVersions) {
+		this.supportedVersions = supportedVersions;
 	}
 
 }
