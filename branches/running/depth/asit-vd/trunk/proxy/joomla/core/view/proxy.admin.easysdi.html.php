@@ -166,7 +166,8 @@ echo $pane->endPanel();
 					<th>
 					<?php echo JText::_( 'EASYSDI_PROXY_NEGOTIATED_VERSION' );?> : 
 					</th>
-					<td class="supportedversion" id="negotiatedVersion">
+					<td class="supportedversion" id="negotiatedVersionText" >
+					<input type="hidden" id="negotiatedVersion" name="negotiatedVersion" value="<?php echo $config->{'negotiated-version'};?>"></input>
 					<?php echo $config->{'negotiated-version'};?>
 					</td>
 				</tr>

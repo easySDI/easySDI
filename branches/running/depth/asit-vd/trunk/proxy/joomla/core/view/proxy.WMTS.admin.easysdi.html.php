@@ -137,7 +137,7 @@ class HTML_proxyWMTS {
 				}
 				$keywordString = substr($keywordString, 0, strlen($keywordString)-1) ;
 				
-				HTML_proxy::genericServletInformationsHeader ($config, $configId, "WMTS", $availableServletList,$availableVersion,$servletVersion)
+				HTML_proxy::genericServletInformationsHeader ($config, $configId, "org.easysdi.proxy.wmts.WMTSProxyServlet", $availableServletList,$availableVersion,$servletVersion,JRequest::getVar('serviceType'))
 		?>
 			
 			<fieldset class="adminform" id="service_metadata" ><legend><?php echo JText::_( 'PROXY_CONFIG_FS_SERVICE_METADATA'); ?></legend>

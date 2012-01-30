@@ -1561,6 +1561,9 @@ class ADMIN_proxy
 				//GetCapabilities version
 				$servletVersion = JRequest::getVar("servletVersion");
 				$config->{'servlet-version'}=$servletVersion;
+				//Negotiated version				
+				$negotiatedVersion = JRequest::getVar("negotiatedVersion");
+				$config->{'negotiated-version'}=$negotiatedVersion;
 				
 				//XSLT repository
 				$config->{"xslt-path"}->{"url"} = JRequest::getVar("xsltPath");
@@ -1723,6 +1726,12 @@ class ADMIN_proxy
 		return $config;
 	}
 	
+	/**
+	 * 
+	 * Service metadata WFS 1.0.0
+	 * @param unknown_type $config
+	 * @return unknown
+	 */
 	function serviceMetadataWFS ($config)
 	{
 		$config->{"service-metadata"}->{"Title"}=JRequest::getVar("service_title"); 
@@ -1771,7 +1780,10 @@ class ADMIN_proxy
 		return $config;
 	}
 	
-	
+	/**
+	 * Add a new XML node to store new Server informations
+	 * @param unknown_type $xml
+	 */
 	function addNewServer($xml){
 	
 		$configId = JRequest::getVar("configId");
@@ -1789,17 +1801,43 @@ class ADMIN_proxy
 	
 	}
 		
+	/**
+	 * Execute all the needed requests on the remote server to achieve the negociation version.
+	 * Result of those requests are a list of supported versions by the remote server.
+	 * @param string $url : url of the remote server
+	 * @param string $user : user for authentication, if needed
+	 * @param string $password : password for authentication, if needed
+	 * @param string $service : service type (WFS, WMS, CSW or WMTS)
+	 * @param string $availableVersions : list of the service versions supported by EasySDI proxy. Only those versions will be tested for capabilities.
+	 */
 	function negociateVersionForServer($url,$user,$password,$service,$availableVersions){
 		$supported_versions = array();
 		$versions_array = json_decode($availableVersions,true);
 		
 		$urlWithPassword = $url;
-		if (strlen($user)!=null && strlen($password)!=null){
-			if (strlen($user)>0 && strlen($password)>0){
-				if (strpos($url,"http:")===False){
-					$urlWithPassword =  "https://".$user.":".$password."@".substr($url,8);
-				}else{
-					$urlWithPassword =  "http://".$user.":".$password."@".substr($url,7);
+		
+		//Authentication
+		if($service === "CSW"){
+			//Perform a geonetwork login	
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+			curl_setopt($ch, CURLOPT_URL, $url);
+			curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
+			curl_setopt ($ch, CURLOPT_COOKIEJAR, "cookie.txt");
+			curl_setopt ($ch, CURLOPT_POSTFIELDS, "username=".$user."&password=".$password);
+			ob_start();
+			curl_exec ($ch);
+			ob_end_clean();
+			curl_close ($ch);
+			unset($ch);
+		}else{
+			if (strlen($user)!=null && strlen($password)!=null){
+				if (strlen($user)>0 && strlen($password)>0){
+					if (strpos($url,"http:")===False){
+						$urlWithPassword =  "https://".$user.":".$password."@".substr($url,8);
+					}else{
+						$urlWithPassword =  "http://".$user.":".$password."@".substr($url,7);
+					}
 				}
 			}
 		}

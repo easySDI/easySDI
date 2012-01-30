@@ -1,9 +1,8 @@
-<?php 
-
-?>
 <script>
 
-
+/**
+ * @function submitbutton 
+ */
 function submitbutton(pressbutton){
 
 	if (pressbutton=="addNewServer"){	
@@ -35,6 +34,11 @@ function submitbutton(pressbutton){
 				}
 			}
 		}
+		if(document.getElementById('negotiatedVersion').value == 'NA' || document.getElementById('negotiatedVersion').value == ''){
+			alert ('<?php echo  JText::_( 'PROXY_CONFIG_EDIT_VALIDATION_NEGOTIATED_VERSION_ERROR');?>');	
+			return;
+		}
+		
 		submitform(pressbutton);
 	}
 	else
@@ -44,7 +48,9 @@ function submitbutton(pressbutton){
 }
 
 
-
+/**
+ * @function removeServer
+ */
 function removeServer(servNo){
 
 	noeud = document.getElementById("remoteServerTable");
@@ -55,19 +61,26 @@ function removeServer(servNo){
 var request;
 var currentServerIndex;
 
+/**
+ * @function negoVersionServer
+ * Build the request for the proxy PHP that will perform the negociation version.
+ */
 function negoVersionServer(servNo,service,availableVersions){
 	var url = document.getElementById("URL_"+servNo).value;
-	var user = document.getElementById("URL_"+servNo).value;
+	var user = document.getElementById("USER_"+servNo).value;
 	var password = document.getElementById("PASSWORD_"+servNo).value;
 	currentServerIndex = servNo;
 	
     request = getHTTPObject();
     document.getElementById("progress").style.visibility = "visible";
-    request.onreadystatechange = sendData;
+    request.onreadystatechange = getSupportedVersions;
     request.open("GET", "index.php?option=com_easysdi_proxy&task=negociateVersionForServer&url="+url+"&user="+user+"&password="+password+"&service="+service+"&availableVersions="+availableVersions, true);
     request.send(null);
 }
 
+/**
+ * Instantiate Http Request
+ */
 function getHTTPObject(){
     var xhr = false;
     if (window.XMLHttpRequest){
@@ -86,7 +99,11 @@ function getHTTPObject(){
     return xhr;
 }
 
-function sendData()
+/**
+ * @function getSupportedVersions
+ * Get the request response and fill appropriate fields in the document
+ */
+function getSupportedVersions()
 {
     // if request object received response
     if(request.readyState == 4){
@@ -125,11 +142,31 @@ function sendData()
 				supportedVersionByServer[server] = new Array();
 			}
 			var j = supportedVersionByServer[server].length;
-			supportedVersionByServer[server][j]= version.replace(/\./g,'');
+			supportedVersionByServer[server][j]= version;
+			//supportedVersionByServer[server][j]= version.replace(/\./g,'');
 			supportedVersionByServer[server].sort();
 			supportedVersionByServer[server].reverse();
 		}
 
+		//Cases were negociation failed
+		if(supportedVersionByServer.length == 0){
+			alert('Impossible de négocier une version pour cette configuration.');
+			document.getElementById("negotiatedVersion").value='NA';
+			document.getElementById("negotiatedVersionText").removeChild(document.getElementById("negotiatedVersionText").firstChild) ; 
+			document.getElementById("negotiatedVersionText").appendChild(document.createTextNode('NA' )) ;
+			return;
+		}
+		for(var i = 0;i < supportedVersionByServer.length;i++){
+			if(supportedVersionByServer[i] == undefined)
+			{
+				alert('Impossible de négocier une version pour cette configuration.');
+				document.getElementById("negotiatedVersion").value='NA';
+				document.getElementById("negotiatedVersionText").removeChild(document.getElementById("negotiatedVersionText").firstChild) ; 
+				document.getElementById("negotiatedVersionText").appendChild(document.createTextNode('NA' )) ;
+				return;
+			}
+		}
+		
 		var i = 0;
 		var v = 0;
 		var negotiatedVersion = supportedVersionByServer[i][v];
@@ -140,7 +177,7 @@ function sendData()
 					break;
 				}else{
 					if (j == supportedVersionByServer[i].length-1 && i == supportedVersionByServer.length-1){
-						negotiatedVersion = 0;
+						negotiatedVersion = 'NA';
 					}
 					if (j == supportedVersionByServer[i].length-1){
 						v= v+1;
@@ -150,10 +187,19 @@ function sendData()
 				}
 			}
 		}
-   		 document.getElementById('negotiatedVersion').innerHTML = negotiatedVersion;
+		document.getElementById("negotiatedVersion").value=negotiatedVersion;
+		document.getElementById("negotiatedVersionText").removeChild(document.getElementById("negotiatedVersionText").firstChild) ; 
+		document.getElementById("negotiatedVersionText").appendChild(document.createTextNode(negotiatedVersion )) ; 
+		
+		
+   		
     }
 }
 
+/**
+ * @function remove 
+ * Remove array element.
+ */
 Array.prototype.remove = function(obj) {
 	  var a = [];
 	  for (var i=0; i<this.length; i++) {
@@ -204,7 +250,17 @@ function getElementsByValue(val, src) {
 	}
 	return matches;
 }
-	
+
+/**
+ * @function addNewServer :
+ * Build the document elements needed to define a new server
+ * ALIAS
+ * URL
+ * USER
+ * PASSWORD
+ * AvailableVersions
+ * SupportedVersions
+ */
 function addNewServer(){
 	
 	var tr = document.createElement('tr');	
@@ -295,5 +351,3 @@ function addNewServer(){
 	nbServer = nbServer + 1;
 }
 </script>
-<?php 
-?>
