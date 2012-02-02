@@ -470,7 +470,7 @@ public class WMTSProxyServletRequest extends ProxyServletRequest {
 	    }else if (key.equalsIgnoreCase("TileMatrixSet")){
 		urlParameters = urlParameters + key + "=" +  new WMTSProxyTileMatrixSet(value).getName() + "&" ;
 	    }
-	    else{
+	    else if (!key.equalsIgnoreCase("VERSION") ){
 		urlParameters = urlParameters + key + "=" + value + "&";
 	    }
 

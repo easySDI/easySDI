@@ -20,10 +20,11 @@ package org.easysdi.proxy.core;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.security.Principal;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.ServletConfig;
@@ -38,9 +39,11 @@ import net.sf.ehcache.Element;
 import org.easysdi.proxy.csw.CSWExceptionReport;
 import org.easysdi.proxy.exception.PolicyNotFoundException;
 import org.easysdi.proxy.exception.ProxyServletException;
+import org.easysdi.proxy.exception.VersionNotSupportedException;
 import org.easysdi.proxy.ows.OWSExceptionReport;
 import org.easysdi.proxy.ows.v200.OWS200ExceptionReport;
 import org.easysdi.proxy.wfs.WFSExceptionReport;
+import org.easysdi.proxy.wms.WMSExceptionReport;
 import org.easysdi.proxy.wms.v130.WMSExceptionReport130;
 import org.easysdi.proxy.wmts.v100.WMTSExceptionReport100;
 import org.easysdi.proxy.policy.Policy;
@@ -248,33 +251,20 @@ public class OgcProxyServlet extends HttpServlet {
 			//Add the version to get the complete class name
 			String reqVersion= null;
 			if(request != null){
-				reqVersion = request.getVersion();
-				if(reqVersion == null && request.getOperation().equalsIgnoreCase("GetCapabilities"))
-				{
-					if(configuration.getNegotiatedVersion() != null){
-						reqVersion = configuration.getNegotiatedVersion();
+				List<String> supportedVersions =  configuration.getSupportedVersions();
+				if(request.getOperation().equalsIgnoreCase("GetCapabilities")){
+					reqVersion = configuration.getRequestNegotiatedVersion(request.getVersion());
+				}else{
+					if(!supportedVersions.contains(request.getVersion())){
+						//requested version not supported
+						//Send back an OGC Exception
+						sendException( new VersionNotSupportedException(request.getVersion()),configuration.getServletClass(), configuration.getRequestNegotiatedVersion(request.getVersion()));
+						return null;
 					}else{
-						if(request.getService().equalsIgnoreCase("WMS"))
-							reqVersion="1.1.0";
-						if(request.getService().equalsIgnoreCase("WFS"))
-							reqVersion="1.0.0";
-						if(request.getService().equalsIgnoreCase("WMTS"))
-							reqVersion="1.0.0";
-						if(request.getService().equalsIgnoreCase("CSW"))
-							reqVersion="2.0.0";
-					}
-					request.setVersion(reqVersion);                                                                                                                                                                        
-				}else if(request.getOperation().equalsIgnoreCase("GetCapabilities")){
-					List<String> supportedVersions =  configuration.getSupportedVersions();
-					if(!supportedVersions.contains(reqVersion)){
-						Collections.sort(supportedVersions);
-						if(reqVersion.compareTo(supportedVersions.get(0)) < 0){
-							reqVersion = supportedVersions.get(0);
-						}else {
-							reqVersion = supportedVersions.get(supportedVersions.size()-1);
-						}
+						reqVersion = request.getVersion();
 					}
 				}
+				request.setVersion(reqVersion);
 				className += reqVersion.replaceAll("\\.", "");
 			}
 
@@ -332,12 +322,14 @@ public class OgcProxyServlet extends HttpServlet {
 		String code = "";
 		String locator = "";
 
-		
-		if(e.getMessage().contains("VersionNotSupportedException")){
+		String t = e.getClass().getName();
+		if(e.getMessage().contains("VersionNotSupportedException") || e.getClass().getName().contains("VersionNotSupportedException")){
 			errorMessage = OWSExceptionReport.TEXT_VERSION_NOT_SUPPORTED;
+			errorMessage += " : ";
+			errorMessage += e.getMessage();
 			code = OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE;
 			locator = "version";
-		} else if(e.getMessage().contains("InvalidServiceNameException")){
+		}else if(e.getMessage().contains("InvalidServiceNameException") || e.getClass().getName().contains("InvalidServiceNameException")){
 			errorMessage = OWSExceptionReport.TEXT_INVALID_SERVICE_NAME;
 			code = OWSExceptionReport.CODE_INVALID_PARAMETER_VALUE;
 			locator = "service";
@@ -350,7 +342,10 @@ public class OgcProxyServlet extends HttpServlet {
 		StringBuffer out = new StringBuffer() ;
 		try {
 			if(servletClass.equalsIgnoreCase("org.easysdi.proxy.wms.WMSProxyServlet")){
-				out = new WMSExceptionReport130().generateExceptionReport(errorMessage, code, locator);
+				Class<?> supportedClasse = Class.forName("org.easysdi.proxy.wms.v"+version.replace(".", "")+".WMSExceptionReport"+version.replace(".", ""));
+				Constructor<?> supportedClasseConstructeur = supportedClasse.getConstructor(new Class [] {});
+				WMSExceptionReport exceptionReport = (WMSExceptionReport) supportedClasseConstructeur.newInstance();
+				out = exceptionReport.generateExceptionReport(errorMessage, code, locator);
 			}else if (servletClass.equalsIgnoreCase("org.easysdi.proxy.wfs.WFSProxyServlet")){
 				out = new WFSExceptionReport().generateExceptionReport(errorMessage, code, locator,version);
 			}else if (servletClass.equalsIgnoreCase("org.easysdi.proxy.wmts.WMSTProxyServlet")){
@@ -370,9 +365,9 @@ public class OgcProxyServlet extends HttpServlet {
 			os.flush();
 			os.close();
 			logger.error( "OgcProxyServlet sends exception", e.toString());
-		} catch (IOException e1) {
+		} catch (Exception e1) {
 			logger.error("Error occured trying to send exception to client.",e1);
-		}
+		} 
 	}
 	/***
 	 * Decrease the number of executed processes used to managed the

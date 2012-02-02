@@ -383,8 +383,8 @@ public class WMSProxyServletRequest extends ProxyServletRequest {
 		}
 	    }
 
-	    if (!key.equalsIgnoreCase("FORMAT") && !key.equalsIgnoreCase("QUERY_LAYERS") && !key.equalsIgnoreCase("LAYERS") && !key.equalsIgnoreCase("STYLES") && !key.equalsIgnoreCase("LAYER")) {
-		urlParameters = urlParameters + key + "=" + value + "&";
+	    if (!key.equalsIgnoreCase("VERSION") && !key.equalsIgnoreCase("FORMAT") && !key.equalsIgnoreCase("QUERY_LAYERS") && !key.equalsIgnoreCase("LAYERS") && !key.equalsIgnoreCase("STYLES") && !key.equalsIgnoreCase("LAYER")) {
+	    	urlParameters = urlParameters + key + "=" + value + "&";
 	    }
 
 	    if (key.equalsIgnoreCase("request")) {

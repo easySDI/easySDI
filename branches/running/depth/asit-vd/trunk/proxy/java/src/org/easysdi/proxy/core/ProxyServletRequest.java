@@ -67,7 +67,7 @@ public abstract class ProxyServletRequest {
 	 * @return the urlParameters
 	 */
 	public String getUrlParameters() {
-		return urlParameters;
+		return urlParameters+"&version="+this.version;
 	}
 
 	/**
@@ -102,7 +102,7 @@ public abstract class ProxyServletRequest {
 	 */
 	public void setVersion(String  version) {
 	    this.version=version;
-	    urlParameters += "&VERSION="+version;
+	    //urlParameters += "&VERSION="+version;
 	}
 	
 	/**
