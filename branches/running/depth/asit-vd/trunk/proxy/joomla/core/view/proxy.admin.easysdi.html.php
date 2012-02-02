@@ -137,6 +137,12 @@ echo $pane->endPanel();
 	 */
 	function genericServletInformationsHeader ($config, $configId, $servletClass, $availableServletList,$availableVersion,$servletVersion,$serviceType)
 	{
+		$negotiatedVersionByConfigArray = array();
+		foreach($config->{"supported-versions"}->{"version"} as $versionConfig){
+			array_push($negotiatedVersionByConfigArray,(string) $versionConfig);
+		}
+		
+		echo "Service : ".$serviceType;
 		?>
 		<div id="progress">
 			<img id="progress_image"  src="components/com_easysdi_proxy/templates/images/ajax-loader.gif" alt=""> 
@@ -166,9 +172,11 @@ echo $pane->endPanel();
 					<th>
 					<?php echo JText::_( 'EASYSDI_PROXY_NEGOTIATED_VERSION' );?> : 
 					</th>
-					<td class="supportedversion" id="negotiatedVersionText" >
-					<input type="hidden" id="negotiatedVersion" name="negotiatedVersion" value="<?php echo $config->{'negotiated-version'};?>"></input>
-					<?php echo $config->{'negotiated-version'};?>
+					<td class="supportedversion" id="negotiatedVersionText" ><?php echo $config->{'negotiated-version'};?>
+					</td>
+					<td>
+						<input type="hidden" id="negotiatedVersion" name="negotiatedVersion" value="<?php echo $config->{'negotiated-version'};?>"></input>
+						<input type="hidden" id="negotiatedVersionByConfig" name="negotiatedVersionByConfig" value='<?php echo json_encode ($negotiatedVersionByConfigArray); ?>'></input>
 					</td>
 				</tr>
 			</table>

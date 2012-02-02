@@ -1611,7 +1611,12 @@ class ADMIN_proxy
 				//Negotiated version				
 				$negotiatedVersion = JRequest::getVar("negotiatedVersion");
 				$config->{'negotiated-version'}=$negotiatedVersion;
-				
+				$supportedVersionByconfig = json_decode(JRequest::getVar("negotiatedVersionByConfig")); 
+				$config->{'supported-versions'}="";
+				foreach ($supportedVersionByconfig as $version){
+					$config->{'supported-versions'}->addChild("version",$version);
+				}
+								
 				//XSLT repository
 				$config->{"xslt-path"}->{"url"} = JRequest::getVar("xsltPath");
 	

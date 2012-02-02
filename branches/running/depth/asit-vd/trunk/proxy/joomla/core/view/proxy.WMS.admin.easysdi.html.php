@@ -129,7 +129,7 @@ class HTML_proxyWMS {
 	function editConfigWMS($xml,$new, $configId,$availableServletList, $availableVersion,$option, $task)
 	{
 		?><form name='adminForm' id='adminForm' action='index.php' method='POST'>
-			<input type='hidden' name='serviceType' id='serviceType' value="<?php echo JRequest::getVar('serviceType');?>" >
+			<input type='hidden' name='serviceType' id='serviceType' value="WMS" >
 			<input type='hidden' name="isNewConfig" value="<?php echo $new; ?>">
 			<input type='hidden' name='option' value='<?php echo $option;?>'> 
 			<input type='hidden' name='task' value='<?php echo $task;?>'> 
@@ -147,7 +147,7 @@ class HTML_proxyWMS {
 					}
 					$keywordString = substr($keywordString, 0, strlen($keywordString)-1) ;
 
-					HTML_proxy::genericServletInformationsHeader ($config, $configId, "org.easysdi.proxy.wms.WMSProxyServlet", $availableServletList,$availableVersion,$servletVersion,JRequest::getVar('serviceType'))
+					HTML_proxy::genericServletInformationsHeader ($config, $configId, "org.easysdi.proxy.wms.WMSProxyServlet", $availableServletList,$availableVersion,$servletVersion,"WMS")
 					?>
 		
 			<fieldset class="adminform" id="service_metadata" ><legend><?php echo JText::_( 'PROXY_CONFIG_FS_SERVICE_METADATA'); ?></legend>

@@ -56,6 +56,8 @@ function removeServer(servNo){
 	noeud = document.getElementById("remoteServerTable");
 	var fils = document.getElementById("remoteServerTableRow"+servNo);
 	noeud.removeChild(fils);
+
+	setConfigVersion();
 }
 
 var request;
@@ -111,7 +113,7 @@ function getSupportedVersions()
 		var JSONtext = request.responseText;
 		var unsupportedVersions = availableVersions;
 
-		//Set the supported versions
+		//Set the supported versions (for the server)
 		var JSONobject = JSON.parse(JSONtext, function (key, value) {
 		    var type;
 		    if (value && typeof value === 'string') {
@@ -122,7 +124,7 @@ function getSupportedVersions()
 		    }
 		});
 
-		//Set the unsupported versions
+		//Set the unsupported versions (for the server)
 		var len = unsupportedVersions.length;
 		for (var i = 0; i<len; i++) {
 			var version = document.getElementById(unsupportedVersions[i]+"_"+currentServerIndex);
@@ -130,70 +132,95 @@ function getSupportedVersions()
 	    	document.getElementById(unsupportedVersions[i]+"_"+currentServerIndex+"_state").value = "unsupported";
 		}
 
-		//Set the negociated version
-		var supportedElementsArray = getElementsByValue('supported');
-		var supportedVersionByServer = new Array();
-		
-		for (var i = 0; i < supportedElementsArray.length; i++ ){
-			var  id = supportedElementsArray[i];
-			var version = id.substring(0,id.indexOf("_", 0));
-			var server = id.substring(id.indexOf("_", 0)+1,id.indexOf("_", id.indexOf("_", 0)+1));
-			if(supportedVersionByServer[server] == undefined){
-				supportedVersionByServer[server] = new Array();
-			}
-			var j = supportedVersionByServer[server].length;
-			supportedVersionByServer[server][j]= version;
-			//supportedVersionByServer[server][j]= version.replace(/\./g,'');
-			supportedVersionByServer[server].sort();
-			supportedVersionByServer[server].reverse();
-		}
+		//Set the negociated version (for the config)
+		setConfigVersion();
+    }
+}
 
-		//Cases were negociation failed
-		if(supportedVersionByServer.length == 0){
-			alert('Impossible de négocier une version pour cette configuration.');
+function setConfigVersion (){
+	var supportedElementsArray = getElementsByValue('supported');
+	var supportedVersionByServer = new Array();
+	
+	for (var i = 0; i < supportedElementsArray.length; i++ ){
+		var  id = supportedElementsArray[i];
+		var version = id.substring(0,id.indexOf("_", 0));
+		var server = id.substring(id.indexOf("_", 0)+1,id.indexOf("_", id.indexOf("_", 0)+1));
+		if(supportedVersionByServer[server] == undefined){
+			supportedVersionByServer[server] = new Array();
+		}
+		var j = supportedVersionByServer[server].length;
+		supportedVersionByServer[server][j]= version;
+		supportedVersionByServer[server].sort();
+		supportedVersionByServer[server].reverse();
+	}
+
+	//Cases were negotiation failed
+	if(supportedVersionByServer.length == 0){
+		alert('<?php echo  JText::_( 'PROXY_CONFIG_NEGOTIATION_VERSION_FAILED');?>');
+		document.getElementById("negotiatedVersion").value='NA';
+		document.getElementById("negotiatedVersionText").removeChild(document.getElementById("negotiatedVersionText").firstChild) ; 
+		document.getElementById("negotiatedVersionText").appendChild(document.createTextNode('NA' )) ;
+		return;
+	}
+	for(var i = 0;i < supportedVersionByServer.length;i++){
+		if(supportedVersionByServer[i] == undefined)
+		{
+			alert('<?php echo  JText::_( 'PROXY_CONFIG_NEGOTIATION_VERSION_FAILED');?>');
 			document.getElementById("negotiatedVersion").value='NA';
 			document.getElementById("negotiatedVersionText").removeChild(document.getElementById("negotiatedVersionText").firstChild) ; 
 			document.getElementById("negotiatedVersionText").appendChild(document.createTextNode('NA' )) ;
 			return;
 		}
-		for(var i = 0;i < supportedVersionByServer.length;i++){
-			if(supportedVersionByServer[i] == undefined)
-			{
-				alert('Impossible de négocier une version pour cette configuration.');
-				document.getElementById("negotiatedVersion").value='NA';
-				document.getElementById("negotiatedVersionText").removeChild(document.getElementById("negotiatedVersionText").firstChild) ; 
-				document.getElementById("negotiatedVersionText").appendChild(document.createTextNode('NA' )) ;
-				return;
-			}
-		}
-		
-		var i = 0;
-		var v = 0;
-		var negotiatedVersion = supportedVersionByServer[i][v];
-		while (i < supportedVersionByServer.length)	{		
-			for(var j = 0 ; j < supportedVersionByServer[i].length ; j++){
-				if(negotiatedVersion == supportedVersionByServer[i][j]){
-					i= i + 1;
-					break;
-				}else{
-					if (j == supportedVersionByServer[i].length-1 && i == supportedVersionByServer.length-1){
-						negotiatedVersion = 'NA';
-					}
-					if (j == supportedVersionByServer[i].length-1){
-						v= v+1;
-						i=0;
-						negotiatedVersion = supportedVersionByServer[i][v];
-					}
+	}
+
+	//Negotiation
+	var i = 0;
+	var v = 0;
+	//var aNupportedVersionByConfig = new Array();
+	var sNegotiatedVersion = supportedVersionByServer[i][v];
+	while (i < supportedVersionByServer.length)	{		
+		for(var j = 0 ; j < supportedVersionByServer[i].length ; j++){
+			if(sNegotiatedVersion == supportedVersionByServer[i][j]){
+				/*if(!aNupportedVersionByConfig.contains(sNegotiatedVersion))
+					aNupportedVersionByConfig.push(sNegotiatedVersion);*/
+				i= i + 1;
+				break;
+			}else{
+				if (j == supportedVersionByServer[i].length-1 && i == supportedVersionByServer.length-1){
+				/*	if(aNupportedVersionByConfig.contains(sNegotiatedVersion))
+						aNupportedVersionByConfig.remove(sNegotiatedVersion);*/
+					sNegotiatedVersion = 'NA';
+				}
+				if (j == supportedVersionByServer[i].length-1){
+					v= v+1;
+					i=0;
+				/*	if(aNupportedVersionByConfig.contains(sNegotiatedVersion))
+						aNupportedVersionByConfig.remove(sNegotiatedVersion);*/
+					sNegotiatedVersion = supportedVersionByServer[i][v];
 				}
 			}
 		}
-		document.getElementById("negotiatedVersion").value=negotiatedVersion;
-		document.getElementById("negotiatedVersionText").removeChild(document.getElementById("negotiatedVersionText").firstChild) ; 
-		document.getElementById("negotiatedVersionText").appendChild(document.createTextNode(negotiatedVersion )) ; 
-		
-		
-   		
-    }
+	}
+
+	
+	var aNupportedVersionByConfig = new Array();
+	var sCurrentVersion = supportedVersionByServer[0][0];
+	while (i < supportedVersionByServer.length)	{		
+		for(var j = 0 ; j < supportedVersionByServer[i].length ; j++){
+			if(sCurrentVersion == supportedVersionByServer[i][j]){
+				if(!aNupportedVersionByConfig.contains(sCurrentVersion))
+					aNupportedVersionByConfig.push(sCurrentVersion);
+
+				sCurrentVersion = supportedVersionByServer[i][j];
+				break;
+			}
+		}
+	}
+
+	document.getElementById("negotiatedVersionByConfig").value=JSON.stringify(aNupportedVersionByConfig);
+	document.getElementById("negotiatedVersion").value=sNegotiatedVersion;
+	document.getElementById("negotiatedVersionText").removeChild(document.getElementById("negotiatedVersionText").firstChild) ; 
+	document.getElementById("negotiatedVersionText").appendChild(document.createTextNode(sNegotiatedVersion )) ; 
 }
 
 /**
@@ -210,6 +237,19 @@ Array.prototype.remove = function(obj) {
 	  return a;
 	}
 
+/**
+ * @function contains
+ Return if the array contains the specified object
+ */
+Array.prototype.contains = function(obj) {
+    var i = this.length;
+    while (i--) {
+        if (this[i] === obj) {
+            return true;
+        }
+    }
+    return false;
+}
 /**
 * @function getElementsByValue
 * Finds elements in FORMs whose value property matches
