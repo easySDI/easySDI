@@ -364,8 +364,8 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				        catch (IOException e) {
 				            e.printStackTrace();
 				        }
-					}
-				}*/
+					}*/
+				}
 				else if( "GetRecordById".equals(currentOperation) )
 				{
 					if (areAllAttributesAllowedForMetadata(getRemoteServerUrl(0)) ) 
