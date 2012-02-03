@@ -338,7 +338,34 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				            e.printStackTrace();
 				        }
 					}
-				}
+					/*else{
+						SAXBuilder sb = new SAXBuilder();
+						
+						Document doc = null;
+				        try {
+				            doc = sb.build(tempFile);
+				            Element racine = doc.getRootElement();
+				            Namespace nsCSW = Namespace.getNamespace("csw","http://www.opengis.net/cat/csw/2.0.2") ;
+				            Element results = racine.getChild("SearchResults", nsCSW);
+				            if(results != null){
+					            String matched =  results.getAttributeValue("numberOfRecordsMatched");
+					            results.setAttribute("numberOfRecordsMatched",matched+"0");
+				            }
+				            
+				            XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
+				            FileOutputStream outStream = new FileOutputStream(tempFile);
+				            sortie.output(doc, outStream);
+				            outStream.close();
+				            
+				        }
+				        catch (JDOMException e) {
+				            e.printStackTrace();
+				        }
+				        catch (IOException e) {
+				            e.printStackTrace();
+				        }
+					}
+				}*/
 				else if( "GetRecordById".equals(currentOperation) )
 				{
 					if (areAllAttributesAllowedForMetadata(getRemoteServerUrl(0)) ) 
@@ -545,8 +572,8 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			
 			//GetRecords is not supported in GET request
 			//EXCEPT for a configuration dedicated to the harvesting
-			if(currentOperation.equalsIgnoreCase("GetRecords") && !configuration.isHarvestingConfig())
-				sendOgcExceptionBuiltInResponse(resp,generateOgcException("Operation not supported in a GET request","OperationNotSupported ","request", requestedVersion));
+//			if(currentOperation.equalsIgnoreCase("GetRecords") && !configuration.isHarvestingConfig())
+//				sendOgcExceptionBuiltInResponse(resp,generateOgcException("Operation not supported in a GET request","OperationNotSupported ","request", requestedVersion));
 			
 			//GetRecordById
 			if(currentOperation.equalsIgnoreCase("GetRecordById"))
@@ -631,6 +658,10 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 			}
 			if(constraint != null && constraint.length()>0){
 				paramUrl = paramUrl + "constraint=" + constraint + "&";
+				paramUrl = paramUrl + "constraintLanguage=" + constraintLanguage + "&";
+				if(constraint_language_version != null)
+					paramUrl = paramUrl + "constraint_language_version=" + constraint_language_version + "&";
+			}else{
 				paramUrl = paramUrl + "constraintLanguage=" + constraintLanguage + "&";
 				if(constraint_language_version != null)
 					paramUrl = paramUrl + "constraint_language_version=" + constraint_language_version + "&";
