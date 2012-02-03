@@ -137,9 +137,9 @@ echo $pane->endPanel();
 	 */
 	function genericServletInformationsHeader ($config, $configId, $servletClass, $availableServletList,$availableVersion,$serviceType)
 	{
-		$negotiatedVersionByConfigArray = array();
+		$supportedVersionsByConfigArray = array();
 		foreach($config->{"supported-versions"}->{"version"} as $versionConfig){
-			array_push($negotiatedVersionByConfigArray,(string) $versionConfig);
+			array_push($supportedVersionsByConfigArray,(string) $versionConfig);
 		}
 		
 		?>
@@ -177,11 +177,11 @@ echo $pane->endPanel();
 					<th>
 					<?php echo JText::_( 'EASYSDI_VERSION' );?> : 
 					</th>
-					<td  id="supportedVersionByConfigText" >
+					<td  id="supportedVersionsByConfigText" >
 					<table>
 					<tr>
 					<?php 
-					foreach ($negotiatedVersionByConfigArray as $vc){
+					foreach ($supportedVersionsByConfigArray as $vc){
 						?>
 						<td class="supportedversion">
 						<?php 
@@ -195,8 +195,7 @@ echo $pane->endPanel();
 					</table>
 					</td>
 					<td>
-						<input type="hidden" id="negotiatedVersion" name="negotiatedVersion" value="<?php echo $config->{'negotiated-version'};?>"></input>
-						<input type="hidden" id="negotiatedVersionByConfig" name="negotiatedVersionByConfig" value='<?php echo json_encode ($negotiatedVersionByConfigArray); ?>'></input>
+						<input type="hidden" id="supportedVersionsByConfig" name="supportedVersionsByConfig" value='<?php echo json_encode ($supportedVersionsByConfigArray); ?>'></input>
 					</td>
 				</tr>
 			</table>
@@ -451,8 +450,6 @@ echo $pane->endPanel();
 		$option = JRequest::getVar('option');
 		$configId = JRequest::getVar("configId");
 		$policyId = JRequest::getVar("policyId");
-//		$task = JRequest::getVar("task");
-		
 		$limitstart = JRequest::getVar('limitstart',0);
 		$limit = JRequest::getVar('limit',$mainframe->getCfg('list_limit'));
 		$search = JRequest::getVar('search','');
@@ -796,12 +793,10 @@ echo $pane->endPanel();
 		?>
 
 <form name='adminForm' action='index.php' method='POST'>
-<input
-	type='hidden' name='option'
-	value='<?php echo JRequest::getVar('option') ;?>'> <input type='hidden'
-	name='task' value='<?php echo JRequest::getVar('task') ;?>'> <input type='hidden' name='boxchecked'
-	value='<?php echo ($_POST['configId'])?1:0;?>'>
-	<input type='hidden' name='serviceType' id='serviceType' value="<?php echo JRequest::getVar('serviceType');?>" >
+<input type='hidden' name='option' value='<?php echo JRequest::getVar('option') ;?>'> 
+<input type='hidden' name='task' id='task' value='<?php echo JRequest::getVar('task') ;?>'> 
+<input type='hidden' name='boxchecked' value='<?php echo ($_POST['configId'])?1:0;?>'>
+<input type='hidden' name='serviceType' id='serviceType' value="<?php echo JRequest::getVar('serviceType');?>" >
 
 <table>
 	<tr>
@@ -865,7 +860,10 @@ echo $pane->endPanel();
 					{
 						echo "WFS";
 					} ?>'; isChecked(this.checked);"></td>
-			<td><b><?php echo $config['id']?></b> </td>
+			<td>
+			<a href="#edit" onclick="document.getElementById('task').value='editConfig';document.getElementById('cb<?php echo $i;?>').checked=true;document.adminForm.submit();;">
+				<?php echo $config['id']?></a>
+			 </td>
 			<td><?php 
 			if($config->{'servlet-class'} == "org.easysdi.proxy.wms.WMSProxyServlet")
 			{

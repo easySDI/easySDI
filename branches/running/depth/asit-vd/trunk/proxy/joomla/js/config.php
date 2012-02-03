@@ -34,11 +34,18 @@ function submitbutton(pressbutton){
 				}
 			}
 		}
-		if(document.getElementById('negotiatedVersion').value == 'NA' || document.getElementById('negotiatedVersion').value == ''){
-			alert ('<?php echo  JText::_( 'PROXY_CONFIG_EDIT_VALIDATION_NEGOTIATED_VERSION_ERROR');?>');	
+
+		var t = document.getElementById('supportedVersionsByConfig').value;
+		if(t == '["NA"]' || t == "[]"){
+			alert ('<?php echo  JText::_( 'PROXY_CONFIG_EDIT_VALIDATION_CONFIG_SUPPORTED_VERSION_ERROR');?>');
 			return;
 		}
-		
+
+		var elements = getElementsByClassName(document.getElementById('remoteServerTable'), "unknown");
+	    if (elements.length > 0 ){
+			alert ('<?php echo  JText::_( 'PROXY_CONFIG_EDIT_VALIDATION_SERVER_NEGOTIATION_MISSING_ERROR');?>');
+			return;
+		}
 		
 		submitform(pressbutton);
 	}
@@ -125,6 +132,16 @@ function getSupportedVersions()
 		    }
 		});
 
+		//None of the available versions are supported by the remote server
+		//Send a negotiation error
+		if(availableVersions.length == unsupportedVersions.length){
+			alert('<?php echo  JText::sprintf( 'PROXY_CONFIG_NEGOTIATION_VERSION_FAILED_FOR_A_SERVER', i);?>');
+			document.getElementById("supportedVersionsByConfig").value=JSON.stringify(new Array('NA'));
+			removeAllElementChild( document.getElementById("supportedVersionsByConfigText"));
+			document.getElementById("supportedVersionsByConfigText").appendChild(createSupportedVersionByConfigTable(new Array('NA'))) ;
+			return;
+		}
+
 		//Set the unsupported versions (for the server)
 		var len = unsupportedVersions.length;
 		for (var i = 0; i<len; i++) {
@@ -157,23 +174,19 @@ function setConfigVersion (){
 
 	//Cases were negotiation failed
 	if(supportedVersionByServer.length == 0){
-		alert('<?php echo  JText::_( 'PROXY_CONFIG_NEGOTIATION_VERSION_FAILED');?>');
-		document.getElementById("negotiatedVersion").value='NA';
-		removeAllElementChild( document.getElementById("supportedVersionByConfigText"));
-		document.getElementById("supportedVersionByConfigText").appendChild(createSupportedVersionByConfigTable(new Array('NA'))) ;
-		/*document.getElementById("negotiatedVersionText").removeChild(document.getElementById("negotiatedVersionText").firstChild) ; 
-		document.getElementById("negotiatedVersionText").appendChild(document.createTextNode('NA' )) ;*/
+		alert('<?php echo  JText::_( 'PROXY_CONFIG_NEGOTIATION_VERSION_FAILED_FOR_ALL_SERVER');?>');
+		document.getElementById("supportedVersionsByConfig").value=JSON.stringify(new Array('NA'));
+		removeAllElementChild( document.getElementById("supportedVersionsByConfigText"));
+		document.getElementById("supportedVersionsByConfigText").appendChild(createSupportedVersionByConfigTable(new Array('NA'))) ;
 		return;
 	}
 	for(var i = 0;i < supportedVersionByServer.length;i++){
 		if(supportedVersionByServer[i] == undefined)
 		{
-			alert('<?php echo  JText::_( 'PROXY_CONFIG_NEGOTIATION_VERSION_FAILED');?>');
-			document.getElementById("negotiatedVersion").value='NA';
-			removeAllElementChild( document.getElementById("supportedVersionByConfigText"));
-			document.getElementById("supportedVersionByConfigText").appendChild(createSupportedVersionByConfigTable(new Array('NA'))) ;
-			/*document.getElementById("negotiatedVersionText").removeChild(document.getElementById("negotiatedVersionText").firstChild) ; 
-			document.getElementById("negotiatedVersionText").appendChild(document.createTextNode('NA' )) ;*/
+			alert('<?php echo  JText::sprintf( 'PROXY_CONFIG_NEGOTIATION_VERSION_FAILED_FOR_A_SERVER', i);?>');
+			document.getElementById("supportedVersionsByConfig").value=JSON.stringify(new Array('NA'));
+			removeAllElementChild( document.getElementById("supportedVersionsByConfigText"));
+			document.getElementById("supportedVersionsByConfigText").appendChild(createSupportedVersionByConfigTable(new Array('NA'))) ;
 			return;
 		}
 	}
@@ -181,13 +194,10 @@ function setConfigVersion (){
 	//Negotiation
 	var i = 0;
 	var v = 0;
-	//var aNupportedVersionByConfig = new Array();
 	var sNegotiatedVersion = supportedVersionByServer[i][v];
 	while (i < supportedVersionByServer.length)	{		
 		for(var j = 0 ; j < supportedVersionByServer[i].length ; j++){
 			if(sNegotiatedVersion == supportedVersionByServer[i][j]){
-				/*if(!aNupportedVersionByConfig.contains(sNegotiatedVersion))
-					aNupportedVersionByConfig.push(sNegotiatedVersion);*/
 				i= i + 1;
 				break;
 			}else{
@@ -235,13 +245,14 @@ function setConfigVersion (){
 		}
 	}
 
-	document.getElementById("negotiatedVersionByConfig").value=JSON.stringify(aNupportedVersionByConfig);
-	document.getElementById("negotiatedVersion").value=sNegotiatedVersion;
-	//document.getElementById("supportedVersionByConfigText").removeChild(document.getElementById("supportedVersionByConfigText").firstChild) ; 
-	removeAllElementChild( document.getElementById("supportedVersionByConfigText"));
-	document.getElementById("supportedVersionByConfigText").appendChild(createSupportedVersionByConfigTable(aNupportedVersionByConfig)) ; 
+	document.getElementById("supportedVersionsByConfig").value=JSON.stringify(aNupportedVersionByConfig);
+	removeAllElementChild( document.getElementById("supportedVersionsByConfigText"));
+	document.getElementById("supportedVersionsByConfigText").appendChild(createSupportedVersionByConfigTable(aNupportedVersionByConfig)) ; 
 }
 
+/**
+ * 
+ */
 function removeAllElementChild (cell){
 	if ( cell.hasChildNodes() )
 	{
@@ -252,6 +263,9 @@ function removeAllElementChild (cell){
 	}
 }
 
+/**
+ * 
+ */
 function createSupportedVersionByConfigTable(aNupportedVersionByConfig){
 	var table = document.createElement('table');
 	var tr = document.createElement('tr');
@@ -335,6 +349,34 @@ function getElementsByValue(val, src) {
 	}
 	return matches;
 }
+
+/**
+ * @getElementsByClassName
+ * Finds elements in FORMs whose class property matches
+ * the given value.
+ */
+function getElementsByClassName(node,classname) {
+	  if (node.getElementsByClassName) { // use native implementation if available
+	    return node.getElementsByClassName(classname);
+	  } else {
+	    return (function getElementsByClass(searchClass,node) {
+	        if ( node == null )
+	          node = document;
+	        var classElements = [],
+	            els = node.getElementsByTagName("*"),
+	            elsLen = els.length,
+	            pattern = new RegExp("(^|\\s)"+searchClass+"(\\s|$)"), i, j;
+
+	        for (i = 0, j = 0; i < elsLen; i++) {
+	          if ( pattern.test(els[i].className) ) {
+	              classElements[j] = els[i];
+	              j++;
+	          }
+	        }
+	        return classElements;
+	    })(classname, node);
+	  }
+	}
 
 /**
  * @function addNewServer :
