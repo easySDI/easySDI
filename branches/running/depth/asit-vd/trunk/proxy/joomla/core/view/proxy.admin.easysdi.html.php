@@ -622,41 +622,45 @@ echo $pane->endPanel();
 		
 		foreach ($xml->config as $config) {
 			if (strcmp($config['id'],$configId)==0){
-
 				$policyFile = $config->{'authorization'}->{'policy-file'};
 				$servletClass =  $config->{'servlet-class'};
-				$servletVersion =  $config->{'negotiated-version'};
+				$servletVersion =  "";
+				foreach($config->{"supported-versions"}->{"version"} as $versionConfig){
+					if(strcmp($servletVersion, $versionConfig)< 0){
+						$servletVersion = $versionConfig;
+					}
+				}
 				
-			if (!file_exists($policyFile)){
-					global $mainframe;		
-					$mainframe->enqueueMessage(JText::_(  'EASYSDI_UNABLE TO LOAD THE POLICY FILE. PLEASE VERIFY THAT THE FILE EXISTS.' ),'error');
-			}
+				if (!file_exists($policyFile)){
+						global $mainframe;		
+						$mainframe->enqueueMessage(JText::_(  'EASYSDI_UNABLE TO LOAD THE POLICY FILE. PLEASE VERIFY THAT THE FILE EXISTS.' ),'error');
+				}
 			
 				if (file_exists($policyFile)) {
 					$xmlConfigFile = simplexml_load_file($policyFile);
 				
 					if($new){
 						
-				$thePolicy  = $xmlConfigFile->addChild('Policy');
-				$thePolicy ['Id']="new Policy";
-				$policyId=$thePolicy ['Id'];
-				$thePolicy ['ConfigId']=$configId;
-				$thePolicy ->Servers['All']="false";
-				$thePolicy ->Subjects['All']="false";
-				$thePolicy ->Operations['All']="true";
-				$thePolicy ->AvailabilityPeriod->Mask="dd-mm-yyyy";
-				$thePolicy ->AvailabilityPeriod->From->Date="28-01-2008";
-				$thePolicy ->AvailabilityPeriod->To->Date="28-01-2108";				
-				}else{
-					foreach ($xmlConfigFile->Policy as $policy){
-
-						if (strcmp($policy['Id'],$policyId)==0  && strcmp($policy['ConfigId'],$configId)==0){								
-							$thePolicy = $policy;
-							break;
-
+					$thePolicy  = $xmlConfigFile->addChild('Policy');
+					$thePolicy ['Id']="new Policy";
+					$policyId=$thePolicy ['Id'];
+					$thePolicy ['ConfigId']=$configId;
+					$thePolicy ->Servers['All']="false";
+					$thePolicy ->Subjects['All']="false";
+					$thePolicy ->Operations['All']="true";
+					$thePolicy ->AvailabilityPeriod->Mask="dd-mm-yyyy";
+					$thePolicy ->AvailabilityPeriod->From->Date="28-01-2008";
+					$thePolicy ->AvailabilityPeriod->To->Date="28-01-2108";				
+					}else{
+						foreach ($xmlConfigFile->Policy as $policy){
+	
+							if (strcmp($policy['Id'],$policyId)==0  && strcmp($policy['ConfigId'],$configId)==0){								
+								$thePolicy = $policy;
+								break;
+	
+							}
 						}
 					}
-				}
 				}				
 				?>
 
