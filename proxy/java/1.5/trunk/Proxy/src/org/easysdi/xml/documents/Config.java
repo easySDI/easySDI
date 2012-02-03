@@ -18,6 +18,8 @@
 package org.easysdi.xml.documents;
 
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -54,6 +56,8 @@ public class Config implements Serializable{
 	private OWSServiceMetadata owsServiceMetadata = null;
 	private String period = "";
 	private Boolean isHarvestingConfig = false;
+//	private String negotiatedVersion = null;
+	private List<String> supportedVersions ;
 
 	/**
 	 * @param ogcSearchFilter the ogcSearchFilter to set
@@ -356,4 +360,77 @@ public class Config implements Serializable{
 		this.isHarvestingConfig = isHarvestingConfig;
 	}
 
+//	/**
+//	 * @return the negotiatedVersion
+//	 */
+//	public String getNegotiatedVersion() {
+//		return negotiatedVersion;
+//	}
+//
+//	/**
+//	 * @param negotiatedVersion the negotiatedVersion to set
+//	 */
+//	public void setNegotiatedVersion(String negotiatedVersion) {
+//		this.negotiatedVersion = negotiatedVersion;
+//	}
+	
+	/**
+	 * @return the supportedVersions
+	 */
+	public List<String> getSupportedVersions() {
+		return supportedVersions;
+	}
+
+	/**
+	 * @param supportedVersions the supportedVersions to set
+	 */
+	public void setSupportedVersions(List<String> supportedVersions) {
+		this.supportedVersions = supportedVersions;
+	}
+	
+	/**
+	 * 
+	 * @param requestedVersion
+	 * @return
+	 */
+	public String getRequestNegotiatedVersion(String requestedVersion, String service){
+		if(supportedVersions.size() == 0){
+			if(service.equalsIgnoreCase("WMS"))
+				return "1.1.1";
+			if(service.equalsIgnoreCase("WFS"))
+				return "1.0.0";
+			if(service.equalsIgnoreCase("WMTS"))
+				return "1.0.0";
+			if(service.equalsIgnoreCase("CSW"))
+				return "2.0.2";
+			return null;
+		}else if (requestedVersion == null ){
+			//Get the highest supported version
+			Collections.sort(supportedVersions);
+			return supportedVersions.get(supportedVersions.size()-1);
+		}else {
+			if(!supportedVersions.contains(requestedVersion)){
+				Collections.sort(supportedVersions);
+				//Requested version is lower than the lowest version supported
+				//return the lowest version supported
+				if(requestedVersion.compareTo(supportedVersions.get(0)) < 0){
+					requestedVersion = supportedVersions.get(0);
+				}else {
+					//return the highest version supported less than the requested one
+					Iterator<String> i =  supportedVersions.iterator();
+					String returnedVersion = null;
+					while(i.hasNext()){
+						String v = i.next();
+						if(returnedVersion == null)
+							returnedVersion = v;
+						if(v.compareTo(requestedVersion) < 0 && v.compareTo(returnedVersion) > 0){
+							returnedVersion = v;
+						}
+					}
+					return returnedVersion;
+				}
+			}
+			return requestedVersion;
+		}
+	}
 }
