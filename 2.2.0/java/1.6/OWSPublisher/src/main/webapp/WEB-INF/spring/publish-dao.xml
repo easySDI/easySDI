@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xmlns:sec="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="
+						http://www.springframework.org/schema/beans
+						http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+						http://www.springframework.org/schema/context 
+        				http://www.springframework.org/schema/context/spring-context-3.0.xsd
+        				http://www.springframework.org/schema/tx 
+        				http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+       					http://www.springframework.org/schema/aop 
+       					http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+       					http://www.springframework.org/schema/util
+       					http://www.springframework.org/schema/util/spring-util-3.0.xsd
+       					http://www.springframework.org/schema/security
+          				http://www.springframework.org/schema/security/spring-security-3.0.xsd
+       					">
+       					
+	
+
+	<!-- Gestion des propriétés pour ce fichier de configuration -->
+	<context:property-placeholder location="/WEB-INF/publish-config.properties" />
+          
+	<!-- Hibernate beans -->
+    <context:annotation-config />
+	<context:component-scan base-package="org.easysdi.publish" />
+
+	<bean id="hibernateDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
+		destroy-method="close">
+		<property name="driverClass">
+			<value>${hibernate.jdbc.driver}</value>
+		</property>
+		<property name="jdbcUrl">
+			<value>${hibernate.jdbc.url}</value>
+		</property>
+		<property name="user">
+			<value>${hibernate.jdbc.user}</value>
+		</property>
+		<property name="password">
+			<value>${hibernate.jdbc.password}</value>
+		</property>
+		<property name="initialPoolSize">
+			<value>${hibernate.c3p0.initialPoolSize}</value>
+		</property>
+		<property name="minPoolSize">
+			<value>${hibernate.c3p0.minPoolSize}</value>
+		</property>
+		<property name="maxPoolSize">
+			<value>${hibernate.c3p0.maxPoolSize}</value>
+		</property>
+		<property name="acquireRetryAttempts">
+			<value>${hibernate.c3p0.acquireRetryAttempts}</value>
+		</property>
+		<property name="acquireIncrement">
+			<value>${hibernate.c3p0.acquireIncrement}</value>
+		</property>
+		<property name="idleConnectionTestPeriod">
+			<value>${hibernate.c3p0.idleConnectionTestPeriod}</value>
+		</property>
+		<property name="maxIdleTime">
+			<value>${hibernate.c3p0.maxIdleTime}</value>
+		</property>
+		<property name="maxConnectionAge">
+			<value>${hibernate.c3p0.maxConnectionAge}</value>
+		</property>
+		<property name="preferredTestQuery">
+			<value>${hibernate.c3p0.preferredTestQuery}</value>
+		</property>
+		<property name="testConnectionOnCheckin">
+			<value>${hibernate.c3p0.testConnectionOnCheckin}</value>
+		</property>
+	</bean>
+	
+	<!-- Hibernate beans -->
+
+	<bean id="joomlaDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
+		destroy-method="close">
+		<property name="driverClass">
+			<value>${joomla.jdbc.driver}</value>
+		</property>
+		<property name="jdbcUrl">
+			<value>${joomla.jdbc.url}</value>
+		</property>
+		<property name="user">
+			<value>${joomla.jdbc.user}</value>
+		</property>
+		<property name="password">
+			<value>${joomla.jdbc.password}</value>
+		</property>
+		<property name="initialPoolSize">
+			<value>${joomla.c3p0.initialPoolSize}</value>
+		</property>
+		<property name="minPoolSize">
+			<value>${joomla.c3p0.minPoolSize}</value>
+		</property>
+		<property name="maxPoolSize">
+			<value>${joomla.c3p0.maxPoolSize}</value>
+		</property>
+		<property name="acquireRetryAttempts">
+			<value>${joomla.c3p0.acquireRetryAttempts}</value>
+		</property>
+		<property name="acquireIncrement">
+			<value>${joomla.c3p0.acquireIncrement}</value>
+		</property>
+		<property name="idleConnectionTestPeriod">
+			<value>${joomla.c3p0.idleConnectionTestPeriod}</value>
+		</property>
+		<property name="maxIdleTime">
+			<value>${joomla.c3p0.maxIdleTime}</value>
+		</property>
+		<property name="maxConnectionAge">
+			<value>${joomla.c3p0.maxConnectionAge}</value>
+		</property>
+		<property name="preferredTestQuery">
+			<value>${joomla.c3p0.preferredTestQuery}</value>
+		</property>
+		<property name="testConnectionOnCheckin">
+			<value>${joomla.c3p0.testConnectionOnCheckin}</value>
+		</property>
+	</bean>
+
+	<bean id="hibernateSessionFactory"
+		class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+		<property name="dataSource" ref="hibernateDataSource" />
+		<property name="mappingResources">
+			<list>
+				<value>org/easysdi/publish/dat/database/Geodatabase.hbm.xml</value>
+				<value>org/easysdi/publish/dat/database/GeodatabaseType.hbm.xml</value>
+				<value>org/easysdi/publish/dat/diffuser/Diffuser.hbm.xml</value>
+				<value>org/easysdi/publish/dat/diffuser/DiffuserType.hbm.xml</value>
+				<value>org/easysdi/publish/dat/layer/FeatureSource.hbm.xml</value>
+				<value>org/easysdi/publish/dat/layer/Layer.hbm.xml</value>
+			</list>
+		</property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.default_catalog">${hibernate.defaultCatalog}</prop>
+				<prop key="hibernate.dialect">${hibernate.dialect}</prop>
+				<prop key="cache.provider_class">org.hibernate.cache.NoCacheProvider</prop>
+				<prop key="hibernate.c3p0.acquire_increment">${hibernate.c3p0.acquireIncrement}</prop>
+				<prop key="hibernate.c3p0.idle_test_period">${hibernate.c3p0.idleConnectionTestPeriod}</prop>
+				<prop key="hibernate.c3p0.timeout">${hibernate.c3p0.maxIdleTime}</prop>
+				<prop key="hibernate.c3p0.max_size">${hibernate.c3p0.maxPoolSize}</prop>
+				<prop key="hibernate.c3p0.min_size">${hibernate.c3p0.minPoolSize}</prop>
+			</props>
+		</property>
+	</bean>
+
+
+	<!-- Transaction management -->
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<property name="sessionFactory" ref="hibernateSessionFactory" />
+	</bean>
+	
+	<tx:advice id="controllerTransactionAdvice"
+		transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="create" propagation="REQUIRED" />
+			<tx:method name="show" read-only="true" propagation="REQUIRED" />
+		</tx:attributes>
+	</tx:advice>
+
+
+	<!-- Generic DAO objects -->
+	<bean id="geodatabaseDao" class="org.easysdi.publish.dat.dao.hibernate.GeodatabaseDao">
+		<constructor-arg ref="hibernateSessionFactory"></constructor-arg>
+		<!-- <property name="txManager" ref="transactionManager"></property>-->
+	</bean>
+
+	<bean id="diffuserDao" class="org.easysdi.publish.dat.dao.hibernate.DiffuserDao">
+		<constructor-arg ref="hibernateSessionFactory"></constructor-arg>
+		<!-- <property name="txManager" ref="transactionManager"></property>-->
+	</bean>
+
+	<bean id="featureSourceDao" class="org.easysdi.publish.dat.dao.hibernate.FeatureSourceDao">
+		<constructor-arg ref="hibernateSessionFactory"></constructor-arg>
+		<!-- <property name="txManager" ref="transactionManager"></property>-->
+	</bean>
+
+	<bean id="layerDao" class="org.easysdi.publish.dat.dao.hibernate.LayerDao">
+		<constructor-arg ref="hibernateSessionFactory"></constructor-arg>
+		<!-- <property name="txManager" ref="transactionManager"></property>-->
+	</bean>
+
+	<!-- Application context beans -->
+	<bean id="appContext"
+		class="org.easysdi.publish.gui.webapp.ApplicationContextProvider" />
+</beans>
