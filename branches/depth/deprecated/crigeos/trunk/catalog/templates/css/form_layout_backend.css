@@ -1,0 +1,158 @@
+/*.easysdi_shop_backend_form {width: auto;}
+.easysdi_shop_backend_fieldset {width: auto;}
+.easysdi_shop_backend_textarea {width: 520px !important;} /* important fait que ça prime sur tout le reste */
+/*.easysdi_shop_backend_textfield {width: 520px;}
+.easysdi_shop_backend_combobox {width: 520px;}
+.easysdi_shop_backend_multiselect {width: auto;}
+.easysdi_shop_backend_numberfield {width: auto;}
+.easysdi_shop_backend_datetimefield {width: auto;}
+.easysdi_shop_backend_datefield {width: auto;}
+.easysdi_shop_backend_checkboxgroup {width: auto;}
+.easysdi_shop_backend_radiogroup {width: auto;}
+.easysdi_shop_backend_choicebox {width: 300px !important;}*/
+
+.thes-term {color:#C00000; font-weight: bold; margin:4px; font-size:15px; text-align:center}
+.thes-description div div {font-family: arial,tahoma; font-size:11px; padding:4px; color:#505050}
+.thes-link a span {color:#0040D0}
+
+
+.date_label_to_style .x-form-item-label{
+    display:block;
+    float:left;
+    width:30px !important;
+    padding:3px;
+    padding-left:0;
+    clear:left;
+    z-index:2;
+    position:relative;
+}
+#content-col-main form fieldset label, #content-col-main form fieldset div.label {
+	display: block;
+	float: left;
+	width: auto !important;
+	padding-right: 10px;
+	text-align: right;
+}
+#content-col-main table {
+    margin: 0 !important;
+    padding: 0 !important;
+    width : auto !important;
+
+}
+.newCoord {
+
+    float: left !important;
+    height: 50px;
+    margin: 10px !important;
+    padding: 0 !important;
+    width: 100px;
+}
+.newCoordInputDiv {
+    padding: 0 !important;
+  	width : aito
+}
+
+.newCoordInput {
+    padding: 0 !important;
+  	width : 100px !important
+}
+
+#thesaurusGemetOption {
+	display :block;
+	float:left;
+}
+#thesaurusInspireOption {
+	display :block;
+	float:left;
+}
+#thesaurus1GEOption {
+	display :none
+}
+.thesaurusCombo {
+	width :200px !important;
+	float:left;
+	display : block;
+	visibility:visible;
+}
+
+.thesaurusCombo  .x-combo-list-inner {
+	width:150px !important;
+	float:left;
+}
+
+.thesaurusCombo  div div {
+	width:30px;
+	float:left;
+}
+
+.thes-selectedword, .thes-topToolBar  {
+height : 30px !important;
+}
+.thes-selectedword ..x-btn-mc , .thes-topToolBar .x-btn-mc{
+height : 30px !important;
+}
+
+.thes-selectedword .x-btn-tl, 
+.thes-selectedword .x-btn-tc,
+.thes-selectedword .x-btn-tr,
+.thes-selectedword .x-btn-bl,
+.thes-selectedword .x-btn-bc,
+.thes-selectedword .x-btn-br,
+.thes-selectedword .x-btn-ml,
+.thes-selectedword .x-btn-mr,
+.thes-topToolBar .x-btn-tl, 
+.thes-topToolBar .x-btn-tc,
+.thes-topToolBar .x-btn-tr,
+.thes-topToolBar .x-btn-bl,
+.thes-topToolBar .x-btn-bc,
+.thes-topToolBar .x-btn-br,
+.thes-topToolBar .x-btn-ml,
+.thes-topToolBar .x-btn-mr
+{
+height : 0px;
+display : none   ;   
+}
+
+.thes-selectedword .x-toolbar-cell, .thes-topToolBar .x-toolbar-cell {
+	padding : 5px!important;
+	vertical-align : top;
+}
+
+.thes-topToolBar .x-toolbar{
+	height : 40px;
+}
+
+.x-tree-node , .x-tree-node ul{
+	margin : 0px !important;
+	paddig : 0px !important;
+}
+#content-col-main li {
+    background-image: none!important;
+    line-height: 1.4em;
+    margin-bottom: 7px;
+    padding-left: 15px;
+}
+.x-btn-tc {   
+    height: 0px !important;
+}
+
+#importcswform  form{
+display : inline !important;
+}
+
+#importMenu li a img {
+width : 0px ;
+display : none; 
+}
+
+#importMenu li a {
+width : 100% ;
+display : block; 
+}
+
+#importMenu li {
+width : 100% ;
+display : block;
+padding : 0px !important;
+margin : 0px !important;
+}

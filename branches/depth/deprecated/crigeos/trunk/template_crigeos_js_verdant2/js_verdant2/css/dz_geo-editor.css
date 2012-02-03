@@ -1,0 +1,681 @@
+
+
+/* at media print */
+@media print {
+
+	
+}
+
+/* ende media print */
+
+/* Header-login modifiziert durch DEPTH */
+#header-login{
+	text-align:right;
+   position: absolute;
+   top:45px;
+   left:790px;
+   width:180px;
+   overflow:hidden;
+} 
+
+.logout-button-text button{
+   margin-left: auto !important;
+   margin-right: 0px !important;
+} 
+
+
+
+
+/* Formular */
+div#divAdvancedSearch .searchTabs_calendar {
+	background-color:#FFF;
+}
+div#divAdvancedSearch img.ui-datepicker-trigger {
+	cursor:pointer;
+	margin-left:5px;
+	margin-right:10px;
+	vertical-align:text-bottom;
+}
+
+/* Druckanpassungen */
+div#printme_body form {
+	visibility:hidden;
+}
+
+/* Frontend table lists */
+.tableList {
+	border: 0;
+	margin-bottom: 20px;
+	line-height: 16px;
+	padding-top:5px;
+}
+
+.tableList .col {
+	padding: 5px 0;
+}
+
+.tableList .col {
+	margin: 0 !important;
+}
+
+.tableList .col .title {
+	font-size: 0.8em;
+	color: #515151;
+}
+
+.tableList .col .logo {
+	width:14px;
+}
+
+.tableList .col .logo2 {
+	width:28px;
+}
+
+.box-table {
+	border: 0;
+	border-collapse:collapse;
+	width:100%;
+}
+
+.box-table tr:hover td {
+	-moz-background-clip:border;
+	-moz-background-inline-policy:continuous;
+	-moz-background-origin:padding;
+	background:#a2c4ea none repeat scroll 0 0;
+}
+
+.box-table td {
+	-moz-background-clip:border;
+	-moz-background-inline-policy:continuous;
+	-moz-background-origin:padding;
+	padding:1px;
+}
+
+div#emptyPicto{
+	background-color:transparent;
+	background-image:url(../../crigeos/images/blank.gif);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+	padding-left:2px;
+	padding-right:2px;	
+}
+
+/* List Metadata Screen*/	
+div#editMetadata:hover{
+	cursor:pointer;
+}
+
+div#editMetadata{
+	background-color:transparent;
+	background-image:url(../../crigeos/icons/silk/pencil.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;	
+	padding-left:2px;
+	padding-right:2px;	
+}
+
+div#archiveMetadata:hover{
+	cursor:pointer;
+}
+
+div#archiveMetadata{
+	background-color:transparent;
+	background-image:url(../../crigeos/icons/silk/folder_database.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+	padding-left:2px;
+	padding-right:2px;	
+}
+
+div#invalidateMetadata:hover{
+	cursor:pointer;
+}
+
+div#invalidateMetadata{
+	background-color:transparent;
+	background-image:url(../../crigeos/icons/silk/arrow_undo.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+	padding-left:2px;
+	padding-right:2px;	
+}
+
+div#historyAssignMetadata:hover{
+	cursor:pointer;
+}
+
+div#historyAssignMetadata{
+	background-color:transparent;
+	background-image:url(../../crigeos/icons/silk/calendar.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;	
+	padding-left:2px;
+	padding-right:2px;	
+}
+
+.box-table .metadataActions{
+	width:80px;
+}
+
+.box-table .metadataActions div{
+	float:left;
+}
+
+/* List Object screen */
+div#listObjectVersion:hover {
+	cursor:pointer;
+}
+div#listObjectVersion {
+	background-color:transparent;
+	background-image:url(../../crigeos/icons/silk/page_white_stack.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;	
+	padding-left:2px;
+	padding-right:2px;	
+}
+
+div#editObject:hover{
+	cursor:pointer;
+}
+
+div#editObject{
+	background-color:transparent;
+	background-image:url(../../crigeos/icons/silk/pencil.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;	
+	padding-left:2px;
+	padding-right:2px;	
+}
+
+div#deleteObject:hover{
+	cursor:pointer;
+}
+
+div#deleteObject{
+	background-color:transparent;
+	background-image:url(../../crigeos/icons/silk/page_delete.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+	padding-left:2px;
+	padding-right:2px;	
+}
+
+.box-table .objectActions{
+	width:60px;
+}
+
+.box-table .objectActions div{
+	float:left;
+}
+
+/* List ObjectVersion screen */
+div#editObjectVersion:hover{
+	cursor:pointer;
+}
+
+div#editObjectVersion{
+	background-color:transparent;
+	background-image:url(../../crigeos/icons/silk/pencil.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;	
+	padding-left:2px;
+	padding-right:2px;	
+}
+
+div#manageObjectVersionLink:hover{
+	cursor:pointer;
+}
+
+div#manageObjectVersionLink{
+	background-color:transparent;
+	background-image:url(../../crigeos/icons/silk/link_edit.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+	padding-left:2px;
+	padding-right:2px;	
+}
+
+div#viewObjectVersionLink:hover{
+	cursor:pointer;
+}
+
+div#viewObjectVersionLink{
+	background-color:transparent;
+	background-image:url(../../crigeos/icons/silk/link.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+	padding-left:2px;
+	padding-right:2px;	
+}
+
+.box-table .objectversionActions{
+	width:80px;
+}
+
+.box-table .objectversionActions div{
+	float:left;
+}
+
+/* List Product */
+div#editProduct:hover{
+	cursor:pointer;
+}
+
+div#editProduct{
+	background-color:transparent;
+	background-image:url(../../crigeos/icons/silk/pencil.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;	
+	padding-left:2px;
+	padding-right:2px;	
+}
+
+div#editProductCheckedOut:hover{
+	cursor:pointer;
+}
+
+div#editProductCheckedOut{
+	background-color:transparent;
+	background-image:url(../../crigeos/icons/silk/lock_edit.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;	
+	padding-left:2px;
+	padding-right:2px;	
+}
+
+div#deleteProduct:hover{
+	cursor:pointer;
+}
+
+div#deleteProduct{
+	background-color:transparent;
+	background-image:url(../../crigeos/icons/silk/page_delete.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+	padding-left:2px;
+	padding-right:2px;	
+}
+
+.box-table .productActions{
+	width:40px;
+}
+
+.box-table .productActions div{
+	float:left;
+}
+
+/* List Account */
+div#editAffiliate:hover{
+	cursor:pointer;
+}
+
+div#editAffiliate{
+	background-color:transparent;
+	background-image:url(../../crigeos/icons/silk/pencil.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+	padding-left:2px;
+	padding-right:2px;	
+}
+
+div#deletableAffiliate:hover{
+	cursor:pointer;
+}
+
+.deletableAffiliate{
+	background-color:transparent;
+	background-image:url(../../crigeos/icons/silk/page_delete.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+	padding-left:2px;
+	padding-right:2px;	
+}
+
+.box-table .accountActions{
+	width:40px;
+}
+
+.box-table .accountActions div{
+	float:left;
+}
+
+/* Tabs Navigation */
+/* Copy of #global-nav a span */
+.AccountForm dl.tabs {
+    margin:0;
+}
+
+#affiliatePane.open{
+	background-color: #F0F0F0;
+	font-weight:bold;
+}
+
+#affiliatePane dl.tabs  {
+    margin:0;
+}
+
+dl.tabs dt {
+    display: block;
+    padding: 5px;
+    border-top:1px solid #97B832;
+    border-left:1px solid #97B832;
+    border-right:1px solid #97B832;
+    margin:0px 3px 0px 0px;
+    float:left;
+
+}
+
+
+.AccountForm  dl.tabs dt.open, .adminForm  dl.tabs dt.open, .productForm  dl.tabs dt.open{
+	background-color:#F0F0F0;
+	font-weight:bold;
+}
+
+.AccountForm  dl.tabs dt span:hover, .adminForm  dl.tabs dt span:hover, .productForm  dl.tabs dt span:hover {
+	font-weight:bold;
+}
+
+.AccountForm  dd, .adminForm dd, .productForm dd {
+	margin:0px 0px 20px 0px;
+	border:none;
+}
+ .AccountForm .current,.adminForm .current, .productForm .current {
+    display : block;
+    clear : both;
+    background-color: #F0F0F0;
+}
+
+.current dd{
+	border-bottom: 1px solid #97B832;
+    border-left: 1px solid #97B832;
+    border-right: 1px solid #97B832; 
+    margin-left:0px;
+}
+
+.AccountForm dd table {
+	border:none;
+	margin:0 !important;
+}
+/*--------------------------------------------------|
+| dTree 2.05 | www.destroydrop.com/javascript/tree/ |
+|---------------------------------------------------|
+| Copyright (c) 2002-2003 Geir Landry               |
+|--------------------------------------------------*/
+
+.dtree {
+	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	color: #666;
+	white-space: nowrap;
+	margin-top: 5px;
+	margin-left: 5px;
+	
+}
+.dtree img {
+	border: 0px;
+	vertical-align: middle;
+}
+.dtree a {
+	color: #333;
+	text-decoration: none;
+}
+.dtree a.node, .dtree a.nodeSel {
+	white-space: nowrap;
+	padding: 1px 2px 1px 2px;
+	
+}
+.dtree a.node:hover, .dtree a.nodeSel:hover {
+	color: #333;
+	text-decoration: underline;
+}
+.dtree a.nodeSel {
+	background-color: #c0d2ec;
+}
+.dtree .clip {
+	overflow: hidden;
+}
+
+.dtree table td {
+	float : left;
+	left : 0px;
+	
+}
+
+/* Form elements */
+
+
+
+/* Tables */
+.geo-editor dd table {
+	border:none;
+	margin:0 !important;
+}
+
+.geo-editor table th, .geo-editor .key, .geo-editor table {
+	font-size:12px !important;
+}
+
+
+.geo-editor table .ptitle, .geo-editor table .key {
+	width:153px;
+	text-align: right;
+}
+/* corrections for wrong .ptitle */
+.geo-editor table .ptitle + .ptitle {
+	text-align: left;
+}
+
+/* form tables */
+.geo-editor .x-toolbar-right-ct, .geo-editor .x-toolbar-right-ct tr, .geo-editor .x-toolbar-right-ct tr td,
+.geo-editor .x-toolbar-right-ct table, .geo-editor .x-toolbar-right-ct table tr, .geo-editor .x-toolbar-right-ct table tr td,
+.geo-editor .x-box-inner table, .geo-editor .x-box-inner table tr, .geo-editor .x-box-inner table tr td,
+.easysdi-table table, .easysdi-table tr, .easysdi-table tr td,
+.geo-editor .fieldset_properties table, .geo-editor .fieldset_properties table tr, .geo-editor .fieldset_properties table tr td,
+.geo-editor .row fieldset table table tr td, .geo-editor fieldset table table,
+.geo-editor .admintable, .geo-editor .admintable tr td,
+.geo-editor .easysdi-table table, .geo-editor .easysdi-table table tr, .geo-editor .easysdi table tr td,
+.geo-editor .contentin>table, .geo-editor .contentin>table tr, .geo-editor .contentin>table tr td,
+.geo-editor .adminForm > table, .geo-editor .adminForm > table tr, .geo-editor .adminForm > table tr td,
+.geo-editor .x-toolbar-ct, .geo-editor .x-toolbar-ct tr, .geo-editor .x-toolbar-ct tr td
+ { /* very much customised...!*/
+	border:none !important;	
+}
+
+
+.geo-editor .x-toolbar-ct, .geo-editor .x-toolbar-ct tr, .geo-editor .x-toolbar-ct tr td {
+	padding:0 !important;
+	margin:0 !important;
+}
+
+
+
+
+
+/* Fieldsets */
+.geo-editor fieldset.fieldset_properties, .geo-editor .row fieldset, .geo-editor .contentin fieldset {
+	border:none !important;
+}
+
+.geo-editor div.x-fieldset-bwrap fieldset  {
+	border:1px solid #97B7C8 !important;
+}
+
+
+.geo-editor div.x-form-element {
+	margin:0 !important;
+	padding:0 !important;
+	padding-left:0px !important; /* was 100px */
+}
+.geo-editor input.x-form-field, .geo-editor textarea.x-form-textarea {
+	margin:0 !important;
+	padding:0 !important;
+	width:450px !important;
+	font-family: Arial, Helvetica, sans-serif !important;
+}
+
+
+
+.geo-editor .x-superboxselect-input-field {
+	visibility: hidden;
+}
+
+.geo-editor .x-superboxselect-display-btns ul li {
+	background-image: none !important;
+}
+
+
+
+.geo-editor div.x-window input.x-form-field {
+	width:200px !important;
+}
+
+.geo-editor input.easysdi_shop_backend_datefield {
+	width:100px !important;
+}
+
+.geo-editor div.ux-mselect-fieldset {
+	position:relative !important;
+	left:173px !important;
+	top:-22px !important;
+}
+
+.geo-editor input.x-superboxselect-input-field {
+	width:150px !important;
+}
+
+/* Buttons Metadata */
+.geo-editor table.x-btn {
+	margin-right:3px !important;
+}
+
+
+.geo-editor fieldset legend {
+	font-weight:bold !important;	
+}
+
+.geo-editor .x-form-item {
+	font-family:Arial, Helvetica, sans-serif !important;
+}
+
+.geo-editor .x-form-item label {
+	width:163px !important;
+}
+
+.geo-editor .ux-mselect {
+	height:80px !important;
+}
+
+.geo-editor .x-combo-list {
+	width:300px !important;
+}
+
+/* Anpassen des Formulares f�r die Zeitst�nde */
+.geo-editor div#viewLinksOutput {
+	background-color:#FFF;
+}
+
+.geo-editor div#x-form-el-fromDate, .geo-editor div#x-form-el-toDate, .geo-editor div.x-form-field-wrap {
+	width:150px !important;
+	padding-left:0px !important;
+}
+
+.geo-editor div#ext-comp-1007 {
+	width:350px !important;
+}
+
+.geo-editor div#ext-comp-1008 {
+	width:350px !important;
+}
+
+.geo-editor div#ext-gen50 {
+	width:350px !important;
+}
+
+
+
+
+
+.geo-editor div#ext-comp-1008 label {
+	width:50px !important;
+}
+
+.geo-editor input#fromDate, .geo-editor input#toDate {
+	width:100px !important;
+}
+.geo-editor img#x-form-date-trigger {
+	left:150px !important;
+}
+/* Ende Formular Zeitst�nde */
+
+/* dtree */
+.geo-editor div.dtree td:first-child {
+	width:20% !important;
+}
+
+/* Pagination */
+.geo-editor .paging .info, .geo-editor .paging .select {
+	margin-left:0px !important;
+}
+
+/* x-panel-bwrap */
+.geo-editor .x-panel-bwrap .x-form-field {
+	left:80px;
+}
+.geo-editor .x-panel-bwrap .x-form-file-btn {
+	right:0px; /* Was left:320px; */
+}
+.geo-editor .x-panel-bwrap .x-form-field-wrap {
+	width:auto !important; /* was 500px */
+}
+
+.geo-editor .x-panel-bwrap .x-form-textarea {
+	/* width:auto !important; */
+}
+
+/* SBOX-WINDOW (Lightbox) */
+.geo-editor #sbox-window {
+	position : absolute !important;
+}
+
+/* Seitennummer */
+.geo-editor input.x-tbar-page-number {
+	width:20px !important;
+}
+
+.geo-editor table.x-toolbar-ct input.x-form-field {
+	left:0px !important;
+	width:150px !important;
+}
+

@@ -1,0 +1,15 @@
+.flexgrid_1,.flexgrid_2,.flexgrid_3,.flexgrid_4,.flexgrid_6{margin-left:.92%;margin-right:.92%;}
+.moduletablemenu ul li a span {background-position: 100% -131px;}
+
+#menu li:hover, #menu li.hover {  position: static;  }
+
+#menu ul ul li:hover, #menu li.hover { position: relative; }
+
+.moduletable.blue, .moduletable.grey, .moduletable.green, .moduletable.orange, .moduletable.red {
+	border: none;
+	padding:10px;
+}
+
+div.default div.yoo-carousel div.top {
+	background-color: #008ca6;
+}

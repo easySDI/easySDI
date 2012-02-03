@@ -1,0 +1,181 @@
+/* @override 
+	http://localhost/verdant/templates/js_verdant/css/templatestyle3.css
+*/
+
+/*--HEADER--*/
+
+#logo-text h1 a { color: #eee; }
+
+#logo-text h2 { color: #f5c158; }
+
+#logo-graphic h1 a {
+	background:transparent url(../images/style3/logo.png) no-repeat scroll 0 0;
+}
+
+#logo-graphic h2 {
+	display: none;
+}
+
+/*--MAIN MENU--*/
+#menuWrapper {
+	background-color: #f2a24c;
+	border-top: 1px solid #fff68e;
+}
+
+#menu ul li a {
+	border-right: 1px solid #fff68e;
+	color: #fff;
+	text-shadow: #6c7263 0 1px 1px;
+}
+
+#menu ul li.active, #menu ul li.current, #menu ul li a:hover {
+	background-color: #fff68e;
+}
+
+#menu ul li.active a, #menu ul li.current a, #menu ul li a:hover {
+	color: #000;
+}
+
+#menu ul li ul {
+	border-right: 1px solid #f2c143;
+	border-top: 1px solid #f2c143;
+	border-bottom: 1px solid #f2c143;
+	border-left: 1px solid #f2c143;
+	background: #fff68e;
+}
+ 
+#menu ul ul a, #menu ul li#current ul a {
+	color: #000;
+	border-bottom: 1px solid #f2c143;
+}
+ 
+#menu ul ul li a:hover, #menu ul li#current ul li a:hover {
+	background: #f2c143;
+}
+
+ul#topmenu li a {
+	color: #ccc;
+}
+
+ul#topmenu li.current a {
+	background-color: #333;
+	border: 1px solid #222;
+}
+
+ul#topmenu li a:hover {
+	color: #fff68e;
+}
+
+
+/*--BANNER--*/
+#banner_wrapper, #footerWrapper {
+	background: #b06014 url(../images/style3/gradients.png) repeat-x 0 -114px;
+}
+
+#banner .module, #footer .module {
+	background-color: #f4963e;
+	border-bottom: 1px solid #9c5510;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+	-webkit-box-shadow: 0 1px 0px #9c5510;
+	-moz-box-shadow: 0 1px 0px #9c5510;
+	box-shadow: 0 1px 0px #9c5510;
+	color: #fff;
+	behavior: url('templates/crigeos/css/PIE.htc');
+}
+
+#banner .module_body, #footer .module_body {
+	color: #fff !important;
+}
+
+#banner h3, #footer h3 { color: #172729; }
+
+#banner h3 span, #footer h3 span { color: #fff; }
+
+/*--SEC MENU--*/
+#menuWrapper2 {
+	background: #222 url(../images/style3/sub_gradient.png) repeat-x;
+}
+
+body.light #menuWrapper2 {
+	background: #eee url(../images/style3/sub_gradient_light.png) repeat-x;
+}
+
+/*--MAIN AREA--*/
+#main_wrapper {
+	background-color: #222;
+}
+
+#main_wrapper a {
+	color: #f5c158;
+	text-decoration: none;
+}
+
+#area_content h2 span, .moduletable h3 span, .module h3 span, .componentheading {
+	color: #f5c158;
+}
+
+#main_wrapper .maincontent h3 {
+	color: #999;	
+}
+
+.left .moduletable h3, .right .moduletable h3 {
+	color: #fff;
+}
+
+.leading {
+	background-color: #fff;	
+	border: 1px solid #ccc;
+}
+
+.left .moduletable ul li, .right .moduletable ul li {
+	margin-bottom: 1px;
+}
+
+.left .moduletable ul li a, .right .moduletable ul li a {
+	background-color: #333;
+	display: block;
+	padding: 5px;
+	font-size: 11px;
+}
+
+.left .moduletable ul li a:hover, .right .moduletable ul li a:hover {
+	background-color: #444;
+}
+
+body.light .left .moduletable ul li a, body.light .right .moduletable ul li a {
+	background-color: #fff;
+	display: block;
+	padding: 5px;
+	font-size: 11px;
+	color: #444 !important;
+}
+
+body.light .left .moduletable ul li a:hover, body.light .right .moduletable ul li a:hover {
+	background-color: #ccc;
+	color: #777 !important;
+}
+
+/*--FOOTER--*/
+#banner a, #footer a { color: #1e3135; }
+
+/*K2 Styles*/
+/* --- Zebra rows --- */
+.even {background: #f8f9fd;}
+.odd {background: #fff;}
+/* Article navigation */
+div#itemListLinks {background-color: #444;}
+div#itemListLinks h4 {color: #fff;}
+div.itemNavigation {background: #b06014;}
+div.itemNavigation span.itemNavigationTitle {color:#eee;}
+/* Author block */
+div.itemAuthorBlock {background: #b06014 url(../images/style3/gradients.png) repeat-x 0 -113px;}
+/* Comments */
+body.dark div.itemComments {background:#333;}
+/* --- Category block --- */
+#k2Container div.itemListCategory, #k2Container .leading {background: #b06014 url(../images/style3/gradients.png) repeat-x 0 -113px;}
+/* --- Sub-category block --- */
+div.subCategory {background: #f4f7fc;}
+/* User info block */
+div.userBlock {background: #b06014 url(../images/style3/gradients.png) repeat-x 0 -113px;}
