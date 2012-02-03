@@ -39,6 +39,7 @@ function submitbutton(pressbutton){
 			return;
 		}
 		
+		
 		submitform(pressbutton);
 	}
 	else
@@ -158,8 +159,10 @@ function setConfigVersion (){
 	if(supportedVersionByServer.length == 0){
 		alert('<?php echo  JText::_( 'PROXY_CONFIG_NEGOTIATION_VERSION_FAILED');?>');
 		document.getElementById("negotiatedVersion").value='NA';
-		document.getElementById("negotiatedVersionText").removeChild(document.getElementById("negotiatedVersionText").firstChild) ; 
-		document.getElementById("negotiatedVersionText").appendChild(document.createTextNode('NA' )) ;
+		removeAllElementChild( document.getElementById("supportedVersionByConfigText"));
+		document.getElementById("supportedVersionByConfigText").appendChild(createSupportedVersionByConfigTable(new Array('NA'))) ;
+		/*document.getElementById("negotiatedVersionText").removeChild(document.getElementById("negotiatedVersionText").firstChild) ; 
+		document.getElementById("negotiatedVersionText").appendChild(document.createTextNode('NA' )) ;*/
 		return;
 	}
 	for(var i = 0;i < supportedVersionByServer.length;i++){
@@ -167,8 +170,10 @@ function setConfigVersion (){
 		{
 			alert('<?php echo  JText::_( 'PROXY_CONFIG_NEGOTIATION_VERSION_FAILED');?>');
 			document.getElementById("negotiatedVersion").value='NA';
-			document.getElementById("negotiatedVersionText").removeChild(document.getElementById("negotiatedVersionText").firstChild) ; 
-			document.getElementById("negotiatedVersionText").appendChild(document.createTextNode('NA' )) ;
+			removeAllElementChild( document.getElementById("supportedVersionByConfigText"));
+			document.getElementById("supportedVersionByConfigText").appendChild(createSupportedVersionByConfigTable(new Array('NA'))) ;
+			/*document.getElementById("negotiatedVersionText").removeChild(document.getElementById("negotiatedVersionText").firstChild) ; 
+			document.getElementById("negotiatedVersionText").appendChild(document.createTextNode('NA' )) ;*/
 			return;
 		}
 	}
@@ -187,15 +192,11 @@ function setConfigVersion (){
 				break;
 			}else{
 				if (j == supportedVersionByServer[i].length-1 && i == supportedVersionByServer.length-1){
-				/*	if(aNupportedVersionByConfig.contains(sNegotiatedVersion))
-						aNupportedVersionByConfig.remove(sNegotiatedVersion);*/
 					sNegotiatedVersion = 'NA';
 				}
 				if (j == supportedVersionByServer[i].length-1){
 					v= v+1;
 					i=0;
-				/*	if(aNupportedVersionByConfig.contains(sNegotiatedVersion))
-						aNupportedVersionByConfig.remove(sNegotiatedVersion);*/
 					sNegotiatedVersion = supportedVersionByServer[i][v];
 				}
 			}
@@ -203,24 +204,68 @@ function setConfigVersion (){
 	}
 
 	
-	var aNupportedVersionByConfig = new Array();
+	var aNupportedVersionByConfig = supportedVersionByServer[0];
+	i = 1;
+	v = 0;
 	var sCurrentVersion = supportedVersionByServer[0][0];
+	
 	while (i < supportedVersionByServer.length)	{		
 		for(var j = 0 ; j < supportedVersionByServer[i].length ; j++){
 			if(sCurrentVersion == supportedVersionByServer[i][j]){
-				if(!aNupportedVersionByConfig.contains(sCurrentVersion))
-					aNupportedVersionByConfig.push(sCurrentVersion);
-
-				sCurrentVersion = supportedVersionByServer[i][j];
+				if( i == supportedVersionByServer.length - 1 && v < supportedVersionByServer[0].length -1){
+					v = v+1;
+					i = 1;
+					sCurrentVersion = supportedVersionByServer[0][v];
+				}else{
+					i = i+1;
+				}
 				break;
+			}else if (j == supportedVersionByServer[i].length-1 ){
+				if(aNupportedVersionByConfig.contains(sCurrentVersion))
+					aNupportedVersionByConfig = aNupportedVersionByConfig.remove(sCurrentVersion);
+				if (v < supportedVersionByServer[0].length -1 ){
+					v = v+1;
+					i = 1;
+					sCurrentVersion = supportedVersionByServer[0][v];
+				}else{
+					i = supportedVersionByServer.length;
+					break;
+				}
 			}
 		}
 	}
 
 	document.getElementById("negotiatedVersionByConfig").value=JSON.stringify(aNupportedVersionByConfig);
 	document.getElementById("negotiatedVersion").value=sNegotiatedVersion;
-	document.getElementById("negotiatedVersionText").removeChild(document.getElementById("negotiatedVersionText").firstChild) ; 
-	document.getElementById("negotiatedVersionText").appendChild(document.createTextNode(sNegotiatedVersion )) ; 
+	//document.getElementById("supportedVersionByConfigText").removeChild(document.getElementById("supportedVersionByConfigText").firstChild) ; 
+	removeAllElementChild( document.getElementById("supportedVersionByConfigText"));
+	document.getElementById("supportedVersionByConfigText").appendChild(createSupportedVersionByConfigTable(aNupportedVersionByConfig)) ; 
+}
+
+function removeAllElementChild (cell){
+	if ( cell.hasChildNodes() )
+	{
+	    while ( cell.childNodes.length >= 1 )
+	    {
+	        cell.removeChild( cell.firstChild );       
+	    } 
+	}
+}
+
+function createSupportedVersionByConfigTable(aNupportedVersionByConfig){
+	var table = document.createElement('table');
+	var tr = document.createElement('tr');
+	table.appendChild(tr);
+	
+	for( var i = 0 ; i < aNupportedVersionByConfig.length ; i++ ){
+		var td = document.createElement('td');
+		var text = document.createTextNode(aNupportedVersionByConfig[i]);
+		td.setAttribute("class","supportedversion");
+		td.appendChild(text);
+		tr.appendChild(td);
+	}
+
+	return table;
 }
 
 /**
@@ -244,7 +289,7 @@ Array.prototype.remove = function(obj) {
 Array.prototype.contains = function(obj) {
     var i = this.length;
     while (i--) {
-        if (this[i] === obj) {
+        if (this[i] == obj) {
             return true;
         }
     }

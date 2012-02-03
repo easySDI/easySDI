@@ -1605,9 +1605,7 @@ class ADMIN_proxy
 				//Servlet class
 				$servletClass = JRequest::getVar("servletClass");
 				$config->{'servlet-class'}=$servletClass;
-				//GetCapabilities version
-				$servletVersion = JRequest::getVar("servletVersion");
-				$config->{'servlet-version'}=$servletVersion;
+				
 				//Negotiated version				
 				$negotiatedVersion = JRequest::getVar("negotiatedVersion");
 				$config->{'negotiated-version'}=$negotiatedVersion;
@@ -1901,7 +1899,7 @@ class ADMIN_proxy
 		
 		$completeurl = "";
 		foreach ($versions_array as $version){
-			$completeurl = $urlWithPassword.$separator."REQUEST=GetCapabilities&version=".$servletVersion."&SERVICE=".$service."&VERSION=".$version;
+			$completeurl = $urlWithPassword.$separator."REQUEST=GetCapabilities&SERVICE=".$service."&VERSION=".$version;
 			$xmlCapa = simplexml_load_file($completeurl);
 			
 			if ($xmlCapa === false){

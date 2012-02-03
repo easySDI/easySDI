@@ -135,28 +135,18 @@ echo $pane->endPanel();
 	 * - host translator
 	 * @param unknown_type $config
 	 */
-	function genericServletInformationsHeader ($config, $configId, $servletClass, $availableServletList,$availableVersion,$servletVersion,$serviceType)
+	function genericServletInformationsHeader ($config, $configId, $servletClass, $availableServletList,$availableVersion,$serviceType)
 	{
 		$negotiatedVersionByConfigArray = array();
 		foreach($config->{"supported-versions"}->{"version"} as $versionConfig){
 			array_push($negotiatedVersionByConfigArray,(string) $versionConfig);
 		}
 		
-		echo "Service : ".$serviceType;
 		?>
 		<div id="progress">
-			<img id="progress_image"  src="components/com_easysdi_proxy/templates/images/ajax-loader.gif" alt=""> 
-			<p><?php echo JText::_( 'EASYSDI_PROXY_VERSION_NEGOCIATION' );?></p>
+			<img id="progress_image"  src="components/com_easysdi_proxy/templates/images/loader.gif" alt="">
 		</div>
-		<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_CONFIG ID' );?></legend>
-			<table class="admintable">
-				<tr>
-					<td colspan="4"><input type='text' name='newConfigId'
-						value='<?php echo $configId;?>'></td>
-				</tr>
-			</table>
-			</fieldset>
-			<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_SERVLET TYPE' );?></legend>
+		<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_SERVLET TYPE' );?></legend>
 			<table class="admintable">
 				<tr>
 					<td>
@@ -169,10 +159,40 @@ echo $pane->endPanel();
 						<input type="checkbox" name="harvestingConfig" value="1" <?php if($config->{"harvesting-config"}=="true"){echo "checked";}?> />
 					</td>
 					<?php }?>
+					
+				</tr>
+			</table>
+		</fieldset>
+		<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_CONFIG ID' );?></legend>
+			<table class="admintable">
+				<tr>
 					<th>
-					<?php echo JText::_( 'EASYSDI_PROXY_NEGOTIATED_VERSION' );?> : 
+					<?php echo JText::_( 'EASYSDI_PROXY_ID' );?> : 
 					</th>
-					<td class="supportedversion" id="negotiatedVersionText" ><?php echo $config->{'negotiated-version'};?>
+					<td colspan="4"><input type='text' name='newConfigId'
+						value='<?php echo $configId;?>'>
+					</td>
+				</tr>
+				<tr>
+					<th>
+					<?php echo JText::_( 'EASYSDI_VERSION' );?> : 
+					</th>
+					<td  id="supportedVersionByConfigText" >
+					<table>
+					<tr>
+					<?php 
+					foreach ($negotiatedVersionByConfigArray as $vc){
+						?>
+						<td class="supportedversion">
+						<?php 
+						echo $vc;
+						?>
+						</td>
+						<?php 
+					}
+					?>
+					</tr>
+					</table>
 					</td>
 					<td>
 						<input type="hidden" id="negotiatedVersion" name="negotiatedVersion" value="<?php echo $config->{'negotiated-version'};?>"></input>
@@ -180,7 +200,8 @@ echo $pane->endPanel();
 					</td>
 				</tr>
 			</table>
-			</fieldset>
+		</fieldset>
+			
 			
 			<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_HOST TRANSLATOR'); ?></legend>
 			<table class="admintable">
@@ -607,7 +628,7 @@ echo $pane->endPanel();
 
 				$policyFile = $config->{'authorization'}->{'policy-file'};
 				$servletClass =  $config->{'servlet-class'};
-				$servletVersion =  $config->{'servlet-version'};
+				$servletVersion =  $config->{'negotiated-version'};
 				
 			if (!file_exists($policyFile)){
 					global $mainframe;		

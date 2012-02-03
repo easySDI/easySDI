@@ -151,14 +151,13 @@ class HTML_proxyWFS {
 			foreach ($xml->config as $config) {
 				if (strcmp($config['id'],$configId)==0){
 					$servletClass=$config->{'servlet-class'};
-					$servletVersion=$config->{'servlet-version'};
 					$keywordString = "";
 					foreach ($config->{"service-metadata"}->{'KeywordList'}->Keyword as $keyword)
 					{
 						$keywordString .= $keyword .",";
 					}
 					$keywordString = substr($keywordString, 0, strlen($keywordString)-1) ;
-					HTML_proxy::genericServletInformationsHeader ($config, $configId, "org.easysdi.proxy.wfs.WFSProxyServlet", $availableServletList,$availableVersion,$servletVersion,JRequest::getVar('serviceType'))
+					HTML_proxy::genericServletInformationsHeader ($config, $configId, "org.easysdi.proxy.wfs.WFSProxyServlet", $availableServletList,$availableVersion,"WFS")
 					?>
 					<fieldset class="adminform" id="service_metadata" ><legend><?php echo JText::_( 'PROXY_CONFIG_FS_SERVICE_METADATA'); ?></legend>
 					<table class="admintable" >
