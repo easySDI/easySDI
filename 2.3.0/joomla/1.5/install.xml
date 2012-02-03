@@ -1,0 +1,35 @@
+<?xml version="1.0"  ?>
+<install version="1.5" type="component">
+	<name>EasySDI_proxy</name>
+	<version>2.3.0</version>
+	<releaseDate>2012-01-20</releaseDate>
+    <releaseType>Major update</releaseType>
+	<creationDate>January 2011</creationDate>
+	<author>Depth.ch</author>
+	<authorEmail>easysdi@depth.ch</authorEmail>
+	<authorUrl>www.depth.ch</authorUrl>
+	<copyright></copyright>
+	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
+	<description>
+		Administration tool for the easysdi proxy.
+	</description>				
+	<installfile>install.easysdi_proxy.php</installfile>
+	<uninstallfile>uninstall.easysdi.php</uninstallfile>
+	<administration>
+		<files>
+			<filename>admin.easysdi_proxy.php</filename>
+			<filename>license.txt</filename>
+			<folder>core</folder>
+			<folder>language</folder>		
+			<folder>templates</folder>	
+			<folder>js</folder>
+			<folder>lib</folder>
+		</files>
+		<languages folder="./language/admin">
+			<language tag="fr-FR">fr-FR.com_easysdi_proxy.ini</language>
+			<language tag="en-GB">en-GB.com_easysdi_proxy.ini</language>
+			<language tag="de-DE">de-DE.com_easysdi_proxy.ini</language>
+		</languages>
+	</administration>	
+</install>
+
