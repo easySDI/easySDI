@@ -1,0 +1,58 @@
+<?xml version="1.0" ?>
+<project default="sync" basedir=".">
+
+	<property name="projet.out.dir" value="out" />
+
+
+	<target name="com_easysdi" depends="create-structure,compression"
+		description="Main target">
+
+	</target>
+
+	<target name="create-structure">
+		<echo>Creating the working directory structure</echo>
+		<delete>
+			<fileset dir="${projet.out.dir}" includes="*" />
+		</delete>
+		<mkdir dir="${projet.out.dir}" />
+	</target>
+
+	<target name="compression" description="Compression">
+
+		<jar compress="true" jarfile="${projet.out.dir}/com_easysdi_proxy.zip"
+			basedir="." excludes="config/** ; com_easysdi_proxy/** ; out/** , .cache/** , .svn/** , .settings/** , .project, .prefs, build.xml" />
+	</target>
+
+	<target name="sync" description="Copy from here to apache">
+		<copy
+			todir="C:\www\Server\rwgisv2\administrator\components\com_easysdi_proxy">
+			<fileset dir=".">
+				<include name="**/*.php" />
+				<include name="**/*.xsl" />
+				<include name="**/*.inc" />
+				<include name="**/*.jar" />
+				<include name="**/*.xml" />
+				<include name="**/*.png" />
+				<include name="**/*.ttf" />
+				<include name="**/*.txt" />
+				<include name="**/*.css" />
+				<include name="**/*.js" />
+			</fileset>
+		</copy>
+
+		<copy		   
+		   todir="C:\www\Server\rwgisv2\administrator\language\fr-FR">
+		     <fileset dir="./language/admin">
+		      <include name="**/fr-FR.com_easysdi_proxy.ini" />
+		     </fileset>
+		    </copy>
+		<copy		   
+		   todir="C:\www\Server\rwgisv2\administrator\language\en-GB">
+		     <fileset dir="./language/admin">
+		      <include name="**/en-GB.com_easysdi_proxy.ini" />
+		     </fileset>
+		   </copy>
+	</target>
+
+
+</project>
