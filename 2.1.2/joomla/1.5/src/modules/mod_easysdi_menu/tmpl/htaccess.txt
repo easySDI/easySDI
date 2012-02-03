@@ -1,0 +1,120 @@
+##
+# @version $Id: htaccess.txt 13415 2009-11-03 15:53:25Z ian $
+# @package Joomla
+# @copyright Copyright (C) 2005 - 2008 Open Source Matters. All rights reserved.
+# @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
+# Joomla! is Free Software
+##
+
+
+#####################################################
+#  READ THIS COMPLETELY IF YOU CHOOSE TO USE THIS FILE
+#
+# The line just below this section: 'Options +FollowSymLinks' may cause problems
+# with some server configurations.  It is required for use of mod_rewrite, but may already
+# be set by your server administrator in a way that dissallows changing it in
+# your .htaccess file.  If using it causes your server to error out, comment it out (add # to
+# beginning of line), reload your site in your browser and test your sef url's.  If they work,
+# it has been set by your server administrator and you do not need it set here.
+#
+#####################################################
+
+<Files .htaccess>
+order allow,deny
+deny from all
+</Files>
+
+### SEUL LE FICHIER index.php EST SERVI COMME PREMIER FICHIER PAR DEFAUT. LES AUTRES SONT INTERDITS
+DirectoryIndex index.php
+
+### INTERDIRE LES AUTRES TYPES DE FICHIER INDEX
+<Files ~ "^(index)\.(p?s?x?htm?|txt|aspx?|cfml?|cgi|pl|php[3-9]|jsp|xml)$">
+order allow,deny
+deny from all
+</Files>
+
+### INTERDIRE L'AFFICHAGE DE CERTAINS FORMATS DE FICHIER
+### EXÉCUTÉS PAR LE SERVEUR MAIS INTERDIT D'AFFICHAGE PAR LE NAVIGATEUR WEB
+<Files ~ "\.(inc|class|sql|ini|conf|exe|dll|bin|tpl|bkp|dat|c|h|py|spd|theme|module)$">
+deny from all
+</Files>
+
+### INTERDIRE L'AFFICHAGE DE CERTAINS FICHIERS COMME config, option, login, setup, install, admin.
+### A ADAPTER SI CELA POSE PROBLEME
+<Files ~ "^((wp-)?config(\.inc)?|configure|configuration|login|options?\.inc|option|settings?(\.inc)?|functions?(\.inc)?|setup(\.inc)?|default|home|main|install?|errors?|hacke?r?d?|[-_a-z0-9.]*mafia[-_a-z0-9.]*|[-_a-z0-9.]*power[-_a-z0-9.]*|[-_a-z0-9.]*jihad[-_a-z0-9.]*|php|shell|ssh|root|cmd|[0-9]{1,6}|test|data)\.(p?s?x?htm?l?|txt|aspx?|cfml?|cgi|pl|php[3-9]{0,1}|jsp?|sql|xml)$">
+order allow,deny
+deny from all
+</Files>
+
+
+##  Can be commented out if causes errors, see notes above.
+Options +FollowSymLinks
+
+#
+#  mod_rewrite in use
+
+RewriteEngine On
+
+########## Begin - Rewrite rules to block out some common exploits
+## If you experience problems on your site block out the operations listed below
+## This attempts to block the most common type of exploit `attempts` to Joomla!
+#
+# Block out any script trying to set a mosConfig value through the URL
+RewriteCond %{QUERY_STRING} mosConfig_[a-zA-Z_]{1,21}(=|\%3D) [OR]
+# Block out any script trying to base64_encode crap to send via URL
+RewriteCond %{QUERY_STRING} base64_encode.*\(.*\) [OR]
+# Block out any script that includes a <script> tag in URL
+RewriteCond %{QUERY_STRING} (\<|%3C).*script.*(\>|%3E) [NC,OR]
+# Block out any script trying to set a PHP GLOBALS variable via URL
+RewriteCond %{QUERY_STRING} GLOBALS(=|\[|\%[0-9A-Z]{0,2}) [OR]
+# Block out any script trying to modify a _REQUEST variable via URL
+RewriteCond %{QUERY_STRING} _REQUEST(=|\[|\%[0-9A-Z]{0,2}) [OR]
+RewriteCond %{QUERY_STRING} ^(.*)(%3D|=)http(%3A|:)(/|%2F){2}(.*)$ [NC,OR] ## ATTENTION A CETTE REGLE. ELLE PEUT CASSER CERTAINES REDIRECTIONS RESSEMBLANT A: http://www.truc.fr/index.php?r=http://www.google.fr ##
+
+# Block SQL
+RewriteCond %{QUERY_STRING} ^(.*)(SELECT|INSERT|DELETE|CHAR\(|UPDATE|REPLACE|LIMIT)(.*)$
+# Send all blocked request to homepage with 403 Forbidden error!
+RewriteRule ^(.*)$ index.php [F,L]
+#
+########## End - Rewrite rules to block out some common exploits
+
+###FILTRE CONTRE ROBOTS DES PIRATES ET ASPIRATEURS DE SITE WEB
+### LISTE ICI: http://www.bg-pro.com/?goto=badbot
+## EXCEPTION: TOUS LES ROBOTS MEMES ANONYMES OU BANNIS PEUVENT ACCEDER A CES FICHIERS
+RewriteCond %{REQUEST_URI} !^/robots.txt
+RewriteCond %{REQUEST_URI} !^/sitemap.xml
+## EXCEPTION: SI UTILISATION DE *PAYPAL INSTANT NOTIFICATION PAYMENT*, COMME PAYPAL N'UTILISE PAS DE HTTP_USER_AGENT, L'IPN NE MARCHERA PAS.
+RewriteCond %{REQUEST_URI} !^/paypal-ipn.php
+##
+RewriteCond %{HTTP_USER_AGENT} ^-?$ [OR] ## ANONYMES
+RewriteCond %{HTTP_USER_AGENT} ^[bcdfghjklmnpqrstvwxz\ ]{8,}|^[0-9a-z]{15,}|^[0-9A-Za-z]{19,}|^[A-Za-z]{3,}\ [a-z]{4,}\ [a-z]{4,} [OR] ## CEUX QUI INVENTENT DES NOMS AU HASARD
+RewriteCond %{HTTP_USER_AGENT} ^<sc|8484\ Boston\ Project|autoemailspider|@nonymouse|ADSARobot|Advanced\ Email\ Extractor|^adwords|ah-ha|aktuelles|amzn_assoc|Anarchie|anonymous|Art-Online|ASPSeek|ASSORT|ATHENS|Atomz|attach|autoemailspider|BackWeb|Bandit|BatchFTP|bdfetch|big.brother|BlackWidow|blogsearchbot-martin|bmclient|Boston\ Project|BravoBrian\ SpiderEngine\ MarcoPolo|Bullseye|bumblebee|capture|CherryPicker|ChinaClaw|CICC|clipping|compatible\ \;|Crescent|Crescent\ Internet|Custo|cyberalert|Deweb|diagem|Digger|Digimarc|DIIbot|DirectUpdate|disco|DISCoFinder|Downloader|Download\ Accelerator|Download\ Demon|Download\ Wonder|Drip|DSurf15a|DTS.Agent|EasyDL|eCatch|echo\ extense|ecollector|efp@gmx\.net|EirGrabber|EmailCollector|EmailSiphon|Email\ Siphon|EmailWolf|Email\ Extractor|Express\ WebPictures|ExtractorPro [NC,OR] ## VRAIS ET FAUX ROBOTS NE RESPECTANT PAS LES REGLES
+RewriteCond %{HTTP_USER_AGENT} EyeNetIE|fastlwspider|FavOrg|Favorites\ Sweeper|^Fetch|FEZhead|FileHound|flashget|FlashGet\ WebWasher|FlickBot|fluffy|frontpage|GalaxyBot|Generic|Getleft|GetRight|GetSmart|GetWeb!|GetWebPage|gigabaz|Girafabot|Go!Zilla|go-ahead-got-it|GornKer|Grabber|GrabNet|Grafula|Green\ Research|grub-client|grub\ crawler|hanzoweb|Harvest|hhjhj@yahoo|hloader|HMView|HomePageSearch|HTTPConnect|httpdown|httplib|HttpProxy|HTTP\ agent|http\ generic|HTTrack|ia_archive|IBM_Planetwide|IDBot|id-search|imagefetch|Image\ Stripper|Image\ Sucker|IncyWincy|Indy\ Library|informant|Ingelin|InterGET|InternetLinkAgent|InternetSeer\.com|^Internet\ Explorer|Internet\ Ninja|IPiumBot|Iria|Irvine|Jakarta\ Commons|JBH*Agent [NC,OR] ## VRAIS ET FAUX ROBOTS NE RESPECTANT PAS LES REGLES
+RewriteCond %{HTTP_USER_AGENT} JetCar|JOC|JOC\ Web\ Spider|JustView|Kapere|KWebGet|Lachesis|larbin|LeechFTP|LexiBot|lftp|likse|Link*Sleuth|LINKS\ ARoMATIZED|LinkWalker|Mac\ Finder|Mag-Net|Magnet|Mass\ Downloader|MCspider|Microsoft\ URL|Microsoft\ Data|MIDown\ tool|minibot\(NaverRobot\)|Mirror|Missigua|Mister\ PiX|MJ12bot|MMMtoCrawl\/UrlDispatcherLLL|Movable\ Type|Moozilla|^Mozilla$|^MSIE|Murzillo|MSProxy|multithreaddb|nationaldirectory|Navroad|NearSite|NetAnts|NetCarta|NetMechanic|netprospector|NetResearchServer|NetSpider|NetZIP|NetZippy|NetZip\ Downloader|Net\ Vampire|NEWT|nicerspro|NICErsPRO|NPBot|Nutch|Nutscrape/|Octopus|Offline\ Explorer|Offline\ Navigator|OmniExplorer|OpaL|Openfind|OpenTextSiteCrawler [NC,OR] ## VRAIS ET FAUX ROBOTS NE RESPECTANT PAS LES REGLES
+RewriteCond %{HTTP_USER_AGENT} OrangeBot|PackRat|PageGrabber|Papa\ Foto|pavuk|pcBrowser|PersonaPilot|PingALink|Pockey|Program\ Shareware|Proxy|psbot|PSurf|psycheclone|^puf|Pump|PushSite|PussyCat|PycURL|python|QRVA|QuepasaCreep|RealDownload|Reaper|Recorder|ReGet|replacer|RepoMonkey|almaden|Robozilla|Rover|RPT-HTTPClient|Rsync|SearchExpress|searchhippo|searchterms\.it|Second\ Street\ Research|Seeker|Shai|sitecheck|SiteMapper|SiteSnagger|SlySearch|SmartDownload|snagger|SpaceBison|Spegla|SpiderBot|SqWorm|Star\ Downloader|Stripper|sucker|SuperBot|SuperHTTP|Surfbot|SurfWalker|SurveyBot|Szukacz|tAkeOut|tarspider|Teleport\ Pro|Telesoft|Templeton|TrackBack|TrueRobot|Turing|TurnitinBot [NC,OR] ## VRAIS ET FAUX ROBOTS NE RESPECTANT PAS LES REGLES
+RewriteCond %{HTTP_USER_AGENT} TV33_Mercator|UIowaCrawler|URL_Spider_Pro|^user|^User\ Agent:\ |^User-Agent:\ |UtilMind|Vacuum|vagabondo|vayala|visibilitygap|vobsub|VoidEYE|vspider|w3mir|WebaltBot|WebAuto|webbandit|WebCapture|Webclipping|webcollage|webcollector|WebCopier|webcraft@bea|WebDAV|webdevil|webdownloader|Webdup|WebEmailExtractor|WebFetch|WebGo\ IS|WebHook|Webinator|WebLeacher|WEBMASTERS|WebMiner|WebMirror|webmole|WebReaper|WebSauger|WEBsaver|Website\ eXtractor|Website\ Quester|WebSnake|Webster|WebStripper|websucker|webvac|webwalk|webweasel|WebWhacker|WebZIP|Web\ Data\ Extractor|Web\ Downloader|Web\ Image\ Collector|Web\ Sucker|web\.by\.mail|whizbang|WhosTalking|Widow|Widows|WISEbot|WISEnutbot|WUMPUS|Wweb|WWWOFFLE|Wysigot|x-Tractor|Xaldon\ WebSpider|XGET|Yandex|Zeus|Zeus.*Webster [NC] ## VRAIS ET FAUX ROBOTS NE RESPECTANT PAS LES REGLES
+RewriteCond %{HTTP_USER_AGENT} ^curl|^Fetch\ API\ Request|GT\:\:WWW|^HTTP\:\:Lite|httplib|^Java/1.|^Java\ 1.|^LWP|libWeb|libwww|^PEAR|PECL\:\:HTTP|PHPCrawl|^Program\ Shareware|python|Rsync|Snoopy|^URI\:\:Fetch|WebDAV|^Wget [NC] ## BIBLIOTHEQUES / CLASSES HTTP DONT ON NE VEUT PAS. ATTENTION, CELA PEUT BLOQUER CERTAINES FONCTIONS DE VOTRE CMS. NE PAS TOUT EFFACER, MAIS CHERCHEZ LE NOM DE LA CLASSE HTTP CONCERNEE (DEMANDEZ AUX DEVELOPPEURS DE VOTRE CMS). CETTE LISTE BLOQUE 80% DES ROBOTS SPAMMEURS. IL FAUT LA CONSERVER.
+RewriteRule (.*) - [F]
+
+
+RewriteCond %{HTTP_HOST} ^asitvd.ch/
+RewriteRule (.*) http://www.asitvd.ch//$1 [R=301,L]
+
+
+#  Uncomment following line if your webserver's URL
+#  is not directly related to physical file paths.
+#  Update Your Joomla! Directory (just / for root)
+
+# RewriteBase /
+
+
+########## Begin - Joomla! core SEF Section
+#
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} !^/index.php
+RewriteCond %{REQUEST_URI} (/|\.php|\.html|\.htm|\.feed|\.pdf|\.raw|/[^.]*)$  [NC]
+RewriteRule (.*) index.php
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization},L]
+#
+########## End - Joomla! core SEF Section
