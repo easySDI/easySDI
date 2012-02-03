@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configurations>
+	<config id="PROXY-ACV">
+		<servlet-class>
+			ch.depth.proxy.wfs.WFSProxyServlet
+		</servlet-class>
+
+		<remote-server-list>
+			<remote-server>
+				<url>http://cartoserver.vd.ch/ogcasit/wfs</url>
+				<user>asitvd</user>
+				<password>d0ubleVMS</password>
+				<prefix />
+			</remote-server>
+
+			<max-request-number>100</max-request-number>
+		</remote-server-list>
+		<authorization>
+			<policy-file>
+				D:\\DEPTH\\Projets\\projets\\eclipse\\workspace\\Proxy\\WebContent\\NewPolicy.xml
+			</policy-file>
+		</authorization>
+		<log-config>
+			<file-structure>
+				<path>/home/users/asitvd/tomcat/logs/</path>
+				<suffix>asitvd</suffix>
+				<prefix>wfs</prefix>
+				<extension>xml</extension>
+				<period>daily</period>
+			</file-structure>
+
+			<date-format>dd/MM/yyyy HH:mm:ss</date-format>
+		</log-config>
+		<xslt-path>
+			<url></url>
+		</xslt-path>
+	</config>
+
+
+
+
+	<config id="CGP2">
+
+		<!--WFS,WMS,CGP,CSW,....-->
+		<servlet-class>
+			ch.depth.proxy.cgp.CGPProxyServlet
+		</servlet-class>
+		<remote-server-list>
+			<remote-server>
+				<url>
+					https://geonetwork.asitvd.ch/geonetwork/srv/en/csw
+				</url>
+				<user></user>
+				<password></password>
+				<max-records>50</max-records>
+				<login-service>
+					https://geonetwork.asitvd.ch/geonetwork/srv/en/xml.user.login?username=admin&amp;password=admin
+				</login-service>
+			</remote-server>
+		</remote-server-list>
+		<authorization>
+			<policy-file>
+				D:\\DEPTH\\Projets\\projets\\eclipse\\workspace\\Proxy\\WebContent\\policy.xml
+			</policy-file>
+		</authorization>
+		<log-config>
+			<file-structure>
+				<!--c://logs//cgp.20071102.depth.xml-->
+				<path>c://logs/</path>
+				<suffix>depth</suffix>
+				<prefix>cgp</prefix>
+				<extension>xml</extension>
+				<period>daily,monthly,weekly,annually</period>
+			</file-structure>
+			<log-entry>
+				<date-format>dd/MM/yyyy HH:mm:ss</date-format>
+				<date>true</date>
+				<mode>All,Debug,Info, ...</mode>
+			</log-entry>
+		</log-config>
+
+
+		<xslt-path>
+			<path></path>
+		</xslt-path>
+
+
+	</config>
+	<config id="CGP">
+		<servlet-class>
+			ch.depth.proxy.cgp.CGPProxyServlet
+		</servlet-class>
+		<remote-server-list>
+			<remote-server>
+				<url>
+					https://geonetwork.asitvd.ch/geonetwork/srv/en/csw
+				</url>
+				<user></user>
+				<password></password>
+				<max-records>50</max-records>
+				<login-service>
+					https://geonetwork.asitvd.ch/geonetwork/srv/en/xml.user.login?username=admin&amp;password=admin
+				</login-service>
+			</remote-server>
+		</remote-server-list>
+		<log-config>
+			<url>C:\\cgp.log</url>
+			<date-format>dd/MM/yyyy HH:mm:ss</date-format>
+		</log-config>
+		<xslt-path>
+			<url></url>
+		</xslt-path>
+	</config>
+	<config id="WMS">
+		<servlet-class>
+			ch.depth.proxy.wms.WMSProxyServlet
+		</servlet-class>
+		<host-translator></host-translator>
+		<remote-server-list>
+			<!--remote-server>
+				<url>http://ecadastre.public.lu:8081/public/wfs/BDLTC</url>
+				<user></user>
+				<password></password>	
+				<prefix/>
+				</remote-server-->
+			<remote-server>
+				<url>
+					http://ecadastre.public.lu:8081/cad_lux/wfs/PCN
+				</url>
+				<user></user>
+				<password></password>
+				<prefix />
+			</remote-server>
+			<max-request-number>10</max-request-number>
+		</remote-server-list>
+		<authorization>
+			<policy-file>
+				D:\\DEPTH\\Projets\\projets\\eclipse\\workspace\\Proxy\\WebContent\\NewPolicy.xml
+			</policy-file>
+		</authorization>
+		<log-config>
+			<file-structure>
+				<!--c://logs//cgp.20071102.depth.xml-->
+				<path>c://</path>
+				<suffix>depth</suffix>
+				<prefix>wms</prefix>
+				<extension>xml</extension>
+				<period>daily</period>
+			</file-structure>
+			<date-format>dd/MM/yyyy HH:mm:ss</date-format>
+		</log-config>
+		<xslt-path>
+			<url></url>
+		</xslt-path>
+	</config>
+
+	<config id="wfs-ogc-carrouge">
+		<servlet-class>
+			ch.depth.proxy.wfs.WFSProxyServlet
+		</servlet-class>
+		<remote-server-list>
+			<remote-server>
+				<url>http://asit-vd.vserver.nimag.net/ogc-carrouge</url>
+				<!--user></user>
+					<password></password-->
+			</remote-server>
+		</remote-server-list>
+		<!--authorization>
+			<policy-file>D:\\DEPTH\\Projets\\projets\\eclipse\\workspace\\Proxy\\WebContent\\policyWFS.xml</policy-file>		
+			</authorization-->
+		<log-config>
+			<file-structure>
+				<path>c:/</path>
+				<suffix>wfs</suffix>
+				<prefix>carrouge</prefix>
+				<extension>xml</extension>
+				<period>daily</period>
+			</file-structure>
+
+			<date-format>dd/MM/yyyy HH:mm:ss</date-format>
+		</log-config>
+		<xslt-path>
+			<url></url>
+		</xslt-path>
+	</config>
+
+	<config id="wms-ogc-carrouge">
+		<servlet-class>
+			ch.depth.proxy.wms.WMSProxyServlet
+		</servlet-class>
+		<remote-server-list>
+			<remote-server>
+				<url>http://asit-vd.vserver.nimag.net/ogc-carrouge</url>
+				<!--user></user>
+					<password></password-->
+			</remote-server>
+		</remote-server-list>
+		<!--authorization>
+			<policy-file>D:\\DEPTH\\Projets\\projets\\eclipse\\workspace\\Proxy\\WebContent\\policyWFS.xml</policy-file>		
+			</authorization-->
+		<log-config>
+			<file-structure>
+				<path>c:/</path>
+				<suffix>wms</suffix>
+				<prefix>carrouge</prefix>
+				<extension>xml</extension>
+				<period>daily</period>
+			</file-structure>
+			<date-format>dd/MM/yyyy HH:mm:ss</date-format>
+		</log-config>
+		<xslt-path>
+			<url></url>
+		</xslt-path>
+	</config>
+
+
+	<config id="CARTOSERVER">
+		<servlet-class>
+			ch.depth.proxy.wms.WMSProxyServlet
+		</servlet-class>
+		<remote-server-list>
+			<remote-server>
+				<url>http://cartoserver.vd.ch/ogcasit/wms</url>
+				<user></user>
+				<password></password>
+			</remote-server>
+		</remote-server-list>
+		<authorization>
+			<policy-file>
+				D:\\DEPTH\\Projets\\projets\\eclipse\\workspace\\Proxy\\WebContent\\policyCARTOSERVER.xml
+			</policy-file>
+		</authorization>
+		<log-config>
+			<file-structure>
+				<path>c:/</path>
+				<suffix>wms</suffix>
+				<prefix>cartoserver</prefix>
+				<extension>xml</extension>
+				<period>daily</period>
+			</file-structure>
+			<date-format>dd/MM/yyyy HH:mm:ss</date-format>
+		</log-config>
+		<xslt-path>
+			<url></url>
+		</xslt-path>
+	</config>
+
+
+	<config id="WFS">
+		<servlet-class>
+			ch.depth.proxy.wfs.WFSProxyServlet
+		</servlet-class>
+		<availability-period>
+			<from>
+				<date>28 Mai 2008 12:08:56</date>
+				<mask>d MMM yyyy HH:mm:ss</mask>
+			</from>
+			<to>
+				<date>28 Mai 2108 17:30:56</date>
+				<mask>d MMM yyyy HH:mm:ss</mask>
+			</to>
+		</availability-period>
+		<remote-server-list>
+			<remote-server>
+				<url>
+					http://www.ecadastre.public.lu:8081/cad_lux/wfs/PCN
+				</url>
+				<user></user>
+				<password></password>
+				<prefix />
+			</remote-server>
+			<!--remote-server>
+				<url>http://www.ecadastre.public.lu:8081/public/wfs/BDLTC</url>
+				<user></user>
+				<password></password>
+				<prefix/>	
+				</remote-server-->
+
+			<max-request-number>100</max-request-number>
+		</remote-server-list>
+		<authorization>
+			<policy-file>
+				D:\\DEPTH\\Projets\\projets\\eclipse\\workspace\\Proxy\\WebContent\\NewPolicy.xml
+			</policy-file>
+		</authorization>
+		<log-config>
+			<file-structure>
+				<path>c:/</path>
+				<suffix>act</suffix>
+				<prefix>wfsPCN</prefix>
+				<extension>xml</extension>
+				<period>daily</period>
+			</file-structure>
+
+			<date-format>dd/MM/yyyy HH:mm:ss</date-format>
+		</log-config>
+		<xslt-path>
+			<url></url>
+		</xslt-path>
+	</config>
+
+	<config id="CSW">
+		<servlet-class>
+			ch.depth.proxy.csw.CSWProxyServlet
+		</servlet-class>
+		<remote-server-list>
+			<remote-server>
+				<url>http://asitvd.ch:8082/geonetwork/srv/en/csw</url>
+				<user></user>
+				<password></password>
+				<login-service>
+					http://asitvd.ch:8082/geonetwork/srv/en/xml.user.login?username=admin&amp;password=admin
+				</login-service>
+			</remote-server>
+		</remote-server-list>
+		<authorization>
+			<policy-file>
+				D:\\DEPTH\\Projets\\projets\\eclipse\\workspace\\Proxy\\WebContent\\NewPolicy.xml
+			</policy-file>
+			<user></user>
+			<password></password>
+		</authorization>
+		<log-config>
+			<file-structure>
+				<path>c:/</path>
+				<suffix>asit</suffix>
+				<prefix>csw</prefix>
+				<extension>xml</extension>
+				<period>daily</period>
+			</file-structure>
+			<date-format>dd/MM/yyyy HH:mm:ss</date-format>
+		</log-config>
+	</config>
+</configurations>
