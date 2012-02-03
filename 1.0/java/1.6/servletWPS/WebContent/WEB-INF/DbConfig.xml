@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+        <!--  MYSQL -->
+		<DB_MANUFACTURER>mysql</DB_MANUFACTURER>
+		<DB_NAME>publish_server</DB_NAME>
+		<!-- The HSQL driver used to connect to the DB -->
+		<CONNECTION_DRIVER>com.mysql.jdbc.Driver</CONNECTION_DRIVER>
+		<!-- The jdbc URL to the HSQLDB server -->
+		<CONNECTION_URL>jdbc:mysql://localhost</CONNECTION_URL>
+		<!-- The jdbc Username for the HSQLDB server -->
+		<CONNECTION_USER>root</CONNECTION_USER>
+		<!-- The jdbc password for the HSQLDB server -->
+		<CONNECTION_PASSWORD></CONNECTION_PASSWORD>
+		
+		<!-- The default Publish configuration values at least needed
+		for the application to run. Then we can edit the configuration
+		at runtime.  -->
+		<!-- The diffuser enums -->
+		<diffuser_type>mapserver,geoserver</diffuser_type>
+		<!-- The geodatabase enums -->
+		<geodatabase_type>postgis</geodatabase_type>
+		<!-- The transformator_type tool -->
+		<transformator_type>fme,sdi,geokeetle</transformator_type>
+		<!-- The transformator -->
+		<transformator>MySDI,sdi</transformator>
+		<!-- The default diffuser geodatabase -->
+		<!-- dbname, url, username, password, schema, geodatabase_type -->
+		<geodatabase>postgislocalhost,jdbc:postgresql://localhost:5432/postgis,postgres,mypassword,public,postgis</geodatabase>
+		<!--  the default diffuser -->
+		<!-- name, url, username, password, diffuser_type -->
+		<diffuser>postgislocalhost,diffuserlocalhost,http://localhost:8080/geoserver,admin,geoserver,geoserver</diffuser>
+		<!-- The layerstatus enum -->
+		<layerstatus>published,unpublished,undefined</layerstatus>
+		<!-- the main ogr script -->
+		<!-- transformer, name, location, command, arguments, conditions, requiredFiles -->
+		<script>MySDI,OGR, , , , , </script>
+		<!-- List All File Types -->
+		<!-- Handled File Types -->
+		<SupportedTransformedFileTypes>MockType,OGR</SupportedTransformedFileTypes>
+		<!-- Associate File Types With A Concrete Transformer-->
+		<!-- Handled File Name -->
+		<!-- Concrete Transformer -->
+		<MockType>eu.bauel.publish.transformation.plugin.MockTransformer</MockType>
+		<!-- Handled File Name -->
+		<!-- Concrete Transformer -->
+		<OGR>eu.bauel.publish.transformation.plugin.OGRTransformer</OGR>
+		<!--  HSQLDB -->
+		<!-- Persistence configuration and access. A HSQL database is used -->
+		<!-- <DB_MANUFACTURER>hsqldb</DB_MANUFACTURER> -->
+        <!-- The HSQL Database name. Will be created in the public schema -->
+		<!--<HSQL_DB_NAME>WpsPublish20</HSQL_DB_NAME> -->
+		<!--<HSQL_DB_LOCATION>C:\Users\Utilisateur\temp\</HSQL_DB_LOCATION> -->
+		<!-- The HSQL driver used to connect to the DB -->
+		<!--<HSQL_CONNECTION_DRIVER>org.hsqldb.jdbcDriver</HSQL_CONNECTION_DRIVER> -->
+		<!-- The jdbc URL to the HSQLDB server -->
+		<!--<HSQL_CONNECTION_URL>jdbc:hsqldb:hsql://localhost</HSQL_CONNECTION_URL> -->
+		<!-- The jdbc Username for the HSQLDB server -->
+		<!--<HSQL_CONNECTION_USER>sa</HSQL_CONNECTION_USER> -->
+		<!-- The jdbc password for the HSQLDB server -->
+		<!--<HSQL_CONNECTION_PASSWORD></HSQL_CONNECTION_PASSWORD> -->
+		
+</CONFIG>

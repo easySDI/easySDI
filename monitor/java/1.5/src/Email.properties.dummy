@@ -1,4 +1,0 @@
-sender = monitor@monitor.com
-smtp.host = monserveur
-smtp.password = monMotDePasse
-smtp.user = monUtilisateur
