@@ -1,0 +1,15 @@
+<?xml version="1.0"  ?>
+<install version="1.5" type="module">
+	<name>mod_easysdi_caddy</name>
+	<version>2.1.0</version>
+	<creationDate>February 2010</creationDate>
+	<author>Depth.ch</author>
+	<authorEmail>easysdi@depth.ch</authorEmail>
+	<authorUrl>www.depth.ch</authorUrl>
+	<copyright></copyright>
+	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
+	<description>module to manage the caddy.</description>
+	<files>
+		<filename module="mod_easysdi_caddy">mod_easysdi_caddy.php</filename>
+	</files>
+</install>
