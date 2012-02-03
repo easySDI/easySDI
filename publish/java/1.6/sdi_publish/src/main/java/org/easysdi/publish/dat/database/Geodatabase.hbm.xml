@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="org.easysdi.publish.biz.database">
+	<class name="Geodatabase" table="geodatabase" lazy="false">
+		<id name="geodatabaseId" type="long" column="ID_GEODATABASE">
+			<generator class="org.hibernate.id.enhanced.TableGenerator">
+				<param name="table_name">last_ids</param>
+				<param name="value_column_name">LAST_ID</param>
+				<param name="segment_column_name">TABLE_NAME</param>
+				<param name="segment_value">GEODATABASE</param>
+				<param name="initial_value">1</param>
+				<param name="increment_size">1</param>
+			</generator>
+		</id>
+		<property name="name" type="string" length="100" column="NAME"></property>
+		<property name="url" type="string" length="200" column="URL"></property>
+		<property name="user" type="string" length="100" column="USERNAME"></property>
+		<property name="pwd" type="string" length="100" column="PASSWORD"></property>
+		<property name="scheme" type="string" length="100" column="SCHEME"></property>
+		<property name="geodatabaseTypeId" type="long" column="TYPE" lazy="false"></property>
+		<property name="template" type="string" length="100" column="TEMPLATE"></property>	
+	</class>
+</hibernate-mapping>

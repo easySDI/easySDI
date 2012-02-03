@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="org.easysdi.publish.biz.layer">
+	<class name="Layer" table="layer" lazy="false">
+		<id name="layerId" type="long" column="ID_LAYER">
+			<generator class="org.hibernate.id.enhanced.TableGenerator">
+				<param name="table_name">last_ids</param>
+				<param name="value_column_name">LAST_ID</param>
+				<param name="segment_column_name">TABLE_NAME</param>
+				<param name="segment_value">LAYER</param>
+				<param name="initial_value">1</param>
+				<param name="increment_size">1</param>
+			</generator>
+		</id>
+		<many-to-one name="featureSource"
+			class="org.easysdi.publish.biz.layer.FeatureSource" column="ID_FEATURESOURCE"
+			lazy="false"></many-to-one>
+		<property name="guid" type="string" length="100" column="GUID"></property>
+		<property name="keywordList" type="string" length="1000"
+			column="KEYWORDLIST"></property>
+		<property name="name" type="string" length="100" column="NAME"></property>		
+		<property name="title" type="string" length="100" column="TITLE"></property>
+		<property name="description" type="string" length="100"
+			column="DESCRIPTION"></property>
+		<property name="status" type="string" length="20" column="STATUS"></property>
+		<property name="quality_area" type="string" length="100" column="QUALITY_AREA"></property>
+		<property name="_abstract" type="string" length="100" column="ABSTRACT"></property>
+		<property name="style" type="string" length="100" column="STYLE"></property>
+		<property name="creationDate" type="calendar_date" column="CREATION_DATE"></property>
+		<property name="updateDate" type="calendar_date" column="UPDATE_DATE"></property>
+	</class>
+</hibernate-mapping>
