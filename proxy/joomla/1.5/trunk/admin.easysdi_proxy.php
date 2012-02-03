@@ -51,6 +51,8 @@ $document = &JFactory::getDocument();
 
 global $mainframe;
 
+require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'model'.DS.'sditable.easysdi.class.php');
+require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'ogc.service.easysdi.class.php');
 
 $configFilePath = config_easysdi::getValue("PROXY_CONFIG");
 $xml = simplexml_load_file(config_easysdi::getValue("PROXY_CONFIG", null,LIBXML_COMPACT));
@@ -332,6 +334,23 @@ switch($task){
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'proxy.admin.easysdi.php');
 		
 		HTML_proxy::helpGeoGraphicalFilter();
+		break;
+	case 'negociateVersionForServer' :
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'proxy.toolbar.easysdi.html.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'proxy.admin.easysdi.html.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'proxy.WMTS.admin.easysdi.html.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'proxy.WMS.admin.easysdi.html.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'proxy.CSW.admin.easysdi.html.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'proxy.WFS.admin.easysdi.html.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'proxy.admin.easysdi.php');
+		
+		$url = JRequest::getVar("url");
+		$user = JRequest::getVar("user");
+		$password = JRequest::getVar("password");
+		$service = JRequest::getVar("service");
+		$availableVersions = JRequest::getVar("availableVersions");
+		ADMIN_PROXY::negociateVersionForServer($url,$user,$password,$service, $availableVersions);
+		die();
 		break;
 	case 'cancelConfigList':
 	case 'cancelComponentConfig':

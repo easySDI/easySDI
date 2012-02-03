@@ -195,6 +195,191 @@ function com_install(){
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 	}
+	if($version == "2.3.0"){
+		
+		$query="CREATE TABLE IF NOT EXISTS `#__sdi_ogcservice` (
+					  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+					  `guid` varchar(36) NOT NULL,
+					  `code` varchar(20),
+					  `name` varchar(50) NOT NULL,
+					  `description` varchar(100),
+					  `created` datetime NOT NULL,
+					  `updated` datetime,
+					  `createdby` bigint(20),
+					  `updatedby` bigint(20),
+					  `label` varchar(50),
+					  `ordering` bigint(20),
+					   `servletclass` varchar(100),
+					  PRIMARY KEY (`id`),
+					  UNIQUE KEY `guid` (`guid`),
+					  UNIQUE KEY `code` (`code`)
+					) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
+		
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			return false;
+		}
+		
+		$query="INSERT INTO #__sdi_ogcservice (guid, code, name, description, created, createdby,servletclass)
+											   VALUES ('".helper_easysdi::getUniqueId()."', 'WMS', 'WMS', 'WMS', '".date('Y-m-d H:i:s')."', '".$user_id."', 'org.easysdi.proxy.wms.WMSProxyServlet')";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			return false;
+		}
+		$wms_id = $db->insertid();
+		
+		$query="INSERT INTO #__sdi_ogcservice (guid, code, name, description, created, createdby,servletclass)
+													   VALUES ('".helper_easysdi::getUniqueId()."', 'WFS', 'WFS', 'WFS', '".date('Y-m-d H:i:s')."', '".$user_id."', 'org.easysdi.proxy.wfs.WFSProxyServlet')";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			return false;
+		}
+		$wfs_id = $db->insertid();
+		
+		$query="INSERT INTO #__sdi_ogcservice (guid, code, name, description, created, createdby,servletclass)
+													   VALUES ('".helper_easysdi::getUniqueId()."', 'WMTS', 'WMTS', 'WMTS', '".date('Y-m-d H:i:s')."', '".$user_id."', 'org.easysdi.proxy.wmts.WMTSProxyServlet')";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			return false;
+		}
+		$wmts_id = $db->insertid();
+		
+		$query="INSERT INTO #__sdi_ogcservice (guid, code, name, description, created, createdby)
+													   VALUES ('".helper_easysdi::getUniqueId()."', 'CSW', 'CSW', 'CSW', '".date('Y-m-d H:i:s')."', '".$user_id."', 'org.easysdi.proxy.csw.CSWProxyServlet')";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			return false;
+		}
+		$csw_id = $db->insertid();
+		
+		$query="CREATE TABLE IF NOT EXISTS `#__sdi_ogcversion` (
+							  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+							  `guid` varchar(36) NOT NULL,
+							  `code` varchar(20),
+							  `name` varchar(50) NOT NULL,
+							  `description` varchar(100),
+							  `created` datetime NOT NULL,
+							  `updated` datetime,
+							  `createdby` bigint(20),
+							  `updatedby` bigint(20),
+							  `label` varchar(50),
+							  `ordering` bigint(20),
+							  PRIMARY KEY (`id`),
+							  UNIQUE KEY `guid` (`guid`),
+							  UNIQUE KEY `code` (`code`)
+							) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
+		
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			return false;
+		}
+		
+		$query="INSERT INTO #__sdi_ogcversion (guid, code, name, description, created, createdby)
+																	VALUES ('".helper_easysdi::getUniqueId()."', '2.0.2', '2.0.2', '2.0.2', '".date('Y-m-d H:i:s')."', '".$user_id."')";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			return false;
+		}
+		$v202 = $db->insertid();
+		
+		$query="INSERT INTO #__sdi_ogcversion (guid, code, name, description, created, createdby)
+																	VALUES ('".helper_easysdi::getUniqueId()."', '2.0.1', '2.0.1', '2.0.1', '".date('Y-m-d H:i:s')."', '".$user_id."')";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			return false;
+		}
+		$v201 = $db->insertid();
+		
+		$query="INSERT INTO #__sdi_ogcversion (guid, code, name, description, created, createdby)
+															VALUES ('".helper_easysdi::getUniqueId()."', '2.0.0', '2.0.0', '2.0.0', '".date('Y-m-d H:i:s')."', '".$user_id."')";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			return false;
+		}
+		$v200 = $db->insertid();
+		
+		$query="INSERT INTO #__sdi_ogcversion (guid, code, name, description, created, createdby)
+													VALUES ('".helper_easysdi::getUniqueId()."', '1.3.0', '1.3.0', '1.3.0', '".date('Y-m-d H:i:s')."', '".$user_id."')";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			return false;
+		}
+		$v130 = $db->insertid();
+		
+		$query="INSERT INTO #__sdi_ogcversion (guid, code, name, description, created, createdby)
+													VALUES ('".helper_easysdi::getUniqueId()."', '1.1.1', '1.1.1', '1.1.1', '".date('Y-m-d H:i:s')."', '".$user_id."')";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			return false;
+		}
+		$v111 = $db->insertid();
+		
+		$query="INSERT INTO #__sdi_ogcversion (guid, code, name, description, created, createdby)
+													VALUES ('".helper_easysdi::getUniqueId()."', '1.1.0', '1.1.0', '1.1.0', '".date('Y-m-d H:i:s')."', '".$user_id."')";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			return false;
+		}
+		$v110 = $db->insertid();
+		
+		$query="INSERT INTO #__sdi_ogcversion (guid, code, name, description, created, createdby)
+															VALUES ('".helper_easysdi::getUniqueId()."', '1.0.0', '1.0.0', '1.0.0', '".date('Y-m-d H:i:s')."', '".$user_id."')";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			return false;
+		}
+		$v100 = $db->insertid();
+		
+		$query="CREATE TABLE IF NOT EXISTS `#__sdi_ogcservice_version` (
+									  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+									  `ogcservice_id` bigint(20),
+									  `ogcversion_id` bigint(20),
+									  PRIMARY KEY (`id`)
+									) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			return false;
+		}
+		
+		$query="INSERT INTO #__sdi_ogcservice_version (ogcservice_id,ogcversion_id)
+							VALUES ($wms_id,$v130),
+							 ($wms_id,$v110),
+							 ($wms_id,$v111),
+							 ($wfs_id,$v100),
+							 ($csw_id,$v202),
+							 ($csw_id,$v201),
+							 ($csw_id,$v200),
+							 ($wmts_id,$v100)
+		";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			return false;
+		}
+		
+		// Update component version
+		$version="2.4.0";
+		$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='PROXY'";
+		$db->setQuery( $query);
+		if (!$db->query())
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+	}
 
 	$query = "DELETE FROM #__components where `option`= 'com_easysdi_proxy' ";
 	$db->setQuery( $query);

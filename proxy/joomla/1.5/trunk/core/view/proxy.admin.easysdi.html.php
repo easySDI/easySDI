@@ -135,23 +135,23 @@ echo $pane->endPanel();
 	 * - host translator
 	 * @param unknown_type $config
 	 */
-	function genericServletInformationsHeader ($config, $configId, $servletClass, $availableServletList,$availableVersion,$servletVersion)
+	function genericServletInformationsHeader ($config, $configId, $servletClass, $availableServletList,$availableVersion,$serviceType)
 	{
+		$supportedVersionsByConfigArray = array();
+		foreach($config->{"supported-versions"}->{"version"} as $versionConfig){
+			array_push($supportedVersionsByConfigArray,(string) $versionConfig);
+		}
+		
 		?>
-		<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_CONFIG ID' );?></legend>
-			<table class="admintable">
-				<tr>
-					<td colspan="4"><input type='text' name='newConfigId'
-						value='<?php echo $configId;?>'></td>
-				</tr>
-			</table>
-			</fieldset>
-			<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_SERVLET TYPE' );?></legend>
-			
+		<div id="progress">
+			<img id="progress_image"  src="components/com_easysdi_proxy/templates/images/loader.gif" alt="">
+		</div>
+		<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_SERVLET TYPE' );?></legend>
 			<table class="admintable">
 				<tr>
 					<td>
-					<?php echo JHTML::_("select.genericlist",$availableServletList, 'servletClass', 'size="1" onChange="submit()"', 'value', 'text', $servletClass ); ?>
+					<?php 
+					echo JHTML::_("select.genericlist",$availableServletList, 'servletClass', 'size="1" onChange="submit()"', 'value', 'text', $servletClass ); ?>
 					</td>
 					<?php if ($servletClass == "org.easysdi.proxy.csw.CSWProxyServlet"){?>
 					<td>
@@ -159,9 +159,48 @@ echo $pane->endPanel();
 						<input type="checkbox" name="harvestingConfig" value="1" <?php if($config->{"harvesting-config"}=="true"){echo "checked";}?> />
 					</td>
 					<?php }?>
+					
 				</tr>
 			</table>
-			</fieldset>
+		</fieldset>
+		<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_CONFIG ID' );?></legend>
+			<table class="admintable">
+				<tr>
+					<th>
+					<?php echo JText::_( 'EASYSDI_PROXY_ID' );?> : 
+					</th>
+					<td colspan="4"><input type='text' name='newConfigId'
+						value='<?php echo $configId;?>'>
+					</td>
+				</tr>
+				<tr>
+					<th>
+					<?php echo JText::_( 'EASYSDI_VERSION' );?> : 
+					</th>
+					<td  id="supportedVersionsByConfigText" >
+					<table>
+					<tr>
+					<?php 
+					foreach ($supportedVersionsByConfigArray as $vc){
+						?>
+						<td class="supportedversion">
+						<?php 
+						echo $vc;
+						?>
+						</td>
+						<?php 
+					}
+					?>
+					</tr>
+					</table>
+					</td>
+					<td>
+						<input type="hidden" id="supportedVersionsByConfig" name="supportedVersionsByConfig" value='<?php echo json_encode ($supportedVersionsByConfigArray); ?>'></input>
+					</td>
+				</tr>
+			</table>
+		</fieldset>
+			
 			
 			<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_HOST TRANSLATOR'); ?></legend>
 			<table class="admintable">
@@ -179,21 +218,31 @@ echo $pane->endPanel();
 					<th><?php echo JText::_( 'EASYSDI_URL'); ?></th>
 					<th><?php echo JText::_( 'EASYSDI_USER'); ?></th>
 					<th><?php echo JText::_( 'EASYSDI_PASSWORD'); ?></th>
+					<th colspan="6"><?php echo JText::_( 'EASYSDI_VERSION'); ?></th>
 				</tr>
 				</thead>
-				<tbody id="remoteServerTable" ><?php
+				<tbody id="remoteServerTable" >
+				<?php
 				$remoteServerList = $config->{'remote-server-list'};
 				$iServer=0;
 				foreach ($remoteServerList->{'remote-server'} as $remoteServer){
 					?><tr id="remoteServerTableRow<?php echo $iServer;?>">
 							<td><input type="text" name="ALIAS_<?php echo $iServer;?>" id="ALIAS_<?php echo $iServer;?>" value="<?php echo $remoteServer->alias; ?>" size=20></td>
-							<td><input type="text" name="URL_<?php echo $iServer;?>" value="<?php echo $remoteServer->url; ?>" size=70></td>
-							<td><input name="USER_<?php echo $iServer;?>" type="text" value="<?php echo $remoteServer->user; ?>"></td>
-							<td><input name="PASSWORD_<?php echo $iServer;?>" type="password" value="<?php echo $remoteServer->password; ?>">	
-							<?php if ($iServer > 0){?>			
-							<input id="removeServerButton" type="button" onClick="javascript:removeServer(<?php echo $iServer;?>);" value="<?php echo JText::_( 'EASYSDI_REMOVE' ); ?>">
-							<?php }?>
+							<td><input type="text" id="URL_<?php echo $iServer;?>" name="URL_<?php echo $iServer;?>" value="<?php echo $remoteServer->url; ?>" size=70></td>
+							<td><input id="USER_<?php echo $iServer;?>" name="USER_<?php echo $iServer;?>" type="text" value="<?php echo $remoteServer->user; ?>"></td>
+							<td><input id="PASSWORD_<?php echo $iServer;?>" name="PASSWORD_<?php echo $iServer;?>" type="password" value="<?php echo $remoteServer->password; ?>">	</td>
+							<td>
+								<a href="#" onclick="javascript:negoVersionServer(<?php echo $iServer;?>,'<?php echo $serviceType; ?>', '<?php echo str_replace('"','&quot;',json_encode ($availableVersion)); ?>');" >
+									<img class="helpTemplate" src="../templates/easysdi/icons/silk/arrow_switch.png" alt="<?php echo JText::_("EASYSDI_VERSION") ?>"/>
+								</a>
 							</td>
+							<td><?php HTML_proxy::getTableVersionForService ($iServer,$remoteServer,$servletClass,$availableVersion)?></td>
+							<?php if ($iServer > 0){?>	
+							<td >		
+							<input id="removeServerButton" type="button" onClick="javascript:removeServer(<?php echo $iServer;?>);" value="<?php echo JText::_( 'EASYSDI_REMOVE' ); ?>">
+							</td>
+							<?php }?>
+							
 					</tr>
 					<?php if ($servletClass == "org.easysdi.proxy.csw.CSWProxyServlet"){?>
 					<tr>						
@@ -220,9 +269,41 @@ echo $pane->endPanel();
 			
 			<script>
 			var nbServer = <?php echo $iServer?>;
+			var service = '<?php echo $serviceType?>';
+			var availableVersions = <?php echo json_encode ($availableVersion); ?>;
 			</script>
 			
 		<?php 
+	}
+	
+	function getTableVersionForService ($iServer,$remoteServer,$serviceType,$availableVersion){
+		$array_version = array();
+		foreach ($remoteServer->{"supported-versions"}->{"version"} as $version){
+			$array_version[]=$version;
+		}?>
+		<table>
+		<tr>
+		<?php 
+		foreach ($availableVersion as $version){
+			if (in_array($version,$array_version)){
+				?>
+				<td class="supportedversion" id="<?php echo $version;?>_<?php echo $iServer;?>"><?php echo $version;?>
+				<input type='hidden' name="<?php echo $version;?>_<?php echo $iServer;?>_state" id="<?php echo $version;?>_<?php echo $iServer;?>_state" value="supported" >
+				</td>
+				<?php 
+			}else{
+				?>
+				<td class="unsupportedversion" id="<?php echo $version;?>_<?php echo $iServer;?>"><?php echo $version;?>
+				<input type='hidden' name="<?php echo $version;?>_<?php echo $iServer;?>_state" id="<?php echo $version;?>_<?php echo $iServer;?>_state" value="unsupported" >
+				</td>
+				<?php
+			}
+			 
+		}
+		?>
+		</tr>
+		</table>
+		<?php
 	}
 	
 	/**
@@ -369,8 +450,6 @@ echo $pane->endPanel();
 		$option = JRequest::getVar('option');
 		$configId = JRequest::getVar("configId");
 		$policyId = JRequest::getVar("policyId");
-//		$task = JRequest::getVar("task");
-		
 		$limitstart = JRequest::getVar('limitstart',0);
 		$limit = JRequest::getVar('limit',$mainframe->getCfg('list_limit'));
 		$search = JRequest::getVar('search','');
@@ -543,41 +622,45 @@ echo $pane->endPanel();
 		
 		foreach ($xml->config as $config) {
 			if (strcmp($config['id'],$configId)==0){
-
 				$policyFile = $config->{'authorization'}->{'policy-file'};
 				$servletClass =  $config->{'servlet-class'};
-				$servletVersion =  $config->{'servlet-version'};
+				$servletVersion =  "";
+				foreach($config->{"supported-versions"}->{"version"} as $versionConfig){
+					if(strcmp($servletVersion, $versionConfig)< 0){
+						$servletVersion = $versionConfig;
+					}
+				}
 				
-			if (!file_exists($policyFile)){
-					global $mainframe;		
-					$mainframe->enqueueMessage(JText::_(  'EASYSDI_UNABLE TO LOAD THE POLICY FILE. PLEASE VERIFY THAT THE FILE EXISTS.' ),'error');
-			}
+				if (!file_exists($policyFile)){
+						global $mainframe;		
+						$mainframe->enqueueMessage(JText::_(  'EASYSDI_UNABLE TO LOAD THE POLICY FILE. PLEASE VERIFY THAT THE FILE EXISTS.' ),'error');
+				}
 			
 				if (file_exists($policyFile)) {
 					$xmlConfigFile = simplexml_load_file($policyFile);
 				
 					if($new){
 						
-				$thePolicy  = $xmlConfigFile->addChild('Policy');
-				$thePolicy ['Id']="new Policy";
-				$policyId=$thePolicy ['Id'];
-				$thePolicy ['ConfigId']=$configId;
-				$thePolicy ->Servers['All']="false";
-				$thePolicy ->Subjects['All']="false";
-				$thePolicy ->Operations['All']="true";
-				$thePolicy ->AvailabilityPeriod->Mask="dd-mm-yyyy";
-				$thePolicy ->AvailabilityPeriod->From->Date="28-01-2008";
-				$thePolicy ->AvailabilityPeriod->To->Date="28-01-2108";				
-				}else{
-					foreach ($xmlConfigFile->Policy as $policy){
-
-						if (strcmp($policy['Id'],$policyId)==0  && strcmp($policy['ConfigId'],$configId)==0){								
-							$thePolicy = $policy;
-							break;
-
+					$thePolicy  = $xmlConfigFile->addChild('Policy');
+					$thePolicy ['Id']="new Policy";
+					$policyId=$thePolicy ['Id'];
+					$thePolicy ['ConfigId']=$configId;
+					$thePolicy ->Servers['All']="false";
+					$thePolicy ->Subjects['All']="false";
+					$thePolicy ->Operations['All']="true";
+					$thePolicy ->AvailabilityPeriod->Mask="dd-mm-yyyy";
+					$thePolicy ->AvailabilityPeriod->From->Date="28-01-2008";
+					$thePolicy ->AvailabilityPeriod->To->Date="28-01-2108";				
+					}else{
+						foreach ($xmlConfigFile->Policy as $policy){
+	
+							if (strcmp($policy['Id'],$policyId)==0  && strcmp($policy['ConfigId'],$configId)==0){								
+								$thePolicy = $policy;
+								break;
+	
+							}
 						}
 					}
-				}
 				}				
 				?>
 
@@ -714,12 +797,10 @@ echo $pane->endPanel();
 		?>
 
 <form name='adminForm' action='index.php' method='POST'>
-<input
-	type='hidden' name='option'
-	value='<?php echo JRequest::getVar('option') ;?>'> <input type='hidden'
-	name='task' value='<?php echo JRequest::getVar('task') ;?>'> <input type='hidden' name='boxchecked'
-	value='<?php echo ($_POST['configId'])?1:0;?>'>
-	<input type='hidden' name='serviceType' id='serviceType' value="<?php echo JRequest::getVar('serviceType');?>" >
+<input type='hidden' name='option' value='<?php echo JRequest::getVar('option') ;?>'> 
+<input type='hidden' name='task' id='task' value='<?php echo JRequest::getVar('task') ;?>'> 
+<input type='hidden' name='boxchecked' value='<?php echo ($_POST['configId'])?1:0;?>'>
+<input type='hidden' name='serviceType' id='serviceType' value="<?php echo JRequest::getVar('serviceType');?>" >
 
 <table>
 	<tr>
@@ -783,7 +864,10 @@ echo $pane->endPanel();
 					{
 						echo "WFS";
 					} ?>'; isChecked(this.checked);"></td>
-			<td><b><?php echo $config['id']?></b> </td>
+			<td>
+			<a href="#edit" onclick="document.getElementById('task').value='editConfig';document.getElementById('cb<?php echo $i;?>').checked=true;document.adminForm.submit();;">
+				<?php echo $config['id']?></a>
+			 </td>
 			<td><?php 
 			if($config->{'servlet-class'} == "org.easysdi.proxy.wms.WMSProxyServlet")
 			{
