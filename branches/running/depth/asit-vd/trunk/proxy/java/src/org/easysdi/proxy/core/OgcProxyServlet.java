@@ -251,14 +251,14 @@ public class OgcProxyServlet extends HttpServlet {
 			//Add the version to get the complete class name
 			String reqVersion= null;
 			if(request != null){
-				List<String> supportedVersions =  configuration.getSupportedVersions();
 				if(request.getOperation().equalsIgnoreCase("GetCapabilities")){
-					reqVersion = configuration.getRequestNegotiatedVersion(request.getVersion());
+					reqVersion = configuration.getRequestNegotiatedVersion(request.getVersion(), request.getService());
 				}else{
+					List<String> supportedVersions =  configuration.getSupportedVersions();
 					if(!supportedVersions.contains(request.getVersion())){
 						//requested version not supported
 						//Send back an OGC Exception
-						sendException( new VersionNotSupportedException(request.getVersion()),configuration.getServletClass(), configuration.getRequestNegotiatedVersion(request.getVersion()));
+						sendException( new VersionNotSupportedException(request.getVersion()),configuration.getServletClass(), configuration.getRequestNegotiatedVersion(request.getVersion(),request.getService()));
 						return null;
 					}else{
 						reqVersion = request.getVersion();

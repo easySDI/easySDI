@@ -241,7 +241,7 @@ public class ConfigFileHandler extends DefaultHandler {
 				config.setOwsServiceMetadata(owsServiceMetadata);
 				config.setPeriod(logPeriod);
 				config.setIsHarvestingConfig(isHarvestingConfig);
-				config.setNegotiatedVersion(negotiatedVersion);
+//				config.setNegotiatedVersion(negotiatedVersion);
 				config.setSupportedVersions(supportedVersions);
 			}
 			isTheGoodId = false;

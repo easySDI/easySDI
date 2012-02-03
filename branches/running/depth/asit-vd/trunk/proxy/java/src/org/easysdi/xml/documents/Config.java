@@ -56,7 +56,7 @@ public class Config implements Serializable{
 	private OWSServiceMetadata owsServiceMetadata = null;
 	private String period = "";
 	private Boolean isHarvestingConfig = false;
-	private String negotiatedVersion = null;
+//	private String negotiatedVersion = null;
 	private List<String> supportedVersions ;
 
 	/**
@@ -360,19 +360,19 @@ public class Config implements Serializable{
 		this.isHarvestingConfig = isHarvestingConfig;
 	}
 
-	/**
-	 * @return the negotiatedVersion
-	 */
-	public String getNegotiatedVersion() {
-		return negotiatedVersion;
-	}
-
-	/**
-	 * @param negotiatedVersion the negotiatedVersion to set
-	 */
-	public void setNegotiatedVersion(String negotiatedVersion) {
-		this.negotiatedVersion = negotiatedVersion;
-	}
+//	/**
+//	 * @return the negotiatedVersion
+//	 */
+//	public String getNegotiatedVersion() {
+//		return negotiatedVersion;
+//	}
+//
+//	/**
+//	 * @param negotiatedVersion the negotiatedVersion to set
+//	 */
+//	public void setNegotiatedVersion(String negotiatedVersion) {
+//		this.negotiatedVersion = negotiatedVersion;
+//	}
 	
 	/**
 	 * @return the supportedVersions
@@ -393,8 +393,16 @@ public class Config implements Serializable{
 	 * @param requestedVersion
 	 * @return
 	 */
-	public String getRequestNegotiatedVersion(String requestedVersion){
+	public String getRequestNegotiatedVersion(String requestedVersion, String service){
 		if(supportedVersions.size() == 0){
+			if(service.equalsIgnoreCase("WMS"))
+				return "1.1.1";
+			if(service.equalsIgnoreCase("WFS"))
+				return "1.0.0";
+			if(service.equalsIgnoreCase("WMTS"))
+				return "1.0.0";
+			if(service.equalsIgnoreCase("CSW"))
+				return "2.0.2";
 			return null;
 		}else if (requestedVersion == null ){
 			//Get the highest supported version
