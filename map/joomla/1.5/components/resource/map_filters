@@ -1,0 +1,8 @@
+CREATE TABLE #__easysdi_map_filter(
+id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+user_id INT NOT NULL,
+title VARCHAR(100) NOT NULL,
+description VARCHAR(1000) NOT NULL,
+filter_data TEXT NOT NULL,
+filter_mode INT NOT NULL
+);
