@@ -36,6 +36,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.Vector;
 
@@ -338,34 +339,42 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				            e.printStackTrace();
 				        }
 					}
-					/*else{
-						SAXBuilder sb = new SAXBuilder();
-						
-						Document doc = null;
-				        try {
-				            doc = sb.build(tempFile);
-				            Element racine = doc.getRootElement();
-				            Namespace nsCSW = Namespace.getNamespace("csw","http://www.opengis.net/cat/csw/2.0.2") ;
-				            Element results = racine.getChild("SearchResults", nsCSW);
-				            if(results != null){
-					            String matched =  results.getAttributeValue("numberOfRecordsMatched");
-					            results.setAttribute("numberOfRecordsMatched",matched+"0");
-				            }
-				            
-				            XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
-				            FileOutputStream outStream = new FileOutputStream(tempFile);
-				            sortie.output(doc, outStream);
-				            outStream.close();
-				            
-				        }
-				        catch (JDOMException e) {
-				            e.printStackTrace();
-				        }
-				        catch (IOException e) {
-				            e.printStackTrace();
-				        }
+					else{
+						//Current config is not used to harvest remote catalog.
+						//If the request was made in HTTP GET, response has to be rewrote to remove unauthorized metadatas
+						if(req.getMethod().equals("GET")){
+							
+							CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy, getJoomlaProvider());
+							List<Map<String,Object>> accessibleDataIds = cswDataManager.getAccessibleDataIds ();
+							
+							SAXBuilder sb = new SAXBuilder();
+							
+							Document doc = null;
+					        try {
+					            doc = sb.build(tempFile);
+					            Element racine = doc.getRootElement();
+					            Namespace nsCSW = Namespace.getNamespace("csw","http://www.opengis.net/cat/csw/2.0.2") ;
+					            Element results = racine.getChild("SearchResults", nsCSW);
+					            if(results != null){
+						            String matched =  results.getAttributeValue("numberOfRecordsMatched");
+						            results.setAttribute("numberOfRecordsMatched",matched+"0");
+					            }
+					            
+					            XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
+					            FileOutputStream outStream = new FileOutputStream(tempFile);
+					            sortie.output(doc, outStream);
+					            outStream.close();
+					            
+					        }
+					        catch (JDOMException e) {
+					            e.printStackTrace();
+					        }
+					        catch (IOException e) {
+					            e.printStackTrace();
+					        }
+						}
 					}
-				}*/
+				}
 				else if( "GetRecordById".equals(currentOperation) )
 				{
 					if (areAllAttributesAllowedForMetadata(getRemoteServerUrl(0)) ) 
