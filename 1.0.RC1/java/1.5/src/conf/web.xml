@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app id="WebApp_ID" version="2.4"
+	xmlns="http://java.sun.com/xml/ns/j2ee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+	<display-name>Proxy</display-name>
+	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+		<welcome-file>index.htm</welcome-file>
+		<welcome-file>index.jsp</welcome-file>
+		<welcome-file>default.html</welcome-file>
+		<welcome-file>default.htm</welcome-file>
+		<welcome-file>default.jsp</welcome-file>
+	</welcome-file-list>
+	
+
+<servlet>
+    <servlet-name>ogc</servlet-name>
+    <servlet-class>ch.depth.proxy.core.OgcProxyServlet</servlet-class>    
+	<init-param> 
+    	<param-name>configFile</param-name>
+		<param-value>/home/users/depthch/easysdi/proxy/config.xml</param-value>
+	</init-param>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>ogc</servlet-name>
+    <url-pattern>/ogc/*</url-pattern>
+  </servlet-mapping>
+    
+  <resource-env-ref>
+  <description>Link to the UserDatabase instance from which we request lists of defined role names. Typically, this will be connected to the global user database with a ResourceLink element in server.xml or the context configuration file for the Manager web application.</description> 
+  <resource-env-ref-name>users</resource-env-ref-name> 
+  <resource-env-ref-type>org.apache.catalina.UserDatabase</resource-env-ref-type> 
+  </resource-env-ref>
+ <security-constraint>
+ <web-resource-collection>
+  <web-resource-name>HTMLManger and Manager command</web-resource-name> 
+  <url-pattern>/ogc2/*</url-pattern>  
+  </web-resource-collection>
+ <auth-constraint> 
+  <role-name>*</role-name> 
+  </auth-constraint>
+  </security-constraint> 
+ <login-config>
+  <auth-method>BASIC</auth-method> 
+  <realm-name>Tomcat Manager Application</realm-name> 
+  </login-config>
+ <security-role>
+  <description>The role that is required to log in to the Manager Application</description> 
+  <role-name>*</role-name> 
+  </security-role>  
+</web-app>
