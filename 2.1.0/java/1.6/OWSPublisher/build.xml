@@ -1,0 +1,115 @@
+<?xml version="1.0" ?>
+<project default="createwar" basedir=".">
+	
+  <property environment="env"/>
+  <property name="projet.conf.dir" value="src/main/webapp/WEB-INF"/>
+  <property name="projet.src.dir" value="src/main/java"/>
+  <property name="projet.work.dir" value="work"/>
+  <property name="projet.out.dir" value="out"/>
+  <property name="projet.lib.dir" value="src/main/webapp/WEB-INF"/>
+	
+   <path id="projet.classpath">
+   		<fileset dir="${projet.conf.dir}\transformerPlugIns">
+   		      <include name="*.jar"/>
+   		    </fileset>
+	    <fileset dir="${projet.lib.dir}">
+	      <include name="*.jar"/>
+	    </fileset>
+  <!--
+    	<fileset dir="${projet.tomcat.lib.dir}">
+	      <include name="*.jar"/>
+	    </fileset>   	   
+   		<fileset dir="${projet.tomcat.lib.dir}">
+   		      <include name="*.jar"/>
+   		 </fileset> 
+   	-->
+   </path>
+	
+<target name="syncJar" depends="create-structure,copy-resources,compilation,compression,Sync-jar" description="Main target">
+	    
+  </target>
+  <target name="createwar" depends="create-structure,copy-resources,compilation,compression,deleteResources,war" description="Main target">
+    
+  </target>
+
+  <target name="create-structure">    
+  	<echo>Creating the working directory structure</echo>
+  	<mkdir dir="${projet.out.dir}" />
+  	<mkdir dir="${projet.work.dir}" />
+  	<mkdir dir="${projet.work.dir}/WEB-INF" />
+  	<mkdir dir="${projet.work.dir}/WEB-INF/classes" />
+  	<mkdir dir="${projet.work.dir}/WEB-INF/lib" />
+  	<mkdir dir="${projet.work.dir}/WEB-INF/transformerPlugIns" />
+  </target>  
+	
+	<target name="compression" description="Compression" >
+	    <jar jarfile="${projet.work.dir}/WEB-INF/lib/servletWPS.jar" basedir="${projet.work.dir}/WEB-INF/classes"  />			
+	</target>
+	
+  <target name="copy-resources">    
+		<echo>Copy the resources into the working directory</echo>
+  			<copy todir="${projet.work.dir}/WEB-INF/lib" >
+  	      <fileset dir="${projet.lib.dir}" >
+  	        <include name="**/*.jar"/>
+  	        <include name="**/*.zip"/>
+  	      </fileset>
+  	    </copy>
+  	
+  		<copy todir="${projet.work.dir}/WEB-INF/transformerPlugIns" >
+  	      <fileset dir="${projet.conf.dir}/transformerPlugIns" >
+  	        <include name="**/*.jar"/>
+  	        <include name="**/*.zip"/>
+  	      </fileset>
+  	    </copy>
+  	
+  		<copy todir="${projet.work.dir}/WEB-INF/" >
+  	  	      <fileset dir="${projet.conf.dir}" >
+  	  	        <include name="web.xml"/>
+  	  	        <include name="DbConfig.xml"/>
+  	  	      </fileset>
+  	  	</copy>
+  	 	
+  </target>
+	
+  <target name="compilation" depends="create-structure" description="Compilation" > 
+    <javac debug="on" srcdir="${projet.src.dir}" destdir="${projet.work.dir}/WEB-INF/classes" >
+    	<classpath refid="projet.classpath"/>
+    </javac>
+  	<!-- add xml ressources -->
+  	<copy todir="${projet.work.dir}/WEB-INF/classes/eu/bauel/publish/diffusion" >
+  	  	 <fileset dir="${projet.src.dir}/eu/bauel/publish/diffusion" >
+  	  	     <include name="publishTemplate.xml"/>
+  	  	     <include name="line.xml"/>
+  	  	     <include name="point.xml"/>
+  	  	     <include name="polygon.xml"/>  	  	        
+  	  	  </fileset>
+  	 </copy>
+  	 <copy todir="${projet.work.dir}/WEB-INF/classes/ch/depth/services/wps" >
+  	  	  <fileset dir="${projet.src.dir}/ch/depth/services/wps" >
+  	  	     <include name="capabilities.xml"/>  	  	        
+  	  	  </fileset>
+  	 </copy>
+  </target>
+  
+	<target name="deleteResources" description="generate the war" >
+		
+	<delete includeEmptyDirs="true">			
+					      <fileset dir="${projet.work.dir}/WEB-INF/classes" />
+	</delete>
+	</target>
+	<target name="war" description="generate the war" >
+		<tstamp/>
+		<echo>Building the war file</echo>
+	    <war warfile="${projet.out.dir}/servletWPS.${DSTAMP}.${TSTAMP}.war" basedir="${projet.work.dir}" />
+	    
+	    <!-- klan work ir -->
+	    <delete includeEmptyDirs="true">			
+					      <fileset dir="${projet.work.dir}/WEB-INF" />
+	    </delete>
+	</target>
+	
+	
+		
+	
+	
+</project>
