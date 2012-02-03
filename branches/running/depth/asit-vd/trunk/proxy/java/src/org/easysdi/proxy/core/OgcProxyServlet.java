@@ -219,22 +219,22 @@ public class OgcProxyServlet extends HttpServlet {
 			} catch (InstantiationException e) {
 				//Problem parsing the request
 				logger.error("Problem parsing request in OgcProxyServlet: ",e);
-				sendException(new ProxyServletException("Problem parsing request: "+e.toString()), configuration.getServletClass(), null);
+				sendException(new ProxyServletException("Problem parsing request: "+e.toString()), configuration.getServletClass(), configuration.getRequestNegotiatedVersion(request.getVersion(),request.getService()));
 				return null;
 			} catch (IllegalAccessException e) {
 				//Problem parsing the request
 				logger.error("Problem parsing request in OgcProxyServlet: ",e);
-				sendException(new ProxyServletException("Problem parsing request: "+e.toString()), configuration.getServletClass(), null);
+				sendException(new ProxyServletException("Problem parsing request: "+e.toString()), configuration.getServletClass(), configuration.getRequestNegotiatedVersion(request.getVersion(),request.getService()));
 				return null;
 			} catch (java.lang.reflect.InvocationTargetException e) {
 				//Problem parsing the request
 				logger.error("Problem parsing request in OgcProxyServlet: ",e);
-				sendException(new ProxyServletException("Problem parsing request: "+e.getCause().getCause().toString()), configuration.getServletClass(), null);
+				sendException(new ProxyServletException("Problem parsing request: "+e.getCause().getCause().toString()), configuration.getServletClass(), configuration.getRequestNegotiatedVersion(request.getVersion(),request.getService()));
 				return null;
 			} catch (IllegalArgumentException e) {
 				//Problem parsing the request
 				logger.error("Problem parsing request in OgcProxyServlet: ",e);
-				sendException(new ProxyServletException("Problem parsing request: "+e.toString()), configuration.getServletClass(), null);
+				sendException(new ProxyServletException("Problem parsing request: "+e.toString()), configuration.getServletClass(), configuration.getRequestNegotiatedVersion(request.getVersion(),request.getService()));
 				return null;
 			} catch (ProxyServletException e) {
 				logger.error("ProxyServletException in OgcProxyServlet: ",e);
