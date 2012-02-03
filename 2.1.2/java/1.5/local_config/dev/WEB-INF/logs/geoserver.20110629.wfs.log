@@ -1,0 +1,237 @@
+<Log><LogRequest user="spring2a2d595e6ed9a0b24f027f2b63b134d6" requestTime="29/06/2011 15:31:40"> 
+<logEntry time="29/06/2011 15:31:40" severity="SYSTEM" name="Request"><![CDATA[<!--      YOU PROBABLY DO NOT WANT TO RUN THIS QUERY SINCE        IT WILL MODIFY YOUR SOURCE DATA FILES              It will add a simple line to the tasmania_roads dataset.         --><wfs:Transaction service="WFS" version="1.0.0"  xmlns:wfs="http://www.opengis.net/wfs"  xmlns:topp="http://www.openplans.org/topp"  xmlns:gml="http://www.opengis.net/gml"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/WFS-transaction.xsd http://www.openplans.org/topp http://localhost:8080/geoserver/wfs/DescribeFeatureType?typename=topp:tasmania_roads">  <wfs:Insert>    <topp:tasmania_roads>      <topp:the_geom>        <gml:MultiLineString srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">          <gml:lineStringMember>            <gml:LineString>              <gml:coordinates decimal="." cs="," ts=" ">494475.71056415,5433016.8189323 494982.70115662,5435041.95096618              </gml:coordinates>            </gml:LineString>          </gml:lineStringMember>        </gml:MultiLineString>      </topp:the_geom>      <topp:TYPE>alley</topp:TYPE>    </topp:tasmania_roads>  </wfs:Insert></wfs:Transaction>]]></logEntry>
+<logEntry time="29/06/2011 15:31:43" severity="INFO"><![CDATA[Transaction is send to remote server.]]></logEntry>
+<logEntry time="29/06/2011 15:31:43" severity="SYSTEM" name="RemoteRequestUrl"><![CDATA[http://localhost/geoserver/sf/ows]]></logEntry>
+<logEntry time="29/06/2011 15:31:43" severity="SYSTEM" name="RemoteRequest"><![CDATA[<!--      YOU PROBABLY DO NOT WANT TO RUN THIS QUERY SINCE        IT WILL MODIFY YOUR SOURCE DATA FILES              It will add a simple line to the tasmania_roads dataset.         --><wfs:Transaction service="WFS" version="1.0.0"  xmlns:wfs="http://www.opengis.net/wfs"  xmlns:topp="http://www.openplans.org/topp"  xmlns:gml="http://www.opengis.net/gml"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/WFS-transaction.xsd http://www.openplans.org/topp http://localhost:8080/geoserver/wfs/DescribeFeatureType?typename=topp:tasmania_roads">  <wfs:Insert>    <topp:tasmania_roads>      <topp:the_geom>        <gml:MultiLineString srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">          <gml:lineStringMember>            <gml:LineString>              <gml:coordinates decimal="." cs="," ts=" ">494475.71056415,5433016.8189323 494982.70115662,5435041.95096618              </gml:coordinates>            </gml:LineString>          </gml:lineStringMember>        </gml:MultiLineString>      </topp:the_geom>      <topp:TYPE>alley</topp:TYPE>    </topp:tasmania_roads>  </wfs:Insert></wfs:Transaction>]]></logEntry>
+<logEntry time="29/06/2011 15:31:43" severity="SYSTEM" name="RemoteRequestLength"><![CDATA[1196]]></logEntry>
+<logEntry time="29/06/2011 15:31:43" severity="SYSTEM" name="RemoteRequestDateTime"><![CDATA[29/06/2011 15:31:43]]></logEntry>
+<logEntry time="29/06/2011 15:31:44" severity="SYSTEM" name="RemoteResponseToRequestUrl"><![CDATA[http://localhost/geoserver/sf/ows]]></logEntry>
+<logEntry time="29/06/2011 15:31:44" severity="SYSTEM" name="RemoteResponseDateTime"><![CDATA[29/06/2011 15:31:44]]></logEntry>
+<logEntry time="29/06/2011 15:31:47" severity="SYSTEM" name="RemoteAddr"><![CDATA[127.0.0.1]]></logEntry>
+<logEntry time="29/06/2011 15:31:47" severity="SYSTEM" name="RemoteUser"><![CDATA[null]]></logEntry>
+<logEntry time="29/06/2011 15:31:47" severity="SYSTEM" name="QueryString"><![CDATA[null]]></logEntry>
+<logEntry time="29/06/2011 15:31:47" severity="SYSTEM" name="RequestURL"><![CDATA[http://localhost:8070/proxy/ogc/Geoserver-wfs]]></logEntry>
+</LogRequest>
+<LogRequest user="spring2a2d595e6ed9a0b24f027f2b63b134d6" requestTime="29/06/2011 15:31:47"> 
+<logEntry time="29/06/2011 15:31:47" severity="SYSTEM" name="Request"><![CDATA[]]></logEntry>
+<logEntry time="29/06/2011 15:31:47" severity="ERROR"><![CDATA[org.xml.sax.SAXParseException: Premature end of file.]]></logEntry>
+<logEntry time="29/06/2011 15:31:47" severity="ERROR"><![CDATA[Error in EasySDI Proxy. Consult the proxy log for more details.]]></logEntry>
+<logEntry time="29/06/2011 15:31:47" severity="SYSTEM" name="ClientResponseDateTime"><![CDATA[29/06/2011 15:31:47]]></logEntry>
+<logEntry time="29/06/2011 15:31:47" severity="SYSTEM" name="ClientResponseLength"><![CDATA[370]]></logEntry>
+<logEntry time="29/06/2011 15:31:47" severity="SYSTEM" name="RemoteAddr"><![CDATA[127.0.0.1]]></logEntry>
+<logEntry time="29/06/2011 15:31:47" severity="SYSTEM" name="RemoteUser"><![CDATA[null]]></logEntry>
+<logEntry time="29/06/2011 15:31:47" severity="SYSTEM" name="QueryString"><![CDATA[null]]></logEntry>
+<logEntry time="29/06/2011 15:31:47" severity="SYSTEM" name="RequestURL"><![CDATA[http://localhost:8070/proxy/ogc/Geoserver-wfs]]></logEntry>
+</LogRequest>
+<LogRequest user="spring2a2d595e6ed9a0b24f027f2b63b134d6" requestTime="29/06/2011 15:35:29"> 
+<logEntry time="29/06/2011 15:35:29" severity="SYSTEM" name="Request"><![CDATA[<!--      YOU PROBABLY DO NOT WANT TO RUN THIS QUERY SINCE        IT WILL MODIFY YOUR SOURCE DATA FILES              It will add a simple line to the tasmania_roads dataset.         --><wfs:Transaction service="WFS" version="1.0.0"  xmlns:wfs="http://www.opengis.net/wfs"  xmlns:topp="http://www.openplans.org/topp"  xmlns:gml="http://www.opengis.net/gml"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/WFS-transaction.xsd http://www.openplans.org/topp http://localhost:8080/geoserver/wfs/DescribeFeatureType?typename=topp:tasmania_roads">  <wfs:Insert>    <topp:tasmania_roads>      <topp:the_geom>        <gml:MultiLineString srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">          <gml:lineStringMember>            <gml:LineString>              <gml:coordinates decimal="." cs="," ts=" ">494475.71056415,5433016.8189323 494982.70115662,5435041.95096618              </gml:coordinates>            </gml:LineString>          </gml:lineStringMember>        </gml:MultiLineString>      </topp:the_geom>      <topp:TYPE>alley</topp:TYPE>    </topp:tasmania_roads>  </wfs:Insert></wfs:Transaction>]]></logEntry>
+<logEntry time="29/06/2011 15:35:32" severity="SYSTEM" name="RemoteRequestUrl"><![CDATA[http://localhost/geoserver/sf/ows]]></logEntry>
+<logEntry time="29/06/2011 15:35:32" severity="SYSTEM" name="RemoteRequest"><![CDATA[<!--      YOU PROBABLY DO NOT WANT TO RUN THIS QUERY SINCE        IT WILL MODIFY YOUR SOURCE DATA FILES              It will add a simple line to the tasmania_roads dataset.         --><wfs:Transaction service="WFS" version="1.0.0"  xmlns:wfs="http://www.opengis.net/wfs"  xmlns:topp="http://www.openplans.org/topp"  xmlns:gml="http://www.opengis.net/gml"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/WFS-transaction.xsd http://www.openplans.org/topp http://localhost:8080/geoserver/wfs/DescribeFeatureType?typename=topp:tasmania_roads">  <wfs:Insert>    <topp:tasmania_roads>      <topp:the_geom>        <gml:MultiLineString srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">          <gml:lineStringMember>            <gml:LineString>              <gml:coordinates decimal="." cs="," ts=" ">494475.71056415,5433016.8189323 494982.70115662,5435041.95096618              </gml:coordinates>            </gml:LineString>          </gml:lineStringMember>        </gml:MultiLineString>      </topp:the_geom>      <topp:TYPE>alley</topp:TYPE>    </topp:tasmania_roads>  </wfs:Insert></wfs:Transaction>]]></logEntry>
+<logEntry time="29/06/2011 15:35:32" severity="SYSTEM" name="RemoteRequestLength"><![CDATA[1196]]></logEntry>
+<logEntry time="29/06/2011 15:35:32" severity="SYSTEM" name="RemoteRequestDateTime"><![CDATA[29/06/2011 15:35:32]]></logEntry>
+<logEntry time="29/06/2011 15:35:32" severity="INFO"><![CDATA[ tmpDir :  C:\Users\Helene\AppData\Local\Temp\]]></logEntry>
+<logEntry time="29/06/2011 15:35:33" severity="SYSTEM" name="RemoteResponseToRequestUrl"><![CDATA[http://localhost/geoserver/sf/ows]]></logEntry>
+<logEntry time="29/06/2011 15:35:33" severity="SYSTEM" name="RemoteResponseLength"><![CDATA[406]]></logEntry>
+<logEntry time="29/06/2011 15:35:33" severity="SYSTEM" name="RemoteResponseDateTime"><![CDATA[29/06/2011 15:35:33]]></logEntry>
+<logEntry time="29/06/2011 15:35:35" severity="SYSTEM" name="RemoteRequestUrl"><![CDATA[http://localhost/geoserver/topp/ows]]></logEntry>
+<logEntry time="29/06/2011 15:35:35" severity="SYSTEM" name="RemoteRequest"><![CDATA[<!--      YOU PROBABLY DO NOT WANT TO RUN THIS QUERY SINCE        IT WILL MODIFY YOUR SOURCE DATA FILES              It will add a simple line to the tasmania_roads dataset.         --><wfs:Transaction service="WFS" version="1.0.0"  xmlns:wfs="http://www.opengis.net/wfs"  xmlns:topp="http://www.openplans.org/topp"  xmlns:gml="http://www.opengis.net/gml"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/WFS-transaction.xsd http://www.openplans.org/topp http://localhost:8080/geoserver/wfs/DescribeFeatureType?typename=topp:tasmania_roads">  <wfs:Insert>    <topp:tasmania_roads>      <topp:the_geom>        <gml:MultiLineString srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">          <gml:lineStringMember>            <gml:LineString>              <gml:coordinates decimal="." cs="," ts=" ">494475.71056415,5433016.8189323 494982.70115662,5435041.95096618              </gml:coordinates>            </gml:LineString>          </gml:lineStringMember>        </gml:MultiLineString>      </topp:the_geom>      <topp:TYPE>alley</topp:TYPE>    </topp:tasmania_roads>  </wfs:Insert></wfs:Transaction>]]></logEntry>
+<logEntry time="29/06/2011 15:35:35" severity="SYSTEM" name="RemoteRequestLength"><![CDATA[1196]]></logEntry>
+<logEntry time="29/06/2011 15:35:35" severity="SYSTEM" name="RemoteRequestDateTime"><![CDATA[29/06/2011 15:35:35]]></logEntry>
+<logEntry time="29/06/2011 15:35:35" severity="INFO"><![CDATA[ tmpDir :  C:\Users\Helene\AppData\Local\Temp\]]></logEntry>
+<logEntry time="29/06/2011 15:35:36" severity="SYSTEM" name="RemoteResponseToRequestUrl"><![CDATA[http://localhost/geoserver/topp/ows]]></logEntry>
+<logEntry time="29/06/2011 15:35:36" severity="SYSTEM" name="RemoteResponseLength"><![CDATA[518]]></logEntry>
+<logEntry time="29/06/2011 15:35:36" severity="SYSTEM" name="RemoteResponseDateTime"><![CDATA[29/06/2011 15:35:36]]></logEntry>
+<logEntry time="29/06/2011 15:35:36" severity="DEBUG"><![CDATA[filterServersResponseFiles begin]]></logEntry>
+<logEntry time="29/06/2011 15:35:36" severity="ERROR"><![CDATA[java.lang.Integer]]></logEntry>
+<logEntry time="29/06/2011 15:35:36" severity="INFO"><![CDATA[User postreatment file \spring2a2d595e6ed9a0b24f027f2b63b134d6\100\Transaction.xsl does not exist]]></logEntry>
+<logEntry time="29/06/2011 15:35:36" severity="INFO"><![CDATA[Global postreatment file \100\Transaction.xsl does not exist]]></logEntry>
+<logEntry time="29/06/2011 15:35:36" severity="SYSTEM" name="ClientResponseDateTime"><![CDATA[29/06/2011 15:35:36]]></logEntry>
+<logEntry time="29/06/2011 15:35:36" severity="INFO"><![CDATA[temporary file file:/C:/Users/Helene/AppData/Local/Temp/sendData_a0fae380-4e0b-4cd7-98b6-abe6b63b4ce43214841022504144377.xml is deleted]]></logEntry>
+<logEntry time="29/06/2011 15:35:36" severity="INFO"><![CDATA[temporary file file:/C:/Users/Helene/AppData/Local/Temp/sendData_9127ac64-3c0a-46fc-93f0-d46d7baed9006533759958795102256.xml is deleted]]></logEntry>
+<logEntry time="29/06/2011 15:35:36" severity="SYSTEM" name="RemoteAddr"><![CDATA[127.0.0.1]]></logEntry>
+<logEntry time="29/06/2011 15:35:36" severity="SYSTEM" name="RemoteUser"><![CDATA[null]]></logEntry>
+<logEntry time="29/06/2011 15:35:36" severity="SYSTEM" name="QueryString"><![CDATA[null]]></logEntry>
+<logEntry time="29/06/2011 15:35:36" severity="SYSTEM" name="RequestURL"><![CDATA[http://localhost:8070/proxy/ogc/Geoserver-wfs]]></logEntry>
+</LogRequest>
+<LogRequest user="spring2a2d595e6ed9a0b24f027f2b63b134d6" requestTime="29/06/2011 15:35:36"> 
+<logEntry time="29/06/2011 15:35:36" severity="SYSTEM" name="Request"><![CDATA[]]></logEntry>
+<logEntry time="29/06/2011 15:35:36" severity="ERROR"><![CDATA[org.xml.sax.SAXParseException: Premature end of file.]]></logEntry>
+<logEntry time="29/06/2011 15:35:36" severity="ERROR"><![CDATA[Error in EasySDI Proxy. Consult the proxy log for more details.]]></logEntry>
+<logEntry time="29/06/2011 15:35:36" severity="SYSTEM" name="ClientResponseDateTime"><![CDATA[29/06/2011 15:35:36]]></logEntry>
+<logEntry time="29/06/2011 15:35:36" severity="SYSTEM" name="ClientResponseLength"><![CDATA[370]]></logEntry>
+<logEntry time="29/06/2011 15:35:36" severity="SYSTEM" name="RemoteAddr"><![CDATA[127.0.0.1]]></logEntry>
+<logEntry time="29/06/2011 15:35:36" severity="SYSTEM" name="RemoteUser"><![CDATA[null]]></logEntry>
+<logEntry time="29/06/2011 15:35:36" severity="SYSTEM" name="QueryString"><![CDATA[null]]></logEntry>
+<logEntry time="29/06/2011 15:35:36" severity="SYSTEM" name="RequestURL"><![CDATA[http://localhost:8070/proxy/ogc/Geoserver-wfs]]></logEntry>
+</LogRequest>
+<LogRequest user="spring2a2d595e6ed9a0b24f027f2b63b134d6" requestTime="29/06/2011 15:39:13"> 
+<logEntry time="29/06/2011 15:39:13" severity="SYSTEM" name="Request"><![CDATA[<!--      YOU PROBABLY DO NOT WANT TO RUN THIS QUERY SINCE        IT WILL MODIFY YOUR SOURCE DATA FILES              It will add a simple line to the tasmania_roads dataset.         --><wfs:Transaction service="WFS" version="1.0.0"  xmlns:wfs="http://www.opengis.net/wfs"  xmlns:topp="http://www.openplans.org/topp"  xmlns:gml="http://www.opengis.net/gml"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/WFS-transaction.xsd http://www.openplans.org/topp http://localhost:8080/geoserver/wfs/DescribeFeatureType?typename=topp:tasmania_roads">  <wfs:Insert>    <topp:tasmania_roads>      <topp:the_geom>        <gml:MultiLineString srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">          <gml:lineStringMember>            <gml:LineString>              <gml:coordinates decimal="." cs="," ts=" ">494475.71056415,5433016.8189323 494982.70115662,5435041.95096618              </gml:coordinates>            </gml:LineString>          </gml:lineStringMember>        </gml:MultiLineString>      </topp:the_geom>      <topp:TYPE>alley</topp:TYPE>    </topp:tasmania_roads>  </wfs:Insert></wfs:Transaction>]]></logEntry>
+<logEntry time="29/06/2011 15:39:15" severity="SYSTEM" name="RemoteRequestUrl"><![CDATA[http://localhost/geoserver/topp/ows]]></logEntry>
+<logEntry time="29/06/2011 15:39:15" severity="SYSTEM" name="RemoteRequest"><![CDATA[<!--      YOU PROBABLY DO NOT WANT TO RUN THIS QUERY SINCE        IT WILL MODIFY YOUR SOURCE DATA FILES              It will add a simple line to the tasmania_roads dataset.         --><wfs:Transaction service="WFS" version="1.0.0"  xmlns:wfs="http://www.opengis.net/wfs"  xmlns:topp="http://www.openplans.org/topp"  xmlns:gml="http://www.opengis.net/gml"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/WFS-transaction.xsd http://www.openplans.org/topp http://localhost:8080/geoserver/wfs/DescribeFeatureType?typename=topp:tasmania_roads">  <wfs:Insert>    <topp:tasmania_roads>      <topp:the_geom>        <gml:MultiLineString srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">          <gml:lineStringMember>            <gml:LineString>              <gml:coordinates decimal="." cs="," ts=" ">494475.71056415,5433016.8189323 494982.70115662,5435041.95096618              </gml:coordinates>            </gml:LineString>          </gml:lineStringMember>        </gml:MultiLineString>      </topp:the_geom>      <topp:TYPE>alley</topp:TYPE>    </topp:tasmania_roads>  </wfs:Insert></wfs:Transaction>]]></logEntry>
+<logEntry time="29/06/2011 15:39:15" severity="SYSTEM" name="RemoteRequestLength"><![CDATA[1196]]></logEntry>
+<logEntry time="29/06/2011 15:39:15" severity="SYSTEM" name="RemoteRequestDateTime"><![CDATA[29/06/2011 15:39:15]]></logEntry>
+<logEntry time="29/06/2011 15:39:16" severity="INFO"><![CDATA[ tmpDir :  C:\Users\Helene\AppData\Local\Temp\]]></logEntry>
+<logEntry time="29/06/2011 15:39:16" severity="SYSTEM" name="RemoteResponseToRequestUrl"><![CDATA[http://localhost/geoserver/topp/ows]]></logEntry>
+<logEntry time="29/06/2011 15:39:16" severity="SYSTEM" name="RemoteResponseLength"><![CDATA[518]]></logEntry>
+<logEntry time="29/06/2011 15:39:16" severity="SYSTEM" name="RemoteResponseDateTime"><![CDATA[29/06/2011 15:39:16]]></logEntry>
+<logEntry time="29/06/2011 15:39:16" severity="DEBUG"><![CDATA[filterServersResponseFiles begin]]></logEntry>
+<logEntry time="29/06/2011 15:39:16" severity="DEBUG"><![CDATA[filterServersResponseFiles end]]></logEntry>
+<logEntry time="29/06/2011 15:39:16" severity="INFO"><![CDATA[User postreatment file \spring2a2d595e6ed9a0b24f027f2b63b134d6\100\Transaction.xsl does not exist]]></logEntry>
+<logEntry time="29/06/2011 15:39:16" severity="INFO"><![CDATA[Global postreatment file \100\Transaction.xsl does not exist]]></logEntry>
+<logEntry time="29/06/2011 15:39:16" severity="SYSTEM" name="ClientResponseDateTime"><![CDATA[29/06/2011 15:39:16]]></logEntry>
+<logEntry time="29/06/2011 15:39:16" severity="INFO"><![CDATA[temporary file file:/C:/Users/Helene/AppData/Local/Temp/sendData_b79d5490-edab-4a55-b230-ac352dddbf18525463509008591491.xml is deleted]]></logEntry>
+<logEntry time="29/06/2011 15:39:16" severity="SYSTEM" name="RemoteAddr"><![CDATA[127.0.0.1]]></logEntry>
+<logEntry time="29/06/2011 15:39:16" severity="SYSTEM" name="RemoteUser"><![CDATA[null]]></logEntry>
+<logEntry time="29/06/2011 15:39:16" severity="SYSTEM" name="QueryString"><![CDATA[null]]></logEntry>
+<logEntry time="29/06/2011 15:39:16" severity="SYSTEM" name="RequestURL"><![CDATA[http://localhost:8070/proxy/ogc/Geoserver-wfs]]></logEntry>
+</LogRequest>
+<LogRequest user="spring2a2d595e6ed9a0b24f027f2b63b134d6" requestTime="29/06/2011 15:39:16"> 
+<logEntry time="29/06/2011 15:39:16" severity="SYSTEM" name="Request"><![CDATA[]]></logEntry>
+<logEntry time="29/06/2011 15:39:16" severity="ERROR"><![CDATA[org.xml.sax.SAXParseException: Premature end of file.]]></logEntry>
+<logEntry time="29/06/2011 15:39:16" severity="ERROR"><![CDATA[Error in EasySDI Proxy. Consult the proxy log for more details.]]></logEntry>
+<logEntry time="29/06/2011 15:39:16" severity="SYSTEM" name="ClientResponseDateTime"><![CDATA[29/06/2011 15:39:16]]></logEntry>
+<logEntry time="29/06/2011 15:39:16" severity="SYSTEM" name="ClientResponseLength"><![CDATA[370]]></logEntry>
+<logEntry time="29/06/2011 15:39:16" severity="SYSTEM" name="RemoteAddr"><![CDATA[127.0.0.1]]></logEntry>
+<logEntry time="29/06/2011 15:39:16" severity="SYSTEM" name="RemoteUser"><![CDATA[null]]></logEntry>
+<logEntry time="29/06/2011 15:39:16" severity="SYSTEM" name="QueryString"><![CDATA[null]]></logEntry>
+<logEntry time="29/06/2011 15:39:16" severity="SYSTEM" name="RequestURL"><![CDATA[http://localhost:8070/proxy/ogc/Geoserver-wfs]]></logEntry>
+</LogRequest>
+<LogRequest user="spring2a2d595e6ed9a0b24f027f2b63b134d6" requestTime="29/06/2011 15:39:46"> 
+<logEntry time="29/06/2011 15:39:46" severity="SYSTEM" name="Request"><![CDATA[]]></logEntry>
+<logEntry time="29/06/2011 15:39:46" severity="ERROR"><![CDATA[org.xml.sax.SAXParseException: Premature end of file.]]></logEntry>
+<logEntry time="29/06/2011 15:39:46" severity="ERROR"><![CDATA[Error in EasySDI Proxy. Consult the proxy log for more details.]]></logEntry>
+<logEntry time="29/06/2011 15:39:46" severity="SYSTEM" name="ClientResponseDateTime"><![CDATA[29/06/2011 15:39:46]]></logEntry>
+<logEntry time="29/06/2011 15:39:46" severity="SYSTEM" name="ClientResponseLength"><![CDATA[370]]></logEntry>
+<logEntry time="29/06/2011 15:39:46" severity="SYSTEM" name="RemoteAddr"><![CDATA[127.0.0.1]]></logEntry>
+<logEntry time="29/06/2011 15:39:46" severity="SYSTEM" name="RemoteUser"><![CDATA[null]]></logEntry>
+<logEntry time="29/06/2011 15:39:46" severity="SYSTEM" name="QueryString"><![CDATA[null]]></logEntry>
+<logEntry time="29/06/2011 15:39:46" severity="SYSTEM" name="RequestURL"><![CDATA[http://localhost:8070/proxy/ogc/Geoserver-wfs]]></logEntry>
+</LogRequest>
+<LogRequest user="spring2a2d595e6ed9a0b24f027f2b63b134d6" requestTime="29/06/2011 15:39:36"> 
+<logEntry time="29/06/2011 15:39:36" severity="SYSTEM" name="Request"><![CDATA[<!--      YOU PROBABLY DO NOT WANT TO RUN THIS QUERY SINCE        IT WILL MODIFY YOUR SOURCE DATA FILES              It will add a simple line to the tasmania_roads dataset.         --><wfs:Transaction service="WFS" version="1.0.0"  xmlns:wfs="http://www.opengis.net/wfs"  xmlns:topp="http://www.openplans.org/topp"  xmlns:gml="http://www.opengis.net/gml"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/WFS-transaction.xsd http://www.openplans.org/topp http://localhost:8080/geoserver/wfs/DescribeFeatureType?typename=topp:tasmania_roads">  <wfs:Insert>    <topp:tasmania_roads>      <topp:the_geom>        <gml:MultiLineString srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">          <gml:lineStringMember>            <gml:LineString>              <gml:coordinates decimal="." cs="," ts=" ">494475.71056415,5433016.8189323 494982.70115662,5435041.95096618              </gml:coordinates>            </gml:LineString>          </gml:lineStringMember>        </gml:MultiLineString>      </topp:the_geom>      <topp:TYPE>alley</topp:TYPE>    </topp:tasmania_roads>  </wfs:Insert></wfs:Transaction>]]></logEntry>
+<logEntry time="29/06/2011 15:39:38" severity="SYSTEM" name="RemoteRequestUrl"><![CDATA[http://localhost/geoserver/topp/ows]]></logEntry>
+<logEntry time="29/06/2011 15:39:38" severity="SYSTEM" name="RemoteRequest"><![CDATA[<!--      YOU PROBABLY DO NOT WANT TO RUN THIS QUERY SINCE        IT WILL MODIFY YOUR SOURCE DATA FILES              It will add a simple line to the tasmania_roads dataset.         --><wfs:Transaction service="WFS" version="1.0.0"  xmlns:wfs="http://www.opengis.net/wfs"  xmlns:topp="http://www.openplans.org/topp"  xmlns:gml="http://www.opengis.net/gml"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/WFS-transaction.xsd http://www.openplans.org/topp http://localhost:8080/geoserver/wfs/DescribeFeatureType?typename=topp:tasmania_roads">  <wfs:Insert>    <topp:tasmania_roads>      <topp:the_geom>        <gml:MultiLineString srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">          <gml:lineStringMember>            <gml:LineString>              <gml:coordinates decimal="." cs="," ts=" ">494475.71056415,5433016.8189323 494982.70115662,5435041.95096618              </gml:coordinates>            </gml:LineString>          </gml:lineStringMember>        </gml:MultiLineString>      </topp:the_geom>      <topp:TYPE>alley</topp:TYPE>    </topp:tasmania_roads>  </wfs:Insert></wfs:Transaction>]]></logEntry>
+<logEntry time="29/06/2011 15:39:38" severity="SYSTEM" name="RemoteRequestLength"><![CDATA[1196]]></logEntry>
+<logEntry time="29/06/2011 15:39:38" severity="SYSTEM" name="RemoteRequestDateTime"><![CDATA[29/06/2011 15:39:38]]></logEntry>
+<logEntry time="29/06/2011 15:39:38" severity="INFO"><![CDATA[ tmpDir :  C:\Users\Helene\AppData\Local\Temp\]]></logEntry>
+<logEntry time="29/06/2011 15:39:40" severity="SYSTEM" name="RemoteResponseToRequestUrl"><![CDATA[http://localhost/geoserver/topp/ows]]></logEntry>
+<logEntry time="29/06/2011 15:39:40" severity="SYSTEM" name="RemoteResponseLength"><![CDATA[518]]></logEntry>
+<logEntry time="29/06/2011 15:39:41" severity="SYSTEM" name="RemoteResponseDateTime"><![CDATA[29/06/2011 15:39:41]]></logEntry>
+<logEntry time="29/06/2011 15:39:46" severity="DEBUG"><![CDATA[filterServersResponseFiles begin]]></logEntry>
+<logEntry time="29/06/2011 15:39:46" severity="DEBUG"><![CDATA[filterServersResponseFiles end]]></logEntry>
+<logEntry time="29/06/2011 15:39:46" severity="INFO"><![CDATA[User postreatment file \spring2a2d595e6ed9a0b24f027f2b63b134d6\100\Transaction.xsl does not exist]]></logEntry>
+<logEntry time="29/06/2011 15:39:46" severity="INFO"><![CDATA[Global postreatment file \100\Transaction.xsl does not exist]]></logEntry>
+<logEntry time="29/06/2011 15:39:46" severity="SYSTEM" name="ClientResponseDateTime"><![CDATA[29/06/2011 15:39:46]]></logEntry>
+<logEntry time="29/06/2011 15:39:48" severity="INFO"><![CDATA[temporary file file:/C:/Users/Helene/AppData/Local/Temp/sendData_2e3a5a62-35e7-4ed4-adc3-90e7df7f42ac844157020975653707.xml is deleted]]></logEntry>
+<logEntry time="29/06/2011 15:39:48" severity="SYSTEM" name="RemoteAddr"><![CDATA[127.0.0.1]]></logEntry>
+<logEntry time="29/06/2011 15:39:48" severity="SYSTEM" name="RemoteUser"><![CDATA[null]]></logEntry>
+<logEntry time="29/06/2011 15:39:48" severity="SYSTEM" name="QueryString"><![CDATA[null]]></logEntry>
+<logEntry time="29/06/2011 15:39:48" severity="SYSTEM" name="RequestURL"><![CDATA[http://localhost:8070/proxy/ogc/Geoserver-wfs]]></logEntry>
+</LogRequest>
+<LogRequest user="spring2a2d595e6ed9a0b24f027f2b63b134d6" requestTime="29/06/2011 16:45:11"> 
+<logEntry time="29/06/2011 16:45:11" severity="SYSTEM" name="Request"><![CDATA[<wfs:Transaction service="WFS" version="1.0.0"  xmlns:wfs="http://www.opengis.net/wfs"  xmlns:topp="http://www.openplans.org/topp"  xmlns:gml="http://www.opengis.net/gml"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/WFS-transaction.xsd http://www.openplans.org/topp http://localhost:8080/geoserver/wfs/DescribeFeatureType?typename=topp:tasmania_roads">  <wfs:Insert>    <topp:tasmania_roads>      <topp:the_geom>        <gml:MultiLineString srsName="http://www.opengis.net/gml/srs/epsg.xml#4326">          <gml:lineStringMember>            <gml:LineString>              <gml:coordinates decimal="." cs="," ts=" ">494475.71056415,5433016.8189323 494982.70115662,5435041.95096618              </gml:coordinates>            </gml:LineString>          </gml:lineStringMember>        </gml:MultiLineString>      </topp:the_geom>      <topp:TYPE>alley</topp:TYPE>    </topp:tasmania_roads>  </wfs:Insert></wfs:Transaction>]]></logEntry>
+<logEntry time="29/06/2011 16:45:11" severity="ERROR"><![CDATA[This request has no authorized results!]]></logEntry>
+<logEntry time="29/06/2011 16:45:11" severity="SYSTEM" name="RemoteAddr"><![CDATA[127.0.0.1]]></logEntry>
+<logEntry time="29/06/2011 16:45:11" severity="SYSTEM" name="RemoteUser"><![CDATA[null]]></logEntry>
+<logEntry time="29/06/2011 16:45:11" severity="SYSTEM" name="QueryString"><![CDATA[null]]></logEntry>
+<logEntry time="29/06/2011 16:45:11" severity="SYSTEM" name="RequestURL"><![CDATA[http://localhost:8080/proxy/ogc/Geoserver-wfs]]></logEntry>
+</LogRequest>
+<LogRequest user="spring2a2d595e6ed9a0b24f027f2b63b134d6" requestTime="29/06/2011 16:45:11"> 
+<logEntry time="29/06/2011 16:45:11" severity="SYSTEM" name="Request"><![CDATA[]]></logEntry>
+<logEntry time="29/06/2011 16:45:11" severity="ERROR"><![CDATA[org.xml.sax.SAXParseException: Premature end of file.]]></logEntry>
+<logEntry time="29/06/2011 16:45:11" severity="ERROR"><![CDATA[Error in EasySDI Proxy. Consult the proxy log for more details.]]></logEntry>
+<logEntry time="29/06/2011 16:45:11" severity="SYSTEM" name="ClientResponseDateTime"><![CDATA[29/06/2011 16:45:11]]></logEntry>
+<logEntry time="29/06/2011 16:45:11" severity="SYSTEM" name="ClientResponseLength"><![CDATA[370]]></logEntry>
+<logEntry time="29/06/2011 16:45:11" severity="SYSTEM" name="RemoteAddr"><![CDATA[127.0.0.1]]></logEntry>
+<logEntry time="29/06/2011 16:45:11" severity="SYSTEM" name="RemoteUser"><![CDATA[null]]></logEntry>
+<logEntry time="29/06/2011 16:45:11" severity="SYSTEM" name="QueryString"><![CDATA[null]]></logEntry>
+<logEntry time="29/06/2011 16:45:11" severity="SYSTEM" name="RequestURL"><![CDATA[http://localhost:8080/proxy/ogc/Geoserver-wfs]]></logEntry>
+</LogRequest>
+<LogRequest user="hvanhoecke" requestTime="29/06/2011 16:47:56"> 
+<logEntry time="29/06/2011 16:47:56" severity="SYSTEM" name="RemoteRequestUrl"><![CDATA[http://localhost/geoserver/topp/ows]]></logEntry>
+<logEntry time="29/06/2011 16:47:56" severity="SYSTEM" name="RemoteRequest"><![CDATA[service=WFS&request=GetCapabilities&version=1.0.0]]></logEntry>
+<logEntry time="29/06/2011 16:47:56" severity="SYSTEM" name="RemoteRequestLength"><![CDATA[49]]></logEntry>
+<logEntry time="29/06/2011 16:47:56" severity="SYSTEM" name="RemoteRequestDateTime"><![CDATA[29/06/2011 16:47:56]]></logEntry>
+<logEntry time="29/06/2011 16:47:56" severity="INFO"><![CDATA[ tmpDir :  C:\www\Tomcat6\temp]]></logEntry>
+<logEntry time="29/06/2011 16:47:56" severity="SYSTEM" name="RemoteResponseToRequestUrl"><![CDATA[http://localhost/geoserver/topp/ows?service=WFS&request=GetCapabilities&version=1.0.0]]></logEntry>
+<logEntry time="29/06/2011 16:47:56" severity="SYSTEM" name="RemoteResponseLength"><![CDATA[13934]]></logEntry>
+<logEntry time="29/06/2011 16:47:56" severity="SYSTEM" name="RemoteResponseDateTime"><![CDATA[29/06/2011 16:47:56]]></logEntry>
+<logEntry time="29/06/2011 16:47:56" severity="DEBUG"><![CDATA[filterServersResponseFiles begin]]></logEntry>
+<logEntry time="29/06/2011 16:47:56" severity="DEBUG"><![CDATA[filterServersResponseFiles end]]></logEntry>
+<logEntry time="29/06/2011 16:47:56" severity="INFO"><![CDATA[User postreatment file \hvanhoecke\000\GetCapabilities.xsl does not exist]]></logEntry>
+<logEntry time="29/06/2011 16:47:56" severity="INFO"><![CDATA[Global postreatment file \000\GetCapabilities.xsl does not exist]]></logEntry>
+<logEntry time="29/06/2011 16:47:56" severity="INFO"><![CDATA[GetCapabilities is permitted]]></logEntry>
+<logEntry time="29/06/2011 16:47:56" severity="INFO"><![CDATA[DescribeFeatureType is permitted]]></logEntry>
+<logEntry time="29/06/2011 16:47:56" severity="INFO"><![CDATA[GetFeature is permitted]]></logEntry>
+<logEntry time="29/06/2011 16:47:56" severity="INFO"><![CDATA[Transaction is permitted]]></logEntry>
+<logEntry time="29/06/2011 16:47:56" severity="INFO"><![CDATA[LockFeature is denied]]></logEntry>
+<logEntry time="29/06/2011 16:47:56" severity="INFO"><![CDATA[GetGmlObject is denied]]></logEntry>
+<logEntry time="29/06/2011 16:47:56" severity="INFO"><![CDATA[GetFeatureWithLock is denied]]></logEntry>
+<logEntry time="29/06/2011 16:47:58" severity="WARNING"><![CDATA[temporary file file:/C:/www/Tomcat6/temp/sendData_85e5bbe3-1a20-4353-95a5-8dba7b09bb433274807917636771900.xml is not deleted]]></logEntry>
+<logEntry time="29/06/2011 16:47:58" severity="INFO"><![CDATA[temporary file file:/C:/www/Tomcat6/temp/transform_GetCapabilities73933d66-d52e-4e63-b58e-de3130ee015c3580098236481496589.xml is deleted]]></logEntry>
+<logEntry time="29/06/2011 16:47:58" severity="SYSTEM" name="RemoteAddr"><![CDATA[127.0.0.1]]></logEntry>
+<logEntry time="29/06/2011 16:47:58" severity="SYSTEM" name="RemoteUser"><![CDATA[hvanhoecke]]></logEntry>
+<logEntry time="29/06/2011 16:47:58" severity="SYSTEM" name="QueryString"><![CDATA[request=GetCapabilities&service=WFS]]></logEntry>
+<logEntry time="29/06/2011 16:47:58" severity="SYSTEM" name="RequestURL"><![CDATA[http://localhost:8080/proxy/ogc/Geoserver-wfs]]></logEntry>
+</LogRequest>
+<LogRequest user="hvanhoecke" requestTime="29/06/2011 16:48:21"> 
+<logEntry time="29/06/2011 16:48:21" severity="SYSTEM" name="RemoteRequestUrl"><![CDATA[http://localhost/geoserver/topp/ows]]></logEntry>
+<logEntry time="29/06/2011 16:48:21" severity="SYSTEM" name="RemoteRequest"><![CDATA[service=WFSversion=1.0.0&request=GetCapabilities&version=1.0.0]]></logEntry>
+<logEntry time="29/06/2011 16:48:21" severity="SYSTEM" name="RemoteRequestLength"><![CDATA[62]]></logEntry>
+<logEntry time="29/06/2011 16:48:21" severity="SYSTEM" name="RemoteRequestDateTime"><![CDATA[29/06/2011 16:48:21]]></logEntry>
+<logEntry time="29/06/2011 16:48:21" severity="INFO"><![CDATA[ tmpDir :  C:\www\Tomcat6\temp]]></logEntry>
+<logEntry time="29/06/2011 16:48:21" severity="SYSTEM" name="RemoteResponseToRequestUrl"><![CDATA[http://localhost/geoserver/topp/ows?service=WFSversion=1.0.0&request=GetCapabilities&version=1.0.0]]></logEntry>
+<logEntry time="29/06/2011 16:48:21" severity="SYSTEM" name="RemoteResponseLength"><![CDATA[487]]></logEntry>
+<logEntry time="29/06/2011 16:48:21" severity="SYSTEM" name="RemoteResponseDateTime"><![CDATA[29/06/2011 16:48:21]]></logEntry>
+<logEntry time="29/06/2011 16:48:21" severity="DEBUG"><![CDATA[filterServersResponseFiles begin]]></logEntry>
+<logEntry time="29/06/2011 16:48:21" severity="DEBUG"><![CDATA[filterServersResponseFiles end]]></logEntry>
+<logEntry time="29/06/2011 16:48:21" severity="INFO"><![CDATA[User postreatment file \hvanhoecke\000\GetCapabilities.xsl does not exist]]></logEntry>
+<logEntry time="29/06/2011 16:48:21" severity="INFO"><![CDATA[Global postreatment file \000\GetCapabilities.xsl does not exist]]></logEntry>
+<logEntry time="29/06/2011 16:48:21" severity="INFO"><![CDATA[GetCapabilities is permitted]]></logEntry>
+<logEntry time="29/06/2011 16:48:21" severity="INFO"><![CDATA[DescribeFeatureType is permitted]]></logEntry>
+<logEntry time="29/06/2011 16:48:21" severity="INFO"><![CDATA[GetFeature is permitted]]></logEntry>
+<logEntry time="29/06/2011 16:48:21" severity="INFO"><![CDATA[Transaction is permitted]]></logEntry>
+<logEntry time="29/06/2011 16:48:21" severity="INFO"><![CDATA[LockFeature is denied]]></logEntry>
+<logEntry time="29/06/2011 16:48:21" severity="INFO"><![CDATA[GetGmlObject is denied]]></logEntry>
+<logEntry time="29/06/2011 16:48:21" severity="INFO"><![CDATA[GetFeatureWithLock is denied]]></logEntry>
+<logEntry time="29/06/2011 16:48:21" severity="ERROR"><![CDATA[[Ljava.lang.Object;]]></logEntry>
+<logEntry time="29/06/2011 16:48:21" severity="ERROR"><![CDATA[Content is not allowed in prolog.]]></logEntry>
+<logEntry time="29/06/2011 16:48:21" severity="Transform ERROR"><![CDATA[java.lang.NullPointerException]]></logEntry>
+<logEntry time="29/06/2011 16:48:21" severity="ERROR"><![CDATA[Error in EasySDI Proxy. Consult the proxy log for more details.]]></logEntry>
+<logEntry time="29/06/2011 16:48:21" severity="SYSTEM" name="ClientResponseDateTime"><![CDATA[29/06/2011 16:48:21]]></logEntry>
+<logEntry time="29/06/2011 16:48:21" severity="SYSTEM" name="ClientResponseLength"><![CDATA[370]]></logEntry>
+<logEntry time="29/06/2011 16:48:21" severity="INFO"><![CDATA[temporary file file:/C:/www/Tomcat6/temp/sendData_b7135df3-4934-42c9-8962-58c1f1bc39177974788951061838184.xml is deleted]]></logEntry>
+<logEntry time="29/06/2011 16:48:21" severity="INFO"><![CDATA[temporary file file:/C:/www/Tomcat6/temp/transform_GetCapabilitiesa3efdbf8-de4d-4166-9803-8546e9a063a72476047589139659138.xml is deleted]]></logEntry>
+<logEntry time="29/06/2011 16:48:21" severity="SYSTEM" name="RemoteAddr"><![CDATA[127.0.0.1]]></logEntry>
+<logEntry time="29/06/2011 16:48:21" severity="SYSTEM" name="RemoteUser"><![CDATA[hvanhoecke]]></logEntry>
+<logEntry time="29/06/2011 16:48:21" severity="SYSTEM" name="QueryString"><![CDATA[request=GetCapabilities&service=WFSversion=1.0.0]]></logEntry>
+<logEntry time="29/06/2011 16:48:21" severity="SYSTEM" name="RequestURL"><![CDATA[http://localhost:8080/proxy/ogc/Geoserver-wfs]]></logEntry>
+</LogRequest>
+<LogRequest user="hvanhoecke" requestTime="29/06/2011 16:48:26"> 
+<logEntry time="29/06/2011 16:48:26" severity="SYSTEM" name="RemoteRequestUrl"><![CDATA[http://localhost/geoserver/topp/ows]]></logEntry>
+<logEntry time="29/06/2011 16:48:26" severity="SYSTEM" name="RemoteRequest"><![CDATA[service=WFS&version=1.0.0&request=GetCapabilities&]]></logEntry>
+<logEntry time="29/06/2011 16:48:26" severity="SYSTEM" name="RemoteRequestLength"><![CDATA[50]]></logEntry>
+<logEntry time="29/06/2011 16:48:26" severity="SYSTEM" name="RemoteRequestDateTime"><![CDATA[29/06/2011 16:48:26]]></logEntry>
+<logEntry time="29/06/2011 16:48:26" severity="INFO"><![CDATA[ tmpDir :  C:\www\Tomcat6\temp]]></logEntry>
+<logEntry time="29/06/2011 16:48:26" severity="SYSTEM" name="RemoteResponseToRequestUrl"><![CDATA[http://localhost/geoserver/topp/ows?service=WFS&version=1.0.0&request=GetCapabilities&]]></logEntry>
+<logEntry time="29/06/2011 16:48:26" severity="SYSTEM" name="RemoteResponseLength"><![CDATA[13934]]></logEntry>
+<logEntry time="29/06/2011 16:48:26" severity="SYSTEM" name="RemoteResponseDateTime"><![CDATA[29/06/2011 16:48:26]]></logEntry>
+<logEntry time="29/06/2011 16:48:26" severity="DEBUG"><![CDATA[filterServersResponseFiles begin]]></logEntry>
+<logEntry time="29/06/2011 16:48:26" severity="DEBUG"><![CDATA[filterServersResponseFiles end]]></logEntry>
+<logEntry time="29/06/2011 16:48:26" severity="INFO"><![CDATA[User postreatment file \hvanhoecke\100\GetCapabilities.xsl does not exist]]></logEntry>
+<logEntry time="29/06/2011 16:48:26" severity="INFO"><![CDATA[Global postreatment file \100\GetCapabilities.xsl does not exist]]></logEntry>
+<logEntry time="29/06/2011 16:48:26" severity="INFO"><![CDATA[GetCapabilities is permitted]]></logEntry>
+<logEntry time="29/06/2011 16:48:26" severity="INFO"><![CDATA[DescribeFeatureType is permitted]]></logEntry>
+<logEntry time="29/06/2011 16:48:26" severity="INFO"><![CDATA[GetFeature is permitted]]></logEntry>
+<logEntry time="29/06/2011 16:48:26" severity="INFO"><![CDATA[Transaction is permitted]]></logEntry>
+<logEntry time="29/06/2011 16:48:26" severity="INFO"><![CDATA[LockFeature is denied]]></logEntry>
+<logEntry time="29/06/2011 16:48:26" severity="INFO"><![CDATA[GetGmlObject is denied]]></logEntry>
+<logEntry time="29/06/2011 16:48:26" severity="INFO"><![CDATA[GetFeatureWithLock is denied]]></logEntry>
+<logEntry time="29/06/2011 16:48:28" severity="INFO"><![CDATA[temporary file file:/C:/www/Tomcat6/temp/sendData_718fba34-5de3-4b00-b20c-365396ef5bc51996071830493895844.xml is deleted]]></logEntry>
+<logEntry time="29/06/2011 16:48:28" severity="INFO"><![CDATA[temporary file file:/C:/www/Tomcat6/temp/transform_GetCapabilitiescbda901a-47ee-44b4-84ed-8dbfcf6727732215255298252066713.xml is deleted]]></logEntry>
+<logEntry time="29/06/2011 16:48:28" severity="INFO"><![CDATA[temporary file file:/C:/www/Tomcat6/temp/mergeCapabilities_f_fb124f39-88a4-4788-af73-d7f9cc7e3d637302651319157105523.xml is deleted]]></logEntry>
+<logEntry time="29/06/2011 16:48:28" severity="SYSTEM" name="RemoteAddr"><![CDATA[127.0.0.1]]></logEntry>
+<logEntry time="29/06/2011 16:48:28" severity="SYSTEM" name="RemoteUser"><![CDATA[hvanhoecke]]></logEntry>
+<logEntry time="29/06/2011 16:48:28" severity="SYSTEM" name="QueryString"><![CDATA[request=GetCapabilities&service=WFS&version=1.0.0]]></logEntry>
+<logEntry time="29/06/2011 16:48:28" severity="SYSTEM" name="RequestURL"><![CDATA[http://localhost:8080/proxy/ogc/Geoserver-wfs]]></logEntry>
+</LogRequest>

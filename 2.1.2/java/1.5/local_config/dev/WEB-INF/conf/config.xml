@@ -1,0 +1,259 @@
+<?xml version="1.0"?>
+<configurations version="1.0">
+
+  <config id="mapserver_wms">
+    <authorization>
+      <policy-file>C:\Source\Service\Proxy\local_config\dev\WEB-INF\conf\NewPolicy.xml</policy-file>
+    </authorization>
+    <servlet-class>org.easysdi.proxy.wms.WMSProxyServlet</servlet-class>
+    <log-config>
+      <file-structure>
+        <path>C:\Source\Service\Proxy\local_config\dev\WEB-INF\logs</path>
+        <suffix>pyrenees</suffix>
+        <prefix>wms</prefix>
+        <extension>log</extension>
+        <period>daily</period>
+      </file-structure>
+      <date-format>dd/MM/yyyy HH:mm:ss:SSS</date-format>
+    </log-config>
+    <host-translator/>
+    <remote-server-list><remote-server><user/><url>http://www.sig-pyrenees.net/wms</url><password/></remote-server><remote-server><user/><url>http://www.geosignal.org/cgi-bin/wmsmap</url><password/></remote-server><remote-server><user/><url>http://adour-garonne.eaufrance.fr/cgi-bin/servicesOGC</url><password/></remote-server></remote-server-list>
+    <service-metadata>
+      <Name/>
+      <Title>Mon titre</Title>
+      <Abstract>WMS multi</Abstract>
+      <KeywordList><Keyword/></KeywordList>
+      <ServiceType/>
+      <ServiceTypeVersion/>
+      <ContactInformation>
+        <ContactName>H&#xE9;l&#xE8;ne Van Hoecke</ContactName>
+        <ContactOrganization>DEPTH</ContactOrganization>
+        <ContactPosition>Ing&#xE9;nieur</ContactPosition>
+        <ContactAddress>
+          <AddressType/>
+          <Address>Chemin d'arche 40B</Address>
+          <PostalCode>1870</PostalCode>
+          <City>Monthey</City>
+          <State>valais</State>
+          <Country>suisse</Country>
+        </ContactAddress>
+        <VoicePhone>00-</VoicePhone>
+        <Facsimile>00-</Facsimile>
+        <ElectronicMailAddress>helene.vanhoecke@depth.ch</ElectronicMailAddress>
+        <Linkage/>
+        <HoursofSservice/>
+        <Instructions/>
+        <ContactSite/>
+      </ContactInformation>
+      <Fees>none</Fees>
+      <AccessConstraints>none</AccessConstraints>
+    </service-metadata>
+    <exception>
+      <mode>permissive</mode>
+    </exception>
+    <ogc-search-filter/>
+  </config>
+  <config id="mapserver_wfs">
+    <authorization>
+      <policy-file>C:\Source\Service\Proxy\local_config\dev\WEB-INF\conf\NewPolicy.xml</policy-file>
+    </authorization>
+    <servlet-class>org.easysdi.proxy.wfs.WFSProxyServlet</servlet-class>
+    <log-config>
+      <file-structure>
+        <path>C:\logs\easysdi</path>
+        <suffix>wfs</suffix>
+        <prefix>easi_</prefix>
+        <extension>log</extension>
+        <period>daily</period>
+      </file-structure>
+      <date-format>dd/MM/yyyy HH:mm:ss</date-format>
+    </log-config>
+    <host-translator></host-translator>
+    <remote-server-list><remote-server master="true"><alias>mapserver</alias><user></user><url>http://www.sig-pyrenees.net/wfs</url><password></password></remote-server></remote-server-list>
+    <exception>
+      <mode>restrictive</mode>
+    </exception>
+    <service-metadata>
+      <Title>SIG pyrenees</Title>
+      <Abstract>SIG pyrenees</Abstract>
+      <KeywordList><Keyword></Keyword></KeywordList>
+      <ContactInformation>
+        <ContactOrganization></ContactOrganization>
+        <ContactName></ContactName>
+        <ContactPosition></ContactPosition>
+        <ContactAddress>
+          <AddressType></AddressType>
+          <Address></Address>
+          <PostalCode></PostalCode>
+          <City></City>
+          <State></State>
+          <Country></Country>
+        </ContactAddress>
+        <VoicePhone></VoicePhone>
+        <Facsimile></Facsimile>
+        <ElectronicMailAddress></ElectronicMailAddress>
+        <Linkage></Linkage>
+        <HoursofSservice></HoursofSservice>
+        <Instructions></Instructions>
+      </ContactInformation>
+      <Fees>none</Fees>
+      <AccessConstraints>none</AccessConstraints>
+    </service-metadata>
+  </config>
+  <config id="geonetwork_csw">
+    <authorization>
+      <policy-file>C:\Source\Service\Proxy\local_config\dev\WEB-INF\conf\NewPolicy.xml</policy-file>
+    </authorization>
+    <servlet-class>org.easysdi.proxy.csw.CSWProxyServlet</servlet-class>
+    <log-config>
+      <file-structure>
+        <path>C:\Source\Service\Proxy\local_config\dev\WEB-INF\logs</path>
+        <suffix>sigpyrennees</suffix>
+        <prefix>csw</prefix>
+        <extension>log</extension>
+        <period>daily</period>
+      </file-structure>
+      <date-format>dd/MM/yyyy HH:mm:ss:SSS</date-format>
+    </log-config>
+    <host-translator/>
+    <remote-server-list><remote-server><user>admin</user><url>http://www.sig-pyrenees.net/geonetwork/srv/en/csw</url><password>admin</password><max-records/><login-service>http://www.sig-pyrenees.net/geonetwork/srv/en/xml.user.login?username=admin&amp;password=admin</login-service><transaction><type>geonetwork</type></transaction></remote-server></remote-server-list>
+    <service-metadata>
+      <Title>Ceci est mon CSW</Title>
+      <Abstract>Ceci est mon CSW &#xE0;&#xA0; moi!</Abstract>
+      <KeywordList><Keyword/></KeywordList>
+      <ContactInformation>
+        <ContactOrganization/>
+        <ContactSite>www.depth.ch</ContactSite>
+        <ContactName/>
+        <ContactPosition/>
+        <ContactAddress>
+          <AddressType/>
+          <Address/>
+          <PostalCode/>
+          <City/>
+          <State/>
+          <Country/>
+        </ContactAddress>
+        <VoicePhone/>
+        <Facsimile/>
+        <ElectronicMailAddress/>
+        <Linkage/>
+        <HoursofSservice/>
+        <Instructions/>
+      </ContactInformation>
+      <Fees>none</Fees>
+      <AccessConstraints>none</AccessConstraints>
+    </service-metadata>
+    <exception>
+      <mode>restrictive</mode>
+    </exception>
+    <version>
+      <mode>all</mode>
+    </version>
+    <object-version>
+      <mode>all</mode>
+    </object-version>
+  <ogc-search-filter/></config>
+  
+  
+  
+  
+  <config id="geosignal">
+    <authorization>
+      <policy-file>C:\Source\Service\Proxy\local_config\dev\WEB-INF\conf\NewPolicy.xml</policy-file>
+    </authorization>
+    <servlet-class>org.easysdi.proxy.wms.WMSProxyServlet</servlet-class>
+    <log-config>
+      <file-structure>
+        <path>C:\Source\Service\Proxy\local_config\dev\WEB-INF\logs</path>
+        <suffix>wms</suffix>
+        <prefix>geosignal</prefix>
+        <extension>log</extension>
+        <period>daily</period>
+      </file-structure>
+      <date-format>dd/MM/yyyy HH:mm:ss:SSS</date-format>
+    </log-config>
+    <host-translator/>
+    <remote-server-list><remote-server><user/><url>http://www.geosignal.org/cgi-bin/wmsmap?</url><password/></remote-server></remote-server-list>
+    <service-metadata>
+      <Name>service test</Name>
+      <Title>service test</Title>
+      <Abstract>ceci est un service test</Abstract>
+      <Keyword>toto,tata</Keyword>
+      <ServiceType/>
+      <ServiceTypeVersion/>
+      <ContactInformation>
+        <ContactName>VH</ContactName>
+        <ContactOrganization>VH</ContactOrganization>
+        <ContactPosition>VH</ContactPosition>
+        <ContactAddress>
+          <AddressType>work</AddressType>
+          <Address>VH</Address>
+          <PostalCode>1870</PostalCode>
+          <City>VH</City>
+          <State>valais</State>
+          <Country>suisse</Country>
+        </ContactAddress>
+        <VoicePhone/>
+        <Facsimile/>
+        <ElectronicMailAddress/>
+        <Linkage/>
+        <HoursofSservice/>
+        <Instructions/>
+      </ContactInformation>
+      <Fees>0-</Fees>
+      <AccessConstraints>none</AccessConstraints>
+    <KeywordList><Keyword/></KeywordList></service-metadata>
+  <ogc-search-filter/><exception><mode>permissive</mode></exception></config>
+  
+  
+  
+  <config id="geodbmeta_csw">
+    <authorization>
+      <policy-file>C:\Source\Service\Proxy\local_config\dev\WEB-INF\conf\NewPolicy.xml</policy-file>
+    </authorization>
+    <servlet-class>org.easysdi.proxy.csw.CSWProxyServlet</servlet-class>
+    <log-config>
+      <file-structure>
+        <path>C:\Source\Service\Proxy\local_config\dev\WEB-INF\logs</path>
+        <suffix>geodbmeta</suffix>
+        <prefix>csw</prefix>
+        <extension>log</extension>
+        <period>daily</period>
+      </file-structure>
+      <date-format>dd/MM/yyyy HH:mm:ss:SSS</date-format>
+    </log-config>
+    <host-translator/>
+    <remote-server-list><remote-server><user>admin</user><url>http://demo.depth.ch:8084/geonetwork/srv/en/csw</url><password>admin</password><max-records>30</max-records><login-service>http://demo.depth.ch:8084/geonetwork/srv/en/xml.user.login?username=admin&amp;password=admin</login-service><transaction><type>geonetwork</type></transaction></remote-server></remote-server-list>
+    <exception>
+      <mode>permissive</mode>
+    </exception>
+    <service-metadata>
+      <Title>CSW Geodbmeta demo edit</Title>
+      <Abstract>CSW geodbmeta demo edit</Abstract>
+      <KeywordList><Keyword/></KeywordList>
+      <ContactInformation>
+        <ContactOrganization>DEPTH</ContactOrganization>
+        <ContactName>DEPTH</ContactName>
+        <ContactPosition/>
+        <ContactAddress>
+          <AddressType/>
+          <Address/>
+          <PostalCode/>
+          <City/>
+          <State/>
+          <Country/>
+        </ContactAddress>
+        <VoicePhone/>
+        <Facsimile/>
+        <ElectronicMailAddress/>
+        <Linkage/>
+        <HoursofSservice/>
+        <Instructions/>
+      </ContactInformation>
+      <Fees>none</Fees>
+      <AccessConstraints>none</AccessConstraints>
+    </service-metadata>
+    <ogc-search-filter>fileId</ogc-search-filter>
+  </config>
+<config id="metacarta_open_wfs"><authorization><policy-file>C:\Source\Service\Proxy\local_config\dev\WEB-INF\conf\NewPolicy.xml</policy-file></authorization><servlet-class>org.easysdi.proxy.wfs.WFSProxyServlet</servlet-class><log-config><file-structure><path>C:\Source\Service\Proxy\local_config\dev\WEB-INF\logs</path><suffix>wfs</suffix><prefix>metacarta</prefix><extension>log</extension><period>daily</period></file-structure><date-format>dd/MM/yyyy HH:mm:ss:SSS</date-format></log-config><host-translator/><remote-server-list><remote-server><user/><url>http://labs.metacarta.com/wms/vmap0</url><password/></remote-server></remote-server-list><exception><mode>permissive</mode></exception><service-metadata><Title>Metacarta WFS open</Title><Abstract>MetacartaWfS open</Abstract><KeywordList><Keyword/></KeywordList><ContactInformation><ContactOrganization/><ContactName/><ContactPosition/><ContactAddress><AddressType/><Address/><PostalCode/><City/><State/><Country/></ContactAddress><VoicePhone/><Facsimile/><ElectronicMailAddress/><Linkage/><HoursofSservice/><Instructions/></ContactInformation><Fees>none</Fees><AccessConstraints>none</AccessConstraints></service-metadata><ogc-search-filter/></config><config id="asit-wms"><authorization><policy-file>C:\Source\Service\Proxy\local_config\dev\WEB-INF\conf\NewPolicy.xml</policy-file></authorization><servlet-class>org.easysdi.proxy.wms.WMSProxyServlet</servlet-class><log-config><file-structure><path>C:\Source\Service\Proxy\local_config\dev\WEB-INF\logs</path><suffix>wms</suffix><prefix>asit</prefix><extension>log</extension><period>daily</period></file-structure><date-format>dd/MM/yyyy HH:mm:ss:SSS</date-format></log-config><host-translator/><remote-server-list><remote-server><user>asitvd</user><url>https://secure.vd.ch/ogcasit/wms</url><password>d0ubleVMS</password></remote-server></remote-server-list><exception><mode>permissive</mode></exception><service-metadata><Title>Test performance</Title><Abstract/><KeywordList><Keyword/></KeywordList><ContactInformation><ContactOrganization/><ContactName/><ContactPosition/><ContactAddress><AddressType/><Address/><PostalCode/><City/><State/><Country/></ContactAddress><VoicePhone/><Facsimile/><ElectronicMailAddress/><Linkage/><HoursofSservice/><Instructions/></ContactInformation><Fees>none</Fees><AccessConstraints>none</AccessConstraints></service-metadata><ogc-search-filter/></config><config id="Geology"><authorization><policy-file>C:\Source\Service\Proxy\local_config\dev\WEB-INF\conf\geology-policy.xml</policy-file></authorization><servlet-class>org.easysdi.proxy.wms.WMSProxyServlet</servlet-class><log-config><file-structure><path>C:\Source\Service\Proxy\local_config\dev\WEB-INF\logs</path><suffix>wms</suffix><prefix>geology</prefix><extension>log</extension><period>daily</period></file-structure><date-format>dd/MM/yyyy HH:mm:ss:SSS</date-format></log-config><host-translator/><remote-server-list><remote-server><user/><url>http://geoservices.brgm.fr/geologie</url><password/></remote-server><remote-server><user/><url>http://geoservices.brgm.fr/risques</url><password/></remote-server></remote-server-list><ogc-search-filter/><exception><mode>permissive</mode></exception><service-metadata><Title>BRGM</Title><Abstract>BRGM</Abstract><KeywordList><Keyword/></KeywordList><ContactInformation><ContactOrganization>DEPTH</ContactOrganization><ContactName>Van Hoecke</ContactName><ContactPosition>Dev</ContactPosition><ContactAddress><AddressType>Bureau</AddressType><Address>Chemin d'arches 40 B</Address><PostalCode>1870</PostalCode><City>Monthey</City><State>valais</State><Country>suisse</Country></ContactAddress><VoicePhone/><Facsimile/><ElectronicMailAddress>helene.vanhoecke@depth.ch</ElectronicMailAddress><Linkage/><HoursofSservice/><Instructions/></ContactInformation><Fees>100</Fees><AccessConstraints>aucune</AccessConstraints></service-metadata></config><config id="easysdi_csw"><authorization><policy-file>C:\Source\Service\Proxy\local_config\dev\WEB-INF\conf\cswPolicy.xml</policy-file></authorization><servlet-class>org.easysdi.proxy.csw.CSWProxyServlet</servlet-class><log-config><file-structure><path>C:\Source\Service\Proxy\local_config\dev\WEB-INF\logs</path><suffix>csw</suffix><prefix>easysdi</prefix><extension>log</extension><period>daily</period></file-structure><date-format>dd/MM/yyyy HH:mm:ss:SSS</date-format></log-config><host-translator/><remote-server-list><remote-server><user>admin</user><url>http://demo.depth.ch:8084/geonetwork/srv/en/csw</url><password>admin</password><max-records>50</max-records><login-service>http://demo.depth.ch:8084/geonetwork/srv/en/xml.user.login?username=admin&amp;password=admin</login-service><transaction><type>geonetwork</type></transaction></remote-server></remote-server-list><ogc-search-filter>fileId</ogc-search-filter><exception><mode>permissive</mode></exception><service-metadata><Title>Easysdi CSW</Title><Abstract/><KeywordList><Keyword/></KeywordList><ContactInformation><ContactOrganization/><ContactName/><ContactPosition/><ContactAddress><AddressType/><Address/><PostalCode/><City/><State/><Country/></ContactAddress><VoicePhone/><Facsimile/><ElectronicMailAddress/><Linkage/><HoursofSservice/><Instructions/></ContactInformation><Fees>none</Fees><AccessConstraints>none</AccessConstraints></service-metadata></config></configurations>
