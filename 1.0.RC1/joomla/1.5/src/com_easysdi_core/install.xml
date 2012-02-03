@@ -1,0 +1,54 @@
+<?xml version="1.0"  ?>
+<install version="1.5" type="component">
+	<name>EasySDI_core</name>
+	<version>1.0</version>
+	<creationDate>July 2008</creationDate>
+	<author>Depth.ch</author>
+	<authorEmail>easysdi@depth.ch</authorEmail>
+	<authorUrl>www.depth.ch</authorUrl>
+	<copyright></copyright>
+	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
+	<description>
+		Administration tool for the core component of easysdi.
+	</description>
+	
+	<installfile>install.easysdi_core.php</installfile>
+	<uninstallfile>uninstall.easysdi.php</uninstallfile>		
+		
+	<administration>		
+	
+		<files>
+			<filename>admin.easysdi_core.php</filename>
+			<filename>license.txt</filename>
+			<filename>toolbar.easysdi.php</filename>
+			<folder>com_easysdi_core</folder>			
+			<folder>core</folder>
+			<folder>font</folder>			
+			<folder>java</folder>
+			<folder>js</folder>
+			<folder>language</folder>			
+			<folder>xsl</folder>
+			<folder>common</folder>
+			<folder>templates</folder>
+			<folder>xml</folder>
+		</files>
+		<languages folder="./language/admin">
+			<language tag="fr-FR">fr-FR.com_easysdi_core.ini</language>
+			<language tag="en-GB">en-GB.com_easysdi_core.ini</language>
+		</languages>
+	</administration>
+	<files folder="com_easysdi_core"> 
+			<filename>easysdi_core.php</filename>
+			<filename>license.txt</filename>									
+			<folder>core</folder>
+			<folder>js</folder>
+			<folder>common</folder>
+			<folder>xsl</folder>
+			<folder>img</folder>
+			<folder>views</folder>
+	</files>
+	<languages folder="./language/site">
+		<language tag="fr-FR">fr-FR.com_easysdi_core.ini</language>
+		<language tag="en-GB">en-GB.com_easysdi_core.ini</language>
+	</languages>
+</install>
