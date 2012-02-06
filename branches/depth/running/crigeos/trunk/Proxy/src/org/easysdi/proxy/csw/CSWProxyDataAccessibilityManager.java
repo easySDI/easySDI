@@ -341,8 +341,15 @@ public class CSWProxyDataAccessibilityManager {
 		
 		
 		//Accessible objects
-		if((policy.getObjectVisibilities() != null && policy.getObjectVisibilities().getVisibilities()!= null && policy.getObjectVisibilities().getVisibilities().size() != 0  && !policy.getObjectVisibilities().isAll()) 
-				|| (policy.getObjectTypes()!= null && policy.getObjectTypes().getObjectTypes() != null && policy.getObjectTypes().getObjectTypes().size() != 0 &&  !policy.getObjectTypes().isAll()))
+		if(    (policy.getObjectVisibilities() != null && 
+				policy.getObjectVisibilities().getVisibilities()!= null && 
+				policy.getObjectVisibilities().getVisibilities().size() != 0  && 
+				!policy.getObjectVisibilities().isAll()) 
+				|| 
+			   (policy.getObjectTypes()!= null && 
+			    policy.getObjectTypes().getObjectTypes() != null && 
+			    policy.getObjectTypes().getObjectTypes().size() != 0 &&  
+			    !policy.getObjectTypes().isAll()))
 		{
 			String listVisibility = "";
 			if(policy.getObjectVisibilities() != null && !policy.getObjectVisibilities().isAll())

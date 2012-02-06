@@ -50,12 +50,16 @@ import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import org.easysdi.jdom.filter.ElementFileIdentifierFilter;
+import org.easysdi.jdom.filter.ElementMD_MetadataFilter;
+import org.easysdi.jdom.filter.ElementMD_MetadataNonAuthorizedFilter;
 import org.easysdi.jdom.filter.ElementSDIPlatformFilter;
 import org.easysdi.jdom.filter.ElementSearchResultsFilter;
 import org.easysdi.jdom.filter.ElementTransactionTypeFilter;
 import org.easysdi.proxy.exception.AvailabilityPeriodException;
 import org.easysdi.xml.documents.RemoteServerInfo;
 import org.easysdi.xml.handler.CswRequestHandler;
+import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -72,7 +76,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
 public class CSWProxyServlet2 extends CSWProxyServlet {
 
 	private static final long serialVersionUID = 1L;
-	
+	public Namespace nsSDI = Namespace.getNamespace("sdi","http://www.easysdi.org/2011/sdi") ;
 	/** 
 	 * 
 	 * @return
@@ -308,7 +312,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				            //Or update the existing node if the remote catalog is driven by EasySDI too
 				            Iterator<Element> resultStorageIterator = resultListStorage.iterator();
 				            Element result = null;
-				            Namespace nsSDI = Namespace.getNamespace("sdi","http://www.easysdi.org/2011/sdi") ;
+				            
 				            while (resultStorageIterator.hasNext()){
 				            	result = resultStorageIterator.next();
 				            	List<Element> platformElementList = result.getChildren("platform", nsSDI);
@@ -342,36 +346,119 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					else{
 						//Current config is not used to harvest remote catalog.
 						//If the request was made in HTTP GET, response has to be rewrote to remove unauthorized metadatas
+						//NB : a geographic filter can't be applied to this kind of request
 						if(req.getMethod().equals("GET")){
 							
-							CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy, getJoomlaProvider());
-							List<Map<String,Object>> accessibleDataIds = cswDataManager.getAccessibleDataIds ();
-							
 							SAXBuilder sb = new SAXBuilder();
-							
 							Document doc = null;
-					        try {
-					            doc = sb.build(tempFile);
+							try {
+								List<Element> lElementHarvested = new ArrayList<Element> ();
+								List<Element> lElementUnauthorized = new ArrayList<Element> ();
+								
+								doc = sb.build(tempFile);
 					            Element racine = doc.getRootElement();
-					            Namespace nsCSW = Namespace.getNamespace("csw","http://www.opengis.net/cat/csw/2.0.2") ;
-					            Element results = racine.getChild("SearchResults", nsCSW);
-					            if(results != null){
-						            String matched =  results.getAttributeValue("numberOfRecordsMatched");
-						            results.setAttribute("numberOfRecordsMatched",matched+"0");
+					            
+					            //EasySDI metadatas
+					            CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy, getJoomlaProvider());
+					            Boolean isAll = cswDataManager.isAllEasySDIDataAccessible();
+					            List <String> authorizedGuidList = new ArrayList<String>();
+					            
+					            if(isAll){
+					            	authorizedGuidList = null;
+					            }else{
+					            	List<Map<String,Object>> accessibleDataIds = cswDataManager.getAccessibleDataIds ();
+					            
+					            	if(accessibleDataIds != null){
+							            for (int i = 0 ; i < accessibleDataIds.size() ; i++ ){
+							            	authorizedGuidList.add((String)accessibleDataIds.get(i).get("guid"));
+							            }
+						            }else{
+						            	authorizedGuidList = null;
+						            }
 					            }
+					            Iterator<Element> resultIterator = racine.getDescendants(new ElementMD_MetadataNonAuthorizedFilter(authorizedGuidList,policy.getIncludeHarvested()));
+					            while(resultIterator.hasNext()){
+									Element e = resultIterator.next();
+									lElementUnauthorized.add(e);
+								}
+								for(int i = 0; i < lElementUnauthorized.size() ; i++){
+					            	lElementUnauthorized.get(i).getParent().removeContent(lElementUnauthorized.get(i));
+					            }
+								
+								Iterator<Element> searchResultIterator = racine.getDescendants(new ElementSearchResultsFilter());
+					            Attribute numberOfRecordsReturnedAttribute = null;
+					            while(searchResultIterator.hasNext()){
+					            	Element e = searchResultIterator.next();
+					            	numberOfRecordsReturnedAttribute = e.getAttribute("numberOfRecordsReturned");
+					            }
+					            numberOfRecordsReturnedAttribute.setValue(String.valueOf(numberOfRecordsReturnedAttribute.getIntValue()-lElementUnauthorized.size()));
 					            
-					            XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
-					            FileOutputStream outStream = new FileOutputStream(tempFile);
-					            sortie.output(doc, outStream);
-					            outStream.close();
 					            
-					        }
+//					        	Boolean isAll = cswDataManager.isAllEasySDIDataAccessible();
+//								if(!isAll){
+//									List<Map<String,Object>> accessibleDataIds = cswDataManager.getAccessibleDataIds ();
+//						            List <String> authorizedGuidList = new ArrayList<String>();
+//						            for (int i = 0 ; i < accessibleDataIds.size() ; i++ ){
+//						            	authorizedGuidList.add((String)accessibleDataIds.get(i).get("guid"));
+//						            }
+//						            
+//									Iterator<Element> resultIterator = racine.getDescendants(new ElementFileIdentifierFilter());
+//									while(resultIterator.hasNext()){
+//										Element e = resultIterator.next();
+//										String text = e.getChildText("CharacterString");
+//										if(!authorizedGuidList.contains(text)){
+//											Element p = (Element)e.getParent();
+//											lElementUnauthorized.add(p);
+//										}
+//									}
+//									for(int i = 0; i < lElementUnauthorized.size() ; i++){
+//						            	lElementUnauthorized.get(i).getParent().removeContent(lElementUnauthorized.get(i));
+//						            }
+//									
+//								}
+					            
+					            //Harvested metadatas
+//					            Boolean withHarvested = policy.getIncludeHarvested();
+//					            //If harvested metadatas are not authorized, remove them from the document response
+//					            if(!withHarvested){
+//					            	Iterator<Element> resultIterator = racine.getDescendants(new ElementSDIPlatformFilter());
+//						            while(resultIterator.hasNext()){
+//						            	Element e = resultIterator.next();
+//						            	Attribute a = e.getAttribute("harvested");
+//						            	if(a != null){
+//						            		if(a.getValue().equalsIgnoreCase("true")){
+//						            			//The current metadata is an harvested one
+//						            			Element p = (Element)e.getParent();
+//						            			lElementHarvested.add(p);
+//						            		}
+//						            	}
+//						            }
+//						            for(int i = 0; i < lElementHarvested.size() ; i++){
+//						            	lElementHarvested.get(i).getParent().removeContent(lElementHarvested.get(i));
+//						            }
+//						        }
+//					            
+					            //Update numberOfRecordsReturned  value according to the modified document
+					            //numberOfRecordsReturned
+//					            Iterator<Element> searchResultIterator = racine.getDescendants(new ElementSearchResultsFilter());
+//					            Attribute numberOfRecordsReturnedAttribute = null;
+//					            while(searchResultIterator.hasNext()){
+//					            	Element e = searchResultIterator.next();
+//					            	numberOfRecordsReturnedAttribute = e.getAttribute("numberOfRecordsReturned");
+//					            }
+//					            numberOfRecordsReturnedAttribute.setValue(String.valueOf(numberOfRecordsReturnedAttribute.getIntValue()-lElementHarvested.size()-lElementUnauthorized.size()));
+							}
 					        catch (JDOMException e) {
 					            e.printStackTrace();
 					        }
 					        catch (IOException e) {
 					            e.printStackTrace();
 					        }
+							
+							XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
+				            FileOutputStream outStream = new FileOutputStream(tempFile);
+				            sortie.output(doc, outStream);
+				            outStream.close();
 						}
 					}
 				}
