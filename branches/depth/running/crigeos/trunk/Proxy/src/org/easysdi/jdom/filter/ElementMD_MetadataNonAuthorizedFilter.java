@@ -57,16 +57,20 @@ public class ElementMD_MetadataNonAuthorizedFilter implements Filter {
 		Element element = (Element)ob;
 		if(element.getName().equals("MD_Metadata"))
 		{
-			if(!this._withHarvested){
-				Element sdi = element.getChild("platform",nsSDI);
+			Element sdi = element.getChild("platform",nsSDI);
+			if(sdi != null){
 				Attribute a = sdi.getAttribute("harvested");
 				if(a != null){
 					if(a.getValue().equalsIgnoreCase("true")){
-						return true;
+						if(!this._withHarvested)
+							return true;
+						else
+							return false;
 					}
 				}
 			}
 			
+			//This list is null if all the EasySDI Metadatas are authorized to be delivered
 			if(this._authorizedGuidList == null){
 				return false;
 			}

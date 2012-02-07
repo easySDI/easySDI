@@ -352,101 +352,70 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 							SAXBuilder sb = new SAXBuilder();
 							Document doc = null;
 							try {
-								List<Element> lElementHarvested = new ArrayList<Element> ();
 								List<Element> lElementUnauthorized = new ArrayList<Element> ();
-								
 								doc = sb.build(tempFile);
 					            Element racine = doc.getRootElement();
+					            Iterator<Element> searchResultIterator = racine.getDescendants(new ElementSearchResultsFilter());
+					            Attribute numberOfRecordsReturnedAttribute = null;
+					            Attribute numberOfRecordsMatchedAttribute = null;
+					            while(searchResultIterator.hasNext()){
+					            	Element e = searchResultIterator.next();
+					            	numberOfRecordsReturnedAttribute = e.getAttribute("numberOfRecordsReturned");
+					            	numberOfRecordsMatchedAttribute = e.getAttribute ("numberOfRecordsMatched");
+					            }
 					            
-					            //EasySDI metadatas
 					            CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy, getJoomlaProvider());
 					            Boolean isAll = cswDataManager.isAllEasySDIDataAccessible();
 					            List <String> authorizedGuidList = new ArrayList<String>();
+					            Integer numberOfRecordsActuallyMatched = 0;
+					            Integer numberOfEasySDIMetadatas = cswDataManager.getCountOfEasySDIMetadatas();
 					            
 					            if(isAll){
+					            	//All metadatas are authorized to be delivered
 					            	authorizedGuidList = null;
+					            	if(policy.getIncludeHarvested())
+					            		numberOfRecordsActuallyMatched = numberOfRecordsMatchedAttribute.getIntValue();
+					            	else
+					            		numberOfRecordsActuallyMatched = numberOfEasySDIMetadatas;
+					            		
 					            }else{
+					            	//Get the list of authorized metadatas
 					            	List<Map<String,Object>> accessibleDataIds = cswDataManager.getAccessibleDataIds ();
-					            
+					            	//Rewrite the result list to keep only the guid value
 					            	if(accessibleDataIds != null){
 							            for (int i = 0 ; i < accessibleDataIds.size() ; i++ ){
 							            	authorizedGuidList.add((String)accessibleDataIds.get(i).get("guid"));
 							            }
+							            if(policy.getIncludeHarvested())
+						            		numberOfRecordsActuallyMatched = numberOfRecordsMatchedAttribute.getIntValue() - (numberOfEasySDIMetadatas - authorizedGuidList.size());
+						            	else
+						            		numberOfRecordsActuallyMatched = numberOfEasySDIMetadatas - authorizedGuidList.size();
 						            }else{
+						            	//accessibleDataIds null means all Metadatas are allowed 
 						            	authorizedGuidList = null;
+						            	numberOfRecordsActuallyMatched = cswDataManager.getCountOfEasySDIMetadatas();
 						            }
 					            }
+					            
+					            //Get all the unauthorized metadata nodes in the result document 
 					            Iterator<Element> resultIterator = racine.getDescendants(new ElementMD_MetadataNonAuthorizedFilter(authorizedGuidList,policy.getIncludeHarvested()));
 					            while(resultIterator.hasNext()){
 									Element e = resultIterator.next();
 									lElementUnauthorized.add(e);
 								}
+					            
+					            //Remove those nodes from the document
 								for(int i = 0; i < lElementUnauthorized.size() ; i++){
 					            	lElementUnauthorized.get(i).getParent().removeContent(lElementUnauthorized.get(i));
 					            }
 								
-								Iterator<Element> searchResultIterator = racine.getDescendants(new ElementSearchResultsFilter());
-					            Attribute numberOfRecordsReturnedAttribute = null;
-					            while(searchResultIterator.hasNext()){
-					            	Element e = searchResultIterator.next();
-					            	numberOfRecordsReturnedAttribute = e.getAttribute("numberOfRecordsReturned");
-					            }
-					            numberOfRecordsReturnedAttribute.setValue(String.valueOf(numberOfRecordsReturnedAttribute.getIntValue()-lElementUnauthorized.size()));
+								//Rewrite the attribute 'numberOfRecordsReturned' 
+								if(numberOfRecordsReturnedAttribute != null)
+									numberOfRecordsReturnedAttribute.setValue(String.valueOf(numberOfRecordsReturnedAttribute.getIntValue()-lElementUnauthorized.size()));
+								//Rewrite the attribute 'numberOfRecordsMatched'
+								if(numberOfRecordsMatchedAttribute != null)
+									numberOfRecordsMatchedAttribute.setValue(String.valueOf(numberOfRecordsActuallyMatched));
 					            
-					            
-//					        	Boolean isAll = cswDataManager.isAllEasySDIDataAccessible();
-//								if(!isAll){
-//									List<Map<String,Object>> accessibleDataIds = cswDataManager.getAccessibleDataIds ();
-//						            List <String> authorizedGuidList = new ArrayList<String>();
-//						            for (int i = 0 ; i < accessibleDataIds.size() ; i++ ){
-//						            	authorizedGuidList.add((String)accessibleDataIds.get(i).get("guid"));
-//						            }
-//						            
-//									Iterator<Element> resultIterator = racine.getDescendants(new ElementFileIdentifierFilter());
-//									while(resultIterator.hasNext()){
-//										Element e = resultIterator.next();
-//										String text = e.getChildText("CharacterString");
-//										if(!authorizedGuidList.contains(text)){
-//											Element p = (Element)e.getParent();
-//											lElementUnauthorized.add(p);
-//										}
-//									}
-//									for(int i = 0; i < lElementUnauthorized.size() ; i++){
-//						            	lElementUnauthorized.get(i).getParent().removeContent(lElementUnauthorized.get(i));
-//						            }
-//									
-//								}
-					            
-					            //Harvested metadatas
-//					            Boolean withHarvested = policy.getIncludeHarvested();
-//					            //If harvested metadatas are not authorized, remove them from the document response
-//					            if(!withHarvested){
-//					            	Iterator<Element> resultIterator = racine.getDescendants(new ElementSDIPlatformFilter());
-//						            while(resultIterator.hasNext()){
-//						            	Element e = resultIterator.next();
-//						            	Attribute a = e.getAttribute("harvested");
-//						            	if(a != null){
-//						            		if(a.getValue().equalsIgnoreCase("true")){
-//						            			//The current metadata is an harvested one
-//						            			Element p = (Element)e.getParent();
-//						            			lElementHarvested.add(p);
-//						            		}
-//						            	}
-//						            }
-//						            for(int i = 0; i < lElementHarvested.size() ; i++){
-//						            	lElementHarvested.get(i).getParent().removeContent(lElementHarvested.get(i));
-//						            }
-//						        }
-//					            
-					            //Update numberOfRecordsReturned  value according to the modified document
-					            //numberOfRecordsReturned
-//					            Iterator<Element> searchResultIterator = racine.getDescendants(new ElementSearchResultsFilter());
-//					            Attribute numberOfRecordsReturnedAttribute = null;
-//					            while(searchResultIterator.hasNext()){
-//					            	Element e = searchResultIterator.next();
-//					            	numberOfRecordsReturnedAttribute = e.getAttribute("numberOfRecordsReturned");
-//					            }
-//					            numberOfRecordsReturnedAttribute.setValue(String.valueOf(numberOfRecordsReturnedAttribute.getIntValue()-lElementHarvested.size()-lElementUnauthorized.size()));
 							}
 					        catch (JDOMException e) {
 					            e.printStackTrace();

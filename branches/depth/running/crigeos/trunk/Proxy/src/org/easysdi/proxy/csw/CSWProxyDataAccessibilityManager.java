@@ -58,6 +58,18 @@ public class CSWProxyDataAccessibilityManager {
 	Namespace nsCSW =  Namespace.getNamespace("http://www.opengis.net/cat/csw/2.0.2");
 	Namespace nsOGC =  Namespace.getNamespace("http://www.opengis.net/ogc");
 	
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public Integer getCountOfEasySDIMetadatas(){
+		String query = "SELECT count(guid) as c FROM "+ joomlaProvider.getPrefix() +"sdi_metadata ";
+		Map<String, Object> result= joomlaProvider.sjt.queryForMap(query);
+		return  ((Long)result.get("c")).intValue();
+	}
+	
+	
 	/**
 	 * @param dataIdVersionAccessible the dataIdVersionAccessible to set
 	 */
