@@ -141,7 +141,7 @@ class HTML_proxyWFS {
 	function editConfigWFS($xml,$new, $configId,$availableServletList,$availableVersion, $option, $task)
 	{
 		?><form name='adminForm' id='adminForm' action='index.php' method='POST'>
-			<input type='hidden' name='serviceType' id='serviceType' value="<?php echo JRequest::getVar('serviceType');?>" >
+			<input type='hidden' name='serviceType' id='serviceType' value="WFS" >
 			<input type='hidden' name="isNewConfig" value="<?php echo $new; ?>">
 			<input type='hidden' name='option' value='<?php echo $option;?>'> 
 			<input type='hidden' name='task' value='<?php echo $task;?>'> 
