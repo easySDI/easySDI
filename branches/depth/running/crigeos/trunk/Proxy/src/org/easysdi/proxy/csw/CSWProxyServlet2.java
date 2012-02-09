@@ -420,12 +420,18 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 								//Rewrite the attribute 'numberOfRecordsReturned' 
 								if(numberOfRecordsReturnedAttribute != null)
 									numberOfRecordsReturnedAttribute.setValue(String.valueOf(numberOfRecordsReturnedAttribute.getIntValue()-lElementUnauthorized.size()));
-								//Rewrite the attribute 'numberOfRecordsMatched' only if the request didn't include a constraint
+								
+								//Rewrite the attribute 'numberOfRecordsMatched' only if the request didn't include a constraint and the harvested MD are not included
 								//(with a constraint, the number of records matched can not be calculated, so we keep the original one)
-								if(numberOfRecordsMatchedAttribute != null && !asConstraint)
+								if(numberOfRecordsMatchedAttribute != null && !asConstraint && !policy.getIncludeHarvested())
 									numberOfRecordsMatchedAttribute.setValue(String.valueOf(numberOfRecordsActuallyMatched));
+								else if (numberOfRecordsMatchedAttribute != null && asConstraint && !policy.getIncludeHarvested()){
+									if(numberOfRecordsMatchedAttribute.getIntValue() > numberOfRecordsActuallyMatched)
+										numberOfRecordsMatchedAttribute.setValue(String.valueOf(numberOfRecordsActuallyMatched));
+								}
+																
 								//Rewrite the attribute 'nextRecord'
-								if(!asConstraint && numberOfRecordsReturnedAttribute!= null && numberOfRecordsMatchedAttribute != null && numberOfRecordsActuallyMatched == numberOfRecordsReturnedAttribute.getIntValue())
+								if(!policy.getIncludeHarvested() && !asConstraint && numberOfRecordsReturnedAttribute!= null && numberOfRecordsMatchedAttribute != null && numberOfRecordsActuallyMatched == numberOfRecordsReturnedAttribute.getIntValue())
 									nextRecordAttribute.setValue(String.valueOf("0"));
 							}
 					        catch (JDOMException e) {
