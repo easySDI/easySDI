@@ -76,7 +76,10 @@ import org.xml.sax.helpers.XMLReaderFactory;
 public class CSWProxyServlet2 extends CSWProxyServlet {
 
 	private static final long serialVersionUID = 1L;
+	
 	public Namespace nsSDI = Namespace.getNamespace("sdi","http://www.easysdi.org/2011/sdi") ;
+	
+	private Boolean asConstraint = false;
 	/** 
 	 * 
 	 * @return
@@ -358,10 +361,12 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 					            Iterator<Element> searchResultIterator = racine.getDescendants(new ElementSearchResultsFilter());
 					            Attribute numberOfRecordsReturnedAttribute = null;
 					            Attribute numberOfRecordsMatchedAttribute = null;
+					            Attribute nextRecordAttribute = null;
 					            while(searchResultIterator.hasNext()){
 					            	Element e = searchResultIterator.next();
 					            	numberOfRecordsReturnedAttribute = e.getAttribute("numberOfRecordsReturned");
 					            	numberOfRecordsMatchedAttribute = e.getAttribute ("numberOfRecordsMatched");
+					            	nextRecordAttribute = e.getAttribute ("nextRecord");
 					            }
 					            
 					            CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy, getJoomlaProvider());
@@ -389,11 +394,14 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 							            if(policy.getIncludeHarvested())
 						            		numberOfRecordsActuallyMatched = numberOfRecordsMatchedAttribute.getIntValue() - (numberOfEasySDIMetadatas - authorizedGuidList.size());
 						            	else
-						            		numberOfRecordsActuallyMatched = numberOfEasySDIMetadatas - authorizedGuidList.size();
+						            		numberOfRecordsActuallyMatched = authorizedGuidList.size();
 						            }else{
 						            	//accessibleDataIds null means all Metadatas are allowed 
 						            	authorizedGuidList = null;
-						            	numberOfRecordsActuallyMatched = cswDataManager.getCountOfEasySDIMetadatas();
+						            	if(policy.getIncludeHarvested())
+						            		numberOfRecordsActuallyMatched = numberOfRecordsMatchedAttribute.getIntValue();
+						            	else
+						            		numberOfRecordsActuallyMatched = cswDataManager.getCountOfEasySDIMetadatas();
 						            }
 					            }
 					            
@@ -412,10 +420,13 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 								//Rewrite the attribute 'numberOfRecordsReturned' 
 								if(numberOfRecordsReturnedAttribute != null)
 									numberOfRecordsReturnedAttribute.setValue(String.valueOf(numberOfRecordsReturnedAttribute.getIntValue()-lElementUnauthorized.size()));
-								//Rewrite the attribute 'numberOfRecordsMatched'
-								if(numberOfRecordsMatchedAttribute != null)
+								//Rewrite the attribute 'numberOfRecordsMatched' only if the request didn't include a constraint
+								//(with a constraint, the number of records matched can not be calculated, so we keep the original one)
+								if(numberOfRecordsMatchedAttribute != null && !asConstraint)
 									numberOfRecordsMatchedAttribute.setValue(String.valueOf(numberOfRecordsActuallyMatched));
-					            
+								//Rewrite the attribute 'nextRecord'
+								if(!asConstraint && numberOfRecordsReturnedAttribute!= null && numberOfRecordsMatchedAttribute != null && numberOfRecordsActuallyMatched == numberOfRecordsReturnedAttribute.getIntValue())
+									nextRecordAttribute.setValue(String.valueOf("0"));
 							}
 					        catch (JDOMException e) {
 					            e.printStackTrace();
@@ -722,6 +733,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				}
 			}
 			if(constraint != null && constraint.length()>0){
+				asConstraint = true;
 				paramUrl = paramUrl + "constraint=" + constraint + "&";
 				paramUrl = paramUrl + "constraintLanguage=" + constraintLanguage + "&";
 				if(constraint_language_version != null)
