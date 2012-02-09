@@ -421,15 +421,17 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 								if(numberOfRecordsReturnedAttribute != null)
 									numberOfRecordsReturnedAttribute.setValue(String.valueOf(numberOfRecordsReturnedAttribute.getIntValue()-lElementUnauthorized.size()));
 								
-								//Rewrite the attribute 'numberOfRecordsMatched' only if the request didn't include a constraint and the harvested MD are not included
+								//Rewrite the attribute 'numberOfRecordsMatched' only if the request didn't include a constraint
 								//(with a constraint, the number of records matched can not be calculated, so we keep the original one)
-								if(numberOfRecordsMatchedAttribute != null && !asConstraint && !policy.getIncludeHarvested())
+								if(numberOfRecordsMatchedAttribute != null && !asConstraint)
 									numberOfRecordsMatchedAttribute.setValue(String.valueOf(numberOfRecordsActuallyMatched));
-								else if (numberOfRecordsMatchedAttribute != null && asConstraint && !policy.getIncludeHarvested()){
+								//If harvested MD are not included, we can set a value closer to the right one in place of the value returned by the remote server
+								//But, this value is not guaranteed to be right
+								if (numberOfRecordsMatchedAttribute != null && asConstraint && !policy.getIncludeHarvested()){
 									if(numberOfRecordsMatchedAttribute.getIntValue() > numberOfRecordsActuallyMatched)
 										numberOfRecordsMatchedAttribute.setValue(String.valueOf(numberOfRecordsActuallyMatched));
 								}
-																
+											
 								//Rewrite the attribute 'nextRecord'
 								if(!policy.getIncludeHarvested() && !asConstraint && numberOfRecordsReturnedAttribute!= null && numberOfRecordsMatchedAttribute != null && numberOfRecordsActuallyMatched == numberOfRecordsReturnedAttribute.getIntValue())
 									nextRecordAttribute.setValue(String.valueOf("0"));
