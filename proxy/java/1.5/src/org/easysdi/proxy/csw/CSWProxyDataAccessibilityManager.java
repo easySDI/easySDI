@@ -25,6 +25,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
@@ -57,6 +58,18 @@ public class CSWProxyDataAccessibilityManager {
 	private String dataIdVersionAccessible;
 	Namespace nsCSW =  Namespace.getNamespace("http://www.opengis.net/cat/csw/2.0.2");
 	Namespace nsOGC =  Namespace.getNamespace("http://www.opengis.net/ogc");
+	
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public Integer getCountOfEasySDIMetadatas(){
+		String query = "SELECT count(guid) as c FROM "+ joomlaProvider.getPrefix() +"sdi_metadata ";
+		Map<String, Object> result= joomlaProvider.sjt.queryForMap(query);
+		return  ((Long)result.get("c")).intValue();
+	}
+	
 	
 	/**
 	 * @param dataIdVersionAccessible the dataIdVersionAccessible to set
@@ -332,6 +345,12 @@ public class CSWProxyDataAccessibilityManager {
 		return sb;
 	}
 	
+	/**
+	 * 
+	 * @return
+	 * null = all metadatas allowed
+	 * empty list = none of the metadatas allowed
+	 */
 	public List<Map<String,Object>> getAccessibleDataIds ()
 	{
 		List<Map<String,Object>> object_ids = null;
@@ -339,10 +358,38 @@ public class CSWProxyDataAccessibilityManager {
 		List<Map<String,Object>> final_metadata_ids = null;
 		String query;
 		
+		//If ObjectVisibilities, ObjectStatus or ObjectTypes don't have any value selected in the policy and the attribute all is set to 'false' :
+		//none of the metadatas will be allowed to be delivered
+		if(    (policy.getObjectVisibilities() != null && 
+				policy.getObjectVisibilities().getVisibilities()!= null && 
+				policy.getObjectVisibilities().getVisibilities().size() == 0  && 
+				!policy.getObjectVisibilities().isAll()) 
+				|| 
+			   (policy.getObjectTypes()!= null && 
+			    policy.getObjectTypes().getObjectTypes() != null && 
+			    policy.getObjectTypes().getObjectTypes().size() == 0 &&  
+			    !policy.getObjectTypes().isAll()) 
+			    ||
+			    (policy.getObjectStatus() != null && 
+			    policy.getObjectStatus().getStatus() != null &&
+			    policy.getObjectStatus().getStatus().size() == 0 &&
+			    !policy.getObjectStatus().isAll())
+				)
+		{
+			return new ArrayList<Map<String,Object>>();
+		}
 		
 		//Accessible objects
-		if((policy.getObjectVisibilities() != null && policy.getObjectVisibilities().getVisibilities()!= null && policy.getObjectVisibilities().getVisibilities().size() != 0  && !policy.getObjectVisibilities().isAll()) 
-				|| (policy.getObjectTypes()!= null && policy.getObjectTypes().getObjectTypes() != null && policy.getObjectTypes().getObjectTypes().size() != 0 &&  !policy.getObjectTypes().isAll()))
+		if(    (policy.getObjectVisibilities() != null && 
+				policy.getObjectVisibilities().getVisibilities()!= null && 
+				policy.getObjectVisibilities().getVisibilities().size() != 0  && 
+				!policy.getObjectVisibilities().isAll()) 
+				|| 
+			   (policy.getObjectTypes()!= null && 
+			    policy.getObjectTypes().getObjectTypes() != null && 
+			    policy.getObjectTypes().getObjectTypes().size() != 0 &&  
+			    !policy.getObjectTypes().isAll()))
+			   
 		{
 			String listVisibility = "";
 			if(policy.getObjectVisibilities() != null && !policy.getObjectVisibilities().isAll())
