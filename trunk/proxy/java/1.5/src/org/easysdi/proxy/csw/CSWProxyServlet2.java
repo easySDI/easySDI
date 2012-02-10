@@ -36,6 +36,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.Vector;
 
@@ -49,12 +50,16 @@ import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import org.easysdi.jdom.filter.ElementFileIdentifierFilter;
+import org.easysdi.jdom.filter.ElementMD_MetadataFilter;
+import org.easysdi.jdom.filter.ElementMD_MetadataNonAuthorizedFilter;
 import org.easysdi.jdom.filter.ElementSDIPlatformFilter;
 import org.easysdi.jdom.filter.ElementSearchResultsFilter;
 import org.easysdi.jdom.filter.ElementTransactionTypeFilter;
 import org.easysdi.proxy.exception.AvailabilityPeriodException;
 import org.easysdi.xml.documents.RemoteServerInfo;
 import org.easysdi.xml.handler.CswRequestHandler;
+import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -72,6 +77,9 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 
 	private static final long serialVersionUID = 1L;
 	
+	public Namespace nsSDI = Namespace.getNamespace("sdi","http://www.easysdi.org/2011/sdi") ;
+	
+	private Boolean asConstraint = false;
 	/** 
 	 * 
 	 * @return
@@ -307,7 +315,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				            //Or update the existing node if the remote catalog is driven by EasySDI too
 				            Iterator<Element> resultStorageIterator = resultListStorage.iterator();
 				            Element result = null;
-				            Namespace nsSDI = Namespace.getNamespace("sdi","http://www.easysdi.org/2011/sdi") ;
+				            
 				            while (resultStorageIterator.hasNext()){
 				            	result = resultStorageIterator.next();
 				            	List<Element> platformElementList = result.getChildren("platform", nsSDI);
@@ -338,33 +346,109 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				            e.printStackTrace();
 				        }
 					}
-					/*else{
-						SAXBuilder sb = new SAXBuilder();
-						
-						Document doc = null;
-				        try {
-				            doc = sb.build(tempFile);
-				            Element racine = doc.getRootElement();
-				            Namespace nsCSW = Namespace.getNamespace("csw","http://www.opengis.net/cat/csw/2.0.2") ;
-				            Element results = racine.getChild("SearchResults", nsCSW);
-				            if(results != null){
-					            String matched =  results.getAttributeValue("numberOfRecordsMatched");
-					            results.setAttribute("numberOfRecordsMatched",matched+"0");
-				            }
-				            
-				            XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
+					else{
+						//Current config is not used to harvest remote catalog.
+						//If the request was made in HTTP GET, response has to be rewrote to remove unauthorized metadatas
+						//NB : a geographic filter can't be applied to this kind of request
+						if(req.getMethod().equals("GET")){
+							
+							SAXBuilder sb = new SAXBuilder();
+							Document doc = null;
+							try {
+								List<Element> lElementUnauthorized = new ArrayList<Element> ();
+								doc = sb.build(tempFile);
+					            Element racine = doc.getRootElement();
+					            Iterator<Element> searchResultIterator = racine.getDescendants(new ElementSearchResultsFilter());
+					            Attribute numberOfRecordsReturnedAttribute = null;
+					            Attribute numberOfRecordsMatchedAttribute = null;
+					            Attribute nextRecordAttribute = null;
+					            while(searchResultIterator.hasNext()){
+					            	Element e = searchResultIterator.next();
+					            	numberOfRecordsReturnedAttribute = e.getAttribute("numberOfRecordsReturned");
+					            	numberOfRecordsMatchedAttribute = e.getAttribute ("numberOfRecordsMatched");
+					            	nextRecordAttribute = e.getAttribute ("nextRecord");
+					            }
+					            
+					            CSWProxyDataAccessibilityManager cswDataManager = new CSWProxyDataAccessibilityManager(policy, getJoomlaProvider());
+					            Boolean isAll = cswDataManager.isAllEasySDIDataAccessible();
+					            List <String> authorizedGuidList = new ArrayList<String>();
+					            Integer numberOfRecordsActuallyMatched = 0;
+					            Integer numberOfEasySDIMetadatas = cswDataManager.getCountOfEasySDIMetadatas();
+					            
+					            if(isAll){
+					            	//All metadatas are authorized to be delivered
+					            	authorizedGuidList = null;
+					            	if(policy.getIncludeHarvested())
+					            		numberOfRecordsActuallyMatched = numberOfRecordsMatchedAttribute.getIntValue();
+					            	else
+					            		numberOfRecordsActuallyMatched = numberOfEasySDIMetadatas;
+					            		
+					            }else{
+					            	//Get the list of authorized metadatas
+					            	List<Map<String,Object>> accessibleDataIds = cswDataManager.getAccessibleDataIds ();
+					            	//Rewrite the result list to keep only the guid value
+					            	if(accessibleDataIds != null){
+							            for (int i = 0 ; i < accessibleDataIds.size() ; i++ ){
+							            	authorizedGuidList.add((String)accessibleDataIds.get(i).get("guid"));
+							            }
+							            if(policy.getIncludeHarvested())
+						            		numberOfRecordsActuallyMatched = numberOfRecordsMatchedAttribute.getIntValue() - (numberOfEasySDIMetadatas - authorizedGuidList.size());
+						            	else
+						            		numberOfRecordsActuallyMatched = authorizedGuidList.size();
+						            }else{
+						            	//accessibleDataIds null means all Metadatas are allowed 
+						            	authorizedGuidList = null;
+						            	if(policy.getIncludeHarvested())
+						            		numberOfRecordsActuallyMatched = numberOfRecordsMatchedAttribute.getIntValue();
+						            	else
+						            		numberOfRecordsActuallyMatched = cswDataManager.getCountOfEasySDIMetadatas();
+						            }
+					            }
+					            
+					            //Get all the unauthorized metadata nodes in the result document 
+					            Iterator<Element> resultIterator = racine.getDescendants(new ElementMD_MetadataNonAuthorizedFilter(authorizedGuidList,policy.getIncludeHarvested()));
+					            while(resultIterator.hasNext()){
+									Element e = resultIterator.next();
+									lElementUnauthorized.add(e);
+								}
+					            
+					            //Remove those nodes from the document
+								for(int i = 0; i < lElementUnauthorized.size() ; i++){
+					            	lElementUnauthorized.get(i).getParent().removeContent(lElementUnauthorized.get(i));
+					            }
+								
+								//Rewrite the attribute 'numberOfRecordsReturned' 
+								if(numberOfRecordsReturnedAttribute != null)
+									numberOfRecordsReturnedAttribute.setValue(String.valueOf(numberOfRecordsReturnedAttribute.getIntValue()-lElementUnauthorized.size()));
+								
+								//Rewrite the attribute 'numberOfRecordsMatched' only if the request didn't include a constraint
+								//(with a constraint, the number of records matched can not be calculated, so we keep the original one)
+								if(numberOfRecordsMatchedAttribute != null && !asConstraint)
+									numberOfRecordsMatchedAttribute.setValue(String.valueOf(numberOfRecordsActuallyMatched));
+								//If harvested MD are not included, we can set a value closer to the right one in place of the value returned by the remote server
+								//But, this value is not guaranteed to be right
+								if (numberOfRecordsMatchedAttribute != null && asConstraint && !policy.getIncludeHarvested()){
+									if(numberOfRecordsMatchedAttribute.getIntValue() > numberOfRecordsActuallyMatched)
+										numberOfRecordsMatchedAttribute.setValue(String.valueOf(numberOfRecordsActuallyMatched));
+								}
+											
+								//Rewrite the attribute 'nextRecord'
+								if(!policy.getIncludeHarvested() && !asConstraint && numberOfRecordsReturnedAttribute!= null && numberOfRecordsMatchedAttribute != null && numberOfRecordsActuallyMatched == numberOfRecordsReturnedAttribute.getIntValue())
+									nextRecordAttribute.setValue(String.valueOf("0"));
+							}
+					        catch (JDOMException e) {
+					            e.printStackTrace();
+					        }
+					        catch (IOException e) {
+					            e.printStackTrace();
+					        }
+							
+							XMLOutputter sortie = new XMLOutputter(Format.getPrettyFormat());
 				            FileOutputStream outStream = new FileOutputStream(tempFile);
 				            sortie.output(doc, outStream);
 				            outStream.close();
-				            
-				        }
-				        catch (JDOMException e) {
-				            e.printStackTrace();
-				        }
-				        catch (IOException e) {
-				            e.printStackTrace();
-				        }
-					}*/
+						}
+					}
 				}
 				else if( "GetRecordById".equals(currentOperation) )
 				{
@@ -657,6 +741,7 @@ public class CSWProxyServlet2 extends CSWProxyServlet {
 				}
 			}
 			if(constraint != null && constraint.length()>0){
+				asConstraint = true;
 				paramUrl = paramUrl + "constraint=" + constraint + "&";
 				paramUrl = paramUrl + "constraintLanguage=" + constraintLanguage + "&";
 				if(constraint_language_version != null)

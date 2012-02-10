@@ -2,8 +2,7 @@
 <configurations>
 	<config id="metacarta_open">
 		<authorization>
-			<policy-file>/var/lib/tomcat5/webapps/proxy/WEB-INF/conf/NewPolicy.xml
-			</policy-file>
+			<policy-file>/var/lib/tomcat5/webapps/proxy/WEB-INF/conf/NewPolicy.xml</policy-file>
 		</authorization>
 		<servlet-class>org.easysdi.proxy.wms.WMSProxyServlet</servlet-class>
 		<log-config>
@@ -15,21 +14,48 @@
 				<period>daily</period>
 			</file-structure>
 			<date-format>dd/MM/yyyy HH:mm:ss</date-format>
+			<logger>org.apache.log4j.Logger</logger>
+			<log-level>INFO</log-level>
 		</log-config>
-		<host-translator />
-		<remote-server-list>
-			<remote-server master="true">
-				<alias>metacarta</alias>
-				<user />
-				<url>http://labs.metacarta.com/wms/vmap0</url>
-				<password />
-			</remote-server>
-		</remote-server-list>
+		<host-translator/>
+		<remote-server-list><remote-server master="true"><alias>metacarta</alias><user/><url>http://labs.metacarta.com/wms/vmap0</url><password/><supported-versions><version>1.1.1</version><version>1.1.0</version></supported-versions></remote-server></remote-server-list>
+		<supported-versions><version>1.1.1</version><version>1.1.0</version></supported-versions>
+		<xslt-path>
+			<url/>
+		</xslt-path>
+		<exception>
+			<mode>permissive</mode>
+		</exception>
+		<service-metadata>
+			<Title>Metacarta WMS via Proxy</Title>
+			<Abstract/>
+			<KeywordList><Keyword/></KeywordList>
+			<ContactInformation>
+				<ContactOrganization/>
+				<ContactName/>
+				<ContactPosition/>
+				<ContactAddress>
+					<AddressType/>
+					<Address/>
+					<PostalCode/>
+					<City/>
+					<State/>
+					<Country/>
+				</ContactAddress>
+				<VoicePhone/>
+				<Facsimile/>
+				<ElectronicMailAddress/>
+				<Linkage/>
+				<HoursofSservice/>
+				<Instructions/>
+			</ContactInformation>
+			<Fees>none</Fees>
+			<AccessConstraints>none</AccessConstraints>
+		</service-metadata>
 	</config>
 	<config id="gmap">
 		<authorization>
-			<policy-file>/var/lib/tomcat5/webapps/proxy/WEB-INF/conf/NewPolicy.xml
-			</policy-file>
+			<policy-file>/var/lib/tomcat5/webapps/proxy/WEB-INF/conf/NewPolicy.xml</policy-file>
 		</authorization>
 		<servlet-class>org.easysdi.proxy.wms.WMSProxyServlet</servlet-class>
 		<log-config>
@@ -41,21 +67,48 @@
 				<period>daily</period>
 			</file-structure>
 			<date-format>dd/MM/yyyy HH:mm:ss</date-format>
+			<logger>org.apache.log4j.Logger</logger>
+			<log-level>INFO</log-level>
 		</log-config>
-		<host-translator />
-		<remote-server-list>
-			<remote-server master="true">
-				<alias>mswms</alias>
-				<user />
-				<url>http://www2.dmsolutions.ca/cgi-bin/mswms_gmap</url>
-				<password />
-			</remote-server>
-		</remote-server-list>
+		<host-translator/>
+		<remote-server-list><remote-server master="true"><alias>gmap</alias><user/><url>http://www2.dmsolutions.ca/cgi-bin/mswms_gmap</url><password/><supported-versions><version>1.3.0</version><version>1.1.1</version><version>1.1.0</version></supported-versions></remote-server></remote-server-list>
+		<supported-versions><version>1.3.0</version><version>1.1.1</version><version>1.1.0</version></supported-versions>
+		<xslt-path>
+			<url/>
+		</xslt-path>
+		<exception>
+			<mode>permissive</mode>
+		</exception>
+		<service-metadata>
+			<Title>GMap WMS via Proxy</Title>
+			<Abstract/>
+			<KeywordList><Keyword/></KeywordList>
+			<ContactInformation>
+				<ContactOrganization/>
+				<ContactName/>
+				<ContactPosition/>
+				<ContactAddress>
+					<AddressType/>
+					<Address/>
+					<PostalCode/>
+					<City/>
+					<State/>
+					<Country/>
+				</ContactAddress>
+				<VoicePhone/>
+				<Facsimile/>
+				<ElectronicMailAddress/>
+				<Linkage/>
+				<HoursofSservice/>
+				<Instructions/>
+			</ContactInformation>
+			<Fees>none</Fees>
+			<AccessConstraints>none</AccessConstraints>
+		</service-metadata>
 	</config>
 	<config id="mfwfs">
 		<authorization>
-			<policy-file>/var/lib/tomcat5/webapps/proxy/WEB-INF/conf/NewPolicy.xml
-			</policy-file>
+			<policy-file>/var/lib/tomcat5/webapps/proxy/WEB-INF/conf/NewPolicy.xml</policy-file>
 		</authorization>
 		<servlet-class>org.easysdi.proxy.wfs.WFSProxyServlet</servlet-class>
 		<log-config>
@@ -67,21 +120,48 @@
 				<period>daily</period>
 			</file-structure>
 			<date-format>dd/MM/yyyy HH:mm:ss</date-format>
+			<logger>org.apache.log4j.Logger</logger>
+			<log-level>INFO</log-level>
 		</log-config>
-		<host-translator></host-translator>
-		<remote-server-list>
-			<remote-server master="true">
-				<alias>mswfs</alias>
-				<user></user>
-				<url>http://www2.dmsolutions.ca/cgi-bin/mswfs_filter</url>
-				<password></password>
-			</remote-server>
-		</remote-server-list>
+		<host-translator/>
+		<remote-server-list><remote-server master="true"><alias>mswfs</alias><user/><url>http://www2.dmsolutions.ca/cgi-bin/mswfs_filter</url><password/><supported-versions><version>1.0.0</version></supported-versions></remote-server></remote-server-list>
+		<supported-versions><version>1.0.0</version></supported-versions>
+		<xslt-path>
+			<url/>
+		</xslt-path>
+		<exception>
+			<mode>permissive</mode>
+		</exception>
+		<service-metadata>
+			<Title>GMap WFS via Proxy</Title>
+			<Abstract/>
+			<KeywordList><Keyword/></KeywordList>
+			<ContactInformation>
+				<ContactOrganization/>
+				<ContactName/>
+				<ContactPosition/>
+				<ContactAddress>
+					<AddressType/>
+					<Address/>
+					<PostalCode/>
+					<City/>
+					<State/>
+					<Country/>
+				</ContactAddress>
+				<VoicePhone/>
+				<Facsimile/>
+				<ElectronicMailAddress/>
+				<Linkage/>
+				<HoursofSservice/>
+				<Instructions/>
+			</ContactInformation>
+			<Fees>none</Fees>
+			<AccessConstraints>none</AccessConstraints>
+		</service-metadata>
 	</config>
 	<config id="geosignal">
 		<authorization>
-			<policy-file>/var/lib/tomcat5/webapps/proxy/WEB-INF/conf/NewPolicy.xml
-		</policy-file>
+			<policy-file>/var/lib/tomcat5/webapps/proxy/WEB-INF/conf/NewPolicy.xml</policy-file>
 		</authorization>
 		<servlet-class>org.easysdi.proxy.wms.WMSProxyServlet</servlet-class>
 		<log-config>
@@ -93,84 +173,189 @@
 				<period>daily</period>
 			</file-structure>
 			<date-format>dd/MM/yyyy HH:mm:ss</date-format>
+			<logger>org.apache.log4j.Logger</logger>
+			<log-level>INFO</log-level>
+		</log-config>
+		<host-translator/>
+		<remote-server-list><remote-server master="true"><alias>geosignal</alias><user/><url>http://www.geosignal.org/cgi-bin/wmsmap</url><password/><supported-versions><version>1.1.1</version><version>1.1.0</version></supported-versions></remote-server></remote-server-list>
+		<supported-versions><version>1.1.1</version><version>1.1.0</version></supported-versions>
+		<xslt-path>
+			<url/>
+		</xslt-path>
+		<exception>
+			<mode>permissive</mode>
+		</exception>
+		<service-metadata>
+			<Title>Geosignal WMS via Proxy</Title>
+			<Abstract/>
+			<KeywordList><Keyword/></KeywordList>
+			<ContactInformation>
+				<ContactOrganization/>
+				<ContactName/>
+				<ContactPosition/>
+				<ContactAddress>
+					<AddressType/>
+					<Address/>
+					<PostalCode/>
+					<City/>
+					<State/>
+					<Country/>
+				</ContactAddress>
+				<VoicePhone/>
+				<Facsimile/>
+				<ElectronicMailAddress/>
+				<Linkage/>
+				<HoursofSservice/>
+				<Instructions/>
+			</ContactInformation>
+			<Fees>none</Fees>
+			<AccessConstraints>none</AccessConstraints>
+		</service-metadata>
+	</config>
+	<config id="opengeo">
+		<authorization>
+			<policy-file>/var/lib/tomcat5/webapps/proxy/WEB-INF/conf/NewPolicy.xml</policy-file>
+		</authorization>
+		<servlet-class>org.easysdi.proxy.wmts.WMTSProxyServlet</servlet-class>
+		<log-config>
+			<file-structure>
+				<path>/var/lib/tomcat5/webapps/proxy/WEB-INF/logs/</path>
+				<suffix>wmts</suffix>
+				<prefix>opengeo</prefix>
+				<extension>log</extension>
+				<period>daily</period>
+			</file-structure>
+			<date-format>dd/MM/yyyy HH:mm:ss</date-format>
+			<logger>org.apache.log4j.Logger</logger>
+			<log-level>INFO</log-level>
+		</log-config>
+		<host-translator/>
+		<remote-server-list><remote-server master="true"><alias>opengeo</alias><user/><url>http://v2.suite.opengeo.org/geoserver/gwc/service/wmts</url><password/><supported-versions><version>1.0.0</version></supported-versions></remote-server></remote-server-list>
+		<exception>
+			<mode>permissive</mode>
+		</exception>
+		<service-metadata>
+			<ServiceProvider>
+				<ProviderName/>
+				<ProviderSite/>
+				<ResponsibleParty>
+					<IndividualName/>
+					<PositionName/>
+					<Role/>
+					<Contact>
+						<HoursofService/>
+						<Instructions/>
+						<onlineResource/>
+						<Telephone>
+							<VoicePhone/>
+							<Facsimile/>
+						</Telephone>
+						<Address>
+							<AddressType/>
+							<DelivryPoint/>
+							<PostalCode/>
+							<City/>
+							<Area/>
+							<Country/>
+							<ElectronicMailAddress/>
+						</Address>
+						<HoursOfService/>
+						<OnlineResource/>
+					</Contact>
+				</ResponsibleParty>
+			</ServiceProvider>
+			<ServiceIdentification>
+				<Title>Web Map Tile Service via Proxy</Title>
+				<Abstract/>
+				<KeywordList><Keyword>easysdi</Keyword><Keyword>wmts</Keyword></KeywordList>
+				<Fees>none</Fees>
+				<AccessConstraints>none</AccessConstraints>
+			</ServiceIdentification>
+			<Title>Web Map Tile Service via Proxy</Title>
+			<Abstract/>
+			<KeywordList>
+				<Keyword/>
+			</KeywordList>
+			<ContactInformation>
+				<ContactOrganization/>
+				<ContactName/>
+				<ContactPosition/>
+				<ContactAddress>
+					<AddressType/>
+					<Address/>
+					<PostalCode/>
+					<City/>
+					<State/>
+					<Country/>
+				</ContactAddress>
+				<VoicePhone/>
+				<Facsimile/>
+				<ElectronicMailAddress/>
+				<Linkage/>
+				<HoursofSservice/>
+				<Instructions/>
+			</ContactInformation>
+			<Fees>none</Fees>
+			<AccessConstraints>none</AccessConstraints>
+		</service-metadata>
+		<supported-versions><version>1.0.0</version></supported-versions>
+		<xslt-path>
+			<url/>
+		</xslt-path>
+	</config>
+	<config id="brgm">
+		<authorization>
+			<policy-file>/var/lib/tomcat5/webapps/proxy/WEB-INF/conf/NewPolicy.xml</policy-file>
+		</authorization>
+		<servlet-class>org.easysdi.proxy.csw.CSWProxyServlet</servlet-class>
+		<supported-versions><version>2.0.2</version></supported-versions>
+		<xslt-path>
+			<url></url>
+		</xslt-path>
+		<log-config>
+			<logger>org.apache.log4j.Logger</logger>
+			<log-level>INFO</log-level>
+			<file-structure>
+				<path>/var/lib/tomcat5/webapps/proxy/WEB-INF/logs/</path>
+				<suffix>csw</suffix>
+				<prefix>brgm</prefix>
+				<extension>log</extension>
+				<period>daily</period>
+			</file-structure>
+			<date-format>dd/MM/yyyy HH:mm:ss</date-format>
 		</log-config>
 		<host-translator></host-translator>
-		<remote-server-list>
-			<remote-server master="true">
-				<alias>geosignal</alias>
-				<user></user>
-				<url>http://www.geosignal.org/cgi-bin/wmsmap</url>
-				<password></password>
-			</remote-server>
-		</remote-server-list>
+		<remote-server-list><remote-server master="true"><alias>geology</alias><user></user><url>http://onegeology-catalog.brgm.fr/geonetwork/srv/csw</url><password></password><max-records>10</max-records><login-service>http://onegeology-catalog.brgm.fr/geonetwork/srv/en/</login-service><transaction><type>geonetwork</type></transaction><supported-versions><version>2.0.2</version></supported-versions></remote-server></remote-server-list>
+		<harvesting-config>false</harvesting-config>
+		<ogc-search-filter>fileId</ogc-search-filter>
+		<exception>
+			<mode>permissive</mode>
+		</exception>
+		<service-metadata>
+			<Title>BRGM geology via Proxy</Title>
+			<Abstract></Abstract>
+			<KeywordList><Keyword></Keyword></KeywordList>
+			<ContactInformation>
+				<ContactOrganization></ContactOrganization>
+				<ContactName></ContactName>
+				<ContactPosition></ContactPosition>
+				<ContactAddress>
+					<AddressType></AddressType>
+					<Address></Address>
+					<PostalCode></PostalCode>
+					<City></City>
+					<State></State>
+					<Country></Country>
+				</ContactAddress>
+				<VoicePhone></VoicePhone>
+				<Facsimile></Facsimile>
+				<ElectronicMailAddress></ElectronicMailAddress>
+				<Linkage></Linkage>
+				<HoursofSservice></HoursofSservice>
+				<Instructions></Instructions>
+			</ContactInformation>
+			<Fees>none</Fees>
+			<AccessConstraints>none</AccessConstraints>
+		</service-metadata>
 	</config>
-	<config id="WMTS">
-    <authorization>
-      <policy-file>/var/lib/tomcat5/webapps/proxy/WEB-INF/conf/NewPolicy.xml</policy-file>
-    </authorization>
-    <servlet-class>org.easysdi.proxy.wmts.v100.WMTS100ProxyServlet</servlet-class>
-    <log-config>
-      <file-structure>
-        <path>/var/lib/tomcat5/webapps/proxy/WEB-INF/logs/</path>
-        <suffix>wmts</suffix>
-        <prefix>opengeo</prefix>
-        <extension>log</extension>
-        <period>daily</period>
-      </file-structure>
-      <date-format>dd/MM/yyyy HH:mm:ss:SSS</date-format>
-    </log-config>
-    <host-translator></host-translator>
-    <remote-server-list>
-    	<remote-server master="true">
-    		<alias>opengeo</alias>
-    		<user></user>
-    		<url>http://v2.suite.opengeo.org/geoserver/gwc/service/wmts</url>
-    		<password></password>
-    	</remote-server>
-    </remote-server-list>
-    <exception>
-      <mode>permissive</mode>
-    </exception>
-    <service-metadata>
-      <ServiceProvider>
-        <ProviderName>DEPTH SA</ProviderName>
-        <ProviderSite>depth.ch</ProviderSite>
-        <ResponsibleParty>
-          <IndividualName>Depth</IndividualName>
-          <PositionName>Dev Team</PositionName>
-          <Role>Dev Team</Role>
-          <Contact>
-            <HoursofService/>
-            <Instructions></Instructions>
-            <onlineResource/>
-            <Telephone>
-              <VoicePhone>000000</VoicePhone>
-              <Facsimile>00000</Facsimile>
-            </Telephone>
-            <Address>
-              <AddressType>work</AddressType>
-              <DelivryPoint>Chemin d'arche 40B</DelivryPoint>
-              <PostalCode>1870</PostalCode>
-              <City>Monthey</City>
-              <Area>Valais</Area>
-              <Country>Suisse</Country>
-              <ElectronicMailAddress>helene.vanhoecke@depth.ch</ElectronicMailAddress>
-            </Address>
-            <HoursOfService></HoursOfService>
-            <OnlineResource></OnlineResource>
-          </Contact>
-        </ResponsibleParty>
-      </ServiceProvider>
-      <ServiceIdentification>
-        <Title>WMTS</Title>
-        <Abstract>WMTS</Abstract>
-        <KeywordList>
-        	<Keyword>easysdi</Keyword>
-        	<Keyword>wmts</Keyword>
-        </KeywordList>
-        <Fees>none</Fees>
-        <AccessConstraints>none</AccessConstraints>
-      </ServiceIdentification>
-    </service-metadata>
-  </config>
 </configurations>
