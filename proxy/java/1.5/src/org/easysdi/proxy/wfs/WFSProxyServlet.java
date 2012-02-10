@@ -1112,6 +1112,10 @@ public class WFSProxyServlet extends ProxyServlet {
 				paramUrl = paramUrl + "version=" + version + "&";
 			}
 			
+			//Set the version to replace the negotiation version process (only the version 1.0.0 is supported for now)
+			if(currentOperation.equalsIgnoreCase("GetCapabilities"))
+				version = "1.0.0";
+			
 			requestParamUrl = paramUrl;
 
 			//If version is not 1.0.0, return an ogc exception
