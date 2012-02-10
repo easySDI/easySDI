@@ -37,7 +37,7 @@ class HTML_proxyCSW {
 		?>
 
 	<form name='adminForm' id='adminForm' action='index.php' method='POST'>
-		<input type='hidden' name='serviceType' id='serviceType' value="<?php echo JRequest::getVar('serviceType');?>" >
+		<input type='hidden' name='serviceType' id='serviceType' value="CSW" >
 		<input type='hidden' name="isNewConfig" value="<?php echo $new; ?>">
 		<input type='hidden' name='option' value='<?php echo $option;?>'> 
 		<input type='hidden' name='task' value='<?php echo $task;?>'> 
