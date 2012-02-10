@@ -28,7 +28,7 @@ class ogcservice extends sdiTable
 	}
 
 	function getVersions (){
-		$this->_db->setQuery( "SELECT v.code  FROM #__sdi_ogcservice_version sv INNER JOIN #__sdi_ogcversion v ON v.id = sv.ogcversion_id WHERE sv.ogcservice_id = ".$this->id );
+		$this->_db->setQuery( "SELECT v.code  FROM #__sdi_ogcservice_version sv INNER JOIN #__sdi_ogcversion v ON v.id = sv.ogcversion_id WHERE sv.ogcservice_id = ".$this->id." ORDER BY v.code DESC");
 		return $this->_db->loadResultArray();
 	}
 	

@@ -820,6 +820,7 @@ echo $pane->endPanel();
 			<th width="2%" class='title'><?php echo JText::_( 'EASYSDI_NUM' ); ?></th>
 			<th width="2%" class='title'></th>
 			<th class='title'><b><?php echo JText::_( 'EASYSDI_CONFIGURATION ID'); ?></b></th>
+			<th class='title'><b><?php echo JText::_( 'EASYSDI_CONFIGURATION POLICIES_LIST'); ?></b></th>
 			<th class='title'><b><?php echo JText::_( 'EASYSDI_CONFIGURATION_TYPE'); ?></b></th>
 			<th class='title'><b><?php echo JText::_( 'EASYSDI_CONFIGURATION_URL'); ?></b></th>
 
@@ -837,6 +838,7 @@ echo $pane->endPanel();
 				?>
 		<tr class="row<?php echo $i%2; ?>">
 			<td><?php echo $i+1;?></td>
+			
 			<td><input
 			<?php if (strlen($id)>0)
 				  {
@@ -868,6 +870,11 @@ echo $pane->endPanel();
 			<a href="#edit" onclick="document.getElementById('task').value='editConfig';document.getElementById('cb<?php echo $i;?>').checked=true;document.adminForm.submit();;">
 				<?php echo $config['id']?></a>
 			 </td>
+			 <td align="center">
+				<a href="index.php?option=<?php echo JRequest::getVar('option');; ?>&amp;task=editPolicyList&configId=<?php echo $config['id']; ?>" title="<?php echo JText::_( 'EASYSDI_CONFIGURATION POLICIES_LIST' ); ?> : <?php echo $config['id']; ?>">
+					<img src="<?php echo JURI::root(true); ?>/includes/js/ThemeOffice/license.png" border="0" />
+				</a>
+			</td>
 			<td><?php 
 			if($config->{'servlet-class'} == "org.easysdi.proxy.wms.WMSProxyServlet")
 			{
