@@ -18,8 +18,22 @@
 			<log-level>INFO</log-level>
 		</log-config>
 		<host-translator/>
-		<remote-server-list><remote-server master="true"><alias>metacarta</alias><user/><url>http://labs.metacarta.com/wms/vmap0</url><password/><supported-versions><version>1.1.1</version><version>1.1.0</version></supported-versions></remote-server></remote-server-list>
-		<supported-versions><version>1.1.1</version><version>1.1.0</version></supported-versions>
+		<remote-server-list>
+			<remote-server master="true">
+				<alias>metacarta</alias>
+				<user/>
+				<url>http://labs.metacarta.com/wms/vmap0</url>
+				<password/>
+				<supported-versions>
+					<version>1.1.1</version>
+					<version>1.1.0</version>
+				</supported-versions>
+			</remote-server>
+		</remote-server-list>
+		<supported-versions>
+			<version>1.1.1</version>
+			<version>1.1.0</version>
+		</supported-versions>
 		<xslt-path>
 			<url/>
 		</xslt-path>
@@ -29,7 +43,9 @@
 		<service-metadata>
 			<Title>Metacarta WMS via Proxy</Title>
 			<Abstract/>
-			<KeywordList><Keyword/></KeywordList>
+			<KeywordList>
+				<Keyword/>
+			</KeywordList>
 			<ContactInformation>
 				<ContactOrganization/>
 				<ContactName/>
@@ -71,8 +87,24 @@
 			<log-level>INFO</log-level>
 		</log-config>
 		<host-translator/>
-		<remote-server-list><remote-server master="true"><alias>gmap</alias><user/><url>http://www2.dmsolutions.ca/cgi-bin/mswms_gmap</url><password/><supported-versions><version>1.3.0</version><version>1.1.1</version><version>1.1.0</version></supported-versions></remote-server></remote-server-list>
-		<supported-versions><version>1.3.0</version><version>1.1.1</version><version>1.1.0</version></supported-versions>
+		<remote-server-list>
+			<remote-server master="true">
+				<alias>gmap</alias>
+				<user/>
+				<url>http://www2.dmsolutions.ca/cgi-bin/mswms_gmap</url>
+				<password/>
+				<supported-versions>
+					<version>1.3.0</version>
+					<version>1.1.1</version>
+					<version>1.1.0</version>
+				</supported-versions>
+			</remote-server>
+		</remote-server-list>
+		<supported-versions>
+			<version>1.3.0</version>
+			<version>1.1.1</version>
+			<version>1.1.0</version>
+		</supported-versions>
 		<xslt-path>
 			<url/>
 		</xslt-path>
@@ -82,7 +114,9 @@
 		<service-metadata>
 			<Title>GMap WMS via Proxy</Title>
 			<Abstract/>
-			<KeywordList><Keyword/></KeywordList>
+			<KeywordList>
+				<Keyword/>
+			</KeywordList>
 			<ContactInformation>
 				<ContactOrganization/>
 				<ContactName/>
@@ -124,8 +158,20 @@
 			<log-level>INFO</log-level>
 		</log-config>
 		<host-translator/>
-		<remote-server-list><remote-server master="true"><alias>mswfs</alias><user/><url>http://www2.dmsolutions.ca/cgi-bin/mswfs_filter</url><password/><supported-versions><version>1.0.0</version></supported-versions></remote-server></remote-server-list>
-		<supported-versions><version>1.0.0</version></supported-versions>
+		<remote-server-list>
+			<remote-server master="true">
+				<alias>mswfs</alias>
+				<user/>
+				<url>http://www2.dmsolutions.ca/cgi-bin/mswfs_filter</url>
+				<password/>
+				<supported-versions>
+					<version>1.0.0</version>
+				</supported-versions>
+			</remote-server>
+		</remote-server-list>
+		<supported-versions>
+			<version>1.0.0</version>
+		</supported-versions>
 		<xslt-path>
 			<url/>
 		</xslt-path>
@@ -135,7 +181,9 @@
 		<service-metadata>
 			<Title>GMap WFS via Proxy</Title>
 			<Abstract/>
-			<KeywordList><Keyword/></KeywordList>
+			<KeywordList>
+				<Keyword/>
+			</KeywordList>
 			<ContactInformation>
 				<ContactOrganization/>
 				<ContactName/>
@@ -177,8 +225,22 @@
 			<log-level>INFO</log-level>
 		</log-config>
 		<host-translator/>
-		<remote-server-list><remote-server master="true"><alias>geosignal</alias><user/><url>http://www.geosignal.org/cgi-bin/wmsmap</url><password/><supported-versions><version>1.1.1</version><version>1.1.0</version></supported-versions></remote-server></remote-server-list>
-		<supported-versions><version>1.1.1</version><version>1.1.0</version></supported-versions>
+		<remote-server-list>
+			<remote-server master="true">
+				<alias>geosignal</alias>
+				<user/>
+				<url>http://www.geosignal.org/cgi-bin/wmsmap</url>
+				<password/>
+				<supported-versions>
+					<version>1.1.1</version>
+					<version>1.1.0</version>
+				</supported-versions>
+			</remote-server>
+		</remote-server-list>
+		<supported-versions>
+			<version>1.1.1</version>
+			<version>1.1.0</version>
+		</supported-versions>
 		<xslt-path>
 			<url/>
 		</xslt-path>
@@ -188,7 +250,9 @@
 		<service-metadata>
 			<Title>Geosignal WMS via Proxy</Title>
 			<Abstract/>
-			<KeywordList><Keyword/></KeywordList>
+			<KeywordList>
+				<Keyword/>
+			</KeywordList>
 			<ContactInformation>
 				<ContactOrganization/>
 				<ContactName/>
@@ -230,7 +294,17 @@
 			<log-level>INFO</log-level>
 		</log-config>
 		<host-translator/>
-		<remote-server-list><remote-server master="true"><alias>opengeo</alias><user/><url>http://v2.suite.opengeo.org/geoserver/gwc/service/wmts</url><password/><supported-versions><version>1.0.0</version></supported-versions></remote-server></remote-server-list>
+		<remote-server-list>
+			<remote-server master="true">
+				<alias>opengeo</alias>
+				<user/>
+				<url>http://v2.suite.opengeo.org/geoserver/gwc/service/wmts</url>
+				<password/>
+				<supported-versions>
+					<version>1.0.0</version>
+				</supported-versions>
+			</remote-server>
+		</remote-server-list>
 		<exception>
 			<mode>permissive</mode>
 		</exception>
@@ -267,7 +341,10 @@
 			<ServiceIdentification>
 				<Title>Web Map Tile Service via Proxy</Title>
 				<Abstract/>
-				<KeywordList><Keyword>easysdi</Keyword><Keyword>wmts</Keyword></KeywordList>
+				<KeywordList>
+					<Keyword>easysdi</Keyword>
+					<Keyword>wmts</Keyword>
+				</KeywordList>
 				<Fees>none</Fees>
 				<AccessConstraints>none</AccessConstraints>
 			</ServiceIdentification>
@@ -298,7 +375,9 @@
 			<Fees>none</Fees>
 			<AccessConstraints>none</AccessConstraints>
 		</service-metadata>
-		<supported-versions><version>1.0.0</version></supported-versions>
+		<supported-versions>
+			<version>1.0.0</version>
+		</supported-versions>
 		<xslt-path>
 			<url/>
 		</xslt-path>
@@ -308,9 +387,11 @@
 			<policy-file>/var/lib/tomcat5/webapps/proxy/WEB-INF/conf/NewPolicy.xml</policy-file>
 		</authorization>
 		<servlet-class>org.easysdi.proxy.csw.CSWProxyServlet</servlet-class>
-		<supported-versions><version>2.0.2</version></supported-versions>
+		<supported-versions>
+			<version>2.0.2</version>
+		</supported-versions>
 		<xslt-path>
-			<url></url>
+			<url/>
 		</xslt-path>
 		<log-config>
 			<logger>org.apache.log4j.Logger</logger>
@@ -324,8 +405,23 @@
 			</file-structure>
 			<date-format>dd/MM/yyyy HH:mm:ss</date-format>
 		</log-config>
-		<host-translator></host-translator>
-		<remote-server-list><remote-server master="true"><alias>geology</alias><user></user><url>http://onegeology-catalog.brgm.fr/geonetwork/srv/csw</url><password></password><max-records>10</max-records><login-service>http://onegeology-catalog.brgm.fr/geonetwork/srv/en/</login-service><transaction><type>geonetwork</type></transaction><supported-versions><version>2.0.2</version></supported-versions></remote-server></remote-server-list>
+		<host-translator/>
+		<remote-server-list>
+			<remote-server master="true">
+				<alias>geology</alias>
+				<user/>
+				<url>http://onegeology-catalog.brgm.fr/geonetwork/srv/csw</url>
+				<password/>
+				<max-records>10</max-records>
+				<login-service>http://onegeology-catalog.brgm.fr/geonetwork/srv/en/</login-service>
+				<transaction>
+					<type>geonetwork</type>
+				</transaction>
+				<supported-versions>
+					<version>2.0.2</version>
+				</supported-versions>
+			</remote-server>
+		</remote-server-list>
 		<harvesting-config>false</harvesting-config>
 		<ogc-search-filter>fileId</ogc-search-filter>
 		<exception>
@@ -333,26 +429,28 @@
 		</exception>
 		<service-metadata>
 			<Title>BRGM geology via Proxy</Title>
-			<Abstract></Abstract>
-			<KeywordList><Keyword></Keyword></KeywordList>
+			<Abstract/>
+			<KeywordList>
+				<Keyword/>
+			</KeywordList>
 			<ContactInformation>
-				<ContactOrganization></ContactOrganization>
-				<ContactName></ContactName>
-				<ContactPosition></ContactPosition>
+				<ContactOrganization/>
+				<ContactName/>
+				<ContactPosition/>
 				<ContactAddress>
-					<AddressType></AddressType>
-					<Address></Address>
-					<PostalCode></PostalCode>
-					<City></City>
-					<State></State>
-					<Country></Country>
+					<AddressType/>
+					<Address/>
+					<PostalCode/>
+					<City/>
+					<State/>
+					<Country/>
 				</ContactAddress>
-				<VoicePhone></VoicePhone>
-				<Facsimile></Facsimile>
-				<ElectronicMailAddress></ElectronicMailAddress>
-				<Linkage></Linkage>
-				<HoursofSservice></HoursofSservice>
-				<Instructions></Instructions>
+				<VoicePhone/>
+				<Facsimile/>
+				<ElectronicMailAddress/>
+				<Linkage/>
+				<HoursofSservice/>
+				<Instructions/>
 			</ContactInformation>
 			<Fees>none</Fees>
 			<AccessConstraints>none</AccessConstraints>
