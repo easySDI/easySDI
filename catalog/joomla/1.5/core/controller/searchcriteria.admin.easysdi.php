@@ -105,7 +105,7 @@ class ADMIN_searchcriteria {
 					return;
 				}
 		
-				// R�cuperer tous les labels et contr�ler qu'ils soient saisis
+				// Récuperer tous les labels et contrôler qu'ils soient saisis
 				var labelEmpty = 0;
 				labels = document.getElementById('labels');
 				fields = labels.getElementsByTagName('input');
@@ -116,7 +116,7 @@ class ADMIN_searchcriteria {
 						labelEmpty=1;
 				}
 				
-				// R�cuperer tous les champs de tri et contr�ler qu'ils soient saisis
+				// Récuperer tous les champs de tri et contrôler qu'ils soient saisis
 				var filterEmpty = 0;
 				filterfields = document.getElementById('filterfields');
 				if(filterfields){
@@ -181,13 +181,13 @@ class ADMIN_searchcriteria {
 
 		$row->checkout($user->get('id'));
 		
-		// R�cup�ration des types mysql pour les champs
+		// Récupération des types mysql pour les champs
 		$tableFields = array();
 		$tableFields = $database->getTableFields("#__sdi_searchcriteria", false);
 		
 		// Parcours des champs pour extraire les informations utiles:
 		// - le nom du champ
-		// - sa longueur en caract�res
+		// - sa longueur en caractères
 		$fieldsLength = array();
 		foreach($tableFields as $table)
 		{
@@ -201,13 +201,13 @@ class ADMIN_searchcriteria {
 			} 
 		}
 		
-		// R�cup�ration des types mysql pour les champs
+		// Récupération des types mysql pour les champs
 		$tableFields = array();
 		$tableFields = $database->getTableFields("#__sdi_context_sc_filter", false);
 		
 		// Parcours des champs pour extraire les informations utiles:
 		// - le nom du champ
-		// - sa longueur en caract�res
+		// - sa longueur en caractères
 		foreach($tableFields as $table)
 		{
 			foreach ($table as $field)
@@ -220,7 +220,7 @@ class ADMIN_searchcriteria {
 			} 
 		}
 		
-		// Langues � g�rer
+		// Langues à gérer
 		$languages = array();
 		$database->setQuery( "SELECT l.id, c.code FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY id" );
 		$languages = array_merge( $languages, $database->loadObjectList() );
@@ -251,6 +251,7 @@ class ADMIN_searchcriteria {
 		$tab[] = JHTML::_('select.option','0', JText::_("CATALOG_SEARCHCRITERIA_CHOICE_NOTAB") );
 		$tab[] = JHTML::_('select.option','1', JText::_("CATALOG_SEARCHCRITERIA_CHOICE_SIMPLETAB") );
 		$tab[] = JHTML::_('select.option','2', JText::_("CATALOG_SEARCHCRITERIA_CHOICE_ADVANCEDTAB") );
+		$tab[] = JHTML::_('select.option','3', JText::_("CATALOG_SEARCHCRITERIA_CHOICE_HIDDEN") );
 		
 		if ($row->simpletab == 1)
 			$selectedTab = 1;
@@ -283,9 +284,9 @@ class ADMIN_searchcriteria {
 		$database->setQuery("SELECT tab_id FROM #__sdi_searchcriteria_tab WHERE searchcriteria_id=".$row->id." AND context_id=".$context_id);
 		$tab_id = $database->loadResult();
 		
-		if ($row->id == 0 or $row->criteriatype_id == 3) // Crit�re OGC 
+		if ($row->id == 0 or $row->criteriatype_id == 3) // Critère OGC 
 			HTML_searchcriteria::editOGCSearchCriteria($row, $tab, $selectedTab, $fieldsLength, $languages, $labels, $filterfields, $context_id, $tabList, $tab_id, $rendertypes, $option);
-		else if ($row->criteriatype_id == 1) // Crit�re system
+		else if ($row->criteriatype_id == 1) // Critère system
 			HTML_searchcriteria::editSystemSearchCriteria($row, $tab, $selectedTab, $fieldsLength, $languages, $labels, $context_id, $tabList, $tab_id, $option);
 		
 	}
@@ -307,37 +308,18 @@ class ADMIN_searchcriteria {
 			exit();
 		}		
 		
-		// G�n�rer un guid
+		// Générer un guid
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 		if ($rowSearchCriteria->guid == null)
 			$rowSearchCriteria->guid = helper_easysdi::getUniqueId();
-		
-		// Onglet
-		/*
-		if ($_POST['tab'] == 0)
-		{
-			$rowSearchCriteria->simpletab = 0;
-			$rowSearchCriteria->advancedtab = 0;
-		}
-		else if ($_POST['tab'] == 1)
-		{
-			$rowSearchCriteria->simpletab = 1;
-			$rowSearchCriteria->advancedtab = 0;
-		}
-		else if ($_POST['tab'] == 2)
-		{	
-			$rowSearchCriteria->simpletab = 0;
-			$rowSearchCriteria->advancedtab = 1;
-		}
-		*/
 			
-		// Si le crit�re de recherche est de type CSW, indiquer le contexte associ�
+		// Si le critère de recherche est de type CSW, indiquer le contexte associé
 		if ($rowSearchCriteria->criteriatype_id == 3)
 		{
 			$rowSearchCriteria->context_id = $context_id;
 			
 			if ($rowSearchCriteria->rendertype_id == 0)
-				$rowSearchCriteria->rendertype_id = 5; // Rendu textbox par d�faut	
+				$rowSearchCriteria->rendertype_id = 5; // Rendu textbox par défaut	
 		}
 		else
 		{
@@ -351,7 +333,7 @@ class ADMIN_searchcriteria {
 			exit();
 		}
 		
-		// Stocker le tab si on cr�e le crit�re
+		// Stocker le tab si on crée le critère
 		if ($_POST['id'] == 0)
 		{
 			$tab_id = $_POST['tabList'];
@@ -379,7 +361,7 @@ class ADMIN_searchcriteria {
 			}
 		}		
 		
-		// Langues � g�rer
+		// Langues à gérer
 		$languages = array();
 		$database->setQuery( "SELECT l.id, c.code FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY id" );
 		$languages = array_merge( $languages, $database->loadObjectList() );
@@ -442,12 +424,12 @@ class ADMIN_searchcriteria {
 		
 		$rowSearchCriteria->checkin();
 		
-		// Au cas o� on sauve avec Apply, recharger la page 
+		// Au cas où on sauve avec Apply, recharger la page 
 		$task = JRequest::getCmd( 'task' );
 		switch ($task)
 		{
 			case 'applySearchCriteria' :
-				// Reprendre en �dition l'objet
+				// Reprendre en édition l'objet
 				TOOLBAR_searchcriteria::_EDIT();
 				ADMIN_searchcriteria::editSearchCriteria($rowSearchCriteria->id,$option);
 				break;
@@ -581,37 +563,6 @@ class ADMIN_searchcriteria {
 		// Update the ordering for items in the cid array
 		for ($i = 0; $i < $total; $i ++)
 		{
-//			// Instantiate an article table object
-//			$row = new searchcriteria( $db );
-//			
-//			$row->load( (int) $cid[$i] );
-//			if ($row->ordering != $order[$i]) {
-//				$row->ordering = $order[$i];
-//				if (!$row->store()) {
-//					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-//					$mainframe->redirect("index.php?option=$option&task=listSearchCriteria&context_id=".$context_id );
-//					exit();
-//				}
-//				
-//				// TODO: Doit être corrigé car désormais le tab n'est plus stocké
-//				// dans ces colonnes mais dans la table #__sdi_searchcriteria_tab.
-//				// La meilleur façon de corriger ça est de stocker désormais l'ordre
-//				// dans la table #__sdi_searchcriteria_tab, afin de pouvoir avoir un ordre
-//				// différent pour le critère selon qu'il est dans un contexte ou dans un autre.
-//				
-//				// remember to updateOrder this group
-//				$condition = 'simpletab = '.(int) $row->simpletab.
-//							 ' AND advancedtab = '.(int) $row->advancedtab;
-//				$found = false;
-//				foreach ($conditions as $cond)
-//					if ($cond[1] == $condition) {
-//						$found = true;
-//						break;
-//					}
-//				if (!$found)
-//					$conditions[] = array ($row->id, $condition);
-//			}
-		
          		$query = 'UPDATE #__sdi_searchcriteria_tab'
 		                . ' SET ordering = '.$order[$i]
 		                . ' WHERE '.$db->nameQuote('context_id').' = '.$db->quote($context_id)
@@ -625,13 +576,6 @@ class ADMIN_searchcriteria {
                 }
 		}
 
-		// execute updateOrder for each group
-//		foreach ($conditions as $cond)
-//		{
-//			$row->load($cond[0]);
-//			$row->reorder($cond[1]);
-//		}
-//		
 		$cache = & JFactory::getCache('com_easysdi_catalog');
 		$cache->clean();
 
@@ -731,15 +675,15 @@ class ADMIN_searchcriteria {
 	{
 		$color_tab = 'style="color: black;"';
 		if ( !$row->tab_id )  { // Aucun tab
-			//$color_tab = 'style="color: green;"';
 			$task_tab = "searchcriteria_tab_simple";
 			$text_tab = JText::_( "CATALOG_SEARCHTAB_NONE");
 		} else if ( $row->tab_id == 1 ) { // tab simple
-			//$color_tab = 'style="color: red;"';
 			$task_tab = "searchcriteria_tab_advanced";
 			$text_tab = JText::_( $row->tab_label );
-		} else { // tab avanc�
-			//$color_tab = 'style="color: black;"';
+		}else if ( $row->tab_id == 2 ) { // tab advanced
+			$task_tab = "searchcriteria_tab_hidden";
+			$text_tab = JText::_( $row->tab_label );
+		}  else { // tab hidden
 			$task_tab = "searchcriteria_tab_none";
 			$text_tab = JText::_( $row->tab_label );
 		}

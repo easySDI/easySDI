@@ -83,7 +83,7 @@ class HTML_catalog{
 		$objecttypes = array_merge( $objecttypes, $db->loadObjectList() );
 		HTML_catalog::alter_array_value_with_Jtext($objecttypes);
 		?>
-		<script text="javascript">
+		<script type="text/javascript">
 		function toggleMe(obj){
 			obj.value = (obj.checked)? 1:0 ;
 		};
