@@ -1675,6 +1675,29 @@ function com_install(){
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}
 		}
+		if($version == "2.1.0"){
+			
+			$query="INSERT INTO `#__sdi_list_searchtab` (`guid`, `code`, `name`, `description`, `created`, `createdby`, `label`) VALUES
+							('".helper_easysdi::getUniqueId()."', 'hidden', 'Hidden', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'CATALOG_SEARCHTAB_HIDDEN')
+							";
+			$db->setQuery( $query);
+			if (!$db->query()){
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			$query="ALTER TABLE `#__sdi_searchcriteria` ADD defaultvalue varchar(500)";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			$version="2.2.0";
+			$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='CATALOG'";
+			$db->setQuery( $query);
+			if (!$db->query()){
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+		}
 
 		$query = "DELETE FROM #__components where `option`= 'com_easysdi_catalog' ";
 		$db->setQuery( $query);
