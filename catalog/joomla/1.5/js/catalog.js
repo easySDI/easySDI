@@ -452,3 +452,37 @@ function changeImporttypeVisibility(importType)
  	else 
  		importtypeDiv.style.display = "none";
 }
+
+function changeDefaultValueField(renderType){
+	if (renderType == 5)
+	{
+		var attributeId = document.getElementById("attribute_id");
+		if (!attributeId)
+			attributeId = document.getElementById("attributechild_id");
+		var attributeTypes = document.getElementById("attributetypes");
+	  	
+		for(var i=0; i < attributeTypes.length; i++)
+		{
+	  		//console.log(attributeTypes[i]['value']);
+	  		if (attributeTypes[i]['value'] == attributeId.value)
+	  			attributeType = attributeTypes.options[i].text;
+	  	}
+
+		 // Valeur par defaut
+		 var defaultVal_textbox = document.getElementById("div_defaultVal_textbox");
+		 var defaultVal_textarea = document.getElementById("div_defaultVal_textarea");
+		 var defaultVal_Locale_textbox = document.getElementById("div_defaultVal_locale_textbox");
+		 var defaultVal_Locale_textarea = document.getElementById("div_defaultVal_locale_textarea");
+
+		 if (attributeType == 2) //Text
+		{
+			 defaultVal_textbox.style.display = "";
+			 defaultVal_textarea.style.display = "none";
+		}
+		else if (attributeType == 3) //Locale
+		{
+			 defaultVal_Locale_textbox.style.display = "";
+			 defaultVal_Locale_textarea.style.display = "none";
+		}		
+	}
+}

@@ -23,12 +23,11 @@ class searchcriteria extends sdiTable
 	var $simpletab=null;
 	var $advancedtab=null;
 	var $relation_id=null;
-	//var $ogcsearchfilter=null;
 	var $criteriatype_id=3;
 	var $context_id=null;
 	var $rendertype_id=null;
+	var $defaultvalue=null;
 	
-	// Class constructor
 	function __construct( &$db )
 	{
 		parent::__construct ( '#__sdi_searchcriteria', 'id', $db ) ;
@@ -40,12 +39,11 @@ class searchcriteriaByRelationId extends sdiTable
 	var $simpletab=null;
 	var $advancedtab=null;
 	var $relation_id=null;
-	//var $ogcsearchfilter=null;
 	var $criteriatype_id=3;
 	var $context_id=null;
 	var $rendertype_id=null;
+	var $defaultvalue=null;
 	
-	// Class constructor
 	function __construct( &$db )
 	{
 		parent::__construct ( '#__sdi_searchcriteria', 'relation_id', $db ) ;
@@ -54,7 +52,6 @@ class searchcriteriaByRelationId extends sdiTable
 
 class criteriatype extends sdiTable
 {	
-	// Class constructor
 	function __construct( &$db )
 	{
 		parent::__construct ( '#__sdi_list_criteriatype', 'id', $db ) ;
