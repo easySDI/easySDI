@@ -76,11 +76,20 @@ class SITE_catalog {
 		// Liste des critères de recherche simple
 		$context= JRequest::getVar('context');
 		$listSimpleFilters = array();
-		$database->setQuery("SELECT sc.*, sc_tab.ordering as context_order , r.guid as relation_guid, a.id as attribute_id, at.code as attributetype_code, sc.code as criteria_code, rt.code as rendertype_code
+		$database->setQuery("SELECT sc.*, 
+									sc_tab.ordering as context_order , 
+									r.guid as relation_guid, 
+									a.id as attribute_id, 
+									at.code as attributetype_code, 
+									sc.code as criteria_code, 
+									rt.code as rendertype_code,
+									ccc.defaultvalue as defaultvalue
+									
 					   FROM #__sdi_searchcriteria sc
 					   			  LEFT OUTER JOIN #__sdi_relation r ON r.id=sc.relation_id
 								  LEFT OUTER JOIN #__sdi_relation_context rc ON r.id=rc.relation_id 
 								  LEFT OUTER JOIN #__sdi_context c ON c.id=rc.context_id
+								  LEFT OUTER JOIN  (SELECT cc.*  FROM jos_sdi_context_criteria cc INNER JOIN jos_sdi_searchcriteria ccs  ON  cc.criteria_id = ccs.id WHERE cc.context_id = (SELECT id FROM jos_sdi_context WHERE code='".$context."')) ccc ON ccc.criteria_id=sc.id
 								  LEFT OUTER JOIN #__sdi_attribute a ON r.attributechild_id=a.id
 								  LEFT OUTER JOIN #__sdi_list_attributetype at ON at.id=a.attributetype_id
 								  LEFT OUTER JOIN #__sdi_searchcriteria_tab sc_tab ON sc_tab.searchcriteria_id=sc.id
@@ -112,7 +121,27 @@ class SITE_catalog {
 					   		 AND c_tab.code='".$context."'
 					   		 AND tab.code = 'advanced' 
 					   ORDER BY context_order");
-		$listAdvancedFilters = array_merge( $listAdvancedFilters, $database->loadObjectList() );		
+		$listAdvancedFilters = array_merge( $listAdvancedFilters, $database->loadObjectList() );	
+
+		// Liste des critères de recherche masqués
+		$listHiddenFilters = array();
+		$database->setQuery("SELECT sc.*, sc_tab.ordering as context_order , r.guid as relation_guid, a.id as attribute_id, at.code as attributetype_code, sc.code as criteria_code, rt.code as rendertype_code
+							   FROM #__sdi_searchcriteria sc
+							   			  LEFT OUTER JOIN #__sdi_relation r ON r.id=sc.relation_id
+										  LEFT OUTER JOIN #__sdi_relation_context rc ON r.id=rc.relation_id 
+										  LEFT OUTER JOIN #__sdi_context c ON c.id=rc.context_id
+										  LEFT OUTER JOIN #__sdi_attribute a ON r.attributechild_id=a.id
+										  LEFT OUTER JOIN #__sdi_list_attributetype at ON at.id=a.attributetype_id
+										  LEFT OUTER JOIN #__sdi_searchcriteria_tab sc_tab ON sc_tab.searchcriteria_id=sc.id
+										  LEFT OUTER JOIN #__sdi_context c_tab ON sc_tab.context_id=c_tab.id
+										  LEFT OUTER JOIN #__sdi_list_searchtab tab ON tab.id=sc_tab.tab_id
+										  LEFT OUTER JOIN #__sdi_list_rendertype rt ON sc.rendertype_id=rt.id
+							   WHERE (sc.relation_id IS NULL
+							   		 OR c.code='".$context."')
+							   		 AND c_tab.code='".$context."'
+							   		 AND tab.code = 'hidden' 
+							   ORDER BY context_order");
+		$listHiddenFilters = array_merge( $listHiddenFilters, $database->loadObjectList() );
 		
 		// Flag pour déterminer s'il y a ou pas des filtres
 		$empty = true;
@@ -2658,7 +2687,7 @@ class SITE_catalog {
 		
 		$allVersions=true;
 		
-		HTML_catalog::listCatalogContentWithPan($pageNav,$cswResults,$option,$total,$simple_filterfreetextcriteria,$maxDescr, $allVersions, $listSimpleFilters, $listAdvancedFilters);
+		HTML_catalog::listCatalogContentWithPan($pageNav,$cswResults,$option,$total,$simple_filterfreetextcriteria,$maxDescr, $allVersions, $listSimpleFilters, $listAdvancedFilters,$listHiddenFilters);
 		
 	}
 
