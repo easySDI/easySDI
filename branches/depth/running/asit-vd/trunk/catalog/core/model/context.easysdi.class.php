@@ -22,6 +22,7 @@ class context extends sdiTable
 {
 	var $objecttype_id=null;
 	var $xsldirectory=null;
+	var $runinitsearch=null;
 	
 	// Class constructor
 	function __construct( &$db )
@@ -33,6 +34,7 @@ class contextByCode extends sdiTable
 {
 	var $objecttype_id=null;
 	var $xsldirectory=null;
+	var $runinitsearch=null;
 	
 	// Class constructor
 	function __construct( &$db )

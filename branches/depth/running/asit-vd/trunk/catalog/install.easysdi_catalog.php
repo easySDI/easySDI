@@ -1715,6 +1715,29 @@ function com_install(){
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}
 			
+			$query="ALTER TABLE `#__sdi_context`
+			  				ADD column runinitsearch tinyint(1) DEFAULT '0'
+							";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			$query = "INSERT INTO `#__sdi_searchcriteria` (`guid`, `code`, `name`, `label`, `created`, `createdby`, `criteriatype_id`,`checked_out`) VALUES
+							  ('".helper_easysdi::getUniqueId()."', 'isFree', 'isFree', 'CATALOG_SEARCHCRITERIA_SYSTEMFIELD_ISFREE', '".date('Y-m-d H:i:s')."', ".$user_id.", 1,0)";
+			$db->setQuery( $query);
+			if (!$db->query()){
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+				return false;
+			}
+			$query = "INSERT INTO `#__sdi_searchcriteria` (`guid`, `code`, `name`, `label`, `created`, `createdby`, `criteriatype_id`,`checked_out`) VALUES
+										  ('".helper_easysdi::getUniqueId()."', 'isOrderable', 'isOrderable', 'CATALOG_SEARCHCRITERIA_SYSTEMFIELD_ISORDERABLE', '".date('Y-m-d H:i:s')."', ".$user_id.", 1,0)";
+			$db->setQuery( $query);
+			if (!$db->query()){
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+				return false;
+			}
+			
 			$version="2.2.0";
 			$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='CATALOG'";
 			$db->setQuery( $query);

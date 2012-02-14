@@ -314,6 +314,8 @@ else
 				</tr>
 				<?php
 				break;
+			case "isFree":
+			case "isOrderable":
 			case "isDownloadable":
 				?>
 				<tr>
