@@ -1685,7 +1685,31 @@ function com_install(){
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}
 			
-			$query="ALTER TABLE `#__sdi_searchcriteria` ADD defaultvalue varchar(500)";
+			$query="CREATE TABLE IF NOT EXISTS `#__sdi_context_criteria` (
+							  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+							  `context_id` bigint(20) NOT NULL,
+							  `criteria_id` bigint(20) NOT NULL,
+							  `defaultvalue` varchar(500) DEFAULT NULL,
+							  `defaultvaluefrom` datetime DEFAULT NULL,
+							  `defaultvalueto` datetime DEFAULT NULL,
+							  PRIMARY KEY (`id`)
+							) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			$query="ALTER TABLE `#__sdi_context_criteria`
+			  				ADD CONSTRAINT `#__sdi_context_criteria_fk_1` FOREIGN KEY (`context_id`) REFERENCES `#__sdi_context` (`id`);
+							";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			$query="ALTER TABLE `#__sdi_context_criteria`
+						  				ADD CONSTRAINT `#__sdi_context_criteria_fk_2` FOREIGN KEY (`criteria_id`) REFERENCES `#__sdi_searchcriteria` (`id`);
+										";
 			$db->setQuery( $query);
 			if (!$db->query()) {
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");

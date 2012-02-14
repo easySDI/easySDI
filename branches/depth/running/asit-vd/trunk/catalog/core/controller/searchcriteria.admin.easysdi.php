@@ -169,6 +169,12 @@ class ADMIN_searchcriteria {
 			exit();
 		}
 		
+		//Load default value
+		$defaultvalues = $row->loadDefaultValue($context_id);
+		$row->defaultvalue = $defaultvalues->defaultvalue;
+		$row->defaultvaluefrom = $defaultvalues->defaultvaluefrom;
+		$row->defaultvalueto = $defaultvalues->defaultvalueto;
+		
 		/*
 		 * If the item is checked out we cannot edit it... unless it was checked
 		 * out by the current user.
@@ -422,6 +428,61 @@ class ADMIN_searchcriteria {
 			}
 		}
 		
+		//Save default value
+		$defaultvalue = JRequest::getVar('defaultvalue', null);
+		if(is_array($defaultvalue))
+			$defaultvalue = json_encode($defaultvalue);
+		$defaultvaluefrom = JRequest::getVar('defaultvaluefrom', null);
+		$defaultvalueto = JRequest::getVar('defaultvalueto', null);
+		
+		$database->setQuery("SELECT count(*) FROM #__sdi_context_criteria WHERE context_id='".$context_id."' AND criteria_id='".$rowSearchCriteria->id."'");
+		$total = $database->loadResult();
+			
+		if ($total > 0)
+		{
+			//Update
+			$database->setQuery("UPDATE #__sdi_context_criteria SET defaultvalue='".$defaultvalue."' WHERE context_id='".$context_id."' AND criteria_id='".$rowSearchCriteria->id."'" );
+			if (!$database->query())
+			{
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				return false;
+			}
+			$database->setQuery("UPDATE #__sdi_context_criteria SET defaultvaluefrom='".$defaultvaluefrom."' WHERE context_id='".$context_id."' AND criteria_id='".$rowSearchCriteria->id."'" );
+			if (!$database->query())
+			{
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				return false;
+			}
+			$database->setQuery("UPDATE #__sdi_context_criteria SET defaultvalueto='".$defaultvalueto."' WHERE context_id='".$context_id."' AND criteria_id='".$rowSearchCriteria->id."'" );
+			if (!$database->query())
+			{
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				return false;
+			}
+		}
+		else
+		{
+			// Create
+			$database->setQuery("INSERT INTO #__sdi_context_criteria (criteria_id, context_id,defaultvalue) VALUES ('".$rowSearchCriteria->id."', '".$context_id."', '".$defaultvalue."')");
+			if (!$database->query())
+			{
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				return false;
+			}
+			$database->setQuery("UPDATE #__sdi_context_criteria SET defaultvaluefrom='".$defaultvaluefrom."' WHERE context_id='".$context_id."' AND criteria_id='".$rowSearchCriteria->id."'" );
+			if (!$database->query())
+			{
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				return false;
+			}
+			$database->setQuery("UPDATE #__sdi_context_criteria SET defaultvalueto='".$defaultvalueto."' WHERE context_id='".$context_id."' AND criteria_id='".$rowSearchCriteria->id."'" );
+			if (!$database->query())
+			{
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				return false;
+			}
+		}
+		
 		$rowSearchCriteria->checkin();
 		
 		// Au cas où on sauve avec Apply, recharger la page 
@@ -448,7 +509,7 @@ class ADMIN_searchcriteria {
 		
 		if (!is_array( $id ) || count( $id ) < 1) {
 			//echo "<script> alert('S�lectionnez un enregistrement � supprimer'); window.history.go(-1);</script>\n";
-			$mainframe->enqueueMessage("S�lectionnez un enregistrement � supprimer","error");
+			$mainframe->enqueueMessage("Sélectionnez un enregistrement à supprimer","error");
 			$mainframe->redirect("index.php?option=$option&task=listSearchCriteria&context_id=".$context_id );
 			exit();
 		}

@@ -179,11 +179,10 @@ else
 							 ORDER BY ot.ordering");
 
 				$objecttypes = array_merge( $objecttypes, $database->loadObjectList() );
-				//HTML_catalog::alter_array_value_with_Jtext($objecttypes);
 				?>
 				<tr>
 					<td class="key"><?php echo JText::_("CATALOG_SEARCHCRITERIA_DEFAULT_VALUE");?></td>
-					<td><?php echo helper_easysdi::checkboxlist($objecttypes, 'objecttype_id', 'size="1" class="inputbox checkbox" ', 'class="inputbox checkbox"', 'value', 'text', $selectedObjectType); ?></td>
+					<td><?php echo helper_easysdi::checkboxlist($objecttypes, 'defaultvalue[]', 'size="1" class="inputbox checkbox" ', 'class="inputbox checkbox"', 'value', 'text', $selectedObjectType); ?></td>
 				</tr>
 				<?php
 				break;
@@ -195,7 +194,7 @@ else
 				<tr >
 					<td class="key"><?php echo JText::_("CATALOG_SEARCHCRITERIA_DEFAULT_VALUE");?></td>
 					<td>
-						<select name="<?php echo 'systemfilter_'.$searchFilter->guid;?>" id="<?php echo 'systemfilter_'.$searchFilter->guid;?>">
+						<select name="defaultvalue" id="defaultvalue">
 							<option value="" <?php if($selectedValue ==""){?> selected="selected" <?php }?>></option>
 							<?php 
 								foreach ($boundaries as $boundary){
@@ -225,12 +224,11 @@ else
 				JHTML::_('select.option',  '0', JText::_( 'CATALOG_SEARCH_VERSIONS_CURRENT' ) ),
 				JHTML::_('select.option',  '1', JText::_( 'CATALOG_SEARCH_VERSIONS_ALL' ) )
 				);
-				//$selectedVersion = $row->defaultvalue;
 				?>	
 				<tr>
 					<td class="key"><?php echo JText::_("CATALOG_SEARCHCRITERIA_DEFAULT_VALUE");?></td>
 					<td>
-					<?php echo helper_easysdi::radiolist($versions, 'defaultvalue', 'class="checkbox"', 'class="checkbox"', 'value', 'text', $selectedVersion); ?>
+					<?php echo helper_easysdi::radiolist($versions, 'defaultvalue', 'class="checkbox"', 'class="checkbox"', 'value', 'text', $row->defaultvalue); ?>
 					</td>
 				</tr>
 				<?php
@@ -261,8 +259,8 @@ else
 				<tr>
 					<td class="key"><?php echo JText::_("CATALOG_SEARCHCRITERIA_DEFAULT_VALUE");?></td>
 					<td>
-						<?php echo JHTML::_("select.genericlist", $accounts, 'defaultvalue', 'class="inputbox text large" style="vertical-align:top " '.$multiple, 'value', 'text', JRequest::getVar('systemfilter_'.$searchFilter->guid)); ?>
-						<a onclick="javascript:toggle_multi_select('<?php echo 'systemfilter_'.$searchFilter->guid;?>', <?php echo $size;?>); return false;" href="#">
+						<?php echo JHTML::_("select.genericlist", $accounts, 'defaultvalue[]', 'class="inputbox text large" style="vertical-align:top " '.$multiple, 'value', 'text', json_decode($row->defaultvalue,false)); ?>
+						<a onclick="javascript:toggle_multi_select('defaultvalue', <?php echo $size;?>); return false;" href="#">
 							<img src="<?php echo $templateDir;?>/icons/silk/add.png" alt="Expand"/>
 						</a>
 					</td>
@@ -293,7 +291,7 @@ else
 				<tr>
 					<td class="key"><?php echo JText::_("CATALOG_SEARCHCRITERIA_DEFAULT_VALUE");?></td>
 					<td>
-					<?php echo JHTML::_("select.genericlist", $managers, 'defaultvalue', 'class="inputbox text large" style="vertical-align:top " '.$multiple, 'value', 'text', JRequest::getVar('systemfilter_'.$searchFilter->guid)); ?>
+					<?php echo JHTML::_("select.genericlist", $managers, 'defaultvalue[]', 'class="inputbox text large" style="vertical-align:top " '.$multiple, 'value', 'text',json_decode($row->defaultvalue,false)); ?>
 					<a onclick="javascript:toggle_multi_select('<?php echo 'systemfilter_'.$searchFilter->guid;?>', <?php echo $size;?>); return false;" href="#">
 						<img src="<?php echo $templateDir;?>/icons/silk/add.png" alt="Expand"/>
 					</a>
@@ -309,9 +307,9 @@ else
 					<td class="key"><?php echo JText::_("CATALOG_SEARCHCRITERIA_DEFAULT_VALUE");?></td>
 					<td>
 					<label class="checkbox" for="from"><?php echo JText::_("CORE_DATE_FROM");?></label>
-					<?php echo helper_easysdi::calendar($row->defaultvalue, 'fromdefaultvalue','fromdefaultvalue',"%d.%m.%Y", 'class="calendar searchTabs_calendar text medium hasDatepicker"', 'class="ui-datepicker-trigger"', JURI::base().'components/com_easysdi_catalog/templates/images/icon_agenda.gif', JText::_("CATALOG_SEARCH_CALENDAR_ALT")); ?>
+					<?php echo helper_easysdi::calendar($row->defaultvaluefrom, 'defaultvaluefrom','defaultvaluefrom',"%Y.%m.%d", 'class="calendar searchTabs_calendar text medium hasDatepicker"', 'class="ui-datepicker-trigger"', JURI::base().'components/com_easysdi_catalog/templates/images/icon_agenda.gif', JText::_("CATALOG_SEARCH_CALENDAR_ALT")); ?>
 					<label class="checkbox" for="to"><?php echo JText::_("CORE_DATE_TO");?></label>
-					<?php echo helper_easysdi::calendar($row->defaultvalue, 'todefaultvalue','todefaultvalue',"%d.%m.%Y", 'class="calendar searchTabs_calendar text medium hasDatepicker"', 'class="ui-datepicker-trigger"', JURI::base().'components/com_easysdi_catalog/templates/images/icon_agenda.gif', JText::_("CATALOG_SEARCH_CALENDAR_ALT")); ?>
+					<?php echo helper_easysdi::calendar($row->defaultvalueto, 'defaultvalueto','defaultvalueto',"%Y.%m.%d", 'class="calendar searchTabs_calendar text medium hasDatepicker"', 'class="ui-datepicker-trigger"', JURI::base().'components/com_easysdi_catalog/templates/images/icon_agenda.gif', JText::_("CATALOG_SEARCH_CALENDAR_ALT")); ?>
 					</td>
 				</tr>
 				<?php
@@ -457,13 +455,11 @@ else
 						<input type="text" id="defaultvalue" name="defaultvalue" value="<?php echo $row->defaultvalue;?>"  <?php if($selectedRendertype == 5){?> style="display:block;" <?php }else {?> style="display:none;"  <?php }?>/>
 						<div id="div_defaultvalue" <?php if($selectedRendertype == 5){?> style="display:none;" <?php }else {?> style="display:block;"  <?php }?>>
 						<label class="checkbox" for="from"><?php echo JText::_("CORE_DATE_FROM");?></label>
-						<?php echo helper_easysdi::calendar($row->defaultvalue, 'fromdefaultvalue','fromdefaultvalue',"%d.%m.%Y", 'class="calendar searchTabs_calendar text medium hasDatepicker"', 'class="ui-datepicker-trigger"', JURI::base().'components/com_easysdi_catalog/templates/images/icon_agenda.gif', JText::_("CATALOG_SEARCH_CALENDAR_ALT")); ?>
+						<?php echo helper_easysdi::calendar($row->defaultvaluefrom, 'defaultvaluefrom','defaultvaluefrom',"%Y.%m.%d", 'class="calendar searchTabs_calendar text medium hasDatepicker"', 'class="ui-datepicker-trigger"', JURI::base().'components/com_easysdi_catalog/templates/images/icon_agenda.gif', JText::_("CATALOG_SEARCH_CALENDAR_ALT")); ?>
 						<label class="checkbox" for="to"><?php echo JText::_("CORE_DATE_TO");?></label>
-						<?php echo helper_easysdi::calendar($row->defaultvalue, 'todefaultvalue','todefaultvalue',"%d.%m.%Y", 'class="calendar searchTabs_calendar text medium hasDatepicker"', 'class="ui-datepicker-trigger"', JURI::base().'components/com_easysdi_catalog/templates/images/icon_agenda.gif', JText::_("CATALOG_SEARCH_CALENDAR_ALT")); ?>
+						<?php echo helper_easysdi::calendar($row->defaultvalueto, 'defaultvalueto','defaultvalueto',"%Y.%m.%d", 'class="calendar searchTabs_calendar text medium hasDatepicker"', 'class="ui-datepicker-trigger"', JURI::base().'components/com_easysdi_catalog/templates/images/icon_agenda.gif', JText::_("CATALOG_SEARCH_CALENDAR_ALT")); ?>
 						</div>
-					</td>
-					
-								
+					</td>			
 				</tr>
 			</table>
 			<table border="0" cellpadding="3" cellspacing="0">
