@@ -119,7 +119,7 @@ class HTML_catalog{
 				<?php
 				foreach($listSimpleFilters as $searchFilter)
 				{
-					HTML_catalog::generateFieldHTML ($searchFilter, $objecttypes,$listMaxLength);
+					HTML_catalog::generateFieldHTML ($searchFilter, $objecttypes,$listMaxLength,$versions,$templateDir);
 				}
 				?>
 			</div>
@@ -129,7 +129,7 @@ class HTML_catalog{
 				<?php
 				foreach($listAdvancedFilters as $searchFilter)
 				{
-					HTML_catalog::generateFieldHTML ($searchFilter, $objecttypes,$listMaxLength);
+					HTML_catalog::generateFieldHTML ($searchFilter, $objecttypes,$listMaxLength,$versions,$templateDir);
 				}
 				?>
 			</div>
@@ -139,7 +139,7 @@ class HTML_catalog{
 				<?php
 				foreach($listHiddenFilters as $searchFilter)
 				{
-					HTML_catalog::generateFieldHTML ($searchFilter, $objecttypes,$listMaxLength);
+					HTML_catalog::generateFieldHTML ($searchFilter, $objecttypes,$listMaxLength,$versions,$templateDir);
 				}
 				?>
 			</div>
@@ -237,11 +237,12 @@ class HTML_catalog{
 	}
 	
 	
-	function generateFieldHTML ($searchFilter, $objecttypes,$listMaxLength){
+	function generateFieldHTML ($searchFilter, $objecttypes,$listMaxLength,$versions,$templateDir){
 		global  $mainframe;
 		$db =& JFactory::getDBO();
 		$default = JRequest::getVar('default', true);
-		echo $default;
+		//echo $default;
+		$language =& JFactory::getLanguage();
 		
 		switch ($searchFilter->attributetype_code)
 		{
@@ -257,7 +258,7 @@ class HTML_catalog{
 					<input type="text"
 						id="<?php echo 'filter_'.$searchFilter->guid;?>"
 						name="<?php echo 'filter_'.$searchFilter->guid;?>"
-						value="<?php echo  JRequest::getVar('filter_'.$searchFilter->guid);?>"
+						value="<?php echo $default ? $searchFilter->defaultvalue : JRequest::getVar('filter_'.$searchFilter->guid);?>"
 						class="inputbox text full" />
 				</div>
 				<?php
@@ -267,10 +268,28 @@ class HTML_catalog{
 				/* Fonctionnement liste de choix*/
 				$choicevalues=array();
 				$choicevalues[] = JHTML::_('select.option','', '');
-				$db->setQuery( "SELECT c.*, t.title, t.content FROM #__sdi_attribute a, #__sdi_list_attributetype at,  #__sdi_codevalue c, #__sdi_translation t, #__sdi_language l, #__sdi_list_codelang cl WHERE a.id=c.attribute_id AND a.attributetype_id=at.id AND c.guid=t.element_guid AND t.language_id=l.id AND l.codelang_id=cl.id and cl.code='".$language->_lang."' AND (at.code='textchoice' OR at.code='localechoice') AND attribute_id=".$searchFilter->attribute_id." AND c.published=true ORDER BY c.name" );
+				$db->setQuery( "SELECT  c.*, 
+										t.title, 
+										t.content 
+								FROM #__sdi_attribute a, 
+									 #__sdi_list_attributetype at,  
+									 #__sdi_codevalue c, 
+									 #__sdi_translation t, 
+									 #__sdi_language l, 
+									 #__sdi_list_codelang cl 
+								WHERE a.id=c.attribute_id 
+								AND a.attributetype_id=at.id 
+								AND c.guid=t.element_guid 
+								AND t.language_id=l.id 
+								AND l.codelang_id=cl.id 
+								and cl.code='".$language->_lang."' 
+								AND (at.code='textchoice' OR at.code='localechoice') 
+								AND attribute_id=".$searchFilter->attribute_id." 
+								AND c.published=true 
+								ORDER BY c.name" );
 				$list = $db->loadObjectList();
 				
-				// Si la premi�re entr�e a un titre, construire une liste sur le titre
+				// Si la première entrée a un titre, construire une liste sur le titre
 				if ($list[0]->title <> "")
 				{
 					$db->setQuery( "SELECT c.id as value, t.title as text FROM #__sdi_attribute a, #__sdi_list_attributetype at,  #__sdi_codevalue c, #__sdi_translation t, #__sdi_language l, #__sdi_list_codelang cl WHERE a.id=c.attribute_id AND a.attributetype_id=at.id AND c.guid=t.element_guid AND t.language_id=l.id AND l.codelang_id=cl.id and cl.code='".$language->_lang."' AND (at.code='textchoice' OR at.code='localechoice') AND attribute_id=".$searchFilter->attribute_id." AND c.published=true ORDER BY c.name" );
@@ -305,7 +324,15 @@ class HTML_catalog{
 				/* Fonctionnement liste*/
 				$list = array();
 				$list[] = JHTML::_('select.option', '', '');
-				$query = "SELECT cv.value as value, t.label as text FROM #__sdi_attribute a RIGHT OUTER JOIN #__sdi_codevalue cv ON a.id=cv.attribute_id INNER JOIN #__sdi_translation t ON t.element_guid=cv.guid INNER JOIN #__sdi_language l ON t.language_id=l.id INNER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id WHERE cl.code='".$language->_lang."' AND a.id=".$searchFilter->attribute_id;
+				$query = "SELECT cv.value as value, 
+								 t.label as text 
+							FROM #__sdi_attribute a 
+							RIGHT OUTER JOIN #__sdi_codevalue cv ON a.id=cv.attribute_id 
+							INNER JOIN #__sdi_translation t ON t.element_guid=cv.guid 
+							INNER JOIN #__sdi_language l ON t.language_id=l.id 
+							INNER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id 
+						WHERE cl.code='".$language->_lang."' 
+						AND a.id=".$searchFilter->attribute_id;
 				$db->setQuery( $query);
 				$list = array_merge( $list, $db->loadObjectList() );
 			
@@ -329,17 +356,17 @@ class HTML_catalog{
 				break;
 			case "date":
 			case "datetime":
-				/* Fonctionnement p�riode*/
+				/* Fonctionnement période*/
 				?>
 				<div class="row">
 					<div class="label"><?php echo JText::_($searchFilter->relation_guid."_LABEL");?></div>
 					<div class="checkbox">
 					<div>
 					<label class="checkbox" for="<?php echo "create_cal_".$searchFilter->guid;?>"><?php echo JText::_("CORE_DATE_FROM");?></label>
-					<?php echo helper_easysdi::calendar(JRequest::getVar('create_cal_'.$searchFilter->guid), "create_cal_".$searchFilter->guid,"create_cal_".$searchFilter->guid,"%d.%m.%Y", 'class="calendar searchTabs_calendar text medium hasDatepicker"', 'class="ui-datepicker-trigger"', $templateDir.'/media/icon_agenda.gif', JText::_("CATALOG_SEARCH_CALENDAR_ALT")); ?>
+					<?php echo helper_easysdi::calendar(JRequest::getVar('create_cal_'.$searchFilter->guid), "create_cal_".$searchFilter->guid,"create_cal_".$searchFilter->guid,"%Y-%m-%d", 'class="calendar searchTabs_calendar text medium hasDatepicker"', 'class="ui-datepicker-trigger"', $templateDir.'/media/icon_agenda.gif', JText::_("CATALOG_SEARCH_CALENDAR_ALT")); ?>
 					</div><div>
 					<label class="checkbox" for="<?php echo "update_cal_".$searchFilter->guid;?>"><?php echo JText::_("CORE_DATE_TO");?></label>
-					<?php echo helper_easysdi::calendar(JRequest::getVar('update_cal_'.$searchFilter->guid), "update_cal_".$searchFilter->guid,"update_cal_".$searchFilter->guid,"%d.%m.%Y", 'class="calendar searchTabs_calendar text medium hasDatepicker"', 'class="ui-datepicker-trigger"', $templateDir.'/media/icon_agenda.gif', JText::_("CATALOG_SEARCH_CALENDAR_ALT")); ?>
+					<?php echo helper_easysdi::calendar(JRequest::getVar('update_cal_'.$searchFilter->guid), "update_cal_".$searchFilter->guid,"update_cal_".$searchFilter->guid,"%Y-%m-%d", 'class="calendar searchTabs_calendar text medium hasDatepicker"', 'class="ui-datepicker-trigger"', $templateDir.'/media/icon_agenda.gif', JText::_("CATALOG_SEARCH_CALENDAR_ALT")); ?>
 					</div></div>
 				</div>
 				<?php
@@ -351,10 +378,14 @@ class HTML_catalog{
 					{
 						case "objecttype":
 							$selectedObjectType = array();
-							if (JRequest::getVar('systemfilter_'.$searchFilter->guid) and JRequest::getVar('systemfilter_'.$searchFilter->guid) <> "Array")
-								$selectedObjectType = JRequest::getVar('systemfilter_'.$searchFilter->guid);
-							else if (!JRequest::getVar('bboxMinX') or JRequest::getVar('systemfilter_'.$searchFilter->guid) == "Array")
-								$selectedObjectType = $objecttypes;
+							if ($default)
+								$selectedObjectType = json_decode($searchFilter->defaultvalue );
+							else{
+								if (JRequest::getVar('systemfilter_'.$searchFilter->guid) and JRequest::getVar('systemfilter_'.$searchFilter->guid) <> "Array")
+									$selectedObjectType = JRequest::getVar('systemfilter_'.$searchFilter->guid);
+								else if (!JRequest::getVar('bboxMinX') or JRequest::getVar('systemfilter_'.$searchFilter->guid) == "Array")
+									$selectedObjectType = $objecttypes;
+							}
 							?>
 							<div class="row">
 								<div class="label"><?php echo JText::_($searchFilter->guid."_LABEL");?></div>
@@ -367,8 +398,12 @@ class HTML_catalog{
 						case "definedBoundary":
 							$boundaries = array();
 							$db->setQuery( "SELECT name, guid FROM #__sdi_boundary") ;
-							$boundaries = $db->loadObjectList() ;								
-							$selectedValue = trim(JRequest::getVar('systemfilter_'.$searchFilter->guid, ""));
+							$boundaries = $db->loadObjectList() ;	
+							$selectedValue = "";
+							if ($default)
+								$selectedValue = $searchFilter->defaultvalue ;
+							else					
+								$selectedValue = trim(JRequest::getVar('systemfilter_'.$searchFilter->guid, ""));
 							?>
 							<div class="row">
 								<div class="label">
@@ -399,6 +434,14 @@ class HTML_catalog{
 						case "isFree":
 						case "isOrderable": 
 						case "isDownloadable":
+							$valueToDisplay = "";
+							if ($default){
+								if($searchFilter->defaultvalue == 1)
+									$valueToDisplay = "checked = true";
+							} else {
+								if( JRequest::getVar('systemfilter_'.$searchFilter->guid)==1 )
+									$valueToDisplay = "checked = true";
+							}	
 							?>
 							<div class="row">
 								<label for="<?php echo 'systemfilter_'.$searchFilter->guid;?>"><?php echo JText::_($searchFilter->guid."_LABEL");?></label>
@@ -407,18 +450,20 @@ class HTML_catalog{
 									value="<?php echo JRequest::getVar('systemfilter_'.$searchFilter->guid);?>"									
 									class="inputbox checkbox" 
 									onClick="toggleMe(this)" 
-									<?php if( JRequest::getVar('systemfilter_'.$searchFilter->guid)==1){
-									echo "checked = true";
-									}									
-									?>	
+									<?php echo $valueToDisplay;?>	
 									/>
 							</div>
 							<?php					
 							break;
 						case "versions":
 							$selectedVersion = 0;
-							if (JRequest::getVar('systemfilter_'.$searchFilter->guid))
-								$selectedVersion = JRequest::getVar('systemfilter_'.$searchFilter->guid);
+							if ($default){
+								$selectedVersion = $searchFilter->defaultvalue ;
+							} else {
+								if (JRequest::getVar('systemfilter_'.$searchFilter->guid))
+									$selectedVersion = JRequest::getVar('systemfilter_'.$searchFilter->guid);
+							}
+							
 							?>
 							<div class="row">
 								<div class="label"><?php echo JText::_($searchFilter->guid."_LABEL");?></div>
@@ -443,14 +488,19 @@ class HTML_catalog{
 							$size=(int)$listMaxLength;
 							if (count($accounts) < (int)$listMaxLength)
 								$size = count($accounts);
-									
+													
+							if ($default)
+								$selectedAccount = json_decode($searchFilter->defaultvalue );
+							else
+								$selectedAccount = JRequest::getVar('systemfilter_'.$searchFilter->guid);
+								
 							$multiple = 'size="1"';
-							if (count(JRequest::getVar('systemfilter_'.$searchFilter->guid)) > 1)
+							if (count($selectedAccount) > 1)
 								$multiple='size="'.$size.'" multiple="multiple"';
 							?>
 							<div class="row">
 								<label for="<?php echo 'systemfilter_'.$searchFilter->guid;?>"><?php echo JText::_($searchFilter->guid."_LABEL");?></label>
-								<?php echo JHTML::_("select.genericlist", $accounts, 'systemfilter_'.$searchFilter->guid.'[]', 'class="inputbox text large" style="vertical-align:top " '.$multiple, 'value', 'text', JRequest::getVar('systemfilter_'.$searchFilter->guid)); ?>
+								<?php echo JHTML::_("select.genericlist", $accounts, 'systemfilter_'.$searchFilter->guid.'[]', 'class="inputbox text large" style="vertical-align:top " '.$multiple, 'value', 'text',$selectedAccount ); ?>
 										<a onclick="javascript:toggle_multi_select('<?php echo 'systemfilter_'.$searchFilter->guid;?>', <?php echo $size;?>); return false;" href="#">
 											<img src="<?php echo $templateDir;?>/icons/silk/add.png" alt="Expand"/>
 										</a>
@@ -463,7 +513,7 @@ class HTML_catalog{
 								<label for="<?php echo 'systemfilter_'.$searchFilter->guid;?>"><?php echo JText::_($searchFilter->guid."_LABEL");?></label>
 								<input type="text" id="<?php echo 'systemfilter_'.$searchFilter->guid;?>"
 									name="<?php echo 'systemfilter_'.$searchFilter->guid;?>"
-									value="<?php echo JRequest::getVar('systemfilter_'.$searchFilter->guid);?>"
+									value="<?php echo $default ? $searchFilter->defaultvalue : JRequest::getVar('simple_filterfreetextcriteria');?>"
 									class="inputbox text full" />
 							</div>
 							<?php
@@ -474,7 +524,7 @@ class HTML_catalog{
 								<label for="<?php echo 'systemfilter_'.$searchFilter->guid;?>"><?php echo JText::_($searchFilter->guid."_LABEL");?></label>
 								<input type="text" id="<?php echo 'systemfilter_'.$searchFilter->guid;?>"
 									name="<?php echo 'systemfilter_'.$searchFilter->guid;?>"
-									value="<?php echo JRequest::getVar('systemfilter_'.$searchFilter->guid);?>"
+									value="<?php echo $default ? $searchFilter->defaultvalue : JRequest::getVar('simple_filterfreetextcriteria');?>"
 									class="inputbox text full" />
 							</div>
 							<?php
@@ -495,14 +545,18 @@ class HTML_catalog{
 							if (count($managers) < (int)$listMaxLength)
 								$size = count($managers);
 								
-							$multiple = 'size="1"';
-							if (count(JRequest::getVar('systemfilter_'.$searchFilter->guid)) > 1)
-								$multiple='size="'.$size.'" multiple="multiple"';
+							if ($default)
+								$selectedAccount = json_decode($searchFilter->defaultvalue );
+							else
+								$selectedAccount = JRequest::getVar('systemfilter_'.$searchFilter->guid);
 							
+							$multiple = 'size="1"';
+							if (count($selectedAccount) > 1)
+								$multiple='size="'.$size.'" multiple="multiple"';
 							?>
 							<div class="row">
 								<label for="<?php echo 'systemfilter_'.$searchFilter->guid; ?>"><?php echo JText::_($searchFilter->guid."_LABEL");?></label>
-								<?php echo JHTML::_("select.genericlist", $managers, 'systemfilter_'.$searchFilter->guid.'[]', 'class="inputbox text large" style="vertical-align:top " '.$multiple, 'value', 'text', JRequest::getVar('systemfilter_'.$searchFilter->guid)); ?>
+								<?php echo JHTML::_("select.genericlist", $managers, 'systemfilter_'.$searchFilter->guid.'[]', 'class="inputbox text large" style="vertical-align:top " '.$multiple, 'value', 'text',$selectedAccount); ?>
 								<a onclick="javascript:toggle_multi_select('<?php echo 'systemfilter_'.$searchFilter->guid;?>', <?php echo $size;?>); return false;" href="#">
 									<img src="<?php echo $templateDir;?>/icons/silk/add.png" alt="Expand"/>
 								</a>
@@ -510,37 +564,29 @@ class HTML_catalog{
 							<?php
 							break;
 						case "metadata_created":
-							/* Fonctionnement p�riode*/
-							?>
-							<div class="row">
-								<div class="label"><?php echo JText::_($searchFilter->guid."_LABEL");?></div>
-								<div class="checkbox">
-								<div>
-								<label class="checkbox" for="<?php echo "create_cal_".$searchFilter->guid;?>"><?php echo JText::_("CORE_DATE_FROM");?></label>
-								<?php echo helper_easysdi::calendar(JRequest::getVar('create_cal_'.$searchFilter->guid), "create_cal_".$searchFilter->guid,"create_cal_".$searchFilter->guid,"%d.%m.%Y", 'class="calendar searchTabs_calendar text medium hasDatepicker"', 'class="ui-datepicker-trigger"', $templateDir.'/media/icon_agenda.gif', JText::_("CATALOG_SEARCH_CALENDAR_ALT")); ?>
-								</div><div>
-								<label class="checkbox" for="<?php echo "update_cal_".$searchFilter->guid;?>"><?php echo JText::_("CORE_DATE_TO");?></label>
-								<?php echo helper_easysdi::calendar(JRequest::getVar('update_cal_'.$searchFilter->guid), "update_cal_".$searchFilter->guid,"update_cal_".$searchFilter->guid,"%d.%m.%Y", 'class="calendar searchTabs_calendar text medium hasDatepicker"', 'class="ui-datepicker-trigger"', $templateDir.'/media/icon_agenda.gif', JText::_("CATALOG_SEARCH_CALENDAR_ALT")); ?>
-								</div></div>
-							</div>
-							<?php
-							break;
 						case "metadata_published":
-							/* Fonctionnement p�riode*/
+							/* Fonctionnement période*/
+							if ($default) {
+								$valuefrom = $searchFilter->defaultvaluefrom ;
+							 	$valueto = $searchFilter->defaultvalueto ;
+							}else{
+								$valuefrom = JRequest::getVar('systemfilter_create_cal_'.$searchFilter->guid);
+							   	$valueto = JRequest::getVar('systemfilter_update_cal_'.$searchFilter->guid);
+							}
 							?>
 							<div class="row">
 								<div class="label"><?php echo JText::_($searchFilter->guid."_LABEL");?></div>
 								<div class="checkbox">
 								<div>
-								<label class="checkbox" for="<?php echo "create_cal_".$searchFilter->guid;?>"><?php echo JText::_("CORE_DATE_FROM");?></label>
-								<?php echo helper_easysdi::calendar(JRequest::getVar('create_cal_'.$searchFilter->guid), "create_cal_".$searchFilter->guid,"create_cal_".$searchFilter->guid,"%d.%m.%Y", 'class="calendar searchTabs_calendar text medium hasDatepicker"', 'class="ui-datepicker-trigger"', $templateDir.'/media/icon_agenda.gif', JText::_("CATALOG_SEARCH_CALENDAR_ALT")); ?>
+								<label class="checkbox" for="<?php echo "systemfilter_create_cal_".$searchFilter->guid;?>"><?php echo JText::_("CORE_DATE_FROM");?></label>
+								<?php echo helper_easysdi::calendar($valuefrom, "systemfilter_create_cal_".$searchFilter->guid,"systemfilter_create_cal_".$searchFilter->guid,"%Y-%m-%d", 'class="calendar searchTabs_calendar text medium hasDatepicker"', 'class="ui-datepicker-trigger"', $templateDir.'/media/icon_agenda.gif', JText::_("CATALOG_SEARCH_CALENDAR_ALT")); ?>
 								</div><div>
-								<label class="checkbox" for="<?php echo "update_cal_".$searchFilter->guid;?>"><?php echo JText::_("CORE_DATE_TO");?></label>
-								<?php echo helper_easysdi::calendar(JRequest::getVar('update_cal_'.$searchFilter->guid), "update_cal_".$searchFilter->guid,"update_cal_".$searchFilter->guid,"%d.%m.%Y", 'class="calendar searchTabs_calendar text medium hasDatepicker"', 'class="ui-datepicker-trigger"', $templateDir.'/media/icon_agenda.gif', JText::_("CATALOG_SEARCH_CALENDAR_ALT")); ?>
+								<label class="checkbox" for="<?php echo "systemfilter_update_cal_".$searchFilter->guid;?>"><?php echo JText::_("CORE_DATE_TO");?></label>
+								<?php echo helper_easysdi::calendar($valueto, "systemfilter_update_cal_".$searchFilter->guid,"systemfilter_update_cal_".$searchFilter->guid,"%Y-%m-%d", 'class="calendar searchTabs_calendar text medium hasDatepicker"', 'class="ui-datepicker-trigger"', $templateDir.'/media/icon_agenda.gif', JText::_("CATALOG_SEARCH_CALENDAR_ALT")); ?>
 								</div></div>
 							</div>
 							<?php
-							break;
+							break;	
 						default:
 							break;
 					}
@@ -558,10 +604,10 @@ class HTML_catalog{
 							<div class="checkbox">
 							<div>
 							<label class="checkbox" for="<?php echo "filter_create_cal_".$searchFilter->guid;?>"><?php echo JText::_("CORE_DATE_FROM");?></label>
-							<?php echo helper_easysdi::calendar(JRequest::getVar('filter_create_cal_'.$searchFilter->guid), "filter_create_cal_".$searchFilter->guid,"filter_create_cal_".$searchFilter->guid,"%d.%m.%Y", 'class="calendar searchTabs_calendar text medium hasDatepicker"', 'class="ui-datepicker-trigger"', $templateDir.'/media/icon_agenda.gif', JText::_("CATALOG_SEARCH_CALENDAR_ALT")); ?>
+							<?php echo helper_easysdi::calendar(JRequest::getVar('filter_create_cal_'.$searchFilter->guid), "filter_create_cal_".$searchFilter->guid,"filter_create_cal_".$searchFilter->guid,"%Y-%m-%d", 'class="calendar searchTabs_calendar text medium hasDatepicker"', 'class="ui-datepicker-trigger"', $templateDir.'/media/icon_agenda.gif', JText::_("CATALOG_SEARCH_CALENDAR_ALT")); ?>
 							</div><div>
 							<label class="checkbox" for="<?php echo "filter_update_cal_".$searchFilter->guid;?>"><?php echo JText::_("CORE_DATE_TO");?></label>
-							<?php echo helper_easysdi::calendar(JRequest::getVar('filter_update_cal_'.$searchFilter->guid), "filter_update_cal_".$searchFilter->guid,"filter_update_cal_".$searchFilter->guid,"%d.%m.%Y", 'class="calendar searchTabs_calendar text medium hasDatepicker"', 'class="ui-datepicker-trigger"', $templateDir.'/media/icon_agenda.gif', JText::_("CATALOG_SEARCH_CALENDAR_ALT")); ?>
+							<?php echo helper_easysdi::calendar(JRequest::getVar('filter_update_cal_'.$searchFilter->guid), "filter_update_cal_".$searchFilter->guid,"filter_update_cal_".$searchFilter->guid,"%Y-%m-%d", 'class="calendar searchTabs_calendar text medium hasDatepicker"', 'class="ui-datepicker-trigger"', $templateDir.'/media/icon_agenda.gif', JText::_("CATALOG_SEARCH_CALENDAR_ALT")); ?>
 							</div></div>
 						</div>
 						<?php

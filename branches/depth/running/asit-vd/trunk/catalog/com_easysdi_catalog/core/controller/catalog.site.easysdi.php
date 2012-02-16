@@ -75,6 +75,9 @@ class SITE_catalog {
 		
 		// Liste des critères de recherche simple
 		$context= JRequest::getVar('context');
+		$contextObject = new contextByCode($database);
+		$contextObject->load($context);
+		
 		$listSimpleFilters = array();
 		$database->setQuery("SELECT sc.*, 
 									sc_tab.ordering as context_order , 
@@ -83,8 +86,9 @@ class SITE_catalog {
 									at.code as attributetype_code, 
 									sc.code as criteria_code, 
 									rt.code as rendertype_code,
-									ccc.defaultvalue as defaultvalue
-									
+									ccc.defaultvalue as defaultvalue,
+									ccc.defaultvaluefrom as defaultvaluefrom,
+									ccc.defaultvalueto as defaultvalueto
 					   FROM #__sdi_searchcriteria sc
 					   			  LEFT OUTER JOIN #__sdi_relation r ON r.id=sc.relation_id
 								  LEFT OUTER JOIN #__sdi_relation_context rc ON r.id=rc.relation_id 
@@ -105,11 +109,21 @@ class SITE_catalog {
 		
 		// Liste des critères de recherche avancés
 		$listAdvancedFilters = array();
-		$database->setQuery("SELECT sc.*, sc_tab.ordering as context_order , r.guid as relation_guid, a.id as attribute_id, at.code as attributetype_code, sc.code as criteria_code, rt.code as rendertype_code
+		$database->setQuery("SELECT sc.*, 
+									sc_tab.ordering as context_order , 
+									r.guid as relation_guid, 
+									a.id as attribute_id, 
+									at.code as attributetype_code, 
+									sc.code as criteria_code, 
+									rt.code as rendertype_code,
+									ccc.defaultvalue as defaultvalue,
+									ccc.defaultvaluefrom as defaultvaluefrom,
+									ccc.defaultvalueto as defaultvalueto
 					   FROM #__sdi_searchcriteria sc
 					   			  LEFT OUTER JOIN #__sdi_relation r ON r.id=sc.relation_id
 								  LEFT OUTER JOIN #__sdi_relation_context rc ON r.id=rc.relation_id 
 								  LEFT OUTER JOIN #__sdi_context c ON c.id=rc.context_id
+								  LEFT OUTER JOIN  (SELECT cc.*  FROM jos_sdi_context_criteria cc INNER JOIN jos_sdi_searchcriteria ccs  ON  cc.criteria_id = ccs.id WHERE cc.context_id = (SELECT id FROM jos_sdi_context WHERE code='".$context."')) ccc ON ccc.criteria_id=sc.id
 								  LEFT OUTER JOIN #__sdi_attribute a ON r.attributechild_id=a.id
 								  LEFT OUTER JOIN #__sdi_list_attributetype at ON at.id=a.attributetype_id
 								  LEFT OUTER JOIN #__sdi_searchcriteria_tab sc_tab ON sc_tab.searchcriteria_id=sc.id
@@ -125,11 +139,21 @@ class SITE_catalog {
 
 		// Liste des critères de recherche masqués
 		$listHiddenFilters = array();
-		$database->setQuery("SELECT sc.*, sc_tab.ordering as context_order , r.guid as relation_guid, a.id as attribute_id, at.code as attributetype_code, sc.code as criteria_code, rt.code as rendertype_code
+		$database->setQuery("SELECT sc.*, 
+									sc_tab.ordering as context_order , 
+									r.guid as relation_guid, 
+									a.id as attribute_id, 
+									at.code as attributetype_code, 
+									sc.code as criteria_code, 
+									rt.code as rendertype_code,
+									ccc.defaultvalue as defaultvalue,
+									ccc.defaultvaluefrom as defaultvaluefrom,
+									ccc.defaultvalueto as defaultvalueto
 							   FROM #__sdi_searchcriteria sc
 							   			  LEFT OUTER JOIN #__sdi_relation r ON r.id=sc.relation_id
 										  LEFT OUTER JOIN #__sdi_relation_context rc ON r.id=rc.relation_id 
 										  LEFT OUTER JOIN #__sdi_context c ON c.id=rc.context_id
+										  LEFT OUTER JOIN  (SELECT cc.*  FROM jos_sdi_context_criteria cc INNER JOIN jos_sdi_searchcriteria ccs  ON  cc.criteria_id = ccs.id WHERE cc.context_id = (SELECT id FROM jos_sdi_context WHERE code='".$context."')) ccc ON ccc.criteria_id=sc.id
 										  LEFT OUTER JOIN #__sdi_attribute a ON r.attributechild_id=a.id
 										  LEFT OUTER JOIN #__sdi_list_attributetype at ON at.id=a.attributetype_id
 										  LEFT OUTER JOIN #__sdi_searchcriteria_tab sc_tab ON sc_tab.searchcriteria_id=sc.id
@@ -191,18 +215,21 @@ class SITE_catalog {
 		/* Construction de la requête de recherche */
 		// Ne retourner des résultats que si l'utilisateur a soumis une requête
 		// ou qu'un contexte est défini
-		if(
-			(isset($_REQUEST['simple_search_button']) || isset($_REQUEST['limitstart']) || isset($_REQUEST['context']) || isset($_GET['context']))
-			&& !$languageChanged)
-		{
-			// Si aucun utilisateur n'est loggé, ne retourner que les métadonnées publiques
-			if($account->id == 0)
-			{
+		//TODO : ne retourner un résultat que si l'option de recherche par défault est défini sur le context 
+		if(		(isset($_REQUEST['simple_search_button']) && (isset($_REQUEST['context']) || isset($_GET['context'])) && !$languageChanged)
+			 || (isset($_REQUEST['limitstart']) && (isset($_REQUEST['context']) || isset($_GET['context'])) && !$languageChanged)
+			 || (($contextObject->runinitsearch == 1) && (!isset($_REQUEST['simple_search_button'])) && (!isset($_REQUEST['limitstart'])) && (isset($_REQUEST['context']) || isset($_GET['context'])) && !$languageChanged)
+		  ){
+			
+		
+// 		if(	(isset($_REQUEST['simple_search_button']) || isset($_REQUEST['limitstart']) || isset($_REQUEST['context']) || isset($_GET['context']))
+// 			&& !$languageChanged)
+// 		{
+// 			// Si aucun utilisateur n'est loggé, ne retourner que les métadonnées publiques
+			if($account->id == 0){
 				//No user logged, display only external products
 				$mysqlFilter = " AND (v.code='public') ";
-			}
-			else
-			{
+			}else{
 				// Si l'utilisateur est loggé, retourner toutes les métadonnées publiques
 				// + les métadonnées privées à son compte racine
 				$mysqlFilter = " AND 
@@ -238,43 +265,25 @@ class SITE_catalog {
 			}
 
 			// Construction du filtre sur la BBOX
-			
 			$query =  "SELECT * FROM #__sdi_searchcriteria where code ='definedBoundary'";
 			$database->setQuery( $query);
-
 			$boundaryFilter = $database->loadObject() ;
 			
 			$selectedBoundary = JRequest::getVar('systemfilter_'.$boundaryFilter->guid,"");
 			if($selectedBoundary!=""){
-				
 					$definedBoundary = array();
 					$boundaryFilter ="";
 
-					//http://webhelp.esri.com/arcims/9.2/general/mergedProjects/wfs_connect/wfs_connector/using_filters.htm
-					//http://code.google.com/apis/picasaweb/docs/2.0/reference.html, west south, east north
 					$query =  "SELECT * FROM #__sdi_boundary where guid ='".$selectedBoundary."'" ;
 					$database->setQuery( $query);
-
 					$definedBoundary = $database->loadObject() ;
 
-				/*	$bboxfilter = "
-					 <ogc:BBOX>
-					 <ogc:PropertyName>gml:multiPointProperty</ogc:PropertyName>
-					 <gml:Box xmlns=\"http://www.opengis.net/cite/spatialTestSuite\" srsName=\"EPSG:4326\">
-					 <gml:coordinates>".$definedBoundary->westbound.",". $definedBoundary->southbound.",". $definedBoundary->eastbound.",".$definedBoundary->northbound."</gml:coordinates>
-					 </gml:Box>
-					 </ogc:BBOX>
-					 ";
-					 	*/
-					 
 					if($definedBoundary){
 						$minY = $definedBoundary->southbound;
 						$minX = $definedBoundary->westbound;
 						$maxY = $definedBoundary->northbound;
 						$maxX =$definedBoundary->eastbound;
-							
 
-							
 						$bboxfilter ="
 						 <ogc:BBOX>
 		                    <ogc:PropertyName>iso:BoundingBox</ogc:PropertyName>
@@ -284,9 +293,7 @@ class SITE_catalog {
 		                    </gml:Envelope>
 		                </ogc:BBOX>";
 					}
-			}
-			else				
-			{
+			}else{
 				$bboxfilter ="";
 			}
 		
@@ -311,8 +318,10 @@ class SITE_catalog {
 				$filter = JRequest::getVar('filter_'.$searchFilter->guid);
 				$lowerFilter = JRequest::getVar('create_cal_'.$searchFilter->guid);
 				$upperFilter = JRequest::getVar('update_cal_'.$searchFilter->guid);
-							
-				if (isset($_REQUEST['filter_'.$searchFilter->guid]) or isset($_REQUEST['create_cal_'.$searchFilter->guid]) or isset($_REQUEST['update_cal_'.$searchFilter->guid]))
+				
+				if ( isset($_REQUEST['filter_'.$searchFilter->guid]) or 
+					 isset($_REQUEST['create_cal_'.$searchFilter->guid]) or 
+					 isset($_REQUEST['update_cal_'.$searchFilter->guid]) )
 				{
 					switch ($searchFilter->attributetype_code)
 					{
@@ -504,14 +513,11 @@ class SITE_catalog {
 						default:
 							break;
 					}
-				}
-				else // Traiter les filtres qui ne sont pas liés à des relations, si ils existent
+				}else // Traiter les filtres qui ne sont pas liés à des relations, si ils existent
 				{
-					if ($searchFilter->criteriatype_id == 1) // Filtres systèmes
-					{
+					if ($searchFilter->criteriatype_id == 1) {// Filtres systèmes
 						// Récupération des filtres standards
-						switch ($searchFilter->code)
-						{
+						switch ($searchFilter->code){
 							case "fulltext":
 								$simple_filterfreetextcriteria = JRequest::getVar('simple_filterfreetextcriteria');
 								if ($simple_filterfreetextcriteria <> "")
@@ -702,53 +708,15 @@ class SITE_catalog {
 										$cswSimpleFilter = "<ogc:Or>".$cswTitle.$cswKeyword.$cswAbstract.$cswObjectName.$cswAccountId."</ogc:Or>";
 								}
 								break;
-								
-							/*case "definedBoundary":
-								//$objecttype_id = JRequest::getVar('objecttype_id');
-								$selectedBoundary = JRequest::getVar('systemfilter_'.$searchFilter->guid,"");
-								if($selectedBoundary!=""){
-									
-									$definedBoundary = array();		
-									$boundaryFilter ="";							
-									
-									if ($isDownloadable !=0 )
-									{								
-									//http://webhelp.esri.com/arcims/9.2/general/mergedProjects/wfs_connect/wfs_connector/using_filters.htm
-									//http://code.google.com/apis/picasaweb/docs/2.0/reference.html, west south, east north
-											$query = $db->setQuery( "SELECT * FROM #__sdi_boundary where guid =".$selectedBoundary) ;
-											$database->setQuery( $query);									
-											
-											$definedBoundary = $database->loadObjectList() ;
-												
-											$boundaryFilter = "
-											<ogc:BBOX>
-											<ogc:PropertyName>gml:multiPointProperty</ogc:PropertyName>
-											<gml:Box xmlns=\"http://www.opengis.net/cite/spatialTestSuite\" srsName=\"EPSG:4326\">
-											<gml:coordinates>".$definedBoundary->westbound.",". $definedBoundary->southbound.",". $definedBoundary->eastbound.",".$definedBoundary->northbound."</gml:coordinates>
-											</gml:Box>
-											</ogc:BBOX>
-											";							
-																			
-										
-										
-									}
-								}
-								break;*/
-								
 							case "isDownloadable":
-								//$objecttype_id = JRequest::getVar('objecttype_id');
 								$isDownloadable = JRequest::getVar('systemfilter_'.$searchFilter->guid, 0);
 								
 								// Construire la liste des guid à filtrer
 								$list_Downloadable_Id = array();
-								
-								//echo "objecttype_id: ".count($objecttype_id);
+
 								if ($isDownloadable !=0 )
 								{
-									//echo "<b>Cas1:</b><br>";
-									//$countSimpleFilters++;
-								
-										$query = "SELECT m.guid as metadata_id 
+									$query = "SELECT m.guid as metadata_id 
 												  FROM #__sdi_objectversion ov 
 												  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
 												  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
@@ -756,13 +724,9 @@ class SITE_catalog {
 												  INNER JOIN #__sdi_product p ON ov.id=p.objectversion_id
 												  WHERE p.available = 1 and p.published=1"
 												.$mysqlFilter;
-										$database->setQuery( $query);									
+									$database->setQuery( $query);									
 										
-										$list_Downloadable_Id = $database->loadObjectList() ;
-										
-																		
-									
-									
+									$list_Downloadable_Id = $database->loadObjectList() ;
 								}
 								break;
 							case "objecttype":
@@ -996,8 +960,8 @@ class SITE_catalog {
 								}
 								break;
 							case "metadata_created":
-								$lower = JRequest::getVar('create_cal_'.$searchFilter->guid);
-								$upper = JRequest::getVar('update_cal_'.$searchFilter->guid);
+								$lower = JRequest::getVar('systemfilter_create_cal_'.$searchFilter->guid);
+								$upper = JRequest::getVar('systemfilter_update_cal_'.$searchFilter->guid);
 								
 								// Sélectionner toutes les métadonnées créées dans l'intervalle indiqué
 								if ($lower == "" and $upper <> "") // Seulement la borne sup
@@ -1015,8 +979,7 @@ class SITE_catalog {
 									$database->setQuery( $query);
 									$mdlist = $database->loadObjectList() ;
 									
-									foreach ($mdlist as $md)
-									{
+									foreach ($mdlist as $md){
 										$arrCreatedMd[] = $md->metadata_id;
 										$empty = false;
 									}
@@ -1036,14 +999,14 @@ class SITE_catalog {
 									$database->setQuery( $query);
 									$mdlist = $database->loadObjectList() ;
 									
-									foreach ($mdlist as $md)
-									{
+									foreach ($mdlist as $md){
 										$arrCreatedMd[] = $md->metadata_id;
 										$empty = false;
 									}
 								}
 								else if ($upper <> "" and $lower <> "") // Les deux bornes
 								{
+									
 									$countSimpleFilters++;
 									$lower = date('Y-m-d', strtotime($lower))." 00:00:00";
 									$upper = date('Y-m-d', strtotime($upper))." 23:59:59";
@@ -1056,6 +1019,7 @@ class SITE_catalog {
 											  WHERE m.created>='".$lower."'".
 										 " 			AND m.created<='".$upper."'"
 											.$mysqlFilter;
+									
 									$database->setQuery( $query);
 									$mdlist = $database->loadObjectList() ;
 									
@@ -1067,8 +1031,8 @@ class SITE_catalog {
 								}
 								break;
 							case "metadata_published":
-								$lower = JRequest::getVar('create_cal_'.$searchFilter->guid);
-								$upper = JRequest::getVar('update_cal_'.$searchFilter->guid);
+								$lower = JRequest::getVar('systemfilter_create_cal_'.$searchFilter->guid);
+								$upper = JRequest::getVar('systemfilter_update_cal_'.$searchFilter->guid);
 								
 								// Sélectionner toutes les métadonnées créées dans l'intervalle indiqué
 								if ($lower == "" and $upper <> "") // Seulement la borne sup
@@ -1756,37 +1720,6 @@ class SITE_catalog {
 									
 								}
 								break;
-							/*case "definedBoundary":
-							//$objecttype_id = JRequest::getVar('objecttype_id');
-							$selectedBoundary = JRequest::getVar('systemfilter_'.$searchFilter->guid,"");
-							if($selectedBoundary!=""){
-								
-								$definedBoundary = array();		
-								$boundaryFilter ="";							
-								
-								if ($isDownloadable !=0 )
-								{								
-								//http://webhelp.esri.com/arcims/9.2/general/mergedProjects/wfs_connect/wfs_connector/using_filters.htm
-								//http://code.google.com/apis/picasaweb/docs/2.0/reference.html, west south, east north
-										$query = $db->setQuery( "SELECT * FROM #__sdi_boundary where guid =".$selectedBoundary) ;
-										$database->setQuery( $query);									
-										
-										$definedBoundary = $database->loadObjectList() ;
-											
-										$boundaryFilter = "
-										<ogc:BBOX>
-										<ogc:PropertyName>gml:multiPointProperty</ogc:PropertyName>
-										<gml:Box xmlns=\"http://www.opengis.net/cite/spatialTestSuite\" srsName=\"EPSG:4326\">
-										<gml:coordinates>".$definedBoundary->westbound.",". $definedBoundary->southbound.",". $definedBoundary->eastbound.",".$definedBoundary->northbound."</gml:coordinates>
-										</gml:Box>
-										</ogc:BBOX>
-										";							
-																		
-									
-									
-								}
-							}*/
-							break;
 							case "objecttype":
 								$hasObjectTypeFilter = true;
 								$objecttype_id = JRequest::getVar('systemfilter_'.$searchFilter->guid);
@@ -2024,8 +1957,8 @@ class SITE_catalog {
 								}
 								break;
 							case "metadata_created":
-								$lower = JRequest::getVar('create_cal_'.$searchFilter->guid);
-								$upper = JRequest::getVar('update_cal_'.$searchFilter->guid);
+								$lower = JRequest::getVar('systemfilter_create_cal_'.$searchFilter->guid);
+								$upper = JRequest::getVar('systemfilter_update_cal_'.$searchFilter->guid);
 								
 								// Sélectionner toutes les métadonnées créées dans l'intervalle indiqué
 								if ($lower == "" and $upper <> "") // Seulement la borne sup
@@ -2095,8 +2028,8 @@ class SITE_catalog {
 								}
 								break;
 							case "metadata_published":
-								$lower = JRequest::getVar('create_cal_'.$searchFilter->guid);
-								$upper = JRequest::getVar('update_cal_'.$searchFilter->guid);
+								$lower = JRequest::getVar('systemfilter_create_cal_'.$searchFilter->guid);
+								$upper = JRequest::getVar('systemfilter_update_cal_'.$searchFilter->guid);
 								
 								// Sélectionner toutes les métadonnées créées dans l'intervalle indiqué
 								if ($lower == "" and $upper <> "") // Seulement la borne sup
@@ -2439,9 +2372,6 @@ class SITE_catalog {
 				$arrSearchableMd = array_intersect($arrSearchableMd, $objectDownloadableIds);
 			}
 				
-			
-		
-			
 			// Objectname
 			if (count($arrObjectNameMd) <> 0) 
 			{
@@ -2490,7 +2420,7 @@ class SITE_catalog {
 			// Created
 			if (count($arrCreatedMd) <> 0) 
 			{
-				if (count($arrSearchableMd) == 0) // Liste vide pour l'instant
+				if (count($arrFilteredMd) == 0) // Liste vide pour l'instant
 				{
 					$arrFilteredMd[] = $arrCreatedMd;
 				}
@@ -2501,11 +2431,11 @@ class SITE_catalog {
 						$arrFilteredMd[] = $intersect;
 				}
 			}
-			
+						
 			// Published
 			if (count($arrPublishedMd) <> 0) 
 			{
-				if (count($arrSearchableMd) == 0) // Liste vide pour l'instant
+				if (count($arrFilteredMd) == 0) // Liste vide pour l'instant
 				{
 					$arrFilteredMd[] = $arrPublishedMd;
 				}
@@ -2536,7 +2466,7 @@ class SITE_catalog {
 				$cswMdCond .= "<ogc:PropertyIsEqualTo><ogc:PropertyName>harvested</ogc:PropertyName><ogc:Literal>true</ogc:Literal></ogc:PropertyIsEqualTo>\r\n";
 				$cswMdCond = "<ogc:Or>".$cswMdCond."</ogc:Or>";
 			}
-			
+
 			if(count($arrSearchableMd) == 0)
 			{
 				//Pas de metadonnées dans le tableau des Id à rechercher
