@@ -107,7 +107,7 @@ class HTML_catalog{
 			<input type="hidden" name="Itemid" id="Itemid" value="<?php echo JRequest::getVar('Itemid');?>" /> 
 			<input type="hidden" name="lang" id="lang" value="<?php echo JRequest::getVar('lang');?>" /> 
 			<input type="hidden" name="tabIndex" id="tabIndex" value="" /> 
-			<input type="hidden" name="default" id="default" value="0" /> 
+			<input type="hidden" name="defaultSearch" id="defaultSearch" value="0" /> 
 			<input type="hidden" name="limit" id="limit" value="20" /> 
 			<input type="hidden" name="limitstart" id="limitstart" value="0" /> 
 			<input type="hidden" name="tabIndex" id="tabIndex" value="" /> 
@@ -240,8 +240,7 @@ class HTML_catalog{
 	function generateFieldHTML ($searchFilter, $objecttypes,$listMaxLength,$versions,$templateDir){
 		global  $mainframe;
 		$db =& JFactory::getDBO();
-		$default = JRequest::getVar('default', true);
-		//echo $default;
+		$defaultSearch = JRequest::getVar('defaultSearch', 1);
 		$language =& JFactory::getLanguage();
 		
 		switch ($searchFilter->attributetype_code)
@@ -258,7 +257,7 @@ class HTML_catalog{
 					<input type="text"
 						id="<?php echo 'filter_'.$searchFilter->guid;?>"
 						name="<?php echo 'filter_'.$searchFilter->guid;?>"
-						value="<?php echo $default ? $searchFilter->defaultvalue : JRequest::getVar('filter_'.$searchFilter->guid);?>"
+						value="<?php echo $defaultSearch ? $searchFilter->defaultvalue : JRequest::getVar('filter_'.$searchFilter->guid);?>"
 						class="inputbox text full" />
 				</div>
 				<?php
@@ -378,7 +377,7 @@ class HTML_catalog{
 					{
 						case "objecttype":
 							$selectedObjectType = array();
-							if ($default)
+							if ($defaultSearch)
 								$selectedObjectType = json_decode($searchFilter->defaultvalue );
 							else{
 								if (JRequest::getVar('systemfilter_'.$searchFilter->guid) and JRequest::getVar('systemfilter_'.$searchFilter->guid) <> "Array")
@@ -400,7 +399,7 @@ class HTML_catalog{
 							$db->setQuery( "SELECT name, guid FROM #__sdi_boundary") ;
 							$boundaries = $db->loadObjectList() ;	
 							$selectedValue = "";
-							if ($default)
+							if ($defaultSearch)
 								$selectedValue = $searchFilter->defaultvalue ;
 							else					
 								$selectedValue = trim(JRequest::getVar('systemfilter_'.$searchFilter->guid, ""));
@@ -426,7 +425,7 @@ class HTML_catalog{
 								<label for="simple_filterfreetextcriteria"><?php echo JText::_($searchFilter->guid."_LABEL");?></label>
 								<input type="text" id="simple_filterfreetextcriteria"
 									name="simple_filterfreetextcriteria"
-									value="<?php echo $default ? $searchFilter->defaultvalue : JRequest::getVar('simple_filterfreetextcriteria');?>"
+									value="<?php echo $defaultSearch ? $searchFilter->defaultvalue : JRequest::getVar('simple_filterfreetextcriteria');?>"
 									class="inputbox text full" />
 							</div>
 							<?php
@@ -435,7 +434,7 @@ class HTML_catalog{
 						case "isOrderable": 
 						case "isDownloadable":
 							$valueToDisplay = "";
-							if ($default){
+							if ($defaultSearch){
 								if($searchFilter->defaultvalue == 1)
 									$valueToDisplay = "checked = true";
 							} else {
@@ -457,7 +456,7 @@ class HTML_catalog{
 							break;
 						case "versions":
 							$selectedVersion = 0;
-							if ($default){
+							if ($defaultSearch){
 								$selectedVersion = $searchFilter->defaultvalue ;
 							} else {
 								if (JRequest::getVar('systemfilter_'.$searchFilter->guid))
@@ -489,7 +488,7 @@ class HTML_catalog{
 							if (count($accounts) < (int)$listMaxLength)
 								$size = count($accounts);
 													
-							if ($default)
+							if ($defaultSearch)
 								$selectedAccount = json_decode($searchFilter->defaultvalue );
 							else
 								$selectedAccount = JRequest::getVar('systemfilter_'.$searchFilter->guid);
@@ -513,7 +512,7 @@ class HTML_catalog{
 								<label for="<?php echo 'systemfilter_'.$searchFilter->guid;?>"><?php echo JText::_($searchFilter->guid."_LABEL");?></label>
 								<input type="text" id="<?php echo 'systemfilter_'.$searchFilter->guid;?>"
 									name="<?php echo 'systemfilter_'.$searchFilter->guid;?>"
-									value="<?php echo $default ? $searchFilter->defaultvalue : JRequest::getVar('simple_filterfreetextcriteria');?>"
+									value="<?php echo $defaultSearch ? $searchFilter->defaultvalue : JRequest::getVar('systemfilter_'.$searchFilter->guid);?>"
 									class="inputbox text full" />
 							</div>
 							<?php
@@ -524,7 +523,7 @@ class HTML_catalog{
 								<label for="<?php echo 'systemfilter_'.$searchFilter->guid;?>"><?php echo JText::_($searchFilter->guid."_LABEL");?></label>
 								<input type="text" id="<?php echo 'systemfilter_'.$searchFilter->guid;?>"
 									name="<?php echo 'systemfilter_'.$searchFilter->guid;?>"
-									value="<?php echo $default ? $searchFilter->defaultvalue : JRequest::getVar('simple_filterfreetextcriteria');?>"
+									value="<?php echo $defaultSearch ? $searchFilter->defaultvalue : JRequest::getVar('simple_filterfreetextcriteria');?>"
 									class="inputbox text full" />
 							</div>
 							<?php
@@ -545,7 +544,7 @@ class HTML_catalog{
 							if (count($managers) < (int)$listMaxLength)
 								$size = count($managers);
 								
-							if ($default)
+							if ($defaultSearch)
 								$selectedAccount = json_decode($searchFilter->defaultvalue );
 							else
 								$selectedAccount = JRequest::getVar('systemfilter_'.$searchFilter->guid);
@@ -566,7 +565,7 @@ class HTML_catalog{
 						case "metadata_created":
 						case "metadata_published":
 							/* Fonctionnement période*/
-							if ($default) {
+							if ($defaultSearch) {
 								$valuefrom = $searchFilter->defaultvaluefrom ;
 							 	$valueto = $searchFilter->defaultvalueto ;
 							}else{
