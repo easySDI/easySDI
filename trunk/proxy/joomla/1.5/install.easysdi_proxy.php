@@ -248,7 +248,7 @@ function com_install(){
 		}
 		$wmts_id = $db->insertid();
 		
-		$query="INSERT INTO #__sdi_ogcservice (guid, code, name, description, created, createdby)
+		$query="INSERT INTO #__sdi_ogcservice (guid, code, name, description, created, createdby,servletclass)
 													   VALUES ('".helper_easysdi::getUniqueId()."', 'CSW', 'CSW', 'CSW', '".date('Y-m-d H:i:s')."', '".$user_id."', 'org.easysdi.proxy.csw.CSWProxyServlet')";
 		$db->setQuery( $query);
 		if (!$db->query()) {
