@@ -307,9 +307,9 @@ else
 					<td class="key"><?php echo JText::_("CATALOG_SEARCHCRITERIA_DEFAULT_VALUE");?></td>
 					<td>
 					<label class="checkbox" for="from"><?php echo JText::_("CORE_DATE_FROM");?></label>
-					<?php echo helper_easysdi::calendar($row->defaultvaluefrom, 'defaultvaluefrom','defaultvaluefrom',"%Y.%m.%d", 'class="calendar searchTabs_calendar text medium hasDatepicker"', 'class="ui-datepicker-trigger"', JURI::base().'components/com_easysdi_catalog/templates/images/icon_agenda.gif', JText::_("CATALOG_SEARCH_CALENDAR_ALT")); ?>
+					<?php echo helper_easysdi::calendar(($row->defaultvaluefrom == '0000-00-00')? null : $row->defaultvaluefrom , 'defaultvaluefrom','defaultvaluefrom',"%Y.%m.%d", 'class="calendar searchTabs_calendar text medium hasDatepicker"', 'class="ui-datepicker-trigger"', JURI::base().'components/com_easysdi_catalog/templates/images/icon_agenda.gif', JText::_("CATALOG_SEARCH_CALENDAR_ALT")); ?>
 					<label class="checkbox" for="to"><?php echo JText::_("CORE_DATE_TO");?></label>
-					<?php echo helper_easysdi::calendar($row->defaultvalueto, 'defaultvalueto','defaultvalueto',"%Y.%m.%d", 'class="calendar searchTabs_calendar text medium hasDatepicker"', 'class="ui-datepicker-trigger"', JURI::base().'components/com_easysdi_catalog/templates/images/icon_agenda.gif', JText::_("CATALOG_SEARCH_CALENDAR_ALT")); ?>
+					<?php echo helper_easysdi::calendar(($row->defaultvalueto == '0000-00-00')? null : $row->defaultvalueto , 'defaultvalueto','defaultvalueto',"%Y.%m.%d", 'class="calendar searchTabs_calendar text medium hasDatepicker"', 'class="ui-datepicker-trigger"', JURI::base().'components/com_easysdi_catalog/templates/images/icon_agenda.gif', JText::_("CATALOG_SEARCH_CALENDAR_ALT")); ?>
 					</td>
 				</tr>
 				<?php

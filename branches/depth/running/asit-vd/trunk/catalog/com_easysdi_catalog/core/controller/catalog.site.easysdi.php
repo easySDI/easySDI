@@ -309,6 +309,7 @@ class SITE_catalog {
 			$hasObjectTypeFilter = false;
 			$arrObjecttypeMd = array();
 			$arrVersionMd = array();
+			$objecttype_id = 0;
 			
 			// Construction des filtres basés sur l'onglet simple
 			$cswSimpleFilter="";
@@ -332,7 +333,8 @@ class SITE_catalog {
 													$arrPublishedMd,
 													$hasObjectTypeFilter,
 													$arrObjecttypeMd,
-													$arrVersionMd,	
+													$arrVersionMd,
+													$objecttype_id,
 													$empty);
 			}
 			
@@ -340,19 +342,50 @@ class SITE_catalog {
 				$condList[]=$cswSimpleFilter;
 			
 			// Construction des filtres basés sur l'onglet avancé
-			$cswAdvancedFilter="";
-			$countAdvancedFilters = 0;
-			foreach($listAdvancedFilters as $searchFilter)
+			$advancedSrch = JRequest::getVar('advancedSrch',0);
+			if($advancedSrch == 1){
+				$cswAdvancedFilter="";
+				$countAdvancedFilters = 0;
+				foreach($listAdvancedFilters as $searchFilter)
+				{
+					SITE_catalog::buildFilterConstraint(false,
+														$database,
+														$language,
+														$defaultSearch,
+														$searchFilter,
+														$mysqlFilter, 
+														$context,
+														$countAdvancedFilters, 
+														$cswAdvancedFilter,
+														$arrFreetextMd,
+														$arrObjectNameMd,
+														$arrAccountsMd,
+														$arrManagersMd,
+														$arrCreatedMd,
+														$arrPublishedMd,
+														$hasObjectTypeFilter,
+														$arrObjecttypeMd,
+														$arrVersionMd,
+														$objecttype_id,
+														$empty);
+				}
+				if ($cswAdvancedFilter <> "")
+					$condList[]=$cswAdvancedFilter;
+			}
+			// Construction des filtres basés sur l'onglet caché
+			$cswHiddenFilter="";
+			$countHiddenFilters = 0;
+			foreach($listHiddenFilters as $searchFilter)
 			{
 				SITE_catalog::buildFilterConstraint(false,
 													$database,
 													$language,
 													$defaultSearch,
 													$searchFilter,
-													$mysqlFilter, 
+													$mysqlFilter,
 													$context,
-													$countSimpleFilters, 
-													$cswSimpleFilter,
+													$countHiddenFilters,
+													$cswHiddenFilter,
 													$arrFreetextMd,
 													$arrObjectNameMd,
 													$arrAccountsMd,
@@ -362,8 +395,11 @@ class SITE_catalog {
 													$hasObjectTypeFilter,
 													$arrObjecttypeMd,
 													$arrVersionMd,
+													$objecttype_id,
 													$empty);
 			}
+			if ($cswHiddenFilter <> "")
+				$condList[]=$cswHiddenFilter;
 			
 			//Pour inclure uniquement les types d'object du context même si le critère de recherche type d'objet n'est pas affiché
 			if(!$hasObjectTypeFilter ){
@@ -403,8 +439,7 @@ class SITE_catalog {
 				}
 			}
 			
-			if ($cswAdvancedFilter <> "")
-				$condList[]=$cswAdvancedFilter;
+			
 				
 			// Prendre l'intersection de tous les guid listés
 			$arrSearchableMd=array(); // Scope de recherche
@@ -412,11 +447,11 @@ class SITE_catalog {
 			 
 			//Build the filter
 			if (count($arrObjecttypeMd) == 0) // Pas de types d'objet
-			$arrSearchableMd = $arrVersionMd;
+				$arrSearchableMd = $arrVersionMd;
 			else if (count($arrVersionMd) == 0) // Pas de versions
-			$arrSearchableMd = $arrObjecttypeMd;
+				$arrSearchableMd = $arrObjecttypeMd;
 			else // Faire l'intersection
-			$arrSearchableMd = array_intersect($arrObjecttypeMd, $arrVersionMd);
+				$arrSearchableMd = array_intersect($arrObjecttypeMd, $arrVersionMd);
 				
 			$objectDownloadableIds =  Array();
 
@@ -489,7 +524,7 @@ class SITE_catalog {
 						$arrFilteredMd[] = $intersect;
 				}
 			}
-						
+			
 			// Published
 			if (count($arrPublishedMd) <> 0) 
 			{
@@ -519,8 +554,19 @@ class SITE_catalog {
 			$cswMdCond .= "<ogc:PropertyIsEqualTo><ogc:PropertyName>harvested</ogc:PropertyName><ogc:Literal>false</ogc:Literal></ogc:PropertyIsEqualTo>\r\n";
 			$cswMdCond = "<ogc:And>".$cswMdCond."</ogc:And>";
 			
-			//Si pas de type d'objet sélectionné et l'option téléchargeable non sélectionnée, on retourne aussi les données harvestées.
-			if (count($objecttype_id) == 0 && $isDownloadable == 0){
+			//Si aucun filtre touchant des attributs systèmes n'est utilisé dans cette recherche 
+			//(attribut faisant référence à des données stockées dana la base MySQL EasySDI)
+			//on retourne aussi les données harvestées.
+			//Attributs sytèmes :
+			//- objecttype
+			//- isDownloadable
+			//- isFree
+			//- isOrderable
+			//- metadata_created
+			//- metadata_updated
+			//- object_name
+			//- account_id
+			if (count($arrObjectNameMd) == 0 && count($arrAccountsMd) == 0 && count($arrCreatedMd)== 0 && count($arrPublishedMd)==0 && (count($objecttype_id) == 0|| !$hasObjectTypeFilter )&& $isDownloadable == 0 ){ //TODO : add isFree and isOrderable
 				$cswMdCond .= "<ogc:PropertyIsEqualTo><ogc:PropertyName>harvested</ogc:PropertyName><ogc:Literal>true</ogc:Literal></ogc:PropertyIsEqualTo>\r\n";
 				$cswMdCond = "<ogc:Or>".$cswMdCond."</ogc:Or>";
 			}
@@ -751,7 +797,9 @@ class SITE_catalog {
 									&$hasObjectTypeFilter,
 									&$arrObjecttypeMd,
 									&$arrVersionMd,
+									&$objecttype_id,
 									&$empty){
+		
 		$filter = JRequest::getVar('filter_'.$searchFilter->guid);
 		$lowerFilter = JRequest::getVar('create_cal_'.$searchFilter->guid);
 		$upperFilter = JRequest::getVar('update_cal_'.$searchFilter->guid);
@@ -800,7 +848,6 @@ class SITE_catalog {
 					// Réunir les critères
 					if ($terms > 1)
 					$cswTerm = "<ogc:And>".$cswTerm."</ogc:And>";
-						
 					$cswFilter.=$cswTerm;
 					$empty = false;
 					break;
@@ -1212,9 +1259,6 @@ class SITE_catalog {
 						$hasObjectTypeFilter = true;
 						$objecttype_id = $defaultSearch? json_decode($searchFilter->defaultvalue) :JRequest::getVar('systemfilter_'.$searchFilter->guid);
 		
-						// Construire la liste des guid à filtrer
-						//$arrObjecttypeMd = array();
-		
 						//Des types d'objets ont été sélectionnés dans l'interface de recherche
 						//On filtre selon ces types et on écarte automatiquement les données harvestées (ceci est fait plus loin dans la construction de la requête)
 						if (count($objecttype_id) > 0 ){
@@ -1240,8 +1284,8 @@ class SITE_catalog {
 								break;
 							}
 								
-						}else if (!array_key_exists('objecttype_id', $_REQUEST) and !array_key_exists('bboxMinX', $_REQUEST)) // Cas du premier appel. Rechercher sur tous les types
-						{
+						}else if (  !array_key_exists('objecttype_id', $_REQUEST) and 
+									!array_key_exists('bboxMinX', $_REQUEST)) {// Cas du premier appel. Rechercher sur tous les types
 							$objecttypes = array();
 							if ($context <> "")
 							{
@@ -1270,9 +1314,8 @@ class SITE_catalog {
 							.$mysqlFilter;
 							$database->setQuery( $query);
 							$list_id = $database->loadObjectList() ;
-						}
-						else if (count($objecttype_id) == 0) //Aucun type d'objet sélectionné, on récupère donc TOUS les types d'objet du context
-						{
+						}else if (count($objecttype_id) == 0){ //Aucun type d'objet sélectionné, on récupère donc TOUS les types d'objet du context
+							
 							$objecttypes = array();
 							if ($context <> "")
 							{
@@ -1309,12 +1352,12 @@ class SITE_catalog {
 						}
 		
 						if(count($list_id)> 0)
-						$empty = false;
+							$empty = false;
 		
 						break;
 					case "versions":
 						$versions = $defaultSearch? $searchFilter->defaultvalue :JRequest::getVar('systemfilter_'.$searchFilter->guid);
-						echo $versions;
+						//echo $versions;
 						if ($versions == "0" or !array_key_exists('systemfilter_'.$searchFilter->guid, $_REQUEST)) // Cas du premier appel et des versions actuelles. Rechercher sur les dernières versions publiées à la date courante
 						{
 							// Si l'utilisateur a choisi de ne chercher que sur les versions actuelles,
@@ -1442,7 +1485,7 @@ class SITE_catalog {
 					case "metadata_created":
 						$lower = $defaultSearch? $searchFilter->defaultvaluefrom :JRequest::getVar('systemfilter_create_cal_'.$searchFilter->guid);
 						$upper = $defaultSearch? $searchFilter->defaultvalueto :JRequest::getVar('systemfilter_update_cal_'.$searchFilter->guid);
-		
+	
 						// Sélectionner toutes les métadonnées créées dans l'intervalle indiqué
 						if ($lower == "" and $upper <> "") // Seulement la borne sup
 						{

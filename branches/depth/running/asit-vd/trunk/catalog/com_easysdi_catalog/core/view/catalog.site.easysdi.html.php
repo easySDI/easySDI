@@ -237,12 +237,12 @@ class HTML_catalog{
 	}
 	
 	
-	function generateFieldHTML ($searchFilter, $objecttypes,$listMaxLength,$versions,$templateDir){
+	function generateFieldHTML ( $searchFilter, $objecttypes,$listMaxLength,$versions,$templateDir){
 		global  $mainframe;
 		$db =& JFactory::getDBO();
 		$defaultSearch = JRequest::getVar('defaultSearch', 1);
 		$language =& JFactory::getLanguage();
-		
+				
 		switch ($searchFilter->attributetype_code)
 		{
 			case "guid":
@@ -566,8 +566,8 @@ class HTML_catalog{
 						case "metadata_published":
 							/* Fonctionnement période*/
 							if ($defaultSearch) {
-								$valuefrom = $searchFilter->defaultvaluefrom ;
-							 	$valueto = $searchFilter->defaultvalueto ;
+								$valuefrom = ($searchFilter->defaultvaluefrom  == '0000-00-00')? null : $searchFilter->defaultvaluefrom  ;
+							 	$valueto = ($searchFilter->defaultvalueto  == '0000-00-00')? null : $searchFilter->defaultvalueto  ;
 							}else{
 								$valuefrom = JRequest::getVar('systemfilter_create_cal_'.$searchFilter->guid);
 							   	$valueto = JRequest::getVar('systemfilter_update_cal_'.$searchFilter->guid);
