@@ -137,10 +137,10 @@ class HTML_catalog{
 			<!-- This is the hidden part of the search -->
 			<div id="divHiddenSearch" class="row" style="display:none" >
 				<?php
-				foreach($listHiddenFilters as $searchFilter)
-				{
-					HTML_catalog::generateFieldHTML ($searchFilter, $objecttypes,$listMaxLength,$versions,$templateDir);
-				}
+//  				foreach($listHiddenFilters as $searchFilter)
+//  				{
+//  					HTML_catalog::generateFieldHTML ($searchFilter, $objecttypes,$listMaxLength,$versions,$templateDir);
+//  				}
 				?>
 			</div>
 

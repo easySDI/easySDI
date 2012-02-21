@@ -299,6 +299,7 @@ class SITE_catalog {
 				
 			if ($bboxfilter <> "")
 				$condList[]=$bboxfilter;
+			
 			// Listes qui vont potentiellement contenir des guid de métadonnées
 			$arrFreetextMd = array();
 			$arrObjectNameMd = array();
@@ -310,6 +311,13 @@ class SITE_catalog {
 			$arrObjecttypeMd = array();
 			$arrVersionMd = array();
 			$objecttype_id = 0;
+			$arrDownloadableMd = array();
+			$arrFreeMd = array();
+			$arrOrderableMd = array();
+			$isDownloadable = false;
+			$isFree=false;
+			$isOrderable=false;
+			
 			
 			// Construction des filtres basés sur l'onglet simple
 			$cswSimpleFilter="";
@@ -335,7 +343,13 @@ class SITE_catalog {
 													$arrObjecttypeMd,
 													$arrVersionMd,
 													$objecttype_id,
-													$empty);
+													$empty,
+													$arrDownloadableMd,
+													$arrFreeMd,
+													$arrOrderableMd,
+													$isDownloadable,
+													$isFree,
+													$isOrderable);
 			}
 			
 			if ($cswSimpleFilter <> "")
@@ -367,7 +381,13 @@ class SITE_catalog {
 														$arrObjecttypeMd,
 														$arrVersionMd,
 														$objecttype_id,
-														$empty);
+														$empty,
+														$arrDownloadableMd,
+														$arrFreeMd,
+														$arrOrderableMd,
+														$isDownloadable,
+														$isFree,
+														$isOrderable);
 				}
 				if ($cswAdvancedFilter <> "")
 					$condList[]=$cswAdvancedFilter;
@@ -380,7 +400,7 @@ class SITE_catalog {
 				SITE_catalog::buildFilterConstraint(false,
 													$database,
 													$language,
-													$defaultSearch,
+													true,
 													$searchFilter,
 													$mysqlFilter,
 													$context,
@@ -396,7 +416,13 @@ class SITE_catalog {
 													$arrObjecttypeMd,
 													$arrVersionMd,
 													$objecttype_id,
-													$empty);
+													$empty,
+													$arrDownloadableMd,
+													$arrFreeMd,
+													$arrOrderableMd,
+													$isDownloadable,
+													$isFree,
+													$isOrderable);
 			}
 			if ($cswHiddenFilter <> "")
 				$condList[]=$cswHiddenFilter;
@@ -453,27 +479,19 @@ class SITE_catalog {
 			else // Faire l'intersection
 				$arrSearchableMd = array_intersect($arrObjecttypeMd, $arrVersionMd);
 				
-			$objectDownloadableIds =  Array();
-
-			if (count($list_Downloadable_Id)> 0){
-				foreach ($list_Downloadable_Id as $md_id)
-				{
-					$objectDownloadableIds[] = $md_id->metadata_id;
-				}
-					
-			 // Pas de types d'objet
-				$arrSearchableMd = array_intersect($arrSearchableMd, $objectDownloadableIds);
-			}
-				
+			//Prendre en compte les MD autorisées par les critères : téléchargeable, commandable et gratuit
+			if (count($arrDownloadableMd)> 0)
+				$arrSearchableMd = array_intersect($arrSearchableMd, $arrDownloadableMd);
+			if (count($arrFreeMd)> 0)
+				$arrSearchableMd = array_intersect($arrSearchableMd, $arrFreeMd);
+			if (count($arrOrderableMd)> 0)
+				$arrSearchableMd = array_intersect($arrSearchableMd, $arrOrderableMd);
+			
 			// Objectname
-			if (count($arrObjectNameMd) <> 0) 
-			{
-				if (count($arrFilteredMd) == 0) // Liste vide pour l'instant
-				{
+			if (count($arrObjectNameMd) <> 0){
+				if (count($arrFilteredMd) == 0){ // Liste vide pour l'instant
 					$arrFilteredMd[] = $arrObjectNameMd;
-				}
-				else // Faire l'intersection
-				{
+				}else{ // Faire l'intersection
 					$intersect = array_intersect($arrObjectNameMd, $arrFilteredMd);
 					if (count($intersect) > 0)
 						$arrFilteredMd[] = $intersect;
@@ -566,7 +584,14 @@ class SITE_catalog {
 			//- metadata_updated
 			//- object_name
 			//- account_id
-			if (count($arrObjectNameMd) == 0 && count($arrAccountsMd) == 0 && count($arrCreatedMd)== 0 && count($arrPublishedMd)==0 && (count($objecttype_id) == 0|| !$hasObjectTypeFilter )&& $isDownloadable == 0 ){ //TODO : add isFree and isOrderable
+			if (count($arrObjectNameMd) == 0 && 
+				count($arrAccountsMd) == 0 && 
+				count($arrCreatedMd)== 0 && 
+				count($arrPublishedMd)==0 && 
+				(count($objecttype_id) == 0|| !$hasObjectTypeFilter )&& 
+				$isDownloadable == 0 && 
+				$isFree == 0 && 
+				$isOrderable == 0){ 
 				$cswMdCond .= "<ogc:PropertyIsEqualTo><ogc:PropertyName>harvested</ogc:PropertyName><ogc:Literal>true</ogc:Literal></ogc:PropertyIsEqualTo>\r\n";
 				$cswMdCond = "<ogc:Or>".$cswMdCond."</ogc:Or>";
 			}
@@ -798,7 +823,13 @@ class SITE_catalog {
 									&$arrObjecttypeMd,
 									&$arrVersionMd,
 									&$objecttype_id,
-									&$empty){
+									&$empty,
+									&$arrDownloadableMd,
+									&$arrFreeMd,
+									&$arrOrderableMd,
+									&$isDownloadable,
+									&$isFree,
+									&$isOrderable){
 		
 		$filter = JRequest::getVar('filter_'.$searchFilter->guid);
 		$lowerFilter = JRequest::getVar('create_cal_'.$searchFilter->guid);
@@ -1236,10 +1267,6 @@ class SITE_catalog {
 						break;
 					case "isDownloadable":
 						$isDownloadable = $defaultSearch? $searchFilter->defaultvalue : JRequest::getVar('systemfilter_'.$searchFilter->guid, 0);
-		
-						// Construire la liste des guid à filtrer
-						$list_Downloadable_Id = array();
-		
 						if ($isDownloadable !=0 )
 						{
 							$query = "SELECT m.guid as metadata_id
@@ -1251,8 +1278,39 @@ class SITE_catalog {
 														  WHERE p.available = 1 and p.published=1"
 							.$mysqlFilter;
 							$database->setQuery( $query);
-		
-							$list_Downloadable_Id = $database->loadObjectList() ;
+							$arrDownloadableMd = $database->loadResultArray() ;
+						}
+						break;
+					case "isFree":
+						$isFree = $defaultSearch? $searchFilter->defaultvalue : JRequest::getVar('systemfilter_'.$searchFilter->guid, 0);
+						if ($isFree !=0 )
+						{
+							$query = "SELECT m.guid as metadata_id
+												  FROM #__sdi_objectversion ov 
+												  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
+												  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
+												  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
+												  INNER JOIN #__sdi_product p ON ov.id=p.objectversion_id
+												  WHERE p.free = 1 and p.published=1"
+							.$mysqlFilter;
+							$database->setQuery( $query);
+							$arrFreeMd = $database->loadResultArray() ;
+						}
+						break;
+					case "isOrderable":
+						$isOrderable = $defaultSearch? $searchFilter->defaultvalue : JRequest::getVar('systemfilter_'.$searchFilter->guid, 0);
+						if ($isOrderable !=0 )
+						{
+							$query = "SELECT m.guid as metadata_id
+												  FROM #__sdi_objectversion ov 
+												  INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
+												  INNER JOIN #__sdi_object o ON ov.object_id=o.id 
+												  INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
+												  INNER JOIN #__sdi_product p ON ov.id=p.objectversion_id
+												  WHERE p.available = 0 and p.published=1"
+							.$mysqlFilter;
+							$database->setQuery( $query);
+							$arrOrderableMd = $database->loadResultArray() ;
 						}
 						break;
 					case "objecttype":

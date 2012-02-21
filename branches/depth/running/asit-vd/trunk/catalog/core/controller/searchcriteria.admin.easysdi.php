@@ -409,7 +409,7 @@ class ADMIN_searchcriteria {
 			if ($total > 0)
 			{
 				//Update
-				$database->setQuery("UPDATE #__sdi_context_sc_filter SET ogcsearchfilter='".addslashes($_POST['filterfield_'.$lang->code])."' WHERE id='".$context_id."' AND searchcriteria_id='".$rowSearchCriteria->id."' AND language_id=".$lang->id);
+				$database->setQuery("UPDATE #__sdi_context_sc_filter SET ogcsearchfilter='".addslashes($_POST['filterfield_'.$lang->code])."' WHERE context_id='".$context_id."' AND searchcriteria_id='".$rowSearchCriteria->id."' AND language_id=".$lang->id);
 				if (!$database->query())
 					{	
 						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -526,8 +526,16 @@ class ADMIN_searchcriteria {
 			{	
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
+			
+			//Remove default values
+			$query = "DELETE FROM #__sdi_context_criteria WHERE criteria_id= ".$searchcriteria_id." AND context_id =".$context_id;
+			$database->setQuery( $query);
+			if (!$database->query())
+			{
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
 				
-			// Crit�re CSW
+			// Critère CSW
 			if ($rowSearchCriteria->criteriatype_id == 3)
 			{
 				// Supprimer les champs de recherche 

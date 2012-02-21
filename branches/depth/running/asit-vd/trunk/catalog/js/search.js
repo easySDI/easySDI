@@ -79,12 +79,9 @@ function clearBasicSearch ()
 	for (var i = 0; i < fields.length; i++)
 	{
 		if (fields.item(i).type == "checkbox") // Les checkbox de l'objecttype
-			fields.item(i).checked = "checked";
+			fields.item(i).checked = "";
 		else if (fields.item(i).type == "radio") // Les radios de la version
-			if (fields.item(i).value == 0)
-				fields.item(i).checked = "checked";
-			else
-				fields.item(i).checked = "";
+			fields.item(i).checked = "";
 		else 
 			fields.item(i).value = "";
 	}
@@ -111,12 +108,9 @@ function clearAdvancedSearch ()
 	for (var i = 0; i < fields.length; i++)
 	{
 		if (fields.item(i).type == "checkbox") // Les checkbox de l'objecttype
-			fields.item(i).checked = "checked";
+			fields.item(i).checked = "";
 		else if (fields.item(i).type == "radio") // Les radios de la version
-			if (fields.item(i).value == 0)
-				fields.item(i).checked = "checked";
-			else
-				fields.item(i).checked = "";
+			fields.item(i).checked = "";
 		else 
 			fields.item(i).value = "";
 	}
