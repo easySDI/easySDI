@@ -87,20 +87,8 @@ class HTML_searchcriteria {
 					}?>
 					<input type="text" id="or<?php echo $i;?>" name="ordering[]" size="5" <?php echo $disabled; ?> value="<?php echo $row->cc_ordering;?>" class="text_area" style="text-align: center" />
 	            </td>
-<?php
-if ($row->criteriatype_name <> "relation")
-{ 
-?>
 				<?php $link =  "index.php?option=$option&amp;task=editSearchCriteria&context_id=$context_id&cid[]=$row->id";?>
 				<td><a href="<?php echo $link;?>"><?php echo $name; ?></a></td>
-<?php 
-}
-else
-{
-?>
-				<td><?php echo $name; ?></td>
-<?php 
-}?>
 				<td align="center"><?php echo JText::_($row->criteriatype_label);?></td>
 				<?php $tab 	= ADMIN_searchcriteria::tab($row, $i);?>
 				<td width="100px" align="center">
@@ -422,6 +410,134 @@ else
 	<?php 	
 	}		
 
+	function editRelationSearchCriteria($row, $tab, $selectedTab, $fieldsLength, $languages, $labels, $context_id, $tabList, $tab_id, $option)
+	{
+		global  $mainframe;
+		$database =& JFactory::getDBO();
+		
+		$database->setQuery("SELECT rendertype_id FROM #__sdi_relation WHERE id=".$row->relation_id);
+		$rendertype = $database->loadResult();
+		
+		?>
+			<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
+				<table border="0" cellpadding="3" cellspacing="0">	
+					<tr>
+						<td width=150><?php echo JText::_("CORE_NAME"); ?></td>
+						<td><input size="50" type="text" name ="name" value="<?php echo $row->name?>" maxlength="<?php echo $fieldsLength['name'];?>"> </td>							
+					</tr>
+					<tr>
+						<td><?php echo JText::_("CATALOG_SEARCHCRITERIA_TAB"); ?></td>
+						<td><?php echo JHTML::_('select.genericlist', $tabList, 'tabList', 'class="list"', 'value', 'text', $tab_id);?></td>							
+					</tr>
+					<tr>
+						<td width=150 ><?php echo JText::_("CATALOG_SEARCHCRITERIA_DEFAULT_VALUE"); ?></td>
+						<td>
+						<?php 
+						switch ($rendertype){
+							case 4:
+							case 2:
+							case 3:
+								$database->setQuery("SELECT attributechild_id FROM #__sdi_relation WHERE id=".$row->relation_id);
+								$attributechild_id = $database->loadResult();
+								$language =& JFactory::getLanguage();
+								$database->setQuery("SELECT cv.value as value, t.label as text 
+															FROM #__sdi_codevalue cv 
+															INNER JOIN #__sdi_translation t ON t.element_guid = cv.guid
+															WHERE cv.attribute_id=".$attributechild_id." 
+															AND t.language_id = (SELECT l.id 
+																					FROM #__sdi_language l 
+																					INNER JOIN #__sdi_list_codelang c ON l.codelang_id=c.id 
+																					WHERE c.code='".$language->_lang."' )");
+								$values = $database->loadAssocList();
+								echo JHTML::_("select.genericlist",$values, 'defaultvalue[]', 'size="5" class="inputbox" style="width:380px" multiple="multiple"', 'value', 'text', json_decode($row->defaultvalue,false) ); 
+								break;
+							case 6:
+								?>
+								<div id="div_defaultvalue" >
+								<label class="checkbox" for="from"><?php echo JText::_("CORE_DATE");?></label>
+								<?php echo helper_easysdi::calendar($row->defaultvaluefrom, 'defaultvaluefrom','defaultvaluefrom',"%Y.%m.%d", 'class="calendar searchTabs_calendar text medium hasDatepicker"', 'class="ui-datepicker-trigger"', JURI::base().'components/com_easysdi_catalog/templates/images/icon_agenda.gif', JText::_("CATALOG_SEARCH_CALENDAR_ALT")); ?>
+								</div>
+								<?php 
+								break;
+							case 1:
+							case 5:
+								?>
+								<input type="text" id="defaultvalue" name="defaultvalue" value="<?php echo $row->defaultvalue;?>" />
+								<?php 
+								break;
+						}
+						?>
+						</td>			
+					</tr>
+				</table>
+		<br></br>
+		<table border="0" cellpadding="3" cellspacing="0">
+		<?php
+		$user =& JFactory::getUser();
+		if ($row->created)
+		{ 
+		?>
+			<tr>
+				<td><?php echo JText::_("CORE_CREATED"); ?> :</td>
+				<td><?php if ($row->created) {echo date('d.m.Y h:i:s',strtotime($row->created));} ?></td>
+				<td>,</td>
+				
+						<?php
+							if ($row->createdby and $row->createdby<> 0)
+							{
+								$query = "SELECT name FROM #__users WHERE id=".$row->createdby ;
+								$database->setQuery($query);
+								$createUser = $database->loadResult();
+							}
+							else
+								$createUser = "";
+						?>
+						<td><?php echo $createUser; ?></td>
+					</tr>
+			
+				<?php
+				}
+				if ($row->updated and $row->updated<> '0000-00-00 00:00:00')
+				{ 
+				?>
+					<tr>
+						<td><?php echo JText::_("CORE_UPDATED"); ?> : </td>
+						<td><?php if ($row->updated and $row->updated<> 0) {echo date('d.m.Y h:i:s',strtotime($row->updated));} ?></td>
+						<td>, </td>
+						<?php
+							if ($row->updatedby and $row->updatedby<> 0)
+							{
+								$query = "SELECT name FROM #__users WHERE id=".$row->updatedby ;
+								$database->setQuery($query);
+								$updateUser = $database->loadResult();
+							}
+							else
+								$updateUser = "";
+						?>
+						<td><?php echo $updateUser; ?></td>
+					</tr>
+			<?php
+			}
+			?>
+			</table>
+
+			<input type="hidden" name="cid[]" value="<?php echo $row->id?>" />
+			<input type="hidden" name="guid" value="<?php echo $row->guid?>" />
+			<input type="hidden" name="context_id" value="<?php echo $context_id?>" />
+			<input type="hidden" name="ordering" value="<?php echo $row->ordering; ?>" />
+			<input type="hidden" name="created" value="<?php echo ($row->created)? $row->created : date ('Y-m-d H:i:s');?>" />
+			<input type="hidden" name="createdby" value="<?php echo ($row->createdby)? $row->createdby : $user->id; ?>" /> 
+			<input type="hidden" name="updated" value="<?php echo ($row->created) ? date ("Y-m-d H:i:s") :  ''; ?>" />
+			<input type="hidden" name="updatedby" value="<?php echo ($row->createdby)? $user->id : ''; ?>" /> 
+			<input type="hidden" name="criteriatype_id" value="<?php echo $row->criteriatype_id?>" />
+			<input type="hidden" name="label" value="<?php echo $row->label; ?>" />
+			<input type="hidden" name="relation_id" value="<?php echo $row->relation_id; ?>" />
+			<input type="hidden" name="option" value="<?php echo $option; ?>" />
+			<input type="hidden" name="id" value="<?php echo $row->id?>" />
+			<input type="hidden" name="task" value="" />
+		</form>
+	<?php 	
+	}
 	
 	function editOGCSearchCriteria($row, $tab, $selectedTab, $fieldsLength, $languages, $labels, $filterfields, $context_id, $tabList, $tab_id, $rendertypes, $option)
 	{

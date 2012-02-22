@@ -338,15 +338,21 @@ class HTML_catalog{
 				$size=(int)$listMaxLength;
 				if (count($list) < (int)$listMaxLength)
 					$size = count($list);
-					
-				$multiple = 'size="1"';
-				if (count(JRequest::getVar('filter_'.$searchFilter->guid)) > 1)
-					$multiple='size="'.$size.'" multiple="multiple"';
 				
+				$defaultSelection=array();
+				if ($defaultSearch)
+					$defaultSelection = json_decode($searchFilter->defaultvalue );
+				else
+					$defaultSelection = JRequest::getVar('systemfilter_'.$searchFilter->guid);
+				
+				$multiple = 'size="1"';
+				if (count($defaultSelection) > 1)
+					$multiple='size="'.$size.'" multiple="multiple"';
+
 				?>
 				<div class="row">
 					<label for="<?php echo 'filter_'.$searchFilter->guid;?>"><?php echo JText::_($searchFilter->relation_guid."_LABEL");?></label>
-					<?php echo JHTML::_("select.genericlist", $list, 'filter_'.$searchFilter->guid.'[]', 'class="inputbox text large" style="vertical-align:top " '.$multiple, 'value', 'text', JRequest::getVar('filter_'.$searchFilter->guid)); ?>
+					<?php echo JHTML::_("select.genericlist", $list, 'filter_'.$searchFilter->guid.'[]', 'class="inputbox text large" style="vertical-align:top " '.$multiple, 'value', 'text', $defaultSelection); ?>
 					<a onclick="javascript:toggle_multi_select('<?php echo 'filter_'.$searchFilter->guid;?>', <?php echo $size;?>); return false;" href="#">
 						<img src="<?php echo $templateDir;?>/icons/silk/add.png" alt="Expand"/>
 					</a>

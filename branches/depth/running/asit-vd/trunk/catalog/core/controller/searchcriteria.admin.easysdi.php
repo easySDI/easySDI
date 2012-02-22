@@ -108,14 +108,15 @@ class ADMIN_searchcriteria {
 				// Récuperer tous les labels et contrôler qu'ils soient saisis
 				var labelEmpty = 0;
 				labels = document.getElementById('labels');
-				fields = labels.getElementsByTagName('input');
-				
-				for (var i = 0; i < fields.length; i++)
-				{
-					if (fields.item(i).value == "")
-						labelEmpty=1;
+				if(labels){
+					fields = labels.getElementsByTagName('input');
+					
+					for (var i = 0; i < fields.length; i++)
+					{
+						if (fields.item(i).value == "")
+							labelEmpty=1;
+					}
 				}
-				
 				// Récuperer tous les champs de tri et contrôler qu'ils soient saisis
 				var filterEmpty = 0;
 				filterfields = document.getElementById('filterfields');
@@ -156,18 +157,8 @@ class ADMIN_searchcriteria {
 		$language =& JFactory::getLanguage();
 		
 		$context_id = JRequest::getVar('context_id',0);
-		
 		$row = new searchcriteria( $database );
 		$row->load( $id );
-		
-		if ($row->id <>0 and $row->criteriatype_id == 2)
-		{
-			$criteriatype = new criteriatype( $database );
-			$criteriatype->load( $row->criteriatype_id );
-			$mainframe->enqueueMessage(JText::sprintf("CATALOG_SEARCHCRITERIA_ISSYSTEM_ERROR_MSG", JText::_($criteriatype->label)),"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=listSearchCriteria&context_id=".$context_id );
-			exit();
-		}
 		
 		//Load default value
 		$defaultvalues = $row->loadDefaultValue($context_id);
@@ -238,7 +229,6 @@ class ADMIN_searchcriteria {
 		{
 			$database->setQuery("SELECT label FROM #__sdi_translation WHERE element_guid='".$row->guid."' AND language_id=".$lang->id);
 			$label = $database->loadResult();
-			
 			$labels[$lang->id] = $label;
 		}
 		
@@ -248,23 +238,8 @@ class ADMIN_searchcriteria {
 		{
 			$database->setQuery("SELECT ogcsearchfilter FROM #__sdi_context_sc_filter WHERE context_id='".$context_id."' AND searchcriteria_id='".$row->id."' AND language_id=".$lang->id);
 			$filterfield = $database->loadResult();
-			
 			$filterfields[$lang->id] = $filterfield;
 		}
-		
-		// Onglets
-		$tab = array();
-		$tab[] = JHTML::_('select.option','0', JText::_("CATALOG_SEARCHCRITERIA_CHOICE_NOTAB") );
-		$tab[] = JHTML::_('select.option','1', JText::_("CATALOG_SEARCHCRITERIA_CHOICE_SIMPLETAB") );
-		$tab[] = JHTML::_('select.option','2', JText::_("CATALOG_SEARCHCRITERIA_CHOICE_ADVANCEDTAB") );
-		$tab[] = JHTML::_('select.option','3', JText::_("CATALOG_SEARCHCRITERIA_CHOICE_HIDDEN") );
-		
-		if ($row->simpletab == 1)
-			$selectedTab = 1;
-		else if ($row->advancedtab == 1)
-			$selectedTab = 2;
-		else
-			$selectedTab = 0;
 		
 		$tabList= array();
 		$tabList[] = JHTML::_('select.option','0', JText::_("CATALOG_SEARCHCRITERIA_CHOICE_NOTAB") );
@@ -294,6 +269,8 @@ class ADMIN_searchcriteria {
 			HTML_searchcriteria::editOGCSearchCriteria($row, $tab, $selectedTab, $fieldsLength, $languages, $labels, $filterfields, $context_id, $tabList, $tab_id, $rendertypes, $option);
 		else if ($row->criteriatype_id == 1) // Critère system
 			HTML_searchcriteria::editSystemSearchCriteria($row, $tab, $selectedTab, $fieldsLength, $languages, $labels, $context_id, $tabList, $tab_id, $option);
+		else if ($row->criteriatype_id == 2) // Critère relation
+			HTML_searchcriteria::editRelationSearchCriteria($row, $tab, $selectedTab, $fieldsLength, $languages, $labels, $context_id, $tabList, $tab_id, $option);
 		
 	}
 	
