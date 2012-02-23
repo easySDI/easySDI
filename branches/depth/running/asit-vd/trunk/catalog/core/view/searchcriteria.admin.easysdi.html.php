@@ -320,7 +320,7 @@ class HTML_searchcriteria {
 		
 			?>
 			</table>
-			<table border="0" cellpadding="3" cellspacing="0">
+			<table class="admintable" border="0" cellpadding="3" cellspacing="0">
 					<tr>
 					<td colspan="2">
 						<fieldset id="labels">
@@ -331,7 +331,7 @@ class HTML_searchcriteria {
 	{ 
 	?>
 					<tr>
-					<td WIDTH=140><?php echo JText::_("CORE_".strtoupper($lang->code)); ?></td>
+					<td  class="key"  WIDTH=140><?php echo JText::_("CORE_".strtoupper($lang->code)); ?></td>
 					<td><input size="50" type="text" name ="label<?php echo "_".$lang->code;?>" value="<?php echo htmlspecialchars($labels[$lang->id])?>" maxlength="<?php echo $fieldsLength['label'];?>"></td>							
 					</tr>
 	<?php
@@ -415,55 +415,66 @@ class HTML_searchcriteria {
 		global  $mainframe;
 		$database =& JFactory::getDBO();
 		
-		$database->setQuery("SELECT rendertype_id FROM #__sdi_relation WHERE id=".$row->relation_id);
-		$rendertype = $database->loadResult();
-		
+		$database->setQuery("SELECT at.code FROM #__sdi_relation r
+									INNER JOIN #__sdi_attribute a ON a.id=r.attributechild_id
+									INNER JOIN #__sdi_list_attributetype at ON a.attributetype_id=at.id
+									WHERE r.id=".$row->relation_id);
+		$attributetype = $database->loadResult();
 		?>
 			<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
-				<table border="0" cellpadding="3" cellspacing="0">	
+				<table class="admintable" border="0" cellpadding="3" cellspacing="0">	
 					<tr>
-						<td width=150><?php echo JText::_("CORE_NAME"); ?></td>
-						<td><input size="50" type="text" name ="name" value="<?php echo $row->name?>" maxlength="<?php echo $fieldsLength['name'];?>"> </td>							
+						<td class="key" width=150><?php echo JText::_("CORE_NAME"); ?></td>
+						<td width=150><?php echo $row->name; ?></td>								
 					</tr>
 					<tr>
-						<td><?php echo JText::_("CATALOG_SEARCHCRITERIA_TAB"); ?></td>
+						<td class="key"><?php echo JText::_("CATALOG_SEARCHCRITERIA_TAB"); ?></td>
 						<td><?php echo JHTML::_('select.genericlist', $tabList, 'tabList', 'class="list"', 'value', 'text', $tab_id);?></td>							
 					</tr>
 					<tr>
-						<td width=150 ><?php echo JText::_("CATALOG_SEARCHCRITERIA_DEFAULT_VALUE"); ?></td>
+						<td class="key" width=250 ><?php echo JText::_("CATALOG_SEARCHCRITERIA_DEFAULT_VALUE"); ?></td>
 						<td>
 						<?php 
-						switch ($rendertype){
-							case 4:
-							case 2:
-							case 3:
-								$database->setQuery("SELECT attributechild_id FROM #__sdi_relation WHERE id=".$row->relation_id);
-								$attributechild_id = $database->loadResult();
-								$language =& JFactory::getLanguage();
-								$database->setQuery("SELECT cv.value as value, t.label as text 
-															FROM #__sdi_codevalue cv 
-															INNER JOIN #__sdi_translation t ON t.element_guid = cv.guid
-															WHERE cv.attribute_id=".$attributechild_id." 
-															AND t.language_id = (SELECT l.id 
-																					FROM #__sdi_language l 
-																					INNER JOIN #__sdi_list_codelang c ON l.codelang_id=c.id 
-																					WHERE c.code='".$language->_lang."' )");
-								$values = $database->loadAssocList();
-								echo JHTML::_("select.genericlist",$values, 'defaultvalue[]', 'size="5" class="inputbox" style="width:380px" multiple="multiple"', 'value', 'text', json_decode($row->defaultvalue,false) ); 
-								break;
-							case 6:
+						switch ($attributetype){
+							case 'guid':
+							case 'text':
+							case 'locale':
+							case 'number':
+							case 'integer':
+							case 'link':
+							case 'Thesaurus GEMET':
+							case 'url':
+							case 'textchoice':
+							case 'localchoice':
 								?>
-								<div id="div_defaultvalue" >
-								<label class="checkbox" for="from"><?php echo JText::_("CORE_DATE");?></label>
-								<?php echo helper_easysdi::calendar($row->defaultvaluefrom, 'defaultvaluefrom','defaultvaluefrom',"%Y.%m.%d", 'class="calendar searchTabs_calendar text medium hasDatepicker"', 'class="ui-datepicker-trigger"', JURI::base().'components/com_easysdi_catalog/templates/images/icon_agenda.gif', JText::_("CATALOG_SEARCH_CALENDAR_ALT")); ?>
+								<input type="text" size="100" MAXLENGTH="500" id="defaultvalue" name="defaultvalue" value="<?php echo $row->defaultvalue;?>" />
+								<?php 
+								break;
+							case 'date':
+							case 'datetime':
+								?>
+								<div>
+									<label class="checkbox" for="from"><?php echo JText::_("CORE_DATE_FROM");?></label>
+									<?php echo helper_easysdi::calendar(($row->defaultvaluefrom == '0000-00-00')? null : $row->defaultvaluefrom , 'defaultvaluefrom','defaultvaluefrom',"%Y.%m.%d", 'class="calendar searchTabs_calendar text medium hasDatepicker"', 'class="ui-datepicker-trigger"', JURI::base().'components/com_easysdi_catalog/templates/images/icon_agenda.gif', JText::_("CATALOG_SEARCH_CALENDAR_ALT")); ?>
+									<label class="checkbox" for="to"><?php echo JText::_("CORE_DATE_TO");?></label>
+									<?php echo helper_easysdi::calendar(($row->defaultvalueto == '0000-00-00')? null : $row->defaultvalueto , 'defaultvalueto','defaultvalueto',"%Y.%m.%d", 'class="calendar searchTabs_calendar text medium hasDatepicker"', 'class="ui-datepicker-trigger"', JURI::base().'components/com_easysdi_catalog/templates/images/icon_agenda.gif', JText::_("CATALOG_SEARCH_CALENDAR_ALT")); ?>
 								</div>
 								<?php 
 								break;
-							case 1:
-							case 5:
-								?>
-								<input type="text" id="defaultvalue" name="defaultvalue" value="<?php echo $row->defaultvalue;?>" />
-								<?php 
+							case 'list':
+								$database->setQuery("SELECT attributechild_id FROM #__sdi_relation WHERE id=".$row->relation_id);
+								$attributechild_id = $database->loadResult();
+								$language =& JFactory::getLanguage();
+								$database->setQuery("SELECT cv.value as value, t.label as text
+																							FROM #__sdi_codevalue cv 
+																							INNER JOIN #__sdi_translation t ON t.element_guid = cv.guid
+																							WHERE cv.attribute_id=".$attributechild_id." 
+																							AND t.language_id = (SELECT l.id 
+																													FROM #__sdi_language l 
+																													INNER JOIN #__sdi_list_codelang c ON l.codelang_id=c.id 
+																													WHERE c.code='".$language->_lang."' )");
+								$values = $database->loadAssocList();
+								echo JHTML::_("select.genericlist",$values, 'defaultvalue[]', 'size="5" class="inputbox" style="width:380px" multiple="multiple"', 'value', 'text', json_decode($row->defaultvalue,false) );
 								break;
 						}
 						?>
@@ -528,7 +539,9 @@ class HTML_searchcriteria {
 			<input type="hidden" name="created" value="<?php echo ($row->created)? $row->created : date ('Y-m-d H:i:s');?>" />
 			<input type="hidden" name="createdby" value="<?php echo ($row->createdby)? $row->createdby : $user->id; ?>" /> 
 			<input type="hidden" name="updated" value="<?php echo ($row->created) ? date ("Y-m-d H:i:s") :  ''; ?>" />
-			<input type="hidden" name="updatedby" value="<?php echo ($row->createdby)? $user->id : ''; ?>" /> 
+			<input type="hidden" name="updatedby" value="<?php echo ($row->createdby)? $user->id : ''; ?>" />
+			<input type="hidden" name="name" value="<?php echo $row->name?>" />
+			<input type="hidden" name="code" value="<?php echo $row->code?>" /> 
 			<input type="hidden" name="criteriatype_id" value="<?php echo $row->criteriatype_id?>" />
 			<input type="hidden" name="label" value="<?php echo $row->label; ?>" />
 			<input type="hidden" name="relation_id" value="<?php echo $row->relation_id; ?>" />
@@ -547,28 +560,28 @@ class HTML_searchcriteria {
 
 		?>
 		<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
-			<table border="0" cellpadding="3" cellspacing="0">	
+			<table class="admintable" border="0" cellpadding="3" cellspacing="0">	
 				<tr>
-					<td width=150><?php echo JText::_("CORE_NAME"); ?></td>
+					<td class="key" width=150><?php echo JText::_("CORE_NAME"); ?></td>
 					<td><input size="50" type="text" name ="name" value="<?php echo $row->name?>" maxlength="<?php echo $fieldsLength['name'];?>"> </td>							
 				</tr>
 				<tr>
-					<td><?php echo JText::_("CORE_DESCRIPTION"); ?></td>
+					<td class="key"><?php echo JText::_("CORE_DESCRIPTION"); ?></td>
 					<td><textarea rows="4" cols="50" name ="description" onkeypress="javascript:maxlength(this,<?php echo $fieldsLength['description'];?>);"><?php echo $row->description?></textarea></td>							
 				</tr>
 				<tr>
-					<td><?php echo JText::_("CATALOG_SEARCHCRITERIA_TAB"); ?></td>
+					<td class="key"><?php echo JText::_("CATALOG_SEARCHCRITERIA_TAB"); ?></td>
 					<td><?php echo JHTML::_('select.genericlist', $tabList, 'tabList', 'class="list"', 'value', 'text', $tab_id);?></td>							
 				</tr>
 				<tr>
-					<td width=150 ><?php echo JText::_("CATALOG_RENDERTYPE"); ?></td>
+					<td class="key" width=150 ><?php echo JText::_("CATALOG_RENDERTYPE"); ?></td>
 					<?php 
 						$selectedRendertype = $row->rendertype_id;
 					?>
 					<td><?php echo JHTML::_("select.genericlist",$rendertypes, 'rendertype_id', 'size="1" class="inputbox" onchange="javascript:changeDefaultValueField(this.value);"', 'value', 'text', $selectedRendertype ); ?></td>							
 				</tr>
 				<tr>
-					<td width=150 ><?php echo JText::_("CATALOG_SEARCHCRITERIA_DEFAULT_VALUE"); ?></td>
+					<td class="key" width=150 ><?php echo JText::_("CATALOG_SEARCHCRITERIA_DEFAULT_VALUE"); ?></td>
 					<td>
 						<input type="text" id="defaultvalue" name="defaultvalue" value="<?php echo $row->defaultvalue;?>"  <?php if($selectedRendertype == 5){?> style="display:block;" <?php }else {?> style="display:none;"  <?php }?>/>
 						<div id="div_defaultvalue" <?php if($selectedRendertype == 5){?> style="display:none;" <?php }else {?> style="display:block;"  <?php }?>>
@@ -580,7 +593,7 @@ class HTML_searchcriteria {
 					</td>			
 				</tr>
 			</table>
-			<table border="0" cellpadding="3" cellspacing="0">
+			<table class="admintable" border="0" cellpadding="3" cellspacing="0">
 					<tr>
 					<td colspan="2">
 						<fieldset id="filterfields">
@@ -591,7 +604,7 @@ foreach ($languages as $lang)
 { 
 ?>
 					<tr>
-					<td WIDTH=140><?php echo JText::_("CORE_".strtoupper($lang->code)); ?></td>
+					<td class="key" WIDTH=140><?php echo JText::_("CORE_".strtoupper($lang->code)); ?></td>
 					<td><input size="50" type="text" name ="filterfield<?php echo "_".$lang->code;?>" value="<?php echo htmlspecialchars($filterfields[$lang->id])?>" maxlength="<?php echo $fieldsLength['ogcsearchfilter'];?>"></td>							
 						</tr>
 						
@@ -603,7 +616,7 @@ foreach ($languages as $lang)
 			</td>
 		</tr>
 	</table>
-	<table border="0" cellpadding="3" cellspacing="0">
+	<table class="admintable" border="0" cellpadding="3" cellspacing="0">
 		<tr>
 			<td colspan="2">
 				<fieldset id="labels">
@@ -615,7 +628,7 @@ foreach ($languages as $lang)
 { 
 ?>
 						<tr>
-					<td WIDTH=140><?php echo JText::_("CORE_".strtoupper($lang->code)); ?></td>
+					<td class="key" WIDTH=140><?php echo JText::_("CORE_".strtoupper($lang->code)); ?></td>
 					<td><input size="50" type="text" name ="label<?php echo "_".$lang->code;?>" value="<?php echo htmlspecialchars($labels[$lang->id])?>" maxlength="<?php echo $fieldsLength['label'];?>"></td>							
 					</tr>
 						

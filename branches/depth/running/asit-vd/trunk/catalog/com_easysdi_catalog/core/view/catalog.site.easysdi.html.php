@@ -339,6 +339,7 @@ class HTML_catalog{
 				if (count($list) < (int)$listMaxLength)
 					$size = count($list);
 				
+				//Load default values
 				$defaultSelection=array();
 				if ($defaultSearch)
 					$defaultSelection = json_decode($searchFilter->defaultvalue );
@@ -348,7 +349,7 @@ class HTML_catalog{
 				$multiple = 'size="1"';
 				if (count($defaultSelection) > 1)
 					$multiple='size="'.$size.'" multiple="multiple"';
-
+				
 				?>
 				<div class="row">
 					<label for="<?php echo 'filter_'.$searchFilter->guid;?>"><?php echo JText::_($searchFilter->relation_guid."_LABEL");?></label>
