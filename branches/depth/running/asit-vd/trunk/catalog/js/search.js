@@ -28,6 +28,17 @@ window.addEvent('domready', function()
 */	
 function init(){
 	toggleAdvancedSearch($('advancedSrch').value);
+	/*if($('advancedSrch').value == 1){
+		$('divAdvancedSearch').style.visibility = 'visible';
+		$('divAdvancedSearch').style.display = 'block';
+		$('advSearchRadio').checked = true;
+		$('advancedSrch').value=1;
+	}else{
+		$('divAdvancedSearch').style.visibility = 'hidden';
+		$('divAdvancedSearch').style.display = 'none';
+		$('advSearchRadio').checked = false;
+		$('advancedSrch').value=0;
+	}*/
 }
 
 /*
@@ -61,7 +72,7 @@ function toggleAdvancedSearch(isVisible){
 		$('advSearchRadio').checked = false;
 		$('advancedSrch').value=0;
 		//Do not keep data in a hidden table
-		clearAdvancedSearch();
+		//clearAdvancedSearch();
 	}
 }
 

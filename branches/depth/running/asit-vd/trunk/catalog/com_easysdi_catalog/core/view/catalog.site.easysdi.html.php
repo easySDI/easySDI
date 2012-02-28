@@ -305,14 +305,24 @@ class HTML_catalog{
 				if (count($choicevalues) < (int)$listMaxLength)
 					$size = count($choicevalues);
 					
-				$multiple = 'size="1"';
+				/*$multiple = 'size="1"';
 				if (count(JRequest::getVar('filter_'.$searchFilter->guid)) > 1)
-					$multiple='size="'.$size.'" multiple="multiple"';
+					$multiple='size="'.$size.'" multiple="multiple"';*/
 				
+				//Load default values
+				$defaultSelection=array();
+				if ($defaultSearch)
+					$defaultSelection = json_decode($searchFilter->defaultvalue );
+				else
+					$defaultSelection = JRequest::getVar('filter_'.$searchFilter->guid);
+				
+				$multiple = 'size="1"';
+				if (count($defaultSelection) > 1)
+					$multiple='size="'.$size.'" multiple="multiple"';
 				?>
 				<div class="row">
 					<label for="<?php echo 'filter_'.$searchFilter->guid;?>"><?php echo JText::_($searchFilter->relation_guid."_LABEL");?></label>
-					<?php echo JHTML::_("select.genericlist", $choicevalues, 'filter_'.$searchFilter->guid.'[]', 'class="inputbox text full" style="vertical-align:top " '.$multiple, 'value', 'text', JRequest::getVar('filter_'.$searchFilter->guid)); ?>
+					<?php echo JHTML::_("select.genericlist", $choicevalues, 'filter_'.$searchFilter->guid.'[]', 'class="inputbox text full" style="vertical-align:top " '.$multiple, 'value', 'text', $defaultSelection); ?>
 					<a onclick="javascript:toggle_multi_select('<?php echo 'filter_'.$searchFilter->guid;?>', <?php echo $size;?>); return false;" href="#">
 						<img src="<?php echo $templateDir;?>/icons/silk/add.png" alt="Expand"/>
 					</a>
@@ -344,7 +354,7 @@ class HTML_catalog{
 				if ($defaultSearch)
 					$defaultSelection = json_decode($searchFilter->defaultvalue );
 				else
-					$defaultSelection = JRequest::getVar('systemfilter_'.$searchFilter->guid);
+					$defaultSelection = JRequest::getVar('filter_'.$searchFilter->guid);
 				
 				$multiple = 'size="1"';
 				if (count($defaultSelection) > 1)
@@ -363,16 +373,23 @@ class HTML_catalog{
 			case "date":
 			case "datetime":
 				/* Fonctionnement période*/
+				if ($defaultSearch) {
+					$valuefrom = ($searchFilter->defaultvaluefrom  == '0000-00-00')? null : $searchFilter->defaultvaluefrom  ;
+					$valueto = ($searchFilter->defaultvalueto  == '0000-00-00')? null : $searchFilter->defaultvalueto  ;
+				}else{
+					$valuefrom = JRequest::getVar('create_cal_'.$searchFilter->guid);
+					$valueto = JRequest::getVar('update_cal_'.$searchFilter->guid);
+				}
 				?>
 				<div class="row">
 					<div class="label"><?php echo JText::_($searchFilter->relation_guid."_LABEL");?></div>
 					<div class="checkbox">
 					<div>
 					<label class="checkbox" for="<?php echo "create_cal_".$searchFilter->guid;?>"><?php echo JText::_("CORE_DATE_FROM");?></label>
-					<?php echo helper_easysdi::calendar(JRequest::getVar('create_cal_'.$searchFilter->guid), "create_cal_".$searchFilter->guid,"create_cal_".$searchFilter->guid,"%Y-%m-%d", 'class="calendar searchTabs_calendar text medium hasDatepicker"', 'class="ui-datepicker-trigger"', $templateDir.'/media/icon_agenda.gif', JText::_("CATALOG_SEARCH_CALENDAR_ALT")); ?>
+					<?php echo helper_easysdi::calendar($valuefrom, "create_cal_".$searchFilter->guid,"create_cal_".$searchFilter->guid,"%Y-%m-%d", 'class="calendar searchTabs_calendar text medium hasDatepicker"', 'class="ui-datepicker-trigger"', $templateDir.'/media/icon_agenda.gif', JText::_("CATALOG_SEARCH_CALENDAR_ALT")); ?>
 					</div><div>
 					<label class="checkbox" for="<?php echo "update_cal_".$searchFilter->guid;?>"><?php echo JText::_("CORE_DATE_TO");?></label>
-					<?php echo helper_easysdi::calendar(JRequest::getVar('update_cal_'.$searchFilter->guid), "update_cal_".$searchFilter->guid,"update_cal_".$searchFilter->guid,"%Y-%m-%d", 'class="calendar searchTabs_calendar text medium hasDatepicker"', 'class="ui-datepicker-trigger"', $templateDir.'/media/icon_agenda.gif', JText::_("CATALOG_SEARCH_CALENDAR_ALT")); ?>
+					<?php echo helper_easysdi::calendar($valueto, "update_cal_".$searchFilter->guid,"update_cal_".$searchFilter->guid,"%Y-%m-%d", 'class="calendar searchTabs_calendar text medium hasDatepicker"', 'class="ui-datepicker-trigger"', $templateDir.'/media/icon_agenda.gif', JText::_("CATALOG_SEARCH_CALENDAR_ALT")); ?>
 					</div></div>
 				</div>
 				<?php
