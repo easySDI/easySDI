@@ -2011,46 +2011,46 @@ class HTML_metadata {
 								";
 								break;
 							//TODO Case File
-							case 14:
-								// Traitement de la classe enfant
-								$node = $xpathResults->query($type_isocode, $attributeScope);
+// 							case 14:
+// 								// Traitement de la classe enfant
+// 								$node = $xpathResults->query($type_isocode, $attributeScope);
 											 	
-								// Cas où le noeud n'existe pas dans le XML. Inutile de rechercher la valeur
-								if ($parentScope <> NULL and $parentScope->nodeName == $scope->nodeName)
-									$nodeValue="";
-								else
-									$nodeValue = html_Metadata::cleanText($node->item($pos)->nodeValue);
+// 								// Cas où le noeud n'existe pas dans le XML. Inutile de rechercher la valeur
+// 								if ($parentScope <> NULL and $parentScope->nodeName == $scope->nodeName)
+// 									$nodeValue="";
+// 								else
+// 									$nodeValue = html_Metadata::cleanText($node->item($pos)->nodeValue);
 
-								// Récupération de la valeur par défaut, s'il y a lieu
-								if ($child->attribute_default <> "" and $nodeValue == "")
-									$nodeValue = html_Metadata::cleanText($child->attribute_default);
+// 								// Récupération de la valeur par défaut, s'il y a lieu
+// 								if ($child->attribute_default <> "" and $nodeValue == "")
+// 									$nodeValue = html_Metadata::cleanText($child->attribute_default);
 			
-								// Selon le rendu de l'attribut, on fait des traitements différents
-								switch ($child->rendertype_id)
-								{
-									// Textbox
-									case 5:
-										$this->javascript .="
-											".$parentFieldsetName.".add(createDisplayField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', true, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
-											".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
-											";
-										break;
-									default:
-										$this->javascript .="
-											".$parentFieldsetName.".add(createDisplayField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', true, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
-											".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
-											";
-									break;
-								}
+// 								// Selon le rendu de l'attribut, on fait des traitements différents
+// 								switch ($child->rendertype_id)
+// 								{
+// 									// Textbox
+// 									case 5:
+// 										$this->javascript .="
+// 											".$parentFieldsetName.".add(createDisplayField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', true, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+// 											".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
+// 											";
+// 										break;
+// 									default:
+// 										$this->javascript .="
+// 											".$parentFieldsetName.".add(createDisplayField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', true, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+// 											".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
+// 											";
+// 									break;
+// 								}
 								
-								if ($child->attribute_system)
-								{
-									$this->javascript .="
-									".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
-									";
-								}
+// 								if ($child->attribute_system)
+// 								{
+// 									$this->javascript .="
+// 									".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
+// 									";
+// 								}
 								
-								break;
+// 								break;
 							default:
 								// Traitement de la classe enfant
 								//echo "Recherche de ".$type_isocode." dans ".$attributeScope->nodeName."<br>";
@@ -2590,8 +2590,8 @@ class HTML_metadata {
 							case 11:
 								// Le Thesaurus GEMET  n'existe qu'en un exemplaire
 								break;
-							case 14:
-								break;
+// 							case 14:
+// 								break;
 							default:
 								// Selon le rendu de l'attribut, on fait des traitements diff�rents
 								switch ($child->rendertype_id)
@@ -3451,25 +3451,25 @@ class HTML_metadata {
 								";
 								
 								break;
-						case 14:
-							// Selon le rendu de l'attribut, on fait des traitements différents
-							switch ($child->rendertype_id)
-							{
-								// Textbox
-								case 5:
-									$this->javascript .="
-									".$parentFieldsetName.".add(createDisplayField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', true, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
-									".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
-									";
-									break;
-								default:
-									$this->javascript .="
-									".$parentFieldsetName.".add(createDisplayField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', true, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
-									".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
-									";
-									break;
-							}
-							break;
+// 						case 14:
+// 							// Selon le rendu de l'attribut, on fait des traitements différents
+// 							switch ($child->rendertype_id)
+// 							{
+// 								// Textbox
+// 								case 5:
+// 									$this->javascript .="
+// 									".$parentFieldsetName.".add(createDisplayField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', true, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+// 									".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
+// 									";
+// 									break;
+// 								default:
+// 									$this->javascript .="
+// 									".$parentFieldsetName.".add(createDisplayField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', true, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+// 									".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
+// 									";
+// 									break;
+// 							}
+// 							break;
 						default:
 							// Selon le rendu de l'attribut, on fait des traitements diff�rents
 							switch ($child->rendertype_id)
