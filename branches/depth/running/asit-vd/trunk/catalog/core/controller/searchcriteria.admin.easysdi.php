@@ -382,7 +382,7 @@ class ADMIN_searchcriteria {
 		{
 			$database->setQuery("SELECT count(*) FROM #__sdi_context_sc_filter WHERE context_id='".$context_id."' AND searchcriteria_id='".$rowSearchCriteria->id."' AND language_id='".$lang->id."'");
 			$total = $database->loadResult();
-			
+			 
 			if ($total > 0)
 			{
 				//Update

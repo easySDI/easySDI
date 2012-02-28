@@ -543,6 +543,7 @@ class HTML_searchcriteria {
 			<input type="hidden" name="name" value="<?php echo $row->name?>" />
 			<input type="hidden" name="code" value="<?php echo $row->code?>" /> 
 			<input type="hidden" name="criteriatype_id" value="<?php echo $row->criteriatype_id?>" />
+			<input type="hidden" name="ogcsearchfilter" value="<?php echo $row->ogcsearchfilter?>" />
 			<input type="hidden" name="label" value="<?php echo $row->label; ?>" />
 			<input type="hidden" name="relation_id" value="<?php echo $row->relation_id; ?>" />
 			<input type="hidden" name="option" value="<?php echo $option; ?>" />

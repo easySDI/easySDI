@@ -837,7 +837,7 @@ class SITE_catalog {
 		
 		if ( 	isset($_REQUEST['filter_'.$searchFilter->guid]) or
 				isset($_REQUEST['create_cal_'.$searchFilter->guid]) or
-				isset($_REQUEST['update_cal_'.$searchFilter->guid]) ){
+				isset($_REQUEST['update_cal_'.$searchFilter->guid]) or $defaultSearch == true){
 			
 			switch ($searchFilter->attributetype_code){
 				case "guid":
@@ -848,6 +848,7 @@ class SITE_catalog {
 					$countFilters++;
 					/* Fonctionnement texte*/
 					//Break the space in the request and split it in many terms
+					$filter = $defaultSearch? $searchFilter->defaultvalue :$filter;
 					$kwords = explode(" ", trim($filter));
 					$ogcsearchfilter="";
 					$database->setQuery("SELECT cscf.ogcsearchfilter
@@ -885,6 +886,7 @@ class SITE_catalog {
 				case "textchoice":
 				case "localechoice":
 					/* Fonctionnement liste de choix*/
+					$filter = $defaultSearch? json_decode($searchFilter->defaultvalue) :$filter;
 					if (count($filter) > 0 and $filter[0] <> "")
 					{
 						$countFilters++;
@@ -943,10 +945,18 @@ class SITE_catalog {
 					break;
 				case "list":
 					/* Fonctionnement liste*/
+					$filter = $defaultSearch? json_decode($searchFilter->defaultvalue) :$filter;
 					if (count($filter) > 0 and $filter[0] <> "")
 					{
 						$countFilters++;
-		
+		echo "SELECT cscf.ogcsearchfilter
+										   FROM #__sdi_context_sc_filter cscf
+										   LEFT OUTER JOIN #__sdi_context c ON cscf.context_id=c.id
+										   LEFT OUTER JOIN #__sdi_language l ON cscf.language_id=l.id
+										   LEFT OUTER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id
+										   WHERE c.code='".$context."'
+										   		 AND cscf.searchcriteria_id='".$searchFilter->id."' 
+										   		 AND cl.code='".$language->_lang."'";
 						$ogcsearchfilter="";
 						$database->setQuery("SELECT cscf.ogcsearchfilter
 										   FROM #__sdi_context_sc_filter cscf
@@ -976,6 +986,9 @@ class SITE_catalog {
 					/* Fonctionnement période
 					 * Format de date: 2001-01-15T20:07:48.11
 					 * */
+					$lowerFilter = $defaultSearch? $searchFilter->defaultvaluefrom :$lowerFilter;
+					$upperFilter = $defaultSearch? $searchFilter->defaultvalueto :$upperFilter;
+					
 					$ogcsearchfilter="";
 					$database->setQuery("SELECT cscf.ogcsearchfilter
 									   FROM #__sdi_context_sc_filter cscf
