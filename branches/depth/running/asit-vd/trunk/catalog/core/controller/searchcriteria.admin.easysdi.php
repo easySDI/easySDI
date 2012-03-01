@@ -382,16 +382,16 @@ class ADMIN_searchcriteria {
 		{
 			$database->setQuery("SELECT count(*) FROM #__sdi_context_sc_filter WHERE context_id='".$context_id."' AND searchcriteria_id='".$rowSearchCriteria->id."' AND language_id='".$lang->id."'");
 			$total = $database->loadResult();
-			 
 			if ($total > 0)
 			{
 				//Update
-				$database->setQuery("UPDATE #__sdi_context_sc_filter SET ogcsearchfilter='".addslashes($_POST['filterfield_'.$lang->code])."' WHERE context_id='".$context_id."' AND searchcriteria_id='".$rowSearchCriteria->id."' AND language_id=".$lang->id);
-				if (!$database->query())
-					{	
+				if(isset ($_POST['filterfield_'.$lang->code])){
+					$database->setQuery("UPDATE #__sdi_context_sc_filter SET ogcsearchfilter='".addslashes($_POST['filterfield_'.$lang->code])."' WHERE context_id='".$context_id."' AND searchcriteria_id='".$rowSearchCriteria->id."' AND language_id=".$lang->id);
+					if (!$database->query()){	
 						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 						return false;
 					}
+				}
 			}
 			else
 			{

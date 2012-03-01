@@ -470,7 +470,7 @@ class HTML_catalog{
 								<label for="<?php echo 'systemfilter_'.$searchFilter->guid;?>"><?php echo JText::_($searchFilter->guid."_LABEL");?></label>
 								<input type="checkbox" id="<?php echo 'systemfilter_'.$searchFilter->guid;?>"
 									name="<?php echo 'systemfilter_'.$searchFilter->guid;?>"
-									value="<?php echo JRequest::getVar('systemfilter_'.$searchFilter->guid);?>"									
+									value="1"									
 									class="inputbox checkbox" 
 									onClick="toggleMe(this)" 
 									<?php echo $valueToDisplay;?>	
