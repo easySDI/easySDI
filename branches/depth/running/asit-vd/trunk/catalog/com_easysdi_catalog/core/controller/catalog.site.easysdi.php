@@ -637,15 +637,15 @@ class SITE_catalog {
 				//Pas de metadonnées dans le tableau des Id à rechercher
 				//Si des types d'objet ont été sélectionnés ou l'option téléchargeable sélectionnée, on doit écarter les données harvestées
 				if (isset($arrObjectNameMd ) || 
-				isset($arrAccountsMd ) || 
-				isset($arrCreatedMd ) || 
-				isset($arrPublishedMd ) ||
-				( isset($objecttype_id ) || $hasObjectTypeFilter )|| 
-				$isDownloadable != 0 || 
-				$isFree != 0 || 
-				$isOrderable != 0){
+					isset($arrAccountsMd ) || 
+					isset($arrCreatedMd ) || 
+					isset($arrPublishedMd ) ||
+					( isset($objecttype_id ) || $hasObjectTypeFilter )|| 
+					$isDownloadable != 0 || 
+					$isFree != 0 || 
+					$isOrderable != 0){
 			//	if (count($objecttype_id) > 0 || $isDownloadable != 0){
-				$condList[] = "<ogc:And>
+					$condList[] = "<ogc:And>
 									<ogc:PropertyIsEqualTo>
 										<ogc:PropertyName>$ogcfilter_fileid</ogc:PropertyName>
 										<ogc:Literal>-1</ogc:Literal>
@@ -657,7 +657,7 @@ class SITE_catalog {
 								</ogc:And>
 								";
 				}else{//Sinon on inclu les données harvestées
-				$condList[] = "<ogc:PropertyIsEqualTo>
+					$condList[] = "<ogc:PropertyIsEqualTo>
 									<ogc:PropertyName>harvested</ogc:PropertyName>
 									<ogc:Literal>true</ogc:Literal>
 								</ogc:PropertyIsEqualTo>\r\n
@@ -703,8 +703,7 @@ class SITE_catalog {
 // 			}
 			
 			$cswfilterCond = "";
-			foreach ($condList as $cond)
-			{
+			foreach ($condList as $cond){
 				$cswfilterCond .= $cond;
 			}
 			
@@ -1017,8 +1016,8 @@ class SITE_catalog {
 					/* Fonctionnement période
 					 * Format de date: 2001-01-15T20:07:48.11
 					 * */
-					$lowerFilter = $defaultSearch? $searchFilter->defaultvaluefrom :$lowerFilter;
-					$upperFilter = $defaultSearch? $searchFilter->defaultvalueto :$upperFilter;
+					$lowerFilter = $defaultSearch? ($searchFilter->defaultvaluefrom  == '0000-00-00')? null : $searchFilter->defaultvaluefrom :$lowerFilter;
+					$upperFilter = $defaultSearch? ($searchFilter->defaultvalueto  == '0000-00-00')? null : $searchFilter->defaultvalueto :$upperFilter;
 					
 					$ogcsearchfilter="";
 					$database->setQuery("SELECT cscf.ogcsearchfilter
@@ -1591,9 +1590,9 @@ class SITE_catalog {
 						}
 						break;
 					case "metadata_created":
-						$lower = $defaultSearch? $searchFilter->defaultvaluefrom :JRequest::getVar('systemfilter_create_cal_'.$searchFilter->guid);
-						$upper = $defaultSearch? $searchFilter->defaultvalueto :JRequest::getVar('systemfilter_update_cal_'.$searchFilter->guid);
-	
+						$lower = $defaultSearch? ($searchFilter->defaultvaluefrom  == '0000-00-00')? null : $searchFilter->defaultvaluefrom : JRequest::getVar('systemfilter_create_cal_'.$searchFilter->guid);
+						$upper = $defaultSearch? ($searchFilter->defaultvalueto  == '0000-00-00')? null : $searchFilter->defaultvalueto : JRequest::getVar('systemfilter_update_cal_'.$searchFilter->guid);
+
 						// Sélectionner toutes les métadonnées créées dans l'intervalle indiqué
 						if ($lower == "" and $upper <> "") // Seulement la borne sup
 						{
@@ -1664,9 +1663,9 @@ class SITE_catalog {
 						}
 						break;
 					case "metadata_published":
-						$lower = $defaultSearch? $searchFilter->defaultvaluefrom :JRequest::getVar('systemfilter_create_cal_'.$searchFilter->guid);
-						$upper = $defaultSearch? $searchFilter->defaultvalueto : JRequest::getVar('systemfilter_update_cal_'.$searchFilter->guid);
-		
+						$lower = $defaultSearch? ($searchFilter->defaultvaluefrom  == '0000-00-00')? null : $searchFilter->defaultvaluefrom : JRequest::getVar('systemfilter_create_cal_'.$searchFilter->guid);
+						$upper = $defaultSearch? ($searchFilter->defaultvalueto  == '0000-00-00')? null : $searchFilter->defaultvalueto : JRequest::getVar('systemfilter_update_cal_'.$searchFilter->guid);
+						
 						// Sélectionner toutes les métadonnées créées dans l'intervalle indiqué
 						if ($lower == "" and $upper <> "") // Seulement la borne sup
 						{

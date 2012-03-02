@@ -46,7 +46,8 @@ function init(){
 */	
 function easysdiClearButton_click(){
 	clearBasicSearch();
-	clearAdvancedSearch();
+	if(document.getElementById('advancedSrch') == '1')
+		clearAdvancedSearch();
 }
 
 /*

@@ -134,16 +134,6 @@ class HTML_catalog{
 				?>
 			</div>
 			
-			<!-- This is the hidden part of the search -->
-			<div id="divHiddenSearch" class="row" style="display:none" >
-				<?php
-//  				foreach($listHiddenFilters as $searchFilter)
-//  				{
-//  					HTML_catalog::generateFieldHTML ($searchFilter, $objecttypes,$listMaxLength,$versions,$templateDir);
-//  				}
-				?>
-			</div>
-
 			<!-- Les boutons Rechercher / Vider -->
 			<div class="row">
 				<div class="checkbox row">
