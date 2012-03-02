@@ -1292,7 +1292,7 @@ class ADMIN_relation {
 			$rowRelation->classassociation_id=null;
 		}
 		
-		// G�n�rer un guid
+		// Générer un guid
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 		if ($rowRelation->guid == null)
 			$rowRelation->guid = helper_easysdi::getUniqueId();
@@ -1303,7 +1303,7 @@ class ADMIN_relation {
 			exit();
 		}
 		
-		// Langues � g�rer
+		// Langues à gérer
 		$languages = array();
 		$database->setQuery( "SELECT l.id, c.code FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY id" );
 		$languages = array_merge( $languages, $database->loadObjectList() );
@@ -1371,11 +1371,11 @@ class ADMIN_relation {
 			}
 		}
 		
-		// Sauvegarde des profils li�s � la relation
+		// Sauvegarde des profils liés à la relation
 		$profiles = array();
 		$profiles = $_POST['profiles'];
 		
-		// Supprimer tout ce qui avait �t� cr�� jusqu'� pr�sent pour cette relation
+		// Supprimer tout ce qui avait été cré jusqu'à présent pour cette relation
 		$query = "delete from #__sdi_relation_profile where relation_id=".$rowRelation->id;
 		$database->setQuery( $query);
 		if (!$database->query()) {
@@ -1395,14 +1395,14 @@ class ADMIN_relation {
 			}
 		}
 		
-		// Etapes sp�cifiques � la relation vers un attribut
+		// Etapes spécifiques à la relation vers un attribut
 		if ($_POST['type'] == 2)
 		{
-			// Sauvegarde de la valeur par d�faut de l'attribut
+			// Sauvegarde de la valeur par défaut de l'attribut
 			$rowAttribute = new attribute( $database );
 			$rowAttribute->load( $rowRelation->attributechild_id );
 					
-			// Valeurs par d�faut
+			// Valeurs par défaut
 			if ($rowAttribute->attributetype_id == 5) // Date
 				$rowAttribute->default = $_POST['defaultDate'];
 			else if ($rowAttribute->attributetype_id == 6) // List
@@ -1506,11 +1506,11 @@ class ADMIN_relation {
 				exit();
 			}
 
-			// Sauvegarde des contextes li�s � la relation
+			// Sauvegarde des contextes liés à la relation
 			$contexts = array();
 			$contexts = $_POST['contexts'];
 			
-			// Supprimer tout ce qui avait �t� cr�� jusqu'� pr�sent pour cette relation
+			// Supprimer tout ce qui avait été créé jusqu'à présent pour cette relation
 			$query = "delete from #__sdi_searchcriteria_tab WHERE searchcriteria_id IN (
 							SELECT id FROM #__sdi_searchcriteria WHERE relation_id = ".$rowRelation->id.")";
 			$database->setQuery( $query);
@@ -1534,7 +1534,21 @@ class ADMIN_relation {
 					if (!$database->query()) {
 						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 					}
+					
+					
 				}
+			}
+			
+			$query = "SELECT * FROM #__sdi_context_criteria WHERE criteria_id IN (
+							SELECT id FROM #__sdi_searchcriteria WHERE relation_id = ".$rowRelation->id.")";
+			$database->setQuery( $query);
+			$contextcriteriaList = $database->loadObjectList();
+				
+			$query = "DELETE FROM #__sdi_context_criteria where criteria_id IN (
+							SELECT id FROM #__sdi_searchcriteria WHERE relation_id = ".$rowRelation->id.")";
+			$database->setQuery( $query);
+			if (!$database->query()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
 			
 			$query = "delete from #__sdi_searchcriteria where relation_id=".$rowRelation->id;
@@ -1549,7 +1563,7 @@ class ADMIN_relation {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
 			
-			// Ne recr�er les liens que si la relation doit �tre un filtre de recherche
+			// Ne recréer les liens que si la relation doit être un filtre de recherche
 			if ($rowRelation->issearchfilter)
 			{
 				foreach($contexts as $context)
@@ -1566,7 +1580,7 @@ class ADMIN_relation {
 				}
 			}
 			
-			// Cr�er un crit�re de recherche associ�
+			// Créer un critère de recherche associé
 			$searchCriteria = null;
 			$database->setQuery("SELECT id FROM #__sdi_searchcriteria WHERE code=\"".$rowRelation->name."_".$rowAttribute->isocode."\" AND relation_id=".$rowRelation->id);
 			$searchCriteria = $database->loadResult();
@@ -1575,14 +1589,12 @@ class ADMIN_relation {
 			if (count($searchCriteria) == 1)
 				$rowSearchCriteria->load($searchCriteria);
 			else
-				$rowSearchCriteria->relation_id= $rowRelation->id; // Par d�faut tout nouveau crit�re de recherche est ajout� dans le tab avanc�
+				$rowSearchCriteria->relation_id= $rowRelation->id; // Par défaut tout nouveau critère de recherche est ajouté dans le tab avancé
 			
 			$rowSearchCriteria->name= $rowRelation->name;
 			$rowSearchCriteria->code= $rowRelation->name."_".$rowAttribute->isocode;
-			$rowSearchCriteria->advancedtab= 1; // Par d�faut tout nouveau crit�re de recherche est ajout� dans le tab avanc�
-			//$rowSearchCriteria->ogcsearchfilter= $_POST['ogcsearchfilter'];
-			$rowSearchCriteria->criteriatype_id= 2; // Le crit�re de recherche sera du type "relation"
-			
+			$rowSearchCriteria->advancedtab= 1; // Par défaut tout nouveau critère de recherche est ajouté dans le tab avancé
+			$rowSearchCriteria->criteriatype_id= 2; // Le critère de recherche sera du type "relation"
 			
 			if (!$rowSearchCriteria->store()) {	
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -1590,10 +1602,25 @@ class ADMIN_relation {
 				exit();
 			}
 			
-			// Par d�faut tout nouveau crit�re de recherche est ajout� dans le tab avanc�
+			//Insert the searchCriteria default value previously defined 
+			foreach ($contextcriteriaList as $contextcriteria){
+				$contextcriteria->criteria_id = $rowSearchCriteria->id;
+				$database->setQuery("INSERT INTO #__sdi_context_criteria (id, context_id, criteria_id,defaultvalue,defaultvaluefrom,defaultvalueto)
+											VALUE ( ".$contextcriteria->id.", 
+													".$contextcriteria->context_id.",
+													".$contextcriteria->criteria_id.",
+													'".$contextcriteria->defaultvalue."',
+													'".$contextcriteria->defaultvaluefrom."',
+													'".$contextcriteria->defaultvalueto."')");
+				if (!$database->query()){
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+					return false;
+				}
+			}
+			
 			if ($rowRelation->issearchfilter)
 			{
-				// Ajout du crit�re dans les tabs
+				// Ajout du critère dans les tabs
 				foreach($contexts as $context)
 				{
 					$database->setQuery("INSERT INTO #__sdi_searchcriteria_tab (searchcriteria_id, context_id, tab_id) 
@@ -1638,7 +1665,7 @@ class ADMIN_relation {
 				
 		$rowRelation->checkin();
 		
-		// Au cas o� on sauve avec Apply, recharger la page 
+		// Au cas où on sauve avec Apply, recharger la page 
 		$task = JRequest::getCmd( 'task' );
 		switch ($task)
 		{

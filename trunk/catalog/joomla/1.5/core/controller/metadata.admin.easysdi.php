@@ -1710,41 +1710,7 @@ class ADMIN_metadata {
 			$keys = explode(',', $fieldset);
 			$keyVals[$keys[0]] = $keys[1];
 		}
-		
-		//echo $_POST['gmd_MD_Metadata-gmd_MD_DataIdentification__2-gmd_abstract__2-gmd_LocalisedCharacterString-fr-FR__1']."\r\n";
-		
-		// Lister les langues que Joomla va prendre en charge
-		//load folder filesystem class
-		/*
-		jimport('joomla.filesystem.folder');
-		$path = JLanguage::getLanguagePath();
-		$dirs = JFolder::folders( $path );
-		$this->langList = array ();
-		$rowid = 0;
-		foreach ($dirs as $dir)
-		{
-			$files = JFolder::files( $path.DS.$dir, '^([-_A-Za-z]*)\.xml$' );
-			foreach ($files as $file)
-			{
-				$data = JApplicationHelper::parseXMLLangMetaFile($path.DS.$dir.DS.$file);
-	
-				$row 			= new StdClass();
-				$row->id 		= $rowid;
-				$row->language 	= substr($file,0,-4);
-	
-				if (!is_array($data)) {
-					continue;
-				}
-				foreach($data as $key => $value) {
-					$row->$key = $value;
-				}
-	
-				$this->langList[] = $row;
-				$rowid++;
-			}
-		}
-		*/
-		
+			
 		// Langues � g�rer
 		$this->langList = array();
 		$this->langCode=array();

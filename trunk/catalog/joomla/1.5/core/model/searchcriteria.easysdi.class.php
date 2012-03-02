@@ -26,11 +26,15 @@ class searchcriteria extends sdiTable
 	var $criteriatype_id=3;
 	var $context_id=null;
 	var $rendertype_id=null;
-	var $defaultvalue=null;
 	
 	function __construct( &$db )
 	{
 		parent::__construct ( '#__sdi_searchcriteria', 'id', $db ) ;
+	}
+	
+	function loadDefaultValue ($contextid){
+		$this->_db->setQuery( "SELECT defaultvalue, defaultvaluefrom, defaultvalueto FROM  #__sdi_context_criteria WHERE context_id='".$contextid."' and criteria_id ='".$this->id."'" );
+		return $this->_db->loadObject() ;
 	}
 }
 
@@ -42,7 +46,6 @@ class searchcriteriaByRelationId extends sdiTable
 	var $criteriatype_id=3;
 	var $context_id=null;
 	var $rendertype_id=null;
-	var $defaultvalue=null;
 	
 	function __construct( &$db )
 	{

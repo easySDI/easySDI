@@ -117,7 +117,7 @@ function listContext(&$rows, $page, $filter_order_Dir, $filter_order, $option)
 <?php
 	}
 	
-	function editContext(&$row, $listObjectTypes, $fieldsLength, $languages, $labels, $sortfields, $objecttypes, $selected_objecttypes, $option)
+	function editContext(&$row, $listObjectTypes, $fieldsLength, $languages, $labels, $titles, $sortfields, $objecttypes, $selected_objecttypes, $option)
 	{
 		global  $mainframe;
 		
@@ -138,11 +138,6 @@ function listContext(&$rows, $page, $filter_order_Dir, $filter_order, $option)
 					<td><?php echo JText::_("CORE_DESCRIPTION"); ?></td>
 					<td colspan="2"><textarea rows="4" cols="50" name ="description" onkeypress="javascript:maxlength(this,<?php echo $fieldsLength['description'];?>);"><?php echo $row->description?></textarea></td>							
 				</tr> 
-				<!-- <tr>
-					<td><?php echo JText::_("CATALOG_CONTEXT_OBJECTTYPE"); ?></td>
-					<td><?php echo JHTML::_("select.genericlist",$listObjectTypes, 'objecttype_id', 'size="1" class="inputbox"', 'value', 'text', $row->objecttype_id ); ?></td>							
-				</tr>
-				 -->
 				<tr>
 					<td width=150 ><?php echo JText::_("CATALOG_CONTEXT_OBJECTTYPE"); ?></td>
 					<td colspan="2">
@@ -167,6 +162,10 @@ function listContext(&$rows, $page, $filter_order_Dir, $filter_order, $option)
 							<img src="<?php echo JURI::root(true);?>/includes/js/ThemeOffice/warning.png" style="vertical-align:top" alt="" /> <?php echo JText::_( 'CATALOG_CONTEXT_XSLDIR_TIP' ); ?>
 						</div>
 					</td>							
+				</tr>
+				<tr>
+					<td><?php echo JText::_("CATALOG_CONTEXT_RUNINITSEARCH"); ?></td>
+					<td><input size="50" type="checkbox" name ="runinitsearch" value="1" <?php echo $row->runinitsearch == "1"? 'checked="yes"':'';?>></input></td>							
 				</tr>
 			</table>
 			<table border="0" cellpadding="3" cellspacing="0">
@@ -204,6 +203,28 @@ foreach ($languages as $lang)
 					<tr>
 					<td WIDTH=140><?php echo JText::_("CORE_".strtoupper($lang->code)); ?></td>
 					<td><input size="50" type="text" name ="label<?php echo "_".$lang->code;?>" value="<?php echo htmlspecialchars($labels[$lang->id])?>" maxlength="<?php echo $fieldsLength['label'];?>"></td>							
+					</tr>
+<?php
+}
+?>
+							</table>
+						</fieldset>
+					</td>
+				</tr>
+			</table>		
+			<table border="0" cellpadding="3" cellspacing="0">
+					<tr>
+					<td colspan="2">
+						<fieldset id="labels">
+							<legend align="top"><?php echo JText::_("CATALOG_CONTEXT_TITLE"); ?></legend>
+							<table>
+<?php
+foreach ($languages as $lang)
+{ 
+?>
+					<tr>
+					<td WIDTH=140><?php echo JText::_("CORE_".strtoupper($lang->code)); ?></td>
+					<td><input size="50" type="text" name ="title<?php echo "_".$lang->code;?>" value="<?php echo htmlspecialchars($titles[$lang->id])?>" maxlength="<?php echo $fieldsLength['title'];?>"></td>							
 					</tr>
 <?php
 }

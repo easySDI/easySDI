@@ -28,6 +28,17 @@ window.addEvent('domready', function()
 */	
 function init(){
 	toggleAdvancedSearch($('advancedSrch').value);
+	/*if($('advancedSrch').value == 1){
+		$('divAdvancedSearch').style.visibility = 'visible';
+		$('divAdvancedSearch').style.display = 'block';
+		$('advSearchRadio').checked = true;
+		$('advancedSrch').value=1;
+	}else{
+		$('divAdvancedSearch').style.visibility = 'hidden';
+		$('divAdvancedSearch').style.display = 'none';
+		$('advSearchRadio').checked = false;
+		$('advancedSrch').value=0;
+	}*/
 }
 
 /*
@@ -35,7 +46,8 @@ function init(){
 */	
 function easysdiClearButton_click(){
 	clearBasicSearch();
-	clearAdvancedSearch();
+	if(document.getElementById('advancedSrch') == '1')
+		clearAdvancedSearch();
 }
 
 /*
@@ -61,7 +73,7 @@ function toggleAdvancedSearch(isVisible){
 		$('advSearchRadio').checked = false;
 		$('advancedSrch').value=0;
 		//Do not keep data in a hidden table
-		clearAdvancedSearch();
+		//clearAdvancedSearch();
 	}
 }
 
@@ -79,12 +91,9 @@ function clearBasicSearch ()
 	for (var i = 0; i < fields.length; i++)
 	{
 		if (fields.item(i).type == "checkbox") // Les checkbox de l'objecttype
-			fields.item(i).checked = "checked";
+			fields.item(i).checked = "";
 		else if (fields.item(i).type == "radio") // Les radios de la version
-			if (fields.item(i).value == 0)
-				fields.item(i).checked = "checked";
-			else
-				fields.item(i).checked = "";
+			fields.item(i).checked = "";
 		else 
 			fields.item(i).value = "";
 	}
@@ -111,12 +120,9 @@ function clearAdvancedSearch ()
 	for (var i = 0; i < fields.length; i++)
 	{
 		if (fields.item(i).type == "checkbox") // Les checkbox de l'objecttype
-			fields.item(i).checked = "checked";
+			fields.item(i).checked = "";
 		else if (fields.item(i).type == "radio") // Les radios de la version
-			if (fields.item(i).value == 0)
-				fields.item(i).checked = "checked";
-			else
-				fields.item(i).checked = "";
+			fields.item(i).checked = "";
 		else 
 			fields.item(i).value = "";
 	}
