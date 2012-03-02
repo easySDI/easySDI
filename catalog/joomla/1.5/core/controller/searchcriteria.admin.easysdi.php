@@ -108,14 +108,15 @@ class ADMIN_searchcriteria {
 				// Récuperer tous les labels et contrôler qu'ils soient saisis
 				var labelEmpty = 0;
 				labels = document.getElementById('labels');
-				fields = labels.getElementsByTagName('input');
-				
-				for (var i = 0; i < fields.length; i++)
-				{
-					if (fields.item(i).value == "")
-						labelEmpty=1;
+				if(labels){
+					fields = labels.getElementsByTagName('input');
+					
+					for (var i = 0; i < fields.length; i++)
+					{
+						if (fields.item(i).value == "")
+							labelEmpty=1;
+					}
 				}
-				
 				// Récuperer tous les champs de tri et contrôler qu'ils soient saisis
 				var filterEmpty = 0;
 				filterfields = document.getElementById('filterfields');
@@ -156,18 +157,14 @@ class ADMIN_searchcriteria {
 		$language =& JFactory::getLanguage();
 		
 		$context_id = JRequest::getVar('context_id',0);
-		
 		$row = new searchcriteria( $database );
 		$row->load( $id );
 		
-		if ($row->id <>0 and $row->criteriatype_id == 2)
-		{
-			$criteriatype = new criteriatype( $database );
-			$criteriatype->load( $row->criteriatype_id );
-			$mainframe->enqueueMessage(JText::sprintf("CATALOG_SEARCHCRITERIA_ISSYSTEM_ERROR_MSG", JText::_($criteriatype->label)),"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=listSearchCriteria&context_id=".$context_id );
-			exit();
-		}
+		//Load default value
+		$defaultvalues = $row->loadDefaultValue($context_id);
+		$row->defaultvalue = $defaultvalues->defaultvalue;
+		$row->defaultvaluefrom = $defaultvalues->defaultvaluefrom;
+		$row->defaultvalueto = $defaultvalues->defaultvalueto;
 		
 		/*
 		 * If the item is checked out we cannot edit it... unless it was checked
@@ -232,7 +229,6 @@ class ADMIN_searchcriteria {
 		{
 			$database->setQuery("SELECT label FROM #__sdi_translation WHERE element_guid='".$row->guid."' AND language_id=".$lang->id);
 			$label = $database->loadResult();
-			
 			$labels[$lang->id] = $label;
 		}
 		
@@ -242,23 +238,8 @@ class ADMIN_searchcriteria {
 		{
 			$database->setQuery("SELECT ogcsearchfilter FROM #__sdi_context_sc_filter WHERE context_id='".$context_id."' AND searchcriteria_id='".$row->id."' AND language_id=".$lang->id);
 			$filterfield = $database->loadResult();
-			
 			$filterfields[$lang->id] = $filterfield;
 		}
-		
-		// Onglets
-		$tab = array();
-		$tab[] = JHTML::_('select.option','0', JText::_("CATALOG_SEARCHCRITERIA_CHOICE_NOTAB") );
-		$tab[] = JHTML::_('select.option','1', JText::_("CATALOG_SEARCHCRITERIA_CHOICE_SIMPLETAB") );
-		$tab[] = JHTML::_('select.option','2', JText::_("CATALOG_SEARCHCRITERIA_CHOICE_ADVANCEDTAB") );
-		$tab[] = JHTML::_('select.option','3', JText::_("CATALOG_SEARCHCRITERIA_CHOICE_HIDDEN") );
-		
-		if ($row->simpletab == 1)
-			$selectedTab = 1;
-		else if ($row->advancedtab == 1)
-			$selectedTab = 2;
-		else
-			$selectedTab = 0;
 		
 		$tabList= array();
 		$tabList[] = JHTML::_('select.option','0', JText::_("CATALOG_SEARCHCRITERIA_CHOICE_NOTAB") );
@@ -288,6 +269,8 @@ class ADMIN_searchcriteria {
 			HTML_searchcriteria::editOGCSearchCriteria($row, $tab, $selectedTab, $fieldsLength, $languages, $labels, $filterfields, $context_id, $tabList, $tab_id, $rendertypes, $option);
 		else if ($row->criteriatype_id == 1) // Critère system
 			HTML_searchcriteria::editSystemSearchCriteria($row, $tab, $selectedTab, $fieldsLength, $languages, $labels, $context_id, $tabList, $tab_id, $option);
+		else if ($row->criteriatype_id == 2) // Critère relation
+			HTML_searchcriteria::editRelationSearchCriteria($row, $tab, $selectedTab, $fieldsLength, $languages, $labels, $context_id, $tabList, $tab_id, $option);
 		
 	}
 	
@@ -399,16 +382,16 @@ class ADMIN_searchcriteria {
 		{
 			$database->setQuery("SELECT count(*) FROM #__sdi_context_sc_filter WHERE context_id='".$context_id."' AND searchcriteria_id='".$rowSearchCriteria->id."' AND language_id='".$lang->id."'");
 			$total = $database->loadResult();
-			
 			if ($total > 0)
 			{
 				//Update
-				$database->setQuery("UPDATE #__sdi_context_sc_filter SET ogcsearchfilter='".addslashes($_POST['filterfield_'.$lang->code])."' WHERE id='".$context_id."' AND searchcriteria_id='".$rowSearchCriteria->id."' AND language_id=".$lang->id);
-				if (!$database->query())
-					{	
+				if(isset ($_POST['filterfield_'.$lang->code])){
+					$database->setQuery("UPDATE #__sdi_context_sc_filter SET ogcsearchfilter='".addslashes($_POST['filterfield_'.$lang->code])."' WHERE context_id='".$context_id."' AND searchcriteria_id='".$rowSearchCriteria->id."' AND language_id=".$lang->id);
+					if (!$database->query()){	
 						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 						return false;
 					}
+				}
 			}
 			else
 			{
@@ -419,6 +402,61 @@ class ADMIN_searchcriteria {
 					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 					return false;
 				}
+			}
+		}
+		
+		//Save default value
+		$defaultvalue = JRequest::getVar('defaultvalue', null);
+		if(is_array($defaultvalue))
+			$defaultvalue = json_encode($defaultvalue);
+		$defaultvaluefrom = JRequest::getVar('defaultvaluefrom', null);
+		$defaultvalueto = JRequest::getVar('defaultvalueto', null);
+		
+		$database->setQuery("SELECT count(*) FROM #__sdi_context_criteria WHERE context_id='".$context_id."' AND criteria_id='".$rowSearchCriteria->id."'");
+		$total = $database->loadResult();
+			
+		if ($total > 0)
+		{
+			//Update
+			$database->setQuery("UPDATE #__sdi_context_criteria SET defaultvalue='".$defaultvalue."' WHERE context_id='".$context_id."' AND criteria_id='".$rowSearchCriteria->id."'" );
+			if (!$database->query())
+			{
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				return false;
+			}
+			$database->setQuery("UPDATE #__sdi_context_criteria SET defaultvaluefrom='".$defaultvaluefrom."' WHERE context_id='".$context_id."' AND criteria_id='".$rowSearchCriteria->id."'" );
+			if (!$database->query())
+			{
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				return false;
+			}
+			$database->setQuery("UPDATE #__sdi_context_criteria SET defaultvalueto='".$defaultvalueto."' WHERE context_id='".$context_id."' AND criteria_id='".$rowSearchCriteria->id."'" );
+			if (!$database->query())
+			{
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				return false;
+			}
+		}
+		else
+		{
+			// Create
+			$database->setQuery("INSERT INTO #__sdi_context_criteria (criteria_id, context_id,defaultvalue) VALUES ('".$rowSearchCriteria->id."', '".$context_id."', '".$defaultvalue."')");
+			if (!$database->query())
+			{
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				return false;
+			}
+			$database->setQuery("UPDATE #__sdi_context_criteria SET defaultvaluefrom='".$defaultvaluefrom."' WHERE context_id='".$context_id."' AND criteria_id='".$rowSearchCriteria->id."'" );
+			if (!$database->query())
+			{
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				return false;
+			}
+			$database->setQuery("UPDATE #__sdi_context_criteria SET defaultvalueto='".$defaultvalueto."' WHERE context_id='".$context_id."' AND criteria_id='".$rowSearchCriteria->id."'" );
+			if (!$database->query())
+			{
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				return false;
 			}
 		}
 		
@@ -448,7 +486,7 @@ class ADMIN_searchcriteria {
 		
 		if (!is_array( $id ) || count( $id ) < 1) {
 			//echo "<script> alert('S�lectionnez un enregistrement � supprimer'); window.history.go(-1);</script>\n";
-			$mainframe->enqueueMessage("S�lectionnez un enregistrement � supprimer","error");
+			$mainframe->enqueueMessage("Sélectionnez un enregistrement à supprimer","error");
 			$mainframe->redirect("index.php?option=$option&task=listSearchCriteria&context_id=".$context_id );
 			exit();
 		}
@@ -465,8 +503,16 @@ class ADMIN_searchcriteria {
 			{	
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
+			
+			//Remove default values
+			$query = "DELETE FROM #__sdi_context_criteria WHERE criteria_id= ".$searchcriteria_id." AND context_id =".$context_id;
+			$database->setQuery( $query);
+			if (!$database->query())
+			{
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
 				
-			// Crit�re CSW
+			// Critère CSW
 			if ($rowSearchCriteria->criteriatype_id == 3)
 			{
 				// Supprimer les champs de recherche 
