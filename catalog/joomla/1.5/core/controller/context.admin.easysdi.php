@@ -191,6 +191,16 @@ class ADMIN_context {
 			$labels[$lang->id] = $label;
 		}
 		
+		// Titles
+		$titles = array();
+		foreach ($languages as $lang)
+		{
+			$database->setQuery("SELECT title FROM #__sdi_translation WHERE element_guid='".$row->guid."' AND language_id=".$lang->id);
+			$title = $database->loadResult();
+				
+			$titles[$lang->id] = $title;
+		}
+		
 		// Champs de tri
 		$sortfields = array();
 		foreach ($languages as $lang)
@@ -212,7 +222,7 @@ class ADMIN_context {
 			$selected_objecttypes = array_merge( $selected_objecttypes, $database->loadResultArray() );
 		}
 		
-		HTML_context::editContext($row, $listObjectTypes, $fieldsLength, $languages, $labels, $sortfields, $objecttypes, $selected_objecttypes, $option);
+		HTML_context::editContext($row, $listObjectTypes, $fieldsLength, $languages, $labels, $titles, $sortfields, $objecttypes, $selected_objecttypes, $option);
 	}
 	
 	function saveContext($option)
@@ -287,6 +297,12 @@ class ADMIN_context {
 						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 						return false;
 					}
+				$database->setQuery("UPDATE #__sdi_translation SET title='".addslashes($_POST['title_'.$lang->code])."', updated='".$_POST['updated']."', updatedby=".$_POST['updatedby']." WHERE element_guid='".$rowContext->guid."' AND language_id=".$lang->id);
+					if (!$database->query())
+					{
+						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+						return false;
+					}
 			}
 			else
 			{
@@ -294,6 +310,12 @@ class ADMIN_context {
 				$database->setQuery("INSERT INTO #__sdi_translation (element_guid, language_id, label, created, createdby) VALUES ('".$rowContext->guid."', ".$lang->id.", '".addslashes($_POST['label_'.$lang->code])."', '".date ("Y-m-d H:i:s")."', ".$user->id.")");
 				if (!$database->query())
 				{	
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+					return false;
+				}
+				$database->setQuery("UPDATE #__sdi_translation SET title='".addslashes($_POST['title_'.$lang->code])."', updated='".$_POST['updated']."', updatedby=".$_POST['updatedby']." WHERE element_guid='".$rowContext->guid."' AND language_id=".$lang->id);
+				if (!$database->query())
+				{
 					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 					return false;
 				}
