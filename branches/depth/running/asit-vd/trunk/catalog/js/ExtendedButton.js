@@ -19,11 +19,6 @@ Ext.override(Ext.Button, {
     	var panel = (ownerCtrl) ? ownerCtrl : this.ownerCt;
     	var isClone = (isClone!=undefined) ? isClone : true;
 		var master = this;
-		//console.log(panel);
-		//console.log(master);
-		//console.log(this);
-		//console.log(this.extendedTemplate);
-		//console.log(isClone);
 		
 		if ( this.extendedTemplate && Ext.getCmp(this.extendedTemplate.getId()) && panel.findById(this.extendedTemplate.getId())) 
 		{
@@ -89,7 +84,7 @@ Ext.override(Ext.Button, {
 						if (!winthge)
 							winthge = new Ext.Window({
 							                id: newName + '_WIN',
-									  title: thesMaster.win_title, //Ext.ComponentMgr.get( newName + '_WIN').title,
+							                 title: thesMaster.win_title, //Ext.ComponentMgr.get( newName + '_WIN').title,
 							                width:500,
 							                height:500,
 							                closeAction:'hide',
