@@ -48,7 +48,7 @@ CREATE TABLE `query_test_result` (
   `RESPONSE_DELAY` float DEFAULT '0',
   `RESPONSE_SIZE` float DEFAULT '0',
   PRIMARY KEY (`ID_QUERY`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
