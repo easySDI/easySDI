@@ -1,0 +1,48 @@
+-----------------------------
+REQUEST HEADERS
+-----------------------------
+forward->:Host:localhost
+forward->:User-Agent:Mozilla/5.0 (Windows; U; Windows NT 5.1; fr; rv:1.9.2.6) Gecko/20100625 Firefox/3.6.6 ( .NET CLR 3.5.30729; .NET4.0E)
+forward->:Accept:text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+forward->:Accept-Language:fr,fr-fr;q=0.8,en-us;q=0.5,en;q=0.3
+forward->:Accept-Encoding:gzip,deflate
+forward->:Accept-Charset:ISO-8859-1,utf-8;q=0.7,*;q=0.7
+forward->:Keep-Alive:115
+forward->:Connection:keep-alive
+forward->:X-Requested-With:XMLHttpRequest
+forward->:Referer:http://localhost/web2/administrator/index.php?option=com_easysdi_monitor&view=main
+forward->:Cookie:fontSize=75; 6107e1dc1049a7b34a9e3ff6479b1c6a=9f29690e039e8ec8be519a360f694446; ys-JobStateGrid=o%3Acolumns%3Da%253Ao%25253Aid%25253Dn%2525253A0%25255Ewidth%25253Dn%2525253A101%255Eo%25253Aid%25253Dn%2525253A1%25255Ewidth%25253Dn%2525253A100%255Eo%25253Aid%25253Dn%2525253A2%25255Ewidth%25253Dn%2525253A50%255Eo%25253Aid%25253Dn%2525253A3%25255Ewidth%25253Dn%2525253A336%255Eo%25253Aid%25253Dn%2525253A4%25255Ewidth%25253Dn%2525253A60%255Eo%25253Aid%25253Dn%2525253A5%25255Ewidth%25253Dn%2525253A70%255Eo%25253Aid%25253Dn%2525253A6%25255Ewidth%25253Dn%2525253A80%255Eo%25253Aid%25253Dn%2525253A7%25255Ewidth%25253Dn%2525253A150; ys-wingeoserver=o%3Awidth%3Dn%253A546%5Eheight%3Dn%253A347%5Ex%3Dn%253A278%5Ey%3Dn%253A232; ys-qrGridgeoserver=o%3Acolumns%3Da%253Ao%25253Aid%25253Dn%2525253A0%25255Ewidth%25253Dn%2525253A100%255Eo%25253Aid%25253Dn%2525253A1%25255Ewidth%25253Dn%2525253A89%255Eo%25253Aid%25253Dn%2525253A2%25255Ewidth%25253Dn%2525253A60%255Eo%25253Aid%25253Dn%2525253A3%25255Ewidth%25253Dn%2525253A60%255Eo%25253Aid%25253Dn%2525253A4%25255Ewidth%25253Dn%2525253A60%255Eo%25253Aid%25253Dn%2525253A5%25255Ewidth%25253Dn%2525253A100; ys-AlertGrid=o%3Acolumns%3Da%253Ao%25253Aid%25253Dn%2525253A0%25255Ewidth%25253Dn%2525253A100%255Eo%25253Aid%25253Dn%2525253A1%25255Ewidth%25253Dn%2525253A64%255Eo%25253Aid%25253Dn%2525253A2%25255Ewidth%25253Dn%2525253A170%255Eo%25253Aid%25253Dn%2525253A3%25255Ewidth%25253Dn%2525253A107%255Eo%25253Aid%25253Dn%2525253A4%25255Ewidth%25253Dn%2525253A90%255Eo%25253Aid%25253Dn%2525253A5%25255Ewidth%25253Dn%2525253A150
+-----------------------------
+
+received url:http://admin:adm@localhost:8083/Monitor/jobs/geoserver/queries/getCap/logs?minDate=2010-10-13
+-----------------------------
+REQUEST PARAMS
+-----------------------------
+maxDate=2010-10-13
+_dc=1286961903402
+-----------------------------
+resulting url:http://admin:adm@localhost:8083/Monitor/jobs/geoserver/queries/getCap/logs?minDate=2010-10-13&maxDate=2010-10-13&_dc=1286961903402&
+
+getfile
+GET:http://admin:adm@localhost:8083/Monitor/jobs/geoserver/queries/getCap/logs?minDate=2010-10-13&maxDate=2010-10-13&_dc=1286961903402&
+CURL SUCCEEDED:
+end getfile
+Raw response:-->HTTP/1.1 200 OK
+Server: Apache-Coyote/1.1
+Content-Type: application/json;charset=UTF-8
+Content-Language: fr
+Transfer-Encoding: chunked
+Date: Wed, 13 Oct 2010 09:25:03 GMT
+
+{"success":true,"message":"Les logs ont bien été récupérés","noPagingCount":21,"data":[{"time":"2010-10-13 11:24:57","status":"Disponible","statusCode":"AVAILABLE","message":"No error","delay":0.671999990940094,"httpCode":"200"},{"time":"2010-10-13 11:23:57","status":"Disponible","statusCode":"AVAILABLE","message":"No error","delay":0.07800000160932541,"httpCode":"200"},{"time":"2010-10-13 11:22:57","status":"Disponible","statusCode":"AVAILABLE","message":"No error","delay":0.10899999737739563,"httpCode":"200"},{"time":"2010-10-13 11:21:12","status":"Disponible","statusCode":"AVAILABLE","message":"No error","delay":0.6570000052452087,"httpCode":"200"},{"time":"2010-10-13 11:19:18","status":"Disponible","statusCode":"AVAILABLE","message":"No error","delay":0.07900000363588333,"httpCode":"200"},{"time":"2010-10-13 11:18:18","status":"Disponible","statusCode":"AVAILABLE","message":"No error","delay":0.04699999839067459,"httpCode":"200"},{"time":"2010-10-13 11:17:18","status":"Disponible","statusCode":"AVAILABLE","message":"No error","delay":0.6880000233650208,"httpCode":"200"},{"time":"2010-10-13 11:15:12","status":"Disponible","statusCode":"AVAILABLE","message":"No error","delay":0.04699999839067459,"httpCode":"200"},{"time":"2010-10-13 11:14:12","status":"Disponible","statusCode":"AVAILABLE","message":"No error","delay":0.06300000101327896,"httpCode":"200"},{"time":"2010-10-13 11:13:12","status":"Disponible","statusCode":"AVAILABLE","message":"No error","delay":0.609000027179718,"httpCode":"200"},{"time":"2010-10-13 11:07:21","status":"Disponible","statusCode":"AVAILABLE","message":"No error","delay":0.04699999839067459,"httpCode":"200"},{"time":"2010-10-13 11:06:21","status":"Disponible","statusCode":"AVAILABLE","message":"No error","delay":0.125,"httpCode":"200"},{"time":"2010-10-13 11:03:58","status":"Disponible","statusCode":"AVAILABLE","message":"No error","delay":0.07800000160932541,"httpCode":"200"},{"time":"2010-10-13 11:02:58","status":"Disponible","statusCode":"AVAILABLE","message":"No error","delay":0.10899999737739563,"httpCode":"200"},{"time":"2010-10-13 11:01:10","status":"Disponible","statusCode":"AVAILABLE","message":"No error","delay":0.5789999961853027,"httpCode":"200"},{"time":"2010-10-13 11:00:10","status":"Disponible","statusCode":"AVAILABLE","message":"No error","delay":0.25,"httpCode":"200"},{"time":"2010-10-13 10:59:10","status":"Disponible","statusCode":"AVAILABLE","message":"No error","delay":0.5929999947547913,"httpCode":"200"},{"time":"2010-10-13 10:58:10","status":"Disponible","statusCode":"AVAILABLE","message":"No error","delay":0.07800000160932541,"httpCode":"200"},{"time":"2010-10-13 10:57:10","status":"Disponible","statusCode":"AVAILABLE","message":"No error","delay":0.04600000008940697,"httpCode":"200"},{"time":"2010-10-13 10:56:10","status":"Disponible","statusCode":"AVAILABLE","message":"No error","delay":0.656000018119812,"httpCode":"200"},{"time":"2010-10-13 10:55:11","status":"Disponible","statusCode":"AVAILABLE","message":"No error","delay":0.18799999356269836,"httpCode":"200"}]}<--
+-----------------------------
+Response headers
+-----------------------------
+sending->HTTP/1.1 200 OK
+sending->Server: Apache-Coyote/1.1
+sending->Content-Type: application/json;charset=UTF-8
+sending->Content-Language: fr
+sending->Date: Wed, 13 Oct 2010 09:25:03 GMT
+-----------------------------
+
+output:{"success":true,"message":"Les logs ont bien été récupérés","noPagingCount":21,"data":[{"time":"2010-10-13 11:24:57","status":"Disponible","statusCode":"AVAILABLE","message":"No error","delay":0.671999990940094,"httpCode":"200"},{"time":"2010-10-13 11:23:57","status":"Disponible","statusCode":"AVAILABLE","message":"No error","delay":0.07800000160932541,"httpCode":"200"},{"time":"2010-10-13 11:22:57","status":"Disponible","statusCode":"AVAILABLE","message":"No error","delay":0.10899999737739563,"httpCode":"200"},{"time":"2010-10-13 11:21:12","status":"Disponible","statusCode":"AVAILABLE","message":"No error","delay":0.6570000052452087,"httpCode":"200"},{"time":"2010-10-13 11:19:18","status":"Disponible","statusCode":"AVAILABLE","message":"No error","delay":0.07900000363588333,"httpCode":"200"},{"time":"2010-10-13 11:18:18","status":"Disponible","statusCode":"AVAILABLE","message":"No error","delay":0.04699999839067459,"httpCode":"200"},{"time":"2010-10-13 11:17:18","status":"Disponible","statusCode":"AVAILABLE","message":"No error","delay":0.6880000233650208,"httpCode":"200"},{"time":"2010-10-13 11:15:12","status":"Disponible","statusCode":"AVAILABLE","message":"No error","delay":0.04699999839067459,"httpCode":"200"},{"time":"2010-10-13 11:14:12","status":"Disponible","statusCode":"AVAILABLE","message":"No error","delay":0.06300000101327896,"httpCode":"200"},{"time":"2010-10-13 11:13:12","status":"Disponible","statusCode":"AVAILABLE","message":"No error","delay":0.609000027179718,"httpCode":"200"},{"time":"2010-10-13 11:07:21","status":"Disponible","statusCode":"AVAILABLE","message":"No error","delay":0.04699999839067459,"httpCode":"200"},{"time":"2010-10-13 11:06:21","status":"Disponible","statusCode":"AVAILABLE","message":"No error","delay":0.125,"httpCode":"200"},{"time":"2010-10-13 11:03:58","status":"Disponible","statusCode":"AVAILABLE","message":"No error","delay":0.07800000160932541,"httpCode":"200"},{"time":"2010-10-13 11:02:58","status":"Disponible","statusCode":"AVAILABLE","message":"No error","delay":0.10899999737739563,"httpCode":"200"},{"time":"2010-10-13 11:01:10","status":"Disponible","statusCode":"AVAILABLE","message":"No error","delay":0.5789999961853027,"httpCode":"200"},{"time":"2010-10-13 11:00:10","status":"Disponible","statusCode":"AVAILABLE","message":"No error","delay":0.25,"httpCode":"200"},{"time":"2010-10-13 10:59:10","status":"Disponible","statusCode":"AVAILABLE","message":"No error","delay":0.5929999947547913,"httpCode":"200"},{"time":"2010-10-13 10:58:10","status":"Disponible","statusCode":"AVAILABLE","message":"No error","delay":0.07800000160932541,"httpCode":"200"},{"time":"2010-10-13 10:57:10","status":"Disponible","statusCode":"AVAILABLE","message":"No error","delay":0.04600000008940697,"httpCode":"200"},{"time":"2010-10-13 10:56:10","status":"Disponible","statusCode":"AVAILABLE","message":"No error","delay":0.656000018119812,"httpCode":"200"},{"time":"2010-10-13 10:55:11","status":"Disponible","statusCode":"AVAILABLE","message":"No error","delay":0.18799999356269836,"httpCode":"200"}]}
