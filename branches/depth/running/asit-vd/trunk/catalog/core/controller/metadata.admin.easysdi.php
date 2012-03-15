@@ -4224,9 +4224,10 @@ class ADMIN_metadata {
 	}
 	
 	function uploadFileAndGetLink ($option){
-		$uploadfile =  file_get_contents($_FILES['uploadfilefield']['tmp_name']);
-		$handle = fopen("C:\tmp\tmp\toto.png","w");
-		fwrite($handle, $uploadfile);
+		
+		$uploadfile =  file_get_contents($_POST['uploadfilefield']);
+		$handle = fopen("C:\www\easysdi\tmp\toto.png","w") or die('Could not open file!');  ;
+		fwrite($handle, $_POST['uploadfilefield']) or die('Could not write to file');  ;
 		fclose($handle);
 		
 		echo json_encode("hbethrbutrikzuoz");
