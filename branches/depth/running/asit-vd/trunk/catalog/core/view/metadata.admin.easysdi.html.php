@@ -2014,7 +2014,7 @@ class HTML_metadata {
 																	     ,method:'post' 
 																	     ,enctype: 'multipart/form-data'
 																	     ,fileUpload: true
-																		 ,url:'".$importxml_url."'
+																		 ,url:'index.php?option=com_easysdi_catalog&task=uploadFileAndGetLink'
 																		 ,standardSubmit: true
 																	     ,defaults:{anchor:'95%'} 
 																	     ,items:[ 
@@ -2640,7 +2640,7 @@ class HTML_metadata {
 																	     ,method:'post' 
 																	     ,enctype: 'multipart/form-data'
 																	     ,fileUpload: true
-																		 ,url:'".$importxml_url."'
+																		 ,url:'index.php?option=com_easysdi_catalog&task=uploadFileAndGetLink'
 																		 ,standardSubmit: true
 																	     ,defaults:{anchor:'95%'} 
 																	     ,items:[ 
@@ -3556,7 +3556,7 @@ class HTML_metadata {
 									})
 								);
 								
-								// Cr�er le champ qui contiendra les mots-cl�s du thesaurus choisis
+								// Créer le champ qui contiendra les mots-cl�s du thesaurus choisis
 								".$parentFieldsetName.".add(createSuperBoxSelect('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."', '', false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."'));
 								";
 								
@@ -3582,14 +3582,10 @@ class HTML_metadata {
 																    frame:true,
 																    items:[{ 
 																	     xtype:'form' 
+																	      ,fileUpload: true
 																	     ,id:'uploadfileform' 
 																	     ,defaultType:'textfield' 
 																	     ,frame:true 
-																	     ,method:'post' 
-																	     ,enctype: 'multipart/form-data'
-																	     ,fileUpload: true
-																		 ,url:'".$importxml_url."'
-																		 ,standardSubmit: true
 																	     ,defaults:{anchor:'95%'} 
 																	     ,items:[ 
 																	       { 
@@ -3603,25 +3599,25 @@ class HTML_metadata {
 																	     ,buttons: [{ 
 															                    text:'".html_Metadata::cleanText(JText::_('CORE_ALERT_SUBMIT'))."',
 															                    handler: function(){
-															                    	Ext.MessageBox.show({
-															                    						title: '".html_Metadata::cleanText(JText::_('CATALOG_METADATA_IMPORTXML_MSG_CONFIRM_TITLE'))."', 
-															                    						msg: '".html_Metadata::cleanText(JText::_('CATALOG_METADATA_IMPORTXML_MSG_CONFIRM_TEXT'))."',
-															                    						buttons: Ext.MessageBox.OKCANCEL,
-															                    						icon: Ext.MessageBox.QUESTION, 
-															                    						fn: function (btn, text){
-													                    									  	if (btn == 'ok')
-													                    									  	{
-													                    									  		myMask.show();
-													                    											winupload.items.get(0).getForm().submit();
-													                    									  	}
-													                    									  } 
-															                    						});        	
+															                    	winupload.items.get(0).getForm().submit({
+														                                url: 'index.php?option=com_easysdi_catalog&task=uploadFileAndGetLink',
+														                                waitMsg: 'Uploading file...',
+														                                success: function(form,action){
+														                                    Ext.MessageBox.alert( 'Processed file  on the server');
+														                                    winupload.close();
+														                                },
+														                                failure: function(form,action){
+														                               		document.getElementById('".$currentName."').value = action.response.responseText;
+														                                    Ext.MessageBox.alert('Processed file on the server: '+action.response.responseText);
+														                                    winupload.close();
+														                                }
+														                            });	
 															                    }
 															                },
 															                {
 															                    text: '".html_Metadata::cleanText(JText::_('CORE_ALERT_CANCEL'))."',
 															                    handler: function(){
-															                        winupload.hide();
+															                        winupload.close();
 															                    }
 															                }]
 																	   }] 

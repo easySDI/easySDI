@@ -2976,10 +2976,10 @@ class ADMIN_metadata {
 		$pretreatmentxslfile = $_POST['pretreatmentxslfile'];
 		$importtype = $_POST['importtype_id'];
 		 
-		// R�cup�rer l'objet li� � cette m�tadonn�e
+		// Récupérer l'objet lié à cette métadonnée
 		$rowObject = new object( $database );
 		$rowObject->load( $object_id );
-		// R�cup�rer la m�tadonn�e
+		// Récupérer la métadonnée
 		//$rowMetadata = new metadata( $database );
 		//$rowMetadata->load( $rowObject->metadata_id );
 		$rowMetadata = new metadataByGuid( $database );
@@ -4219,50 +4219,18 @@ class ADMIN_metadata {
 		$xpathUpdate->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
 		
 		$updated = $xpathUpdate->query("//csw:totalUpdated")->item(0)->nodeValue;
-		//$updated = $xpathUpdate->query("//csw:totalUpdated")->item(0)->nodeValue;
 		
-		/*
-		$xmlstr = '<?xml version="1.0" encoding="UTF-8"?>
-			<csw:Transaction service="CSW" version="2.0.2" xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" xmlns:ogc="http://www.opengis.net/ogc" 
-			    xmlns:apiso="http://www.opengis.net/cat/csw/apiso/1.0">
-			    <csw:Delete>
-			        <csw:Constraint version="1.0.0">
-			            <ogc:Filter>
-			                <ogc:PropertyIsLike wildCard="%" singleChar="_" escape="/">
-			                    <ogc:PropertyName>apiso:identifier</ogc:PropertyName>
-			                    <ogc:Literal>'.$metadata_id.'</ogc:Literal>
-			                </ogc:PropertyIsLike>
-			            </ogc:Filter>
-			        </csw:Constraint>
-			    </csw:Delete>
-			</csw:Transaction>'; 
-		
-		//$result = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
-		$result = ADMIN_metadata::CURLRequest("POST", $catalogUrlBase, $xmlstr);
-		
-		// Ins�rer dans Geonetwork la nouvelle version de la m�tadonn�e
-		$xmlstr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
-		<csw:Transaction service=\"CSW\"
-		version=\"2.0.2\"
-		xmlns:csw=\"http://www.opengis.net/cat/csw/2.0.2\" >
-		<csw:Insert>
-		".substr($XMLDoc->saveXML(), strlen('<?xml version="1.0" encoding="UTF-8"?>'))."
-		</csw:Insert>
-		</csw:Transaction>";
-		//echo $XMLDoc->saveXML()." \r\n ";
-			
-		//$result = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
-		$result = ADMIN_metadata::CURLRequest("POST", $catalogUrlBase, $xmlstr);
-		
-		$insertResults = DOMDocument::loadXML($result);
-		
-		$xpathInsert = new DOMXPath($insertResults);
-		$xpathInsert->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
-		
-		$inserted = $xpathInsert->query("//csw:totalInserted")->item(0)->nodeValue;
-		$inserted = $xpathInsert->query("//csw:totalInserted")->item(0)->nodeValue;
-		*/
 		return $updated;
+	}
+	
+	function uploadFileAndGetLink ($option){
+		$uploadfile =  file_get_contents($_FILES['uploadfilefield']['tmp_name']);
+		$handle = fopen("C:\tmp\tmp\toto.png","w");
+		fwrite($handle, $uploadfile);
+		fclose($handle);
+		
+		echo json_encode("hbethrbutrikzuoz");
+		die();
 	}
 }
 ?>
