@@ -4225,12 +4225,31 @@ class ADMIN_metadata {
 	
 	function uploadFileAndGetLink ($option){
 		
-		$uploadfile =  file_get_contents($_POST['uploadfilefield']);
-		$handle = fopen("C:\www\easysdi\tmp\toto.png","w") or die('Could not open file!');  ;
-		fwrite($handle, $_POST['uploadfilefield']) or die('Could not write to file');  ;
-		fclose($handle);
+		//Check user's rights
+		$user = JFactory::getUser();
+		if (!userManager::isUserAllowed($user,"METADATA")){
+			echo json_encode("User not allowed");
+			die;
+		}
 		
-		echo json_encode("hbethrbutrikzuoz");
+		//Get configuration params
+		$database =& JFactory::getDBO();
+		$query = "select value as config from #__sdi_configuration where code ='CATALOG_METADATA_LINKED_FILE_REPOSITORY'";
+		$database->setQuery($query);
+		$repository = $database->loadResult();
+		$query = "select value as config from #__sdi_configuration where code ='CATALOG_METADATA_LINKED_FILE_BASE_URI'";
+		$database->setQuery($query);
+		$url = $database->loadResult();
+		
+		//Generate random file name
+		$original_file_name = utf8_decode($_FILES['uploadfilefield']['name']);
+		$file_name = $repository."\\".helper_easysdi::getUniqueId()."_".$original_file_name;
+		
+		if(move_uploaded_file($_FILES['uploadfilefield']['tmp_name'], $file_name)) {
+			echo json_encode($file_name);
+		} else{
+			echo json_encode("ERROR");
+		}
 		die();
 	}
 }

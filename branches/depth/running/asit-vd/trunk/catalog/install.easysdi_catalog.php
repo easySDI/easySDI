@@ -1762,6 +1762,17 @@ function com_install(){
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 				return false;
 			}
+			
+			$query = "INSERT INTO #__sdi_configuration (guid, code, name, description, created, createdby, label, value, module_id) VALUES
+			('".helper_easysdi::getUniqueId()."', 'CATALOG_METADATA_LINKED_FILE_REPOSITORY', 'CATALOG_METADATA_LINKED_FILE_REPOSITORY', null, '".date('Y-m-d H:i:s')."', '".$user_id."', null, '/home/tmp', '".$id."'),
+			('".helper_easysdi::getUniqueId()."', 'CATALOG_METADATA_LINKED_FILE_BASE_URI', 'CATALOG_METADATA_LINKED_FILE_BASE_URI', null, '".date('Y-m-d H:i:s')."', '".$user_id."', null, 'http://localhost/easysdi/file/', '".$id."')
+			";
+			$db->setQuery( $query);
+			if (!$db->query())
+			{
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+				return false;
+			}
 				
 			$version="2.3.0";
 			$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='CATALOG'";

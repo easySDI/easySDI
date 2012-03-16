@@ -3581,13 +3581,16 @@ class HTML_metadata {
 																    renderTo:Ext.getBody(), 
 																    frame:true,
 																    items:[{ 
-																	     xtype:'form' 
-																	      ,fileUpload: true
-																	     ,id:'uploadfileform' 
-																	     ,defaultType:'textfield' 
-																	     ,frame:true 
-																	     ,defaults:{anchor:'95%'} 
-																	     ,items:[ 
+																	     xtype:'form',
+																	     fileUpload: true,
+																	     isUpload: true,
+																	     id:'uploadfileform' ,
+																	     defaultType:'textfield', 
+																	     method:'POST',
+																	     enctype:'multipart/form-data',
+																	     frame:true ,
+																	     defaults:{anchor:'95%'}, 
+																	     items:[ 
 																	       { 
 																	       	 xtype: 'fileuploadfield',
 																             id: 'uploadfilefield',
