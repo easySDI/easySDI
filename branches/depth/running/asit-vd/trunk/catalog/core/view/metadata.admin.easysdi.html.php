@@ -3580,6 +3580,7 @@ class HTML_metadata {
 																    closable:true, 
 																    renderTo:Ext.getBody(), 
 																    frame:true,
+																    backvalue:'',
 																    items:[{ 
 																	     xtype:'form',
 																	     fileUpload: true,
@@ -3606,13 +3607,24 @@ class HTML_metadata {
 														                                url: 'index.php?option=com_easysdi_catalog&task=uploadFileAndGetLink',
 														                                waitMsg: 'Uploading file...',
 														                                success: function(form,action){
-														                                    Ext.MessageBox.alert( 'Processed file  on the server');
-														                                    winupload.close();
+														                                   if(JSON.parse(action.response.responseText) == 'ERROR')
+															                                {
+															                                	Ext.MessageBox.alert( 'An error occured while trying to upload the file.');
+															                                	winupload.close();
+															                                }
+														                                	
+														                                		winupload.backvalue = JSON.parse (action.response.responseText);
+														                               		winupload.close();
 														                                },
 														                                failure: function(form,action){
-														                               		document.getElementById('".$currentName."').value = action.response.responseText;
-														                                    Ext.MessageBox.alert('Processed file on the server: '+action.response.responseText);
-														                                    winupload.close();
+															                                if(JSON.parse(action.response.responseText) == 'ERROR')
+															                                {
+															                                	Ext.MessageBox.alert( 'An error occured while trying to upload the file.');
+															                                	winupload.close();
+															                                }
+														                                	
+														                                	winupload.backvalue = JSON.parse (action.response.responseText);
+														                               		winupload.close();
 														                                }
 														                            });	
 															                    }
@@ -3626,6 +3638,9 @@ class HTML_metadata {
 																	   }] 
 													                
 													            });
+													winupload.on('beforeclose', function(){
+														form.getForm().findField('".$currentName."').setValue(winupload.backvalue);
+													}, this);
 													
 							  						winupload.show();
 								        	},

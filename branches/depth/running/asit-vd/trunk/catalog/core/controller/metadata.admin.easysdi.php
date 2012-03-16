@@ -4243,10 +4243,11 @@ class ADMIN_metadata {
 		
 		//Generate random file name
 		$original_file_name = utf8_decode($_FILES['uploadfilefield']['name']);
-		$file_name = $repository."\\".helper_easysdi::getUniqueId()."_".$original_file_name;
+		$file_name = helper_easysdi::getUniqueId()."_".$original_file_name;
+		$file_location = $repository."\\".$file_name;
 		
-		if(move_uploaded_file($_FILES['uploadfilefield']['tmp_name'], $file_name)) {
-			echo json_encode($file_name);
+		if(move_uploaded_file($_FILES['uploadfilefield']['tmp_name'], $file_location)) {
+			echo json_encode($url."/".$file_name);
 		} else{
 			echo json_encode("ERROR");
 		}
