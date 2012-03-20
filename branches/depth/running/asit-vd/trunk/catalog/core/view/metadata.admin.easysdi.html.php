@@ -765,6 +765,12 @@ class HTML_metadata {
 				if ($child->length)
 					$maxLength = $child->length;
 				
+// 				echo " > rel_name : ".$child->rel_name."<br>";
+// 				echo " > rel_lowerbound : ".$child->rel_lowerbound."<br>";
+// 				echo " > rel_upperbound : ".$child->rel_upperbound."<br>";
+// 				echo " > mandatory : ".$mandatory."<br>";
+// 				echo "<hr>";
+				
 				// On regarde dans le XML s'il contient la balise correspondante au code ISO de l'attribut enfant,
 				// et combien de fois au niveau courant
 				//echo "Le scope pour l'attribut est <b>".$scope->nodeName."</b> et on recherche <b>".$child->attribute_id.$child->attribute_isocode."</b><br>";
@@ -1986,7 +1992,6 @@ class HTML_metadata {
 								// Récupération de la valeur par défaut, s'il y a lieu
 								if ($child->attribute_default <> "" and $nodeValue == "")
 									$nodeValue = html_Metadata::cleanText($child->attribute_default);
-			
 								
 								$this->javascript .="
 								".$parentFieldsetName.".add(createDisplayField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '', ".$disabled.", '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
@@ -2181,7 +2186,6 @@ class HTML_metadata {
 						var master = Ext.getCmp('".$master."');						
 						";
 						
-						//TODO  
 						// Traitement de chaque attribut selon son type
 						switch($child->attribute_type)
 						{
