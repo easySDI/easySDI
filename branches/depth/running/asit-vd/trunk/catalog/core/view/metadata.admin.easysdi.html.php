@@ -434,7 +434,7 @@ class HTML_metadata {
 														clientValidation: false,
 														success: function(form, action) 
 														{
-															// Retour � la page pr�c�dente
+															// Retour à la page précèdente
 															Ext.MessageBox.alert('".JText::_('CATALOG_SAVEMETADATA_MSG_SUCCESS_TITLE')."', 
 								                    						 '".JText::_('CATALOG_SAVEMETADATA_MSG_SUCCESS_TEXT')."',
 								                    						 function () {window.open ('./index.php?option=".$option."&Itemid=".JRequest::getVar('Itemid')."&lang=".JRequest::getVar('lang')."&task=cancelMetadata','_parent');});
@@ -1958,7 +1958,7 @@ class HTML_metadata {
 														winthge.show();
 										        	},
 										
-								        // Champs sp�cifiques au clonage
+								        // Champs spécifiques au clonage
 								        dynamic:true,
 								        minOccurs:1,
 							            maxOccurs:1,
@@ -1972,7 +1972,7 @@ class HTML_metadata {
 								".$parentFieldsetName.".add(createSuperBoxSelect('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."', ".$value.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."'));
 								";
 								break;
-							//TODO Case File
+							
 							case 14:
 								// Traitement de la classe enfant
 								$node = $xpathResults->query($type_isocode, $attributeScope);
@@ -1989,13 +1989,23 @@ class HTML_metadata {
 			
 								
 								$this->javascript .="
-								".$parentFieldsetName.".add(createDisplayField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+								".$parentFieldsetName.".add(createDisplayField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '', ".$disabled.", '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+								".$parentFieldsetName.".add(
+										new Ext.Button({
+											id:'".$currentName."_clear_button',
+											text:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_CLEAR_UPLOADFILE_BUTTON'))."',
+											handler: function(){
+												form.getForm().findField('".$currentName."').setValue('');
+												form.getForm().findField('".$currentName."_hiddenVal').setValue('');
+											}
+										}
+									));
 								".$parentFieldsetName.".add(
 										new Ext.Button({
 											id:'".$currentName."_button',
 											text:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_UPLOADFILE_BUTTON'))."',
 											handler: function(){
-							                	if(winupload) winupload.close();
+							                		if(winupload) winupload.close();
 													winupload = new Ext.Window({
 													                title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_UPLOADFILE_ALERT'))."',
 													                width:500,
@@ -2006,18 +2016,18 @@ class HTML_metadata {
 																    closable:true, 
 																    renderTo:Ext.getBody(), 
 																    frame:true,
+																    backvalue:'',
 																    items:[{ 
-																	     xtype:'form' 
-																	     ,id:'uploadfileform' 
-																	     ,defaultType:'textfield' 
-																	     ,frame:true 
-																	     ,method:'post' 
-																	     ,enctype: 'multipart/form-data'
-																	     ,fileUpload: true
-																		 ,url:'index.php?option=com_easysdi_catalog&task=uploadFileAndGetLink'
-																		 ,standardSubmit: true
-																	     ,defaults:{anchor:'95%'} 
-																	     ,items:[ 
+																	     xtype:'form',
+																	     fileUpload: true,
+																	     isUpload: true,
+																	     id:'uploadfileform' ,
+																	     defaultType:'textfield', 
+																	     method:'POST',
+																	     enctype:'multipart/form-data',
+																	     frame:true ,
+																	     defaults:{anchor:'95%'}, 
+																	     items:[ 
 																	       { 
 																	       	 xtype: 'fileuploadfield',
 																             id: 'uploadfilefield',
@@ -2029,30 +2039,45 @@ class HTML_metadata {
 																	     ,buttons: [{ 
 															                    text:'".html_Metadata::cleanText(JText::_('CORE_ALERT_SUBMIT'))."',
 															                    handler: function(){
-															                    	Ext.MessageBox.show({
-															                    						title: '".html_Metadata::cleanText(JText::_('CATALOG_METADATA_IMPORTXML_MSG_CONFIRM_TITLE'))."', 
-															                    						msg: '".html_Metadata::cleanText(JText::_('CATALOG_METADATA_IMPORTXML_MSG_CONFIRM_TEXT'))."',
-															                    						buttons: Ext.MessageBox.OKCANCEL,
-															                    						icon: Ext.MessageBox.QUESTION, 
-															                    						fn: function (btn, text){
-													                    									  	if (btn == 'ok')
-													                    									  	{
-													                    									  		myMask.show();
-													                    											winupload.items.get(0).getForm().submit();
-													                    									  	}
-													                    									  } 
-															                    						});        	
+															                    	winupload.items.get(0).getForm().submit({
+														                                url: 'index.php?option=com_easysdi_catalog&task=uploadFileAndGetLink',
+														                                waitMsg: 'Uploading file...',
+														                                success: function(form,action){
+														                                   if(JSON.parse(action.response.responseText) == 'ERROR')
+															                                {
+															                                	Ext.MessageBox.alert( 'An error occured while trying to upload the file.');
+															                                	winupload.close();
+															                                }
+														                                	
+														                                		winupload.backvalue = JSON.parse (action.response.responseText);
+														                               		winupload.close();
+														                                },
+														                                failure: function(form,action){
+															                                if(JSON.parse(action.response.responseText) == 'ERROR')
+															                                {
+															                                	Ext.MessageBox.alert( 'An error occured while trying to upload the file.');
+															                                	winupload.close();
+															                                }
+														                                	
+														                                	winupload.backvalue = JSON.parse (action.response.responseText);
+														                               		winupload.close();
+														                                }
+														                            });	
 															                    }
 															                },
 															                {
 															                    text: '".html_Metadata::cleanText(JText::_('CORE_ALERT_CANCEL'))."',
 															                    handler: function(){
-															                        winupload.hide();
+															                        winupload.close();
 															                    }
 															                }]
 																	   }] 
 													                
 													            });
+													winupload.on('beforeclose', function(){
+														form.getForm().findField('".$currentName."').setValue(winupload.backvalue);
+														form.getForm().findField('".$currentName."_hiddenVal').setValue(winupload.backvalue);
+													}, this);
 													
 							  						winupload.show();
 								        	},
@@ -2067,7 +2092,6 @@ class HTML_metadata {
 										})
 									);
 								";
-		
 								if ($child->attribute_system)
 								{
 									$this->javascript .="
@@ -2599,7 +2623,7 @@ class HTML_metadata {
 							case 11:
 								// Le Thesaurus GEMET  n'existe qu'en un exemplaire
 								break;
-								//TODO : case file
+								
 							case 14:
 								// Traitement de la classe enfant
 								$node = $xpathResults->query($type_isocode, $attributeScope);
@@ -2615,13 +2639,23 @@ class HTML_metadata {
 									$nodeValue = html_Metadata::cleanText($child->attribute_default);
 								
 								$this->javascript .="
-								".$parentFieldsetName.".add(createDisplayField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", true, master, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+								".$parentFieldsetName.".add(createDisplayField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '', ".$disabled.", '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+								".$parentFieldsetName.".add(
+										new Ext.Button({
+											id:'".$currentName."_clear_button',
+											text:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_CLEAR_UPLOADFILE_BUTTON'))."',
+											handler: function(){
+												form.getForm().findField('".$currentName."').setValue('');
+												form.getForm().findField('".$currentName."_hiddenVal').setValue('');
+											}
+										}
+									));
 								".$parentFieldsetName.".add(
 										new Ext.Button({
 											id:'".$currentName."_button',
 											text:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_UPLOADFILE_BUTTON'))."',
 											handler: function(){
-							                	if(winupload) winupload.close();
+							                		if(winupload) winupload.close();
 													winupload = new Ext.Window({
 													                title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_UPLOADFILE_ALERT'))."',
 													                width:500,
@@ -2632,18 +2666,18 @@ class HTML_metadata {
 																    closable:true, 
 																    renderTo:Ext.getBody(), 
 																    frame:true,
+																    backvalue:'',
 																    items:[{ 
-																	     xtype:'form' 
-																	     ,id:'uploadfileform' 
-																	     ,defaultType:'textfield' 
-																	     ,frame:true 
-																	     ,method:'post' 
-																	     ,enctype: 'multipart/form-data'
-																	     ,fileUpload: true
-																		 ,url:'index.php?option=com_easysdi_catalog&task=uploadFileAndGetLink'
-																		 ,standardSubmit: true
-																	     ,defaults:{anchor:'95%'} 
-																	     ,items:[ 
+																	     xtype:'form',
+																	     fileUpload: true,
+																	     isUpload: true,
+																	     id:'uploadfileform' ,
+																	     defaultType:'textfield', 
+																	     method:'POST',
+																	     enctype:'multipart/form-data',
+																	     frame:true ,
+																	     defaults:{anchor:'95%'}, 
+																	     items:[ 
 																	       { 
 																	       	 xtype: 'fileuploadfield',
 																             id: 'uploadfilefield',
@@ -2655,30 +2689,45 @@ class HTML_metadata {
 																	     ,buttons: [{ 
 															                    text:'".html_Metadata::cleanText(JText::_('CORE_ALERT_SUBMIT'))."',
 															                    handler: function(){
-															                    	Ext.MessageBox.show({
-															                    						title: '".html_Metadata::cleanText(JText::_('CATALOG_METADATA_IMPORTXML_MSG_CONFIRM_TITLE'))."', 
-															                    						msg: '".html_Metadata::cleanText(JText::_('CATALOG_METADATA_IMPORTXML_MSG_CONFIRM_TEXT'))."',
-															                    						buttons: Ext.MessageBox.OKCANCEL,
-															                    						icon: Ext.MessageBox.QUESTION, 
-															                    						fn: function (btn, text){
-													                    									  	if (btn == 'ok')
-													                    									  	{
-													                    									  		myMask.show();
-													                    											winupload.items.get(0).getForm().submit();
-													                    									  	}
-													                    									  } 
-															                    						});        	
+															                    	winupload.items.get(0).getForm().submit({
+														                                url: 'index.php?option=com_easysdi_catalog&task=uploadFileAndGetLink',
+														                                waitMsg: 'Uploading file...',
+														                                success: function(form,action){
+														                                   if(JSON.parse(action.response.responseText) == 'ERROR')
+															                                {
+															                                	Ext.MessageBox.alert( 'An error occured while trying to upload the file.');
+															                                	winupload.close();
+															                                }
+														                                	
+														                                		winupload.backvalue = JSON.parse (action.response.responseText);
+														                               		winupload.close();
+														                                },
+														                                failure: function(form,action){
+															                                if(JSON.parse(action.response.responseText) == 'ERROR')
+															                                {
+															                                	Ext.MessageBox.alert( 'An error occured while trying to upload the file.');
+															                                	winupload.close();
+															                                }
+														                                	
+														                                	winupload.backvalue = JSON.parse (action.response.responseText);
+														                               		winupload.close();
+														                                }
+														                            });	
 															                    }
 															                },
 															                {
 															                    text: '".html_Metadata::cleanText(JText::_('CORE_ALERT_CANCEL'))."',
 															                    handler: function(){
-															                        winupload.hide();
+															                        winupload.close();
 															                    }
 															                }]
 																	   }] 
 													                
 													            });
+													winupload.on('beforeclose', function(){
+														form.getForm().findField('".$currentName."').setValue(winupload.backvalue);
+														form.getForm().findField('".$currentName."_hiddenVal').setValue(winupload.backvalue);
+													}, this);
 													
 							  						winupload.show();
 								        	},
@@ -2693,7 +2742,7 @@ class HTML_metadata {
 										})
 									);
 								";
-		
+								
 								if ($child->attribute_system)
 								{
 									$this->javascript .="
@@ -3566,11 +3615,22 @@ class HTML_metadata {
 								".$parentFieldsetName.".add(createDisplayField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '', ".$disabled.", '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
 								".$parentFieldsetName.".add(
 										new Ext.Button({
+											id:'".$currentName."_clear_button',
+											text:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_CLEAR_UPLOADFILE_BUTTON'))."',
+											handler: function(){
+												form.getForm().findField('".$currentName."').setValue('');
+												form.getForm().findField('".$currentName."_hiddenVal').setValue('');
+											}
+										}
+									));
+								".$parentFieldsetName.".add(
+										new Ext.Button({
 											id:'".$currentName."_button',
 											text:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_UPLOADFILE_BUTTON'))."',
 											handler: function(){
 							                		if(winupload) winupload.close();
 													winupload = new Ext.Window({
+																	id:'".$currentName."_WIN_UPLOAD',
 													                title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_UPLOADFILE_ALERT'))."',
 													                width:500,
 													                height:130,
@@ -3640,6 +3700,7 @@ class HTML_metadata {
 													            });
 													winupload.on('beforeclose', function(){
 														form.getForm().findField('".$currentName."').setValue(winupload.backvalue);
+														form.getForm().findField('".$currentName."_hiddenVal').setValue(winupload.backvalue);
 													}, this);
 													
 							  						winupload.show();
@@ -3655,6 +3716,12 @@ class HTML_metadata {
 										})
 									);
 								";
+								if ($child->attribute_system)
+								{
+									$this->javascript .="
+									".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
+									";
+								}
 								break;
 						default:
 							// Selon le rendu de l'attribut, on fait des traitements diff�rents

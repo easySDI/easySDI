@@ -50,10 +50,6 @@ Ext.override(Ext.Button, {
 				var parentName = panel.getId();
 				var name = master.getId();
 				var truncatedName = name.substring(0, name.length-String('_BUTTON').length);
-				//console.log(truncatedName);
-				//console.log("parentName: "+ parentName);
-				//console.log("name: "+ name);
-				
 				var partOfNameToModify = name.substring(parentName.length);
 				
 				// Retirer la partie _BUTTON du nom à modifier
@@ -63,15 +59,38 @@ Ext.override(Ext.Button, {
 			    clones_count = 1;
 				
 				var newName = parentName + partOfNameToModify;
-				//console.log("newName: "+ newName);
 				
 				// L'extension Thesaurus GEMET à dupliquer
 				var thesMaster = Ext.ComponentMgr.get(truncatedName + '_PANEL_THESAURUS');
-				//console.log(thesMaster);
 				
 				var winthge;
+				var winupload;
+				var clone;
 				
-				var clone = master.cloneConfig({
+			if (typeof(thesMaster) == 'undefined'){
+				//Case of stereotype 'file'
+				var button_action =  truncatedName.substring(truncatedName.length - 6);
+				
+				if (button_action == '_CLEAR'){
+					//Button 'clear' of the stereotype 'file'
+					clone = master.cloneConfig({
+						id : newName + '_CLEAR_BUTTON',
+						name : newName + '_CLEAR_BUTTON',
+						hiddenName: newName + '_CLEAR_BUTTON' + '_hidden',
+						clone : isClone,
+						clones_count: clones_count,
+						extendedTemplate : master,
+						handler: function()
+		                {
+							var form = Ext.getCmp('metadataForm');
+							form.getForm().findField(newName).setValue('');
+							form.getForm().findField(newName+'_hiddenVal').setValue('');
+							
+			        	}																	   
+					});
+				}else{
+					//Button 'upload' of the stereotype 'file'
+					clone = master.cloneConfig({
 					id : newName + '_BUTTON',
 					name : newName + '_BUTTON',
 					hiddenName: newName + '_BUTTON' + '_hidden',
@@ -80,11 +99,101 @@ Ext.override(Ext.Button, {
 					extendedTemplate : master,
 					handler: function()
 	                {
-	                	// Créer une iframe pour demander à l'utilisateur le type d'import
-						if (!winthge)
+						if(winupload) winupload.close();
+						winupload = new Ext.Window({
+										id:newName+'_WIN_UPLOAD',
+						                title:'Upload',
+						                width:500,
+						                height:130,
+						                closeAction:'hide',
+						                layout:'fit', 
+									    border:true, 
+									    closable:true, 
+									    renderTo:Ext.getBody(), 
+									    frame:true,
+									    backvalue:'',
+									    items:[{ 
+										     xtype:'form',
+										     fileUpload: true,
+										     isUpload: true,
+										     id:'uploadfileform' ,
+										     defaultType:'textfield', 
+										     method:'POST',
+										     enctype:'multipart/form-data',
+										     frame:true ,
+										     defaults:{anchor:'95%'}, 
+										     items:[ 
+										       { 
+										       	 xtype: 'fileuploadfield',
+									             id: 'uploadfilefield',
+									             name: 'uploadfilefield',
+									             fieldLabel: 'CORE_METADATA_UPLOADFILE_LABEL'
+										       }
+										    ] 
+										     ,buttonAlign:'right' 
+										     ,buttons: [{ 
+								                    text:'CORE_ALERT_SUBMIT',
+								                    handler: function(){
+								                    	winupload.items.get(0).getForm().submit({
+							                                url: 'index.php?option=com_easysdi_catalog&task=uploadFileAndGetLink',
+							                                waitMsg: 'Uploading file...',
+							                                success: function(form,action){
+							                                   if(JSON.parse(action.response.responseText) == 'ERROR')
+								                                {
+								                                	Ext.MessageBox.alert( 'An error occured while trying to upload the file.');
+								                                	winupload.close();
+								                                }
+							                                	
+							                                		winupload.backvalue = JSON.parse (action.response.responseText);
+							                               		winupload.close();
+							                                },
+							                                failure: function(form,action){
+								                                if(JSON.parse(action.response.responseText) == 'ERROR')
+								                                {
+								                                	Ext.MessageBox.alert( 'An error occured while trying to upload the file.');
+								                                	winupload.close();
+								                                }
+							                                	
+							                                	winupload.backvalue = JSON.parse (action.response.responseText);
+							                               		winupload.close();
+							                                }
+							                            });	
+								                    }
+								                },
+								                {
+								                    text: 'CORE_ALERT_CANCEL',
+								                    handler: function(){
+								                        winupload.close();
+								                    }
+								                }]
+										   }] 
+						                
+						            });
+						winupload.on('beforeclose', function(){
+							var form = Ext.getCmp('metadataForm');
+							form.getForm().findField(newName).setValue(winupload.backvalue);
+							form.getForm().findField(newName+'_hiddenVal').setValue(winupload.backvalue);
+						}, this);
+						
+  						winupload.show();
+		        	}																	   
+				});
+				}
+			}else{
+				//Case of stereotype 'Thesaurus GEMET'
+				clone = master.cloneConfig({
+					id : newName + '_BUTTON',
+					name : newName + '_BUTTON',
+					hiddenName: newName + '_BUTTON' + '_hidden',
+					clone : isClone,
+					clones_count: clones_count,
+					extendedTemplate : master,
+					handler: function()
+	                {
+	                	if (!winthge)
 							winthge = new Ext.Window({
 							                id: newName + '_WIN',
-							                 title: thesMaster.win_title, //Ext.ComponentMgr.get( newName + '_WIN').title,
+							                title: thesMaster.win_title, 
 							                width:500,
 							                height:500,
 							                closeAction:'hide',
@@ -137,8 +246,6 @@ Ext.override(Ext.Button, {
 																	//					 '".JText::_('CATALOG_EDITMETADATA_THESAURUSSELECT_MSG_SUCCESS_TEXT')."');
 																
 																}
-																
-															    //winthge.hide();
 															}
 											  })]
 							            });
@@ -150,6 +257,7 @@ Ext.override(Ext.Button, {
 						winthge.show();
 		        	}																	   
 				});
+			}
 				//console.log(clone);
 				
 				panel.add(clone);

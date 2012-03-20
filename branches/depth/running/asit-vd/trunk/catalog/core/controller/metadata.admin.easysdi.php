@@ -529,16 +529,16 @@ class ADMIN_metadata {
 			// Traitement d'une relation vers un attribut
 			if ($child->attribute_id <> null)
 			{
-				//echo "attribute: ".$child->attribute_isocode."\r\n";
-				//echo "attributetype_id: ".$child->attribute_type."\r\n\r\n";
+// 				echo "attribute: ".$child->attribute_isocode."\r\n";
+// 				echo "attributetype_id: ".$child->attribute_type."\r\n";
 				
 				if ($child->attribute_type == 6 )
 					$type_isocode = $child->list_isocode;
 				else
 					$type_isocode = $child->t_isocode;
 		
-				//echo "type_isocode: ".$type_isocode."\r\n";
-				//echo "parent name: ".$parentName."\r\n";
+// 				echo "type_isocode: ".$type_isocode."\r\n";
+// 				echo "parent name: ".$parentName."\r\n\r\n";
 				$name = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."-".str_replace(":", "_", $type_isocode);
 	
 				//$name = $name."__1";
@@ -558,7 +558,7 @@ class ADMIN_metadata {
 						
 						//echo "name: ".$name."\r\n";
 						
-						// R�cup�ration des valeurs post�es correspondantes
+						// Récupération des valeurs postées correspondantes
 						$keys = array_keys($_POST);
 						$usefullVals=array();
 						//$usefullKeys=array();
@@ -578,7 +578,7 @@ class ADMIN_metadata {
 						}
 						
 						//print_r($usefullVals);
-						// Ajouter chacune des copies du champ dans le XML r�sultat
+						// Ajouter chacune des copies du champ dans le XML résultat
 						for ($pos=1; $pos<=$count; $pos++)
 						{
 							$nodeValue = $usefullVals[$pos-1];
@@ -594,7 +594,7 @@ class ADMIN_metadata {
 						break;
 					// Text
 					case 2:
-						// R�cup�ration des valeurs post�es correspondantes
+						// Récupération des valeurs postées correspondantes
 						$keys = array_keys($_POST);
 						//print_r($keys);
 						$usefullVals=array();
@@ -638,8 +638,8 @@ class ADMIN_metadata {
 						break;
 					// Local
 					case 3:
-						/* Traitement sp�cifique aux langues */
-						// On cr�e le nom sp�cifiquement pour les textes localis�s
+						/* Traitement spécifique aux langues */
+						// On cr�e le nom spécifiquement pour les textes localisés
 						$name = $parentName."-".str_replace(":", "_", $child->attribute_isocode); //."-".str_replace(":", "_", $type_isocode);
 	
 						$count=0;
@@ -663,8 +663,8 @@ class ADMIN_metadata {
 							$LocName = $name."__".($pos+2);
 							//echo "LocName: ".$LocName."\r\n";
 							
-							// S'assurer que l'entr�e a bien �t� retourn�e, et que ce n'est pas juste un effet de bord
-							// du comptage, li� � des +/- successifs 
+							// S'assurer que l'entrée a bien été retournée, et que ce n'est pas juste un effet de bord
+							// du comptage, lié à des +/- successifs 
 							$countExist=0;
 							foreach($keyVals as $key => $val)
 							{
@@ -688,7 +688,7 @@ class ADMIN_metadata {
 									$LangName = $LocName."-gmd_LocalisedCharacterString-".$lang->code_easysdi."__1";
 									//echo "LangName: ".$LangName."\r\n";  
 	
-									// R�cup�ration des valeurs post�es correspondantes
+									// Récupération des valeurs postées correspondantes
 									$keys = array_keys($_POST);
 									$usefullVals=array();
 									//$usefullKeys=array();
@@ -749,42 +749,11 @@ class ADMIN_metadata {
 									}
 								}
 							}
-								
-							/*
-							// Ajouter chacune des copies du champ dans le XML r�sultat
-							$langIndex = 0;
-							for ($pos=1; $pos<=$count; $pos++)
-							{
-								$searchName = $parentName."-".str_replace(":", "_", $attribute->attribute_isocode)."__1";
-								echo "searchName: ".$searchName."\\r\\n";
-								
-								$XMLNode = $XMLDoc->createElement($child->attribute_isocode);
-								$xmlAttributeParent->appendChild($XMLNode);
-								$xmlLocParent = $XMLNode;
-								
-								foreach($this->langList as $lang)
-								{
-									$LangName = $LocName."-gmd_LocalisedCharacterString-".$row->language."__1";
-									 echo "LangName: ".$LangName."\\r\\n";  
-									 
-									$nodeValue=$usefullVals[$langIndex][$lang->lang];
-								
-									$XMLNode = $XMLDoc->createElement("gmd:LocalisedCharacterString", $nodeValue);
-									$xmlLocParent->appendChild($XMLNode);
-									$XMLNode->setAttribute('locale', $lang->lang);
-									$xmlParent = $XMLNode;
-									
-									$langIndex = $langIndex+1;
-								}
-							}*/
 						}
-					
-						
-						
 						break;
 					// Number
 					case 4:
-						// R�cup�ration des valeurs post�es correspondantes
+						// Récupération des valeurs postées correspondantes
 						$keys = array_keys($_POST);
 						$usefullVals=array();
 						//$usefullKeys=array();
@@ -806,7 +775,7 @@ class ADMIN_metadata {
 							}
 						}
 						
-						// Ajouter chacune des copies du champ dans le XML r�sultat
+						// Ajouter chacune des copies du champ dans le XML résultat
 						for ($pos=1; $pos<=$count; $pos++)
 						{
 							$nodeValue = $usefullVals[$pos-1];
@@ -822,7 +791,7 @@ class ADMIN_metadata {
 						break;
 					// Date
 					case 5:
-						// R�cup�ration des valeurs post�es correspondantes
+						// Récupération des valeurs postées correspondantes
 						$keys = array_keys($_POST);
 						$usefullVals=array();
 						//$usefullKeys=array();
@@ -873,7 +842,7 @@ class ADMIN_metadata {
 						{
 							// Checkbox
 							case 2:
-								// R�cup�ration des valeurs post�es correspondantes
+								// Récupération des valeurs postées correspondantes
 								$keys = array_keys($_POST);
 								//print_r($keys);echo "\r\n";
 								$usefullVals=array();
@@ -968,7 +937,7 @@ class ADMIN_metadata {
 								break;
 							// Radiobutton
 							case 3:
-								// R�cup�ration des valeurs post�es correspondantes
+								// Récupération des valeurs postées correspondantes
 								$keys = array_keys($_POST);
 								//print_r($keys);echo "\r\n";
 								//print_r(array_values($_POST));
@@ -1050,9 +1019,9 @@ class ADMIN_metadata {
 							// List
 							case 4:
 							default:
-								/* Traitement sp�cifique aux listes */
+								/* Traitement spécifique aux listes */
 						
-								// R�cup�ration des valeurs post�es correspondantes
+								// Récupération des valeurs postées correspondantes
 								$keys = array_keys($_POST);
 								$usefullVals=array();
 								//$usefullKeys=array();
@@ -1077,7 +1046,7 @@ class ADMIN_metadata {
 								}
 								// Traitement des enfants de type list
 								// Traitement de la multiplicit�
-							 	// R�cup�ration du path du bloc de champs qui va �tre cr�� pour construire le nom
+							 	// Récupération du path du bloc de champs qui va être créé pour construire le nom
 							 	$listName = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__1";
 								//$nodeValue = $usefullVals[0];
 								
@@ -1186,7 +1155,7 @@ class ADMIN_metadata {
 						break;
 					// DateTime
 					case 8:
-						// R�cup�ration des valeurs post�es correspondantes
+						// Récupération des valeurs postées correspondantes
 						$keys = array_keys($_POST);
 						$usefullVals=array();
 						//$usefullKeys=array();
@@ -1208,7 +1177,7 @@ class ADMIN_metadata {
 							}
 						}
 						
-						// Ajouter chacune des copies du champ dans le XML r�sultat
+						// Ajouter chacune des copies du champ dans le XML résultat
 						for ($pos=1; $pos<=$count; $pos++)
 						{
 							$nodeValue = $usefullVals[$pos-1];
@@ -1226,7 +1195,7 @@ class ADMIN_metadata {
 						break;
 					// ChoiceText
 					case 9:
-						// R�cup�ration des valeurs post�es correspondantes
+						// Récupération des valeurs postées correspondantes
 						$keys = array_keys($_POST);
 						$usefullVals=array();
 						//$usefullKeys=array();
@@ -1367,7 +1336,7 @@ class ADMIN_metadata {
 					// Thesaurus GEMET
 					case 11:
 						//echo $parentName."-".str_replace(":", "_", $child->attribute_isocode)."<br>";
-						// R�cup�ration des valeurs post�es correspondantes
+						// Récupération des valeurs postées correspondantes
 						$keys = array_keys($_POST);
 						$usefullVals=array();
 						//$usefullKeys=array();
@@ -1456,17 +1425,17 @@ class ADMIN_metadata {
 						}
 						
 						break;
-					case 14 :
+					case 14 :					
 						// Récupération des valeurs postées correspondantes
 						$keys = array_keys($_POST);
 						$usefullVals=array();
 						
 						$count=0;
+						if ($child->attribute_system)
+							$name = $name."__1"."_hiddenVal";
+						
 						foreach($keys as $key)
 						{
-							if ($child->attribute_system)
-								$name = $name."__1"."_hiddenVal";
-								
 							$partToCompare = substr($key, 0, strlen($name));
 							if ($partToCompare == $name)
 							{
@@ -1477,11 +1446,13 @@ class ADMIN_metadata {
 								}
 							}
 						}
-						print_r($usefullVals);
+						
 						for ($pos=1; $pos<=$count; $pos++)
 						{
 							$nodeValue = $usefullVals[$pos-1];
-								
+							if(strlen($nodeValue) == 0){
+								continue;
+							}
 							$XMLNode = $XMLDoc->createElement($child->attribute_isocode);
 							$xmlAttributeParent->appendChild($XMLNode);
 								
@@ -1492,12 +1463,13 @@ class ADMIN_metadata {
 							$XMLNode->appendChild($XMLNode1);
 							$XMLNode1->appendChild($XMLNode2);
 							$XMLNode2->appendChild($XMLNode3);
-							$xmlParent = $XMLNode3;
+							
+							$xmlParent = $XMLNode;
 						}
 						
 						break;
 					default:
-						// R�cup�ration des valeurs post�es correspondantes
+						// Récupération des valeurs postées correspondantes
 						$keys = array_keys($_POST);
 						$usefullVals=array();
 						//$usefullKeys=array();
