@@ -4254,7 +4254,9 @@ class ADMIN_metadata {
 		$i = strlen($url);
 		$filename = substr($fileurl, $i);
 		
-		if(unlink($repository."/".$filename))
+		if (!file_exists($repository."/".$filename)) 
+			echo json_encode(array("success"=>true));
+		else if(unlink($repository."/".$filename))
 			echo json_encode(array("success"=>true));
 		else
 			echo json_encode(array("success"=>false));
