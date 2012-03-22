@@ -2000,11 +2000,29 @@ class HTML_metadata {
 											id:'".$currentName."_clear_button',
 											text:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_CLEAR_UPLOADFILE_BUTTON'))."',
 											handler: function(){
-												form.getForm().findField('".$currentName."').setValue('');
-												form.getForm().findField('".$currentName."_hiddenVal').setValue('');
-											}
+												Ext.MessageBox.show({
+												  msg: 'Saving your data, please wait...',
+												  progressText: 'Saving...',
+												  width:300,
+												  wait:true,
+												  waitConfig: {interval:200}
+												});
+												Ext.Ajax.request({
+													url:'http://localhost/easysdi/administrator/index.php?option=com_easysdi_catalog&task=deleteUploadedFile&file='+form.getForm().findField('".$currentName."').getValue(),
+													params:{},
+													method:'GET',
+													success:function(result,request) {
+														Ext.MessageBox.hide();
+														form.getForm().findField('".$currentName."').setValue('');
+														form.getForm().findField('".$currentName."_hiddenVal').setValue('');
+													},
+													failure:function(result,request) {
+														Ext.MessageBox.hide();
+													}
+												});
 										}
-									));
+									})
+								);
 								".$parentFieldsetName.".add(
 										new Ext.Button({
 											id:'".$currentName."_button',
@@ -2048,24 +2066,13 @@ class HTML_metadata {
 														                                url: 'index.php?option=com_easysdi_catalog&task=uploadFileAndGetLink',
 														                                waitMsg: 'Uploading file...',
 														                                success: function(form,action){
-														                                   if(JSON.parse(action.response.responseText) == 'ERROR')
-															                                {
-															                                	Ext.MessageBox.alert( 'An error occured while trying to upload the file.');
-															                                	winupload.close();
-															                                }
-														                                	
-														                                		winupload.backvalue = JSON.parse (action.response.responseText);
+													                                		winupload.backvalue = JSON.parse (action.response.responseText).url;
 														                               		winupload.close();
 														                                },
 														                                failure: function(form,action){
-															                                if(JSON.parse(action.response.responseText) == 'ERROR')
-															                                {
-															                                	Ext.MessageBox.alert( 'An error occured while trying to upload the file.');
-															                                	winupload.close();
-															                                }
-														                                	
-														                                	winupload.backvalue = JSON.parse (action.response.responseText);
-														                               		winupload.close();
+															                               	Ext.MessageBox.alert( 'An error occured while trying to upload the file.');
+															                               	winupload.close();
+															                               
 														                                }
 														                            });	
 															                    }
@@ -2097,12 +2104,12 @@ class HTML_metadata {
 										})
 									);
 								";
-								if ($child->attribute_system)
-								{
+// 								if ($child->attribute_system)
+// 								{
 									$this->javascript .="
 									".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
 									";
-								}
+// 								}
 								break;
 							default:
 								// Traitement de la classe enfant
@@ -2649,11 +2656,30 @@ class HTML_metadata {
 											id:'".$currentName."_clear_button',
 											text:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_CLEAR_UPLOADFILE_BUTTON'))."',
 											handler: function(){
-												form.getForm().findField('".$currentName."').setValue('');
-												form.getForm().findField('".$currentName."_hiddenVal').setValue('');
-											}
+												Ext.MessageBox.show({
+												  msg: 'Saving your data, please wait...',
+												  progressText: 'Saving...',
+												  width:300,
+												  wait:true,
+												  waitConfig: {interval:200}
+												});
+												
+												Ext.Ajax.request({
+													url:'http://localhost/easysdi/administrator/index.php?option=com_easysdi_catalog&task=deleteUploadedFile&file='+form.getForm().findField('".$currentName."').getValue(),
+													params:{},
+													method:'GET',
+													success:function(result,request) {
+														Ext.MessageBox.hide();
+														form.getForm().findField('".$currentName."').setValue('');
+														form.getForm().findField('".$currentName."_hiddenVal').setValue('');
+													},
+													failure:function(result,request) {
+														Ext.MessageBox.hide();
+													}
+												});
 										}
-									));
+									})
+								);
 								".$parentFieldsetName.".add(
 										new Ext.Button({
 											id:'".$currentName."_button',
@@ -2697,24 +2723,13 @@ class HTML_metadata {
 														                                url: 'index.php?option=com_easysdi_catalog&task=uploadFileAndGetLink',
 														                                waitMsg: 'Uploading file...',
 														                                success: function(form,action){
-														                                   if(JSON.parse(action.response.responseText) == 'ERROR')
-															                                {
-															                                	Ext.MessageBox.alert( 'An error occured while trying to upload the file.');
-															                                	winupload.close();
-															                                }
-														                                	
-														                                		winupload.backvalue = JSON.parse (action.response.responseText);
+													                                		winupload.backvalue = JSON.parse (action.response.responseText).url;
 														                               		winupload.close();
 														                                },
 														                                failure: function(form,action){
-															                                if(JSON.parse(action.response.responseText) == 'ERROR')
-															                                {
-															                                	Ext.MessageBox.alert( 'An error occured while trying to upload the file.');
-															                                	winupload.close();
-															                                }
-														                                	
-														                                	winupload.backvalue = JSON.parse (action.response.responseText);
-														                               		winupload.close();
+															                               	Ext.MessageBox.alert( 'An error occured while trying to upload the file.');
+															                               	winupload.close();
+															                               
 														                                }
 														                            });	
 															                    }
@@ -2747,12 +2762,11 @@ class HTML_metadata {
 									);
 								";
 								
-								if ($child->attribute_system)
-								{
+								
 									$this->javascript .="
 									".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
 									";
-								}
+								
 								break;
 
 							default:
@@ -3622,11 +3636,29 @@ class HTML_metadata {
 											id:'".$currentName."_clear_button',
 											text:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_CLEAR_UPLOADFILE_BUTTON'))."',
 											handler: function(){
-												form.getForm().findField('".$currentName."').setValue('');
-												form.getForm().findField('".$currentName."_hiddenVal').setValue('');
-											}
+												Ext.MessageBox.show({
+												  msg: 'Saving your data, please wait...',
+												  progressText: 'Saving...',
+												  width:300,
+												  wait:true,
+												  waitConfig: {interval:200}
+												});
+												Ext.Ajax.request({
+													url:'http://localhost/easysdi/administrator/index.php?option=com_easysdi_catalog&task=deleteUploadedFile&file='+form.getForm().findField('".$currentName."').getValue(),
+													params:{},
+													method:'GET',
+													success:function(result,request) {
+														Ext.MessageBox.hide();
+														form.getForm().findField('".$currentName."').setValue('');
+														form.getForm().findField('".$currentName."_hiddenVal').setValue('');
+													},
+													failure:function(result,request) {
+														Ext.MessageBox.hide();
+													}
+												});
 										}
-									));
+									})
+								);
 								".$parentFieldsetName.".add(
 										new Ext.Button({
 											id:'".$currentName."_button',
@@ -3666,29 +3698,18 @@ class HTML_metadata {
 																	     ,buttonAlign:'right' 
 																	     ,buttons: [{ 
 															                    text:'".html_Metadata::cleanText(JText::_('CORE_ALERT_SUBMIT'))."',
-															                    handler: function(){
+															                   handler: function(){
 															                    	winupload.items.get(0).getForm().submit({
 														                                url: 'index.php?option=com_easysdi_catalog&task=uploadFileAndGetLink',
 														                                waitMsg: 'Uploading file...',
 														                                success: function(form,action){
-														                                   if(JSON.parse(action.response.responseText) == 'ERROR')
-															                                {
-															                                	Ext.MessageBox.alert( 'An error occured while trying to upload the file.');
-															                                	winupload.close();
-															                                }
-														                                	
-														                                		winupload.backvalue = JSON.parse (action.response.responseText);
+													                                		winupload.backvalue = JSON.parse (action.response.responseText).url;
 														                               		winupload.close();
 														                                },
 														                                failure: function(form,action){
-															                                if(JSON.parse(action.response.responseText) == 'ERROR')
-															                                {
-															                                	Ext.MessageBox.alert( 'An error occured while trying to upload the file.');
-															                                	winupload.close();
-															                                }
-														                                	
-														                                	winupload.backvalue = JSON.parse (action.response.responseText);
-														                               		winupload.close();
+															                               	Ext.MessageBox.alert( 'An error occured while trying to upload the file.');
+															                               	winupload.close();
+															                               
 														                                }
 														                            });	
 															                    }
@@ -3720,12 +3741,11 @@ class HTML_metadata {
 										})
 									);
 								";
-								if ($child->attribute_system)
-								{
+								
 									$this->javascript .="
 									".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
 									";
-								}
+								
 								break;
 						default:
 							// Selon le rendu de l'attribut, on fait des traitements diff�rents

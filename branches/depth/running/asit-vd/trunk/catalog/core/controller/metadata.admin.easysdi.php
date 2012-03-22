@@ -4203,7 +4203,7 @@ class ADMIN_metadata {
 		//Check user's rights
 		$user = JFactory::getUser();
 		if (!userManager::isUserAllowed($user,"METADATA")){
-			echo json_encode("User not allowed");
+			echo json_encode(array("success"=>false));
 			die;
 		}
 		
@@ -4222,11 +4222,43 @@ class ADMIN_metadata {
 		$file_location = $repository."\\".$file_name;
 		
 		if(move_uploaded_file($_FILES['uploadfilefield']['tmp_name'], $file_location)) {
-			echo json_encode($url."/".$file_name);
+			$result = array("success"=>true, "url"=>$url."/".$file_name);
+			echo json_encode($result);
 		} else{
-			echo json_encode("ERROR");
+			echo json_encode(array("success"=>false));
 		}
 		die();
+	}
+	
+	function deleteUploadedFile ($option, $fileurl){
+		if($fileurl == null){
+			echo json_encode(array("success"=>false));
+			die;
+		}
+		//Check user's rights
+		$user = JFactory::getUser();
+		if (!userManager::isUserAllowed($user,"METADATA")){
+			echo json_encode(array("success"=>false));
+			die;
+		}
+		
+		//Get configuration params
+		$database =& JFactory::getDBO();
+		$query = "select value as config from #__sdi_configuration where code ='CATALOG_METADATA_LINKED_FILE_REPOSITORY'";
+		$database->setQuery($query);
+		$repository = $database->loadResult();
+		$query = "select value as config from #__sdi_configuration where code ='CATALOG_METADATA_LINKED_FILE_BASE_URI'";
+		$database->setQuery($query);
+		$url = $database->loadResult();
+		
+		$i = strlen($url);
+		$filename = substr($fileurl, $i);
+		
+		if(unlink($repository."/".$filename))
+			echo json_encode(array("success"=>true));
+		else
+			echo json_encode(array("success"=>false));
+		die;
 	}
 }
 ?>
