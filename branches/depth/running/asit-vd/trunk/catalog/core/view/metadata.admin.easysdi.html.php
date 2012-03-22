@@ -600,7 +600,7 @@ class HTML_metadata {
 					});
 					winupload.on('beforeclose', function(){
 					form.getForm().findField(fieldname).setValue(winupload.backvalue);
-					form.getForm().findField(fieldname+'_hidden').setValue(winupload.backvalue);
+					form.getForm().findField(fieldname.concat('_hiddenVal')).setValue(winupload.backvalue);
 					}, this);
 						
 					winupload.show();
