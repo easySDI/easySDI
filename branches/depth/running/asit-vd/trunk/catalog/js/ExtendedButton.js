@@ -71,113 +71,29 @@ Ext.override(Ext.Button, {
 				//Case of stereotype 'file'
 				var button_action =  truncatedName.substring(truncatedName.length - 6);
 				
-				if (button_action == '_CLEAR'){
+				if (button_action == '_clear'){
 					//Button 'clear' of the stereotype 'file'
+					newName =  truncatedName.substring(0,truncatedName.length - 6);
 					clone = master.cloneConfig({
-						id : newName + '_CLEAR_BUTTON',
-						name : newName + '_CLEAR_BUTTON',
-						hiddenName: newName + '_CLEAR_BUTTON' + '_hidden',
+						currentid : newName,
+						id : newName + '_clear_button',
+						hiddenName: newName + '_clear_button' + '_hidden',
 						clone : isClone,
 						clones_count: clones_count,
 						extendedTemplate : master,
-						handler: function()
-		                {
-							var form = Ext.getCmp('metadataForm');
-							form.getForm().findField(newName).setValue('');
-							form.getForm().findField(newName+'_hiddenVal').setValue('');
-							
-			        	}																	   
+						handler: function () {master.handler (newName)}														   
 					});
 				}else{
 					//Button 'upload' of the stereotype 'file'
 					clone = master.cloneConfig({
-					id : newName + '_BUTTON',
-					name : newName + '_BUTTON',
-					hiddenName: newName + '_BUTTON' + '_hidden',
-					clone : isClone,
-					clones_count: clones_count,
-					extendedTemplate : master,
-					handler: function()
-	                {
-						if(winupload) winupload.close();
-						winupload = new Ext.Window({
-										id:newName+'_WIN_UPLOAD',
-						                title:'Upload',
-						                width:500,
-						                height:130,
-						                closeAction:'hide',
-						                layout:'fit', 
-									    border:true, 
-									    closable:true, 
-									    renderTo:Ext.getBody(), 
-									    frame:true,
-									    backvalue:'',
-									    items:[{ 
-										     xtype:'form',
-										     fileUpload: true,
-										     isUpload: true,
-										     id:'uploadfileform' ,
-										     defaultType:'textfield', 
-										     method:'POST',
-										     enctype:'multipart/form-data',
-										     frame:true ,
-										     defaults:{anchor:'95%'}, 
-										     items:[ 
-										       { 
-										       	 xtype: 'fileuploadfield',
-									             id: 'uploadfilefield',
-									             name: 'uploadfilefield',
-									             fieldLabel: 'CORE_METADATA_UPLOADFILE_LABEL'
-										       }
-										    ] 
-										     ,buttonAlign:'right' 
-										     ,buttons: [{ 
-								                    text:'CORE_ALERT_SUBMIT',
-								                    handler: function(){
-								                    	winupload.items.get(0).getForm().submit({
-							                                url: 'index.php?option=com_easysdi_catalog&task=uploadFileAndGetLink',
-							                                waitMsg: 'Uploading file...',
-							                                success: function(form,action){
-							                                   if(JSON.parse(action.response.responseText) == 'ERROR')
-								                                {
-								                                	Ext.MessageBox.alert( 'An error occured while trying to upload the file.');
-								                                	winupload.close();
-								                                }
-							                                	
-							                                		winupload.backvalue = JSON.parse (action.response.responseText);
-							                               		winupload.close();
-							                                },
-							                                failure: function(form,action){
-								                                if(JSON.parse(action.response.responseText) == 'ERROR')
-								                                {
-								                                	Ext.MessageBox.alert( 'An error occured while trying to upload the file.');
-								                                	winupload.close();
-								                                }
-							                                	
-							                                	winupload.backvalue = JSON.parse (action.response.responseText);
-							                               		winupload.close();
-							                                }
-							                            });	
-								                    }
-								                },
-								                {
-								                    text: 'CORE_ALERT_CANCEL',
-								                    handler: function(){
-								                        winupload.close();
-								                    }
-								                }]
-										   }] 
-						                
-						            });
-						winupload.on('beforeclose', function(){
-							var form = Ext.getCmp('metadataForm');
-							form.getForm().findField(newName).setValue(winupload.backvalue);
-							form.getForm().findField(newName+'_hiddenVal').setValue(winupload.backvalue);
-						}, this);
-						
-  						winupload.show();
-		        	}																	   
-				});
+						currentid : newName,
+						id : newName + '_button',
+						hiddenName: newName + '_button' + '_hidden',
+						clone : isClone,
+						clones_count: clones_count,
+						extendedTemplate : master,
+						handler: function () {master.handler (newName)}																   
+					});
 				}
 			}else{
 				//Case of stereotype 'Thesaurus GEMET'
