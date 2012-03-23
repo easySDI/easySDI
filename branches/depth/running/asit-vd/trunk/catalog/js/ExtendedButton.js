@@ -9,6 +9,121 @@ Ext.override(Ext.Button, {
 Ext.override(Ext.Button, {
     dynamic : false,
 	
+//    initUploadFile : function  (caller){
+//		if(Ext.ComponentMgr.get(caller).getValue().length != 0){
+//			Ext.Msg.confirm(
+//					'CATALOG_METADATA_ALERT_UPLOADFILE_FILE_EXISTS_TITLE',
+//					'CATALOG_METADATA_ALERT_UPLOADFILE_FILE_EXISTS_MSG',
+//				function(btn, text){
+//					if (btn == 'yes'){
+//						 Ext.ComponentMgr.get(caller.concat('_button')).uploadfile(caller);
+//					}
+//				}
+//			);
+//		}else{
+//			this.uploadfile(caller);
+//		}
+//	},
+//	
+//	clearUploadedFile : function  (caller){
+//		Ext.Msg.confirm(
+//			'CATALOG_METADATA_ALERT_CLEAR_UPLOADEDFILE_CONFIRM_TITLE',
+//			'CATALOG_METADATA_ALERT_CLEAR_UPLOADEDFILE_CONFIRM_MSG',
+//			function(btn, text){
+//				if (btn == 'yes'){
+//					Ext.MessageBox.show({
+//						msg: 'CATALOG_METADATA_CLEAR_UPLOADEDFILE_WAIT',
+//						progressText: 'CATALOG_METADATA_CLEAR_UPLOADEDFILE_WAIT_PRG',
+//						width:300,
+//						wait:true,
+//						waitConfig: {
+//							interval:200}
+//					});
+//					Ext.Ajax.request({
+//						url:'index.php?option=com_easysdi_catalog&task=deleteUploadedFile&file='+Ext.ComponentMgr.get(caller).getValue(),
+//						method:'GET',
+//						success:function(result,request) {
+//							Ext.MessageBox.hide();
+//							Ext.ComponentMgr.get(caller).setValue('');
+//							Ext.ComponentMgr.get(caller.concat('_hiddenVal')).setValue('');
+//						},
+//						failure:function(result,request) {
+//							Ext.MessageBox.hide();
+//						}
+//					});
+//				}
+//			}
+//		)
+//	},
+//	
+//	uploadfile : function  (caller){
+//		var winupload = Ext.ComponentMgr.get(winupload);
+//		if(winupload) winupload.close();
+//		winupload = new Ext.Window({
+//			title:'CATALOG_METADATA_UPLOADFILE_ALERT',
+//			width:500,
+//			height:130,
+//			closeAction:'hide',
+//			layout:'fit',
+//			border:true,
+//			closable:true,
+//			renderTo:Ext.getBody(),
+//			frame:true,
+//			backvalue:'',
+//			items:[{
+//				xtype:'form',
+//				fileUpload: true,
+//				isUpload: true,
+//				id:'uploadfileform' ,
+//				defaultType:'textfield',
+//				method:'POST',
+//				enctype:'multipart/form-data',
+//				frame:true ,
+//				defaults:{anchor:'95%'},
+//				items:[
+//					{
+//						xtype: 'fileuploadfield',
+//						id: 'uploadfilefield',
+//						name: 'uploadfilefield',
+//						fieldLabel: 'CORE_METADATA_UPLOADFILE_LABEL'
+//					}
+//				]
+//				,buttonAlign:'right'
+//				,buttons: [
+//					{
+//						text:'CORE_ALERT_SUBMIT',
+//						handler: function(){
+//							winupload.items.get(0).getForm().submit({
+//								url: 'index.php?option=com_easysdi_catalog&task=uploadFileAndGetLink',
+//								waitMsg: 'CORE_METADATA_UPLOADFILE_WAIT',
+//								success: function(form,action){
+//									winupload.backvalue = JSON.parse (action.response.responseText).url;
+//									winupload.close();
+//								},
+//								failure: function(form,action){
+//									Ext.MessageBox.alert('CORE_METADATA_UPLOADFILE_ERROR');
+//									winupload.close();
+//								}
+//							});
+//						}
+//					},
+//					{
+//						text: 'CORE_ALERT_CANCEL',
+//						handler: function(){
+//							winupload.close();
+//						}
+//					}
+//				]
+//			}]
+//	 	});
+//		winupload.on('beforeclose', function(){
+//			Ext.ComponentMgr.get(caller).setValue(winupload.backvalue);
+//			Ext.ComponentMgr.get(caller.concat('_hiddenVal')).setValue(winupload.backvalue);
+//		}, this);
+//		
+//		winupload.show();
+//	},
+
 	/**
 	 * Clones a button
 	 * @param {Number} card  Number of clones required. When no card is specified, the current clones will be returned
@@ -64,37 +179,38 @@ Ext.override(Ext.Button, {
 				var thesMaster = Ext.ComponentMgr.get(truncatedName + '_PANEL_THESAURUS');
 				
 				var winthge;
-				var winupload;
 				var clone;
 				
 			if (typeof(thesMaster) == 'undefined'){
 				//Case of stereotype 'file'
-				var button_action =  truncatedName.substring(truncatedName.length - 6);
+				var button_action =  newName.substring(truncatedName.length - 6);
 				
 				if (button_action == '_clear'){
 					//Button 'clear' of the stereotype 'file'
-					newName =  truncatedName.substring(0,truncatedName.length - 6);
+					newName =  newName.substring(0,truncatedName.length - 6);
+					newNameButton = newName + '_clear_button';
 					clone = master.cloneConfig({
-						currentid : newName,
-						id : newName + '_clear_button',
-						hiddenName: newName + '_clear_button' + '_hidden',
+						id : newNameButton,
+						hiddenName: newNameButton + '_hidden',
 						clone : isClone,
 						clones_count: clones_count,
 						extendedTemplate : master,
-						handler: function () {master.handler (newName)}														   
+						handler : Ext.ComponentMgr.get('metadataForm').clearUploadedFile.createCallback(newName)
 					});
 				}else{
 					//Button 'upload' of the stereotype 'file'
+					newNameButton = newName + '_button';
 					clone = master.cloneConfig({
-						currentid : newName,
-						id : newName + '_button',
-						hiddenName: newName + '_button' + '_hidden',
+						id : newNameButton,
+						hiddenName: newNameButton + '_hidden',
 						clone : isClone,
 						clones_count: clones_count,
 						extendedTemplate : master,
-						handler: function () {master.handler (newName)}																   
+						handler : Ext.ComponentMgr.get('metadataForm').initUploadFile.createCallback(newName)
 					});
 				}
+				
+				
 			}else{
 				//Case of stereotype 'Thesaurus GEMET'
 				clone = master.cloneConfig({
@@ -174,13 +290,8 @@ Ext.override(Ext.Button, {
 		        	}																	   
 				});
 			}
-				//console.log(clone);
-				
 				panel.add(clone);
-				
 				panel.doLayout();
-
-				
 			}			
 
 			// remove clones untill cardinality is reached
