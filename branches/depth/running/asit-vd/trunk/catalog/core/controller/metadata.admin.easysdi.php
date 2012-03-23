@@ -4218,7 +4218,17 @@ class ADMIN_metadata {
 		
 		//Generate random file name
 		$original_file_name = utf8_decode($_FILES['uploadfilefield']['name']);
-		$file_name = helper_easysdi::getUniqueId()."_".$original_file_name;
+		$guid = sprintf( '%04x%04x%04x', 
+						mt_rand( 0, 0xffff ), 
+						mt_rand( 0, 0xffff ), 
+						mt_rand( 0, 0xffff ), 
+						mt_rand( 0, 0x0fff ) | 0x4000, 
+						mt_rand( 0, 0x3fff ) | 0x8000, 
+						mt_rand( 0, 0xffff ), 
+						mt_rand( 0, 0xffff ), 
+						mt_rand( 0, 0xffff ) 
+					   );
+		$file_name = $guid."_".$original_file_name;
 		$file_location = $repository."\\".$file_name;
 		
 		if(move_uploaded_file($_FILES['uploadfilefield']['tmp_name'], $file_location)) {
