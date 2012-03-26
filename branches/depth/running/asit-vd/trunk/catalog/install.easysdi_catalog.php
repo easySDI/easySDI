@@ -1755,7 +1755,6 @@ function com_install(){
 			}
 	
 			$query = "INSERT INTO #__sdi_list_renderattributetype (attributetype_id, rendertype_id) VALUES
-								( 14, 1),
 								( 14, 5)";
 			$db->setQuery( $query);
 			if (!$db->query()){

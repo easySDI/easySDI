@@ -1431,7 +1431,7 @@ class ADMIN_metadata {
 						$usefullVals=array();
 						
 						$count=0;
-						if ($child->attribute_system)
+					//	if ($child->attribute_system)
 							$name = $name."__1"."_hiddenVal";
 						
 						foreach($keys as $key)
@@ -1450,6 +1450,7 @@ class ADMIN_metadata {
 						for ($pos=1; $pos<=$count; $pos++)
 						{
 							$nodeValue = $usefullVals[$pos-1];
+							
 							if(strlen($nodeValue) == 0){
 								continue;
 							}
@@ -1458,7 +1459,7 @@ class ADMIN_metadata {
 								
 							$XMLNode1 = $XMLDoc->createElement("gmd:MI_Identifier");
 							$XMLNode2 = $XMLDoc->createElement("gmd:code");
-							$XMLNode3 = $XMLDoc->createElement("gco:CharacterString",$nodeValue);
+							$XMLNode3 = $XMLDoc->createElement("gco:CharacterString",trim($nodeValue));
 							
 							$XMLNode->appendChild($XMLNode1);
 							$XMLNode1->appendChild($XMLNode2);

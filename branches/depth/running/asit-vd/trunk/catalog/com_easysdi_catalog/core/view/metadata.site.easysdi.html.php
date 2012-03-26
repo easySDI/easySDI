@@ -533,6 +533,125 @@ else
 						       	collapsed:false,
 						        renderTo: document.getElementById('formContainer'),
 						        isInvalid: false,
+						        initUploadFile : function  (caller){
+									if(Ext.ComponentMgr.get(caller).getValue().length != 0){
+										Ext.Msg.confirm(
+												'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_ALERT_UPLOADFILE_FILE_EXISTS_TITLE'))."',
+												'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_ALERT_UPLOADFILE_FILE_EXISTS_MSG'))."',
+												function(btn, text){
+											if (btn == 'yes'){
+												Ext.Ajax.request({
+													url:'index.php?option=com_easysdi_catalog&task=deleteUploadedFile&file='+Ext.ComponentMgr.get(caller).getValue(),
+													method:'GET'
+												});
+												Ext.ComponentMgr.get('metadataForm').uploadfile(caller);
+											}
+										}
+										);
+									}else{
+										Ext.ComponentMgr.get('metadataForm').uploadfile(caller);
+									}
+								},
+				
+					clearUploadedFile : function  (caller){
+						Ext.Msg.confirm(
+							'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_ALERT_CLEAR_UPLOADEDFILE_CONFIRM_TITLE'))."',
+							'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_ALERT_CLEAR_UPLOADEDFILE_CONFIRM_MSG'))."',
+							function(btn, text){
+								if (btn == 'yes'){
+									Ext.MessageBox.show({
+										title: '".html_Metadata::cleanText(JText::_('CATALOG_METADATA_CLEAR_UPLOADEDFILE_WAIT'))."',
+										msg: '".html_Metadata::cleanText(JText::_('CATALOG_METADATA_CLEAR_UPLOADEDFILE_WAIT_PRG'))."',
+										width:300,
+										wait:true,
+										waitConfig: {
+											interval:200}
+									});
+									Ext.Ajax.request({
+										url:'index.php?option=com_easysdi_catalog&task=deleteUploadedFile&file='+Ext.ComponentMgr.get(caller).getValue(),
+										method:'GET',
+										success:function(result,request) {
+											Ext.MessageBox.hide();
+											Ext.ComponentMgr.get(caller).setValue('');
+											if(Ext.ComponentMgr.get(caller.concat('_hiddenVal')))
+												Ext.ComponentMgr.get(caller.concat('_hiddenVal')).setValue('');
+										},
+										failure:function(result,request) {
+											Ext.MessageBox.hide();
+										}
+									});
+								}
+							}
+						)
+					},
+					
+					 uploadfile : function  (caller){
+						if(winupload) winupload.close();
+						winupload = new Ext.Window({
+							title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_UPLOADFILE_ALERT'))."',
+							width:500,
+							height:130,
+							closeAction:'hide',
+							layout:'fit',
+							border:true,
+							closable:true,
+							renderTo:Ext.getBody(),
+							frame:true,
+							backvalue:'',
+							items:[{
+								xtype:'form',
+								fileUpload: true,
+								isUpload: true,
+								id:'uploadfileform' ,
+								defaultType:'textfield',
+								method:'POST',
+								enctype:'multipart/form-data',
+								frame:true ,
+								defaults:{anchor:'95%'},
+								items:[
+									{
+										xtype: 'fileuploadfield',
+										id: 'uploadfilefield',
+										name: 'uploadfilefield',
+										fieldLabel: '".html_Metadata::cleanText(JText::_('CORE_METADATA_UPLOADFILE_LABEL'))."'
+									}
+								]
+								,buttonAlign:'right'
+								,buttons: [
+									{
+										text:'".html_Metadata::cleanText(JText::_('CORE_ALERT_SUBMIT'))."',
+										handler: function(){
+											winupload.items.get(0).getForm().submit({
+												url: 'index.php?option=com_easysdi_catalog&task=uploadFileAndGetLink',
+												waitMsg: '".html_Metadata::cleanText(JText::_('CORE_METADATA_UPLOADFILE_WAIT'))."',
+												success: function(form,action){
+													winupload.backvalue = JSON.parse (action.response.responseText).url;
+													winupload.close();
+												},
+												failure: function(form,action){
+													Ext.MessageBox.alert('".html_Metadata::cleanText(JText::_('CORE_METADATA_UPLOADFILE_ERROR'))."');
+													winupload.close();
+												}
+											});
+										}
+									},
+									{
+										text: '".html_Metadata::cleanText(JText::_('CORE_ALERT_CANCEL'))."',
+										handler: function(){
+											winupload.close();
+										}
+									}
+								]
+							}]
+					 	});
+						winupload.on('beforeclose', function(){
+							Ext.ComponentMgr.get(caller).setValue(winupload.backvalue);
+							if(Ext.ComponentMgr.get(caller.concat('_hiddenVal')))
+								Ext.ComponentMgr.get(caller.concat('_hiddenVal')).setValue(winupload.backvalue);
+						}, this);
+						
+						winupload.show();
+					},
 						        buttons: [{
 							                text: '".JText::_('CORE_XML_PREVIEW')."',
 							                handler: function()
@@ -3051,6 +3170,64 @@ else
 								".$parentFieldsetName.".add(createSuperBoxSelect('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."', ".$value.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."'));
 								";
 								break;
+								//TODO
+								case 14:
+									// Traitement de la classe enfant
+									$node = $xpathResults->query($type_isocode, $attributeScope);
+										
+									// Cas où le noeud n'existe pas dans le XML. Inutile de rechercher la valeur
+									if ($parentScope <> NULL and $parentScope->nodeName == $scope->nodeName)
+										$nodeValue="";
+									else
+										$nodeValue = html_Metadata::cleanText($node->item($pos)->nodeValue);
+								
+									// Récupération de la valeur par défaut, s'il y a lieu
+									if ($child->attribute_default <> "" and $nodeValue == "")
+										$nodeValue = html_Metadata::cleanText($child->attribute_default);
+								
+									$this->javascript .="
+									var _toolbar = new Ext.Toolbar({
+									toolbarCls: 'x-panel-fbar',
+									buttonAlign: 'left',
+									layout: 'toolbar',
+									cls: 'x-panel-footer x-panel-footer-noborder x-panel-btns'
+								});
+								
+								_toolbar.add(
+								new Ext.Button({
+								id:'".$currentName."_clear_button',
+								text:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_CLEAR_UPLOADFILE_BUTTON'))."',
+								handler:  Ext.ComponentMgr.get('metadataForm').clearUploadedFile.createCallback('".$currentName."')
+								})
+								);
+								_toolbar.add(
+								new Ext.Button({
+								id:'".$currentName."_button',
+								text:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_UPLOADFILE_BUTTON'))."',
+								handler:  Ext.ComponentMgr.get('metadataForm').initUploadFile.createCallback('".$currentName."'),
+									
+								// Champs spécifiques au clonage
+								dynamic:true,
+								minOccurs:1,
+								maxOccurs:1,
+								clone: false,
+								clones_count: 1,
+								extendedTemplate: null
+								})
+								);
+								
+								".$parentFieldsetName.".add(createDisplayField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', true, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+								//Ext.ComponentMgr.get('".$currentName."').setWidth(400);
+								".$parentFieldsetName.".add(_toolbar);
+								";
+								
+									// 								if ($child->attribute_system)
+										// 								{
+									$this->javascript .="
+									".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
+									";
+									// 								}
+									break;
 							default:
 								// Traitement de la classe enfant
 								//echo "Recherche de ".$type_isocode." dans ".$attributeScope->nodeName."<br>";
@@ -3610,6 +3787,63 @@ else
 							case 11:
 								// Le Thesaurus GEMET  n'existe qu'en un exemplaire
 								break;
+								//TODO
+								case 14:
+									// Traitement de la classe enfant
+									$node = $xpathResults->query($type_isocode, $attributeScope);
+										
+									// Cas où le noeud n'existe pas dans le XML. Inutile de rechercher la valeur
+									if ($parentScope <> NULL and $parentScope->nodeName == $scope->nodeName)
+										$nodeValue="";
+									else
+										$nodeValue = html_Metadata::cleanText($node->item($pos)->nodeValue);
+								
+									// Récupération de la valeur par défaut, s'il y a lieu
+									if ($child->attribute_default <> "" and $nodeValue == "")
+										$nodeValue = html_Metadata::cleanText($child->attribute_default);
+								
+									$this->javascript .="
+									var _toolbar = new Ext.Toolbar({
+									toolbarCls: 'x-panel-fbar',
+									buttonAlign: 'left',
+									layout: 'toolbar',
+									cls: 'x-panel-footer x-panel-footer-noborder x-panel-btns'
+								});
+								
+								_toolbar.add(
+								new Ext.Button({
+								id:'".$currentName."_clear_button',
+								text:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_CLEAR_UPLOADFILE_BUTTON'))."',
+								handler:  Ext.ComponentMgr.get('metadataForm').clearUploadedFile.createCallback('".$currentName."')
+								})
+								);
+								_toolbar.add(
+								new Ext.Button({
+								id:'".$currentName."_button',
+								text:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_UPLOADFILE_BUTTON'))."',
+								handler:  Ext.ComponentMgr.get('metadataForm').initUploadFile.createCallback('".$currentName."'),
+									
+								// Champs spécifiques au clonage
+								dynamic:true,
+								minOccurs:1,
+								maxOccurs:1,
+								clone: false,
+								clones_count: 1,
+								extendedTemplate: null
+								})
+								);
+								".$parentFieldsetName.".add(createDisplayField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', true, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+								//Ext.ComponentMgr.get('".$currentName."').setWidth(400);
+								".$parentFieldsetName.".add(_toolbar);
+								";
+								
+									// 								if ($child->attribute_system)
+										// 								{
+									$this->javascript .="
+									".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
+									";
+									// 								}
+									break;
 							default:
 								// Selon le rendu de l'attribut, on fait des traitements diff�rents
 								switch ($child->rendertype_id)
@@ -4477,6 +4711,51 @@ else
 								";
 								
 								break;
+							//TODO
+								case 14:
+									$this->javascript .="
+									var _toolbar = new Ext.Toolbar({
+									toolbarCls: 'x-panel-fbar',
+									buttonAlign: 'left',
+									layout: 'toolbar',
+									cls: 'x-panel-footer x-panel-footer-noborder x-panel-btns'
+								});
+								
+								_toolbar.add(
+								new Ext.Button({
+								id:'".$currentName."_clear_button',
+								text:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_CLEAR_UPLOADFILE_BUTTON'))."',
+								handler:  Ext.ComponentMgr.get('metadataForm').clearUploadedFile.createCallback('".$currentName."')
+								})
+								);
+								_toolbar.add(
+								new Ext.Button({
+								id:'".$currentName."_button',
+								text:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_UPLOADFILE_BUTTON'))."',
+								handler:  Ext.ComponentMgr.get('metadataForm').initUploadFile.createCallback('".$currentName."'),
+								
+								// Champs spécifiques au clonage
+								dynamic:true,
+								minOccurs:1,
+								maxOccurs:1,
+								clone: false,
+								clones_count: 1,
+								extendedTemplate: null
+								})
+								);
+								
+								".$parentFieldsetName.".add(createDisplayField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', true, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+								//Ext.ComponentMgr.get('".$currentName."').setWidth(400);
+								".$parentFieldsetName.".add(_toolbar);
+								";
+								
+									// 								if ($child->attribute_system)
+										// 								{
+									$this->javascript .="
+									".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
+									";
+									// 								}
+									break;
 						default:
 							// Selon le rendu de l'attribut, on fait des traitements diff�rents
 							switch ($child->rendertype_id)
@@ -5276,7 +5555,7 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 				$str .= 'true';
 				else
 				$str .= '"' . addslashes($value) . '"'; //All other things
-				// :TODO: Is there any more datatype we should be in the lookout for? (Object?)
+				//  Is there any more datatype we should be in the lookout for? (Object?)
 
 				$parts[] = $str;
 			}
