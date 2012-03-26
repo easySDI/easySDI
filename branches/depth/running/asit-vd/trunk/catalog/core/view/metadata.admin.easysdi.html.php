@@ -306,7 +306,7 @@ class HTML_metadata {
 										success:function(result,request) {
 											Ext.MessageBox.hide();
 											Ext.ComponentMgr.get(caller).setValue('');
-											Ext.ComponentMgr.get(caller.concat('_hiddenVal')).setValue('');
+										//	Ext.ComponentMgr.get(caller.concat('_hiddenVal')).setValue('');
 										},
 										failure:function(result,request) {
 											Ext.MessageBox.hide();
@@ -378,7 +378,7 @@ class HTML_metadata {
 					 	});
 						winupload.on('beforeclose', function(){
 							Ext.ComponentMgr.get(caller).setValue(winupload.backvalue);
-							Ext.ComponentMgr.get(caller.concat('_hiddenVal')).setValue(winupload.backvalue);
+							//Ext.ComponentMgr.get(caller.concat('_hiddenVal')).setValue(winupload.backvalue);
 						}, this);
 						
 						winupload.show();
@@ -2093,7 +2093,7 @@ class HTML_metadata {
 									})
 								);
 								
-								// Cr�er le champ qui contiendra les mots-cl�s du thesaurus choisis
+								// Créer le champ qui contiendra les mots-clés du thesaurus choisis
 								".$parentFieldsetName.".add(createSuperBoxSelect('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."', ".$value.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."'));
 								";
 								break;
@@ -2113,15 +2113,21 @@ class HTML_metadata {
 									$nodeValue = html_Metadata::cleanText($child->attribute_default);
 								
 								$this->javascript .="
-								".$parentFieldsetName.".add(createDisplayField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '', ".$disabled.", '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
-								".$parentFieldsetName.".add(
+								var _toolbar = new Ext.Toolbar({
+						       			toolbarCls: 'x-panel-fbar',
+						       			buttonAlign: 'left',
+						       			layout: 'toolbar',
+						       			cls: 'x-panel-footer x-panel-footer-noborder x-panel-btns'
+								});
+								
+								_toolbar.add(
 										new Ext.Button({
 											id:'".$currentName."_clear_button',
 											text:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_CLEAR_UPLOADFILE_BUTTON'))."',
 											handler:  Ext.ComponentMgr.get('metadataForm').clearUploadedFile.createCallback('".$currentName."')
 									})
 								);
-								".$parentFieldsetName.".add(
+								_toolbar.add(
 										new Ext.Button({
 											id:'".$currentName."_button',
 											text:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_UPLOADFILE_BUTTON'))."',
@@ -2136,10 +2142,40 @@ class HTML_metadata {
 								            extendedTemplate: null
 										})
 									);
+								
+								".$parentFieldsetName.".add(createTextField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".html_Metadata::cleanText($nodeValue)."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+								Ext.ComponentMgr.get('".$currentName."').autoSize();
+								".$parentFieldsetName.".add(_toolbar);
 								";
-								$this->javascript .="
-								".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
-								";
+								
+// 								$this->javascript .="
+// 								".$parentFieldsetName.".add(createDisplayField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '', ".$disabled.", '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+// 								".$parentFieldsetName.".add(
+// 										new Ext.Button({
+// 											id:'".$currentName."_clear_button',
+// 											text:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_CLEAR_UPLOADFILE_BUTTON'))."',
+// 											handler:  Ext.ComponentMgr.get('metadataForm').clearUploadedFile.createCallback('".$currentName."')
+// 									})
+// 								);
+// 								".$parentFieldsetName.".add(
+// 										new Ext.Button({
+// 											id:'".$currentName."_button',
+// 											text:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_UPLOADFILE_BUTTON'))."',
+// 											handler:  Ext.ComponentMgr.get('metadataForm').initUploadFile.createCallback('".$currentName."'),
+											
+// 									        // Champs spécifiques au clonage
+// 									        dynamic:true,
+// 									        minOccurs:1,
+// 								            maxOccurs:1,
+// 								            clone: false,
+// 											clones_count: 1,
+// 								            extendedTemplate: null
+// 										})
+// 									);
+// 								";
+// 								$this->javascript .="
+// 								".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
+// 								";
 								break;
 							default:
 								// Traitement de la classe enfant
@@ -2680,33 +2716,67 @@ class HTML_metadata {
 									$nodeValue = html_Metadata::cleanText($child->attribute_default);
 								
 								$this->javascript .="
-								".$parentFieldsetName.".add(createDisplayField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '', ".$disabled.", '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
-								".$parentFieldsetName.".add(
-										new Ext.Button({
-											id:'".$currentName."_clear_button',
-											text:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_CLEAR_UPLOADFILE_BUTTON'))."',
-											handler:  Ext.ComponentMgr.get('metadataForm').clearUploadedFile.createCallback('".$currentName."')
-										})
-									);
-								".$parentFieldsetName.".add(
-										new Ext.Button({
-											id:'".$currentName."_button',
-											text:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_UPLOADFILE_BUTTON'))."',
-											handler:  Ext.ComponentMgr.get('metadataForm').initUploadFile.createCallback('".$currentName."'),
+								var _toolbar = new Ext.Toolbar({
+									toolbarCls: 'x-panel-fbar',
+									buttonAlign: 'left',
+									layout: 'toolbar',
+									cls: 'x-panel-footer x-panel-footer-noborder x-panel-btns'
+								});
+								
+								_toolbar.add(
+									new Ext.Button({
+										id:'".$currentName."_clear_button',
+										text:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_CLEAR_UPLOADFILE_BUTTON'))."',
+										handler:  Ext.ComponentMgr.get('metadataForm').clearUploadedFile.createCallback('".$currentName."')
+									})
+								);
+								_toolbar.add(
+									new Ext.Button({
+										id:'".$currentName."_button',
+										text:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_UPLOADFILE_BUTTON'))."',
+										handler:  Ext.ComponentMgr.get('metadataForm').initUploadFile.createCallback('".$currentName."'),
 											
-									        // Champs spécifiques au clonage
-									        dynamic:true,
-									        minOccurs:1,
-								            maxOccurs:1,
-								            clone: false,
-											clones_count: 1,
-								            extendedTemplate: null
-										})
-									);
+										// Champs spécifiques au clonage
+										dynamic:true,
+										minOccurs:1,
+										maxOccurs:1,
+										clone: false,
+										clones_count: 1,
+										extendedTemplate: null
+									})
+								);
+								".$parentFieldsetName.".add(createTextField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".html_Metadata::cleanText($nodeValue)."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+								Ext.ComponentMgr.get('".$currentName."').autoSize();
+								".$parentFieldsetName.".add(_toolbar);
 								";
-								$this->javascript .="
-								".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
-								";
+// 								$this->javascript .="
+// 								".$parentFieldsetName.".add(createDisplayField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '', ".$disabled.", '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+// 								".$parentFieldsetName.".add(
+// 										new Ext.Button({
+// 											id:'".$currentName."_clear_button',
+// 											text:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_CLEAR_UPLOADFILE_BUTTON'))."',
+// 											handler:  Ext.ComponentMgr.get('metadataForm').clearUploadedFile.createCallback('".$currentName."')
+// 										})
+// 									);
+// 								".$parentFieldsetName.".add(
+// 										new Ext.Button({
+// 											id:'".$currentName."_button',
+// 											text:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_UPLOADFILE_BUTTON'))."',
+// 											handler:  Ext.ComponentMgr.get('metadataForm').initUploadFile.createCallback('".$currentName."'),
+											
+// 									        // Champs spécifiques au clonage
+// 									        dynamic:true,
+// 									        minOccurs:1,
+// 								            maxOccurs:1,
+// 								            clone: false,
+// 											clones_count: 1,
+// 								            extendedTemplate: null
+// 										})
+// 									);
+// 								";
+// 								$this->javascript .="
+// 								".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
+// 								";
 								break;
 
 							default:
@@ -3571,33 +3641,69 @@ class HTML_metadata {
 								//TODO
 							case 14:
 								$this->javascript .="
-								".$parentFieldsetName.".add(createDisplayField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '', ".$disabled.", '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
-								".$parentFieldsetName.".add(
-										new Ext.Button({
-											id:'".$currentName."_clear_button',
-											text:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_CLEAR_UPLOADFILE_BUTTON'))."',
-											handler:  Ext.ComponentMgr.get('metadataForm').clearUploadedFile.createCallback('".$currentName."')
-										})
-									);
-								".$parentFieldsetName.".add(
-										new Ext.Button({
-											id:'".$currentName."_button',
-											text:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_UPLOADFILE_BUTTON'))."',
-											handler:  Ext.ComponentMgr.get('metadataForm').initUploadFile.createCallback('".$currentName."'),
+								var _toolbar = new Ext.Toolbar({
+									toolbarCls: 'x-panel-fbar',
+									buttonAlign: 'left',
+									layout: 'toolbar',
+									cls: 'x-panel-footer x-panel-footer-noborder x-panel-btns'
+								});
+								
+								_toolbar.add(
+									new Ext.Button({
+										id:'".$currentName."_clear_button',
+										text:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_CLEAR_UPLOADFILE_BUTTON'))."',
+										handler:  Ext.ComponentMgr.get('metadataForm').clearUploadedFile.createCallback('".$currentName."')
+									})
+								);
+								_toolbar.add(
+									new Ext.Button({
+										id:'".$currentName."_button',
+										text:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_UPLOADFILE_BUTTON'))."',
+										handler:  Ext.ComponentMgr.get('metadataForm').initUploadFile.createCallback('".$currentName."'),
+										
+										// Champs spécifiques au clonage
+										dynamic:true,
+										minOccurs:1,
+										maxOccurs:1,
+										clone: false,
+										clones_count: 1,
+										extendedTemplate: null
+									})
+								);
+								
+								".$parentFieldsetName.".add(createTextField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".html_Metadata::cleanText($nodeValue)."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+								Ext.ComponentMgr.get('".$currentName."').autoSize();
+								".$parentFieldsetName.".add(_toolbar);
+								
+								";
+// 								$this->javascript .="
+// 								".$parentFieldsetName.".add(createDisplayField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '', ".$disabled.", '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+// 								".$parentFieldsetName.".add(
+// 										new Ext.Button({
+// 											id:'".$currentName."_clear_button',
+// 											text:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_CLEAR_UPLOADFILE_BUTTON'))."',
+// 											handler:  Ext.ComponentMgr.get('metadataForm').clearUploadedFile.createCallback('".$currentName."')
+// 										})
+// 									);
+// 								".$parentFieldsetName.".add(
+// 										new Ext.Button({
+// 											id:'".$currentName."_button',
+// 											text:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_UPLOADFILE_BUTTON'))."',
+// 											handler:  Ext.ComponentMgr.get('metadataForm').initUploadFile.createCallback('".$currentName."'),
 											
-									        // Champs spécifiques au clonage
-									        dynamic:true,
-									        minOccurs:1,
-								            maxOccurs:1,
-								            clone: false,
-											clones_count: 1,
-								            extendedTemplate: null
-										})
-									);
-								";
-								$this->javascript .="
-								".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
-								";
+// 									        // Champs spécifiques au clonage
+// 									        dynamic:true,
+// 									        minOccurs:1,
+// 								            maxOccurs:1,
+// 								            clone: false,
+// 											clones_count: 1,
+// 								            extendedTemplate: null
+// 										})
+// 									);
+// 								";
+// 								$this->javascript .="
+// 								".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
+// 								";
 								
 								break;
 						default:

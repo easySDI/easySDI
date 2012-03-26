@@ -372,6 +372,7 @@
 	            xtype: 'displayfield',
 				cls: 'easysdi_shop_backend_textfield', 
 	            fieldLabel: label,
+	            labelWidth:150,
 	            name: id,
 	            //allowBlank: optional,
 	            //blankText: mandatoryMsg,
