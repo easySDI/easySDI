@@ -2123,14 +2123,14 @@ class HTML_metadata {
 						       			cls: 'x-panel-footer x-panel-footer-noborder x-panel-btns'
 								});
 								
-								_toolbar.add(
+								".$parentFieldsetName.".add(
 										new Ext.Button({
 											id:'".$currentName."_clear_button',
 											text:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_CLEAR_UPLOADFILE_BUTTON'))."',
 											handler:  Ext.ComponentMgr.get('metadataForm').clearUploadedFile.createCallback('".$currentName."')
 									})
 								);
-								_toolbar.add(
+								".$parentFieldsetName.".add(
 										new Ext.Button({
 											id:'".$currentName."_button',
 											text:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_UPLOADFILE_BUTTON'))."',
@@ -2146,9 +2146,8 @@ class HTML_metadata {
 										})
 									);
 								
-								".$parentFieldsetName.".add(createDisplayField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', true, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
-								//Ext.ComponentMgr.get('".$currentName."').setWidth(400);
-								".$parentFieldsetName.".add(_toolbar);
+								".$parentFieldsetName.".add(createTextField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', false, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+								//".$parentFieldsetName.".add(_toolbar);
 								";
 								
 // 								if ($child->attribute_system)
@@ -2704,14 +2703,14 @@ class HTML_metadata {
 									cls: 'x-panel-footer x-panel-footer-noborder x-panel-btns'
 								});
 								
-								_toolbar.add(
+								".$parentFieldsetName.".add(
 									new Ext.Button({
 										id:'".$currentName."_clear_button',
 										text:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_CLEAR_UPLOADFILE_BUTTON'))."',
 										handler:  Ext.ComponentMgr.get('metadataForm').clearUploadedFile.createCallback('".$currentName."')
 									})
 								);
-								_toolbar.add(
+								".$parentFieldsetName.".add(
 									new Ext.Button({
 										id:'".$currentName."_button',
 										text:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_UPLOADFILE_BUTTON'))."',
@@ -2726,9 +2725,8 @@ class HTML_metadata {
 										extendedTemplate: null
 									})
 								);
-								".$parentFieldsetName.".add(createDisplayField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', true, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
-								//Ext.ComponentMgr.get('".$currentName."').setWidth(400);
-								".$parentFieldsetName.".add(_toolbar);
+								".$parentFieldsetName.".add(createTextField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', false, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+								//".$parentFieldsetName.".add(_toolbar);
 								";
 								
 // 								if ($child->attribute_system)
@@ -3608,14 +3606,14 @@ class HTML_metadata {
 									cls: 'x-panel-footer x-panel-footer-noborder x-panel-btns'
 								});
 								
-								_toolbar.add(
+								".$parentFieldsetName.".add(
 									new Ext.Button({
 										id:'".$currentName."_clear_button',
 										text:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_CLEAR_UPLOADFILE_BUTTON'))."',
 										handler:  Ext.ComponentMgr.get('metadataForm').clearUploadedFile.createCallback('".$currentName."')
 									})
 								);
-								_toolbar.add(
+								".$parentFieldsetName.".add(
 									new Ext.Button({
 										id:'".$currentName."_button',
 										text:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_UPLOADFILE_BUTTON'))."',
@@ -3631,9 +3629,8 @@ class HTML_metadata {
 									})
 								);
 								
-								".$parentFieldsetName.".add(createDisplayField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', true, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
-								//Ext.ComponentMgr.get('".$currentName."').setWidth(400);
-								".$parentFieldsetName.".add(_toolbar);
+								".$parentFieldsetName.".add(createTextField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', false, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+							//	".$parentFieldsetName.".add(_toolbar);
 								";
 								
 // 								if ($child->attribute_system)

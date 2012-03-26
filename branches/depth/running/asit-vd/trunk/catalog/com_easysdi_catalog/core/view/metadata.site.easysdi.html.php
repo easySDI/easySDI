@@ -499,6 +499,7 @@ else
 						var wincsw;
 						var winrct;
 						var winrst;
+						var winupload;
     
 						// Outils pour la pr�visualisation
 						SyntaxHighlighter.config.clipboardSwf = 'clipboard.swf';
