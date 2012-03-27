@@ -131,6 +131,9 @@ Ext.override(Ext.form.Field, {
 						clone : isClone,
 						clones_count: clones_count,
 						template : master,
+						listeners:{
+		                    focus: Ext.ComponentMgr.get('metadataForm').showUploadFileWindow.createCallback(newName)
+		                },
 						iconCfg : {cls:'x-tool x-tool-minus',clsOnOver:'x-tool-minus-over'}																	   
 					});
 				}
@@ -143,6 +146,9 @@ Ext.override(Ext.form.Field, {
 						clone : isClone,
 						clones_count: clones_count,
 						template : master,
+						listeners:{
+		                    focus: Ext.ComponentMgr.get('metadataForm').showUploadFileWindow.createCallback(newName)
+		                },
 						iconCfg : {cls:'x-tool x-tool-minus',clsOnOver:'x-tool-minus-over'}																	   
 					});
 				}
@@ -154,6 +160,9 @@ Ext.override(Ext.form.Field, {
 						clone : isClone,
 						clones_count: clones_count,
 						template : master,
+						listeners:{
+		                    focus: Ext.ComponentMgr.get('metadataForm').showUploadFileWindow.createCallback(newName)
+		                },
 						iconCfg : {cls:'x-tool x-tool-minus',clsOnOver:'x-tool-minus-over'}																	   
 					});
 				}

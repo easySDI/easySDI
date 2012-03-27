@@ -355,6 +355,46 @@
 		 return tf;
 	}
 	
+	function createTextFieldWithFocusListener(id, label, mandatory, clone, master, min, max, value, defaultVal, dis, maxL, tip, dismissDelay, regex, mandatoryMsg, regexMsg)
+	{
+		optional = !mandatory;
+		//if (!clone) optional=true;
+		if (clone) optional=true;
+		if (master) master.clones_count=master.clones_count+1;
+		var clones_count = (master) ? master.clones_count : 1;
+		var dynamic = !dis;
+		
+		// Valeur max = n
+		if (max == 999) max = Number.MAX_VALUE;
+		
+		var tf = new Ext.form.TextField({
+	            id:id,
+	            xtype: 'textfield',
+				cls: 'easysdi_shop_backend_textfield', 
+	            fieldLabel: label,
+	            name: id,
+	            allowBlank: optional,
+	            blankText: mandatoryMsg,
+	            regex: eval("/"+regex+"/"),
+	            regexText: regexMsg,
+	            value: value,
+	            defaultVal:defaultVal,
+	            dynamic:dynamic,
+	            minOccurs:min,
+	            maxOccurs:max,
+	            clone: clone,
+				clones_count: clones_count,
+	            template: master,
+	            disabled: dis,
+	            maxLength: maxL,
+	            qTip: tip,
+	            qTipDelay: dismissDelay,
+	            listeners:{
+                    focus: Ext.ComponentMgr.get('metadataForm').showUploadFileWindow.createCallback(id)
+                }
+	        });
+		 return tf;
+	}
 	function createDisplayField(id, label, mandatory, clone, master, min, max, value, defaultVal, dis, maxL, tip, dismissDelay, regex, mandatoryMsg, regexMsg)
 	{
 		optional = !mandatory;
