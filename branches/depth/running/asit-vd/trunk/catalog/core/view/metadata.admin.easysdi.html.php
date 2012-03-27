@@ -269,6 +269,7 @@ class HTML_metadata {
 						        isInvalid: false,
 						       
 						        showUploadFileWindow : function (caller){
+						        	var startValue = Ext.ComponentMgr.get(caller).getValue();
 						        	if(winupload) winupload.close();
 									winupload = new Ext.Window({
 										title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_UPLOADFILE_ALERT'))."',
@@ -296,14 +297,14 @@ class HTML_metadata {
 													xtype: 'fileuploadfield',
 													id: 'uploadfilefield',
 													name: 'uploadfilefield',
-													value : Ext.ComponentMgr.get(caller).getValue,
+													value : startValue,
 													fieldLabel: '".html_Metadata::cleanText(JText::_('CORE_METADATA_UPLOADFILE_LABEL'))."'
 												}
 											]
 											,buttonAlign:'right'
 											,buttons: [
 												{
-													text: '".html_Metadata::cleanText(JText::_('CORE_ALERT_DELETE'))."',
+													text: '".html_Metadata::cleanText(JText::_('CATALOG_ALERT_DELETE'))."',
 													handler: Ext.ComponentMgr.get('metadataForm').clearUploadedFile.createCallback(caller)
 												},
 												{
@@ -347,9 +348,10 @@ class HTML_metadata {
 													}
 												},
 												{
-													text: '".html_Metadata::cleanText(JText::_('CORE_ALERT_CANCEL'))."',
+													text: '".html_Metadata::cleanText(JText::_('CATALOG_ALERT_CLOSE'))."',
 													handler: function(){
 														winupload.close();
+														Ext.ComponentMgr.get(caller).setValue (startValue);
 													}
 												}
 												
@@ -388,6 +390,7 @@ class HTML_metadata {
 														Ext.ComponentMgr.get(caller).setValue('');
 														if(Ext.ComponentMgr.get(caller.concat('_hiddenVal')))
 															Ext.ComponentMgr.get(caller.concat('_hiddenVal')).setValue('');
+														winupload.close();
 													},
 													failure:function(result,request) {
 														Ext.MessageBox.hide();
@@ -2141,46 +2144,15 @@ class HTML_metadata {
 									$nodeValue = html_Metadata::cleanText($child->attribute_default);
 								
 								$this->javascript .="
-// 								var _toolbar = new Ext.ux.ExtendedToolBar({
-// 						       			toolbarCls: 'x-panel-fbar',
-// 						       			buttonAlign: 'left',
-// 						       			layout: 'toolbar',
-// 						       			cls: 'x-panel-footer x-panel-footer-noborder x-panel-btns'
-// 								});
-								
-// 								_toolbar.add(
-// 										new Ext.Button({
-// 											id:'".$currentName."_clear_button',
-// 											text:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_CLEAR_UPLOADFILE_BUTTON'))."',
-// 											handler:  Ext.ComponentMgr.get('metadataForm').clearUploadedFile.createCallback('".$currentName."')
-// 									})
-// 								);
-// 								_toolbar.add(
-// 										new Ext.Button({
-// 											id:'".$currentName."_button',
-// 											text:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_UPLOADFILE_BUTTON'))."',
-// 											handler:  Ext.ComponentMgr.get('metadataForm').initUploadFile.createCallback('".$currentName."'),
-											
-// 									        // Champs spécifiques au clonage
-// 									        dynamic:true,
-// 									        minOccurs:1,
-// 								            maxOccurs:1,
-// 								            clone: false,
-// 											clones_count: 1,
-// 								            extendedTemplate: null
-// 										})
-// 									);
-								
-								".$parentFieldsetName.".add(createTextFieldWithFocusListener('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', false, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
-// 								".$parentFieldsetName.".add(_toolbar);
+								".$parentFieldsetName.".add(createTextFieldWithFocusListener('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".str_replace(chr(10),'',$nodeValue)."', '".html_Metadata::cleanText($child->attribute_default)."', false, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
 								";
 								
-// 								if ($child->attribute_system)
-// 								{
+								if ($child->attribute_system)
+								{
 									$this->javascript .="
 									".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
 									";
-// 								}
+								}
 								break;
 							default:
 								// Traitement de la classe enfant
@@ -2196,7 +2168,7 @@ class HTML_metadata {
 								if ($child->attribute_default <> "" and $nodeValue == "")
 									$nodeValue = html_Metadata::cleanText($child->attribute_default);
 			
-								// Selon le rendu de l'attribut, on fait des traitements diff�rents
+								// Selon le rendu de l'attribut, on fait des traitements différents
 								switch ($child->rendertype_id)
 								{
 									default:
@@ -2229,7 +2201,7 @@ class HTML_metadata {
 						else
 							$type_isocode = $child->t_isocode;
 	
-						// Modifier le path d'acc�s � l'attribut
+						// Modifier le path d'accés à l'attribut
 						$queryPath = $queryPath."/".$child->attribute_isocode."/".$type_isocode;
 						
 						// Construction du nom de l'attribut
@@ -2707,59 +2679,16 @@ class HTML_metadata {
 								break;
 								//TODO
 							case 14:
-								// Traitement de la classe enfant
-								$node = $xpathResults->query($type_isocode, $attributeScope);
-									
-								// Cas où le noeud n'existe pas dans le XML. Inutile de rechercher la valeur
-								if ($parentScope <> NULL and $parentScope->nodeName == $scope->nodeName)
-									$nodeValue="";
-								else
-									$nodeValue = html_Metadata::cleanText($node->item($pos)->nodeValue);
-								
-								// Récupération de la valeur par défaut, s'il y a lieu
-								if ($child->attribute_default <> "" and $nodeValue == "")
-									$nodeValue = html_Metadata::cleanText($child->attribute_default);
-								
 								$this->javascript .="
-// 								var _toolbar = new Ext.ux.ExtendedToolBar({
-// 									toolbarCls: 'x-panel-fbar',
-// 									buttonAlign: 'left',
-// 									layout: 'toolbar',
-// 									cls: 'x-panel-footer x-panel-footer-noborder x-panel-btns'
-// 								});
-								
-// 								_toolbar.add(
-// 									new Ext.Button({
-// 										id:'".$currentName."_clear_button',
-// 										text:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_CLEAR_UPLOADFILE_BUTTON'))."',
-// 										handler:  Ext.ComponentMgr.get('metadataForm').clearUploadedFile.createCallback('".$currentName."')
-// 									})
-// 								);
-// 								_toolbar.add(
-// 									new Ext.Button({
-// 										id:'".$currentName."_button',
-// 										text:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_UPLOADFILE_BUTTON'))."',
-// 										handler:  Ext.ComponentMgr.get('metadataForm').initUploadFile.createCallback('".$currentName."'),
-											
-// 										// Champs spécifiques au clonage
-// 										dynamic:true,
-// 										minOccurs:1,
-// 										maxOccurs:1,
-// 										clone: false,
-// 										clones_count: 1,
-// 										extendedTemplate: null
-// 									})
-// 								);
-								".$parentFieldsetName.".add(createTextFieldWithFocusListener('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', false, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
-// 								".$parentFieldsetName.".add(_toolbar);
+								".$parentFieldsetName.".add(createTextFieldWithFocusListener('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", true, master, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".str_replace(chr(10),'',$nodeValue)."', '".html_Metadata::cleanText($child->attribute_default)."', false, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
 								";
 								
-// 								if ($child->attribute_system)
-// 								{
+								if ($child->attribute_system)
+								{
 									$this->javascript .="
 									".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
 									";
-// 								}
+								}
 								break;
 
 							default:
@@ -3624,49 +3553,18 @@ class HTML_metadata {
 								//TODO
 							case 14:
 								$this->javascript .="
-// 								var _toolbar = new Ext.ux.ExtendedToolBar({
-// 									toolbarCls: 'x-panel-fbar',
-// 									buttonAlign: 'left',
-// 									layout: 'toolbar',
-// 									cls: 'x-panel-footer x-panel-footer-noborder x-panel-btns'
-// 								});
-								
-// 								_toolbar.add(
-// 									new Ext.Button({
-// 										id:'".$currentName."_clear_button',
-// 										text:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_CLEAR_UPLOADFILE_BUTTON'))."',
-// 										handler:  Ext.ComponentMgr.get('metadataForm').clearUploadedFile.createCallback('".$currentName."')
-// 									})
-// 								);
-// 								_toolbar.add(
-// 									new Ext.Button({
-// 										id:'".$currentName."_button',
-// 										text:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_UPLOADFILE_BUTTON'))."',
-// 										handler:  Ext.ComponentMgr.get('metadataForm').initUploadFile.createCallback('".$currentName."'),
-										
-// 										// Champs spécifiques au clonage
-// 										dynamic:true,
-// 										minOccurs:1,
-// 										maxOccurs:1,
-// 										clone: false,
-// 										clones_count: 1,
-// 										extendedTemplate: null
-// 									})
-// 								);
-								
-								".$parentFieldsetName.".add(createTextFieldWithFocusListener('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', false, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
-// 								".$parentFieldsetName.".add(_toolbar);
+								".$parentFieldsetName.".add(createTextFieldWithFocusListener('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".str_replace(chr(10),'',$nodeValue)."', '".html_Metadata::cleanText($child->attribute_default)."', false, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
 								";
 								
-// 								if ($child->attribute_system)
-// 								{
+								if ($child->attribute_system)
+								{
 									$this->javascript .="
 									".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
 									";
-// 								}
+								}
 								break;
 						default:
-							// Selon le rendu de l'attribut, on fait des traitements diff�rents
+							// Selon le rendu de l'attribut, on fait des traitements différents
 							switch ($child->rendertype_id)
 							{
 								default:

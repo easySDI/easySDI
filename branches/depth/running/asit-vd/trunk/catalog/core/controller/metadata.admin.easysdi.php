@@ -1428,10 +1428,11 @@ class ADMIN_metadata {
 					case 14 :					
 						// Récupération des valeurs postées correspondantes
 						$keys = array_keys($_POST);
+						
 						$usefullVals=array();
 						
 						$count=0;
-					//	if ($child->attribute_system)
+						if ($child->attribute_system)
 							$name = $name."__1"."_hiddenVal";
 						
 						foreach($keys as $key)
@@ -1459,7 +1460,7 @@ class ADMIN_metadata {
 								
 							$XMLNode1 = $XMLDoc->createElement("gmd:MI_Identifier");
 							$XMLNode2 = $XMLDoc->createElement("gmd:code");
-							$XMLNode3 = $XMLDoc->createElement("gco:CharacterString",trim($nodeValue));
+							$XMLNode3 = $XMLDoc->createElement("gco:CharacterString",$nodeValue);
 							
 							$XMLNode->appendChild($XMLNode1);
 							$XMLNode1->appendChild($XMLNode2);

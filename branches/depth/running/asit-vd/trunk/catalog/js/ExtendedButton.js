@@ -68,32 +68,32 @@ Ext.override(Ext.Button, {
 				
 			if (typeof(thesMaster) == 'undefined'){
 				//Case of stereotype 'file'
-				var button_action =  newName.substring(truncatedName.length - 6);
-				
-				if (button_action == '_clear'){
-					//Button 'clear' of the stereotype 'file'
-					newName =  newName.substring(0,truncatedName.length - 6);
-					newNameButton = newName + '_clear_button';
-					clone = master.cloneConfig({
-						id : newNameButton,
-						hiddenName: newNameButton + '_hidden',
-						clone : isClone,
-						clones_count: clones_count,
-						extendedTemplate : master,
-						handler : Ext.ComponentMgr.get('metadataForm').clearUploadedFile.createCallback(newName)
-					});
-				}else{
-					//Button 'upload' of the stereotype 'file'
-					newNameButton = newName + '_button';
-					clone = master.cloneConfig({
-						id : newNameButton,
-						hiddenName: newNameButton + '_hidden',
-						clone : isClone,
-						clones_count: clones_count,
-						extendedTemplate : master,
-						handler : Ext.ComponentMgr.get('metadataForm').initUploadFile.createCallback(newName)
-					});
-				}
+//				var button_action =  newName.substring(truncatedName.length - 6);
+//				
+//				if (button_action == '_clear'){
+//					//Button 'clear' of the stereotype 'file'
+//					newName =  newName.substring(0,truncatedName.length - 6);
+//					newNameButton = newName + '_clear_button';
+//					clone = master.cloneConfig({
+//						id : newNameButton,
+//						hiddenName: newNameButton + '_hidden',
+//						clone : isClone,
+//						clones_count: clones_count,
+//						extendedTemplate : master,
+//						handler : Ext.ComponentMgr.get('metadataForm').clearUploadedFile.createCallback(newName)
+//					});
+//				}else{
+//					//Button 'upload' of the stereotype 'file'
+//					newNameButton = newName + '_button';
+//					clone = master.cloneConfig({
+//						id : newNameButton,
+//						hiddenName: newNameButton + '_hidden',
+//						clone : isClone,
+//						clones_count: clones_count,
+//						extendedTemplate : master,
+//						handler : Ext.ComponentMgr.get('metadataForm').initUploadFile.createCallback(newName)
+//					});
+//				}
 				
 				
 			}else{

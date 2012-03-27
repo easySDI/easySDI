@@ -389,6 +389,7 @@
 	            maxLength: maxL,
 	            qTip: tip,
 	            qTipDelay: dismissDelay,
+	            width : 500,
 	            listeners:{
                     focus: Ext.ComponentMgr.get('metadataForm').showUploadFileWindow.createCallback(id)
                 }

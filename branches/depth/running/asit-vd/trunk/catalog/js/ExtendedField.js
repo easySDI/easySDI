@@ -81,18 +81,9 @@ Ext.override(Ext.form.Field, {
 					var masterName = parentName + name.substring(parentName.length);
 					master = Ext.getCmp(masterName);
 				}
-				//console.log("Master: "+ master.getId());
-				//console.log("Master clones_count: "+ master.clones_count);
-				//console.log("parentName: "+ parentName);
-				//console.log("name: "+ name);
 				if (!master.clones_count)
 					master.clones_count=1;
-				//var oldIndexComponent = Ext.ComponentMgr.get(name + '_index');
-				//console.log("Fieldset: "+name + '_index');
 				var partOfNameToModify = name.substring(parentName.length);
-				//console.log("partOfNameToModify: "+ partOfNameToModify);
-				//var partOfNameToModify2 = name.substring(parentName.length,name.length-String(master.clones_count).length);
-				//console.log("partOfNameToModify2: "+ partOfNameToModify2);
 				var aName = name.split('__');
 				var sName = name.split('-');
                 var partOfNameToModify2 = name.substring(parentName.length, name.length-aName[aName.length - 1].length);
@@ -104,24 +95,10 @@ Ext.override(Ext.form.Field, {
 					clones_count = master.clones_count;
 				else
 					clones_count = 1;
-				
-				
-/*				var indexComponent = Ext.ComponentMgr.get(parentName + partOfNameToModify + '_index');
-				var newVal = 1;
-				var newPos = 1;
-				if (indexComponent!=undefined)
-				{	var newVal = Number(indexComponent.getValue()) + 1;
-					newPos = indexComponent.getValue().length;
-			    	indexComponent.setValue(newVal);
-				}
-*/				
-				var nameEndPart = partOfNameToModify.substring(partOfNameToModify2.length+String(master.clones_count).length);
-				//console.log("nameEndPart: "+ nameEndPart);
+
+			    var nameEndPart = partOfNameToModify.substring(partOfNameToModify2.length+String(master.clones_count).length);
 				var newName = parentName + partOfNameToModify2 + clones_count + nameEndPart;
-				//console.log("newName: "+ newName);
 				
-				//hiddenName:id + '_hidden',
-				//console.log(master.xtype);
 				if (master.xtype == "choicetext" || master.xtype == "combo")
 				{
 					var clone = master.cloneConfig({
@@ -131,9 +108,6 @@ Ext.override(Ext.form.Field, {
 						clone : isClone,
 						clones_count: clones_count,
 						template : master,
-						listeners:{
-		                    focus: Ext.ComponentMgr.get('metadataForm').showUploadFileWindow.createCallback(newName)
-		                },
 						iconCfg : {cls:'x-tool x-tool-minus',clsOnOver:'x-tool-minus-over'}																	   
 					});
 				}
@@ -146,13 +120,10 @@ Ext.override(Ext.form.Field, {
 						clone : isClone,
 						clones_count: clones_count,
 						template : master,
-						listeners:{
-		                    focus: Ext.ComponentMgr.get('metadataForm').showUploadFileWindow.createCallback(newName)
-		                },
 						iconCfg : {cls:'x-tool x-tool-minus',clsOnOver:'x-tool-minus-over'}																	   
 					});
 				}
-				else
+				else if(master.hasListener ('focus'))
 				{
 					var clone = master.cloneConfig({
 						id : newName,
@@ -163,6 +134,16 @@ Ext.override(Ext.form.Field, {
 						listeners:{
 		                    focus: Ext.ComponentMgr.get('metadataForm').showUploadFileWindow.createCallback(newName)
 		                },
+						iconCfg : {cls:'x-tool x-tool-minus',clsOnOver:'x-tool-minus-over'}																	   
+					});
+				}else 
+				{
+					var clone = master.cloneConfig({
+						id : newName,
+						name : newName,
+						clone : isClone,
+						clones_count: clones_count,
+						template : master,
 						iconCfg : {cls:'x-tool x-tool-minus',clsOnOver:'x-tool-minus-over'}																	   
 					});
 				}
@@ -183,29 +164,10 @@ Ext.override(Ext.form.Field, {
 				{
 					clone.setValue(master.defaultVal);
 				}
-				/*
-				// Traitement des checkboxs et radiobuttons
-				if (clone.xtype=='checkboxgroup' || clone.xtype=='radiogroup') 
-				{
-					var listBoxes = clone.items;
-					//console.log(listBoxes);
-					for (var b=0; b<listBoxes.length; b++)
-					{
-						//console.log(listBoxes[b]);
-						//console.log(listBoxes[b].xtype);
-						if (listBoxes[b].xtype=='checkbox' || listBoxes[b].xtype=='radio') 
-							listBoxes[b].checked = false;
-					}
-				}
-				*/
-				
-				/*if (clone.xtype=='multiselect') 
-					alert(clone.id + " - " + clone.getValue(clone));
-				*/
+
 				panel.doLayout();
 			}			
 
-			//
 			// remove clones untill cardinality is reached
 			for ( var i = cmps.length ; i > card ; i -- ) {
 					var field = cmps[i-1];
