@@ -282,25 +282,19 @@ Ext.override(Ext.form.Field, {
 				var item = Ext.get(field.el.findParent('.x-form-item'));
 			    var fieldset = field.ownerCt;
 				
+			    if(this.hasListener ('focus')){
+			    	Ext.Ajax.request({
+						url:'index.php?option=com_easysdi_catalog&task=deleteUploadedFile&file='+Ext.ComponentMgr.get(this.id).getValue(),
+						method:'GET'
+					});
+			    }
+			    	
 		    	// Traitement pour le premier élément de la liste, le master
 		    	if (!field.clone)
 		    	{
-					
 					// Get the first clone af the master
 					var listOfClones = field.clones();
 					var firstClone = listOfClones[0];			
-					/*var name = field.getId();						
-					var oldIndex = name + "_index";
-					var oldCmp = Ext.getCmp(oldIndex);					
-					var newName = firstClone.getId() + "_index";
-					var newValue = oldCmp.getValue();
-					var idx = fieldset.items.indexOf(oldCmp);
-					fieldset.remove(oldCmp, true);
-					var newCmp = new Ext.ux.ExtendedHidden({id: newName, name: newName, value: newValue});
-
-					fieldset.insert(idx,newCmp);
-					fieldset.doLayout();
-					*/
 					firstClone.clone = false;
 					firstClone.template = undefined;
 					firstClone.clones_count = field.clones_count;
@@ -326,6 +320,7 @@ Ext.override(Ext.form.Field, {
 							var lastClone = listOfClones[listOfClones.length-1];									
 							if (lastClone) lastClone.manageIcons(lastClone);
 			    }
+		    	
 			});
 		} 
 		else 

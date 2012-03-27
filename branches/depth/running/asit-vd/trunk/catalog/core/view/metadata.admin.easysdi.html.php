@@ -270,6 +270,9 @@ class HTML_metadata {
 						       
 						        showUploadFileWindow : function (caller){
 						        	var startValue = Ext.ComponentMgr.get(caller).getValue();
+						        	var doesFileExist = false;
+						        	if (Ext.ComponentMgr.get(caller).getValue().length != 0)
+						        		doesFileExist = true ;
 						        	if(winupload) winupload.close();
 									winupload = new Ext.Window({
 										title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_UPLOADFILE_ALERT'))."',
@@ -298,17 +301,28 @@ class HTML_metadata {
 													id: 'uploadfilefield',
 													name: 'uploadfilefield',
 													value : startValue,
-													fieldLabel: '".html_Metadata::cleanText(JText::_('CORE_METADATA_UPLOADFILE_LABEL'))."'
+													buttonText: '".html_Metadata::cleanText(JText::_('CORE_METADATA_UPLOADFILE_BUTTON'))."',
+													fieldLabel: '".html_Metadata::cleanText(JText::_('CORE_METADATA_UPLOADFILE_LABEL'))."',
+													listeners : {
+														fileselected : function(){
+															Ext.ComponentMgr.get('winupload_OK').enable();
+															Ext.ComponentMgr.get('winupload_DELETE').disable();
+														}
+													}
 												}
 											]
 											,buttonAlign:'right'
 											,buttons: [
 												{
+													id : 'winupload_DELETE',
 													text: '".html_Metadata::cleanText(JText::_('CATALOG_ALERT_DELETE'))."',
-													handler: Ext.ComponentMgr.get('metadataForm').clearUploadedFile.createCallback(caller)
+													handler: Ext.ComponentMgr.get('metadataForm').clearUploadedFile.createCallback(caller),
+													disabled : !doesFileExist
 												},
 												{
+													id : 'winupload_OK',
 													text:'".html_Metadata::cleanText(JText::_('CORE_ALERT_SUBMIT'))."',
+													disabled : true,
 													handler: function(){
 														if(Ext.ComponentMgr.get(caller).getValue().length != 0){
 															Ext.Msg.confirm(
@@ -2130,10 +2144,17 @@ class HTML_metadata {
 								break;
 							//TODO
 							case 14:
-								// Traitement de la classe enfant
-								$node = $xpathResults->query($type_isocode, $attributeScope);
-											 	
+								//$node = $xpathResults->query($type_isocode, $attributeScope);
+									 	
+								
+// 								if ($parentScope <> NULL and $parentScope->nodeName == $scope->nodeName)
+// 									$nodeValue="";
+// 								else
+// 									$nodeValue = html_Metadata::cleanText($node->item($pos)->nodeValue);
+// 								echo "Recherche de ".$type_isocode." dans ".$attributeScope->nodeName."<br>";
+
 								// Cas où le noeud n'existe pas dans le XML. Inutile de rechercher la valeur
+								$node = $xpathResults->query($type_isocode, $attributeScope);
 								if ($parentScope <> NULL and $parentScope->nodeName == $scope->nodeName)
 									$nodeValue="";
 								else
