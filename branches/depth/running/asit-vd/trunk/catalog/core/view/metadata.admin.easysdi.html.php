@@ -257,7 +257,10 @@ class HTML_metadata {
 						HS.Lang['".$userLang."']['BT']='".html_Metadata::cleanText(JText::_('CATALOG_GEMETCOMPONENT_HS_BT'))."';
 						HS.Lang['".$userLang."']['NT']='".html_Metadata::cleanText(JText::_('CATALOG_GEMETCOMPONENT_HS_NT'))."';
 						HS.Lang['".$userLang."']['RT']='".html_Metadata::cleanText(JText::_('CATALOG_GEMETCOMPONENT_HS_RT'))."';
-
+						HS.Lang['".$userLang."']['CATALOG_METADATA_CLEAR_UPLOADEDFILE_WAIT_PRG']='".html_Metadata::cleanText(JText::_('CATALOG_METADATA_CLEAR_UPLOADEDFILE_WAIT_PRG'))."';
+						HS.Lang['".$userLang."']['CATALOG_METADATA_ALERT_CLEAR_UPLOADEDFILE_CONFIRM_TITLE']='".html_Metadata::cleanText(JText::_('CATALOG_METADATA_ALERT_CLEAR_UPLOADEDFILE_CONFIRM_TITLE'))."';
+						HS.Lang['".$userLang."']['CORE_METADATA_UPLOADFILE_ERROR']='".html_Metadata::cleanText(JText::_('CORE_METADATA_UPLOADFILE_ERROR'))."';
+						HS.Lang['".$userLang."']['CATALOG_METADATA_ALERT_CLEAR_UPLOADEDFILE_CONFIRM_MSG']='".html_Metadata::cleanText(JText::_('CATALOG_METADATA_ALERT_CLEAR_UPLOADEDFILE_CONFIRM_MSG'))."';
 						
 						// Create the form that will hold in the structure
 						var form = new Ext.form.FormPanel({
@@ -312,6 +315,12 @@ class HTML_metadata {
 															Ext.ComponentMgr.get('winupload_DELETE').disable();
 														}
 													}
+												},
+												{
+													xtype: 'label',
+													text : '".html_Metadata::cleanText(JText::_('CORE_METADATA_STEREOTYPE_FILE_WARNING'))."',
+													fieldLabel : '". '<img src="http://wiki.openvz.org/images/thumb/1/17/Warning.svg/600px-Warning.svg.png" width="32" height="32"  /> ' ."'
+										            
 												}
 											]
 											,buttonAlign:'right'
@@ -324,7 +333,7 @@ class HTML_metadata {
 												},
 												{
 													id : 'winupload_OK',
-													text:'".html_Metadata::cleanText(JText::_('CORE_ALERT_SUBMIT'))."',
+													text:'".html_Metadata::cleanText(JText::_('CATALOG_ALERT_UPLOAD'))."',
 													disabled : true,
 													handler: function(){
 														if(Ext.ComponentMgr.get(caller).getValue().length != 0){
@@ -414,7 +423,7 @@ class HTML_metadata {
 															Ext.ComponentMgr.get(caller).setValue('');
 															if(Ext.ComponentMgr.get(caller.concat('_hiddenVal')))
 																Ext.ComponentMgr.get(caller.concat('_hiddenVal')).setValue('');
-															Ext.ComponentMgr.get('metadataForm').saveMetadataAfterLinkedFileUpdate();
+															//Ext.ComponentMgr.get('metadataForm').saveMetadataAfterLinkedFileUpdate();
 															if(winupload)
 																winupload.close();
 														}else {
@@ -439,7 +448,7 @@ class HTML_metadata {
 										waitMsg: '".html_Metadata::cleanText(JText::_('CORE_METADATA_UPLOADFILE_WAIT'))."',
 										success: function(form,action){
 											winupload.backvalue = JSON.parse (action.response.responseText).url;
-											Ext.ComponentMgr.get('metadataForm').saveMetadataAfterLinkedFileUpdate();
+											//Ext.ComponentMgr.get('metadataForm').saveMetadataAfterLinkedFileUpdate();
 											winupload.close();
 										},
 										failure: function(form,action){
@@ -2223,7 +2232,7 @@ class HTML_metadata {
 									$nodeValue = html_Metadata::cleanText($child->attribute_default);
 								
 								$this->javascript .="
-								".$parentFieldsetName.".add(createStereotypeFileTextField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".str_replace(chr(10),'',$nodeValue)."', '".html_Metadata::cleanText($child->attribute_default)."', false, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+								".$parentFieldsetName.".add(createStereotypeFileTextField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', false, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
 								";
 								
 								if ($child->attribute_system)
@@ -2758,8 +2767,12 @@ class HTML_metadata {
 								break;
 								//TODO
 							case 14:
+								//echo "Recherche de gco:CharacterString dans ".$attributeScope->nodeName."<br>";
+								$node = $xpathResults->query("gmd:MI_Identifier/gmd:code/gco:CharacterString", $attributeScope);
+								$nodeValue = html_Metadata::cleanText($node->item(0)->nodeValue);
+								
 								$this->javascript .="
-								".$parentFieldsetName.".add(createStereotypeFileTextField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", true, master, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".str_replace(chr(10),'',$nodeValue)."', '".html_Metadata::cleanText($child->attribute_default)."', false, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+								".$parentFieldsetName.".add(createStereotypeFileTextField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", true, master, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', false, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
 								";
 								
 								if ($child->attribute_system)
@@ -3631,8 +3644,11 @@ class HTML_metadata {
 								break;
 								//TODO
 							case 14:
+								$node = $xpathResults->query("gmd:MI_Identifier/gmd:code/gco:CharacterString", $attributeScope);
+								$nodeValue = html_Metadata::cleanText($node->item(0)->nodeValue);
+								
 								$this->javascript .="
-								".$parentFieldsetName.".add(createStereotypeFileTextField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".str_replace(chr(10),'',$nodeValue)."', '".html_Metadata::cleanText($child->attribute_default)."', false, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+								".$parentFieldsetName.".add(createStereotypeFileTextField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', false, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
 								";
 								
 								if ($child->attribute_system)

@@ -286,13 +286,13 @@ Ext.override(Ext.form.Field, {
 			    	//Un fichier a effacer
 			    	if(Ext.ComponentMgr.get(field.id).getValue().length != 0){
 			    		Ext.Msg.confirm(
-							'CATALOG_METADATA_ALERT_CLEAR_UPLOADEDFILE_CONFIRM_TITLE',
-							'CATALOG_METADATA_ALERT_CLEAR_UPLOADEDFILE_CONFIRM_MSG',
+			    				HS.i18n('CATALOG_METADATA_ALERT_CLEAR_UPLOADEDFILE_CONFIRM_TITLE'),
+			    				HS.i18n('CATALOG_METADATA_ALERT_CLEAR_UPLOADEDFILE_CONFIRM_MSG'),
 							function(btn, text){
 								if (btn == 'yes'){
 									Ext.MessageBox.show({
-										title: 'CATALOG_METADATA_CLEAR_UPLOADEDFILE_WAIT',
-										msg: 'CATALOG_METADATA_CLEAR_UPLOADEDFILE_WAIT_PRG',
+										title: HS.i18n('CATALOG_METADATA_CLEAR_UPLOADEDFILE_WAIT_PRG'),
+										msg: HS.i18n('CATALOG_METADATA_CLEAR_UPLOADEDFILE_WAIT_PRG'),
 										width:300,
 										wait:true,
 										waitConfig: {
@@ -302,13 +302,20 @@ Ext.override(Ext.form.Field, {
 										url:'index.php?option=com_easysdi_catalog&task=deleteUploadedFile&file='+Ext.ComponentMgr.get(field.id).getValue(),
 										method:'GET',
 										success:function(result,request) {
-											Ext.MessageBox.hide();
-											Ext.ComponentMgr.get(field.id).setValue('');
-											if(Ext.ComponentMgr.get(field.id.concat('_hiddenVal')))
-												Ext.ComponentMgr.get(field.id.concat('_hiddenVal')).setValue('');
+											if(JSON.parse (result.responseText).success){
+												Ext.MessageBox.hide();
+												Ext.ComponentMgr.get(field.id).setValue('');
+												if(Ext.ComponentMgr.get(field.id.concat('_hiddenVal')))
+													Ext.ComponentMgr.get(field.id.concat('_hiddenVal')).setValue('');
+												//Ext.ComponentMgr.get('metadataForm').saveMetadataAfterLinkedFileUpdate();		
+											}else{
+												Ext.MessageBox.hide();
+												Ext.MessageBox.alert(HS.i18n('CORE_METADATA_UPLOADFILE_ERROR')+' : '+JSON.parse (result.responseText).cause);
+											}
 										},
 										failure:function(result,request) {
 											Ext.MessageBox.hide();
+											Ext.MessageBox.alert(HS.i18n('CORE_METADATA_UPLOADFILE_ERROR') +' : '+JSON.parse (result.responseText).cause);
 										}
 									});
 									field.listOfClonesManagement(field, cnt, item, fieldset);
