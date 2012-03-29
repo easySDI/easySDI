@@ -269,7 +269,8 @@ class HTML_metadata {
 						        isInvalid: false,
 						       
 						        showUploadFileWindow : function (caller){
-						        	var startValue = Ext.ComponentMgr.get(caller).getValue();
+						        	var longStartValue = Ext.ComponentMgr.get(caller).getValue();
+						        	var shortStartValue = longStartValue.substring(longStartValue.lastIndexOf('/')+1);
 						        	var doesFileExist = false;
 						        	if (Ext.ComponentMgr.get(caller).getValue().length != 0)
 						        		doesFileExist = true ;
@@ -300,7 +301,7 @@ class HTML_metadata {
 													xtype: 'fileuploadfield',
 													id: 'uploadfilefield',
 													name: 'uploadfilefield',
-													value : startValue,
+													value : shortStartValue,
 													buttonText: '".html_Metadata::cleanText(JText::_('CORE_METADATA_UPLOADFILE_BUTTON'))."',
 													fieldLabel: '".html_Metadata::cleanText(JText::_('CORE_METADATA_UPLOADFILE_LABEL'))."',
 													listeners : {
@@ -365,7 +366,7 @@ class HTML_metadata {
 													text: '".html_Metadata::cleanText(JText::_('CATALOG_ALERT_CLOSE'))."',
 													handler: function(){
 														winupload.close();
-														Ext.ComponentMgr.get(caller).setValue (startValue);
+														Ext.ComponentMgr.get(caller).setValue (longStartValue);
 													}
 												}
 												
@@ -2193,18 +2194,9 @@ class HTML_metadata {
 								break;
 							//TODO
 							case 14:
-								//$node = $xpathResults->query($type_isocode, $attributeScope);
-// 								if ($parentScope <> NULL and $parentScope->nodeName == $scope->nodeName)
-// 									$nodeValue="";
-// 								else
-// 									$nodeValue = html_Metadata::cleanText($node->item($pos)->nodeValue);
-//  								echo "Recherche de ".$type_isocode." dans ".$attributeScope->nodeName."<br>";
-
-
 								// Cas où le noeud n'existe pas dans le XML. Inutile de rechercher la valeur
-								$node = $xpathResults->query($type_isocode."/gmd:code/gco:CharacterString", $attributeScope);
+								$node = $xpathResults->query("gmd:MI_Identifier/gmd:code/gco:CharacterString", $attributeScope);
 								
-								//echo $node2->item($pos)->nodeValue;
 								if ($parentScope <> NULL and $parentScope->nodeName == $scope->nodeName)
 									$nodeValue="";
 								else
