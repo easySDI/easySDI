@@ -236,6 +236,8 @@ Ext.override(Ext.form.Field, {
 		
 		if (component.minOccurs==0) component.minOccurs=1;
 		
+		//console.log(component.getId()+"-"+component.minOccurs+"-"+component.maxOccurs+"-"+component.clones().length);
+		//console.log(isHiddenPlus+"-"+isHiddenMinus);
 		if (component.minOccurs==1 && component.maxOccurs==1) 
 		{
 			isHiddenMinus = true;
@@ -368,7 +370,7 @@ Ext.override(Ext.form.Field, {
 			var firstClone = listOfClones[0];			
 			firstClone.clone = false;
 			firstClone.template = undefined;
-			firstClone.clones_count = field.clones_count -1;
+			firstClone.clones_count = field.clones_count;
 			item.remove();
 			fieldset.remove(field, true);
 			fieldset.doLayout();

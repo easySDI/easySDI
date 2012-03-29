@@ -355,7 +355,7 @@
 		 return tf;
 	}
 	
-	function createTextFieldWithFocusListener(id, label, mandatory, clone, master, min, max, value, defaultVal, dis, maxL, tip, dismissDelay, regex, mandatoryMsg, regexMsg)
+	function createStereotypeFileTextField(id, label, mandatory, clone, master, min, max, value, defaultVal, dis, maxL, tip, dismissDelay, regex, mandatoryMsg, regexMsg)
 	{
 		optional = !mandatory;
 		//if (!clone) optional=true;
@@ -396,6 +396,7 @@
 	        });
 		 return tf;
 	}
+	
 	function createDisplayField(id, label, mandatory, clone, master, min, max, value, defaultVal, dis, maxL, tip, dismissDelay, regex, mandatoryMsg, regexMsg)
 	{
 		optional = !mandatory;

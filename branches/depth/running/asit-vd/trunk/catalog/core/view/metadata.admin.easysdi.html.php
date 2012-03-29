@@ -404,6 +404,7 @@ class HTML_metadata {
 														Ext.ComponentMgr.get(caller).setValue('');
 														if(Ext.ComponentMgr.get(caller.concat('_hiddenVal')))
 															Ext.ComponentMgr.get(caller.concat('_hiddenVal')).setValue('');
+														Ext.ComponentMgr.get('metadataForm').saveMetadataAfterLinkedFileUpdate();
 														if(winupload)
 															winupload.close();
 													},
@@ -422,6 +423,7 @@ class HTML_metadata {
 										waitMsg: '".html_Metadata::cleanText(JText::_('CORE_METADATA_UPLOADFILE_WAIT'))."',
 										success: function(form,action){
 											winupload.backvalue = JSON.parse (action.response.responseText).url;
+											Ext.ComponentMgr.get('metadataForm').saveMetadataAfterLinkedFileUpdate();
 											winupload.close();
 										},
 										failure: function(form,action){
@@ -430,6 +432,52 @@ class HTML_metadata {
 										}
 									});
 								},
+								
+								saveMetadataAfterLinkedFileUpdate : function (){
+									myMask.show();
+							        var fields = new Array();
+							        form.getForm().fieldInvalid =false;	
+							        form.cascade(function(cmp)
+							        {
+										if(cmp.isValid){
+										    if(!cmp.isValid()&& Ext.get(cmp.id)){														
+												form.getForm().fieldInvalid =true;													
+											}
+										}
+					        			if (cmp.getId() == 'gmd_MD_Metadata-gmd_MD_DataIdentification__2-gmd_abstract__2-gmd_LocalisedCharacterString-fr-FR__1')
+			         					}
+						          					
+										if (cmp.xtype=='fieldset')
+				         				{
+											if (cmp.clones_count)
+				          					{
+				           						fields.push(cmp.getId()+','+cmp.clones_count);
+				         					}
+				         				}
+				        			});
+									var fieldsets = fields.join(' | ');
+							        form.getForm().setValues({fieldsets: fieldsets});
+							        form.getForm().setValues({task: 'saveMetadata'});
+							        form.getForm().setValues({metadata_id: '".$metadata_id."'});
+							        form.getForm().setValues({object_id: '".$object_id."'});
+									form.getForm().submit({
+										scope: this,
+										method	: 'POST',
+										clientValidation: false,
+										success: function(form, action){
+							                myMask.hide();
+										},
+										failure: function(form, action){
+                        					if (action.result)
+												alert(action.result.errors.xml);
+											else
+												alert('Form save error');
+											myMask.hide();
+										},
+										url:'".$url."'
+									});
+								},
+								
 						        buttons: [{
 							                text: '".JText::_('CORE_XML_PREVIEW')."',
 							                handler: function()
@@ -991,7 +1039,7 @@ class HTML_metadata {
 							// Guid (toujours disabled, donc toujours un champ caché)
 							case 1:
 								// Traitement de la classe enfant
-								//echo "Recherche de ".$type_isocode." dans ".$attributeScope->nodeName."<br>";
+// 								echo "Recherche de ".$type_isocode." dans ".$attributeScope->nodeName."<br>";
 								//$node = $xpathResults->query($child->attribute_isocode."/".$type_isocode, $attributeScope);
 								$node = $xpathResults->query($type_isocode, $attributeScope);
 											 	
@@ -2146,13 +2194,11 @@ class HTML_metadata {
 							//TODO
 							case 14:
 								//$node = $xpathResults->query($type_isocode, $attributeScope);
-									 	
-								
 // 								if ($parentScope <> NULL and $parentScope->nodeName == $scope->nodeName)
 // 									$nodeValue="";
 // 								else
 // 									$nodeValue = html_Metadata::cleanText($node->item($pos)->nodeValue);
-// 								echo "Recherche de ".$type_isocode." dans ".$attributeScope->nodeName."<br>";
+//  								echo "Recherche de ".$type_isocode." dans ".$attributeScope->nodeName."<br>";
 
 								// Cas où le noeud n'existe pas dans le XML. Inutile de rechercher la valeur
 								$node = $xpathResults->query($type_isocode, $attributeScope);
@@ -2166,7 +2212,7 @@ class HTML_metadata {
 									$nodeValue = html_Metadata::cleanText($child->attribute_default);
 								
 								$this->javascript .="
-								".$parentFieldsetName.".add(createTextFieldWithFocusListener('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".str_replace(chr(10),'',$nodeValue)."', '".html_Metadata::cleanText($child->attribute_default)."', false, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+								".$parentFieldsetName.".add(createStereotypeFileTextField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".str_replace(chr(10),'',$nodeValue)."', '".html_Metadata::cleanText($child->attribute_default)."', false, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
 								";
 								
 								if ($child->attribute_system)
@@ -2702,7 +2748,7 @@ class HTML_metadata {
 								//TODO
 							case 14:
 								$this->javascript .="
-								".$parentFieldsetName.".add(createTextFieldWithFocusListener('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", true, master, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".str_replace(chr(10),'',$nodeValue)."', '".html_Metadata::cleanText($child->attribute_default)."', false, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+								".$parentFieldsetName.".add(createStereotypeFileTextField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", true, master, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".str_replace(chr(10),'',$nodeValue)."', '".html_Metadata::cleanText($child->attribute_default)."', false, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
 								";
 								
 								if ($child->attribute_system)
@@ -3575,7 +3621,7 @@ class HTML_metadata {
 								//TODO
 							case 14:
 								$this->javascript .="
-								".$parentFieldsetName.".add(createTextFieldWithFocusListener('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".str_replace(chr(10),'',$nodeValue)."', '".html_Metadata::cleanText($child->attribute_default)."', false, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+								".$parentFieldsetName.".add(createStereotypeFileTextField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".str_replace(chr(10),'',$nodeValue)."', '".html_Metadata::cleanText($child->attribute_default)."', false, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
 								";
 								
 								if ($child->attribute_system)
