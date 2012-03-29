@@ -444,7 +444,7 @@ class HTML_metadata {
 												form.getForm().fieldInvalid =true;													
 											}
 										}
-					        			if (cmp.getId() == 'gmd_MD_Metadata-gmd_MD_DataIdentification__2-gmd_abstract__2-gmd_LocalisedCharacterString-fr-FR__1')
+					        			if (cmp.getId() == 'gmd_MD_Metadata-gmd_MD_DataIdentification__2-gmd_abstract__2-gmd_LocalisedCharacterString-fr-FR__1'){
 			         					}
 						          					
 										if (cmp.xtype=='fieldset')
@@ -2200,8 +2200,11 @@ class HTML_metadata {
 // 									$nodeValue = html_Metadata::cleanText($node->item($pos)->nodeValue);
 //  								echo "Recherche de ".$type_isocode." dans ".$attributeScope->nodeName."<br>";
 
+
 								// Cas où le noeud n'existe pas dans le XML. Inutile de rechercher la valeur
-								$node = $xpathResults->query($type_isocode, $attributeScope);
+								$node = $xpathResults->query($type_isocode."/gmd:code/gco:CharacterString", $attributeScope);
+								
+								//echo $node2->item($pos)->nodeValue;
 								if ($parentScope <> NULL and $parentScope->nodeName == $scope->nodeName)
 									$nodeValue="";
 								else

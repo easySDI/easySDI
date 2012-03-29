@@ -186,25 +186,6 @@ class ADMIN_metadata {
 			$msg = JText::_('CATALOG_METADATA_EDIT_NOMETADATA_MSG');
 			$mainframe->redirect("index.php?option=$option&task=listObject", $msg );
 		}
-			
-			
-		/*if (array_key_exists('version_hidden', $_POST))
-		{
-			$rowVersion = new objectversion($database);
-			$rowVersion->load( $_POST['version_hidden'] );
-			$rowMetadata = new metadata( $database );
-			$rowMetadata->load( $rowVersion->metadata_id );
-		}
-		else if (array_key_exists('metadata_id', $_POST))
-		{
-			$rowMetadata = new metadataByGuid( $database );
-			$rowMetadata->load( $_POST['metadata_id'] );
-		}
-		else
-		{
-			$rowMetadata = new metadata( $database );
-			$rowMetadata->load( $rowObject->metadata_id );
-		}*/
 		
 		/*
 		 * If the item is checked out we cannot edit it... unless it was checked
