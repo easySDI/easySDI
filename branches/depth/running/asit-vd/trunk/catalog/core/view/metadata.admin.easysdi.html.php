@@ -283,7 +283,7 @@ class HTML_metadata {
 									winupload = new Ext.Window({
 										title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_UPLOADFILE_ALERT'))."',
 										width:500,
-										height:130,
+										height:160,
 										closeAction:'hide',
 										layout:'fit',
 										border:true,
@@ -315,6 +315,11 @@ class HTML_metadata {
 															Ext.ComponentMgr.get('winupload_DELETE').disable();
 														}
 													}
+												},
+												{
+													xtype: 'label'
+													
+										            
 												},
 												{
 													xtype: 'label',
