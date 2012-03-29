@@ -404,7 +404,8 @@ class HTML_metadata {
 														Ext.ComponentMgr.get(caller).setValue('');
 														if(Ext.ComponentMgr.get(caller.concat('_hiddenVal')))
 															Ext.ComponentMgr.get(caller.concat('_hiddenVal')).setValue('');
-														winupload.close();
+														if(winupload)
+															winupload.close();
 													},
 													failure:function(result,request) {
 														Ext.MessageBox.hide();
