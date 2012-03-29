@@ -1795,6 +1795,7 @@ class ADMIN_metadata {
 		{
 			ADMIN_metadata::buildXMLTree($root->id, $root->id, str_replace(":", "_", $root->isocode), $XMLDoc, $XMLNode, $path, $root->isocode, $_POST, $keyVals, $profile_id, $account_id, $option);
 			
+			
 			$updated = ADMIN_metadata::CURLUpdateMetadata($metadata_id, $XMLDoc );
 			
 			if ($updated <> 1)
@@ -4186,7 +4187,7 @@ class ADMIN_metadata {
 		//Check user's rights
 		$user = JFactory::getUser();
 		if (!userManager::isUserAllowed($user,"METADATA")){
-			echo json_encode(array("success"=>false));
+			echo json_encode(array("success"=>false, "cause"=>"unauthorized"));
 			die;
 		}
 		
@@ -4218,20 +4219,20 @@ class ADMIN_metadata {
 			$result = array("success"=>true, "url"=>$url."/".$file_name);
 			echo json_encode($result);
 		} else{
-			echo json_encode(array("success"=>false));
+			echo json_encode(array("success"=>false, "cause"=>"move_uploaded_file_failed"));
 		}
 		die();
 	}
 	
 	function deleteUploadedFile ($option, $fileurl){
 		if($fileurl == null){
-			echo json_encode(array("success"=>false));
+			echo json_encode(array("success"=>false, "cause"=>"no_file_submitted"));
 			die;
 		}
 		//Check user's rights
 		$user = JFactory::getUser();
 		if (!userManager::isUserAllowed($user,"METADATA")){
-			echo json_encode(array("success"=>false));
+			echo json_encode(array("success"=>false, "cause"=>"unauthorized"));
 			die;
 		}
 		
@@ -4252,7 +4253,7 @@ class ADMIN_metadata {
 		else if(unlink($repository."/".$filename))
 			echo json_encode(array("success"=>true));
 		else
-			echo json_encode(array("success"=>false));
+			echo json_encode(array("success"=>false, "cause"=>"unlink_failed"));
 		die;
 	}
 }

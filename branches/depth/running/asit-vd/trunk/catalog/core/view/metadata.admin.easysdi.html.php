@@ -219,6 +219,7 @@ class HTML_metadata {
 				<?php $document->addScriptDeclaration( $defautBBoxConfig );?>
 			
 				<?php
+				
 				//TODO
 				$this->javascript .="
 						var domNode = Ext.DomQuery.selectNode('div#element-box div.m')
@@ -256,7 +257,8 @@ class HTML_metadata {
 						HS.Lang['".$userLang."']['BT']='".html_Metadata::cleanText(JText::_('CATALOG_GEMETCOMPONENT_HS_BT'))."';
 						HS.Lang['".$userLang."']['NT']='".html_Metadata::cleanText(JText::_('CATALOG_GEMETCOMPONENT_HS_NT'))."';
 						HS.Lang['".$userLang."']['RT']='".html_Metadata::cleanText(JText::_('CATALOG_GEMETCOMPONENT_HS_RT'))."';
-												
+
+						
 						// Create the form that will hold in the structure
 						var form = new Ext.form.FormPanel({
 								id:'metadataForm',
@@ -343,14 +345,20 @@ class HTML_metadata {
 																				url:'index.php?option=com_easysdi_catalog&task=deleteUploadedFile&file='+Ext.ComponentMgr.get(caller).getValue(),
 																				method:'GET',
 																				success:function(result,request) {
-																					Ext.MessageBox.hide();
-																					Ext.ComponentMgr.get(caller).setValue('');
-																					if(Ext.ComponentMgr.get(caller.concat('_hiddenVal')))
-																						Ext.ComponentMgr.get(caller.concat('_hiddenVal')).setValue('');
-																					Ext.ComponentMgr.get('metadataForm').uploadfile(caller);
+																					if(JSON.parse (result.responseText).success){
+																						Ext.MessageBox.hide();
+																						Ext.ComponentMgr.get(caller).setValue('');
+																						if(Ext.ComponentMgr.get(caller.concat('_hiddenVal')))
+																							Ext.ComponentMgr.get(caller.concat('_hiddenVal')).setValue('');
+																						Ext.ComponentMgr.get('metadataForm').uploadfile(caller);
+																					}else{
+																						Ext.MessageBox.hide();
+																						Ext.MessageBox.alert('".html_Metadata::cleanText(JText::_('CORE_METADATA_UPLOADFILE_ERROR'))." : '+JSON.parse (result.responseText).cause);
+																					}
 																				},
 																				failure:function(result,request) {
 																					Ext.MessageBox.hide();
+																					Ext.MessageBox.alert('".html_Metadata::cleanText(JText::_('CORE_METADATA_UPLOADFILE_ERROR'))." : '+JSON.parse (result.response.responseText).cause);
 																				}
 																			});
 																		}
@@ -401,16 +409,23 @@ class HTML_metadata {
 													url:'index.php?option=com_easysdi_catalog&task=deleteUploadedFile&file='+Ext.ComponentMgr.get(caller).getValue(),
 													method:'GET',
 													success:function(result,request) {
-														Ext.MessageBox.hide();
-														Ext.ComponentMgr.get(caller).setValue('');
-														if(Ext.ComponentMgr.get(caller.concat('_hiddenVal')))
-															Ext.ComponentMgr.get(caller.concat('_hiddenVal')).setValue('');
-														Ext.ComponentMgr.get('metadataForm').saveMetadataAfterLinkedFileUpdate();
-														if(winupload)
-															winupload.close();
+														if(JSON.parse (result.responseText).success){
+															Ext.MessageBox.hide();
+															Ext.ComponentMgr.get(caller).setValue('');
+															if(Ext.ComponentMgr.get(caller.concat('_hiddenVal')))
+																Ext.ComponentMgr.get(caller.concat('_hiddenVal')).setValue('');
+															Ext.ComponentMgr.get('metadataForm').saveMetadataAfterLinkedFileUpdate();
+															if(winupload)
+																winupload.close();
+														}else {
+															Ext.MessageBox.hide();
+															Ext.MessageBox.alert('".html_Metadata::cleanText(JText::_('CORE_METADATA_UPLOADFILE_ERROR'))." : '+JSON.parse (result.responseText).cause);
+															
+														}	
 													},
 													failure:function(result,request) {
 														Ext.MessageBox.hide();
+														Ext.MessageBox.alert('".html_Metadata::cleanText(JText::_('CORE_METADATA_UPLOADFILE_ERROR'))." : '+JSON.parse (result.responseText).cause);
 													}
 												});
 											}
@@ -428,7 +443,7 @@ class HTML_metadata {
 											winupload.close();
 										},
 										failure: function(form,action){
-											Ext.MessageBox.alert('".html_Metadata::cleanText(JText::_('CORE_METADATA_UPLOADFILE_ERROR'))."');
+											Ext.MessageBox.alert('".html_Metadata::cleanText(JText::_('CORE_METADATA_UPLOADFILE_ERROR'))." : '+JSON.parse (action.response.responseText).cause);
 											winupload.close();
 										}
 									});
@@ -556,14 +571,14 @@ class HTML_metadata {
 						
 						var ".$fieldsetName." = new Ext.form.FieldSet({id:'".str_replace(":", "_", $root[0]->isocode)."', cls: 'easysdi_shop_backend_form', title:'".html_Metadata::cleanText(JText::_($root[0]->label))."', xtype: 'fieldset', clones_count: 1});
 						form.add(".$fieldsetName.");";
-
-		
+						
 				$queryPath="/";
 				// Boucle pour construire la structure
 				$node = $xpathResults->query($queryPath."/".$root[0]->isocode);
 				$nodeCount = $node->length;
 				//echo $nodeCount." fois ".$root[0]->isocode;
 				HTML_metadata::buildTree($database, 0, $root[0]->id, $root[0]->id, $fieldsetName, 'form', str_replace(":", "_", $root[0]->isocode), $xpathResults, null, $node->item(0), $queryPath, $root[0]->isocode, $account_id, $profile_id, $option);
+				
 				
 				// Retraverser la structure et autoriser les nulls pour tous les champs cachés
 				$this->javascript .="
@@ -834,7 +849,7 @@ class HTML_metadata {
 						
 		// Stockage du path pour atteindre ce noeud du XML
 		$queryPath = $queryPath."/".$currentIsocode;
-	//	echo($currentIsocode."<br>") ;
+		//echo($currentIsocode."<br>") ;
 		
 		// Construire la liste déroulante des périmètres prédéfinis si on est au bon endroit
 		//echo $this->catalogBoundaryIsocode." == ".$currentIsocode.", ".count($this->boundaries)."<br>";
@@ -2194,6 +2209,7 @@ class HTML_metadata {
 								break;
 							//TODO
 							case 14:
+								
 								// Cas où le noeud n'existe pas dans le XML. Inutile de rechercher la valeur
 								$node = $xpathResults->query("gmd:MI_Identifier/gmd:code/gco:CharacterString", $attributeScope);
 								
@@ -2774,7 +2790,7 @@ class HTML_metadata {
 						}
 					}
 				}
-					
+				
 				//Attribut n'existe pas dans le XML
 				// Si le XML ne contient aucune occurence de l'attribut
 				// il faut le créer vide

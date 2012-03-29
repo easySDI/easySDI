@@ -147,6 +147,13 @@ else
 				<tr><td colspan="2"><input type="hidden" name="isocode" value="" /></td></tr>
 <?php
 }
+if($row->name == "file"){
+	//This value need to be non null to allow editMetadata form to work 
+	//TODO : find a more elegant way to make the editMetadata form work fine (find why this value need to be set).
+	?>
+					<tr><td colspan="2"><input type="hidden" name="isocode" value="MI_Identifier" /></td></tr>
+	<?php
+}
 ?>
 			</table>
 			<br></br>
