@@ -1487,6 +1487,41 @@ function com_install(){
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 	}
+	if ($version =="2.2.0"){
+		
+		$query="CREATE TABLE IF NOT EXISTS `#__sdi_translation` (
+			`id` bigint(20) NOT NULL AUTO_INCREMENT,
+			`element_guid` varchar(36) NOT NULL,
+			`language_id` bigint(20) NOT NULL,
+			`label` varchar(200),
+			`defaultvalue` varchar(4000),
+			`information` varchar(200),
+			`created` datetime NOT NULL,
+			`updated` datetime,
+			`createdby` bigint(20),
+			`updatedby` bigint(20),
+			`regexmsg` varchar(200),
+			`title` varchar(100),
+			`content` varchar(500),
+			PRIMARY KEY (`id`),
+			FOREIGN KEY (`language_id`) REFERENCES `#__sdi_language` (`id`),
+			KEY `language_id` (`language_id`)
+			) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+				
+		
+		// Update component version
+		$version="2.2.1";
+		$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='CORE'";
+		$db->setQuery( $query);
+		if (!$db->query())
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+	}
 	
 	/**
 	 * Menu creation
