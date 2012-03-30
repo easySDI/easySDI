@@ -19,11 +19,6 @@ Ext.override(Ext.Button, {
     	var panel = (ownerCtrl) ? ownerCtrl : this.ownerCt;
     	var isClone = (isClone!=undefined) ? isClone : true;
 		var master = this;
-		//console.log(panel);
-		//console.log(master);
-		//console.log(this);
-		//console.log(this.extendedTemplate);
-		//console.log(isClone);
 		
 		if ( this.extendedTemplate && Ext.getCmp(this.extendedTemplate.getId()) && panel.findById(this.extendedTemplate.getId())) 
 		{
@@ -55,10 +50,6 @@ Ext.override(Ext.Button, {
 				var parentName = panel.getId();
 				var name = master.getId();
 				var truncatedName = name.substring(0, name.length-String('_BUTTON').length);
-				//console.log(truncatedName);
-				//console.log("parentName: "+ parentName);
-				//console.log("name: "+ name);
-				
 				var partOfNameToModify = name.substring(parentName.length);
 				
 				// Retirer la partie _BUTTON du nom à modifier
@@ -68,15 +59,46 @@ Ext.override(Ext.Button, {
 			    clones_count = 1;
 				
 				var newName = parentName + partOfNameToModify;
-				//console.log("newName: "+ newName);
 				
 				// L'extension Thesaurus GEMET à dupliquer
 				var thesMaster = Ext.ComponentMgr.get(truncatedName + '_PANEL_THESAURUS');
-				//console.log(thesMaster);
 				
 				var winthge;
+				var clone;
 				
-				var clone = master.cloneConfig({
+			if (typeof(thesMaster) == 'undefined'){
+				//Case of stereotype 'file'
+//				var button_action =  newName.substring(truncatedName.length - 6);
+//				
+//				if (button_action == '_clear'){
+//					//Button 'clear' of the stereotype 'file'
+//					newName =  newName.substring(0,truncatedName.length - 6);
+//					newNameButton = newName + '_clear_button';
+//					clone = master.cloneConfig({
+//						id : newNameButton,
+//						hiddenName: newNameButton + '_hidden',
+//						clone : isClone,
+//						clones_count: clones_count,
+//						extendedTemplate : master,
+//						handler : Ext.ComponentMgr.get('metadataForm').clearUploadedFile.createCallback(newName)
+//					});
+//				}else{
+//					//Button 'upload' of the stereotype 'file'
+//					newNameButton = newName + '_button';
+//					clone = master.cloneConfig({
+//						id : newNameButton,
+//						hiddenName: newNameButton + '_hidden',
+//						clone : isClone,
+//						clones_count: clones_count,
+//						extendedTemplate : master,
+//						handler : Ext.ComponentMgr.get('metadataForm').initUploadFile.createCallback(newName)
+//					});
+//				}
+				
+				
+			}else{
+				//Case of stereotype 'Thesaurus GEMET'
+				clone = master.cloneConfig({
 					id : newName + '_BUTTON',
 					name : newName + '_BUTTON',
 					hiddenName: newName + '_BUTTON' + '_hidden',
@@ -85,11 +107,10 @@ Ext.override(Ext.Button, {
 					extendedTemplate : master,
 					handler: function()
 	                {
-	                	// Créer une iframe pour demander à l'utilisateur le type d'import
-						if (!winthge)
+	                	if (!winthge)
 							winthge = new Ext.Window({
 							                id: newName + '_WIN',
-									  title: thesMaster.win_title, //Ext.ComponentMgr.get( newName + '_WIN').title,
+							                title: thesMaster.win_title, 
 							                width:500,
 							                height:500,
 							                closeAction:'hide',
@@ -142,8 +163,6 @@ Ext.override(Ext.Button, {
 																	//					 '".JText::_('CATALOG_EDITMETADATA_THESAURUSSELECT_MSG_SUCCESS_TEXT')."');
 																
 																}
-																
-															    //winthge.hide();
 															}
 											  })]
 							            });
@@ -155,13 +174,9 @@ Ext.override(Ext.Button, {
 						winthge.show();
 		        	}																	   
 				});
-				//console.log(clone);
-				
+			}
 				panel.add(clone);
-				
 				panel.doLayout();
-
-				
 			}			
 
 			// remove clones untill cardinality is reached

@@ -499,6 +499,7 @@ else
 						var wincsw;
 						var winrct;
 						var winrst;
+						var winupload;
     
 						// Outils pour la pr�visualisation
 						SyntaxHighlighter.config.clipboardSwf = 'clipboard.swf';
@@ -521,6 +522,10 @@ else
 						HS.Lang['".$userLang."']['BT']='".html_Metadata::cleanText(JText::_('CATALOG_GEMETCOMPONENT_HS_BT'))."';
 						HS.Lang['".$userLang."']['NT']='".html_Metadata::cleanText(JText::_('CATALOG_GEMETCOMPONENT_HS_NT'))."';
 						HS.Lang['".$userLang."']['RT']='".html_Metadata::cleanText(JText::_('CATALOG_GEMETCOMPONENT_HS_RT'))."';
+						HS.Lang['".$userLang."']['CATALOG_METADATA_CLEAR_UPLOADEDFILE_WAIT_PRG']='".html_Metadata::cleanText(JText::_('CATALOG_METADATA_CLEAR_UPLOADEDFILE_WAIT_PRG'))."';
+						HS.Lang['".$userLang."']['CATALOG_METADATA_ALERT_CLEAR_UPLOADEDFILE_CONFIRM_TITLE']='".html_Metadata::cleanText(JText::_('CATALOG_METADATA_ALERT_CLEAR_UPLOADEDFILE_CONFIRM_TITLE'))."';
+						HS.Lang['".$userLang."']['CORE_METADATA_UPLOADFILE_ERROR']='".html_Metadata::cleanText(JText::_('CORE_METADATA_UPLOADFILE_ERROR'))."';
+						HS.Lang['".$userLang."']['CATALOG_METADATA_ALERT_CLEAR_UPLOADEDFILE_CONFIRM_MSG']='".html_Metadata::cleanText(JText::_('CATALOG_METADATA_ALERT_CLEAR_UPLOADEDFILE_CONFIRM_MSG'))."';
 												
 						// Cr�er le formulaire qui va contenir la structure
 						var form = new Ext.ux.ExtendedFormPanel({
@@ -533,6 +538,194 @@ else
 						       	collapsed:false,
 						        renderTo: document.getElementById('formContainer'),
 						        isInvalid: false,
+						        
+						        showUploadFileWindow : function (caller){
+						        	var longStartValue = Ext.ComponentMgr.get(caller).getValue();
+						        	var shortStartValue = longStartValue.substring(longStartValue.lastIndexOf('/')+1);
+						        	var doesFileExist = false;
+						        	if (Ext.ComponentMgr.get(caller).getValue().length != 0)
+						        		doesFileExist = true ;
+						        	if(winupload) winupload.close();
+									winupload = new Ext.Window({
+										title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_UPLOADFILE_ALERT'))."',
+										width:500,
+										height:160,
+										closeAction:'hide',
+										layout:'fit',
+										border:true,
+										closable:true,
+										renderTo:Ext.getBody(),
+										frame:true,
+										backvalue:'',
+										items:[{
+											xtype:'form',
+											fileUpload: true,
+											isUpload: true,
+											id:'uploadfileform' ,
+											defaultType:'textfield',
+											method:'POST',
+											enctype:'multipart/form-data',
+											frame:true ,
+											defaults:{anchor:'95%'},
+											items:[
+												{
+													xtype: 'fileuploadfield',
+													id: 'uploadfilefield',
+													name: 'uploadfilefield',
+													value : shortStartValue,
+													buttonText: '".html_Metadata::cleanText(JText::_('CORE_METADATA_UPLOADFILE_BUTTON'))."',
+													fieldLabel: '".html_Metadata::cleanText(JText::_('CORE_METADATA_UPLOADFILE_LABEL'))."',
+													listeners : {
+														fileselected : function(){
+															Ext.ComponentMgr.get('winupload_OK').enable();
+															Ext.ComponentMgr.get('winupload_DELETE').disable();
+														}
+													}
+												},
+												{
+													xtype: 'label'
+													
+										            
+												},
+												{
+													xtype: 'label',
+													html : '<table cellspacing=\"10\"><tr><td> <img src=\"./templates/system/images/notice-info.png\" width=\"32\" height=\"32\"  /></td><td><p>".html_Metadata::cleanText(JText::_('CORE_METADATA_STEREOTYPE_FILE_WARNING'))."</td></tr> </table>'
+												}
+											]
+											,buttonAlign:'right'
+											,buttons: [
+												{
+													id : 'winupload_DELETE',
+													text: '".html_Metadata::cleanText(JText::_('CATALOG_ALERT_DELETE'))."',
+													handler: Ext.ComponentMgr.get('metadataForm').clearUploadedFile.createCallback(caller),
+													disabled : !doesFileExist
+												},
+												{
+													id : 'winupload_OK',
+													text:'".html_Metadata::cleanText(JText::_('CATALOG_ALERT_UPLOAD'))."',
+													disabled : true,
+													handler: function(){
+														if(Ext.ComponentMgr.get(caller).getValue().length != 0){
+															Ext.Msg.confirm(
+																	'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_ALERT_UPLOADFILE_FILE_EXISTS_TITLE'))."',
+																	'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_ALERT_UPLOADFILE_FILE_EXISTS_MSG'))."',
+																	function(btn, text){
+																		if (btn == 'yes'){
+																			Ext.MessageBox.show({
+																				title: '".html_Metadata::cleanText(JText::_('CATALOG_METADATA_CLEAR_UPLOADEDFILE_WAIT'))."',
+																				msg: '".html_Metadata::cleanText(JText::_('CATALOG_METADATA_CLEAR_UPLOADEDFILE_WAIT_PRG'))."',
+																				width:300,
+																				wait:true,
+																				waitConfig: {
+																					interval:200}
+																			});
+																			Ext.Ajax.request({
+																				url:'index.php?option=com_easysdi_catalog&task=deleteUploadedFile&file='+Ext.ComponentMgr.get(caller).getValue(),
+																				method:'GET',
+																				success:function(result,request) {
+																					if(JSON.parse (result.responseText).success){
+																						Ext.MessageBox.hide();
+																						Ext.ComponentMgr.get(caller).setValue('');
+																						if(Ext.ComponentMgr.get(caller.concat('_hiddenVal')))
+																							Ext.ComponentMgr.get(caller.concat('_hiddenVal')).setValue('');
+																						Ext.ComponentMgr.get('metadataForm').uploadfile(caller);
+																					}else{
+																						Ext.MessageBox.hide();
+																						Ext.MessageBox.alert('".html_Metadata::cleanText(JText::_('CORE_METADATA_UPLOADFILE_ERROR'))." : '+JSON.parse (result.responseText).cause);
+																					}
+																				},
+																				failure:function(result,request) {
+																					Ext.MessageBox.hide();
+																					Ext.MessageBox.alert('".html_Metadata::cleanText(JText::_('CORE_METADATA_UPLOADFILE_ERROR'))." : '+JSON.parse (result.response.responseText).cause);
+																				}
+																			});
+																		}
+																	}
+																);
+														}else{
+															Ext.ComponentMgr.get('metadataForm').uploadfile(caller);
+														}
+														
+													}
+												},
+												{
+													text: '".html_Metadata::cleanText(JText::_('CATALOG_ALERT_CLOSE'))."',
+													handler: function(){
+														winupload.close();
+														Ext.ComponentMgr.get(caller).setValue (longStartValue);
+													}
+												}
+												
+											]
+										}]
+								 	});
+								 	
+									winupload.on('beforeclose', function(){
+										Ext.ComponentMgr.get(caller).setValue(winupload.backvalue);
+										if(Ext.ComponentMgr.get(caller.concat('_hiddenVal')))
+											Ext.ComponentMgr.get(caller.concat('_hiddenVal')).setValue(winupload.backvalue);
+									}, this);
+									
+									winupload.show();
+								},
+						        
+								clearUploadedFile : function  (caller){
+									Ext.Msg.confirm(
+										'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_ALERT_CLEAR_UPLOADEDFILE_CONFIRM_TITLE'))."',
+										'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_ALERT_CLEAR_UPLOADEDFILE_CONFIRM_MSG'))."',
+										function(btn, text){
+											if (btn == 'yes'){
+												Ext.MessageBox.show({
+													title: '".html_Metadata::cleanText(JText::_('CATALOG_METADATA_CLEAR_UPLOADEDFILE_WAIT'))."',
+													msg: '".html_Metadata::cleanText(JText::_('CATALOG_METADATA_CLEAR_UPLOADEDFILE_WAIT_PRG'))."',
+													width:300,
+													wait:true,
+													waitConfig: {
+														interval:200}
+												});
+												Ext.Ajax.request({
+													url:'index.php?option=com_easysdi_catalog&task=deleteUploadedFile&file='+Ext.ComponentMgr.get(caller).getValue(),
+													method:'GET',
+													success:function(result,request) {
+														if(JSON.parse (result.responseText).success){
+															Ext.MessageBox.hide();
+															Ext.ComponentMgr.get(caller).setValue('');
+															if(Ext.ComponentMgr.get(caller.concat('_hiddenVal')))
+																Ext.ComponentMgr.get(caller.concat('_hiddenVal')).setValue('');
+															//Ext.ComponentMgr.get('metadataForm').saveMetadataAfterLinkedFileUpdate();
+															if(winupload)
+																winupload.close();
+														}else {
+															Ext.MessageBox.hide();
+															Ext.MessageBox.alert('".html_Metadata::cleanText(JText::_('CORE_METADATA_UPLOADFILE_ERROR'))." : '+JSON.parse (result.responseText).cause);
+															
+														}	
+													},
+													failure:function(result,request) {
+														Ext.MessageBox.hide();
+														Ext.MessageBox.alert('".html_Metadata::cleanText(JText::_('CORE_METADATA_UPLOADFILE_ERROR'))." : '+JSON.parse (result.responseText).cause);
+													}
+												});
+											}
+										}
+									)
+								},
+								
+								uploadfile : function  (caller){
+									winupload.items.get(0).getForm().submit({
+										url: 'index.php?option=com_easysdi_catalog&task=uploadFileAndGetLink',
+										waitMsg: '".html_Metadata::cleanText(JText::_('CORE_METADATA_UPLOADFILE_WAIT'))."',
+										success: function(form,action){
+											winupload.backvalue = JSON.parse (action.response.responseText).url;
+											//Ext.ComponentMgr.get('metadataForm').saveMetadataAfterLinkedFileUpdate();
+											winupload.close();
+										},
+										failure: function(form,action){
+											Ext.MessageBox.alert('".html_Metadata::cleanText(JText::_('CORE_METADATA_UPLOADFILE_ERROR'))." : '+JSON.parse (action.response.responseText).cause);
+											winupload.close();
+										}
+									});
+								},
 						        buttons: [{
 							                text: '".JText::_('CORE_XML_PREVIEW')."',
 							                handler: function()
@@ -3051,6 +3244,31 @@ else
 								".$parentFieldsetName.".add(createSuperBoxSelect('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."', ".$value.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."'));
 								";
 								break;
+								//TODO
+								case 14:
+									// Cas où le noeud n'existe pas dans le XML. Inutile de rechercher la valeur
+								$node = $xpathResults->query("gmd:MI_Identifier/gmd:code/gco:CharacterString", $attributeScope);
+								
+								if ($parentScope <> NULL and $parentScope->nodeName == $scope->nodeName)
+									$nodeValue="";
+								else
+									$nodeValue = html_Metadata::cleanText($node->item($pos)->nodeValue);
+
+								// Récupération de la valeur par défaut, s'il y a lieu
+								if ($child->attribute_default <> "" and $nodeValue == "")
+									$nodeValue = html_Metadata::cleanText($child->attribute_default);
+								
+								$this->javascript .="
+								".$parentFieldsetName.".add(createStereotypeFileTextField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', false, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+								";
+								
+								if ($child->attribute_system)
+								{
+									$this->javascript .="
+									".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
+									";
+								}
+								break;
 							default:
 								// Traitement de la classe enfant
 								//echo "Recherche de ".$type_isocode." dans ".$attributeScope->nodeName."<br>";
@@ -3609,6 +3827,23 @@ else
 							// Thesaurus GEMET
 							case 11:
 								// Le Thesaurus GEMET  n'existe qu'en un exemplaire
+								break;
+								//TODO
+							case 14:
+									//echo "Recherche de gco:CharacterString dans ".$attributeScope->nodeName."<br>";
+								$node = $xpathResults->query("gmd:MI_Identifier/gmd:code/gco:CharacterString", $attributeScope);
+								$nodeValue = html_Metadata::cleanText($node->item(0)->nodeValue);
+								
+								$this->javascript .="
+								".$parentFieldsetName.".add(createStereotypeFileTextField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", true, master, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', false, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+								";
+								
+								if ($child->attribute_system)
+								{
+									$this->javascript .="
+									".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
+									";
+								}
 								break;
 							default:
 								// Selon le rendu de l'attribut, on fait des traitements diff�rents
@@ -4477,6 +4712,22 @@ else
 								";
 								
 								break;
+							//TODO
+							case 14:
+									$node = $xpathResults->query("gmd:MI_Identifier/gmd:code/gco:CharacterString", $attributeScope);
+								$nodeValue = html_Metadata::cleanText($node->item(0)->nodeValue);
+								
+								$this->javascript .="
+								".$parentFieldsetName.".add(createStereotypeFileTextField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', false, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+								";
+								
+								if ($child->attribute_system)
+								{
+									$this->javascript .="
+									".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
+									";
+								}
+								break;
 						default:
 							// Selon le rendu de l'attribut, on fait des traitements diff�rents
 							switch ($child->rendertype_id)
@@ -5276,7 +5527,7 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 				$str .= 'true';
 				else
 				$str .= '"' . addslashes($value) . '"'; //All other things
-				// :TODO: Is there any more datatype we should be in the lookout for? (Object?)
+				//  Is there any more datatype we should be in the lookout for? (Object?)
 
 				$parts[] = $str;
 			}

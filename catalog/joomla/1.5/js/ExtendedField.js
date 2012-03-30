@@ -81,18 +81,9 @@ Ext.override(Ext.form.Field, {
 					var masterName = parentName + name.substring(parentName.length);
 					master = Ext.getCmp(masterName);
 				}
-				//console.log("Master: "+ master.getId());
-				//console.log("Master clones_count: "+ master.clones_count);
-				//console.log("parentName: "+ parentName);
-				//console.log("name: "+ name);
 				if (!master.clones_count)
 					master.clones_count=1;
-				//var oldIndexComponent = Ext.ComponentMgr.get(name + '_index');
-				//console.log("Fieldset: "+name + '_index');
 				var partOfNameToModify = name.substring(parentName.length);
-				//console.log("partOfNameToModify: "+ partOfNameToModify);
-				//var partOfNameToModify2 = name.substring(parentName.length,name.length-String(master.clones_count).length);
-				//console.log("partOfNameToModify2: "+ partOfNameToModify2);
 				var aName = name.split('__');
 				var sName = name.split('-');
                 var partOfNameToModify2 = name.substring(parentName.length, name.length-aName[aName.length - 1].length);
@@ -104,24 +95,10 @@ Ext.override(Ext.form.Field, {
 					clones_count = master.clones_count;
 				else
 					clones_count = 1;
-				
-				
-/*				var indexComponent = Ext.ComponentMgr.get(parentName + partOfNameToModify + '_index');
-				var newVal = 1;
-				var newPos = 1;
-				if (indexComponent!=undefined)
-				{	var newVal = Number(indexComponent.getValue()) + 1;
-					newPos = indexComponent.getValue().length;
-			    	indexComponent.setValue(newVal);
-				}
-*/				
-				var nameEndPart = partOfNameToModify.substring(partOfNameToModify2.length+String(master.clones_count).length);
-				//console.log("nameEndPart: "+ nameEndPart);
+
+			    var nameEndPart = partOfNameToModify.substring(partOfNameToModify2.length+String(master.clones_count).length);
 				var newName = parentName + partOfNameToModify2 + clones_count + nameEndPart;
-				//console.log("newName: "+ newName);
 				
-				//hiddenName:id + '_hidden',
-				//console.log(master.xtype);
 				if (master.xtype == "choicetext" || master.xtype == "combo")
 				{
 					var clone = master.cloneConfig({
@@ -146,7 +123,20 @@ Ext.override(Ext.form.Field, {
 						iconCfg : {cls:'x-tool x-tool-minus',clsOnOver:'x-tool-minus-over'}																	   
 					});
 				}
-				else
+				else if(master.hasListener ('focus'))
+				{
+					var clone = master.cloneConfig({
+						id : newName,
+						name : newName,
+						clone : isClone,
+						clones_count: clones_count,
+						template : master,
+						listeners:{
+		                    focus: Ext.ComponentMgr.get('metadataForm').showUploadFileWindow.createCallback(newName)
+		                },
+						iconCfg : {cls:'x-tool x-tool-minus',clsOnOver:'x-tool-minus-over'}																	   
+					});
+				}else 
 				{
 					var clone = master.cloneConfig({
 						id : newName,
@@ -174,29 +164,10 @@ Ext.override(Ext.form.Field, {
 				{
 					clone.setValue(master.defaultVal);
 				}
-				/*
-				// Traitement des checkboxs et radiobuttons
-				if (clone.xtype=='checkboxgroup' || clone.xtype=='radiogroup') 
-				{
-					var listBoxes = clone.items;
-					//console.log(listBoxes);
-					for (var b=0; b<listBoxes.length; b++)
-					{
-						//console.log(listBoxes[b]);
-						//console.log(listBoxes[b].xtype);
-						if (listBoxes[b].xtype=='checkbox' || listBoxes[b].xtype=='radio') 
-							listBoxes[b].checked = false;
-					}
-				}
-				*/
-				
-				/*if (clone.xtype=='multiselect') 
-					alert(clone.id + " - " + clone.getValue(clone));
-				*/
+
 				panel.doLayout();
 			}			
 
-			//
 			// remove clones untill cardinality is reached
 			for ( var i = cmps.length ; i > card ; i -- ) {
 					var field = cmps[i-1];
@@ -311,49 +282,52 @@ Ext.override(Ext.form.Field, {
 				var item = Ext.get(field.el.findParent('.x-form-item'));
 			    var fieldset = field.ownerCt;
 				
-		    	// Traitement pour le premier élément de la liste, le master
-		    	if (!field.clone)
-		    	{
-					
-					// Get the first clone af the master
-					var listOfClones = field.clones();
-					var firstClone = listOfClones[0];			
-					/*var name = field.getId();						
-					var oldIndex = name + "_index";
-					var oldCmp = Ext.getCmp(oldIndex);					
-					var newName = firstClone.getId() + "_index";
-					var newValue = oldCmp.getValue();
-					var idx = fieldset.items.indexOf(oldCmp);
-					fieldset.remove(oldCmp, true);
-					var newCmp = new Ext.ux.ExtendedHidden({id: newName, name: newName, value: newValue});
-
-					fieldset.insert(idx,newCmp);
-					fieldset.doLayout();
-					*/
-					firstClone.clone = false;
-					firstClone.template = undefined;
-					firstClone.clones_count = field.clones_count;
-					item.remove();
-					fieldset.remove(field, true);
-					fieldset.doLayout();
-
-					for (i=1; i < listOfClones.length; i++)
-					{
-						listOfClones[i].template = firstClone;
+			    if(this.hasListener ('focus')){
+			    	//Un fichier a effacer
+			    	if(Ext.ComponentMgr.get(field.id).getValue().length != 0){
+			    		Ext.Msg.confirm(
+			    				HS.i18n('CATALOG_METADATA_ALERT_CLEAR_UPLOADEDFILE_CONFIRM_TITLE'),
+			    				HS.i18n('CATALOG_METADATA_ALERT_CLEAR_UPLOADEDFILE_CONFIRM_MSG'),
+							function(btn, text){
+								if (btn == 'yes'){
+									Ext.MessageBox.show({
+										title: HS.i18n('CATALOG_METADATA_CLEAR_UPLOADEDFILE_WAIT_PRG'),
+										msg: HS.i18n('CATALOG_METADATA_CLEAR_UPLOADEDFILE_WAIT_PRG'),
+										width:300,
+										wait:true,
+										waitConfig: {
+											interval:200}
+									});
+									Ext.Ajax.request({
+										url:'index.php?option=com_easysdi_catalog&task=deleteUploadedFile&file='+Ext.ComponentMgr.get(field.id).getValue(),
+										method:'GET',
+										success:function(result,request) {
+											if(JSON.parse (result.responseText).success){
+												Ext.MessageBox.hide();
+												Ext.ComponentMgr.get(field.id).setValue('');
+												if(Ext.ComponentMgr.get(field.id.concat('_hiddenVal')))
+													Ext.ComponentMgr.get(field.id.concat('_hiddenVal')).setValue('');
+												//Ext.ComponentMgr.get('metadataForm').saveMetadataAfterLinkedFileUpdate();		
+											}else{
+												Ext.MessageBox.hide();
+												Ext.MessageBox.alert(HS.i18n('CORE_METADATA_UPLOADFILE_ERROR')+' : '+JSON.parse (result.responseText).cause);
+											}
+										},
+										failure:function(result,request) {
+											Ext.MessageBox.hide();
+											Ext.MessageBox.alert(HS.i18n('CORE_METADATA_UPLOADFILE_ERROR') +' : '+JSON.parse (result.responseText).cause);
+										}
+									});
+									field.listOfClonesManagement(field, cnt, item, fieldset);
+								}
+							}
+						)
+			    	}else{//Pas de fichier a effacer
+			    		field.listOfClonesManagement(field, cnt, item, fieldset);
 					}
-					firstClone.manageIcons(firstClone);
-			    }
-			    else
-			    {
-			    	var tmpl = field.template;
-			    	item.remove();
-					fieldset.remove(field, true);
-					fieldset.doLayout();
-					tmpl.manageIcons(tmpl); //mise a jour des boutons
-							
-							var listOfClones = tmpl.clones();
-							var lastClone = listOfClones[listOfClones.length-1];									
-							if (lastClone) lastClone.manageIcons(lastClone);
+				}//Pas un stereotype file
+			    else{
+			    	field.listOfClonesManagement(field, cnt, item, fieldset);
 			    }
 			});
 		} 
@@ -393,6 +367,39 @@ Ext.override(Ext.form.Field, {
 		   on ne sait pourquoi, ce n'est pas fait automatiquement.*/
 		this.isValid(false);
 	}),
+	
+	listOfClonesManagement : function (field, cnt, item, fieldset){
+		// Traitement pour le premier élément de la liste, le master
+    	if (!field.clone)
+    	{
+			// Get the first clone of the master
+			var listOfClones = field.clones();
+			var firstClone = listOfClones[0];			
+			firstClone.clone = false;
+			firstClone.template = undefined;
+			firstClone.clones_count = field.clones_count;
+			item.remove();
+			fieldset.remove(field, true);
+			fieldset.doLayout();
+
+			for (i=1; i < listOfClones.length; i++)
+			{
+				listOfClones[i].template = firstClone;
+			}
+			firstClone.manageIcons(firstClone);
+	    }
+	    else
+	    {
+	    	var tmpl = field.template;
+	    	item.remove();
+			fieldset.remove(field, true);
+			fieldset.doLayout();
+			tmpl.manageIcons(tmpl); //mise a jour des boutons
+					var listOfClones = tmpl.clones();
+					var lastClone = listOfClones[listOfClones.length-1];									
+					if (lastClone) lastClone.manageIcons(lastClone);
+	    }
+	},
 	
 	/**
 	 * Add icon on rightside of field to create the ability to implement dynamic behaviour in the context of the specified field.
