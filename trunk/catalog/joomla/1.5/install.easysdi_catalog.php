@@ -1738,24 +1738,6 @@ function com_install(){
 				return false;
 			}
 			
-// 			$query = "INSERT INTO #__sdi_list_attributetype (guid, code, name, description, created, createdby, label, defaultpattern, isocode, namespace_id) VALUES
-// 								('".helper_easysdi::getUniqueId()."', 'File', 'File', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'CATALOG_ATTRIBUTETYPE_FILE', '', 'identifier', 1)";
-// 			$db->setQuery( $query);
-// 			if (!$db->query()){
-// 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-// 				return false;
-// 			}
-			
-// 			$query = "INSERT INTO #__sdi_list_renderattributetype (attributetype_id, rendertype_id) VALUES
-// 								( 14, 1),
-// 								( 14, 5)";
-// 			$db->setQuery( $query);
-// 			if (!$db->query())
-// 			{
-// 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-// 				return false;
-// 			}
-			
 			$version="2.2.0";
 			$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='CATALOG'";
 			$db->setQuery( $query);
@@ -1763,7 +1745,42 @@ function com_install(){
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}
 		}
-
+		if($version == "2.2.0"){
+			$query = "INSERT INTO #__sdi_list_attributetype (guid, code, name, description, created, createdby, label, defaultpattern, isocode, namespace_id) VALUES
+								('".helper_easysdi::getUniqueId()."', 'file', 'file', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'CATALOG_ATTRIBUTETYPE_FILE', '', 'MI_Identifier', 1)";
+			$db->setQuery( $query);
+			if (!$db->query()){
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+				return false;
+			}
+	
+			$query = "INSERT INTO #__sdi_list_renderattributetype (attributetype_id, rendertype_id) VALUES
+								( 14, 5)";
+			$db->setQuery( $query);
+			if (!$db->query()){
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+				return false;
+			}
+			
+			$query = "INSERT INTO #__sdi_configuration (guid, code, name, description, created, createdby, label, value, module_id) VALUES
+			('".helper_easysdi::getUniqueId()."', 'CATALOG_METADATA_LINKED_FILE_REPOSITORY', 'CATALOG_METADATA_LINKED_FILE_REPOSITORY', null, '".date('Y-m-d H:i:s')."', '".$user_id."', null, '/home/tmp', '".$id."'),
+			('".helper_easysdi::getUniqueId()."', 'CATALOG_METADATA_LINKED_FILE_BASE_URI', 'CATALOG_METADATA_LINKED_FILE_BASE_URI', null, '".date('Y-m-d H:i:s')."', '".$user_id."', null, 'http://localhost/easysdi/file/', '".$id."')
+			";
+			$db->setQuery( $query);
+			if (!$db->query())
+			{
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+				return false;
+			}
+				
+			$version="2.3.0";
+			$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='CATALOG'";
+			$db->setQuery( $query);
+			if (!$db->query()){
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+		}		
+		
 		$query = "DELETE FROM #__components where `option`= 'com_easysdi_catalog' ";
 		$db->setQuery( $query);
 		if (!$db->query())

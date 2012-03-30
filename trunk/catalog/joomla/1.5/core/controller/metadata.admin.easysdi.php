@@ -186,25 +186,6 @@ class ADMIN_metadata {
 			$msg = JText::_('CATALOG_METADATA_EDIT_NOMETADATA_MSG');
 			$mainframe->redirect("index.php?option=$option&task=listObject", $msg );
 		}
-			
-			
-		/*if (array_key_exists('version_hidden', $_POST))
-		{
-			$rowVersion = new objectversion($database);
-			$rowVersion->load( $_POST['version_hidden'] );
-			$rowMetadata = new metadata( $database );
-			$rowMetadata->load( $rowVersion->metadata_id );
-		}
-		else if (array_key_exists('metadata_id', $_POST))
-		{
-			$rowMetadata = new metadataByGuid( $database );
-			$rowMetadata->load( $_POST['metadata_id'] );
-		}
-		else
-		{
-			$rowMetadata = new metadata( $database );
-			$rowMetadata->load( $rowObject->metadata_id );
-		}*/
 		
 		/*
 		 * If the item is checked out we cannot edit it... unless it was checked
@@ -439,12 +420,10 @@ class ADMIN_metadata {
 	}
 
 	/*
-	 * Construction d'un xml ISO1939, � partir du formulaire EXTJS 
+	 * Construction d'un xml ISO1939, à partir du formulaire EXTJS 
 	 */
 	function buildXMLTree($parent, $parentFieldset, $parentName, &$XMLDoc, $xmlParent, $queryPath, $currentIsocode, $scope, $keyVals, $profile_id, $account_id, $option)
 	{
-		//echo "Name: ".$parentName." \r\n ";
-		//echo "Isocode courant: ".$currentIsocode."\\r\\n";
 		$database =& JFactory::getDBO();
 		$rowChilds = array();
 		$xmlClassParent = $xmlParent;
@@ -526,22 +505,21 @@ class ADMIN_metadata {
 		$database->setQuery( $query );
 		$rowChilds = array_merge( $rowChilds, $database->loadObjectList() );
 		
-		//foreach($rowAttributeChilds as $child)
 		foreach($rowChilds as $child)
 		{
 			// Traitement d'une relation vers un attribut
 			if ($child->attribute_id <> null)
 			{
-				//echo "attribute: ".$child->attribute_isocode."\r\n";
-				//echo "attributetype_id: ".$child->attribute_type."\r\n\r\n";
+// 				echo "attribute: ".$child->attribute_isocode."\r\n";
+// 				echo "attributetype_id: ".$child->attribute_type."\r\n";
 				
 				if ($child->attribute_type == 6 )
 					$type_isocode = $child->list_isocode;
 				else
 					$type_isocode = $child->t_isocode;
 		
-				//echo "type_isocode: ".$type_isocode."\r\n";
-				//echo "parent name: ".$parentName."\r\n";
+// 				echo "type_isocode: ".$type_isocode."\r\n";
+// 				echo "parent name: ".$parentName."\r\n\r\n";
 				$name = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."-".str_replace(":", "_", $type_isocode);
 	
 				//$name = $name."__1";
@@ -561,7 +539,7 @@ class ADMIN_metadata {
 						
 						//echo "name: ".$name."\r\n";
 						
-						// R�cup�ration des valeurs post�es correspondantes
+						// Récupération des valeurs postées correspondantes
 						$keys = array_keys($_POST);
 						$usefullVals=array();
 						//$usefullKeys=array();
@@ -581,7 +559,7 @@ class ADMIN_metadata {
 						}
 						
 						//print_r($usefullVals);
-						// Ajouter chacune des copies du champ dans le XML r�sultat
+						// Ajouter chacune des copies du champ dans le XML résultat
 						for ($pos=1; $pos<=$count; $pos++)
 						{
 							$nodeValue = $usefullVals[$pos-1];
@@ -597,7 +575,7 @@ class ADMIN_metadata {
 						break;
 					// Text
 					case 2:
-						// R�cup�ration des valeurs post�es correspondantes
+						// Récupération des valeurs postées correspondantes
 						$keys = array_keys($_POST);
 						//print_r($keys);
 						$usefullVals=array();
@@ -641,8 +619,8 @@ class ADMIN_metadata {
 						break;
 					// Local
 					case 3:
-						/* Traitement sp�cifique aux langues */
-						// On cr�e le nom sp�cifiquement pour les textes localis�s
+						/* Traitement spécifique aux langues */
+						// On cr�e le nom spécifiquement pour les textes localisés
 						$name = $parentName."-".str_replace(":", "_", $child->attribute_isocode); //."-".str_replace(":", "_", $type_isocode);
 	
 						$count=0;
@@ -666,8 +644,8 @@ class ADMIN_metadata {
 							$LocName = $name."__".($pos+2);
 							//echo "LocName: ".$LocName."\r\n";
 							
-							// S'assurer que l'entr�e a bien �t� retourn�e, et que ce n'est pas juste un effet de bord
-							// du comptage, li� � des +/- successifs 
+							// S'assurer que l'entrée a bien été retournée, et que ce n'est pas juste un effet de bord
+							// du comptage, lié à des +/- successifs 
 							$countExist=0;
 							foreach($keyVals as $key => $val)
 							{
@@ -691,7 +669,7 @@ class ADMIN_metadata {
 									$LangName = $LocName."-gmd_LocalisedCharacterString-".$lang->code_easysdi."__1";
 									//echo "LangName: ".$LangName."\r\n";  
 	
-									// R�cup�ration des valeurs post�es correspondantes
+									// Récupération des valeurs postées correspondantes
 									$keys = array_keys($_POST);
 									$usefullVals=array();
 									//$usefullKeys=array();
@@ -752,42 +730,11 @@ class ADMIN_metadata {
 									}
 								}
 							}
-								
-							/*
-							// Ajouter chacune des copies du champ dans le XML r�sultat
-							$langIndex = 0;
-							for ($pos=1; $pos<=$count; $pos++)
-							{
-								$searchName = $parentName."-".str_replace(":", "_", $attribute->attribute_isocode)."__1";
-								echo "searchName: ".$searchName."\\r\\n";
-								
-								$XMLNode = $XMLDoc->createElement($child->attribute_isocode);
-								$xmlAttributeParent->appendChild($XMLNode);
-								$xmlLocParent = $XMLNode;
-								
-								foreach($this->langList as $lang)
-								{
-									$LangName = $LocName."-gmd_LocalisedCharacterString-".$row->language."__1";
-									 echo "LangName: ".$LangName."\\r\\n";  
-									 
-									$nodeValue=$usefullVals[$langIndex][$lang->lang];
-								
-									$XMLNode = $XMLDoc->createElement("gmd:LocalisedCharacterString", $nodeValue);
-									$xmlLocParent->appendChild($XMLNode);
-									$XMLNode->setAttribute('locale', $lang->lang);
-									$xmlParent = $XMLNode;
-									
-									$langIndex = $langIndex+1;
-								}
-							}*/
 						}
-					
-						
-						
 						break;
 					// Number
 					case 4:
-						// R�cup�ration des valeurs post�es correspondantes
+						// Récupération des valeurs postées correspondantes
 						$keys = array_keys($_POST);
 						$usefullVals=array();
 						//$usefullKeys=array();
@@ -809,7 +756,7 @@ class ADMIN_metadata {
 							}
 						}
 						
-						// Ajouter chacune des copies du champ dans le XML r�sultat
+						// Ajouter chacune des copies du champ dans le XML résultat
 						for ($pos=1; $pos<=$count; $pos++)
 						{
 							$nodeValue = $usefullVals[$pos-1];
@@ -825,7 +772,7 @@ class ADMIN_metadata {
 						break;
 					// Date
 					case 5:
-						// R�cup�ration des valeurs post�es correspondantes
+						// Récupération des valeurs postées correspondantes
 						$keys = array_keys($_POST);
 						$usefullVals=array();
 						//$usefullKeys=array();
@@ -876,7 +823,7 @@ class ADMIN_metadata {
 						{
 							// Checkbox
 							case 2:
-								// R�cup�ration des valeurs post�es correspondantes
+								// Récupération des valeurs postées correspondantes
 								$keys = array_keys($_POST);
 								//print_r($keys);echo "\r\n";
 								$usefullVals=array();
@@ -971,7 +918,7 @@ class ADMIN_metadata {
 								break;
 							// Radiobutton
 							case 3:
-								// R�cup�ration des valeurs post�es correspondantes
+								// Récupération des valeurs postées correspondantes
 								$keys = array_keys($_POST);
 								//print_r($keys);echo "\r\n";
 								//print_r(array_values($_POST));
@@ -1053,9 +1000,9 @@ class ADMIN_metadata {
 							// List
 							case 4:
 							default:
-								/* Traitement sp�cifique aux listes */
+								/* Traitement spécifique aux listes */
 						
-								// R�cup�ration des valeurs post�es correspondantes
+								// Récupération des valeurs postées correspondantes
 								$keys = array_keys($_POST);
 								$usefullVals=array();
 								//$usefullKeys=array();
@@ -1080,7 +1027,7 @@ class ADMIN_metadata {
 								}
 								// Traitement des enfants de type list
 								// Traitement de la multiplicit�
-							 	// R�cup�ration du path du bloc de champs qui va �tre cr�� pour construire le nom
+							 	// Récupération du path du bloc de champs qui va être créé pour construire le nom
 							 	$listName = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__1";
 								//$nodeValue = $usefullVals[0];
 								
@@ -1152,7 +1099,7 @@ class ADMIN_metadata {
 						break;
 					// Link
 					case 7:
-						// R�cup�ration des valeurs post�es correspondantes
+						// Récupération des valeurs postées correspondantes
 						$keys = array_keys($_POST);
 						$usefullVals=array();
 						//$usefullKeys=array();
@@ -1174,11 +1121,10 @@ class ADMIN_metadata {
 							}
 						}
 						
-						// Ajouter chacune des copies du champ dans le XML r�sultat
+						// Ajouter chacune des copies du champ dans le XML résultat
 						for ($pos=1; $pos<=$count; $pos++)
 						{
 							$nodeValue = $usefullVals[$pos-1];
-							//$nodeValue = stripslashes($nodeValue);
 									
 							$XMLNode = $XMLDoc->createElement($child->attribute_isocode);
 							$xmlAttributeParent->appendChild($XMLNode);
@@ -1190,7 +1136,7 @@ class ADMIN_metadata {
 						break;
 					// DateTime
 					case 8:
-						// R�cup�ration des valeurs post�es correspondantes
+						// Récupération des valeurs postées correspondantes
 						$keys = array_keys($_POST);
 						$usefullVals=array();
 						//$usefullKeys=array();
@@ -1212,7 +1158,7 @@ class ADMIN_metadata {
 							}
 						}
 						
-						// Ajouter chacune des copies du champ dans le XML r�sultat
+						// Ajouter chacune des copies du champ dans le XML résultat
 						for ($pos=1; $pos<=$count; $pos++)
 						{
 							$nodeValue = $usefullVals[$pos-1];
@@ -1230,7 +1176,7 @@ class ADMIN_metadata {
 						break;
 					// ChoiceText
 					case 9:
-						// R�cup�ration des valeurs post�es correspondantes
+						// Récupération des valeurs postées correspondantes
 						$keys = array_keys($_POST);
 						$usefullVals=array();
 						//$usefullKeys=array();
@@ -1281,14 +1227,13 @@ class ADMIN_metadata {
 						break;
 					// ChoiceLocale
 					case 10:
-						// R�cup�ration des valeurs post�es correspondantes
+						// Récupération des valeurs postées correspondantes
 						$keys = array_keys($_POST);
 						$usefullVals=array();
-						//$usefullKeys=array();
+						
 						$count=0;
 						foreach($keys as $key)
 						{
-							//$partToCompare = substr($key, 0, strlen($parentName."-".str_replace(":", "_", $child->attribute_isocode)));
 							$partToCompare_temp1 = substr($key, strlen($parentName."-"));
 							if (strpos($partToCompare_temp1, "-"))
 								$partToCompare_temp2 = substr($partToCompare_temp1, 0, strpos($partToCompare_temp1, "-"));
@@ -1308,21 +1253,16 @@ class ADMIN_metadata {
 							}
 						}
 						
-						//print_r($usefullVals);echo "\r\n";
-							
-						// Ajouter chacune des copies du champ dans le XML r�sultat
+						// Ajouter chacune des copies du champ dans le XML résultat
 						for ($pos=1; $pos<=$count; $pos++)
 						{
 							$nodeValue = $usefullVals[$pos-1];
-							//$nodeValue = stripslashes($nodeValue);
-
-							// R�cup�rer la valeur li�e � cette entr�e de liste
+					
+							// Récupérer la valeur liée à cette entrée de liste
 							$locValues = array();
 							$query = "SELECT cl.code, t.content FROM #__sdi_translation t, #__sdi_language l, #__sdi_list_codelang cl WHERE t.language_id=l.id AND l.codelang_id=cl.id AND t.element_guid = '".$nodeValue."' ORDER BY l.ordering";
 							$database->setQuery( $query );
-							//echo $database->getQuery()."<br>";
 							$locValues = $database->loadObjectList();
-							//print_r($locValues);
 							
 							$XMLNode = $XMLDoc->createElement($child->attribute_isocode);
 							$xmlAttributeParent->appendChild($XMLNode);
@@ -1336,7 +1276,6 @@ class ADMIN_metadata {
 								{
 									if ($loc->code==$lang->code_easysdi)
 									{
-										//$nodeValue=$usefullVals[$loc->code];
 										$nodeValue=$loc->content;
 										$codeToSave = $lang->code;
 										if ($lang->defaultlang== true)
@@ -1347,14 +1286,7 @@ class ADMIN_metadata {
 									}
 								}
 								
-								/*if (mb_detect_encoding($nodeValue) <> "UTF-8")
-									$nodeValue = utf8_encode($nodeValue);
-								*/
-								//$nodeValue = stripslashes($loc->content);
-								//$nodeValue = preg_replace("/\r\n|\r|\n/","&#xD;",$nodeValue);
-								//echo $isdefault.", ".$codeToSave;
-								// Ajout des balises inh�rantes aux locales
-								if ($isdefault) // La langue par d�faut
+								if ($isdefault) // La langue par défaut
 								{
 									$XMLNode = $XMLDoc->createElement("gco:CharacterString", $nodeValue);
 									$xmlLocParent->appendChild($XMLNode);
@@ -1385,7 +1317,7 @@ class ADMIN_metadata {
 					// Thesaurus GEMET
 					case 11:
 						//echo $parentName."-".str_replace(":", "_", $child->attribute_isocode)."<br>";
-						// R�cup�ration des valeurs post�es correspondantes
+						// Récupération des valeurs postées correspondantes
 						$keys = array_keys($_POST);
 						$usefullVals=array();
 						//$usefullKeys=array();
@@ -1474,8 +1406,53 @@ class ADMIN_metadata {
 						}
 						
 						break;
+					case 14 :					
+						// Récupération des valeurs postées correspondantes
+						$keys = array_keys($_POST);
+						
+						$usefullVals=array();
+						
+						$count=0;
+						if ($child->attribute_system)
+							$name = $name."__1"."_hiddenVal";
+						
+						foreach($keys as $key)
+						{
+							$partToCompare = substr($key, 0, strlen($name));
+							if ($partToCompare == $name)
+							{
+								if (substr($key, -6) <> "_index")
+								{
+									$count = $count+1;
+									$usefullVals[] = $_POST[$key];
+								}
+							}
+						}
+						
+						for ($pos=1; $pos<=$count; $pos++)
+						{
+							$nodeValue = $usefullVals[$pos-1];
+							
+							if(strlen($nodeValue) == 0){
+								continue;
+							}
+							$XMLNode = $XMLDoc->createElement($child->attribute_isocode);
+							$xmlAttributeParent->appendChild($XMLNode);
+								
+							$XMLNode1 = $XMLDoc->createElement("gmd:MI_Identifier");
+							$XMLNode2 = $XMLDoc->createElement("gmd:code");
+							$XMLNode3 = $XMLDoc->createElement("gco:CharacterString",$nodeValue);
+							
+							$XMLNode->appendChild($XMLNode1);
+							$XMLNode1->appendChild($XMLNode2);
+							$XMLNode2->appendChild($XMLNode3);
+							
+							$xmlParent = $XMLNode;
+						}
+						
+						break;
 					default:
-						// R�cup�ration des valeurs post�es correspondantes
+						// Récupération des valeurs postées correspondantes
 						$keys = array_keys($_POST);
 						$usefullVals=array();
 						//$usefullKeys=array();
@@ -1685,7 +1662,7 @@ class ADMIN_metadata {
 	}
 	
 	/*
-	 * Sauvegarde d'une m�tadonn�e 
+	 * Sauvegarde d'une métadonnée 
 	 */
 	function saveMetadata($option)
 	{
@@ -1695,12 +1672,12 @@ class ADMIN_metadata {
 		$metadata_id = $_POST['metadata_id'];
 		$object_id = $_POST['object_id'];
 		
-		// Remise � jour des compteurs de suppression et d'ajout 
+		// Remise à jour des compteurs de suppression et d'ajout 
 		$deleted=0;
 		$inserted=0;
 		//echo "Metadata: ".$metadata_id." \r\n ";
 		//echo "Product: ".$object_id." \r\n ";
-		// R�cup�ration des index des fieldsets
+		// Récupération des index des fieldsets
 		$fieldsets = array();
 		$fieldsets = explode(" | ", $_POST['fieldsets']);
 		
@@ -1711,7 +1688,7 @@ class ADMIN_metadata {
 			$keyVals[$keys[0]] = $keys[1];
 		}
 			
-		// Langues � g�rer
+		// Langues à gérer
 		$this->langList = array();
 		$this->langCode=array();
 		//$database->setQuery( "SELECT l.id, l.name, l.defaultlang, l.code as code, l.isocode, c.code as code_easysdi FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY l.ordering" );
@@ -1733,14 +1710,14 @@ class ADMIN_metadata {
 		// Parcourir les classes et les attributs
 		$XMLDoc = new DOMDocument('1.0', 'UTF-8');
 		$XMLDoc->formatOutput = true;
-		// R�cup�rer l'objet li� � cette m�tadonn�e
+		// Récupérer l'objet lié à cette métadonnée
 		$rowMetadata = new metadataByGuid( $database );
 		$rowMetadata->load($metadata_id);
 		//echo "Metadata: ".$rowMetadata->guid." \r\n ";
 		$rowObject = new object( $database );
 		$rowObject->load($object_id);
 		//echo "Product: ".$rowObject->id." \r\n ";
-		// R�cup�rer la classe racine du profile du type d'objet
+		// Récupérer la classe racine du profile du type d'objet
 		$query = "SELECT c.name as name, CONCAT(ns.prefix,':',c.isocode) as isocode, prof.class_id as id FROM #__sdi_profile prof, #__sdi_objecttype ot, #__sdi_object o, #__sdi_class c RIGHT OUTER JOIN #__sdi_namespace ns ON c.namespace_id=ns.id WHERE prof.id=ot.profile_id AND ot.id=o.objecttype_id AND c.id=prof.class_id AND o.id=".$rowObject->id;
 		$database->setQuery( $query );
 		$root = $database->loadObject();
@@ -1752,7 +1729,7 @@ class ADMIN_metadata {
 		$XMLNode->setAttributeNS('http://www.w3.org/2000/xmlns/' ,'xmlns:gts', 'http://www.isotc211.org/2005/gts');
 		$XMLNode->setAttributeNS('http://www.w3.org/2000/xmlns/' ,'xmlns:srv', 'http://www.isotc211.org/2005/srv');
 		
-		// R�cup�ration des namespaces � inclure
+		// Récupération des namespaces à inclure
 		$namespacelist = array();
 		//$namespacelist[] = JHTML::_('select.option','0', JText::_("CATALOG_ATTRIBUTE_NAMESPACE_LIST") );
 		$database->setQuery( "SELECT prefix, uri FROM #__sdi_namespace ORDER BY prefix" );
@@ -1761,13 +1738,9 @@ class ADMIN_metadata {
 		 foreach ($namespacelist as $namespace)
         {
         	$XMLNode->setAttributeNS('http://www.w3.org/2000/xmlns/' ,'xmlns:'.$namespace->prefix, $namespace->uri);
-        	//$XMLNode->setAttributeNS('http://www.w3.org/2000/xmlns/' ,'xmlns:gmd', 'http://www.isotc211.org/2005/gmd');
-			//$XMLNode->setAttributeNS('http://www.w3.org/2000/xmlns/' ,'xmlns:gco', 'http://www.isotc211.org/2005/gco');
-			//$XMLNode->setAttributeNS('http://www.w3.org/2000/xmlns/' ,'xmlns:gml', 'http://www.opengis.net/gml');
-			//$XMLNode->setAttributeNS('http://www.w3.org/2000/xmlns/' ,'xmlns:bee', 'http://www.depth.ch/2008/bee');
-        } 
+         } 
 		
-		// R�cup�rer le profil li� � cet objet
+		// Récupérer le profil lié à cet objet
 		$query = "SELECT profile_id FROM #__sdi_objecttype WHERE id=".$rowObject->objecttype_id;
 		$database->setQuery( $query );
 		$profile_id = $database->loadResult();
@@ -1778,22 +1751,10 @@ class ADMIN_metadata {
 		$account_id = $database->loadResult();
 		if ($account_id == null)
 			$account_id = $user_id;
-
 		
-		/*
-		$doc = "<gmd:MD_Metadata 
-					xmlns:gmd=\"http://www.isotc211.org/2005/gmd\" 
-					xmlns:gco=\"http://www.isotc211.org/2005/gco\" 
-					xmlns:xlink=\"http://www.w3.org/1999/xlink\" 
-					xmlns:gml=\"http://www.opengis.net/gml\" 
-					xmlns:gts=\"http://www.isotc211.org/2005/gts\" 
-					xmlns:srv=\"http://www.isotc211.org/2005/srv\"
-					xmlns:ext=\"http://www.depth.ch/2008/ext\">";
-		*/
 		$path="/";
-		//echo $root->id;
 		
-		// Construire les champs concernant la langue par d�faut et l'encodage par d�faut
+		// Construire les champs concernant la langue par défaut et l'encodage par défaut
 		$XMLNodeLang = $XMLDoc->createElement("gmd:language");
 		$XMLNode->appendChild($XMLNodeLang);
 		$XMLNodeLang->appendChild($XMLDoc->createElement("gco:CharacterString", $this->defaultlang[0]->isocode));
@@ -1805,7 +1766,7 @@ class ADMIN_metadata {
 		$XMLNodeCode->setAttribute('codeList', "http://www.isotc211.org/2005/resources/codeList.xml#MD_CharacterSetCode");
 		$XMLNodeEncoding->appendChild($XMLNodeCode);
 		
-		// Construire la d�finition des locales
+		// Construire la définition des locales
 		foreach($this->langList as $lang)
 		{
 			if (!$lang->defaultlang)
@@ -1834,8 +1795,6 @@ class ADMIN_metadata {
 		{
 			ADMIN_metadata::buildXMLTree($root->id, $root->id, str_replace(":", "_", $root->isocode), $XMLDoc, $XMLNode, $path, $root->isocode, $_POST, $keyVals, $profile_id, $account_id, $option);
 			
-			//$XMLDoc->save("C:\\RecorderWebGIS\\".$metadata_id.".xml");
-			//$XMLDoc->save("/home/sites/demo.depth.ch/web/geodbmeta/administrator/components/com_easysdi_catalog/core/controller/xml.xml");
 			
 			$updated = ADMIN_metadata::CURLUpdateMetadata($metadata_id, $XMLDoc );
 			
@@ -2976,10 +2935,10 @@ class ADMIN_metadata {
 		$pretreatmentxslfile = $_POST['pretreatmentxslfile'];
 		$importtype = $_POST['importtype_id'];
 		 
-		// R�cup�rer l'objet li� � cette m�tadonn�e
+		// Récupérer l'objet lié à cette métadonnée
 		$rowObject = new object( $database );
 		$rowObject->load( $object_id );
-		// R�cup�rer la m�tadonn�e
+		// Récupérer la métadonnée
 		//$rowMetadata = new metadata( $database );
 		//$rowMetadata->load( $rowObject->metadata_id );
 		$rowMetadata = new metadataByGuid( $database );
@@ -4219,50 +4178,83 @@ class ADMIN_metadata {
 		$xpathUpdate->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
 		
 		$updated = $xpathUpdate->query("//csw:totalUpdated")->item(0)->nodeValue;
-		//$updated = $xpathUpdate->query("//csw:totalUpdated")->item(0)->nodeValue;
 		
-		/*
-		$xmlstr = '<?xml version="1.0" encoding="UTF-8"?>
-			<csw:Transaction service="CSW" version="2.0.2" xmlns:csw="http://www.opengis.net/cat/csw/2.0.2" xmlns:ogc="http://www.opengis.net/ogc" 
-			    xmlns:apiso="http://www.opengis.net/cat/csw/apiso/1.0">
-			    <csw:Delete>
-			        <csw:Constraint version="1.0.0">
-			            <ogc:Filter>
-			                <ogc:PropertyIsLike wildCard="%" singleChar="_" escape="/">
-			                    <ogc:PropertyName>apiso:identifier</ogc:PropertyName>
-			                    <ogc:Literal>'.$metadata_id.'</ogc:Literal>
-			                </ogc:PropertyIsLike>
-			            </ogc:Filter>
-			        </csw:Constraint>
-			    </csw:Delete>
-			</csw:Transaction>'; 
-		
-		//$result = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
-		$result = ADMIN_metadata::CURLRequest("POST", $catalogUrlBase, $xmlstr);
-		
-		// Ins�rer dans Geonetwork la nouvelle version de la m�tadonn�e
-		$xmlstr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
-		<csw:Transaction service=\"CSW\"
-		version=\"2.0.2\"
-		xmlns:csw=\"http://www.opengis.net/cat/csw/2.0.2\" >
-		<csw:Insert>
-		".substr($XMLDoc->saveXML(), strlen('<?xml version="1.0" encoding="UTF-8"?>'))."
-		</csw:Insert>
-		</csw:Transaction>";
-		//echo $XMLDoc->saveXML()." \r\n ";
-			
-		//$result = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
-		$result = ADMIN_metadata::CURLRequest("POST", $catalogUrlBase, $xmlstr);
-		
-		$insertResults = DOMDocument::loadXML($result);
-		
-		$xpathInsert = new DOMXPath($insertResults);
-		$xpathInsert->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
-		
-		$inserted = $xpathInsert->query("//csw:totalInserted")->item(0)->nodeValue;
-		$inserted = $xpathInsert->query("//csw:totalInserted")->item(0)->nodeValue;
-		*/
 		return $updated;
+	}
+	
+	function uploadFileAndGetLink ($option){
+		
+		//Check user's rights
+		$user = JFactory::getUser();
+		if (!userManager::isUserAllowed($user,"METADATA")){
+			echo json_encode(array("success"=>false, "cause"=>"unauthorized"));
+			die;
+		}
+		
+		//Get configuration params
+		$database =& JFactory::getDBO();
+		$query = "select value as config from #__sdi_configuration where code ='CATALOG_METADATA_LINKED_FILE_REPOSITORY'";
+		$database->setQuery($query);
+		$repository = $database->loadResult();
+		$query = "select value as config from #__sdi_configuration where code ='CATALOG_METADATA_LINKED_FILE_BASE_URI'";
+		$database->setQuery($query);
+		$url = $database->loadResult();
+		
+		//Generate random file name
+		$original_file_name = utf8_decode($_FILES['uploadfilefield']['name']);
+		$guid = sprintf( '%04x%04x%04x', 
+						mt_rand( 0, 0xffff ), 
+						mt_rand( 0, 0xffff ), 
+						mt_rand( 0, 0xffff ), 
+						mt_rand( 0, 0x0fff ) | 0x4000, 
+						mt_rand( 0, 0x3fff ) | 0x8000, 
+						mt_rand( 0, 0xffff ), 
+						mt_rand( 0, 0xffff ), 
+						mt_rand( 0, 0xffff ) 
+					   );
+		$file_name = $guid."_".$original_file_name;
+		$file_location = $repository."\\".$file_name;
+		
+		if(move_uploaded_file($_FILES['uploadfilefield']['tmp_name'], $file_location)) {
+			$result = array("success"=>true, "url"=>$url."/".$file_name);
+			echo json_encode($result);
+		} else{
+			echo json_encode(array("success"=>false, "cause"=>"move_uploaded_file_failed"));
+		}
+		die();
+	}
+	
+	function deleteUploadedFile ($option, $fileurl){
+		if($fileurl == null){
+			echo json_encode(array("success"=>false, "cause"=>"no_file_submitted"));
+			die;
+		}
+		//Check user's rights
+		$user = JFactory::getUser();
+		if (!userManager::isUserAllowed($user,"METADATA")){
+			echo json_encode(array("success"=>false, "cause"=>"unauthorized"));
+			die;
+		}
+		
+		//Get configuration params
+		$database =& JFactory::getDBO();
+		$query = "select value as config from #__sdi_configuration where code ='CATALOG_METADATA_LINKED_FILE_REPOSITORY'";
+		$database->setQuery($query);
+		$repository = $database->loadResult();
+		$query = "select value as config from #__sdi_configuration where code ='CATALOG_METADATA_LINKED_FILE_BASE_URI'";
+		$database->setQuery($query);
+		$url = $database->loadResult();
+		
+		$i = strlen($url);
+		$filename = substr($fileurl, $i);
+		
+		if (!file_exists($repository."/".$filename)) 
+			echo json_encode(array("success"=>true));
+		else if(unlink($repository."/".$filename))
+			echo json_encode(array("success"=>true));
+		else
+			echo json_encode(array("success"=>false, "cause"=>"unlink_failed"));
+		die;
 	}
 }
 ?>
