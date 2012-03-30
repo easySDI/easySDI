@@ -54,8 +54,6 @@ JHTML::script('shBrushXml.js', 'administrator/components/com_easysdi_catalog/js/
 JHTML::script('thesaur.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('HS.js', 'administrator/components/com_easysdi_catalog/js/');
 
-JHTML::script('ExtendedToolBar.js', 'administrator/components/com_easysdi_catalog/js/');
-
 $jsLoader =JSLOADER_UTIL::getInstance();
 JHTML::script('SingleFile.js', $jsLoader->getPath("map","openlayers", "/lib/OpenLayers/"));
 JHTML::script('OpenLayers.js', $jsLoader->getPath("map","openlayers"));
