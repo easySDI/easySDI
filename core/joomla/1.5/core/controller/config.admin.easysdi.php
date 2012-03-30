@@ -139,13 +139,13 @@ class ADMIN_config {
 		}
 		
 		
-		// R�cup�ration des types mysql pour les champs
+		// Récupération des types mysql pour les champs
 		$tableFields = array();
 		$tableFields = $db->getTableFields("#__sdi_configuration", false);
 		
 		// Parcours des champs pour extraire les informations utiles:
 		// - le nom du champ
-		// - sa longueur en caract�res
+		// - sa longueur en caractères
 		$fieldsLength = array();
 		foreach($tableFields as $table)
 		{
@@ -293,6 +293,14 @@ class ADMIN_config {
 			}
 			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes(trim($_POST['thesaurusUrl']))."\" WHERE code = 'thesaurusUrl'");
 			if (!$database->query()) {			
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes(trim($_POST['metadata_linked_file_repository']))."\" WHERE code = 'CATALOG_METADATA_LINKED_FILE_REPOSITORY'");
+			if (!$database->query()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes(trim($_POST['metadata_linked_file_base_uri']))."\" WHERE code = 'CATALOG_METADATA_LINKED_FILE_BASE_URI'");
+			if (!$database->query()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
 		}
