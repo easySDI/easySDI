@@ -1747,7 +1747,7 @@ function com_install(){
 		}
 		if($version == "2.2.0"){
 			$query = "INSERT INTO #__sdi_list_attributetype (guid, code, name, description, created, createdby, label, defaultpattern, isocode, namespace_id) VALUES
-								('".helper_easysdi::getUniqueId()."', 'file', 'file', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'CATALOG_ATTRIBUTETYPE_FILE', '', 'identifier', 1)";
+								('".helper_easysdi::getUniqueId()."', 'file', 'file', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'CATALOG_ATTRIBUTETYPE_FILE', '', 'MI_Identifier', 1)";
 			$db->setQuery( $query);
 			if (!$db->query()){
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
