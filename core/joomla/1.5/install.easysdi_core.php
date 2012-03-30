@@ -1514,7 +1514,7 @@ function com_install(){
 				
 		
 		// Update component version
-		$version="2.2.1";
+		$version="2.3.0";
 		$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='CORE'";
 		$db->setQuery( $query);
 		if (!$db->query())
