@@ -656,7 +656,7 @@ class HTML_account {
 			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'common'.DS.'easysdi.config.php');
 		
 			$rights = array();
-			$query = "SELECT id AS value, name AS text FROM #__sdi_list_role WHERE roletype_id=".$row->id;
+			$query = "SELECT id AS value, label AS text FROM #__sdi_list_role WHERE roletype_id=".$row->id;
 			$enableFavorites = config_easysdi::getValue("ENABLE_FAVORITES", 1);
 			if($enableFavorites != 1)
 				$query .= " AND code !='FAVORITE' ";

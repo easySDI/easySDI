@@ -348,6 +348,27 @@ if ($catalogItem > 0){
 										</td>
 									</tr>
 									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_METADATA_LINKED_FILE_REPOSITORY_LABEL' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_METADATA_LINKED_FILE_REPOSITORY_LABEL' ); ?>
+											</span>
+										</td>
+										<td>
+											<input class="text_area" type="text" size="100" name="metadata_linked_file_repository" value="<?php echo $catalogList['CATALOG_METADATA_LINKED_FILE_REPOSITORY']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+										</td>
+									</tr>
+									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_METADATA_LINKED_FILE_BASE_URI_LABEL' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_METADATA_LINKED_FILE_BASE_URI_LABEL' ); ?>
+											</span>
+										</td>
+										<td>
+											<input class="text_area" type="text" size="100" name="metadata_linked_file_base_uri" value="<?php echo $catalogList['CATALOG_METADATA_LINKED_FILE_BASE_URI']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+										</td>
+									</tr>
+									
+									<tr>
 										<td valign="top" class="key" colspan="2">
 											<fieldset class="adminform">
 												<legend>
