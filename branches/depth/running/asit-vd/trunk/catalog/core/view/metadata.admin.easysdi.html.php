@@ -323,9 +323,7 @@ class HTML_metadata {
 												},
 												{
 													xtype: 'label',
-													text : '".html_Metadata::cleanText(JText::_('CORE_METADATA_STEREOTYPE_FILE_WARNING'))."',
-													fieldLabel : '". '<img src="http://wiki.openvz.org/images/thumb/1/17/Warning.svg/600px-Warning.svg.png" width="32" height="32"  /> ' ."'
-										            
+													html : '<table cellspacing=\"10\"><tr><td> <img src=\"./templates/system/images/notice-info.png\" width=\"32\" height=\"32\"  /></td><td><p>".html_Metadata::cleanText(JText::_('CORE_METADATA_STEREOTYPE_FILE_WARNING'))."</td></tr> </table>'
 												}
 											]
 											,buttonAlign:'right'
