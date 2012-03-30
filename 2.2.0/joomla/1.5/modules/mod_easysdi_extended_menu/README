@@ -1,0 +1,10 @@
+Extended Menu for Joomla / Mambo 4.5.1-4.5.2.3
+Version: 1.0.6
+Copyright (C) 2005-2009 Daniel Ecer
+http://de.siteof.de/
+
+This is a Joomla/Mambo module that extends the functionality of the mainmenu module. In addition it its code is completly redesigned which should make it easier to extends/modify.
+
+Additional copyright note:
+Some code fragments are taken from the Joomla/Mambo Core (usually noted).
+Images are modified and unmodified taken from Eclipse.
