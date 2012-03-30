@@ -462,3 +462,5 @@ function changeDefaultValueField(renderType){
 		document.getElementById("div_defaultvalue").style.display = 'block';
 	}
 }
+
+
