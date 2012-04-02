@@ -1780,6 +1780,20 @@ function com_install(){
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}
 		}		
+		if($version == "2.3.0"){
+			
+			$db->setQuery(" ALTER TABLE #__sdi_history_assign DROP FOREIGN KEY #__sdi_history_assign_ibfk_1");
+			$db->query();
+			$db->setQuery(" ALTER TABLE #__sdi_history_assign DROP FOREIGN KEY #__sdi_history_assign_ibfk_2");
+			$db->query();			
+			
+			$version="2.3.1";
+			$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='CATALOG'";
+			$db->setQuery( $query);
+			if (!$db->query()){
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+		}
 		
 		$query = "DELETE FROM #__components where `option`= 'com_easysdi_catalog' ";
 		$db->setQuery( $query);
