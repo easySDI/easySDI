@@ -1520,7 +1520,7 @@ function com_install(){
 			
 		}
 		
-		if($version =="2.0.3" || $version = "2.0.5"){		
+		if($version =="2.0.3" || $version == "2.0.5"){		
 
 			$db->setQuery(" ALTER TABLE #__sdi_history_assign DROP FOREIGN KEY #__sdi_history_assign_ibfk_1");
 			$db->query();
