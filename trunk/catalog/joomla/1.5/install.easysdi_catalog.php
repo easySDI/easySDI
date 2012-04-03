@@ -1527,7 +1527,7 @@ function com_install(){
 			}
 
 		}
-		if($version == "2.0.3")
+		if($version == "2.0.3" || $version== "2.0.3.3")
 		{
 		
 			$query = "SELECT id FROM #__sdi_list_module  WHERE  code='CATALOG'";
