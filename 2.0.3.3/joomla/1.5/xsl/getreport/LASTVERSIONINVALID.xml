@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<errorHandler>
+	<errorName>LASTVERSIONINVALID</errorName>
+	<errorDescription>
+		<fr>
+			Le param&#232;tre lastVersion n'accepte que les valeurs yes / no
+		</fr>
+		<de>
+			Le param&#232;tre lastVersion n'accepte que les valeurs yes / no
+		</de>
+		<en>
+			Le param&#232;tre lastVersion n'accepte que les valeurs yes / no
+		</en>		
+	</errorDescription>
+</errorHandler>
