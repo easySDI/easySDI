@@ -74,7 +74,7 @@ class ADMIN_attributetype {
 		// Build the where clause of the content record query
 		$where = (count($where) ? ' WHERE '.implode(' AND ', $where) : '');
 		
-		$query = "SELECT COUNT(*) FROM #__sdi_list_attributetype";					
+		$query = "SELECT COUNT(*) FROM #__sdi_sys_stereotype";					
 		$query .= $where;
 		$db->setQuery( $query );
 		$total = $db->loadResult();
@@ -84,7 +84,7 @@ class ADMIN_attributetype {
 		$pagination = new JPagination($total, $limitstart, $limit);
 
 		// Recherche des enregistrements selon les limites
-		$query = "SELECT t.*, CONCAT(ns.prefix,':',t.isocode) as attributetype_isocode FROM #__sdi_list_attributetype t LEFT OUTER JOIN #__sdi_namespace ns ON ns.id=t.namespace_id";
+		$query = "SELECT t.*, CONCAT(ns.prefix,':',t.isocode) as attributetype_isocode FROM #__sdi_sys_stereotype t LEFT OUTER JOIN #__sdi_namespace ns ON ns.id=t.namespace_id";
 		$query .= $where;
 		$query .= $orderby;
 		$db->setQuery( $query, $pagination->limitstart, $pagination->limit);
@@ -104,13 +104,13 @@ class ADMIN_attributetype {
 		$rowAttributeType = new attributetype( $database );
 		$rowAttributeType->load( $id );
 		
-		// Récupération des types mysql pour les champs
+		// Rï¿½cupï¿½ration des types mysql pour les champs
 		$tableFields = array();
-		$tableFields = $database->getTableFields("#__sdi_list_attributetype", false);
+		$tableFields = $database->getTableFields("#__sdi_sys_stereotype", false);
 		
 		// Parcours des champs pour extraire les informations utiles:
 		// - le nom du champ
-		// - sa longueur en caractères
+		// - sa longueur en caractï¿½res
 		$fieldsLength = array();
 		foreach($tableFields as $table)
 		{
@@ -153,12 +153,12 @@ class ADMIN_attributetype {
 			exit();
 		}
 		
-		// Au cas où on sauve avec Apply, recharger la page 
+		// Au cas oï¿½ on sauve avec Apply, recharger la page 
 		$task = JRequest::getCmd( 'task' );
 		switch ($task)
 		{
 			case 'applyAttributeType' :
-				// Reprendre en édition l'objet
+				// Reprendre en ï¿½dition l'objet
 				TOOLBAR_attributetype::_EDIT();
 				ADMIN_attributetype::editAttributeType($rowAttributeType->id,$option);
 				break;

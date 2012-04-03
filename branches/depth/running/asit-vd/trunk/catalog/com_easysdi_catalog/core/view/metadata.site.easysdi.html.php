@@ -1900,7 +1900,7 @@ else
 						 	 ON rel.id = prof.relation_id
 						 LEFT OUTER JOIN #__sdi_attribute as a
 				  		 	 ON rel.attributechild_id=a.id 
-						     LEFT OUTER JOIN #__sdi_list_attributetype as t
+						     LEFT OUTER JOIN #__sdi_sys_stereotype as t
 						  		 ON a.attributetype_id = t.id 
 					     LEFT OUTER JOIN #__sdi_class as c
 					  		 ON rel.classchild_id=c.id

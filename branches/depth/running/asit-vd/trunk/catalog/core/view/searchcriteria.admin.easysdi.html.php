@@ -415,9 +415,9 @@ class HTML_searchcriteria {
 		global  $mainframe;
 		$database =& JFactory::getDBO();
 		
-		$database->setQuery("SELECT at.code FROM #__sdi_relation r
+		$database->setQuery("SELECT at.alias FROM #__sdi_relation r
 									INNER JOIN #__sdi_attribute a ON a.id=r.attributechild_id
-									INNER JOIN #__sdi_list_attributetype at ON a.attributetype_id=at.id
+									INNER JOIN #__sdi_sys_stereotype at ON a.attributetype_id=at.id
 									WHERE r.id=".$row->relation_id);
 		$attributetype = $database->loadResult();
 		?>

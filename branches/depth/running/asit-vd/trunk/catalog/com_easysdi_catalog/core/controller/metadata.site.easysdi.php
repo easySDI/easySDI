@@ -405,7 +405,7 @@ class SITE_metadata {
 		//$rowAttributeType = new attributetype($database);
 		//$rowAttributeType->load(config_easysdi::getValue("catalog_boundary_type"));
 		//$type_isocode = $rowAttributeType->isocode;
-		$query = "SELECT t.*, CONCAT(ns.prefix, ':', t.isocode) as attributetype_isocode FROM #__sdi_list_attributetype t LEFT OUTER JOIN #__sdi_namespace ns ON t.namespace_id=ns.id WHERE t.id=".config_easysdi::getValue("catalog_boundary_type");
+		$query = "SELECT t.*, CONCAT(ns.prefix, ':', t.isocode) as attributetype_isocode FROM #__sdi_sys_stereotype t LEFT OUTER JOIN #__sdi_namespace ns ON t.namespace_id=ns.id WHERE t.id=".config_easysdi::getValue("catalog_boundary_type");
 		$database->setQuery( $query );
 		$rowAttributeType = $database->loadObject();
 		$type_isocode = $rowAttributeType->attributetype_isocode;

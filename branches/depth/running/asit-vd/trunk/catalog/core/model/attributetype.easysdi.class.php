@@ -22,23 +22,19 @@ class attributetype extends JTable
 {
 	var $id=null;
 	var $guid=null;
-	var $code=null;
-	var $name=null;
-	var $description=null;
-	var $created=null;
-	var $createdby=null;
-	var $updated=null;
-	var $updatedby=null;
-	var $label=null;
+	var $alias=null;
+	var $state=null;
 	var $ordering=0;
-	var $defaultpattern=null;
-	var $isocode=null;
+	var $entity_id=null;
 	var $namespace_id=null;
+	var $isocode=null;
+	var $regexp_pattern=null;
+	var $repexp_overwrite=0;
 	
 	// Class constructor
 	function __construct( &$db )
 	{
-		parent::__construct ( '#__sdi_list_attributetype', 'id', $db ) ;
+		parent::__construct ( '#__sdi_sys_stereotype', 'id', $db ) ;
 	}
 }
 ?>

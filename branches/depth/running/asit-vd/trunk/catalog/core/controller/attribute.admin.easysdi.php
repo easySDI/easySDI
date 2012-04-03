@@ -124,7 +124,7 @@ class ADMIN_attribute {
 		$pagination = new JPagination($total, $limitstart, $limit);
 
 		// Recherche des enregistrements selon les limites
-		$query = "SELECT a.*, at.name as attributetype_name, at.code as attributetype_code, CONCAT(ns.prefix,':',a.isocode) as attribute_isocode FROM #__sdi_list_attributetype at, #__sdi_attribute a LEFT OUTER JOIN #__sdi_namespace ns ON ns.id=a.namespace_id WHERE a.attributetype_id=at.id";
+		$query = "SELECT a.*, at.name as attributetype_name, at.alias as attributetype_code, CONCAT(ns.prefix,':',a.isocode) as attribute_isocode FROM #__sdi_sys_stereotype at, #__sdi_attribute a LEFT OUTER JOIN #__sdi_namespace ns ON ns.id=a.namespace_id WHERE a.attributetype_id=at.id";
 		if ($where)
 			$query .= ' AND '.$where;
 		$query .= $orderby;
@@ -137,8 +137,8 @@ class ADMIN_attribute {
 		}		
 		
 		// get list of relationtypes for dropdown filter
-		$query = 'SELECT id as value, name as text' .
-				' FROM #__sdi_list_attributetype' .
+		$query = 'SELECT id as value, alias as text' .
+				' FROM #__sdi_sys_stereotype' .
 				' ORDER BY name';
 		$attributetypes[] = JHTML::_('select.option', '0', JText::_('SELECT_ATTRIBUTETYPE'), 'value', 'text');
 		$db->setQuery($query);
@@ -173,7 +173,7 @@ class ADMIN_attribute {
 		
 		$attributetypelist = array();
 		$attributetypelist[] = JHTML::_('select.option','0', JText::_("EASYSDI_ATTRIBUTETYPE_LIST") );
-		$database->setQuery( "SELECT id AS value, name AS text FROM #__sdi_list_attributetype ORDER BY name" );
+		$database->setQuery( "SELECT id AS value, alias AS text FROM #__sdi_sys_stereotype ORDER BY alias" );
 		$attributetypelist = array_merge( $attributetypelist, $database->loadObjectList() );
 		
 		// R�cup�ration des types mysql pour les champs

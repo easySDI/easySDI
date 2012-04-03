@@ -261,7 +261,7 @@ class HTML_catalog{
 										t.title, 
 										t.content 
 								FROM #__sdi_attribute a, 
-									 #__sdi_list_attributetype at,  
+									 #__sdi_sys_stereotype at,  
 									 #__sdi_codevalue c, 
 									 #__sdi_translation t, 
 									 #__sdi_language l, 
@@ -272,7 +272,7 @@ class HTML_catalog{
 								AND t.language_id=l.id 
 								AND l.codelang_id=cl.id 
 								and cl.code='".$language->_lang."' 
-								AND (at.code='textchoice' OR at.code='localechoice') 
+								AND (at.alias='textchoice' OR at.alias='localechoice') 
 								AND attribute_id=".$searchFilter->attribute_id." 
 								AND c.published=true 
 								ORDER BY c.name" );
@@ -281,13 +281,13 @@ class HTML_catalog{
 				// Si la première entrée a un titre, construire une liste sur le titre
 				if ($list[0]->title <> "")
 				{
-					$db->setQuery( "SELECT c.id as value, t.title as text FROM #__sdi_attribute a, #__sdi_list_attributetype at,  #__sdi_codevalue c, #__sdi_translation t, #__sdi_language l, #__sdi_list_codelang cl WHERE a.id=c.attribute_id AND a.attributetype_id=at.id AND c.guid=t.element_guid AND t.language_id=l.id AND l.codelang_id=cl.id and cl.code='".$language->_lang."' AND (at.code='textchoice' OR at.code='localechoice') AND attribute_id=".$searchFilter->attribute_id." AND c.published=true ORDER BY c.name" );
+					$db->setQuery( "SELECT c.id as value, t.title as text FROM #__sdi_attribute a, #__sdi_sys_stereotype at,  #__sdi_codevalue c, #__sdi_translation t, #__sdi_language l, #__sdi_list_codelang cl WHERE a.id=c.attribute_id AND a.attributetype_id=at.id AND c.guid=t.element_guid AND t.language_id=l.id AND l.codelang_id=cl.id and cl.code='".$language->_lang."' AND (at.code='textchoice' OR at.code='localechoice') AND attribute_id=".$searchFilter->attribute_id." AND c.published=true ORDER BY c.name" );
 					$choicevalues = array_merge( $choicevalues, $db->loadObjectList() );
 				}
 				// Sinon, construire une liste sur le contenu
 				else
 				{
-					$db->setQuery( "SELECT c.id as value, IF (LENGTH(t.content)>50,CONCAT(LEFT(t.content, 50), '...'),t.content) as text FROM #__sdi_attribute a, #__sdi_list_attributetype at,  #__sdi_codevalue c, #__sdi_translation t, #__sdi_language l, #__sdi_list_codelang cl WHERE a.id=c.attribute_id AND a.attributetype_id=at.id AND c.guid=t.element_guid AND t.language_id=l.id AND l.codelang_id=cl.id and cl.code='".$language->_lang."' AND (at.code='textchoice' OR at.code='localechoice') AND attribute_id=".$searchFilter->attribute_id." AND c.published=true ORDER BY c.name" );
+					$db->setQuery( "SELECT c.id as value, IF (LENGTH(t.content)>50,CONCAT(LEFT(t.content, 50), '...'),t.content) as text FROM #__sdi_attribute a, #__sdi_sys_stereotype at,  #__sdi_codevalue c, #__sdi_translation t, #__sdi_language l, #__sdi_list_codelang cl WHERE a.id=c.attribute_id AND a.attributetype_id=at.id AND c.guid=t.element_guid AND t.language_id=l.id AND l.codelang_id=cl.id and cl.code='".$language->_lang."' AND (at.code='textchoice' OR at.code='localechoice') AND attribute_id=".$searchFilter->attribute_id." AND c.published=true ORDER BY c.name" );
 					$choicevalues = array_merge( $choicevalues, $db->loadObjectList() );
 				}
 													 	

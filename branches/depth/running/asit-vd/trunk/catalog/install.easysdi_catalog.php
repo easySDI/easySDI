@@ -1861,6 +1861,7 @@ function com_install(){
 					`namespace_id` bigint(20),
 					`regex_pattern` varchar(200),
 					`regex_overwrite` tinyint(1) NOT NULL DEFAULT 0,
+					`isocode` varchar(50),
 					`checked_out` bigint(20) NOT NULL DEFAULT '0',
 					`checked_out_time` datetime DEFAULT NULL,
 					PRIMARY KEY (`id`),
@@ -1878,14 +1879,16 @@ function com_install(){
 															alias,
 															ordering,
 															namespace_id,
-															regex_pattern
+															regex_pattern,
+															isocode
 															)
 						SELECT  id,
 								guid,
 								code,
 								ordering,
 								namespace_id,
-								defaultpattern
+								defaultpattern,
+								isocode
 						FROM `#__sdi_list_attributetype`";
 			$db->setQuery( $query);
 			if (!$db->query()) {
