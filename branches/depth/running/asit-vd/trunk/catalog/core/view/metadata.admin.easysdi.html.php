@@ -587,8 +587,8 @@ class HTML_metadata {
 				$node = $xpathResults->query($queryPath."/".$root[0]->isocode);
 				$nodeCount = $node->length;
 				//echo $nodeCount." fois ".$root[0]->isocode;
-				HTML_metadata::buildTree($database, 0, $root[0]->id, $root[0]->id, $fieldsetName, 'form', str_replace(":", "_", $root[0]->isocode), $xpathResults, null, $node->item(0), $queryPath, $root[0]->isocode, $account_id, $profile_id, $option);
 				
+				HTML_metadata::buildTree($database, 0, $root[0]->id, $root[0]->id, $fieldsetName, 'form', str_replace(":", "_", $root[0]->isocode), $xpathResults, null, $node->item(0), $queryPath, $root[0]->isocode, $account_id, $profile_id, $option);
 				
 				// Retraverser la structure et autoriser les nulls pour tous les champs cachés
 				$this->javascript .="
@@ -847,6 +847,7 @@ class HTML_metadata {
 	 */
 	function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFieldsetName, $ancestorFieldsetName, $parentName, $xpathResults, $parentScope, $scope, $queryPath, $currentIsocode, $account_id, $profile_id, $option)
 	{
+		
 // 		echo $parent." - ".$parentFieldsetName."<br>";
 // 		echo "<hr>SCOPE: ".$scope->nodeName."<br>";
 // 		echo '<HR>';
@@ -952,6 +953,8 @@ class HTML_metadata {
 		//foreach($rowAttributeChilds as $child)
 		foreach($rowChilds as $child)
 		{
+// 			print_r($child);
+// 			echo '<HR>';
 			//Traitement d'une relation vers un attribut
 			//Traitement d'une relation vers un attribut
 			if ($child->attribute_id <> null)
@@ -2302,12 +2305,11 @@ class HTML_metadata {
 						
 						if ($child->attribute_type <> 9 and $child->attribute_type <> 10 and $child->attribute_type <> 11)
 						{
-							//echo $type_isocode." - ".$attributeScope->nodeName."<br>";
+// 							echo $type_isocode." - ".$attributeScope->nodeName."<br>";
 							// Traitement de l'attribut enfant
 							//$node = $xpathResults->query($child->attribute_isocode."/".$type_isocode, $attributeScope);
 							$node = $xpathResults->query($type_isocode, $attributeScope);
-							//echo $node->length." - ".$node->item(0)->nodeName."<br>";
-							
+// 							echo $node->length." - ".$node->item(0)->nodeName."<br>";
 							// Si le fieldset n'existe pas, inutile de r�cup�rer une valeur
 							if ($parentScope <> NULL and $parentScope->nodeName == $scope->nodeName)
 								$nodeValue = "";
@@ -2319,7 +2321,7 @@ class HTML_metadata {
 							if ($child->attribute_default <> "" and $nodeValue == "")
 								$nodeValue = html_Metadata::cleanText($child->attribute_default);
 		
-							//echo $nodeValue."<br>";
+// 							echo $nodeValue."<br>";
 						}
 						$this->javascript .="
 						var master = Ext.getCmp('".$master."');						

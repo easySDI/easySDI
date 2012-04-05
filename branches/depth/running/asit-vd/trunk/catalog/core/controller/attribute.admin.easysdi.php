@@ -124,7 +124,7 @@ class ADMIN_attribute {
 		$pagination = new JPagination($total, $limitstart, $limit);
 
 		// Recherche des enregistrements selon les limites
-		$query = "SELECT a.*, at.name as attributetype_name, at.alias as attributetype_code, CONCAT(ns.prefix,':',a.isocode) as attribute_isocode FROM #__sdi_sys_stereotype at, #__sdi_attribute a LEFT OUTER JOIN #__sdi_namespace ns ON ns.id=a.namespace_id WHERE a.attributetype_id=at.id";
+		$query = "SELECT a.*, at.alias as attributetype_name, at.alias as attributetype_code, CONCAT(ns.prefix,':',a.isocode) as attribute_isocode FROM #__sdi_sys_stereotype at, #__sdi_attribute a LEFT OUTER JOIN #__sdi_namespace ns ON ns.id=a.namespace_id WHERE a.attributetype_id=at.id";
 		if ($where)
 			$query .= ' AND '.$where;
 		$query .= $orderby;

@@ -1866,7 +1866,8 @@ function com_install(){
 					`checked_out_time` datetime DEFAULT NULL,
 					PRIMARY KEY (`id`),
 					KEY `entity_id` (`entity_id`),
-					KEY `namespace_id` (`namespace_id`)
+					KEY `namespace_id` (`namespace_id`),
+					UNIQUE `alias` (`alias`)
 					) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
 			$db->setQuery( $query);
 			if (!$db->query()) {
