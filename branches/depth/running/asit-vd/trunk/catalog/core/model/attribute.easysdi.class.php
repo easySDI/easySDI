@@ -37,7 +37,6 @@ class attribute extends JTable
 	var $length=null;
 	var $pattern=null;
 	var $issystem=null;
-	var $isextensible=null;
 	var $type_isocode=null;
 	var $codeList=null;
 	var $namespace_id=null;

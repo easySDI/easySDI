@@ -233,7 +233,7 @@ function listAttribute(&$rows, $lists, $page, $option,  $filter_order_Dir, $filt
 					</td>							
 				</tr>
 				<tr>
-					<td><?php echo JText::_("CATALOG_ATTRIBUTE_ATTRIBUTETYPE"); ?></td>
+					<td><?php echo JText::_("CATALOG_ATTRIBUTE_STEREOTYPE"); ?></td>
 					<td><?php echo JHTML::_("select.genericlist",$attributetypelist, 'attributetype_id', 'size="1" class="inputbox" onchange="javascript:changeAttributeListVisibility(this.value);"', 'value', 'text', $row->attributetype_id ); ?></td>							
 				</tr>
 			</table>
@@ -289,10 +289,7 @@ foreach ($languages as $lang)
 			</table>
 			</div>
 			<table border="0" cellpadding="3" cellspacing="0">	
-				<tr>
-					<td WIDTH=150><?php echo JText::_("CORE_ISEXTENSIBLE"); ?></td>
-					<td><?php echo JHTML::_('select.booleanlist', 'isextensible', '', $row->isextensible);?> </td>							
-				</tr>
+				
 				<tr>
 					<td colspan="2">
 						<fieldset>

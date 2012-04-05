@@ -118,7 +118,7 @@ class ADMIN_class {
 		// searchClass filter
 		$lists['searchClass'] = $searchClass;
 		
-		HTML_class::listClass(&$rows, $lists, $pagination, $option,  $filter_order_Dir, $filter_order);
+		HTML_class::listClass($rows, $lists, $pagination, $option,  $filter_order_Dir, $filter_order);
 	}
 	
 	function editClass($id, $option)
@@ -174,7 +174,7 @@ class ADMIN_class {
 			} 
 		}
 		
-		// Langues � g�rer
+		// Langues à gérer
 		$languages = array();
 		$database->setQuery( "SELECT l.id, c.code FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY id" );
 		$languages = array_merge( $languages, $database->loadObjectList() );
@@ -190,12 +190,16 @@ class ADMIN_class {
 		}
 		
 		$namespacelist = array();
-		//$namespacelist[] = JHTML::_('select.option','0', JText::_("CATALOG_ATTRIBUTE_NAMESPACE_LIST") );
 		$namespacelist[] = JHTML::_('select.option','0', " - " );
 		$database->setQuery( "SELECT id AS value, prefix AS text FROM #__sdi_namespace ORDER BY prefix" );
 		$namespacelist = array_merge( $namespacelist, $database->loadObjectList() );
 		
-		HTML_class::editClass($rowClass, $unselected_accounts, $selected_accounts, $fieldsLength, $languages, $informations, $namespacelist, $option);
+		$stereotypelist = array();
+		$stereotypelist[] = JHTML::_('select.option','0', JText::_("EASYSDI_ATTRIBUTETYPE_LIST") );
+		$database->setQuery( "SELECT id AS value, alias AS text FROM #__sdi_sys_stereotype WHERE entity_id=2 ORDER BY alias" );
+		$stereotypelist = array_merge( $stereotypelist, $database->loadObjectList() );
+		
+		HTML_class::editClass($rowClass, $unselected_accounts, $selected_accounts, $fieldsLength, $languages, $informations, $namespacelist,$stereotypelist, $option);
 	}
 	
 	function saveClass($option)

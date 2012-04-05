@@ -495,20 +495,20 @@ switch($task){
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'attribute.admin.easysdi.php');
 		ADMIN_attribute::changeState('issystem', 0);
 		break;
-	case "attribute_isextensible_publish":
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'attribute.easysdi.class.php');
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'attribute.toolbar.easysdi.html.php');
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'attribute.admin.easysdi.html.php');
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'attribute.admin.easysdi.php');
-		ADMIN_attribute::changeState('isextensible', 1);
-		break;
-	case "attribute_isextensible_unpublish":
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'attribute.easysdi.class.php');
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'attribute.toolbar.easysdi.html.php');
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'attribute.admin.easysdi.html.php');
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'attribute.admin.easysdi.php');
-		ADMIN_attribute::changeState('isextensible', 0);
-		break;	
+// 	case "attribute_isextensible_publish":
+// 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'attribute.easysdi.class.php');
+// 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'attribute.toolbar.easysdi.html.php');
+// 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'attribute.admin.easysdi.html.php');
+// 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'attribute.admin.easysdi.php');
+// 		ADMIN_attribute::changeState('isextensible', 1);
+// 		break;
+// 	case "attribute_isextensible_unpublish":
+// 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'attribute.easysdi.class.php');
+// 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'attribute.toolbar.easysdi.html.php');
+// 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'attribute.admin.easysdi.html.php');
+// 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'attribute.admin.easysdi.php');
+// 		ADMIN_attribute::changeState('isextensible', 0);
+// 		break;	
 		
 	// CodeValue
 	case "listCodeValue":

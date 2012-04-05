@@ -38,17 +38,6 @@ defined('_JEXEC') or die('Restricted access');
 			if (fields.item(i).value == "")
 				labelEmpty=1;
 		}
-
-		// Récuperer tous les champs de tri et contrôler qu'ils soient saisis
-		/*var filterEmpty = 0;
-		filterfields = document.getElementById('filterfields');
-		fields = filterfields.getElementsByTagName('input');
-		
-		for (var i = 0; i < fields.length; i++)
-		{
-			if (fields.item(i).value == "")
-				filterEmpty=1;
-		}*/
 		
 		// do field validation
 		if (form.name.value == "") 
@@ -67,10 +56,6 @@ defined('_JEXEC') or die('Restricted access');
 		{
 			alert( "<?php echo JText::_( 'CATALOG_RELATION_SUBMIT_NOUPPERBOUND', true ); ?>" );
 		} 
-		//else if (profiles_checked < 1) 
-		//{
-		//	alert( "<?php //echo JText::_( 'CATALOG_RELATION_SUBMIT_NOPROFILE', true ); ?>" );
-		//}
 		else if (labelEmpty > 0) 
 		{
 			alert( "<?php echo JText::_( 'CATALOG_PROFILE_SUBMIT_NOLABELS', true ); ?>" );
@@ -79,7 +64,7 @@ defined('_JEXEC') or die('Restricted access');
 		{
 			alert( "<?php echo JText::_( 'CATALOG_RELATION_SUBMIT_NOCHILDRELATION', true ); ?>" );
 		}
-		else // Contr�les d�pendants du type de relation
+		else // Contrôles dépendants du type de relation
 		{
 			if (form.type.value == 2) // Vers attribut
 			{
@@ -91,10 +76,6 @@ defined('_JEXEC') or die('Restricted access');
 				{
 					alert( "<?php echo JText::_( 'CATALOG_RELATION_SUBMIT_NORENDERTYPE', true ); ?>" );
 				}
-				//else if (form.issearchfilter1.value == 1 && filterEmpty > 0) 
-				//{
-				//	alert( "<?php //echo JText::_( 'CATALOG_CONTEXT_SUBMIT_NOFILTERFIELDS', true ); ?>" );
-				//}
 				else 
 				{
 					submitform( pressbutton );
@@ -293,7 +274,7 @@ class ADMIN_relation {
 		// searchAttributeRelation filter
 		$lists['searchRelation'] = $searchRelation;
 		
-		HTML_relation::listRelation(&$rows, $lists, $pagination, $option,  $filter_order_Dir, $filter_order);
+		HTML_relation::listRelation($rows, $lists, $pagination, $option,  $filter_order_Dir, $filter_order);
 	}
 	
 	function newRelation($id, $option)
@@ -684,13 +665,16 @@ class ADMIN_relation {
 		}
 		
 		$namespacelist = array();
-		//$namespacelist[] = JHTML::_('select.option','0', JText::_("CATALOG_ATTRIBUTE_NAMESPACE_LIST") );
 		$namespacelist[] = JHTML::_('select.option','0', " - " );
 		$database->setQuery( "SELECT id AS value, prefix AS text FROM #__sdi_namespace ORDER BY prefix" );
 		$namespacelist = array_merge( $namespacelist, $database->loadObjectList() );
 		
 		// Champs de tri
 		$filterfields = array();
+		
+		$fieldpropertylist = array();
+		$database->setQuery( "SELECT id AS value, alias AS text FROM #__sdi_sys_fieldproperty ORDER BY id" );
+		$fieldpropertylist = array_merge( $fieldpropertylist, $database->loadObjectList() );
 		
 		
 		$child_attributetype = 0;
@@ -700,7 +684,7 @@ class ADMIN_relation {
 		}
 		
 		
-		HTML_relation::newRelation($rowRelation, $rowAttribute, $types, $type, $classes, $attributes, $objecttypes, $rendertypes, $relationtypes, $fieldsLength, $attributeFieldsLength, $boundsStyle, $style, $defaultStyle_textbox, $defaultStyle_textarea, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale_Textbox, $defaultStyle_Locale_Textarea, $defaultStyle_Choicelist, $renderStyle, $languages, $codevalues, $choicevalues, $selectedcodevalues, $profiles, $selected_profiles, $contexts, $selected_contexts, $attributetypes, $attributeid, $pageReloaded, $localeDefaults, $labels, $filterfields, $informations, $namespacelist, $searchCriteriaFieldsLength, $searchCriteria, $child_attributetype, $option);
+		HTML_relation::newRelation($rowRelation, $rowAttribute, $types, $type, $classes, $attributes, $objecttypes, $rendertypes, $relationtypes, $fieldsLength, $attributeFieldsLength, $boundsStyle, $style, $defaultStyle_textbox, $defaultStyle_textarea, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale_Textbox, $defaultStyle_Locale_Textarea, $defaultStyle_Choicelist, $renderStyle, $languages, $codevalues, $choicevalues, $selectedcodevalues, $profiles, $selected_profiles, $contexts, $selected_contexts, $attributetypes, $attributeid, $pageReloaded, $localeDefaults, $labels, $filterfields, $informations, $namespacelist, $searchCriteriaFieldsLength, $searchCriteria, $child_attributetype,$fieldpropertylist, $option);
 	}
 	
 	function editRelation($id, $option)
@@ -958,7 +942,7 @@ class ADMIN_relation {
 		// Sinon, construire une liste sur le contenu
 		else
 		{
-			$database->setQuery( "SELECT c.id as value, LEFT(t.content, 50) as text FROM #__sdi_attribute a, #__sdi_sys_stereotype at,  #__sdi_codevalue c, #__sdi_translation t, #__sdi_language l, #__sdi_list_codelang cl WHERE a.id=c.attribute_id AND a.attributetype_id=at.id AND c.guid=t.element_guid AND t.language_id=l.id AND l.codelang_id=cl.id and cl.code='".$language->_lang."' AND (at.code='textchoice' OR at.code='localechoice') AND attribute_id=".$rowAttribute->id." AND c.published=true ORDER BY c.name" );
+			$database->setQuery( "SELECT c.id as value, LEFT(t.content, 50) as text FROM #__sdi_attribute a, #__sdi_sys_stereotype at,  #__sdi_codevalue c, #__sdi_translation t, #__sdi_language l, #__sdi_list_codelang cl WHERE a.id=c.attribute_id AND a.attributetype_id=at.id AND c.guid=t.element_guid AND t.language_id=l.id AND l.codelang_id=cl.id and cl.code='".$language->_lang."' AND (at.alias='textchoice' OR at.alias='localechoice') AND attribute_id=".$rowAttribute->id." AND c.published=true ORDER BY c.name" );
 			$choicevalues = array_merge( $choicevalues, $database->loadObjectList() );
 		}
 		
@@ -1043,6 +1027,10 @@ class ADMIN_relation {
 			}
 		}
 		
+		$fieldpropertylist = array();
+		$database->setQuery( "SELECT id AS value, alias AS text FROM #__sdi_sys_fieldproperty ORDER BY id" );
+		$fieldpropertylist = array_merge( $fieldpropertylist, $database->loadObjectList() );
+		
 		// Parcours des champs pour extraire les informations utiles:
 		// - le nom du champ
 		// - sa longueur en caract�res
@@ -1059,7 +1047,7 @@ class ADMIN_relation {
 			} 
 		}
 		
-		HTML_relation::editAttributeRelation($rowAttributeRelation, $rowAttribute, $classes, $attributes, $rendertypes, $fieldsLength, $attributeFieldsLength, $style, $style_choice, $defaultStyle_textbox, $defaultStyle_textarea, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale_Textbox, $defaultStyle_Locale_Textarea, $languages, $codevalues, $selectedcodevalues, $choicevalues, $selectedchoicevalues, $profiles, $selected_profiles, $contexts, $selected_contexts, $attributetypes, $attributeid, $pageReloaded, $localeDefaults, $labels, $filterfields, $informations, $searchCriteriaFieldsLength, $searchCriteria, $boundsStyle, $renderStyle, $rowAttribute->attributetype_id, $option);
+		HTML_relation::editAttributeRelation($rowAttributeRelation, $rowAttribute, $classes, $attributes, $rendertypes, $fieldsLength, $attributeFieldsLength, $style, $style_choice, $defaultStyle_textbox, $defaultStyle_textarea, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale_Textbox, $defaultStyle_Locale_Textarea, $languages, $codevalues, $selectedcodevalues, $choicevalues, $selectedchoicevalues, $profiles, $selected_profiles, $contexts, $selected_contexts, $attributetypes, $attributeid, $pageReloaded, $localeDefaults, $labels, $filterfields, $informations, $searchCriteriaFieldsLength, $searchCriteria, $boundsStyle, $renderStyle, $rowAttribute->attributetype_id,$fieldpropertylist, $option);
 	}
 	
 	function editClassRelation($rowRelation, $option)
@@ -1155,7 +1143,11 @@ class ADMIN_relation {
 		$database->setQuery( "SELECT id AS value, prefix AS text FROM #__sdi_namespace ORDER BY prefix" );
 		$namespacelist = array_merge( $namespacelist, $database->loadObjectList() );
 		
-		HTML_relation::editClassRelation($rowClassRelation, $classes, $relationtypes, $fieldsLength, $boundsStyle, $profiles, $selected_profiles, $contexts, $selected_contexts, $languages, $labels, $informations, $namespacelist, $option);
+		$fieldpropertylist = array();
+		$database->setQuery( "SELECT id AS value, alias AS text FROM #__sdi_sys_fieldproperty ORDER BY id" );
+		$fieldpropertylist = array_merge( $fieldpropertylist, $database->loadObjectList() );
+		
+		HTML_relation::editClassRelation($rowClassRelation, $classes, $relationtypes, $fieldsLength, $boundsStyle, $profiles, $selected_profiles, $contexts, $selected_contexts, $languages, $labels, $informations, $namespacelist,$fieldpropertylist, $option);
 	}
 	
 	function editObjectRelation($rowRelation, $option)
@@ -1251,12 +1243,16 @@ class ADMIN_relation {
 		}
 		
 		$namespacelist = array();
-		//$namespacelist[] = JHTML::_('select.option','0', JText::_("CATALOG_ATTRIBUTE_NAMESPACE_LIST") );
 		$namespacelist[] = JHTML::_('select.option','0', " - " );
 		$database->setQuery( "SELECT id AS value, prefix AS text FROM #__sdi_namespace ORDER BY prefix" );
 		$namespacelist = array_merge( $namespacelist, $database->loadObjectList() );
 		
-		HTML_relation::editObjectRelation($rowObjectRelation, $classes, $objecttypes, $relationtypes, $fieldsLength, $boundsStyle, $profiles, $selected_profiles, $contexts, $selected_contexts, $languages, $labels, $informations, $namespacelist, $option);
+		
+		$fieldpropertylist = array();
+		$database->setQuery( "SELECT id AS value, alias AS text FROM #__sdi_sys_fieldproperty ORDER BY id" );
+		$fieldpropertylist = array_merge( $fieldpropertylist, $database->loadObjectList() );
+		
+		HTML_relation::editObjectRelation($rowObjectRelation, $classes, $objecttypes, $relationtypes, $fieldsLength, $boundsStyle, $profiles, $selected_profiles, $contexts, $selected_contexts, $languages, $labels, $informations, $namespacelist, $fieldpropertylist, $option);
 	}
 	
 	function saveRelation($option)

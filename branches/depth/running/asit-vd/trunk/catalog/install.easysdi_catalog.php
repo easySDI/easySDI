@@ -2053,7 +2053,80 @@ function com_install(){
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}
 				
+			$query = "INSERT INTO #__sdi_sys_stereotype (guid, alias, created, created_by) VALUES
+			('".helper_easysdi::getUniqueId()."', 'geographicextent', '".date('Y-m-d H:i:s')."', ".$user_id.")";
+			$db->setQuery( $query);
+			if (!$db->query()){
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+				return false;
+			}
 				
+			$query="ALTER TABLE `#__sdi_class` ADD stereotype_id bigint(20)";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			$query="ALTER TABLE `#__sdi_attribute` DROP isextensible ";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			$query="ALTER TABLE `#__sdi_relation` ADD editable bigint(20)";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			//CREATE #__sdi_sys_fieldproperty
+			$query="CREATE TABLE IF NOT EXISTS `#__sdi_sys_fieldproperty` (
+								`id` bigint(20) NOT NULL AUTO_INCREMENT,
+								`guid` varchar(36) NOT NULL,
+								`alias` varchar(20) NOT NULL,
+								`state` tinyint(1) NOT NULL DEFAULT 0,
+								`ordering` bigint(20) NOT NULL DEFAULT '0',
+								`checked_out` bigint(20) NOT NULL DEFAULT '0',
+								`checked_out_time` datetime DEFAULT NULL,
+								PRIMARY KEY (`id`)
+								) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+				return false;
+			}
+			
+			//INSERT #__sdi_sys_fieldproperty
+			$query="INSERT INTO `#__sdi_sys_fieldproperty` VALUE (1,'".helper_easysdi::getUniqueId()."','editable',1,0,0,NULL)";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			//INSERT #__sdi_sys_fieldproperty
+			$query="INSERT INTO `#__sdi_sys_fieldproperty` VALUE (2,'".helper_easysdi::getUniqueId()."','visible',1,0,0,NULL)";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			//INSERT #__sdi_sys_fieldproperty
+			$query="INSERT INTO `#__sdi_sys_fieldproperty` VALUE (3,'".helper_easysdi::getUniqueId()."','hidden',1,0,0,NULL)";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			$query="UPDATE `#__sdi_relation` r INNER JOIN `#__sdi_attribute` a ON r.attributechild_id=a.id SET r.editable = 1 WHERE a.issystem=0";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			$query="UPDATE `#__sdi_relation` r INNER JOIN `#__sdi_attribute` a ON r.attributechild_id=a.id SET r.editable = 2 WHERE a.issystem=1";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
 			$version="2.4.0";
 			$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='CATALOG'";
 			$db->setQuery( $query);

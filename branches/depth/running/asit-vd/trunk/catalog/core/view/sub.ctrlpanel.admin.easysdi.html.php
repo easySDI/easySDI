@@ -26,7 +26,6 @@
 			         <ul>
 			             <li><?php printf('<a href="index.php?option=%s&amp;task=listImportRef">', $option); echo JText::_( 'CORE_IMPORTREF_PANEL' ); ?></a></li>
 			             <li><?php printf('<a href="index.php?option=%s&amp;task=listContext">', $option); echo JText::_( 'CORE_CONTEXT_PANEL' ); ?></a></li>
-			             <li><?php printf('<a href="index.php?option=%s&amp;task=listAttributeType">', $option); echo JText::_( 'CORE_ATTRIBUTETYPE_PANEL' ); ?></a></li>
 			             <li><?php printf('<a href="index.php?option=%s&amp;task=listProfile">', $option); echo JText::_( 'CORE_PROFILE_PANEL' ); ?></a></li>
 				 </ul>
 			       </td>

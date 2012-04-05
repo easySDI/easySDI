@@ -81,7 +81,7 @@ class ADMIN_attribute {
 		$searchAttribute				= JString::strtolower($searchAttribute);
 		
 		// Test si le filtre est valide
-		if ($filter_order <> "id" and $filter_order <> "name" and $filter_order <> "attributetype_id" and $filter_order <> "attribute_isocode" and $filter_order <> "issystem" and $filter_order <> "isextensible" and $filter_order <> "description" and $filter_order <> "updated")
+		if ($filter_order <> "id" and $filter_order <> "name" and $filter_order <> "attributetype_id" and $filter_order <> "attribute_isocode" and $filter_order <> "issystem" and $filter_order <> "description" and $filter_order <> "updated")
 		{
 			$filter_order		= "id";
 			$filter_order_Dir	= "ASC";
@@ -138,8 +138,8 @@ class ADMIN_attribute {
 		
 		// get list of relationtypes for dropdown filter
 		$query = 'SELECT id as value, alias as text' .
-				' FROM #__sdi_sys_stereotype' .
-				' ORDER BY name';
+				' FROM #__sdi_sys_stereotype WHERE entity_id=1' .
+				' ORDER BY alias';
 		$attributetypes[] = JHTML::_('select.option', '0', JText::_('SELECT_ATTRIBUTETYPE'), 'value', 'text');
 		$db->setQuery($query);
 		$attributetypes = array_merge($attributetypes, $db->loadObjectList());
@@ -148,7 +148,7 @@ class ADMIN_attribute {
 		// searchAttribute filter
 		$lists['searchAttribute'] = $searchAttribute;
 		
-		HTML_attribute::listAttribute(&$rows, $lists, $pagination, $option,  $filter_order_Dir, $filter_order);
+		HTML_attribute::listAttribute($rows, $lists, $pagination, $option,  $filter_order_Dir, $filter_order);
 	}
 	
 	function editAttribute($id, $option)
@@ -173,17 +173,17 @@ class ADMIN_attribute {
 		
 		$attributetypelist = array();
 		$attributetypelist[] = JHTML::_('select.option','0', JText::_("EASYSDI_ATTRIBUTETYPE_LIST") );
-		$database->setQuery( "SELECT id AS value, alias AS text FROM #__sdi_sys_stereotype ORDER BY alias" );
+		$database->setQuery( "SELECT id AS value, alias AS text FROM #__sdi_sys_stereotype WHERE entity_id=1 ORDER BY alias" );
 		$attributetypelist = array_merge( $attributetypelist, $database->loadObjectList() );
 		
-		// R�cup�ration des types mysql pour les champs
+		// Récupération des types mysql pour les champs
 		$tableFields = array();
 		$tableFields = $database->getTableFields("#__sdi_attribute", false);
 		$tableFields = array_merge( $tableFields, $database->getTableFields("#__sdi_translation", false) );
 		
 		// Parcours des champs pour extraire les informations utiles:
 		// - le nom du champ
-		// - sa longueur en caract�res
+		// - sa longueur en caractéres
 		$fieldsLength = array();
 		foreach($tableFields as $table)
 		{
@@ -197,7 +197,7 @@ class ADMIN_attribute {
 			} 
 		}
 		
-		// Liste d�roulante pour la saisie de la valeur par d�faut
+		// Liste déroulante pour la saisie de la valeur par défaut
 		// + Champ de saisie de codeValueList
 		if ($rowAttribute->attributetype_id <> 6)
 			$style = "display:none";
@@ -211,7 +211,7 @@ class ADMIN_attribute {
 			$styleAttributes = "display:inline";
 		
 		
-		// Langues � g�rer
+		// Langues à gérer
 		$languages = array();
 		$database->setQuery( "SELECT l.id, c.code FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY id" );
 		$languages = array_merge( $languages, $database->loadObjectList() );
@@ -237,7 +237,6 @@ class ADMIN_attribute {
 		}
 
 		$namespacelist = array();
-		//$namespacelist[] = JHTML::_('select.option','0', JText::_("CATALOG_ATTRIBUTE_NAMESPACE_LIST") );
 		$namespacelist[] = JHTML::_('select.option','0', " - " );
 		$database->setQuery( "SELECT id AS value, prefix AS text FROM #__sdi_namespace ORDER BY prefix" );
 		$namespacelist = array_merge( $namespacelist, $database->loadObjectList() );
@@ -266,12 +265,12 @@ class ADMIN_attribute {
 		if ($rowAttribute->listnamespace_id == 0)
 			$rowAttribute->listnamespace_id = null;
 		
-		// G�n�rer un guid
+		// Générer un guid
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 		if ($rowAttribute->guid == null)
 			$rowAttribute->guid = helper_easysdi::getUniqueId();
 		
-		// Enlever les �ventuels retours � la ligne dans le pattern
+		// Enlever les éventuels retours à la ligne dans le pattern
 		$rowAttribute->pattern = str_replace("\r\n", "", $rowAttribute->pattern);
 			
 		if (!$rowAttribute->store(false)) {			
@@ -351,12 +350,12 @@ class ADMIN_attribute {
 		
 		$rowAttribute->checkin();
 		
-		// Au cas o� on sauve avec Apply, recharger la page 
+		// Au cas oé on sauve avec Apply, recharger la page 
 		$task = JRequest::getCmd( 'task' );
 		switch ($task)
 		{
 			case 'applyAttribute' :
-				// Reprendre en �dition l'objet
+				// Reprendre en édition l'objet
 				TOOLBAR_attribute::_EDIT();
 				ADMIN_attribute::editAttribute($rowAttribute->id,$option);
 				break;
@@ -373,8 +372,8 @@ class ADMIN_attribute {
 		$database=& JFactory::getDBO(); 
 
 		if (!is_array( $id ) || count( $id ) < 1) {
-			//echo "<script> alert('S�lectionnez un enregistrement � supprimer'); window.history.go(-1);</script>\n";
-			$mainframe->enqueueMessage("S�lectionnez un enregistrement � supprimer","error");
+			//echo "<script> alert('Sélectionnez un enregistrement à supprimer'); window.history.go(-1);</script>\n";
+			$mainframe->enqueueMessage("Sélectionnez un enregistrement à supprimer","error");
 			$mainframe->redirect("index.php?option=$option&task=listAttribute" );
 			exit;
 		}
