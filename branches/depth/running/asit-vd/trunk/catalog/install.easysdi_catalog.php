@@ -1867,7 +1867,7 @@ function com_install(){
 					PRIMARY KEY (`id`),
 					KEY `entity_id` (`entity_id`),
 					KEY `namespace_id` (`namespace_id`),
-					UNIQUE `alias` (`alias`)
+					UNIQUE KEY `alias` (`alias`)
 					) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
 			$db->setQuery( $query);
 			if (!$db->query()) {
@@ -2044,6 +2044,15 @@ function com_install(){
 			if (!$db->query()) {
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}
+			
+			$query="INSERT INTO `#__sdi_namespace` (`guid`, `created`, `created_by`, `ordering`, `prefix`, `uri`, `system`) VALUES
+			('".helper_easysdi::getUniqueId()."','".date('Y-m-d H:i:s')."', ".$user_id.", 0, 'sdi', 'http://www.easysdi.org/2011/sdi', 1)
+			;";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+				
 				
 			$version="2.4.0";
 			$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='CATALOG'";

@@ -448,7 +448,7 @@ class ADMIN_class {
 				' WHERE id IN ( '. $cids .' )';
 		$db->setQuery($query);
 		if (!$db->query()) {
-			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			$mainframe->redirect("index.php?option=$option&task=listClass" );
 			exit();
 		}
