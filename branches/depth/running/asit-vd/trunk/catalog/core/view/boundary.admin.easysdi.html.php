@@ -237,5 +237,163 @@ if ($row->updated)
 		</form>
 			<?php 	
 	}
+	
+	function listBoundaryCategory(&$rows, $page, $option,  $filter_order_Dir, $filter_order)
+	{
+		$database =& JFactory::getDBO();
+	
+		$ordering = ($filter_order == 'ordering');
+		?>
+		<form action="index.php" method="POST" name="adminForm">
+			<table class="adminlist">
+			<thead>
+				<tr>
+					<th class='title' width="10px"><?php echo JText::_("CORE_SHARP"); ?></th>
+					<th class='title' width="10px"><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($rows); ?>);" /></th>				
+					<th class='title' width="30px"><?php echo JHTML::_('grid.sort',   JText::_("CORE_ID"), 'id', @$filter_order_Dir, @$filter_order); ?></th>
+					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_TITLE"), 'title', @$filter_order_Dir, @$filter_order); ?></th>
+					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_ALIAS"), 'alias', @$filter_order_Dir, @$filter_order); ?></th>
+					<th class='title' width="100px"><?php echo JHTML::_('grid.sort',   JText::_("CORE_UPDATED"), 'modified', @$filter_order_Dir, @$filter_order); ?></th>
+				</tr>
+			</thead>
+			<tbody>		
+	<?php
+			$i=0;
+			foreach ($rows as $row)
+			{		
+	?>
+				<tr>
+					<td align="center" width="10px"><?php echo $page->getRowOffset( $i );//echo $i+$page->limitstart+1;?></td>
+					<td width="10px"><input type="checkbox" id="cb<?php echo $i;?>" name="cid[]" value="<?php echo $row->id; ?>" onclick="isChecked(this.checked);" /></td>												
+					<td width="30px" align="center"><?php echo $row->id; ?></td>
+					 <?php $link =  "index.php?option=$option&amp;task=editBoundaryCategory&cid[]=$row->id";?>
+					<td><a href="<?php echo $link;?>"><?php echo $row->title; ?></a></td>
+					<td><?php echo $row->alias; ?></td>
+					<td width="100px"><?php if ($row->modified and $row->modified<> '0000-00-00 00:00:00') {echo date('d.m.Y h:i:s',strtotime($row->modified));} ?></td>
+				</tr>
+	<?php
+				$i ++;
+			}
+			
+				?>
+			</tbody>
+			<tfoot>
+			<tr>	
+			<td colspan="8"><?php echo $page->getListFooter(); ?></td>
+			</tr>
+			</tfoot>
+			</table>
+		  	<input type="hidden" name="option" value="<?php echo $option; ?>" />
+		  	<input type="hidden" name="task" value="listBoundary" />
+		  	<input type="hidden" name="boxchecked" value="0" />
+		  	<input type="hidden" name="hidemainmenu" value="0">
+		  	<input type="hidden" name="filter_order_Dir" value="<?php echo $filter_order_Dir; ?>" />
+		  	<input type="hidden" name="filter_order" value="<?php echo $filter_order; ?>" />
+		  </form>
+	<?php
+		}
+		
+		function editBoundaryCategory(&$row, $fieldsLength, $languages, $labels, $option)
+		{
+			global  $mainframe;
+		
+			$database =& JFactory::getDBO();
+		
+			?>
+				<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
+					<table border="0" cellpadding="3" cellspacing="0">	
+						<tr>
+							<td width=150><?php echo JText::_("CORE_TITLE"); ?></td>
+							<td><input size="50" type="text" name ="title" value="<?php echo $row->title?>" maxlength="<?php echo $fieldsLength['title'];?>"> </td>							
+						</tr>
+						<tr>
+							<td><?php echo JText::_("CORE_ALIAS"); ?></td>
+							<td><input size="50" type="text" name ="alias" value="<?php echo $row->alias?>" maxlength="<?php echo $fieldsLength['alias'];?>"></td>							
+						</tr>
+					</table>
+					<table border="0" cellpadding="3" cellspacing="0">
+							<tr>
+							<td colspan="2">
+								<fieldset id="labels">
+									<legend align="top"><?php echo JText::_("CORE_LABEL"); ?></legend>
+									<table>
+		<?php
+		foreach ($languages as $lang)
+		{ 
+		?>
+							<tr>
+							<td WIDTH=140><?php echo JText::_("CORE_".strtoupper($lang->code)); ?></td>
+							<td><input size="50" type="text" name ="label<?php echo "_".$lang->code;?>" value="<?php echo htmlspecialchars($labels[$lang->id])?>" maxlength="<?php echo $fieldsLength['label'];?>"></td>							
+							</tr>
+		<?php
+		}
+		?>
+									</table>
+								</fieldset>
+							</td>
+						</tr>
+					</table>			
+					<br></br>
+					<table border="0" cellpadding="3" cellspacing="0">
+		<?php
+		$user =& JFactory::getUser();
+		if ($row->created)
+		{ 
+		?>
+						<tr>
+							<td><?php echo JText::_("CORE_CREATED"); ?> : </td>
+							<td><?php if ($row->created) {echo date('d.m.Y h:i:s',strtotime($row->created));} ?></td>
+							<td>, </td>
+							<?php
+								if ($row->created_by and $row->created_by<> 0)
+								{
+									$query = "SELECT name FROM #__users WHERE id=".$row->created_by ;
+									$database->setQuery($query);
+									$createUser = $database->loadResult();
+								}
+								else
+									$createUser = "";
+							?>
+							<td><?php echo $createUser; ?></td>
+						</tr>
+		<?php
+		}
+		if ($row->modified)
+		{ 
+		?>
+						<tr>
+							<td><?php echo JText::_("CORE_UPDATED"); ?> : </td>
+							<td><?php if ($row->modified and $row->modified<> 0) {echo date('d.m.Y h:i:s',strtotime($row->modified));} ?></td>
+							<td>, </td>
+							<?php
+								if ($row->modified_by and $row->modified_by<> 0)
+								{
+									$query = "SELECT name FROM #__users WHERE id=".$row->modified_by ;
+									$database->setQuery($query);
+									$updateUser = $database->loadResult();
+								}
+								else
+									$updateUser = "";
+							?>
+							<td><?php echo $updateUser; ?></td>
+						</tr>
+		<?php
+		}
+		?>
+					</table> 
+					 
+					<input type="hidden" name="cid[]" value="<?php echo $row->id?>" />
+					<input type="hidden" name="guid" value="<?php echo $row->guid?>" />
+					<input type="hidden" name="ordering" value="<?php echo $row->ordering; ?>" />
+					<input type="hidden" name="created" value="<?php echo ($row->created)? $row->created : date ('Y-m-d H:i:s');?>" />
+					<input type="hidden" name="created_by" value="<?php echo ($row->created_by)? $row->created_by : $user->id; ?>" /> 
+					<input type="hidden" name="modified" value="<?php echo ($row->created) ? date ("Y-m-d H:i:s") :  ''; ?>" />
+					<input type="hidden" name="modified_by" value="<?php echo ($row->created_by)? $user->id : ''; ?>" /> 
+					<input type="hidden" name="option" value="<?php echo $option; ?>" />
+					<input type="hidden" name="id" value="<?php echo $row->id?>" />
+					<input type="hidden" name="task" value="" />
+				</form>
+					<?php 	
+			}
 }
 ?>

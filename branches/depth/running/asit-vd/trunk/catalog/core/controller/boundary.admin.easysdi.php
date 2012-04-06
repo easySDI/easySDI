@@ -27,7 +27,7 @@ defined('_JEXEC') or die('Restricted access');
 			return;
 		}
 
-		// R�cuperer tous les labels et contr�ler qu'ils soient saisis
+		// Récuperer tous les labels et contrôler qu'ils soient saisis
 		var labelEmpty = 0;
 		labels = document.getElementById('labels');
 		fields = labels.getElementsByTagName('input');
@@ -38,7 +38,7 @@ defined('_JEXEC') or die('Restricted access');
 				labelEmpty=1;
 		}
 		
-		// R�cuperer toutes les coordonn�es et contr�ler qu'elles soient saisies
+		// Récuperer toutes les coordonnées et contrôler qu'elles soient saisies
 		var boudaryEmpty = 0;
 		boundaries = document.getElementById('boundaries');
 		fields = boundaries.getElementsByTagName('input');
@@ -103,9 +103,7 @@ class ADMIN_boundary {
 		$orderby 	= ' ORDER BY '. $filter_order .' '. $filter_order_Dir;
 		
 		
-		/*
-		 * Add the filter specific information to the where clause
-		 */
+		//Add the filter specific information to the where clause
 		$where = array();
 		
 		// Build the where clause of the content record query
@@ -132,7 +130,7 @@ class ADMIN_boundary {
 			return false;
 		}		
 		
-		HTML_boundary::listBoundary(&$rows, $pagination, $option,  $filter_order_Dir, $filter_order);
+		HTML_boundary::listBoundary($rows, $pagination, $option,  $filter_order_Dir, $filter_order);
 	}
 	
 	function editBoundary($id, $option)
@@ -155,7 +153,7 @@ class ADMIN_boundary {
 
 		$rowBoundary->checkout($user->get('id'));
 		
-		// R�cup�ration des types mysql pour les champs
+		// Récupération des types mysql pour les champs
 		$tableFields = array();
 		$tableFields = $database->getTableFields("#__sdi_boundary", false);
 		$tableFields = array_merge( $tableFields, $database->getTableFields("#__sdi_translation", false) );
@@ -176,7 +174,7 @@ class ADMIN_boundary {
 			} 
 		}
 		
-		// Langues � g�rer
+		// Langues à gérer
 		$languages = array();
 		$database->setQuery( "SELECT l.id, c.code FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY id" );
 		$languages = array_merge( $languages, $database->loadObjectList() );
@@ -378,6 +376,220 @@ class ADMIN_boundary {
 
 		$mainframe->redirect("index.php?option=$option&task=listBoundary" );
 		exit();
+	}
+	
+	function listBoundaryCategory($option)
+	{
+		global  $mainframe;
+		$db =& JFactory::getDBO();
+		$filter	= null;
+	
+		$context	= $option.'.listBoundaryCategory';
+		$limit		= $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
+		$limitstart	= $mainframe->getUserStateFromRequest($context.'limitstart', 'limitstart', 0, 'int');
+	
+		// In case limit has been changed, adjust limitstart accordingly
+		$limitstart = ( $limit != 0 ? (floor($limitstart / $limit) * $limit) : 0 );
+	
+	
+		// table ordering
+		$filter_order		= $mainframe->getUserStateFromRequest( "$option.filter_order",		'filter_order',		'id',	'cmd' );
+		$filter_order_Dir	= $mainframe->getUserStateFromRequest( "$option.filter_order_Dir",	'filter_order_Dir',	'ASC',		'word' );
+	
+		// Test si le filtre est valide
+		if ($filter_order <> "id" and
+				$filter_order <> "title" and
+				$filter_order <> "updated" and
+				$filter_order <> "alias")
+		{
+			$filter_order		= "id";
+			$filter_order_Dir	= "ASC";
+		}
+	
+		$orderby 	= ' ORDER BY '. $filter_order .' '. $filter_order_Dir;
+	
+	
+		//Add the filter specific information to the where clause
+		$where = array();
+	
+		// Build the where clause of the content record query
+		$where = (count($where) ? ' WHERE '.implode(' AND ', $where) : '');
+	
+		$query = "SELECT COUNT(*) FROM #__sdi_boundarycategory";
+		$query .= $where;
+		$db->setQuery( $query );
+		$total = $db->loadResult();
+	
+		// Create the pagination object
+		jimport('joomla.html.pagination');
+		$pagination = new JPagination($total, $limitstart, $limit);
+	
+		// Recherche des enregistrements selon les limites
+		$query = "SELECT * FROM #__sdi_boundarycategory";
+		$query .= $where;
+		$query .= $orderby;
+		$db->setQuery( $query, $pagination->limitstart, $pagination->limit);
+	
+		$rows = $db->loadObjectList();
+		if ($db->getErrorNum()) {
+			echo $db->stderr();
+			return false;
+		}
+	
+		HTML_boundary::listBoundaryCategory($rows, $pagination, $option,  $filter_order_Dir, $filter_order);
+	}
+	
+	function editBoundaryCategory($id, $option)
+	{
+		$database =& JFactory::getDBO();
+		$user = & JFactory::getUser();
+	
+		$rowBoundaryCategory = new boundarycategory( $database );
+		$rowBoundaryCategory->load( $id );
+	
+		/*
+		 * If the item is checked out we cannot edit it... unless it was checked
+		* out by the current user.
+		*/
+		if ( JTable::isCheckedOut($user->get('id'), $rowBoundaryCategory->checked_out ))
+		{
+			$msg = JText::sprintf('DESCBEINGEDITTED', JText::_('The item'), $rowBoundary->name);
+			$mainframe->redirect("index.php?option=$option&task=listBoundary", $msg );
+		}
+	
+		$rowBoundaryCategory->checkout($user->get('id'));
+	
+		// Récupération des types mysql pour les champs
+		$tableFields = array();
+		$tableFields = $database->getTableFields("#__sdi_boundarycategory", false);
+		$tableFields = array_merge( $tableFields, $database->getTableFields("#__sdi_translation", false) );
+	
+		// Parcours des champs pour extraire les informations utiles:
+		// - le nom du champ
+		// - sa longueur en caractères
+		$fieldsLength = array();
+		foreach($tableFields as $table)
+		{
+			foreach ($table as $field)
+			{
+				if (substr($field->Type, 0, strlen("varchar")) == "varchar")
+				{
+					$length = strpos($field->Type, ")")-strpos($field->Type, "(")-1;
+					$fieldsLength[$field->Field] = substr($field->Type, strpos($field->Type, "(")+ 1, $length);
+				}
+			}
+		}
+	
+		// Langues à gérer
+		$languages = array();
+		$database->setQuery( "SELECT l.id, c.code FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY id" );
+		$languages = array_merge( $languages, $database->loadObjectList() );
+	
+	
+		// Les labels
+		$labels = array();
+		foreach ($languages as $lang)
+		{
+			$database->setQuery("SELECT label FROM #__sdi_translation WHERE element_guid='".$rowBoundaryCategory->guid."' AND language_id=".$lang->id);
+			$label = $database->loadResult();
+				
+			$labels[$lang->id] = $label;
+		}
+	
+		HTML_boundary::editBoundaryCategory($rowBoundaryCategory, $fieldsLength, $languages, $labels, $option);
+	}
+	
+	function saveBoundaryCategory($option)
+	{
+		global $mainframe;
+			
+		$database=& JFactory::getDBO();
+		$user =& JFactory::getUser();
+	
+		$rowBoundaryCategory= new boundarycategory( $database );
+	
+		if (!$rowBoundaryCategory->bind( $_POST )) {
+	
+			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			$mainframe->redirect("index.php?option=$option&task=listBoundaryCategory" );
+			exit();
+		}
+	
+		// Générer un guid
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
+		if ($rowBoundaryCategory->guid == null)
+			$rowBoundaryCategory->guid = helper_easysdi::getUniqueId();
+	
+		if (!$rowBoundaryCategory->store(false)) {
+			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			$mainframe->redirect("index.php?option=$option&task=listBoundaryCategory" );
+			exit();
+		}
+	
+		// Langues à gérer
+		$languages = array();
+		$database->setQuery( "SELECT l.id, c.code FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY id" );
+		$languages = array_merge( $languages, $database->loadObjectList() );
+	
+	
+		// Stocker les labels
+		foreach ($languages as $lang)
+		{
+			$database->setQuery("SELECT count(*) FROM #__sdi_translation WHERE element_guid='".$rowBoundaryCategory->guid."' AND language_id='".$lang->id."'");
+			$total = $database->loadResult();
+				
+			if ($total > 0)
+			{
+				//Update
+				$database->setQuery("UPDATE #__sdi_translation SET label='".addslashes($_POST['label_'.$lang->code])."', updated='".$_POST['modified']."', updatedby=".$_POST['modified_by']." WHERE element_guid='".$rowBoundaryCategory->guid."' AND language_id=".$lang->id);
+				if (!$database->query())
+				{
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+					return false;
+				}
+			}
+			else
+			{
+				// Create
+				$database->setQuery("INSERT INTO #__sdi_translation (element_guid, language_id, label, created, createdby) VALUES ('".$rowBoundaryCategory->guid."', ".$lang->id.", '".addslashes($_POST['label_'.$lang->code])."', '".date ("Y-m-d H:i:s")."', ".$user->id.")");
+				if (!$database->query())
+				{
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+					return false;
+				}
+			}
+		}
+	
+		$rowBoundaryCategory->checkin();
+	
+		// Au cas où on sauve avec Apply, recharger la page
+		$task = JRequest::getCmd( 'task' );
+		switch ($task)
+		{
+			case 'applyBoundaryCategory' :
+				// Reprendre en �dition l'objet
+				TOOLBAR_boundary::_EDIT();
+				ADMIN_boundary::editBoundaryCategory($rowBoundaryCategory->id,$option);
+				break;
+	
+			case 'saveBoundaryCategory' :
+			default :
+				break;
+		}
+	}
+	function cancelBoundaryCategory($option)
+	{
+		global $mainframe;
+	
+		// Initialize variables
+		$database = & JFactory::getDBO();
+	
+		// Check the attribute in if checked out
+		$rowBoundaryCategory= new boundarycategory( $database );
+		$rowBoundaryCategory->bind(JRequest::get('post'));
+		$rowBoundaryCategory->checkin();
+	
+		$mainframe->redirect("index.php?option=$option&task=listBoundaryCategory" );
 	}
 }
 ?>

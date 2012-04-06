@@ -25,7 +25,8 @@ class TOOLBAR_boundary {
 		JToolBarHelper::addNew('newBoundary');
 		JToolBarHelper::editList('editBoundary');
 		JToolBarHelper::deleteList( JText::_( 'CATALOG_BOUNDARY_DELETE_CONFIRM_MSG'), 'removeBoundary', JText::_( 'DELETE'));		
-		
+		JToolBarHelper::spacer();
+		JToolBarHelper::custom( 'listBoundaryCategory', 'tool_easysdi_admin.png', 'tool_easysdi_admin.png', JTEXT::_("CORE_MENU_CPANEL"), false );
 		JToolBarHelper::spacer();
 		JToolBarHelper::custom( 'cpanel', 'tool_easysdi_admin.png', 'tool_easysdi_admin.png', JTEXT::_("CORE_MENU_CPANEL"), false );
 	}
@@ -43,6 +44,35 @@ class TOOLBAR_boundary {
 		JToolBarHelper::apply('applyBoundary');
 		JToolBarHelper::spacer();
 		JToolBarHelper::custom( 'cancelBoundary', 'back.png', 'back.png', JTEXT::_("CORE_MENU_BACK"), false );
+	}
+}
+
+class TOOLBAR_boundarycategory {
+	function _DEFAULT() {
+		JToolBarHelper::title(JText::_("CATALOG_LIST_BOUNDARY_CATEGORY"));
+
+		JToolBarHelper::addNew('newBoundaryCategory');
+		JToolBarHelper::editList('editBoundaryCategory');
+		JToolBarHelper::deleteList( JText::_( 'CATALOG_BOUNDARY_CATEGORY_DELETE_CONFIRM_MSG'), 'removeBoundaryCategory', JText::_( 'DELETE'));
+
+		JToolBarHelper::spacer();
+		JToolBarHelper::custom( 'listBoundary', 'back.png', 'back.png', JTEXT::_("CORE_MENU_BACK"), false );
+		JToolBarHelper::custom( 'cpanel', 'tool_easysdi_admin.png', 'tool_easysdi_admin.png', JTEXT::_("CORE_MENU_CPANEL"), false );
+	}
+	function _EDIT() {
+		global $mainframe;
+		$cid = JRequest::getVar( 'cid', array(0), '', 'array' );
+
+		if (intval($cid[0]) == 0) // New
+			$text = JText::_("CORE_NEW");
+		else // Edit
+			$text = JText::_("CORE_EDIT");
+		JToolBarHelper::title(JText::_( 'CATALOG_EDIT_BOUNDARY_CATEGORY' ).': <small><small>[ '. $text.' ]</small></small>', 'addedit.png');
+
+		JToolBarHelper::save('saveBoundaryCategory');
+		JToolBarHelper::apply('applyBoundaryCategory');
+		JToolBarHelper::spacer();
+		JToolBarHelper::custom( 'cancelBoundaryCategory', 'back.png', 'back.png', JTEXT::_("CORE_MENU_BACK"), false );
 	}
 }
 ?>

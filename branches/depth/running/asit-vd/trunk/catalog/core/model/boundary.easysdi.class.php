@@ -43,4 +43,26 @@ class boundary extends JTable
 		parent::__construct ( '#__sdi_boundary', 'id', $db ) ;
 	}
 }
+
+class boundarycategory extends JTable
+{
+	var $id=null;
+	var $guid=null;
+	var $title=null;
+	var $alias=null;
+	var $state=null;
+	var $ordering=0;
+	var $created=null;
+	var $modified=null;
+	var $created_by=null;
+	var $modified_by=null;
+	var $checked_out=null;
+	var $checked_out_time=null;
+
+	// Class constructor
+	function __construct( &$db )
+	{
+		parent::__construct ( '#__sdi_boundarycategory', 'id', $db ) ;
+	}
+}
 ?>
