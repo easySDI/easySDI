@@ -36,6 +36,7 @@ class boundary extends JTable
 	var $westbound=null;
 	var $checked_out=null;
 	var $checked_out_time=null;
+	var $category_id=null;
 	
 	// Class constructor
 	function __construct( &$db )

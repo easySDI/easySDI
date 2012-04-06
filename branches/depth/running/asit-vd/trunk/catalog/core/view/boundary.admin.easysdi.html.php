@@ -35,8 +35,8 @@ function listBoundary(&$rows, $page, $option,  $filter_order_Dir, $filter_order)
 				<th class='title' width="100px"><?php echo JHTML::_('grid.sort',   JText::_("CORE_ORDER"), 'ordering', @$filter_order_Dir, @$filter_order); ?>
 				<?php echo JHTML::_('grid.order',  $rows, 'filesave.png', 'saveOrderBoundary' ); ?></th>
 				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_NAME"), 'name', @$filter_order_Dir, @$filter_order); ?></th>
-				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_DESCRIPTION"), 'description', @$filter_order_Dir, @$filter_order); ?></th>
-				<th class='title' width="100px"><?php echo JHTML::_('grid.sort',   JText::_("CORE_UPDATED"), 'updated', @$filter_order_Dir, @$filter_order); ?></th>
+				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CATALOG_PERIMETER_CATEGORY_TITLE"), 'category_title', @$filter_order_Dir, @$filter_order); ?></th>
+				<th class='title' width="100px"><?php echo JHTML::_('grid.sort',   JText::_("CORE_UPDATED"), 'modified', @$filter_order_Dir, @$filter_order); ?></th>
 			</tr>
 		</thead>
 		<tbody>		
@@ -84,7 +84,7 @@ function listBoundary(&$rows, $page, $option,  $filter_order_Dir, $filter_order)
 	            </td>
 				 <?php $link =  "index.php?option=$option&amp;task=editBoundary&cid[]=$row->id";?>
 				<td><a href="<?php echo $link;?>"><?php echo $row->name; ?></a></td>
-				<td><?php echo $row->description; ?></td>
+				<td><?php echo $row->category_title; ?></td>
 				<td width="100px"><?php if ($row->updated and $row->updated<> '0000-00-00 00:00:00') {echo date('d.m.Y h:i:s',strtotime($row->updated));} ?></td>
 			</tr>
 <?php
@@ -109,7 +109,7 @@ function listBoundary(&$rows, $page, $option,  $filter_order_Dir, $filter_order)
 <?php
 	}
 	
-	function editBoundary(&$row, $fieldsLength, $languages, $labels, $option)
+	function editBoundary(&$row, $fieldsLength, $languages, $labels,$titles, $contents,$categories, $option)
 	{
 		global  $mainframe;
 		
@@ -123,12 +123,32 @@ function listBoundary(&$rows, $page, $option,  $filter_order_Dir, $filter_order)
 					<td><input size="50" type="text" name ="name" value="<?php echo $row->name?>" maxlength="<?php echo $fieldsLength['name'];?>"> </td>							
 				</tr>
 				<tr>
-					<td><?php echo JText::_("CORE_DESCRIPTION"); ?></td>
-					<td><textarea rows="4" cols="50" name ="description" onkeypress="javascript:maxlength(this,<?php echo $fieldsLength['description'];?>);"><?php echo $row->description?></textarea></td>							
+					<td><?php echo JText::_("CATALOG_PERIMETER_CATEGORY_LIST"); ?></td>
+					<td><?php echo JHTML::_("select.genericlist",$categories, 'category_id', 'size="1" class="inputbox" onchange=""', 'value', 'text', $row->category_id ); ?></td>							
 				</tr>
 			</table>
 			<table border="0" cellpadding="3" cellspacing="0">
+				<tr>
+					<td colspan="2">
+						<fieldset id="titles">
+							<legend align="top"><?php echo JText::_("CORE_TITLE"); ?></legend>
+							<table>
+<?php
+foreach ($languages as $lang)
+{ 
+?>
 					<tr>
+					<td WIDTH=140><?php echo JText::_("CORE_".strtoupper($lang->code)); ?></td>
+					<td><input size="50" type="text" name ="title<?php echo "_".$lang->code;?>" value="<?php echo htmlspecialchars($titles[$lang->id])?>" maxlength="<?php echo $fieldsLength['title'];?>"></td>							
+					</tr>
+<?php
+}
+?>
+							</table>
+						</fieldset>
+					</td>
+				</tr>
+				<tr>
 					<td colspan="2">
 						<fieldset id="labels">
 							<legend align="top"><?php echo JText::_("CORE_LABEL"); ?></legend>
@@ -140,6 +160,26 @@ foreach ($languages as $lang)
 					<tr>
 					<td WIDTH=140><?php echo JText::_("CORE_".strtoupper($lang->code)); ?></td>
 					<td><input size="50" type="text" name ="label<?php echo "_".$lang->code;?>" value="<?php echo htmlspecialchars($labels[$lang->id])?>" maxlength="<?php echo $fieldsLength['label'];?>"></td>							
+					</tr>
+<?php
+}
+?>
+							</table>
+						</fieldset>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<fieldset id="contents">
+							<legend align="top"><?php echo JText::_("CORE_DESCRIPTION"); ?></legend>
+							<table>
+<?php
+foreach ($languages as $lang)
+{ 
+?>
+					<tr>
+					<td WIDTH=140><?php echo JText::_("CORE_".strtoupper($lang->code)); ?></td>
+					<td><textarea rows="5" cols="50" name ="content<?php echo "_".$lang->code;?>" ><?php echo htmlspecialchars($contents[$lang->id])?></textarea></td>							
 					</tr>
 <?php
 }

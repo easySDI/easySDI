@@ -93,8 +93,7 @@ class ADMIN_boundary {
 		if ($filter_order <> "id" and 
 			$filter_order <> "name" and 
 			$filter_order <> "ordering" and 
-			$filter_order <> "updated" and
-			$filter_order <> "description")
+			$filter_order <> "updated" )
 		{
 			$filter_order		= "id";
 			$filter_order_Dir	= "ASC";
@@ -119,7 +118,7 @@ class ADMIN_boundary {
 		$pagination = new JPagination($total, $limitstart, $limit);
 
 		// Recherche des enregistrements selon les limites
-		$query = "SELECT * FROM #__sdi_boundary";
+		$query = "SELECT b.*, bc.title as category_title FROM #__sdi_boundary b LEFT JOIN #__sdi_boundarycategory bc ON b.category_id = bc.id";
 		$query .= $where;
 		$query .= $orderby;
 		$db->setQuery( $query, $pagination->limitstart, $pagination->limit);
@@ -160,7 +159,7 @@ class ADMIN_boundary {
 		
 		// Parcours des champs pour extraire les informations utiles:
 		// - le nom du champ
-		// - sa longueur en caract�res
+		// - sa longueur en caractères
 		$fieldsLength = array();
 		foreach($tableFields as $table)
 		{
@@ -190,7 +189,34 @@ class ADMIN_boundary {
 			$labels[$lang->id] = $label;
 		}
 		
-		HTML_boundary::editBoundary($rowBoundary, $fieldsLength, $languages, $labels, $option);
+		// Titles
+		$titles = array();
+		foreach ($languages as $lang)
+		{
+			$database->setQuery("SELECT title FROM #__sdi_translation WHERE element_guid='".$rowBoundary->guid."' AND language_id=".$lang->id);
+			$title = $database->loadResult();
+				
+			$titles[$lang->id] = $title;
+		}
+		
+		// Contents
+		$contents = array();
+		foreach ($languages as $lang)
+		{
+			$database->setQuery("SELECT content FROM #__sdi_translation WHERE element_guid='".$rowBoundary->guid."' AND language_id=".$lang->id);
+			$content = $database->loadResult();
+		
+			$contents[$lang->id] = $content;
+		}
+		
+		//Categories
+		$categories = array();
+		$categories[] = JHTML::_('select.option','0', JText::_("CATALOG_PERIMETER_CATEGORY_LIST_CHOICE") );
+		$database->setQuery( "SELECT id AS value, title as text FROM #__sdi_boundarycategory ORDER BY title" );
+		$categories = array_merge( $categories, $database->loadObjectList() );
+		
+		
+		HTML_boundary::editBoundary($rowBoundary, $fieldsLength, $languages, $labels, $titles, $contents,$categories, $option);
 	}
 	
 	function saveBoundary($option)
@@ -209,7 +235,7 @@ class ADMIN_boundary {
 			exit();
 		}		
 		
-		// G�n�rer un guid
+		// Générer un guid
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 		if ($rowBoundary->guid == null)
 			$rowBoundary->guid = helper_easysdi::getUniqueId();
@@ -220,34 +246,54 @@ class ADMIN_boundary {
 			exit();
 		}
 		
-		// Langues � g�rer
+		// Langues à gérer
 		$languages = array();
 		$database->setQuery( "SELECT l.id, c.code FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY id" );
 		$languages = array_merge( $languages, $database->loadObjectList() );
 		
 	
-		// Stocker les labels
+		
 		foreach ($languages as $lang)
 		{
+			
 			$database->setQuery("SELECT count(*) FROM #__sdi_translation WHERE element_guid='".$rowBoundary->guid."' AND language_id='".$lang->id."'");
 			$total = $database->loadResult();
 			
-			if ($total > 0)
-			{
-				//Update
+			if ($total > 0){//Update
+				// Labels
 				$database->setQuery("UPDATE #__sdi_translation SET label='".addslashes($_POST['label_'.$lang->code])."', updated='".$_POST['updated']."', updatedby=".$_POST['updatedby']." WHERE element_guid='".$rowBoundary->guid."' AND language_id=".$lang->id);
-				if (!$database->query())
-					{	
-						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-						return false;
-					}
-			}
-			else
-			{
-				// Create
+				if (!$database->query()){	
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+					return false;
+				}
+				// Titles
+				$database->setQuery("UPDATE #__sdi_translation SET title='".addslashes($_POST['title_'.$lang->code])."', updated='".$_POST['updated']."', updatedby=".$_POST['updatedby']." WHERE element_guid='".$rowBoundary->guid."' AND language_id=".$lang->id);
+				if (!$database->query()){
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+					return false;
+				}
+				// Contents
+				$database->setQuery("UPDATE #__sdi_translation SET content='".addslashes($_POST['content_'.$lang->code])."', updated='".$_POST['updated']."', updatedby=".$_POST['updatedby']." WHERE element_guid='".$rowBoundary->guid."' AND language_id=".$lang->id);
+				if (!$database->query()){
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+					return false;
+				}
+			}else{// Create
+				//Labels
 				$database->setQuery("INSERT INTO #__sdi_translation (element_guid, language_id, label, created, createdby) VALUES ('".$rowBoundary->guid."', ".$lang->id.", '".addslashes($_POST['label_'.$lang->code])."', '".date ("Y-m-d H:i:s")."', ".$user->id.")");
-				if (!$database->query())
-				{	
+				if (!$database->query()){	
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+					return false;
+				}
+				//Titles
+				$database->setQuery("INSERT INTO #__sdi_translation (element_guid, language_id, title, created, createdby) VALUES ('".$rowBoundary->guid."', ".$lang->id.", '".addslashes($_POST['title_'.$lang->code])."', '".date ("Y-m-d H:i:s")."', ".$user->id.")");
+				if (!$database->query()){
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+					return false;
+				}
+				//Contents
+				$database->setQuery("INSERT INTO #__sdi_translation (element_guid, language_id, content, created, createdby) VALUES ('".$rowBoundary->guid."', ".$lang->id.", '".addslashes($_POST['content_'.$lang->code])."', '".date ("Y-m-d H:i:s")."', ".$user->id.")");
+				if (!$database->query()){
 					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 					return false;
 				}
@@ -590,6 +636,29 @@ class ADMIN_boundary {
 		$rowBoundaryCategory->checkin();
 	
 		$mainframe->redirect("index.php?option=$option&task=listBoundaryCategory" );
+	}
+	
+	function removeBoundaryCategory($id, $option)
+	{
+		global $mainframe;
+		$database=& JFactory::getDBO();
+	
+		if (!is_array( $id ) || count( $id ) < 1) {
+			$mainframe->enqueueMessage(JText::_("CATALOG_NO_ENTRY_SELECTED_ERROR"),"error");
+			$mainframe->redirect("index.php?option=$option&task=listBoundaryCategory" );
+			exit;
+		}
+		foreach( $id as $boundarycategory_id )
+		{
+			$rowBoundaryCategory= new boundarycategory( $database );
+			$rowBoundaryCategory->load( $boundarycategory_id );
+				
+			if (!$rowBoundaryCategory->delete()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				$mainframe->redirect("index.php?option=$option&task=listBoundaryCategory" );
+				exit();
+			}
+		}
 	}
 }
 ?>
