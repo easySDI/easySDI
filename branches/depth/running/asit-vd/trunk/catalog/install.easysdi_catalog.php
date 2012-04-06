@@ -2133,6 +2133,7 @@ function com_install(){
 					`guid` varchar(36) NOT NULL,
 					`title` varchar(100) NOT NULL,
 					`alias` varchar(20) NOT NULL,
+					`parent_id` varchar(20) NOT NULL,
 					`state` tinyint(1) NOT NULL DEFAULT 0,
 					`ordering` bigint(20) NOT NULL DEFAULT '0',
 					`created` datetime DEFAULT NULL ,
@@ -2151,7 +2152,19 @@ function com_install(){
 				return false;
 			}
 			
+			$query="ALTER TABLE `#__sdi_boundarycategory` ADD CONSTRAINT `#__sdi_bounderycategory_ibfk_1` FOREIGN KEY (`parent_id`) REFERENCES `#__sdi_boundarycategory` (`id`)";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
 			$query="ALTER TABLE `#__sdi_boundary` ADD category_id bigint(20)";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			$query="ALTER TABLE `#__sdi_boundary` ADD parent_id bigint(20)";
 			$db->setQuery( $query);
 			if (!$db->query()) {
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
@@ -2162,7 +2175,12 @@ function com_install(){
 			if (!$db->query()) {
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}
-				
+			
+			$query="ALTER TABLE `#__sdi_boundary` ADD CONSTRAINT `#__sdi_boundery_ibfk_2` FOREIGN KEY (`parent_id`) REFERENCES `#__sdi_boundary` (`id`)";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}	
 			
 			$version="2.4.0";
 			$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='CATALOG'";

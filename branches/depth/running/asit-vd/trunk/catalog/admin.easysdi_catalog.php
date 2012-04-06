@@ -878,6 +878,10 @@ switch($task){
 		break;
 		
 	// Predefined boundaries
+	case "getParentPerimeterList":
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'boundary.admin.easysdi.php');
+		ADMIN_boundary::getParentPerimeterList(JRequest::getVar("category_id"));
+		break;
 	case "listBoundaryCategory":
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'boundary.easysdi.class.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'boundary.toolbar.easysdi.html.php');

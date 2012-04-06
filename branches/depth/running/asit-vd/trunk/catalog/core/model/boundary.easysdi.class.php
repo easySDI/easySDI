@@ -37,6 +37,7 @@ class boundary extends JTable
 	var $checked_out=null;
 	var $checked_out_time=null;
 	var $category_id=null;
+	var $parent_id=null;
 	
 	// Class constructor
 	function __construct( &$db )
@@ -51,6 +52,7 @@ class boundarycategory extends JTable
 	var $guid=null;
 	var $title=null;
 	var $alias=null;
+	var $parent_id=null;
 	var $state=null;
 	var $ordering=0;
 	var $created=null;

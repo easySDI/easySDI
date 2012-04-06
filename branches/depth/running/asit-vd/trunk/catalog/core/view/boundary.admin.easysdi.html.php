@@ -17,6 +17,107 @@
 
 defined('_JEXEC') or die('Restricted access');
 
+?>
+<script type="text/javascript">
+	function submitbutton(pressbutton) 
+	{
+		var form = document.adminForm;
+		if (pressbutton != 'saveBoundary' && pressbutton != 'applyBoundary') {
+			submitform( pressbutton );
+			return;
+		}
+
+		// Récuperer tous les labels et contrôler qu'ils soient saisis
+		var labelEmpty = 0;
+		labels = document.getElementById('labels');
+		fields = labels.getElementsByTagName('input');
+		
+		for (var i = 0; i < fields.length; i++)
+		{
+			if (fields.item(i).value == "")
+				labelEmpty=1;
+		}
+		
+		// Récuperer toutes les coordonnées et contrôler qu'elles soient saisies
+		var boudaryEmpty = 0;
+		boundaries = document.getElementById('boundaries');
+		fields = boundaries.getElementsByTagName('input');
+		
+		for (var i = 0; i < fields.length; i++)
+		{
+			if (fields.item(i).value == "")
+				boudaryEmpty=1;
+		}
+		
+		// do field validation
+		if (form.name.value == "") 
+		{
+			alert( "<?php echo JText::_( 'CATALOG_BOUNDARY_SUBMIT_NONAME', true ); ?>" );
+		}
+		else if (labelEmpty > 0) 
+		{
+			alert( "<?php echo JText::_( 'CATALOG_BOUNDARY_SUBMIT_NOLABELS', true ); ?>" );
+		}
+		else if (boudaryEmpty >0) 
+		{
+		alert( "<?php echo JText::_( 'CATALOG_BOUNDARY_SUBMIT_BOUNDARIES', true ); ?>" );
+		} 
+		else 
+		{
+			submitform( pressbutton );
+		}
+	}
+	
+	var request;
+	function getParentList(){
+		var selectedCategory = document.getElementById('category_id').value;
+		request = getHTTPObject();
+	   // document.getElementById("progress").style.visibility = "visible";
+	    request.onreadystatechange = parseServerResponse;
+	    request.open("GET", "index.php?option=com_easysdi_catalog&task=getParentPerimeterList&category_id="+selectedCategory, true);
+	    request.send(null);
+	}
+
+	function getHTTPObject(){
+	    var xhr = false;
+	    if (window.XMLHttpRequest){
+	        xhr = new XMLHttpRequest();
+	    } else if (window.ActiveXObject) {
+	        try{
+	            xhr = new ActiveXObject("Msxml2.XMLHTTP");
+	        }catch(e){
+	            try{
+	                xhr = new ActiveXObject("Microsoft.XMLHTTP");
+	            }catch(e){
+	                xhr = false;
+	            }
+	        }
+	    }
+	    return xhr;
+	}
+
+	function parseServerResponse()
+	{
+	    // if request object received response
+	    if(request.readyState == 4){
+	    //	document.getElementById("progress").style.visibility = "hidden";
+			var JSONtext = request.responseText;
+			
+			var i = 0;
+			var JSONobject = JSON.parse(JSONtext, function (key, value) {
+				if(key == 'text'){
+					document.getElementById('parent_id').options[i].value = value;
+					i = i +1
+				}
+				if(key == 'value'){
+					document.getElementById('parent_id').options[i].text = value;
+				}
+			});			
+	    }
+	}
+</script>
+
+<?php 
 
 class HTML_boundary {
 function listBoundary(&$rows, $page, $option,  $filter_order_Dir, $filter_order)
@@ -109,7 +210,7 @@ function listBoundary(&$rows, $page, $option,  $filter_order_Dir, $filter_order)
 <?php
 	}
 	
-	function editBoundary(&$row, $fieldsLength, $languages, $labels,$titles, $contents,$categories, $option)
+	function editBoundary(&$row, $fieldsLength, $languages, $labels,$titles, $contents,$categories,$parents, $option)
 	{
 		global  $mainframe;
 		
@@ -117,6 +218,9 @@ function listBoundary(&$rows, $page, $option,  $filter_order_Dir, $filter_order)
 
 		?>
 		<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
+			<div id="progress">
+				<img id="progress_image"  src="components/com_easysdi_proxy/templates/images/loader.gif" alt="">
+			</div>
 			<table border="0" cellpadding="3" cellspacing="0">	
 				<tr>
 					<td width=150><?php echo JText::_("CORE_NAME"); ?></td>
@@ -124,7 +228,11 @@ function listBoundary(&$rows, $page, $option,  $filter_order_Dir, $filter_order)
 				</tr>
 				<tr>
 					<td><?php echo JText::_("CATALOG_PERIMETER_CATEGORY_LIST"); ?></td>
-					<td><?php echo JHTML::_("select.genericlist",$categories, 'category_id', 'size="1" class="inputbox" onchange=""', 'value', 'text', $row->category_id ); ?></td>							
+					<td><?php echo JHTML::_("select.genericlist",$categories, 'category_id', 'size="1" class="inputbox" onchange="getParentList()"', 'value', 'text', $row->category_id ); ?></td>							
+				</tr>
+				<tr>
+					<td><?php echo JText::_("CATALOG_PERIMETER_PARENT_LIST"); ?></td>
+					<td><?php echo JHTML::_("select.genericlist",$parents, 'parent_id', 'size="1" class="inputbox" onchange=""', 'value', 'text', $row->parent_id ); ?></td>							
 				</tr>
 			</table>
 			<table border="0" cellpadding="3" cellspacing="0">
@@ -333,7 +441,7 @@ if ($row->updated)
 	<?php
 		}
 		
-		function editBoundaryCategory(&$row, $fieldsLength, $languages, $labels, $option)
+		function editBoundaryCategory(&$row, $fieldsLength, $languages, $labels, $parents, $option)
 		{
 			global  $mainframe;
 		
@@ -350,6 +458,10 @@ if ($row->updated)
 							<td><?php echo JText::_("CORE_ALIAS"); ?></td>
 							<td><input size="50" type="text" name ="alias" value="<?php echo $row->alias?>" maxlength="<?php echo $fieldsLength['alias'];?>"></td>							
 						</tr>
+						<tr>
+							<td><?php echo JText::_("CATALOG_PERIMETER_CATEGORY_PARENT_LIST"); ?></td>
+						<td><?php echo JHTML::_("select.genericlist",$parents, 'parent_id', 'size="1" class="inputbox" onchange=""', 'value', 'text', $row->parent_id ); ?></td>							
+				</tr>
 					</table>
 					<table border="0" cellpadding="3" cellspacing="0">
 							<tr>
