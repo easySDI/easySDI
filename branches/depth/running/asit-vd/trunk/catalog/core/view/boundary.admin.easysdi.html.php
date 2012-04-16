@@ -72,7 +72,7 @@ defined('_JEXEC') or die('Restricted access');
 	function getParentList(){
 		var selectedCategory = document.getElementById('category_id').value;
 		request = getHTTPObject();
-	   // document.getElementById("progress").style.visibility = "visible";
+	    document.getElementById("progress").style.visibility = "visible";
 	    request.onreadystatechange = parseServerResponse;
 	    request.open("GET", "index.php?option=com_easysdi_catalog&task=getParentPerimeterList&category_id="+selectedCategory, true);
 	    request.send(null);
@@ -100,17 +100,30 @@ defined('_JEXEC') or die('Restricted access');
 	{
 	    // if request object received response
 	    if(request.readyState == 4){
-	    //	document.getElementById("progress").style.visibility = "hidden";
+	    	document.getElementById("progress").style.visibility = "hidden";
 			var JSONtext = request.responseText;
+			document.getElementById('parent_id').options.length = 0;
 			
-			var i = 0;
+			var valuevalue = -1;
+			var valuetext = -1;
 			var JSONobject = JSON.parse(JSONtext, function (key, value) {
 				if(key == 'text'){
-					document.getElementById('parent_id').options[i].value = value;
-					i = i +1
+					valuetext = value;
 				}
 				if(key == 'value'){
-					document.getElementById('parent_id').options[i].text = value;
+					valuevalue = value;
+				}
+				if(valuevalue != -1 && valuetext != -1){
+					var elOptNew = document.createElement('option');
+				  	elOptNew.text = valuetext;
+				  	elOptNew.value = valuevalue;
+				  	try{
+						document.getElementById('parent_id').add(elOptNew, null);// standards compliant; doesn't work in IE
+				  	}catch (ex){
+				  		document.getElementById('parent_id').add(elOptNew); //IE only
+				  	}
+					valuevalue = -1;
+					valuetext = -1;
 				}
 			});			
 	    }
@@ -218,7 +231,7 @@ function listBoundary(&$rows, $page, $option,  $filter_order_Dir, $filter_order)
 
 		?>
 		<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
-			<div id="progress">
+			<div id="progress" style="visibility:hidden">
 				<img id="progress_image"  src="components/com_easysdi_proxy/templates/images/loader.gif" alt="">
 			</div>
 			<table border="0" cellpadding="3" cellspacing="0">	
