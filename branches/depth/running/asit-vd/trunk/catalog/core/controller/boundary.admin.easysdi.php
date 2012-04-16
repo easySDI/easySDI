@@ -598,7 +598,7 @@ class ADMIN_boundary {
 		$database=& JFactory::getDBO();
 		
 		$parents = array();
-		$parents[] = JHTML::_('select.option',null, JText::_("CATALOG_PERIMETER_CATEGORY_PARENT_LIST_CHOICE") );
+		$parents[] = JHTML::_('select.option',null, JText::_("CATALOG_PERIMETER_PARENT_LIST") );
 		$database->setQuery( "SELECT id AS value, name as text FROM #__sdi_boundary WHERE category_id =  (SELECT parent_id FROM #__sdi_boundarycategory WHERE id = $category_id) ORDER BY name" );
 		$parents = array_merge( $parents, $database->loadObjectList() );
 	
