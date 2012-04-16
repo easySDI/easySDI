@@ -232,7 +232,7 @@ function listBoundary(&$rows, $page, $option,  $filter_order_Dir, $filter_order)
 		?>
 		<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
 			<div id="progress" style="visibility:hidden">
-				<img id="progress_image"  src="components/com_easysdi_proxy/templates/images/loader.gif" alt="">
+				<img id="progress_image"  src="components/com_easysdi_core/templates/images/loader.gif" alt="">
 			</div>
 			<table border="0" cellpadding="3" cellspacing="0">	
 				<tr>
