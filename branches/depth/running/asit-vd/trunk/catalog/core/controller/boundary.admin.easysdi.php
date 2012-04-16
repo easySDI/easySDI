@@ -499,7 +499,10 @@ class ADMIN_boundary {
 		if ($rowBoundaryCategory->guid == null)
 			$rowBoundaryCategory->guid = helper_easysdi::getUniqueId();
 	
-		if (!$rowBoundaryCategory->store(false)) {
+		if ($rowBoundaryCategory->parent_id == '')
+			$rowBoundaryCategory->parent_id = null;
+		
+		if (!$rowBoundaryCategory->store(true)) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			$mainframe->redirect("index.php?option=$option&task=listBoundaryCategory" );
 			exit();
