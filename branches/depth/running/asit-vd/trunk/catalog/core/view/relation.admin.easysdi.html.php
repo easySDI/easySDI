@@ -1236,8 +1236,9 @@ if ($row->updated and $row->updated <> '0000-00-00 00:00:00')
 					<td><?php echo JHTML::_('select.booleanlist', 'displaymap', '', $relation_attribute->displaymap);?> </td>																
 				</tr>
 				<tr>
-				<?php $params = json_decode($relation_attribute->params, true);
-				prnt_r($params);?>
+				<?php 
+				$params = json_decode($relation_attribute->params, true);
+				?>
 					<td valign="top" colspan="2">
 						<fieldset class="adminform">
 							<legend>
@@ -1254,7 +1255,7 @@ if ($row->updated and $row->updated <> '0000-00-00 00:00:00')
 										</span>
 										</td>
 										<td>
-											<textarea class="textarea resolutions" style="height: 200px; width: 440px;" name="defaultBboxConfig" ><?php  echo $params['defaultBboxConfig'];?></textarea>
+											<textarea class="textarea resolutions" style="height: 200px; width: 440px;" name="defaultBboxConfig" ><?php  echo html_entity_decode ($params['defaultBboxConfig']);?></textarea>
 										</td>
 									</tr>
 									<tr>

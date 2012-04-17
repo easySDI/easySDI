@@ -1496,7 +1496,7 @@ class ADMIN_relation {
 				$defaultBboxConfigExtentTop = $_POST['defaultBboxConfigExtentTop'];
 			
 			$value = array();
-			$value['defaultBboxConfig'] = trim( preg_replace( '/\s+/', ' ', $defaultBboxConfig ) ) ;
+			$value['defaultBboxConfig'] = htmlentities ( trim( preg_replace( '/\s+/', ' ', $defaultBboxConfig ) ) );
 			$value['defaultBboxConfigExtentLeft'] = $defaultBboxConfigExtentLeft;
 			$value['defaultBboxConfigExtentRight'] = $defaultBboxConfigExtentRight;
 			$value['defaultBboxConfigExtentBottom'] = $defaultBboxConfigExtentBottom;
