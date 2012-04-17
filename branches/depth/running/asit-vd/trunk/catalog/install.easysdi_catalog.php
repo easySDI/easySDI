@@ -2060,6 +2060,8 @@ function com_install(){
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 				return false;
 			}
+			
+			$geo_stereotype_id = $db->insertid(); 
 				
 			$query="ALTER TABLE `#__sdi_class` ADD stereotype_id bigint(20)";
 			$db->setQuery( $query);
@@ -2078,6 +2080,64 @@ function com_install(){
 			if (!$db->query()) {
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}
+			
+			//CREATE #__sdi_sys_attribute
+			$query="CREATE TABLE IF NOT EXISTS `#__sdi_sys_attribute` (
+				`id` bigint(20) NOT NULL AUTO_INCREMENT,
+				`guid` varchar(36) NOT NULL,
+				`alias` varchar(20) NOT NULL,
+				`state` tinyint(1) NOT NULL DEFAULT 0,
+				`ordering` bigint(20) NOT NULL DEFAULT '0',
+				`checked_out` bigint(20) NOT NULL DEFAULT '0',
+				`checked_out_time` datetime DEFAULT NULL,
+				`type` varchar(50) NOT NULL,
+				`length` int(10) NOT NULL,
+				`stereotype_id` bigint(20) NULL,
+				FOREIGN KEY (`stereotype_id`) REFERENCES `#__sdi_sys_stereotype` (`id`) ,
+				PRIMARY KEY (`id`)
+				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+				return false;
+			}
+			
+			//CREATE #__sdi_relationattribute
+			$query="CREATE TABLE IF NOT EXISTS `#__sdi_relation_attribute` (
+				`id` bigint(20) NOT NULL AUTO_INCREMENT,
+				`guid` varchar(36) NOT NULL,
+				`relation_id` bigint(20) NOT NULL,
+				`attribute_id` bigint(20) NOT NULL,
+				`value` varchar(500) NULL,
+				PRIMARY KEY (`id`),
+				FOREIGN KEY (`relation_id`) REFERENCES `#__sdi_relation` (`id`) ,
+				FOREIGN KEY (`attribute_id`) REFERENCES `#__sdi_sys_attribute` (`id`) 
+				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+				return false;
+			}
+			
+			//INSERT #__sdi_sys_attribute
+			$query="INSERT INTO `#__sdi_sys_attribute` VALUE (1,'".helper_easysdi::getUniqueId()."','displaymap',0,0,0,NULL,'tinyint',1,$geo_stereotype_id)";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			//INSERT #__sdi_sys_attribute
+			$query="INSERT INTO `#__sdi_sys_attribute` VALUE (2,'".helper_easysdi::getUniqueId()."','strictperimeter',0,0,0,NULL,'tinyint',1,$geo_stereotype_id)";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			//INSERT #__sdi_sys_attribute
+			$query="INSERT INTO `#__sdi_sys_attribute` VALUE (3,'".helper_easysdi::getUniqueId()."','params',0,0,0,NULL,'varchar',500,$geo_stereotype_id)";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
 			
 			//CREATE #__sdi_sys_fieldproperty
 			$query="CREATE TABLE IF NOT EXISTS `#__sdi_sys_fieldproperty` (

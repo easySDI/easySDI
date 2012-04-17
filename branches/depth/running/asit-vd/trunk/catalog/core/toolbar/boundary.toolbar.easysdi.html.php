@@ -26,7 +26,7 @@ class TOOLBAR_boundary {
 		JToolBarHelper::editList('editBoundary');
 		JToolBarHelper::deleteList( JText::_( 'CATALOG_BOUNDARY_DELETE_CONFIRM_MSG'), 'removeBoundary', JText::_( 'DELETE'));		
 		JToolBarHelper::spacer();
-		JToolBarHelper::custom( 'listBoundaryCategory', 'tool_easysdi_admin.png', 'tool_easysdi_admin.png', JTEXT::_("CORE_MENU_CPANEL"), false );
+		JToolBarHelper::custom( 'listBoundaryCategory', 'menus.png', 'menus.png', JTEXT::_("CATALOG_BOUNDARY_CATEGORY"), false );
 		JToolBarHelper::spacer();
 		JToolBarHelper::custom( 'cpanel', 'tool_easysdi_admin.png', 'tool_easysdi_admin.png', JTEXT::_("CORE_MENU_CPANEL"), false );
 	}

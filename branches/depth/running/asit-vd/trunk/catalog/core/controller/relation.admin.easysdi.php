@@ -285,7 +285,7 @@ class ADMIN_relation {
 		$rowRelation = new relation( $database );
 		$rowRelation->load( $id );
 		
-		// Gestion de la page recharg�e sur modification de l'attribut enfant de la relation
+		// Gestion de la page rechargée sur modification de l'attribut enfant de la relation
 		$attributeid = 0;
 		$upper = 0;
 		$pageReloaded=false;
@@ -306,6 +306,25 @@ class ADMIN_relation {
 		{
 			$pageReloaded=true;
 		}
+		
+		//Page rechargée suite au choix d'une classe enfant
+		$geographicextentchild = false ;
+		if(array_key_exists('classchild_id', $_POST)){
+			$classchildid = $_POST['classchild_id'];
+			if($classchildid != 0){
+				$rowclasschild = new classes ($database);
+				$rowclasschild->load ($classchildid);
+				if($rowclasschild->stereotype_id != null && $rowclasschild->stereotype_id != 0){
+					$database->setQuery( "SELECT alias FROM #__sdi_sys_stereotype WHERE id = ".$rowclasschild->stereotype_id ." AND alias = 'geographicextent'");
+					$database->query();
+					if($database->getNumRows() == 1){
+						//The child class is type of 'geographicextent'. Somme specific fields need to be add to the form.
+						$geographicextentchild = true;
+					}
+				}
+			}
+		}
+		
 		
 		$rowAttribute = new attribute( $database );
 		$rowAttribute->load( $attributeid );
@@ -337,20 +356,15 @@ class ADMIN_relation {
 		$contexts = array_merge( $contexts, $database->loadObjectList() );
 		
 		$selected_contexts = array();
-		/*if ($rowRelation->id <> 0)
-		{
-			$database->setQuery( "SELECT context_id FROM #__sdi_relation_context where relation_id=".$rowRelation->id);
-			$selected_contexts = array_merge( $selected_contexts, $database->loadResultArray() );
-		}*/
 		
-		// R�cup�ration des types mysql pour les champs
+		// Récupération des types mysql pour les champs
 		$tableFields = array();
 		$tableFields = $database->getTableFields("#__sdi_relation", false);
 		$tableFields = array_merge( $tableFields, $database->getTableFields("#__sdi_translation", false) );
 		
 		// Parcours des champs pour extraire les informations utiles:
 		// - le nom du champ
-		// - sa longueur en caract�res
+		// - sa longueur en caractères
 		$fieldsLength = array();
 		foreach($tableFields as $table)
 		{
@@ -364,14 +378,14 @@ class ADMIN_relation {
 			} 
 		}
 		
-		// R�cup�ration des types mysql pour les champs
+		// Récupération des types mysql pour les champs
 		$searchCriteriaTableFields = array();
 		$searchCriteriaTableFields = $database->getTableFields("#__sdi_searchcriteria", false);
 		$searchCriteriaTableFields = array_merge( $searchCriteriaTableFields, $database->getTableFields("#__sdi_context_sc_filter", false) );
 		
 		// Parcours des champs pour extraire les informations utiles:
 		// - le nom du champ
-		// - sa longueur en caract�res
+		// - sa longueur en caractères
 		$searchCriteriaFieldsLength = array();
 		foreach($searchCriteriaTableFields as $table)
 		{
@@ -384,7 +398,7 @@ class ADMIN_relation {
 				}
 			} 
 		}
-		// Langues � g�rer
+		// Langues à gérer
 		$languages = array();
 		$database->setQuery( "SELECT l.id, c.code FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY id" );
 		$languages = array_merge( $languages, $database->loadObjectList() );
@@ -410,7 +424,7 @@ class ADMIN_relation {
 			$informations[$lang->id] = $information;
 		}
 		
-		//Initialisation de toutes les variables qui vont �tre pass�es en param�tre, 
+		//Initialisation de toutes les variables qui vont être passées en paramètre, 
 		// pour ne pas avoir d'erreur de code
 		$attributes = array();
 		$objects=array();
@@ -436,7 +450,7 @@ class ADMIN_relation {
 		$boundsStyle = "display:inline";
 		$searchCriteria= new searchCriteriaByRelationId($database);
 		
-		/* D�but de la partie sp�cifique � une relation vers un attribut */
+		/* Début de la partie spécifique à une relation vers un attribut */
 		if ($type == 2)
 		{
 			$attributes = array();
@@ -454,13 +468,13 @@ class ADMIN_relation {
 			$database->setQuery( "SELECT id as value, attributetype_id as text FROM #__sdi_attribute ORDER BY id" );
 			$attributetypes = array_merge( $attributetypes, $database->loadObjectList() );
 			
-			// R�cup�ration des types mysql pour les champs
+			// Récupération des types mysql pour les champs
 			$attributeTableFields = array();
 			$attributeTableFields = $database->getTableFields("#__sdi_attribute", false);
 			
 			// Parcours des champs pour extraire les informations utiles:
 			// - le nom du champ
-			// - sa longueur en caract�res
+			// - sa longueur en caractères
 			$attributeFieldsLength = array();
 			foreach($attributeTableFields as $table)
 			{
@@ -477,7 +491,7 @@ class ADMIN_relation {
 			$defaults = array();
 			$defaultStyle_Date = "display:none";
 			$defaults['style_date'] = "display:none";
-			// Liste d�roulante pour la saisie de la valeur par d�faut
+			// Liste d�roulante pour la saisie de la valeur par défaut
 			// + Champ de saisie de codeValueList
 			if ($rowAttribute->attributetype_id <> 6)
 			{
@@ -492,8 +506,8 @@ class ADMIN_relation {
 				$defaults['style'] = "display:inline";
 			}
 	
-			// Textbox simple pour la saisie de la valeur par d�faut
-			if ($rowAttribute->attributetype_id == 0 or // Rien de s�lectionn�
+			// Textbox simple pour la saisie de la valeur par défaut
+			if ($rowAttribute->attributetype_id == 0 or // Rien de sélectionné
 				$rowAttribute->attributetype_id == 1 or // GUID
 				$rowAttribute->attributetype_id == 3 or // Local
 				$rowAttribute->attributetype_id == 5 or // Date
@@ -524,7 +538,7 @@ class ADMIN_relation {
 					$defaults['style_textbox'] = "display:inline";
 				}
 			
-			// Radio button pour la saisie de la valeur par d�faut pour la date
+			// Radio button pour la saisie de la valeur par défaut pour la date
 			if ($rowAttribute->attributetype_id <> 5)
 			{
 				$renderStyle = "display:inline";
@@ -543,7 +557,7 @@ class ADMIN_relation {
 				}
 			}
 			
-			// Plusieurs textbox pour la saisie de la valeur par d�faut pour la locale
+			// Plusieurs textbox pour la saisie de la valeur par défaut pour la locale
 			if ($rowAttribute->attributetype_id <> 3)
 			{
 				$renderStyle = "display:inline";
@@ -570,7 +584,7 @@ class ADMIN_relation {
 					$defaults['style_locale_textbox'] = "display:inline";
 				}
 			
-			// Liste d�roulante choicelist
+			// Liste déroulante choicelist
 			if ($rowAttribute->attributetype_id <> 9 and $rowAttribute->attributetype_id <> 10)
 			{
 				$renderStyle = "display:inline";
@@ -633,8 +647,8 @@ class ADMIN_relation {
 				$defaults['style_choicelist'] = "display:none";				
 			}
 		}
-		/* Fin de la pr�paration consacr�e � une relation vers un attribut */
-		/* Pr�paration consacr�e � une relation vers une classe */
+		/* Fin de la préparation consacrée à une relation vers un attribut */
+		/* Préparation consacrée à une relation vers une classe */
 		else if ($type == 1)
 		{
 			$relationtypes = array();
@@ -646,7 +660,7 @@ class ADMIN_relation {
 			if ($rowRelation->relationtype_id == 5) // Generalization
 				$boundsStyle = "display:none";
 		}
-		/* Pr�paration consacr�e � une relation vers un objet */
+		/* Préparation consacrée à une relation vers un objet */
 		else if ($type == 3)
 		{
 			$objecttypes = array();
@@ -684,7 +698,7 @@ class ADMIN_relation {
 		}
 		
 		
-		HTML_relation::newRelation($rowRelation, $rowAttribute, $types, $type, $classes, $attributes, $objecttypes, $rendertypes, $relationtypes, $fieldsLength, $attributeFieldsLength, $boundsStyle, $style, $defaultStyle_textbox, $defaultStyle_textarea, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale_Textbox, $defaultStyle_Locale_Textarea, $defaultStyle_Choicelist, $renderStyle, $languages, $codevalues, $choicevalues, $selectedcodevalues, $profiles, $selected_profiles, $contexts, $selected_contexts, $attributetypes, $attributeid, $pageReloaded, $localeDefaults, $labels, $filterfields, $informations, $namespacelist, $searchCriteriaFieldsLength, $searchCriteria, $child_attributetype,$fieldpropertylist, $option);
+		HTML_relation::newRelation($rowRelation, $rowAttribute, $types, $type, $classes, $attributes, $objecttypes, $rendertypes, $relationtypes, $fieldsLength, $attributeFieldsLength, $boundsStyle, $style, $defaultStyle_textbox, $defaultStyle_textarea, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale_Textbox, $defaultStyle_Locale_Textarea, $defaultStyle_Choicelist, $renderStyle, $languages, $codevalues, $choicevalues, $selectedcodevalues, $profiles, $selected_profiles, $contexts, $selected_contexts, $attributetypes, $attributeid, $pageReloaded, $localeDefaults, $labels, $filterfields, $informations, $namespacelist, $searchCriteriaFieldsLength, $searchCriteria, $child_attributetype,$fieldpropertylist,$geographicextentchild, $option);
 	}
 	
 	function editRelation($id, $option)
@@ -1087,14 +1101,14 @@ class ADMIN_relation {
 			$selected_contexts = array_merge( $selected_contexts, $database->loadResultArray() );
 		}
 		
-		// R�cup�ration des types mysql pour les champs
+		// Récupération des types mysql pour les champs
 		$tableFields = array();
 		$tableFields = $database->getTableFields("#__sdi_relation", false);
 		$tableFields = array_merge( $tableFields, $database->getTableFields("#__sdi_translation", false) );
 		
 		// Parcours des champs pour extraire les informations utiles:
 		// - le nom du champ
-		// - sa longueur en caract�res
+		// - sa longueur en caractères
 		$fieldsLength = array();
 		foreach($tableFields as $table)
 		{
@@ -1112,7 +1126,7 @@ class ADMIN_relation {
 		if ($rowClassRelation->relationtype_id == 5) // Generalization
 			$boundsStyle = "display:none";
 		
-		// Langues � g�rer
+		// Langues à gérer
 		$languages = array();
 		$database->setQuery( "SELECT l.id, c.code FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY id" );
 		$languages = array_merge( $languages, $database->loadObjectList() );
@@ -1138,7 +1152,6 @@ class ADMIN_relation {
 		}
 		
 		$namespacelist = array();
-		//$namespacelist[] = JHTML::_('select.option','0', JText::_("CATALOG_ATTRIBUTE_NAMESPACE_LIST") );
 		$namespacelist[] = JHTML::_('select.option','0', " - " );
 		$database->setQuery( "SELECT id AS value, prefix AS text FROM #__sdi_namespace ORDER BY prefix" );
 		$namespacelist = array_merge( $namespacelist, $database->loadObjectList() );
@@ -1147,7 +1160,33 @@ class ADMIN_relation {
 		$database->setQuery( "SELECT id AS value, alias AS text FROM #__sdi_sys_fieldproperty ORDER BY id" );
 		$fieldpropertylist = array_merge( $fieldpropertylist, $database->loadObjectList() );
 		
-		HTML_relation::editClassRelation($rowClassRelation, $classes, $relationtypes, $fieldsLength, $boundsStyle, $profiles, $selected_profiles, $contexts, $selected_contexts, $languages, $labels, $informations, $namespacelist,$fieldpropertylist, $option);
+		//Relation links a class of type 'geographicextent'
+		$geographicextentchild = false ;
+		$relation_attribute = new stdClass;
+		$rowclasschild = new classes ($database);
+		$rowclasschild->load ($rowClassRelation->classchild_id);
+		if($rowclasschild->stereotype_id != null && $rowclasschild->stereotype_id != 0){
+			$database->setQuery( "SELECT alias FROM #__sdi_sys_stereotype WHERE id = ".$rowclasschild->stereotype_id ." AND alias = 'geographicextent'");
+			$database->query();
+			if($database->getNumRows() == 1){
+				//The child class is type of 'geographicextent'. Somme specific fields need to be add to the form.
+				$geographicextentchild = true;
+				//DisplayMap
+				$database->setQuery( "SELECT value FROM #__sdi_relation_attribute WHERE relation_id = ".$rowClassRelation->id ." AND attribute_id = (SELECT id FROM #__sdi_sys_attribute WHERE alias = 'displaymap')");
+				$database->query();
+				$relation_attribute->displaymap = $database->loadResult();
+				//strictPerimeter
+				$database->setQuery( "SELECT value FROM #__sdi_relation_attribute WHERE relation_id = ".$rowClassRelation->id ." AND attribute_id = (SELECT id FROM #__sdi_sys_attribute WHERE alias = 'strictperimeter')");
+				$database->query();
+				$relation_attribute->strictperimeter = $database->loadResult();
+				//params
+				$database->setQuery( "SELECT value FROM #__sdi_relation_attribute WHERE relation_id = ".$rowClassRelation->id ." AND attribute_id = (SELECT id FROM #__sdi_sys_attribute WHERE alias = 'params')");
+				$database->query();
+				$relation_attribute->params = $database->loadResult();
+			}
+		}
+		
+		HTML_relation::editClassRelation($rowClassRelation, $classes, $relationtypes, $fieldsLength, $boundsStyle, $profiles, $selected_profiles, $contexts, $selected_contexts, $languages, $labels, $informations, $namespacelist,$fieldpropertylist,$geographicextentchild,$relation_attribute, $option);
 	}
 	
 	function editObjectRelation($rowRelation, $option)
@@ -1388,6 +1427,99 @@ class ADMIN_relation {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 				$mainframe->redirect("index.php?option=$option&task=listRelation" );
 				exit();
+			}
+		}
+		
+		//If the relation linked a class type of geographicextent 
+		if (array_key_exists('displaymap', $_POST))
+		{
+			$displaymap = $_POST['displaymap'];
+			$query = "SELECT id FROM #__sdi_relation_attribute WHERE relation_id=".$rowRelation->id." AND attribute_id = (SELECT id FROM #__sdi_sys_attribute WHERE alias = 'displaymap')" ;
+			$database->setQuery( $query);
+			$database->query();
+			$numRow = $database->getNumRows();
+			
+			if($numRow == 1){
+				$rel_att_id = $database->loadResult();
+				$query = "UPDATE #__sdi_relation_attribute SET value = '".$displaymap."' WHERE id =".$rel_att_id;
+				$database->setQuery( $query);
+				if (!$database->query()) {
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				}
+			}else{
+				$query = "INSERT INTO #__sdi_relation_attribute (guid, relation_id, attribute_id, value) VALUES ('".helper_easysdi::getUniqueId()."',".$rowRelation->id.",(SELECT id FROM #__sdi_sys_attribute WHERE alias = 'displaymap'),'".$displaymap."')";
+				$database->setQuery( $query);
+				if (!$database->query()) {
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				}
+			}
+			
+		}
+		if (array_key_exists('strictperimeter', $_POST))
+		{
+			$strictperimeter = $_POST['strictperimeter'];
+			$query = "SELECT id FROM #__sdi_relation_attribute WHERE relation_id=".$rowRelation->id." AND attribute_id = (SELECT id FROM #__sdi_sys_attribute WHERE alias = 'strictperimeter')" ;
+			$database->setQuery( $query);
+			$database->query();
+			$numRow = $database->getNumRows();
+				
+			if($numRow == 1){
+				$rel_att_id = $database->loadResult();
+				$query = "UPDATE #__sdi_relation_attribute SET value = '".$strictperimeter."' WHERE id =".$rel_att_id;
+				$database->setQuery( $query);
+				if (!$database->query()) {
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				}
+			}else{
+				$query = "INSERT INTO #__sdi_relation_attribute (guid, relation_id, attribute_id, value) VALUES ('".helper_easysdi::getUniqueId()."',".$rowRelation->id.",(SELECT id FROM #__sdi_sys_attribute WHERE alias = 'strictperimeter'),'".$strictperimeter."')";
+				$database->setQuery( $query);
+				if (!$database->query()) {
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				}
+			}	
+		}
+		if (array_key_exists('defaultBboxConfig', $_POST))
+		{
+			$defaultBboxConfig = $_POST['defaultBboxConfig'];
+			$defaultBboxConfigExtentLeft = null;
+			$defaultBboxConfigExtentRight = null;
+			$defaultBboxConfigExtentBottom = null;
+			$defaultBboxConfigExtentTop = null;
+			
+			if (array_key_exists('defaultBboxConfigExtentLeft', $_POST))
+				$defaultBboxConfigExtentLeft = $_POST['defaultBboxConfigExtentLeft'];
+			if (array_key_exists('defaultBboxConfigExtentRight', $_POST))
+				$defaultBboxConfigExtentRight = $_POST['defaultBboxConfigExtentRight'];
+			if (array_key_exists('defaultBboxConfigExtentBottom', $_POST))
+				$defaultBboxConfigExtentBottom = $_POST['defaultBboxConfigExtentBottom'];
+			if (array_key_exists('defaultBboxConfigExtentTop', $_POST))
+				$defaultBboxConfigExtentTop = $_POST['defaultBboxConfigExtentTop'];
+			
+			$value = array();
+			$value['defaultBboxConfig'] = trim( preg_replace( '/\s+/', ' ', $defaultBboxConfig ) ) ;
+			$value['defaultBboxConfigExtentLeft'] = $defaultBboxConfigExtentLeft;
+			$value['defaultBboxConfigExtentRight'] = $defaultBboxConfigExtentRight;
+			$value['defaultBboxConfigExtentBottom'] = $defaultBboxConfigExtentBottom;
+			$value['defaultBboxConfigExtentTop'] = $defaultBboxConfigExtentTop;
+						
+			$query = "SELECT id FROM #__sdi_relation_attribute WHERE relation_id=".$rowRelation->id." AND attribute_id = (SELECT id FROM #__sdi_sys_attribute WHERE alias = 'params')" ;
+			$database->setQuery( $query);
+			$database->query();
+			$numRow = $database->getNumRows();
+		
+			if($numRow == 1){
+				$rel_att_id = $database->loadResult();
+				$query = "UPDATE #__sdi_relation_attribute SET value = '".json_encode($value)."' WHERE id =".$rel_att_id;
+				$database->setQuery( $query);
+				if (!$database->query()) {
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				}
+			}else{
+				$query = "INSERT INTO #__sdi_relation_attribute (guid, relation_id, attribute_id, value) VALUES ('".helper_easysdi::getUniqueId()."',".$rowRelation->id.",(SELECT id FROM #__sdi_sys_attribute WHERE alias = 'params'),'".json_encode($value)."')";
+				$database->setQuery( $query);
+				if (!$database->query()) {
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				}
 			}
 		}
 		

@@ -168,7 +168,7 @@ function listRelation(&$rows, $lists, $page, $option,  $filter_order_Dir, $filte
 <?php
 	}
 	
-	function newRelation(&$row, &$rowAttribute, $types, $type, $classes, $attributes, $objecttypes, $rendertypes, $relationtypes, $fieldsLength, $attributeFieldsLength, $boundsStyle, $style, $defaultStyle_textbox, $defaultStyle_textarea, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale_Textbox, $defaultStyle_Locale_Textarea, $defaultStyle_Choicelist, $renderStyle, $languages, $codevalues, $choicevalues, $selectedcodevalues, $profiles, $selected_profiles, $contexts, $selected_contexts, $attributetypes, $attributeid, $pageReloaded, $localeDefaults, $labels, $filterfields, $informations, $namespacelist, $searchCriteriaFieldsLength, $searchCriteria, $child_attributetype,$fieldpropertylist, $option)
+	function newRelation(&$row, &$rowAttribute, $types, $type, $classes, $attributes, $objecttypes, $rendertypes, $relationtypes, $fieldsLength, $attributeFieldsLength, $boundsStyle, $style, $defaultStyle_textbox, $defaultStyle_textarea, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale_Textbox, $defaultStyle_Locale_Textarea, $defaultStyle_Choicelist, $renderStyle, $languages, $codevalues, $choicevalues, $selectedcodevalues, $profiles, $selected_profiles, $contexts, $selected_contexts, $attributetypes, $attributeid, $pageReloaded, $localeDefaults, $labels, $filterfields, $informations, $namespacelist, $searchCriteriaFieldsLength, $searchCriteria, $child_attributetype,$fieldpropertylist,$geographicextentchild, $option)
 	{
 		JHTML::script('catalog.js', 'administrator/components/com_easysdi_catalog/js/');
 		global  $mainframe;
@@ -515,14 +515,14 @@ foreach ($languages as $lang)
 			
 <?php 
 }
-else if ($type == 1)
+else if ($type == 1) // Type d'enfant = classe
 {
 ?>
 			<table border="0" cellpadding="3" cellspacing="0">	
 				<tr>
 					<td><?php echo JText::_("CATALOG_CLASSCHILD"); ?></td>
 					<?php if ($pageReloaded and array_key_exists('classchild_id', $_POST)) $selectedClasschild=$_POST['classchild_id']; else $selectedClasschild=$row->classchild_id;?>
-					<td><?php echo JHTML::_("select.genericlist",$classes, 'classchild_id', 'size="1" class="inputbox"', 'value', 'text', $selectedClasschild ); ?></td>							
+					<td><?php echo JHTML::_("select.genericlist",$classes, 'classchild_id', 'size="1" class="inputbox" onchange="javascript:submitbutton(\'newRelation\');"', 'value', 'text', $selectedClasschild ); ?></td>							
 				</tr>
 				<tr>
 					<td WIDTH=150><?php echo JText::_("CORE_ISOCODE"); ?></td>
@@ -541,6 +541,89 @@ else if ($type == 1)
 					<?php if ($pageReloaded and array_key_exists('classassociation_id', $_POST)) $selectedClassassociation=$_POST['classassociation_id']; else $selectedClassassociation=$row->classassociation_id;?>
 					<td><?php echo JHTML::_("select.genericlist",$classes, 'classassociation_id', 'size="1" class="inputbox"', 'value', 'text', $selectedClassassociation ); ?></td>							
 				</tr>
+				<?php 
+				if($geographicextentchild){
+					?>
+					<tr>
+						<td><?php echo JText::_("CATALOG_RELATION_PERIMETER_ONLY"); ?></td>
+						<?php if ($pageReloaded && array_key_exists('strictperimeter', $_POST)) $strictperimeter=$_POST['strictperimeter']; else $strictperimeter=0;?>
+						<td><?php echo JHTML::_('select.booleanlist', 'strictperimeter', '', $strictperimeter);?> </td>																
+					</tr>
+					<tr>
+						<td><?php echo JText::_("CATALOG_RELATION_MAP_DISPLAY"); ?></td>
+						<?php if ($pageReloaded && array_key_exists('displaymap', $_POST)) $displaymap=$_POST['displaymap']; else $displaymap=0;?>
+						<td><?php echo JHTML::_('select.booleanlist', 'displaymap', '', $displaymap);?> </td>																
+					</tr>
+					<tr>
+						<td valign="top" colspan="2">
+							<fieldset class="adminform">
+								<legend>
+								<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_TITLE' ); ?>
+								</legend>
+
+								<table class="admintable" cellspacing="1">
+									<tbody>
+										<tr>
+											<td valign="top" class="key" 	style="width: 140px;">
+												<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_TIP' ); ?>">
+													<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_LABEL' ); ?>
+												</span>
+											</td>
+											<td>
+												<textarea class="textarea resolutions" style="height: 200px; width: 440px;" name="defaultBboxConfig" maxlength="" />
+													<?php  echo "";?>
+												</textarea>
+											</td>
+										</tr>
+										<tr>
+											<td valign="top" class="key">
+												<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_LEFT' ); ?>">
+													<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_LEFT' ); ?>
+												</span>
+											</td>
+											<td>
+												<input class="text_area" type="text" size="100" name="defaultBboxConfigExtentLeft" value="" maxlength="" />
+											</td>
+										</tr>
+										<tr>
+											<td valign="top" class="key">
+												<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_BOTTOM' ); ?>">
+													<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_BOTTOM' ); ?>
+												</span>
+											</td>
+											<td>
+												<input class="text_area" type="text" size="100" name="defaultBboxConfigExtentBottom" value="" maxlength="" />
+											</td>
+										</tr>
+										<tr>
+											<td valign="top" class="key">
+												<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_RIGHT' ); ?>">
+													<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_RIGHT' ); ?>
+												</span>
+											</td>
+											<td>
+												<input class="text_area" type="text" size="100" name="defaultBboxConfigExtentRight" value="" maxlength="" />
+											</td>
+										</tr>
+										<tr>
+											<td valign="top" class="key">
+												<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_TOP' ); ?>">
+													<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_TOP' ); ?>
+												</span>
+											</td>
+											<td>
+												<input class="text_area" type="text" size="100" name="defaultBboxConfigExtentTop" value="" maxlength="" />
+											</td>
+										</tr>
+															
+									</tbody>
+								</table>
+							</fieldset>
+						</td>
+					</tr> 
+					<?php 
+				}
+				?>
 				</table>
 <?php 
 }
@@ -1055,7 +1138,7 @@ if ($row->updated and $row->updated <> '0000-00-00 00:00:00')
 			<?php 	
 	}
 	
-	function editClassRelation(&$row, $classes, $relationtypes, $fieldsLength, $boundsStyle, $profiles, $selected_profiles, $contexts, $selected_contexts, $languages, $labels, $informations, $namespacelist, $fieldpropertylist, $option)
+	function editClassRelation(&$row, $classes, $relationtypes, $fieldsLength, $boundsStyle, $profiles, $selected_profiles, $contexts, $selected_contexts, $languages, $labels, $informations, $namespacelist, $fieldpropertylist,$geographicextentchild,$relation_attribute, $option)
 	{
 		JHTML::script('catalog.js', 'administrator/components/com_easysdi_catalog/js/');
 		global  $mainframe;
@@ -1143,6 +1226,84 @@ if ($row->updated and $row->updated <> '0000-00-00 00:00:00')
 						?>
 					</td>
 				</tr>	
+				<?php if($geographicextentchild){?>
+				<tr>
+					<td><?php echo JText::_("CATALOG_RELATION_PERIMETER_ONLY"); ?></td>
+					<td><?php echo JHTML::_('select.booleanlist', 'strictperimeter', '', $relation_attribute->strictperimeter);?> </td>																
+				</tr>
+				<tr>
+					<td><?php echo JText::_("CATALOG_RELATION_MAP_DISPLAY"); ?></td>
+					<td><?php echo JHTML::_('select.booleanlist', 'displaymap', '', $relation_attribute->displaymap);?> </td>																
+				</tr>
+				<tr>
+				<?php $params = json_decode($relation_attribute->params, true);
+				prnt_r($params);?>
+					<td valign="top" colspan="2">
+						<fieldset class="adminform">
+							<legend>
+							<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_TITLE' ); ?>
+							</legend>
+
+							<table class="admintable" cellspacing="1">
+								<tbody>
+									<tr>
+										<td valign="top" class="key" 	style="width: 140px;"><span
+											class="editlinktip hasTip"
+											title="<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_TIP' ); ?>">
+											<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_LABEL' ); ?>
+										</span>
+										</td>
+										<td>
+											<textarea class="textarea resolutions" style="height: 200px; width: 440px;" name="defaultBboxConfig" ><?php  echo $params['defaultBboxConfig'];?></textarea>
+										</td>
+									</tr>
+									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_LEFT' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_LEFT' ); ?>
+											</span>
+										</td>
+										<td>
+											<input class="text_area" type="text" size="100" name="defaultBboxConfigExtentLeft" value="<?php echo $params['defaultBboxConfigExtentLeft'];  ?>" maxlength="" />
+										</td>
+									</tr>
+									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_BOTTOM' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_BOTTOM' ); ?>
+											</span>
+										</td>
+										<td>
+											<input class="text_area" type="text" size="100" name="defaultBboxConfigExtentBottom" value="<?php echo $params['defaultBboxConfigExtentBottom'];  ?>" maxlength="" />
+										</td>
+									</tr>
+									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_RIGHT' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_RIGHT' ); ?>
+											</span>
+										</td>
+										<td>
+											<input class="text_area" type="text" size="100" name="defaultBboxConfigExtentRight" value="<?php echo $params['defaultBboxConfigExtentRight'];  ?>" maxlength="" />
+										</td>
+									</tr>
+									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_TOP' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_TOP' ); ?>
+											</span>
+										</td>
+										<td>
+											<input class="text_area" type="text" size="100" name="defaultBboxConfigExtentTop" value="<?php echo $params['defaultBboxConfigExtentTop'];  ?>" maxlength="" />
+										</td>
+									</tr>
+														
+								</tbody>
+							</table>
+						</fieldset>
+					</td>
+				</tr> 
+				<?php }?>
 				<tr>
 					<td colspan="2">
 						<fieldset id="labels">
