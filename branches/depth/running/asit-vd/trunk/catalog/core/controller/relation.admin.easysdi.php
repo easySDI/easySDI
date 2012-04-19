@@ -1077,6 +1077,10 @@ class ADMIN_relation {
 		$database =& JFactory::getDBO(); 
 		$rowClassRelation = $rowRelation;
 		
+		$pageReloaded=false;
+		if (array_key_exists('reload', $_POST))
+			$pageReloaded=true;
+				
 		$classes = array();
 		$classes[] = JHTML::_('select.option','0', JText::_("CATALOG_CLASS_LIST") );
 		$database->setQuery( "SELECT id AS value, name as text FROM #__sdi_class ORDER BY name" );
@@ -1169,34 +1173,15 @@ class ADMIN_relation {
 		$fieldpropertylist = array_merge( $fieldpropertylist, $database->loadObjectList() );
 		
 		//Relation links a class of type 'geographicextent'
-// 		$geographicextentchild = false ;
-// 		$relation_attribute = new stdClass;
-// 		$rowclasschild = new classes ($database);
-// 		$rowclasschild->load ($rowClassRelation->classchild_id);
-// 		if($rowclasschild->stereotype_id != null && $rowclasschild->stereotype_id != 0){
-// 			$database->setQuery( "SELECT alias FROM #__sdi_sys_stereotype WHERE id = ".$rowclasschild->stereotype_id ." AND alias = 'geographicextent'");
-// 			$database->query();
-// 			if($database->getNumRows() == 1){
-// 				//The child class is type of 'geographicextent'. Somme specific fields need to be add to the form.
-// 				$geographicextentchild = true;
-// 				//DisplayMap
-// 				$database->setQuery( "SELECT value FROM #__sdi_relation_attribute WHERE relation_id = ".$rowClassRelation->id ." AND attribute_id = (SELECT id FROM #__sdi_sys_attribute WHERE alias = 'displaymap')");
-// 				$database->query();
-// 				$relation_attribute->displaymap = $database->loadResult();
-// 				//strictPerimeter
-// 				$database->setQuery( "SELECT value FROM #__sdi_relation_attribute WHERE relation_id = ".$rowClassRelation->id ." AND attribute_id = (SELECT id FROM #__sdi_sys_attribute WHERE alias = 'strictperimeter')");
-// 				$database->query();
-// 				$relation_attribute->strictperimeter = $database->loadResult();
-// 				//params
-// 				$database->setQuery( "SELECT value FROM #__sdi_relation_attribute WHERE relation_id = ".$rowClassRelation->id ." AND attribute_id = (SELECT id FROM #__sdi_sys_attribute WHERE alias = 'params')");
-// 				$database->query();
-// 				$relation_attribute->params = $database->loadResult();
-// 			}
-// 		}
-		//Page rechargée suite au choix d'une classe enfant
 		$relation_attribute_array = null;
 		$rowclasschild = new classes ($database);
-		$rowclasschild->load ($rowClassRelation->classchild_id);
+		if($pageReloaded){
+			if (array_key_exists('classchild_id', $_POST)){
+				 $rowclasschild->load ($_POST['classchild_id']);
+			}
+		}else{
+			$rowclasschild->load ($rowClassRelation->classchild_id);
+		}
 		if($rowclasschild->stereotype_id != null && $rowclasschild->stereotype_id != 0){
 			$database->setQuery( "SELECT * FROM #__sdi_sys_attribute WHERE stereotype_id = ".$rowclasschild->stereotype_id );
 			$attributeRows = $database->loadObjectList();
@@ -1218,7 +1203,7 @@ class ADMIN_relation {
 			}
 		}
 		
-		HTML_relation::editClassRelation($rowClassRelation, $classes, $relationtypes, $fieldsLength, $boundsStyle, $profiles, $selected_profiles, $contexts, $selected_contexts, $languages, $labels, $informations, $namespacelist,$fieldpropertylist,$relation_attribute_array, $option);
+		HTML_relation::editClassRelation($rowClassRelation, $classes, $relationtypes, $fieldsLength, $boundsStyle, $profiles, $selected_profiles, $contexts, $selected_contexts, $languages, $labels, $informations, $namespacelist,$fieldpropertylist,$relation_attribute_array,$pageReloaded, $option);
 	}
 	
 	function editObjectRelation($rowRelation, $option)
@@ -1476,7 +1461,7 @@ class ADMIN_relation {
 			$attribute_list = $database->loadObjectList();
 			
 			foreach ($attribute_list as $attribute){
-				if($attribute->type == 'boolean'){
+				if($attribute->type == 'boolean' || $attribute->type == 'text'){
 					if(array_key_exists($attribute->alias, $_POST)){
 						$value = $_POST[$attribute->alias];
 						$query = "SELECT id FROM #__sdi_relation_attribute WHERE relation_id=".$rowRelation->id." AND attribute_id = (SELECT id FROM #__sdi_sys_attribute WHERE alias = '".$attribute->alias."')" ;
@@ -1843,13 +1828,13 @@ class ADMIN_relation {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
 			
-			// Supprimer tout ce qui avait �t� cr�� jusqu'� pr�sent pour cette relation en relation avec le profile
+			// Supprimer tout ce qui avait été créé jusqu'à présent pour cette relation en relation avec le profile
 			$query = "delete from #__sdi_relation_profile where relation_id=".$rowRelation->id;
 			$database->setQuery( $query);
 			if (!$database->query()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
-			// Supprimer tout ce qui avait �t� cr�� jusqu'� pr�sent pour cette relation
+			// Supprimer tout ce qui avait été cré jusqu'à présent pour cette relation
 			$query = "delete from #__sdi_searchcriteria_tab WHERE searchcriteria_id IN (
 							SELECT id FROM #__sdi_searchcriteria WHERE relation_id = ".$rowRelation->id.")";
 			$database->setQuery( $query);
@@ -1884,6 +1869,14 @@ class ADMIN_relation {
 			if (!$database->query()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
+			
+			// Delete from #__sdi_relation_attribute
+			$query = "delete from #__sdi_relation_attribute WHERE relation_id = ".$rowRelation->id;
+			$database->setQuery( $query);
+			if (!$database->query()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+				
 			
 			if (!$rowRelation->delete()) {			
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
