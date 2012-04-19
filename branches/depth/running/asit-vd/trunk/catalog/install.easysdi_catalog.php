@@ -2086,6 +2086,7 @@ function com_install(){
 				`id` bigint(20) NOT NULL AUTO_INCREMENT,
 				`guid` varchar(36) NOT NULL,
 				`alias` varchar(20) NOT NULL,
+				`label` varchar(100) NOT NULL,
 				`state` tinyint(1) NOT NULL DEFAULT 0,
 				`ordering` bigint(20) NOT NULL DEFAULT '0',
 				`checked_out` bigint(20) NOT NULL DEFAULT '0',
@@ -2093,6 +2094,7 @@ function com_install(){
 				`type` varchar(50) NOT NULL,
 				`length` int(10) NOT NULL,
 				`stereotype_id` bigint(20) NULL,
+				`fieldtype` varchar(500) NOT NULL,
 				FOREIGN KEY (`stereotype_id`) REFERENCES `#__sdi_sys_stereotype` (`id`) ,
 				PRIMARY KEY (`id`)
 				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
@@ -2120,19 +2122,19 @@ function com_install(){
 			}
 			
 			//INSERT #__sdi_sys_attribute
-			$query="INSERT INTO `#__sdi_sys_attribute` VALUE (1,'".helper_easysdi::getUniqueId()."','displaymap',0,0,0,NULL,'tinyint',1,$geo_stereotype_id)";
+			$query="INSERT INTO `#__sdi_sys_attribute` VALUE (1,'".helper_easysdi::getUniqueId()."','displaymap','CATALOG_RELATION_ATTRIBUT_DISPLAYMAP',0,0,0,NULL,'boolean',1,$geo_stereotype_id)";
 			$db->setQuery( $query);
 			if (!$db->query()) {
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}
 			//INSERT #__sdi_sys_attribute
-			$query="INSERT INTO `#__sdi_sys_attribute` VALUE (2,'".helper_easysdi::getUniqueId()."','strictperimeter',0,0,0,NULL,'tinyint',1,$geo_stereotype_id)";
+			$query="INSERT INTO `#__sdi_sys_attribute` VALUE (2,'".helper_easysdi::getUniqueId()."','strictperimeter','CATALOG_RELATION_ATTRIBUT_STRICTPERIMETER',0,0,0,NULL,'boolean',1,$geo_stereotype_id)";
 			$db->setQuery( $query);
 			if (!$db->query()) {
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}
 			//INSERT #__sdi_sys_attribute
-			$query="INSERT INTO `#__sdi_sys_attribute` VALUE (3,'".helper_easysdi::getUniqueId()."','params',0,0,0,NULL,'varchar',500,$geo_stereotype_id)";
+			$query="INSERT INTO `#__sdi_sys_attribute` VALUE (3,'".helper_easysdi::getUniqueId()."','params','CATALOG_RELATION_ATTRIBUT_PARAMS',0,0,0,NULL,'json',500,$geo_stereotype_id)";
 			$db->setQuery( $query);
 			if (!$db->query()) {
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");

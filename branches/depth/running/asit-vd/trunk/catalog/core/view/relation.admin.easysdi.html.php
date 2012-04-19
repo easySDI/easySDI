@@ -168,7 +168,7 @@ function listRelation(&$rows, $lists, $page, $option,  $filter_order_Dir, $filte
 <?php
 	}
 	
-	function newRelation(&$row, &$rowAttribute, $types, $type, $classes, $attributes, $objecttypes, $rendertypes, $relationtypes, $fieldsLength, $attributeFieldsLength, $boundsStyle, $style, $defaultStyle_textbox, $defaultStyle_textarea, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale_Textbox, $defaultStyle_Locale_Textarea, $defaultStyle_Choicelist, $renderStyle, $languages, $codevalues, $choicevalues, $selectedcodevalues, $profiles, $selected_profiles, $contexts, $selected_contexts, $attributetypes, $attributeid, $pageReloaded, $localeDefaults, $labels, $filterfields, $informations, $namespacelist, $searchCriteriaFieldsLength, $searchCriteria, $child_attributetype,$fieldpropertylist,$geographicextentchild, $option)
+	function newRelation(&$row, &$rowAttribute, $types, $type, $classes, $attributes, $objecttypes, $rendertypes, $relationtypes, $fieldsLength, $attributeFieldsLength, $boundsStyle, $style, $defaultStyle_textbox, $defaultStyle_textarea, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale_Textbox, $defaultStyle_Locale_Textarea, $defaultStyle_Choicelist, $renderStyle, $languages, $codevalues, $choicevalues, $selectedcodevalues, $profiles, $selected_profiles, $contexts, $selected_contexts, $attributetypes, $attributeid, $pageReloaded, $localeDefaults, $labels, $filterfields, $informations, $namespacelist, $searchCriteriaFieldsLength, $searchCriteria, $child_attributetype,$fieldpropertylist,$relation_attribute_array, $option)
 	{
 		JHTML::script('catalog.js', 'administrator/components/com_easysdi_catalog/js/');
 		global  $mainframe;
@@ -542,86 +542,70 @@ else if ($type == 1) // Type d'enfant = classe
 					<td><?php echo JHTML::_("select.genericlist",$classes, 'classassociation_id', 'size="1" class="inputbox"', 'value', 'text', $selectedClassassociation ); ?></td>							
 				</tr>
 				<?php 
-				if($geographicextentchild){
-					?>
-					<tr>
-						<td><?php echo JText::_("CATALOG_RELATION_PERIMETER_ONLY"); ?></td>
-						<?php if ($pageReloaded && array_key_exists('strictperimeter', $_POST)) $strictperimeter=$_POST['strictperimeter']; else $strictperimeter=0;?>
-						<td><?php echo JHTML::_('select.booleanlist', 'strictperimeter', '', $strictperimeter);?> </td>																
-					</tr>
-					<tr>
-						<td><?php echo JText::_("CATALOG_RELATION_MAP_DISPLAY"); ?></td>
-						<?php if ($pageReloaded && array_key_exists('displaymap', $_POST)) $displaymap=$_POST['displaymap']; else $displaymap=0;?>
-						<td><?php echo JHTML::_('select.booleanlist', 'displaymap', '', $displaymap);?> </td>																
-					</tr>
-					<tr>
-						<td valign="top" colspan="2">
-							<fieldset class="adminform">
-								<legend>
-								<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_TITLE' ); ?>
-								</legend>
-
-								<table class="admintable" cellspacing="1">
-									<tbody>
-										<tr>
-											<td valign="top" class="key" 	style="width: 140px;">
-												<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_TIP' ); ?>">
-													<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_LABEL' ); ?>
-												</span>
-											</td>
-											<td>
-												<textarea class="textarea resolutions" style="height: 200px; width: 440px;" name="defaultBboxConfig" maxlength="" />
-													<?php  echo "";?>
-												</textarea>
-											</td>
-										</tr>
-										<tr>
-											<td valign="top" class="key">
-												<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_LEFT' ); ?>">
-													<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_LEFT' ); ?>
-												</span>
-											</td>
-											<td>
-												<input class="text_area" type="text" size="100" name="defaultBboxConfigExtentLeft" value="" maxlength="" />
-											</td>
-										</tr>
-										<tr>
-											<td valign="top" class="key">
-												<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_BOTTOM' ); ?>">
-													<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_BOTTOM' ); ?>
-												</span>
-											</td>
-											<td>
-												<input class="text_area" type="text" size="100" name="defaultBboxConfigExtentBottom" value="" maxlength="" />
-											</td>
-										</tr>
-										<tr>
-											<td valign="top" class="key">
-												<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_RIGHT' ); ?>">
-													<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_RIGHT' ); ?>
-												</span>
-											</td>
-											<td>
-												<input class="text_area" type="text" size="100" name="defaultBboxConfigExtentRight" value="" maxlength="" />
-											</td>
-										</tr>
-										<tr>
-											<td valign="top" class="key">
-												<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_TOP' ); ?>">
-													<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_TOP' ); ?>
-												</span>
-											</td>
-											<td>
-												<input class="text_area" type="text" size="100" name="defaultBboxConfigExtentTop" value="" maxlength="" />
-											</td>
-										</tr>
-															
-									</tbody>
-								</table>
-							</fieldset>
-						</td>
-					</tr> 
-					<?php 
+				if(isset($relation_attribute_array)){
+					foreach($relation_attribute_array as $relation_attribute){
+						if($relation_attribute->type == 'boolean'){
+							?>
+							<tr>
+								<td><?php echo JText::_($relation_attribute->label); ?></td>
+								<?php if ($pageReloaded && array_key_exists($relation_attribute->alias, $_POST)) $value=$_POST[$relation_attribute->alias]; else $value=0;?>
+								<td><?php echo JHTML::_('select.booleanlist', $relation_attribute->alias, '', $value);?> </td>																
+							</tr>
+							<?php 
+						}else if ($relation_attribute->type == 'json'){
+							$label_list = json_decode (JText::_( $relation_attribute->label ), true);
+							$attribute_list = json_decode($relation_attribute->fieldtype, true);
+							?>
+							<tr>
+								<td valign="top" colspan="2">
+									<fieldset class="adminform">
+										<legend>
+										<?php echo $label_list['fieldset']; ?>
+										</legend>
+		
+										<table class="admintable" cellspacing="1">
+											<tbody>
+											<?php 
+											foreach ($attribute_list as $key=>$value){
+												if($value == 'textarea'){
+													?>
+													<tr>
+														<td valign="top" class="key" 	style="width: 140px;">
+															<span class="editlinktip hasTip" title="<?php echo  $label_list[$key]; ?>">
+																<?php echo $label_list[$key]; ?>
+															</span>
+														</td>
+														<td>
+															<textarea class="textarea resolutions" style="height: 200px; width: 440px;" name="<?php echo  $key; ?>" maxlength="" />
+																<?php  echo "";?>
+															</textarea>
+														</td>
+													</tr>
+													<?php 
+												}else if ($value == 'input'){
+													?>
+													<tr>
+														<td valign="top" class="key">
+															<span class="editlinktip hasTip" title="<?php echo  $label_list[$key]; ?>">
+																<?php echo  $label_list[$key]; ?>
+															</span>
+														</td>
+														<td>
+															<input class="text_area" type="text" size="100" name="<?php echo  $key; ?>" value="" maxlength="" />
+														</td>
+													</tr>
+													<?php 													
+												}
+											}
+											?>
+											</tbody>
+										</table>
+									</fieldset>
+								</td>
+							</tr> 
+							<?php 
+						}
+					}
 				}
 				?>
 				</table>
@@ -724,6 +708,7 @@ if ($row->updated and $row->updated <> '0000-00-00 00:00:00')
 			<input type="hidden" name="id" value="<?php echo $row->id?>" />
 			<input type="hidden" name="task" value="newRelation" />
 			<input type="hidden" name="child_attributetype" value="<?php echo $child_attributetype?>" />
+			<input type="hidden" name="classchildstereotype" value="<?php if(isset($relation_attribute_array)){echo true;}else{echo false;}?>" />
 		</form>
 			<?php 	
 	}
@@ -1138,7 +1123,7 @@ if ($row->updated and $row->updated <> '0000-00-00 00:00:00')
 			<?php 	
 	}
 	
-	function editClassRelation(&$row, $classes, $relationtypes, $fieldsLength, $boundsStyle, $profiles, $selected_profiles, $contexts, $selected_contexts, $languages, $labels, $informations, $namespacelist, $fieldpropertylist,$geographicextentchild,$relation_attribute, $option)
+	function editClassRelation(&$row, $classes, $relationtypes, $fieldsLength, $boundsStyle, $profiles, $selected_profiles, $contexts, $selected_contexts, $languages, $labels, $informations, $namespacelist, $fieldpropertylist,$relation_attribute_array, $option)
 	{
 		JHTML::script('catalog.js', 'administrator/components/com_easysdi_catalog/js/');
 		global  $mainframe;
@@ -1226,85 +1211,75 @@ if ($row->updated and $row->updated <> '0000-00-00 00:00:00')
 						?>
 					</td>
 				</tr>	
-				<?php if($geographicextentchild){?>
-				<tr>
-					<td><?php echo JText::_("CATALOG_RELATION_PERIMETER_ONLY"); ?></td>
-					<td><?php echo JHTML::_('select.booleanlist', 'strictperimeter', '', $relation_attribute->strictperimeter);?> </td>																
-				</tr>
-				<tr>
-					<td><?php echo JText::_("CATALOG_RELATION_MAP_DISPLAY"); ?></td>
-					<td><?php echo JHTML::_('select.booleanlist', 'displaymap', '', $relation_attribute->displaymap);?> </td>																
-				</tr>
-				<tr>
 				<?php 
-				$params = json_decode($relation_attribute->params, true);
+				if(isset($relation_attribute_array)){
+					foreach($relation_attribute_array as $relation_attribute){
+						if($relation_attribute->type == 'boolean'){
+							?>
+							<tr>
+								<td><?php echo JText::_($relation_attribute->label); ?></td>
+								<?php if (isset($pageReloaded) && $pageReloaded && array_key_exists($relation_attribute->alias, $_POST)) $value=$_POST[$relation_attribute->alias]; else $value=$relation_attribute->value;?>
+								<td><?php echo JHTML::_('select.booleanlist', $relation_attribute->alias, '', $value);?> </td>																
+							</tr>
+							<?php 
+						}else if ($relation_attribute->type == 'json'){
+							$label_list = json_decode (JText::_( $relation_attribute->label ), true);
+							$attribute_list = json_decode($relation_attribute->fieldtype, true);
+							$value_list = json_decode($relation_attribute->value, true);
+							?>
+							<tr>
+								<td valign="top" colspan="2">
+									<fieldset class="adminform">
+										<legend>
+										<?php echo $label_list['fieldset']; ?>
+										</legend>
+		
+										<table class="admintable" cellspacing="1">
+											<tbody>
+											<?php 
+											foreach ($attribute_list as $key=>$value){
+												if($value == 'textarea'){
+													?>
+													<tr>
+														<td valign="top" class="key" 	style="width: 140px;">
+															<span class="editlinktip hasTip" title="<?php echo  $label_list[$key]; ?>">
+																<?php echo $label_list[$key]; ?>
+															</span>
+														</td>
+														<td>
+															<textarea class="textarea resolutions" style="height: 200px; width: 440px;" name="<?php echo  $key; ?>" maxlength="" />
+																<?php  echo html_entity_decode ($value_list[$key]);?>
+															</textarea>
+														</td>
+													</tr>
+													<?php 
+												}else if ($value == 'input'){
+													?>
+													<tr>
+														<td valign="top" class="key">
+															<span class="editlinktip hasTip" title="<?php echo  $label_list[$key]; ?>">
+																<?php echo  $label_list[$key]; ?>
+															</span>
+														</td>
+														<td>
+															<input class="text_area" type="text" size="100" name="<?php echo  $key; ?>" value="<?php  echo html_entity_decode ($value_list[$key]);?>" maxlength="" />
+														</td>
+													</tr>
+													<?php 													
+												}
+											}
+											?>
+											</tbody>
+										</table>
+									</fieldset>
+								</td>
+							</tr> 
+							<?php 
+						}
+					}
+				}
 				?>
-					<td valign="top" colspan="2">
-						<fieldset class="adminform">
-							<legend>
-							<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_TITLE' ); ?>
-							</legend>
-
-							<table class="admintable" cellspacing="1">
-								<tbody>
-									<tr>
-										<td valign="top" class="key" 	style="width: 140px;"><span
-											class="editlinktip hasTip"
-											title="<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_TIP' ); ?>">
-											<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_LABEL' ); ?>
-										</span>
-										</td>
-										<td>
-											<textarea class="textarea resolutions" style="height: 200px; width: 440px;" name="defaultBboxConfig" ><?php  echo html_entity_decode ($params['defaultBboxConfig']);?></textarea>
-										</td>
-									</tr>
-									<tr>
-										<td valign="top" class="key">
-											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_LEFT' ); ?>">
-												<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_LEFT' ); ?>
-											</span>
-										</td>
-										<td>
-											<input class="text_area" type="text" size="100" name="defaultBboxConfigExtentLeft" value="<?php echo $params['defaultBboxConfigExtentLeft'];  ?>" maxlength="" />
-										</td>
-									</tr>
-									<tr>
-										<td valign="top" class="key">
-											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_BOTTOM' ); ?>">
-												<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_BOTTOM' ); ?>
-											</span>
-										</td>
-										<td>
-											<input class="text_area" type="text" size="100" name="defaultBboxConfigExtentBottom" value="<?php echo $params['defaultBboxConfigExtentBottom'];  ?>" maxlength="" />
-										</td>
-									</tr>
-									<tr>
-										<td valign="top" class="key">
-											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_RIGHT' ); ?>">
-												<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_RIGHT' ); ?>
-											</span>
-										</td>
-										<td>
-											<input class="text_area" type="text" size="100" name="defaultBboxConfigExtentRight" value="<?php echo $params['defaultBboxConfigExtentRight'];  ?>" maxlength="" />
-										</td>
-									</tr>
-									<tr>
-										<td valign="top" class="key">
-											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_TOP' ); ?>">
-												<?php echo JText::_( 'CORE_CONFIGURATION_BBOXMAP_FIELDSET_TOP' ); ?>
-											</span>
-										</td>
-										<td>
-											<input class="text_area" type="text" size="100" name="defaultBboxConfigExtentTop" value="<?php echo $params['defaultBboxConfigExtentTop'];  ?>" maxlength="" />
-										</td>
-									</tr>
-														
-								</tbody>
-							</table>
-						</fieldset>
-					</td>
-				</tr> 
-				<?php }?>
+				
 				<tr>
 					<td colspan="2">
 						<fieldset id="labels">
@@ -1402,11 +1377,11 @@ if ($row->updated and $row->updated <> '0000-00-00 00:00:00')
 			<input type="hidden" name="createdby" value="<?php echo ($row->createdby)? $row->createdby : $user->id; ?>" /> 
 			<input type="hidden" name="updated" value="<?php echo ($row->created) ? date ("Y-m-d H:i:s") :  ''; ?>" />
 			<input type="hidden" name="updatedby" value="<?php echo ($row->createdby)? $user->id : ''; ?>" /> 
-			
 			<input type="hidden" name="type" value='1' />
 			<input type="hidden" name="option" value="<?php echo $option; ?>" />
 			<input type="hidden" name="id" value="<?php echo $row->id?>" />
 			<input type="hidden" name="task" value="" />
+			<input type="hidden" name="classchildstereotype" value="<?php if(isset($relation_attribute_array)){echo true;}else{echo false;}?>" />
 		</form>
 			<?php 	
 	}
