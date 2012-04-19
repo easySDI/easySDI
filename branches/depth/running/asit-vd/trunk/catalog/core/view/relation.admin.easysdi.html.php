@@ -1343,8 +1343,8 @@ foreach ($languages as $lang)
 ?>
 					<tr>
 					<td width=140><?php echo JText::_("CORE_".strtoupper($lang->code)); ?></td>
-					<?php if ($pageReloaded and array_key_exists('information'."_".$lang->code, $_POST)) $information=$_POST['information'."_".$lang->code]; else $information=htmlspecialchars($information[$lang->id]);?>
-					<td><input size="50" type="text" name ="information<?php echo "_".$lang->code;?>" value="<?php echo $information?>" maxlength="<?php echo $fieldsLength['information'];?>"></td>							
+					<?php if ($pageReloaded and array_key_exists('information'."_".$lang->code, $_POST)) $selectedinformation=$_POST['information'."_".$lang->code]; else $selectedinformation=htmlspecialchars($informations[$lang->id]);?>
+					<td><input size="50" type="text" name ="information<?php echo "_".$lang->code;?>" value="<?php echo $selectedinformation;?>" maxlength="<?php echo $fieldsLength['information'];?>"></td>							
 					</tr>
 <?php
 }
