@@ -5,20 +5,12 @@ function TransfertAll(idOrigine, idDestination)
 
 	for (i=objOrigine.length-1;i>=0;i--)
 	{
-		//selectedOne = objOrigine.options[i];
-	    var ADeplacer = new Option(objOrigine.options[i].text, objOrigine.options[i].value);
+		var ADeplacer = new Option(objOrigine.options[i].text, objOrigine.options[i].value);
     	objDestination.options[objDestination.length]=ADeplacer;
     	objOrigine.options[i]=null;    			
 	 }
 	 
 	sortArray(idDestination);
-	/*for (i=objOrigine.length-1;i>=0;i--) 
-	{
-		//console.log(i);
-		var ADeplacer = new Option(objOrigine.options[i].text, objOrigine.options[i].value);
-		objDestination.options[i]=ADeplacer;
-		objOrigine.options[i]=null;
-	}*/
 }
 
 //Transfert une ligne de la liste Origine à la liste Destination

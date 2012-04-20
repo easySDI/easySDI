@@ -2244,6 +2244,21 @@ function com_install(){
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}	
 			
+			//ALTER __sdi_searchcriteria
+			$query="ALTER TABLE `#__sdi_searchcriteria` ADD paramsdef varchar(500)";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			//ALTER __sdi_context_criteria
+			$query="ALTER TABLE `#__sdi_context_criteria` ADD params varchar(500)";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			
 			$version="2.4.0";
 			$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='CATALOG'";
 			$db->setQuery( $query);

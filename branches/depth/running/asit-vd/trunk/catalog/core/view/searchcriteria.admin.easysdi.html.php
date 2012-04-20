@@ -122,13 +122,13 @@ class HTML_searchcriteria {
 <?php
 	}
 	
-	function editSystemSearchCriteria($row, $tab, $selectedTab, $fieldsLength, $languages, $labels, $context_id, $tabList, $tab_id, $option)
+	function editSystemSearchCriteria($row, $fieldsLength, $languages, $labels, $context_id, $tabList, $tab_id, $option)
 	{
 		global  $mainframe;
 		$database =& JFactory::getDBO();
 		$language =& JFactory::getLanguage();
 		?>
-		<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
+		<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm" onsubmit="PostSelect('adminForm', 'selected_boundarycategories')" >
 			<table class="admintable"  border="0" cellpadding="3" cellspacing="0">	
 				<tr >
 					<td  class="key" width=150><?php echo JText::_("CORE_NAME"); ?></td>
@@ -175,15 +175,93 @@ class HTML_searchcriteria {
 				<?php
 				break;
 			case "definedBoundary":	
+				$selected_boundarycategories= array();
+				$selected_boundarycategories_json=array();
+				$params = json_decode($row->params, true);
+				
+				$boundarycategories = array();
+				$database->setQuery( "SELECT id, title FROM #__sdi_boundarycategory") ;
+				$boundarycategories = $database->loadObjectList() ;
+				
+				$boundaryToRemove=array();
+				
+				foreach ($boundarycategories as $key=>$value){
+					if(in_array($value->id,$params['boundarycategory'])){
+						$cat = new stdClass();
+						$cat->id = $value->id;
+						$cat->title = $value->title;
+						array_push ($selected_boundarycategories,$cat);
+						array_push($boundaryToRemove,$key);
+					}
+				}
+				
+				foreach ($boundaryToRemove as $toremove){
+					unset($boundarycategories[$toremove]);
+				}
+				
 				$boundaries = array();
 				$database->setQuery( "SELECT name, guid FROM #__sdi_boundary") ;
 				$boundaries = $database->loadObjectList() ;
+				
 				?>
+				<tr>
+					<td>
+					<table>
+						<tr>
+							<th><b><?php echo JText::_( 'CORE_AVAILABLE'); ?></b></th>
+							<th></th>
+							<th><b><?php echo JText::_( 'CORE_SELECTED'); ?></b></th>
+						</tr>
+						<tr>
+							<td>
+								<select name="boundarycategories[]" id="boundarycategories" size="10" multiple="multiple">
+								<?php
+								foreach ($boundarycategories as $boundarycategory){
+									echo "<option value='".$boundarycategory->id."'>".$boundarycategory->title."</option>";
+								}
+								?>
+								</select>
+							</td>
+							<td>
+								<table>
+									<tr>
+										<td><input type="button" value="<<" id="removeAllAccounts"
+											onclick="javascript:TransfertAll('selected_boundarycategories','boundarycategories');"></td>
+									</tr>
+									<tr>
+										<td><input type="button" value="<" id="removeAccount"
+											onclick="javascript:Transfert('selected_boundarycategories', 'boundarycategories');"></td>
+									</tr>
+									<tr>
+										<td><input type="button" value=">" id ="addAccount"
+											onclick="javascript:Transfert('boundarycategories','selected_boundarycategories');"></td>
+									</tr>
+									<tr>
+										<td><input type="button" value=">>" id="addAllAccounts"
+											onclick="javascript:TransfertAll('boundarycategories', 'selected_boundarycategories');"></td>
+									</tr>
+								</table>
+							</td>
+							<td>
+								<select name="selected_boundarycategories[]" id="selected_boundarycategories" size="10" multiple="multiple">
+								<?php
+								if(isset($selected_boundarycategories)){
+									foreach ($selected_boundarycategories as $selected_boundarycategory){
+										echo "<option value='".$selected_boundarycategory->id."'>".$selected_boundarycategory->title."</option>";
+									}
+								}
+								?>
+								</select>
+							</td>
+						</tr>
+					</table>
+					</td>
+				</tr>
 				<tr >
 					<td class="key"><?php echo JText::_("CATALOG_SEARCHCRITERIA_DEFAULT_VALUE");?></td>
 					<td>
 						<select name="defaultvalue" id="defaultvalue">
-							<option value="" <?php if($selectedValue ==""){?> selected="selected" <?php }?>></option>
+							<option value="" <?php if(!isset($row->defaultvalue)){?> selected="selected" <?php }?>></option>
 							<?php 
 								foreach ($boundaries as $boundary){
 						    ?> 
@@ -410,7 +488,7 @@ class HTML_searchcriteria {
 	<?php 	
 	}		
 
-	function editRelationSearchCriteria($row, $tab, $selectedTab, $fieldsLength, $languages, $labels, $context_id, $tabList, $tab_id, $option)
+	function editRelationSearchCriteria($row, $fieldsLength, $languages, $labels, $context_id, $tabList, $tab_id, $option)
 	{
 		global  $mainframe;
 		$database =& JFactory::getDBO();
@@ -553,7 +631,7 @@ class HTML_searchcriteria {
 	<?php 	
 	}
 	
-	function editOGCSearchCriteria($row, $tab, $selectedTab, $fieldsLength, $languages, $labels, $filterfields, $context_id, $tabList, $tab_id, $rendertypes, $option)
+	function editOGCSearchCriteria($row, $fieldsLength, $languages, $labels, $filterfields, $context_id, $tabList, $tab_id, $rendertypes, $option)
 	{
 		global  $mainframe;
 		

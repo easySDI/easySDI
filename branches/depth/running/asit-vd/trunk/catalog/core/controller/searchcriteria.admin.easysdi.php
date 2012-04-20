@@ -161,11 +161,13 @@ class ADMIN_searchcriteria {
 		$row->load( $id );
 		
 		//Load default value
-		$defaultvalues = $row->loadDefaultValue($context_id);
-		$row->defaultvalue = $defaultvalues->defaultvalue;
-		$row->defaultvaluefrom = $defaultvalues->defaultvaluefrom;
-		$row->defaultvalueto = $defaultvalues->defaultvalueto;
-		
+		$defaultvalues = $row->loadValues($context_id);
+		if(isset($defaultvalues)){
+			$row->defaultvalue = $defaultvalues->defaultvalue;
+			$row->defaultvaluefrom = $defaultvalues->defaultvaluefrom;
+			$row->defaultvalueto = $defaultvalues->defaultvalueto;
+			$row->params= $defaultvalues->params;
+		}
 		/*
 		 * If the item is checked out we cannot edit it... unless it was checked
 		 * out by the current user.
@@ -266,18 +268,17 @@ class ADMIN_searchcriteria {
 		$tab_id = $database->loadResult();
 		
 		if ($row->id == 0 or $row->criteriatype_id == 3) // Critère OGC 
-			HTML_searchcriteria::editOGCSearchCriteria($row, $tab, $selectedTab, $fieldsLength, $languages, $labels, $filterfields, $context_id, $tabList, $tab_id, $rendertypes, $option);
+			HTML_searchcriteria::editOGCSearchCriteria($row,$fieldsLength, $languages, $labels, $filterfields, $context_id, $tabList, $tab_id, $rendertypes, $option);
 		else if ($row->criteriatype_id == 1) // Critère system
-			HTML_searchcriteria::editSystemSearchCriteria($row, $tab, $selectedTab, $fieldsLength, $languages, $labels, $context_id, $tabList, $tab_id, $option);
+			HTML_searchcriteria::editSystemSearchCriteria($row, $fieldsLength, $languages, $labels, $context_id, $tabList, $tab_id, $option);
 		else if ($row->criteriatype_id == 2) // Critère relation
-			HTML_searchcriteria::editRelationSearchCriteria($row, $tab, $selectedTab, $fieldsLength, $languages, $labels, $context_id, $tabList, $tab_id, $option);
+			HTML_searchcriteria::editRelationSearchCriteria($row, $fieldsLength, $languages, $labels, $context_id, $tabList, $tab_id, $option);
 		
 	}
 	
 	function saveSearchCriteria($option)
 	{
 		global $mainframe;
-			
 		$database=& JFactory::getDBO(); 
 		$user =& JFactory::getUser();
 		$context_id = JRequest::getVar('context_id',0);
@@ -458,6 +459,21 @@ class ADMIN_searchcriteria {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 				return false;
 			}
+		}
+		
+		//Save params
+		$selected_boundarycategories = $_POST['selected'];
+		//$boundarycategory = json_encode($selected_boundarycategories);
+		$boundarycategory = $selected_boundarycategories;
+		
+		$params_text = array();
+		$params_text['boundarycategory'] = $boundarycategory;
+		$params = json_encode($params_text);
+		
+		$database->setQuery("UPDATE #__sdi_context_criteria SET params='".$params."' WHERE context_id='".$context_id."' AND criteria_id='".$rowSearchCriteria->id."'" );
+		if (!$database->query()){
+			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			return false;
 		}
 		
 		$rowSearchCriteria->checkin();
