@@ -184,7 +184,6 @@ class HTML_searchcriteria {
 				$boundarycategories = $database->loadObjectList() ;
 				
 				$boundaryToRemove=array();
-				
 				foreach ($boundarycategories as $key=>$value){
 					if(in_array($value->id,$params['boundarycategory'])){
 						$cat = new stdClass();
@@ -205,6 +204,7 @@ class HTML_searchcriteria {
 				
 				?>
 				<tr>
+					<td class="key"><?php echo JText::_("CATALOG_SEARCHCRITERIA_BOUNDARYCATEGORIE_AVAILABLE");?></td>
 					<td>
 					<table>
 						<tr>
