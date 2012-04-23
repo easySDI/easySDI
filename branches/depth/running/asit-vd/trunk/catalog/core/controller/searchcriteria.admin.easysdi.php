@@ -468,6 +468,7 @@ class ADMIN_searchcriteria {
 		
 		$params_text = array();
 		$params_text['boundarycategory'] = $boundarycategory;
+		$params_text['boundarysearch'] = $_POST['boundarysearch'];
 		$params = json_encode($params_text);
 		
 		$database->setQuery("UPDATE #__sdi_context_criteria SET params='".$params."' WHERE context_id='".$context_id."' AND criteria_id='".$rowSearchCriteria->id."'" );

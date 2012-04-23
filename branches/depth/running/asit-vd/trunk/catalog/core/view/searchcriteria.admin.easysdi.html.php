@@ -176,7 +176,6 @@ class HTML_searchcriteria {
 				break;
 			case "definedBoundary":	
 				$selected_boundarycategories= array();
-				$selected_boundarycategories_json=array();
 				$params = json_decode($row->params, true);
 				
 				$boundarycategories = array();
@@ -184,6 +183,7 @@ class HTML_searchcriteria {
 				$boundarycategories = $database->loadObjectList() ;
 				
 				$boundaryToRemove=array();
+				$boundaryavailable = '';
 				foreach ($boundarycategories as $key=>$value){
 					if(in_array($value->id,$params['boundarycategory'])){
 						$cat = new stdClass();
@@ -191,6 +191,7 @@ class HTML_searchcriteria {
 						$cat->title = $value->title;
 						array_push ($selected_boundarycategories,$cat);
 						array_push($boundaryToRemove,$key);
+						$boundaryavailable = strlen($boundaryavailable) == 0? $value->id : $boundaryavailable.','.$value->id;
 					}
 				}
 				
@@ -199,7 +200,7 @@ class HTML_searchcriteria {
 				}
 				
 				$boundaries = array();
-				$database->setQuery( "SELECT name, guid FROM #__sdi_boundary") ;
+				$database->setQuery( "SELECT name, guid FROM #__sdi_boundary WHERE category_id IN (".$boundaryavailable.")") ;
 				$boundaries = $database->loadObjectList() ;
 				
 				?>
@@ -257,7 +258,14 @@ class HTML_searchcriteria {
 					</table>
 					</td>
 				</tr>
-				<tr >
+				<tr>
+					<td class="key"><?php echo JText::_("CATALOG_SEARCHCRITERIA_BOUNDARYSEARCH_TYPE");?></td>
+					<td>
+						<input name="boundarysearch" type="radio" value="bbox" <?php if(!isset ($params['boundarysearch']) || $params['boundarysearch'] == 'bbox'  ) echo 'checked="checked"'?>><?php echo JText::_("CATALOG_SEARCHCRITERIA_BOUNDARYSEARCH_BBOX");?></input>
+						<input name="boundarysearch" type="radio" value="id" <?php if(isset ($params['boundarysearch']) && $params['boundarysearch'] == 'id' ) echo 'checked="checked"'?>><?php echo JText::_("CATALOG_SEARCHCRITERIA_BOUNDARYSEARCH_ID");?></input>
+					</td>
+				</tr>
+				<tr>
 					<td class="key"><?php echo JText::_("CATALOG_SEARCHCRITERIA_DEFAULT_VALUE");?></td>
 					<td>
 						<select name="defaultvalue" id="defaultvalue">
