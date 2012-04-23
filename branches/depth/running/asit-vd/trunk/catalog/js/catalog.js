@@ -54,6 +54,9 @@ function PostSelect(form_name, idListe)
 {
 	// On compte le nombre d'item de la liste select
   	obj=document.getElementById(idListe);
+  	if(obj == null)
+  		return;
+  	
   	NbOption=obj.length;
   
 	// On lance une boucle pour selectionner tous les items

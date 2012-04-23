@@ -298,11 +298,12 @@ class HTML_searchcriteria {
 				JHTML::_('select.option',  '0', JText::_( 'CATALOG_SEARCH_VERSIONS_CURRENT' ) ),
 				JHTML::_('select.option',  '1', JText::_( 'CATALOG_SEARCH_VERSIONS_ALL' ) )
 				);
+				$value = isset($row->defaultvalue) ? $row->defaultvalue : null;
 				?>	
 				<tr>
 					<td class="key"><?php echo JText::_("CATALOG_SEARCHCRITERIA_DEFAULT_VALUE");?></td>
 					<td>
-					<?php echo helper_easysdi::radiolist($versions, 'defaultvalue', 'class="checkbox"', 'class="checkbox"', 'value', 'text', $row->defaultvalue); ?>
+					<?php echo helper_easysdi::radiolist($versions, 'defaultvalue', 'class="checkbox"', 'class="checkbox"', 'value', 'text',$value ); ?>
 					</td>
 				</tr>
 				<?php
@@ -407,7 +408,7 @@ class HTML_searchcriteria {
 			?>
 			<tr>
 				<td class="key"><?php echo JText::_("CATALOG_SEARCHCRITERIA_CSW_FILTER"); ?></td>
-				<td><textarea rows="4" cols="50" id="filter" name="filter"><?php echo $row->filter?></textarea></td>
+				<td><textarea rows="4" cols="50" id="filter" name="filter"><?php  if(isset($row->filter)) echo $row->filter;?></textarea></td>
 			</tr>
 			</table>
 			<table class="admintable" border="0" cellpadding="3" cellspacing="0">
