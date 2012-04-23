@@ -137,11 +137,11 @@ class HTML_searchcriteria {
 				<tr>
 					<td class="key"><?php echo JText::_("CORE_DESCRIPTION"); ?></td>
 					<td><textarea rows="4" cols="50" name ="description" onkeypress="javascript:maxlength(this,<?php echo $fieldsLength['description'];?>);"><?php echo $row->description?></textarea></td>
-		</tr>
-		<tr>
-			<td class="key"><?php echo JText::_("CATALOG_SEARCHCRITERIA_TAB"); ?></td>
-			<td><?php echo JHTML::_('select.genericlist', $tabList, 'tabList', 'class="list"', 'value', 'text', $tab_id);?></td>
-		</tr>
+				</tr>
+				<tr>
+					<td class="key"><?php echo JText::_("CATALOG_SEARCHCRITERIA_TAB"); ?></td>
+					<td><?php echo JHTML::_('select.genericlist', $tabList, 'tabList', 'class="list"', 'value', 'text', $tab_id);?></td>
+				</tr>
 	
 		<?php 
 		$listMaxLength = config_easysdi::getValue("CATALOG_SEARCH_MULTILIST_LENGTH");
@@ -405,6 +405,10 @@ class HTML_searchcriteria {
 		}
 		
 			?>
+			<tr>
+				<td class="key"><?php echo JText::_("CATALOG_SEARCHCRITERIA_CSW_FILTER"); ?></td>
+				<td><textarea rows="4" cols="50" id="filter" name="filter"><?php echo $row->filter?></textarea></td>
+			</tr>
 			</table>
 			<table class="admintable" border="0" cellpadding="3" cellspacing="0">
 					<tr>

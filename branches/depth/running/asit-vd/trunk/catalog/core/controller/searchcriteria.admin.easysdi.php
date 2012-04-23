@@ -161,13 +161,8 @@ class ADMIN_searchcriteria {
 		$row->load( $id );
 		
 		//Load default value
-		$defaultvalues = $row->loadValues($context_id);
-		if(isset($defaultvalues)){
-			$row->defaultvalue = $defaultvalues->defaultvalue;
-			$row->defaultvaluefrom = $defaultvalues->defaultvaluefrom;
-			$row->defaultvalueto = $defaultvalues->defaultvalueto;
-			$row->params= $defaultvalues->params;
-		}
+		$row->loadValues($context_id);
+		
 		/*
 		 * If the item is checked out we cannot edit it... unless it was checked
 		 * out by the current user.
@@ -462,16 +457,16 @@ class ADMIN_searchcriteria {
 		}
 		
 		//Save params
-		$selected_boundarycategories = $_POST['selected'];
-		//$boundarycategory = json_encode($selected_boundarycategories);
-		$boundarycategory = $selected_boundarycategories;
-		
+		$boundarycategory = $_POST['selected'];
+		 
 		$params_text = array();
 		$params_text['boundarycategory'] = $boundarycategory;
 		$params_text['boundarysearch'] = $_POST['boundarysearch'];
 		$params = json_encode($params_text);
 		
-		$database->setQuery("UPDATE #__sdi_context_criteria SET params='".$params."' WHERE context_id='".$context_id."' AND criteria_id='".$rowSearchCriteria->id."'" );
+		$filter = $_POST['filter'];
+		
+		$database->setQuery("UPDATE #__sdi_context_criteria SET params='".$params."', filter='".addslashes ( $filter )."' WHERE context_id='".$context_id."' AND criteria_id='".$rowSearchCriteria->id."'" );
 		if (!$database->query()){
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			return false;
