@@ -280,8 +280,6 @@ class ADMIN_metadata {
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 		
 		// Type d'attribut pour les périmétres prédéfinis 
-		//$rowAttributeType = new attributetype($database);
-		//$rowAttributeType->load(config_easysdi::getValue("catalog_boundary_type"));
 		$query = "SELECT t.*, CONCAT(ns.prefix, ':', t.isocode) as attributetype_isocode FROM #__sdi_sys_stereotype t LEFT OUTER JOIN #__sdi_namespace ns ON t.namespace_id=ns.id WHERE t.id=".config_easysdi::getValue("catalog_boundary_type");
 		$database->setQuery( $query );
 		$rowAttributeType = $database->loadObject();
@@ -289,11 +287,8 @@ class ADMIN_metadata {
 		
 		$catalogBoundaryIsocode = config_easysdi::getValue("catalog_boundary_isocode");
 		$catalogUrlBase = config_easysdi::getValue("catalog_url");
-		//$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&id=158_bis"; //.$id;
-		//$catalogUrlGetRecordById = "http://demo.easysdi.org:8080/proxy/ogc/geonetwork?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&id=".$rowObject->metadata_id; //.$id;
 		$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&content=CORE&id=".$rowMetadata->guid;
 		
-		//.$id."
 		$xmlBody= "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n
 			<csw:GetRecordById xmlns:csw=\"http://www.opengis.net/cat/csw/2.0.2\" service=\"CSW\" version=\"2.0.2\"
 			    outputSchema=\"csw:IsoRecord\">
@@ -314,14 +309,6 @@ class ADMIN_metadata {
 		// En GET
 		//$cswResults = DOMDocument::load($catalogUrlGetRecordById);
 		$cswResults = DOMDocument::loadXML(ADMIN_metadata::CURLRequest("GET", $catalogUrlGetRecordById));
-		
-		/*
-		$cswResults = new DOMDocument();
-		echo var_dump($cswResults->load($catalogUrlGetRecordById))."<br>";
-		echo var_dump($cswResults->saveXML())."<br>";
-		echo var_dump($cswResults)."<br>";
-		echo "<hr>".htmlspecialchars($cswResults->saveXML())."<hr>";
-		*/
 		
 		// Construction du DOMXPath à utiliser pour générer la vue d'édition
 		$doc = new DOMDocument('1.0', 'UTF-8');
@@ -414,9 +401,6 @@ class ADMIN_metadata {
         
         
 		HTML_metadata::editMetadata($rowObject->id, $root, $rowMetadata->guid, $xpathResults, $profile_id, $isManager, $isEditor, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $rowObject->name, $rowObjectVersion->title, $option, $defaultBBoxConfig);
-		//HTML_metadata::editMetadata($root, $id, $xpathResults, $option);
-		//HTML_metadata::editMetadata($rowMetadata, $metadatastates, $option);
-	
 	}
 
 	/*

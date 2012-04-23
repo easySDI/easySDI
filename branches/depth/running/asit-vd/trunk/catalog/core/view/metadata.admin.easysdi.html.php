@@ -217,8 +217,6 @@ class HTML_metadata {
 				<?php $document->addScriptDeclaration( $defautBBoxConfig );?>
 			
 				<?php
-				
-				//TODO
 				$this->javascript .="
 						var domNode = Ext.DomQuery.selectNode('div#element-box div.m')
 						Ext.DomHelper.insertHtml('beforeEnd',domNode,'<div id=formContainer></div>');
@@ -586,7 +584,6 @@ class HTML_metadata {
 				// Boucle pour construire la structure
 				$node = $xpathResults->query($queryPath."/".$root[0]->isocode);
 				$nodeCount = $node->length;
-				//echo $nodeCount." fois ".$root[0]->isocode;
 				
 				HTML_metadata::buildTree($database, 0, $root[0]->id, $root[0]->id, $fieldsetName, 'form', str_replace(":", "_", $root[0]->isocode), $xpathResults, null, $node->item(0), $queryPath, $root[0]->isocode, $account_id, $profile_id, $option);
 				
@@ -950,7 +947,6 @@ class HTML_metadata {
 		$rowChilds = array_merge( $rowChilds, $database->loadObjectList() );
 
 		// Parcours des attributs enfants
-		//foreach($rowAttributeChilds as $child)
 		foreach($rowChilds as $child)
 		{
 // 			print_r($child);
@@ -2122,9 +2118,8 @@ class HTML_metadata {
 									$value = "[".implode(",",$nodeValues)."]";
 								else
 									$value = "[]";
-								
+								// Créer un bouton pour appeler la fenêtre de choix dans le Thesaurus GEMET
 								$this->javascript .="
-								// Cr�er un bouton pour appeler la fenêtre de choix dans le Thesaurus GEMET
 								var winthge;
 								
 								Ext.BLANK_IMAGE_URL = '".$uri->base(true)."/components/com_easysdi_catalog/ext/resources/images/default/s.gif';
@@ -2150,7 +2145,7 @@ class HTML_metadata {
 												      		    					
 																      		    var reliableRecord = result.terms[thes.lang];
 																      		    
-																      		    // S'assurer que le mot-cl� n'est pas d�j� s�lectionn�
+																      		    // S'assurer que le mot-clé n'est pas déjé sélectionné
 																      		    if (!target.usedRecords.containsKey(reliableRecord))
 																				{
 																					// Sauvegarde dans le champs SuperBoxSelect des mots-cl�s dans toutes les langues de EasySDI
@@ -2220,7 +2215,6 @@ class HTML_metadata {
 								".$parentFieldsetName.".add(createSuperBoxSelect('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."', ".$value.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."'));
 								";
 								break;
-							//TODO
 							case 14:
 								
 								// Cas où le noeud n'existe pas dans le XML. Inutile de rechercher la valeur
@@ -2768,7 +2762,6 @@ class HTML_metadata {
 							case 11:
 								// Le Thesaurus GEMET  n'existe qu'en un exemplaire
 								break;
-								//TODO
 							case 14:
 								//echo "Recherche de gco:CharacterString dans ".$attributeScope->nodeName."<br>";
 								$node = $xpathResults->query("gmd:MI_Identifier/gmd:code/gco:CharacterString", $attributeScope);
@@ -3645,7 +3638,6 @@ class HTML_metadata {
 								";
 								
 								break;
-								//TODO
 							case 14:
 								$node = $xpathResults->query("gmd:MI_Identifier/gmd:code/gco:CharacterString", $attributeScope);
 								$nodeValue = html_Metadata::cleanText($node->item(0)->nodeValue);
@@ -3881,7 +3873,7 @@ class HTML_metadata {
 					// Classassociation_id contient une classe
 					if ($child->association_id <>0)
 					{
-						// Appel r�cursif de la fonction pour le traitement du prochain niveau
+						// Appel récursif de la fonction pour le traitement du prochain niveau
 						if ($ancestor <> $parent)
 							HTML_metadata::buildTree($database, $parent, $child->association_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
 					}
@@ -4217,40 +4209,9 @@ class HTML_metadata {
 	 */
 	function cleanText($text)
 	{
-		//echo " ------- encoding: ".mb_detect_encoding($text)."<br>";
-		//echo " ------- ".$text."<br>";
-		/*if (mb_detect_encoding($text) == "UTF-8")
-			$text = utf8_encode($text);
-		//echo " ------- ".$text."<br>";
-		$text = utf8_decode($text);
-		//echo " ------- ".$text."<br>";
-		$text = str_replace("\n","\\n",$text);
-		//echo " ------- ".$text."<br>";
-		$text = str_replace("\r","\\r",$text);
-		//echo " ------- ".$text."<br>";
-		$text = str_replace("\t","\\t",$text);
-		//echo " ------- ".$text."<br>";
-		$text = str_replace("'","\'",$text);
-		//echo " ------- ".$text."<br>";
-		//$text = str_replace("�","\�",$text);
-		//echo " ------- ".$text."<br>";
-		if (ord(substr($text, -1)) == 92)
-			$text = $text.chr(92);
-		if (mb_detect_encoding($text) <> "UTF-8")
-			$text = utf8_encode($text);
-		//echo " ------- ".$text."<br>";
-		
-		
-		if (mb_detect_encoding($text) == "UTF-8")
-			$text = utf8_encode($text);
-		*/
-		
-		//$text = html_entity_decode($text, ENT_QUOTES, "UTF-8");
-		
 		$text = addslashes($text);
 		$text = str_replace(chr(13),"\\r",$text);
 		$text = str_replace(chr(10),"\\n",$text);
-		//echo $text."<br>";
 		return $text;
 	}
 
@@ -4276,8 +4237,7 @@ class HTML_metadata {
 		foreach($arr as $key=>$value)
 		{
 			$extjsArray .= "[";
-			//$extjsArray .= "'".$id."', ";
-			if ($textlist) // Mettre le titre � vide si on est dans une liste de type texte
+			if ($textlist) // Mettre le titre à vide si on est dans une liste de type texte
 			{
 				if (substr($key, -6, 6) == "_TITLE")
 					$extjsArray .= "'', ";
