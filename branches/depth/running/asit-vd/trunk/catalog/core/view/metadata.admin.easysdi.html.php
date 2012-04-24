@@ -893,6 +893,7 @@ class HTML_metadata {
 						 CONCAT(attribute_namespace.prefix,':',a.isocode) as attribute_isocode, 
 						 CONCAT(list_namespace.prefix,':',a.type_isocode) as list_isocode, 
 						 a.attributetype_id as attribute_type, 
+						 tc.id as cl_stereotype_id,
 						 a.default as attribute_default, 
 						 a.pattern as attribute_pattern, 
 						 a.isSystem as attribute_system, 
@@ -910,10 +911,12 @@ class HTML_metadata {
 						 	 ON rel.id = prof.relation_id
 						 LEFT OUTER JOIN #__sdi_attribute as a
 				  		 	 ON rel.attributechild_id=a.id 
-						     LEFT OUTER JOIN #__sdi_sys_stereotype as t
-						  		 ON a.attributetype_id = t.id 
+						 LEFT OUTER JOIN #__sdi_sys_stereotype as t
+						 	 ON a.attributetype_id = t.id 
 					     LEFT OUTER JOIN #__sdi_class as c
 					  		 ON rel.classchild_id=c.id
+					  	LEFT OUTER JOIN jos_sdi_sys_stereotype as tc
+			 				ON c.stereotype_id = tc.id 
 					     LEFT OUTER JOIN #__sdi_list_relationtype as reltype
 					  		 ON rel.relationtype_id=reltype.id	 
 					     LEFT OUTER JOIN #__sdi_account_attribute as accountrel_attribute
@@ -955,6 +958,7 @@ class HTML_metadata {
 // 			echo '<HR>';
 			//Traitement d'une relation vers un attribut
 			//Traitement d'une relation vers un attribut
+			//  : Traitement d'une relation vers un attribut
 			if ($child->attribute_id <> null)
 			{
 				$label = JText::_($child->rel_guid."_LABEL");
@@ -1203,8 +1207,8 @@ class HTML_metadata {
 								
 												//echo $LocName." - ".$child->attribute_id." - ".JText::_($label)." - ".$child->rel_lowerbound." - ".$child->rel_upperbound." - ".$parentFieldsetName."<br>";
 												$fieldsetName = "fieldset".$child->attribute_id."_".str_replace("-", "_", helper_easysdi::getUniqueId());
+												// Créer un nouveau fieldset
 												$this->javascript .="
-													// Créer un nouveau fieldset
 													var ".$fieldsetName." = createFieldSet('".$LocName."', '".html_Metadata::cleanText($label)."', true, false, false, true, true, null, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', true); 
 													".$parentFieldsetName.".add(".$fieldsetName.");
 												";
@@ -3680,6 +3684,7 @@ class HTML_metadata {
 		// Parcours des relations enfant
 		//foreach($rowClassChilds as $child)
 		// Parcours des classes
+		// TODO : Traitement d'une relation vers une classe
 		else if ($child->child_id <> null)
 		{
 			$label = $label = JText::_($child->rel_guid."_LABEL");
@@ -3708,9 +3713,9 @@ class HTML_metadata {
 			//echo "La relation ".$child->rel_isocode. " avec la classe enfant ".$child->child_isocode." existe ".$relCount." fois.<br>";
 						
 			// Traitement de chaque occurence de la relation dans le XML.
-			// Si pas trouv�, on entre une fois dans la boucle pour cr�er
+			// Si pas trouvé, on entre une fois dans la boucle pour créer
 			// une seule occurence de saisie (master)
-			for ($pos=0; $pos<=$relCount; $pos++)
+			for ($pos=0; $pos<=$relCount; $pos++)//for ($pos=0; $pos<=$relCount; $pos++)
 			{
 				/*
 				 * COMPREHENSION DU MODELE
@@ -3719,8 +3724,8 @@ class HTML_metadata {
 				 */  
 				
 				// Construction du master qui permet d'ajouter des occurences de la relation.
-				// Le master doit contenir une structure mais pas de donn�es.
-				if ($pos==0)
+				// Le master doit contenir une structure mais pas de données.
+				if ($pos==0)//$pos==0
 				{
 					// Traitement de la relation entre la classe parent et la classe enfant
 					// S'il y a au moins une occurence de la relation dans le XML, on change le scope
@@ -3743,7 +3748,7 @@ class HTML_metadata {
 						//$childCount = $node->length;
 						//echo "La classe ".$child->child_isocode." existe ".$node->length." fois.<br>";
 			
-						// Si on a trouv� des occurences, on modifie le scope.
+						// Si on a trouvé des occurences, on modifie le scope.
 						if ($childnode->length > 0)
 							$classScope = $childnode->item(0);
 						else
@@ -3761,8 +3766,8 @@ class HTML_metadata {
 					// Nom du fieldset avec guid pour l'unicité
 					$fieldsetName = "fieldset".$child->child_id."_".str_replace("-", "_", helper_easysdi::getUniqueId());
 					
+					// Créer un nouveau fieldset
 					$this->javascript .="
-						// Créer un nouveau fieldset
 						var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, false, false, true, true, null, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false); 
 						".$parentFieldsetName.".add(".$fieldsetName.");
 					";
@@ -3784,6 +3789,15 @@ class HTML_metadata {
 					//echo "Account Id = ".$account_id."<br>";
 					//echo "<hr>";
 					
+					//TODO : stereotype case 1
+					if ($child->cl_stereotype_id <> null){
+						echo "Stereotype classe 1 : ".$child->cl_stereotype_id;
+						echo "<hr>";
+						
+						//Tester le stereotype pour créer le bon
+						//Ne supporte que le gesographicextent pour le moment
+						HTML_metadata::buildGeographicExtentStereotype($database, $child, $fieldsetName);
+					}
 					// Test pour le cas d'une relation qui boucle une classe sur elle-même
 					if ($ancestor <> $parent)					
 						HTML_metadata::buildTree($database, $parent, $child->child_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
@@ -3795,9 +3809,9 @@ class HTML_metadata {
 						if ($ancestor <> $parent)
 							HTML_metadata::buildTree($database, $parent, $child->association_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
 					}
-				}
-				// Ici on va traiter toutes les occurences trouv�es dans le XML
-				else
+				}//end - //$pos==0
+				// Ici on va traiter toutes les occurences trouvées dans le XML
+				else //else !($pos==0)
 				{
 					// Traitement de la relation entre la classe parent et la classe enfant
 					$relScope = $node->item($pos-1);
@@ -3813,7 +3827,7 @@ class HTML_metadata {
 						//$childCount = $node->length;
 						//echo "La classe ".$child->child_isocode." existe ".$node->length." fois.<br>";
 			
-						// Si on a trouv� des occurences, on modifie le scope.
+						// Si on a trouvé des occurences, on modifie le scope.
 						if ($childnode->length > 0)
 							$classScope = $childnode->item(0);
 						else
@@ -3822,41 +3836,27 @@ class HTML_metadata {
 					else
 						$classScope = $relScope;
 					
-					// Construction du nom du fieldset qui va correspondre � la classe
-					// On n'y met pas la relation qui n'a pas d'int�r�t pour l'unicit� du nom
-					// On r�cup�re le master qui a l'index 1
+					// Construction du nom du fieldset qui va correspondre à la classe
+					// On n'y met pas la relation qui n'a pas d'intérêt pour l'unicité du nom
+					// On récupère le master qui a l'index 1
 					$master = $parentName."-".str_replace(":", "_", $child->child_isocode)."__1";
 					// On construit le nom de l'occurence
 					$name = $parentName."-".str_replace(":", "_", $child->child_isocode)."__".($pos+1);
 							
 					// Construction du bloc de la classe enfant
-					// Nom du fieldset avec guid pour l'unicit�
+					// Nom du fieldset avec guid pour l'unicité
 					$fieldsetName = "fieldset".$child->child_id."_".str_replace("-", "_", helper_easysdi::getUniqueId());
-					
+			
+					// Créer un nouveau fieldset
 					$this->javascript .="
 						var master = Ext.getCmp('".$master."');							
-						// Créer un nouveau fieldset
 						var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, true, true, true, true, master, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false); 
 						".$parentFieldsetName.".add(".$fieldsetName.");
 					";
 					
-					/*
-					// S'il y a un xlink:title d�fini, alors afficher une balise pour le saisir
-					if ($child->has_xlinkTitle)
-					{
-						if ($nodeCount > 0)
-						$xlinkTitleValue = html_Metadata::cleanText($node->item($pos)->getAttribute('xlink:title'));
-						else
-						$xlinkTitleValue = "";
-
-						$this->javascript .="
-						fieldset".$child->classes_to_id.".add(createTextArea('".$name."_xlinktitle', '".JText::_('EDIT_METADATA_EXTENSION_TITLE')."',true, false, null, '1', '1', '".$xlinkTitleValue."'));";
-					}
-					*/
-
 					// Le code ISO de la classe enfant devient le code ISO du nouveau parent
 					$nextIsocode = $child->child_isocode;
-					// Appel r�cursif de la fonction pour le traitement du prochain niveau
+					// Appel récursif de la fonction pour le traitement du prochain niveau
 					//HTML_metadata::buildTree($prof, $database, $child->classes_to_id, $child->classes_to_id, $name, $xpathResults, $classScope, $queryPath, $nextIsocode, $account_id, $option);
 					
 					//echo "Appel r�cursif avec les valeurs suivantes:<br> ";
@@ -3869,6 +3869,16 @@ class HTML_metadata {
 					//echo "Account Id = ".$account_id."<br>";
 					//echo "<hr>";
 					
+					//TODO : stereotype case 2
+					if ($child->cl_stereotype_id <> null){
+						echo "Stereotype classe 2 : ".$child->cl_stereotype_id;
+						echo "<hr>";
+						
+						//Tester le stereotype pour créer le bon
+						//Ne supporte que le gesographicextent pour le moment
+						HTML_metadata::buildGeographicExtentStereotype($database, $child, $fieldsetName);
+					}
+					
 					HTML_metadata::buildTree($database, $parent, $child->child_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
 				
 				
@@ -3879,63 +3889,62 @@ class HTML_metadata {
 						if ($ancestor <> $parent)
 							HTML_metadata::buildTree($database, $parent, $child->association_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
 					}
-				}
-			}
+				}//end - else !($pos==0)
+			}// end - for ($pos=0; $pos<=$relCount; $pos++)
 
-			// Si la classe est obligatoire mais qu'elle n'existe pas � l'heure actuelle dans le XML, 
-			// il faut cr�er en plus du master un bloc de saisie qui ne puisse pas �tre supprim� par l'utilisateur 
+			// Si la classe est obligatoire mais qu'elle n'existe pas à l'heure actuelle dans le XML, 
+			// il faut créer en plus du master un bloc de saisie qui ne puisse pas être supprimé par l'utilisateur 
 			if ($relCount==0 and $child->rel_lowerbound>0)
 			{
-				// Construction du nom du fieldset qui va correspondre � la classe
-				// On n'y met pas la relation qui n'a pas d'int�r�t pour l'unicit� du nom
-				// On r�cup�re le master qui a l'index 1
+				// Construction du nom du fieldset qui va correspondre à la classe
+				// On n'y met pas la relation qui n'a pas d'intérêt pour l'unicité du nom
+				// On récupère le master qui a l'index 1
 				$master = $parentName."-".str_replace(":", "_", $child->child_isocode)."__1";
-				// On construit le nom de l'occurence qui a forc�ment l'index 2
+				// On construit le nom de l'occurence qui a forcément l'index 2
 				$name = $parentName."-".str_replace(":", "_", $child->child_isocode)."__2";
 
-				// Le scope reste le m�me, il n'aura de toute fa�on plus d'utilit� pour les enfants
-				// puisqu'� partir de ce niveau plus rien n'existe dans le XML	
+				// Le scope reste le même, il n'aura de toute façon plus d'utilité pour les enfants
+				// puisqu'à partir de ce niveau plus rien n'existe dans le XML	
 				$classScope = $scope;
 					
 				// Construction du fieldset
 				$fieldsetName = "fieldset".$child->child_id."_".str_replace("-", "_", helper_easysdi::getUniqueId());
 				
+				// Créer un nouveau fieldset
 				$this->javascript .="
 					var master = Ext.getCmp('".$master."');							
-					// Cr�er un nouveau fieldset
 					var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, true, true, true, true, master, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false); 
 					".$parentFieldsetName.".add(".$fieldsetName.");
 				";	
 
-				/*	
-				// S'il y a un xlink:title d�fini, alors afficher une balise pour le saisir
-				if ($child->has_xlinkTitle)
-				{
-					$xlinkTitleValue = "";
-
-					$this->javascript .="
-					fieldset".$child->classes_to_id.".add(createTextArea('".$name."_xlinktitle', '".JText::_('EDIT_METADATA_EXTENSION_TITLE')."',true, false, null, '1', '1', '".$xlinkTitleValue."'));";
-				}
-				*/	
-					
 				// Le code ISO de la classe enfant devient le code ISO du nouveau parent
 				$nextIsocode = $child->child_isocode;
 				
+				//TODO : stereotype case 3
+				if ($child->cl_stereotype_id <> null){
+					echo "Stereotype classe 3 : ".$child->cl_stereotype_id;
+					echo "<hr>";
+					
+					//Tester le stereotype pour créer le bon
+					//Ne supporte que le geographicextent pour le moment
+					HTML_metadata::buildGeographicExtentStereotype($database, $child, $fieldsetName);
+				}
 				
-				// Appel r�cursif de la fonction pour le traitement du prochain niveau
+				// Appel récursif de la fonction pour le traitement du prochain niveau
 				if ($ancestor <> $parent)
 					HTML_metadata::buildTree($database, $parent, $child->child_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
 					
 				// Classassociation_id contient une classe
 				if ($child->association_id <>0)
 				{
-					// Appel r�cursif de la fonction pour le traitement du prochain niveau
+					// Appel récursif de la fonction pour le traitement du prochain niveau
 					if ($ancestor <> $parent)
 						HTML_metadata::buildTree($database, $parent, $child->association_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
 				}
 			}
-		
 		}
+		
+		// TODO : Traitement d'une relation vers ????
 		else if ($child->objecttype_id <> null)
 		{
 			$label = $label = JText::_($child->rel_guid."_LABEL");
@@ -3964,30 +3973,16 @@ class HTML_metadata {
 			for ($pos=0; $pos<=$relCount; $pos++)
 			{
 				// Construction du master qui permet d'ajouter des occurences de la relation.
-				// Le master doit contenir une structure mais pas de donn�es.
+				// Le master doit contenir une structure mais pas de données.
 				if ($pos==0)
 				{
-					/*if ($relCount > 0)
-			{
-				$guid = substr($node->item($pos)->attributes->getNamedItem('href')->value, -36);
-				//echo "Trouve ".$guid."<br>";
-				$results = array();
-				$database->setQuery( "SELECT o.id as id, m.guid as guid, o.name as name FROM #__sdi_object o, #__sdi_objecttype ot, #__sdi_metadata m where o.metadata_id=m.id AND o.objecttype_id=ot.id AND ot.id=".$child->objecttype_id." AND m.guid ='".$guid."'" );
-				$results= array_merge( $results, $database->loadObjectList() );
-				//$results = HTML_metadata::array2json(array ("total"=>count($results), "contacts"=>$results));
-				$results = HTML_metadata::array2json($results);
-				//$results = $results[0]->guid;
-				//print_r($results);
-			}
-			else
-			{*/
+		
 				$guid = "";
 				//echo "Trouve ".$guid."<br>";
 				$results = array();
 				$results = HTML_metadata::array2json($results);
-			//}
 						
-			// On construit le nom de l'occurence qui a forc�ment l'index 2
+					// On construit le nom de l'occurence qui a forc�ment l'index 2
 					$name = $parentName."-".str_replace(":", "_", $child->rel_isocode)."__1";
 					
 					// Traitement de la relation entre la classe parent et la classe enfant
@@ -4025,8 +4020,8 @@ class HTML_metadata {
 					//echo $fieldsetName."<br>";
 					$searchFieldName = $name."-"."SEARCH__1"; //.($pos+1);
 					
+					// Créer un nouveau fieldset
 					$this->javascript .="
-							// Cr�er un nouveau fieldset
 							var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, false, false, true, true, null, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false); 
 								".$parentFieldsetName.".add(".$fieldsetName.");
 							".$fieldsetName.".add(createSearchField('".$searchFieldName."', '".$child->objecttype_id."', '".html_Metadata::cleanText(JText::_('SEARCH'))."',true, false, null, '1', '1', ".$results.", false, 0, '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', ''));
@@ -4136,8 +4131,9 @@ class HTML_metadata {
 					$fieldsetName = "fieldset".$child->rel_id."_".str_replace("-", "_", helper_easysdi::getUniqueId());
 					$searchFieldName = $name."-"."SEARCH__1"; //.($pos+1);
 					
+					// Créer un nouveau fieldset
 					$this->javascript .="
-						// Cr�er un nouveau fieldset
+						
 						var master = Ext.getCmp('".$master."');							
 						var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, true, true, true, true, master, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false); 
 							".$parentFieldsetName.".add(".$fieldsetName.");
@@ -4180,9 +4176,10 @@ class HTML_metadata {
 				// Construction du fieldset
 				$fieldsetName = "fieldset".$child->rel_id."_".str_replace("-", "_", helper_easysdi::getUniqueId());
 				$searchFieldName = $name."-"."SEARCH__1"; //2";
-				
+
+				// Créer un nouveau fieldset
 				$this->javascript .="
-					// Cr�er un nouveau fieldset
+
 					var master = Ext.getCmp('".$master."');							
 					var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, true, true, true, true, master, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false); 
 						".$parentFieldsetName.".add(".$fieldsetName.");
@@ -4199,8 +4196,52 @@ class HTML_metadata {
 				}
 			}
 		}
-			//}
+		// TODO : Fin de Traitement d'une relation vers ???
 		}
+	}
+	
+	
+	function buildGeographicExtentStereotype($database, $child, $parentFieldsetName){
+		//Liste des catégories de périmètres
+		$language =& JFactory::getLanguage();
+		$content = array();
+		$query = "SELECT bc.alias as alias, t.label as label 
+						FROM #__sdi_boundarycategory bc 
+							INNER JOIN #__sdi_translation t ON bc.guid = t.element_guid 
+							INNER JOIN #__sdi_language l ON t.language_id=l.id
+							INNER JOIN #__sdi_list_codelang c ON l.codelang_id=c.id
+					WHERE c.code='".$language->_lang."'";
+		$database->setQuery( $query );
+		$content = $database->loadObjectList();
+		$dataValues = array();
+		foreach ($content as $cont)
+		{
+			$dataValues[$cont->alias] = html_Metadata::cleanText($cont->label);
+		}
+		
+		$listName = $parentFieldsetName."_combobox";
+		$label = JText::_($child->rel_guid."_LABEL");
+		
+		$this->javascript .="
+		var valueList = ".HTML_metadata::array2extjs($dataValues, true).";
+		var selectedValueList = ".HTML_metadata::array2json($dataValues).";
+		var defaultValueList = ".HTML_metadata::array2json($dataValues).";
+		
+	
+		".$parentFieldsetName.".add(createComboBox('".$listName."', '".html_Metadata::cleanText(JText::_($label))."', false, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', valueList, selectedValueList, defaultValueList, false, '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."'));
+		";
+		
+		//Ajouter un listener pour recharger la liste des périmètres quand la catégorie a été changée
+		 
+		//Construire le ItemSelector avec la liste des périmètres correspondant à la catégorie sélectionnée
+		
+		
+		//To remove
+		$currentName = $parentFieldsetName."_displayfield";
+		
+		$this->javascript .="
+		".$parentFieldsetName.".add(createDisplayField('".$currentName."', 'label',true, false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '', '', true, '100', '".html_Metadata::cleanText(JText::_('tip'))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+		";
 	}
 	
 	/**

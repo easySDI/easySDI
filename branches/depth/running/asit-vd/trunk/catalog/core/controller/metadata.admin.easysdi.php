@@ -432,7 +432,8 @@ class ADMIN_metadata {
 						 a.name as attribute_name, 
 						 CONCAT(attribute_namespace.prefix,':',a.isocode) as attribute_isocode, 
 						 CONCAT(list_namespace.prefix,':',a.type_isocode) as list_isocode, 
-						 a.attributetype_id as attribute_type, 
+						 a.attributetype_id as attribute_type,
+						 tc.id as cl_stereotype_id, 
 						 a.default as attribute_default, 
 						 a.isSystem as attribute_system, 
 						 a.length as length,
@@ -455,6 +456,8 @@ class ADMIN_metadata {
 					  		 ON a.attributetype_id = t.id 
 					     LEFT OUTER JOIN #__sdi_class as c
 					  		 ON rel.classchild_id=c.id
+					  	LEFT OUTER JOIN jos_sdi_sys_stereotype as tc
+			 				ON c.stereotype_id = tc.id 
 					     LEFT OUTER JOIN #__sdi_objecttype as ot
 					  		 ON rel.objecttypechild_id=ot.id
 					  	 LEFT OUTER JOIN #__sdi_list_relationtype as reltype
