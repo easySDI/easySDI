@@ -281,6 +281,7 @@ class ADMIN_metadata {
 		
 		// Type d'attribut pour les périmétres prédéfinis 
 		$query = "SELECT t.*, CONCAT(ns.prefix, ':', t.isocode) as attributetype_isocode FROM #__sdi_sys_stereotype t LEFT OUTER JOIN #__sdi_namespace ns ON t.namespace_id=ns.id WHERE t.id=".config_easysdi::getValue("catalog_boundary_type");
+		//$query = "SELECT t.*, CONCAT(ns.prefix, ':', t.isocode) as attributetype_isocode FROM #__sdi_list_attributetype t LEFT OUTER JOIN #__sdi_namespace ns ON t.namespace_id=ns.id WHERE t.id=".config_easysdi::getValue("catalog_boundary_type");
 		$database->setQuery( $query );
 		$rowAttributeType = $database->loadObject();
 		$type_isocode = $rowAttributeType->attributetype_isocode;
@@ -485,7 +486,7 @@ class ADMIN_metadata {
 				  		 	OR
 				  		 	(accountrel_class.account_id is null or accountrel_class.account_id=".$account_id.")
 				  		 )
-				  ORDER BY rel.ordering, rel.id";		
+				 GROUP BY rel.id ORDER BY rel.ordering, rel.id";		
 		$database->setQuery( $query );
 		$rowChilds = array_merge( $rowChilds, $database->loadObjectList() );
 		

@@ -30,11 +30,12 @@ class attributetype extends JTable
 	var $isocode=null;
 	var $regexp_pattern=null;
 	var $repexp_overwrite=0;
-	
+
 	// Class constructor
 	function __construct( &$db )
 	{
 		parent::__construct ( '#__sdi_sys_stereotype', 'id', $db ) ;
+//parent::__construct ( '#__sdi_list_attributetype', 'id', $db ) ;
 	}
 }
 ?>

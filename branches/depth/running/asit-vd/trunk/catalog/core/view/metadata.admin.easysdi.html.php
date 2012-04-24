@@ -204,6 +204,8 @@ class HTML_metadata {
 				$userLang = $row->gemetlang;
 		}
 		
+		
+		
 		// Premier noeud						
 		$fieldsetName = "fieldset".$root[0]->id."_".str_replace("-", "_", helper_easysdi::getUniqueId());
 		?>
@@ -939,11 +941,11 @@ class HTML_metadata {
 				  		 	OR
 				  		 	(accountrel_class.account_id is null or accountrel_class.account_id=".$account_id.")
 				  		 )
-				  ORDER BY rel.ordering, rel.id";		
+				  GROUP BY rel.id ORDER BY rel.ordering, rel.id";		
 		$database->setQuery( $query );
 		
-// 		echo $database->getquery()."<br>";
-// 		echo '<HR>';
+//  		echo $database->getquery()."<br>";
+//  		echo '<HR>';
 		$rowChilds = array_merge( $rowChilds, $database->loadObjectList() );
 
 		// Parcours des attributs enfants
@@ -3803,7 +3805,7 @@ class HTML_metadata {
 					// Traitement de la classe enfant
 					if ($relCount > 0)
 					{					
-						// R�cup�ration du noeud XML correspondant au code ISO de la relation
+						// Récupération du noeud XML correspondant au code ISO de la relation
 						//echo "Recherche de ".$child->child_isocode. " dans ".$relScope->nodeName."<br>";
 						$childnode = $xpathResults->query($child->child_isocode, $relScope);
 						//echo "Trouve ".$node->length." fois<br>";
@@ -3833,7 +3835,7 @@ class HTML_metadata {
 					
 					$this->javascript .="
 						var master = Ext.getCmp('".$master."');							
-						// Cr�er un nouveau fieldset
+						// Créer un nouveau fieldset
 						var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, true, true, true, true, master, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false); 
 						".$parentFieldsetName.".add(".$fieldsetName.");
 					";
