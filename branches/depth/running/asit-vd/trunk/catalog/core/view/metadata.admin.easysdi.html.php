@@ -4234,7 +4234,21 @@ class HTML_metadata {
 		//Ajouter un listener pour recharger la liste des périmètres quand la catégorie a été changée
 		 
 		//Construire le ItemSelector avec la liste des périmètres correspondant à la catégorie sélectionnée
-		
+		$this->javascript .="
+		var itemSelector = new Ext.ux.ItemSelector({
+				
+			name              : 'itemselector',
+			fieldLabel        : 'ItemSelector',
+			dataFields        : ['code', 'desc'],
+			fromData          : [['1', 'One'], ['2', 'Two'], ['3', 'Three'], ['4', 'Four'], ['5', 'Five']],
+			toData            : [['6', 'Six']],
+			msWidth           : 100,
+			msHeight          : 200,
+			valueField        : 'code',
+			displayField      : 'desc'
+		});
+		".$parentFieldsetName.".add(itemSelector);
+		";
 		
 		//To remove
 		$currentName = $parentFieldsetName."_displayfield";
