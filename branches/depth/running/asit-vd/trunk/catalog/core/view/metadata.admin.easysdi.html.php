@@ -36,8 +36,8 @@ var thesaurusConfig = '<?php echo config_easysdi::getValue("thesaurusUrl");?>';
 </script>
 <?php }
 			
-JHTML::script('ext-base.js', 'administrator/components/com_easysdi_catalog/ext/adapter/ext/');
-JHTML::script('ext-all.js', 'administrator/components/com_easysdi_catalog/ext/');
+JHTML::script('ext-base-debug.js', 'administrator/components/com_easysdi_catalog/ext/adapter/ext/');
+JHTML::script('ext-all-debug.js', 'administrator/components/com_easysdi_catalog/ext/');
 JHTML::script('catalogMapPanel.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('dynamic.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('ExtendedButton.js', 'administrator/components/com_easysdi_catalog/js/');
@@ -53,10 +53,14 @@ JHTML::script('shCore.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('shBrushXml.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('thesaur.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('HS.js', 'administrator/components/com_easysdi_catalog/js/');
+JHTML::script('ItemSelector.js', 'administrator/components/com_easysdi_catalog/ext/ux/');
+JHTML::script('MultiSelect.js', 'administrator/components/com_easysdi_catalog/ext/ux/');
 
 $jsLoader =JSLOADER_UTIL::getInstance();
 JHTML::script('SingleFile.js', $jsLoader->getPath("map","openlayers", "/lib/OpenLayers/"));
 JHTML::script('OpenLayers.js', $jsLoader->getPath("map","openlayers"));
+
+JHTML::_('stylesheet', 'MultiSelect.css', 'administrator/components/com_easysdi_catalog/ext/ux/css/');
 
 
 class HTML_metadata {
@@ -1078,7 +1082,7 @@ class HTML_metadata {
 								//echo "Trouve ".$nodeValue."<br>";
 								//echo "Valeur en 0: ".$nodeValue."<br>";
 									
-								// R�cup�ration de la valeur par d�faut, s'il y a lieu
+								// Récupération de la valeur par défaut, s'il y a lieu
 								if ($child->attribute_default <> "" and $nodeValue == "")
 									$nodeValue = html_Metadata::cleanText($child->attribute_default);
 			
@@ -3791,12 +3795,15 @@ class HTML_metadata {
 					
 					//TODO : stereotype case 1
 					if ($child->cl_stereotype_id <> null){
-						echo "Stereotype classe 1 : ".$child->cl_stereotype_id;
-						echo "<hr>";
-						
 						//Tester le stereotype pour créer le bon
-						//Ne supporte que le gesographicextent pour le moment
-						HTML_metadata::buildGeographicExtentStereotype($database, $child, $fieldsetName);
+						$database->setQuery("SELECT alias FROM #__sdi_sys_stereotype WHERE id =".$child->cl_stereotype_id);
+						$stereotype = $database->loadResult();
+						switch ($stereotype){
+							case "geographicextent":
+								HTML_classstereotype_builder::getGeographicExtentClass($database, $child, $fieldsetName,1);
+						}
+						
+						
 					}
 					// Test pour le cas d'une relation qui boucle une classe sur elle-même
 					if ($ancestor <> $parent)					
@@ -3871,12 +3878,13 @@ class HTML_metadata {
 					
 					//TODO : stereotype case 2
 					if ($child->cl_stereotype_id <> null){
-						echo "Stereotype classe 2 : ".$child->cl_stereotype_id;
-						echo "<hr>";
-						
 						//Tester le stereotype pour créer le bon
-						//Ne supporte que le gesographicextent pour le moment
-						HTML_metadata::buildGeographicExtentStereotype($database, $child, $fieldsetName);
+						$database->setQuery("SELECT alias FROM #__sdi_sys_stereotype WHERE id =".$child->cl_stereotype_id);
+						$stereotype = $database->loadResult();
+						switch ($stereotype){
+							case "geographicextent":
+								HTML_classstereotype_builder::getGeographicExtentClass($database, $child, $fieldsetName);
+						}
 					}
 					
 					HTML_metadata::buildTree($database, $parent, $child->child_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
@@ -3922,12 +3930,13 @@ class HTML_metadata {
 				
 				//TODO : stereotype case 3
 				if ($child->cl_stereotype_id <> null){
-					echo "Stereotype classe 3 : ".$child->cl_stereotype_id;
-					echo "<hr>";
-					
 					//Tester le stereotype pour créer le bon
-					//Ne supporte que le geographicextent pour le moment
-					HTML_metadata::buildGeographicExtentStereotype($database, $child, $fieldsetName);
+					$database->setQuery("SELECT alias FROM #__sdi_sys_stereotype WHERE id =".$child->cl_stereotype_id);
+					$stereotype = $database->loadResult();
+					switch ($stereotype){
+						case "geographicextent":
+							HTML_classstereotype_builder::getGeographicExtentClass($database, $child, $fieldsetName);
+					}
 				}
 				
 				// Appel récursif de la fonction pour le traitement du prochain niveau
@@ -4200,63 +4209,6 @@ class HTML_metadata {
 		}
 	}
 	
-	
-	function buildGeographicExtentStereotype($database, $child, $parentFieldsetName){
-		//Liste des catégories de périmètres
-		$language =& JFactory::getLanguage();
-		$content = array();
-		$query = "SELECT bc.alias as alias, t.label as label 
-						FROM #__sdi_boundarycategory bc 
-							INNER JOIN #__sdi_translation t ON bc.guid = t.element_guid 
-							INNER JOIN #__sdi_language l ON t.language_id=l.id
-							INNER JOIN #__sdi_list_codelang c ON l.codelang_id=c.id
-					WHERE c.code='".$language->_lang."'";
-		$database->setQuery( $query );
-		$content = $database->loadObjectList();
-		$dataValues = array();
-		foreach ($content as $cont)
-		{
-			$dataValues[$cont->alias] = html_Metadata::cleanText($cont->label);
-		}
-		
-		$listName = $parentFieldsetName."_combobox";
-		$label = JText::_($child->rel_guid."_LABEL");
-		
-		$this->javascript .="
-		var valueList = ".HTML_metadata::array2extjs($dataValues, true).";
-		var selectedValueList = ".HTML_metadata::array2json($dataValues).";
-		var defaultValueList = ".HTML_metadata::array2json($dataValues).";
-		
-	
-		".$parentFieldsetName.".add(createComboBox('".$listName."', '".html_Metadata::cleanText(JText::_($label))."', false, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', valueList, selectedValueList, defaultValueList, false, '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."'));
-		";
-		
-		//Ajouter un listener pour recharger la liste des périmètres quand la catégorie a été changée
-		 
-		//Construire le ItemSelector avec la liste des périmètres correspondant à la catégorie sélectionnée
-		$this->javascript .="
-		var itemSelector = new Ext.ux.ItemSelector({
-				
-			name              : 'itemselector',
-			fieldLabel        : 'ItemSelector',
-			dataFields        : ['code', 'desc'],
-			fromData          : [['1', 'One'], ['2', 'Two'], ['3', 'Three'], ['4', 'Four'], ['5', 'Five']],
-			toData            : [['6', 'Six']],
-			msWidth           : 100,
-			msHeight          : 200,
-			valueField        : 'code',
-			displayField      : 'desc'
-		});
-		".$parentFieldsetName.".add(itemSelector);
-		";
-		
-		//To remove
-		$currentName = $parentFieldsetName."_displayfield";
-		
-		$this->javascript .="
-		".$parentFieldsetName.".add(createDisplayField('".$currentName."', 'label',true, false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '', '', true, '100', '".html_Metadata::cleanText(JText::_('tip'))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
-		";
-	}
 	
 	/**
 	 * cleanText

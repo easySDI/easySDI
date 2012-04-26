@@ -333,7 +333,11 @@ Ext.override(Ext.form.Field, {
 		} 
 		else 
 		{
-			this.addIcon(this.iconCfg);
+			try{
+				this.addIcon(this.iconCfg);
+			}catch (e){
+				
+			}
 		}
 		this.manageIcons(this);
 		
