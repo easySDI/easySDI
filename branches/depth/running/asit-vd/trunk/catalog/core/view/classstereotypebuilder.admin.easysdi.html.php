@@ -26,6 +26,13 @@ defined('_JEXEC') or die('Restricted access');
 class HTML_classstereotype_builder {
 	
 	function getGeographicExtentClass( $database, $relationNode, $parentFieldsetName, $xpathResults, $path, $scope){
+		
+		//TODO rajouter des parametres permettant de savoir dans quel contexte cette méthode a été appellé :
+		// case 1 : construction du master
+		// case 2 : occurence qui existe
+		// case 3 n'existe pas mais est obligatoire
+		//Pour éviter d'avoir a refaire des tests dans cette méthode alors que l'état est connu depuis l'appellant
+		
 // 		echo "QueryPath = ".$XPath."<br>";
 // 		echo "Relation name = ".$relationNode->rel_name."<br>";
 // 		echo "Relation isocode = ". $relationNode->rel_isocode."<br>";
@@ -106,8 +113,8 @@ class HTML_classstereotype_builder {
 			    });
 				  
 		 var ".$parentFieldsetName."_itemselector = new Ext.ux.form.ItemSelector({
-	                    name: 'itemselector',
-			            fieldLabel: 'ItemSelector',
+	                    name: '".$parentFieldsetName."_itemselector',
+			            fieldLabel: '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_PERIMETER_LABEL"))."',
 				        imagePath: '/easysdi/administrator/components/com_easysdi_catalog/ext/ux/images/',
 			            multiselects: [{
 			                width: 250,
