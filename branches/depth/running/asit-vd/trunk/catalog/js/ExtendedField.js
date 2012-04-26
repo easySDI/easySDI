@@ -231,34 +231,33 @@ Ext.override(Ext.form.Field, {
     {
     	if (component.xtype!='hidden')
     	{
-		var isHiddenPlus = (component.clone) ? true : false;
-		var isHiddenMinus = false;
-		
-		if (component.minOccurs==0) component.minOccurs=1;
-		
-		//console.log(component.getId()+"-"+component.minOccurs+"-"+component.maxOccurs+"-"+component.clones().length);
-		//console.log(isHiddenPlus+"-"+isHiddenMinus);
-		if (component.minOccurs==1 && component.maxOccurs==1) 
-		{
-			isHiddenMinus = true;
-			isHiddenPlus = true;
-		}
-		
-		if (component.clones().length+1 == component.maxOccurs) isHiddenPlus=true;
-		if (component.clones().length+1 == component.minOccurs) isHiddenMinus=true;
-
-		if (component.xtype == "superboxselect")
-		{
-			isHiddenPlus=true;
-			isHiddenMinus=true;
-		}
-
-		var plusIcon = component.plusIcon;
-		var minusIcon = component.minusIcon;
-		if (plusIcon) (isHiddenPlus) ? plusIcon.setVisible(false) : plusIcon.setVisible(true);
-		if (minusIcon) (isHiddenMinus) ? minusIcon.setVisible(false) : minusIcon.setVisible(true);
+			var isHiddenPlus = (component.clone) ? true : false;
+			var isHiddenMinus = false;
+			
+			if (component.minOccurs==0) component.minOccurs=1;
+			
+			if (component.minOccurs==1 && component.maxOccurs==1) 
+			{
+				isHiddenMinus = true;
+				isHiddenPlus = true;
+			}
+			
+			if (component.clones().length+1 == component.maxOccurs) isHiddenPlus=true;
+			if (component.clones().length+1 == component.minOccurs) isHiddenMinus=true;
+	
+			if (component.xtype == "superboxselect")
+			{
+				isHiddenPlus=true;
+				isHiddenMinus=true;
+			}
+	
+			var plusIcon = component.plusIcon;
+			var minusIcon = component.minusIcon;
+			if (plusIcon) (isHiddenPlus) ? plusIcon.setVisible(false) : plusIcon.setVisible(true);
+			if (minusIcon) (isHiddenMinus) ? minusIcon.setVisible(false) : minusIcon.setVisible(true);
 		}
     },
+    
 	afterRender : Ext.form.Field.prototype.afterRender.createSequence(function() { 			
 		if ( this.dynamic) 
 		{		
@@ -335,10 +334,11 @@ Ext.override(Ext.form.Field, {
 		{
 			try{
 				this.addIcon(this.iconCfg);
-			}catch (e){
+			}catch(e){
 				
 			}
 		}
+		
 		this.manageIcons(this);
 		
 		// Tooltips
@@ -346,13 +346,6 @@ Ext.override(Ext.form.Field, {
 		var qt = this.qTip;        
 		var dismissDelay = this.qTipDelay;
 		if(qt){
-			/*Ext.QuickTips.register({
-				target:  this,
-				title: '',
-				text: qt,
-				enabled: true
-			});*/
-			
 			// Positionner l'aide contextuelle sur le label
 			var label = findLabel(this);
 			if (label)
