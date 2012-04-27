@@ -850,23 +850,14 @@ class HTML_metadata {
 	 */
 	function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFieldsetName, $ancestorFieldsetName, $parentName, $xpathResults, $parentScope, $scope, $queryPath, $currentIsocode, $account_id, $profile_id, $option)
 	{
-		
-// 		echo $parent." - ".$parentFieldsetName."<br>";
-// 		echo "<hr>SCOPE: ".$scope->nodeName."<br>";
-// 		echo '<HR>';
 		// On récupère dans des variables le scope respectivement pour le traitement des classes enfant et
 		// pour le traitement des attributs enfants.
 		// Cela permet d'éviter les effets de bord
-		
-		//$classScope = $scope;
-		//$attributScope = $scope;
 						
 		// Stockage du path pour atteindre ce noeud du XML
 		$queryPath = $queryPath."/".$currentIsocode;
-		//echo($currentIsocode."<br>") ;
 		
 		// Construire la liste déroulante des périmètres prédéfinis si on est au bon endroit
-		//echo $this->catalogBoundaryIsocode." == ".$currentIsocode.", ".count($this->boundaries)."<br>";
 		if ($this->catalogBoundaryIsocode == $currentIsocode AND count($this->boundaries_name) > 0)
 		{
 			$this->javascript .="
@@ -951,15 +942,11 @@ class HTML_metadata {
 				  GROUP BY rel.id ORDER BY rel.ordering, rel.id";		
 		$database->setQuery( $query );
 		
-//  		echo $database->getquery()."<br>";
-//  		echo '<HR>';
 		$rowChilds = array_merge( $rowChilds, $database->loadObjectList() );
 
 		// Parcours des attributs enfants
 		foreach($rowChilds as $child)
 		{
-// 			print_r($child);
-// 			echo '<HR>';
 			//Traitement d'une relation vers un attribut
 			//Traitement d'une relation vers un attribut
 			//  : Traitement d'une relation vers un attribut

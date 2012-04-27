@@ -107,8 +107,7 @@
 	function createComboBox(id, label, mandatory, min, max, data, value, defaultVal, dis, tip, dismissDelay, mandatoryMsg)
 	{
 		var store = new Ext.data.ArrayStore({
-						    //fields: ['id', 'key', 'translation'],
-							fields: ['id', 'key'],
+						   fields: ['id', 'key'],
 						    data: data
 						});
 		 
@@ -116,15 +115,11 @@
 		if (max == 999) max = Number.MAX_VALUE;
 		optional = !mandatory;
 		
-		//alert(id + " - " + value);
-		//console.log(id + " - " + value);
-		
 		var c = new Ext.form.ComboBox({
 			id:id,
 			name:id,
             hiddenName:id + '_hidden',
-			//hiddenId:id,
-    		cls: 'easysdi_shop_backend_combobox',
+			cls: 'easysdi_shop_backend_combobox',
     		xtype: 'combo',
             fieldLabel: label,
             allowBlank: optional,

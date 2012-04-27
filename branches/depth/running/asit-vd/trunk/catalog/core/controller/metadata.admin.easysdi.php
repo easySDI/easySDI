@@ -1476,26 +1476,20 @@ class ADMIN_metadata {
 				$count = $count - 1;
 				
 				for ($pos=0; $pos<$count; $pos++){
+					//$name est le nom du fieldset
 					$name = $parentName."-".str_replace(":", "_", $child->child_isocode)."__".($pos+2);
 				
 					// Structure à créer ou pas
 					$keys = array_keys($_POST);
 					$existVal=false;
 					foreach($keys as $key){
-						echo ("Key = ".$key);
-						echo ("\n");
 						$partToCompare = substr($key, 0, strlen($name));
 						if ($partToCompare == $name){
 							$existVal = true;
 							break;
 						}
 					}
-// 	echo ("Child = ".$child->rel_name);
-// 	echo ("\n");
-// 	echo ("Name = ".$name);
-// 	echo ("\n");
-// 	echo ("existVal = ".$existVal);
-// 	echo ("\n");
+
 					if ($existVal){
 						// La relation
 						if ($child->rel_isocode <> ""){
@@ -1505,26 +1499,26 @@ class ADMIN_metadata {
 							$xmlOldClassParent = $xmlClassParent;
 							$xmlClassParent = $XMLNode;
 						}
+						// La classe enfant
+						$XMLNode = $XMLDoc->createElement($child->child_isocode);
+						$xmlClassParent->appendChild($XMLNode);
+						$xmlParent = $XMLNode;
+						// On récupére la vraie classe parent, au cas où elle aurait été changée
+						$xmlClassParent = $xmlOldClassParent;
+						// Récupération des codes ISO et appel récursif de la fonction
+						$nextIsocode = $child->child_isocode;
 						
 						if ($child->cl_stereotype_id <> null){
-							//Tester le stereotype pour créer le bon
+							
+							//Tester le stereotype pour sauver la bonne structure
 							$database->setQuery("SELECT alias FROM #__sdi_sys_stereotype WHERE id =".$child->cl_stereotype_id);
 							$stereotype = $database->loadResult();
 							switch ($stereotype){
 								case "geographicextent":
-									print_r ($child);
-									//HTML_classstereotype_builder::getGeographicExtentClass($database, $child, $fieldsetName, $xpathResults, $queryPath,$scope);
+									
+									ADMIN_classstereotype_saver::saveGeographicExtentClass($database, $child, $XMLDoc, $XMLNode, $name);
 							}
 						}else{
-							// La classe enfant
-							$XMLNode = $XMLDoc->createElement($child->child_isocode);
-							$xmlClassParent->appendChild($XMLNode);
-							$xmlParent = $XMLNode;
-							// On récupére la vraie classe parent, au cas où elle aurait été changée					
-							$xmlClassParent = $xmlOldClassParent;		
-							// Récupération des codes ISO et appel récursif de la fonction
-							$nextIsocode = $child->child_isocode;
-								
 							ADMIN_metadata::buildXMLTree($child->child_id, $child->child_id, $name, $XMLDoc, $XMLNode, $queryPath, $nextIsocode, $scope, $keyVals, $profile_id, $account_id, $option);
 						}
 					}

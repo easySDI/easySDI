@@ -25,9 +25,7 @@ defined('_JEXEC') or die('Restricted access');
 
 class HTML_classstereotype_builder {
 	
-	function getGeographicExtentClass( $database,$fieldsetname, $relationObject, $parentFieldsetName, $xpathResults, $path, $scope){
-		
-		
+	function getGeographicExtentClass( $database, $fieldsetname, $relationObject, $parentFieldsetName, $xpathResults, $path, $scope){
 		//TODO rajouter des parametres permettant de savoir dans quel contexte cette méthode a été appellé :
 		// case 1 : construction du master
 		// case 2 : occurence qui existe
@@ -46,7 +44,7 @@ class HTML_classstereotype_builder {
 		//Liste des catégories de périmètres
 		$language =& JFactory::getLanguage();
 		
-		$query = "SELECT bc.alias as alias, t.label as label
+		$query = "SELECT bc.id as id, t.label as label
 					FROM #__sdi_boundarycategory bc
 						INNER JOIN #__sdi_translation t ON bc.guid = t.element_guid
 						INNER JOIN #__sdi_language l ON t.language_id=l.id
@@ -57,7 +55,7 @@ class HTML_classstereotype_builder {
 		
 		$dataValues = array();
 		foreach ($categorycontent as $cont){
-			$dataValues[$cont->alias] = html_Metadata::cleanText($cont->label);
+			$dataValues[$cont->id] = html_Metadata::cleanText($cont->label);
 		}
 		
 		$comboboxName = $fieldsetname."-sdi_extentType__1";
@@ -116,6 +114,7 @@ class HTML_classstereotype_builder {
 				  
 		 var ".$parentFieldsetName."_itemselector = new Ext.ux.form.ItemSelector({
 	                    name: '".$itemselectorName."',
+	                    id: '".$itemselectorName."',
 			            fieldLabel: '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_PERIMETER_LABEL"))."',
 				        imagePath: '/easysdi/administrator/components/com_easysdi_catalog/ext/ux/images/',
 			            multiselects: [{
