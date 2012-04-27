@@ -68,6 +68,7 @@ class ADMIN_classstereotype_saver {
 		foreach($boundaryLocal as $boundary){
 			$usefullVals[$boundary->codelang] = $boundary->label;
 		}
+		
 		foreach($this->langList as $lang)
 		{
 			if ($lang->defaultlang == true) // La langue par défaut
@@ -95,7 +96,7 @@ class ADMIN_classstereotype_saver {
 		//Geographic element BoundingBox
 		$query ="SELECT * from #__sdi_boundary WHERE id =".$boundary_id;
 		$database->setQuery( $query );
-		$boundaryLocal = $database->loadObject();
+		$boundary = $database->loadObject();
 		
 		$nodeA = $XMLDoc->createElement("gmd:geographicElement");
 		$XMLNode->appendChild($nodeA);
@@ -108,22 +109,22 @@ class ADMIN_classstereotype_saver {
 		
 		$nodeD = $XMLDoc->createElement("gmd:northBoundLatitude");
 		$nodeB->appendChild($nodeD);
-		$nodeD_ = $XMLDoc->createElement("gco:Decimal", $boundaryLocal->northbound);
+		$nodeD_ = $XMLDoc->createElement("gco:Decimal", $boundary->northbound);
 		$nodeD->appendChild($nodeD_);
 		
 		$nodeE = $XMLDoc->createElement("gmd:southBoundLatitude");
 		$nodeB->appendChild($nodeE);
-		$nodeE_ = $XMLDoc->createElement("gco:Decimal", $boundaryLocal->southbound);
+		$nodeE_ = $XMLDoc->createElement("gco:Decimal", $boundary->southbound);
 		$nodeE->appendChild($nodeE_);
 		
 		$nodeF = $XMLDoc->createElement("gmd:eastBoundLatitude");
 		$nodeB->appendChild($nodeF);
-		$nodeF_ = $XMLDoc->createElement("gco:Decimal", $boundaryLocal->eastbound);
+		$nodeF_ = $XMLDoc->createElement("gco:Decimal", $boundary->eastbound);
 		$nodeF->appendChild($nodeF_);
 		
 		$nodeG = $XMLDoc->createElement("gmd:westBoundLatitude");
 		$nodeB->appendChild($nodeG);
-		$nodeG_ = $XMLDoc->createElement("gco:Decimal", $boundaryLocal->westbound);
+		$nodeG_ = $XMLDoc->createElement("gco:Decimal", $boundary->westbound);
 		$nodeG->appendChild($nodeG_);
 		
 		//Geographic element Identifier
@@ -146,6 +147,7 @@ class ADMIN_classstereotype_saver {
 		foreach($boundaryLocal as $boundary){
 			$usefullVals[$boundary->codelang] = $boundary->title;
 		}
+		
 		foreach($this->langList as $lang)
 		{
 			if ($lang->defaultlang == true) // La langue par défaut
@@ -156,8 +158,7 @@ class ADMIN_classstereotype_saver {
 			{
 				$nodelang = $XMLDoc->createElement("gmd:PT_FreeText");
 				$nodeV->appendChild($nodelang);
-				
-				
+								
 				$nodelanggroup = $XMLDoc->createElement("gmd:textGroup");
 				$nodeV->appendChild($nodelanggroup);
 				
