@@ -178,7 +178,6 @@ class ADMIN_metadata {
 		
 		// Récupérer la métadonnée choisie par l'utilisateur
 		$rowMetadata = new metadata( $database );
-		//$rowMetadata->load( $rowObject->metadata_id );
 		$rowMetadata->load( $rowObjectVersion->metadata_id );
 		
 		if ($rowMetadata->id == 0)
@@ -276,12 +275,10 @@ class ADMIN_metadata {
 		$boundaries = array_merge( $boundaries, $database->loadObjectList() );
 		
 		// Récupérer la métadonnée en CSW
-		//$metadata_id = "0f62e111-831d-4547-aee7-03ad10a3a141";
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 		
 		// Type d'attribut pour les périmétres prédéfinis 
 		$query = "SELECT t.*, CONCAT(ns.prefix, ':', t.isocode) as attributetype_isocode FROM #__sdi_sys_stereotype t LEFT OUTER JOIN #__sdi_namespace ns ON t.namespace_id=ns.id WHERE t.id=".config_easysdi::getValue("catalog_boundary_type");
-		//$query = "SELECT t.*, CONCAT(ns.prefix, ':', t.isocode) as attributetype_isocode FROM #__sdi_list_attributetype t LEFT OUTER JOIN #__sdi_namespace ns ON t.namespace_id=ns.id WHERE t.id=".config_easysdi::getValue("catalog_boundary_type");
 		$database->setQuery( $query );
 		$rowAttributeType = $database->loadObject();
 		$type_isocode = $rowAttributeType->attributetype_isocode;
@@ -1295,12 +1292,7 @@ class ADMIN_metadata {
 									//$xmlParent = $XMLNode;
 								}
 							}
-							/*
-							$XMLValueNode = $XMLDoc->createElement($childType, $nodeValue);
-							$XMLNode->appendChild($XMLValueNode);
-							$xmlParent = $XMLValueNode;*/
 						}
-						
 						break;
 					// Thesaurus GEMET
 					case 11:
@@ -1308,12 +1300,9 @@ class ADMIN_metadata {
 						// Récupération des valeurs postées correspondantes
 						$keys = array_keys($_POST);
 						$usefullVals=array();
-						//$usefullKeys=array();
 						$count=0;
 						foreach($keys as $key)
 						{
-							//echo $key."\r\n";
-							//$partToCompare = substr($key, 0, strlen($parentName."-".str_replace(":", "_", $child->attribute_isocode)));
 							$partToCompare_temp1 = substr($key, strlen($parentName."-"));
 							if (strpos($partToCompare_temp1, "-"))
 								$partToCompare_temp2 = substr($partToCompare_temp1, 0, strpos($partToCompare_temp1, "-"));
@@ -1325,16 +1314,10 @@ class ADMIN_metadata {
 								
 							if ($partToCompare == $parentName."-".str_replace(":", "_", $child->attribute_isocode))
 							{
-								//if (substr($key, -6) <> "_hidden")
-								//{
 									$count = $count+1;
-									//print_r($_POST[$key]);
 									$usefullVals[] = $_POST[$key];
-								//}
 							}
 						}
-						
-						//print_r($usefullVals);
 						
 						// Construire les blocs de mots-clés pour chaque mot-clé à sauver 
 						foreach ($usefullVals as $usefullVal)
@@ -1482,47 +1465,40 @@ class ADMIN_metadata {
 			// Récupération des relations de cette classe vers d'autres classes
 			else if ($child->child_id <> null)
 			{
-				//echo "child: ".$child->child_isocode."\\r\\n";
-				//echo "relation: ".$child->rel_isocode."\\r\\n";
 				$count=0;
 				
-				foreach($keyVals as $key => $val)
-				{
-					//echo "key: ".$key."\\r\\n";
-					//echo "equals: ".$parentName."-".str_replace(":", "_", $child->child_isocode)."__1"."\\r\\n";
-					if ($key == $parentName."-".str_replace(":", "_", $child->child_isocode)."__1")
-					{
+				foreach($keyVals as $key => $val){
+					if ($key == $parentName."-".str_replace(":", "_", $child->child_isocode)."__1"){
 						$count = $val;
 						break;
 					}
 				}
 				$count = $count - 1;
 				
-				//echo "count: ".$count."\\r\\n";
-				
-				for ($pos=0; $pos<$count; $pos++)
-				{
+				for ($pos=0; $pos<$count; $pos++){
 					$name = $parentName."-".str_replace(":", "_", $child->child_isocode)."__".($pos+2);
-					//echo "name: ".$name."\\r\\n";
 				
 					// Structure à créer ou pas
 					$keys = array_keys($_POST);
 					$existVal=false;
-					foreach($keys as $key)
-					{
+					foreach($keys as $key){
+						echo ("Key = ".$key);
+						echo ("\n");
 						$partToCompare = substr($key, 0, strlen($name));
-						if ($partToCompare == $name)
-						{
+						if ($partToCompare == $name){
 							$existVal = true;
 							break;
 						}
 					}
-	
-					if ($existVal)
-					{
+// 	echo ("Child = ".$child->rel_name);
+// 	echo ("\n");
+// 	echo ("Name = ".$name);
+// 	echo ("\n");
+// 	echo ("existVal = ".$existVal);
+// 	echo ("\n");
+					if ($existVal){
 						// La relation
-						if ($child->rel_isocode <> "")
-						{
+						if ($child->rel_isocode <> ""){
 							$XMLNode = $XMLDoc->createElement($child->rel_isocode);
 							$xmlClassParent->appendChild($XMLNode);
 							// On conserve dans une variable intermédiaire la classe parent
@@ -1530,28 +1506,37 @@ class ADMIN_metadata {
 							$xmlClassParent = $XMLNode;
 						}
 						
-						// La classe enfant
-						$XMLNode = $XMLDoc->createElement($child->child_isocode);
-						$xmlClassParent->appendChild($XMLNode);
-						$xmlParent = $XMLNode;
-						// On récupére la vraie classe parent, au cas oé elle aurait été changée					
-						$xmlClassParent = $xmlOldClassParent;		
-						// Récupération des codes ISO et appel récursif de la fonction
-						$nextIsocode = $child->child_isocode;
-							
-						ADMIN_metadata::buildXMLTree($child->child_id, $child->child_id, $name, $XMLDoc, $XMLNode, $queryPath, $nextIsocode, $scope, $keyVals, $profile_id, $account_id, $option);
+						if ($child->cl_stereotype_id <> null){
+							//Tester le stereotype pour créer le bon
+							$database->setQuery("SELECT alias FROM #__sdi_sys_stereotype WHERE id =".$child->cl_stereotype_id);
+							$stereotype = $database->loadResult();
+							switch ($stereotype){
+								case "geographicextent":
+									print_r ($child);
+									//HTML_classstereotype_builder::getGeographicExtentClass($database, $child, $fieldsetName, $xpathResults, $queryPath,$scope);
+							}
+						}else{
+							// La classe enfant
+							$XMLNode = $XMLDoc->createElement($child->child_isocode);
+							$xmlClassParent->appendChild($XMLNode);
+							$xmlParent = $XMLNode;
+							// On récupére la vraie classe parent, au cas où elle aurait été changée					
+							$xmlClassParent = $xmlOldClassParent;		
+							// Récupération des codes ISO et appel récursif de la fonction
+							$nextIsocode = $child->child_isocode;
+								
+							ADMIN_metadata::buildXMLTree($child->child_id, $child->child_id, $name, $XMLDoc, $XMLNode, $queryPath, $nextIsocode, $scope, $keyVals, $profile_id, $account_id, $option);
+						}
 					}
 					
 					// Classassociation_id contient une classe
-					if ($child->association_id <>0)
-					{
+					if ($child->association_id <>0){
 						// Appel récursif de la fonction pour le traitement du prochain niveau
 						ADMIN_metadata::buildXMLTree($child->association_id, $child->child_id, $name, $XMLDoc, $XMLNode, $queryPath, $nextIsocode, $scope, $keyVals, $profile_id, $account_id, $option);
 					}
 				}
 			}
-			else if ($child->objecttype_id <> null)
-			{
+			else if ($child->objecttype_id <> null){
 				$name = $parentName."-".str_replace(":", "_", $child->rel_isocode);
 				
 				// Récupération des valeurs postées correspondantes
@@ -1580,25 +1565,18 @@ class ADMIN_metadata {
 						}
 					}
 				}
-				//echo "count: ".$count."\r\n";
-				//echo count($usefullVals);
-				//print_r($usefullVals); 
 				
 				for ($pos=1; $pos<=$count; $pos++)
 				{
 					$searchName = $name."__".($pos+1)."-SEARCH__1"; 
-					//echo $searchName;
 					// Récupération des valeurs postées correspondantes
 					$keys = array_keys($_POST);
 					$usefullVals=array();
-					//$usefullKeys=array();
 					$searchCount=0;
 					
 					foreach($keys as $key)
 					{
 						$partToCompare = substr($key, 0, strlen($searchName));
-						//echo "partToCompare: ".$partToCompare."\r\n";
-						//echo "key: ".$key."\r\n";
 						if ($partToCompare == $searchName)
 						{
 							if (substr($key, -6) <> "_index")
@@ -1609,14 +1587,9 @@ class ADMIN_metadata {
 							}
 						}
 					}
-					
-					//echo "count: ".$searchCount."\r\n";
-					//print_r($usefullVals); 
-					
 					if ($searchCount > 0)	
 					{
 						$nodeValue = $usefullVals[0];
-						//$nodeValue = stripslashes($nodeValue);
 						
 						if (strlen($nodeValue) <> 36)
 							continue;
@@ -1663,8 +1636,7 @@ class ADMIN_metadata {
 		// Remise à jour des compteurs de suppression et d'ajout 
 		$deleted=0;
 		$inserted=0;
-		//echo "Metadata: ".$metadata_id." \r\n ";
-		//echo "Product: ".$object_id." \r\n ";
+		
 		// Récupération des index des fieldsets
 		$fieldsets = array();
 		$fieldsets = explode(" | ", $_POST['fieldsets']);
@@ -1679,7 +1651,6 @@ class ADMIN_metadata {
 		// Langues à gérer
 		$this->langList = array();
 		$this->langCode=array();
-		//$database->setQuery( "SELECT l.id, l.name, l.defaultlang, l.code as code, l.isocode, c.code as code_easysdi FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY l.ordering" );
 		$database->setQuery( "SELECT l.id, l.name, l.defaultlang, l.code as code, l.isocode, c.code as code_easysdi,l.gemetlang FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY l.ordering" );
 		$this->langList= array_merge( $this->langList, $database->loadObjectList() );
 		$database->setQuery( "SELECT c.code FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY l.ordering" );
@@ -1701,15 +1672,13 @@ class ADMIN_metadata {
 		// Récupérer l'objet lié à cette métadonnée
 		$rowMetadata = new metadataByGuid( $database );
 		$rowMetadata->load($metadata_id);
-		//echo "Metadata: ".$rowMetadata->guid." \r\n ";
 		$rowObject = new object( $database );
 		$rowObject->load($object_id);
-		//echo "Product: ".$rowObject->id." \r\n ";
 		// Récupérer la classe racine du profile du type d'objet
 		$query = "SELECT c.name as name, CONCAT(ns.prefix,':',c.isocode) as isocode, prof.class_id as id FROM #__sdi_profile prof, #__sdi_objecttype ot, #__sdi_object o, #__sdi_class c RIGHT OUTER JOIN #__sdi_namespace ns ON c.namespace_id=ns.id WHERE prof.id=ot.profile_id AND ot.id=o.objecttype_id AND c.id=prof.class_id AND o.id=".$rowObject->id;
 		$database->setQuery( $query );
 		$root = $database->loadObject();
-		//echo $database->getQuery()." \r\n ";
+		
 		//Pour chaque élément rencontré, l'insérer dans le xml
 		$XMLNode = $XMLDoc->createElement("gmd:MD_Metadata");
 		$XMLDoc->appendChild($XMLNode);
@@ -1719,7 +1688,6 @@ class ADMIN_metadata {
 		
 		// Récupération des namespaces à inclure
 		$namespacelist = array();
-		//$namespacelist[] = JHTML::_('select.option','0', JText::_("CATALOG_ATTRIBUTE_NAMESPACE_LIST") );
 		$database->setQuery( "SELECT prefix, uri FROM #__sdi_namespace ORDER BY prefix" );
 		$namespacelist = array_merge( $namespacelist, $database->loadObjectList() );
 		
@@ -1783,7 +1751,6 @@ class ADMIN_metadata {
 		{
 			ADMIN_metadata::buildXMLTree($root->id, $root->id, str_replace(":", "_", $root->isocode), $XMLDoc, $XMLNode, $path, $root->isocode, $_POST, $keyVals, $profile_id, $account_id, $option);
 			
-			
 			$updated = ADMIN_metadata::CURLUpdateMetadata($metadata_id, $XMLDoc );
 			
 			if ($updated <> 1)
@@ -1800,9 +1767,6 @@ class ADMIN_metadata {
 			}
 			else if ($_POST['task'] == 'saveMetadata')
 			{
-				//$result="";
-				//$mainframe->redirect("index.php?option=$option&task=listObject" );
-				//ADMIN_metadata::cswTest($xmlstr);
 				$response = '{
 					    		success: true,
 							    errors: {
@@ -1819,10 +1783,8 @@ class ADMIN_metadata {
 			$rowMetadata->updated = date('Y-m-d H:i:s');
 			$rowMetadata->updatedby = $account_id;
 			
-			//$rowMetadata->metadatastate_id = 1;
 			if (!$rowMetadata->store()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				//$mainframe->redirect("index.php?option=$option&task=listMetadata" );
 				exit();
 			}
 			

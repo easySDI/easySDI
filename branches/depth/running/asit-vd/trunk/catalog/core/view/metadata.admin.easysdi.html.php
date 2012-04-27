@@ -3801,7 +3801,7 @@ class HTML_metadata {
 						$stereotype = $database->loadResult();
 						switch ($stereotype){
 							case "geographicextent":
-								HTML_classstereotype_builder::getGeographicExtentClass($database, $child, $fieldsetName, $xpathResults, $queryPath,$scope);
+								HTML_classstereotype_builder::getGeographicExtentClass($database,$name, $child, $fieldsetName, $xpathResults, $queryPath,$scope);
 						}
 						
 						
@@ -3885,7 +3885,7 @@ class HTML_metadata {
 						$stereotype = $database->loadResult();
 						switch ($stereotype){
 							case "geographicextent":
-								HTML_classstereotype_builder::getGeographicExtentClass($database, $child, $fieldsetName, $xpathResults, $queryPath,$scope);
+								HTML_classstereotype_builder::getGeographicExtentClass($database,$name, $child, $fieldsetName, $xpathResults, $queryPath,$scope);
 						}
 					}
 					
@@ -3932,24 +3932,12 @@ class HTML_metadata {
 				
 				//TODO : stereotype case 3
 				if ($child->cl_stereotype_id <> null){
-// 					echo "Parent Name = ".$name."<br>";
-// 					echo "Stéréotype case 3<br>";
-// 					echo "QueryPath = ".$queryPath."<br>";
-// 					echo "Relation name = ".$child->rel_name."<br>";
-// 					echo "Relation isocode = ". $child->rel_isocode."<br>";
-// 					echo "Class stereotype isocode = ". $child->child_isocode."<br>";
-					
-// 					print_r($classScope->nodeName);
-// 					echo "<br>";
-// 					print_r($scope->nodeName);
-// 					echo "<hr>";
-					
 					//Tester le stereotype pour créer le bon
 					$database->setQuery("SELECT alias FROM #__sdi_sys_stereotype WHERE id =".$child->cl_stereotype_id);
 					$stereotype = $database->loadResult();
 					switch ($stereotype){
 						case "geographicextent":
-							HTML_classstereotype_builder::getGeographicExtentClass($database, $child, $fieldsetName, $xpathResults, $queryPath,$scope);
+							HTML_classstereotype_builder::getGeographicExtentClass($database,$name, $child, $fieldsetName, $xpathResults, $queryPath,$scope);
 					}
 				}
 				
