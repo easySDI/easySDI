@@ -26,6 +26,7 @@ defined('_JEXEC') or die('Restricted access');
 class HTML_classstereotype_builder {
 	
 	function getGeographicExtentClass( $database, $fieldsetname, $relationObject, $parentFieldsetName, $xpathResults, $path, $scope){
+		
 		//Default language
 		foreach($this->langList as $lang)
 		{
@@ -95,7 +96,6 @@ class HTML_classstereotype_builder {
  			array_push($extent_object_array, $extent_object);
 		}
 		
-		//print_r ($extent_object_array);
 		//Liste des catégories de périmètres
 		$language =& JFactory::getLanguage();
 		
@@ -117,8 +117,6 @@ class HTML_classstereotype_builder {
 		$rel_lowerbound = $relationObject->rel_lowerbound;
 		$rel_upperbound = $relationObject->rel_upperbound;
 		
-		
-		
 		$comboboxName = $fieldsetname."-sdi_extentType__1";
 		
 		$this->javascript .="
@@ -136,36 +134,57 @@ class HTML_classstereotype_builder {
 		$itemselectorName = $fieldsetname."-gmd_geographicElement__1";
 		
 		//Avalaible boundaries
-		$query = "SELECT b.id as id, t.label as label
-					FROM #__sdi_boundary b
-						INNER JOIN #__sdi_translation t ON b.guid = t.element_guid
-						INNER JOIN #__sdi_language l ON t.language_id=l.id
-						INNER JOIN #__sdi_list_codelang c ON l.codelang_id=c.id
-					WHERE c.code='".$language->_lang."'
-					AND b.id NOT IN (SELECT b.id as id
-							FROM #__sdi_boundary b
-								INNER JOIN #__sdi_translation t ON b.guid = t.element_guid
-								INNER JOIN #__sdi_language l ON t.language_id=l.id
-								INNER JOIN #__sdi_list_codelang c ON l.codelang_id=c.id
-							WHERE c.code='".$default_lang."'
-							AND t.title='".$extent_object->description."')";
+		if(count($extent_object_array) > 0 ){
+			$query = "SELECT b.id as id, t.label as label
+			FROM #__sdi_boundary b
+			INNER JOIN #__sdi_translation t ON b.guid = t.element_guid
+			INNER JOIN #__sdi_language l ON t.language_id=l.id
+			INNER JOIN #__sdi_list_codelang c ON l.codelang_id=c.id
+			WHERE c.code='".$language->_lang."'
+			";
+// 			$query = "SELECT b.id as id, t.label as label
+// 						FROM #__sdi_boundary b
+// 							INNER JOIN #__sdi_translation t ON b.guid = t.element_guid
+// 							INNER JOIN #__sdi_language l ON t.language_id=l.id
+// 							INNER JOIN #__sdi_list_codelang c ON l.codelang_id=c.id
+// 						WHERE c.code='".$language->_lang."'
+// 						AND b.id NOT IN (SELECT b.id as id
+// 								FROM #__sdi_boundary b
+// 									INNER JOIN #__sdi_translation t ON b.guid = t.element_guid
+// 									INNER JOIN #__sdi_language l ON t.language_id=l.id
+// 									INNER JOIN #__sdi_list_codelang c ON l.codelang_id=c.id
+// 								WHERE c.code='".$default_lang."'
+// 								AND t.title='".$extent_object->description."')";
+			
+		}else{
+			$query = "SELECT b.id as id, t.label as label
+			FROM #__sdi_boundary b
+			INNER JOIN #__sdi_translation t ON b.guid = t.element_guid
+			INNER JOIN #__sdi_language l ON t.language_id=l.id
+			INNER JOIN #__sdi_list_codelang c ON l.codelang_id=c.id
+			WHERE c.code='".$language->_lang."'
+			";
+			
+		}
 		$database->setQuery( $query );
 		$perimetercontent = $database->loadObjectList();
 		
 		//Selected boundaries
 		$selectedBoundaries = array();
-		foreach ($extent_object_array as $extent_object){
-			if($extent_object ->description != null){
-				$query = "SELECT b.id as id, t.label as label
-							FROM #__sdi_boundary b
-								INNER JOIN #__sdi_translation t ON b.guid = t.element_guid
-								INNER JOIN #__sdi_language l ON t.language_id=l.id
-								INNER JOIN #__sdi_list_codelang c ON l.codelang_id=c.id
-							WHERE c.code='".$default_lang."'
-							AND t.title='".$extent_object->description."'";
-				$database->setQuery( $query );
-				$perimeter_selected = $database->loadObject();
-				array_push($selectedBoundaries,$perimeter_selected);
+		if(count($extent_object_array) > 0 ){
+			foreach ($extent_object_array as $extent_object){
+				if( isset($extent_object->description)){
+					$query = "SELECT b.id as id, t.label as label
+								FROM #__sdi_boundary b
+									INNER JOIN #__sdi_translation t ON b.guid = t.element_guid
+									INNER JOIN #__sdi_language l ON t.language_id=l.id
+									INNER JOIN #__sdi_list_codelang c ON l.codelang_id=c.id
+								WHERE c.code='".$default_lang."'
+								AND t.title='".$extent_object->description."'";
+					$database->setQuery( $query );
+					$perimeter_selected = $database->loadObject();
+					array_push($selectedBoundaries,$perimeter_selected);
+				}
 			}
 		}
 		

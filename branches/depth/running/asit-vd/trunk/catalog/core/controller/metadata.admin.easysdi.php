@@ -1495,38 +1495,33 @@ class ADMIN_metadata {
 					}
 
 					if ($existVal){
-						// La relation
-						if ($child->rel_isocode <> ""){
-// 							echo ("rel_isocode : ".$child->rel_isocode);
-// 							echo ("\n");
-							$XMLNode = $XMLDoc->createElement($child->rel_isocode);
-							$xmlClassParent->appendChild($XMLNode);
-							// On conserve dans une variable intermédiaire la classe parent
-							$xmlOldClassParent = $xmlClassParent;
-							$xmlClassParent = $XMLNode;
-						}
-						// La classe enfant
-// 						echo ("child_isocode : ".$child->child_isocode);
-// 						echo ("\n");
-						$XMLNode = $XMLDoc->createElement($child->child_isocode);
-						$xmlClassParent->appendChild($XMLNode);
-						$xmlParent = $XMLNode;
-						// On récupére la vraie classe parent, au cas où elle aurait été changée
-						$xmlClassParent = $xmlOldClassParent;
-						// Récupération des codes ISO et appel récursif de la fonction
-						$nextIsocode = $child->child_isocode;
-						
 						if ($child->cl_stereotype_id <> null){
-							
 							//Tester le stereotype pour sauver la bonne structure
 							$database->setQuery("SELECT alias FROM #__sdi_sys_stereotype WHERE id =".$child->cl_stereotype_id);
 							$stereotype = $database->loadResult();
 							switch ($stereotype){
 								case "geographicextent":
-									
-									ADMIN_classstereotype_saver::saveGeographicExtentClass($database, $child, $XMLDoc, $XMLNode, $name);
+									//On ne créer pas les elements du XML correspondant à la relation et la classe enfant ici
+									//Ils sont gérés dans le stereotype -> cas particulier dû à la gestion de la multiplicité du stereotype geographicextent
+									ADMIN_classstereotype_saver::saveGeographicExtentClass($database, $child, $XMLDoc, $xmlClassParent, $name);
 							}
 						}else{
+							// Création du noeud de La relation
+							if ($child->rel_isocode <> ""){
+								$XMLNode = $XMLDoc->createElement($child->rel_isocode);
+								$xmlClassParent->appendChild($XMLNode);
+								// On conserve dans une variable intermédiaire la classe parent
+								$xmlOldClassParent = $xmlClassParent;
+								$xmlClassParent = $XMLNode;
+							}
+							// Création du noeud de La classe enfant
+							$XMLNode = $XMLDoc->createElement($child->child_isocode);
+							$xmlClassParent->appendChild($XMLNode);
+							$xmlParent = $XMLNode;
+							// On récupére la vraie classe parent, au cas où elle aurait été changée
+							$xmlClassParent = $xmlOldClassParent;
+							// Récupération des codes ISO et appel récursif de la fonction
+							$nextIsocode = $child->child_isocode;
 							ADMIN_metadata::buildXMLTree($child->child_id, $child->child_id, $name, $XMLDoc, $XMLNode, $queryPath, $nextIsocode, $scope, $keyVals, $profile_id, $account_id, $option);
 						}
 					}

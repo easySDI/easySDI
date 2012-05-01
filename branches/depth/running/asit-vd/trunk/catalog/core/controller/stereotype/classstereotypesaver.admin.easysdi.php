@@ -41,137 +41,152 @@ class ADMIN_classstereotype_saver {
 		
 		//Le doc XML contient déjà le noeud de la relation et le noeud de la classe du stereotype
 		
-		//Boundary category
-		$node = $XMLDoc->createElement("sdi:extentType");
-		$XMLNode->appendChild($node);
 		
-		//BoundaryCategory alias
-		$key = $fieldsetName."-sdi_extentType__1_hidden";
-		$node1 = $XMLDoc->createElement("gco:CharacterString",$_POST[$key]);
-		$node->appendChild($node1);
-		
-		//Description
-		$node2 = $XMLDoc->createElement("gmd:description");
-		$XMLNode->appendChild($node2);
 		//Boundary id
 		$key = $fieldsetName."-gmd_geographicElement__1";
-		$boundary_id = $_POST[$key];
-		$query = "SELECT b.id as id, t.label as label, c.code as codelang, t.title as title
-					FROM #__sdi_boundary b
-						INNER JOIN #__sdi_translation t ON b.guid = t.element_guid
-						INNER JOIN #__sdi_language l ON t.language_id=l.id
-						INNER JOIN #__sdi_list_codelang c ON l.codelang_id=c.id
-					WHERE b.id=".$boundary_id;
-		$database->setQuery( $query );
-		$boundaryLocal = $database->loadObjectList();
-		$usefullVals=array();
-		foreach($boundaryLocal as $boundary){
-			$usefullVals[$boundary->codelang] = $boundary->label;
-		}
+		$boundaries_id = json_decode($_POST[$key]);
 		
-		foreach($this->langList as $lang)
-		{
-			if ($lang->defaultlang == true) // La langue par défaut
-			{
-				$nodelang = $XMLDoc->createElement("gco:CharacterString", $usefullVals[$lang->code_easysdi]);
-				$node2->appendChild($nodelang);
-			}else // Les autres langues
-			{
-				$nodelang = $XMLDoc->createElement("gmd:PT_FreeText");
-				$node2->appendChild($nodelang);
-				
-				
-				$nodelanggroup = $XMLDoc->createElement("gmd:textGroup");
-				$node2->appendChild($nodelanggroup);
-				
-				// Ajout de la valeur
-				$nodelangvalue = $XMLDoc->createElement("gmd:LocalisedCharacterString", $usefullVals[$lang->code_easysdi]);
-				$nodelanggroup->appendChild($nodelangvalue);
-				// Indication de la langue concernée
-				$nodelanggroup->setAttribute('locale', "#".$lang->code);
+		foreach ($boundaries_id as $boundary_id){
+			$query = "SELECT b.id as id, t.label as label, c.code as codelang, t.title as title, bc.alias as alias
+						FROM #__sdi_boundary b
+							INNER JOIN #__sdi_boundarycategory bc ON bc.id = b.category_id
+							INNER JOIN #__sdi_translation t ON b.guid = t.element_guid
+							INNER JOIN #__sdi_language l ON t.language_id=l.id
+							INNER JOIN #__sdi_list_codelang c ON l.codelang_id=c.id
+						WHERE b.id=".$boundary_id;
+			$database->setQuery( $query );
+			$boundaryLocal = $database->loadObjectList();
+			$usefullVals=array();
+			foreach($boundaryLocal as $boundary){
+				$usefullVals[$boundary->codelang] = $boundary->label;
 			}
 			
-		}
-		
-		//Geographic element BoundingBox
-		$query ="SELECT * from #__sdi_boundary WHERE id =".$boundary_id;
-		$database->setQuery( $query );
-		$boundary = $database->loadObject();
-		
-		$nodeA = $XMLDoc->createElement("gmd:geographicElement");
-		$XMLNode->appendChild($nodeA);
-		
-		$nodeB = $XMLDoc->createElement("gmd:EX_GeographicBoundingBox");
-		$nodeA->appendChild($nodeB);
-		
-		$nodeC = $XMLDoc->createElement("gmd:extentTypeCode", 'true');
-		$nodeB->appendChild($nodeC);
-		
-		$nodeD = $XMLDoc->createElement("gmd:northBoundLatitude");
-		$nodeB->appendChild($nodeD);
-		$nodeD_ = $XMLDoc->createElement("gco:Decimal", $boundary->northbound);
-		$nodeD->appendChild($nodeD_);
-		
-		$nodeE = $XMLDoc->createElement("gmd:southBoundLatitude");
-		$nodeB->appendChild($nodeE);
-		$nodeE_ = $XMLDoc->createElement("gco:Decimal", $boundary->southbound);
-		$nodeE->appendChild($nodeE_);
-		
-		$nodeF = $XMLDoc->createElement("gmd:eastBoundLatitude");
-		$nodeB->appendChild($nodeF);
-		$nodeF_ = $XMLDoc->createElement("gco:Decimal", $boundary->eastbound);
-		$nodeF->appendChild($nodeF_);
-		
-		$nodeG = $XMLDoc->createElement("gmd:westBoundLatitude");
-		$nodeB->appendChild($nodeG);
-		$nodeG_ = $XMLDoc->createElement("gco:Decimal", $boundary->westbound);
-		$nodeG->appendChild($nodeG_);
-		
-		//Geographic element Identifier
-		$nodeI = $XMLDoc->createElement("gmd:geographicElement");
-		$XMLNode->appendChild($nodeI);
-		
-		$nodeII = $XMLDoc->createElement("gmd:EX_GeographicDescription");
-		$nodeI->appendChild($nodeII);
-		
-		$nodeIII = $XMLDoc->createElement("gmd:extentTypeCode", 'true');
-		$nodeII->appendChild($nodeIII);
-		
-		$nodeIV = $XMLDoc->createElement("gmd:geographicIdentifier");
-		$nodeII->appendChild($nodeIV);
-		
-		$nodeIVa = $XMLDoc->createElement("gmd:MD_Identifier");
-		$nodeIV->appendChild($nodeIVa);
-		
-		$nodeV = $XMLDoc->createElement("gmd:code");
-		$nodeIVa->appendChild($nodeV);
-		
-		$usefullVals=array();
-		foreach($boundaryLocal as $boundary){
-			$usefullVals[$boundary->codelang] = $boundary->title;
-		}
-		
-		foreach($this->langList as $lang)
-		{
-			if ($lang->defaultlang == true) // La langue par défaut
+			//Relation node
+			$noderelation = $XMLDoc->createElement("gmd:extent");
+			$XMLNode->appendChild($noderelation);
+			
+			//Child class node
+			$nodechild = $XMLDoc->createElement("gmd:EX_Extent");
+			$noderelation->appendChild($nodechild);
+			
+			//Boundary category
+			$node = $XMLDoc->createElement("sdi:extentType");
+			$nodechild->appendChild($node);
+			
+			//BoundaryCategory alias
+			$node1 = $XMLDoc->createElement("gco:CharacterString",$boundary->alias);
+			$node->appendChild($node1);
+			
+			//Description
+			$node2 = $XMLDoc->createElement("gmd:description");
+			$XMLNode->appendChild($node2);
+			
+			foreach($this->langList as $lang)
 			{
-				$nodelang = $XMLDoc->createElement("gco:CharacterString", $usefullVals[$lang->code_easysdi]);
-				$nodeV->appendChild($nodelang);
-			}else // Les autres langues
-			{
-				$nodelang = $XMLDoc->createElement("gmd:PT_FreeText");
-				$nodeV->appendChild($nodelang);
-								
-				$nodelanggroup = $XMLDoc->createElement("gmd:textGroup");
-				$nodeV->appendChild($nodelanggroup);
+				if ($lang->defaultlang == true) // La langue par défaut
+				{
+					$nodelang = $XMLDoc->createElement("gco:CharacterString", $usefullVals[$lang->code_easysdi]);
+					$node2->appendChild($nodelang);
+				}else // Les autres langues
+				{
+					$nodelang = $XMLDoc->createElement("gmd:PT_FreeText");
+					$node2->appendChild($nodelang);
+					
+					
+					$nodelanggroup = $XMLDoc->createElement("gmd:textGroup");
+					$node2->appendChild($nodelanggroup);
+					
+					// Ajout de la valeur
+					$nodelangvalue = $XMLDoc->createElement("gmd:LocalisedCharacterString", $usefullVals[$lang->code_easysdi]);
+					$nodelanggroup->appendChild($nodelangvalue);
+					// Indication de la langue concernée
+					$nodelanggroup->setAttribute('locale', "#".$lang->code);
+				}
 				
-				// Ajout de la valeur
-				$nodelangvalue = $XMLDoc->createElement("gmd:LocalisedCharacterString", $usefullVals[$lang->code_easysdi]);
-				$nodelanggroup->appendChild($nodelangvalue);
-				// Indication de la langue concernée
-				$nodelanggroup->setAttribute('locale', "#".$lang->code);
 			}
 			
+			
+			
+			//Geographic element BoundingBox
+			$query ="SELECT * from #__sdi_boundary WHERE id =".$boundary_id;
+			$database->setQuery( $query );
+			$boundary = $database->loadObject();
+			
+			$nodeA = $XMLDoc->createElement("gmd:geographicElement");
+			$XMLNode->appendChild($nodeA);
+			
+			$nodeB = $XMLDoc->createElement("gmd:EX_GeographicBoundingBox");
+			$nodeA->appendChild($nodeB);
+			
+			$nodeC = $XMLDoc->createElement("gmd:extentTypeCode", 'true');
+			$nodeB->appendChild($nodeC);
+			
+			$nodeD = $XMLDoc->createElement("gmd:northBoundLatitude");
+			$nodeB->appendChild($nodeD);
+			$nodeD_ = $XMLDoc->createElement("gco:Decimal", $boundary->northbound);
+			$nodeD->appendChild($nodeD_);
+			
+			$nodeE = $XMLDoc->createElement("gmd:southBoundLatitude");
+			$nodeB->appendChild($nodeE);
+			$nodeE_ = $XMLDoc->createElement("gco:Decimal", $boundary->southbound);
+			$nodeE->appendChild($nodeE_);
+			
+			$nodeF = $XMLDoc->createElement("gmd:eastBoundLatitude");
+			$nodeB->appendChild($nodeF);
+			$nodeF_ = $XMLDoc->createElement("gco:Decimal", $boundary->eastbound);
+			$nodeF->appendChild($nodeF_);
+			
+			$nodeG = $XMLDoc->createElement("gmd:westBoundLatitude");
+			$nodeB->appendChild($nodeG);
+			$nodeG_ = $XMLDoc->createElement("gco:Decimal", $boundary->westbound);
+			$nodeG->appendChild($nodeG_);
+			
+			//Geographic element Identifier
+			$nodeI = $XMLDoc->createElement("gmd:geographicElement");
+			$XMLNode->appendChild($nodeI);
+			
+			$nodeII = $XMLDoc->createElement("gmd:EX_GeographicDescription");
+			$nodeI->appendChild($nodeII);
+			
+			$nodeIII = $XMLDoc->createElement("gmd:extentTypeCode", 'true');
+			$nodeII->appendChild($nodeIII);
+			
+			$nodeIV = $XMLDoc->createElement("gmd:geographicIdentifier");
+			$nodeII->appendChild($nodeIV);
+			
+			$nodeIVa = $XMLDoc->createElement("gmd:MD_Identifier");
+			$nodeIV->appendChild($nodeIVa);
+			
+			$nodeV = $XMLDoc->createElement("gmd:code");
+			$nodeIVa->appendChild($nodeV);
+			
+			$usefullVals=array();
+			foreach($boundaryLocal as $boundary){
+				$usefullVals[$boundary->codelang] = $boundary->title;
+			}
+			
+			foreach($this->langList as $lang)
+			{
+				if ($lang->defaultlang == true) // La langue par défaut
+				{
+					$nodelang = $XMLDoc->createElement("gco:CharacterString", $usefullVals[$lang->code_easysdi]);
+					$nodeV->appendChild($nodelang);
+				}else // Les autres langues
+				{
+					$nodelang = $XMLDoc->createElement("gmd:PT_FreeText");
+					$nodeV->appendChild($nodelang);
+									
+					$nodelanggroup = $XMLDoc->createElement("gmd:textGroup");
+					$nodeV->appendChild($nodelanggroup);
+					
+					// Ajout de la valeur
+					$nodelangvalue = $XMLDoc->createElement("gmd:LocalisedCharacterString", $usefullVals[$lang->code_easysdi]);
+					$nodelanggroup->appendChild($nodelangvalue);
+					// Indication de la langue concernée
+					$nodelanggroup->setAttribute('locale', "#".$lang->code);
+				}
+				
+			}
 		}
 	}
 }
