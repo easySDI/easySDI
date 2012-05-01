@@ -137,11 +137,14 @@ class ADMIN_classstereotype_saver {
 		$nodeIII = $XMLDoc->createElement("gmd:extentTypeCode", 'true');
 		$nodeII->appendChild($nodeIII);
 		
-		$nodeIV = $XMLDoc->createElement("gmd:geographicIdentier");
+		$nodeIV = $XMLDoc->createElement("gmd:geographicIdentifier");
 		$nodeII->appendChild($nodeIV);
 		
+		$nodeIVa = $XMLDoc->createElement("gmd:MD_Identifier");
+		$nodeIV->appendChild($nodeIVa);
+		
 		$nodeV = $XMLDoc->createElement("gmd:code");
-		$nodeIV->appendChild($nodeV);
+		$nodeIVa->appendChild($nodeV);
 		
 		$usefullVals=array();
 		foreach($boundaryLocal as $boundary){

@@ -26,27 +26,76 @@ defined('_JEXEC') or die('Restricted access');
 class HTML_classstereotype_builder {
 	
 	function getGeographicExtentClass( $database, $fieldsetname, $relationObject, $parentFieldsetName, $xpathResults, $path, $scope){
-		
-// 		echo "QueryPath = ".$XPath."<br>";
-// 		echo "Relation name = ".$relationNode->rel_name."<br>";
-// 		echo "Relation isocode = ". $relationObject->rel_isocode."<br>"; //gmd:extent
-// 		echo "Class stereotype isocode = ". $relationObject->child_isocode."<br>"; //gmd:EX_Extent
-// echo ($scope->nodeName);
-//  		echo "<hr>";
-		
-		$nodes = $xpathResults->query($relationObject->rel_isocode."/".$relationObject->child_isocode."/sdi:extentType/gco:CharacterString", $scope);
-		foreach ($nodes as $node){
-			echo $node->nodeValue;
-// 			$extents = $xpathResults->query($relationObject->child_isocode, $node);
-// 			foreach ($extents as $extent){
-// 				$category_nodes = $xpathResults->query("sdi:extentType", $extent);
-// 				foreach ($category_nodes as $category_node){
-// 					echo $category_node->nodeValue;
-// 				}
-				
-// 			}
+		//Default language
+		foreach($this->langList as $lang)
+		{
+			if ($lang->defaultlang == true){
+				$default_lang = $lang->code_easysdi;
+			}
 		}
 		
+		//Build object to hold XML content
+		$extent_object_array = array();
+		$nodes_EX_Extent = $xpathResults->query($relationObject->rel_isocode."/".$relationObject->child_isocode, $scope);
+		foreach ($nodes_EX_Extent as $node_EX_Extent){
+			//Create a new object to hold extent description
+			$extent_object = new stdClass;
+ 			
+			//sdi:extentType
+			$nodes_extentType = $xpathResults->query("sdi:extentType", $node_EX_Extent);
+ 			if(count($nodes_extentType)== 0){
+ 				//no atttribute sdi:extentType
+ 				$extent_object->extentType = null;
+ 			}else{
+				foreach ($nodes_extentType as $node_extentType){
+					$category_nodes = $xpathResults->query("gco:CharacterString", $node_extentType);
+					foreach ($category_nodes as $category_node){
+						$extent_object->extentType = $category_node->nodeValue;
+					}
+				}
+ 			}
+ 			
+ 			//gmd:geographicElement
+ 			$nodes_geographicElement = $xpathResults->query("gmd:geographicElement", $node_EX_Extent);
+ 			if(count($nodes_geographicElement)== 0){
+ 				//no geographicElement
+ 				$extent_object->geographicElement = null;
+ 			}else{
+ 				if($extent_object->extentType == null){
+ 					//Look for geographicExtent defined by, and only by, a BBOX 
+ 					foreach ($nodes_geographicElement as $node_geographicElement){
+ 						$nodes_BBOX_north = $xpathResults->query("gmd:EX_GeographicBoundingBox/gmd:northBoundLatitude/gco:Decimal", $node_geographicElement);
+ 						if(count($nodes_BBOX_north) == 0){
+ 							//Not a geographic bbox
+ 							continue;
+ 						}else{
+	 						foreach ($nodes_BBOX_north as $node_BBOX_north){
+	 							$extent_object->north = $node_BBOX_north->nodeValue;
+	 						}
+ 						}
+ 					}
+ 				}else{
+ 					//Look for geographicExtent defined by a predifined perimeter
+ 					foreach ($nodes_geographicElement as $node_geographicElement){
+ 						//Description is multilingual, get the one in default language
+ 						$nodes_description_text = $xpathResults->query("gmd:EX_GeographicDescription/gmd:geographicIdentifier/gmd:MD_Identifier/gmd:code/gco:CharacterString", $node_geographicElement);
+ 						if(count($nodes_description_text) == 0){
+ 							//Not a geographicIdentifier
+ 							continue;
+ 						}else{
+	 						foreach ($nodes_description_text as $node_description_text){
+	 							$extent_object->description = $node_description_text->nodeValue;
+	 						}
+ 						}
+ 					}
+ 				}
+ 			}
+ 			
+ 			//Add extent object to array
+ 			array_push($extent_object_array, $extent_object);
+		}
+		
+		//print_r ($extent_object_array);
 		//Liste des catégories de périmètres
 		$language =& JFactory::getLanguage();
 		
@@ -68,6 +117,8 @@ class HTML_classstereotype_builder {
 		$rel_lowerbound = $relationObject->rel_lowerbound;
 		$rel_upperbound = $relationObject->rel_upperbound;
 		
+		
+		
 		$comboboxName = $fieldsetname."-sdi_extentType__1";
 		
 		$this->javascript .="
@@ -84,28 +135,51 @@ class HTML_classstereotype_builder {
 		//Construire le ItemSelector avec la liste des périmètres correspondant à la catégorie sélectionnée
 		$itemselectorName = $fieldsetname."-gmd_geographicElement__1";
 		
+		//Avalaible boundaries
 		$query = "SELECT b.id as id, t.label as label
 					FROM #__sdi_boundary b
 						INNER JOIN #__sdi_translation t ON b.guid = t.element_guid
 						INNER JOIN #__sdi_language l ON t.language_id=l.id
 						INNER JOIN #__sdi_list_codelang c ON l.codelang_id=c.id
-					WHERE c.code='".$language->_lang."'";
+					WHERE c.code='".$language->_lang."'
+					AND b.id NOT IN (SELECT b.id as id
+							FROM #__sdi_boundary b
+								INNER JOIN #__sdi_translation t ON b.guid = t.element_guid
+								INNER JOIN #__sdi_language l ON t.language_id=l.id
+								INNER JOIN #__sdi_list_codelang c ON l.codelang_id=c.id
+							WHERE c.code='".$default_lang."'
+							AND t.title='".$extent_object->description."')";
 		$database->setQuery( $query );
 		$perimetercontent = $database->loadObjectList();
 		
+		//Selected boundaries
+		$selectedBoundaries = array();
+		foreach ($extent_object_array as $extent_object){
+			if($extent_object ->description != null){
+				$query = "SELECT b.id as id, t.label as label
+							FROM #__sdi_boundary b
+								INNER JOIN #__sdi_translation t ON b.guid = t.element_guid
+								INNER JOIN #__sdi_language l ON t.language_id=l.id
+								INNER JOIN #__sdi_list_codelang c ON l.codelang_id=c.id
+							WHERE c.code='".$default_lang."'
+							AND t.title='".$extent_object->description."'";
+				$database->setQuery( $query );
+				$perimeter_selected = $database->loadObject();
+				array_push($selectedBoundaries,$perimeter_selected);
+			}
+		}
+		
 		$this->javascript .="
 			 var sourceDS = new Ext.data.ArrayStore({
-			        data: [
-			        	";
-		    foreach ($perimetercontent as $perimeter){
-		    	$this->javascript .="[
-		    	'".$perimeter->id."','".$perimeter->label."'
-		    	],
-		    	";
-			};
-		
-			$this->javascript = substr($this->javascript, 0, strlen($this->javascript)-1);
-			$this->javascript .="],
+			        data: [";
+					    foreach ($perimetercontent as $perimeter){
+					    	$this->javascript .="[
+					    	'".$perimeter->id."','".$perimeter->label."'
+					    	],
+					    	";
+						};
+						$this->javascript = substr($this->javascript, 0, strlen($this->javascript)-1);
+						$this->javascript .="],
 			        fields: ['value','text'],
 			        sortInfo: {
 			            field: 'value',
@@ -113,14 +187,25 @@ class HTML_classstereotype_builder {
 			        }
 			    });
     
+			    
 			var destinationDS = new   Ext.data.ArrayStore({
-				data: [],
+				data: [
+						";
+				    foreach ($selectedBoundaries as $perimeter){
+				    	$this->javascript .="[
+				    	'".$perimeter->id."','".$perimeter->label."'
+					  ],
+		    		  ";
+			        };
+					$this->javascript = substr($this->javascript, 0, strlen($this->javascript)-1);
+					$this->javascript .="
+					],
 				fields: ['value','text'],
 			        sortInfo: {
 			            field: 'value',
 			            direction: 'ASC'
 			        }
-			    });
+			});
 				  
 		 var ".$parentFieldsetName."_itemselector = new Ext.ux.form.ItemSelector({
 	                    name: '".$itemselectorName."',
