@@ -3778,7 +3778,8 @@ class HTML_metadata {
 //  							echo "case 1";
 							// Créer un nouveau fieldset
 							$this->javascript .="
-							var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, true, true, true, true, null, 1, 1, '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false);
+							var master = Ext.getCmp('".$master."');
+							var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, false, false, true, true, null, 1, 1, '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false);
 							".$parentFieldsetName.".add(".$fieldsetName.");
 							";
 							
@@ -3903,7 +3904,9 @@ class HTML_metadata {
 	
 				// Si la classe est obligatoire mais qu'elle n'existe pas à l'heure actuelle dans le XML, 
 				// il faut créer en plus du master un bloc de saisie qui ne puisse pas être supprimé par l'utilisateur 
-				if ($relCount==0 and $child->rel_lowerbound>0)
+				//OU
+				//Si la classe enfant est de type geographic extent
+				if (($relCount==0 and $child->rel_lowerbound>0) || $child->cl_stereotype_id <> null)
 				{
 					// Construction du nom du fieldset qui va correspondre à la classe
 					// On n'y met pas la relation qui n'a pas d'intérêt pour l'unicité du nom

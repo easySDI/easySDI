@@ -44,7 +44,7 @@ class ADMIN_classstereotype_saver {
 		
 		//Boundary id
 		$key = $fieldsetName."-gmd_geographicElement__1";
-		$boundaries_id = json_decode($_POST[$key]);
+		$boundaries_id = json_decode("[".$_POST[$key]."]",true);
 		
 		foreach ($boundaries_id as $boundary_id){
 			$query = "SELECT b.id as id, t.label as label, c.code as codelang, t.title as title, bc.alias as alias
