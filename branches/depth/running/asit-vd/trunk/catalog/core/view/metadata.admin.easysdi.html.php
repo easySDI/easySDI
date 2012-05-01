@@ -3775,10 +3775,10 @@ class HTML_metadata {
 					
 					//TODO : stereotype case 1 : Pas d'occurence de la relation dans le XML : on créer le master
 					if ($child->cl_stereotype_id <> null){
-// 							echo "case 1";
+//  							echo "case 1";
 							// Créer un nouveau fieldset
 							$this->javascript .="
-							var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, false, false, true, true, null, 1, 1, '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false);
+							var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, true, true, true, true, null, 1, 1, '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false);
 							".$parentFieldsetName.".add(".$fieldsetName.");
 							";
 							
@@ -3864,14 +3864,13 @@ class HTML_metadata {
 					
 					//TODO : stereotype case 2 : traitement des occurences trouvées dans le XML
 					if ($child->cl_stereotype_id <> null){
-// 						echo "case 2";
+//  						echo "case 2";
 						// Créer un nouveau fieldset
 						$this->javascript .="
 						var master = Ext.getCmp('".$master."');
 						var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, true, true, true, true, master, 1, 1, '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false);
 						".$parentFieldsetName.".add(".$fieldsetName.");
 						";
-						
 						
 						//Tester le stereotype pour créer le bon
 						$database->setQuery("SELECT alias FROM #__sdi_sys_stereotype WHERE id =".$child->cl_stereotype_id);
@@ -3927,7 +3926,7 @@ class HTML_metadata {
 					
 				//TODO : stereotype case 3 : occurence obligatoire mais pas présente dans le XML donc création d'une occurence en plus du master
 				if ($child->cl_stereotype_id <> null){
-// 					echo "case 3";
+//  					echo "case 3";
 					// Créer un nouveau fieldset
 					$this->javascript .="
 					var master = Ext.getCmp('".$master."');
