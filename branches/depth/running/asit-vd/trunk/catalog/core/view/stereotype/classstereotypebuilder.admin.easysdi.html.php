@@ -197,7 +197,8 @@ class HTML_classstereotype_builder {
 					    	],
 					    	";
 						};
-						$this->javascript = substr($this->javascript, 0, strlen($this->javascript)-1);
+						if(count($perimetercontent)>0)
+							$this->javascript = substr($this->javascript, 0, strlen($this->javascript)-1);
 						$this->javascript .="],
 			        fields: ['value','text'],
 			        sortInfo: {
@@ -216,7 +217,8 @@ class HTML_classstereotype_builder {
 					  ],
 		    		  ";
 			        };
-					$this->javascript = substr($this->javascript, 0, strlen($this->javascript)-1);
+			        if(count($selectedBoundaries)>0)
+						$this->javascript = substr($this->javascript, 0, strlen($this->javascript)-1);
 					$this->javascript .="
 					],
 				fields: ['value','text'],

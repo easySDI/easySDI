@@ -3774,7 +3774,6 @@ class HTML_metadata {
 // 					echo "<hr>";
 					
 					//TODO : stereotype case 1 : Pas d'occurence de la relation dans le XML : on créer le master
-					
 					if ($child->cl_stereotype_id <> null){
 // 							echo "case 1";
 							// Créer un nouveau fieldset
