@@ -3699,72 +3699,64 @@ class HTML_metadata {
 			//echo "Recherche de ".$child->rel_isocode."/".$child->child_isocode. " dans ".$scope->nodeName."<br>";
 			$node = $xpathResults->query($child->rel_isocode."/".$child->child_isocode, $scope);
 			$relCount = $node->length;
-			//echo "Trouve ".$relCount." fois<br>";
 			
-			//echo "La relation ".$child->rel_isocode. " avec la classe enfant ".$child->child_isocode." existe ".$relCount." fois.<br>";
-						
-			// Traitement de chaque occurence de la relation dans le XML.
-			// Si pas trouvé, on entre une fois dans la boucle pour créer
-			// une seule occurence de saisie (master)
-			for ($pos=0; $pos<=$relCount; $pos++)//for ($pos=0; $pos<=$relCount; $pos++)
-			{
-				/*
-				 * COMPREHENSION DU MODELE
-				 * C'est la relation qui est multiple. De ce fait on a toujours un et un
-				 * seul enfant pour chaque relation trouvée.
-				 */  
-				
-				// Construction du master qui permet d'ajouter des occurences de la relation.
-				// Le master doit contenir une structure mais pas de données.
-				if ($pos==0)//$pos==0
+				// Traitement de chaque occurence de la relation dans le XML.
+				// Si pas trouvé, on entre une fois dans la boucle pour créer
+				// une seule occurence de saisie (master)
+				for ($pos=0; $pos<=$relCount; $pos++)//for ($pos=0; $pos<=$relCount; $pos++)
 				{
-					// Traitement de la relation entre la classe parent et la classe enfant
-					// S'il y a au moins une occurence de la relation dans le XML, on change le scope
-					//echo "relcount: ".$relCount." - ".$node->item($pos)->nodeName."<br>";
-					if ($relCount > 0)
-						$relScope = $node->item($pos);
-					else
-						$relScope = $scope;
+					/*
+					 * COMPREHENSION DU MODELE
+					 * C'est la relation qui est multiple. De ce fait on a toujours un et un
+					 * seul enfant pour chaque relation trouvée.
+					 */  
 					
-					//echo "relscope: ".$relScope->nodeName."<br>";
-					
-					// Traitement de la classe enfant
-					if ($relCount > 0)
-					{					
-						// Récupération du noeud XML correspondant au code ISO de la relation
-						//echo "Recherche de ".$child->child_isocode. " dans ".$relScope->nodeName."<br>";
-						$childnode = $xpathResults->query($child->child_isocode, $relScope);
-						//echo "Trouve ".$childnode->length." fois<br>";
-						// Compte du nombre d'occurence du code ISO de la classe enfant dans le XML
-						//$childCount = $node->length;
-						//echo "La classe ".$child->child_isocode." existe ".$node->length." fois.<br>";
-			
-						// Si on a trouvé des occurences, on modifie le scope.
-						if ($childnode->length > 0)
-							$classScope = $childnode->item(0);
+					// Construction du master qui permet d'ajouter des occurences de la relation.
+					// Le master doit contenir une structure mais pas de données.
+					if ($pos==0)//$pos==0
+					{
+						// Traitement de la relation entre la classe parent et la classe enfant
+						// S'il y a au moins une occurence de la relation dans le XML, on change le scope
+						//echo "relcount: ".$relCount." - ".$node->item($pos)->nodeName."<br>";
+						if ($relCount > 0)
+							$relScope = $node->item($pos);
+						else
+							$relScope = $scope;
+						
+						//echo "relscope: ".$relScope->nodeName."<br>";
+						
+						// Traitement de la classe enfant
+						if ($relCount > 0)
+						{					
+							// Récupération du noeud XML correspondant au code ISO de la relation
+							//echo "Recherche de ".$child->child_isocode. " dans ".$relScope->nodeName."<br>";
+							$childnode = $xpathResults->query($child->child_isocode, $relScope);
+							// Compte du nombre d'occurence du code ISO de la classe enfant dans le XML
+							//$childCount = $node->length;
+							//echo "La classe ".$child->child_isocode." existe ".$node->length." fois.<br>";
+				
+							// Si on a trouvé des occurences, on modifie le scope.
+							if ($childnode->length > 0)
+								$classScope = $childnode->item(0);
+							else
+								$classScope = $relScope;
+						}
 						else
 							$classScope = $relScope;
-					}
-					else
-						$classScope = $relScope;
-					
-					// Construction du nom du fieldset qui va correspondre à la classe
-					// On n'y met pas la relation qui n'a pas d'intérêt pour l'unicité du nom
-					// On démarre l'indexation à 1
-					$name = $parentName."-".str_replace(":", "_", $child->child_isocode)."__".($pos+1);
-							
-					// Construction du bloc de la classe enfant
-					// Nom du fieldset avec guid pour l'unicité
-					$fieldsetName = "fieldset".$child->child_id."_".str_replace("-", "_", helper_easysdi::getUniqueId());
-					
-					// Créer un nouveau fieldset
-					$this->javascript .="
-						var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, false, false, true, true, null, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false); 
-						".$parentFieldsetName.".add(".$fieldsetName.");
-					";
-
-					// Le code ISO de la classe enfant devient le code ISO du nouveau parent
-					$nextIsocode = $child->child_isocode;
+						
+						// Construction du nom du fieldset qui va correspondre à la classe
+						// On n'y met pas la relation qui n'a pas d'intérêt pour l'unicité du nom
+						// On démarre l'indexation à 1
+						$name = $parentName."-".str_replace(":", "_", $child->child_isocode)."__".($pos+1);
+								
+						// Construction du bloc de la classe enfant
+						// Nom du fieldset avec guid pour l'unicité
+						$fieldsetName = "fieldset".$child->child_id."_".str_replace("-", "_", helper_easysdi::getUniqueId());
+						
+						
+	
+						// Le code ISO de la classe enfant devient le code ISO du nouveau parent
+						$nextIsocode = $child->child_isocode;
 					// Appel récursif de la fonction pour le traitement du prochain niveau
 					//HTML_metadata::buildTree($prof, $database, $child->classes_to_id, $child->classes_to_id, $name, $xpathResults, $classScope, $queryPath, $nextIsocode, $account_id, $option);
 					//echo "Appel récursif avec les valeurs suivantes:<br> ";
@@ -3781,8 +3773,16 @@ class HTML_metadata {
 // 					//echo "Account Id = ".$account_id."<br>";
 // 					echo "<hr>";
 					
-					//TODO : stereotype case 1
+					//TODO : stereotype case 1 : Pas d'occurence de la relation dans le XML : on créer le master
+					
 					if ($child->cl_stereotype_id <> null){
+// 							echo "case 1";
+							// Créer un nouveau fieldset
+							$this->javascript .="
+							var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, false, false, true, true, null, 1, 1, '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false);
+							".$parentFieldsetName.".add(".$fieldsetName.");
+							";
+							
 						//Tester le stereotype pour créer le bon
 						$database->setQuery("SELECT alias FROM #__sdi_sys_stereotype WHERE id =".$child->cl_stereotype_id);
 						$stereotype = $database->loadResult();
@@ -3790,67 +3790,65 @@ class HTML_metadata {
 							case "geographicextent":
 								HTML_classstereotype_builder::getGeographicExtentClass($database,$name, $child, $fieldsetName, $xpathResults, $queryPath,$scope);
 						}
-						
-						
+					}else{
+						// Créer un nouveau fieldset
+						$this->javascript .="
+						var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, false, false, true, true, null, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false);
+						".$parentFieldsetName.".add(".$fieldsetName.");
+						";
 					}
-					// Test pour le cas d'une relation qui boucle une classe sur elle-même
-					if ($ancestor <> $parent)					
-						HTML_metadata::buildTree($database, $parent, $child->child_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
-		
-					// Classassociation_id contient une classe
-					if ($child->association_id <>0)
-					{
-						// Appel récursif de la fonction pour le traitement du prochain niveau
-						if ($ancestor <> $parent)
-							HTML_metadata::buildTree($database, $parent, $child->association_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
-					}
-				}//end - //$pos==0
-				// Ici on va traiter toutes les occurences trouvées dans le XML
-				else //else !($pos==0)
-				{
-					// Traitement de la relation entre la classe parent et la classe enfant
-					$relScope = $node->item($pos-1);
-					
-					// Traitement de la classe enfant
-					if ($relCount > 0)
-					{					
-						// Récupération du noeud XML correspondant au code ISO de la relation
-						//echo "Recherche de ".$child->child_isocode. " dans ".$relScope->nodeName."<br>";
-						$childnode = $xpathResults->query($child->child_isocode, $relScope);
-						//echo "Trouve ".$node->length." fois<br>";
-						// Compte du nombre d'occurence du code ISO de la classe enfant dans le XML
-						//$childCount = $node->length;
-						//echo "La classe ".$child->child_isocode." existe ".$node->length." fois.<br>";
+						// Test pour le cas d'une relation qui boucle une classe sur elle-même
+						if ($ancestor <> $parent)					
+							HTML_metadata::buildTree($database, $parent, $child->child_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
 			
-						// Si on a trouvé des occurences, on modifie le scope.
-						if ($childnode->length > 0)
-							$classScope = $childnode->item(0);
+						// Classassociation_id contient une classe
+						if ($child->association_id <>0)
+						{
+							// Appel récursif de la fonction pour le traitement du prochain niveau
+							if ($ancestor <> $parent)
+								HTML_metadata::buildTree($database, $parent, $child->association_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
+						}
+					}//end - //$pos==0
+					// Ici on va traiter toutes les occurences trouvées dans le XML
+					else //else !($pos==0)
+					{
+						// Traitement de la relation entre la classe parent et la classe enfant
+						$relScope = $node->item($pos-1);
+						
+						// Traitement de la classe enfant
+						if ($relCount > 0)
+						{					
+							// Récupération du noeud XML correspondant au code ISO de la relation
+							//echo "Recherche de ".$child->child_isocode. " dans ".$relScope->nodeName."<br>";
+							$childnode = $xpathResults->query($child->child_isocode, $relScope);
+							//echo "Trouve ".$node->length." fois<br>";
+							// Compte du nombre d'occurence du code ISO de la classe enfant dans le XML
+							//$childCount = $node->length;
+							//echo "La classe ".$child->child_isocode." existe ".$node->length." fois.<br>";
+				
+							// Si on a trouvé des occurences, on modifie le scope.
+							if ($childnode->length > 0)
+								$classScope = $childnode->item(0);
+							else
+								$classScope = $relScope;
+						}
 						else
 							$classScope = $relScope;
-					}
-					else
-						$classScope = $relScope;
-					
-					// Construction du nom du fieldset qui va correspondre à la classe
-					// On n'y met pas la relation qui n'a pas d'intérêt pour l'unicité du nom
-					// On récupère le master qui a l'index 1
-					$master = $parentName."-".str_replace(":", "_", $child->child_isocode)."__1";
-					// On construit le nom de l'occurence
-					$name = $parentName."-".str_replace(":", "_", $child->child_isocode)."__".($pos+1);
-							
-					// Construction du bloc de la classe enfant
-					// Nom du fieldset avec guid pour l'unicité
-					$fieldsetName = "fieldset".$child->child_id."_".str_replace("-", "_", helper_easysdi::getUniqueId());
-			
-					// Créer un nouveau fieldset
-					$this->javascript .="
-						var master = Ext.getCmp('".$master."');							
-						var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, true, true, true, true, master, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false); 
-						".$parentFieldsetName.".add(".$fieldsetName.");
-					";
-					
-					// Le code ISO de la classe enfant devient le code ISO du nouveau parent
-					$nextIsocode = $child->child_isocode;
+						
+						// Construction du nom du fieldset qui va correspondre à la classe
+						// On n'y met pas la relation qui n'a pas d'intérêt pour l'unicité du nom
+						// On récupère le master qui a l'index 1
+						$master = $parentName."-".str_replace(":", "_", $child->child_isocode)."__1";
+						// On construit le nom de l'occurence
+						$name = $parentName."-".str_replace(":", "_", $child->child_isocode)."__".($pos+1);
+								
+						// Construction du bloc de la classe enfant
+						// Nom du fieldset avec guid pour l'unicité
+						$fieldsetName = "fieldset".$child->child_id."_".str_replace("-", "_", helper_easysdi::getUniqueId());
+				
+						
+						// Le code ISO de la classe enfant devient le code ISO du nouveau parent
+						$nextIsocode = $child->child_isocode;
 					// Appel récursif de la fonction pour le traitement du prochain niveau
 					//HTML_metadata::buildTree($prof, $database, $child->classes_to_id, $child->classes_to_id, $name, $xpathResults, $classScope, $queryPath, $nextIsocode, $account_id, $option);
 					
@@ -3865,8 +3863,17 @@ class HTML_metadata {
 // 					//echo "Account Id = ".$account_id."<br>";
 // 					echo "<hr>";
 					
-					//TODO : stereotype case 2
+					//TODO : stereotype case 2 : traitement des occurences trouvées dans le XML
 					if ($child->cl_stereotype_id <> null){
+// 						echo "case 2";
+						// Créer un nouveau fieldset
+						$this->javascript .="
+						var master = Ext.getCmp('".$master."');
+						var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, true, true, true, true, master, 1, 1, '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false);
+						".$parentFieldsetName.".add(".$fieldsetName.");
+						";
+						
+						
 						//Tester le stereotype pour créer le bon
 						$database->setQuery("SELECT alias FROM #__sdi_sys_stereotype WHERE id =".$child->cl_stereotype_id);
 						$stereotype = $database->loadResult();
@@ -3874,51 +3881,61 @@ class HTML_metadata {
 							case "geographicextent":
 								HTML_classstereotype_builder::getGeographicExtentClass($database,$name, $child, $fieldsetName, $xpathResults, $queryPath,$scope);
 						}
+					}else{
+						// Créer un nouveau fieldset
+						$this->javascript .="
+						var master = Ext.getCmp('".$master."');
+						var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, true, true, true, true, master, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false);
+						".$parentFieldsetName.".add(".$fieldsetName.");
+						";
 					}
 					
-					HTML_metadata::buildTree($database, $parent, $child->child_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
-				
-				
-					// Classassociation_id contient une classe
-					if ($child->association_id <>0)
-					{
-						// Appel récursif de la fonction pour le traitement du prochain niveau
-						if ($ancestor <> $parent)
-							HTML_metadata::buildTree($database, $parent, $child->association_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
-					}
-				}//end - else !($pos==0)
-			}// end - for ($pos=0; $pos<=$relCount; $pos++)
-
-			// Si la classe est obligatoire mais qu'elle n'existe pas à l'heure actuelle dans le XML, 
-			// il faut créer en plus du master un bloc de saisie qui ne puisse pas être supprimé par l'utilisateur 
-			if ($relCount==0 and $child->rel_lowerbound>0)
-			{
-				// Construction du nom du fieldset qui va correspondre à la classe
-				// On n'y met pas la relation qui n'a pas d'intérêt pour l'unicité du nom
-				// On récupère le master qui a l'index 1
-				$master = $parentName."-".str_replace(":", "_", $child->child_isocode)."__1";
-				// On construit le nom de l'occurence qui a forcément l'index 2
-				$name = $parentName."-".str_replace(":", "_", $child->child_isocode)."__2";
-
-				// Le scope reste le même, il n'aura de toute façon plus d'utilité pour les enfants
-				// puisqu'à partir de ce niveau plus rien n'existe dans le XML	
-				$classScope = $scope;
+						HTML_metadata::buildTree($database, $parent, $child->child_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
 					
-				// Construction du fieldset
-				$fieldsetName = "fieldset".$child->child_id."_".str_replace("-", "_", helper_easysdi::getUniqueId());
-				
-				// Créer un nouveau fieldset
-				$this->javascript .="
-					var master = Ext.getCmp('".$master."');							
-					var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, true, true, true, true, master, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false); 
-					".$parentFieldsetName.".add(".$fieldsetName.");
-				";	
-
-				// Le code ISO de la classe enfant devient le code ISO du nouveau parent
-				$nextIsocode = $child->child_isocode;
-				
-				//TODO : stereotype case 3
+					
+						// Classassociation_id contient une classe
+						if ($child->association_id <>0)
+						{
+							// Appel récursif de la fonction pour le traitement du prochain niveau
+							if ($ancestor <> $parent)
+								HTML_metadata::buildTree($database, $parent, $child->association_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
+						}
+					}//end - else !($pos==0)
+				}// end - for ($pos=0; $pos<=$relCount; $pos++)
+	
+				// Si la classe est obligatoire mais qu'elle n'existe pas à l'heure actuelle dans le XML, 
+				// il faut créer en plus du master un bloc de saisie qui ne puisse pas être supprimé par l'utilisateur 
+				if ($relCount==0 and $child->rel_lowerbound>0)
+				{
+					// Construction du nom du fieldset qui va correspondre à la classe
+					// On n'y met pas la relation qui n'a pas d'intérêt pour l'unicité du nom
+					// On récupère le master qui a l'index 1
+					$master = $parentName."-".str_replace(":", "_", $child->child_isocode)."__1";
+					// On construit le nom de l'occurence qui a forcément l'index 2
+					$name = $parentName."-".str_replace(":", "_", $child->child_isocode)."__2";
+	
+					// Le scope reste le même, il n'aura de toute façon plus d'utilité pour les enfants
+					// puisqu'à partir de ce niveau plus rien n'existe dans le XML	
+					$classScope = $scope;
+						
+					// Construction du fieldset
+					$fieldsetName = "fieldset".$child->child_id."_".str_replace("-", "_", helper_easysdi::getUniqueId());
+					
+					
+	
+					// Le code ISO de la classe enfant devient le code ISO du nouveau parent
+					$nextIsocode = $child->child_isocode;
+					
+				//TODO : stereotype case 3 : occurence obligatoire mais pas présente dans le XML donc création d'une occurence en plus du master
 				if ($child->cl_stereotype_id <> null){
+// 					echo "case 3";
+					// Créer un nouveau fieldset
+					$this->javascript .="
+					var master = Ext.getCmp('".$master."');
+					var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, true, true, true, true, master, 1,1, '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false);
+					".$parentFieldsetName.".add(".$fieldsetName.");
+					";
+					
 					//Tester le stereotype pour créer le bon
 					$database->setQuery("SELECT alias FROM #__sdi_sys_stereotype WHERE id =".$child->cl_stereotype_id);
 					$stereotype = $database->loadResult();
@@ -3926,20 +3943,28 @@ class HTML_metadata {
 						case "geographicextent":
 							HTML_classstereotype_builder::getGeographicExtentClass($database,$name, $child, $fieldsetName, $xpathResults, $queryPath,$scope);
 					}
+				}else{
+					// Créer un nouveau fieldset
+					$this->javascript .="
+					var master = Ext.getCmp('".$master."');
+					var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, true, true, true, true, master, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false);
+					".$parentFieldsetName.".add(".$fieldsetName.");
+					";
 				}
 				
-				// Appel récursif de la fonction pour le traitement du prochain niveau
-				if ($ancestor <> $parent)
-					HTML_metadata::buildTree($database, $parent, $child->child_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
-					
-				// Classassociation_id contient une classe
-				if ($child->association_id <>0)
-				{
 					// Appel récursif de la fonction pour le traitement du prochain niveau
 					if ($ancestor <> $parent)
-						HTML_metadata::buildTree($database, $parent, $child->association_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
+						HTML_metadata::buildTree($database, $parent, $child->child_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
+						
+					// Classassociation_id contient une classe
+					if ($child->association_id <>0)
+					{
+						// Appel récursif de la fonction pour le traitement du prochain niveau
+						if ($ancestor <> $parent)
+							HTML_metadata::buildTree($database, $parent, $child->association_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
+					}
 				}
-			}
+// 			}//end of ($child->cl_stereotype_id == null)
 		}
 		
 		// TODO : Traitement d'une relation vers ????

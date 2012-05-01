@@ -26,20 +26,26 @@ defined('_JEXEC') or die('Restricted access');
 class HTML_classstereotype_builder {
 	
 	function getGeographicExtentClass( $database, $fieldsetname, $relationObject, $parentFieldsetName, $xpathResults, $path, $scope){
-		//TODO rajouter des parametres permettant de savoir dans quel contexte cette méthode a été appellé :
-		// case 1 : construction du master
-		// case 2 : occurence qui existe
-		// case 3 n'existe pas mais est obligatoire
-		//Pour éviter d'avoir a refaire des tests dans cette méthode alors que l'état est connu depuis l'appellant
 		
 // 		echo "QueryPath = ".$XPath."<br>";
 // 		echo "Relation name = ".$relationNode->rel_name."<br>";
-// 		echo "Relation isocode = ". $relationNode->rel_isocode."<br>";
-// 		echo "Class stereotype isocode = ". $relationNode->child_isocode."<br>";
-// 		echo "<hr>";
+// 		echo "Relation isocode = ". $relationObject->rel_isocode."<br>"; //gmd:extent
+// 		echo "Class stereotype isocode = ". $relationObject->child_isocode."<br>"; //gmd:EX_Extent
+// echo ($scope->nodeName);
+//  		echo "<hr>";
 		
-		$node = $xpathResults->query($relationNode->rel_isocode."/".$relationObject->child_isocode, $scope);
-// 		print_r($node);
+		$nodes = $xpathResults->query($relationObject->rel_isocode."/".$relationObject->child_isocode."/sdi:extentType/gco:CharacterString", $scope);
+		foreach ($nodes as $node){
+			echo $node->nodeValue;
+// 			$extents = $xpathResults->query($relationObject->child_isocode, $node);
+// 			foreach ($extents as $extent){
+// 				$category_nodes = $xpathResults->query("sdi:extentType", $extent);
+// 				foreach ($category_nodes as $category_node){
+// 					echo $category_node->nodeValue;
+// 				}
+				
+// 			}
+		}
 		
 		//Liste des catégories de périmètres
 		$language =& JFactory::getLanguage();
@@ -58,6 +64,10 @@ class HTML_classstereotype_builder {
 			$dataValues[$cont->alias] = html_Metadata::cleanText($cont->label);
 		}
 		
+		//Multiplicité de la relation
+		$rel_lowerbound = $relationObject->rel_lowerbound;
+		$rel_upperbound = $relationObject->rel_upperbound;
+		
 		$comboboxName = $fieldsetname."-sdi_extentType__1";
 		
 		$this->javascript .="
@@ -66,7 +76,7 @@ class HTML_classstereotype_builder {
 		var defaultValueList = '';
 		
 		
-		".$parentFieldsetName.".add(createComboBox('".$comboboxName."', '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_CATEGORY_LABEL"))."', false, '1', '1', valueList, selectedValueList, defaultValueList, false, '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."'));
+		".$parentFieldsetName.".add(createComboBox('".$comboboxName."', '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_CATEGORY_LABEL"))."', false, '1', '1', valueList, selectedValueList, defaultValueList, false, '".html_Metadata::cleanText(JText::_(""))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."'));
 		";
 		
 		//Ajouter un listener pour recharger la liste des périmètres quand la catégorie a été changée

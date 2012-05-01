@@ -1,4 +1,4 @@
-	function createFieldSet(id, title, border, clone, collapsible, relation, dynamic, master, min, max, tip, dismissDelay, isLanguageFieldset)
+	function createFieldSet(id, title, border, clone, collapsible, relation, dynamic, master, min, max, tip, dismissDelay, isLanguageFieldset, forceUniqueOccurence)
 	{	
 		//if (title) title = title+" "+min+" - "+max;
 		var collapsed = (relation && !clone) ? collapsed=true : collapsed = false;
@@ -23,6 +23,7 @@
 		            border: border,
 					clone: clone,
 					clones_count: clones_count,
+					forceUniqueOccurence : forceUniqueOccurence,
 					hidden: hidden,
 			        collapsible: collapsible,
 			        collapsed: collapsed,

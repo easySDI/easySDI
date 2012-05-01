@@ -1478,13 +1478,17 @@ class ADMIN_metadata {
 				for ($pos=0; $pos<$count; $pos++){
 					//$name est le nom du fieldset
 					$name = $parentName."-".str_replace(":", "_", $child->child_isocode)."__".($pos+2);
-				
+					
 					// Structure à créer ou pas
 					$keys = array_keys($_POST);
 					$existVal=false;
 					foreach($keys as $key){
 						$partToCompare = substr($key, 0, strlen($name));
 						if ($partToCompare == $name){
+// 							echo ("Name : ".$name);
+// 							echo ("\n");
+// 							echo ("key : ".$key);
+// 							echo ("\n");
 							$existVal = true;
 							break;
 						}
@@ -1493,6 +1497,8 @@ class ADMIN_metadata {
 					if ($existVal){
 						// La relation
 						if ($child->rel_isocode <> ""){
+// 							echo ("rel_isocode : ".$child->rel_isocode);
+// 							echo ("\n");
 							$XMLNode = $XMLDoc->createElement($child->rel_isocode);
 							$xmlClassParent->appendChild($XMLNode);
 							// On conserve dans une variable intermédiaire la classe parent
@@ -1500,6 +1506,8 @@ class ADMIN_metadata {
 							$xmlClassParent = $XMLNode;
 						}
 						// La classe enfant
+// 						echo ("child_isocode : ".$child->child_isocode);
+// 						echo ("\n");
 						$XMLNode = $XMLDoc->createElement($child->child_isocode);
 						$xmlClassParent->appendChild($XMLNode);
 						$xmlParent = $XMLNode;

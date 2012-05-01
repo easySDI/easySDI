@@ -258,7 +258,7 @@ Ext.override(Ext.form.FieldSet, {
 	},
 	manageTitle: function(component)
 	{
-		if (component.maxOccurs != 1)
+		if (component.maxOccurs != 1  )
 		{
 			if (component.clone)
 			{
