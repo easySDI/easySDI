@@ -3760,7 +3760,7 @@ class HTML_metadata {
 					// Appel récursif de la fonction pour le traitement du prochain niveau
 					//HTML_metadata::buildTree($prof, $database, $child->classes_to_id, $child->classes_to_id, $name, $xpathResults, $classScope, $queryPath, $nextIsocode, $account_id, $option);
 					
-					//TODO : stereotype case 1 : Pas d'occurence de la relation dans le XML : on créer le master
+					//TODO : stereotype case 1 :  on créer le master = la structure sans données
 					if ($child->cl_stereotype_id <> null){
 						//Tester le stereotype pour créer le bon
 						$database->setQuery("SELECT alias FROM #__sdi_sys_stereotype WHERE id =".$child->cl_stereotype_id);
@@ -3779,7 +3779,7 @@ class HTML_metadata {
 									var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, false, false, true, true, null, 1, 1, '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false);
 									".$parentFieldsetName.".add(".$fieldsetName.");
 									";
-									HTML_classstereotype_builder::getGeographicExtentClass($database,$name, $child, $fieldsetName, $xpathResults, $queryPath,$scope);
+									HTML_classstereotype_builder::getGeographicExtentClass($database,$name, $child, $fieldsetName, $xpathResults, $queryPath,$scope, true);
 								}
 						}
 					}else{
@@ -3858,7 +3858,7 @@ class HTML_metadata {
 									var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, true, true, true, true, master, 1, 1, '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false);
 									".$parentFieldsetName.".add(".$fieldsetName.");
 									";
-									HTML_classstereotype_builder::getGeographicExtentClass($database,$name, $child, $fieldsetName, $xpathResults, $queryPath,$scope);
+									HTML_classstereotype_builder::getGeographicExtentClass($database,$name, $child, $fieldsetName, $xpathResults, $queryPath,$scope, false);
 								}
 						}
 					}else{
@@ -3925,7 +3925,7 @@ class HTML_metadata {
 							".$parentFieldsetName.".add(".$fieldsetName.");
 							";
 								
-							HTML_classstereotype_builder::getGeographicExtentClass($database,$name, $child, $fieldsetName, $xpathResults, $queryPath,$scope);
+							HTML_classstereotype_builder::getGeographicExtentClass($database,$name, $child, $fieldsetName, $xpathResults, $queryPath,$scope, false);
 					}
 				}else{
 					// Créer un nouveau fieldset
