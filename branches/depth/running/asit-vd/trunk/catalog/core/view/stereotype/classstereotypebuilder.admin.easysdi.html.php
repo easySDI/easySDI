@@ -26,6 +26,7 @@ defined('_JEXEC') or die('Restricted access');
 class HTML_classstereotype_builder {
 	
 	function getGeographicExtentClass( $database, $fieldsetname, $relationObject, $parentFieldsetName, $xpathResults, $path, $scope){
+		//Pour info $scope : gmd:MD_DataIdentification
 		
 		//Default language
 		foreach($this->langList as $lang)
@@ -37,64 +38,73 @@ class HTML_classstereotype_builder {
 		
 		//Build object to hold XML content
 		$extent_object_array = array();
-		$nodes_EX_Extent = $xpathResults->query($relationObject->rel_isocode."/".$relationObject->child_isocode, $scope);
-		foreach ($nodes_EX_Extent as $node_EX_Extent){
-			//Create a new object to hold extent description
-			$extent_object = new stdClass;
- 			
-			//sdi:extentType
-			$nodes_extentType = $xpathResults->query("sdi:extentType", $node_EX_Extent);
- 			if(count($nodes_extentType)== 0){
- 				//no atttribute sdi:extentType
- 				$extent_object->extentType = null;
- 			}else{
-				foreach ($nodes_extentType as $node_extentType){
-					$category_nodes = $xpathResults->query("gco:CharacterString", $node_extentType);
-					foreach ($category_nodes as $category_node){
-						$extent_object->extentType = $category_node->nodeValue;
+		
+		//gmd:extent
+		$nodes_extent = $xpathResults->query($relationObject->rel_isocode, $scope);
+		foreach ($nodes_extent as $node_extent){
+			//gmd:EX_Extent
+			$nodes_EX_Extent = $xpathResults->query($relationObject->child_isocode, $node_extent);
+			foreach ($nodes_EX_Extent as $node_EX_Extent){
+				//Create a new object to hold extent description
+				$extent_object = new stdClass;
+			
+				//sdi:extentType
+				$nodes_extentType = $xpathResults->query("sdi:extentType", $node_EX_Extent);
+				if(count($nodes_extentType)== 0){
+					//no atttribute sdi:extentType
+					$extent_object->extentType = null;
+				}else{
+					foreach ($nodes_extentType as $node_extentType){
+						$category_nodes = $xpathResults->query("gco:CharacterString", $node_extentType);
+						foreach ($category_nodes as $category_node){
+							$extent_object->extentType = $category_node->nodeValue;
+						}
 					}
 				}
- 			}
- 			
- 			//gmd:geographicElement
- 			$nodes_geographicElement = $xpathResults->query("gmd:geographicElement", $node_EX_Extent);
- 			if(count($nodes_geographicElement)== 0){
- 				//no geographicElement
- 				$extent_object->geographicElement = null;
- 			}else{
- 				if($extent_object->extentType == null){
- 					//Look for geographicExtent defined by, and only by, a BBOX 
- 					foreach ($nodes_geographicElement as $node_geographicElement){
- 						$nodes_BBOX_north = $xpathResults->query("gmd:EX_GeographicBoundingBox/gmd:northBoundLatitude/gco:Decimal", $node_geographicElement);
- 						if(count($nodes_BBOX_north) == 0){
- 							//Not a geographic bbox
- 							continue;
- 						}else{
-	 						foreach ($nodes_BBOX_north as $node_BBOX_north){
-	 							$extent_object->north = $node_BBOX_north->nodeValue;
-	 						}
- 						}
- 					}
- 				}else{
- 					//Look for geographicExtent defined by a predifined perimeter
- 					foreach ($nodes_geographicElement as $node_geographicElement){
- 						//Description is multilingual, get the one in default language
- 						$nodes_description_text = $xpathResults->query("gmd:EX_GeographicDescription/gmd:geographicIdentifier/gmd:MD_Identifier/gmd:code/gco:CharacterString", $node_geographicElement);
- 						if(count($nodes_description_text) == 0){
- 							//Not a geographicIdentifier
- 							continue;
- 						}else{
-	 						foreach ($nodes_description_text as $node_description_text){
-	 							$extent_object->description = $node_description_text->nodeValue;
-	 						}
- 						}
- 					}
- 				}
- 			}
- 			
- 			//Add extent object to array
- 			array_push($extent_object_array, $extent_object);
+			
+				//gmd:geographicElement
+				$nodes_geographicElement = $xpathResults->query("gmd:geographicElement", $node_EX_Extent);
+				if(count($nodes_geographicElement)== 0){
+					//no geographicElement
+					$extent_object->geographicElement = null;
+				}else{
+					if($extent_object->extentType == null){
+						//Look for geographicExtent defined by, and only by, a BBOX
+						foreach ($nodes_geographicElement as $node_geographicElement){
+							$nodes_BBOX_north = $xpathResults->query("gmd:EX_GeographicBoundingBox/gmd:northBoundLatitude/gco:Decimal", $node_geographicElement);
+							if(count($nodes_BBOX_north) == 0){
+								//Not a geographic bbox
+								continue;
+							}else{
+								foreach ($nodes_BBOX_north as $node_BBOX_north){
+									$extent_object->north = $node_BBOX_north->nodeValue;
+								}
+							}
+						}
+					}else{
+						//Look for geographicExtent defined by a predifined perimeter
+						foreach ($nodes_geographicElement as $node_geographicElement){
+							//Description is multilingual, get the one in default language
+							$nodes_description_text = $xpathResults->query("gmd:EX_GeographicDescription/gmd:geographicIdentifier/gmd:MD_Identifier/gmd:code/gco:CharacterString", $node_geographicElement);
+							if(count($nodes_description_text) == 0){
+								//Not a geographicIdentifier
+								continue;
+							}else{
+								foreach ($nodes_description_text as $node_description_text){
+									$extent_object->description = $node_description_text->nodeValue;
+								}
+							}
+						}
+					}
+				}
+				
+				print_r($extent_object);
+				echo("<br>");
+				//Add extent object to array
+				array_push($extent_object_array, $extent_object);
+			}
 		}
+		echo("<hr>");
 		
 		//Liste des catégories de périmètres
 		$language =& JFactory::getLanguage();

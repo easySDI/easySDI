@@ -3759,36 +3759,28 @@ class HTML_metadata {
 						$nextIsocode = $child->child_isocode;
 					// Appel récursif de la fonction pour le traitement du prochain niveau
 					//HTML_metadata::buildTree($prof, $database, $child->classes_to_id, $child->classes_to_id, $name, $xpathResults, $classScope, $queryPath, $nextIsocode, $account_id, $option);
-					//echo "Appel récursif avec les valeurs suivantes:<br> ";
-					//echo "Ancetre = ".$ancestor."<br>";
-					//echo "Parent = ".$child->child_id."<br>";
-					//echo "Parent Fieldset = ".$child->child_id."<br>";
-					//echo "Parent Name = ".$name."<br>";
-					//echo "Parent avec un $ = ".$parent."<br>";
-					//echo "Scope = ".$scope->nodeName."<br>";
-// 					echo "Stéréotype case 1<br>";
-// 					echo "ClassScope = ".$classScope->nodeName."<br>";
-// 					echo "QueryPath = ".$queryPath."<br>";
-// 					//echo "Current Isocode = ".$nextIsocode."<br>";
-// 					//echo "Account Id = ".$account_id."<br>";
-// 					echo "<hr>";
 					
 					//TODO : stereotype case 1 : Pas d'occurence de la relation dans le XML : on créer le master
 					if ($child->cl_stereotype_id <> null){
-//  							echo "case 1";
-							// Créer un nouveau fieldset
-							$this->javascript .="
-							var master = Ext.getCmp('".$master."');
-							var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, false, false, true, true, null, 1, 1, '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false);
-							".$parentFieldsetName.".add(".$fieldsetName.");
-							";
-							
 						//Tester le stereotype pour créer le bon
 						$database->setQuery("SELECT alias FROM #__sdi_sys_stereotype WHERE id =".$child->cl_stereotype_id);
 						$stereotype = $database->loadResult();
 						switch ($stereotype){
 							case "geographicextent":
-								HTML_classstereotype_builder::getGeographicExtentClass($database,$name, $child, $fieldsetName, $xpathResults, $queryPath,$scope);
+								echo("Case 1 :");
+								echo("<br>");
+								//Attention : l'ensemble des classe stereotypée liées à ce noeud parent vont
+								//être traité lors du premier, et unique, appel au classstereotype_builder.
+								//Ce traitement particulier est dû à la gestion particulière de la cardinalité de la
+								//relation vers une classe stereotypée geographicExtent (utilisation d'un ItemSelector)
+								if($pos == 0){
+									// Créer un nouveau fieldset
+									$this->javascript .="
+									var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, false, false, true, true, null, 1, 1, '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false);
+									".$parentFieldsetName.".add(".$fieldsetName.");
+									";
+									HTML_classstereotype_builder::getGeographicExtentClass($database,$name, $child, $fieldsetName, $xpathResults, $queryPath,$scope);
+								}
 						}
 					}else{
 						// Créer un nouveau fieldset
@@ -3841,46 +3833,36 @@ class HTML_metadata {
 						$master = $parentName."-".str_replace(":", "_", $child->child_isocode)."__1";
 						// On construit le nom de l'occurence
 						$name = $parentName."-".str_replace(":", "_", $child->child_isocode)."__".($pos+1);
-								
-						// Construction du bloc de la classe enfant
-						// Nom du fieldset avec guid pour l'unicité
-						$fieldsetName = "fieldset".$child->child_id."_".str_replace("-", "_", helper_easysdi::getUniqueId());
-				
 						
 						// Le code ISO de la classe enfant devient le code ISO du nouveau parent
 						$nextIsocode = $child->child_isocode;
-					// Appel récursif de la fonction pour le traitement du prochain niveau
-					//HTML_metadata::buildTree($prof, $database, $child->classes_to_id, $child->classes_to_id, $name, $xpathResults, $classScope, $queryPath, $nextIsocode, $account_id, $option);
-					
-					//echo "Appel r�cursif avec les valeurs suivantes:<br> ";
-					//echo "Parent = ".$child->child_id."<br>";
-					//echo "Parent Fieldset = ".$child->child_id."<br>";
-					//echo "Parent Name = ".$name."<br>";
-// 					echo "Stéréotype case 2<br>";
-// 					echo "ClassScope = ".$classScope->nodeName."<br>";
-// 					echo "QueryPath = ".$queryPath."<br>";
-// 					//echo "Current Isocode = ".$nextIsocode."<br>";
-// 					//echo "Account Id = ".$account_id."<br>";
-// 					echo "<hr>";
+
 					
 					//TODO : stereotype case 2 : traitement des occurences trouvées dans le XML
 					if ($child->cl_stereotype_id <> null){
-//  						echo "case 2";
-						// Créer un nouveau fieldset
-						$this->javascript .="
-						var master = Ext.getCmp('".$master."');
-						var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, true, true, true, true, master, 1, 1, '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false);
-						".$parentFieldsetName.".add(".$fieldsetName.");
-						";
-						
 						//Tester le stereotype pour créer le bon
 						$database->setQuery("SELECT alias FROM #__sdi_sys_stereotype WHERE id =".$child->cl_stereotype_id);
 						$stereotype = $database->loadResult();
 						switch ($stereotype){
 							case "geographicextent":
-								HTML_classstereotype_builder::getGeographicExtentClass($database,$name, $child, $fieldsetName, $xpathResults, $queryPath,$scope);
+								echo("Case 2 :");
+								echo("<br>");
+								//Attention : l'ensemble des classe stereotypée liées à ce noeud parent vont
+								//être traité lors du premier, et unique, appel au classstereotype_builder.
+								//Ce traitement particulier est dû à la gestion particulière de la cardinalité de la
+								//relation vers une classe stereotypée geographicExtent (utilisation d'un ItemSelector)
+								if($pos == 1){
+									// Créer un nouveau fieldset
+									$this->javascript .="
+									var master = Ext.getCmp('".$master."');
+									var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, true, true, true, true, master, 1, 1, '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false);
+									".$parentFieldsetName.".add(".$fieldsetName.");
+									";
+									HTML_classstereotype_builder::getGeographicExtentClass($database,$name, $child, $fieldsetName, $xpathResults, $queryPath,$scope);
+								}
 						}
 					}else{
+						
 						// Créer un nouveau fieldset
 						$this->javascript .="
 						var master = Ext.getCmp('".$master."');
@@ -3906,7 +3888,7 @@ class HTML_metadata {
 				// il faut créer en plus du master un bloc de saisie qui ne puisse pas être supprimé par l'utilisateur 
 				//OU
 				//Si la classe enfant est de type geographic extent
-				if (($relCount==0 and $child->rel_lowerbound>0) || $child->cl_stereotype_id <> null)
+				if (($relCount==0 and $child->rel_lowerbound>0) || ($child->cl_stereotype_id <> null && $relCount==0))
 				{
 					// Construction du nom du fieldset qui va correspondre à la classe
 					// On n'y met pas la relation qui n'a pas d'intérêt pour l'unicité du nom
@@ -3929,19 +3911,20 @@ class HTML_metadata {
 					
 				//TODO : stereotype case 3 : occurence obligatoire mais pas présente dans le XML donc création d'une occurence en plus du master
 				if ($child->cl_stereotype_id <> null){
-//  					echo "case 3";
-					// Créer un nouveau fieldset
-					$this->javascript .="
-					var master = Ext.getCmp('".$master."');
-					var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, true, true, true, true, master, 1,1, '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false);
-					".$parentFieldsetName.".add(".$fieldsetName.");
-					";
-					
 					//Tester le stereotype pour créer le bon
 					$database->setQuery("SELECT alias FROM #__sdi_sys_stereotype WHERE id =".$child->cl_stereotype_id);
 					$stereotype = $database->loadResult();
 					switch ($stereotype){
 						case "geographicextent":
+							echo("Case 3 :");
+							echo("<br>");
+							// Créer un nouveau fieldset
+							$this->javascript .="
+							var master = Ext.getCmp('".$master."');
+							var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, true, true, true, true, master, 1,1, '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false);
+							".$parentFieldsetName.".add(".$fieldsetName.");
+							";
+								
 							HTML_classstereotype_builder::getGeographicExtentClass($database,$name, $child, $fieldsetName, $xpathResults, $queryPath,$scope);
 					}
 				}else{

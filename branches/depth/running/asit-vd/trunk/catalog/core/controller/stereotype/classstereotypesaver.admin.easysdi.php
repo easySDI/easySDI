@@ -79,7 +79,7 @@ class ADMIN_classstereotype_saver {
 			
 			//Description
 			$node2 = $XMLDoc->createElement("gmd:description");
-			$XMLNode->appendChild($node2);
+			$nodechild->appendChild($node2);
 			
 			foreach($this->langList as $lang)
 			{
@@ -113,7 +113,7 @@ class ADMIN_classstereotype_saver {
 			$boundary = $database->loadObject();
 			
 			$nodeA = $XMLDoc->createElement("gmd:geographicElement");
-			$XMLNode->appendChild($nodeA);
+			$nodechild->appendChild($nodeA);
 			
 			$nodeB = $XMLDoc->createElement("gmd:EX_GeographicBoundingBox");
 			$nodeA->appendChild($nodeB);
@@ -143,7 +143,7 @@ class ADMIN_classstereotype_saver {
 			
 			//Geographic element Identifier
 			$nodeI = $XMLDoc->createElement("gmd:geographicElement");
-			$XMLNode->appendChild($nodeI);
+			$nodechild->appendChild($nodeI);
 			
 			$nodeII = $XMLDoc->createElement("gmd:EX_GeographicDescription");
 			$nodeI->appendChild($nodeII);
