@@ -1816,9 +1816,10 @@ class ADMIN_metadata {
 		
 		// Check the attribute in if checked out
 		$rowObject = new object( $database );
-		$rowObject->load( $_POST['object_id'] );
-			
-		$rowObject->checkin();
+		if (isset($_POST['object_id'])){
+			$rowObject->load( $_POST['object_id'] );
+			$rowObject->checkin();
+		}
 	}
 	
 	/*

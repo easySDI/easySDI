@@ -291,46 +291,35 @@ Ext.override(Ext.form.FieldSet, {
 		if (component.tools) if (component.getTool('minus')) (isHiddenMinus) ? component.getTool('minus').hide() : component.getTool('minus').show();
 		if (component.tools) if (component.getTool('plus')) (isHiddenPlus) ? component.getTool('plus').hide() : component.getTool('plus').show();
 	},
+	
 	constructClone : function(original, count) 
 	{
-		//console.log("Original: " + original.getId());
+//		console.log("Original: " + original.getId());
 		var childs = Ext.getCmp(original.getId()).items;
 
 		if (childs)
 			count=childs.length;
-		//console.log("Nombre d'enfants: " + count);
+//		console.log("Nombre d'enfants: " + count);
+		
 		// Clone each child and add it to the clone of the original parent
 		for (var i=0; i<count;i++)
 		{
 			// Get the child
 			var child = childs.get(i);
 			
-			//console.log(child.minOccurs == child.maxOccurs);
-			//console.log("Enfant " + i + ": " + child.getId());
+//			console.log(child.minOccurs == child.maxOccurs);
+//			console.log("Enfant " + i + ": " + child.getId());
 			if (!child.clone)
 			{
 		
 					if(child.clones)
 						child.clones(1,this, false);
-				/*	else if (child.GeoExtMapPanel){
-						child.cloneConfig(1,this, false);
-					}*/
-	
 				
 				if (child.minOccurs > 0 && child.xtype=='fieldset')
 				{
 					child.clones(child.minOccurs+1,this, true);
 				}
 			}
-			// [SGI - 28.10.09] Cas de lowerbound >0 => cloner les clones
-			/*else if (child.minOccurs > 0)
-			{
-				var idx = original.ownerCt.items.indexOf(original)+1+i;
-				console.log("template owner: " + child.template.ownerCt.getId());
-				console.log("this: " + this.getId());
-			   	//child.clones(1, child.template.ownerCt, true);
-				child.clones(1, this, true);
-			}*/
 		}
 	},
 	constructDuplicataChilds : function(original, count) 

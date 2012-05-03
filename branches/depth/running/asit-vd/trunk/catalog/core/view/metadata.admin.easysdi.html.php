@@ -53,12 +53,14 @@ JHTML::script('shCore.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('shBrushXml.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('thesaur.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('HS.js', 'administrator/components/com_easysdi_catalog/js/');
-JHTML::script('ItemSelector.js', 'administrator/components/com_easysdi_catalog/ext/ux/');
-JHTML::script('MultiSelect.js', 'administrator/components/com_easysdi_catalog/ext/ux/');
+JHTML::script('ItemSelector.js', 'administrator/components/com_easysdi_catalog/js/ux/form/');
+JHTML::script('MultiSelect.js', 'administrator/components/com_easysdi_catalog/js/ux/form/');
+//JHTML::script('ExtendedItemSelector.js', 'administrator/components/com_easysdi_catalog/js/');
 
 $jsLoader =JSLOADER_UTIL::getInstance();
 JHTML::script('SingleFile.js', $jsLoader->getPath("map","openlayers", "/lib/OpenLayers/"));
 JHTML::script('OpenLayers.js', $jsLoader->getPath("map","openlayers"));
+
 
 JHTML::_('stylesheet', 'MultiSelect.css', 'administrator/components/com_easysdi_catalog/ext/ux/css/');
 
@@ -3779,7 +3781,7 @@ class HTML_metadata {
 									var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, false, false, true, true, null, 1, 1, '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false);
 									".$parentFieldsetName.".add(".$fieldsetName.");
 									";
-									HTML_classstereotype_builder::getGeographicExtentClass($database,$name, $child, $fieldsetName, $xpathResults, $queryPath,$scope, true);
+									HTML_classstereotype_builder::getGeographicExtentClass($database,$name, $child, $fieldsetName, $xpathResults, $queryPath,$scope, true, false);
 								}
 						}
 					}else{
@@ -3858,7 +3860,7 @@ class HTML_metadata {
 									var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, true, true, true, true, master, 1, 1, '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false);
 									".$parentFieldsetName.".add(".$fieldsetName.");
 									";
-									HTML_classstereotype_builder::getGeographicExtentClass($database,$name, $child, $fieldsetName, $xpathResults, $queryPath,$scope, false);
+									HTML_classstereotype_builder::getGeographicExtentClass($database,$name, $child, $fieldsetName, $xpathResults, $queryPath,$scope, false, true);
 								}
 						}
 					}else{
@@ -3925,7 +3927,7 @@ class HTML_metadata {
 							".$parentFieldsetName.".add(".$fieldsetName.");
 							";
 								
-							HTML_classstereotype_builder::getGeographicExtentClass($database,$name, $child, $fieldsetName, $xpathResults, $queryPath,$scope, false);
+							HTML_classstereotype_builder::getGeographicExtentClass($database,$name, $child, $fieldsetName, $xpathResults, $queryPath,$scope, false, true);
 					}
 				}else{
 					// Créer un nouveau fieldset

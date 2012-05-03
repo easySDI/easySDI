@@ -48,7 +48,7 @@ Ext.override(Ext.form.Field, {
     	var panel = (ownerCtrl) ? ownerCtrl : this.ownerCt;
     	var isClone = (isClone!=undefined) ? isClone : true;
 		var master = this;
-
+		
 		if ( this.template && Ext.getCmp(this.template.getId()) && panel.findById(this.template.getId())) 
 		{
 			master = this.template;
@@ -62,20 +62,23 @@ Ext.override(Ext.form.Field, {
 					return cmp.template == this.template;
 				}
 			},{template:master});
-
+		
 		if ( Ext.isEmpty(card)) 
 		{
 			return cmps;
-		}										
-		//
+		}	
+		
+		
 		// sanitize amount of clones untill cardinality is reached
 		if ( !Ext.isEmpty(card) ) {
+			
 			//
 			// add clones untill card is reached			
 			for ( var i = cmps.length ; i < card ; i ++ ) {
 
 				var parentName = panel.getId();
 				var name = master.getId();
+
 				if (isClone)
 				{
 					var masterName = parentName + name.substring(parentName.length);
@@ -98,7 +101,7 @@ Ext.override(Ext.form.Field, {
 
 			    var nameEndPart = partOfNameToModify.substring(partOfNameToModify2.length+String(master.clones_count).length);
 				var newName = parentName + partOfNameToModify2 + clones_count + nameEndPart;
-				
+//				console.log ("name : "+name);
 				if (master.xtype == "choicetext" || master.xtype == "combo")
 				{
 					var clone = master.cloneConfig({

@@ -25,7 +25,7 @@ defined('_JEXEC') or die('Restricted access');
 
 class HTML_classstereotype_builder {
 	
-	function getGeographicExtentClass( $database, $fieldsetname, $relationObject, $parentFieldsetName, $xpathResults, $path, $scope, $master){
+	function getGeographicExtentClass( $database, $fieldsetname, $relationObject, $parentFieldsetName, $xpathResults, $path, $scope, $master, $clone){
 		//Pour info $scope : gmd:MD_DataIdentification
 		
 		//Default language
@@ -199,6 +199,7 @@ class HTML_classstereotype_builder {
 				}
 			}
 		}
+		$clone = $clone ? 'true' : 'false';
 		
 		$this->javascript .="
 			 var sourceDS = new Ext.data.ArrayStore({
@@ -243,15 +244,26 @@ class HTML_classstereotype_builder {
 		 var ".$parentFieldsetName."_itemselector = new Ext.ux.form.ItemSelector({
 	                    name: '".$itemselectorName."',
 	                    id: '".$itemselectorName."',
+	                    clone: ".$clone.",
 			            fieldLabel: '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_PERIMETER_LABEL"))."',
 				        imagePath: '/easysdi/administrator/components/com_easysdi_catalog/ext/ux/images/',
 			            multiselects: [{
+			            	legend: 'Available',
+			            	id: '".$itemselectorName."_available',
+			            	minOccurs:1,
+	            			maxOccurs:1,
+	            			dynamic:true,
 			                width: 250,
 			                height: 200,
 			                store: sourceDS,
 			                displayField: 'text',
 			                valueField: 'value'
 			            },{
+			            	legend: 'Selected',
+			            	id: '".$itemselectorName."_selected',
+			                minOccurs:1,
+	            			maxOccurs:1,
+			                dynamic:true,
 			                width: 250,
 			                height: 200,
 			                store: destinationDS,
