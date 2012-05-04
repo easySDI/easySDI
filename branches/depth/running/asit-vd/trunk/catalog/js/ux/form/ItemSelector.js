@@ -227,12 +227,9 @@ Ext.ux.form.ItemSelector = Ext.extend(Ext.form.Field,  {
             height: 100
         }];
 
-//        console.log (this.id +" - "+ this.clone);
-//        console.log (this.multiselects[0]);
         this.fromMultiselect = new Ext.ux.form.MultiSelect(Ext.applyIf(this.multiselects[0], msConfig[0]));
         this.fromMultiselect.on('dblclick', this.onRowDblClick, this);
 
-//        console.log (this.multiselects[1]);
         this.toMultiselect = new Ext.ux.form.MultiSelect(Ext.applyIf(this.multiselects[1], msConfig[1]));
         this.toMultiselect.on('dblclick', this.onRowDblClick, this);
 

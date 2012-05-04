@@ -244,8 +244,8 @@ class HTML_classstereotype_builder {
 			            multiselects: [{
 			            	legend: 'Available',
 			            	id: '".$itemselectorName."_available',
-			            	minOccurs:1,
-	            			maxOccurs:1,
+			            	minSelections:0,
+	            			maxSelections:999,
 	            			dynamic:true,
 			                width: 250,
 			                height: 200,
@@ -255,8 +255,8 @@ class HTML_classstereotype_builder {
 			            },{
 			            	legend: 'Selected',
 			            	id: '".$itemselectorName."_selected',
-			                minOccurs:1,
-	            			maxOccurs:1,
+			                minSelections:1,
+	            			maxSelections:1,
 			                dynamic:true,
 			                width: 250,
 			                height: 200,
