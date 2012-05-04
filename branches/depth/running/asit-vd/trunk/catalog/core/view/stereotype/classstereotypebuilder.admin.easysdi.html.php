@@ -145,43 +145,9 @@ class HTML_classstereotype_builder {
 		//Construire le ItemSelector avec la liste des périmètres correspondant à la catégorie sélectionnée
 		$itemselectorName = $fieldsetname."-gmd_geographicElement__1";
 		
-		//Avalaible boundaries
-		if(count($extent_object_array) > 0 ){
-			$query = "SELECT b.id as id, t.label as label
-			FROM #__sdi_boundary b
-			INNER JOIN #__sdi_translation t ON b.guid = t.element_guid
-			INNER JOIN #__sdi_language l ON t.language_id=l.id
-			INNER JOIN #__sdi_list_codelang c ON l.codelang_id=c.id
-			WHERE c.code='".$language->_lang."'
-			";
-// 			$query = "SELECT b.id as id, t.label as label
-// 						FROM #__sdi_boundary b
-// 							INNER JOIN #__sdi_translation t ON b.guid = t.element_guid
-// 							INNER JOIN #__sdi_language l ON t.language_id=l.id
-// 							INNER JOIN #__sdi_list_codelang c ON l.codelang_id=c.id
-// 						WHERE c.code='".$language->_lang."'
-// 						AND b.id NOT IN (SELECT b.id as id
-// 								FROM #__sdi_boundary b
-// 									INNER JOIN #__sdi_translation t ON b.guid = t.element_guid
-// 									INNER JOIN #__sdi_language l ON t.language_id=l.id
-// 									INNER JOIN #__sdi_list_codelang c ON l.codelang_id=c.id
-// 								WHERE c.code='".$default_lang."'
-// 								AND t.title='".$extent_object->description."')";
-			
-		}else{
-			$query = "SELECT b.id as id, t.label as label
-			FROM #__sdi_boundary b
-			INNER JOIN #__sdi_translation t ON b.guid = t.element_guid
-			INNER JOIN #__sdi_language l ON t.language_id=l.id
-			INNER JOIN #__sdi_list_codelang c ON l.codelang_id=c.id
-			WHERE c.code='".$language->_lang."'
-			";
-			
-		}
-		$database->setQuery( $query );
-		$perimetercontent = $database->loadObjectList();
 		
 		//Selected boundaries
+		$query_ids = "";
 		$selectedBoundaries = array();
 		if(count($extent_object_array) > 0 ){
 			foreach ($extent_object_array as $extent_object){
@@ -195,22 +161,50 @@ class HTML_classstereotype_builder {
 								AND t.title='".$extent_object->description."'";
 					$database->setQuery( $query );
 					$perimeter_selected = $database->loadObject();
+					if(strlen($query_ids) != 0) {
+						$query_ids += ",";
+					}
+					$query_ids .= $perimeter_selected->id;
 					array_push($selectedBoundaries,$perimeter_selected);
 				}
 			}
 		}
+		
+		//Avalaible boundaries
+		if(count($extent_object_array) > 0 ){
+			$query = "SELECT b.id as id, t.label as label
+					FROM #__sdi_boundary b
+						INNER JOIN #__sdi_translation t ON b.guid = t.element_guid
+						INNER JOIN #__sdi_language l ON t.language_id=l.id
+						INNER JOIN #__sdi_list_codelang c ON l.codelang_id=c.id
+					WHERE c.code='".$language->_lang."'
+					AND b.id NOT IN ($query_ids)";
+				
+		}else{
+			$query = "SELECT b.id as id, t.label as label
+			FROM #__sdi_boundary b
+			INNER JOIN #__sdi_translation t ON b.guid = t.element_guid
+			INNER JOIN #__sdi_language l ON t.language_id=l.id
+			INNER JOIN #__sdi_list_codelang c ON l.codelang_id=c.id
+			WHERE c.code='".$language->_lang."'
+			";
+				
+		}
+		$database->setQuery( $query );
+		$availableBoundaries = $database->loadObjectList();
+		
 		$clone = $clone ? 'true' : 'false';
 		
 		$this->javascript .="
 			 var sourceDS = new Ext.data.ArrayStore({
 			        data: [";
-					    foreach ($perimetercontent as $perimeter){
+					    foreach ($availableBoundaries as $boundary){
 					    	$this->javascript .="[
-					    	'".$perimeter->id."','".$perimeter->label."'
+					    	'".$boundary->id."','".$boundary->label."'
 					    	],
 					    	";
 						};
-						if(count($perimetercontent)>0)
+						if(count($availableBoundaries)>0)
 							$this->javascript = substr($this->javascript, 0, strlen($this->javascript)-1);
 						$this->javascript .="],
 			        fields: ['value','text'],
