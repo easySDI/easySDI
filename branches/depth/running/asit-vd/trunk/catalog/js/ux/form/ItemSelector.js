@@ -117,13 +117,12 @@ Ext.ux.form.ItemSelector = Ext.extend(Ext.form.Field,  {
 				        }
 				});
 				
-				 var sourceData = "";
+				 var sourceData = new Array();
 				 
 					 master.multiselects[0].store.each (function (record){
-						 sourceData = sourceData+"['"+record.data.value+"','"+record.data.text+"'],"; 
+						 sourceData.push([record.data.value,record.data.text]); 
 					 }, this);
-					 sourceData = "["+sourceData.substring(0,sourceData.length-1)+"]";
-				
+					 
 				
 				 var	sourceDS = new   Ext.data.ArrayStore({
 					data: sourceData,
