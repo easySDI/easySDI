@@ -408,6 +408,9 @@ Ext.ux.form.ItemSelector = Ext.extend(Ext.form.Field,  {
                     this.fromMultiselect.view.store.remove(record);
                     this.toMultiselect.view.store.add(record);
                     selectionsArray.push((this.toMultiselect.view.store.getCount() - 1));
+                    if( !this.toMultiselect.validateValue(this.toMultiselect.view.store.data)){
+                    	this.toMultiselect.view.store.remove(record);
+                    }
                 }
             }
         }

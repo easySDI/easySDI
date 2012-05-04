@@ -3769,8 +3769,8 @@ class HTML_metadata {
 						$stereotype = $database->loadResult();
 						switch ($stereotype){
 							case "geographicextent":
-								echo("Case 1 :");
-								echo("<br>");
+// 								echo("Case 1 :");
+// 								echo("<br>");
 								//Attention : l'ensemble des classe stereotypée liées à ce noeud parent vont
 								//être traité lors du premier, et unique, appel au classstereotype_builder.
 								//Ce traitement particulier est dû à la gestion particulière de la cardinalité de la
@@ -3847,8 +3847,8 @@ class HTML_metadata {
 						$stereotype = $database->loadResult();
 						switch ($stereotype){
 							case "geographicextent":
-								echo("Case 2 :");
-								echo("<br>");
+// 								echo("Case 2 :");
+// 								echo("<br>");
 								//Attention : l'ensemble des classe stereotypée liées à ce noeud parent vont
 								//être traité lors du premier, et unique, appel au classstereotype_builder.
 								//Ce traitement particulier est dû à la gestion particulière de la cardinalité de la
@@ -3918,8 +3918,8 @@ class HTML_metadata {
 					$stereotype = $database->loadResult();
 					switch ($stereotype){
 						case "geographicextent":
-							echo("Case 3 :");
-							echo("<br>");
+// 							echo("Case 3 :");
+// 							echo("<br>");
 							// Créer un nouveau fieldset
 							$this->javascript .="
 							var master = Ext.getCmp('".$master."');

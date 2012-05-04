@@ -99,8 +99,8 @@ class HTML_classstereotype_builder {
 						}
 					}
 					
-					print_r($extent_object);
-					echo("<br>");
+// 					print_r($extent_object);
+// 					echo("<br>");
 					//Add extent object to array
 					array_push($extent_object_array, $extent_object);
 				}
