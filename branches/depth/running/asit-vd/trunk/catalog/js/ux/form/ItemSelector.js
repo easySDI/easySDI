@@ -117,25 +117,23 @@ Ext.ux.form.ItemSelector = Ext.extend(Ext.form.Field,  {
 				        }
 				});
 				
-				var sourceData = "";
-				 master.multiselects[0].store.each (function (record){
-					 sourceData = sourceData+"['"+record.data.value+"','"+record.data.text+"'],"; 
-				 }, this);
+				 var sourceData = "";
 				 
-				// var t = "["+sourceData.substring(0,sourceData.length-1)+"]";
-				var  t = "[['0', 'ici'],['1','la-bas']]";
-				var	sourceDS = new   Ext.data.ArrayStore({
-						data: t,
-						fields: ['value','text'],
-					        sortInfo: {
-					            field: 'value',
-					            direction: 'ASC'
-					        }
-					});
+					 master.multiselects[0].store.each (function (record){
+						 sourceData = sourceData+"['"+record.data.value+"','"+record.data.text+"'],"; 
+					 }, this);
+					 sourceData = "["+sourceData.substring(0,sourceData.length-1)+"]";
 				
 				
-//				var sourceDS = master.multiselects[0].store;
-					
+				 var	sourceDS = new   Ext.data.ArrayStore({
+					data: sourceData,
+					fields: ['value','text'],
+				        sortInfo: {
+				            field: 'value',
+				            direction: 'ASC'
+				        }
+				});
+				 
 				var clone = master.cloneConfig({
 					id : newName,
 					name : newName,
@@ -143,7 +141,7 @@ Ext.ux.form.ItemSelector = Ext.extend(Ext.form.Field,  {
 					clone : isClone,
 					clones_count: clones_count,
 					template : master,
-					 multiselects: [{
+					multiselects: [{
 			            	legend: 'Available',
 			            	id: newName+'_available',
 			            	minOccurs:1,
@@ -168,8 +166,6 @@ Ext.ux.form.ItemSelector = Ext.extend(Ext.form.Field,  {
 			            }],
 					iconCfg : {cls:'x-tool x-tool-minus',clsOnOver:'x-tool-minus-over'}																	   
 				});
-				
-				
 				
 				if (isClone)
 				{
