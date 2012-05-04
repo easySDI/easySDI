@@ -26,29 +26,13 @@ class ADMIN_classstereotype_saver {
 	
 	function saveGeographicExtentClass($database, $relationObject, &$XMLDoc, $XMLNode, $fieldsetName){
 		
-// 		echo ("Name = ".$fieldsetName);
-// 		echo("\n");
-// 		$key = $fieldsetName."-sdi_extentType__1_hidden";
-// 		echo ("Key = ".$key);
-// 		echo("\n");
-// 		echo ("POST[key] = ".$_POST[$key]);
-// 		echo("\n");
-// 		$key = $fieldsetName."-gmd_geographicElement__1";
-// 		echo ("Key = ".$key);
-// 		echo("\n");
-// 		echo ("POST[key] = ".$_POST[$key]);
-// 		echo("\n");
-		
 		//Le doc XML contient déjà le noeud de la relation et le noeud de la classe du stereotype
 		
 		
 		//Boundary id
 		$key = $fieldsetName."-gmd_geographicElement__1";
 		$boundaries_id = json_decode("[".$_POST[$key]."]",true);
-		echo $key;
-		echo ("\n");
-		print_r($boundaries_id) ;
-		echo ("\n");
+
 		foreach ($boundaries_id as $boundary_id){
 			$query = "SELECT b.id as id, t.label as label, c.code as codelang, t.title as title, bc.alias as alias
 						FROM #__sdi_boundary b
