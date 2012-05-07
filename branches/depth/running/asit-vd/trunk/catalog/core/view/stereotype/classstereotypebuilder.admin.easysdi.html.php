@@ -25,7 +25,7 @@ defined('_JEXEC') or die('Restricted access');
 
 class HTML_classstereotype_builder {
 	
-	function getGeographicExtentClass( $database, $fieldsetname, $relationObject, $parentFieldsetName, $xpathResults, $path, $scope, $master, $clone){
+	function getGeographicExtentClass( $database, $fieldsetname, $relationObject, $parentFieldsetName, $xpathResults, $path, $scope, $master, $clone = false){
 		//Pour info $scope : gmd:MD_DataIdentification
 		
 		//Default language
@@ -105,7 +105,7 @@ class HTML_classstereotype_builder {
 					array_push($extent_object_array, $extent_object);
 				}
 			}
-			echo("<hr>");
+// 			echo("<hr>");
 		}
 		
 		//Liste des catégories de périmètres
@@ -136,8 +136,15 @@ class HTML_classstereotype_builder {
 		var selectedValueList = '';
 		var defaultValueList = '';
 		
-		
 		".$parentFieldsetName.".add(createComboBox('".$comboboxName."', '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_CATEGORY_LABEL"))."', false, '1', '1', valueList, selectedValueList, defaultValueList, false, '".html_Metadata::cleanText(JText::_(""))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."'));
+		
+		var comboboxCategories = document.getElementById('".$comboboxName."');
+		comboboxCategories.addListener('select', function(){
+			var itemselector = document.getElementById('".$parentFieldsetName."_itemselector');
+			var fromMultiselect = itemselector.fromMultiselect;
+			
+		}, this);
+		
 		";
 		
 		//Ajouter un listener pour recharger la liste des périmètres quand la catégorie a été changée
@@ -145,24 +152,28 @@ class HTML_classstereotype_builder {
 		//Construire le ItemSelector avec la liste des périmètres correspondant à la catégorie sélectionnée
 		$itemselectorName = $fieldsetname."-gmd_geographicElement__1";
 		
-		
 		//Selected boundaries
 		$query_ids = "";
 		$selectedBoundaries = array();
 		if(count($extent_object_array) > 0 ){
 			foreach ($extent_object_array as $extent_object){
 				if( isset($extent_object->description)){
-					$query = "SELECT b.id as id, t.label as label
+					$query = "SELECT b.id as id, Concat (t.label,' [',tbc.label,']') as label
 								FROM #__sdi_boundary b
+									INNER JOIN #__sdi_boundarycategory bc ON b.category_id = bc.id 
+									INNER JOIN #__sdi_translation tbc ON bc.guid = tbc.element_guid
+									INNER JOIN #__sdi_language lbc ON tbc.language_id=lbc.id
+									INNER JOIN #__sdi_list_codelang cbc ON lbc.codelang_id=cbc.id
 									INNER JOIN #__sdi_translation t ON b.guid = t.element_guid
 									INNER JOIN #__sdi_language l ON t.language_id=l.id
 									INNER JOIN #__sdi_list_codelang c ON l.codelang_id=c.id
 								WHERE c.code='".$default_lang."'
+								AND cbc.code='".$default_lang."'
 								AND t.title='".$extent_object->description."'";
 					$database->setQuery( $query );
 					$perimeter_selected = $database->loadObject();
 					if(strlen($query_ids) != 0) {
-						$query_ids += ",";
+						$query_ids .= ",";
 					}
 					$query_ids .= $perimeter_selected->id;
 					array_push($selectedBoundaries,$perimeter_selected);
@@ -171,29 +182,40 @@ class HTML_classstereotype_builder {
 		}
 		
 		//Avalaible boundaries
-		if(count($extent_object_array) > 0 ){
-			$query = "SELECT b.id as id, t.label as label
+		if(count($selectedBoundaries) > 0 ){
+			$query = "SELECT b.id as id, Concat (t.label,' [',tbc.label,']') as label
 					FROM #__sdi_boundary b
+						INNER JOIN #__sdi_boundarycategory bc ON b.category_id = bc.id 
+						INNER JOIN #__sdi_translation tbc ON bc.guid = tbc.element_guid
+						INNER JOIN #__sdi_language lbc ON tbc.language_id=lbc.id
+						INNER JOIN #__sdi_list_codelang cbc ON lbc.codelang_id=cbc.id
 						INNER JOIN #__sdi_translation t ON b.guid = t.element_guid
 						INNER JOIN #__sdi_language l ON t.language_id=l.id
 						INNER JOIN #__sdi_list_codelang c ON l.codelang_id=c.id
 					WHERE c.code='".$language->_lang."'
+					AND cbc.code='".$language->_lang."'
 					AND b.id NOT IN ($query_ids)";
 				
 		}else{
-			$query = "SELECT b.id as id, t.label as label
-			FROM #__sdi_boundary b
-			INNER JOIN #__sdi_translation t ON b.guid = t.element_guid
-			INNER JOIN #__sdi_language l ON t.language_id=l.id
-			INNER JOIN #__sdi_list_codelang c ON l.codelang_id=c.id
-			WHERE c.code='".$language->_lang."'
+			$query = "SELECT b.id as id, Concat (t.label,' [',tbc.label,']') as label
+					FROM #__sdi_boundary b
+						INNER JOIN #__sdi_boundarycategory bc ON b.category_id = bc.id 
+						INNER JOIN #__sdi_translation tbc ON bc.guid = tbc.element_guid
+						INNER JOIN #__sdi_language lbc ON tbc.language_id=lbc.id
+						INNER JOIN #__sdi_list_codelang cbc ON lbc.codelang_id=cbc.id
+									
+						INNER JOIN #__sdi_translation t ON b.guid = t.element_guid
+						INNER JOIN #__sdi_language l ON t.language_id=l.id
+						INNER JOIN #__sdi_list_codelang c ON l.codelang_id=c.id
+					WHERE c.code='".$language->_lang."'
+					AND cbc.code='".$language->_lang."'
 			";
 				
 		}
 		$database->setQuery( $query );
 		$availableBoundaries = $database->loadObjectList();
 		
-		$clone = $clone ? 'true' : 'false';
+		$clone ? $clone = 'true' : $clone ='false';
 		
 		$this->javascript .="
 			 var sourceDS = new Ext.data.ArrayStore({
@@ -237,6 +259,7 @@ class HTML_classstereotype_builder {
 				  
 		 var ".$parentFieldsetName."_itemselector = new Ext.ux.form.ItemSelector({
 	                    name: '".$itemselectorName."',
+	                    comboboxname : '".$comboboxName."',
 	                    id: '".$itemselectorName."',
 	                    clone: ".$clone.",
 			            fieldLabel: '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_PERIMETER_LABEL"))."',

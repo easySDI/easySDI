@@ -50,151 +50,7 @@ Ext.ux.form.ItemSelector = Ext.extend(Ext.form.Field,  {
     clone : false,
     minOccurs : 1,
     maxOccurs : 1,
-   
-    
-    clones : function(card, ownerCtrl, isClone) 
-	{			
-    	var panel = (ownerCtrl) ? ownerCtrl : this.ownerCt;
-    	var isClone = (isClone!=undefined) ? isClone : true;
-		var master = this;
-
-		if ( this.template && Ext.getCmp(this.template.getId()) && panel.findById(this.template.getId())) 
-		{
-			master = this.template;
-		}
-		
-		var cmps  = panel.findBy(
-			function(cmp) 
-			{
-				if ( cmp.template ) 
-				{
-					return cmp.template == this.template;
-				}
-			},{template:master});
-
-		if ( Ext.isEmpty(card)) 
-		{
-			return cmps;
-		}										
-		
-		// sanitize amount of clones untill cardinality is reached
-		if ( !Ext.isEmpty(card) ) {
-			
-			// add clones untill card is reached			
-			for ( var i = cmps.length ; i < card ; i ++ ) {
-				var parentName = panel.getId();
-				var name = master.getId();
-
-				if (isClone)
-				{
-					var masterName = parentName + name.substring(parentName.length);
-					master = Ext.getCmp(masterName);
-				}
-				if (!master.clones_count)
-					master.clones_count=1;
-				var partOfNameToModify = name.substring(parentName.length);
-				var aName = name.split('__');
-				var sName = name.split('-');
-                var partOfNameToModify2 = name.substring(parentName.length, name.length-aName[aName.length - 1].length);
-				if(partOfNameToModify2.match("^-") != "-")
-				    partOfNameToModify2 = "-"+partOfNameToModify2;
-				
-			    master.clones_count = master.clones_count+1;
-			    if (isClone)
-					clones_count = master.clones_count;
-				else
-					clones_count = 1;
-
-			    var nameEndPart = partOfNameToModify.substring(partOfNameToModify2.length+String(master.clones_count).length);
-				var newName = parentName + partOfNameToModify2 + clones_count + nameEndPart;
-				
-				var destinationDS = new   Ext.data.ArrayStore({
-					data: [],
-					fields: ['value','text'],
-				        sortInfo: {
-				            field: 'value',
-				            direction: 'ASC'
-				        }
-				});
-				
-				 var sourceData = new Array();
-				 
-					 master.multiselects[0].store.each (function (record){
-						 sourceData.push([record.data.value,record.data.text]); 
-					 }, this);
-					 
-				
-				 var	sourceDS = new   Ext.data.ArrayStore({
-					data: sourceData,
-					fields: ['value','text'],
-				        sortInfo: {
-				            field: 'value',
-				            direction: 'ASC'
-				        }
-				});
-				 
-				var clone = master.cloneConfig({
-					id : newName,
-					name : newName,
-					hiddenName: newName + '_hidden',
-					clone : isClone,
-					clones_count: clones_count,
-					template : master,
-					multiselects: [{
-			            	legend: 'Available',
-			            	id: newName+'_available',
-			            	minOccurs:1,
-	            			maxOccurs:1,
-	            			dynamic:true,
-			                width: 250,
-			                height: 200,
-			                store: sourceDS,
-			                displayField: 'text',
-			                valueField: 'value'
-			            },{
-			            	legend: 'Selected',
-			            	id: newName+'_selected',
-			                minOccurs:1,
-	            			maxOccurs:1,
-			                dynamic:true,
-			                width: 250,
-			                height: 200,
-			                store: destinationDS,
-			                displayField: 'text',
-			                valueField: 'value'
-			            }],
-					iconCfg : {cls:'x-tool x-tool-minus',clsOnOver:'x-tool-minus-over'}																	   
-				});
-				
-				if (isClone)
-				{
-					var idx = idx = panel.items.indexOf(master)+1+i;
-			   		panel.insert(idx,clone);	
-				}
-				else
-				{
-					panel.add(clone);
-				}
-				
-				clone.setValue(master.defaultVal);
-				panel.doLayout();
-			}			
-
-			// remove clones untill cardinality is reached
-			for ( var i = cmps.length ; i > card ; i -- ) {
-					var field = cmps[i-1];
-					var item = Ext.get(field.el.findParent('.x-form-item'));
-					item.remove();
-					panel.remove(field);			
-			}
-			cmps  = panel.findBy(function(cmp) {
-						 if ( cmp.template ) {
-							return cmp.template == this.template;
-						 }
-						},{template:master});
-		}
-		return cmps;								
-	},
+    comboboxname : null,
     
     /**
      * @cfg {Array} multiselects An array of {@link Ext.ux.form.MultiSelect} config objects, with at least all required parameters (e.g., store)
@@ -408,9 +264,6 @@ Ext.ux.form.ItemSelector = Ext.extend(Ext.form.Field,  {
                     this.fromMultiselect.view.store.remove(record);
                     this.toMultiselect.view.store.add(record);
                     selectionsArray.push((this.toMultiselect.view.store.getCount() - 1));
-                    if( !this.toMultiselect.validateValue(this.toMultiselect.view.store.data)){
-                    	this.toMultiselect.view.store.remove(record);
-                    }
                 }
             }
         }
@@ -436,8 +289,24 @@ Ext.ux.form.ItemSelector = Ext.extend(Ext.form.Field,  {
                 record = records[i];
                 this.toMultiselect.view.store.remove(record);
                 if(!this.allowDup){
-                    this.fromMultiselect.view.store.add(record);
-                    selectionsArray.push((this.fromMultiselect.view.store.getCount() - 1));
+                	//EasySDI specific :
+                	//Check if the 'to' record is from the same record category that the records display in the 'from' store
+                	if(this.comboboxname != null){
+                		var comboboxCategories = document.getElementById(this.comboboxname);
+                		var selectedValue = comboboxCategories.getValue();
+                		if(selectedValue || 0 != selectedValue.length){
+                			if(record.data.text.indexOf( '['+selectedValue+']') != -1){
+                				this.fromMultiselect.view.store.add(record);
+                                selectionsArray.push((this.fromMultiselect.view.store.getCount() - 1));
+                			}
+                		}else{
+                			this.fromMultiselect.view.store.add(record);
+                            selectionsArray.push((this.fromMultiselect.view.store.getCount() - 1));
+                		}
+                	}else{
+	                    this.fromMultiselect.view.store.add(record);
+	                    selectionsArray.push((this.fromMultiselect.view.store.getCount() - 1));
+                	}
                 }
             }
         }
@@ -483,7 +352,151 @@ Ext.ux.form.ItemSelector = Ext.extend(Ext.form.Field,  {
             this.fromMultiselect.store.sort(si.field, si.direction);
         }
         this.valueChanged(this.toMultiselect.store);
-    }
+    },
+    
+    clones : function(card, ownerCtrl, isClone) 
+	{			
+    	var panel = (ownerCtrl) ? ownerCtrl : this.ownerCt;
+    	var isClone = (isClone!=undefined) ? isClone : true;
+		var master = this;
+
+		if ( this.template && Ext.getCmp(this.template.getId()) && panel.findById(this.template.getId())) 
+		{
+			master = this.template;
+		}
+		
+		var cmps  = panel.findBy(
+			function(cmp) 
+			{
+				if ( cmp.template ) 
+				{
+					return cmp.template == this.template;
+				}
+			},{template:master});
+
+		if ( Ext.isEmpty(card)) 
+		{
+			return cmps;
+		}										
+		
+		// sanitize amount of clones untill cardinality is reached
+		if ( !Ext.isEmpty(card) ) {
+			
+			// add clones untill card is reached			
+			for ( var i = cmps.length ; i < card ; i ++ ) {
+				var parentName = panel.getId();
+				var name = master.getId();
+
+				if (isClone)
+				{
+					var masterName = parentName + name.substring(parentName.length);
+					master = Ext.getCmp(masterName);
+				}
+				if (!master.clones_count)
+					master.clones_count=1;
+				var partOfNameToModify = name.substring(parentName.length);
+				var aName = name.split('__');
+				var sName = name.split('-');
+                var partOfNameToModify2 = name.substring(parentName.length, name.length-aName[aName.length - 1].length);
+				if(partOfNameToModify2.match("^-") != "-")
+				    partOfNameToModify2 = "-"+partOfNameToModify2;
+				
+			    master.clones_count = master.clones_count+1;
+			    if (isClone)
+					clones_count = master.clones_count;
+				else
+					clones_count = 1;
+
+			    var nameEndPart = partOfNameToModify.substring(partOfNameToModify2.length+String(master.clones_count).length);
+				var newName = parentName + partOfNameToModify2 + clones_count + nameEndPart;
+				
+				var destinationDS = new   Ext.data.ArrayStore({
+					data: [],
+					fields: ['value','text'],
+				        sortInfo: {
+				            field: 'value',
+				            direction: 'ASC'
+				        }
+				});
+				
+				 var sourceData = new Array();
+				 
+					 master.multiselects[0].store.each (function (record){
+						 sourceData.push([record.data.value,record.data.text]); 
+					 }, this);
+					 
+				
+				 var	sourceDS = new   Ext.data.ArrayStore({
+					data: sourceData,
+					fields: ['value','text'],
+				        sortInfo: {
+				            field: 'value',
+				            direction: 'ASC'
+				        }
+				});
+				 
+				var clone = master.cloneConfig({
+					id : newName,
+					name : newName,
+					hiddenName: newName + '_hidden',
+					clone : isClone,
+					clones_count: clones_count,
+					template : master,
+					multiselects: [{
+			            	legend: 'Available',
+			            	id: newName+'_available',
+			            	minOccurs:1,
+	            			maxOccurs:1,
+	            			dynamic:true,
+			                width: 250,
+			                height: 200,
+			                store: sourceDS,
+			                displayField: 'text',
+			                valueField: 'value'
+			            },{
+			            	legend: 'Selected',
+			            	id: newName+'_selected',
+			                minOccurs:1,
+	            			maxOccurs:1,
+			                dynamic:true,
+			                width: 250,
+			                height: 200,
+			                store: destinationDS,
+			                displayField: 'text',
+			                valueField: 'value'
+			            }],
+					iconCfg : {cls:'x-tool x-tool-minus',clsOnOver:'x-tool-minus-over'}																	   
+				});
+				
+				if (isClone)
+				{
+					var idx = idx = panel.items.indexOf(master)+1+i;
+			   		panel.insert(idx,clone);	
+				}
+				else
+				{
+					panel.add(clone);
+				}
+				
+				clone.setValue(master.defaultVal);
+				panel.doLayout();
+			}			
+
+			// remove clones untill cardinality is reached
+			for ( var i = cmps.length ; i > card ; i -- ) {
+					var field = cmps[i-1];
+					var item = Ext.get(field.el.findParent('.x-form-item'));
+					item.remove();
+					panel.remove(field);			
+			}
+			cmps  = panel.findBy(function(cmp) {
+						 if ( cmp.template ) {
+							return cmp.template == this.template;
+						 }
+						},{template:master});
+		}
+		return cmps;								
+	}
 });
 
 Ext.reg('itemselector', Ext.ux.form.ItemSelector);
