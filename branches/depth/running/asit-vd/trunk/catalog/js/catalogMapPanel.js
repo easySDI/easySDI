@@ -28,7 +28,6 @@ CatalogMapPanel = Ext.extend(Ext.Panel, {
 		OpenLayers.ProxyHost="/proxy/?url=";
 	//	var maxBounds = new OpenLayers.Bounds(defaultBBoxConfig.defaultExtent.left,defaultBBoxConfig.defaultExtent.bottom,defaultBBoxConfig.defaultExtent.right,defaultBBoxConfig.defaultExtent.top);
 
-
 		this.map = new OpenLayers.Map(Ext.getCmp(this.id).body.id, { controls: [] });
 
 		if(defaultBBoxConfig!=""){

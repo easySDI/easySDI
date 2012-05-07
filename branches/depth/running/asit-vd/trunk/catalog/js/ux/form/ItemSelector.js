@@ -65,6 +65,11 @@ Ext.ux.form.ItemSelector = Ext.extend(Ext.form.Field,  {
         });
     },
 
+    setFromMultiSelect: function (newMultiselectstore){
+    	this.fromMultiselect.store = newMultiselectstore;
+//    	this.fromMultiselect.fs.doLayout();
+    },
+    
     onRender: function(ct, position){
         Ext.ux.form.ItemSelector.superclass.onRender.call(this, ct, position);
 

@@ -35,9 +35,10 @@
 		            isLanguageFieldset: isLanguageFieldset,
 		            listeners :{
 		            	expand:function(){
-		            		
 		            		if(!this.hasBBox)
 		            			addBBoxToFieldSet(this.id);
+		            		if (!this.hasStereotypeGeographicExtentMap)
+		            			addStereotypeGeographicExtentMap(this.id);
 		            	},
 		            	afterrender:function(){
 		            		
@@ -785,7 +786,6 @@
 
 		if(typeof(defaultBBoxConfig) == "undefined")
 			return;
-		
 	
 		if(fieldsetId){			
 			if((fieldsetId.indexOf("gmd_EX_Extent")>=0)&&(fieldsetId.indexOf("gmd_EX_GeographicBoundingBox")>=0)){
@@ -793,10 +793,7 @@
 						if(!Ext.getCmp(fieldsetId).hasBBox){
 							Ext.getCmp(fieldsetId).hasBBox = true;			
 							var coords = Ext.getCmp(fieldsetId).items.items ; 
-							
-										
-							
-										
+						
 							var mapHelper = new CatalogMapPanel(fieldsetId);
 							Ext.getCmp(fieldsetId).doLayout();
 							mapHelper.addMap();	
@@ -830,11 +827,33 @@
 					
 			}
 		}
+	}
 		
-	
+	function addStereotypeGeographicExtentMap(fieldsetId){
 
+		if(typeof(mapConfigOption) == "undefined")
+			return;
+	
+		if(fieldsetId){			
+			if((fieldsetId.indexOf("gmd_EX_Extent")>=0)){
+				
+						if(!Ext.getCmp(fieldsetId).hasStereotypeGeographicExtentMap){
+							Ext.getCmp(fieldsetId).hasStereotypeGeographicExtentMap = true;			
+						
+							var mapHelper = new GeographicExtentStereotypeMapPanel(fieldsetId);
+							Ext.getCmp(fieldsetId).doLayout();
+							mapHelper.addMap();	
+	
+							
+						}
+					
+				
+					
+			}
+		}
 
 	}
+	
 
 
 

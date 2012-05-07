@@ -28,6 +28,18 @@ class HTML_classstereotype_builder {
 	function getGeographicExtentClass( $database, $fieldsetname, $relationObject, $parentFieldsetName, $xpathResults, $path, $scope, $master, $clone = false){
 		//Pour info $scope : gmd:MD_DataIdentification
 		
+		
+		//Chargement des attributs de la relation spécifiques au stéréotype
+		$query = "  SELECT sa.alias as alias, ra.value as value 
+						FROM #__sdi_sys_stereotype s 
+						INNER JOIN #__sdi_sys_attribute sa ON sa.stereotype_id = s.id
+						INNER JOIN #__sdi_relation_attribute ra ON ra.attribute_id =sa.id
+						INNER JOIN #__sdi_relation r ON r.id = ra.relation_id  
+					WHERE s.id =".$relationObject->cl_stereotype_id."
+					AND r.id = ".$relationObject->rel_id;
+		$database->setQuery($query);
+		$stereotypeAttributes = $database->loadObjectList();
+		
 		//Default language
 		foreach($this->langList as $lang)
 		{
@@ -130,27 +142,52 @@ class HTML_classstereotype_builder {
 		$rel_upperbound = $relationObject->rel_upperbound;
 		
 		$comboboxName = $fieldsetname."-sdi_extentType__1";
+		$itemselectorName = $fieldsetname."-gmd_geographicElement__1";
 		
 		$this->javascript .="
 		var valueList = ".HTML_metadata::array2extjs($dataValues, true).";
 		var selectedValueList = '';
 		var defaultValueList = '';
 		
-		".$parentFieldsetName.".add(createComboBox('".$comboboxName."', '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_CATEGORY_LABEL"))."', false, '1', '1', valueList, selectedValueList, defaultValueList, false, '".html_Metadata::cleanText(JText::_(""))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."'));
+		var comboboxCategories = createComboBox('".$comboboxName."', '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_CATEGORY_LABEL"))."', false, '1', '1', valueList, selectedValueList, defaultValueList, false, '".html_Metadata::cleanText(JText::_(""))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."');
+ 		".$parentFieldsetName.".add(comboboxCategories);
 		
-		var comboboxCategories = document.getElementById('".$comboboxName."');
-		comboboxCategories.addListener('select', function(){
-			var itemselector = document.getElementById('".$parentFieldsetName."_itemselector');
-			var fromMultiselect = itemselector.fromMultiselect;
+		
+		comboboxCategories.on('select', function(){
+				var itemselector = Ext.getCmp('".$itemselectorName."');
+				var data = [];
+				var datasource = new Ext.data.ArrayStore({
+			        data: [
+					    ],
+			        fields: ['value','text'],
+			        sortInfo: {
+			            field: 'value',
+			            direction: 'ASC'
+			        }
+			    });
+				var newMultiselect = {
+			            	legend: 'Available',
+			            	id: '".$itemselectorName."_available',
+			            	minSelections:0,
+	            			maxSelections:999,
+	            			dynamic:true,
+			                width: 250,
+			                height: 200,
+			                store: datasource,
+			                displayField: 'text',
+			                valueField: 'value'
+			            };
+			       
+				itemselector.setFromMultiSelect(datasource);
+			    
+			}, this);
 			
-		}, this);
-		
 		";
 		
 		//Ajouter un listener pour recharger la liste des périmètres quand la catégorie a été changée
 			
 		//Construire le ItemSelector avec la liste des périmètres correspondant à la catégorie sélectionnée
-		$itemselectorName = $fieldsetname."-gmd_geographicElement__1";
+		
 		
 		//Selected boundaries
 		$query_ids = "";
@@ -289,11 +326,35 @@ class HTML_classstereotype_builder {
 			            }]
 			        });
 
-		    
+
 		".$parentFieldsetName.".add(".$parentFieldsetName."_itemselector);
 		";
 		
+		//Map
+		foreach ($stereotypeAttributes as $stereotypeAttribute){
+			if($stereotypeAttribute->alias == "displaymap"){
+				$displaymap = $stereotypeAttribute->value;
+			}
+			if ($stereotypeAttribute->alias == "strictperimeter"){
+				$strictperimeter = $stereotypeAttribute->value;
+			}
+			if ($stereotypeAttribute->alias == "params"){
+				$params = json_decode($stereotypeAttribute->value, true);
+			}
+		} 
+		
+		if($clone && $displaymap){
+			$this->javascript .="
+				mapConfigOption ={
+					getLayers : function(){
+						return new Array(new OpenLayers.Layer.".html_entity_decode($params['defaultBboxConfig']).")
+					},
+					defaultExtent:{
+						left:".$params['defaultBboxConfigExtentLeft'].",bottom:".$params['defaultBboxConfigExtentBottom'].",right:".$params['defaultBboxConfigExtentRight'].",top:".$params['defaultBboxConfigExtentTop']."}
+				};
 
+			";
+		}
 	}
 }
 ?>
