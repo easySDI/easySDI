@@ -48,9 +48,9 @@ Ext.ux.form.ItemSelector = Ext.extend(Ext.form.Field,  {
      */
     dynamic : false,
     clone : false,
-    minOccurs : 1,
-    maxOccurs : 1,
     comboboxname : null,
+    maxcardbound : 1,
+    mincardbound : 1,
     
     /**
      * @cfg {Array} multiselects An array of {@link Ext.ux.form.MultiSelect} config objects, with at least all required parameters (e.g., store)
@@ -61,13 +61,14 @@ Ext.ux.form.ItemSelector = Ext.extend(Ext.form.Field,  {
         Ext.ux.form.ItemSelector.superclass.initComponent.call(this);
         this.addEvents({
             'rowdblclick' : true,
-            'change' : true
+            'change' : true,
+            'addItemTo' : true,
+            'removeItemTo' : true
         });
     },
 
     setFromMultiSelect: function (newMultiselectstore){
     	this.fromMultiselect.store = newMultiselectstore;
-//    	this.fromMultiselect.fs.doLayout();
     },
     
     onRender: function(ct, position){
@@ -166,6 +167,7 @@ Ext.ux.form.ItemSelector = Ext.extend(Ext.form.Field,  {
         this.toStore.on('remove', this.valueChanged, this);
         this.toStore.on('load', this.valueChanged, this);
         this.valueChanged(this.toStore);
+
     },
 
     toTop : function() {
@@ -266,9 +268,14 @@ Ext.ux.form.ItemSelector = Ext.extend(Ext.form.Field,  {
                     delete x;
                     this.toMultiselect.view.store.add(record);
                 }else{
-                    this.fromMultiselect.view.store.remove(record);
-                    this.toMultiselect.view.store.add(record);
-                    selectionsArray.push((this.toMultiselect.view.store.getCount() - 1));
+                	if(this.toMultiselect.view.store.getCount() == this.maxcardbound){
+                		alert ('maxcardbound reaches');
+                	}else{
+	                    this.fromMultiselect.view.store.remove(record);
+	                    this.toMultiselect.view.store.add(record);
+	                    selectionsArray.push((this.toMultiselect.view.store.getCount() - 1));
+	                    this.fireEvent ('addItemTo', record);
+                	}
                 }
             }
         }
@@ -293,6 +300,7 @@ Ext.ux.form.ItemSelector = Ext.extend(Ext.form.Field,  {
             for (var i=0; i<records.length; i++) {
                 record = records[i];
                 this.toMultiselect.view.store.remove(record);
+                
                 if(!this.allowDup){
                 	//EasySDI specific :
                 	//Check if the 'to' record is from the same record category that the records display in the 'from' store
@@ -313,6 +321,7 @@ Ext.ux.form.ItemSelector = Ext.extend(Ext.form.Field,  {
 	                    selectionsArray.push((this.fromMultiselect.view.store.getCount() - 1));
                 	}
                 }
+                this.fireEvent ('removeItemTo', record);
             }
         }
         this.fromMultiselect.view.refresh();

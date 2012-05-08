@@ -72,5 +72,89 @@ GeographicExtentStereotypeMapPanel = new Ext.extend(Ext.Panel, {
 		
 		
 
+	},
+	
+	addToolbar : function(){
+
+		// General tool bar items
+
+		this.map.previousButton = new Ext.Toolbar.Button( {
+			iconCls : 'previousBtn',
+
+			handler : function() {
+				this.map.navCtrl.previousTrigger();
+			},
+			scope : this
+		});
+
+
+
+		this.map.nextButton = new Ext.Toolbar.Button( {
+			iconCls : 'nextBtn',
+
+			handler : function() {
+				this.map.navCtrl.nextTrigger();
+			},
+			scope : this
+		});
+
+
+
+		this.map.navButton = new Ext.Toolbar.Button( {
+			iconCls : 'navBtn',
+
+			enableToggle : true,
+			toggleGroup : 'mapCtrl',
+			allowDepress : false,
+			handler : this.updateCtrlBtns,
+			scope : this.map,
+			pressed : true
+		});
+
+
+
+		this.map.zoomInBoxButton = new Ext.Toolbar.Button( {
+			iconCls : 'zoomInBoxBtn',
+
+			enableToggle : true,
+			toggleGroup : 'mapCtrl',
+			allowDepress : false,
+			handler : this.updateCtrlBtns,
+			scope : this.map
+		});
+
+
+		this.map.zoomOutBoxButton = new Ext.Toolbar.Button( {
+			iconCls : 'zoomOutBoxBtn',
+
+			enableToggle : true,
+			toggleGroup : 'mapCtrl',
+			allowDepress : false,
+			handler : this.updateCtrlBtns,
+			scope : this.map
+		});
+
+
+
+		Ext.getCmp(this.fieldsetId).add(
+		new Ext.Toolbar( {
+			id : this.fieldsetId+"_BBoxPanel",
+			autoHeight : true,
+			width : 500,
+			height : 30,				
+			frame: false,
+			style :{position:'relative',			
+				left:'0px',
+				top:'-500px',
+				clear :'both'
+			},
+			items : [ this.map.previousButton, this.map.nextButton, {
+				xtype : 'tbseparator'
+			}, this.map.zoomInBoxButton, this.map.zoomOutBoxButton,this.map.navButton
+			]
+		}));
+
+
 	}
+	
 });

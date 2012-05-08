@@ -110,14 +110,10 @@ class HTML_classstereotype_builder {
 							}
 						}
 					}
-					
-// 					print_r($extent_object);
-// 					echo("<br>");
 					//Add extent object to array
 					array_push($extent_object_array, $extent_object);
 				}
 			}
-// 			echo("<hr>");
 		}
 		
 		//Liste des catégories de périmètres
@@ -143,6 +139,10 @@ class HTML_classstereotype_builder {
 		
 		$comboboxName = $fieldsetname."-sdi_extentType__1";
 		$itemselectorName = $fieldsetname."-gmd_geographicElement__1";
+		$fieldNorthName = $fieldsetname."-north__1";
+		$fieldSouthName = $fieldsetname."-south__1";
+		$fieldEastName = $fieldsetname."-east__1";
+		$fieldWestName = $fieldsetname."-west__1";
 		
 		$this->javascript .="
 		var valueList = ".HTML_metadata::array2extjs($dataValues, true).";
@@ -195,7 +195,7 @@ class HTML_classstereotype_builder {
 		if(count($extent_object_array) > 0 ){
 			foreach ($extent_object_array as $extent_object){
 				if( isset($extent_object->description)){
-					$query = "SELECT b.id as id, Concat (t.label,' [',tbc.label,']') as label
+					$query = "SELECT b.id as id, Concat (t.label,' [',tbc.label,']') as label, b.northbound as northbound ,b.southbound as southbound, b.eastbound as eastbound ,b.westbound as westbound  
 								FROM #__sdi_boundary b
 									INNER JOIN #__sdi_boundarycategory bc ON b.category_id = bc.id 
 									INNER JOIN #__sdi_translation tbc ON bc.guid = tbc.element_guid
@@ -220,7 +220,7 @@ class HTML_classstereotype_builder {
 		
 		//Avalaible boundaries
 		if(count($selectedBoundaries) > 0 ){
-			$query = "SELECT b.id as id, Concat (t.label,' [',tbc.label,']') as label
+			$query = "SELECT b.id as id, Concat (t.label,' [',tbc.label,']') as label, b.northbound as northbound ,b.southbound as southbound, b.eastbound as eastbound ,b.westbound as westbound
 					FROM #__sdi_boundary b
 						INNER JOIN #__sdi_boundarycategory bc ON b.category_id = bc.id 
 						INNER JOIN #__sdi_translation tbc ON bc.guid = tbc.element_guid
@@ -234,7 +234,7 @@ class HTML_classstereotype_builder {
 					AND b.id NOT IN ($query_ids)";
 				
 		}else{
-			$query = "SELECT b.id as id, Concat (t.label,' [',tbc.label,']') as label
+			$query = "SELECT b.id as id, Concat (t.label,' [',tbc.label,']') as label, b.northbound as northbound ,b.southbound as southbound, b.eastbound as eastbound ,b.westbound as westbound
 					FROM #__sdi_boundary b
 						INNER JOIN #__sdi_boundarycategory bc ON b.category_id = bc.id 
 						INNER JOIN #__sdi_translation tbc ON bc.guid = tbc.element_guid
@@ -251,6 +251,7 @@ class HTML_classstereotype_builder {
 		}
 		$database->setQuery( $query );
 		$availableBoundaries = $database->loadObjectList();
+		print_r ($availableBoundaries);
 		
 		$clone ? $clone = 'true' : $clone ='false';
 		
@@ -259,14 +260,14 @@ class HTML_classstereotype_builder {
 			        data: [";
 					    foreach ($availableBoundaries as $boundary){
 					    	$this->javascript .="[
-					    	'".$boundary->id."','".$boundary->label."'
+					    	'".$boundary->id."','".$boundary->label."','".$boundary->northbound."','".$boundary->southbound."','".$boundary->eastbound."','".$boundary->westbound."'
 					    	],
 					    	";
 						};
 						if(count($availableBoundaries)>0)
 							$this->javascript = substr($this->javascript, 0, strlen($this->javascript)-1);
 						$this->javascript .="],
-			        fields: ['value','text'],
+			        fields: ['value','text', 'northbound', 'southbound', 'eastbound', 'westbound'],
 			        sortInfo: {
 			            field: 'value',
 			            direction: 'ASC'
@@ -279,7 +280,7 @@ class HTML_classstereotype_builder {
 						";
 				    foreach ($selectedBoundaries as $perimeter){
 				    	$this->javascript .="[
-				    	'".$perimeter->id."','".$perimeter->label."'
+				    	'".$perimeter->id."','".$perimeter->label."','".$perimeter->northbound."','".$boundary->southbound."','".$boundary->eastbound."','".$boundary->westbound."'
 					  ],
 		    		  ";
 			        };
@@ -287,7 +288,7 @@ class HTML_classstereotype_builder {
 						$this->javascript = substr($this->javascript, 0, strlen($this->javascript)-1);
 					$this->javascript .="
 					],
-				fields: ['value','text'],
+				fields: ['value','text', 'northbound', 'southbound', 'eastbound', 'westbound'],
 			        sortInfo: {
 			            field: 'value',
 			            direction: 'ASC'
@@ -299,6 +300,8 @@ class HTML_classstereotype_builder {
 	                    comboboxname : '".$comboboxName."',
 	                    id: '".$itemselectorName."',
 	                    clone: ".$clone.",
+	                    mincardbound : ".$rel_lowerbound.",
+	                    maxcardbound : ".$rel_upperbound.",
 			            fieldLabel: '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_PERIMETER_LABEL"))."',
 				        imagePath: '/easysdi/administrator/components/com_easysdi_catalog/ext/ux/images/',
 			            multiselects: [{
@@ -325,12 +328,10 @@ class HTML_classstereotype_builder {
 			                valueField: 'value'
 			            }]
 			        });
+			        ";
 
 
-		".$parentFieldsetName.".add(".$parentFieldsetName."_itemselector);
-		";
-		
-		//Map
+		//Options of the relation
 		foreach ($stereotypeAttributes as $stereotypeAttribute){
 			if($stereotypeAttribute->alias == "displaymap"){
 				$displaymap = $stereotypeAttribute->value;
@@ -341,18 +342,75 @@ class HTML_classstereotype_builder {
 			if ($stereotypeAttribute->alias == "params"){
 				$params = json_decode($stereotypeAttribute->value, true);
 			}
-		} 
+		}
+		
+		//If a map is displayed, add a polygon corresponding to the predefined perimeter
+		if($clone && $displaymap){
+			$this->javascript .="
+			".$parentFieldsetName."_itemselector.addListener ('addItemTo',function(record){
+					var bounds = new OpenLayers.Bounds(record.data.westbound,record.data.southbound,record.data.eastbound,record.data.northbound);
+					var feature = new OpenLayers.Feature.Vector(bounds.toGeometry());
+					feature.id = record.data.value;
+					this.mapHelper.perimeterLayer.addFeatures(feature);
+				}, this);
+				
+			".$parentFieldsetName."_itemselector.addListener ('removeItemTo',function(record){
+					this.mapHelper.perimeterLayer.removeFeatures(this.mapHelper.perimeterLayer.getFeatureById(record.data.value));
+				}, this);
+
+				
+			".$parentFieldsetName.".add(".$parentFieldsetName."_itemselector);
+			";
+			
+			
+		}
+		
+		
+		
+		if($clone && !$strictperimeter){
+			$this->javascript .="
+			".$parentFieldsetName.".add(createTextField('".$fieldNorthName."', '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_NORTH_LABEL"))."',false, false, null, '1', '1', '', '', false, '10', '', '', '', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', ''));
+			";
+			$this->javascript .="
+			".$parentFieldsetName.".add(createTextField('".$fieldSouthName."', '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_SOUTH_LABEL"))."',false, false, null, '1', '1', '', '', false, '10', '', '', '', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', ''));
+			";
+			$this->javascript .="
+			".$parentFieldsetName.".add(createTextField('".$fieldEastName."', '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_EAST_LABEL"))."',false, false, null, '1', '1', '', '', false, '10', '', '', '', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', ''));
+			";
+			$this->javascript .="
+			".$parentFieldsetName.".add(createTextField('".$fieldWestName."', '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_WEST_LABEL"))."',false, false, null, '1', '1', '', '', false, '10', '', '', '', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', ''));
+			";
+		}
 		
 		if($clone && $displaymap){
 			$this->javascript .="
-				mapConfigOption ={
+				defaultBBoxConfig ={
 					getLayers : function(){
 						return new Array(new OpenLayers.Layer.".html_entity_decode($params['defaultBboxConfig']).")
 					},
 					defaultExtent:{
-						left:".$params['defaultBboxConfigExtentLeft'].",bottom:".$params['defaultBboxConfigExtentBottom'].",right:".$params['defaultBboxConfigExtentRight'].",top:".$params['defaultBboxConfigExtentTop']."}
-				};
-
+						left:".$params['defaultBboxConfigExtentLeft'].",bottom:".$params['defaultBboxConfigExtentBottom'].",right:".$params['defaultBboxConfigExtentRight'].",top:".$params['defaultBboxConfigExtentTop']."
+					},
+					initPerimeter:[
+						";
+						foreach ($selectedBoundaries as $perimeter){
+							$this->javascript .="{id:";
+							$this->javascript .=$perimeter->id;
+							$this->javascript .=",label:";
+							$this->javascript .="'".$perimeter->label."'";
+							$this->javascript .=",northbound:";
+							$this->javascript .=$perimeter->northbound;
+							$this->javascript .=",southbound:";
+							$this->javascript .=$perimeter->southbound;
+							$this->javascript .=",eastbound:";
+							$this->javascript .=$perimeter->eastbound;
+							$this->javascript .=",westbound:";
+							$this->javascript .=$perimeter->westbound;
+							$this->javascript .="},";
+				        }
+				        $this->javascript .="
+					]					
+				};				
 			";
 		}
 	}

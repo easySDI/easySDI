@@ -1,24 +1,44 @@
+/**
+ * EasySDI, a solution to implement easily any spatial data infrastructure
+ * Copyright (C) 2008 DEPTH SA, Chemin d’Arche 40b, CH-1870 Monthey, easysdi@depth.ch 
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or 
+ * any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html. 
+ */
 
 CatalogMapPanel = Ext.extend(Ext.Panel, {	
 
 			
-	constructor: function( fieldsetId) {
+	constructor: function( fieldsetId, width, height, numZoomLevels, isStereotype) {
 	
+		this.numZoomLevels = numZoomLevels;
+		this.width = width;
+		this.height = height;
+		this.isStereotype = isStereotype;
+		
 		this.id = fieldsetId+"_BBox";
 		this.fieldsetId = fieldsetId;
+		
 		Ext.getCmp(fieldsetId).add( new Ext.Panel( {
 			id : fieldsetId+"_BBox",
-			width : 500,
-			height : 500,
+			width : width,
+			height : height,
 			xtype: 'panel',			
 			frame: false,
-			style :{position:'relative',
-			top:'30px',
-			left:'0px',
-			clear :'both'			
-			
+			style :{
+				position:'relative',
+				top:'30px',
+				left:'0px',
+				clear :'both'			
 			}
-			
 		}));	
 		
 	}, 
@@ -26,9 +46,8 @@ CatalogMapPanel = Ext.extend(Ext.Panel, {
 	addMap : function(){
 	
 		OpenLayers.ProxyHost="/proxy/?url=";
-	//	var maxBounds = new OpenLayers.Bounds(defaultBBoxConfig.defaultExtent.left,defaultBBoxConfig.defaultExtent.bottom,defaultBBoxConfig.defaultExtent.right,defaultBBoxConfig.defaultExtent.top);
 
-		this.map = new OpenLayers.Map(Ext.getCmp(this.id).body.id, { controls: [] });
+		this.map = new OpenLayers.Map(Ext.getCmp(this.id).body.id, { controls: [], numZoomLevels: this.numZoomLevels });
 
 		if(defaultBBoxConfig!=""){
 			var layerArray = defaultBBoxConfig.getLayers();//Ext.ux.util.clone(defaultBBoxConfig.layers);
@@ -36,12 +55,9 @@ CatalogMapPanel = Ext.extend(Ext.Panel, {
 		}
 		else
 			console.log("defaultBBoxConfig param is missing");
-
 	
-		this.map.addControl(new OpenLayers.Control.PanZoomBar());		
-
+		this.map.addControl(new OpenLayers.Control.PanZoomBar());
 		this.map.navCtrl = new OpenLayers.Control.NavigationHistory();
-
 
 		// parent control must be added to the map
 		this.map.addControl(this.map.navCtrl);
@@ -54,44 +70,57 @@ CatalogMapPanel = Ext.extend(Ext.Panel, {
 		});
 		this.map.addControl(this.map.zoomOutBoxCtrl);
 
-		
-
 		this.updateManuallyTriggered = false;
 		this.map.zoomToExtent(new OpenLayers.Bounds(defaultBBoxConfig.defaultExtent.left,defaultBBoxConfig.defaultExtent.bottom,defaultBBoxConfig.defaultExtent.right,defaultBBoxConfig.defaultExtent.top));
-
+		this.map.maxExtent = this.map.getExtent();
+		
 		var navCtrls = this.map.getControlsByClass('OpenLayers.Control.Navigation');
 		for (var i = 0; i < navCtrls.length; i++) {
-		navCtrls[i].disableZoomWheel();
+			navCtrls[i].disableZoomWheel();
 		}
 		
-		for (i= 0; i<Ext.getCmp(this.fieldsetId).items.length; i++){
-			if(	Ext.getCmp(this.fieldsetId).items.items[i].id.indexOf("east")>=0||
-					Ext.getCmp(this.fieldsetId).items.items[i].id.indexOf("west")>=0||
-					Ext.getCmp(this.fieldsetId).items.items[i].id.indexOf("north")>=0||
-					Ext.getCmp(this.fieldsetId).items.items[i].id.indexOf("south")>=0){
-				Ext.getCmp(this.fieldsetId).items.items[i].addListener("change", this.updateMapExtent, this);
+		if(this.isStereotype){
+			//Add vector layer
+			this.perimeterLayer = new OpenLayers.Layer.Vector("Perimeters");
+			this.map.addLayer(this.perimeterLayer);
 			
+			var initPerimeterList =  defaultBBoxConfig.initPerimeter;
+			for(i = 0; i<initPerimeterList.length; i++){
+				var bounds = new OpenLayers.Bounds(initPerimeterList[i].westbound,initPerimeterList[i].southbound,initPerimeterList[i].eastbound,initPerimeterList[i].northbound);
+				var feature = new OpenLayers.Feature.Vector(bounds.toGeometry());
+				feature.id = initPerimeterList[i].id;
+				this.perimeterLayer.addFeatures(feature);
 			}
-			else if (Ext.getCmp(this.fieldsetId).items.items[0].id.indexOf("undaries")>=0){
-				Ext.getCmp(this.fieldsetId).items.items[i].addListener("select", this.updateMapExtent, this);
+			
+			for (i= 0; i<Ext.getCmp(this.fieldsetId).items.length; i++){
+				if(	Ext.getCmp(this.fieldsetId).items.items[i].id.indexOf("east")>=0||
+						Ext.getCmp(this.fieldsetId).items.items[i].id.indexOf("west")>=0||
+						Ext.getCmp(this.fieldsetId).items.items[i].id.indexOf("north")>=0||
+						Ext.getCmp(this.fieldsetId).items.items[i].id.indexOf("south")>=0){
+					Ext.getCmp(this.fieldsetId).items.items[i].addListener("change", this.addFreePerimeter, this);
+				
+				}
 			}
-			else{}
+		}else{
+			for (i= 0; i<Ext.getCmp(this.fieldsetId).items.length; i++){
+				if(	Ext.getCmp(this.fieldsetId).items.items[i].id.indexOf("east")>=0||
+						Ext.getCmp(this.fieldsetId).items.items[i].id.indexOf("west")>=0||
+						Ext.getCmp(this.fieldsetId).items.items[i].id.indexOf("north")>=0||
+						Ext.getCmp(this.fieldsetId).items.items[i].id.indexOf("south")>=0){
+					Ext.getCmp(this.fieldsetId).items.items[i].addListener("change", this.updateMapExtent, this);
+				
+				}
+				else if (Ext.getCmp(this.fieldsetId).items.items[0].id.indexOf("undaries")>=0){
+					Ext.getCmp(this.fieldsetId).items.items[i].addListener("select", this.updateMapExtent, this);
+				}
+				else{}
+			}
+			this.map.events.register('moveend', this, this.updateFieldset);
 		}
-
-		this.map.events.register('moveend', this, this.updateFieldset);
-
-
-		
-		
-
 	}, 	
 	
 	addOverView: function(){
-		
-		//this.map.maxExtent = new OpenLayers.Bounds(defaultBBoxConfig.defaultExtent.left,defaultBBoxConfig.defaultExtent.bottom,defaultBBoxConfig.defaultExtent.right,defaultBBoxConfig.defaultExtent.top);
-		//this.map.baseLayer.maxExtent = new OpenLayers.Bounds(defaultBBoxConfig.defaultExtent.left,defaultBBoxConfig.defaultExtent.bottom,defaultBBoxConfig.defaultExtent.right,defaultBBoxConfig.defaultExtent.top);
 
-		this.map.maxExtent = this.map.getExtent();
 		this.map.baseLayer.maxExtent = this.map.maxExtent;
 	
 			var bounds;
@@ -105,12 +134,7 @@ CatalogMapPanel = Ext.extend(Ext.Panel, {
 			var wRes = bounds.getWidth() / viewSize.w;
 			var hRes = bounds.getHeight() / viewSize.h;
 			maxResolution = Math.max(wRes, hRes);
-		//maxResolution =overviewLayer.maxResolution ; 
-			
-			/*overviewLayer.scales = null;
-			overviewLayer.minScale = null;
-			overviewLayer.maxScale = null;*/
-
+	
 			ovControl = new OpenLayers.Control.OverviewMap({
 				mapOptions :{
 					maxExtent : bounds,
@@ -142,6 +166,52 @@ CatalogMapPanel = Ext.extend(Ext.Panel, {
 		
 	},
 
+	addFreePerimeter:function(){
+		this.updateManuallyTriggered = true;
+		var extent = new Array();
+		var extentInvalid = false ;
+		
+		Ext.each(Ext.getCmp(this.fieldsetId).items.items, function(item, index) {
+			if(item.id.indexOf("east")>=0){
+				if(item.isValid())
+					extent["east"]= item.getValue();
+				else
+					extentInvalid = true;
+
+			}else if(item.id.indexOf("west")>=0){
+				if(item.isValid())
+					extent["west"]= item.getValue();	
+				else					
+					extentInvalid = true;
+
+			}else if(item.id.indexOf("south")>=0){
+				if(item.isValid())
+					extent["south"]= item.getValue();	
+				else
+					extentInvalid = true;
+
+			}else if(item.id.indexOf("north")>=0){
+				if(item.isValid())
+					extent["north"]= item.getValue();	
+				else
+					extentInvalid = true;
+
+			}else{}
+		});
+		
+		if(!extentInvalid && extent["west"] && extent["south"] && extent["east"] && extent["north"]){
+			var bounds = new OpenLayers.Bounds(extent["west"],extent["south"],extent["east"],extent["north"]);
+			var feature = new OpenLayers.Feature.Vector(bounds.toGeometry());
+			feature.id = extent["west"]+extent["south"]+extent["east"]+extent["north"];
+			this.perimeterLayer.addFeatures(feature);
+//			this.map.zoomToExtent(bounds);
+		}else if (extentInvalid){
+			this.updateManuallyTriggered = false;
+		}
+		
+		
+	},
+	
 	updateMapExtent: function(){
 		this.updateManuallyTriggered = true;
 		var extent = new Array();
@@ -177,13 +247,11 @@ CatalogMapPanel = Ext.extend(Ext.Panel, {
 
 		//left, bottom, right, top 
 		if(!extentInvalid){
-		var currentBounds = new OpenLayers.Bounds(extent["west"],extent["south"],extent["east"],extent["north"]);
-
-		this.map.zoomToExtent(currentBounds);
+			var currentBounds = new OpenLayers.Bounds(extent["west"],extent["south"],extent["east"],extent["north"]);
+			this.map.zoomToExtent(currentBounds);
 		}else{
 			this.updateManuallyTriggered = false;
 		}
-
 	},
 
 	updateCtrlBtns : function() {
@@ -274,12 +342,12 @@ CatalogMapPanel = Ext.extend(Ext.Panel, {
 		new Ext.Toolbar( {
 			id : this.fieldsetId+"_BBoxPanel",
 			autoHeight : true,
-			width : 500,
+			width : this.width,
 			height : 30,				
 			frame: false,
 			style :{position:'relative',			
 				left:'0px',
-				top:'-500px',
+				top:'-'+this.height+'px',
 				clear :'both'
 			},
 			items : [ this.map.previousButton, this.map.nextButton, {
@@ -313,7 +381,7 @@ CatalogMapPanel = Ext.extend(Ext.Panel, {
 		}else{}
 	},
 	
-	 updateFieldset: function () {		
+	updateFieldset: function () {		
 
 			if(!this.updateManuallyTriggered){
 

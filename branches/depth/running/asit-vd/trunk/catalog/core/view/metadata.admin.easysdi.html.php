@@ -3779,7 +3779,7 @@ class HTML_metadata {
 								if($pos == 0){
 									// Créer un nouveau fieldset
 									$this->javascript .="
-									var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, false, false, true, true, null, 1, 1, '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false);
+									var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, false, false, true, true, null, 1, 1, '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."',false, true);
 									".$parentFieldsetName.".add(".$fieldsetName.");
 									";
 									HTML_classstereotype_builder::getGeographicExtentClass($database,$name, $child, $fieldsetName, $xpathResults, $queryPath,$scope, true, false);
@@ -3858,7 +3858,7 @@ class HTML_metadata {
 									// Créer un nouveau fieldset
 									$this->javascript .="
 									var master = Ext.getCmp('".$master."');
-									var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, true, true, true, true, master, 1, 1, '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false);
+									var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, true, true, true, true, master, 1, 1, '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false,true);
 									".$parentFieldsetName.".add(".$fieldsetName.");
 									";
 									HTML_classstereotype_builder::getGeographicExtentClass($database,$name, $child, $fieldsetName, $xpathResults, $queryPath,$scope, false, true);
@@ -3924,7 +3924,7 @@ class HTML_metadata {
 							// Créer un nouveau fieldset
 							$this->javascript .="
 							var master = Ext.getCmp('".$master."');
-							var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, true, true, true, true, master, 1,1, '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false);
+							var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, true, true, true, true, master, 1,1, '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."',false, true);
 							".$parentFieldsetName.".add(".$fieldsetName.");
 							";
 								

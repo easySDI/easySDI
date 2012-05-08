@@ -28,6 +28,15 @@ class ADMIN_classstereotype_saver {
 		
 		//Le doc XML contient déjà le noeud de la relation et le noeud de la classe du stereotype
 		
+		//Free Perimeter
+		$keyNorth = $fieldsetName."-north__1";
+		$keySouth = $fieldsetName."-south__1";
+		$keyEast = $fieldsetName."-east__1";
+		$keyWest = $fieldsetName."-west__1";
+		
+		if($keyNorth && $keySouth && $keyEast && $keyWest){
+			
+		}
 		
 		//Boundary id
 		$key = $fieldsetName."-gmd_geographicElement__1";

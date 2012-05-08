@@ -1,4 +1,20 @@
-	function createFieldSet(id, title, border, clone, collapsible, relation, dynamic, master, min, max, tip, dismissDelay, isLanguageFieldset, forceUniqueOccurence)
+/**
+ * EasySDI, a solution to implement easily any spatial data infrastructure
+ * Copyright (C) 2008 DEPTH SA, Chemin d’Arche 40b, CH-1870 Monthey, easysdi@depth.ch 
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or 
+ * any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html. 
+ */
+
+	function createFieldSet(id, title, border, clone, collapsible, relation, dynamic, master, min, max, tip, dismissDelay, isLanguageFieldset, isGeographicStereotype )
 	{	
 		//if (title) title = title+" "+min+" - "+max;
 		var collapsed = (relation && !clone) ? collapsed=true : collapsed = false;
@@ -23,7 +39,6 @@
 		            border: border,
 					clone: clone,
 					clones_count: clones_count,
-					forceUniqueOccurence : forceUniqueOccurence,
 					hidden: hidden,
 			        collapsible: collapsible,
 			        collapsed: collapsed,
@@ -33,26 +48,22 @@
 		            qTip: tip,
 		            qTipDelay: dismissDelay,
 		            isLanguageFieldset: isLanguageFieldset,
+		            isGeographicStereotype: isGeographicStereotype,
 		            listeners :{
 		            	expand:function(){
-		            		if(!this.hasBBox)
+		            		if(!this.hasBBox && (this.id.indexOf("gmd_EX_Extent")>=0)&&(this.id.indexOf("gmd_EX_GeographicBoundingBox")>=0))
 		            			addBBoxToFieldSet(this.id);
-		            		if (!this.hasStereotypeGeographicExtentMap)
+		            		else if (this.isGeographicStereotype == true)
 		            			addStereotypeGeographicExtentMap(this.id);
 		            	},
 		            	afterrender:function(){
-		            		
 		            		if(!this.collapsed){
 		            			this.collapse();
 		            			this.expand();
 		            		}
-		            		
 		            	}
 		            }
 	        });
-		//if (navigator.appName == "Netscape")
-		//	console.log(id+" - "+clone+" - "+clones_count);
-		
 		return f;
 	}
 	
@@ -790,70 +801,59 @@
 		if(fieldsetId){			
 			if((fieldsetId.indexOf("gmd_EX_Extent")>=0)&&(fieldsetId.indexOf("gmd_EX_GeographicBoundingBox")>=0)){
 				if(Ext.getCmp(fieldsetId).items.items.length>=4){
-						if(!Ext.getCmp(fieldsetId).hasBBox){
-							Ext.getCmp(fieldsetId).hasBBox = true;			
-							var coords = Ext.getCmp(fieldsetId).items.items ; 
+					if(!Ext.getCmp(fieldsetId).hasBBox){
+						Ext.getCmp(fieldsetId).hasBBox = true;			
+						var coords = Ext.getCmp(fieldsetId).items.items ; 
+					
+						var mapHelper = new CatalogMapPanel(fieldsetId, 500, 500, 12, false);
+						Ext.getCmp(fieldsetId).doLayout();
+						mapHelper.addMap();	
+						Ext.getCmp(fieldsetId).doLayout();
+						mapHelper.addToolbar();	
+						Ext.getCmp(fieldsetId).doLayout();
 						
-							var mapHelper = new CatalogMapPanel(fieldsetId);
-							Ext.getCmp(fieldsetId).doLayout();
-							mapHelper.addMap();	
-							Ext.getCmp(fieldsetId).doLayout();
-							mapHelper.addToolbar();	
-							Ext.getCmp(fieldsetId).doLayout();
+						Ext.getCmp(fieldsetId).addListener("afterlayout", mapHelper.updateMapExtent, mapHelper);
+						Ext.getCmp(fieldsetId).doLayout();
+						mapHelper.addOverView();
+						
+						
+						for ( i =0; i< coords.length ;i++  ){
 							
-							Ext.getCmp(fieldsetId).addListener("afterlayout", mapHelper.updateMapExtent, mapHelper);
-							Ext.getCmp(fieldsetId).doLayout();
-							mapHelper.addOverView();
-							
-							
-							for ( i =0; i< coords.length ;i++  ){
-								
-								if((coords[i].id.indexOf("east")>=0) || (coords[i].id.indexOf("west")>=0)|| 
-								(coords[i].id.indexOf("south")>=0)|| (coords[i].id.indexOf("north")>=0))								
-								{
-									Ext.get(coords[i].id).parent().parent().addClass("newCoord");
-									Ext.get(coords[i].id).parent().addClass("newCoordInputDiv");
-									Ext.get(coords[i].id).addClass("newCoordInput");
-									//coords[i].setValue(extent["east"]);
-
-								}
-								else{}
-								
-							}				
-							
-						}
-					
+							if((coords[i].id.indexOf("east")>=0) || (coords[i].id.indexOf("west")>=0)|| 
+							(coords[i].id.indexOf("south")>=0)|| (coords[i].id.indexOf("north")>=0))								
+							{
+								Ext.get(coords[i].id).parent().parent().addClass("newCoord");
+								Ext.get(coords[i].id).parent().addClass("newCoordInputDiv");
+								Ext.get(coords[i].id).addClass("newCoordInput");
+							}
+							else{}
+						}				
+					}
 				}
-					
 			}
 		}
 	}
 		
 	function addStereotypeGeographicExtentMap(fieldsetId){
 
-		if(typeof(mapConfigOption) == "undefined")
+		if(typeof(defaultBBoxConfig) == "undefined")
 			return;
 	
 		if(fieldsetId){			
 			if((fieldsetId.indexOf("gmd_EX_Extent")>=0)){
+				if(!Ext.getCmp(fieldsetId).hasStereotypeGeographicExtentMap){
+					Ext.getCmp(fieldsetId).hasStereotypeGeographicExtentMap = true;			
 				
-						if(!Ext.getCmp(fieldsetId).hasStereotypeGeographicExtentMap){
-							Ext.getCmp(fieldsetId).hasStereotypeGeographicExtentMap = true;			
-						
-							var mapHelper = new GeographicExtentStereotypeMapPanel(fieldsetId);
-							Ext.getCmp(fieldsetId).doLayout();
-							mapHelper.addMap();	
-	
-							
-						}
-					
+					this.mapHelper = new CatalogMapPanel(fieldsetId, 250, 250, 12, true);
+					Ext.getCmp(fieldsetId).doLayout();
+					mapHelper.addMap();	
+					Ext.getCmp(fieldsetId).doLayout();
+					mapHelper.addToolbar();	
+					Ext.getCmp(fieldsetId).doLayout();
+					mapHelper.addOverView();
+					Ext.getCmp(fieldsetId).doLayout();
+				}
 				
-					
 			}
 		}
-
 	}
-	
-
-
-
