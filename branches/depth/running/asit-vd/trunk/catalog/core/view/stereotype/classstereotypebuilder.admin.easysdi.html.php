@@ -374,23 +374,23 @@ class HTML_classstereotype_builder {
 		if($clone && !$strictperimeter){
 			$this->javascript .="
 			var ".$parentFieldsetName."_north = createTextField('".$fieldNorthName."', '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_NORTH_LABEL"))."',false, false, null, '1', '1', '', '', false, '10', '', '', '', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '');
-			".$parentFieldsetName.".add(".$parentFieldsetName."_north);
+// 			".$parentFieldsetName.".add(".$parentFieldsetName."_north);
 			";
 			$this->javascript .="
 			var ".$parentFieldsetName."_south = createTextField('".$fieldSouthName."', '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_SOUTH_LABEL"))."',false, false, null, '1', '1', '', '', false, '10', '', '', '', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '');
-			".$parentFieldsetName.".add(".$parentFieldsetName."_south);
+// 			".$parentFieldsetName.".add(".$parentFieldsetName."_south);
 			";
 			$this->javascript .="
 			var ".$parentFieldsetName."_east = createTextField('".$fieldEastName."', '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_EAST_LABEL"))."',false, false, null, '1', '1', '', '', false, '10', '', '', '', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '');
-			".$parentFieldsetName.".add(".$parentFieldsetName."_east);
+// 			".$parentFieldsetName.".add(".$parentFieldsetName."_east);
 			";
 			$this->javascript .="
 			var ".$parentFieldsetName."_west = createTextField('".$fieldWestName."', '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_WEST_LABEL"))."',false, false, null, '1', '1', '', '', false, '10', '', '', '', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '');
-			".$parentFieldsetName.".add(".$parentFieldsetName."_west);
+// 			".$parentFieldsetName.".add(".$parentFieldsetName."_west);
 			";
 			
 			$this->javascript .="
-			var ".$parentFieldsetName."_freeperimeterselector = new Ext.ux.form.ItemSelector({
+			var ".$parentFieldsetName."_freeperimeterselector = new catalogFreePerimeterPanel({
 	                    name: '".$freeperimeterselectorName."',
 	                    comboboxname : '".$comboboxName."',
 	                    id: '".$freeperimeterselectorName."',
@@ -402,7 +402,6 @@ class HTML_classstereotype_builder {
 				        freefields:[ ".$parentFieldsetName."_north,".$parentFieldsetName."_south,".$parentFieldsetName."_east,".$parentFieldsetName."_west
 				        ],
 			            multiselects: [{
-			            },{
 			            	legend: 'Selected',
 			            	id: '".$freeperimeterselectorName."_selected',
 			                minSelections:1,
@@ -415,7 +414,7 @@ class HTML_classstereotype_builder {
 			                valueField: 'value'
 			            }]
 			        });
-			       ".$parentFieldsetName.".add(".$parentFieldsetName."_freeperimeterselector);
+//  			       ".$parentFieldsetName.".add(".$parentFieldsetName."_freeperimeterselector);
 			";
 		}
 		

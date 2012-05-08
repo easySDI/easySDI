@@ -36,16 +36,21 @@ catalogFreePerimeterPanel = Ext.extend(Ext.form.Field,  {
             height: 100
         }];
 
-        this.toMultiselect = new Ext.ux.form.MultiSelect(Ext.applyIf(this.multiselects[0], msConfig[0]));
+        this.fromMultiselect = 
+    		new Ext.Panel({
+    			layout:"auto",
+    			items:this.freefields
+            });
+        this.toMultiselect = new Ext.ux.form.MultiSelect(msConfig[0]);
         
         var p = new Ext.Panel({
             bodyStyle:this.bodyStyle,
             border:this.border,
             layout:"table",
-            layoutConfig:{columns:3}
+            layoutConfig:{columns:6}
         });
 
-//        p.add(this.fromMultiselect);
+        p.add(this.fromMultiselect);
         var icons = new Ext.Panel({header:false});
         p.add(icons);
         p.add(this.toMultiselect);
@@ -95,120 +100,10 @@ catalogFreePerimeterPanel = Ext.extend(Ext.form.Field,  {
         this.hiddenField = this.el.createChild(hiddenTag);
     },
     
-    doLayout: function(){
-        if(this.rendered){
-            this.toMultiselect.fs.doLayout();
-        }
-    },
-    
     afterRender: function(){
-    	catalogFreePerimeterPanel.superclass.afterRender.call(this);
+    	
 
-        this.toStore = this.toMultiselect.store;
-        this.toStore.on('add', this.valueChanged, this);
-        this.toStore.on('remove', this.valueChanged, this);
-        this.toStore.on('load', this.valueChanged, this);
-        this.valueChanged(this.toStore);
-
-    },
-
-    toTop : function() {
-        var selectionsArray = this.toMultiselect.view.getSelectedIndexes();
-        var records = [];
-        if (selectionsArray.length > 0) {
-            selectionsArray.sort();
-            for (var i=0; i<selectionsArray.length; i++) {
-                record = this.toMultiselect.view.store.getAt(selectionsArray[i]);
-                records.push(record);
-            }
-            selectionsArray = [];
-            for (var i=records.length-1; i>-1; i--) {
-                record = records[i];
-                this.toMultiselect.view.store.remove(record);
-                this.toMultiselect.view.store.insert(0, record);
-                selectionsArray.push(((records.length - 1) - i));
-            }
-        }
-        this.toMultiselect.view.refresh();
-        this.toMultiselect.view.select(selectionsArray);
-    },
-
-    toBottom : function() {
-        var selectionsArray = this.toMultiselect.view.getSelectedIndexes();
-        var records = [];
-        if (selectionsArray.length > 0) {
-            selectionsArray.sort();
-            for (var i=0; i<selectionsArray.length; i++) {
-                record = this.toMultiselect.view.store.getAt(selectionsArray[i]);
-                records.push(record);
-            }
-            selectionsArray = [];
-            for (var i=0; i<records.length; i++) {
-                record = records[i];
-                this.toMultiselect.view.store.remove(record);
-                this.toMultiselect.view.store.add(record);
-                selectionsArray.push((this.toMultiselect.view.store.getCount()) - (records.length - i));
-            }
-        }
-        this.toMultiselect.view.refresh();
-        this.toMultiselect.view.select(selectionsArray);
-    },
-
-    up : function() {
-        var record = null;
-        var selectionsArray = this.toMultiselect.view.getSelectedIndexes();
-        selectionsArray.sort();
-        var newSelectionsArray = [];
-        if (selectionsArray.length > 0) {
-            for (var i=0; i<selectionsArray.length; i++) {
-                record = this.toMultiselect.view.store.getAt(selectionsArray[i]);
-                if ((selectionsArray[i] - 1) >= 0) {
-                    this.toMultiselect.view.store.remove(record);
-                    this.toMultiselect.view.store.insert(selectionsArray[i] - 1, record);
-                    newSelectionsArray.push(selectionsArray[i] - 1);
-                }
-            }
-            this.toMultiselect.view.refresh();
-            this.toMultiselect.view.select(newSelectionsArray);
-        }
-    },
-
-    down : function() {
-        var record = null;
-        var selectionsArray = this.toMultiselect.view.getSelectedIndexes();
-        selectionsArray.sort();
-        selectionsArray.reverse();
-        var newSelectionsArray = [];
-        if (selectionsArray.length > 0) {
-            for (var i=0; i<selectionsArray.length; i++) {
-                record = this.toMultiselect.view.store.getAt(selectionsArray[i]);
-                if ((selectionsArray[i] + 1) < this.toMultiselect.view.store.getCount()) {
-                    this.toMultiselect.view.store.remove(record);
-                    this.toMultiselect.view.store.insert(selectionsArray[i] + 1, record);
-                    newSelectionsArray.push(selectionsArray[i] + 1);
-                }
-            }
-            this.toMultiselect.view.refresh();
-            this.toMultiselect.view.select(newSelectionsArray);
-        }
     },
 
     
-
-    
-
-    valueChanged: function(store) {
-        var record = null;
-        var values = [];
-        for (var i=0; i<store.getCount(); i++) {
-            record = store.getAt(i);
-            values.push(record.get(this.toMultiselect.valueField));
-        }
-        this.hiddenField.dom.value = values.join(this.delimiter);
-        this.fireEvent('change', this, this.getValue(), this.hiddenField.dom.value);
-    },
-    
-    reset: function(){
-        
-    }
 });
