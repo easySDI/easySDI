@@ -89,8 +89,15 @@ Ext.ux.form.ItemSelector = Ext.extend(Ext.form.Field,  {
             height: 100
         }];
 
-        this.fromMultiselect = new Ext.ux.form.MultiSelect(Ext.applyIf(this.multiselects[0], msConfig[0]));
-        this.fromMultiselect.on('dblclick', this.onRowDblClick, this);
+        if(this.freefields){
+        	this.fromMultiselect = 
+        		new Ext.Panel({
+        			items:this.freefields
+                });
+        }else{
+        	this.fromMultiselect = new Ext.ux.form.MultiSelect(Ext.applyIf(this.multiselects[0], msConfig[0]));
+        	this.fromMultiselect.on('dblclick', this.onRowDblClick, this);
+        }
 
         this.toMultiselect = new Ext.ux.form.MultiSelect(Ext.applyIf(this.multiselects[1], msConfig[1]));
         this.toMultiselect.on('dblclick', this.onRowDblClick, this);
@@ -154,7 +161,11 @@ Ext.ux.form.ItemSelector = Ext.extend(Ext.form.Field,  {
     
     doLayout: function(){
         if(this.rendered){
-            this.fromMultiselect.fs.doLayout();
+            try{
+            	this.fromMultiselect.fs.doLayout();
+        	}catch (e){
+        		this.fromMultiselect.doLayout();
+        	}
             this.toMultiselect.fs.doLayout();
         }
     },

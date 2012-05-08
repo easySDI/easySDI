@@ -139,6 +139,7 @@ class HTML_classstereotype_builder {
 		
 		$comboboxName = $fieldsetname."-sdi_extentType__1";
 		$itemselectorName = $fieldsetname."-gmd_geographicElement__1";
+		$freeperimeterselectorName = $fieldsetname."-free-perimeter__1";
 		$fieldNorthName = $fieldsetname."-north__1";
 		$fieldSouthName = $fieldsetname."-south__1";
 		$fieldEastName = $fieldsetname."-east__1";
@@ -251,7 +252,7 @@ class HTML_classstereotype_builder {
 		}
 		$database->setQuery( $query );
 		$availableBoundaries = $database->loadObjectList();
-		print_r ($availableBoundaries);
+	
 		
 		$clone ? $clone = 'true' : $clone ='false';
 		
@@ -280,7 +281,7 @@ class HTML_classstereotype_builder {
 						";
 				    foreach ($selectedBoundaries as $perimeter){
 				    	$this->javascript .="[
-				    	'".$perimeter->id."','".$perimeter->label."','".$perimeter->northbound."','".$boundary->southbound."','".$boundary->eastbound."','".$boundary->westbound."'
+				    	'".$perimeter->id."','".$perimeter->label."','".$perimeter->northbound."','".$perimeter->southbound."','".$perimeter->eastbound."','".$perimeter->westbound."'
 					  ],
 		    		  ";
 			        };
@@ -359,26 +360,62 @@ class HTML_classstereotype_builder {
 				}, this);
 
 				
-			".$parentFieldsetName.".add(".$parentFieldsetName."_itemselector);
+			
 			";
-			
-			
 		}
+		
+		$this->javascript .="
+		".$parentFieldsetName.".add(".$parentFieldsetName."_itemselector);
+		";
+		
 		
 		
 		
 		if($clone && !$strictperimeter){
 			$this->javascript .="
-			".$parentFieldsetName.".add(createTextField('".$fieldNorthName."', '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_NORTH_LABEL"))."',false, false, null, '1', '1', '', '', false, '10', '', '', '', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', ''));
+			var ".$parentFieldsetName."_north = createTextField('".$fieldNorthName."', '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_NORTH_LABEL"))."',false, false, null, '1', '1', '', '', false, '10', '', '', '', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '');
+			".$parentFieldsetName.".add(".$parentFieldsetName."_north);
 			";
 			$this->javascript .="
-			".$parentFieldsetName.".add(createTextField('".$fieldSouthName."', '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_SOUTH_LABEL"))."',false, false, null, '1', '1', '', '', false, '10', '', '', '', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', ''));
+			var ".$parentFieldsetName."_south = createTextField('".$fieldSouthName."', '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_SOUTH_LABEL"))."',false, false, null, '1', '1', '', '', false, '10', '', '', '', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '');
+			".$parentFieldsetName.".add(".$parentFieldsetName."_south);
 			";
 			$this->javascript .="
-			".$parentFieldsetName.".add(createTextField('".$fieldEastName."', '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_EAST_LABEL"))."',false, false, null, '1', '1', '', '', false, '10', '', '', '', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', ''));
+			var ".$parentFieldsetName."_east = createTextField('".$fieldEastName."', '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_EAST_LABEL"))."',false, false, null, '1', '1', '', '', false, '10', '', '', '', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '');
+			".$parentFieldsetName.".add(".$parentFieldsetName."_east);
 			";
 			$this->javascript .="
-			".$parentFieldsetName.".add(createTextField('".$fieldWestName."', '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_WEST_LABEL"))."',false, false, null, '1', '1', '', '', false, '10', '', '', '', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', ''));
+			var ".$parentFieldsetName."_west = createTextField('".$fieldWestName."', '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_WEST_LABEL"))."',false, false, null, '1', '1', '', '', false, '10', '', '', '', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '');
+			".$parentFieldsetName.".add(".$parentFieldsetName."_west);
+			";
+			
+			$this->javascript .="
+			var ".$parentFieldsetName."_freeperimeterselector = new Ext.ux.form.ItemSelector({
+	                    name: '".$freeperimeterselectorName."',
+	                    comboboxname : '".$comboboxName."',
+	                    id: '".$freeperimeterselectorName."',
+	                    clone: ".$clone.",
+	                    mincardbound : ".$rel_lowerbound.",
+	                    maxcardbound : ".$rel_upperbound.",
+			            fieldLabel: '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_PERIMETER_LABEL"))."',
+				        imagePath: '/easysdi/administrator/components/com_easysdi_catalog/ext/ux/images/',
+				        freefields:[ ".$parentFieldsetName."_north,".$parentFieldsetName."_south,".$parentFieldsetName."_east,".$parentFieldsetName."_west
+				        ],
+			            multiselects: [{
+			            },{
+			            	legend: 'Selected',
+			            	id: '".$freeperimeterselectorName."_selected',
+			                minSelections:1,
+	            			maxSelections:1,
+			                dynamic:true,
+			                width: 250,
+			                height: 200,
+			                store: destinationDS,
+			                displayField: 'text',
+			                valueField: 'value'
+			            }]
+			        });
+			       ".$parentFieldsetName.".add(".$parentFieldsetName."_freeperimeterselector);
 			";
 		}
 		
