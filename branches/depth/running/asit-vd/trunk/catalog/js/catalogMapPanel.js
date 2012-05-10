@@ -19,6 +19,10 @@ CatalogMapPanel = Ext.extend(Ext.Panel, {
 			
 	constructor: function( fieldsetId, width, height, numZoomLevels, isStereotype) {
 	
+		 this.addEvents({
+	            'featureAdded' : true
+	        });
+		 
 		this.numZoomLevels = numZoomLevels;
 		this.width = width;
 		this.height = height;
@@ -55,10 +59,6 @@ CatalogMapPanel = Ext.extend(Ext.Panel, {
 		}
 		else
 			console.log("defaultBBoxConfig param is missing");
-	
-		//Add vector layer
-		this.perimeterLayer = new OpenLayers.Layer.Vector("Perimeters");
-		this.map.addLayer(this.perimeterLayer);
 		
 		this.map.addControl(new OpenLayers.Control.PanZoomBar());
 		this.map.navCtrl = new OpenLayers.Control.NavigationHistory();
@@ -74,10 +74,7 @@ CatalogMapPanel = Ext.extend(Ext.Panel, {
 		});
 		this.map.addControl(this.map.zoomOutBoxCtrl);
 		
-		if(this.freePerimeter){
-			this.map.drawBoxCtrl = new OpenLayers.Control.DrawFeature(this.perimeterLayer,OpenLayers.Handler.Polygon)
-			this.map.addControl(this.map.drawBoxCtrl);
-		}
+		
 
 		this.updateManuallyTriggered = false;
 		this.map.zoomToExtent(new OpenLayers.Bounds(defaultBBoxConfig.defaultExtent.left,defaultBBoxConfig.defaultExtent.bottom,defaultBBoxConfig.defaultExtent.right,defaultBBoxConfig.defaultExtent.top));
@@ -89,6 +86,23 @@ CatalogMapPanel = Ext.extend(Ext.Panel, {
 		}
 		
 		if(this.isStereotype){
+			//Add vector layer
+			this.perimeterLayer = new OpenLayers.Layer.Vector("Perimeters");
+			this.map.addLayer(this.perimeterLayer);
+			
+			if(defaultBBoxConfig.freePerimeter == 1){
+				this.map.drawBoxCtrl = new OpenLayers.Control.DrawFeature(this.perimeterLayer,OpenLayers.Handler.RegularPolygon, {
+																												                    handlerOptions: {
+																												                        sides: 4,
+																												                        irregular: true
+																												                    }
+																												                })
+				this.map.addControl(this.map.drawBoxCtrl);
+				this.map.drawBoxCtrl.events.register ('featureadded',this.map.drawBoxCtrl, function(feature){
+					feature.id = '['+feature.feature.geometry.bounds.top+','+feature.feature.geometry.bounds.bottom+','+feature.feature.geometry.bounds.left+','+feature.feature.geometry.bounds.right+']';
+					defaultBBoxConfig.freePerimeterSelector.addRecord(feature);
+				});
+			}
 			
 			var initPerimeterList =  defaultBBoxConfig.initPerimeter;
 			for(i = 0; i<initPerimeterList.length; i++){
@@ -267,10 +281,12 @@ CatalogMapPanel = Ext.extend(Ext.Panel, {
 		} else {
 			this.zoomOutBoxCtrl.deactivate();
 		}
-		if(this.drawBoxButton.pressed){
-			this.drawBoxCtrl.activate();
-		}else{
-			this.drawBoxCtrl.deactivate();
+		if(defaultBBoxConfig.freePerimeter == 1){
+			if(this.drawBoxButton.pressed){
+				this.drawBoxCtrl.activate();
+			}else{
+				this.drawBoxCtrl.deactivate();
+			}
 		}
 
 	},
@@ -278,32 +294,24 @@ CatalogMapPanel = Ext.extend(Ext.Panel, {
 	addToolbar : function(){
 
 		// General tool bar items
-
 		this.map.previousButton = new Ext.Toolbar.Button( {
 			iconCls : 'previousBtn',
-
 			handler : function() {
 				this.map.navCtrl.previousTrigger();
 			},
 			scope : this
 		});
 
-
-
 		this.map.nextButton = new Ext.Toolbar.Button( {
 			iconCls : 'nextBtn',
-
 			handler : function() {
 				this.map.navCtrl.nextTrigger();
 			},
 			scope : this
 		});
 
-
-
 		this.map.navButton = new Ext.Toolbar.Button( {
 			iconCls : 'navBtn',
-
 			enableToggle : true,
 			toggleGroup : 'mapCtrl',
 			allowDepress : false,
@@ -312,22 +320,17 @@ CatalogMapPanel = Ext.extend(Ext.Panel, {
 			pressed : true
 		});
 
-
-
 		this.map.zoomInBoxButton = new Ext.Toolbar.Button( {
 			iconCls : 'zoomInBoxBtn',
-
 			enableToggle : true,
 			toggleGroup : 'mapCtrl',
 			allowDepress : false,
 			handler : this.updateCtrlBtns,
 			scope : this.map
 		});
-
 
 		this.map.zoomOutBoxButton = new Ext.Toolbar.Button( {
 			iconCls : 'zoomOutBoxBtn',
-
 			enableToggle : true,
 			toggleGroup : 'mapCtrl',
 			allowDepress : false,
@@ -335,16 +338,37 @@ CatalogMapPanel = Ext.extend(Ext.Panel, {
 			scope : this.map
 		});
 
-		this.map.drawBoxButton = new Ext.Toolbar.Button( {
-			iconCls : 'drawBoxBtn',
-
-			enableToggle : true,
-			toggleGroup : 'mapCtrl',
-			allowDepress : false,
-			handler : this.updateCtrlBtns,
-			scope : this.map
-		});
-
+		var itemslist = [ 
+				          this.map.previousButton, 
+				          this.map.nextButton, 
+				          {xtype : 'tbseparator'}, 
+				          this.map.zoomInBoxButton, 
+				          this.map.zoomOutBoxButton,
+				          this.map.navButton
+				];
+		
+		if(defaultBBoxConfig.freePerimeter == 1){
+			this.map.drawBoxButton = new Ext.Toolbar.Button( {
+				iconCls : 'zoomOutBoxBtn',
+				enableToggle : true,
+				toggleGroup : 'mapCtrl',
+				allowDepress : false,
+				handler : this.updateCtrlBtns,
+				scope : this.map
+			});
+			
+			itemslist = [ 
+				          this.map.previousButton, 
+				          this.map.nextButton, 
+				          {xtype : 'tbseparator'}, 
+				          this.map.zoomInBoxButton, 
+				          this.map.zoomOutBoxButton,
+				          this.map.navButton,
+				          {xtype : 'tbseparator'}, 
+				          this.map.drawBoxButton
+				]
+		}
+		
 		Ext.getCmp(this.fieldsetId).add(
 		new Ext.Toolbar( {
 			id : this.fieldsetId+"_BBoxPanel",
@@ -357,60 +381,39 @@ CatalogMapPanel = Ext.extend(Ext.Panel, {
 				top:'-'+this.height+'px',
 				clear :'both'
 			},
-			items : [ this.map.previousButton, this.map.nextButton, {
-				xtype : 'tbseparator'
-			}, this.map.zoomInBoxButton, this.map.zoomOutBoxButton,this.map.navButton
-			]
+			items : itemslist
 		}));
-
-
 	},
 	
 	updateItem: function(item, extent) {
 		if(item.id.indexOf("east")>=0){
-
 			item.setValue(extent["east"]);
-
 		}else if(item.id.indexOf("west")>=0){
-
 			item.setValue(extent["west"]);				
-
 		}else if(item.id.indexOf("south")>=0){
-
 			item.setValue(extent["south"]);				
-
 		}else if(item.id.indexOf("north")>=0){
-
 			item.setValue(extent["north"]);				
-
 		}else if (item.getXType()=="combo"){
 			item.setValue(); // setting the combobox to empty.
 		}else{}
 	},
 	
 	updateFieldset: function () {		
-
-			if(!this.updateManuallyTriggered){
-
-				//console.log(map);
-				var extent = new Array();
-				var currentExtent = this.map.getExtent();
-				extent["south"] = currentExtent.bottom ;
-				extent["west"] = currentExtent.left ;
-				extent["north"] = currentExtent.top ;
-				extent["east"] = currentExtent.right ;
-
-			//	console.log(Ext.getCmp(this.fieldsetId).items);
-					
-				for ( i =0; i< Ext.getCmp(this.fieldsetId).items.items.length ;i++  )
-				this.updateItem(Ext.getCmp(this.fieldsetId).items.items[i], extent) ;
-			}
-			else
-				this.updateManuallyTriggered = false;
+		if(!this.updateManuallyTriggered){
+			var extent = new Array();
+			var currentExtent = this.map.getExtent();
+			extent["south"] = currentExtent.bottom ;
+			extent["west"] = currentExtent.left ;
+			extent["north"] = currentExtent.top ;
+			extent["east"] = currentExtent.right ;
+				
+			for ( i =0; i< Ext.getCmp(this.fieldsetId).items.items.length ;i++  )
+			this.updateItem(Ext.getCmp(this.fieldsetId).items.items[i], extent) ;
+		}
+		else
+			this.updateManuallyTriggered = false;
 	}
-
-
-
 });
 	
 	

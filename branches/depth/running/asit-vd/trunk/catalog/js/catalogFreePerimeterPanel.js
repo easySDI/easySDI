@@ -178,29 +178,51 @@ catalogFreePerimeterPanel = Ext.extend(Ext.form.Field,  {
 
     },
     
+    buildRecord : function (northvalue, southvalue, eastvalue, westvalue){
+    	 var TopicRecord = Ext.data.Record.create(
+          	    {name: 'value', mapping: 'value'},
+          	    {name: 'text', mapping: 'text'},
+          	    {name: 'northbound', mapping: 'northbound'},
+          	    {name: 'southbound', mapping: 'southbound'},
+          	    {name: 'eastbound', mapping: 'eastbound'},
+          	    {name: 'westbound', mapping: 'westbound'}
+          	);
+    	 
+    	 var record = new TopicRecord({
+      		value: '['+northvalue+','+southvalue+','+eastvalue+','+westvalue+']',
+      	    text: '['+northvalue+','+southvalue+','+eastvalue+','+westvalue+']',
+      	    northbound: northvalue,
+      	    southbound: southvalue,
+      	    eastbound: eastvalue,
+      	    westbound: westvalue
+      	});
+    	 
+    	 return record;
+    },
+    
+    addRecord : function(record){
+    	var northvalue =  record.feature.geometry.bounds.top;
+        var eastvalue =  record.feature.geometry.bounds.right;
+        var southvalue =  record.feature.geometry.bounds.bottom;
+        var westvalue =  record.feature.geometry.bounds.left;
+         	
+        this.toMultiselect.view.store.add(this.buildRecord(northvalue, southvalue, eastvalue, westvalue));
+             
+        this.toMultiselect.view.refresh();
+        var si = this.toMultiselect.store.sortInfo;
+         if(si){
+             this.toMultiselect.store.sort(si.field, si.direction);
+         }
+         
+    },
+    
     fromTo : function() {
-         var TopicRecord = Ext.data.Record.create(
-        	    {name: 'value', mapping: 'value'},
-        	    {name: 'text', mapping: 'text'},
-        	    {name: 'northbound', mapping: 'northbound'},
-        	    {name: 'southbound', mapping: 'southbound'},
-        	    {name: 'eastbound', mapping: 'eastbound'},
-        	    {name: 'westbound', mapping: 'westbound'}
-        	);
-
          var northvalue =  Ext.getCmp(this.id+'_north').getValue();
          var eastvalue =  Ext.getCmp(this.id+'_east').getValue();
          var southvalue =  Ext.getCmp(this.id+'_south').getValue();
          var westvalue =  Ext.getCmp(this.id+'_west').getValue();
-        	var record = new TopicRecord({
-        		value: '['+northvalue+','+southvalue+','+eastvalue+','+westvalue+']',
-        	    text: '['+northvalue+','+southvalue+','+eastvalue+','+westvalue+']',
-        	    northbound: northvalue,
-        	    southbound: southvalue,
-        	    eastbound: eastvalue,
-        	    westbound: westvalue
-        	});
-        this.toMultiselect.view.store.add(record);
+
+        this.toMultiselect.view.store.add(this.buildRecord(northvalue, southvalue, eastvalue, westvalue));
             
         this.toMultiselect.view.refresh();
         var si = this.toMultiselect.store.sortInfo;

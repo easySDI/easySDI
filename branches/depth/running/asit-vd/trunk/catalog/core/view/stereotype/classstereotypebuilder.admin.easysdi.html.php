@@ -455,10 +455,10 @@ class HTML_classstereotype_builder {
 		if($clone && $displaymap && !$strictperimeter){
 			$this->javascript .="
 				".$parentFieldsetName."_freeperimeterselector.addListener ('addItemTo',function(record){
-				var bounds = new OpenLayers.Bounds(record.data.westbound,record.data.southbound,record.data.eastbound,record.data.northbound);
-				var feature = new OpenLayers.Feature.Vector(bounds.toGeometry());
-				feature.id = record.data.value;
-				this.mapHelper.perimeterLayer.addFeatures(feature);
+					var bounds = new OpenLayers.Bounds(record.data.westbound,record.data.southbound,record.data.eastbound,record.data.northbound);
+					var feature = new OpenLayers.Feature.Vector(bounds.toGeometry());
+					feature.id = record.data.value;
+					this.mapHelper.perimeterLayer.addFeatures(feature);
 			}, this);
 				
 			".$parentFieldsetName."_freeperimeterselector.addListener ('removeItemTo',function(record){
@@ -477,6 +477,7 @@ class HTML_classstereotype_builder {
 						left:".$params['defaultBboxConfigExtentLeft'].",bottom:".$params['defaultBboxConfigExtentBottom'].",right:".$params['defaultBboxConfigExtentRight'].",top:".$params['defaultBboxConfigExtentTop']."
 					},
 					freePerimeter : ".!$strictperimeter.",
+					freePerimeterSelector : ".$parentFieldsetName."_freeperimeterselector,
 					initPerimeter:[
 						";
 						foreach ($selectedBoundaries as $perimeter){

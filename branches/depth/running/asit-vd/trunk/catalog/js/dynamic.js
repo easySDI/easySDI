@@ -852,6 +852,7 @@
 					Ext.getCmp(fieldsetId).doLayout();
 					mapHelper.addOverView();
 					Ext.getCmp(fieldsetId).doLayout();
+					
 				}
 				
 			}
