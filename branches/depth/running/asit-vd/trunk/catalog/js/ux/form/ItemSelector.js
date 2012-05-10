@@ -67,10 +67,6 @@ Ext.ux.form.ItemSelector = Ext.extend(Ext.form.Field,  {
         });
     },
 
-    setFromMultiSelect: function (newMultiselectstore){
-    	this.fromMultiselect.store = newMultiselectstore;
-    },
-    
     onRender: function(ct, position){
         Ext.ux.form.ItemSelector.superclass.onRender.call(this, ct, position);
 
@@ -89,15 +85,8 @@ Ext.ux.form.ItemSelector = Ext.extend(Ext.form.Field,  {
             height: 100
         }];
 
-        if(this.freefields){
-        	this.fromMultiselect = 
-        		new Ext.Panel({
-        			items:this.freefields
-                });
-        }else{
-        	this.fromMultiselect = new Ext.ux.form.MultiSelect(Ext.applyIf(this.multiselects[0], msConfig[0]));
-        	this.fromMultiselect.on('dblclick', this.onRowDblClick, this);
-        }
+       	this.fromMultiselect = new Ext.ux.form.MultiSelect(Ext.applyIf(this.multiselects[0], msConfig[0]));
+       	this.fromMultiselect.on('dblclick', this.onRowDblClick, this);
 
         this.toMultiselect = new Ext.ux.form.MultiSelect(Ext.applyIf(this.multiselects[1], msConfig[1]));
         this.toMultiselect.on('dblclick', this.onRowDblClick, this);
@@ -161,11 +150,7 @@ Ext.ux.form.ItemSelector = Ext.extend(Ext.form.Field,  {
     
     doLayout: function(){
         if(this.rendered){
-            try{
-            	this.fromMultiselect.fs.doLayout();
-        	}catch (e){
-        		this.fromMultiselect.doLayout();
-        	}
+           	this.fromMultiselect.fs.doLayout();
             this.toMultiselect.fs.doLayout();
         }
     },

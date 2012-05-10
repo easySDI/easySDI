@@ -150,7 +150,7 @@ class HTML_classstereotype_builder {
 		var selectedValueList = '';
 		var defaultValueList = '';
 		
-		var comboboxCategories = createComboBox('".$comboboxName."', '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_CATEGORY_LABEL"))."', false, '1', '1', valueList, selectedValueList, defaultValueList, false, '".html_Metadata::cleanText(JText::_(""))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."');
+		var comboboxCategories = createComboBox('".$comboboxName."', '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_PERIMETER_LABEL"))."', false, '1', '1', valueList, selectedValueList, defaultValueList, false, '".html_Metadata::cleanText(JText::_(""))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."');
  		".$parentFieldsetName.".add(comboboxCategories);
 		
 		
@@ -303,7 +303,7 @@ class HTML_classstereotype_builder {
 	                    clone: ".$clone.",
 	                    mincardbound : ".$rel_lowerbound.",
 	                    maxcardbound : ".$rel_upperbound.",
-			            fieldLabel: '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_PERIMETER_LABEL"))."',
+			            fieldLabel: '',
 				        imagePath: '/easysdi/administrator/components/com_easysdi_catalog/ext/ux/images/',
 			            multiselects: [{
 			            	legend: 'Available',
@@ -372,24 +372,22 @@ class HTML_classstereotype_builder {
 		
 		
 		if($clone && !$strictperimeter){
+			
 			$this->javascript .="
 			var ".$parentFieldsetName."_north = createTextField('".$fieldNorthName."', '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_NORTH_LABEL"))."',false, false, null, '1', '1', '', '', false, '10', '', '', '', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '');
-// 			".$parentFieldsetName.".add(".$parentFieldsetName."_north);
-			";
-			$this->javascript .="
+			".$parentFieldsetName."_north.setSize( {width:100, height:40});
 			var ".$parentFieldsetName."_south = createTextField('".$fieldSouthName."', '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_SOUTH_LABEL"))."',false, false, null, '1', '1', '', '', false, '10', '', '', '', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '');
-// 			".$parentFieldsetName.".add(".$parentFieldsetName."_south);
-			";
-			$this->javascript .="
 			var ".$parentFieldsetName."_east = createTextField('".$fieldEastName."', '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_EAST_LABEL"))."',false, false, null, '1', '1', '', '', false, '10', '', '', '', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '');
-// 			".$parentFieldsetName.".add(".$parentFieldsetName."_east);
-			";
-			$this->javascript .="
 			var ".$parentFieldsetName."_west = createTextField('".$fieldWestName."', '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_WEST_LABEL"))."',false, false, null, '1', '1', '', '', false, '10', '', '', '', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '');
-// 			".$parentFieldsetName.".add(".$parentFieldsetName."_west);
 			";
 			
 			$this->javascript .="
+			
+			var freedestinationDS = new   Ext.data.ArrayStore({
+				data: [],
+				fields: ['value','text', 'northbound', 'southbound', 'eastbound', 'westbound']
+			});
+			
 			var ".$parentFieldsetName."_freeperimeterselector = new catalogFreePerimeterPanel({
 	                    name: '".$freeperimeterselectorName."',
 	                    comboboxname : '".$comboboxName."',
@@ -397,7 +395,11 @@ class HTML_classstereotype_builder {
 	                    clone: ".$clone.",
 	                    mincardbound : ".$rel_lowerbound.",
 	                    maxcardbound : ".$rel_upperbound.",
-			            fieldLabel: '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_PERIMETER_LABEL"))."',
+			            fieldLabel: '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_FREEPERIMETER_LABEL"))."',
+			            northLabel : '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_NORTH_LABEL"))."',
+			            southLabel : '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_SOUTH_LABEL"))."',
+			            eastLabel : '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_EAST_LABEL"))."',
+			            westLabel : '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_WEST_LABEL"))."',
 				        imagePath: '/easysdi/administrator/components/com_easysdi_catalog/ext/ux/images/',
 				        freefields:[ ".$parentFieldsetName."_north,".$parentFieldsetName."_south,".$parentFieldsetName."_east,".$parentFieldsetName."_west
 				        ],
@@ -409,12 +411,12 @@ class HTML_classstereotype_builder {
 			                dynamic:true,
 			                width: 250,
 			                height: 200,
-			                store: destinationDS,
+			                store: freedestinationDS,
 			                displayField: 'text',
 			                valueField: 'value'
 			            }]
 			        });
-//  			       ".$parentFieldsetName.".add(".$parentFieldsetName."_freeperimeterselector);
+  			       ".$parentFieldsetName.".add(".$parentFieldsetName."_freeperimeterselector);
 			";
 		}
 		

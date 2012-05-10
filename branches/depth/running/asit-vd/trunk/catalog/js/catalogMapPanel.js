@@ -36,7 +36,7 @@ CatalogMapPanel = Ext.extend(Ext.Panel, {
 			style :{
 				position:'relative',
 				top:'30px',
-				left:'0px',
+				left:'480px',
 				clear :'both'			
 			}
 		}));	
@@ -346,7 +346,7 @@ CatalogMapPanel = Ext.extend(Ext.Panel, {
 			height : 30,				
 			frame: false,
 			style :{position:'relative',			
-				left:'0px',
+				left:'480px',
 				top:'-'+this.height+'px',
 				clear :'both'
 			},

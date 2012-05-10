@@ -15,6 +15,31 @@
  */
 
 catalogFreePerimeterPanel = Ext.extend(Ext.form.Field,  {
+	
+    hideNavIcons:false,
+    imagePath:"",
+    iconUp:"up2.gif",
+    iconDown:"down2.gif",
+    iconLeft:"left2.gif",
+    iconRight:"right2.gif",
+    iconTop:"top2.gif",
+    iconBottom:"bottom2.gif",
+    drawUpIcon:true,
+    drawDownIcon:true,
+    drawLeftIcon:true,
+    drawRightIcon:true,
+    drawTopIcon:true,
+    drawBotIcon:true,
+    delimiter:',',
+    bodyStyle:null,
+    border:false,
+    defaultAutoCreate:{tag: "div"},
+    dynamic : false,
+    clone : false,
+    comboboxname : null,
+    maxcardbound : 1,
+    mincardbound : 1,
+    
 	initComponent: function(){
 		catalogFreePerimeterPanel.superclass.initComponent.call(this);
         this.addEvents({
@@ -38,16 +63,89 @@ catalogFreePerimeterPanel = Ext.extend(Ext.form.Field,  {
 
         this.fromMultiselect = 
     		new Ext.Panel({
-    			layout:"auto",
-    			items:this.freefields
+    			layout:"table",
+    			border:this.border,
+    			width: 250,
+                height: 200,
+    			layoutConfig:{columns:1},
+    			items:[{
+		    		  xtype: 'spacer',
+		    		  height: 10
+		    		},{
+    		        xtype: 'label',
+    		        text: this.northLabel,
+    		        margins: '0 0 0 10'
+    		    	},{
+    	            id:this.id+'_north',
+    	            xtype: 'textfield',
+    				cls: 'easysdi_shop_backend_textfield', 
+    	            name: this.id+'_north',
+    	            allowBlank: true,
+    	            blankText: '',
+    	            value: '',
+    	            defaultVal:'',
+    	            width: 250
+    		    	},{
+		    		  xtype: 'spacer',
+		    		  height: 10
+		    		},{
+    		        xtype: 'label',
+    		        text: this.southLabel,
+    		        margins: '0 0 0 10'
+    		    	},{
+    	            id:this.id+'_south',
+    	            xtype: 'textfield',
+    				cls: 'easysdi_shop_backend_textfield', 
+    	            name: this.id+'_south',
+    	            allowBlank: true,
+    	            blankText: '',
+    	            value: '',
+    	            defaultVal:'',
+    	            width: 250
+    		    	},{
+		    		  xtype: 'spacer',
+		    		  height: 10
+		    		},{
+        		        xtype: 'label',
+        		        text: this.eastLabel,
+        		        margins: '0 0 0 10'
+        		    	},{
+        	            id:this.id+'_east',
+        	            
+        	            xtype: 'textfield',
+        				cls: 'easysdi_shop_backend_textfield', 
+        	            name: this.id+'_east',
+        	            allowBlank: true,
+        	            blankText: '',
+        	            value: '',
+        	            defaultVal:'',
+        	            width: 250
+        		    	},{
+      		    		  xtype: 'spacer',
+    		    		  height: 10
+    		    		},{
+            		        xtype: 'label',
+            		        text: this.westLabel,
+            		        margins: '0 0 0 10'
+            		    	},{
+            	            id:this.id+'_west',
+            	            xtype: 'textfield',
+            				cls: 'easysdi_shop_backend_textfield', 
+            	            name: this.id+'_west',
+            	            allowBlank: true,
+            	            blankText: '',
+            	            value: '',
+            	            defaultVal:'',
+            	            width: 250
+            		    	}]
             });
-        this.toMultiselect = new Ext.ux.form.MultiSelect(msConfig[0]);
+        this.toMultiselect = new Ext.ux.form.MultiSelect(this.multiselects[0]);
         
         var p = new Ext.Panel({
             bodyStyle:this.bodyStyle,
             border:this.border,
             layout:"table",
-            layoutConfig:{columns:6}
+            layoutConfig:{columns:4}
         });
 
         p.add(this.fromMultiselect);
@@ -60,37 +158,18 @@ catalogFreePerimeterPanel = Ext.extend(Ext.form.Field,  {
         // ICON HELL!!!
         if (this.imagePath!="" && this.imagePath.charAt(this.imagePath.length-1)!="/")
             this.imagePath+="/";
-        this.iconUp = this.imagePath + (this.iconUp || 'up2.gif');
-        this.iconDown = this.imagePath + (this.iconDown || 'down2.gif');
         this.iconLeft = this.imagePath + (this.iconLeft || 'left2.gif');
         this.iconRight = this.imagePath + (this.iconRight || 'right2.gif');
-        this.iconTop = this.imagePath + (this.iconTop || 'top2.gif');
-        this.iconBottom = this.imagePath + (this.iconBottom || 'bottom2.gif');
         var el=icons.getEl();
-        this.toTopIcon = el.createChild({tag:'img', src:this.iconTop, style:{cursor:'pointer', margin:'2px'}});
-        el.createChild({tag: 'br'});
-        this.upIcon = el.createChild({tag:'img', src:this.iconUp, style:{cursor:'pointer', margin:'2px'}});
-        el.createChild({tag: 'br'});
         this.addIcon = el.createChild({tag:'img', src:this.iconRight, style:{cursor:'pointer', margin:'2px'}});
         el.createChild({tag: 'br'});
         this.removeIcon = el.createChild({tag:'img', src:this.iconLeft, style:{cursor:'pointer', margin:'2px'}});
         el.createChild({tag: 'br'});
-        this.downIcon = el.createChild({tag:'img', src:this.iconDown, style:{cursor:'pointer', margin:'2px'}});
-        el.createChild({tag: 'br'});
-        this.toBottomIcon = el.createChild({tag:'img', src:this.iconBottom, style:{cursor:'pointer', margin:'2px'}});
-        this.toTopIcon.on('click', this.toTop, this);
-        this.upIcon.on('click', this.up, this);
-        this.downIcon.on('click', this.down, this);
-        this.toBottomIcon.on('click', this.toBottom, this);
         this.addIcon.on('click', this.fromTo, this);
         this.removeIcon.on('click', this.toFrom, this);
-        if (!this.drawUpIcon || this.hideNavIcons) { this.upIcon.dom.style.display='none'; }
-        if (!this.drawDownIcon || this.hideNavIcons) { this.downIcon.dom.style.display='none'; }
         if (!this.drawLeftIcon || this.hideNavIcons) { this.addIcon.dom.style.display='none'; }
         if (!this.drawRightIcon || this.hideNavIcons) { this.removeIcon.dom.style.display='none'; }
-        if (!this.drawTopIcon || this.hideNavIcons) { this.toTopIcon.dom.style.display='none'; }
-        if (!this.drawBotIcon || this.hideNavIcons) { this.toBottomIcon.dom.style.display='none'; }
-
+       
         var tb = p.body.first();
         this.el.setWidth(p.body.first().getWidth());
         p.body.removeClass();
@@ -100,10 +179,46 @@ catalogFreePerimeterPanel = Ext.extend(Ext.form.Field,  {
         this.hiddenField = this.el.createChild(hiddenTag);
     },
     
-    afterRender: function(){
+    fromTo : function() {
     	
+        
+        var TopicRecord = Ext.data.Record.create(
+        	    {name: 'value', mapping: 'value'},
+        	    {name: 'text', mapping: 'text'},
+        	    {name: 'northbound', mapping: 'northbound'},
+        	    {name: 'southbound', mapping: 'southbound'},
+        	    {name: 'eastbound', mapping: 'eastbound'},
+        	    {name: 'westbound', mapping: 'westbound'}
+        	);
 
+        	var myNewRecord = new TopicRecord({
+        		value: 'value test',
+        	    text: 'text test',
+        	    northbound: 'test 1',
+        	    southbound: 'test 2',
+        	    eastbound: 'test 3',
+        	    westbound: 'test 4'
+        	});
+        	
+        	
+        
+        this.toMultiselect.view.store.add(myNewRecord);
+            
+        this.toMultiselect.view.refresh();
+        var si = this.toMultiselect.store.sortInfo;
+        if(si){
+            this.toMultiselect.store.sort(si.field, si.direction);
+        }
+        
     },
+
+    toFrom : function() {
+        
+    }
+    
+ 
 
     
 });
+
+Ext.reg('catalogFreePerimeterPanel', catalogFreePerimeterPanel);
