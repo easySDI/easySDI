@@ -16,20 +16,9 @@
 
 catalogFreePerimeterPanel = Ext.extend(Ext.form.Field,  {
 	
-    hideNavIcons:false,
     imagePath:"",
-    iconUp:"up2.gif",
-    iconDown:"down2.gif",
     iconLeft:"left2.gif",
     iconRight:"right2.gif",
-    iconTop:"top2.gif",
-    iconBottom:"bottom2.gif",
-    drawUpIcon:true,
-    drawDownIcon:true,
-    drawLeftIcon:true,
-    drawRightIcon:true,
-    drawTopIcon:true,
-    drawBotIcon:true,
     delimiter:',',
     bodyStyle:null,
     border:false,
@@ -50,95 +39,92 @@ catalogFreePerimeterPanel = Ext.extend(Ext.form.Field,  {
     },
     
     onRender: function(ct, position){
+    	
     	catalogFreePerimeterPanel.superclass.onRender.call(this, ct, position);
 
-        // Internal default configuration for multiselect
-        var msConfig = [{
-            legend: 'Selected',
-            droppable: true,
-            draggable: true,
-            width: 100,
-            height: 100
-        }];
-
-        this.fromMultiselect = 
-    		new Ext.Panel({
+        this.fieldnorth = {
+	            id:this.id+'_north',
+	            xtype: 'textfield',
+				cls: 'easysdi_shop_backend_textfield', 
+	            name: this.id+'_north',
+	            allowBlank: true,
+	            width: 250
+		    	};
+		this.fieldsouth = {
+	            id:this.id+'_south',
+	            xtype: 'textfield',
+				cls: 'easysdi_shop_backend_textfield', 
+	            name: this.id+'_south',
+	            allowBlank: true,
+	            width: 250
+		    	};
+		this.fieldeast = {
+	            id:this.id+'_east',
+	            xtype: 'textfield',
+				cls: 'easysdi_shop_backend_textfield', 
+	            name: this.id+'_east',
+	            allowBlank: true,
+	           width: 250
+		    	};
+		this.fieldwest = {
+	            id:this.id+'_west',
+	            xtype: 'textfield',
+				cls: 'easysdi_shop_backend_textfield', 
+	            name: this.id+'_west',
+	            allowBlank: true,
+	             width: 250
+		    	};
+		
+        this.fromMultiselect = new Ext.Panel({
     			layout:"table",
     			border:this.border,
     			width: 250,
                 height: 200,
     			layoutConfig:{columns:1},
-    			items:[{
-		    		  xtype: 'spacer',
-		    		  height: 10
-		    		},{
-    		        xtype: 'label',
-    		        text: this.northLabel,
-    		        margins: '0 0 0 10'
-    		    	},{
-    	            id:this.id+'_north',
-    	            xtype: 'textfield',
-    				cls: 'easysdi_shop_backend_textfield', 
-    	            name: this.id+'_north',
-    	            allowBlank: true,
-    	            blankText: '',
-    	            value: '',
-    	            defaultVal:'',
-    	            width: 250
-    		    	},{
-		    		  xtype: 'spacer',
-		    		  height: 10
-		    		},{
-    		        xtype: 'label',
-    		        text: this.southLabel,
-    		        margins: '0 0 0 10'
-    		    	},{
-    	            id:this.id+'_south',
-    	            xtype: 'textfield',
-    				cls: 'easysdi_shop_backend_textfield', 
-    	            name: this.id+'_south',
-    	            allowBlank: true,
-    	            blankText: '',
-    	            value: '',
-    	            defaultVal:'',
-    	            width: 250
-    		    	},{
-		    		  xtype: 'spacer',
-		    		  height: 10
-		    		},{
-        		        xtype: 'label',
-        		        text: this.eastLabel,
-        		        margins: '0 0 0 10'
-        		    	},{
-        	            id:this.id+'_east',
-        	            
-        	            xtype: 'textfield',
-        				cls: 'easysdi_shop_backend_textfield', 
-        	            name: this.id+'_east',
-        	            allowBlank: true,
-        	            blankText: '',
-        	            value: '',
-        	            defaultVal:'',
-        	            width: 250
-        		    	},{
-      		    		  xtype: 'spacer',
-    		    		  height: 10
-    		    		},{
-            		        xtype: 'label',
-            		        text: this.westLabel,
-            		        margins: '0 0 0 10'
-            		    	},{
-            	            id:this.id+'_west',
-            	            xtype: 'textfield',
-            				cls: 'easysdi_shop_backend_textfield', 
-            	            name: this.id+'_west',
-            	            allowBlank: true,
-            	            blankText: '',
-            	            value: '',
-            	            defaultVal:'',
-            	            width: 250
-            		    	}]
+    			items:[
+    			    {
+    			    	xtype: 'spacer',
+    			    	height: 10
+		    		},
+		    		{
+		    			xtype: 'label',
+		    			text: this.northLabel,
+		    			margins: '0 0 0 10'
+				    },
+				    this.fieldnorth,
+				    {
+				    	xtype: 'spacer',
+				    	height: 10
+		    		},
+		    		{
+		    			xtype: 'label',
+	    		        text: this.southLabel,
+	    		        margins: '0 0 0 10'
+    		    	},
+    		    	this.fieldsouth,
+    		    	{
+    		    		xtype: 'spacer',
+    		    		height: 10
+		    		},
+		    		{
+	    		        xtype: 'label',
+	    		        text: this.eastLabel,
+	    		        margins: '0 0 0 10'
+    		    	},
+    		    	this.fieldeast,
+    		    	{
+    		    		xtype: 'spacer',
+    		    		height: 10
+		    		},
+		    		{
+		    			xtype: 'label',
+		    			text: this.westLabel,
+		    			margins: '0 0 0 10'
+    		    	},
+    		    	this.fieldwest
+    		    	]
             });
+        
         this.toMultiselect = new Ext.ux.form.MultiSelect(this.multiselects[0]);
         
         var p = new Ext.Panel({
@@ -154,8 +140,6 @@ catalogFreePerimeterPanel = Ext.extend(Ext.form.Field,  {
         p.add(this.toMultiselect);
         p.render(this.el);
         icons.el.down('.'+icons.bwrapCls).remove();
-
-        // ICON HELL!!!
         if (this.imagePath!="" && this.imagePath.charAt(this.imagePath.length-1)!="/")
             this.imagePath+="/";
         this.iconLeft = this.imagePath + (this.iconLeft || 'left2.gif');
@@ -167,9 +151,7 @@ catalogFreePerimeterPanel = Ext.extend(Ext.form.Field,  {
         el.createChild({tag: 'br'});
         this.addIcon.on('click', this.fromTo, this);
         this.removeIcon.on('click', this.toFrom, this);
-        if (!this.drawLeftIcon || this.hideNavIcons) { this.addIcon.dom.style.display='none'; }
-        if (!this.drawRightIcon || this.hideNavIcons) { this.removeIcon.dom.style.display='none'; }
-       
+        
         var tb = p.body.first();
         this.el.setWidth(p.body.first().getWidth());
         p.body.removeClass();
@@ -179,10 +161,25 @@ catalogFreePerimeterPanel = Ext.extend(Ext.form.Field,  {
         this.hiddenField = this.el.createChild(hiddenTag);
     },
     
+    doLayout: function(){
+        if(this.rendered){
+            this.toMultiselect.fs.doLayout();
+        }
+    },
+    
+    afterRender: function(){
+        Ext.ux.form.ItemSelector.superclass.afterRender.call(this);
+
+        this.toStore = this.toMultiselect.store;
+        this.toStore.on('add', this.valueChanged, this);
+        this.toStore.on('remove', this.valueChanged, this);
+        this.toStore.on('load', this.valueChanged, this);
+        this.valueChanged(this.toStore);
+
+    },
+    
     fromTo : function() {
-    	
-        
-        var TopicRecord = Ext.data.Record.create(
+         var TopicRecord = Ext.data.Record.create(
         	    {name: 'value', mapping: 'value'},
         	    {name: 'text', mapping: 'text'},
         	    {name: 'northbound', mapping: 'northbound'},
@@ -191,18 +188,19 @@ catalogFreePerimeterPanel = Ext.extend(Ext.form.Field,  {
         	    {name: 'westbound', mapping: 'westbound'}
         	);
 
-        	var myNewRecord = new TopicRecord({
-        		value: 'value test',
-        	    text: 'text test',
-        	    northbound: 'test 1',
-        	    southbound: 'test 2',
-        	    eastbound: 'test 3',
-        	    westbound: 'test 4'
+         var northvalue =  Ext.getCmp(this.id+'_north').getValue();
+         var eastvalue =  Ext.getCmp(this.id+'_east').getValue();
+         var southvalue =  Ext.getCmp(this.id+'_south').getValue();
+         var westvalue =  Ext.getCmp(this.id+'_west').getValue();
+        	var record = new TopicRecord({
+        		value: '['+northvalue+','+southvalue+','+eastvalue+','+westvalue+']',
+        	    text: '['+northvalue+','+southvalue+','+eastvalue+','+westvalue+']',
+        	    northbound: northvalue,
+        	    southbound: southvalue,
+        	    eastbound: eastvalue,
+        	    westbound: westvalue
         	});
-        	
-        	
-        
-        this.toMultiselect.view.store.add(myNewRecord);
+        this.toMultiselect.view.store.add(record);
             
         this.toMultiselect.view.refresh();
         var si = this.toMultiselect.store.sortInfo;
@@ -210,15 +208,48 @@ catalogFreePerimeterPanel = Ext.extend(Ext.form.Field,  {
             this.toMultiselect.store.sort(si.field, si.direction);
         }
         
+        Ext.getCmp(this.id+'_north').setValue('');
+        Ext.getCmp(this.id+'_east').setValue('');
+        Ext.getCmp(this.id+'_south').setValue('');
+        Ext.getCmp(this.id+'_west').setValue('');
+        
+        this.fireEvent ('addItemTo', record);
     },
 
     toFrom : function() {
+    	var selectionsArray = this.toMultiselect.view.getSelectedIndexes();
+        var records = [];
+        if (selectionsArray.length > 0) {
+            for (var i=0; i<selectionsArray.length; i++) {
+                record = this.toMultiselect.view.store.getAt(selectionsArray[i]);
+                records.push(record);
+            }
+            selectionsArray = [];
+            for (var i=0; i<records.length; i++) {
+                record = records[i];
+                this.toMultiselect.view.store.remove(record);
+                this.fireEvent ('removeItemTo', record);
+            }
+        }
         
-    }
+        this.toMultiselect.view.refresh();
+        
+    } ,
     
- 
-
+    valueChanged: function(store) {
+        var record = null;
+        var values = [];
+        for (var i=0; i<store.getCount(); i++) {
+            record = store.getAt(i);
+            values.push(record.get(this.toMultiselect.valueField));
+        }
+        this.hiddenField.dom.value = values.join(this.delimiter);
+        this.fireEvent('change', this, this.getValue(), this.hiddenField.dom.value);
+    },
     
+    getValue : function() {
+        return this.hiddenField.dom.value;
+    },
 });
 
 Ext.reg('catalogFreePerimeterPanel', catalogFreePerimeterPanel);

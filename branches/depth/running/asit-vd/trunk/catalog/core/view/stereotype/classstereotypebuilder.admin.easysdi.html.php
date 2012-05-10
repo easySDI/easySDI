@@ -330,7 +330,11 @@ class HTML_classstereotype_builder {
 			            }]
 			        });
 			        ";
-
+					
+			$this->javascript .="
+			".$parentFieldsetName.".add(".$parentFieldsetName."_itemselector);
+			";
+					
 
 		//Options of the relation
 		foreach ($stereotypeAttributes as $stereotypeAttribute){
@@ -358,31 +362,12 @@ class HTML_classstereotype_builder {
 			".$parentFieldsetName."_itemselector.addListener ('removeItemTo',function(record){
 					this.mapHelper.perimeterLayer.removeFeatures(this.mapHelper.perimeterLayer.getFeatureById(record.data.value));
 				}, this);
-
-				
-			
 			";
 		}
-		
-		$this->javascript .="
-		".$parentFieldsetName.".add(".$parentFieldsetName."_itemselector);
-		";
-		
-		
-		
+
 		
 		if($clone && !$strictperimeter){
-			
 			$this->javascript .="
-			var ".$parentFieldsetName."_north = createTextField('".$fieldNorthName."', '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_NORTH_LABEL"))."',false, false, null, '1', '1', '', '', false, '10', '', '', '', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '');
-			".$parentFieldsetName."_north.setSize( {width:100, height:40});
-			var ".$parentFieldsetName."_south = createTextField('".$fieldSouthName."', '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_SOUTH_LABEL"))."',false, false, null, '1', '1', '', '', false, '10', '', '', '', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '');
-			var ".$parentFieldsetName."_east = createTextField('".$fieldEastName."', '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_EAST_LABEL"))."',false, false, null, '1', '1', '', '', false, '10', '', '', '', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '');
-			var ".$parentFieldsetName."_west = createTextField('".$fieldWestName."', '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_WEST_LABEL"))."',false, false, null, '1', '1', '', '', false, '10', '', '', '', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '');
-			";
-			
-			$this->javascript .="
-			
 			var freedestinationDS = new   Ext.data.ArrayStore({
 				data: [],
 				fields: ['value','text', 'northbound', 'southbound', 'eastbound', 'westbound']
@@ -401,13 +386,9 @@ class HTML_classstereotype_builder {
 			            eastLabel : '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_EAST_LABEL"))."',
 			            westLabel : '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_WEST_LABEL"))."',
 				        imagePath: '/easysdi/administrator/components/com_easysdi_catalog/ext/ux/images/',
-				        freefields:[ ".$parentFieldsetName."_north,".$parentFieldsetName."_south,".$parentFieldsetName."_east,".$parentFieldsetName."_west
-				        ],
-			            multiselects: [{
+				        multiselects: [{
 			            	legend: 'Selected',
 			            	id: '".$freeperimeterselectorName."_selected',
-			                minSelections:1,
-	            			maxSelections:1,
 			                dynamic:true,
 			                width: 250,
 			                height: 200,
@@ -417,6 +398,21 @@ class HTML_classstereotype_builder {
 			            }]
 			        });
   			       ".$parentFieldsetName.".add(".$parentFieldsetName."_freeperimeterselector);
+			";
+		}
+		
+		if($clone && $displaymap && !$strictperimeter){
+			$this->javascript .="
+				".$parentFieldsetName."_freeperimeterselector.addListener ('addItemTo',function(record){
+				var bounds = new OpenLayers.Bounds(record.data.westbound,record.data.southbound,record.data.eastbound,record.data.northbound);
+				var feature = new OpenLayers.Feature.Vector(bounds.toGeometry());
+				feature.id = record.data.value;
+				this.mapHelper.perimeterLayer.addFeatures(feature);
+			}, this);
+				
+			".$parentFieldsetName."_freeperimeterselector.addListener ('removeItemTo',function(record){
+			this.mapHelper.perimeterLayer.removeFeatures(this.mapHelper.perimeterLayer.getFeatureById(record.data.value));
+			}, this);
 			";
 		}
 		

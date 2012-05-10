@@ -91,16 +91,7 @@ CatalogMapPanel = Ext.extend(Ext.Panel, {
 				feature.id = initPerimeterList[i].id;
 				this.perimeterLayer.addFeatures(feature);
 			}
-			
-			for (i= 0; i<Ext.getCmp(this.fieldsetId).items.length; i++){
-				if(	Ext.getCmp(this.fieldsetId).items.items[i].id.indexOf("east")>=0||
-						Ext.getCmp(this.fieldsetId).items.items[i].id.indexOf("west")>=0||
-						Ext.getCmp(this.fieldsetId).items.items[i].id.indexOf("north")>=0||
-						Ext.getCmp(this.fieldsetId).items.items[i].id.indexOf("south")>=0){
-					Ext.getCmp(this.fieldsetId).items.items[i].addListener("change", this.addFreePerimeter, this);
-				
-				}
-			}
+
 		}else{
 			for (i= 0; i<Ext.getCmp(this.fieldsetId).items.length; i++){
 				if(	Ext.getCmp(this.fieldsetId).items.items[i].id.indexOf("east")>=0||

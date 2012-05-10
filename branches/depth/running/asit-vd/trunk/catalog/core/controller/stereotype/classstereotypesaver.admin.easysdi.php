@@ -29,13 +29,47 @@ class ADMIN_classstereotype_saver {
 		//Le doc XML contient déjà le noeud de la relation et le noeud de la classe du stereotype
 		
 		//Free Perimeter
-		$keyNorth = $fieldsetName."-north__1";
-		$keySouth = $fieldsetName."-south__1";
-		$keyEast = $fieldsetName."-east__1";
-		$keyWest = $fieldsetName."-west__1";
-		
-		if($keyNorth && $keySouth && $keyEast && $keyWest){
+		$key = $fieldsetName."-free-perimeter__1";
+		$freeboundaries_id = json_decode("[".$_POST[$key]."]",true);
+		foreach ($freeboundaries_id as $boundary){
 			
+			//$boundary = json_decode ($boundary_id, true);
+			//Relation node
+			$noderelation = $XMLDoc->createElement("gmd:extent");
+			$XMLNode->appendChild($noderelation);
+				
+			//Child class node
+			$nodechild = $XMLDoc->createElement("gmd:EX_Extent");
+			$noderelation->appendChild($nodechild);
+				
+			$nodeA = $XMLDoc->createElement("gmd:geographicElement");
+			$nodechild->appendChild($nodeA);
+				
+			$nodeB = $XMLDoc->createElement("gmd:EX_GeographicBoundingBox");
+			$nodeA->appendChild($nodeB);
+				
+			$nodeC = $XMLDoc->createElement("gmd:extentTypeCode", 'true');
+			$nodeB->appendChild($nodeC);
+				
+			$nodeD = $XMLDoc->createElement("gmd:northBoundLatitude");
+			$nodeB->appendChild($nodeD);
+			$nodeD_ = $XMLDoc->createElement("gco:Decimal", $boundary[0]);
+			$nodeD->appendChild($nodeD_);
+				
+			$nodeE = $XMLDoc->createElement("gmd:southBoundLatitude");
+			$nodeB->appendChild($nodeE);
+			$nodeE_ = $XMLDoc->createElement("gco:Decimal", $boundary[1]);
+			$nodeE->appendChild($nodeE_);
+				
+			$nodeF = $XMLDoc->createElement("gmd:eastBoundLatitude");
+			$nodeB->appendChild($nodeF);
+			$nodeF_ = $XMLDoc->createElement("gco:Decimal", $boundary[2]);
+			$nodeF->appendChild($nodeF_);
+				
+			$nodeG = $XMLDoc->createElement("gmd:westBoundLatitude");
+			$nodeB->appendChild($nodeG);
+			$nodeG_ = $XMLDoc->createElement("gco:Decimal", $boundary[3]);
+			$nodeG->appendChild($nodeG_);
 		}
 		
 		//Boundary id
