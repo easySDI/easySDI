@@ -141,36 +141,36 @@ class ADMIN_classstereotype_saver {
 			$query ="SELECT * from #__sdi_boundary WHERE id =".$boundary_id;
 			$database->setQuery( $query );
 			$boundary = $database->loadObject();
-			
-			$nodeA = $XMLDoc->createElement("gmd:geographicElement");
-			$nodechild->appendChild($nodeA);
-			
-			$nodeB = $XMLDoc->createElement("gmd:EX_GeographicBoundingBox");
-			$nodeA->appendChild($nodeB);
-			
-			$nodeC = $XMLDoc->createElement("gmd:extentTypeCode", 'true');
-			$nodeB->appendChild($nodeC);
-			
-			$nodeD = $XMLDoc->createElement("gmd:northBoundLatitude");
-			$nodeB->appendChild($nodeD);
-			$nodeD_ = $XMLDoc->createElement("gco:Decimal", $boundary->northbound);
-			$nodeD->appendChild($nodeD_);
-			
-			$nodeE = $XMLDoc->createElement("gmd:southBoundLatitude");
-			$nodeB->appendChild($nodeE);
-			$nodeE_ = $XMLDoc->createElement("gco:Decimal", $boundary->southbound);
-			$nodeE->appendChild($nodeE_);
-			
-			$nodeF = $XMLDoc->createElement("gmd:eastBoundLatitude");
-			$nodeB->appendChild($nodeF);
-			$nodeF_ = $XMLDoc->createElement("gco:Decimal", $boundary->eastbound);
-			$nodeF->appendChild($nodeF_);
-			
-			$nodeG = $XMLDoc->createElement("gmd:westBoundLatitude");
-			$nodeB->appendChild($nodeG);
-			$nodeG_ = $XMLDoc->createElement("gco:Decimal", $boundary->westbound);
-			$nodeG->appendChild($nodeG_);
-			
+			if(isset($boundary->northbound)){
+				$nodeA = $XMLDoc->createElement("gmd:geographicElement");
+				$nodechild->appendChild($nodeA);
+				
+				$nodeB = $XMLDoc->createElement("gmd:EX_GeographicBoundingBox");
+				$nodeA->appendChild($nodeB);
+				
+				$nodeC = $XMLDoc->createElement("gmd:extentTypeCode", 'true');
+				$nodeB->appendChild($nodeC);
+				
+				$nodeD = $XMLDoc->createElement("gmd:northBoundLatitude");
+				$nodeB->appendChild($nodeD);
+				$nodeD_ = $XMLDoc->createElement("gco:Decimal", $boundary->northbound);
+				$nodeD->appendChild($nodeD_);
+				
+				$nodeE = $XMLDoc->createElement("gmd:southBoundLatitude");
+				$nodeB->appendChild($nodeE);
+				$nodeE_ = $XMLDoc->createElement("gco:Decimal", $boundary->southbound);
+				$nodeE->appendChild($nodeE_);
+				
+				$nodeF = $XMLDoc->createElement("gmd:eastBoundLatitude");
+				$nodeB->appendChild($nodeF);
+				$nodeF_ = $XMLDoc->createElement("gco:Decimal", $boundary->eastbound);
+				$nodeF->appendChild($nodeF_);
+				
+				$nodeG = $XMLDoc->createElement("gmd:westBoundLatitude");
+				$nodeB->appendChild($nodeG);
+				$nodeG_ = $XMLDoc->createElement("gco:Decimal", $boundary->westbound);
+				$nodeG->appendChild($nodeG_);
+			}
 			//Geographic element Identifier
 			$nodeI = $XMLDoc->createElement("gmd:geographicElement");
 			$nodechild->appendChild($nodeI);

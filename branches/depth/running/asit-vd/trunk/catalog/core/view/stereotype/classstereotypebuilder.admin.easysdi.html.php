@@ -81,18 +81,49 @@ class HTML_classstereotype_builder {
 						//no geographicElement
 						$extent_object->geographicElement = null;
 					}else{
-						if($extent_object->extentType == null){
+						if(!isset($extent_object->extentType )){
 							//Look for geographicExtent defined by, and only by, a BBOX
 							foreach ($nodes_geographicElement as $node_geographicElement){
-								$nodes_BBOX_north = $xpathResults->query("gmd:EX_GeographicBoundingBox/gmd:northBoundLatitude/gco:Decimal", $node_geographicElement);
-								if(count($nodes_BBOX_north) == 0){
+								$nodes_BBOX = $xpathResults->query("gmd:EX_GeographicBoundingBox/gmd:northBoundLatitude/gco:Decimal", $node_geographicElement);
+								if(count($nodes_BBOX) == 0){
 									//Not a geographic bbox
 									continue;
 								}else{
-									foreach ($nodes_BBOX_north as $node_BBOX_north){
-										$extent_object->north = $node_BBOX_north->nodeValue;
+									foreach ($nodes_BBOX as $node_BBOX){
+										$extent_object->north = $node_BBOX->nodeValue;
 									}
 								}
+								
+								$nodes_BBOX = $xpathResults->query("gmd:EX_GeographicBoundingBox/gmd:southBoundLatitude/gco:Decimal", $node_geographicElement);
+								if(count($nodes_BBOX) == 0){
+									//Not a geographic bbox
+									continue;
+								}else{
+									foreach ($nodes_BBOX as $node_BBOX){
+										$extent_object->south = $node_BBOX->nodeValue;
+									}
+								}
+								
+								$nodes_BBOX = $xpathResults->query("gmd:EX_GeographicBoundingBox/gmd:eastBoundLatitude/gco:Decimal", $node_geographicElement);
+								if(count($nodes_BBOX) == 0){
+									//Not a geographic bbox
+									continue;
+								}else{
+									foreach ($nodes_BBOX as $node_BBOX){
+										$extent_object->east = $node_BBOX->nodeValue;
+									}
+								}
+								
+								$nodes_BBOX = $xpathResults->query("gmd:EX_GeographicBoundingBox/gmd:westBoundLatitude/gco:Decimal", $node_geographicElement);
+								if(count($nodes_BBOX) == 0){
+									//Not a geographic bbox
+									continue;
+								}else{
+									foreach ($nodes_BBOX as $node_BBOX){
+										$extent_object->west = $node_BBOX->nodeValue;
+									}
+								}
+								
 							}
 						}else{
 							//Look for geographicExtent defined by a predifined perimeter
@@ -187,15 +218,14 @@ class HTML_classstereotype_builder {
 		
 		//Ajouter un listener pour recharger la liste des périmètres quand la catégorie a été changée
 			
-		//Construire le ItemSelector avec la liste des périmètres correspondant à la catégorie sélectionnée
 		
-		
-		//Selected boundaries
+		//Existing boundaries in the XML file
 		$query_ids = "";
 		$selectedBoundaries = array();
+		$freeBoundaries = array();
 		if(count($extent_object_array) > 0 ){
 			foreach ($extent_object_array as $extent_object){
-				if( isset($extent_object->description)){
+				if( isset($extent_object->description)){//Predefined perimeters
 					$query = "SELECT b.id as id, Concat (t.label,' [',tbc.label,']') as label, b.northbound as northbound ,b.southbound as southbound, b.eastbound as eastbound ,b.westbound as westbound  
 								FROM #__sdi_boundary b
 									INNER JOIN #__sdi_boundarycategory bc ON b.category_id = bc.id 
@@ -215,6 +245,16 @@ class HTML_classstereotype_builder {
 					}
 					$query_ids .= $perimeter_selected->id;
 					array_push($selectedBoundaries,$perimeter_selected);
+				}else{//Free perimeters
+					$freeperimeter = new stdClass;
+					$freeperimeter->id = '['.$extent_object->north.','.$extent_object->south.','.$extent_object->east.','.$extent_object->west.']';
+					$freeperimeter->label = '['.$extent_object->north.','.$extent_object->south.','.$extent_object->east.','.$extent_object->west.']';
+					$freeperimeter->northbound = $extent_object->north;
+					$freeperimeter->southbound = $extent_object->south;
+					$freeperimeter->eastbound = $extent_object->east;
+					$freeperimeter->westbound = $extent_object->west;
+					
+					array_push($freeBoundaries,$freeperimeter);
 				}
 			}
 		}
@@ -369,7 +409,18 @@ class HTML_classstereotype_builder {
 		if($clone && !$strictperimeter){
 			$this->javascript .="
 			var freedestinationDS = new   Ext.data.ArrayStore({
-				data: [],
+				data: [
+				";
+				    foreach ($freeBoundaries as $perimeter){
+				    	$this->javascript .="[
+				    	'".$perimeter->id."','".$perimeter->label."','".$perimeter->northbound."','".$perimeter->southbound."','".$perimeter->eastbound."','".$perimeter->westbound."'
+					  ],
+		    		  ";
+			        };
+			        if(count($freeBoundaries)>0)
+						$this->javascript = substr($this->javascript, 0, strlen($this->javascript)-1);
+					$this->javascript .="
+				],
 				fields: ['value','text', 'northbound', 'southbound', 'eastbound', 'westbound']
 			});
 			
@@ -411,7 +462,7 @@ class HTML_classstereotype_builder {
 			}, this);
 				
 			".$parentFieldsetName."_freeperimeterselector.addListener ('removeItemTo',function(record){
-			this.mapHelper.perimeterLayer.removeFeatures(this.mapHelper.perimeterLayer.getFeatureById(record.data.value));
+				this.mapHelper.perimeterLayer.removeFeatures(this.mapHelper.perimeterLayer.getFeatureById(record.data.value));
 			}, this);
 			";
 		}
@@ -425,6 +476,7 @@ class HTML_classstereotype_builder {
 					defaultExtent:{
 						left:".$params['defaultBboxConfigExtentLeft'].",bottom:".$params['defaultBboxConfigExtentBottom'].",right:".$params['defaultBboxConfigExtentRight'].",top:".$params['defaultBboxConfigExtentTop']."
 					},
+					freePerimeter : ".!$strictperimeter.",
 					initPerimeter:[
 						";
 						foreach ($selectedBoundaries as $perimeter){
@@ -441,6 +493,21 @@ class HTML_classstereotype_builder {
 							$this->javascript .=",westbound:";
 							$this->javascript .=$perimeter->westbound;
 							$this->javascript .="},";
+				        }
+				        foreach ($freeBoundaries as $perimeter){
+				        	$this->javascript .="{id:";
+				        	$this->javascript .="'".$perimeter->id."'";
+				        	$this->javascript .=",label:";
+				        	$this->javascript .="'".$perimeter->label."'";
+				        	$this->javascript .=",northbound:";
+				        	$this->javascript .=$perimeter->northbound;
+				        	$this->javascript .=",southbound:";
+				        	$this->javascript .=$perimeter->southbound;
+				        	$this->javascript .=",eastbound:";
+				        	$this->javascript .=$perimeter->eastbound;
+				        	$this->javascript .=",westbound:";
+				        	$this->javascript .=$perimeter->westbound;
+				        	$this->javascript .="},";
 				        }
 				        $this->javascript .="
 					]					

@@ -56,6 +56,10 @@ CatalogMapPanel = Ext.extend(Ext.Panel, {
 		else
 			console.log("defaultBBoxConfig param is missing");
 	
+		//Add vector layer
+		this.perimeterLayer = new OpenLayers.Layer.Vector("Perimeters");
+		this.map.addLayer(this.perimeterLayer);
+		
 		this.map.addControl(new OpenLayers.Control.PanZoomBar());
 		this.map.navCtrl = new OpenLayers.Control.NavigationHistory();
 
@@ -69,6 +73,11 @@ CatalogMapPanel = Ext.extend(Ext.Panel, {
 			out : true
 		});
 		this.map.addControl(this.map.zoomOutBoxCtrl);
+		
+		if(this.freePerimeter){
+			this.map.drawBoxCtrl = new OpenLayers.Control.DrawFeature(this.perimeterLayer,OpenLayers.Handler.Polygon)
+			this.map.addControl(this.map.drawBoxCtrl);
+		}
 
 		this.updateManuallyTriggered = false;
 		this.map.zoomToExtent(new OpenLayers.Bounds(defaultBBoxConfig.defaultExtent.left,defaultBBoxConfig.defaultExtent.bottom,defaultBBoxConfig.defaultExtent.right,defaultBBoxConfig.defaultExtent.top));
@@ -80,9 +89,6 @@ CatalogMapPanel = Ext.extend(Ext.Panel, {
 		}
 		
 		if(this.isStereotype){
-			//Add vector layer
-			this.perimeterLayer = new OpenLayers.Layer.Vector("Perimeters");
-			this.map.addLayer(this.perimeterLayer);
 			
 			var initPerimeterList =  defaultBBoxConfig.initPerimeter;
 			for(i = 0; i<initPerimeterList.length; i++){
@@ -248,12 +254,9 @@ CatalogMapPanel = Ext.extend(Ext.Panel, {
 	updateCtrlBtns : function() {
 		if (this.navButton.pressed) {
 			this.navCtrl.activate();
-			// this.getFeatureInfoCtrl.activate();
 		} else {
 			this.navCtrl.deactivate();
-			// this.getFeatureInfoCtrl.deactivate();
 		}
-
 		if (this.zoomInBoxButton.pressed) {
 			this.zoomInBoxCtrl.activate();
 		} else {
@@ -263,6 +266,11 @@ CatalogMapPanel = Ext.extend(Ext.Panel, {
 			this.zoomOutBoxCtrl.activate();
 		} else {
 			this.zoomOutBoxCtrl.deactivate();
+		}
+		if(this.drawBoxButton.pressed){
+			this.drawBoxCtrl.activate();
+		}else{
+			this.drawBoxCtrl.deactivate();
 		}
 
 	},
@@ -327,7 +335,15 @@ CatalogMapPanel = Ext.extend(Ext.Panel, {
 			scope : this.map
 		});
 
+		this.map.drawBoxButton = new Ext.Toolbar.Button( {
+			iconCls : 'drawBoxBtn',
 
+			enableToggle : true,
+			toggleGroup : 'mapCtrl',
+			allowDepress : false,
+			handler : this.updateCtrlBtns,
+			scope : this.map
+		});
 
 		Ext.getCmp(this.fieldsetId).add(
 		new Ext.Toolbar( {
