@@ -16,30 +16,46 @@
 
 CatalogMapPanel = Ext.extend(Ext.form.Field, {	
 
-	initComponent: function(){
-		CatalogMapPanel.superclass.initComponent.call(this);
+	constructor: function( fieldsetId, width, height, numZoomLevels, isStereotype) {
 		
-		this.addEvents({
-            'featureAdded' : true
-        });
-	 
-	
-		this.id = this.fieldsetId+"_BBox";
-	
-		Ext.getCmp(this.fieldsetId).add( new Ext.Panel( {
-			id : this.id,
-			width : this.width,
-			height : this.height,
-			xtype: 'panel',			
-			frame: false,
-			style :{
-				position:'relative',
-				top:'30px',
-				left:'200px',
-				clear :'both'			
-			}
-		}));	
-	},
+		 this.addEvents({
+	            'featureAdded' : true
+	        });
+		 
+		this.numZoomLevels = numZoomLevels;
+		this.width = width;
+		this.height = height;
+		this.isStereotype = isStereotype;
+		
+		this.id = fieldsetId+"_BBox";
+		this.fieldsetId = fieldsetId;
+		
+		
+		
+		Ext.getCmp(fieldsetId).add(new Ext.Panel( {
+			layout:"table",
+            layoutConfig:{columns:2},
+            border: false,
+			items: [
+			        {xtype:'label',text:'test',labelAlign:'top'},
+			        {
+						id : fieldsetId+"_BBox",
+						width : width,
+						height : height,
+						xtype: 'panel',			
+						frame: false,
+						style :{
+							position:'relative',
+							top:'0px',
+							left:'200px',
+							clear :'both'			
+						}
+			        }
+			        ]
+		}))
+		;	
+		
+	}, 
 	
 	addMap : function(){
 	
