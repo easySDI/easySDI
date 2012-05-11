@@ -54,8 +54,8 @@ JHTML::script('shCore.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('shBrushXml.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('thesaur.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('HS.js', 'administrator/components/com_easysdi_catalog/js/');
-JHTML::script('ItemSelector.js', 'administrator/components/com_easysdi_catalog/js/ux/form/');
-JHTML::script('MultiSelect.js', 'administrator/components/com_easysdi_catalog/js/ux/form/');
+JHTML::script('BoundaryItemSelector.js', 'administrator/components/com_easysdi_catalog/js/');
+JHTML::script('MultiSelect.js', 'administrator/components/com_easysdi_catalog/js/');
 //JHTML::script('ExtendedItemSelector.js', 'administrator/components/com_easysdi_catalog/js/');
 
 $jsLoader =JSLOADER_UTIL::getInstance();
@@ -63,7 +63,7 @@ JHTML::script('SingleFile.js', $jsLoader->getPath("map","openlayers", "/lib/Open
 JHTML::script('OpenLayers.js', $jsLoader->getPath("map","openlayers"));
 
 
-JHTML::_('stylesheet', 'MultiSelect.css', 'administrator/components/com_easysdi_catalog/ext/ux/css/');
+JHTML::_('stylesheet', 'MultiSelect.css', 'administrator/components/com_easysdi_catalog/tenplate/css/');
 
 
 class HTML_metadata {

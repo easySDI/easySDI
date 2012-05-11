@@ -844,7 +844,7 @@
 				if(!Ext.getCmp(fieldsetId).hasStereotypeGeographicExtentMap){
 					Ext.getCmp(fieldsetId).hasStereotypeGeographicExtentMap = true;			
 				
-					this.mapHelper = new CatalogMapPanel(fieldsetId, 250, 250, 12, true);
+					this.mapHelper = new CatalogMapPanel({fieldLabel: 'ploplop',fieldsetId:fieldsetId,width:500, height:250, numZoomLevels:12, isStereotype:true});
 					Ext.getCmp(fieldsetId).doLayout();
 					mapHelper.addMap();	
 					Ext.getCmp(fieldsetId).doLayout();

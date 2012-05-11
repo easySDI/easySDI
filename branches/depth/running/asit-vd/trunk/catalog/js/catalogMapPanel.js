@@ -14,38 +14,32 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html. 
  */
 
-CatalogMapPanel = Ext.extend(Ext.Panel, {	
+CatalogMapPanel = Ext.extend(Ext.form.Field, {	
 
-			
-	constructor: function( fieldsetId, width, height, numZoomLevels, isStereotype) {
+	initComponent: function(){
+		CatalogMapPanel.superclass.initComponent.call(this);
+		
+		this.addEvents({
+            'featureAdded' : true
+        });
+	 
 	
-		 this.addEvents({
-	            'featureAdded' : true
-	        });
-		 
-		this.numZoomLevels = numZoomLevels;
-		this.width = width;
-		this.height = height;
-		this.isStereotype = isStereotype;
-		
-		this.id = fieldsetId+"_BBox";
-		this.fieldsetId = fieldsetId;
-		
-		Ext.getCmp(fieldsetId).add( new Ext.Panel( {
-			id : fieldsetId+"_BBox",
-			width : width,
-			height : height,
+		this.id = this.fieldsetId+"_BBox";
+	
+		Ext.getCmp(this.fieldsetId).add( new Ext.Panel( {
+			id : this.id,
+			width : this.width,
+			height : this.height,
 			xtype: 'panel',			
 			frame: false,
 			style :{
 				position:'relative',
 				top:'30px',
-				left:'480px',
+				left:'200px',
 				clear :'both'			
 			}
 		}));	
-		
-	}, 
+	},
 	
 	addMap : function(){
 	
@@ -361,7 +355,7 @@ CatalogMapPanel = Ext.extend(Ext.Panel, {
 		
 		if(defaultBBoxConfig.freePerimeter == 1){
 			this.map.drawBoxButton = new Ext.Toolbar.Button( {
-				iconCls : 'zoomOutBoxBtn',
+				iconCls : 'drawRectangleBoxBtn',
 				enableToggle : true,
 				toggleGroup : 'mapCtrl',
 				allowDepress : false,
@@ -389,7 +383,7 @@ CatalogMapPanel = Ext.extend(Ext.Panel, {
 			height : 30,				
 			frame: false,
 			style :{position:'relative',			
-				left:'480px',
+				left:'200px',
 				top:'-'+this.height+'px',
 				clear :'both'
 			},

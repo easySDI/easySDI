@@ -17,8 +17,8 @@
 catalogFreePerimeterPanel = Ext.extend(Ext.form.Field,  {
 	
     imagePath:"",
-    iconLeft:"left2.gif",
-    iconRight:"right2.gif",
+    iconLeft:"delete.png",
+    iconRight:"add.png",
     delimiter:',',
     bodyStyle:null,
     border:false,
@@ -168,7 +168,7 @@ catalogFreePerimeterPanel = Ext.extend(Ext.form.Field,  {
     },
     
     afterRender: function(){
-        Ext.ux.form.ItemSelector.superclass.afterRender.call(this);
+    	catalogFreePerimeterPanel.superclass.afterRender.call(this);
 
         this.toStore = this.toMultiselect.store;
         this.toStore.on('add', this.valueChanged, this);

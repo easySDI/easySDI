@@ -313,7 +313,7 @@ class HTML_classstereotype_builder {
 			        }
 			});
 				  
-		 var ".$parentFieldsetName."_itemselector = new Ext.ux.form.ItemSelector({
+		 var ".$parentFieldsetName."_itemselector = new BoundaryItemSelector({
 	                    name: '".$itemselectorName."',
 	                    comboboxname : '".$comboboxName."',
 	                    id: '".$itemselectorName."',
@@ -321,7 +321,7 @@ class HTML_classstereotype_builder {
 	                    mincardbound : ".$rel_lowerbound.",
 	                    maxcardbound : ".$rel_upperbound.",
 			            fieldLabel: '',
-				        imagePath: '/easysdi/administrator/components/com_easysdi_catalog/ext/ux/images/',
+				        imagePath: '".JURI::base( true )."/components/com_easysdi_catalog/templates/images/',
 			            multiselects: [{
 			            	legend: 'Available',
 			            	id: '".$itemselectorName."_available',
@@ -398,7 +398,7 @@ class HTML_classstereotype_builder {
 			            southLabel : '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_SOUTH_LABEL"))."',
 			            eastLabel : '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_EAST_LABEL"))."',
 			            westLabel : '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_WEST_LABEL"))."',
-				        imagePath: '/easysdi/administrator/components/com_easysdi_catalog/ext/ux/images/',
+				        imagePath: '".JURI::base( true )."/components/com_easysdi_catalog/templates/images/',
 				        multiselects: [{
 			            	legend: 'Selected',
 			            	id: '".$freeperimeterselectorName."_selected',
