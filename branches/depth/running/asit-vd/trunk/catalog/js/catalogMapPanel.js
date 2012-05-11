@@ -91,10 +91,12 @@ CatalogMapPanel = Ext.extend(Ext.Panel, {
 			this.map.addLayer(this.perimeterLayer);
 			
 			this.perimeterLayer.events.register('featureadded',this.perimeterLayer, function(feature){
-				this.map.zoomToExtent(this.getDataExtent());
+				if(this.features.length != 0)
+					this.map.zoomToExtent(this.getDataExtent());
 			});
 			this.perimeterLayer.events.register('featureremoved',this.perimeterLayer, function(feature){
-				this.map.zoomToExtent(this.getDataExtent());
+				if(this.features.length != 0)
+					this.map.zoomToExtent(this.getDataExtent());
 			});
 			
 			if(defaultBBoxConfig.freePerimeter == 1){
@@ -114,10 +116,12 @@ CatalogMapPanel = Ext.extend(Ext.Panel, {
 			
 			var initPerimeterList =  defaultBBoxConfig.initPerimeter;
 			for(i = 0; i<initPerimeterList.length; i++){
-				var bounds = new OpenLayers.Bounds(initPerimeterList[i].westbound,initPerimeterList[i].southbound,initPerimeterList[i].eastbound,initPerimeterList[i].northbound);
-				var feature = new OpenLayers.Feature.Vector(bounds.toGeometry());
-				feature.id = initPerimeterList[i].id;
-				this.perimeterLayer.addFeatures(feature);
+				if(initPerimeterList[i].westbound!= 0 && initPerimeterList[i].southbound != 0 && initPerimeterList[i].eastbound !=0 && initPerimeterList[i].nortbound != 0){
+					var bounds = new OpenLayers.Bounds(initPerimeterList[i].westbound,initPerimeterList[i].southbound,initPerimeterList[i].eastbound,initPerimeterList[i].northbound);
+					var feature = new OpenLayers.Feature.Vector(bounds.toGeometry());
+					feature.id = initPerimeterList[i].id;
+					this.perimeterLayer.addFeatures(feature);
+				}
 			}
 
 		}else{

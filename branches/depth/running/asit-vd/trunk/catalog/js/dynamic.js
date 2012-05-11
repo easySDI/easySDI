@@ -53,7 +53,7 @@
 		            	expand:function(){
 		            		if(!this.hasBBox && (this.id.indexOf("gmd_EX_Extent")>=0)&&(this.id.indexOf("gmd_EX_GeographicBoundingBox")>=0))
 		            			addBBoxToFieldSet(this.id);
-		            		else if (this.isGeographicStereotype == true)
+		            		else if (this.isGeographicStereotype == true )
 		            			addStereotypeGeographicExtentMap(this.id);
 		            	},
 		            	afterrender:function(){

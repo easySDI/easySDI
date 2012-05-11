@@ -50,7 +50,6 @@ class HTML_classstereotype_builder {
 		
 		//Build object to hold XML content
 		$extent_object_array = array();
-		
 		if(!$master){
 			//gmd:extent
 			$nodes_extent = $xpathResults->query($relationObject->rel_isocode, $scope);
@@ -176,6 +175,8 @@ class HTML_classstereotype_builder {
 		$fieldEastName = $fieldsetname."-east__1";
 		$fieldWestName = $fieldsetname."-west__1";
 		
+		
+		//Categories of predefined perimeters
 		$this->javascript .="
 		var valueList = ".HTML_metadata::array2extjs($dataValues, true).";
 		var selectedValueList = '';
@@ -183,7 +184,6 @@ class HTML_classstereotype_builder {
 		
 		var comboboxCategories = createComboBox('".$comboboxName."', '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_PERIMETER_LABEL"))."', false, '1', '1', valueList, selectedValueList, defaultValueList, false, '".html_Metadata::cleanText(JText::_(""))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."');
  		".$parentFieldsetName.".add(comboboxCategories);
-		
 		
 		comboboxCategories.on('select', function(){
 				var itemselector = Ext.getCmp('".$itemselectorName."');
@@ -259,7 +259,7 @@ class HTML_classstereotype_builder {
 			}
 		}
 		
-		//Avalaible boundaries
+		//Avalaible boundaries in the database
 		if(count($selectedBoundaries) > 0 ){
 			$query = "SELECT b.id as id, Concat (t.label,' [',tbc.label,']') as label, b.northbound as northbound ,b.southbound as southbound, b.eastbound as eastbound ,b.westbound as westbound
 					FROM #__sdi_boundary b
@@ -294,8 +294,8 @@ class HTML_classstereotype_builder {
 		$availableBoundaries = $database->loadObjectList();
 	
 		
+		//Predefined perimeter item selector
 		$clone ? $clone = 'true' : $clone ='false';
-		
 		$this->javascript .="
 			 var sourceDS = new Ext.data.ArrayStore({
 			        data: [";
@@ -314,8 +314,7 @@ class HTML_classstereotype_builder {
 			            direction: 'ASC'
 			        }
 			    });
-    
-			    
+    		    
 			var destinationDS = new   Ext.data.ArrayStore({
 				data: [
 						";
@@ -378,8 +377,9 @@ class HTML_classstereotype_builder {
 
 		//Options of the relation
 		foreach ($stereotypeAttributes as $stereotypeAttribute){
+			
 			if($stereotypeAttribute->alias == "displaymap"){
-				$displaymap = $stereotypeAttribute->value;
+				$displaymap = $stereotypeAttribute->value ;
 			}
 			if ($stereotypeAttribute->alias == "strictperimeter"){
 				$strictperimeter = $stereotypeAttribute->value;
@@ -389,23 +389,7 @@ class HTML_classstereotype_builder {
 			}
 		}
 		
-		//If a map is displayed, add a polygon corresponding to the predefined perimeter
-		if($clone && $displaymap){
-			$this->javascript .="
-			".$parentFieldsetName."_itemselector.addListener ('addItemTo',function(record){
-					var bounds = new OpenLayers.Bounds(record.data.westbound,record.data.southbound,record.data.eastbound,record.data.northbound);
-					var feature = new OpenLayers.Feature.Vector(bounds.toGeometry());
-					feature.id = record.data.value;
-					this.mapHelper.perimeterLayer.addFeatures(feature);
-				}, this);
-				
-			".$parentFieldsetName."_itemselector.addListener ('removeItemTo',function(record){
-					this.mapHelper.perimeterLayer.removeFeatures(this.mapHelper.perimeterLayer.getFeatureById(record.data.value));
-				}, this);
-			";
-		}
-
-		
+		//Free perimeter selector
 		if($clone && !$strictperimeter){
 			$this->javascript .="
 			var freedestinationDS = new   Ext.data.ArrayStore({
@@ -452,22 +436,27 @@ class HTML_classstereotype_builder {
 			";
 		}
 		
-		if($clone && $displaymap && !$strictperimeter){
-			$this->javascript .="
-				".$parentFieldsetName."_freeperimeterselector.addListener ('addItemTo',function(record){
-					var bounds = new OpenLayers.Bounds(record.data.westbound,record.data.southbound,record.data.eastbound,record.data.northbound);
-					var feature = new OpenLayers.Feature.Vector(bounds.toGeometry());
-					feature.id = record.data.value;
-					this.mapHelper.perimeterLayer.addFeatures(feature);
-			}, this);
-				
-			".$parentFieldsetName."_freeperimeterselector.addListener ('removeItemTo',function(record){
-				this.mapHelper.perimeterLayer.removeFeatures(this.mapHelper.perimeterLayer.getFeatureById(record.data.value));
-			}, this);
-			";
-		}
 		
+		//Map configuration
+		//Note : see dynamic.js createFieldSet listener for the map creation itself 
 		if($clone && $displaymap){
+			//NOTE : Predefined perimeters can have an empty geographic BBOX
+			$this->javascript .="
+				".$parentFieldsetName."_itemselector.addListener ('addItemTo',function(record){
+					if (record.data.westbound != 0 && record.data.southbound != 0 && record.data.eastbound != 0 && record.data.northbound  != 0){
+						var bounds = new OpenLayers.Bounds(record.data.westbound,record.data.southbound,record.data.eastbound,record.data.northbound);
+						var feature = new OpenLayers.Feature.Vector(bounds.toGeometry());
+						feature.id = record.data.value;
+						this.mapHelper.perimeterLayer.addFeatures(feature);
+					}
+				}, this);
+				
+				".$parentFieldsetName."_itemselector.addListener ('removeItemTo',function(record){
+					this.mapHelper.perimeterLayer.removeFeatures(this.mapHelper.perimeterLayer.getFeatureById(record.data.value));
+				}, this);
+			";
+			$withFreePerimeter = $strictperimeter ? 0 : 1;
+			$freePerimeterSelectorName = $strictperimeter ? 'null' : $parentFieldsetName."_freeperimeterselector";
 			$this->javascript .="
 				defaultBBoxConfig ={
 					getLayers : function(){
@@ -476,8 +465,8 @@ class HTML_classstereotype_builder {
 					defaultExtent:{
 						left:".$params['defaultBboxConfigExtentLeft'].",bottom:".$params['defaultBboxConfigExtentBottom'].",right:".$params['defaultBboxConfigExtentRight'].",top:".$params['defaultBboxConfigExtentTop']."
 					},
-					freePerimeter : ".!$strictperimeter.",
-					freePerimeterSelector : ".$parentFieldsetName."_freeperimeterselector,
+					freePerimeter : ".$withFreePerimeter.",
+					freePerimeterSelector : ".$freePerimeterSelectorName.",
 					initPerimeter:[
 						";
 						foreach ($selectedBoundaries as $perimeter){
@@ -513,6 +502,26 @@ class HTML_classstereotype_builder {
 				        $this->javascript .="
 					]					
 				};				
+			";
+		}else if (!$displaymap){ //Object defaultBBoxConfig must be cleared
+			$this->javascript .="
+				defaultBBoxConfig =undefined;
+				";
+		}
+		
+		//Map configuration for the free perimeter handling
+		if($clone && $displaymap && !$strictperimeter){
+			$this->javascript .="
+				".$parentFieldsetName."_freeperimeterselector.addListener ('addItemTo',function(record){
+					var bounds = new OpenLayers.Bounds(record.data.westbound,record.data.southbound,record.data.eastbound,record.data.northbound);
+					var feature = new OpenLayers.Feature.Vector(bounds.toGeometry());
+					feature.id = record.data.value;
+					this.mapHelper.perimeterLayer.addFeatures(feature);
+				}, this);
+			
+			".$parentFieldsetName."_freeperimeterselector.addListener ('removeItemTo',function(record){
+				this.mapHelper.perimeterLayer.removeFeatures(this.mapHelper.perimeterLayer.getFeatureById(record.data.value));
+				}, this);
 			";
 		}
 	}

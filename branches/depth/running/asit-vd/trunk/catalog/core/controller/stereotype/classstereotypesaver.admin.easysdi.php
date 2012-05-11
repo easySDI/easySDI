@@ -30,7 +30,11 @@ class ADMIN_classstereotype_saver {
 		
 		//Free Perimeter
 		$key = $fieldsetName."-free-perimeter__1";
-		$freeboundaries_id = json_decode("[".$_POST[$key]."]",true);
+		if (isset($_POST[$key])){
+			$freeboundaries_id = json_decode("[".$_POST[$key]."]",true);
+		}else{
+			$freeboundaries_id = array();
+		}
 		foreach ($freeboundaries_id as $boundary){
 			
 			//$boundary = json_decode ($boundary_id, true);
@@ -75,7 +79,11 @@ class ADMIN_classstereotype_saver {
 		//Boundary id
 		$key = $fieldsetName."-gmd_geographicElement__1";
 		$boundaries_id = json_decode("[".$_POST[$key]."]",true);
-
+		if (isset($_POST[$key])){
+			$boundaries_id = json_decode("[".$_POST[$key]."]",true);
+		}else{
+			$boundaries_id = array();
+		}
 		foreach ($boundaries_id as $boundary_id){
 			$query = "SELECT b.id as id, t.label as label, c.code as codelang, t.title as title, bc.alias as alias
 						FROM #__sdi_boundary b
