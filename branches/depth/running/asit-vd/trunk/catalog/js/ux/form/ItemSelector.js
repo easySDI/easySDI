@@ -91,18 +91,18 @@ Ext.ux.form.ItemSelector = Ext.extend(Ext.form.Field,  {
         this.toMultiselect = new Ext.ux.form.MultiSelect(Ext.applyIf(this.multiselects[1], msConfig[1]));
         this.toMultiselect.on('dblclick', this.onRowDblClick, this);
 
-        var p = new Ext.Panel({
+        this.p = new Ext.Panel({
             bodyStyle:this.bodyStyle,
             border:this.border,
             layout:"table",
             layoutConfig:{columns:3}
         });
 
-        p.add(this.fromMultiselect);
+        this.p.add(this.fromMultiselect);
         var icons = new Ext.Panel({header:false});
-        p.add(icons);
-        p.add(this.toMultiselect);
-        p.render(this.el);
+        this.p.add(icons);
+        this.p.add(this.toMultiselect);
+        this.p.render(this.el);
         icons.el.down('.'+icons.bwrapCls).remove();
 
         // ICON HELL!!!
@@ -139,9 +139,9 @@ Ext.ux.form.ItemSelector = Ext.extend(Ext.form.Field,  {
         if (!this.drawTopIcon || this.hideNavIcons) { this.toTopIcon.dom.style.display='none'; }
         if (!this.drawBotIcon || this.hideNavIcons) { this.toBottomIcon.dom.style.display='none'; }
 
-        var tb = p.body.first();
-        this.el.setWidth(p.body.first().getWidth());
-        p.body.removeClass();
+        var tb = this.p.body.first();
+        this.el.setWidth(this.p.body.first().getWidth());
+        this.p.body.removeClass();
 
         this.hiddenName = this.name;
         var hiddenTag = {tag: "input", type: "hidden", value: "", name: this.name};
@@ -164,6 +164,12 @@ Ext.ux.form.ItemSelector = Ext.extend(Ext.form.Field,  {
         this.toStore.on('load', this.valueChanged, this);
         this.valueChanged(this.toStore);
 
+    },
+    
+    setFromMultiSelect: function (multiSelect){
+    	this.fromMultiselect = new Ext.ux.form.MultiSelect(multiSelect);;
+    	this.fromMultiselect.on('dblclick', this.onRowDblClick, this);
+    	this.p.render (this.el);
     },
 
     toTop : function() {

@@ -187,32 +187,10 @@ class HTML_classstereotype_builder {
 		
 		comboboxCategories.on('select', function(){
 				var itemselector = Ext.getCmp('".$itemselectorName."');
-				var data = [];
-				var datasource = new Ext.data.ArrayStore({
-			        data: [
-					    ],
-			        fields: ['value','text'],
-			        sortInfo: {
-			            field: 'value',
-			            direction: 'ASC'
-			        }
-			    });
-				var newMultiselect = {
-			            	legend: 'Available',
-			            	id: '".$itemselectorName."_available',
-			            	minSelections:0,
-	            			maxSelections:999,
-	            			dynamic:true,
-			                width: 250,
-			                height: 200,
-			                store: datasource,
-			                displayField: 'text',
-			                valueField: 'value'
-			            };
-			       
-				itemselector.setFromMultiSelect(datasource);
+				var selectedCategory = this.getValue();
+				//itemselector.fromMultiselect.store.removeAll();
 			    
-			}, this);
+			}, comboboxCategories);
 			
 		";
 		
