@@ -222,7 +222,8 @@ catalogFreePerimeterPanel = Ext.extend(Ext.form.Field,  {
          var southvalue =  Ext.getCmp(this.id+'_south').getValue();
          var westvalue =  Ext.getCmp(this.id+'_west').getValue();
 
-        this.toMultiselect.view.store.add(this.buildRecord(northvalue, southvalue, eastvalue, westvalue));
+         var  record = this.buildRecord(northvalue, southvalue, eastvalue, westvalue);
+        this.toMultiselect.view.store.add(record);
             
         this.toMultiselect.view.refresh();
         var si = this.toMultiselect.store.sortInfo;

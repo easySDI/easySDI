@@ -99,7 +99,7 @@ CatalogMapPanel = Ext.extend(Ext.Panel, {
 																												                })
 				this.map.addControl(this.map.drawBoxCtrl);
 				this.map.drawBoxCtrl.events.register ('featureadded',this.map.drawBoxCtrl, function(feature){
-					feature.id = '['+feature.feature.geometry.bounds.top+','+feature.feature.geometry.bounds.bottom+','+feature.feature.geometry.bounds.left+','+feature.feature.geometry.bounds.right+']';
+					feature.geometry.id = '['+feature.feature.geometry.bounds.top+','+feature.feature.geometry.bounds.bottom+','+feature.feature.geometry.bounds.right+','+feature.feature.geometry.bounds.left+']';
 					defaultBBoxConfig.freePerimeterSelector.addRecord(feature);
 				});
 			}
