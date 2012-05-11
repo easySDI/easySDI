@@ -46,7 +46,7 @@ CatalogMapPanel = Ext.extend(Ext.form.Field, {
 						frame: false,
 						style :{
 							position:'relative',
-							top:'0px',
+							top:'30px',
 							left:'200px',
 							clear :'both'			
 						}
