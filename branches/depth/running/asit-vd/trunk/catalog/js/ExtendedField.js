@@ -126,7 +126,7 @@ Ext.override(Ext.form.Field, {
 						iconCfg : {cls:'x-tool x-tool-minus',clsOnOver:'x-tool-minus-over'}																	   
 					});
 				}
-				else if(master.hasListener ('focus'))
+				else if(master.hasListener ('focus') && master.xtype == "textfield")
 				{
 					var clone = master.cloneConfig({
 						id : newName,

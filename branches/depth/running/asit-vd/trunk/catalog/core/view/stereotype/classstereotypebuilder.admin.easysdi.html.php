@@ -103,7 +103,7 @@ class HTML_classstereotype_builder {
 									}
 								}
 								
-								$nodes_BBOX = $xpathResults->query("gmd:EX_GeographicBoundingBox/gmd:eastBoundLatitude/gco:Decimal", $node_geographicElement);
+								$nodes_BBOX = $xpathResults->query("gmd:EX_GeographicBoundingBox/gmd:eastBoundLongitude/gco:Decimal", $node_geographicElement);
 								if(count($nodes_BBOX) == 0){
 									//Not a geographic bbox
 									continue;
@@ -113,7 +113,7 @@ class HTML_classstereotype_builder {
 									}
 								}
 								
-								$nodes_BBOX = $xpathResults->query("gmd:EX_GeographicBoundingBox/gmd:westBoundLatitude/gco:Decimal", $node_geographicElement);
+								$nodes_BBOX = $xpathResults->query("gmd:EX_GeographicBoundingBox/gmd:westBoundLongitude/gco:Decimal", $node_geographicElement);
 								if(count($nodes_BBOX) == 0){
 									//Not a geographic bbox
 									continue;

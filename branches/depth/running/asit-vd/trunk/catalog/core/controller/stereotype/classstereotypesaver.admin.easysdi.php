@@ -65,12 +65,12 @@ class ADMIN_classstereotype_saver {
 			$nodeE_ = $XMLDoc->createElement("gco:Decimal", $boundary[1]);
 			$nodeE->appendChild($nodeE_);
 				
-			$nodeF = $XMLDoc->createElement("gmd:eastBoundLatitude");
+			$nodeF = $XMLDoc->createElement("gmd:eastBoundLongitude");
 			$nodeB->appendChild($nodeF);
 			$nodeF_ = $XMLDoc->createElement("gco:Decimal", $boundary[2]);
 			$nodeF->appendChild($nodeF_);
 				
-			$nodeG = $XMLDoc->createElement("gmd:westBoundLatitude");
+			$nodeG = $XMLDoc->createElement("gmd:westBoundLongitude");
 			$nodeB->appendChild($nodeG);
 			$nodeG_ = $XMLDoc->createElement("gco:Decimal", $boundary[3]);
 			$nodeG->appendChild($nodeG_);
@@ -169,12 +169,12 @@ class ADMIN_classstereotype_saver {
 				$nodeE_ = $XMLDoc->createElement("gco:Decimal", $boundary->southbound);
 				$nodeE->appendChild($nodeE_);
 				
-				$nodeF = $XMLDoc->createElement("gmd:eastBoundLatitude");
+				$nodeF = $XMLDoc->createElement("gmd:eastBoundLongitude");
 				$nodeB->appendChild($nodeF);
 				$nodeF_ = $XMLDoc->createElement("gco:Decimal", $boundary->eastbound);
 				$nodeF->appendChild($nodeF_);
 				
-				$nodeG = $XMLDoc->createElement("gmd:westBoundLatitude");
+				$nodeG = $XMLDoc->createElement("gmd:westBoundLongitude");
 				$nodeB->appendChild($nodeG);
 				$nodeG_ = $XMLDoc->createElement("gco:Decimal", $boundary->westbound);
 				$nodeG->appendChild($nodeG_);
