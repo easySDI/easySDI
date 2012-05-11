@@ -90,6 +90,13 @@ CatalogMapPanel = Ext.extend(Ext.Panel, {
 			this.perimeterLayer = new OpenLayers.Layer.Vector("Perimeters");
 			this.map.addLayer(this.perimeterLayer);
 			
+			this.perimeterLayer.events.register('featureadded',this.perimeterLayer, function(feature){
+				this.map.zoomToExtent(this.getDataExtent());
+			});
+			this.perimeterLayer.events.register('featureremoved',this.perimeterLayer, function(feature){
+				this.map.zoomToExtent(this.getDataExtent());
+			});
+			
 			if(defaultBBoxConfig.freePerimeter == 1){
 				this.map.drawBoxCtrl = new OpenLayers.Control.DrawFeature(this.perimeterLayer,OpenLayers.Handler.RegularPolygon, {
 																												                    handlerOptions: {
@@ -98,8 +105,9 @@ CatalogMapPanel = Ext.extend(Ext.Panel, {
 																												                    }
 																												                })
 				this.map.addControl(this.map.drawBoxCtrl);
+				
 				this.map.drawBoxCtrl.events.register ('featureadded',this.map.drawBoxCtrl, function(feature){
-					feature.geometry.id = '['+feature.feature.geometry.bounds.top+','+feature.feature.geometry.bounds.bottom+','+feature.feature.geometry.bounds.right+','+feature.feature.geometry.bounds.left+']';
+					feature.feature.geometry.id = '['+feature.feature.geometry.bounds.top+','+feature.feature.geometry.bounds.bottom+','+feature.feature.geometry.bounds.right+','+feature.feature.geometry.bounds.left+']';
 					defaultBBoxConfig.freePerimeterSelector.addRecord(feature);
 				});
 			}
