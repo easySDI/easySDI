@@ -45,40 +45,36 @@ catalogFreePerimeterPanel = Ext.extend(Ext.form.Field,  {
         this.fieldnorth = {
 	            id:this.id+'_north',
 	            xtype: 'textfield',
-				cls: 'easysdi_shop_backend_textfield', 
-	            name: this.id+'_north',
+				name: this.id+'_north',
 	            allowBlank: true,
-	            width: 250
+	            width: 200
 		    	};
 		this.fieldsouth = {
 	            id:this.id+'_south',
 	            xtype: 'textfield',
-				cls: 'easysdi_shop_backend_textfield', 
-	            name: this.id+'_south',
+				name: this.id+'_south',
 	            allowBlank: true,
-	            width: 250
+	            width: 200
 		    	};
 		this.fieldeast = {
 	            id:this.id+'_east',
 	            xtype: 'textfield',
-				cls: 'easysdi_shop_backend_textfield', 
-	            name: this.id+'_east',
+				name: this.id+'_east',
 	            allowBlank: true,
-	           width: 250
+	           width: 200
 		    	};
 		this.fieldwest = {
 	            id:this.id+'_west',
 	            xtype: 'textfield',
-				cls: 'easysdi_shop_backend_textfield', 
-	            name: this.id+'_west',
+				name: this.id+'_west',
 	            allowBlank: true,
-	             width: 250
+	             width: 200
 		    	};
 		
         this.fromMultiselect = new Ext.Panel({
     			layout:"table",
     			border:this.border,
-    			width: 250,
+    			width: 200,
                 height: 200,
     			layoutConfig:{columns:1},
     			items:[
@@ -131,6 +127,7 @@ catalogFreePerimeterPanel = Ext.extend(Ext.form.Field,  {
             bodyStyle:this.bodyStyle,
             border:this.border,
             layout:"table",
+            width:550,
             layoutConfig:{columns:4}
         });
 

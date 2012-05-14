@@ -14,7 +14,7 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/gpl.html. 
  */
 
-	function createFieldSet(id, title, border, clone, collapsible, relation, dynamic, master, min, max, tip, dismissDelay, isLanguageFieldset, isGeographicStereotype )
+	function createFieldSet(id, title, border, clone, collapsible, relation, dynamic, master, min, max, tip, dismissDelay, isLanguageFieldset, isGeographicStereotype, geographicStereotypeLabel )
 	{	
 		//if (title) title = title+" "+min+" - "+max;
 		var collapsed = (relation && !clone) ? collapsed=true : collapsed = false;
@@ -54,7 +54,7 @@
 		            		if(!this.hasBBox && (this.id.indexOf("gmd_EX_Extent")>=0)&&(this.id.indexOf("gmd_EX_GeographicBoundingBox")>=0))
 		            			addBBoxToFieldSet(this.id);
 		            		else if (this.isGeographicStereotype == true )
-		            			addStereotypeGeographicExtentMap(this.id);
+		            			addStereotypeGeographicExtentMap(this.id, geographicStereotypeLabel);
 		            	},
 		            	afterrender:function(){
 		            		if(!this.collapsed){
@@ -834,7 +834,7 @@
 		}
 	}
 		
-	function addStereotypeGeographicExtentMap(fieldsetId){
+	function addStereotypeGeographicExtentMap(fieldsetId, geographicStereotypeLabel){
 
 		if(typeof(defaultBBoxConfig) == "undefined")
 			return;
@@ -844,7 +844,7 @@
 				if(!Ext.getCmp(fieldsetId).hasStereotypeGeographicExtentMap){
 					Ext.getCmp(fieldsetId).hasStereotypeGeographicExtentMap = true;			
 				
-					this.mapHelper = new CatalogMapPanel(fieldsetId,500, 250, 12, true);
+					this.mapHelper = new CatalogMapPanel(fieldsetId,480, 250, 12, true, geographicStereotypeLabel);
 					Ext.getCmp(fieldsetId).doLayout();
 					mapHelper.addMap();	
 					Ext.getCmp(fieldsetId).doLayout();

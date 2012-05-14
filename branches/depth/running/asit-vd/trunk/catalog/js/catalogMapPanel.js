@@ -16,7 +16,7 @@
 
 CatalogMapPanel = Ext.extend(Ext.form.Field, {	
 
-	constructor: function( fieldsetId, width, height, numZoomLevels, isStereotype) {
+	constructor: function( fieldsetId, width, height, numZoomLevels, isStereotype, label) {
 		
 		 this.addEvents({
 	            'featureAdded' : true
@@ -25,31 +25,34 @@ CatalogMapPanel = Ext.extend(Ext.form.Field, {
 		this.numZoomLevels = numZoomLevels;
 		this.width = width;
 		this.height = height;
+		this.panelwidth = Ext.getCmp(fieldsetId).getWidth();
 		this.isStereotype = isStereotype;
 		
 		this.id = fieldsetId+"_BBox";
 		this.fieldsetId = fieldsetId;
 		
-		
-		
 		Ext.getCmp(fieldsetId).add(new Ext.Panel( {
 			layout:"table",
+			labelWidth: 200,
             layoutConfig:{columns:2},
             border: false,
+            width : this.panelwidth,
+			height : height+30,
 			items: [
-			        {xtype:'label',text:'test',labelAlign:'top'},
 			        {
-						id : fieldsetId+"_BBox",
+			        	xtype:'label',
+			        	cls:'x-form-item-label',
+			        	text:label,
+			        	width:'200px',
+			        	labelWidth: 200,
+			        	labelAlign:'top'
+			        },
+			        {
+						id : this.id,
 						width : width,
-						height : height-10,
+						height : height,
 						xtype: 'panel',			
-						frame: false,
-						style :{
-							position:'relative',
-							top:'30px',
-							left:'200px',
-							clear :'both'			
-						}
+						frame: false
 			        }
 			        ]
 		}))
@@ -390,7 +393,7 @@ CatalogMapPanel = Ext.extend(Ext.form.Field, {
 				          this.map.drawBoxButton
 				]
 		}
-		
+		var bartop = this.height +30; 
 		Ext.getCmp(this.fieldsetId).add(
 		new Ext.Toolbar( {
 			id : this.fieldsetId+"_BBoxPanel",
@@ -400,7 +403,7 @@ CatalogMapPanel = Ext.extend(Ext.form.Field, {
 			frame: false,
 			style :{position:'relative',			
 				left:'200px',
-				top:'-'+this.height+'px',
+				top:'-'+bartop+'px',
 				clear :'both'
 			},
 			items : itemslist

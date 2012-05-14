@@ -35,6 +35,7 @@ var thesaurusConfig = '<?php echo config_easysdi::getValue("thesaurusUrl");?>'
 JHTML::script('ext-base.js', 'administrator/components/com_easysdi_catalog/ext/adapter/ext/');
 JHTML::script('ext-all.js', 'administrator/components/com_easysdi_catalog/ext/');
 JHTML::script('catalogMapPanel.js', 'administrator/components/com_easysdi_catalog/js/');
+JHTML::script('catalogFreePerimeterPanel.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('dynamic.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('ExtendedButton.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('ExtendedField.js', 'administrator/components/com_easysdi_catalog/js/');
@@ -58,6 +59,10 @@ JHTML::script('SingleFile.js', $jsLoader->getPath("map","openlayers", "/lib/Open
 JHTML::script('OpenLayers.js', $jsLoader->getPath("map","openlayers"));
 //JHTML::script('SingleFile.js',  $jsLoader->getPath("map","geoext", "/lib/GeoExt/"));
 //JHTML::script('GeoExt.js',  $jsLoader->getPath("map", "geoext", "/script/"));
+JHTML::script('BoundaryItemSelector.js', 'administrator/components/com_easysdi_catalog/js/');
+JHTML::script('MultiSelect.js', 'administrator/components/com_easysdi_catalog/js/');
+
+JHTML::_('stylesheet', 'MultiSelect.css', 'administrator/components/com_easysdi_catalog/tenplate/css/');
 
 class HTML_metadata {
 	var $javascript = "";
@@ -1883,6 +1888,7 @@ else
 						 CONCAT(attribute_namespace.prefix,':',a.isocode) as attribute_isocode, 
 						 CONCAT(list_namespace.prefix,':',a.type_isocode) as list_isocode, 
 						 a.attributetype_id as attribute_type, 
+						  tc.id as cl_stereotype_id,
 						 a.default as attribute_default, 
 						 a.pattern as attribute_pattern, 
 						 a.isSystem as attribute_system, 
@@ -1900,12 +1906,14 @@ else
 						 	 ON rel.id = prof.relation_id
 						 LEFT OUTER JOIN #__sdi_attribute as a
 				  		 	 ON rel.attributechild_id=a.id 
-						     LEFT OUTER JOIN #__sdi_sys_stereotype as t
-						  		 ON a.attributetype_id = t.id 
+						 LEFT OUTER JOIN #__sdi_sys_stereotype as t
+						  	 ON a.attributetype_id = t.id 
 					     LEFT OUTER JOIN #__sdi_class as c
 					  		 ON rel.classchild_id=c.id
-					     LEFT OUTER JOIN #__sdi_list_relationtype as reltype
-					  		 ON rel.relationtype_id=reltype.id	 
+					     LEFT OUTER JOIN jos_sdi_sys_stereotype as tc
+			 				ON c.stereotype_id = tc.id	 
+			 			 LEFT OUTER JOIN #__sdi_list_relationtype as reltype
+					  		 ON rel.relationtype_id=reltype.id	
 					     LEFT OUTER JOIN #__sdi_account_attribute as accountrel_attribute
 					  		 ON accountrel_attribute.attribute_id=attribute_id
 					     LEFT OUTER JOIN #__sdi_account_class as accountrel_class
@@ -1931,7 +1939,7 @@ else
 				  		 	OR
 				  		 	(accountrel_class.account_id is null or accountrel_class.account_id=".$account_id.")
 				  		 )
-				  ORDER BY rel.ordering, rel.id";		
+				  GROUP BY rel.id ORDER BY rel.ordering, rel.id";		
 		$database->setQuery( $query );
 		
 		//echo $database->getquery()."<br>";
@@ -3244,7 +3252,6 @@ else
 								".$parentFieldsetName.".add(createSuperBoxSelect('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."', ".$value.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."'));
 								";
 								break;
-								//TODO
 								case 14:
 									// Cas où le noeud n'existe pas dans le XML. Inutile de rechercher la valeur
 								$node = $xpathResults->query("gmd:MI_Identifier/gmd:code/gco:CharacterString", $attributeScope);
@@ -3828,7 +3835,7 @@ else
 							case 11:
 								// Le Thesaurus GEMET  n'existe qu'en un exemplaire
 								break;
-								//TODO
+								
 							case 14:
 									//echo "Recherche de gco:CharacterString dans ".$attributeScope->nodeName."<br>";
 								$node = $xpathResults->query("gmd:MI_Identifier/gmd:code/gco:CharacterString", $attributeScope);
@@ -4712,7 +4719,7 @@ else
 								";
 								
 								break;
-							//TODO
+							
 							case 14:
 									$node = $xpathResults->query("gmd:MI_Identifier/gmd:code/gco:CharacterString", $attributeScope);
 								$nodeValue = html_Metadata::cleanText($node->item(0)->nodeValue);
@@ -4883,43 +4890,38 @@ else
 					// Nom du fieldset avec guid pour l'unicit�
 					$fieldsetName = "fieldset".$child->child_id."_".str_replace("-", "_", helper_easysdi::getUniqueId());
 					
-					$this->javascript .="
-						// Cr�er un nouveau fieldset
-						var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, false, false, true, true, null, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false); 
-						".$parentFieldsetName.".add(".$fieldsetName.");
-					";
-
-					/*
-					// S'il y a un xlink:title d�fini, alors afficher une balise pour le saisir
-					if ($child->has_xlinkTitle)
-					{
-						if ($nodeCount > 0)
-						$xlinkTitleValue = html_Metadata::cleanText($node->item($pos)->getAttribute('xlink:title'));
-						else
-						$xlinkTitleValue = "";
-
-						$this->javascript .="
-						fieldset".$child->classes_to_id.".add(createTextArea('".$name."_xlinktitle', '".JText::_('EDIT_METADATA_EXTENSION_TITLE')."',true, false, null, '1', '1', '".$xlinkTitleValue."'));";
-					}
-					*/
-
 					// Le code ISO de la classe enfant devient le code ISO du nouveau parent
 					$nextIsocode = $child->child_isocode;
-					// Appel r�cursif de la fonction pour le traitement du prochain niveau
-					//HTML_metadata::buildTree($prof, $database, $child->classes_to_id, $child->classes_to_id, $name, $xpathResults, $classScope, $queryPath, $nextIsocode, $account_id, $option);
-					//echo "Appel r�cursif avec les valeurs suivantes:<br> ";
-					//echo "Ancetre = ".$ancestor."<br>";
-					//echo "Parent = ".$child->child_id."<br>";
-					//echo "Parent Fieldset = ".$child->child_id."<br>";
-					//echo "Parent Name = ".$name."<br>";
-					//echo "Parent avec un $ = ".$parent."<br>";
-					//echo "Scope = ".$scope->nodeName."<br>";
-					//echo "ClassScope = ".$classScope->nodeName."<br>";
-					//echo "QueryPath = ".$queryPath."<br>";
-					//echo "Current Isocode = ".$nextIsocode."<br>";
-					//echo "Account Id = ".$account_id."<br>";
-					//echo "<hr>";
 					
+					//TODO : stereotype case 1 :  on créer le master = la structure sans données
+					if ($child->cl_stereotype_id <> null){
+						//Tester le stereotype pour créer le bon
+						$database->setQuery("SELECT alias FROM #__sdi_sys_stereotype WHERE id =".$child->cl_stereotype_id);
+						$stereotype = $database->loadResult();
+						switch ($stereotype){
+							case "geographicextent":
+								// 								echo("Case 1 :");
+								// 								echo("<br>");
+								//Attention : l'ensemble des classe stereotypée liées à ce noeud parent vont
+								//être traité lors du premier, et unique, appel au classstereotype_builder.
+								//Ce traitement particulier est dû à la gestion particulière de la cardinalité de la
+								//relation vers une classe stereotypée geographicExtent (utilisation d'un ItemSelector)
+								if($pos == 0){
+									// Créer un nouveau fieldset
+									$this->javascript .="
+									var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, false, false, true, true, null, 1, 1, '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."',false, true, '".JText::_( 'CATALOG_STEREOTYPE_CLASS_MAP_PANEL_LABEL' )."');
+									".$parentFieldsetName.".add(".$fieldsetName.");
+									";
+									HTML_classstereotype_builder::getGeographicExtentClass($database,$name, $child, $fieldsetName, $xpathResults, $queryPath,$scope, true, false);
+								}
+						}
+					}else{
+						// Créer un nouveau fieldset
+						$this->javascript .="
+							var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, false, false, true, true, null, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false); 
+							".$parentFieldsetName.".add(".$fieldsetName.");
+						";
+					}
 					// Test pour le cas d'une relation qui boucle une classe sur elle-m�me
 					if ($ancestor <> $parent)					
 						HTML_metadata::buildTree($database, $parent, $child->child_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
@@ -4965,46 +4967,47 @@ else
 					// On construit le nom de l'occurence
 					$name = $parentName."-".str_replace(":", "_", $child->child_isocode)."__".($pos+1);
 							
+					// Le code ISO de la classe enfant devient le code ISO du nouveau parent
+					$nextIsocode = $child->child_isocode;
+					
 					// Construction du bloc de la classe enfant
 					// Nom du fieldset avec guid pour l'unicit�
 					$fieldsetName = "fieldset".$child->child_id."_".str_replace("-", "_", helper_easysdi::getUniqueId());
 					
-					$this->javascript .="
-						var master = Ext.getCmp('".$master."');							
-						// Cr�er un nouveau fieldset
-						var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, true, true, true, true, master, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false); 
-						".$parentFieldsetName.".add(".$fieldsetName.");
-					";
-					
-					/*
-					// S'il y a un xlink:title d�fini, alors afficher une balise pour le saisir
-					if ($child->has_xlinkTitle)
-					{
-						if ($nodeCount > 0)
-						$xlinkTitleValue = html_Metadata::cleanText($node->item($pos)->getAttribute('xlink:title'));
-						else
-						$xlinkTitleValue = "";
-
+					//TODO : stereotype case 2 : traitement des occurences trouvées dans le XML
+					if ($child->cl_stereotype_id <> null){
+						//Tester le stereotype pour créer le bon
+						$database->setQuery("SELECT alias FROM #__sdi_sys_stereotype WHERE id =".$child->cl_stereotype_id);
+						$stereotype = $database->loadResult();
+						switch ($stereotype){
+							case "geographicextent":
+								// 								echo("Case 2 :");
+								// 								echo("<br>");
+								//Attention : l'ensemble des classe stereotypée liées à ce noeud parent vont
+								//être traité lors du premier, et unique, appel au classstereotype_builder.
+								//Ce traitement particulier est dû à la gestion particulière de la cardinalité de la
+								//relation vers une classe stereotypée geographicExtent (utilisation d'un ItemSelector)
+								if($pos == 1){
+									// Créer un nouveau fieldset
+									$this->javascript .="
+									var master = Ext.getCmp('".$master."');
+									var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, true, true, true, true, master, 1, 1, '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false,true, '".JText::_( 'CATALOG_STEREOTYPE_CLASS_MAP_PANEL_LABEL' )."');
+									".$parentFieldsetName.".add(".$fieldsetName.");
+									";
+									HTML_classstereotype_builder::getGeographicExtentClass($database,$name, $child, $fieldsetName, $xpathResults, $queryPath,$scope, false, true);
+								}
+						}
+					}else{
+						// Créer un nouveau fieldset
 						$this->javascript .="
-						fieldset".$child->classes_to_id.".add(createTextArea('".$name."_xlinktitle', '".JText::_('EDIT_METADATA_EXTENSION_TITLE')."',true, false, null, '1', '1', '".$xlinkTitleValue."'));";
-					}
-					*/
+							var master = Ext.getCmp('".$master."');							
+							
+							var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, true, true, true, true, master, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false); 
+							".$parentFieldsetName.".add(".$fieldsetName.");
+						";
 
-					// Le code ISO de la classe enfant devient le code ISO du nouveau parent
-					$nextIsocode = $child->child_isocode;
-					// Appel r�cursif de la fonction pour le traitement du prochain niveau
-					//HTML_metadata::buildTree($prof, $database, $child->classes_to_id, $child->classes_to_id, $name, $xpathResults, $classScope, $queryPath, $nextIsocode, $account_id, $option);
-					
-					//echo "Appel r�cursif avec les valeurs suivantes:<br> ";
-					//echo "Parent = ".$child->child_id."<br>";
-					//echo "Parent Fieldset = ".$child->child_id."<br>";
-					//echo "Parent Name = ".$name."<br>";
-					//echo "Scope = ".$classScope->nodeName."<br>";
-					//echo "QueryPath = ".$queryPath."<br>";
-					//echo "Current Isocode = ".$nextIsocode."<br>";
-					//echo "Account Id = ".$account_id."<br>";
-					//echo "<hr>";
-					
+					}
+					// Appel récursif de la fonction pour le traitement du prochain niveau
 					HTML_metadata::buildTree($database, $parent, $child->child_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
 				
 				
@@ -5036,13 +5039,35 @@ else
 				// Construction du fieldset
 				$fieldsetName = "fieldset".$child->child_id."_".str_replace("-", "_", helper_easysdi::getUniqueId());
 				
-				$this->javascript .="
-					var master = Ext.getCmp('".$master."');							
-					// Cr�er un nouveau fieldset
-					var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, true, true, true, true, master, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false); 
-					".$parentFieldsetName.".add(".$fieldsetName.");
-				";	
-
+				// Le code ISO de la classe enfant devient le code ISO du nouveau parent
+				$nextIsocode = $child->child_isocode;
+				
+				//TODO : stereotype case 3 : occurence obligatoire mais pas présente dans le XML donc création d'une occurence en plus du master
+				if ($child->cl_stereotype_id <> null){
+					//Tester le stereotype pour créer le bon
+					$database->setQuery("SELECT alias FROM #__sdi_sys_stereotype WHERE id =".$child->cl_stereotype_id);
+					$stereotype = $database->loadResult();
+					switch ($stereotype){
+						case "geographicextent":
+							// 							echo("Case 3 :");
+							// 							echo("<br>");
+							// Créer un nouveau fieldset
+							$this->javascript .="
+							var master = Ext.getCmp('".$master."');
+							var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, true, true, true, true, master, 1,1, '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."',false, true,'".JText::_( 'CATALOG_STEREOTYPE_CLASS_MAP_PANEL_LABEL' )."');
+							".$parentFieldsetName.".add(".$fieldsetName.");
+							";
+				
+							HTML_classstereotype_builder::getGeographicExtentClass($database,$name, $child, $fieldsetName, $xpathResults, $queryPath,$scope, false, true);
+					}
+				}else{
+					$this->javascript .="
+						var master = Ext.getCmp('".$master."');							
+						// Cr�er un nouveau fieldset
+						var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, true, true, true, true, master, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false); 
+						".$parentFieldsetName.".add(".$fieldsetName.");
+					";	
+				}
 				/*	
 				// S'il y a un xlink:title d�fini, alors afficher une balise pour le saisir
 				if ($child->has_xlinkTitle)
@@ -5054,8 +5079,7 @@ else
 				}
 				*/	
 					
-				// Le code ISO de la classe enfant devient le code ISO du nouveau parent
-				$nextIsocode = $child->child_isocode;
+				
 				
 				
 				// Appel r�cursif de la fonction pour le traitement du prochain niveau

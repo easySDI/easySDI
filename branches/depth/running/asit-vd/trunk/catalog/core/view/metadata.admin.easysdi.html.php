@@ -56,7 +56,6 @@ JHTML::script('thesaur.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('HS.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('BoundaryItemSelector.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('MultiSelect.js', 'administrator/components/com_easysdi_catalog/js/');
-//JHTML::script('ExtendedItemSelector.js', 'administrator/components/com_easysdi_catalog/js/');
 
 $jsLoader =JSLOADER_UTIL::getInstance();
 JHTML::script('SingleFile.js', $jsLoader->getPath("map","openlayers", "/lib/OpenLayers/"));
@@ -913,7 +912,7 @@ class HTML_metadata {
 						 	 ON a.attributetype_id = t.id 
 					     LEFT OUTER JOIN #__sdi_class as c
 					  		 ON rel.classchild_id=c.id
-					  	LEFT OUTER JOIN jos_sdi_sys_stereotype as tc
+					  	 LEFT OUTER JOIN jos_sdi_sys_stereotype as tc
 			 				ON c.stereotype_id = tc.id 
 					     LEFT OUTER JOIN #__sdi_list_relationtype as reltype
 					  		 ON rel.relationtype_id=reltype.id	 
@@ -3779,7 +3778,7 @@ class HTML_metadata {
 								if($pos == 0){
 									// Créer un nouveau fieldset
 									$this->javascript .="
-									var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, false, false, true, true, null, 1, 1, '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."',false, true);
+									var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, false, false, true, true, null, 1, 1, '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."',false, true, '".JText::_( 'CATALOG_STEREOTYPE_CLASS_MAP_PANEL_LABEL' )."');
 									".$parentFieldsetName.".add(".$fieldsetName.");
 									";
 									HTML_classstereotype_builder::getGeographicExtentClass($database,$name, $child, $fieldsetName, $xpathResults, $queryPath,$scope, true, false);
@@ -3858,7 +3857,7 @@ class HTML_metadata {
 									// Créer un nouveau fieldset
 									$this->javascript .="
 									var master = Ext.getCmp('".$master."');
-									var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, true, true, true, true, master, 1, 1, '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false,true);
+									var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, true, true, true, true, master, 1, 1, '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false,true, '".JText::_( 'CATALOG_STEREOTYPE_CLASS_MAP_PANEL_LABEL' )."');
 									".$parentFieldsetName.".add(".$fieldsetName.");
 									";
 									HTML_classstereotype_builder::getGeographicExtentClass($database,$name, $child, $fieldsetName, $xpathResults, $queryPath,$scope, false, true);
@@ -3874,6 +3873,7 @@ class HTML_metadata {
 						";
 					}
 					
+					// Appel récursif de la fonction pour le traitement du prochain niveau
 						HTML_metadata::buildTree($database, $parent, $child->child_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
 					
 					
@@ -3924,7 +3924,7 @@ class HTML_metadata {
 							// Créer un nouveau fieldset
 							$this->javascript .="
 							var master = Ext.getCmp('".$master."');
-							var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, true, true, true, true, master, 1,1, '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."',false, true);
+							var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, true, true, true, true, master, 1,1, '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."',false, true,'".JText::_( 'CATALOG_STEREOTYPE_CLASS_MAP_PANEL_LABEL' )."');
 							".$parentFieldsetName.".add(".$fieldsetName.");
 							";
 								
