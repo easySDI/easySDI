@@ -1025,7 +1025,14 @@ switch($task){
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'boundary.admin.easysdi.php');
 		ADMIN_boundary::orderContent(1, $option);
 		break;
-
+	case "getBoundariesByCategory":
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'service'.DS.'boundary.admin.easysdi.service.php');
+		SERVICE_boundary::getBoundaries(JRequest::getVar('category', null),JRequest::getVar('exclude', null));
+		break;
+	case "getBoundaries";
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'service'.DS.'boundary.admin.easysdi.service.php');
+		SERVICE_boundary::getBoundaries(null, JRequest::getVar('exclude', null));
+		break;
 	// Import Reference
 	case "listImportRef":
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'importref.easysdi.class.php');

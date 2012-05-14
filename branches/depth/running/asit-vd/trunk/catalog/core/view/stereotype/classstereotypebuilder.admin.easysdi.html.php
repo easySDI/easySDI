@@ -187,10 +187,55 @@ class HTML_classstereotype_builder {
 		
 		comboboxCategories.on('select', function(){
 				var itemselector = Ext.getCmp('".$itemselectorName."');
+				Ext.getCmp('".$fieldsetname."').getEl().mask();
 				var selectedCategory = this.getValue();
-				//itemselector.fromMultiselect.store.removeAll();
-			    
-			}, comboboxCategories);
+				var selectedBoundaries =itemselector.toMultiselect.store.getRange();
+				var boundaries_id = '';
+				for (var i = 0; i < selectedBoundaries.length ; i++){
+					var boundary_id = selectedBoundaries[i].get('value');
+					boundaries_id = boundaries_id + boundary_id ;
+					if(i != selectedBoundaries.length-1){
+						boundaries_id = boundaries_id + ',';
+					}
+				}
+				
+				 Ext.Ajax.request({
+			         url : 'index.php?option=com_easysdi_catalog&task=getBoundariesByCategory&category='+selectedCategory+'&exclude='+boundaries_id,
+			                  method: 'GET',
+			                  success: function ( result, request ) {
+			                      var jsonData = Ext.util.JSON.decode(result.responseText);
+			                      itemselector.fromMultiselect.store.removeAll();
+			                      for  (var i = 0 ; i <jsonData.length ; i++){
+				                  	var boundary = jsonData[i];
+				                  	var boundaryRecord = Ext.data.Record.create([
+					                  	{name : 'value'},
+					                  	{name : 'text'},
+					                  	{name : 'northbound'},
+					                  	{name : 'southbound'},
+					                  	{name : 'eastbound'},
+					                  	{name : 'westbound'}
+				                  	]);
+				                  	
+				                  	var record = new boundaryRecord({
+				                  		value :  boundary['id'],
+				                  		text : boundary['label'],
+                 						northbound:boundary['northbound'],
+                 						southbound : boundary['southbound'],
+                 						eastbound : boundary['eastbound'],
+                 						westbound : boundary['westbound']
+				                  	});
+	
+				                  	   itemselector.fromMultiselect.store.add([record]);
+								  } 
+								  Ext.getCmp('".$fieldsetname."').getEl().unmask();
+			               },
+			                  failure: function ( result, request ) {
+			                   var jsonData = Ext.util.JSON.decode(result.responseText);
+			                   alert(jsonData);
+			                   Ext.getCmp('".$fieldsetname."').getEl().unmask();
+			               }
+			       });
+		}, comboboxCategories);
 			
 		";
 		

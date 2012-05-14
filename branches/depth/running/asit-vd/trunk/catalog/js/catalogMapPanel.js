@@ -41,7 +41,7 @@ CatalogMapPanel = Ext.extend(Ext.form.Field, {
 			        {
 						id : fieldsetId+"_BBox",
 						width : width,
-						height : height,
+						height : height-10,
 						xtype: 'panel',			
 						frame: false,
 						style :{
