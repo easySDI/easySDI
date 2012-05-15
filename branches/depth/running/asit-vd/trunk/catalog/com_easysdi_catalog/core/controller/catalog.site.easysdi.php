@@ -276,8 +276,6 @@ class SITE_catalog {
 			$database->setQuery( $query);
 			$boundaryFilter = $database->loadObject() ;
 			
-			print_r($boundaryFilter);
-			
 			$selectedBoundary = $defaultSearch? $boundaryFilter->defaultvalue : JRequest::getVar('systemfilter_'.$boundaryFilter->guid,"");
 			if($selectedBoundary!=""){
 					$definedBoundary = array();
@@ -319,7 +317,7 @@ class SITE_catalog {
 							$categorysearchfield = json_decode($boundaryFilter->params)->categorysearchfield;
 							
 							$bboxfilter ="
-							<AND>
+							<ogc:and>
 								<ogc:PropertyIsEqualTo>
 									<ogc:PropertyName>".$boundarysearchfield."</ogc:PropertyName>
 									<ogc:Literal>".$boundaryTitle."</ogc:Literal>
@@ -328,7 +326,7 @@ class SITE_catalog {
 									<ogc:PropertyName>".$categorysearchfield."</ogc:PropertyName>
 									<ogc:Literal>".$categoryLabel."</ogc:Literal>
 								</ogc:PropertyIsEqualTo>
-							</AND>
+							</ogc:and>
 							";
 							break;
 					}
