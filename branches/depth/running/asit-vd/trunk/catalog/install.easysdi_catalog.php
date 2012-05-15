@@ -2258,7 +2258,7 @@ function com_install(){
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}
 			//ALTER __sdi_context_criteria
-			$query="ALTER TABLE `#__sdi_context_criteria` ADD filter varchar(1000)";
+			$query="ALTER TABLE `#__sdi_context` ADD filter varchar(1000)";
 			$db->setQuery( $query);
 			if (!$db->query()) {
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");

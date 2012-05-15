@@ -266,6 +266,18 @@ class HTML_searchcriteria {
 					</td>
 				</tr>
 				<tr>
+					<td class="key"><?php echo JText::_("CATALOG_SEARCHCRITERIA_BOUNDARYSEARCH_SEARCHFIELD_CATEGORY");?></td>
+					<td>
+						<input size="50" type="text" name ="categorysearchfield" value="<?php echo $params['categorysearchfield'];?>" maxlength="<?php echo $fieldsLength['params'];?>">
+					</td>
+				</tr>
+				<tr>
+					<td class="key"><?php echo JText::_("CATALOG_SEARCHCRITERIA_BOUNDARYSEARCH_SEARCHFIELD_BOUNDARY");?></td>
+					<td>
+						<input size="50" type="text" name ="boundarysearchfield" value="<?php echo $params['boundarysearchfield'];?>" maxlength="<?php echo $fieldsLength['params'];?>"> 
+					</td>
+				</tr>
+				<tr>
 					<td class="key"><?php echo JText::_("CATALOG_SEARCHCRITERIA_DEFAULT_VALUE");?></td>
 					<td>
 						<select name="defaultvalue" id="defaultvalue">
@@ -406,10 +418,6 @@ class HTML_searchcriteria {
 		}
 		
 			?>
-			<tr>
-				<td class="key"><?php echo JText::_("CATALOG_SEARCHCRITERIA_CSW_FILTER"); ?></td>
-				<td><textarea rows="4" cols="50" id="filter" name="filter"><?php  if(isset($row->filter)) echo $row->filter;?></textarea></td>
-			</tr>
 			</table>
 			<table class="admintable" border="0" cellpadding="3" cellspacing="0">
 					<tr>

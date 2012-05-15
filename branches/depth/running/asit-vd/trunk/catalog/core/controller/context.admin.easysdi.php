@@ -242,6 +242,9 @@ class ADMIN_context {
 			exit();
 		}		
 		
+		if(isset($_POST['filter']))
+			$rowContext->filter = addslashes ( $_POST['filter'] );
+		
 		// G�n�rer un guid
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 		if ($rowContext->guid == null)

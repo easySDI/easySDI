@@ -456,13 +456,13 @@ class ADMIN_searchcriteria {
 			}
 		}
 		
-		//Save XSW additionnal filter
-		$filter = $_POST['filter'];
-		$database->setQuery("UPDATE #__sdi_context_criteria SET filter='".addslashes ( $filter )."' WHERE context_id='".$context_id."' AND criteria_id='".$rowSearchCriteria->id."'" );
-		if (!$database->query()){
-			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			return false;
-		}
+// 		//Save XSW additionnal filter
+// 		$filter = $_POST['filter'];
+// 		$database->setQuery("UPDATE #__sdi_context_criteria SET filter='".addslashes ( $filter )."' WHERE context_id='".$context_id."' AND criteria_id='".$rowSearchCriteria->id."'" );
+// 		if (!$database->query()){
+// 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+// 			return false;
+// 		}
 		
 		
 		if($rowSearchCriteria->code == 'definedBoundary'){
@@ -472,6 +472,8 @@ class ADMIN_searchcriteria {
 			$params_text = array();
 			$params_text['boundarycategory'] = $boundarycategory;
 			$params_text['boundarysearch'] = $_POST['boundarysearch'];
+			$params_text['categorysearchfield'] = $_POST['categorysearchfield'];
+			$params_text['boundarysearchfield'] = $_POST['boundarysearchfield'];
 			$params = json_encode($params_text);
 			
 			$database->setQuery("UPDATE #__sdi_context_criteria SET params='".$params."' WHERE context_id='".$context_id."' AND criteria_id='".$rowSearchCriteria->id."'" );

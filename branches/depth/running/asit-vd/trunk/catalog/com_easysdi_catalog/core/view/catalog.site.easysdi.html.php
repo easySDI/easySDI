@@ -410,7 +410,14 @@ class HTML_catalog{
 							break;
 						case "definedBoundary":
 							$boundaries = array();
-							$db->setQuery( "SELECT name, guid FROM #__sdi_boundary") ;
+							$params = json_decode($searchFilter->params);
+							if(isset ($params->boundarycategory) && count($params->boundarycategory)>0){
+								$category_list = implode(",", $params->boundarycategory);
+								$db->setQuery( "SELECT name, guid FROM #__sdi_boundary WHERE category_id IN (".$category_list.")") ;
+							}else{
+								$db->setQuery( "SELECT name, guid FROM #__sdi_boundary") ;
+							}
+							
 							$boundaries = $db->loadObjectList() ;	
 							$selectedValue = "";
 							if ($defaultSearch)

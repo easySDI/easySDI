@@ -91,12 +91,14 @@ class SITE_catalog {
 									rt.code as rendertype_code,
 									ccc.defaultvalue as defaultvalue,
 									ccc.defaultvaluefrom as defaultvaluefrom,
-									ccc.defaultvalueto as defaultvalueto
+									ccc.defaultvalueto as defaultvalueto,
+									ccc.params as params,
+									c.filter as filter
 					   FROM #__sdi_searchcriteria sc
 					   			  LEFT OUTER JOIN #__sdi_relation r ON r.id=sc.relation_id
 								  LEFT OUTER JOIN #__sdi_relation_context rc ON r.id=rc.relation_id 
 								  LEFT OUTER JOIN #__sdi_context c ON c.id=rc.context_id
-								  LEFT OUTER JOIN  (SELECT cc.*  FROM jos_sdi_context_criteria cc INNER JOIN jos_sdi_searchcriteria ccs  ON  cc.criteria_id = ccs.id WHERE cc.context_id = (SELECT id FROM jos_sdi_context WHERE code='".$context."')) ccc ON ccc.criteria_id=sc.id
+								  LEFT OUTER JOIN  (SELECT cc.*  FROM #__sdi_context_criteria cc INNER JOIN #__sdi_searchcriteria ccs  ON  cc.criteria_id = ccs.id WHERE cc.context_id = (SELECT id FROM #__sdi_context WHERE code='".$context."')) ccc ON ccc.criteria_id=sc.id
 								  LEFT OUTER JOIN #__sdi_attribute a ON r.attributechild_id=a.id
 								  LEFT OUTER JOIN #__sdi_sys_stereotype at ON at.id=a.attributetype_id
 								  LEFT OUTER JOIN #__sdi_searchcriteria_tab sc_tab ON sc_tab.searchcriteria_id=sc.id
@@ -121,12 +123,14 @@ class SITE_catalog {
 									rt.code as rendertype_code,
 									ccc.defaultvalue as defaultvalue,
 									ccc.defaultvaluefrom as defaultvaluefrom,
-									ccc.defaultvalueto as defaultvalueto
+									ccc.defaultvalueto as defaultvalueto,
+									ccc.params as params,
+									c.filter as filter
 					   FROM #__sdi_searchcriteria sc
 					   			  LEFT OUTER JOIN #__sdi_relation r ON r.id=sc.relation_id
 								  LEFT OUTER JOIN #__sdi_relation_context rc ON r.id=rc.relation_id 
 								  LEFT OUTER JOIN #__sdi_context c ON c.id=rc.context_id
-								  LEFT OUTER JOIN  (SELECT cc.*  FROM jos_sdi_context_criteria cc INNER JOIN jos_sdi_searchcriteria ccs  ON  cc.criteria_id = ccs.id WHERE cc.context_id = (SELECT id FROM jos_sdi_context WHERE code='".$context."')) ccc ON ccc.criteria_id=sc.id
+								  LEFT OUTER JOIN  (SELECT cc.*  FROM #__sdi_context_criteria cc INNER JOIN #__sdi_searchcriteria ccs  ON  cc.criteria_id = ccs.id WHERE cc.context_id = (SELECT id FROM #__sdi_context WHERE code='".$context."')) ccc ON ccc.criteria_id=sc.id
 								  LEFT OUTER JOIN #__sdi_attribute a ON r.attributechild_id=a.id
 								  LEFT OUTER JOIN #__sdi_sys_stereotype at ON at.id=a.attributetype_id
 								  LEFT OUTER JOIN #__sdi_searchcriteria_tab sc_tab ON sc_tab.searchcriteria_id=sc.id
@@ -151,7 +155,9 @@ class SITE_catalog {
 									rt.code as rendertype_code,
 									ccc.defaultvalue as defaultvalue,
 									ccc.defaultvaluefrom as defaultvaluefrom,
-									ccc.defaultvalueto as defaultvalueto
+									ccc.defaultvalueto as defaultvalueto,
+									ccc.params as params,
+									c.filter as filter
 							   FROM #__sdi_searchcriteria sc
 							   			  LEFT OUTER JOIN #__sdi_relation r ON r.id=sc.relation_id
 										  LEFT OUTER JOIN #__sdi_relation_context rc ON r.id=rc.relation_id 
@@ -262,43 +268,87 @@ class SITE_catalog {
 			}
 
 			// Construction du filtre sur la BBOX
-			$query =  "SELECT sc.*, cc.defaultvalue FROM #__sdi_searchcriteria sc
-								INNER JOIN #__sdi_context_criteria cc ON cc.criteria_id = sc.id 			
+			$query =  "SELECT sc.*, cc.defaultvalue,  cc.params, c.filter FROM #__sdi_searchcriteria sc
+								INNER JOIN #__sdi_context_criteria cc ON cc.criteria_id = sc.id 	
+								INNER JOIN #__sdi_context c ON c.id=	cc.context_id	
 								where sc.code ='definedBoundary'
 								AND cc.context_id = $contextObject->id";
 			$database->setQuery( $query);
 			$boundaryFilter = $database->loadObject() ;
+			
+			print_r($boundaryFilter);
+			
 			$selectedBoundary = $defaultSearch? $boundaryFilter->defaultvalue : JRequest::getVar('systemfilter_'.$boundaryFilter->guid,"");
 			if($selectedBoundary!=""){
 					$definedBoundary = array();
-					$boundaryFilter ="";
-
+					
 					$query =  "SELECT * FROM #__sdi_boundary where guid ='".$selectedBoundary."'" ;
 					$database->setQuery( $query);
 					$definedBoundary = $database->loadObject() ;
-
-					if($definedBoundary){
-						$minY = $definedBoundary->southbound;
-						$minX = $definedBoundary->westbound;
-						$maxY = $definedBoundary->northbound;
-						$maxX =$definedBoundary->eastbound;
-
-						$bboxfilter ="
-						 <ogc:BBOX>
-		                    <ogc:PropertyName>iso:BoundingBox</ogc:PropertyName>
-		                    <gml:Envelope xmlns:gml=\"http://www.opengis.net/gml\">
-		                        <gml:lowerCorner>".$minX." ".$minY."</gml:lowerCorner>
-		                        <gml:upperCorner>".$maxX." ". $maxY."</gml:upperCorner>
-		                    </gml:Envelope>
-		                </ogc:BBOX>";
+					
+					$searchtype = json_decode($boundaryFilter->params)->boundarysearch;
+					switch ($searchtype){
+						case "bbox" :
+							if($definedBoundary){
+								$minY = $definedBoundary->southbound;
+								$minX = $definedBoundary->westbound;
+								$maxY = $definedBoundary->northbound;
+								$maxX =$definedBoundary->eastbound;
+							
+								$bboxfilter ="
+								<ogc:BBOX>
+									<ogc:PropertyName>iso:BoundingBox</ogc:PropertyName>
+									<gml:Envelope xmlns:gml=\"http://www.opengis.net/gml\">
+										<gml:lowerCorner>".$minX." ".$minY."</gml:lowerCorner>
+										<gml:upperCorner>".$maxX." ". $maxY."</gml:upperCorner>
+									</gml:Envelope>
+								</ogc:BBOX>";
+							}
+							break;
+						case "id":
+							//build the filter
+							$query =  "SELECT title FROM #__sdi_translation where element_guid ='".$selectedBoundary."'" ;
+							$database->setQuery( $query);
+							$boundaryTitle = $database->loadResult() ;
+							
+							$query =  "SELECT label FROM #__sdi_translation where element_guid = (SELECT guid FROM #__sdi_boundarycategory WHERE id = ".$definedBoundary->category_id.")" ;
+							$database->setQuery( $query);
+							$categoryLabel = $database->loadResult() ;
+							
+							$boundarysearchfield = json_decode($boundaryFilter->params)->boundarysearchfield;
+							$categorysearchfield = json_decode($boundaryFilter->params)->categorysearchfield;
+							
+							$bboxfilter ="
+							<AND>
+								<ogc:PropertyIsEqualTo>
+									<ogc:PropertyName>".$boundarysearchfield."</ogc:PropertyName>
+									<ogc:Literal>".$boundaryTitle."</ogc:Literal>
+								</ogc:PropertyIsEqualTo>
+								<ogc:PropertyIsEqualTo>
+									<ogc:PropertyName>".$categorysearchfield."</ogc:PropertyName>
+									<ogc:Literal>".$categoryLabel."</ogc:Literal>
+								</ogc:PropertyIsEqualTo>
+							</AND>
+							";
+							break;
 					}
+					
+					
+					
 			}else{
 				$bboxfilter ="";
 			}
-		
-				
+			
 			if ($bboxfilter <> "")
 				$condList[]=$bboxfilter;
+			
+			if (isset($boundaryFilter->filter) && strlen($boundaryFilter->filter) > 0){
+				//Add the user defined filter
+				$condList[]= $boundaryFilter->filter;
+			}
+			
+			$boundaryFilter ="";
+			
 			
 			// Listes qui vont potentiellement contenir des guid de métadonnées
 			$arrFreetextMd = null;
@@ -507,7 +557,6 @@ class SITE_catalog {
 			
 			// Prendre l'intersection de tous les guid listés
 			$arrSearchableMd=array(); // Scope de recherche
-// 			$arrFilteredMd=array(); // Filtres
 			 
 			//Build the filter
 			if (!isset($arrObjecttypeMd ) ) // Pas de types d'objet
@@ -528,72 +577,27 @@ class SITE_catalog {
 			// Objectname
 			if (isset($arrObjectNameMd) ){
 				$arrSearchableMd = array_intersect($arrSearchableMd, $arrObjectNameMd);
-// 				if (count($arrFilteredMd) == 0){ // Liste vide pour l'instant
-// 					$arrFilteredMd[] = $arrObjectNameMd;
-// 				}else{ // Faire l'intersection
-// 					$intersect = array_intersect($arrObjectNameMd, $arrFilteredMd);
-// 					if (count($intersect) > 0)
-// 						$arrFilteredMd[] = $intersect;
-// 				}
 			}
 			
 			// Accounts
 			if (isset($arrAccountsMd)){
 				$arrSearchableMd = array_intersect($arrSearchableMd, $arrAccountsMd);
-// 				if (count($arrFilteredMd) == 0) {// Liste vide pour l'instant
-// 					$arrFilteredMd[] = $arrAccountsMd;
-// 				}
-// 				else { // Faire l'intersection
-// 					$intersect = array_intersect($arrAccountsMd, $arrFilteredMd);
-// 					if (count($intersect) > 0)
-// 						$arrFilteredMd[] = $intersect;
-// 				}
 			}
 			
 			// Managers
 			if (isset($arrManagersMd ) ){
 				$arrSearchableMd = array_intersect($arrSearchableMd, $arrManagersMd);
-// 				if (count($arrFilteredMd) == 0) {// Liste vide pour l'instant
-// 					$arrFilteredMd[] = $arrManagersMd;
-// 				}
-// 				else{  // Faire l'intersection
-// 					$intersect = array_intersect($arrManagersMd, $arrFilteredMd);
-// 					if (count($intersect) > 0)
-// 						$arrFilteredMd[] = $intersect;
-// 				}
 			}
 			
 			// Created
 			if (isset($arrCreatedMd)) {
-				
 					$arrSearchableMd = array_intersect($arrSearchableMd, $arrCreatedMd);
-// 				if (count($arrFilteredMd) == 0) {// Liste vide pour l'instant
-// 					$arrFilteredMd[] = $arrCreatedMd;
-// 				}
-// 				else{ // Faire l'intersection
-// 					$intersect = array_intersect($arrCreatedMd, $arrFilteredMd);
-// 					if (count($intersect) > 0)
-// 						$arrFilteredMd[] = $intersect;
-// 				}
 			}
 			
 			// Published
 			if (isset($arrPublishedMd ) ) {
 				$arrSearchableMd = array_intersect($arrSearchableMd, $arrPublishedMd);
-// 				if (count($arrFilteredMd) == 0) {// Liste vide pour l'instant
-// 					$arrFilteredMd[] = $arrPublishedMd;
-// 				}
-// 				else {// Faire l'intersection
-// 					$intersect = array_intersect($arrPublishedMd, $arrFilteredMd);
-// 					if (count($intersect) > 0)
-// 						$arrFilteredMd[] = $intersect;
-// 				}
 			}
-			
-// 			print_r($arrSearchableMd);
-// 			echo '<hr>';
-// 			print_r($arrFilteredMd);
-// 			echo '<hr>';
 			
 			$cswMdCond = "";
 			//Le scope de recherche c'est:
@@ -644,7 +648,6 @@ class SITE_catalog {
 					$isDownloadable != 0 || 
 					$isFree != 0 || 
 					$isOrderable != 0){
-			//	if (count($objecttype_id) > 0 || $isDownloadable != 0){
 					$condList[] = "<ogc:And>
 									<ogc:PropertyIsEqualTo>
 										<ogc:PropertyName>$ogcfilter_fileid</ogc:PropertyName>
@@ -668,40 +671,7 @@ class SITE_catalog {
 			if(count($arrSearchableMd) > 0)
 				$condList[] = $cswMdCond;
 			$cswMdCond = "";
-
-			//Si pas de liste d'Id selon les filtres systèmes ET des filtres OGC définis ET pas de conditions définis selon type d'objet et version
-			//cas jamais atteint -> à enlever si le réellement le cas
-// 			if((count($arrFilteredMd) == 0) and ($countAdvancedFilters <> 0 or $countSimpleFilters <> 0) and count($condList) == 0)
-// 			{
-// 				//Si aucune md filtrées : on ne retourne que les harvestées
-// 				//$condList[] = "<ogc:Or><ogc:And><ogc:PropertyIsEqualTo><ogc:PropertyName>$ogcfilter_fileid</ogc:PropertyName><ogc:Literal>-1</ogc:Literal></ogc:PropertyIsEqualTo>\r\n<ogc:PropertyIsEqualTo><ogc:PropertyName>harvested</ogc:PropertyName><ogc:Literal>false</ogc:Literal></ogc:PropertyIsEqualTo>\r\n</ogc:And><ogc:PropertyIsEqualTo><ogc:PropertyName>harvested</ogc:PropertyName><ogc:Literal>true</ogc:Literal></ogc:PropertyIsEqualTo>\r\n</ogc:Or>";
-// 				$condList[] = "<ogc:PropertyIsEqualTo><ogc:PropertyName>harvested</ogc:PropertyName><ogc:Literal>true</ogc:Literal></ogc:PropertyIsEqualTo>\r\n";
-// 				//echo "CondList Vide: <br>"; print_r($condList); echo"<hr>";
-// 			}
-// 			else
-// 			{
-// 				//echo "CondList pas Vide: <br>"; print_r($condList); echo"<hr>";
-// 				//Filtre système défini : on ajoute les Id correspondantes, on écarte les harvestées qui ne peuvent pas répondre à ces critères.
-// 				$cswMdCond.= "<ogc:And>";
-// 				foreach ($arrFilteredMd as $filteredMd)
-// 				{
-// 					if (count($filteredMd) > 1)
-// 						$cswMdCond.= "<ogc:Or>";
-// 					foreach ($filteredMd as $md_id)
-// 					{
-// 						//keep it so to keep the request "small"
-// 						$cswMdCond .= "<ogc:PropertyIsEqualTo><ogc:PropertyName>$ogcfilter_fileid</ogc:PropertyName><ogc:Literal>$md_id</ogc:Literal></ogc:PropertyIsEqualTo>\r\n";
-// 					}
-// 					if (count($filteredMd) > 1)
-// 						$cswMdCond.= "</ogc:Or>";
-// 				}
-// 				$cswMdCond .= "<ogc:PropertyIsEqualTo><ogc:PropertyName>harvested</ogc:PropertyName><ogc:Literal>false</ogc:Literal></ogc:PropertyIsEqualTo>\r\n";
-// 				$cswMdCond .= "</ogc:And>";
-											
-// 				if(count($arrFilteredMd) > 0)
-// 					$condList[] = $cswMdCond;
-// 			}
-			
+		
 			$cswfilterCond = "";
 			foreach ($condList as $cond){
 				$cswfilterCond .= $cond;
