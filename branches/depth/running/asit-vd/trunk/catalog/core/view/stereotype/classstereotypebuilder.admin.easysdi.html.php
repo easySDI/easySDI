@@ -366,6 +366,7 @@ class HTML_classstereotype_builder {
 	                    mincardbound : ".$rel_lowerbound.",
 	                    maxcardbound : ".$rel_upperbound.",
 			            fieldLabel: '',
+			            maxcardReachMessage : '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_MAXCARD_REACH_MESSAGE"))."',
 				        imagePath: '".JURI::root( true )."/administrator/components/com_easysdi_catalog/templates/images/',
 			            multiselects: [{
 			            	legend: 'Available',
@@ -381,8 +382,8 @@ class HTML_classstereotype_builder {
 			            },{
 			            	legend: 'Selected',
 			            	id: '".$itemselectorName."_selected',
-			                minSelections:1,
-	            			maxSelections:1,
+			                minSelections:".$rel_lowerbound.",
+	            			maxSelections:".$rel_upperbound.",
 			                dynamic:true,
 			                width: 200,
 			                height: 200,
@@ -444,10 +445,13 @@ class HTML_classstereotype_builder {
 			            southLabel : '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_SOUTH_LABEL"))."',
 			            eastLabel : '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_EAST_LABEL"))."',
 			            westLabel : '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_WEST_LABEL"))."',
+			            maxcardReachMessage : '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_MAXCARD_REACH_MESSAGE"))."',
 				        imagePath: '".JURI::root( true )."/administrator/components/com_easysdi_catalog/templates/images/',
 				        multiselects: [{
 			            	legend: 'Selected',
 			            	id: '".$freeperimeterselectorName."_selected',
+			            	minSelections:".$rel_lowerbound.",
+	            			maxSelections:".$rel_upperbound.",
 			                dynamic:true,
 			                width: 200,
 			                height: 200,
