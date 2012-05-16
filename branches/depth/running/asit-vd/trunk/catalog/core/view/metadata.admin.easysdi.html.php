@@ -726,13 +726,13 @@ class HTML_metadata {
 						        			{
 						        			
 						        				if(cmp.isValid){
-									        				if(!cmp.isValid()&& Ext.get(cmp.id)){														
-																	form.getForm().fieldInvalid =true;														
-														
-																if(!Ext.getCmp(cmp.id)){														
-																		form.getForm().extValidationCorrupt =true;														
-																}
-															}
+							        				if(!cmp.isValid()&& Ext.get(cmp.id)){														
+															form.getForm().fieldInvalid =true;														
+												
+														if(!Ext.getCmp(cmp.id)){														
+																form.getForm().extValidationCorrupt =true;														
+														}
+													}
 												}
 							        			if (cmp.xtype=='fieldset')
 						         				{
@@ -4595,9 +4595,10 @@ class HTML_metadata {
 				}
 				else // Import depuis un serveur CSW
 				{
+					// Créer une iframe pour demander à l'utilisateur le type d'import
 					$menu .= "handler: function()
 				                {
-				                	// Cr�er une iframe pour demander � l'utilisateur le type d'import
+				                	
 									if (!wincsw)
 										wincsw = new Ext.Window({
 										                title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_IMPORT_CSW_ALERT'))."',
