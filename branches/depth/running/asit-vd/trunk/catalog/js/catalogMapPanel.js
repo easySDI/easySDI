@@ -36,22 +36,29 @@ CatalogMapPanel = Ext.extend(Ext.form.Field, {
 			layout:"table",
 			cls:'x-form-item',
 			labelWidth: 200,
-            layoutConfig:{columns:2},
+            layoutConfig:{columns:2,rows:2},
             border: false,
             width : this.panelwidth,
 			height : height+30,
 			items: [
 			        {
+			        	id:fieldsetId+"_mapLabel",
 			        	xtype:'label',
 			        	cls:'x-form-item-label',
-			        	text:label
+			        	text:label,
+			        	width :Ext.getCmp('metadataForm').labelWidth,
 			        },
 			        {
 						id : this.id,
 						width : width,
 						height : height,
 						xtype: 'panel',			
-						frame: false
+						frame: false,
+						style :{
+							position:'relative',			
+							top:'30px',
+							clear :'both'
+						},
 			        }
 			        ]
 		}))
@@ -393,16 +400,18 @@ CatalogMapPanel = Ext.extend(Ext.form.Field, {
 				          this.map.drawBoxButton
 				]
 		}
-		var bartop = this.height +30; 
-		Ext.getCmp(this.fieldsetId+"_mapPanel").add(
-		new Ext.Toolbar( {
+		
+		var topbar = this.height +30;
+		Ext.getCmp(this.fieldsetId).add(new Ext.Toolbar( {
 			id : this.fieldsetId+"_BBoxPanel",
 			autoHeight : true,
 			width : this.width,
 			height : 30,				
 			frame: false,
-			style :{position:'relative',			
-				
+			style :{
+				position:'relative',			
+				left:Ext.getCmp(this.fieldsetId+"_mapLabel").getWidth()+'px',
+				top:'-'+topbar+'px',
 				clear :'both'
 			},
 			items : itemslist
