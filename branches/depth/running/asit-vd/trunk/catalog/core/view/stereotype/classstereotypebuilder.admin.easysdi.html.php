@@ -431,14 +431,15 @@ class HTML_classstereotype_builder {
 				fields: ['value','text', 'northbound', 'southbound', 'eastbound', 'westbound']
 			});
 			
-			var ".$parentFieldsetName."_freeperimeterselector = new catalogFreePerimeterPanel({
+			var ".$parentFieldsetName."_freeperimeterselector = new catalogFreePerimeterSelector({
 	                    name: '".$freeperimeterselectorName."',
 	                    comboboxname : '".$comboboxName."',
 	                    id: '".$freeperimeterselectorName."',
 	                    clone: ".$clone.",
 	                    mincardbound : ".$rel_lowerbound.",
 	                    maxcardbound : ".$rel_upperbound.",
-			            fieldLabel: '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_FREEPERIMETER_LABEL"))."',
+	                    boundaryItemSelector : ".$parentFieldsetName."_itemselector,
+	                    fieldLabel: '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_FREEPERIMETER_LABEL"))."',
 			            northLabel : '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_NORTH_LABEL"))."',
 			            southLabel : '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_SOUTH_LABEL"))."',
 			            eastLabel : '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_EAST_LABEL"))."',
@@ -456,6 +457,8 @@ class HTML_classstereotype_builder {
 			            }]
 			        });
   			       ".$parentFieldsetName.".add(".$parentFieldsetName."_freeperimeterselector);
+  			       
+  			       ".$parentFieldsetName."_itemselector.setFreePerimeterSelector(".$parentFieldsetName."_freeperimeterselector);
 			";
 		}
 		

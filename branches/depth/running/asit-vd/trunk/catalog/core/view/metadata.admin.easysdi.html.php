@@ -39,7 +39,7 @@ var thesaurusConfig = '<?php echo config_easysdi::getValue("thesaurusUrl");?>';
 JHTML::script('ext-base-debug.js', 'administrator/components/com_easysdi_catalog/ext/adapter/ext/');
 JHTML::script('ext-all-debug.js', 'administrator/components/com_easysdi_catalog/ext/');
 JHTML::script('catalogMapPanel.js', 'administrator/components/com_easysdi_catalog/js/');
-JHTML::script('catalogFreePerimeterPanel.js', 'administrator/components/com_easysdi_catalog/js/');
+JHTML::script('catalogFreePerimeterSelector.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('dynamic.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('ExtendedButton.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('ExtendedField.js', 'administrator/components/com_easysdi_catalog/js/');
