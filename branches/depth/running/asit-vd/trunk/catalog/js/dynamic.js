@@ -117,7 +117,7 @@
 		return ta;
 	}
 	
-	function createComboBox(id, label, mandatory, min, max, data, value, defaultVal, dis, tip, dismissDelay, mandatoryMsg)
+	function createComboBox(id, label, mandatory, min, max, data, value, defaultVal, dis, tip, dismissDelay, mandatoryMsg, emptyText)
 	{
 		var store = new Ext.data.ArrayStore({
 						   fields: ['id', 'key'],
@@ -127,6 +127,9 @@
 		// Valeur max = n
 		if (max == 999) max = Number.MAX_VALUE;
 		optional = !mandatory;
+		
+		if(typeof(emptyText) == 'undefined')
+			emptyText = '';
 		
 		var c = new Ext.form.ComboBox({
 			id:id,
@@ -150,7 +153,7 @@
           	mode: 'local',
           	forceSelection: true,
           	triggerAction: 'all',
-          	emptyText:'',
+          	emptyText:emptyText,
           	disabled: dis,
 	        selectOnFocus:true,
             qTip: tip,
