@@ -1037,6 +1037,10 @@ switch($task){
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'service'.DS.'boundary.admin.easysdi.service.php');
 		SERVICE_boundary::getBoundariesByCategoriesId(JRequest::getVar('category', null));
 		break;
+	case "getBoundary";
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'service'.DS.'boundary.admin.easysdi.service.php');
+		SERVICE_boundary::getBoundary(JRequest::getVar('query', null));
+		break;
 	// Import Reference
 	case "listImportRef":
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'importref.easysdi.class.php');

@@ -879,6 +879,10 @@ switch($task){
 			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'service'.DS.'boundary.admin.easysdi.service.php');
 			SERVICE_boundary::getBoundaries(null, JRequest::getVar('exclude', null));
 			break;
+		case "getBoundary";
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'service'.DS.'boundary.admin.easysdi.service.php');
+			SERVICE_boundary::getBoundary(JRequest::getVar('query', null));
+			break;
 	}
 //}
  ?>

@@ -232,7 +232,10 @@ class HTML_catalog{
 		$db =& JFactory::getDBO();
 		$defaultSearch = JRequest::getVar('defaultSearch', 1);
 		$language =& JFactory::getLanguage();
-				
+
+		JHTML::script('ext-base.js', 'administrator/components/com_easysdi_catalog/ext/adapter/ext/');
+		JHTML::script('ext-all-debug.js', 'administrator/components/com_easysdi_catalog/ext/');
+		
 		switch ($searchFilter->attributetype_code)
 		{
 			case "guid":
@@ -425,19 +428,49 @@ class HTML_catalog{
 							else					
 								$selectedValue = trim(JRequest::getVar('systemfilter_'.$searchFilter->guid, ""));
 							?>
+							
 							<div class="row">
 								<div class="label">
 								<?php echo JText::_($searchFilter->guid."_LABEL");?>
 								</div>
-								<div>
-								<select name="<?php echo 'systemfilter_'.$searchFilter->guid;?>" id="<?php echo 'systemfilter_'.$searchFilter->guid;?>">
-									<option value="" <?php if($selectedValue ==""){?> selected="selected" <?Php }?>></option>
-									<?php foreach ($boundaries as $boundary){
-								    ?>  <option value="<?php echo JText::_($boundary->guid);?>" <?php if($selectedValue == trim($boundary->guid)){?> selected="selected" <?Php }?> ><?php echo JText::_($boundary->name);?></option>
-								   <?php }?>
-								</select>
+								
+								<div   id="catalogSearchFormExtentDiv">
+								
 								</div>
-							</div>					
+							</div>	
+							<script>
+							var Tpl = new Ext.XTemplate(
+								    '<tpl for="."><div class="search-item">',
+								    '{text}</div></tpl>',
+								    '')
+						    
+							
+
+							var contactStore= new Ext.data.Store({
+								 reader: new Ext.data.JsonReader({
+								        fields: ['value', 'text']
+							        }),
+							    proxy: new Ext.data.HttpProxy({
+							        url: 'index.php?option=com_easysdi_catalog&task=getBoundary'
+							    }),
+							    autoLoad:true
+							});
+							
+							var combo = new Ext.form.ComboBox({
+							                 id:'extentComboBox',
+							                 hiddenName:'<?php echo  'systemfilter_'.$searchFilter->guid;?>',
+							        		 valueField: 'value',
+				                             displayField: 'text',
+				                             minChars:0,
+				                             tpl:Tpl,
+				                             store:contactStore,
+				                             hideLabel: true,
+				                             typeAhead: false,
+				                             hideTrigger:true,
+				                             itemSelector: 'div.search-item',
+				                             renderTo: document.getElementById('catalogSearchFormExtentDiv')
+							});
+							</script>				
 							<?php
 							break;
 						case "fulltext":
