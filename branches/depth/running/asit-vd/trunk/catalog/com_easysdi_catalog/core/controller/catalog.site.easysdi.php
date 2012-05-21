@@ -328,6 +328,11 @@ class SITE_catalog {
 								</ogc:PropertyIsEqualTo>
 							</ogc:and>
 							";
+							
+							//Get the hierachy boundary
+							if(isset($definedBoundary->parent_id)){
+								$bboxfilter = "<ogc:Or>".SITE_catalog::getFilterForBoundaryParent($bboxfilter, $definedBoundary->parent_id, $boundarysearchfield, $categorysearchfield)."</ogc:Or>";
+							}
 							break;
 					}
 					
@@ -1908,6 +1913,43 @@ class SITE_catalog {
 			}
 		}
 	
+	}
+
+	function getFilterForBoundaryParent(&$filter, $parent_id, $boundarysearchfield, $categorysearchfield){
+		$database =& JFactory::getDBO();
+		$query =  "SELECT * FROM #__sdi_boundary where id ='".$parent_id."'" ;
+		$database->setQuery( $query);
+		$parentBoundary = $database->loadObject() ;
+		
+		//build the filter
+		$query =  "SELECT title FROM #__sdi_translation where element_guid ='".$parentBoundary->guid."'" ;
+		$database->setQuery( $query);
+		$boundaryTitle = $database->loadResult() ;
+			
+		$query =  "SELECT label FROM #__sdi_translation where element_guid = (SELECT guid FROM #__sdi_boundarycategory WHERE id = ".$parentBoundary->category_id.")" ;
+		$database->setQuery( $query);
+		$categoryLabel = $database->loadResult() ;
+			
+			
+		$filter .="
+		<ogc:and>
+		<ogc:PropertyIsEqualTo>
+		<ogc:PropertyName>".$boundarysearchfield."</ogc:PropertyName>
+		<ogc:Literal>".$boundaryTitle."</ogc:Literal>
+		</ogc:PropertyIsEqualTo>
+		<ogc:PropertyIsEqualTo>
+		<ogc:PropertyName>".$categorysearchfield."</ogc:PropertyName>
+		<ogc:Literal>".$categoryLabel."</ogc:Literal>
+		</ogc:PropertyIsEqualTo>
+		</ogc:and>
+		";
+		
+		
+		if(isset($parentBoundary->parent_id)){
+			return getFilterForBoundaryParent($filter,$parentBoundary->parent_id, $boundarysearchfield, $categorysearchfield);
+		}else{
+			return $filter;
+		}
 	}
 }
 ?>
