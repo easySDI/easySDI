@@ -200,7 +200,7 @@ class HTML_searchcriteria {
 				}
 				
 				$boundaries = array();
-				$database->setQuery( "SELECT name, guid FROM #__sdi_boundary WHERE category_id IN (".$boundaryavailable.")") ;
+				$database->setQuery( "SELECT name, guid FROM #__sdi_boundary WHERE category_id IN (".$boundaryavailable.") ORDER by name") ;
 				$boundaries = $database->loadObjectList() ;
 				
 				?>
@@ -227,19 +227,19 @@ class HTML_searchcriteria {
 								<table>
 									<tr>
 										<td><input type="button" value="<<" id="removeAllAccounts"
-											onclick="javascript:TransfertAll('selected_boundarycategories','boundarycategories');"></td>
+											onclick="javascript:TransfertAll('selected_boundarycategories','boundarycategories');javascript:getBoundaries('selected_boundarycategories');"></td>
 									</tr>
 									<tr>
 										<td><input type="button" value="<" id="removeAccount"
-											onclick="javascript:Transfert('selected_boundarycategories', 'boundarycategories');"></td>
+											onclick="javascript:Transfert('selected_boundarycategories', 'boundarycategories');javascript:getBoundaries('selected_boundarycategories');"></td>
 									</tr>
 									<tr>
 										<td><input type="button" value=">" id ="addAccount"
-											onclick="javascript:Transfert('boundarycategories','selected_boundarycategories');"></td>
+											onclick="javascript:Transfert('boundarycategories','selected_boundarycategories');javascript:getBoundaries('selected_boundarycategories');"></td>
 									</tr>
 									<tr>
 										<td><input type="button" value=">>" id="addAllAccounts"
-											onclick="javascript:TransfertAll('boundarycategories', 'selected_boundarycategories');"></td>
+											onclick="javascript:TransfertAll('boundarycategories', 'selected_boundarycategories');javascript:getBoundaries('selected_boundarycategories');"></td>
 									</tr>
 								</table>
 							</td>
