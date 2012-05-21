@@ -423,10 +423,16 @@ class HTML_catalog{
 							
 							$boundaries = $db->loadObjectList() ;	
 							$selectedValue = "";
-							if ($defaultSearch)
+							$selectedText = "";
+							if ($defaultSearch){
 								$selectedValue = $searchFilter->defaultvalue ;
-							else					
+							}else{					
 								$selectedValue = trim(JRequest::getVar('systemfilter_'.$searchFilter->guid, ""));
+							}
+							if(strlen($selectedValue) > 0){
+								$db->setQuery( "SELECT b.name FROM #__sdi_boundary where guid ='".$selectedValue."'");
+								$selectedText = $db->loadResult() ;
+							}
 							?>
 							
 							<div class="row">
@@ -468,6 +474,8 @@ class HTML_catalog{
 				                             typeAhead: false,
 				                             hideTrigger:true,
 				                             itemSelector: 'div.search-item',
+				                             value:'<?php echo  $selectedValue;?>',
+				                             text:'<?php echo  $selectedText;?>',
 				                             renderTo: document.getElementById('catalogSearchFormExtentDiv')
 							});
 							</script>				
