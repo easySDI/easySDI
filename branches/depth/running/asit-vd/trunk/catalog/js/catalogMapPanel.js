@@ -136,7 +136,7 @@ CatalogMapPanel = Ext.extend(Ext.form.Field, {
 			
 			var initPerimeterList =  defaultBBoxConfig.initPerimeter;
 			for(i = 0; i<initPerimeterList.length; i++){
-				if(initPerimeterList[i].westbound!= 0 && initPerimeterList[i].southbound != 0 && initPerimeterList[i].eastbound !=0 && initPerimeterList[i].nortbound != 0){
+				if(initPerimeterList[i].westbound!= null && initPerimeterList[i].southbound != null && initPerimeterList[i].eastbound !=null && initPerimeterList[i].nortbound != null){
 					var bounds = new OpenLayers.Bounds(initPerimeterList[i].westbound,initPerimeterList[i].southbound,initPerimeterList[i].eastbound,initPerimeterList[i].northbound);
 					var feature = new OpenLayers.Feature.Vector(bounds.toGeometry());
 					feature.id = initPerimeterList[i].id;

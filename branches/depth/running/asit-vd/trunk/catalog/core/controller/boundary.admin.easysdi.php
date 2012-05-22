@@ -193,6 +193,14 @@ class ADMIN_boundary {
 		
 		if ($rowBoundary->parent_id == '')
 			$rowBoundary->parent_id = null;
+		if ($rowBoundary->northbound == '')
+			$rowBoundary->northbound = null;
+		if ($rowBoundary->southbound == '')
+			$rowBoundary->southbound = null;
+		if ($rowBoundary->eastbound == '')
+			$rowBoundary->eastbound = null;
+		if ($rowBoundary->westbound == '')
+			$rowBoundary->westbound = null;
 		
 		if (!$rowBoundary->store(true)) {			
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");

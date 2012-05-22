@@ -499,19 +499,21 @@ class HTML_classstereotype_builder {
 					initPerimeter:[
 						";
 						foreach ($selectedBoundaries as $perimeter){
-							$this->javascript .="{id:";
-							$this->javascript .=$perimeter->id;
-							$this->javascript .=",label:";
-							$this->javascript .="'".$perimeter->label."'";
-							$this->javascript .=",northbound:";
-							$this->javascript .=$perimeter->northbound;
-							$this->javascript .=",southbound:";
-							$this->javascript .=$perimeter->southbound;
-							$this->javascript .=",eastbound:";
-							$this->javascript .=$perimeter->eastbound;
-							$this->javascript .=",westbound:";
-							$this->javascript .=$perimeter->westbound;
-							$this->javascript .="},";
+							if(isset($perimeter->northbound)){
+								$this->javascript .="{id:";
+								$this->javascript .=$perimeter->id;
+								$this->javascript .=",label:";
+								$this->javascript .="'".$perimeter->label."'";
+								$this->javascript .=",northbound:";
+								$this->javascript .=$perimeter->northbound;
+								$this->javascript .=",southbound:";
+								$this->javascript .=$perimeter->southbound;
+								$this->javascript .=",eastbound:";
+								$this->javascript .=$perimeter->eastbound;
+								$this->javascript .=",westbound:";
+								$this->javascript .=$perimeter->westbound;
+								$this->javascript .="},";
+							}
 				        }
 				        foreach ($freeBoundaries as $perimeter){
 				        	$this->javascript .="{id:";
