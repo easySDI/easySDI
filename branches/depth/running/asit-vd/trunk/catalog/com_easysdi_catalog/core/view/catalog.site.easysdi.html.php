@@ -233,8 +233,7 @@ class HTML_catalog{
 		$defaultSearch = JRequest::getVar('defaultSearch', 1);
 		$language =& JFactory::getLanguage();
 
-		JHTML::script('ext-base.js', 'administrator/components/com_easysdi_catalog/ext/adapter/ext/');
-		JHTML::script('ext-all-debug.js', 'administrator/components/com_easysdi_catalog/ext/');
+	
 		
 		switch ($searchFilter->attributetype_code)
 		{
@@ -412,6 +411,17 @@ class HTML_catalog{
 							<?php
 							break;
 						case "definedBoundary":
+							JHTML::script('ext-base.js', 'administrator/components/com_easysdi_catalog/ext/adapter/ext/');
+							JHTML::script('ext-all-debug.js', 'administrator/components/com_easysdi_catalog/ext/');
+// 							JHTML::_('stylesheet', 'form.css', 'administrator/components/com_easysdi_catalog/ext/resources/css/theme-gray/');
+// 							JHTML::_('stylesheet', 'combo.css', 'administrator/components/com_easysdi_catalog/ext/resources/css/theme-gray/');
+// 							JHTML::_('stylesheet', 'core.css', 'administrator/components/com_easysdi_catalog/ext/resources/css/theme-gray/');
+// 							JHTML::_('stylesheet', 'borders.css', 'administrator/components/com_easysdi_catalog/ext/resources/css/theme-gray/');
+// 							JHTML::_('stylesheet', 'grid.css', 'administrator/components/com_easysdi_catalog/ext/resources/css/theme-gray/');
+// 							JHTML::_('stylesheet', 'layout.css', 'administrator/components/com_easysdi_catalog/ext/resources/css/theme-gray/');
+// 							JHTML::_('stylesheet', 'ext-all.css', 'administrator/components/com_easysdi_catalog/ext/resources/css/');
+							JHTML::_('stylesheet', 'catalog_search.css', 'administrator/components/com_easysdi_catalog/templates/css/');
+							
 							$params = json_decode($searchFilter->params);
 							if(isset ($params->boundarycategory) && count($params->boundarycategory)>0){
 								$category_list = implode(",", $params->boundarycategory);
@@ -440,13 +450,12 @@ class HTML_catalog{
 								$selectedText = $db->loadResult() ;
 							}
 							?>
-							
 							<div class="row">
 								<div class="label"><?php echo JText::_($searchFilter->guid."_LABEL");?></div>
-								<div class="inputbox text large"  id="catalogSearchFormExtentDiv"></div>
+								<div id="catalogSearchFormExtentDiv"></div>
 							</div>	
 							<script>
-							var Tpl = new Ext.XTemplate('<tpl for="."><div class="search-item">','{text}</div></tpl>','');
+							var Tpl = new Ext.XTemplate('<tpl for="."><div class="search-item">{text}</div></tpl>');
 
 							var contactStore= new Ext.data.Store({
 								 reader: new Ext.data.JsonReader({
