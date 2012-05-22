@@ -873,15 +873,15 @@ switch($task){
 			break;
 		case "getBoundariesByCategory":
 				require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'service'.DS.'boundary.admin.easysdi.service.php');
-				SERVICE_boundary::getBoundaries(JRequest::getVar('category', null),JRequest::getVar('exclude', null));
+				SERVICE_boundary::getBoundariesByCategoriesAlias(JRequest::getVar('category', null),JRequest::getVar('exclude', null));
 				break;
 		case "getBoundaries";
 			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'service'.DS.'boundary.admin.easysdi.service.php');
-			SERVICE_boundary::getBoundaries(null, JRequest::getVar('exclude', null));
+			SERVICE_boundary::getBoundariesByCategoriesAlias(null, JRequest::getVar('exclude', null));
 			break;
-		case "getBoundary";
+		case "getBoundariesByLabel";
 			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'service'.DS.'boundary.admin.easysdi.service.php');
-			SERVICE_boundary::getBoundary(JRequest::getVar('query', null));
+			SERVICE_boundary::getBoundariesByLabel(JRequest::getVar('query', null), JRequest::getVar('category', null));
 			break;
 	}
 //}

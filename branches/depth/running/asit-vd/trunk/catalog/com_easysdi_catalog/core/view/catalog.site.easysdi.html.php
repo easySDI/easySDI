@@ -412,16 +412,11 @@ class HTML_catalog{
 							<?php
 							break;
 						case "definedBoundary":
-							$boundaries = array();
 							$params = json_decode($searchFilter->params);
 							if(isset ($params->boundarycategory) && count($params->boundarycategory)>0){
 								$category_list = implode(",", $params->boundarycategory);
-								$db->setQuery( "SELECT name, guid FROM #__sdi_boundary WHERE category_id IN (".$category_list.")") ;
-							}else{
-								$db->setQuery( "SELECT name, guid FROM #__sdi_boundary") ;
 							}
 							
-							$boundaries = $db->loadObjectList() ;	
 							$selectedValue = "";
 							$selectedText = "";
 							if ($defaultSearch){
@@ -430,53 +425,54 @@ class HTML_catalog{
 								$selectedValue = trim(JRequest::getVar('systemfilter_'.$searchFilter->guid, ""));
 							}
 							if(strlen($selectedValue) > 0){
-								$db->setQuery( "SELECT b.name FROM #__sdi_boundary where guid ='".$selectedValue."'");
+								$db->setQuery( "SELECT Concat (t.label,' [',tbc.label,']')  
+												FROM #__sdi_boundary b
+												INNER JOIN #__sdi_boundarycategory bc ON b.category_id = bc.id
+												INNER JOIN #__sdi_translation tbc ON bc.guid = tbc.element_guid
+												INNER JOIN #__sdi_language lbc ON tbc.language_id=lbc.id
+												INNER JOIN #__sdi_list_codelang cbc ON lbc.codelang_id=cbc.id
+												INNER JOIN #__sdi_translation t ON b.guid = t.element_guid
+												INNER JOIN #__sdi_language l ON t.language_id=l.id
+												INNER JOIN #__sdi_list_codelang c ON l.codelang_id=c.id 
+												WHERE b.guid ='".$selectedValue."'
+												AND c.code='".$language->_lang."'
+												AND cbc.code='".$language->_lang."' ");
 								$selectedText = $db->loadResult() ;
 							}
 							?>
 							
 							<div class="row">
-								<div class="label">
-								<?php echo JText::_($searchFilter->guid."_LABEL");?>
-								</div>
-								
-								<div   id="catalogSearchFormExtentDiv">
-								
-								</div>
+								<div class="label"><?php echo JText::_($searchFilter->guid."_LABEL");?></div>
+								<div class="inputbox text large"  id="catalogSearchFormExtentDiv"></div>
 							</div>	
 							<script>
-							var Tpl = new Ext.XTemplate(
-								    '<tpl for="."><div class="search-item">',
-								    '{text}</div></tpl>',
-								    '')
-						    
-							
+							var Tpl = new Ext.XTemplate('<tpl for="."><div class="search-item">','{text}</div></tpl>','');
 
 							var contactStore= new Ext.data.Store({
 								 reader: new Ext.data.JsonReader({
 								        fields: ['value', 'text']
 							        }),
-							    proxy: new Ext.data.HttpProxy({
-							        url: 'index.php?option=com_easysdi_catalog&task=getBoundary'
-							    }),
-							    autoLoad:true
+								 proxy: new Ext.data.HttpProxy({
+								    url: 'index.php?option=com_easysdi_catalog&task=getBoundariesByLabel&category=<?php echo $category_list ;?>'
+								 }),
+								 autoLoad:true
 							});
 							
 							var combo = new Ext.form.ComboBox({
-							                 id:'extentComboBox',
-							                 hiddenName:'<?php echo  'systemfilter_'.$searchFilter->guid;?>',
-							        		 valueField: 'value',
-				                             displayField: 'text',
-				                             minChars:0,
-				                             tpl:Tpl,
-				                             store:contactStore,
-				                             hideLabel: true,
-				                             typeAhead: false,
-				                             hideTrigger:true,
-				                             itemSelector: 'div.search-item',
-				                             value:'<?php echo  $selectedValue;?>',
-				                             text:'<?php echo  $selectedText;?>',
-				                             renderTo: document.getElementById('catalogSearchFormExtentDiv')
+				                 id:'extentComboBox',
+				                 hiddenName:'<?php echo  'systemfilter_'.$searchFilter->guid;?>',
+				        		 valueField: 'value',
+	                             displayField: 'text',
+	                             minChars:0,
+	                             tpl:Tpl,
+	                             store:contactStore,
+	                             hideLabel: true,
+	                             typeAhead: false,
+	                             hideTrigger:true,
+	                             itemSelector: 'div.search-item',
+	                             value:'<?php echo  $selectedText;?>',
+	                             hiddenValue:'<?php echo  $selectedValue;?>',
+	                             renderTo: document.getElementById('catalogSearchFormExtentDiv')
 							});
 							</script>				
 							<?php
