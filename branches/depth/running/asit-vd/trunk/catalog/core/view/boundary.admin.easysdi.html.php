@@ -239,7 +239,7 @@ function listBoundary(&$rows, $page, $option,  $filter_order_Dir, $filter_order)
 				<tr>
 					<td colspan="2">
 						<fieldset id="titles">
-							<legend align="top"><?php echo JText::_("CORE_TITLE"); ?></legend>
+							<legend align="top"><?php echo JText::_("CATALOG_PERIMETER_MULTI_ID"); ?></legend>
 							<table>
 <?php
 foreach ($languages as $lang)
@@ -259,7 +259,7 @@ foreach ($languages as $lang)
 				<tr>
 					<td colspan="2">
 						<fieldset id="labels">
-							<legend align="top"><?php echo JText::_("CORE_LABEL"); ?></legend>
+							<legend align="top"><?php echo JText::_("CATALOG_PERIMETER_MULTI_NAME"); ?></legend>
 							<table>
 <?php
 foreach ($languages as $lang)
@@ -467,7 +467,7 @@ if ($row->updated)
 							<tr>
 							<td colspan="2">
 								<fieldset id="labels">
-									<legend align="top"><?php echo JText::_("CORE_LABEL"); ?></legend>
+									<legend align="top"><?php echo JText::_("CATALOG_PERIMETER_MULTI_NAME"); ?></legend>
 									<table>
 		<?php
 		foreach ($languages as $lang)

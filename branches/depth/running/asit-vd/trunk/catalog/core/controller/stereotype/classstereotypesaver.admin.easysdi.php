@@ -85,7 +85,7 @@ class ADMIN_classstereotype_saver {
 			$boundaries_id = array();
 		}
 		foreach ($boundaries_id as $boundary_id){
-			$query = "SELECT b.id as id, t.label as label, c.code as codelang, t.title as title, bc.alias as alias
+			$query = "SELECT b.id as id, t.content as content, c.code as codelang, t.title as title, bc.alias as alias
 						FROM #__sdi_boundary b
 							INNER JOIN #__sdi_boundarycategory bc ON bc.id = b.category_id
 							INNER JOIN #__sdi_translation t ON b.guid = t.element_guid
@@ -96,7 +96,7 @@ class ADMIN_classstereotype_saver {
 			$boundaryLocal = $database->loadObjectList();
 			$usefullVals=array();
 			foreach($boundaryLocal as $boundary){
-				$usefullVals[$boundary->codelang] = $boundary->label;
+				$usefullVals[$boundary->codelang] = $boundary->content;
 			}
 			
 			//Relation node
