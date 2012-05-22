@@ -28,11 +28,11 @@ CatalogMapPanel = Ext.extend(Ext.form.Field, {
 		this.panelwidth = Ext.getCmp(fieldsetId).getWidth();
 		this.isStereotype = isStereotype;
 		
-		this.id = fieldsetId+"_BBox";
+		this.id = fieldsetId+"_BBox__1";
 		this.fieldsetId = fieldsetId;
 		
 		Ext.getCmp(fieldsetId).add(new Ext.Panel( {
-			id:fieldsetId+"_mapPanel",
+			id:fieldsetId+"_mapPanel__1",
 			layout:"table",
 			cls:'x-form-item',
 			labelWidth: 200,
@@ -42,7 +42,7 @@ CatalogMapPanel = Ext.extend(Ext.form.Field, {
 			height : height+30,
 			items: [
 			        {
-			        	id:fieldsetId+"_mapLabel",
+			        	id:fieldsetId+"_mapLabel__1",
 			        	xtype:'label',
 			        	cls:'x-form-item-label',
 			        	text:label,
@@ -129,7 +129,7 @@ CatalogMapPanel = Ext.extend(Ext.form.Field, {
 				this.map.addControl(this.map.drawBoxCtrl);
 				
 				this.map.drawBoxCtrl.events.register ('featureadded',this.map.drawBoxCtrl, function(feature){
-					feature.feature.geometry.id = '['+feature.feature.geometry.bounds.top+','+feature.feature.geometry.bounds.bottom+','+feature.feature.geometry.bounds.right+','+feature.feature.geometry.bounds.left+']';
+					feature.feature.id = '['+feature.feature.geometry.bounds.top+','+feature.feature.geometry.bounds.bottom+','+feature.feature.geometry.bounds.right+','+feature.feature.geometry.bounds.left+']';
 					defaultBBoxConfig.freePerimeterSelector.addRecord(feature);
 				});
 			}
@@ -403,14 +403,14 @@ CatalogMapPanel = Ext.extend(Ext.form.Field, {
 		
 		var topbar = this.height +30;
 		Ext.getCmp(this.fieldsetId).add(new Ext.Toolbar( {
-			id : this.fieldsetId+"_BBoxPanel",
+			id : this.fieldsetId+"_BBoxPanel__1",
 			autoHeight : true,
 			width : this.width,
 			height : 30,				
 			frame: false,
 			style :{
 				position:'relative',			
-				left:Ext.getCmp(this.fieldsetId+"_mapLabel").getWidth()+'px',
+				left:Ext.getCmp(this.fieldsetId+"_mapLabel__1").getWidth()+'px',
 				top:'-'+topbar+'px',
 				clear :'both'
 			},

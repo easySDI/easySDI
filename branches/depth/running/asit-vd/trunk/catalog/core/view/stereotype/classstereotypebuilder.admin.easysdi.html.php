@@ -28,7 +28,6 @@ class HTML_classstereotype_builder {
 	function getGeographicExtentClass( $database, $fieldsetname, $relationObject, $parentFieldsetName, $xpathResults, $path, $scope, $master, $clone = false){
 		//Pour info $scope : gmd:MD_DataIdentification
 		
-		
 		//Chargement des attributs de la relation spécifiques au stéréotype
 		$query = "  SELECT sa.alias as alias, ra.value as value 
 						FROM #__sdi_sys_stereotype s 
