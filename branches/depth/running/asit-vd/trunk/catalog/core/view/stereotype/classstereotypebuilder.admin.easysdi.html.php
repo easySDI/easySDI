@@ -368,7 +368,7 @@ class HTML_classstereotype_builder {
 			            maxcardReachMessage : '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_MAXCARD_REACH_MESSAGE"))."',
 				        imagePath: '".JURI::root( true )."/administrator/components/com_easysdi_catalog/templates/images/',
 			            multiselects: [{
-			            	legend: 'Available',
+			            	legend: '".JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_LIST_AVAILABLE")."',
 			            	id: '".$itemselectorName."_available',
 			            	minSelections:0,
 	            			maxSelections:999,
@@ -379,7 +379,7 @@ class HTML_classstereotype_builder {
 			                displayField: 'text',
 			                valueField: 'value'
 			            },{
-			            	legend: 'Selected',
+			            	legend: '".JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_LIST_SELECTED")."',
 			            	id: '".$itemselectorName."_selected',
 			                minSelections:".$rel_lowerbound.",
 	            			maxSelections:".$rel_upperbound.",
@@ -447,7 +447,7 @@ class HTML_classstereotype_builder {
 			            maxcardReachMessage : '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_MAXCARD_REACH_MESSAGE"))."',
 				        imagePath: '".JURI::root( true )."/administrator/components/com_easysdi_catalog/templates/images/',
 				        multiselects: [{
-			            	legend: 'Selected',
+			            	legend: '".JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_LIST_SELECTED")."',
 			            	id: '".$freeperimeterselectorName."_selected',
 			            	minSelections:".$rel_lowerbound.",
 	            			maxSelections:".$rel_upperbound.",
