@@ -283,7 +283,7 @@ BoundaryItemSelector = Ext.extend(Ext.form.Field,  {
 	                    selectionsArray.push((this.toMultiselect.view.store.getCount() - 1));
 	                    this.fireEvent ('addItemTo', record);
 	                    
-	                    this.handleValidSelectionNumber();
+	                    this.handleValidSelectionBoundaryCount();
                 	}
                 }
             }
@@ -332,7 +332,7 @@ BoundaryItemSelector = Ext.extend(Ext.form.Field,  {
                 }
                 this.fireEvent ('removeItemTo', record);
             }
-            this.handleValidSelectionNumber();
+            this.handleValidSelectionBoundaryCount();
         }
         this.fromMultiselect.view.refresh();
         this.toMultiselect.view.refresh();
@@ -533,7 +533,7 @@ BoundaryItemSelector = Ext.extend(Ext.form.Field,  {
 		this.freePerimeterSelector = selector;
 	},
 	
-	 handleValidSelectionNumber :function (){
+	 handleValidSelectionBoundaryCount :function (){
 		var totalSelectionCount = null;
 		if (typeof (this.freePerimeterSelector) == 'undefined'){
 			totalSelectionCount =this.toMultiselect.view.store.getCount() ;

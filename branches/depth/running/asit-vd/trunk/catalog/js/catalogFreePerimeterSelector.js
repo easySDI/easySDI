@@ -157,7 +157,7 @@ catalogFreePerimeterSelector = Ext.extend(Ext.form.Field,  {
         var hiddenTag = {tag: "input", type: "hidden", value: "", name: this.name};
         this.hiddenField = this.el.createChild(hiddenTag);
         
-        this.boundaryItemSelector.handleValidSelectionNumber();
+        this.boundaryItemSelector.handleValidSelectionBoundaryCount();
     },
     
     doLayout: function(){
@@ -186,10 +186,9 @@ catalogFreePerimeterSelector = Ext.extend(Ext.form.Field,  {
           	    {name: 'eastbound', mapping: 'eastbound'},
           	    {name: 'westbound', mapping: 'westbound'}
           	);
-//    	 text: '['+(Math.round(northvalue*1000))/1000+','+(Math.round(southvalue*1000))/1000+','+(Math.round(eastvalue*1000))/1000+','+(Math.round(westvalue*1000))/1000+']',
     	 var record = new TopicRecord({
       		value: '['+northvalue+','+southvalue+','+eastvalue+','+westvalue+']',
-      		text: '['+northvalue+','+southvalue+','+eastvalue+','+westvalue+']',
+      		text: '['+(Math.round(northvalue*1000))/1000+'...,'+(Math.round(southvalue*1000))/1000+'...,'+(Math.round(eastvalue*1000))/1000+'...,'+(Math.round(westvalue*1000))/1000+'...]',
       	    northbound: northvalue,
       	    southbound: southvalue,
       	    eastbound: eastvalue,
@@ -213,8 +212,18 @@ catalogFreePerimeterSelector = Ext.extend(Ext.form.Field,  {
              this.toMultiselect.store.sort(si.field, si.direction);
          }
          
-         this.boundaryItemSelector.handleValidSelectionNumber();
+         this.boundaryItemSelector.handleValidSelectionBoundaryCount();
          
+    },
+    
+    isMaxCardReach: function(){
+    	var totalSelectionCount =this.toMultiselect.view.store.getCount() + this.boundaryItemSelector.toMultiselect.view.store.getCount(); 
+        if(totalSelectionCount == this.maxcardbound){
+    		alert (this.maxcardReachMessage);
+    		return true;
+        }else{
+        	return false;
+        }	
     },
     
     fromTo : function() {
@@ -241,7 +250,7 @@ catalogFreePerimeterSelector = Ext.extend(Ext.form.Field,  {
 	             this.toMultiselect.store.sort(si.field, si.direction);
 	         }   
 	         
-	         this.boundaryItemSelector.handleValidSelectionNumber();
+	         this.boundaryItemSelector.handleValidSelectionBoundaryCount();
      	}
          
         
@@ -263,7 +272,7 @@ catalogFreePerimeterSelector = Ext.extend(Ext.form.Field,  {
                
             }
             
-            this.boundaryItemSelector.handleValidSelectionNumber();
+            this.boundaryItemSelector.handleValidSelectionBoundaryCount();
         }
         
         this.toMultiselect.view.refresh();

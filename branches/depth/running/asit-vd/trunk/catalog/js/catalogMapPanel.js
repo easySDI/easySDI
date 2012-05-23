@@ -125,12 +125,17 @@ CatalogMapPanel = Ext.extend(Ext.form.Field, {
 																												                        sides: 4,
 																												                        irregular: true
 																												                    }
-																												                })
+																												                });
 				this.map.addControl(this.map.drawBoxCtrl);
 				
 				this.map.drawBoxCtrl.events.register ('featureadded',this.map.drawBoxCtrl, function(feature){
-					feature.feature.id = '['+feature.feature.geometry.bounds.top+','+feature.feature.geometry.bounds.bottom+','+feature.feature.geometry.bounds.right+','+feature.feature.geometry.bounds.left+']';
-					defaultBBoxConfig.freePerimeterSelector.addRecord(feature);
+					if(!defaultBBoxConfig.freePerimeterSelector.isMaxCardReach()){
+						feature.feature.id = '['+feature.feature.geometry.bounds.top+','+feature.feature.geometry.bounds.bottom+','+feature.feature.geometry.bounds.right+','+feature.feature.geometry.bounds.left+']';
+						defaultBBoxConfig.freePerimeterSelector.addRecord(feature);
+					}else{
+						this.layer.removeFeatures(feature);
+					}
+					defaultBBoxConfig.freePerimeterSelector.boundaryItemSelector.handleValidSelectionBoundaryCount();
 				});
 			}
 			

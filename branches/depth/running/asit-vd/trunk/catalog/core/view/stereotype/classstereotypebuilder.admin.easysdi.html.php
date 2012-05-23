@@ -270,7 +270,7 @@ class HTML_classstereotype_builder {
 				}else{//Free perimeters
 					$freeperimeter = new stdClass;
 					$freeperimeter->id = '['.$extent_object->north.','.$extent_object->south.','.$extent_object->east.','.$extent_object->west.']';
-					$freeperimeter->label = '['.$extent_object->north.','.$extent_object->south.','.$extent_object->east.','.$extent_object->west.']';
+					$freeperimeter->label = '['.round($extent_object->north,2).'...,'.round($extent_object->south,2).'...,'.round($extent_object->east,2).'...,'.round($extent_object->west,2).'...]';
 					$freeperimeter->northbound = $extent_object->north;
 					$freeperimeter->southbound = $extent_object->south;
 					$freeperimeter->eastbound = $extent_object->east;
