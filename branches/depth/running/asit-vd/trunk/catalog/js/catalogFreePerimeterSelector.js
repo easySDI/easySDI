@@ -103,21 +103,21 @@ catalogFreePerimeterSelector = Ext.extend(Ext.form.Field,  {
     		    		height: 10
 		    		},
 		    		{
-	    		        xtype: 'label',
-	    		        text: this.eastLabel,
-	    		        margins: '0 0 0 10'
+		    			xtype: 'label',
+		    			text: this.westLabel,
+		    			margins: '0 0 0 10'
     		    	},
-    		    	this.fieldeast,
+    		    	this.fieldwest,
     		    	{
     		    		xtype: 'spacer',
     		    		height: 10
 		    		},
 		    		{
-		    			xtype: 'label',
-		    			text: this.westLabel,
-		    			margins: '0 0 0 10'
+	    		        xtype: 'label',
+	    		        text: this.eastLabel,
+	    		        margins: '0 0 0 10'
     		    	},
-    		    	this.fieldwest
+    		    	this.fieldeast
     		    	]
             });
         

@@ -2121,14 +2121,15 @@ function com_install(){
 				return false;
 			}
 			
+			
 			//INSERT #__sdi_sys_attribute
-			$query="INSERT INTO `#__sdi_sys_attribute` VALUE (1,'".helper_easysdi::getUniqueId()."','displaymap','CATALOG_RELATION_ATTRIBUT_DISPLAYMAP',0,0,0,NULL,'boolean',1,$geo_stereotype_id, null)";
+			$query="INSERT INTO `#__sdi_sys_attribute` VALUE (1,'".helper_easysdi::getUniqueId()."','strictperimeter','CATALOG_RELATION_ATTRIBUT_STRICTPERIMETER',0,0,0,NULL,'boolean',1,$geo_stereotype_id, null)";
 			$db->setQuery( $query);
 			if (!$db->query()) {
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}
 			//INSERT #__sdi_sys_attribute
-			$query="INSERT INTO `#__sdi_sys_attribute` VALUE (2,'".helper_easysdi::getUniqueId()."','strictperimeter','CATALOG_RELATION_ATTRIBUT_STRICTPERIMETER',0,0,0,NULL,'boolean',1,$geo_stereotype_id, null)";
+			$query="INSERT INTO `#__sdi_sys_attribute` VALUE (2,'".helper_easysdi::getUniqueId()."','displaymap','CATALOG_RELATION_ATTRIBUT_DISPLAYMAP',0,0,0,NULL,'boolean',1,$geo_stereotype_id, null)";
 			$db->setQuery( $query);
 			if (!$db->query()) {
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
