@@ -128,12 +128,12 @@ CatalogMapPanel = Ext.extend(Ext.form.Field, {
 																												                });
 				this.map.addControl(this.map.drawBoxCtrl);
 				
-				this.map.drawBoxCtrl.events.register ('featureadded',this.map.drawBoxCtrl, function(feature){
+				this.map.drawBoxCtrl.events.register ('featureadded',this, function(feature){
 					if(!defaultBBoxConfig.freePerimeterSelector.isMaxCardReach()){
 						feature.feature.id = '['+feature.feature.geometry.bounds.top+','+feature.feature.geometry.bounds.bottom+','+feature.feature.geometry.bounds.right+','+feature.feature.geometry.bounds.left+']';
 						defaultBBoxConfig.freePerimeterSelector.addRecord(feature);
 					}else{
-						this.layer.removeFeatures(feature);
+						this.perimeterLayer.removeFeatures([feature.feature]);
 					}
 					defaultBBoxConfig.freePerimeterSelector.boundaryItemSelector.handleValidSelectionBoundaryCount();
 				});
