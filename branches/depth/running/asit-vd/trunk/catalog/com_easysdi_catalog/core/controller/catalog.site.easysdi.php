@@ -268,7 +268,7 @@ class SITE_catalog {
 			}
 
 			// Construction du filtre sur la BBOX
-			$query =  "SELECT sc.*, cc.defaultvalue,  cc.params, c.filter FROM #__sdi_searchcriteria sc
+			$query =  "SELECT sc.*, cc.defaultvalue,  cc.params FROM #__sdi_searchcriteria sc
 								INNER JOIN #__sdi_context_criteria cc ON cc.criteria_id = sc.id 	
 								INNER JOIN #__sdi_context c ON c.id=	cc.context_id	
 								where sc.code ='definedBoundary'
@@ -345,9 +345,9 @@ class SITE_catalog {
 			if ($bboxfilter <> "")
 				$condList[]=$bboxfilter;
 			
-			if (isset($boundaryFilter->filter) && strlen($boundaryFilter->filter) > 0){
+			if (isset($contextObject->filter) && strlen($contextObject->filter) > 0){
 				//Add the user defined filter
-				$condList[]= $boundaryFilter->filter;
+				$condList[]= $contextObject->filter;
 			}
 			
 			$boundaryFilter ="";
