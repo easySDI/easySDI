@@ -281,7 +281,7 @@ foreach ($languages as $lang)
 ?>
 					<tr>
 					<td WIDTH=140><?php echo JText::_("CORE_".strtoupper($lang->code)); ?></td>
-					<td><input size="50" type="text" name ="information<?php echo "_".$lang->code;?>" value="<?php if ($pageReloaded and array_key_exists('information_'.$lang->code, $_POST)) echo $_POST['information_'.$lang->code]; else echo $informations[$lang->id]?>" maxlength="<?php echo $fieldsLength['information'];?>"></td>							
+					<td><textarea  rows="4" cols="50" name="information<?php echo "_".$lang->code;?>" onkeypress="javascript:maxlength(this,<?php echo $fieldsLength['information'];?>);"><?php if ($pageReloaded and array_key_exists('information_'.$lang->code, $_POST)) echo $_POST['information_'.$lang->code]; else echo $informations[$lang->id]?></textarea></td>
 					</tr>
 <?php
 }
