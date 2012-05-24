@@ -80,8 +80,12 @@ CatalogMapPanel = Ext.extend(Ext.form.Field, {
 		else
 			console.log("defaultBBoxConfig param is missing");
 		
-		this.map.addControl(new OpenLayers.Control.PanZoomBar());
+		
+		this.map.addControl(new OpenLayers.Control.MousePosition());
+		this.map.addControl(new OpenLayers.Control.Navigation());
 		this.map.navCtrl = new OpenLayers.Control.NavigationHistory();
+		this.map.panZoomCtrl = new OpenLayers.Control.PanZoom();
+		this.map.addControl(new OpenLayers.Control.PanZoomBar());
 
 		// parent control must be added to the map
 		this.map.addControl(this.map.navCtrl);
@@ -94,11 +98,10 @@ CatalogMapPanel = Ext.extend(Ext.form.Field, {
 		});
 		this.map.addControl(this.map.zoomOutBoxCtrl);
 		
-		
-
 		this.updateManuallyTriggered = false;
 		this.map.zoomToExtent(new OpenLayers.Bounds(defaultBBoxConfig.defaultExtent.left,defaultBBoxConfig.defaultExtent.bottom,defaultBBoxConfig.defaultExtent.right,defaultBBoxConfig.defaultExtent.top));
 		this.map.maxExtent = this.map.getExtent();
+		this.map.restrictedExtent = new OpenLayers.Bounds(defaultBBoxConfig.defaultExtent.left,defaultBBoxConfig.defaultExtent.bottom,defaultBBoxConfig.defaultExtent.right,defaultBBoxConfig.defaultExtent.top);
 		
 		var navCtrls = this.map.getControlsByClass('OpenLayers.Control.Navigation');
 		for (var i = 0; i < navCtrls.length; i++) {
@@ -168,50 +171,46 @@ CatalogMapPanel = Ext.extend(Ext.form.Field, {
 	}, 	
 	
 	addOverView: function(){
-
 		this.map.baseLayer.maxExtent = this.map.maxExtent;
-	
-			var bounds;
-			var viewSize = new OpenLayers.Size(180, 100);			
-			bounds = this.map.maxExtent;
-	
-			var overviewLayer = this.map.baseLayer.clone();
-			overviewLayer.map = null;
-			overviewLayer.maxExtent = bounds;
-			overviewLayer.minExtent = bounds;
-			var wRes = bounds.getWidth() / viewSize.w;
-			var hRes = bounds.getHeight() / viewSize.h;
-			maxResolution = Math.max(wRes, hRes);
-	
-			ovControl = new OpenLayers.Control.OverviewMap({
-				mapOptions :{
-					maxExtent : bounds,
-					restrictedExtent : bounds,
-					maxResolution : maxResolution,
-					minExtent : bounds,	
-					minScale : null,
-					maxScale : null,
-					scales :null,					
-					numZoomLevels :1,				
-					center : bounds.getCenterLonLat()
-					
-				},
-				layers : [overviewLayer],
-				size : viewSize	
+		var bounds;
+		var viewSize = new OpenLayers.Size(180, 100);			
+		bounds = this.map.maxExtent;
+
+		var overviewLayer = this.map.baseLayer.clone();
+		overviewLayer.map = null;
+		overviewLayer.maxExtent = bounds;
+		overviewLayer.minExtent = bounds;
+		var wRes = bounds.getWidth() / viewSize.w;
+		var hRes = bounds.getHeight() / viewSize.h;
+		maxResolution = Math.max(wRes, hRes);
+
+		ovControl = new OpenLayers.Control.OverviewMap({
+			mapOptions :{
+				maxExtent : bounds,
+				restrictedExtent : bounds,
+				maxResolution : maxResolution,
+				minExtent : bounds,	
+				minScale : null,
+				maxScale : null,
+				scales :null,					
+				numZoomLevels :1,				
+				center : bounds.getCenterLonLat()
 				
-				
-			});
+			},
+			layers : [overviewLayer],
+			size : viewSize	
 			
+			
+		});
 			 
-			// This forces the overview to never pan or zoom, since it
-			// is always
-			// suitable.
-			ovControl.isSuitableOverview = function() {
-				return true;
-			};		
-		
-			this.map.addControl(ovControl);
-		
+		// This forces the overview to never pan or zoom, since it
+		// is always
+		// suitable.
+		ovControl.isSuitableOverview = function() {
+			return true;
+		};		
+	
+		this.map.addControl(ovControl);
 	},
 
 	addFreePerimeter:function(){
@@ -305,8 +304,10 @@ CatalogMapPanel = Ext.extend(Ext.form.Field, {
 	updateCtrlBtns : function() {
 		if (this.navButton.pressed) {
 			this.navCtrl.activate();
+			this.panZoomCtrl.activate();
 		} else {
 			this.navCtrl.deactivate();
+			this.panZoomCtrl.deactivate();
 		}
 		if (this.zoomInBoxButton.pressed) {
 			this.zoomInBoxCtrl.activate();
