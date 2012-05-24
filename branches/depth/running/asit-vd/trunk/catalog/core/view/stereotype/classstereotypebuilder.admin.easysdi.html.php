@@ -381,8 +381,8 @@ class HTML_classstereotype_builder {
 			            },{
 			            	legend: '".JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_LIST_SELECTED")."',
 			            	id: '".$itemselectorName."_selected',
-			                minSelections:".$rel_lowerbound.",
-	            			maxSelections:".$rel_upperbound.",
+			                minSelections:0,
+	            			maxSelections:999,
 			                dynamic:true,
 			                width: 200,
 			                height: 200,
