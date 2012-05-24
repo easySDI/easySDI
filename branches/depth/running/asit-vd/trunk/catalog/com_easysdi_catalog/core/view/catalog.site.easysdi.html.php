@@ -445,7 +445,7 @@ class HTML_catalog{
 							?>
 							<div class="row">
 								<div class="label"><?php echo JText::_($searchFilter->guid."_LABEL");?></div>
-								<div id="catalogSearchFormExtentDiv"></div>
+								<div id="catalogSearchFormExtentDiv" class="text full"></div>
 							</div>	
 							<script>
 							var Tpl = new Ext.XTemplate('<tpl for="."><div class="search-item">{text}</div></tpl>');
