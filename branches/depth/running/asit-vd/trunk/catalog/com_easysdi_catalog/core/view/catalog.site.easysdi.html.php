@@ -412,14 +412,7 @@ class HTML_catalog{
 							break;
 						case "definedBoundary":
 							JHTML::script('ext-base.js', 'administrator/components/com_easysdi_catalog/ext/adapter/ext/');
-							JHTML::script('ext-all-debug.js', 'administrator/components/com_easysdi_catalog/ext/');
-// 							JHTML::_('stylesheet', 'form.css', 'administrator/components/com_easysdi_catalog/ext/resources/css/theme-gray/');
-// 							JHTML::_('stylesheet', 'combo.css', 'administrator/components/com_easysdi_catalog/ext/resources/css/theme-gray/');
-// 							JHTML::_('stylesheet', 'core.css', 'administrator/components/com_easysdi_catalog/ext/resources/css/theme-gray/');
-// 							JHTML::_('stylesheet', 'borders.css', 'administrator/components/com_easysdi_catalog/ext/resources/css/theme-gray/');
-// 							JHTML::_('stylesheet', 'grid.css', 'administrator/components/com_easysdi_catalog/ext/resources/css/theme-gray/');
-// 							JHTML::_('stylesheet', 'layout.css', 'administrator/components/com_easysdi_catalog/ext/resources/css/theme-gray/');
-// 							JHTML::_('stylesheet', 'ext-all.css', 'administrator/components/com_easysdi_catalog/ext/resources/css/');
+							JHTML::script('ext-all.js', 'administrator/components/com_easysdi_catalog/ext/');
 							JHTML::_('stylesheet', 'catalog_search.css', 'administrator/components/com_easysdi_catalog/templates/css/');
 							
 							$params = json_decode($searchFilter->params);
@@ -479,6 +472,7 @@ class HTML_catalog{
 	                             typeAhead: false,
 	                             hideTrigger:true,
 	                             itemSelector: 'div.search-item',
+	                             selectOnFocus: true,
 	                             value:'<?php echo  $selectedText;?>',
 	                             hiddenValue:'<?php echo  $selectedValue;?>',
 	                             renderTo: document.getElementById('catalogSearchFormExtentDiv')
