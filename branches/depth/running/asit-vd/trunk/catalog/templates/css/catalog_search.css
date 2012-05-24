@@ -5,6 +5,9 @@
  * http://www.extjs.com/license
  */
 
+#extentComboBox{
+	width:300px;
+}
 
 .ext-el-mask-msg {
     z-index: 20001;

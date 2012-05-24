@@ -445,7 +445,7 @@ class HTML_catalog{
 							?>
 							<div class="row">
 								<div class="label"><?php echo JText::_($searchFilter->guid."_LABEL");?></div>
-								<div id="catalogSearchFormExtentDiv" class="text full"></div>
+								<div id="catalogSearchFormExtentDiv" ></div>
 							</div>	
 							<script>
 							var Tpl = new Ext.XTemplate('<tpl for="."><div class="search-item">{text}</div></tpl>');
@@ -459,7 +459,7 @@ class HTML_catalog{
 								 }),
 								 autoLoad:true
 							});
-							
+
 							var combo = new Ext.form.ComboBox({
 				                 id:'extentComboBox',
 				                 hiddenName:'<?php echo  'systemfilter_'.$searchFilter->guid;?>',
@@ -473,6 +473,7 @@ class HTML_catalog{
 	                             hideTrigger:true,
 	                             itemSelector: 'div.search-item',
 	                             selectOnFocus: true,
+	                             autoWidth:true,
 	                             value:'<?php echo  $selectedText;?>',
 	                             hiddenValue:'<?php echo  $selectedValue;?>',
 	                             renderTo: document.getElementById('catalogSearchFormExtentDiv')
