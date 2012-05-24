@@ -723,69 +723,6 @@ switch($task){
 		ADMIN_relation::changeContent(0);
 		break;
 		
-	// Attribute types
-	case "listAttributeType":
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'attributetype.easysdi.class.php');
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'attributetype.toolbar.easysdi.html.php');
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'attributetype.admin.easysdi.html.php');
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'attributetype.admin.easysdi.php');
-		TOOLBAR_attributetype::_DEFAULT();
-		ADMIN_attributetype::listAttributeType($option);
-		break;
-	case "editAttributeType":
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'attributetype.easysdi.class.php');
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'attributetype.toolbar.easysdi.html.php');
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'attributetype.admin.easysdi.html.php');
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'attributetype.admin.easysdi.php');
-		TOOLBAR_attributetype::_EDIT();		
-		ADMIN_attributetype::editAttributeType($cid[0],$option);
-	break;
-	case "saveAttributeType":
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'attributetype.easysdi.class.php');
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'attributetype.toolbar.easysdi.html.php');
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'attributetype.admin.easysdi.html.php');
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'attributetype.admin.easysdi.php');
-		ADMIN_attributetype::saveAttributeType($option);
-		TOOLBAR_attributetype::_DEFAULT();
-		ADMIN_attributetype::listAttributeType($option);
-		break;
-	case "applyAttributeType":
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'attributetype.easysdi.class.php');
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'attributetype.toolbar.easysdi.html.php');
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'attributetype.admin.easysdi.html.php');
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'attributetype.admin.easysdi.php');
-		ADMIN_attributetype::saveAttributeType($option);
-		break;
-	case "cancelAttributeType":
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'attributetype.easysdi.class.php');
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'attributetype.toolbar.easysdi.html.php');
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'attributetype.admin.easysdi.html.php');
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'attributetype.admin.easysdi.php');
-		TOOLBAR_attributetype::_DEFAULT();
-		ADMIN_attributetype::listAttributeType($option);
-		break;
-	case "saveOrderAttributeType":
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'attributetype.easysdi.class.php');
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'attributetype.toolbar.easysdi.html.php');
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'attributetype.admin.easysdi.html.php');
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'attributetype.admin.easysdi.php');
-		ADMIN_attributetype::saveOrder($option);
-		break;
-	case "orderupAttributeType":
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'attributetype.easysdi.class.php');
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'attributetype.toolbar.easysdi.html.php');
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'attributetype.admin.easysdi.html.php');
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'attributetype.admin.easysdi.php');
-		ADMIN_attributetype::orderContent(-1, $option);
-		break;
-	case "orderdownAttributeType":
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'attributetype.easysdi.class.php');
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'attributetype.toolbar.easysdi.html.php');
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'view'.DS.'attributetype.admin.easysdi.html.php');
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'attributetype.admin.easysdi.php');
-		ADMIN_attributetype::orderContent(1, $option);
-		break;
-		
 	// Namespace
 	case "listMDNamespace":
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'mdnamespace.easysdi.class.php');
