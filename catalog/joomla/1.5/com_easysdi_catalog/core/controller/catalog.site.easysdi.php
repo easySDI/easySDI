@@ -873,6 +873,8 @@ class SITE_catalog {
 		$filter = JRequest::getVar('filter_'.$searchFilter->guid);
 		$lowerFilter = JRequest::getVar('create_cal_'.$searchFilter->guid);
 		$upperFilter = JRequest::getVar('update_cal_'.$searchFilter->guid);
+		
+		$ogcfilter_fileid = config_easysdi::getValue("catalog_search_ogcfilterfileid");
 
 		if ( 	isset($_REQUEST['filter_'.$searchFilter->guid]) or
 				isset($_REQUEST['create_cal_'.$searchFilter->guid]) or
