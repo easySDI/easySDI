@@ -121,7 +121,7 @@ class SERVICE_boundary {
 		INNER JOIN #__sdi_list_codelang c ON l.codelang_id=c.id
 		WHERE c.code='".$language->_lang."'
 		AND cbc.code='".$language->_lang."' 
-		AND t.label LIKE '".$boundary."%' ";
+		AND t.label LIKE '%".$boundary."%' ";
 		
 		if(isset($categories_id) && strlen($categories_id)> 0){
 			$query .= " AND bc.id IN (".$categories_id.")";
