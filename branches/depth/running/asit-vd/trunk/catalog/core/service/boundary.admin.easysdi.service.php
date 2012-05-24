@@ -46,7 +46,8 @@ class SERVICE_boundary {
 		INNER JOIN #__sdi_language l ON t.language_id=l.id
 		INNER JOIN #__sdi_list_codelang c ON l.codelang_id=c.id
 		WHERE c.code='".$language->_lang."'
-		AND cbc.code='".$language->_lang."' ";
+		AND cbc.code='".$language->_lang."' 
+		";
 		
 		if(isset($category_alias) && strlen($category_alias)> 0){
 			$query .= " AND bc.alias = '".$category_alias."'";
@@ -55,7 +56,7 @@ class SERVICE_boundary {
 		if(isset($exclude)&& strlen($exclude)> 0){
 			$query .= " AND b.id NOT IN ( ".$exclude.")";
 		}
-		
+		$query .= " ORDER BY label";
 		$db->setQuery( $query );
 		$boudaries =  $db->loadObjectList();
 		echo json_encode($boudaries);

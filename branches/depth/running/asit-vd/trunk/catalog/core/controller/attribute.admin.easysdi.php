@@ -81,7 +81,7 @@ class ADMIN_attribute {
 		$searchAttribute				= JString::strtolower($searchAttribute);
 		
 		// Test si le filtre est valide
-		if ($filter_order <> "id" and $filter_order <> "name" and $filter_order <> "attributetype_id" and $filter_order <> "attribute_isocode" and $filter_order <> "issystem" and $filter_order <> "description" and $filter_order <> "updated")
+		if ($filter_order <> "id" and $filter_order <> "name" and $filter_order <> "attributetype_id" and $filter_order <> "attribute_isocode" and  $filter_order <> "description" and $filter_order <> "updated")
 		{
 			$filter_order		= "id";
 			$filter_order_Dir	= "ASC";

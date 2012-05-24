@@ -274,7 +274,11 @@ BoundaryItemSelector = Ext.extend(Ext.form.Field,  {
                     delete x;
                     this.toMultiselect.view.store.add(record);
                 }else{
-                	var totalSelectionCount = this.toMultiselect.view.store.getCount() + this.freePerimeterSelector.toMultiselect.view.store.getCount(); 
+                	var totalSelectionCount = 0; 
+                	if (typeof (this.freePerimeterSelector) == 'undefined' || this.freePerimeterSelector == null)
+                		totalSelectionCount = this.toMultiselect.view.store.getCount() ;
+                	else
+                		totalSelectionCount = this.toMultiselect.view.store.getCount() + this.freePerimeterSelector.toMultiselect.view.store.getCount();
                 	if(totalSelectionCount == this.maxcardbound){
                 		alert (this.maxcardReachMessage);
                 	}else{
@@ -314,13 +318,14 @@ BoundaryItemSelector = Ext.extend(Ext.form.Field,  {
                 	//EasySDI specific :
                 	//Check if the 'to' record is from the same record category that the records display in the 'from' store
                 	if(this.comboboxname != null){
-                		var comboboxCategories = document.getElementById(this.comboboxname);
+                		var comboboxCategories = Ext.getCmp(this.comboboxname);
                 		var selectedValue = comboboxCategories.getValue();
-                		if(selectedValue || 0 != selectedValue.length){
-                			if(record.data.text.indexOf( '['+selectedValue+']') != -1){
-                				this.fromMultiselect.view.store.add(record);
-                                selectionsArray.push((this.fromMultiselect.view.store.getCount() - 1));
-                			}
+                		if(selectedValue && 0 != selectedValue.length && selectedValue != comboboxCategories.emptyText){
+                				if(record.data.text.indexOf( '['+selectedValue+']') != -1){
+	                				this.fromMultiselect.view.store.add(record);
+	                                selectionsArray.push((this.fromMultiselect.view.store.getCount() - 1));
+	                			}
+	                		
                 		}else{
                 			this.fromMultiselect.view.store.add(record);
                             selectionsArray.push((this.fromMultiselect.view.store.getCount() - 1));
@@ -535,14 +540,14 @@ BoundaryItemSelector = Ext.extend(Ext.form.Field,  {
 	
 	 handleValidSelectionBoundaryCount :function (){
 		var totalSelectionCount = null;
-		if (typeof (this.freePerimeterSelector) == 'undefined'){
+		if (typeof (this.freePerimeterSelector) == 'undefined' || this.freePerimeterSelector == null){
 			totalSelectionCount =this.toMultiselect.view.store.getCount() ;
 			if(totalSelectionCount < this.mincardbound){
 	         	this.toMultiselect.markInvalid(String.format(this.toMultiselect.minSelectionsText, this.toMultiselect.minSelections));
-	         	this.isValid = false;
+	         	this.isValidCmp = false;
 	         }else{
 	         	this.toMultiselect.clearInvalid();
-	         	this.isValid = true;
+	         	this.isValidCmp = true;
 	         }
 	 	}else{
 			totalSelectionCount =this.toMultiselect.view.store.getCount() + this.freePerimeterSelector.toMultiselect.view.store.getCount();

@@ -259,7 +259,8 @@ class HTML_classstereotype_builder {
 									INNER JOIN #__sdi_list_codelang c ON l.codelang_id=c.id
 								WHERE c.code='".$default_lang."'
 								AND cbc.code='".$default_lang."'
-								AND t.title='".$extent_object->description."'";
+								AND t.title='".$extent_object->description."'
+					ORDER BY label";
 					$database->setQuery( $query );
 					$perimeter_selected = $database->loadObject();
 					if(strlen($query_ids) != 0) {
@@ -294,7 +295,8 @@ class HTML_classstereotype_builder {
 						INNER JOIN #__sdi_list_codelang c ON l.codelang_id=c.id
 					WHERE c.code='".$language->_lang."'
 					AND cbc.code='".$language->_lang."'
-					AND b.id NOT IN ($query_ids)";
+					AND b.id NOT IN ($query_ids)
+					ORDER BY label";
 				
 		}else{
 			$query = "SELECT b.id as id, Concat (t.label,' [',tbc.label,']') as label, b.northbound as northbound ,b.southbound as southbound, b.eastbound as eastbound ,b.westbound as westbound
@@ -309,6 +311,7 @@ class HTML_classstereotype_builder {
 						INNER JOIN #__sdi_list_codelang c ON l.codelang_id=c.id
 					WHERE c.code='".$language->_lang."'
 					AND cbc.code='".$language->_lang."'
+					ORDER BY label
 			";
 				
 		}
@@ -332,7 +335,7 @@ class HTML_classstereotype_builder {
 						$this->javascript .="],
 			        fields: ['value','text', 'northbound', 'southbound', 'eastbound', 'westbound'],
 			        sortInfo: {
-			            field: 'value',
+			            field: 'text',
 			            direction: 'ASC'
 			        }
 			    });
@@ -352,7 +355,7 @@ class HTML_classstereotype_builder {
 					],
 				fields: ['value','text', 'northbound', 'southbound', 'eastbound', 'westbound'],
 			        sortInfo: {
-			            field: 'value',
+			            field: 'text',
 			            direction: 'ASC'
 			        }
 			});
@@ -515,20 +518,22 @@ class HTML_classstereotype_builder {
 								$this->javascript .="},";
 							}
 				        }
-				        foreach ($freeBoundaries as $perimeter){
-				        	$this->javascript .="{id:";
-				        	$this->javascript .="'".$perimeter->id."'";
-				        	$this->javascript .=",label:";
-				        	$this->javascript .="'".$perimeter->label."'";
-				        	$this->javascript .=",northbound:";
-				        	$this->javascript .=$perimeter->northbound;
-				        	$this->javascript .=",southbound:";
-				        	$this->javascript .=$perimeter->southbound;
-				        	$this->javascript .=",eastbound:";
-				        	$this->javascript .=$perimeter->eastbound;
-				        	$this->javascript .=",westbound:";
-				        	$this->javascript .=$perimeter->westbound;
-				        	$this->javascript .="},";
+				        if(!$strictperimeter){
+					        foreach ($freeBoundaries as $perimeter){
+					        	$this->javascript .="{id:";
+					        	$this->javascript .="'".$perimeter->id."'";
+					        	$this->javascript .=",label:";
+					        	$this->javascript .="'".$perimeter->label."'";
+					        	$this->javascript .=",northbound:";
+					        	$this->javascript .=$perimeter->northbound;
+					        	$this->javascript .=",southbound:";
+					        	$this->javascript .=$perimeter->southbound;
+					        	$this->javascript .=",eastbound:";
+					        	$this->javascript .=$perimeter->eastbound;
+					        	$this->javascript .=",westbound:";
+					        	$this->javascript .=$perimeter->westbound;
+					        	$this->javascript .="},";
+					        }
 				        }
 				        $this->javascript .="
 					]					

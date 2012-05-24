@@ -422,6 +422,7 @@ class ADMIN_metadata {
 						 rel.rendertype_id as rendertype_id, 
 						 rel.classchild_id as child_id, 
 						 rel.objecttypechild_id as objecttype_id, 
+						 rel.editable as editable,
 						 CONCAT(relation_namespace.prefix,':',rel.isocode) as rel_isocode, 
 						 rel.relationtype_id as reltype_id, 
 						 rel.classassociation_id as association_id,
@@ -432,7 +433,6 @@ class ADMIN_metadata {
 						 a.attributetype_id as attribute_type,
 						 tc.id as cl_stereotype_id, 
 						 a.default as attribute_default, 
-						 a.isSystem as attribute_system, 
 						 a.length as length,
 						 a.codeList as codeList,
 						 a.information as tip,
@@ -519,7 +519,7 @@ class ADMIN_metadata {
 					case 1:
 						//echo "attribute: ".$child->attribute_isocode."\r\n";
 						$name = $name."__1";
-						if ($child->attribute_system)
+						if ($child->editable == 2)
 							$name = $name."_hiddenVal";
 						
 						//echo "name: ".$name."\r\n";
@@ -566,7 +566,7 @@ class ADMIN_metadata {
 						$usefullVals=array();
 						//$usefullKeys=array();
 						$count=0;
-						if ($child->attribute_system)
+						if ($child->editable == 2)
 							$name = $name."__1"."_hiddenVal";
 							
 						foreach($keys as $key)
@@ -726,7 +726,7 @@ class ADMIN_metadata {
 						$count=0;
 						foreach($keys as $key)
 						{
-							if ($child->attribute_system)
+							if ($child->editable == 2)
 								$name = $name."__1"."_hiddenVal";
 						
 							$partToCompare = substr($key, 0, strlen($name));
@@ -764,7 +764,7 @@ class ADMIN_metadata {
 						$count=0;
 						foreach($keys as $key)
 						{
-							if ($child->attribute_system)
+							if ($child->editable == 2)
 								$name = $name."__1"."_hiddenVal";
 							
 							$partToCompare = substr($key, 0, strlen($name));
@@ -1091,7 +1091,7 @@ class ADMIN_metadata {
 						$count=0;
 						foreach($keys as $key)
 						{
-							if ($child->attribute_system)
+							if ($child->editable == 2)
 								$name = $name."__1"."_hiddenVal";
 							
 							$partToCompare = substr($key, 0, strlen($name));
@@ -1128,7 +1128,7 @@ class ADMIN_metadata {
 						$count=0;
 						foreach($keys as $key)
 						{
-							if ($child->attribute_system)
+							if ($child->editable == 2)
 								$name = $name."__1"."_hiddenVal";
 							
 							$partToCompare = substr($key, 0, strlen($name));
@@ -1384,7 +1384,7 @@ class ADMIN_metadata {
 						$usefullVals=array();
 						
 						$count=0;
-						if ($child->attribute_system)
+						if ($child->editable == 2)
 							$name = $name."__1"."_hiddenVal";
 						
 						foreach($keys as $key)
@@ -1430,7 +1430,7 @@ class ADMIN_metadata {
 						$count=0;
 						foreach($keys as $key)
 						{
-							if ($child->attribute_system)
+							if ($child->editable == 2)
 								$name = $name."__1"."_hiddenVal";
 							
 							$partToCompare = substr($key, 0, strlen($name));

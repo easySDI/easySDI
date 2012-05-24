@@ -55,8 +55,6 @@ function listAttribute(&$rows, $lists, $page, $option,  $filter_order_Dir, $filt
 				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CATALOG_ATTRIBUTE_ATTRIBUTETYPE"), 'attributetype_id', @$filter_order_Dir, @$filter_order); ?></th>
 				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CATALOG_EDITLIST"), 'attributetype_id', @$filter_order_Dir, @$filter_order); ?></th>
 				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_ISOCODE"), 'attribute_isocode', @$filter_order_Dir, @$filter_order); ?></th>
-				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_ISSYSTEM"), 'issystem', @$filter_order_Dir, @$filter_order); ?></th>
-				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_ISEXTENSIBLE"), 'isextensible', @$filter_order_Dir, @$filter_order); ?></th>
 				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_DESCRIPTION"), 'description', @$filter_order_Dir, @$filter_order); ?></th>
 				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_UPDATED"), 'updated', @$filter_order_Dir, @$filter_order); ?></th>
 			</tr>
@@ -151,34 +149,6 @@ function listAttribute(&$rows, $lists, $page, $option,  $filter_order_Dir, $filt
 					?>
 				</td>
 				<td><?php echo htmlspecialchars($row->attribute_isocode); ?></td>
-				<td width="100px" align="center">
-					<?php 
-						$imgY = 'tick.png';
-						$imgX = 'publish_x.png';
-						$img 	= $row->issystem ? $imgY : $imgX;
-						$prefix = "attribute_issystem_";
-						$task 	= $row->issystem ? 'unpublish' : 'publish';
-						$alt = $row->issystem ? JText::_( 'Yes' ) : JText::_( 'No' );		
-					?>
-					
-					<a href="javascript:void(0);" onclick="return listItemTask('cb<?php echo $i;?>','<?php echo $prefix.$task;?>');">
-						<img src="images/<?php echo $img;?>" width="16" height="16" border="0" alt="<?php echo $alt;?>" />
-					</a>
-				</td>
-				<td width="100px" align="center">
-					<?php 
-						$imgY = 'tick.png';
-						$imgX = 'publish_x.png';
-						$img 	= $row->isextensible ? $imgY : $imgX;
-						$prefix = "attribute_isextensible_";
-						$task 	= $row->isextensible ? 'unpublish' : 'publish';
-						$alt = $row->isextensible ? JText::_( 'Yes' ) : JText::_( 'No' );		
-					?>
-					
-					<a href="javascript:void(0);" onclick="return listItemTask('cb<?php echo $i;?>','<?php echo $prefix.$task;?>');">
-						<img src="images/<?php echo $img;?>" width="16" height="16" border="0" alt="<?php echo $alt;?>" />
-					</a>
-				</td>
 				<td><?php echo $row->description; ?></td>
 				<td width="100px"><?php if ($row->updated and $row->updated<> '0000-00-00 00:00:00') {echo date('d.m.Y h:i:s',strtotime($row->updated));} ?></td>
 			</tr>
@@ -282,10 +252,6 @@ foreach ($languages as $lang)
 						</fieldset>
 					</td>
 				</tr>
-				<tr>
-					<td><?php echo JText::_("CORE_ISSYSTEM"); ?></td>
-					<td><?php echo JHTML::_('select.booleanlist', 'issystem', '', $row->issystem);?> </td>							
-				</tr>	
 			</table>
 			</div>
 			<table border="0" cellpadding="3" cellspacing="0">	

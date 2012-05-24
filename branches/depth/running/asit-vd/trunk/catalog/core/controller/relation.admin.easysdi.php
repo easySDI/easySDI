@@ -64,6 +64,9 @@ defined('_JEXEC') or die('Restricted access');
 		{
 			alert( "<?php echo JText::_( 'CATALOG_RELATION_SUBMIT_NOCHILDRELATION', true ); ?>" );
 		}
+		else if (form.editable == 3 ){
+			//TODO
+		}
 		else // Contrôles dépendants du type de relation
 		{
 			if (form.type.value == 2) // Vers attribut

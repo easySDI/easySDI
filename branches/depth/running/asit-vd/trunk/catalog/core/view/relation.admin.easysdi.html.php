@@ -254,13 +254,7 @@ function listRelation(&$rows, $lists, $page, $option,  $filter_order_Dir, $filte
 						?>
 					</td>
 				</tr>
-				<tr>
-					<td><?php echo JText::_("CATALOG_RELATION_EDITABLE"); ?></td>
-					<td><?php echo JHTML::_('select.booleanlist', 'editable', '', $row->editable);?> </td>							
-				</tr>
 			</table>
-			
-				
 				<table border="0" cellpadding="3" cellspacing="0">
 					<tr>
 					<td colspan="2">
