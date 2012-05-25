@@ -5,20 +5,12 @@ function TransfertAll(idOrigine, idDestination)
 
 	for (i=objOrigine.length-1;i>=0;i--)
 	{
-		//selectedOne = objOrigine.options[i];
-	    var ADeplacer = new Option(objOrigine.options[i].text, objOrigine.options[i].value);
+		var ADeplacer = new Option(objOrigine.options[i].text, objOrigine.options[i].value);
     	objDestination.options[objDestination.length]=ADeplacer;
     	objOrigine.options[i]=null;    			
 	 }
 	 
 	sortArray(idDestination);
-	/*for (i=objOrigine.length-1;i>=0;i--) 
-	{
-		//console.log(i);
-		var ADeplacer = new Option(objOrigine.options[i].text, objOrigine.options[i].value);
-		objDestination.options[i]=ADeplacer;
-		objOrigine.options[i]=null;
-	}*/
 }
 
 //Transfert une ligne de la liste Origine à la liste Destination
@@ -48,7 +40,85 @@ function Transfert(idOrigine, idDestination)
 	}
 	//console.log(toBeDeleted);
 	sortArray(idDestination);
+	
+	
 }
+
+var request;
+function getBoundaries (idDestination){
+	var objDestination = document.getElementById(idDestination);
+	var listBoundariesId = '';
+	for (var i = 0; i < objDestination.length; i++)
+	{
+		selectedOne = objDestination.options[i];
+	    listBoundariesId = listBoundariesId + objDestination.options[i].value ;
+	    if(i != objDestination.length -1)
+	    	listBoundariesId = listBoundariesId +',';
+	 }
+	
+	//Get HTTPObject
+	request = false;
+    if (window.XMLHttpRequest){
+    	request = new XMLHttpRequest();
+    } else if (window.ActiveXObject) {
+        try{
+        	request = new ActiveXObject("Msxml2.XMLHTTP");
+        }catch(e){
+            try{
+            	request = new ActiveXObject("Microsoft.XMLHTTP");
+            }catch(e){
+            	request = false;
+            }
+        }
+    }
+    if(!request)
+    	return;
+    request.onreadystatechange = setBoundaries;
+    request.open("GET", "index.php?option=com_easysdi_catalog&task=getBoundariesByCategoriesId&category="+listBoundariesId, true);
+    request.send(null);
+}
+
+function setBoundaries()
+{
+    // if request object received response
+    if(request.readyState == 4){
+    	//document.getElementById("progress").style.visibility = "hidden";
+		var JSONtext = request.responseText;
+		var boundaryChoice = document.getElementById('defaultvalue');
+		
+		var selectedValue = null;
+		if(boundaryChoice.selectedIndex != -1)
+			selectedValue = boundaryChoice.options[boundaryChoice.selectedIndex].value;
+		
+		boundaryChoice.options.length = 0;
+		
+		var i = 1;
+		var selectedIndex = 0;
+		var elOptNew = null;
+		//Null value
+		elOptNew = document.createElement('option');
+    	elOptNew.value = '';
+    	elOptNew.text = '';
+    	boundaryChoice.options.add (elOptNew, 0);
+    	elOptNew = null;
+    	
+		var JSONobject = JSON.parse(JSONtext, function (key, value) {
+		    if(key == 'value'){
+		    	elOptNew = document.createElement('option');
+		    	elOptNew.value = value;
+		    	if(value == selectedValue )
+		    		selectedIndex = i;
+		    }else if (key == 'text'){
+		    	elOptNew.text = value;
+		    	boundaryChoice.options.add (elOptNew, i);
+		    	i = i+ 1;
+		    }
+		});
+		
+		boundaryChoice.selectedIndex = selectedIndex;
+    }
+}
+
 
 //Vérifie la présence de Valeur dans IdListe
 function VerifValeurDansListe(IdListe, Valeur, blnAlerte) 
@@ -62,6 +132,9 @@ function PostSelect(form_name, idListe)
 {
 	// On compte le nombre d'item de la liste select
   	obj=document.getElementById(idListe);
+  	if(obj == null)
+  		return;
+  	
   	NbOption=obj.length;
   
 	// On lance une boucle pour selectionner tous les items

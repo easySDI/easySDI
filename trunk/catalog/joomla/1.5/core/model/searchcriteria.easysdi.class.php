@@ -32,9 +32,18 @@ class searchcriteria extends sdiTable
 		parent::__construct ( '#__sdi_searchcriteria', 'id', $db ) ;
 	}
 	
-	function loadDefaultValue ($contextid){
-		$this->_db->setQuery( "SELECT defaultvalue, defaultvaluefrom, defaultvalueto FROM  #__sdi_context_criteria WHERE context_id='".$contextid."' and criteria_id ='".$this->id."'" );
-		return $this->_db->loadObject() ;
+	function loadValues ($contextid){
+		$this->_db->setQuery( "SELECT defaultvalue, defaultvaluefrom, defaultvalueto, params FROM  #__sdi_context_criteria WHERE context_id='".$contextid."' and criteria_id ='".$this->id."'" );
+		$values = $this->_db->loadObject();
+		if(isset($values)){
+			$this->defaultvalue = $values->defaultvalue;
+			$this->defaultvaluefrom = $values->defaultvaluefrom;
+			$this->defaultvalueto = $values->defaultvalueto;
+			$this->params= $values->params;
+			return true;
+		}
+		return false ;
+		
 	}
 }
 

@@ -174,7 +174,7 @@ function listClass(&$rows, $lists, $page, $option,  $filter_order_Dir, $filter_o
 <?php
 	}
 	
-	function editClass(&$row, $accounts, $selected_accounts, $fieldsLength, $languages, $informations, $namespacelist, $option)
+	function editClass(&$row, $accounts, $selected_accounts, $fieldsLength, $languages, $informations, $namespacelist,$stereotypelist, $option)
 	{
 		global  $mainframe;
 		
@@ -182,17 +182,21 @@ function listClass(&$rows, $lists, $page, $option,  $filter_order_Dir, $filter_o
 		$user =& JFactory::getUser();
 		?>
 		<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm" onsubmit="javascript:PostSelect('adminForm', 'selected_accounts')">
-			<table border="0" cellpadding="3" cellspacing="0">	
+			<table class="admintable" border="0" cellpadding="3" cellspacing="0">	
 				<tr>
-					<td width=150><?php echo JText::_("CORE_NAME"); ?></td>
+					<td class="key" width=150><?php echo JText::_("CORE_NAME"); ?></td>
 					<td><input size="50" type="text" name ="name" value="<?php echo $row->name?>" maxlength="<?php echo $fieldsLength['name'];?>"> </td>							
 				</tr>
 				<tr>
-					<td><?php echo JText::_("CORE_DESCRIPTION"); ?></td>
+					<td class="key"><?php echo JText::_("CORE_DESCRIPTION"); ?></td>
 					<td><textarea rows="4" cols="50" name ="description" onkeypress="javascript:maxlength(this,<?php echo $fieldsLength['description'];?>);"><?php echo $row->description?></textarea></td>							
 				</tr>
 				<tr>
-					<td><?php echo JText::_("CATALOG_CLASS_ISOCODE"); ?></td>
+					<td class="key"><?php echo JText::_("CATALOG_CLASS_STEREOTYPE"); ?></td>
+					<td><?php echo JHTML::_("select.genericlist",$stereotypelist, 'stereotype_id', 'size="1" class="inputbox" onchange=""', 'value', 'text', $row->stereotype_id ); ?></td>							
+				</tr>
+				<tr>
+					<td class="key"><?php echo JText::_("CATALOG_CLASS_ISOCODE"); ?></td>
 					<td>
 						<?php echo JHTML::_("select.genericlist",$namespacelist, 'namespace_id', 'size="1" class="inputbox"', 'value', 'text', $row->namespace_id ); ?>
 						<input size="50" type="text" name ="isocode" value="<?php echo $row->isocode?>" maxlength="<?php echo $fieldsLength['isocode'];?>"> 
@@ -219,15 +223,15 @@ foreach ($languages as $lang)
 					</td>
 				</tr>
 				<tr>
-					<td><?php echo JText::_("CORE_ISSYSTEM"); ?></td>
+					<td class="key"><?php echo JText::_("CORE_ISSYSTEM"); ?></td>
 					<td><?php echo JHTML::_('select.booleanlist', 'issystem', '', $row->issystem);?> </td>							
 				</tr>
 				<tr>
-					<td><?php echo JText::_("CORE_ISEXTENSIBLE"); ?></td>
+					<td class="key"><?php echo JText::_("CORE_ISEXTENSIBLE"); ?></td>
 					<td><?php echo JHTML::_('select.booleanlist', 'isextensible', '', $row->isextensible);?> </td>							
 				</tr>	
 				<tr>
-					<td><?php echo JText::_("CATALOG_ISROOTCLASS"); ?></td>
+					<td class="key"><?php echo JText::_("CATALOG_ISROOTCLASS"); ?></td>
 					<td><?php echo JHTML::_('select.booleanlist', 'isrootclass', '', $row->isrootclass);?> </td>
 				</tr>
 				<tr>

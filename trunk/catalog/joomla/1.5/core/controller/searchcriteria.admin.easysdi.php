@@ -161,10 +161,7 @@ class ADMIN_searchcriteria {
 		$row->load( $id );
 		
 		//Load default value
-		$defaultvalues = $row->loadDefaultValue($context_id);
-		$row->defaultvalue = $defaultvalues->defaultvalue;
-		$row->defaultvaluefrom = $defaultvalues->defaultvaluefrom;
-		$row->defaultvalueto = $defaultvalues->defaultvalueto;
+		$row->loadValues($context_id);
 		
 		/*
 		 * If the item is checked out we cannot edit it... unless it was checked
@@ -266,18 +263,17 @@ class ADMIN_searchcriteria {
 		$tab_id = $database->loadResult();
 		
 		if ($row->id == 0 or $row->criteriatype_id == 3) // Critère OGC 
-			HTML_searchcriteria::editOGCSearchCriteria($row, $tab, $selectedTab, $fieldsLength, $languages, $labels, $filterfields, $context_id, $tabList, $tab_id, $rendertypes, $option);
+			HTML_searchcriteria::editOGCSearchCriteria($row,$fieldsLength, $languages, $labels, $filterfields, $context_id, $tabList, $tab_id, $rendertypes, $option);
 		else if ($row->criteriatype_id == 1) // Critère system
-			HTML_searchcriteria::editSystemSearchCriteria($row, $tab, $selectedTab, $fieldsLength, $languages, $labels, $context_id, $tabList, $tab_id, $option);
+			HTML_searchcriteria::editSystemSearchCriteria($row, $fieldsLength, $languages, $labels, $context_id, $tabList, $tab_id, $option);
 		else if ($row->criteriatype_id == 2) // Critère relation
-			HTML_searchcriteria::editRelationSearchCriteria($row, $tab, $selectedTab, $fieldsLength, $languages, $labels, $context_id, $tabList, $tab_id, $option);
+			HTML_searchcriteria::editRelationSearchCriteria($row, $fieldsLength, $languages, $labels, $context_id, $tabList, $tab_id, $option);
 		
 	}
 	
 	function saveSearchCriteria($option)
 	{
 		global $mainframe;
-			
 		$database=& JFactory::getDBO(); 
 		$user =& JFactory::getUser();
 		$context_id = JRequest::getVar('context_id',0);
@@ -455,6 +451,33 @@ class ADMIN_searchcriteria {
 			$database->setQuery("UPDATE #__sdi_context_criteria SET defaultvalueto='".$defaultvalueto."' WHERE context_id='".$context_id."' AND criteria_id='".$rowSearchCriteria->id."'" );
 			if (!$database->query())
 			{
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				return false;
+			}
+		}
+		
+// 		//Save XSW additionnal filter
+// 		$filter = $_POST['filter'];
+// 		$database->setQuery("UPDATE #__sdi_context_criteria SET filter='".addslashes ( $filter )."' WHERE context_id='".$context_id."' AND criteria_id='".$rowSearchCriteria->id."'" );
+// 		if (!$database->query()){
+// 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+// 			return false;
+// 		}
+		
+		
+		if($rowSearchCriteria->code == 'definedBoundary'){
+			//Save params
+			$boundarycategory = $_POST['selected'];
+			 
+			$params_text = array();
+			$params_text['boundarycategory'] = $boundarycategory;
+			$params_text['boundarysearch'] = $_POST['boundarysearch'];
+			$params_text['categorysearchfield'] = $_POST['categorysearchfield'];
+			$params_text['boundarysearchfield'] = $_POST['boundarysearchfield'];
+			$params = json_encode($params_text);
+			
+			$database->setQuery("UPDATE #__sdi_context_criteria SET params='".$params."' WHERE context_id='".$context_id."' AND criteria_id='".$rowSearchCriteria->id."'" );
+			if (!$database->query()){
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 				return false;
 			}

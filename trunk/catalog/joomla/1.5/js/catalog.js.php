@@ -25,6 +25,7 @@ function TransfertAll(idOrigine, idDestination)
 		objDestination.options[i]=ADeplacer;
 		objOrigine.options[i]=null;
 	}*/
+	
 }
 
 //Transfert une ligne de la liste Origine à la liste Destination

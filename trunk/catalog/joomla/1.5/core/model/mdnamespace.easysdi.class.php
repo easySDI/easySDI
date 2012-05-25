@@ -22,17 +22,15 @@ class mdnamespace extends JTable
 {
 	var $id=null;
 	var $guid=null;
-	var $code=null;
-	var $name=null;
-	var $description=null;
-	var $created=null;
-	var $updated=null;
-	var $createdby=null;
-	var $updatedby=null;
-	var $ordering=0;
 	var $prefix=null;
 	var $uri=null;
-	var $issystem=0;
+	var $state=null;
+	var $ordering=0;
+	var $system=0;
+	var $created=null;
+	var $created_by=null;
+	var $modified=null;
+	var $modified_by=null;
 	var $checked_out=null;
 	var $checked_out_time=null;
 	
