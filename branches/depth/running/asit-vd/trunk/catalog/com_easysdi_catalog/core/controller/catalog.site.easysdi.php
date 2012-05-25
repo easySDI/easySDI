@@ -309,7 +309,7 @@ class SITE_catalog {
 							$database->setQuery( $query);
 							$boundaryTitle = $database->loadResult() ;
 							
-							$query =  "SELECT label FROM #__sdi_translation where element_guid = (SELECT guid FROM #__sdi_boundarycategory WHERE id = ".$definedBoundary->category_id.")" ;
+							$query =  "SELECT alias FROM #__sdi_boundarycategory WHERE id = ".$definedBoundary->category_id ;
 							$database->setQuery( $query);
 							$categoryLabel = $database->loadResult() ;
 							
@@ -1926,7 +1926,7 @@ class SITE_catalog {
 		$database->setQuery( $query);
 		$boundaryTitle = $database->loadResult() ;
 			
-		$query =  "SELECT label FROM #__sdi_translation where element_guid = (SELECT guid FROM #__sdi_boundarycategory WHERE id = ".$parentBoundary->category_id.")" ;
+		$query =  "SELECT alias FROM #__sdi_boundarycategory WHERE id = ".$parentBoundary->category_id ;
 		$database->setQuery( $query);
 		$categoryLabel = $database->loadResult() ;
 			

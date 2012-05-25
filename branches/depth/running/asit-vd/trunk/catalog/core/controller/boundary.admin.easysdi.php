@@ -193,6 +193,8 @@ class ADMIN_boundary {
 		
 		if ($rowBoundary->parent_id == '')
 			$rowBoundary->parent_id = null;
+		if ($rowBoundary->category_id == '')
+			$rowBoundary->category_id = null;
 		if ($rowBoundary->northbound == '')
 			$rowBoundary->northbound = null;
 		if ($rowBoundary->southbound == '')

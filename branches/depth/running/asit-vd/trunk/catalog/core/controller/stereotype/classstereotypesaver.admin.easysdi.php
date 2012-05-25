@@ -39,11 +39,11 @@ class ADMIN_classstereotype_saver {
 			
 			//$boundary = json_decode ($boundary_id, true);
 			//Relation node
-			$noderelation = $XMLDoc->createElement("gmd:extent");
+			$noderelation = $XMLDoc->createElement($relationObject->rel_isocode);
 			$XMLNode->appendChild($noderelation);
 				
 			//Child class node
-			$nodechild = $XMLDoc->createElement("gmd:EX_Extent");
+			$nodechild = $XMLDoc->createElement($relationObject->child_isocode);
 			$noderelation->appendChild($nodechild);
 				
 			$nodeA = $XMLDoc->createElement("gmd:geographicElement");
@@ -100,11 +100,11 @@ class ADMIN_classstereotype_saver {
 			}
 			
 			//Relation node
-			$noderelation = $XMLDoc->createElement("gmd:extent");
+			$noderelation = $XMLDoc->createElement($relationObject->rel_isocode);
 			$XMLNode->appendChild($noderelation);
 			
 			//Child class node
-			$nodechild = $XMLDoc->createElement("gmd:EX_Extent");
+			$nodechild = $XMLDoc->createElement($relationObject->child_isocode);
 			$noderelation->appendChild($nodechild);
 			
 			//Boundary category

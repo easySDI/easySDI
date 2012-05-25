@@ -1746,6 +1746,10 @@ function com_install(){
 			}
 		}
 		if($version == "2.2.0"){
+			$query = "SELECT id FROM `#__sdi_list_module` where code = 'CATALOG'";
+			$db->setQuery( $query);
+			$id = $db->loadResult();
+			
 			$query = "INSERT INTO #__sdi_list_attributetype (guid, code, name, description, created, createdby, label, defaultpattern, isocode, namespace_id) VALUES
 								('".helper_easysdi::getUniqueId()."', 'file', 'file', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'CATALOG_ATTRIBUTETYPE_FILE', '', 'MI_Identifier', 1)";
 			$db->setQuery( $query);
@@ -2045,16 +2049,23 @@ function com_install(){
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}
 			
-			$query="INSERT INTO `#__sdi_namespace` (`guid`, `created`, `created_by`, `ordering`, `prefix`, `uri`, `system`) VALUES
-			('".helper_easysdi::getUniqueId()."','".date('Y-m-d H:i:s')."', ".$user_id.", 0, 'sdi', 'http://www.easysdi.org/2011/sdi', 1)
-			;";
+			//INSERT namespace sdi
+			$query = "SELECT count(*) FROM `#__sdi_namespace` where prefix = 'sdi'";
 			$db->setQuery( $query);
-			if (!$db->query()) {
-				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			$count = $db->loadResult();
+			
+			if($count == 0){
+				$query="INSERT INTO `#__sdi_namespace` (`guid`, `created`, `created_by`, `ordering`, `prefix`, `uri`, `system`) VALUES
+				('".helper_easysdi::getUniqueId()."','".date('Y-m-d H:i:s')."', ".$user_id.", 0, 'sdi', 'http://www.easysdi.org/2011/sdi', 1)
+				;";
+				$db->setQuery( $query);
+				if (!$db->query()) {
+					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+				}
 			}
 				
-			$query = "INSERT INTO #__sdi_sys_stereotype (guid, alias, created, created_by) VALUES
-			('".helper_easysdi::getUniqueId()."', 'geographicextent', '".date('Y-m-d H:i:s')."', ".$user_id.")";
+			$query = "INSERT INTO #__sdi_sys_stereotype (guid, alias, entity_id) VALUES
+			('".helper_easysdi::getUniqueId()."', 'geographicextent', 2)";
 			$db->setQuery( $query);
 			if (!$db->query()){
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
@@ -2094,7 +2105,7 @@ function com_install(){
 				`type` varchar(50) NOT NULL,
 				`length` int(10) NOT NULL,
 				`stereotype_id` bigint(20) NULL,
-				`fieldtype` varchar(500) NOT NULL,
+				`fieldtype` varchar(500)  NULL,
 				FOREIGN KEY (`stereotype_id`) REFERENCES `#__sdi_sys_stereotype` (`id`) ,
 				PRIMARY KEY (`id`)
 				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
@@ -2196,7 +2207,7 @@ function com_install(){
 					`guid` varchar(36) NOT NULL,
 					`title` varchar(100) NOT NULL,
 					`alias` varchar(20) NOT NULL,
-					`parent_id` varchar(20) NOT NULL,
+					`parent_id` bigint(20) NULL,
 					`state` tinyint(1) NOT NULL DEFAULT 0,
 					`ordering` bigint(20) NOT NULL DEFAULT '0',
 					`created` datetime DEFAULT NULL ,
@@ -2245,12 +2256,12 @@ function com_install(){
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}	
 			
-			//ALTER __sdi_searchcriteria
-			$query="ALTER TABLE `#__sdi_searchcriteria` ADD paramsdef varchar(500)";
-			$db->setQuery( $query);
-			if (!$db->query()) {
-				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-			}
+// 			//ALTER __sdi_searchcriteria
+// 			$query="ALTER TABLE `#__sdi_searchcriteria` ADD paramsdef varchar(500)";
+// 			$db->setQuery( $query);
+// 			if (!$db->query()) {
+// 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+// 			}
 			
 			//ALTER __sdi_context_criteria
 			$query="ALTER TABLE `#__sdi_context_criteria` ADD params varchar(500)";
@@ -2260,6 +2271,13 @@ function com_install(){
 			}
 			//ALTER __sdi_context_criteria
 			$query="ALTER TABLE `#__sdi_context` ADD filter varchar(1000)";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			//Extent tooltip text field in backend
+			$query="ALTER TABLE `#__sdi_translation` CHANGE COLUMN `information` `information` VARCHAR(400) NULL DEFAULT NULL";
 			$db->setQuery( $query);
 			if (!$db->query()) {
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
