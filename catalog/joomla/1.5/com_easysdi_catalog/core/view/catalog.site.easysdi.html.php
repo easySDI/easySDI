@@ -232,7 +232,9 @@ class HTML_catalog{
 		$db =& JFactory::getDBO();
 		$defaultSearch = JRequest::getVar('defaultSearch', 1);
 		$language =& JFactory::getLanguage();
-				
+
+	
+		
 		switch ($searchFilter->attributetype_code)
 		{
 			case "guid":
@@ -261,7 +263,7 @@ class HTML_catalog{
 										t.title, 
 										t.content 
 								FROM #__sdi_attribute a, 
-									 #__sdi_list_attributetype at,  
+									 #__sdi_sys_stereotype at,  
 									 #__sdi_codevalue c, 
 									 #__sdi_translation t, 
 									 #__sdi_language l, 
@@ -272,7 +274,7 @@ class HTML_catalog{
 								AND t.language_id=l.id 
 								AND l.codelang_id=cl.id 
 								and cl.code='".$language->_lang."' 
-								AND (at.code='textchoice' OR at.code='localechoice') 
+								AND (at.alias='textchoice' OR at.alias='localechoice') 
 								AND attribute_id=".$searchFilter->attribute_id." 
 								AND c.published=true 
 								ORDER BY c.name" );
@@ -281,13 +283,13 @@ class HTML_catalog{
 				// Si la première entrée a un titre, construire une liste sur le titre
 				if ($list[0]->title <> "")
 				{
-					$db->setQuery( "SELECT c.id as value, t.title as text FROM #__sdi_attribute a, #__sdi_list_attributetype at,  #__sdi_codevalue c, #__sdi_translation t, #__sdi_language l, #__sdi_list_codelang cl WHERE a.id=c.attribute_id AND a.attributetype_id=at.id AND c.guid=t.element_guid AND t.language_id=l.id AND l.codelang_id=cl.id and cl.code='".$language->_lang."' AND (at.code='textchoice' OR at.code='localechoice') AND attribute_id=".$searchFilter->attribute_id." AND c.published=true ORDER BY c.name" );
+					$db->setQuery( "SELECT c.id as value, t.title as text FROM #__sdi_attribute a, #__sdi_sys_stereotype at,  #__sdi_codevalue c, #__sdi_translation t, #__sdi_language l, #__sdi_list_codelang cl WHERE a.id=c.attribute_id AND a.attributetype_id=at.id AND c.guid=t.element_guid AND t.language_id=l.id AND l.codelang_id=cl.id and cl.code='".$language->_lang."' AND (at.code='textchoice' OR at.code='localechoice') AND attribute_id=".$searchFilter->attribute_id." AND c.published=true ORDER BY c.name" );
 					$choicevalues = array_merge( $choicevalues, $db->loadObjectList() );
 				}
 				// Sinon, construire une liste sur le contenu
 				else
 				{
-					$db->setQuery( "SELECT c.id as value, IF (LENGTH(t.content)>50,CONCAT(LEFT(t.content, 50), '...'),t.content) as text FROM #__sdi_attribute a, #__sdi_list_attributetype at,  #__sdi_codevalue c, #__sdi_translation t, #__sdi_language l, #__sdi_list_codelang cl WHERE a.id=c.attribute_id AND a.attributetype_id=at.id AND c.guid=t.element_guid AND t.language_id=l.id AND l.codelang_id=cl.id and cl.code='".$language->_lang."' AND (at.code='textchoice' OR at.code='localechoice') AND attribute_id=".$searchFilter->attribute_id." AND c.published=true ORDER BY c.name" );
+					$db->setQuery( "SELECT c.id as value, IF (LENGTH(t.content)>50,CONCAT(LEFT(t.content, 50), '...'),t.content) as text FROM #__sdi_attribute a, #__sdi_sys_stereotype at,  #__sdi_codevalue c, #__sdi_translation t, #__sdi_language l, #__sdi_list_codelang cl WHERE a.id=c.attribute_id AND a.attributetype_id=at.id AND c.guid=t.element_guid AND t.language_id=l.id AND l.codelang_id=cl.id and cl.code='".$language->_lang."' AND (at.code='textchoice' OR at.code='localechoice') AND attribute_id=".$searchFilter->attribute_id." AND c.published=true ORDER BY c.name" );
 					$choicevalues = array_merge( $choicevalues, $db->loadObjectList() );
 				}
 													 	
@@ -409,28 +411,74 @@ class HTML_catalog{
 							<?php
 							break;
 						case "definedBoundary":
-							$boundaries = array();
-							$db->setQuery( "SELECT name, guid FROM #__sdi_boundary") ;
-							$boundaries = $db->loadObjectList() ;	
+							JHTML::script('ext-base.js', 'administrator/components/com_easysdi_catalog/ext/adapter/ext/');
+							JHTML::script('ext-all.js', 'administrator/components/com_easysdi_catalog/ext/');
+							JHTML::_('stylesheet', 'catalog_search.css', 'administrator/components/com_easysdi_catalog/templates/css/');
+							
+							$params = json_decode($searchFilter->params);
+							if(isset ($params->boundarycategory) && count($params->boundarycategory)>0){
+								$category_list = implode(",", $params->boundarycategory);
+							}
+							
 							$selectedValue = "";
-							if ($defaultSearch)
+							$selectedText = "";
+							if ($defaultSearch){
 								$selectedValue = $searchFilter->defaultvalue ;
-							else					
+							}else{					
 								$selectedValue = trim(JRequest::getVar('systemfilter_'.$searchFilter->guid, ""));
+							}
+							if(strlen($selectedValue) > 0){
+								$db->setQuery( "SELECT Concat (t.label,' [',tbc.label,']')  
+												FROM #__sdi_boundary b
+												INNER JOIN #__sdi_boundarycategory bc ON b.category_id = bc.id
+												INNER JOIN #__sdi_translation tbc ON bc.guid = tbc.element_guid
+												INNER JOIN #__sdi_language lbc ON tbc.language_id=lbc.id
+												INNER JOIN #__sdi_list_codelang cbc ON lbc.codelang_id=cbc.id
+												INNER JOIN #__sdi_translation t ON b.guid = t.element_guid
+												INNER JOIN #__sdi_language l ON t.language_id=l.id
+												INNER JOIN #__sdi_list_codelang c ON l.codelang_id=c.id 
+												WHERE b.guid ='".$selectedValue."'
+												AND c.code='".$language->_lang."'
+												AND cbc.code='".$language->_lang."' ");
+								$selectedText = $db->loadResult() ;
+							}
 							?>
 							<div class="row">
-								<div class="label">
-								<?php echo JText::_($searchFilter->guid."_LABEL");?>
-								</div>
-								<div>
-								<select name="<?php echo 'systemfilter_'.$searchFilter->guid;?>" id="<?php echo 'systemfilter_'.$searchFilter->guid;?>">
-									<option value="" <?php if($selectedValue ==""){?> selected="selected" <?Php }?>></option>
-									<?php foreach ($boundaries as $boundary){
-								    ?>  <option value="<?php echo JText::_($boundary->guid);?>" <?php if($selectedValue == trim($boundary->guid)){?> selected="selected" <?Php }?> ><?php echo JText::_($boundary->name);?></option>
-								   <?php }?>
-								</select>
-								</div>
-							</div>					
+								<div class="label"><?php echo JText::_($searchFilter->guid."_LABEL");?></div>
+								<div id="catalogSearchFormExtentDiv" ></div>
+							</div>	
+							<script>
+							var Tpl = new Ext.XTemplate('<tpl for="."><div class="search-item">{text}</div></tpl>');
+
+							var contactStore= new Ext.data.Store({
+								 reader: new Ext.data.JsonReader({
+								        fields: ['value', 'text']
+							        }),
+								 proxy: new Ext.data.HttpProxy({
+								    url: 'index.php?option=com_easysdi_catalog&task=getBoundariesByLabel&category=<?php echo $category_list ;?>'
+								 }),
+								 autoLoad:true
+							});
+
+							var combo = new Ext.form.ComboBox({
+				                 id:'extentComboBox',
+				                 hiddenName:'<?php echo  'systemfilter_'.$searchFilter->guid;?>',
+				        		 valueField: 'value',
+	                             displayField: 'text',
+	                             minChars:0,
+	                             tpl:Tpl,
+	                             store:contactStore,
+	                             hideLabel: true,
+	                             typeAhead: false,
+	                             hideTrigger:true,
+	                             itemSelector: 'div.search-item',
+	                             selectOnFocus: true,
+	                             autoWidth:true,
+	                             value:'<?php echo  $selectedText;?>',
+	                             hiddenValue:'<?php echo  $selectedValue;?>',
+	                             renderTo: document.getElementById('catalogSearchFormExtentDiv')
+							});
+							</script>				
 							<?php
 							break;
 						case "fulltext":

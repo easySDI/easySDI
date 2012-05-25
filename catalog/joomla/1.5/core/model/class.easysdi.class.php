@@ -38,6 +38,7 @@ class classes extends JTable
 	var $checked_out=null;
 	var $checked_out_time=null;
  	var $isocode=null;
+ 	var $stereotype_id=null;
 	
 	// Class constructor
 	function __construct( &$db )

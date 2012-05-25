@@ -167,6 +167,10 @@ function listContext(&$rows, $page, $filter_order_Dir, $filter_order, $option)
 					<td><?php echo JText::_("CATALOG_CONTEXT_RUNINITSEARCH"); ?></td>
 					<td><input size="50" type="checkbox" name ="runinitsearch" value="1" <?php echo $row->runinitsearch == "1"? 'checked="yes"':'';?>></input></td>							
 				</tr>
+				<tr>
+					<td class="key"><?php echo JText::_("CATALOG_SEARCHCRITERIA_CSW_FILTER"); ?></td>
+					<td><textarea rows="4" cols="50" id="filter" name="filter"><?php  if(isset($row->filter)) echo $row->filter;?></textarea></td>
+				</tr>
 			</table>
 			<table border="0" cellpadding="3" cellspacing="0">
 					<tr>

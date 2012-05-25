@@ -25,86 +25,52 @@ Ext.override(Ext.form.FieldSet, {
 	 * @return {Array}  required clones of type {Ext.form.FieldSet}  
 	 */				
 	clones : function(card,ownerCtrl,isClone, mas) {
-    	var panel = (ownerCtrl) ? ownerCtrl : this.ownerCt;
+    	
+		var panel = (ownerCtrl) ? ownerCtrl : this.ownerCt;
     	var isClone = (isClone!=undefined) ? isClone : true;
-    	//var master = (master!=undefined) ? master : this;
     	var master = this;
     	
-		//console.log("master avant: " + master.getId());
-		if ( this.template && Ext.getCmp(this.template.getId()) && panel.findById(this.template.getId())) 
-		{
+		if ( this.template && Ext.getCmp(this.template.getId()) && panel.findById(this.template.getId())){
 			master = this.template;
 		}
 		
-		//console.log("master apres: " + master.getId());
 		var cmps  = panel.findBy(
-			function(cmp) 
-			{
-				if ( cmp.template ) 
-				{
+			function(cmp) {
+				if ( cmp.template ){
 					return cmp.template == this.template;
 				}
-			},{template:master});
+			},{template:master}
+		);
 
-		if ( Ext.isEmpty(card)) 
-		{
+		//When no card is specified, the current clones will be returned
+		if ( Ext.isEmpty(card)) {
 			return cmps;
-		}										
-		//
+		}						
+		
 		// sanitize amount of clones untill cardinality is reached
 		if ( !Ext.isEmpty(card) ) {
-			//console.log("Appel de clone: " + cmps.length + " - " + card + " - " + this.getId() + " - " + master.getId() + " - " + isClone); 
-			//
 			// add clones untill card is reached			
 			for ( var i = cmps.length ; i < card ; i ++ ) {
 				
 				var parentName = panel.getId();
 				var name = master.getId();
-				//console.log("name: " + name);
-				//console.log("parentName: " + parentName);
-				if (isClone)
-				{
+				if (isClone){
 					var masterName = parentName + name.substring(parentName.length);
 					master = Ext.getCmp(masterName);
 				}
-				//console.log("master: " + master.getId());
-				//console.log("nombre d'enfants clones: " + master.clones_count);
-				//var oldIndexComponent = Ext.ComponentMgr.get(name + '_index');
-				//console.log("Fieldset: "+name + '_index');
 				var partOfNameToModify = name.substring(parentName.length);
-				//var partOfNameToModify = name.substring(name.lastIndexOf('-'));
-				//console.log("partOfNameToModify: " + partOfNameToModify);
-				//console.log("test: " + test);
-				//var partOfNameToModify2 = name.substring(parentName.length,name.length-String(master.clones_count).length);
-				//console.log("partOfNameToModify2: " + partOfNameToModify2 + " - " + name.length + " - " + String(master.clones_count).length );
-				//console.log("partOfNameToModify2: " + partOfNameToModify2);
 				var aName = name.split('__');
-			    //console.log("aName: " + aName);
 			    var partOfNameToModify2 = name.substring(parentName.length,name.length-aName[aName.length - 1].length);
-			    //console.log("partOfNameToModify2: " + partOfNameToModify2);
 			    
 			    master.clones_count = master.clones_count+1;
-			    //clones_count = master.clones_count;
 				
 			    if (isClone)
 					clones_count = master.clones_count;
 				else
 					clones_count = 1;
-				
-/*				var indexComponent = Ext.ComponentMgr.get(parentName + partOfNameToModify + '_index');
-				var newVal = 1;
-				var newPos = 1;
-				if (indexComponent!=undefined)
-				{	var newVal = Number(indexComponent.getValue()) + 1;
-					newPos = indexComponent.getValue().length;
-			    	indexComponent.setValue(newVal);
-				}
-*/				
+			
 				var nameEndPart = partOfNameToModify.substring(partOfNameToModify2.length+String(master.clones_count).length);
-				//console.log("nameEndPart: " + nameEndPart);
 				var newName = parentName + partOfNameToModify2 + clones_count + nameEndPart;
-			    //console.log("newName: " + parentName +" - "+partOfNameToModify2+" - "+clones_count +" - "+ nameEndPart);
-				//console.log("newName: " + newName);
 				var coll=false;
 				if (master.relation && !isClone) coll=true;
 			    
@@ -122,12 +88,8 @@ Ext.override(Ext.form.FieldSet, {
 					hidden:hidden
 				});
 				
-				//console.log("master: " + master.getId());
-				//console.log("clone: " + clone.name);
-				//console.log(name+" - "+clones_count);
 				count=0;
 				clone.constructClone(master, count);
-				//console.log(name+" - "+isClone);
 				if (isClone)
 				{
 					// [SGI - 28.10.09] Pourquoi ce calcul pour insérer le clone?
@@ -194,10 +156,7 @@ Ext.override(Ext.form.FieldSet, {
 
 						panel.doLayout();
 			}	
-			
-			
-			
-			//
+
 			// remove clones untill cardinality is reached
 			for ( var i = cmps.length ; i > card ; i -- ) {
 					var fieldset = cmps[i-1];
@@ -226,10 +185,7 @@ Ext.override(Ext.form.FieldSet, {
 	duplicates : function(newName, title, ancestor) { //, isClone, mas) {
     	var panel = this.ownerCt;
 
-
-    	//console.log("newName: " + newName);
-		
-		var clone = this.cloneConfig({
+    	var clone = this.cloneConfig({
 			id : newName,
 			name : newName,
 			title : title,
@@ -246,19 +202,15 @@ Ext.override(Ext.form.FieldSet, {
 			dynamic: true
 		});
 		
-		//console.log(name+" - "+clones_count);
 		count=0;
-		
-		 
 		ancestor.add(clone);
-		//ancestor.doLayout();
-		//clone.constructClone(this, count);	
 			
 		return clone;
 	},
+	
 	manageTitle: function(component)
 	{
-		if (component.maxOccurs != 1)
+		if (component.maxOccurs != 1  )
 		{
 			if (component.clone)
 			{
@@ -291,46 +243,34 @@ Ext.override(Ext.form.FieldSet, {
 		if (component.tools) if (component.getTool('minus')) (isHiddenMinus) ? component.getTool('minus').hide() : component.getTool('minus').show();
 		if (component.tools) if (component.getTool('plus')) (isHiddenPlus) ? component.getTool('plus').hide() : component.getTool('plus').show();
 	},
+	
 	constructClone : function(original, count) 
 	{
-		//console.log("Original: " + original.getId());
+//		console.log("Original: " + original.getId());
 		var childs = Ext.getCmp(original.getId()).items;
 
 		if (childs)
 			count=childs.length;
-		//console.log("Nombre d'enfants: " + count);
+//		console.log("Nombre d'enfants: " + count);
+		
 		// Clone each child and add it to the clone of the original parent
 		for (var i=0; i<count;i++)
 		{
 			// Get the child
 			var child = childs.get(i);
 			
-			//console.log(child.minOccurs == child.maxOccurs);
-			//console.log("Enfant " + i + ": " + child.getId());
+//			console.log(child.minOccurs == child.maxOccurs);
+//			console.log("Enfant " + i + ": " + child.getId());
 			if (!child.clone)
 			{
-		
-					if(child.clones)
-						child.clones(1,this, false);
-				/*	else if (child.GeoExtMapPanel){
-						child.cloneConfig(1,this, false);
-					}*/
-	
+				if(child.clones)
+					child.clones(1,this, false);
 				
 				if (child.minOccurs > 0 && child.xtype=='fieldset')
 				{
 					child.clones(child.minOccurs+1,this, true);
 				}
 			}
-			// [SGI - 28.10.09] Cas de lowerbound >0 => cloner les clones
-			/*else if (child.minOccurs > 0)
-			{
-				var idx = original.ownerCt.items.indexOf(original)+1+i;
-				console.log("template owner: " + child.template.ownerCt.getId());
-				console.log("this: " + this.getId());
-			   	//child.clones(1, child.template.ownerCt, true);
-				child.clones(1, this, true);
-			}*/
 		}
 	},
 	constructDuplicataChilds : function(original, count) 

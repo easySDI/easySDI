@@ -116,7 +116,7 @@ Ext.ux.form.MultiSelect = Ext.extend(Ext.form.Field,  {
 
     // private
     initComponent: function(){
-        Ext.ux.form.MultiSelect.superclass.initComponent.call(this);
+    	Ext.ux.form.MultiSelect.superclass.initComponent.call(this);
 
         if(Ext.isArray(this.store)){
             if (Ext.isArray(this.store[0])){

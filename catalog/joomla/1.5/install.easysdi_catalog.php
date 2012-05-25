@@ -1746,11 +1746,10 @@ function com_install(){
 			}
 		}
 		if($version == "2.2.0"){
-
-		    $query = "SELECT id FROM `#__sdi_list_module` where code = 'CATALOG'";
-            $db->setQuery( $query);
-            $id = $db->loadResult();
-
+			$query = "SELECT id FROM `#__sdi_list_module` where code = 'CATALOG'";
+			$db->setQuery( $query);
+			$id = $db->loadResult();
+			
 			$query = "INSERT INTO #__sdi_list_attributetype (guid, code, name, description, created, createdby, label, defaultpattern, isocode, namespace_id) VALUES
 								('".helper_easysdi::getUniqueId()."', 'file', 'file', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'CATALOG_ATTRIBUTETYPE_FILE', '', 'MI_Identifier', 1)";
 			$db->setQuery( $query);
@@ -1799,6 +1798,501 @@ function com_install(){
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}
 		}
+		if($version == "2.3.1"){
+			
+			//CREATE #__sdi_catalog_namespace
+			$query="CREATE TABLE IF NOT EXISTS `#__sdi_catalog_namespace` (
+					`id` bigint(20) NOT NULL AUTO_INCREMENT,
+					`guid` varchar(36) NOT NULL,
+					`prefix` varchar(10) NOT NULL,
+					`uri` varchar(100) NOT NULL,
+					`state` tinyint(1) DEFAULT 0,
+					`ordering` bigint(20) NOT NULL DEFAULT '0',
+					`system` tinyint(1) DEFAULT 0,
+					`created` datetime DEFAULT NULL ,
+					`created_by` bigint(20) DEFAULT NULL,
+					`modified` datetime DEFAULT NULL,
+					`modified_by` bigint(20) DEFAULT NULL,
+					`checked_out` bigint(20) NOT NULL DEFAULT '0',
+					`checked_out_time` datetime DEFAULT NULL,
+					PRIMARY KEY (`id`),
+					UNIQUE KEY `guid` (`guid`),
+					UNIQUE KEY `prefix` (`prefix`)
+					) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			$query = "INSERT INTO `#__sdi_catalog_namespace`  (id, 
+																   guid, 
+																   prefix, 
+																   uri, 
+																   ordering, 
+																   system, 
+																   created, 
+																   created_by, 
+																   modified, 
+																   modified_by,
+																   checked_out,
+																   checked_out_time)
+						SELECT id, 
+							   guid, 
+							   prefix, 
+							   uri, 
+							   ordering,
+							   issystem,
+							   created,
+							   createdby,
+							   updated,
+							   updatedby,
+							   checked_out,
+							   checked_out_time
+						FROM `#__sdi_namespace` ";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			//CREATE #__sdi_sys_stereotype
+			$query="CREATE TABLE IF NOT EXISTS `#__sdi_sys_stereotype` (
+					`id` bigint(20) NOT NULL AUTO_INCREMENT,
+					`guid` varchar(36) NOT NULL,
+					`alias` varchar(20) NOT NULL,
+					`state` tinyint(1) NOT NULL DEFAULT 0,
+					`ordering` bigint(20) NOT NULL DEFAULT '0',
+					`entity_id` bigint(20) NOT NULL,
+					`namespace_id` bigint(20),
+					`regex_pattern` varchar(200),
+					`regex_overwrite` tinyint(1) NOT NULL DEFAULT 0,
+					`isocode` varchar(50),
+					`checked_out` bigint(20) NOT NULL DEFAULT '0',
+					`checked_out_time` datetime DEFAULT NULL,
+					PRIMARY KEY (`id`),
+					KEY `entity_id` (`entity_id`),
+					KEY `namespace_id` (`namespace_id`),
+					UNIQUE KEY `alias` (`alias`)
+					) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+				return false;
+			}
+			
+			$query = "INSERT INTO `#__sdi_sys_stereotype`  (id,
+															guid,
+															alias,
+															ordering,
+															namespace_id,
+															regex_pattern,
+															isocode
+															)
+						SELECT  id,
+								guid,
+								code,
+								ordering,
+								namespace_id,
+								defaultpattern,
+								isocode
+						FROM `#__sdi_list_attributetype`";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			$db->setQuery( "UPDATE #__sdi_sys_stereotype SET entity_id = 1");
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			//CREATE #__sdi_sys_entity
+			$query="CREATE TABLE IF NOT EXISTS `#__sdi_sys_entity` (
+					`id` bigint(20) NOT NULL AUTO_INCREMENT,
+					`guid` varchar(36) NOT NULL,
+					`alias` varchar(20) NOT NULL,
+					`state` tinyint(1) NOT NULL DEFAULT 0,
+					`ordering` bigint(20) NOT NULL DEFAULT '0',
+					`checked_out` bigint(20) NOT NULL DEFAULT '0',
+					`checked_out_time` datetime DEFAULT NULL,
+					PRIMARY KEY (`id`)
+					) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+				return false;
+			}
+			
+			//INSERT #__sdi_sys_entity
+			$query="INSERT INTO `#__sdi_sys_entity` VALUE (1,'".helper_easysdi::getUniqueId()."','attribute',1,0,0,NULL)";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			$query="INSERT INTO `#__sdi_sys_entity` VALUE (2,'".helper_easysdi::getUniqueId()."','class',1,1,0,NULL)";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			//DROP #__sdi_list_attributetype CONSTRAINTS
+			$query="ALTER TABLE `#__sdi_list_attributetype` DROP FOREIGN KEY `#__sdi_list_attributetype_ibfk_1`;";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			//DROP #__sdi_attribute CONSTRAINTS
+			$query="ALTER TABLE `#__sdi_attribute` DROP FOREIGN KEY `#__sdi_attribute_ibfk_1`;";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			$query="ALTER TABLE `#__sdi_attribute` DROP FOREIGN KEY `#__sdi_attribute_ibfk_2`;";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			$query="ALTER TABLE `#__sdi_attribute` DROP FOREIGN KEY `#__sdi_attribute_ibfk_3`;";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			//DROP #__sdi_relation CONSTRAINTS
+			$query="ALTER TABLE `#__sdi_relation` DROP FOREIGN KEY `#__sdi_relation_ibfk_8`;";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			//DROP #__sdi_class CONSTRAINTS
+			$query="ALTER TABLE `#__sdi_class` DROP FOREIGN KEY `#__sdi_class_ibfk_2`;";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			//DROP TABLE #__sdi_namespace
+			$query="DROP TABLE `#__sdi_namespace` ";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			//RENAME TABLE #__sdi_namespace
+			$query="RENAME TABLE `#__sdi_catalog_namespace` TO `#__sdi_namespace` ";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			//CREATE #__sdi_attribute CONSTRAINTS
+			$query="ALTER TABLE `#__sdi_attribute` ADD CONSTRAINT `#__sdi_attribute_ibfk_1` FOREIGN KEY (`attributetype_id`) REFERENCES `#__sdi_sys_stereotype` (`id`);";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			$query="ALTER TABLE `#__sdi_attribute` ADD CONSTRAINT `#__sdi_attribute_ibfk_2` FOREIGN KEY (`namespace_id`) REFERENCES `#__sdi_namespace` (`id`);";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			$query="ALTER TABLE `#__sdi_attribute` ADD CONSTRAINT `#__sdi_attribute_ibfk_3` FOREIGN KEY (`listnamespace_id`) REFERENCES `#__sdi_namespace` (`id`);";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+
+			//CREATE #__sdi_relation CONSTRAINTS
+			$query="ALTER TABLE `#__sdi_relation` ADD CONSTRAINT `#__sdi_relation_ibfk_8` FOREIGN KEY (`namespace_id`) REFERENCES `#__sdi_namespace` (`id`);";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			//CREATE #__sdi_class CONSTRAINTS
+			$query="ALTER TABLE `#__sdi_class` ADD CONSTRAINT `#__sdi_class_ibfk_2` FOREIGN KEY (`namespace_id`) REFERENCES `#__sdi_namespace` (`id`);";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			//CREATE #__sdi_sys_stereotype CONSTRAINTS
+			$query="ALTER TABLE `#__sdi_sys_stereotype` ADD CONSTRAINT `#__sdi_sys_stereotype_ibfk_1` FOREIGN KEY (`namespace_id`) REFERENCES `#__sdi_namespace` (`id`);";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			$query="ALTER TABLE `#__sdi_sys_stereotype` ADD CONSTRAINT `#__sdi_sys_stereotype_ibfk_2` FOREIGN KEY (`entity_id`) REFERENCES `#__sdi_sys_entity` (`id`);";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			//DROP #__sdi_list_renderattributetype CONSTRAINTS
+			$query="ALTER TABLE `#__sdi_list_renderattributetype` DROP FOREIGN KEY `#__sdi_list_renderattributetype_ibfk_2`;";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			//CREATE #__sdi_list_renderattributetype CONSTRAINTS
+			$query="ALTER TABLE `#__sdi_list_renderattributetype`  ADD CONSTRAINT `#__sdi_list_renderattributetype_ibfk_2` FOREIGN KEY (`attributetype_id`) REFERENCES `#__sdi_sys_stereotype` (`id`);";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			//DROP TABLE #__sdi_list_attributetype
+			$query="DROP TABLE `#__sdi_list_attributetype` ";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			//INSERT namespace sdi
+			$query = "SELECT count(*) FROM `#__sdi_namespace` where prefix = 'sdi'";
+			$db->setQuery( $query);
+			$count = $db->loadResult();
+			
+			if($count == 0){
+				$query="INSERT INTO `#__sdi_namespace` (`guid`, `created`, `created_by`, `ordering`, `prefix`, `uri`, `system`) VALUES
+				('".helper_easysdi::getUniqueId()."','".date('Y-m-d H:i:s')."', ".$user_id.", 0, 'sdi', 'http://www.easysdi.org/2011/sdi', 1)
+				;";
+				$db->setQuery( $query);
+				if (!$db->query()) {
+					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+				}
+			}
+				
+			$query = "INSERT INTO #__sdi_sys_stereotype (guid, alias, entity_id) VALUES
+			('".helper_easysdi::getUniqueId()."', 'geographicextent', 2)";
+			$db->setQuery( $query);
+			if (!$db->query()){
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+				return false;
+			}
+			
+			$geo_stereotype_id = $db->insertid(); 
+				
+			$query="ALTER TABLE `#__sdi_class` ADD stereotype_id bigint(20)";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			$query="ALTER TABLE `#__sdi_attribute` DROP isextensible ";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			$query="ALTER TABLE `#__sdi_relation` ADD editable bigint(20)";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			//CREATE #__sdi_sys_attribute
+			$query="CREATE TABLE IF NOT EXISTS `#__sdi_sys_attribute` (
+				`id` bigint(20) NOT NULL AUTO_INCREMENT,
+				`guid` varchar(36) NOT NULL,
+				`alias` varchar(20) NOT NULL,
+				`label` varchar(100) NOT NULL,
+				`state` tinyint(1) NOT NULL DEFAULT 0,
+				`ordering` bigint(20) NOT NULL DEFAULT '0',
+				`checked_out` bigint(20) NOT NULL DEFAULT '0',
+				`checked_out_time` datetime DEFAULT NULL,
+				`type` varchar(50) NOT NULL,
+				`length` int(10) NOT NULL,
+				`stereotype_id` bigint(20) NULL,
+				`fieldtype` varchar(500)  NULL,
+				FOREIGN KEY (`stereotype_id`) REFERENCES `#__sdi_sys_stereotype` (`id`) ,
+				PRIMARY KEY (`id`)
+				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+				return false;
+			}
+			
+			//CREATE #__sdi_relationattribute
+			$query="CREATE TABLE IF NOT EXISTS `#__sdi_relation_attribute` (
+				`id` bigint(20) NOT NULL AUTO_INCREMENT,
+				`guid` varchar(36) NOT NULL,
+				`relation_id` bigint(20) NOT NULL,
+				`attribute_id` bigint(20) NOT NULL,
+				`value` varchar(500) NULL,
+				PRIMARY KEY (`id`),
+				FOREIGN KEY (`relation_id`) REFERENCES `#__sdi_relation` (`id`) ,
+				FOREIGN KEY (`attribute_id`) REFERENCES `#__sdi_sys_attribute` (`id`) 
+				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+				return false;
+			}
+			
+			
+			//INSERT #__sdi_sys_attribute
+			$query="INSERT INTO `#__sdi_sys_attribute` VALUE (1,'".helper_easysdi::getUniqueId()."','strictperimeter','CATALOG_RELATION_ATTRIBUT_STRICTPERIMETER',0,0,0,NULL,'boolean',1,$geo_stereotype_id, null)";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			//INSERT #__sdi_sys_attribute
+			$query="INSERT INTO `#__sdi_sys_attribute` VALUE (2,'".helper_easysdi::getUniqueId()."','displaymap','CATALOG_RELATION_ATTRIBUT_DISPLAYMAP',0,0,0,NULL,'boolean',1,$geo_stereotype_id, null)";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			//INSERT #__sdi_sys_attribute
+			$query="INSERT INTO `#__sdi_sys_attribute` VALUE (3,'".helper_easysdi::getUniqueId()."','params','CATALOG_RELATION_ATTRIBUT_PARAMS',0,0,0,NULL,'json',500,$geo_stereotype_id, '{\"defaultBboxConfig\":\"textarea\",\"defaultBboxConfigExtentLeft\":\"input\",\"defaultBboxConfigExtentRight\":\"input\",\"defaultBboxConfigExtentBottom\":\"input\",\"defaultBboxConfigExtentTop\":\"input\"}')";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			
+			//CREATE #__sdi_sys_fieldproperty
+			$query="CREATE TABLE IF NOT EXISTS `#__sdi_sys_fieldproperty` (
+								`id` bigint(20) NOT NULL AUTO_INCREMENT,
+								`guid` varchar(36) NOT NULL,
+								`alias` varchar(20) NOT NULL,
+								`state` tinyint(1) NOT NULL DEFAULT 0,
+								`ordering` bigint(20) NOT NULL DEFAULT '0',
+								`checked_out` bigint(20) NOT NULL DEFAULT '0',
+								`checked_out_time` datetime DEFAULT NULL,
+								PRIMARY KEY (`id`)
+								) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+				return false;
+			}
+			
+			//INSERT #__sdi_sys_fieldproperty
+			$query="INSERT INTO `#__sdi_sys_fieldproperty` VALUE (1,'".helper_easysdi::getUniqueId()."','editable',1,0,0,NULL)";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			//INSERT #__sdi_sys_fieldproperty
+			$query="INSERT INTO `#__sdi_sys_fieldproperty` VALUE (2,'".helper_easysdi::getUniqueId()."','visible',1,0,0,NULL)";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			//INSERT #__sdi_sys_fieldproperty
+			$query="INSERT INTO `#__sdi_sys_fieldproperty` VALUE (3,'".helper_easysdi::getUniqueId()."','hidden',1,0,0,NULL)";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			$query="UPDATE `#__sdi_relation` r INNER JOIN `#__sdi_attribute` a ON r.attributechild_id=a.id SET r.editable = 1 WHERE a.issystem=0";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			$query="UPDATE `#__sdi_relation` r INNER JOIN `#__sdi_attribute` a ON r.attributechild_id=a.id SET r.editable = 2 WHERE a.issystem=1";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			//CREATE #__sdi_boundarycategory
+			$query="CREATE TABLE IF NOT EXISTS `#__sdi_boundarycategory` (
+					`id` bigint(20) NOT NULL AUTO_INCREMENT,
+					`guid` varchar(36) NOT NULL,
+					`title` varchar(100) NOT NULL,
+					`alias` varchar(20) NOT NULL,
+					`parent_id` bigint(20) NULL,
+					`state` tinyint(1) NOT NULL DEFAULT 0,
+					`ordering` bigint(20) NOT NULL DEFAULT '0',
+					`created` datetime DEFAULT NULL ,
+					`created_by` bigint(20) DEFAULT NULL,
+					`modified` datetime DEFAULT NULL,
+					`modified_by` bigint(20) DEFAULT NULL,
+					`checked_out` bigint(20) NOT NULL DEFAULT '0',
+					`checked_out_time` datetime DEFAULT NULL,
+			PRIMARY KEY (`id`),
+			UNIQUE KEY `guid` (`guid`),
+			UNIQUE KEY `alias` (`alias`)
+			) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+				return false;
+			}
+			
+			$query="ALTER TABLE `#__sdi_boundarycategory` ADD CONSTRAINT `#__sdi_bounderycategory_ibfk_1` FOREIGN KEY (`parent_id`) REFERENCES `#__sdi_boundarycategory` (`id`)";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			$query="ALTER TABLE `#__sdi_boundary` ADD category_id bigint(20)";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			$query="ALTER TABLE `#__sdi_boundary` ADD parent_id bigint(20)";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			$query="ALTER TABLE `#__sdi_boundary` ADD CONSTRAINT `#__sdi_boundery_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `#__sdi_boundarycategory` (`id`)";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			$query="ALTER TABLE `#__sdi_boundary` ADD CONSTRAINT `#__sdi_boundery_ibfk_2` FOREIGN KEY (`parent_id`) REFERENCES `#__sdi_boundary` (`id`)";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}	
+			
+// 			//ALTER __sdi_searchcriteria
+// 			$query="ALTER TABLE `#__sdi_searchcriteria` ADD paramsdef varchar(500)";
+// 			$db->setQuery( $query);
+// 			if (!$db->query()) {
+// 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+// 			}
+			
+			//ALTER __sdi_context_criteria
+			$query="ALTER TABLE `#__sdi_context_criteria` ADD params varchar(500)";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			//ALTER __sdi_context_criteria
+			$query="ALTER TABLE `#__sdi_context` ADD filter varchar(1000)";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			//Extent tooltip text field in backend
+			$query="ALTER TABLE `#__sdi_translation` CHANGE COLUMN `information` `information` VARCHAR(400) NULL DEFAULT NULL";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			$version="2.4.0";
+			$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='CATALOG'";
+			$db->setQuery( $query);
+			if (!$db->query()){
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+		}
+		//TODO in next version :
+		//Drop table sdi_list_attribute_type, no more used by the CATALOG since release 2.4.0
+		//Table is kept until next version in case of migration data problems between tables 'sdi_list_attribute_type' and 'sdi_sys_stereotype'
 		
 		$query = "DELETE FROM #__components where `option`= 'com_easysdi_catalog' ";
 		$db->setQuery( $query);
