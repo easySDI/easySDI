@@ -1746,6 +1746,11 @@ function com_install(){
 			}
 		}
 		if($version == "2.2.0"){
+
+		    $query = "SELECT id FROM `#__sdi_list_module` where code = 'CATALOG'";
+            $db->setQuery( $query);
+            $id = $db->loadResult();
+
 			$query = "INSERT INTO #__sdi_list_attributetype (guid, code, name, description, created, createdby, label, defaultpattern, isocode, namespace_id) VALUES
 								('".helper_easysdi::getUniqueId()."', 'file', 'file', NULL, '".date('Y-m-d H:i:s')."', ".$user_id.", 'CATALOG_ATTRIBUTETYPE_FILE', '', 'MI_Identifier', 1)";
 			$db->setQuery( $query);
