@@ -7,7 +7,9 @@
 .x-form-field{
     font:normal 12px tahoma, arial, helvetica, sans-serif;
 }
-
+.x-form-field-wrap {
+    white-space: nowrap;
+}
 .x-form-text, textarea.x-form-field{
     background-color:#fff;
     background-image:url(../images/default/form/text-bg.gif);

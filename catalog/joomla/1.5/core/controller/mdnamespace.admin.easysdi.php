@@ -38,13 +38,11 @@ class ADMIN_mdnamespace {
 		
 		// Test si le filtre est valide
 		if ($filter_order <> "id" and 
-			$filter_order <> "name" and 
 			$filter_order <> "ordering" and
 			$filter_order <> "prefix" and 
 			$filter_order <> "uri" and
-			$filter_order <> "description" and
-			$filter_order <> "updated" and
-			$filter_order <> "issystem")
+			$filter_order <> "modified" and
+			$filter_order <> "system")
 		{
 			$filter_order		= "id";
 			$filter_order_Dir	= "ASC";
@@ -82,7 +80,7 @@ class ADMIN_mdnamespace {
 			return false;
 		}		
 		
-		HTML_mdnamespace::listMDNamespace(&$rows, $pagination, $option,  $filter_order_Dir, $filter_order);
+		HTML_mdnamespace::listMDNamespace($rows, $pagination, $option,  $filter_order_Dir, $filter_order);
 	}
 	
 	function editMDNamespace($id, $option)
@@ -122,20 +120,20 @@ class ADMIN_mdnamespace {
 		$rowMDNamespace = new mdnamespace( $database );
 		$rowMDNamespace->load( $id );
 		
-		if ($rowMDNamespace->issystem)
+		if ($rowMDNamespace->system)
 		{
 			$mainframe->enqueueMessage(JText::_("CATALOG_NAMESPACE_ISSYSTEM_ERROR_MSG"),"ERROR");
 			$mainframe->redirect("index.php?option=$option&task=listMDNamespace" );
 			exit();
 		}
 		
-		// Récupération des types mysql pour les champs
+		// Rï¿½cupï¿½ration des types mysql pour les champs
 		$tableFields = array();
 		$tableFields = $database->getTableFields("#__sdi_namespace", false);
 		
 		// Parcours des champs pour extraire les informations utiles:
 		// - le nom du champ
-		// - sa longueur en caractères
+		// - sa longueur en caractï¿½res
 		$fieldsLength = array();
 		foreach($tableFields as $table)
 		{
@@ -167,23 +165,28 @@ class ADMIN_mdnamespace {
 			exit();
 		}		
 		
-		// Générer un guid
+		// GÃ©nÃ©rer un guid
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 		if ($rowMDNamespace->guid == null)
 			$rowMDNamespace->guid = helper_easysdi::getUniqueId();
 		
-		if (!$rowMDNamespace->store(false)) {			
-			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+		if (!$rowMDNamespace->store(false)) {	
+			if($database->getErrorNum() == "1062"){
+				$mainframe->enqueueMessage(JText::_("CATALOG_NAMESPACE_DUPLICATE_KEY_ERROR_MSG"),"ERROR");
+			}else{	
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
 			$mainframe->redirect("index.php?option=$option&task=listMDNamespace" );
+			
 			exit();
 		}
 		
-		// Au cas où on sauve avec Apply, recharger la page 
+		// Au cas oÃ¹ on sauve avec Apply, recharger la page 
 		$task = JRequest::getCmd( 'task' );
 		switch ($task)
 		{
 			case 'applyMDNamespace' :
-				// Reprendre en édition l'objet
+				// Reprendre en ï¿½dition l'objet
 				TOOLBAR_mdnamespace::_EDIT();
 				ADMIN_mdnamespace::editMDNamespace($rowMDNamespace->id,$option);
 				break;
@@ -210,7 +213,7 @@ class ADMIN_mdnamespace {
 			$rowMDNamespace= new mdnamespace( $database );
 			$rowMDNamespace->load( $namespace_id );
 			
-			if ($rowMDNamespace->issystem)
+			if ($rowMDNamespace->system)
 			{
 				$mainframe->enqueueMessage(JText::_("CATALOG_NAMESPACE_DELETE_ERROR_MSG"),"ERROR");
 				$mainframe->redirect("index.php?option=$option&task=listMDNamespace" );
@@ -309,7 +312,7 @@ class ADMIN_mdnamespace {
 				' WHERE id IN ( '. $cids .' )';
 		$db->setQuery($query);
 		if (!$db->query()) {
-			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			$mainframe->redirect("index.php?option=$option&task=listMDNamespace" );
 			exit();
 		}

@@ -134,10 +134,13 @@ function listRelation(&$rows, $lists, $page, $option,  $filter_order_Dir, $filte
 				}
 				?>
 				</td>
-				 <td><?php echo $row->parent_name; ?></td>
+				<?php $link =  "index.php?option=$option&amp;task=editClass&cid[]=$row->parent_id";?>
+				 <td><a  href="<?php echo $link;?>" ><?php echo $row->parent_name; ?></a></td>
 				 <td><?php echo $row->objecttypechild_name; ?></td>
-				 <td><?php echo $row->classchild_name; ?></td>
-				 <td><?php echo $row->attributechild_name; ?></td>
+				 <?php $link =  "index.php?option=$option&amp;task=editClass&cid[]=$row->classchild_id";?>
+				 <td><a  href="<?php echo $link;?>" ><?php echo $row->classchild_name; ?></a></td>
+				 <?php $link =  "index.php?option=$option&amp;task=editAttribute&cid[]=$row->attributechild_id";?>
+				 <td><a  href="<?php echo $link;?>" ><?php echo $row->attributechild_name; ?></a></td>
 				 <td><?php echo $row->rendertype_name; ?></td>
 				 <td><?php echo $row->relationtype_name; ?></td>
 				<td> <?php echo JHTML::_('grid.published',$row,$i, 'tick.png', 'publish_x.png', 'relation_'); ?></td>
@@ -165,7 +168,7 @@ function listRelation(&$rows, $lists, $page, $option,  $filter_order_Dir, $filte
 <?php
 	}
 	
-	function newRelation(&$row, &$rowAttribute, $types, $type, $classes, $attributes, $objecttypes, $rendertypes, $relationtypes, $fieldsLength, $attributeFieldsLength, $boundsStyle, $style, $defaultStyle_textbox, $defaultStyle_textarea, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale_Textbox, $defaultStyle_Locale_Textarea, $defaultStyle_Choicelist, $renderStyle, $languages, $codevalues, $choicevalues, $selectedcodevalues, $profiles, $selected_profiles, $contexts, $selected_contexts, $attributetypes, $attributeid, $pageReloaded, $localeDefaults, $labels, $filterfields, $informations, $namespacelist, $searchCriteriaFieldsLength, $searchCriteria, $child_attributetype, $option)
+	function newRelation(&$row, &$rowAttribute, $types, $type, $classes, $attributes, $objecttypes, $rendertypes, $relationtypes, $fieldsLength, $attributeFieldsLength, $boundsStyle, $style, $defaultStyle_textbox, $defaultStyle_textarea, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale_Textbox, $defaultStyle_Locale_Textarea, $defaultStyle_Choicelist, $renderStyle, $languages, $codevalues, $choicevalues, $selectedcodevalues, $profiles, $selected_profiles, $contexts, $selected_contexts, $attributetypes, $attributeid, $pageReloaded, $localeDefaults, $labels, $filterfields, $informations, $namespacelist, $searchCriteriaFieldsLength, $searchCriteria, $child_attributetype,$fieldpropertylist,$relation_attribute_array, $option)
 	{
 		JHTML::script('catalog.js', 'administrator/components/com_easysdi_catalog/js/');
 		global  $mainframe;
@@ -189,6 +192,11 @@ function listRelation(&$rows, $lists, $page, $option,  $filter_order_Dir, $filte
 					<td><?php echo JText::_("CORE_PUBLISHED"); ?></td>
 					<?php if ($pageReloaded and array_key_exists('published', $_POST)) $published=$_POST['published']; else $published=$row->published;?>
 					<td><?php echo JHTML::_('select.booleanlist', 'published', '', $published);?> </td>																
+				</tr>
+				<tr>
+					<td><?php echo JText::_("CATALOG_RELATION_EDITABLE"); ?></td>
+					<?php if ($pageReloaded and array_key_exists('editable', $_POST)) $editablevalue= $_POST['editable']; else $editablevalue= $row->editable;?>
+					<td><?php echo JHTML::_("select.genericlist",$fieldpropertylist, 'editable', 'size="1" class="inputbox" onchange=""', 'value', 'text', $editablevalue ); ?></td>							
 				</tr>
 				<tr>
 					<td><?php echo JText::_("CATALOG_PARENT"); ?></td>
@@ -247,8 +255,6 @@ function listRelation(&$rows, $lists, $page, $option,  $filter_order_Dir, $filte
 					</td>
 				</tr>
 			</table>
-			
-				
 				<table border="0" cellpadding="3" cellspacing="0">
 					<tr>
 					<td colspan="2">
@@ -297,7 +303,7 @@ foreach ($languages as $lang)
 				</tr>
 			</table>
 			<br/><br/>
-<!-- Partie li�e � une relation vers un attribut -->
+<!-- Partie liée à une relation vers un attribut -->
 <?php
 if ($type == 2)
 { 
@@ -504,14 +510,14 @@ foreach ($languages as $lang)
 			
 <?php 
 }
-else if ($type == 1)
+else if ($type == 1) // Type d'enfant = classe
 {
 ?>
 			<table border="0" cellpadding="3" cellspacing="0">	
 				<tr>
 					<td><?php echo JText::_("CATALOG_CLASSCHILD"); ?></td>
 					<?php if ($pageReloaded and array_key_exists('classchild_id', $_POST)) $selectedClasschild=$_POST['classchild_id']; else $selectedClasschild=$row->classchild_id;?>
-					<td><?php echo JHTML::_("select.genericlist",$classes, 'classchild_id', 'size="1" class="inputbox"', 'value', 'text', $selectedClasschild ); ?></td>							
+					<td><?php echo JHTML::_("select.genericlist",$classes, 'classchild_id', 'size="1" class="inputbox" onchange="javascript:submitbutton(\'newRelation\');"', 'value', 'text', $selectedClasschild ); ?></td>							
 				</tr>
 				<tr>
 					<td WIDTH=150><?php echo JText::_("CORE_ISOCODE"); ?></td>
@@ -530,6 +536,82 @@ else if ($type == 1)
 					<?php if ($pageReloaded and array_key_exists('classassociation_id', $_POST)) $selectedClassassociation=$_POST['classassociation_id']; else $selectedClassassociation=$row->classassociation_id;?>
 					<td><?php echo JHTML::_("select.genericlist",$classes, 'classassociation_id', 'size="1" class="inputbox"', 'value', 'text', $selectedClassassociation ); ?></td>							
 				</tr>
+				<?php 
+				if(isset($relation_attribute_array)){
+					foreach($relation_attribute_array as $relation_attribute){
+						if($relation_attribute->type == 'boolean'){
+							?>
+							<tr>
+								<td><?php echo JText::_($relation_attribute->label); ?></td>
+								<?php if ($pageReloaded && array_key_exists($relation_attribute->alias, $_POST)) $value=$_POST[$relation_attribute->alias]; else $value=0;?>
+								<td><?php echo JHTML::_('select.booleanlist', $relation_attribute->alias, '', $value);?> </td>																
+							</tr>
+							<?php 
+						}else if ($relation_attribute->type == 'json'){
+							$label_list = json_decode (JText::_( $relation_attribute->label ), true);
+							$attribute_list = json_decode($relation_attribute->fieldtype, true);
+							?>
+							<tr>
+								<td valign="top" colspan="2">
+									<fieldset class="adminform">
+										<legend>
+										<?php echo $label_list['fieldset']; ?>
+										</legend>
+		
+										<table class="admintable" cellspacing="1">
+											<tbody>
+											<?php 
+											foreach ($attribute_list as $key=>$value){
+												if($value == 'textarea'){
+													?>
+													<tr>
+														<td valign="top" class="key" 	style="width: 140px;">
+															<span class="editlinktip hasTip" title="<?php echo  $label_list[$key]; ?>">
+																<?php echo $label_list[$key]; ?>
+															</span>
+														</td>
+														<td>
+															<textarea class="textarea resolutions" style="height: 200px; width: 440px;" name="<?php echo  $key; ?>" maxlength="" />
+																<?php  echo "";?>
+															</textarea>
+														</td>
+													</tr>
+													<?php 
+												}else if ($value == 'input'){
+													?>
+													<tr>
+														<td valign="top" class="key">
+															<span class="editlinktip hasTip" title="<?php echo  $label_list[$key]; ?>">
+																<?php echo  $label_list[$key]; ?>
+															</span>
+														</td>
+														<td>
+															<input class="text_area" type="text" size="100" name="<?php echo  $key; ?>" value="" maxlength="" />
+														</td>
+													</tr>
+													<?php 													
+												}
+											}
+											?>
+											</tbody>
+										</table>
+									</fieldset>
+								</td>
+							</tr> 
+							<?php 
+						}else if($relation_attribute->type == 'text'){
+							?>
+							<tr>
+								<td WIDTH=150><?php echo JText::_($relation_attribute->label); ?></td>
+								<td>
+									<input size="50" type="text" name ="<?php echo  $relation_attribute->alias; ?>" value="<?php if ($pageReloaded and array_key_exists($relation_attribute->alias, $_POST)) echo $_POST[$relation_attribute->alias]; else echo '';?>" maxlength="<?php echo $relation_attribute->length;?>"> 
+								</td>							
+							</tr>
+							<?php 
+						}
+					}
+				}
+				?>
 				</table>
 <?php 
 }
@@ -630,11 +712,12 @@ if ($row->updated and $row->updated <> '0000-00-00 00:00:00')
 			<input type="hidden" name="id" value="<?php echo $row->id?>" />
 			<input type="hidden" name="task" value="newRelation" />
 			<input type="hidden" name="child_attributetype" value="<?php echo $child_attributetype?>" />
+			<input type="hidden" name="classchildstereotype" value="<?php if(isset($relation_attribute_array)){echo true;}else{echo false;}?>" />
 		</form>
 			<?php 	
 	}
 
-	function editAttributeRelation(&$row, &$rowAttribute, $classes, $attributes, $rendertypes, $fieldsLength, $attributeFieldsLength, $style, $style_choice, $defaultStyle_textbox, $defaultStyle_textarea, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale_Textbox, $defaultStyle_Locale_Textarea, $languages, $codevalues, $selectedcodevalues, $choicevalues, $selectedchoicevalues, $profiles, $selected_profiles, $contexts, $selected_contexts, $attributetypes, $attributeid, $pageReloaded, $localeDefaults, $labels, $filterfields, $informations, $searchCriteriaFieldsLength, $searchCriteria, $boundsStyle, $renderStyle, $child_attributetype, $option)
+	function editAttributeRelation(&$row, &$rowAttribute, $classes, $attributes, $rendertypes, $fieldsLength, $attributeFieldsLength, $style, $style_choice, $defaultStyle_textbox, $defaultStyle_textarea, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale_Textbox, $defaultStyle_Locale_Textarea, $languages, $codevalues, $selectedcodevalues, $choicevalues, $selectedchoicevalues, $profiles, $selected_profiles, $contexts, $selected_contexts, $attributetypes, $attributeid, $pageReloaded, $localeDefaults, $labels, $filterfields, $informations, $searchCriteriaFieldsLength, $searchCriteria, $boundsStyle, $renderStyle, $child_attributetype,$fieldpropertylist, $option)
 	{
 		JHTML::script('catalog.js', 'administrator/components/com_easysdi_catalog/js/');
 		global  $mainframe;
@@ -662,6 +745,10 @@ if ($row->updated and $row->updated <> '0000-00-00 00:00:00')
 				<tr>
 					<td><?php echo JText::_("CORE_PUBLISHED"); ?> : </td>
 					<td><?php echo JHTML::_('select.booleanlist', 'published', '', $row->published);?> </td>																
+				</tr>
+				<tr>
+					<td><?php echo JText::_("CATALOG_RELATION_EDITABLE"); ?></td>
+					<td><?php echo JHTML::_("select.genericlist",$fieldpropertylist, 'editable', 'size="1" class="inputbox" onchange=""', 'value', 'text', $row->editable ); ?></td>							
 				</tr>
 				<tr>
 					<td><?php echo JText::_("CATALOG_CLASS"); ?></td>
@@ -702,8 +789,6 @@ if ($row->updated and $row->updated <> '0000-00-00 00:00:00')
 				<tr>
 					<td width=150 ><?php echo JText::_("CATALOG_RENDERTYPE"); ?></td>
 					<?php 
-					//$selectedRendertype = 0;
-					//if (!$pageReloaded) 
 						$selectedRendertype = $row->rendertype_id;
 					?>
 					<td><?php echo JHTML::_("select.genericlist",$rendertypes, 'rendertype_id', 'size="1" class="inputbox" onchange="javascript:changeDefaultField(this.value);"', 'value', 'text', $selectedRendertype ); ?></td>							
@@ -736,71 +821,72 @@ if ($row->updated and $row->updated <> '0000-00-00 00:00:00')
 						?>
 					</td>
 				</tr>	
+				
 			</table>
 			<div id = "div_defaultVal_textbox" style="<?php echo $defaultStyle_textbox; ?>">
-			<table border="0" cellpadding="3" cellspacing="0">
-			<tr>
-				<td WIDTH=150><?php echo JText::_("CORE_DEFAULT"); ?></td>
-				<td><input size="50" type="text" name ="default_tb" value="<?php echo $rowAttribute->default?>" maxlength="<?php echo $fieldsLength['defaultvalue'];?>"> </td>							
-			</tr>
-			</table>
+				<table border="0" cellpadding="3" cellspacing="0">
+					<tr>
+						<td WIDTH=150><?php echo JText::_("CORE_DEFAULT"); ?></td>
+						<td><input size="50" type="text" name ="default_tb" value="<?php echo $rowAttribute->default?>" maxlength="<?php echo $fieldsLength['defaultvalue'];?>"> </td>							
+					</tr>
+				</table>
 			</div>
 			<div id = "div_defaultVal_textarea" style="<?php echo $defaultStyle_textarea; ?>">
-			<table border="0" cellpadding="3" cellspacing="0">
-			<tr>
-				<td WIDTH=150><?php echo JText::_("CORE_DEFAULT"); ?></td>
-				<td><textarea rows="4" cols="50" name ="default_ta" onkeypress="javascript:maxlength(this,<?php echo $fieldsLength['defaultvalue'];?>);"><?php echo $rowAttribute->default?></textarea></td>							
-			</tr>
-			</table>
+				<table border="0" cellpadding="3" cellspacing="0">
+					<tr>
+						<td WIDTH=150><?php echo JText::_("CORE_DEFAULT"); ?></td>
+						<td><textarea rows="4" cols="50" name ="default_ta" onkeypress="javascript:maxlength(this,<?php echo $fieldsLength['defaultvalue'];?>);"><?php echo $rowAttribute->default?></textarea></td>							
+					</tr>
+				</table>
 			</div>
 
 			<div id = "div_defaultVal_list" style="<?php echo $style; ?>">
-			<table border="0" cellpadding="3" cellspacing="0">
-			<tr>
-				<td WIDTH=150><?php echo JText::_("CORE_DEFAULT"); ?></td>
-				<?php
-				
-				if ($pageReloaded and array_key_exists('upperbound', $_POST))
-					$upper =$_POST['upperbound'];
-				else
-					$upper = $row->upperbound;  
-				if ($upper <= 1)
-				{
-				?>
-				<td><?php echo JHTML::_("select.genericlist",$codevalues, 'defaultList[]', 'size="1" class="inputbox" style="width:380px" ', 'value', 'text', $selectedcodevalues ); ?></td>
-				<?php 
-				}
-				else
-				{
-				?>
-				<td><?php echo JHTML::_("select.genericlist",$codevalues, 'defaultList[]', 'size="5" class="inputbox" style="width:380px" multiple="multiple"', 'value', 'text', $selectedcodevalues ); ?></td>
-				<?php 
-				}
-				?>							
-			</tr>
-			</table>
+				<table border="0" cellpadding="3" cellspacing="0">
+					<tr>
+						<td WIDTH=150><?php echo JText::_("CORE_DEFAULT"); ?></td>
+						<?php
+						
+						if ($pageReloaded and array_key_exists('upperbound', $_POST))
+							$upper =$_POST['upperbound'];
+						else
+							$upper = $row->upperbound;  
+						if ($upper <= 1)
+						{
+						?>
+						<td><?php echo JHTML::_("select.genericlist",$codevalues, 'defaultList[]', 'size="1" class="inputbox" style="width:380px" ', 'value', 'text', $selectedcodevalues ); ?></td>
+						<?php 
+						}
+						else
+						{
+						?>
+						<td><?php echo JHTML::_("select.genericlist",$codevalues, 'defaultList[]', 'size="5" class="inputbox" style="width:380px" multiple="multiple"', 'value', 'text', $selectedcodevalues ); ?></td>
+						<?php 
+						}
+						?>							
+					</tr>
+				</table>
 			</div>
 			
 			<div id = "div_defaultVal_choice" style="<?php echo $style_choice; ?>">
-			<table border="0" cellpadding="3" cellspacing="0">
-			<tr>
-				<td WIDTH=150><?php echo JText::_("CORE_DEFAULT"); ?></td>
-				<td><?php echo JHTML::_("select.genericlist",$choicevalues, 'defaultChoice[]', 'size="1" class="inputbox" style="width:380px" ', 'value', 'text', $selectedchoicevalues ); ?></td>							
-			</tr>
-			</table>
-			</div>
-			
-			<div id = "div_defaultVal_radio" style="<?php echo $defaultStyle_Radio; ?>">
-			<table border="0" cellpadding="3" cellspacing="0">
-			<tr>
-				<td WIDTH=150 valign="top"><?php echo JText::_("CORE_DEFAULT"); ?></td>
-				<td><?php echo JHTML::_("select.booleanlist", 'defaultDate_Radio', 'onclick="javascript:changeDateVisibility(this.value);"', ($rowAttribute->default == "today")? false: true, 'Date fixe', 'Date du jour' ); ?>
-					<div id = "div_defaultDate" style="<?php echo $defaultStyle_Date; ?>">
-					<?php echo JHTML::_("calendar", $rowAttribute->default, 'defaultDate', 'defaultDate', '%d.%m.%Y'); ?>
+				<table border="0" cellpadding="3" cellspacing="0">
+					<tr>
+						<td WIDTH=150><?php echo JText::_("CORE_DEFAULT"); ?></td>
+						<td><?php echo JHTML::_("select.genericlist",$choicevalues, 'defaultChoice[]', 'size="1" class="inputbox" style="width:380px" ', 'value', 'text', $selectedchoicevalues ); ?></td>							
+					</tr>
+					</table>
 					</div>
-				</td>							
-			</tr>
-			</table>
+					
+					<div id = "div_defaultVal_radio" style="<?php echo $defaultStyle_Radio; ?>">
+					<table border="0" cellpadding="3" cellspacing="0">
+					<tr>
+						<td WIDTH=150 valign="top"><?php echo JText::_("CORE_DEFAULT"); ?></td>
+						<td><?php echo JHTML::_("select.booleanlist", 'defaultDate_Radio', 'onclick="javascript:changeDateVisibility(this.value);"', ($rowAttribute->default == "today")? false: true, 'Date fixe', 'Date du jour' ); ?>
+							<div id = "div_defaultDate" style="<?php echo $defaultStyle_Date; ?>">
+							<?php echo JHTML::_("calendar", $rowAttribute->default, 'defaultDate', 'defaultDate', '%d.%m.%Y'); ?>
+							</div>
+						</td>							
+					</tr>
+				</table>
 			</div>
 			
 			<div id = "div_defaultVal_locale_textbox" style="<?php echo $defaultStyle_Locale_Textbox; ?>">
@@ -1041,7 +1127,7 @@ if ($row->updated and $row->updated <> '0000-00-00 00:00:00')
 			<?php 	
 	}
 	
-	function editClassRelation(&$row, $classes, $relationtypes, $fieldsLength, $boundsStyle, $profiles, $selected_profiles, $contexts, $selected_contexts, $languages, $labels, $informations, $namespacelist, $option)
+	function editClassRelation(&$row, $classes, $relationtypes, $fieldsLength, $boundsStyle, $profiles, $selected_profiles, $contexts, $selected_contexts, $languages, $labels, $informations, $namespacelist, $fieldpropertylist,$relation_attribute_array,$pageReloaded, $option)
 	{
 		JHTML::script('catalog.js', 'administrator/components/com_easysdi_catalog/js/');
 		global  $mainframe;
@@ -1053,23 +1139,33 @@ if ($row->updated and $row->updated <> '0000-00-00 00:00:00')
 			<table border="0" cellpadding="3" cellspacing="0">	
 				<tr>
 					<td WIDTH=150><?php echo JText::_("CORE_NAME"); ?></td>
-					<td><input size="50" type="text" name ="name" value="<?php echo $row->name?>" maxlength="<?php echo $fieldsLength['name'];?>"> </td>							
+					<?php if ($pageReloaded and array_key_exists('name', $_POST)) $name= $_POST['name']; else $name= $row->name;?>
+					<td><input size="50" type="text" name ="name" value="<?php echo $name?>" maxlength="<?php echo $fieldsLength['name'];?>"> </td>							
 				</tr>
 				<tr>
 					<td><?php echo JText::_("CORE_DESCRIPTION"); ?></td>
-					<td><textarea rows="4" cols="50" name ="description" onkeypress="javascript:maxlength(this,<?php echo $fieldsLength['description'];?>);"><?php echo $row->description?></textarea></td>							
+					<?php if ($pageReloaded and array_key_exists('description', $_POST)) $description= $_POST['description']; else $description= $row->description;?>
+					<td><textarea rows="4" cols="50" name ="description" onkeypress="javascript:maxlength(this,<?php echo $fieldsLength['description'];?>);"><?php echo $description;?></textarea></td>							
 				</tr>
 				<tr>
 					<td><?php echo JText::_("CORE_PUBLISHED"); ?> : </td>
-					<td><?php echo JHTML::_('select.booleanlist', 'published', '', $row->published);?> </td>																
+					<?php if ($pageReloaded and array_key_exists('published', $_POST)) $published= $_POST['published']; else $published= $row->published;?>
+					<td><?php echo JHTML::_('select.booleanlist', 'published', '', $published);?> </td>																
+				</tr>
+				<tr>
+					<td><?php echo JText::_("CATALOG_RELATION_EDITABLE"); ?></td>
+					<?php if ($pageReloaded and array_key_exists('editable', $_POST)) $editablevalue= $_POST['editable']; else $editablevalue= $row->editable;?>
+					<td><?php echo JHTML::_("select.genericlist",$fieldpropertylist, 'editable', 'size="1" class="inputbox" onchange=""', 'value', 'text',$editablevalue ); ?></td>
 				</tr>
 				<tr>
 					<td><?php echo JText::_("CATALOG_PARENT"); ?></td>
-					<td><?php echo JHTML::_("select.genericlist",$classes, 'parent_id', 'size="1" class="inputbox"', 'value', 'text', $row->parent_id ); ?></td>							
+					<?php if ($pageReloaded and array_key_exists('parent_id', $_POST)) $selectedParent=$_POST['parent_id']; else $selectedParent=$row->parent_id;?>
+					<td><?php echo JHTML::_("select.genericlist",$classes, 'parent_id', 'size="1" class="inputbox"', 'value', 'text',  $selectedParent ); ?></td>							
 				</tr>
 				<tr>
 					<td><?php echo JText::_("CATALOG_CLASSCHILD"); ?></td>
-					<td><?php echo JHTML::_("select.genericlist",$classes, 'classchild_id', 'size="1" class="inputbox"', 'value', 'text', $row->classchild_id ); ?></td>							
+					<?php if ($pageReloaded and array_key_exists('classchild_id', $_POST)) $selectedClasschild=$_POST['classchild_id']; else $selectedClasschild=$row->classchild_id;?>
+					<td><?php echo JHTML::_("select.genericlist",$classes, 'classchild_id', 'size="1" class="inputbox" onchange="javascript:submitbutton(\'editRelation\');"', 'value', 'text', $selectedClasschild ); ?></td>							
 				</tr>
 				</table>
 				<div id="div_bounds" style="<?php echo $boundsStyle; ?>">
@@ -1082,7 +1178,7 @@ if ($row->updated and $row->updated <> '0000-00-00 00:00:00')
 						else
 							$lower = $row->lowerbound;
 					?>
-					<td><input size="50" type="text" name ="lowerbound" value="<?php echo $lower;?>"> </td>							
+					<td><input size="50" type="text" name ="lowerbound" value="<?php if ($pageReloaded and array_key_exists('lowerbound', $_POST)) echo $_POST['lowerbound']; else echo $lower;?>"> </td>							
 				</tr>		
 				<tr>
 					<td><?php echo JText::_("CATALOG_UPPERBOUND"); ?></td>
@@ -1092,7 +1188,7 @@ if ($row->updated and $row->updated <> '0000-00-00 00:00:00')
 						else
 							$upper = $row->upperbound;
 					?>
-					<td><input size="50" type="text" name ="upperbound" value="<?php echo $upper;?>"> </td>							
+					<td><input size="50" type="text" name ="upperbound" value="<?php if ($pageReloaded and array_key_exists('upperbound', $_POST)) echo $_POST['upperbound']; else echo $upper;?>"> </td>							
 				</tr>
 				</table>
 				</div>
@@ -1100,17 +1196,21 @@ if ($row->updated and $row->updated <> '0000-00-00 00:00:00')
 				<tr>
 					<td WIDTH=150><?php echo JText::_("CORE_ISOCODE"); ?></td>
 					<td>
-						<?php echo JHTML::_("select.genericlist",$namespacelist, 'namespace_id', 'size="1" class="inputbox"', 'value', 'text', $row->namespace_id ); ?>
-						<input size="50" type="text" name ="isocode" value="<?php echo $row->isocode?>" maxlength="<?php echo $fieldsLength['isocode'];?>">
+						<?php if ($pageReloaded and array_key_exists('namespace_id', $_POST)) $selectedNamespaceid=$_POST['namespace_id']; else $selectedNamespaceid=$row->namespace_id;?>
+						<?php echo JHTML::_("select.genericlist",$namespacelist, 'namespace_id', 'size="1" class="inputbox"', 'value', 'text',$selectedNamespaceid); ?>
+						<?php if ($pageReloaded and array_key_exists('isocode', $_POST)) $isocode=$_POST['namespace_id']; else $isocode=$row->isocode;?>
+						<input size="50" type="text" name ="isocode" value="<?php echo $isocode;?>" maxlength="<?php echo $fieldsLength['isocode'];?>">
 					</td>							
 				</tr>
 				<tr>
 					<td><?php echo JText::_("CATALOG_RELATIONTYPE"); ?></td>
-					<td><?php echo JHTML::_("select.genericlist",$relationtypes, 'relationtype_id', 'size="1" class="inputbox" onchange="javascript:changeBoundsVisibility(this.value);"', 'value', 'text', $row->relationtype_id ); ?></td>							
+					<?php if ($pageReloaded and array_key_exists('relationtype_id', $_POST)) $selectedRelationTypeid=$_POST['relationtype_id']; else $selectedRelationTypeid=$row->relationtype_id;?>
+					<td><?php echo JHTML::_("select.genericlist",$relationtypes, 'relationtype_id', 'size="1" class="inputbox" onchange="javascript:changeBoundsVisibility(this.value);"', 'value', 'text', $selectedRelationTypeid); ?></td>							
 				</tr>
 				<tr>
 					<td><?php echo JText::_("CATALOG_CLASSASSOCIATION"); ?></td>
-					<td><?php echo JHTML::_("select.genericlist",$classes, 'classassociation_id', 'size="1" class="inputbox"', 'value', 'text', $row->classassociation_id ); ?></td>							
+					<?php if ($pageReloaded and array_key_exists('classassociation_id', $_POST)) $selectedClassAssociationid=$_POST['classassociation_id']; else $selectedClassAssociationid=$row->classassociation_id;?>
+					<td><?php echo JHTML::_("select.genericlist",$classes, 'classassociation_id', 'size="1" class="inputbox"', 'value', 'text', $selectedClassAssociationid ); ?></td>							
 				</tr>
 				<tr>
 					<td><?php echo JText::_("CATALOG_PROFILE"); ?></td>
@@ -1119,12 +1219,92 @@ if ($row->updated and $row->updated <> '0000-00-00 00:00:00')
 						foreach($profiles as $profile)
 						{
 							?>
-							<input size="50" type="checkbox" name ="profiles[]" value="<?php echo $profile->value?>" <?php echo in_array($profile->value, $selected_profiles)? 'checked="yes"':'';?>><?php echo $profile->text?></input>
+							<input size="50" type="checkbox" name ="profiles[]" value="<?php echo $profile->value?>" <?php echo in_array($profile->value, $selected_profiles)? 'checked="yes"':'';?>>
+								<?php echo $profile->text?>
+							</input>
 							<?php
 						} 
 						?>
 					</td>
 				</tr>	
+				<?php 
+				if(isset($relation_attribute_array)){
+					foreach($relation_attribute_array as $relation_attribute){
+						if($relation_attribute->type == 'boolean'){
+							?>
+							<tr>
+								<td><?php echo JText::_($relation_attribute->label); ?></td>
+								<?php if (isset($pageReloaded) && $pageReloaded && array_key_exists($relation_attribute->alias, $_POST)) $value=$_POST[$relation_attribute->alias]; else $value=$relation_attribute->value;?>
+								<td><?php echo JHTML::_('select.booleanlist', $relation_attribute->alias, '', $value);?> </td>																
+							</tr>
+							<?php 
+						}else if ($relation_attribute->type == 'json'){
+							$label_list = json_decode (JText::_( $relation_attribute->label ), true);
+							$attribute_list = json_decode($relation_attribute->fieldtype, true);
+							$value_list = json_decode($relation_attribute->value, true);
+							?>
+							<tr>
+								<td valign="top" colspan="2">
+									<fieldset class="adminform">
+										<legend>
+										<?php echo $label_list['fieldset']; ?>
+										</legend>
+		
+										<table class="admintable" cellspacing="1">
+											<tbody>
+											<?php 
+											foreach ($attribute_list as $key=>$value){
+												if($value == 'textarea'){
+													?>
+													<tr>
+														<td valign="top" class="key" 	style="width: 140px;">
+															<span class="editlinktip hasTip" title="<?php echo  $label_list[$key]; ?>">
+																<?php echo $label_list[$key]; ?>
+															</span>
+														</td>
+														<td>
+															<textarea class="textarea resolutions" style="height: 200px; width: 440px;" name="<?php echo  $key; ?>" maxlength="" />
+																<?php  echo html_entity_decode ($value_list[$key]);?>
+															</textarea>
+														</td>
+													</tr>
+													<?php 
+												}else if ($value == 'input'){
+													?>
+													<tr>
+														<td valign="top" class="key">
+															<span class="editlinktip hasTip" title="<?php echo  $label_list[$key]; ?>">
+																<?php echo  $label_list[$key]; ?>
+															</span>
+														</td>
+														<td>
+															<input class="text_area" type="text" size="100" name="<?php echo  $key; ?>" value="<?php  echo html_entity_decode ($value_list[$key]);?>" maxlength="" />
+														</td>
+													</tr>
+													<?php 													
+												}
+											}
+											?>
+											</tbody>
+										</table>
+									</fieldset>
+								</td>
+							</tr> 
+							<?php 
+						}else if($relation_attribute->type == 'text'){
+							?>
+							<tr>
+								<td WIDTH=150><?php echo JText::_($relation_attribute->label); ?></td>
+								<td>
+									<input size="50" type="text" name ="<?php echo  $relation_attribute->alias; ?>" value="<?php if (isset($pageReloaded) && $pageReloaded and array_key_exists($relation_attribute->alias, $_POST)) echo $_POST[$relation_attribute->alias]; else echo $relation_attribute->value;?>" maxlength="<?php echo $relation_attribute->length;?>"> 
+								</td>							
+							</tr>
+							<?php 
+						}
+					}
+				}
+				?>
+				
 				<tr>
 					<td colspan="2">
 						<fieldset id="labels">
@@ -1136,7 +1316,8 @@ foreach ($languages as $lang)
 ?>
 					<tr>
 					<td width=140><?php echo JText::_("CORE_".strtoupper($lang->code)); ?></td>
-					<td><input size="50" type="text" name ="label<?php echo "_".$lang->code;?>" value="<?php echo htmlspecialchars($labels[$lang->id])?>" maxlength="<?php echo $fieldsLength['label'];?>"></td>							
+					<?php if ($pageReloaded and array_key_exists('label'."_".$lang->code, $_POST)) $label=$_POST['label'."_".$lang->code]; else $label=htmlspecialchars($labels[$lang->id]);?>
+					<td><input size="50" type="text" name ="label<?php echo "_".$lang->code;?>" value="<?php echo $label;?>" maxlength="<?php echo $fieldsLength['label'];?>"></td>							
 					</tr>
 <?php
 }
@@ -1156,7 +1337,8 @@ foreach ($languages as $lang)
 ?>
 					<tr>
 					<td width=140><?php echo JText::_("CORE_".strtoupper($lang->code)); ?></td>
-					<td><input size="50" type="text" name ="information<?php echo "_".$lang->code;?>" value="<?php echo htmlspecialchars($informations[$lang->id])?>" maxlength="<?php echo $fieldsLength['information'];?>"></td>							
+					<?php if ($pageReloaded and array_key_exists('information'."_".$lang->code, $_POST)) $selectedinformation=$_POST['information'."_".$lang->code]; else $selectedinformation=htmlspecialchars($informations[$lang->id]);?>
+					<td><input size="50" type="text" name ="information<?php echo "_".$lang->code;?>" value="<?php echo $selectedinformation;?>" maxlength="<?php echo $fieldsLength['information'];?>"></td>							
 					</tr>
 <?php
 }
@@ -1222,16 +1404,17 @@ if ($row->updated and $row->updated <> '0000-00-00 00:00:00')
 			<input type="hidden" name="createdby" value="<?php echo ($row->createdby)? $row->createdby : $user->id; ?>" /> 
 			<input type="hidden" name="updated" value="<?php echo ($row->created) ? date ("Y-m-d H:i:s") :  ''; ?>" />
 			<input type="hidden" name="updatedby" value="<?php echo ($row->createdby)? $user->id : ''; ?>" /> 
-			
 			<input type="hidden" name="type" value='1' />
 			<input type="hidden" name="option" value="<?php echo $option; ?>" />
 			<input type="hidden" name="id" value="<?php echo $row->id?>" />
 			<input type="hidden" name="task" value="" />
+			<input type="hidden" name="classchildstereotype" value="<?php if(isset($relation_attribute_array)){echo true;}else{echo false;}?>" />
+			<input type="hidden" name="reload" value="<?php echo true;?>" />
 		</form>
 			<?php 	
 	}
 	
-	function editObjectRelation(&$row, $classes, $objecttypes, $relationtypes, $fieldsLength, $boundsStyle, $profiles, $selected_profiles, $contexts, $selected_contexts, $languages, $labels, $informations, $namespacelist, $option)
+	function editObjectRelation(&$row, $classes, $objecttypes, $relationtypes, $fieldsLength, $boundsStyle, $profiles, $selected_profiles, $contexts, $selected_contexts, $languages, $labels, $informations, $namespacelist,$fieldpropertylist, $option)
 	{
 		JHTML::script('catalog.js', 'administrator/components/com_easysdi_catalog/js/');
 		global  $mainframe;
@@ -1252,6 +1435,10 @@ if ($row->updated and $row->updated <> '0000-00-00 00:00:00')
 				<tr>
 					<td><?php echo JText::_("CORE_PUBLISHED"); ?> : </td>
 					<td><?php echo JHTML::_('select.booleanlist', 'published', '', $row->published);?> </td>																
+				</tr>
+				<tr>
+					<td><?php echo JText::_("CATALOG_RELATION_EDITABLE"); ?></td>
+					<td><?php echo JHTML::_("select.genericlist",$fieldpropertylist, 'editable', 'size="1" class="inputbox" onchange=""', 'value', 'text', $row->editable ); ?></td>							
 				</tr>
 				<tr>
 					<td><?php echo JText::_("CATALOG_PARENT"); ?></td>
