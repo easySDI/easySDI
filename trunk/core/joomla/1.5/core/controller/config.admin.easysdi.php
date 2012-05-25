@@ -161,7 +161,7 @@ class ADMIN_config {
 		
 		// Liste des types d'attributs
 		$attributetypelist = array();
-		$query = "SELECT id as value, name as text FROM #__sdi_list_attributetype";
+		$query = "SELECT id as value, alias as text FROM #__sdi_sys_stereotype";
 		$db->setQuery( $query );
 		$attributetypelist = $db->loadObjectList();
 		
