@@ -32,7 +32,7 @@ class SERVICE_boundary {
 		$boudaries = array();
 		
 		$query = "SELECT b.id as id, 
-						 Concat (t.label,' [',tbc.label,']') as label, 
+						 Concat(t.label,' [',tbc.label,']') as label, 
 						 b.northbound as northbound ,
 						 b.southbound as southbound, 
 						 b.eastbound as eastbound ,
@@ -110,7 +110,7 @@ class SERVICE_boundary {
 		$boudaries = array();
 	
 		$query = "SELECT b.guid as value,
-		Concat (t.label,' [',tbc.label,']') as text
+		Concat(t.label,' [',tbc.label,']') as text
 		FROM #__sdi_boundary b
 		INNER JOIN #__sdi_boundarycategory bc ON b.category_id = bc.id
 		INNER JOIN #__sdi_translation tbc ON bc.guid = tbc.element_guid
