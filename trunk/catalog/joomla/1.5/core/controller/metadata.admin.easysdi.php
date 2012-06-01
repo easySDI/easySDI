@@ -4161,7 +4161,7 @@ class ADMIN_metadata {
 						mt_rand( 0, 0xffff ) 
 					   );
 		$file_name = $guid."_".$original_file_name;
-		$file_location = $repository."\\".$file_name;
+		$file_location = $repository.DS.$file_name;
 		
 		if(move_uploaded_file($_FILES['uploadfilefield']['tmp_name'], $file_location)) {
 			$result = array("success"=>true, "url"=>$url."/".$file_name);
