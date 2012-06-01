@@ -61,7 +61,7 @@ class HTML_cpanel {
 				<option value=""><?php echo JText::_("SHOP_ORDER_CMD_FILTER_ALL"); ?></option>
 				 <?php  foreach($typeFilter as $type){ ?>
 					 <option value="<?php echo $type->id;?>" <?php if ($ordertype==$type->id){?>selected="selected"<?php }?>>
-					<?php echo JText::_($type->translation); ?>
+					<?php echo JText::_($type->label); ?>
 				  </option>
 				 <?php } ?>
 				</select>
@@ -71,7 +71,7 @@ class HTML_cpanel {
 				 <option value=""><?php echo JText::_("SHOP_ORDER_CMD_STATUS_FILTER_ALL"); ?></option>
 				 <?php  foreach($statusFilter as $stat){ ?>
 					 <option value="<?php echo $stat->id;?>" <?php if ($orderstatus==$stat->id){?>selected="selected"<?php }?>>
-					<?php echo JText::_($stat->translation); ?>
+					<?php echo JText::_($stat->label); ?>
 				  </option>
 				 <?php } ?>
 				</select>				
