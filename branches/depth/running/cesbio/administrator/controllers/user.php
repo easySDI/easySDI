@@ -17,6 +17,8 @@ jimport('joomla.application.component.controllerform');
  */
 class Easysdi_coreControllerUser extends JControllerForm
 {
+//$params = JComponentHelper::getParams('com_easysdi_core');
+//$this->params->get('serviceaccount');
 
     function __construct() {
         $this->view_list = 'users';

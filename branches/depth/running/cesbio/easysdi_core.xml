@@ -38,11 +38,7 @@
     </languages>
     <administration>
         <menu img="components/com_easysdi_core/assets/images/s_com_easysdi_core.png" >COM_EASYSDI_CORE</menu>
-        <submenu>
-            			<menu link="option=com_easysdi_core&amp;view=users" view="users" img="components/com_easysdi_core/assets/images/s_users.png" alt="Easysdi_core/Users">COM_EASYSDI_CORE_USERS</menu>
-			<menu link="option=com_easysdi_core&amp;view=services" view="services" img="components/com_easysdi_core/assets/images/s_services.png" alt="Easysdi_core/Services">COM_EASYSDI_CORE_SERVICES</menu>
-
-        </submenu>
+        
         <files folder="administrator">
             <filename>access.xml</filename>
             <filename>config.xml</filename>
