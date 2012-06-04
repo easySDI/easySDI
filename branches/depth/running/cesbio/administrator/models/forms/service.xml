@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+	<fieldset>
+
+              <field name="id" type="text" default="0" label="JGLOBAL_FIELD_ID_LABEL"
+                    readonly="true" class="readonly"
+                    description="JGLOBAL_FIELD_ID_DESC" /> 
+
+       <field name="guid" type="text" size="40" class="inputbox"
+                
+            label="COM_EASYSDI_CORE_FORM_LBL_SERVICE_GUID"
+            description="COM_EASYSDI_CORE_FORM_DESC_SERVICE_GUID" 
+                
+                
+                
+                filter="safehtml" /> 
+
+       <field name="alias" type="text" size="40" class="inputbox"
+                
+            label="COM_EASYSDI_CORE_FORM_LBL_SERVICE_ALIAS"
+            description="COM_EASYSDI_CORE_FORM_DESC_SERVICE_ALIAS" 
+                
+                
+                
+                filter="safehtml" /> 
+
+       <field name="created_by" type="text" size="40" class="inputbox"
+                
+            label="COM_EASYSDI_CORE_FORM_LBL_SERVICE_CREATED_BY"
+            description="COM_EASYSDI_CORE_FORM_DESC_SERVICE_CREATED_BY" 
+                
+                
+                
+                filter="safehtml" /> 
+
+       <field name="created" type="calendar" class="inputbox"
+                
+                
+                
+                
+            label="COM_EASYSDI_CORE_FORM_LBL_SERVICE_CREATED"
+            description="COM_EASYSDI_CORE_FORM_DESC_SERVICE_CREATED" 
+                filter="safehtml" /> 
+
+       <field name="modified_by" type="text" size="40" class="inputbox"
+                
+            label="COM_EASYSDI_CORE_FORM_LBL_SERVICE_MODIFIED_BY"
+            description="COM_EASYSDI_CORE_FORM_DESC_SERVICE_MODIFIED_BY" 
+                
+                
+                
+                filter="safehtml" /> 
+
+       <field name="modified" type="calendar" class="inputbox"
+                
+                
+                
+                
+            label="COM_EASYSDI_CORE_FORM_LBL_SERVICE_MODIFIED"
+            description="COM_EASYSDI_CORE_FORM_DESC_SERVICE_MODIFIED" 
+                filter="safehtml" /> 
+
+       <field name="name" type="text" size="40" class="inputbox"
+                
+            label="COM_EASYSDI_CORE_FORM_LBL_SERVICE_NAME"
+            description="COM_EASYSDI_CORE_FORM_DESC_SERVICE_NAME" 
+                
+                
+                
+                filter="safehtml" /> 
+
+       <field name="serviceconnector_id" type="sql" class="inputbox"
+                
+            label="COM_EASYSDI_CORE_FORM_LBL_SERVICE_SERVICECONNECTOR_ID"
+            description="COM_EASYSDI_CORE_FORM_DESC_SERVICE_SERVICECONNECTOR_ID" 
+                
+                
+                 required="true" 
+                query="SELECT 0 AS id, '- Please select -' AS value UNION SELECT id, value FROM #__sdi_sys_serviceconnector" key_field="id" value_field="value"
+                 /> 
+
+ <field id="published" name="published" type="radio"
+                class="inputbox"
+                
+            label="COM_EASYSDI_CORE_FORM_LBL_SERVICE_PUBLISHED"
+            description="COM_EASYSDI_CORE_FORM_DESC_SERVICE_PUBLISHED" 
+                
+                
+                >
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field> 
+
+       <field name="resourceauthentication_id" type="sql" class="inputbox"
+                
+            label="COM_EASYSDI_CORE_FORM_LBL_SERVICE_RESOURCEAUTHENTICATION_ID"
+            description="COM_EASYSDI_CORE_FORM_DESC_SERVICE_RESOURCEAUTHENTICATION_ID" 
+                
+                
+                
+                query="SELECT 0 AS id, '- Please select -' AS value UNION SELECT id, value FROM #__sdi_sys_authenticationconnector" key_field="id" value_field="value"
+                 /> 
+
+       <field name="resourceurl" type="text" size="40" class="inputbox"
+                
+            label="COM_EASYSDI_CORE_FORM_LBL_SERVICE_RESOURCEURL"
+            description="COM_EASYSDI_CORE_FORM_DESC_SERVICE_RESOURCEURL" 
+                
+                 validate="url" 
+                
+                filter="safehtml" /> 
+
+       <field name="resourceusername" type="text" size="40" class="inputbox"
+                
+            label="COM_EASYSDI_CORE_FORM_LBL_SERVICE_RESOURCEUSERNAME"
+            description="COM_EASYSDI_CORE_FORM_DESC_SERVICE_RESOURCEUSERNAME" 
+                
+                
+                
+                filter="safehtml" /> 
+
+       <field name="resourcepassword" type="text" size="40" class="inputbox"
+                
+            label="COM_EASYSDI_CORE_FORM_LBL_SERVICE_RESOURCEPASSWORD"
+            description="COM_EASYSDI_CORE_FORM_DESC_SERVICE_RESOURCEPASSWORD" 
+                
+                
+                
+                filter="safehtml" /> 
+
+       <field name="serviceauthentication_id" type="sql" class="inputbox"
+                
+            label="COM_EASYSDI_CORE_FORM_LBL_SERVICE_SERVICEAUTHENTICATION_ID"
+            description="COM_EASYSDI_CORE_FORM_DESC_SERVICE_SERVICEAUTHENTICATION_ID" 
+                
+                
+                
+                query="SELECT 0 AS id, '- Please select -' AS value UNION SELECT id, value FROM #__sdi_sys_authenticationconnector" key_field="id" value_field="value"
+                 /> 
+
+       <field name="serviceurl" type="text" size="40" class="inputbox"
+                
+            label="COM_EASYSDI_CORE_FORM_LBL_SERVICE_SERVICEURL"
+            description="COM_EASYSDI_CORE_FORM_DESC_SERVICE_SERVICEURL" 
+                
+                 validate="url" 
+                
+                filter="safehtml" /> 
+
+       <field name="serviceusername" type="text" size="40" class="inputbox"
+                
+            label="COM_EASYSDI_CORE_FORM_LBL_SERVICE_SERVICEUSERNAME"
+            description="COM_EASYSDI_CORE_FORM_DESC_SERVICE_SERVICEUSERNAME" 
+                
+                
+                
+                filter="safehtml" /> 
+
+       <field name="servicepassword" type="text" size="40" class="inputbox"
+                
+            label="COM_EASYSDI_CORE_FORM_LBL_SERVICE_SERVICEPASSWORD"
+            description="COM_EASYSDI_CORE_FORM_DESC_SERVICE_SERVICEPASSWORD" 
+                
+                
+                
+                filter="safehtml" /> 
+
+       <field name="catid" type="text" size="40" class="inputbox"
+                
+            label="COM_EASYSDI_CORE_FORM_LBL_SERVICE_CATID"
+            description="COM_EASYSDI_CORE_FORM_DESC_SERVICE_CATID" 
+                
+                
+                 required="true" 
+                filter="safehtml" /> 
+
+       <field name="params" type="text" size="40" class="inputbox"
+                
+            label="COM_EASYSDI_CORE_FORM_LBL_SERVICE_PARAMS"
+            description="COM_EASYSDI_CORE_FORM_DESC_SERVICE_PARAMS" 
+                
+                
+                
+                filter="safehtml" /> 
+
+         <field
+                name="state"
+                type="list"
+                label="JSTATUS"
+                description="JFIELD_PUBLISHED_DESC"
+                class="inputbox"
+                size="1"
+                default="1">
+                <option value="1">JPUBLISHED</option>
+                <option value="0">JUNPUBLISHED</option>
+            </field> 
+
+                        <field name="checked_out" type="hidden" filter="unset" />
+                <field name="checked_out_time" type="hidden" filter="unset" />
+
+	</fieldset>
+
+</form>
