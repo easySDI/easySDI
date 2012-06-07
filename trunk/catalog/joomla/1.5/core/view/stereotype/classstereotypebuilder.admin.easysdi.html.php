@@ -248,7 +248,7 @@ class HTML_classstereotype_builder {
 		if(count($extent_object_array) > 0 ){
 			foreach ($extent_object_array as $extent_object){
 				if( isset($extent_object->description)){//Predefined perimeters
-					$query = "SELECT b.id as id, Concat (t.label,' [',tbc.label,']') as label, b.northbound as northbound ,b.southbound as southbound, b.eastbound as eastbound ,b.westbound as westbound  
+					$query = "SELECT b.id as id, Concat(t.label,' [',tbc.label,']') as label, b.northbound as northbound ,b.southbound as southbound, b.eastbound as eastbound ,b.westbound as westbound  
 								FROM #__sdi_boundary b
 									INNER JOIN #__sdi_boundarycategory bc ON b.category_id = bc.id 
 									INNER JOIN #__sdi_translation tbc ON bc.guid = tbc.element_guid
@@ -284,7 +284,7 @@ class HTML_classstereotype_builder {
 		
 		//Avalaible boundaries in the database
 		if(count($selectedBoundaries) > 0 ){
-			$query = "SELECT b.id as id, Concat (t.label,' [',tbc.label,']') as label, b.northbound as northbound ,b.southbound as southbound, b.eastbound as eastbound ,b.westbound as westbound
+			$query = "SELECT b.id as id, Concat(t.label,' [',tbc.label,']') as label, b.northbound as northbound ,b.southbound as southbound, b.eastbound as eastbound ,b.westbound as westbound
 					FROM #__sdi_boundary b
 						INNER JOIN #__sdi_boundarycategory bc ON b.category_id = bc.id 
 						INNER JOIN #__sdi_translation tbc ON bc.guid = tbc.element_guid
@@ -299,7 +299,7 @@ class HTML_classstereotype_builder {
 					ORDER BY label";
 				
 		}else{
-			$query = "SELECT b.id as id, Concat (t.label,' [',tbc.label,']') as label, b.northbound as northbound ,b.southbound as southbound, b.eastbound as eastbound ,b.westbound as westbound
+			$query = "SELECT b.id as id, Concat(t.label,' [',tbc.label,']') as label, b.northbound as northbound ,b.southbound as southbound, b.eastbound as eastbound ,b.westbound as westbound
 					FROM #__sdi_boundary b
 						INNER JOIN #__sdi_boundarycategory bc ON b.category_id = bc.id 
 						INNER JOIN #__sdi_translation tbc ON bc.guid = tbc.element_guid
