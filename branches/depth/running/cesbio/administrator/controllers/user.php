@@ -21,7 +21,11 @@ class Easysdi_coreControllerUser extends JControllerForm
 //$this->params->get('serviceaccount');
 
     function __construct() {
-        $this->view_list = 'users';
+    	
+    	//Need to be add here even if it is in administrator/controller.php l.27
+    	require_once JPATH_COMPONENT.'/helpers/easysdi_core.php';
+        
+    	$this->view_list = 'users';
         parent::__construct();
     }
 

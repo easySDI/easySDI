@@ -115,7 +115,6 @@ class Easysdi_coreModeluser extends JModelAdmin
 				$max = $db->loadResult();
 				$table->ordering = $max+1;
 			}
-
 		}
 	}
 
