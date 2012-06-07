@@ -143,7 +143,36 @@ class Easysdi_coreTableaddress extends JTable
         return true;
     }
 
-
+	public function loadByUser($pk){
+		
+		// Initialise the query.
+		
+		$this->_db->setQuery('SELECT * FROM `'.$this->_tbl.'` WHERE user_id ='.$pk);
+		
+		try
+		{
+			$row = $this->_db->loadAssoc();
+		}
+		catch (JDatabaseException $e)
+		{
+			$je = new JException($e->getMessage());
+			$this->setError($je);
+			return false;
+		}
+		
+		
+		
+		// Check that we have a result.
+		if (empty($row))
+		{
+			$e = new JException(JText::_('JLIB_DATABASE_ERROR_EMPTY_ROW_RETURNED'));
+			$this->setError($e);
+			return false;
+		}
+		
+		// Bind the object with the row and return.
+		return $this->bind($row);
+	}
 
 
 }

@@ -32,7 +32,10 @@ class Easysdi_coreViewUser extends JView
 		$this->state	= $this->get('State');
 		$this->item		= $this->get('Item');
 		$this->form		= $this->get('Form');
-
+		
+		$this->addressmodel = & JModel::getInstance('address', 'Easysdi_coreModel');
+		$this->addressform = $this->addressmodel->getForm(null, true); 
+		
 		// Check for errors.
 		if (count($errors = $this->get('Errors'))) {
 			JError::raiseError(500, implode("\n", $errors));

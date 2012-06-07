@@ -27,6 +27,7 @@ class Easysdi_coreControllerUser extends JControllerForm
         
     	$this->view_list = 'users';
         parent::__construct();
+
     }
 
 }

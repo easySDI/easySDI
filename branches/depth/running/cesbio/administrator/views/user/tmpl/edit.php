@@ -86,9 +86,25 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
 		</fieldset>
 	</div>
 
+	<div class="width-40 fltrt">
+		<?php echo JHtml::_('sliders.start', 'user-sliders-'.$this->item->id, array('useCookie'=>1)); ?>
+			<?php echo JHtml::_('sliders.panel', JText::_('JGLOBAL_FIELDSET_PUBLISHING'), 'publishing-details'); ?>
+			<fieldset class="adminform">
+				<ul class="adminformlist">
+				<li><?php echo $this->addressform->getLabel('id'); ?>
+			<?php echo $this->addressform->getInput('id'); ?></li>
+
+            
+			<li><?php echo $this->addressform->getLabel('guid'); ?>
+			<?php echo $this->addressform->getInput('guid'); ?></li>
+					
+				</ul>
+			</fieldset>
+		<?php echo JHtml::_('sliders.end'); ?>
+	</div>
 
 	<div class="width-40 fltrt">
-		<?php echo JHtml::_('sliders.start', 'newsfeed-sliders-'.$this->item->id, array('useCookie'=>1)); ?>
+		<?php echo JHtml::_('sliders.start', 'user-sliders-'.$this->item->id, array('useCookie'=>1)); ?>
 			<?php echo JHtml::_('sliders.panel', JText::_('JGLOBAL_FIELDSET_PUBLISHING'), 'publishing-details'); ?>
 			<fieldset class="adminform">
 				<ul class="adminformlist">

@@ -70,9 +70,10 @@ class Easysdi_coreModeladdress extends JModelAdmin
 	{
 		// Check the session for previously entered form data.
 		$data = JFactory::getApplication()->getUserState('com_easysdi_core.edit.address.data', array());
-
+		$userdata = JFactory::getApplication()->getUserState('com_easysdi_core.edit.user.data', array());
+		
 		if (empty($data)) {
-			$data = $this->getItem();
+			$data = $this->getItem($userdata->id);
 		}
 
 		return $data;
@@ -88,10 +89,30 @@ class Easysdi_coreModeladdress extends JModelAdmin
 	 */
 	public function getItem($pk = null)
 	{
-		if ($item = parent::getItem($pk)) {
+// 		if ($item = parent::getItem($pk)) {
 
-			//Do any procesing on fields here if needed
+// 			//Do any procesing on fields here if needed
 
+// 		}
+		$table = $this->getTable();
+		
+		$return = $table->loadByUser($pk);
+		
+		// Check for a table object error.
+		if ($return === false && $table->getError())
+		{
+			$this->setError($table->getError());
+			return false;
+		}
+		// Convert to the JObject before adding other data.
+		$properties = $table->getProperties(1);
+		$item = JArrayHelper::toObject($properties, 'JObject');
+
+		if (property_exists($item, 'params'))
+		{
+			$registry = new JRegistry;
+			$registry->loadString($item->params);
+			$item->params = $registry->toArray();
 		}
 
 		return $item;
