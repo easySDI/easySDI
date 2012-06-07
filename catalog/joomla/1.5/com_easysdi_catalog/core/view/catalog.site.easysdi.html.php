@@ -428,7 +428,7 @@ class HTML_catalog{
 								$selectedValue = trim(JRequest::getVar('systemfilter_'.$searchFilter->guid, ""));
 							}
 							if(strlen($selectedValue) > 0){
-								$db->setQuery( "SELECT Concat (t.label,' [',tbc.label,']')  
+								$db->setQuery( "SELECT Concat(t.label,' [',tbc.label,']')  
 												FROM #__sdi_boundary b
 												INNER JOIN #__sdi_boundarycategory bc ON b.category_id = bc.id
 												INNER JOIN #__sdi_translation tbc ON bc.guid = tbc.element_guid
