@@ -1,138 +1,96 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
-	<fieldset>
-
-              <field name="id" type="text" default="0" label="JGLOBAL_FIELD_ID_LABEL"
+	<fieldset addfieldpath="/administrator/components/com_categories/models/fields">
+        <field name="id" type="text" default="0" label="JGLOBAL_FIELD_ID_LABEL"
                     readonly="true" class="readonly"
                     description="JGLOBAL_FIELD_ID_DESC" /> 
 
+	<field name="catid"
+			type="categoryedit"
+			extension="com_easysdi_core"
+			label="JCATEGORY"
+			description="JFIELD_CATEGORY_DESC"
+			class="inputbox"
+			required="true"
+		/>
+		
        <field name="guid" type="text" size="40" class="inputbox"
-                
             label="COM_EASYSDI_CORE_FORM_LBL_USER_GUID"
             description="COM_EASYSDI_CORE_FORM_DESC_USER_GUID" 
-                
-                
                  required="true" 
                 filter="safehtml" /> 
 
        <field name="alias" type="text" size="40" class="inputbox"
-                
             label="COM_EASYSDI_CORE_FORM_LBL_USER_ALIAS"
             description="COM_EASYSDI_CORE_FORM_DESC_USER_ALIAS" 
-                
-                
-                
                 filter="safehtml" /> 
 
        <field name="created_by" type="text" size="40" class="inputbox"
-                
             label="COM_EASYSDI_CORE_FORM_LBL_USER_CREATED_BY"
             description="COM_EASYSDI_CORE_FORM_DESC_USER_CREATED_BY" 
-                
-                
-                
                 filter="safehtml" /> 
 
        <field name="created" type="calendar" class="inputbox"
-                
-                
                  default="0000-00-00 00:00:00" 
-                
             label="COM_EASYSDI_CORE_FORM_LBL_USER_CREATED"
             description="COM_EASYSDI_CORE_FORM_DESC_USER_CREATED" 
                 filter="safehtml" /> 
 
        <field name="modified_by" type="text" size="40" class="inputbox"
-                
             label="COM_EASYSDI_CORE_FORM_LBL_USER_MODIFIED_BY"
             description="COM_EASYSDI_CORE_FORM_DESC_USER_MODIFIED_BY" 
-                
-                
-                
                 filter="safehtml" /> 
 
        <field name="modified" type="calendar" class="inputbox"
-                
-                
                  default="0000-00-00 00:00:00" 
-                
             label="COM_EASYSDI_CORE_FORM_LBL_USER_MODIFIED"
             description="COM_EASYSDI_CORE_FORM_DESC_USER_MODIFIED" 
                 filter="safehtml" /> 
 
-       <field name="user_id" type="text" size="40" class="inputbox"
-                
-            label="COM_EASYSDI_CORE_FORM_LBL_USER_USER_ID"
-            description="COM_EASYSDI_CORE_FORM_DESC_USER_USER_ID" 
-                
-                
-                 required="true" 
-                filter="safehtml" /> 
+		<field name="user_id"
+				type="user"
+				default="" 
+				label="COM_EASYSDI_CORE_FORM_LBL_USER_USER_ID"
+				description="COM_EASYSDI_CORE_FORM_DESC_USER_USER_ID"
+			/>
 
        <field name="acronym" type="text" size="40" class="inputbox"
-                
             label="COM_EASYSDI_CORE_FORM_LBL_USER_ACRONYM"
             description="COM_EASYSDI_CORE_FORM_DESC_USER_ACRONYM" 
-                
-                
-                
                 filter="safehtml" /> 
 
        <field name="logo" type="text" size="40" class="inputbox"
-                
             label="COM_EASYSDI_CORE_FORM_LBL_USER_LOGO"
             description="COM_EASYSDI_CORE_FORM_DESC_USER_LOGO" 
-                
                  validate="url" 
-                
                 filter="safehtml" /> 
 
        <field name="description" type="text" size="40" class="inputbox"
-                
             label="COM_EASYSDI_CORE_FORM_LBL_USER_DESCRIPTION"
             description="COM_EASYSDI_CORE_FORM_DESC_USER_DESCRIPTION" 
-                
-                
-                
                 filter="safehtml" /> 
 
        <field name="website" type="text" size="40" class="inputbox"
-                
             label="COM_EASYSDI_CORE_FORM_LBL_USER_WEBSITE"
             description="COM_EASYSDI_CORE_FORM_DESC_USER_WEBSITE" 
-                
                  validate="url" 
-                
                 filter="safehtml" /> 
 
- <field id="notificationrequesttreatment" name="notificationrequesttreatment" type="radio"
+ 		<field id="notificationrequesttreatment" name="notificationrequesttreatment" type="radio"
                 class="inputbox"
-                
             label="COM_EASYSDI_CORE_FORM_LBL_USER_NOTIFICATIONREQUESTTREATMENT"
             description="COM_EASYSDI_CORE_FORM_DESC_USER_NOTIFICATIONREQUESTTREATMENT" 
                  default="1" 
-                
                 >
                     <option value="0">JNO</option>
                     <option value="1">JYES</option>
                 </field> 
 
-       <field name="catid" type="text" size="40" class="inputbox"
-                
-            label="COM_EASYSDI_CORE_FORM_LBL_USER_CATID"
-            description="COM_EASYSDI_CORE_FORM_DESC_USER_CATID" 
-                
-                
-                 required="true" 
-                filter="safehtml" /> 
+
 
        <field name="params" type="text" size="40" class="inputbox"
-                
             label="COM_EASYSDI_CORE_FORM_LBL_USER_PARAMS"
             description="COM_EASYSDI_CORE_FORM_DESC_USER_PARAMS" 
-                
-                
-                
                 filter="safehtml" /> 
 
          <field
@@ -147,9 +105,7 @@
                 <option value="0">JUNPUBLISHED</option>
             </field> 
 
-                        <field name="checked_out" type="hidden" filter="unset" />
-                <field name="checked_out_time" type="hidden" filter="unset" />
-
+        <field name="checked_out" type="hidden" filter="unset" />
+		<field name="checked_out_time" type="hidden" filter="unset" />
 	</fieldset>
-
 </form>

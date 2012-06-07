@@ -26,6 +26,19 @@ class Easysdi_coreHelper
 			'index.php?option=com_easysdi_core&view=users',
 			$vName == 'users'
 		);
+		
+		JSubMenuHelper::addEntry(
+				JText::_('COM_EASYSDI_CORE_SUBMENU_CATEGORIES'),
+				'index.php?option=com_categories&extension=com_easysdi_core',
+				$vName == 'categories'
+		);
+		
+		if ($vName=='categories') {
+			JToolBarHelper::title(
+					JText::sprintf('COM_CATEGORIES_CATEGORIES_TITLE', JText::_('com_easysdi_core')),
+					'easysdi_core-categories');
+		}
+		
 		JSubMenuHelper::addEntry(
 			JText::_('COM_EASYSDI_CORE_TITLE_SERVICES'),
 			'index.php?option=com_easysdi_core&view=services',

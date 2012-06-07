@@ -165,14 +165,6 @@
                 
                 filter="safehtml" /> 
 
-       <field name="catid" type="text" size="40" class="inputbox"
-                
-            label="COM_EASYSDI_CORE_FORM_LBL_SERVICE_CATID"
-            description="COM_EASYSDI_CORE_FORM_DESC_SERVICE_CATID" 
-                
-                
-                 required="true" 
-                filter="safehtml" /> 
 
        <field name="params" type="text" size="40" class="inputbox"
                 

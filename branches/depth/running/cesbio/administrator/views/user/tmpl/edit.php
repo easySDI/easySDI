@@ -41,26 +41,20 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
             
 			<li><?php echo $this->form->getLabel('guid'); ?>
 			<?php echo $this->form->getInput('guid'); ?></li>
-
+			
+			<li><?php echo $this->form->getLabel('catid'); ?>
+				<?php echo $this->form->getInput('catid'); ?></li>
             
 			<li><?php echo $this->form->getLabel('alias'); ?>
 			<?php echo $this->form->getInput('alias'); ?></li>
 
             
-			<li><?php echo $this->form->getLabel('created_by'); ?>
-			<?php echo $this->form->getInput('created_by'); ?></li>
+			<li><?php echo $this->form->getLabel('state'); ?>
+                    <?php echo $this->form->getInput('state'); ?></li><li><?php echo $this->form->getLabel('checked_out'); ?>
+                    <?php echo $this->form->getInput('checked_out'); ?></li><li><?php echo $this->form->getLabel('checked_out_time'); ?>
+                    <?php echo $this->form->getInput('checked_out_time'); ?></li>
 
-            
-			<li><?php echo $this->form->getLabel('created'); ?>
-			<?php echo $this->form->getInput('created'); ?></li>
-
-            
-			<li><?php echo $this->form->getLabel('modified_by'); ?>
-			<?php echo $this->form->getInput('modified_by'); ?></li>
-
-            
-			<li><?php echo $this->form->getLabel('modified'); ?>
-			<?php echo $this->form->getInput('modified'); ?></li>
+            </ul>
 
             
 			<li><?php echo $this->form->getLabel('user_id'); ?>
@@ -87,17 +81,22 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
 			<?php echo $this->form->getInput('notificationrequesttreatment'); ?></li>
 
             
-			<li><?php echo $this->form->getLabel('catid'); ?>
-			<?php echo $this->form->getInput('catid'); ?></li>
+			
+            
+            <li><?php echo $this->form->getLabel('created_by'); ?>
+			<?php echo $this->form->getInput('created_by'); ?></li>
 
             
+			<li><?php echo $this->form->getLabel('created'); ?>
+			<?php echo $this->form->getInput('created'); ?></li>
 
-            <li><?php echo $this->form->getLabel('state'); ?>
-                    <?php echo $this->form->getInput('state'); ?></li><li><?php echo $this->form->getLabel('checked_out'); ?>
-                    <?php echo $this->form->getInput('checked_out'); ?></li><li><?php echo $this->form->getLabel('checked_out_time'); ?>
-                    <?php echo $this->form->getInput('checked_out_time'); ?></li>
+            
+			<li><?php echo $this->form->getLabel('modified_by'); ?>
+			<?php echo $this->form->getInput('modified_by'); ?></li>
 
-            </ul>
+            
+			<li><?php echo $this->form->getLabel('modified'); ?>
+			<?php echo $this->form->getInput('modified'); ?></li>
 		</fieldset>
 	</div>
 

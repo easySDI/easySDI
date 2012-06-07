@@ -52,8 +52,14 @@ $saveOrder	= $listOrder == 'a.ordering';
 				<th width="1%">
 					<input type="checkbox" name="checkall-toggle" value="" onclick="checkAll(this)" />
 				</th>
-
-
+				<?php if (isset($this->items[0]->id)) { ?>
+                <th width="1%" class="nowrap">
+                    <?php echo JHtml::_('grid.sort',  'JGRID_HEADING_ID', 'a.id', $listDirn, $listOrder); ?>
+                </th>
+                <?php } ?>
+				<th>
+					<?php echo JHtml::_('grid.sort', 'COM_EASYSDI_CORE_FORM_LBL_USER_ALIAS', 'a.alias', $listDirn, $listOrder); ?>
+				</th>
 
                 <?php if (isset($this->items[0]->state)) { ?>
 				<th width="5%">
@@ -68,11 +74,7 @@ $saveOrder	= $listOrder == 'a.ordering';
 					<?php endif; ?>
 				</th>
                 <?php } ?>
-                <?php if (isset($this->items[0]->id)) { ?>
-                <th width="1%" class="nowrap">
-                    <?php echo JHtml::_('grid.sort',  'JGRID_HEADING_ID', 'a.id', $listDirn, $listOrder); ?>
-                </th>
-                <?php } ?>
+                
 			</tr>
 		</thead>
 		<tfoot>
@@ -94,8 +96,14 @@ $saveOrder	= $listOrder == 'a.ordering';
 				<td class="center">
 					<?php echo JHtml::_('grid.id', $i, $item->id); ?>
 				</td>
-
-
+				<?php if (isset($this->items[0]->id)) { ?>
+				<td class="center">
+					<?php echo (int) $item->id; ?>
+				</td>
+                <?php } ?>
+				<td class="center">
+					<a href="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=user.edit&id='.$item->id);?>"><?php echo $item->alias;?></a>
+				</td>
 
                 <?php if (isset($this->items[0]->state)) { ?>
 				    <td class="center">
@@ -121,11 +129,7 @@ $saveOrder	= $listOrder == 'a.ordering';
 					    <?php endif; ?>
 				    </td>
                 <?php } ?>
-                <?php if (isset($this->items[0]->id)) { ?>
-				<td class="center">
-					<?php echo (int) $item->id; ?>
-				</td>
-                <?php } ?>
+                
 			</tr>
 			<?php endforeach; ?>
 		</tbody>
