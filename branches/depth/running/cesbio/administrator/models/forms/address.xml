@@ -9,15 +9,6 @@
 				class="readonly"
 				description="JGLOBAL_FIELD_ID_DESC" /> 
 
-		<field  name="guid" 
-				type="text" 
-				size="40" 
-				class="inputbox"
-				label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_GUID"
-				description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_GUID" 
-				required="true" 
-				filter="safehtml" /> 
-
 		<field 	name="alias" 
 				type="text" 
 				size="40" 
@@ -228,7 +219,8 @@
 
 		<field name="checked_out" type="hidden" filter="unset" />
 		<field name="checked_out_time" type="hidden" filter="unset" />
-
+		<field  name="guid" type="hidden" filter="unset" />
+		 
 	</fieldset>
 
 </form>
