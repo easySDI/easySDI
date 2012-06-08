@@ -46,6 +46,14 @@ class Easysdi_coreTableuser extends JTable
 			$registry->loadArray($array['metadata']);
 			$array['metadata'] = (string)$registry;
 		}
+		
+		// Bind the rules.
+		if (isset($array['rules']) && is_array($array['rules']))
+		{
+			$rules = new JAccessRules($array['rules']);
+			$this->setRules($rules);
+		}
+		
 		return parent::bind($array, $ignore);
 	}
 
@@ -184,5 +192,59 @@ class Easysdi_coreTableuser extends JTable
     	$k = $this->_tbl_key;
     	return 'com_easysdi_core.user.' . (int) $this->$k;
     }
+    
+    /**
+     * Method to return the title to use for the asset table.
+     *
+     * @return  string
+     *
+     * @since   11.1
+     */
+    protected function _getAssetTitle()
+    {
+    	return $this->alias;
+    }
 
+    /**
+     * Method to get the parent asset id for the record
+     *
+     * @param   JTable   $table  A JTable object (optional) for the asset parent
+     * @param   integer  $id     The id (optional) of the content.
+     *
+     * @return  integer
+     *
+     * @since   11.1
+     */
+    protected function _getAssetParentId($table = null, $id = null)
+    {
+    	// Initialise variables.
+    	$assetId = null;
+    
+    	// This is a article under a category.
+    	if ($this->catid)
+    	{
+    		// Build the query to get the asset id for the parent category.
+    		$query = $this->_db->getQuery(true);
+    		$query->select($this->_db->quoteName('asset_id'));
+    		$query->from($this->_db->quoteName('#__categories'));
+    		$query->where($this->_db->quoteName('id') . ' = ' . (int) $this->catid);
+    
+    		// Get the asset id from the database.
+    		$this->_db->setQuery($query);
+    		if ($result = $this->_db->loadResult())
+    		{
+    			$assetId = (int) $result;
+    		}
+    	}
+    
+    	// Return the asset id.
+    	if ($assetId)
+    	{
+    		return $assetId;
+    	}
+    	else
+    	{
+    		return parent::_getAssetParentId($table, $id);
+    	}
+    }
 }
