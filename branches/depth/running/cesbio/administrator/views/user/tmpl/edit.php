@@ -154,7 +154,7 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
 	<?php echo JHtml::_('form.token'); ?>
 	
 	<div class="clr"></div>
-	<?php if ($this->canDo->get('core.admin')): ?>
+	
 		<div class="width-100 fltlft">
 			<?php echo JHtml::_('sliders.start', 'permissions-sliders-'.$this->item->id, array('useCookie'=>1)); ?>
 
@@ -166,7 +166,7 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
 
 			<?php echo JHtml::_('sliders.end'); ?>
 		</div>
-	<?php endif; ?>
+	
     <style type="text/css">
         /* Temporary fix for drifting editor fields */
         .adminformlist li {
