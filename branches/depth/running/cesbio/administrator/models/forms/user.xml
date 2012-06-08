@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
 	<fieldset addfieldpath="/administrator/components/com_categories/models/fields">
+		
+		<field 	name="rules" 
+				type="rules" 
+				label="JFIELD_RULES_LABEL"
+				translate_label="false" 
+				class="inputbox" 
+				filter="rules"
+				component="com_easysdi_core" 
+				section="user" 
+				validate="rules"
+		/>
+		<field name="asset_id" type="hidden" filter="unset" />
+		
 		<field  name="id" 
         		type="text" 
         		default="0" 
