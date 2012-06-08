@@ -22,7 +22,7 @@ class Easysdi_coreModeladdress extends JModelAdmin
 	 * @since	1.6
 	 */
 	protected $text_prefix = 'COM_EASYSDI_CORE';
-
+// 	protected $user_id = null;
 
 	/**
 	 * Returns a reference to the a Table object, always creating it.
@@ -48,9 +48,11 @@ class Easysdi_coreModeladdress extends JModelAdmin
 	 */
 	public function getForm($data = array(), $loadData = true)
 	{
+		//$date is th user id
 		// Initialise variables.
 		$app	= JFactory::getApplication();
-
+// 		$this->user_id = $data;
+		
 		// Get the form.
 		$form = $this->loadForm('com_easysdi_core.address', 'address', array('control' => 'jform', 'load_data' => $loadData));
 		if (empty($form)) {
@@ -70,11 +72,11 @@ class Easysdi_coreModeladdress extends JModelAdmin
 	{
 		// Check the session for previously entered form data.
 		$data = JFactory::getApplication()->getUserState('com_easysdi_core.edit.address.data', array());
-		$userdata = JFactory::getApplication()->getUserState('com_easysdi_core.edit.user.data', array());
-		print_r ($userdata);
-		die;
+		
 		if (empty($data)) {
-			$data = $this->getItem($userdata->id);
+			//Load data by using user.id
+			
+			$data = $this->getItem();
 		}
 
 		return $data;
@@ -90,32 +92,32 @@ class Easysdi_coreModeladdress extends JModelAdmin
 	 */
 	public function getItem($pk = null)
 	{
-// 		if ($item = parent::getItem($pk)) {
+// 		$table = $this->getTable();
 
-// 			//Do any procesing on fields here if needed
+// 		$return = $table->load($this->user_id);
 
+// 		if ($return === false && $table->getError())
+// 		{
+// 			$this->setError($table->getError());
+// 			return false;
 // 		}
-		$table = $this->getTable();
-		
-		$return = $table->loadByUser($pk);
-		
-		// Check for a table object error.
-		if ($return === false && $table->getError())
-		{
-			$this->setError($table->getError());
-			return false;
-		}
-		// Convert to the JObject before adding other data.
-		$properties = $table->getProperties(1);
-		$item = JArrayHelper::toObject($properties, 'JObject');
+	
+// 		// Convert to the JObject before adding other data.
+// 		$properties = $table->getProperties(1);
+// 		$item = JArrayHelper::toObject($properties, 'JObject');
 
-		if (property_exists($item, 'params'))
-		{
-			$registry = new JRegistry;
-			$registry->loadString($item->params);
-			$item->params = $registry->toArray();
-		}
+// 		if (property_exists($item, 'params'))
+// 		{
+// 			$registry = new JRegistry;
+// 			$registry->loadString($item->params);
+// 			$item->params = $registry->toArray();
+// 		}
 
+		if ($item = parent::getItem($pk)) {
+		
+			//Do any procesing on fields here if needed
+		
+		}
 		return $item;
 	}
 

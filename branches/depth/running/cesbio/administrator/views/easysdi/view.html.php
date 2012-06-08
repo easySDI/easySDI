@@ -27,8 +27,23 @@ class Easysdi_coreViewEasysdi extends JView
 	{
 		// Assign data to the view
 		$this->form		= $this->get('Form');
- 
+		
 		// Display the view
+		$this->addToolbar();
 		parent::display($tpl);
+	}
+	
+	/**
+	 * Add the page title and toolbar.
+	 */
+	protected function addToolbar()
+	{
+		require_once JPATH_COMPONENT.DS.'helpers'.DS.'easysdi_core.php';
+
+		$canDo	= Easysdi_coreHelper::getActions();
+		
+		if ($canDo->get('core.admin')) {
+			JToolBarHelper::preferences('com_easysdi_core');
+		}
 	}
 }

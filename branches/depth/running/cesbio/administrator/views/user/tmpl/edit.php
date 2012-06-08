@@ -34,56 +34,93 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
 			<legend><?php echo JText::_('COM_EASYSDI_CORE_LEGEND_USER'); ?></legend>
 			<ul class="adminformlist">
             
-			<li><?php echo $this->form->getLabel('id'); ?>
-			<?php echo $this->form->getInput('id'); ?></li>
-            
-			<li><?php echo $this->form->getLabel('guid'); ?>
-			<?php echo $this->form->getInput('guid'); ?></li>
-			
-			<li><?php echo $this->form->getLabel('catid'); ?>
-				<?php echo $this->form->getInput('catid'); ?></li>
-            
-			<li><?php echo $this->form->getLabel('alias'); ?>
-			<?php echo $this->form->getInput('alias'); ?></li>
-           
-			<li><?php echo $this->form->getLabel('state'); ?>
-                    <?php echo $this->form->getInput('state'); ?></li><li><?php echo $this->form->getLabel('checked_out'); ?>
-                    <?php echo $this->form->getInput('checked_out'); ?></li><li><?php echo $this->form->getLabel('checked_out_time'); ?>
-                    <?php echo $this->form->getInput('checked_out_time'); ?></li>
-
-            </ul>
-            
-			<li><?php echo $this->form->getLabel('user_id'); ?>
-			<?php echo $this->form->getInput('user_id'); ?></li>
-            
-			<li><?php echo $this->form->getLabel('acronym'); ?>
-			<?php echo $this->form->getInput('acronym'); ?></li>
-            
-			<li><?php echo $this->form->getLabel('logo'); ?>
-			<?php echo $this->form->getInput('logo'); ?></li>
-            
-			<li><?php echo $this->form->getLabel('description'); ?>
-			<?php echo $this->form->getInput('description'); ?></li>
-            
-			<li><?php echo $this->form->getLabel('website'); ?>
-			<?php echo $this->form->getInput('website'); ?></li>
-            
-			<li><?php echo $this->form->getLabel('notificationrequesttreatment'); ?>
-			<?php echo $this->form->getInput('notificationrequesttreatment'); ?></li>
-
+				<li><?php echo $this->form->getLabel('id'); ?>
+				<?php echo $this->form->getInput('id'); ?></li>
+	            
+				<li><?php echo $this->form->getLabel('guid'); ?>
+				<?php echo $this->form->getInput('guid'); ?></li>
+				
+				<li><?php echo $this->form->getLabel('catid'); ?>
+					<?php echo $this->form->getInput('catid'); ?></li>
+	            
+				<li><?php echo $this->form->getLabel('alias'); ?>
+				<?php echo $this->form->getInput('alias'); ?></li>
+	           
+				<li><?php echo $this->form->getLabel('state'); ?>
+	            <?php echo $this->form->getInput('state'); ?></li>
+	            
+				<li><?php echo $this->form->getLabel('user_id'); ?>
+				<?php echo $this->form->getInput('user_id'); ?></li>
+	            
+	            <li><?php echo $this->form->getLabel('access'); ?>
+				<?php echo $this->form->getInput('access'); ?></li>
+				
+				<li><?php echo $this->form->getLabel('acronym'); ?>
+				<?php echo $this->form->getInput('acronym'); ?></li>
+	            
+				<li><?php echo $this->form->getLabel('logo'); ?>
+				<?php echo $this->form->getInput('logo'); ?></li>
+	            
+				<li><?php echo $this->form->getLabel('description'); ?>
+				<?php echo $this->form->getInput('description'); ?></li>
+	            
+				<li><?php echo $this->form->getLabel('website'); ?>
+				<?php echo $this->form->getInput('website'); ?></li>
+	            
+				<li><?php echo $this->form->getLabel('notificationrequesttreatment'); ?>
+				<?php echo $this->form->getInput('notificationrequesttreatment'); ?></li>
+				
+				 <li><?php echo $this->form->getLabel('checked_out'); ?>
+	            <?php echo $this->form->getInput('checked_out'); ?></li>
+	            
+	            <li><?php echo $this->form->getLabel('checked_out_time'); ?>
+	            <?php echo $this->form->getInput('checked_out_time'); ?></li>
+ 			</ul>
 		</fieldset>
 	</div>
 
 	<div class="width-40 fltrt">
 		<?php echo JHtml::_('sliders.start', 'user-sliders-'.$this->item->id, array('useCookie'=>1)); ?>
-			<?php echo JHtml::_('sliders.panel', JText::_('JGLOBAL_FIELDSET_PUBLISHING'), 'publishing-details'); ?>
+			<?php echo JHtml::_('sliders.panel', JText::_('COM_EASYSDI_CORE_FIELDSET_CONTACTADDRESS'), 'contactaddress-details'); ?>
 			<fieldset class="adminform">
 				<ul class="adminformlist">
-				<li><?php echo $this->addressform->getLabel('id'); ?>
-			<?php echo $this->addressform->getInput('id'); ?></li>
+				<li><?php echo $this->contactaddressform->getLabel('id'); ?>
+			<?php echo $this->contactaddressform->getInput('id'); ?></li>
             
-			<li><?php echo $this->addressform->getLabel('guid'); ?>
-			<?php echo $this->addressform->getInput('guid'); ?></li>
+			<li><?php echo $this->contactaddressform->getLabel('guid'); ?>
+			<?php echo $this->contactaddressform->getInput('guid'); ?></li>
+					
+				</ul>
+			</fieldset>
+		<?php echo JHtml::_('sliders.end'); ?>
+	</div>
+	
+	<div class="width-40 fltrt">
+		<?php echo JHtml::_('sliders.start', 'user-sliders-'.$this->item->id, array('useCookie'=>1)); ?>
+			<?php echo JHtml::_('sliders.panel', JText::_('COM_EASYSDI_CORE_FIELDSET_BILLINGADDRESS'), 'billingaddress-details'); ?>
+			<fieldset class="adminform">
+				<ul class="adminformlist">
+				<li><?php echo $this->billingaddressform->getLabel('id'); ?>
+			<?php echo $this->billingaddressform->getInput('id'); ?></li>
+            
+			<li><?php echo $this->billingaddressform->getLabel('guid'); ?>
+			<?php echo $this->billingaddressform->getInput('guid'); ?></li>
+					
+				</ul>
+			</fieldset>
+		<?php echo JHtml::_('sliders.end'); ?>
+	</div>
+	
+	<div class="width-40 fltrt">
+		<?php echo JHtml::_('sliders.start', 'user-sliders-'.$this->item->id, array('useCookie'=>1)); ?>
+			<?php echo JHtml::_('sliders.panel', JText::_('COM_EASYSDI_CORE_FIELDSET_DELIVRYADDRESS'), 'delivryaddress-details'); ?>
+			<fieldset class="adminform">
+				<ul class="adminformlist">
+				<li><?php echo $this->delivryaddressform->getLabel('id'); ?>
+			<?php echo $this->delivryaddressform->getInput('id'); ?></li>
+            
+			<li><?php echo $this->delivryaddressform->getLabel('guid'); ?>
+			<?php echo $this->delivryaddressform->getInput('guid'); ?></li>
 					
 				</ul>
 			</fieldset>

@@ -1,254 +1,233 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
 	<fieldset>
+		<field 	name="id" 
+				type="text" 
+				default="0" 
+				label="JGLOBAL_FIELD_ID_LABEL"
+				readonly="true" 
+				class="readonly"
+				description="JGLOBAL_FIELD_ID_DESC" /> 
 
-              <field name="id" type="text" default="0" label="JGLOBAL_FIELD_ID_LABEL"
-                    readonly="true" class="readonly"
-                    description="JGLOBAL_FIELD_ID_DESC" /> 
+		<field  name="guid" 
+				type="text" 
+				size="40" 
+				class="inputbox"
+				label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_GUID"
+				description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_GUID" 
+				required="true" 
+				filter="safehtml" /> 
 
-       <field name="guid" type="text" size="40" class="inputbox"
-                
-            label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_GUID"
-            description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_GUID" 
-                
-                
-                 required="true" 
-                filter="safehtml" /> 
+		<field 	name="alias" 
+				type="text" 
+				size="40" 
+				class="inputbox"
+				label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_ALIAS"
+				description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_ALIAS" 
+				filter="safehtml" /> 
 
-       <field name="alias" type="text" size="40" class="inputbox"
-                
-            label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_ALIAS"
-            description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_ALIAS" 
-                
-                
-                
-                filter="safehtml" /> 
+		<field 	name="created_by" 
+				type="text" 
+				size="40" 
+				class="inputbox"
+				label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_CREATED_BY"
+				description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_CREATED_BY" 
+				filter="safehtml" /> 
 
-       <field name="created_by" type="text" size="40" class="inputbox"
-                
-            label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_CREATED_BY"
-            description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_CREATED_BY" 
-                
-                
-                
-                filter="safehtml" /> 
+		<field 	name="created" 
+				type="calendar" 
+				class="inputbox"
+				default="0000-00-00 00:00:00" 
+				label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_CREATED"
+				description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_CREATED" 
+				filter="safehtml" /> 
 
-       <field name="created" type="calendar" class="inputbox"
-                
-                
-                 default="0000-00-00 00:00:00" 
-                
-            label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_CREATED"
-            description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_CREATED" 
-                filter="safehtml" /> 
+		<field 	name="modified_by" 
+				type="text" 
+				size="40" 
+				class="inputbox"
+				label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_MODIFIED_BY"
+				description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_MODIFIED_BY" 
+				filter="safehtml" /> 
 
-       <field name="modified_by" type="text" size="40" class="inputbox"
-                
-            label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_MODIFIED_BY"
-            description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_MODIFIED_BY" 
-                
-                
-                
-                filter="safehtml" /> 
+		<field 	name="modified" 
+				type="calendar" 
+				class="inputbox"
+				default="0000-00-00 00:00:00" 
+				label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_MODIFIED"
+				description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_MODIFIED" 
+				filter="safehtml" /> 
 
-       <field name="modified" type="calendar" class="inputbox"
-                
-                
-                 default="0000-00-00 00:00:00" 
-                
-            label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_MODIFIED"
-            description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_MODIFIED" 
-                filter="safehtml" /> 
+		<field 	name="user_id" 
+				type="sql" 
+				class="inputbox"
+				label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_USER_ID"
+				description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_USER_ID" 
+				required="true" 
+				query="SELECT 0 AS id, '- Please select -' AS id UNION SELECT id, id FROM #__sdi_user" key_field="id" value_field="id"
+				/> 
 
-       <field name="user_id" type="sql" class="inputbox"
-                
-            label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_USER_ID"
-            description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_USER_ID" 
-                
-                
-                 required="true" 
-                query="SELECT 0 AS id, '- Please select -' AS id UNION SELECT id, id FROM #__sdi_user" key_field="id" value_field="id"
-                 /> 
+		<field 	name="addresstype_id" 
+				type="text" 
+				size="40" 
+				class="inputbox"
+				label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_ADDRESSTYPE_ID"
+				description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_ADDRESSTYPE_ID" 
+				required="true" 
+				filter="safehtml" /> 
 
-       <field name="addresstype_id" type="text" size="40" class="inputbox"
-                
-            label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_ADDRESSTYPE_ID"
-            description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_ADDRESSTYPE_ID" 
-                
-                
-                 required="true" 
-                filter="safehtml" /> 
+		<field 	name="organismcomplement" 
+				type="text" 
+				size="40" 
+				class="inputbox"
+				label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_ORGANISMCOMPLEMENT"
+				description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_ORGANISMCOMPLEMENT" 
+				filter="safehtml" /> 
 
-       <field name="organismcomplement" type="text" size="40" class="inputbox"
-                
-            label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_ORGANISMCOMPLEMENT"
-            description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_ORGANISMCOMPLEMENT" 
-                
-                
-                
-                filter="safehtml" /> 
+		<field 	name="organism" 
+				type="text" 
+				size="40" 
+				class="inputbox"
+				label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_ORGANISM"
+				description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_ORGANISM" 
+				filter="safehtml" /> 
 
-       <field name="organism" type="text" size="40" class="inputbox"
-                
-            label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_ORGANISM"
-            description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_ORGANISM" 
-                
-                
-                
-                filter="safehtml" /> 
+		<field 	name="civility" 
+				type="text" 
+				size="40" 
+				class="inputbox"
+				label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_CIVILITY"
+				description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_CIVILITY" 
+				filter="safehtml" /> 
 
-       <field name="civility" type="text" size="40" class="inputbox"
-                
-            label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_CIVILITY"
-            description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_CIVILITY" 
-                
-                
-                
-                filter="safehtml" /> 
+		<field 	name="firstname" 
+				type="text" 
+				size="40" 
+				class="inputbox"
+				label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_FIRSTNAME"
+				description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_FIRSTNAME" 
+				filter="safehtml" /> 
 
-       <field name="firstname" type="text" size="40" class="inputbox"
-                
-            label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_FIRSTNAME"
-            description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_FIRSTNAME" 
-                
-                
-                
-                filter="safehtml" /> 
+		<field 	name="lastname" 
+				type="text" 
+				size="40" 
+				class="inputbox"
+				label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_LASTNAME"
+				description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_LASTNAME" 
+				filter="safehtml" /> 
 
-       <field name="lastname" type="text" size="40" class="inputbox"
-                
-            label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_LASTNAME"
-            description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_LASTNAME" 
-                
-                
-                
-                filter="safehtml" /> 
+		<field 	name="function" 
+				type="text" 
+				size="40" 
+				class="inputbox"
+				label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_FUNCTION"
+				description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_FUNCTION" 
+				filter="safehtml" /> 
 
-       <field name="function" type="text" size="40" class="inputbox"
-                
-            label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_FUNCTION"
-            description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_FUNCTION" 
-                
-                
-                
-                filter="safehtml" /> 
+		<field 	name="address" 
+				type="text" 
+				size="40" 
+				class="inputbox"
+				label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_ADDRESS"
+				description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_ADDRESS" 
+				filter="safehtml" /> 
 
-       <field name="address" type="text" size="40" class="inputbox"
-                
-            label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_ADDRESS"
-            description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_ADDRESS" 
-                
-                
-                
-                filter="safehtml" /> 
+		<field 	name="addresscomplement" 
+				type="text" 
+				size="40" 
+				class="inputbox"
+				label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_ADDRESSCOMPLEMENT"
+				description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_ADDRESSCOMPLEMENT" 
+				filter="safehtml" /> 
 
-       <field name="addresscomplement" type="text" size="40" class="inputbox"
-                
-            label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_ADDRESSCOMPLEMENT"
-            description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_ADDRESSCOMPLEMENT" 
-                
-                
-                
-                filter="safehtml" /> 
+		<field 	name="postalcode" 
+				type="text" 
+				size="40" 
+				class="inputbox"
+				label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_POSTALCODE"
+				description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_POSTALCODE" 
+				filter="safehtml" /> 
 
-       <field name="postalcode" type="text" size="40" class="inputbox"
-                
-            label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_POSTALCODE"
-            description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_POSTALCODE" 
-                
-                
-                
-                filter="safehtml" /> 
+		<field 	name="postalbox" 
+				type="text" 
+				size="40" 
+				class="inputbox"
+				label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_POSTALBOX"
+				description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_POSTALBOX" 
+				filter="safehtml" /> 
 
-       <field name="postalbox" type="text" size="40" class="inputbox"
-                
-            label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_POSTALBOX"
-            description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_POSTALBOX" 
-                
-                
-                
-                filter="safehtml" /> 
+		<field 	name="locality" 
+				type="text" 
+				size="40" 
+				class="inputbox"
+				label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_LOCALITY"
+				description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_LOCALITY" 
+				filter="safehtml" /> 
 
-       <field name="locality" type="text" size="40" class="inputbox"
-                
-            label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_LOCALITY"
-            description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_LOCALITY" 
-                
-                
-                
-                filter="safehtml" /> 
+		<field 	name="country" 
+				type="text" 
+				size="40" 
+				class="inputbox"
+				label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_COUNTRY"
+				description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_COUNTRY" 
+				filter="safehtml" /> 
 
-       <field name="country" type="text" size="40" class="inputbox"
-                
-            label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_COUNTRY"
-            description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_COUNTRY" 
-                
-                
-                
-                filter="safehtml" /> 
+		<field 	name="phone" 
+				type="text" 
+				size="40" 
+				class="inputbox"
+				label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_PHONE"
+				description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_PHONE" 
+				filter="safehtml" /> 
 
-       <field name="phone" type="text" size="40" class="inputbox"
-                
-            label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_PHONE"
-            description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_PHONE" 
-                
-                
-                
-                filter="safehtml" /> 
+		<field 	name="mobile" 
+				type="text" 
+				size="40" 
+				class="inputbox"
+				label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_MOBILE"
+				description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_MOBILE" 
+				filter="safehtml" /> 
 
-       <field name="mobile" type="text" size="40" class="inputbox"
-                
-            label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_MOBILE"
-            description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_MOBILE" 
-                
-                
-                
-                filter="safehtml" /> 
+		<field 	name="fax" 
+				type="text" 
+				size="40" 
+				class="inputbox"
+				label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_FAX"
+				description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_FAX" 
+				filter="safehtml" /> 
 
-       <field name="fax" type="text" size="40" class="inputbox"
-                
-            label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_FAX"
-            description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_FAX" 
-                
-                
-                
-                filter="safehtml" /> 
+		<field 	name="email" 
+				type="text" 
+				size="40" 
+				class="inputbox"
+				label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_EMAIL"
+				description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_EMAIL" 
+				filter="safehtml" /> 
 
-       <field name="email" type="text" size="40" class="inputbox"
-                
-            label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_EMAIL"
-            description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_EMAIL" 
-                
-                
-                
-                filter="safehtml" /> 
+		<field 	id="sameascontact" 
+				name="sameascontact" 
+				type="radio"
+				class="inputbox"
+				label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_SAMEASCONTACT"
+				description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_SAMEASCONTACT" 
+				default="1" 	>
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field> 
 
- <field id="sameascontact" name="sameascontact" type="radio"
-                class="inputbox"
-                
-            label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_SAMEASCONTACT"
-            description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_SAMEASCONTACT" 
-                 default="1" 
-                
-                >
-                    <option value="0">JNO</option>
-                    <option value="1">JYES</option>
-                </field> 
+		<field  name="state"
+				type="list"
+				label="JSTATUS"
+				description="JFIELD_PUBLISHED_DESC"
+				class="inputbox"
+				size="1"
+				default="1">
+			<option value="1">JPUBLISHED</option>
+			<option value="0">JUNPUBLISHED</option>
+		</field> 
 
-         <field
-                name="state"
-                type="list"
-                label="JSTATUS"
-                description="JFIELD_PUBLISHED_DESC"
-                class="inputbox"
-                size="1"
-                default="1">
-                <option value="1">JPUBLISHED</option>
-                <option value="0">JUNPUBLISHED</option>
-            </field> 
-
-                        <field name="checked_out" type="hidden" filter="unset" />
-                <field name="checked_out_time" type="hidden" filter="unset" />
+		<field name="checked_out" type="hidden" filter="unset" />
+		<field name="checked_out_time" type="hidden" filter="unset" />
 
 	</fieldset>
 

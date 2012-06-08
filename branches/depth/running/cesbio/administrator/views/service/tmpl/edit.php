@@ -34,66 +34,71 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
 			<legend><?php echo JText::_('COM_EASYSDI_CORE_LEGEND_SERVICE'); ?></legend>
 			<ul class="adminformlist">
             
-			<li><?php echo $this->form->getLabel('id'); ?>
-			<?php echo $this->form->getInput('id'); ?></li>
-
-            
-			<li><?php echo $this->form->getLabel('guid'); ?>
-			<?php echo $this->form->getInput('guid'); ?></li>
-
-            
-			<li><?php echo $this->form->getLabel('alias'); ?>
-			<?php echo $this->form->getInput('alias'); ?></li>
-            
-			<li><?php echo $this->form->getLabel('name'); ?>
-			<?php echo $this->form->getInput('name'); ?></li>
-
-			<li><?php echo $this->form->getLabel('state'); ?>
-                    <?php echo $this->form->getInput('state'); ?></li><li><?php echo $this->form->getLabel('checked_out'); ?>
-                    <?php echo $this->form->getInput('checked_out'); ?></li><li><?php echo $this->form->getLabel('checked_out_time'); ?>
-                    <?php echo $this->form->getInput('checked_out_time'); ?></li>
-
-            </ul>
-            
-			<li><?php echo $this->form->getLabel('serviceconnector_id'); ?>
-			<?php echo $this->form->getInput('serviceconnector_id'); ?></li>
-
-            <li><?php echo $this->form->getLabel('resourceauthentication_id'); ?>
-			<?php echo $this->form->getInput('resourceauthentication_id'); ?></li>
-
-            
-			<li><?php echo $this->form->getLabel('resourceurl'); ?>
-			<?php echo $this->form->getInput('resourceurl'); ?></li>
-
-            
-			<li><?php echo $this->form->getLabel('resourceusername'); ?>
-			<?php echo $this->form->getInput('resourceusername'); ?></li>
-
-            
-			<li><?php echo $this->form->getLabel('resourcepassword'); ?>
-			<?php echo $this->form->getInput('resourcepassword'); ?></li>
-
-            
-			<li><?php echo $this->form->getLabel('serviceauthentication_id'); ?>
-			<?php echo $this->form->getInput('serviceauthentication_id'); ?></li>
-
-            
-			<li><?php echo $this->form->getLabel('serviceurl'); ?>
-			<?php echo $this->form->getInput('serviceurl'); ?></li>
-
-            
-			<li><?php echo $this->form->getLabel('serviceusername'); ?>
-			<?php echo $this->form->getInput('serviceusername'); ?></li>
-
-            
-			<li><?php echo $this->form->getLabel('servicepassword'); ?>
-			<?php echo $this->form->getInput('servicepassword'); ?></li>
-
-            
-			<li><?php echo $this->form->getLabel('catid'); ?>
-			<?php echo $this->form->getInput('catid'); ?></li>
-
-            
+				<li><?php echo $this->form->getLabel('id'); ?>
+				<?php echo $this->form->getInput('id'); ?></li>
+	
+	            
+				<li><?php echo $this->form->getLabel('guid'); ?>
+				<?php echo $this->form->getInput('guid'); ?></li>
+	
+	            
+				<li><?php echo $this->form->getLabel('alias'); ?>
+				<?php echo $this->form->getInput('alias'); ?></li>
+	            
+				<li><?php echo $this->form->getLabel('name'); ?>
+				<?php echo $this->form->getInput('name'); ?></li>
+	
+				<li><?php echo $this->form->getLabel('state'); ?>
+	            <?php echo $this->form->getInput('state'); ?></li>
+	            
+	            <li><?php echo $this->form->getLabel('access'); ?>
+				<?php echo $this->form->getInput('access'); ?></li>
+				
+				<li><?php echo $this->form->getLabel('serviceconnector_id'); ?>
+				<?php echo $this->form->getInput('serviceconnector_id'); ?></li>
+	
+	            <li><?php echo $this->form->getLabel('resourceauthentication_id'); ?>
+				<?php echo $this->form->getInput('resourceauthentication_id'); ?></li>
+	
+	            
+				<li><?php echo $this->form->getLabel('resourceurl'); ?>
+				<?php echo $this->form->getInput('resourceurl'); ?></li>
+	
+	            
+				<li><?php echo $this->form->getLabel('resourceusername'); ?>
+				<?php echo $this->form->getInput('resourceusername'); ?></li>
+	
+	            
+				<li><?php echo $this->form->getLabel('resourcepassword'); ?>
+				<?php echo $this->form->getInput('resourcepassword'); ?></li>
+	
+	            
+				<li><?php echo $this->form->getLabel('serviceauthentication_id'); ?>
+				<?php echo $this->form->getInput('serviceauthentication_id'); ?></li>
+	
+	            
+				<li><?php echo $this->form->getLabel('serviceurl'); ?>
+				<?php echo $this->form->getInput('serviceurl'); ?></li>
+	
+	            
+				<li><?php echo $this->form->getLabel('serviceusername'); ?>
+				<?php echo $this->form->getInput('serviceusername'); ?></li>
+	
+	            
+				<li><?php echo $this->form->getLabel('servicepassword'); ?>
+				<?php echo $this->form->getInput('servicepassword'); ?></li>
+	
+	            
+				<li><?php echo $this->form->getLabel('catid'); ?>
+				<?php echo $this->form->getInput('catid'); ?></li>
+				
+				<li><?php echo $this->form->getLabel('checked_out'); ?>
+	            <?php echo $this->form->getInput('checked_out'); ?></li>
+	            
+	            <li><?php echo $this->form->getLabel('checked_out_time'); ?>
+	            <?php echo $this->form->getInput('checked_out_time'); ?></li>
+			
+             </ul>
 		</fieldset>
 	</div>
 

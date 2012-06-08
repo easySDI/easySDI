@@ -33,6 +33,13 @@
 				description="COM_EASYSDI_CORE_FORM_DESC_USER_USER_ID"
 				required="true"	/>
 
+		<field 	name="access"
+				type="accesslevel"
+				label="JFIELD_ACCESS_LABEL"
+				description="JFIELD_ACCESS_DESC"
+				class="inputbox"
+				size="1" />
+		
 		<field 	name="acronym" 
        			type="text" 
        			size="40" 
