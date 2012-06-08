@@ -103,6 +103,7 @@ class Easysdi_coreViewServices extends JView
 			JToolBarHelper::preferences('com_easysdi_core');
 		}
 
-
+		JToolBarHelper::divider();
+		JToolBarHelper::back('JTOOLBAR_BACK','index.php?option=com_easysdi_core');
 	}
 }
