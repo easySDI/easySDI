@@ -130,15 +130,15 @@ class Easysdi_coreModelservices extends JModelList
         $query->join('LEFT', '#__users AS uc ON uc.id=a.checked_out');
         
         // Join over the foreign key 'serviceconnector_id'
-        $query->select('#__sdi_sys_serviceconnector.value AS s_value');
+        $query->select('#__sdi_sys_serviceconnector.value AS serviceconnector_value');
         $query->join('LEFT', '#__sdi_sys_serviceconnector ON #__sdi_sys_serviceconnector.id=a.serviceconnector_id');
         
         // Join over the foreign key 'resourceauthentication_id'
-        $query->select('ssac1.value AS s1_value');
+        $query->select('ssac1.value AS resourceauth_value');
         $query->join('LEFT', '#__sdi_sys_authenticationconnector as ssac1 ON ssac1.id=a.resourceauthentication_id');
         
         // Join over the foreign key 'serviceauthentication_id'
-        $query->select('ssac2.value AS s2_value');
+        $query->select('ssac2.value AS serviceauth_value');
         $query->join('LEFT', '#__sdi_sys_authenticationconnector as ssac2 ON ssac2.id=a.serviceauthentication_id');
         
 

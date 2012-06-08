@@ -71,7 +71,8 @@ class Easysdi_coreModeladdress extends JModelAdmin
 		// Check the session for previously entered form data.
 		$data = JFactory::getApplication()->getUserState('com_easysdi_core.edit.address.data', array());
 		$userdata = JFactory::getApplication()->getUserState('com_easysdi_core.edit.user.data', array());
-		
+		print_r ($userdata);
+		die;
 		if (empty($data)) {
 			$data = $this->getItem($userdata->id);
 		}

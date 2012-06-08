@@ -178,7 +178,8 @@ CREATE TABLE IF NOT EXISTS `#__sdi_service` (
 `servicepassword` VARCHAR(150)  NOT NULL ,
 `catid` INT(11)  NOT NULL ,
 `params` VARCHAR(1024)  NOT NULL ,
-PRIMARY KEY (`id`)
+PRIMARY KEY (`id`),
+UNIQUE (`name`) 
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
 CREATE TABLE IF NOT EXISTS `#__sdi_service_servicecompliance` (

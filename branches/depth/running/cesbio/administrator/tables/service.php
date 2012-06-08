@@ -143,7 +143,31 @@ class Easysdi_coreTableservice extends JTable
         return true;
     }
 
-
+    /**
+     * Overriden JTable::store to set modified data and service id.
+     *
+     * @param	boolean	True to update fields even if they are null.
+     * @return	boolean	True on success.
+     * @since	1.6
+     */
+    public function store($updateNulls = false)
+    {
+    	$date	= JFactory::getDate();
+    	$user	= JFactory::getUser();
+    	if ($this->id) {
+    		// Existing item
+    		$this->modified		= $date->toSql();
+    		$this->modified_by	= $user->get('id');
+    	} else {
+    		$this->created = $date->toSql();
+    		$this->created_by = $user->get('id');
+    	}
+    	if(empty ($this->guid)){
+    		$this->guid = Easysdi_coreHelper::uuid();
+    	}
+    	 
+    	return parent::store($updateNulls);
+    }
 
 
 }

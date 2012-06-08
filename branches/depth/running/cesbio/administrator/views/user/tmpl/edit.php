@@ -33,11 +33,9 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
 		<fieldset class="adminform">
 			<legend><?php echo JText::_('COM_EASYSDI_CORE_LEGEND_USER'); ?></legend>
 			<ul class="adminformlist">
-
             
 			<li><?php echo $this->form->getLabel('id'); ?>
 			<?php echo $this->form->getInput('id'); ?></li>
-
             
 			<li><?php echo $this->form->getLabel('guid'); ?>
 			<?php echo $this->form->getInput('guid'); ?></li>
@@ -47,42 +45,32 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
             
 			<li><?php echo $this->form->getLabel('alias'); ?>
 			<?php echo $this->form->getInput('alias'); ?></li>
-
-            
+           
 			<li><?php echo $this->form->getLabel('state'); ?>
                     <?php echo $this->form->getInput('state'); ?></li><li><?php echo $this->form->getLabel('checked_out'); ?>
                     <?php echo $this->form->getInput('checked_out'); ?></li><li><?php echo $this->form->getLabel('checked_out_time'); ?>
                     <?php echo $this->form->getInput('checked_out_time'); ?></li>
 
             </ul>
-
             
 			<li><?php echo $this->form->getLabel('user_id'); ?>
 			<?php echo $this->form->getInput('user_id'); ?></li>
-
             
 			<li><?php echo $this->form->getLabel('acronym'); ?>
 			<?php echo $this->form->getInput('acronym'); ?></li>
-
             
 			<li><?php echo $this->form->getLabel('logo'); ?>
 			<?php echo $this->form->getInput('logo'); ?></li>
-
             
 			<li><?php echo $this->form->getLabel('description'); ?>
 			<?php echo $this->form->getInput('description'); ?></li>
-
             
 			<li><?php echo $this->form->getLabel('website'); ?>
 			<?php echo $this->form->getInput('website'); ?></li>
-
             
 			<li><?php echo $this->form->getLabel('notificationrequesttreatment'); ?>
 			<?php echo $this->form->getInput('notificationrequesttreatment'); ?></li>
 
-		</fieldset>
-		<fieldset>
-            
 		</fieldset>
 	</div>
 
@@ -93,7 +81,6 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
 				<ul class="adminformlist">
 				<li><?php echo $this->addressform->getLabel('id'); ?>
 			<?php echo $this->addressform->getInput('id'); ?></li>
-
             
 			<li><?php echo $this->addressform->getLabel('guid'); ?>
 			<?php echo $this->addressform->getInput('guid'); ?></li>

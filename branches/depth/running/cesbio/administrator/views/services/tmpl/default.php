@@ -59,7 +59,9 @@ $saveOrder	= $listOrder == 'a.ordering';
 				<th class='left'>
 				<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_CORE_SERVICES_NAME', 'a.name', $listDirn, $listOrder); ?>
 				</th>
-
+				<th class='left'>
+				<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_CORE_SERVICES_CONNECTOR', 'a.serviceconnector_value', $listDirn, $listOrder); ?>
+				</th>
 
                 <?php if (isset($this->items[0]->state)) { ?>
 				<th width="5%">
@@ -115,7 +117,9 @@ $saveOrder	= $listOrder == 'a.ordering';
 				<td>
 					<?php echo $item->name; ?>
 				</td>
-
+				<td>
+					<?php echo $item->serviceconnector_value; ?>
+				</td>
 
                 <?php if (isset($this->items[0]->state)) { ?>
 				    <td class="center">

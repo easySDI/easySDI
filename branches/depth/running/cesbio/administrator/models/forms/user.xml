@@ -98,12 +98,12 @@
         </field> 
                 
        	<field  name="created_by" 
-				type="USER" 
+				type="user" 
 				class="readonly"
 				readonly="true" 
             	label="COM_EASYSDI_CORE_FORM_LBL_USER_CREATED_BY"
             	description="COM_EASYSDI_CORE_FORM_DESC_USER_CREATED_BY" 
-                filter="UNSET" /> 
+                filter="unset" /> 
 
         <field 	name="created" 
        			type="calendar" 

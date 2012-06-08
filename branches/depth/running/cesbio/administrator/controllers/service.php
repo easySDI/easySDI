@@ -19,6 +19,10 @@ class Easysdi_coreControllerService extends JControllerForm
 {
 
     function __construct() {
+    	
+    	//Need to be add here even if it is in administrator/controller.php l.27
+    	require_once JPATH_COMPONENT.'/helpers/easysdi_core.php';
+    	
         $this->view_list = 'services';
         parent::__construct();
     }

@@ -5,6 +5,12 @@ VALUES
 (2,1,0,'service')
 ;
 
+INSERT INTO `#__sdi_sys_authenticationconnector` (ordering,state,checked_out,authenticationlevel_id,value) 
+VALUES 
+(1,1,0,1,'HTTPBasic'),
+(2,1,0,2,'Geonetwork')
+;
+
 INSERT INTO `#__sdi_sys_serviceversion` (ordering,state,checked_out,value) 
 VALUES 
 (1,1,0,'1.0.0'),

@@ -33,7 +33,6 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
 		<fieldset class="adminform">
 			<legend><?php echo JText::_('COM_EASYSDI_CORE_LEGEND_SERVICE'); ?></legend>
 			<ul class="adminformlist">
-
             
 			<li><?php echo $this->form->getLabel('id'); ?>
 			<?php echo $this->form->getInput('id'); ?></li>
@@ -45,37 +44,21 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
             
 			<li><?php echo $this->form->getLabel('alias'); ?>
 			<?php echo $this->form->getInput('alias'); ?></li>
-
-            
-			<li><?php echo $this->form->getLabel('created_by'); ?>
-			<?php echo $this->form->getInput('created_by'); ?></li>
-
-            
-			<li><?php echo $this->form->getLabel('created'); ?>
-			<?php echo $this->form->getInput('created'); ?></li>
-
-            
-			<li><?php echo $this->form->getLabel('modified_by'); ?>
-			<?php echo $this->form->getInput('modified_by'); ?></li>
-
-            
-			<li><?php echo $this->form->getLabel('modified'); ?>
-			<?php echo $this->form->getInput('modified'); ?></li>
-
             
 			<li><?php echo $this->form->getLabel('name'); ?>
 			<?php echo $this->form->getInput('name'); ?></li>
 
+			<li><?php echo $this->form->getLabel('state'); ?>
+                    <?php echo $this->form->getInput('state'); ?></li><li><?php echo $this->form->getLabel('checked_out'); ?>
+                    <?php echo $this->form->getInput('checked_out'); ?></li><li><?php echo $this->form->getLabel('checked_out_time'); ?>
+                    <?php echo $this->form->getInput('checked_out_time'); ?></li>
+
+            </ul>
             
 			<li><?php echo $this->form->getLabel('serviceconnector_id'); ?>
 			<?php echo $this->form->getInput('serviceconnector_id'); ?></li>
 
-            
-			<li><?php echo $this->form->getLabel('published'); ?>
-			<?php echo $this->form->getInput('published'); ?></li>
-
-            
-			<li><?php echo $this->form->getLabel('resourceauthentication_id'); ?>
+            <li><?php echo $this->form->getLabel('resourceauthentication_id'); ?>
 			<?php echo $this->form->getInput('resourceauthentication_id'); ?></li>
 
             
@@ -111,16 +94,31 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
 			<?php echo $this->form->getInput('catid'); ?></li>
 
             
-
-            <li><?php echo $this->form->getLabel('state'); ?>
-                    <?php echo $this->form->getInput('state'); ?></li><li><?php echo $this->form->getLabel('checked_out'); ?>
-                    <?php echo $this->form->getInput('checked_out'); ?></li><li><?php echo $this->form->getLabel('checked_out_time'); ?>
-                    <?php echo $this->form->getInput('checked_out_time'); ?></li>
-
-            </ul>
 		</fieldset>
 	</div>
 
+	<div class="width-40 fltrt">
+		<?php echo JHtml::_('sliders.start', 'service-sliders-'.$this->item->id, array('useCookie'=>1)); ?>
+			<?php echo JHtml::_('sliders.panel', JText::_('JGLOBAL_FIELDSET_PUBLISHING'), 'publishing-details'); ?>
+			<fieldset class="adminform">
+				<ul class="adminformlist">
+					<li><?php echo $this->form->getLabel('created_by'); ?>
+					<?php echo $this->form->getInput('created_by'); ?></li>
+		            
+					<li><?php echo $this->form->getLabel('created'); ?>
+					<?php echo $this->form->getInput('created'); ?></li>
+		
+		            <?php if ($this->item->modified_by) : ?>
+						<li><?php echo $this->form->getLabel('modified_by'); ?>
+						<?php echo $this->form->getInput('modified_by'); ?></li>
+			            
+						<li><?php echo $this->form->getLabel('modified'); ?>
+						<?php echo $this->form->getInput('modified'); ?></li>
+					<?php endif; ?>
+				</ul>
+			</fieldset>
+		<?php echo JHtml::_('sliders.end'); ?>
+	</div>
 
 	<input type="hidden" name="task" value="" />
 	<?php echo JHtml::_('form.token'); ?>
