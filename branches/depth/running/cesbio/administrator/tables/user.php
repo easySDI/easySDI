@@ -170,5 +170,19 @@ class Easysdi_coreTableuser extends JTable
     }
 
 
+    /**
+     * Method to compute the default name of the asset.
+     * The default name is in the form table_name.id
+     * where id is the value of the primary key of the table.
+     *
+     * @return  string
+     *
+     * @since   11.1
+     */
+    protected function _getAssetName()
+    {
+    	$k = $this->_tbl_key;
+    	return 'com_easysdi_core.user.' . (int) $this->$k;
+    }
 
 }
