@@ -42,6 +42,8 @@ class Easysdi_coreViewEasysdi extends JView
 
 		$canDo	= Easysdi_coreHelper::getActions();
 		
+		JToolBarHelper::title(JText::_('COM_EASYSDI_CORE_TITLE'), 'users.png');
+		
 		if ($canDo->get('core.admin')) {
 			JToolBarHelper::preferences('com_easysdi_core');
 		}

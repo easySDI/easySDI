@@ -62,6 +62,7 @@
 		<copy todir="${projet.install.langEN.dir}">
 		     <fileset dir="./administrator/language">
 		      <include name="**/en-GB.com_easysdi_core.ini" />
+		       <include name="**/en-GB.com_easysdi_core.sys.ini" />
 		     </fileset>
 		    </copy>
 	</target>
