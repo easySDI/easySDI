@@ -102,7 +102,6 @@ class Easysdi_coreModeladdress extends JModelAdmin
 		
 		if (empty($data)) {
 			//Load data by using user.id
-			
 			$data = $this->getItem();
 		}
 

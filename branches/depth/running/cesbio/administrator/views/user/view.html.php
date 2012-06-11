@@ -42,6 +42,15 @@ class Easysdi_coreViewUser extends JView
 		$this->delivryaddressmodel = & JModel::getInstance('address', 'easysdi_coreModel');
 		$this->delivryitem = $this->delivryaddressmodel->getItemByUserID($this->item->id,3);
 		
+// 		$this->contactaddressmodel = & JModel::getInstance('address', 'Easysdi_coreModel');
+// 		$this->contactaddressform = $this->contactaddressmodel->getForm(null, true);
+		
+// 		$this->billingaddressmodel = & JModel::getInstance('address', 'Easysdi_coreModel');
+// 		$this->billingaddressform = $this->billingaddressmodel->getForm(null, true);
+		
+// 		$this->delivryaddressmodel = & JModel::getInstance('address', 'Easysdi_coreModel');
+// 		$this->delivryaddressform = $this->delivryaddressmodel->getForm(null, true);
+		
 		// Check for errors.
 		if (count($errors = $this->get('Errors'))) {
 			JError::raiseError(500, implode("\n", $errors));

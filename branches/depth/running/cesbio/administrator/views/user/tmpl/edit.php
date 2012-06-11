@@ -39,85 +39,43 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
 			</ul>
 		</fieldset>
 	</div>
-	
 	<div class="width-40 fltrt">
 		<?php echo JHtml::_('sliders.start', 'user-sliders-'.$this->item->id, array('useCookie'=>1)); ?>
-			<?php echo JHtml::_('sliders.panel', JText::_('COM_EASYSDI_CORE_FIELDSET_BILLINGADDRESS'), 'billingaddress-details'); ?>
-			<fieldset class="adminform">
+			<?php echo JHtml::_('sliders.panel', JText::_('COM_EASYSDI_CORE_FIELDSET_CONTACTADDRESS'), 'contactaddress-details'); ?>
+			<fieldset class="panelform">
 				<ul class="adminformlist">
-					<li><?php echo $this->form->getLabel('billing_id'); ?>
-					<?php echo $this->form->getInput('billing_id', null,$this->billingitem->id); ?></li>
-            
-					<li><?php echo $this->form->getLabel('billing_guid'); ?>
-					<?php echo $this->form->getInput('billing_guid', null,$this->billingitem->guid); ?></li>
-					
-					<li><?php echo $this->form->getLabel('billing_addresstype_id'); ?>
-					<?php echo $this->form->getInput('billing_addresstype_id', null,2); ?></li>
-					
-					<li><?php echo $this->form->getLabel('billing_user_id'); ?>
-					<?php echo $this->form->getInput('billing_user_id', null,$this->item->id); ?></li>
-							
-					<li><?php echo $this->form->getLabel('billing_organismcomplement'); ?>
-					<?php echo $this->form->getInput('billing_organismcomplement', null,$this->billingitem->organismcomplement); ?></li>
-		            
-					<li><?php echo $this->form->getLabel('billing_organism'); ?>
-					<?php  echo $this->form->getInput('billing_organism', null,$this->billingitem->organism); ?></li>
-		            
-					<li><?php echo $this->form->getLabel('billing_civility'); ?>
-					<?php echo $this->form->getInput('billing_civility', null,$this->billingitem->civility); ?></li>
-		            
-					<li><?php echo $this->form->getLabel('billing_firstname'); ?>
-					<?php echo $this->form->getInput('billing_firstname', null,$this->billingitem->firstname); ?></li>
-		            
-					<li><?php echo $this->form->getLabel('billing_lastname'); ?>
-					<?php echo $this->form->getInput('billing_lastname', null,$this->billingitem->lastname); ?></li>
-		            
-					<li><?php echo $this->form->getLabel('billing_function'); ?>
-					<?php echo $this->form->getInput('billing_function', null,$this->billingitem->function); ?></li>
-		            
-					<li><?php echo $this->form->getLabel('billing_address'); ?>
-					<?php echo $this->form->getInput('billing_address', null,$this->billingitem->address); ?></li>
-		            
-					<li><?php echo $this->form->getLabel('billing_addresscomplement'); ?>
-					<?php echo $this->form->getInput('billing_addresscomplement', null,$this->billingitem->addresscomplement); ?></li>
-		
-					<li><?php echo $this->form->getLabel('billing_postalcode'); ?>
-					<?php echo $this->form->getInput('billing_postalcode', null,$this->billingitem->postalcode); ?></li>
-		
-					<li><?php echo $this->form->getLabel('billing_postalbox'); ?>
-					<?php echo $this->form->getInput('billing_postalbox', null,$this->billingitem->postalbox); ?></li>
-		            
-					<li><?php echo $this->form->getLabel('billing_locality'); ?>
-					<?php echo $this->form->getInput('billing_locality', null,$this->billingitem->locality); ?></li>
-		            
-					<li><?php echo $this->form->getLabel('billing_country'); ?>
-					<?php echo $this->form->getInput('billing_country', null,$this->billingitem->country); ?></li>
-		            
-					<li><?php echo $this->form->getLabel('billing_phone'); ?>
-					<?php echo $this->form->getInput('billing_phone', null,$this->billingitem->phone); ?></li>
-		            
-					<li><?php echo $this->form->getLabel('billing_mobile'); ?>
-					<?php echo $this->form->getInput('billing_mobile', null,$this->billingitem->mobile); ?></li>
-		            
-					<li><?php echo $this->form->getLabel('billing_fax'); ?>
-					<?php echo $this->form->getInput('billing_fax', null,$this->billingitem->fax); ?></li>
-		            
-					<li><?php echo $this->form->getLabel('billing_email'); ?>
-					<?php echo $this->form->getInput('billing_email', null,$this->billingitem->email); ?></li>
-		            
-					<li><?php echo $this->form->getLabel('billing_sameascontact'); ?>
-					<?php echo $this->form->getInput('billing_sameascontact', null,$this->billingitem->sameascontact); ?></li>
+				<?php foreach($this->form->getFieldset('contactaddress') as $field): ?>
+					<?php $property = substr($field->id, 14);?>
+					<li><?php echo $field->label; ?>
+					<?php echo $this->form->getInput(substr($field->id, 6), null,$this->contactitem->$property); ?></li>
+					</li>
+				<?php endforeach; ?>
 				</ul>
 			</fieldset>
-		<?php echo JHtml::_('sliders.end'); ?>
-	</div>
-	
-
-
-	<div class="width-40 fltrt">
-		<?php echo JHtml::_('sliders.start', 'user-sliders-'.$this->item->id, array('useCookie'=>1)); ?>
-			<?php echo JHtml::_('sliders.panel', JText::_('JGLOBAL_FIELDSET_PUBLISHING'), 'publishing-details'); ?>
-			<fieldset class="adminform">
+		<?php echo JHtml::_('sliders.panel', JText::_('COM_EASYSDI_CORE_FIELDSET_BILLINGADDRESS'), 'billingaddress-details'); ?>
+			<fieldset class="panelform">
+				<ul class="adminformlist">
+				<?php foreach($this->form->getFieldset('billingaddress') as $field): ?>
+					<?php $property = substr($field->id, 14);?>
+					<li><?php echo $field->label; ?>
+					<?php echo $this->form->getInput(substr($field->id, 6), null,$this->billingitem->$property); ?></li>
+					</li>
+				<?php endforeach; ?>
+				</ul>
+			</fieldset>
+		<?php echo JHtml::_('sliders.panel', JText::_('COM_EASYSDI_CORE_FIELDSET_DELIVRYADDRESS'), 'delivryaddress-details'); ?>
+			<fieldset class="panelform">
+				<ul class="adminformlist">
+				<?php foreach($this->form->getFieldset('delivryaddress') as $field): ?>
+					<?php $property = substr($field->id, 14);?>
+					<li><?php echo $field->label; ?>
+					<?php echo $this->form->getInput(substr($field->id, 6), null,$this->delivryitem->$property); ?></li>
+					</li>
+				<?php endforeach; ?>
+				</ul>
+			</fieldset>
+		<?php echo JHtml::_('sliders.panel', JText::_('JGLOBAL_FIELDSET_PUBLISHING'), 'publishing-details'); ?>
+			<fieldset class="panelform">
 				<ul class="adminformlist">
 					<li><?php echo $this->form->getLabel('created_by'); ?>
 					<?php echo $this->form->getInput('created_by'); ?></li>
