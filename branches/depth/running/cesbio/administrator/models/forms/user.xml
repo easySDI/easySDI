@@ -170,15 +170,15 @@
 				description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_ORGANISMCOMPLEMENT" 
 				filter="safehtml" /> 
 
-		
 		<field 	name="contact_civility" 
-				type="text" 
-				size="40" 
+				type="sql" 
 				class="inputbox"
 				label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_CIVILITY"
 				description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_CIVILITY" 
-				filter="safehtml" /> 
-
+                translate="true" 
+                query="SELECT 0 AS id, '- Please select -' AS value UNION SELECT id, value FROM #__sdi_sys_civility" key_field="id" value_field="value"
+                 /> 
+                 
 		<field 	name="contact_firstname" 
 				type="text" 
 				size="40" 
@@ -292,6 +292,18 @@
 	</fieldset>
 	
 	<fieldset name="billingaddress">
+		<field 	id="billing_sameascontact" 
+				name="billing_sameascontact" 
+				type="radio"
+				class="inputbox"
+				label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_SAMEASCONTACT"
+				description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_SAMEASCONTACT" 
+				default="1" 	
+				>
+			<option value="0" onclick="enableAddressType('billing');">JNO</option>
+			<option value="1" onclick="disableAddressType('billing');">JYES</option>
+		</field>
+		
 		<field 	name="billing_organism" 
 				type="text" 
 				size="40" 
@@ -299,7 +311,6 @@
 				label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_ORGANISM"
 				description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_ORGANISM" 
 				filter="safehtml" /> 
-		
 		
 		<field 	name="billing_organismcomplement" 
 				type="text" 
@@ -311,12 +322,13 @@
 
 		
 		<field 	name="billing_civility" 
-				type="text" 
-				size="40" 
+				type="sql" 
 				class="inputbox"
 				label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_CIVILITY"
 				description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_CIVILITY" 
-				filter="safehtml" /> 
+                translate="true" 
+                query="SELECT 0 AS id, '- Please select -' AS value UNION SELECT id, value FROM #__sdi_sys_civility" key_field="id" value_field="value"
+                 /> 
 
 		<field 	name="billing_firstname" 
 				type="text" 
@@ -422,17 +434,6 @@
 				description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_EMAIL" 
 				filter="safehtml" /> 
 
-		<field 	id="billing_sameascontact" 
-				name="billing_sameascontact" 
-				type="radio"
-				class="inputbox"
-				label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_SAMEASCONTACT"
-				description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_SAMEASCONTACT" 
-				default="1" 	>
-			<option value="0">JNO</option>
-			<option value="1">JYES</option>
-		</field> 
-
 		<field name="billing_checked_out" type="hidden" filter="unset" />
 		<field name="billing_checked_out_time" type="hidden" filter="unset" />
 		<field  name="billing_guid" type="hidden" filter="unset" />
@@ -442,6 +443,16 @@
 	</fieldset>
 	
 	<fieldset name="delivryaddress">
+		<field 	id="delivry_sameascontact" 
+				name="delivry_sameascontact" 
+				type="radio"
+				class="inputbox"
+				label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_SAMEASCONTACT"
+				description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_SAMEASCONTACT" 
+				default="1" 	>
+			<option value="0" onclick="enableAddressType('delivry');">JNO</option>
+			<option value="1" onclick="disableAddressType('delivry');">JYES</option>
+		</field> 
 		<field 	name="delivry_organism" 
 				type="text" 
 				size="40" 
@@ -461,12 +472,13 @@
 
 		
 		<field 	name="delivry_civility" 
-				type="text" 
-				size="40" 
+				type="sql" 
 				class="inputbox"
 				label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_CIVILITY"
 				description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_CIVILITY" 
-				filter="safehtml" /> 
+                translate="true" 
+                query="SELECT 0 AS id, '- Please select -' AS value UNION SELECT id, value FROM #__sdi_sys_civility" key_field="id" value_field="value"
+                 /> 
 
 		<field 	name="delivry_firstname" 
 				type="text" 
@@ -572,16 +584,7 @@
 				description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_EMAIL" 
 				filter="safehtml" /> 
 
-		<field 	id="delivry_sameascontact" 
-				name="delivry_sameascontact" 
-				type="radio"
-				class="inputbox"
-				label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_SAMEASCONTACT"
-				description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_SAMEASCONTACT" 
-				default="1" 	>
-			<option value="0">JNO</option>
-			<option value="1">JYES</option>
-		</field> 
+		
 
 		<field name="delivry_checked_out" type="hidden" filter="unset" />
 		<field name="delivry_checked_out_time" type="hidden" filter="unset" />
