@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
 	<fieldset>
-		<field 	name="alias" 
+		<field 	name="addressalias" 
 				type="text" 
 				size="40" 
 				class="inputbox"
@@ -193,9 +193,9 @@
 
 		<field name="checked_out" type="hidden" filter="unset" />
 		<field name="checked_out_time" type="hidden" filter="unset" />
-		<field  name="guid" type="hidden" filter="unset" />
+		<field  name="addressguid" type="hidden" filter="unset" />
 		<field  name="user_id" type="hidden" filter="unset" />
-		<field  name="id" type="hidden" filter="unset" />
+		<field  name="addressid" type="hidden" filter="unset" />
 		<field  name="addresstype_id" type="hidden" filter="unset" />
 		 
 	</fieldset>

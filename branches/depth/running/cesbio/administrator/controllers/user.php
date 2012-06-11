@@ -17,7 +17,7 @@ jimport('joomla.application.component.controllerform');
  */
 class Easysdi_coreControllerUser extends JControllerForm
 {
-//$params = JComponentHelper::getParams('com_easysdi_core');
+//$params'] =JComponentHelper::getParams('com_easysdi_core');
 //$this->params->get('serviceaccount');
 
     function __construct() {
@@ -25,72 +25,61 @@ class Easysdi_coreControllerUser extends JControllerForm
     	//Need to be add here even if it is in administrator/controller.php l.27
     	require_once JPATH_COMPONENT.'/helpers/easysdi_core.php';
         
-    	$this->view_list = 'users';
+    	$this->view_list ='users';
         parent::__construct();
 
     }
     
-    public function save($key = null, $urlVar = null)
+    public function save($key =null, $urlVar =null)
     {
     	//Save user first
-//     	parent::save($key, $urlVar);
+     	parent::save($key, $urlVar);
     	
     	//Then save address
-    	$billingaddressmodel = & JModel::getInstance('address', 'Easysdi_coreModel');
-    	$billingdata = JRequest::getVar('jform', array(), 'post', 'array');
+     	$data =JRequest::getVar('jform', array(), 'post', 'array');
+     	
+     	$addresstable =& JTable::getInstance('address', 'Easysdi_coreTable');
     	
     	
-    	
-    	// Validate the posted data.
-    	$billingform = $billingaddressmodel->getForm($billingdata, false);
-    	
-    	if (!$billingform)
+    	if(!$addresstable->save($data, 'billing'))
     	{
-    		$app->enqueueMessage($model->getError(), 'error');
+    		$this->setError($billingaddresstable->getError());
+    		$this->setMessage($this->getError(), 'error');
+    		$this->setRedirect(
+    				JRoute::_(
+    						'index.php?option=' . $this->option . '&view=' . $this->view_list
+    						. $this->getRedirectToListAppend(), false
+    				)
+    		);
     		return false;
     	}
     	
-    	// Test whether the data is valid.
-    	$validData = $billingaddressmodel->validate($billingform, $billingdata);
-    	
-    	// Check for validation errors.
-    	if ($validData === false)
+    	if(!$addresstable->save($data, 'contact'))
     	{
-    		// Get the validation messages.
-    		$errors = $billingaddressmodel->getErrors();
-    	
-    		// Push up to three validation messages out to the user.
-    		for ($i = 0, $n = count($errors); $i < $n && $i < 3; $i++)
-    		{
-    		if ($errors[$i] instanceof Exception)
-    		{
-    		$app->enqueueMessage($errors[$i]->getMessage(), 'warning');
-    		}
-    		else
-    		{
-    		$app->enqueueMessage($errors[$i], 'warning');
-    		}
-    		}
+    		$this->setError($billingaddresstable->getError());
+    		$this->setMessage($this->getError(), 'error');
+    		$this->setRedirect(
+    				JRoute::_(
+    						'index.php?option=' . $this->option . '&view=' . $this->view_list
+    						. $this->getRedirectToListAppend(), false
+    				)
+    		);
     		return false;
     	}
     	
-    	// Attempt to save the data.
-    		if (!$billingaddressmodel->save($validData))
-    		{
-	    		// Save the data in the session.
-	    		$app->setUserState($context . '.data', $validData);
-    	
-    			// Redirect back to the edit screen.
-    			$this->setError(JText::sprintf('JLIB_APPLICATION_ERROR_SAVE_FAILED', $model->getError()));
-    			$this->setMessage($this->getError(), 'error');
-    	
-    			$this->setRedirect(JRoute::_(
-    							'index.php?option=' . $this->option . '&view=' . $this->view_item
-    							. $this->getRedirectToItemAppend($recordId, $key), false
-    							)
-    							);
-    			return false;
-    		}
+    	if(!$addresstable->save($data, 'delivry'))
+    	{
+    		$this->setError($billingaddresstable->getError());
+    		$this->setMessage($this->getError(), 'error');
+    		$this->setRedirect(
+    				JRoute::_(
+    						'index.php?option=' . $this->option . '&view=' . $this->view_list
+    						. $this->getRedirectToListAppend(), false
+    				)
+    		);
+    		return false;
+    	}
+    	 
     	
     	
     }

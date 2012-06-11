@@ -22,7 +22,6 @@ class Easysdi_coreModeladdress extends JModelAdmin
 	 * @since	1.6
 	 */
 	protected $text_prefix = 'COM_EASYSDI_CORE';
-// 	protected $user_id = null;
 
 	/**
 	 * Returns a reference to the a Table object, always creating it.
@@ -62,12 +61,13 @@ class Easysdi_coreModeladdress extends JModelAdmin
 	}
 	
 	/**
-	 * Method to get the record form.
+	 * Method to get the address form to load in one of the user form left fieldsets.
 	 *
-	 * @param	array	$data		An optional array of data for the form to interogate.
+	 * @param	int		$user_id	User id.
+	 * @param	int		$addresstype_id	Address type id.
 	 * @param	boolean	$loadData	True if the form is to load its own data (default case), false if not.
-	 * @return	JForm	A JForm object on success, false on failure
-	 * @since	1.6
+	 * @return	JForm	A JForm 	object on success, false on failure
+	 * @since	EasySDI 3.0.0
 	 */
 	public function getFormForUserForm($user_id, $addresstype_id, $loadData = true)
 	{
@@ -75,7 +75,7 @@ class Easysdi_coreModeladdress extends JModelAdmin
 		// Initialise variables.
 		$app	= JFactory::getApplication();
 	
-		//To load by user_id the address object, param $data is used to hold the user_id value
+		//To load a specific address, user_id and addresstype_id are needed
 		$this->user_id = $user_id;
 		$this->addresstype_id = $addresstype_id;
 	
@@ -112,34 +112,44 @@ class Easysdi_coreModeladdress extends JModelAdmin
 	/**
 	 * Method to get a single record.
 	 *
+	 * @param	$user_id 	integer		The id of the user.
+	 * @param	$addresstype_id 	integer		The id of the addresstype.
+	 *
+	 * @return	mixed	Object on success, false on failure.
+	 * @since	EasySDI 3.0.0
+	 */
+	public function getItemByUserID($user_id, $addresstype_id)
+	{
+		$this->user_id = $user_id;
+		$this->addresstype_id = $addresstype_id;
+		$item = $this->getItem(null);
+		
+		return $item;
+	}
+	
+	/**
+	 * Method to get a single record.
+	 *
 	 * @param	integer	The id of the primary key.
 	 *
 	 * @return	mixed	Object on success, false on failure.
-	 * @since	1.6
+	 * @since	EasySDI 3.0.0
 	 */
 	public function getItem($pk = null)
 	{
 		//Get Item by User Id
 		if(isset($this->user_id)){
 			$table = $this->getTable();
+			
 			$return = $table->loadByUserID($this->user_id,$this->addresstype_id );
+
 			if ($return === false && $table->getError())
 			{
 				$this->setError($table->getError());
 				return false;
 			}
-			// Convert to the JObject before adding other data.
-			$properties = $table->getProperties(1);
-			$item = JArrayHelper::toObject($properties, 'JObject');
 			
-			if (property_exists($item, 'params'))
-			{
-				$registry = new JRegistry;
-				$registry->loadString($item->params);
-				$item->params = $registry->toArray();
-			}
-			
-			return $item;
+			return $table;
 		}else{//Get item by Id
 			if ($item = parent::getItem($pk)) {
 				//Do any procesing on fields here if needed
@@ -165,7 +175,6 @@ class Easysdi_coreModeladdress extends JModelAdmin
 				$max = $db->loadResult();
 				$table->ordering = $max+1;
 			}
-
 		}
 	}
 

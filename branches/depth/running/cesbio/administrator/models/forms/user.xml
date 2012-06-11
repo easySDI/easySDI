@@ -1,19 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
-	<fieldset addfieldpath="/administrator/components/com_categories/models/fields">
-		
-		<field 	name="rules" 
-				type="rules" 
-				label="JFIELD_RULES_LABEL"
-				translate_label="false" 
-				class="inputbox" 
-				filter="rules"
-				component="com_easysdi_core" 
-				section="user" 
-				validate="rules"
-		/>
-		<field name="asset_id" type="hidden" filter="unset" />
-		
+	<fieldset name="details" addfieldpath="/administrator/components/com_categories/models/fields">
 		<field  name="id" 
         		type="text" 
         		default="0" 
@@ -98,15 +85,7 @@
                     <option value="1">JYES</option>
 		</field> 
 
-        <field 	name="params" 
-        		type="text" 
-        		size="40" 
-        		class="inputbox"
-            	label="COM_EASYSDI_CORE_FORM_LBL_USER_PARAMS"
-            	description="COM_EASYSDI_CORE_FORM_DESC_USER_PARAMS" 
-                filter="safehtml" /> 
-
-		<field	name="state"
+        <field	name="state"
                 type="list"
                 label="JSTATUS"
                 description="JFIELD_PUBLISHED_DESC"
@@ -117,7 +96,15 @@
                 <option value="0">JUNPUBLISHED</option>
         </field> 
                 
-       	<field  name="created_by" 
+       	<field name="asset_id" type="hidden" filter="unset" />
+		<field  name="checked_out" type="hidden" filter="unset" />
+		<field  name="checked_out_time" type="hidden" filter="unset" />
+		<field  name="guid" type="hidden" filter="unset" />
+		 
+	</fieldset>
+	
+	<fieldset name="publishing">
+		<field  name="created_by" 
 				type="user" 
 				class="readonly"
 				readonly="true" 
@@ -150,9 +137,180 @@
             	label="COM_EASYSDI_CORE_FORM_LBL_USER_MODIFIED"
             	description="COM_EASYSDI_CORE_FORM_DESC_USER_MODIFIED" 
                 filter="safehtml" /> 
-                
-		<field  name="checked_out" type="hidden" filter="unset" />
-		<field  name="checked_out_time" type="hidden" filter="unset" />
-		<field  name="guid" type="hidden" filter="unset" /> 
+	</fieldset>
+	
+	<fieldset name="rulesdefinition">
+		<field 	name="rules" 
+				type="rules" 
+				label="JFIELD_RULES_LABEL"
+				translate_label="false" 
+				class="inputbox" 
+				filter="rules"
+				component="com_easysdi_core" 
+				section="user" 
+				validate="rules"
+		/>
+	</fieldset>
+	
+	<fieldset name="billingaddress">
+		<field 	name="billing_organism" 
+				type="text" 
+				size="40" 
+				class="inputbox"
+				label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_ORGANISM"
+				description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_ORGANISM" 
+				filter="safehtml" /> 
+		
+		
+		<field 	name="billing_organismcomplement" 
+				type="text" 
+				size="40" 
+				class="inputbox"
+				label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_ORGANISMCOMPLEMENT"
+				description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_ORGANISMCOMPLEMENT" 
+				filter="safehtml" /> 
+
+		
+		<field 	name="billing_civility" 
+				type="text" 
+				size="40" 
+				class="inputbox"
+				label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_CIVILITY"
+				description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_CIVILITY" 
+				filter="safehtml" /> 
+
+		<field 	name="billing_firstname" 
+				type="text" 
+				size="40" 
+				class="inputbox"
+				label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_FIRSTNAME"
+				description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_FIRSTNAME" 
+				filter="safehtml" /> 
+
+		<field 	name="billing_lastname" 
+				type="text" 
+				size="40" 
+				class="inputbox"
+				label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_LASTNAME"
+				description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_LASTNAME" 
+				filter="safehtml" /> 
+
+		<field 	name="billing_function" 
+				type="text" 
+				size="40" 
+				class="inputbox"
+				label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_FUNCTION"
+				description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_FUNCTION" 
+				filter="safehtml" /> 
+
+		<field 	name="billing_address" 
+				type="text" 
+				size="40" 
+				class="inputbox"
+				label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_ADDRESS"
+				description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_ADDRESS" 
+				filter="safehtml" /> 
+
+		<field 	name="billing_addresscomplement" 
+				type="text" 
+				size="40" 
+				class="inputbox"
+				label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_ADDRESSCOMPLEMENT"
+				description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_ADDRESSCOMPLEMENT" 
+				filter="safehtml" /> 
+
+		<field 	name="billing_postalcode" 
+				type="text" 
+				size="40" 
+				class="inputbox"
+				label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_POSTALCODE"
+				description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_POSTALCODE" 
+				filter="safehtml" /> 
+
+		<field 	name="billing_postalbox" 
+				type="text" 
+				size="40" 
+				class="inputbox"
+				label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_POSTALBOX"
+				description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_POSTALBOX" 
+				filter="safehtml" /> 
+
+		<field 	name="billing_locality" 
+				type="text" 
+				size="40" 
+				class="inputbox"
+				label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_LOCALITY"
+				description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_LOCALITY" 
+				filter="safehtml" /> 
+
+		<field 	name="billing_country" 
+				type="text" 
+				size="40" 
+				class="inputbox"
+				label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_COUNTRY"
+				description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_COUNTRY" 
+				filter="safehtml" /> 
+
+		<field 	name="billing_phone" 
+				type="text" 
+				size="40" 
+				class="inputbox"
+				label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_PHONE"
+				description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_PHONE" 
+				filter="safehtml" /> 
+
+		<field 	name="billing_mobile" 
+				type="text" 
+				size="40" 
+				class="inputbox"
+				label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_MOBILE"
+				description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_MOBILE" 
+				filter="safehtml" /> 
+
+		<field 	name="billing_fax" 
+				type="text" 
+				size="40" 
+				class="inputbox"
+				label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_FAX"
+				description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_FAX" 
+				filter="safehtml" /> 
+
+		<field 	name="billing_email" 
+				type="text" 
+				size="40" 
+				class="inputbox"
+				label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_EMAIL"
+				description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_EMAIL" 
+				filter="safehtml" /> 
+
+		<field 	id="billing_sameascontact" 
+				name="billing_sameascontact" 
+				type="radio"
+				class="inputbox"
+				label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_SAMEASCONTACT"
+				description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_SAMEASCONTACT" 
+				default="1" 	>
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field> 
+
+		<field  name="billing_state"
+				type="list"
+				label="JSTATUS"
+				description="JFIELD_PUBLISHED_DESC"
+				class="inputbox"
+				size="1"
+				default="1">
+			<option value="1">JPUBLISHED</option>
+			<option value="0">JUNPUBLISHED</option>
+		</field> 
+
+		<field name="billing_checked_out" type="hidden" filter="unset" />
+		<field name="billing_checked_out_time" type="hidden" filter="unset" />
+		<field  name="billing_guid" type="hidden" filter="unset" />
+		<field  name="billing_user_id" type="hidden" filter="unset" />
+		<field  name="billing_id" type="hidden" filter="unset" />
+		<field  name="billing_addresstype_id" type="hidden" filter="unset" value = "2" />
+		 
 	</fieldset>
 </form>

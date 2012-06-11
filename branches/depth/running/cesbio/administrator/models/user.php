@@ -89,9 +89,9 @@ class Easysdi_coreModeluser extends JModelAdmin
 	public function getItem($pk = null)
 	{
 		if ($item = parent::getItem($pk)) {
-
-			//Do any procesing on fields here if needed
-
+			//Join address information
+			
+			
 		}
 
 		return $item;
