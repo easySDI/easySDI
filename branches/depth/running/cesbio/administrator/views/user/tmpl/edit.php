@@ -100,11 +100,85 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
 			<?php echo JHtml::_('sliders.panel', JText::_('COM_EASYSDI_CORE_FIELDSET_BILLINGADDRESS'), 'billingaddress-details'); ?>
 			<fieldset class="adminform">
 				<ul class="adminformlist">
-				<li><?php echo $this->billingaddressform->getLabel('id'); ?>
-			<?php echo $this->billingaddressform->getInput('id'); ?></li>
+					<li><?php echo $this->billingaddressform->getLabel('id'); ?>
+					<?php echo $this->billingaddressform->getInput('id'); ?></li>
             
-			<li><?php echo $this->billingaddressform->getLabel('guid'); ?>
-			<?php echo $this->billingaddressform->getInput('guid'); ?></li>
+					<li><?php echo $this->billingaddressform->getLabel('guid'); ?>
+					<?php echo $this->billingaddressform->getInput('guid'); ?></li>
+					
+					<li><?php echo $this->billingaddressform->getLabel('addresstype_id'); ?>
+					<?php echo $this->billingaddressform->getInput('addresstype_id'); ?></li>
+					
+					<li><?php echo $this->billingaddressform->getLabel('user_id'); ?>
+					<?php echo $this->billingaddressform->getInput('user_id'); ?></li>
+							
+					<li><?php echo $this->form->getLabel('organismcomplement'); ?>
+					<?php echo $this->form->getInput('organismcomplement'); ?></li>
+		
+		            
+					<li><?php echo $this->billingaddressform->getLabel('organism'); ?>
+					<?php echo $this->billingaddressform->getInput('organism'); ?></li>
+		
+		            
+					<li><?php echo $this->billingaddressform->getLabel('civility'); ?>
+					<?php echo $this->billingaddressform->getInput('civility'); ?></li>
+		
+		            
+					<li><?php echo $this->billingaddressform->getLabel('firstname'); ?>
+					<?php echo $this->billingaddressform->getInput('firstname'); ?></li>
+		
+		            
+					<li><?php echo $this->billingaddressform->getLabel('lastname'); ?>
+					<?php echo $this->billingaddressform->getInput('lastname'); ?></li>
+		
+		            
+					<li><?php echo $this->billingaddressform->getLabel('function'); ?>
+					<?php echo $this->billingaddressform->getInput('function'); ?></li>
+		
+		            
+					<li><?php echo $this->billingaddressform->getLabel('address'); ?>
+					<?php echo $this->billingaddressform->getInput('address'); ?></li>
+		
+		            
+					<li><?php echo $this->billingaddressform->getLabel('addresscomplement'); ?>
+					<?php echo $this->billingaddressform->getInput('addresscomplement'); ?></li>
+		
+		            
+					<li><?php echo $this->billingaddressform->getLabel('postalcode'); ?>
+					<?php echo $this->billingaddressform->getInput('postalcode'); ?></li>
+		
+		            
+					<li><?php echo $this->billingaddressform->getLabel('postalbox'); ?>
+					<?php echo $this->billingaddressform->getInput('postalbox'); ?></li>
+		
+		            
+					<li><?php echo $this->billingaddressform->getLabel('locality'); ?>
+					<?php echo $this->billingaddressform->getInput('locality'); ?></li>
+		
+		            
+					<li><?php echo $this->billingaddressform->getLabel('country'); ?>
+					<?php echo $this->billingaddressform->getInput('country'); ?></li>
+		
+		            
+					<li><?php echo $this->billingaddressform->getLabel('phone'); ?>
+					<?php echo $this->billingaddressform->getInput('phone'); ?></li>
+		
+		            
+					<li><?php echo $this->billingaddressform->getLabel('mobile'); ?>
+					<?php echo $this->billingaddressform->getInput('mobile'); ?></li>
+		
+		            
+					<li><?php echo $this->billingaddressform->getLabel('fax'); ?>
+					<?php echo $this->billingaddressform->getInput('fax'); ?></li>
+		
+		            
+					<li><?php echo $this->billingaddressform->getLabel('email'); ?>
+					<?php echo $this->billingaddressform->getInput('email'); ?></li>
+		
+		            
+					<li><?php echo $this->billingaddressform->getLabel('sameascontact'); ?>
+					<?php echo $this->billingaddressform->getInput('sameascontact'); ?></li>
+					
 					
 				</ul>
 			</fieldset>

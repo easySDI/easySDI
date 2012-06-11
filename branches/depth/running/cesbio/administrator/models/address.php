@@ -51,7 +51,6 @@ class Easysdi_coreModeladdress extends JModelAdmin
 		//$date is th user id
 		// Initialise variables.
 		$app	= JFactory::getApplication();
-// 		$this->user_id = $data;
 		
 		// Get the form.
 		$form = $this->loadForm('com_easysdi_core.address', 'address', array('control' => 'jform', 'load_data' => $loadData));
@@ -59,6 +58,33 @@ class Easysdi_coreModeladdress extends JModelAdmin
 			return false;
 		}
 
+		return $form;
+	}
+	
+	/**
+	 * Method to get the record form.
+	 *
+	 * @param	array	$data		An optional array of data for the form to interogate.
+	 * @param	boolean	$loadData	True if the form is to load its own data (default case), false if not.
+	 * @return	JForm	A JForm object on success, false on failure
+	 * @since	1.6
+	 */
+	public function getFormForUserForm($user_id, $addresstype_id, $loadData = true)
+	{
+		//$date is th user id
+		// Initialise variables.
+		$app	= JFactory::getApplication();
+	
+		//To load by user_id the address object, param $data is used to hold the user_id value
+		$this->user_id = $user_id;
+		$this->addresstype_id = $addresstype_id;
+	
+		// Get the form.
+		$form = $this->loadForm('com_easysdi_core.address', 'address', array('control' => 'jform', 'load_data' => $loadData));
+		if (empty($form)) {
+			return false;
+		}
+	
 		return $form;
 	}
 
@@ -70,6 +96,7 @@ class Easysdi_coreModeladdress extends JModelAdmin
 	 */
 	protected function loadFormData()
 	{
+		
 		// Check the session for previously entered form data.
 		$data = JFactory::getApplication()->getUserState('com_easysdi_core.edit.address.data', array());
 		
@@ -92,33 +119,32 @@ class Easysdi_coreModeladdress extends JModelAdmin
 	 */
 	public function getItem($pk = null)
 	{
-// 		$table = $this->getTable();
-
-// 		$return = $table->load($this->user_id);
-
-// 		if ($return === false && $table->getError())
-// 		{
-// 			$this->setError($table->getError());
-// 			return false;
-// 		}
-	
-// 		// Convert to the JObject before adding other data.
-// 		$properties = $table->getProperties(1);
-// 		$item = JArrayHelper::toObject($properties, 'JObject');
-
-// 		if (property_exists($item, 'params'))
-// 		{
-// 			$registry = new JRegistry;
-// 			$registry->loadString($item->params);
-// 			$item->params = $registry->toArray();
-// 		}
-
-		if ($item = parent::getItem($pk)) {
-		
-			//Do any procesing on fields here if needed
-		
+		//Get Item by User Id
+		if(isset($this->user_id)){
+			$table = $this->getTable();
+			$return = $table->loadByUserID($this->user_id,$this->addresstype_id );
+			if ($return === false && $table->getError())
+			{
+				$this->setError($table->getError());
+				return false;
+			}
+			// Convert to the JObject before adding other data.
+			$properties = $table->getProperties(1);
+			$item = JArrayHelper::toObject($properties, 'JObject');
+			
+			if (property_exists($item, 'params'))
+			{
+				$registry = new JRegistry;
+				$registry->loadString($item->params);
+				$item->params = $registry->toArray();
+			}
+			
+			return $item;
+		}else{//Get item by Id
+			if ($item = parent::getItem($pk)) {
+				//Do any procesing on fields here if needed
+			}
 		}
-		return $item;
 	}
 
 	/**

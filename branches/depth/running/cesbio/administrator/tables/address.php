@@ -143,64 +143,65 @@ class Easysdi_coreTableaddress extends JTable
         return true;
     }
     
-//     /**
-//      * Method to load a row from the database by primary key and bind the fields
-//      * to the JTable instance properties.
-//      *
-//      * @param   mixed    $keys   An optional primary key value to load the row by, or an array of fields to match.  If not
-//      * set the instance property value is used.
-//      * @param   boolean  $reset  True to reset the default values before loading the new row.
-//      *
-//      * @return  boolean  True if successful. False if row not found or on error (internal error state set in that case).
-//      *
-//      * @link    http://docs.joomla.org/JTable/load
-//      * @since   11.1
-//      */
-//     public function load($user_id = null, $reset = true)
-//     {
-//     	if ($reset)
-//     	{
-//     		$this->reset();
-//     	}
+    /**
+     * Method to load a row from the database by primary key and bind the fields
+     * to the JTable instance properties.
+     *
+     * @param   mixed    $keys   An optional primary key value to load the row by, or an array of fields to match.  If not
+     * set the instance property value is used.
+     * @param   boolean  $reset  True to reset the default values before loading the new row.
+     *
+     * @return  boolean  True if successful. False if row not found or on error (internal error state set in that case).
+     *
+     * @link    http://docs.joomla.org/JTable/load
+     * @since   11.1
+     */
+    public function loadByUserID($user_id = null,$addresstype_id=null, $reset = true)
+    {
+    	if ($reset)
+    	{
+    		$this->reset();
+    	}
     
-//     	// Initialise the query.
-//     	$query = $this->_db->getQuery(true);
-//     	$query->select('*');
-//     	$query->from($this->_tbl);
-//     	$query->where($this->_db->quoteName('user_id') . ' = ' . (int) $user_id);
+    	// Initialise the query.
+    	$query = $this->_db->getQuery(true);
+    	$query->select('*');
+    	$query->from($this->_tbl);
+    	$query->where($this->_db->quoteName('user_id') . ' = ' . (int) $user_id);
+    	$query->where($this->_db->quoteName('addresstype_id') . ' = ' . (int) $addresstype_id);
     	
-//     	$this->_db->setQuery($query);
+    	$this->_db->setQuery($query);
     
-//     	try
-//     	{
-//     		$row = $this->_db->loadAssoc();
-//     	}
-//     	catch (JDatabaseException $e)
-//     	{
-//     		$je = new JException($e->getMessage());
-//     		$this->setError($je);
-//     		return false;
-//     	}
+    	try
+    	{
+    		$row = $this->_db->loadAssoc();
+    	}
+    	catch (JDatabaseException $e)
+    	{
+    		$je = new JException($e->getMessage());
+    		$this->setError($je);
+    		return false;
+    	}
     
-//     	// Legacy error handling switch based on the JError::$legacy switch.
-//     	// @deprecated  12.1
-//     	if (JError::$legacy && $this->_db->getErrorNum())
-//     	{
-//     		$e = new JException($this->_db->getErrorMsg());
-//     		$this->setError($e);
-//     		return false;
-//     	}
+    	// Legacy error handling switch based on the JError::$legacy switch.
+    	// @deprecated  12.1
+    	if (JError::$legacy && $this->_db->getErrorNum())
+    	{
+    		$e = new JException($this->_db->getErrorMsg());
+    		$this->setError($e);
+    		return false;
+    	}
     
-//     	// Check that we have a result.
-//     	if (empty($row))
-//     	{
-//     		$e = new JException(JText::_('JLIB_DATABASE_ERROR_EMPTY_ROW_RETURNED'));
-//     		$this->setError($e);
-//     		return false;
-//     	}
+    	// Check that we have a result.
+    	if (empty($row))
+    	{
+    		$e = new JException(JText::_('JLIB_DATABASE_ERROR_EMPTY_ROW_RETURNED'));
+    		$this->setError($e);
+    		return false;
+    	}
     
-//     	// Bind the object with the row and return.
-//     	return $this->bind($row);
-//     }
+    	// Bind the object with the row and return.
+    	return $this->bind($row);
+    }
 
 }

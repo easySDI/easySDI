@@ -1,14 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
 	<fieldset>
-		<field 	name="id" 
-				type="text" 
-				default="0" 
-				label="JGLOBAL_FIELD_ID_LABEL"
-				readonly="true" 
-				class="readonly"
-				description="JGLOBAL_FIELD_ID_DESC" /> 
-
 		<field 	name="alias" 
 				type="text" 
 				size="40" 
@@ -47,24 +39,6 @@
 				default="0000-00-00 00:00:00" 
 				label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_MODIFIED"
 				description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_MODIFIED" 
-				filter="safehtml" /> 
-
-		<field 	name="user_id" 
-				type="sql" 
-				class="inputbox"
-				label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_USER_ID"
-				description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_USER_ID" 
-				required="true" 
-				query="SELECT 0 AS id, '- Please select -' AS id UNION SELECT id, id FROM #__sdi_user" key_field="id" value_field="id"
-				/> 
-
-		<field 	name="addresstype_id" 
-				type="text" 
-				size="40" 
-				class="inputbox"
-				label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_ADDRESSTYPE_ID"
-				description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_ADDRESSTYPE_ID" 
-				required="true" 
 				filter="safehtml" /> 
 
 		<field 	name="organismcomplement" 
@@ -220,6 +194,9 @@
 		<field name="checked_out" type="hidden" filter="unset" />
 		<field name="checked_out_time" type="hidden" filter="unset" />
 		<field  name="guid" type="hidden" filter="unset" />
+		<field  name="user_id" type="hidden" filter="unset" />
+		<field  name="id" type="hidden" filter="unset" />
+		<field  name="addresstype_id" type="hidden" filter="unset" />
 		 
 	</fieldset>
 
