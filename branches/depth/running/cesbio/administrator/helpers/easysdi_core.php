@@ -94,4 +94,77 @@ class Easysdi_coreHelper
 	        mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535) // 48 bits for "node"  
 	    );
 	}
+
+ /**
+     * Execute all the needed requests on the remote server to achieve the negociation version.
+     * Result of those requests are a list of supported versions by the remote server.
+     * @param string $url : url of the remote server
+     * @param string $user : user for authentication, if needed
+     * @param string $password : password for authentication, if needed
+     * @param string $service : service type (WFS, WMS, CSW or WMTS)
+     */
+    public static function negociation($url,$user,$password,$service){
+    	echo 'negociation';
+    	die();
+    	
+    	$supported_versions = array();
+    	$versions_array = json_decode($availableVersions,true);
+    
+    	$urlWithPassword = $url;
+    
+    	//Authentication
+    	if($service === "CSW"){
+    		//Perform a geonetwork login
+    		$ch = curl_init();
+    		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    		curl_setopt($ch, CURLOPT_URL, $url);
+    		curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
+    		curl_setopt ($ch, CURLOPT_COOKIEJAR, "cookie.txt");
+    		curl_setopt ($ch, CURLOPT_POSTFIELDS, "username=".$user."&password=".$password);
+    		ob_start();
+    		curl_exec ($ch);
+    		ob_end_clean();
+    		curl_close ($ch);
+    		unset($ch);
+    	}else{
+    		if (strlen($user)!=null && strlen($password)!=null){
+    			if (strlen($user)>0 && strlen($password)>0){
+    				if (strpos($url,"http:")===False){
+    					$urlWithPassword =  "https://".$user.":".$password."@".substr($url,8);
+    				}else{
+    					$urlWithPassword =  "http://".$user.":".$password."@".substr($url,7);
+    				}
+    			}
+    		}
+    	}
+    
+    	$pos1 = stripos($urlWithPassword, "?");
+    	$separator = "&";
+    	if ($pos1 === false) {
+    		//"?" Not found then use ? instead of &
+    		$separator = "?";
+    	}
+    
+    	$completeurl = "";
+    	foreach ($versions_array as $version){
+    		$completeurl = $urlWithPassword.$separator."REQUEST=GetCapabilities&SERVICE=".$service."&VERSION=".$version;
+    		$xmlCapa = simplexml_load_file($completeurl);
+    			
+    		if ($xmlCapa === false){
+    			global $mainframe;
+    			$mainframe->enqueueMessage(JText::_('EASYSDI_UNABLE TO RETRIEVE THE CAPABILITIES OF THE REMOTE SERVER' )." - ".$completeurl,'error');
+    		}else{
+    			foreach ($xmlCapa->attributes() as $key => $value){
+    				if($key == 'version'){
+    					if($value == $version)
+    						$supported_versions[]=$version;
+    				}
+    			}
+    		}
+    	}
+    
+    	$encoded = json_encode($supported_versions);
+    	echo $encoded;
+    	die();
+    }
 }

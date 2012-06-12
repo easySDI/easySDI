@@ -26,5 +26,7 @@ class Easysdi_coreControllerService extends JControllerForm
         $this->view_list = 'services';
         parent::__construct();
     }
+    
+   
 
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
-	<fieldset addfieldpath="/administrator/components/com_categories/models/fields">
+	<fieldset name="details" addfieldpath="/administrator/components/com_categories/models/fields">
 		<field 	name="id" 
 				type="text" 
 				default="0" 
@@ -8,7 +8,6 @@
                 readonly="true" 
 				class="readonly"
                 description="JGLOBAL_FIELD_ID_DESC" /> 
-
 		<field 	name="alias" 
 				type="text" 
 				size="40" 
@@ -35,17 +34,6 @@
                 required="true" 
                 query="SELECT 0 AS id, '- Please select -' AS value UNION SELECT id, value FROM #__sdi_sys_serviceconnector" key_field="id" value_field="value"
                  /> 
-
-		<field 	id="published" 
-				name="published" 
-				type="radio"
-                class="inputbox"
-				label="COM_EASYSDI_CORE_FORM_LBL_SERVICE_PUBLISHED"
-				description="COM_EASYSDI_CORE_FORM_DESC_SERVICE_PUBLISHED" 
-				default="0" >
-			<option value="0">JNO</option>
-			<option value="1">JYES</option>
-		</field> 
 
 		<field 	name="access"
 				type="accesslevel"
@@ -119,14 +107,11 @@
 				label="COM_EASYSDI_CORE_FORM_LBL_SERVICE_SERVICEPASSWORD"
 				description="COM_EASYSDI_CORE_FORM_DESC_SERVICE_SERVICEPASSWORD" 
                 filter="safehtml" /> 
-
-		<field 	name="params" 
-				type="text" 
-				size="40" 
+        
+        <field 	name="negociation" 
+				type="negociationaction" 
 				class="inputbox"
-				label="COM_EASYSDI_CORE_FORM_LBL_SERVICE_PARAMS"
-				description="COM_EASYSDI_CORE_FORM_DESC_SERVICE_PARAMS" 
-                filter="safehtml" /> 
+				filter="safehtml" /> 
 
 		<field  name="state"
                 type="list"
@@ -138,7 +123,12 @@
 			<option value="1">JPUBLISHED</option>
 			<option value="0">JUNPUBLISHED</option>
 		</field> 
-
+		
+		<field name="checked_out" type="hidden" filter="unset" />
+		<field name="checked_out_time" type="hidden" filter="unset" />
+		<field  name="guid" type="hidden" filter="unset" />
+</fieldset>
+<fieldset name="publishing">
 		<field 	name="created_by" 
 				type="user" 
 				class="readonly"
@@ -171,8 +161,6 @@
 				description="COM_EASYSDI_CORE_FORM_DESC_SERVICE_MODIFIED" 
                 filter="safehtml" /> 
                 
-		<field name="checked_out" type="hidden" filter="unset" />
-		<field name="checked_out_time" type="hidden" filter="unset" />
-		<field  name="guid" type="hidden" filter="unset" />
+		
 	</fieldset>
 </form>

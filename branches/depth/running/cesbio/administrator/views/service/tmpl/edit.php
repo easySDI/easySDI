@@ -26,6 +26,89 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
 			alert('<?php echo $this->escape(JText::_('JGLOBAL_VALIDATION_FORM_FAILED'));?>');
 		}
 	}
+
+	var request;
+	
+	/**
+	 * @function negoVersionServer
+	 * Build the request for the proxy PHP that will perform the negociation version.
+	 */
+	function negoVersionService(){
+		var url = document.getElementById("jform_resourceurl").value;
+		var user = document.getElementById("jform_resourceusername").value;
+		var password = document.getElementById("jform_resourcepassword").value;
+		var serviceSelector = document.getElementById("jform_serviceconnector_id");
+		var service = serviceSelector.options[serviceSelector.selectedIndex].text;
+		
+	    request = getHTTPObject();
+	   // document.getElementById("progress").style.visibility = "visible";
+	    request.onreadystatechange = getSupportedVersions;
+	    request.open("GET", "index.php?option=com_easysdi_core&task=negociation&url="+url+"&user="+user+"&password="+password+"&service="+service, true);
+	    request.send(null);
+	}
+
+	/**
+	 * Instantiate Http Request
+	 */
+	function getHTTPObject(){
+	    var xhr = false;
+	    if (window.XMLHttpRequest){
+	        xhr = new XMLHttpRequest();
+	    } else if (window.ActiveXObject) {
+	        try{
+	            xhr = new ActiveXObject("Msxml2.XMLHTTP");
+	        }catch(e){
+	            try{
+	                xhr = new ActiveXObject("Microsoft.XMLHTTP");
+	            }catch(e){
+	                xhr = false;
+	            }
+	        }
+	    }
+	    return xhr;
+	}
+
+	/**
+	 * @function getSupportedVersions
+	 * Get the request response and fill appropriate fields in the document
+	 */
+	function getSupportedVersions()
+	{
+	    // if request object received response
+	    if(request.readyState == 4){
+	    //	document.getElementById("progress").style.visibility = "hidden";
+			var JSONtext = request.responseText;
+			
+			//Set the supported versions (for the server)
+	/*		var JSONobject = JSON.parse(JSONtext, function (key, value) {
+			    var type;
+			    if (value && typeof value === 'string') {
+			    	var version = document.getElementById(value+"_"+currentServerIndex);
+			    	version.setAttribute("class","supportedversion");
+			    	document.getElementById(value+"_"+currentServerIndex+"_state").value = "supported";
+			    	unsupportedVersions = unsupportedVersions.remove(value);
+			    }
+			});*/
+
+			//None of the available versions are supported by the remote server
+			//Send a negotiation error
+/*			if(availableVersions.length == unsupportedVersions.length){
+				document.getElementById("supportedVersionsByConfig").value=JSON.stringify(new Array('NA'));
+				removeAllElementChild( document.getElementById("supportedVersionsByConfigText"));
+				document.getElementById("supportedVersionsByConfigText").appendChild(createSupportedVersionByConfigTable(new Array('NA'))) ;
+				return;
+			}*/
+
+			//Set the unsupported versions (for the server)
+	/*		var len = unsupportedVersions.length;
+			for (var i = 0; i<len; i++) {
+				var version = document.getElementById(unsupportedVersions[i]+"_"+currentServerIndex);
+		    	version.setAttribute("class","unsupportedversion");
+		    	document.getElementById(unsupportedVersions[i]+"_"+currentServerIndex+"_state").value = "unsupported";
+			}*/
+
+	    }
+	}
 </script>
 
 <form action="<?php echo JRoute::_('index.php?option=com_easysdi_core&layout=edit&id='.(int) $this->item->id); ?>" method="post" name="adminForm" id="service-form" class="form-validate">
@@ -34,70 +117,12 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
 			<legend><?php echo JText::_('COM_EASYSDI_CORE_LEGEND_SERVICE'); ?></legend>
 			<ul class="adminformlist">
             
-				<li><?php echo $this->form->getLabel('id'); ?>
-				<?php echo $this->form->getInput('id'); ?></li>
-	
-	            
-				<li><?php echo $this->form->getLabel('guid'); ?>
-				<?php echo $this->form->getInput('guid'); ?></li>
-	
-	            
-				<li><?php echo $this->form->getLabel('alias'); ?>
-				<?php echo $this->form->getInput('alias'); ?></li>
-	            
-				<li><?php echo $this->form->getLabel('name'); ?>
-				<?php echo $this->form->getInput('name'); ?></li>
-	
-				<li><?php echo $this->form->getLabel('state'); ?>
-	            <?php echo $this->form->getInput('state'); ?></li>
-	            
-	            <li><?php echo $this->form->getLabel('access'); ?>
-				<?php echo $this->form->getInput('access'); ?></li>
-				
-				<li><?php echo $this->form->getLabel('serviceconnector_id'); ?>
-				<?php echo $this->form->getInput('serviceconnector_id'); ?></li>
-	
-	            <li><?php echo $this->form->getLabel('resourceauthentication_id'); ?>
-				<?php echo $this->form->getInput('resourceauthentication_id'); ?></li>
-	
-	            
-				<li><?php echo $this->form->getLabel('resourceurl'); ?>
-				<?php echo $this->form->getInput('resourceurl'); ?></li>
-	
-	            
-				<li><?php echo $this->form->getLabel('resourceusername'); ?>
-				<?php echo $this->form->getInput('resourceusername'); ?></li>
-	
-	            
-				<li><?php echo $this->form->getLabel('resourcepassword'); ?>
-				<?php echo $this->form->getInput('resourcepassword'); ?></li>
-	
-	            
-				<li><?php echo $this->form->getLabel('serviceauthentication_id'); ?>
-				<?php echo $this->form->getInput('serviceauthentication_id'); ?></li>
-	
-	            
-				<li><?php echo $this->form->getLabel('serviceurl'); ?>
-				<?php echo $this->form->getInput('serviceurl'); ?></li>
-	
-	            
-				<li><?php echo $this->form->getLabel('serviceusername'); ?>
-				<?php echo $this->form->getInput('serviceusername'); ?></li>
-	
-	            
-				<li><?php echo $this->form->getLabel('servicepassword'); ?>
-				<?php echo $this->form->getInput('servicepassword'); ?></li>
-	
-	            
-				<li><?php echo $this->form->getLabel('catid'); ?>
-				<?php echo $this->form->getInput('catid'); ?></li>
-				
-				<li><?php echo $this->form->getLabel('checked_out'); ?>
-	            <?php echo $this->form->getInput('checked_out'); ?></li>
-	            
-	            <li><?php echo $this->form->getLabel('checked_out_time'); ?>
-	            <?php echo $this->form->getInput('checked_out_time'); ?></li>
-			
+	            <ul class="adminformlist">
+					<?php foreach($this->form->getFieldset('details') as $field): ?>
+						<li><?php echo $field->label;echo $field->input;?></li>
+					<?php endforeach; ?>
+				</ul>
+            
              </ul>
 		</fieldset>
 	</div>
