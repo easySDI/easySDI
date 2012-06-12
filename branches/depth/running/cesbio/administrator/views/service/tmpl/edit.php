@@ -87,33 +87,26 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
 			var JSONtext = request.responseText;
 			
 			//Set the supported versions (for the server)
-	/*		var JSONobject = JSON.parse(JSONtext, function (key, value) {
-			    var type;
-			    if (value && typeof value === 'string') {
-			    	var version = document.getElementById(value+"_"+currentServerIndex);
-			    	version.setAttribute("class","supportedversion");
-			    	document.getElementById(value+"_"+currentServerIndex+"_state").value = "supported";
-			    	unsupportedVersions = unsupportedVersions.remove(value);
+			var strcompliance="";
+			var JSONobject = JSON.parse(JSONtext, function (key, value) {
+				var type;
+			    if(key && typeof key === 'string' && key == 'ERROR'){
+			    	dv=document.createElement('div');
+			    	txt=document.createTextNode(value);
+			    	dv.appendChild(txt);
+			    	document.getElementById('div-negotiatedversions').appendChild(dv);
 			    }
-			});*/
+			    if (value && typeof value === 'string') {
+			    	dv=document.createElement('div');
+			    	dv.className = "supportedversion";
+			    	txt=document.createTextNode(value);
+			    	dv.appendChild(txt);
+			    	document.getElementById('div-negotiatedversions').appendChild(dv);
 
-			//None of the available versions are supported by the remote server
-			//Send a negotiation error
-/*			if(availableVersions.length == unsupportedVersions.length){
-				document.getElementById("supportedVersionsByConfig").value=JSON.stringify(new Array('NA'));
-				removeAllElementChild( document.getElementById("supportedVersionsByConfigText"));
-				document.getElementById("supportedVersionsByConfigText").appendChild(createSupportedVersionByConfigTable(new Array('NA'))) ;
-				return;
-			}*/
-
-			//Set the unsupported versions (for the server)
-	/*		var len = unsupportedVersions.length;
-			for (var i = 0; i<len; i++) {
-				var version = document.getElementById(unsupportedVersions[i]+"_"+currentServerIndex);
-		    	version.setAttribute("class","unsupportedversion");
-		    	document.getElementById(unsupportedVersions[i]+"_"+currentServerIndex+"_state").value = "unsupported";
-			}*/
-
+			    	strcompliance = strcompliance + key +',';
+			    }
+			});
+			document.getElementById('jform_compliance').value = strcompliance;
 	    }
 	}
 </script>

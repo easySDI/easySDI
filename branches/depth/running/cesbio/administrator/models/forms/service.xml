@@ -124,6 +124,7 @@
 		<field name="checked_out" type="hidden" filter="unset" />
 		<field name="checked_out_time" type="hidden" filter="unset" />
 		<field  name="guid" type="hidden" filter="unset" />
+		<field  name="compliance" id="compliance" type="hidden" filter="unset" />
 </fieldset>
 
 <fieldset name="negotiation">
@@ -133,9 +134,9 @@
 				description="COM_EASYSDI_CORE_FORM_DESC_SERVICE_NEGOTIATION" 
 				filter="safehtml" />
 				 
-		<field 	name="supportedversions" 
-				type="supportedversions" 
-				class="cls-supportedversions"
+		<field 	name="negotiatedversions" 
+				type="negotiatedversions" 
+				class="readonly"
 				label="COM_EASYSDI_CORE_FORM_LBL_SERVICE_SUPPORTEDVERSIONS"
 				description="COM_EASYSDI_CORE_FORM_DESC_SERVICE_SUPPORTEDVERSIONS"
 				filter="safehtml" /> 

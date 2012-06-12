@@ -160,7 +160,7 @@ class Easysdi_coreHelper
     
     	//Get the implemented version of the requested ServiceConnector
     	$db =& JFactory::getDBO();
-    	$query = "SELECT sv.value 
+    	$query = "SELECT c.id as id, sv.value as value 
     						FROM #__sdi_sys_serviceconnector sc 
     						INNER JOIN #__sdi_sys_servicecompliance c ON c.serviceconnector_id = sc.id
     						INNER JOIN #__sdi_sys_serviceversion sv ON c.serviceversion_id = sv.id
@@ -168,21 +168,25 @@ class Easysdi_coreHelper
     						AND sc.value = '".$service."'
     	";
     	$db->setQuery($query);
-    	$implemented_versions= $db->loadResultArray();
+    	$implemented_versions= $db->loadObjectList();
 
     	$completeurl = "";
     	foreach ($implemented_versions as $version){
-    		$completeurl = $urlWithPassword.$separator."REQUEST=GetCapabilities&SERVICE=".$service."&VERSION=".$version;
+    		$completeurl = $urlWithPassword.$separator."REQUEST=GetCapabilities&SERVICE=".$service."&VERSION=".$version->value;
     		
     		$xmlCapa = simplexml_load_file($completeurl);
-    		if ($xmlCapa === false){
-    			global $mainframe;
-    			$mainframe->enqueueMessage(JText::_('EASYSDI_UNABLE TO RETRIEVE THE CAPABILITIES OF THE REMOTE SERVER' )." - ".$completeurl,'error');
-    		}else{
+    		if ($xmlCapa === false)
+    		{
+    			$supported_versions['ERROR']=JText::_('COM_EASYSDI_CORE_FORM_DESC_SERVICE_NEGOTIATION_ERROR');
+    			echo json_encode($supported_versions);
+		    	die();
+    		}
+    		else
+    		{
     			foreach ($xmlCapa->attributes() as $key => $value){
     				if($key == 'version'){
-    					if($value == $version)
-    						$supported_versions[]=$version;
+    					if($value == $version->value)
+    						$supported_versions[$version->id]=$version->value;
     				}
     			}
     		}

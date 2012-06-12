@@ -20,7 +20,7 @@ class JFormFieldNegotiatedVersions extends JFormField {
 		$html = array();
 		
 		// Start the action field output.
-		$html[] = '<div id="div-supportedversions" class="' . (string) $this->element['class'] . '"></>';
+		$html[] = '<div id="div-negotiatedversions" class="' . (string) $this->element['class'] . '"></div>';
 		
 		return implode($html);
 
