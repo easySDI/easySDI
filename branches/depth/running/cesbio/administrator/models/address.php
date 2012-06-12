@@ -111,7 +111,7 @@ class Easysdi_coreModeladdress extends JModelAdmin
 	/**
 	 * Method to get a single record.
 	 *
-	 * @param	$user_id 	integer		The id of the user.
+	 * @param	$user_id 			integer		The id of the user.
 	 * @param	$addresstype_id 	integer		The id of the addresstype.
 	 *
 	 * @return	mixed	Object on success, false on failure.
@@ -127,7 +127,7 @@ class Easysdi_coreModeladdress extends JModelAdmin
 	}
 	
 	/**
-	 * Method to get a single record.
+	 * Overloaded method to get a single record.
 	 *
 	 * @param	integer	The id of the primary key.
 	 *

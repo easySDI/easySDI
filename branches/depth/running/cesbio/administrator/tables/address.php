@@ -144,17 +144,16 @@ class Easysdi_coreTableaddress extends JTable
     }
     
     /**
-     * Method to load a row from the database by primary key and bind the fields
+     * Method to load a row from the database by user id and address type, and bind the fields
      * to the JTable instance properties.
      *
-     * @param   mixed    $keys   An optional primary key value to load the row by, or an array of fields to match.  If not
-     * set the instance property value is used.
-     * @param   boolean  $reset  True to reset the default values before loading the new row.
+     * @param   integer    	$user_id   			User identifier
+     * @param   integer  	$addresstype_id  	Address type identifier
      *
      * @return  boolean  True if successful. False if row not found or on error (internal error state set in that case).
      *
      * @link    http://docs.joomla.org/JTable/load
-     * @since   11.1
+     * @since   EasySDI 3.0.0
      */
     public function loadByUserID($user_id = null,$addresstype_id=null, $reset = true)
     {
@@ -205,6 +204,19 @@ class Easysdi_coreTableaddress extends JTable
     	return $this->bind($row);
     }
 
+    /**
+     * Overloaded save function to bind the posted data to the table fields
+     *
+     * @param   mixed    	$src   			posted data
+     * @param   string  	$type  			Address type alias ('billing', 'contact' or 'delivry')
+     * @param 	mixed		$orderingFilter	Param for the parent 'save' funtion 
+     * @param 	mixed		$ignore			Param for the parent 'save' funtion
+     *
+     * @return  boolean  True if successful. False if on error (internal error state set in that case).
+     *
+     * @link    http://docs.joomla.org/JTable/save
+     * @since   EasySDI 3.0.0
+     */
     public function save($src,$type, $orderingFilter = '', $ignore = '')
     {
     	$data =array();

@@ -30,17 +30,23 @@ class Easysdi_coreControllerUser extends JControllerForm
 
     }
     
+    /**
+     * Overloaded method to save a single user record.
+     *
+     * @since	EasySDI 3.0.0
+     */
     public function save($key =null, $urlVar =null)
     {
     	//Save user first
      	parent::save($key, $urlVar);
     	
-    	//Then save address
+    	//Then save addresses
      	$data =JRequest::getVar('jform', array(), 'post', 'array');
      	
+     	//Instantiate an address JTable
      	$addresstable =& JTable::getInstance('address', 'Easysdi_coreTable');
     	
-    	
+    	//Call the overloaded save function to store the input data
     	if(!$addresstable->save($data, 'billing'))
     	{
     		$this->setError($billingaddresstable->getError());
@@ -79,9 +85,5 @@ class Easysdi_coreControllerUser extends JControllerForm
     		);
     		return false;
     	}
-    	 
-    	
-    	
     }
-
 }
