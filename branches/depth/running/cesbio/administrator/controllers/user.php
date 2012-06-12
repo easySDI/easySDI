@@ -45,24 +45,24 @@ class Easysdi_coreControllerUser extends JControllerForm
      	
      	//Instantiate an address JTable
      	$addresstable =& JTable::getInstance('address', 'Easysdi_coreTable');
-    	
+     	
     	//Call the overloaded save function to store the input data
+     	if(!$addresstable->save($data, 'contact'))
+     	{
+     		$this->setError($addresstable->getError());
+     		$this->setMessage($this->getError(), 'error');
+     		$this->setRedirect(
+     				JRoute::_(
+     						'index.php?option=' . $this->option . '&view=' . $this->view_list
+     						. $this->getRedirectToListAppend(), false
+     				)
+     		);
+     		return false;
+     	}
+     
     	if(!$addresstable->save($data, 'billing'))
     	{
-    		$this->setError($billingaddresstable->getError());
-    		$this->setMessage($this->getError(), 'error');
-    		$this->setRedirect(
-    				JRoute::_(
-    						'index.php?option=' . $this->option . '&view=' . $this->view_list
-    						. $this->getRedirectToListAppend(), false
-    				)
-    		);
-    		return false;
-    	}
-    	
-    	if(!$addresstable->save($data, 'contact'))
-    	{
-    		$this->setError($billingaddresstable->getError());
+    		$this->setError($addresstable->getError());
     		$this->setMessage($this->getError(), 'error');
     		$this->setRedirect(
     				JRoute::_(
@@ -75,7 +75,7 @@ class Easysdi_coreControllerUser extends JControllerForm
     	
     	if(!$addresstable->save($data, 'delivry'))
     	{
-    		$this->setError($billingaddresstable->getError());
+    		$this->setError($addresstable->getError());
     		$this->setMessage($this->getError(), 'error');
     		$this->setRedirect(
     				JRoute::_(

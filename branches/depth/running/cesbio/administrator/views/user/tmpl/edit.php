@@ -26,6 +26,40 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
 			alert('<?php echo $this->escape(JText::_('JGLOBAL_VALIDATION_FORM_FAILED'));?>');
 		}
 	}
+
+	function disableAddressType(disable, type)
+	{
+		var elem = document.getElementById('user-form').elements;
+        for(var i = 0; i < elem.length; i++)
+        {
+        	var tofind = 'jform['+type+'_';
+        	if(elem[i].getAttribute('name') != null ){
+	            if(		   elem[i].getAttribute('name').indexOf(tofind) != -1 
+	    	            && elem[i].getAttribute('name').indexOf('sameascontact') == -1 
+	    	            && elem[i].getAttribute('type') != 'hidden' )
+	            {
+		            elem[i].disabled = disable;
+		            elem[i].value = ''; 
+	            }
+            }
+        } 
+	}
+
+	window.addEvent('domready', function() 
+	{
+		initAddressByType ('billing');
+		initAddressByType ('delivry');
+	})
+
+	function initAddressByType (type)
+	{
+		var elem = document.getElementById('jform_'+type+'_sameascontact1');
+		if(elem.checked == true )
+		{
+			disableAddressType(true, type);
+		}
+	}
+	
 </script>
 
 <form action="<?php echo JRoute::_('index.php?option=com_easysdi_core&layout=edit&id='.(int) $this->item->id); ?>" method="post" name="adminForm" id="user-form" class="form-validate">
@@ -69,7 +103,7 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
 					else if($property == 'user_id')
 						$defaultvalue = $this->item->id;
 					else
-						$defaultvalue = $this->contactitem->$property;
+						$defaultvalue = $this->billingitem->$property;
 					?>
 					<li><?php echo $field->label; ?>
 					<?php echo $this->form->getInput(substr($field->id, 6), null,$defaultvalue); ?></li>
@@ -87,7 +121,7 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
 					else if($property == 'user_id')
 						$defaultvalue = $this->item->id;
 					else
-						$defaultvalue = $this->contactitem->$property;
+						$defaultvalue = $this->delivryitem->$property;
 					?>
 					<li><?php echo $field->label; ?>
 					<?php echo $this->form->getInput(substr($field->id, 6), null,$defaultvalue); ?></li>
@@ -120,7 +154,6 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
 	<?php echo JHtml::_('form.token'); ?>
 	
 	<div class="clr"></div>
-	
 		<div class="width-100 fltlft">
 			<?php echo JHtml::_('sliders.start', 'permissions-sliders-'.$this->item->id, array('useCookie'=>1)); ?>
 

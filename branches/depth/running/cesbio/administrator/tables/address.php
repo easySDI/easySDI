@@ -219,6 +219,8 @@ class Easysdi_coreTableaddress extends JTable
      */
     public function save($src,$type, $orderingFilter = '', $ignore = '')
     {
+    	
+    
     	$data =array();
     	$data['id'] =$src[$type.'_id'];
     	$data['guid'] =$src[$type.'_guid'];

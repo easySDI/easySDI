@@ -281,7 +281,8 @@
 				class="inputbox"
 				label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_EMAIL"
 				description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_EMAIL" 
-				filter="safehtml" /> 
+				filter="safehtml" 
+				validate="email" /> 
 
 		<field name="contact_checked_out" type="hidden" filter="unset" />
 		<field name="contact_checked_out_time" type="hidden" filter="unset" />
@@ -300,8 +301,8 @@
 				description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_SAMEASCONTACT" 
 				default="1" 	
 				>
-			<option value="0" onclick="enableAddressType('billing');">JNO</option>
-			<option value="1" onclick="disableAddressType('billing');">JYES</option>
+			<option value="0" onclick="disableAddressType(false, 'billing');">JNO</option>
+			<option value="1" onclick="disableAddressType(true, 'billing');">JYES</option>
 		</field>
 		
 		<field 	name="billing_organism" 
@@ -450,8 +451,8 @@
 				label="COM_EASYSDI_CORE_FORM_LBL_ADDRESS_SAMEASCONTACT"
 				description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_SAMEASCONTACT" 
 				default="1" 	>
-			<option value="0" onclick="enableAddressType('delivry');">JNO</option>
-			<option value="1" onclick="disableAddressType('delivry');">JYES</option>
+			<option value="0" onclick="disableAddressType(false,'delivry');">JNO</option>
+			<option value="1" onclick="disableAddressType(true,'delivry');">JYES</option>
 		</field> 
 		<field 	name="delivry_organism" 
 				type="text" 
