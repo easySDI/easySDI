@@ -108,10 +108,7 @@
 				description="COM_EASYSDI_CORE_FORM_DESC_SERVICE_SERVICEPASSWORD" 
                 filter="safehtml" /> 
         
-        <field 	name="negociation" 
-				type="negociationaction" 
-				class="inputbox"
-				filter="safehtml" /> 
+       
 
 		<field  name="state"
                 type="list"
@@ -128,6 +125,22 @@
 		<field name="checked_out_time" type="hidden" filter="unset" />
 		<field  name="guid" type="hidden" filter="unset" />
 </fieldset>
+
+<fieldset name="negotiation">
+ 		<field 	name="negotiation" 
+				type="negotiationaction" 
+				label="COM_EASYSDI_CORE_FORM_LBL_SERVICE_NEGOTIATION"
+				description="COM_EASYSDI_CORE_FORM_DESC_SERVICE_NEGOTIATION" 
+				filter="safehtml" />
+				 
+		<field 	name="supportedversions" 
+				type="supportedversions" 
+				class="cls-supportedversions"
+				label="COM_EASYSDI_CORE_FORM_LBL_SERVICE_SUPPORTEDVERSIONS"
+				description="COM_EASYSDI_CORE_FORM_DESC_SERVICE_SUPPORTEDVERSIONS"
+				filter="safehtml" /> 
+</fieldset>
+
 <fieldset name="publishing">
 		<field 	name="created_by" 
 				type="user" 

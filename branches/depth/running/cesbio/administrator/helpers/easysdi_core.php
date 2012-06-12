@@ -95,38 +95,51 @@ class Easysdi_coreHelper
 	    );
 	}
 
- /**
-     * Execute all the needed requests on the remote server to achieve the negociation version.
+ 	/**
+     * Execute all the needed requests on the remote server to achieve the negotiation version.
      * Result of those requests are a list of supported versions by the remote server.
      * @param string $url : url of the remote server
      * @param string $user : user for authentication, if needed
      * @param string $password : password for authentication, if needed
      * @param string $service : service type (WFS, WMS, CSW or WMTS)
      */
-    public static function negociation($url,$user,$password,$service){
-    	echo 'negociation';
-    	die();
+    public static function negotiation ($params){
+    	$service 				= $params['service'];
+    	$url 					= $params['resurl'];
+    	$user 					= $params['resusername'];
+    	$password 				= $params['respassword'];
+    	 
+    	$supported_versions 	= array();
+    	$urlWithPassword 		= $url;
     	
-    	$supported_versions = array();
-    	$versions_array = json_decode($availableVersions,true);
-    
-    	$urlWithPassword = $url;
-    
-    	//Authentication
-    	if($service === "CSW"){
+    	if(isset($params['serurl']))
+    	{
+    		//Authentication needed
+    		$s_url 				= $params['serurl'];
+    		$s_user 			= $params['serusername'];
+    		$s_password 		= $params['serpassword'];
+    		
+    		
     		//Perform a geonetwork login
     		$ch = curl_init();
+    		if(!$ch)
+    		{
+    			echo 'Error';
+    			die();
+    		}
     		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    		curl_setopt($ch, CURLOPT_URL, $url);
+    		curl_setopt($ch, CURLOPT_URL, $s_url);
     		curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
     		curl_setopt ($ch, CURLOPT_COOKIEJAR, "cookie.txt");
-    		curl_setopt ($ch, CURLOPT_POSTFIELDS, "username=".$user."&password=".$password);
+    		curl_setopt ($ch, CURLOPT_POSTFIELDS, "username=".$s_user."&password=".$s_password);
     		ob_start();
     		curl_exec ($ch);
     		ob_end_clean();
     		curl_close ($ch);
     		unset($ch);
-    	}else{
+    	}
+    	else
+    	{
     		if (strlen($user)!=null && strlen($password)!=null){
     			if (strlen($user)>0 && strlen($password)>0){
     				if (strpos($url,"http:")===False){
@@ -137,19 +150,31 @@ class Easysdi_coreHelper
     			}
     		}
     	}
-    
-    	$pos1 = stripos($urlWithPassword, "?");
-    	$separator = "&";
+
+    	$pos1 		= stripos($urlWithPassword, "?");
+    	$separator 	= "&";
     	if ($pos1 === false) {
     		//"?" Not found then use ? instead of &
     		$separator = "?";
     	}
     
+    	//Get the implemented version of the requested ServiceConnector
+    	$db =& JFactory::getDBO();
+    	$query = "SELECT sv.value 
+    						FROM #__sdi_sys_serviceconnector sc 
+    						INNER JOIN #__sdi_sys_servicecompliance c ON c.serviceconnector_id = sc.id
+    						INNER JOIN #__sdi_sys_serviceversion sv ON c.serviceversion_id = sv.id
+    						WHERE c.implemented = 1
+    						AND sc.value = '".$service."'
+    	";
+    	$db->setQuery($query);
+    	$implemented_versions= $db->loadResultArray();
+
     	$completeurl = "";
-    	foreach ($versions_array as $version){
+    	foreach ($implemented_versions as $version){
     		$completeurl = $urlWithPassword.$separator."REQUEST=GetCapabilities&SERVICE=".$service."&VERSION=".$version;
+    		
     		$xmlCapa = simplexml_load_file($completeurl);
-    			
     		if ($xmlCapa === false){
     			global $mainframe;
     			$mainframe->enqueueMessage(JText::_('EASYSDI_UNABLE TO RETRIEVE THE CAPABILITIES OF THE REMOTE SERVER' )." - ".$completeurl,'error');

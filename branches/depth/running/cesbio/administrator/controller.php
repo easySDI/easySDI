@@ -37,9 +37,9 @@ class Easysdi_coreController extends JController
 		return $this;
 	}
 	
-	public function negociation ($cachable = false, $urlparams = false)
+	public function negotiation ()
 	{
 		require_once JPATH_COMPONENT.'/helpers/easysdi_core.php';
-		Easysdi_coreHelper::negociation(JRequest::getVar('url', null), JRequest::getVar('user', null), JRequest::getVar('password', null), JRequest::getVar('service', null));
+		Easysdi_coreHelper::negotiation(JRequest::get( 'get' ));
 	}
 }

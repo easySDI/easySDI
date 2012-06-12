@@ -31,19 +31,26 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
 	
 	/**
 	 * @function negoVersionServer
-	 * Build the request for the proxy PHP that will perform the negociation version.
+	 * Build the request for the proxy PHP that will perform the negotiation  version.
 	 */
 	function negoVersionService(){
-		var url = document.getElementById("jform_resourceurl").value;
-		var user = document.getElementById("jform_resourceusername").value;
-		var password = document.getElementById("jform_resourcepassword").value;
+		var url 			= document.getElementById("jform_resourceurl").value;
+		var user 			= document.getElementById("jform_resourceusername").value;
+		var password 		= document.getElementById("jform_resourcepassword").value;
+		var serurl 			= document.getElementById("jform_serviceurl").value;
+		var seruser 		= document.getElementById("jform_serviceusername").value;
+		var serpassword 	= document.getElementById("jform_servicepassword").value;
 		var serviceSelector = document.getElementById("jform_serviceconnector_id");
-		var service = serviceSelector.options[serviceSelector.selectedIndex].text;
-		
-	    request = getHTTPObject();
-	   // document.getElementById("progress").style.visibility = "visible";
+		var service 		= serviceSelector.options[serviceSelector.selectedIndex].text;
+		var query 			= "index.php?option=com_easysdi_core&task=negotiation&resurl="+url+"&resuser="+user+"&respassword="+password+"&service="+service;
+		if(serurl.length > 0)
+		{
+			query 			= query + "&serurl="+url+"&seruser="+user+"&serpassword="+password;
+		}
+	    request 			= getHTTPObject();
+	    document.getElementById("progress").style.visibility = "visible";
 	    request.onreadystatechange = getSupportedVersions;
-	    request.open("GET", "index.php?option=com_easysdi_core&task=negociation&url="+url+"&user="+user+"&password="+password+"&service="+service, true);
+	    request.open("GET", query, true);
 	    request.send(null);
 	}
 
@@ -76,7 +83,7 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
 	{
 	    // if request object received response
 	    if(request.readyState == 4){
-	    //	document.getElementById("progress").style.visibility = "hidden";
+	    	document.getElementById("progress").style.visibility = "hidden";
 			var JSONtext = request.responseText;
 			
 			//Set the supported versions (for the server)
@@ -112,23 +119,32 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
 </script>
 
 <form action="<?php echo JRoute::_('index.php?option=com_easysdi_core&layout=edit&id='.(int) $this->item->id); ?>" method="post" name="adminForm" id="service-form" class="form-validate">
+	
+	<div id="progress">
+		<img id="progress_image"  src="components/com_easysdi_core/helpers/loader.gif" alt="">
+	</div>
 	<div class="width-60 fltlft">
 		<fieldset class="adminform">
 			<legend><?php echo JText::_('COM_EASYSDI_CORE_LEGEND_SERVICE'); ?></legend>
-			<ul class="adminformlist">
-            
-	            <ul class="adminformlist">
-					<?php foreach($this->form->getFieldset('details') as $field): ?>
-						<li><?php echo $field->label;echo $field->input;?></li>
-					<?php endforeach; ?>
-				</ul>
-            
-             </ul>
+		   <ul class="adminformlist">
+				<?php foreach($this->form->getFieldset('details') as $field): ?>
+					<li><?php echo $field->label;echo $field->input;?></li>
+				<?php endforeach; ?>
+			</ul>
 		</fieldset>
 	</div>
 
 	<div class="width-40 fltrt">
 		<?php echo JHtml::_('sliders.start', 'service-sliders-'.$this->item->id, array('useCookie'=>1)); ?>
+			<?php echo JHtml::_('sliders.panel', JText::_('COM_EASYSDI_CORE_LEGEND_SERVICE_NEGOTIATION'), 'negotiation-details'); ?>
+			<fieldset class="adminform">
+				<ul class="adminformlist">
+				<?php foreach($this->form->getFieldset('negotiation') as $field): ?>
+					<li><?php echo $field->label;echo $field->input;?></li>
+				<?php endforeach; ?>
+			</ul>
+			</fieldset>
+		
 			<?php echo JHtml::_('sliders.panel', JText::_('JGLOBAL_FIELDSET_PUBLISHING'), 'publishing-details'); ?>
 			<fieldset class="adminform">
 				<ul class="adminformlist">
