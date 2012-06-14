@@ -22,7 +22,7 @@ class Easysdi_coreModelservice extends JModelAdmin
 	 * @since	1.6
 	 */
 	protected $text_prefix = 'COM_EASYSDI_CORE';
-
+	
 
 	/**
 	 * Returns a reference to the a Table object, always creating it.
@@ -89,9 +89,15 @@ class Easysdi_coreModelservice extends JModelAdmin
 	public function getItem($pk = null)
 	{
 		if ($item = parent::getItem($pk)) {
-
-			//Do any procesing on fields here if needed
-
+			$compliances = $this->getServiceCompliance($item->id);
+			$compliance_ids ='';
+			$compliance_values ='';
+			foreach ($compliances as $compliance)
+			{
+				$compliance_ids .= $compliance->id.',';
+				$compliance_values .= $compliance->value.',';
+			}
+			$item->compliance = substr ($compliance_ids, 0 , strlen($compliance_ids)-1);
 		}
 
 		return $item;
@@ -141,7 +147,14 @@ class Easysdi_coreModelservice extends JModelAdmin
 	}
 	
 	/**
+	 * Method to save the service compliance deducted from the negotiation process
 	 * 
+	 * @param array 	$pks	array of the #__sdi_sys_servicecompliance ids to link with the current service
+	 * @param int		$id		primary key of the current service to save.
+	 * 
+	 * @return boolean 	True on success, False on error
+	 * 
+	 * @since EasySDI 3.0.0
 	 */
 	public function saveServiceCompliance ($pks, $id)
 	{
@@ -165,6 +178,40 @@ class Easysdi_coreModelservice extends JModelAdmin
 			}	
 		}
 		return true;
+	}
+	
+	/**
+	 * Method to get the service compliance deducted from the negotiation process and saved into database
+	 *
+	 * @param int		$id		primary key of the current service to get.
+	 *
+	 * @return boolean 	Object list on success, False on error
+	 *
+	 * @since EasySDI 3.0.0
+	 */
+	public function getServiceCompliance ( $id=null)
+	{
+		if(!isset($id))
+			return null;
+		
+		
+		try {
+			$db = $this->getDbo();
+			$db->setQuery(
+					'SELECT sv.value as value, sc.id as id FROM #__sdi_service_servicecompliance ssc ' .
+					' INNER JOIN #__sdi_sys_servicecompliance sc ON sc.id = ssc.servicecompliance_id '.
+					' INNER JOIN #__sdi_sys_serviceversion sv ON sv.id = sc.serviceversion_id'.
+					' WHERE ssc.service_id ='.$id
+
+			);
+			$compliance = $db->loadObjectList();
+			return $compliance;
+				
+		} catch (Exception $e) {
+			$this->setError($e->getMessage());
+			return false;
+		}
+		
 	}
 
 }
