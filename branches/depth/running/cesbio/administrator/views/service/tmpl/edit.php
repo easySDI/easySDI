@@ -29,10 +29,6 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
 
 	var request;
 	
-	/**
-	 * @function negoVersionServer
-	 * Build the request for the proxy PHP that will perform the negotiation  version.
-	 */
 	function negoVersionService(){
 		var url 			= document.getElementById("jform_resourceurl").value;
 		var user 			= document.getElementById("jform_resourceusername").value;
@@ -54,9 +50,6 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
 	    request.send(null);
 	}
 
-	/**
-	 * Instantiate Http Request
-	 */
 	function getHTTPObject(){
 	    var xhr = false;
 	    if (window.XMLHttpRequest){
@@ -75,38 +68,32 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
 	    return xhr;
 	}
 
-	/**
-	 * @function getSupportedVersions
-	 * Get the request response and fill appropriate fields in the document
-	 */
 	function getSupportedVersions()
 	{
-	    // if request object received response
 	    if(request.readyState == 4){
 	    	document.getElementById("progress").style.visibility = "hidden";
 			var JSONtext = request.responseText;
-			
-			//Set the supported versions (for the server)
-			var strcompliance="";
+			var arrcompliance=new Array();
+			document.getElementById('div-supportedversions').innerHTML = '';
 			var JSONobject = JSON.parse(JSONtext, function (key, value) {
 				var type;
 			    if(key && typeof key === 'string' && key == 'ERROR'){
 			    	dv=document.createElement('div');
 			    	txt=document.createTextNode(value);
 			    	dv.appendChild(txt);
-			    	document.getElementById('div-negotiatedversions').appendChild(dv);
+			    	document.getElementById('div-supportedversions').appendChild(dv);
 			    }
 			    if (value && typeof value === 'string') {
 			    	dv=document.createElement('div');
 			    	dv.className = "supportedversion";
 			    	txt=document.createTextNode(value);
 			    	dv.appendChild(txt);
-			    	document.getElementById('div-negotiatedversions').appendChild(dv);
+			    	document.getElementById('div-supportedversions').appendChild(dv);
 
-			    	strcompliance = strcompliance + key +',';
+			    	arrcompliance.push(key);
 			    }
 			});
-			document.getElementById('jform_compliance').value = strcompliance.substring(0,strcompliance.length-1 );
+			document.getElementById('jform_compliance').value = JSON.stringify(arrcompliance);
 	    }
 	}
 </script>

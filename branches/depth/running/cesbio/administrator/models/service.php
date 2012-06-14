@@ -90,14 +90,16 @@ class Easysdi_coreModelservice extends JModelAdmin
 	{
 		if ($item = parent::getItem($pk)) {
 			$compliances = $this->getServiceCompliance($item->id);
-			$compliance_ids ='';
-			$compliance_values ='';
+			$compliance_ids =array();
+			$compliance_values =array();
 			foreach ($compliances as $compliance)
 			{
-				$compliance_ids .= $compliance->id.',';
-				$compliance_values .= $compliance->value.',';
+				$compliance_ids[] =$compliance->id;
+				$compliance_values[] =$compliance->value;
 			}
-			$item->compliance = substr ($compliance_ids, 0 , strlen($compliance_ids)-1);
+
+			$item->compliance = json_encode($compliance_ids);
+			$item->supportedversions = json_encode($compliance_values);
 		}
 
 		return $item;

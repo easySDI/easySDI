@@ -135,8 +135,8 @@
 				description="COM_EASYSDI_CORE_FORM_DESC_SERVICE_NEGOTIATION" 
 				filter="safehtml" />
 				 
-		<field 	name="negotiatedversions" 
-				type="negotiatedversions" 
+		<field 	name="supportedversions" 
+				type="supportedversions" 
 				class="readonly"
 				label="COM_EASYSDI_CORE_FORM_LBL_SERVICE_SUPPORTEDVERSIONS"
 				description="COM_EASYSDI_CORE_FORM_DESC_SERVICE_SUPPORTEDVERSIONS"
