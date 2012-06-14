@@ -27,26 +27,4 @@ class Easysdi_coreControllerService extends JControllerForm
         parent::__construct();
     }
     
-    /**
-     * Overloaded method to save a single service record.
-     *
-     * @since	EasySDI 3.0.0
-     */
-    public function save($key =null, $urlVar =null)
-    {
-    	//Save service first
-    	parent::save($key, $urlVar);
-    	
-    	
-    	//then save service compliance
-    	$data =JRequest::getVar('compliance', null);
-    	if(!isset($data))
-    		return;
-    	
-    	$compliance_ids = explode(',', $data);
-
-    	print_r($compliance_ids);
-    	die();
-    	 
-    }
 }

@@ -115,8 +115,56 @@ class Easysdi_coreModelservice extends JModelAdmin
 				$max = $db->loadResult();
 				$table->ordering = $max+1;
 			}
-
 		}
+	}
+	
+	/**
+	 * Method to save the form data.
+	 *
+	 * @param   array  $data  The form data.
+	 *
+	 * @return  boolean  True on success, False on error.
+	 *
+	 * @since   11.1
+	 */
+	public function save($data)
+	{
+		if(parent::save($data))
+		{
+			if(isset($data['compliance']))
+			{
+				return $this->saveServiceCompliance($data['compliance'], $data['id']);
+			}
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * 
+	 */
+	public function saveServiceCompliance ($pks, $id)
+	{
+		$arr_pks = explode (",", $pks);
+
+		foreach ($arr_pks as $pk)
+		{
+			try {
+				$db = $this->getDbo();
+				$db->setQuery(
+						'INSERT INTO #__sdi_service_servicecompliance (service_id, servicecompliance_id) ' .
+						' VALUES ('.$id.','.$pk.')'
+						
+				);
+				if (!$db->query()) {
+					throw new Exception($db->getErrorMsg());
+				}
+			} catch (Exception $e) {
+				$this->setError($e->getMessage());
+				return false;
+			}	
+		}
+		return true;
 	}
 
 }

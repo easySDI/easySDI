@@ -106,7 +106,8 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
 			    	strcompliance = strcompliance + key +',';
 			    }
 			});
-			document.getElementById('jform_compliance').value = strcompliance;
+			document.getElementById('jform_compliance').value = strcompliance.substring(0,strcompliance.length-1 );
+			alert (document.getElementById('jform_compliance').value);
 	    }
 	}
 </script>

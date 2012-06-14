@@ -172,7 +172,7 @@ class Easysdi_coreTableservice extends JTable
     	if(empty ($this->guid)){
     		$this->guid = Easysdi_coreHelper::uuid();
     	}
-    	 
+
     	return parent::store($updateNulls);
     }
 
