@@ -160,7 +160,7 @@ class Easysdi_coreModelservice extends JModelAdmin
 	 */
 	public function saveServiceCompliance ($pks, $id)
 	{
-		$arr_pks = explode (",", $pks);
+		$arr_pks = json_decode ($pks);
 
 		foreach ($arr_pks as $pk)
 		{

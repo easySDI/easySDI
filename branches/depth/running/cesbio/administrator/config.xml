@@ -5,32 +5,45 @@
 		description="COM_EASYSDI_CORE_COMPONENT_DESC" >
 
         <field name="descmaxlength"
-             type="text"
+             type="hidden"
              default="50"
              label="COM_EASYSDI_CORE_CONFIG_LBL_DESC_MAX_LENGTH"
              description="COM_EASYSDI_CORE_CONFIG_DESC_DESC_MAX_LENGTH">
          </field>
          
           <field name="logowidth"
-             type="text"
+             type="hidden"
              default="16"
              label="COM_EASYSDI_CORE_CONFIG_LBL_LOGO_WIDTH"
              description="COM_EASYSDI_CORE_CONFIG_DESC_LOGO_WIDTH">
          </field>
          
           <field name="logoheight"
-             type="text"
+             type="hidden"
              default="16"
              label="COM_EASYSDI_CORE_CONFIG_LBL_LOGO_HEIGHT"
              description="COM_EASYSDI_CORE_CONFIG_DESC_LOGO_HEIGHT">
          </field>
          
           <field name="welcomepage"
-             type="text"
+             type="hidden"
              default=""
              label="COM_EASYSDI_CORE_CONFIG_LBL_WELCOME_PAGE_URL"
              description="COM_EASYSDI_CORE_CONFIG_DESC_WELCOME_PAGE_URL">
          </field>
+		 
+		 <field name="infrastructureID"
+             type="text"
+             default="50"
+             label="COM_EASYSDI_CORE_CONFIG_LBL_INFRASTRUCTURE_ID"
+             description="COM_EASYSDI_CORE_CONFIG_DESC_INFRASTRUCTURE_ID">
+         </field>
+         
+		 <field name="defaultaccount" 
+		 		type="user" 
+		 		default="" 
+		 		label="COM_EASYSDI_CORE_CONFIG_LBL_DEFAULT_ACCOUNT" 
+         		description="COM_EASYSDI_CORE_CONFIG_DESC_DEFAULT_ACCOUNT" />
 		 
 		 <field name="guestaccount" 
 		 		type="user" 

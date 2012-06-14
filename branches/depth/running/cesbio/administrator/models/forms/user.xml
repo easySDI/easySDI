@@ -284,12 +284,12 @@
 				filter="safehtml" 
 				validate="email" /> 
 
-		<field name="contact_checked_out" type="hidden" filter="unset" />
-		<field name="contact_checked_out_time" type="hidden" filter="unset" />
-		<field  name="contact_guid" type="hidden" filter="unset" />
-		<field  name="contact_user_id" type="hidden" filter="unset" />
-		<field  name="contact_id" type="hidden" filter="unset" />
-		<field  name="contact_addresstype_id" type="hidden" filter="unset" value = "2" />
+		<field name="contact_checked_out" type="hidden" filter="safehtml" />
+		<field name="contact_checked_out_time" type="hidden" filter="safehtml" />
+		<field  name="contact_guid" type="hidden" filter="safehtml" />
+		<field  name="contact_user_id" type="hidden" filter="safehtml" />
+		<field  name="contact_id" type="hidden" filter="safehtml" />
+		<field  name="contact_addresstype_id" type="hidden" filter="safehtml" value = "2" />
 	</fieldset>
 	
 	<fieldset name="billingaddress">
@@ -435,12 +435,12 @@
 				description="COM_EASYSDI_CORE_FORM_DESC_ADDRESS_EMAIL" 
 				filter="safehtml" /> 
 
-		<field name="billing_checked_out" type="hidden" filter="unset" />
-		<field name="billing_checked_out_time" type="hidden" filter="unset" />
-		<field  name="billing_guid" type="hidden" filter="unset" />
-		<field  name="billing_user_id" type="hidden" filter="unset" />
-		<field  name="billing_id" type="hidden" filter="unset" />
-		<field  name="billing_addresstype_id" type="hidden" filter="unset" value = "2" />
+		<field name="billing_checked_out" type="hidden" filter="safehtml" />
+		<field name="billing_checked_out_time" type="hidden" filter="safehtml" />
+		<field  name="billing_guid" type="hidden" filter="safehtml" />
+		<field  name="billing_user_id" type="hidden" filter="safehtml" />
+		<field  name="billing_id" type="hidden" filter="safehtml" />
+		<field  name="billing_addresstype_id" type="hidden" filter="safehtml" value = "2" />
 	</fieldset>
 	
 	<fieldset name="delivryaddress">
@@ -587,11 +587,11 @@
 
 		
 
-		<field name="delivry_checked_out" type="hidden" filter="unset" />
-		<field name="delivry_checked_out_time" type="hidden" filter="unset" />
-		<field  name="delivry_guid" type="hidden" filter="unset" />
-		<field  name="delivry_user_id" type="hidden" filter="unset" />
-		<field  name="delivry_id" type="hidden" filter="unset" />
-		<field  name="delivry_addresstype_id" type="hidden" filter="unset" value = "2" />
+		<field name="delivry_checked_out" type="hidden" filter="safehtml" />
+		<field name="delivry_checked_out_time" type="hidden" filter="safehtml" />
+		<field  name="delivry_guid" type="hidden" filter="safehtml" />
+		<field  name="delivry_user_id" type="hidden" filter="safehtml" />
+		<field  name="delivry_id" type="hidden" filter="safehtml" />
+		<field  name="delivry_addresstype_id" type="hidden" filter="safehtml" value = "2" />
 	</fieldset>
 </form>

@@ -16,6 +16,9 @@ if (!JFactory::getUser()->authorise('core.manage', 'com_easysdi_core')) {
 	return JError::raiseWarning(404, JText::_('JERROR_ALERTNOAUTHOR'));
 }
 
+require_once JPATH_COMPONENT.'/librairies/easysdi/database/sditable.php';
+require_once JPATH_COMPONENT.'/helpers/easysdi_core.php';
+
 // Include dependancies
 jimport('joomla.application.component.controller');
 

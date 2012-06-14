@@ -117,5 +117,41 @@ class Easysdi_coreModeluser extends JModelAdmin
 			}
 		}
 	}
+	
+	/**
+	 * Method to save the form data.
+	 *
+	 * @param   array  $data  The form data.
+	 *
+	 * @return  boolean  True on success, False on error.
+	 *
+	 * @since   11.1
+	 */
+	public function save($data)
+	{
+		if(parent::save($data))
+		{
+			//Instantiate an address JTable
+			$addresstable =& JTable::getInstance('address', 'Easysdi_coreTable');
+
+			//Call the overloaded save function to store the input data
+			if(!$addresstable->save($data, 'contact' ))
+			{	
+				return false;
+			}
+			 
+			if(!$addresstable->save($data, 'billing'))
+			{
+				return false;
+			}
+			 
+			if(!$addresstable->save($data, 'delivry'))
+			{
+				return false;
+			}
+			return true;
+		}
+		return false;
+	}
 
 }

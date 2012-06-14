@@ -19,7 +19,6 @@ class JFormFieldSupportedVersions extends JFormField {
 		// Initialize variables.
 		$html = array();
 		
-		
 		$supportedversions = json_decode($this->form->getValue('supportedversions'));
 		// Start the action field output.
 		$html[]  = '<div id="div-supportedversions" class="' . (string) $this->element['class'] . '">';
