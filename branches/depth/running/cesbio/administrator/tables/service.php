@@ -46,6 +46,13 @@ class Easysdi_coreTableservice extends JTable
 			$registry->loadArray($array['metadata']);
 			$array['metadata'] = (string)$registry;
 		}
+		
+		// Bind the rules.
+		if (isset($array['rules']) && is_array($array['rules']))
+		{
+			$rules = new JAccessRules($array['rules']);
+			$this->setRules($rules);
+		}
 		return parent::bind($array, $ignore);
 	}
 
@@ -169,5 +176,32 @@ class Easysdi_coreTableservice extends JTable
     	return parent::store($updateNulls);
     }
 
+    /**
+     * Method to compute the default name of the asset.
+     * The default name is in the form table_name.id
+     * where id is the value of the primary key of the table.
+     *
+     * @return  string
+     *
+     * @since   11.1
+     */
+    protected function _getAssetName()
+    {
+    	$k = $this->_tbl_key;
+    	return 'com_easysdi_core.service.' . (int) $this->$k;
+    }
+    
+    /**
+     * Method to return the title to use for the asset table.
+     *
+     * @return  string
+     *
+     * @since   11.1
+     */
+    protected function _getAssetTitle()
+    {
+    	return $this->alias;
+    }
+    
 
 }

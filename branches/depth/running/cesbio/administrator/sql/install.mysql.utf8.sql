@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_user` (
 `catid` INT(11)  NOT NULL ,
 `params` VARCHAR(1024)  NOT NULL ,
 `access` INT(10)  NOT NULL DEFAULT '1',
+`asset_id` INT(10)  ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
@@ -180,6 +181,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_service` (
 `catid` INT(11)  NOT NULL ,
 `params` VARCHAR(1024)  NOT NULL ,
 `access` INT(10)  NOT NULL DEFAULT '1',
+`asset_id` INT(10)   ,
 PRIMARY KEY (`id`),
 UNIQUE (`name`) 
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
