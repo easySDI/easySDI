@@ -26,21 +26,23 @@
 /** header icons **/
 
 div.supportedversion{
+	
+	width: 30px;
+	height:15px;
+	float:left;
 	background-color: #F6F6F6;
     border-bottom: 1px solid #E9E9E9;
     border-right: 1px solid #E9E9E9;
     color: #666666;
     font-weight: bold;
-    text-align: left;
-    width: 25px;
+    text-align: center;
     -moz-border-radius: 8px;
-	border-radius: 8px;
+	border-radius: 8px
 	
 }
 
-div.cls-negotiatedversions{
-	position:absolute;
-	width:150px;
+div.div-supportedversions{
+	position:relative
 }
 
 #progress{
