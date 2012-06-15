@@ -191,7 +191,7 @@ class ADMIN_boundary {
 		if ($rowBoundary->guid == null)
 			$rowBoundary->guid = helper_easysdi::getUniqueId();
 		
-		if ($rowBoundary->parent_id == '')
+		if ($rowBoundary->parent_id == '' || $rowBoundary->parent_id == 'null')
 			$rowBoundary->parent_id = null;
 		if ($rowBoundary->category_id == '')
 			$rowBoundary->category_id = null;
@@ -611,7 +611,7 @@ class ADMIN_boundary {
 		$database=& JFactory::getDBO();
 		
 		$parents = array();
-		$parents[] = JHTML::_('select.option',null, JText::_("CATALOG_PERIMETER_PARENT_LIST") );
+		$parents[] = JHTML::_('select.option',null, JText::_("CATALOG_PERIMETER_PARENT_LIST_CHOICE") );
 		$database->setQuery( "SELECT id AS value, name as text FROM #__sdi_boundary WHERE category_id =  (SELECT parent_id FROM #__sdi_boundarycategory WHERE id = $category_id) ORDER BY name" );
 		$parents = array_merge( $parents, $database->loadObjectList() );
 	
