@@ -52,7 +52,7 @@ class ADMIN_classstereotype_saver {
 			$nodeB = $XMLDoc->createElement("gmd:EX_GeographicBoundingBox");
 			$nodeA->appendChild($nodeB);
 				
-			$nodeC = $XMLDoc->createElement("gmd:extentTypeCode", 'true');
+			$nodeC = $XMLDoc->createElement("gmd:extentTypeCode");
 			$nodeB->appendChild($nodeC);
 				
 			$nodeD = $XMLDoc->createElement("gmd:northBoundLatitude");
@@ -130,9 +130,8 @@ class ADMIN_classstereotype_saver {
 					$nodelang = $XMLDoc->createElement("gmd:PT_FreeText");
 					$node2->appendChild($nodelang);
 					
-					
 					$nodelanggroup = $XMLDoc->createElement("gmd:textGroup");
-					$node2->appendChild($nodelanggroup);
+					$nodelang->appendChild($nodelanggroup);
 					
 					// Ajout de la valeur
 					$nodelangvalue = $XMLDoc->createElement("gmd:LocalisedCharacterString", $usefullVals[$lang->code_easysdi]);
@@ -140,10 +139,7 @@ class ADMIN_classstereotype_saver {
 					// Indication de la langue concernée
 					$nodelanggroup->setAttribute('locale', "#".$lang->code);
 				}
-				
 			}
-			
-			
 			
 			//Geographic element BoundingBox
 			$query ="SELECT * from #__sdi_boundary WHERE id =".$boundary_id;
@@ -186,8 +182,11 @@ class ADMIN_classstereotype_saver {
 			$nodeII = $XMLDoc->createElement("gmd:EX_GeographicDescription");
 			$nodeI->appendChild($nodeII);
 			
-			$nodeIII = $XMLDoc->createElement("gmd:extentTypeCode", 'true');
+			$nodeIII = $XMLDoc->createElement("gmd:extentTypeCode");
 			$nodeII->appendChild($nodeIII);
+			
+			$nodeIIIa = $XMLDoc->createElement("gco:Boolean", 'true');
+			$nodeIII->appendChild($nodeIIIa);
 			
 			$nodeIV = $XMLDoc->createElement("gmd:geographicIdentifier");
 			$nodeII->appendChild($nodeIV);
@@ -215,7 +214,7 @@ class ADMIN_classstereotype_saver {
 					$nodeV->appendChild($nodelang);
 									
 					$nodelanggroup = $XMLDoc->createElement("gmd:textGroup");
-					$nodeV->appendChild($nodelanggroup);
+					$nodelang->appendChild($nodelanggroup);
 					
 					// Ajout de la valeur
 					$nodelangvalue = $XMLDoc->createElement("gmd:LocalisedCharacterString", $usefullVals[$lang->code_easysdi]);
