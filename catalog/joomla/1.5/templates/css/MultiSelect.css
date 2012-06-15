@@ -15,11 +15,10 @@
 */
 
 .ux-mselect{
-    overflow:auto;
+    overflow:auto !important;
     background:white;
     position:relative; /* for calculating scroll offsets */
     zoom:1;
-    overflow:auto;	
 }
 .ux-mselect-item{
     font:normal 12px tahoma, arial, helvetica, sans-serif;
@@ -46,7 +45,3 @@
 	margin: 0px !important;
 }
 
-/*
-
-	border: 0px !important;
-*/
