@@ -2131,7 +2131,7 @@ class HTML_account {
 		
 		<table border="0" cellpadding="3" cellspacing="0">
 			<tr>
-				<td class="ptitle"><?php echo JText::_("CORE_NAME"); ?> : </td>
+				<td class="ptitle"><?php echo JText::_("CORE_ACCOUNT_CONTACT_NAME"); ?> : </td>
 				<td><input class="inputbox" type="text" size="50" maxlength="100" name="corporatename1[0]" value="<?php echo $rowContact->corporatename1; ?>" /></td>
 			</tr>
 			<tr>
