@@ -118,7 +118,7 @@ class HTML_cpanel {
 	<th align="center"><?php echo JText::_('CORE_ID'); ?></th>
 	<th class="infoLogo"></th>
 	<th class="logo"></th>
-	<th class="reqDescr"><?php echo JText::_('CORE_NAME'); ?></th>
+	<th class="reqDescr"><?php echo JText::_('SHOP_ORDER_LIST_NAME'); ?></th>
 	<th align="center"><?php echo JText::_('SHOP_ORDER_STATUS'); ?></th>
 	<th class="logo"></th>
 	<th class="logo"></th>
