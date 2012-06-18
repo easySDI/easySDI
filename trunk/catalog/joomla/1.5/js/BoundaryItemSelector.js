@@ -312,8 +312,6 @@ BoundaryItemSelector = Ext.extend(Ext.form.Field,  {
             selectionsArray = [];
             for (var i=0; i<records.length; i++) {
                 record = records[i];
-                this.toMultiselect.view.store.remove(record);
-                
                 if(!this.allowDup){
                 	//EasySDI specific :
                 	//Check if the 'to' record is from the same record category that the records display in the 'from' store
@@ -321,7 +319,7 @@ BoundaryItemSelector = Ext.extend(Ext.form.Field,  {
                 		var comboboxCategories = Ext.getCmp(this.comboboxname);
                 		var selectedValue = comboboxCategories.getValue();
                 		if(selectedValue && 0 != selectedValue.length && selectedValue != comboboxCategories.emptyText){
-                				if(record.data.text.indexOf( '['+selectedValue+']') != -1){
+                				if(record.data.category==selectedValue){
 	                				this.fromMultiselect.view.store.add(record);
 	                                selectionsArray.push((this.fromMultiselect.view.store.getCount() - 1));
 	                			}
@@ -336,6 +334,7 @@ BoundaryItemSelector = Ext.extend(Ext.form.Field,  {
                 	}
                 }
                 this.fireEvent ('removeItemTo', record);
+                this.toMultiselect.view.store.remove(record);
             }
             this.handleValidSelectionBoundaryCount();
         }

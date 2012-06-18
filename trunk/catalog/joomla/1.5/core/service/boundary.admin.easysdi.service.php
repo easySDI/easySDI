@@ -36,7 +36,8 @@ class SERVICE_boundary {
 						 b.northbound as northbound ,
 						 b.southbound as southbound, 
 						 b.eastbound as eastbound ,
-						 b.westbound as westbound
+						 b.westbound as westbound,
+						 bc.alias as category 
 		FROM #__sdi_boundary b
 		INNER JOIN #__sdi_boundarycategory bc ON b.category_id = bc.id
 		INNER JOIN #__sdi_translation tbc ON bc.guid = tbc.element_guid
@@ -50,7 +51,7 @@ class SERVICE_boundary {
 		";
 		
 		if(isset($category_alias) && strlen($category_alias)> 0){
-			$query .= " AND bc.alias = '".$category_alias."'";
+			$query .= " AND bc.alias = '".mysql_real_escape_string($category_alias)."'";
 		}
 		
 		if(isset($exclude)&& strlen($exclude)> 0){
