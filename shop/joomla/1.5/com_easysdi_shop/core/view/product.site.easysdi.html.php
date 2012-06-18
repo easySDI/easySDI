@@ -77,7 +77,7 @@ class HTML_product{
 								<td><?php echo JHTML::_("select.genericlist",$version_list, 'objectversion_id', 'size="1" class="inputbox" onChange="var form = document.getElementById(\'productForm\');form.task.value=\'editProduct\';form.submit();"', 'value', 'text', $version->id ); ?></td>
 							</tr>
 							<tr>
-								<td class="ptitle"><?php echo JText::_("CORE_NAME"); ?> : </td>
+								<td class="ptitle"><?php echo JText::_("SHOP_PRODUCT_OBJECT_NAME"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="name" value="<?php echo $product->name; ?>" /></td>								
 							</tr>
 							<tr>
