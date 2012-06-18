@@ -97,7 +97,7 @@ if (!$hasVersioning)
 							</div>
 							<div class="checkbox">
 								<div class="row">
-									<label for="published"><?php echo JText::_("CORE_PUBLISHED"); ?> : </label>
+									<label for="published"><?php echo JText::_("CATALOG_OBJECT_PUBLISHED_IN_CATALOG"); ?> : </label>
 									<?php echo helper_easysdi::booleanlist('published', 'class="checkbox"', 'class="checkbox"', ($pageReloaded)? $_POST['published'] : $rowObject->published, 'CORE_YES', 'CORE_NO'); ?>
 								</div>
 							</div>
