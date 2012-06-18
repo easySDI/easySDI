@@ -27,12 +27,8 @@ class userTree
 			<td>
 			<a href="javascript: d.openAll();"><?php echo JText::_("EASYSDI_USER_TREE_OPEN_ALL"); ?></a> | <a href="javascript: d.closeAll();"><?php echo JText::_("EASYSDI_USER_TREE_CLOSE_ALL"); ?></a>
 			</td>
-			<td>
-			</td>
 			</tr>
 			<tr>
-			<td>
-			</td>
 			<td>
 			<script type="text/javascript">
 				d = new dTree('d', '<?php echo JURI::root(true).'/templates/easysdi/';  ?>');
