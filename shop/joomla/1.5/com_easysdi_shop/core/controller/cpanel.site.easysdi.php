@@ -558,7 +558,7 @@ class SITE_cpanel {
 		// Ne montre pas dans la liste les devis dont le prix est gratuit. Ils sont automatiquement traité par le système.
 		// Ni les requêtes de type brouillon
 		$query = "SELECT o.id as order_id, 
-		                                 o.thirparty_id as third_party,
+		                                 o.thirdparty_id as third_party,
 						 v.metadata_id as metadata_id,
 						 m.guid as metadata_guid,
 						 p.name as productName,
