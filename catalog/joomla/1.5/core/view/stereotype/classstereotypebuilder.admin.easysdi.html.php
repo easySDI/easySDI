@@ -245,7 +245,12 @@ class HTML_classstereotype_builder {
 		if(count($extent_object_array) > 0 ){
 			foreach ($extent_object_array as $extent_object){
 				if( isset($extent_object->description)){//Predefined perimeters
-					$query = "SELECT b.id as id,Concat(t.label,' [',tbc.label,']') as label, b.northbound as northbound ,b.southbound as southbound, b.eastbound as eastbound ,b.westbound as westbound  
+					$query = "SELECT b.id as id,Concat(t.label,' [',tbc.label,']') as label, 
+									 b.northbound as northbound ,
+									 b.southbound as southbound, 
+									 b.eastbound as eastbound ,
+									 b.westbound as westbound,
+									 bc.alias as category  
 								FROM #__sdi_boundary b
 									INNER JOIN #__sdi_boundarycategory bc ON b.category_id = bc.id 
 									INNER JOIN #__sdi_translation tbc ON bc.guid = tbc.element_guid
@@ -282,7 +287,13 @@ class HTML_classstereotype_builder {
 		
 		//Avalaible boundaries in the database
 		if(count($selectedBoundaries) > 0 ){
-			$query = "SELECT b.id as id, Concat(t.label,' [',tbc.label,']') as label, b.northbound as northbound ,b.southbound as southbound, b.eastbound as eastbound ,b.westbound as westbound
+			$query = "SELECT b.id as id, 
+							 Concat(t.label,' [',tbc.label,']') as label, 
+							 b.northbound as northbound ,
+							 b.southbound as southbound, 
+							 b.eastbound as eastbound ,
+							 b.westbound as westbound,
+							 bc.alias as category 
 					FROM #__sdi_boundary b
 						INNER JOIN #__sdi_boundarycategory bc ON b.category_id = bc.id 
 						INNER JOIN #__sdi_translation tbc ON bc.guid = tbc.element_guid
@@ -297,7 +308,13 @@ class HTML_classstereotype_builder {
 					ORDER BY label";
 				
 		}else{
-			$query = "SELECT b.id as id, Concat(t.label,' [',tbc.label,']') as label, b.northbound as northbound ,b.southbound as southbound, b.eastbound as eastbound ,b.westbound as westbound
+			$query = "SELECT b.id as id, 
+							 Concat(t.label,' [',tbc.label,']') as label, 
+							 b.northbound as northbound ,
+							 b.southbound as southbound, 
+							 b.eastbound as eastbound ,
+							 b.westbound as westbound,
+							 bc.alias as category 
 					FROM #__sdi_boundary b
 						INNER JOIN #__sdi_boundarycategory bc ON b.category_id = bc.id 
 						INNER JOIN #__sdi_translation tbc ON bc.guid = tbc.element_guid
@@ -322,14 +339,20 @@ class HTML_classstereotype_builder {
 			        data: [";
 					    foreach ($availableBoundaries as $boundary){
 					    	$this->javascript .="[
-					    	'".$boundary->id."','".addslashes($boundary->label)."','".$boundary->northbound."','".$boundary->southbound."','".$boundary->eastbound."','".$boundary->westbound."'
+						    	'".$boundary->id."',
+						    	'".addslashes($boundary->label)."',
+						    	'".$boundary->northbound."',
+						    	'".$boundary->southbound."',
+						    	'".$boundary->eastbound."',
+						    	'".$boundary->westbound."',
+						    	'".addslashes($boundary->category)."'
 					    	],
 					    	";
 						};
 						if(count($availableBoundaries)>0)
 							$this->javascript = substr($this->javascript, 0, strlen($this->javascript)-1);
 						$this->javascript .="],
-			        fields: ['value','text', 'northbound', 'southbound', 'eastbound', 'westbound'],
+			        fields: ['value','text', 'northbound', 'southbound', 'eastbound', 'westbound','category'],
 			        sortInfo: {
 			            field: 'text',
 			            direction: 'ASC'
@@ -339,9 +362,15 @@ class HTML_classstereotype_builder {
 			var destinationDS = new   Ext.data.ArrayStore({
 				data: [
 						";
-				    foreach ($selectedBoundaries as $perimeter){
+				    foreach ($selectedBoundaries as $boundary){
 				    	$this->javascript .="[
-				    	'".$perimeter->id."','".addslashes($perimeter->label)."','".$perimeter->northbound."','".$perimeter->southbound."','".$perimeter->eastbound."','".$perimeter->westbound."'
+					    	'".$boundary->id."',
+					    	'".addslashes($boundary->label)."',
+					    	'".$boundary->northbound."',
+					    	'".$boundary->southbound."',
+					    	'".$boundary->eastbound."',
+					    	'".$boundary->westbound."',
+					    	'".addslashes($boundary->category)."'
 					  ],
 		    		  ";
 			        };
@@ -349,7 +378,7 @@ class HTML_classstereotype_builder {
 						$this->javascript = substr($this->javascript, 0, strlen($this->javascript)-1);
 					$this->javascript .="
 					],
-				fields: ['value','text', 'northbound', 'southbound', 'eastbound', 'westbound'],
+				fields: ['value','text', 'northbound', 'southbound', 'eastbound', 'westbound','category'],
 			        sortInfo: {
 			            field: 'text',
 			            direction: 'ASC'
@@ -419,7 +448,12 @@ class HTML_classstereotype_builder {
 				";
 				    foreach ($freeBoundaries as $perimeter){
 				    	$this->javascript .="[
-				    	'".$perimeter->id."','".$perimeter->label."','".$perimeter->northbound."','".$perimeter->southbound."','".$perimeter->eastbound."','".$perimeter->westbound."'
+					    	'".$perimeter->id."',
+					    	'".$perimeter->label."',
+					    	'".$perimeter->northbound."',
+					    	'".$perimeter->southbound."',
+					    	'".$perimeter->eastbound."',
+					    	'".$perimeter->westbound."'
 					  ],
 		    		  ";
 			        };
