@@ -238,9 +238,6 @@ class HTML_classstereotype_builder {
 			
 		";
 		
-		//Ajouter un listener pour recharger la liste des périmètres quand la catégorie a été changée
-			
-		
 		//Existing boundaries in the XML file
 		$query_ids = "";
 		$selectedBoundaries = array();
@@ -248,7 +245,7 @@ class HTML_classstereotype_builder {
 		if(count($extent_object_array) > 0 ){
 			foreach ($extent_object_array as $extent_object){
 				if( isset($extent_object->description)){//Predefined perimeters
-					$query = "SELECT b.id as id, Concat(t.label,' [',tbc.label,']') as label, b.northbound as northbound ,b.southbound as southbound, b.eastbound as eastbound ,b.westbound as westbound  
+					$query = "SELECT b.id as id,Concat(t.label,' [',tbc.label,']') as label, b.northbound as northbound ,b.southbound as southbound, b.eastbound as eastbound ,b.westbound as westbound  
 								FROM #__sdi_boundary b
 									INNER JOIN #__sdi_boundarycategory bc ON b.category_id = bc.id 
 									INNER JOIN #__sdi_translation tbc ON bc.guid = tbc.element_guid
@@ -259,10 +256,11 @@ class HTML_classstereotype_builder {
 									INNER JOIN #__sdi_list_codelang c ON l.codelang_id=c.id
 								WHERE c.code='".$default_lang."'
 								AND cbc.code='".$default_lang."'
-								AND t.title='".$extent_object->description."'
+								AND t.title='".mysql_real_escape_string($extent_object->description)."'
 					ORDER BY label";
 					$database->setQuery( $query );
 					$perimeter_selected = $database->loadObject();
+		
 					if(strlen($query_ids) != 0) {
 						$query_ids .= ",";
 					}
@@ -305,7 +303,6 @@ class HTML_classstereotype_builder {
 						INNER JOIN #__sdi_translation tbc ON bc.guid = tbc.element_guid
 						INNER JOIN #__sdi_language lbc ON tbc.language_id=lbc.id
 						INNER JOIN #__sdi_list_codelang cbc ON lbc.codelang_id=cbc.id
-									
 						INNER JOIN #__sdi_translation t ON b.guid = t.element_guid
 						INNER JOIN #__sdi_language l ON t.language_id=l.id
 						INNER JOIN #__sdi_list_codelang c ON l.codelang_id=c.id
@@ -317,7 +314,6 @@ class HTML_classstereotype_builder {
 		}
 		$database->setQuery( $query );
 		$availableBoundaries = $database->loadObjectList();
-	
 		
 		//Predefined perimeter item selector
 		$clone ? $clone = 'true' : $clone ='false';
@@ -326,7 +322,7 @@ class HTML_classstereotype_builder {
 			        data: [";
 					    foreach ($availableBoundaries as $boundary){
 					    	$this->javascript .="[
-					    	'".$boundary->id."','".$boundary->label."','".$boundary->northbound."','".$boundary->southbound."','".$boundary->eastbound."','".$boundary->westbound."'
+					    	'".$boundary->id."','".addslashes($boundary->label)."','".$boundary->northbound."','".$boundary->southbound."','".$boundary->eastbound."','".$boundary->westbound."'
 					    	],
 					    	";
 						};
@@ -345,7 +341,7 @@ class HTML_classstereotype_builder {
 						";
 				    foreach ($selectedBoundaries as $perimeter){
 				    	$this->javascript .="[
-				    	'".$perimeter->id."','".$perimeter->label."','".$perimeter->northbound."','".$perimeter->southbound."','".$perimeter->eastbound."','".$perimeter->westbound."'
+				    	'".$perimeter->id."','".addslashes($perimeter->label)."','".$perimeter->northbound."','".$perimeter->southbound."','".$perimeter->eastbound."','".$perimeter->westbound."'
 					  ],
 		    		  ";
 			        };
