@@ -97,7 +97,7 @@ class HTML_product{
 								<td><?php echo date('d.m.Y H:i:s',strtotime($product->updated)); ?></td>								
 							</tr>
 							<tr>
-								<td class="ptitle"><?php echo JText::_("CORE_PUBLISHED"); ?> : </td>
+								<td class="ptitle"><?php echo JText::_("SHOP_PRODUCT_PUBLISHED"); ?> : </td>
 								<td><select class="inputbox" name="published" >								
 								<option value="0" <?php if( $product->published == 0 ) echo "selected"; ?> ><?php echo JText::_("CORE_FALSE"); ?></option>
 								<option value="1" <?php if( $product->published == 1 ) echo "selected"; ?>><?php echo JText::_("CORE_TRUE"); ?></option>
