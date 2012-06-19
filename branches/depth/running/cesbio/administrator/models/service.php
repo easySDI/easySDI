@@ -167,12 +167,19 @@ class Easysdi_coreModelservice extends JModelAdmin
 			try {
 				$db = $this->getDbo();
 				$db->setQuery(
-						'INSERT INTO #__sdi_service_servicecompliance (service_id, servicecompliance_id) ' .
-						' VALUES ('.$id.','.$pk.')'
-						
+						'SELECT * FROM #__sdi_service_servicecompliance WHERE service_id = '.$id.' AND servicecompliance_id= '.$pk 
 				);
-				if (!$db->query()) {
-					throw new Exception($db->getErrorMsg());
+				$row = $db->loadObjectList();
+				//If compliance does not already exist, insert it
+				if(count($row) < 1){
+					$db->setQuery(
+							'INSERT INTO #__sdi_service_servicecompliance (service_id, servicecompliance_id) ' .
+							' VALUES ('.$id.','.$pk.')'
+							
+					);
+					if (!$db->query()) {
+						throw new Exception($db->getErrorMsg());
+					}
 				}
 			} catch (Exception $e) {
 				$this->setError($e->getMessage());

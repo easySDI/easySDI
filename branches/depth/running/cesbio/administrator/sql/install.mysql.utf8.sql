@@ -169,7 +169,6 @@ CREATE TABLE IF NOT EXISTS `#__sdi_service` (
 `checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `name` VARCHAR(150)  NOT NULL ,
 `serviceconnector_id` INT(11)  NOT NULL ,
-`published` TINYINT(1)  NOT NULL ,
 `resourceauthentication_id` INT(11)  NOT NULL ,
 `resourceurl` VARCHAR(500)  NOT NULL ,
 `resourceusername` VARCHAR(150)  NOT NULL ,
