@@ -50,34 +50,41 @@ class Easysdi_coreHelper
 	/**
 	 * Gets a list of the actions that can be performed.
 	 *
+	 * @param	int		The category ID.
+	 * @param	int		The article ID.
+	 *
 	 * @return	JObject
 	 * @since	1.6
 	 */
-	public static function getActions()
+	public static function getActions($categoryId = 0, $userId = 0, $serviceId = 0)
 	{
 		$user	= JFactory::getUser();
 		$result	= new JObject;
-
-		$assetName = 'com_easysdi_core';
-
-// 		if (empty($articleId) && empty($categoryId)) {
-// 			$assetName = 'com_content';
-// 		}
-// 		elseif (empty($articleId)) {
-// 			$assetName = 'com_content.category.'.(int) $categoryId;
-// 		}
-// 		else {
-// 			$assetName = 'com_content.article.'.(int) $articleId;
-// 		}
+	
 		
-		$actions = array(
-			'core.admin', 'core.manage', 'core.create', 'core.edit', 'core.edit.own', 'core.edit.state', 'core.delete'
-		);
-
-		foreach ($actions as $action) {
-			$result->set($action,	$user->authorise($action, $assetName));
+		if (empty($serviceId) && empty($userId) && empty($categoryId)) {
+			$assetName = 'com_easysdi_core';
+		}
+		elseif (empty($serviceId) && empty($userId)) {
+			$assetName = 'com_easysdi_core.category.'.(int) $categoryId;
+		}
+		elseif (empty($userId)) {
+			$assetName = 'com_easysdi_core.service.'.(int) $serviceId;
+		}
+		else{
+			$assetName = 'com_easysdi_core.user.'.(int) $userId;
 		}
 
+		$actions = array(
+				'core.admin', 'core.manage', 'core.create', 'core.edit', 'core.edit.own', 'core.edit.state', 'core.delete'
+		);
+	
+		foreach ($actions as $action) {
+			print_r($assetName.' -> '.$action.' : '.$user->authorise($action, $assetName));
+			print_r('<br>');
+			$result->set($action,	$user->authorise($action, $assetName));
+		}
+	
 		return $result;
 	}
 	

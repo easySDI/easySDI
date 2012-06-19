@@ -108,6 +108,14 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
 			<legend><?php echo JText::_('COM_EASYSDI_CORE_LEGEND_SERVICE'); ?></legend>
 		   <ul class="adminformlist">
 				<?php foreach($this->form->getFieldset('details') as $field): ?>
+				<?php
+					if($field->name=="jform[state]"){
+						if($this->canDo->get('core.edit.state'))
+						{
+							?><li><?php echo $field->label;echo $field->input;?></li><?php 
+						}
+						continue;
+					} ?>
 					<li><?php echo $field->label;echo $field->input;?></li>
 				<?php endforeach; ?>
 			</ul>

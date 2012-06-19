@@ -42,15 +42,6 @@ class Easysdi_coreViewUser extends JView
 		$this->delivryaddressmodel = & JModel::getInstance('address', 'easysdi_coreModel');
 		$this->delivryitem = $this->delivryaddressmodel->getItemByUserID($this->item->id,3);
 		
-// 		$this->contactaddressmodel = & JModel::getInstance('address', 'Easysdi_coreModel');
-// 		$this->contactaddressform = $this->contactaddressmodel->getForm(null, true);
-		
-// 		$this->billingaddressmodel = & JModel::getInstance('address', 'Easysdi_coreModel');
-// 		$this->billingaddressform = $this->billingaddressmodel->getForm(null, true);
-		
-// 		$this->delivryaddressmodel = & JModel::getInstance('address', 'Easysdi_coreModel');
-// 		$this->delivryaddressform = $this->delivryaddressmodel->getForm(null, true);
-		
 		// Check for errors.
 		if (count($errors = $this->get('Errors'))) {
 			JError::raiseError(500, implode("\n", $errors));
@@ -70,27 +61,33 @@ class Easysdi_coreViewUser extends JView
 
 		$user		= JFactory::getUser();
 		$isNew		= ($this->item->id == 0);
+		
         if (isset($this->item->checked_out)) {
 		    $checkedOut	= !($this->item->checked_out == 0 || $this->item->checked_out == $user->get('id'));
         } else {
             $checkedOut = false;
         }
-		$canDo		= Easysdi_coreHelper::getActions();
-
+        
+        $state	= $this->get('State');
+		$this->canDo	= Easysdi_coreHelper::getActions($state->get('filter.category_id'),$this->item->id, null);
+		
 		JToolBarHelper::title(JText::_('COM_EASYSDI_CORE_TITLE_USER'), 'user.png');
 
 		// If not checked out, can save the item.
-		if (!$checkedOut && ($canDo->get('core.edit')||($canDo->get('core.create'))))
+		if (!$checkedOut && ( 		($this->canDo->get('core.edit') && !$isNew)
+								||  ($this->canDo->get('core.create') && $isNew))
+								||	($this->canDo->get('core.edit.own') && $this->item->created_by == $user->get('id')
+							)
+			)
 		{
-
 			JToolBarHelper::apply('user.apply', 'JTOOLBAR_APPLY');
 			JToolBarHelper::save('user.save', 'JTOOLBAR_SAVE');
 		}
-		if (!$checkedOut && ($canDo->get('core.create'))){
+		if (!$checkedOut && $this->canDo->get('core.edit')&& $this->canDo->get('core.create')){
 			JToolBarHelper::custom('user.save2new', 'save-new.png', 'save-new_f2.png', 'JTOOLBAR_SAVE_AND_NEW', false);
 		}
 		// If an existing item, can save to a copy.
-		if (!$isNew && $canDo->get('core.create')) {
+		if (!$isNew && $this->canDo->get('core.create')) {
 			JToolBarHelper::custom('user.save2copy', 'save-copy.png', 'save-copy_f2.png', 'JTOOLBAR_SAVE_AS_COPY', false);
 		}
 		if (empty($this->item->id)) {

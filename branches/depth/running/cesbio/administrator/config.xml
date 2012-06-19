@@ -34,7 +34,7 @@
 		 
 		 <field name="infrastructureID"
              type="text"
-             default="50"
+             default=""
              label="COM_EASYSDI_CORE_CONFIG_LBL_INFRASTRUCTURE_ID"
              description="COM_EASYSDI_CORE_CONFIG_DESC_INFRASTRUCTURE_ID">
          </field>

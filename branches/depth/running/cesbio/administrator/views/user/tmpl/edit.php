@@ -68,6 +68,14 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
 			<legend><?php echo JText::_('COM_EASYSDI_CORE_LEGEND_USER'); ?></legend>
 			<ul class="adminformlist">
 				<?php foreach($this->form->getFieldset('details') as $field): ?>
+					<?php
+					if($field->name=="jform[state]"){
+						if($this->canDo->get('core.edit.state'))
+						{
+							?><li><?php echo $field->label;echo $field->input;?></li><?php 
+						}
+						continue;
+					} ?>
 					<li><?php echo $field->label;echo $field->input;?></li>
 				<?php endforeach; ?>
 			</ul>
@@ -76,7 +84,7 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
 	<div class="width-40 fltrt">
 		<?php echo JHtml::_('sliders.start', 'user-sliders-'.$this->item->id, array('useCookie'=>1)); ?>
 			<?php echo JHtml::_('sliders.panel', JText::_('COM_EASYSDI_CORE_FIELDSET_CONTACTADDRESS'), 'contactaddress-details'); ?>
-			<fieldset class="panelform">
+			<fieldset class="adminform">
 				<ul class="adminformlist">
 				<?php foreach($this->form->getFieldset('contactaddress') as $field): ?>
 					<?php $property = substr($field->id, 14);
@@ -94,7 +102,7 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
 				</ul>
 			</fieldset>
 		<?php echo JHtml::_('sliders.panel', JText::_('COM_EASYSDI_CORE_FIELDSET_BILLINGADDRESS'), 'billingaddress-details'); ?>
-			<fieldset class="panelform">
+			<fieldset class="adminform">
 				<ul class="adminformlist">
 				<?php foreach($this->form->getFieldset('billingaddress') as $field): ?>
 					<?php $property = substr($field->id, 14);
@@ -112,7 +120,7 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
 				</ul>
 			</fieldset>
 		<?php echo JHtml::_('sliders.panel', JText::_('COM_EASYSDI_CORE_FIELDSET_DELIVRYADDRESS'), 'delivryaddress-details'); ?>
-			<fieldset class="panelform">
+			<fieldset class="adminform">
 				<ul class="adminformlist">
 				<?php foreach($this->form->getFieldset('delivryaddress') as $field): ?>
 					<?php $property = substr($field->id, 14);
@@ -130,7 +138,7 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
 				</ul>
 			</fieldset>
 		<?php echo JHtml::_('sliders.panel', JText::_('JGLOBAL_FIELDSET_PUBLISHING'), 'publishing-details'); ?>
-			<fieldset class="panelform">
+			<fieldset class="adminform">
 				<ul class="adminformlist">
 					<li><?php echo $this->form->getLabel('created_by'); ?>
 					<?php echo $this->form->getInput('created_by'); ?></li>
@@ -152,6 +160,7 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
 	
 	<input type="hidden" name="task" value="" />
 	<?php echo JHtml::_('form.token'); ?>
+	<div class="clr"></div>
 	
 	<div class="clr"></div>
 		<div class="width-100 fltlft">

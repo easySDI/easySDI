@@ -96,10 +96,10 @@
                 <option value="0">JUNPUBLISHED</option>
         </field> 
                 
-       	<field name="asset_id" type="hidden" filter="unset" />
-		<field  name="checked_out" type="hidden" filter="unset" />
-		<field  name="checked_out_time" type="hidden" filter="unset" />
-		<field  name="guid" type="hidden" filter="unset" />
+       	<field  name="asset_id" type="hidden" filter="unset" />
+		<field  name="checked_out" type="hidden" filter="SAFEHTML" />
+		<field  name="checked_out_time" type="hidden" filter="SAFEHTML" />
+		<field  name="guid" type="hidden" filter="SAFEHTML" />
 		 
 	</fieldset>
 	
@@ -143,7 +143,7 @@
 		<field 	name="rules" 
 				type="rules" 
 				label="JFIELD_RULES_LABEL"
-				translate_label="false" 
+				translate_label="true" 
 				class="inputbox" 
 				filter="rules"
 				component="com_easysdi_core" 
