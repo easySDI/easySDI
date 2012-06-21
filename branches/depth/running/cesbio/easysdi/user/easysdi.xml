@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<install version="2.5" type="plugin" group="user">
+	<name>EasySDI User</name>
+	<author>EasySDI Community</author>
+	<creationDate>June 2012</creationDate>
+	<copyright>Copyright (C) 2012. All rights reserved.</copyright>
+    <license>GNU General Public License version 3 or later; see LICENSE.txt</license>
+	<authorEmail>contact@easysdi.org</authorEmail>
+    <authorUrl>http://www.easysdi.org</authorUrl>
+	<version>3.0.0</version>
+	<description></description>
+	<files>
+		<filename plugin="easysdi">easysdi.php</filename>
+	</files>
+	<languages>
+		<language tag="en-GB">en-GB.plg_user_easysdi.ini</language>
+	</languages>
+</install>
