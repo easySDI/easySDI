@@ -9,7 +9,7 @@
     <authorUrl>http://www.easysdi.org</authorUrl>
     <version>3.0.0</version>
     <description></description>
-	<scriptfile>installerscript.php</scriptfile>
+	<scriptfile>script.php</scriptfile>
     <install> <!-- Runs on install -->
         <sql>
             <file driver="mysql" charset="utf8">sql/install.mysql.utf8.sql</file>
@@ -42,7 +42,7 @@
         </language>
     </languages>
     <administration>
-        <menu img="components/com_easysdi_core/assets/images/s_com_easysdi_core.png" >COM_EASYSDI_CORE</menu>
+        <menu img="components/com_easysdi_core/assets/images/s_com_easysdi_core.ico" >COM_EASYSDI_CORE</menu>
         
         <files folder="administrator">
             <filename>access.xml</filename>

@@ -18,7 +18,20 @@
       padding-left:60px!important;
 }
 
+.icon-48-easysdi {
+      background-image: url(../images/l_com_easysdi_core.png);
+      padding-left:60px!important;
+}
 
+.adminsdilegend {
+	padding-left:4em;
+	padding-top:1em;
+	height:30px;
+}
+
+.adminsdicorelegend {
+	background:url(../images/easysdi_picto_core.jpg) no-repeat;
+}
 /** toolbar icons **/
 
 .icon-32-tool_f2 		{ background-image: url(../images/toolbar/icon-32-tool_f2.png); }
