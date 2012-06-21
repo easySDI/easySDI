@@ -13,6 +13,7 @@
 		<filename plugin="easysdi">easysdi.php</filename>
 	</files>
 	<languages>
+		<language tag="en-GB">en-GB.plg_user_easysdi.sys.ini</language>
 		<language tag="en-GB">en-GB.plg_user_easysdi.ini</language>
 	</languages>
 </install>

@@ -1,6 +1,6 @@
 <?php
 /**
- * @version     3.0.0
+* @version     3.0.0
 * @package     com_easysdi_core
 * @copyright   Copyright (C) 2012. All rights reserved.
 * @license     GNU General Public License version 3 or later; see LICENSE.txt
@@ -107,7 +107,7 @@ class plgUserEasysdi extends JPlugin {
 		$result = $newaccount->store();
 		
 		if (!(isset($result)) || !$result) {
-			JError::raiseError(42, JText::sprintf('PLG_EASYSDIUSER_ERR_FAILED_CREATE', $newaccount->getError()));
+			JError::raiseError(42, JText::_('PLG_EASYSDIUSER_ERR_FAILED_CREATE'). $newaccount->getError());
 		}
 		
 		//Set the state of the new EasySDI account to unpublish

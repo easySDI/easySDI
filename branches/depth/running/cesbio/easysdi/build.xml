@@ -13,8 +13,6 @@
 		</delete>
 		<mkdir dir="${projet.out.dir}" />
 	</target>
-
-
 	
     <target name="compression" description="Compression" depends="create-structure">
 		<jar compress="true" 
