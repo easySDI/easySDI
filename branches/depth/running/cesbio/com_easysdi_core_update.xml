@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<updates>
+	<update>
+      	<name>EasySDI</name>
+		<description>EasySDI Core</description>
+		<element>com_easysdi_core</element>
+		<type>component</type>
+		<client>0</client>
+		<version>3.0.0</version>
+ 	      	<infourl title="EasySDI Update Site">http://www.easysdi.org</infourl>
+      		<downloads>
+        		<downloadurl type="full" format="zip">http://forge.easysdi.org/attachments/download/xxx/com_easysdi_core.zip</downloadurl>
+		</downloads>
+ 		<maintainer>EasySDI</maintainer>
+      		<maintainerurl>http://www.easysdi.org</maintainerurl>
+	      	<targetplatform name="joomla" version="2.5" />
+   	</update>
+</updates>
