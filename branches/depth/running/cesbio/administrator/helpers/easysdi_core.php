@@ -80,8 +80,6 @@ class Easysdi_coreHelper
 		);
 	
 		foreach ($actions as $action) {
-			print_r($assetName.' -> '.$action.' : '.$user->authorise($action, $assetName));
-			print_r('<br>');
 			$result->set($action,	$user->authorise($action, $assetName));
 		}
 	

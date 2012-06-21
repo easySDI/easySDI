@@ -16,20 +16,6 @@
 		<mkdir dir="${projet.out.dir}" />
 	</target>
 
-	<target name="compression-prod" description="Compression prod" depends="create-structure">
-		<jar compress="true" 
-			jarfile="${projet.out.dir}/prod/com_easysdi_core.zip"
-			basedir="." 
-			excludes=" 
-			build.xml ; 
-			out/** ; 
-			.cache/** ; 
-			.svn/** ; 
-			.settings/** ; 
-			.project; 
-			.prefs; 
-			.buildpath" />
-	</target>
 	
     <target name="compression" description="Compression" depends="create-structure">
 		<jar compress="true" 

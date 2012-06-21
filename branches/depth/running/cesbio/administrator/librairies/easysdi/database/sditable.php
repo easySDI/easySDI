@@ -9,6 +9,8 @@
 
 defined('JPATH_PLATFORM') or die;
 
+require_once JPATH_ADMINISTRATOR.'/components/com_easysdi_core/helpers/easysdi_core.php';
+
 /**
  * Abstract sdiTable class
  *

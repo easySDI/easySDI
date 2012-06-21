@@ -9,11 +9,12 @@
     <authorUrl>http://www.easysdi.org</authorUrl>
     <version>3.0.0</version>
     <description></description>
-
+	<scriptfile>installerscript.php</scriptfile>
     <install> <!-- Runs on install -->
         <sql>
             <file driver="mysql" charset="utf8">sql/install.mysql.utf8.sql</file>
             <file driver="mysql" charset="utf8">sql/insert.install.mysql.utf8.sql</file>
+            <file driver="mysql" charset="utf8">sql/alter.install.mysql.utf8.sql</file>
         </sql>
     </install>
     <uninstall> <!-- Runs on uninstall -->
@@ -52,6 +53,7 @@
             <folder>sql</folder>
             <folder>tables</folder>
             <folder>views</folder>
+            <folder>librairies</folder>
         </files>
         <languages folder="administrator">
             <language tag="en-GB">language/en-GB.com_easysdi_core.ini
