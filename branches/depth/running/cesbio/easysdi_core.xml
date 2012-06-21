@@ -22,10 +22,15 @@
             <file driver="mysql" charset="utf8">sql/uninstall.mysql.utf8.sql</file>
         </sql>
     </uninstall>
+	<update> 
+		<schemas> 
+			<schemapath type="mysql">sql/updates</schemapath> 
+		</schemas> 
+	</update>
 
-	<updateservers> 
-		<server type="extension" name="DEPTH SA Update Site" priority="1">http://forge.easysdi.org/attachments/download/xxx/com_easysdi_core_update.xml</server> 
-	</updateservers>
+	<updateservers>
+        <server type="extension" name="EasySDI Deployment Site" priority="1">http://deploy.easysdi.org/joomla25/core/manifest.xml</server>
+    </updateservers>
 
     <files folder="site">
         <filename>index.html</filename>
