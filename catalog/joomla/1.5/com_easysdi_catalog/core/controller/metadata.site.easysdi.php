@@ -117,8 +117,6 @@ class SITE_metadata {
 		$queryCount = "	SELECT DISTINCT o.*, ov.title as version_title, s.label as state, m.guid as metadata_guid 
 						FROM 	#__sdi_metadata m, 
 								#__sdi_list_metadatastate s, 
-								#__sdi_account a, 
-								#__users u,
 								#__sdi_objecttype ot,
 								#__sdi_objectversion ov,
 								#__sdi_object o
@@ -127,7 +125,6 @@ class SITE_metadata {
 						WHERE ov.object_id=o.id
 							AND ov.metadata_id=m.id
 							AND m.metadatastate_id=s.id
-							AND a.user_id = u.id
 							AND ot.id=o.objecttype_id
 							AND ot.predefined=0
 							AND (e.account_id = ".$account->id."
@@ -179,8 +176,6 @@ class SITE_metadata {
 		$query = "	SELECT DISTINCT o.*, ov.id as version_id, ov.title as version_title, s.label as state, m.guid as metadata_guid 
 						FROM 	#__sdi_metadata m, 
 								#__sdi_list_metadatastate s, 
-								#__sdi_account a, 
-								#__users u,
 								#__sdi_objecttype ot,
 								#__sdi_objectversion ov,
 								#__sdi_object o 
@@ -189,7 +184,6 @@ class SITE_metadata {
 						WHERE ov.object_id=o.id
 							AND ov.metadata_id=m.id
 							AND m.metadatastate_id=s.id
-							AND a.user_id = u.id
 							AND ot.id=o.objecttype_id
 							AND ot.predefined=0
 							AND (e.account_id = ".$account->id."
