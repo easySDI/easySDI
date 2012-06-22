@@ -26,6 +26,9 @@ class Easysdi_coreViewUsers extends JView
 	 */
 	public function display($tpl = null)
 	{
+		// Load the submenu.
+		Easysdi_coreHelper::addSubmenu(JRequest::getCmd('view', 'users'));
+		
 		$this->state		= $this->get('State');
 		$this->items		= $this->get('Items');
 		$this->pagination	= $this->get('Pagination');

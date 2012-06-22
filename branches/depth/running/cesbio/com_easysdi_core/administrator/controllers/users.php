@@ -17,6 +17,7 @@ jimport('joomla.application.component.controlleradmin');
  */
 class Easysdi_coreControllerUsers extends JControllerAdmin
 {
+	
 	/**
 	 * Proxy for getModel.
 	 * @since	1.6

@@ -27,7 +27,7 @@ class Easysdi_coreController extends JController
 		require_once JPATH_COMPONENT.'/helpers/easysdi_core.php';
 
 		// Load the submenu.
-// 		Easysdi_coreHelper::addSubmenu(JRequest::getCmd('view', 'users'));
+ 		//Easysdi_coreHelper::addSubmenu(JRequest::getCmd('view', 'users'));
 
 		$view		= JRequest::getCmd('view', 'easysdi');
         JRequest::setVar('view', $view);

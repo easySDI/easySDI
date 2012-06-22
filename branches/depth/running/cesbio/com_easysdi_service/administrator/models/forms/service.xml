@@ -9,12 +9,20 @@
 				class="readonly"
                 description="JGLOBAL_FIELD_ID_DESC" /> 
 		
+		<field 	name="catid"
+				type="categoryedit"
+				extension="com_easysdi_service"
+				label="JCATEGORY"
+				description="JFIELD_CATEGORY_DESC"
+				class="inputbox"
+				required="true" />
+				
 		<field 	name="alias" 
 				type="text" 
 				size="40" 
 				class="inputbox"
-				label="COM_EASYSDI_CORE_FORM_LBL_SERVICE_ALIAS"
-				description="COM_EASYSDI_CORE_FORM_DESC_SERVICE_ALIAS"
+				label="COM_EASYSDI_SERVICE_FORM_LBL_SERVICE_ALIAS"
+				description="COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_ALIAS"
 				required="true"  
                 filter="safehtml" /> 
 
@@ -22,16 +30,16 @@
 				type="text" 
 				size="40" 
 				class="inputbox"
-				label="COM_EASYSDI_CORE_FORM_LBL_SERVICE_NAME"
-				description="COM_EASYSDI_CORE_FORM_DESC_SERVICE_NAME"
+				label="COM_EASYSDI_SERVICE_FORM_LBL_SERVICE_NAME"
+				description="COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_NAME"
 				required="true"  
 				filter="safehtml" /> 
 
 		<field 	name="serviceconnector_id" 
 				type="sql" 
 				class="inputbox"
-				label="COM_EASYSDI_CORE_FORM_LBL_SERVICE_SERVICECONNECTOR_ID"
-				description="COM_EASYSDI_CORE_FORM_DESC_SERVICE_SERVICECONNECTOR_ID" 
+				label="COM_EASYSDI_SERVICE_FORM_LBL_SERVICE_SERVICECONNECTOR_ID"
+				description="COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_SERVICECONNECTOR_ID" 
                 required="true" 
                 query="SELECT 0 AS id, '- Please select -' AS value UNION SELECT id, value FROM #__sdi_sys_serviceconnector" key_field="id" value_field="value"
                  /> 
@@ -46,8 +54,8 @@
 		<field 	name="resourceauthentication_id" 
 				type="sql" 
 				class="inputbox"
-				label="COM_EASYSDI_CORE_FORM_LBL_SERVICE_RESOURCEAUTHENTICATION_ID"
-				description="COM_EASYSDI_CORE_FORM_DESC_SERVICE_RESOURCEAUTHENTICATION_ID" 
+				label="COM_EASYSDI_SERVICE_FORM_LBL_SERVICE_RESOURCEAUTHENTICATION_ID"
+				description="COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_RESOURCEAUTHENTICATION_ID" 
                 query="SELECT 0 AS id, '- Please select -' AS value UNION SELECT id, value FROM #__sdi_sys_authenticationconnector" key_field="id" value_field="value"
                  /> 
 
@@ -55,8 +63,8 @@
 				type="text" 
 				size="40" 
 				class="inputbox"
-				label="COM_EASYSDI_CORE_FORM_LBL_SERVICE_RESOURCEURL"
-				description="COM_EASYSDI_CORE_FORM_DESC_SERVICE_RESOURCEURL" 
+				label="COM_EASYSDI_SERVICE_FORM_LBL_SERVICE_RESOURCEURL"
+				description="COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_RESOURCEURL" 
                 validate="url" 
                 filter="safehtml" /> 
 
@@ -64,23 +72,23 @@
 				type="text" 
 				size="40" 
 				class="inputbox"
-				label="COM_EASYSDI_CORE_FORM_LBL_SERVICE_RESOURCEUSERNAME"
-				description="COM_EASYSDI_CORE_FORM_DESC_SERVICE_RESOURCEUSERNAME" 
+				label="COM_EASYSDI_SERVICE_FORM_LBL_SERVICE_RESOURCEUSERNAME"
+				description="COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_RESOURCEUSERNAME" 
                 filter="safehtml" /> 
 
 		<field 	name="resourcepassword" 
 				type="text" 
 				size="40" 
 				class="inputbox"
-				label="COM_EASYSDI_CORE_FORM_LBL_SERVICE_RESOURCEPASSWORD"
-				description="COM_EASYSDI_CORE_FORM_DESC_SERVICE_RESOURCEPASSWORD" 
+				label="COM_EASYSDI_SERVICE_FORM_LBL_SERVICE_RESOURCEPASSWORD"
+				description="COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_RESOURCEPASSWORD" 
                 filter="safehtml" /> 
 
 		<field 	name="serviceauthentication_id" 
 				type="sql" 
 				class="inputbox"
-				label="COM_EASYSDI_CORE_FORM_LBL_SERVICE_SERVICEAUTHENTICATION_ID"
-				description="COM_EASYSDI_CORE_FORM_DESC_SERVICE_SERVICEAUTHENTICATION_ID" 
+				label="COM_EASYSDI_SERVICE_FORM_LBL_SERVICE_SERVICEAUTHENTICATION_ID"
+				description="COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_SERVICEAUTHENTICATION_ID" 
                 query="SELECT 0 AS id, '- Please select -' AS value UNION SELECT id, value FROM #__sdi_sys_authenticationconnector" key_field="id" value_field="value"
                  /> 
 
@@ -88,8 +96,8 @@
 				type="text" 
 				size="40" 
 				class="inputbox"
-				label="COM_EASYSDI_CORE_FORM_LBL_SERVICE_SERVICEURL"
-				description="COM_EASYSDI_CORE_FORM_DESC_SERVICE_SERVICEURL" 
+				label="COM_EASYSDI_SERVICE_FORM_LBL_SERVICE_SERVICEURL"
+				description="COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_SERVICEURL" 
                 validate="url" 
                 filter="safehtml" /> 
 
@@ -97,20 +105,18 @@
 				type="text" 
 				size="40" 
 				class="inputbox"
-				label="COM_EASYSDI_CORE_FORM_LBL_SERVICE_SERVICEUSERNAME"
-				description="COM_EASYSDI_CORE_FORM_DESC_SERVICE_SERVICEUSERNAME" 
+				label="COM_EASYSDI_SERVICE_FORM_LBL_SERVICE_SERVICEUSERNAME"
+				description="COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_SERVICEUSERNAME" 
                 filter="safehtml" /> 
 
 		<field 	name="servicepassword" 
 				type="text" 
 				size="40" 
 				class="inputbox"
-				label="COM_EASYSDI_CORE_FORM_LBL_SERVICE_SERVICEPASSWORD"
-				description="COM_EASYSDI_CORE_FORM_DESC_SERVICE_SERVICEPASSWORD" 
+				label="COM_EASYSDI_SERVICE_FORM_LBL_SERVICE_SERVICEPASSWORD"
+				description="COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_SERVICEPASSWORD" 
                 filter="safehtml" /> 
         
-       
-
 		<field  name="state"
                 type="list"
                 label="JSTATUS"
@@ -122,7 +128,7 @@
 			<option value="0">JUNPUBLISHED</option>
 		</field> 
 		
-		<field name="asset_id" type="hidden" filter="SAFEHTML" />
+		<field name="asset_id" type="hidden" filter="unset" />
 		<field name="checked_out" type="hidden" filter="SAFEHTML" />
 		<field name="checked_out_time" type="hidden" filter="SAFEHTML" />
 		<field name="guid" type="hidden" filter="SAFEHTML" />
@@ -132,15 +138,15 @@
 <fieldset name="negotiation">
  		<field 	name="negotiation" 
 				type="negotiationaction" 
-				label="COM_EASYSDI_CORE_FORM_LBL_SERVICE_NEGOTIATION"
-				description="COM_EASYSDI_CORE_FORM_DESC_SERVICE_NEGOTIATION" 
+				label="COM_EASYSDI_SERVICE_FORM_LBL_SERVICE_NEGOTIATION"
+				description="COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_NEGOTIATION" 
 				filter="safehtml" />
 				 
 		<field 	name="supportedversions" 
 				type="supportedversions" 
 				class="readonly"
-				label="COM_EASYSDI_CORE_FORM_LBL_SERVICE_SUPPORTEDVERSIONS"
-				description="COM_EASYSDI_CORE_FORM_DESC_SERVICE_SUPPORTEDVERSIONS"
+				label="COM_EASYSDI_SERVICE_FORM_LBL_SERVICE_SUPPORTEDVERSIONS"
+				description="COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_SUPPORTEDVERSIONS"
 				filter="safehtml" /> 
 </fieldset>
 
@@ -149,32 +155,32 @@
 				type="user" 
 				class="readonly"
 				readonly="true" 
-				label="COM_EASYSDI_CORE_FORM_LBL_SERVICE_CREATED_BY"
-				description="COM_EASYSDI_CORE_FORM_DESC_SERVICE_CREATED_BY" 
+				label="COM_EASYSDI_SERVICE_FORM_LBL_SERVICE_CREATED_BY"
+				description="COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_CREATED_BY" 
                 filter="unset" /> 
 
 		<field 	name="created" 
 				type="calendar" 
 				class="readonly"
        			readonly="true"
-				label="COM_EASYSDI_CORE_FORM_LBL_SERVICE_CREATED"
-				description="COM_EASYSDI_CORE_FORM_DESC_SERVICE_CREATED" 
+				label="COM_EASYSDI_SERVICE_FORM_LBL_SERVICE_CREATED"
+				description="COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_CREATED" 
                 filter="safehtml" /> 
 
 		<field 	name="modified_by" 
 				type="user" 
 				class="readonly"
 				readonly="true" 
-				label="COM_EASYSDI_CORE_FORM_LBL_SERVICE_MODIFIED_BY"
-				description="COM_EASYSDI_CORE_FORM_DESC_SERVICE_MODIFIED_BY" 
+				label="COM_EASYSDI_SERVICE_FORM_LBL_SERVICE_MODIFIED_BY"
+				description="COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_MODIFIED_BY" 
                 filter="unset" /> 
 
 		<field 	name="modified" 
 				type="calendar" 
 				class="readonly"
        			readonly="true"
-				label="COM_EASYSDI_CORE_FORM_LBL_SERVICE_MODIFIED"
-				description="COM_EASYSDI_CORE_FORM_DESC_SERVICE_MODIFIED" 
+				label="COM_EASYSDI_SERVICE_FORM_LBL_SERVICE_MODIFIED"
+				description="COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_MODIFIED" 
                 filter="safehtml" /> 
                 
 		
@@ -187,7 +193,7 @@
 				translate_label="true" 
 				class="inputbox" 
 				filter="rules"
-				component="com_easysdi_core" 
+				component="com_easysdi_service" 
 				section="service" 
 				validate="rules"
 		/>

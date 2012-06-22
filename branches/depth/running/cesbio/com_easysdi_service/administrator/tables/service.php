@@ -15,7 +15,7 @@ require_once JPATH_ADMINISTRATOR.'/components/com_easysdi_core/librairies/easysd
 /**
  * service Table class
  */
-class Easysdi_serviceTableservice extends JTable
+class Easysdi_serviceTableservice extends sdiTable
 {
 	/**
 	 * Constructor
@@ -39,7 +39,7 @@ class Easysdi_serviceTableservice extends JTable
 	protected function _getAssetName()
 	{
 		$k = $this->_tbl_key;
-		return 'com_easysdi_core.service.' . (int) $this->$k;
+		return 'com_easysdi_service.service.' . (int) $this->$k;
 	}
 	
 	/**

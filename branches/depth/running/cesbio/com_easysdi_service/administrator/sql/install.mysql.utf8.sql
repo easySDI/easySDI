@@ -90,7 +90,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_service` (
 `checked_out_time` DATETIME ,
 `name` VARCHAR(150)   ,
 `serviceconnector_id` INT(11) UNSIGNED  NOT NULL ,
-`resourceauthentication_id` INT(11) UNSIGNED  NOT NULL ,
+`resourceauthentication_id` INT(11) UNSIGNED   ,
 `resourceurl` VARCHAR(500)   ,
 `resourceusername` VARCHAR(150)  ,
 `resourcepassword` VARCHAR(150)  ,

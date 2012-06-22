@@ -125,7 +125,7 @@ class com_easysdi_coreInstallerScript
 	 */
 	function getParam( $name ) {
 		$db = JFactory::getDbo();
-		$db->setQuery('SELECT manifest_cache FROM #__extensions WHERE name = "com_democompupdate"');
+		$db->setQuery('SELECT manifest_cache FROM #__extensions WHERE name = "com_easysdi_core"');
 		$manifest = json_decode( $db->loadResult(), true );
 		return $manifest[ $name ];
 	}

@@ -205,7 +205,6 @@ class Easysdi_serviceModelservice extends JModelAdmin
 		if(!isset($id))
 			return null;
 	
-	
 		try {
 			$db = $this->getDbo();
 			$db->setQuery(

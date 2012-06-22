@@ -10,6 +10,8 @@
 // No direct access
 defined('_JEXEC') or die;
 
+require_once JPATH_ADMINISTRATOR.'/components/com_easysdi_core/librairies/easysdi/database/sditable.php';
+
 /**
  * address Table class
  */

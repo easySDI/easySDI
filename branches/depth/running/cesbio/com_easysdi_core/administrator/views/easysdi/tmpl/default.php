@@ -16,8 +16,19 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
 <form action="<?php echo JRoute::_('index.php?option=com_easysdi_core&view=easysdi'); ?>" method="post" name="adminForm" id="adminForm">
 	<fieldset class="adminsdiform">
 	<legend class="adminsdilegend adminsdicorelegend"><?php echo JText::_('COM_EASYSDI_CORE_LEGEND_EASYSDI'); ?></legend>
-		<?php foreach($this->form->getFieldset('ctrlpanel') as $field): ?>
+		<div>
+		<ul class="adminformlist">
+		<?php foreach($this->form->getFieldset('core') as $field): ?>
 			<li><?php echo $field->input;?></li>
 		<?php endforeach; ?>
+		</ul>
+		</div>
+		<div>
+		<ul class="adminformlist">
+		<?php foreach($this->form->getFieldset('service') as $field): ?>
+			<li><?php echo $field->input;?></li>
+		<?php endforeach; ?>
+		</ul>
+		</div>
 	</fieldset>
 </form>

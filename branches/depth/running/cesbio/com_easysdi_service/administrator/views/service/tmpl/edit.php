@@ -157,18 +157,18 @@ var request;
 	<?php echo JHtml::_('form.token'); ?>
 	<div class="clr"></div>
 
-		<div class="clr"></div>
-		<div class="width-100 fltlft">
-			<?php echo JHtml::_('sliders.start', 'permissions-sliders-'.$this->item->id, array('useCookie'=>1)); ?>
+	<div class="clr"></div>
+	<div class="width-100 fltlft">
+		<?php echo JHtml::_('sliders.start', 'permissions-sliders-'.$this->item->id, array('useCookie'=>1)); ?>
 
-				<?php echo JHtml::_('sliders.panel', JText::_('COM_EASYSDI_SERVICE_FIELDSET_RULES'), 'access-rules'); ?>
-				<fieldset class="panelform">
-					<?php echo $this->form->getLabel('rules'); ?>
-					<?php echo $this->form->getInput('rules'); ?>
-				</fieldset>
+			<?php echo JHtml::_('sliders.panel', JText::_('COM_EASYSDI_SERVICE_FIELDSET_RULES'), 'access-rules'); ?>
+			<fieldset class="panelform">
+				<?php echo $this->form->getLabel('rules'); ?>
+				<?php echo $this->form->getInput('rules'); ?>
+			</fieldset>
 
-			<?php echo JHtml::_('sliders.end'); ?>
-		</div>
+		<?php echo JHtml::_('sliders.end'); ?>
+	</div>
 		
     <style type="text/css">
         /* Temporary fix for drifting editor fields */
