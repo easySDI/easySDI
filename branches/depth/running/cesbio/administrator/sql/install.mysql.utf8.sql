@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_address` (
 `state` TINYINT(1)  NOT NULL DEFAULT '1',
 `checked_out` INT(11)  ,
 `checked_out_time` DATETIME ,
-`user_id` INT(11)  NOT NULL ,
+`user_id` INT(11) UNSIGNED  NOT NULL ,
 `addresstype_id` INT(11) UNSIGNED  NOT NULL ,
 `organismcomplement` VARCHAR(150)   ,
 `organism` VARCHAR(150)   ,

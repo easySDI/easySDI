@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<extension type="package" version="2.5"> 
+  <name>EasySDI solution</name> 
+  <packager>EasySDI Community</packager> 
+  <packagename>easysdi</packagename> 
+  <version>3.0.0</version> 
+  <description>EasySDI solution</description> 
+  <files folder="easysdi"> 
+      <file type="component"  id="com_easysdi_core" >com_easysdi_core.zip</file> 
+      <file type="plugin"  id="easysdi" group="user" >plg_easysdi.zip</file> 
+  </files> 
+</extension> 

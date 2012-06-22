@@ -23,6 +23,8 @@
 			basedir="." 
 			excludes=" 
 			        build.xml ; 
+			        easysdi.xml ;
+			        manifest.xml ;
 					out/** ; 
 					.cache/** ; 
 					.svn/** ; 
