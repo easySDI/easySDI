@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <install version="2.5" type="plugin" group="user">
-	<name>EasySDI User</name>
+	<name>EasySDI plugin User</name>
 	<author>EasySDI Community</author>
 	<creationDate>June 2012</creationDate>
 	<copyright>Copyright (C) 2012. All rights reserved.</copyright>

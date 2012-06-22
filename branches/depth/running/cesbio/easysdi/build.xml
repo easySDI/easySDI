@@ -16,7 +16,7 @@
 	
     <target name="compression" description="Compression" depends="create-structure">
 		<jar compress="true" 
-		    jarfile="${projet.out.dir}/easysdi.zip"
+		    jarfile="${projet.out.dir}/plg_easysdi.zip"
 			basedir="." 
 			excludes=" 
 			        build.xml ; 
