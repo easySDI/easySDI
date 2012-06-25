@@ -2298,10 +2298,28 @@ function com_install(){
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}
 		}
+        
 		//TODO in next version :
 		//Drop table sdi_list_attribute_type, no more used by the CATALOG since release 2.4.0
 		//Table is kept until next version in case of migration data problems between tables 'sdi_list_attribute_type' and 'sdi_sys_stereotype'
-		
+        if($version == "2.4.1"){
+        
+            //issue #540
+            $query="ALTER TABLE `#__sdi_translation` ADD INDEX `element_guid` (`element_guid` ASC)" 
+            $db->setQuery( $query);
+            if (!$db->query()) {
+                $mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+            }
+
+        
+			$version="2.4.2";
+			$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='CATALOG'";
+			$db->setQuery( $query);
+			if (!$db->query()){
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+		}
+        
 		$query = "DELETE FROM #__components where `option`= 'com_easysdi_catalog' ";
 		$db->setQuery( $query);
 		if (!$db->query())
