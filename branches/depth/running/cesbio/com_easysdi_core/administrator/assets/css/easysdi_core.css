@@ -32,6 +32,11 @@
 .adminsdicorelegend {
 	background:url(../images/l_core.jpg) no-repeat;
 }
+
+.adminsdiservicelegend {
+	background:url(../images/l_service.jpg) no-repeat;
+}
+
 /** toolbar icons **/
 
 .icon-32-tool_f2 		{ background-image: url(../images/toolbar/icon-32-tool_f2.png); }

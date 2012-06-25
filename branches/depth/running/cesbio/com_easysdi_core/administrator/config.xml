@@ -35,6 +35,9 @@
 		 <field name="infrastructureID"
              type="text"
              default=""
+             readonly="true" 
+             class="readonly"
+             size="40"
              label="COM_EASYSDI_CORE_CONFIG_LBL_INFRASTRUCTURE_ID"
              description="COM_EASYSDI_CORE_CONFIG_DESC_INFRASTRUCTURE_ID">
          </field>
@@ -42,18 +45,21 @@
 		 <field name="defaultaccount" 
 		 		type="user" 
 		 		default="" 
+		 		size="40"
 		 		label="COM_EASYSDI_CORE_CONFIG_LBL_DEFAULT_ACCOUNT" 
          		description="COM_EASYSDI_CORE_CONFIG_DESC_DEFAULT_ACCOUNT" />
 		 
 		 <field name="guestaccount" 
 		 		type="user" 
 		 		default="" 
+		 		size="40"
 		 		label="COM_EASYSDI_CORE_CONFIG_LBL_GUEST_ACCOUNT" 
          		description="COM_EASYSDI_CORE_CONFIG_DESC_GUEST_ACCOUNT" />
 
 		 <field name="serviceaccount" 
 		 		type="user" 
 		 		default="" 
+		 		size="40"
 		 		label="COM_EASYSDI_CORE_CONFIG_LBL_SERVICE_ACCOUNT" 
          		description="COM_EASYSDI_CORE_CONFIG_DESC_SERVICE_ACCOUNT" />
 		 

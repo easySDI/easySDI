@@ -23,6 +23,10 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
 		<?php endforeach; ?>
 		</ul>
 		</div>
+	</fieldset>
+	<?php if($this->form->getFieldset('service') ){ ?>
+	<fieldset class="adminsdiform">
+	<legend class="adminsdilegend adminsdiservicelegend"><?php echo JText::_('COM_EASYSDI_SERVICE_LEGEND_EASYSDI'); ?></legend>
 		<div>
 		<ul class="adminformlist">
 		<?php foreach($this->form->getFieldset('service') as $field): ?>
@@ -31,4 +35,7 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
 		</ul>
 		</div>
 	</fieldset>
+	<?php }?>
+	
+	
 </form>

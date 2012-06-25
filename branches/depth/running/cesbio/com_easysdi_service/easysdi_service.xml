@@ -11,7 +11,11 @@
     <description></description>
     <scriptfile>script.php</scriptfile>
     <install> <!-- Runs on install -->
-       
+        <sql>
+            <file driver="mysql" charset="utf8">sql/install.mysql.utf8.sql</file>
+            <file driver="mysql" charset="utf8">sql/insert.install.mysql.utf8.sql</file>
+            <file driver="mysql" charset="utf8">sql/alter.install.mysql.utf8.sql</file>
+        </sql>
     </install>
     <uninstall> <!-- Runs on uninstall -->
         <sql>
@@ -43,12 +47,6 @@
         </language>
     </languages>
     <administration>
-        <menu img="components/com_easysdi_service/assets/images/s_com_easysdi_service.png" >COM_EASYSDI_SERVICE</menu>
-        <submenu>
-            
-			<menu link="option=com_easysdi_service&amp;view=services" view="services" img="components/com_easysdi_service/assets/images/s_services.png" alt="Easysdi_service/Services">COM_EASYSDI_SERVICE_SERVICES</menu>
-
-        </submenu>
         <files folder="administrator">
             <filename>access.xml</filename>
             <filename>config.xml</filename>
@@ -71,5 +69,4 @@
         </languages>
     </administration>
 </extension>
-<!-- Component built by the Joomla Component Creator -->
-<!-- http://www.notwebdesign.com/joomla-component-creator/ -->
+

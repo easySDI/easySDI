@@ -102,10 +102,6 @@ class Easysdi_coreViewUsers extends JView
 		    }
         }
 
-		if ($canDo->get('core.admin')) {
-			JToolBarHelper::preferences('com_easysdi_core');
-		}
-
 		JToolBarHelper::divider();
 		JToolBarHelper::back('JTOOLBAR_BACK','index.php?option=com_easysdi_core');
 

@@ -10,7 +10,7 @@
 // No direct access to this file
 defined('_JEXEC') or die('Restricted access');
  
-class com_easysdi_coreInstallerScript
+class com_easysdi_serviceInstallerScript
 {
 	/*
 	 * $parent is the class calling this method.
@@ -53,7 +53,44 @@ class com_easysdi_coreInstallerScript
 	 * postflight is run after the extension is registered in the database.
 	 */
 	function postflight( $type, $parent ) {
+		echo '<p>' . JText::_('COM_DEMOCOMPUPDATE_POSTFLIGHT ' . $type . ' to ' . $this->release) . '</p>';
+		$fielset = "<fieldset name=\"service\" >
+	      <field name=\"services\" 
+	     		type=\"link\" 
+	     		default=\"0\" 
+	     		label=\"COM_EASYSDI_CORE_CTRLPANEL_LBL_SERVICESLINK\"
+	          	readonly=\"true\" 
+	          	class=\"readonly\" 
+	          	component=\"com_easysdi_service\"
+	          	description=\"COM_EASYSDI_CORE_CTRLPANEL_DESC_SERVICESLINK\" /> 
+	          	
+	      <field extension=\"com_easysdi_service\" 
+	     		type=\"link\" 
+	     		default=\"0\" 
+	     		label=\"COM_EASYSDI_CORE_CTRLPANEL_LBL_SERVICE_CATEGORIES\"
+	          	readonly=\"true\" 
+	          	class=\"readonly\" 
+	          	component=\"com_categories\"
+	          	description=\"COM_EASYSDI_CORE_CTRLPANEL_DESC_SERVICE_CATEGORIES\" /> 
+		</fieldset>
+		";
 		
+		
+		$fieldsetNode = new SimpleXMLElement ($fielset);
+		
+		$form_definition = simplexml_load_file( JPATH_ADMINISTRATOR.'/components/com_easysdi_core/models/forms/easysdi.xml');
+		$fieldsNode = $form_definition->fields;
+		
+		foreach ($fieldsNode->fieldset as $fieldset) {
+			
+			if (strcmp($fieldset['name'],'service')==0){
+				
+				simplexml_insert_after($fieldsetNode, $fieldset);
+				
+				break;
+			}
+		}
+		$form_definition->asXML(JPATH_ADMINISTRATOR.'/components/com_easysdi_core/models/forms/easysdi.xml');
 		
 		echo '<p>' . JText::_('COM_DEMOCOMPUPDATE_POSTFLIGHT ' . $type . ' to ' . $this->release) . '</p>';
 	}
