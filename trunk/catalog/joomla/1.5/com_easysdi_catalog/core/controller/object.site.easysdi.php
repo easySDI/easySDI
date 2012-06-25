@@ -27,6 +27,16 @@ defined('_JEXEC') or die('Restricted access');
 			return;
 		}*/
 		// do field validation
+        
+        /* test for at least one manager*/
+        var manager_list_valid = false;
+        for(var i = 0; i < form.selected_managers.options.length; i++) {  
+            if(form.selected_managers.options[i].selected) {  
+                manager_list_valid = true;  
+                break;  
+            }  
+        } 
+
 		if (form.name.value == "") 
 		{
 			alert( "<?php echo JText::_( 'You must provide a name.', true ); ?>" );
@@ -34,6 +44,10 @@ defined('_JEXEC') or die('Restricted access');
 		else if (getSelectedValue('adminForm','objecttype_id') < 1) 
 		{
 			alert( "<?php echo JText::_( 'Please select an object type.', true ); ?>" );
+		}
+        else if (!manager_list_valid) 
+		{
+			alert( "<?php echo JText::_( 'You must select at least one manager', true ); ?>" );
 		}
 		else 
 		{
