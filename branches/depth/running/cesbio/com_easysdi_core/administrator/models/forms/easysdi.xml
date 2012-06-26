@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
 	<fields name="ctrlpanel">
-	<fieldset name="core">
+	<fieldset name="core" text="COM_EASYSDI_CORE_LEGEND_EASYSDI">
 	    <field 	name="users" 
 	    		type="link" 
 	    		default="0" 
@@ -20,7 +20,7 @@
 	          	component="com_categories"
 	          	description="COM_EASYSDI_CORE_CTRLPANEL_DESC_CATEGORIES" />
 	</fieldset>
-	<fieldset name="service" >
+	<fieldset name="service" text="COM_EASYSDI_SERVICE_LEGEND_EASYSDI">
 	      <field name="services" 
 	     		type="link" 
 	     		default="0" 
@@ -40,4 +40,5 @@
 	          	description="COM_EASYSDI_CORE_CTRLPANEL_DESC_SERVICE_CATEGORIES" /> 
 	</fieldset>
     </fields>
+    
 </form>

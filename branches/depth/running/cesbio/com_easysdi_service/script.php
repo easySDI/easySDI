@@ -56,7 +56,7 @@ class com_easysdi_serviceInstallerScript
 		
 		if($type == 'install'){
 			//EasySDI control Panel form update
-			$fielset_string = "<fieldset name=\"service\" >
+			$fielset_string = "<fieldset name=\"service\" text=\"COM_EASYSDI_SERVICE_LEGEND_EASYSDI\" >
 				      		<field name=\"services\" 
 						     		type=\"link\" 
 						     		default=\"0\" 
