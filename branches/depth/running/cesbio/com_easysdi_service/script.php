@@ -1,7 +1,7 @@
 <?php
 /**
  * @version     3.0.0
- * @package     com_easysdi_core
+ * @package     com_easysdi_service
  * @copyright   Copyright (C) 2012. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
@@ -74,6 +74,15 @@ class com_easysdi_serviceInstallerScript
 						          	class=\"readonly\" 
 						          	component=\"com_categories\"
 						          	description=\"COM_EASYSDI_CORE_CTRLPANEL_DESC_SERVICE_CATEGORIES\" /> 
+
+						       <field name=\"proxy\" 
+						     		type=\"link\" 
+						     		default=\"0\" 
+						     		label=\"COM_EASYSDI_CORE_CTRLPANEL_LBL_PROXIEDSERVICESLINK\"
+						          	readonly=\"true\" 
+						          	class=\"readonly\" 
+						          	component=\"com_easysdi_service\"
+						          	description=\"COM_EASYSDI_CORE_CTRLPANEL_DESC_PROXIEDSERVICESLINK\" />
 							</fieldset>";
 			
 			$form_dom = new DomDocument();

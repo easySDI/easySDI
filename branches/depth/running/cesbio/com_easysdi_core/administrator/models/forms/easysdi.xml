@@ -38,6 +38,15 @@
 	          	class="readonly" 
 	          	component="com_categories"
 	          	description="COM_EASYSDI_CORE_CTRLPANEL_DESC_SERVICE_CATEGORIES" /> 
+	          	
+	      <field name="proxy" 
+	     		type="link" 
+	     		default="0" 
+	     		label="COM_EASYSDI_CORE_CTRLPANEL_LBL_PROXIEDSERVICESLINK"
+	          	readonly="true" 
+	          	class="readonly" 
+	          	component="com_easysdi_service"
+	          	description="COM_EASYSDI_CORE_CTRLPANEL_DESC_PROXIEDSERVICESLINK" />
 	</fieldset>
     </fields>
     
