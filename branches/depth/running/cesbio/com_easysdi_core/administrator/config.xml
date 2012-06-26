@@ -4,35 +4,7 @@
 		label="COM_EASYSDI_CORE_COMPONENT_LABEL"
 		description="COM_EASYSDI_CORE_COMPONENT_DESC" >
 
-        <field name="descmaxlength"
-             type="hidden"
-             default="50"
-             label="COM_EASYSDI_CORE_CONFIG_LBL_DESC_MAX_LENGTH"
-             description="COM_EASYSDI_CORE_CONFIG_DESC_DESC_MAX_LENGTH">
-         </field>
-         
-          <field name="logowidth"
-             type="hidden"
-             default="16"
-             label="COM_EASYSDI_CORE_CONFIG_LBL_LOGO_WIDTH"
-             description="COM_EASYSDI_CORE_CONFIG_DESC_LOGO_WIDTH">
-         </field>
-         
-          <field name="logoheight"
-             type="hidden"
-             default="16"
-             label="COM_EASYSDI_CORE_CONFIG_LBL_LOGO_HEIGHT"
-             description="COM_EASYSDI_CORE_CONFIG_DESC_LOGO_HEIGHT">
-         </field>
-         
-          <field name="welcomepage"
-             type="hidden"
-             default=""
-             label="COM_EASYSDI_CORE_CONFIG_LBL_WELCOME_PAGE_URL"
-             description="COM_EASYSDI_CORE_CONFIG_DESC_WELCOME_PAGE_URL">
-         </field>
-		 
-		 <field name="infrastructureID"
+        <field name="infrastructureID"
              type="text"
              default=""
              readonly="true" 

@@ -53,44 +53,72 @@ class com_easysdi_serviceInstallerScript
 	 * postflight is run after the extension is registered in the database.
 	 */
 	function postflight( $type, $parent ) {
-		echo '<p>' . JText::_('COM_DEMOCOMPUPDATE_POSTFLIGHT ' . $type . ' to ' . $this->release) . '</p>';
-		$fielset = "<fieldset name=\"service\" >
-	      <field name=\"services\" 
-	     		type=\"link\" 
-	     		default=\"0\" 
-	     		label=\"COM_EASYSDI_CORE_CTRLPANEL_LBL_SERVICESLINK\"
-	          	readonly=\"true\" 
-	          	class=\"readonly\" 
-	          	component=\"com_easysdi_service\"
-	          	description=\"COM_EASYSDI_CORE_CTRLPANEL_DESC_SERVICESLINK\" /> 
-	          	
-	      <field extension=\"com_easysdi_service\" 
-	     		type=\"link\" 
-	     		default=\"0\" 
-	     		label=\"COM_EASYSDI_CORE_CTRLPANEL_LBL_SERVICE_CATEGORIES\"
-	          	readonly=\"true\" 
-	          	class=\"readonly\" 
-	          	component=\"com_categories\"
-	          	description=\"COM_EASYSDI_CORE_CTRLPANEL_DESC_SERVICE_CATEGORIES\" /> 
-		</fieldset>
-		";
 		
-		
-		$fieldsetNode = new SimpleXMLElement ($fielset);
-		
-		$form_definition = simplexml_load_file( JPATH_ADMINISTRATOR.'/components/com_easysdi_core/models/forms/easysdi.xml');
-		$fieldsNode = $form_definition->fields;
-		
-		foreach ($fieldsNode->fieldset as $fieldset) {
+		if($type == 'install'){
+			//EasySDI control Panel form update
+			$fielset_string = "<fieldset name=\"service\" >
+				      		<field name=\"services\" 
+						     		type=\"link\" 
+						     		default=\"0\" 
+						     		label=\"COM_EASYSDI_CORE_CTRLPANEL_LBL_SERVICESLINK\"
+						          	readonly=\"true\" 
+						          	class=\"readonly\" 
+						          	component=\"com_easysdi_service\"
+						          	description=\"COM_EASYSDI_CORE_CTRLPANEL_DESC_SERVICESLINK\" /> 
+						          	
+						      <field extension=\"com_easysdi_service\" 
+							     	type=\"link\" 
+						     		default=\"0\" 
+						     		label=\"COM_EASYSDI_CORE_CTRLPANEL_LBL_SERVICE_CATEGORIES\"
+						          	readonly=\"true\" 
+						          	class=\"readonly\" 
+						          	component=\"com_categories\"
+						          	description=\"COM_EASYSDI_CORE_CTRLPANEL_DESC_SERVICE_CATEGORIES\" /> 
+							</fieldset>";
 			
-			if (strcmp($fieldset['name'],'service')==0){
-				
-				simplexml_insert_after($fieldsetNode, $fieldset);
-				
-				break;
+			$form_dom = new DomDocument();
+			$form_dom->load(JPATH_ADMINISTRATOR.'/components/com_easysdi_core/models/forms/easysdi.xml');
+			$form_fields = $form_dom->getElementsByTagName('fields')->item(0);
+	// 		$form_fieldsets = $form_fields->getElementsByTagName('fieldset');
+	// 		$nodeToRemove= null;
+	// 		foreach($form_fieldsets as $form_fieldset){
+	// 			if($form_fieldset->getAttribute("name") == 'service'){
+	// 				$nodeToRemove = $form_fieldset;
+	//  				break;
+	// 			}
+	// 		}
+	// 		$form_fields->removeChild($nodeToRemove);
+			
+			$fragment 				= $form_dom->createDocumentFragment();
+			$fragment->appendXML($fielset_string);
+			$form_fields->appendChild($fragment);
+			$form_dom->save(JPATH_ADMINISTRATOR.'/components/com_easysdi_core/models/forms/easysdi.xml');
+			
+			//EasySDI configuration form update
+			$core_dom = new DomDocument();
+			$core_dom->load(JPATH_ADMINISTRATOR.'/components/com_easysdi_core/config.xml');
+			$service_dom = new DomDocument();
+			$service_dom->load(JPATH_ADMINISTRATOR.'/components/com_easysdi_service/config.xml');
+			
+			$core_fieldsets = $core_dom->getElementsByTagName('fieldset');
+			$service_fieldsets = $service_dom->getElementsByTagName('fieldset');
+			
+			foreach($core_fieldsets as $core_fieldset){
+				if($core_fieldset->getAttribute("name") == 'component'){
+					foreach($service_fieldsets as $service_fieldset){
+						if($service_fieldset->getAttribute("name") == 'component'){
+							$fields = $service_fieldset->getElementsByTagName('field');
+							foreach ($fields as $field){
+								$node = $core_dom->importNode($field, true);
+								$core_fieldset->appendChild ($node);
+							}
+							break;
+						}
+					}
+				}
 			}
+			$core_dom->save(JPATH_ADMINISTRATOR.'/components/com_easysdi_core/config.xml');
 		}
-		$form_definition->asXML(JPATH_ADMINISTRATOR.'/components/com_easysdi_core/models/forms/easysdi.xml');
 		
 		echo '<p>' . JText::_('COM_DEMOCOMPUPDATE_POSTFLIGHT ' . $type . ' to ' . $this->release) . '</p>';
 	}
@@ -100,6 +128,24 @@ class com_easysdi_serviceInstallerScript
 	 * uninstall runs before any other action is taken (file removal or database processing).
 	 */
 	function uninstall( $parent ) {
+		
+		//EasySDI control Panel form cleaning
+		$form_dom = new DomDocument();
+		$form_dom->load(JPATH_ADMINISTRATOR.'/components/com_easysdi_core/models/forms/easysdi.xml');
+		$form_fields = $form_dom->getElementsByTagName('fields')->item(0);
+		$form_fieldsets = $form_fields->getElementsByTagName('fieldset');
+		$nodeToRemove= null;
+		foreach($form_fieldsets as $form_fieldset){
+			if($form_fieldset->getAttribute("name") == 'service'){
+				$nodeToRemove = $form_fieldset;
+				break;
+			}
+		}
+		$form_fields->removeChild($nodeToRemove);
+		$form_dom->save(JPATH_ADMINISTRATOR.'/components/com_easysdi_core/models/forms/easysdi.xml');
+		
+		//EasySDI configuration form cleaning
+		
 		echo '<p>' . JText::_('COM_DEMOCOMPUPDATE_UNINSTALL ' . $this->release) . '</p>';
 	}
  
