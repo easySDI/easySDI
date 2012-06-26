@@ -26,6 +26,7 @@ class Easysdi_serviceViewService extends JView
 	 */
 	public function display($tpl = null)
 	{
+
 		$this->state	= $this->get('State');
 		$this->item		= $this->get('Item');
 		$this->form		= $this->get('Form');

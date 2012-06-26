@@ -37,6 +37,12 @@ class Easysdi_serviceHelper
 					JText::sprintf('COM_CATEGORIES_CATEGORIES_TITLE', JText::_('com_easysdi_service')),
 					'easysdi_service-categories');
 		}
+		
+		JSubMenuHelper::addEntry(
+				JText::_('COM_EASYSDI_SERVICE_TITLE_CONFGID'),
+				'index.php?option=com_easysdi_service&view=configs',
+				$vName == 'services'
+		);
 	}
 
 	/**
