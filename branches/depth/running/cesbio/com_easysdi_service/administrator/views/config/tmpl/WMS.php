@@ -18,7 +18,6 @@ $document = &JFactory::getDocument();
 $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_service.css');
 
 ?>
-
 <form action="<?php echo JRoute::_('index.php?option=com_easysdi_service&view=config&layout=WMS&id='.(int) $this->id); ?>" method="post" name="adminForm" id="adminForm" class="form-validate">
 	<div class="width-60 fltlft">
 		

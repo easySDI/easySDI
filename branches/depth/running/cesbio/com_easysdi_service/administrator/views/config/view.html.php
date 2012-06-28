@@ -19,10 +19,78 @@ class Easysdi_serviceViewConfig extends JView
 {
 
 	/**
+	 * Add the page title and toolbar.
+	 *
+	 * @since	1.6
+	 */
+	protected function addToolbar()
+	{
+		JRequest::setVar('hidemainmenu', true);
+	
+		JToolBarHelper::title(JText::_('COM_EASYSDI_SERVICE_TITLE_CONFIG')." : ".$this->id, 'service.png');
+		JToolBarHelper::addNew('config.addserver',JText::_( 'COM_EASYSDI_SERVICE_NEW_SERVER'));
+		JToolBarHelper::save('config.save', 'JTOOLBAR_SAVE');
+		JToolBarHelper::back('JTOOLBAR_BACK','index.php?option=com_easysdi_service&view=configs');
+	}
+	
+	/**
 	 * Display the view
 	 */
 	public function display($tpl = null)
 	{
+		?>
+		<script type="text/javascript">
+		
+		function addNewServer()
+		{
+			var tr = document.createElement('tr');	
+			tr.id = "remoteServerTableRow"+nbServer;
+			
+			var tdservice = document.createElement('td');
+			var service = document.getElementById('service_0').cloneNode(true);
+			service.name = 'service_'+nbServer;
+			service.id = 'service_'+nbServer;
+			tdservice.appendChild(service);
+			tr.appendChild(tdservice);
+			
+			var tdRemove = document.createElement('td');	
+			var aButton = document.createElement('input');
+			aButton.type="button";
+			aButton.value="<?php echo JText::_( 'COM_EASYSDI_SERVICE_SERVICE_REMOVE' ); ?>";
+			aButton.setAttribute("onClick","removeServer("+nbServer+");");
+			tdRemove.appendChild(aButton);
+			tr.appendChild(tdRemove);
+			
+			document.getElementById("remoteServerTable").appendChild(tr);
+			nbServer = nbServer + 1;
+		}
+		
+		Joomla.submitbutton = function(task)
+		{
+			if (task == 'config.addserver') {
+				addNewServer();
+			}
+			else {
+				Joomla.submitform(task,document.getElementById('adminForm'));
+			}
+		}
+		
+		function removeServer(servNo)
+		{
+			noeud = document.getElementById("remoteServerTable");
+			var fils = document.getElementById("remoteServerTableRow"+servNo);
+			noeud.removeChild(fils);			
+		}
+		function serviceSelection(servNo)
+		{
+			var alias = document.getElementById("ALIAS_"+servNo);
+
+			var url = document.getElementById("URL_"+servNo);
+			
+		}
+		</script>
+		
+		<?php
 		if (count($errors = $this->get('Errors'))) {
 			JError::raiseError(500, implode("\n", $errors));
 			return false;
@@ -55,23 +123,14 @@ class Easysdi_serviceViewConfig extends JView
 		$db->setQuery("SELECT 0 AS id, '- Please select -' AS value UNION SELECT id, value FROM #__sdi_sys_serviceconnector") ;
 		$this->serviceconnectorlist = $db->loadObjectList();
 		
+		$db->setQuery("SELECT  id, alias, CONCAT (alias, ' - ', resourceurl) as value FROM #__sdi_service") ;
+		$this->servicelist = $db->loadObjectList();
+		
 		$this->addToolbar();
 		parent::display($tpl);
 	}
 
-	/**
-	 * Add the page title and toolbar.
-	 *
-	 * @since	1.6
-	 */
-	protected function addToolbar()
-	{
-		JRequest::setVar('hidemainmenu', true);
 
-		JToolBarHelper::title(JText::_('COM_EASYSDI_SERVICE_TITLE_CONFIG')." : ".$this->id, 'service.png');
-		JToolBarHelper::save('config.save', 'JTOOLBAR_SAVE');
-		JToolBarHelper::back('JTOOLBAR_BACK','index.php?option=com_easysdi_service&view=configs');
-	}
 	
 	/**
 	 *
@@ -135,9 +194,7 @@ class Easysdi_serviceViewConfig extends JView
 					<thead>
 					<tr>
 						<th><?php echo JText::_( 'COM_EASYSDI_SERVICE_SERVICE'); ?></th>
-						<th><?php echo JText::_( 'COM_EASYSDI_SERVICE_SERVICE_ALIAS'); ?></th>
-						<th><?php echo JText::_( 'COM_EASYSDI_SERVICE_SERVICE_URL'); ?></th>
-						<th colspan="6"><?php echo JText::_( 'COM_EASYSDI_SERVICE_SERVICE_VERSION'); ?></th>
+						<th></th>
 					</tr>
 					
 					</thead>
@@ -147,21 +204,8 @@ class Easysdi_serviceViewConfig extends JView
 					$iServer=0;
 					foreach ($remoteServerList->{'remote-server'} as $remoteServer){
 						?><tr id="remoteServerTableRow<?php echo $iServer;?>">
-								<td><input type="text" name="SERVICE_<?php echo $iServer;?>" id="ALIAS_<?php echo $iServer;?>" value="<?php echo $remoteServer->alias; ?>" size=20></td>
-								<td><input type="text" name="ALIAS_<?php echo $iServer;?>" id="ALIAS_<?php echo $iServer;?>" value="<?php echo $remoteServer->alias; ?>" size=20></td>
-								<td><input type="text" id="URL_<?php echo $iServer;?>" name="URL_<?php echo $iServer;?>" value="<?php echo $remoteServer->url; ?>" size=70></td>
 								<td>
-									<table>
-										<tr>
-											<?php 
-											foreach ($remoteServer->{"supported-versions"}->{"version"} as $version){?>
-												<td class="supportedversion" id="<?php echo $version;?>_<?php echo $iServer;?>"><?php echo $version;?>
-													<input type='hidden' name="<?php echo $version;?>_<?php echo $iServer;?>_state" id="<?php echo $version;?>_<?php echo $iServer;?>_state" value="supported" >
-												</td>
-											<?php 
-											}?>
-										</tr>
-									</table>
+								<?php echo JHTML::_("select.genericlist",$this->servicelist, 'service_'.$iServer, 'size="1" onChange="serviceSelection('.$iServer.')"', 'alias', 'value', $remoteServer->alias); ?>
 								</td>
 								<?php if ($iServer > 0){?>	
 								<td><input id="removeServerButton" type="button" onClick="javascript:removeServer(<?php echo $iServer;?>);" value="<?php echo JText::_( 'COM_EASYSDI_SERVICE_SERVICE_REMOVE' ); ?>"></td>
@@ -191,7 +235,6 @@ class Easysdi_serviceViewConfig extends JView
 				<script>
 				var nbServer = <?php echo $iServer?>;
 				var service = '<?php echo $serviceType?>';
-				var availableVersions = <?php echo json_encode ($availableVersion); ?>;
 				</script>
 				
 			<?php 
