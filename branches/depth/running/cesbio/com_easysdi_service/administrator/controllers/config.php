@@ -26,7 +26,11 @@ class Easysdi_serviceControllerConfig extends JController
     }
     
     function add() {
-    	$this->setRedirect('index.php?option=com_easysdi_service&view=config&task=add&layout=add');
+    	$serviceconnector = JRequest::getVar('serviceconnector',null);
+    	if(isset($serviceconnector))
+    		$this->setRedirect('index.php?option=com_easysdi_service&view=config&task=add&layout='.$serviceconnector);
+    	else
+    		$this->setRedirect('index.php?option=com_easysdi_service&view=config&task=add&layout=add');
     }
     
     function edit() {

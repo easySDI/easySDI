@@ -10,8 +10,8 @@ ADD CONSTRAINT `#__sdi_sys_authenticationconnector_fk1` FOREIGN KEY (`authentica
 ALTER TABLE `#__sdi_sys_servicecon_authenticationcon`
 ADD CONSTRAINT `#__sdi_sys_servicecon_authenticationcon_fk1` FOREIGN KEY (`authenticationconnector_id`) REFERENCES `#__sdi_sys_authenticationconnector` (`id`);
 
-ALTER TABLE `#__sdi_sys_servicecon_authenticationcon`
-ADD CONSTRAINT `#__sdi_sys_servicecon_authenticationcon_fk2` FOREIGN KEY (`serviceconnector_id`) REFERENCES `#__sdi_sys_serviceconnector` (`id`);
+--ALTER TABLE `#__sdi_sys_servicecon_authenticationcon`
+--ADD CONSTRAINT `#__sdi_sys_servicecon_authenticationcon_fk2` FOREIGN KEY (`serviceconnector_id`) REFERENCES `#__sdi_sys_serviceconnector` (`id`);
 
 ALTER TABLE `#__sdi_service_servicecompliance`
 ADD CONSTRAINT `#__sdi_service_servicecompliance_fk1` FOREIGN KEY (`service_id`) REFERENCES `#__sdi_service` (`id`);

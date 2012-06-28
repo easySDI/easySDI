@@ -23,7 +23,7 @@ class Easysdi_serviceViewConfigs extends JView
 	 */
 	public function display($tpl = null)
 	{
-		$params =JComponentHelper::getParams('com_easysdi_core');
+		$params = JComponentHelper::getParams('com_easysdi_core');
 		
 		$this->xml = simplexml_load_file($params->get('proxyconfigurationfile'));
 				

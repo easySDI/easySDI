@@ -19,15 +19,25 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 
 ?>
 
-<form action="<?php echo JRoute::_('index.php?option=com_easysdi_service&layout=editWMS&id='.(int) $this->item->id); ?>" method="post" name="adminForm" id="adminForm" class="form-validate">
+<form action="<?php echo JRoute::_('index.php?option=com_easysdi_service'); ?>" method="post" name="adminForm" id="adminForm" class="form-validate">
 	<div class="width-60 fltlft">
 		<fieldset class="adminform">
 			<legend><?php echo JText::_('COM_EASYSDI_SERVICE_LEGEND_CONFIG'); ?></legend>
 		   
+		   <fieldset class="adminform"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_CONNECTOR_CHOICE' );?></legend>
+				<table class="admintable">
+					<tr>
+						<td>
+						<?php 
+						echo JHTML::_("select.genericlist",$this->serviceconnectorlist, 'serviceconnector', 'size="1" onChange="submit()"', 'value', 'value', null); ?>
+						</td>
+					</tr>
+				</table>
+			</fieldset>
 		</fieldset>
 	</div>
 	
-		<input type="hidden" name="task" value="" />
+		<input type="hidden" name="task" value="config.add" />
 	<?php echo JHtml::_('form.token'); ?>
 	<div class="clr"></div>
 

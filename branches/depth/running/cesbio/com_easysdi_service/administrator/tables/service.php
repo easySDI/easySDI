@@ -53,4 +53,8 @@ class Easysdi_serviceTableservice extends sdiTable
 	{
 		return $this->alias;
 	}
+	
+// 	function store($updateNulls) {
+// 		return parent::store(true);
+// 	}
 }

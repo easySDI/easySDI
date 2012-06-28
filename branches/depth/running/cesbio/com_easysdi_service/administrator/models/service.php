@@ -116,7 +116,7 @@ class Easysdi_serviceModelservice extends JModelAdmin
 		jimport('joomla.filter.output');
 
 		if (empty($table->id)) {
-
+			$table->serviceauthentication_id = null;
 			// Set ordering to the last item if not set
 			if (@$table->ordering === '') {
 				$db = JFactory::getDbo();
@@ -124,7 +124,6 @@ class Easysdi_serviceModelservice extends JModelAdmin
 				$max = $db->loadResult();
 				$table->ordering = $max+1;
 			}
-
 		}
 	}
 
@@ -139,6 +138,9 @@ class Easysdi_serviceModelservice extends JModelAdmin
 	 */
 	public function save($data)
 	{
+// 		if($data['serviceauthentication_id'] == 0){
+// 			$data['serviceauthentication_id'] = null;
+// 		}
 		if(parent::save($data))
 		{
 			if(isset($data['compliance']))
