@@ -83,10 +83,11 @@ class Easysdi_serviceViewConfig extends JView
 		}
 		function serviceSelection(servNo)
 		{
-			var alias = document.getElementById("ALIAS_"+servNo);
-
-			var url = document.getElementById("URL_"+servNo);
-			
+			//Mettre à jour la liste des versions supportées par la config
+			for(i = 0 ; i < nbServer ; i++)
+			{
+				
+			}
 		}
 		</script>
 		
@@ -123,8 +124,18 @@ class Easysdi_serviceViewConfig extends JView
 		$db->setQuery("SELECT 0 AS id, '- Please select -' AS value UNION SELECT id, value FROM #__sdi_sys_serviceconnector") ;
 		$this->serviceconnectorlist = $db->loadObjectList();
 		
-		$db->setQuery("SELECT  id, alias, CONCAT (alias, ' - ', resourceurl) as value FROM #__sdi_service") ;
+// 		$db->setQuery("SELECT  id, alias, CONCAT (alias, ' - ', resourceurl) as value FROM #__sdi_service") ;
+		$db->setQuery("SELECT s.id, s.alias,CONCAT(s.alias, ' - ', s.resourceurl,' - [',GROUP_CONCAT(syv.value SEPARATOR '-'),']') as value FROM #__sdi_service s
+				INNER JOIN #__sdi_service_servicecompliance sc ON sc.service_id = s.id
+				INNER JOIN #__sdi_sys_servicecompliance syc ON syc.id = sc.servicecompliance_id
+				INNER JOIN #__sdi_sys_serviceversion syv ON syv.id = syc.serviceversion_id") ;
 		$this->servicelist = $db->loadObjectList();
+		
+// 		$db->setQuery("SELECT  s.alias, GROUP_CONCAT(syv.value) FROM #__sdi_service s 
+// 											INNER JOIN #__sdi_service_servicecompliance sc ON sc.service_id = s.id 
+// 											INNER JOIN #__sdi_sys_servicecompliance syc ON syc.id = sc.servicecompliance_id
+// 											INNER JOIN #__sdi_sys_serviceversion syv ON syv.id = syc.serviceversion_id") ;
+// 		$this->servicelist = $db->loadObjectList();
 		
 		$this->addToolbar();
 		parent::display($tpl);
