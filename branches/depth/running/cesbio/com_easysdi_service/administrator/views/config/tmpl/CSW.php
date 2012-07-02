@@ -26,7 +26,11 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 					<tr>
 						<td>
 						<?php 
-						echo JHTML::_("select.genericlist",$this->serviceconnectorlist, 'serviceconnector', 'size="1" onChange="submit()"', 'value', 'value', 'WMS'); ?>
+						echo JHTML::_("select.genericlist",$this->serviceconnectorlist, 'serviceconnector', 'size="1" onChange="submit()"', 'value', 'value', 'CSW'); ?>
+						</td>
+						<td>
+							<?php echo JText::_( 'COM_EASYSDI_SERVICE_CONNECTOR_CSW_HARVESTING' );?>
+							<input type="checkbox" name="harvestingConfig" value="1" <?php if($this->config->{"harvesting-config"}=="true"){echo "checked";}?> />
 						</td>
 					</tr>
 				</table>
@@ -39,8 +43,16 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 			}
 			$keywordString = substr($keywordString, 0, strlen($keywordString)-1) ;
 			
-			$this->genericServletInformationsHeader ("WMS");
+			$this->genericServletInformationsHeader ("CSW");
 			?>
+			<fieldset class="adminform" id="ogcSearchFilterFS"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_LEGEND_OGC_SEARCH_FILTER' );?></legend>
+			<table class="admintable">
+				<tr>
+					<td colspan="4"><input type='text' name='ogcSearchFilter'
+						value='<?php echo $this->config->{"ogc-search-filter"}; ?>'></td>
+				</tr>
+			</table>
+			</fieldset>
 			<fieldset class="adminform" id="service_metadata" ><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_LEGEND_METADATA'); ?></legend>
 				<table class="admintable" >
 					<tr>
@@ -103,6 +115,18 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 								<tr>
 									<td class="key"><?php echo JText::_("COM_EASYSDI_SERVICE_METADATA_CONTACT_MAIL"); ?> : </td>
 									<td colspan="2"><input name="service_contactmail" id="service_contactmail" type="text" size="80" value="<?php echo $this->config->{"service-metadata"}->{"ContactInformation"}->{"ElectronicMailAddress"}; ?>"></td>
+								</tr>
+								<tr>
+									<td class="key" id="service_contactlinkage_t"><?php echo JText::_("COM_EASYSDI_SERVICE_METADATA_CONTACT_LINKAGE"); ?> : </td>
+									<td colspan="2"><input name="service_contactlinkage" id="service_contactlinkage" type="text" size="80" value="<?php echo $this->config->{"service-metadata"}->{"ContactInformation"}->{"Linkage"}; ?>"></td>
+								</tr>
+								<tr>
+									<td class="key" id="service_contacthours_t"><?php echo JText::_("COM_EASYSDI_SERVICE_METADATA_CONTACT_HOURS"); ?> : </td>
+									<td colspan="2"><input name="service_contacthours" id="service_contacthours" type="text" size="80" value="<?php echo $this->config->{"service-metadata"}->{"ContactInformation"}->{"HoursofSservice"}; ?>"></td>
+								</tr>
+								<tr>
+									<td class="key" id="service_contactinstructions_t"><?php echo JText::_("COM_EASYSDI_SERVICE_METADATA_CONTACT_INSTRUCTIONS"); ?> : </td>
+									<td colspan="2"><textarea name="service_contactinstructions" id="service_contactinstructions"  cols="45" rows="5"  ><?php echo $this->config->{"service-metadata"}->{"ContactInformation"}->{"Instructions"}; ?></textarea></td>
 								</tr>
 							</table>
 						</fieldset>

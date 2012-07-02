@@ -33,15 +33,17 @@ class Easysdi_serviceControllerConfig extends JController
     }
     
     function edit() {
-    	$id = JRequest::getVar('cid',array(0));
-    	$layout = JRequest::getVar('layout','');
+    	$id 				= JRequest::getVar('cid',array(0));
+    	$layout 			= JRequest::getVar('serviceconnector',null);
+    	if(!isset($layout))
+    		$layout 			= JRequest::getVar('layout','');
     	$this->setRedirect('index.php?option=com_easysdi_service&view=config&task=edit&layout=edit&id='.$id[0].'&layout='.$layout );
     }
     
     function delete() {
-    	$params = JComponentHelper::getParams('com_easysdi_core');
+    	$params		= JComponentHelper::getParams('com_easysdi_core');
     	$xml 		= simplexml_load_file($params->get('proxyconfigurationfile'));
-    	$cid = JRequest::getVar('cid',array(0));
+    	$cid 		= JRequest::getVar('cid',array(0));
     	foreach ($cid as $id ){
 	    	foreach ($xml->config as $config) {
 	    		if (strcmp($config['id'],$id)==0){
@@ -62,16 +64,14 @@ class Easysdi_serviceControllerConfig extends JController
     }
     
     function save() {
-    	
     	$params 		= JComponentHelper::getParams('com_easysdi_core');
     	$xml 			= simplexml_load_file($params->get('proxyconfigurationfile'));
     	$configId 		= JRequest::getVar("id","New Config");
-    	$sentid 		= JRequest::getVar("id");
-    	$new			= (isset($sentid))? false : true;
+    	$previoustask 	= JRequest::getVar("previoustask", 'edit');
+    	$new			= ($previoustask == 'add')? true : false;
     	
     	if ($new){
     		$found = false;
-    	
     		$i=0;
     		foreach ($xml->config as $config) {
     			if (strcmp($config['id'],$configId)==0){
@@ -102,33 +102,24 @@ class Easysdi_serviceControllerConfig extends JController
     	
     	foreach ($xml->config as $config) {
     		if (strcmp($config['id'],$configId)==0){
-    				
     			//Id
     			$config['id']=$configId;
     	
     			//Servlet class
     			$servletName = JRequest::getVar("serviceconnector");
     			if($servletName == "WMS")
-    			{
     				$servletClass = "org.easysdi.proxy.wms.WMSProxyServlet";
-    			}
     			else if($servletName == "WMTS")
-    			{
     				$servletClass = "org.easysdi.proxy.wmts.WMTSProxyServlet";
-    			}
     			else if($servletName == "CSW")
-    			{
     				$servletClass = "org.easysdi.proxy.csw.CSWProxyServlet";
-    			}
     			else if($servletName== "WFS")
-    			{
     				$servletClass = "org.easysdi.proxy.wfs.WFSProxyServlet";
-    			}
     			$config->{'servlet-class'}=$servletClass;
     			
     			//Supported version
-    			$supportedVersionByconfig = json_decode(JRequest::getVar("supportedVersionsByConfig"));
-    			$config->{'supported-versions'}="";
+    			$supportedVersionByconfig 		= json_decode(JRequest::getVar("supportedVersionsByConfig"));
+    			$config->{'supported-versions'}	= "";
     			foreach ($supportedVersionByconfig as $version){
     				$config->{'supported-versions'}->addChild("version",$version);
     			}
@@ -152,82 +143,64 @@ class Easysdi_serviceControllerConfig extends JController
     			$config->{'log-config'}->{'date-format'} 					= JRequest::getVar("dateFormat","dd/MM/yyyy HH:mm:ss");
     	
     			//Host translator
-    			$hostTranslator = JRequest::getVar("hostTranslator");
-    			$config->{'host-translator'}=$hostTranslator;
+    			$hostTranslator 				= JRequest::getVar("hostTranslator");
+    			$config->{'host-translator'}	= $hostTranslator;
     	
     			//Remote server
-    			$config->{'remote-server-list'}="";
+    			$config->{'remote-server-list'} = "";
     			$i=0;
-    			for($i = 0 ; $i <= JRequest::getVar("nbServer",0); $i++)
+    			for($i = 0 ; $i < JRequest::getVar("nbServer",0); $i++)
     			{
-	    			$service = JRequest::getVar("service_".$i,"");
-	    				
-// 	    			if (strlen($url)==0) continue;
+	    			$service  		= JRequest::getVar("service_".$i,"");
+	    			$db 			= JFactory::getDbo();
+	    			$db->setQuery('SELECT resourceurl, resourceusername, resourcepassword, serviceurl, serviceusername, servicepassword FROM #__sdi_service WHERE alias="'.$service.'"');
+	    			$sdi_service 	= $db->loadObject();
 	    			
-// 	    			$alias = JRequest::getVar("ALIAS_".$i,"");
-// 	    			$user = JRequest::getVar("USER_".$i,"");
-// 	    			$pwd = JRequest::getVar("PASSWORD_".$i,"");
-	    			$remoteServer = $config->{'remote-server-list'}->addChild("remote-server");
+	    			$remoteServer 	= $config->{'remote-server-list'}->addChild("remote-server");
 	    			
 	    			if($i == 0)
 	    				$remoteServer['master'] = "true";
 	    			else
 	    				$remoteServer['master'] = "false";
 	    			
-	    			$remoteServer->alias=$service;
-// 	    			$remoteServer->user=$user;
-// 	    			$remoteServer->url=$url;
-// 	    			$remoteServer->password=$pwd;
-// 	    			if (strcmp($servletClass,"org.easysdi.proxy.csw.CSWProxyServlet")==0 )
-// 	    			{
-// 		    			$remoteServer->{'max-records'}=JRequest::getVar("max-records_".$i,"-1");
-// 		    			$remoteServer->{'login-service'}=JRequest::getVar("login-service_".$i,"");
-// 		    			$geonetworktransaction  = $remoteServer->addChild("transaction");
-// 		    			$geonetworktransaction->{'type'}='geonetwork';
-// 	    			}
-	    				
-// 	    			$supportedVersionNode = $remoteServer->addChild("supported-versions");
-// 	    			foreach ($availableVersion as $version)
-// 	    			{
-// 	    				//dot in variable names are replaced by underscore character when form is posted
-// 	    				//Service version contain dot, so : str_replace(".","_",$version)
-// 	    				$supportedVersion = JRequest::getVar(str_replace(".","_",$version)."_".$i."_state","");
-	    	
-// 		    			if(strcmp( $supportedVersion ,"supported") == 0 ){
-// 		    					$supportedVersionNode->addChild("version",$version);
-// 		    			}
-// 	    			}
+	    			$remoteServer->alias		= $service;
+	    			$remoteServer->user			= $sdi_service->resourceusername;
+	    			$remoteServer->url			= $sdi_service->resourceurl;
+	    			$remoteServer->password		= $sdi_service->resourcepassword;
+	    			if (strcmp($servletClass,"org.easysdi.proxy.csw.CSWProxyServlet")==0 )
+	    			{
+		    			$remoteServer->{'max-records'}		= JRequest::getVar("max-records_".$i,"-1");
+		    			$remoteServer->{'login-service'}	= $sdi_service->serviceurl.'?username='.$sdi_service->serviceusername.'&password='.$sdi_service->servicepassword;
+		    			$geonetworktransaction  			= $remoteServer->addChild("transaction");
+		    			$geonetworktransaction->{'type'}	= 'geonetwork';
+	    			}
     			}
     				
     			//Harvesting and Ogc search filter
     			if (strcmp($servletClass,"org.easysdi.proxy.csw.CSWProxyServlet")==0 )
     			{
-	    			$harvesting = JRequest::getVar("harvestingConfig",0);
+	    			$harvesting 		= JRequest::getVar("harvestingConfig",0);
 	    			if($harvesting == 1)
 	    				$config->{"harvesting-config"}="true";
 	    			else
 	    				$config->{"harvesting-config"}="false";
-	    			$ogcSearchFilter = JRequest::getVar("ogcSearchFilter","");
+	    			$ogcSearchFilter 	= JRequest::getVar("ogcSearchFilter","");
 	    			$config->{"ogc-search-filter"}=$ogcSearchFilter;
     			}
     	
     			//Exception
-    			$exceptionMode = JRequest::getVar("exception_mode","permissive");
-    			$config->{"exception"}->{"mode"}=$exceptionMode;
+    			$exceptionMode 						= JRequest::getVar("exception_mode","permissive");
+    			$config->{"exception"}->{"mode"}	= $exceptionMode;
     	
     			//Policy
-    			$policyFile = JRequest::getVar("policyFile");
-    					$config->{"authorization"}->{"policy-file"}=$policyFile;
+    			$policyFile 								= JRequest::getVar("policyFile");
+    			$config->{"authorization"}->{"policy-file"}	= $policyFile;
     	
-    					//Service metadata
+    			//Service metadata
     			if (strcmp($servletClass,"org.easysdi.proxy.wmts.WMTSProxyServlet")==0 )
-    			{
     				$config = $this->serviceMetadataOWS($config);
-    			}
     			else
-    			{
     				$config = $this->serviceMetadataWFS($config);
-    			}
     			$xml->asXML($params->get('proxyconfigurationfile'));
     		}
     		

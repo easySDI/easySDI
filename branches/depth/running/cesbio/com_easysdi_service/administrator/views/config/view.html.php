@@ -28,7 +28,10 @@ class Easysdi_serviceViewConfig extends JView
 		JRequest::setVar('hidemainmenu', true);
 	
 		JToolBarHelper::title(JText::_('COM_EASYSDI_SERVICE_TITLE_CONFIG')." : ".$this->id, 'service.png');
-		JToolBarHelper::addNew('config.addserver',JText::_( 'COM_EASYSDI_SERVICE_NEW_SERVER'));
+		
+		if(JRequest::getVar('layout',null)!='CSW')
+			JToolBarHelper::addNew('config.addserver',JText::_( 'COM_EASYSDI_SERVICE_NEW_SERVER'));
+		
 		JToolBarHelper::save('config.save', 'JTOOLBAR_SAVE');
 		JToolBarHelper::back('JTOOLBAR_BACK','index.php?option=com_easysdi_service&view=configs');
 	}
@@ -58,6 +61,7 @@ class Easysdi_serviceViewConfig extends JView
 			var service = document.getElementById('service_0').cloneNode(true);
 			service.name = 'service_'+nbServer;
 			service.id = 'service_'+nbServer;
+			service.options[0].selected= true;
 			tdservice.appendChild(service);
 			tr.appendChild(tdservice);
 			
@@ -71,13 +75,16 @@ class Easysdi_serviceViewConfig extends JView
 			
 			document.getElementById("remoteServerTable").appendChild(tr);
 			nbServer = nbServer + 1;
+			document.getElementById("nbServer").value = nbServer;	
 		}
 		
 		function removeServer(servNo)
 		{
 			noeud = document.getElementById("remoteServerTable");
 			var fils = document.getElementById("remoteServerTableRow"+servNo);
-			noeud.removeChild(fils);			
+			noeud.removeChild(fils);	
+			nbServer = nbServer - 1;	
+			document.getElementById("nbServer").value = nbServer;	
 		}
 		function serviceSelection(servNo)
 		{
@@ -87,6 +94,10 @@ class Easysdi_serviceViewConfig extends JView
 			{
 				var selectBoxName = 'service_'+i;
 				var server = document.getElementById(selectBoxName);
+				if(server.getSelected()[0].value == 0 ){
+					removeAllElementChild( document.getElementById("supportedVersionsByConfigText"));
+					return;
+				}
 				var selected = server.getSelected()[0].text;
 				var versions = selected.split(' - ')[2];
 				var versionsArray = versions.substring(1, versions.length -1).split('-');
@@ -173,7 +184,7 @@ class Easysdi_serviceViewConfig extends JView
 		$db->setQuery("SELECT 0 AS id, '- Please select -' AS value UNION SELECT id, value FROM #__sdi_sys_serviceconnector") ;
 		$this->serviceconnectorlist = $db->loadObjectList();
 		
-		$db->setQuery("SELECT s.id, s.alias,CONCAT(s.alias, ' - ', s.resourceurl,' - [',GROUP_CONCAT(syv.value SEPARATOR '-'),']') as value FROM #__sdi_service s
+		$db->setQuery("SELECT 0 AS alias, '- Please select -' AS value UNION SELECT s.alias as alias,CONCAT(s.alias, ' - ', s.resourceurl,' - [',GROUP_CONCAT(syv.value SEPARATOR '-'),']') as value FROM #__sdi_service s
 				INNER JOIN #__sdi_service_servicecompliance sc ON sc.service_id = s.id
 				INNER JOIN #__sdi_sys_servicecompliance syc ON syc.id = sc.servicecompliance_id
 				INNER JOIN #__sdi_sys_serviceversion syv ON syv.id = syc.serviceversion_id
@@ -314,7 +325,7 @@ class Easysdi_serviceViewConfig extends JView
 					</tbody>
 				</table>
 				</fieldset>
-				<input type='hidden' name="nbServer" id="nbServer" value="<?php echo $iServer; ?>" />
+				<input type='hidden' name="nbServer" id="nbServer" value="<?php echo $iServer ; ?>" />
 				<script>
 				var nbServer = <?php echo $iServer?>;
 				var service = '<?php echo $serviceType?>';

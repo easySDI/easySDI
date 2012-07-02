@@ -39,10 +39,10 @@ $search = JRequest::getVar('search','');
 			<tr>
 				
 				<th width="2%" class='title'></th>
-				<th class='title'><b><?php echo JText::_( 'EASYSDI_CONFIGURATION ID'); ?></b></th>
-				<th class='title'><b><?php echo JText::_( 'EASYSDI_CONFIGURATION POLICIES_LIST'); ?></b></th>
-				<th class='title'><b><?php echo JText::_( 'EASYSDI_CONFIGURATION_TYPE'); ?></b></th>
-				<th class='title'><b><?php echo JText::_( 'EASYSDI_CONFIGURATION_URL'); ?></b></th>
+				<th class='title'><b><?php echo JText::_( 'COM_EASYSDI_SERVICE_CONFIGURATION'); ?></b></th>
+				<th class='title'><b><?php echo JText::_( 'COM_EASYSDI_SERVICE_CONFIGURATION_POLICIES_LIST'); ?></b></th>
+				<th class='title'><b><?php echo JText::_( 'COM_EASYSDI_SERVICE_CONFIGURATION_TYPE'); ?></b></th>
+				<th class='title'><b><?php echo JText::_( 'COM_EASYSDI_SERVICE_CONFIGURATION_URL'); ?></b></th>
 	
 			</tr>
 		</thead>
