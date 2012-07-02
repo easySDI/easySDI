@@ -18,7 +18,7 @@ $document = &JFactory::getDocument();
 $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_service.css');
 
 ?>
-<form action="<?php echo JRoute::_('index.php?option=com_easysdi_service&view=config&layout=WMS&id='.(int) $this->id); ?>" method="post" name="adminForm" id="adminForm" class="form-validate">
+<form action="<?php echo JRoute::_('index.php?option=com_easysdi_service'); ?>" method="post" name="adminForm" id="item-form" class="form-validate">
 	<div class="width-60 fltlft">
 		
 			 <fieldset class="adminform"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_CONNECTOR_CHOICE' );?></legend>
@@ -32,6 +32,13 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 				</table>
 			</fieldset>
 			<?php
+			$keywordString = "";
+			foreach ($this->config->{"service-metadata"}->{'KeywordList'}->Keyword as $keyword)
+			{
+				$keywordString .= $keyword .",";
+			}
+			$keywordString = substr($keywordString, 0, strlen($keywordString)-1) ;
+			
 			$this->genericServletInformationsHeader ("WMS");
 			?>
 			<fieldset class="adminform" id="service_metadata" ><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_LEGEND_METADATA'); ?></legend>
@@ -46,7 +53,7 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 					</tr>
 					<tr>
 						<td class="key"><?php echo JText::_("COM_EASYSDI_SERVICE_METADATA_KEYWORD"); ?> : </td>
-						<td><input name="service_keyword" id="service_keyword" type="text" size=100 value="<?php echo $this->keywordString; ?>"></td>
+						<td><input name="service_keyword" id="service_keyword" type="text" size=100 value="<?php echo $keywordString; ?>"></td>
 					</tr>
 					<tr>
 						<td colspan="2">
@@ -117,15 +124,11 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 			?>
 		
 	</div>
-	
-		<input type='hidden' name='id' value='<?php echo $this->id;?>'> 
-		<input type='hidden' name="nbServer" id="nbServer" value=''>
-		<input type="hidden" name="task" value="<?php echo JRequest::getCmd('task');?>" />
+	<input type="hidden" name="task" value="<?php echo JRequest::getCmd('task');?>" />
 		
 	<?php echo JHtml::_('form.token'); ?>
 	<div class="clr"></div>
 
-	
 		
     <style type="text/css">
         /* Temporary fix for drifting editor fields */

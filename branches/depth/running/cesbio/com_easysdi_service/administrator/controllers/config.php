@@ -62,6 +62,7 @@ class Easysdi_serviceControllerConfig extends JController
     }
     
     function save() {
+    	
     	$params 		= JComponentHelper::getParams('com_easysdi_core');
     	$xml 			= simplexml_load_file($params->get('proxyconfigurationfile'));
     	$configId 		= JRequest::getVar("id","New Config");
@@ -73,7 +74,7 @@ class Easysdi_serviceControllerConfig extends JController
     	
     		$i=0;
     		foreach ($xml->config as $config) {
-    			if (strcmp($config['id'],$newConfigId)==0){
+    			if (strcmp($config['id'],$configId)==0){
     				$found = true;
     				break;
     			}
@@ -82,31 +83,28 @@ class Easysdi_serviceControllerConfig extends JController
     		while($found){
     			foreach ($xml->config as $config) {
     				$found=false;
-    				if (strcmp($config['id'],$newConfigId.$i)==0){
+    				if (strcmp($config['id'],$configId.$i)==0){
     					$found = true;
     					break;
     				}
     			}
     			if ($found == false){
-    				$newConfigId = $newConfigId.$i;
+    				$configId = $configId.$i;
     			}
     			$i++;
     		}
     	
     		$config = $xml->addChild("config");
-    		$config->addAttribute("id",$newConfigId);
+    		$config->addAttribute("id",$configId);
     	
-    		$config->addChild("authorization")->addChild("policy-file");
-    	
-    		$configId=$newConfigId;
+    		$config->addChild("authorization")->addChild("policy-file");	
     	}
-    	
     	
     	foreach ($xml->config as $config) {
     		if (strcmp($config['id'],$configId)==0){
     				
     			//Id
-    			$config['id']=$newConfigId;
+    			$config['id']=$configId;
     	
     			//Servlet class
     			$servletName = JRequest::getVar("serviceconnector");
@@ -127,7 +125,7 @@ class Easysdi_serviceControllerConfig extends JController
     				$servletClass = "org.easysdi.proxy.wfs.WFSProxyServlet";
     			}
     			$config->{'servlet-class'}=$servletClass;
-    	
+    			
     			//Supported version
     			$supportedVersionByconfig = json_decode(JRequest::getVar("supportedVersionsByConfig"));
     			$config->{'supported-versions'}="";
@@ -139,27 +137,23 @@ class Easysdi_serviceControllerConfig extends JController
     			$config->{"xslt-path"}->{"url"} = JRequest::getVar("xsltPath");
     	
     			//Log file
-    			$config->{'log-config'}->{'logger'}=JRequest::getVar("logger");
-    			$config->{'log-config'}->{'log-level'}=JRequest::getVar("logLevel");
-    			$logPath= JRequest::getVar("logPath");
-    			$logSuffix= JRequest::getVar("logSuffix");
-    			$logPrefix= JRequest::getVar("logPrefix");
-    			$logExt= JRequest::getVar("logExt");
-    			$logPeriod= JRequest::getVar("logPeriod");
-    			$config->{'log-config'}->{'file-structure'}->{'path'} = $logPath;
-    			$config->{'log-config'}->{'file-structure'}->{'suffix'} = $logSuffix;
-    			$config->{'log-config'}->{'file-structure'}->{'prefix'} = $logPrefix;
-    			$config->{'log-config'}->{'file-structure'}->{'extension'} = $logExt;
-    			$config->{'log-config'}->{'file-structure'}->{'period'} = $logPeriod;
-    			$config->{'log-config'}->{'date-format'} = JRequest::getVar("dateFormat","dd/MM/yyyy HH:mm:ss");
+    			$config->{'log-config'}->{'logger'}							= JRequest::getVar("logger");
+    			$config->{'log-config'}->{'log-level'}						= JRequest::getVar("logLevel");
+    			$logPath													= JRequest::getVar("logPath");
+    			$logSuffix													= JRequest::getVar("logSuffix");
+    			$logPrefix													= JRequest::getVar("logPrefix");
+    			$logExt														= JRequest::getVar("logExt");
+    			$logPeriod													= JRequest::getVar("logPeriod");
+    			$config->{'log-config'}->{'file-structure'}->{'path'} 		= $logPath;
+    			$config->{'log-config'}->{'file-structure'}->{'suffix'} 	= $logSuffix;
+    			$config->{'log-config'}->{'file-structure'}->{'prefix'} 	= $logPrefix;
+    			$config->{'log-config'}->{'file-structure'}->{'extension'} 	= $logExt;
+    			$config->{'log-config'}->{'file-structure'}->{'period'} 	= $logPeriod;
+    			$config->{'log-config'}->{'date-format'} 					= JRequest::getVar("dateFormat","dd/MM/yyyy HH:mm:ss");
     	
     			//Host translator
     			$hostTranslator = JRequest::getVar("hostTranslator");
     			$config->{'host-translator'}=$hostTranslator;
-    	
-    			$service = new ogcservice(JFactory::getDBO());
-    			$service->load(JRequest::getVar('serviceType'));
-    			$availableVersion = $service->getVersions();
     	
     			//Remote server
     			$config->{'remote-server-list'}="";
@@ -228,11 +222,11 @@ class Easysdi_serviceControllerConfig extends JController
     					//Service metadata
     			if (strcmp($servletClass,"org.easysdi.proxy.wmts.WMTSProxyServlet")==0 )
     			{
-//     				$config = ADMIN_proxy::serviceMetadataOWS($config);
+    				$config = $this->serviceMetadataOWS($config);
     			}
     			else
     			{
-//     				$config = ADMIN_proxy::serviceMetadataWFS($config);
+    				$config = $this->serviceMetadataWFS($config);
     			}
     			$xml->asXML($params->get('proxyconfigurationfile'));
     		}

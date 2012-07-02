@@ -40,6 +40,14 @@ class Easysdi_serviceViewConfig extends JView
 	{
 		?>
 		<script type="text/javascript">
+		Joomla.submitbutton = function(task)
+		{
+			if (task == 'config.addserver') {
+				addNewServer();
+			}else {
+				Joomla.submitform(task,document.getElementById('item-form'));
+			}
+		}
 		
 		function addNewServer()
 		{
@@ -63,16 +71,6 @@ class Easysdi_serviceViewConfig extends JView
 			
 			document.getElementById("remoteServerTable").appendChild(tr);
 			nbServer = nbServer + 1;
-		}
-		
-		Joomla.submitbutton = function(task)
-		{
-			if (task == 'config.addserver') {
-				addNewServer();
-			}
-			else {
-				Joomla.submitform(task,document.getElementById('adminForm'));
-			}
 		}
 		
 		function removeServer(servNo)
@@ -211,6 +209,7 @@ class Easysdi_serviceViewConfig extends JView
 						</th>
 						<td colspan="4">
 							<input type='text' name='id' value='<?php echo $this->id;?>' <?php if(isset($this->id)){ echo "disabled='disabled'";};?>>
+							<?php if(isset($this->id)){ ?> <input type='hidden' name="id" id="id" value="<?php echo $this->id; ?>" /> <?php };?>
 						</td>
 					</tr>
 					<tr>
@@ -315,7 +314,7 @@ class Easysdi_serviceViewConfig extends JView
 					</tbody>
 				</table>
 				</fieldset>
-				
+				<input type='hidden' name="nbServer" id="nbServer" value="<?php echo $iServer; ?>" />
 				<script>
 				var nbServer = <?php echo $iServer?>;
 				var service = '<?php echo $serviceType?>';

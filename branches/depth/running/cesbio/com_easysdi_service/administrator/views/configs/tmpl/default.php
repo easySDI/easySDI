@@ -18,18 +18,22 @@ $document = &JFactory::getDocument();
 $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_service.css');
 
 global $mainframe;
-
+jimport("joomla.html.pagination");
 $limitstart = JRequest::getVar('limitstart',0);
 $limit = JRequest::getVar('limit',15);
 $search = JRequest::getVar('search','');
-
-
-
 ?>
-
-<form action="<?php echo JRoute::_('index.php?option=com_easysdi_service&view=config'); ?>" method="post" name="adminForm" id="adminForm">
+<form action="<?php echo JRoute::_('index.php?option=com_easysdi_service&view=configs&'); ?>" method="post" name="adminForm" id="adminForm">
 	<fieldset id="filter-bar">
-		
+		<table>
+			<tr>
+				<td align="right" width="100%">
+					<?php echo JText::_("EASYSDI_FILTER");?>&nbsp;
+					<input type="text" name="search" id="search" value="<?php echo $search;?>" class="inputbox" onchange="document.adminForm.submit();"  />			
+				</td>
+				<td nowrap="nowrap"></td>
+			</tr>
+		</table>
 	</fieldset>
 	<div class="clr"> </div>
 
@@ -54,7 +58,6 @@ $search = JRequest::getVar('search','');
 		if (!(stripos($config['id'],$search)===False) || !(stripos($config->{'servlet-class'},$search)===False) || strlen($search)==0){
 			if (($i>=$limitstart || $limit==0)&& ($i < $limitstart+$limit || $limit==0)){
 				$policyFile = $config->{'authorization'}->{'policy-file'};
-				
 				
 				if($config->{'servlet-class'} == "org.easysdi.proxy.wms.WMSProxyServlet")
 				{
@@ -103,10 +106,13 @@ $search = JRequest::getVar('search','');
 
 	}?>
 	</tbody>
-
-
+	<tfoot>
+		<?php
+		$pageNav = new JPagination(count($this->xml->config),$limitstart,$limit);
+		?>
+		<td colspan="7"><?php echo $pageNav->getListFooter(); ?></td>
+	</tfoot>
 	</table>
-
 	<div>
 		<input type="hidden" name="task" value="" />
 		<input type="hidden" name="boxchecked" value="0" />
@@ -114,4 +120,5 @@ $search = JRequest::getVar('search','');
 		<input type="hidden" name="filter_order_Dir" value="<?php echo $listDirn; ?>" />
 		<?php echo JHtml::_('form.token'); ?>
 	</div>
+	
 </form>
