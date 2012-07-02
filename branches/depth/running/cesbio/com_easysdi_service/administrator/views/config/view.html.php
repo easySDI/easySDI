@@ -84,10 +84,62 @@ class Easysdi_serviceViewConfig extends JView
 		function serviceSelection(servNo)
 		{
 			//Mettre à jour la liste des versions supportées par la config
+			var supportedVersionsArray ;
 			for(i = 0 ; i < nbServer ; i++)
 			{
-				
+				var selectBoxName = 'service_'+i;
+				var server = document.getElementById(selectBoxName);
+				var selected = server.getSelected()[0].text;
+				var versions = selected.split(' - ')[2];
+				var versionsArray = versions.substring(1, versions.length -1).split('-');
+
+				if(supportedVersionsArray){
+					var j = supportedVersionsArray.length;
+					while(j--){
+						if(!contains(versionsArray,supportedVersionsArray[j])){
+							supportedVersionsArray.splice(1,j);
+						}
+					}
+				}else{
+					supportedVersionsArray = versionsArray;
+				}
 			}
+			document.getElementById("supportedVersionsByConfig").value=JSON.stringify(supportedVersionsArray);
+			removeAllElementChild( document.getElementById("supportedVersionsByConfigText"));
+			document.getElementById("supportedVersionsByConfigText").appendChild(createSupportedVersionByConfigTable(supportedVersionsArray)) ; 
+		}
+
+		function contains(arr, findValue) {
+		    var i = arr.length;
+		     
+		    while (i--) {
+		        if (arr[i] === findValue) return true;
+		    }
+		    return false;
+		}
+		function removeAllElementChild (cell){
+			if ( cell.hasChildNodes() )
+			{
+			    while ( cell.childNodes.length >= 1 )
+			    {
+			        cell.removeChild( cell.firstChild );       
+			    } 
+			}
+		}
+		function createSupportedVersionByConfigTable(aNupportedVersionByConfig){
+			var table = document.createElement('table');
+			var tr = document.createElement('tr');
+			table.appendChild(tr);
+			
+			for( var i = 0 ; i < aNupportedVersionByConfig.length ; i++ ){
+				var td = document.createElement('td');
+				var text = document.createTextNode(aNupportedVersionByConfig[i]);
+				td.setAttribute("class","supportedversion");
+				td.appendChild(text);
+				tr.appendChild(td);
+			}
+
+			return table;
 		}
 		</script>
 		
@@ -119,23 +171,20 @@ class Easysdi_serviceViewConfig extends JView
 		if(!isset($this->config))
 			$this->config = new stdClass();
 		
-		
 		$db 			= JFactory::getDBO();
 		$db->setQuery("SELECT 0 AS id, '- Please select -' AS value UNION SELECT id, value FROM #__sdi_sys_serviceconnector") ;
 		$this->serviceconnectorlist = $db->loadObjectList();
 		
-// 		$db->setQuery("SELECT  id, alias, CONCAT (alias, ' - ', resourceurl) as value FROM #__sdi_service") ;
 		$db->setQuery("SELECT s.id, s.alias,CONCAT(s.alias, ' - ', s.resourceurl,' - [',GROUP_CONCAT(syv.value SEPARATOR '-'),']') as value FROM #__sdi_service s
 				INNER JOIN #__sdi_service_servicecompliance sc ON sc.service_id = s.id
 				INNER JOIN #__sdi_sys_servicecompliance syc ON syc.id = sc.servicecompliance_id
-				INNER JOIN #__sdi_sys_serviceversion syv ON syv.id = syc.serviceversion_id") ;
+				INNER JOIN #__sdi_sys_serviceversion syv ON syv.id = syc.serviceversion_id
+				INNER JOIN #__sdi_sys_serviceconnector sycc ON sycc.id = syc.serviceconnector_id
+				WHERE sycc.value = '".JRequest::getVar('layout',null)."'
+				GROUP BY s.id") ;
 		$this->servicelist = $db->loadObjectList();
 		
-// 		$db->setQuery("SELECT  s.alias, GROUP_CONCAT(syv.value) FROM #__sdi_service s 
-// 											INNER JOIN #__sdi_service_servicecompliance sc ON sc.service_id = s.id 
-// 											INNER JOIN #__sdi_sys_servicecompliance syc ON syc.id = sc.servicecompliance_id
-// 											INNER JOIN #__sdi_sys_serviceversion syv ON syv.id = syc.serviceversion_id") ;
-// 		$this->servicelist = $db->loadObjectList();
+
 		
 		$this->addToolbar();
 		parent::display($tpl);
@@ -215,13 +264,12 @@ class Easysdi_serviceViewConfig extends JView
 					$iServer=0;
 					foreach ($remoteServerList->{'remote-server'} as $remoteServer){
 						?><tr id="remoteServerTableRow<?php echo $iServer;?>">
-								<td>
-								<?php echo JHTML::_("select.genericlist",$this->servicelist, 'service_'.$iServer, 'size="1" onChange="serviceSelection('.$iServer.')"', 'alias', 'value', $remoteServer->alias); ?>
-								</td>
-								<?php if ($iServer > 0){?>	
-								<td><input id="removeServerButton" type="button" onClick="javascript:removeServer(<?php echo $iServer;?>);" value="<?php echo JText::_( 'COM_EASYSDI_SERVICE_SERVICE_REMOVE' ); ?>"></td>
-								<?php }?>
-								
+							<td>
+							<?php echo JHTML::_("select.genericlist",$this->servicelist, 'service_'.$iServer, 'size="1" onChange="serviceSelection('.$iServer.')"', 'alias', 'value', $remoteServer->alias); ?>
+							</td>
+							<?php if ($iServer > 0){?>	
+							<td><input id="removeServerButton" type="button" onClick="javascript:removeServer(<?php echo $iServer;?>);" value="<?php echo JText::_( 'COM_EASYSDI_SERVICE_SERVICE_REMOVE' ); ?>"></td>
+							<?php }?>
 						</tr>
 						<?php if ($serviceconnector == "CSW"){?>
 						<tr>						
@@ -239,7 +287,32 @@ class Easysdi_serviceViewConfig extends JView
 						}
 					$iServer=$iServer+1;
 					}
-					?></tbody>
+					if($iServer == 0){
+						?>
+						<tr id="remoteServerTableRow<?php echo $iServer;?>">
+								<td>
+								<?php echo JHTML::_("select.genericlist",$this->servicelist, 'service_'.$iServer, 'size="1" onChange="serviceSelection('.$iServer.')"', 'alias', 'value', $remoteServer->alias); ?>
+								</td>
+								
+						</tr>
+						<?php if ($serviceconnector == "CSW"){?>
+						<tr>						
+							<td colspan="4">
+							<div id="specificGeonetowrk" >
+								<table>	
+								<tr>									
+								<td><?php echo JText::_( 'COM_EASYSDI_SERVICE_MAX_RECORDS');?></td><td><input type="text" name="max-records_<?php echo $iServer;?>" value="<?php echo $remoteServer->{'max-records'}; ?>" size=5></td>
+								</tr>							
+								</table>
+							</div>
+							</td>
+							</tr>
+						<?php
+						}
+						$iServer=$iServer+1;
+					}
+					?>
+					</tbody>
 				</table>
 				</fieldset>
 				

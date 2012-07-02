@@ -145,7 +145,7 @@ class Easysdi_serviceModelservice extends JModelAdmin
 		{
 			if(isset($data['compliance']))
 			{
-				return $this->saveServiceCompliance($data['compliance'], $data['id']);
+				return $this->saveServiceCompliance($data['compliance'], $this->getState($this->getName().'.id'));
 			}
 			return true;
 		}

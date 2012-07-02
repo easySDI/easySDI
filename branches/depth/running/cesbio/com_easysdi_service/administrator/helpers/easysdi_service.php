@@ -39,7 +39,7 @@ class Easysdi_serviceHelper
 		}
 		
 		JSubMenuHelper::addEntry(
-				JText::_('COM_EASYSDI_SERVICE_TITLE_CONFGID'),
+				JText::_('COM_EASYSDI_SERVICE_TITLE_CONFIGS'),
 				'index.php?option=com_easysdi_service&view=configs',
 				$vName == 'services'
 		);
