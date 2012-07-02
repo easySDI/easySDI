@@ -120,7 +120,7 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 	
 		<input type='hidden' name='id' value='<?php echo $this->id;?>'> 
 		<input type='hidden' name="nbServer" id="nbServer" value=''>
-		<input type="hidden" name="task" value="" />
+		<input type="hidden" name="task" value="<?php echo JRequest::getCmd('task');?>" />
 		
 	<?php echo JHtml::_('form.token'); ?>
 	<div class="clr"></div>

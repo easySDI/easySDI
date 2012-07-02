@@ -45,7 +45,7 @@ class Easysdi_serviceViewConfigs extends JView
 	protected function addToolbar()
 	{
 		require_once JPATH_COMPONENT.DS.'helpers'.DS.'easysdi_service.php';
-
+		
 		$canDo	= Easysdi_serviceHelper::getActions();
 		JToolBarHelper::title(JText::_('COM_EASYSDI_SERVICE_TITLE_CONFIGS'), 'proxy.png');
 		
@@ -57,10 +57,10 @@ class Easysdi_serviceViewConfigs extends JView
 	    }
 		        
         if( $canDo->get('core.delete')) {
-		    JToolBarHelper::deleteList('', 'configs.delete','JTOOLBAR_EMPTY_TRASH');
+		    JToolBarHelper::deleteList('', 'config.delete','JTOOLBAR_EMPTY_TRASH');
 		    JToolBarHelper::divider();
 		} else if ($canDo->get('core.edit.state')) {
-		    JToolBarHelper::trash('configs.trash','JTOOLBAR_TRASH');
+		    JToolBarHelper::trash('config.trash','JTOOLBAR_TRASH');
 		    JToolBarHelper::divider();
 		}
         

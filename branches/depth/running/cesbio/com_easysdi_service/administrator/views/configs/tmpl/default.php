@@ -27,7 +27,7 @@ $search = JRequest::getVar('search','');
 
 ?>
 
-<form action="<?php echo JRoute::_('index.php?option=com_easysdi_service&view=configs'); ?>" method="post" name="adminForm" id="adminForm">
+<form action="<?php echo JRoute::_('index.php?option=com_easysdi_service&view=config'); ?>" method="post" name="adminForm" id="adminForm">
 	<fieldset id="filter-bar">
 		
 	</fieldset>
@@ -96,7 +96,7 @@ $search = JRequest::getVar('search','');
 		
 
 		<?php
-			}
+ 			}
 			$i++;
 
 		}

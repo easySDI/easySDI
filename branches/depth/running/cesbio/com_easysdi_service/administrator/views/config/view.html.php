@@ -210,7 +210,7 @@ class Easysdi_serviceViewConfig extends JView
 						<?php echo JText::_( 'COM_EASYSDI_SERVICE_CONFIG_ID' );?> : 
 						</th>
 						<td colspan="4">
-							<input type='text' name='id' value='<?php echo $this->id;?>'>
+							<input type='text' name='id' value='<?php echo $this->id;?>' <?php if(isset($this->id)){ echo "disabled='disabled'";};?>>
 						</td>
 					</tr>
 					<tr>
