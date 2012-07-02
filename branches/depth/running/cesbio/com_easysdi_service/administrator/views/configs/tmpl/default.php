@@ -25,15 +25,12 @@ $search = JRequest::getVar('search','');
 ?>
 <form action="<?php echo JRoute::_('index.php?option=com_easysdi_service&view=configs&'); ?>" method="post" name="adminForm" id="adminForm">
 	<fieldset id="filter-bar">
-		<table>
-			<tr>
-				<td align="right" width="100%">
-					<?php echo JText::_("EASYSDI_FILTER");?>&nbsp;
-					<input type="text" name="search" id="search" value="<?php echo $search;?>" class="inputbox" onchange="document.adminForm.submit();"  />			
-				</td>
-				<td nowrap="nowrap"></td>
-			</tr>
-		</table>
+		<div class="filter-search fltlft">
+			<label class="filter-search-lbl" for="filter_search"><?php echo JText::_('JSEARCH_FILTER_LABEL'); ?></label>
+			<input type="text" name="search" id="search" value="<?php echo $search;?>" class="inputbox" onchange="document.adminForm.submit();"  />	
+			<button type="submit"><?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?></button>
+			<button type="button" onclick="document.id('search').value='';this.form.submit();"><?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?></button>
+		</div>
 	</fieldset>
 	<div class="clr"> </div>
 
