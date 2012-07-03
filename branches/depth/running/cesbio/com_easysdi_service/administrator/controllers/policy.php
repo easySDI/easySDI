@@ -36,6 +36,7 @@ class Easysdi_serviceControllerPolicy extends JController
     	$id 				= JRequest::getVar('cid',array(0));
     	$connector 			= JRequest::getVar('connector','');
     	$config		 		= JRequest::getVar('config','');
+    	
     	$this->setRedirect('index.php?option=com_easysdi_service&view=policy&task=edit&id='.$id[0].'&layout='.$connector.'&config='.$config );
     }
     
@@ -66,7 +67,7 @@ class Easysdi_serviceControllerPolicy extends JController
     	$params 		= JComponentHelper::getParams('com_easysdi_core');
     	$xml 			= simplexml_load_file($params->get('proxyconfigurationfile'));
     	$connector 		= JRequest::getVar("connector");
-
+    	$configId 		= JRequest::getVar("configId","");
     	$params 		= $this->savePolicyCommonParts($xml);
     	
     	
@@ -83,6 +84,8 @@ class Easysdi_serviceControllerPolicy extends JController
     	
     	//Save to file
     	$params[1]->asXML($params[0]);
+    	
+    	$this->setRedirect('index.php?option=com_easysdi_service&view=policies&config='.$configId.'&connector='.$connector);
     	
     }
     
@@ -103,10 +106,7 @@ class Easysdi_serviceControllerPolicy extends JController
     	$dateTo 			= JRequest::getVar("dateTo","");
     	$configId 			= JRequest::getVar("configId","");
     	$policyId 			= JRequest::getVar("policyId","");
-    	$maxWidth			= JRequest::getVar("maxWidth","");
-    	$minWidth			= JRequest::getVar("minWidth","");
-    	$maxHeight			= JRequest::getVar("maxHeight","");
-    	$minHeight			= JRequest::getVar("minHeight","");
+    	
     
     	foreach ($xml->config as $config)
     	{
@@ -118,7 +118,6 @@ class Easysdi_serviceControllerPolicy extends JController
     			if (file_exists($policyFile))
     			{
     				$xmlConfigFile = simplexml_load_file($config->{'authorization'}->{'policy-file'});
-    
     				if ($isNewPolicy)
     				{
     					$found=false;
@@ -176,10 +175,11 @@ class Easysdi_serviceControllerPolicy extends JController
     		}
     	}
     
+    	
     	//AvailabilityPeriod
-    	$thePolicy->AvailabilityPeriod->From->Date =$dateFrom;
-    	$thePolicy->AvailabilityPeriod->To->Date =$dateTo;
-    
+    	$thePolicy->AvailabilityPeriod->From->Date  = $dateFrom;
+    	$thePolicy->AvailabilityPeriod->To->Date   	= $dateTo;
+
     	//Users and Roles
     	if (is_array($allUsers))
     	{
@@ -190,12 +190,13 @@ class Easysdi_serviceControllerPolicy extends JController
     	{
     		$thePolicy->Subjects="";
     		$thePolicy->Subjects['All']="false";
+    		
     		$userNameList = JRequest::getVar("userNameList");
     		if (sizeof($userNameList )>0)
     		{
-    			foreach ($userNameList as $user)
+     			foreach ($userNameList as $user)
     			{
-    				$node = $thePolicy->Subjects->addChild(User,$user);
+    				$node = $thePolicy->Subjects->addChild('User',$user);
     			}
     		}
     		$groupNameList = JRequest::getVar("groupNameList");
@@ -203,11 +204,12 @@ class Easysdi_serviceControllerPolicy extends JController
     		{
     			foreach ($groupNameList as $group)
     			{
-    				$node = $thePolicy->Subjects->addChild(Role,$group);
+    				$node = $thePolicy->Subjects->addChild('Group',$group);
     			}
     		}
     	}
-    
+    	
+    	
     	//Operations
     	$AllOperations = JRequest::getVar("AllOperations","");
     	if (is_array($AllOperations))
@@ -230,6 +232,7 @@ class Easysdi_serviceControllerPolicy extends JController
     	}
     
     	$result = array(0 => $policyFile,1=> $xmlConfigFile, 2=>$thePolicy);
+    	
     	return $result;
     }
     
@@ -238,7 +241,12 @@ class Easysdi_serviceControllerPolicy extends JController
      * @param object $thePolicy
      */
     function savePolicyWMS($thePolicy){
-    	$params = JRequest::get();
+    	$params 			= JRequest::get();
+    	$maxWidth			= JRequest::getVar("maxWidth","");
+    	$minWidth			= JRequest::getVar("minWidth","");
+    	$maxHeight			= JRequest::getVar("maxHeight","");
+    	$minHeight			= JRequest::getVar("minHeight","");	
+    	
     	//Image size
     	$thePolicy->ImageSize="";
     	if(strlen($minHeight)>0 && strlen($minWidth>0) )

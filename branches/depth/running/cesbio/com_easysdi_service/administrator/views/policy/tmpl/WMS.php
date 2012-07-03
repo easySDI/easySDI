@@ -20,7 +20,7 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 foreach ($this->xml->config as $config) {
 	if (strcmp($config['id'],$this->config)==0){
 		$policyFile = $config->{'authorization'}->{'policy-file'};
-		$servletClass =  $config->{'servlet-class'};
+		$this->servletClass =  $config->{'servlet-class'};
 		$servletVersion =  "";
 		foreach($config->{"supported-versions"}->{"version"} as $versionConfig){
 			if(strcmp($servletVersion, $versionConfig)< 0){
@@ -40,7 +40,7 @@ foreach ($this->xml->config as $config) {
 				$thePolicy  									= $xmlConfigFile->addChild('Policy');
 				$thePolicy ['Id']								= "new Policy";
 				$policyId										= $thePolicy ['Id'];
-				$thePolicy ['ConfigId'] 						= $configId;
+				$thePolicy ['ConfigId'] 						= $this->config;
 				$thePolicy ->Servers['All']						= "false";
 				$thePolicy ->Subjects['All']					= "false";
 				$thePolicy ->Operations['All']					= "true";
@@ -52,7 +52,7 @@ foreach ($this->xml->config as $config) {
 			{
 				foreach ($xmlConfigFile->Policy as $policy)
 				{
-					if (strcmp($policy['Id'],$policyId)==0  && strcmp($policy['ConfigId'],$configId)==0)
+					if (strcmp($policy['Id'],$this->id)==0  && strcmp($policy['ConfigId'],$this->config)==0)
 					{
 						$thePolicy = $policy;
 						break;
@@ -63,94 +63,8 @@ foreach ($this->xml->config as $config) {
 ?>
 <form action="<?php echo JRoute::_('index.php?option=com_easysdi_service'); ?>" method="post" name="adminForm" id="item-form" class="form-validate">
 	<div class="width-60 fltlft">
-		<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_POLICY IDENTIFICATION'); ?></legend>
-			<table class="admintable">
-				<tr>
-					<td class="key"><?php echo JText::_( 'EASYSDI_CONFIGURATION ID'); ?></td>
-					<td><input type="text" size="100" value="<?php echo $this->config  ?>" disabled="disabled"></td>
-				</tr>
-				<tr>
-					<td class="key"><?php echo JText::_( 'EASYSDI_POLICY ID'); ?></td>
-					<td><input type="text" size="100" name="newPolicyId" value="<?php echo $this->id ?>"></td>
-				</tr>
-				<tr>
-					<td class="key"><?php echo JText::_( 'EASYSDI_SERVLET'); ?></td>
-					<td><input type="text" size="100" name="servlet-class" id="servlet-class" value="<?php echo $servletClass;?>" disabled="disabled" size=50></td>
-				</tr>
-			
-			</table>
-		</fieldset>
-
-		<fieldset class="adminform"><legend>Users and Groups</legend>
-		<table class="admintable">
-			<tr>
-				<td><input
-				<?php if (strcasecmp($thePolicy->Subjects['All'],'True')==0){echo 'checked';} ?>
-					type="checkBox" name="AllUsers[]" id="AllUsers" 
-					onclick="disableList('AllUsers','userNameList');disableList('AllUsers','roleNameList');">
-				<?php echo JText::_( 'EASYSDI_ANONYMOUS'); ?></td>
-				<td></td>
-				<td></td>
-			</tr>
-			<tr>
-				<th><b><?php echo JText::_( 'EASYSDI_USERS'); ?></b></th>
-				<th></th>		
-				<th><b><?php echo JText::_( 'EASYSDI_ROLES'); ?></b></th>
-			</tr>
-			
-			<tr>
-				<?php
-				$userSelected = array();
-				foreach ($thePolicy->Subjects->User as $user)
-				{
-					$ou->value = $user;
-					$userSelected[] =$ou;
-					$ou = null;				
-				}
-				
-				$profileSelected = array();
-				foreach ($thePolicy->Subjects->Role as $role)
-				{
-					$or->value = $role;
-					$profileSelected[] = $or;
-					$or = null;
-				}
-				$disabled ="";
-				if (strcasecmp($thePolicy->Subjects['All'],'True')==0)
-				{
-					$disabled = "disabled ";
-				}
-				?>
-				<td><?php echo JHTML::_("select.genericlist",$this->rowsUser, 'userNameList[]', 'size="15" multiple="true" class="selectbox" '.$disabled, 'value', 'text', $userSelected ); ?></td>
-				<td></td>
-				<td><?php echo JHTML::_("select.genericlist", $this->rowsGroup, 'groupNameList[]', 'size="15" multiple="true" class="selectbox" '.$disabled, 'value', 'text', $profileSelected ); ?></td>
-			</tr>
-		</table>
-		</fieldset>
-		<?php JHTML::_( 'behavior.modal' ); ?>
-		<?php JHTML::_('behavior.calendar'); ?>
-		<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_AVAILIBILITY'); ?></legend>
-		<table class="admintable">
-			<tr>
-				<th><b><?php echo JText::_( 'EASYSDI_DATE TIME FORMAT'); ?> </b>: <?php echo $thePolicy->{'AvailabilityPeriod'}->Mask; ?>
-				</th>
-				<td></td>
-			</tr>
-			<tr>
-					
-				<td><b><?php echo JText::_( 'EASYSDI_FROM'); ?></b> 	
-					<?php echo JHTML::_('calendar',$thePolicy->{'AvailabilityPeriod'}->From->Date, "dateFrom","dateFrom","%d-%m-%Y"); ?>		
-					</td>
-				<td><b><?php echo JText::_( 'EASYSDI_TO'); ?></b>		
-					<?php echo JHTML::_('calendar',$thePolicy->{'AvailabilityPeriod'}->To->Date, "dateTo","dateTo","%d-%m-%Y"); ?>
-					</td>
-					
-			</tr>
-			<input name="dateFormat" type="hidden" value"dd-mm-yyyy">
-		</table>
-		</fieldset>
-			<script>
-
+		<?php $this->genericPolicyFields($thePolicy); ?>
+	<script>
 	function submitbutton(pressbutton)
 	{
 		if(pressbutton=='cancelPolicy')
@@ -496,10 +410,13 @@ foreach ($this->xml->config as $config) {
 
 		
 	</div>		 
-	<input type="hidden" name="task" value="<?php echo JRequest::getCmd('task');?>" />
-	<input type="hidden" name="connector" value="<?php echo JRequest::getCmd('layout');?>" />
-	<input type="hidden" name="servletClass" value="<?php echo $servletClass;?>" />
-	<input type="hidden" name="previoustask" value="<?php echo JRequest::getCmd('task');?>" />
+	<input type="hidden" name="task" value="<?php echo JRequest::getVar('task');?>" />
+	<input type="hidden" name="connector" value="<?php echo JRequest::getVar('layout');?>" />
+	<input type="hidden" name="servletClass" value="<?php echo $this->servletClass;?>" />
+	<input type="hidden" name="previoustask" value="<?php echo JRequest::getVar('task');?>" />
+	<input type="hidden" name="policyId" value="<?php echo $this->id ;?>" />
+	<input type="hidden" name="configId" value="<?php echo $this->config;  ?>" />
+	
 		
 	<?php echo JHtml::_('form.token'); ?>
 	<div class="clr"></div>
