@@ -15,7 +15,7 @@ jimport('joomla.application.component.view');
 /**
  * View class for a list of Easysdi_service.
  */
-class Easysdi_serviceViewConfigs extends JView
+class Easysdi_serviceViewPolicies extends JView
 {
 
 	/**
@@ -23,16 +23,16 @@ class Easysdi_serviceViewConfigs extends JView
 	 */
 	public function display($tpl = null)
 	{
-		$params = JComponentHelper::getParams('com_easysdi_core');
+		$params 			= JComponentHelper::getParams('com_easysdi_core');
+		$this->config 		= JRequest::getVar('config',null);
+		$this->connector 	= JRequest::getVar('connector', null);
 		
-		$this->xml = simplexml_load_file($params->get('proxyconfigurationfile'));
-				
-		// Check for errors.
-		if (!isset($this->xml) || !$this->xml) {
-			JError::raiseError(500, implode("\n", $errors));
+		if (!isset($this->config)) {
+			JError::raiseError(500,JText::_( 'COM_EASYSDI_SERVICE_CONFIG_LOAD_ERROR'));
 			return false;
 		}
-
+		$this->xml 			= simplexml_load_file($params->get('proxyconfigurationfile'));
+				
 		$this->addToolbar();
 		parent::display($tpl);
 	}
@@ -47,24 +47,25 @@ class Easysdi_serviceViewConfigs extends JView
 		require_once JPATH_COMPONENT.DS.'helpers'.DS.'easysdi_service.php';
 		
 		$canDo	= Easysdi_serviceHelper::getActions();
-		JToolBarHelper::title(JText::_('COM_EASYSDI_SERVICE_TITLE_CONFIGS'), 'proxy.png');
+		JToolBarHelper::title(JText::_('COM_EASYSDI_SERVICE_TITLE_POLICIES').' ['.$this->config.']', 'proxy.png');
 		
         if ($canDo->get('core.create')) {
-			JToolBarHelper::addNew('config.add','JTOOLBAR_NEW');
+			JToolBarHelper::addNew('policy.add','JTOOLBAR_NEW');
+			JToolBarHelper::addNew('policy.copy','JTOOLBAR_NEW');
 		}
 	    if ($canDo->get('core.edit')) {
-		    JToolBarHelper::editList('config.edit','JTOOLBAR_EDIT');
+		    JToolBarHelper::editList('policy.edit','JTOOLBAR_EDIT');
 	    }
 		        
         if( $canDo->get('core.delete')) {
-		    JToolBarHelper::deleteList('', 'config.delete','JTOOLBAR_EMPTY_TRASH');
+		    JToolBarHelper::deleteList('', 'policy.delete','JTOOLBAR_EMPTY_TRASH');
 		    JToolBarHelper::divider();
-		} else if ($canDo->get('core.edit.state')) {
-		    JToolBarHelper::trash('config.trash','JTOOLBAR_TRASH');
+		} else if ($canDo->get('policy.edit.state')) {
+		    JToolBarHelper::trash('policy.trash','JTOOLBAR_TRASH');
 		    JToolBarHelper::divider();
 		}
         
 		JToolBarHelper::divider();
-		JToolBarHelper::back('JTOOLBAR_BACK','index.php?option=com_easysdi_core');
+		JToolBarHelper::back('JTOOLBAR_BACK','index.php?option=com_easysdi_service&view=configs');
 	}
 }

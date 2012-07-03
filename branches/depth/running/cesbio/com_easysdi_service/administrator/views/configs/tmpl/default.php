@@ -83,8 +83,8 @@ $search = JRequest::getVar('search','');
 				<a href="<?php echo JRoute::_('index.php?option=com_easysdi_service&task=config.edit&cid[]='.$config['id']).'&layout='.$layout;?>"><?php echo $config['id'];?></a>
 			</td>
 			<td class="center">
-				<a href="<?php echo JRoute::_('index.php?option=com_easysdi_service&task=policies.edit&cid[]='.$config['id']);?>">
-					<img src="<?php echo JURI::root(true); ?>/includes/js/ThemeOffice/license.png" border="0" />
+				<a href="<?php echo JRoute::_('index.php?option=com_easysdi_service&view=policies&config='.$config['id'].'&connector='.$layout);?>">
+					<img src="<?php echo JURI::root(true); ?>/administrator/components/com_easysdi_service/assets/images/s_policieslist.png" border="0" />
 				</a>
 			</td>
 			
