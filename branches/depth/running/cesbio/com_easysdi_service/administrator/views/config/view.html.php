@@ -45,9 +45,33 @@ class Easysdi_serviceViewConfig extends JView
 		<script type="text/javascript">
 		Joomla.submitbutton = function(task)
 		{
-			if (task == 'config.addserver') {
+			if (task == 'config.addserver') 
+			{
 				addNewServer();
-			}else {
+			}
+			else if (task == 'config.save') 
+			{
+				if( document.getElementById('logPath').value == "" || 
+					document.getElementById('logPrefix').value == "" || 
+					document.getElementById('logSuffix').value == "" ){
+					alert ('<?php echo  JText::_( 'PROXY_CONFIG_EDIT_VALIDATION_LOGFILE_ERROR');?>');	
+					return;
+				}
+				if(document.getElementById('service_title').value == ""  )
+				{
+					alert ('<?php echo  JText::_( 'PROXY_CONFIG_EDIT_VALIDATION_SERVICE_MD_ERROR');?>');	
+					return;
+				}
+
+				var t = document.getElementById('supportedVersionsByConfig').value;
+				if( !t || t == "null" || t=="undefined"){
+					alert ('<?php echo  JText::_( 'PROXY_CONFIG_EDIT_VALIDATION_CONFIG_SUPPORTED_VERSION_ERROR');?>');
+					return;
+				}
+								
+				Joomla.submitform(task,document.getElementById('item-form'));
+				
+			}else{
 				Joomla.submitform(task,document.getElementById('item-form'));
 			}
 		}
@@ -84,7 +108,8 @@ class Easysdi_serviceViewConfig extends JView
 			var fils = document.getElementById("remoteServerTableRow"+servNo);
 			noeud.removeChild(fils);	
 			nbServer = nbServer - 1;	
-			document.getElementById("nbServer").value = nbServer;	
+			document.getElementById("nbServer").value = nbServer;
+			serviceSelection(servNo);
 		}
 		function serviceSelection(servNo)
 		{
@@ -95,8 +120,12 @@ class Easysdi_serviceViewConfig extends JView
 				var selectBoxName = 'service_'+i;
 				var server = document.getElementById(selectBoxName);
 				if(server.getSelected()[0].value == 0 ){
-					removeAllElementChild( document.getElementById("supportedVersionsByConfigText"));
-					return;
+					if(nbServer == 1){
+						document.getElementById("supportedVersionsByConfig").value=JSON.stringify(supportedVersionsArray);
+						removeAllElementChild( document.getElementById("supportedVersionsByConfigText"));
+						return;
+					}
+					continue;
 				}
 				var selected = server.getSelected()[0].text;
 				var versions = selected.split(' - ')[2];
@@ -115,7 +144,8 @@ class Easysdi_serviceViewConfig extends JView
 			}
 			document.getElementById("supportedVersionsByConfig").value=JSON.stringify(supportedVersionsArray);
 			removeAllElementChild( document.getElementById("supportedVersionsByConfigText"));
-			document.getElementById("supportedVersionsByConfigText").appendChild(createSupportedVersionByConfigTable(supportedVersionsArray)) ; 
+			if(supportedVersionsArray.length > 0)
+				document.getElementById("supportedVersionsByConfigText").appendChild(createSupportedVersionByConfigTable(supportedVersionsArray)) ; 
 		}
 
 		function contains(arr, findValue) {

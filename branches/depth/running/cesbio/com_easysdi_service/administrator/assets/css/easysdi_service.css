@@ -8,7 +8,7 @@
       padding-left:60px!important;
 }
 
-div.supportedversion{
+.supportedversion{
 	
 	width: 30px;
 	height:15px;
@@ -24,7 +24,7 @@ div.supportedversion{
 	
 }
 
-div.div-supportedversions{
+.div-supportedversions{
 	position:relative
 }
 
