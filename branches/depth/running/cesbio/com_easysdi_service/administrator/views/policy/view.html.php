@@ -29,7 +29,8 @@ class Easysdi_serviceViewPolicy extends JView
 	
 		JToolBarHelper::title(JText::_('COM_EASYSDI_SERVICE_TITLE_POLICY').' ['.$this->id.']', 'service.png');
 		JToolBarHelper::save('policy.save', 'JTOOLBAR_SAVE');
-		JToolBarHelper::back('JTOOLBAR_BACK','index.php?option=com_easysdi_service&view=policies');
+		
+		JToolBarHelper::back('JTOOLBAR_BACK','index.php?option=com_easysdi_service&view=policies&config='.$this->config.'&connector='.$this->connector);
 	}
 	
 	/**
@@ -42,7 +43,7 @@ class Easysdi_serviceViewPolicy extends JView
 		$this->xml 				= simplexml_load_file($params->get('proxyconfigurationfile'));
 		$this->id 				= JRequest::getVar('id',null);
 		$this->config 			= JRequest::getVar('config',null);
-		$this->connector 		= JRequest::getVar('connector',null);
+		$this->connector 		= JRequest::getVar('layout',null);
 		$db			 			= JFactory::getDBO();
 		//Get Joomla Groups
 		$db->setQuery( "SELECT id as value, title as text FROM #__usergroups l ORDER BY text" );
