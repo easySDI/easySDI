@@ -68,11 +68,11 @@ foreach ($this->xml->config as $config) {
 		<?php $this->genericPolicyFields($thePolicy); ?>
 
 	<script>
-		function submitbutton(pressbutton)
+		Joomla.submitbutton = function(task)
 		{
-			if(pressbutton=='cancelPolicy')
+			if(task=='policy.cancel')
 			{
-				submitform(pressbutton);	
+				Joomla.submitform(task, document.getElementById('item-form'));	
 			}
 			else
 			{
@@ -93,7 +93,7 @@ foreach ($this->xml->config as $config) {
 				}
 				else
 				{
-					submitform(pressbutton);
+					Joomla.submitform(task, document.getElementById('item-form'));
 				}
 			}
 		}

@@ -68,11 +68,11 @@ foreach ($this->xml->config as $config) {
 			<?php $this->genericPolicyFields($thePolicy); ?>
 			<script>
 			var waitFor = 0;
-			function submitbutton(pressbutton)
+			Joomla.submitbutton = function(task)
 			{
-				if(pressbutton=='cancelPolicy')
+				if(task=='policy.cancel')
 				{
-					submitform(pressbutton);	
+					Joomla.submitform(task, document.getElementById('item-form'));	
 				}
 				else
 				{
@@ -106,16 +106,16 @@ foreach ($this->xml->config as $config) {
 							}	
 						}
 					}
-					submitWhenAllBBOXCalculated(pressbutton);
+					submitWhenAllBBOXCalculated(task);
 
 				}
 			}
 
-			function submitWhenAllBBOXCalculated (pressbutton){
+			function submitWhenAllBBOXCalculated (task){
 				if(waitFor== 0)
-					submitform(pressbutton);
+					Joomla.submitform(task, document.getElementById('item-form'));
 				else
-					window.setTimeout(Proj4js.bind(submitWhenAllBBOXCalculated, this, pressbutton), 500);
+					window.setTimeout(Proj4js.bind(submitWhenAllBBOXCalculated, this, task), 500);
 			}
 			
 			function calculateBBOX(i,j,k, bboxminx, bboxminy,bboxmaxx,bboxmaxy, source, dest){
@@ -152,6 +152,52 @@ foreach ($this->xml->config as $config) {
 				document.getElementById('oGetCapabilities').checked=check;
 				document.getElementById('oGetTile').checked=check;
 				document.getElementById('oGetFeatureInfo').checked=check;
+			}
+			function disableWMTSLayers(iServ)
+			{
+				var iLay = 0;
+				var check = document.getElementById('AllLayers@'+iServ).checked;
+				while (document.getElementById('layer@'+iServ+'@'+iLay) != null)
+				{
+					document.getElementById('layer@'+iServ+'@'+iLay).checked = check;
+					document.getElementById('layer@'+iServ+'@'+iLay).disabled = check;
+					document.getElementById('fsLayer@'+iServ+'@'+iLay).disabled = check;
+					document.getElementById('tableLayer@'+iServ+'@'+iLay).style.display = "none";
+					iLay ++;
+				}
+			}
+			function enableTableLayer(iServ,iLay)
+			{
+				var check = document.getElementById('layer@'+iServ+'@'+iLay).checked;
+				var display = "none";
+				if(check){
+					display="block";
+				}
+				document.getElementById('tableLayer@'+iServ+'@'+iLay).style.display = display;
+			}
+			function disableWMTSServersLayers ()
+			{
+				var nb = 0;
+				var iLay = 0;
+				var display = "block";
+				var check = document.getElementById('AllServers').checked;
+				if (document.getElementById('AllServers').checked)
+				{
+					display="none";
+				}
+				
+				while (document.getElementById('remoteServerTable@'+nb) != null)
+				{
+					document.getElementById('remoteServerTable@'+nb).style.display=display;
+					document.getElementById('AllLayers@'+nb).checked = check;
+					while (document.getElementById('layer@'+nb+'@'+iLay) != null)
+					{
+						document.getElementById('layer@'+nb+'@'+iLay).checked = check;
+						iLay ++;
+					}
+					iLay = 0;
+					nb ++;
+				}	
 			}
 			</script>
 			<fieldset class="adminform"><legend><?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_OPERATION'); ?></legend>

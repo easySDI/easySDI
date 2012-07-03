@@ -29,7 +29,7 @@ class Easysdi_serviceViewPolicy extends JView
 	
 		JToolBarHelper::title(JText::_('COM_EASYSDI_SERVICE_TITLE_POLICY').' ['.$this->id.']', 'service.png');
 		JToolBarHelper::save('policy.save', 'JTOOLBAR_SAVE');
-		
+		JToolBarHelper::cancel('policy.cancel', 'JTOOLBAR_SAVE');
 		JToolBarHelper::back('JTOOLBAR_BACK','index.php?option=com_easysdi_service&view=policies&config='.$this->config.'&connector='.$this->connector);
 	}
 	
@@ -117,52 +117,7 @@ class Easysdi_serviceViewPolicy extends JView
 			document.getElementById(elementId).value = "";
 			document.getElementById(elementId).value = text;
 		}
-		function disableWMTSLayers(iServ)
-		{
-			var iLay = 0;
-			var check = document.getElementById('AllLayers@'+iServ).checked;
-			while (document.getElementById('layer@'+iServ+'@'+iLay) != null)
-			{
-				document.getElementById('layer@'+iServ+'@'+iLay).checked = check;
-				document.getElementById('layer@'+iServ+'@'+iLay).disabled = check;
-				document.getElementById('fsLayer@'+iServ+'@'+iLay).disabled = check;
-				document.getElementById('tableLayer@'+iServ+'@'+iLay).style.display = "none";
-				iLay ++;
-			}
-		}
-		function enableTableLayer(iServ,iLay)
-		{
-			var check = document.getElementById('layer@'+iServ+'@'+iLay).checked;
-			var display = "none";
-			if(check){
-				display="block";
-			}
-			document.getElementById('tableLayer@'+iServ+'@'+iLay).style.display = display;
-		}
-		function disableWMTSServersLayers ()
-		{
-			var nb = 0;
-			var iLay = 0;
-			var display = "block";
-			var check = document.getElementById('AllServers').checked;
-			if (document.getElementById('AllServers').checked)
-			{
-				display="none";
-			}
-			
-			while (document.getElementById('remoteServerTable@'+nb) != null)
-			{
-				document.getElementById('remoteServerTable@'+nb).style.display=display;
-				document.getElementById('AllLayers@'+nb).checked = check;
-				while (document.getElementById('layer@'+nb+'@'+iLay) != null)
-				{
-					document.getElementById('layer@'+nb+'@'+iLay).checked = check;
-					iLay ++;
-				}
-				iLay = 0;
-				nb ++;
-			}	
-		}
+		
 		</script>
 		<?php 
 		$this->addToolbar();

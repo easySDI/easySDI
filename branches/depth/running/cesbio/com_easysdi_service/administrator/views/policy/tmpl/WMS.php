@@ -16,6 +16,8 @@ JHTML::_('script','system/multiselect.js',false,true);
 // Import CSS
 $document = &JFactory::getDocument();
 $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_service.css');
+$document->addScript( JURI::root(true).'/administrator/components/com_easysdi_service/librairies/openlayers/OpenLayers.js' );
+$document->addScript( JURI::root(true).'/administrator/components/com_easysdi_service/librairies/proj4js/lib/proj4js-combined.js' );
 
 foreach ($this->xml->config as $config) {
 	if (strcmp($config['id'],$this->config)==0){
@@ -65,11 +67,11 @@ foreach ($this->xml->config as $config) {
 	<div class="width-60 fltlft">
 		<?php $this->genericPolicyFields($thePolicy); ?>
 	<script>
-	function submitbutton(pressbutton)
+	Joomla.submitbutton = function(task)
 	{
-		if(pressbutton=='cancelPolicy')
+		if(task=='policy.cancel')
 		{
-			submitform(pressbutton);	
+			Joomla.submitform(task, document.getElementById('item-form'));	
 		}
 		else
 		{
@@ -122,7 +124,7 @@ foreach ($this->xml->config as $config) {
 						}
 					}
 				}
-				submitform(pressbutton);
+				Joomla.submitform(task, document.getElementById('item-form'));	
 			}
 		}
 	}
