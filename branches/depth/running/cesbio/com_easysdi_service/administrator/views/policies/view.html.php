@@ -51,20 +51,14 @@ class Easysdi_serviceViewPolicies extends JView
 		
         if ($canDo->get('core.create')) {
 			JToolBarHelper::addNew('policy.add','JTOOLBAR_NEW');
-			JToolBarHelper::addNew('policy.copy','JTOOLBAR_NEW');
+			JToolBarHelper::custom('policy.copy','','','JTOOLBAR_COPY');
 		}
 	    if ($canDo->get('core.edit')) {
 		    JToolBarHelper::editList('policy.edit','JTOOLBAR_EDIT');
 	    }
-		        
         if( $canDo->get('core.delete')) {
-		    JToolBarHelper::deleteList('', 'policy.delete','JTOOLBAR_EMPTY_TRASH');
-		    JToolBarHelper::divider();
-		} else if ($canDo->get('policy.edit.state')) {
-		    JToolBarHelper::trash('policy.trash','JTOOLBAR_TRASH');
-		    JToolBarHelper::divider();
-		}
-        
+		    JToolBarHelper::deleteList('', 'policy.delete','JTOOLBAR_DELETE');
+		} 
 		JToolBarHelper::divider();
 		JToolBarHelper::back('JTOOLBAR_BACK','index.php?option=com_easysdi_service&view=configs');
 	}

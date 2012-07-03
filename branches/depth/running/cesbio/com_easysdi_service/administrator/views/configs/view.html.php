@@ -57,13 +57,8 @@ class Easysdi_serviceViewConfigs extends JView
 	    }
 		        
         if( $canDo->get('core.delete')) {
-		    JToolBarHelper::deleteList('', 'config.delete','JTOOLBAR_EMPTY_TRASH');
-		    JToolBarHelper::divider();
-		} else if ($canDo->get('core.edit.state')) {
-		    JToolBarHelper::trash('config.trash','JTOOLBAR_TRASH');
-		    JToolBarHelper::divider();
-		}
-        
+		    JToolBarHelper::deleteList('', 'config.delete','JTOOLBAR_DELETE');
+		} 
 		JToolBarHelper::divider();
 		JToolBarHelper::back('JTOOLBAR_BACK','index.php?option=com_easysdi_core');
 	}

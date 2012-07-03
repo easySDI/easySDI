@@ -220,6 +220,7 @@ class Easysdi_serviceViewConfig extends JView
 				INNER JOIN #__sdi_sys_serviceversion syv ON syv.id = syc.serviceversion_id
 				INNER JOIN #__sdi_sys_serviceconnector sycc ON sycc.id = syc.serviceconnector_id
 				WHERE sycc.value = '".JRequest::getVar('layout',null)."'
+				AND s.state= 1
 				GROUP BY s.id") ;
 		$this->servicelist = $db->loadObjectList();
 		

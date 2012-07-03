@@ -91,20 +91,8 @@ $search = JRequest::getVar('search','');
 							if (($count>=$limitstart || $limit==0)&& ($count < $limitstart+$limit || $limit==0)){
 								?>
 								<tr class="row<?php echo $i%2;?>">
-									<td>
-										<input
-										<?php 
-											if (strlen($policyId)==0){ 
-												if (!$isChecked) {
-													echo 'checked'; 
-													$isChecked =true;
-												}
-											}else{ 
-												if(strcmp($policyId,$policy['Id'])==0){
-													echo 'checked';
-												} 
-											}?>
-											type='radio' id="cb<?php echo$i ?>" name="policyId" value="<?php echo $policy['Id']; ?>" onclick="isChecked(this.checked);"> 
+									<td class="center">
+										<?php echo JHtml::_('grid.id', $i, $policy['Id']); ?>
 									</td>
 									<td>
 										<a href="<?php echo JRoute::_('index.php?option=com_easysdi_service&task=policy.edit&config='.$this->config.'&cid[]='.$policy['Id'].'&connector='.$this->connector);?>"><?php echo $policy['Id']; ?></a>				
