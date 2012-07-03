@@ -24,21 +24,72 @@ class Easysdi_serviceControllerPolicy extends JController
 		parent::__construct();
 	}
 
+	function copy (){
+		$params				= JComponentHelper::getParams('com_easysdi_core');
+		$xml 				= simplexml_load_file($params->get('proxyconfigurationfile'));
+		$id 				= JRequest::getVar('cid',array(0));
+		$connector 			= JRequest::getVar('connector','');
+		$configId		 		= JRequest::getVar('config','');
+		
+		foreach ($xml->config as $config) {
+			if (strcmp($config[id],$configId)==0){
+		
+				$policyFile = $config->{'authorization'}->{'policy-file'};
+				$servletClass =  $config->{'servlet-class'};
+		
+				if (file_exists($policyFile)) {
+					$xmlConfigFile = simplexml_load_file($config->{'authorization'}->{'policy-file'});
+		
+					foreach ($xmlConfigFile->Policy as $policy){
+						if (strcmp($policy['Id'],$id[0])==0){
+							$child = dom_import_simplexml($policy);
+							$newPolicy = $child->cloneNode(true);
+							$i=0;
+							$found=true;
+							while($found){
+								$found=false;
+								foreach ($xmlConfigFile->Policy as $policy2){
+		
+									if(strcmp($policy2['Id'],$i.'_'.$id[0])==0){
+										$found = true;
+										$i++;
+									}
+								}
+							}
+							$newPolicy->setAttribute('Id',$i.'_'.$child->getAttribute('Id'));
+							$parent = $child->parentNode;
+							$parent->appendChild($newPolicy);
+							$xmlConfigFile->asXML($policyFile);
+							break;
+						}
+					}
+				}
+			}
+		}	
+		$this->setRedirect('index.php?option=com_easysdi_service&view=policies&config='.$configId.'&connector='.$connector );
+	}
+	
+	function cancel() {
+		$connector 			= JRequest::getVar('connector','');
+		$config		 		= JRequest::getVar('configId','');
+			
+		$this->setRedirect('index.php?option=com_easysdi_service&view=policies&config='.$config.'&connector='.$connector );
+	}
+	
 	function add() {
-		//     	$serviceconnector = JRequest::getVar('serviceconnector',null);
-		//     	if(isset($serviceconnector))
-			//     		$this->setRedirect('index.php?option=com_easysdi_service&view=config&task=add&layout='.$serviceconnector);
-		//     	else
-			//     		$this->setRedirect('index.php?option=com_easysdi_service&view=config&task=add&layout=add');
+		$connector 			= JRequest::getVar('connector','');
+		$config		 		= JRequest::getVar('config','');
+		
+		$this->setRedirect('index.php?option=com_easysdi_service&view=policy&task=add&layout='.$connector.'&config='.$config );
 	}
 
-		function edit() {
-			$id 				= JRequest::getVar('cid',array(0));
-			$connector 			= JRequest::getVar('connector','');
-			$config		 		= JRequest::getVar('config','');
-			 
-			$this->setRedirect('index.php?option=com_easysdi_service&view=policy&task=edit&id='.$id[0].'&layout='.$connector.'&config='.$config );
-		}
+	function edit() {
+		$id 				= JRequest::getVar('cid',array(0));
+		$connector 			= JRequest::getVar('connector','');
+		$config		 		= JRequest::getVar('config','');
+		 
+		$this->setRedirect('index.php?option=com_easysdi_service&view=policy&task=edit&id='.$id[0].'&layout='.$connector.'&config='.$config );
+	}
 
 		function delete() {
 			$params		= JComponentHelper::getParams('com_easysdi_core');
