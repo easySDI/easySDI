@@ -111,6 +111,107 @@ foreach ($this->xml->config as $config) {
 			document.getElementById('oDescribeFeatureType').checked=check;
 			document.getElementById('oGetFeature').checked=check;
 		}
+
+		function activateAttributeList(server,featureType)
+		{
+			if (document.getElementById('selectAttribute@'+server+'@'+featureType).checked==true){
+				document.getElementById('AttributeList@'+server+'@'+featureType).disabled=false;
+				document.getElementById('AttributeList@'+server+'@'+featureType).value="";
+			}
+			else
+			{
+				document.getElementById('AttributeList@'+server+'@'+featureType).disabled=true;
+				document.getElementById('AttributeList@'+server+'@'+featureType).value="";
+			}
+		}
+		function activateFeatureType(server,featureType){
+
+
+			if (document.getElementById('featuretype@'+server+'@'+featureType).checked==true){
+				document.getElementById('LocalFilter@'+server+'@'+featureType).disabled=false;
+				document.getElementById('LocalFilter@'+server+'@'+featureType).value = "";
+				document.getElementById('RemoteFilter@'+server+'@'+featureType).disabled=false;		
+				document.getElementById('RemoteFilter@'+server+'@'+featureType).value = "";
+				document.getElementById('selectAttribute@'+server+'@'+featureType).checked = false;
+				document.getElementById('selectAttribute@'+server+'@'+featureType).disabled = false;
+				document.getElementById('AttributeList@'+server+'@'+featureType).disabled=true;
+				document.getElementById('AttributeList@'+server+'@'+featureType).value="";
+
+			}
+			else
+			{	
+				document.getElementById('AllFeatureTypes@'+nb).checked = false;
+				document.getElementById('LocalFilter@'+server+'@'+featureType).disabled=true;
+				document.getElementById('LocalFilter@'+server+'@'+featureType).value = "";
+				document.getElementById('RemoteFilter@'+server+'@'+featureType).disabled=true;		
+				document.getElementById('RemoteFilter@'+server+'@'+featureType).value = "";
+				document.getElementById('selectAttribute@'+server+'@'+featureType).checked = false;
+				document.getElementById('selectAttribute@'+server+'@'+featureType).disabled = true;
+				document.getElementById('AttributeList@'+server+'@'+featureType).disabled=true;
+				document.getElementById('AttributeList@'+server+'@'+featureType).value="";
+				
+			}
+		}
+		function CheckQuery(server,featureType)
+		{
+				var remote = document.getElementById('RemoteFilter@'+server+'@'+featureType).value;
+				var local = document.getElementById('LocalFilter@'+server+'@'+featureType).value;
+				if (remote.length == 0 && local.length >0)
+				{
+					geoQueryValid[geoQueryValid.length] = 'RemoteFilter@'+server+'@'+featureType;
+					document.getElementById('RemoteFilter@'+server+'@'+featureType).style.backgroundColor = "#E2A09B";
+				}
+				else
+				{
+					geoQueryValid.remove('RemoteFilter@'+server+'@'+featureType);
+					
+					document.getElementById('RemoteFilter@'+server+'@'+featureType).style.backgroundColor = document.getElementById('LocalFilter@'+server+'@'+featureType).style.backgroundColor;
+				}
+		}
+		function disableFeatureTypes(iServ)
+		{
+			var iFeat = 0;
+			var check = document.getElementById('AllFeatureTypes@'+iServ).checked;
+			
+			while (document.getElementById('featuretype@'+iServ+'@'+iFeat) != null)
+			{
+				document.getElementById('featuretype@'+iServ+'@'+iFeat).checked = check;
+				document.getElementById('selectAttribute@'+iServ+'@'+iFeat).disabled=check;
+				document.getElementById('AttributeList@'+iServ+'@'+iFeat).disabled=check;
+				document.getElementById('RemoteFilter@'+iServ+'@'+iFeat).disabled=check;
+				document.getElementById('LocalFilter@'+iServ+'@'+iFeat).disabled=check;
+				
+				iFeat ++;
+			}
+		}
+		function disableServersFeatureTypes ()
+		{
+			var nb = 0;
+			var iFeat = 0;
+			var display = "block";
+			var check = document.getElementById('AllServers').checked;
+			if (document.getElementById('AllServers').checked)
+			{
+				display="none";
+			}
+			
+			while (document.getElementById('remoteServerTable@'+nb) != null)
+			{
+				document.getElementById('remoteServerTable@'+nb).style.display=display;
+				document.getElementById('AllFeatureTypes@'+nb).checked = check;
+				while (document.getElementById('featuretype@'+nb+'@'+iFeat) != null)
+				{
+					document.getElementById('featuretype@'+nb+'@'+iFeat).checked = check;
+					document.getElementById('selectAttribute@'+nb+'@'+iFeat).disabled=check;
+					document.getElementById('AttributeList@'+nb+'@'+iFeat).disabled=check;
+					document.getElementById('RemoteFilter@'+nb+'@'+iFeat).disabled=check;
+					document.getElementById('LocalFilter@'+nb+'@'+iFeat).disabled=check;
+					iFeat ++;
+				}
+				iFeat = 0;
+				nb ++;
+			}	
+		}
 		</script>
 		<fieldset class="adminform"><legend><?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_OPERATION'); ?></legend>
 			<table class="admintable">

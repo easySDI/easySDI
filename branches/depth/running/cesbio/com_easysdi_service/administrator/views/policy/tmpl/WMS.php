@@ -140,6 +140,68 @@ foreach ($this->xml->config as $config) {
 		document.getElementById('oGetFeatureInfo').checked=check;
 		document.getElementById('oGetLegendGraphic').checked=check;
 	}
+	function activateLayer(server,layerName){
+
+
+		if (document.getElementById('layer@'+server+'@'+layerName).checked==true){
+			document.getElementById('scaleMin@'+server+'@'+layerName).disabled=false;
+			document.getElementById('scaleMax@'+server+'@'+layerName).disabled=false;
+			document.getElementById('LocalFilter@'+server+'@'+layerName).disabled=false;
+			
+		}else{
+			document.getElementById('AllLayers@'+server).checked = false;
+			document.getElementById('scaleMin@'+server+'@'+layerName).disabled=true;
+			document.getElementById('scaleMin@'+server+'@'+layerName).value ="";
+			document.getElementById('scaleMax@'+server+'@'+layerName).disabled=true;
+			document.getElementById('scaleMax@'+server+'@'+layerName).value ="";
+			document.getElementById('LocalFilter@'+server+'@'+layerName).disabled=true;
+			document.getElementById('LocalFilter@'+server+'@'+layerName).value ="";	
+		}
+	}
+	function disableServersLayers ()
+	{
+		var nb = 0;
+		var iLay = 0;
+		var display = "block";
+		var check = document.getElementById('AllServers').checked;
+		if (document.getElementById('AllServers').checked)
+		{
+			display="none";
+		}
+		
+		while (document.getElementById('remoteServerTable@'+nb) != null)
+		{
+			document.getElementById('remoteServerTable@'+nb).style.display=display;
+			document.getElementById('AllLayers@'+nb).checked = check;
+			while (document.getElementById('layer@'+nb+'@'+iLay) != null)
+			{
+				document.getElementById('layer@'+nb+'@'+iLay).checked = check;
+				document.getElementById('scaleMin@'+nb+'@'+iLay).disabled=!check;
+				document.getElementById('scaleMax@'+nb+'@'+iLay).disabled=!check;
+				document.getElementById('LocalFilter@'+nb+'@'+iLay).disabled=!check;
+				iLay ++;
+			}
+			iLay = 0;
+			nb ++;
+		}	
+	}
+	function disableLayers(iServ)
+	{
+		var iLay = 0;
+		var check = document.getElementById('AllLayers@'+iServ).checked;
+		
+		while (document.getElementById('layer@'+iServ+'@'+iLay) != null)
+		{
+			document.getElementById('layer@'+iServ+'@'+iLay).checked = check;
+			document.getElementById('scaleMin@'+iServ+'@'+iLay).disabled=check;
+			document.getElementById('scaleMax@'+iServ+'@'+iLay).disabled=check;
+			document.getElementById('LocalFilter@'+iServ+'@'+iLay).disabled=check;
+			
+			iLay ++;
+		}
+	}
+	
+	
 		</script>
 		<fieldset class="adminform"><legend><?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_OPERATION'); ?></legend>
 			<table class="admintable">
