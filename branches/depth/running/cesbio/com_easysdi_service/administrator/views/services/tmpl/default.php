@@ -94,10 +94,11 @@ $saveOrder	= $listOrder == 'a.ordering';
 		<tbody>
 		<?php foreach ($this->items as $i => $item) :
 			$ordering	= ($listOrder == 'a.ordering');
-			$canCreate	= $user->authorise('core.create',		'com_easysdi_service');
-			$canEdit	= $user->authorise('core.edit',			'com_easysdi_service');
-			$canCheckin	= $user->authorise('core.manage',		'com_easysdi_service');
-			$canChange	= $user->authorise('core.edit.state',	'com_easysdi_service');
+			$canCreate	= $user->authorise('core.create',		'com_easysdi_service.category.'.$item->catid);
+			$canEdit	= $user->authorise('core.edit',			'com_easysdi_service.service.'.$item->id);
+			$canCheckin	= $user->authorise('core.manage',		'com_checkin') || $item->checked_out == $userId || $item->checked_out == 0;
+			$canEditOwn	= $user->authorise('core.edit.own',		'com_easysdi_service.service.'.$item->id) && $item->created_by == $userId;
+			$canChange	= $user->authorise('core.edit.state',	'com_easysdi_service.service.'.$item->id) && $canCheckin;
 			?>
 			<tr class="row<?php echo $i % 2; ?>">
 				<td class="center">
@@ -108,7 +109,7 @@ $saveOrder	= $listOrder == 'a.ordering';
 				<?php if (isset($item->checked_out) && $item->checked_out) : ?>
 					<?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'services.', $canCheckin); ?>
 				<?php endif; ?>
-				<?php if ($canEdit) : ?>
+				<?php if ($canEdit || $canEditOwn) : ?>
 					<a href="<?php echo JRoute::_('index.php?option=com_easysdi_service&task=service.edit&id='.(int) $item->id); ?>">
 					<?php echo $this->escape($item->alias); ?></a>
 				<?php else : ?>
