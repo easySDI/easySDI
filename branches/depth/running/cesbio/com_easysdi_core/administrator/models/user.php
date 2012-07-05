@@ -135,6 +135,7 @@ class Easysdi_coreModeluser extends JModelAdmin
 			$addresstable =& JTable::getInstance('address', 'Easysdi_coreTable');
 
 			//Call the overloaded save function to store the input data
+			$data['id'] = $this->getItem()->get('id');
 			if(!$addresstable->save($data, 'contact' ))
 			{	
 				return false;

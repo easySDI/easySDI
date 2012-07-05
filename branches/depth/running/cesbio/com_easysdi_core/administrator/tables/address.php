@@ -108,7 +108,7 @@ class Easysdi_coreTableaddress extends sdiTable
     	$data['id'] =$src[$type.'_id'];
     	$data['guid'] =$src[$type.'_guid'];
     	$data['addresstype_id'] =$src[$type.'_addresstype_id'];
-    	$data['user_id'] =$src[$type.'_user_id'];
+    	$data['user_id'] =$src['id'];
     	$data['organismcomplement'] =$src[$type.'_organismcomplement'];
     	$data['organism'] =$src[$type.'_organism'];
     	If($src[$type.'_civility'] == 0)
