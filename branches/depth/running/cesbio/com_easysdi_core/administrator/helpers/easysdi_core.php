@@ -38,13 +38,6 @@ class Easysdi_coreHelper
 					JText::sprintf('COM_CATEGORIES_CATEGORIES_TITLE', JText::_('com_easysdi_core')),
 					'easysdi_core-categories');
 		}
-		
-		JSubMenuHelper::addEntry(
-			JText::_('COM_EASYSDI_CORE_TITLE_SERVICES'),
-			'index.php?option=com_easysdi_core&view=services',
-			$vName == 'services'
-		);
-
 	}
 
 	/**
@@ -56,20 +49,17 @@ class Easysdi_coreHelper
 	 * @return	JObject
 	 * @since	1.6
 	 */
-	public static function getActions($categoryId = 0, $userId = 0, $serviceId = 0)
+	public static function getActions($categoryId = 0, $userId = 0)
 	{
 		$user	= JFactory::getUser();
 		$result	= new JObject;
 	
 		
-		if (empty($serviceId) && empty($userId) && empty($categoryId)) {
+		if (empty($userId) && empty($categoryId)) {
 			$assetName = 'com_easysdi_core';
 		}
-		elseif (empty($serviceId) && empty($userId)) {
+		elseif ( empty($userId)) {
 			$assetName = 'com_easysdi_core.category.'.(int) $categoryId;
-		}
-		elseif (empty($userId)) {
-			$assetName = 'com_easysdi_core.service.'.(int) $serviceId;
 		}
 		else{
 			$assetName = 'com_easysdi_core.user.'.(int) $userId;
