@@ -55,7 +55,6 @@ class Easysdi_serviceViewConfigs extends JView
 	    if ($canDo->get('core.edit')) {
 		    JToolBarHelper::editList('config.edit','JTOOLBAR_EDIT');
 	    }
-		        
         if( $canDo->get('core.delete')) {
 		    JToolBarHelper::deleteList('', 'config.delete','JTOOLBAR_DELETE');
 		} 

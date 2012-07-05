@@ -28,7 +28,12 @@ class Easysdi_serviceViewPolicy extends JView
 		JRequest::setVar('hidemainmenu', true);
 	
 		JToolBarHelper::title(JText::_('COM_EASYSDI_SERVICE_TITLE_POLICY').' ['.$this->id.']', 'service.png');
-		JToolBarHelper::save('policy.save', 'JTOOLBAR_SAVE');
+		
+		$canDo	= Easysdi_serviceHelper::getActions();
+		
+		if ((!isset($this->id)&& $canDo->get('core.create')) || (isset($this->id)&& $canDo->get('core.edit')))
+			JToolBarHelper::save('policy.save', 'JTOOLBAR_SAVE');
+		
 		JToolBarHelper::cancel('policy.cancel', 'JTOOLBAR_CANCEL');
 		JToolBarHelper::back('JTOOLBAR_BACK','index.php?option=com_easysdi_service&view=policies&config='.$this->config.'&connector='.$this->connector);
 	}

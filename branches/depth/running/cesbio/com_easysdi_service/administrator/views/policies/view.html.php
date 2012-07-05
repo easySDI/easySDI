@@ -44,8 +44,6 @@ class Easysdi_serviceViewPolicies extends JView
 	 */
 	protected function addToolbar()
 	{
-		require_once JPATH_COMPONENT.DS.'helpers'.DS.'easysdi_service.php';
-		
 		$canDo	= Easysdi_serviceHelper::getActions();
 		JToolBarHelper::title(JText::_('COM_EASYSDI_SERVICE_TITLE_POLICIES').' ['.$this->config.']', 'proxy.png');
 		

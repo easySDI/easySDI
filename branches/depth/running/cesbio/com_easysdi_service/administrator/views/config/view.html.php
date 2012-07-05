@@ -27,12 +27,16 @@ class Easysdi_serviceViewConfig extends JView
 	{
 		JRequest::setVar('hidemainmenu', true);
 	
+		$canDo	= Easysdi_serviceHelper::getActions();
+		
 		JToolBarHelper::title(JText::_('COM_EASYSDI_SERVICE_TITLE_CONFIG')." : ".$this->id, 'service.png');
 		
-		if(JRequest::getVar('layout',null)!='CSW')
+		if(JRequest::getVar('layout',null)!='CSW' &&  $canDo->get('core.edit'))
 			JToolBarHelper::addNew('config.addserver',JText::_( 'COM_EASYSDI_SERVICE_NEW_SERVER'));
 		
-		JToolBarHelper::save('config.save', 'JTOOLBAR_SAVE');
+		if ((!isset($this->id)&& $canDo->get('core.create')) || (isset($this->id)&& $canDo->get('core.edit'))){
+			JToolBarHelper::save('config.save', 'JTOOLBAR_SAVE');
+		}
 		JToolBarHelper::back('JTOOLBAR_BACK','index.php?option=com_easysdi_service&view=configs');
 	}
 	
@@ -51,24 +55,27 @@ class Easysdi_serviceViewConfig extends JView
 			}
 			else if (task == 'config.save') 
 			{
+				if(document.getElementById('service_title').value == ""  )
+				{
+					alert ('<?php echo  JText::_( 'PROXY_CONFIG_EDIT_VALIDATION_SERVICE_MD_ERROR');?>');	
+					return;
+				}
+				var t = document.getElementById('supportedVersionsByConfig').value;
+				if( !t || t == "null" || t=="undefined"){
+					alert ('<?php echo  JText::_( 'PROXY_CONFIG_EDIT_VALIDATION_CONFIG_SUPPORTED_VERSION_ERROR');?>');
+					return;
+				}
+				if(document.getElementById('policyFile').value == ""  )
+				{
+					alert ('<?php echo  JText::_( 'PROXY_CONFIG_EDIT_VALIDATION_POLICYFILE_ERROR');?>');	
+					return;
+				}
 				if( document.getElementById('logPath').value == "" || 
 					document.getElementById('logPrefix').value == "" || 
 					document.getElementById('logSuffix').value == "" ){
 					alert ('<?php echo  JText::_( 'PROXY_CONFIG_EDIT_VALIDATION_LOGFILE_ERROR');?>');	
 					return;
 				}
-				if(document.getElementById('service_title').value == ""  )
-				{
-					alert ('<?php echo  JText::_( 'PROXY_CONFIG_EDIT_VALIDATION_SERVICE_MD_ERROR');?>');	
-					return;
-				}
-
-				var t = document.getElementById('supportedVersionsByConfig').value;
-				if( !t || t == "null" || t=="undefined"){
-					alert ('<?php echo  JText::_( 'PROXY_CONFIG_EDIT_VALIDATION_CONFIG_SUPPORTED_VERSION_ERROR');?>');
-					return;
-				}
-								
 				Joomla.submitform(task,document.getElementById('item-form'));
 				
 			}else{
@@ -247,10 +254,10 @@ class Easysdi_serviceViewConfig extends JView
 				<table class="admintable">
 					<tr>
 						<th>
-						<?php echo JText::_( 'COM_EASYSDI_SERVICE_CONFIG_ID' );?> : 
+						<?php echo JText::_( 'COM_EASYSDI_SERVICE_CONFIG_ID' );?> :<span class="star">*</span> 
 						</th>
 						<td colspan="4">
-							<input type='text' name='id' value='<?php echo $this->id;?>' <?php if(isset($this->id)){ echo "disabled='disabled'";};?>>
+							<input class="inputbox required" type='text' name='id' value='<?php echo $this->id;?>' <?php if(isset($this->id)){ echo "disabled='disabled'";};?>>
 							<?php if(isset($this->id)){ ?> <input type='hidden' name="id" id="id" value="<?php echo $this->id; ?>" /> <?php };?>
 						</td>
 					</tr>
@@ -294,8 +301,7 @@ class Easysdi_serviceViewConfig extends JView
 				<table class="admintable">
 					<thead>
 					<tr>
-						<th><?php echo JText::_( 'COM_EASYSDI_SERVICE_SERVICE'); ?></th>
-						<th></th>
+						<th><?php echo JText::_( 'COM_EASYSDI_SERVICE_SERVICE'); ?><span class="star">*</span></th>
 					</tr>
 					
 					</thead>
@@ -385,7 +391,7 @@ class Easysdi_serviceViewConfig extends JView
 							</tr>
 						</table>
 					</fieldset>
-					<fieldset class="adminform"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_POLICY_FILE_LOCATION'); ?></legend>
+					<fieldset class="adminform"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_POLICY_FILE_LOCATION'); ?><span class="star">*</span></legend>
 					<table class="admintable">
 						<tr>
 							<td><input name="policyFile" type="text" size=100
@@ -419,10 +425,10 @@ class Easysdi_serviceViewConfig extends JView
 							<td colspan = "2">
 							<table class="admintable">
 								<tr>
-									<th><?php echo JText::_( 'COM_EASYSDI_SERVICE_LOG_PATH'); ?></th>
-									<th><?php echo JText::_( 'COM_EASYSDI_SERVICE_LOG_PREFIX'); ?></th>
-									<th><?php echo JText::_( 'COM_EASYSDI_SERVICE_LOG_SUFFIX'); ?></th>
-									<th><?php echo JText::_( 'COM_EASYSDI_SERVICE_LOG_EXTENSION'); ?></th>
+									<th><?php echo JText::_( 'COM_EASYSDI_SERVICE_LOG_PATH'); ?><span class="star">*</span></th>
+									<th><?php echo JText::_( 'COM_EASYSDI_SERVICE_LOG_PREFIX'); ?><span class="star">*</span></th>
+									<th><?php echo JText::_( 'COM_EASYSDI_SERVICE_LOG_SUFFIX'); ?><span class="star">*</span></th>
+									<th><?php echo JText::_( 'COM_EASYSDI_SERVICE_LOG_EXTENSION'); ?><span class="star">*</span></th>
 								</tr>
 								<tr>
 									<td><input name="logPath"  id="logPath" size=70 type="text"
