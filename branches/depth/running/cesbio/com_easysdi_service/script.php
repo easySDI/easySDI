@@ -75,7 +75,7 @@ class com_easysdi_serviceInstallerScript
 						          	component=\"com_categories\"
 						          	description=\"COM_EASYSDI_CORE_CTRLPANEL_DESC_SERVICE_CATEGORIES\" /> 
 
-						       <field name=\"proxy\" 
+						       <field name=\"configs\" 
 						     		type=\"link\" 
 						     		default=\"0\" 
 						     		label=\"COM_EASYSDI_CORE_CTRLPANEL_LBL_PROXIEDSERVICESLINK\"
@@ -119,6 +119,10 @@ class com_easysdi_serviceInstallerScript
 			}
 			$core_dom->save(JPATH_ADMINISTRATOR.'/components/com_easysdi_core/config.xml');
 		}
+		
+		$db = JFactory::getDbo();
+		$db->setQuery("DELETE FROM `#__menu` WHERE title = 'com_easysdi_service'");
+		$db->query();
 		
 		echo '<p>' . JText::_('COM_EASYSDI_SERVICE_POSTFLIGHT_SCRIPT ') . '</p>';
 	}

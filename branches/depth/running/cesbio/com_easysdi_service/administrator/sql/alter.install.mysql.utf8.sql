@@ -14,10 +14,10 @@ ALTER TABLE `#__sdi_sys_servicecon_authenticationcon`
 ADD CONSTRAINT `#__sdi_sys_servicecon_authenticationcon_fk2` FOREIGN KEY (`serviceconnector_id`) REFERENCES `#__sdi_sys_serviceconnector` (`id`);
 
 ALTER TABLE `#__sdi_service_servicecompliance`
-ADD CONSTRAINT `#__sdi_service_servicecompliance_fk1` FOREIGN KEY (`service_id`) REFERENCES `#__sdi_service` (`id`);
+ADD CONSTRAINT `#__sdi_service_servicecompliance_fk1` FOREIGN KEY (`service_id`) REFERENCES `#__sdi_service` (`id`) ON DELETE CASCADE ;
 
 ALTER TABLE `#__sdi_service_servicecompliance`
-ADD CONSTRAINT `#__sdi_service_servicecompliance_fk2` FOREIGN KEY (`servicecompliance_id`) REFERENCES `#__sdi_sys_servicecompliance` (`id`);
+ADD CONSTRAINT `#__sdi_service_servicecompliance_fk2` FOREIGN KEY (`servicecompliance_id`) REFERENCES `#__sdi_sys_servicecompliance` (`id`) ON DELETE CASCADE ;
 
 ALTER TABLE `#__sdi_sys_operationcompliance`
 ADD CONSTRAINT `#__sdi_sys_operationcompliance_fk1` FOREIGN KEY (`servicecompliance_id`) REFERENCES `#__sdi_sys_servicecompliance` (`id`);
