@@ -29,7 +29,7 @@ class Easysdi_serviceControllerPolicy extends JController
 		$xml 				= simplexml_load_file($params->get('proxyconfigurationfile'));
 		$id 				= JRequest::getVar('cid',array(0));
 		$connector 			= JRequest::getVar('connector','');
-		$configId		 		= JRequest::getVar('config','');
+		$configId		 	= JRequest::getVar('config','');
 		
 		foreach ($xml->config as $config) {
 			if (strcmp($config[id],$configId)==0){
@@ -66,6 +66,113 @@ class Easysdi_serviceControllerPolicy extends JController
 				}
 			}
 		}	
+		$this->setRedirect('index.php?option=com_easysdi_service&view=policies&config='.$configId.'&connector='.$connector );
+	}
+	
+	/**
+	 * Order policy in configuration
+	 * @deprecated
+	 * @param object $xml
+	 */
+	function orderupPolicy($xml){
+		$params				= JComponentHelper::getParams('com_easysdi_core');
+		$xml 				= simplexml_load_file($params->get('proxyconfigurationfile'));
+		$id 				= JRequest::getVar('cid',array(0));
+		$connector 			= JRequest::getVar('connector','');
+		$configId		 	= JRequest::getVar('config','');
+	
+	
+		foreach ($xml->config as $config) {
+			if (strcmp($config[id],$configId)==0){
+	
+				$policyFile = $config->{'authorization'}->{'policy-file'};
+				$servletClass =  $config->{'servlet-class'};
+	
+				if (file_exists($policyFile)) {
+					$xmlConfigFile = simplexml_load_file($config->{'authorization'}->{'policy-file'});
+	
+					foreach ($xmlConfigFile->Policy as $policy){
+	
+							
+						if (strcmp($policy['ConfigId'],$configId)==0){
+	
+	
+							if (strcmp($policy['Id'],$id[0])==0){
+									
+								$goodChild = dom_import_simplexml($policy);
+								$clonedGoodChild = $goodChild->cloneNode(true);
+								$lastChild = dom_import_simplexml($lastPolicy);
+								$clonedLastChild = $lastChild->cloneNode(true);
+								$parent = $lastChild->parentNode;
+								$result = $parent->replaceChild( $clonedGoodChild,$lastChild);
+								$parent->replaceChild( $clonedLastChild,$goodChild );
+								$xmlConfigFile->asXML($policyFile);
+									
+								break;
+							}else{
+								$lastPolicy = $policy;
+							}
+						}
+					}
+				}
+			}
+		}
+		$this->setRedirect('index.php?option=com_easysdi_service&view=policies&config='.$configId.'&connector='.$connector );
+	}
+	
+	/**
+	 * Order policy in configuration
+	 * @deprecated
+	 * @param object $xml
+	 */
+	function orderdownPolicy($xml){
+		$params				= JComponentHelper::getParams('com_easysdi_core');
+		$xml 				= simplexml_load_file($params->get('proxyconfigurationfile'));
+		$id 				= JRequest::getVar('cid',array(0));
+		$connector 			= JRequest::getVar('connector','');
+		$configId		 	= JRequest::getVar('config','');
+	
+	
+		foreach ($xml->config as $config) {
+			if (strcmp($config[id],$configId)==0){
+	
+				$policyFile = $config->{'authorization'}->{'policy-file'};
+				$servletClass =  $config->{'servlet-class'};
+	
+				if (file_exists($policyFile)) {
+					$xmlConfigFile = simplexml_load_file($config->{'authorization'}->{'policy-file'});
+					$found = false;
+					foreach ($xmlConfigFile->Policy as $policy){
+	
+							
+						if (strcmp($policy['ConfigId'],$configId)==0){
+	
+	
+							if (strcmp($policy['Id'],$id[0])==0){
+								$found=true;
+								$lastPolicy = $policy;
+									
+							}else{
+								if($found){
+	
+									$goodChild = dom_import_simplexml($policy);
+									$clonedGoodChild = $goodChild->cloneNode(true);
+									$lastChild = dom_import_simplexml($lastPolicy);
+									$clonedLastChild = $lastChild->cloneNode(true);
+									$parent = $lastChild->parentNode;
+									$result = $parent->replaceChild( $clonedGoodChild,$lastChild);
+									$parent->replaceChild( $clonedLastChild,$goodChild );
+									$xmlConfigFile->asXML($policyFile);
+									break;
+								}
+									
+									
+							}
+						}
+					}
+				}
+			}
+		}
 		$this->setRedirect('index.php?option=com_easysdi_service&view=policies&config='.$configId.'&connector='.$connector );
 	}
 	

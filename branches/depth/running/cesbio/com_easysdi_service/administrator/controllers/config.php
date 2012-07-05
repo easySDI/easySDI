@@ -47,8 +47,6 @@ class Easysdi_serviceControllerConfig extends JController
     	foreach ($cid as $id ){
 	    	foreach ($xml->config as $config) {
 	    		if (strcmp($config['id'],$id)==0){
-	    	
-	//     			ADMIN_proxy::deleteAllPolicy($xml,$configId);
 	    				
 	    			$child = dom_import_simplexml($config);
 	    			$parent = $child->parentNode;
@@ -56,12 +54,49 @@ class Easysdi_serviceControllerConfig extends JController
 	    	
 	    			$xml->asXML($params->get('proxyconfigurationfile'));
 	    	
+	    			$this->deleteAllPolicy($xml,$id);
 	    			break;
 	    		}
 	    	}
     	}
     	$this->setRedirect('index.php?option=com_easysdi_service&view=configs');
     }
+    
+    /**
+     * Delete all policy of a specific configuration
+     * @param object $xml
+     * @param String $configId
+     */
+    function deleteAllPolicy($xml,$configId){
+    
+    	foreach ($xml->config as $config) {
+    		if (strcmp($config['id'],$configId)==0){
+    
+    			$policyFile = $config->{'authorization'}->{'policy-file'};
+    			$servletClass =  $config->{'servlet-class'};
+    
+    			if (file_exists($policyFile)) {
+    				$xmlConfigFile = simplexml_load_file($config->{'authorization'}->{'policy-file'});
+    
+    				foreach ($xmlConfigFile->Policy as $policy){
+    						
+    					if (strcmp($policy['ConfigId'],$configId)==0){
+    
+    						$child = dom_import_simplexml($policy);
+    						$parent = $child->parentNode;
+    						$parent->removeChild($child);
+    
+    						$xmlConfigFile->asXML($policyFile);
+    						break;
+    					}
+    				}
+    
+    			}
+    		}
+    	}
+    
+    }
+    
     
     function save() {
     	$params 		= JComponentHelper::getParams('com_easysdi_core');

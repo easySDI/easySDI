@@ -47,12 +47,10 @@ $search = JRequest::getVar('search','');
 	<tbody>
 	<?php
 	$isChecked = false;
-	$i=0;
+	$it=0;
 	foreach ($this->xml->config as $config) {
 		if (strcmp($config['id'],$this->config )==0){
 			$policyFile = $config->{'authorization'}->{'policy-file'};
-			$i=0;
-			$count=0;
 			if (!file_exists($policyFile)){
 					JError::raiseError(500, JText::_( 'COM_EASYSDI_SERVICE_POLICY_LOAD_ERROR'));
 					return false;
@@ -61,15 +59,15 @@ $search = JRequest::getVar('search','');
 			if (file_exists($policyFile)) {
 				$xmlConfigFile = simplexml_load_file($policyFile);
 				foreach ($xmlConfigFile->Policy as $policy){
-					if (strcmp($policy['ConfigId'],$configId)==0){
-						$i++;	
+					if (strcmp($policy['ConfigId'],$this->config)==0){
+						$it++;	
 					}
 				}
 			}
 		}
 	}
 	
-	$pageNav = new JPagination($i,$limitstart,$limit);
+	$pageNav = new JPagination($it,$limitstart,$limit);
 	
 	foreach ($this->xml->config as $config) {
 		if (strcmp($config['id'],$this->config)==0){
@@ -113,9 +111,9 @@ $search = JRequest::getVar('search','');
 											}
 										}?>
 									</td>
-									<td>
-										<?php echo $pageNav->orderUpIcon($i,  true, 'orderuppolicy', 'Move Up'); ?>
-						            	<?php echo $pageNav->orderDownIcon($i,1,  true, 'orderdownpolicy', 'Move Down' ); ?>                       
+									<td class="order">
+										<span><?php echo $pageNav->orderUpIcon($i,  true, 'policy.orderuppolicy', 'Move Up'); ?></span>
+						            	<span><?php echo $pageNav->orderDownIcon($i,$it,  true, 'policy.orderdownpolicy', 'Move Down' ); ?></span>                       
 						        	</td>
 								</tr>
 								<?php
