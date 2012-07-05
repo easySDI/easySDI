@@ -81,7 +81,7 @@ class Easysdi_coreViewUsers extends JView
                 //If this component does not use state then show a direct delete button as we can not trash
                 JToolBarHelper::deleteList('', 'users.delete','JTOOLBAR_DELETE');
             }
-
+     
             if (isset($this->items[0]->state)) {
 			    JToolBarHelper::divider();
 			    JToolBarHelper::archiveList('users.archive','JTOOLBAR_ARCHIVE');
