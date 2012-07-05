@@ -50,7 +50,7 @@ class com_easysdi_coreInstallerScript
 		}
 		else { $rel = $this->release; }
  
-		echo '<p>' . JText::_('COM_DEMOCOMPUPDATE_PREFLIGHT_' . $type . ' ' . $rel) . '</p>';
+		echo '<p>' . JText::_('COM_EASYSDI_CORE_PREFLIGHT_SCRIPT' ) . '</p>';
 	}
  
 	/*
@@ -60,7 +60,7 @@ class com_easysdi_coreInstallerScript
 	 * If install returns false, Joomla will abort the install and undo everything already done.
 	 */
 	function install( $parent ) {
-		echo '<p>' . JText::_('COM_DEMOCOMPUPDATE_INSTALL to ' . $this->release) . '</p>';
+		echo '<p>' . JText::_('COM_EASYSDI_CORE_INSTALL_SCRIPT') . '</p>';
 		// You can have the backend jump directly to the newly installed component configuration page
 		// $parent->getParent()->setRedirectURL('index.php?option=com_democompupdate');
 	}
@@ -72,7 +72,7 @@ class com_easysdi_coreInstallerScript
 	 * If this returns false, Joomla will abort the update and undo everything already done.
 	 */
 	function update( $parent ) {
-		echo '<p>' . JText::_('COM_DEMOCOMPUPDATE_UPDATE_ to ' . $this->release) . '</p>';
+		echo '<p>' . JText::_('COM_EASYSDI_CORE_UPDATE_SCRIPT') . '</p>';
 		// You can have the backend jump directly to the newly updated component configuration page
 		// $parent->getParent()->setRedirectURL('index.php?option=com_democompupdate');
 	}
@@ -109,7 +109,7 @@ class com_easysdi_coreInstallerScript
 			$this->setParams( $params );
 		}
 		
-		echo '<p>' . JText::_('COM_DEMOCOMPUPDATE_POSTFLIGHT ' . $type . ' to ' . $this->release) . '</p>';
+		echo '<p>' . JText::_('COM_EASYSDI_CORE_POSTFLIGHT ') . '</p>';
 	}
 
 	/*
@@ -117,7 +117,7 @@ class com_easysdi_coreInstallerScript
 	 * uninstall runs before any other action is taken (file removal or database processing).
 	 */
 	function uninstall( $parent ) {
-		echo '<p>' . JText::_('COM_DEMOCOMPUPDATE_UNINSTALL ' . $this->release) . '</p>';
+		echo '<p>' . JText::_('COM_DEMOCOMPUPDATE_UNINSTALL_SCRIPT ') . '</p>';
 	}
  
 	/*
