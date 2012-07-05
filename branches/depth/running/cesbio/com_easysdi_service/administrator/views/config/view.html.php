@@ -394,7 +394,7 @@ class Easysdi_serviceViewConfig extends JView
 					<fieldset class="adminform"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_POLICY_FILE_LOCATION'); ?><span class="star">*</span></legend>
 					<table class="admintable">
 						<tr>
-							<td><input name="policyFile" type="text" size=100
+							<td><input name="policyFile" id="policyFile" type="text" size=100
 								value="<?php echo $this->config->{"authorization"}->{"policy-file"}; ?>"></td>
 						</tr>
 					</table>
@@ -441,21 +441,6 @@ class Easysdi_serviceViewConfig extends JView
 										value="<?php  echo $this->config->{"log-config"}->{"file-structure"}->{"extension"};?>"></td>
 								</tr>
 							</table>
-							</td>
-						</tr>
-						<tr>
-							<td colspan = "2">
-								<table class="admintable">
-									<tr>
-										<td class="key"><?php echo JText::_( 'COM_EASYSDI_SERVICE_LOG_MODE'); ?></td>
-										<td><select name="logger">
-											<option <?php if (strcmp($this->config->{"log-config"}->{"logger"},"org.apache.log4j.Logger")==0){echo "selected";} ?>
-												value="org.apache.log4j.Logger"><?php echo JText::_( 'PROXY_CONFIG_LOG_MODE_LOG4J'); ?></option>
-											<option <?php if (strcmp($this->config->{"log-config"}->{"logger"},"org.easysdi.proxy.log.ProxyLogger")==0){echo "selected";} ?>
-												value="org.easysdi.proxy.log.ProxyLogger"><?php echo JText::_( 'PROXY_CONFIG_LOG_MODE_EASYSDI'); ?></option>
-										</select></td>
-									</tr>
-								</table>
 							</td>
 						</tr>
 						<tr>

@@ -99,9 +99,9 @@ $search = JRequest::getVar('search','');
 										if (strcasecmp($policy->{'Subjects'}['All'],"true")==0){
 											echo JText::_( 'COM_EASYSDI_SERVICE_POLICY_ALL_USERS');
 										}else{
-											if (count($policy->Subjects->Role)>0){
-												foreach ($policy->Subjects->Role as $role){
-													echo  JText::_( $role).",";
+											if (count($policy->Subjects->Group)>0){
+												foreach ($policy->Subjects->Group as $group){
+													echo  JText::_( $group).",";
 												}
 											}
 											if (count($policy->Subjects->User)>0){

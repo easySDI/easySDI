@@ -198,40 +198,41 @@ class Easysdi_serviceControllerPolicy extends JController
 		$this->setRedirect('index.php?option=com_easysdi_service&view=policy&task=edit&id='.$id[0].'&layout='.$connector.'&config='.$config );
 	}
 
-		function delete() {
-			$params		= JComponentHelper::getParams('com_easysdi_core');
-			$xml 		= simplexml_load_file($params->get('proxyconfigurationfile'));
-			$cid 		= JRequest::getVar('cid',array(0));
-			$config		= JRequest::getVar('config');
-			$connector	= JRequest::getVar('connector');
-			foreach ($cid as $id ){
-				foreach ($xml->config as $config) {
-					if (strcmp($config[id],$config)==0){
-				
-						$policyFile = $config->{'authorization'}->{'policy-file'};
-						$servletClass =  $config->{'servlet-class'};
-				
-						if (file_exists($policyFile)) {
-							$xmlConfigFile = simplexml_load_file($config->{'authorization'}->{'policy-file'});
-				
-							foreach ($xmlConfigFile->Policy as $policy){
-									
-								if (strcmp($policy['Id'],$id)==0 && strcmp($policy['ConfigId'],$config)==0){
-				
-									$child = dom_import_simplexml($policy);
-									$parent = $child->parentNode;
-									$parent->removeChild($child);
-				
-									$xmlConfigFile->asXML($policyFile);
-									break;
-								}
+	function delete() {
+		$params		= JComponentHelper::getParams('com_easysdi_core');
+		$xml 		= simplexml_load_file($params->get('proxyconfigurationfile'));
+		$cid 		= JRequest::getVar('cid',array(0));
+		$configId		= JRequest::getVar('config','');
+		$connector	= JRequest::getVar('connector','');
+		
+		foreach ($cid as $id ){
+			foreach ($xml->config as $config) {
+				if (strcmp($config[id],$configId)==0){
+			
+					$policyFile = $config->{'authorization'}->{'policy-file'};
+					$servletClass =  $config->{'servlet-class'};
+			
+					if (file_exists($policyFile)) {
+						$xmlConfigFile = simplexml_load_file($config->{'authorization'}->{'policy-file'});
+			
+						foreach ($xmlConfigFile->Policy as $policy){
+								
+							if (strcmp($policy['Id'],$id)==0 && strcmp($policy['ConfigId'],$configId)==0){
+			
+								$child = dom_import_simplexml($policy);
+								$parent = $child->parentNode;
+								$parent->removeChild($child);
+			
+								$xmlConfigFile->asXML($policyFile);
+								break;
 							}
 						}
 					}
 				}
 			}
-		   	$this->setRedirect('index.php?option=com_easysdi_service&view=policies&config='.$config.'&connector='.$connector);
 		}
+	   	$this->setRedirect('index.php?option=com_easysdi_service&view=policies&config='.$configId.'&connector='.$connector);
+	}
 
 	function save() {
 		$params 		= JComponentHelper::getParams('com_easysdi_core');

@@ -46,8 +46,8 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 				<fieldset class="adminform" id="service_identification" ><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_LEGEND_METADATA_IDENTIFICATION'); ?></legend>
 					<table class="admintable" >
 						<tr>
-							<td class="key"><?php echo JText::_("COM_EASYSDI_SERVICE_METADATA_TITLE"); ?> : </td>
-							<td><input name="service_title" id="service_title" type="text" size=100 value="<?php echo $this->config{"service-metadata"}->{"ServiceIdentification"}->{"Title"}; ?>"></td>
+							<td class="key"><?php echo JText::_("COM_EASYSDI_SERVICE_METADATA_TITLE"); ?> : <span class="star">*</span></td>
+							<td><input class="inputbox required" name="service_title" id="service_title" type="text" size=100 value="<?php echo $this->config{"service-metadata"}->{"ServiceIdentification"}->{"Title"}; ?>"></td>
 						</tr>
 						<tr>
 							<td class="key"><?php echo JText::_("COM_EASYSDI_SERVICE_METADATA_ABSTRACT"); ?> : </td>

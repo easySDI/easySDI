@@ -163,7 +163,7 @@ class Easysdi_serviceControllerConfig extends JController
     			$config->{"xslt-path"}->{"url"} = JRequest::getVar("xsltPath");
     	
     			//Log file
-    			$config->{'log-config'}->{'logger'}							= JRequest::getVar("logger");
+    			$config->{'log-config'}->{'logger'}							= "org.apache.log4j.Logger";
     			$config->{'log-config'}->{'log-level'}						= JRequest::getVar("logLevel");
     			$logPath													= JRequest::getVar("logPath");
     			$logSuffix													= JRequest::getVar("logSuffix");
