@@ -82,14 +82,14 @@ foreach ($this->xml->config as $config) {
 				{
 					if(document.getElementById('serverPrefixe'+server).value == "" || document.getElementById('serverNamespace'+server).value == "")
 					{
-						alert ('<?php echo  JText::_( 'EASYSDI_NAMESPACE_VALIDATION_ERROR');?>');	
+						alert ('<?php echo  JText::_( 'COM_EASYSDI_SERVICE_NAMESPACE_VALIDATION_ERROR');?>');	
 						return;
 					}
 					server ++;
 				}
 				if(geoQueryValid.length != 0)
 				{
-					alert ('<?php echo  JText::_( 'EASYSDI_QUERY_VALIDATION_ERROR');?>');
+					alert ('<?php echo  JText::_( 'COM_EASYSDI_SERVICE_QUERY_VALIDATION_ERROR');?>');
 				}
 				else
 				{
@@ -213,26 +213,26 @@ foreach ($this->xml->config as $config) {
 			}	
 		}
 		</script>
-		<fieldset class="adminform"><legend><?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_OPERATION'); ?></legend>
+		<fieldset class="adminform"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_AUTHORIZED_OPERATION'); ?></legend>
 			<table class="admintable">
 				<tr>
 					<td >
 					<?php if (strcasecmp($thePolicy->Operations['All'],'True')==0 || !$thePolicy->Operations){$checkedO='checked';} ?>	
 						<input <?php echo $checkedO; ?>
 						type="checkBox" name="AllOperations[]" id="AllOperations" 
-						onclick="disableOperationCheckBoxes();"><?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_OPERATION_ALL'); ?></td>
+						onclick="disableOperationCheckBoxes();"><?php echo JText::_( 'COM_EASYSDI_SERVICE_AUTHORIZED_OPERATION_ALL'); ?></td>
 					<td><input type="checkBox" name="operation[]" id="oGetCapabilities" value="GetCapabilities" <?php if (strcasecmp($checkedO,'checked')==0){echo 'disabled checked';} ?>
 						<?php foreach ($thePolicy->Operations->Operation as $operation)
 							{
 								if(strcasecmp($operation->Name,'GetCapabilities')==0) echo 'checked';			
 							}?>
-						><?php echo JText::_( 'PROXY_CONFIG_OPERATION_GETCAPABILITIES'); ?></td>
+						><?php echo JText::_( 'COM_EASYSDI_SERVICE_OPERATION_GETCAPABILITIES'); ?></td>
 					<td><input type="checkBox" name="operation[]" id="oTransaction" value="Transaction" <?php if (strcasecmp($checkedO,'checked')==0){echo 'disabled checked';} ?>
 						<?php foreach ($thePolicy->Operations->Operation as $operation)
 						{
 							if(strcasecmp($operation->Name,'Transaction')==0) echo 'checked';			
 						}?>
-						><?php echo JText::_( 'PROXY_CONFIG_OPERATION_TRANSACTION'); ?></td>
+						><?php echo JText::_( 'COM_EASYSDI_SERVICE_OPERATION_TRANSACTION'); ?></td>
 					
 				</tr>
 				<tr>
@@ -242,9 +242,9 @@ foreach ($this->xml->config as $config) {
 							{
 								if(strcasecmp($operation->Name,'DescribeFeatureType')==0) echo 'checked';			
 							}?>
-						><?php echo JText::_( 'PROXY_CONFIG_OPERATION_DESCRIBEFEATURETYPE'); ?></td>
+						><?php echo JText::_( 'COM_EASYSDI_SERVICE_OPERATION_DESCRIBEFEATURETYPE'); ?></td>
 						<td><input type="checkBox" name="operation[]" id="oLockFeature" value="LockFeature" disabled>
-							<i><?php echo JText::_( 'PROXY_CONFIG_OPERATION_LOCKFEATURE'); ?></i></td>
+							<i><?php echo JText::_( 'COM_EASYSDI_SERVICE_OPERATION_LOCKFEATURE'); ?></i></td>
 					
 				</tr>
 				<tr>
@@ -254,16 +254,16 @@ foreach ($this->xml->config as $config) {
 						{
 							if(strcasecmp($operation->Name,'GetFeature')==0) echo 'checked';			
 						}?>
-						><?php echo JText::_( 'PROXY_CONFIG_OPERATION_GETFEATURE'); ?></td>
+						><?php echo JText::_( 'COM_EASYSDI_SERVICE_OPERATION_GETFEATURE'); ?></td>
 					<td><input type="checkBox" name="operation[]" id="oGetFeatureWithLock" value="GetFeatureWithLock" disabled >
-						<i><?php echo JText::_( 'PROXY_CONFIG_OPERATION_GETFEATUREWITHLOCK'); ?></i></td>
+						<i><?php echo JText::_( 'COM_EASYSDI_SERVICE_OPERATION_GETFEATUREWITHLOCK'); ?></i></td>
 				</tr>
 			</table>
 		</fieldset>
-		<fieldset class="adminform"><legend><?php echo JText::_( 'PROXY_CONFIG_SERVER_ALL_TITLE'); ?></legend>
+		<fieldset class="adminform"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_SERVER_ALL_TITLE'); ?></legend>
 			<table class="admintable">
 				<tr>
-					<td><input type="checkBox" name="AllServers[]" id="AllServers" value="All" onclick="disableServersFeatureTypes();" <?php if (strcasecmp($thePolicy->Servers['All'],'True')==0 ) echo 'checked'; ?>><?php echo JText::_( 'PROXY_CONFIG_SERVER_ALL'); ?></td>
+					<td><input type="checkBox" name="AllServers[]" id="AllServers" value="All" onclick="disableServersFeatureTypes();" <?php if (strcasecmp($thePolicy->Servers['All'],'True')==0 ) echo 'checked'; ?>><?php echo JText::_( 'COM_EASYSDI_SERVICE_SERVER_ALL'); ?></td>
 				</tr>
 			</table>
 		</fieldset>
@@ -315,16 +315,16 @@ foreach ($this->xml->config as $config) {
 			}
 			?>
 			<input type="hidden" id ="remoteServer<?php echo $iServer; ?>" name="remoteServer<?php echo $iServer; ?>" value="<?php echo $remoteServer->url; ?>">
-			<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_WFS_SERVER'); ?> <?php echo $remoteServer->url ?></legend>
+			<fieldset class="adminform"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_WFS_SERVER'); ?> <?php echo $remoteServer->url ?></legend>
 			<table class="admintable">
 				<tr>
-					<td class="key"><?php echo JText::_( 'EASYSDI_WFS_SERVER_PREFIXE'); ?><span class="star">*</span> </td>		
+					<td class="key"><?php echo JText::_( 'COM_EASYSDI_SERVICE_WFS_SERVER_PREFIXE'); ?><span class="star">*</span> </td>		
 					<td>
 					<input class="inputbox required" type="text" size ="100"   name="serverPrefixe<?php echo $iServer; ?>" id="serverPrefixe<?php echo $iServer; ?>" value="<?php echo $theServer->Prefix; ?>">
 					</td>
 				</tr>
 				<tr>
-					<td class="key"><?php echo JText::_( 'EASYSDI_WFS_SERVER_NAMESPACE'); ?><span class="star">*</span></td>
+					<td class="key"><?php echo JText::_( 'COM_EASYSDI_SERVICE_WFS_SERVER_NAMESPACE'); ?><span class="star">*</span></td>
 					<td>
 					<input  class="inputbox required" type="text" size ="100"  name="serverNamespace<?php echo $iServer; ?>" id="serverNamespace<?php echo $iServer; ?>" value="<?php echo $theServer->Namespace; ?>">
 					</td>
@@ -333,36 +333,36 @@ foreach ($this->xml->config as $config) {
 			<br>
 			<table class="admintable" id="remoteServerTable@<?php echo $iServer; ?>" <?php if (strcasecmp($thePolicy->Servers['All'],'True')==0 ) echo "style='display:none'"; ?>>
 				<tr>
-					<th><b><?php echo JText::_( 'EASYSDI_FEATURETYPE NAME'); ?></b></th>
-					<th><b><?php echo JText::_( 'EASYSDI_FILTERED_ATTRIBUTES_LABEL'); ?></b>
+					<th><b><?php echo JText::_( 'COM_EASYSDI_SERVICE_FEATURETYPE_NAME'); ?></b></th>
+					<th><b><?php echo JText::_( 'COM_EASYSDI_SERVICE_FILTERED_ATTRIBUTES_LABEL'); ?></b>
 					<a class="modal" href="./index.php?option=com_easysdi_proxy&tmpl=component&task=helpAttributeFilter" rel="{handler:'iframe',size:{x:600,y:190}}"> 	
 						<img class="helpTemplate" 
 						     src="components/com_easysdi_service/assets/images/s_help.png" 
-							 alt="<?php echo JText::_("EASYSDI_GEOGRAPHIC_FILTER_QUERY_TEMPLATE") ?>" 
+							 alt="<?php echo JText::_("COM_EASYSDI_SERVICE_GEOGRAPHIC_FILTER_QUERY_TEMPLATE") ?>" 
 							
 							  />	
 					</a></th>
-					<th><b><?php echo JText::_( 'EASYSDI_GEOGRAPHIC_FILTER_ON_QUERY'); ?></b>
+					<th><b><?php echo JText::_( 'COM_EASYSDI_SERVICE_GEOGRAPHIC_FILTER_ON_QUERY'); ?></b>
 					<a class="modal" href="./index.php?option=com_easysdi_proxy&tmpl=component&task=helpQueryTemplate&filter_type=filterQuery" rel="{handler:'iframe',size:{x:600,y:290}}"> 	
 						<img class="helpTemplate" 
 						     src="components/com_easysdi_service/assets/images/s_help.png" 
-							 alt="<?php echo JText::_("EASYSDI_GEOGRAPHIC_FILTER_QUERY_TEMPLATE") ?>" 
+							 alt="<?php echo JText::_("COM_EASYSDI_SERVICE_GEOGRAPHIC_FILTER_QUERY_TEMPLATE") ?>" 
 							
 							  />	
 					</a>
 					</th>
 					
-					<th><b><?php echo JText::_( 'EASYSDI_GEOGRAPHIC_FILTER_ON_ANSWER'); ?></b>
+					<th><b><?php echo JText::_( 'COM_EASYSDI_SERVICE_GEOGRAPHIC_FILTER_ON_ANSWER'); ?></b>
 					<a class="modal" href="./index.php?option=com_easysdi_proxy&tmpl=component&task=helpQueryTemplate&filter_type=filterAnswer" rel="{handler:'iframe',size:{x:600,y:320}}"> 
 						<img class="helpTemplate" 
 							  src="components/com_easysdi_service/assets/images/s_help.png" 
-							 alt="<?php echo JText::_("EASYSDI_GEOGRAPHIC_FILTER_QUERY_TEMPLATE") ?>" 
+							 alt="<?php echo JText::_("COM_EASYSDI_SERVICE_GEOGRAPHIC_FILTER_QUERY_TEMPLATE") ?>" 
 							 />
 					</a>
 					</th>		
 				</tr>
 				<tr>
-					<td colspan="4"><input type="checkBox" name="AllFeatureTypes@<?php echo $iServer; ?>" id="AllFeatureTypes@<?php echo $iServer; ?>" value="All" <?php if (strcasecmp($theServer->FeatureTypes['All'],'True')==0 ) echo ' checked '; ?> onclick="disableFeatureTypes(<?php echo $iServer; ?>);"><?php echo JText::_( 'PROXY_CONFIG_FEATURES_ALL'); ?></td>
+					<td colspan="4"><input type="checkBox" name="AllFeatureTypes@<?php echo $iServer; ?>" id="AllFeatureTypes@<?php echo $iServer; ?>" value="All" <?php if (strcasecmp($theServer->FeatureTypes['All'],'True')==0 ) echo ' checked '; ?> onclick="disableFeatureTypes(<?php echo $iServer; ?>);"><?php echo JText::_( 'COM_EASYSDI_SERVICE_FEATURES_ALL'); ?></td>
 				</tr>
 				<?php
 				$pos1 = stripos($urlWithPassword, "?");
@@ -477,7 +477,7 @@ foreach ($this->xml->config as $config) {
 					<td  align="center">
 						<table>
 							<tr>
-								<td><?php echo JText::_( 'EASYSDI_FEATURE_TYPE_SELECT_ATTRIBUTE'); ?> 
+								<td><?php echo JText::_( 'COM_EASYSDI_SERVICE_FEATURE_TYPE_SELECT_ATTRIBUTE'); ?> 
 									<input align="left" 
 										   <?php if( ! $this->isChecked($theServer,$featureType)) echo 'disabled ';?> 
 										   <?php  $attributes =  $this->getFeatureTypeAttributesList($theServer,$featureType) ;if (strcmp($attributes,"")==0){}else{echo 'checked '; } ?>

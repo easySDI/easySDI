@@ -200,20 +200,20 @@ foreach ($this->xml->config as $config) {
 				}	
 			}
 			</script>
-			<fieldset class="adminform"><legend><?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_OPERATION'); ?></legend>
+			<fieldset class="adminform"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_AUTHORIZED_OPERATION'); ?></legend>
 			<table class="admintable">
 				<tr>
 					<td >
 					<?php if (strcasecmp($thePolicy->Operations['All'],'True')==0 || !$thePolicy->Operations){$checkedO='checked';} ?>	
 						<input <?php echo $checkedO; ?>
 						type="checkBox" name="AllOperations[]" id="AllOperations" 
-						onclick="disableOperationCheckBoxes();"><?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_OPERATION_ALL'); ?></td>
+						onclick="disableOperationCheckBoxes();"><?php echo JText::_( 'COM_EASYSDI_SERVICE_AUTHORIZED_OPERATION_ALL'); ?></td>
 					<td><input type="checkBox" name="operation[]" id="oGetCapabilities" value="GetCapabilities" <?php if (strcasecmp($checkedO,'checked')==0){echo 'disabled checked';} ?>
 						<?php foreach ($thePolicy->Operations->Operation as $operation)
 							{
 								if(strcasecmp($operation->Name,'GetCapabilities')==0) echo 'checked';			
 							}?>
-						><?php echo JText::_( 'PROXY_CONFIG_OPERATION_GETCAPABILITIES'); ?>
+						><?php echo JText::_( 'COM_EASYSDI_SERVICE_OPERATION_GETCAPABILITIES'); ?>
 					</td>
 				<tr>
 					<td></td>
@@ -222,7 +222,7 @@ foreach ($this->xml->config as $config) {
 							{
 								if(strcasecmp($operation->Name,'GetTile')==0) echo 'checked';			
 							}?>
-						><?php echo JText::_( 'PROXY_CONFIG_OPERATION_GETTILE'); ?>
+						><?php echo JText::_( 'COM_EASYSDI_SERVICE_OPERATION_GETTILE'); ?>
 					</td>
 				</tr>	
 				<tr>
@@ -232,16 +232,16 @@ foreach ($this->xml->config as $config) {
 							{
 								if(strcasecmp($operation->Name,'GetFeatureInfo')==0) echo 'checked';			
 							}?>
-						><?php echo JText::_( 'PROXY_CONFIG_OPERATION_GETFEATUREINFO'); ?>
+						><?php echo JText::_( 'COM_EASYSDI_SERVICE_OPERATION_GETFEATUREINFO'); ?>
 					</td>
 				</tr>
 			</table>
 		</fieldset>
 
-	<fieldset class="adminform"><legend><?php echo JText::_( 'PROXY_CONFIG_SERVER_ALL_TITLE'); ?></legend>
+	<fieldset class="adminform"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_SERVER_ALL_TITLE'); ?></legend>
 		<table class="admintable">
 			<tr>
-				<td><input type="checkBox" name="AllServers[]" id="AllServers" value="All" onclick="disableWMTSServersLayers();" <?php if (strcasecmp($thePolicy->Servers['All'],'True')==0 ) echo 'checked'; ?>><?php echo JText::_( 'PROXY_CONFIG_SERVER_ALL'); ?></td>
+				<td><input type="checkBox" name="AllServers[]" id="AllServers" value="All" onclick="disableWMTSServersLayers();" <?php if (strcasecmp($thePolicy->Servers['All'],'True')==0 ) echo 'checked'; ?>><?php echo JText::_( 'COM_EASYSDI_SERVICE_SERVER_ALL'); ?></td>
 			</tr>
 		</table>
 	</fieldset>
@@ -309,7 +309,7 @@ foreach ($this->xml->config as $config) {
 								   value="All" <?php if (strcasecmp($theServer->Layers['All'],'True')==0 ) 
 								   echo ' checked '; ?> 
 								   onclick="disableWMTSLayers(<?php echo $iServer; ?>);">
-								   <?php echo JText::_( 'PROXY_CONFIG_LAYER_ALL'); ?>
+								   <?php echo JText::_( 'COM_EASYSDI_SERVICE_LAYER_ALL'); ?>
 						</td>
 					</tr>
 			<?php
@@ -382,14 +382,14 @@ foreach ($this->xml->config as $config) {
 									<table>
 										<tr>
 											<th colspan="4">
-												<?php echo JText::_( 'PROXY_CONFIG_GEOGRAPHIC_FILTER'); ?>	
+												<?php echo JText::_( 'COM_EASYSDI_SERVICE_GEOGRAPHIC_FILTER'); ?>	
 											</th>
 										</tr>
 										<tr>
 											<td>
 											</td>
 											<td align="right">
-												<?php echo JText::_( 'PROXY_CONFIG_BBOX_MAXY'); ?>
+												<?php echo JText::_( 'COM_EASYSDI_SERVICE_BBOX_MAXY'); ?>
 											</td>
 											<td>
 												<input type="text" name="bboxmaxy@<?php echo $iServer; ?>@<?php echo $layernum; ?>" id="bboxmaxy@<?php echo $iServer; ?>@<?php echo $layernum; ?>" value="<?php echo $bboxLayer['maxy'];?>">
@@ -401,13 +401,13 @@ foreach ($this->xml->config as $config) {
 										</tr>
 										<tr>
 											<td>
-												<?php echo JText::_( 'PROXY_CONFIG_BBOX_MINX'); ?>
+												<?php echo JText::_( 'COM_EASYSDI_SERVICE_BBOX_MINX'); ?>
 											</td>
 											<td>
 												<input type="text" name="bboxminx@<?php echo $iServer; ?>@<?php echo $layernum; ?>" id="bboxminx@<?php echo $iServer; ?>@<?php echo $layernum; ?>" value="<?php echo $bboxLayer['minx'];?>">
 											</td>
 											<td align="right">
-												<?php echo JText::_( 'PROXY_CONFIG_BBOX_MAXX'); ?>
+												<?php echo JText::_( 'COM_EASYSDI_SERVICE_BBOX_MAXX'); ?>
 											</td>
 											<td>
 												<input type="text" name="bboxmaxx@<?php echo $iServer; ?>@<?php echo $layernum; ?>" id="bboxmaxx@<?php echo $iServer; ?>@<?php echo $layernum; ?>" value="<?php echo $bboxLayer['maxx'];?>">
@@ -420,7 +420,7 @@ foreach ($this->xml->config as $config) {
 											<td>
 											</td>
 											<td align="right">
-												<?php echo JText::_( 'PROXY_CONFIG_BBOX_MINY'); ?>
+												<?php echo JText::_( 'COM_EASYSDI_SERVICE_BBOX_MINY'); ?>
 											</td>
 											<td>
 												<input type="text" name="bboxminy@<?php echo $iServer; ?>@<?php echo $layernum; ?>" id="bboxminy@<?php echo $iServer; ?>@<?php echo $layernum; ?>" value="<?php echo $bboxLayer['miny'];?>">
@@ -441,8 +441,8 @@ foreach ($this->xml->config as $config) {
 									<td valign="top"  colspan="2">
 										<table width ="100%">
 											<tr>
-												<th><?php echo JText::_( 'PROXY_CONFIG_TILEMATRIXSET_ID'); ?></th>
-												<th><?php echo JText::_( 'PROXY_CONFIG_TILEMATRIX_MIN_SCALE_DENOMINATOR'); ?></th>
+												<th><?php echo JText::_( 'COM_EASYSDI_SERVICE_TILEMATRIXSET_ID'); ?></th>
+												<th><?php echo JText::_( 'COM_EASYSDI_SERVICE_TILEMATRIX_MIN_SCALE_DENOMINATOR'); ?></th>
 											</tr>
 											<?php 
 											for($id = 0; $id<$TileMatrixSetLinks->length; $id++){ 
@@ -468,7 +468,7 @@ foreach ($this->xml->config as $config) {
 														}
 					 									 $availableTileMatrixList[] = JHTML::_('select.option', $key." [ ".$value." ]", $key." [ ".$value." ]");
 					 							endforeach;
-					 							$availableTileMatrixList = array_merge(array(JHTML::_('select.option', 'service-value', JText::_( 'PROXY_CONFIG_SCALE_DENOMINATOR_DEFAULT'))), $availableTileMatrixList);
+					 							$availableTileMatrixList = array_merge(array(JHTML::_('select.option', 'service-value', JText::_( 'COM_EASYSDI_SERVICE_SCALE_DENOMINATOR_DEFAULT'))), $availableTileMatrixList);
 					 							echo JHTML::_("select.genericlist",$availableTileMatrixList, 'minScaleDenominator@'.$iServer."@".$layernum."@".$id, 'size="1" ', 'value', 'text', $selectedDenominator );
 												?>
 												<input type="hidden" name="tmsCRS@<?php echo $iServer; ?>@<?php echo $layernum; ?>@<?php echo $id; ?>" id="tmsCRS@<?php echo $iServer; ?>@<?php echo $layernum; ?>@<?php echo $id; ?>" value="<?php echo $describedTileMatrixSetsCRS[$tileMatrixSetId]; ?>">

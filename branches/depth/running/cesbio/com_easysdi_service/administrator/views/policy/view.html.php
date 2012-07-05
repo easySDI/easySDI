@@ -392,7 +392,7 @@ class Easysdi_serviceViewPolicy extends JView
 
 	function genericPolicyFields($thePolicy){
 		?>
-		<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_POLICY IDENTIFICATION'); ?></legend>
+		<fieldset class="adminform"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_IDENTIFICATION'); ?></legend>
 			<table class="admintable">
 				<tr>
 					<td class="key"><?php echo JText::_( 'COM_EASYSDI_SERVICE_CONFIGURATION_ID'); ?></td>

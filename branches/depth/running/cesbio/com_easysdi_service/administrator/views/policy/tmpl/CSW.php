@@ -210,26 +210,26 @@ foreach ($this->xml->config as $config) {
 			
 		}
 		</script>
-		<fieldset class="adminform"><legend><?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_OPERATION'); ?></legend>
+		<fieldset class="adminform"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_AUTHORIZED_OPERATION'); ?></legend>
 			<table class="admintable">
 				<tr>
 					<td >
 					<?php if (strcasecmp($thePolicy->Operations['All'],'True')==0 || !$thePolicy->Operations){$checkedO='checked';} ?>	
 						<input <?php echo $checkedO; ?>
 						type="checkBox" name="AllOperations[]" id="AllOperations" 
-						onclick="disableOperationCheckBoxes();"><?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_OPERATION_ALL'); ?></td>
+						onclick="disableOperationCheckBoxes();"><?php echo JText::_( 'COM_EASYSDI_SERVICE_AUTHORIZED_OPERATION_ALL'); ?></td>
 					<td><input type="checkBox" name="operation[]" id="oGetCapabilities" value="GetCapabilities" <?php if (strcasecmp($checkedO,'checked')==0){echo 'disabled checked';} ?>
 						<?php foreach ($thePolicy->Operations->Operation as $operation)
 							{
 								if(strcasecmp($operation->Name,'GetCapabilities')==0) echo 'checked';			
 							}?>
-						><?php echo JText::_( 'PROXY_CONFIG_OPERATION_GETCAPABILITIES'); ?></td>
+						><?php echo JText::_( 'COM_EASYSDI_SERVICE_OPERATION_GETCAPABILITIES'); ?></td>
 						<td><input type="checkBox" name="operation[]" id="oTransaction" value="Transaction" <?php if (strcasecmp($checkedO,'checked')==0){echo 'disabled checked';} ?>
 						<?php foreach ($thePolicy->Operations->Operation as $operation)
 						{
 							if(strcasecmp($operation->Name,'Transaction')==0) echo 'checked';			
 						}?>
-						><?php echo JText::_( 'PROXY_CONFIG_OPERATION_TRANSACTION'); ?></td>
+						><?php echo JText::_( 'COM_EASYSDI_SERVICE_OPERATION_TRANSACTION'); ?></td>
 					
 				</tr>
 				<tr>
@@ -239,9 +239,9 @@ foreach ($this->xml->config as $config) {
 						{
 							if(strcasecmp($operation->Name,'DescribeRecord')==0) echo 'checked';			
 						}?>
-						><?php echo JText::_( 'PROXY_CONFIG_OPERATION_DESCRIBERECORD'); ?></td>
+						><?php echo JText::_( 'COM_EASYSDI_SERVICE_OPERATION_DESCRIBERECORD'); ?></td>
 						<td><input type="checkBox" name="operation[]" id="oHarvest"  value="Harvest" disabled >
-						<i><?php echo JText::_( 'PROXY_CONFIG_OPERATION_HARVEST'); ?></i></td>
+						<i><?php echo JText::_( 'COM_EASYSDI_SERVICE_OPERATION_HARVEST'); ?></i></td>
 				</tr>
 				<tr>
 					<td></td>
@@ -250,9 +250,9 @@ foreach ($this->xml->config as $config) {
 						{
 							if(strcasecmp($operation->Name,'GetRecords')==0) echo 'checked';			
 						}?>
-						><?php echo JText::_( 'PROXY_CONFIG_OPERATION_GETRECORDS'); ?></td>
+						><?php echo JText::_( 'COM_EASYSDI_SERVICE_OPERATION_GETRECORDS'); ?></td>
 					<td><input type="checkBox" name="operation[]" id="oGetDomain" value="GetDomain" disabled >
-					<i><?php echo JText::_( 'PROXY_CONFIG_OPERATION_GETDOMAIN'); ?></i></td>
+					<i><?php echo JText::_( 'COM_EASYSDI_SERVICE_OPERATION_GETDOMAIN'); ?></i></td>
 				</tr>
 				<tr>
 					<td></td>
@@ -260,18 +260,18 @@ foreach ($this->xml->config as $config) {
 						<?php foreach ($thePolicy->Operations->Operation as $operation)
 						{
 							if(strcasecmp($operation->Name,'GetRecordbyId')==0) echo 'checked';			
-						}?>><?php echo JText::_( 'PROXY_CONFIG_OPERATION_GETRECORDBYID'); ?></td>
+						}?>><?php echo JText::_( 'COM_EASYSDI_SERVICE_OPERATION_GETRECORDBYID'); ?></td>
 					<td></td>
 				</tr>
 			</table>
 		</fieldset>
 		
-		<fieldset class="adminform"><legend><?php echo JText::_( 'PROXY_CONFIG_EASYSDI_MD_FILTER'); ?></legend>
+		<fieldset class="adminform"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_EASYSDI_MD_FILTER'); ?></legend>
 		<table class="admintable">
 		<tr>
-		<th align="center"><?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_OBJECTTYPE'); ?></th>
-		<th align="center"><?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_VISIBILITY'); ?></th>
-		<th align="center"><?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_STATUS'); ?></th>
+		<th align="center"><?php echo JText::_( 'COM_EASYSDI_SERVICE_AUTHORIZED_OBJECTTYPE'); ?></th>
+		<th align="center"><?php echo JText::_( 'COM_EASYSDI_SERVICE_AUTHORIZED_VISIBILITY'); ?></th>
+		<th align="center"><?php echo JText::_( 'COM_EASYSDI_SERVICE_AUTHORIZED_STATUS'); ?></th>
 		</tr>
 		<tr>
 		<td valign="top">
@@ -285,7 +285,7 @@ foreach ($this->xml->config as $config) {
 							   name="AllObjectType[]" 
 							   id="AllObjectType" 
 							   onclick="disableCheckBoxes('AllObjectType','objectType[]');">
-							   <?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_OBJECTTYPE_ALL'); ?>
+							   <?php echo JText::_( 'COM_EASYSDI_SERVICE_AUTHORIZED_OBJECTTYPE_ALL'); ?>
 					</td>
 					<?php 
 					foreach ($rowsObjectTypes as $objectType)
@@ -324,7 +324,7 @@ foreach ($this->xml->config as $config) {
 							   name="AllVisibilities[]" 
 							   id="AllVisibilities" 
 							   onclick="disableVisibilitiesCheckBoxes();">
-							   <?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_VISIBILITY_ALL'); ?>
+							   <?php echo JText::_( 'COM_EASYSDI_SERVICE_AUTHORIZED_VISIBILITY_ALL'); ?>
 					</td>
 					<?php 
 					foreach ($rowsVisibility as $visibility)
@@ -363,7 +363,7 @@ foreach ($this->xml->config as $config) {
 							   name="AllStatus[]" 
 							   id="AllStatus" 
 							   onclick="disableStatusCheckBoxes();">
-							   <?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_STATUS_ALL'); ?>
+							   <?php echo JText::_( 'COM_EASYSDI_SERVICE_AUTHORIZED_STATUS_ALL'); ?>
 					</td>
 					<?php 
 					foreach ($rowsStatus as $status)
@@ -388,9 +388,9 @@ foreach ($this->xml->config as $config) {
 								   }?>
 							><?php echo JText::_($status->text); ?>
 							</td>
-							<td><i><?php echo JText::_( 'PROXY_CONFIG_AUTHORIZED_STATUS_VERSION_MODE'); ?></i></td>
-							<td><input type="radio" name="objectversion_mode" value="last" <?php if (strcmp($versionMode,"last")==0 ){echo "checked";} ?>  <?php if (strcasecmp($checkedS,'checked')==0){echo 'disabled';} ?>> <?php echo JText::_( 'PROXY_CONFIG_VERSION_MANAGEMENT_MODE_LAST'); ?><br></td>
-							<td><input type="radio" name="objectversion_mode" value="all" <?php if (strcmp($versionMode,"all")==0){echo "checked";} ?>  <?php if (strcasecmp($checkedS,'checked')==0){echo 'disabled';} ?> > <?php echo JText::_( 'PROXY_CONFIG_VERSION_MANAGEMENT_MODE_ALL'); ?><br></td>
+							<td><i><?php echo JText::_( 'COM_EASYSDI_SERVICE_AUTHORIZED_STATUS_VERSION_MODE'); ?></i></td>
+							<td><input type="radio" name="objectversion_mode" value="last" <?php if (strcmp($versionMode,"last")==0 ){echo "checked";} ?>  <?php if (strcasecmp($checkedS,'checked')==0){echo 'disabled';} ?>> <?php echo JText::_( 'COM_EASYSDI_SERVICE_VERSION_MANAGEMENT_MODE_LAST'); ?><br></td>
+							<td><input type="radio" name="objectversion_mode" value="all" <?php if (strcmp($versionMode,"all")==0){echo "checked";} ?>  <?php if (strcasecmp($checkedS,'checked')==0){echo 'disabled';} ?> > <?php echo JText::_( 'COM_EASYSDI_SERVICE_VERSION_MANAGEMENT_MODE_ALL'); ?><br></td>
 							<?php 
 						}
 						else
@@ -431,11 +431,11 @@ foreach ($this->xml->config as $config) {
 		</tr>
 		</table>
 	</fieldset>
-	<fieldset class="adminform"><legend><?php echo JText::_( 'PROXY_CONFIG_HARVESTED_MD_FILTER'); ?></legend>
+	<fieldset class="adminform"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_HARVESTED_MD_FILTER'); ?></legend>
 			<table class="admintable">
 				<tr>
 					<td >
-					<?php echo JText::_( 'PROXY_CONFIG_HARVESTED_MD_INCLUDE'); ?>
+					<?php echo JText::_( 'COM_EASYSDI_SERVICE_HARVESTED_MD_INCLUDE'); ?>
 					</td>
 					<td >
 					<input type="radio" name="IncludeHarvested" value="true" <?php if($thePolicy->IncludeHarvested != "false") echo "checked"; ?>> <?php echo JText::_( 'CORE_YES'); ?>
@@ -446,13 +446,13 @@ foreach ($this->xml->config as $config) {
 		</fieldset>
 		
 		
-		<fieldset class="adminform"><legend><?php echo JText::_( 'PROXY_CONFIG_CSW_GEOGRAPHICAL_FILTER'); ?> 
+		<fieldset class="adminform"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_CSW_GEOGRAPHICAL_FILTER'); ?> 
 			</legend>
 			<table class="admintable">
 				<tr>
 					<td colspan="4" >
-						<b><?php echo JText::_( 'PROXY_CONFIG_CSW_GEOGRAPHIC_FILTER_CRS'); ?>   </b>	
-						<input type="text" size="35" maxlength="100" name="crsSource" id="crsSource" title="<?php echo JText::_( 'PROXY_CONFIG_CSW_GEOGRAPHIC_FILTER_CRS_TITLE'); ?>" value="<?php echo $thePolicy->BBOXFilter['crsSource'];?>">
+						<b><?php echo JText::_( 'COM_EASYSDI_SERVICE_CSW_GEOGRAPHIC_FILTER_CRS'); ?>   </b>	
+						<input type="text" size="35" maxlength="100" name="crsSource" id="crsSource" title="<?php echo JText::_( 'COM_EASYSDI_SERVICE_CSW_GEOGRAPHIC_FILTER_CRS_TITLE'); ?>" value="<?php echo $thePolicy->BBOXFilter['crsSource'];?>">
 					</td>
 				</tr>
 				<tr></tr>
@@ -460,7 +460,7 @@ foreach ($this->xml->config as $config) {
 					<td>
 					</td>
 					<td align="right">
-						<?php echo JText::_( 'PROXY_CONFIG_BBOX_MAXY'); ?>
+						<?php echo JText::_( 'COM_EASYSDI_SERVICE_BBOX_MAXY'); ?>
 					</td>
 					<td>
 						<input type="text" name="maxy" id="maxy" value="<?php echo $thePolicy->BBOXFilter['maxy'];?>">
@@ -472,13 +472,13 @@ foreach ($this->xml->config as $config) {
 				</tr>
 				<tr>
 					<td>
-						<?php echo JText::_( 'PROXY_CONFIG_BBOX_MINX'); ?>
+						<?php echo JText::_( 'COM_EASYSDI_SERVICE_BBOX_MINX'); ?>
 					</td>
 					<td>
 						<input type="text" name="minx" id="minx" value="<?php echo $thePolicy->BBOXFilter['minx'];?>">
 					</td>
 					<td align="right">
-						<?php echo JText::_( 'PROXY_CONFIG_BBOX_MAXX'); ?>
+						<?php echo JText::_( 'COM_EASYSDI_SERVICE_BBOX_MAXX'); ?>
 					</td>
 					<td>
 						<input type="text" name="maxx" id="maxx" value="<?php echo $thePolicy->BBOXFilter['maxx'];?>">
@@ -491,7 +491,7 @@ foreach ($this->xml->config as $config) {
 					<td>
 					</td>
 					<td align="right">
-						<?php echo JText::_( 'PROXY_CONFIG_BBOX_MINY'); ?>
+						<?php echo JText::_( 'COM_EASYSDI_SERVICE_BBOX_MINY'); ?>
 					</td>
 					<td>
 						<input type="text" name="miny" id="miny" value="<?php echo $thePolicy->BBOXFilter['miny'];?>">
@@ -515,11 +515,11 @@ foreach ($this->xml->config as $config) {
 		?>			
 			<input type="hidden" name="remoteServer<?php echo $iServer;?>"	value="<?php echo $remoteServer->url ?>">
 			
-			<fieldset class="adminform"><legend><?php echo JText::_( 'EASYSDI_CSW_SERVER'); ?> <?php echo $remoteServer->url ?> <input type="button" value="<?php echo JText::_( 'EASYSDI_ADD NEW PARAM');?>" onClick="addNewMetadataToExclude('nbParam<?php echo $iServer; ?>',<?php echo $iServer; ?>);"></legend>
+			<fieldset class="adminform"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_CSW_SERVER'); ?> <?php echo $remoteServer->url ?> <input type="button" value="<?php echo JText::_( 'EASYSDI_ADD NEW PARAM');?>" onClick="addNewMetadataToExclude('nbParam<?php echo $iServer; ?>',<?php echo $iServer; ?>);"></legend>
 				<table  class="admintable">
 				<thead>
 					<tr>
-						<th><b><?php echo JText::_( 'EASYSDI_ATTRIBUTE TO EXCLUDE'); ?></b></th>		
+						<th><b><?php echo JText::_( 'COM_EASYSDI_SERVICE_ATTRIBUTE_TO_EXCLUDE'); ?></b></th>		
 					</tr>
 					</thead>
 					<tbody id="metadataParamTable">
