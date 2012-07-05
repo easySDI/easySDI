@@ -164,8 +164,8 @@ public class JoomlaCookieAuthenticationFilter extends GenericFilterBean {
 							int guestaccount = 0;
 							if (paramsJSON != null ) {
 							    if (paramsJSON.get("params") != null) {
-							    	paramsJSON.get("params").toString();
-							    	JSONObject json = (JSONObject) JSONSerializer.toJSON( paramsJSON );        
+							    	String paramsJSONstring = paramsJSON.get("params").toString();
+							    	JSONObject json = (JSONObject) JSONSerializer.toJSON( paramsJSONstring );        
 							        guestaccount = json.getInt("guestaccount" );
 							    }
 							    if(guestaccount != 0){
