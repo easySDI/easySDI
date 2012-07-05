@@ -93,7 +93,8 @@ var request;
 			    	arrcompliance.push(key);
 			    }
 			});
-			document.getElementById('jform_compliance').value = JSON.stringify(arrcompliance);
+			if(arrcompliance.length >0)
+				document.getElementById('jform_compliance').value = JSON.stringify(arrcompliance);
 	    }
 	}
 </script>

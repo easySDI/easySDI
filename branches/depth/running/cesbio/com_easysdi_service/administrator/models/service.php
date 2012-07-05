@@ -97,8 +97,10 @@ class Easysdi_serviceModelservice extends JModelAdmin
 				$compliance_ids[] =$compliance->id;
 				$compliance_values[] =$compliance->value;
 			}
-			
-			$item->compliance = json_encode($compliance_ids);
+			if(count($compliance_ids)>0)
+				$item->compliance = json_encode($compliance_ids);
+			else 
+				$item->compliance = '';
 			$item->supportedversions = json_encode($compliance_values);
 
 		}
@@ -125,6 +127,10 @@ class Easysdi_serviceModelservice extends JModelAdmin
 				$table->ordering = $max+1;
 			}
 		}
+		if($table->resourceauthentication_id == 0)
+			$table->resourceauthentication_id = null;
+		if($table->serviceauthentication_id == 0)
+			$table->serviceauthentication_id = null;
 	}
 
 	/**
@@ -138,9 +144,6 @@ class Easysdi_serviceModelservice extends JModelAdmin
 	 */
 	public function save($data)
 	{
-// 		if($data['serviceauthentication_id'] == 0){
-// 			$data['serviceauthentication_id'] = null;
-// 		}
 		if(parent::save($data))
 		{
 			if(isset($data['compliance']))

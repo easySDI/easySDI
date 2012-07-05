@@ -1,3 +1,5 @@
+DELETE FROM `#__menu` WHERE title = 'com_easysdi_service';
+
 
 INSERT INTO `#__sdi_sys_authenticationlevel` (ordering,state,checked_out,value) 
 VALUES 

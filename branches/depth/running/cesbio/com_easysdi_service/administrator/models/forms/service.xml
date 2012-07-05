@@ -65,6 +65,7 @@
 				type="text" 
 				size="40" 
 				class="inputbox"
+				required="true" 
 				label="COM_EASYSDI_SERVICE_FORM_LBL_SERVICE_RESOURCEURL"
 				description="COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_RESOURCEURL" 
                 validate="url" 
@@ -136,7 +137,7 @@
 		<field name="checked_out" type="hidden" filter="SAFEHTML" />
 		<field name="checked_out_time" type="hidden" filter="SAFEHTML" />
 		<field name="guid" type="hidden" filter="SAFEHTML" />
-		<field name="compliance" id="compliance" type="hidden" filter="SAFEHTML" />
+		<field name="compliance" id="compliance" type="hidden" required="true"  filter="SAFEHTML" />
 </fieldset>
 
 <fieldset name="negotiation">
@@ -151,7 +152,7 @@
 				class="readonly"
 				label="COM_EASYSDI_SERVICE_FORM_LBL_SERVICE_SUPPORTEDVERSIONS"
 				description="COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_SUPPORTEDVERSIONS"
-				filter="safehtml" /> 
+				filter="unset" /> 
 </fieldset>
 
 <fieldset name="publishing">

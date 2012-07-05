@@ -20,7 +20,7 @@ class JFormFieldNegotiationAction extends JFormField {
 		$html = array();
 		
 		// Start the action field output.
-		$html[] = '<a href="#" onclick="javascript:negoVersionService();" >
+		$html[] = '<span class="star">*</span><a href="#" onclick="javascript:negoVersionService();" >
 									<img class="helpTemplate" src="../templates/system/images/j_button2_image.png" alt=""/>
 								</a>';
 		
