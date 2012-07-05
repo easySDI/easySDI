@@ -107,7 +107,8 @@ public class JoomlaProvider implements AuthenticationProvider, UserDetailsServic
 	}
 	else
 	{
-	    throw new DataRetrievalFailureException ("Requested Proxy version is not supported");
+		 sql = "select u.* from " + getPrefix() + "sdi_user a join " + getPrefix()
+				    + "users u on (a.user_id = u.id) where username = ? and block = 0";
 	}
 
 	try {
@@ -120,6 +121,7 @@ public class JoomlaProvider implements AuthenticationProvider, UserDetailsServic
     private Collection<GrantedAuthority> getAuthorities(String username)  {
 	Method m;
 	String sql = "";
+	List<GrantedAuthority> authList = null;
 	if(getVersion()== null || Integer.parseInt(getVersion())<200)
 	{
 	    sql = "SELECT " + getPrefix() + "easysdi_community_role.role_name as role FROM " + getPrefix() + "easysdi_community_role Inner Join "
@@ -133,6 +135,11 @@ public class JoomlaProvider implements AuthenticationProvider, UserDetailsServic
 	    + "UNION SELECT profile_translation as role from " + getPrefix() + "easysdi_community_profile r join " + getPrefix()
 	    + "easysdi_community_partner_profile pr on (pr.profile_id = r.profile_id) join " + getPrefix()
 	    + "easysdi_community_partner p on (p.partner_id = pr.partner_id) join " + getPrefix() + "users u on (u.id = p.user_id) where u.username = ?";
+	    
+	    authList = sjt.query(sql, new ParameterizedRowMapper<GrantedAuthority>() {
+		    public GrantedAuthority mapRow(ResultSet rs, int rowNum) throws SQLException {
+		    								return new GrantedAuthorityImpl(rs.getString("role")); }
+		}, username, username);
 	}
 	else if (Integer.parseInt(getVersion()) >= 200 && Integer.parseInt(getVersion()) < 300)
 	{
@@ -145,17 +152,27 @@ public class JoomlaProvider implements AuthenticationProvider, UserDetailsServic
 	    + " join " + getPrefix() + "sdi_account_accountprofile pr on (pr.accountprofile_id = r.id) "
 	    + " join " + getPrefix() + "sdi_account p on (p.id = pr.account_id)"
 	    + " join " + getPrefix() + "users u on (u.id = p.user_id) where u.username = ?";
+	    
+	    authList = sjt.query(sql, new ParameterizedRowMapper<GrantedAuthority>() {
+		    public GrantedAuthority mapRow(ResultSet rs, int rowNum) throws SQLException {
+		    								return new GrantedAuthorityImpl(rs.getString("role")); }
+		}, username, username);
 	}
 	else
 	{
-
+		sql = "SELECT CAST(" + getPrefix()+ "usergroups.id AS CHAR) as role FROM " + getPrefix() + "usergroups"
+			    + " Inner Join "+ getPrefix()+ "user_usergroup_map ON " + getPrefix()+ "user_usergroup_map.group_id = " + getPrefix() + "usergroups.id" 
+			    + " Inner Join " + getPrefix()+ "users ON " + getPrefix() + "users.id = " + getPrefix()+ "user_usergroup_map.user_id"
+			    + " Inner Join " + getPrefix()+ "sdi_user ON " + getPrefix() + "sdi_user.user_id = " + getPrefix() + "users.id"
+			    + " WHERE " + getPrefix() + "users.username =  ? "
+			    ;
+		
+		authList = sjt.query(sql, new ParameterizedRowMapper<GrantedAuthority>() {
+		    public GrantedAuthority mapRow(ResultSet rs, int rowNum) throws SQLException {
+		    								return new GrantedAuthorityImpl(rs.getString("role")); }
+		}, username);
 	}
-	List<GrantedAuthority> authList = sjt.query(sql, new ParameterizedRowMapper<GrantedAuthority>() {
-	    public GrantedAuthority mapRow(ResultSet rs, int rowNum) throws SQLException {
-		//				return (rs.getString("role") != null) ? new GrantedAuthorityImpl(rs.getString("role")) : null;
-		return new GrantedAuthorityImpl(rs.getString("role"));
-	    }
-	}, username, username);
+	
 	authList.add(0, new GrantedAuthorityImpl("proxy_user"));
 	return authList;
     }
