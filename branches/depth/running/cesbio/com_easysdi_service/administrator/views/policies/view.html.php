@@ -45,11 +45,11 @@ class Easysdi_serviceViewPolicies extends JView
 	protected function addToolbar()
 	{
 		$canDo	= Easysdi_serviceHelper::getActions();
-		JToolBarHelper::title(JText::_('COM_EASYSDI_SERVICE_TITLE_POLICIES').' ['.$this->config.']', 'proxy.png');
+		JToolBarHelper::title(JText::_('COM_EASYSDI_SERVICE_TITLE_POLICIES').' ['.$this->config.']', 'article.png');
 		
         if ($canDo->get('core.create')) {
 			JToolBarHelper::addNew('policy.add','JTOOLBAR_NEW');
-			JToolBarHelper::custom('policy.copy','','','JTOOLBAR_COPY');
+			JToolBarHelper::custom('policy.copy','new-style','','COM_EASYSDI_SERVICE_TOOLBAR_COPY_POLICY');
 		}
 	    if ($canDo->get('core.edit')) {
 		    JToolBarHelper::editList('policy.edit','JTOOLBAR_EDIT');

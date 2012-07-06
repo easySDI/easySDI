@@ -1,10 +1,10 @@
-.icon-48-services {
-      background-image: url(../images/L_services.png);
+.icon-48-links-cat {
+      background-image: url(../images/icon-48-links-cat.png);
       padding-left:60px!important;
 }
 
-.icon-48-service {
-      background-image: url(../images/L_services.png);
+.icon-48-links {
+      background-image: url(../images/icon-48-links.png);
       padding-left:60px!important;
 }
 
@@ -20,7 +20,8 @@
     font-weight: bold;
     text-align: center;
     -moz-border-radius: 8px;
-	border-radius: 8px
+	border-radius: 8px;
+	margin-top:5px;
 	
 }
 

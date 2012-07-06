@@ -29,7 +29,7 @@ class Easysdi_serviceViewConfig extends JView
 	
 		$canDo	= Easysdi_serviceHelper::getActions();
 		
-		JToolBarHelper::title(JText::_('COM_EASYSDI_SERVICE_TITLE_CONFIG')." : ".$this->id, 'service.png');
+		JToolBarHelper::title(JText::_('COM_EASYSDI_SERVICE_TITLE_CONFIG')." : ".$this->id, 'module.png');
 		
 		if(JRequest::getVar('layout',null)!='CSW' &&  $canDo->get('core.edit'))
 			JToolBarHelper::addNew('config.addserver',JText::_( 'COM_EASYSDI_SERVICE_NEW_SERVER'));

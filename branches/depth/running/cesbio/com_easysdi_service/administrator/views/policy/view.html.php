@@ -27,7 +27,7 @@ class Easysdi_serviceViewPolicy extends JView
 	{
 		JRequest::setVar('hidemainmenu', true);
 	
-		JToolBarHelper::title(JText::_('COM_EASYSDI_SERVICE_TITLE_POLICY').' ['.$this->id.']', 'service.png');
+		JToolBarHelper::title(JText::_('COM_EASYSDI_SERVICE_TITLE_POLICY').' ['.$this->id.']', 'article-edit.png');
 		
 		$canDo	= Easysdi_serviceHelper::getActions();
 		

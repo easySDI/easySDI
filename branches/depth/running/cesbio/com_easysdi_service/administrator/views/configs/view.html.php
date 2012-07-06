@@ -47,7 +47,7 @@ class Easysdi_serviceViewConfigs extends JView
 		require_once JPATH_COMPONENT.DS.'helpers'.DS.'easysdi_service.php';
 		
 		$canDo	= Easysdi_serviceHelper::getActions();
-		JToolBarHelper::title(JText::_('COM_EASYSDI_SERVICE_TITLE_CONFIGS'), 'proxy.png');
+		JToolBarHelper::title(JText::_('COM_EASYSDI_SERVICE_TITLE_CONFIGS'), 'module.png');
 		
         if ($canDo->get('core.create')) {
 			JToolBarHelper::addNew('config.add','JTOOLBAR_NEW');
