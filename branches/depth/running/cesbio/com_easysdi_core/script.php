@@ -28,14 +28,15 @@ class com_easysdi_coreInstallerScript
 		$this->minimum_joomla_release = $parent->get( "manifest" )->attributes()->version;   
 
 		// Show the essential information at the install/update back-end
-		echo '<p>Installing component manifest file version = ' . $this->release;
+		echo '<p>EasySDI Core [com_easysdi_core]';
+		echo '<br />Installing component manifest file version = ' . $this->release;
 		echo '<br />Current manifest cache commponent version = ' . $this->getParam('version');
 		echo '<br />Installing component manifest file minimum Joomla version = ' . $this->minimum_joomla_release;
 		echo '<br />Current Joomla version = ' . $jversion->getShortVersion();
 
 		// abort if the current Joomla release is older
 		if( version_compare( $jversion->getShortVersion(), $this->minimum_joomla_release, 'lt' ) ) {
-			Jerror::raiseWarning(null, 'Cannot install com_democompupdate in a Joomla release prior to '.$this->minimum_joomla_release);
+			Jerror::raiseWarning(null, 'Cannot install com_easysdi_core in a Joomla release prior to '.$this->minimum_joomla_release);
 			return false;
 		}
  
@@ -117,7 +118,7 @@ class com_easysdi_coreInstallerScript
 	 * uninstall runs before any other action is taken (file removal or database processing).
 	 */
 	function uninstall( $parent ) {
-		echo '<p>' . JText::_('COM_DEMOCOMPUPDATE_UNINSTALL_SCRIPT ') . '</p>';
+		echo '<p>' . JText::_('COM_EASYSDI_CORE_UNINSTALL_SCRIPT ') . '</p>';
 	}
  
 	/*

@@ -20,34 +20,5 @@
 	          	component="com_categories"
 	          	description="COM_EASYSDI_CORE_CTRLPANEL_DESC_CATEGORIES" />
 	</fieldset>
-	<fieldset name="service" text="COM_EASYSDI_SERVICE_LEGEND_EASYSDI">
-	      <field name="services" 
-	     		type="link" 
-	     		default="0" 
-	     		label="COM_EASYSDI_CORE_CTRLPANEL_LBL_SERVICESLINK"
-	          	readonly="true" 
-	          	class="readonly" 
-	          	component="com_easysdi_service"
-	          	description="COM_EASYSDI_CORE_CTRLPANEL_DESC_SERVICESLINK" /> 
-	          	
-	      <field extension="com_easysdi_service" 
-	     		type="link" 
-	     		default="0" 
-	     		label="COM_EASYSDI_CORE_CTRLPANEL_LBL_SERVICE_CATEGORIES"
-	          	readonly="true" 
-	          	class="readonly" 
-	          	component="com_categories"
-	          	description="COM_EASYSDI_CORE_CTRLPANEL_DESC_SERVICE_CATEGORIES" /> 
-	          	
-	      <field name="configs" 
-	     		type="link" 
-	     		default="0" 
-	     		label="COM_EASYSDI_CORE_CTRLPANEL_LBL_PROXIEDSERVICESLINK"
-	          	readonly="true" 
-	          	class="readonly" 
-	          	component="com_easysdi_service"
-	          	description="COM_EASYSDI_CORE_CTRLPANEL_DESC_PROXIEDSERVICESLINK" />
-	</fieldset>
     </fields>
-    
 </form>
