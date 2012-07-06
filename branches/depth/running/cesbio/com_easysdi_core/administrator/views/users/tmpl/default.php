@@ -33,15 +33,20 @@ $saveOrder	= $listOrder == 'a.ordering';
 			<button type="submit"><?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?></button>
 			<button type="button" onclick="document.id('filter_search').value='';this.form.submit();"><?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?></button>
 		</div>
+
 		<div class="filter-select fltrt">
-
-            
-                <select name="filter_published" class="inputbox" onchange="this.form.submit()">
-                    <option value=""><?php echo JText::_('JOPTION_SELECT_PUBLISHED');?></option>
-                    <?php echo JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'), "value", "text", $this->state->get('filter.state'), true);?>
-                </select>
-                
-
+			<select name="filter_published" class="inputbox" onchange="this.form.submit()">
+				<option value=""><?php echo JText::_('JOPTION_SELECT_PUBLISHED');?></option>
+				<?php echo JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'), 'value', 'text', $this->state->get('filter.state'), true);?>
+			</select>
+			<select name="filter_category_id" class="inputbox" onchange="this.form.submit()">
+				<option value=""><?php echo JText::_('JOPTION_SELECT_CATEGORY');?></option>
+				<?php echo JHtml::_('select.options', JHtml::_('category.options', 'com_easysdi_core'), 'value', 'text', $this->state->get('filter.category_id'));?>
+			</select>
+            <select name="filter_access" class="inputbox" onchange="this.form.submit()">
+				<option value=""><?php echo JText::_('JOPTION_SELECT_ACCESS');?></option>
+				<?php echo JHtml::_('select.options', JHtml::_('access.assetgroups'), 'value', 'text', $this->state->get('filter.access'));?>
+			</select>
 		</div>
 	</fieldset>
 	<div class="clr"> </div>
@@ -65,6 +70,12 @@ $saveOrder	= $listOrder == 'a.ordering';
 				<th width="5%">
 					<?php echo JHtml::_('grid.sort',  'JPUBLISHED', 'a.state', $listDirn, $listOrder); ?>
 				</th>
+				<th width="10%">
+					<?php echo JHtml::_('grid.sort', 'JCATEGORY', 'category_title', $listDirn, $listOrder); ?>
+				</th>
+                <th width="10%">
+					<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_ACCESS', 'a.access', $listDirn, $listOrder); ?>
+				</th>
                 <?php } ?>
                 <?php if (isset($this->items[0]->ordering)) { ?>
 				<th width="10%">
@@ -87,8 +98,7 @@ $saveOrder	= $listOrder == 'a.ordering';
 		<tbody>
 		<?php foreach ($this->items as $i => $item) :
 			$ordering	= ($listOrder == 'a.ordering');
-			$canCreate	= $user->authorise('core.create',		'com_easysdi_core.category.'.$item->catid);
-			$canEdit	= $user->authorise('core.edit',			'com_easysdi_core.user'.$item->id);
+			$canEdit	= $user->authorise('core.edit',			'com_easysdi_core.user'.$item->id) && $user->authorise('core.edit',			'com_easysdi_core.category'.$item->catid);
 			$canCheckin	= $user->authorise('core.manage',		'com_checkin') || $item->checked_out == $userId || $item->checked_out == 0;
 			$canEditOwn	= $user->authorise('core.edit.own',		'com_easysdi_core.user.'.$item->id) && $item->created_by == $userId;
 			$canChange	= $user->authorise('core.edit.state',	'com_easysdi_core.user.'.$item->id) && $canCheckin;
@@ -108,7 +118,7 @@ $saveOrder	= $listOrder == 'a.ordering';
 					<?php if ($item->checked_out) : ?>
 						<?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'contacts.', $canCheckin); ?>
 					<?php endif; ?>
-					<?php if ($canEdit || $canEditOwn) : ?>
+					<?php if ($canEdit || $canEditOwn || $canCheckin) : ?>
 						<a href="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=user.edit&id='.$item->id);?>"><?php echo $this->escape($item->alias);?></a>
 					<?php else : ?>
 						<?php echo $this->escape($item->alias); ?>
@@ -121,6 +131,12 @@ $saveOrder	= $listOrder == 'a.ordering';
 					    <?php echo JHtml::_('jgrid.published', $item->state, $i, 'users.', $canChange, 'cb'); ?>
 				    </td>
                 <?php } ?>
+                <td align="center">
+					<?php echo $item->category_title; ?>
+				</td>
+                <td align="center">
+					<?php echo $item->access_level; ?>
+				</td>
                 <?php if (isset($this->items[0]->ordering)) { ?>
 				    <td class="order">
 					    <?php if ($canChange) : ?>

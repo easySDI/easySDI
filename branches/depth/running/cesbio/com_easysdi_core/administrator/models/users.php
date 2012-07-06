@@ -45,6 +45,7 @@ class Easysdi_coreModelusers extends JModelList
                 'notificationrequesttreatment', 'a.notificationrequesttreatment',
                 'catid', 'a.catid',
                 'params', 'a.params',
+            	'access', 'a.access', 'access_level',
 
             );
         }
@@ -66,10 +67,19 @@ class Easysdi_coreModelusers extends JModelList
 		// Load the filter state.
 		$search = $app->getUserStateFromRequest($this->context.'.filter.search', 'filter_search');
 		$this->setState('filter.search', $search);
+		
+		$access = $this->getUserStateFromRequest($this->context.'.filter.access', 'filter_access', 0, 'int');
+		$this->setState('filter.access', $access);
 
 		$published = $app->getUserStateFromRequest($this->context.'.filter.state', 'filter_published', '', 'string');
 		$this->setState('filter.state', $published);
+		
+		$categoryId = $this->getUserStateFromRequest($this->context.'.filter.category_id', 'filter_category_id');
+		$this->setState('filter.category_id', $categoryId);
 
+		$published = $this->getUserStateFromRequest($this->context.'.filter.published', 'filter_published', '');
+		$this->setState('filter.published', $published);
+		
 		// Load the parameters.
 		$params = JComponentHelper::getParams('com_easysdi_core');
 		$this->setState('params', $params);
@@ -94,6 +104,9 @@ class Easysdi_coreModelusers extends JModelList
 		// Compile the store id.
 		$id.= ':' . $this->getState('filter.search');
 		$id.= ':' . $this->getState('filter.state');
+		$id	.= ':'. $this->getState('filter.published');
+		$id	.= ':'. $this->getState('filter.category_id');
+		$id	.= ':'. $this->getState('filter.access');
 
 		return parent::getStoreId($id);
 	}
@@ -106,9 +119,11 @@ class Easysdi_coreModelusers extends JModelList
 	 */
 	protected function getListQuery()
 	{
+		
 		// Create a new query object.
 		$db		= $this->getDbo();
 		$query	= $db->getQuery(true);
+		$user	= JFactory::getUser();
 
 		// Select the required fields from the table.
 		$query->select(
@@ -124,8 +139,14 @@ class Easysdi_coreModelusers extends JModelList
         $query->select('uc.name AS editor');
         $query->join('LEFT', '#__users AS uc ON uc.id=a.checked_out');
         
+        // Join over the asset groups.
+        $query->select('ag.title AS access_level');
+        $query->join('LEFT', '#__viewlevels AS ag ON ag.id = a.access');
 
-
+        // Join over the categories.
+        $query->select('c.title AS category_title');
+        $query->join('LEFT', '#__categories AS c ON c.id = a.catid');
+        
         // Filter by published state
         $published = $this->getState('filter.state');
         if (is_numeric($published)) {
@@ -134,6 +155,37 @@ class Easysdi_coreModelusers extends JModelList
             $query->where('(a.state IN (0, 1))');
         }
         
+        // Filter by access level.
+        if ($access = $this->getState('filter.access')) {
+        	$query->where('a.access = ' . (int) $access);
+        }
+        
+        // Implement View Level Access
+        if (!$user->authorise('core.admin'))
+        {
+        	$groups	= implode(',', $user->getAuthorisedViewLevels());
+        	$query->where('a.access IN ('.$groups.')');
+        }
+        
+        // Filter by published state
+        $published = $this->getState('filter.published');
+        if (is_numeric($published)) {
+        	$query->where('a.state = ' . (int) $published);
+        }
+        elseif ($published === '') {
+        	$query->where('(a.state = 0 OR a.state = 1)');
+        }
+        
+        // Filter by a single or group of categories.
+        $categoryId = $this->getState('filter.category_id');
+        if (is_numeric($categoryId)) {
+        	$query->where('a.catid = '.(int) $categoryId);
+        }
+        elseif (is_array($categoryId)) {
+        	JArrayHelper::toInteger($categoryId);
+        	$categoryId = implode(',', $categoryId);
+        	$query->where('a.catid IN ('.$categoryId.')');
+        }
 
 		// Filter by search in title
 		$search = $this->getState('filter.search');
@@ -146,6 +198,8 @@ class Easysdi_coreModelusers extends JModelList
 			}
 		}
 
+		
+		
 		// Add the list ordering clause.
 		$orderCol	= $this->state->get('list.ordering');
 		$orderDirn	= $this->state->get('list.direction');

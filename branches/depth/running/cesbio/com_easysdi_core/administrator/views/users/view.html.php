@@ -53,7 +53,7 @@ class Easysdi_coreViewUsers extends JView
 		require_once JPATH_COMPONENT.DS.'helpers'.DS.'easysdi_core.php';
 
 		$state	= $this->get('State');
-		$canDo	= Easysdi_coreHelper::getActions($state->get('filter.category_id'),null, null);
+		$canDo	= Easysdi_coreHelper::getActions($state->get('filter.category_id'),null);
 		
 		JToolBarHelper::title(JText::_('COM_EASYSDI_CORE_TITLE_USERS'), 'user.png');
 
@@ -95,10 +95,10 @@ class Easysdi_coreViewUsers extends JView
         if (isset($this->items[0]->state)) {
 		    if ($state->get('filter.state') == -2 && $canDo->get('core.delete')) {
 			    JToolBarHelper::deleteList('', 'users.delete','JTOOLBAR_EMPTY_TRASH');
-			    JToolBarHelper::divider();
+			    
 		    } else if ($canDo->get('core.edit.state')) {
 			    JToolBarHelper::trash('users.trash','JTOOLBAR_TRASH');
-			    JToolBarHelper::divider();
+			   
 		    }
         }
 
