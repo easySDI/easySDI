@@ -272,10 +272,10 @@ foreach ($this->xml->config as $config) {
 			</table>
 		</fieldset>
 	<fieldset class="adminform"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_IMAGE_SIZE'); ?>
-	<a class="modal" href="./index.php?option=com_easysdi_proxy&tmpl=component&task=helpImageSize" rel="{handler:'iframe',size:{x:600,y:180}}"> 
-			<img class="helpTemplate" 
-				 src="../templates/easysdi/icons/silk/help.png" 
-				 alt="<?php echo JText::_("COM_EASYSDI_SERVICE_GEOGRAPHIC_FILTER_QUERY_TEMPLATE") ?>" 
+	<a class="modal" href="./index.php?option=com_easysdi_service&tmpl=component&view=policy.helpImageSize" rel="{handler:'iframe',size:{x:600,y:180}}"> 
+			<img 
+				 src="components/com_easysdi_service/assets/images/s_help.png"
+				 alt="<?php echo JText::_(  'EASYSDI_HELP_IMAGE_SIZE_CONTENT' ); ?>" 
 				 />
 		</a></legend>
 		<table class="admintable">

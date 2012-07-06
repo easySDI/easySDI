@@ -481,4 +481,6 @@ class Easysdi_serviceViewPolicy extends JView
 		</fieldset>
 		<?php 
 	}
+	
+	
 }
