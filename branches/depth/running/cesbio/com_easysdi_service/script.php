@@ -19,6 +19,20 @@ class com_easysdi_serviceInstallerScript
 	 * If preflight returns false, Joomla will abort the update and undo everything already done.
 	 */
 	function preflight( $type, $parent ) {
+		$jversion = new JVersion();
+		
+		// Installing component manifest file version
+		$this->release = $parent->get( "manifest" )->version;
+		
+		// Manifest file minimum Joomla version
+		$this->minimum_joomla_release = $parent->get( "manifest" )->attributes()->version;
+		
+		// Show the essential information at the install/update back-end
+		echo '<p>EasySDI Service [com_easysdi_service]';
+		echo '<br />Installing component manifest file version = ' . $this->release;
+		echo '<br />Current manifest cache commponent version = ' . $this->getParam('version');
+		echo '<br />Installing component manifest file minimum Joomla version = ' . $this->minimum_joomla_release;
+		echo '<br />Current Joomla version = ' . $jversion->getShortVersion();
 		
 		echo '<p>' . JText::_('COM_EASYSDI_SERVICE_PREFLIGHT_SCRIPT') . '</p>';
 	}
@@ -132,10 +146,14 @@ class com_easysdi_serviceInstallerScript
 	 * uninstall runs before any other action is taken (file removal or database processing).
 	 */
 	function uninstall( $parent ) {
-		
 		//EasySDI control Panel form cleaning
 		$form_dom = new DomDocument();
-		$form_dom->load(JPATH_ADMINISTRATOR.'/components/com_easysdi_core/models/forms/easysdi.xml');
+		if(!$form_dom->load(JPATH_ADMINISTRATOR.'/components/com_easysdi_core/models/forms/easysdi.xml'))
+		{
+			//EasySDI core must be uninstalled...
+			echo '<p>' . JText::_('COM_EASYSDI_SERVICE_UNINSTALL_SCRIPT ') . '</p>';
+			return;
+		}
 		$form_fields = $form_dom->getElementsByTagName('fields')->item(0);
 		$form_fieldsets = $form_fields->getElementsByTagName('fieldset');
 		$nodeToRemove= null;
@@ -150,7 +168,12 @@ class com_easysdi_serviceInstallerScript
 		
 		//EasySDI configuration form cleaning
 		$core_dom = new DomDocument();
-		$core_dom->load(JPATH_ADMINISTRATOR.'/components/com_easysdi_core/config.xml');
+		if(!$core_dom->load(JPATH_ADMINISTRATOR.'/components/com_easysdi_core/config.xml'))
+		{
+			//EasySDI core must be uninstalled...
+			echo '<p>' . JText::_('COM_EASYSDI_SERVICE_UNINSTALL_SCRIPT ') . '</p>';
+			return;
+		}
 		$service_dom = new DomDocument();
 		$service_dom->load(JPATH_ADMINISTRATOR.'/components/com_easysdi_service/config.xml');
 			

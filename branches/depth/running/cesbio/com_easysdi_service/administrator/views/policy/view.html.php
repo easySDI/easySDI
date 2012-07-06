@@ -57,7 +57,7 @@ class Easysdi_serviceViewPolicy extends JView
 		
 		
 		//Get users
-		$db->setQuery( "SELECT #__users.username as value, #__users.name as text FROM #__users INNER JOIN #__sdi_user ON  #__users.id = #__sdi_user.user_id ORDER BY text" );
+		$db->setQuery( "SELECT #__users.username as value, #__users.name as text FROM #__users INNER JOIN #__sdi_user ON  #__users.id = #__sdi_user.user_id WHERE #__users.block = 0 AND #__users.activation = 0 ORDER BY text" );
 		$this->rowsUser = $db->loadObjectList();
 		echo $db->getErrorMsg();
 		

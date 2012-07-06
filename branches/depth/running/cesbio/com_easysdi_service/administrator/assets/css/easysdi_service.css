@@ -25,6 +25,20 @@
 	
 }
 
+.errornegotiation{
+	
+	width: 200px;
+	height:15px;
+	float:left;
+	color: #FF0000;
+    font-weight: bold;
+    text-align: center;
+    -moz-border-radius: 8px;
+	border-radius: 8px;
+	margin-top:5px;
+	
+}
+
 .div-supportedversions{
 	position:relative
 }

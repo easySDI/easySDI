@@ -73,15 +73,28 @@ var request;
 	    if(request.readyState == 4){
 	    	document.getElementById("progress").style.visibility = "hidden";
 			var JSONtext = request.responseText;
+			if(JSONtext == "[]"){
+				dv=document.createElement('div');
+		    	dv.className = "errornegotiation";
+		    	txt=document.createTextNode('<?php echo JText::_('COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_NEGOTIATION_ERROR'); ?>');
+		    	dv.appendChild(txt);
+		    	document.getElementById('div-supportedversions').appendChild(dv);
+				document.getElementById('jform_compliance').value = "";
+				return;
+			}
 			var arrcompliance=new Array();
 			document.getElementById('div-supportedversions').innerHTML = '';
 			var JSONobject = JSON.parse(JSONtext, function (key, value) {
 				var type;
+
 			    if(key && typeof key === 'string' && key == 'ERROR'){
 			    	dv=document.createElement('div');
+			    	dv.className = "errornegotiation";
 			    	txt=document.createTextNode(value);
 			    	dv.appendChild(txt);
 			    	document.getElementById('div-supportedversions').appendChild(dv);
+			    	document.getElementById('jform_compliance').value = "";
+					return;
 			    }
 			    if (value && typeof value === 'string') {
 			    	dv=document.createElement('div');
@@ -95,6 +108,8 @@ var request;
 			});
 			if(arrcompliance.length >0)
 				document.getElementById('jform_compliance').value = JSON.stringify(arrcompliance);
+			else
+				document.getElementById('jform_compliance').value = "";
 	    }
 	}
 </script>
