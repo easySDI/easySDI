@@ -55,7 +55,7 @@ class Easysdi_coreViewUsers extends JView
 		$state	= $this->get('State');
 		$canDo	= Easysdi_coreHelper::getActions($state->get('filter.category_id'),null, null);
 		
-		JToolBarHelper::title(JText::_('COM_EASYSDI_CORE_TITLE_USERS'), 'users.png');
+		JToolBarHelper::title(JText::_('COM_EASYSDI_CORE_TITLE_USERS'), 'user.png');
 
         //Check if the form exists before showing the add/edit buttons
         $formPath = JPATH_COMPONENT_ADMINISTRATOR.DS.'views'.DS.'user';
