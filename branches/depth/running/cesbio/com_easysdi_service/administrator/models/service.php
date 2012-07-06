@@ -37,6 +37,54 @@ class Easysdi_serviceModelservice extends JModelAdmin
 	{
 		return JTable::getInstance($type, $prefix, $config);
 	}
+	
+	/**
+	 * Method to test whether a record can be deleted.
+	 *
+	 * @param	object	$record	A record object.
+	 *
+	 * @return	boolean	True if allowed to delete the record. Defaults to the permission set in the component.
+	 * @since	1.6
+	 */
+	protected function canDelete($record)
+	{
+		$user = JFactory::getUser();
+	
+		if (!empty($record->id)) {
+			if ($record->state != -2) {
+				return ;
+			}
+			if (!empty($record->catid)) {
+				return $user->authorise('core.delete', 'com_easysdi_service.category.'.(int) $record->catid);
+			}
+			// Default to component settings if category not known.
+			else {
+				return parent::canDelete($record);
+			}
+		}
+	}
+	
+	/**
+	 * Method to test whether a record can have its state edited.
+	 *
+	 * @param	object	$record	A record object.
+	 *
+	 * @return	boolean	True if allowed to change the state of the record. Defaults to the permission set in the component.
+	 * @since	1.6
+	 */
+	protected function canEditState($record)
+	{
+		$user = JFactory::getUser();
+	
+		// Check against the category.
+		if (!empty($record->catid)) {
+			return $user->authorise('core.edit.state', 'com_easysdi_service.category.'.(int) $record->catid);
+		}
+		// Default to component settings if category not known.
+		else {
+			return parent::canEditState($record);
+		}
+	}
 
 	/**
 	 * Method to get the record form.
