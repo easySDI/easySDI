@@ -49,9 +49,8 @@ class Easysdi_serviceModelservices extends JModelList
                 'servicepassword', 'a.servicepassword',
                 'catid', 'a.catid',
                 'params', 'a.params',
-                'access', 'a.access',
                 'asset_id', 'a.asset_id',
-
+            	'access', 'a.access', 'access_level',
             );
         }
 
@@ -72,9 +71,18 @@ class Easysdi_serviceModelservices extends JModelList
 		// Load the filter state.
 		$search = $app->getUserStateFromRequest($this->context.'.filter.search', 'filter_search');
 		$this->setState('filter.search', $search);
+		
+		$access = $this->getUserStateFromRequest($this->context.'.filter.access', 'filter_access', 0, 'int');
+		$this->setState('filter.access', $access);
 
 		$published = $app->getUserStateFromRequest($this->context.'.filter.state', 'filter_published', '', 'string');
 		$this->setState('filter.state', $published);
+		
+		$categoryId = $this->getUserStateFromRequest($this->context.'.filter.category_id', 'filter_category_id');
+		$this->setState('filter.category_id', $categoryId);
+		
+		$published = $this->getUserStateFromRequest($this->context.'.filter.published', 'filter_published', '');
+		$this->setState('filter.published', $published);
 
 		// Load the parameters.
 		$params = JComponentHelper::getParams('com_easysdi_service');
@@ -100,6 +108,9 @@ class Easysdi_serviceModelservices extends JModelList
 		// Compile the store id.
 		$id.= ':' . $this->getState('filter.search');
 		$id.= ':' . $this->getState('filter.state');
+		$id	.= ':'. $this->getState('filter.published');
+		$id	.= ':'. $this->getState('filter.category_id');
+		$id	.= ':'. $this->getState('filter.access');
 
 		return parent::getStoreId($id);
 	}
@@ -115,6 +126,7 @@ class Easysdi_serviceModelservices extends JModelList
 		// Create a new query object.
 		$db		= $this->getDbo();
 		$query	= $db->getQuery(true);
+		$user	= JFactory::getUser();
 
 		// Select the required fields from the table.
 		$query->select(
@@ -129,6 +141,14 @@ class Easysdi_serviceModelservices extends JModelList
         // Join over the users for the checked out user.
         $query->select('uc.name AS editor');
         $query->join('LEFT', '#__users AS uc ON uc.id=a.checked_out');
+        
+        // Join over the asset groups.
+        $query->select('ag.title AS access_level');
+        $query->join('LEFT', '#__viewlevels AS ag ON ag.id = a.access');
+        
+        // Join over the categories.
+        $query->select('c.title AS category_title');
+        $query->join('LEFT', '#__categories AS c ON c.id = a.catid');
         
         // Join over the foreign key 'serviceconnector_id'
         $query->select('#__sdi_sys_serviceconnector.value AS serviceconnector_value');
@@ -151,7 +171,38 @@ class Easysdi_serviceModelservices extends JModelList
             $query->where('(a.state IN (0, 1))');
         }
         
-
+        // Filter by access level.
+        if ($access = $this->getState('filter.access')) {
+        	$query->where('a.access = ' . (int) $access);
+        }
+        
+        // Implement View Level Access
+        if (!$user->authorise('core.admin'))
+        {
+        	$groups	= implode(',', $user->getAuthorisedViewLevels());
+        	$query->where('a.access IN ('.$groups.')');
+        }
+        
+        // Filter by published state
+        $published = $this->getState('filter.published');
+        if (is_numeric($published)) {
+        	$query->where('a.state = ' . (int) $published);
+        }
+        elseif ($published === '') {
+        	$query->where('(a.state = 0 OR a.state = 1)');
+        }
+        
+        // Filter by a single or group of categories.
+        $categoryId = $this->getState('filter.category_id');
+        if (is_numeric($categoryId)) {
+        	$query->where('a.catid = '.(int) $categoryId);
+        }
+        elseif (is_array($categoryId)) {
+        	JArrayHelper::toInteger($categoryId);
+        	$categoryId = implode(',', $categoryId);
+        	$query->where('a.catid IN ('.$categoryId.')');
+        }
+        
 		// Filter by search in title
 		$search = $this->getState('filter.search');
 		if (!empty($search)) {

@@ -34,14 +34,18 @@ $saveOrder	= $listOrder == 'a.ordering';
 			<button type="button" onclick="document.id('filter_search').value='';this.form.submit();"><?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?></button>
 		</div>
 		<div class="filter-select fltrt">
-
-            
-                <select name="filter_published" class="inputbox" onchange="this.form.submit()">
-                    <option value=""><?php echo JText::_('JOPTION_SELECT_PUBLISHED');?></option>
-                    <?php echo JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'), "value", "text", $this->state->get('filter.state'), true);?>
-                </select>
-                
-
+			<select name="filter_published" class="inputbox" onchange="this.form.submit()">
+				<option value=""><?php echo JText::_('JOPTION_SELECT_PUBLISHED');?></option>
+				<?php echo JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'), 'value', 'text', $this->state->get('filter.state'), true);?>
+			</select>
+			<select name="filter_category_id" class="inputbox" onchange="this.form.submit()">
+				<option value=""><?php echo JText::_('JOPTION_SELECT_CATEGORY');?></option>
+				<?php echo JHtml::_('select.options', JHtml::_('category.options', 'com_easysdi_service'), 'value', 'text', $this->state->get('filter.category_id'));?>
+			</select>
+            <select name="filter_access" class="inputbox" onchange="this.form.submit()">
+				<option value=""><?php echo JText::_('JOPTION_SELECT_ACCESS');?></option>
+				<?php echo JHtml::_('select.options', JHtml::_('access.assetgroups'), 'value', 'text', $this->state->get('filter.access'));?>
+			</select>
 		</div>
 	</fieldset>
 	<div class="clr"> </div>
@@ -69,19 +73,12 @@ $saveOrder	= $listOrder == 'a.ordering';
 					<?php echo JHtml::_('grid.sort',  'JPUBLISHED', 'a.state', $listDirn, $listOrder); ?>
 				</th>
                 <?php } ?>
-                <?php if (isset($this->items[0]->ordering)) { ?>
-				<th width="10%">
-					<?php echo JHtml::_('grid.sort',  'JGRID_HEADING_ORDERING', 'a.ordering', $listDirn, $listOrder); ?>
-					<?php if ($canOrder && $saveOrder) :?>
-						<?php echo JHtml::_('grid.order',  $this->items, 'filesave.png', 'services.saveorder'); ?>
-					<?php endif; ?>
+                <th width="10%">
+					<?php echo JHtml::_('grid.sort', 'JCATEGORY', 'category_title', $listDirn, $listOrder); ?>
 				</th>
-                <?php } ?>
-                <?php if (isset($this->items[0]->id)) { ?>
-                <th width="1%" class="nowrap">
-                    <?php echo JHtml::_('grid.sort',  'JGRID_HEADING_ID', 'a.id', $listDirn, $listOrder); ?>
-                </th>
-                <?php } ?>
+                <th width="10%">
+					<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_ACCESS', 'a.access', $listDirn, $listOrder); ?>
+				</th>
 			</tr>
 		</thead>
 		<tfoot>
@@ -99,6 +96,7 @@ $saveOrder	= $listOrder == 'a.ordering';
 			$canCheckin	= $user->authorise('core.manage',		'com_checkin') || $item->checked_out == $userId || $item->checked_out == 0;
 			$canEditOwn	= $user->authorise('core.edit.own',		'com_easysdi_service.service.'.$item->id) && $item->created_by == $userId;
 			$canChange	= $user->authorise('core.edit.state',	'com_easysdi_service.service.'.$item->id) && $canCheckin;
+			
 			?>
 			<tr class="row<?php echo $i % 2; ?>">
 				<td class="center">
@@ -128,30 +126,13 @@ $saveOrder	= $listOrder == 'a.ordering';
 					    <?php echo JHtml::_('jgrid.published', $item->state, $i, 'services.', $canChange, 'cb'); ?>
 				    </td>
                 <?php } ?>
-                <?php if (isset($this->items[0]->ordering)) { ?>
-				    <td class="order">
-					    <?php if ($canChange) : ?>
-						    <?php if ($saveOrder) :?>
-							    <?php if ($listDirn == 'asc') : ?>
-								    <span><?php echo $this->pagination->orderUpIcon($i, true, 'services.orderup', 'JLIB_HTML_MOVE_UP', $ordering); ?></span>
-								    <span><?php echo $this->pagination->orderDownIcon($i, $this->pagination->total, true, 'services.orderdown', 'JLIB_HTML_MOVE_DOWN', $ordering); ?></span>
-							    <?php elseif ($listDirn == 'desc') : ?>
-								    <span><?php echo $this->pagination->orderUpIcon($i, true, 'services.orderdown', 'JLIB_HTML_MOVE_UP', $ordering); ?></span>
-								    <span><?php echo $this->pagination->orderDownIcon($i, $this->pagination->total, true, 'services.orderup', 'JLIB_HTML_MOVE_DOWN', $ordering); ?></span>
-							    <?php endif; ?>
-						    <?php endif; ?>
-						    <?php $disabled = $saveOrder ?  '' : 'disabled="disabled"'; ?>
-						    <input type="text" name="order[]" size="5" value="<?php echo $item->ordering;?>" <?php echo $disabled ?> class="text-area-order" />
-					    <?php else : ?>
-						    <?php echo $item->ordering; ?>
-					    <?php endif; ?>
-				    </td>
-                <?php } ?>
-                <?php if (isset($this->items[0]->id)) { ?>
-				<td class="center">
-					<?php echo (int) $item->id; ?>
+                <td align="center">
+					<?php echo $item->category_title; ?>
 				</td>
-                <?php } ?>
+                <td align="center">
+					<?php echo $item->access_level; ?>
+				</td>
+               
 			</tr>
 			<?php endforeach; ?>
 		</tbody>
