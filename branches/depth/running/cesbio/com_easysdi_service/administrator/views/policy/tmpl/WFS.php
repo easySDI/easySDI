@@ -335,7 +335,7 @@ foreach ($this->xml->config as $config) {
 				<tr>
 					<th><b><?php echo JText::_( 'COM_EASYSDI_SERVICE_FEATURETYPE_NAME'); ?></b></th>
 					<th><b><?php echo JText::_( 'COM_EASYSDI_SERVICE_FILTERED_ATTRIBUTES_LABEL'); ?></b>
-					<a class="modal" href="./index.php?option=com_easysdi_proxy&tmpl=component&task=helpAttributeFilter" rel="{handler:'iframe',size:{x:600,y:190}}"> 	
+					<a class="modal" href="./index.php?option=com_easysdi_service&tmpl=component&view=policy&layout=helpAttributeFilter" rel="{handler:'iframe',size:{x:600,y:190}}"> 	
 						<img class="helpTemplate" 
 						     src="components/com_easysdi_service/assets/images/s_help.png" 
 							 alt="<?php echo JText::_("COM_EASYSDI_SERVICE_GEOGRAPHIC_FILTER_QUERY_TEMPLATE") ?>" 
@@ -343,7 +343,7 @@ foreach ($this->xml->config as $config) {
 							  />	
 					</a></th>
 					<th><b><?php echo JText::_( 'COM_EASYSDI_SERVICE_GEOGRAPHIC_FILTER_ON_QUERY'); ?></b>
-					<a class="modal" href="./index.php?option=com_easysdi_proxy&tmpl=component&task=helpQueryTemplate&filter_type=filterQuery" rel="{handler:'iframe',size:{x:600,y:290}}"> 	
+					<a class="modal" href=./index.php?option=com_easysdi_service&tmpl=component&view=policy&layout=helpQueryTemplate&filter_type=filterQuery" rel="{handler:'iframe',size:{x:600,y:290}}"> 	
 						<img class="helpTemplate" 
 						     src="components/com_easysdi_service/assets/images/s_help.png" 
 							 alt="<?php echo JText::_("COM_EASYSDI_SERVICE_GEOGRAPHIC_FILTER_QUERY_TEMPLATE") ?>" 
@@ -353,7 +353,7 @@ foreach ($this->xml->config as $config) {
 					</th>
 					
 					<th><b><?php echo JText::_( 'COM_EASYSDI_SERVICE_GEOGRAPHIC_FILTER_ON_ANSWER'); ?></b>
-					<a class="modal" href="./index.php?option=com_easysdi_proxy&tmpl=component&task=helpQueryTemplate&filter_type=filterAnswer" rel="{handler:'iframe',size:{x:600,y:320}}"> 
+					<a class="modal" href="./index.php?option=com_easysdi_service&tmpl=component&view=policy&layout=helpQueryTemplate&filter_type=filterAnswer" rel="{handler:'iframe',size:{x:600,y:320}}"> 
 						<img class="helpTemplate" 
 							  src="components/com_easysdi_service/assets/images/s_help.png" 
 							 alt="<?php echo JText::_("COM_EASYSDI_SERVICE_GEOGRAPHIC_FILTER_QUERY_TEMPLATE") ?>" 

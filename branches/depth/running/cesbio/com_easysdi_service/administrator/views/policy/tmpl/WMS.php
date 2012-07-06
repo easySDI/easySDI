@@ -272,7 +272,7 @@ foreach ($this->xml->config as $config) {
 			</table>
 		</fieldset>
 	<fieldset class="adminform"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_IMAGE_SIZE'); ?>
-	<a class="modal" href="./index.php?option=com_easysdi_service&tmpl=component&view=policy.helpImageSize" rel="{handler:'iframe',size:{x:600,y:180}}"> 
+	<a class="modal" href="./index.php?option=com_easysdi_service&tmpl=component&view=policy&layout=helpImageSize" rel="{handler:'iframe',size:{x:600,y:180}}"> 
 			<img 
 				 src="components/com_easysdi_service/assets/images/s_help.png"
 				 alt="<?php echo JText::_(  'EASYSDI_HELP_IMAGE_SIZE_CONTENT' ); ?>" 
@@ -393,7 +393,7 @@ foreach ($this->xml->config as $config) {
 				<th><b><?php echo JText::_( 'COM_EASYSDI_SERVICE_SCALE_MIN'); ?></b></th>
 				<th><b><?php echo JText::_( 'COM_EASYSDI_SERVICE_SCALE_MAX'); ?></b></th>
 				<th><b><?php echo JText::_( 'COM_EASYSDI_SERVICE_GEOGRAPHIC_FILTER'); ?></b>
-				<a class="modal" href="./index.php?option=com_easysdi_proxy&tmpl=component&task=helpQueryWMSTemplate" rel="{handler:'iframe',size:{x:600,y:280}}"> 
+				<a class="modal" href="./index.php?option=com_easysdi_service&tmpl=component&view=policy&layout=helpQueryWMSTemplate" rel="{handler:'iframe',size:{x:600,y:280}}"> 
 					<img class="helpTemplate" 
 						 src="components/com_easysdi_service/assets/images/s_help.png" 
 						 alt="<?php echo JText::_("COM_EASYSDI_SERVICE_GEOGRAPHIC_FILTER_QUERY_TEMPLATE") ?>" 

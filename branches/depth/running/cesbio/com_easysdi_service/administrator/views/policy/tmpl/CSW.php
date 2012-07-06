@@ -438,8 +438,8 @@ foreach ($this->xml->config as $config) {
 					<?php echo JText::_( 'COM_EASYSDI_SERVICE_HARVESTED_MD_INCLUDE'); ?>
 					</td>
 					<td >
-					<input type="radio" name="IncludeHarvested" value="true" <?php if($thePolicy->IncludeHarvested != "false") echo "checked"; ?>> <?php echo JText::_( 'CORE_YES'); ?>
-					<input type="radio" name="IncludeHarvested" value="false" <?php if($thePolicy->IncludeHarvested == "false") echo "checked"; ?>> <?php echo JText::_( 'CORE_NO'); ?>
+					<input type="radio" name="IncludeHarvested" value="true" <?php if($thePolicy->IncludeHarvested != "false") echo "checked"; ?> > <?php echo JText::_( 'JYES'); ?>
+					<input type="radio" name="IncludeHarvested" value="false" <?php if($thePolicy->IncludeHarvested == "false") echo "checked"; ?> > <?php echo JText::_( 'JNO'); ?>
 					</td>
 				</tr>
 			</table>
@@ -515,7 +515,10 @@ foreach ($this->xml->config as $config) {
 		?>			
 			<input type="hidden" name="remoteServer<?php echo $iServer;?>"	value="<?php echo $remoteServer->url ?>">
 			
-			<fieldset class="adminform"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_CSW_SERVER'); ?> <?php echo $remoteServer->url ?> <input type="button" value="<?php echo JText::_( 'EASYSDI_ADD NEW PARAM');?>" onClick="addNewMetadataToExclude('nbParam<?php echo $iServer; ?>',<?php echo $iServer; ?>);"></legend>
+			<fieldset class="adminform"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_CSW_SERVER'); ?> <?php echo $remoteServer->url ?> 
+			<input 	type="button" 
+					value="<?php echo JText::_( 'COM_EASYSDI_SERVICE_ADD_NEW_PARAM');?>" 
+					onClick="addNewMetadataToExclude('nbParam<?php echo $iServer; ?>',<?php echo $iServer; ?>);"></legend>
 				<table  class="admintable">
 				<thead>
 					<tr>

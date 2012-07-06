@@ -299,7 +299,7 @@ foreach ($this->xml->config as $config) {
 			<input type="hidden" name="capaServer@<?php echo $iServer;?>" id="capaServer@<?php echo $iServer;?>" value="<?php echo $tmpName; ?>">
 			<input type="hidden" name="remoteServer<?php echo $iServer;?>" id="remoteServer<?php echo $iServer;?>" value="<?php echo $remoteServer->url ;?>">
 			<fieldset class="adminform" id="fsServer<?php echo $iServer;?>" >
-				<legend><?php echo JText::_( 'PROXY_CONFOG_WMTS_SERVER'); ?> <?php echo $remoteServer->alias ;?> (<?php echo $remoteServer->url; ?>)</legend>
+				<legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_WMTS_SERVER'); ?> <?php echo $remoteServer->alias ;?> (<?php echo $remoteServer->url; ?>)</legend>
 				<table  width ="100%"  class="admintable" id="remoteServerTable@<?php echo $iServer; ?>" <?php if (strcasecmp($thePolicy->Servers['All'],'True')==0 ) echo "style='display:none'"; ?>>
 					<tr>
 						<td colspan="1">
