@@ -46,7 +46,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "Subjects")
 public class Subjects implements Serializable {
 
-	@XmlElement(name = "Role")
+	@XmlElement(name = "Group")
 	protected List<String> role;
 	@XmlElement(name = "User")
 	protected List<String> user;

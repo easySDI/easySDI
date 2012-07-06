@@ -20,6 +20,7 @@ import java.lang.reflect.Method;
 import java.security.NoSuchAlgorithmException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -57,196 +58,219 @@ public class JoomlaProvider implements AuthenticationProvider, UserDetailsServic
     public JdbcTemplate sjt = null;
 
     public JoomlaProvider() {
-	super();
+    	super();
     }
 
     public DataSource getDataSource() {
-	return dataSource;
+    	return dataSource;
     }
 
     public void setDataSource(DataSource dataSource) {
-	this.dataSource = dataSource;
-	sjt = new JdbcTemplate(dataSource);
+		this.dataSource = dataSource;
+		sjt = new JdbcTemplate(dataSource);
     }
 
     private String prefix;
 
     public String getPrefix() {
-	return prefix;
+    	return prefix;
     }
 
     public void setPrefix(String prefix) {
-	this.prefix = prefix;
+    	this.prefix = prefix;
     }
 
     private String version;
 
     public void setVersion(String version) {
-	if (version != null)
-	    version = version.replaceAll("\\.", "");
-
-	this.version = version;
+		if (version != null)
+		    version = version.replaceAll("\\.", "");
+	
+		this.version = version;
     }
 
     public String getVersion() {
-	return version;
+    	return version;
     }
 
     public UserDetails loadUserByUsername(String username) {
-	String sql="";
-	JoomlaUser user = null;
-	if(getVersion()== null || Integer.parseInt(getVersion())<200)
-	{
-	    sql = "select u.* from " + getPrefix() + "easysdi_community_partner p join " + getPrefix()
-	    + "users u on (p.user_id = u.id) where username = ? and block = 0";
-	}
-	else if (Integer.parseInt(getVersion()) >= 200 && Integer.parseInt(getVersion()) < 300)
-	{
-	    sql = "select u.* from " + getPrefix() + "sdi_account a join " + getPrefix()
-	    + "users u on (a.user_id = u.id) where username = ? and block = 0";
-	}
-	else
-	{
-		 sql = "select u.* from " + getPrefix() + "sdi_user a join " + getPrefix()
-				    + "users u on (a.user_id = u.id) where username = ? and block = 0";
-	}
-
-	try {
-	    user = sjt.queryForObject(sql, new UserMapper(), username);
-	}catch (DataAccessException e) {
-	} 
-	return user;
+		String sql="";
+		JoomlaUser user = null;
+		if(getVersion()== null || Integer.parseInt(getVersion())<200)
+		{
+		    sql = "select u.* from " + getPrefix() + "easysdi_community_partner p join " + getPrefix()
+		    + "users u on (p.user_id = u.id) where username = ? and block = 0";
+		}
+		else if (Integer.parseInt(getVersion()) >= 200 && Integer.parseInt(getVersion()) < 300)
+		{
+		    sql = "select u.* from " + getPrefix() + "sdi_account a join " + getPrefix()
+		    + "users u on (a.user_id = u.id) where username = ? and block = 0";
+		}
+		else
+		{
+			 sql = "select u.* from " + getPrefix() + "sdi_user a join " + getPrefix()
+					    + "users u on (a.user_id = u.id) where username = ? and block = 0";
+		}
+	
+		try {
+		    user = sjt.queryForObject(sql, new UserMapper(), username);
+		}catch (DataAccessException e) {
+		} 
+		return user;
     }
 
     private Collection<GrantedAuthority> getAuthorities(String username)  {
-	Method m;
-	String sql = "";
-	List<GrantedAuthority> authList = null;
-	if(getVersion()== null || Integer.parseInt(getVersion())<200)
-	{
-	    sql = "SELECT " + getPrefix() + "easysdi_community_role.role_name as role FROM " + getPrefix() + "easysdi_community_role Inner Join "
-	    + getPrefix() + "easysdi_map_profile_role ON " + getPrefix() + "easysdi_map_profile_role.id_role = " + getPrefix()
-	    + "easysdi_community_role.role_id Inner Join " + getPrefix() + "easysdi_community_profile ON " + getPrefix()
-	    + "easysdi_map_profile_role.id_prof = " + getPrefix() + "easysdi_community_profile.profile_id Inner Join " + getPrefix()
-	    + "easysdi_community_partner_profile ON " + getPrefix() + "easysdi_community_partner_profile.profile_id = " + getPrefix()
-	    + "easysdi_community_profile.profile_id Inner Join " + getPrefix() + "easysdi_community_partner ON " + getPrefix()
-	    + "easysdi_community_partner_profile.partner_id = " + getPrefix() + "easysdi_community_partner.partner_id Inner Join " + getPrefix()
-	    + "users ON " + getPrefix() + "easysdi_community_partner.user_id = " + getPrefix() + "users.id WHERE " + getPrefix() + "users.username =  ? "
-	    + "UNION SELECT profile_translation as role from " + getPrefix() + "easysdi_community_profile r join " + getPrefix()
-	    + "easysdi_community_partner_profile pr on (pr.profile_id = r.profile_id) join " + getPrefix()
-	    + "easysdi_community_partner p on (p.partner_id = pr.partner_id) join " + getPrefix() + "users u on (u.id = p.user_id) where u.username = ?";
-	    
-	    authList = sjt.query(sql, new ParameterizedRowMapper<GrantedAuthority>() {
-		    public GrantedAuthority mapRow(ResultSet rs, int rowNum) throws SQLException {
-		    								return new GrantedAuthorityImpl(rs.getString("role")); }
-		}, username, username);
-	}
-	else if (Integer.parseInt(getVersion()) >= 200 && Integer.parseInt(getVersion()) < 300)
-	{
-	    sql = "SELECT " + getPrefix()+ "sdi_list_role.code as role FROM " + getPrefix() + "sdi_list_role"
-	    + " Inner Join "+ getPrefix()+ "sdi_actor ON " + getPrefix()+ "sdi_actor.role_id = " + getPrefix() + "sdi_list_role.id" 
-	    + " Inner Join " + getPrefix()+ "sdi_account ON " + getPrefix() + "sdi_account.id = " + getPrefix()+ "sdi_actor.account_id"
-	    + " Inner Join " + getPrefix()+ "users ON " + getPrefix() + "sdi_account.user_id = " + getPrefix() + "users.id"
-	    + " WHERE " + getPrefix() + "users.username =  ? "
-	    + "UNION SELECT r.code as role from " + getPrefix() + "sdi_accountprofile r "
-	    + " join " + getPrefix() + "sdi_account_accountprofile pr on (pr.accountprofile_id = r.id) "
-	    + " join " + getPrefix() + "sdi_account p on (p.id = pr.account_id)"
-	    + " join " + getPrefix() + "users u on (u.id = p.user_id) where u.username = ?";
-	    
-	    authList = sjt.query(sql, new ParameterizedRowMapper<GrantedAuthority>() {
-		    public GrantedAuthority mapRow(ResultSet rs, int rowNum) throws SQLException {
-		    								return new GrantedAuthorityImpl(rs.getString("role")); }
-		}, username, username);
-	}
-	else
-	{
-		sql = "SELECT CAST(" + getPrefix()+ "usergroups.id AS CHAR) as role FROM " + getPrefix() + "usergroups"
-			    + " Inner Join "+ getPrefix()+ "user_usergroup_map ON " + getPrefix()+ "user_usergroup_map.group_id = " + getPrefix() + "usergroups.id" 
-			    + " Inner Join " + getPrefix()+ "users ON " + getPrefix() + "users.id = " + getPrefix()+ "user_usergroup_map.user_id"
-			    + " Inner Join " + getPrefix()+ "sdi_user ON " + getPrefix() + "sdi_user.user_id = " + getPrefix() + "users.id"
-			    + " WHERE " + getPrefix() + "users.username =  ? "
-			    ;
+		Method m;
+		String sql = "";
+		List<GrantedAuthority> authList = null;
+		if(getVersion()== null || Integer.parseInt(getVersion())<200)
+		{
+		    sql = "SELECT " + getPrefix() + "easysdi_community_role.role_name as role FROM " + getPrefix() + "easysdi_community_role Inner Join "
+		    + getPrefix() + "easysdi_map_profile_role ON " + getPrefix() + "easysdi_map_profile_role.id_role = " + getPrefix()
+		    + "easysdi_community_role.role_id Inner Join " + getPrefix() + "easysdi_community_profile ON " + getPrefix()
+		    + "easysdi_map_profile_role.id_prof = " + getPrefix() + "easysdi_community_profile.profile_id Inner Join " + getPrefix()
+		    + "easysdi_community_partner_profile ON " + getPrefix() + "easysdi_community_partner_profile.profile_id = " + getPrefix()
+		    + "easysdi_community_profile.profile_id Inner Join " + getPrefix() + "easysdi_community_partner ON " + getPrefix()
+		    + "easysdi_community_partner_profile.partner_id = " + getPrefix() + "easysdi_community_partner.partner_id Inner Join " + getPrefix()
+		    + "users ON " + getPrefix() + "easysdi_community_partner.user_id = " + getPrefix() + "users.id WHERE " + getPrefix() + "users.username =  ? "
+		    + "UNION SELECT profile_translation as role from " + getPrefix() + "easysdi_community_profile r join " + getPrefix()
+		    + "easysdi_community_partner_profile pr on (pr.profile_id = r.profile_id) join " + getPrefix()
+		    + "easysdi_community_partner p on (p.partner_id = pr.partner_id) join " + getPrefix() + "users u on (u.id = p.user_id) where u.username = ?";
+		    
+		    authList = sjt.query(sql, new ParameterizedRowMapper<GrantedAuthority>() {
+			    public GrantedAuthority mapRow(ResultSet rs, int rowNum) throws SQLException {
+			    								return new GrantedAuthorityImpl(rs.getString("role")); }
+			}, username, username);
+		}
+		else if (Integer.parseInt(getVersion()) >= 200 && Integer.parseInt(getVersion()) < 300)
+		{
+		    sql = "SELECT " + getPrefix()+ "sdi_list_role.code as role FROM " + getPrefix() + "sdi_list_role"
+		    + " Inner Join "+ getPrefix()+ "sdi_actor ON " + getPrefix()+ "sdi_actor.role_id = " + getPrefix() + "sdi_list_role.id" 
+		    + " Inner Join " + getPrefix()+ "sdi_account ON " + getPrefix() + "sdi_account.id = " + getPrefix()+ "sdi_actor.account_id"
+		    + " Inner Join " + getPrefix()+ "users ON " + getPrefix() + "sdi_account.user_id = " + getPrefix() + "users.id"
+		    + " WHERE " + getPrefix() + "users.username =  ? "
+		    + "UNION SELECT r.code as role from " + getPrefix() + "sdi_accountprofile r "
+		    + " join " + getPrefix() + "sdi_account_accountprofile pr on (pr.accountprofile_id = r.id) "
+		    + " join " + getPrefix() + "sdi_account p on (p.id = pr.account_id)"
+		    + " join " + getPrefix() + "users u on (u.id = p.user_id) where u.username = ?";
+		    
+		    authList = sjt.query(sql, new ParameterizedRowMapper<GrantedAuthority>() {
+			    public GrantedAuthority mapRow(ResultSet rs, int rowNum) throws SQLException {
+			    								return new GrantedAuthorityImpl(rs.getString("role")); }
+			}, username, username);
+		}
+		else
+		{
+			sql = "SELECT " + getPrefix()+ "usergroups.id  FROM " + getPrefix() + "usergroups"
+				    + " Inner Join "+ getPrefix()+ "user_usergroup_map ON " + getPrefix()+ "user_usergroup_map.group_id = " + getPrefix() + "usergroups.id" 
+				    + " Inner Join " + getPrefix()+ "users ON " + getPrefix() + "users.id = " + getPrefix()+ "user_usergroup_map.user_id"
+				    + " Inner Join " + getPrefix()+ "sdi_user ON " + getPrefix() + "sdi_user.user_id = " + getPrefix() + "users.id"
+				    + " WHERE " + getPrefix() + "users.username =  ? "
+				    ;
+			int currentGroupId = sjt.queryForInt(sql, new Object[]{username});
+	    	
+			authList = new ArrayList();
+			authList.add(new GrantedAuthorityImpl(String.valueOf(currentGroupId)));
+			GroupHierarchy(currentGroupId, authList);
+			
+			
+//			sql = "SELECT CAST(" + getPrefix()+ "usergroups.id AS CHAR) as role FROM " + getPrefix() + "usergroups"
+//				    + " Inner Join "+ getPrefix()+ "user_usergroup_map ON " + getPrefix()+ "user_usergroup_map.group_id = " + getPrefix() + "usergroups.id" 
+//				    + " Inner Join " + getPrefix()+ "users ON " + getPrefix() + "users.id = " + getPrefix()+ "user_usergroup_map.user_id"
+//				    + " Inner Join " + getPrefix()+ "sdi_user ON " + getPrefix() + "sdi_user.user_id = " + getPrefix() + "users.id"
+//				    + " WHERE " + getPrefix() + "users.username =  ? "
+//				    ;
+//			
+//			authList = sjt.query(sql, new ParameterizedRowMapper<GrantedAuthority>() {
+//			    public GrantedAuthority mapRow(ResultSet rs, int rowNum) throws SQLException {
+//			    								return new GrantedAuthorityImpl(rs.getString("role")); }
+//			}, username);
+		}
 		
-		authList = sjt.query(sql, new ParameterizedRowMapper<GrantedAuthority>() {
-		    public GrantedAuthority mapRow(ResultSet rs, int rowNum) throws SQLException {
-		    								return new GrantedAuthorityImpl(rs.getString("role")); }
-		}, username);
-	}
+		authList.add(0, new GrantedAuthorityImpl("proxy_user"));
+		return authList;
+    }
+
+    private void GroupHierarchy (int id, List <GrantedAuthority> parentGroups){
+    	int parentGroup = sjt.queryForInt("select parent_id from " + getPrefix() + "usergroups where id = ?", new Object[]{id});
+    	if (parentGroup != 0){
+    		if(!parentGroups.contains(parentGroup)){
+    			parentGroups.add(new GrantedAuthorityImpl(String.valueOf(parentGroup)));
+    		}
+    		GroupHierarchy(parentGroup, parentGroups);
+    	}
+    }
+    
+	private class UserMapper implements ParameterizedRowMapper<JoomlaUser> {
 	
-	authList.add(0, new GrantedAuthorityImpl("proxy_user"));
-	return authList;
-    }
-
-    private class UserMapper implements ParameterizedRowMapper<JoomlaUser> {
-
-	public JoomlaUser mapRow(ResultSet rs, int arg1) throws SQLException {
-	    String[] passwordParts = rs.getString("password").split(":");
-	    String salt = (passwordParts.length > 1) ? passwordParts[1] : null;
-	    return new JoomlaUser(rs.getString("username"), rs.getString("password"), salt, getAuthorities(rs.getString("username")), true, true, true, !rs
-		    .getBoolean("block"));
+		public JoomlaUser mapRow(ResultSet rs, int arg1) throws SQLException {
+		    String[] passwordParts = rs.getString("password").split(":");
+		    String salt = (passwordParts.length > 1) ? passwordParts[1] : null;
+		    return new JoomlaUser(rs.getString("username"), rs.getString("password"), salt, getAuthorities(rs.getString("username")), true, true, true, !rs
+			    .getBoolean("block"));
+		}
 	}
-    }
 
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-	JoomlaUser user = null;
-	UsernamePasswordAuthenticationToken token = null;
-	userCache = cacheManager.getCache("userCache");
-	Element userElement = userCache.get(authentication.getPrincipal());
-	user = (JoomlaUser) ((userElement != null) ? (userElement.getValue()) : null);
-	if (user == null)
-	{
-	    user = (JoomlaUser) loadUserByUsername(authentication.getPrincipal().toString());
-	}
-	if (user == null)
-	{
-	    throw new UsernameNotFoundException("Username not found !");
-	}
-	else if (authentication.getPrincipal().equals(user.getUsername())) {
-	    if (authentication.getCredentials().equals(user.getPassword())) {
-		token = new UsernamePasswordAuthenticationToken(authentication.getPrincipal().toString(), authentication.getCredentials().toString(), user
-			.getAuthorities());
-	    } else if (authentication.getCredentials().toString().split(":")[0].equals(user.getPassword().split(":")[0])) {
-		token = new UsernamePasswordAuthenticationToken(authentication.getPrincipal().toString(), authentication.getCredentials().toString(), user
-			.getAuthorities());
-	    } else {
-		java.security.MessageDigest msgDigest;
-		try {
-		    msgDigest = java.security.MessageDigest.getInstance("MD5");
-		    msgDigest.update(authentication.getCredentials().toString().getBytes());
-		    if (user.getSalt() != null)
-			msgDigest.update(user.getSalt().getBytes());
-		    StringBuffer joomlaPasswordBuilder = new StringBuffer();
-		    byte[] digest = msgDigest.digest();
-		    joomlaPasswordBuilder.append(toHexString(digest));
-		    if (user.getSalt() != null) {
-			joomlaPasswordBuilder.append(":");
-			joomlaPasswordBuilder.append(user.getSalt());
-		    }
-		    String joomlaPassword = joomlaPasswordBuilder.toString();
-
-		    if (joomlaPassword.equals(user.getPassword())) {
-			token = new UsernamePasswordAuthenticationToken(authentication.getPrincipal().toString(), joomlaPassword, user.getAuthorities());
-		    } else {
-			if (userElement != null)
-			    userCache.remove(authentication.getPrincipal());
-			throw new BadCredentialsException("username or password incorrect !");
-		    }
-		} catch (NoSuchAlgorithmException e) {
-
+		JoomlaUser user = null;
+		UsernamePasswordAuthenticationToken token = null;
+		userCache = cacheManager.getCache("userCache");
+		Element userElement = userCache.get(authentication.getPrincipal());
+		user = (JoomlaUser) ((userElement != null) ? (userElement.getValue()) : null);
+		if (user == null)
+		{
+		    user = (JoomlaUser) loadUserByUsername(authentication.getPrincipal().toString());
 		}
-	    }
-	} else {
-	    if (userElement != null)
-		userCache.remove(authentication.getPrincipal());
-	}
-	userElement = new Element(authentication.getPrincipal(), user);
-	userCache.put(userElement);
-
-	return token;
+		if (user == null)
+		{
+		    throw new UsernameNotFoundException("Username not found !");
+		}
+		else if (authentication.getPrincipal().equals(user.getUsername())) {
+		    if (authentication.getCredentials().equals(user.getPassword())) {
+			token = new UsernamePasswordAuthenticationToken(authentication.getPrincipal().toString(), authentication.getCredentials().toString(), user
+				.getAuthorities());
+		    } else if (authentication.getCredentials().toString().split(":")[0].equals(user.getPassword().split(":")[0])) {
+			token = new UsernamePasswordAuthenticationToken(authentication.getPrincipal().toString(), authentication.getCredentials().toString(), user
+				.getAuthorities());
+		    } else {
+			java.security.MessageDigest msgDigest;
+			try {
+			    msgDigest = java.security.MessageDigest.getInstance("MD5");
+			    msgDigest.update(authentication.getCredentials().toString().getBytes());
+			    if (user.getSalt() != null)
+				msgDigest.update(user.getSalt().getBytes());
+			    StringBuffer joomlaPasswordBuilder = new StringBuffer();
+			    byte[] digest = msgDigest.digest();
+			    joomlaPasswordBuilder.append(toHexString(digest));
+			    if (user.getSalt() != null) {
+				joomlaPasswordBuilder.append(":");
+				joomlaPasswordBuilder.append(user.getSalt());
+			    }
+			    String joomlaPassword = joomlaPasswordBuilder.toString();
+	
+			    if (joomlaPassword.equals(user.getPassword())) {
+				token = new UsernamePasswordAuthenticationToken(authentication.getPrincipal().toString(), joomlaPassword, user.getAuthorities());
+			    } else {
+				if (userElement != null)
+				    userCache.remove(authentication.getPrincipal());
+				throw new BadCredentialsException("username or password incorrect !");
+			    }
+			} catch (NoSuchAlgorithmException e) {
+	
+			}
+		    }
+		} else {
+		    if (userElement != null)
+			userCache.remove(authentication.getPrincipal());
+		}
+		userElement = new Element(authentication.getPrincipal(), user);
+		userCache.put(userElement);
+	
+		return token;
     }
 
     public boolean supports(Class authenticationClassName) {
-	return true;
+    	return true;
     }
 
     private static final String HEX_DIGITS = "0123456789abcdef";
@@ -254,14 +278,14 @@ public class JoomlaProvider implements AuthenticationProvider, UserDetailsServic
     private static String toHexString(byte[] v) {
 
 	StringBuffer sb = new StringBuffer(v.length * 2);
-	for (int i = 0; i < v.length; i++) {
-	    int b = v[i] & 0xFF;
-	    sb.append(HEX_DIGITS.charAt(b >>> 4)).append(HEX_DIGITS.charAt(b & 0xF));
-	}
-	return sb.toString();
+		for (int i = 0; i < v.length; i++) {
+		    int b = v[i] & 0xFF;
+		    sb.append(HEX_DIGITS.charAt(b >>> 4)).append(HEX_DIGITS.charAt(b & 0xF));
+		}
+		return sb.toString();
     }
 
     public JdbcTemplate getSjt() {
-	return sjt;
+    	return sjt;
     }
 }
