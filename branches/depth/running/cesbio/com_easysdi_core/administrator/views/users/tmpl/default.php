@@ -118,7 +118,7 @@ $saveOrder	= $listOrder == 'a.ordering';
                 <?php } ?>
                 <td>
 					<?php if ($item->checked_out) : ?>
-						<?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'contacts.', $canCheckin); ?>
+						<?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'users.', $canCheckin); ?>
 					<?php endif; ?>
 					<?php if (($canEdit || $canEditOwn) && $canCheckin) : ?>
 						<a href="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=user.edit&id='.$item->id);?>"><?php echo $this->escape($item->alias);?></a>
