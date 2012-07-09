@@ -49,7 +49,7 @@ class Easysdi_coreHelper
 	 * @return	JObject
 	 * @since	1.6
 	 */
-	public static function getActions($categoryId = 0, $userId = 0)
+	public static function getActions($categoryId = null, $userId = null)
 	{
 		$user	= JFactory::getUser();
 		$result	= new JObject;

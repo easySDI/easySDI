@@ -96,7 +96,7 @@
                 <option value="0">JUNPUBLISHED</option>
         </field> 
                 
-       	<field  name="asset_id" type="hidden" filter="unset" />
+       	<field  name="asset_id" type="hidden" filter="SAFEHTML" />
 		<field  name="checked_out" type="hidden" filter="SAFEHTML" />
 		<field  name="checked_out_time" type="hidden" filter="SAFEHTML" />
 		<field  name="guid" type="hidden" filter="SAFEHTML" />

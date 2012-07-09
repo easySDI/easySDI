@@ -177,17 +177,24 @@ class Easysdi_coreModelusers extends JModelList
         }
         
         // Filter by a single or group of categories.
-        $categoryId = $this->getState('filter.category_id');
-        if (is_numeric($categoryId)) {
-        	$query->where('a.catid = '.(int) $categoryId);
-        }
-        elseif (is_array($categoryId)) {
-        	JArrayHelper::toInteger($categoryId);
-        	$categoryId = implode(',', $categoryId);
-        	$query->where('a.catid IN ('.$categoryId.')');
-        }
-
-		// Filter by search in title
+		$baselevel = 1;
+		$categoryId = $this->getState('filter.category_id');
+		if (is_numeric($categoryId)) {
+			$cat_tbl = JTable::getInstance('Category', 'JTable');
+			$cat_tbl->load($categoryId);
+			$rgt = $cat_tbl->rgt;
+			$lft = $cat_tbl->lft;
+			$baselevel = (int) $cat_tbl->level;
+			$query->where('c.lft >= '.(int) $lft);
+			$query->where('c.rgt <= '.(int) $rgt);
+		}
+		elseif (is_array($categoryId)) {
+			JArrayHelper::toInteger($categoryId);
+			$categoryId = implode(',', $categoryId);
+			$query->where('a.catid IN ('.$categoryId.')');
+		}
+		
+				// Filter by search in title
 		$search = $this->getState('filter.search');
 		if (!empty($search)) {
 			if (stripos($search, 'id:') === 0) {

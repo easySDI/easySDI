@@ -30,7 +30,19 @@ class Easysdi_coreController extends JController
  		//Easysdi_coreHelper::addSubmenu(JRequest::getCmd('view', 'users'));
 
 		$view		= JRequest::getCmd('view', 'easysdi');
+		$layout 	= JRequest::getCmd('layout', 'edit');
+		$id			= JRequest::getInt('id');
         JRequest::setVar('view', $view);
+        
+        // Check for edit form.
+        if ($view == 'user' && $layout == 'edit' && !$this->checkEditId('com_easysdi_core.edit.user', $id)) {
+        	// Somehow the person just went to the form - we don't allow that.
+        	$this->setError(JText::sprintf('JLIB_APPLICATION_ERROR_UNHELD_ID', $id));
+        	$this->setMessage($this->getError(), 'error');
+        	$this->setRedirect(JRoute::_('index.php?option=com_easysdi_core&view=users', false));
+        
+        	return false;
+        }
 
 		parent::display();
 
