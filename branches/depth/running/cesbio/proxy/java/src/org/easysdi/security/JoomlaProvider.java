@@ -173,18 +173,7 @@ public class JoomlaProvider implements AuthenticationProvider, UserDetailsServic
 			authList.add(new GrantedAuthorityImpl(String.valueOf(currentGroupId)));
 			GroupHierarchy(currentGroupId, authList);
 			
-			
-//			sql = "SELECT CAST(" + getPrefix()+ "usergroups.id AS CHAR) as role FROM " + getPrefix() + "usergroups"
-//				    + " Inner Join "+ getPrefix()+ "user_usergroup_map ON " + getPrefix()+ "user_usergroup_map.group_id = " + getPrefix() + "usergroups.id" 
-//				    + " Inner Join " + getPrefix()+ "users ON " + getPrefix() + "users.id = " + getPrefix()+ "user_usergroup_map.user_id"
-//				    + " Inner Join " + getPrefix()+ "sdi_user ON " + getPrefix() + "sdi_user.user_id = " + getPrefix() + "users.id"
-//				    + " WHERE " + getPrefix() + "users.username =  ? "
-//				    ;
-//			
-//			authList = sjt.query(sql, new ParameterizedRowMapper<GrantedAuthority>() {
-//			    public GrantedAuthority mapRow(ResultSet rs, int rowNum) throws SQLException {
-//			    								return new GrantedAuthorityImpl(rs.getString("role")); }
-//			}, username);
+
 		}
 		
 		authList.add(0, new GrantedAuthorityImpl("proxy_user"));
