@@ -1,10 +1,10 @@
 <?php
 ?>
 		<h2>
-		<?php echo JText::_(  'EASYSDI_HELP_TEMPLATE_TITLE' ); ?>
+		<?php echo JText::_(  'COM_EASYSDI_SERVICE_HELP_TEMPLATE_TITLE' ); ?>
 		</h2>
 		<h3>
-		<?php echo JText::_(  'EASYSDI_HELP_WMS_QUERY' ); ?>
+		<?php echo JText::_(  'COM_EASYSDI_SERVICE_HELP_WMS_QUERY' ); ?>
 		</h3>
 		
 		

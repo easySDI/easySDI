@@ -1,16 +1,16 @@
 <?php
 ?>
 		<h2>
-		<?php echo JText::_(  'EASYSDI_HELP_TEMPLATE_TITLE' ); ?>
+		<?php echo JText::_(  'COM_EASYSDI_SERVICE_HELP_TEMPLATE_TITLE' ); ?>
 		</h2>
 		<h3>
 		<?php if(JRequest::getVar('filter_type','') == "filterQuery")
 		{
-			echo JText::_(  'EASYSDI_HELP_TEMPLATE_FILTER_TYPE_QUERY' ); 
+			echo JText::_(  'COM_EASYSDI_SERVICE_HELP_TEMPLATE_FILTER_TYPE_QUERY' ); 
 		}
 		else
 		{
-			echo JText::_(  'EASYSDI_HELP_TEMPLATE_FILTER_TYPE_ANSWER' ); 
+			echo JText::_(  'COM_EASYSDI_SERVICE_HELP_TEMPLATE_FILTER_TYPE_ANSWER' ); 
 		}
 		?>
 		</h3>
@@ -51,7 +51,7 @@
 			?>
 			<p>
 			<?php 
-			echo JText::_(  'EASYSDI_HELP_TEMPLATE_FILTER_TYPE_QUERY_REM' );
+			echo JText::_(  'COM_EASYSDI_SERVICE_HELP_TEMPLATE_FILTER_TYPE_QUERY_REM' );
 			?>
 			</p>
 			<?php
