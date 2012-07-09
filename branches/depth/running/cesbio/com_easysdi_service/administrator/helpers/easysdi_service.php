@@ -57,7 +57,7 @@ class Easysdi_serviceHelper
 		$result	= new JObject;
 
 		if (empty($serviceId) && empty($categoryId)) {
-			$assetName = 'com_easysdi_service';
+			$assetName = 'com_easysdi_core';
 		}
 		elseif (empty($serviceId) ) {
 			$assetName = 'com_easysdi_service.category.'.(int) $categoryId;

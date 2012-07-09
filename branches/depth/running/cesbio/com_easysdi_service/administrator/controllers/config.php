@@ -33,11 +33,36 @@ class Easysdi_serviceControllerConfig extends JController
     }
     
     function edit() {
-    	$id 				= JRequest::getVar('cid',array(0));
-    	$layout 			= JRequest::getVar('serviceconnector',null);
-    	if(!isset($layout))
-    		$layout 			= JRequest::getVar('layout','');
-    	$this->setRedirect('index.php?option=com_easysdi_service&view=config&task=edit&layout=edit&id='.$id[0].'&layout='.$layout );
+    	$params 			= JComponentHelper::getParams('com_easysdi_core');
+    	$xml 				= simplexml_load_file($params->get('proxyconfigurationfile'));
+    	$cid 				= JRequest::getVar('cid',array(0));
+    	$layout 			= JRequest::getVar('layout',null);
+    	if(!isset($layout)){
+	    	foreach ($cid as $id ){
+	    		foreach ($xml->config as $config) {
+	    			if (strcmp($config['id'],$id)==0){
+	    				if($config->{'servlet-class'} == "org.easysdi.proxy.wms.WMSProxyServlet")
+	    				{
+	    					$layout = "wms";
+	    				}
+	    				else if($config->{'servlet-class'} == "org.easysdi.proxy.wmts.WMTSProxyServlet")
+	    				{
+	    					$layout = "wmts";
+	    				}
+	    				else if($config->{'servlet-class'} == "org.easysdi.proxy.csw.CSWProxyServlet")
+	    				{
+	    					$layout = "csw";
+	    				}
+	    				else if($config->{'servlet-class'} == "org.easysdi.proxy.wfs.WFSProxyServlet")
+	    				{
+	    					$layout = "wfs";
+	    				}
+	    			}
+	    		}
+	    	}
+	    }
+
+    	$this->setRedirect('index.php?option=com_easysdi_service&view=config&task=edit&id='.$cid[0].'&layout='.$layout );
     }
     
     function delete() {

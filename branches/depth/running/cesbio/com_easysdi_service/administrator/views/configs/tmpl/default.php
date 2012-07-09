@@ -49,7 +49,7 @@ $search = JRequest::getVar('search','');
 	<tbody>
 	<?php
 	$id = JRequest::getVar("configId","");
-
+	
 	$i=0;
 	foreach ($this->xml->config as $config) {
 		if (!(stripos($config['id'],$search)===False) || !(stripos($config->{'servlet-class'},$search)===False) || strlen($search)==0){
@@ -58,19 +58,19 @@ $search = JRequest::getVar('search','');
 				
 				if($config->{'servlet-class'} == "org.easysdi.proxy.wms.WMSProxyServlet")
 				{
-					$layout = "WMS";
+					$layout = "wms";
 				}
 				else if($config->{'servlet-class'} == "org.easysdi.proxy.wmts.WMTSProxyServlet")
 				{
-					$layout = "WMTS";
+					$layout = "wmts";
 				}
 				else if($config->{'servlet-class'} == "org.easysdi.proxy.csw.CSWProxyServlet")
 				{
-					$layout = "CSW";
+					$layout = "csw";
 				}
 				else if($config->{'servlet-class'} == "org.easysdi.proxy.wfs.WFSProxyServlet")
 				{
-					$layout = "WFS";
+					$layout = "wfs";
 				}
 				
 				?>

@@ -90,13 +90,6 @@ $saveOrder	= $listOrder == 'a.ordering';
 		</tfoot>
 		<tbody>
 		<?php foreach ($this->items as $i => $item) :
-// 			$ordering	= ($listOrder == 'a.ordering');
-// 			$canCreate	= $user->authorise('core.create',		'com_easysdi_service.category.'.$item->catid);
-// 			$canEdit	= $user->authorise('core.edit',			'com_easysdi_service.service.'.$item->id);
-// 			$canCheckin	= $user->authorise('core.manage',		'com_checkin') || $item->checked_out == $userId || $item->checked_out == 0;
-// 			$canEditOwn	= $user->authorise('core.edit.own',		'com_easysdi_service.service.'.$item->id) && $item->created_by == $userId;
-// 			$canChange	= $user->authorise('core.edit.state',	'com_easysdi_service.service.'.$item->id) && $canCheckin;
-			
 			$canDo		= Easysdi_serviceHelper::getActions(null,$item->id);
 				print_r ('checkin '.$user->authorise('core.manage',		'com_checkin') );
 			$ordering	= ($listOrder == 'a.ordering');
