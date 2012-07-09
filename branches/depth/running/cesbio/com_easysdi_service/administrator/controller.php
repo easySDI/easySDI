@@ -29,7 +29,19 @@ class Easysdi_serviceController extends JController
 		Easysdi_serviceHelper::addSubmenu(JRequest::getCmd('view', 'services'));
 
 		$view		= JRequest::getCmd('view', 'services');
+		$layout 	= JRequest::getCmd('layout', 'edit');
+		$id			= JRequest::getInt('id');
         JRequest::setVar('view', $view);
+        
+        // Check for edit form.
+        if ($view == 'service' && $layout == 'edit' && !$this->checkEditId('com_easysdi_service.edit.service', $id)) {
+        	// Somehow the person just went to the form - we don't allow that.
+        	$this->setError(JText::sprintf('JLIB_APPLICATION_ERROR_UNHELD_ID', $id));
+        	$this->setMessage($this->getError(), 'error');
+        	$this->setRedirect(JRoute::_('index.php?option=com_easysdi_service&view=services', false));
+        
+        	return false;
+        }
 
 		parent::display();
 

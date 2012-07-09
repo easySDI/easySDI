@@ -90,17 +90,26 @@ $saveOrder	= $listOrder == 'a.ordering';
 		</tfoot>
 		<tbody>
 		<?php foreach ($this->items as $i => $item) :
+// 			$ordering	= ($listOrder == 'a.ordering');
+// 			$canCreate	= $user->authorise('core.create',		'com_easysdi_service.category.'.$item->catid);
+// 			$canEdit	= $user->authorise('core.edit',			'com_easysdi_service.service.'.$item->id);
+// 			$canCheckin	= $user->authorise('core.manage',		'com_checkin') || $item->checked_out == $userId || $item->checked_out == 0;
+// 			$canEditOwn	= $user->authorise('core.edit.own',		'com_easysdi_service.service.'.$item->id) && $item->created_by == $userId;
+// 			$canChange	= $user->authorise('core.edit.state',	'com_easysdi_service.service.'.$item->id) && $canCheckin;
+			
+			$canDo		= Easysdi_serviceHelper::getActions(null,$item->id);
+				print_r ('checkin '.$user->authorise('core.manage',		'com_checkin') );
 			$ordering	= ($listOrder == 'a.ordering');
-			$canCreate	= $user->authorise('core.create',		'com_easysdi_service.category.'.$item->catid);
-			$canEdit	= $user->authorise('core.edit',			'com_easysdi_service.service.'.$item->id);
-			$canCheckin	= $user->authorise('core.manage',		'com_checkin') || $item->checked_out == $userId || $item->checked_out == 0;
-			$canEditOwn	= $user->authorise('core.edit.own',		'com_easysdi_service.service.'.$item->id) && $item->created_by == $userId;
-			$canChange	= $user->authorise('core.edit.state',	'com_easysdi_service.service.'.$item->id) && $canCheckin;
+			$canEdit 		= $canDo->get('core.edit');
+			$canEditOwn 	= $canDo->get('core.edit.own');
+			$canChange 		= $canDo->get('core.edit.state');
+			$canCheckin		= $user->authorise('core.manage',		'com_checkin') || $item->checked_out == $userId || $item->checked_out == 0;
 			
 			?>
 			<tr class="row<?php echo $i % 2; ?>">
 				<td class="center">
-					<?php echo JHtml::_('grid.id', $i, $item->id); ?>
+					<?php // if ($canEdit || $canEditOwn) :  echo JHtml::_('grid.id', $i, $item->id); else : endif; ?>
+					<?php echo JHtml::_('grid.id', $i, $item->id);  ?>
 				</td>
 
 				<td>
