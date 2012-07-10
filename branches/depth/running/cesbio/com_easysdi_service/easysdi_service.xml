@@ -60,11 +60,12 @@
             <folder>sql</folder>
             <folder>tables</folder>
             <folder>views</folder>
+            <folder>language</folder>
         </files>
         <languages folder="administrator">
-            <language tag="en-GB">language/en-GB.com_easysdi_service.ini
+            <language tag="en-GB">language/en-GB/en-GB.com_easysdi_service.ini
             </language>
-            <language tag="en-GB">language/en-GB.com_easysdi_service.sys.ini
+            <language tag="en-GB">language/en-GB/en-GB.com_easysdi_service.sys.ini
             </language>
         </languages>
     </administration>

@@ -19,22 +19,24 @@ class com_easysdi_serviceInstallerScript
 	 * If preflight returns false, Joomla will abort the update and undo everything already done.
 	 */
 	function preflight( $type, $parent ) {
-		$jversion = new JVersion();
+		//Check if com_easysdi_core is installed
+		$db = JFactory::getDbo();
+		$db->setQuery('SELECT COUNT(*) FROM #__extensions WHERE name = "com_easysdi_core"');
+		$install = $db->loadResult();
+		if($install == 0){
+			JError::raiseWarning(null, JText::_('COM_EASYSDI_SERVICE_INSTALL_SCRIPT_CORE_ERROR'));
+			return false;
+		}
 		
 		// Installing component manifest file version
 		$this->release = $parent->get( "manifest" )->version;
 		
-		// Manifest file minimum Joomla version
-		$this->minimum_joomla_release = $parent->get( "manifest" )->attributes()->version;
-		
 		// Show the essential information at the install/update back-end
 		echo '<p>EasySDI Service [com_easysdi_service]';
-		echo '<br />Installing component manifest file version = ' . $this->release;
-		echo '<br />Current manifest cache commponent version = ' . $this->getParam('version');
-		echo '<br />Installing component manifest file minimum Joomla version = ' . $this->minimum_joomla_release;
-		echo '<br />Current Joomla version = ' . $jversion->getShortVersion();
+		echo '<br />'.JText::_('COM_EASYSDI_SERVICE_INSTALL_SCRIPT_MANIFEST_VERSION') . $this->release;
 		
-		echo '<p>' . JText::_('COM_EASYSDI_SERVICE_PREFLIGHT_SCRIPT') . '</p>';
+		
+// 		echo '<p>' . JText::_('COM_EASYSDI_SERVICE_PREFLIGHT_SCRIPT') . '</p>';
 	}
  
 	/*
@@ -44,7 +46,7 @@ class com_easysdi_serviceInstallerScript
 	 * If install returns false, Joomla will abort the install and undo everything already done.
 	 */
 	function install( $parent ) {
-		echo '<p>' . JText::_('COM_EASYSDI_SERVICE_INSTALL_SCRIPT' )  . '</p>';
+// 		echo '<p>' . JText::_('COM_EASYSDI_SERVICE_INSTALL_SCRIPT' )  . '</p>';
 		// You can have the backend jump directly to the newly installed component configuration page
 		// $parent->getParent()->setRedirectURL('index.php?option=com_democompupdate');
 	}
@@ -56,7 +58,7 @@ class com_easysdi_serviceInstallerScript
 	 * If this returns false, Joomla will abort the update and undo everything already done.
 	 */
 	function update( $parent ) {
-		echo '<p>' . JText::_('COM_EASYSDI_SERVICE_UPDATE_SCRIPT' ) . '</p>';
+// 		echo '<p>' . JText::_('COM_EASYSDI_SERVICE_UPDATE_SCRIPT' ) . '</p>';
 		// You can have the backend jump directly to the newly updated component configuration page
 		// $parent->getParent()->setRedirectURL('index.php?option=com_democompupdate');
 	}
@@ -69,6 +71,27 @@ class com_easysdi_serviceInstallerScript
 	function postflight( $type, $parent ) {
 		
 		if($type == 'install'){
+			JTable::addIncludePath(JPATH_ADMINISTRATOR.DS."..".DS."libraries".DS."joomla".DS."database".DS."table");
+				
+			//Create a default EasySDI Service Category
+			$row 					=& JTable::getInstance('category');
+			$row->parent_id 		= 1;
+			$row->level				= 1;
+			$row->path 				= 'uncategorised';
+			$row->extension 		= 'com_easysdi_service';
+			$row->title 			= "Uncategorised";
+			$row->alias 			= "uncategorised";
+			$row->published 		= 1;
+			$row->access 			= 1;
+			$row->params  			= '{"category_layout":"","image":""}';
+			$row->metadata 			= '{"author":"","robots":""}';
+			if(!$row->store(true))
+			{
+				JError::raiseWarning(null, $row->getError());
+				return false;
+			}
+			$row->moveByReference(0, 'last-child', $row->id);
+			
 			//EasySDI control Panel form update
 			$fielset_string = "<fieldset name=\"service\" text=\"COM_EASYSDI_SERVICE_LEGEND_EASYSDI\" >
 				      		<field name=\"services\" 
@@ -138,7 +161,7 @@ class com_easysdi_serviceInstallerScript
 		$db->setQuery("DELETE FROM `#__menu` WHERE title = 'com_easysdi_service'");
 		$db->query();
 		
-		echo '<p>' . JText::_('COM_EASYSDI_SERVICE_POSTFLIGHT_SCRIPT ') . '</p>';
+// 		echo '<p>' . JText::_('COM_EASYSDI_SERVICE_POSTFLIGHT_SCRIPT ') . '</p>';
 	}
 
 	/*
@@ -207,7 +230,7 @@ class com_easysdi_serviceInstallerScript
 		}
 		$core_dom->save(JPATH_ADMINISTRATOR.'/components/com_easysdi_core/config.xml');
 		
-		echo '<p>' . JText::_('COM_EASYSDI_SERVICE_UNINSTALL_SCRIPT ') . '</p>';
+// 		echo '<p>' . JText::_('COM_EASYSDI_SERVICE_UNINSTALL_SCRIPT ') . '</p>';
 	}
  
 	/*
