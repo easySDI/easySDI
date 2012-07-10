@@ -9,6 +9,7 @@
     <authorUrl>http://www.easysdi.org</authorUrl>
 	<version>3.0.0</version>
 	<description></description>
+	<scriptfile>script.php</scriptfile>
 	<files>
 		<filename plugin="easysdi">easysdi.php</filename>
 	</files>
