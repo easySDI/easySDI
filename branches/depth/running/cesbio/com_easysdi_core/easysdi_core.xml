@@ -63,11 +63,12 @@
             <folder>tables</folder>
             <folder>views</folder>
             <folder>librairies</folder>
+            <folder>language</folder>
         </files>
         <languages folder="administrator">
-            <language tag="en-GB">language/en-GB.com_easysdi_core.ini
+            <language tag="en-GB">language/en-GB/en-GB.com_easysdi_core.ini
             </language>
-            <language tag="en-GB">language/en-GB.com_easysdi_core.sys.ini
+            <language tag="en-GB">language/en-GB/en-GB.com_easysdi_core.sys.ini
             </language>
         </languages>
     </administration>
