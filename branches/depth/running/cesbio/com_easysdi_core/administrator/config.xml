@@ -18,6 +18,7 @@
 		 		type="user" 
 		 		default="" 
 		 		size="40"
+		 		required="true"
 		 		label="COM_EASYSDI_CORE_CONFIG_LBL_DEFAULT_ACCOUNT" 
          		description="COM_EASYSDI_CORE_CONFIG_DESC_DEFAULT_ACCOUNT" />
 		 
@@ -25,6 +26,7 @@
 		 		type="user" 
 		 		default="" 
 		 		size="40"
+		 		required="true"
 		 		label="COM_EASYSDI_CORE_CONFIG_LBL_GUEST_ACCOUNT" 
          		description="COM_EASYSDI_CORE_CONFIG_DESC_GUEST_ACCOUNT" />
 
@@ -32,6 +34,7 @@
 		 		type="user" 
 		 		default="" 
 		 		size="40"
+		 		required="true"
 		 		label="COM_EASYSDI_CORE_CONFIG_LBL_SERVICE_ACCOUNT" 
          		description="COM_EASYSDI_CORE_CONFIG_DESC_SERVICE_ACCOUNT" />
 	</fieldset>
@@ -44,6 +47,7 @@
              type="text"
              default=""
              size="40"
+             required="true"
              label="COM_EASYSDI_CORE_CONFIG_LBL_PROXY_URL"
              description="COM_EASYSDI_CORE_CONFIG_DESC_PROXY_URL" />
              
@@ -51,6 +55,7 @@
              type="text"
              default=""
              size="40"
+             required="true"
              label="COM_EASYSDI_CORE_CONFIG_LBL_CONFIGURATION_FILE"
              description="COM_EASYSDI_CORE_CONFIG_DESC_CONFIGURATION_FILE" />
          
