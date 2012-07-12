@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <install version="2.5" type="plugin" group="user">
-	<name>plg_easysdiuser</name>
+	<name>EasySDI plugin User</name>
 	<author>EasySDI Community</author>
 	<creationDate>13 July 2012</creationDate>
 	<copyright>Copyright (C) 2012. All rights reserved.</copyright>
