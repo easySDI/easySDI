@@ -27,8 +27,39 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 		}
 	}
 
-var request;
+	var request;
 	
+	function getAuthenticationConnector(){
+		var serviceSelector = document.getElementById("jform_serviceconnector_id");
+		var service 		= serviceSelector.options[serviceSelector.selectedIndex].text;
+		var query 			= "index.php?option=com_easysdi_service&task=getauthenticationconnector&service="+service;
+		request 			= getHTTPObject();
+	    document.getElementById("progress").style.visibility = "visible";
+	    request.onreadystatechange = updateAuthenticationConnectorFields;
+	    request.open("GET", query, true);
+	    request.send(null);
+	}
+	
+	function updateAuthenticationConnectorFields()
+	{
+	    if(request.readyState == 4){
+	    	document.getElementById("progress").style.visibility = "hidden";
+			var JSONtext = request.responseText;
+			var serviceauthentication = document.getElementById("jform_serviceauthentication_id");
+			while ( serviceauthentication.options.length > 1 ) serviceauthentication.options[1] = null;
+			var resourceauthentication = document.getElementById("jform_resourceauthentication_id");
+			while ( resourceauthentication.options.length > 1 ) resourceauthentication.options[1] = null;
+			var JSONobjects = JSON.parse(JSONtext);
+			for(var i=0; i < JSONobjects.length ; i++){
+				var option = new Option( JSONobjects[i].value, JSONobjects[i].id);
+				if(JSONobjects[i].level == 1){
+					resourceauthentication.options[resourceauthentication.length] = option;
+				}else{
+					serviceauthentication.options[serviceauthentication.length] = option;
+				}
+			}
+	    }
+	}
 	function negoVersionService(){
 		var url 			= document.getElementById("jform_resourceurl").value;
 		var user 			= document.getElementById("jform_resourceusername").value;
@@ -114,7 +145,7 @@ var request;
 	}
 </script>
 
-<form action="<?php echo JRoute::_('index.php?option=com_easysdi_service&layout=edit&id='.(int) $this->item->id); ?>" method="post" name="adminForm" id="service-form" class="form-validate">
+<form action="<?php echo JRoute::_('index.php?option=com_easysdi_service&view=service&layout=edit&id='.(int) $this->item->id); ?>" method="post" name="adminForm" id="service-form" class="form-validate">
 	<div id="progress">
 		<img id="progress_image"  src="components/com_easysdi_service/assets/images/loader.gif" alt="">
 	</div>
@@ -139,6 +170,24 @@ var request;
 
 	<div class="width-40 fltrt">
 		<?php echo JHtml::_('sliders.start', 'service-sliders-'.$this->item->id, array('useCookie'=>1)); ?>
+			<?php echo JHtml::_('sliders.panel', JText::_('COM_EASYSDI_SERVICE_LEGEND_AUTHENTICATION_OPTIONS'), 'authenticationoptions-details'); ?>
+			<fieldset class="adminform">
+				<ul class="adminformlist">
+				<?php foreach($this->form->getFieldset('authenticationoptions') as $field): ?>
+					<li><?php echo $field->label;echo $field->input;?></li>
+				<?php endforeach; ?>
+			</ul>
+			</fieldset>
+			
+			<?php echo JHtml::_('sliders.panel', JText::_('COM_EASYSDI_SERVICE_LEGEND_PROVIDER_OPTIONS'), 'provideroptions-details'); ?>
+			<fieldset class="adminform">
+				<ul class="adminformlist">
+				<?php foreach($this->form->getFieldset('provideroptions') as $field): ?>
+					<li><?php echo $field->label;echo $field->input;?></li>
+				<?php endforeach; ?>
+			</ul>
+			</fieldset>
+			
 			<?php echo JHtml::_('sliders.panel', JText::_('COM_EASYSDI_SERVICE_LEGEND_SERVICE_NEGOTIATION'), 'negotiation-details'); ?>
 			<fieldset class="adminform">
 				<ul class="adminformlist">

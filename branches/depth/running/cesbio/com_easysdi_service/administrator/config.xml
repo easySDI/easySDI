@@ -1,26 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <config>
-	<fieldset name="component" 
-			  label="COM_EASYSDI_SERVICE_COMPONENT_LABEL"
-			  description="COM_EASYSDI_SERVICE_COMPONENT_DESC"	>
- 		 
- 		 <field name="proxyurl"
-             type="text"
-             default=""
-             size="40"
-             label="COM_EASYSDI_CORE_CONFIG_LBL_PROXY_URL"
-             description="COM_EASYSDI_CORE_CONFIG_DESC_PROXY_URL" />
-             
-         <field name="proxyconfigurationfile"
-             type="text"
-             default=""
-             size="40"
-             label="COM_EASYSDI_CORE_CONFIG_LBL_CONFIGURATION_FILE"
-             description="COM_EASYSDI_CORE_CONFIG_DESC_CONFIGURATION_FILE" />
-         
-	</fieldset>
-
-	<fieldset name="permissions"
+		<fieldset name="permissions"
 			  description="JCONFIG_PERMISSIONS_DESC"
 			  label="JCONFIG_PERMISSIONS_LABEL"	>
 

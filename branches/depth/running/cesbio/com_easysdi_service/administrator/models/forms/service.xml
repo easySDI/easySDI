@@ -41,24 +41,8 @@
 				label="COM_EASYSDI_SERVICE_FORM_LBL_SERVICE_SERVICECONNECTOR_ID"
 				description="COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_SERVICECONNECTOR_ID" 
                 required="true" 
+                onchange="javascript:getAuthenticationConnector();"
                 query="SELECT 0 AS id, '- Please select -' AS value UNION SELECT id, value FROM #__sdi_sys_serviceconnector" key_field="id" value_field="value"
-                 /> 
-
-		<field 	name="access"
-				type="accesslevel"
-				label="JFIELD_ACCESS_LABEL"
-				description="JFIELD_ACCESS_DESC"
-				class="inputbox"
-				size="1" />
-				
-		<field 	name="resourceauthentication_id" 
-				type="sql" 
-				class="inputbox"
-				label="COM_EASYSDI_SERVICE_FORM_LBL_SERVICE_RESOURCEAUTHENTICATION_ID"
-				description="COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_RESOURCEAUTHENTICATION_ID" 
-                query="SELECT 0 AS id, '- Please select -' AS value UNION SELECT id, value FROM #__sdi_sys_authenticationconnector" 
-                key_field="id" 
-                value_field="value"
                  /> 
 
 		<field 	name="resourceurl" 
@@ -70,8 +54,44 @@
 				description="COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_RESOURCEURL" 
                 validate="url" 
                 filter="safehtml" /> 
+                
+		<field 	name="access"
+				type="accesslevel"
+				label="JFIELD_ACCESS_LABEL"
+				description="JFIELD_ACCESS_DESC"
+				class="inputbox"
+				size="1" />
+				        
+		<field  name="state"
+                type="list"
+                label="JSTATUS"
+                description="JFIELD_PUBLISHED_DESC"
+                class="inputbox"
+                size="1"
+                default="0">
+			<option value="1">JPUBLISHED</option>
+			<option value="0">JUNPUBLISHED</option>
+		</field> 
+		
+		<field name="asset_id" type="hidden" filter="SAFEHTML" />
+		<field name="checked_out" type="hidden" filter="SAFEHTML" />
+		<field name="checked_out_time" type="hidden" filter="SAFEHTML" />
+		<field name="guid" type="hidden" filter="SAFEHTML" />
+		<field name="compliance" id="compliance" type="hidden" required="true"  filter="SAFEHTML" />
+	</fieldset>
 
-		<field 	name="resourceusername" 
+	<fieldset name="authenticationoptions" text="COM_EASYSDI_SERVICE_LEGEND_AUTHENTICATION_OPTIONS">
+		<field 	name="resourceauthentication_id" 
+				type="sql" 
+				class="inputbox"
+				label="COM_EASYSDI_SERVICE_FORM_LBL_SERVICE_RESOURCEAUTHENTICATION_ID"
+				description="COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_RESOURCEAUTHENTICATION_ID" 
+                query="SELECT 0 AS id, '- None -' AS value UNION SELECT id, value FROM #__sdi_sys_authenticationconnector" 
+                key_field="id" 
+                value_field="value"
+                 /> 
+                 
+ 		<field 	name="resourceusername" 
 				type="text" 
 				size="40" 
 				class="inputbox"
@@ -86,13 +106,15 @@
 				label="COM_EASYSDI_SERVICE_FORM_LBL_SERVICE_RESOURCEPASSWORD"
 				description="COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_RESOURCEPASSWORD" 
                 filter="safehtml" /> 
+	</fieldset>
 
+	<fieldset name="provideroptions" text="COM_EASYSDI_SERVICE_LEGEND_PROVIDER_OPTIONS">
 		<field 	name="serviceauthentication_id" 
 				type="sql" 
 				class="inputbox"
 				label="COM_EASYSDI_SERVICE_FORM_LBL_SERVICE_SERVICEAUTHENTICATION_ID"
 				description="COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_SERVICEAUTHENTICATION_ID" 
-                query="SELECT 0 AS id, '- Please select -' AS value UNION SELECT id, value FROM #__sdi_sys_authenticationconnector" 
+                query="SELECT 0 AS id, '- None -' AS value UNION SELECT id, value FROM #__sdi_sys_authenticationconnector" 
                 key_field="id" 
                 value_field="value"
                  /> 
@@ -121,26 +143,9 @@
 				label="COM_EASYSDI_SERVICE_FORM_LBL_SERVICE_SERVICEPASSWORD"
 				description="COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_SERVICEPASSWORD" 
                 filter="safehtml" /> 
-        
-		<field  name="state"
-                type="list"
-                label="JSTATUS"
-                description="JFIELD_PUBLISHED_DESC"
-                class="inputbox"
-                size="1"
-                default="0">
-			<option value="1">JPUBLISHED</option>
-			<option value="0">JUNPUBLISHED</option>
-		</field> 
-		
-		<field name="asset_id" type="hidden" filter="SAFEHTML" />
-		<field name="checked_out" type="hidden" filter="SAFEHTML" />
-		<field name="checked_out_time" type="hidden" filter="SAFEHTML" />
-		<field name="guid" type="hidden" filter="SAFEHTML" />
-		<field name="compliance" id="compliance" type="hidden" required="true"  filter="SAFEHTML" />
-</fieldset>
+	</fieldset>
 
-<fieldset name="negotiation">
+	<fieldset name="negotiation" text="COM_EASYSDI_SERVICE_LEGEND_SERVICE_NEGOTIATION">
  		<field 	name="negotiation" 
 				type="negotiationaction" 
 				label="COM_EASYSDI_SERVICE_FORM_LBL_SERVICE_NEGOTIATION"
@@ -153,9 +158,9 @@
 				label="COM_EASYSDI_SERVICE_FORM_LBL_SERVICE_SUPPORTEDVERSIONS"
 				description="COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_SUPPORTEDVERSIONS"
 				filter="unset" /> 
-</fieldset>
+	</fieldset>
 
-<fieldset name="publishing">
+	<fieldset name="publishing">
 		<field 	name="created_by" 
 				type="user" 
 				class="readonly"
@@ -187,9 +192,7 @@
 				label="COM_EASYSDI_SERVICE_FORM_LBL_SERVICE_MODIFIED"
 				description="COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_MODIFIED" 
                 filter="safehtml" /> 
-                
-		
-	</fieldset>
+     </fieldset>
 	
 	<fieldset name="rulesdefinition">
 		<field 	name="rules" 
