@@ -36,7 +36,7 @@ class Easysdi_serviceControllerConfig extends JController
     	$params 			= JComponentHelper::getParams('com_easysdi_core');
     	$xml 				= simplexml_load_file($params->get('proxyconfigurationfile'));
     	$cid 				= JRequest::getVar('cid',array(0));
-    	$layout 			= JRequest::getVar('layout',null);
+    	$layout 			= JRequest::getVar('serviceconnector',null);
     	if(!isset($layout)){
 	    	foreach ($cid as $id ){
 	    		foreach ($xml->config as $config) {

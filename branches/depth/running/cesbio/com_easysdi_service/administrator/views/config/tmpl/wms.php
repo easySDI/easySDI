@@ -18,7 +18,7 @@ $document = &JFactory::getDocument();
 $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_service.css');
 
 ?>
-<form action="<?php echo JRoute::_('index.php?option=com_easysdi_service'); ?>" method="post" name="adminForm" id="item-form" class="form-validate">
+<form action="<?php echo JRoute::_('index.php?option=com_easysdi_service&view=config&id='.JRequest::getVar('id',null)); ?>" method="post" name="adminForm" id="item-form" class="form-validate">
 	<div class="width-60 fltlft">
 		
 			 <fieldset class="adminform"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_CONNECTOR_CHOICE' );?></legend>
@@ -26,7 +26,7 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 					<tr>
 						<td>
 						<?php 
-						echo JHTML::_("select.genericlist",$this->serviceconnectorlist, 'serviceconnector', 'size="1" onChange="submit()"', 'value', 'value', 'WMS'); ?>
+						echo JHTML::_("select.genericlist",$this->serviceconnectorlist, 'serviceconnector', 'size="1" onChange="document.getElementById(\'layout\').value=document.getElementById(\'serviceconnector\').value;submit()"', 'value', 'value', 'WMS'); ?>
 						</td>
 					</tr>
 				</table>
@@ -124,6 +124,7 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 			?>
 		
 	</div>
+	<input type="hidden" name="layout" id="layout" value="" />
 	<input type="hidden" name="task" value="<?php echo JRequest::getCmd('task');?>" />
 	<input type="hidden" name="previoustask" value="<?php echo JRequest::getCmd('task');?>" />
 		

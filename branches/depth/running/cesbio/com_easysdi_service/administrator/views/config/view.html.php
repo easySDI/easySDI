@@ -195,9 +195,9 @@ class Easysdi_serviceViewConfig extends JView
 			return false;
 		}
 		
-		$params 		= JComponentHelper::getParams('com_easysdi_core');
-		$this->xml 		= simplexml_load_file($params->get('proxyconfigurationfile'));
-		$this->id 		= JRequest::getVar('id',null);
+		$params 			= JComponentHelper::getParams('com_easysdi_core');
+		$this->xml 			= simplexml_load_file($params->get('proxyconfigurationfile'));
+		$this->id 			= JRequest::getVar('id',null);
 		
 		if(isset ($this->id)) {
 			foreach ($this->xml->config as $config) {
