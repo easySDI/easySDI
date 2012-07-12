@@ -36,13 +36,11 @@
 		<copy todir="${projet.install.admin.dir}">
 			<fileset dir="./administrator">
 				<include name="**/*.*" />
-				<exclude name="language/*.*" />
 			</fileset>
 		</copy>
 		<copy todir="${projet.install.site.dir}">
 			<fileset dir="./site">
 				<include name="**/*.*" />
-				<exclude name="language/*.*" />
 			</fileset>
 		</copy>
 		<copy todir="${projet.install.langEN.dir}">

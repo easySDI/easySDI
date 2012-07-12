@@ -51,8 +51,9 @@ $search = JRequest::getVar('search','');
 	foreach ($this->xml->config as $config) {
 		if (strcmp($config['id'],$this->config )==0){
 			$policyFile = $config->{'authorization'}->{'policy-file'};
+			
 			if (!file_exists($policyFile)){
-					JError::raiseError(500, JText::_( 'COM_EASYSDI_SERVICE_POLICY_LOAD_ERROR'));
+					JError::raiseWarning(null, JText::sprintf( 'COM_EASYSDI_SERVICE_POLICY_LOAD_ERROR',$policyFile));
 					return false;
 			}
 			

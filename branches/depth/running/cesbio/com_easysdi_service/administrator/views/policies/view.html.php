@@ -28,10 +28,23 @@ class Easysdi_serviceViewPolicies extends JView
 		$this->connector 	= JRequest::getVar('connector', null);
 		
 		if (!isset($this->config)) {
-			JError::raiseError(500,JText::_( 'COM_EASYSDI_SERVICE_CONFIG_LOAD_ERROR'));
-			return false;
+			JError::raiseWarning(null,JText::_( 'COM_EASYSDI_SERVICE_CONFIG_LOAD_ERROR'));
+			return;
 		}
-		$this->xml 			= simplexml_load_file($params->get('proxyconfigurationfile'));
+		
+		// Check if config file is set.
+		$file = $params->get('proxyconfigurationfile');
+		if (!isset($file) ) {
+			JError::raiseWarning(null, JText::_('COM_EASYSDI_SERVICE_CONFIG_FILE_ERROR_NOT_SET'));
+			return ;
+		}
+		
+		$this->xml = simplexml_load_file($file);
+		// Check if config file can be loaded.
+		if (!isset($this->xml) || !$this->xml) {
+			JError::raiseWarning(null, JText::_('COM_EASYSDI_SERVICE_CONFIG_FILE_ERROR_LOADING'));
+			return ;
+		}
 				
 		$this->addToolbar();
 		parent::display($tpl);

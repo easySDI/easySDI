@@ -24,16 +24,22 @@ class Easysdi_serviceViewConfigs extends JView
 	public function display($tpl = null)
 	{
 		$params = JComponentHelper::getParams('com_easysdi_core');
-		
-		$this->xml = simplexml_load_file($params->get('proxyconfigurationfile'));
-				
-		// Check for errors.
-		if (!isset($this->xml) || !$this->xml) {
-			JError::raiseError(500, implode("\n", $errors));
-			return false;
-		}
-
 		$this->addToolbar();
+		
+		// Check if config file is set.
+		$file = $params->get('proxyconfigurationfile');
+		if (!isset($file) ) {
+			JError::raiseWarning(null, JText::_('COM_EASYSDI_SERVICE_CONFIG_FILE_ERROR_NOT_SET'));
+			return ;
+		}
+		
+		$this->xml = simplexml_load_file($file);
+		// Check if config file can be loaded.
+		if (!isset($this->xml) || !$this->xml) {
+			JError::raiseWarning(null, JText::sprintf('COM_EASYSDI_SERVICE_CONFIG_FILE_ERROR_LOADING',$file));
+			return ;
+		}
+		
 		parent::display($tpl);
 	}
 
