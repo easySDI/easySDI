@@ -57,23 +57,23 @@ class Easysdi_serviceViewConfig extends JView
 			{
 				if(document.getElementById('service_title').value == ""  )
 				{
-					alert ('<?php echo  JText::_( 'PROXY_CONFIG_EDIT_VALIDATION_SERVICE_MD_ERROR');?>');	
+					alert ('<?php echo  JText::_( 'COM_EASYSDI_SERVICE_CONFIG_EDIT_VALIDATION_SERVICE_MD_ERROR');?>');	
 					return;
 				}
 				var t = document.getElementById('supportedVersionsByConfig').value;
 				if( !t || t == "null" || t=="undefined"){
-					alert ('<?php echo  JText::_( 'PROXY_CONFIG_EDIT_VALIDATION_CONFIG_SUPPORTED_VERSION_ERROR');?>');
+					alert ('<?php echo  JText::_( 'COM_EASYSDI_SERVICE_CONFIG_EDIT_VALIDATION_SUPPORTED_VERSION_ERROR');?>');
 					return;
 				}
 				if(document.getElementById('policyFile').value == ""  )
 				{
-					alert ('<?php echo  JText::_( 'PROXY_CONFIG_EDIT_VALIDATION_POLICYFILE_ERROR');?>');	
+					alert ('<?php echo  JText::_( 'COM_EASYSDI_SERVICE_CONFIG_EDIT_VALIDATION_POLICYFILE_ERROR');?>');	
 					return;
 				}
 				if( document.getElementById('logPath').value == "" || 
 					document.getElementById('logPrefix').value == "" || 
 					document.getElementById('logSuffix').value == "" ){
-					alert ('<?php echo  JText::_( 'PROXY_CONFIG_EDIT_VALIDATION_LOGFILE_ERROR');?>');	
+					alert ('<?php echo  JText::_( 'COM_EASYSDI_SERVICE_CONFIG_EDIT_VALIDATION_LOGFILE_ERROR');?>');	
 					return;
 				}
 				Joomla.submitform(task,document.getElementById('item-form'));
@@ -199,6 +199,30 @@ class Easysdi_serviceViewConfig extends JView
 		$this->xml 			= simplexml_load_file($params->get('proxyconfigurationfile'));
 		$this->id 			= JRequest::getVar('id',null);
 		
+		if(!isset($layout)){
+			foreach ($cid as $id ){
+				foreach ($xml->config as $config) {
+					if (strcmp($config['id'],$id)==0){
+						if($config->{'servlet-class'} == "org.easysdi.proxy.wms.WMSProxyServlet")
+						{
+							$layout = "wms";
+						}
+						else if($config->{'servlet-class'} == "org.easysdi.proxy.wmts.WMTSProxyServlet")
+						{
+							$layout = "wmts";
+						}
+						else if($config->{'servlet-class'} == "org.easysdi.proxy.csw.CSWProxyServlet")
+						{
+							$layout = "csw";
+						}
+						else if($config->{'servlet-class'} == "org.easysdi.proxy.wfs.WFSProxyServlet")
+						{
+							$layout = "wfs";
+						}
+					}
+				}
+			}
+		}
 		if(isset ($this->id)) {
 			foreach ($this->xml->config as $config) {
 				if (strcmp($config['id'],$this->id)==0){
@@ -230,9 +254,7 @@ class Easysdi_serviceViewConfig extends JView
 				AND s.state= 1
 				GROUP BY s.id") ;
 		$this->servicelist = $db->loadObjectList();
-		
-
-		
+				
 		$this->addToolbar();
 		parent::display($tpl);
 	}
