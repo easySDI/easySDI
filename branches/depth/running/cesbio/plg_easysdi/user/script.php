@@ -10,7 +10,7 @@
 // No direct access to this file
 defined('_JEXEC') or die('Restricted access');
  
-class easysdiInstallerScript
+class plg_easysdiInstallerScript
 {
 
 	function preflight( $type, $parent ) {
@@ -22,6 +22,10 @@ class easysdiInstallerScript
 			JError::raiseWarning(null, JText::_('COM_EASYSDI_SERVICE_INSTALL_SCRIPT_CORE_ERROR'));
 			return false;
 		}
+		
+		// Show the essential information at the install/update back-end
+		echo '<p>EasySDI plugin User [plg_easysdi]';
+		echo '<br />'.JText::_('COM_EASYSDI_SERVICE_INSTALL_SCRIPT_MANIFEST_VERSION') . $this->release;
 	}
  
 	function install( $parent ) {

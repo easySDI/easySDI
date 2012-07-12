@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <install version="2.5" type="plugin" group="user">
-	<name>EasySDI plugin User</name>
+	<name>plg_easysdiuser</name>
 	<author>EasySDI Community</author>
-	<creationDate>June 2012</creationDate>
+	<creationDate>13 July 2012</creationDate>
 	<copyright>Copyright (C) 2012. All rights reserved.</copyright>
     <license>GNU General Public License version 3 or later; see LICENSE.txt</license>
 	<authorEmail>contact@easysdi.org</authorEmail>
