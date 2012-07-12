@@ -28,6 +28,12 @@ class Easysdi_coreViewEasysdi extends JView
 		// Assign data to the view
 		$this->form		= $this->get('Form');
 		
+		//Check if com_easysdi_service is installed
+		$db = JFactory::getDbo();
+		$db->setQuery('SELECT COUNT(*) FROM #__extensions WHERE name = "com_easysdi_service"');
+		$this->service = $db->loadResult();
+		
+		
 		// Display the view
 		$this->addToolbar();
 		parent::display($tpl);

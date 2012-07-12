@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="component" version="1.6.0" method="upgrade">
     <name>com_easysdi_core</name>
-    <creationDate>2012-06-04</creationDate>
+    <creationDate>13 July 2012</creationDate>
     <copyright>Copyright (C) 2012. All rights reserved.</copyright>
     <license>GNU General Public License version 3 or later; see LICENSE.txt</license>
     <author>EasySDI Community</author>
@@ -47,7 +47,7 @@
         </language>
     </languages>
     <administration>
-        <menu img="components/com_easysdi_core/assets/images/s_com_easysdi_core.ico" >COM_EASYSDI_CORE</menu>
+        <menu img="components/com_easysdi_core/assets/images/s_com_easysdi_core.ico" >COM_EASYSDI_SOLUTION</menu>
         
         <files folder="administrator">
             <filename>access.xml</filename>

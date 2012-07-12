@@ -68,8 +68,8 @@ class com_easysdi_coreInstallerScript
 			$row->level				= 1;
 			$row->path 				= 'uncategorised';
 			$row->extension 		= 'com_easysdi_core';
-			$row->title 			= "Uncategorised";
-			$row->alias 			= "uncategorised";
+			$row->title 			= 'Uncategorised';
+			$row->alias 			= 'uncategorised';
 			$row->published 		= 1;
 			$row->access 			= 1;
 			$row->params  			= '{"category_layout":"","image":""}';
