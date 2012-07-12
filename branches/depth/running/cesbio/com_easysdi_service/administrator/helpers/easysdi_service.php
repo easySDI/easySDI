@@ -34,7 +34,7 @@ class Easysdi_serviceHelper
 		
 		if ($vName=='categories') {
 			JToolBarHelper::title(
-					JText::sprintf('COM_CATEGORIES_CATEGORIES_TITLE', JText::_('com_easysdi_service')),
+					JText::sprintf('COM_CATEGORIES_CATEGORIES_TITLE', JText::_('COM_EASYSDI_SERVICE_NAME')),
 					'easysdi_service-categories');
 		}
 		

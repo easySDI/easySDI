@@ -242,7 +242,7 @@ class Easysdi_serviceViewConfig extends JView
 			$this->config = new stdClass();
 		
 		$db 			= JFactory::getDBO();
-		$db->setQuery("SELECT 0 AS id, '- Please select -' AS value UNION SELECT id, value FROM #__sdi_sys_serviceconnector") ;
+		$db->setQuery("SELECT 0 AS id, '- Please select -' AS value UNION SELECT id, value FROM #__sdi_sys_serviceconnector WHERE state = 1") ;
 		$this->serviceconnectorlist = $db->loadObjectList();
 		
 		$db->setQuery("SELECT 0 AS alias, '- Please select -' AS value UNION SELECT s.alias as alias,CONCAT(s.alias, ' - ', s.resourceurl,' - [',GROUP_CONCAT(syv.value SEPARATOR '-'),']') as value FROM #__sdi_service s
@@ -319,13 +319,9 @@ class Easysdi_serviceViewConfig extends JView
 					</tr>
 				</table>
 			</fieldset>
-			<fieldset class="adminform"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_CONFIG_SERVICE_LIST'); ?></legend>
+			<fieldset class="adminform"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_CONFIG_SERVICE_LIST'); ?><span class="star">*</span></legend>
 				<table class="admintable">
 					<thead>
-					<tr>
-						<th><?php echo JText::_( 'COM_EASYSDI_SERVICE_SERVICE'); ?><span class="star">*</span></th>
-					</tr>
-					
 					</thead>
 					<tbody id="remoteServerTable" >
 					<?php

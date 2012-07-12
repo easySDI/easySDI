@@ -42,7 +42,7 @@
 				description="COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_SERVICECONNECTOR_ID" 
                 required="true" 
                 onchange="javascript:getAuthenticationConnector();"
-                query="SELECT 0 AS id, '- Please select -' AS value UNION SELECT id, value FROM #__sdi_sys_serviceconnector" key_field="id" value_field="value"
+                query="SELECT 0 AS id, '- Please select -' AS value UNION SELECT id, value FROM #__sdi_sys_serviceconnector WHERE state=1" key_field="id" value_field="value"
                  /> 
 
 		<field 	name="resourceurl" 

@@ -44,7 +44,7 @@
 			</fileset>
 		</copy>
 		<copy todir="${projet.install.langEN.dir}">
-		     <fileset dir="./administrator/language">
+		     <fileset dir="./administrator/language/en-GB">
 		      <include name="**/en-GB.com_easysdi_service.ini" />
 		       <include name="**/en-GB.com_easysdi_service.sys.ini" />
 		     </fileset>

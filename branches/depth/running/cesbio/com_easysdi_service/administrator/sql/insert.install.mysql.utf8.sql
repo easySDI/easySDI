@@ -31,12 +31,12 @@ VALUES
 (2,1,0,'WMS'),
 (3,1,0,'WMTS'),
 (4,1,0,'WFS'),
-(5,1,0,'WCS'),
-(6,1,0,'WCPS'),
-(7,1,0,'SOS'),
-(8,1,0,'SPS'),
-(9,1,0,'WPS'),
-(10,1,0,'OLS')
+(5,0,0,'WCS'),
+(6,0,0,'WCPS'),
+(7,0,0,'SOS'),
+(8,0,0,'SPS'),
+(9,0,0,'WPS'),
+(10,0,0,'OLS')
 ;
 
 INSERT INTO `#__sdi_sys_servicecon_authenticationcon` (serviceconnector_id,authenticationconnector_id) 
