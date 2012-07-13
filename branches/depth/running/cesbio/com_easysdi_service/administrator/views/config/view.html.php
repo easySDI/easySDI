@@ -34,10 +34,12 @@ class Easysdi_serviceViewConfig extends JView
 		if(JRequest::getVar('layout',null)!='CSW' &&  $canDo->get('core.edit'))
 			JToolBarHelper::addNew('config.addserver',JText::_( 'COM_EASYSDI_SERVICE_NEW_SERVER'));
 		
+		
 		if ((!isset($this->id)&& $canDo->get('core.create')) || (isset($this->id)&& $canDo->get('core.edit'))){
 			JToolBarHelper::save('config.save', 'JTOOLBAR_SAVE');
 		}
-		JToolBarHelper::back('JTOOLBAR_BACK','index.php?option=com_easysdi_service&view=configs');
+		
+		JToolBarHelper::cancel('config.cancel', 'JTOOLBAR_CANCEL');
 	}
 	
 	/**
@@ -272,54 +274,7 @@ class Easysdi_serviceViewConfig extends JView
 	function genericServletInformationsHeader ($serviceconnector)
 	{
 		?>
-			<fieldset class="adminform"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_LEGEND_CONFIG_ID' );?></legend>
-				<table class="admintable">
-					<tr>
-						<th>
-						<?php echo JText::_( 'COM_EASYSDI_SERVICE_CONFIG_ID' );?> :<span class="star">*</span> 
-						</th>
-						<td colspan="4">
-							<input class="inputbox required" type='text' name='id' value='<?php echo $this->id;?>' <?php if(isset($this->id)){ echo "disabled='disabled'";};?>>
-							<?php if(isset($this->id)){ ?> <input type='hidden' name="id" id="id" value="<?php echo $this->id; ?>" /> <?php };?>
-						</td>
-					</tr>
-					<tr>
-						<th>
-						<?php echo JText::_( 'COM_EASYSDI_SERVICE_CONFIG_VERSION' );?> : 
-						</th>
-						<td  id="supportedVersionsByConfigText" >
-						<table>
-						<tr>
-						<?php 
-						foreach($this->config->{"supported-versions"}->{"version"} as $versionConfig){
-							?>
-							<td class="supportedversion">
-							<?php 
-							echo $versionConfig;
-							?>
-							</td>
-							<?php 
-						}
-						?>
-						</tr>
-						</table>
-						</td>
-						<td>
-							<input type="hidden" id="supportedVersionsByConfig" name="supportedVersionsByConfig" value='<?php echo json_encode ($versionConfig); ?>'></input>
-						</td>
-					</tr>
-				</table>
-			</fieldset>
-				
-			<fieldset class="adminform"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_CONFIG_HOST_TRANSLATOR'); ?></legend>
-				<table class="admintable">
-					<tr>
-						<td><input size="100" type="text" name="hostTranslator"
-							value="<?php  echo $this->config->{'host-translator'}; ?>"></td>
-					</tr>
-				</table>
-			</fieldset>
-			<fieldset class="adminform"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_CONFIG_SERVICE_LIST'); ?><span class="star">*</span></legend>
+		<fieldset class="adminform"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_CONFIG_SERVICE_LIST'); ?><span class="star">*</span></legend>
 				<table class="admintable">
 					<thead>
 					</thead>
@@ -385,6 +340,54 @@ class Easysdi_serviceViewConfig extends JView
 				var nbServer = <?php echo $iServer?>;
 				var service = '<?php echo $serviceType?>';
 				</script>
+			<fieldset class="adminform"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_LEGEND_CONFIG_ID' );?></legend>
+				<table class="admintable">
+					<tr>
+						<th>
+						<?php echo JText::_( 'COM_EASYSDI_SERVICE_CONFIG_ID' );?> :<span class="star">*</span> 
+						</th>
+						<td colspan="4">
+							<input class="inputbox required" type='text' name='id' value='<?php echo $this->id;?>' <?php if(isset($this->id)){ echo "disabled='disabled'";};?>>
+							<?php if(isset($this->id)){ ?> <input type='hidden' name="id" id="id" value="<?php echo $this->id; ?>" /> <?php };?>
+						</td>
+					</tr>
+					<tr>
+						<th>
+						<?php echo JText::_( 'COM_EASYSDI_SERVICE_CONFIG_VERSION' );?> : 
+						</th>
+						<td  id="supportedVersionsByConfigText" >
+						<table>
+						<tr>
+						<?php 
+						foreach($this->config->{"supported-versions"}->{"version"} as $versionConfig){
+							?>
+							<td class="supportedversion">
+							<?php 
+							echo $versionConfig;
+							?>
+							</td>
+							<?php 
+						}
+						?>
+						</tr>
+						</table>
+						</td>
+						<td>
+							<input type="hidden" id="supportedVersionsByConfig" name="supportedVersionsByConfig" value='<?php echo json_encode ($versionConfig); ?>'></input>
+						</td>
+					</tr>
+				</table>
+			</fieldset>
+				
+			<fieldset class="adminform"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_CONFIG_HOST_TRANSLATOR'); ?></legend>
+				<table class="admintable">
+					<tr>
+						<td><input size="100" type="text" name="hostTranslator"
+							value="<?php  echo $this->config->{'host-translator'}; ?>"></td>
+					</tr>
+				</table>
+			</fieldset>
+			
 				
 			<?php 
 		}
@@ -399,6 +402,7 @@ class Easysdi_serviceViewConfig extends JView
 		function genericServletInformationsFooter ()
 		{
 			?>
+			
 						<fieldset class="adminform" id="exceptionMode"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_LEGEND_EXCEPTION_MANAGEMENT'); ?></legend>
 						<table class="admintable">
 							<tr>

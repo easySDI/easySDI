@@ -24,6 +24,10 @@ class Easysdi_serviceControllerConfig extends JController
         parent::__construct();
     }
     
+    function cancel() {
+    	$this->setRedirect('index.php?option=com_easysdi_service&view=configs' );
+    }
+    
     function add() {
     	$serviceconnector = JRequest::getVar('serviceconnector',null);
     	if(isset($serviceconnector))

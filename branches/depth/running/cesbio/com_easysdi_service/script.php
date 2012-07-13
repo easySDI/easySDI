@@ -98,6 +98,25 @@ class com_easysdi_serviceInstallerScript
 		$db->setQuery("DELETE FROM `#__menu` WHERE title = 'com_easysdi_service'");
 		$db->query();
 		
+		//EasySDI configuration form update
+		$core_dom = new DomDocument();
+		$core_dom->load(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'config.xml');
+		$service_dom = new DomDocument();
+		$service_dom->load(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_service'.DS.'config.xml');
+			
+		$core_config = $core_dom->getElementsByTagName('config');
+		$service_fieldsets = $service_dom->getElementsByTagName('fieldset');
+			
+		
+		foreach($service_fieldsets as $service_fieldset){
+			if($service_fieldset->getAttribute("name") == 'component_service'){
+				$node = $core_dom->importNode($service_fieldset, true);
+				$core_config->appendChild ($node);
+			}
+		}
+
+		$core_dom->save(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'config.xml');
+		
 // 		echo '<p>' . JText::_('COM_EASYSDI_SERVICE_POSTFLIGHT_SCRIPT ') . '</p>';
 	}
 

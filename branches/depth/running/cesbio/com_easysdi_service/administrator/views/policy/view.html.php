@@ -35,7 +35,6 @@ class Easysdi_serviceViewPolicy extends JView
 			JToolBarHelper::save('policy.save', 'JTOOLBAR_SAVE');
 		
 		JToolBarHelper::cancel('policy.cancel', 'JTOOLBAR_CANCEL');
-		JToolBarHelper::back('JTOOLBAR_BACK','index.php?option=com_easysdi_service&view=policies&config='.$this->config.'&connector='.$this->connector);
 	}
 	
 	/**
@@ -468,12 +467,16 @@ class Easysdi_serviceViewPolicy extends JView
 			</tr>
 			<tr>
 					
-				<td><b><?php echo JText::_( 'COM_EASYSDI_SERVICE_FROM'); ?></b> 	
-					<?php echo JHTML::_('calendar',$thePolicy->{'AvailabilityPeriod'}->From->Date, "dateFrom","dateFrom","%d-%m-%Y"); ?>		
-					</td>
-				<td><b><?php echo JText::_( 'COM_EASYSDI_SERVICE_TO'); ?></b>		
+				<td>
+					<label for="dateFrom" class="sdidate" ><?php echo JText::_( 'COM_EASYSDI_SERVICE_FROM'); ?></label>				
+					<?php echo JHTML::_('calendar',$thePolicy->{'AvailabilityPeriod'}->From->Date, "dateFrom","dateFrom","%d-%m-%Y"); ?>			
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<label for="dateTo" class="sdidate" ><?php echo JText::_( 'COM_EASYSDI_SERVICE_TO'); ?></label>			
 					<?php echo JHTML::_('calendar',$thePolicy->{'AvailabilityPeriod'}->To->Date, "dateTo","dateTo","%d-%m-%Y"); ?>
-					</td>
+				</td>
 					
 			</tr>
 			<input name="dateFormat" type="hidden" value"dd-mm-yyyy">

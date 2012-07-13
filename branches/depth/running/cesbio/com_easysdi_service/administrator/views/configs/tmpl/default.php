@@ -43,7 +43,7 @@ $search = JRequest::getVar('search','');
 				<th class='title'><b><?php echo JText::_( 'COM_EASYSDI_SERVICE_CONFIGURATION_POLICIES_LIST'); ?></b></th>
 				<th class='title'><b><?php echo JText::_( 'COM_EASYSDI_SERVICE_CONFIGURATION_TYPE'); ?></b></th>
 				<th class='title'><b><?php echo JText::_( 'COM_EASYSDI_SERVICE_CONFIGURATION_URL'); ?></b></th>
-	
+				<th class='title'><b><?php echo JText::_( 'COM_EASYSDI_SERVICE_CONFIGURATION_HOST'); ?></b></th>
 			</tr>
 		</thead>
 	<tbody>
@@ -79,7 +79,7 @@ $search = JRequest::getVar('search','');
 			<td class="center">
 				<?php echo JHtml::_('grid.id', $i, $config['id']); ?>
 			</td>
-			<td class="center">
+			<td>
 				<a href="<?php echo JRoute::_('index.php?option=com_easysdi_service&task=config.edit&cid[]='.$config['id']).'&layout='.$layout;?>"><?php echo $config['id'];?></a>
 			</td>
 			<td class="center">
@@ -91,6 +91,7 @@ $search = JRequest::getVar('search','');
 			<td>
 			<?php echo '<b>'.$layout.'</b>'?>
 			</td>
+			<td><?php	echo $this->params->get('proxyurl').$config['id'].'?';?></td>
 			<td><?php	echo $config->{'host-translator'};?></td>
 		</tr>
 		
