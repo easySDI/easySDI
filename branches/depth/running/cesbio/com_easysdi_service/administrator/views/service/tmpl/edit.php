@@ -33,8 +33,8 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 		var serviceSelector 			= document.getElementById("jform_serviceconnector_id");
 		var service 					= serviceSelector.options[serviceSelector.selectedIndex].value;
 		var serviceauthentication 		= document.getElementById("jformserviceauthentication_id");
-		while ( serviceauthentication.options.length > 1 ) serviceauthentication.options[1] = null;
 		var resourceauthentication 		= document.getElementById("jformresourceauthentication_id");
+		while ( serviceauthentication.options.length > 1 ) serviceauthentication.options[1] = null;
 		while ( resourceauthentication.options.length > 1 ) resourceauthentication.options[1] = null;
 		var authenticationconnectorlist = document.getElementById("authenticationconnectorlist").value;
 		var JSONobjects 				= JSON.parse(authenticationconnectorlist);
@@ -48,6 +48,8 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 				}
 			}
 		}
+		document.getElementById('div-supportedversions').innerHTML = '<span class="star">*</span>';
+		document.getElementById('jform_compliance').value = "";
 	}
 	
 	function negoVersionService(){
@@ -104,7 +106,7 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 				return;
 			}
 			var arrcompliance=new Array();
-			document.getElementById('div-supportedversions').innerHTML = '';
+			document.getElementById('div-supportedversions').innerHTML = '<span class="star">*</span>';
 			var JSONobject = JSON.parse(JSONtext, function (key, value) {
 				var type;
 
