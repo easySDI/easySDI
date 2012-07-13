@@ -12,9 +12,10 @@
 	<scriptfile>script.php</scriptfile>
 	<files>
 		<filename plugin="easysdi">easysdi.php</filename>
+		<folder>language</folder>
 	</files>
 	<languages>
-		<language tag="en-GB">en-GB.plg_user_easysdi.sys.ini</language>
-		<language tag="en-GB">en-GB.plg_user_easysdi.ini</language>
+		<language tag="en-GB">language/en-GB/en-GB.plg_user_easysdi.sys.ini</language>
+		<language tag="en-GB">language/en-GB/en-GB.plg_user_easysdi.ini</language>
 	</languages>
 </install>
