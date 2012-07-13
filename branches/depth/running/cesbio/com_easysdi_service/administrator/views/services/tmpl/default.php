@@ -34,6 +34,10 @@ $saveOrder	= $listOrder == 'a.ordering';
 			<button type="button" onclick="document.id('filter_search').value='';this.form.submit();"><?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?></button>
 		</div>
 		<div class="filter-select fltrt">
+			<select name="filter_connector" class="inputbox" onchange="this.form.submit()">
+				<option value=""><?php echo JText::_('COM_EASYSDI_SERVICE_SELECT_CONNECTOR');?></option>
+				<?php echo JHtml::_('select.options', $this->connectorlist, 'value', 'text', $this->state->get('filter.connector'));?>
+			</select>
 			<select name="filter_published" class="inputbox" onchange="this.form.submit()">
 				<option value=""><?php echo JText::_('JOPTION_SELECT_PUBLISHED');?></option>
 				<?php echo JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'), 'value', 'text', $this->state->get('filter.state'), true);?>
@@ -66,8 +70,9 @@ $saveOrder	= $listOrder == 'a.ordering';
 				<th class='left'>
 				<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SERVICE_SERVICES_CONNECTOR', 'a.serviceconnector_value', $listDirn, $listOrder); ?>
 				</th>
-
-
+				<th class='left'>
+				<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SERVICE_SERVICES_URL', 'a.resourceurl', $listDirn, $listOrder); ?>
+				</th>
                 <?php if (isset($this->items[0]->state)) { ?>
 				<th width="5%">
 					<?php echo JHtml::_('grid.sort',  'JPUBLISHED', 'a.state', $listDirn, $listOrder); ?>
@@ -121,7 +126,9 @@ $saveOrder	= $listOrder == 'a.ordering';
 				<td>
 					<?php echo $item->serviceconnector_value; ?>
 				</td>
-
+				<td>
+					<?php echo $item->resourceurl; ?>
+				</td>
                 <?php if (isset($this->items[0]->state)) { ?>
 				    <td class="center">
 					    <?php echo JHtml::_('jgrid.published', $item->state, $i, 'services.', $canChange, 'cb'); ?>

@@ -26,6 +26,7 @@ class Easysdi_serviceViewServices extends JView
 	 */
 	public function display($tpl = null)
 	{
+		$this->categories	= $this->get('CategoryOrders');
 		$this->state		= $this->get('State');
 		$this->items		= $this->get('Items');
 		$this->pagination	= $this->get('Pagination');
@@ -35,7 +36,11 @@ class Easysdi_serviceViewServices extends JView
 			JError::raiseError(500, implode("\n", $errors));
 			return false;
 		}
-
+		$db 				=& JFactory::getDBO();
+		$query				= "SELECT id as value, value as text FROM #__sdi_sys_serviceconnector WHERE state=1" ;
+		$db->setQuery($query);
+		$this->connectorlist = $db->loadObjectList();
+		
 		$this->addToolbar();
 		parent::display($tpl);
 	}

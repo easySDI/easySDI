@@ -47,7 +47,7 @@ class Easysdi_serviceModelservices extends JModelList
                 'serviceurl', 'a.serviceurl',
                 'serviceusername', 'a.serviceusername',
                 'servicepassword', 'a.servicepassword',
-                'catid', 'a.catid',
+                'catid', 'a.catid', 'category_title',
                 'params', 'a.params',
                 'asset_id', 'a.asset_id',
             	'access', 'a.access', 'access_level',
@@ -71,6 +71,9 @@ class Easysdi_serviceModelservices extends JModelList
 		// Load the filter state.
 		$search = $app->getUserStateFromRequest($this->context.'.filter.search', 'filter_search');
 		$this->setState('filter.search', $search);
+		
+		$connector = $app->getUserStateFromRequest($this->context.'.filter.connector', 'filter_connector', '');
+		$this->setState('filter.connector', $connector);
 		
 		$access = $this->getUserStateFromRequest($this->context.'.filter.access', 'filter_access', 0, 'int');
 		$this->setState('filter.access', $access);
@@ -106,8 +109,9 @@ class Easysdi_serviceModelservices extends JModelList
 	protected function getStoreId($id = '')
 	{
 		// Compile the store id.
-		$id.= ':' . $this->getState('filter.search');
-		$id.= ':' . $this->getState('filter.state');
+		$id .= ':' . $this->getState('filter.search');
+		$id .= ':' . $this->getState('filter.connector');
+		$id .= ':' . $this->getState('filter.state');
 		$id	.= ':'. $this->getState('filter.published');
 		$id	.= ':'. $this->getState('filter.category_id');
 		$id	.= ':'. $this->getState('filter.access');
@@ -169,6 +173,11 @@ class Easysdi_serviceModelservices extends JModelList
             $query->where('a.state = '.(int) $published);
         } else if ($published === '') {
             $query->where('(a.state IN (0, 1))');
+        }
+        
+        // Filter by connector.
+        if ($connector = $this->getState('filter.connector')) {
+        	$query->where('#__sdi_sys_serviceconnector.id = ' . (int) $connector);
         }
         
         // Filter by access level.
