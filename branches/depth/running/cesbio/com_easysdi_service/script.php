@@ -92,30 +92,41 @@ class com_easysdi_serviceInstallerScript
 				return false;
 			}
 			$row->moveByReference(0, 'last-child', $row->id);
-		}
-		
-		$db = JFactory::getDbo();
-		$db->setQuery("DELETE FROM `#__menu` WHERE title = 'com_easysdi_service'");
-		$db->query();
-		
-		//EasySDI configuration form update
-		$core_dom = new DomDocument();
-		$core_dom->load(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'config.xml');
-		$service_dom = new DomDocument();
-		$service_dom->load(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_service'.DS.'config.xml');
 			
-		$core_config = $core_dom->getElementsByTagName('config');
-		$service_fieldsets = $service_dom->getElementsByTagName('fieldset');
+			$db = JFactory::getDbo();
+			$db->setQuery("DELETE FROM `#__menu` WHERE title = 'com_easysdi_service'");
+			$db->query();
 			
-		
-		foreach($service_fieldsets as $service_fieldset){
-			if($service_fieldset->getAttribute("name") == 'component_service'){
-				$node = $core_dom->importNode($service_fieldset, true);
-				$core_config->appendChild ($node);
+			//EasySDI configuration form update
+			$core_dom = new DomDocument();
+			if(!$core_dom->load(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'config.xml')){
+				JError::raiseWarning(null, JText::_('COM_EASYSDI_SERVICE_POSTFLIGHT_SCRIPT_LOAD_CORE_CONFIG_ERROR'));
+				return false;
 			}
+			$service_dom = new DomDocument();
+			if(!$service_dom->load(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_service'.DS.'config.xml')){
+				JError::raiseWarning(null, JText::_('COM_EASYSDI_SERVICE_POSTFLIGHT_SCRIPT_LOAD_SERVICE_CONFIG_ERROR'));
+				return false;
+			}
+				
+			$core_config = $core_dom->getElementsByTagName('config');
+			$service_fieldsets = $service_dom->getElementsByTagName('fieldset');
+			
+			foreach($service_fieldsets as $service_fieldset){
+				if($service_fieldset->getAttribute("name") == 'component_service'){
+					$node = $core_dom->importNode($service_fieldset, true);
+					foreach($core_config as $config){
+						$config->appendChild ($node);
+						break;
+					}
+					break;
+				}
+			}
+			
+			$core_dom->save(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'config.xml');
 		}
-
-		$core_dom->save(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'config.xml');
+		
+		
 		
 // 		echo '<p>' . JText::_('COM_EASYSDI_SERVICE_POSTFLIGHT_SCRIPT ') . '</p>';
 	}
@@ -125,66 +136,25 @@ class com_easysdi_serviceInstallerScript
 	 * uninstall runs before any other action is taken (file removal or database processing).
 	 */
 	function uninstall( $parent ) {
-		//EasySDI control Panel form cleaning
-// 		$form_dom = new DomDocument();
-// 		if(!$form_dom->load(JPATH_ADMINISTRATOR.'/components/com_easysdi_core/models/forms/easysdi.xml'))
-// 		{
-// 			//EasySDI core must be uninstalled...
-// 			echo '<p>' . JText::_('COM_EASYSDI_SERVICE_UNINSTALL_SCRIPT ') . '</p>';
-// 			return;
-// 		}
-// 		$form_fields = $form_dom->getElementsByTagName('fields')->item(0);
-// 		$form_fieldsets = $form_fields->getElementsByTagName('fieldset');
-// 		$nodeToRemove= null;
-// 		foreach($form_fieldsets as $form_fieldset){
-// 			if($form_fieldset->getAttribute("name") == 'service'){
-// 				$nodeToRemove = $form_fieldset;
-// 				break;
-// 			}
-// 		}
-// 		$form_fields->removeChild($nodeToRemove);
-// 		$form_dom->save(JPATH_ADMINISTRATOR.'/components/com_easysdi_core/models/forms/easysdi.xml');
+		//EasySDI configuration form cleaning
+		$core_dom = new DomDocument();
+		if(!$core_dom->load(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'config.xml')){
+			JError::raiseWarning(null, JText::_('COM_EASYSDI_SERVICE_POSTFLIGHT_SCRIPT_LOAD_CORE_CONFIG_ERROR'));
+			return false;
+		}
+		$core_fieldsets = $core_dom->getElementsByTagName('fieldset');
+
+		$fieldsToRemove = array();
+		foreach($core_fieldsets as $core_fieldset){
+			if($core_fieldset->getAttribute("name") == 'component_service'){
+				$fieldsToRemove[]=$core_fieldset;
+			}
+		}
 		
-// 		//EasySDI configuration form cleaning
-// 		$core_dom = new DomDocument();
-// 		if(!$core_dom->load(JPATH_ADMINISTRATOR.'/components/com_easysdi_core/config.xml'))
-// 		{
-// 			//EasySDI core must be uninstalled...
-// 			echo '<p>' . JText::_('COM_EASYSDI_SERVICE_UNINSTALL_SCRIPT ') . '</p>';
-// 			return;
-// 		}
-// 		$service_dom = new DomDocument();
-// 		$service_dom->load(JPATH_ADMINISTRATOR.'/components/com_easysdi_service/config.xml');
-			
-// 		$core_fieldsets = $core_dom->getElementsByTagName('fieldset');
-// 		$service_fieldsets = $service_dom->getElementsByTagName('fieldset');
-// 		$namesToRemove = array();
-// 		foreach($service_fieldsets as $service_fieldset){
-// 			if($service_fieldset->getAttribute("name") == 'component'){
-// 				$fields = $service_fieldset->getElementsByTagName('field');
-// 				foreach ($fields as $field){
-// 					$namesToRemove[]= $field->getAttribute("name");
-// 				}
-// 				break;
-// 			}
-// 		}
-		
-// 		$fieldsToRemove = array();
-// 		foreach($core_fieldsets as $core_fieldset){
-// 			if($core_fieldset->getAttribute("name") == 'component'){
-// 				$core_fields = $core_fieldset->getElementsByTagName('field'); 
-// 				foreach($core_fields as $core_field){
-// 					if(in_array($core_field->getAttribute("name"), $namesToRemove) ){
-// 						$fieldsToRemove[]=$core_field;
-// 					}
-// 				}
-// 			}
-// 		}
-		
-// 		foreach ($fieldsToRemove as $field){
-// 			$field->parentNode->removeChild($field);
-// 		}
-// 		$core_dom->save(JPATH_ADMINISTRATOR.'/components/com_easysdi_core/config.xml');
+		foreach ($fieldsToRemove as $field){
+			$field->parentNode->removeChild($field);
+		}
+		$core_dom->save(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'config.xml');
 		
 // 		echo '<p>' . JText::_('COM_EASYSDI_SERVICE_UNINSTALL_SCRIPT ') . '</p>';
 	}
