@@ -137,6 +137,16 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
 				<?php endforeach; ?>
 				</ul>
 			</fieldset>
+		<?php if($this->shop){?>
+		<?php echo JHtml::_('sliders.panel', JText::_('COM_EASYSDI_CORE_FIELDSET_ORDERINGOPTIONS'), 'orderingoptions-details'); ?>
+			<fieldset class="adminform">
+				<ul class="adminformlist">
+				<?php foreach($this->form->getFieldset('orderingoptions') as $field): ?>
+					<li><?php echo $field->label;echo $field->input;?></li>
+				<?php endforeach; ?>
+				</ul>
+			</fieldset>
+		<?php }?>
 		<?php echo JHtml::_('sliders.panel', JText::_('JGLOBAL_FIELDSET_PUBLISHING'), 'publishing-details'); ?>
 			<fieldset class="adminform">
 				<ul class="adminformlist">

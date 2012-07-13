@@ -26,9 +26,14 @@ class Easysdi_coreController extends JController
 	{
 		require_once JPATH_COMPONENT.'/helpers/easysdi_core.php';
 
-		// Load the submenu.
- 		//Easysdi_coreHelper::addSubmenu(JRequest::getCmd('view', 'users'));
-
+		//Check if others EasySDI components are installed and saved results in UserState
+		$app 				=& JFactory::getApplication();
+		$db 				= JFactory::getDbo();
+		$db->setQuery('SELECT COUNT(*) FROM #__extensions WHERE name = "com_easysdi_shop"');
+		$app->setUserState( 'com_easysdi_shop-installed' ,$db->loadResult() == 0 ? false : true);
+		$db->setQuery('SELECT COUNT(*) FROM #__extensions WHERE name = "com_easysdi_service"');
+		$app->setUserState( 'com_easysdi_service-installed' ,$db->loadResult() == 0 ? false : true);
+		
 		$view		= JRequest::getCmd('view', 'easysdi');
 		$layout 	= JRequest::getCmd('layout', 'edit');
 		$id			= JRequest::getInt('id');

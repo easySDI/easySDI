@@ -67,17 +67,6 @@
                 validate="url" 
                 filter="safehtml" /> 
 
-		<field 	id="notificationrequesttreatment" 
- 				name="notificationrequesttreatment" 
- 				type="radio"
-                class="inputbox"
-            	label="COM_EASYSDI_CORE_FORM_LBL_USER_NOTIFICATIONREQUESTTREATMENT"
-            	description="COM_EASYSDI_CORE_FORM_DESC_USER_NOTIFICATIONREQUESTTREATMENT" 
-                default="1" >
-                    <option value="0">JNO</option>
-                    <option value="1">JYES</option>
-		</field> 
-
         <field	name="state"
                 type="list"
                 label="JSTATUS"
@@ -96,6 +85,19 @@
 		<field  name="checked_out_time" type="hidden" filter="SAFEHTML" />
 		<field  name="guid" type="hidden" filter="SAFEHTML" />
 		 
+	</fieldset>
+	
+	<fieldset name="orderingoptions">
+		<field 	id="notificationrequesttreatment" 
+ 				name="notificationrequesttreatment" 
+ 				type="radio"
+                class="inputbox"
+            	label="COM_EASYSDI_CORE_FORM_LBL_USER_NOTIFICATIONREQUESTTREATMENT"
+            	description="COM_EASYSDI_CORE_FORM_DESC_USER_NOTIFICATIONREQUESTTREATMENT" 
+                default="1" >
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+		</field> 
 	</fieldset>
 	
 	<fieldset name="publishing">

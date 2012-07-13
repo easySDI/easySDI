@@ -33,14 +33,17 @@ class Easysdi_coreViewUser extends JView
 		$this->item		= $this->get('Item');
 		$this->form		= $this->get('Form');
 		
-		$this->contactaddressmodel = & JModel::getInstance('address', 'easysdi_coreModel');
-		$this->contactitem = $this->contactaddressmodel->getItemByUserID($this->item->id,1);
+		$this->contactaddressmodel 	= & JModel::getInstance('address', 'easysdi_coreModel');
+		$this->contactitem 			= $this->contactaddressmodel->getItemByUserID($this->item->id,1);
 
-		$this->billingaddressmodel = & JModel::getInstance('address', 'easysdi_coreModel');
-		$this->billingitem = $this->billingaddressmodel->getItemByUserID($this->item->id,2);
+		$this->billingaddressmodel 	= & JModel::getInstance('address', 'easysdi_coreModel');
+		$this->billingitem 			= $this->billingaddressmodel->getItemByUserID($this->item->id,2);
 		
-		$this->delivryaddressmodel = & JModel::getInstance('address', 'easysdi_coreModel');
-		$this->delivryitem = $this->delivryaddressmodel->getItemByUserID($this->item->id,3);
+		$this->delivryaddressmodel 	= & JModel::getInstance('address', 'easysdi_coreModel');
+		$this->delivryitem 			= $this->delivryaddressmodel->getItemByUserID($this->item->id,3);
+		
+		$app 				=& JFactory::getApplication();
+		$this->shop 		= $app->getUserState( 'com_easysdi_shop-installed');
 		
 		// Check for errors.
 		if (count($errors = $this->get('Errors'))) {
