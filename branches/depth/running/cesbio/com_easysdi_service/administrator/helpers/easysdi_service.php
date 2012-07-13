@@ -21,7 +21,7 @@ class Easysdi_serviceHelper
 	public static function addSubmenu($vName = '')
 	{
 		JSubMenuHelper::addEntry(
-			JText::_('COM_EASYSDI_SERVICE_TITLE_SERVICES'),
+			JText::_('COM_EASYSDI_SERVICE_SUBMENU_TITLE_SERVICES'),
 			'index.php?option=com_easysdi_service&view=services',
 			$vName == 'services'
 		);
@@ -34,12 +34,12 @@ class Easysdi_serviceHelper
 		
 		if ($vName=='categories') {
 			JToolBarHelper::title(
-					JText::sprintf('COM_CATEGORIES_CATEGORIES_TITLE', JText::_('COM_EASYSDI_SERVICE_NAME')),
+					JText::_('COM_EASYSDI_SERVICE_TITLE_CATEGORIES'),
 					'easysdi_service-categories');
 		}
 		
 		JSubMenuHelper::addEntry(
-				JText::_('COM_EASYSDI_SERVICE_TITLE_CONFIGS'),
+				JText::_('COM_EASYSDI_SERVICE_SUBMENU_TITLE_CONFIGS'),
 				'index.php?option=com_easysdi_service&view=configs',
 				$vName == 'configs'
 		);
