@@ -22,7 +22,7 @@ class Easysdi_coreHelper
 	{
 
 		JSubMenuHelper::addEntry(
-			JText::_('COM_EASYSDI_CORE_TITLE_USERS'),
+			JText::_('COM_EASYSDI_CORE_SUBMENU_TITLE_USERS'),
 			'index.php?option=com_easysdi_core&view=users',
 			$vName == 'users'
 		);
