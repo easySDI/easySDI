@@ -86,18 +86,18 @@ class com_easysdi_coreInstallerScript
 			JTable::addIncludePath(JPATH_ADMINISTRATOR.DS."components".DS."com_easysdi_core".DS."tables");
 			$newaccount =& JTable::getInstance('user', 'easysdi_coreTable');
 			if (!$newaccount) {
-				JError::raiseWarning(null, JText::_('COM_EASYSDI_CORE_POSTFLIGHT_SCRIPT_USER_ERROR'));
+				JError::raiseWarning(null, JText::_('COM_EASYSDI_CORE_POSTFLIGHT_SCRIPT_USER_ERROR_INSTANCIATE'));
 				return false;
 			}
 			$newaccount->user_id 	= $user->id;
-			$newaccount->alias 		= $user->username;
+			$newaccount->acronym	= $user->username;
 			$newaccount->catid 		= $row->id;
 			$result 				= $newaccount->store();
 			if (!(isset($result)) || !$result) {
-				JError::raiseWarning(null, JText::_('COM_EASYSDI_CORE_POSTFLIGHT_SCRIPT_USER_ERROR'));
+				JError::raiseError(42, JText::_('COM_EASYSDI_CORE_POSTFLIGHT_SCRIPT_USER_ERROR_STORE'). $newaccount->getError());
 				return false;
 			}
-			require_once JPATH_ADMINISTRATOR.'/components/com_easysdi_core/helpers/easysdi_core.php';
+			require_once JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'helpers'.DS.'easysdi_core.php';
 			$params['infrastructureID'] 	=  Easysdi_coreHelper::uuid();
 			$params['defaultaccount'] 		= $user->id;
 			$params['guestaccount'] 		= $user->id;
