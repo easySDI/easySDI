@@ -19,7 +19,7 @@
 				
 		<field 	name="alias" 
 				type="text" 
-				size="40" 
+				size="70" 
 				class="inputbox"
 				label="COM_EASYSDI_SERVICE_FORM_LBL_SERVICE_ALIAS"
 				description="COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_ALIAS"
@@ -28,7 +28,7 @@
 
 		<field 	name="name" 
 				type="text" 
-				size="40" 
+				size="70" 
 				class="inputbox"
 				label="COM_EASYSDI_SERVICE_FORM_LBL_SERVICE_NAME"
 				description="COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_NAME"
@@ -47,7 +47,7 @@
 
 		<field 	name="resourceurl" 
 				type="text" 
-				size="40" 
+				size="70" 
 				class="inputbox"
 				required="true" 
 				label="COM_EASYSDI_SERVICE_FORM_LBL_SERVICE_RESOURCEURL"
