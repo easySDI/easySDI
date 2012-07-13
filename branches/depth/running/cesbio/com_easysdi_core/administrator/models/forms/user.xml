@@ -17,17 +17,9 @@
 				class="inputbox"
 				required="true" />
 	
-		<field 	name="alias" 
-	   			type="text" 
-	   			size="40" 
-	   			class="inputbox"
-	   			required="true"
-            	label="COM_EASYSDI_CORE_FORM_LBL_USER_ALIAS"
-            	description="COM_EASYSDI_CORE_FORM_DESC_USER_ALIAS" 
-                filter="safehtml" /> 
-
 		<field 	name="user_id"
 				type="user"
+				size="55" 
 				default="" 
 				label="COM_EASYSDI_CORE_FORM_LBL_USER_USER_ID"
 				description="COM_EASYSDI_CORE_FORM_DESC_USER_USER_ID"
@@ -42,32 +34,33 @@
 		
 		<field 	name="acronym" 
        			type="text" 
-       			size="40" 
+       			size="75" 
        			class="inputbox"
            		label="COM_EASYSDI_CORE_FORM_LBL_USER_ACRONYM"
             	description="COM_EASYSDI_CORE_FORM_DESC_USER_ACRONYM" 
                 filter="safehtml" /> 
 
+		<field 	name="description" 
+       			type="textarea" 
+       			rows="3"
+       			cols="30"
+       			class="inputbox"
+            	label="COM_EASYSDI_CORE_FORM_LBL_USER_DESCRIPTION"
+            	description="COM_EASYSDI_CORE_FORM_DESC_USER_DESCRIPTION" 
+                 /> 
+                 
 		<field 	name="logo" 
        			type="text" 
-       			size="40" 
+       			size="75" 
        			class="inputbox"
             	label="COM_EASYSDI_CORE_FORM_LBL_USER_LOGO"
             	description="COM_EASYSDI_CORE_FORM_DESC_USER_LOGO" 
                 validate="url" 
                 filter="safehtml" /> 
 
-		<field 	name="description" 
-       			type="text" 
-       			size="40" 
-       			class="inputbox"
-            	label="COM_EASYSDI_CORE_FORM_LBL_USER_DESCRIPTION"
-            	description="COM_EASYSDI_CORE_FORM_DESC_USER_DESCRIPTION" 
-                filter="safehtml" /> 
-
 		<field 	name="website" 
        			type="text" 
-       			size="40" 
+       			size="75" 
        			class="inputbox"
             	label="COM_EASYSDI_CORE_FORM_LBL_USER_WEBSITE"
             	description="COM_EASYSDI_CORE_FORM_DESC_USER_WEBSITE" 

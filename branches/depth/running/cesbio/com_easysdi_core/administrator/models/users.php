@@ -135,6 +135,10 @@ class Easysdi_coreModelusers extends JModelList
 		$query->from('`#__sdi_user` AS a');
 
 
+		// Join over the users .
+		$query->select('u.name, u.username ');
+		$query->join('LEFT', '#__users AS u ON u.id=a.user_id');
+		
         // Join over the users for the checked out user.
         $query->select('uc.name AS editor');
         $query->join('LEFT', '#__users AS uc ON uc.id=a.checked_out');
@@ -201,7 +205,7 @@ class Easysdi_coreModelusers extends JModelList
 				$query->where('a.id = '.(int) substr($search, 3));
 			} else {
 				$search = $db->Quote('%'.$db->getEscaped($search, true).'%');
-                $query->where('( a.guid LIKE '.$search.'  OR  a.alias LIKE '.$search.'  OR  a.acronym LIKE '.$search.'  OR  a.logo LIKE '.$search.'  OR  a.description LIKE '.$search.'  OR  a.website LIKE '.$search.'  OR  a.params LIKE '.$search.' )');
+                $query->where('( u.name LIKE '.$search.'   OR  u.username LIKE '.$search.'  )');
 			}
 		}
 

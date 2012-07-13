@@ -1,7 +1,6 @@
 CREATE TABLE IF NOT EXISTS `#__sdi_user` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `guid` VARCHAR(36)  NOT NULL ,
-`alias` VARCHAR(20)  NOT NULL ,
 `created_by` INT(11)  NOT NULL ,
 `created` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `modified_by` INT(11) ,
@@ -13,7 +12,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_user` (
 `user_id` INT(11)  NOT NULL ,
 `acronym` VARCHAR(150)   ,
 `logo` VARCHAR(500) ,
-`description` VARCHAR(500)  ,
+`description` text  ,
 `website` VARCHAR(500)  ,
 `notificationrequesttreatment` TINYINT(1)  NOT NULL DEFAULT '1',
 `catid` INT(11)  ,
