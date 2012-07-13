@@ -53,10 +53,4 @@ class Easysdi_serviceController extends JController
 		require_once JPATH_COMPONENT.'/helpers/easysdi_service.php';
 		Easysdi_serviceHelper::negotiation(JRequest::get( 'get' ));
 	}
-	
-	public function getauthenticationconnector ()
-	{
-		require_once JPATH_COMPONENT.'/helpers/easysdi_service.php';
-		Easysdi_serviceHelper::getauthenticationconnector(JRequest::get( 'get' ));
-	}
 }

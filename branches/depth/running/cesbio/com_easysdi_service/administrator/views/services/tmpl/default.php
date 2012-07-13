@@ -90,9 +90,8 @@ $saveOrder	= $listOrder == 'a.ordering';
 		</tfoot>
 		<tbody>
 		<?php foreach ($this->items as $i => $item) :
-			$canDo		= Easysdi_serviceHelper::getActions(null,$item->id);
-				print_r ('checkin '.$user->authorise('core.manage',		'com_checkin') );
-			$ordering	= ($listOrder == 'a.ordering');
+			$canDo			= Easysdi_serviceHelper::getActions(null,$item->id);
+			$ordering		= ($listOrder == 'a.ordering');
 			$canEdit 		= $canDo->get('core.edit');
 			$canEditOwn 	= $canDo->get('core.edit.own');
 			$canChange 		= $canDo->get('core.edit.state');

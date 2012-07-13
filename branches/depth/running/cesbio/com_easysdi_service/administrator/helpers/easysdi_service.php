@@ -179,21 +179,4 @@ class Easysdi_serviceHelper
 		echo $encoded;
 		die();
 	}
-	
-	public static function getauthenticationconnector ($params){
-		$service				= $params['service'];
-		$db 					=& JFactory::getDBO();
-		$query 					= "SELECT ac.id as id, ac.value as value, al.id as level
-									FROM #__sdi_sys_authenticationconnector ac
-									INNER JOIN #__sdi_sys_servicecon_authenticationcon sc ON sc.authenticationconnector_id = ac.id
-									INNER JOIN #__sdi_sys_serviceconnector c ON c.id = sc.serviceconnector_id
-									INNER JOIN #__sdi_sys_authenticationlevel al ON ac.authenticationlevel_id = al.id
-									WHERE c.value = '".$service."'
-									";
-		$db->setQuery($query);
-		$authenticationcnnector = $db->loadObjectList();
-		$encoded = json_encode($authenticationcnnector);
-		echo $encoded;
-		die();
-	}
 }
