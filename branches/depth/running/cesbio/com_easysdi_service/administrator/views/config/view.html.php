@@ -192,11 +192,6 @@ class Easysdi_serviceViewConfig extends JView
 		</script>
 		
 		<?php
-		if (count($errors = $this->get('Errors'))) {
-			JError::raiseError(500, implode("\n", $errors));
-			return false;
-		}
-		
 		$params 			= JComponentHelper::getParams('com_easysdi_core');
 		$this->xml 			= simplexml_load_file($params->get('proxyconfigurationfile'));
 		$this->id 			= JRequest::getVar('id',null);

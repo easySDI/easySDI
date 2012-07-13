@@ -77,7 +77,7 @@ $search = JRequest::getVar('search','');
 			$i=0;
 			$count=0;
 			if (!file_exists($policyFile)){
-					JError::raiseError(500, JText::_( 'COM_EASYSDI_SERVICE_POLICY_LOAD_ERROR'));
+					JError::raiseWarning(null, JText::_( 'COM_EASYSDI_SERVICE_POLICY_LOAD_ERROR'));
 					return false;
 			}
 			
