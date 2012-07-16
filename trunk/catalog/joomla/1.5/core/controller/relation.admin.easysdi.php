@@ -64,8 +64,25 @@ defined('_JEXEC') or die('Restricted access');
 		{
 			alert( "<?php echo JText::_( 'CATALOG_RELATION_SUBMIT_NOCHILDRELATION', true ); ?>" );
 		}
-		else if (form.editable == 3 ){
-			//TODO
+		else if (document.getElementById('div_defaultVal_textbox') && document.getElementById('div_defaultVal_textbox').style.display == 'inline' && form.lowerbound.value > 0 && ((form.editable.value == 3 || form.editable.value == 2) && form.default_tb.value == ""))
+		{
+			alert( "<?php echo JText::_( 'CATALOG_RELATION_SUBMIT_NODEFAULT_VALUE', true ); ?>" );
+		}
+		else if (document.getElementById('div_defaultVal_textarea') && document.getElementById('div_defaultVal_textarea').style.display == 'inline' && form.lowerbound.value > 0 && ((form.editable.value == 3 || form.editable.value == 2) && form.default_ta.value == ""))
+		{
+			alert( "<?php echo JText::_( 'CATALOG_RELATION_SUBMIT_NODEFAULT_VALUE', true ); ?>" );
+		}
+		else if (document.getElementById('div_defaultVal_list') && document.getElementById('div_defaultVal_list').style.display == 'inline' && form.lowerbound.value > 0 && ((form.editable.value == 3 || form.editable.value == 2) && form.defaultList.selectedIndex == -1))
+		{
+			alert( "<?php echo JText::_( 'CATALOG_RELATION_SUBMIT_NODEFAULT_VALUE', true ); ?>" );
+		}
+		else if (document.getElementById('div_defaultVal_choice') && document.getElementById('div_defaultVal_choice').style.display == 'inline' && form.lowerbound.value > 0 && ((form.editable.value == 3 || form.editable.value == 2) && form.defaultChoice.length == 0))
+		{
+			alert( "<?php echo JText::_( 'CATALOG_RELATION_SUBMIT_NODEFAULT_VALUE', true ); ?>" );
+		}
+		else if (document.getElementById('div_defaultDate') && document.getElementById('div_defaultDate').style.display == 'inline' && form.lowerbound.value > 0 && ((form.editable.value == 3 || form.editable.value == 2) && form.defaultDate.value == ""))
+		{
+			alert( "<?php echo JText::_( 'CATALOG_RELATION_SUBMIT_NODEFAULT_VALUE', true ); ?>" );
 		}
 		else // Contrôles dépendants du type de relation
 		{
