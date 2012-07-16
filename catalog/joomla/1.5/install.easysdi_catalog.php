@@ -2305,7 +2305,7 @@ function com_install(){
         if($version == "2.4.1"){
         
             //issue #540
-            $query="ALTER TABLE `#__sdi_translation` ADD INDEX `element_guid` (`element_guid` ASC)" 
+            $query="ALTER TABLE `#__sdi_translation` ADD INDEX `element_guid` (`element_guid` ASC)" ;
             $db->setQuery( $query);
             if (!$db->query()) {
                 $mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");

@@ -67,6 +67,59 @@
 		return f;
 	}
 	
+	function createFieldSetHidden(id, title, border, clone, collapsible, relation, dynamic, master, min, max, tip, dismissDelay, isLanguageFieldset, isGeographicStereotype, geographicStereotypeLabel )
+	{	
+		//if (title) title = title+" "+min+" - "+max;
+		var collapsed = (relation && !clone) ? collapsed=true : collapsed = false;
+		if (master) master.clones_count=master.clones_count+1;
+		var clones_count = (master) ? master.clones_count : 1;
+		
+		// Valeur max = n
+		if (max == 999) max = Number.MAX_VALUE;
+		//collapsible = true;
+		// Créer un nouveau fieldset
+		var f = new Ext.form.FieldSet(
+				{
+					xtype: 'fieldset',
+					cls: 'easysdi_shop_backend_fieldset', 
+					title:title, 
+					originalTitle:title,
+					id:id, 
+					name:id,
+					minOccurs:min, 
+		            maxOccurs:max,
+		            border: border,
+					clone: clone,
+					clones_count: clones_count,
+					hidden: true,
+			        collapsible: collapsible,
+			        collapsed: collapsed,
+				    relation: relation,
+					dynamic: dynamic,
+					template: master,
+		            qTip: tip,
+		            qTipDelay: dismissDelay,
+		            isLanguageFieldset: isLanguageFieldset,
+		            isGeographicStereotype: isGeographicStereotype,
+		            listeners :{
+		            	expand:function(){
+		            		if(!this.hasBBox && (this.id.indexOf("gmd_EX_Extent")>=0)&&(this.id.indexOf("gmd_EX_GeographicBoundingBox")>=0))
+		            			addBBoxToFieldSet(this.id);
+		            		else if (this.isGeographicStereotype == true )
+		            			addStereotypeGeographicExtentMap(this.id, geographicStereotypeLabel);
+		            	},
+		            	afterrender:function(){
+		            		if(!this.collapsed){
+		            			this.collapse();
+		            			this.expand();
+		            		}
+		            	}
+		            }
+	        });
+		
+		return f;
+	}
+	
 	function createTextArea(id, label, mandatory, clone, master, min, max, value, defaultVal, dis, maxL, tip, dismissDelay, regex, mandatoryMsg, regexMsg)
 	{
 		optional = !mandatory;
