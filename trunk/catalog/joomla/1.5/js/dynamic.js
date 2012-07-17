@@ -243,6 +243,7 @@
 	            value: value,
 	            defaultVal:defaultVal,
 	            dynamic:true,
+	            disabled:dis,
 	            editable:false,
 	            minOccurs:min,
 	            maxOccurs:max,
