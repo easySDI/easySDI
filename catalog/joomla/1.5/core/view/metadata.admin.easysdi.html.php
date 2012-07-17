@@ -1416,25 +1416,18 @@ class HTML_metadata {
 								
 								if($hidden == "false")
 								{
-									// Selon le rendu de l'attribut, on fait des traitements diff�rents
-									switch ($child->rendertype_id)
+									$this->javascript .="
+									".$parentFieldsetName.".add(createNumberField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', true, 3, ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+									";
+									
+									if($disabled == "true")
 									{
-										// Textarea
-										case 1:
-											// Textbox
-										case 5:
-										default:
-											$this->javascript .="
-											".$parentFieldsetName.".add(createNumberField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', true, 3, ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
-											";
-											break;
-									}
-									if($disabled == "true"){
 										$this->javascript .="
 										".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
 										";
 									}
-								}else 
+								}
+								else 
 								{
 									$this->javascript .="
 									".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
@@ -1452,31 +1445,25 @@ class HTML_metadata {
 								if ($child->attribute_default <> "" and $nodeValue == "")
 								{
 									if($child->attribute_default == 'today')
-										$nodeValue = date ('d.m.Y');
+										$nodeValue = html_Metadata::cleanText(date ('d.m.Y'));
 									else
 										$nodeValue = html_Metadata::cleanText($child->attribute_default);
 								}
 								
 								if($hidden == "false")
 								{
-									// Selon le rendu de l'attribut, on fait des traitements différents
-									switch ($child->rendertype_id)
+									$this->javascript .="
+									".$parentFieldsetName.".add(createDateField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));";
+									
+									if($disabled == "true")
 									{
-										// Textarea
-										case 1:
-											// Textbox
-										case 5:
-										default:
-											$this->javascript .="
-											".$parentFieldsetName.".add(createDateField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));";
-											break;
-									}
-									if($disabled == "true"){
 										$this->javascript .="
 										".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
 										";
 									}
-								}else{
+								}
+								else
+								{
 									$this->javascript .="
 									".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
 									";
@@ -1688,32 +1675,26 @@ class HTML_metadata {
 								if ($child->attribute_default <> "" and $nodeValue == "")
 								{
 									if($child->attribute_default == 'today')
-										$nodeValue = date ('d.m.Y');
+										$nodeValue = html_Metadata::cleanText(date ('d.m.Y'));
 									else
 										$nodeValue = html_Metadata::cleanText($child->attribute_default);
 								}
 			
 								$nodeValue = substr($nodeValue, 0, 10);
-								if($hidden == "false"){
-									// Selon le rendu de l'attribut, on fait des traitements différents
-									switch ($child->rendertype_id)
-									{
-										// Textarea
-										case 1:
-										// Textbox
-										case 5:
-										default:
-											$this->javascript .="
-											".$parentFieldsetName.".add(createDateField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));";
-											break;
-									}
+								if($hidden == "false")
+								{
+									$this->javascript .="
+									".$parentFieldsetName.".add(createDateField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));";
+											
 									if($disabled == "true")
 									{
 										$this->javascript .="
 										".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
 										";
 									}
-								}else{
+								}
+								else
+								{
 									$this->javascript .="
 									".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
 									";
@@ -1800,24 +1781,19 @@ class HTML_metadata {
 											$nodeDefaultValues[] = $cont->guid;
 										}
 									}
-									
-									// Selon le rendu de l'attribut, on fait des traitements diff�rents
-									switch ($child->rendertype_id)
-									{
-										default:
-											$simple=true;
-											if ($child->rel_lowerbound>0)
-												$simple = false;
-												
-									 		$this->javascript .="
-											var valueList = ".HTML_metadata::array2extjs($dataValues, $simple, true, true).";
-										     var selectedValueList = ".HTML_metadata::array2json($nodeValues).";
-										     var defaultValueList = ".HTML_metadata::array2json($nodeDefaultValues).";
-										     // La liste
-										     ".$parentFieldsetName.".add(createChoiceBox('".$listName."', '".html_Metadata::cleanText(JText::_($label))."', ".$mandatory.", '".$child->rel_lowerbound."', '".$child->rel_upperbound."', valueList, selectedValueList, defaultValueList, ".$disabled.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."'));
-										    ";
-										break;
-									}
+								
+									$simple=true;
+									if ($child->rel_lowerbound>0)
+										$simple = false;
+										
+							 		$this->javascript .="
+									var valueList = ".HTML_metadata::array2extjs($dataValues, $simple, true, true).";
+								     var selectedValueList = ".HTML_metadata::array2json($nodeValues).";
+								     var defaultValueList = ".HTML_metadata::array2json($nodeDefaultValues).";
+								     // La liste
+								     ".$parentFieldsetName.".add(createChoiceBox('".$listName."', '".html_Metadata::cleanText(JText::_($label))."', ".$mandatory.", '".$child->rel_lowerbound."', '".$child->rel_upperbound."', valueList, selectedValueList, defaultValueList, ".$disabled.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."'));
+								    ";
+			
 									
 									if($disabled == "true")
 									{
@@ -1882,14 +1858,11 @@ class HTML_metadata {
 									else
 										$dataValues[html_Metadata::cleanText($contTitle)] = array(html_Metadata::cleanText($contContent), $cont->guid);
 								}
-								//echo "1)Contenu: "; print_r($dataValues); echo "<br>";
-								
 								$relNode = $xpathResults->query($child->attribute_isocode, $scope);
 									
-								//echo "existant: ".count($nodeValues)."<br>";
 								$language =& JFactory::getLanguage();
 								
-								// R�cup�rer le texte localis� stock�
+								// Récupérer le texte localisé stocké
 								foreach($this->langList as $row)
 								{
 									if ($row->code_easysdi == $language->_lang)
@@ -1898,8 +1871,6 @@ class HTML_metadata {
 											$node = $xpathResults->query("gco:CharacterString", $relNode->item(0));
 										else
 											$node = $xpathResults->query("gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString"."[@locale='#".$row->code."']", $relNode->item(0));
-								
-										//echo $type_isocode."[@locale='".$row->code."']"." dans ".$relNode->item(0)->nodeName."<br>";
 								
 										if ($node->length > 0)
 										{
@@ -1913,17 +1884,11 @@ class HTML_metadata {
 											AND t.content = '".html_Metadata::cleanText($node->item(0)->nodeValue)."'"."
 											ORDER BY c.ordering";
 											$database->setQuery( $query );
-											//echo $database->getQuery()."<br>";
-											//$cont_guid = $database->loadResult();
-												
-											//$nodeValues[] = $database->loadResult();
 											$result = $database->loadObject();
 											$nodeValues[] = $result->guid;
 										}
 									}
 								}
-									
-								//print_r($nodeValues); echo "<br>";
 									
 								$nodeDefaultValues = array();
 								if (count($nodeValues) == 0)
@@ -1931,14 +1896,11 @@ class HTML_metadata {
 									// Elements s�lectionn�s par d�faut
 									$query = "SELECT c.* FROM #__sdi_codevalue c, #__sdi_defaultvalue d WHERE c.id=d.codevalue_id AND c.published=true AND d.attribute_id = ".$child->attribute_id." ORDER BY c.ordering";
 									$database->setQuery( $query );
-									//echo $database->getQuery()."<br>";
 									$selectedContent = $database->loadObjectList();
 										
 									// Construction de la liste
 									foreach ($selectedContent as $cont)
 									{
-										//$nodeValues[] = html_Metadata::cleanText(JText::_($cont->guid."_TITLE"));
-										//$nodeDefaultValues[] = html_Metadata::cleanText(JText::_($cont->guid."_TITLE"));
 										$nodeValues[] = $cont->guid;
 										$nodeDefaultValues[] = $cont->guid;
 									}
@@ -1950,27 +1912,17 @@ class HTML_metadata {
 								
 								if($hidden == "false")
 								{
-
-									// Selon le rendu de l'attribut, on fait des traitements diff�rents
-									switch ($child->rendertype_id)
-									{
-										default:
-											
-											//echo "selectionne par defaut: "; print_r($nodeValues); echo "<hr>";
-										 	
-											$simple=true;
-											if ($child->rel_lowerbound>0)
-												$simple = false;
-											
-									 		$this->javascript .="
-											var valueList = ".HTML_metadata::array2extjs($dataValues, $simple, true, true).";
-										     var selectedValueList = ".HTML_metadata::array2json($nodeValues).";
-										     var defaultValueList = ".HTML_metadata::array2json($nodeDefaultValues).";
-										     // La liste
-										     ".$parentFieldsetName.".add(createChoiceBox('".$listName."', '".html_Metadata::cleanText(JText::_($label))."', ".$mandatory.", '".$child->rel_lowerbound."', '".$child->rel_upperbound."', valueList, selectedValueList, defaultValueList, ".$disabled.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."'));
-										    ";
-										break;
-									}
+									$simple=true;
+									if ($child->rel_lowerbound>0)
+										$simple = false;
+									
+							 		$this->javascript .="
+									var valueList = ".HTML_metadata::array2extjs($dataValues, $simple, true, true).";
+								     var selectedValueList = ".HTML_metadata::array2json($nodeValues).";
+								     var defaultValueList = ".HTML_metadata::array2json($nodeDefaultValues).";
+								     // La liste
+								     ".$parentFieldsetName.".add(createChoiceBox('".$listName."', '".html_Metadata::cleanText(JText::_($label))."', ".$mandatory.", '".$child->rel_lowerbound."', '".$child->rel_upperbound."', valueList, selectedValueList, defaultValueList, ".$disabled.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."'));
+								    ";
 									
 									if($disabled == "true")
 									{
@@ -2240,7 +2192,7 @@ class HTML_metadata {
 							if ($child->attribute_default <> "" and $nodeValue == "")
 							{
 								if(( $child->attribute_type == 5 || $child->attribute_type == 8 ) && $child->attribute_default == 'today')
-									$nodeValue = date ('d.m.Y');
+									$nodeValue = html_Metadata::cleanText(date ('d.m.Y'));
 								else
 									$nodeValue = html_Metadata::cleanText($child->attribute_default);
 							}
@@ -2315,19 +2267,11 @@ class HTML_metadata {
 								break;
 							// Number
 							case 4:
-								if($hidden == "false"){
-									// Selon le rendu de l'attribut, on fait des traitements diff�rents
-									switch ($child->rendertype_id)
-									{
-										// Textarea
-										case 1:
-										// Textbox
-										case 5:
-										default:
-											$this->javascript .="
-											".$parentFieldsetName.".add(createNumberField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", true, master, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', true, 3, ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));";
-											break;
-									}
+								if($hidden == "false")
+								{
+									$this->javascript .="
+									".$parentFieldsetName.".add(createNumberField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", true, master, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', true, 3, ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));";
+										
 									if($disabled == "true")
 									{
 										$this->javascript .="
@@ -2343,26 +2287,20 @@ class HTML_metadata {
 								break;
 							// Date
 							case 5:
-								if($hidden == "false"){
-									// Selon le rendu de l'attribut, on fait des traitements diff�rents
-									switch ($child->rendertype_id)
-									{
-										// Textarea
-										case 1:
-										// Textbox
-										case 5:
-										default:
-											$this->javascript .="
-											".$parentFieldsetName.".add(createDateField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", true, master, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));";
-											break;
-									}
+								if($hidden == "false")
+								{
+									$this->javascript .="
+									".$parentFieldsetName.".add(createDateField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", true, master, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));";
+									
 									if($disabled == "true")
 									{
 										$this->javascript .="
 										".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
 										";
 									}
-								}else{
+								}
+								else
+								{
 									$this->javascript .="
 									".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
 									";
@@ -2409,27 +2347,20 @@ class HTML_metadata {
 							// DateTime
 							case 8:
 								$nodeValue = substr($nodeValue, 0, 10);
-								
-								if($hidden == "false"){
-									// Selon le rendu de l'attribut, on fait des traitements diff�rents
-									switch ($child->rendertype_id)
-									{
-										// Textarea
-										case 1:
-										// Textbox
-										case 5:
-										default:
-											$this->javascript .="
-											".$parentFieldsetName.".add(createDateField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", true, master, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));";
-											break;
-									}
+								if($hidden == "false")
+								{
+									$this->javascript .="
+									".$parentFieldsetName.".add(createDateField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", true, master, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));";
+									
 									if($disabled == "true")
 									{
 										$this->javascript .="
 										".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
 										";
 									}
-								}else{
+								}
+								else
+								{
 									$this->javascript .="
 									".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
 									";
@@ -2519,25 +2450,18 @@ class HTML_metadata {
 								}
 								
 								if($hidden == "false"){
-									// Selon le rendu de l'attribut, on fait des traitements diff�rents
-									switch ($child->rendertype_id)
-									{
-										default:
-											$simple=true;
-											if ($child->rel_lowerbound>0)
-												$simple = false;
-											
-											$this->javascript .="
-											var master = Ext.getCmp('".$masterlistName."'); 
-											var valueList = ".HTML_metadata::array2extjs($dataValues, $simple, true, true).";
-										     var selectedValueList = ".HTML_metadata::array2json($nodeValues).";
-										     var defaultValueList = ".HTML_metadata::array2json($nodeDefaultValues).";
-										     // La liste
-										     ".$parentFieldsetName.".add(createChoiceBox('".$listName."', '".html_Metadata::cleanText(JText::_($label))."', ".$mandatory.", '".$child->rel_lowerbound."', '".$child->rel_upperbound."', valueList, selectedValueList, defaultValueList, ".$disabled.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."', master, true));
-										    ";
-											
-									 	break;
-									}
+									$simple=true;
+									if ($child->rel_lowerbound>0)
+										$simple = false;
+									
+									$this->javascript .="
+									var master = Ext.getCmp('".$masterlistName."'); 
+									var valueList = ".HTML_metadata::array2extjs($dataValues, $simple, true, true).";
+								     var selectedValueList = ".HTML_metadata::array2json($nodeValues).";
+								     var defaultValueList = ".HTML_metadata::array2json($nodeDefaultValues).";
+								     // La liste
+								     ".$parentFieldsetName.".add(createChoiceBox('".$listName."', '".html_Metadata::cleanText(JText::_($label))."', ".$mandatory.", '".$child->rel_lowerbound."', '".$child->rel_upperbound."', valueList, selectedValueList, defaultValueList, ".$disabled.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."', master, true));
+								    ";
 									
 									if($disabled == "true")
 									{
@@ -2650,24 +2574,18 @@ class HTML_metadata {
 									$nodeValues[] = "";
 								
 								if($hidden == "false"){
-									// Selon le rendu de l'attribut, on fait des traitements diff�rents
-									switch ($child->rendertype_id)
-									{
-										default:
-											$simple=true;
-											if ($child->rel_lowerbound>0)
-												$simple = false;
-											
-									 		$this->javascript .="
-											var master = Ext.getCmp('".$masterlistName."'); 
-											var valueList = ".HTML_metadata::array2extjs($dataValues, $simple, true, true).";
-										     var selectedValueList = ".HTML_metadata::array2json($nodeValues).";
-										     var defaultValueList = ".HTML_metadata::array2json($nodeDefaultValues).";
-										     // La liste
-										     ".$parentFieldsetName.".add(createChoiceBox('".$listName."', '".html_Metadata::cleanText(JText::_($label))."', ".$mandatory.", '".$child->rel_lowerbound."', '".$child->rel_upperbound."', valueList, selectedValueList, defaultValueList, ".$disabled.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."', master, true));
-										    ";
-										break;
-									}
+									$simple=true;
+									if ($child->rel_lowerbound>0)
+										$simple = false;
+									
+							 		$this->javascript .="
+									var master = Ext.getCmp('".$masterlistName."'); 
+									var valueList = ".HTML_metadata::array2extjs($dataValues, $simple, true, true).";
+								     var selectedValueList = ".HTML_metadata::array2json($nodeValues).";
+								     var defaultValueList = ".HTML_metadata::array2json($nodeDefaultValues).";
+								     // La liste
+								     ".$parentFieldsetName.".add(createChoiceBox('".$listName."', '".html_Metadata::cleanText(JText::_($label))."', ".$mandatory.", '".$child->rel_lowerbound."', '".$child->rel_upperbound."', valueList, selectedValueList, defaultValueList, ".$disabled.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."', master, true));
+								    ";
 									
 									if($disabled == "true")
 									{
@@ -2718,14 +2636,9 @@ class HTML_metadata {
 									";
 									break;
 								}
-								// Selon le rendu de l'attribut, on fait des traitements diff�rents
-								switch ($child->rendertype_id)
-								{
-									default:
-										$this->javascript .="
-										".$parentFieldsetName.".add(createTextArea('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", true, master, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));";
-										break;
-								}
+								$this->javascript .="
+								".$parentFieldsetName.".add(createTextArea('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", true, master, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));";
+								
 								if($disabled == "true")
 								{
 									$this->javascript .="
@@ -2761,7 +2674,7 @@ class HTML_metadata {
 					if ($child->attribute_default <> "" )
 					{
 						if(( $child->attribute_type == 5 || $child->attribute_type == 8 ) && $child->attribute_default == 'today')
-							$nodeValue = date ('d.m.Y');
+							$nodeValue = html_Metadata::cleanText(date ('d.m.Y'));
 						else
 							$nodeValue = html_Metadata::cleanText($child->attribute_default);
 					}
@@ -3061,18 +2974,9 @@ class HTML_metadata {
 								";
 								break;
 							}
-							// Selon le rendu de l'attribut, on fait des traitements diff�rents
-							switch ($child->rendertype_id)
-							{
-								// Textarea
-								case 1:
-								// Textbox
-								case 5:
-								default:
-									$this->javascript .="
-									".$parentFieldsetName.".add(createNumberField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', true, 3, ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));";
-									break;
-							}
+							$this->javascript .="
+							".$parentFieldsetName.".add(createNumberField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', true, 3, ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));";
+							
 							if($disabled == "true")
 							{
 								$this->javascript .="
@@ -3090,18 +2994,10 @@ class HTML_metadata {
 								";
 								break;
 							}
-							// Selon le rendu de l'attribut, on fait des traitements diff�rents
-							switch ($child->rendertype_id)
-							{
-								// Textarea
-								case 1:
-								// Textbox
-								case 5:
-								default:
-									$this->javascript .="
-									".$parentFieldsetName.".add(createDateField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));";
-									break;
-							}
+							
+							$this->javascript .="
+							".$parentFieldsetName.".add(createDateField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));";
+							
 							if($disabled == "true")
 							{
 								$this->javascript .="
@@ -3232,8 +3128,7 @@ class HTML_metadata {
 											     // La liste
 											     ".$parentFieldsetName.".add(createComboBox('".$listName."', '".html_Metadata::cleanText(JText::_($label))."', ".$mandatory.", '".$child->rel_lowerbound."', '".$child->rel_upperbound."', valueList, selectedValueList, defaultValueList, ".$disabled.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."'));
 											    ";
-										 	}
-																					 
+										 	}										 
 											break;
 									}
 								 	break;
@@ -3295,18 +3190,9 @@ class HTML_metadata {
 								break;
 							}
 							
-							// Selon le rendu de l'attribut, on fait des traitements diff�rents
-							switch ($child->rendertype_id)
-							{
-								// Textarea
-								case 1:
-								// Textbox
-								case 5:
-								default:
-									$this->javascript .="
-									".$parentFieldsetName.".add(createDateField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));";
-									break;
-							}
+							$this->javascript .="
+							".$parentFieldsetName.".add(createDateField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));";
+
 							if($disabled == "true")
 							{
 								$this->javascript .="
@@ -3380,24 +3266,18 @@ class HTML_metadata {
 								";
 								break;
 							}
-							// Selon le rendu de l'attribut, on fait des traitements diff�rents
-							switch ($child->rendertype_id)
-							{
-								default:
-									
-							 										 		
-							 		$simple=true;
-									if ($child->rel_lowerbound>0)
-										$simple = false;
-									
-									$this->javascript .="
-									var valueList = ".HTML_metadata::array2extjs($dataValues, $simple, true, true).";
-								    var selectedValueList = ".HTML_metadata::array2json($nodeValues).";
-								    var defaultValueList = ".HTML_metadata::array2json($nodeDefaultValues).";
-								     // La liste
-								    ".$parentFieldsetName.".add(createChoiceBox('".$listName."', '".html_Metadata::cleanText(JText::_($label))."', ".$mandatory.", '".$child->rel_lowerbound."', '".$child->rel_upperbound."', valueList, selectedValueList, defaultValueList, ".$disabled.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."'));
-								    ";
-							}
+
+							$simple=true;
+							if ($child->rel_lowerbound>0)
+								$simple = false;
+							
+							$this->javascript .="
+							var valueList = ".HTML_metadata::array2extjs($dataValues, $simple, true, true).";
+						    var selectedValueList = ".HTML_metadata::array2json($nodeValues).";
+						    var defaultValueList = ".HTML_metadata::array2json($nodeDefaultValues).";
+						     // La liste
+						    ".$parentFieldsetName.".add(createChoiceBox('".$listName."', '".html_Metadata::cleanText(JText::_($label))."', ".$mandatory.", '".$child->rel_lowerbound."', '".$child->rel_upperbound."', valueList, selectedValueList, defaultValueList, ".$disabled.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."'));
+						    ";
 							
 							if($disabled == "true")
 							{
@@ -3467,25 +3347,19 @@ class HTML_metadata {
 									";
 									break;
 								}
-								// Selon le rendu de l'attribut, on fait des traitements diff�rents
-								switch ($child->rendertype_id)
-								{
-									default:
-										
 
-								 		$simple=true;
-										if ($child->rel_lowerbound>0)
-											$simple = false;
-										
-								 		$this->javascript .="
-										var valueList = ".HTML_metadata::array2extjs($dataValues, $simple, true, true).";
-									    var selectedValueList = ".HTML_metadata::array2json($nodeValues).";
-									    var defaultValueList = ".HTML_metadata::array2json($nodeDefaultValues).";
-									    // La liste
-									    ".$parentFieldsetName.".add(createChoiceBox('".$listName."', '".html_Metadata::cleanText(JText::_($label))."', ".$mandatory.", '".$child->rel_lowerbound."', '".$child->rel_upperbound."', valueList, selectedValueList, defaultValueList, ".$disabled.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."'));
-									    ";
-									break;
-								}
+								$simple=true;
+								if ($child->rel_lowerbound>0)
+									$simple = false;
+								
+						 		$this->javascript .="
+								var valueList = ".HTML_metadata::array2extjs($dataValues, $simple, true, true).";
+							    var selectedValueList = ".HTML_metadata::array2json($nodeValues).";
+							    var defaultValueList = ".HTML_metadata::array2json($nodeDefaultValues).";
+							    // La liste
+							    ".$parentFieldsetName.".add(createChoiceBox('".$listName."', '".html_Metadata::cleanText(JText::_($label))."', ".$mandatory.", '".$child->rel_lowerbound."', '".$child->rel_upperbound."', valueList, selectedValueList, defaultValueList, ".$disabled.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."'));
+							    ";
+			
 								
 								if($disabled == "true")
 								{
@@ -3643,14 +3517,10 @@ class HTML_metadata {
 								";
 								break;
 							}
-							// Selon le rendu de l'attribut, on fait des traitements différents
-							switch ($child->rendertype_id)
-							{
-								default:
-									$this->javascript .="
-									".$parentFieldsetName.".add(createTextArea('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));";
-									break;
-							}
+							
+							$this->javascript .="
+							".$parentFieldsetName.".add(createTextArea('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));";
+							
 							if($disabled == "true")
 							{
 								$this->javascript .="
