@@ -122,7 +122,6 @@ class HTML_metadata {
 			$this->boundaries_name[] = addslashes(JText::_($boundary->guid."_LABEL"));
 			$this->boundaries[JText::_($boundary->guid."_LABEL")] = array('northbound'=>$boundary->northbound, 'southbound'=>$boundary->southbound, 'westbound'=>$boundary->westbound, 'eastbound'=>$boundary->eastbound);
 		}
-		//print_r($this->boundaries);
 		$this->catalogBoundaryIsocode = $catalogBoundaryIsocode;
 	
 		$catalogBoundaryIsocode = config_easysdi::getValue("catalog_boundary_isocode");
@@ -866,8 +865,7 @@ class HTML_metadata {
 								     ".$parentFieldsetName.".add(createComboBox_Boundaries('".$parentName."_boundaries', '".addslashes(JText::_("BOUNDARIES"))."', false, '1', '1', valueList, '', false, '".html_Metadata::cleanText(JText::_("BOUNDARIES_TIP"))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."', boundaries, paths));
 								    ";
 		}
-		
-		
+				
 		$rowChilds = array();
 		$query = "SELECT rel.id as rel_id, 
 						 rel.guid as rel_guid,
