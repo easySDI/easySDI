@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySDI, a solution to implement easily any spatial data infrastructure
- * Copyright (C) 2008 DEPTH SA, Chemin d�"Arche 40b, CH-1870 Monthey, easysdi@depth.ch 
+ * Copyright (C) 2008 DEPTH SA, Chemin de"Arche 40b, CH-1870 Monthey, easysdi@depth.ch 
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,7 +24,6 @@ defined('_JEXEC') or die('Restricted access');
 
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
-//jimport( 'joomla.application.component.view' );
 ?>
 <?php if((JRequest::getVar('task') =="editMetadata")||(JRequest::getVar('task') =="askForEditMetadata")||(JRequest::getVar('task') =="replicateMetadata")){?>
 <script>
@@ -48,17 +47,12 @@ JHTML::script('SuperBoxSelect.js', 'administrator/components/com_easysdi_catalog
 JHTML::script('FileUploadField.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('shCore.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('shBrushXml.js', 'administrator/components/com_easysdi_catalog/js/');
-//JHTML::script('GemetClient.js', 'administrator/components/com_easysdi_catalog/js/');
-//JHTML::script('GemetClient-uncompressed.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('thesaur.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('HS.js', 'administrator/components/com_easysdi_catalog/js/');
-//JHTML::script('translations.js', 'administrator/components/com_easysdi_catalog/js/');
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.jsLoaderUtil.php');
 $jsLoader =JSLOADER_UTIL::getInstance();
 JHTML::script('SingleFile.js', $jsLoader->getPath("map","openlayers", "/lib/OpenLayers/"));
 JHTML::script('OpenLayers.js', $jsLoader->getPath("map","openlayers"));
-//JHTML::script('SingleFile.js',  $jsLoader->getPath("map","geoext", "/lib/GeoExt/"));
-//JHTML::script('GeoExt.js',  $jsLoader->getPath("map", "geoext", "/script/"));
 JHTML::script('BoundaryItemSelector.js', 'administrator/components/com_easysdi_catalog/js/');
 JHTML::script('MultiSelect.js', 'administrator/components/com_easysdi_catalog/js/');
 
@@ -73,7 +67,7 @@ class HTML_metadata {
 	var $paths = array();
 	var $boundaries_name = array();
 	var $catalogBoundaryIsocode = "";
-	var $qTipDismissDelay = "5000"; // Dur�e par d�faut de l'affichage du tooltip
+	var $qTipDismissDelay = "5000"; // Duree par defaut de l'affichage du tooltip
 	var $parentId_class="";
 	var $parentId_attribute="";
 	var $parentGuid="";
@@ -219,12 +213,12 @@ else
 					
 					$rowMetadata = new metadataByGuid($database);
 					$rowMetadata->load($row->metadata_guid);
-					if ($isManager) // Le r�le de gestionnaire prime sur celui d'�diteur, au cas o� l'utilisateur a les deux
+					if ($isManager) // Le rele de gestionnaire prime sur celui d'editeur, au cas oe l'utilisateur a les deux
 					{
 						if ($rowMetadata->metadatastate_id == 4 // En travail
-							or $rowMetadata->metadatastate_id == 3 // Valid�
-							or ($rowMetadata->metadatastate_id == 2 and $rowMetadata->archived >= date('Y-m-d H:i:s'))// Archiv� et date du jour <= date d'archivage
-							or ($rowMetadata->metadatastate_id == 1 and $rowMetadata->published <= date('Y-m-d H:i:s') )// Publi� et date du jour >= date de publication
+							or $rowMetadata->metadatastate_id == 3 // Valide
+							or ($rowMetadata->metadatastate_id == 2 and $rowMetadata->archived >= date('Y-m-d H:i:s'))// Archive et date du jour <= date d'archivage
+							or ($rowMetadata->metadatastate_id == 1 and $rowMetadata->published <= date('Y-m-d H:i:s') )// Publie et date du jour >= date de publication
 							)
 						{
 							?>
@@ -240,11 +234,11 @@ else
 					}
 					else if ($isEditor)
 					{
-						// L'utilisateur courant, si c'est un �diteur, doit �tre �diteur de la m�tadonn�e
+						// L'utilisateur courant, si c'est un editeur, doit etre editeur de la metadonnee
 						$rowCurrentUser = new accountByUserId($database);
 						$rowCurrentUser->load($user->get('id'));
 			
-						if ($rowMetadata->metadatastate_id == 4 and $rowMetadata->editor_id == $rowCurrentUser->id) // En travail et t�che d'�dition assign�e
+						if ($rowMetadata->metadatastate_id == 4 and $rowMetadata->editor_id == $rowCurrentUser->id) // En travail et teche d'edition assignee
 						{
 							?>
 							<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_EDIT_METADATA_ACTION')); ?>" id="editMetadata" onClick="window.open('<?php echo JRoute::_(displayManager::buildUrl('index.php?task=editMetadata&option='.$option.'&cid[]='.$row->version_id)); ?>', '_self'); "></div>
@@ -280,9 +274,9 @@ else
 					
 					$rowMetadata = new metadataByGuid($database);
 					$rowMetadata->load($row->metadata_guid);
-					if ($isManager) // Le r�le de gestionnaire prime sur celui d'�diteur, au cas o� l'utilisateur a les deux
+					if ($isManager) // Le rele de gestionnaire prime sur celui d'editeur, au cas oe l'utilisateur a les deux
 					{
-						if (($rowMetadata->metadatastate_id == 1 and date('Y-m-d H:i:s') >= $rowMetadata->published )// Publi� et date du jour >= date de publication
+						if (($rowMetadata->metadatastate_id == 1 and date('Y-m-d H:i:s') >= $rowMetadata->published )// Publie et date du jour >= date de publication
 							)
 						{
 							?>
@@ -295,7 +289,7 @@ else
 								<div class="logo" id="emptyPicto"></div>
 							<?php 
 						}
-						if ($rowMetadata->metadatastate_id == 3 or ($rowMetadata->metadatastate_id == 2 ) or  ($rowMetadata->metadatastate_id == 1 and date('Y-m-d H:i:s') >= $rowMetadata->published)// Archiv�, Valid� ou Publi�
+						if ($rowMetadata->metadatastate_id == 3 or ($rowMetadata->metadatastate_id == 2 ) or  ($rowMetadata->metadatastate_id == 1 and date('Y-m-d H:i:s') >= $rowMetadata->published)// Archive, Valide ou Publie
 							)
 						{
 							?>
@@ -371,7 +365,7 @@ else
 		$this->mandatoryMsg = html_Metadata::cleanText(JText::_('CATALOG_METADATA_EDIT_MANDATORY_MSG'));
 		$this->regexMsg = html_Metadata::cleanText(JText::_('CATALOG_METADATA_EDIT_REGEX_MSG'));
 	
-		// R�cup�rer les noms des p�rim�tres
+		// Recuperer les noms des perimetres
 		$this->boundaries[JText::_('CORE_METADATASTATE_LIST')] = array('northbound'=>0, 'southbound'=>0, 'westbound'=>0, 'eastbound'=>0);
 		
 		foreach($boundaries as $boundary)
@@ -390,7 +384,7 @@ else
 		
 		
 		
-		// R�cup�rer les infos pour la m�tadonn�e parente pour le lien entre les types d'objet o� cet objet est l'enfant et la borne parent max est �gale � 1
+		// Recuperer les infos pour la metadonnee parente pour le lien entre les types d'objet oe cet objet est l'enfant et la borne parent max est egale e 1
 		$database->setQuery( "SELECT otl.class_id, otl.attribute_id, parent_m.guid as parent_guid 
 							  FROM #__sdi_objecttypelink otl
 							  INNER JOIN #__sdi_object child_o ON otl.child_id=child_o.objecttype_id
@@ -450,7 +444,7 @@ else
 		if ($account_id == null)
 			$account_id = $user_id;
 
-		// Langues � g�rer
+		// Langues e gerer
 		$this->langList = array();
 		$database->setQuery( "SELECT l.id, l.name, l.label, l.defaultlang, l.code as code, l.isocode, l.gemetlang, c.code as code_easysdi 
 							  FROM #__sdi_language l, #__sdi_list_codelang c 
@@ -470,7 +464,7 @@ else
 		// Premier noeud						
 		$fieldsetName = "fieldset".$root[0]->id."_".str_replace("-", "_", helper_easysdi::getUniqueId());
 		?>
-			<!-- Pour permettre le retour � la liste des produits depuis la toolbar Joomla -->
+			<!-- Pour permettre le retour e la liste des produits depuis la toolbar Joomla -->
 			<div id="page">
 		   <h2 class="contentheading"><?php echo JText::sprintf("CATALOG_EDIT_METADATA", $object_name, $version_title) ?></h2>
 		   <div id="contentin" class="contentin easysdi-table">
@@ -498,7 +492,7 @@ else
 						// Message d'attente pendant les chargements
 						var myMask = new Ext.LoadMask(Ext.getBody(), {msg:'Please wait...'});
 
-						// Construction des variables pour les diff�rentes fen�tres qui pourraient �tre g�n�r�es
+						// Construction des variables pour les differentes fenetres qui pourraient etre generees
 						var win;
     					var winxml;
 						var wincsw;
@@ -506,7 +500,7 @@ else
 						var winrst;
 						var winupload;
     
-						// Outils pour la pr�visualisation
+						// Outils pour la previsualisation
 						SyntaxHighlighter.config.clipboardSwf = 'clipboard.swf';
 														
 						// sets the user interface language
@@ -532,7 +526,7 @@ else
 						HS.Lang['".$userLang."']['CORE_METADATA_UPLOADFILE_ERROR']='".html_Metadata::cleanText(JText::_('CORE_METADATA_UPLOADFILE_ERROR'))."';
 						HS.Lang['".$userLang."']['CATALOG_METADATA_ALERT_CLEAR_UPLOADEDFILE_CONFIRM_MSG']='".html_Metadata::cleanText(JText::_('CATALOG_METADATA_ALERT_CLEAR_UPLOADEDFILE_CONFIRM_MSG'))."';
 												
-						// Cr�er le formulaire qui va contenir la structure
+						// Creer le formulaire qui va contenir la structure
 						var form = new Ext.ux.ExtendedFormPanel({
 								id:'metadataForm',
 								url: 'index.php',
@@ -770,7 +764,7 @@ else
 														xml = xml.split('<br>').join('\\n');
 														var html = '<pre class=\"brush: xml;gutter: false;\">' + xml + '</pre>';
 														
-														// Cr�er une iframe pour accueillir le preview XML
+														// Creer une iframe pour accueillir le preview XML
 														mifWin = new Ext.Window({
 						
 														      title         : 'XML Preview',
@@ -823,7 +817,7 @@ else
 				//echo $nodeCount." fois ".$root[0]->isocode;
 				HTML_metadata::buildTree($database, 0, $root[0]->id, $root[0]->id, $fieldsetName, 'form', str_replace(":", "_", $root[0]->isocode), $xpathResults, null, $node->item(0), $queryPath, $root[0]->isocode, $account_id, $profile_id, $option);
 				
-				// Retraverser la structure et autoriser les nulls pour tous les champs cach�s
+				// Retraverser la structure et autoriser les nulls pour tous les champs caches
 				$this->javascript .="
 					//var hiddenFields= new Array();
 					form.cascade(function(cmp)
@@ -856,7 +850,7 @@ else
 					//console.log(hiddenFields);
 				";								
 
-				// Sauvegarde basique, pas de contr�les ExtJs. Uniquement quand une m�tadonn�e n'est pas publi�e.
+				// Sauvegarde basique, pas de contreles ExtJs. Uniquement quand une metadonnee n'est pas publiee.
 				if (!$isPublished)
 				{
 					$this->javascript .="
@@ -897,7 +891,7 @@ else
 												clientValidation: false,
 												success: function(form, action) 
 												{
-													// Retour � la page pr�c�dente
+													// Retour e la page precedente
 													Ext.MessageBox.alert('".JText::_('CATALOG_SAVEMETADATA_MSG_SUCCESS_TITLE')."', 
 							                    						 '".JText::_('CATALOG_SAVEMETADATA_MSG_SUCCESS_TEXT')."',
 							                    						 function () {window.open ('./index.php?option=".$option."&task=cancelMetadata&object_id=".$object_id."&Itemid=".JRequest::getVar('Itemid')."&lang=".JRequest::getVar('lang')."','_parent');});
@@ -919,7 +913,7 @@ else
 					form.render();";
 				}
 				
-				// Possibilit� de valider lorsqu'on est �diteur. Contr�les ExtJs et passage de l'�tat "En travail" � "Valid�"
+				// Possibilite de valider lorsqu'on est editeur. Contreles ExtJs et passage de l'etat "En travail" e "Valide"
 				if ($isEditor and !$isPublished)
 				{
 					$this->javascript .="
@@ -965,7 +959,7 @@ else
 														}
 													}
 													
-													// countValues doit �tre �gal � z�ro ou � countFields. Sinon, lever une erreur
+													// countValues doit etre egal e zero ou e countFields. Sinon, lever une erreur
 													if (countValues != countFields && countValues != 0)
 													{
 														//console.log(cmp.getId());
@@ -1077,7 +1071,7 @@ else
 					form.render();";
 				}
 				
-				// Possibilit� de publier lorsqu'on est gestionnaire. Contr�les ExtJs et passage de l'�tat "Valid�" � "Publi�"
+				// Possibilite de publier lorsqu'on est gestionnaire. Contreles ExtJs et passage de l'etat "Valide" e "Publie"
 				if($isManager and $isValidated)
 				{
 					$this->javascript .="
@@ -1124,7 +1118,7 @@ else
 															}
 														}
 														
-														// countValues doit �tre �gal � z�ro ou � countFields. Sinon, lever une erreur
+														// countValues doit etre egal e zero ou e countFields. Sinon, lever une erreur
 														if (countValues != countFields && countValues != 0)
 														{
 															for (var i=0; i < countFields ; i++)
@@ -1156,7 +1150,7 @@ else
 																								{
 																									xml = (action.result.file.xml);
 																									xmlfile = xml.split('<br>').join('\\n');
-																									// Cr�er une iframe pour demander � l'utilisateur la date de publication
+																									// Creer une iframe pour demander e l'utilisateur la date de publication
 																									if (!win)
 																										win = new Ext.Window({
 																												                title:'Publication',
@@ -1313,7 +1307,7 @@ else
 																								{
 																									xml = (action.result.file.xml);
 																									xmlfile = xml.split('<br>').join('\\n');
-																									// Cr�er une iframe pour demander � l'utilisateur la date de publication
+																									// Creer une iframe pour demander e l'utilisateur la date de publication
 																									if (!win)
 																										win = new Ext.Window({
 																												                title:'Publication',
@@ -1474,7 +1468,7 @@ else
 								        	}})
 								        );
 						form.render();";
-					// Possibilit� de revenir en travail. Contr�les ExtJs et passage � l'�tat "En travail"
+					// Possibilite de revenir en travail. Contreles ExtJs et passage e l'etat "En travail"
 					$this->javascript .="
 					form.fbar.add(new Ext.Button({text: '".JText::_('CORE_INVALIDATE')."',
 									handler: function()
@@ -1510,9 +1504,9 @@ else
 					form.render();";
 				}
 				
-				// Ajout du bouton METTRE A JOUR seulement si l'utilisateur courant est gestionnaire de la m�tadonn�e
-				// et que la m�tadonn�e est publi�e
-				// Possibilit� de mettre � jour lorsqu'on est gestionnaire et que l'�tat est "Publi�". Contr�les ExtJs.
+				// Ajout du bouton METTRE A JOUR seulement si l'utilisateur courant est gestionnaire de la metadonnee
+				// et que la metadonnee est publiee
+				// Possibilite de mettre e jour lorsqu'on est gestionnaire et que l'etat est "Publie". Contreles ExtJs.
 				if($isManager and $isPublished)
 				{
 					$this->javascript .="
@@ -1635,7 +1629,7 @@ else
 					
 				if(!$isPublished and !$isValidated)
 				{
-					// Assignation de m�tadonn�e
+					// Assignation de metadonnee
 					$editors = array();
 					$listEditors = array();
 					$database->setQuery( "	SELECT DISTINCT c.id AS value, b.name AS text 
@@ -1664,7 +1658,7 @@ else
 												clientValidation: false,
 												success: function(form, action) 
 												{*/
-													// Cr�er une iframe pour demander � l'utilisateur la date de publication
+													// Creer une iframe pour demander e l'utilisateur la date de publication
 													if (!win)
 														win = new Ext.Window({
 														                title:'".addslashes(JText::_('CORE_METADATA_ASSIGN_ALERT'))."',
@@ -1808,7 +1802,7 @@ else
 		    		// Affichage du formulaire
 		    		form.doLayout();";
 
-		// Tout fermer ou tout ouvrir, selon la cl� de config METADATA_COLLAPSE 
+		// Tout fermer ou tout ouvrir, selon la cle de config METADATA_COLLAPSE 
 		if ($metadata_collapse == 'true')
 		{
 			$this->javascript .="
@@ -1844,20 +1838,16 @@ else
 		print_r("<script type='text/javascript'>Ext.onReady(function(){".$this->javascript."});</script>");
 	}
 	
-	function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFieldsetName, $ancestorFieldsetName, $parentName, $xpathResults, $parentScope, $scope, $queryPath, $currentIsocode, $account_id, $profile_id, $option)
+	function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFieldsetName, $ancestorFieldsetName, $parentName, $xpathResults, $parentScope, $scope, $queryPath, $currentIsocode, $account_id, $profile_id, $option,$parent_object)
 	{
-		//echo $parent." - ".$parentFieldsetName."<br>";
-		//echo "<hr>SCOPE: ".$scope->nodeName."<br>";
-		// On r�cup�re dans des variables le scope respectivement pour le traitement des classes enfant et
+		// On recupere dans des variables le scope respectivement pour le traitement des classes enfant et
 		// pour le traitement des attributs enfants.
-		// Cela permet d'�viter les effets de bord
-		//$classScope = $scope;
-		//$attributScope = $scope;
+		// Cela permet d'eviter les effets de bord
 						
 		// Stockage du path pour atteindre ce noeud du XML
 		$queryPath = $queryPath."/".$currentIsocode;
 		
-		// Construire la liste d�roulante des p�rim�tres pr�d�finis si on est au bon endroit
+		// Construire la liste deroulante des perimetres predefinis si on est au bon endroit
 		//echo $this->catalogBoundaryIsocode." == ".$currentIsocode.", ".count($this->boundaries)."<br>";
 		if ($this->catalogBoundaryIsocode == $currentIsocode AND count($this->boundaries_name) > 0)
 		{
@@ -1889,7 +1879,7 @@ else
 						 CONCAT(attribute_namespace.prefix,':',a.isocode) as attribute_isocode, 
 						 CONCAT(list_namespace.prefix,':',a.type_isocode) as list_isocode, 
 						 a.attributetype_id as attribute_type, 
-						  tc.id as cl_stereotype_id,
+						 tc.id as cl_stereotype_id,
 						 a.default as attribute_default, 
 						 a.pattern as attribute_pattern, 
 						 a.length as length,
@@ -1942,14 +1932,15 @@ else
 				  GROUP BY rel.id ORDER BY rel.ordering, rel.id";		
 		$database->setQuery( $query );
 		
-		//echo $database->getquery()."<br>";
-		//$rowAttributeChilds = array_merge( $rowAttributeChilds, $database->loadObjectList() );
 		$rowChilds = array_merge( $rowChilds, $database->loadObjectList() );
 
 		// Parcours des attributs enfants
-		//foreach($rowAttributeChilds as $child)
 		foreach($rowChilds as $child)
 		{
+			//La visibilité est héréditaire : mise à jour de la valeur du child courant en fonction du parent
+			if(isset($parent_object) && $parent_object->editable > $child->editable)
+				$child->editable = $parent_object->editable;
+			
 			// Traitement d'une relation vers un attribut
 			if ($child->attribute_id <> null)
 			{
@@ -1967,28 +1958,24 @@ else
 					if ($tip == null or substr($tip, -12, 12) == "_INFORMATION")
 						$tip = ""; //$child->attribute_name;			
 				}	
-				//echo " > ".$child->attribute_isocode." - ".$label."<br>";
 				
-				// Le mod�le de saisie
-				//$regex = html_Metadata::cleanText($child->attribute_pattern);
+				// Le modele de saisie
 				$regex = addslashes($child->attribute_pattern);
 				
 				if ($regex == null)
 					$regex = "";
 				
-				// Le message � afficher en cas d'erreur de saisie selon le mod�le
+				// Le message e afficher en cas d'erreur de saisie selon le modele
 				$regexmsg = JText::_(strtoupper($child->attribute_guid)."_REGEXMSG");
 				if ($regexmsg == null or substr($regexmsg, -9, 9) == "_REGEXMSG")
 				{
 					$regexmsg = "";			
 				}	
-
-				//echo " > ".$child->attribute_isocode." - ".$regex." - ".$regexmsg."<br>";
 				
-				// Mise en place des contr�les
-				// Cas des champs syst�me qui doivent �tre d�sactiv�s
+				// Mise en place des contrôles
+				// Cas des champs systèmes qui doivent être désactivés
 				$disabled = "false";
-				if ($child->editable == 2)
+				if ($child->editable == 2 )
 					$disabled = "true";
 				
 				// Cas des champs qui sont obligatoires
@@ -2001,20 +1988,20 @@ else
 				if ($child->length)
 					$maxLength = $child->length;
 				
+				//Champs caché
+				$hidden = "false";
+				if ($child->editable == 3 )
+					$hidden = "true";
+				
 				// On regarde dans le XML s'il contient la balise correspondante au code ISO de l'attribut enfant,
 				// et combien de fois au niveau courant
-				//echo "Le scope pour l'attribut est <b>".$scope->nodeName."</b> et on recherche <b>".$child->attribute_id.$child->attribute_isocode."</b><br>";
 				$mainNode = $xpathResults->query($child->attribute_isocode, $scope);
 				$attributeCount = $mainNode->length;
 	
-				//echo "L'attribut enfant ".$child->attribute_isocode." existe ".$attributeCount." fois.<br>";
-				
 				if ($child->attribute_type == 6 and $attributeCount > 1)
 					$attributeCount = 1;
-				//echo "Pardon, ".$attributeCount." fois.<br>";
 				
-				
-				// On n'entre dans cette boucle que si on a trouv� au moins une occurence de l'attribut dans le XML
+				// On n'entre dans cette boucle que si on a trouve au moins une occurence de l'attribut dans le XML
 				for ($pos=0; $pos<$attributeCount; $pos++)
 				{
 					/*
@@ -2024,26 +2011,20 @@ else
 					//echo "----------- On traite ".$child->attribute_isocode." [".$child->attribute_type."] -----------<br>";
 				
 					// Construction du master qui permet d'ajouter des occurences de la relation.
-					// Le master contient les donn�es de la premi�re occurence.
+					// Le master contient les donnees de la premiere occurence.
 					if ($pos==0)
 					{	
-						//echo $pos.") mainNode: ".$mainNode->nodeName."<br>";
 						$attributeScope = $mainNode->item($pos);
-						//echo "Cas ".$pos."<br>";
 						// Traitement de l'attribut enfant.
-						// Changement du scope pour le noeud correspondant � cette occurence de l'attribut dans le XML
-						//echo $pos.") attributeScope: ".$attributeScope->nodeName."<br>";
-						// Modifier le path d'acc�s � l'attribut
-						// $queryPath = $queryPath."/".$child->attribute_id;
 						
-						// Si on est en train de traiter un attribut de type liste, il faut encore r�cup�rer
-						// Le code ISO de la liste, sinon on r�cup�re le code ISO du type d'attribut
+						// Si on est en train de traiter un attribut de type liste, il faut encore recuperer
+						// Le code ISO de la liste, sinon on recupere le code ISO du type d'attribut
 						if ($child->attribute_type == 6 )
 							$type_isocode = $child->list_isocode;
 						else
 							$type_isocode = $child->t_isocode;
 	
-						// Modifier le path d'acc�s � l'attribut
+						// Modifier le path d'acces e l'attribut
 						$queryPath = $queryPath."/".$child->attribute_isocode."/".$type_isocode;
 						
 						// Construction du nom de l'attribut
@@ -2053,7 +2034,7 @@ else
 						// Traitement de chaque attribut selon son type
 						switch($child->attribute_type)
 						{
-							// Guid (toujours disabled, donc toujours un champ cach�)
+							// Guid (toujours disabled, donc toujours un champ cache)
 							case 1:
 								// Traitement de la classe enfant
 								//echo "Recherche de ".$type_isocode." dans ".$attributeScope->nodeName."<br>";
@@ -2064,15 +2045,15 @@ else
 								//echo "Trouve ".$nodeValue."<br>";
 								//echo "Valeur en 0: ".$nodeValue."<br>";
 									
-								// R�cup�ration de la valeur par d�faut, s'il y a lieu
+								// Recuperation de la valeur par defaut, s'il y a lieu
 								if ($child->attribute_default <> "" and $nodeValue == "")
 									$nodeValue = html_Metadata::cleanText($child->attribute_default);
 			
-								// Si le xpathParentId est d�fini, regarder si on est au xpath souhait�.	
+								// Si le xpathParentId est defini, regarder si on est au xpath souhaite.	
 								if ($this->parentId_attribute <> "")
 								{
 									//gmd_MD_Metadata-gmd_parentIdentifier-gco_CharacterString__1
-									// V�rification qu'on est bien dans l'attribut choisi. La classe n'a pas d'utilit�
+									// Verification qu'on est bien dans l'attribut choisi. La classe n'a pas d'utilite
 									if ($parentScope <> NULL and $this->parentId_attribute == $child->attribute_id)
 									{
 										// Stocker le guid du parent
@@ -2080,7 +2061,7 @@ else
 									}
 								}
 								
-								// Selon le rendu de l'attribut, on fait des traitements diff�rents
+								// Selon le rendu de l'attribut, on fait des traitements differents
 								switch ($child->rendertype_id)
 								{
 									// Textbox
@@ -2101,9 +2082,6 @@ else
 							// Text
 							case 2:
 								// Traitement de la classe enfant
-								//echo $currentName."; recherche de ".$type_isocode." dans ".$attributeScope->nodeName.", enfant de ".$attributeScope->parentNode->nodeName;//."<br>";
-								//echo "<br><b>".$parentScope->nodeName." - ".$scope->nodeName."</b><br>";
-								//$node = $xpathResults->query($child->attribute_isocode."/".$type_isocode, $attributeScope);
 								$node = $xpathResults->query($type_isocode, $attributeScope);
 											 	
 								// Cas où le noeud n'existe pas dans le XML. Inutile de rechercher la valeur
@@ -2112,35 +2090,39 @@ else
 								else
 									$nodeValue = html_Metadata::cleanText($node->item($pos)->nodeValue);
 								
-								//echo "<i>Trouve ".$nodeValue."</i><hr>";
-								//echo "Valeur en 0: ".$nodeValue."<br>";
-									
-								// R�cup�ration de la valeur par d�faut, s'il y a lieu
+								// Recuperation de la valeur par defaut, s'il y a lieu
 								if ($child->attribute_default <> "" and $nodeValue == "")
 									$nodeValue = html_Metadata::cleanText($child->attribute_default);
 			
-								// Selon le rendu de l'attribut, on fait des traitements diff�rents
-								switch ($child->rendertype_id)
+								if($hidden == "false")
 								{
-									// Textarea
-									case 1:
+									// Selon le rendu de l'attribut, on fait des traitements differents
+									switch ($child->rendertype_id)
+									{
+										// Textarea
+										case 1:
+											$this->javascript .="
+											".$parentFieldsetName.".add(createTextArea('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+											";
+											break;
+										// Textbox
+										case 5:
+											$this->javascript .="
+											".$parentFieldsetName.".add(createTextField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+											";
+											break;
+										default:
+											$this->javascript .="
+											".$parentFieldsetName.".add(createTextArea('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));";
+											break;
+									}
+									if ($disabled == "true")
+									{
 										$this->javascript .="
-										".$parentFieldsetName.".add(createTextArea('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+										".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
 										";
-										break;
-									// Textbox
-									case 5:
-										$this->javascript .="
-										".$parentFieldsetName.".add(createTextField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
-										";
-										break;
-									default:
-										$this->javascript .="
-										".$parentFieldsetName.".add(createTextArea('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));";
-										break;
-								}
-								if ($child->editable == 2)
-								{
+									}
+								}else {
 									$this->javascript .="
 									".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
 									";
@@ -2150,48 +2132,30 @@ else
 							// Local
 							case 3:
 								// Traitement de la classe enfant
-								//echo "Recherche de gco:CharacterString dans ".$attributeScope->nodeName."<br>";
-								//$node = $xpathResults->query($child->attribute_isocode."/".$type_isocode, $attributeScope);
 								$node = $xpathResults->query("gco:CharacterString", $attributeScope);
-								//echo "Trouve ".$node->length."<br>";
 											 	
 								if ($node->length>0)
 									$nodeValue = html_Metadata::cleanText($node->item($pos)->nodeValue);
 								else
 									$nodeValue="";
-								//echo "Trouve ".$nodeValue."<br>";
-								//echo "Valeur en 0: ".$node->item($pos)->nodeValue."<br>";
-								//print_r($node->item($pos)->nodeValue); echo "<br>";
 									
-								// R�cup�ration de la valeur par d�faut, s'il y a lieu
-								/*if ($child->attribute_default <> "" and $nodeValue == "")
-									$nodeValue = html_Metadata::cleanText($child->attribute_default);
-								*/
+								// Recuperation de la valeur par defaut, s'il y a lieu
 								$defaultVal = "";
 								
 								switch ($child->rendertype_id)
 								{
 									default:
-										/* Traitement sp�cifique aux langues */
-										
-										// Stockage du path pour atteindre ce noeud du XML
-										//$queryPath = $child->attribute_isocode."/gmd:LocalisedCharacterString";
-										//$queryPath = "gmd:LocalisedCharacterString";
-											
+										/* Traitement specifique aux langues */
 										$listNode = $xpathResults->query($child->attribute_isocode, $scope);
 										$listCount = $listNode->length;
-										//echo "2) Il y a ".$listCount." occurences de ".$child->attribute_isocode." dans ".$scope->nodeName."<br>";
 										for($pos=0;$pos<=$listCount; $pos++)
 										{
 											if ($pos==0)
 											{	
 												$currentScope=$listNode->item($pos);
-												// Traitement de la multiplicit�
-												// R�cup�ration du path du bloc de champs qui va �tre cr�� pour construire le nom
-												//$LocName = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__".($pos+1);
+												// Traitement de la multiplicite
+												// Recuperation du path du bloc de champs qui va etre cree pour construire le nom
 												$LocName = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__1";
-								
-												//echo $LocName." - ".$child->attribute_id." - ".JText::_($label)." - ".$child->rel_lowerbound." - ".$child->rel_upperbound." - ".$parentFieldsetName."<br>";
 												$fieldsetName = "fieldset".$child->attribute_id."_".str_replace("-", "_", helper_easysdi::getUniqueId());
 												$this->javascript .="
 													// Créer un nouveau fieldset
@@ -2205,7 +2169,6 @@ else
 													if ($row->defaultlang)
 													{
 														$langNode = $xpathResults->query("gco:CharacterString", $currentScope);
-														//echo "2a) Il y a ".$langNode->length." occurences de gco:CharacterString dans ".$currentScope->nodeName."<br>";
 														if ($langNode->length > 0)
 															$nodeValue = html_Metadata::cleanText($langNode->item(0)->nodeValue);
 														else
@@ -2213,16 +2176,11 @@ else
 															$database->setQuery("SELECT defaultvalue FROM #__sdi_translation WHERE element_guid='".$child->attribute_guid."' AND language_id=".$row->id);
 															$nodeValue = html_Metadata::cleanText($database->loadResult());
 															$defaultVal= $nodeValue; //html_Metadata::cleanText($nodeValue);
-															//$nodeValue = "";
 														}
 													}
 													else
 													{
-														//print_r($row);echo "<br>";
-														//echo $row->language."<br>";
-														//$LocLangName = $LocName."-gmd_LocalisedCharacterString-".$row->code_easysdi."__1";
 														$langNode = $xpathResults->query("gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString"."[@locale='#".$row->code."']", $currentScope);
-														//echo "2b) Il y a ".$langNode->length." occurences de gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString dans ".$currentScope->nodeName."<br>";
 														if ($langNode->length > 0)
 															$nodeValue = html_Metadata::cleanText($langNode->item(0)->nodeValue);
 														else
@@ -2230,51 +2188,53 @@ else
 															$database->setQuery("SELECT defaultvalue FROM #__sdi_translation WHERE element_guid='".$child->attribute_guid."' AND language_id=".$row->id);
 															$nodeValue = html_Metadata::cleanText($database->loadResult());
 															$defaultVal= $nodeValue; //html_Metadata::cleanText($nodeValue);
-															//$nodeValue = "";
 														}
 													}
 													
-													//$nodeValue = "";
-													
-													//echo $LocLangName." - ".$child->attribute_id." - ".JText::_($row->name)." - ".$nodeValue."<br>";
-													//echo $child->attribute_id." - ".$LocLangName." - ".$nodeValue."<br>";
-													//echo $LocLangName." - ".$nodeValue."<br>";
-													// Selon le rendu de l'attribut, on fait des traitements diff�rents
-													switch ($child->rendertype_id)
+													if($hidden == "false")
 													{
-														// Textarea
-														case 1:
+														// Selon le rendu de l'attribut, on fait des traitements differents
+														switch ($child->rendertype_id)
+														{
+															// Textarea
+															case 1:
+																$this->javascript .="
+																".$fieldsetName.".add(createTextArea('".$LocLangName."', '".html_Metadata::cleanText(JText::_($row->label))."',".$mandatory.", false, null, '1', '1', '".$nodeValue."', '".html_Metadata::cleanText($defaultVal)."', ".$disabled.", ".$maxLength.", '', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+																";
+																break;
+															// Textbox
+															case 5:
+																$this->javascript .="
+																//console.log(".$parentFieldsetName.".getId() + ': ' + ".$parentFieldsetName.".collapsed + '\\n\\r a la creation de ' + '".$currentName."' + '\\n\\r' + ".$parentFieldsetName.".masterflow);
+																".$fieldsetName.".add(createTextField('".$LocLangName."', '".html_Metadata::cleanText(JText::_($row->label))."',".$mandatory.", false, null, '1', '1', '".$nodeValue."', '".html_Metadata::cleanText($defaultVal)."', ".$disabled.", '".$maxLength."', '', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+																";
+																break;
+															default:
+																$this->javascript .="
+																".$fieldsetName.".add(createTextArea('".$LocLangName."', '".html_Metadata::cleanText(JText::_($row->label))."',".$mandatory.", false, null, '1', '1', '".$nodeValue."', '".html_Metadata::cleanText($defaultVal)."', ".$disabled.", ".$maxLength.", '', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+																";
+																break;
+														}
+														
+														if($disabled == "true")
+														{
 															$this->javascript .="
-															".$fieldsetName.".add(createTextArea('".$LocLangName."', '".html_Metadata::cleanText(JText::_($row->label))."',".$mandatory.", false, null, '1', '1', '".$nodeValue."', '".html_Metadata::cleanText($defaultVal)."', ".$disabled.", ".$maxLength.", '', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+															".$parentFieldsetName.".add(createHidden('".$LocLangName."_hiddenVal', '".$LocLangName."_hiddenVal', '".$nodeValue."'));
 															";
-															break;
-														// Textbox
-														case 5:
-															$this->javascript .="
-															//console.log(".$parentFieldsetName.".getId() + ': ' + ".$parentFieldsetName.".collapsed + '\\n\\r a la creation de ' + '".$currentName."' + '\\n\\r' + ".$parentFieldsetName.".masterflow);
-															".$fieldsetName.".add(createTextField('".$LocLangName."', '".html_Metadata::cleanText(JText::_($row->label))."',".$mandatory.", false, null, '1', '1', '".$nodeValue."', '".html_Metadata::cleanText($defaultVal)."', ".$disabled.", '".$maxLength."', '', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
-															";
-															break;
-														default:
-															$this->javascript .="
-															".$fieldsetName.".add(createTextArea('".$LocLangName."', '".html_Metadata::cleanText(JText::_($row->label))."',".$mandatory.", false, null, '1', '1', '".$nodeValue."', '".html_Metadata::cleanText($defaultVal)."', ".$disabled.", ".$maxLength.", '', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
-															";
-															break;
+														}
 													}
-													
-													if ($child->editable == 2)
-													{
+													else {
 														$this->javascript .="
-														".$parentFieldsetName.".add(createHidden('".$LocLangName."_hiddenVal', '".$LocLangName."_hiddenVal', '".$nodeValue."'));
-														";
+															".$parentFieldsetName.".add(createHidden('".$LocLangName."_hiddenVal', '".$LocLangName."_hiddenVal', '".$nodeValue."'));
+															";
 													}
 												}
 											}
 											else
 											{
 												$currentScope=$listNode->item($pos-1);
-												// Traitement de la multiplicit�
-												// R�cup�ration du path du bloc de champs qui va �tre cr�� pour construire le nom
+												// Traitement de la multiplicite
+												// Recuperation du path du bloc de champs qui va etre cree pour construire le nom
 												$master = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__1";
 												$LocName = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__".($pos+1);
 								
@@ -2282,7 +2242,6 @@ else
 												var master = Ext.getCmp('".$master."');						
 												";
 												
-												//echo $LocName." - ".$child->attribute_id." - ".JText::_($label)." - ".$child->rel_lowerbound." - ".$child->rel_upperbound." - ".$parentFieldsetName."<br>";
 												$fieldsetName = "fieldset".$child->attribute_id."_".str_replace("-", "_", helper_easysdi::getUniqueId());
 												$this->javascript .="
 													var ".$fieldsetName." = createFieldSet('".$LocName."', '".html_Metadata::cleanText(JText::_($label))."', true, true, true, true, true, master, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', true); 
@@ -2295,7 +2254,6 @@ else
 													{
 														$LocLangName = $LocName."-gmd_LocalisedCharacterString-".$row->code_easysdi."__1";
 														$langNode = $xpathResults->query("gco:CharacterString", $currentScope);
-														//echo "2) Il y a ".$langNode->length." occurences de gco:CharacterString dans ".$currentScope->nodeName."<br>";
 														if ($langNode->length > 0)
 															$nodeValue = html_Metadata::cleanText($langNode->item(0)->nodeValue);
 														else
@@ -2303,16 +2261,12 @@ else
 															$database->setQuery("SELECT defaultvalue FROM #__sdi_translation WHERE element_guid='".$child->attribute_guid."' AND language_id=".$row->id);
 															$nodeValue = html_Metadata::cleanText($database->loadResult());
 															$defaultVal= $nodeValue; //html_Metadata::cleanText($nodeValue);
-															//$nodeValue = "";
 														}
 													}
 													else
 													{
-														//print_r($row);echo "<br>";
-														//echo $row->language."<br>";
 														$LocLangName = $LocName."-gmd_LocalisedCharacterString-".$row->code_easysdi."__1";
 														$langNode = $xpathResults->query("gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString"."[@locale='#".$row->code."']", $currentScope);
-														//echo "2) Il y a ".$langNode->length." occurences de gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString dans ".$currentScope->nodeName."<br>";
 														if ($langNode->length > 0)
 															$nodeValue = html_Metadata::cleanText($langNode->item(0)->nodeValue);
 														else
@@ -2320,13 +2274,94 @@ else
 															$database->setQuery("SELECT defaultvalue FROM #__sdi_translation WHERE element_guid='".$child->attribute_guid."' AND language_id=".$row->id);
 															$nodeValue = html_Metadata::cleanText($database->loadResult());
 															$defaultVal= $nodeValue; //html_Metadata::cleanText($nodeValue);
-															//$nodeValue = "";
 														}
 													}
-													
-													
-													//echo $LocLangName." - ".$child->attribute_id." - ".JText::_($row->name)." - ".$nodeValue."<br>";
-													//echo $child->attribute_id." - ".$LocLangName." - ".$nodeValue."<br>";
+													if($hidden == "false")
+													{
+														switch ($child->rendertype_id)
+														{
+															// Textarea
+															case 1:
+																$this->javascript .="
+																".$fieldsetName.".add(createTextArea('".$LocLangName."', '".JText::_($row->label)."',".$mandatory.", false, null, '1', '1', '".$nodeValue."', '".$defaultVal."', ".$disabled.", ".$maxLength.", '', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+																";
+																break;
+															// Textbox
+															case 5:
+																$this->javascript .="
+																".$fieldsetName.".add(createTextField('".$LocLangName."', '".JText::_($row->label)."',".$mandatory.", false, null, '1', '1', '".$nodeValue."', '".$defaultVal."', ".$disabled.", '".$maxLength."', '', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+																";
+																break;
+															default:
+																$this->javascript .="
+																".$fieldsetName.".add(createTextArea('".$LocLangName."', '".JText::_($row->label)."',".$mandatory.", false, null, '1', '1', '".$nodeValue."', '".$defaultVal."', ".$disabled.", ".$maxLength.", '', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+																";
+																break;
+														}
+														
+														if($disabled == "true")
+														{
+															$this->javascript .="
+															".$fieldsetName.".add(createHidden('".$LocLangName."_hiddenVal', '".$LocLangName."_hiddenVal', '".$nodeValue."'));
+															";
+														}
+													}
+													else {
+														$this->javascript .="
+															".$fieldsetName.".add(createHidden('".$LocLangName."_hiddenVal', '".$LocLangName."_hiddenVal', '".$nodeValue."'));
+															";
+													}
+												}
+											}
+										}
+										if ($listCount==0 and $child->rel_lowerbound>0)
+										{
+											// Traitement de la multiplicite
+											// Recuperation du path du bloc de champs qui va etre cree pour construire le nom
+											$master = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__1";
+											$LocName = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__2";
+							
+											$this->javascript .="
+											var master = Ext.getCmp('".$master."');						
+											";
+											
+											$fieldsetName = "fieldset".$child->attribute_id."_".str_replace("-", "_", helper_easysdi::getUniqueId());
+											$this->javascript .="
+											var ".$fieldsetName." = createFieldSet('".$LocName."', '".html_Metadata::cleanText(JText::_($label))."', true, true, true, true, true, master, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', true); 
+												".$parentFieldsetName.".add(".$fieldsetName.");
+											";
+												
+											foreach($this->langList as $row)
+											{
+												if ($row->defaultlang)
+												{
+													$LocLangName = $LocName."-gmd_LocalisedCharacterString-".$row->code_easysdi."__1";
+													$langNode = $xpathResults->query("gco:CharacterString", $attributeScope);
+													if ($langNode->length > 0)
+														$nodeValue = html_Metadata::cleanText($langNode->item(0)->nodeValue);
+													else
+													{
+														$database->setQuery("SELECT defaultvalue FROM #__sdi_translation WHERE element_guid='".$child->attribute_guid."' AND language_id=".$row->id);
+														$nodeValue = html_Metadata::cleanText($database->loadResult());
+														$defaultVal= $nodeValue; //html_Metadata::cleanText($nodeValue);
+													}
+												}
+												else
+												{
+													$LocLangName = $LocName."-gmd_LocalisedCharacterString-".$row->code_easysdi."__1";
+													$langNode = $xpathResults->query("gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString"."[@locale='#".$row->code."']", $attributeScope);
+													if ($langNode->length > 0)
+														$nodeValue = html_Metadata::cleanText($langNode->item(0)->nodeValue);
+													else
+													{
+														$database->setQuery("SELECT defaultvalue FROM #__sdi_translation WHERE element_guid='".$child->attribute_guid."' AND language_id=".$row->id);
+														$nodeValue = html_Metadata::cleanText($database->loadResult());
+														$defaultVal= $nodeValue; //html_Metadata::cleanText($nodeValue);
+													}
+												}
+												
+												if($hidden == "false")
+												{
 													switch ($child->rendertype_id)
 													{
 														// Textarea
@@ -2347,92 +2382,15 @@ else
 															";
 															break;
 													}
-													
-													if ($child->editable == 2)
+														
+													if($disabled == "true")
 													{
 														$this->javascript .="
 														".$fieldsetName.".add(createHidden('".$LocLangName."_hiddenVal', '".$LocLangName."_hiddenVal', '".$nodeValue."'));
 														";
 													}
 												}
-											}
-										}
-										if ($listCount==0 and $child->rel_lowerbound>0)
-										{
-											// Traitement de la multiplicit�
-											// R�cup�ration du path du bloc de champs qui va �tre cr�� pour construire le nom
-											$master = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__1";
-											$LocName = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__2";
-							
-											$this->javascript .="
-											var master = Ext.getCmp('".$master."');						
-											";
-											
-											//echo $LocName." - ".$child->attribute_id." - ".JText::_($label)." - ".$child->rel_lowerbound." - ".$child->rel_upperbound." - ".$parentFieldsetName."<br>";
-											$fieldsetName = "fieldset".$child->attribute_id."_".str_replace("-", "_", helper_easysdi::getUniqueId());
-											$this->javascript .="
-											var ".$fieldsetName." = createFieldSet('".$LocName."', '".html_Metadata::cleanText(JText::_($label))."', true, true, true, true, true, master, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', true); 
-												".$parentFieldsetName.".add(".$fieldsetName.");
-											";
-												
-											foreach($this->langList as $row)
-											{
-												if ($row->defaultlang)
-												{
-													$LocLangName = $LocName."-gmd_LocalisedCharacterString-".$row->code_easysdi."__1";
-													$langNode = $xpathResults->query("gco:CharacterString", $attributeScope);
-													//echo "2) Il y a ".$langNode->length." occurences de gco:CharacterString dans ".$currentScope->nodeName."<br>";
-													if ($langNode->length > 0)
-														$nodeValue = html_Metadata::cleanText($langNode->item(0)->nodeValue);
-													else
-													{
-														$database->setQuery("SELECT defaultvalue FROM #__sdi_translation WHERE element_guid='".$child->attribute_guid."' AND language_id=".$row->id);
-														$nodeValue = html_Metadata::cleanText($database->loadResult());
-														$defaultVal= $nodeValue; //html_Metadata::cleanText($nodeValue);
-														//$nodeValue = "";
-													}
-												}
 												else
-												{
-													//print_r($row);echo "<br>";
-													//echo $row->language."<br>";
-													$LocLangName = $LocName."-gmd_LocalisedCharacterString-".$row->code_easysdi."__1";
-													$langNode = $xpathResults->query("gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString"."[@locale='#".$row->code."']", $attributeScope);
-													//echo "2) Il y a ".$langNode->length." occurences de gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString dans ".$currentScope->nodeName."<br>";
-													if ($langNode->length > 0)
-														$nodeValue = html_Metadata::cleanText($langNode->item(0)->nodeValue);
-													else
-													{
-														$database->setQuery("SELECT defaultvalue FROM #__sdi_translation WHERE element_guid='".$child->attribute_guid."' AND language_id=".$row->id);
-														$nodeValue = html_Metadata::cleanText($database->loadResult());
-														$defaultVal= $nodeValue; //html_Metadata::cleanText($nodeValue);
-														//$nodeValue = "";
-													}
-												}
-												//echo $LocLangName." - ".$child->attribute_id." - ".JText::_($row->name)." - ".$nodeValue."<br>";
-												//echo $child->attribute_id." - ".$LocLangName." - ".$nodeValue."<br>";
-												switch ($child->rendertype_id)
-												{
-													// Textarea
-													case 1:
-														$this->javascript .="
-														".$fieldsetName.".add(createTextArea('".$LocLangName."', '".JText::_($row->label)."',".$mandatory.", false, null, '1', '1', '".$nodeValue."', '".$defaultVal."', ".$disabled.", ".$maxLength.", '', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
-														";
-														break;
-													// Textbox
-													case 5:
-														$this->javascript .="
-														".$fieldsetName.".add(createTextField('".$LocLangName."', '".JText::_($row->label)."',".$mandatory.", false, null, '1', '1', '".$nodeValue."', '".$defaultVal."', ".$disabled.", '".$maxLength."', '', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
-														";
-														break;
-													default:
-														$this->javascript .="
-														".$fieldsetName.".add(createTextArea('".$LocLangName."', '".JText::_($row->label)."',".$mandatory.", false, null, '1', '1', '".$nodeValue."', '".$defaultVal."', ".$disabled.", ".$maxLength.", '', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
-														";
-														break;
-												}
-													
-												if ($child->editable == 2)
 												{
 													$this->javascript .="
 													".$fieldsetName.".add(createHidden('".$LocLangName."_hiddenVal', '".$LocLangName."_hiddenVal', '".$nodeValue."'));
@@ -2451,274 +2409,280 @@ else
 								// gco-Integer
 							case 13:
 								// Traitement de la classe enfant
-								//echo "Recherche de ".$type_isocode." dans ".$attributeScope->nodeName."<br>";
-								//$node = $xpathResults->query($child->attribute_isocode."/".$type_isocode, $attributeScope);
 								$node = $xpathResults->query($type_isocode, $attributeScope);
 											 	
 								if ($node->length >0)
 									$nodeValue = html_Metadata::cleanText($node->item($pos)->nodeValue);
 								else
 									$nodeValue = "";
-								//echo "Trouve ".$nodeValue."<br>";
-								//echo "Valeur en 0: ".$nodeValue."<br>";
 									
-								// R�cup�ration de la valeur par d�faut, s'il y a lieu
+								// Recuperation de la valeur par defaut, s'il y a lieu
 								if ($child->attribute_default <> "" and $nodeValue == "")
 									$nodeValue = html_Metadata::cleanText($child->attribute_default);
 			
-								// Selon le rendu de l'attribut, on fait des traitements diff�rents
-								switch ($child->rendertype_id)
+								if($hidden == "false")
 								{
-									// Textarea
-									case 1:
-									// Textbox
-									case 5:
-									default:
+									// Selon le rendu de l'attribut, on fait des traitements differents
+									switch ($child->rendertype_id)
+									{
+										// Textarea
+										case 1:
+										// Textbox
+										case 5:
+										default:
+											$this->javascript .="
+											".$parentFieldsetName.".add(createNumberField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', true, 3, ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+											";
+											break;
+									}
+									if($disabled == "true")
+									{
 										$this->javascript .="
-										".$parentFieldsetName.".add(createNumberField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', true, 3, ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+										".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
 										";
-										break;
+									}
 								}
-								if ($child->editable == 2)
+								else 
 								{
 									$this->javascript .="
 									".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
 									";
 								}
-								
 								break;
-								
-							
 							// Date
 							case 5:
 								// Traitement de la classe enfant
-								//echo "Recherche de ".$type_isocode." dans ".$attributeScope->nodeName."<br>";
-								//$node = $xpathResults->query($child->attribute_isocode."/".$type_isocode, $attributeScope);
 								$node = $xpathResults->query($type_isocode, $attributeScope);
 											 	
 								$nodeValue = html_Metadata::cleanText($node->item($pos)->nodeValue);
-								//echo "Trouve ".$nodeValue."<br>";
-								//echo "Valeur en 0: ".$nodeValue."<br>";
 									
-								// R�cup�ration de la valeur par d�faut, s'il y a lieu
+								// Récupération de la valeur par défaut, s'il y a lieu
 								if ($child->attribute_default <> "" and $nodeValue == "")
-									$nodeValue = html_Metadata::cleanText($child->attribute_default);
-			
-								// Selon le rendu de l'attribut, on fait des traitements diff�rents
-								switch ($child->rendertype_id)
 								{
-									// Textarea
-									case 1:
-									// Textbox
-									case 5:
-									default:
-										$this->javascript .="
-										".$parentFieldsetName.".add(createDateField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));";
-										break;
+									if($child->attribute_default == 'today')
+										$nodeValue = html_Metadata::cleanText(date ('d.m.Y'));
+									else
+										$nodeValue = html_Metadata::cleanText($child->attribute_default);
 								}
-								if ($child->editable == 2)
+								
+								if($hidden == "false")
+								{
+									// Selon le rendu de l'attribut, on fait des traitements differents
+									switch ($child->rendertype_id)
+									{
+										// Textarea
+										case 1:
+										// Textbox
+										case 5:
+										default:
+											$this->javascript .="
+											".$parentFieldsetName.".add(createDateField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));";
+											break;
+									}
+									if($disabled == "true")
+									{
+										$this->javascript .="
+										".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
+										";
+									}
+								}
+								else
 								{
 									$this->javascript .="
 									".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
 									";
 								}
-								
 								break;
 							// List
 							case 6:
 								// Traitement de la classe enfant
-								//echo "Recherche de <b>".$type_isocode."</b> dans <b>".$attributeScope->nodeName."</b><br>";
-								//$node = $xpathResults->query($child->attribute_isocode."/".$type_isocode, $attributeScope);
 								$node = $xpathResults->query($type_isocode, $attributeScope);
 											 	
 								if ($node->length >0)
 									$nodeValue = html_Metadata::cleanText($node->item($pos)->nodeValue);
 								else
 									$nodeValue = "";
-								//echo "Trouve ".$nodeValue."<br>";
-								//echo "Valeur en 0: ".$nodeValue."<br>";
 									
-								// R�cup�ration de la valeur par d�faut, s'il y a lieu
+								// Recuperation de la valeur par defaut, s'il y a lieu
 								if ($child->attribute_default <> "" and $nodeValue == "")
 									$nodeValue = html_Metadata::cleanText($child->attribute_default);
 			
-								// Selon le rendu de l'attribut, on fait des traitements diff�rents
-								switch ($child->rendertype_id)
-								{
-									default:
-										// Traitement sp�cifique aux listes
-										//echo $ancestorFieldsetName." - ".$parentName." - ".$child->attribute_isocode. " (1)<br>";					
-										// Traitement des enfants de type list
-										$content = array();
-										//$query = "SELECT c.*, rel.* FROM #__easysdi_metadata_classes c, #__easysdi_metadata_classes_classes rel WHERE rel.classes_to_id = c.id and c.type='list' and rel.classes_from_id=".$parent." and (c.partner_id=0 or c.partner_id=".$account_id.") ORDER BY c.ordering";
-										$query = "SELECT * FROM #__sdi_codevalue WHERE published=true AND attribute_id = ".$child->attribute_id;
-										$database->setQuery( $query );
-										$content = $database->loadObjectList();
-	
-									 	$dataValues = array();
-									 	$nodeValues = array();
+								$content = array();
+								$query = "SELECT * FROM #__sdi_codevalue WHERE published=true AND attribute_id = ".$child->attribute_id;
+								$database->setQuery( $query );
+								$content = $database->loadObjectList();
 								
-									 	// Traitement de la multiplicit�
-									 	// R�cup�ration du path du bloc de champs qui va �tre cr�� pour construire le nom
-									 	$listName = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__1";
-									 	 
-									 	// Construction de la liste
-									 	foreach ($content as $cont)
-									 	{
-									 		$contLabel = JText::_($cont->guid."_LABEL");
-											$cond1 = !$contLabel;
-											$cond2 = substr($contLabel, -6, 6) == "_LABEL";
-											if ($cond1 or $cond2)
-												$contLabel = $cont->name;
-											
-											$dataValues[$cont->value] = html_Metadata::cleanText($contLabel);
-											
-									 	}
-										//echo "1)Contenu: "; print_r($dataValues); echo "<br>";
+								$dataValues = array();
+								$nodeValues = array();
+								
+								// Traitement de la multiplicite
+								// Recuperation du path du bloc de champs qui va etre cree pour construire le nom
+								$listName = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__1";
+								
+								// Construction de la liste
+								foreach ($content as $cont)
+								{
+									$contLabel = JText::_($cont->guid."_LABEL");
+									$cond1 = !$contLabel;
+									$cond2 = substr($contLabel, -6, 6) == "_LABEL";
+									if ($cond1 or $cond2)
+										$contLabel = $cont->name;
 										
-									 	$relNode = $xpathResults->query($child->attribute_isocode, $scope);
-									 	
-									 	for ($pos=0;$pos<$relNode->length;$pos++)
-									 	{
-									 		$listNode = $xpathResults->query($child->list_isocode, $relNode->item($pos));
-									 		
-									 		if ($listNode->length > 0)
-									 		{
-									 			if ($child->codeList <> null)
-													$nodeValues[]=html_Metadata::cleanText($listNode->item(0)->getAttribute('codeListValue'));
-										 		else
-										 			$nodeValues[]=html_Metadata::cleanText($listNode->item(0)->nodeValue);
-									 		}
-									 		/*else
-								 				$nodeValues[]="";*/
-									 	}
-									 	
-									 	//echo "existant: ".count($nodeValues)."<br>";
-									 	
-									 	// S'il n'y a pas de valeurs existantes, r�cup�rer les valeurs par d�faut
-										$nodeDefaultValues = array();
-										if (count($nodeValues) == 0)
-									 	{
-									 		// Elements s�lectionn�s par d�faut
-											$query = "SELECT c.* FROM #__sdi_codevalue c, #__sdi_defaultvalue d WHERE c.id=d.codevalue_id AND c.published=true AND d.attribute_id = ".$child->attribute_id;
-											$database->setQuery( $query );
-											//echo $database->getQuery()."<br>";
-											$selectedContent = $database->loadObjectList();
-											
-										 	// Construction de la liste
-										 	foreach ($selectedContent as $cont)
-										 	{
-										 		$nodeValues[] = html_Metadata::cleanText($cont->value);
-										 		$nodeDefaultValues[] = html_Metadata::cleanText($cont->value);
-									 		}
-										}
-									 	
-										//echo "selectionne par defaut: "; print_r($nodeDefaultValues); echo "<hr>";
-									 	
-										switch ($child->rendertype_id)
-										{
-											// Checkbox
-											case 2:
-												if ($child->rel_lowerbound < $child->rel_upperbound)
-											 	{
-											 		$this->javascript .="
-													var valueList = ".HTML_metadata::array2checkbox($listName, false, $dataValues, $nodeValues, html_Metadata::cleanText(JText::_($tip))).";
-											     	var selectedValueList = ".HTML_metadata::array2json($nodeValues).";
-											     	var defaultValueList = ".HTML_metadata::array2json($nodeDefaultValues).";
-											     	// La liste
-											     	".$parentFieldsetName.".add(createCheckboxGroup('".$listName."', '".html_Metadata::cleanText(JText::_($label))."', ".$mandatory.", '1', '1', valueList, ".$disabled.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."'));
-											     	";
-											 	}
-											 	break;
-											// Radiobutton
-											case 3:
-												if ($child->rel_lowerbound == $child->rel_upperbound)
-											 	{
-											 		$this->javascript .="
-													var valueList = ".HTML_metadata::array2checkbox($listName, true, $dataValues, $nodeValues, html_Metadata::cleanText(JText::_($tip))).";
-											     	var selectedValueList = ".HTML_metadata::array2json($nodeValues).";
-											     	var defaultValueList = ".HTML_metadata::array2json($nodeDefaultValues).";
-											     	// La liste
-											     	".$parentFieldsetName.".add(createRadioGroup('".$listName."', '".html_Metadata::cleanText(JText::_($label))."', ".$mandatory.", '1', '1', valueList, ".$disabled.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."'));
-											     	";
-											 	}
-											 	break;
-											// List
-											case 4:
-											default:
-												// Deux traitement pour deux types de listes
-											 	if (($child->rel_upperbound - $child->rel_lowerbound) > 1 )
-											 	{
-											 		$this->javascript .="
-													var valueList = ".HTML_metadata::array2extjs($dataValues, false).";
-											     	var selectedValueList = ".HTML_metadata::array2json($nodeValues).";
-											     	var defaultValueList = ".HTML_metadata::array2json($nodeDefaultValues).";
-											     	// La liste
-											     	".$parentFieldsetName.".add(createMultiSelector('".$listName."', '".html_Metadata::cleanText(JText::_($label))."', ".$mandatory.", '1', '1', valueList, selectedValueList, defaultValueList, ".$disabled.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."'));
-											     	";
-											 	}
-											 	else
-											 	{
-											 		$this->javascript .="
-													var valueList = ".HTML_metadata::array2extjs($dataValues, true).";
-												     var selectedValueList = ".HTML_metadata::array2json($nodeValues).";
-												     var defaultValueList = ".HTML_metadata::array2json($nodeDefaultValues).";
-											     	// La liste
-												     ".$parentFieldsetName.".add(createComboBox('".$listName."', '".html_Metadata::cleanText(JText::_($label))."', ".$mandatory.", '".$child->rel_lowerbound."', '".$child->rel_upperbound."', valueList, selectedValueList, defaultValueList, ".$disabled.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."'));
-												    ";
-											 	}
-												 
-												break;
-										}
+									$dataValues[$cont->value] = html_Metadata::cleanText($contLabel);
 										
-									 	break;
 								}
 								
-								if ($child->editable == 2)
+								$relNode = $xpathResults->query($child->attribute_isocode, $scope);
+									
+								for ($pos=0;$pos<$relNode->length;$pos++)
+								{
+									$listNode = $xpathResults->query($child->list_isocode, $relNode->item($pos));
+								
+									if ($listNode->length > 0)
+									{
+										if ($child->codeList <> null)
+											$nodeValues[]=html_Metadata::cleanText($listNode->item(0)->getAttribute('codeListValue'));
+										else
+											$nodeValues[]=html_Metadata::cleanText($listNode->item(0)->nodeValue);
+									}
+								}
+									
+								// S'il n'y a pas de valeurs existantes, recuperer les valeurs par defaut
+								$nodeDefaultValues = array();
+								if (count($nodeValues) == 0)
+								{
+									// Elements selectionnes par defaut
+									$query = "SELECT c.* FROM #__sdi_codevalue c, #__sdi_defaultvalue d WHERE c.id=d.codevalue_id AND c.published=true AND d.attribute_id = ".$child->attribute_id;
+									$database->setQuery( $query );
+									$selectedContent = $database->loadObjectList();
+										
+									// Construction de la liste
+									foreach ($selectedContent as $cont)
+									{
+										$nodeValues[] = html_Metadata::cleanText($cont->value);
+										$nodeDefaultValues[] = html_Metadata::cleanText($cont->value);
+									}
+								}
+								
+								if($hidden == "false")
+								{
+									// Selon le rendu de l'attribut, on fait des traitements differents
+									switch ($child->rendertype_id)
+									{
+										default:
+											switch ($child->rendertype_id)
+											{
+												// Checkbox
+												case 2:
+													if ($child->rel_lowerbound < $child->rel_upperbound)
+												 	{
+												 		$this->javascript .="
+														var valueList = ".HTML_metadata::array2checkbox($listName, false, $dataValues, $nodeValues, html_Metadata::cleanText(JText::_($tip))).";
+												     	var selectedValueList = ".HTML_metadata::array2json($nodeValues).";
+												     	var defaultValueList = ".HTML_metadata::array2json($nodeDefaultValues).";
+												     	// La liste
+												     	".$parentFieldsetName.".add(createCheckboxGroup('".$listName."', '".html_Metadata::cleanText(JText::_($label))."', ".$mandatory.", '1', '1', valueList, ".$disabled.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."'));
+												     	";
+												 	}
+												 	break;
+												// Radiobutton
+												case 3:
+													if ($child->rel_lowerbound == $child->rel_upperbound)
+												 	{
+												 		$this->javascript .="
+														var valueList = ".HTML_metadata::array2checkbox($listName, true, $dataValues, $nodeValues, html_Metadata::cleanText(JText::_($tip))).";
+												     	var selectedValueList = ".HTML_metadata::array2json($nodeValues).";
+												     	var defaultValueList = ".HTML_metadata::array2json($nodeDefaultValues).";
+												     	// La liste
+												     	".$parentFieldsetName.".add(createRadioGroup('".$listName."', '".html_Metadata::cleanText(JText::_($label))."', ".$mandatory.", '1', '1', valueList, ".$disabled.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."'));
+												     	";
+												 	}
+												 	break;
+												// List
+												case 4:
+												default:
+													// Deux traitement pour deux types de listes
+												 	if (($child->rel_upperbound - $child->rel_lowerbound) > 1 )
+												 	{
+												 		$this->javascript .="
+														var valueList = ".HTML_metadata::array2extjs($dataValues, false).";
+												     	var selectedValueList = ".HTML_metadata::array2json($nodeValues).";
+												     	var defaultValueList = ".HTML_metadata::array2json($nodeDefaultValues).";
+												     	// La liste
+												     	".$parentFieldsetName.".add(createMultiSelector('".$listName."', '".html_Metadata::cleanText(JText::_($label))."', ".$mandatory.", '1', '1', valueList, selectedValueList, defaultValueList, ".$disabled.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."'));
+												     	";
+												 	}
+												 	else
+												 	{
+												 		$this->javascript .="
+														var valueList = ".HTML_metadata::array2extjs($dataValues, true).";
+													     var selectedValueList = ".HTML_metadata::array2json($nodeValues).";
+													     var defaultValueList = ".HTML_metadata::array2json($nodeDefaultValues).";
+												     	// La liste
+													     ".$parentFieldsetName.".add(createComboBox('".$listName."', '".html_Metadata::cleanText(JText::_($label))."', ".$mandatory.", '".$child->rel_lowerbound."', '".$child->rel_upperbound."', valueList, selectedValueList, defaultValueList, ".$disabled.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."'));
+													    ";
+												 	}
+													 
+													break;
+											}
+											
+										 	break;
+									}
+									
+									if($disabled == "true")
+									{
+										$this->javascript .="
+										 var defaultValueList = ".HTML_metadata::array2json($nodeValues).";
+										".$parentFieldsetName.".add(createHidden('".$listName."_hiddenVal', '".$listName."_hiddenVal', defaultValueList));
+										";
+									}
+								}
+								else
 								{
 									$this->javascript .="
+									 var defaultValueList = ".HTML_metadata::array2json($nodeValues).";
 									".$parentFieldsetName.".add(createHidden('".$listName."_hiddenVal', '".$listName."_hiddenVal', defaultValueList));
 									";
 								}
-								
-								
-								
 								break;
 							// Link
 							case 7:
 								// Traitement de la classe enfant
-								//echo "Recherche de ".$type_isocode." dans ".$attributeScope->nodeName."<br>";
-								//$node = $xpathResults->query($child->attribute_isocode."/".$type_isocode, $attributeScope);
 								$node = $xpathResults->query($type_isocode, $attributeScope);
-											 	
 								$nodeValue = html_Metadata::cleanText($node->item($pos)->nodeValue);
-								//echo "Trouve ".$nodeValue."<br>";
-								//echo "Valeur en 0: ".$nodeValue."<br>";
 									
-								// R�cup�ration de la valeur par d�faut, s'il y a lieu
+								// Recuperation de la valeur par defaut, s'il y a lieu
 								if ($child->attribute_default <> "" and $nodeValue == "")
 									$nodeValue = html_Metadata::cleanText($child->attribute_default);
 			
-								// Selon le rendu de l'attribut, on fait des traitements diff�rents
-								switch ($child->rendertype_id)
-								{
-									// Textarea
-									case 1:
+								// Selon le rendu de l'attribut, on fait des traitements differents
+								if($hidden == "false"){
+									switch ($child->rendertype_id)
+									{
+										// Textarea
+										case 1:
+											$this->javascript .="
+											".$parentFieldsetName.".add(createTextArea('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));";
+											break;
+										// Textbox
+										case 5:
+											$this->javascript .="
+											".$parentFieldsetName.".add(createTextField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+											";
+											break;
+										default:
+											$this->javascript .="
+											".$parentFieldsetName.".add(createTextArea('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));";
+											break;
+									}
+									if($disabled == "true")
+									{
 										$this->javascript .="
-										".$parentFieldsetName.".add(createTextArea('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));";
-										break;
-									// Textbox
-									case 5:
-										$this->javascript .="
-										".$parentFieldsetName.".add(createTextField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+										".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
 										";
-										break;
-									default:
-										$this->javascript .="
-										".$parentFieldsetName.".add(createTextArea('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));";
-										break;
+									}
 								}
-								if ($child->editable == 2)
+								else
 								{
 									$this->javascript .="
 									".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
@@ -2729,356 +2693,301 @@ else
 							// DateTime
 							case 8:
 								// Traitement de la classe enfant
-								//echo "Recherche de ".$type_isocode." dans ".$attributeScope->nodeName."<br>";
-								//$node = $xpathResults->query($child->attribute_isocode."/".$type_isocode, $attributeScope);
 								$node = $xpathResults->query($type_isocode, $attributeScope);
 											 	
 								if ($node->length >0)
 									$nodeValue = html_Metadata::cleanText($node->item($pos)->nodeValue);
 								else
 									$nodeValue = "";
-								
-								//echo "Trouve ".$nodeValue."<br>";
-								//echo "Valeur en 0: ".$nodeValue."<br>";
 									
-								// R�cup�ration de la valeur par d�faut, s'il y a lieu
+								// Récupération de la valeur par défaut, s'il y a lieu
 								if ($child->attribute_default <> "" and $nodeValue == "")
-									$nodeValue = html_Metadata::cleanText($child->attribute_default);
+								{
+									if($child->attribute_default == 'today')
+										$nodeValue = html_Metadata::cleanText(date ('d.m.Y'));
+									else
+										$nodeValue = html_Metadata::cleanText($child->attribute_default);
+								}
 			
 								$nodeValue = substr($nodeValue, 0, 10);
-								// Selon le rendu de l'attribut, on fait des traitements diff�rents
-								switch ($child->rendertype_id)
+								if($hidden == "false")
 								{
-									// Textarea
-									case 1:
-									// Textbox
-									case 5:
-									default:
+									// Selon le rendu de l'attribut, on fait des traitements differents
+									switch ($child->rendertype_id)
+									{
+										// Textarea
+										case 1:
+										// Textbox
+										case 5:
+										default:
+											$this->javascript .="
+											".$parentFieldsetName.".add(createDateField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));";
+											break;
+									}
+									if($disabled == "true")
+									{
 										$this->javascript .="
-										".$parentFieldsetName.".add(createDateField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));";
-										break;
+										".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
+										";
+									}
 								}
-								if ($child->editable == 2)
+								else
 								{
 									$this->javascript .="
 									".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
 									";
 								}
-								
 								break;
 							// TextChoice
 							case 9:
 								// Traitement de la classe enfant
-								//echo "Recherche de ".$type_isocode." dans ".$attributeScope->nodeName."<br>";
-								//$node = $xpathResults->query($child->attribute_isocode."/".$type_isocode, $attributeScope);
 								$node = $xpathResults->query($type_isocode, $attributeScope);
 											 	
 								$nodeValue = html_Metadata::cleanText($node->item($pos)->nodeValue);
-								//echo "Trouve ".$nodeValue."<br>";
-								//echo "Valeur en 0: ".$nodeValue."<br>";
 									
-								// R�cup�ration de la valeur par d�faut, s'il y a lieu
+								// Recuperation de la valeur par defaut, s'il y a lieu
 								if ($child->attribute_default <> "" and $nodeValue == "")
 									$nodeValue = html_Metadata::cleanText($child->attribute_default);
 			
-								// Selon le rendu de l'attribut, on fait des traitements diff�rents
-								switch ($child->rendertype_id)
+								if($hidden == "false")
 								{
-									default:
-										// Traitement sp�cifique aux listes
-										//echo $ancestorFieldsetName." - ".$parentName." - ".$child->attribute_isocode. " (1)<br>";					
-										// Traitement des enfants de type list
-										$content = array();
-										//$query = "SELECT c.*, rel.* FROM #__easysdi_metadata_classes c, #__easysdi_metadata_classes_classes rel WHERE rel.classes_to_id = c.id and c.type='list' and rel.classes_from_id=".$parent." and (c.partner_id=0 or c.partner_id=".$account_id.") ORDER BY c.ordering";
-										$query = "SELECT * FROM #__sdi_codevalue WHERE published=true AND attribute_id = ".$child->attribute_id." ORDER BY ordering";
-										$database->setQuery( $query );
-										$content = $database->loadObjectList();
-	
-									 	$dataValues = array();
-									 	$nodeValues = array();
-								
-									 	// Traitement de la multiplicit�
-									 	// R�cup�ration du path du bloc de champs qui va �tre cr�� pour construire le nom
-									 	$listName = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__1";
-									 	 
-									 	// Construction de la liste
-									 	foreach ($content as $cont)
-									 	{
-									 		$contTitle = JText::_($cont->guid."_TITLE");
-											$cond1 = !$contTitle;
-											$cond2 = substr($contTitle, -6, 6) == "_TITLE";
-											if ($cond1 or $cond2)
-												$contTitle = "";
+									// Traitement specifique aux listes
+									// Traitement des enfants de type list
+									$content = array();
+									$query = "SELECT * FROM #__sdi_codevalue WHERE published=true AND attribute_id = ".$child->attribute_id." ORDER BY ordering";
+									$database->setQuery( $query );
+									$content = $database->loadObjectList();
+
+								 	$dataValues = array();
+								 	$nodeValues = array();
+							
+								 	// Traitement de la multiplicite
+								 	// Recuperation du path du bloc de champs qui va etre cree pour construire le nom
+								 	$listName = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__1";
+								 	 
+								 	// Construction de la liste
+								 	foreach ($content as $cont)
+								 	{
+								 		$contTitle = JText::_($cont->guid."_TITLE");
+										$cond1 = !$contTitle;
+										$cond2 = substr($contTitle, -6, 6) == "_TITLE";
+										if ($cond1 or $cond2)
+											$contTitle = "";
+										
+										$contContent = JText::_($cont->guid."_CONTENT");
+										$cond1 = !$contContent;
+										$cond2 = substr($contContent, -6, 6) == "_CONTENT";
+										if ($cond1 or $cond2)
+											$contContent = $cont->value;
 											
-											$contContent = JText::_($cont->guid."_CONTENT");
-											$cond1 = !$contContent;
-											$cond2 = substr($contContent, -6, 6) == "_CONTENT";
-											if ($cond1 or $cond2)
-												$contContent = $cont->value;
-												
-											if ($contTitle == "")
-												$dataValues[$cont->guid."_TITLE"] = array(html_Metadata::cleanText($contContent), $cont->guid);
-											else
-												$dataValues[html_Metadata::cleanText($contTitle)] = array(html_Metadata::cleanText($contContent), $cont->guid);
-									 	}
-										//echo "1)Contenu: "; print_r($dataValues); echo "<br>";
-										
-										$relNode = $xpathResults->query($child->attribute_isocode, $scope);
-									 	/*
-									 	for ($pos=0;$pos<$relNode->length;$pos++)
-									 	{
-									 		$listNode = $xpathResults->query($child->list_isocode, $relNode->item($pos));
-									 		echo $type_isocode." dans ".$relNode->item($pos)->nodeName."<br>";
-									 		if ($listNode->length > 0)
-									 		{
-									 			if ($child->codeList <> null)
-													$nodeValues[]=html_Metadata::cleanText($listNode->item(0)->getAttribute('codeListValue'));
-										 		else
-										 			$nodeValues[]=html_Metadata::cleanText($listNode->item(0)->nodeValue);
-									 		}
-									 		else
-								 				$nodeValues[]="";
-									 	}
-									 	*/
-									 	//echo "existant: ".count($nodeValues)."<br>";
-									 	$language =& JFactory::getLanguage();
-										
-									 	$node = $xpathResults->query($type_isocode, $relNode->item(0));
-										//echo $type_isocode."[@locale='".$row->code."']"." dans ".$relNode->item(0)->nodeName."<br>";
-										if ($node->length > 0)
-								 		{
-								 			// Chercher le titre associé au texte localisé souhaité, ou s'il n'y a pas de titre le contenu
-								 			foreach ($content as $cont)
-									 		{
-									 			if ($cont->value == html_Metadata::cleanText($node->item(0)->nodeValue))
-													$nodeValues[] = $cont->guid;
-									 			
-									 		}
-											//echo html_Metadata::cleanText($node->item(0)->nodeValue)."<br>";
-											//$nodeValues[] = html_Metadata::cleanText($node->item(0)->nodeValue);
-								 		}
+										if ($contTitle == "")
+											$dataValues[$cont->guid."_TITLE"] = array(html_Metadata::cleanText($contContent), $cont->guid);
 										else
-											$nodeValues[] = "";
+											$dataValues[html_Metadata::cleanText($contTitle)] = array(html_Metadata::cleanText($contContent), $cont->guid);
+								 	}
 									
+									$relNode = $xpathResults->query($child->attribute_isocode, $scope);
+								 	$language =& JFactory::getLanguage();
+									
+								 	$node = $xpathResults->query($type_isocode, $relNode->item(0));
+									if ($node->length > 0)
+							 		{
+							 			// Chercher le titre associé au texte localisé souhaité, ou s'il n'y a pas de titre le contenu
+							 			foreach ($content as $cont)
+								 		{
+								 			if ($cont->value == html_Metadata::cleanText($node->item(0)->nodeValue))
+												$nodeValues[] = $cont->guid;
+								 			
+								 		}
+							 		}
+									else
+										$nodeValues[] = "";
 								
-										$nodeDefaultValues = array();
-										if (count($nodeValues) == 0)
+							
+									$nodeDefaultValues = array();
+									if (count($nodeValues) == 0)
+								 	{
+									 	// Elements selectionnes par defaut
+										$query = "SELECT c.* FROM #__sdi_codevalue c, #__sdi_defaultvalue d WHERE c.id=d.codevalue_id AND c.published=true AND d.attribute_id = ".$child->attribute_id." ORDER BY c.ordering";
+										$database->setQuery( $query );
+										$selectedContent = $database->loadObjectList();
+										
+									 	// Construction de la liste
+									 	foreach ($selectedContent as $cont)
 									 	{
-										 	// Elements s�lectionn�s par d�faut
-											$query = "SELECT c.* FROM #__sdi_codevalue c, #__sdi_defaultvalue d WHERE c.id=d.codevalue_id AND c.published=true AND d.attribute_id = ".$child->attribute_id." ORDER BY c.ordering";
-											$database->setQuery( $query );
-											//echo $database->getQuery()."<br>";
-											$selectedContent = $database->loadObjectList();
-											
-										 	// Construction de la liste
-										 	foreach ($selectedContent as $cont)
-										 	{
-										 		//$nodeValues[] = html_Metadata::cleanText(JText::_($cont->guid."_TITLE"));
-										 		$nodeValues[] = $cont->guid;
-										 		//$nodeDefaultValues[] = html_Metadata::cleanText(JText::_($cont->guid."_TITLE"));
-										 		$nodeDefaultValues[] = $cont->guid;
-									 		}
-										}
-									 	
-										//echo "selectionne par defaut: "; print_r($nodeValues); echo "<hr>";
-									 	
-										$simple=true;
-										if ($child->rel_lowerbound>0)
-											$simple = false;
-											
-								 		$this->javascript .="
-										var valueList = ".HTML_metadata::array2extjs($dataValues, $simple, true, true).";
-									     var selectedValueList = ".HTML_metadata::array2json($nodeValues).";
-									     var defaultValueList = ".HTML_metadata::array2json($nodeDefaultValues).";
-									     // La liste
-									     ".$parentFieldsetName.".add(createChoiceBox('".$listName."', '".html_Metadata::cleanText(JText::_($label))."', ".$mandatory.", '".$child->rel_lowerbound."', '".$child->rel_upperbound."', valueList, selectedValueList, defaultValueList, ".$disabled.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."'));
-									    ";
-									break;
-								}
+									 		$nodeValues[] = $cont->guid;
+									 		$nodeDefaultValues[] = $cont->guid;
+								 		}
+									}
+									$simple=true;
+									if ($child->rel_lowerbound>0)
+										$simple = false;
+										
+							 		$this->javascript .="
+									var valueList = ".HTML_metadata::array2extjs($dataValues, $simple, true, true).";
+								     var selectedValueList = ".HTML_metadata::array2json($nodeValues).";
+								     var defaultValueList = ".HTML_metadata::array2json($nodeDefaultValues).";
+								     // La liste
+								     ".$parentFieldsetName.".add(createChoiceBox('".$listName."', '".html_Metadata::cleanText(JText::_($label))."', ".$mandatory.", '".$child->rel_lowerbound."', '".$child->rel_upperbound."', valueList, selectedValueList, defaultValueList, ".$disabled.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."'));
+								    ";
 								
-								if ($child->editable == 2)
-								{
+								
+									if($disabled == "true")
+									{
+										$this->javascript .="
+										var defaultValueList = ".HTML_metadata::array2json($nodeValues).";
+										".$parentFieldsetName.".add(createHidden('".$listName."_hiddenVal', '".$listName."_hiddenVal', defaultValueList));
+										";
+									}
+								}
+								else
+								{		
 									$this->javascript .="
+									var defaultValueList = ".HTML_metadata::array2json($nodeValues).";
 									".$parentFieldsetName.".add(createHidden('".$listName."_hiddenVal', '".$listName."_hiddenVal', defaultValueList));
 									";
 								}
-								
 								break;
 							// LocaleChoice
 							case 10:
 								// Traitement de la classe enfant
-								//echo "Recherche de gco:CharacterString dans ".$attributeScope->nodeName."<br>";
-								//$node = $xpathResults->query($child->attribute_isocode."/".$type_isocode, $attributeScope);
 								$node = $xpathResults->query("gco:CharacterString", $attributeScope);
-								//echo "Trouve ".$node->length."<br>";
 								
 								if ($node->length >0)
 									$nodeValue = html_Metadata::cleanText($node->item($pos)->nodeValue);
 								else
 									$nodeValue = "";
-								//echo "Trouve ".$nodeValue."<br>";
-								//echo "Valeur en 0: ".$nodeValue."<br>";
 									
-								// R�cup�ration de la valeur par d�faut, s'il y a lieu
+								// Recuperation de la valeur par defaut, s'il y a lieu
 								if ($child->attribute_default <> "" and $nodeValue == "")
 									$nodeValue = html_Metadata::cleanText($child->attribute_default);
 			
-								// Selon le rendu de l'attribut, on fait des traitements diff�rents
-								switch ($child->rendertype_id)
-								{
-									default:
-										// Traitement sp�cifique aux listes
-										//echo $ancestorFieldsetName." - ".$parentName." - ".$child->attribute_isocode. " (1)<br>";					
-										// Traitement des enfants de type list
-										$content = array();
-										//$query = "SELECT c.*, rel.* FROM #__easysdi_metadata_classes c, #__easysdi_metadata_classes_classes rel WHERE rel.classes_to_id = c.id and c.type='list' and rel.classes_from_id=".$parent." and (c.partner_id=0 or c.partner_id=".$account_id.") ORDER BY c.ordering";
-										$query = "SELECT * FROM #__sdi_codevalue WHERE published=true AND attribute_id = ".$child->attribute_id." ORDER BY ordering";
-										$database->setQuery( $query );
-										$content = $database->loadObjectList();
-	
-									 	$dataValues = array();
-									 	$nodeValues = array();
+								// Traitement specifique aux listes
+								// Traitement des enfants de type list
+								$content = array();
+								$query = "SELECT * FROM #__sdi_codevalue WHERE published=true AND attribute_id = ".$child->attribute_id." ORDER BY ordering";
+								$database->setQuery( $query );
+								$content = $database->loadObjectList();
 								
-									 	// Traitement de la multiplicit�
-									 	// R�cup�ration du path du bloc de champs qui va �tre cr�� pour construire le nom
-									 	$listName = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__1";
-									 	 
-									 	// Construction de la liste
-									 	foreach ($content as $cont)
-									 	{
-									 		$contTitle = JText::_($cont->guid."_TITLE");
-											$cond1 = !$contTitle;
-											$cond2 = substr($contTitle, -6, 6) == "_TITLE";
-											if ($cond1 or $cond2)
-												$contTitle = "";
-											
-											$contContent = JText::_($cont->guid."_CONTENT");
-											$cond1 = !$contContent;
-											$cond2 = substr($contContent, -6, 6) == "_CONTENT";
-											if ($cond1 or $cond2)
-												$contContent = "";
-												
-											if ($contTitle == "")
-												$dataValues[$cont->guid."_TITLE"] = array(html_Metadata::cleanText($contContent), $cont->guid);
-											else
-												$dataValues[html_Metadata::cleanText($contTitle)] = array(html_Metadata::cleanText($contContent), $cont->guid);
-									 	}
-										//echo "1)Contenu: "; print_r($dataValues); echo "<br>";
+								$dataValues = array();
+								$nodeValues = array();
+								
+								// Traitement de la multiplicite
+								// Recuperation du path du bloc de champs qui va etre cree pour construire le nom
+								$listName = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__1";
+								
+								// Construction de la liste
+								foreach ($content as $cont)
+								{
+									$contTitle = JText::_($cont->guid."_TITLE");
+									$cond1 = !$contTitle;
+									$cond2 = substr($contTitle, -6, 6) == "_TITLE";
+									if ($cond1 or $cond2)
+										$contTitle = "";
 										
-									 	$relNode = $xpathResults->query($child->attribute_isocode, $scope);
-									 	/*
-									 	for ($pos=0;$pos<$relNode->length;$pos++)
-									 	{
-									 		$listNode = $xpathResults->query($child->list_isocode, $relNode->item($pos));
-									 		echo $type_isocode." dans ".$relNode->item($pos)->nodeName."<br>";
-									 		if ($listNode->length > 0)
-									 		{
-									 			if ($child->codeList <> null)
-													$nodeValues[]=html_Metadata::cleanText($listNode->item(0)->getAttribute('codeListValue'));
-										 		else
-										 			$nodeValues[]=html_Metadata::cleanText($listNode->item(0)->nodeValue);
-									 		}
-									 		else
-								 				$nodeValues[]="";
-									 	}
-									 	*/
-									 	//echo "existant: ".count($nodeValues)."<br>";
-									 	$language =& JFactory::getLanguage();
-										
-									 	// R�cup�rer le texte localis� stock�
-									 	foreach($this->langList as $row)
+									$contContent = JText::_($cont->guid."_CONTENT");
+									$cond1 = !$contContent;
+									$cond2 = substr($contContent, -6, 6) == "_CONTENT";
+									if ($cond1 or $cond2)
+										$contContent = "";
+								
+									if ($contTitle == "")
+										$dataValues[$cont->guid."_TITLE"] = array(html_Metadata::cleanText($contContent), $cont->guid);
+									else
+										$dataValues[html_Metadata::cleanText($contTitle)] = array(html_Metadata::cleanText($contContent), $cont->guid);
+								}
+								$relNode = $xpathResults->query($child->attribute_isocode, $scope);
+								
+								$language =& JFactory::getLanguage();
+								
+								// Recuperer le texte localise stocke
+								foreach($this->langList as $row)
+								{
+									if ($row->code_easysdi == $language->_lang)
+									{
+										if ($row->defaultlang)
+											$node = $xpathResults->query("gco:CharacterString", $relNode->item(0));
+										else
+											$node = $xpathResults->query("gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString"."[@locale='#".$row->code."']", $relNode->item(0));
+								
+										if ($node->length > 0)
 										{
-											if ($row->code_easysdi == $language->_lang)
-											{
-												if ($row->defaultlang)
-													$node = $xpathResults->query("gco:CharacterString", $relNode->item(0));
-												else
-													$node = $xpathResults->query("gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString"."[@locale='#".$row->code."']", $relNode->item(0));
-												
-												//echo $type_isocode."[@locale='".$row->code."']"." dans ".$relNode->item(0)->nodeName."<br>";
-												
-										 		if ($node->length > 0)
-										 		{
-										 			// Chercher le titre associé au texte localisé souhaité, ou s'il n'y a pas de titre le contenu
-										 			$query = "SELECT t.title, t.content, c.guid 
-															  FROM #__sdi_codevalue c, #__sdi_translation t, #__sdi_language l, #__sdi_list_codelang cl 
-															  WHERE c.guid=t.element_guid 
-															        AND t.language_id=l.id 
-															        AND l.codelang_id=cl.id 
-															        AND cl.code='".$language->_lang."' 
-															        AND t.content = '".html_Metadata::cleanText($node->item(0)->nodeValue)."'"." 
-															        ORDER BY c.ordering";
-													$database->setQuery( $query );
-													//echo $database->getQuery()."<br>";
-													//$cont_guid = $database->loadResult();
-													
-													//$nodeValues[] = $database->loadResult();
-													$result = $database->loadObject();
-													/* Mis en commentaire � cause du bug #3919
-													 * if ($result->title <> "")
-														$nodeValues[] = $result->title;
-													else*/
-														$nodeValues[] = $result->guid;
-
-													//$nodeValues[] = html_Metadata::cleanText($node->item(0)->nodeValue);
-													//echo html_Metadata::cleanText($node->item(0)->nodeValue)."<br>";
-													//$nodeValues[] = html_Metadata::cleanText($node->item(0)->nodeValue);
-										 		}
-											}
-										}
-
-										//print_r($nodeValues); echo "<br>";
-									 	
-										$nodeDefaultValues = array();
-										if (count($nodeValues) == 0)
-									 	{
-										 	// Elements s�lectionn�s par d�faut
-											$query = "SELECT c.* FROM #__sdi_codevalue c, #__sdi_defaultvalue d WHERE c.id=d.codevalue_id AND c.published=true AND d.attribute_id = ".$child->attribute_id." ORDER BY c.ordering";
+											// Chercher le titre associé au texte localisé souhaité, ou s'il n'y a pas de titre le contenu
+											$query = "SELECT t.title, t.content, c.guid
+											FROM #__sdi_codevalue c, #__sdi_translation t, #__sdi_language l, #__sdi_list_codelang cl
+											WHERE c.guid=t.element_guid
+											AND t.language_id=l.id
+											AND l.codelang_id=cl.id
+											AND cl.code='".$language->_lang."'
+											AND t.content = '".html_Metadata::cleanText($node->item(0)->nodeValue)."'"."
+											ORDER BY c.ordering";
 											$database->setQuery( $query );
-											//echo $database->getQuery()."<br>";
-											$selectedContent = $database->loadObjectList();
-											
-										 	// Construction de la liste
-										 	foreach ($selectedContent as $cont)
-										 	{
-										 		//$nodeValues[] = html_Metadata::cleanText(JText::_($cont->guid."_TITLE"));
-										 		//$nodeDefaultValues[] = html_Metadata::cleanText(JText::_($cont->guid."_TITLE"));
-										 		$nodeValues[] = $cont->guid;
-												$nodeDefaultValues[] = $cont->guid;
-									 		}
+											$result = $database->loadObject();
+											$nodeValues[] = $result->guid;
 										}
-									 	
-										if (count($nodeValues) == 0)
-											$nodeValues[] = "";
-										//echo "selectionne par defaut: "; print_r($nodeValues); echo "<hr>";
-									 	
-										$simple=true;
-										if ($child->rel_lowerbound>0)
-											$simple = false;
-										
-								 		$this->javascript .="
-										var valueList = ".HTML_metadata::array2extjs($dataValues, $simple, true, true).";
-									     var selectedValueList = ".HTML_metadata::array2json($nodeValues).";
-									     var defaultValueList = ".HTML_metadata::array2json($nodeDefaultValues).";
-									     // La liste
-									     ".$parentFieldsetName.".add(createChoiceBox('".$listName."', '".html_Metadata::cleanText(JText::_($label))."', ".$mandatory.", '".$child->rel_lowerbound."', '".$child->rel_upperbound."', valueList, selectedValueList, defaultValueList, ".$disabled.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."'));
-									    ";
-									break;
+									}
 								}
 								
-								if ($child->editable == 2)
+								$nodeDefaultValues = array();
+								if (count($nodeValues) == 0)
+								{
+									// Elements selectionnes par defaut
+									$query = "SELECT c.* FROM #__sdi_codevalue c, #__sdi_defaultvalue d WHERE c.id=d.codevalue_id AND c.published=true AND d.attribute_id = ".$child->attribute_id." ORDER BY c.ordering";
+									$database->setQuery( $query );
+									$selectedContent = $database->loadObjectList();
+										
+									// Construction de la liste
+									foreach ($selectedContent as $cont)
+									{
+										$nodeValues[] = $cont->guid;
+										$nodeDefaultValues[] = $cont->guid;
+									}
+								}
+									
+								if (count($nodeValues) == 0)
+									$nodeValues[] = "";
+								
+								if($hidden == "false")
+								{
+									// Selon le rendu de l'attribut, on fait des traitements differents
+									switch ($child->rendertype_id)
+									{
+										default:
+											
+											//echo "selectionne par defaut: "; print_r($nodeValues); echo "<hr>";
+										 	
+											$simple=true;
+											if ($child->rel_lowerbound>0)
+												$simple = false;
+											
+									 		$this->javascript .="
+											var valueList = ".HTML_metadata::array2extjs($dataValues, $simple, true, true).";
+										     var selectedValueList = ".HTML_metadata::array2json($nodeValues).";
+										     var defaultValueList = ".HTML_metadata::array2json($nodeDefaultValues).";
+										     // La liste
+										     ".$parentFieldsetName.".add(createChoiceBox('".$listName."', '".html_Metadata::cleanText(JText::_($label))."', ".$mandatory.", '".$child->rel_lowerbound."', '".$child->rel_upperbound."', valueList, selectedValueList, defaultValueList, ".$disabled.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."'));
+										    ";
+										break;
+									}
+									
+									if($disabled == "true")
+									{
+										$this->javascript .="
+										var defaultValueList = ".HTML_metadata::array2json($nodeValues).";
+										".$parentFieldsetName.".add(createHidden('".$listName."_hiddenVal', '".$listName."_hiddenVal', defaultValueList));
+										";
+									}
+								}
+								else
 								{
 									$this->javascript .="
+									var defaultValueList = ".HTML_metadata::array2json($nodeValues).";
 									".$parentFieldsetName.".add(createHidden('".$listName."_hiddenVal', '".$listName."_hiddenVal', defaultValueList));
 									";
 								}
-								
 								break;
 							// Thesaurus GEMET
 							case 11:
-								//echo "1) ".$child->rel_lowerbound."', '".$child->rel_upperbound."<br>";
-								//echo "Recherche de gco:CharacterString dans ".$attributeScope->nodeName."<br>";
-								
 								$uri =& JUri::getInstance();
 		
 								$language =& JFactory::getLanguage();
@@ -3088,7 +2997,7 @@ else
 								$langArray = Array();
 								foreach($this->langList as $row)
 								{									
-									if ($row->defaultlang) // Langue par d�faut de la m�tadonn�e
+									if ($row->defaultlang) // Langue par defaut de la metadonnee
 										$defaultLang = $row->gemetlang;
 									
 									if ($row->code_easysdi == $language->_lang) // Langue courante de l'utilisateur
@@ -3096,43 +3005,33 @@ else
 										
 									$langArray[] = $row->gemetlang;
 								}
-								/*print_r($langArray);
-								echo "<hr>";
-								print_r(str_replace('"', "'", HTML_metadata::array2json($langArray)));
-								*/
 								
 								$value="";
 								$listNode = $xpathResults->query($child->attribute_isocode, $scope);
 								$listCount = $listNode->length;		
-								//echo "Il y a ".$listCount." occurences de ".$child->attribute_isocode." dans ".$scope->nodeName."<br>";
 								$nodeValues = array();
 								for($keyPos=0;$keyPos<$listCount; $keyPos++)
 								{
 									$currentScope=$listNode->item($keyPos);
-									//echo "Position ".$keyPos.", ".$currentScope->nodeName." avec ".$currentScope->nodeValue."<br>";
 								
 									if ($currentScope and $currentScope->nodeName <> "")
 									{
 									$nodeValue= "";
 									$nodeKeyword= "";
-									// R�cup�rer le texte localis� stock�
+									// Recuperer le texte localise stocke
 									foreach($this->langList as $row)
 									{
-										//echo $row->gemetlang."<br>";
 										if ($row->defaultlang)
 										{
 											$keyNode = $xpathResults->query("gco:CharacterString", $currentScope);
-											//echo "Il y a ".$keyNode->length." occurences de gco:CharacterString dans ".$currentScope->nodeName."<br>";
 											if ($keyNode->length > 0)
 											{
 												$nodeValue .= $row->gemetlang.": ".html_Metadata::cleanText($keyNode->item(0)->nodeValue).";";
-												//$nodeKeyword = html_Metadata::cleanText($keyNode->item(0)->nodeValue);
 											}
 										}
 										else
 										{
 											$keyNode = $xpathResults->query("gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString"."[@locale='#".$row->code."']", $currentScope);
-											//echo "Il y a ".$keyNode->length." occurences de gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString dans ".$currentScope->nodeName."<br>";
 											if ($keyNode->length > 0)
 												$nodeValue .= $row->gemetlang.": ".html_Metadata::cleanText($keyNode->item(0)->nodeValue).";";
 											
@@ -3144,9 +3043,6 @@ else
 									}
 									if ($nodeKeyword <> "")
 										$nodeValues[] = "{keyword:'$nodeKeyword', value: '$nodeValue'}";
-									//echo $nodeValue."<br>";
-									//echo $nodeKeyword."<br>";
-									
 								}
 
 								if (count($nodeValues)>0)
@@ -3155,7 +3051,7 @@ else
 									$value = "[]";
 								
 								$this->javascript .="
-								// Cr�er un bouton pour appeler la fen�tre de choix dans le Thesaurus GEMET
+								// Creer un bouton pour appeler la fenetre de choix dans le Thesaurus GEMET
 								var winthge;
 								
 								Ext.BLANK_IMAGE_URL = '".$uri->base(true)."/components/com_easysdi_catalog/ext/resources/images/default/s.gif';
@@ -3181,10 +3077,10 @@ else
 												      		    					
 																      		    var reliableRecord = result.terms[thes.lang];
 																      		    
-																      		    // S'assurer que le mot-cl� n'est pas d�j� s�lectionn�
+																      		    // S'assurer que le mot-cle n'est pas deje selectionne
 																      		    if (!target.usedRecords.containsKey(reliableRecord))
 																				{
-																					// Sauvegarde dans le champs SuperBoxSelect des mots-cl�s dans toutes les langues de EasySDI
+																					// Sauvegarde dans le champs SuperBoxSelect des mots-cles dans toutes les langues de EasySDI
 																				    for(l in result.terms) 
 																				    {
 																				    	s += l+': '+result.terms[l]+';';
@@ -3207,7 +3103,7 @@ else
 										text:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_THESAURUSGEMET_BUTTON'))."',
 										handler: function()
 								                {
-								                	// Cr�er une iframe pour demander � l'utilisateur le type d'import
+								                	// Creer une iframe pour demander e l'utilisateur le type d'import
 													if (!winthge)
 														winthge = new Ext.Window({
 														                id:'".$currentName."_win',
@@ -3238,7 +3134,7 @@ else
 														winthge.show();
 										        	},
 										
-								        // Champs sp�cifiques au clonage
+								        // Champs specifiques au clonage
 								        dynamic:true,
 								        minOccurs:1,
 							            maxOccurs:1,
@@ -3248,12 +3144,12 @@ else
 									})
 								);
 								
-								// Cr�er le champ qui contiendra les mots-cl�s du thesaurus choisis
+								// Creer le champ qui contiendra les mots-cles du thesaurus choisis
 								".$parentFieldsetName.".add(createSuperBoxSelect('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."', ".$value.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."'));
 								";
 								break;
-								case 14:
-									// Cas où le noeud n'existe pas dans le XML. Inutile de rechercher la valeur
+							case 14:
+								// Cas où le noeud n'existe pas dans le XML. Inutile de rechercher la valeur
 								$node = $xpathResults->query("gmd:MI_Identifier/gmd:code/gco:CharacterString", $attributeScope);
 								
 								if ($parentScope <> NULL and $parentScope->nodeName == $scope->nodeName)
@@ -3265,11 +3161,19 @@ else
 								if ($child->attribute_default <> "" and $nodeValue == "")
 									$nodeValue = html_Metadata::cleanText($child->attribute_default);
 								
-								$this->javascript .="
-								".$parentFieldsetName.".add(createStereotypeFileTextField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', false, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
-								";
-								
-								if ($child->editable == 2)
+								if($hidden == "false"){
+									$this->javascript .="
+									".$parentFieldsetName.".add(createStereotypeFileTextField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', false, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+									";
+									
+									if($disabled == "true")
+									{
+										$this->javascript .="
+										".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
+										";
+									}
+								}
+								else
 								{
 									$this->javascript .="
 									".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
@@ -3278,33 +3182,36 @@ else
 								break;
 							default:
 								// Traitement de la classe enfant
-								//echo "Recherche de ".$type_isocode." dans ".$attributeScope->nodeName."<br>";
-								//$node = $xpathResults->query($child->attribute_isocode."/".$type_isocode, $attributeScope);
 								$node = $xpathResults->query($type_isocode, $attributeScope);
 											 	
 								$nodeValue = html_Metadata::cleanText($node->item($pos)->nodeValue);
-								//echo "Trouve ".$nodeValue."<br>";
-								//echo "Valeur en 0: ".$nodeValue."<br>";
 									
-								// R�cup�ration de la valeur par d�faut, s'il y a lieu
+								// Recuperation de la valeur par defaut, s'il y a lieu
 								if ($child->attribute_default <> "" and $nodeValue == "")
 									$nodeValue = html_Metadata::cleanText($child->attribute_default);
 			
-								// Selon le rendu de l'attribut, on fait des traitements diff�rents
-								switch ($child->rendertype_id)
-								{
-									default:
+								if($hidden == "false"){
+									// Selon le rendu de l'attribut, on fait des traitements differents
+									switch ($child->rendertype_id)
+									{
+										default:
+											$this->javascript .="
+											".$parentFieldsetName.".add(createTextArea('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));";
+											break;
+									}
+									if($disabled == "true")
+									{
 										$this->javascript .="
-										".$parentFieldsetName.".add(createTextArea('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));";
-										break;
+										".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
+										";
+									}
 								}
-								if ($child->editable == 2)
+								else
 								{
 									$this->javascript .="
 									".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
 									";
 								}
-								
 								break;
 						}
 					}
@@ -3312,10 +3219,7 @@ else
 					else
 					{
 						$attributeScope = $mainNode->item($pos);
-						//echo $pos.") attributeScope: ".$attributeScope->nodeName."<br>";
 						// Positionner le code ISO de l'attribut
-						//$queryPath = $queryPath."/".$child->attribute_id;
-						
 						if ($child->attribute_type == 6 )
 							$type_isocode = $child->list_isocode;
 						else
@@ -3323,39 +3227,29 @@ else
 	
 						$queryPath = $queryPath."/".$child->attribute_isocode."/".$type_isocode;
 						
-						
-						//$master = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__1";
 						$master = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."-".str_replace(":", "_", $type_isocode)."__1";
-						//$master = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."-".str_replace(":", "_", $type_isocode)."__1";
-						//$name = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."-".str_replace(":", "_", $type_isocode)."__".($pos+1);
-						//$name = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__".($pos+2);
-						//$name = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__".($pos+1);
 						$name = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."-".str_replace(":", "_", $type_isocode)."__".($pos+1);
-						
 						$currentName = $name;
-						
-						//echo $master." - ".$name." - ".$currentName."<br>";
 						
 						if ($child->attribute_type <> 9 and $child->attribute_type <> 10 and $child->attribute_type <> 11)
 						{
-							//echo $type_isocode." - ".$attributeScope->nodeName."<br>";
 							// Traitement de l'attribut enfant
-							//$node = $xpathResults->query($child->attribute_isocode."/".$type_isocode, $attributeScope);
 							$node = $xpathResults->query($type_isocode, $attributeScope);
-							//echo $node->length." - ".$node->item(0)->nodeName."<br>";
 							
-							// Si le fieldset n'existe pas, inutile de r�cup�rer une valeur
-								if ($parentScope <> NULL and $parentScope->nodeName == $scope->nodeName)
-									$nodeValue = "";
-								else
-									$nodeValue = html_Metadata::cleanText($node->item($pos-1)->nodeValue);
-								
+							// Si le fieldset n'existe pas, inutile de recuperer une valeur
+							if ($parentScope <> NULL and $parentScope->nodeName == $scope->nodeName)
+								$nodeValue = "";
+							else
+								$nodeValue = html_Metadata::cleanText($node->item($pos-1)->nodeValue);
 							
-							// R�cup�ration de la valeur par d�faut, s'il y a lieu
+							// Récupération de la valeur par défaut, s'il y a lieu
 							if ($child->attribute_default <> "" and $nodeValue == "")
-								$nodeValue = html_Metadata::cleanText($child->attribute_default);
-		
-							//echo $nodeValue."<br>";
+							{
+								if(( $child->attribute_type == 5 || $child->attribute_type == 8 ) && $child->attribute_default == 'today')
+									$nodeValue = html_Metadata::cleanText(date ('d.m.Y'));
+								else
+									$nodeValue = html_Metadata::cleanText($child->attribute_default);
+							}
 						}
 						$this->javascript .="
 						var master = Ext.getCmp('".$master."');						
@@ -3366,7 +3260,7 @@ else
 						{
 							// Guid
 							case 1:
-								// Selon le rendu de l'attribut, on fait des traitements diff�rents
+								// Selon le rendu de l'attribut, on fait des traitements differents
 								switch ($child->rendertype_id)
 								{
 									// Textbox
@@ -3386,7 +3280,7 @@ else
 								break;
 							// Text
 							case 2:
-								// Selon le rendu de l'attribut, on fait des traitements diff�rents
+								// Selon le rendu de l'attribut, on fait des traitements differents
 								switch ($child->rendertype_id)
 								{
 									// Textarea
@@ -3420,7 +3314,7 @@ else
 								break;
 							// Number//distance/integer
 							case 4:case 12:case 13:
-								// Selon le rendu de l'attribut, on fait des traitements diff�rents
+								// Selon le rendu de l'attribut, on fait des traitements differents
 								switch ($child->rendertype_id)
 								{
 									// Textarea
@@ -3442,7 +3336,7 @@ else
 								break;
 							// Date
 							case 5:
-								// Selon le rendu de l'attribut, on fait des traitements diff�rents
+								// Selon le rendu de l'attribut, on fait des traitements differents
 								switch ($child->rendertype_id)
 								{
 									// Textarea
@@ -3468,7 +3362,7 @@ else
 								break;
 							// Link
 							case 7:
-								// Selon le rendu de l'attribut, on fait des traitements diff�rents
+								// Selon le rendu de l'attribut, on fait des traitements differents
 								switch ($child->rendertype_id)
 								{
 									// Textarea
@@ -3498,7 +3392,7 @@ else
 							// DateTime
 							case 8:
 								$nodeValue = substr($nodeValue, 0, 10);
-								// Selon le rendu de l'attribut, on fait des traitements diff�rents
+								// Selon le rendu de l'attribut, on fait des traitements differents
 								switch ($child->rendertype_id)
 								{
 									// Textarea
@@ -3533,15 +3427,15 @@ else
 								//echo "Trouve ".$nodeValue."<br>";
 								//echo "Valeur en 0: ".$nodeValue."<br>";
 									
-								// R�cup�ration de la valeur par d�faut, s'il y a lieu
+								// Recuperation de la valeur par defaut, s'il y a lieu
 								if ($child->attribute_default <> "" and $nodeValue == "")
 									$nodeValue = html_Metadata::cleanText($child->attribute_default);
 			
-								// Selon le rendu de l'attribut, on fait des traitements diff�rents
+								// Selon le rendu de l'attribut, on fait des traitements differents
 								switch ($child->rendertype_id)
 								{
 									default:
-										// Traitement sp�cifique aux listes
+										// Traitement specifique aux listes
 										//echo $ancestorFieldsetName." - ".$parentName." - ".$child->attribute_isocode. " (1)<br>";					
 										// Traitement des enfants de type list
 										$content = array();
@@ -3553,8 +3447,8 @@ else
 									 	$dataValues = array();
 									 	$nodeValues = array();
 								
-									 	// Traitement de la multiplicit�
-									 	// R�cup�ration du path du bloc de champs qui va �tre cr�� pour construire le nom
+									 	// Traitement de la multiplicite
+									 	// Recuperation du path du bloc de champs qui va etre cree pour construire le nom
 									 	//$listName = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__1";
 									 	$masterlistName = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__1";
 										$listName = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__".($pos+1);
@@ -3606,7 +3500,7 @@ else
 										//echo $type_isocode."[@locale='".$row->code."']"." dans ".$relNode->item(0)->nodeName."<br>";
 										if ($node->length > 0)
 								 		{
-								 			// Chercher le titre associ� au texte localis� souhait� et 
+								 			// Chercher le titre associe au texte localise souhaite et 
 											foreach ($content as $cont)
 									 		{
 									 			if ($cont->value == html_Metadata::cleanText($node->item(0)->nodeValue))
@@ -3622,7 +3516,7 @@ else
 										$nodeDefaultValues = array();
 										if (count($nodeValues) == 0)
 									 	{
-										 	// Elements s�lectionn�s par d�faut
+										 	// Elements selectionnes par defaut
 											$query = "SELECT c.* FROM #__sdi_codevalue c, #__sdi_defaultvalue d WHERE c.id=d.codevalue_id AND c.published=true AND d.attribute_id = ".$child->attribute_id." ORDER BY c.ordering";
 											$database->setQuery( $query );
 											//echo $database->getQuery()."<br>";
@@ -3679,15 +3573,15 @@ else
 								//echo "Trouve ".$nodeValue."<br>";
 								//echo "Valeur en 0: ".$nodeValue."<br>";
 									
-								// R�cup�ration de la valeur par d�faut, s'il y a lieu
+								// Recuperation de la valeur par defaut, s'il y a lieu
 								if ($child->attribute_default <> "" and $nodeValue == "")
 									$nodeValue = html_Metadata::cleanText($child->attribute_default);
 			
-								// Selon le rendu de l'attribut, on fait des traitements diff�rents
+								// Selon le rendu de l'attribut, on fait des traitements differents
 								switch ($child->rendertype_id)
 								{
 									default:
-										// Traitement sp�cifique aux listes
+										// Traitement specifique aux listes
 										//echo $ancestorFieldsetName." - ".$parentName." - ".$child->attribute_isocode. " (1)<br>";					
 										// Traitement des enfants de type list
 										$content = array();
@@ -3699,8 +3593,8 @@ else
 									 	$dataValues = array();
 									 	$nodeValues = array();
 								
-									 	// Traitement de la multiplicit�
-									 	// R�cup�ration du path du bloc de champs qui va �tre cr�� pour construire le nom
+									 	// Traitement de la multiplicite
+									 	// Recuperation du path du bloc de champs qui va etre cree pour construire le nom
 									 	//$listName = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__1";
 									 	$masterlistName = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__1";
 										$listName = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__".($pos+1);
@@ -3747,7 +3641,7 @@ else
 									 	//echo "existant: ".count($nodeValues)."<br>";
 									 	$language =& JFactory::getLanguage();
 										
-									 	// R�cup�rer le texte localis� stock�
+									 	// Recuperer le texte localise stocke
 									 	foreach($this->langList as $row)
 										{
 											if ($row->code_easysdi == $language->_lang)
@@ -3761,7 +3655,7 @@ else
 												//echo $type_isocode."[@locale='".$row->code."']"." dans ".$relNode->item(0)->nodeName."<br>";
 												if ($node->length > 0)
 										 		{
-										 			// Chercher le titre associ� au texte localis� souhait�, ou s'il n'y a pas de titre le contenu
+										 			// Chercher le titre associe au texte localise souhaite, ou s'il n'y a pas de titre le contenu
 													$query = "SELECT t.title, t.content, c.guid FROM #__sdi_codevalue c, #__sdi_translation t, #__sdi_language l, #__sdi_list_codelang cl WHERE c.guid=t.element_guid AND t.language_id=l.id AND l.codelang_id=cl.id and cl.code='".$language->_lang."' AND t.content = '".html_Metadata::cleanText($node->item(0)->nodeValue)."'"." ORDER BY c.ordering";
 													$database->setQuery( $query );
 													//echo $database->getQuery()."<br>";
@@ -3769,7 +3663,7 @@ else
 													
 													//$nodeValues[] = $database->loadResult();
 													$result = $database->loadObject();
-													/* Mis en commentaire � cause du bug #3919
+													/* Mis en commentaire e cause du bug #3919
 													 * if ($result->title <> "")
 														$nodeValues[] = $result->title;
 													else*/
@@ -3787,7 +3681,7 @@ else
 										$nodeDefaultValues = array();
 										if (count($nodeValues) == 0)
 									 	{
-										 	// Elements s�lectionn�s par d�faut
+										 	// Elements selectionnes par defaut
 											$query = "SELECT c.* FROM #__sdi_codevalue c, #__sdi_defaultvalue d WHERE c.id=d.codevalue_id AND c.published=true AND d.attribute_id = ".$child->attribute_id." ORDER BY c.ordering";
 											$database->setQuery( $query );
 											//echo $database->getQuery()."<br>";
@@ -3853,7 +3747,7 @@ else
 								}
 								break;
 							default:
-								// Selon le rendu de l'attribut, on fait des traitements diff�rents
+								// Selon le rendu de l'attribut, on fait des traitements differents
 								switch ($child->rendertype_id)
 								{
 									default:
@@ -3875,7 +3769,7 @@ else
 					
 					
 				// Si le XML ne contient aucune occurence de l'attribut
-				// il faut le cr�er vide
+				// il faut le creer vide
 				if ($attributeCount==0)
 				{
 					$nodeValue = "";
@@ -3894,7 +3788,7 @@ else
 					$name = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."-".str_replace(":", "_", $type_isocode);
 					$currentName = $name."__1";
 					
-					// R�cup�ration de la valeur par d�faut, s'il y a lieu
+					// Recuperation de la valeur par defaut, s'il y a lieu
 					if ($child->attribute_default <> "")
 						$nodeValue = html_Metadata::cleanText($child->attribute_default);
 				
@@ -3904,7 +3798,7 @@ else
 					{
 						// Guid
 						case 1:
-							// Selon le rendu de l'attribut, on fait des traitements diff�rents
+							// Selon le rendu de l'attribut, on fait des traitements differents
 							switch ($child->rendertype_id)
 							{
 								// Textbox
@@ -3924,7 +3818,7 @@ else
 							break;
 						// Text
 						case 2:
-							// Selon le rendu de l'attribut, on fait des traitements diff�rents
+							// Selon le rendu de l'attribut, on fait des traitements differents
 							switch ($child->rendertype_id)
 							{
 								// Textarea
@@ -3958,7 +3852,7 @@ else
 							switch ($child->rendertype_id)
 							{
 								default:
-									/* Traitement sp�cifique aux langues */
+									/* Traitement specifique aux langues */
 									
 									// Stockage du path pour atteindre ce noeud du XML
 									//$queryPath = $child->attribute_isocode."/gmd:LocalisedCharacterString";
@@ -3971,8 +3865,8 @@ else
 									{
 										if ($pos==0)
 										{	
-											// Traitement de la multiplicit�
-											// R�cup�ration du path du bloc de champs qui va �tre cr�� pour construire le nom
+											// Traitement de la multiplicite
+											// Recuperation du path du bloc de champs qui va etre cree pour construire le nom
 											$LocName = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__".($pos+1);
 							
 											//echo $LocName." - ".$child->attribute_id." - ".JText::_($label)." - ".$child->rel_lowerbound." - ".$child->rel_upperbound." - ".$parentFieldsetName."<br>";
@@ -4019,7 +3913,7 @@ else
 												
 												//echo $LocLangName." - ".$child->attribute_id." - ".JText::_($row->name)." - ".$nodeValue."<br>";
 												//echo $child->attribute_id." - ".$LocLangName." - ".$nodeValue."<br>";
-												// Selon le rendu de l'attribut, on fait des traitements diff�rents
+												// Selon le rendu de l'attribut, on fait des traitements differents
 												switch ($child->rendertype_id)
 												{
 													// Textarea
@@ -4050,8 +3944,8 @@ else
 										}
 										else
 										{
-											// Traitement de la multiplicit�
-											// R�cup�ration du path du bloc de champs qui va �tre cr�� pour construire le nom
+											// Traitement de la multiplicite
+											// Recuperation du path du bloc de champs qui va etre cree pour construire le nom
 											$master = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__1";
 											$LocName = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__".($pos+1);
 							
@@ -4128,8 +4022,8 @@ else
 									}
 									if ($listCount==0 and $child->rel_lowerbound>0)
 									{
-										// Traitement de la multiplicit�
-										// R�cup�ration du path du bloc de champs qui va �tre cr�� pour construire le nom
+										// Traitement de la multiplicite
+										// Recuperation du path du bloc de champs qui va etre cree pour construire le nom
 										$master = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__1";
 										$LocName = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__2";
 						
@@ -4190,7 +4084,7 @@ else
 							break;
 						// Number // distance/integer
 						case 4:case 12:case 13:
-							// Selon le rendu de l'attribut, on fait des traitements diff�rents
+							// Selon le rendu de l'attribut, on fait des traitements differents
 							switch ($child->rendertype_id)
 							{
 								// Textarea
@@ -4212,7 +4106,7 @@ else
 							break;
 						// Date
 						case 5:
-							// Selon le rendu de l'attribut, on fait des traitements diff�rents
+							// Selon le rendu de l'attribut, on fait des traitements differents
 							switch ($child->rendertype_id)
 							{
 								// Textarea
@@ -4234,11 +4128,11 @@ else
 							break;
 						// List
 						case 6:
-							// Selon le rendu de l'attribut, on fait des traitements diff�rents
+							// Selon le rendu de l'attribut, on fait des traitements differents
 							switch ($child->rendertype_id)
 							{
 								default:
-									// Traitement sp�cifique aux listes
+									// Traitement specifique aux listes
 									//echo $ancestorFieldsetName." - ".$parentName." - ".$child->attribute_isocode. " (2)<br>";					
 									// Traitement des enfants de type list
 									$content = array();
@@ -4250,8 +4144,8 @@ else
 								 	$dataValues = array();
 								 	$nodeValues = array();
 							
-								 	// Traitement de la multiplicit�
-								 	// R�cup�ration du path du bloc de champs qui va �tre cr�� pour construire le nom
+								 	// Traitement de la multiplicite
+								 	// Recuperation du path du bloc de champs qui va etre cree pour construire le nom
 								 	$listName = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__1";
 								 	 
 								 	// Construction de la liste
@@ -4284,11 +4178,11 @@ else
 								 	}
 									//echo "existant: ".count($nodeValues)."<br>";
 									
-									// S'il n'y a pas de valeurs existantes, r�cup�rer les valeurs par d�faut
+									// S'il n'y a pas de valeurs existantes, recuperer les valeurs par defaut
 									$nodeDefaultValues = array();
 									if (count($nodeValues) == 0)
 								 	{
-								 		// Elements s�lectionn�s par d�faut
+								 		// Elements selectionnes par defaut
 										$query = "SELECT c.* FROM #__sdi_codevalue c, #__sdi_defaultvalue d WHERE c.id=d.codevalue_id AND c.published=true AND d.attribute_id = ".$child->attribute_id;
 										$database->setQuery( $query );
 										//echo $database->getQuery()."<br>";
@@ -4374,7 +4268,7 @@ else
 							break;
 						// Link
 						case 7:
-							// Selon le rendu de l'attribut, on fait des traitements diff�rents
+							// Selon le rendu de l'attribut, on fait des traitements differents
 							switch ($child->rendertype_id)
 							{
 								// Textarea
@@ -4404,7 +4298,7 @@ else
 						// DateTime
 						case 8:
 							$nodeValue = substr($nodeValue, 0, 10);
-							// Selon le rendu de l'attribut, on fait des traitements diff�rents
+							// Selon le rendu de l'attribut, on fait des traitements differents
 							switch ($child->rendertype_id)
 							{
 								// Textarea
@@ -4426,11 +4320,11 @@ else
 							break;
 							// TextChoice
 							case 9:
-								// Selon le rendu de l'attribut, on fait des traitements diff�rents
+								// Selon le rendu de l'attribut, on fait des traitements differents
 								switch ($child->rendertype_id)
 								{
 									default:
-										// Traitement sp�cifique aux listes
+										// Traitement specifique aux listes
 										//echo $ancestorFieldsetName." - ".$parentName." - ".$child->attribute_isocode. " (1)<br>";					
 										// Traitement des enfants de type list
 										$content = array();
@@ -4442,8 +4336,8 @@ else
 									 	$dataValues = array();
 									 	$nodeValues = array();
 								
-									 	// Traitement de la multiplicit�
-									 	// R�cup�ration du path du bloc de champs qui va �tre cr�� pour construire le nom
+									 	// Traitement de la multiplicite
+									 	// Recuperation du path du bloc de champs qui va etre cree pour construire le nom
 									 	$listName = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__1";
 									 	 
 									 	// Construction de la liste
@@ -4471,7 +4365,7 @@ else
 										
 									 	$relNode = $xpathResults->query($child->attribute_isocode, $scope);
 									 	
-										// Elements s�lectionn�s par d�faut
+										// Elements selectionnes par defaut
 										$nodeDefaultValues = array();
 										$query = "SELECT c.* FROM #__sdi_codevalue c, #__sdi_defaultvalue d WHERE c.id=d.codevalue_id AND c.published=true AND d.attribute_id = ".$child->attribute_id." ORDER BY c.ordering";
 										$database->setQuery( $query );
@@ -4511,11 +4405,11 @@ else
 								break;
 							// LocaleChoice
 							case 10:
-								// Selon le rendu de l'attribut, on fait des traitements diff�rents
+								// Selon le rendu de l'attribut, on fait des traitements differents
 								switch ($child->rendertype_id)
 								{
 									default:
-										// Traitement sp�cifique aux listes
+										// Traitement specifique aux listes
 										//echo $ancestorFieldsetName." - ".$parentName." - ".$child->attribute_isocode. " (1)<br>";					
 										// Traitement des enfants de type list
 										$content = array();
@@ -4527,8 +4421,8 @@ else
 									 	$dataValues = array();
 									 	$nodeValues = array();
 								
-									 	// Traitement de la multiplicit�
-									 	// R�cup�ration du path du bloc de champs qui va �tre cr�� pour construire le nom
+									 	// Traitement de la multiplicite
+									 	// Recuperation du path du bloc de champs qui va etre cree pour construire le nom
 									 	$listName = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__1";
 									 	 
 									 	// Construction de la liste
@@ -4555,7 +4449,7 @@ else
 										
 									 	$relNode = $xpathResults->query($child->attribute_isocode, $scope);
 									 	
-										// Elements s�lectionn�s par d�faut
+										// Elements selectionnes par defaut
 										$nodeDefaultValues = array();
 										$query = "SELECT c.* FROM #__sdi_codevalue c, #__sdi_defaultvalue d WHERE c.id=d.codevalue_id AND c.published=true AND d.attribute_id = ".$child->attribute_id." ORDER BY c.ordering";
 										$database->setQuery( $query );
@@ -4607,7 +4501,7 @@ else
 								$langArray = Array();
 								foreach($this->langList as $row)
 								{									
-									if ($row->defaultlang) // Langue par d�faut de la m�tadonn�e
+									if ($row->defaultlang) // Langue par defaut de la metadonnee
 										$defaultLang = $row->gemetlang;
 									
 									if ($row->code_easysdi == $language->_lang) // Langue courante de l'utilisateur
@@ -4621,7 +4515,7 @@ else
 								*/
 													
 								$this->javascript .="
-								// Cr�er un bouton pour appeler la fen�tre de choix dans le Thesaurus GEMET
+								// Creer un bouton pour appeler la fenetre de choix dans le Thesaurus GEMET
 								var winthge;
 								
 								Ext.BLANK_IMAGE_URL = '".$uri->base(true)."/components/com_easysdi_catalog/ext/resources/images/default/s.gif';
@@ -4647,10 +4541,10 @@ else
 																			    
 																      		    var reliableRecord = result.terms[thes.lang];
 																      		    
-																      		    // S'assurer que le mot-cl� n'est pas d�j� s�lectionn�
+																      		    // S'assurer que le mot-cle n'est pas deje selectionne
 																      		    if (!target.usedRecords.containsKey(reliableRecord))
 																				{
-																					// Sauvegarde dans le champs SuperBoxSelect des mots-cl�s dans toutes les langues de EasySDI
+																					// Sauvegarde dans le champs SuperBoxSelect des mots-cles dans toutes les langues de EasySDI
 																				    for(l in result.terms) 
 																				    {
 																				    	s += l+': '+result.terms[l]+';';
@@ -4673,7 +4567,7 @@ else
 										text:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_THESAURUSGEMET_BUTTON'))."',
 										handler: function()
 								                {
-								                	// Cr�er une iframe pour demander � l'utilisateur le type d'import
+								                	// Creer une iframe pour demander e l'utilisateur le type d'import
 													if (!winthge)
 														winthge = new Ext.Window({
 														                id:'".$currentName."_win',
@@ -4704,7 +4598,7 @@ else
 														winthge.show();
 										        	},
 										
-								        // Champs sp�cifiques au clonage
+								        // Champs specifiques au clonage
 								        dynamic:true,
 								        minOccurs:1,
 							            maxOccurs:1,
@@ -4714,7 +4608,7 @@ else
 									})
 								);
 								
-								// Cr�er le champ qui contiendra les mots-cl�s du thesaurus choisis
+								// Creer le champ qui contiendra les mots-cles du thesaurus choisis
 								".$parentFieldsetName.".add(createSuperBoxSelect('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."', '', false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."'));
 								";
 								
@@ -4736,7 +4630,7 @@ else
 								}
 								break;
 						default:
-							// Selon le rendu de l'attribut, on fait des traitements diff�rents
+							// Selon le rendu de l'attribut, on fait des traitements differents
 							switch ($child->rendertype_id)
 							{
 								default:
@@ -4755,7 +4649,7 @@ else
 					}
 				}
 			}
-		// R�cup�ration des relations de cette classe (parent) vers d'autres classes (enfants)
+		// Recuperation des relations de cette classe (parent) vers d'autres classes (enfants)
 		//$database->setQuery( $query );
 		//$rowClassChilds = array_merge( $rowClassChilds, $database->loadObjectList() );
 		//echo "<br>";
@@ -4810,7 +4704,7 @@ else
 				//if ($parent <> $child->child_id)
 				//{
 					$this->javascript .="
-						// Cr�er un nouveau fieldset
+						// Creer un nouveau fieldset
 						//console.log(ancestor.getId());							
 						var ".$fieldsetName." = ".$parentFieldsetName.".duplicates('".$generalizationName."', '".html_Metadata::cleanText($label)."', ".$ancestorFieldsetName."); 
 						//var ".$fieldsetName." = createFieldSet('".$generalizationName."', '".html_Metadata::cleanText($label)."', true, false, false, true, true, null, 0, 1, '".html_Metadata::cleanText(JText::_($tip))."'); 
@@ -4823,7 +4717,7 @@ else
 					";	
 				//}
 				
-				//echo "Appel r�cursif avec les valeurs suivantes:<br> ";
+				//echo "Appel recursif avec les valeurs suivantes:<br> ";
 				//echo "Ancestor Fieldset = ".$ancestorFieldsetName."<br>";
 				//echo "Parent Fieldset = ".$parentFieldsetName."<br>";
 				//echo "Fieldset = ".$fieldsetName."<br>";
@@ -4837,18 +4731,18 @@ else
 			{*/
 						
 			// Traitement de chaque occurence de la relation dans le XML.
-			// Si pas trouv�, on entre une fois dans la boucle pour cr�er
+			// Si pas trouve, on entre une fois dans la boucle pour creer
 			// une seule occurence de saisie (master)
 			for ($pos=0; $pos<=$relCount; $pos++)
 			{
 				/*
 				 * COMPREHENSION DU MODELE
 				 * C'est la relation qui est multiple. De ce fait on a toujours un et un
-				 * seul enfant pour chaque relation trouv�e.
+				 * seul enfant pour chaque relation trouvee.
 				 */  
 				
 				// Construction du master qui permet d'ajouter des occurences de la relation.
-				// Le master doit contenir une structure mais pas de donn�es.
+				// Le master doit contenir une structure mais pas de donnees.
 				if ($pos==0)
 				{
 					// Traitement de la relation entre la classe parent et la classe enfant
@@ -4864,7 +4758,7 @@ else
 					// Traitement de la classe enfant
 					if ($relCount > 0)
 					{					
-						// R�cup�ration du noeud XML correspondant au code ISO de la relation
+						// Recuperation du noeud XML correspondant au code ISO de la relation
 						//echo "Recherche de ".$child->child_isocode. " dans ".$relScope->nodeName."<br>";
 						$childnode = $xpathResults->query($child->child_isocode, $relScope);
 						//echo "Trouve ".$childnode->length." fois<br>";
@@ -4872,7 +4766,7 @@ else
 						//$childCount = $node->length;
 						//echo "La classe ".$child->child_isocode." existe ".$node->length." fois.<br>";
 			
-						// Si on a trouv� des occurences, on modifie le scope.
+						// Si on a trouve des occurences, on modifie le scope.
 						if ($childnode->length > 0)
 							$classScope = $childnode->item(0);
 						else
@@ -4881,13 +4775,13 @@ else
 					else
 						$classScope = $relScope;
 					
-					// Construction du nom du fieldset qui va correspondre � la classe
-					// On n'y met pas la relation qui n'a pas d'int�r�t pour l'unicit� du nom
-					// On d�marre l'indexation � 1
+					// Construction du nom du fieldset qui va correspondre e la classe
+					// On n'y met pas la relation qui n'a pas d'interet pour l'unicite du nom
+					// On demarre l'indexation e 1
 					$name = $parentName."-".str_replace(":", "_", $child->child_isocode)."__".($pos+1);
 							
 					// Construction du bloc de la classe enfant
-					// Nom du fieldset avec guid pour l'unicit�
+					// Nom du fieldset avec guid pour l'unicite
 					$fieldsetName = "fieldset".$child->child_id."_".str_replace("-", "_", helper_easysdi::getUniqueId());
 					
 					// Le code ISO de la classe enfant devient le code ISO du nouveau parent
@@ -4922,19 +4816,19 @@ else
 							".$parentFieldsetName.".add(".$fieldsetName.");
 						";
 					}
-					// Test pour le cas d'une relation qui boucle une classe sur elle-m�me
+					// Test pour le cas d'une relation qui boucle une classe sur elle-meme
 					if ($ancestor <> $parent)					
 						HTML_metadata::buildTree($database, $parent, $child->child_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
 		
 					// Classassociation_id contient une classe
 					if ($child->association_id <>0)
 					{
-						// Appel r�cursif de la fonction pour le traitement du prochain niveau
+						// Appel recursif de la fonction pour le traitement du prochain niveau
 						if ($ancestor <> $parent)
 							HTML_metadata::buildTree($database, $parent, $child->association_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
 					}
 				}
-				// Ici on va traiter toutes les occurences trouv�es dans le XML
+				// Ici on va traiter toutes les occurences trouvees dans le XML
 				else
 				{
 					// Traitement de la relation entre la classe parent et la classe enfant
@@ -4943,7 +4837,7 @@ else
 					// Traitement de la classe enfant
 					if ($relCount > 0)
 					{					
-						// R�cup�ration du noeud XML correspondant au code ISO de la relation
+						// Recuperation du noeud XML correspondant au code ISO de la relation
 						//echo "Recherche de ".$child->child_isocode. " dans ".$relScope->nodeName."<br>";
 						$childnode = $xpathResults->query($child->child_isocode, $relScope);
 						//echo "Trouve ".$node->length." fois<br>";
@@ -4951,7 +4845,7 @@ else
 						//$childCount = $node->length;
 						//echo "La classe ".$child->child_isocode." existe ".$node->length." fois.<br>";
 			
-						// Si on a trouv� des occurences, on modifie le scope.
+						// Si on a trouve des occurences, on modifie le scope.
 						if ($childnode->length > 0)
 							$classScope = $childnode->item(0);
 						else
@@ -4960,9 +4854,9 @@ else
 					else
 						$classScope = $relScope;
 					
-					// Construction du nom du fieldset qui va correspondre � la classe
-					// On n'y met pas la relation qui n'a pas d'int�r�t pour l'unicit� du nom
-					// On r�cup�re le master qui a l'index 1
+					// Construction du nom du fieldset qui va correspondre e la classe
+					// On n'y met pas la relation qui n'a pas d'interet pour l'unicite du nom
+					// On recupere le master qui a l'index 1
 					$master = $parentName."-".str_replace(":", "_", $child->child_isocode)."__1";
 					// On construit le nom de l'occurence
 					$name = $parentName."-".str_replace(":", "_", $child->child_isocode)."__".($pos+1);
@@ -4971,7 +4865,7 @@ else
 					$nextIsocode = $child->child_isocode;
 					
 					// Construction du bloc de la classe enfant
-					// Nom du fieldset avec guid pour l'unicit�
+					// Nom du fieldset avec guid pour l'unicite
 					$fieldsetName = "fieldset".$child->child_id."_".str_replace("-", "_", helper_easysdi::getUniqueId());
 					
 					//TODO : stereotype case 2 : traitement des occurences trouvées dans le XML
@@ -5014,26 +4908,26 @@ else
 					// Classassociation_id contient une classe
 					if ($child->association_id <>0)
 					{
-						// Appel r�cursif de la fonction pour le traitement du prochain niveau
+						// Appel recursif de la fonction pour le traitement du prochain niveau
 						if ($ancestor <> $parent)
 							HTML_metadata::buildTree($database, $parent, $child->association_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
 					}
 				}
 			}
 
-			// Si la classe est obligatoire mais qu'elle n'existe pas � l'heure actuelle dans le XML, 
-			// il faut cr�er en plus du master un bloc de saisie qui ne puisse pas �tre supprim� par l'utilisateur 
+			// Si la classe est obligatoire mais qu'elle n'existe pas e l'heure actuelle dans le XML, 
+			// il faut creer en plus du master un bloc de saisie qui ne puisse pas etre supprime par l'utilisateur 
 			if ($relCount==0 and $child->rel_lowerbound>0)
 			{
-				// Construction du nom du fieldset qui va correspondre � la classe
-				// On n'y met pas la relation qui n'a pas d'int�r�t pour l'unicit� du nom
-				// On r�cup�re le master qui a l'index 1
+				// Construction du nom du fieldset qui va correspondre e la classe
+				// On n'y met pas la relation qui n'a pas d'interet pour l'unicite du nom
+				// On recupere le master qui a l'index 1
 				$master = $parentName."-".str_replace(":", "_", $child->child_isocode)."__1";
-				// On construit le nom de l'occurence qui a forc�ment l'index 2
+				// On construit le nom de l'occurence qui a forcement l'index 2
 				$name = $parentName."-".str_replace(":", "_", $child->child_isocode)."__2";
 
-				// Le scope reste le m�me, il n'aura de toute fa�on plus d'utilit� pour les enfants
-				// puisqu'� partir de ce niveau plus rien n'existe dans le XML	
+				// Le scope reste le meme, il n'aura de toute faeon plus d'utilite pour les enfants
+				// puisqu'e partir de ce niveau plus rien n'existe dans le XML	
 				$classScope = $scope;
 					
 				// Construction du fieldset
@@ -5063,13 +4957,13 @@ else
 				}else{
 					$this->javascript .="
 						var master = Ext.getCmp('".$master."');							
-						// Cr�er un nouveau fieldset
+						// Creer un nouveau fieldset
 						var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, true, true, true, true, master, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false); 
 						".$parentFieldsetName.".add(".$fieldsetName.");
 					";	
 				}
 				/*	
-				// S'il y a un xlink:title d�fini, alors afficher une balise pour le saisir
+				// S'il y a un xlink:title defini, alors afficher une balise pour le saisir
 				if ($child->has_xlinkTitle)
 				{
 					$xlinkTitleValue = "";
@@ -5082,14 +4976,14 @@ else
 				
 				
 				
-				// Appel r�cursif de la fonction pour le traitement du prochain niveau
+				// Appel recursif de la fonction pour le traitement du prochain niveau
 				if ($ancestor <> $parent)
 					HTML_metadata::buildTree($database, $parent, $child->child_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
 					
 				// Classassociation_id contient une classe
 				if ($child->association_id <>0)
 				{
-					// Appel r�cursif de la fonction pour le traitement du prochain niveau
+					// Appel recursif de la fonction pour le traitement du prochain niveau
 					if ($ancestor <> $parent)
 						HTML_metadata::buildTree($database, $parent, $child->association_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
 				}
@@ -5118,13 +5012,13 @@ else
 			
 			//echo $relCount." enregistrements trouves pour ".$child->rel_isocode." dans ".$scope->nodeName."<br>";
 			// Traitement de chaque occurence de la relation dans le XML.
-			// Si pas trouv�, on entre une fois dans la boucle pour cr�er
+			// Si pas trouve, on entre une fois dans la boucle pour creer
 			// une seule occurence de saisie (master)
 			//echo $child->rel_lowerbound. " - ".$child->rel_upperbound."<br>";
 			for ($pos=0; $pos<=$relCount; $pos++)
 			{
 				// Construction du master qui permet d'ajouter des occurences de la relation.
-				// Le master doit contenir une structure mais pas de donn�es.
+				// Le master doit contenir une structure mais pas de donnees.
 				if ($pos==0)
 				{
 					/*if ($relCount > 0)
@@ -5147,7 +5041,7 @@ else
 				$results = HTML_metadata::array2json($results);
 			//}
 						
-			// On construit le nom de l'occurence qui a forc�ment l'index 2
+			// On construit le nom de l'occurence qui a forcement l'index 2
 					$name = $parentName."-".str_replace(":", "_", $child->rel_isocode)."__1";
 					
 					// Traitement de la relation entre la classe parent et la classe enfant
@@ -5161,7 +5055,7 @@ else
 					// Traitement de la classe enfant
 					if ($relCount > 0)
 					{					
-						// R�cup�ration du noeud XML correspondant au code ISO de la relation
+						// Recuperation du noeud XML correspondant au code ISO de la relation
 						//echo "Recherche de ".$child->child_isocode. " dans ".$relScope->nodeName."<br>";
 						$childnode = $xpathResults->query($child->rel_isocode, $relScope);
 						//echo "Trouve ".$childnode->length." fois<br>";
@@ -5169,7 +5063,7 @@ else
 						//$childCount = $node->length;
 						//echo "La classe ".$child->child_isocode." existe ".$node->length." fois.<br>";
 			
-						// Si on a trouv� des occurences, on modifie le scope.
+						// Si on a trouve des occurences, on modifie le scope.
 						if ($childnode->length > 0)
 							$classScope = $childnode->item(0);
 						else
@@ -5185,7 +5079,7 @@ else
 					$searchFieldName = $name."-"."SEARCH__1"; //.($pos+1);
 					
 					$this->javascript .="
-							// Cr�er un nouveau fieldset
+							// Creer un nouveau fieldset
 							var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, false, false, true, true, null, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false); 
 								".$parentFieldsetName.".add(".$fieldsetName.");
 							".$fieldsetName.".add(createSearchField('".$searchFieldName."', '".$child->objecttype_id."', '".html_Metadata::cleanText(JText::_('SEARCH'))."',true, false, null, '1', '1', ".$results.", false, 0, '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', ''));
@@ -5195,7 +5089,7 @@ else
 					$nextIsocode = $child->rel_isocode;
 					if ($child->association_id <>0)
 					{
-						// Appel r�cursif de la fonction pour le traitement du prochain niveau
+						// Appel recursif de la fonction pour le traitement du prochain niveau
 						if ($ancestor <> $parent)
 							HTML_metadata::buildTree($database, $parent, $child->association_id, $child->objecttype_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
 					}
@@ -5257,11 +5151,11 @@ else
 					//print_r($results);
 						
 			
-					// Construction du nom du fieldset qui va correspondre � la classe
-					// On n'y met pas la relation qui n'a pas d'int�r�t pour l'unicit� du nom
-					// On r�cup�re le master qui a l'index 1
+					// Construction du nom du fieldset qui va correspondre e la classe
+					// On n'y met pas la relation qui n'a pas d'interet pour l'unicite du nom
+					// On recupere le master qui a l'index 1
 					$master = $parentName."-".str_replace(":", "_", $child->rel_isocode)."__1";
-					// On construit le nom de l'occurence qui a forc�ment l'index 2
+					// On construit le nom de l'occurence qui a forcement l'index 2
 					$name = $parentName."-".str_replace(":", "_", $child->rel_isocode)."__".($pos+1);
 				
 					// Traitement de la relation entre la classe parent et la classe enfant
@@ -5270,7 +5164,7 @@ else
 					// Traitement de la classe enfant
 					if ($relCount > 0)
 					{					
-						// R�cup�ration du noeud XML correspondant au code ISO de la relation
+						// Recuperation du noeud XML correspondant au code ISO de la relation
 						//echo "Recherche de ".$child->child_isocode. " dans ".$relScope->nodeName."<br>";
 						$childnode = $xpathResults->query($child->rel_isocode, $relScope);
 						//echo "Trouve ".$childnode->length." fois<br>";
@@ -5278,7 +5172,7 @@ else
 						//$childCount = $node->length;
 						//echo "La classe ".$child->child_isocode." existe ".$node->length." fois.<br>";
 			
-						// Si on a trouv� des occurences, on modifie le scope.
+						// Si on a trouve des occurences, on modifie le scope.
 						if ($childnode->length > 0)
 							$classScope = $childnode->item(0);
 						else
@@ -5294,7 +5188,7 @@ else
 					$searchFieldName = $name."-"."SEARCH__1"; //.($pos+1);
 					
 					$this->javascript .="
-						// Cr�er un nouveau fieldset
+						// Creer un nouveau fieldset
 						var master = Ext.getCmp('".$master."');							
 						var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, true, true, true, true, master, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false); 
 							".$parentFieldsetName.".add(".$fieldsetName.");
@@ -5305,7 +5199,7 @@ else
 					$nextIsocode = $child->rel_isocode;
 					if ($child->association_id <>0)
 					{
-						// Appel r�cursif de la fonction pour le traitement du prochain niveau
+						// Appel recursif de la fonction pour le traitement du prochain niveau
 						if ($ancestor <> $parent)
 							HTML_metadata::buildTree($database, $parent, $child->association_id, $child->objecttype_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
 					}
@@ -5314,8 +5208,8 @@ else
 			
 			
 			
-			// Si l'objet est obligatoire mais qu'il n'existe pas � l'heure actuelle dans le XML, 
-			// il faut cr�er en plus du master un bloc de saisie qui ne puisse pas �tre supprim� par l'utilisateur 
+			// Si l'objet est obligatoire mais qu'il n'existe pas e l'heure actuelle dans le XML, 
+			// il faut creer en plus du master un bloc de saisie qui ne puisse pas etre supprime par l'utilisateur 
 			if ($relCount==0 and $child->rel_lowerbound>0)
 			{
 				$guid = "";
@@ -5323,15 +5217,15 @@ else
 				$results = array();
 				$results = HTML_metadata::array2json($results);
 			
-				// Construction du nom du fieldset qui va correspondre � la classe
-				// On n'y met pas la relation qui n'a pas d'int�r�t pour l'unicit� du nom
-				// On r�cup�re le master qui a l'index 1
+				// Construction du nom du fieldset qui va correspondre e la classe
+				// On n'y met pas la relation qui n'a pas d'interet pour l'unicite du nom
+				// On recupere le master qui a l'index 1
 				$master = $parentName."-".str_replace(":", "_", $child->rel_isocode)."__1";
-				// On construit le nom de l'occurence qui a forc�ment l'index 2
+				// On construit le nom de l'occurence qui a forcement l'index 2
 				$name = $parentName."-".str_replace(":", "_", $child->rel_isocode)."__2";
 			
-				// Le scope reste le m�me, il n'aura de toute fa�on plus d'utilit� pour les enfants
-				// puisqu'� partir de ce niveau plus rien n'existe dans le XML	
+				// Le scope reste le meme, il n'aura de toute faeon plus d'utilite pour les enfants
+				// puisqu'e partir de ce niveau plus rien n'existe dans le XML	
 				$classScope = $scope;
 					
 				// Construction du fieldset
@@ -5339,7 +5233,7 @@ else
 				$searchFieldName = $name."-"."SEARCH__1"; //2";
 				
 				$this->javascript .="
-					// Cr�er un nouveau fieldset
+					// Creer un nouveau fieldset
 					var master = Ext.getCmp('".$master."');							
 					var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, true, true, true, true, master, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false); 
 						".$parentFieldsetName.".add(".$fieldsetName.");
@@ -5350,7 +5244,7 @@ else
 				$nextIsocode = $child->rel_isocode;
 				if ($child->association_id <>0)
 				{
-					// Appel r�cursif de la fonction pour le traitement du prochain niveau
+					// Appel recursif de la fonction pour le traitement du prochain niveau
 					if ($ancestor <> $parent)
 						HTML_metadata::buildTree($database, $parent, $child->association_id, $child->objecttype_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
 				}
@@ -5445,7 +5339,7 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 
 		if ($simple)
 		{
-			// Entr�e vide
+			// Entree vide
 			$extjsArray .= "['', ''], ";
 		}
 		$id=0;
@@ -5453,7 +5347,7 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 		{
 			$extjsArray .= "[";
 			//$extjsArray .= "'".$id."', ";
-			if ($textlist) // Mettre le titre � vide si on est dans une liste de type texte
+			if ($textlist) // Mettre le titre e vide si on est dans une liste de type texte
 			{
 				if (substr($key, -6, 6) == "_TITLE")
 					$extjsArray .= "'', ";
@@ -5961,12 +5855,12 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 		            }
 				";
 			}
-			// Boutons de r�plication
+			// Boutons de replication
 			if (!$isPublished)
 			{
 				$replicate_url = 'index.php?option='.$option.'&task=replicateMetadata';
 			
-				// R�plication de m�tadonn�e
+				// Replication de metadonnee
 				$objecttypes = array();
 				$listObjecttypes = array();
 				$database->setQuery( "SELECT id as value, name as text FROM #__sdi_objecttype WHERE predefined=0 ORDER BY name" );
@@ -6012,7 +5906,7 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 			            text: '".JText::_('CATALOG_REPLICATE')."',
 						handler: function()
 		                {
-		                	// Cr�er une iframe pour demander à l'utilisateur le type d'import
+		                	// Creer une iframe pour demander à l'utilisateur le type d'import
 							if (!winrct)
 								winrct = new Ext.Window({
 								                title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_REPLICATE_ALERT'))."',
@@ -6190,7 +6084,7 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 					$tbar[] ="{text: '".JText::_('CORE_RESET')."',
 										handler: function()
 						                {
-						                	// Cr�er une iframe pour confirmer la r�initialisation
+						                	// Creer une iframe pour confirmer la reinitialisation
 											if (!winrst)
 												winrst = new Ext.Window({
 												                title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_CONFIRM_RESET_ALERT'))."',
