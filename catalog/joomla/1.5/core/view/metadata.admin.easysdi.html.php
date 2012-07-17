@@ -3909,19 +3909,26 @@ class HTML_metadata {
 						$stereotype = $database->loadResult();
 						switch ($stereotype){
 							case "geographicextent":
-// 								echo("Case 1 :");
-// 								echo("<br>");
 								//Attention : l'ensemble des classe stereotypée liées à ce noeud parent vont
 								//être traité lors du premier, et unique, appel au classstereotype_builder.
 								//Ce traitement particulier est dû à la gestion particulière de la cardinalité de la
 								//relation vers une classe stereotypée geographicExtent (utilisation d'un ItemSelector)
 								if($pos == 0){
 									// Créer un nouveau fieldset
-									$this->javascript .="
-									var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, false, false, true, true, null, 1, 1, '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."',false, true, '".JText::_( 'CATALOG_STEREOTYPE_CLASS_MAP_PANEL_LABEL' )."');
-									".$parentFieldsetName.".add(".$fieldsetName.");
-									";
-									HTML_classstereotype_builder::getGeographicExtentClass($database,$name, $child, $fieldsetName, $xpathResults, $queryPath,$scope, true, false);
+									if($child->editable == 3){
+										$this->javascript .="
+										var ".$fieldsetName." = createFieldSetHidden('".$name."', '".html_Metadata::cleanText($label)."', true, false, false, true, true, null, 1, 1, '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."',false, true, '".JText::_( 'CATALOG_STEREOTYPE_CLASS_MAP_PANEL_LABEL' )."');
+										".$parentFieldsetName.".add(".$fieldsetName.");
+										";
+									}
+									else
+									{
+										$this->javascript .="
+										var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, false, false, true, true, null, 1, 1, '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."',false, true, '".JText::_( 'CATALOG_STEREOTYPE_CLASS_MAP_PANEL_LABEL' )."');
+										".$parentFieldsetName.".add(".$fieldsetName.");
+										";
+									}
+									HTML_classstereotype_builder::getGeographicExtentClass($database,$name, $child, $fieldsetName, $xpathResults, $queryPath,$scope, true, false,$child->editable );
 								}
 						}
 					}
@@ -4011,12 +4018,23 @@ class HTML_metadata {
 								//relation vers une classe stereotypée geographicExtent (utilisation d'un ItemSelector)
 								if($pos == 1){
 									// Créer un nouveau fieldset
-									$this->javascript .="
-									var master = Ext.getCmp('".$master."');
-									var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, true, true, true, true, master, 1, 1, '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false,true, '".JText::_( 'CATALOG_STEREOTYPE_CLASS_MAP_PANEL_LABEL' )."');
-									".$parentFieldsetName.".add(".$fieldsetName.");
-									";
-									HTML_classstereotype_builder::getGeographicExtentClass($database,$name, $child, $fieldsetName, $xpathResults, $queryPath,$scope, false, true);
+									if($child->editable == 3)
+									{
+										$this->javascript .="
+										var master = Ext.getCmp('".$master."');
+										var ".$fieldsetName." = createFieldSetHidden('".$name."', '".html_Metadata::cleanText($label)."', true, true, true, true, true, master, 1, 1, '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false,true, '".JText::_( 'CATALOG_STEREOTYPE_CLASS_MAP_PANEL_LABEL' )."');
+										".$parentFieldsetName.".add(".$fieldsetName.");
+										";
+									}
+									else 
+									{
+										$this->javascript .="
+										var master = Ext.getCmp('".$master."');
+										var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, true, true, true, true, master, 1, 1, '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false,true, '".JText::_( 'CATALOG_STEREOTYPE_CLASS_MAP_PANEL_LABEL' )."');
+										".$parentFieldsetName.".add(".$fieldsetName.");
+										";
+									}										
+									HTML_classstereotype_builder::getGeographicExtentClass($database,$name, $child, $fieldsetName, $xpathResults, $queryPath,$scope, false, true,$child->editable);
 								}
 						}
 					}
@@ -4096,13 +4114,24 @@ class HTML_metadata {
 					switch ($stereotype){
 						case "geographicextent":
 							// Créer un nouveau fieldset
-							$this->javascript .="
-							var master = Ext.getCmp('".$master."');
-							var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, true, true, true, true, master, 1,1, '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."',false, true,'".JText::_( 'CATALOG_STEREOTYPE_CLASS_MAP_PANEL_LABEL' )."');
-							".$parentFieldsetName.".add(".$fieldsetName.");
-							";
+							if($child->editable == 3)
+							{
+								$this->javascript .="
+								var master = Ext.getCmp('".$master."');
+								var ".$fieldsetName." = createFieldSetHidden('".$name."', '".html_Metadata::cleanText($label)."', true, true, true, true, true, master, 1,1, '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."',false, true,'".JText::_( 'CATALOG_STEREOTYPE_CLASS_MAP_PANEL_LABEL' )."');
+								".$parentFieldsetName.".add(".$fieldsetName.");
+								";
+							}
+							else
+							{
+								$this->javascript .="
+								var master = Ext.getCmp('".$master."');
+								var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, true, true, true, true, master, 1,1, '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."',false, true,'".JText::_( 'CATALOG_STEREOTYPE_CLASS_MAP_PANEL_LABEL' )."');
+								".$parentFieldsetName.".add(".$fieldsetName.");
+								";
+							}
 								
-							HTML_classstereotype_builder::getGeographicExtentClass($database,$name, $child, $fieldsetName, $xpathResults, $queryPath,$scope, false, true);
+							HTML_classstereotype_builder::getGeographicExtentClass($database,$name, $child, $fieldsetName, $xpathResults, $queryPath,$scope, false, true, $child->editable);
 					}
 				}
 				else

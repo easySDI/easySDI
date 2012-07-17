@@ -119,12 +119,16 @@ BoundaryItemSelector = Ext.extend(Ext.form.Field,  {
         this.downIcon = el.createChild({tag:'img', src:this.iconDown, style:{cursor:'pointer', margin:'2px'}});
         el.createChild({tag: 'br'});
         this.toBottomIcon = el.createChild({tag:'img', src:this.iconBottom, style:{cursor:'pointer', margin:'2px'}});
-        this.toTopIcon.on('click', this.toTop, this);
-        this.upIcon.on('click', this.up, this);
-        this.downIcon.on('click', this.down, this);
-        this.toBottomIcon.on('click', this.toBottom, this);
-        this.addIcon.on('click', this.fromTo, this);
-        this.removeIcon.on('click', this.toFrom, this);
+        
+        if(this.disabled == false){
+	        this.toTopIcon.on('click', this.toTop, this);
+	        this.upIcon.on('click', this.up, this);
+	        this.downIcon.on('click', this.down, this);
+	        this.toBottomIcon.on('click', this.toBottom, this);
+	        this.addIcon.on('click', this.fromTo, this);
+	        this.removeIcon.on('click', this.toFrom, this);
+        }
+        
         if (!this.drawUpIcon || this.hideNavIcons) { this.upIcon.dom.style.display='none'; }
         if (!this.drawDownIcon || this.hideNavIcons) { this.downIcon.dom.style.display='none'; }
         if (!this.drawLeftIcon || this.hideNavIcons) { this.addIcon.dom.style.display='none'; }
@@ -159,15 +163,11 @@ BoundaryItemSelector = Ext.extend(Ext.form.Field,  {
 
     afterRender: function(){
         BoundaryItemSelector.superclass.afterRender.call(this);
-
-        //this.markInvalid(String.format(this.minSelectionsText, this.minSelections));
-        
         this.toStore = this.toMultiselect.store;
         this.toStore.on('add', this.valueChanged, this);
         this.toStore.on('remove', this.valueChanged, this);
         this.toStore.on('load', this.valueChanged, this);
         this.valueChanged(this.toStore);
-
     },
     
     setFromMultiSelect: function (multiSelect){

@@ -44,6 +44,7 @@ catalogFreePerimeterSelector = Ext.extend(Ext.form.Field,  {
 
         this.fieldnorth = {
 	            id:this.id+'_north',
+	            disabled:this.disabled,
 	            xtype: 'textfield',
 				name: this.id+'_north',
 	            allowBlank: true,
@@ -51,6 +52,7 @@ catalogFreePerimeterSelector = Ext.extend(Ext.form.Field,  {
 		    	};
 		this.fieldsouth = {
 	            id:this.id+'_south',
+	            disabled:this.disabled,
 	            xtype: 'textfield',
 				name: this.id+'_south',
 	            allowBlank: true,
@@ -58,6 +60,7 @@ catalogFreePerimeterSelector = Ext.extend(Ext.form.Field,  {
 		    	};
 		this.fieldeast = {
 	            id:this.id+'_east',
+	            disabled:this.disabled,
 	            xtype: 'textfield',
 				name: this.id+'_east',
 	            allowBlank: true,
@@ -65,6 +68,7 @@ catalogFreePerimeterSelector = Ext.extend(Ext.form.Field,  {
 		    	};
 		this.fieldwest = {
 	            id:this.id+'_west',
+	            disabled:this.disabled,
 	            xtype: 'textfield',
 				name: this.id+'_west',
 	            allowBlank: true,
@@ -146,8 +150,11 @@ catalogFreePerimeterSelector = Ext.extend(Ext.form.Field,  {
         el.createChild({tag: 'br'});
         this.removeIcon = el.createChild({tag:'img', src:this.iconLeft, style:{cursor:'pointer', margin:'2px'}});
         el.createChild({tag: 'br'});
-        this.addIcon.on('click', this.fromTo, this);
-        this.removeIcon.on('click', this.toFrom, this);
+        
+        if(this.disabled == false){
+        	this.addIcon.on('click', this.fromTo, this);
+        	this.removeIcon.on('click', this.toFrom, this);
+        }
         
         var tb = p.body.first();
         this.el.setWidth(p.body.first().getWidth());
