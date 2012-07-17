@@ -792,7 +792,7 @@
 		return sf;
 	}
 	
-	function createSuperBoxSelect(id, label, value, clone, master, min, max, mandatoryMsg)
+	function createSuperBoxSelect(id, label, value, clone, master, min, max, mandatoryMsg, disabled)
 	{
 		var optional=false;
 		if (clone) optional=true; // Pas sûr que ce soit juste, il faut peut-être toujours l'avoir à false?
@@ -811,6 +811,7 @@
 		var sbs = new Ext.ux.form.SuperBoxSelect({
 				id:id,
 				name:id,
+				disabled:disabled,
 	            hiddenName:id + '_hidden[]',
 	            xtype:'superboxselect',
 		        fieldLabel: label,
