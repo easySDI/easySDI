@@ -25,8 +25,16 @@ defined('_JEXEC') or die('Restricted access');
 
 class HTML_classstereotype_builder {
 	
-	function getGeographicExtentClass( $database, $fieldsetname, $relationObject, $parentFieldsetName, $xpathResults, $path, $scope, $master, $clone = false){
+	function getGeographicExtentClass( $database, $fieldsetname, $relationObject, $parentFieldsetName, $xpathResults, $path, $scope, $master, $clone = false, $editable = 1){
 		//Pour info $scope : gmd:MD_DataIdentification
+		
+		$hidden = "false";
+		if($editable == 3)
+			$hidden = "true";
+		
+		$disabled = "false";
+		if($editable == 2)
+			$disabled = "true";
 		
 		//Chargement des attributs de la relation spécifiques au stéréotype
 		$query = "  SELECT sa.alias as alias, ra.value as value 
@@ -181,7 +189,7 @@ class HTML_classstereotype_builder {
 		var selectedValueList = '';
 		var defaultValueList = '';
 		
-		var comboboxCategories = createComboBox('".$comboboxName."', '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_PERIMETER_LABEL"))."', false, '1', '1', valueList, selectedValueList, defaultValueList, false, '".html_Metadata::cleanText(JText::_(""))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."', '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_CATEGORY_ALL"))."');
+		var comboboxCategories = createComboBox('".$comboboxName."', '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_PERIMETER_LABEL"))."', false, '1', '1', valueList, selectedValueList, defaultValueList, ".$disabled.", '".html_Metadata::cleanText(JText::_(""))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."', '".html_Metadata::cleanText(JText::_("CATALOG_STEREOTYPE_CLASS_GEOGRAPHICEXTENT_CATEGORY_ALL"))."');
  		".$parentFieldsetName.".add(comboboxCategories);
 		
 		comboboxCategories.on('select', function(){
@@ -387,6 +395,7 @@ class HTML_classstereotype_builder {
 				  
 		 var ".$parentFieldsetName."_itemselector = new BoundaryItemSelector({
 	                    name: '".$itemselectorName."',
+	                    disabled:".$disabled.",
 	                    comboboxname : '".$comboboxName."',
 	                    id: '".$itemselectorName."',
 	                    clone: ".$clone.",
@@ -467,6 +476,7 @@ class HTML_classstereotype_builder {
 			var ".$parentFieldsetName."_freeperimeterselector = new catalogFreePerimeterSelector({
 	                    name: '".$freeperimeterselectorName."',
 	                    comboboxname : '".$comboboxName."',
+	                    disabled:".$disabled.",
 	                    id: '".$freeperimeterselectorName."',
 	                    clone: ".$clone.",
 	                    mincardbound : ".$rel_lowerbound.",
@@ -501,7 +511,7 @@ class HTML_classstereotype_builder {
 		
 		//Map configuration
 		//Note : see dynamic.js createFieldSet listener for the map creation itself 
-		if($clone && $displaymap){
+		if($clone && $displaymap && $hidden == "false"){
 			//NOTE : Predefined perimeters can have an empty geographic BBOX
 			$this->javascript .="
 				".$parentFieldsetName."_itemselector.addListener ('addItemTo',function(record){
@@ -519,6 +529,8 @@ class HTML_classstereotype_builder {
 			";
 			$withFreePerimeter = $strictperimeter ? 0 : 1;
 			$freePerimeterSelectorName = $strictperimeter ? 'null' : $parentFieldsetName."_freeperimeterselector";
+			
+				
 			$this->javascript .="
 				defaultBBoxConfig ={
 					getLayers : function(){
@@ -569,11 +581,12 @@ class HTML_classstereotype_builder {
 					]					
 				};				
 			";
-		}else if (!$displaymap){ //Object defaultBBoxConfig must be cleared
+		}else if (!$displaymap || $hidden == "true"){ //Object defaultBBoxConfig must be cleared
 			$this->javascript .="
 				defaultBBoxConfig =undefined;
 				";
 		}
+		
 		
 		//Map configuration for the free perimeter handling
 		if($clone && $displaymap && !$strictperimeter){
