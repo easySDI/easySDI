@@ -2051,19 +2051,14 @@ class HTML_metadata {
 								break;
 							// Thesaurus GEMET
 							case 11:
-								//echo "1) ".$child->rel_lowerbound."', '".$child->rel_upperbound."<br>";
-								//echo "Recherche de gco:CharacterString dans ".$attributeScope->nodeName."<br>";
-								
 								$uri =& JUri::getInstance();
-		
 								$language =& JFactory::getLanguage();
-								
 								$userLang="";
 								$defaultLang="";
 								$langArray = Array();
 								foreach($this->langList as $row)
 								{									
-									if ($row->defaultlang) // Langue par d�faut de la m�tadonn�e
+									if ($row->defaultlang) // Langue par défaut de la métadonnée
 										$defaultLang = $row->gemetlang;
 									
 									if ($row->code_easysdi == $language->_lang) // Langue courante de l'utilisateur
@@ -2071,20 +2066,13 @@ class HTML_metadata {
 										
 									$langArray[] = $row->gemetlang;
 								}
-								/*print_r($langArray);
-								echo "<hr>";
-								print_r(str_replace('"', "'", HTML_metadata::array2json($langArray)));
-								*/
-								
 								$value = "";
 								$listNode = $xpathResults->query($child->attribute_isocode, $scope);
 								$listCount = $listNode->length;		
-								//echo "Il y a ".$listCount." occurences de ".$child->attribute_isocode." dans ".$scope->nodeName."<br>";
 								$nodeValues = array();
 								for($keyPos=0;$keyPos<$listCount; $keyPos++)
 								{
 									$currentScope=$listNode->item($keyPos);
-									//echo "Position ".$keyPos.", ".$currentScope->nodeName." avec ".$currentScope->nodeValue."<br>";
 								
 									if ($currentScope and $currentScope->nodeName <> "")
 									{
@@ -2093,21 +2081,17 @@ class HTML_metadata {
 										// Récupérer le texte localisé stocké
 										foreach($this->langList as $row)
 										{
-											//echo $row->gemetlang."<br>";
 											if ($row->defaultlang)
 											{
 												$keyNode = $xpathResults->query("gco:CharacterString", $currentScope);
-												//echo "Il y a ".$keyNode->length." occurences de gco:CharacterString dans ".$currentScope->nodeName."<br>";
 												if ($keyNode->length > 0)
 												{
 													$nodeValue .= $row->gemetlang.": ".html_Metadata::cleanText($keyNode->item(0)->nodeValue).";";
-													//$nodeKeyword = html_Metadata::cleanText($keyNode->item(0)->nodeValue);
 												}
 											}
 											else
 											{
 												$keyNode = $xpathResults->query("gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString"."[@locale='#".$row->code."']", $currentScope);
-												//echo "Il y a ".$keyNode->length." occurences de gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString dans ".$currentScope->nodeName."<br>";
 												if ($keyNode->length > 0)
 													$nodeValue .= $row->gemetlang.": ".html_Metadata::cleanText($keyNode->item(0)->nodeValue).";";
 												
@@ -2118,9 +2102,6 @@ class HTML_metadata {
 									}
 									if ($nodeKeyword <> "")
 										$nodeValues[] = "{keyword:'$nodeKeyword', value: '$nodeValue'}";
-									//echo $nodeValue."<br>";
-									//echo $nodeKeyword."<br>";
-									
 								}
 
 								if (count($nodeValues)>0)
@@ -2177,6 +2158,7 @@ class HTML_metadata {
 									new Ext.Button({
 										id:'".$currentName."_button',
 										text:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_THESAURUSGEMET_BUTTON'))."',
+										disabled:".$disabled.",
 										handler: function()
 								                {
 								                	if (!winthge)
@@ -2221,7 +2203,7 @@ class HTML_metadata {
 								);
 								
 								// Créer le champ qui contiendra les mots-clés du thesaurus choisis
-								".$parentFieldsetName.".add(createSuperBoxSelect('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."', ".$value.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."'));
+								".$parentFieldsetName.".add(createSuperBoxSelect('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."', ".$value.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', ".$disabled."));
 								";
 								break;
 							case 14:
@@ -3730,9 +3712,10 @@ class HTML_metadata {
 									new Ext.Button({
 										id:'".$currentName."_button',
 										text:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_THESAURUSGEMET_BUTTON'))."',
+										disabled:".$disabled.",
 										handler: function()
 								                {
-								                	// Cr�er une iframe pour demander � l'utilisateur le type d'import
+								                	// Créer une iframe pour demander à l'utilisateur le type d'import
 													if (!winthge)
 														winthge = new Ext.Window({
 														                id:'".$currentName."_win',
@@ -3762,9 +3745,7 @@ class HTML_metadata {
 														
 														winthge.show();
 										        	},
-										
-								        // Champs sp�cifiques au clonage
-								        dynamic:true,
+										 dynamic:true,
 								        minOccurs:1,
 							            maxOccurs:1,
 							            clone: false,
@@ -3773,8 +3754,8 @@ class HTML_metadata {
 									})
 								);
 								
-								// Créer le champ qui contiendra les mots-cl�s du thesaurus choisis
-								".$parentFieldsetName.".add(createSuperBoxSelect('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."', '', false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."'));
+								// Créer le champ qui contiendra les mots-clés du thesaurus choisis
+								".$parentFieldsetName.".add(createSuperBoxSelect('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."', '', false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."',".$disabled."));
 								";
 								
 								break;
@@ -3934,9 +3915,10 @@ class HTML_metadata {
 					}
 					else
 					{
+						// Créer un nouveau fieldset
 						if($child->editable == 3)
 						{
-							// Créer un nouveau fieldset
+							// Fieldset caché
 							$this->javascript .="
 							var ".$fieldsetName." = createFieldSetHidden('".$name."', '".html_Metadata::cleanText($label)."', true, false, false, true, true, null, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false);
 							".$parentFieldsetName.".add(".$fieldsetName.");
@@ -3944,7 +3926,7 @@ class HTML_metadata {
 						}
 						else if($child->editable == 2)
 						{
-							// Créer un nouveau fieldset
+							// Fieldset désactivé avec cardinalité forcée pour désactiver les bouttons plus et minus
 							$this->javascript .="
 							var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, false, false, true, true, null, 1, 1, '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false);
 							".$parentFieldsetName.".add(".$fieldsetName.");
@@ -3952,7 +3934,7 @@ class HTML_metadata {
 						}
 						else 
 						{
-							// Créer un nouveau fieldset
+							// Fieldset actif
 							$this->javascript .="
 							var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, false, false, true, true, null, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false);
 							".$parentFieldsetName.".add(".$fieldsetName.");
@@ -4040,9 +4022,10 @@ class HTML_metadata {
 					}
 					else
 					{
+						// Créer un nouveau fieldset
 						if($child->editable == 3)
 						{
-							// Créer un nouveau fieldset
+							// Fieldset caché
 							$this->javascript .="
 							var master = Ext.getCmp('".$master."');
 							var ".$fieldsetName." = createFieldSetHidden('".$name."', '".html_Metadata::cleanText($label)."', true, true, true, true, true, master, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false);
@@ -4051,7 +4034,7 @@ class HTML_metadata {
 						}
 						else if($child->editable == 2)
 						{
-							// Créer un nouveau fieldset
+							// Fieldset désactivé avec cardinalité forcée pour désactiver les bouttons plus et minus
 							$this->javascript .="
 							var master = Ext.getCmp('".$master."');
 							var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, true, true, true, true, master, 1, 1, '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false);
@@ -4060,7 +4043,7 @@ class HTML_metadata {
 						}
 						else
 						{
-							// Créer un nouveau fieldset
+							// Fieldset actif
 							$this->javascript .="
 							var master = Ext.getCmp('".$master."');
 							var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, true, true, true, true, master, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false);
@@ -4136,10 +4119,10 @@ class HTML_metadata {
 				}
 				else
 				{
-					
+					// Créer un nouveau fieldset
 					if($child->editable == 3)
 					{
-						// Créer un nouveau fieldset
+						//Fieldset caché
 						$this->javascript .="
 						var master = Ext.getCmp('".$master."');
 						var ".$fieldsetName." = createFieldSetHidden('".$name."', '".html_Metadata::cleanText($label)."', true, true, true, true, true, master, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false);
@@ -4148,16 +4131,16 @@ class HTML_metadata {
 					}
 					else if($child->editable == 2)
 					{
-						// Créer un nouveau fieldset
+						// Fieldset désactivé avec cardinalité forcée pour désactiver les bouttons plus et minus
 						$this->javascript .="
 						var master = Ext.getCmp('".$master."');
 						var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, true, true, true, true, master, 1, 1, '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false);
 						".$parentFieldsetName.".add(".$fieldsetName.");
 						";
 					}
-						else
+					else
 					{
-						// Créer un nouveau fieldset
+						// Fieldset actif
 						$this->javascript .="
 						var master = Ext.getCmp('".$master."');
 						var ".$fieldsetName." = createFieldSet('".$name."', '".html_Metadata::cleanText($label)."', true, true, true, true, true, master, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', false);
@@ -4277,7 +4260,7 @@ class HTML_metadata {
 					$guid = substr($node->item($pos-1)->attributes->getNamedItem('href')->value, strpos($node->item($pos-1)->attributes->getNamedItem('href')->value, "&id=") + strlen("&id=") , 36);
 					
 					//echo "Trouve ".$guid."<br>";
-					// R�cup�rer tous les objets du type d'objet li� dont le nom comporte le searchPattern
+					// Récupérer tous les objets du type d'objet lié dont le nom comporte le searchPattern
 					$total = 0;
 					$database->setQuery( "SELECT count(*) 
 										  FROM 	 #__sdi_object o, 
@@ -4343,7 +4326,7 @@ class HTML_metadata {
 					// Traitement de la classe enfant
 					if ($relCount > 0)
 					{					
-						// R�cup�ration du noeud XML correspondant au code ISO de la relation
+						// Récupération du noeud XML correspondant au code ISO de la relation
 						//echo "Recherche de ".$child->child_isocode. " dans ".$relScope->nodeName."<br>";
 						$childnode = $xpathResults->query($child->rel_isocode, $relScope);
 						//echo "Trouve ".$childnode->length." fois<br>";
