@@ -4713,7 +4713,9 @@ else
 
 			// Si la classe est obligatoire mais qu'elle n'existe pas e l'heure actuelle dans le XML, 
 			// il faut creer en plus du master un bloc de saisie qui ne puisse pas etre supprime par l'utilisateur 
-			if ($relCount==0 and $child->rel_lowerbound>0)
+			//OU
+			//Si la classe enfant est de type geographic extent
+			if (($relCount==0 and $child->rel_lowerbound>0) || ($child->cl_stereotype_id <> null && $relCount==0))
 			{
 				// Construction du nom du fieldset qui va correspondre e la classe
 				// On n'y met pas la relation qui n'a pas d'interet pour l'unicite du nom
@@ -4739,7 +4741,7 @@ else
 					$stereotype = $database->loadResult();
 					switch ($stereotype){
 						case "geographicextent":
-					// Créer un nouveau fieldset
+							// Créer un nouveau fieldset
 							if($child->editable == 3)
 							{
 								$this->javascript .="
