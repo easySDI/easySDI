@@ -815,7 +815,7 @@ else
 				$node = $xpathResults->query($queryPath."/".$root[0]->isocode);
 				$nodeCount = $node->length;
 				//echo $nodeCount." fois ".$root[0]->isocode;
-				HTML_metadata::buildTree($database, 0, $root[0]->id, $root[0]->id, $fieldsetName, 'form', str_replace(":", "_", $root[0]->isocode), $xpathResults, null, $node->item(0), $queryPath, $root[0]->isocode, $account_id, $profile_id, $option);
+				HTML_metadata::buildTree($database, 0, $root[0]->id, $root[0]->id, $fieldsetName, 'form', str_replace(":", "_", $root[0]->isocode), $xpathResults, null, $node->item(0), $queryPath, $root[0]->isocode, $account_id, $profile_id, $option,$child);
 				
 				// Retraverser la structure et autoriser les nulls pour tous les champs caches
 				$this->javascript .="
@@ -3122,7 +3122,7 @@ else
 								);
 								
 								// Creer le champ qui contiendra les mots-cles du thesaurus choisis
-								".$parentFieldsetName.".add(createSuperBoxSelect('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."', ".$value.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."'));
+								".$parentFieldsetName.".add(createSuperBoxSelect('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."', ".$value.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', ".$disabled."));
 								";
 								break;
 							case 14:
@@ -4422,7 +4422,7 @@ else
 							);
 							
 							// Creer le champ qui contiendra les mots-cles du thesaurus choisis
-							".$parentFieldsetName.".add(createSuperBoxSelect('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."', '', false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."'));
+							".$parentFieldsetName.".add(createSuperBoxSelect('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."', '', false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', ".$disabled."));
 							";
 							
 							break;
@@ -4557,7 +4557,7 @@ else
 										".$parentFieldsetName.".add(".$fieldsetName.");
 										";
 									}
-									HTML_classstereotype_builder::getGeographicExtentClass($database,$name, $child, $fieldsetName, $xpathResults, $queryPath,$scope, true, false);
+									HTML_classstereotype_builder::getGeographicExtentClass($database,$name, $child, $fieldsetName, $xpathResults, $queryPath,$scope, true, false,$child->editable);
 								}
 						}
 					}else{
@@ -4589,14 +4589,14 @@ else
 					}
 					// Test pour le cas d'une relation qui boucle une classe sur elle-meme
 					if ($ancestor <> $parent)					
-						HTML_metadata::buildTree($database, $parent, $child->child_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
+						HTML_metadata::buildTree($database, $parent, $child->child_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option,$child);
 		
 					// Classassociation_id contient une classe
 					if ($child->association_id <>0)
 					{
 						// Appel recursif de la fonction pour le traitement du prochain niveau
 						if ($ancestor <> $parent)
-							HTML_metadata::buildTree($database, $parent, $child->association_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
+							HTML_metadata::buildTree($database, $parent, $child->association_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option,$child);
 					}
 				}
 				// Ici on va traiter toutes les occurences trouvees dans le XML
@@ -4663,7 +4663,7 @@ else
 										".$parentFieldsetName.".add(".$fieldsetName.");
 										";
 									}
-									HTML_classstereotype_builder::getGeographicExtentClass($database,$name, $child, $fieldsetName, $xpathResults, $queryPath,$scope, false, true);
+									HTML_classstereotype_builder::getGeographicExtentClass($database,$name, $child, $fieldsetName, $xpathResults, $queryPath,$scope, false, true,$child->editable);
 								}
 						}
 					}
@@ -4699,14 +4699,14 @@ else
 						}
 							}
 					// Appel récursif de la fonction pour le traitement du prochain niveau
-					HTML_metadata::buildTree($database, $parent, $child->child_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
+					HTML_metadata::buildTree($database, $parent, $child->child_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option,$child);
 				
 					// Classassociation_id contient une classe
 					if ($child->association_id <>0)
 					{
 						// Appel recursif de la fonction pour le traitement du prochain niveau
 						if ($ancestor <> $parent)
-							HTML_metadata::buildTree($database, $parent, $child->association_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
+							HTML_metadata::buildTree($database, $parent, $child->association_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option,$child);
 					}
 				}
 			}
@@ -4756,7 +4756,7 @@ else
 								".$parentFieldsetName.".add(".$fieldsetName.");
 								";
 							}
-							HTML_classstereotype_builder::getGeographicExtentClass($database,$name, $child, $fieldsetName, $xpathResults, $queryPath,$scope, false, true);
+							HTML_classstereotype_builder::getGeographicExtentClass($database,$name, $child, $fieldsetName, $xpathResults, $queryPath,$scope, false, true,$child->editable);
 					}
 				}
 				else
@@ -4792,14 +4792,14 @@ else
 				}
 				// Appel recursif de la fonction pour le traitement du prochain niveau
 				if ($ancestor <> $parent)
-					HTML_metadata::buildTree($database, $parent, $child->child_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
+					HTML_metadata::buildTree($database, $parent, $child->child_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option,$child);
 					
 				// Classassociation_id contient une classe
 				if ($child->association_id <>0)
 				{
 					// Appel recursif de la fonction pour le traitement du prochain niveau
 					if ($ancestor <> $parent)
-						HTML_metadata::buildTree($database, $parent, $child->association_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
+						HTML_metadata::buildTree($database, $parent, $child->association_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option,$child);
 				}
 			}
 		}
@@ -4901,7 +4901,7 @@ else
 					{
 						// Appel recursif de la fonction pour le traitement du prochain niveau
 						if ($ancestor <> $parent)
-							HTML_metadata::buildTree($database, $parent, $child->association_id, $child->objecttype_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
+							HTML_metadata::buildTree($database, $parent, $child->association_id, $child->objecttype_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option,$child);
 					}
 				}
 				else
@@ -5023,7 +5023,7 @@ else
 					{
 						// Appel recursif de la fonction pour le traitement du prochain niveau
 						if ($ancestor <> $parent)
-							HTML_metadata::buildTree($database, $parent, $child->association_id, $child->objecttype_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
+							HTML_metadata::buildTree($database, $parent, $child->association_id, $child->objecttype_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option,$child);
 					}
 				}
 			}
@@ -5089,7 +5089,7 @@ else
 				{
 					// Appel recursif de la fonction pour le traitement du prochain niveau
 					if ($ancestor <> $parent)
-						HTML_metadata::buildTree($database, $parent, $child->association_id, $child->objecttype_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option);
+						HTML_metadata::buildTree($database, $parent, $child->association_id, $child->objecttype_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option,$child);
 				}
 			}
 		}
