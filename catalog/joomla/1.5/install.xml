@@ -1,7 +1,7 @@
 <?xml version="1.0"  ?>
 <install version="1.5" type="component">
 	<name>EasySDI_catalog</name>
-	<version>2.4.1</version>
+	<version>2.4.2</version>
 	<releaseDate>2012-06-18</releaseDate>
     <releaseType>Bug fix release</releaseType>
 	<creationDate>January 2011</creationDate>
