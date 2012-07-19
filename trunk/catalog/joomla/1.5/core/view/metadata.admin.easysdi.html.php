@@ -1117,12 +1117,9 @@ class HTML_metadata {
 											".$parentFieldsetName.".add(createTextArea('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));";
 											break;
 									}
-									if($disabled == "true"){
-										$this->javascript .="
-										".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
-										";
-									}
-								}else {
+								}
+								if($hidden == "true" || $disabled == "true")
+								{
 									$this->javascript .="
 									".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
 									";
@@ -1218,13 +1215,9 @@ class HTML_metadata {
 																";
 																break;
 														}
-														
-														if($disabled == "true"){
-															$this->javascript .="
-															".$parentFieldsetName.".add(createHidden('".$LocLangName."_hiddenVal', '".$LocLangName."_hiddenVal', '".$nodeValue."'));
-															";
-														}
-													}else {
+													}
+													if($hidden == "true" || $disabled == "true")
+													{
 														$this->javascript .="
 														".$parentFieldsetName.".add(createHidden('".$LocLangName."_hiddenVal', '".$LocLangName."_hiddenVal', '".$nodeValue."'));
 														";
@@ -1300,12 +1293,9 @@ class HTML_metadata {
 																";
 																break;
 														}
-														if($disabled == "true"){
-															$this->javascript .="
-															".$fieldsetName.".add(createHidden('".$LocLangName."_hiddenVal', '".$LocLangName."_hiddenVal', '".$nodeValue."'));
-															";
-														}
-													}else {
+													}
+													if($hidden == "true" || $disabled == "true")
+													{
 														$this->javascript .="
 														".$fieldsetName.".add(createHidden('".$LocLangName."_hiddenVal', '".$LocLangName."_hiddenVal', '".$nodeValue."'));
 														";
@@ -1381,12 +1371,8 @@ class HTML_metadata {
 															";
 															break;
 													}
-													if($disabled == "true"){
-														$this->javascript .="
-														".$fieldsetName.".add(createHidden('".$LocLangName."_hiddenVal', '".$LocLangName."_hiddenVal', '".$nodeValue."'));
-														";
-													}
-												}else 
+												}
+												if($hidden == "true" || $disabled == "true")
 												{
 													$this->javascript .="
 													".$fieldsetName.".add(createHidden('".$LocLangName."_hiddenVal', '".$LocLangName."_hiddenVal', '".$nodeValue."'));
@@ -1417,15 +1403,8 @@ class HTML_metadata {
 									$this->javascript .="
 									".$parentFieldsetName.".add(createNumberField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', true, 3, ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
 									";
-									
-									if($disabled == "true")
-									{
-										$this->javascript .="
-										".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
-										";
-									}
 								}
-								else 
+								if($hidden == "true" || $disabled == "true") 
 								{
 									$this->javascript .="
 									".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
@@ -1452,21 +1431,13 @@ class HTML_metadata {
 								{
 									$this->javascript .="
 									".$parentFieldsetName.".add(createDateField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));";
-									
-									if($disabled == "true")
-									{
-										$this->javascript .="
-										".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
-										";
-									}
 								}
-								else
+								if($hidden == "true" || $disabled == "true")
 								{
 									$this->javascript .="
 									".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
 									";
 								}
-								
 								break;
 							// List
 							case 6:
@@ -1542,71 +1513,60 @@ class HTML_metadata {
 									// Selon le rendu de l'attribut, on fait des traitements différents
 									switch ($child->rendertype_id)
 									{
+										// Checkbox
+										case 2:
+											if ($child->rel_lowerbound < $child->rel_upperbound)
+										 	{
+										 		$this->javascript .="
+												var valueList = ".HTML_metadata::array2checkbox($listName, false, $dataValues, $nodeValues, html_Metadata::cleanText(JText::_($tip))).";
+										     	var selectedValueList = ".HTML_metadata::array2json($nodeValues).";
+										     	var defaultValueList = ".HTML_metadata::array2json($nodeDefaultValues).";
+										     	// La liste
+										     	".$parentFieldsetName.".add(createCheckboxGroup('".$listName."', '".html_Metadata::cleanText(JText::_($label))."', ".$mandatory.", '1', '1', valueList, ".$disabled.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."'));
+										     	";
+										 	}
+										 	break;
+										// Radiobutton
+										case 3:
+											if ($child->rel_lowerbound == $child->rel_upperbound)
+										 	{
+										 		$this->javascript .="
+												var valueList = ".HTML_metadata::array2checkbox($listName, true, $dataValues, $nodeValues, html_Metadata::cleanText(JText::_($tip))).";
+										     	var selectedValueList = ".HTML_metadata::array2json($nodeValues).";
+										     	var defaultValueList = ".HTML_metadata::array2json($nodeDefaultValues).";
+										     	// La liste
+										     	".$parentFieldsetName.".add(createRadioGroup('".$listName."', '".html_Metadata::cleanText(JText::_($label))."', ".$mandatory.", '1', '1', valueList, ".$disabled.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."'));
+										     	";
+										 	}
+										 	break;
+										// List
+										case 4:
 										default:
-											switch ($child->rendertype_id)
-											{
-												// Checkbox
-												case 2:
-													if ($child->rel_lowerbound < $child->rel_upperbound)
-												 	{
-												 		$this->javascript .="
-														var valueList = ".HTML_metadata::array2checkbox($listName, false, $dataValues, $nodeValues, html_Metadata::cleanText(JText::_($tip))).";
-												     	var selectedValueList = ".HTML_metadata::array2json($nodeValues).";
-												     	var defaultValueList = ".HTML_metadata::array2json($nodeDefaultValues).";
-												     	// La liste
-												     	".$parentFieldsetName.".add(createCheckboxGroup('".$listName."', '".html_Metadata::cleanText(JText::_($label))."', ".$mandatory.", '1', '1', valueList, ".$disabled.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."'));
-												     	";
-												 	}
-												 	break;
-												// Radiobutton
-												case 3:
-													if ($child->rel_lowerbound == $child->rel_upperbound)
-												 	{
-												 		$this->javascript .="
-														var valueList = ".HTML_metadata::array2checkbox($listName, true, $dataValues, $nodeValues, html_Metadata::cleanText(JText::_($tip))).";
-												     	var selectedValueList = ".HTML_metadata::array2json($nodeValues).";
-												     	var defaultValueList = ".HTML_metadata::array2json($nodeDefaultValues).";
-												     	// La liste
-												     	".$parentFieldsetName.".add(createRadioGroup('".$listName."', '".html_Metadata::cleanText(JText::_($label))."', ".$mandatory.", '1', '1', valueList, ".$disabled.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."'));
-												     	";
-												 	}
-												 	break;
-												// List
-												case 4:
-												default:
-													// Deux traitement pour deux types de listes
-												 	if (($child->rel_upperbound - $child->rel_lowerbound) > 1 )
-												 	{
-												 		$this->javascript .="
-														var valueList = ".HTML_metadata::array2extjs($dataValues, false).";
-												     	var selectedValueList = ".HTML_metadata::array2json($nodeValues).";
-												     	var defaultValueList = ".HTML_metadata::array2json($nodeDefaultValues).";
-												     	// La liste
-												     	".$parentFieldsetName.".add(createMultiSelector('".$listName."', '".html_Metadata::cleanText(JText::_($label))."', ".$mandatory.", '1', '1', valueList, selectedValueList, defaultValueList, ".$disabled.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."'));
-												     	";
-												 	}
-												 	else
-												 	{
-												 		$this->javascript .="
-														var valueList = ".HTML_metadata::array2extjs($dataValues, true).";
-													     var selectedValueList = ".HTML_metadata::array2json($nodeValues).";
-													     var defaultValueList = ".HTML_metadata::array2json($nodeDefaultValues).";
-												     	// La liste
-													     ".$parentFieldsetName.".add(createComboBox('".$listName."', '".html_Metadata::cleanText(JText::_($label))."', ".$mandatory.", '".$child->rel_lowerbound."', '".$child->rel_upperbound."', valueList, selectedValueList, defaultValueList, ".$disabled.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."'));
-													    ";
-												 	}
-													break;
-											}
-									 		break;
-									}
-									if($disabled == "true"){
-										$this->javascript .="
-										var defaultValueList = ".HTML_metadata::array2json($nodeValues).";
-										".$parentFieldsetName.".add(createHidden('".$listName."_hiddenVal', '".$listName."_hiddenVal', defaultValueList));
-										";
+											// Deux traitement pour deux types de listes
+										 	if (($child->rel_upperbound - $child->rel_lowerbound) > 1 )
+										 	{
+										 		$this->javascript .="
+												var valueList = ".HTML_metadata::array2extjs($dataValues, false).";
+										     	var selectedValueList = ".HTML_metadata::array2json($nodeValues).";
+										     	var defaultValueList = ".HTML_metadata::array2json($nodeDefaultValues).";
+										     	// La liste
+										     	".$parentFieldsetName.".add(createMultiSelector('".$listName."', '".html_Metadata::cleanText(JText::_($label))."', ".$mandatory.", '1', '1', valueList, selectedValueList, defaultValueList, ".$disabled.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."'));
+										     	";
+										 	}
+										 	else
+										 	{
+										 		$this->javascript .="
+												var valueList = ".HTML_metadata::array2extjs($dataValues, true).";
+											     var selectedValueList = ".HTML_metadata::array2json($nodeValues).";
+											     var defaultValueList = ".HTML_metadata::array2json($nodeDefaultValues).";
+										     	// La liste
+											     ".$parentFieldsetName.".add(createComboBox('".$listName."', '".html_Metadata::cleanText(JText::_($label))."', ".$mandatory.", '".$child->rel_lowerbound."', '".$child->rel_upperbound."', valueList, selectedValueList, defaultValueList, ".$disabled.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."'));
+											    ";
+										 	}
+											break;
 									}
 								}
-								else
+								if($hidden == "true" || $disabled == "true")
 								{
 									$this->javascript .="
 									var defaultValueList = ".HTML_metadata::array2json($nodeValues).";
@@ -1646,13 +1606,10 @@ class HTML_metadata {
 											".$parentFieldsetName.".add(createTextArea('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));";
 											break;
 									}
-									if($disabled == "true")
-									{
-										$this->javascript .="
-										".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
-										";
-									}
-								}else{
+
+								}
+								if($hidden == "true" || $disabled == "true")
+								{
 									$this->javascript .="
 									".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
 									";
@@ -1683,15 +1640,8 @@ class HTML_metadata {
 								{
 									$this->javascript .="
 									".$parentFieldsetName.".add(createDateField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));";
-											
-									if($disabled == "true")
-									{
-										$this->javascript .="
-										".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
-										";
-									}
 								}
-								else
+								if($hidden == "true" || $disabled == "true")
 								{
 									$this->javascript .="
 									".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
@@ -1710,97 +1660,89 @@ class HTML_metadata {
 								if ($child->attribute_default <> "" and $nodeValue == "")
 									$nodeValue = html_Metadata::cleanText($child->attribute_default);
 			
-								if($hidden == "false")
-								{
-									// Traitement spécifique aux listes
-									// Traitement des enfants de type list
-									$content = array();
-									$query = "SELECT * FROM #__sdi_codevalue WHERE published=true AND attribute_id = ".$child->attribute_id." ORDER BY ordering";
-									$database->setQuery( $query );
-									$content = $database->loadObjectList();
+								// Traitement spécifique aux listes
+								// Traitement des enfants de type list
+								$content = array();
+								$query = "SELECT * FROM #__sdi_codevalue WHERE published=true AND attribute_id = ".$child->attribute_id." ORDER BY ordering";
+								$database->setQuery( $query );
+								$content = $database->loadObjectList();
 									
-									$dataValues = array();
-									$nodeValues = array();
+								$dataValues = array();
+								$nodeValues = array();
+								
+								// Traitement de la multiplicité
+								// Récupération du path du bloc de champs qui va être créé pour construire le nom
+								$listName = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__1";
+								
+								// Construction de la liste
+								foreach ($content as $cont)
+								{
+									$contTitle = JText::_($cont->guid."_TITLE");
+									$cond1 = !$contTitle;
+									$cond2 = substr($contTitle, -6, 6) == "_TITLE";
+									if ($cond1 or $cond2)
+										$contTitle = "";
 										
-									// Traitement de la multiplicité
-									// Récupération du path du bloc de champs qui va être créé pour construire le nom
-									$listName = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__1";
+									$contContent = JText::_($cont->guid."_CONTENT");
+									$cond1 = !$contContent;
+									$cond2 = substr($contContent, -6, 6) == "_CONTENT";
+									if ($cond1 or $cond2)
+										$contContent = $cont->value;
 										
-									// Construction de la liste
+									if ($contTitle == "")
+										$dataValues[$cont->guid."_TITLE"] = array(html_Metadata::cleanText($contContent), $cont->guid);
+									else
+										$dataValues[html_Metadata::cleanText($contTitle)] = array(html_Metadata::cleanText($contContent), $cont->guid);
+								}
+								$relNode = $xpathResults->query($child->attribute_isocode, $scope);
+									
+								$language =& JFactory::getLanguage();
+								
+								$node = $xpathResults->query($type_isocode, $relNode->item(0));
+								if ($node->length > 0)
+								{
+									// Chercher le titre associé au texte localisé souhaité, ou s'il n'y a pas de titre le contenu
 									foreach ($content as $cont)
 									{
-										$contTitle = JText::_($cont->guid."_TITLE");
-										$cond1 = !$contTitle;
-										$cond2 = substr($contTitle, -6, 6) == "_TITLE";
-										if ($cond1 or $cond2)
-											$contTitle = "";
-									
-										$contContent = JText::_($cont->guid."_CONTENT");
-										$cond1 = !$contContent;
-										$cond2 = substr($contContent, -6, 6) == "_CONTENT";
-										if ($cond1 or $cond2)
-											$contContent = $cont->value;
-											
-										if ($contTitle == "")
-											$dataValues[$cont->guid."_TITLE"] = array(html_Metadata::cleanText($contContent), $cont->guid);
-										else
-											$dataValues[html_Metadata::cleanText($contTitle)] = array(html_Metadata::cleanText($contContent), $cont->guid);
-									}
-									$relNode = $xpathResults->query($child->attribute_isocode, $scope);
-									
-									$language =& JFactory::getLanguage();
-										
-									$node = $xpathResults->query($type_isocode, $relNode->item(0));
-									if ($node->length > 0)
-									{
-										// Chercher le titre associé au texte localisé souhaité, ou s'il n'y a pas de titre le contenu
-										foreach ($content as $cont)
-										{
-											if ($cont->value == html_Metadata::cleanText($node->item(0)->nodeValue))
-												$nodeValues[] = $cont->guid;
-										}
-									}
-									else
-										$nodeValues[] = "";
-									
-										
-									$nodeDefaultValues = array();
-									if (count($nodeValues) == 0)
-									{
-										// Elements sélectionnés par défaut
-										$query = "SELECT c.* FROM #__sdi_codevalue c, #__sdi_defaultvalue d WHERE c.id=d.codevalue_id AND c.published=true AND d.attribute_id = ".$child->attribute_id." ORDER BY c.ordering";
-										$database->setQuery( $query );
-										$selectedContent = $database->loadObjectList();
-									
-										// Construction de la liste
-										foreach ($selectedContent as $cont)
-										{
+										if ($cont->value == html_Metadata::cleanText($node->item(0)->nodeValue))
 											$nodeValues[] = $cont->guid;
-											$nodeDefaultValues[] = $cont->guid;
-										}
 									}
+								}
+								else
+									$nodeValues[] = "";
+									
 								
-									$simple=true;
-									if ($child->rel_lowerbound>0)
-										$simple = false;
+								$nodeDefaultValues = array();
+								if (count($nodeValues) == 0)
+								{
+									// Elements sélectionnés par défaut
+									$query = "SELECT c.* FROM #__sdi_codevalue c, #__sdi_defaultvalue d WHERE c.id=d.codevalue_id AND c.published=true AND d.attribute_id = ".$child->attribute_id." ORDER BY c.ordering";
+									$database->setQuery( $query );
+									$selectedContent = $database->loadObjectList();
 										
+									// Construction de la liste
+									foreach ($selectedContent as $cont)
+									{
+										$nodeValues[] = $cont->guid;
+										$nodeDefaultValues[] = $cont->guid;
+									}
+								}
+								
+								$simple=true;
+								if ($child->rel_lowerbound>0)
+									$simple = false;
+								
+								if($hidden == "false")
+								{
 							 		$this->javascript .="
 									var valueList = ".HTML_metadata::array2extjs($dataValues, $simple, true, true).";
 								     var selectedValueList = ".HTML_metadata::array2json($nodeValues).";
 								     var defaultValueList = ".HTML_metadata::array2json($nodeDefaultValues).";
-								     // La liste
 								     ".$parentFieldsetName.".add(createChoiceBox('".$listName."', '".html_Metadata::cleanText(JText::_($label))."', ".$mandatory.", '".$child->rel_lowerbound."', '".$child->rel_upperbound."', valueList, selectedValueList, defaultValueList, ".$disabled.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."'));
 								    ";
-			
-									
-									if($disabled == "true")
-									{
-										$this->javascript .="
-										var defaultValueList = ".HTML_metadata::array2json($nodeValues).";
-										".$parentFieldsetName.".add(createHidden('".$listName."_hiddenVal', '".$listName."_hiddenVal', defaultValueList));
-										";
-									}
-								}else{
+								}
+								if($hidden == "true" || $disabled == "true")
+								{
 									$this->javascript .="
 									var defaultValueList = ".HTML_metadata::array2json($nodeValues).";
 									".$parentFieldsetName.".add(createHidden('".$listName."_hiddenVal', '".$listName."_hiddenVal', defaultValueList));
@@ -1921,15 +1863,9 @@ class HTML_metadata {
 								     // La liste
 								     ".$parentFieldsetName.".add(createChoiceBox('".$listName."', '".html_Metadata::cleanText(JText::_($label))."', ".$mandatory.", '".$child->rel_lowerbound."', '".$child->rel_upperbound."', valueList, selectedValueList, defaultValueList, ".$disabled.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."'));
 								    ";
-									
-									if($disabled == "true")
-									{
-										$this->javascript .="
-										var defaultValueList = ".HTML_metadata::array2json($nodeValues).";
-										".$parentFieldsetName.".add(createHidden('".$listName."_hiddenVal', '".$listName."_hiddenVal', defaultValueList));
-										";
-									}
-								}else{
+								}
+								if($hidden == "true" || $disabled == "true")
+								{
 									$this->javascript .="
 									var defaultValueList = ".HTML_metadata::array2json($nodeValues).";
 									".$parentFieldsetName.".add(createHidden('".$listName."_hiddenVal', '".$listName."_hiddenVal', defaultValueList));
@@ -2106,18 +2042,14 @@ class HTML_metadata {
 								if ($child->attribute_default <> "" and $nodeValue == "")
 									$nodeValue = html_Metadata::cleanText($child->attribute_default);
 								
-								if($hidden == "false"){
+								if($hidden == "false")
+								{
 									$this->javascript .="
 									".$parentFieldsetName.".add(createStereotypeFileTextField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', false, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
 									";
-									
-									if($disabled == "true")
-									{
-										$this->javascript .="
-										".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
-										";
-									}
-								}else{
+								}
+								if($hidden == "true" || $disabled == "true")
+								{
 									$this->javascript .="
 									".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
 									";
@@ -2142,13 +2074,9 @@ class HTML_metadata {
 											".$parentFieldsetName.".add(createTextArea('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));";
 											break;
 									}
-									if($disabled == "true")
-									{
-										$this->javascript .="
-										".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
-										";
-									}
-								}else{
+								}
+								if($hidden == "true" || $disabled == "true")
+								{
 									$this->javascript .="
 									".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
 									";
@@ -2246,13 +2174,9 @@ class HTML_metadata {
 											".$parentFieldsetName.".add(createTextArea('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", true, master, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));";
 											break;
 									}
-									if($disabled == "true")
-									{
-										$this->javascript .="
-										".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
-										";
-									}
-								}else{
+								}
+								if($hidden == "true" || $disabled == "true")
+								{
 									$this->javascript .="
 									".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
 									";
@@ -2269,14 +2193,9 @@ class HTML_metadata {
 								{
 									$this->javascript .="
 									".$parentFieldsetName.".add(createNumberField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", true, master, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', true, 3, ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));";
-										
-									if($disabled == "true")
-									{
-										$this->javascript .="
-										".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
-										";
-									}
-								}else{
+								}
+								if($hidden == "true" || $disabled == "true")
+								{
 									$this->javascript .="
 									".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
 									";
@@ -2289,15 +2208,8 @@ class HTML_metadata {
 								{
 									$this->javascript .="
 									".$parentFieldsetName.".add(createDateField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", true, master, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));";
-									
-									if($disabled == "true")
-									{
-										$this->javascript .="
-										".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
-										";
-									}
 								}
-								else
+								if($hidden == "true" || $disabled == "true")
 								{
 									$this->javascript .="
 									".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
@@ -2330,13 +2242,9 @@ class HTML_metadata {
 											".$parentFieldsetName.".add(createTextArea('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", true, master, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));";
 											break;
 									}
-									if($disabled == "true")
-									{
-										$this->javascript .="
-										".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
-										";
-									}
-								}else{
+								}
+								if($hidden == "true" || $disabled == "true")
+								{
 									$this->javascript .="
 									".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
 									";
@@ -2349,19 +2257,12 @@ class HTML_metadata {
 								{
 									$this->javascript .="
 									".$parentFieldsetName.".add(createDateField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", true, master, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));";
-									
-									if($disabled == "true")
-									{
-										$this->javascript .="
-										".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
-										";
-									}
 								}
-								else
+								if($hidden == "true" || $disabled == "true")
 								{
 									$this->javascript .="
-									".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
-									";
+										".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
+										";
 								}
 								break;
 							// TextChoice
@@ -2460,15 +2361,9 @@ class HTML_metadata {
 								     // La liste
 								     ".$parentFieldsetName.".add(createChoiceBox('".$listName."', '".html_Metadata::cleanText(JText::_($label))."', ".$mandatory.", '".$child->rel_lowerbound."', '".$child->rel_upperbound."', valueList, selectedValueList, defaultValueList, ".$disabled.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."', master, true));
 								    ";
-									
-									if($disabled == "true")
-									{
-										$this->javascript .="
-										var defaultValueList = ".HTML_metadata::array2json($nodeValues).";
-										".$parentFieldsetName.".add(createHidden('".$listName."_hiddenVal', '".$listName."_hiddenVal', defaultValueList));
-										";
-									}
-								}else{
+								}
+								if($hidden == "true" || $disabled == "true")
+								{
 									$this->javascript .="
 									var defaultValueList = ".HTML_metadata::array2json($nodeValues).";
 									".$parentFieldsetName.".add(createHidden('".$listName."_hiddenVal', '".$listName."_hiddenVal', defaultValueList));
@@ -2584,15 +2479,9 @@ class HTML_metadata {
 								     // La liste
 								     ".$parentFieldsetName.".add(createChoiceBox('".$listName."', '".html_Metadata::cleanText(JText::_($label))."', ".$mandatory.", '".$child->rel_lowerbound."', '".$child->rel_upperbound."', valueList, selectedValueList, defaultValueList, ".$disabled.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".JText::_($this->mandatoryMsg)."', master, true));
 								    ";
-									
-									if($disabled == "true")
-									{
-										$this->javascript .="
-										var defaultValueList = ".HTML_metadata::array2json($nodeValues).";
-										".$parentFieldsetName.".add(createHidden('".$listName."_hiddenVal', '".$listName."_hiddenVal', defaultValueList));
-										";
-									}
-								}else{
+								}
+								if($hidden == "true" || $disabled == "true")
+								{
 									$this->javascript .="
 									var defaultValueList = ".HTML_metadata::array2json($nodeValues).";
 									".$parentFieldsetName.".add(createHidden('".$listName."_hiddenVal', '".$listName."_hiddenVal', defaultValueList));
@@ -2608,18 +2497,13 @@ class HTML_metadata {
 								$node = $xpathResults->query("gmd:MI_Identifier/gmd:code/gco:CharacterString", $attributeScope);
 								$nodeValue = html_Metadata::cleanText($node->item(0)->nodeValue);
 								
-								if ($hidden){
+								if ($hidden == "false")
+								{
 									$this->javascript .="
-									".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
+									".$parentFieldsetName.".add(createStereotypeFileTextField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", true, master, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', false, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
 									";
-									break;
 								}
-								
-								$this->javascript .="
-								".$parentFieldsetName.".add(createStereotypeFileTextField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", true, master, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', false, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
-								";
-								
-								if($disabled == "true")
+								if($hidden == "true" || $disabled == "true")
 								{
 									$this->javascript .="
 									".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
@@ -2628,16 +2512,12 @@ class HTML_metadata {
 								break;
 
 							default:
-								if ($hidden){
+								if ($hidden == "false")
+								{
 									$this->javascript .="
-									".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
-									";
-									break;
-								}
-								$this->javascript .="
-								".$parentFieldsetName.".add(createTextArea('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", true, master, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));";
-								
-								if($disabled == "true")
+									".$parentFieldsetName.".add(createTextArea('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", true, master, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));";
+								}								
+								if($hidden == "true" || $disabled == "true")
 								{
 									$this->javascript .="
 									".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
@@ -2702,40 +2582,35 @@ class HTML_metadata {
 							break;
 						// Text
 						case 2:
-							if ($hidden == "true")
+							if ($hidden == "false")
+							{
+								// Selon le rendu de l'attribut, on fait des traitements diff�rents
+								switch ($child->rendertype_id)
+								{
+									// Textarea
+									case 1:
+										$this->javascript .="
+										".$parentFieldsetName.".add(createTextArea('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+										";
+										break;
+									// Textbox
+									case 5:
+										$this->javascript .="
+										".$parentFieldsetName.".add(createTextField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+										";
+										break;
+									default:
+										$this->javascript .="
+										".$parentFieldsetName.".add(createTextArea('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));";
+										break;
+								}
+							}
+							if($hidden == "true" || $disabled == "true")
 							{
 								$this->javascript .="
 								".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
 								";
-								break;
 							}
-							// Selon le rendu de l'attribut, on fait des traitements diff�rents
-							switch ($child->rendertype_id)
-							{
-								// Textarea
-								case 1:
-									$this->javascript .="
-									".$parentFieldsetName.".add(createTextArea('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
-									";
-									break;
-								// Textbox
-								case 5:
-									$this->javascript .="
-									".$parentFieldsetName.".add(createTextField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
-									";
-									break;
-								default:
-									$this->javascript .="
-									".$parentFieldsetName.".add(createTextArea('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));";
-									break;
-							}
-							if($disabled == "true")
-							{
-								$this->javascript .="
-								".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
-								";
-							}
-							
 							break;
 						// Local
 						case 3:
@@ -2817,14 +2692,9 @@ class HTML_metadata {
 															";
 															break;
 													}
-													
-													if($disabled == "true")
-													{
-														$this->javascript .="
-														".$parentFieldsetName.".add(createHidden('".$LocLangName."_hiddenVal', '".$LocLangName."_hiddenVal', '".$nodeValue."'));
-														";
-													}
-												}else{
+												}
+												if($hidden == "true" || $disabled == "true")
+												{
 													$this->javascript .="
 													".$parentFieldsetName.".add(createHidden('".$LocLangName."_hiddenVal', '".$LocLangName."_hiddenVal', '".$nodeValue."'));
 													";
@@ -2965,17 +2835,12 @@ class HTML_metadata {
 						// Number
 						case 4:
 							//If relation is hidden
-							if ($hidden == "true")
+							if ($hidden == "false")
 							{
 								$this->javascript .="
-								".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
-								";
-								break;
+								".$parentFieldsetName.".add(createNumberField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', true, 3, ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));";
 							}
-							$this->javascript .="
-							".$parentFieldsetName.".add(createNumberField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', true, 3, ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));";
-							
-							if($disabled == "true")
+							if($hidden == "true" || $disabled == "true")
 							{
 								$this->javascript .="
 								".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
@@ -2985,24 +2850,17 @@ class HTML_metadata {
 							break;
 						// Date
 						case 5:
-							//If relation is hidden
-							if ($hidden == "true")
-							{	$this->javascript .="
-								".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
-								";
-								break;
+							if ($hidden == "false")
+							{
+								$this->javascript .="
+								".$parentFieldsetName.".add(createDateField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));";
 							}
-							
-							$this->javascript .="
-							".$parentFieldsetName.".add(createDateField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));";
-							
-							if($disabled == "true")
+							if($hidden == "true" || $disabled == "true")
 							{
 								$this->javascript .="
 								".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
 								";
 							}
-							
 							break;
 						// List
 						case 6:
@@ -3142,33 +3000,29 @@ class HTML_metadata {
 							break;
 						// Link
 						case 7:
-							if ($hidden == "true")
+							if ($hidden == "false")
 							{
-								$this->javascript .="
-								".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
-								";
-								break;
+								// Selon le rendu de l'attribut, on fait des traitements diff�rents
+								switch ($child->rendertype_id)
+								{
+									// Textarea
+									case 1:
+										$this->javascript .="
+										".$parentFieldsetName.".add(createTextArea('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));";
+										break;
+									// Textbox
+									case 5:
+										$this->javascript .="
+										".$parentFieldsetName.".add(createTextField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
+										";
+										break;
+									default:
+										$this->javascript .="
+										".$parentFieldsetName.".add(createTextArea('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));";
+										break;
+								}
 							}
-							// Selon le rendu de l'attribut, on fait des traitements diff�rents
-							switch ($child->rendertype_id)
-							{
-								// Textarea
-								case 1:
-									$this->javascript .="
-									".$parentFieldsetName.".add(createTextArea('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));";
-									break;
-								// Textbox
-								case 5:
-									$this->javascript .="
-									".$parentFieldsetName.".add(createTextField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
-									";
-									break;
-								default:
-									$this->javascript .="
-									".$parentFieldsetName.".add(createTextArea('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));";
-									break;
-							}
-							if($disabled == "true")
+							if($hidden == "true" || $disabled == "true")
 							{
 								$this->javascript .="
 								".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
@@ -3180,18 +3034,12 @@ class HTML_metadata {
 						case 8:
 							$nodeValue = substr($nodeValue, 0, 10);
 								
-							if ($hidden == "true")
+							if ($hidden == "false")
 							{
 								$this->javascript .="
-								".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
-								";
-								break;
+								".$parentFieldsetName.".add(createDateField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));";
 							}
-							
-							$this->javascript .="
-							".$parentFieldsetName.".add(createDateField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));";
-
-							if($disabled == "true")
+							if($hidden == "true" || $disabled == "true")
 							{
 								$this->javascript .="
 								".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
@@ -3488,19 +3336,13 @@ class HTML_metadata {
 								$node = $xpathResults->query("gmd:MI_Identifier/gmd:code/gco:CharacterString", $attributeScope);
 								$nodeValue = html_Metadata::cleanText($node->item(0)->nodeValue);
 								
-								if ($hidden == "true")
+								if ($hidden == "false")
 								{
 									$this->javascript .="
-									".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
+									".$parentFieldsetName.".add(createStereotypeFileTextField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', false, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
 									";
-									break;
 								}
-								
-								$this->javascript .="
-								".$parentFieldsetName.".add(createStereotypeFileTextField('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', false, '".$maxLength."', '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));
-								";
-								
-								if($disabled == "true")
+								if($hidden == "true" || $disabled == "true")
 								{
 									$this->javascript .="
 									".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
@@ -3508,18 +3350,12 @@ class HTML_metadata {
 								}
 								break;
 						default:
-							if ($hidden == "true")
+							if ($hidden == "false")
 							{
 								$this->javascript .="
-								".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
-								";
-								break;
+								".$parentFieldsetName.".add(createTextArea('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));";
 							}
-							
-							$this->javascript .="
-							".$parentFieldsetName.".add(createTextArea('".$currentName."', '".html_Metadata::cleanText(JText::_($label))."',".$mandatory.", false, null, '".$child->rel_lowerbound."', '".$child->rel_upperbound."', '".$nodeValue."', '".html_Metadata::cleanText($child->attribute_default)."', ".$disabled.", ".$maxLength.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', '".$regex."', '".html_Metadata::cleanText(JText::_($this->mandatoryMsg))."', '".html_Metadata::cleanText(JText::_($regexmsg))."'));";
-							
-							if($disabled == "true")
+							if($hidden == "true" || $disabled == "true")
 							{
 								$this->javascript .="
 								".$parentFieldsetName.".add(createHidden('".$currentName."_hiddenVal', '".$currentName."_hiddenVal', '".$nodeValue."'));
@@ -3532,9 +3368,7 @@ class HTML_metadata {
 			}
 		//Traitement d'une relation vers une classe
 		// Récupération des relations de cette classe (parent) vers d'autres classes (enfants)
-		// Parcours des relations enfant
-		// Parcours des classes
-		// TODO : Traitement d'une relation vers une classe
+		// Traitement d'une relation vers une classe
 		else if ($child->child_id <> null)
 		{
 			$label = $label = JText::_($child->rel_guid."_LABEL");
@@ -3603,7 +3437,7 @@ class HTML_metadata {
 					// Le code ISO de la classe enfant devient le code ISO du nouveau parent
 					$nextIsocode = $child->child_isocode;
 				
-					//TODO : stereotype case 1 :  on créer le master = la structure sans données
+					//stereotype case 1 :  on créer le master = la structure sans données
 					if ($child->cl_stereotype_id <> null)
 					{
 						//Tester le stereotype pour créer le bon
@@ -3884,7 +3718,7 @@ class HTML_metadata {
 			}
 		}
 		
-		// TODO : Traitement d'une relation vers un type d'objet
+		// Traitement d'une relation vers un type d'objet
 		else if ($child->objecttype_id <> null)
 		{
 			$label = $label = JText::_($child->rel_guid."_LABEL");
@@ -4172,7 +4006,7 @@ class HTML_metadata {
 				}
 			}
 		}
-		// TODO : Fin de Traitement d'une relation vers type d'objet
+		//Fin de Traitement d'une relation vers type d'objet
 		}
 	}
 	

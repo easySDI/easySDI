@@ -495,21 +495,13 @@ class ADMIN_metadata {
 			// Traitement d'une relation vers un attribut
 			if ($child->attribute_id <> null)
 			{
-// 				echo "attribute: ".$child->attribute_isocode."\r\n";
-// 				echo "attributetype_id: ".$child->attribute_type."\r\n";
-				
 				if ($child->attribute_type == 6 )
 					$type_isocode = $child->list_isocode;
 				else
 					$type_isocode = $child->t_isocode;
 		
-// 				echo "type_isocode: ".$type_isocode."\r\n";
-// 				echo "parent name: ".$parentName."\r\n\r\n";
 				$name = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."-".str_replace(":", "_", $type_isocode);
 	
-				//$name = $name."__1";
-					
-				//echo "attribute name: ".$name."\r\n";
 				$childType = $child->t_isocode;
 				
 				// Traitement de chaque attribut selon son type
@@ -517,17 +509,13 @@ class ADMIN_metadata {
 				{
 					// Guid
 					case 1:
-						//echo "attribute: ".$child->attribute_isocode."\r\n";
 						$name = $name."__1";
 						if ($child->editable == 2)
 							$name = $name."_hiddenVal";
 						
-						//echo "name: ".$name."\r\n";
-						
 						// Récupération des valeurs postées correspondantes
 						$keys = array_keys($_POST);
 						$usefullVals=array();
-						//$usefullKeys=array();
 						$count=0;
 						foreach($keys as $key)
 						{
@@ -537,18 +525,14 @@ class ADMIN_metadata {
 								if (substr($key, -6) <> "_index")
 								{
 									$count = $count+1;
-									//$usefullKeys[] = $key;
 									$usefullVals[] = $_POST[$key];
 								}
 							}
 						}
-						
-						//print_r($usefullVals);
 						// Ajouter chacune des copies du champ dans le XML résultat
 						for ($pos=1; $pos<=$count; $pos++)
 						{
 							$nodeValue = $usefullVals[$pos-1];
-							//$nodeValue = stripslashes($nodeValue);
 									
 							$XMLNode = $XMLDoc->createElement($child->attribute_isocode);
 							$xmlAttributeParent->appendChild($XMLNode);
@@ -760,12 +744,11 @@ class ADMIN_metadata {
 						// Récupération des valeurs postées correspondantes
 						$keys = array_keys($_POST);
 						$usefullVals=array();
-						//$usefullKeys=array();
 						$count=0;
 						foreach($keys as $key)
 						{
-							if ($child->editable == 2)
-								$name = $name."__1"."_hiddenVal";
+// 							if ($child->editable == 2)
+// 								$name = $name."__1"."_hiddenVal";
 							
 							$partToCompare = substr($key, 0, strlen($name));
 							if ($partToCompare == $name)
@@ -773,7 +756,6 @@ class ADMIN_metadata {
 								if (substr($key, -6) <> "_index")
 								{
 									$count = $count+1;
-									//$usefullKeys[] = $key;
 									$usefullVals[] = $_POST[$key];
 								}
 							}
@@ -783,7 +765,6 @@ class ADMIN_metadata {
 						for ($pos=1; $pos<=$count; $pos++)
 						{
 							$nodeValue = $usefullVals[$pos-1];
-							//$nodeValue = stripslashes($nodeValue);
 							if ($nodeValue <> "")
 								$nodeValue = date('Y-m-d', strtotime($nodeValue));
 							
@@ -794,13 +775,6 @@ class ADMIN_metadata {
 							$XMLNode->appendChild($XMLValueNode);
 							$xmlParent = $XMLValueNode;
 						}
-						
-						// DATETIME
-						/*if ($nodeValue <> "")
-							$nodeValue = date('Y-m-d', strtotime($nodeValue));
-						else
-							$nodeValue = date('Y-m-d');*/
-						// $nodeValue = date('Y-m-d')."T".date('H:m:s');
 						break;
 					// List
 					case 6:

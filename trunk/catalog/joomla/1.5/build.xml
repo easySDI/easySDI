@@ -73,7 +73,7 @@
 		</copy>
 		
 		<copy
-			todir="C:\www\easysdi\components\com_easysdi_core\views">
+			todir="C:\www\easysdi\components\com_easysdi_catalog\views">
 			<fileset dir="./com_easysdi_catalog/core/view">
 				<include name="**/*.php" />
 				<include name="**/*.xml" />
