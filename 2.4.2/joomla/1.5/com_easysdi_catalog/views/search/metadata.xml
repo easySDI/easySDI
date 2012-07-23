@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+<layout title="Base">
+<message>
+<![CDATA[Description of my layout.]]>
+</message>
+</layout>
+<state>
+<name><![CDATA[STANDARD SEARCH LAYOUT DESC]]></name>
+<description><![CDATA[STANDARD SEARCH LAYOUT LONG DESC]]></description>
+  <url>
+    <param name="task" type="list" default="listCatalogContent" label="Type" description="Type of menu" >
+      <option value="listCatalogContent">Search</option>
+    </param>
+    <param name="context" type="text" label="Context" description="Search context" >
+    </param>
+  </url>
+  <params>
+  </params>
+</state>
+</metadata>
