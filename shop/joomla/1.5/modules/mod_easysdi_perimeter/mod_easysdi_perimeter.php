@@ -63,7 +63,7 @@ if ($curstep == "2")
 			$query = $query.$id."," ;
 		}
 		$query  = substr($query , 0, -1);
-		$query = $query . ") group by id  having  count(*)  = ".$nbProduct.")";
+		$query = $query . ") group by perimeter_id  having  count(*)  = ".$nbProduct.")";
 		$query .= " order by ordering";
 		$db->setQuery( $query );
 	
