@@ -20,7 +20,7 @@ class Easysdi_serviceControllerConfig extends JController
 
     function __construct() {
     	//Need to be add here even if it is in administrator/controller.php 
-    	require_once JPATH_COMPONENT.'/helpers/easysdi_service.php';
+    	require_once JPATH_COMPONENT.DS.'helpers'.DS.'easysdi_service.php';
         parent::__construct();
     }
     

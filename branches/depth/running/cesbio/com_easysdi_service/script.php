@@ -35,9 +35,6 @@ class com_easysdi_serviceInstallerScript
 		// Show the essential information at the install/update back-end
 		echo '<p>EasySDI Service [com_easysdi_service]';
 		echo '<br />'.JText::_('COM_EASYSDI_SERVICE_INSTALL_SCRIPT_MANIFEST_VERSION') . $this->release;
-		
-		
-// 		echo '<p>' . JText::_('COM_EASYSDI_SERVICE_PREFLIGHT_SCRIPT') . '</p>';
 	}
  
 	/*
@@ -47,7 +44,6 @@ class com_easysdi_serviceInstallerScript
 	 * If install returns false, Joomla will abort the install and undo everything already done.
 	 */
 	function install( $parent ) {
-// 		echo '<p>' . JText::_('COM_EASYSDI_SERVICE_INSTALL_SCRIPT' )  . '</p>';
 		// You can have the backend jump directly to the newly installed component configuration page
 		// $parent->getParent()->setRedirectURL('index.php?option=com_democompupdate');
 	}
@@ -59,7 +55,6 @@ class com_easysdi_serviceInstallerScript
 	 * If this returns false, Joomla will abort the update and undo everything already done.
 	 */
 	function update( $parent ) {
-// 		echo '<p>' . JText::_('COM_EASYSDI_SERVICE_UPDATE_SCRIPT' ) . '</p>';
 		// You can have the backend jump directly to the newly updated component configuration page
 		// $parent->getParent()->setRedirectURL('index.php?option=com_democompupdate');
 	}
@@ -70,7 +65,6 @@ class com_easysdi_serviceInstallerScript
 	 * postflight is run after the extension is registered in the database.
 	 */
 	function postflight( $type, $parent ) {
-		
 		if($type == 'install'){
 			JTable::addIncludePath(JPATH_ADMINISTRATOR.DS."..".DS."libraries".DS."joomla".DS."database".DS."table");
 				
@@ -91,44 +85,12 @@ class com_easysdi_serviceInstallerScript
 				JError::raiseWarning(null, JText::_('COM_EASYSDI_SERVICE_POSTFLIGHT_SCRIPT_CATEGORY_ERROR'));
 				return false;
 			}
-			$row->moveByReference(0, 'last-child', $row->id);
+			//$row->moveByReference(0, 'last-child', $row->id);
 			
 			$db = JFactory::getDbo();
 			$db->setQuery("DELETE FROM `#__menu` WHERE title = 'com_easysdi_service'");
 			$db->query();
-			
-			//EasySDI configuration form update
-			$core_dom = new DomDocument();
-			if(!$core_dom->load(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'config.xml')){
-				JError::raiseWarning(null, JText::_('COM_EASYSDI_SERVICE_POSTFLIGHT_SCRIPT_LOAD_CORE_CONFIG_ERROR'));
-				return false;
-			}
-			$service_dom = new DomDocument();
-			if(!$service_dom->load(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_service'.DS.'config.xml')){
-				JError::raiseWarning(null, JText::_('COM_EASYSDI_SERVICE_POSTFLIGHT_SCRIPT_LOAD_SERVICE_CONFIG_ERROR'));
-				return false;
-			}
-				
-			$core_config = $core_dom->getElementsByTagName('config');
-			$service_fieldsets = $service_dom->getElementsByTagName('fieldset');
-			
-			foreach($service_fieldsets as $service_fieldset){
-				if($service_fieldset->getAttribute("name") == 'component_service'){
-					$node = $core_dom->importNode($service_fieldset, true);
-					foreach($core_config as $config){
-						$config->appendChild ($node);
-						break;
-					}
-					break;
-				}
-			}
-			
-			$core_dom->save(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'config.xml');
 		}
-		
-		
-		
-// 		echo '<p>' . JText::_('COM_EASYSDI_SERVICE_POSTFLIGHT_SCRIPT ') . '</p>';
 	}
 
 	/*
@@ -136,27 +98,7 @@ class com_easysdi_serviceInstallerScript
 	 * uninstall runs before any other action is taken (file removal or database processing).
 	 */
 	function uninstall( $parent ) {
-		//EasySDI configuration form cleaning
-		$core_dom = new DomDocument();
-		if(!$core_dom->load(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'config.xml')){
-			JError::raiseWarning(null, JText::_('COM_EASYSDI_SERVICE_POSTFLIGHT_SCRIPT_LOAD_CORE_CONFIG_ERROR'));
-			return false;
-		}
-		$core_fieldsets = $core_dom->getElementsByTagName('fieldset');
-
-		$fieldsToRemove = array();
-		foreach($core_fieldsets as $core_fieldset){
-			if($core_fieldset->getAttribute("name") == 'component_service'){
-				$fieldsToRemove[]=$core_fieldset;
-			}
-		}
 		
-		foreach ($fieldsToRemove as $field){
-			$field->parentNode->removeChild($field);
-		}
-		$core_dom->save(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'config.xml');
-		
-// 		echo '<p>' . JText::_('COM_EASYSDI_SERVICE_UNINSTALL_SCRIPT ') . '</p>';
 	}
  
 	/*

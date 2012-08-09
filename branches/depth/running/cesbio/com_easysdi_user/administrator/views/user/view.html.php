@@ -1,7 +1,7 @@
 <?php
 /**
  * @version     3.0.0
- * @package     com_easysdi_core
+  * @package     com_easysdi_user
  * @copyright   Copyright (C) 2012. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
@@ -15,7 +15,7 @@ jimport('joomla.application.component.view');
 /**
  * View to edit
  */
-class Easysdi_coreViewUser extends JView
+class Easysdi_userViewUser extends JView
 {
 	protected $state;
 	protected $item;
@@ -33,13 +33,13 @@ class Easysdi_coreViewUser extends JView
 		$this->item		= $this->get('Item');
 		$this->form		= $this->get('Form');
 		
-		$this->contactaddressmodel 	= & JModel::getInstance('address', 'easysdi_coreModel');
+		$this->contactaddressmodel 	= & JModel::getInstance('address', 'easysdi_userModel');
 		$this->contactitem 			= $this->contactaddressmodel->getItemByUserID($this->item->id,1);
 
-		$this->billingaddressmodel 	= & JModel::getInstance('address', 'easysdi_coreModel');
+		$this->billingaddressmodel 	= & JModel::getInstance('address', 'easysdi_userModel');
 		$this->billingitem 			= $this->billingaddressmodel->getItemByUserID($this->item->id,2);
 		
-		$this->delivryaddressmodel 	= & JModel::getInstance('address', 'easysdi_coreModel');
+		$this->delivryaddressmodel 	= & JModel::getInstance('address', 'easysdi_userModel');
 		$this->delivryitem 			= $this->delivryaddressmodel->getItemByUserID($this->item->id,3);
 		
 		$app 				=& JFactory::getApplication();
@@ -72,7 +72,7 @@ class Easysdi_coreViewUser extends JView
         }
         
         $state	= $this->get('State');
-		$this->canDo	= Easysdi_coreHelper::getActions($state->get('filter.category_id'),$this->item->id, null);
+		$this->canDo	= Easysdi_userHelper::getActions($state->get('filter.category_id'),$this->item->id, null);
 		
 		JToolBarHelper::title(JText::_('COM_EASYSDI_CORE_TITLE_USER'), 'user-profile.png');
 

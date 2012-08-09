@@ -1,7 +1,7 @@
 <?php
 /**
  * @version     3.0.0
- * @package     com_easysdi_core
+  * @package     com_easysdi_user
  * @copyright   Copyright (C) 2012. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
@@ -14,7 +14,7 @@ jimport('joomla.application.component.modellist');
 /**
  * Methods supporting a list of Easysdi_core records.
  */
-class Easysdi_coreModelusers extends JModelList
+class Easysdi_userModelusers extends JModelList
 {
 
     /**
@@ -81,7 +81,7 @@ class Easysdi_coreModelusers extends JModelList
 		$this->setState('filter.published', $published);
 		
 		// Load the parameters.
-		$params = JComponentHelper::getParams('com_easysdi_core');
+		$params = JComponentHelper::getParams('com_easysdi_user');
 		$this->setState('params', $params);
 
 		// List state information.
@@ -208,8 +208,6 @@ class Easysdi_coreModelusers extends JModelList
                 $query->where('( u.name LIKE '.$search.'   OR  u.username LIKE '.$search.'  )');
 			}
 		}
-
-		
 		
 		// Add the list ordering clause.
 		$orderCol	= $this->state->get('list.ordering');

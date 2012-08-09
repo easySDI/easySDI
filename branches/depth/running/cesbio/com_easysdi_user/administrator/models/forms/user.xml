@@ -11,7 +11,7 @@
 
 		<field 	name="catid"
 				type="categoryedit"
-				extension="com_easysdi_core"
+				extension="com_easysdi_user"
 				label="JCATEGORY"
 				description="JFIELD_CATEGORY_DESC"
 				class="inputbox"

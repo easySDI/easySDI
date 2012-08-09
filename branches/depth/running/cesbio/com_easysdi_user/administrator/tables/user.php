@@ -1,7 +1,7 @@
 <?php
 /**
  * @version     3.0.0
- * @package     com_easysdi_core
+  * @package     com_easysdi_user
  * @copyright   Copyright (C) 2012. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
@@ -10,13 +10,13 @@
 // No direct access
 defined('_JEXEC') or die;
 
-require_once JPATH_ADMINISTRATOR.'/components/com_easysdi_core/librairies/easysdi/database/sditable.php';
+require_once JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'libraries'.DS.'easysdi'.DS.'database'.DS.'sditable.php';
 
 
 /**
  * user Table class
  */
-class Easysdi_coreTableuser extends sdiTable
+class Easysdi_userTableuser extends sdiTable
 {
 	/**
 	 * Constructor
@@ -40,7 +40,7 @@ class Easysdi_coreTableuser extends sdiTable
     protected function _getAssetName()
     {
     	$k = $this->_tbl_key;
-    	return 'com_easysdi_core.user.' . (int) $this->$k;
+    	return 'com_easysdi_user.user.' . (int) $this->$k;
     }
     
     /**

@@ -1,7 +1,7 @@
 <?php
 /**
  * @version     3.0.0
- * @package     com_easysdi_core
+  * @package     com_easysdi_user
  * @copyright   Copyright (C) 2012. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
@@ -10,7 +10,7 @@
 // No direct access to this file
 defined('_JEXEC') or die('Restricted access');
  
-class com_easysdi_coreInstallerScript
+class com_easysdi_userInstallerScript
 {
 	/*
 	 * $parent is the class calling this method.
@@ -19,14 +19,22 @@ class com_easysdi_coreInstallerScript
 	 * If preflight returns false, Joomla will abort the update and undo everything already done.
 	 */
 	function preflight( $type, $parent ) {
+		//Check if com_easysdi_core is installed
+		$db = JFactory::getDbo();
+		$db->setQuery('SELECT COUNT(*) FROM #__extensions WHERE name = "com_easysdi_core"');
+		$install = $db->loadResult();
+		
+		if($install == 0){
+			JError::raiseWarning(null, JText::_('COM_EASYSDI_SERVICE_INSTALL_SCRIPT_CORE_ERROR'));
+			return false;
+		}
+		
 		// Installing component manifest file version
 		$this->release = $parent->get( "manifest" )->version;
 		
 		// Show the essential information at the install/update back-end
-		echo '<p>EasySDI Core [com_easysdi_core]';
+		echo '<p>EasySDI User [com_easysdi_user]';
 		echo '<br />'.JText::_('COM_EASYSDI_CORE_INSTALL_SCRIPT_MANIFEST_VERSION') . $this->release;
-		
-// 		echo '<p>' . JText::_('COM_EASYSDI_CORE_PREFLIGHT_SCRIPT' ) . '</p>';
 	}
  
 	/*
@@ -36,7 +44,6 @@ class com_easysdi_coreInstallerScript
 	 * If install returns false, Joomla will abort the install and undo everything already done.
 	 */
 	function install( $parent ) {
-// 		echo '<p>' . JText::_('COM_EASYSDI_CORE_INSTALL_SCRIPT') . '</p>';
 		// You can have the backend jump directly to the newly installed component configuration page
 		// $parent->getParent()->setRedirectURL('index.php?option=com_democompupdate');
 	}
@@ -48,7 +55,6 @@ class com_easysdi_coreInstallerScript
 	 * If this returns false, Joomla will abort the update and undo everything already done.
 	 */
 	function update( $parent ) {
-// 		echo '<p>' . JText::_('COM_EASYSDI_CORE_UPDATE_SCRIPT') . '</p>';
 		// You can have the backend jump directly to the newly updated component configuration page
 		// $parent->getParent()->setRedirectURL('index.php?option=com_democompupdate');
 	}
@@ -67,7 +73,7 @@ class com_easysdi_coreInstallerScript
 			$row->parent_id 		= 1;
 			$row->level				= 1;
 			$row->path 				= 'uncategorised';
-			$row->extension 		= 'com_easysdi_core';
+			$row->extension 		= 'com_easysdi_user';
 			$row->title 			= 'Uncategorised';
 			$row->alias 			= 'uncategorised';
 			$row->published 		= 1;
@@ -83,8 +89,8 @@ class com_easysdi_coreInstallerScript
 			
 			//Create new EasySDI User account
 			$user	= JFactory::getUser();
-			JTable::addIncludePath(JPATH_ADMINISTRATOR.DS."components".DS."com_easysdi_core".DS."tables");
-			$newaccount =& JTable::getInstance('user', 'easysdi_coreTable');
+			JTable::addIncludePath(JPATH_ADMINISTRATOR.DS."components".DS."com_easysdi_user".DS."tables");
+			$newaccount =& JTable::getInstance('user', 'easysdi_userTable');
 			if (!$newaccount) {
 				JError::raiseWarning(null, JText::_('COM_EASYSDI_CORE_POSTFLIGHT_SCRIPT_USER_ERROR_INSTANCIATE'));
 				return false;
@@ -98,15 +104,17 @@ class com_easysdi_coreInstallerScript
 				return false;
 			}
 			require_once JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'helpers'.DS.'easysdi_core.php';
-			$params['infrastructureID'] 	=  Easysdi_coreHelper::uuid();
+			$params['infrastructureID'] 	= Easysdi_coreHelper::uuid();
 			$params['defaultaccount'] 		= $user->id;
 			$params['guestaccount'] 		= $user->id;
 			$params['serviceaccount'] 		= $user->id;
 			
 			$this->setParams( $params );
+			
+			$db = JFactory::getDbo();
+			$db->setQuery("DELETE FROM `#__menu` WHERE title = 'com_easysdi_user'");
+			$db->query();
 		}
-		
-// 		echo '<p>' . JText::_('COM_EASYSDI_CORE_POSTFLIGHT_SCRIPT ') . '</p>';
 	}
 
 	/*
@@ -114,7 +122,6 @@ class com_easysdi_coreInstallerScript
 	 * uninstall runs before any other action is taken (file removal or database processing).
 	 */
 	function uninstall( $parent ) {
-// 		echo '<p>' . JText::_('COM_EASYSDI_CORE_UNINSTALL_SCRIPT ') . '</p>';
 	}
  
 	/*
@@ -122,7 +129,7 @@ class com_easysdi_coreInstallerScript
 	 */
 	function getParam( $name ) {
 		$db = JFactory::getDbo();
-		$db->setQuery('SELECT manifest_cache FROM #__extensions WHERE name = "com_easysdi_core"');
+		$db->setQuery('SELECT manifest_cache FROM #__extensions WHERE name = "com_easysdi_user"');
 		$manifest = json_decode( $db->loadResult(), true );
 		return $manifest[ $name ];
 	}
@@ -134,7 +141,7 @@ class com_easysdi_coreInstallerScript
 		if ( count($param_array) > 0 ) {
 			// read the existing component value(s)
 			$db = JFactory::getDbo();
-			$db->setQuery('SELECT params FROM #__extensions WHERE name = "com_easysdi_core"');
+			$db->setQuery('SELECT params FROM #__extensions WHERE name = "com_easysdi_user"');
 			$params = json_decode( $db->loadResult(), true );
 			// add the new variable(s) to the existing one(s)
 			foreach ( $param_array as $name => $value ) {
@@ -144,7 +151,7 @@ class com_easysdi_coreInstallerScript
 			$paramsString = json_encode( $params );
 			$db->setQuery('UPDATE #__extensions SET params = ' .
 				$db->quote( $paramsString ) .
-				' WHERE name = "com_easysdi_core"' );
+				' WHERE name = "com_easysdi_user"' );
 				$db->query();
 		}
 	}

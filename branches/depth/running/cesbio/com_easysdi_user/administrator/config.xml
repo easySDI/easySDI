@@ -1,18 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <config>
-	<fieldset name="component_core"
+	<fieldset name="component_user"
 		label="COM_EASYSDI_CORE_COMPONENT_LABEL"
 		description="COM_EASYSDI_CORE_COMPONENT_DESC" >
-
-        <field name="infrastructureID"
-             type="text"
-             default=""
-             readonly="true" 
-             class="readonly"
-             size="40"
-             label="COM_EASYSDI_CORE_CONFIG_LBL_INFRASTRUCTURE_ID"
-             description="COM_EASYSDI_CORE_CONFIG_DESC_INFRASTRUCTURE_ID">
-         </field>
          
 		 <field name="defaultaccount" 
 		 		type="user" 
@@ -44,7 +34,7 @@
 		label="JCONFIG_PERMISSIONS_LABEL" >
 
 		<field name="rules" type="rules"
-			component="com_easysdi_core"
+			component="com_easysdi_user"
 			filter="rules"
 			validate="rules"
 			label="JCONFIG_PERMISSIONS_LABEL"

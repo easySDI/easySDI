@@ -1,7 +1,7 @@
 <?php
 /**
  * @version     3.0.0
- * @package     com_easysdi_core
+ * @package     com_easysdi_user
  * @copyright   Copyright (C) 2012. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
@@ -15,7 +15,7 @@ jimport('joomla.application.component.view');
 /**
  * View class for a list of Easysdi_core.
  */
-class Easysdi_coreViewUsers extends JView
+class Easysdi_userViewUsers extends JView
 {
 	protected $items;
 	protected $pagination;
@@ -27,7 +27,7 @@ class Easysdi_coreViewUsers extends JView
 	public function display($tpl = null)
 	{
 		// Load the submenu.
-		Easysdi_coreHelper::addSubmenu(JRequest::getCmd('view', 'users'));
+		Easysdi_userHelper::addSubmenu(JRequest::getCmd('view', 'users'));
 		
 		$this->state		= $this->get('State');
 		$this->items		= $this->get('Items');
@@ -50,10 +50,8 @@ class Easysdi_coreViewUsers extends JView
 	 */
 	protected function addToolbar()
 	{
-		require_once JPATH_COMPONENT.DS.'helpers'.DS.'easysdi_core.php';
-
 		$state	= $this->get('State');
-		$canDo	= Easysdi_coreHelper::getActions($state->get('filter.category_id'),null);
+		$canDo	= Easysdi_userHelper::getActions($state->get('filter.category_id'),null);
 		
 		JToolBarHelper::title(JText::_('COM_EASYSDI_CORE_TITLE_USERS'), 'user.png');
 
@@ -102,6 +100,11 @@ class Easysdi_coreViewUsers extends JView
 		    }
         }
 
+        JToolBarHelper::divider();
+        if ($canDo->get('core.admin')) {
+        	JToolBarHelper::preferences('com_easysdi_user');
+        }
+        
 		JToolBarHelper::divider();
 		JToolBarHelper::back('JTOOLBAR_BACK','index.php?option=com_easysdi_core');
 

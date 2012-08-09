@@ -23,7 +23,7 @@ class Easysdi_serviceController extends JController
 	 */
 	public function display($cachable = false, $urlparams = false)
 	{
-		require_once JPATH_COMPONENT.'/helpers/easysdi_service.php';
+		require_once JPATH_COMPONENT.DS.'helpers'.DS.'easysdi_service.php';
 
 		// Load the submenu.
 		Easysdi_serviceHelper::addSubmenu(JRequest::getCmd('view', 'services'));

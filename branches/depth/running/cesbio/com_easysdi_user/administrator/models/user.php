@@ -1,7 +1,7 @@
 <?php
 /**
  * @version     3.0.0
- * @package     com_easysdi_core
+  * @package     com_easysdi_user
  * @copyright   Copyright (C) 2012. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
@@ -15,13 +15,13 @@ jimport('joomla.application.component.modeladmin');
 /**
  * Easysdi_core model.
  */
-class Easysdi_coreModeluser extends JModelAdmin
+class Easysdi_userModeluser extends JModelAdmin
 {
 	/**
 	 * @var		string	The prefix to use with controller messages.
 	 * @since	1.6
 	 */
-	protected $text_prefix = 'COM_EASYSDI_CORE';
+	protected $text_prefix = 'COM_EASYSDI_USER';
 
 
 	/**
@@ -33,7 +33,7 @@ class Easysdi_coreModeluser extends JModelAdmin
 	 * @return	JTable	A database object
 	 * @since	1.6
 	 */
-	public function getTable($type = 'User', $prefix = 'Easysdi_coreTable', $config = array())
+	public function getTable($type = 'User', $prefix = 'Easysdi_userTable', $config = array())
 	{
 		return JTable::getInstance($type, $prefix, $config);
 	}
@@ -55,7 +55,7 @@ class Easysdi_coreModeluser extends JModelAdmin
 				return ;
 			}
 			if (!empty($record->catid)) {
-				return $user->authorise('core.delete', 'com_easysdi_core.category.'.(int) $record->catid);
+				return $user->authorise('core.delete', 'com_easysdi_user.category.'.(int) $record->catid);
 			}
 			// Default to component settings if category not known.
 			else {
@@ -78,7 +78,7 @@ class Easysdi_coreModeluser extends JModelAdmin
 	
 		// Check against the category.
 		if (!empty($record->catid)) {
-			return $user->authorise('core.edit.state', 'com_easysdi_core.category.'.(int) $record->catid);
+			return $user->authorise('core.edit.state', 'com_easysdi_user.category.'.(int) $record->catid);
 		}
 		// Default to component settings if category not known.
 		else {
@@ -99,7 +99,7 @@ class Easysdi_coreModeluser extends JModelAdmin
 		$app	= JFactory::getApplication();
 
 		// Get the form.
-		$form = $this->loadForm('com_easysdi_core.user', 'user', array('control' => 'jform', 'load_data' => $loadData));
+		$form = $this->loadForm('com_easysdi_user.user', 'user', array('control' => 'jform', 'load_data' => $loadData));
 		if (empty($form)) {
 			return false;
 		}
@@ -116,7 +116,7 @@ class Easysdi_coreModeluser extends JModelAdmin
 	protected function loadFormData()
 	{
 		// Check the session for previously entered form data.
-		$data = JFactory::getApplication()->getUserState('com_easysdi_core.edit.user.data', array());
+		$data = JFactory::getApplication()->getUserState('com_easysdi_user.edit.user.data', array());
 
 		if (empty($data)) {
 			$data = $this->getItem();
@@ -136,9 +136,6 @@ class Easysdi_coreModeluser extends JModelAdmin
 	public function getItem($pk = null)
 	{
 		if ($item = parent::getItem($pk)) {
-			//Join address information
-			
-			
 		}
 
 		return $item;
@@ -179,7 +176,7 @@ class Easysdi_coreModeluser extends JModelAdmin
 		if(parent::save($data))
 		{
 			//Instantiate an address JTable
-			$addresstable =& JTable::getInstance('address', 'Easysdi_coreTable');
+			$addresstable =& JTable::getInstance('address', 'Easysdi_userTable');
 
 			//Call the overloaded save function to store the input data
 			$data['id'] = $this->getItem()->get('id');

@@ -104,10 +104,11 @@ class Easysdi_serviceViewServices extends JView
 		    }
         }
 
-// 		if ($canDo->get('core.admin')) {
-// 			JToolBarHelper::preferences('com_easysdi_service');
-// 		}
-
+		JToolBarHelper::divider();
+        if ($canDo->get('core.admin')) {
+        	JToolBarHelper::preferences('com_easysdi_service');
+        }
+        
 		JToolBarHelper::divider();
 		JToolBarHelper::back('JTOOLBAR_BACK','index.php?option=com_easysdi_core');
 	}

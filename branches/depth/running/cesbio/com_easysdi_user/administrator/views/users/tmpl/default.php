@@ -1,7 +1,7 @@
 <?php
 /**
  * @version     3.0.0
- * @package     com_easysdi_core
+ * @package     com_easysdi_user
  * @copyright   Copyright (C) 2012. All rights reserved.
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
@@ -15,17 +15,17 @@ JHtml::_('behavior.tooltip');
 JHTML::_('script','system/multiselect.js',false,true);
 // Import CSS
 $document = &JFactory::getDocument();
-$document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.css');
+$document->addStyleSheet('components/com_easysdi_user/assets/css/easysdi_user.css');
 
 $user	= JFactory::getUser();
 $userId	= $user->get('id');
 $listOrder	= $this->state->get('list.ordering');
 $listDirn	= $this->state->get('list.direction');
-$canOrder	= $user->authorise('core.edit.state', 'com_easysdi_core');
+$canOrder	= $user->authorise('core.edit.state', 'com_easysdi_user');
 $saveOrder	= $listOrder == 'a.ordering';
 ?>
 
-<form action="<?php echo JRoute::_('index.php?option=com_easysdi_core&view=users'); ?>" method="post" name="adminForm" id="adminForm">
+<form action="<?php echo JRoute::_('index.php?option=com_easysdi_user&view=users'); ?>" method="post" name="adminForm" id="adminForm">
 	<fieldset id="filter-bar">
 		<div class="filter-search fltlft">
 			<label class="filter-search-lbl" for="filter_search"><?php echo JText::_('JSEARCH_FILTER_LABEL'); ?></label>
@@ -41,7 +41,7 @@ $saveOrder	= $listOrder == 'a.ordering';
 			</select>
 			<select name="filter_category_id" class="inputbox" onchange="this.form.submit()">
 				<option value=""><?php echo JText::_('JOPTION_SELECT_CATEGORY');?></option>
-				<?php echo JHtml::_('select.options', JHtml::_('category.options', 'com_easysdi_core'), 'value', 'text', $this->state->get('filter.category_id'));?>
+				<?php echo JHtml::_('select.options', JHtml::_('category.options', 'com_easysdi_user'), 'value', 'text', $this->state->get('filter.category_id'));?>
 			</select>
             <select name="filter_access" class="inputbox" onchange="this.form.submit()">
 				<option value=""><?php echo JText::_('JOPTION_SELECT_ACCESS');?></option>
@@ -90,7 +90,7 @@ $saveOrder	= $listOrder == 'a.ordering';
 		</tfoot>
 		<tbody>
 		<?php foreach ($this->items as $i => $item) :
-			$canDo			= Easysdi_coreHelper::getActions(null,$item->id);
+			$canDo			= Easysdi_userHelper::getActions(null,$item->id);
 			$ordering		= ($listOrder == 'a.ordering');
 			$canEdit 		= $canDo->get('core.edit');
 			$canEditOwn 	= $canDo->get('core.edit.own');
@@ -106,7 +106,7 @@ $saveOrder	= $listOrder == 'a.ordering';
 						<?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'users.', $canCheckin); ?>
 					<?php endif; ?>
 					<?php if (($canEdit || $canEditOwn) && $canCheckin) : ?>
-						<a href="<?php echo JRoute::_('index.php?option=com_easysdi_core&task=user.edit&id='.$item->id);?>"><?php echo $this->escape($item->name);?></a>
+						<a href="<?php echo JRoute::_('index.php?option=com_easysdi_user&task=user.edit&id='.$item->id);?>"><?php echo $this->escape($item->name);?></a>
 					<?php else : ?>
 						<?php echo $this->escape($item->name); ?>
 					<?php endif; ?>

@@ -17,8 +17,8 @@ JHTML::_('script','system/multiselect.js',false,true);
 $document = &JFactory::getDocument();
 $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_service.css');
 
-$document->addScript( JURI::root(true).'/administrator/components/com_easysdi_service/librairies/openlayers/OpenLayers.js' );
-$document->addScript( JURI::root(true).'/administrator/components/com_easysdi_service/librairies/proj4js/lib/proj4js-combined.js' );
+$document->addScript( JURI::root(true).'/administrator/components/com_easysdi_service/libraries/openlayers/OpenLayers.js' );
+$document->addScript( JURI::root(true).'/administrator/components/com_easysdi_service/libraries/proj4js/lib/proj4js-combined.js' );
 
 foreach ($this->xml->config as $config) {
 	if (strcmp($config['id'],$this->config)==0){
