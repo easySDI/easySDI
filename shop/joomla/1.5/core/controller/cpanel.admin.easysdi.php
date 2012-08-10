@@ -193,7 +193,7 @@ class ADMIN_cpanel {
 			$Order = new order( $database );
 			$Order->load( $id );
 
-			if ($Order->order_id == 0)
+			if ($Order->id == 0)
 			{
 				echo "<div class='alert'>";			
 				echo JText::_("SHOP_SHOP_MESSAGE_DELETE_ORDER").$Order->id;
