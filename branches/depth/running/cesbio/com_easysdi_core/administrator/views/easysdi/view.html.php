@@ -33,6 +33,21 @@ class Easysdi_coreViewEasysdi extends JView
 		$this->user 		= $app->getUserState( 'com_easysdi_user-installed');
 		$this->service 		= $app->getUserState( 'com_easysdi_service-installed');
 		
+		$this->buttons = array(
+				array(
+						'link' => JRoute::_('index.php?option=com_easysdi_user'),
+						'image' => 'templates/bluestork/images/header/icon-48-article-add.png',
+						'text' => JText::_('MOD_QUICKICON_ADD_NEW_ARTICLE'),
+						'access' => array('core.manage', 'com_easysdi_user', 'core.edit', 'com_easysdi_user' )
+				),
+				array(
+						'link' => JRoute::_('index.php?option=com_easysdi_service'),
+						'image' => 'templates/bluestork/images/header/icon-48-article.png',
+						'text' => JText::_('MOD_QUICKICON_ARTICLE_MANAGER'),
+						'access' => array('core.manage', 'com_easysdi_service', 'core.create', 'com_easysdi_service' )
+				)
+		);
+		
 		// Display the view
 		$this->addToolbar();
 		parent::display($tpl);
