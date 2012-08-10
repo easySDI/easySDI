@@ -37,7 +37,7 @@ class Easysdi_serviceControllerConfig extends JController
     }
     
     function edit() {
-    	$params 			= JComponentHelper::getParams('com_easysdi_core');
+    	$params 			= JComponentHelper::getParams('com_easysdi_service');
     	$xml 				= simplexml_load_file($params->get('proxyconfigurationfile'));
     	$cid 				= JRequest::getVar('cid',array(0));
     	$layout 			= JRequest::getVar('serviceconnector',null);
@@ -70,7 +70,7 @@ class Easysdi_serviceControllerConfig extends JController
     }
     
     function delete() {
-    	$params		= JComponentHelper::getParams('com_easysdi_core');
+    	$params		= JComponentHelper::getParams('com_easysdi_service');
     	$xml 		= simplexml_load_file($params->get('proxyconfigurationfile'));
     	$cid 		= JRequest::getVar('cid',array(0));
     	foreach ($cid as $id ){
@@ -128,7 +128,7 @@ class Easysdi_serviceControllerConfig extends JController
     
     
     function save() {
-    	$params 		= JComponentHelper::getParams('com_easysdi_core');
+    	$params 		= JComponentHelper::getParams('com_easysdi_service');
     	$xml 			= simplexml_load_file($params->get('proxyconfigurationfile'));
     	$configId 		= JRequest::getVar("id","New Config");
     	$previoustask 	= JRequest::getVar("previoustask", 'edit');

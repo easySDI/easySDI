@@ -25,7 +25,7 @@ class Easysdi_serviceControllerPolicy extends JController
 	}
 
 	function copy (){
-		$params				= JComponentHelper::getParams('com_easysdi_core');
+		$params				= JComponentHelper::getParams('com_easysdi_service');
 		$xml 				= simplexml_load_file($params->get('proxyconfigurationfile'));
 		$id 				= JRequest::getVar('cid',array(0));
 		$connector 			= JRequest::getVar('connector','');
@@ -75,7 +75,7 @@ class Easysdi_serviceControllerPolicy extends JController
 	 * @param object $xml
 	 */
 	function orderupPolicy($xml){
-		$params				= JComponentHelper::getParams('com_easysdi_core');
+		$params				= JComponentHelper::getParams('com_easysdi_service');
 		$xml 				= simplexml_load_file($params->get('proxyconfigurationfile'));
 		$id 				= JRequest::getVar('cid',array(0));
 		$connector 			= JRequest::getVar('connector','');
@@ -126,7 +126,7 @@ class Easysdi_serviceControllerPolicy extends JController
 	 * @param object $xml
 	 */
 	function orderdownPolicy($xml){
-		$params				= JComponentHelper::getParams('com_easysdi_core');
+		$params				= JComponentHelper::getParams('com_easysdi_service');
 		$xml 				= simplexml_load_file($params->get('proxyconfigurationfile'));
 		$id 				= JRequest::getVar('cid',array(0));
 		$connector 			= JRequest::getVar('connector','');
@@ -199,7 +199,7 @@ class Easysdi_serviceControllerPolicy extends JController
 	}
 
 	function delete() {
-		$params		= JComponentHelper::getParams('com_easysdi_core');
+		$params		= JComponentHelper::getParams('com_easysdi_service');
 		$xml 		= simplexml_load_file($params->get('proxyconfigurationfile'));
 		$cid 		= JRequest::getVar('cid',array(0));
 		$configId		= JRequest::getVar('config','');
@@ -235,7 +235,7 @@ class Easysdi_serviceControllerPolicy extends JController
 	}
 
 	function save() {
-		$params 		= JComponentHelper::getParams('com_easysdi_core');
+		$params 		= JComponentHelper::getParams('com_easysdi_service');
 		$xml 			= simplexml_load_file($params->get('proxyconfigurationfile'));
 		$connector 		= JRequest::getVar("connector");
 		$configId 		= JRequest::getVar("configId","");

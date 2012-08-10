@@ -23,7 +23,7 @@ class Easysdi_serviceViewConfigs extends JView
 	 */
 	public function display($tpl = null)
 	{
-		$this->params = JComponentHelper::getParams('com_easysdi_core');
+		$this->params = JComponentHelper::getParams('com_easysdi_service');
 		$this->addToolbar();
 		
 		// Check if config file is set.

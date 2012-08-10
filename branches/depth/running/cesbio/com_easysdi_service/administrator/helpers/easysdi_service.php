@@ -89,7 +89,7 @@ class Easysdi_serviceHelper
 	public static function negotiation ($params){
 		$service 				= $params['service'];
 		$url 					= $params['resurl'];
-		$user 					= $params['resusername'];
+		$user 					= $params['resuser'];
 		$password 				= $params['respassword'];
 	
 		$supported_versions 	= array();
@@ -99,9 +99,8 @@ class Easysdi_serviceHelper
 		{
 			//Authentication needed
 			$s_url 				= $params['serurl'];
-			$s_user 			= $params['serusername'];
+			$s_user 			= $params['seruser'];
 			$s_password 		= $params['serpassword'];
-	
 	
 			//Perform a geonetwork login
 			$ch = curl_init();
@@ -156,7 +155,7 @@ class Easysdi_serviceHelper
 		$completeurl = "";
 		foreach ($implemented_versions as $version){
 			$completeurl = $urlWithPassword.$separator."REQUEST=GetCapabilities&SERVICE=".$service."&VERSION=".$version->value;
-	
+
 			$xmlCapa = simplexml_load_file($completeurl);
 			if ($xmlCapa === false)
 			{

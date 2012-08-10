@@ -152,13 +152,13 @@ public class JoomlaCookieAuthenticationFilter extends GenericFilterBean {
 					}
 			    }
 			}else{
-				e = userCache.get("com_easysdi_core");
+				e = userCache.get("com_easysdi_user");
 			    if (e != null){
 					authenticationPair = (Map<String, Object>) e.getValue();
 				    }else{
 					if (authenticationPair.get("username") == null && authenticationPair.size() == 2) {
 						String sqlParams = "select params from " + joomlaProvider.getPrefix() + "extensions  "
-							    + " where name='com_easysdi_core' limit 1";
+							    + " where name='com_easysdi_user' limit 1";
 						try {
 							Map<String, Object> paramsJSON = sjt.queryForMap(sqlParams);
 							int guestaccount = 0;
@@ -175,9 +175,9 @@ public class JoomlaCookieAuthenticationFilter extends GenericFilterBean {
 										authenticationPair = sjt.queryForMap(sql);
 										if (authenticationPair != null && authenticationPair.size() > 0) {
 										    if (authenticationPair.get("username") != null) {
-												Object k = (cookies != null && cookies.length > 0) ? cookies : "com_easysdi_core";
+												Object k = (cookies != null && cookies.length > 0) ? cookies : "com_easysdi_user";
 												userCache.put(new Element(k, authenticationPair));
-												userCache.put(new Element("com_easysdi_core", authenticationPair));
+												userCache.put(new Element("com_easysdi_user", authenticationPair));
 										    }
 										}
 									   } catch (EmptyResultDataAccessException er){	

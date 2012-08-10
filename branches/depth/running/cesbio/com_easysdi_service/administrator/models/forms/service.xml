@@ -102,7 +102,8 @@
                 filter="safehtml" /> 
 
 		<field 	name="resourcepassword" 
-				type="text" 
+				type="password"
+				autocomplete="off"
 				size="40" 
 				class="inputbox"
 				label="COM_EASYSDI_SERVICE_FORM_LBL_SERVICE_RESOURCEPASSWORD"
@@ -139,7 +140,8 @@
                 filter="safehtml" /> 
 
 		<field 	name="servicepassword" 
-				type="text" 
+				type="password"
+				autocomplete="off"
 				size="40" 
 				class="inputbox"
 				label="COM_EASYSDI_SERVICE_FORM_LBL_SERVICE_SERVICEPASSWORD"
