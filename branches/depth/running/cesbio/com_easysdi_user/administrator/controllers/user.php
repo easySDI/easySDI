@@ -23,7 +23,7 @@ class Easysdi_userControllerUser extends JControllerForm
     function __construct() {
     	
     	//Need to be add here even if it is in administrator/controller.php l.27
-    	require_once JPATH_COMPONENT.'/helpers/easysdi_user.php';
+    	require_once JPATH_COMPONENT.DS.'helpers'.DS.'easysdi_user.php';
         
     	$this->view_list ='users';
         parent::__construct();

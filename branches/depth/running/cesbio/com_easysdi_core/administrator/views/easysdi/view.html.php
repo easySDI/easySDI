@@ -28,26 +28,29 @@ class Easysdi_coreViewEasysdi extends JView
 		// Assign data to the view
 		$this->form		= $this->get('Form');
 		
-		//Check if com_easysdi_service is installed
+		//Check if others easysdi components are installed
 		$app 				=& JFactory::getApplication();
-		$this->user 		= $app->getUserState( 'com_easysdi_user-installed');
-		$this->service 		= $app->getUserState( 'com_easysdi_service-installed');
+		$this->buttons = array();
 		
-		$this->buttons = array(
-				array(
-						'link' => JRoute::_('index.php?option=com_easysdi_user'),
-						'image' => 'templates/bluestork/images/header/icon-48-article-add.png',
-						'text' => JText::_('MOD_QUICKICON_ADD_NEW_ARTICLE'),
-						'access' => array('core.manage', 'com_easysdi_user', 'core.edit', 'com_easysdi_user' )
-				),
-				array(
-						'link' => JRoute::_('index.php?option=com_easysdi_service'),
-						'image' => 'templates/bluestork/images/header/icon-48-article.png',
-						'text' => JText::_('MOD_QUICKICON_ARTICLE_MANAGER'),
-						'access' => array('core.manage', 'com_easysdi_service', 'core.create', 'com_easysdi_service' )
-				)
-		);
-		
+		//com_easysdi_user
+		if($app->getUserState( 'com_easysdi_user-installed')){
+			array_push($this->buttons,array(
+											'link' 		=> JRoute::_('index.php?option=com_easysdi_user'),
+											'image'		=> '../../../components/com_easysdi_core/assets/images/l_core.jpg',
+											'text'		=> JText::_('COM_EASYSDI_CORE_ICON_SDI_USER'),
+											'access'	=> array(	'core.manage'		 , 'com_easysdi_user')
+											));
+		}
+		//com_easysdi_service
+		if($app->getUserState( 'com_easysdi_service-installed')){
+			array_push($this->buttons,array(
+											'link' 		=> JRoute::_('index.php?option=com_easysdi_service'),
+											'image' 	=> '../../../components/com_easysdi_core/assets/images/l_service.jpg',
+											'text' 		=> JText::_('COM_EASYSDI_CORE_ICON_SDI_SERVICE'),
+											'access' 	=> array(	'core.manage'		 , 'com_easysdi_service')
+			));
+		}
+					
 		// Display the view
 		$this->addToolbar();
 		parent::display($tpl);
@@ -58,6 +61,13 @@ class Easysdi_coreViewEasysdi extends JView
 	 */
 	protected function addToolbar()
 	{
+		require_once JPATH_COMPONENT.DS.'helpers'.DS.'easysdi_core.php';
 		JToolBarHelper::title(JText::_('COM_EASYSDI_CORE_TITLE'), 'easysdi.png');
+		
+		$canDo	= Easysdi_coreHelper::getActions();
+		
+		if ($canDo->get('core.admin')) {
+			JToolBarHelper::preferences('com_easysdi_core');
+		}
 	}
 }

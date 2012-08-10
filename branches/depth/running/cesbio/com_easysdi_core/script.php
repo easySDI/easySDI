@@ -55,7 +55,12 @@ class com_easysdi_coreInstallerScript
 	 * postflight is run after the extension is registered in the database.
 	 */
 	function postflight( $type, $parent ) {
-		
+		if ( $type == 'install' ) {
+			require_once JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'helpers'.DS.'easysdi_core.php';
+			$params['infrastructureID'] 	= Easysdi_coreHelper::uuid();
+				
+			$this->setParams( $params );
+		}
 	}
 
 	/*

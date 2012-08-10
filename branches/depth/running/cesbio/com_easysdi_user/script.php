@@ -103,8 +103,8 @@ class com_easysdi_userInstallerScript
 				JError::raiseError(42, JText::_('COM_EASYSDI_CORE_POSTFLIGHT_SCRIPT_USER_ERROR_STORE'). $newaccount->getError());
 				return false;
 			}
-			require_once JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'helpers'.DS.'easysdi_core.php';
-			$params['infrastructureID'] 	= Easysdi_coreHelper::uuid();
+			
+			//Set parameter values for the component
 			$params['defaultaccount'] 		= $user->id;
 			$params['guestaccount'] 		= $user->id;
 			$params['serviceaccount'] 		= $user->id;

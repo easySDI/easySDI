@@ -24,7 +24,7 @@ class Easysdi_coreController extends JController
 	 */
 	public function display($cachable = false, $urlparams = false)
 	{
-		require_once JPATH_COMPONENT.'/helpers/easysdi_core.php';
+		require_once JPATH_COMPONENT.DS.'helpers'.DS.'easysdi_core.php';
 
 		//Check if others EasySDI components are installed and saved results in UserState
 		$app 				=& JFactory::getApplication();

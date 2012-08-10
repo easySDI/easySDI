@@ -14,34 +14,13 @@ $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.cs
 
 ?>
 <form action="<?php echo JRoute::_('index.php?option=com_easysdi_core&view=easysdi'); ?>" method="post" name="adminForm" id="adminForm">
+
 	<?php
+	$html = JHtml::_('icons.buttons', $this->buttons);
+	if (!empty($html)): ?>
+		<div class="cpanel">
+			<?php echo $html;?>
+		</div>
+	<?php endif;?>
 	
-	 $html = JHtml::_('icons.buttons', $this->buttons);?>
-<?php if (!empty($html)): ?>
-	<div class="cpanel"><?php echo $html;?></div>
-<?php endif;?>
-	<?php if($this->user){?>
-	<fieldset class="adminsdiform">
-	<legend class="adminsdilegend adminsdicorelegend"><?php echo JText::_('COM_EASYSDI_CORE_LEGEND_EASYSDI'); ?></legend>
-		<div>
-			<ul class="adminformlist">
-			<?php foreach($this->form->getFieldset('user') as $field): ?>
-				<li><?php echo $field->input;?></li>
-			<?php endforeach; ?>
-			</ul>
-		</div>
-	</fieldset>
-	<?php }?>
-	<?php if($this->service){?>
-	<fieldset class="adminsdiform">
-	<legend class="adminsdilegend adminsdiservicelegend"><?php echo JText::_('COM_EASYSDI_SERVICE_LEGEND_EASYSDI'); ?></legend>
-		<div>
-			<ul class="adminformlist">
-			<?php foreach($this->form->getFieldset('service') as $field): ?>
-				<li><?php echo $field->input;?></li>
-			<?php endforeach; ?>
-			</ul>
-		</div>
-	</fieldset>
-	<?php }?>	
 </form>
