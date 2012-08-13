@@ -43,7 +43,7 @@
         <folder>helpers</folder>
     </files>
     <languages folder="site">
-        <language tag="en-GB">language/en-GB.com_easysdi_core.ini
+        <language tag="en-GB">language/en-GB.com_easysdi_user.ini
         </language>
     </languages>
     <administration>
@@ -60,7 +60,6 @@
             <folder>sql</folder>
             <folder>tables</folder>
             <folder>views</folder>
-            <folder>language</folder>
         </files>
         <languages folder="administrator">
             <language tag="en-GB">language/en-GB/en-GB.com_easysdi_user.ini

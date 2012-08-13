@@ -33,7 +33,7 @@ class com_easysdi_serviceInstallerScript
 		$this->release = $parent->get( "manifest" )->version;
 		
 		// Show the essential information at the install/update back-end
-		echo '<p>EasySDI Service [com_easysdi_service]';
+		echo '<p>EasySDI component Service [com_easysdi_service]';
 		echo '<br />'.JText::_('COM_EASYSDI_SERVICE_INSTALL_SCRIPT_MANIFEST_VERSION') . $this->release;
 	}
  

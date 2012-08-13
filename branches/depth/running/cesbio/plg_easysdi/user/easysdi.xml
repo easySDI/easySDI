@@ -2,7 +2,7 @@
 <install version="2.5" type="plugin" group="user">
 	<name>EasySDI plugin User</name>
 	<author>EasySDI Community</author>
-	<creationDate>13 July 2012</creationDate>
+	<creationDate>15 August 2012</creationDate>
 	<copyright>Copyright (C) 2012. All rights reserved.</copyright>
     <license>GNU General Public License version 3 or later; see LICENSE.txt</license>
 	<authorEmail>contact@easysdi.org</authorEmail>
@@ -12,7 +12,6 @@
 	<scriptfile>script.php</scriptfile>
 	<files>
 		<filename plugin="easysdi">easysdi.php</filename>
-		<folder>language</folder>
 	</files>
 	<languages>
 		<language tag="en-GB">language/en-GB/en-GB.plg_user_easysdi.sys.ini</language>

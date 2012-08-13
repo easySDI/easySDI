@@ -22,13 +22,13 @@ class Easysdi_userHelper
 	{
 
 		JSubMenuHelper::addEntry(
-			JText::_('COM_EASYSDI_CORE_SUBMENU_TITLE_USERS'),
+			JText::_('COM_EASYSDI_USER_SUBMENU_TITLE_USERS'),
 			'index.php?option=com_easysdi_user&view=users',
 			$vName == 'users'
 		);
 		
 		JSubMenuHelper::addEntry(
-				JText::_('COM_EASYSDI_CORE_SUBMENU_CATEGORIES'),
+				JText::_('COM_EASYSDI_USER_SUBMENU_CATEGORIES'),
 				'index.php?option=com_categories&extension=com_easysdi_user',
 				$vName == 'categories'
 		);

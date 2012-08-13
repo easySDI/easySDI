@@ -1,32 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <config>
 	<fieldset name="component_user"
-		label="COM_EASYSDI_CORE_COMPONENT_LABEL"
-		description="COM_EASYSDI_CORE_COMPONENT_DESC" >
+		label="COM_EASYSDI_USER_COMPONENT_LABEL"
+		description="COM_EASYSDI_USER_COMPONENT_DESC" >
          
 		 <field name="defaultaccount" 
 		 		type="user" 
 		 		default="" 
 		 		size="40"
 		 		required="true"
-		 		label="COM_EASYSDI_CORE_CONFIG_LBL_DEFAULT_ACCOUNT" 
-         		description="COM_EASYSDI_CORE_CONFIG_DESC_DEFAULT_ACCOUNT" />
+		 		label="COM_EASYSDI_USER_CONFIG_LBL_DEFAULT_ACCOUNT" 
+         		description="COM_EASYSDI_USER_CONFIG_DESC_DEFAULT_ACCOUNT" />
 		 
 		 <field name="guestaccount" 
 		 		type="user" 
 		 		default="" 
 		 		size="40"
 		 		required="true"
-		 		label="COM_EASYSDI_CORE_CONFIG_LBL_GUEST_ACCOUNT" 
-         		description="COM_EASYSDI_CORE_CONFIG_DESC_GUEST_ACCOUNT" />
+		 		label="COM_EASYSDI_USER_CONFIG_LBL_GUEST_ACCOUNT" 
+         		description="COM_EASYSDI_USER_CONFIG_DESC_GUEST_ACCOUNT" />
 
 		 <field name="serviceaccount" 
 		 		type="user" 
 		 		default="" 
 		 		size="40"
 		 		required="true"
-		 		label="COM_EASYSDI_CORE_CONFIG_LBL_SERVICE_ACCOUNT" 
-         		description="COM_EASYSDI_CORE_CONFIG_DESC_SERVICE_ACCOUNT" />
+		 		label="COM_EASYSDI_USER_CONFIG_LBL_SERVICE_ACCOUNT" 
+         		description="COM_EASYSDI_USER_CONFIG_DESC_SERVICE_ACCOUNT" />
 	</fieldset>
 	
 	<fieldset name="permissions"

@@ -25,7 +25,7 @@ class com_easysdi_userInstallerScript
 		$install = $db->loadResult();
 		
 		if($install == 0){
-			JError::raiseWarning(null, JText::_('COM_EASYSDI_SERVICE_INSTALL_SCRIPT_CORE_ERROR'));
+			JError::raiseWarning(null, JText::_('COM_EASYSDI_USER_INSTALL_SCRIPT_CORE_ERROR'));
 			return false;
 		}
 		
@@ -33,8 +33,8 @@ class com_easysdi_userInstallerScript
 		$this->release = $parent->get( "manifest" )->version;
 		
 		// Show the essential information at the install/update back-end
-		echo '<p>EasySDI User [com_easysdi_user]';
-		echo '<br />'.JText::_('COM_EASYSDI_CORE_INSTALL_SCRIPT_MANIFEST_VERSION') . $this->release;
+		echo '<p>EasySDI component User [com_easysdi_user]';
+		echo '<br />'.JText::_('COM_EASYSDI_USER_INSTALL_SCRIPT_MANIFEST_VERSION') . $this->release;
 	}
  
 	/*
@@ -82,7 +82,7 @@ class com_easysdi_userInstallerScript
 			$row->metadata 			= '{"author":"","robots":""}';
 			if(!$row->store(true))
 			{
-				JError::raiseWarning(null, JText::_('COM_EASYSDI_CORE_POSTFLIGHT_SCRIPT_CATEGORY_ERROR'));
+				JError::raiseWarning(null, JText::_('COM_EASYSDI_USER_POSTFLIGHT_SCRIPT_CATEGORY_ERROR'));
 				return false;
 			}
 			$row->moveByReference(0, 'last-child', $row->id);
@@ -92,7 +92,7 @@ class com_easysdi_userInstallerScript
 			JTable::addIncludePath(JPATH_ADMINISTRATOR.DS."components".DS."com_easysdi_user".DS."tables");
 			$newaccount =& JTable::getInstance('user', 'easysdi_userTable');
 			if (!$newaccount) {
-				JError::raiseWarning(null, JText::_('COM_EASYSDI_CORE_POSTFLIGHT_SCRIPT_USER_ERROR_INSTANCIATE'));
+				JError::raiseWarning(null, JText::_('COM_EASYSDI_USER_POSTFLIGHT_SCRIPT_USER_ERROR_INSTANCIATE'));
 				return false;
 			}
 			$newaccount->user_id 	= $user->id;
@@ -100,7 +100,7 @@ class com_easysdi_userInstallerScript
 			$newaccount->catid 		= $row->id;
 			$result 				= $newaccount->store();
 			if (!(isset($result)) || !$result) {
-				JError::raiseError(42, JText::_('COM_EASYSDI_CORE_POSTFLIGHT_SCRIPT_USER_ERROR_STORE'). $newaccount->getError());
+				JError::raiseError(42, JText::_('COM_EASYSDI_USER_POSTFLIGHT_SCRIPT_USER_ERROR_STORE'). $newaccount->getError());
 				return false;
 			}
 			

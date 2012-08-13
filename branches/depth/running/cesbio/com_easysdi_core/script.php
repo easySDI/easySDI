@@ -23,7 +23,7 @@ class com_easysdi_coreInstallerScript
 		$this->release = $parent->get( "manifest" )->version;
 		
 		// Show the essential information at the install/update back-end
-		echo '<p>EasySDI Core [com_easysdi_core]';
+		echo '<p>EasySDI component Core [com_easysdi_core]';
 		echo '<br />'.JText::_('COM_EASYSDI_CORE_INSTALL_SCRIPT_MANIFEST_VERSION') . $this->release;
 	}
  

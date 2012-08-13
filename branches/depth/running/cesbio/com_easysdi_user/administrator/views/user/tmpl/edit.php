@@ -65,7 +65,7 @@ $document->addStyleSheet('components/com_easysdi_user/assets/css/easysdi_user.cs
 <form action="<?php echo JRoute::_('index.php?option=com_easysdi_user&layout=edit&id='.(int) $this->item->id); ?>" method="post" name="adminForm" id="user-form" class="form-validate">
 	<div class="width-60 fltlft">
 		<fieldset class="adminform">
-			<legend><?php echo JText::_('COM_EASYSDI_CORE_LEGEND_USER'); ?></legend>
+			<legend><?php echo JText::_('COM_EASYSDI_USER_LEGEND_USER'); ?></legend>
 			<ul class="adminformlist">
 				<?php foreach($this->form->getFieldset('details') as $field): ?>
 					<?php
@@ -83,7 +83,7 @@ $document->addStyleSheet('components/com_easysdi_user/assets/css/easysdi_user.cs
 	</div>
 	<div class="width-40 fltrt">
 		<?php echo JHtml::_('sliders.start', 'user-sliders-'.$this->item->id, array('useCookie'=>1)); ?>
-			<?php echo JHtml::_('sliders.panel', JText::_('COM_EASYSDI_CORE_FIELDSET_CONTACTADDRESS'), 'contactaddress-details'); ?>
+			<?php echo JHtml::_('sliders.panel', JText::_('COM_EASYSDI_USER_FIELDSET_CONTACTADDRESS'), 'contactaddress-details'); ?>
 			<fieldset class="adminform">
 				<ul class="adminformlist">
 				<?php foreach($this->form->getFieldset('contactaddress') as $field): ?>
@@ -101,7 +101,7 @@ $document->addStyleSheet('components/com_easysdi_user/assets/css/easysdi_user.cs
 				<?php endforeach; ?>
 				</ul>
 			</fieldset>
-		<?php echo JHtml::_('sliders.panel', JText::_('COM_EASYSDI_CORE_FIELDSET_BILLINGADDRESS'), 'billingaddress-details'); ?>
+		<?php echo JHtml::_('sliders.panel', JText::_('COM_EASYSDI_USER_FIELDSET_BILLINGADDRESS'), 'billingaddress-details'); ?>
 			<fieldset class="adminform">
 				<ul class="adminformlist">
 				<?php foreach($this->form->getFieldset('billingaddress') as $field): ?>
@@ -119,7 +119,7 @@ $document->addStyleSheet('components/com_easysdi_user/assets/css/easysdi_user.cs
 				<?php endforeach; ?>
 				</ul>
 			</fieldset>
-		<?php echo JHtml::_('sliders.panel', JText::_('COM_EASYSDI_CORE_FIELDSET_DELIVRYADDRESS'), 'delivryaddress-details'); ?>
+		<?php echo JHtml::_('sliders.panel', JText::_('COM_EASYSDI_USER_FIELDSET_DELIVRYADDRESS'), 'delivryaddress-details'); ?>
 			<fieldset class="adminform">
 				<ul class="adminformlist">
 				<?php foreach($this->form->getFieldset('delivryaddress') as $field): ?>
@@ -138,7 +138,7 @@ $document->addStyleSheet('components/com_easysdi_user/assets/css/easysdi_user.cs
 				</ul>
 			</fieldset>
 		<?php if($this->shop){?>
-		<?php echo JHtml::_('sliders.panel', JText::_('COM_EASYSDI_CORE_FIELDSET_ORDERINGOPTIONS'), 'orderingoptions-details'); ?>
+		<?php echo JHtml::_('sliders.panel', JText::_('COM_EASYSDI_USER_FIELDSET_ORDERINGOPTIONS'), 'orderingoptions-details'); ?>
 			<fieldset class="adminform">
 				<ul class="adminformlist">
 				<?php foreach($this->form->getFieldset('orderingoptions') as $field): ?>
@@ -176,7 +176,7 @@ $document->addStyleSheet('components/com_easysdi_user/assets/css/easysdi_user.cs
 	<div class="width-100 fltlft">
 		<?php echo JHtml::_('sliders.start', 'permissions-sliders-'.$this->item->id, array('useCookie'=>1)); ?>
 
-			<?php echo JHtml::_('sliders.panel', JText::_('COM_EASYSDI_CORE_FIELDSET_RULES'), 'access-rules'); ?>
+			<?php echo JHtml::_('sliders.panel', JText::_('COM_EASYSDI_USER_FIELDSET_RULES'), 'access-rules'); ?>
 			<fieldset class="panelform">
 				<?php echo $this->form->getLabel('rules'); ?>
 				<?php echo $this->form->getInput('rules'); ?>

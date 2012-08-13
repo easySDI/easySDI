@@ -58,10 +58,10 @@ $saveOrder	= $listOrder == 'a.ordering';
 					<input type="checkbox" name="checkall-toggle" value="" onclick="checkAll(this)" />
 				</th>
 				<th>
-					<?php echo JHtml::_('grid.sort', 'COM_EASYSDI_CORE_FORM_LBL_USER_NAME', 'a.name', $listDirn, $listOrder); ?>
+					<?php echo JHtml::_('grid.sort', 'COM_EASYSDI_USER_FORM_LBL_USER_NAME', 'a.name', $listDirn, $listOrder); ?>
 				</th>
 				<th>
-					<?php echo JHtml::_('grid.sort', 'COM_EASYSDI_CORE_FORM_LBL_USER_USERNAME', 'a.username', $listDirn, $listOrder); ?>
+					<?php echo JHtml::_('grid.sort', 'COM_EASYSDI_USER_FORM_LBL_USER_USERNAME', 'a.username', $listDirn, $listOrder); ?>
 				</th>
                 <?php if (isset($this->items[0]->state)) { ?>
 				<th width="5%">

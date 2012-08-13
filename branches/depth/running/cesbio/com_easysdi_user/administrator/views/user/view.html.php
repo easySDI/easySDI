@@ -74,7 +74,7 @@ class Easysdi_userViewUser extends JView
         $state	= $this->get('State');
 		$this->canDo	= Easysdi_userHelper::getActions($state->get('filter.category_id'),$this->item->id, null);
 		
-		JToolBarHelper::title(JText::_('COM_EASYSDI_CORE_TITLE_USER'), 'user-profile.png');
+		JToolBarHelper::title(JText::_('COM_EASYSDI_USER_TITLE_USER'), 'user-profile.png');
 
 		// If not checked out, can save the item.
 		if (!$checkedOut && ( 		($this->canDo->get('core.edit') && !$isNew)

@@ -28,7 +28,7 @@ class plgusereasysdiInstallerScript
 			$this->release = $parent->get( "manifest" )->version;
 			// Show the essential information at the install/update back-end
 			echo '<p>EasySDI plugin User [plg_easysdi]';
-			echo '<br />'.JText::_('PLG_EASYSDIUSER_INSTALL_SCRIPT_MANIFEST_VERSION') . $this->release;
+			echo '<br />'.JText::_('Installing plugin manifest file version = ') . $this->release;
 		}
 	}
  
