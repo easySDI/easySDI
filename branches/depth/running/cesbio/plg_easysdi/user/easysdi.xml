@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<install version="2.5" type="plugin" group="user">
+<install version="2.5" type="plugin" group="user"  method="upgrade">
 	<name>EasySDI plugin User</name>
 	<author>EasySDI Community</author>
 	<creationDate>15 August 2012</creationDate>
