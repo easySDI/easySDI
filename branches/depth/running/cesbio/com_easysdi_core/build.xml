@@ -10,9 +10,6 @@
 	</target>
 
 	<target name="create-structure" description="Creating the working directory structure">
-		<delete>
-			<fileset dir="${projet.out.dir}" includes="*" />
-		</delete>
 		<mkdir dir="${projet.out.dir}" />
 	</target>
 
@@ -25,6 +22,7 @@
 			        build.xml ; 
 			        easysdi.xml ;
 			        manifest.xml ;
+					site/** ;
 					out/** ; 
 					.cache/** ; 
 					.svn/** ; 

@@ -26,24 +26,6 @@
 		</schemas> 
 	</update>
 
-	<updateservers>
-        <server type="extension" name="EasySDI Deployment Site" priority="1">http://deploy.easysdi.org/joomla25/core/manifest.xml</server>
-    </updateservers>
-    
-    <files folder="site">
-        <filename>index.html</filename>
-        <filename>easysdi_core.php</filename>
-        <filename>controller.php</filename>
-        <filename>router.php</filename>
-        <folder>views</folder>
-        <folder>models</folder>
-        <folder>controllers</folder>
-        <folder>helpers</folder>
-    </files>
-    <languages folder="site">
-        <language tag="en-GB">language/en-GB.com_easysdi_core.ini
-        </language>
-    </languages>
     <administration>
         <menu img="components/com_easysdi_core/assets/images/s_com_easysdi_core.ico" >COM_EASYSDI_SOLUTION</menu>
         

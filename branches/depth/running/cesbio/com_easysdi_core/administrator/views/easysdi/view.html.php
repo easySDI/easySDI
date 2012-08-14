@@ -36,16 +36,17 @@ class Easysdi_coreViewEasysdi extends JView
 		if($app->getUserState( 'com_easysdi_user-installed')){
 			array_push($this->buttons,array(
 											'link' 		=> JRoute::_('index.php?option=com_easysdi_user'),
-											'image'		=> '../../../components/com_easysdi_core/assets/images/l_core.jpg',
+											'image'		=> '../../../templates/bluestork/images/header/icon-48-user.png',
 											'text'		=> JText::_('COM_EASYSDI_CORE_ICON_SDI_USER'),
 											'access'	=> array(	'core.manage'		 , 'com_easysdi_user')
 											));
 		}
+		
 		//com_easysdi_service
 		if($app->getUserState( 'com_easysdi_service-installed')){
 			array_push($this->buttons,array(
 											'link' 		=> JRoute::_('index.php?option=com_easysdi_service'),
-											'image' 	=> '../../../components/com_easysdi_core/assets/images/l_service.jpg',
+											'image' 	=> '../../../templates/bluestork/images/header/icon-48-links.png',
 											'text' 		=> JText::_('COM_EASYSDI_CORE_ICON_SDI_SERVICE'),
 											'access' 	=> array(	'core.manage'		 , 'com_easysdi_service')
 			));
