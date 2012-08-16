@@ -704,6 +704,70 @@ class HTML_metadata {
 							        
 						form.render();";
 					
+					
+					$this->javascript .="
+						var applyButton = new Ext.Button( {
+							text: '".JText::_('CATALOG_APPLY')."',
+							handler: function(){
+										myMask.show();
+										var fields = new Array();
+										form.getForm().fieldInvalid =false;
+										form.cascade(function(cmp){
+											if(cmp.isValid){
+												if(!cmp.isValid()&& Ext.get(cmp.id)){
+													form.getForm().fieldInvalid =true;
+												}
+											}
+											if (cmp.xtype=='fieldset')
+											{
+												if (cmp.clones_count)
+												{
+													fields.push(cmp.getId()+','+cmp.clones_count);
+												}
+											}
+										});
+					
+										if(!form.getForm().fieldInvalid)
+										{
+											var fieldsets = fields.join(' | ');
+											form.getForm().setValues({fieldsets: fieldsets});
+											form.getForm().setValues({task: 'saveMetadata'});
+											form.getForm().setValues({metadata_id: '".$metadata_id."'});
+											form.getForm().setValues({object_id: '".$object_id."'});
+											form.getForm().submit({
+												scope: this,
+												method	: 'POST',
+												clientValidation: false,
+												success: function(form, action)
+															{
+																Ext.MessageBox.alert('".JText::_('CATALOG_SAVEMETADATA_MSG_SUCCESS_TITLE')."',
+																'".JText::_('CATALOG_SAVEMETADATA_MSG_SUCCESS_TEXT')."',
+																function () {window.open ('./index.php?option=".$option."&cid[]=".$object_id."&lang=".JRequest::getVar('lang')."&task=askForEditMetadata','_parent');}
+																);
+																myMask.hide();
+															},
+												failure: function(form, action)
+															{
+																if (action.result)
+																	alert(action.result.errors.xml);
+																else
+																	alert('Form save error');
+																myMask.hide();
+															},
+												url:'".$url."'
+											});
+										}
+										else
+										{
+											alert('Please verify whether all required fields are present');
+											myMask.hide();
+										}
+							}
+						})
+					 
+						form.fbar.add(applyButton);
+						form.render();";
+					
 				}
 				
 				// Ajout du bouton METTRE A JOUR seulement si l'utilisateur courant est gestionnaire de la métadonnée
@@ -2638,6 +2702,7 @@ class HTML_metadata {
 											$fieldsetName = "fieldset".$child->attribute_id."_".str_replace("-", "_", helper_easysdi::getUniqueId());
 											$this->javascript .="
 											var ".$fieldsetName." = createFieldSet('".$LocName."', '".html_Metadata::cleanText(JText::_($label))."', true, false, false, true, true, null, ".$child->rel_lowerbound.", ".$child->rel_upperbound.", '".html_Metadata::cleanText(JText::_($tip))."', '".$this->qTipDismissDelay."', true); 
+												".$parentFieldsetName.".add(".$fieldsetName.");
 											";
 												
 											foreach($this->langList as $row)
