@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:security="http://www.springframework.org/schema/security" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+          http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+          http://www.springframework.org/schema/security
+          http://www.springframework.org/schema/security/spring-security-3.0.xsd">
+
+	<security:authentication-manager alias="authenticationManager">
+		<security:authentication-provider ref="joomlaProvider" />
+	</security:authentication-manager>
+
+	<bean id="joomlaProvider" class="org.easysdi.security.JoomlaProvider">
+		<property name="prefix">
+			<value>sdi_</value>
+		</property>
+		<property name="version" value="3.0.0" />
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<security:http auto-config="false" access-decision-manager-ref="accessDecisionManager" path-type="regex">
+		<security:http-basic />
+		<security:anonymous username="spring2a2d595e6ed9a0b24f027f2b63b134d6" granted-authority="anonymous" />
+		<security:intercept-url pattern="(.*)" access="anonymous,proxy_user" />
+		<security:custom-filter ref="joomlaCookieAuthenticationFilter" before="BASIC_AUTH_FILTER" />
+		<security:custom-filter ref="easySdiConfigFilter" after="FILTER_SECURITY_INTERCEPTOR" />
+		<security:custom-filter ref="getMapCacheFilter" position="LAST" />
+	</security:http>
+
+	<bean id="basicAuthenticationEntryPoint" class="org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint">
+		<property name="realmName">
+			<value>EasySDI Proxy Security</value>
+		</property>
+	</bean>
+
+	<bean id="accessDecisionManager" class="org.springframework.security.access.vote.AffirmativeBased">
+		<property name="decisionVoters">
+			<list>
+				<ref bean="authenticatedVoter" />
+				<ref bean="roleVoter" />
+			</list>
+		</property>
+	</bean>
+	<bean id="roleVoter" class="org.springframework.security.access.vote.RoleVoter">
+		<property name="rolePrefix" value="" />
+	</bean>
+
+	<bean id="joomlaCookieAuthenticationFilter" class="org.easysdi.security.JoomlaCookieAuthenticationFilter">
+		<property name="joomlaProvider" ref="joomlaProvider" />
+		<property name="authenticationManager" ref="authenticationManager" />
+		<property name="authenticationEntryPoint" ref="basicAuthenticationEntryPoint" />
+	</bean>
+
+	<bean id="authenticatedVoter" class="org.springframework.security.access.vote.AuthenticatedVoter" />
+
+</beans>
