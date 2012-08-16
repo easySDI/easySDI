@@ -742,7 +742,9 @@ class HTML_metadata {
 															{
 																Ext.MessageBox.alert('".JText::_('CATALOG_SAVEMETADATA_MSG_SUCCESS_TITLE')."',
 																'".JText::_('CATALOG_SAVEMETADATA_MSG_SUCCESS_TEXT')."',
-																function () {window.open ('./index.php?option=".$option."&cid[]=".$object_id."&lang=".JRequest::getVar('lang')."&task=askForEditMetadata','_parent');}
+																function () {
+																	//window.open ('./index.php?option=".$option."&cid[]=".$object_id."&lang=".JRequest::getVar('lang')."&task=askForEditMetadata','_parent');
+																}
 																);
 																myMask.hide();
 															},

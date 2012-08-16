@@ -342,7 +342,7 @@ else
 	<?php
 	}
 	
-	function editMetadata($object_id, $root, $metadata_id, $xpathResults, $profile_id, $isManager, $isEditor, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $object_name, $version_title, $option, $defautBBoxConfig="")
+	function editMetadata($object_id, $root, $metadata_id, $xpathResults, $profile_id, $isManager, $isEditor, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $object_name, $version_title, $option, $defautBBoxConfig="",$rowObjectVersion)
 	{
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 		
@@ -911,6 +911,63 @@ else
 					        })
 						        );
 					form.render();";
+				
+				$this->javascript .="
+					form.fbar.add(new Ext.Button( {
+						text: '".JText::_('CATALOG_APPLY')."',
+						handler: function()
+						{
+							myMask.show();
+							var fields = new Array();
+							form.cascade(function(cmp)
+							{
+								if (cmp.xtype=='fieldset')
+								{
+									if (cmp.clones_count)
+									{
+										fields.push(cmp.getId()+','+cmp.clones_count);
+									}
+								}
+							});
+							var fieldsets = fields.join(' | ');
+								
+							form.getForm().setValues({
+								fieldsets: fieldsets});
+								form.getForm().setValues({
+									task: 'saveMetadata'});
+									form.getForm().setValues({
+										metadata_id: '".$metadata_id."'});
+										form.getForm().setValues({
+											object_id: '".$object_id."'});
+											form.getForm().submit({
+												scope: this,
+												method	: 'POST',
+												clientValidation: false,
+												success: function(form, action)
+												{
+													Ext.MessageBox.alert('".JText::_('CATALOG_SAVEMETADATA_MSG_SUCCESS_TITLE')."',
+															'".JText::_('CATALOG_SAVEMETADATA_MSG_SUCCESS_TEXT')."',
+															function () {
+														//window.open ('./index.php?task=editMetadata&option=".$option."&cid[]=".$rowObjectVersion."','_parent');
+													});
+													myMask.hide();
+												},
+												failure: function(form, action)
+												{
+													if (action.result)
+														alert(action.result.errors.xml);
+													else
+														alert('Form save error');
+													myMask.hide();
+												},
+												url:'".$url."'
+											});
+						}
+					})
+					);
+					form.render();";
+					
+					
 				}
 				
 				// Possibilite de valider lorsqu'on est editeur. Contreles ExtJs et passage de l'etat "En travail" e "Valide"
