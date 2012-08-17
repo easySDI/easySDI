@@ -452,7 +452,7 @@ else
 							  		AND published=true 
 							  ORDER BY l.ordering" );
 		$this->langList= array_merge( $this->langList, $database->loadObjectList() );
-		
+
 		// Langue de l'utilisateur pour la construction du Thesaurus Gemet
 		$userLang="";
 		foreach($this->langList as $row)
@@ -460,7 +460,7 @@ else
 			if ($row->code_easysdi == $language->_lang) // Langue courante de l'utilisateur
 				$userLang = $row->gemetlang;
 		}
-								
+					
 		// Premier noeud						
 		$fieldsetName = "fieldset".$root[0]->id."_".str_replace("-", "_", helper_easysdi::getUniqueId());
 		?>
@@ -948,7 +948,7 @@ else
 													Ext.MessageBox.alert('".JText::_('CATALOG_SAVEMETADATA_MSG_SUCCESS_TITLE')."',
 															'".JText::_('CATALOG_SAVEMETADATA_MSG_SUCCESS_TEXT')."',
 															function () {
-														//window.open ('./index.php?task=editMetadata&option=".$option."&cid[]=".$rowObjectVersion."','_parent');
+														//window.open ('./index.php?task=editMetadata&option=".$option."&cid[]=".$rowObjectVersion->id."','_parent');
 													});
 													myMask.hide();
 												},
@@ -973,6 +973,85 @@ else
 				// Possibilite de valider lorsqu'on est editeur. Contreles ExtJs et passage de l'etat "En travail" e "Valide"
 				if ($isEditor and !$isPublished)
 				{
+
+					$this->javascript .="
+						form.fbar.add(new Ext.Button({text: '".JText::_('CATALOG_CONTROL')."',
+							handler: function()
+								{
+									myMask.show();
+									var fields = new Array();
+									form.getForm().isInvalid=false;
+									form.getForm().fieldInvalid =false;
+									form.getForm().extValidationCorrupt =false;
+									form.cascade(function(cmp){
+										if(cmp.isValid){
+											if(!cmp.isValid()&& Ext.get(cmp.id)){
+												form.getForm().fieldInvalid =true;
+												if(!Ext.getCmp(cmp.id)){
+													form.getForm().extValidationCorrupt =true;
+												}
+											}
+										}
+										if (cmp.xtype=='fieldset')
+										{
+											if (cmp.clones_count)
+											fields.push(cmp.getId()+','+cmp.clones_count);
+										}
+					 					if (cmp.isLanguageFieldset && cmp.rendered == true && cmp.clone == true)
+										{
+											var countFields = cmp.items.length;
+											var countValues = 0;
+												
+											for (var i=0; i < countFields ; i++)
+											{
+												field = cmp.items.get(i);
+												if (field.getValue() != '')
+												{
+													countValues++;
+												}
+											}
+											if (countValues != countFields && countValues != 0)
+											{
+												for (var i=0; i < countFields ; i++)
+												{
+													field = cmp.items.get(i);
+													if (field.getValue() == '')
+														field.markInvalid('".html_Metadata::cleanText(JText::_('CATALOG_VALIDATEMETADATA_LANGUAGEINVALID_MSG'))."');
+												}
+												form.getForm().isInvalid=true;
+											}
+										}
+									});
+									var fieldsets = fields.join(' | ');
+									myMask.hide();
+					
+									if ((!form.getForm().isInvalid) &&(!form.getForm().fieldInvalid) )
+									{
+										Ext.MessageBox.alert('".JText::_('CATALOG_CONTROLMETADATA_MSG_OK_TITLE')."', '".JText::_('CATALOG_CONTROLMETADATA_MSG_OK_TEXT')."');
+										myMask.hide();
+									}
+									else
+									{
+										if(form.getForm().extValidationCorrupt)
+										{
+											Ext.MessageBox.alert('".JText::_('CATALOG_CONTROLMETADATA_MSG_FAILURE_TITLE')."', '".JText::_('CATALOG_CONTROLMETADATA_MSG_EXTCORRUPT')."');
+											myMask.hide();
+										}
+										else if (form.getForm().isInvalid)
+										{
+											Ext.MessageBox.alert('".JText::_('CATALOG_CONTROLMETADATA_LANGUAGE_MSG_FAILURE_TITLE')."', '".JText::_('CATALOG_CONTROLMETADATA_LANGUAGE_MSG_FAILURE_TEXT')."');
+											myMask.hide();
+										}
+										else
+										{
+											Ext.MessageBox.alert('".JText::_('CATALOG_CONTROLMETADATA_MSG_FAILURE_TITLE')."', '".JText::_('CATALOG_CONTROLMETADATA_MSG_FAILURE_TEXT')."');
+											myMask.hide();
+										}
+									}
+								}
+						}));
+					form.render();";
+					
 					$this->javascript .="
 						form.fbar.add(new Ext.Button({text: '".JText::_('CORE_VALIDATE')."',
 									handler: function()

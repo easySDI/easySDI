@@ -19,6 +19,30 @@ defined('_JEXEC') or die('Restricted access');
 
 ?>
 <script type="text/javascript">
+	function updateAccessibilityList ()
+	{
+		var selectedvalue = document.getElementById('editable').value;
+
+		var dropdowndest = document.getElementById('editoraccessibility');
+		dropdowndest.options.length = 0;
+		var dropdown = document.getElementById('editable');
+		var dropdownlength = dropdown.options.length;
+
+		var newOption = document.createElement("option");
+		newOption.text = '<?php echo JText::_("CATALOG_RELATION_EDITOR_EDITABLE_IDEM"); ?>';
+		newOption.value = 0;
+		dropdowndest.options.add(newOption);
+		
+		for (var i=selectedvalue; i < dropdownlength; i++) 
+	    {
+			var newOption = document.createElement("option");
+			newOption.text = dropdown.options[i].text;
+			newOption.value = dropdown.options[i].value;
+			dropdowndest.options.add(newOption);
+	    }
+		
+	} 
+	
 	function submitbutton(pressbutton) 
 	{
 		var form = document.adminForm;
@@ -714,10 +738,16 @@ class ADMIN_relation {
 		// Champs de tri
 		$filterfields = array();
 		
+		array_key_exists('editable', $_POST)? $editable = $_POST['editable'] : $editable = 1;
+		
 		$fieldpropertylist = array();
 		$database->setQuery( "SELECT id AS value, alias AS text FROM #__sdi_sys_fieldproperty ORDER BY id" );
 		$fieldpropertylist = array_merge( $fieldpropertylist, $database->loadObjectList() );
 		
+		$fieldpropertyeditorlist = array();
+		$fieldpropertyeditorlist[] = JHTML::_('select.option','0', JText::_("CATALOG_RELATION_EDITOR_EDITABLE_IDEM") );
+		$database->setQuery( "SELECT id AS value, alias AS text FROM #__sdi_sys_fieldproperty WHERE id > ".$editable." ORDER BY id" );
+		$fieldpropertyeditorlist = array_merge( $fieldpropertyeditorlist, $database->loadObjectList() );
 		
 		$child_attributetype = 0;
 		if ($rowAttribute->id)
@@ -726,7 +756,7 @@ class ADMIN_relation {
 		}
 		
 		
-		HTML_relation::newRelation($rowRelation, $rowAttribute, $types, $type, $classes, $attributes, $objecttypes, $rendertypes, $relationtypes, $fieldsLength, $attributeFieldsLength, $boundsStyle, $style, $defaultStyle_textbox, $defaultStyle_textarea, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale_Textbox, $defaultStyle_Locale_Textarea, $defaultStyle_Choicelist, $renderStyle, $languages, $codevalues, $choicevalues, $selectedcodevalues, $profiles, $selected_profiles, $contexts, $selected_contexts, $attributetypes, $attributeid, $pageReloaded, $localeDefaults, $labels, $filterfields, $informations, $namespacelist, $searchCriteriaFieldsLength, $searchCriteria, $child_attributetype,$fieldpropertylist,$relation_attribute_array, $option);
+		HTML_relation::newRelation($rowRelation, $rowAttribute, $types, $type, $classes, $attributes, $objecttypes, $rendertypes, $relationtypes, $fieldsLength, $attributeFieldsLength, $boundsStyle, $style, $defaultStyle_textbox, $defaultStyle_textarea, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale_Textbox, $defaultStyle_Locale_Textarea, $defaultStyle_Choicelist, $renderStyle, $languages, $codevalues, $choicevalues, $selectedcodevalues, $profiles, $selected_profiles, $contexts, $selected_contexts, $attributetypes, $attributeid, $pageReloaded, $localeDefaults, $labels, $filterfields, $informations, $namespacelist, $searchCriteriaFieldsLength, $searchCriteria, $child_attributetype,$fieldpropertylist,$fieldpropertyeditorlist,$relation_attribute_array, $option);
 	}
 	
 	function editRelation($id, $option)
@@ -1069,9 +1099,16 @@ class ADMIN_relation {
 			}
 		}
 		
+		array_key_exists('editable', $_POST)? $editable = $_POST['editable'] : $editable = 1;
+		
 		$fieldpropertylist = array();
 		$database->setQuery( "SELECT id AS value, alias AS text FROM #__sdi_sys_fieldproperty ORDER BY id" );
 		$fieldpropertylist = array_merge( $fieldpropertylist, $database->loadObjectList() );
+		
+		$fieldpropertyeditorlist = array();
+		$fieldpropertyeditorlist[] = JHTML::_('select.option','0', JText::_("CATALOG_RELATION_EDITOR_EDITABLE_IDEM") );
+		$database->setQuery( "SELECT id AS value, alias AS text FROM #__sdi_sys_fieldproperty WHERE id > ".$editable." ORDER BY id" );
+		$fieldpropertyeditorlist = array_merge( $fieldpropertyeditorlist, $database->loadObjectList() );
 		
 		// Parcours des champs pour extraire les informations utiles:
 		// - le nom du champ
@@ -1089,7 +1126,7 @@ class ADMIN_relation {
 			} 
 		}
 		
-		HTML_relation::editAttributeRelation($rowAttributeRelation, $rowAttribute, $classes, $attributes, $rendertypes, $fieldsLength, $attributeFieldsLength, $style, $style_choice, $defaultStyle_textbox, $defaultStyle_textarea, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale_Textbox, $defaultStyle_Locale_Textarea, $languages, $codevalues, $selectedcodevalues, $choicevalues, $selectedchoicevalues, $profiles, $selected_profiles, $contexts, $selected_contexts, $attributetypes, $attributeid, $pageReloaded, $localeDefaults, $labels, $filterfields, $informations, $searchCriteriaFieldsLength, $searchCriteria, $boundsStyle, $renderStyle, $rowAttribute->attributetype_id,$fieldpropertylist, $option);
+		HTML_relation::editAttributeRelation($rowAttributeRelation, $rowAttribute, $classes, $attributes, $rendertypes, $fieldsLength, $attributeFieldsLength, $style, $style_choice, $defaultStyle_textbox, $defaultStyle_textarea, $defaultStyle_Radio, $defaultStyle_Date, $defaultStyle_Locale_Textbox, $defaultStyle_Locale_Textarea, $languages, $codevalues, $selectedcodevalues, $choicevalues, $selectedchoicevalues, $profiles, $selected_profiles, $contexts, $selected_contexts, $attributetypes, $attributeid, $pageReloaded, $localeDefaults, $labels, $filterfields, $informations, $searchCriteriaFieldsLength, $searchCriteria, $boundsStyle, $renderStyle, $rowAttribute->attributetype_id,$fieldpropertylist,$fieldpropertyeditorlist, $option);
 	}
 	
 	function editClassRelation($rowRelation, $option)
@@ -1188,9 +1225,16 @@ class ADMIN_relation {
 		$database->setQuery( "SELECT id AS value, prefix AS text FROM #__sdi_namespace ORDER BY prefix" );
 		$namespacelist = array_merge( $namespacelist, $database->loadObjectList() );
 		
+		array_key_exists('editable', $_POST)? $editable = $_POST['editable'] : $editable = 1;
+		
 		$fieldpropertylist = array();
 		$database->setQuery( "SELECT id AS value, alias AS text FROM #__sdi_sys_fieldproperty ORDER BY id" );
 		$fieldpropertylist = array_merge( $fieldpropertylist, $database->loadObjectList() );
+		
+		$fieldpropertyeditorlist = array();
+		$fieldpropertyeditorlist[] = JHTML::_('select.option','0', JText::_("CATALOG_RELATION_EDITOR_EDITABLE_IDEM") );
+		$database->setQuery( "SELECT id AS value, alias AS text FROM #__sdi_sys_fieldproperty WHERE id > ".$editable." ORDER BY id" );
+		$fieldpropertyeditorlist = array_merge( $fieldpropertyeditorlist, $database->loadObjectList() );
 		
 		//Relation links a class of type 'geographicextent'
 		$relation_attribute_array = null;
@@ -1223,7 +1267,7 @@ class ADMIN_relation {
 			}
 		}
 		
-		HTML_relation::editClassRelation($rowClassRelation, $classes, $relationtypes, $fieldsLength, $boundsStyle, $profiles, $selected_profiles, $contexts, $selected_contexts, $languages, $labels, $informations, $namespacelist,$fieldpropertylist,$relation_attribute_array,$pageReloaded, $option);
+		HTML_relation::editClassRelation($rowClassRelation, $classes, $relationtypes, $fieldsLength, $boundsStyle, $profiles, $selected_profiles, $contexts, $selected_contexts, $languages, $labels, $informations, $namespacelist,$fieldpropertylist,$fieldpropertyeditorlist,$relation_attribute_array,$pageReloaded, $option);
 	}
 	
 	function editObjectRelation($rowRelation, $option)
@@ -1323,12 +1367,18 @@ class ADMIN_relation {
 		$database->setQuery( "SELECT id AS value, prefix AS text FROM #__sdi_namespace ORDER BY prefix" );
 		$namespacelist = array_merge( $namespacelist, $database->loadObjectList() );
 		
+		array_key_exists('editable', $_POST)? $editable = $_POST['editable'] : $editable = 1;
 		
 		$fieldpropertylist = array();
 		$database->setQuery( "SELECT id AS value, alias AS text FROM #__sdi_sys_fieldproperty ORDER BY id" );
 		$fieldpropertylist = array_merge( $fieldpropertylist, $database->loadObjectList() );
 		
-		HTML_relation::editObjectRelation($rowObjectRelation, $classes, $objecttypes, $relationtypes, $fieldsLength, $boundsStyle, $profiles, $selected_profiles, $contexts, $selected_contexts, $languages, $labels, $informations, $namespacelist, $fieldpropertylist, $option);
+		$fieldpropertyeditorlist = array();
+		$fieldpropertyeditorlist[] = JHTML::_('select.option','0', JText::_("CATALOG_RELATION_EDITOR_EDITABLE_IDEM") );
+		$database->setQuery( "SELECT id AS value, alias AS text FROM #__sdi_sys_fieldproperty WHERE id > ".$editable." ORDER BY id" );
+		$fieldpropertyeditorlist = array_merge( $fieldpropertyeditorlist, $database->loadObjectList() );
+		
+		HTML_relation::editObjectRelation($rowObjectRelation, $classes, $objecttypes, $relationtypes, $fieldsLength, $boundsStyle, $profiles, $selected_profiles, $contexts, $selected_contexts, $languages, $labels, $informations, $namespacelist, $fieldpropertylist, $fieldpropertyeditorlist,$option);
 	}
 	
 	function saveRelation($option)

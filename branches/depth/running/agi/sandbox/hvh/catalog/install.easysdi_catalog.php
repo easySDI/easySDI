@@ -2319,6 +2319,23 @@ function com_install(){
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}
 		}
+		
+		if($version == "2.4.2"){
+			
+			//ALTER __sdi_relation
+			$query="ALTER TABLE `#__sdi_relation` ADD editoraccessibility BIGINT(20)";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			$version="2.5.0";
+			$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='CATALOG'";
+			$db->setQuery( $query);
+			if (!$db->query()){
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+		}
         
 		$query = "DELETE FROM #__components where `option`= 'com_easysdi_catalog' ";
 		$db->setQuery( $query);

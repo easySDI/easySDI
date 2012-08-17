@@ -45,6 +45,7 @@ class relation extends JTable
 	var $namespace_id=null;
 	var $issearchfilter=0;
 	var $editable=0;
+	var $editoraccessibility=0;
 	
 	// Class constructor
 	function __construct( &$db )
