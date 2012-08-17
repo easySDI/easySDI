@@ -86,7 +86,7 @@ class plgUserEasysdi extends JPlugin {
 		$dbo = JFactory::getDBO();
 		
 		//Get default user
-		$params = JComponentHelper::getParams('com_easysdi_core');
+		$params = JComponentHelper::getParams('com_easysdi_user');
 		$defaultaccount_id = $params->get( 'defaultaccount', null );
 		$dbo->setQuery('SELECT * FROM #__sdi_user WHERE user_id = '. $defaultaccount_id );
 		$defaultaccount = $dbo->loadObject();
@@ -97,8 +97,8 @@ class plgUserEasysdi extends JPlugin {
 		}
 		
 		//Create new EasySDI User account
-		JTable::addIncludePath(JPATH_ADMINISTRATOR.'/components/com_easysdi_core/tables');
-		$newaccount =& JTable::getInstance('user', 'easysdi_coreTable');	
+		JTable::addIncludePath(JPATH_ADMINISTRATOR.'/components/com_easysdi_user/tables');
+		$newaccount =& JTable::getInstance('user', 'easysdi_userTable');	
 
 		if (!$newaccount) {
 			$app 				=& JFactory::getApplication();
