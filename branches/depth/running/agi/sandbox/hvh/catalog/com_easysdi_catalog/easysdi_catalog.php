@@ -28,15 +28,6 @@ require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'model'.DS.'account.easysdi.class.php');
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.usermanager.class.php');
 
-/*require_once(JPATH_COMPONENT.DS.'core'.DS.'catalog.site.easysdi.php');
-require_once(JPATH_COMPONENT.DS.'core'.DS.'catalog.site.easysdi.html.php');
-require_once(JPATH_COMPONENT.DS.'core'.DS.'catalog.site.easysdi.class.php');
-require_once(JPATH_COMPONENT.DS.'core'.DS.'preview.site.easysdi.html.php');
-require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'geoMetadata.php');
-*/
-
-?>
-<?php
 global $mainframe;
 $language=&JFactory::getLanguage();
 $language->load('com_easysdi_catalog', JPATH_ADMINISTRATOR);

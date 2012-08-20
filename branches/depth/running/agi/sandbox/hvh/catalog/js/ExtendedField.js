@@ -281,58 +281,65 @@ Ext.override(Ext.form.Field, {
 			
 			this.addListener('onMinusIcon',function(field) 
 			{
-		    	var cnt = this.clones().length;
-				var item = Ext.get(field.el.findParent('.x-form-item'));
-			    var fieldset = field.ownerCt;
-				
-			    if(this.hasListener ('focus')){
-			    	//Un fichier a effacer
-			    	if(Ext.ComponentMgr.get(field.id).getValue().length != 0){
-			    		Ext.Msg.confirm(
-			    				HS.i18n('CATALOG_METADATA_ALERT_CLEAR_UPLOADEDFILE_CONFIRM_TITLE'),
-			    				HS.i18n('CATALOG_METADATA_ALERT_CLEAR_UPLOADEDFILE_CONFIRM_MSG'),
-							function(btn, text){
-								if (btn == 'yes'){
-									Ext.MessageBox.show({
-										title: HS.i18n('CATALOG_METADATA_CLEAR_UPLOADEDFILE_WAIT_PRG'),
-										msg: HS.i18n('CATALOG_METADATA_CLEAR_UPLOADEDFILE_WAIT_PRG'),
-										width:300,
-										wait:true,
-										waitConfig: {
-											interval:200}
-									});
-									Ext.Ajax.request({
-										url:'index.php?option=com_easysdi_catalog&task=deleteUploadedFile&file='+Ext.ComponentMgr.get(field.id).getValue(),
-										method:'GET',
-										success:function(result,request) {
-											if(JSON.parse (result.responseText).success){
-												Ext.MessageBox.hide();
-												Ext.ComponentMgr.get(field.id).setValue('');
-												if(Ext.ComponentMgr.get(field.id.concat('_hiddenVal')))
-													Ext.ComponentMgr.get(field.id.concat('_hiddenVal')).setValue('');
-												//Ext.ComponentMgr.get('metadataForm').saveMetadataAfterLinkedFileUpdate();		
-											}else{
-												Ext.MessageBox.hide();
-												Ext.MessageBox.alert(HS.i18n('CORE_METADATA_UPLOADFILE_ERROR')+' : '+JSON.parse (result.responseText).cause);
+				Ext.Msg.confirm(
+	    				HS.i18n('CATALOG_METADATA_ALERT_MINUS_ACTION_CONFIRM_TITLE'),
+	    				HS.i18n('CATALOG_METADATA_ALERT_MINUS_ACTION_CONFIRM_MSG'),
+					function(btn, text){
+						if (btn == 'yes'){
+							var cnt = this.clones().length;
+							var item = Ext.get(field.el.findParent('.x-form-item'));
+						    var fieldset = field.ownerCt;
+							
+						    if(this.hasListener ('focus')){
+						    	//Un fichier a effacer
+						    	if(Ext.ComponentMgr.get(field.id).getValue().length != 0){
+						    		Ext.Msg.confirm(
+						    				HS.i18n('CATALOG_METADATA_ALERT_CLEAR_UPLOADEDFILE_CONFIRM_TITLE'),
+						    				HS.i18n('CATALOG_METADATA_ALERT_CLEAR_UPLOADEDFILE_CONFIRM_MSG'),
+										function(btn, text){
+											if (btn == 'yes'){
+												Ext.MessageBox.show({
+													title: HS.i18n('CATALOG_METADATA_CLEAR_UPLOADEDFILE_WAIT_PRG'),
+													msg: HS.i18n('CATALOG_METADATA_CLEAR_UPLOADEDFILE_WAIT_PRG'),
+													width:300,
+													wait:true,
+													waitConfig: {
+														interval:200}
+												});
+												Ext.Ajax.request({
+													url:'index.php?option=com_easysdi_catalog&task=deleteUploadedFile&file='+Ext.ComponentMgr.get(field.id).getValue(),
+													method:'GET',
+													success:function(result,request) {
+														if(JSON.parse (result.responseText).success){
+															Ext.MessageBox.hide();
+															Ext.ComponentMgr.get(field.id).setValue('');
+															if(Ext.ComponentMgr.get(field.id.concat('_hiddenVal')))
+																Ext.ComponentMgr.get(field.id.concat('_hiddenVal')).setValue('');
+															//Ext.ComponentMgr.get('metadataForm').saveMetadataAfterLinkedFileUpdate();		
+														}else{
+															Ext.MessageBox.hide();
+															Ext.MessageBox.alert(HS.i18n('CORE_METADATA_UPLOADFILE_ERROR')+' : '+JSON.parse (result.responseText).cause);
+														}
+													},
+													failure:function(result,request) {
+														Ext.MessageBox.hide();
+														Ext.MessageBox.alert(HS.i18n('CORE_METADATA_UPLOADFILE_ERROR') +' : '+JSON.parse (result.responseText).cause);
+													}
+												});
+												field.listOfClonesManagement(field, cnt, item, fieldset);
 											}
-										},
-										failure:function(result,request) {
-											Ext.MessageBox.hide();
-											Ext.MessageBox.alert(HS.i18n('CORE_METADATA_UPLOADFILE_ERROR') +' : '+JSON.parse (result.responseText).cause);
 										}
-									});
-									field.listOfClonesManagement(field, cnt, item, fieldset);
+									)
+						    	}else{//Pas de fichier a effacer
+						    		field.listOfClonesManagement(field, cnt, item, fieldset);
 								}
-							}
-						)
-			    	}else{//Pas de fichier a effacer
-			    		field.listOfClonesManagement(field, cnt, item, fieldset);
-					}
-				}//Pas un stereotype file
-			    else{
-			    	field.listOfClonesManagement(field, cnt, item, fieldset);
-			    }
-			});
+							}//Pas un stereotype file
+						    else{
+						    	field.listOfClonesManagement(field, cnt, item, fieldset);
+						    }
+						}
+					}, this)
+			}, this);
 		} 
 		else 
 		{

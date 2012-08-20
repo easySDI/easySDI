@@ -260,6 +260,8 @@ class HTML_metadata {
 						HS.Lang['".$userLang."']['CATALOG_METADATA_ALERT_CLEAR_UPLOADEDFILE_CONFIRM_TITLE']='".html_Metadata::cleanText(JText::_('CATALOG_METADATA_ALERT_CLEAR_UPLOADEDFILE_CONFIRM_TITLE'))."';
 						HS.Lang['".$userLang."']['CORE_METADATA_UPLOADFILE_ERROR']='".html_Metadata::cleanText(JText::_('CORE_METADATA_UPLOADFILE_ERROR'))."';
 						HS.Lang['".$userLang."']['CATALOG_METADATA_ALERT_CLEAR_UPLOADEDFILE_CONFIRM_MSG']='".html_Metadata::cleanText(JText::_('CATALOG_METADATA_ALERT_CLEAR_UPLOADEDFILE_CONFIRM_MSG'))."';
+						HS.Lang['".$userLang."']['CATALOG_METADATA_ALERT_MINUS_ACTION_CONFIRM_TITLE']='".html_Metadata::cleanText(JText::_('CATALOG_METADATA_ALERT_MINUS_ACTION_CONFIRM_TITLE'))."';
+						HS.Lang['".$userLang."']['CATALOG_METADATA_ALERT_MINUS_ACTION_CONFIRM_MSG']='".html_Metadata::cleanText(JText::_('CATALOG_METADATA_ALERT_MINUS_ACTION_CONFIRM_MSG'))."';
 						
 						// Create the form that will hold in the structure
 						var form = new Ext.form.FormPanel({
