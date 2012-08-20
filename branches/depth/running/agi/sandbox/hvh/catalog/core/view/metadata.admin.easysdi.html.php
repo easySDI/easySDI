@@ -588,7 +588,7 @@ class HTML_metadata {
 				$node = $xpathResults->query($queryPath."/".$root[0]->isocode);
 				$nodeCount = $node->length;
 				
-				HTML_metadata::buildTree($database, 0, $root[0]->id, $root[0]->id, $fieldsetName, 'form', str_replace(":", "_", $root[0]->isocode), $xpathResults, null, $node->item(0), $queryPath, $root[0]->isocode, $account_id, $profile_id, $option, $child);
+				HTML_metadata::buildTree($database, 0, $root[0]->id, $root[0]->id, $fieldsetName, 'form', str_replace(":", "_", $root[0]->isocode), $xpathResults, null, $node->item(0), $queryPath, $root[0]->isocode, $account_id, $profile_id, $option, $child,$isManager, $isEditor);
 				
 				// Retraverser la structure et autoriser les nulls pour tous les champs cachés
 				$this->javascript .="
@@ -911,7 +911,7 @@ class HTML_metadata {
 	 * @param unknown_type $profile_id
 	 * @param unknown_type $option
 	 */
-	function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFieldsetName, $ancestorFieldsetName, $parentName, $xpathResults, $parentScope, $scope, $queryPath, $currentIsocode, $account_id, $profile_id, $option,$parent_object)
+	function buildTree($database, $ancestor, $parent, $parentFieldset, $parentFieldsetName, $ancestorFieldsetName, $parentName, $xpathResults, $parentScope, $scope, $queryPath, $currentIsocode, $account_id, $profile_id, $option,$parent_object,$isManager, $isEditor)
 	{
 		// On récupère dans des variables le scope respectivement pour le traitement des classes enfant et
 		// pour le traitement des attributs enfants.
@@ -943,6 +943,7 @@ class HTML_metadata {
 						 rel.classchild_id as child_id, 
 						 rel.objecttypechild_id as objecttype_id, 
 						 rel.editable as editable,
+						 rel.editoraccessibility as editoraccessibility,
 						 CONCAT(relation_namespace.prefix,':',rel.isocode) as rel_isocode, 
 						 rel.relationtype_id as reltype_id, 
 						 rel.classassociation_id as association_id,
@@ -1012,6 +1013,10 @@ class HTML_metadata {
 			//La visibilité est héréditaire : mise à jour de la valeur du child courant en fonction du parent
 			if(isset($parent_object) && $parent_object->editable > $child->editable)
 				$child->editable = $parent_object->editable;
+			
+			//For editors, visibility can be downgrade by admin configuration
+			if(!$isManager && $isEditor && isset($child->editoraccessibility) && $child->editoraccessibility > $child->editable )
+				$child->editable = $child->editoraccessibility;
 			
 			//Traitement d'une relation vers un attribut
 			if ($child->attribute_id <> null)
@@ -3566,14 +3571,14 @@ class HTML_metadata {
 					}
 					// Test pour le cas d'une relation qui boucle une classe sur elle-même
 					if ($ancestor <> $parent)					
-						HTML_metadata::buildTree($database, $parent, $child->child_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option,$child);
+						HTML_metadata::buildTree($database, $parent, $child->child_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option,$child,$isManager, $isEditor);
 		
 					// Classassociation_id contient une classe
 					if ($child->association_id <>0)
 					{
 						// Appel récursif de la fonction pour le traitement du prochain niveau
 						if ($ancestor <> $parent)
-							HTML_metadata::buildTree($database, $parent, $child->association_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option, $child);
+							HTML_metadata::buildTree($database, $parent, $child->association_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option, $child,$isManager, $isEditor);
 					}
 				}//end - //$pos==0
 				// Ici on va traiter toutes les occurences trouvées dans le XML
@@ -3675,14 +3680,14 @@ class HTML_metadata {
 					}
 					
 					// Appel récursif de la fonction pour le traitement du prochain niveau
-					HTML_metadata::buildTree($database, $parent, $child->child_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option, $child);
+					HTML_metadata::buildTree($database, $parent, $child->child_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option, $child,$isManager, $isEditor);
 					
 					// Classassociation_id contient une classe
 					if ($child->association_id <>0)
 					{
 						// Appel récursif de la fonction pour le traitement du prochain niveau
 						if ($ancestor <> $parent)
-							HTML_metadata::buildTree($database, $parent, $child->association_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option, $child);
+							HTML_metadata::buildTree($database, $parent, $child->association_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option, $child,$isManager, $isEditor);
 					}
 				}//end - else !($pos==0)
 			}// end - for ($pos=0; $pos<=$relCount; $pos++)
@@ -3773,14 +3778,14 @@ class HTML_metadata {
 				
 				// Appel récursif de la fonction pour le traitement du prochain niveau
 				if ($ancestor <> $parent)
-					HTML_metadata::buildTree($database, $parent, $child->child_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option, $child);
+					HTML_metadata::buildTree($database, $parent, $child->child_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option, $child,$isManager, $isEditor);
 					
 				// Classassociation_id contient une classe
 				if ($child->association_id <>0)
 				{
 					// Appel récursif de la fonction pour le traitement du prochain niveau
 					if ($ancestor <> $parent)
-						HTML_metadata::buildTree($database, $parent, $child->association_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option, $child);
+						HTML_metadata::buildTree($database, $parent, $child->association_id, $child->child_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option, $child,$isManager, $isEditor);
 				}
 			}
 		}
@@ -3884,7 +3889,7 @@ class HTML_metadata {
 					{
 						// Appel récursif de la fonction pour le traitement du prochain niveau
 						if ($ancestor <> $parent)
-							HTML_metadata::buildTree($database, $parent, $child->association_id, $child->objecttype_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option, $child);
+							HTML_metadata::buildTree($database, $parent, $child->association_id, $child->objecttype_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option, $child,$isManager, $isEditor);
 					}
 				}
 				else
@@ -4005,7 +4010,7 @@ class HTML_metadata {
 					{
 						// Appel récursif de la fonction pour le traitement du prochain niveau
 						if ($ancestor <> $parent)
-							HTML_metadata::buildTree($database, $parent, $child->association_id, $child->objecttype_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option, $child);
+							HTML_metadata::buildTree($database, $parent, $child->association_id, $child->objecttype_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option, $child,$isManager, $isEditor);
 					}
 				}
 			}
@@ -4069,7 +4074,7 @@ class HTML_metadata {
 				{
 					// Appel récursif de la fonction pour le traitement du prochain niveau
 					if ($ancestor <> $parent)
-						HTML_metadata::buildTree($database, $parent, $child->association_id, $child->objecttype_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option, $child);
+						HTML_metadata::buildTree($database, $parent, $child->association_id, $child->objecttype_id, $fieldsetName, $parentFieldsetName, $name, $xpathResults, $scope, $classScope, $queryPath, $nextIsocode, $account_id, $profile_id, $option, $child,$isManager, $isEditor);
 				}
 			}
 		}

@@ -32,7 +32,7 @@ class SITE_metadata {
 		$allow = userManager::isUserAllowed($user,"PRODUCT");
 		if (!$allow)
 		{
-			$mainframe->_messageQueue=array(); // Seul le message li� au droit d'�dition sera conserv�, s'il y a lieu
+			$mainframe->_messageQueue=array(); // Seul le message lie au droit d'edition sera conserve, s'il y a lieu
 			$allow = userManager::isUserAllowed($user,"METADATA");	
 		}
 		
@@ -42,8 +42,6 @@ class SITE_metadata {
 		}
 		
 		$option=JRequest::getVar("option");
-		//$limit = $mainframe->getUserStateFromRequest($option.".limit", 'limit', 20, 'int');
-		//$limitstart = JRequest::getVar('limitstart', 0, '', 'int');
 		$context	= $option.'.listMetadata';
 		$limit		= $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
 		$limitstart	= $mainframe->getUserStateFromRequest($context.'limitstart', 'limitstart', 0, 'int');
@@ -80,32 +78,9 @@ class SITE_metadata {
 		$rootAccount = new account($database);
 		$rootAccount->load($account->root_id);		
 		
-		// Si le compte n'a pas de root, c'est qu'il l'est lui-m�me
+		// Si le compte n'a pas de root, c'est qu'il l'est lui-meme
 		if (!$rootAccount->id)
 			$rootAccount = $account;
-			
-		//List only the objects for which metadata manager is the current user
-		/*$queryCount = "	SELECT DISTINCT o.*, ov.name as version_name, s.label as state 
-						FROM 	#__sdi_editor_object e, 
-								#__sdi_metadata m, 
-								#__sdi_list_metadatastate s, 
-								#__sdi_account a, 
-								#__users u,
-								#__sdi_objecttype ot,
-								#__sdi_object o 
-						LEFT OUTER JOIN #__sdi_manager_object ma ON ma.object_id=o.id
-						LEFT OUTER JOIN #__sdi_objectversion ov ON ov.object_id=o.id
-						WHERE e.object_id=o.id
-							AND ov.metadata_id=m.id 
-							AND m.metadatastate_id=s.id 
-							AND e.account_id=a.id 
-							AND a.user_id = u.id
-							AND ot.id=o.objecttype_id
-							AND ot.predefined=0
-							AND (e.account_id = ".$account->id."
-								OR (ma.account_id=".$account->id."
-									AND s.id=1)
-								)";*/
 		
 		// Objecttype filter
 		if ($filter_objecttype_id > 0) {
@@ -140,7 +115,7 @@ class SITE_metadata {
 			echo "</div>";
 		}	
 		
-		// Si le nombre de r�sultats retourn�s a chang�, adapter la page affich�e
+		// Si le nombre de resultats retournes a change, adapter la page affichee
 		if ($limitstart >= $total)
 		{
 			$limitstart = ( $limit != 0 ? ((floor($total / $limit) * $limit)-1) : 0 );
@@ -152,27 +127,7 @@ class SITE_metadata {
 		
 		jimport('joomla.html.pagination');
 		$pageNav = new JPagination($total,$limitstart,$limit);
-		/*$query = "	SELECT DISTINCT o.*, ov.name as version_name, ov.created as version_created, CONCAT(o.name,' ',ov.name) as full_name, s.label as state, m.guid as metadata_guid 
-						FROM 	#__sdi_editor_object e, 
-								#__sdi_metadata m, 
-								#__sdi_list_metadatastate s, 
-								#__sdi_account a, 
-								#__users u,
-								#__sdi_objecttype ot,
-								#__sdi_object o 
-						LEFT OUTER JOIN #__sdi_manager_object ma ON ma.object_id=o.id
-						LEFT OUTER JOIN #__sdi_objectversion ov ON ov.object_id=o.id
-						WHERE e.object_id=o.id
-							AND ov.metadata_id=m.id 
-							AND m.metadatastate_id=s.id 
-							AND e.account_id=a.id 
-							AND a.user_id = u.id
-							AND ot.id=o.objecttype_id
-							AND ot.predefined=0
-							AND (e.account_id = ".$account->id."
-								OR (ma.account_id=".$account->id."
-									AND s.id=1)
-								)";*/
+		
 		$query = "	SELECT DISTINCT o.*, ov.id as version_id, ov.title as version_title, s.label as state, m.guid as metadata_guid 
 						FROM 	#__sdi_metadata m, 
 								#__sdi_list_metadatastate s, 
@@ -195,7 +150,6 @@ class SITE_metadata {
 		
 		
 		$database->setQuery($query,$limitstart,$limit);
-		//echo $database->getQuery();		
 		$rows = $database->loadObjectList() ;
 		if ($database->getErrorNum()) {
 			echo "<div class='alert'>";			
@@ -211,10 +165,6 @@ class SITE_metadata {
 		$database->setQuery( "SELECT a.object_id FROM #__sdi_editor_object a,#__users b, #__sdi_account c where a.account_id = c.id AND c.user_id=b.id AND c.user_id=".$user->id." ORDER BY a.object_id" );
 		$editors = implode(",\r\n", $database->loadResultArray());
 		
-		/*$query = 'SELECT id as value, name as text' .
-				' FROM #__sdi_objecttype' .
-				' WHERE predefined=false' .
-				' ORDER BY name';*/
 		$query = "SELECT ot.id AS value, t.label as text 
 				 FROM #__sdi_objecttype ot 
 				 INNER JOIN #__sdi_translation t ON t.element_guid=ot.guid
@@ -251,58 +201,26 @@ class SITE_metadata {
 		if ($id == 0)
 		{
 			$msg = JText::_('CATALOG_OBJECT_SELECTMETADATA_MSG');
-			//$mainframe->redirect("index.php?option=$option&task=listMetadata", $msg);
 			$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listMetadata'), false ), $msg);
 			exit;
 		}
 		
-		// R�cup�rer l'objet li� � cette m�tadonn�e
+		// Récupérer l'objet lié à cette métadonnée
 		$rowObjectVersion = new objectversion( $database );
 		$rowObjectVersion->load( $id );
 		
 		$rowObject = new object( $database );
 		$rowObject->load( $rowObjectVersion->object_id );
 		
-		// R�cup�rer la m�tadonn�e choisie par l'utilisateur
+		// Recuperer la metadonnee choisie par l'utilisateur
 		$rowMetadata = new metadata( $database );
 		$rowMetadata->load( $rowObjectVersion->metadata_id );
 		
 		if ($rowMetadata->id == 0)
 		{
 			$msg = JText::_('CATALOG_METADATA_EDIT_NOMETADATA_MSG');
-			//$mainframe->redirect("index.php?option=$option&task=listMetadata", $msg );
 			$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listMetadata'), false ), $msg);
 		}
-		
-		/*
-		// R�cup�rer la m�tadonn�e choisie par l'utilisateur
-		if (array_key_exists('version_hidden', $_POST))
-		{
-			$rowVersion = new objectversion($database);
-			$rowVersion->load( $_POST['version_hidden'] );
-			$rowMetadata = new metadata( $database );
-			$rowMetadata->load( $rowVersion->metadata_id );
-		}
-		else if (array_key_exists('metadata_id', $_POST))
-		{
-			$rowMetadata = new metadataByGuid( $database );
-			$rowMetadata->load( $_POST['metadata_id'] );
-		}
-		else
-		{
-			// R�cup�rer la seule et unique version de l'objet
-			$lastVersion = array();
-			$database->setQuery( "SELECT * FROM #__sdi_objectversion WHERE object_id=".$id." ORDER BY created DESC" );
-			$lastVersion = array_merge( $lastVersion, $database->loadObjectList() );
-			
-			// R�cup�rer la m�tadonn�e de la derni�re version de l'objet
-			$rowMetadata = new metadata( $database );
-			if (count($lastVersion) > 0)
-				$rowMetadata->load($lastVersion[0]->metadata_id);
-			else
-			$rowMetadata->load( $rowObject->metadata_id );
-		}
-		*/
 		
 		/*
 		 * If the item is checked out we cannot edit it... unless it was checked
@@ -311,14 +229,12 @@ class SITE_metadata {
 		if ( JTable::isCheckedOut($user->get('id'), $rowObject->checked_out ))
 		{
 			$msg = JText::sprintf('DESCBEINGEDITTED', JText::_('The item'), $rowObject->name);
-			//$mainframe->redirect("index.php?option=$option&task=listObject", $msg );
 			$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listObject'), false ), $msg);
 		}
 
 		$rowObject->checkout($user->get('id'));
 		
-		
-		// Stocker en m�moire toutes les traductions de label, valeur par d�faut et information pour la langue courante
+		// Stocker en memoire toutes les traductions de label, valeur par defaut et information pour la langue courante
 		$language =& JFactory::getLanguage();
 		
 		$newTraductions = array();
@@ -353,12 +269,12 @@ class SITE_metadata {
 		$database->setQuery( "SELECT id AS value, name as text FROM #__sdi_list_metadatastate ORDER BY name" );
 		$metadatastates = array_merge( $metadatastates, $database->loadObjectList() );
 		
-		// R�cup�rer la classe racine du profile du type d'objet
+		// Recuperer la classe racine du profile du type d'objet
 		$query = "SELECT c.name as name, CONCAT(ns.prefix, ':', c.isocode) as isocode, c.label as label, prof.class_id as id FROM #__sdi_profile prof, #__sdi_objecttype ot, #__sdi_object o, #__sdi_class c RIGHT OUTER JOIN #__sdi_namespace ns ON c.namespace_id=ns.id WHERE prof.id=ot.profile_id AND ot.id=o.objecttype_id AND c.id=prof.class_id AND o.id=".$rowObject->id;
 		$database->setQuery( $query );
 		$root = $database->loadObjectList();
 		
-		// R�cup�rer le profil li� � cet objet
+		// Recuperer le profil lie e cet objet
 		$query = "SELECT profile_id FROM #__sdi_objecttype WHERE id=".$rowObject->objecttype_id;
 		$database->setQuery( $query );
 		$profile_id = $database->loadResult();
@@ -377,25 +293,25 @@ class SITE_metadata {
 		if ($total == 1)
 			$isEditor = true;
 			
-		// Est-ce que la m�tadonn�e est publi�e?
+		// Est-ce que la metadonnee est publiee?
 		$isPublished = false;
 		if ($rowMetadata->metadatastate_id == 1)
 			$isPublished = true;			
 			
-		// Est-ce que la m�tadonn�e est valid�e?
+		// Est-ce que la metadonnee est validee?
 		$isValidated = false;
 		if ($rowMetadata->metadatastate_id == 3)
 			$isValidated = true;			
 			
-		// R�cup�rer les p�rim�tres administratifs
+		// Recuperer les perimetres administratifs
 		$boundaries = array();
 		$database->setQuery( "SELECT name, guid, northbound, southbound, westbound, eastbound FROM #__sdi_boundary") ;
 		$boundaries = array_merge( $boundaries, $database->loadObjectList() );
 		
-		// R�cup�rer la m�tadonn�e en CSW
+		// Recuperer la metadonnee en CSW
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 		
-		// Type d'attribut pour les p�rim�tres pr�d�finis 
+		// Type d'attribut pour les perimetres predefinis 
 		//$rowAttributeType = new attributetype($database);
 		//$rowAttributeType->load(config_easysdi::getValue("catalog_boundary_type"));
 		//$type_isocode = $rowAttributeType->isocode;
@@ -406,8 +322,6 @@ class SITE_metadata {
 		
 		$catalogBoundaryIsocode = config_easysdi::getValue("catalog_boundary_isocode");
 		$catalogUrlBase = config_easysdi::getValue("catalog_url");
-		//$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&id=158_bis"; //.$id;
-		//$catalogUrlGetRecordById = "http://demo.easysdi.org:8080/proxy/ogc/geonetwork?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&id=".$rowObject->metadata_id; //.$id;
 		$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&content=CORE&id=".$rowMetadata->guid;
 		
 		//.$id."
@@ -418,11 +332,9 @@ class SITE_metadata {
 			</csw:GetRecordById>			
 		";
 		
-		//echo "<hr>".htmlspecialchars($xmlBody)."<hr>";break;
-		
-		// Requ�te de type GET pour le login (conserver le token response)
-		// Stocker dans un cookie le r�sultat de la requ�te pr�c�dente
-		// Mettre le cookie dans l'en-t�te de la requ�te insert
+		// Requete de type GET pour le login (conserver le token response)
+		// Stocker dans un cookie le resultat de la requete precedente
+		// Mettre le cookie dans l'en-tete de la requete insert
 		//$xmlResponse = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlBody);
 
 		// En POST
@@ -432,36 +344,21 @@ class SITE_metadata {
 		//$cswResults = DOMDocument::load($catalogUrlGetRecordById);
 		$cswResults = DOMDocument::loadXML(ADMIN_metadata::CURLRequest("GET", $catalogUrlGetRecordById));
 		
-		/*
-		$cswResults = new DOMDocument();
-		echo var_dump($cswResults->load($catalogUrlGetRecordById))."<br>";
-		echo var_dump($cswResults->saveXML())."<br>";
-		echo var_dump($cswResults)."<br>";
-		*/
-		
-		// Construction du DOMXPath � utiliser pour g�n�rer la vue d'�dition
+		// Construction du DOMXPath e utiliser pour generer la vue d'edition
 		$doc = new DOMDocument('1.0', 'UTF-8');
 		
-		/*if ($cswResults <> false)
-			$xpathResults = new DOMXPath($cswResults);
-		else
-			$xpathResults = new DOMXPath($doc);*/
 		if ($cswResults <> false and $cswResults->childNodes->item(0)->hasChildNodes())
 			$xpathResults = new DOMXPath($cswResults);
 		else if ($cswResults->childNodes->item(0)->nodeName == "ows:ExceptionReport")
 		{
 			$rowObject->checkin();
-			//$xpathResults = new DOMXPath($doc);
 			$msg = $cswResults->childNodes->item(0)->nodeValue;
-			//$mainframe->redirect("index.php?option=$option&task=listMetadata", $msg );
 			$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listMetadata'), false ), $msg);
 		}
 		else
 		{
 			$rowObject->checkin();
-			//$xpathResults = new DOMXPath($doc);
 			$msg = JText::_('CATALOG_METADATA_EDIT_NOMETADATA_MSG');
-			//$mainframe->redirect("index.php?option=$option&task=listMetadata", $msg );
 			$mainframe->redirect(JRoute::_(displayManager::buildUrl('index.php?option='.$option.'&task=listMetadata'), false ), $msg);
 		}
 		
@@ -470,9 +367,8 @@ class SITE_metadata {
         $xpathResults->registerNamespace('xlink','http://www.w3.org/1999/xlink');
         $xpathResults->registerNamespace('gts','http://www.isotc211.org/2005/gts');
         
-        // R�cup�ration des namespaces � inclure
+        // Recuperation des namespaces e inclure
 		$namespacelist = array();
-		//$namespacelist[] = JHTML::_('select.option','0', JText::_("CATALOG_ATTRIBUTE_NAMESPACE_LIST") );
 		$database->setQuery( "SELECT prefix, uri FROM #__sdi_namespace ORDER BY prefix" );
 		$namespacelist = array_merge( $namespacelist, $database->loadObjectList() );
 		
@@ -518,12 +414,7 @@ class SITE_metadata {
         	$defaultBBoxConfig = "";
         }
         
-        
 		HTML_metadata::editMetadata($rowObject->id, $root, $rowMetadata->guid, $xpathResults, $profile_id, $isManager, $isEditor, $boundaries, $catalogBoundaryIsocode, $type_isocode, $isPublished, $isValidated, $rowObject->name, $rowObjectVersion->title, $option, $defaultBBoxConfig,$rowObjectVersion);
-        
-        
-		//HTML_metadata::editMetadata($root, $id, $xpathResults, $option);
-		//HTML_metadata::editMetadata($rowMetadata, $metadatastates, $option);
 	}
 	
 	function cancelMetadata($option)
@@ -557,8 +448,8 @@ class SITE_metadata {
 		$limit		= $mainframe->getUserStateFromRequest($option.'global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
 		$limitstart	= $mainframe->getUserStateFromRequest($context.'limitstart', 'limitstart', 0, 'int');
 		
-		// Probl�me avec le retour au d�but ou � la page une, quand limitstart n'est pas pr�sent dans la session.
-		// La mise � z�ro ne se fait pas, il faut donc la forcer
+		// Probleme avec le retour au debut ou e la page une, quand limitstart n'est pas present dans la session.
+		// La mise e zero ne se fait pas, il faut donc la forcer
 		if (! isset($_REQUEST['limitstart']))
 			$limitstart=0;
 		

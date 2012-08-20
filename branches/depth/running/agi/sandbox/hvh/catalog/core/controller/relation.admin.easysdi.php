@@ -30,7 +30,7 @@ defined('_JEXEC') or die('Restricted access');
 
 		var newOption = document.createElement("option");
 		newOption.text = '<?php echo JText::_("CATALOG_RELATION_EDITOR_EDITABLE_IDEM"); ?>';
-		newOption.value = 0;
+		newOption.value = null;
 		dropdowndest.options.add(newOption);
 		
 		for (var i=selectedvalue; i < dropdownlength; i++) 
@@ -745,7 +745,7 @@ class ADMIN_relation {
 		$fieldpropertylist = array_merge( $fieldpropertylist, $database->loadObjectList() );
 		
 		$fieldpropertyeditorlist = array();
-		$fieldpropertyeditorlist[] = JHTML::_('select.option','0', JText::_("CATALOG_RELATION_EDITOR_EDITABLE_IDEM") );
+		$fieldpropertyeditorlist[] = JHTML::_('select.option',null, JText::_("CATALOG_RELATION_EDITOR_EDITABLE_IDEM") );
 		$database->setQuery( "SELECT id AS value, alias AS text FROM #__sdi_sys_fieldproperty WHERE id > ".$editable." ORDER BY id" );
 		$fieldpropertyeditorlist = array_merge( $fieldpropertyeditorlist, $database->loadObjectList() );
 		
@@ -1106,7 +1106,7 @@ class ADMIN_relation {
 		$fieldpropertylist = array_merge( $fieldpropertylist, $database->loadObjectList() );
 		
 		$fieldpropertyeditorlist = array();
-		$fieldpropertyeditorlist[] = JHTML::_('select.option','0', JText::_("CATALOG_RELATION_EDITOR_EDITABLE_IDEM") );
+		$fieldpropertyeditorlist[] = JHTML::_('select.option',null, JText::_("CATALOG_RELATION_EDITOR_EDITABLE_IDEM") );
 		$database->setQuery( "SELECT id AS value, alias AS text FROM #__sdi_sys_fieldproperty WHERE id > ".$editable." ORDER BY id" );
 		$fieldpropertyeditorlist = array_merge( $fieldpropertyeditorlist, $database->loadObjectList() );
 		
@@ -1232,7 +1232,7 @@ class ADMIN_relation {
 		$fieldpropertylist = array_merge( $fieldpropertylist, $database->loadObjectList() );
 		
 		$fieldpropertyeditorlist = array();
-		$fieldpropertyeditorlist[] = JHTML::_('select.option','0', JText::_("CATALOG_RELATION_EDITOR_EDITABLE_IDEM") );
+		$fieldpropertyeditorlist[] = JHTML::_('select.option',null, JText::_("CATALOG_RELATION_EDITOR_EDITABLE_IDEM") );
 		$database->setQuery( "SELECT id AS value, alias AS text FROM #__sdi_sys_fieldproperty WHERE id > ".$editable." ORDER BY id" );
 		$fieldpropertyeditorlist = array_merge( $fieldpropertyeditorlist, $database->loadObjectList() );
 		
@@ -1374,7 +1374,7 @@ class ADMIN_relation {
 		$fieldpropertylist = array_merge( $fieldpropertylist, $database->loadObjectList() );
 		
 		$fieldpropertyeditorlist = array();
-		$fieldpropertyeditorlist[] = JHTML::_('select.option','0', JText::_("CATALOG_RELATION_EDITOR_EDITABLE_IDEM") );
+		$fieldpropertyeditorlist[] = JHTML::_('select.option',null, JText::_("CATALOG_RELATION_EDITOR_EDITABLE_IDEM") );
 		$database->setQuery( "SELECT id AS value, alias AS text FROM #__sdi_sys_fieldproperty WHERE id > ".$editable." ORDER BY id" );
 		$fieldpropertyeditorlist = array_merge( $fieldpropertyeditorlist, $database->loadObjectList() );
 		
@@ -1408,6 +1408,9 @@ class ADMIN_relation {
 		
 		if ($rowRelation->rendertype_id == 0)
 			$rowRelation->rendertype_id = null;
+		
+		if ($rowRelation->editoraccessibility == 0)
+			$rowRelation->editoraccessibility = null;
 		
 		if (array_key_exists('classassociation_id', $_POST) and $_POST['classassociation_id'] == 0)
 		{
