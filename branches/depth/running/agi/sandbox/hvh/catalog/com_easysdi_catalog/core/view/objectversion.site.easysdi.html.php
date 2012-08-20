@@ -183,21 +183,21 @@ class HTML_objectversion {
 		
 		$object = new object($database);
 		$object->load($object_id);
+		$objectversion_name = "\"".$row->title."\"";
 		$object_name = "\"".$object->name."\"";
-		
 		?>
 		<div id="page">
 <?php 
 if ($row->id == 0)
 {
 ?>
-			<h1 class="contentheading"><?php echo JText::_( 'CATALOG_NEW_OBJECTVERSION' )." ".$object_name ?></h1>
+			<h1 class="contentheading"><?php echo JText::_( 'CATALOG_EDIT_OBJECTVERSION_OBJECT' )." ".$object_name." " ?>[<?php echo JText::_( 'CATALOG_EDIT_OBJECTVERSION_NEW' ) ?>]</h1>
 <?php 
 }
 else
 {
 ?>
-			<h1 class="contentheading"><?php echo JText::_( 'CATALOG_EDIT_OBJECTVERSION' )." ".$row->title ?></h1>
+			<h1 class="contentheading"><?php echo JText::_( 'CATALOG_EDIT_OBJECTVERSION_OBJECT' )." ".$object_name." " ?><?php echo JText::_( 'CATALOG_EDIT_OBJECTVERSION_' )." ".$objectversion_name ?></h1>
 <?php 
 }
 ?>
@@ -275,11 +275,15 @@ else
 	
 		$objectversion = new objectversion($database);
 		$objectversion->load($objectversion_id);
-		$title = "\"".$objectversion->title."\"";
 		
+		$object = new object($database);
+		$object->load($objectversion->object_id);
+		
+		$objectversion_name = "\"".$objectversion->title."\"";
+		$object_name = "\"".$object->name."\"";
 		?>
 		<div id="page">
-			<h2 class="contentheading"><?php echo JText::_( 'CATALOG_VIEW_OBJECTVERSIONLINK' )." ".$title ?></h2>
+			<h2 class="contentheading"><?php echo JText::_("CATALOG_VIEW_OBJECTVERSIONLINK")." ".$object_name." ".JText::_("CATALOG_EDIT_OBJECTVERSION_")." ".$objectversion_name ?></h2>
 		    <div id="contentin" class="contentin">
 		   <form action="index.php" method="post" name="adminForm" id="adminForm"
 			class="adminForm">
@@ -419,11 +423,15 @@ else
 	
 		$objectversion = new objectversion($database);
 		$objectversion->load($objectversion_id);
-		$title = "\"".$objectversion->title."\"";
 		
+		$object = new object($database);
+		$object->load($objectversion->object_id);
+		
+		$objectversion_name = "\"".$objectversion->title."\"";
+		$object_name = "\"".$object->name."\"";
 		?>
 		<div id="page">
-			<h2 class="contentheading"><?php echo JText::_( 'CATALOG_MANAGE_OBJECTVERSIONLINK' )." ".$title ?></h2>
+			<h2 class="contentheading"><?php echo JText::_("CATALOG_MANAGE_OBJECTVERSIONLINK")." ".$object_name." ".JText::_("CATALOG_EDIT_OBJECTVERSION_")." ".$objectversion_name ?></h2>
 		    <div id="contentin" class="contentin">
 		    <form action="index.php" method="post" name="adminForm" id="adminForm"
 			class="adminForm">

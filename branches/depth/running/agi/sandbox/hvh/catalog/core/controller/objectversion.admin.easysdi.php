@@ -870,6 +870,7 @@ class ADMIN_objectversion {
 	{
 		global  $mainframe;
 		$database =& JFactory::getDBO();
+		$language =& JFactory::getLanguage();
 		
 		if ($objectversion_id == 0 and !JRequest::getVar('objectversion_id'))
 		{
@@ -882,23 +883,34 @@ class ADMIN_objectversion {
 		
 		// get list of parents for this object
 		$parent_objectlinks=array();
-		$query = 'SELECT parent.id as value, CONCAT(o.name, " ", parent.title)  as name' .
-				' FROM #__sdi_objectversionlink l
+		$query = "SELECT parent.id as value, CONCAT(o.name, ' ', parent.title)  as name , o.code AS code , t.label as objecttype, o.published as published
+				  FROM #__sdi_objectversionlink l
 				  INNER JOIN #__sdi_objectversion parent ON parent.id=l.parent_id
-				  INNER JOIN #__sdi_object o ON o.id=parent.object_id' .
-				' WHERE l.child_id=' . $objectversion_id.
-				' ORDER BY parent.name';
+				  INNER JOIN #__sdi_object o ON o.id=parent.object_id
+				  INNER JOIN #__sdi_objecttype ot ON o.objecttype_id=ot.id
+				  INNER JOIN #__sdi_translation t ON ot.guid = t.element_guid
+				  INNER JOIN #__sdi_language lg ON t.language_id=lg.id
+				  INNER JOIN #__sdi_list_codelang cl ON lg.codelang_id=cl.id
+				  WHERE l.child_id=" . $objectversion_id."
+				  AND cl.code='".$language->_lang."'
+				  ORDER BY parent.name";
+		
 		$database->setQuery($query);
 		$parent_objectlinks = array_merge($parent_objectlinks, $database->loadObjectList());
 		
 		// get list of childs for this object
 		$child_objectlinks=array();
-		$query = 'SELECT child.id as value, CONCAT(o.name, " ", child.title) as name' .
-				' FROM #__sdi_objectversionlink l
+		$query = "SELECT child.id as value, CONCAT(o.name,' ', child.title) as name , o.code AS code , t.label as objecttype, o.published as published
+				  FROM #__sdi_objectversionlink l
 				  INNER JOIN #__sdi_objectversion child ON child.id=l.child_id
-				  INNER JOIN #__sdi_object o ON o.id=child.object_id' .
-				' WHERE l.parent_id=' . $objectversion_id.
-				' ORDER BY child.name';
+				  INNER JOIN #__sdi_object o ON o.id=child.object_id
+				  INNER JOIN #__sdi_objecttype ot ON o.objecttype_id=ot.id
+				  INNER JOIN #__sdi_translation t ON ot.guid = t.element_guid
+				  INNER JOIN #__sdi_language lg ON t.language_id=lg.id
+				  INNER JOIN #__sdi_list_codelang cl ON lg.codelang_id=cl.id
+				  WHERE l.parent_id=" . $objectversion_id."
+				  AND cl.code='".$language->_lang."'
+				  ORDER BY child.name";
 		$database->setQuery($query);
 		$child_objectlinks = array_merge($child_objectlinks, $database->loadObjectList());
 		

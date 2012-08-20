@@ -21,13 +21,25 @@ defined('_JEXEC') or die('Restricted access');
 class TOOLBAR_objectversion {
 	function _EDIT(){
 		global $mainframe;
+		$database=& JFactory::getDBO();
+		
 		$cid = JRequest::getVar( 'cid', array(0), '', 'array' );
+		$object_id = JRequest::getVar( 'object_id' );
+		
+		$objectversion_id = $cid[0];
+		$objectversion = new objectversion($database);
+		$objectversion->load($objectversion_id);
+		
+		$object = new object($database);
+		$object->load($object_id);
+		
+ 		$objectversion_name = "\"".$objectversion->title."\"";
+		$object_name = "\"".$object->name."\"";
 		
 		if (intval($cid[0]) == 0) // New
-			$text = JText::_("CORE_NEW");
+			JToolBarHelper::title(JText::_( 'CATALOG_EDIT_OBJECTVERSION_OBJECT' ).' '.$object_name.'  : <small><small>[ '.JText::_("CATALOG_EDIT_OBJECTVERSION_NEW").']</small></small>', 'addedit.png');
 		else // Edit
-			$text = JText::_("CORE_EDIT");
-		JToolBarHelper::title(JText::_( 'CATALOG_EDIT_OBJECTVERSION' ).': <small><small>[ '. $text.' ]</small></small>', 'addedit.png');
+			JToolBarHelper::title(JText::_( 'CATALOG_EDIT_OBJECTVERSION_OBJECT' ).' '.$object_name.' '.JText::_("CATALOG_EDIT_OBJECTVERSION_").' '.$objectversion_name.' : <small><small>[ '. JText::_("CATALOG_EDIT_OBJECTVERSION_EDIT").' ]</small></small>', 'addedit.png');
 		
 		JToolBarHelper::save('saveObjectVersion');
 		JToolBarHelper::apply('applyObjectVersion');
@@ -94,8 +106,11 @@ class TOOLBAR_objectversion {
 		$objectversion = new objectversion($database);
 		$objectversion->load($objectversion_id);
 		
-		$objectversion_name = "\"".$objectversion->title."\"";
-		JToolBarHelper::title(JText::_("CATALOG_VIEW_OBJECTVERSIONLINK")." ".$objectversion_name);
+		$object = new object($database);
+		$object->load($objectversion->object_id);
+		
+// 		$objectversion_name = "\"".$object->name." ".$objectversion->title."\"";
+		JToolBarHelper::title(JText::_("CATALOG_VIEW_OBJECTVERSIONLINK")." "."\"".$object->name."\" ".JText::_("CATALOG_EDIT_OBJECTVERSION_")." "."\"".$objectversion->title."\" ");
 		JToolBarHelper::spacer();
 		JToolBarHelper::custom( 'backObjectVersionLink', 'back.png', 'back.png', JTEXT::_("CORE_MENU_BACK"), false );
 	}
@@ -107,8 +122,12 @@ class TOOLBAR_objectversion {
 		$objectversion_id = $cid[0];
 		$objectversion = new objectversion($database);
 		$objectversion->load($objectversion_id);
-		$objectversion_name = "\"".$objectversion->title."\"";
-		JToolBarHelper::title(JText::_("CATALOG_MANAGE_OBJECTVERSIONLINK")." ".$objectversion_name);
+		$object = new object($database);
+		$object->load($objectversion->object_id);
+		
+// 		$objectversion_name = "\"".$object->name." ".$objectversion->title."\"";
+		JToolBarHelper::title(JText::_("CATALOG_MANAGE_OBJECTVERSIONLINK")." "."\"".$object->name."\" ".JText::_("CATALOG_EDIT_OBJECTVERSION_")." "."\"".$objectversion->title."\" ");
+		
 		JToolBarHelper::spacer();
 		JToolBarHelper::custom( 'backObjectVersionLink', 'back.png', 'back.png', JTEXT::_("CORE_MENU_BACK"), false );
 	}
