@@ -883,10 +883,12 @@ class ADMIN_objectversion {
 		
 		// get list of parents for this object
 		$parent_objectlinks=array();
-		$query = "SELECT parent.id as value, CONCAT(o.name, ' ', parent.title)  as name , o.code AS code , t.label as objecttype, o.published as published
+		$query = "SELECT parent.id as value, CONCAT(o.name, ' ', parent.title)  as name , o.code AS code , t.label as objecttype, ms.label as status
 				  FROM #__sdi_objectversionlink l
 				  INNER JOIN #__sdi_objectversion parent ON parent.id=l.parent_id
 				  INNER JOIN #__sdi_object o ON o.id=parent.object_id
+				  INNER JOIN #__sdi_metadata m ON m.id = parent.metadata_id
+				  INNER JOIN #__sdi_list_metadatastate ms ON ms.id = m.metadatastate_id
 				  INNER JOIN #__sdi_objecttype ot ON o.objecttype_id=ot.id
 				  INNER JOIN #__sdi_translation t ON ot.guid = t.element_guid
 				  INNER JOIN #__sdi_language lg ON t.language_id=lg.id
@@ -894,16 +896,19 @@ class ADMIN_objectversion {
 				  WHERE l.child_id=" . $objectversion_id."
 				  AND cl.code='".$language->_lang."'
 				  ORDER BY parent.name";
-		
 		$database->setQuery($query);
 		$parent_objectlinks = array_merge($parent_objectlinks, $database->loadObjectList());
+		foreach ($parent_objectlinks as $parent_objectlink)
+			$parent_objectlink->status = JText::_($parent_objectlink->status);
 		
 		// get list of childs for this object
 		$child_objectlinks=array();
-		$query = "SELECT child.id as value, CONCAT(o.name,' ', child.title) as name , o.code AS code , t.label as objecttype, o.published as published
+		$query = "SELECT child.id as value, CONCAT(o.name,' ', child.title) as name , o.code AS code , t.label as objecttype, ms.label as status
 				  FROM #__sdi_objectversionlink l
 				  INNER JOIN #__sdi_objectversion child ON child.id=l.child_id
 				  INNER JOIN #__sdi_object o ON o.id=child.object_id
+				  INNER JOIN #__sdi_metadata m ON m.id = child.metadata_id
+				  INNER JOIN #__sdi_list_metadatastate ms ON ms.id = m.metadatastate_id
 				  INNER JOIN #__sdi_objecttype ot ON o.objecttype_id=ot.id
 				  INNER JOIN #__sdi_translation t ON ot.guid = t.element_guid
 				  INNER JOIN #__sdi_language lg ON t.language_id=lg.id
@@ -913,6 +918,8 @@ class ADMIN_objectversion {
 				  ORDER BY child.name";
 		$database->setQuery($query);
 		$child_objectlinks = array_merge($child_objectlinks, $database->loadObjectList());
+		foreach ($child_objectlinks as $child_objectlink)
+			$child_objectlink->status = JText::_($child_objectlink->status);
 		
 		HTML_objectversion::viewObjectVersionLink($parent_objectlinks, $child_objectlinks, $objectversion_id, $object_id, $option);
 	}

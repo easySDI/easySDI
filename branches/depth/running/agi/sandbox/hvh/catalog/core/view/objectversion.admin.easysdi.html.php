@@ -266,13 +266,13 @@ if ($row->updated)
 			// Column Model shortcut array
 			var cols = [
 				{ id : 'value', hidden: true, dataIndex: 'value'},
-				{ id : 'name', header: '".html_Metadata::cleanText(JText::_("CATALOG_OBJECTVERSIONLINK_GRID_NAME_HEADER"))."', sortable: true, dataIndex: 'name', width:400},
-				{ id : 'objecttype', header: '".html_Metadata::cleanText(JText::_("CATALOG_OBJECTVERSIONLINK_GRID_OBJECTTYPE_HEADER"))."', sortable: true, dataIndex: 'objecttype'},
-				{ id : 'published' , xtype: 'booleancolumn',  header: '".html_Metadata::cleanText(JText::_("CATALOG_OBJECTVERSIONLINK_GRID_PUBLISHED_HEADER"))."', sortable: true, dataIndex: 'published'}
+				{ id : 'name', header: '".html_Metadata::cleanText(JText::_("CATALOG_OBJECTVERSIONLINK_GRID_NAME_HEADER"))."', sortable: true, dataIndex: 'name', width:350},
+				{ id : 'objecttype', header: '".html_Metadata::cleanText(JText::_("CATALOG_OBJECTVERSIONLINK_GRID_OBJECTTYPE_HEADER"))."', sortable: true, dataIndex: 'objecttype', width:50},
+				{ id : 'status' , header: '".html_Metadata::cleanText(JText::_("CATALOG_OBJECTVERSIONLINK_GRID_PUBLISHED_HEADER"))."', sortable: true, dataIndex: 'status', width:50}
 			];
 			
 			var parentGridStore = new Ext.data.JsonStore({
-		        fields : [{name: 'value', mapping : 'value'}, {name: 'name', mapping : 'name'},{name: 'objecttype', mapping : 'objecttype'},{name: 'published', mapping : 'published', type : 'boolean'}],
+		        fields : [{name: 'value', mapping : 'value'}, {name: 'name', mapping : 'name'},{name: 'objecttype', mapping : 'objecttype'},{name: 'status', mapping : 'status'}],
 		        data   : ".HTML_metadata::array2json(array ("total"=>count($parent_objectlinks), "links"=>$parent_objectlinks)).",
 				root   : 'links'
 		    });
@@ -292,7 +292,7 @@ if ($row->updated)
 		    });
 		
 		    var childGridStore = new Ext.data.JsonStore({
-		        fields : [{name: 'value', mapping : 'value'}, {name: 'name', mapping : 'name'},{name: 'objecttype', mapping : 'objecttype'},{name: 'published', mapping : 'published', type : 'boolean'}],
+		        fields : [{name: 'value', mapping : 'value'}, {name: 'name', mapping : 'name'},{name: 'objecttype', mapping : 'objecttype'},{name: 'status', mapping : 'status'}],
 		        data   : ".HTML_metadata::array2json(array ("total"=>count($child_objectlinks), "links"=>$child_objectlinks)).",
 				root   : 'links'
 		    });
