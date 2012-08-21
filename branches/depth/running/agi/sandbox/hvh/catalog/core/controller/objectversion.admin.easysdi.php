@@ -1071,6 +1071,7 @@ class ADMIN_objectversion {
 		$id					=null;
 		$name				=null;
 		$status				=null;
+		$version			=null;
 		$editor				=null;
 		$manager			=null;
 		$fromDate			=null;
@@ -1084,6 +1085,8 @@ class ADMIN_objectversion {
 			$name = $_POST['name'];
 		if (array_key_exists('status', $_POST))
 			$status = $_POST['status'];
+		if (array_key_exists('version', $_POST))
+			$version = $_POST['version'];
 		if (array_key_exists('editor', $_POST))
 			$editor = $_POST['editor'];
 		if (array_key_exists('manager', $_POST))

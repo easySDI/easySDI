@@ -559,6 +559,9 @@ if ($row->updated)
 		    status['label'] = '".html_Metadata::cleanText(JText::_('CATALOG_OBJECTVERSIONLINK_STATUS_LABEL'))."';
 			status['list'] = $listStatus;
 			
+			var version = new Array();
+		    version['label'] = '".html_Metadata::cleanText(JText::_('CATALOG_OBJECTVERSIONLINK_VERSION_LABEL'))."';
+		    
 			var manager = new Array();
 		    manager['label'] = '".html_Metadata::cleanText(JText::_('CATALOG_OBJECTVERSIONLINK_MANAGER_LABEL'))."';
 			manager['list'] = $listManagers;
@@ -572,6 +575,7 @@ if ($row->updated)
 			
 		    var toDate = new Array();
 		    toDate['label'] = '".html_Metadata::cleanText(JText::_('CATALOG_OBJECTVERSIONLINK_TODATE_LABEL'))."';
+		    
 			
 		    // Creer le formulaire qui va contenir la structure
 			var form = new Ext.form.FormPanel(
@@ -590,7 +594,7 @@ if ($row->updated)
 			        		title:'".html_Metadata::cleanText(JText::_('CATALOG_OBJECTVERSIONLINK_FILTERS_LABEL'))."',
 			        		collapsible:false,
 			        		items:[
-			        				manageObjectLinkFilter(objecttype, id, name, status, manager, editor, fromDate, toDate)
+			        				manageObjectLinkFilter(objecttype, id, name, status, version,manager, editor, fromDate, toDate)
 					        	  ],
 								  buttons: [
 										{
@@ -611,6 +615,7 @@ if ($row->updated)
 														id : Ext.getCmp('id').getValue(),
 														name : Ext.getCmp('name').getValue(),
 														status : Ext.getCmp('status').getValue(),
+														version : Ext.getCmp('version').getValue(),
 														manager : Ext.getCmp('manager').getValue(),
 														editor : Ext.getCmp('editor').getValue(),
 														fromDate : Ext.getCmp('fromDate').getValue(),
