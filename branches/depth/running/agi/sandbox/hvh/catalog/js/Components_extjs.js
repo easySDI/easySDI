@@ -59,8 +59,8 @@ function manageObjectLinkFilter(objecttype, id, name, status,version, manager, e
         id:'version', 
         vertical: false,
         items: [
-                {boxLabel: 'Last', name: 'Last', inputValue: 'Last'},
-                {boxLabel: 'All', name: 'All', inputValue: 'All', checked:true}
+                {boxLabel: 'Last', name: 'version_last', inputValue: 'Last'},
+                {boxLabel: 'All', name: 'version_all', inputValue: 'All', checked:true}
         ] 
 	});
 	
@@ -105,6 +105,8 @@ function manageObjectLinkFilter(objecttype, id, name, status,version, manager, e
 		 valueField:'value',
 		 displayField:'text'
 	});
+	
+	
 	
 	var fullFilter = new Array(objecttypeFilter, idFilter, nameFilter, statusFilter,versionFilter, managerFilter, editorFilter, fromtoDateFilter(from, to));
 

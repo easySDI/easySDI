@@ -615,7 +615,7 @@ if ($row->updated)
 														id : Ext.getCmp('id').getValue(),
 														name : Ext.getCmp('name').getValue(),
 														status : Ext.getCmp('status').getValue(),
-														version : Ext.getCmp('version').getValue(),
+														version : Ext.getCmp('version').getValue().getGroupValue(),
 														manager : Ext.getCmp('manager').getValue(),
 														editor : Ext.getCmp('editor').getValue(),
 														fromDate : Ext.getCmp('fromDate').getValue(),
