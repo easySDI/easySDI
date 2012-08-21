@@ -944,37 +944,58 @@ class ADMIN_objectversion {
 		
 		// get list of childs for this object
 		$selected_objectlinks=array();
-		$query = 'SELECT child.id as value, o.objecttype_id as objecttype_id, CONCAT(o.name, " ", child.title) as name' .
-				' FROM #__sdi_objectversionlink l
+		$query = "SELECT child.id as value, o.objecttype_id as objecttype_id, CONCAT(o.name, ' ', child.title) as name, t.label as objecttype, ms.label as status 
+				  FROM #__sdi_objectversionlink l
 				  INNER JOIN #__sdi_objectversion child ON child.id=l.child_id
-				  INNER JOIN #__sdi_object o ON o.id=child.object_id' .
-				' WHERE l.parent_id=' . $objectversion_id.
-				' ORDER BY child.name';
+				  INNER JOIN #__sdi_object o ON o.id=child.object_id
+				  INNER JOIN #__sdi_metadata m ON m.id = child.metadata_id
+				  INNER JOIN #__sdi_list_metadatastate ms ON ms.id = m.metadatastate_id
+				  INNER JOIN #__sdi_objecttype ot ON o.objecttype_id=ot.id
+				  INNER JOIN #__sdi_translation t ON ot.guid = t.element_guid
+				  INNER JOIN #__sdi_language lg ON t.language_id=lg.id
+				  INNER JOIN #__sdi_list_codelang cl ON lg.codelang_id=cl.id 
+				  WHERE l.parent_id=" . $objectversion_id."
+				  AND cl.code='".$language->_lang."'
+				  ORDER BY child.name";
 		$database->setQuery($query);
 		$selected_objectlinks = array_merge($selected_objectlinks, $database->loadObjectList());
+		foreach ($selected_objectlinks as $selected_objectlink)
+			$selected_objectlink->status = JText::_($selected_objectlink->status);
 		
 		// get list of versions which are not childs
 		$unselected_objectlinks=array();
 		$temp_objectlinks=array();
 		$objectlinks=array();
-		$query = 'SELECT ov.id as value, o.objecttype_id as objecttype_id, CONCAT(o.name, " ", ov.title) as name' .
-				' FROM #__sdi_objectversion ov
-				  INNER JOIN #__sdi_object o ON o.id=ov.object_id' .
-				' WHERE ov.id<>' . $objectversion_id.
-				' ORDER BY name';
+// 		$query = 'SELECT ov.id as value, o.objecttype_id as objecttype_id, CONCAT(o.name, " ", ov.title) as name' .
+// 				' FROM #__sdi_objectversion ov
+// 				INNER JOIN #__sdi_object o ON o.id=ov.object_id' .
+// 				' WHERE ov.id<>' . $objectversion_id.
+// 				' ORDER BY name';
+		$query = "SELECT ov.id as value, o.objecttype_id as objecttype_id, CONCAT(o.name, ' ' , ov.title) as name, t.label as objecttype, ms.label as status 
+				  FROM #__sdi_objectversion ov
+				  INNER JOIN #__sdi_object o ON o.id=ov.object_id
+				  INNER JOIN #__sdi_metadata m ON m.id = ov.metadata_id
+				  INNER JOIN #__sdi_list_metadatastate ms ON ms.id = m.metadatastate_id
+				  INNER JOIN #__sdi_objecttype ot ON o.objecttype_id=ot.id
+				  INNER JOIN #__sdi_translation t ON ot.guid = t.element_guid
+				  INNER JOIN #__sdi_language lg ON t.language_id=lg.id
+				  INNER JOIN #__sdi_list_codelang cl ON lg.codelang_id=cl.id 
+				  WHERE ov.id<>" . $objectversion_id."
+				  AND cl.code='".$language->_lang."'
+				  ORDER BY o.name";
 		$database->setQuery($query);
 		$unselected_objectlinks = array_merge($unselected_objectlinks, $database->loadObjectList());
-		$temp_objectlinks = helper_easysdi::array_obj_diff($unselected_objectlinks, $selected_objectlinks);
 		
-		// Recr�er le tableau afin d'avoir des cl�s qui se suivent
+		$temp_objectlinks = helper_easysdi::array_obj_diff($unselected_objectlinks, $selected_objectlinks);
+		foreach ($temp_objectlinks as $temp_objectlink)
+			$temp_objectlink->status = JText::_($temp_objectlink->status);
+		
+		// Recréer le tableau afin d'avoir des clés qui se suivent
 		foreach ($temp_objectlinks as $object)
-		{
 			$objectlinks[] = $object;
-		}
 		
 		$objecttypes = array();
 		$listObjecttypes = array();
-		//$database->setQuery( "SELECT id as value, name as text FROM #__sdi_objecttype WHERE predefined=0 ORDER BY name" );
 		$database->setQuery( "SELECT ot.id AS value, t.label as text 
 				 FROM #__sdi_objecttype ot 
 				 INNER JOIN #__sdi_translation t ON t.element_guid=ot.guid
@@ -1028,53 +1049,33 @@ class ADMIN_objectversion {
 				  INNER JOIN #__sdi_objecttype child_ot ON child_ot.id=otl.child_id
 				  WHERE otl.parent_id =' . $rowObject->objecttype_id;
 		$database->setQuery($query);
-		//echo $database->getQuery()."<br>";
 		$objecttypelink = array_merge( $objecttypelink, $database->loadObjectList() );
-		//print_r($objecttypelink);
+
 		
 		HTML_objectversion::manageObjectVersionLink($objectlinks, $selected_objectlinks, $listObjecttypes, $listStatus, $listManagers, $listEditors, $objectversion_id, $object_id, $objecttypelink, $option);
 	}
-	/*
-	function getLinkBounds($parent_id, $child_id)
-	{
-		global  $mainframe;
-		$database =& JFactory::getDBO(); 
-		
-		// $rowObject->objecttype_id
-		$objecttypelink = array();
-		$query = 'SELECT otl.*' .
-				' FROM #__sdi_objecttypelink otl' .
-				' WHERE otl.parent_id =' . $parent_id.
-				' 		AND otl.child_id =' . $child_id;
-		$database->setQuery($query);
-		echo $database->getQuery();
-		$objecttypelink = array_merge( $objecttypes, $database->loadObjectList() );
-		
-		print_r(HTML_metadata::array2json($objecttypelink));
-		die();
-	}
-	*/
+
 	function getObjectVersionForLink($option)
 	{
 		global  $mainframe;
-		$database =& JFactory::getDBO(); 
+		$database 			=& JFactory::getDBO(); 
+		$language 			=& JFactory::getLanguage();
 		
-		$dir = $_POST['dir'];
-		$sort = $_POST['sort'];
-		//$start = $_POST['start'];
-		//$limit = $_POST['limit'];
-		$object_id = $_POST['object_id'];
-		$objectversion_id = $_POST['objectversion_id'];
-		$selectedObjects = $_POST['selectedObjects'];
+		$dir 				= $_POST['dir'];
+		$sort 				= $_POST['sort'];
+		$object_id			= $_POST['object_id'];
+		$objectversion_id	= $_POST['objectversion_id'];
+		$selectedObjects 	= $_POST['selectedObjects'];
 		
-		$objecttype_id = null;
-		$id=null;
-		$name=null;
-		$status=null;
-		$editor=null;
-		$manager=null;
-		$fromDate=null;
-		$toDate=null;
+		$objecttype_id 		=null;
+		$id					=null;
+		$name				=null;
+		$status				=null;
+		$editor				=null;
+		$manager			=null;
+		$fromDate			=null;
+		$toDate				=null;
+		
 		if (array_key_exists('objecttype_id', $_POST))
 			$objecttype_id = $_POST['objecttype_id'];
 		if (array_key_exists('id', $_POST))
@@ -1106,11 +1107,16 @@ class ADMIN_objectversion {
 		// et pour lesquels il existe une relation parent/enfant entre les types d'objets
 		
 		$query = 
-		"SELECT ov.id as value, o.objecttype_id as objecttype_id, o.name as object_name, CONCAT(o.name, ' ', ov.title) as name, otl.parentbound_upper, link.* 
+		"SELECT ov.id as value, o.objecttype_id as objecttype_id, o.name as object_name, CONCAT(o.name, ' ', ov.title) as name, otl.parentbound_upper, link.* , t.label as objecttype, ms.label as status
 		FROM #__sdi_objectversion ov 
 		INNER JOIN #__sdi_object o ON ov.object_id=o.id
 		INNER JOIN #__sdi_objecttype ot ON o.objecttype_id=ot.id 
 		INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
+		  INNER JOIN #__sdi_list_metadatastate ms ON ms.id = m.metadatastate_id
+		
+		  INNER JOIN #__sdi_translation t ON ot.guid = t.element_guid
+		  INNER JOIN #__sdi_language lg ON t.language_id=lg.id
+		  INNER JOIN #__sdi_list_codelang cl ON lg.codelang_id=cl.id 
 		LEFT OUTER JOIN #__sdi_manager_object ma ON o.id = ma.object_id
 		LEFT OUTER JOIN #__sdi_editor_object e ON o.id = e.object_id 
 		LEFT OUTER JOIN #__sdi_objecttypelink otl ON otl.child_id=o.objecttype_id
@@ -1122,8 +1128,10 @@ class ADMIN_objectversion {
 						 WHERE parent_o.objecttype_id=".$rowParentObject->objecttype_id."
 						 GROUP BY ovl.child_id
 						) AS link ON link.child_id=ov.id
-		WHERE otl.child_id IS NOT NULL AND otl.parent_id=".$rowParentObject->objecttype_id."
+		WHERE otl.child_id IS NOT NULL 
+			  AND otl.parent_id=".$rowParentObject->objecttype_id."
 			  AND ov.id<>".$objectversion_id."
+			  AND cl.code='".$language->_lang."'
 			  AND 
 			  (link.child_id IS NULL
 			   OR
@@ -1149,18 +1157,21 @@ class ADMIN_objectversion {
 		if ($toDate)
 			$query .= " AND ov.updated <= '".$toDate."'";
 		
-		// Suppression des entr�es d�j� s�lectionn�es
+		// Suppression des entrées déjà sélectionn�es
 		if (strlen($selectedObjects) > 0)
 			$query .= " AND ov.id NOT IN (".$selectedObjects.")";
 			
 		$query .= "	ORDER BY $sort $dir";
+		
+
 			
 		$database->setQuery($query);
-		//echo $database->getQuery()."\r\n";
 		$results= $database->loadObjectList();
 		
+		foreach ($results as $result)
+			$result->status = JText::_($result->status);
+		
 		// Construire le tableau de r�sultats
-		//$return = array ("total"=>$total, "links"=>$results);
 		$return = array ("total"=>count($results), "links"=>$results);
 		
 		print_r(HTML_metadata::array2json($return));

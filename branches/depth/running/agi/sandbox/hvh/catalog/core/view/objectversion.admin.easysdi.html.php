@@ -266,9 +266,9 @@ if ($row->updated)
 			// Column Model shortcut array
 			var cols = [
 				{ id : 'value', hidden: true, dataIndex: 'value'},
-				{ id : 'name', header: '".html_Metadata::cleanText(JText::_("CATALOG_OBJECTVERSIONLINK_GRID_NAME_HEADER"))."', sortable: true, dataIndex: 'name', width:350},
-				{ id : 'objecttype', header: '".html_Metadata::cleanText(JText::_("CATALOG_OBJECTVERSIONLINK_GRID_OBJECTTYPE_HEADER"))."', sortable: true, dataIndex: 'objecttype', width:50},
-				{ id : 'status' , header: '".html_Metadata::cleanText(JText::_("CATALOG_OBJECTVERSIONLINK_GRID_PUBLISHED_HEADER"))."', sortable: true, dataIndex: 'status', width:50}
+				{ id : 'name', header: '".html_Metadata::cleanText(JText::_("CATALOG_OBJECTVERSIONLINK_GRID_NAME_HEADER"))."', sortable: true, dataIndex: 'name', width:200},
+				{ id : 'objecttype', header: '".html_Metadata::cleanText(JText::_("CATALOG_OBJECTVERSIONLINK_GRID_OBJECTTYPE_HEADER"))."', sortable: true, dataIndex: 'objecttype', width:100},
+				{ id : 'status' , header: '".html_Metadata::cleanText(JText::_("CATALOG_OBJECTVERSIONLINK_GRID_PUBLISHED_HEADER"))."', sortable: true, dataIndex: 'status', width:100}
 			];
 			
 			var parentGridStore = new Ext.data.JsonStore({
@@ -354,7 +354,7 @@ if ($row->updated)
 		$document->addStyleSheet($uri->base(true) . '/components/com_easysdi_catalog/ext/resources/css/ext-all.css');
 
 		$javascript = "";
-	
+
 		?>
 			<form action="index.php" method="post" name="adminForm" id="adminForm"
 			class="adminForm">
@@ -372,11 +372,13 @@ if ($row->updated)
 			var cols = [
 				{ id : 'value', hidden: true, dataIndex: 'value', menuDisabled: true},
 				{ id : 'objecttype_id', hidden: true, dataIndex: 'objecttype_id', menuDisabled: true},
-				{ id : 'name', header: '".html_Metadata::cleanText(JText::_("CATALOG_OBJECTVERSIONLINK_GRID_NAME_HEADER"))."', sortable: true, dataIndex: 'name', menuDisabled: true, width:400}
+				{ id : 'name', header: '".html_Metadata::cleanText(JText::_("CATALOG_OBJECTVERSIONLINK_GRID_NAME_HEADER"))."', sortable: true, dataIndex: 'name', menuDisabled: true, width:400},
+				{ id : 'objecttype', header: '".html_Metadata::cleanText(JText::_("CATALOG_OBJECTVERSIONLINK_GRID_OBJECTTYPE_HEADER"))."', sortable: true, dataIndex: 'objecttype', width:100},
+				{ id : 'status' , header: '".html_Metadata::cleanText(JText::_("CATALOG_OBJECTVERSIONLINK_GRID_PUBLISHED_HEADER"))."', sortable: true, dataIndex: 'status', width:100}
 			];
 			
 			var unselectedGridStore = new Ext.data.JsonStore({
-		        fields : [{name: 'value', mapping : 'value'}, {name: 'objecttype_id', mapping : 'objecttype_id'}, {name: 'name', mapping : 'name'}],
+		        fields : [{name: 'value', mapping : 'value'}, {name: 'objecttype_id', mapping : 'objecttype_id'}, {name: 'name', mapping : 'name'},{name: 'objecttype', mapping : 'objecttype'},{name: 'status', mapping : 'status'}],
 		        data   : ".HTML_metadata::array2json(array ("total"=>count($objectlinks), "links"=>$objectlinks)).",
 				root   : 'links'
 		    });
@@ -402,7 +404,7 @@ if ($row->updated)
 		    });
 			    
 		    var selectedGridStore = new Ext.data.JsonStore({
-		        fields : [{name: 'value', mapping : 'value'}, {name: 'objecttype_id', mapping : 'objecttype_id'}, {name: 'name', mapping : 'name'}],
+		        fields : [{name: 'value', mapping : 'value'}, {name: 'objecttype_id', mapping : 'objecttype_id'}, {name: 'name', mapping : 'name'},{name: 'objecttype', mapping : 'objecttype'},{name: 'status', mapping : 'status'}],
 		        data   : ".HTML_metadata::array2json(array ("total"=>count($selected_objectlinks), "links"=>$selected_objectlinks)).",
 				root   : 'links'
 		    });
@@ -435,8 +437,7 @@ if ($row->updated)
 				flex			 : 1,
 				layoutConfig	 : { align : 'center', pack:'center'},
 				defaults		 : {margins:'0 0 5 0'},
-                items			 : [
-									{
+                items			 : [{
 										xtype: 'button',
 										text: ' << ',
 										width:30,
@@ -572,7 +573,7 @@ if ($row->updated)
 		    var toDate = new Array();
 		    toDate['label'] = '".html_Metadata::cleanText(JText::_('CATALOG_OBJECTVERSIONLINK_TODATE_LABEL'))."';
 			
-		    // Cr�er le formulaire qui va contenir la structure
+		    // Creer le formulaire qui va contenir la structure
 			var form = new Ext.form.FormPanel(
 				{
 					id:'linksForm',
@@ -588,7 +589,38 @@ if ($row->updated)
 			        		xtype:'fieldset',
 			        		title:'".html_Metadata::cleanText(JText::_('CATALOG_OBJECTVERSIONLINK_FILTERS_LABEL'))."',
 			        		collapsible:false,
-			        		items:[manageObjectLinkFilter(objecttype, id, name, status, manager, editor, fromDate, toDate)]
+			        		items:[
+			        				manageObjectLinkFilter(objecttype, id, name, status, manager, editor, fromDate, toDate)
+					        	  ],
+								  buttons: [
+										{
+											text:'".html_Metadata::cleanText(JText::_('CORE_SEARCH_BUTTON'))."',
+						                    handler: function(){
+						                    	var modelDest = Ext.getCmp('unselected');
+						                    	modelDest.store.removeAll();
+
+												var selectedValues = new Array();
+												var grid = Ext.getCmp('selected').store.data;
+												for ( var i = 0; i < grid.length; i++) {
+													selectedValues.push(grid.get(i).get('value'));
+												}
+
+												modelDest.store.reload( {
+													params : {
+														objecttype_id : Ext.getCmp('objecttype_id').getValue(),
+														id : Ext.getCmp('id').getValue(),
+														name : Ext.getCmp('name').getValue(),
+														status : Ext.getCmp('status').getValue(),
+														manager : Ext.getCmp('manager').getValue(),
+														editor : Ext.getCmp('editor').getValue(),
+														fromDate : Ext.getCmp('fromDate').getValue(),
+														toDate : Ext.getCmp('toDate').getValue(),
+														selectedObjects : selectedValues.join(', ')
+													}
+												})
+											}
+										}
+									]
 						},
 			        	{
 			        		id			 : 'gridPanel',
@@ -649,19 +681,14 @@ if ($row->updated)
 			    }
 			);
 
-			/****
-	        * Setup Drop Targets
-	        ***/
+
 	        // This will make sure we only drop to the  view scroller element
 	        var unselectedGridDropTargetEl =  unselectedGrid.getView().scroller.dom;
 	        var unselectedGridDropTarget = new Ext.dd.DropTarget(unselectedGridDropTargetEl, {
 	                ddGroup    : 'unselectedGridDDGroup',
 	                notifyDrop : function(ddSource, e, data){
-	                       var records =  ddSource.dragData.selections;
-	                       Ext.each(records, ddSource.grid.store.remove, ddSource.grid.store);
-	                        //unselectedGrid.store.add(records);
-	                        //unselectedGrid.store.sort('name', 'ASC');
-	                        
+	                        var records =  ddSource.dragData.selections;
+	                        Ext.each(records, ddSource.grid.store.remove, ddSource.grid.store);
 	                        var selectedValues = new Array();
 				 			var grid = Ext.getCmp('selected').store.data;
 						 	for (var i = 0 ; i < grid.length ;i++) 
@@ -719,7 +746,9 @@ if ($row->updated)
 					        }, [
 					            {name: 'value', mapping: 'value'},
 					            {name: 'objecttype_id', mapping: 'objecttype_id'},
-					           	{name: 'name', mapping: 'name'}
+					           	{name: 'name', mapping: 'name'},
+					           	{name: 'objecttype', mapping : 'objecttype'},
+					           	{name: 'status', mapping : 'status'}
 					        ]),
 					        // turn on remote sorting
 					        remoteSort: true,

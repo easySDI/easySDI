@@ -109,8 +109,13 @@ class TOOLBAR_objectversion {
 		$object = new object($database);
 		$object->load($objectversion->object_id);
 		
-// 		$objectversion_name = "\"".$object->name." ".$objectversion->title."\"";
-		JToolBarHelper::title(JText::_("CATALOG_VIEW_OBJECTVERSIONLINK")." "."\"".$object->name."\" ".JText::_("CATALOG_EDIT_OBJECTVERSION_")." "."\"".$objectversion->title."\" ");
+		$metadata = new metadata($database);
+		$metadata->load($objectversion->metadata_id);
+		$query = "SELECT label FROM #__sdi_list_metadatastate WHERE id=" . $metadata->metadatastate_id;
+		$database->setQuery($query);
+		$state = JText::_($database->loadResult());
+		
+		JToolBarHelper::title(JText::_("CATALOG_VIEW_OBJECTVERSIONLINK")." "."\"".$object->name."\" ".JText::_("CATALOG_EDIT_OBJECTVERSION_")." "."\"".$objectversion->title."\" (".$state.")");
 		JToolBarHelper::spacer();
 		JToolBarHelper::custom( 'backObjectVersionLink', 'back.png', 'back.png', JTEXT::_("CORE_MENU_BACK"), false );
 	}
@@ -122,11 +127,17 @@ class TOOLBAR_objectversion {
 		$objectversion_id = $cid[0];
 		$objectversion = new objectversion($database);
 		$objectversion->load($objectversion_id);
+		
 		$object = new object($database);
 		$object->load($objectversion->object_id);
 		
-// 		$objectversion_name = "\"".$object->name." ".$objectversion->title."\"";
-		JToolBarHelper::title(JText::_("CATALOG_MANAGE_OBJECTVERSIONLINK")." "."\"".$object->name."\" ".JText::_("CATALOG_EDIT_OBJECTVERSION_")." "."\"".$objectversion->title."\" ");
+		$metadata = new metadata($database);
+		$metadata->load($objectversion->metadata_id);
+		$query = "SELECT label FROM #__sdi_list_metadatastate WHERE id=" . $metadata->metadatastate_id;
+		$database->setQuery($query);
+		$state = JText::_($database->loadResult());
+		
+		JToolBarHelper::title(JText::_("CATALOG_MANAGE_OBJECTVERSIONLINK")." "."\"".$object->name."\" ".JText::_("CATALOG_EDIT_OBJECTVERSION_")." "."\"".$objectversion->title."\" (".$state.")");
 		
 		JToolBarHelper::spacer();
 		JToolBarHelper::custom( 'backObjectVersionLink', 'back.png', 'back.png', JTEXT::_("CORE_MENU_BACK"), false );
