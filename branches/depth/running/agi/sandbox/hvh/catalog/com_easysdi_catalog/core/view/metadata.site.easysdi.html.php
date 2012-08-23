@@ -5859,6 +5859,16 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 				}
 				$listObjecttypes = HTML_metadata::array2extjs($listObjecttypes, true);
 				
+				$objectstatus = array();
+				$listObjectStatus = array();
+				$database->setQuery( "SELECT id as value, label as text FROM #__sdi_list_metadatastate " );
+				$objectstatus= array_merge( $objectstatus, $database->loadObjectList() );
+				foreach($objectstatus as $ot)
+				{
+					$listObjectStatus[$ot->value] = JText::_($ot->text);
+				}
+				$listObjectStatus = HTML_metadata::array2extjs($listObjectStatus, true);
+				
 				$this->javascript .="
 				var replicateDataStore = new Ext.data.Store({
 								id: 'objectListStore',
@@ -5914,7 +5924,6 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 												     ,method:'post' 
 												     ,url:'".$replicate_url."'
 													 ,standardSubmit: true
-												     //,defaults:{anchor:'95%'} 
 												     ,items:[ 
 												       { 
 												       	 typeAhead:true,
@@ -5934,21 +5943,66 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 															        data: ".$listObjecttypes."
 															    }),
 														 valueField:'value',
-														 displayField:'text',
-														 listeners: {        
-														 				select: {            
-														 							fn:function(combo, value) {
-														 								var modelDest = Ext.getCmp('objectselector');                
-														 								modelDest.store.removeAll();                
-														 								//reload region store and enable region                 
-														 								modelDest.store.reload({                    
-														 								params: { 
-														 									objecttype_id: combo.getValue() 
-																							}                
-																						});																						}        
-																				}	
-																	}
+														 displayField:'text'
 												       },
+												       {
+											       		id:'objectname',
+											       		hiddenName:'objectname_hidden',
+											       		xtype:'textfield',
+											       		fieldLabel : '".addslashes(JText::_('CATALOG_METADATA_REPLICATE_ALERT_OBJECTNAME_LABEL'))."'
+											       },
+											        { 
+											         typeAhead:true,
+											       	 triggerAction:'all',
+											       	 mode:'local',
+											       	 fieldLabel:'".addslashes(JText::_('CATALOG_METADATA_REPLICATE_ALERT_OBJECTSTATUS_LABEL'))."', 
+											         id:'objectstatus', 
+											         hiddenName:'objectstatus_hidden', 
+											         xtype: 'combo',
+											         editable: false,
+											         store: new Ext.data.ArrayStore({
+														        id: 0,
+														        fields: [
+														            'value',
+														            'text'
+														        ],
+														        data: ".$listObjectStatus."
+														    }),
+													 valueField:'value',
+													 displayField:'text'
+											       },
+											       {
+											        fieldLabel: '".addslashes(JText::_('CATALOG_METADATA_REPLICATE_ALERT_OBJECTVERSION_LABEL'))."',
+											        xtype: 'radiogroup', 
+        											id:'objectversion', 
+        											cls: 'x-check-group-alt',
+        											columns: [80,80],
+        											vertical:false,
+											        items: [
+											                {boxLabel: '".addslashes(JText::_('CATALOG_METADATA_REPLICATE_ALERT_OBJECTVERSION_ALL_LABEL'))."', name: 'version_grp', inputValue: 'All',checked: true},
+											                {boxLabel: '".addslashes(JText::_('CATALOG_METADATA_REPLICATE_ALERT_OBJECTVERSION_LAST_LABEL'))."', name: 'version_grp', inputValue: 'Last'}
+											        	] 
+											       },
+											       {
+        											xtype: 'panel', 
+        											buttonAlign:'right' ,
+											       	buttons: [{ 
+												       	xtype: 'button', 
+												       	text:'".html_Metadata::cleanText(JText::_('CORE_SEARCH_BUTTON'))."',
+									                    handler: function(){
+									                    	var modelDest = Ext.getCmp('objectselector');                
+												 			modelDest.store.removeAll();                
+												 			modelDest.store.reload({                    
+													 			params: { 
+													 				objecttype_id: Ext.getCmp('objecttype_id').getValue(),
+													 				objectname : Ext.getCmp('objectname').getValue(),
+													 				objectstatus : Ext.getCmp('objectstatus').getValue(),
+													 				objectversion : Ext.getCmp('objectversion').getValue().getGroupValue(),
+																}                
+															});	
+														}
+												       }]
+											       },
 												       {
 												       	 id:'objectselector',
 												       	 itemId:'objectselector',
