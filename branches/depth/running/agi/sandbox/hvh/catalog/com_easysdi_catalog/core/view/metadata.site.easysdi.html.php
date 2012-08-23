@@ -5894,6 +5894,9 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 								            beforeload: {
 								            				fn:function(store, options) {
 								            					options.params.objecttype_id = Ext.getCmp('objecttype_id').getValue();
+								            					options.params.objectname = Ext.getCmp('objectname').getValue();
+													 			options.params.objectstatus = Ext.getCmp('objectstatus').getValue();
+													 			options.params.objectversion = Ext.getCmp('objectversion').getValue().getGroupValue();
 																return true;		
 												            }
 												         }
