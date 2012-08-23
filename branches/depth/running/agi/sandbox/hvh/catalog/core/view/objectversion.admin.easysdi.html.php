@@ -508,7 +508,7 @@ if ($row->updated)
 						                	var selected = Ext.getCmp('selected');                
 			 								var records = unselected.selModel.getSelections();
 			 								
-                        					// Traiter chaque objet � ajouter
+                        					// Traiter chaque objet a ajouter
 											for (i=0;i<records.length;i++)
 											{
 												if (!childbound_upper_reached(records[i]))
@@ -561,6 +561,8 @@ if ($row->updated)
 			
 			var version = new Array();
 		    version['label'] = '".html_Metadata::cleanText(JText::_('CATALOG_OBJECTVERSIONLINK_VERSION_LABEL'))."';
+		    version['label_all'] = '".html_Metadata::cleanText(JText::_('CATALOG_OBJECTVERSIONLINK_VERSION_LABEL_ALL'))."';
+		    version['label_last'] = '".html_Metadata::cleanText(JText::_('CATALOG_OBJECTVERSIONLINK_VERSION_LABEL_LAST'))."';
 		    
 			var manager = new Array();
 		    manager['label'] = '".html_Metadata::cleanText(JText::_('CATALOG_OBJECTVERSIONLINK_MANAGER_LABEL'))."';

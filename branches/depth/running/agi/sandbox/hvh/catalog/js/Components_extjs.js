@@ -54,13 +54,13 @@ function manageObjectLinkFilter(objecttype, id, name, status,version, manager, e
 	});
 	
 	var versionFilter = new Ext.form.RadioGroup( {
-
         fieldLabel: version['label'], 
         id:'version', 
-        vertical: false,
+        cls: 'x-check-group-alt',
+        columns: 1,
         items: [
-                {boxLabel: 'Last', name: 'version_last', inputValue: 'Last'},
-                {boxLabel: 'All', name: 'version_all', inputValue: 'All', checked:true}
+                {boxLabel: version['label_all'], name: 'version_grp', inputValue: 'All',checked: true},
+                {boxLabel: version['label_last'], name: 'version_grp', inputValue: 'Last'}
         ] 
 	});
 	
