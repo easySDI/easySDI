@@ -564,6 +564,7 @@ else
 				 									id:Ext.getCmp('id').getValue(),
 				 									name:Ext.getCmp('name').getValue(),
 				 									status:Ext.getCmp('status').getValue(),
+				 									version : Ext.getCmp('version').getValue().getGroupValue(),
 				 									manager:Ext.getCmp('manager').getValue(),
 				 									editor:Ext.getCmp('editor').getValue(),
 				 									fromDate:Ext.getCmp('fromDate').getValue(),
@@ -599,6 +600,7 @@ else
 				 									id:Ext.getCmp('id').getValue(),
 				 									name:Ext.getCmp('name').getValue(),
 				 									status:Ext.getCmp('status').getValue(),
+				 									version : Ext.getCmp('version').getValue().getGroupValue(),
 				 									manager:Ext.getCmp('manager').getValue(),
 				 									editor:Ext.getCmp('editor').getValue(),
 				 									fromDate:Ext.getCmp('fromDate').getValue(),
@@ -670,6 +672,11 @@ else
 		    status['label'] = '".html_Metadata::cleanText(JText::_('CATALOG_OBJECTVERSIONLINK_STATUS_LABEL'))."';
 			status['list'] = $listStatus;
 			
+			var version = new Array();
+		    version['label'] = '".html_Metadata::cleanText(JText::_('CATALOG_OBJECTVERSIONLINK_VERSION_LABEL'))."';
+		    version['label_all'] = '".html_Metadata::cleanText(JText::_('CATALOG_OBJECTVERSIONLINK_VERSION_LABEL_ALL'))."';
+		    version['label_last'] = '".html_Metadata::cleanText(JText::_('CATALOG_OBJECTVERSIONLINK_VERSION_LABEL_LAST'))."';
+			
 			var manager = new Array();
 		    manager['label'] = '".html_Metadata::cleanText(JText::_('CATALOG_OBJECTVERSIONLINK_MANAGER_LABEL'))."';
 			manager['list'] = $listManagers;
@@ -701,7 +708,7 @@ else
 			        		title:'".html_Metadata::cleanText(JText::_('CATALOG_OBJECTVERSIONLINK_FILTERS_LABEL'))."',
 			        		collapsible:false,
 			        		items:[
-			        				manageObjectLinkFilter(objecttype, id, name, status, manager, editor, fromDate, toDate)
+			        				manageObjectLinkFilter(objecttype, id, name, status,version, manager, editor, fromDate, toDate)
 			        			  ],
 								  buttons: [
 										{
@@ -722,6 +729,7 @@ else
 														id : Ext.getCmp('id').getValue(),
 														name : Ext.getCmp('name').getValue(),
 														status : Ext.getCmp('status').getValue(),
+														version : Ext.getCmp('version').getValue().getGroupValue(),
 														manager : Ext.getCmp('manager').getValue(),
 														editor : Ext.getCmp('editor').getValue(),
 														fromDate : Ext.getCmp('fromDate').getValue(),
