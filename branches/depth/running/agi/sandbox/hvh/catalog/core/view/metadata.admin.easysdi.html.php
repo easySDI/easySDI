@@ -1,7 +1,7 @@
 <?php
 /**
  * EasySDI, a solution to implement easily any spatial data infrastructure
- * Copyright (C) 2008 DEPTH SA, Chemin d�??Arche 40b, CH-1870 Monthey, easysdi@depth.ch 
+ * Copyright (C) 2008 DEPTH SA, Chemin de??Arche 40b, CH-1870 Monthey, easysdi@depth.ch 
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1124,7 +1124,7 @@ class HTML_metadata {
 								if ($child->attribute_default <> "" and $nodeValue == "")
 									$nodeValue = html_Metadata::cleanText($child->attribute_default);
 			
-								// Si le xpathParentId est d�fini, regarder si on est au xpath souhait�.	
+								// Si le xpathParentId est defini, regarder si on est au xpath souhaite.	
 								if ($this->parentId_attribute <> "")
 								{
 									// Vérification qu'on est bien dans l'attribut choisi. La classe n'a pas d'utilité
@@ -1266,7 +1266,7 @@ class HTML_metadata {
 													
 													if($hidden == "false")
 													{
-														// Selon le rendu de l'attribut, on fait des traitements diff�rents
+														// Selon le rendu de l'attribut, on fait des traitements differents
 														switch ($child->rendertype_id)
 														{
 															// Textarea
@@ -1906,7 +1906,7 @@ class HTML_metadata {
 								$nodeDefaultValues = array();
 								if (count($nodeValues) == 0)
 								{
-									// Elements s�lectionn�s par d�faut
+									// Elements selectionnes par defaut
 									$query = "SELECT c.* FROM #__sdi_codevalue c, #__sdi_defaultvalue d WHERE c.id=d.codevalue_id AND c.published=true AND d.attribute_id = ".$child->attribute_id." ORDER BY c.ordering";
 									$database->setQuery( $query );
 									$selectedContent = $database->loadObjectList();
@@ -2034,7 +2034,7 @@ class HTML_metadata {
 																      		    // S'assurer que le mot-clé n'est pas déjé sélectionné
 																      		    if (!target.usedRecords.containsKey(reliableRecord))
 																				{
-																					// Sauvegarde dans le champs SuperBoxSelect des mots-cl�s dans toutes les langues de EasySDI
+																					// Sauvegarde dans le champs SuperBoxSelect des mots-cles dans toutes les langues de EasySDI
 																				    for(l in result.terms) 
 																				    {
 																				    	s += l+': '+result.terms[l]+';';
@@ -2206,7 +2206,7 @@ class HTML_metadata {
 						{
 							// Guid
 							case 1:
-								// Selon le rendu de l'attribut, on fait des traitements diff�rents
+								// Selon le rendu de l'attribut, on fait des traitements differents
 								switch ($child->rendertype_id)
 								{
 									// Textbox
@@ -2509,7 +2509,7 @@ class HTML_metadata {
 											
 										if ($node->length > 0)
 										{
-											// Chercher le titre associ� au texte localis� souhait�, ou s'il n'y a pas de titre le contenu
+											// Chercher le titre associe au texte localise souhaite, ou s'il n'y a pas de titre le contenu
 											$query = "SELECT t.title, t.content, c.guid FROM #__sdi_codevalue c, #__sdi_translation t, #__sdi_language l, #__sdi_list_codelang cl WHERE c.guid=t.element_guid AND t.language_id=l.id AND l.codelang_id=cl.id and cl.code='".$language->_lang."' AND t.content = '".html_Metadata::cleanText($node->item(0)->nodeValue)."'"." ORDER BY c.ordering";
 											$database->setQuery( $query );
 											$result = $database->loadObject();
@@ -2521,7 +2521,7 @@ class HTML_metadata {
 								$nodeDefaultValues = array();
 								if (count($nodeValues) == 0)
 								{
-									// Elements s�lectionn�s par d�faut
+									// Elements selectionnes par defaut
 									$query = "SELECT c.* FROM #__sdi_codevalue c, #__sdi_defaultvalue d WHERE c.id=d.codevalue_id AND c.published=true AND d.attribute_id = ".$child->attribute_id." ORDER BY c.ordering";
 									$database->setQuery( $query );
 									//echo $database->getQuery()."<br>";
@@ -2635,7 +2635,7 @@ class HTML_metadata {
 					{
 						// Guid
 						case 1:
-							// Selon le rendu de l'attribut, on fait des traitements diff�rents
+							// Selon le rendu de l'attribut, on fait des traitements differents
 							switch ($child->rendertype_id)
 							{
 								// Textbox
@@ -2657,7 +2657,7 @@ class HTML_metadata {
 						case 2:
 							if ($hidden == "false")
 							{
-								// Selon le rendu de l'attribut, on fait des traitements diff�rents
+								// Selon le rendu de l'attribut, on fait des traitements differents
 								switch ($child->rendertype_id)
 								{
 									// Textarea
@@ -2691,7 +2691,7 @@ class HTML_metadata {
 							switch ($child->rendertype_id)
 							{
 								default:
-									/* Traitement sp�cifique aux langues */
+									/* Traitement specifique aux langues */
 									
 									// Stockage du path pour atteindre ce noeud du XML
 									//$queryPath = $child->attribute_isocode."/gmd:LocalisedCharacterString";
@@ -2745,7 +2745,7 @@ class HTML_metadata {
 												}
 												
 												if($hidden == "false"){
-													// Selon le rendu de l'attribut, on fait des traitements diff�rents
+													// Selon le rendu de l'attribut, on fait des traitements differents
 													switch ($child->rendertype_id)
 													{
 														// Textarea
@@ -3076,7 +3076,7 @@ class HTML_metadata {
 						case 7:
 							if ($hidden == "false")
 							{
-								// Selon le rendu de l'attribut, on fait des traitements diff�rents
+								// Selon le rendu de l'attribut, on fait des traitements differents
 								switch ($child->rendertype_id)
 								{
 									// Textarea
@@ -3123,7 +3123,7 @@ class HTML_metadata {
 							break;
 						// TextChoice
 						case 9:
-							// Traitement sp�cifique aux listes
+							// Traitement specifique aux listes
 							//echo $ancestorFieldsetName." - ".$parentName." - ".$child->attribute_isocode. " (1)<br>";					
 							// Traitement des enfants de type list
 							$content = array();
@@ -3135,8 +3135,8 @@ class HTML_metadata {
 						 	$dataValues = array();
 						 	$nodeValues = array();
 					
-						 	// Traitement de la multiplicit�
-						 	// R�cup�ration du path du bloc de champs qui va �tre cr�� pour construire le nom
+						 	// Traitement de la multiplicite
+						 	// Recuperation du path du bloc de champs qui va etre cree pour construire le nom
 						 	$listName = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__1";
 						 	 
 						 	// Construction de la liste
@@ -3164,7 +3164,7 @@ class HTML_metadata {
 							
 						 	$relNode = $xpathResults->query($child->attribute_isocode, $scope);
 						 	
-							// Elements s�lectionn�s par d�faut
+							// Elements selectionnes par defaut
 							$nodeDefaultValues = array();
 							$query = "SELECT c.* FROM #__sdi_codevalue c, #__sdi_defaultvalue d WHERE c.id=d.codevalue_id AND c.published=true AND d.attribute_id = ".$child->attribute_id." ORDER BY c.ordering";
 							$database->setQuery( $query );
@@ -3299,7 +3299,7 @@ class HTML_metadata {
 								$langArray = Array();
 								foreach($this->langList as $row)
 								{									
-									if ($row->defaultlang) // Langue par d�faut de la m�tadonn�e
+									if ($row->defaultlang) // Langue par defaut de la metadonnee
 										$defaultLang = $row->gemetlang;
 									
 									if ($row->code_easysdi == $language->_lang) // Langue courante de l'utilisateur
@@ -3334,10 +3334,10 @@ class HTML_metadata {
 												      		    					    
 																      		    var reliableRecord = result.terms[thes.lang];
 																      		    
-																      		    // S'assurer que le mot-cl� n'est pas d�j� s�lectionn�
+																      		    // S'assurer que le mot-cle n'est pas deje selectionne
 																      		    if (!target.usedRecords.containsKey(reliableRecord))
 																				{
-																					// Sauvegarde dans le champs SuperBoxSelect des mots-cl�s dans toutes les langues de EasySDI
+																					// Sauvegarde dans le champs SuperBoxSelect des mots-cles dans toutes les langues de EasySDI
 																				    for(l in result.terms) 
 																				    {
 																				    	s += l+': '+result.terms[l]+';';
@@ -3828,7 +3828,7 @@ class HTML_metadata {
 					$results = array();
 					$results = HTML_metadata::array2json($results);
 						
-					// On construit le nom de l'occurence qui a forc�ment l'index 2
+					// On construit le nom de l'occurence qui a forcement l'index 2
 					$name = $parentName."-".str_replace(":", "_", $child->rel_isocode)."__1";
 					
 					// Traitement de la relation entre la classe parent et la classe enfant
@@ -4114,7 +4114,7 @@ class HTML_metadata {
 
 		if ($simple)
 		{
-			// Entr�e vide
+			// Entree vide
 			$extjsArray .= "['', ''], ";
 		}
 		$id=0;
@@ -4345,7 +4345,7 @@ class HTML_metadata {
 				{
 			       $menu .= "handler: function()
 				                {
-				                	// Cr�er une iframe pour demander � l'utilisateur le type d'import
+				                	// Creer une iframe pour demander e l'utilisateur le type d'import
 									if (!winxml)
 										winxml = new Ext.Window({
 										                title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_IMPORT_XMLFILE_ALERT'))."',
@@ -4616,12 +4616,12 @@ class HTML_metadata {
 	            }
 			";
 		}
-		// Boutons de r�plication
+		// Boutons de replication
 		if (!$isPublished)
 		{
 			$replicate_url = 'index.php?option='.$option.'&task=replicateMetadata';
 		
-			// R�plication de m�tadonn�e
+			// Replication de metadonnee
 			$objecttypes = array();
 			$listObjecttypes = array();
 			$database->setQuery( "SELECT id as value, name as text FROM #__sdi_objecttype WHERE predefined=0 ORDER BY name" );
@@ -4631,6 +4631,17 @@ class HTML_metadata {
 				$listObjecttypes[$ot->value] = $ot->text;
 			}
 			$listObjecttypes = HTML_metadata::array2extjs($listObjecttypes, true);
+			
+			$objectstatus = array();
+			$listObjectStatus = array();
+			$database->setQuery( "SELECT id as value, label as text FROM #__sdi_list_metadatastate " );
+			$objectstatus= array_merge( $objectstatus, $database->loadObjectList() );
+			foreach($objectstatus as $ot)
+			{
+				$listObjectStatus[$ot->value] = JText::_($ot->text);
+			}
+			$listObjectStatus = HTML_metadata::array2extjs($listObjectStatus, true);
+			
 			
 			$this->javascript .="
 			var replicateDataStore = new Ext.data.Store({
@@ -4667,8 +4678,7 @@ class HTML_metadata {
 		            text: '".JText::_('CATALOG_REPLICATE')."',
 					handler: function()
 	                {
-	                	// Cr�er une iframe pour demander � l'utilisateur le type d'import
-						if (!winrct)
+	                	if (!winrct)
 							winrct = new Ext.Window({
 							                title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_REPLICATE_ALERT'))."',
 							                width:600,
@@ -4687,7 +4697,7 @@ class HTML_metadata {
 											     ,method:'post' 
 											     ,url:'".$replicate_url."'
 												 ,standardSubmit: true
-											     //,defaults:{anchor:'95%'} 
+											 
 											     ,items:[ 
 											       { 
 											       	 typeAhead:true,
@@ -4707,20 +4717,65 @@ class HTML_metadata {
 														        data: ".$listObjecttypes."
 														    }),
 													 valueField:'value',
-													 displayField:'text',
-													 listeners: {        
-													 				select: {            
-													 							fn:function(combo, value) {
-													 								var modelDest = Ext.getCmp('objectselector');                
-													 								modelDest.store.removeAll();                
-													 								//reload region store and enable region                 
-													 								modelDest.store.reload({                    
-													 								params: { 
-													 									objecttype_id: combo.getValue() 
-																						}                
-																					});																						}        
-																			}
-																}
+													 displayField:'text'
+											       },
+											       {
+											       		id:'objectname',
+											       		hiddenName:'objectname_hidden',
+											       		xtype:'textfield',
+											       		fieldLabel : '".addslashes(JText::_('CATALOG_METADATA_REPLICATE_ALERT_OBJECTNAME_LABEL'))."'
+											       },
+											        { 
+											         typeAhead:true,
+											       	 triggerAction:'all',
+											       	 mode:'local',
+											       	 fieldLabel:'".addslashes(JText::_('CATALOG_METADATA_REPLICATE_ALERT_OBJECTSTATUS_LABEL'))."', 
+											         id:'objectstatus', 
+											         hiddenName:'objectstatus_hidden', 
+											         xtype: 'combo',
+											         editable: false,
+											         store: new Ext.data.ArrayStore({
+														        id: 0,
+														        fields: [
+														            'value',
+														            'text'
+														        ],
+														        data: ".$listObjectStatus."
+														    }),
+													 valueField:'value',
+													 displayField:'text'
+											       },
+											       {
+											        fieldLabel: '".addslashes(JText::_('CATALOG_METADATA_REPLICATE_ALERT_OBJECTVERSION_LABEL'))."',
+											        xtype: 'radiogroup', 
+        											id:'objectversion', 
+        											cls: 'x-check-group-alt',
+        											columns: [80,80],
+        											vertical:false,
+											        items: [
+											                {boxLabel: '".addslashes(JText::_('CATALOG_METADATA_REPLICATE_ALERT_OBJECTVERSION_ALL_LABEL'))."', name: 'version_grp', inputValue: 'All',checked: true},
+											                {boxLabel: '".addslashes(JText::_('CATALOG_METADATA_REPLICATE_ALERT_OBJECTVERSION_LAST_LABEL'))."', name: 'version_grp', inputValue: 'Last'}
+											        	] 
+											       },
+											       {
+        											xtype: 'panel', 
+        											buttonAlign:'right' ,
+											       	buttons: [{ 
+												       	xtype: 'button', 
+												       	text:'".html_Metadata::cleanText(JText::_('CORE_SEARCH_BUTTON'))."',
+									                    handler: function(){
+									                    	var modelDest = Ext.getCmp('objectselector');                
+												 			modelDest.store.removeAll();                
+												 			modelDest.store.reload({                    
+													 			params: { 
+													 				objecttype_id: Ext.getCmp('objecttype_id').getValue(),
+													 				objectname : Ext.getCmp('objectname').getValue(),
+													 				objectstatus : Ext.getCmp('objectstatus').getValue(),
+													 				objectversion : Ext.getCmp('objectversion').getValue().getGroupValue(),
+																}                
+															});	
+														}
+												       }]
 											       },
 											       {
 											       	 id:'objectselector',
@@ -4830,7 +4885,7 @@ class HTML_metadata {
 
 							Ext.getCmp('objectselector').store.load();
 							
-							// Masquer le bouton de rafra�chissement
+							// Masquer le bouton de rafraechissement
 							Ext.getCmp('objectselector').getBottomToolbar().refresh.hide();
 							
 				            winrct.show();
@@ -4847,7 +4902,7 @@ class HTML_metadata {
 				$tbar[] ="{text: '".JText::_('CORE_RESET')."',
 									handler: function()
 					                {
-					                	// Cr�er une iframe pour confirmer la r�initialisation
+					                	// Creer une iframe pour confirmer la reinitialisation
 										if (!winrst)
 											winrst = new Ext.Window({
 											                title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_CONFIRM_RESET_ALERT'))."',

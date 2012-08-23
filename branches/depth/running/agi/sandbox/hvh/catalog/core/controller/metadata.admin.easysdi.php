@@ -3900,23 +3900,77 @@ class ADMIN_metadata {
 		global  $mainframe;
 		$database =& JFactory::getDBO(); 
 		
-		$dir = $_POST['dir'];
-		$sort = $_POST['sort'];
+		$dir 	= $_POST['dir'];
+		$sort 	= $_POST['sort'];
 		
 		//get start and limit if present
-		$start = (array_key_exists('start', $_REQUEST))? $_REQUEST["start"]: 0;
-		$count = (array_key_exists('limit', $_REQUEST))? $_REQUEST["limit"]: 10;
+		$start 	= (array_key_exists('start', $_REQUEST))? $_REQUEST["start"]: 0;
+		$count 	= (array_key_exists('limit', $_REQUEST))? $_REQUEST["limit"]: 10;
 			
-		$objecttype_id = null;
+		$objecttype_id 		= null;
+		$objectname 		= null;
+		$objectstatus 		= null;
+		$objectversion 		= null;
 		if (array_key_exists('objecttype_id', $_POST))
-			$objecttype_id = $_POST['objecttype_id'];
+			$objecttype_id 	= $_POST['objecttype_id'];
+		if (array_key_exists('objectname', $_POST))
+			$objectname 	= $_POST['objectname'];
+		if (array_key_exists('objectstatus', $_POST))
+			$objectstatus 	= $_POST['objectstatus'];
+		if (array_key_exists('objectversion', $_POST))
+			$objectversion	= $_POST['objectversion'];
 		
 		// Récupérer tous les objets du type d'objet lié dont le nom comporte le searchPattern
 		$results = array();
-		$query = "SELECT ov.id as version_id, m.guid as metadata_guid, o.name as object_name, ov.title as version_title FROM #__sdi_object o, #__sdi_objectversion ov, #__sdi_objecttype ot, #__sdi_metadata m WHERE ov.object_id=o.id AND ov.metadata_id=m.id AND o.objecttype_id=ot.id AND ot.predefined=false";
-		
+		if ($objectversion == 'Last' )
+		{
+			$query = " SELECT 	ov.id as version_id,
+								m.guid as metadata_guid,
+								o.name as object_name,
+								ov.title as version_title
+						FROM 	#__sdi_object o,
+								#__sdi_objectversion ov,
+								#__sdi_objecttype ot,
+								(
+									SELECT ssm.id, ssm.metadatastate_id,ssm.guid,ssm.published,ssm.archived,max( ssm.published ), ssov.object_id
+									FROM jos_sdi_metadata ssm
+									INNER JOIN jos_sdi_list_metadatastate ssms ON ssms.id = ssm.metadatastate_id
+									INNER JOIN jos_sdi_objectversion ssov ON ssov.metadata_id = ssm.id
+									WHERE
+									(
+										(ssms.code='published' AND ssm.published <=NOW())
+										OR
+										(ssms.code='archived' AND ssm.archived >NOW())
+									)
+									GROUP BY ssov.object_id
+									ORDER BY ssov.object_id
+								)m
+						WHERE 	ov.object_id=o.id
+						AND 	ov.metadata_id=m.id
+						AND 	o.objecttype_id=ot.id
+						AND 	ot.predefined=false";
+		}
+		else 
+		{
+			$query = "SELECT 	ov.id as version_id,
+								m.guid as metadata_guid,
+								o.name as object_name,
+								ov.title as version_title
+						FROM 	#__sdi_object o,
+								#__sdi_objectversion ov,
+								#__sdi_objecttype ot,
+								#__sdi_metadata m
+						WHERE 	ov.object_id=o.id
+						AND 	ov.metadata_id=m.id
+						AND 	o.objecttype_id=ot.id
+						AND 	ot.predefined=false";
+		}
 		if ($objecttype_id)
 			$query .= " AND ot.id=".$objecttype_id;
+		if ($objectname)
+			$query .= " AND (o.name LIKE '%".$objectname."%' OR ov.name LIKE '%".$objectname."%')";
+		if ($objectstatus)
+			$query .= " AND m.metadatastate_id=".$objectstatus;
 		
 		//add sort direction if not empty
 		if ($sort != "") 
@@ -3926,7 +3980,6 @@ class ADMIN_metadata {
 		$queryFiltered.= " LIMIT ".$start.",".$count;
 
 		$database->setQuery($queryFiltered);
-		//echo $database->getQuery();
 		$results= array_merge( $results, $database->loadObjectList() );
 		
 		
