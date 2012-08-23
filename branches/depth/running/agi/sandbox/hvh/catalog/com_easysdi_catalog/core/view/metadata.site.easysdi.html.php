@@ -6111,7 +6111,7 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 									winrct.items.get(0).findById('objectselector').store.removeAll();
 								}
 	
-								Ext.getCmp('objectselector').store.load();
+								//Ext.getCmp('objectselector').store.load();
 								
 								// Masquer le bouton de rafraîchissement
 								Ext.getCmp('objectselector').getBottomToolbar().refresh.hide();

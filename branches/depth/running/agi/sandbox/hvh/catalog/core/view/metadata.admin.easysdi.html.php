@@ -4886,7 +4886,7 @@ class HTML_metadata {
 								winrct.items.get(0).findById('objectselector').store.removeAll();
 							}
 
-							Ext.getCmp('objectselector').store.load();
+ 							//Ext.getCmp('objectselector').store.load();
 							
 							// Masquer le bouton de rafraechissement
 							Ext.getCmp('objectselector').getBottomToolbar().refresh.hide();
