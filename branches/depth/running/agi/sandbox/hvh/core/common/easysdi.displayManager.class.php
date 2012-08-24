@@ -1945,8 +1945,8 @@ class displayManager{
 							INNER JOIN #__sdi_objectversion ov ON ov.object_id=o.id
 							INNER JOIN #__sdi_metadata m ON m.id=ov.metadata_id
 							INNER JOIN #__sdi_translation t ON t.element_guid=ot.guid
-							INNER JOIN jos_sdi_language l ON t.language_id=l.id
-							INNER JOIN jos_sdi_list_codelang cl ON l.codelang_id=cl.id
+							INNER JOIN #__sdi_language l ON t.language_id=l.id
+							INNER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id
 							WHERE m.guid = '".$fileIdentifier."'
 								  AND cl.code = '".$language->_lang."'";
 		$db->setQuery($queryObjecttype);
@@ -2154,24 +2154,32 @@ class displayManager{
 		$rowObjectVersion->load($rowMetadata->id);
 			
 		$childs=array();
-		$query = "SELECT m.guid as metadata_guid, o.name as objectname, ot.code as objecttype
+		$query = "SELECT m.guid as metadata_guid, o.name as objectname, ot.code as objecttype, t.title as metadatatitle
 				 FROM #__sdi_metadata m
 				 INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
 				 INNER JOIN #__sdi_object o ON ov.object_id = o.id
 				 INNER JOIN #__sdi_objecttype ot ON o.objecttype_id = ot.id
 				 INNER JOIN #__sdi_objectversionlink ovl ON ov.id = ovl.child_id
-				 WHERE ovl.parent_id=".$rowObjectVersion->id;
+				 INNER JOIN #__sdi_translation t on t.element_guid = m.guid
+				 INNER JOIN #__sdi_language l ON t.language_id=l.id
+				 INNER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id
+				 WHERE ovl.parent_id=".$rowObjectVersion->id."
+				 AND cl.code = '".$language->_lang."'";
 		$db->setQuery($query);
 		$childs = $db->loadObjectList();
 		
 		$parents=array();
-		$query = "SELECT m.guid as metadata_guid, o.name as objectname, ot.code as objecttype
+		$query = "SELECT m.guid as metadata_guid, o.name as objectname, ot.code as objecttype, t.title as metadatatitle
 				 FROM #__sdi_metadata m
 				 INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
 				 INNER JOIN #__sdi_object o ON ov.object_id = o.id
 				 INNER JOIN #__sdi_objecttype ot ON o.objecttype_id = ot.id
 				 INNER JOIN #__sdi_objectversionlink ovl ON ov.id = ovl.parent_id
-				 WHERE ovl.child_id=".$rowObjectVersion->id;
+				 INNER JOIN #__sdi_translation t on t.element_guid = m.guid
+				 INNER JOIN #__sdi_language l ON t.language_id=l.id
+				 INNER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id
+				 WHERE ovl.child_id=".$rowObjectVersion->id."
+				 AND cl.code = '".$language->_lang."'";
 		$db->setQuery($query);
 		$parents = $db->loadObjectList();
 		
@@ -2180,6 +2188,7 @@ class displayManager{
 		{
 			$XMLChild = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:child");
 			$XMLChild->setAttribute('metadata_guid', $c->metadata_guid);
+			$XMLChild->setAttribute('metadata_title', $c->metadatatitle);
 			$XMLChild->setAttribute('object_name', $c->objectname);
 			$XMLChild->setAttribute('objecttype', $c->objecttype);
 			$XMLLinks->appendChild($XMLChild);
@@ -2189,6 +2198,7 @@ class displayManager{
 		{
 			$XMLParent = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:parent");
 			$XMLParent->setAttribute('metadata_guid', $p->metadata_guid);
+			$XMLChild->setAttribute('metadata_title', $p->metadatatitle);
 			$XMLParent->setAttribute('object_name', $p->objectname);
 			$XMLParent->setAttribute('objecttype', $p->objecttype);	
 			$XMLLinks->appendChild($XMLParent);
@@ -2221,7 +2231,7 @@ class displayManager{
 		}
 		$XMLSdi->appendChild($XMLExternalApp);
 			
-		//$doc->save("C:/tmp/temp1.xml");
+		$doc->save("C:/tmp/temp1.xml");
 		                     
 		return $doc;
 	}
