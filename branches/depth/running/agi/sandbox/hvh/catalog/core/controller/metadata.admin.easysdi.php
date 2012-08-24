@@ -294,8 +294,6 @@ class ADMIN_metadata {
 			</csw:GetRecordById>			
 		";
 		
-		//echo "<hr>".htmlspecialchars($xmlBody)."<hr>";
-		
 		// Requéte de type GET pour le login (conserver le token response)
 		// Stocker dans un cookie le résultat de la requéte précédente
 		// Mettre le cookie dans l'en-téte de la requéte insert
@@ -327,7 +325,6 @@ class ADMIN_metadata {
 		}
 		else
 		{
-			//$xpathResults = new DOMXPath($doc);
 			$msg = JText::_('CATALOG_METADATA_EDIT_NOMETADATA_MSG');
 			switch ($task)
 			{
@@ -344,7 +341,6 @@ class ADMIN_metadata {
         
         // Récupération des namespaces à inclure
 		$namespacelist = array();
-		//$namespacelist[] = JHTML::_('select.option','0', JText::_("CATALOG_ATTRIBUTE_NAMESPACE_LIST") );
 		$database->setQuery( "SELECT prefix, uri FROM #__sdi_namespace ORDER BY prefix" );
 		$namespacelist = array_merge( $namespacelist, $database->loadObjectList() );
 		
@@ -423,6 +419,7 @@ class ADMIN_metadata {
 						 rel.classchild_id as child_id, 
 						 rel.objecttypechild_id as objecttype_id, 
 						 rel.editable as editable,
+						 rel.istitle as istitle,
 						 CONCAT(relation_namespace.prefix,':',rel.isocode) as rel_isocode, 
 						 rel.relationtype_id as reltype_id, 
 						 rel.classassociation_id as association_id,
@@ -490,6 +487,10 @@ class ADMIN_metadata {
 		$database->setQuery( $query );
 		$rowChilds = array_merge( $rowChilds, $database->loadObjectList() );
 		
+		//Store Title into EasySDI database
+		$titles = array ();
+		$session = JFactory::getSession();
+		
 		foreach($rowChilds as $child)
 		{
 			// Traitement d'une relation vers un attribut
@@ -546,9 +547,7 @@ class ADMIN_metadata {
 					case 2:
 						// Récupération des valeurs postées correspondantes
 						$keys = array_keys($_POST);
-						//print_r($keys);
 						$usefullVals=array();
-						//$usefullKeys=array();
 						$count=0;
 						if ($child->editable == 2)
 							$name = $name."__1"."_hiddenVal";
@@ -556,27 +555,21 @@ class ADMIN_metadata {
 						foreach($keys as $key)
 						{
 							$partToCompare = substr($key, 0, strlen($name));
-							//echo "partToCompare: ".$partToCompare."\r\n";
-							//echo "name: ".$name."\r\n";
 							if ($partToCompare == $name)
 							{
 								if (substr($key, -6) <> "_index")
 								{
 									$count = $count+1;
-									//$usefullKeys[] = $key;
 									$usefullVals[] = $_POST[$key];
 								}
 							}
 						}
-						//echo $name." ".$count."\r\n";
-						//print_r($usefullVals);
 						
 						// Ajouter chacune des copies du champ dans le XML résultat
 						for ($pos=1; $pos<=$count; $pos++)
 						{
 							$nodeValue = $usefullVals[$pos-1];
 							$nodeValue = htmlspecialchars($nodeValue);
-							//$nodeValue = stripslashes($nodeValue);
 									
 							$XMLNode = $XMLDoc->createElement($child->attribute_isocode);
 							$xmlAttributeParent->appendChild($XMLNode);
@@ -588,16 +581,13 @@ class ADMIN_metadata {
 						break;
 					// Local
 					case 3:
-						/* Traitement spécifique aux langues */
+						// Traitement spécifique aux langues 
 						// On crée le nom spécifiquement pour les textes localisés
-						$name = $parentName."-".str_replace(":", "_", $child->attribute_isocode); //."-".str_replace(":", "_", $type_isocode);
+						$name = $parentName."-".str_replace(":", "_", $child->attribute_isocode); 
 	
 						$count=0;
-				
 						foreach($keyVals as $key => $val)
 						{
-							//echo "key: ".$key."\r\n";
-							//echo "equals: ".$parentName."-".str_replace(":", "_", $child->attribute_isocode)."__1"."\r\n";
 							if ($key == $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__1")
 							{
 								$count = $val;
@@ -606,12 +596,9 @@ class ADMIN_metadata {
 						}
 						$count = $count - 1;
 						
-						//echo "count: ".$count."\r\n";
-						
 						for ($pos=0; $pos<$count; $pos++)
 						{
 							$LocName = $name."__".($pos+2);
-							//echo "LocName: ".$LocName."\r\n";
 							
 							// S'assurer que l'entrée a bien été retournée, et que ce n'est pas juste un effet de bord
 							// du comptage, lié à des +/- successifs 
@@ -624,8 +611,7 @@ class ADMIN_metadata {
 									break;
 								}
 							}
-							//echo "countExist: ".$countExist."\r\n";
-
+			
 							if ($countExist == 1)
 							{
 								$XMLNode = $XMLDoc->createElement($child->attribute_isocode);
@@ -634,79 +620,65 @@ class ADMIN_metadata {
 							
 								foreach($this->langList as $lang)
 								{
-									//print_r($lang); echo "\r\n";
 									$LangName = $LocName."-gmd_LocalisedCharacterString-".$lang->code_easysdi."__1";
-									//echo "LangName: ".$LangName."\r\n";  
-	
+			
 									// Récupération des valeurs postées correspondantes
 									$keys = array_keys($_POST);
 									$usefullVals=array();
-									//$usefullKeys=array();
-									$langCount=0;
-								
+									
 									foreach($keys as $key)
 									{
 										$partToCompare = substr($key, 0, strlen($LangName));
-										//echo "partToCompare: ".$partToCompare."\r\n";
-										//echo "key: ".$key."\r\n";
 										if ($partToCompare == $LangName)
 										{
 											if (substr($key, -6) <> "_index")
 											{
-												$langCount = $langCount+1;
-												//$usefullKeys[] = $key;
-												$usefullVals[$lang->code_easysdi] = $_POST[$key];
+												$nodeValue = $_POST[$key];
+												break;
 											}
 										}
 									}
-									//$count = $count/count($this->langList);
-								
-									//echo "count langue: ".$langCount."\r\n";
-									//print_r($usefullVals); echo "\r\n";
+										
+									$nodeValue = htmlspecialchars($nodeValue);
+									$nodeValue = preg_replace("/\r\n|\r|\n/","&#xD;",$nodeValue);
 									
-									for ($langPos=1; $langPos<=$langCount; $langPos++)
+									if($child->istitle == 1)
+										$titles [$lang->code] = $nodeValue;
+									
+									
+									// Ajout des balises inhérantes aux locales
+									if ($lang->defaultlang == true) // La langue par défaut
 									{
-										$nodeValue=$usefullVals[$lang->code_easysdi];
-										//echo $nodeValue."<br>";
-										/*if (mb_detect_encoding($nodeValue) <> "UTF-8")
-											$nodeValue = utf8_encode($nodeValue);
-										*/
-										//$nodeValue = stripslashes($nodeValue);
-										$nodeValue = htmlspecialchars($nodeValue);
-										$nodeValue = preg_replace("/\r\n|\r|\n/","&#xD;",$nodeValue);
-										// Ajout des balises inhérantes aux locales
-										if ($lang->defaultlang == true) // La langue par défaut
-										{
-											$XMLNode = $XMLDoc->createElement("gco:CharacterString", $nodeValue);
-											$xmlLocParent->appendChild($XMLNode);
-										}
-										else // Les autres langues
-										{
-											$XMLNode = $XMLDoc->createElement("gmd:PT_FreeText");
-											$xmlLocParent->appendChild($XMLNode);
-											$xmlLocParent_temp = $XMLNode;
-											$XMLNode = $XMLDoc->createElement("gmd:textGroup");
-											$xmlLocParent_temp->appendChild($XMLNode);
-											$xmlLocParent_temp = $XMLNode;
-											// Ajout de la valeur
-											$XMLNode = $XMLDoc->createElement("gmd:LocalisedCharacterString", $nodeValue);
-											$xmlLocParent_temp->appendChild($XMLNode);
-											// Indication de la langue concernée
-											$XMLNode->setAttribute('locale', "#".$lang->code);
-											//$xmlParent = $XMLNode;
-										}
-										//print_r($XMLNode->nodeName.", ".$XMLNode->nodeValue);
+										$XMLNode = $XMLDoc->createElement("gco:CharacterString", $nodeValue);
+										$xmlLocParent->appendChild($XMLNode);
 									}
+									else // Les autres langues
+									{
+										$XMLNode = $XMLDoc->createElement("gmd:PT_FreeText");
+										$xmlLocParent->appendChild($XMLNode);
+										$xmlLocParent_temp = $XMLNode;
+										$XMLNode = $XMLDoc->createElement("gmd:textGroup");
+										$xmlLocParent_temp->appendChild($XMLNode);
+										$xmlLocParent_temp = $XMLNode;
+										// Ajout de la valeur
+										$XMLNode = $XMLDoc->createElement("gmd:LocalisedCharacterString", $nodeValue);
+										$xmlLocParent_temp->appendChild($XMLNode);
+										// Indication de la langue concernée
+										$XMLNode->setAttribute('locale', "#".$lang->code);
+									}
+									
 								}
 							}
 						}
+						if($child->istitle == 1)
+							$session->set ('MD_TITLE',$titles);
+
 						break;
 					// Number
 					case 4:
 						// Récupération des valeurs postées correspondantes
 						$keys = array_keys($_POST);
 						$usefullVals=array();
-						//$usefullKeys=array();
 						$count=0;
 						foreach($keys as $key)
 						{
@@ -719,7 +691,6 @@ class ADMIN_metadata {
 								if (substr($key, -6) <> "_index")
 								{
 									$count = $count+1;
-									//$usefullKeys[] = $key;
 									$usefullVals[] = $_POST[$key];
 								}
 							}
@@ -729,11 +700,8 @@ class ADMIN_metadata {
 						for ($pos=1; $pos<=$count; $pos++)
 						{
 							$nodeValue = $usefullVals[$pos-1];
-							//$nodeValue = stripslashes($nodeValue);
-									
 							$XMLNode = $XMLDoc->createElement($child->attribute_isocode);
 							$xmlAttributeParent->appendChild($XMLNode);
-							
 							$XMLValueNode = $XMLDoc->createElement($childType, $nodeValue);
 							$XMLNode->appendChild($XMLValueNode);
 							$xmlParent = $XMLValueNode;
@@ -747,9 +715,6 @@ class ADMIN_metadata {
 						$count=0;
 						foreach($keys as $key)
 						{
-// 							if ($child->editable == 2)
-// 								$name = $name."__1"."_hiddenVal";
-							
 							$partToCompare = substr($key, 0, strlen($name));
 							if ($partToCompare == $name)
 							{
@@ -784,45 +749,29 @@ class ADMIN_metadata {
 							case 2:
 								// Récupération des valeurs postées correspondantes
 								$keys = array_keys($_POST);
-								//print_r($keys);echo "\r\n";
 								$usefullVals=array();
-								//$usefullKeys=array();
 								$count=0;
 								foreach($keys as $key)
 								{
 									$partToCompare = substr($key, 0, strlen($parentName."-".str_replace(":", "_", $child->attribute_isocode)));
 									if ($partToCompare == $parentName."-".str_replace(":", "_", $child->attribute_isocode))
 									{
-										//echo "partToCompare: ".$partToCompare."\r\n";
-										//echo "second partToCompare: ".$parentName."-".str_replace(":", "_", $child->attribute_isocode)."\r\n";
-										//echo "key: ".$key."\r\n";
-										//echo "value: ".$_POST[$key]."\r\n";
-										
 										if (substr($key, -6) <> "_index")
 										{
 											$count = $count+1;
-											//$usefullKeys[] = $key;
 											$usefullVals[] = $_POST[$key];
 										}
 									}
 								}
-								//print_r($usefullVals);
-								//echo "\r\n";
-								//$nodeValues=split(",",$usefullVals);
 								$nodeValues=$usefullVals;
-								//print_r($nodeValues);
-								//echo "\r\n";
 								
 								// Deux traitement pour deux types de listes
-								//$child->rel_lowerbound < $child->rel_upperbound
 							 	if ($child->codeList <> "")
 							 	{
 								 	foreach($nodeValues as $val)
 									{
 										if ($val)
 										{
-											//$val = stripslashes($val);
-											
 											if ($child->rel_isocode <> "")
 											{
 												$XMLNode = $XMLDoc->createElement($child->rel_isocode);
@@ -851,8 +800,6 @@ class ADMIN_metadata {
 									{
 										if ($val)
 										{
-											//$val = stripslashes($val);
-											
 											if ($child->rel_isocode <> "")
 											{
 												$XMLNode = $XMLDoc->createElement($child->rel_isocode);
@@ -879,36 +826,21 @@ class ADMIN_metadata {
 							case 3:
 								// Récupération des valeurs postées correspondantes
 								$keys = array_keys($_POST);
-								//print_r($keys);echo "\r\n";
-								//print_r(array_values($_POST));
-								//echo "\r\n";
 								$usefullVals=array();
-								//$usefullKeys=array();
 								$count=0;
 								foreach($keys as $key)
 								{
 									$partToCompare = substr($key, 0, strlen($parentName."-".str_replace(":", "_", $child->attribute_isocode)));
 									if ($partToCompare == $parentName."-".str_replace(":", "_", $child->attribute_isocode))
 									{
-										//echo "partToCompare: ".$partToCompare."\r\n";
-										//echo "second partToCompare: ".$parentName."-".str_replace(":", "_", $child->attribute_isocode)."\r\n";
-										//echo "key: ".$key."\r\n";
-										//echo "value: ".$_POST[$key]."\r\n";
-										
 										if (substr($key, -6) <> "_index")
 										{
 											$count = $count+1;
-											//$usefullKeys[] = $key;
 											$usefullVals[] = $_POST[$key];
 										}
 									}
 								}
-								
 								$nodeValue = $usefullVals[0];
-								//$nodeValue = stripslashes($nodeValue);
-									
-								//echo $nodeValue."\r\n";
-								
 								if ($nodeValue <> "")
 								{
 									// Deux traitement pour deux types de listes
@@ -959,27 +891,19 @@ class ADMIN_metadata {
 							// List
 							case 4:
 							default:
-								/* Traitement spécifique aux listes */
-						
+								// Traitement spécifique aux listes 
 								// Récupération des valeurs postées correspondantes
 								$keys = array_keys($_POST);
 								$usefullVals=array();
-								//$usefullKeys=array();
 								$count=0;
 								foreach($keys as $key)
 								{
 									$partToCompare = substr($key, 0, strlen($parentName."-".str_replace(":", "_", $child->attribute_isocode)));
 									if ($partToCompare == $parentName."-".str_replace(":", "_", $child->attribute_isocode))
 									{
-										//echo "partToCompare: ".$partToCompare."\r\n";
-										//echo "second partToCompare: ".$parentName."-".str_replace(":", "_", $child->attribute_isocode)."\r\n";
-										//echo "key: ".$key."\r\n";
-										//echo "value: ".$_POST[$key]."\r\n";
-										
 										if (substr($key, -6) <> "_index")
 										{
 											$count = $count+1;
-										//$usefullKeys[] = $key;
 											$usefullVals[] = $_POST[$key];
 										}
 									}
@@ -988,15 +912,12 @@ class ADMIN_metadata {
 								// Traitement de la multiplicité
 							 	// Récupération du path du bloc de champs qui va être créé pour construire le nom
 							 	$listName = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."__1";
-								//$nodeValue = $usefullVals[0];
-								
 								if (count($usefullVals) > 0)
 									$nodeValues=split(",",$usefullVals[0]);		
 								else
 									$nodeValues=array();
 								
 								// Deux traitement pour deux types de listes
-								//$child->rel_lowerbound < $child->rel_upperbound
 							 	if ($child->codeList <> "")
 							 	{
 								 	foreach($nodeValues as $val)
@@ -1061,7 +982,6 @@ class ADMIN_metadata {
 						// Récupération des valeurs postées correspondantes
 						$keys = array_keys($_POST);
 						$usefullVals=array();
-						//$usefullKeys=array();
 						$count=0;
 						foreach($keys as $key)
 						{
@@ -1074,7 +994,6 @@ class ADMIN_metadata {
 								if (substr($key, -6) <> "_index")
 								{
 									$count = $count+1;
-									//$usefullKeys[] = $key;
 									$usefullVals[] = $_POST[$key];
 								}
 							}
@@ -1084,10 +1003,8 @@ class ADMIN_metadata {
 						for ($pos=1; $pos<=$count; $pos++)
 						{
 							$nodeValue = $usefullVals[$pos-1];
-									
 							$XMLNode = $XMLDoc->createElement($child->attribute_isocode);
 							$xmlAttributeParent->appendChild($XMLNode);
-							
 							$XMLValueNode = $XMLDoc->createElement($childType, $nodeValue);
 							$XMLNode->appendChild($XMLValueNode);
 							$xmlParent = $XMLValueNode;
@@ -1098,7 +1015,6 @@ class ADMIN_metadata {
 						// Récupération des valeurs postées correspondantes
 						$keys = array_keys($_POST);
 						$usefullVals=array();
-						//$usefullKeys=array();
 						$count=0;
 						foreach($keys as $key)
 						{
@@ -1111,7 +1027,6 @@ class ADMIN_metadata {
 								if (substr($key, -6) <> "_index")
 								{
 									$count = $count+1;
-									//$usefullKeys[] = $key;
 									$usefullVals[] = $_POST[$key];
 								}
 							}
@@ -1121,7 +1036,6 @@ class ADMIN_metadata {
 						for ($pos=1; $pos<=$count; $pos++)
 						{
 							$nodeValue = $usefullVals[$pos-1];
-							//$nodeValue = stripslashes($nodeValue);
 							if ($nodeValue <> "")
 								$nodeValue = date('Y-m-d', strtotime($nodeValue))."T00:00:00";
 							
@@ -1138,11 +1052,9 @@ class ADMIN_metadata {
 						// Récupération des valeurs postées correspondantes
 						$keys = array_keys($_POST);
 						$usefullVals=array();
-						//$usefullKeys=array();
 						$count=0;
 						foreach($keys as $key)
 						{
-							//$partToCompare = substr($key, 0, strlen($parentName."-".str_replace(":", "_", $child->attribute_isocode)));
 							$partToCompare_temp1 = substr($key, strlen($parentName."-"));
 							if (strpos($partToCompare_temp1, "-"))
 								$partToCompare_temp2 = substr($partToCompare_temp1, 0, strpos($partToCompare_temp1, "-"));
@@ -1161,15 +1073,11 @@ class ADMIN_metadata {
 								}
 							}
 						}
-						
-						//print_r($usefullVals);
-						
 						// Ajouter chacune des copies du champ dans le XML résultat
 						for ($pos=1; $pos<=$count; $pos++)
 						{
 							$nodeValue = $usefullVals[$pos-1];
-							//$nodeValue = stripslashes($nodeValue);
-
+		
 							// Récupérer la valeur liée à cette entrée de liste
 							$query = "SELECT value FROM #__sdi_codevalue WHERE guid = '".$nodeValue."'";
 							$database->setQuery( $query );
@@ -1263,14 +1171,12 @@ class ADMIN_metadata {
 									$xmlLocParent_temp->appendChild($XMLNode);
 									// Indication de la langue concernée
 									$XMLNode->setAttribute('locale', "#".$codeToSave);
-									//$xmlParent = $XMLNode;
 								}
 							}
 						}
 						break;
 					// Thesaurus GEMET
 					case 11:
-						//echo $parentName."-".str_replace(":", "_", $child->attribute_isocode)."<br>";
 						// Récupération des valeurs postées correspondantes
 						$keys = array_keys($_POST);
 						$usefullVals=array();
@@ -1343,7 +1249,6 @@ class ADMIN_metadata {
 											$xmlLocParent_temp->appendChild($XMLNode);
 											// Indication de la langue concernée
 											$XMLNode->setAttribute('locale', "#".$loc->code);
-											//$xmlParent = $XMLNode;
 										}
 									}
 								}
@@ -1354,9 +1259,7 @@ class ADMIN_metadata {
 					case 14 :					
 						// Récupération des valeurs postées correspondantes
 						$keys = array_keys($_POST);
-						
 						$usefullVals=array();
-						
 						$count=0;
 						if ($child->editable == 2)
 							$name = $name."__1"."_hiddenVal";
@@ -1400,7 +1303,6 @@ class ADMIN_metadata {
 						// Récupération des valeurs postées correspondantes
 						$keys = array_keys($_POST);
 						$usefullVals=array();
-						//$usefullKeys=array();
 						$count=0;
 						foreach($keys as $key)
 						{
@@ -1413,7 +1315,6 @@ class ADMIN_metadata {
 								if (substr($key, -6) <> "_index")
 								{
 									$count = $count+1;
-									//$usefullKeys[] = $key;
 									$usefullVals[] = $_POST[$key];
 								}
 							}
@@ -1423,7 +1324,6 @@ class ADMIN_metadata {
 						for ($pos=1; $pos<=$count; $pos++)
 						{
 							$nodeValue = $usefullVals[$pos-1];
-							//$nodeValue = stripslashes($nodeValue);
 									
 							$XMLNode = $XMLDoc->createElement($child->attribute_isocode);
 							$xmlAttributeParent->appendChild($XMLNode);
@@ -1459,10 +1359,6 @@ class ADMIN_metadata {
 					foreach($keys as $key){
 						$partToCompare = substr($key, 0, strlen($name));
 						if ($partToCompare == $name){
-// 							echo ("Name : ".$name);
-// 							echo ("\n");
-// 							echo ("key : ".$key);
-// 							echo ("\n");
 							$existVal = true;
 							break;
 						}
@@ -1553,7 +1449,6 @@ class ADMIN_metadata {
 							if (substr($key, -6) <> "_index")
 							{
 								$searchCount = $searchCount+1;
-								//$usefullKeys[] = $key;
 								$usefullVals[] = $_POST[$key];
 							}
 						}
@@ -1744,8 +1639,8 @@ class ADMIN_metadata {
 							        xml: "Metadata saved"
 							    }
 							}';
-				print_r($response);
-				die();
+// 				print_r($response);
+// 				die();
 			}
 			
 			// Mettre à jour la métadonnée liée (state et revision)
@@ -1753,10 +1648,35 @@ class ADMIN_metadata {
 			$rowMetadata->load($metadata_id);
 			$rowMetadata->updated = date('Y-m-d H:i:s');
 			$rowMetadata->updatedby = $account_id;
-			
 			if (!$rowMetadata->store()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 				exit();
+			}
+			$rowMetadata->load($metadata_id);
+			
+			$session = JFactory::getSession();
+			$MD_title = $session->get('MD_TITLE');
+			if(isset($MD_title)){
+				foreach ($MD_title as $key => $value){
+					$database->setQuery("INSERT INTO #__sdi_translation (element_guid, language_id, title, created) 
+											VALUES ('".$rowMetadata->guid."', 
+													(SELECT id FROM #__sdi_language WHERE code ='".$key."'), 
+													'".addslashes($value)."',
+													NOW())");
+					print_r("INSERT INTO #__sdi_translation (element_guid, language_id, title, created) 
+											VALUES ('".$rowMetadata->guid."', 
+													(SELECT id FROM #__sdi_language WHERE code ='".$key."'), 
+													'".addslashes($value)."',
+													NOW())");
+									die();
+					if (!$database->query())
+					{	
+						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+						exit();
+					}
+					
+				}
+				$session->clear('MD_TITLE');
 			}
 			
 			// Checkin object
