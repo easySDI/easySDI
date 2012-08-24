@@ -1494,10 +1494,10 @@ class ADMIN_metadata {
 	function saveMetadata($option)
 	{
 		global  $mainframe;
-		$database =& JFactory::getDBO(); 
-		$option = $_POST['option'];
-		$metadata_id = $_POST['metadata_id'];
-		$object_id = $_POST['object_id'];
+		$database 		=& JFactory::getDBO(); 
+		$option 		= $_POST['option'];
+		$metadata_id 	= $_POST['metadata_id'];
+		$object_id 		= $_POST['object_id'];
 		
 		// Remise à jour des compteurs de suppression et d'ajout 
 		$deleted=0;
@@ -1616,12 +1616,11 @@ class ADMIN_metadata {
 		try
 		{
 			ADMIN_metadata::buildXMLTree($root->id, $root->id, str_replace(":", "_", $root->isocode), $XMLDoc, $XMLNode, $path, $root->isocode, $_POST, $keyVals, $profile_id, $account_id, $option);
-			
 			$updated = ADMIN_metadata::CURLUpdateMetadata($metadata_id, $XMLDoc );
 			
 			if ($updated <> 1)
 			{
-				$errorMsg = "erreur"; //$xpathDelete->query("//csw:totalDeleted")->item(0)->nodeValue;
+				$errorMsg = "erreur"; 
 				$response = '{
 					    		success: false,
 							    errors: {
@@ -1639,12 +1638,12 @@ class ADMIN_metadata {
 							        xml: "Metadata saved"
 							    }
 							}';
-// 				print_r($response);
-// 				die();
+				print_r($response);
+				die();
 			}
 			
 			// Mettre à jour la métadonnée liée (state et revision)
-			$rowMetadata = new metadata($database);
+			$rowMetadata = new metadataByGuid($database);
 			$rowMetadata->load($metadata_id);
 			$rowMetadata->updated = date('Y-m-d H:i:s');
 			$rowMetadata->updatedby = $account_id;
@@ -1652,33 +1651,37 @@ class ADMIN_metadata {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 				exit();
 			}
-			$rowMetadata->load($metadata_id);
 			
+			//Mettre à jour le titre multilingue de la métadonnées
 			$session = JFactory::getSession();
 			$MD_title = $session->get('MD_TITLE');
 			if(isset($MD_title)){
+				$user = JFactory::getUser();
 				foreach ($MD_title as $key => $value){
-					$database->setQuery("INSERT INTO #__sdi_translation (element_guid, language_id, title, created) 
+					$database->setQuery ("SELECT COUNT(*) FROM #__sdi_translation 
+											WHERE element_guid ='".$rowMetadata->guid."' 
+											AND language_id=(SELECT id FROM #__sdi_language WHERE code ='".$key."' )");
+					$count = $database->loadResult();
+					if($count > 0){
+						$query = "UPDATE #__sdi_translation SET title = '".addslashes($value)."' , updated = NOW(), updatedby = ".$user->id." 
+									WHERE element_guid = '".$rowMetadata->guid."'
+									AND language_id=(SELECT id FROM #__sdi_language WHERE code ='".$key."' )";
+					}else{
+						$query = "INSERT INTO #__sdi_translation (element_guid, language_id, title, created, createdby) 
 											VALUES ('".$rowMetadata->guid."', 
-													(SELECT id FROM #__sdi_language WHERE code ='".$key."'), 
+													(SELECT id FROM #__sdi_language WHERE code ='".$key."' ), 
 													'".addslashes($value)."',
-													NOW())");
-					print_r("INSERT INTO #__sdi_translation (element_guid, language_id, title, created) 
-											VALUES ('".$rowMetadata->guid."', 
-													(SELECT id FROM #__sdi_language WHERE code ='".$key."'), 
-													'".addslashes($value)."',
-													NOW())");
-									die();
-					if (!$database->query())
-					{	
-						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-						exit();
+													NOW(),
+													".$user->id." )";
 					}
 					
+					$database->setQuery($query);
+					if (!$database->query()){	
+						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+					}
 				}
 				$session->clear('MD_TITLE');
 			}
-			
 			// Checkin object
 			$rowObject = new object( $database );
 			$rowObject->load( $object_id );
