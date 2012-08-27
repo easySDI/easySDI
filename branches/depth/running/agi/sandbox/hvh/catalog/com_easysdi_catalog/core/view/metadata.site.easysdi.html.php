@@ -424,6 +424,7 @@ else
 		
 		$url = 'index.php?option='.$option.'&task=saveMetadata';
 		$preview_url = 'index.php?option='.$option.'&task=previewXMLMetadata';
+		$previewMD_url = 'index.php?option='.$option.'&task=previewMetadata';
 		$invalidate_url = 'index.php?option='.$option.'&task=invalidateMetadata';
 		$validate_url = 'index.php?option='.$option.'&task=validateMetadata';
 		$update_url = 'index.php?option='.$option.'&task=updateMetadata';
@@ -728,7 +729,8 @@ else
 										}
 									});
 								},
-						        buttons: [{
+						        buttons: [
+						        		{
 							                text: '".JText::_('CORE_XML_PREVIEW')."',
 							                handler: function()
 							                {
@@ -796,6 +798,70 @@ else
 														myMask.hide();
 													},
 													url:'".$preview_url."'
+												});
+							        	}
+						        },
+						        {
+							                text: '".JText::_('CORE_MD_PREVIEW')."',
+							                handler: function()
+							                {
+							                	myMask.show();
+							                 	var fields = new Array();
+							        			form.cascade(function(cmp)
+							        			{
+								        			if (cmp.xtype=='fieldset')
+							         				{
+							         					if (cmp.clones_count)
+							          					{
+							           						fields.push(cmp.getId()+','+cmp.clones_count);
+							         					}
+							         				}
+							        			});
+							        			var fieldsets = fields.join(' | ');
+							        			
+												form.getForm().setValues({fieldsets: fieldsets});
+							              		form.getForm().setValues({task: 'previewMetadata'});
+							                 	form.getForm().setValues({metadata_id: '".$metadata_id."'});
+							                 	form.getForm().setValues({object_id: '".$object_id."'});
+												form.getForm().submit({
+											    	scope: this,
+													method	: 'POST',
+													clientValidation: false,
+													success: function(form, action) 
+													{
+														var xml = action.result.file.xml;
+														xml = xml.split('<br>').join('\\n');
+														var html = '<pre class=\"brush: xml;gutter: false;\">' + xml + '</pre>';
+														
+														// Creer une iframe pour accueillir le preview XML
+														mifWin = new Ext.Window({
+						
+														      title         : 'Preview',
+														      width         : 845,
+														      height        : 469,
+														      maximizable   : false,
+														      collapsible   : false,
+														      id            : 'preview',
+														      constrain     : false,
+														      loadMask      : {msg: 'Loading...'},
+														      autoScroll    : true,
+														      html			: html
+														  });
+								  						mifWin.show();
+								  						SyntaxHighlighter.highlight();
+														
+								  						myMask.hide();
+													},
+													failure: function(form, action) 
+													{
+                        								if (action.result)
+															alert(action.result.errors.xml);
+														else
+															alert('Form validation error');
+															
+														myMask.hide();
+													},
+													url:'".$previewMD_url."'
 												});
 							        	}
 						        }
