@@ -2160,11 +2160,10 @@ class displayManager{
 				 INNER JOIN #__sdi_object o ON ov.object_id = o.id
 				 INNER JOIN #__sdi_objecttype ot ON o.objecttype_id = ot.id
 				 INNER JOIN #__sdi_objectversionlink ovl ON ov.id = ovl.child_id
-				 INNER JOIN #__sdi_translation t on t.element_guid = m.guid
-				 INNER JOIN #__sdi_language l ON t.language_id=l.id
-				 INNER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id
-				 WHERE ovl.parent_id=".$rowObjectVersion->id."
-				 AND cl.code = '".$language->_lang."'";
+				 LEFT OUTER JOIN #__sdi_translation t on t.element_guid = m.guid
+				 LEFT OUTER JOIN #__sdi_language l ON t.language_id=l.id
+				 LEFT OUTER JOIN (SELECT * FROM  #__sdi_list_codelang WHERE code='".$language->_lang."') cl ON l.codelang_id=cl.id
+				 WHERE ovl.parent_id=".$rowObjectVersion->id;
 		$db->setQuery($query);
 		$childs = $db->loadObjectList();
 		
@@ -2175,11 +2174,10 @@ class displayManager{
 				 INNER JOIN #__sdi_object o ON ov.object_id = o.id
 				 INNER JOIN #__sdi_objecttype ot ON o.objecttype_id = ot.id
 				 INNER JOIN #__sdi_objectversionlink ovl ON ov.id = ovl.parent_id
-				 INNER JOIN #__sdi_translation t on t.element_guid = m.guid
-				 INNER JOIN #__sdi_language l ON t.language_id=l.id
-				 INNER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id
-				 WHERE ovl.child_id=".$rowObjectVersion->id."
-				 AND cl.code = '".$language->_lang."'";
+				 LEFT OUTER JOIN #__sdi_translation t on t.element_guid = m.guid
+				 LEFT OUTER JOIN #__sdi_language l ON t.language_id=l.id
+				 LEFT OUTER JOIN (SELECT * FROM  #__sdi_list_codelang WHERE code='".$language->_lang."') cl ON l.codelang_id=cl.id
+				 WHERE ovl.child_id=".$rowObjectVersion->id;
 		$db->setQuery($query);
 		$parents = $db->loadObjectList();
 

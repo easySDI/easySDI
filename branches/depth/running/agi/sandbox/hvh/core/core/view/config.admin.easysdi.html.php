@@ -19,7 +19,7 @@ defined('_JEXEC') or die('Restricted access');
 
 class HTML_config {
 	
-	function showConfig($option, $coreList, $catalogItem, $catalogList, $shopItem, $shopList, $proxyItem, $proxyList, $monitorItem, $monitorList, $publishItem, $publishList,$mapItem, $mapList,$fieldsLength, $attributetypelist )
+	function showConfig($option, $coreList, $catalogItem, $catalogList, $shopItem, $shopList, $proxyItem, $proxyList, $monitorItem, $monitorList, $publishItem, $publishList,$mapItem, $mapList,$fieldsLength, $attributetypelist, $relationtitlelist,$relationtitle )
 	{
 		global $mainframe;
 
@@ -315,6 +315,16 @@ if ($catalogItem > 0){
 										</td>
 										<td>
 											<input class="text_area" type="text" size="50" name="catalog_search_ogcfilterfileid" value="<?php echo $catalogList['CATALOG_SEARCH_OGCFILTERFILEID']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+										</td>
+									</tr>
+									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_RELATION_TITLE_TIP' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_RELATION_TITLE_LABEL' ); ?>
+											</span>
+										</td>
+										<td>
+											<?php echo JHTML::_("select.genericlist",$relationtitlelist, 'relationtitle', 'size="1" class="inputbox"', 'value', 'text', $relationtitle ); ?>
 										</td>
 									</tr>
 									<tr>

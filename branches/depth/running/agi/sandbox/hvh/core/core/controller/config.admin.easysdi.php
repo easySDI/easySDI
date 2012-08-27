@@ -165,15 +165,24 @@ class ADMIN_config {
 		$db->setQuery( $query );
 		$attributetypelist = $db->loadObjectList();
 		
+		//List des relation pouvant être utilisées en tant que titre de la métadonnée
+		$relationtitlelist = array();
+		$query = "SELECT id as value, name as text FROM #__sdi_relation WHERE rendertype_id IN (1,2,3,4,5,8) AND published = 1 ORDER BY name";
+		$db->setQuery( $query );
+		$relationtitlelist = $db->loadObjectList();
 		
-		HTML_config::showConfig($option, $coreList, $catalogItem, $catalogList, $shopItem, $shopList, $proxyItem, $proxyList,  $monitorItem, $monitorList,$publishItem, $publishList,$mapItem, $mapList, $fieldsLength, $attributetypelist );
+		$query = "SELECT id FROM #__sdi_relation WHERE istitle = 1 LIMIT 0,1 ";
+		$db->setQuery( $query );
+		$relationtitle = $db->loadResult();
+		
+		HTML_config::showConfig($option, $coreList, $catalogItem, $catalogList, $shopItem, $shopList, $proxyItem, $proxyList,  $monitorItem, $monitorList,$publishItem, $publishList,$mapItem, $mapList, $fieldsLength, $attributetypelist, $relationtitlelist,$relationtitle );
 	}
 
 	function saveShowConfig($option) {
 		global $mainframe;
 		$database=& JFactory::getDBO(); 
 		
-		// Sauvegarde des cl�s CORE
+		// Sauvegarde des clés CORE
 		$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['description_length'])."\" WHERE code = 'DESCRIPTION_LENGTH'");
 		if (!$database->query()) {			
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -191,7 +200,7 @@ class ADMIN_config {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 		}
 		
-		// Sauvegarde des cl�s CATALOG
+		// Sauvegarde des clés CATALOG
 		if ($_POST['catalog_item'] > 0)
 		{
 			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['catalog_url'])."\" WHERE code = 'CATALOG_URL'");
@@ -303,9 +312,17 @@ class ADMIN_config {
 			if (!$database->query()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
+			$database->setQuery( "UPDATE #__sdi_relation SET istitle=0 WHERE istitle = 1");
+			if (!$database->query()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			$database->setQuery( "UPDATE #__sdi_relation SET istitle=1 WHERE id = ".addslashes(trim($_POST['relationtitle'])));
+			if (!$database->query()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
 		}
 		
-		// Sauvegarde des cl�s SHOP
+		// Sauvegarde des clés SHOP
 		if ($_POST['shop_item'] > 0)
 		{
 			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes($_POST['proxyhost'])."\" WHERE code = 'SHOP_CONFIGURATION_PROXYHOST'");
