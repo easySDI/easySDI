@@ -402,13 +402,15 @@ class ADMIN_metadata {
 	 */
 	function buildXMLTree($parent, $parentFieldset, $parentName, &$XMLDoc, $xmlParent, $queryPath, $currentIsocode, $scope, $keyVals, $profile_id, $account_id, $option)
 	{
-		$database =& JFactory::getDBO();
-		$rowChilds = array();
-		$xmlClassParent = $xmlParent;
+		$database 			=& JFactory::getDBO();
+		$language 			=& JFactory::getLanguage();
+		$session 			=& JFactory::getSession();
+		$rowChilds 			= array();
+		$xmlClassParent 	= $xmlParent;
 		$xmlAttributeParent = $xmlParent;
-		$xmlObjectParent = $xmlParent;
+		$xmlObjectParent 	= $xmlParent;
+		$rowChilds 			= array();
 		
-		$rowChilds = array();
 		$query = "SELECT rel.id as rel_id, 
 						 rel.guid as rel_guid,
 						 rel.name as rel_name, 
@@ -487,22 +489,20 @@ class ADMIN_metadata {
 		$database->setQuery( $query );
 		$rowChilds = array_merge( $rowChilds, $database->loadObjectList() );
 		
-		//Store Title into EasySDI database
-		$titles = array ();
-		$session = JFactory::getSession();
-		
 		foreach($rowChilds as $child)
 		{
 			// Traitement d'une relation vers un attribut
 			if ($child->attribute_id <> null)
 			{
+				//Store Title into EasySDI database
+				$titles = array ();
+				
 				if ($child->attribute_type == 6 )
 					$type_isocode = $child->list_isocode;
 				else
 					$type_isocode = $child->t_isocode;
 		
 				$name = $parentName."-".str_replace(":", "_", $child->attribute_isocode)."-".str_replace(":", "_", $type_isocode);
-	
 				$childType = $child->t_isocode;
 				
 				// Traitement de chaque attribut selon son type
@@ -534,7 +534,10 @@ class ADMIN_metadata {
 						for ($pos=1; $pos<=$count; $pos++)
 						{
 							$nodeValue = $usefullVals[$pos-1];
-									
+
+							if($pos == 1 && $child->istitle == 1)
+								$titles ['NA'] = $nodeValue;
+							
 							$XMLNode = $XMLDoc->createElement($child->attribute_isocode);
 							$xmlAttributeParent->appendChild($XMLNode);
 							
@@ -542,6 +545,8 @@ class ADMIN_metadata {
 							$XMLNode->appendChild($XMLValueNode);
 							$xmlParent = $XMLValueNode;
 						}
+						if($child->istitle == 1)
+							$session->set ('MD_TITLE',$titles);
 						break;
 					// Text
 					case 2:
@@ -570,7 +575,10 @@ class ADMIN_metadata {
 						{
 							$nodeValue = $usefullVals[$pos-1];
 							$nodeValue = htmlspecialchars($nodeValue);
-									
+							
+							if($pos == 1 && $child->istitle == 1)
+								$titles ['NA'] = $nodeValue;
+																	
 							$XMLNode = $XMLDoc->createElement($child->attribute_isocode);
 							$xmlAttributeParent->appendChild($XMLNode);
 							
@@ -578,6 +586,9 @@ class ADMIN_metadata {
 							$XMLNode->appendChild($XMLValueNode);
 							$xmlParent = $XMLValueNode;
 						}
+
+						if($child->istitle == 1)
+							$session->set ('MD_TITLE',$titles);
 						break;
 					// Local
 					case 3:
@@ -645,7 +656,6 @@ class ADMIN_metadata {
 									if($child->istitle == 1)
 										$titles [$lang->code] = $nodeValue;
 									
-									
 									// Ajout des balises inhérantes aux locales
 									if ($lang->defaultlang == true) // La langue par défaut
 									{
@@ -672,7 +682,6 @@ class ADMIN_metadata {
 						}
 						if($child->istitle == 1)
 							$session->set ('MD_TITLE',$titles);
-
 						break;
 					// Number
 					case 4:
@@ -700,12 +709,18 @@ class ADMIN_metadata {
 						for ($pos=1; $pos<=$count; $pos++)
 						{
 							$nodeValue = $usefullVals[$pos-1];
+							
+							if($pos == 1 && $child->istitle == 1)
+								$titles ['NA'] = $nodeValue;
+							
 							$XMLNode = $XMLDoc->createElement($child->attribute_isocode);
 							$xmlAttributeParent->appendChild($XMLNode);
 							$XMLValueNode = $XMLDoc->createElement($childType, $nodeValue);
 							$XMLNode->appendChild($XMLValueNode);
 							$xmlParent = $XMLValueNode;
 						}
+						if($child->istitle == 1)
+							$session->set ('MD_TITLE',$titles);
 						break;
 					// Date
 					case 5:
@@ -730,6 +745,10 @@ class ADMIN_metadata {
 						for ($pos=1; $pos<=$count; $pos++)
 						{
 							$nodeValue = $usefullVals[$pos-1];
+							
+							if($pos == 1 && $child->istitle == 1)
+								$titles ['NA'] = $nodeValue;
+							
 							if ($nodeValue <> "")
 								$nodeValue = date('Y-m-d', strtotime($nodeValue));
 							
@@ -740,6 +759,8 @@ class ADMIN_metadata {
 							$XMLNode->appendChild($XMLValueNode);
 							$xmlParent = $XMLValueNode;
 						}
+						if($child->istitle == 1)
+							$session->set ('MD_TITLE',$titles);
 						break;
 					// List
 					case 6:
@@ -1036,6 +1057,10 @@ class ADMIN_metadata {
 						for ($pos=1; $pos<=$count; $pos++)
 						{
 							$nodeValue = $usefullVals[$pos-1];
+							
+							if($pos == 1 && $child->istitle == 1)
+								$titles ['NA'] = $nodeValue;
+							
 							if ($nodeValue <> "")
 								$nodeValue = date('Y-m-d', strtotime($nodeValue))."T00:00:00";
 							
@@ -1046,6 +1071,8 @@ class ADMIN_metadata {
 							$XMLNode->appendChild($XMLValueNode);
 							$xmlParent = $XMLValueNode;
 						}
+						if($child->istitle == 1)
+							$session->set ('MD_TITLE',$titles);
 						break;
 					// ChoiceText
 					case 9:
@@ -1658,26 +1685,63 @@ class ADMIN_metadata {
 			if(isset($MD_title)){
 				$user = JFactory::getUser();
 				foreach ($MD_title as $key => $value){
-					$database->setQuery ("SELECT COUNT(*) FROM #__sdi_translation 
-											WHERE element_guid ='".$rowMetadata->guid."' 
-											AND language_id=(SELECT id FROM #__sdi_language WHERE code ='".$key."' )");
-					$count = $database->loadResult();
-					if($count > 0){
-						$query = "UPDATE #__sdi_translation SET title = '".addslashes($value)."' , updated = NOW(), updatedby = ".$user->id." 
-									WHERE element_guid = '".$rowMetadata->guid."'
-									AND language_id=(SELECT id FROM #__sdi_language WHERE code ='".$key."' )";
-					}else{
-						$query = "INSERT INTO #__sdi_translation (element_guid, language_id, title, created, createdby) 
-											VALUES ('".$rowMetadata->guid."', 
-													(SELECT id FROM #__sdi_language WHERE code ='".$key."' ), 
-													'".addslashes($value)."',
-													NOW(),
-													".$user->id." )";
-					}
 					
-					$database->setQuery($query);
-					if (!$database->query()){	
-						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+					if($key == 'NA')
+					{
+						//Le titre n'est pas un champ multilingue
+						//On récupère toutes les langues de la solution
+						$database->setQuery ("SELECT id FROM #__sdi_language");
+						$language_list = $database->loadObjectList();
+						
+						//Pour chaque langue, on enregistre la valeur du champ titre
+						foreach ($language_list as $language)
+						{
+							$database->setQuery ("SELECT COUNT(*) FROM #__sdi_translation
+									WHERE element_guid ='".$rowMetadata->guid."'
+									AND language_id=".$language->id);
+							$count = $database->loadResult();
+							if($count > 0){
+								$query = "UPDATE #__sdi_translation SET title = '".addslashes($value)."' , updated = NOW(), updatedby = ".$user->id."
+								WHERE element_guid = '".$rowMetadata->guid."'
+								AND language_id=".$language->id;
+							}else{
+								$query = "INSERT INTO #__sdi_translation (element_guid, language_id, title, created, createdby)
+								VALUES ('".$rowMetadata->guid."',
+								".$language->id.",
+								'".addslashes($value)."',
+								NOW(),
+								".$user->id." )";
+							}
+							$database->setQuery($query);
+							if (!$database->query()){
+								$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+							}
+						}
+					}
+					else 
+					{
+						//Le titre est un champ multilingue
+						$database->setQuery ("SELECT COUNT(*) FROM #__sdi_translation 
+												WHERE element_guid ='".$rowMetadata->guid."' 
+												AND language_id=(SELECT id FROM #__sdi_language WHERE code ='".$key."' )");
+						$count = $database->loadResult();
+						if($count > 0){
+							$query = "UPDATE #__sdi_translation SET title = '".addslashes($value)."' , updated = NOW(), updatedby = ".$user->id." 
+										WHERE element_guid = '".$rowMetadata->guid."'
+										AND language_id=(SELECT id FROM #__sdi_language WHERE code ='".$key."' )";
+						}else{
+							$query = "INSERT INTO #__sdi_translation (element_guid, language_id, title, created, createdby) 
+												VALUES ('".$rowMetadata->guid."', 
+														(SELECT id FROM #__sdi_language WHERE code ='".$key."' ), 
+														'".addslashes($value)."',
+														NOW(),
+														".$user->id." )";
+						}
+					
+						$database->setQuery($query);
+						if (!$database->query()){	
+							$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+						}
 					}
 				}
 				$session->clear('MD_TITLE');
@@ -2133,9 +2197,6 @@ class ADMIN_metadata {
 		try
 		{
 			ADMIN_metadata::buildXMLTree($root->id, $root->id, str_replace(":", "_", $root->isocode), $XMLDoc, $XMLNode, $path, $root->isocode, $_POST, $keyVals, $profile_id, $account_id, $option);
-			
-			//$XMLDoc->save("C:\\RecorderWebGIS\\".$metadata_id.".xml");
-			//$XMLDoc->save("/home/sites/demo.depth.ch/web/geodbmeta/administrator/components/com_easysdi_catalog/core/controller/xml.xml");
 			
 			if (!$XMLDoc)
 			{
