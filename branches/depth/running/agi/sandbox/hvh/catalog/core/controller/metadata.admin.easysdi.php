@@ -1685,7 +1685,6 @@ class ADMIN_metadata {
 			if(isset($MD_title)){
 				$user = JFactory::getUser();
 				foreach ($MD_title as $key => $value){
-					
 					if($key == 'NA')
 					{
 						//Le titre n'est pas un champ multilingue
@@ -1745,6 +1744,15 @@ class ADMIN_metadata {
 					}
 				}
 				$session->clear('MD_TITLE');
+			}
+			else
+			{
+				//Auncun titre n'est défini dans la métadonnée, effacer si présent
+				$query = "DELETE FROM  #__sdi_translation WHERE element_guid = '".$rowMetadata->guid."' ";
+				$database->setQuery($query);
+				if (!$database->query()){
+					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+				}
 			}
 			// Checkin object
 			$rowObject = new object( $database );
