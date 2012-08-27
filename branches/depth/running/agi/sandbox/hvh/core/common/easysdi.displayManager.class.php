@@ -2182,7 +2182,7 @@ class displayManager{
 				 AND cl.code = '".$language->_lang."'";
 		$db->setQuery($query);
 		$parents = $db->loadObjectList();
-		
+
 		$XMLLinks = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:links");
 		foreach ($childs as $c)
 		{
@@ -2198,7 +2198,7 @@ class displayManager{
 		{
 			$XMLParent = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:parent");
 			$XMLParent->setAttribute('metadata_guid', $p->metadata_guid);
-			$XMLChild->setAttribute('metadata_title', $p->metadatatitle);
+			$XMLParent->setAttribute('metadata_title', $p->metadatatitle);
 			$XMLParent->setAttribute('object_name', $p->objectname);
 			$XMLParent->setAttribute('objecttype', $p->objecttype);	
 			$XMLLinks->appendChild($XMLParent);

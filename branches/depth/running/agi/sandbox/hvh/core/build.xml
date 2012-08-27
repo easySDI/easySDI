@@ -95,7 +95,7 @@
 
 	<target name="sync" description="Copy from here to apache">
 		<copy
-			todir="C:\www\easysdi\administrator\components\com_easysdi_core">
+			todir="C:\www\agi\administrator\components\com_easysdi_core">
 			<fileset dir=".">
 				<include name="**/*.php" />
 				<include name="**/*.xsl" />
@@ -114,7 +114,7 @@
 			</fileset>
 		</copy>
 		<copy
-			todir="C:\www\easysdi\components\com_easysdi_core">
+			todir="C:\www\agi\components\com_easysdi_core">
 			<fileset dir="./com_easysdi_core">
 				<include name="**/*.php" />
 				<include name="**/*.xsl" />
@@ -130,19 +130,19 @@
 			</fileset>
 		</copy>
 		<copy		   
-			todir="C:\www\easysdi\administrator\language\fr-FR">
+			todir="C:\www\agi\administrator\language\fr-FR">
 		     <fileset dir="./language/admin">
 		      <include name="**/fr-FR.com_easysdi_core.ini" />
 		     </fileset>
 		    </copy>
 		<copy		   
-			todir="C:\www\easysdi\administrator\language\en-GB">
+			todir="C:\www\agi\administrator\language\en-GB">
 		     <fileset dir="./language/admin">
 		      <include name="**/en-GB.com_easysdi_core.ini" />
 		     </fileset>
 		    </copy>
 		<copy		   
-			todir="C:\www\easysdi\administrator\language\de-DE">
+			todir="C:\www\agi\administrator\language\de-DE">
 		     <fileset dir="./language/admin">
 		      <include name="**/de-DE.com_easysdi_core.ini" />
 		     </fileset>
