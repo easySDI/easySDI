@@ -704,50 +704,9 @@ class displayManager{
 		$doc .= '<?xml version="1.0"?>';
 		$doc .= '<Metadata><Diffusion><fileIdentifier><CharacterString>'.$id.'</CharacterString></fileIdentifier>';
 		$doc .= '<gmd:identificationInfo xmlns:gmd="http://www.isotc211.org/2005/gmd"><gmd:MD_DataIdentification><gmd:citation><gmd:CI_Citation><gmd:title><gmd:LocalisedCharacterString>'.$title.'</gmd:LocalisedCharacterString></gmd:title></gmd:CI_Citation></gmd:citation></gmd:MD_DataIdentification></gmd:identificationInfo>';
-		/*$query = "SELECT DISTINCT #__easysdi_product_properties_definition.text as PropDef 
-					from #__easysdi_product_properties_definition 
-					INNER JOIN 
-					(select property_value_id, #__easysdi_product_properties_values_definition.text,properties_id 
-							from #__easysdi_product_property 
-							INNER JOIN #__easysdi_product_properties_values_definition 
-							ON #__easysdi_product_property.property_value_id=#__easysdi_product_properties_values_definition.id
- 							where product_id IN (select id from #__easysdi_product where metadata_id = '".$id."')) T 
- 					ON #__easysdi_product_properties_definition.id=T.properties_id";
-		
-		$database->setQuery($query);
-		$rows = $database->loadObjectList();		
-		foreach ($rows as $row)
-		{
-			
-			$doc .= "<Property><PropertyName>$row->PropDef</PropertyName>";
-			
-			
-			$subQuery = "SELECT  #__easysdi_product_properties_definition.text as PropDef, T.translation as ValueDef 
-					  from #__easysdi_product_properties_definition 
-					  INNER JOIN 
-					  (select property_value_id, #__easysdi_product_properties_values_definition.text,properties_id 
-					 	from #__easysdi_product_property 
-						INNER JOIN #__easysdi_product_properties_values_definition 
-					 	ON #__easysdi_product_property.property_value_id=#__easysdi_product_properties_values_definition.id
- 						where product_id IN (select id from #__easysdi_product where metadata_id = '".$id."') ) T 
- 					 ON #__easysdi_product_properties_definition.id=T.properties_id 
- 					 Where #__easysdi_product_properties_definition.text = '".addslashes($row->PropDef)."'";
-			
-			$database->setQuery($subQuery);
-			$results = $database->loadObjectList();
-			foreach ($results as $result)
-			{
-				$doc.="<PropertyValue><value>$result->ValueDef</value></PropertyValue>";
-			}
-			
-			$doc.= "</Property>";
-		}
-	*/
 		$doc .= '</Diffusion></Metadata>';
 		
 		$document = new DomDocument();
-		
-		
 		$document->loadXML($doc);
 		
 		$style = new DomDocument();
@@ -1010,7 +969,6 @@ class displayManager{
 	 */
 	function buildXHTML ($xslStyle, $xml)
 	{
-//		$enableFavorites = config_easysdi::getValue("ENABLE_FAVORITES", 1);
 		$option = JRequest::getVar('option');
 		$task = JRequest::getVar('task');
 		$type = JRequest::getVar('type', 'abstract');
@@ -1028,21 +986,18 @@ class displayManager{
 		$shopExist=0;
 		
 		// Si la page est appelée depuis un autre environnement que Joomla
-		//print_r($_SERVER);echo "<br>";
 		$notJoomlaCall = 'true';
 		if (array_key_exists('HTTP_REFERER', $_SERVER))
 		{
 			// Emplacement depuis lequel l'adresse a été appelée
 			$httpReferer = parse_url($_SERVER['HTTP_REFERER']);
 			$caller = $httpReferer['scheme']."://".$httpReferer['host'].$httpReferer['path'];
-			//echo $caller."<br>";
 			
 			// Adresse appelée
 			$scheme = "http";
 			if ($_SERVER['HTTPS'] and $_SERVER['HTTPS'] <> "off")
 				$scheme .= "s";
 			$current = $scheme."://".$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME'];
-			//echo $current;
 			
 			// Si l'adresse courante ne fait pas partie du méme site que l'adresse appelante, 
 			// on considére que c'est un appel direct
@@ -1090,7 +1045,6 @@ class displayManager{
 					WHERE m.guid = '".$id."'";
 		$db->setQuery($query);
 		$product_creation_date = $db->loadResult();
-		//$product_creation_date = date(config_easysdi::getValue("DATETIME_FORMAT", "d-m-Y H:i:s"), strtotime($temp));
 		
 		$query = "	SELECT o.updated 
 					FROM #__sdi_metadata m
@@ -1099,7 +1053,6 @@ class displayManager{
 					WHERE m.guid = '".$id."'";
 		$db->setQuery($query);
 		$product_update_date = $db->loadResult();
-		//$product_update_date = $temp == '0000-00-00 00:00:00' ? '-' : date(config_easysdi::getValue("DATETIME_FORMAT", "d-m-Y H:i:s"), strtotime($temp));
 		if ($product_update_date == '0000-00-00 00:00:00')
 			$product_update_date = '-';
 				
@@ -1120,30 +1073,9 @@ class displayManager{
 		//Defines if the corresponding product is orderable.
 		$hasOrderableProduct = false;
 		
-		//load favorites
-//		$optionFavorite;
-//		$metadataListArray = array();
-//		if($current_account->id == 0)
-//			$optionFavorite = false;
-//		else if ($enableFavorites == 1){
-//			$query = "SELECT m.guid FROM #__sdi_metadata m WHERE m.id IN (SELECT metadata_id FROM #__sdi_favorite WHERE account_id = $current_account->id)";
-//			$db->setQuery($query);
-//			$metadataListArray = $db->loadResultArray();
-//			if ($db->getErrorNum()) {						
-//						echo "<div class='alert'>";			
-//						echo 			$db->getErrorMsg();
-//						echo "</div>";
-//			}
-//		}
-//		$isFavorite = 1;
-//		if(!in_array($id, $metadataListArray) && $enableFavorites == 1 && !$user->guest)
-//			$isFavorite = 0;
-		
 		$context = JRequest::getVar('context');
 		if ($type <> 'diffusion')
 			$xml = displayManager::constructXML($xml, $db, $language, $id, $notJoomlaCall, $type, $context);
-		
-//		echo htmlspecialchars($xml->saveXML())."<br>";break;
 		
 		$processor = new xsltProcessor();
 		$processor->importStylesheet($xslStyle);
@@ -1153,10 +1085,6 @@ class displayManager{
 		// Toolbar build from EasySDIV1
 		if ($toolbar==1){
 			$buttonsHtml .= "<table align=\"right\"><tr align='right'>";
-//			if(!in_array($id, $metadataListArray) && $enableFavorites == 1 && !$user->guest)
-//				$buttonsHtml .= "<td><div title=\"".JText::_("EASYSDI_ADD_TO_FAVORITE")."\" id=\"toggleFavorite\" class=\"addFavorite\" onclick=\"favoriteManagment();\"> </div></td>";
-//			if(in_array($id, $metadataListArray) && $enableFavorites == 1 && !$user->guest)
-//				$buttonsHtml .= "<td><div title=\"".JText::_("EASYSDI_REMOVE_FAVORITE")."\" id=\"toggleFavorite\" class=\"removeFavorite\" onclick=\"favoriteManagment();\"> </div></td>";
 			$buttonsHtml .= "<td><div title=\"".JText::_("EASYSDI_ACTION_EXPORTPDF")."\" id=\"exportPdf\" onclick=\"window.open('./index.php?tmpl=component&option=com_easysdi_core&task=exportPdf&id=$id&type=$type', '_self');\"> </div></td>
 					<td><div title=\"".JText::_("EASYSDI_ACTION_EXPORTXML")."\" id=\"exportXml\" onclick=\"window.open('./index.php?tmpl=component&format=raw&option=com_easysdi_core&task=exportXml&id=$id&type=$type', '_self');\"> </div></td>
 					<td><div title=\"".JText::_("EASYSDI_ACTION_PRINTMD")."\" id=\"printMetadata\" onclick=\"window.open('./index.php?tmpl=component&option=$option&task=$task&id=$id&type=$type&toolbar=0&print=1','win2','status=no,toolbar=no,scrollbars=yes,titlebar=no,menubar=no,resizable=yes,width=640,height=480,directories=no,location=no');\"> </div></td>";
@@ -1190,83 +1118,6 @@ class displayManager{
 			
 			//Define links for onclick event
 			$myHtml .= "<script>\n";
-			
-//			$myHtml .="
-//			function favoriteManagment ()
-//			{
-//			  var action = \"addFavorite\";
-//			   var title = Array();
-//			   title['CORE_REMOVE_FAVORITE']='".JText::_("CORE_REMOVE_FAVORITE")."';
-//			   title['CORE_ADD_TO_FAVORITE']='".JText::_("CORE_ADD_TO_FAVORITE")."';
-//				   
-//			   if(document.getElementById('toggleFavorite').className == \"removeFavorite\")
-//			      action = \"removeFavorite\";
-//				   
-//			   var req = new Ajax('./index.php?option=com_easysdi_shop&task='+action+'&view=&metadata_guid=$id', {
-//		           	method: 'get',
-//		           	onSuccess: function(){
-//				        if(document.getElementById('toggleFavorite').className == \"removeFavorite\"){
-//		           		   document.getElementById(\"toggleFavorite\").className = 'addFavorite';
-//			   		   document.getElementById(\"toggleFavorite\").title = title['EASYSDI_ADD_TO_FAVORITE'];
-//					}else{
-//					   document.getElementById(\"toggleFavorite\").className = 'removeFavorite';
-//			   		   document.getElementById(\"toggleFavorite\").title = title['EASYSDI_REMOVE_FAVORITE'];
-//					}
-//		           	},
-//		           	onFailure: function(){
-//		           		
-//		           	}
-//		           }).request();		
-//				
-//			}";
-			
-//			//Manage display class
-//			/* Onglets abstract et complete*/
-//			$myHtml .= "window.addEvent('domready', function() {
-//			
-//			document.getElementById('catalogPanel1').addEvent( 'click' , function() { 
-//				window.open('./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=$id&type=abstract', '_self');
-//			});
-//			document.getElementById('catalogPanel2').addEvent( 'click' , function() { 
-//				window.open('./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=$id&type=complete', '_self');
-//			});
-//			
-//			task = '$task';
-//			type = '$type';
-//			
-//			";
-//			/* Onglet diffusion, si et seulement si le shop est installé et que l'objet est diffusable*/
-//			if ($shopExist)
-//			{
-//				$myHtml .= "
-//				document.getElementById('catalogPanel3').addEvent( 'click' , function() { 
-//					window.open('./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=$id&type=diffusion', '_self');
-//				});
-//				
-//				document.getElementById('catalogPanel3').className = 'closed';
-//				
-//				if(task == 'showMetadata' & type == 'diffusion'){
-//	        		document.getElementById('catalogPanel3').className = 'open';
-//				}
-//				";
-//			}
-			
-			/* Boutons */
-//			$myHtml .= "
-//
-//			
-//	
-//			document.getElementById('catalogPanel1').className = 'closed';
-//			document.getElementById('catalogPanel2').className = 'closed';
-//			
-//			if(task == 'showMetadata' & type == 'abstract'){
-//	        	document.getElementById('catalogPanel1').className = 'open';
-//			}
-//			if(task == 'showMetadata' & type == 'complete'){
-//	        	document.getElementById('catalogPanel2').className = 'open';
-//			}
-//			});\n"; 
-		
 			$myHtml .= "</script>";
 
 		}
@@ -1808,11 +1659,11 @@ class displayManager{
 		$root = $xml->getElementsByTagName("MD_Metadata");
 		$root = $root->item(0);
 		$gmdRoot = $doc->importNode($root, true);
-		
+
 		$XMLNewRoot = $doc->createElement("Metadata");
 		$doc->appendChild($XMLNewRoot);
 		$XMLNewRoot->appendChild($gmdRoot);
-	
+		
 		$XMLSdi = $doc->createElementNS('http://www.depth.ch/sdi', 'sdi:Metadata');
 		$XMLSdi->setAttribute('user_lang', $language->_lang);
 		$XMLSdi->setAttribute('call_from_joomla', (int)!$notJoomlaCall);
