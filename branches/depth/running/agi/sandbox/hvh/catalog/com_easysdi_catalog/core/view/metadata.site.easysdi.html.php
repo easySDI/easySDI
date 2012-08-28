@@ -802,7 +802,7 @@ else
 							        	}
 						        },
 						        {
-							                text: '".JText::_('CORE_MD_PREVIEW')."',
+							                text: '".JText::_('CATALOG_METADATA_PREVIEW_BUTTON_LABEL')."',
 							                handler: function()
 							                {
 							                	myMask.show();
@@ -831,11 +831,10 @@ else
 													{
 														var xml = action.result.file.xml;
 														xml = xml.split('<br>').join('\\n');
-														var html = '<pre class=\"brush: xml;gutter: false;\">' + xml + '</pre>';
+														var html =  xml;
 														
 														// Creer une iframe pour accueillir le preview XML
 														mifWin = new Ext.Window({
-						
 														      title         : 'Preview',
 														      width         : 845,
 														      height        : 469,
@@ -848,8 +847,6 @@ else
 														      html			: html
 														  });
 								  						mifWin.show();
-								  						SyntaxHighlighter.highlight();
-														
 								  						myMask.hide();
 													},
 													failure: function(form, action) 

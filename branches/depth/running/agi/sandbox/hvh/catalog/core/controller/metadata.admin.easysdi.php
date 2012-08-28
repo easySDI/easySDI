@@ -1791,10 +1791,7 @@ class ADMIN_metadata {
 		}
 	}
 	
-	/**
-	 * 
-	 */
-	function previewMetadata ()
+	function preview($previewType)
 	{
 		global  $mainframe;
 		$database 		=& JFactory::getDBO();
@@ -1928,23 +1925,12 @@ class ADMIN_metadata {
 			// Jusqu'ici, on utilise le code de saveMetadata //
 			if ($XMLDoc)
 			{
-
-				$style = new DomDocument();
-				$style->load(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'xsl'.DS.'XML2XHTML_result.xsl');
-				$processor = new xsltProcessor();
-				$processor->importStylesheet($style);
-				$xml = new DomDocument();
-				$xml = $processor->transformToXml($XMLDoc);
-				
-				
-				$response = '{
-				success: true,
-				file: {
-				xml: "'.str_replace(chr(10), "<br>", $xml).'"
-			}
-			}';
-				print_r($response);
-				die();
+				if($previewType == 'XML'){
+					ADMIN_metadata::previewXMLMetadata($XMLDoc);
+				}
+				else if ($previewType == 'MD'){
+					ADMIN_metadata::previewMetadata ($XMLDoc, $database, $metadata_id);
+				}
 			}
 			else
 			{
@@ -1968,182 +1954,87 @@ class ADMIN_metadata {
 		}';
 			print_r($response);
 			die();
-		
 		}
 	}
+	/**
+	 * Prévisualiser le rendu HTML de la métadonnée qui pourrait être construite à partir du formulaire EXTJS
+	 */
+	function previewMetadata ($XMLDoc, $database, $metadata_id)
+	{
+		$language 	=& JFactory::getLanguage();
+		$xslFolder 	= "";
+		
+		$context = 'GEOCATALOG';
+		$type= 'complete';
+		
+		
+		if (isset($context)){
+			$database->setQuery("SELECT xsldirectory FROM #__sdi_context WHERE code='".$context."'");
+			$xslFolder = $database->loadResult();
+		}
+		if ($xslFolder <> "")
+			$xslFolder = $xslFolder."/";
+		
+		// Récupérer le type d'objet
+		$database->setQuery("SELECT ot.code
+				FROM #__sdi_metadata m
+				INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
+				INNER JOIN #__sdi_object o ON o.id = ov.object_id
+				INNER JOIN #__sdi_objecttype ot ON ot.id=o.objecttype_id
+				WHERE m.guid='".$metadata_id."'");
+		$objecttype = $database->loadResult();
+		
+		$XMLDoc->loadXML($XMLDoc->saveXML());
+		$xmlcomplete = displayManager::constructXML($XMLDoc, $database, $language, $metadata_id, 'false', $type, $context);
+		
+		$style = new DomDocument();
+		if (file_exists(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'xsl'.DS.$xslFolder.'XML2XHTML_'.$objecttype.'_'.$type.'_'.$language->_lang.'.xsl'))
+		{
+			$style->load(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'xsl'.DS.$xslFolder.'XML2XHTML_'.$objecttype.'_'.$type.'_'.$language->_lang.'.xsl');
+		}
+		else if (file_exists(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'xsl'.DS.$xslFolder.'XML2XHTML_'.$objecttype.'_'.$type.'.xsl'))
+		{
+			$style->load(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'xsl'.DS.'XML2XHTML_'.$objecttype.'_'.$type.'.xsl');
+		}
+		else if (file_exists(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'xsl'.DS.$xslFolder.'XML2XHTML_'.$type.'_'.$language->_lang.'.xsl'))
+		{
+			$style->load(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'xsl'.DS.$xslFolder.'XML2XHTML_'.$type.'_'.$language->_lang.'.xsl');
+		}
+		else
+		{
+			$style->load(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'xsl'.DS.$xslFolder.'XML2XHTML_'.$type.'.xsl');
+		}
+		$processor = new xsltProcessor();
+		$processor->importStylesheet($style);
+		$xml = new DomDocument();
+		$xml = $processor->transformToXml($xmlcomplete);
+		$xmlToReturn = addslashes($xml);
+		
+		$response = '{
+						success: true,
+						file: {
+							xml: "'.str_replace(chr(10), "<br>", $xmlToReturn).'"
+						}
+					}';
+		print_r($response);
+		die();
+	}
 	
-	/*
+	/**
 	 * Prévisualiser le XML ISO19139 qui pourrait être construit à partir du formulaire EXTJS
 	 */
-	function previewXMLMetadata($option)
+	function previewXMLMetadata($XMLDoc)
 	{
-		global  $mainframe;
-		$database 		=& JFactory::getDBO(); 
-		$option 		= $_POST['option'];
-		$metadata_id 	= $_POST['metadata_id'];
-		$object_id 		= $_POST['object_id'];
-		
-		// Remise à jour des compteurs de suppression et d'ajout 
-		$deleted=0;
-		$inserted=0;
-		// Récupération des index des fieldsets
-		$fieldsets = array();
-		$fieldsets = explode(" | ", $_POST['fieldsets']);
-		
-		$keyVals = array();
-		foreach($fieldsets as $fieldset)
-		{
-			$keys = explode(',', $fieldset);
-			$keyVals[$keys[0]] = $keys[1];
-		}
-		
-		// Langues à gérer
-		$this->langList = array();
-		$this->langCode = array();
-		//$database->setQuery( "SELECT l.id, l.name, l.defaultlang, l.code as code, l.isocode, c.code as code_easysdi FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY l.ordering" );
-		$database->setQuery( "SELECT l.id, l.name, l.defaultlang, l.code as code, l.isocode, c.code as code_easysdi,l.gemetlang FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY l.ordering" );
-		$this->langList= array_merge( $this->langList, $database->loadObjectList() );
-		$database->setQuery( "SELECT c.code FROM #__sdi_language l, #__sdi_list_codelang c WHERE l.codelang_id=c.id AND published=true ORDER BY l.ordering" );
-		$this->langCode= array_merge( $this->langCode, $database->loadResultArray() );
-		
-		// Langue par défaut
-		$this->defaultlang = array();
-		$database->setQuery( "SELECT isocode FROM #__sdi_language WHERE defaultlang=true" );
-		$this->defaultlang = $database->loadObjectList();
-		
-		// Encodage par défaut
-		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
-		$this->defaultencoding_val = config_easysdi::getValue("catalog_encoding_code");
-		$this->defaultencoding_code = config_easysdi::getValue("catalog_encoding_val");
-		
-		// Parcourir les classes et les attributs
-		$XMLDoc = new DOMDocument('1.0', 'UTF-8');
-		$XMLDoc->formatOutput = true;
-		// Récupérer l'objet lié à cette métadonnée
-		$rowMetadata = new metadataByGuid( $database );
-		$rowMetadata->load($metadata_id);
-		$rowObject = new object( $database );
-		$rowObject->load($object_id);
-		// Récupérer la classe racine du profile du type d'objet
-		$query = "SELECT c.name as name, CONCAT(ns.prefix, ':', c.isocode) as isocode, prof.class_id as id FROM #__sdi_profile prof, #__sdi_objecttype ot, #__sdi_object o, #__sdi_class c RIGHT OUTER JOIN #__sdi_namespace ns ON c.namespace_id=ns.id WHERE prof.id=ot.profile_id AND ot.id=o.objecttype_id AND c.id=prof.class_id AND o.id=".$rowObject->id;
-		$database->setQuery( $query );
-		$root = $database->loadObject();
-		
-		//Pour chaque élément rencontré, l'insérer dans le xml
-		$XMLNode = $XMLDoc->createElement("gmd:MD_Metadata");
-		$XMLDoc->appendChild($XMLNode);
-		$XMLNode->setAttributeNS('http://www.w3.org/2000/xmlns/' ,'xmlns:xlink', 'http://www.w3.org/1999/xlink');
-		$XMLNode->setAttributeNS('http://www.w3.org/2000/xmlns/' ,'xmlns:gts', 'http://www.isotc211.org/2005/gts');
-		$XMLNode->setAttributeNS('http://www.w3.org/2000/xmlns/' ,'xmlns:srv', 'http://www.isotc211.org/2005/srv');
-		
-		// Récupération des namespaces à inclure
-		$namespacelist = array();
-		$database->setQuery( "SELECT prefix, uri FROM #__sdi_namespace ORDER BY prefix" );
-		$namespacelist = array_merge( $namespacelist, $database->loadObjectList() );
-		
-		 foreach ($namespacelist as $namespace)
-        {
-        	$XMLNode->setAttributeNS('http://www.w3.org/2000/xmlns/' ,'xmlns:'.$namespace->prefix, $namespace->uri);
-        } 
-		
-		// Récupérer le profil lié à cet objet
-		$query = "SELECT profile_id FROM #__sdi_objecttype WHERE id=".$rowObject->objecttype_id;
-		$database->setQuery( $query );
-		$profile_id = $database->loadResult();
-		
-		$user =& JFactory::getUser();
-		$user_id = $user->get('id');
-		$database->setQuery( "SELECT a.root_id FROM #__sdi_account a,#__users u where a.root_id is null AND a.user_id = u.id and u.id=".$user_id." ORDER BY u.name" );
-		$account_id = $database->loadResult();
-		if ($account_id == null)
-			$account_id = $user_id;
-
-		
-		$path="/";
-		
-		// Construire les champs concernant la langue par défaut et l'encodage par défaut
-		$XMLNodeEncoding = $XMLDoc->createElement("gmd:characterSet");
-		$XMLNode->appendChild($XMLNodeEncoding);
-		$XMLNodeCode = $XMLDoc->createElement("gmd:MD_CharacterSetCode");
-		$XMLNodeCode->setAttribute('codeListValue', $this->defaultencoding_code);
-		$XMLNodeCode->setAttribute('codeList', 'http://www.isotc211.org/2005/resources/codeList.xml#MD_CharacterSetCode');
-		$XMLNodeEncoding->appendChild($XMLNodeCode);
-		
-		$XMLNodeLang = $XMLDoc->createElement("gmd:language");
-		$XMLNode->appendChild($XMLNodeLang);
-		$XMLNodeLang->appendChild($XMLDoc->createElement("gco:CharacterString", $this->defaultlang[0]->isocode));
-		
-		// Construire la définition des locales
-		foreach($this->langList as $lang)
-		{
-			if (!$lang->defaultlang)
-			{
-				$XMLNodeLoc = $XMLDoc->createElement("gmd:locale");
-				$XMLNode->appendChild($XMLNodeLoc);
-				
-				$XMLNodeLocPT = $XMLDoc->createElement("gmd:PT_Locale");
-				$XMLNodeLocPT->setAttribute('id', $lang->code);
-				
-				$XMLNodeLoc->appendChild($XMLNodeLocPT);
-				$XMLNodeLocCode = $XMLDoc->createElement("gmd:languageCode");
-				$XMLNodeLocPT->appendChild($XMLNodeLocCode);
-				
-				$XMLNodeLocVal = $XMLDoc->createElement("gmd:LanguageCode", $lang->name);
-				$XMLNodeLocVal->setAttribute('codeListValue', $lang->isocode);
-				$XMLNodeLocVal->setAttribute('codeList', "#LanguageCode");
-				$XMLNodeLocCode->appendChild($XMLNodeLocVal);
-				
-				$XMLNodeEnc = $XMLDoc->createElement("gmd:characterEncoding");
-				$XMLNodeLocPT->appendChild($XMLNodeEnc);
-				
-				$XMLNodeEncCode = $XMLDoc->createElement("gmd:MD_CharacterSetCode", $this->defaultencoding_val);
-				$XMLNodeEncCode->setAttribute('codeListValue', $this->defaultencoding_code);
-				$XMLNodeEncCode->setAttribute('codeList', "#MD_CharacterSetCode");
-				$XMLNodeEnc->appendChild($XMLNodeEncCode);
-			}
-		}
-		
-		try
-		{
-			// Construire la partie dynamique du xml
-			ADMIN_metadata::buildXMLTree($root->id, $root->id, str_replace(":", "_", $root->isocode), $XMLDoc, $XMLNode, $path, $root->isocode, $_POST, $keyVals, $profile_id, $account_id, $option);
-			// Jusqu'ici, on utilise le code de saveMetadata //
-			if ($XMLDoc)
-			{
-				$xmlToReturn = addslashes($XMLDoc->saveXML());
-				$response = '{
-								success: true,
-							    file: {
-							        xml: "'.str_replace(chr(10), "<br>", $xmlToReturn).'"
-							    }
-							}';
-				print_r($response);
-				die();
-			}
-			else
-			{
-				$response = '{
-								success: false,
-							    errors: {
-							        xml: "Probléme rencontré"
-							    }
-							}';
-				print_r($response);
-				die();
-			}
-		}
-		catch (Exception $e) 
-		{
-			$response = '{
-							success: false,
-						    errors: {
-						        xml: "Exception: '.$e->getMessage().'"
-						    }
-						}';
-			print_r($response);
-			die();
-		
-		}
+		$xmlToReturn = addslashes($XMLDoc->saveXML());
+		$response = '{
+						success: true,
+					    file: {
+					        xml: "'.str_replace(chr(10), "<br>", $xmlToReturn).'"
+					    }
+					}';
+		print_r($response);
+		die();
+			
 	}
 	
 	function validateMetadata($option)
