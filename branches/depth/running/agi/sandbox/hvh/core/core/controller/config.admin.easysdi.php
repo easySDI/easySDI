@@ -179,8 +179,7 @@ class ADMIN_config {
 		$metadatapreviewcontextlist = $db->loadObjectList();
 				
 		//List of type
-		$metadatapreviewtypelist = array(	array(value => '', 			text => '-'),
-											array(value => 'abstract', 	text => 'abstract'), 
+		$metadatapreviewtypelist = array(	array(value => 'abstract', 	text => 'abstract'), 
 											array(value => 'complete', 	text => 'complete'), 
 											array(value => 'specific', 	text => 'specific'),
 											array(value => 'diffusion', text => 'diffusion'));
