@@ -20,18 +20,15 @@ defined('_JEXEC') or die('Restricted access');
 class ADMIN_config {
 
 	function showConfig($option){
-		
-		
 		global  $mainframe;
-		$db =& JFactory::getDBO(); 
-		
-		$coreList=array();
+		$db 		=& JFactory::getDBO(); 
+		$coreList	=array();
 		$catalogList=array();
-		$shopList=array();
-		$proxyList=array();
+		$shopList	=array();
+		$proxyList	=array();
 		$monitorList=array();
 		$publishList=array();
-		$mapList=array();
+		$mapList	=array();
 		
 		$result=array();
 		$query = "SELECT c.* FROM #__sdi_configuration c, #__sdi_list_module m WHERE c.module_id=m.id AND m.code='CORE'";
@@ -175,7 +172,20 @@ class ADMIN_config {
 		$db->setQuery( $query );
 		$relationtitle = $db->loadResult();
 		
-		HTML_config::showConfig($option, $coreList, $catalogItem, $catalogList, $shopItem, $shopList, $proxyItem, $proxyList,  $monitorItem, $monitorList,$publishItem, $publishList,$mapItem, $mapList, $fieldsLength, $attributetypelist, $relationtitlelist,$relationtitle );
+		//List of context
+		$metadatapreviewcontextlist = array();
+		$query= "SELECT '' AS value, '-' AS text UNION SELECT code as value, name as text FROM #__sdi_context ORDER BY text";
+		$db->setQuery( $query );
+		$metadatapreviewcontextlist = $db->loadObjectList();
+				
+		//List of type
+		$metadatapreviewtypelist = array(	array(value => '', 			text => '-'),
+											array(value => 'abstract', 	text => 'abstract'), 
+											array(value => 'complete', 	text => 'complete'), 
+											array(value => 'specific', 	text => 'specific'),
+											array(value => 'diffusion', text => 'diffusion'));
+		
+		HTML_config::showConfig($option, $coreList, $catalogItem, $catalogList, $shopItem, $shopList, $proxyItem, $proxyList,  $monitorItem, $monitorList,$publishItem, $publishList,$mapItem, $mapList, $fieldsLength, $attributetypelist, $relationtitlelist,$relationtitle, $metadatapreviewtypelist, $metadatapreviewcontextlist );
 	}
 
 	function saveShowConfig($option) {
@@ -317,6 +327,14 @@ class ADMIN_config {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
 			$database->setQuery( "UPDATE #__sdi_relation SET istitle=1 WHERE id = ".addslashes(trim($_POST['relationtitle'])));
+			if (!$database->query()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes(trim($_POST['metadatapreviewtype']))."\" WHERE code = 'CATALOG_METADATA_PREVIEW_TYPE'");
+			if (!$database->query()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes(trim($_POST['metadatapreviewcontext']))."\" WHERE code = 'CATALOG_METADATA_PREVIEW_CONTEXT'");
 			if (!$database->query()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
