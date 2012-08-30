@@ -1964,9 +1964,9 @@ class ADMIN_metadata {
 		$language 	=& JFactory::getLanguage();
 		$xslFolder 	= "";
 		
-		$context = 'GEOCATALOG';
-		$type= 'complete';
-		
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
+		$type = config_easysdi::getValue("CATALOG_METADATA_PREVIEW_TYPE");
+		$context = config_easysdi::getValue("CATALOG_METADATA_PREVIEW_CONTEXT");
 		
 		if (isset($context)){
 			$database->setQuery("SELECT xsldirectory FROM #__sdi_context WHERE code='".$context."'");

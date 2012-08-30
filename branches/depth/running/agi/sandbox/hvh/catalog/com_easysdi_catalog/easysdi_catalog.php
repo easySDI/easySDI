@@ -123,7 +123,6 @@ switch($task){
 			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'metadata.easysdi.class.php');
 			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.displayManager.class.php');
 			ADMIN_metadata::preview('XML');
-// 			ADMIN_metadata::previewXMLMetadata($option);
 			break;
 			
 		case "previewMetadata":
@@ -134,7 +133,6 @@ switch($task){
 			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'objectversion.easysdi.class.php');
 			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.displayManager.class.php');
 			ADMIN_metadata::preview('MD');
-// 			ADMIN_metadata::previewMetadata($option);
 			break;
 		
 		case "validateMetadata":
