@@ -171,6 +171,7 @@ class HTML_metadata {
 		
 		$url = 'index.php?option='.$option.'&task=saveMetadata';
 		$preview_url = 'index.php?option='.$option.'&task=previewXMLMetadata';
+		$previewMD_url = 'index.php?option='.$option.'&task=previewMetadata';
 		$update_url = 'index.php?option='.$option.'&task=updateMetadata';
 		
 		$user =& JFactory::getUser();
@@ -568,6 +569,65 @@ class HTML_metadata {
 														myMask.hide();
 													},
 													url:'".$preview_url."'
+												});
+							        	}
+						        },
+						        {
+							                text: '".JText::_('CATALOG_METADATA_PREVIEW_BUTTON_LABEL')."',
+							                handler: function()
+							                {
+							                	myMask.show();
+							                 	var fields = new Array();
+							        			form.cascade(function(cmp)
+							        			{
+								        			if (cmp.xtype=='fieldset')
+							         				{
+							         					if (cmp.clones_count)
+							          					{
+							           						fields.push(cmp.getId()+','+cmp.clones_count);
+							         					}
+							         				}
+							        			});
+							        			var fieldsets = fields.join(' | ');
+							        			
+												form.getForm().setValues({fieldsets: fieldsets});
+							              		form.getForm().setValues({task: 'previewMetadata'});
+							                 	form.getForm().setValues({metadata_id: '".$metadata_id."'});
+							                 	form.getForm().setValues({object_id: '".$object_id."'});
+												form.getForm().submit({
+											    	scope: this,
+													method	: 'POST',
+													clientValidation: false,
+													success: function(form, action) 
+													{
+														var html = action.result.file.xml;
+														html = html.split('<br>').join('\\n');
+														
+														mifWin = new Ext.Window({
+														      title         : 'Preview',
+														      width         : 845,
+														      height        : 469,
+														      maximizable   : false,
+														      collapsible   : false,
+														      id            : 'preview',
+														      constrain     : false,
+														      loadMask      : {msg: 'Loading...'},
+														      autoScroll    : true,
+														      html			: html
+														  });
+								  						mifWin.show();
+								  						myMask.hide();
+													},
+													failure: function(form, action) 
+													{
+                        								if (action.result)
+															alert(action.result.errors.xml);
+														else
+															alert('Form validation error');
+															
+														myMask.hide();
+													},
+													url:'".$previewMD_url."'
 												});
 							        	}
 						        }],

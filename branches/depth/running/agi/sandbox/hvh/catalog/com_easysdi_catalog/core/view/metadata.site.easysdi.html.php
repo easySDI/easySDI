@@ -829,11 +829,9 @@ else
 													clientValidation: false,
 													success: function(form, action) 
 													{
-														var xml = action.result.file.xml;
-														xml = xml.split('<br>').join('\\n');
-														var html =  xml;
+														var html = action.result.file.xml;
+														html = html.split('<br>').join('\\n');
 														
-														// Creer une iframe pour accueillir le preview XML
 														mifWin = new Ext.Window({
 														      title         : 'Preview',
 														      width         : 845,
