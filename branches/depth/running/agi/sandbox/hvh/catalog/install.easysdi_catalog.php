@@ -2334,11 +2334,37 @@ function com_install(){
 					('".helper_easysdi::getUniqueId()."', 'CATALOG_METADATA_PREVIEW_TYPE', 'CATALOG_METADATA_PREVIEW_TYPE', null, '".date('Y-m-d H:i:s')."', '".$user_id."', null, '', '".$id."')
 					";
 			$db->setQuery( $query);
-			if (!$db->query())
-			{
+			if (!$db->query()){
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 				return false;
 			}
+			
+			//ALTER __sdi_objecttypelink
+			$query="ALTER TABLE `#__sdi_objecttypelink` ADD inheritance TINYINT(1) NOT NULL DEFAULT '0'";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			//CREATE #__sdi_objecttypelinkinheritance
+			$query="CREATE TABLE IF NOT EXISTS `#__sdi_objecttypelinkinheritance` (
+					`id` bigint(20) NOT NULL AUTO_INCREMENT,
+					`objecttypelink_id` bigint(20) NOT NULL,
+					`xpath` varchar(500) NOT NULL,
+					PRIMARY KEY (`id`)
+					) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+				return false;
+			}
+			
+			$query="ALTER TABLE `#__sdi_objecttypelinkinheritance` ADD CONSTRAINT `#__sdi_objecttypelinkinheritance_fk_1` FOREIGN KEY (`objecttypelink_id`) REFERENCES `#__sdi_objecttypelink` (`id`)";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+				
 			
 			$version="2.5.0";
 			$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='CATALOG'";

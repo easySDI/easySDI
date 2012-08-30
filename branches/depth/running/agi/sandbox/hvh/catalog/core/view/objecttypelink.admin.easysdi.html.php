@@ -146,6 +146,30 @@ function listObjectTypeLink(&$rows, $page, $option,  $filter_order_Dir, $filter_
 
 		?>
 		<form action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
+		<script>
+		function addXPath()
+		{
+			var tr = document.createElement('tr');	
+			var tdParam = document.createElement('td');	
+			var inputParam = document.createElement('input');
+			inputParam.size=250;
+			inputParam.type="text";
+			inputParam.name="xpath_"+document.getElementById('nbxpath').value;
+			tdParam.appendChild(inputParam);
+			tr.appendChild(tdParam);
+			document.getElementById('inheritancexpathtable').appendChild(tr);
+			document.getElementById('nbxpath').value = parseInt(document.getElementById('nbxpath').value) + 1 ;
+		}
+		function enableXPath(value)
+		{
+			if(value == 0){
+				document.getElementById('inheritance').style.display = 'none';
+			}
+			else{
+				document.getElementById('inheritance').style.display = 'block';
+			}
+		}
+		</script>
 			<table border="0" cellpadding="3" cellspacing="0">	
 				<tr>
 					<td width=150><?php echo JText::_("CATALOG_OBJECTTYPELINK_PARENT"); ?></td>
@@ -211,13 +235,47 @@ function listObjectTypeLink(&$rows, $page, $option,  $filter_order_Dir, $filter_
 						</fieldset>
 					</td>
 				</tr>	
-				
-				<!-- <tr>
-					<td><?php //echo JText::_("CATALOG_OBJECTTYPELINK_ESCALATEVERSIONINGUPDATE_LABEL"); ?></td>
-					<td><?php //echo JHTML::_('select.booleanlist', 'escalate_versioning_update', '', $row->escalate_versioning_update); ?> </td>							
-				</tr>
-				 -->
 			</table>
+			<fieldset>
+					<legend align="top"><?php echo JText::_("CATALOG_OBJECTTYPELINK_INHERITANCE"); ?>
+						
+					</legend>
+				<table>
+					<tr>
+						<td width=150><?php echo JText::_("CATALOG_OBJECTTYPELINK_INHERITANCE_LABEL"); ?></td>
+						<?php if ($pageReloaded) $inheritance = $_POST['inheritance']; else $inheritance = $row->inheritance; ?>
+						<td><?php echo JHTML::_('select.booleanlist', 'inheritance', 'onclick="enableXPath(this.value)"', $inheritance); ?> </td>							
+					</tr>
+					
+				</table>
+				<div id="inheritance" style="<?php if($inheritance == 0) echo 'display:none'; else echo 'display:block';?>">
+					<table  class="admintable">
+						<thead>
+							<tr>
+								<th><b><?php echo JText::_( 'CATALOG_OBJECTTYPELINK_INHERITANCE_XPATH'); ?></b>
+								<input type="button" value="<?php echo JText::_( 'CATALOG_OBJECTTYPELINK_INHERITANCE_ADD_XPATH');?>" onClick="addXPath();">
+								</th>		
+							</tr>
+						</thead>
+						<tbody id="inheritancexpathtable">
+							<?php 
+								$i = 0;
+								$xpathlist = $row->getXPath();
+								foreach ($xpathlist as $xpath)
+								{			
+									?>
+									<tr>
+										<td><input name="xpath_<?php echo $i;?>" type="text" class="text_area" size="250" value='<?php echo $xpath->xpath; ?>'></td>
+									</tr>
+									<?php 
+									$i  ++;
+								} 
+							?>
+							
+						</tbody>
+					</table>
+				</div>
+			</fieldset>
 			<br></br>
 			<table border="0" cellpadding="3" cellspacing="0">
 <?php
@@ -274,7 +332,7 @@ if ($row->updated and $row->updated<> '0000-00-00 00:00:00')
 			<input type="hidden" name="createdby" value="<?php echo ($row->createdby)? $row->createdby : $user->id; ?>" /> 
 			<input type="hidden" name="updated" value="<?php echo ($row->created) ? date ("Y-m-d H:i:s") :  ''; ?>" />
 			<input type="hidden" name="updatedby" value="<?php echo ($row->createdby)? $user->id : ''; ?>" /> 
-			
+			<input type="hidden" name="nbxpath" id="nbxpath" value="<?php echo $i;?>">
 			<input type="hidden" name="option" value="<?php echo $option; ?>" />
 			<input type="hidden" name="id" value="<?php echo $row->id?>" />
 			<input type="hidden" name="task" value="" />

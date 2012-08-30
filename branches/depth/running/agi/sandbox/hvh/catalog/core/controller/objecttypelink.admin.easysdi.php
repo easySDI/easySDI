@@ -134,7 +134,7 @@ class ADMIN_objecttypelink {
 		$user = & JFactory::getUser();
 		$language =& JFactory::getLanguage();
 		
-		// Gestion de la page rechargée sur modification de la classe root du parentIdentifier
+		// Gestion de la page rechargï¿½e sur modification de la classe root du parentIdentifier
 		$pageReloaded=false;
 		if (array_key_exists('class_id', $_POST))
 		{
@@ -157,13 +157,13 @@ class ADMIN_objecttypelink {
 
 		$rowObjectTypeLink->checkout($user->get('id'));
 		
-		// Récupération des types mysql pour les champs
+		// Rï¿½cupï¿½ration des types mysql pour les champs
 		$tableFields = array();
 		$tableFields = $database->getTableFields("#__sdi_objecttypelink", false);
 		
 		// Parcours des champs pour extraire les informations utiles:
 		// - le nom du champ
-		// - sa longueur en caractères
+		// - sa longueur en caractï¿½res
 		$fieldsLength = array();
 		foreach($tableFields as $table)
 		{
@@ -178,10 +178,6 @@ class ADMIN_objecttypelink {
 		}
 		
 		// get list of objecttypes for dropdown filter
-		/*$query = 'SELECT id as value, name as text' .
-				' FROM #__sdi_objecttype' .
-				//' WHERE predefined=false' .
-				' ORDER BY name';*/
 		$query = "SELECT ot.id AS value, t.label as text 
 				 FROM #__sdi_objecttype ot 
 				 INNER JOIN #__sdi_translation t ON t.element_guid=ot.guid
@@ -253,7 +249,7 @@ class ADMIN_objecttypelink {
 		if ($_POST['attribute_id'] == 0) 
 			$rowObjectTypeLink->attribute_id=null;
 		
-		// Générer un guid
+		// GÃ©nÃ©rer un guid
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 		if ($rowObjectTypeLink->guid == null)
 			$rowObjectTypeLink->guid = helper_easysdi::getUniqueId();
@@ -264,14 +260,29 @@ class ADMIN_objecttypelink {
 			exit();
 		}
 		
+		$rowObjectTypeLink->deleteInheritanceXPath();
+		if($rowObjectTypeLink->inheritance == 1){
+			//Saving XPath
+			$nbxpath = $_POST['nbxpath'];
+			if (isset($nbxpath)&& $nbxpath > 0)
+			{
+				for ($i = 0 ; $i < $nbxpath ; $i++){
+					$xpath = $_POST['xpath_'.$i];
+					if(isset($xpath)){
+						$rowObjectTypeLink->addInheritanceXPath($xpath);
+					}
+				}
+			}
+		}
+		
 		$rowObjectTypeLink->checkin();
 		
-		// Au cas où on sauve avec Apply, recharger la page 
+		// Au cas ou on sauve avec Apply, recharger la page 
 		$task = JRequest::getCmd( 'task' );
 		switch ($task)
 		{
 			case 'applyObjectTypeLink' :
-				// Reprendre en édition l'objet
+				// Reprendre en Ã©dition l'objet
 				TOOLBAR_objecttypelink::_EDIT();
 				ADMIN_objecttypelink::editObjectTypeLink($rowObjectTypeLink->id,$option);
 				break;
