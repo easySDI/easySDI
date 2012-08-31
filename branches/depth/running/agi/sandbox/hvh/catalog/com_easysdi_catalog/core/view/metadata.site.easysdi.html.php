@@ -384,7 +384,7 @@ else
 		
 		
 		
-		// Recuperer les infos pour la metadonnee parente pour le lien entre les types d'objet oe cet objet est l'enfant et la borne parent max est egale e 1
+		// Recuperer les infos pour la metadonnee parente pour le lien entre les types d'objet ou cet objet est l'enfant et la borne parent max est egale a 1
 		$database->setQuery( "SELECT otl.class_id, otl.attribute_id, parent_m.guid as parent_guid 
 							  FROM #__sdi_objecttypelink otl
 							  INNER JOIN #__sdi_object child_o ON otl.child_id=child_o.objecttype_id
@@ -396,6 +396,7 @@ else
 							  WHERE otl.parentbound_upper=1
 							  		AND child_o.id=".$object_id);
 		$parentInfos = $database->loadObject();
+		
 		
 		if (count($parentInfos) > 0)
 		{
@@ -1824,6 +1825,61 @@ else
 							        	}})
 							        );
 						form.render();";
+					
+					$this->javascript .="
+						form.fbar.add(new Ext.Button( {
+							text: '".JText::_('CATALOG_APPLY')."',
+							handler: function()
+							{
+								myMask.show();
+								var fields = new Array();
+								form.cascade(function(cmp)
+								{
+									if (cmp.xtype=='fieldset')
+									{
+										if (cmp.clones_count)
+										{
+											fields.push(cmp.getId()+','+cmp.clones_count);
+										}
+									}
+								});
+								var fieldsets = fields.join(' | ');
+							
+								form.getForm().setValues({
+									fieldsets: fieldsets});
+								form.getForm().setValues({
+									task: 'saveMetadata'});
+								form.getForm().setValues({
+									metadata_id: '".$metadata_id."'});
+								form.getForm().setValues({
+									object_id: '".$object_id."'});
+								form.getForm().submit({
+									scope: this,
+									method	: 'POST',
+									clientValidation: false,
+									success: function(form, action)
+									{
+										Ext.MessageBox.alert('".JText::_('CATALOG_SAVEMETADATA_MSG_SUCCESS_TITLE')."',
+										'".JText::_('CATALOG_SAVEMETADATA_MSG_SUCCESS_TEXT')."',
+										function () {
+									
+										});
+										myMask.hide();
+									},
+									failure: function(form, action)
+									{
+										if (action.result)
+											alert(action.result.errors.xml);
+										else
+											alert('Form save error');
+										myMask.hide();
+									},
+									url:'".$url."'
+								});
+							}
+						})
+						);
+						form.render();";
 				}
 					
 				if(!$isPublished and !$isValidated)
@@ -2251,7 +2307,7 @@ else
 								if ($this->parentId_attribute <> "")
 								{
 									// Verification qu'on est bien dans l'attribut choisi. La classe n'a pas d'utilite
-									if ($parentScope <> NULL and $this->parentId_attribute == $child->attribute_id)
+									if ( $this->parentId_attribute == $child->attribute_id)
 									{
 										// Stocker le guid du parent
 										$nodeValue = $this->parentGuid;

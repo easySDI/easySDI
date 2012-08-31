@@ -684,6 +684,72 @@ class HTML_metadata {
 					//console.log(hiddenFields);
 				";								
 
+				//Apply button : save and keep the form opened
+				$this->javascript .="
+					var applyButton = new Ext.Button( {
+						text: '".JText::_('CATALOG_APPLY')."',
+						handler: function(){
+							myMask.show();
+							var fields = new Array();
+							form.getForm().fieldInvalid =false;
+							form.cascade(function(cmp){
+								if(cmp.isValid){
+									if(!cmp.isValid()&& Ext.get(cmp.id)){
+										form.getForm().fieldInvalid =true;
+									}
+								}
+								if (cmp.xtype=='fieldset')
+								{
+									if (cmp.clones_count)
+									{
+										fields.push(cmp.getId()+','+cmp.clones_count);
+									}
+								}
+							});
+							
+							if(!form.getForm().fieldInvalid)
+							{
+								var fieldsets = fields.join(' | ');
+								form.getForm().setValues({fieldsets: fieldsets});
+								form.getForm().setValues({task: 'saveMetadata'});
+								form.getForm().setValues({metadata_id: '".$metadata_id."'});
+								form.getForm().setValues({object_id: '".$object_id."'});
+								form.getForm().submit({
+									scope: this,
+									method	: 'POST',
+									clientValidation: false,
+									success: function(form, action)
+									{
+										Ext.MessageBox.alert('".JText::_('CATALOG_SAVEMETADATA_MSG_SUCCESS_TITLE')."',
+											'".JText::_('CATALOG_SAVEMETADATA_MSG_SUCCESS_TEXT')."',
+											function () {
+											}
+										);
+										myMask.hide();
+									},
+									failure: function(form, action)
+									{
+										if (action.result)
+											alert(action.result.errors.xml);
+										else
+											alert('Form save error');
+										myMask.hide();
+									},
+									url:'".$url."'
+								});
+							}
+							else
+							{
+								alert('Please verify whether all required fields are present');
+								myMask.hide();
+							}
+						}
+					})
+					
+					form.fbar.add(applyButton);
+					form.render();
+				";
+				
 				// Ajout du bouton VALIDER seulement si l'utilisateur courant est gestionnaire de la métadonnée
 				if(!$isPublished)
 				{
@@ -765,73 +831,6 @@ class HTML_metadata {
 						form.fbar.add(saveButton);
 							        
 						form.render();";
-					
-					
-					$this->javascript .="
-						var applyButton = new Ext.Button( {
-							text: '".JText::_('CATALOG_APPLY')."',
-							handler: function(){
-										myMask.show();
-										var fields = new Array();
-										form.getForm().fieldInvalid =false;
-										form.cascade(function(cmp){
-											if(cmp.isValid){
-												if(!cmp.isValid()&& Ext.get(cmp.id)){
-													form.getForm().fieldInvalid =true;
-												}
-											}
-											if (cmp.xtype=='fieldset')
-											{
-												if (cmp.clones_count)
-												{
-													fields.push(cmp.getId()+','+cmp.clones_count);
-												}
-											}
-										});
-					
-										if(!form.getForm().fieldInvalid)
-										{
-											var fieldsets = fields.join(' | ');
-											form.getForm().setValues({fieldsets: fieldsets});
-											form.getForm().setValues({task: 'saveMetadata'});
-											form.getForm().setValues({metadata_id: '".$metadata_id."'});
-											form.getForm().setValues({object_id: '".$object_id."'});
-											form.getForm().submit({
-												scope: this,
-												method	: 'POST',
-												clientValidation: false,
-												success: function(form, action)
-															{
-																Ext.MessageBox.alert('".JText::_('CATALOG_SAVEMETADATA_MSG_SUCCESS_TITLE')."',
-																'".JText::_('CATALOG_SAVEMETADATA_MSG_SUCCESS_TEXT')."',
-																function () {
-																	//window.open ('./index.php?option=".$option."&cid[]=".$object_id."&lang=".JRequest::getVar('lang')."&task=askForEditMetadata','_parent');
-																}
-																);
-																myMask.hide();
-															},
-												failure: function(form, action)
-															{
-																if (action.result)
-																	alert(action.result.errors.xml);
-																else
-																	alert('Form save error');
-																myMask.hide();
-															},
-												url:'".$url."'
-											});
-										}
-										else
-										{
-											alert('Please verify whether all required fields are present');
-											myMask.hide();
-										}
-							}
-						})
-					 
-						form.fbar.add(applyButton);
-						form.render();";
-					
 				}
 				
 				// Ajout du bouton METTRE A JOUR seulement si l'utilisateur courant est gestionnaire de la métadonnée
@@ -904,8 +903,6 @@ class HTML_metadata {
 							        );
 						form.render();";
 					}
-										
-					
 					
 					$this->javascript .="
 						form.add(createHidden('option', 'option', '".$option."'));
@@ -1188,7 +1185,7 @@ class HTML_metadata {
 								if ($this->parentId_attribute <> "")
 								{
 									// Vérification qu'on est bien dans l'attribut choisi. La classe n'a pas d'utilité
-									if ($parentScope <> NULL and $this->parentId_attribute == $child->attribute_id)
+									if ($this->parentId_attribute == $child->attribute_id)
 									{
 										// Stocker le guid du parent
 										$nodeValue = $this->parentGuid;
