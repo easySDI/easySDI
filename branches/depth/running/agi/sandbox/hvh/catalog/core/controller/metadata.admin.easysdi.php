@@ -3986,20 +3986,6 @@ class ADMIN_metadata {
     
 	function CURLRequest($type, $url, $xmlBody="")
 	{
-		// Ce décode est nécessaire pour arriver à sauver dans un bon encodage le fichier XML.
-		// Ceci permet d'envoyer au proxy les caractères accentués.
-		//$xmlBody = utf8_decode($xmlBody);
-
-		
-		//$fp = fopen('/home/users/depthch/easysdi/proxy/logs/xmlBodyApresDecode.xml', 'w');
-		//$fp = fopen('C:\RecorderWebGIS\xmlBodyApresDecode.xml', 'w');
-		/*
-		$filename = JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'xml'.DS.'tmp'.DS.'sendedrequest.xml';
-		$fp = fopen($filename, 'w');
-		fwrite($fp, $xmlBody);
-		fclose($fp);
-		*/
-		
 		$database =& JFactory::getDBO(); 
 		
 		// Récupération du cookie sous la forme clé=valeur;clé=valeur
@@ -4176,11 +4162,10 @@ class ADMIN_metadata {
 	function synchronizeMetadata ($option){
 		global  $mainframe;
 		$db		 		=& JFactory::getDBO();
-		$option 		= $_POST['option'];
-		$metadata_id 	= $_POST['metadata_id'];
+		$metadata_id 	= $_GET['metadata_id'];
 		
 		//Load XPath to synchronize
-		$query = "SELECT xpath from #__sdi_objecttypelinkinheritance h
+		$query = "SELECT h.xpath from #__sdi_objecttypelinkinheritance h
 					INNER JOIN #__sdi_objecttypelink otl ON otl.id = h.objecttypelink_id
 					INNER JOIN #__sdi_objecttype ot ON ot.id = otl.parent_id
 					INNER JOIN #__sdi_object o ON o.objecttype_id = ot.id
@@ -4188,6 +4173,30 @@ class ADMIN_metadata {
 					INNER JOIN #__sdi_metadata m ON m.id = ov.metadata_id
 					WHERE m.guid = '$metadata_id'
 				 ";
+		$db->setQuery($query);
+		$xpathlist = $db->loadResultArray();
+		
+		//Load parent Metadata
+		$catalogUrlBase = config_easysdi::getValue("catalog_url");
+		$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&content=CORE&id=".$metadata_id;
+		$metadatacsw = DOMDocument::loadXML(ADMIN_metadata::CURLRequest("GET", $catalogUrlGetRecordById));
+		$metadataxpath = new DOMXPath($metadatacsw);
+		
+		//Register namespace
+		$query = "SELECT prefix, uri FROM #__sdi_namespace";
+		$db->setQuery($query);
+		$namespaces = $db->loadObjectList();
+		foreach ($namespaces as $namespace)
+			$metadataxpath->registerNamespace($namespace->prefix, $namespace->uri);
+		
+		//Loop on xpath to store the values
+		$parentvaluelist = array();
+		
+		foreach ($xpathlist as $xpath)
+		{
+			$nodeList = $metadataxpath->query($xpath);
+			$parentvaluelist[$xpath] = $nodeList->item(0);
+		}
 		
 		//Load children metadata guid
 		$query = "SELECT m.guid FROM #__sdi_metadata m
@@ -4197,6 +4206,34 @@ class ADMIN_metadata {
 				 ";
 		$db->setQuery($query);
 		$childguidlist = $db->loadResultArray();
+		
+		foreach ($childguidlist as $childguid)
+		{
+			try {
+				$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&content=CORE&id=".$childguid;
+				$childcsw = DOMDocument::loadXML(ADMIN_metadata::CURLRequest("GET", $catalogUrlGetRecordById));
+				$childxpath = new DOMXPath($childcsw);
+				
+				foreach ($namespaces as $namespace)
+					$childxpath->registerNamespace($namespace->prefix, $namespace->uri);
+				
+				foreach ($xpathlist as $xpath)
+				{
+					print_r($xpath."<br>");
+					$node = $parentvaluelist[$xpath];
+					$copiedNode = $childcsw->importNode($node, TRUE);
+// 					print_r("CopiedNode : ".$copiedNode);
+					$nodeList = $childxpath->query($xpath);
+					$oldNode = $nodeList->item(0)->parentNode->appendChild($copiedNode);
+					print_r("OldNode : ".$oldNode."<br>");
+				}
+				
+				print_r( $childcsw->saveXML());
+			}
+			catch (Exception $e){
+				print_r("Error : ".$e->getMessage()."<br>");
+			}
+		}
 		
 	}
 }

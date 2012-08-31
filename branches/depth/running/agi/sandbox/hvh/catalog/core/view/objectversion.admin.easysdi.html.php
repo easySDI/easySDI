@@ -40,6 +40,7 @@ class HTML_objectversion {
 					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_NAME"), 'title', @$filter_order_Dir, @$filter_order); ?></th>
 					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_DESCRIPTION"), 'description', @$filter_order_Dir, @$filter_order); ?></th>
 					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_METADATA_STATE"), 'state', @$filter_order_Dir, @$filter_order); ?></th>
+					<th class='title'><?php echo JText::_("CATALOG_METADATA_SYNCHRONIZE");?></th>
 					<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_UPDATED"), 'updated', @$filter_order_Dir, @$filter_order); ?></th>
 				</tr>
 			</thead>
@@ -111,6 +112,11 @@ class HTML_objectversion {
 					</td>
 					<td><?php echo JText::_($row->description); ?></td>		
 					<td><?php echo JText::_($row->state); ?></td>
+					<td align="center">
+						<a href="<?php echo "index.php?option=$option&task=synchronizeMetadata&metadata_id=$row->metadata_id"; ?>" title="<?php echo JText::_( 'CATALOG_OBJECT_VERSION_SYNCHRONIZE' ); ?>">
+							<img src="<?php echo JURI::root(true); ?>/includes/js/ThemeOffice/mainmenu.png" border="0" />
+						</a>
+					</td>
 					<td width="100px"><?php if ($row->updated and $row->updated<> '0000-00-00 00:00:00') {echo date('d.m.Y h:i:s',strtotime($row->updated));} ?></td>
 				</tr>
 	<?php
