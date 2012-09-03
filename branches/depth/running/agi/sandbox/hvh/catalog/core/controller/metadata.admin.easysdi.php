@@ -4072,8 +4072,11 @@ class ADMIN_metadata {
 			</csw:Transaction>'; 
 		
 		$result = ADMIN_metadata::CURLRequest("POST", $catalogUrlBase, $xmlstr);
-		//print_r($xmlstr);
-			
+		print_r("<hr>");
+		print_r($xmlstr);
+		print_r("<hr>");
+		print_r($result);
+		print_r("<hr>");
 		$updateResults = DOMDocument::loadXML($result);
 		
 		$xpathUpdate = new DOMXPath($updateResults);
@@ -4191,7 +4194,6 @@ class ADMIN_metadata {
 		
 		//Loop on xpath to store the values
 		$parentvaluelist = array();
-		
 		foreach ($xpathlist as $xpath)
 		{
 			$nodeList = $metadataxpath->query($xpath);
@@ -4211,7 +4213,10 @@ class ADMIN_metadata {
 		{
 			try {
 				$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&content=CORE&id=".$childguid;
-				$childcsw = DOMDocument::loadXML(ADMIN_metadata::CURLRequest("GET", $catalogUrlGetRecordById));
+				$childcsw = simplexml_load_string(ADMIN_metadata::CURLRequest("GET", $catalogUrlGetRecordById));
+				// Enlever les balises CSW Response pour ne garder que les gmd, depuis gmd:MD_Metadata
+				$childcsw = $childcsw->children("http://www.isotc211.org/2005/gmd");
+				$childcsw = DOMDocument::loadXML('<?xml version="1.0" encoding="UTF-8"?>'.$childcsw->asXML());
 				$childxpath = new DOMXPath($childcsw);
 				
 				foreach ($namespaces as $namespace)
@@ -4219,16 +4224,17 @@ class ADMIN_metadata {
 				
 				foreach ($xpathlist as $xpath)
 				{
-					print_r($xpath."<br>");
 					$node = $parentvaluelist[$xpath];
-					$copiedNode = $childcsw->importNode($node, TRUE);
-// 					print_r("CopiedNode : ".$copiedNode);
-					$nodeList = $childxpath->query($xpath);
-					$oldNode = $nodeList->item(0)->parentNode->appendChild($copiedNode);
-					print_r("OldNode : ".$oldNode."<br>");
+					$node = $childcsw->importNode($node, TRUE);
+ 					$nodeList = $childxpath->query($xpath);
+					$oldNode = $nodeList->item(0)->parentNode->replaceChild($node, $nodeList->item(0));
 				}
 				
-				print_r( $childcsw->saveXML());
+				$updated = ADMIN_metadata::CURLUpdateMetadata($metadata_id, $childcsw);
+				if($updated <> 1)
+					print_r("failed");
+				else
+					print_r("Ok");
 			}
 			catch (Exception $e){
 				print_r("Error : ".$e->getMessage()."<br>");
