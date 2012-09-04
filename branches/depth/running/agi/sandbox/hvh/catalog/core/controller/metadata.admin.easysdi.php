@@ -4157,6 +4157,10 @@ class ADMIN_metadata {
 		die;
 	}
 
+	/**
+	 * 
+	 * @param unknown_type $option
+	 */
 	function synchronizeMetadata ($option){
 		global  $mainframe;
 		$db		 		=& JFactory::getDBO();
@@ -4218,6 +4222,7 @@ class ADMIN_metadata {
 			}
 		}
 		
+		//If multiple node were detect in the parent metadata, the synchronization is aborted
 		if(count($multiplenodeerror) > 0)
 		{
 			$mainframe->enqueueMessage("Synchronization aborted","ERROR");
@@ -4260,8 +4265,27 @@ class ADMIN_metadata {
 					$node = $parentvaluelist[$xpath];
 					$node = $childcsw->importNode($node, TRUE);
  					$nodeList = $childxpath->query($xpath);
- 					//Cas : si les noeuds du xpath ne sont pas tous existant dans la metadonnees enfant, le replacechild va echouer
-					$oldNode = $nodeList->item(0)->parentNode->replaceChild($node, $nodeList->item(0));
+ 					if($nodeList->length > 1)
+ 					{
+ 						//Plusieur occurence du noeud dans la métadonnée enfant
+ 						// opt 1 : on ajoute celui à synchroniser
+ 						// opt 2 : on remplace le premier rencontré
+ 						// opt 3 : on remplace tous les noeuds enfants par l'unique parent <--
+ 						$mainframe->enqueueMessage("Plus de 1");
+ 					}
+ 					else if ($nodeList->length == 0)
+ 					{
+ 						//Aucune occurence du noeud dans la métadonnée enfant
+ 						//Il faut la créer, mais à partir de quel niveau du xpath les noeuds sont-ils manquants?
+ 						//Tester tous les noeuds en partant de la racine pour trouver celui à partir duquel créer la structure
+ 						$mainframe->enqueueMessage("Aucune");
+ 					}
+ 					else if($nodeList->length == 1)
+ 					{
+ 						//Une occurence présente, elle est remplacée
+ 						$mainframe->enqueueMessage("Unique");
+ 						$oldNode = $nodeList->item(0)->parentNode->replaceChild($node, $nodeList->item(0));
+ 					}
 				}
 				
 				$updated = ADMIN_metadata::CURLUpdateMetadata($childguid, $childcsw);
