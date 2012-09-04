@@ -4072,11 +4072,6 @@ class ADMIN_metadata {
 			</csw:Transaction>'; 
 		
 		$result = ADMIN_metadata::CURLRequest("POST", $catalogUrlBase, $xmlstr);
-		print_r("<hr>");
-		print_r($xmlstr);
-		print_r("<hr>");
-		print_r($result);
-		print_r("<hr>");
 		$updateResults = DOMDocument::loadXML($result);
 		
 		$xpathUpdate = new DOMXPath($updateResults);
@@ -4175,9 +4170,15 @@ class ADMIN_metadata {
 					INNER JOIN #__sdi_objectversion ov ON ov.object_id = o.id
 					INNER JOIN #__sdi_metadata m ON m.id = ov.metadata_id
 					WHERE m.guid = '$metadata_id'
+					AND otl.inheritance = 1
 				 ";
 		$db->setQuery($query);
 		$xpathlist = $db->loadResultArray();
+		if(count($xpathlist) < 1 )
+		{
+			$mainframe->enqueueMessage(JText::_("CATALOG_METADATA_SYNCHRONIZE_MESSAGE_NO_XPATH"));
+			return;
+		}
 		
 		//Load parent Metadata
 		$catalogUrlBase = config_easysdi::getValue("catalog_url");
@@ -4194,10 +4195,35 @@ class ADMIN_metadata {
 		
 		//Loop on xpath to store the values
 		$parentvaluelist = array();
+		$multiplenodeerror = array();
 		foreach ($xpathlist as $xpath)
 		{
+			//Check if all xpath nodes are unique in the parent metadata
+			//If it is not the case, put the xpath to the node in $multiplenodeerror array
+			//If it is the case, put the complete xpath in $parentvaluelist array
 			$nodeList = $metadataxpath->query($xpath);
-			$parentvaluelist[$xpath] = $nodeList->item(0);
+			if($nodeList->length > 1)
+				$multiplenodeerror[$xpath] = $nodeList->length;
+			else
+				$parentvaluelist[$xpath] = $nodeList->item(0);
+			
+			$subxpath = $xpath;
+			while (strlen($subxpath) > 1)
+			{
+				$pos = strrpos ($subxpath, '/', -1);
+				$subxpath =  substr ($subxpath, 0, $pos);
+				$nodeList = $metadataxpath->query($subxpath);
+				if($nodeList->length > 1)
+					$multiplenodeerror[$subxpath] = $nodeList->length;
+			}
+		}
+		
+		if(count($multiplenodeerror) > 0)
+		{
+			$mainframe->enqueueMessage("Synchronization aborted","ERROR");
+			foreach ($multiplenodeerror as $key => $value)
+				$mainframe->enqueueMessage("XPath : ".$key." occured ".$value." times in the document.", "ERROR");
+			return;
 		}
 		
 		//Load children metadata guid
@@ -4209,6 +4235,13 @@ class ADMIN_metadata {
 		$db->setQuery($query);
 		$childguidlist = $db->loadResultArray();
 		
+		if(count($childguidlist) < 1 )
+		{
+			$mainframe->enqueueMessage(JText::_("CATALOG_METADATA_SYNCHRONIZE_MESSAGE_NO_CHILD"));
+			return;
+		}
+		
+		//Update children metadata 
 		foreach ($childguidlist as $childguid)
 		{
 			try {
@@ -4227,20 +4260,20 @@ class ADMIN_metadata {
 					$node = $parentvaluelist[$xpath];
 					$node = $childcsw->importNode($node, TRUE);
  					$nodeList = $childxpath->query($xpath);
+ 					//Cas : si les noeuds du xpath ne sont pas tous existant dans la metadonnees enfant, le replacechild va echouer
 					$oldNode = $nodeList->item(0)->parentNode->replaceChild($node, $nodeList->item(0));
 				}
 				
-				$updated = ADMIN_metadata::CURLUpdateMetadata($metadata_id, $childcsw);
-				if($updated <> 1)
-					print_r("failed");
+				$updated = ADMIN_metadata::CURLUpdateMetadata($childguid, $childcsw);
+				if($updated <> 0)
+					$mainframe->enqueueMessage($childguid);
 				else
-					print_r("Ok");
+					$mainframe->enqueueMessage($childguid, "ERROR");
 			}
 			catch (Exception $e){
-				print_r("Error : ".$e->getMessage()."<br>");
+				$mainframe->enqueueMessage($e->getMessage(),"ERROR");
 			}
 		}
-		
 	}
 }
 ?>

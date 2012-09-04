@@ -113,7 +113,7 @@ class HTML_objectversion {
 					<td><?php echo JText::_($row->description); ?></td>		
 					<td><?php echo JText::_($row->state); ?></td>
 					<td align="center">
-						<a href="<?php echo "index.php?option=$option&task=synchronizeMetadata&metadata_id=$row->metadata_id"; ?>" title="<?php echo JText::_( 'CATALOG_OBJECT_VERSION_SYNCHRONIZE' ); ?>">
+						<a href="<?php echo "index.php?option=$option&task=synchronizeMetadata&metadata_id=$row->metadata_id&object_id=$object_id"; ?>" title="<?php echo JText::_( 'CATALOG_OBJECT_VERSION_SYNCHRONIZE' ); ?>">
 							<img src="<?php echo JURI::root(true); ?>/includes/js/ThemeOffice/mainmenu.png" border="0" />
 						</a>
 					</td>
