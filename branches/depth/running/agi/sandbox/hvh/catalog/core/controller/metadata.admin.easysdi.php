@@ -4176,17 +4176,67 @@ class ADMIN_metadata {
 		$rowObject = new object( $db );
 		$rowObject->load( $rowObjectVersion->object_id );
 		
-		/*
-		 * If the item is checked out we cannot edit it... unless it was checked
-		* out by the current user.
-		*/
+		//Checkout status
 		if ( JTable::isCheckedOut($user->get('id'), $rowObject->checked_out ))
 		{
-			$msg = JText::sprintf('DESCBEINGEDITTED', JText::_('The item'), $rowObject->name);
+			$msg = JText::sprintf('DESCBEINGEDITTED', JText::_('The metadata'), $rowObject->name." - ".$rowObjectVersion->title);
 			$mainframe->enqueueMessage($msg);
 			return;
 		}
 		$rowObject->checkout($user->get('id'));
+		
+		//Load children metadata guid
+		$query = "SELECT m.guid FROM #__sdi_metadata m
+					INNER JOIN #__sdi_objectversion ov ON m.id = ov.metadata_id
+					INNER JOIN #__sdi_objectversionlink ovl ON ovl.child_id = ov.id
+					WHERE ovl.parent_id = (SELECT id FROM #__sdi_objectversion WHERE metadata_id = (SELECT id FROM #__sdi_metadata WHERE guid = '$metadata_id' ))
+					";
+		$db->setQuery($query);
+		$childguidlist = $db->loadResultArray();
+		if(count($childguidlist) < 1 )
+		{
+			$mainframe->enqueueMessage(JText::_("CATALOG_METADATA_SYNCHRONIZE_MESSAGE_NO_CHILD"));
+			$rowObject->checkin();
+			return;
+		}
+		
+		//Checkout status of children metadata
+		$okgo = true;
+		$childObjectList = array();
+		foreach ($childguidlist as $childguid)
+		{
+			$rowChildMetadata = new metadataByGuid( $db );
+			$rowChildMetadata->load( $childguid );
+				
+			$rowChildObjectVersion = new objectversionByMetadata_id( $db );
+			$rowChildObjectVersion->load( $rowChildMetadata->id );
+				
+			$rowChildObject = new object( $db );
+			$rowChildObject->load( $rowChildObjectVersion->object_id );
+			
+			if ( JTable::isCheckedOut($user->get('id'), $rowChildObject->checked_out))
+			{
+				$msg = JText::sprintf('DESCBEINGEDITTED', JText::_('CATALOG_METADATA_SYNCHRONIZE_MESSAGE_CHECKEDOUT_METADATA'), "\"".$rowChildObject->name." - ".$rowChildObjectVersion->title."\" (". JText::_('CATALOG_METADATA_SYNCHRONIZE_MESSAGE_CHECKEDOUT_METADATA_LINKED')." \"".$rowObject->name." - ".$rowObjectVersion->title."\")");
+				$mainframe->enqueueMessage($msg);
+				$mainframe->enqueueMessage(JText::_('CATALOG_METADATA_SYNCHRONIZE_ABORTED'));
+				$okgo = false;
+				break;
+			}
+			
+			$childObjectList [$childguid] = $rowChildObject;
+			$rowChildObject->checkout($user->get('id'));
+		}
+		if(!$okgo)
+		{
+			//Check in the parent metadata
+			$rowObject->checkin();
+			//Check in all the children metadata and get out of the synchronize process
+			foreach ($childObjectList as $childObject)
+			{
+				$childObject->checkin();
+			}
+			return;
+		}
 		
 		//Load XPath to synchronize
 		$query = "SELECT h.xpath from #__sdi_objecttypelinkinheritance h
@@ -4247,7 +4297,7 @@ class ADMIN_metadata {
 		//If multiple node were detect in the parent metadata, the synchronization is aborted
 		if(count($multiplenodeerror) > 0)
 		{
-			$mainframe->enqueueMessage("Synchronization aborted","ERROR");
+			$mainframe->enqueueMessage(JText::_("CATALOG_METADATA_SYNCHRONIZE_ABORTED"));
 			foreach ($multiplenodeerror as $key => $value)
 				$mainframe->enqueueMessage("XPath : ".$key." occured ".$value." times in the document.", "ERROR");
 			return;
@@ -4271,24 +4321,6 @@ class ADMIN_metadata {
 		//Update children metadata 
 		foreach ($childguidlist as $childguid)
 		{
-			$rowChildMetadata = new metadataByGuid( $db );
-			$rowChildMetadata->load( $childguid );
-			
-			$rowChildObjectVersion = new objectversionByMetadata_id( $db );
-			$rowChildObjectVersion->load( $rowChildMetadata->id );
-			
-			$rowChildObject = new object( $db );
-			$rowChildObject->load( $rowChildObjectVersion->object_id );
-			
-			if ( JTable::isCheckedOut($user->get('id'), $rowChildObject->checked_out ))
-			{
-				$msg = JText::sprintf('DESCBEINGEDITTED', JText::_('The item'), $rowObject->name);
-				$mainframe->enqueueMessage($msg);
-				$rowObject->checkin();
-				return;
-			}
-			$rowChildObject->checkout($user->get('id'));
-			
 			try {
 				$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&content=CORE&id=".$childguid;
 				$childcsw = simplexml_load_string(ADMIN_metadata::CURLRequest("GET", $catalogUrlGetRecordById));
@@ -4390,7 +4422,7 @@ class ADMIN_metadata {
 				else
 					$mainframe->enqueueMessage($childguid, "ERROR");
 				
-				$rowChildObject->checkin();
+				$childObjectList[$childguid]->checkin();
 			}
 			catch (Exception $e){
 				$rowChildObject->checkin();
