@@ -4256,7 +4256,6 @@ class ADMIN_metadata {
 				$childcsw = $childcsw->children("http://www.isotc211.org/2005/gmd");
 				$childcsw = DOMDocument::loadXML('<?xml version="1.0" encoding="UTF-8"?>'.$childcsw->asXML());
 				$childxpath = new DOMXPath($childcsw);
-				
 				foreach ($namespaces as $namespace)
 					$childxpath->registerNamespace($namespace->prefix, $namespace->uri);
 				
@@ -4264,6 +4263,7 @@ class ADMIN_metadata {
 				{
 					$node = $parentvaluelist[$xpath];
 					$node = $childcsw->importNode($node, TRUE);
+					
  					$nodeList = $childxpath->query($xpath);
  					if($nodeList->length > 1)
  					{
@@ -4279,6 +4279,48 @@ class ADMIN_metadata {
  						//Il faut la créer, mais à partir de quel niveau du xpath les noeuds sont-ils manquants?
  						//Tester tous les noeuds en partant de la racine pour trouver celui à partir duquel créer la structure
  						$mainframe->enqueueMessage("Aucune");
+ 						
+ 						print_r("XPath : ".$xpath);
+ 						print_r("<hr>");
+ 						$offset = 1;
+ 						$next = 1;
+ 						//Prevnode doit etre initialise!!
+ 						while ($offset < strlen($xpath) )
+ 						{
+ 							$pos = strpos ($xpath, '/', $offset);
+ 							print_r("Pos : ".$pos);
+ 							print_r("<hr>");
+ 							$currentxPath =  substr ($xpath, 0, $pos);
+ 							print_r("SubXPath : ".$currentxPath);
+ 							print_r("<hr>");
+ 							$nodechildList = $childxpath->query($currentxPath);
+ 							if($nodechildList == FALSE){
+ 								$offset = pos + 1;
+ 								continue;
+ 							}
+ 							print_r("ok");
+ 							print_r("<hr>");
+ 							if($nodechildList->length > 0 )
+ 							{
+ 								//Une occurence trouvé, on continue vers la suivante
+ 								print_r("PrevNode");
+ 								$prevNode = $nodechildList->item(0);
+ 								print_r("<hr>");
+ 							}
+ 							else if($nodechildList->length == 0)
+ 							{
+ 								//Le noeud n'existe pas, c'est à partir du précédent qu'il faut créer
+ 								$prevpos = strrpos ($currentxPath, '/', -1);
+ 								print_r("Prevpos : ".$prevpos);
+ 								print_r("<hr>");
+ 								$nodeName = substr ($currentxPath, $prevpos);
+ 								print_r("NodeName : ".$nodeName);
+ 								print_r("<hr>");
+ 								$prevNode = $prevNode->appendChild($childcsw->createElement($nodeName));
+ 							}
+ 							$offset = pos + 1;
+ 						}
+ 						$oldNode = $prevNode->parentNode->replaceChild($node, $prevNode); 						
  					}
  					else if($nodeList->length == 1)
  					{
