@@ -4165,6 +4165,28 @@ class ADMIN_metadata {
 		global  $mainframe;
 		$db		 		=& JFactory::getDBO();
 		$metadata_id 	= $_GET['metadata_id'];
+		$user 			= JFactory::getUser();
+		
+		$rowMetadata = new metadataByGuid( $db );
+		$rowMetadata->load( $metadata_id );
+		
+		$rowObjectVersion = new objectversionByMetadata_id( $db );
+		$rowObjectVersion->load( $rowMetadata->id );
+		
+		$rowObject = new object( $db );
+		$rowObject->load( $rowObjectVersion->object_id );
+		
+		/*
+		 * If the item is checked out we cannot edit it... unless it was checked
+		* out by the current user.
+		*/
+		if ( JTable::isCheckedOut($user->get('id'), $rowObject->checked_out ))
+		{
+			$msg = JText::sprintf('DESCBEINGEDITTED', JText::_('The item'), $rowObject->name);
+			$mainframe->enqueueMessage($msg);
+			return;
+		}
+		$rowObject->checkout($user->get('id'));
 		
 		//Load XPath to synchronize
 		$query = "SELECT h.xpath from #__sdi_objecttypelinkinheritance h
@@ -4249,6 +4271,24 @@ class ADMIN_metadata {
 		//Update children metadata 
 		foreach ($childguidlist as $childguid)
 		{
+			$rowChildMetadata = new metadataByGuid( $db );
+			$rowChildMetadata->load( $childguid );
+			
+			$rowChildObjectVersion = new objectversionByMetadata_id( $db );
+			$rowChildObjectVersion->load( $rowChildMetadata->id );
+			
+			$rowChildObject = new object( $db );
+			$rowChildObject->load( $rowChildObjectVersion->object_id );
+			
+			if ( JTable::isCheckedOut($user->get('id'), $rowChildObject->checked_out ))
+			{
+				$msg = JText::sprintf('DESCBEINGEDITTED', JText::_('The item'), $rowObject->name);
+				$mainframe->enqueueMessage($msg);
+				$rowObject->checkin();
+				return;
+			}
+			$rowChildObject->checkout($user->get('id'));
+			
 			try {
 				$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&content=CORE&id=".$childguid;
 				$childcsw = simplexml_load_string(ADMIN_metadata::CURLRequest("GET", $catalogUrlGetRecordById));
@@ -4272,74 +4312,92 @@ class ADMIN_metadata {
  						// opt 2 : on remplace le premier rencontré
  						// opt 3 : on remplace tous les noeuds enfants par l'unique parent <--
  						$mainframe->enqueueMessage("Plus de 1");
+ 						$parentNode = $nodeList->item(0)->parentNode;
+ 						$first = true;
+ 						foreach ($nodeList as $nodeToRemove )
+ 						{
+ 							if($first)
+ 							{
+ 								$first = false;
+ 								$parentNode->replaceChild($node, $nodeToRemove);
+ 							}
+ 							else
+ 							{
+ 								$parentNode->removeChild($nodeToRemove);
+ 							}
+ 						}
+ 						
  					}
  					else if ($nodeList->length == 0)
  					{
- 						//Aucune occurence du noeud dans la métadonnée enfant
- 						//Il faut la créer, mais à partir de quel niveau du xpath les noeuds sont-ils manquants?
- 						//Tester tous les noeuds en partant de la racine pour trouver celui à partir duquel créer la structure
- 						$mainframe->enqueueMessage("Aucune");
- 						
- 						print_r("XPath : ".$xpath);
- 						print_r("<hr>");
+ 						//Node doesn't exist in the child metadata, it has to be created, so do its missing parents.
  						$offset = 1;
- 						$next = 1;
- 						//Prevnode doit etre initialise!!
+ 						$last = false;
  						while ($offset < strlen($xpath) )
  						{
  							$pos = strpos ($xpath, '/', $offset);
- 							print_r("Pos : ".$pos);
- 							print_r("<hr>");
- 							$currentxPath =  substr ($xpath, 0, $pos);
- 							print_r("SubXPath : ".$currentxPath);
- 							print_r("<hr>");
- 							$nodechildList = $childxpath->query($currentxPath);
- 							if($nodechildList == FALSE){
- 								$offset = pos + 1;
- 								continue;
+ 							if(!$pos)//End of the xpath
+ 							{
+ 								$currentxPath = $xpath;
+ 								$last = true;
  							}
- 							print_r("ok");
- 							print_r("<hr>");
+ 							else
+ 							{
+ 								$currentxPath =  substr ($xpath, 0, $pos);
+ 							}
+ 							
+ 							$nodechildList = $childxpath->query($currentxPath);
  							if($nodechildList->length > 0 )
  							{
- 								//Une occurence trouvé, on continue vers la suivante
- 								print_r("PrevNode");
+ 								//Node exists, continue to next child node in the xPath
  								$prevNode = $nodechildList->item(0);
- 								print_r("<hr>");
  							}
  							else if($nodechildList->length == 0)
  							{
- 								//Le noeud n'existe pas, c'est à partir du précédent qu'il faut créer
- 								$prevpos = strrpos ($currentxPath, '/', -1);
- 								print_r("Prevpos : ".$prevpos);
- 								print_r("<hr>");
- 								$nodeName = substr ($currentxPath, $prevpos);
- 								print_r("NodeName : ".$nodeName);
- 								print_r("<hr>");
- 								$prevNode = $prevNode->appendChild($childcsw->createElement($nodeName));
+ 								//Node doesn't exist : get the previous node (the parent) to create this missing node
+ 								if(!$last)
+ 								{
+ 									//Not the leaf of the xPath so create the missing node and continue to next child node of the xPath
+	 								$prevpos = strrpos ($currentxPath, '/', -1);
+	 								$nodeName = substr ($currentxPath, $prevpos +1);
+	 								$newNode = $childcsw->createElement($nodeName);
+	 								$appendedNode = $prevNode->appendChild($newNode);
+	 								$prevNode = $appendedNode;
+ 								}
+ 								else
+ 								{
+ 									//End of the xPath : append directly the node from the parent metadata
+ 									$prevNode->appendChild($node);
+ 								}
  							}
- 							$offset = pos + 1;
+ 							if($last)
+ 								break;
+ 							else
+ 								$offset = $pos + 1;
  						}
- 						$oldNode = $prevNode->parentNode->replaceChild($node, $prevNode); 						
  					}
  					else if($nodeList->length == 1)
  					{
- 						//Une occurence présente, elle est remplacée
+ 						//Node exists just one time in the child metadata : it is replaced
  						$mainframe->enqueueMessage("Unique");
- 						$oldNode = $nodeList->item(0)->parentNode->replaceChild($node, $nodeList->item(0));
+ 						$nodeList->item(0)->parentNode->replaceChild($node, $nodeList->item(0));
  					}
 				}
-				
+
 				$updated = ADMIN_metadata::CURLUpdateMetadata($childguid, $childcsw);
 				if($updated <> 0)
 					$mainframe->enqueueMessage($childguid);
 				else
 					$mainframe->enqueueMessage($childguid, "ERROR");
+				
+				$rowChildObject->checkin();
 			}
 			catch (Exception $e){
+				$rowChildObject->checkin();
 				$mainframe->enqueueMessage($e->getMessage(),"ERROR");
 			}
 		}
+		$rowObject->checkin();
 	}
 }
 ?>
