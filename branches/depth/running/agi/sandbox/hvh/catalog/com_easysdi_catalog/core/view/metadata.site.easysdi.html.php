@@ -75,11 +75,10 @@ class HTML_metadata {
 	
 	function listMetadata($pageNav, $rows, $option, $rootAccount, $listObjectType, $filter_objecttype_id, $search, $lists)
 	{
-		$database =& JFactory::getDBO(); 
-		$user = JFactory::getUser();
-		
-		$app	= &JFactory::getApplication();
-		$router = &$app->getRouter();
+		$database 	=& JFactory::getDBO(); 
+		$user 		= JFactory::getUser();
+		$app		= &JFactory::getApplication();
+		$router 	= &$app->getRouter();
 		$router->setVars($_REQUEST);
 		
 		?>
@@ -141,8 +140,37 @@ class HTML_metadata {
 		$param = array('size'=>array('x'=>800,'y'=>800) );
 		JHTML::_("behavior.modal","a.modal",$param);
 		foreach ($rows as $row)
-		{	$i++;
+		{	
+			$i++;
 			
+			//Inheritance information
+			$database->setQuery ("SELECT count(ot.id) FROM #__sdi_objecttype ot
+					INNER JOIN #__sdi_objecttypelink otl ON otl.parent_id = ot.id
+					INNER JOIN #__sdi_object o ON o.objecttype_id = ot.id
+					INNER JOIN #__sdi_objectversion ov ON ov.object_id = o.id
+					INNER JOIN #__sdi_objectversionlink ovl ON ovl.parent_id = ov.id
+					WHERE o.id = $row->id
+					AND ovl.parent_id = $row->version_id
+					AND otl.inheritance = 1");
+			$row->hasInheritance = $database->loadResult();
+		
+			// Est-ce que cet utilisateur est un manager?
+			$database->setQuery( "SELECT count(*) FROM #__sdi_manager_object m, #__sdi_object o, #__sdi_account a WHERE m.object_id=o.id AND m.account_id=a.id AND a.user_id=".$user->get('id')." AND o.id=".$row->id) ;
+			$total = $database->loadResult();
+			if ($total == 1)
+				$isManager = true;
+			else
+				$isManager = false;
+			
+			// Est-ce que cet utilisateur est un editeur?
+			$database->setQuery( "SELECT count(*) FROM #__sdi_editor_object e, #__sdi_object o, #__sdi_account a WHERE e.object_id=o.id AND e.account_id=a.id AND a.user_id=".$user->get('id')." AND o.id=".$row->id) ;
+			$total = $database->loadResult();
+			if ($total == 1)
+				$isEditor = true;
+			else
+				$isEditor = false;
+		
+			//Metadata 
 			$rowMetadata = new metadataByGuid($database);
 			$rowMetadata->load($row->metadata_guid);
 			
@@ -155,26 +183,25 @@ class HTML_metadata {
 					<a class="modal" title="<?php echo addslashes(JText::_("CATALOG_VIEW_MD")); ?>" href="./index.php?tmpl=component&option=com_easysdi_catalog&toolbar=1&task=showMetadata&type=specific&id=<?php echo $row->metadata_guid;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}"> <?php echo $row->version_title ;?></a>
 				</td>
 				<?php
-if ($row->state == "CORE_PUBLISHED" and date('Y-m-d') < date('Y-m-d', strtotime($rowMetadata->published)))
-{ 
-?>
+				if ($row->state == "CORE_PUBLISHED" and date('Y-m-d') < date('Y-m-d', strtotime($rowMetadata->published)))
+				{ 
+				?>
 				<td ><?php echo JText::_($row->state).JText::sprintf("CATALOG_FE_METADATA_PUBLISHEDSTATE_DATE", date('d.m.Y', strtotime($rowMetadata->published))); ?></td>
-<?php
-}
-else if ($row->state == "CORE_ARCHIVED" and date('Y-m-d') < date('Y-m-d', strtotime($rowMetadata->archived)))
-{ 
-?>
+				<?php
+				}
+				else if ($row->state == "CORE_ARCHIVED" and date('Y-m-d') < date('Y-m-d', strtotime($rowMetadata->archived)))
+				{ 
+				?>
 				<td ><?php echo JText::_($row->state).JText::sprintf("CATALOG_FE_METADATA_PUBLISHEDSTATE_DATE", date('d.m.Y', strtotime($rowMetadata->archived))); ?></td>
-<?php
-}
-else
-{ 
-?>
+				<?php
+				}
+				else
+				{ 
+				?>
 				<td ><?php echo JText::_($row->state); ?></td>
-<?php
-}
-?>	
-				<?php 		
+				<?php
+				}
+						
 				$managers = "";
 				$database->setQuery( "SELECT b.name FROM #__sdi_manager_object a,#__users b, #__sdi_account c where a.account_id = c.id AND c.user_id=b.id AND a.object_id=".$row->id." ORDER BY b.name" );
 				$managers = implode(", ", $database->loadResultArray());
@@ -191,44 +218,76 @@ else
 				{
 					?>
 					<div class="logo" id="emptyPicto"></div>
+					<div class="logo" id="emptyPicto"></div>
+					<div class="logo" id="emptyPicto"></div>
+					<div class="logo" id="emptyPicto"></div>
 					<?php 
+					 
 				} 
 				else 
 				{
-					// Est-ce que cet utilisateur est un manager?
-					$database->setQuery( "SELECT count(*) FROM #__sdi_manager_object m, #__sdi_object o, #__sdi_account a WHERE m.object_id=o.id AND m.account_id=a.id AND a.user_id=".$user->get('id')." AND o.id=".$row->id) ;
-					$total = $database->loadResult();
-					if ($total == 1)
-						$isManager = true;
-					else
-						$isManager = false;
-					
-					// Est-ce que cet utilisateur est un editeur?
-					$database->setQuery( "SELECT count(*) FROM #__sdi_editor_object e, #__sdi_object o, #__sdi_account a WHERE e.object_id=o.id AND e.account_id=a.id AND a.user_id=".$user->get('id')." AND o.id=".$row->id) ;
-					$total = $database->loadResult();
-					if ($total == 1)
-						$isEditor = true;
-					else
-						$isEditor = false;
-					
-					$rowMetadata = new metadataByGuid($database);
-					$rowMetadata->load($row->metadata_guid);
 					if ($isManager) // Le rele de gestionnaire prime sur celui d'editeur, au cas oe l'utilisateur a les deux
 					{
-						if ($rowMetadata->metadatastate_id == 4 // En travail
+						if (   $rowMetadata->metadatastate_id == 4 // En travail
 							or $rowMetadata->metadatastate_id == 3 // Valide
 							or ($rowMetadata->metadatastate_id == 2 and $rowMetadata->archived >= date('Y-m-d H:i:s'))// Archive et date du jour <= date d'archivage
-							or ($rowMetadata->metadatastate_id == 1 and $rowMetadata->published <= date('Y-m-d H:i:s') )// Publie et date du jour >= date de publication
-							)
+							or ($rowMetadata->metadatastate_id == 1 and $rowMetadata->published <= date('Y-m-d H:i:s') ))// Publie et date du jour >= date de publication
 						{
 							?>
-								<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_EDIT_METADATA_ACTION')); ?>" id="editMetadata" onClick="window.open('<?php echo JRoute::_(displayManager::buildUrl('index.php?task=editMetadata&option='.$option.'&cid[]='.$row->version_id)); ?>', '_self');"></div>
+							<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_EDIT_METADATA_ACTION')); ?>" id="editMetadata" onClick="window.open('<?php echo JRoute::_(displayManager::buildUrl('index.php?task=editMetadata&option='.$option.'&cid[]='.$row->version_id)); ?>', '_self');"></div>
 							<?php
 						}
 						else
 						{
 							?>
-								<div class="logo" id="emptyPicto"></div>
+							<div class="logo" id="emptyPicto"></div>
+							<?php 
+						}
+						if ((	$rowMetadata->metadatastate_id == 1 
+							and date('Y-m-d H:i:s') >= $rowMetadata->published ))// Publie et date du jour >= date de publication
+						{
+							?>
+							<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_ARCHIVE_METADATA')); ?>" id="archiveMetadata" onClick="document.getElementById('metadataListForm').task.value='archiveMetadata';document.getElementById('cid[]').value=<?php echo $rowMetadata->id?>;document.getElementById('metadataListForm').submit();"></div>
+							<?php
+						}
+						else
+						{
+							?>
+							<div class="logo" id="emptyPicto"></div>
+							<?php 
+						}
+						if (	$rowMetadata->metadatastate_id == 3 
+							or ($rowMetadata->metadatastate_id == 2 ) 
+							or (	$rowMetadata->metadatastate_id == 1 
+								and date('Y-m-d H:i:s') >= $rowMetadata->published))// Archive, Valide ou Publie
+						{
+							?>
+							<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_INVALIDATE_METADATA')); ?>" id="invalidateMetadata" 
+							onClick="document.getElementById('metadataListForm').task.value='invalidateMetadata';
+							document.getElementById('cid[]').value=<?php echo $rowMetadata->id?>;
+							document.getElementById('metadataListForm').submit();"></div>
+							<?php
+						}
+						else
+						{
+							?>
+							<div class="logo" id="emptyPicto"></div>
+							<?php 
+						}
+						if ($row->hasInheritance)//Synchronization on this metadata is possible
+						{
+							?>
+							<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_SYNCHRONIZE_METADATA')); ?>" id="synchronizeMetadata" 
+							onClick="if (confirm('<?php echo JText::_("CATALOG_METADATA_SYNCHRONIZE_MESSAGE_CONFIRMATION") ;?>')){
+							document.getElementById('metadataListForm').task.value='synchronizeMetadata';
+							document.getElementById('guid').value='<?php echo $row->metadata_guid?>';
+							document.getElementById('metadataListForm').submit();}"></div>
+							<?php
+						}
+						else
+						{
+							?>
+							<div class="logo" id="emptyPicto"></div>
 							<?php 
 						}
 					}
@@ -242,76 +301,24 @@ else
 						{
 							?>
 							<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_EDIT_METADATA_ACTION')); ?>" id="editMetadata" onClick="window.open('<?php echo JRoute::_(displayManager::buildUrl('index.php?task=editMetadata&option='.$option.'&cid[]='.$row->version_id)); ?>', '_self'); "></div>
-							
 							<?php
 						} 
 						else
 						{
 							?>
-								<div class="logo" id="emptyPicto"></div>
-							<?php 
-						}
-					}
-				}
-			?>
-				<?php 
-				if (  JTable::isCheckedOut($user->get ('id'), $row->checked_out ) ) 
-				{
-					?>
-					<div class="logo" id="emptyPicto"></div>
-					<div class="logo" id="emptyPicto"></div>
-					<?php 
-				} 
-				else 
-				{
-					// Est-ce que cet utilisateur est un manager?
-					$database->setQuery( "SELECT count(*) FROM #__sdi_manager_object m, #__sdi_object o, #__sdi_account a WHERE m.object_id=o.id AND m.account_id=a.id AND a.user_id=".$user->get('id')." AND o.id=".$row->id) ;
-					$total = $database->loadResult();
-					if ($total == 1)
-						$isManager = true;
-					else
-						$isManager = false;
-					
-					$rowMetadata = new metadataByGuid($database);
-					$rowMetadata->load($row->metadata_guid);
-					if ($isManager) // Le rele de gestionnaire prime sur celui d'editeur, au cas oe l'utilisateur a les deux
-					{
-						if (($rowMetadata->metadatastate_id == 1 and date('Y-m-d H:i:s') >= $rowMetadata->published )// Publie et date du jour >= date de publication
-							)
-						{
-							?>
-								<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_ARCHIVE_METADATA')); ?>" id="archiveMetadata" onClick="document.getElementById('metadataListForm').task.value='archiveMetadata';document.getElementById('cid[]').value=<?php echo $rowMetadata->id?>;document.getElementById('metadataListForm').submit();"></div>
-							<?php
-						}
-						else
-						{
-							?>
-								<div class="logo" id="emptyPicto"></div>
-							<?php 
-						}
-						if ($rowMetadata->metadatastate_id == 3 or ($rowMetadata->metadatastate_id == 2 ) or  ($rowMetadata->metadatastate_id == 1 and date('Y-m-d H:i:s') >= $rowMetadata->published)// Archive, Valide ou Publie
-							)
-						{
-							?>
-								<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_INVALIDATE_METADATA')); ?>" id="invalidateMetadata" onClick="document.getElementById('metadataListForm').task.value='invalidateMetadata';document.getElementById('cid[]').value=<?php echo $rowMetadata->id?>;document.getElementById('metadataListForm').submit();"></div>
-							<?php
-						}
-						else
-						{
-							?>
-								<div class="logo" id="emptyPicto"></div>
-							<?php 
-						}
-					}
-					else
-					{
-						?>
 							<div class="logo" id="emptyPicto"></div>
+							<?php 
+						}
+						
+						?>
+						<div class="logo" id="emptyPicto"></div>
+						<div class="logo" id="emptyPicto"></div>
+						<div class="logo" id="emptyPicto"></div>
 						<?php
 					}
 				}
-			?>
-				<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_HISTORYASSIGN_METADATA')); ?>" id="historyAssignMetadata" onClick="document.getElementById('metadataListForm').task.value='historyAssignMetadata';document.getElementById('cid[]').value=<?php echo $rowMetadata->id?>;document.getElementById('metadataListForm').submit();"></div>
+				?>
+					<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_HISTORYASSIGN_METADATA')); ?>" id="historyAssignMetadata" onClick="document.getElementById('metadataListForm').task.value='historyAssignMetadata';document.getElementById('cid[]').value=<?php echo $rowMetadata->id?>;document.getElementById('metadataListForm').submit();"></div>
 				</td>
 			</tr>
 			
@@ -330,6 +337,7 @@ else
 			 
 			<input type="hidden" id="cid[]" name="cid[]" value="">
 			<input type="hidden" id="id" name="id" value="">
+			<input type="hidden" id="guid" name="guid" value="">
 			<input type="hidden" name="option" value="<?php echo $option; ?>">
 			<input type="hidden" id="task" name="task" value="listMetadata">
 			<input type="hidden" id="Itemid" name="Itemid" value="<?php echo JRequest::getVar('Itemid'); ?>">

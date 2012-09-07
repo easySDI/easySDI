@@ -1356,7 +1356,7 @@ switch($task){
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'object.easysdi.class.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'objectversion.easysdi.class.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'objectversion.toolbar.easysdi.html.php');
-		ADMIN_metadata::synchronizeMetadata();
+		ADMIN_metadata::synchronizeMetadata(JRequest::getVar('metadata_id'));
 		TOOLBAR_objectversion::_DEFAULT();
 		ADMIN_objectversion::listObjectVersion($option);
 		break;

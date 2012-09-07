@@ -21,8 +21,8 @@ class ADMIN_objectversion {
 	
 	function listObjectVersion($option) {
 		global  $mainframe;
-		$db =& JFactory::getDBO();
-		$object_id = JRequest::getVar ('object_id');
+		$db			=& JFactory::getDBO();
+		$object_id 	= JRequest::getVar ('object_id');
 		$context	= 'listObjectVersion';
 		$limit		= $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
 		$limitstart	= $mainframe->getUserStateFromRequest($context.'limitstart', 'limitstart', 0, 'int');
@@ -35,7 +35,7 @@ class ADMIN_objectversion {
 		$filter_order_Dir	= $mainframe->getUserStateFromRequest( $option.$context.".filter_order_Dir",	'filter_order_Dir',	'ASC',		'word' );
 		
 		// Test si le filtre est valide
-		if ($filter_order <> "id" 
+		if (	$filter_order <> "id" 
 			and $filter_order <> "ordering" 
 			and $filter_order <> "created" 
 			and $filter_order <> "description" 
@@ -49,28 +49,31 @@ class ADMIN_objectversion {
 		
 		$orderby 	= ' ORDER BY ov.'. $filter_order .' '. $filter_order_Dir;
 		
-		$query = "SELECT COUNT(*) FROM #__sdi_objectversion ov INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id INNER JOIN #__sdi_list_metadatastate s ON m.metadatastate_id=s.id WHERE ov.object_id=".$object_id;					
+		$query 		= "SELECT COUNT(*) FROM #__sdi_objectversion ov 
+						INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id 
+						INNER JOIN #__sdi_list_metadatastate s ON m.metadatastate_id=s.id 
+						WHERE ov.object_id=".$object_id;					
 		$db->setQuery( $query );
-		$total = $db->loadResult();
+		$total 		= $db->loadResult();
 		
 		// Create the pagination object
 		jimport('joomla.html.pagination');
 		$pagination = new JPagination($total, $limitstart, $limit);
 
 		// Recherche des enregistrements selon les limites
-		$query = "SELECT ov.*, s.label as state, m.guid as metadata_id FROM #__sdi_objectversion ov INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id INNER JOIN #__sdi_list_metadatastate s ON m.metadatastate_id=s.id WHERE ov.object_id=".$object_id;
-		$query .= $orderby;
+		$query 		= "SELECT ov.*, s.label as state, m.guid as metadata_id FROM #__sdi_objectversion ov 
+						INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id 
+						INNER JOIN #__sdi_list_metadatastate s ON m.metadatastate_id=s.id 
+						WHERE ov.object_id=".$object_id;
+		$query 		.= $orderby;
 		$db->setQuery( $query, $pagination->limitstart, $pagination->limit);
 		
-		$rows = $db->loadObjectList();
+		$rows 		= $db->loadObjectList();
 		if ($db->getErrorNum()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-			//exit();
 		}
 		
-		
 		HTML_objectversion::listObjectVersion($rows, $object_id, $pagination, $filter_order_Dir, $filter_order, $option);
-
 	}
 
 	function newObjectVersion($object_id, $option)

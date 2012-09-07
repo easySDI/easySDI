@@ -4161,10 +4161,9 @@ class ADMIN_metadata {
 	 * 
 	 * @param unknown_type $option
 	 */
-	function synchronizeMetadata ($option){
+	function synchronizeMetadata ($metadata_id){
 		global  $mainframe;
 		$db		 		=& JFactory::getDBO();
-		$metadata_id 	= $_GET['metadata_id'];
 		$user 			= JFactory::getUser();
 		
 		$rowMetadata = new metadataByGuid( $db );
@@ -4179,7 +4178,7 @@ class ADMIN_metadata {
 		//Checkout status
 		if ( JTable::isCheckedOut($user->get('id'), $rowObject->checked_out ))
 		{
-			$msg = JText::sprintf('DESCBEINGEDITTED', JText::_('The metadata'), $rowObject->name." - ".$rowObjectVersion->title);
+			$msg = JText::sprintf('DESCBEINGEDITTED', JText::_('CATALOG_METADATA_SYNCHRONIZE_MESSAGE_CHECKEDOUT_METADATA_PARENT'), $rowObject->name." - ".$rowObjectVersion->title);
 			$mainframe->enqueueMessage($msg);
 			return;
 		}
@@ -4216,7 +4215,7 @@ class ADMIN_metadata {
 			
 			if ( JTable::isCheckedOut($user->get('id'), $rowChildObject->checked_out))
 			{
-				$msg = JText::sprintf('DESCBEINGEDITTED', JText::_('CATALOG_METADATA_SYNCHRONIZE_MESSAGE_CHECKEDOUT_METADATA'), "\"".$rowChildObject->name." - ".$rowChildObjectVersion->title."\" (". JText::_('CATALOG_METADATA_SYNCHRONIZE_MESSAGE_CHECKEDOUT_METADATA_LINKED')." \"".$rowObject->name." - ".$rowObjectVersion->title."\")");
+				$msg = JText::sprintf('DESCBEINGEDITTED', JText::sprintf('CATALOG_METADATA_SYNCHRONIZE_MESSAGE_CHECKEDOUT_METADATA', "\"".$rowChildObject->name." - ".$rowChildObjectVersion->title."\"","\"".$rowObject->name." - ".$rowObjectVersion->title."\""));
 				$mainframe->enqueueMessage($msg);
 				$mainframe->enqueueMessage(JText::_('CATALOG_METADATA_SYNCHRONIZE_ABORTED'));
 				$okgo = false;
@@ -4299,7 +4298,7 @@ class ADMIN_metadata {
 		{
 			$mainframe->enqueueMessage(JText::_("CATALOG_METADATA_SYNCHRONIZE_ABORTED"));
 			foreach ($multiplenodeerror as $key => $value)
-				$mainframe->enqueueMessage("XPath : ".$key." occured ".$value." times in the document.", "ERROR");
+				$mainframe->enqueueMessage(JTEXT::sprintf("CATALOG_METADATA_SYNCHRONIZE_ABORTED_MESSAGE",$key, $value), "ERROR");
 			return;
 		}
 		
@@ -4343,7 +4342,6 @@ class ADMIN_metadata {
  						// opt 1 : on ajoute celui à synchroniser
  						// opt 2 : on remplace le premier rencontré
  						// opt 3 : on remplace tous les noeuds enfants par l'unique parent <--
- 						$mainframe->enqueueMessage("Plus de 1");
  						$parentNode = $nodeList->item(0)->parentNode;
  						$first = true;
  						foreach ($nodeList as $nodeToRemove )
@@ -4411,16 +4409,24 @@ class ADMIN_metadata {
  					else if($nodeList->length == 1)
  					{
  						//Node exists just one time in the child metadata : it is replaced
- 						$mainframe->enqueueMessage("Unique");
  						$nodeList->item(0)->parentNode->replaceChild($node, $nodeList->item(0));
  					}
 				}
 
 				$updated = ADMIN_metadata::CURLUpdateMetadata($childguid, $childcsw);
-				if($updated <> 0)
-					$mainframe->enqueueMessage($childguid);
-				else
-					$mainframe->enqueueMessage($childguid, "ERROR");
+				if($updated == 0)
+				{
+					$rowChildMetadata = new metadataByGuid( $db );
+					$rowChildMetadata->load( $childguid );
+						
+					$rowChildObjectVersion = new objectversionByMetadata_id( $db );
+					$rowChildObjectVersion->load( $rowChildMetadata->id );
+						
+					$rowChildObject = new object( $db );
+					$rowChildObject->load( $rowChildObjectVersion->object_id );
+					
+					$mainframe->enqueueMessage(JText::sprintf("CATALOG_METADATA_SYNCHRONIZE_MESSAGE_CHILD_ERROR","\"".$rowChildObject->name." - ".$rowChildObjectVersion->title."\""), "ERROR");
+				}
 				
 				$childObjectList[$childguid]->checkin();
 			}
@@ -4430,6 +4436,7 @@ class ADMIN_metadata {
 			}
 		}
 		$rowObject->checkin();
+		$mainframe->enqueueMessage(JText::sprintf("CATALOG_METADATA_SYNCHRONIZE_MESSAGE_SUCCESS", "\"". $rowObject->name." - ".$rowObjectVersion->title."\""));
 	}
 }
 ?>

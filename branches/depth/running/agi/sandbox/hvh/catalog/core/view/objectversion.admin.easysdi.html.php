@@ -22,9 +22,9 @@ class HTML_objectversion {
 	
 	function listObjectVersion($rows, $object_id, $page, $filter_order_Dir, $filter_order, $option)
 	{
-		$database =& JFactory::getDBO();
-		$user	=& JFactory::getUser();
-		$ordering = ($filter_order == 'ordering');
+		$database 	=& JFactory::getDBO();
+		$user		=& JFactory::getUser();
+		$ordering 	= ($filter_order == 'ordering');
 		
 		$partners =	array(); ?>
 		<form action="index.php" method="post" name="adminForm">
@@ -51,9 +51,20 @@ class HTML_objectversion {
 			foreach ($rows as $row)
 			{			
 				$checked 	= JHTML::_('grid.checkedout',   $row, $i );
-					  				
+								
+				$query = "SELECT count(ot.id) FROM #__sdi_objecttype ot 
+							INNER JOIN #__sdi_objecttypelink otl ON otl.parent_id = ot.id
+							INNER JOIN #__sdi_object o ON o.objecttype_id = ot.id 
+							INNER JOIN #__sdi_objectversion ov ON ov.object_id = o.id
+							INNER JOIN #__sdi_objectversionlink ovl ON ovl.parent_id = ov.id
+							WHERE o.id = $row->object_id
+							AND ovl.parent_id = $row->id
+							AND otl.inheritance = 1";
+				$database->setQuery ($query);
+				$row->hasInheritance = $database->loadResult();
+
 	?>
-				<tr> <!-- class="<?php //echo "row$k"; ?>" -->
+				<tr> 
 					<td align="center" width="10px"><?php echo $page->getRowOffset( $i );//echo $i+$page->limitstart+1;?></td>
 					<td align="center">
 					<?php echo $checked; ?>
@@ -113,9 +124,15 @@ class HTML_objectversion {
 					<td><?php echo JText::_($row->description); ?></td>		
 					<td><?php echo JText::_($row->state); ?></td>
 					<td align="center">
+					<?php if ($row->hasInheritance)
+					{
+					?>
 						<a onclick="return confirm('<?php echo JText::_("CATALOG_METADATA_SYNCHRONIZE_MESSAGE_CONFIRMATION") ;?>')"  href="<?php echo "index.php?option=$option&task=synchronizeMetadata&metadata_id=$row->metadata_id&object_id=$object_id"; ?>" title="<?php echo JText::_( 'CATALOG_OBJECT_VERSION_SYNCHRONIZE' ); ?>">
 							<img src="<?php echo JURI::root(true); ?>/includes/js/ThemeOffice/mainmenu.png" border="0" />
 						</a>
+					<?php 
+					}
+					?>
 					</td>
 					<td width="100px"><?php if ($row->updated and $row->updated<> '0000-00-00 00:00:00') {echo date('d.m.Y h:i:s',strtotime($row->updated));} ?></td>
 				</tr>

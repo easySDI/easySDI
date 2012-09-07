@@ -92,6 +92,21 @@ switch($task){
 			
 			SITE_metadata::editMetadata($cid[0],$option);
 			break;
+		case "synchronizeMetadata":
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'metadata.admin.easysdi.php');
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'metadata.easysdi.class.php');
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'object.easysdi.class.php');
+			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'objectversion.easysdi.class.php');
+			require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'metadata.site.easysdi.html.php');
+			require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'metadata.site.easysdi.php');
+			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'model'.DS.'account.easysdi.class.php');
+			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.usermanager.class.php');
+			JHTML::script('catalog.js', 'administrator/components/com_easysdi_catalog/js/');
+			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
+			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.displayManager.class.php');
+			ADMIN_metadata::synchronizeMetadata(JRequest::getVar('guid'));
+			SITE_metadata::listMetadata($option);
+			break;
 		case "saveMetadata":
 			require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'metadata.site.easysdi.php');
 			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'metadata.admin.easysdi.php');
@@ -152,19 +167,14 @@ switch($task){
 			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'stereotype'.DS.'classstereotypesaver.admin.easysdi.php');
 			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'model'.DS.'account.easysdi.class.php');
 			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.displayManager.class.php');
-			
-			
 			SITE_metadata::invalidateMetadata($cid[0], $option);
 			
 			require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'metadata.site.easysdi.html.php');
 			require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'object.easysdi.class.php');
 			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.usermanager.class.php');
 			JHTML::script('catalog.js', 'administrator/components/com_easysdi_catalog/js/');
-		
 			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.displayManager.class.php');
-			
-			
 			SITE_metadata::listMetadata($option);
 			break;
 			
