@@ -1362,6 +1362,23 @@ div#archiveMetadata{
 	background-repeat:no-repeat;
 	height:16px;
 	width:16px;
+	padding-left:2px;
+	padding-right:2px;
+}
+
+div#synchronizeMetadata:hover{
+	cursor:pointer;
+}
+
+div#synchronizeMetadata{
+	background-color:transparent;
+	background-image:url(../icons/silk/arrow_switch.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+	padding-left:2px;
+	padding-right:2px;
 }
 
 div#invalidateMetadata:hover{
@@ -1375,6 +1392,8 @@ div#invalidateMetadata{
 	background-repeat:no-repeat;
 	height:16px;
 	width:16px;
+	padding-left:2px;
+	padding-right:2px;
 }
 
 div#manageObjectVersionLink{
@@ -2691,7 +2710,7 @@ div#editMetadata{
 }
 
 .box-table .metadataActions{
-	width:80px;
+	width:100px;
 }
 
 .box-table .metadataActions div{
