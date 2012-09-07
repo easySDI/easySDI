@@ -276,8 +276,12 @@ class HTML_metadata {
 						}
 						if ($row->hasInheritance)//Synchronization on this metadata is possible
 						{
+							if($row->lastsynchronization)
+								$title = addslashes(JText::_('CATALOG_SYNCHRONIZE_METADATA'))."&#013".JTEXT::sprintf("CATALOG_SYNCHRONIZE_METADATA_MESSAGE_LAST", $row->lastsynchronization);
+							else
+								$title = addslashes(JText::_('CATALOG_SYNCHRONIZE_METADATA'));
 							?>
-							<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_SYNCHRONIZE_METADATA')); ?>" id="synchronizeMetadata" 
+							<div class="logo" title="<?php echo $title; ?>" id="synchronizeMetadata" 
 							onClick="if (confirm('<?php echo JText::_("CATALOG_METADATA_SYNCHRONIZE_MESSAGE_CONFIRMATION") ;?>')){
 							document.getElementById('metadataListForm').task.value='synchronizeMetadata';
 							document.getElementById('guid').value='<?php echo $row->metadata_guid?>';

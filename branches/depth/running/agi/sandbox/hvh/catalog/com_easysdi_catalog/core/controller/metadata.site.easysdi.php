@@ -128,7 +128,7 @@ class SITE_metadata {
 		jimport('joomla.html.pagination');
 		$pageNav = new JPagination($total,$limitstart,$limit);
 		
-		$query = "	SELECT DISTINCT o.*, ov.id as version_id, ov.title as version_title, s.label as state, m.guid as metadata_guid 
+		$query = "	SELECT DISTINCT o.*, ov.id as version_id, ov.title as version_title, s.label as state, m.guid as metadata_guid , ov.lastsynchronization as lastsynchronization
 						FROM 	#__sdi_metadata m, 
 								#__sdi_list_metadatastate s, 
 								#__sdi_objecttype ot,
@@ -145,7 +145,6 @@ class SITE_metadata {
 								OR (ma.account_id=".$account->id.")
 								)";
 		$query .= $filter;
-		//$query .= " ORDER BY o.name, ov.name ASC";
 		$query .= $orderby;
 		
 		

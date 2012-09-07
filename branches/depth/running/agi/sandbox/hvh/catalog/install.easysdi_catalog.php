@@ -2322,6 +2322,13 @@ function com_install(){
 		
 		if($version == "2.4.2"){
 			
+			//ALTER __sdi_objectversion
+			$query="ALTER TABLE `#__sdi_objectversion` ADD lastsynchronization datetime";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
 			//ALTER __sdi_relation
 			$query="ALTER TABLE `#__sdi_relation` ADD editoraccessibility BIGINT(20)";
 			$db->setQuery( $query);

@@ -126,8 +126,13 @@ class HTML_objectversion {
 					<td align="center">
 					<?php if ($row->hasInheritance)
 					{
+						if($row->lastsynchronization)
+							$title = addslashes(JText::_('CATALOG_SYNCHRONIZE_METADATA'))."&#013".JTEXT::sprintf("CATALOG_SYNCHRONIZE_METADATA_MESSAGE_LAST", $row->lastsynchronization);
+						else
+							$title = addslashes(JText::_('CATALOG_SYNCHRONIZE_METADATA'));
 					?>
-						<a onclick="return confirm('<?php echo JText::_("CATALOG_METADATA_SYNCHRONIZE_MESSAGE_CONFIRMATION") ;?>')"  href="<?php echo "index.php?option=$option&task=synchronizeMetadata&metadata_id=$row->metadata_id&object_id=$object_id"; ?>" title="<?php echo JText::_( 'CATALOG_OBJECT_VERSION_SYNCHRONIZE' ); ?>">
+						<a onclick="return confirm('<?php echo JText::_("CATALOG_METADATA_SYNCHRONIZE_MESSAGE_CONFIRMATION") ;?>')"  href="<?php echo "index.php?option=$option&task=synchronizeMetadata&metadata_id=$row->metadata_id&object_id=$object_id"; ?>" 
+						title="<?php echo $title; ?>">
 							<img src="<?php echo JURI::root(true); ?>/includes/js/ThemeOffice/mainmenu.png" border="0" />
 						</a>
 					<?php 
