@@ -252,8 +252,14 @@ function listObjectTypeLink(&$rows, $page, $option,  $filter_order_Dir, $filter_
 					<table  class="admintable">
 						<thead>
 							<tr>
-								<th><b><?php echo JText::_( 'CATALOG_OBJECTTYPELINK_INHERITANCE_XPATH'); ?></b>
-								<input type="button" value="<?php echo JText::_( 'CATALOG_OBJECTTYPELINK_INHERITANCE_ADD_XPATH');?>" onClick="addXPath();">
+								<th>
+								<table>
+								<tr><td>
+								<b><?php echo JText::_( 'CATALOG_OBJECTTYPELINK_INHERITANCE_XPATH'); ?></b>
+								</td>								
+								<td><div title="<?php echo JText::_( 'CATALOG_OBJECTTYPELINK_INHERITANCE_ADD_XPATH');?>" class="fieldset-add-icon" onClick="addXPath();"></div>
+								</td></tr>
+								</table>
 								</th>		
 							</tr>
 						</thead>
