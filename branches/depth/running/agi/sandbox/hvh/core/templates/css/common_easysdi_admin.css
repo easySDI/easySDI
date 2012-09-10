@@ -221,3 +221,12 @@ div.header_sdi {
 	padding-left:60px;
 	padding-top:70px;
 }
+
+.fieldset-add-icon {
+	background-color:transparent;
+    background-image: url("../images/add.png");
+    background-position:0 0;
+    background-repeat:no-repeat;
+    height:20px;
+    width:20px;
+}
