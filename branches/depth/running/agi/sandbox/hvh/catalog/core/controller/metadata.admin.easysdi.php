@@ -4268,6 +4268,7 @@ class ADMIN_metadata {
 		foreach ($namespaces as $namespace)
 			$metadataxpath->registerNamespace($namespace->prefix, $namespace->uri);
 		
+		
 		//Loop on xpath to store the values
 		$parentvaluelist = array();
 		$multiplenodeerror = array();
@@ -4277,6 +4278,12 @@ class ADMIN_metadata {
 			//If it is not the case, put the xpath to the node in $multiplenodeerror array
 			//If it is the case, put the complete xpath in $parentvaluelist array
 			$nodeList = $metadataxpath->query($xpath);
+			
+			if(!$nodeList){
+				$multiplenodeerror[$xpath] = 0;
+				continue;
+			}
+			
 			if($nodeList->length > 1)
 				$multiplenodeerror[$xpath] = $nodeList->length;
 			else
@@ -4296,7 +4303,15 @@ class ADMIN_metadata {
 		//If multiple node were detect in the parent metadata, the synchronization is aborted
 		if(count($multiplenodeerror) > 0)
 		{
+			//Check in the parent metadata
+			$rowObject->checkin();
+			//Check in all the children metadata and get out of the synchronize process
+			foreach ($childObjectList as $childObject)
+			{
+				$childObject->checkin();
+			}
 			$mainframe->enqueueMessage(JText::_("CATALOG_METADATA_SYNCHRONIZE_ABORTED"));
+			$mainframe->enqueueMessage(JText::_("CATALOG_METADATA_SYNCHRONIZE_CHECK_XPATH"));
 			foreach ($multiplenodeerror as $key => $value)
 				$mainframe->enqueueMessage(JTEXT::sprintf("CATALOG_METADATA_SYNCHRONIZE_ABORTED_MESSAGE",$key, $value), "ERROR");
 			return;
