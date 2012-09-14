@@ -54,7 +54,7 @@
 
 	<target name="sync" description="Copy from here to apache">
 		<copy
-			todir="C:\www\Server\crigeos\administrator\components\com_easysdi_shop">
+			todir="C:\www\agi\administrator\components\com_easysdi_shop">
 			<fileset dir=".">
 				<include name="**/*.php" />
 				<include name="**/*.xsl" />
@@ -69,7 +69,7 @@
 			</fileset>
 		</copy>
 		<copy
-			todir="C:\www\Server\crigeos\components\com_easysdi_shop">
+			todir="C:\www\agi\components\com_easysdi_shop">
 			<fileset dir="./com_easysdi_shop">
 				<include name="**/*.php" />
 				<include name="**/*.xsl" />
@@ -83,23 +83,23 @@
 			</fileset>
 		</copy>
 		<copy
-			todir="C:\www\Server\crigeos\components\com_easysdi_shop\views">
+			todir="C:\www\agi\components\com_easysdi_shop\views">
 			<fileset dir="./com_easysdi_shop/views">
 				<include name="**/*.php" />
 				<include name="**/*.xml" />
 			</fileset>
 		</copy>
 		<copy		   
-		   todir="C:\www\Server\crigeos\administrator\language\fr-FR">
+		   todir="C:\www\agi\administrator\language\fr-FR">
 		     <fileset dir="./language/admin">
 		      <include name="**/fr-FR.com_easysdi_shop.ini" />
 		     </fileset>
 		    </copy>
 		<copy		   
-				   todir="C:\www\Server\crigeos\administrator\language\en-GB">
-				     <fileset dir="./language/admin">
-				      <include name="**/en-GB.com_easysdi_shop.ini" />
-				     </fileset>
-				    </copy>
+		   todir="C:\www\agi\administrator\language\en-GB">
+		     <fileset dir="./language/admin">
+		      <include name="**/en-GB.com_easysdi_shop.ini" />
+		     </fileset>
+		    </copy>
 	</target>
 </project>
