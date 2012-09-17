@@ -1060,7 +1060,7 @@ function com_install(){
 	}
 	if($version == "2.1.0")
 	{
-		$query = "CREATE TABLE IF NOT EXISTS `#__sdi_productextent`  (
+		$query = "CREATE TABLE IF NOT EXISTS `#__sdi_grid`  (
 			`id`  bigint(20) NOT NULL AUTO_INCREMENT ,
 			`guid`  varchar(36) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
 			`code`  varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
@@ -1082,6 +1082,7 @@ function com_install(){
 			`urlwfs`  varchar(400) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
 			`featuretype`  varchar(400) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
 			`fieldid`  varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+			`fieldgeom`  varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
 			`fieldresource`  varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
 			`user`  varchar(400) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
 			`password`  varchar(400) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
@@ -1096,26 +1097,14 @@ function com_install(){
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 		
-		$query="CREATE TABLE IF NOT EXISTS `#__sdi_product_extent` (
-			`id` bigint(20) NOT NULL AUTO_INCREMENT,
-			`guid` varchar(36) NOT NULL,
-			`product_id` bigint(20) NOT NULL,
-			`productextent_id` bigint(20) NOT NULL,
-			PRIMARY KEY (`id`),
-			UNIQUE KEY `guid` (`guid`)
-		) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
+		$query="ALTER TABLE  `#__sdi_product` ADD grid_id bigint (20)";
 		$db->setQuery( $query);
-		if (!$db->query()){
-			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-		}
-
-		$query="ALTER TABLE `#__sdi_product_extent` ADD CONSTRAINT `#__sdi_product_ex_pk1` FOREIGN KEY (`product_id`) REFERENCES `#__sdi_product` (`id`);";
-		$db->setQuery( $query);
-		if (!$db->query()) {
+		if (!$db->query())
+		{
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 		
-		$query="ALTER TABLE `#__sdi_product_extent` ADD CONSTRAINT `#__sdi_product_ex_pk2` FOREIGN KEY (`productextent_id`) REFERENCES `#__sdi_productextent` (`id`);";
+		$query="ALTER TABLE `#__sdi_product` ADD CONSTRAINT `#__sdi_product_grid_pk2` FOREIGN KEY (`grid_id`) REFERENCES `#__sdi_grid` (`id`);";
 		$db->setQuery( $query);
 		if (!$db->query()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");

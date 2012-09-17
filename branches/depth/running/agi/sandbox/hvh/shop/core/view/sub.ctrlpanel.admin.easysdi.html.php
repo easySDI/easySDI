@@ -22,7 +22,7 @@
 			       </td>
 			       <td class="header_sdi_list">
 			       	<ul>
-			        	<li><?php printf('<a href="index.php?option=%s&amp;task=listProductExtent">', 'com_easysdi_shop'); echo JText::_( 'SHOP_CPANEL_PRODUCTEXTENT' ); ?></a></li>
+			        	<li><?php printf('<a href="index.php?option=%s&amp;task=listGrid">', 'com_easysdi_shop'); echo JText::_( 'SHOP_CPANEL_GRID' ); ?></a></li>
 			            <li><?php printf('<a href="index.php?option=%s&amp;task=listProduct">', 'com_easysdi_shop'); echo JText::_( 'SHOP_CPANEL_PRODUCT' ); ?></a></li>
 			            <li><?php printf('<a href="index.php?option=%s&amp;task=listProperties">', 'com_easysdi_shop'); echo JText::_( 'SHOP_CPANEL_PROPERTY' ); ?></a></li>
 			          </ul>

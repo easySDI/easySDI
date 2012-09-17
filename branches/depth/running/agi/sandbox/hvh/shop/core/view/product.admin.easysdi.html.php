@@ -24,7 +24,7 @@ defined('_JEXEC') or die('Restricted access');
 
 class HTML_product {
 
-	function editProduct($product,$version,$object_id,$objecttype_id,$supplier,$objecttype_list, $object_list,$version_list,$diffusion_list,$baseMap_list,$treatmentType_list,$visibility_list,$accessibility_list,$perimeter_list,$selected_perimeter,$catalogUrlBase,$rowsAccount,$rowsUser,$userPreviewSelected,$userDownloadSelected,$id, $option ){
+	function editProduct($product,$version,$object_id,$objecttype_id,$supplier,$objecttype_list, $object_list,$version_list,$diffusion_list,$baseMap_list,$treatmentType_list,$visibility_list,$accessibility_list,$perimeter_list,$selected_perimeter,$catalogUrlBase,$rowsAccount,$rowsUser,$userPreviewSelected,$userDownloadSelected,$id, $grid_list,$option ){
 		global  $mainframe;
 		$database =& JFactory::getDBO(); 
 		JHTML::_('behavior.calendar');
@@ -84,6 +84,7 @@ class HTML_product {
 				document.getElementById('surfacemax').disabled = false;
 				document.getElementById('notification_email').disabled = false;
 				document.getElementById('treatmenttype_id').disabled = false;
+				document.getElementById('grid_id').disabled = true;
 			}
 			else if (document.forms['adminForm'].free.value == '1' && document.forms['adminForm'].available.value == '0')
 			{
@@ -96,6 +97,7 @@ class HTML_product {
 				document.getElementById('surfacemax').disabled = false;
 				document.getElementById('notification_email').disabled = false;
 				document.getElementById('treatmenttype_id').disabled = false;
+				document.getElementById('grid_id').disabled = true;
 			}
 			else
 			{
@@ -108,6 +110,7 @@ class HTML_product {
 				document.getElementById('surfacemax').disabled = true;
 				document.getElementById('notification_email').disabled = true;
 				document.getElementById('treatmenttype_id').disabled = true;
+				document.getElementById('grid_id').disabled = false;
 			}
 		}
 		
@@ -136,6 +139,46 @@ class HTML_product {
 				 form.submit();
 			 }
 		}
+
+		function activateFileManagementOption (selected){
+			switch (selected)
+			{
+				case "repository":
+					document.getElementById('linkFile').style.visibility = "visible";
+					document.getElementById('productfile').disabled = false;
+					document.getElementById('deleteFileButton').disabled = false;
+
+					document.getElementById('pathfile').value ='';
+					document.getElementById('pathfile').disabled = true;
+
+					document.getElementById('grid_id').value = null;
+					document.getElementById('grid_id').disabled = true;
+					break;
+				case "link":
+					document.getElementById('pathfile').value ='';
+					document.getElementById('pathfile').disabled = false;
+
+					document.getElementById('grid_id').value = null;
+					document.getElementById('grid_id').disabled = true;
+
+					document.getElementById('linkFile').style.visibility = "hidden";
+					document.getElementById('productfile').disabled = true;
+					document.getElementById('deleteFileButton').disabled = true;
+					break;
+				case "grid":
+					document.getElementById('grid_id').value = '';
+					document.getElementById('grid_id').disabled = false;
+					
+					document.getElementById('linkFile').style.visibility = "hidden";
+					document.getElementById('productfile').disabled = true;
+					document.getElementById('deleteFileButton').disabled = true;
+
+					document.getElementById('pathfile').value ='';
+					document.getElementById('pathfile').disabled = true;
+					break;
+			}
+		}
+		
 		</script>			
 	<form enctype="multipart/form-data" action="index.php" method="post" name="adminForm" id="adminForm" class="adminForm">
 	<?php
@@ -199,70 +242,67 @@ class HTML_product {
 			</tr>
 			<tr>
 				<td>
-					<fieldset>
-						<legend><?php echo JText::_("SHOP_PRODUCT_FS_DIFFUSION"); ?></legend>
-						<table border="0" cellpadding="3" cellspacing="0">
-							<tr>							
-								<td class="key"><?php echo JText::_("SHOP_DIFFUSION_NAME"); ?> : </td>
-								<td colspan="2"><?php echo JHTML::_("select.genericlist",$diffusion_list, 'diffusion_id', 'size="1" class="inputbox"', 'value', 'text', $product->diffusion_id ); ?></td>								
-							</tr>
-							<tr>
-								<td class="key"><?php echo JText::_("SHOP_PRODUCT_VISIBILITY"); ?> : </td>
-								<td colspan="2"><?php echo JHTML::_("select.genericlist",$visibility_list, 'visibility_id', 'size="1" class="inputbox"', 'value',  'text', $product->visibility_id ); ?></td>															
-							</tr>
-							<tr>
-								<td class="key"><?php echo JText::_("SHOP_PRODUCT_FREE"); ?> : </td>
-								<td colspan="2"><select class="inputbox" name="free" id="free"  onChange="javascript:fieldManagement();">								
-									<option value="0" <?php if( $product->free == 0 ) echo "selected"; ?> ><?php echo JText::_("CORE_NO"); ?></option>
-									<option value="1" <?php if( $product->free == 1 ) echo "selected"; ?>><?php echo JText::_("CORE_YES"); ?></option>
-									</select>
-								</td>								
-							</tr>
-							<tr>
-								<td class="key"><?php echo JText::_("SHOP_PRODUCT_AVAILABLE"); ?> : </td>
-									<td>
-									<select <?php if( $product->free == 0 ) echo "disabled"; ?> class="inputbox" name="available" id="available"  onChange="javascript:fieldManagement();">								
-									<option value="0" <?php if( $product->available == 0 ) echo "selected"; ?> ><?php echo JText::_("CORE_NO"); ?></option>
-									<option value="1" <?php if( $product->available == 1 ) echo "selected"; ?>><?php echo JText::_("CORE_YES"); ?></option>
-									</select>
-									</td>
-							</tr>
-							<tr>
-								<td class="key"><?php echo JText::_("SHOP_PRODUCT_FILE_NAME") ;?></td>
-								<td>
-								<a id="linkFile" target="RAW" href="./index.php?format=raw&option=<?php echo $option; ?>&task=downloadProduct&product_id=<?php echo $product->id?>"><?php echo $product->getFileName();?> </a> 
-								</td>
-								<td>
-								<button type="button" id="deleteFileButton" onCLick="deleteFile(document.getElementById('adminForm'));" ><?php echo JText::_("SHOP_PRODUCT_DELETE_FILE"); ?></button>
-								</td>
-							</tr>
-							<tr>
-								<td class="key"><?php echo JText::_("SHOP_PRODUCT_UP_FILE") ;?></td>
-								<td colspan="2"><input type="file" name="productfile" id="productfile" <?php if( $product->available == 0 ) echo "disabled"; ?> ><?php printf( JText::_("SHOP_PRODUCT_FILE_MAX_SIZE"),$product->maxFileSize); ?> </td>
-							</tr>
-							<tr>
-								<td class="key"><?php echo JText::_("SHOP_PRODUCT_PATH_FILE") ;?></td>
-								<td colspan="2"><input class="inputbox" type="text" size="50" maxlength="100" name="pathfile"  id="pathfile" <?php  if( $product->available == 0 ) echo "disabled";?> value="<?php echo $product->pathfile; ?>" /></td>
-							</tr>
-							<tr>
-								<td class="key"><?php echo JText::_("SHOP_PRODUCT_TREATMENT"); ?> : </td>
-								<td colspan="2"><?php $disabled=''; if( $product->available == 1 ) $disabled='disabled'; echo JHTML::_("select.genericlist",$treatmentType_list, 'treatmenttype_id', 'size="1" class="inputbox" '.$disabled, 'value',  'text', $product->treatmenttype_id ); ?></td>															
-							</tr>
-							<tr>
-								<td class="key"><?php echo JText::_("SHOP_PRODUCT_SURFACE_MIN"); ?> : </td>
-								<td colspan="2"><input class="inputbox" type="text" size="50" maxlength="100" name="surfacemin"  id="surfacemin" <?php  if( $product->available == 1 ) echo $disabled;?> value="<?php echo $product->surfacemin; ?>" /></td>							
-							</tr>
-							<tr>
-								<td class="key"><?php echo JText::_("SHOP_PRODUCT_SURFACE_MAX"); ?> : </td>
-								<td colspan="2"><input class="inputbox" type="text" size="50" maxlength="100" name="surfacemax" id="surfacemax"  <?php if( $product->available == 1 ) echo $disabled;?> value="<?php echo $product->surfacemax; ?>" /></td>							
-							</tr>
-							<tr>							
-								<td class="key"><?php echo JText::_("SHOP_NOTIFICATION_EMAIL"); ?> : </td>
-								<td colspan="2"><input class="inputbox" type="text" size="50" maxlength="500" name="notification_email" id="notification_email" <?php if( $product->available == 1 ) echo $disabled;?> value="<?php echo $product->notification_email; ?>" /></td>								
-							</tr>
-							
-						</table>
-					</fieldset>	
+					<table>
+						<tr>
+							<td>
+								<fieldset>
+									<legend><?php echo JText::_("SHOP_PRODUCT_FS_DIFFUSION"); ?></legend>
+									<table border="0" cellpadding="3" cellspacing="0">
+										<tr>							
+											<td class="key"><?php echo JText::_("SHOP_DIFFUSION_NAME"); ?> : </td>
+											<td colspan="2"><?php echo JHTML::_("select.genericlist",$diffusion_list, 'diffusion_id', 'size="1" class="inputbox"', 'value', 'text', $product->diffusion_id ); ?></td>								
+										</tr>
+										<tr>
+											<td class="key"><?php echo JText::_("SHOP_PRODUCT_VISIBILITY"); ?> : </td>
+											<td colspan="2"><?php echo JHTML::_("select.genericlist",$visibility_list, 'visibility_id', 'size="1" class="inputbox"', 'value',  'text', $product->visibility_id ); ?></td>															
+										</tr>
+										<tr>
+											<td class="key"><?php echo JText::_("SHOP_PRODUCT_FREE"); ?> : </td>
+											<td colspan="2"><select class="inputbox" name="free" id="free"  onChange="javascript:fieldManagement();">								
+												<option value="0" <?php if( $product->free == 0 ) echo "selected"; ?> ><?php echo JText::_("CORE_NO"); ?></option>
+												<option value="1" <?php if( $product->free == 1 ) echo "selected"; ?>><?php echo JText::_("CORE_YES"); ?></option>
+												</select>
+											</td>								
+										</tr>
+										<tr>	
+											<td class="key"><?php echo JText::_("SHOP_PRODUCT_AVAILABLE"); ?> : </td>
+											<td>
+											<select <?php if( $product->free == 0 ) echo "disabled"; ?> class="inputbox" name="available" id="available"  onChange="javascript:fieldManagement();">								
+											<option value="0" <?php if( $product->available == 0 ) echo "selected"; ?> ><?php echo JText::_("CORE_NO"); ?></option>
+											<option value="1" <?php if( $product->available == 1 ) echo "selected"; ?>><?php echo JText::_("CORE_YES"); ?></option>
+											</select>
+											</td>
+										</tr>
+									</table>
+								</fieldset>	
+							</td>
+						</tr>
+						<tr>
+							<td >
+								<fieldset>
+									<legend><?php echo JText::_("SHOP_PRODUCT_FS_EXTRACTION"); ?></legend>
+									<table border="0" cellpadding="3" cellspacing="0">
+										<tr>	
+											<td class="key"><?php echo JText::_("SHOP_PRODUCT_TREATMENT"); ?> : </td>
+											<td colspan="2"><?php $disabled=''; if( $product->available == 1 ) $disabled='disabled'; echo JHTML::_("select.genericlist",$treatmentType_list, 'treatmenttype_id', 'size="1" class="inputbox" '.$disabled, 'value',  'text', $product->treatmenttype_id ); ?></td>															
+										</tr>
+										<tr>
+											<td class="key"><?php echo JText::_("SHOP_PRODUCT_SURFACE_MIN"); ?> : </td>
+											<td colspan="2"><input class="inputbox" type="text" size="50" maxlength="100" name="surfacemin"  id="surfacemin" <?php  if( $product->available == 1 ) echo $disabled;?> value="<?php echo $product->surfacemin; ?>" /></td>							
+										</tr>
+										<tr>
+											<td class="key"><?php echo JText::_("SHOP_PRODUCT_SURFACE_MAX"); ?> : </td>
+											<td colspan="2"><input class="inputbox" type="text" size="50" maxlength="100" name="surfacemax" id="surfacemax"  <?php if( $product->available == 1 ) echo $disabled;?> value="<?php echo $product->surfacemax; ?>" /></td>							
+										</tr>
+										<tr>							
+											<td class="key"><?php echo JText::_("SHOP_NOTIFICATION_EMAIL"); ?> : </td>
+											<td colspan="2"><input class="inputbox" type="text" size="50" maxlength="500" name="notification_email" id="notification_email" <?php if( $product->available == 1 ) echo $disabled;?> value="<?php echo $product->notification_email; ?>" /></td>								
+										</tr>
+									</table>
+								</fieldset>
+							</td>
+						</tr>
+					</table>
 				</td>
 				<td valign="top">
 					<fieldset>
@@ -275,13 +315,53 @@ class HTML_product {
 							<tr>
 								<td class="key"><?php echo JText::_( 'SHOP_PRODUCT_DOWNLOAD_ACCESSIBILITY_USER'); ?> </td>
 								<td ><?php
-								
-									if ($product->loadaccessibility_id != 0 || $product->loadaccessibility_id != "" || $product->loadaccessibility_id != null )  {$disabled = 'disabled';} else {$disabled = '';};
+								if ($product->loadaccessibility_id != 0 || $product->loadaccessibility_id != "" || $product->loadaccessibility_id != null )  {$disabled = 'disabled';} else {$disabled = '';};
 								 echo JHTML::_("select.genericlist",$rowsUser, 'userDownloadList[]', 'size="15" multiple="true" class="selectbox" '.$disabled, 'value', 'text', $userDownloadSelected ); ?></td>
 							</tr>
 						</table>
 						
 					</fieldset>	
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<fieldset>
+						<legend><?php echo JText::_("SHOP_PRODUCT_FS_DIFFUSION_MODE"); ?></legend>
+						<table border="0" cellpadding="3" cellspacing="0">
+							<tr>
+								<?php if ($product->getFileName()) $repositorychecked = 'checked="checked"'; ?>
+								<td><input type="radio" name="diffusion_mode" value="repository" onclick="javascript:activateFileManagementOption('repository');" <?php echo $repositorychecked;?>></td>
+								<td class="key"><?php echo JText::_("SHOP_PRODUCT_UP_FILE") ;?></td>
+								<td>
+									<a id="linkFile" target="RAW" href="./index.php?format=raw&option=<?php echo $option; ?>&task=downloadProduct&product_id=<?php echo $product->id?>"><?php echo $product->getFileName();?> </a> 
+								</td>
+								<td >
+									<input type="file" name="productfile" id="productfile" <?php if( $product->available == 0 || !$repositorychecked ) echo "disabled"; ?> ><?php printf( JText::_("SHOP_PRODUCT_FILE_MAX_SIZE"),$product->maxFileSize); ?> 
+								</td>
+								<td>
+									<button type="button" id="deleteFileButton" onCLick="deleteFile(document.getElementById('adminForm'));" <?php if( $product->available == 0 || !$repositorychecked ) echo "disabled"; ?>><?php echo JText::_("SHOP_PRODUCT_DELETE_FILE"); ?></button>
+								</td>
+							</tr>
+							<tr>
+								<?php if ($product->pathfile) $linkchecked = 'checked="checked"'; ?>
+								<td><input type="radio" name="diffusion_mode" value="link" onclick="javascript:activateFileManagementOption('link');" <?php echo $linkchecked;?> ></td>
+								<td class="key"><?php echo JText::_("SHOP_PRODUCT_PATH_FILE") ;?></td>
+								<td colspan="3"><input class="inputbox" type="text" size="50" maxlength="100" name="pathfile"  id="pathfile" <?php  if( $product->available == 0 || !$linkchecked) echo "disabled";?> value="<?php echo $product->pathfile; ?>" /></td>
+							</tr>
+							<tr>
+								<?php if ($product->grid_id) $gridchecked = 'checked="checked"'; ?>
+								<td><input type="radio" name="diffusion_mode" value="grid" onclick="javascript:activateFileManagementOption('grid');" <?php echo $gridchecked;?> ></td>
+								<td class="key"><?php echo JText::_("SHOP_PRODUCT_GRID_SELECTION") ;?></td>
+								<td colspan="3">
+									<?php
+									 if( $product->available == 0 || !$gridchecked)
+									 	$disabled = 'disabled';
+									 echo JHTML::_("select.genericlist",$grid_list, 'grid_id', 'size="1" class="inputbox" '.$disabled, 'value',  'text', $product->grid_id ); 
+									?>
+								</td>
+							</tr>
+						</table>
+					</fieldset>						
 				</td>
 			</tr>
 		</table>

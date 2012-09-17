@@ -18,9 +18,9 @@
 
 defined('_JEXEC') or die('Restricted access');
 
-class HTML_productextent {
+class HTML_grid {
 
-	function editProductExtent( $rowProductExtent,$rowsAccount,$id, $option ){
+	function editGrid( $rowGrid,$rowsAccount,$id, $option ){
 		
 		global  $mainframe;
 		$database =& JFactory::getDBO(); 
@@ -55,18 +55,18 @@ class HTML_productextent {
 						<table border="0" cellpadding="3" cellspacing="0">
 							<tr>
 								<td class="key"><?php echo JText::_("CORE_ID"); ?> : </td>
-								<td><?php echo $rowProductExtent->id; ?></td>
+								<td><?php echo $rowGrid->id; ?></td>
 								<input type="hidden" name="id" value="<?php echo $id;?>">								
 							</tr>			
 							<tr>
 							
-								<td class="key"><?php echo JText::_("SHOP_PRODUCTEXTENT_NAME"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="name" value="<?php echo $rowProductExtent->name; ?>" /></td>							
+								<td class="key"><?php echo JText::_("SHOP_GRID_NAME"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="name" value="<?php echo $rowGrid->name; ?>" /></td>							
 							</tr>
 							<tr>
 							
-								<td class="key"><?php echo JText::_("SHOP_PRODUCTEXTENT_DESC"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="description" value="<?php echo $rowProductExtent->description; ?>" /></td>							
+								<td class="key"><?php echo JText::_("SHOP_GRID_DESC"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="description" value="<?php echo $rowGrid->description; ?>" /></td>							
 							</tr>
 						</table>
 					</fieldset>
@@ -75,23 +75,23 @@ class HTML_productextent {
 						<table>
 							<tr>
 								<td class="key"><?php echo JText::_("SHOP_WMS_URL"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="urlwms" value="<?php echo $rowProductExtent->urlwms; ?>" /></td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="urlwms" value="<?php echo $rowGrid->urlwms; ?>" /></td>
 							</tr>
 							<tr>
-								<td class="key"><?php echo JText::_("SHOP_PRODUCTEXTENT_LAYER_NAME"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="layername" value="<?php echo $rowProductExtent->layername; ?>" /></td>
+								<td class="key"><?php echo JText::_("SHOP_GRID_LAYER_NAME"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="layername" value="<?php echo $rowGrid->layername; ?>" /></td>
 							</tr>
 							<tr>
-								<td class="key"><?php echo JText::_("SHOP_PRODUCTEXTENT_IMG_FORMAT"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="imgformat" value="<?php echo $rowProductExtent->imgformat; ?>" /></td>
+								<td class="key"><?php echo JText::_("SHOP_GRID_IMG_FORMAT"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="imgformat" value="<?php echo $rowGrid->imgformat; ?>" /></td>
 							</tr>
 							<tr>
-								<td class="key"><?php echo JText::_("SHOP_PRODUCTEXTENT_MIN_SCALE"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="minscale" value="<?php echo $rowProductExtent->minscale; ?>" /></td>
+								<td class="key"><?php echo JText::_("SHOP_GRID_MIN_SCALE"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="minscale" value="<?php echo $rowGrid->minscale; ?>" /></td>
 							</tr>
 							<tr>
-								<td class="key"><?php echo JText::_("SHOP_PRODUCTEXTENT_MAX_SCALE"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="maxscale" value="<?php echo $rowProductExtent->maxscale; ?>" /></td>
+								<td class="key"><?php echo JText::_("SHOP_GRID_MAX_SCALE"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="maxscale" value="<?php echo $rowGrid->maxscale; ?>" /></td>
 							</tr>
 						</table>
 					</fieldset>
@@ -100,19 +100,23 @@ class HTML_productextent {
 						<table>
 							<tr>
 								<td class="key"><?php echo JText::_("SHOP_WFS_URL"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="urlwfs" value="<?php echo $rowProductExtent->urlwfs; ?>" /></td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="urlwfs" value="<?php echo $rowGrid->urlwfs; ?>" /></td>
 							</tr>
 							<tr>							
 								<td class="key"><?php echo JText::_("SHOP_FEATURETYPE_NAME"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="featuretype" value="<?php echo $rowProductExtent->featuretype; ?>" /></td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="featuretype" value="<?php echo $rowGrid->featuretype; ?>" /></td>
 							</tr>
 							<tr>							
-								<td class="key"><?php echo JText::_("SHOP_PRODUCTEXTENT_FIELD_ID"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="fieldid" value="<?php echo $rowProductExtent->fieldid; ?>" /></td>							
+								<td class="key"><?php echo JText::_("SHOP_GRID_FIELD_ID"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="fieldid" value="<?php echo $rowGrid->fieldid; ?>" /></td>							
 							</tr>
 							<tr>							
-								<td class="key"><?php echo JText::_("SHOP_PRODUCTEXTENT_FIELD_RESOURCE"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="fieldresource" value="<?php echo $rowProductExtent->fieldresource; ?>" /></td>							
+								<td class="key"><?php echo JText::_("SHOP_GRID_FIELD_GEOM"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="fieldgeom" value="<?php echo $rowGrid->fieldgeom; ?>" /></td>							
+							</tr>
+							<tr>							
+								<td class="key"><?php echo JText::_("SHOP_GRID_FIELD_RESOURCE"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="fieldresource" value="<?php echo $rowGrid->fieldresource; ?>" /></td>							
 							</tr>
 						</table>
 					</fieldset>
@@ -121,7 +125,7 @@ class HTML_productextent {
 								<table>
 								<tr>
 									<td >
-										<input type="radio" name="service_type" value="via_proxy" onclick="javascript:displayAuthentication();" <?php if ($rowProductExtent->account_id) echo "checked";?>>
+										<input type="radio" name="service_type" value="via_proxy" onclick="javascript:displayAuthentication();" <?php if ($rowGrid->account_id) echo "checked";?>>
 									</td>
 									<td  class="key" colspan="2">
 										<?php echo JText::_("SHOP_AUTH_VIA_PROXY"); ?>
@@ -130,11 +134,11 @@ class HTML_productextent {
 								<tr>
 									<td></td>
 									<td><?php echo JText::_("SHOP_EASYSDI_ACCOUNT"); ?> : </td>
-									<td><?php $enable = $rowProductExtent->account_id? "" : "disabled"  ; echo JHTML::_("select.genericlist",$rowsAccount, 'account_id', 'size="1" class="inputbox" onChange="" '.$enable , 'value', 'text',$rowProductExtent->account_id); ?></td>
+									<td><?php $enable = $rowGrid->account_id? "" : "disabled"  ; echo JHTML::_("select.genericlist",$rowsAccount, 'account_id', 'size="1" class="inputbox" onChange="" '.$enable , 'value', 'text',$rowGrid->account_id); ?></td>
 								</tr>
 								<tr>
 									<td >
-									 	<input type="radio" name="service_type" value="direct" onclick="javascript:displayAuthentication();" <?php if ($rowProductExtent->user) echo "checked";?>> 
+									 	<input type="radio" name="service_type" value="direct" onclick="javascript:displayAuthentication();" <?php if ($rowGrid->user) echo "checked";?>> 
 								 	</td>
 								 	<td  class="key" colspan="2">
 									 	 <?php echo JText::_("SHOP_AUTH_DIRECT"); ?>
@@ -143,12 +147,12 @@ class HTML_productextent {
 								<tr>
 									<td></td>
 									<td><?php echo JText::_("SHOP_AUTH_USER"); ?> : </td>
-									<td><input <?php if (!$rowProductExtent->user){echo "disabled";} ?> class="inputbox" type="text" size="50" maxlength="100" name="user" id="user" value="<?php echo $rowProductExtent->user; ?>" /></td>							
+									<td><input <?php if (!$rowGrid->user){echo "disabled";} ?> class="inputbox" type="text" size="50" maxlength="100" name="user" id="user" value="<?php echo $rowGrid->user; ?>" /></td>							
 								</tr>							
 								<tr>
 									<td></td>
 									<td><?php echo JText::_("SHOP_AUTH_PASSWORD"); ?> : </td>
-									<td><input <?php if (!$rowProductExtent->user){echo "disabled";} ?> class="inputbox" type="password" size="50" maxlength="100" name="password" id="password" value="<?php echo $rowProductExtent->password; ?>" /></td>							
+									<td><input <?php if (!$rowGrid->user){echo "disabled";} ?> class="inputbox" type="password" size="50" maxlength="100" name="password" id="password" value="<?php echo $rowGrid->password; ?>" /></td>							
 								</tr>
 								
 								</table>
@@ -158,22 +162,22 @@ class HTML_productextent {
 		</table>
 		<input type="hidden" name="option" value="<?php echo $option; ?>" />
 		<input type="hidden" name="task" value="" />
-		<input type="hidden" name="guid" value="<?php echo $rowProductExtent->guid; ?>" />
-		<input type="hidden" name="created" value="<?php echo $rowProductExtent->created; ?>" />
-		<input type="hidden" name="createdby" value="<?php echo $rowProductExtent->createdby; ?>" />
-		<input type="hidden" name="checked_out" value="<?php echo $rowProductExtent->checked_out; ?>" />
-		<input type="hidden" name="checked_out_time" value="<?php echo $rowProductExtent->checked_out_time; ?>" />
+		<input type="hidden" name="guid" value="<?php echo $rowGrid->guid; ?>" />
+		<input type="hidden" name="created" value="<?php echo $rowGrid->created; ?>" />
+		<input type="hidden" name="createdby" value="<?php echo $rowGrid->createdby; ?>" />
+		<input type="hidden" name="checked_out" value="<?php echo $rowGrid->checked_out; ?>" />
+		<input type="hidden" name="checked_out_time" value="<?php echo $rowGrid->checked_out_time; ?>" />
 		</form>
 	<?php
 	}
 	
 	
 	
-	function listProductExtent( $rows, $pageNav,$option,$filter_order_Dir, $filter_order,$search){
+	function listGrid( $rows, $pageNav,$option,$filter_order_Dir, $filter_order,$search){
 	
 		$database =& JFactory::getDBO();
 		$user	=& JFactory::getUser();
-		JToolBarHelper::title(JText::_("SHOP_PRODUCTEXTENT_LIST"));
+		JToolBarHelper::title(JText::_("SHOP_GRID_LIST"));
 		
 		?>
 	<form action="index.php" method="post" name="adminForm">
@@ -181,9 +185,9 @@ class HTML_productextent {
 			<tr>
 				<td class="key"  width="100%">
 					<?php echo JText::_("FILTER"); ?>:
-					<input type="text" name="searchProductExtent" id="searchProductExtent" value="<?php echo $search;?>" class="text_area" onchange="document.adminForm.submit();" />
+					<input type="text" name="searchGrid" id="searchGrid" value="<?php echo $search;?>" class="text_area" onchange="document.adminForm.submit();" />
 					<button onclick="this.form.submit();"><?php echo JText::_( "GO" ); ?></button>
-					<button onclick="document.getElementById('searchProductExtent').value='';this.form.submit();"><?php echo JText::_( "RESET" ); ?></button>
+					<button onclick="document.getElementById('searchGrid').value='';this.form.submit();"><?php echo JText::_( "RESET" ); ?></button>
 				</td>
 			</tr>
 		</table>
@@ -195,7 +199,7 @@ class HTML_productextent {
 				<th class='title' width="30px"><?php echo JHTML::_('grid.sort',   JText::_("CORE_ID"), 'id', @$filter_order_Dir, @$filter_order); ?></th>
 				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_NAME"), 'name', @$filter_order_Dir, @$filter_order); ?></th>
 				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("SHOP_WFS_URL"), 'urlwfs', @$filter_order_Dir, @$filter_order); ?></th>
-				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("SHOP_PRODUCTEXTENT_FEATURE_TYPE"), 'featuretype', @$filter_order_Dir, @$filter_order); ?></th>
+				<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("SHOP_GRID_FEATURE_TYPE"), 'featuretype', @$filter_order_Dir, @$filter_order); ?></th>
 			</tr>
 		</thead>
 		<tbody>		
@@ -204,7 +208,7 @@ class HTML_productextent {
 		for ($i=0, $n=count($rows); $i < $n; $i++)
 		{
 			$row = $rows[$i];
-			$link = 'index.php?option='.$option.'&task=editProductExtent&cid[]='.$row->id;	  				
+			$link = 'index.php?option='.$option.'&task=editGrid&cid[]='.$row->id;	  				
 ?>
 			<tr class="<?php echo "row$k"; ?>">
 				<td align="center"><?php echo $i+$pageNav->limitstart+1;?></td>
@@ -240,7 +244,7 @@ class HTML_productextent {
 		</tfoot>
 		</table>
 	  	<input type="hidden" name="option" value="<?php echo $option; ?>" />
-	  	<input type="hidden" name="task" value="listProductExtent" />
+	  	<input type="hidden" name="task" value="listGrid" />
 	  	<input type="hidden" name="boxchecked" value="0" />
 	  	<input type="hidden" name="hidemainmenu" value="0">
 	  	<input type="hidden" name="filter_order_Dir" value="<?php echo $filter_order_Dir; ?>" />

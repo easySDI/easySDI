@@ -17,7 +17,7 @@
  */
 defined('_JEXEC') or die('Restricted access');
 
-class productextent extends sdiTable
+class grid extends sdiTable
 {	
 	var $urlwms=null;
 	var $minscale=0;
@@ -28,6 +28,7 @@ class productextent extends sdiTable
 	var $featuretype=null;
 	var $fieldid=null;
 	var $fieldresource=null;
+	var $fieldgeom=null;
 	var $user=null;
 	var $password=null;
 	var $account_id=null;
@@ -35,7 +36,7 @@ class productextent extends sdiTable
 	// Class constructor
 	function __construct( &$db )
 	{
-		parent::__construct ( '#__sdi_productextent', 'id', $db ) ;    		
+		parent::__construct ( '#__sdi_grid', 'id', $db ) ;    		
 	}
 }
 

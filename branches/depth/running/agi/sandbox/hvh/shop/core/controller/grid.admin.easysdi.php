@@ -18,21 +18,21 @@
 
 defined('_JEXEC') or die('Restricted access');
 
-class ADMIN_productextent {
+class ADMIN_grid {
 	
-	function listProductExtent($option) {
+	function listGrid($option) {
 		global  $mainframe;
 		$db =& JFactory::getDBO(); 
 		
 		$limit = $mainframe->getUserStateFromRequest( "viewlistlimit", 'limit', 10 );
 		$limitstart = $mainframe->getUserStateFromRequest( "view{$option}limitstart", 'limitstart', 0 );
-		$productextent = new productextent( $db );
-		$total = $productextent->getObjectCount();
+		$grid = new grid( $db );
+		$total = $grid->getObjectCount();
 		$pageNav = new JPagination($total,$limitstart,$limit);
 		
 		// Recherche des enregistrements selon les limites
-		$query = "SELECT * FROM ".$productextent->_tbl ;
-		$search	= $mainframe->getUserStateFromRequest( "$option.searchProductextent",'searchProductextent','','string' );
+		$query = "SELECT * FROM ".$grid->_tbl ;
+		$search	= $mainframe->getUserStateFromRequest( "$option.searchGrid",'searchGrid','','string' );
 		$search	= JString::strtolower( $search );
 		if ($search)
 		{
@@ -66,115 +66,115 @@ class ADMIN_productextent {
 			return false;
 		}		
 	
-		HTML_productextent::listProductExtent($rows, $pageNav,$option, $filter_order_Dir, $filter_order, $search);	
+		HTML_grid::listGrid($rows, $pageNav,$option, $filter_order_Dir, $filter_order, $search);	
 	}
 	
-	function editProductExtent( $id, $option ) {
+	function editGrid( $id, $option ) {
 		$db =& JFactory::getDBO();
-		$rowProductextent = new productextent($db);
-		$rowProductextent->load( $id );					
+		$rowGrid = new grid($db);
+		$rowGrid->load( $id );					
 		
-		$rowProductextent->tryCheckOut($option,'listProductextent');
+		$rowGrid->tryCheckOut($option,'listGrid');
 		
 		//Select all available easysdi Account
 		$rowsAccount = array();
 		$rowsAccount[] = JHTML::_('select.option','0', JText::_("SHOP_LIST_ACCOUNT_SELECT" ));
 		$rowsAccount = array_merge($rowsAccount,account::getEasySDIAccountsList());
 		
-		HTML_productextent::editProductExtent( $rowProductextent,$rowsAccount,$id, $option );
+		HTML_grid::editGrid( $rowGrid,$rowsAccount,$id, $option );
 	}
 	
-	function saveProductExtent($returnList ,$option){
+	function saveGrid($returnList ,$option){
 		global  $mainframe;
 		$db =& JFactory::getDBO();
 		
-		$productextent = new productextent( $db );
+		$grid = new grid( $db );
 				
-		if (!$productextent->bind( $_POST )) {			
+		if (!$grid->bind( $_POST )) {			
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=listProductExtent" );
+			$mainframe->redirect("index.php?option=$option&task=listGrid" );
 			exit();
 		}
 		
 		$service_type = JRequest::getVar('service_type');
 		if($service_type == "via_proxy")
 		{
-			$productextent->user = "";
-			$productextent->password = "";
+			$grid->user = "";
+			$grid->password = "";
 		}
 		else
 		{
-			$productextent->account_id="";
+			$grid->account_id="";
 		}
 		
-		$productextent->checkin();
+		$grid->checkin();
 		
-		if (!$productextent->store()) {
+		if (!$grid->store()) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			$mainframe->redirect("index.php?option=$option&task=listProductExtent" );
+			$mainframe->redirect("index.php?option=$option&task=listGrid" );
 			exit();
 		}
 		
 		if ($returnList == true) {			
-			$mainframe->redirect("index.php?option=$option&task=listProductExtent");
+			$mainframe->redirect("index.php?option=$option&task=listGrid");
 		}
 	}
 		
-	function deleteProductExtent($cid ,$option){
+	function deleteGrid($cid ,$option){
 		global $mainframe;
 		$db =& JFactory::getDBO();
 		
 		if (!is_array( $cid ) || count( $cid ) < 1) {
 			$mainframe->enqueueMessage(JText::_("SHOP_SELECT_ROW_TO_DELETE"),"error");
-			$mainframe->redirect("index.php?option=$option&task=listProductExtent" );
+			$mainframe->redirect("index.php?option=$option&task=listGrid" );
 			exit;
 		}
 		foreach( $cid as $id )
 		{
-			$productextent = new productextent( $db );
-			$productextent->load( $id );
+			$grid = new grid( $db );
+			$grid->load( $id );
 					
-			if (!$productextent->delete()) {
+			if (!$Grid->delete()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=listProductExtent" );
+				$mainframe->redirect("index.php?option=$option&task=listGrid" );
 			}												
 		}
-		$mainframe->redirect("index.php?option=$option&task=listProductExtent" );		
+		$mainframe->redirect("index.php?option=$option&task=listGrid" );		
 	}
 	
-	function copyProductExtent($cid ,$option){		
+	function copyGrid($cid ,$option){		
 		global $mainframe;
 		$db =& JFactory::getDBO();
 		
 		if (!is_array( $cid ) || count( $cid ) < 1) {
 			$mainframe->enqueueMessage(JText::_("SHOP_SELECT_ROW_TO_COPY"),"error");
-			$mainframe->redirect("index.php?option=$option&task=listProductExtent" );
+			$mainframe->redirect("index.php?option=$option&task=listGrid" );
 			exit;
 		}
 		
 		foreach( $cid as $id )
 		{
-			$productextent = new productextent( $db );
-			$productextent->load( $id );
-			$productextent->id=0;
-			$productextent->guid=0;
-			if (!$productextent->store()) {
+			$grid = new grid( $db );
+			$grid->load( $id );
+			$grid->id=0;
+			$grid->guid=0;
+			if (!$grid->store()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				$mainframe->redirect("index.php?option=$option&task=listProductExtent" );
+				$mainframe->redirect("index.php?option=$option&task=listGrid" );
 			}												
 		}
-		$mainframe->redirect("index.php?option=$option&task=listProductExtent" );		
+		$mainframe->redirect("index.php?option=$option&task=listGrid" );		
 	}
 	
-	function cancelProductExtent($option)
+	function cancelGrid($option)
 	{
 		global $mainframe;
 		$db =& JFactory::getDBO();
-		$productextent = new productextent( $db );
-		$productextent->bind(JRequest::get('post'));
-		$productextent->checkin();
+		$grid = new grid( $db );
+		$grid->bind(JRequest::get('post'));
+		$grid->checkin();
 
-		$mainframe->redirect("index.php?option=$option&task=listProductExtent" );
+		$mainframe->redirect("index.php?option=$option&task=listGrid" );
 	}
 }
 	

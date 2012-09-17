@@ -17,27 +17,27 @@
  */
 
 defined('_JEXEC') or die('Restricted access');
-class TOOLBAR_productextent{
+class TOOLBAR_grid{
 		
-	function _EDITPRODUCTEXTENT(){
+	function _EDITGRID(){
 
 		$cid = JRequest::getVar( 'cid', array(0), '', 'array' );
 		if (intval($cid[0]) == 0) // New
 			$text = JText::_("CORE_NEW");
 		else // Edit
 			$text = JText::_("CORE_EDIT");
-		JToolBarHelper::title(JText::_( 'SHOP_PRODUCTEXTENT_TITLE_EDIT' ).': <small><small>[ '. $text.' ]</small></small>', 'addedit.png');
+		JToolBarHelper::title(JText::_( 'SHOP_GRID_TITLE_EDIT' ).': <small><small>[ '. $text.' ]</small></small>', 'addedit.png');
 		
-		JToolBarHelper::save('saveProductExtent');
-		JToolBarHelper::apply('applyProductExtent');
-		JToolBarHelper::cancel('cancelProductExtent');
+		JToolBarHelper::save('saveGrid');
+		JToolBarHelper::apply('applyGrid');
+		JToolBarHelper::cancel('cancelGrid');
 	}
 	
-	function _LISTPRODUCTEXTENT() {
-		JToolBarHelper::addNew('newProductExtent');
-		JToolBarHelper::editList('editProductExtent');
-		JToolBarHelper::deleteList('','deleteProductExtent');
-		JToolBarHelper::custom( 'copyProductExtent', 'copy.png', 'copy.png', JTEXT::_("SHOP_MENU_COPY_PRODUCTEXTENT"), false );
+	function _LISTGRID() {
+		JToolBarHelper::addNew('newGrid');
+		JToolBarHelper::editList('editGrid');
+		JToolBarHelper::deleteList('','deleteGrid');
+		JToolBarHelper::custom( 'copyGrid', 'copy.png', 'copy.png', JTEXT::_("SHOP_MENU_COPY_GRID"), false );
 		JToolBarHelper::spacer();
 		JToolBarHelper::custom( 'ctrlPanelShop', 'tool_easysdi_admin.png', 'tool_easysdi_admin.png', JTEXT::_("CORE_MENU_CPANEL"), false );
 	}
