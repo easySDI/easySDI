@@ -1303,11 +1303,12 @@ function validateForm(toStep, fromStep){
 			
 			if($product->grid_id)
 			{
+				require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'product.easysdi.class.php');
+				require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'product.site.easysdi.html.php');
 				HTML_product::downloadAvailableProductByGrid($product, $option, $task,$view,$step,$row);
 			}
 			else
 			{
-				
 				HTML_shop::downloadAvailableProduct($id, $option, $task,$view,$step,$row);
 			}
 		}

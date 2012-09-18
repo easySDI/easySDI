@@ -641,7 +641,7 @@ class HTML_shop
 						                perimUrl,
 						                {typename: featureTypeName}, {
 						                    typename: featureTypeName,                                    
-						                    extractAttributes: false
+						                    extractAttributes: true
 						                       
 						                },
 					                { featureClass: OpenLayers.Feature.WFS}

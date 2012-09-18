@@ -951,5 +951,49 @@ class HTML_product{
    		
    		 return $result;
 	}
+	
+	function downloadAvailableProductByGrid($product, $option, $task,$view,$step,$row)
+	{
+		$grid = $product->getGrid();
+		?>
+			<script type="text/javascript" src="./administrator/components/com_easysdi_shop/lib/openlayers2.11/lib/OpenLayers.js"></script>
+			<script type="text/javascript" src="./administrator/components/com_easysdi_shop/lib/proj4js/lib/proj4js.js"></script>
+			<script type="text/javascript" src="./administrator/components/com_easysdi_shop/lib/openlayers2.11/lib/OpenLayers/Control/LoadingPanel.js"></script>
+			<script defer="defer" type="text/javascript">
+			
+            function init(){
+            	var map = new OpenLayers.Map("map");
+
+            	var ol_wms = new OpenLayers.Layer.WMS(
+            	    "OpenLayers WMS",
+            	    "http://vmap0.tiles.osgeo.org/wms/vmap0",
+            	    {layers: "basic"}
+            	);
+
+            	var dm_wms = new OpenLayers.Layer.WMS(
+            	    "Canadian Data",
+            	    "http://www2.dmsolutions.ca/cgi-bin/mswms_gmap",
+            	    {
+            	        layers: "bathymetry,land_fn,park,drain_fn,drainage," +
+            	                "prov_bound,fedlimit,rail,road,popplace",
+            	        transparent: "true",
+            	        format: "image/png"
+            	    },
+            	    {isBaseLayer: false, visibility: false}
+            	);
+
+            	map.addLayers([ol_wms, dm_wms]);
+            	map.addControl(new OpenLayers.Control.LayerSwitcher());
+            	map.zoomToMaxExtent();
+            }
+            
+		
+	        </script>
+	        <body onload="init()">
+			<div id="map" style="width: 600px; height: 300px"></div>
+			</body>
+	        
+			<?php
+		}
 }
 ?>
