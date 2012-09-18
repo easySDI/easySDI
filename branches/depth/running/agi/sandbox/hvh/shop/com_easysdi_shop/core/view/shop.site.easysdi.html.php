@@ -2037,6 +2037,5 @@ class HTML_shop
 		
 		<?php
 	}
-	
 }
 ?>

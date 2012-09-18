@@ -110,56 +110,76 @@ class product extends sdiTable
 		}
 		else
 		{
-			if(isset($_FILES['productfile']) && !empty($_FILES['productfile']['name'])) 
-		 	{
-		 		//A file was uploaded, store it in the database
-		 		$fileName = $_FILES['productfile']["name"];
-		 		$tmpName =  $_FILES['productfile']["tmp_name"];
-		 		$type = strtolower(substr($fileName, strrpos($fileName, '.')+1)) ;
-  				$size = ($_FILES['productfile']["size"] ) ;
-			 	$fp      = fopen($tmpName, 'r');
-			 	$content = fread($fp, filesize($tmpName));
-			 	$content = addslashes($content);
-			 	fclose($fp);
-				
-				$this->_db->setQuery( "SELECT COUNT(*) FROM  #__sdi_product_file WHERE product_id = ".$this->id );
-				$result = $this->_db->loadResult();
-				if ($this->_db->getErrorNum()) {
-					$mainframe->enqueueMessage($this->_db->getErrorMsg(), "ERROR");
-					return false;
-				}
-				if($result > 0)
+			if(isset($_POST['diffusion_mode']))
+			{
+				if($_POST['diffusion_mode']=='repository' )
 				{
-					$this->_db->setQuery( "UPDATE  #__sdi_product_file SET data='".$content."', filename='".$fileName."', size =".$size.", type='".$type."' WHERE product_id = ".$this->id );
-					if (!$this->_db->query()) {
-						$mainframe->enqueueMessage($this->_db->getErrorMsg(), "ERROR");
-						return false;
+					if(isset($_FILES['productfile']) && !empty($_FILES['productfile']['name'])) 
+				 	{
+				 		//A file was uploaded, store it in the database
+				 		$fileName = $_FILES['productfile']["name"];
+				 		$tmpName =  $_FILES['productfile']["tmp_name"];
+				 		$type = strtolower(substr($fileName, strrpos($fileName, '.')+1)) ;
+		  				$size = ($_FILES['productfile']["size"] ) ;
+					 	$fp      = fopen($tmpName, 'r');
+					 	$content = fread($fp, filesize($tmpName));
+					 	$content = addslashes($content);
+					 	fclose($fp);
+						
+						$this->_db->setQuery( "SELECT COUNT(*) FROM  #__sdi_product_file WHERE product_id = ".$this->id );
+						$result = $this->_db->loadResult();
+						if ($this->_db->getErrorNum()) {
+							$mainframe->enqueueMessage($this->_db->getErrorMsg(), "ERROR");
+							return false;
+						}
+						if($result > 0)
+						{
+							$this->_db->setQuery( "UPDATE  #__sdi_product_file SET data='".$content."', filename='".$fileName."', size =".$size.", type='".$type."' WHERE product_id = ".$this->id );
+							if (!$this->_db->query()) {
+								$mainframe->enqueueMessage($this->_db->getErrorMsg(), "ERROR");
+								return false;
+							}
+						}
+						else
+						{
+							$query =  "INSERT INTO  #__sdi_product_file (filename, data,product_id, type, size) VALUES ('".$fileName."' ,'".$content."', ".$this->id.", '".$type."', ".$size." )" ;
+							$this->_db->setQuery($query);
+							if (!$this->_db->query()) {
+								$mainframe->enqueueMessage($this->_db->getErrorMsg(), "ERROR");
+								return false;
+							}
+						}
+				 		$this->pathfile = null;
+						if(! parent::store())
+						{
+							return false;
+						}
 					}
 				}
-				else
+				else if($_POST['diffusion_mode']=='link' )
 				{
-					$query =  "INSERT INTO  #__sdi_product_file (filename, data,product_id, type, size) VALUES ('".$fileName."' ,'".$content."', ".$this->id.", '".$type."', ".$size." )" ;
-					$this->_db->setQuery($query);
-					if (!$this->_db->query()) {
-						$mainframe->enqueueMessage($this->_db->getErrorMsg(), "ERROR");
-						return false;
+					if (isset($this->pathfile)){
+						//A local path file is defined, delete the file stored in the database
+						$this->_db->setQuery( "DELETE FROM  #__sdi_product_file WHERE product_id = ".$this->id );
+						if (!$this->_db->query()) {
+							return false;
+						}
 					}
 				}
-		 		$this->pathfile = null;
-				if(! parent::store())
+				else if($_POST['diffusion_mode'] == 'grid')
 				{
-					return false;
-				}
-			}elseif ($this->pathfile != null){
-				//A local path file is defined, delete the file stored in the database
-				$this->_db->setQuery( "DELETE FROM  #__sdi_product_file WHERE product_id = ".$this->id );
-				if (!$this->_db->query()) {
-					return false;
+					if (isset($this->grid_id)){
+						//A grid is defined, delete the file stored in the database
+						$this->_db->setQuery( "DELETE FROM  #__sdi_product_file WHERE product_id = ".$this->id );
+						if (!$this->_db->query()) {
+							return false;
+						}
+					}
 				}
 			}
-			else
+			if(!isset($_FILES['productfile']) && !isset($this->pathfile) && !isset($this->grid_id)) 
 			{
-				//If no local file path and no file are defined, set the available attribute value to false
+				//If no local file path, no file and no grid are defined, set the available attribute value to false
 				$this->_db->setQuery( "SELECT COUNT(*) FROM  #__sdi_product_file WHERE product_id = ".$this->id );
 				$result = $this->_db->loadResult();
 				if ($this->_db->getErrorNum()) {
@@ -213,13 +233,20 @@ class product extends sdiTable
 			return basename($this->pathfile);
 		}
 		
-		global  $mainframe;	
 		$this->_db->setQuery( "SELECT filename FROM  #__sdi_product_file WHERE product_id = ".$this->id );
 		$filename = $this->_db->loadResult();
 		if ($this->_db->getErrorNum()) {
-			$mainframe->enqueueMessage($this->_db->getErrorMsg());
 			return false;
 		}
+		
+		if(!$filename){
+			$this->_db->setQuery( "SELECT name FROM  #__sdi_grid WHERE id = ".$this->grid_id );
+			$filename = $this->_db->loadResult();
+			if ($this->_db->getErrorNum()) {
+				return false;
+			}
+		}
+		
 		return $filename;
 	}
 	
@@ -427,6 +454,17 @@ class product extends sdiTable
 			return false;
 		}
 		return false;
+	}
+	
+	function getGrid()
+	{
+		if (!$this->grid_id)
+			return null;
+		
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'grid.easysdi.class.php');
+		$grid = new grid ($this->_db);
+		$grid->load ($this->grid_id);
+		return $grid;
 	}
 }
 

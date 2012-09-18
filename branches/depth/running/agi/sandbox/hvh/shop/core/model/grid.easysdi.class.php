@@ -19,19 +19,22 @@ defined('_JEXEC') or die('Restricted access');
 
 class grid extends sdiTable
 {	
-	var $urlwms=null;
-	var $minscale=0;
-  	var $maxscale=-1;
-	var $imgformat=null;
-	var $layername=null;
-	var $urlwfs=null;
-	var $featuretype=null;
-	var $fieldid=null;
-	var $fieldresource=null;
-	var $fieldgeom=null;
-	var $user=null;
-	var $password=null;
-	var $account_id=null;
+	var $urlwms			= null;
+	var $projection 	= null;
+	var $unit			= null;
+	var $extent			= null;
+	var $minscale		= 0;
+  	var $maxscale		= -1;
+	var $imgformat		= null;
+	var $layername		= null;
+	var $urlwfs			= null;
+	var $featuretype	= null;
+	var $fieldid		= null;
+	var $fieldresource	= null;
+	var $fieldgeom		= null;
+	var $user			= null;
+	var $password		= null;
+	var $account_id		= null;
 	
 	// Class constructor
 	function __construct( &$db )

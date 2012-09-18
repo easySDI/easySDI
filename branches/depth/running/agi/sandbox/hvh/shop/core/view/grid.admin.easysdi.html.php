@@ -86,6 +86,18 @@ class HTML_grid {
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="imgformat" value="<?php echo $rowGrid->imgformat; ?>" /></td>
 							</tr>
 							<tr>
+								<td class="key"><?php echo JText::_("SHOP_GRID_PROJECTION"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="projection" value="<?php echo $rowGrid->projection; ?>" /></td>
+							</tr>
+							<tr>
+								<td class="key"><?php echo JText::_("SHOP_GRID_UNIT"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="unit" value="<?php echo $rowGrid->unit; ?>" /></td>
+							</tr>
+							<tr>
+								<td class="key"><?php echo JText::_("SHOP_GRID_EXTENT"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="extent" value="<?php echo $rowGrid->extent; ?>" /></td>
+							</tr>
+							<tr>
 								<td class="key"><?php echo JText::_("SHOP_GRID_MIN_SCALE"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="minscale" value="<?php echo $rowGrid->minscale; ?>" /></td>
 							</tr>

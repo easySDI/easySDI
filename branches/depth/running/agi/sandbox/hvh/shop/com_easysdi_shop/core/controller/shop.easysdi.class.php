@@ -1286,11 +1286,11 @@ function validateForm(toStep, fromStep){
 		}else{
 			$client_lang = '';
 			$jfcookie = JRequest::getVar('jfcookie', null ,"COOKIE");
-			if (isset($jfcookie["lang"]) && $jfcookie["lang"] != "") 
+			if (isset($jfcookie["lang"]) && $jfcookie["lang"] != "")
 			{
-			   $client_lang = $jfcookie["lang"];
-			   $ar = explode("-",$client_lang);
-			   $client_lang = $ar[0];
+				$client_lang = $jfcookie["lang"];
+				$ar = explode("-",$client_lang);
+				$client_lang = $ar[0];
 			}
 			$key = config_easysdi::getValue("SHOP_CONFIGURATION_ARTICLE_TERMS_OF_USE");
 			$new_key = substr_replace($key, $client_lang." ", 22, 0);
@@ -1300,7 +1300,16 @@ function validateForm(toStep, fromStep){
 			$dispatcher =& JDispatcher::getInstance();
 			$dispatcher->trigger('onPrepareContent', array(&$row,&$params,0));
 			$mainframe->addCustomHeadTag('<meta http-equiv="X-UA-Compatible" content="IE=Edge">');
-			HTML_shop::downloadAvailableProduct($id, $option, $task,$view,$step,$row);
+			
+			if($product->grid_id)
+			{
+				HTML_product::downloadAvailableProductByGrid($product, $option, $task,$view,$step,$row);
+			}
+			else
+			{
+				
+				HTML_shop::downloadAvailableProduct($id, $option, $task,$view,$step,$row);
+			}
 		}
 	}
 	
