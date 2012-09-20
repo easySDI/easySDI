@@ -954,14 +954,18 @@ class HTML_product{
 	
 	function downloadAvailableProductByGrid($product, $option, $task,$view,$step,$row)
 	{
-		$grid = $product->getGrid();
+		$db			=& JFactory::getDBO();
+		$product 	= new product($db);
+		$product->load ($id);
+		$grid 		= $product->getGrid();
 		?>
 			<script type="text/javascript" src="./administrator/components/com_easysdi_shop/lib/openlayers2.11/lib/OpenLayers.js"></script>
 			<script type="text/javascript" src="./administrator/components/com_easysdi_shop/lib/proj4js/lib/proj4js.js"></script>
 			<script type="text/javascript" src="./administrator/components/com_easysdi_shop/lib/openlayers2.11/lib/OpenLayers/Control/LoadingPanel.js"></script>
 			<script defer="defer" type="text/javascript">
-			
-            function init(){
+			var protocol, map, popup;
+
+			function init(){
             	var options = { 
                     	minScale:1000000000,
                     	maxScale:1,
@@ -969,7 +973,7 @@ class HTML_product{
                         projection : new OpenLayers.Projection("EPSG:4326"),
                         maxExtent :new OpenLayers.Bounds(-130.85168,20.7052,-62.0054,54.1141)
                       };
-            	var map = new OpenLayers.Map("map",options);
+            	map = new OpenLayers.Map("map",options);
 
             	var baseLayer = new OpenLayers.Layer.WMS(
             	    "Nurc Img_sample",
@@ -978,30 +982,97 @@ class HTML_product{
             	    {isBaseLayer: true, visibility: true}
             	);
 
+            	protocol = new OpenLayers.Protocol.WFS({
+        		    version: "1.0.0",
+        		    srsName:"EPSG:4326",
+        		    url: "http://localhost/geoserverwfs",
+        		    featureType: "states",
+        		    featureNS: "http://www.openplans.org/topp",
+        		    geometryName: "the_geom"
+        		});
             	
         		var layer = new OpenLayers.Layer.Vector("WFS", {
 					strategies : [ new OpenLayers.Strategy.BBOX() ],
-					protocol : new OpenLayers.Protocol.WFS({
-	        		    version: "1.0.0",
-	        		    srsName:"EPSG:4326",
-	        		    url: "http://localhost/geoserverwfs",
-	        		    featureType: "states",
-	        		    featureNS: "http://www.openplans.org/topp",
-	        		    geometryName: "the_geom"
-	        		}),
-	        		 visibility: true,
-	        		 extractAttributes: true					
+					protocol : protocol,
+	        		visibility: true,
+	        		extractAttributes: true					
 				});
-				
-            	map.addLayers([baseLayer, layer]);
+
+        		var select = new OpenLayers.Layer.Vector("Selection", {styleMap: 
+                    new OpenLayers.Style(OpenLayers.Feature.Vector.style["select"])
+                });
+                
+                var hover = new OpenLayers.Layer.Vector("Hover");
+                
+                var control = new OpenLayers.Control.GetFeature({
+                    protocol: protocol,
+                    box: true,
+                    hover: true,
+                    multipleKey: "shiftKey",
+                    toggleKey: "ctrlKey"
+                });
+                
+                control.events.register("featureselected", this, function(e) {
+                    select.addFeatures([e.feature]);
+                    document.getElementById('selected-feature-detail').innerHTML = e.feature.attributes.STATE_NAME;
+                    document.getElementById('resource').value = e.feature.attributes.STATE_NAME;
+                });
+                control.events.register("featureunselected", this, function(e) {
+                    select.removeFeatures([e.feature]);
+                    document.getElementById('selected-feature-detail').innerHTML = "";
+                });
+                control.events.register("hoverfeature", this, function(e) {
+                    hover.addFeatures([e.feature]);
+                    popup = new OpenLayers.Popup.FramedCloud(
+                            "chicken", 
+                            e.feature.geometry.getBounds().getCenterLonLat(),
+                            null,
+                            e.feature.fid,
+                            null,
+                            true
+                        )
+                    map.addPopup(popup);
+                });
+                control.events.register("outfeature", this, function(e) {
+                    hover.removeFeatures([e.feature]);
+                    if(popup != null)
+                    	map.removePopup(popup);
+                	popup.destroy();
+                	popup = null;
+                });
+                
+                map.addControl(control);
+                control.activate();
+                
+            	map.addLayers([baseLayer, layer, select, hover]);
             	map.addControl(new OpenLayers.Control.LayerSwitcher());
             	map.zoomToMaxExtent();
             }
             
-		
+			function validate()
+			{
+				
+				document.getElementById('task').value='doDownloadAvailableProduct';
+				document.getElementById('selectGridForm').submit();
+			}
 	        </script>
 	        <body onload="init()">
-			<div id="map" style="width: 600px; height: 300px"></div>
+	       	<form name="selectGridForm" id="selectGridForm" action='index.php' method='GET'>
+				<div id="map" style="width: 600px; height: 300px"></div>
+				<div id="selected-feature">
+			        <h1>Selected feature</h1>
+			        <div id="selected-feature-detail">
+			        </div>
+			    </div>
+			    <div>
+					<input type="submit" id="validateSelectGrid" name="validateSelectGrid" class="submit" value ="<?php echo JText::_("SHOP_VALIDATE_BUTTON"); ?>" 
+							onClick="javascript:validate();"/>
+				</div>
+				<input type='hidden' name='option' value='<?php echo $option;?>'> 
+				<input type='hidden' name='resource' id='resource' value=''> 
+				<input type='hidden' name='product_id' value='<?php echo $product->id;?>'> 
+				<input type='hidden' id="task" name='task' value='<?php echo $task; ?>'> 
+			</form>
 			</body>
 	        
 			<?php

@@ -1305,7 +1305,8 @@ function validateForm(toStep, fromStep){
 			{
 				require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'product.easysdi.class.php');
 				require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'product.site.easysdi.html.php');
-				HTML_product::downloadAvailableProductByGrid($product, $option, $task,$view,$step,$row);
+				HTML_shop::downloadAvailableProduct($id, $option, $task,$view,$step,$row);
+				//HTML_product::downloadAvailableProductByGrid($product, $option, $task,$view,$step,$row);
 			}
 			else
 			{
@@ -1314,6 +1315,9 @@ function validateForm(toStep, fromStep){
 		}
 	}
 	
+	function termsOfUseValidated()
+	{
+	}
 	function doDownloadAvailableProduct(){
 
 		$database =& JFactory::getDBO();
@@ -1330,19 +1334,41 @@ function validateForm(toStep, fromStep){
 			//User is not allowed to download this product
 			JError::raiseWarning( 100, JText::_("SHOP_MSG_NOT_ALLOWED_TO_DOWNLOAD_THIS_PRODUCT") );
 		}else{
-			$file = $product->getFile();
-			$fileName = $product->getFileName();
-	
-			error_reporting(0);
-	
-			ini_set('zlib.output_compression', 0);
-			header('Pragma: public');
-			header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
-			header('Content-Transfer-Encoding: none');
-			header("Content-Length: ".strlen($file));
-			header('Content-Type: application/octetstream; name="'.$product->getFileExtension().'"');
-			header('Content-Disposition: attachement; filename="'.$fileName.'"');
-	
+			
+			$resource = JRequest::getVar('resource');
+			
+			if($resource){
+				
+				$handle = fopen($resource, "r");
+				$file = '';
+				while (!feof($handle)) {
+					$contents .= fread($handle, 8192);
+				}
+				fclose($handle);
+				$fileName = 'toto.zip';
+				error_reporting(0);
+				
+				ini_set('zlib.output_compression', 0);
+				header('Pragma: public');
+				header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
+				header('Content-Transfer-Encoding: none');
+				header("Content-Length: ".strlen($file));
+				header('Content-Type: application/octetstream; name="zip"');
+				header('Content-Disposition: attachement; filename="'.$fileName.'"');
+			}else{
+			
+				$file = $product->getFile();
+				$fileName = $product->getFileName();
+				error_reporting(0);
+		
+				ini_set('zlib.output_compression', 0);
+				header('Pragma: public');
+				header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
+				header('Content-Transfer-Encoding: none');
+				header("Content-Length: ".strlen($file));
+				header('Content-Type: application/octetstream; name="'.$product->getFileExtension().'"');
+				header('Content-Disposition: attachement; filename="'.$fileName.'"');
+			}
 			echo $file;
 			die();
 		}
