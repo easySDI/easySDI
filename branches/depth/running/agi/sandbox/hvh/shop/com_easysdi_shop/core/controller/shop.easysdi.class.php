@@ -1267,17 +1267,16 @@ function validateForm(toStep, fromStep){
 	
 	function downloadAvailableProduct($id)
 	{
-		$option = JRequest::getVar('option');
-		$task = JRequest::getVar('task');
-		$view = JRequest::getVar('view');
-		$step = JRequest::getVar('step');
-		
 		global  $mainframe;
-		$user = JFactory::getUser();
-		$db=& JFactory::getDBO(); 
-		$account = new accountByUserId( $db );
+		$option 	= JRequest::getVar('option');
+		$task 		= JRequest::getVar('task');
+		$view 		= JRequest::getVar('view');
+		$step 		= JRequest::getVar('step');
+		$user 		= JFactory::getUser();
+		$db			=& JFactory::getDBO(); 
+		$account 	= new accountByUserId( $db );
 		$account->load( $user->id );
-		$product = new product($db);
+		$product 	= new product($db);
 		$product->load ($id);
 		
 		if(!$product->isUserAllowedToLoad($account->id)){
@@ -1300,28 +1299,17 @@ function validateForm(toStep, fromStep){
 			$dispatcher =& JDispatcher::getInstance();
 			$dispatcher->trigger('onPrepareContent', array(&$row,&$params,0));
 			$mainframe->addCustomHeadTag('<meta http-equiv="X-UA-Compatible" content="IE=Edge">');
-			
-			if($product->grid_id)
-			{
-				require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'product.easysdi.class.php');
-				require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'product.site.easysdi.html.php');
-				HTML_shop::downloadAvailableProduct($id, $option, $task,$view,$step,$row);
-				//HTML_product::downloadAvailableProductByGrid($product, $option, $task,$view,$step,$row);
-			}
+			if($product->grid_id && !JRequest::getVar('resource'))
+				HTML_product::gridSelection($product, $option, $task,$view,$step,$row);
 			else
-			{
-				HTML_shop::downloadAvailableProduct($id, $option, $task,$view,$step,$row);
-			}
+				HTML_shop::termsOfUse($id, $option, $task,$view,$step,$row);
 		}
 	}
-	
-	function termsOfUseValidated()
-	{
-	}
-	function doDownloadAvailableProduct(){
 
-		$database =& JFactory::getDBO();
-		$id = JRequest::getVar('product_id');
+	function downloadProduct(){
+
+		$database 	=& JFactory::getDBO();
+		$id 		= JRequest::getVar('product_id');
 		
 		global  $mainframe;
 		$user = JFactory::getUser();
@@ -1338,7 +1326,8 @@ function validateForm(toStep, fromStep){
 			$resource = JRequest::getVar('resource');
 			
 			if($resource){
-				
+				print_r ($resource);
+				die();
 				$handle = fopen($resource, "r");
 				$file = '';
 				while (!feof($handle)) {

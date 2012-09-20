@@ -952,11 +952,8 @@ class HTML_product{
    		 return $result;
 	}
 	
-	function downloadAvailableProductByGrid($product, $option, $task,$view,$step,$row)
+	function gridSelection($product, $option, $task,$view,$step,$row)
 	{
-		$db			=& JFactory::getDBO();
-		$product 	= new product($db);
-		$product->load ($id);
 		$grid 		= $product->getGrid();
 		?>
 			<script type="text/javascript" src="./administrator/components/com_easysdi_shop/lib/openlayers2.11/lib/OpenLayers.js"></script>
@@ -1016,12 +1013,14 @@ class HTML_product{
                     select.addFeatures([e.feature]);
                     document.getElementById('selected-feature-detail').innerHTML = e.feature.attributes.STATE_NAME;
                     document.getElementById('resource').value = e.feature.attributes.STATE_NAME;
+                    document.getElementById('validateSelectGrid').disabled = false;
                 });
                 control.events.register("featureunselected", this, function(e) {
                     select.removeFeatures([e.feature]);
                     document.getElementById('selected-feature-detail').innerHTML = "";
+                    document.getElementById('validateSelectGrid').disabled = true;
                 });
-                control.events.register("hoverfeature", this, function(e) {
+               /* control.events.register("hoverfeature", this, function(e) {
                     hover.addFeatures([e.feature]);
                     popup = new OpenLayers.Popup.FramedCloud(
                             "chicken", 
@@ -1039,20 +1038,19 @@ class HTML_product{
                     	map.removePopup(popup);
                 	popup.destroy();
                 	popup = null;
-                });
+                });*/
                 
                 map.addControl(control);
                 control.activate();
                 
-            	map.addLayers([baseLayer, layer, select, hover]);
+            	map.addLayers([baseLayer, layer, select]);
             	map.addControl(new OpenLayers.Control.LayerSwitcher());
             	map.zoomToMaxExtent();
             }
             
 			function validate()
 			{
-				
-				document.getElementById('task').value='doDownloadAvailableProduct';
+				document.getElementById('task').value='downloadAvailableProduct';
 				document.getElementById('selectGridForm').submit();
 			}
 	        </script>
@@ -1065,12 +1063,13 @@ class HTML_product{
 			        </div>
 			    </div>
 			    <div>
-					<input type="submit" id="validateSelectGrid" name="validateSelectGrid" class="submit" value ="<?php echo JText::_("SHOP_VALIDATE_BUTTON"); ?>" 
+					<input type="submit" id="validateSelectGrid" name="validateSelectGrid" class="submit" disabled value ="<?php echo JText::_("SHOP_VALIDATE_BUTTON"); ?>" 
 							onClick="javascript:validate();"/>
 				</div>
 				<input type='hidden' name='option' value='<?php echo $option;?>'> 
+				<input type='hidden' name='tmpl' value='component'> 
 				<input type='hidden' name='resource' id='resource' value=''> 
-				<input type='hidden' name='product_id' value='<?php echo $product->id;?>'> 
+				<input type='hidden' name='cid[]' value='<?php echo $product->id;?>'> 
 				<input type='hidden' id="task" name='task' value='<?php echo $task; ?>'> 
 			</form>
 			</body>

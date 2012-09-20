@@ -1987,52 +1987,54 @@ class HTML_shop
 		<?php 
 	}
 	
-	function downloadAvailableProduct($id, $option, $task,$view,$step,$row)
+	function termsOfUse($id, $option, $task,$view,$step,$row)
 	{
 		?>
 		<form name="dlProductForm" id="dlProductForm" 	 action='index.php' method='GET'>
-		<table>
-		<tr>
-		<td >
-		<table width="100%" >
-		<tr>
-		<td colspan ="2" >
-		<?php
-		echo $row->text;
-		?>
-		</td>
-		</tr>
-		</table>
-		</td></tr>
-		<tr>
-		<td>
-		<table>
-		<tr>
-		<td width="50%" align="right" >    
-		<input
-		onClick="document.getElementById('task').value = 'shop'; try{ window.parent.document.getElementById('sbox-window').close();}catch(err){javascript:history.back();}"
-		type="button"
-		class="button"
-		value='<?php echo JText::_("SHOP_SHOP_PRODUCT_TERMS_DENY"); ?>'> 
-		</td>
-		<td width="50%" align="left">
-		<input 
-		onClick="document.getElementById('task').value = 'doDownloadAvailableProduct';document.getElementById('product_id').value = '<?php echo $id; ?>';document.getElementById('dlProductForm').submit();try{ window.parent.document.getElementById('sbox-window').close();}catch(err){}"
-		type="button"
-		class="button"
-		value='<?php echo JText::_("SHOP_SHOP_PRODUCT_TERMS_ACCEPT"); ?>'> 
-		</td>
-		</tr>
-		</table>
-		</td></tr>
-		</table>
-		<input type='hidden' name='option' value='<?php echo $option;?>'> 
-		<input type='hidden' id="task" name='task' value='<?php echo $task; ?>'> 
-		<input type='hidden' id="view" name='view' value='<?php echo $view; ?>'> 
-		<input type='hidden' id="fromStep" name='fromStep' value='1'> 
-		<input type='hidden' id="step" name='step' value='<?php echo $step; ?>'>
-		<input type='hidden' id="product_id" name='product_id' value=''>
-	
+			<table>
+				<tr>
+					<td >
+						<table width="100%" >
+							<tr>
+								<td colspan ="2" >
+									<?php
+									echo $row->text;
+									?>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<table>
+							<tr>
+								<td width="50%" align="right" >    
+									<input
+										onClick="document.getElementById('task').value = 'shop'; try{ window.parent.document.getElementById('sbox-window').close();}catch(err){javascript:history.back();}"
+										type="button"
+										class="button"
+										value='<?php echo JText::_("SHOP_SHOP_PRODUCT_TERMS_DENY"); ?>'> 
+								</td>
+								<td width="50%" align="left">
+									<input 
+									onClick="document.getElementById('task').value = 'downloadProduct';document.getElementById('product_id').value = '<?php echo $id; ?>';document.getElementById('dlProductForm').submit();try{ window.parent.document.getElementById('sbox-window').close();}catch(err){}"
+									type="button"
+									class="button"
+									value='<?php echo JText::_("SHOP_SHOP_PRODUCT_TERMS_ACCEPT"); ?>'> 
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+			<input type='hidden' name='option' value='<?php echo $option;?>'> 
+			<input type='hidden' id="task" name='task' value='<?php echo $task; ?>'> 
+			<input type='hidden' id="view" name='view' value='<?php echo $view; ?>'> 
+			<input type='hidden' id="fromStep" name='fromStep' value='1'> 
+			<input type='hidden' id="step" name='step' value='<?php echo $step; ?>'>
+			<input type='hidden' id="product_id" name='product_id' value=''>
+			<input type='hidden' id="resource" name='resource' value='<?php echo JRequest::getVar('resource');?>'>
 		</form>
 		
 		<?php

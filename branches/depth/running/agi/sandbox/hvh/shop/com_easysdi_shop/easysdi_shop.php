@@ -82,38 +82,29 @@ switch($task){
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'perimList.easysdi.html.php');
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.displayManager.class.php');
 		$mainframe->redirect(JRoute::_(displayManager::buildUrl("index.php?option=$option&view=shop&step=$step&perimeter_id=$perimeter_id&Itemid=$Itemid"), false));
-	break;
+		break;
 		
 	case "downloadAvailableProduct":
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.displayManager.class.php');
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'shop.easysdi.class.php');
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'shop.site.easysdi.html.php');
+		require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'product.site.easysdi.html.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'product.easysdi.class.php');
-		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.displayManager.class.php');
-		
+	
 		SITE_shop::downloadAvailableProduct($cid[0]);
 		break;
+		
+	case "downloadProduct":
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
+		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'shop.easysdi.class.php');
+		require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'shop.site.easysdi.html.php');
+		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'product.easysdi.class.php');
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.displayManager.class.php');
+		
+		SITE_shop::downloadProduct();
+		break;
 	
-	case "termsOfUseValidated":
-		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
-		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'shop.easysdi.class.php');
-		require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'shop.site.easysdi.html.php');
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'product.easysdi.class.php');
-		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.displayManager.class.php');
-		
-		SITE_shop::doDownloadAvailableProduct();
-		break;
-		
-	case "doDownloadAvailableProduct":
-		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
-		require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'shop.easysdi.class.php');
-		require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'shop.site.easysdi.html.php');
-		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'product.easysdi.class.php');
-		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.displayManager.class.php');
-		
-		SITE_shop::doDownloadAvailableProduct($cid[0]);
-		break;
-
 	/*****************************************************************************************************************************
 	 * Proxy
 	 *****************************************************************************************************************************/
