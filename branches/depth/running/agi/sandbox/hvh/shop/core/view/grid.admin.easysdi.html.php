@@ -64,27 +64,14 @@ class HTML_grid {
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="name" value="<?php echo $rowGrid->name; ?>" /></td>							
 							</tr>
 							<tr>
-							
 								<td class="key"><?php echo JText::_("SHOP_GRID_DESC"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="description" value="<?php echo $rowGrid->description; ?>" /></td>							
 							</tr>
 						</table>
 					</fieldset>
 					<fieldset>
-						<legend><?php echo JText::_("SHOP_WMS"); ?></legend>
+						<legend><?php echo JText::_("SHOP_MAP"); ?></legend>
 						<table>
-							<tr>
-								<td class="key"><?php echo JText::_("SHOP_WMS_URL"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="urlwms" value="<?php echo $rowGrid->urlwms; ?>" /></td>
-							</tr>
-							<tr>
-								<td class="key"><?php echo JText::_("SHOP_GRID_LAYER_NAME"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="layername" value="<?php echo $rowGrid->layername; ?>" /></td>
-							</tr>
-							<tr>
-								<td class="key"><?php echo JText::_("SHOP_GRID_IMG_FORMAT"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="imgformat" value="<?php echo $rowGrid->imgformat; ?>" /></td>
-							</tr>
 							<tr>
 								<td class="key"><?php echo JText::_("SHOP_GRID_PROJECTION"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="projection" value="<?php echo $rowGrid->projection; ?>" /></td>
@@ -108,6 +95,23 @@ class HTML_grid {
 						</table>
 					</fieldset>
 					<fieldset>
+						<legend><?php echo JText::_("SHOP_WMS"); ?></legend>
+						<table>
+							<tr>
+								<td class="key"><?php echo JText::_("SHOP_WMS_URL"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="urlwms" value="<?php echo $rowGrid->urlwms; ?>" /></td>
+							</tr>
+							<tr>
+								<td class="key"><?php echo JText::_("SHOP_GRID_LAYER_NAME"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="layername" value="<?php echo $rowGrid->layername; ?>" /></td>
+							</tr>
+							<tr>
+								<td class="key"><?php echo JText::_("SHOP_GRID_IMG_FORMAT"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="imgformat" value="<?php echo $rowGrid->imgformat; ?>" /></td>
+							</tr>
+						</table>
+					</fieldset>
+					<fieldset>
 						<legend><?php echo JText::_("SHOP_WFS"); ?></legend>
 						<table>
 							<tr>
@@ -116,7 +120,11 @@ class HTML_grid {
 							</tr>
 							<tr>							
 								<td class="key"><?php echo JText::_("SHOP_FEATURETYPE_NAME"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="featuretype" value="<?php echo $rowGrid->featuretype; ?>" /></td>
+								<td><input class="inputbox" type="text" size="50" maxlength="400" name="featuretype" value="<?php echo $rowGrid->featuretype; ?>" /></td>
+							</tr>
+							<tr>							
+								<td class="key"><?php echo JText::_("SHOP_FEATURE_NS"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="400" name="featureNS" value="<?php echo $rowGrid->featureNS; ?>" /></td>
 							</tr>
 							<tr>							
 								<td class="key"><?php echo JText::_("SHOP_GRID_FIELD_ID"); ?> : </td>

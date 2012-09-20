@@ -1084,6 +1084,7 @@ function com_install(){
 			`layername`  varchar(400) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
 			`urlwfs`  varchar(400) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
 			`featuretype`  varchar(400) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+			`featureNS`  varchar(400) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
 			`fieldid`  varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
 			`fieldgeom`  varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
 			`fieldresource`  varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
