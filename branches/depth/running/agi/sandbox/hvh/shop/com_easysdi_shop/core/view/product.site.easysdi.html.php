@@ -962,27 +962,38 @@ class HTML_product{
 			<script defer="defer" type="text/javascript">
 			
             function init(){
-            	var map = new OpenLayers.Map("map");
+            	var options = { 
+                    	minScale:1000000000,
+                    	maxScale:1,
+                        units: "degrees",
+                        projection : new OpenLayers.Projection("EPSG:4326"),
+                        maxExtent :new OpenLayers.Bounds(-130.85168,20.7052,-62.0054,54.1141)
+                      };
+            	var map = new OpenLayers.Map("map",options);
 
-            	var ol_wms = new OpenLayers.Layer.WMS(
-            	    "OpenLayers WMS",
-            	    "http://vmap0.tiles.osgeo.org/wms/vmap0",
-            	    {layers: "basic"}
+            	var baseLayer = new OpenLayers.Layer.WMS(
+            	    "Nurc Img_sample",
+            	    "http://localhost/geoserverwms",
+            	    {layers: "nurc:Img_Sample", format:"image/png", transparent : true},
+            	    {isBaseLayer: true, visibility: true}
             	);
 
-            	var dm_wms = new OpenLayers.Layer.WMS(
-            	    "Canadian Data",
-            	    "http://www2.dmsolutions.ca/cgi-bin/mswms_gmap",
-            	    {
-            	        layers: "bathymetry,land_fn,park,drain_fn,drainage," +
-            	                "prov_bound,fedlimit,rail,road,popplace",
-            	        transparent: "true",
-            	        format: "image/png"
-            	    },
-            	    {isBaseLayer: false, visibility: false}
-            	);
-
-            	map.addLayers([ol_wms, dm_wms]);
+            	
+        		var layer = new OpenLayers.Layer.Vector("WFS", {
+					strategies : [ new OpenLayers.Strategy.BBOX() ],
+					protocol : new OpenLayers.Protocol.WFS({
+	        		    version: "1.0.0",
+	        		    srsName:"EPSG:4326",
+	        		    url: "http://localhost/geoserverwfs",
+	        		    featureType: "states",
+	        		    featureNS: "http://www.openplans.org/topp",
+	        		    geometryName: "the_geom"
+	        		}),
+	        		 visibility: true,
+	        		 extractAttributes: true					
+				});
+				
+            	map.addLayers([baseLayer, layer]);
             	map.addControl(new OpenLayers.Control.LayerSwitcher());
             	map.zoomToMaxExtent();
             }
