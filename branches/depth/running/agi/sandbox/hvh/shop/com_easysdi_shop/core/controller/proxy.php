@@ -126,7 +126,6 @@ class SITE_proxy{
 					}
 				}
 			}
-			
 		}
 		
 		$type = ($_POST['type']) ? $_POST['type'] : $_GET['type'];
