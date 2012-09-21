@@ -2808,16 +2808,6 @@ div#viewObjectVersionLink:hover{
 	margin-bottom: 5px;
 	}
 
-/*
-label {
-	display: block;
-	float: left;
-	width: 158px;
-	padding-right: 10px;
-	text-align: right;
-}
-*/
-
 /* List Application */
 .box-table .applicationActions{
 	width:40px;
@@ -2918,9 +2908,28 @@ div#deleteProduct{
 	background-repeat:no-repeat;
 	height:16px;
 	width:20px;
-
 }
 
 .executeXQuery:hover{
 	cursor :pointer;
+}
+
+#selected-grid-name{
+	height:20px;
+	padding-left:20px;
+}
+
+#selected-grid-detail{
+	height:20px;
+	padding-left:20px;
+}
+
+.grid-selection{
+	padding-left:20px;
+}
+
+.grid-map{
+	padding-left:20px;
+	width: 600px; 
+	height: 300px
 }
