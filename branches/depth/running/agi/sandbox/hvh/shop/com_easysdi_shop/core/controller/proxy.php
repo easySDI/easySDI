@@ -91,8 +91,7 @@ class SITE_proxy{
 				$db->setQuery( $query);
 				$row = $db->loadObject();
 				SITE_proxy::getAuthentication ($row, $user, $password);
-				//$user = $row->user; 
-				//$password = $row->password;
+
 					
 			}		
 			else
@@ -108,8 +107,6 @@ class SITE_proxy{
 					$db->setQuery( $query);
 					$row = $db->loadObject();
 					SITE_proxy::getAuthentication ($row, $user, $password);
-					//$user = $row->user; 
-					//$password = $row->password;
 							 
 				}	
 				else
@@ -125,8 +122,6 @@ class SITE_proxy{
 						$db->setQuery( $query);
 						$row = $db->loadObject();
 						SITE_proxy::getAuthentication ($row, $user, $password, "preview");
-						//$user = $row->previewUser; 
-						//$password = $row->previewPassword;
 						
 					}
 				}

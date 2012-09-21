@@ -96,15 +96,25 @@ class ADMIN_grid {
 			exit();
 		}
 		
-		$service_type = JRequest::getVar('service_type');
+		$service_type = JRequest::getVar('service_type_wms');
 		if($service_type == "via_proxy")
 		{
-			$grid->user = "";
-			$grid->password = "";
+			$grid->wmsuser = "";
+			$grid->wmspassword = "";
 		}
 		else
 		{
-			$grid->account_id="";
+			$grid->wmsaccount_id="";
+		}
+		$service_type = JRequest::getVar('service_type_wfs');
+		if($service_type == "via_proxy")
+		{
+			$grid->wfsuser = "";
+			$grid->wfspassword = "";
+		}
+		else
+		{
+			$grid->wfsaccount_id="";
 		}
 		
 		$grid->checkin();

@@ -1090,9 +1090,12 @@ function com_install(){
 			`fieldgeom`  varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
 			`fieldresource`  varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
 			`detailtooltip` tinyint(1) NULL DEFAULT NULL ,
-			`user`  varchar(400) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
-			`password`  varchar(400) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
-			`account_id`  bigint(20) NULL DEFAULT NULL ,
+			`wmsuser`  varchar(400) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+			`wmspassword`  varchar(400) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+			`wmsaccount_id`  bigint(20) NULL DEFAULT NULL ,
+			`wfsuser`  varchar(400) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+			`wfspassword`  varchar(400) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+			`wfsaccount_id`  bigint(20) NULL DEFAULT NULL ,
 			PRIMARY KEY (`id`),
 			UNIQUE INDEX `guid` USING BTREE (`guid`) 
 		)

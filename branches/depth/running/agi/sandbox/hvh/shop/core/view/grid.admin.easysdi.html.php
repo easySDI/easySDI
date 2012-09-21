@@ -24,7 +24,7 @@ class HTML_grid {
 		
 		global  $mainframe;
 		$database =& JFactory::getDBO(); 
-			
+		jimport('joomla.html.pane');
 		?>	
 		<script>
 		function submitbutton(pressbutton)
@@ -92,22 +92,22 @@ class HTML_grid {
 			submitform( pressbutton );
 		}
 		
-		function displayAuthentication()
+		function displayAuthentication(type)
 		{
-			if (document.forms['adminForm'].service_type[0].checked)
+			if (document.forms['adminForm'].elements['service_type_'+type][0].checked)
 			{
-				document.getElementById('password').disabled = true;
-				document.getElementById('password').value = "";
-				document.getElementById('user').disabled = true;
-				document.getElementById('user').value ="";
-				document.getElementById('account_id').disabled = false;
+				document.getElementById(type+'password').disabled = true;
+				document.getElementById(type+'password').value = "";
+				document.getElementById(type+'user').disabled = true;
+				document.getElementById(type+'user').value ="";
+				document.getElementById(type+'account_id').disabled = false;
 			}
 			else
 			{
-				document.getElementById('password').disabled = false;
-				document.getElementById('user').disabled = false;
-				document.getElementById('account_id').disabled = true;
-				document.getElementById('account_id').value = '0';
+				document.getElementById(type+'password').disabled = false;
+				document.getElementById(type+'user').disabled = false;
+				document.getElementById(type+'account_id').disabled = true;
+				document.getElementById(type+'account_id').value = '0';
 			}
 		}		
 		</script>		
@@ -135,7 +135,7 @@ class HTML_grid {
 						</table>
 					</fieldset>
 					<fieldset>
-						<legend><?php echo JText::_("SHOP_MAP"); ?></legend>
+						<legend><?php echo JText::_("SHOP_GRID_MAP"); ?></legend>
 						<table>
 							<tr>
 								<td class="key"><?php echo JText::_("SHOP_GRID_PROJECTION"); ?> : </td>
@@ -178,6 +178,57 @@ class HTML_grid {
 								<td class="key"><?php echo JText::_("SHOP_GRID_IMG_FORMAT"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="imgformat" value="<?php echo $rowGrid->imgformat; ?>" /></td>
 							</tr>
+							<tr>
+								<td colspan="2">
+									<?php 
+									$pane = &JPane::getInstance('sliders', array('startOffset'=>-1, 'allowAllClose'=>true, 'opacityTransition'=>true, 'duration'=>600));
+									echo $pane->startPane( 'panewms' ); 
+									echo $pane->startPanel( JText::_("SHOP_AUTHENTICATION") );
+									?>
+									<table>
+									<tr>
+										<td >
+											<input type="radio" name="service_type_wms" value="via_proxy" onclick="javascript:displayAuthentication('wms');" <?php if ($rowGrid->wmsaccount_id) echo "checked";?>>
+										</td>
+										<td colspan="2">
+											<?php echo JText::_("SHOP_AUTH_VIA_PROXY"); ?>
+										</td>
+									</tr>
+									<tr>
+										<td></td>
+										<td><?php echo JText::_("SHOP_EASYSDI_ACCOUNT"); ?> : </td>
+										<td><?php 
+											$enable = $rowGrid->wmsaccount_id? "" : "disabled"  ; 
+											echo JHTML::_("select.genericlist",$rowsAccount, 'wmsaccount_id', 'size="1" class="inputbox" onChange="" '.$enable , 'value', 'text',$rowGrid->wmsaccount_id); 
+											?>
+										</td>
+									</tr>
+									<tr>
+										<td >
+										 	<input type="radio" name="service_type_wms" value="direct" onclick="javascript:displayAuthentication('wms');" <?php if ($rowGrid->wmsuser) echo "checked";?>> 
+									 	</td>
+									 	<td   colspan="2">
+										 	 <?php echo JText::_("SHOP_AUTH_DIRECT"); ?>
+									 	</td>
+								 	<tr>
+									<tr>
+										<td></td>
+										<td><?php echo JText::_("SHOP_AUTH_USER"); ?> : </td>
+										<td><input <?php if (!$rowGrid->wmsuser){echo "disabled";} ?> class="inputbox" type="text" size="50" maxlength="100" name="wmsuser" id="wmsuser" value="<?php echo $rowGrid->wmsuser; ?>" /></td>							
+									</tr>							
+									<tr>
+										<td></td>
+										<td><?php echo JText::_("SHOP_AUTH_PASSWORD"); ?> : </td>
+										<td><input <?php if (!$rowGrid->wmsuser){echo "disabled";} ?> class="inputbox" type="password" size="50" maxlength="100" name="wmspassword" id="wmspassword" value="<?php echo $rowGrid->wmspassword; ?>" /></td>							
+									</tr>
+									
+									</table>
+									<?php 
+									echo $pane->endPanel();
+									echo $pane->endPane();
+									?>
+								</td>
+							</tr>
 						</table>
 					</fieldset>
 					<fieldset>
@@ -215,45 +266,59 @@ class HTML_grid {
 								<td class="key"><?php echo JText::_("SHOP_GRID_DETAIL_TOOL_TIP"); ?> : </td>
 								<td><?php echo JHTML::_('select.booleanlist', 'detailtooltip', '', $rowGrid->detailtooltip); ?> </td>
 							</tr>		
+							<tr>
+								<td colspan="2">
+									<?php 
+									$pane = &JPane::getInstance('sliders', array('startOffset'=>-1, 'allowAllClose'=>true, 'opacityTransition'=>true, 'duration'=>600));
+									echo $pane->startPane( 'panewms' ); 
+									echo $pane->startPanel( JText::_("SHOP_AUTHENTICATION") );
+									?>
+									<table>
+									<tr>
+										<td >
+											<input type="radio" name="service_type_wfs" value="via_proxy" onclick="javascript:displayAuthentication('wfs');" <?php if ($rowGrid->wfsaccount_id) echo "checked";?>>
+										</td>
+										<td colspan="2">
+											<?php echo JText::_("SHOP_AUTH_VIA_PROXY"); ?>
+										</td>
+									</tr>
+									<tr>
+										<td></td>
+										<td><?php echo JText::_("SHOP_EASYSDI_ACCOUNT"); ?> : </td>
+										<td><?php 
+											$enable = $rowGrid->wfsaccount_id? "" : "disabled"  ; 
+											echo JHTML::_("select.genericlist",$rowsAccount, 'wfsaccount_id', 'size="1" class="inputbox" onChange="" '.$enable , 'value', 'text',$rowGrid->wfsaccount_id); 
+											?>
+										</td>
+									</tr>
+									<tr>
+										<td >
+										 	<input type="radio" name="service_type_wfs" value="direct" onclick="javascript:displayAuthentication('wfs');" <?php if ($rowGrid->wfsuser) echo "checked";?>> 
+									 	</td>
+									 	<td   colspan="2">
+										 	 <?php echo JText::_("SHOP_AUTH_DIRECT"); ?>
+									 	</td>
+								 	<tr>
+									<tr>
+										<td></td>
+										<td><?php echo JText::_("SHOP_AUTH_USER"); ?> : </td>
+										<td><input <?php if (!$rowGrid->wfsuser){echo "disabled";} ?> class="inputbox" type="text" size="50" maxlength="100" name="wfsuser" id="wfsuser" value="<?php echo $rowGrid->wfsuser; ?>" /></td>							
+									</tr>							
+									<tr>
+										<td></td>
+										<td><?php echo JText::_("SHOP_AUTH_PASSWORD"); ?> : </td>
+										<td><input <?php if (!$rowGrid->wfsuser){echo "disabled";} ?> class="inputbox" type="password" size="50" maxlength="100" name="wfspassword" id="wfspassword" value="<?php echo $rowGrid->wfspassword; ?>" /></td>							
+									</tr>
+									
+									</table>
+									<?php 
+									echo $pane->endPanel();
+									echo $pane->endPane();
+									?>
+								</td>
+							</tr>
 						</table>
 					</fieldset>
-					<fieldset>
-							<legend><?php echo JText::_("SHOP_AUTHENTICATION"); ?></legend>
-								<table>
-								<tr>
-									<td >
-										<input type="radio" name="service_type" value="via_proxy" onclick="javascript:displayAuthentication();" <?php if ($rowGrid->account_id) echo "checked";?>>
-									</td>
-									<td  class="key" colspan="2">
-										<?php echo JText::_("SHOP_AUTH_VIA_PROXY"); ?>
-									</td>
-								</tr>
-								<tr>
-									<td></td>
-									<td><?php echo JText::_("SHOP_EASYSDI_ACCOUNT"); ?> : </td>
-									<td><?php $enable = $rowGrid->account_id? "" : "disabled"  ; echo JHTML::_("select.genericlist",$rowsAccount, 'account_id', 'size="1" class="inputbox" onChange="" '.$enable , 'value', 'text',$rowGrid->account_id); ?></td>
-								</tr>
-								<tr>
-									<td >
-									 	<input type="radio" name="service_type" value="direct" onclick="javascript:displayAuthentication();" <?php if ($rowGrid->user) echo "checked";?>> 
-								 	</td>
-								 	<td  class="key" colspan="2">
-									 	 <?php echo JText::_("SHOP_AUTH_DIRECT"); ?>
-								 	</td>
-							 	<tr>
-								<tr>
-									<td></td>
-									<td><?php echo JText::_("SHOP_AUTH_USER"); ?> : </td>
-									<td><input <?php if (!$rowGrid->user){echo "disabled";} ?> class="inputbox" type="text" size="50" maxlength="100" name="user" id="user" value="<?php echo $rowGrid->user; ?>" /></td>							
-								</tr>							
-								<tr>
-									<td></td>
-									<td><?php echo JText::_("SHOP_AUTH_PASSWORD"); ?> : </td>
-									<td><input <?php if (!$rowGrid->user){echo "disabled";} ?> class="inputbox" type="password" size="50" maxlength="100" name="password" id="password" value="<?php echo $rowGrid->password; ?>" /></td>							
-								</tr>
-								
-								</table>
-							</fieldset>
 				</td>
 			</tr>			
 		</table>

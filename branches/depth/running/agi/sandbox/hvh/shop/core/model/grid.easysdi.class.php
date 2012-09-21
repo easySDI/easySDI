@@ -34,9 +34,12 @@ class grid extends sdiTable
 	var $fielddetail	= null;
 	var $fieldresource	= null;
 	var $fieldgeom		= null;
-	var $user			= null;
-	var $password		= null;
-	var $account_id		= null;
+	var $wmsuser		= null;
+	var $wmspassword	= null;
+	var $wmsaccount_id	= null;
+	var $wfsuser		= null;
+	var $wfspassword	= null;
+	var $wfsaccount_id	= null;
 	var $detailtooltip	= null;
 	
 	// Class constructor
