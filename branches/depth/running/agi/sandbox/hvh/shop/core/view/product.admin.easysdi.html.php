@@ -76,22 +76,27 @@ class HTML_product {
 			{
 				document.getElementById('productfile').disabled = true;
 				document.getElementById('pathfile').disabled = true;
+				document.getElementById('deleteFileButton').disabled = true;
+				document.getElementById('grid_id').disabled = true;
+				
 				document.getElementById('available').disabled = true;
 				document.getElementById('available').value = '0';
-				document.getElementById('deleteFileButton').disabled = true;
+				
 				document.getElementById('linkFile').value = true;
 				document.getElementById('surfacemin').disabled = false;
 				document.getElementById('surfacemax').disabled = false;
 				document.getElementById('notification_email').disabled = false;
 				document.getElementById('treatmenttype_id').disabled = false;
-				document.getElementById('grid_id').disabled = true;
 			}
 			else if (document.forms['adminForm'].free.value == '1' && document.forms['adminForm'].available.value == '0')
 			{
 				document.getElementById('productfile').disabled = true;
 				document.getElementById('pathfile').disabled = true;
-				document.getElementById('available').disabled = false;
 				document.getElementById('deleteFileButton').disabled = true;
+				document.getElementById('grid_id').disabled = true;
+				
+				document.getElementById('available').disabled = false;
+				
 				document.getElementById('linkFile').disabled = false;
 				document.getElementById('surfacemin').disabled = false;
 				document.getElementById('surfacemax').disabled = false;
@@ -101,16 +106,18 @@ class HTML_product {
 			}
 			else
 			{
-				document.getElementById('productfile').disabled = false;
-				document.getElementById('pathfile').disabled = false;
+				document.getElementById('productfile').disabled = true;
+				document.getElementById('pathfile').disabled = true;
+				document.getElementById('deleteFileButton').disabled = true;
+				document.getElementById('grid_id').disabled = true;
+				
 				document.getElementById('available').disabled = false;
-				document.getElementById('deleteFileButton').disabled = false;
+				
 				document.getElementById('linkFile').disabled = false;
 				document.getElementById('surfacemin').disabled = true;
 				document.getElementById('surfacemax').disabled = true;
 				document.getElementById('notification_email').disabled = true;
 				document.getElementById('treatmenttype_id').disabled = true;
-				document.getElementById('grid_id').disabled = false;
 			}
 		}
 		
@@ -141,6 +148,8 @@ class HTML_product {
 		}
 
 		function activateFileManagementOption (selected){
+			if(document.forms['adminForm'].available.value == '0')
+				return;
 			switch (selected)
 			{
 				case "repository":
@@ -325,18 +334,18 @@ class HTML_product {
 			</tr>
 			<tr>
 				<td colspan="2">
-					<fieldset>
+					<fieldset id="fs-diffusion">
 						<legend><?php echo JText::_("SHOP_PRODUCT_FS_DIFFUSION_MODE"); ?></legend>
 						<table border="0" cellpadding="3" cellspacing="0">
 							<tr>
 								<?php if ($product->getFileName()) $repositorychecked = 'checked="checked"'; ?>
 								<td><input type="radio" name="diffusion_mode" value="repository" onclick="javascript:activateFileManagementOption('repository');" <?php echo $repositorychecked;?>></td>
-								<td class="key"><?php echo JText::_("SHOP_PRODUCT_UP_FILE") ;?></td>
+								<td class="key"><?php echo JText::_("SHOP_PRODUCT_UP_FILE") ;?><br><?php printf( JText::_("SHOP_PRODUCT_FILE_MAX_SIZE"),$product->maxFileSize); ?></td>
+								<td >
+									<input type="file" name="productfile" id="productfile" <?php if( $product->available == 0 || !$repositorychecked ) echo "disabled"; ?> > 
+								</td>
 								<td>
 									<a id="linkFile" target="RAW" href="./index.php?format=raw&option=<?php echo $option; ?>&task=downloadProduct&product_id=<?php echo $product->id?>"><?php echo $product->getFileName();?> </a> 
-								</td>
-								<td >
-									<input type="file" name="productfile" id="productfile" <?php if( $product->available == 0 || !$repositorychecked ) echo "disabled"; ?> ><?php printf( JText::_("SHOP_PRODUCT_FILE_MAX_SIZE"),$product->maxFileSize); ?> 
 								</td>
 								<td>
 									<button type="button" id="deleteFileButton" onCLick="deleteFile(document.getElementById('adminForm'));" <?php if( $product->available == 0 || !$repositorychecked ) echo "disabled"; ?>><?php echo JText::_("SHOP_PRODUCT_DELETE_FILE"); ?></button>
@@ -344,13 +353,13 @@ class HTML_product {
 							</tr>
 							<tr>
 								<?php if ($product->pathfile) $linkchecked = 'checked="checked"'; ?>
-								<td><input type="radio" name="diffusion_mode" value="link" onclick="javascript:activateFileManagementOption('link');" <?php echo $linkchecked;?> ></td>
+								<td><input type="radio" name="diffusion_mode" value="link" onclick="javascript:activateFileManagementOption('link');"  <?php echo $linkchecked;?> ></td>
 								<td class="key"><?php echo JText::_("SHOP_PRODUCT_PATH_FILE") ;?></td>
 								<td colspan="3"><input class="inputbox" type="text" size="50" maxlength="100" name="pathfile"  id="pathfile" <?php  if( $product->available == 0 || !$linkchecked) echo "disabled";?> value="<?php echo $product->pathfile; ?>" /></td>
 							</tr>
 							<tr>
 								<?php if ($product->grid_id) $gridchecked = 'checked="checked"'; ?>
-								<td><input type="radio" name="diffusion_mode" value="grid" onclick="javascript:activateFileManagementOption('grid');" <?php echo $gridchecked;?> ></td>
+								<td><input type="radio" name="diffusion_mode" value="grid" onclick="javascript:activateFileManagementOption('grid');"   <?php echo $gridchecked;?> ></td>
 								<td class="key"><?php echo JText::_("SHOP_PRODUCT_GRID_SELECTION") ;?></td>
 								<td colspan="3">
 									<?php

@@ -483,12 +483,21 @@ class SITE_product {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 		}
 		
+		$grid_list=array();
+		$database->setQuery( "SELECT NULL AS value, '".JText::_("SHOP_PRODUCT_GRID_SELECTION_MESSAGE")."' AS text UNION SELECT  id as value, name as text
+				FROM #__sdi_grid
+				" );
+		$grid_list = $database->loadObjectList();
+		if ($database->getErrorNum()) {
+			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+		}
+		
 		$catalogUrlBase = config_easysdi::getValue("catalog_url");
 		
 		if (strlen($catalogUrlBase )==0){
 				$mainframe->enqueueMessage("NO VALID CATALOG URL IS DEFINED","ERROR");
 		}else{
-			HTML_product::editProduct( $account,$product,$version,$supplier,$id,$accounts,$object_id, $objecttype_id,$objecttype_list,$object_list,$version_list,$diffusion_list,$baseMap_list,$treatmentType_list,$visibility_list,$accessibility_list,$perimeter_list,$rowsAccount,$rowsUser,$userPreviewSelected,$userDownloadSelected,$option );
+			HTML_product::editProduct( $account,$product,$version,$supplier,$id,$accounts,$object_id, $objecttype_id,$objecttype_list,$object_list,$version_list,$diffusion_list,$baseMap_list,$treatmentType_list,$visibility_list,$accessibility_list,$perimeter_list,$rowsAccount,$rowsUser,$userPreviewSelected,$userDownloadSelected,$grid_list, $option );
 		}
 	}
 	

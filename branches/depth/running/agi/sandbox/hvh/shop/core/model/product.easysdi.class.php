@@ -239,13 +239,13 @@ class product extends sdiTable
 			return false;
 		}
 		
-		if(!$filename){
-			$this->_db->setQuery( "SELECT name FROM  #__sdi_grid WHERE id = ".$this->grid_id );
-			$filename = $this->_db->loadResult();
-			if ($this->_db->getErrorNum()) {
-				return false;
-			}
-		}
+// 		if(!$filename && $this->grid_id){
+// 			$this->_db->setQuery( "SELECT name FROM  #__sdi_grid WHERE id = ".$this->grid_id );
+// 			$filename = $this->_db->loadResult();
+// 			if ($this->_db->getErrorNum()) {
+// 				return false;
+// 			}
+// 		}
 		
 		return $filename;
 	}

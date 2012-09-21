@@ -30,12 +30,14 @@ class grid extends sdiTable
 	var $urlwfs			= null;
 	var $featuretype	= null;
 	var $featureNS		= null;
-	var $fieldid		= null;
+	var $fieldname		= null;
+	var $fielddetail	= null;
 	var $fieldresource	= null;
 	var $fieldgeom		= null;
 	var $user			= null;
 	var $password		= null;
 	var $account_id		= null;
+	var $detailtooltip	= null;
 	
 	// Class constructor
 	function __construct( &$db )

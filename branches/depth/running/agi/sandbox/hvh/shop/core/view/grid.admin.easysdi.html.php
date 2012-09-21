@@ -27,6 +27,71 @@ class HTML_grid {
 			
 		?>	
 		<script>
+		function submitbutton(pressbutton)
+		{
+			var form = document.adminForm;
+			var text = '';
+			var index = 0;
+			if (pressbutton == "saveGrid" || pressbutton == "applyGrid")
+			{
+				if (form.elements['urlwms'].value == '')
+				{
+					if(index != 0)text += ", ";
+					text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_URLWMS");?>";
+					index = 1;	
+				}	
+				if (form.elements['layername'].value == '')
+				{
+					if(index != 0)text += ", ";
+					text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_LAYERNAME");?>";
+					index = 1;	
+				}	
+				if (form.elements['urlwfs'].value == '')
+				{
+					if(index != 0)text += ", ";
+					text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_URLWFS");?>";
+					index = 1;	
+				}
+				if (form.elements['featuretype'].value == '')
+				{
+					if(index != 0)text += ", ";
+					text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_FEATURETYPE");?>";
+					index = 1;	
+				}
+				if (form.elements['featureNS'].value == '')
+				{
+					if(index != 0)text += ", ";
+					text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_FEATURENS");?>";
+					index = 1;	
+				}	
+				if (form.elements['fieldgeom'].value == '')
+				{
+					if(index != 0)text += ", ";
+					text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_FIELDGEOM");?>";
+					index = 1;	
+				}
+				if (form.elements['fieldname'].value == '')
+				{
+					if(index != 0)text += ", ";
+					text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_FIELDNAME");?>";
+					index = 1;	
+				}
+				if (form.elements['fieldresource'].value == '')
+				{
+					if(index != 0)text += ", ";
+					text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_FIELDRESOURCE");?>";
+					index = 1;	
+				}	
+				if(index ==1)
+				{
+					text += ".";
+					alert( "<?php echo JText::_("SHOP_MESSAGE_PROVIDE_VALUES");?> : "+text);
+					return;
+				}	
+			}
+			submitform( pressbutton );
+		}
+		
 		function displayAuthentication()
 		{
 			if (document.forms['adminForm'].service_type[0].checked)
@@ -76,9 +141,13 @@ class HTML_grid {
 								<td class="key"><?php echo JText::_("SHOP_GRID_PROJECTION"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="projection" value="<?php echo $rowGrid->projection; ?>" /></td>
 							</tr>
-							<tr>
-								<td class="key"><?php echo JText::_("SHOP_GRID_UNIT"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="unit" value="<?php echo $rowGrid->unit; ?>" /></td>
+							<tr>							
+								<td class="key"><?php echo JText::_("SHOP_UNIT"); ?> : </td>
+								<td colspan="2"><select class="inputbox" name="unit" >
+								<option <?php if($rowGrid->unit == 'm') echo "selected" ; ?> value="m"> <?php echo JText::_("SHOP_METERS"); ?></option>
+								<option <?php if($rowGrid->unit == 'degrees') echo "selected" ; ?> value="degrees"> <?php echo JText::_("SHOP_DEGREES"); ?></option>
+								</select>
+								</td>
 							</tr>
 							<tr>
 								<td class="key"><?php echo JText::_("SHOP_GRID_EXTENT"); ?> : </td>
@@ -98,7 +167,7 @@ class HTML_grid {
 						<legend><?php echo JText::_("SHOP_WMS"); ?></legend>
 						<table>
 							<tr>
-								<td class="key"><?php echo JText::_("SHOP_WMS_URL"); ?> : </td>
+								<td class="key"><?php echo JText::_("SHOP_GRID_WMS_URL"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="urlwms" value="<?php echo $rowGrid->urlwms; ?>" /></td>
 							</tr>
 							<tr>
@@ -115,11 +184,11 @@ class HTML_grid {
 						<legend><?php echo JText::_("SHOP_WFS"); ?></legend>
 						<table>
 							<tr>
-								<td class="key"><?php echo JText::_("SHOP_WFS_URL"); ?> : </td>
+								<td class="key"><?php echo JText::_("SHOP_GRID_WFS_URL"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="urlwfs" value="<?php echo $rowGrid->urlwfs; ?>" /></td>
 							</tr>
 							<tr>							
-								<td class="key"><?php echo JText::_("SHOP_FEATURETYPE_NAME"); ?> : </td>
+								<td class="key"><?php echo JText::_("SHOP_GRID_FEATURETYPE_NAME"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="400" name="featuretype" value="<?php echo $rowGrid->featuretype; ?>" /></td>
 							</tr>
 							<tr>							
@@ -127,8 +196,12 @@ class HTML_grid {
 								<td><input class="inputbox" type="text" size="50" maxlength="400" name="featureNS" value="<?php echo $rowGrid->featureNS; ?>" /></td>
 							</tr>
 							<tr>							
-								<td class="key"><?php echo JText::_("SHOP_GRID_FIELD_ID"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="fieldid" value="<?php echo $rowGrid->fieldid; ?>" /></td>							
+								<td class="key"><?php echo JText::_("SHOP_GRID_FIELD_NAME"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="fieldname" value="<?php echo $rowGrid->fieldname; ?>" /></td>							
+							</tr>
+							<tr>							
+								<td class="key"><?php echo JText::_("SHOP_GRID_FIELD_DETAIL"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="100" name="fielddetail" value="<?php echo $rowGrid->fielddetail; ?>" /></td>							
 							</tr>
 							<tr>							
 								<td class="key"><?php echo JText::_("SHOP_GRID_FIELD_GEOM"); ?> : </td>
@@ -138,6 +211,10 @@ class HTML_grid {
 								<td class="key"><?php echo JText::_("SHOP_GRID_FIELD_RESOURCE"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="fieldresource" value="<?php echo $rowGrid->fieldresource; ?>" /></td>							
 							</tr>
+							<tr>
+								<td class="key"><?php echo JText::_("SHOP_GRID_DETAIL_TOOL_TIP"); ?> : </td>
+								<td><?php echo JHTML::_('select.booleanlist', 'detailtooltip', '', $rowGrid->detailtooltip); ?> </td>
+							</tr>		
 						</table>
 					</fieldset>
 					<fieldset>
