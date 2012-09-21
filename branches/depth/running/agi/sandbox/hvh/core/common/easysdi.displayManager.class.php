@@ -1933,14 +1933,14 @@ class displayManager{
 				$user = JFactory::getUser();
 				$account = new accountByUserId( $db );
 				$account->load( $user->id );
-				if($product_object->published && $product_object->available && strlen($productFileName) > 0 && $product_object->isUserAllowedToLoad($account->id)){
+				if($product_object->published && $product_object->available && (strlen($productFileName) > 0 || $product_object->grid_id) && $product_object->isUserAllowedToLoad($account->id)){
 					//Link to download the product 
 					$XMLActionDownloadProduct = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:downloadProduct");
 					$XMLActionDownloadProduct->setAttribute('id', 'downloadProduct');
 					$XMLActionDownloadProductLink = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:link", htmlentities(JRoute::_('./index.php?tmpl=component&option=com_easysdi_shop&task=downloadAvailableProduct&cid='.$product_object->id.'&toolbar=0&print=1')));
 					$XMLActionDownloadProduct->appendChild($XMLActionDownloadProductLink);
 					$XMLAction->appendChild($XMLActionDownloadProduct);
-				} else if($product_object->published && $product_object->available && strlen($productFileName) > 0 && !$product_object->isUserAllowedToLoad($account->id)){
+				} else if($product_object->published && $product_object->available && (strlen($productFileName) > 0|| $product_object->grid_id) && !$product_object->isUserAllowedToLoad($account->id)){
 					//Contact to extend user rights  
 					$XMLActionDownloadProductRight = $doc->createElementNS('http://www.depth.ch/sdi', "sdi:downloadProductRight");
 					$XMLActionDownloadProductRight->setAttribute('id', 'downloadProductRight');
