@@ -337,6 +337,10 @@ class ADMIN_config {
 			if (!$database->query()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes(trim($_POST['CATALOG_VERSION_DATETIME_DISPLAY']))."\" WHERE code = 'CATALOG_VERSION_DATETIME_DISPLAY'");
+			if (!$database->query()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
 		}
 		
 		// Sauvegarde des clés SHOP

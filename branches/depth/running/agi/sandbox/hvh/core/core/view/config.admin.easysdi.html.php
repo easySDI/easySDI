@@ -310,6 +310,21 @@ if ($catalogItem > 0){
 										</td>
 									</tr>
 									<tr>
+										<td valign="top" class="key">
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_VERSION_DATETIME_DISPLAY' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_VERSION_DATETIME_DISPLAY' ); ?>
+											</span>
+										</td>
+										<td>
+											<?php
+												$dateformat = array();
+												$dateformat[] = JHTML::_('select.option','Y-m-d H:i:s', 'Y-m-d H:i:s' );
+												$dateformat[] = JHTML::_('select.option','Y-m-d','Y-m-d' ); 
+											
+												echo JHTML::_("select.genericlist",$dateformat, 'CATALOG_VERSION_DATETIME_DISPLAY', 'size="1" class="inputbox"', 'value', 'text', $catalogList['CATALOG_VERSION_DATETIME_DISPLAY']->value ); ?>
+										</td>
+									</tr>
+									<tr>
 										<td valign="top"  colspan="2">
 											<fieldset class="adminform">
 												<legend>
