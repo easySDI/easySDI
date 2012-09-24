@@ -318,33 +318,28 @@ if ($rowObject->updated)
 	<?php
 	}
 	
-	function listObject($pageNav,$rows,$option,$rootAccount, $listObjectType, $filter_objecttype_id, $search, $lists)
+	function listObject($pageNav, $rows, $option, $rootAccount, $listObjectType, $listState, $filter_objecttype_id, $filter_objectstate_id, $search, $lists)
 	{
-		$database =& JFactory::getDBO(); 
-		$user	=& JFactory::getUser();
-		
-		$app	= &JFactory::getApplication();
-		$router = &$app->getRouter();
+		$database 	=& JFactory::getDBO(); 
+		$user		=& JFactory::getUser();
+		$app		= &JFactory::getApplication();
+		$router 	= &$app->getRouter();
 		$router->setVars($_REQUEST);
-		
 		?>
 		<script>
 		function tableOrdering( order, dir, view )
 		{
 			var form = document.getElementById("objectListForm");
-			
 			form.filter_order.value 	= order;
 			form.filter_order_Dir.value	= dir;
 			form.submit( view );
-		}
-					
+		}			
 		</script>
 		<div id="page">
 		<h1 class="contentheading"><?php echo JText::_("CATALOG_FE_LIST_OBJECT"); ?></h1>
 		<div class="contentin">
 		<h2> <?php echo JText::_("CORE_SEARCH_CRITERIA_TITLE"); ?></h2>
 		<form action="index.php" method="POST" id="objectListForm" name="objectListForm">
-	
 		<div class="row">
 			 <div class="row">
 			 	<label for="searchObjectName"><?php echo JText::_("CATALOG_OBJECT_FILTER_OBJECTNAME");?></label>
@@ -353,6 +348,10 @@ if ($rowObject->updated)
 			 <div class="row">
 			 	<label for="searchObjectType"><?php echo JText::_("CATALOG_OBJECT_FILTER_OBJECTTYPE");?></label>
 			 	<?php echo JHTML::_('select.genericlist',  $listObjectType, 'filter_objecttype_id', 'class="inputbox full" size="1"', 'value', 'text', $filter_objecttype_id); ?>
+			 </div>
+			  <div class="row">
+			 	<label for="filter_objectstate_id"><?php echo JText::_("CATALOG_METADATA_FILTER_STATE");?></label>
+			 	<?php echo JHTML::_('select.genericlist',  $listState, 'filter_objectstate_id', 'class="inputbox" size="1"', 'value', 'text', $filter_objectstate_id); ?>
 			 </div>
 			 <div class="row">
 				<input type="submit" id="simple_search_button" name="simple_search_button" class="submit" value ="<?php echo JText::_("CORE_SEARCH_BUTTON"); ?>" onClick="document.getElementById('objectListForm').task.value='listObject';document.getElementById('objectListForm').submit();"/>

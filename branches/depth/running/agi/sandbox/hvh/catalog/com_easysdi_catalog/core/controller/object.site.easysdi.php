@@ -22,11 +22,7 @@ defined('_JEXEC') or die('Restricted access');
 	function verify() 
 	{
 		var form = document.adminForm;
-		/*if (pressbutton != 'saveObject' && pressbutton != 'applyObject') {
-			submitform( pressbutton );
-			return;
-		}*/
-		// do field validation
+		
         
         /* test for at least one manager*/
         var manager_list_valid = false;
@@ -80,27 +76,20 @@ class SITE_object {
 
 	function listObject($option) {
 		global  $mainframe;
-		$db =& JFactory::getDBO();
-		$user = JFactory::getUser();
-		$language =& JFactory::getLanguage();
-		
-		$option=JRequest::getVar("option");
-		
+		$db 		=& JFactory::getDBO();
+		$user 		= JFactory::getUser();
+		$language 	=& JFactory::getLanguage();
+		$option		= JRequest::getVar("option");
 		$context	= $option.'.listObject';
-		//$limit		= $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
-		//$limitstart	= $mainframe->getUserStateFromRequest($context.'limitstart', 'limitstart', 0, 'int');
-		$limit = JRequest::getVar('limit', 20 );
+		$limit 		= JRequest::getVar('limit', 20 );
 		$limitstart = JRequest::getVar('limitstart', 0 ); 
-		//echo $limit." - ".$limitstart."<br>";
-		// In case limit has been changed, adjust limitstart accordingly
 		$limitstart = ( $limit != 0 ? (floor($limitstart / $limit) * $limit) : 0 );
-		//echo $limitstart."<br>";
 		
 		// table ordering
-		$filter_order		= $mainframe->getUserStateFromRequest( $option.".filter_order",		'filter_order',		'name',	'word' );
-		$filter_order_Dir	= $mainframe->getUserStateFromRequest( $option.".filter_order_Dir",	'filter_order_Dir',	'ASC',		'word' );
-		
-		$filter_objecttype_id = $mainframe->getUserStateFromRequest( $option.'filter_objecttype_id',	'filter_objecttype_id',	-1,	'int' );
+		$filter_order			= $mainframe->getUserStateFromRequest( $option.".filter_order",		'filter_order',		'name',	'word' );
+		$filter_order_Dir		= $mainframe->getUserStateFromRequest( $option.".filter_order_Dir",	'filter_order_Dir',	'ASC',		'word' );
+		$filter_objecttype_id 	= $mainframe->getUserStateFromRequest( $option.'filter_objecttype_id',	'filter_objecttype_id',	-1,	'int' );
+		$filter_objectstate_id 	= $mainframe->getUserStateFromRequest( $option.'filter_objectstate_id',	'filter_objectstate_id',-1,	'int' );
 		
 		//Check user's rights
 		if(!userManager::isUserAllowed($user,"PRODUCT"))
@@ -127,12 +116,18 @@ class SITE_object {
 		
 		$filter = "";
 		if ( $search ) {
-			$filter .= " AND (o.name LIKE '%$search%')";			
+			$filter .= " AND (o.name = '$search')";			
 		}
 		
 		// Objecttype filter
 		if ($filter_objecttype_id > 0) {
 			$filter .= ' AND o.objecttype_id = ' . (int) $filter_objecttype_id;
+		}
+		
+		// State filter
+		if ($filter_objectstate_id != -1)
+		{
+ 			$filter .= ' AND o.published = '.(int) $filter_objectstate_id;
 		}
 		
 		$orderby 	= ' order by '. $filter_order .' '. $filter_order_Dir;
@@ -163,12 +158,9 @@ class SITE_object {
 		if ($limitstart < 0)
 			$limitstart = 0;
 		
-		//echo $limitstart."<br>";
-		//break;
 		// Create the pagination object
 		jimport('joomla.html.pagination');
 		$pagination = new JPagination($total, $limitstart, $limit);
-		//print_r($pagination);
 		
 		// Recherche des enregistrements selon les limites
 		$query = "	SELECT o.*, ot.name as objecttype 
@@ -183,22 +175,16 @@ class SITE_object {
 						AND ot.predefined=false
 						AND e.account_id = ".$account->id;
 		$query .= $filter;
-		//$query .= $filter;
 		$query .= $orderby;
 		
 		$db->setQuery($query, $pagination->limitstart, $pagination->limit);
 		
 		$rows = $db->loadObjectList();
-		//print_r($rows);
+		
 		if ($db->getErrorNum()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-			//exit();
 		}
-		
-		/*$query = 'SELECT id as value, name as text' .
-				' FROM #__sdi_objecttype' .
-				' WHERE predefined=false' .
-				' ORDER BY name';*/
+
 		$query = "SELECT ot.id AS value, t.label as text 
 				 FROM #__sdi_objecttype ot 
 				 INNER JOIN #__sdi_translation t ON t.element_guid=ot.guid
@@ -211,12 +197,15 @@ class SITE_object {
 		$listObjectType[] = JHTML::_('select.option', '0', JText::_('CATALOG_OBJECT_SELECT_OBJECTTYPE'), 'value', 'text');
 		$db->setQuery($query);
 		$listObjectType = array_merge($listObjectType, $db->loadObjectList());
-		//$listObjectType = JHTML::_('select.genericlist',  $listObjectType, 'filter_objecttype_id', 'class="inputbox" size="1"', 'value', 'text', $filter_objecttype_id);
 		
 		$lists['order_Dir'] 	= $filter_order_Dir;
 		$lists['order'] 		= $filter_order;
 		
-		HTML_object::listObject($pagination,$rows,$option,$rootAccount,$listObjectType,$filter_objecttype_id,$search,$lists);
+		$listState[] = JHTML::_('select.option', '-1', JText::_('CATALOG_OBJECT_SELECT_OBJECTTYPE'), 'value', 'text');
+		$listState[] = JHTML::_('select.option', '0', JText::_('UNPUBLISHED'), 'value', 'text');
+		$listState[] = JHTML::_('select.option', '1', JText::_('PUBLISHED'), 'value', 'text');
+		
+		HTML_object::listObject($pagination, $rows, $option, $rootAccount, $listObjectType, $listState, $filter_objecttype_id, $filter_objectstate_id, $search,$lists);
 	}
 
 	function editObject( $id, $option ) {
