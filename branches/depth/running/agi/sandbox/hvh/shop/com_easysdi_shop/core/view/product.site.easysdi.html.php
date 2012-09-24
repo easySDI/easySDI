@@ -1023,6 +1023,9 @@ class HTML_product{
 	function gridSelection($product, $option, $task,$view,$step,$row)
 	{
 		$grid 		= $product->getGrid();
+		$proxyhost 	= config_easysdi::getValue("SHOP_CONFIGURATION_PROXYHOST");
+		$urlwfs 	= $proxyhost."&gridid=$grid->id&type=wfs&url=".urlencode  (trim($grid->urlwfs));
+		$urlwms 	= $proxyhost."&gridid=$grid->id&type=wms&url=".urlencode  (trim($grid->urlwms));
 		?>
 			<script type="text/javascript" src="./administrator/components/com_easysdi_shop/lib/openlayers2.11/lib/OpenLayers.js"></script>
 			<script type="text/javascript" src="./administrator/components/com_easysdi_shop/lib/proj4js/lib/proj4js.js"></script>
@@ -1050,7 +1053,7 @@ class HTML_product{
 
             	var baseLayer = new OpenLayers.Layer.WMS(
             	    "BaseMap",
-            	    "<?php echo $grid->urlwms;?>",
+            	    "<?php echo $urlwms;?>",
             	    {layers: "<?php echo $grid->layername;?>", format:"<?php echo $grid->imgformat;?>", transparent : true},
             	    {isBaseLayer: true, visibility: true}
             	);
@@ -1058,7 +1061,7 @@ class HTML_product{
             	protocol = new OpenLayers.Protocol.WFS({
         		    version: "1.0.0",
         		    srsName:"<?php echo $grid->projection;?>",
-        		    url: "<?php echo $grid->urlwfs;?>",
+        		    url: "<?php echo $urlwfs;?>",
         		    featureType: "<?php echo $grid->featuretype;?>",
         		    featureNS: "<?php echo $grid->featureNS;?>",
         		    geometryName: "<?php echo $grid->fieldgeom;?>"
