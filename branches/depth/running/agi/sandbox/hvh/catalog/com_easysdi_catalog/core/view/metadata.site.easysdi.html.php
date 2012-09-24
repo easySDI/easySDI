@@ -73,7 +73,7 @@ class HTML_metadata {
 	var $parentGuid="";
 	
 	
-	function listMetadata($pageNav, $rows, $option, $rootAccount, $listObjectType, $filter_objecttype_id, $search, $lists)
+	function listMetadata($pageNav, $rows, $option, $rootAccount, $listObjectType,$listState, $filter_objecttype_id, $filter_md_state_id, $filter_md_version, $versions, $search, $lists)
 	{
 		$database 	=& JFactory::getDBO(); 
 		$user 		= JFactory::getUser();
@@ -86,7 +86,6 @@ class HTML_metadata {
 		function tableOrdering( order, dir, view )
 		{
 			var form = document.getElementById("metadataListForm");
-			
 			form.filter_order.value 	= order;
 			form.filter_order_Dir.value	= dir;
 			form.submit( view );
@@ -108,6 +107,16 @@ class HTML_metadata {
 			 	<label for="searchObjectType"><?php echo JText::_("CATALOG_METADATA_FILTER_OBJECTTYPE");?></label>
 			 	<?php echo JHTML::_('select.genericlist',  $listObjectType, 'filter_md_objecttype_id', 'class="inputbox" size="1"', 'value', 'text', $filter_objecttype_id); ?>
 			 </div>
+			 <div class="row">
+			 	<label for="searchState"><?php echo JText::_("CATALOG_METADATA_FILTER_STATE");?></label>
+			 	<?php echo JHTML::_('select.genericlist',  $listState, 'filter_md_state_id', 'class="inputbox" size="1"', 'value', 'text', $filter_md_state_id); ?>
+			 </div>
+			 <div class="row">
+				<label for="searchVersions"><?php echo JText::_("CATALOG_METADATA_FILTER_VERSION");?></label>
+				<div class="checkbox">
+				<?php echo helper_easysdi::radiolist($versions, 'filter_md_version', 'class="checkbox"', 'class="checkbox"', 'value', 'text', $filter_md_version); ?>
+				</div>
+			</div>
 			 <div class="row">
 				<input type="submit" id="simple_search_button" name="simple_search_button" class="easysdi_search_button submit" value ="<?php echo JText::_("CORE_SEARCH_BUTTON"); ?>" onClick="document.getElementById('metadataListForm').task.value='listMetadata';document.getElementById('metadataListForm').submit();"/>
 			</div>	 

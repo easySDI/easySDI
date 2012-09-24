@@ -47,18 +47,18 @@ class SITE_metadata {
 		// In case limit has been changed, adjust limitstart accordingly
 		$limitstart = ( $limit != 0 ? (floor($limitstart / $limit) * $limit) : 0 );
 		
-		// table ordering
-		$filter_order		= $mainframe->getUserStateFromRequest( $option.".filter_order",		'filter_order',		'name',	'word' );
-		$filter_order_Dir	= $mainframe->getUserStateFromRequest( $option.".filter_order_Dir",	'filter_order_Dir',	'ASC',		'word' );
-		
-		$filter_objecttype_id = $mainframe->getUserStateFromRequest( $option.'filter_md_objecttype_id',	'filter_md_objecttype_id',	-1,	'int' );
-		
-		$search = $mainframe->getUserStateFromRequest( "searchObjectName{$option}", 'searchObjectName', '' );
-		$search = $database->getEscaped( trim( strtolower( $search ) ) );
+		// Search and ordering
+		$filter_order			= $mainframe->getUserStateFromRequest( $option.".filter_order",		'filter_order',		'name',	'word' );
+		$filter_order_Dir		= $mainframe->getUserStateFromRequest( $option.".filter_order_Dir",	'filter_order_Dir',	'ASC',		'word' );
+		$filter_objecttype_id 	= $mainframe->getUserStateFromRequest( $option.'filter_md_objecttype_id',	'filter_md_objecttype_id',	-1,	'int' );
+		$filter_md_state_id 	= $mainframe->getUserStateFromRequest( $option.'filter_md_state_id',	'filter_md_state_id',	-1,	'int' );
+		$filter_md_version 		= $mainframe->getUserStateFromRequest( $option.'filter_md_version',	'filter_md_version',	-1,	'int' );
+		$search 				= $mainframe->getUserStateFromRequest( "searchObjectName{$option}", 'searchObjectName', '' );
+		$search 				= $database->getEscaped( trim( strtolower( $search ) ) );
 
 		$filter = "";
 		if ( $search ) {
-			$filter .= " AND (o.name LIKE '%$search%')";			
+			$filter .= " AND (o.name = '$search')";			
 		}
 		
 		// Test si le filtre est valide
@@ -84,6 +84,11 @@ class SITE_metadata {
 		// Objecttype filter
 		if ($filter_objecttype_id > 0) {
 			$filter .= ' AND o.objecttype_id = ' . (int) $filter_objecttype_id;
+		}
+		
+		// State filter
+		if ($filter_md_state_id > 0) {
+			$filter .= ' AND m.metadatastate_id = ' . (int) $filter_md_state_id;
 		}
 		
 		$orderby 	= ' order by '. $filter_order .' '. $filter_order_Dir;
@@ -127,23 +132,23 @@ class SITE_metadata {
 		jimport('joomla.html.pagination');
 		$pageNav = new JPagination($total,$limitstart,$limit);
 		
-		$query = "	SELECT DISTINCT o.*, 
-									t.label as objecttype,
-									ov.id as version_id, 
-									ov.title as version_title, 
-									s.label as state, 
-									m.guid as metadata_guid , 
-									ov.lastsynchronization as lastsynchronization
-						FROM 	#__sdi_metadata m, 
-								#__sdi_list_metadatastate s, 
-								#__sdi_objectversion ov,
-								#__sdi_object o 
-						LEFT OUTER JOIN #__sdi_manager_object ma ON ma.object_id=o.id
-						LEFT OUTER JOIN #__sdi_editor_object e ON e.object_id=o.id
-						INNER JOIN #__sdi_objecttype ot ON ot.id = o.objecttype_id
-						INNER JOIN #__sdi_translation t ON t.element_guid=ot.guid
-						INNER JOIN #__sdi_language l ON t.language_id=l.id
-						INNER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id
+		$query = "	SELECT DISTINCT o.*,
+							t.label as objecttype,
+							ov.id as version_id,
+							ov.title as version_title,
+							s.label as state,
+							m.guid as metadata_guid ,
+							ov.lastsynchronization as lastsynchronization
+					FROM 	#__sdi_metadata m,
+							#__sdi_list_metadatastate s,
+							#__sdi_objectversion ov,
+							#__sdi_object o
+					LEFT OUTER JOIN #__sdi_manager_object ma ON ma.object_id=o.id
+					LEFT OUTER JOIN #__sdi_editor_object e ON e.object_id=o.id
+					INNER JOIN #__sdi_objecttype ot ON ot.id = o.objecttype_id
+					INNER JOIN #__sdi_translation t ON t.element_guid=ot.guid
+					INNER JOIN #__sdi_language l ON t.language_id=l.id
+					INNER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id
 						WHERE ov.object_id=o.id
 							AND ov.metadata_id=m.id
 							AND m.metadatastate_id=s.id
@@ -151,19 +156,98 @@ class SITE_metadata {
 							AND ot.predefined=0
 							AND cl.code='".$language->_lang."'
 							AND (e.account_id = ".$account->id."
-								OR (ma.account_id=".$account->id.")
-								)";
+							OR (ma.account_id=".$account->id.")
+							)";
 		$query .= $filter;
 		$query .= $orderby;
-		
+			
 		$database->setQuery($query,$limitstart,$limit);
 		$rows = $database->loadObjectList() ;
 		if ($database->getErrorNum()) {
-			echo "<div class='alert'>";			
+			echo "<div class='alert'>";
 			echo 			$database->getErrorMsg();
 			echo "</div>";
-		}	
+		}
+		// Version filter
+		if ($filter_md_version == 0) {
+			//Return only the last published metadata for each object
 			
+			$arrVersionMd =array();
+			foreach ($rows as $object)
+			{
+				$query = "SELECT m.id as metadata_id, ms.code, m.published
+				FROM #__sdi_objectversion ov
+				INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
+				INNER JOIN #__sdi_list_metadatastate ms ON m.metadatastate_id=ms.id
+				INNER JOIN #__sdi_object o ON ov.object_id=o.id
+				INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
+				WHERE o.id=".$object->id.
+				"		AND ((ms.code='published'
+				AND m.published <='".date('Y-m-d')."')
+				OR
+				(ms.code='archived'
+				AND m.archived >'".date('Y-m-d')."')
+				)
+				ORDER BY m.published DESC
+				LIMIT 0, 1";
+				$database->setQuery( $query);
+				$versionlist = $database->loadObjectList() ;
+		
+				if (count($versionlist))
+				{
+					// Si la dernière version est publiée à la date courante, on l'utilise
+					$arrVersionMd[] = $versionlist[0]->metadata_id;
+				}
+			}
+			
+			if(count($arrVersionMd) == 0)
+			{
+				$rows = array();
+			}
+			else
+			{
+				$str_version = implode(",",$arrVersionMd);
+				
+				$query = "	SELECT DISTINCT o.*,
+									t.label as objecttype,
+									ov.id as version_id,
+									ov.title as version_title,
+									s.label as state,
+									m.guid as metadata_guid ,
+									ov.lastsynchronization as lastsynchronization
+							FROM 	#__sdi_metadata m,
+									#__sdi_list_metadatastate s,
+									#__sdi_objectversion ov,
+									#__sdi_object o
+							LEFT OUTER JOIN #__sdi_manager_object ma ON ma.object_id=o.id
+							LEFT OUTER JOIN #__sdi_editor_object e ON e.object_id=o.id
+							INNER JOIN #__sdi_objecttype ot ON ot.id = o.objecttype_id
+							INNER JOIN #__sdi_translation t ON t.element_guid=ot.guid
+							INNER JOIN #__sdi_language l ON t.language_id=l.id
+							INNER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id
+								WHERE ov.object_id=o.id
+									AND ov.metadata_id=m.id
+									AND m.id IN ($str_version)
+									AND m.metadatastate_id=s.id
+									AND ot.id=o.objecttype_id
+									AND ot.predefined=0
+									AND cl.code='".$language->_lang."'
+									AND (e.account_id = ".$account->id."
+									OR (ma.account_id=".$account->id.")
+									)";
+				$query .= $filter;
+				$query .= $orderby;
+					
+				$database->setQuery($query,$limitstart,$limit);
+				$rows = $database->loadObjectList() ;
+				if ($database->getErrorNum()) {
+					echo "<div class='alert'>";
+					echo 			$database->getErrorMsg();
+					echo "</div>";
+				}
+			}
+		}
+		
 		$query = "SELECT ot.id AS value, t.label as text 
 				 FROM #__sdi_objecttype ot 
 				 INNER JOIN #__sdi_translation t ON t.element_guid=ot.guid
@@ -177,10 +261,22 @@ class SITE_metadata {
 		$database->setQuery($query);
 		$listObjectType = array_merge($listObjectType, $database->loadObjectList());
 		
+		$query = "SELECT id AS value, code as text
+					FROM #__sdi_list_metadatastate";
+		$listState[] = JHTML::_('select.option', '0', JText::_('CATALOG_METADATA_SELECT_OBJECTTYPE'), 'value', 'text');
+		$database->setQuery($query);
+		$listState = array_merge($listState, $database->loadObjectList());
+		
+		// Choix radio pour les versions
+		$versions = array(
+			JHTML::_('select.option',  '0', JText::_( 'CATALOG_SEARCH_VERSIONS_CURRENT' ) ),
+			JHTML::_('select.option',  '1', JText::_( 'CATALOG_SEARCH_VERSIONS_ALL' ) )
+		);
+		
 		$lists['order_Dir'] 	= $filter_order_Dir;
 		$lists['order'] 		= $filter_order;
 		
-		HTML_metadata::listMetadata($pageNav,$rows,$option,$rootAccount, $listObjectType, $filter_objecttype_id, $search, $lists);	
+		HTML_metadata::listMetadata($pageNav,$rows,$option,$rootAccount, $listObjectType, $listState, $filter_objecttype_id, $filter_md_state_id, $filter_md_version,$versions, $search, $lists);	
 		
 	}
 	

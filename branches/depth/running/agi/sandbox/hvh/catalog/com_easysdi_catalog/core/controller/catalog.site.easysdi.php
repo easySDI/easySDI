@@ -22,16 +22,16 @@ class SITE_catalog {
 	
 	function listCatalogContent(){
 		global $mainframe;
-		$database =& JFactory::getDBO();
-		$user = JFactory::getUser();
-		$language =& JFactory::getLanguage();
+		$database 	=& JFactory::getDBO();
+		$user 		= JFactory::getUser();
+		$language 	=& JFactory::getLanguage();
 		
 		// Valeurs de configuration pour le rendu des résultats
-		$maxDescr = config_easysdi::getValue("description_length");
-		$MDPag = config_easysdi::getValue("catalog_pagination_searchresult");
+		$maxDescr 	= config_easysdi::getValue("description_length");
+		$MDPag 		= config_easysdi::getValue("catalog_pagination_searchresult");
 		
-		$option=JRequest::getVar("option");
-		$limit = JRequest::getVar('limit', $MDPag );
+		$option		= JRequest::getVar("option");
+		$limit 		= JRequest::getVar('limit', $MDPag );
 		$context	= $option.'.listCatalogContent';
 		$limitstart	= $mainframe->getUserStateFromRequest($context.'limitstart', 'limitstart', 0, 'int');
 				
