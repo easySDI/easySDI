@@ -125,9 +125,8 @@ class HTML_metadata {
 		<tr>
 			<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CATALOG_METADATA_OBJECTNAME"), 'name', $lists['order_Dir'], $lists['order']); ?></th>
 			<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CATALOG_METADATA_VERSIONTITLE"), 'version_title', $lists['order_Dir'], $lists['order']); ?></th>
+			<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CATALOG_METADATA_OBJECTTYPE"), 'objecttype', $lists['order_Dir'], $lists['order']); ?></th>
 			<th class='title'><?php echo JHTML::_('grid.sort',   JText::_("CORE_METADATA_STATE"), 'state', $lists['order_Dir'], $lists['order']); ?></th>
-			<th class='title'><?php echo JText::_('CORE_METADATA_MANAGERS'); ?></th>
-			<th class='title'><?php echo JText::_('CORE_METADATA_EDITORS'); ?></th>
 			<th class='title'><?php echo JText::_('CATALOG_METADATA_ACTIONS'); ?></th>
 		</tr>
 	</thead>
@@ -174,13 +173,18 @@ class HTML_metadata {
 			$rowMetadata = new metadataByGuid($database);
 			$rowMetadata->load($row->metadata_guid);
 			
+			//Config datetime format
+			$datetimedisplay = config_easysdi::getValue("CATALOG_VERSION_DATETIME_DISPLAY");
 			?>		
 			<tr>
 				<td >
 					<?php echo $row->name;  ?>
 				</td>
 				<td >
-					<a class="modal" title="<?php echo addslashes(JText::_("CATALOG_VIEW_MD")); ?>" href="./index.php?tmpl=component&option=com_easysdi_catalog&toolbar=1&task=showMetadata&type=specific&id=<?php echo $row->metadata_guid;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}"> <?php echo $row->version_title ;?></a>
+					<a class="modal" title="<?php echo addslashes(JText::_("CATALOG_VIEW_MD")); ?>" href="./index.php?tmpl=component&option=com_easysdi_catalog&toolbar=1&task=showMetadata&type=specific&id=<?php echo $row->metadata_guid;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}"> <?php $date = new DateTime($row->version_title); echo $date->format($datetimedisplay) ;?></a>
+				</td>
+				<td >
+					<?php echo $row->objecttype;  ?>
 				</td>
 				<?php
 				if ($row->state == "CORE_PUBLISHED" and date('Y-m-d') < date('Y-m-d', strtotime($rowMetadata->published)))
@@ -201,17 +205,7 @@ class HTML_metadata {
 				<td ><?php echo JText::_($row->state); ?></td>
 				<?php
 				}
-						
-				$managers = "";
-				$database->setQuery( "SELECT b.name FROM #__sdi_manager_object a,#__users b, #__sdi_account c where a.account_id = c.id AND c.user_id=b.id AND a.object_id=".$row->id." ORDER BY b.name" );
-				$managers = implode(", ", $database->loadResultArray());
-				
-				$editors = "";
-				$database->setQuery( "SELECT b.name FROM #__sdi_editor_object a,#__users b, #__sdi_account c where a.account_id = c.id AND c.user_id=b.id AND a.object_id=".$row->id." ORDER BY b.name" );
-				$editors = implode(", ", $database->loadResultArray());
 				?>
-				<td ><?php echo $managers; ?></td>
-				<td ><?php echo $editors; ?></td>
 				<td class="metadataActions">
 				<?php 
 				if (  JTable::isCheckedOut($user->get ('id'), $row->checked_out ) ) 
@@ -226,7 +220,7 @@ class HTML_metadata {
 				} 
 				else 
 				{
-					if ($isManager) // Le rele de gestionnaire prime sur celui d'editeur, au cas oe l'utilisateur a les deux
+					if ($isManager) // Le role de gestionnaire prime sur celui d'editeur, au cas ou l'utilisateur a les deux
 					{
 						if (   $rowMetadata->metadatastate_id == 4 // En travail
 							or $rowMetadata->metadatastate_id == 3 // Valide

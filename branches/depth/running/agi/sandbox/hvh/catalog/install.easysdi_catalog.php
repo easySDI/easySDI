@@ -2338,7 +2338,8 @@ function com_install(){
 			
 			$query = "INSERT INTO #__sdi_configuration (guid, code, name, description, created, createdby, label, value, module_id) VALUES
 					('".helper_easysdi::getUniqueId()."', 'CATALOG_METADATA_PREVIEW_CONTEXT', 'CATALOG_METADATA_PREVIEW_CONTEXT', null, '".date('Y-m-d H:i:s')."', '".$user_id."', null, '', '".$id."'),
-					('".helper_easysdi::getUniqueId()."', 'CATALOG_METADATA_PREVIEW_TYPE', 'CATALOG_METADATA_PREVIEW_TYPE', null, '".date('Y-m-d H:i:s')."', '".$user_id."', null, '', '".$id."')
+					('".helper_easysdi::getUniqueId()."', 'CATALOG_METADATA_PREVIEW_TYPE', 'CATALOG_METADATA_PREVIEW_TYPE', null, '".date('Y-m-d H:i:s')."', '".$user_id."', null, '', '".$id."'),
+					('".helper_easysdi::getUniqueId()."', 'CATALOG_VERSION_DATETIME_DISPLAY', 'CATALOG_VERSION_DATETIME_DISPLAY', null, '".date('Y-m-d H:i:s')."', '".$user_id."', null, 'Y-m-d', '".$id."')
 					";
 			$db->setQuery( $query);
 			if (!$db->query()){
