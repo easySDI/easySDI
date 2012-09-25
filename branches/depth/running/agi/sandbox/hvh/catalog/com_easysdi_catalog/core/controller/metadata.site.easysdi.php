@@ -658,18 +658,27 @@ class SITE_metadata {
 		$object_id 		= JRequest::getVar('object_id');
 		$metadata_id 	= JRequest::getVar('metadata_id');
 	
+		$database->setQuery( "	SELECT child_id 
+								FROM #__sdi_objectversionlink ovl
+								INNER JOIN  #__sdi_objectversion ov ON ov.id = ovl.parent_id
+								INNER JOIN #__sdi_metadata m ON m.id = ov.metadata_id
+								WHERE m.guid = '$metadata_id'
+								" );
+		$children = $database->loadResultArray();
+		
 		$editors = array();
 		$listEditors = array();
-		$database->setQuery( "	SELECT DISTINCT c.id AS value, b.name AS text
+		$database->setQuery( "	SELECT NULL AS value, '".JText::_("CATALOG_METADATA_ASSIGN_EDITOR_SELECTION_MESSAGE")."' AS text UNION
+								SELECT DISTINCT c.id AS value, b.name AS text
 								FROM #__users b, #__sdi_editor_object a
 								LEFT OUTER JOIN #__sdi_account c ON a.account_id = c.id
 								LEFT OUTER JOIN #__sdi_manager_object d ON d.account_id=c.id
 								WHERE c.user_id=b.id AND (a.object_id=".$object_id." OR d.object_id=".$object_id.")
 								AND c.user_id <> ".$user_id."
-								ORDER BY b.name" );
+								ORDER BY text" );
 		$editors = array_merge( $editors, $database->loadObjectList() );
 	
-		HTML_metadata::selectAssignMetadata($option,$object_id,$metadata_id,$editors);
+		HTML_metadata::selectAssignMetadata($option,$object_id,$metadata_id,$children,$editors);
 	
 	}
 	
@@ -681,59 +690,123 @@ class SITE_metadata {
 		$object_id 		= JRequest::getVar('object_id');
 		$editor 		= JRequest::getVar('editor');
 		$information 	= JRequest::getVar('information');
+		$assignChildren	= JRequest::getVar('children');
 		
-		$rowObject 		= new object($database);
-		$rowObject->load($object_id);
+		$result = array();
+		if($assignChildren)
+		{
+			$database->setQuery( "	SELECT ovl.child_id 
+					FROM #__sdi_objectversionlink ovl
+					INNER JOIN  #__sdi_objectversion ov ON ov.id = ovl.parent_id
+					INNER JOIN #__sdi_metadata m ON m.id = ov.metadata_id
+					WHERE m.guid = '$metadata_id'
+					" );
+			$children = $database->loadResultArray();
+			
+			$object_child_list = array();
+			
+			foreach ($children as $child)
+			{
+				$database->setQuery( "	SELECT m.guid as metadata_id, o.id as object_id
+						FROM #__sdi_object o 
+						INNER JOIN #__sdi_objectversion ov ON ov.object_id = o.id
+						INNER JOIN #__sdi_metadata m ON m.id = ov.metadata_id
+						WHERE ov.id = $child
+						" );
+				$object_child = $database->loadObject();
+				$object_child_list[] = $object_child;
+			}
+			 $object_parent 				= new stdClass();
+			 $object_parent->metadata_id 	= $metadata_id;
+			 $object_parent->object_id		= $object_id;
+			 SITE_metadata::assignEachMetadata($option, $object_parent, $editor, $information);
+			 
+			foreach ($object_child_list as $object)
+			{
+				$result[] =  SITE_metadata::assignEachMetadata($option, $object, $editor, $information);
+			}
+		}
+		else 
+		{
+			$object_parent 					= new stdClass();
+			$object_parent->metadata_id 	= $metadata_id;
+			$object_parent->object_id		= $object_id;
+			
+			$result[] = SITE_metadata::assignEachMetadata($option, $object_parent, $editor, $information);
+		}
+		
+		// Envoi d'email
+		
+		$rowUser = array();
+		$database->setQuery( "SELECT * FROM #__sdi_account a INNER JOIN #__users u ON a.user_id=u.id WHERE a.id=".$editor );
+		$rowUser	= array_merge( $rowUser, $database->loadObjectList() );
+		$body 		= JText::sprintf(	"CORE_REQUEST_ASSIGNED_METADATA_MAIL_BODY",
+										$user->username,
+										$result[0]->rowObjectName, 
+										$result[0]->rowObjectVersionTitle)."\n\n".JText::_("CORE_REQUEST_ASSIGNED_METADATA_MAIL_BODY_INFORMATION").":\n".$information;
+		if($assignChildren)
+		{
+			$body .= "\n\n".JText::_("CORE_REQUEST_ASSIGNED_METADATA_MAIL_BODY_CHILDREN_LIST").":\n";
+			foreach ($result as $r)
+			{
+				$body .= "\n - ".JText::sprintf("CORE_REQUEST_ASSIGNED_METADATA_MAIL_BODY_CHILD",$r->rowObjectName,$r->rowObjectVersionTitle);
+			}
+		}
+		if(! ADMIN_metadata::sendMailByEmail($rowUser[0]->email,JText::_("CORE_REQUEST_ASSIGNED_METADATA_MAIL_SUBJECT"),$body))
+		{
+			$mainframe->enqueueMessage(JText::_("CATALOG_ASSIGN_METADATA_SEND_MAIL_ERROR"),"ERROR");
+		}
+	}
 	
+	function assignEachMetadata($option,$object, $editor, $information)
+	{
+		global  $mainframe;
+		$database 		=& JFactory::getDBO();
+		$rowObject 		= new object($database);
+		$rowObject->load($object->object_id);
+		
 		// Enregistrer l'éditeur auxquel la métadonnée est assignée
 		$rowMetadata = new metadataByGuid($database);
-		$rowMetadata->load($metadata_id);
+		$rowMetadata->load($object->metadata_id);
 		$rowMetadata->editor_id=$editor;
-	
+		
 		if (!$rowMetadata->store()) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			$mainframe->redirect("index.php?option=$option&task=listMetadata" );
 			exit();
 		}
-	
+		
 		// Récupérer la version de l'objet liée
 		$rowObjectVersion = new objectversionByMetadata_id($database);
 		$rowObjectVersion->load($rowMetadata->id);
-	
+		
 		// Remplir l'historique d'assignement
 		$user 			= JFactory::getUser();
 		$rowCurrentUser = new accountByUserId($database);
 		$rowCurrentUser->load($user->get('id'));
-	
+		
 		$rowHistory 					= new historyassign($database);
-		$rowHistory->object_id			= $object_id;
+		$rowHistory->object_id			= $object->object_id;
 		$rowHistory->objectversion_id	= $rowObjectVersion->id;
 		$rowHistory->account_id			= $editor;
 		$rowHistory->assigned			= date ("Y-m-d H:i:s");
 		$rowHistory->assignedby			= $rowCurrentUser->id;
 		$rowHistory->information		= $information;
-	
+		
 		// Générer un guid
 		$rowHistory->guid = helper_easysdi::getUniqueId();
-	
+		
 		if (!$rowHistory->store()) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			$mainframe->redirect("index.php?option=$option&task=listMetadata" );
 			exit();
 		}
-	
-		// Envoi d'email
-		$rowUser = array();
-		$database->setQuery( "SELECT *
-				FROM #__sdi_account a
-				INNER JOIN #__users u ON a.user_id=u.id
-				WHERE a.id=".$editor );
-		$rowUser	= array_merge( $rowUser, $database->loadObjectList() );
-		$body 		= JText::sprintf("CORE_REQUEST_ASSIGNED_METADATA_MAIL_BODY",$user->username,$rowObject->name, $rowObjectVersion->title)."\n\n".JText::_("CORE_REQUEST_ASSIGNED_METADATA_MAIL_BODY_INFORMATION").":\n".$information;
-		if(! ADMIN_metadata::sendMailByEmail($rowUser[0]->email,JText::_("CORE_REQUEST_ASSIGNED_METADATA_MAIL_SUBJECT"),$body))
-		{
-			$mainframe->enqueueMessage(JText::_("CATALOG_ASSIGN_METADATA_SEND_MAIL_ERROR"),"ERROR");
-		}
+		
+		$result = new stdClass();
+		$result->rowObjectName = $rowObject->name;
+		$result->rowObjectVersionTitle = $rowObjectVersion->title;
+		
+		return $result;
 	}
 }
 ?>
