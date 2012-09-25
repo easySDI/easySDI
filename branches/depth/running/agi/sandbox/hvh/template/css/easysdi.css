@@ -2146,19 +2146,6 @@ table#manageMetadata div{
 	background-image:url(../icons/silk/basket.png);
 }
 
-div#editMetadata:hover{
-	cursor:pointer;
-}
-
-div#editMetadata{
-	background-color:transparent;
-	background-image:url(../icons/silk/pencil.png);
-	background-position:0 0;
-	background-repeat:no-repeat;
-	height:16px;
-	width:16px;	
-}
-
 div#historyAssignMetadata:hover{
 	cursor:pointer;
 }
@@ -2709,8 +2696,23 @@ div#editMetadata{
 	padding-right:2px;	
 }
 
+div#assignMetadata:hover{
+	cursor:pointer;
+}
+
+div#assignMetadata{
+	background-color:transparent;
+	background-image:url(../icons/silk/user_go.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;	
+	padding-left:2px;
+	padding-right:2px;	
+}
+
 .box-table .metadataActions{
-	width:100px;
+	width:120px;
 }
 
 .box-table .metadataActions div{
