@@ -677,11 +677,11 @@ class SITE_metadata {
 	{
 		global  $mainframe;
 		$database 		=& JFactory::getDBO();
-		$success		= true;
 		$metadata_id 	= JRequest::getVar('metadata_id');
 		$object_id 		= JRequest::getVar('object_id');
 		$editor 		= JRequest::getVar('editor');
 		$information 	= JRequest::getVar('information');
+		
 		$rowObject 		= new object($database);
 		$rowObject->load($object_id);
 	
@@ -714,9 +714,7 @@ class SITE_metadata {
 		$rowHistory->information		= $information;
 	
 		// Générer un guid
-		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 		$rowHistory->guid = helper_easysdi::getUniqueId();
-	
 	
 		if (!$rowHistory->store()) {
 			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
@@ -732,9 +730,10 @@ class SITE_metadata {
 				WHERE a.id=".$editor );
 		$rowUser	= array_merge( $rowUser, $database->loadObjectList() );
 		$body 		= JText::sprintf("CORE_REQUEST_ASSIGNED_METADATA_MAIL_BODY",$user->username,$rowObject->name, $rowObjectVersion->title)."\n\n".JText::_("CORE_REQUEST_ASSIGNED_METADATA_MAIL_BODY_INFORMATION").":\n".$information;
-		$success 	= ADMIN_metadata::sendMailByEmail($rowUser[0]->email,JText::_("CORE_REQUEST_ASSIGNED_METADATA_MAIL_SUBJECT"),$body);
-		
-		return $success;
+		if(! ADMIN_metadata::sendMailByEmail($rowUser[0]->email,JText::_("CORE_REQUEST_ASSIGNED_METADATA_MAIL_SUBJECT"),$body))
+		{
+			$mainframe->enqueueMessage(JText::_("CATALOG_ASSIGN_METADATA_SEND_MAIL_ERROR"),"ERROR");
+		}
 	}
 }
 ?>
