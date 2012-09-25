@@ -246,6 +246,18 @@ class HTML_metadata {
 							<div class="logo" id="emptyPicto"></div>
 							<?php 
 						}
+						if (   $rowMetadata->metadatastate_id == 4 ) // En travail
+						{
+							?>
+							<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_ASSIGN_METADATA_ACTION')); ?>" id="assignMetadata" onClick="window.open('<?php echo JRoute::_(displayManager::buildUrl('index.php?task=assignMetadata&option='.$option.'&cid[]='.$row->version_id)); ?>', '_self'); "></div>
+							<?php
+						}
+						else
+						{
+							?>
+							<div class="logo" id="emptyPicto"></div>
+							<?php 
+						}
 						if ((	$rowMetadata->metadatastate_id == 1 
 							and date('Y-m-d H:i:s') >= $rowMetadata->published ))// Publie et date du jour >= date de publication
 						{
@@ -308,11 +320,13 @@ class HTML_metadata {
 						{
 							?>
 							<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_EDIT_METADATA_ACTION')); ?>" id="editMetadata" onClick="window.open('<?php echo JRoute::_(displayManager::buildUrl('index.php?task=editMetadata&option='.$option.'&cid[]='.$row->version_id)); ?>', '_self'); "></div>
+							<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_ASSIGN_METADATA_ACTION')); ?>" id="assignMetadata" onClick="window.open('<?php echo JRoute::_(displayManager::buildUrl('index.php?task=assignMetadata&option='.$option.'&cid[]='.$row->version_id)); ?>', '_self'); "></div>
 							<?php
 						} 
 						else
 						{
 							?>
+							<div class="logo" id="emptyPicto"></div>
 							<div class="logo" id="emptyPicto"></div>
 							<?php 
 						}
@@ -6357,5 +6371,39 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 				
 		return implode(', ', $tbar);
 	} 
+	
+	function selectAssignMetadata($option,$object_id,$metadata_id,$editors )
+	{
+		?>
+		<h1 class="contentheading"><?php echo JText::_("CATALOG_SELECTASSIGN_METADATA"); ?></h1>
+		<div class="contentin">
+			<form action="index.php" method="POST" id="selectAssignForm" name="selectAssignForm">
+			<table id="myHistoryAssign" class="box-table">
+				<tbody>
+				<tr>
+					<td><?php echo JText::_("CATALOG_SELECTASSIGN_METADATA_EDITOR"); ?></td>
+					<td><?php echo JHTML::_("select.genericlist",$editors, 'editor', 'size="1" class="inputbox" ', 'value', 'text', '' ); ?></td>
+				</tr>
+				<tr>
+					<td><?php echo JText::_("CATALOG_SELECTASSIGN_METADATA_INFORMATION"); ?></td>
+					<td><textarea cols="50" rows="5" name ="information" ></textarea></td>
+				</tr>
+			</table>
+			<div class="row">
+				<input type="submit" id="assign_button" name="assign_button" class="submit" value ="<?php echo JText::_("CORE_VALIDATE"); ?>" onClick="document.getElementById('selectAssignForm').task.value='assignMetadata';document.getElementById('selectAssignForm').submit();"/>
+			</div>
+			<div class="row">
+				<input type="submit" id="cancel_button" name="cancel_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="document.getElementById('selectAssignForm').task.value='listMetadata';document.getElementById('selectAssignForm').submit();"/>
+			</div>
+			<input type="hidden" name="option" value="<?php echo $option; ?>">
+			<input type="hidden" name="object_id" value="<?php echo $object_id; ?>">
+			<input type="hidden" name="metadata_id" value="<?php echo $metadata_id; ?>">
+			<input type="hidden" id="task" name="task" value="selectAssignMetadata">
+			<input type="hidden" id="Itemid" name="Itemid" value="<?php echo JRequest::getVar('Itemid'); ?>">
+			<input type="hidden" id="lang" name="lang" value="<?php echo JRequest::getVar('lang'); ?>">
+			</form>
+		</div>
+		<?php
+	}
 }
 ?>

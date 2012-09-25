@@ -648,5 +648,93 @@ class SITE_metadata {
 			die();
 		}
 	}
+
+	function selectAssignMetadata($option)
+	{
+		global  $mainframe;
+		$database 		=& JFactory::getDBO();
+		$user			=& JFactory::getUser();
+		$user_id 		= $user->get('id');
+		$object_id 		= JRequest::getVar('object_id');
+		$metadata_id 	= JRequest::getVar('metadata_id');
+	
+		$editors = array();
+		$listEditors = array();
+		$database->setQuery( "	SELECT DISTINCT c.id AS value, b.name AS text
+								FROM #__users b, #__sdi_editor_object a
+								LEFT OUTER JOIN #__sdi_account c ON a.account_id = c.id
+								LEFT OUTER JOIN #__sdi_manager_object d ON d.account_id=c.id
+								WHERE c.user_id=b.id AND (a.object_id=".$object_id." OR d.object_id=".$object_id.")
+								AND c.user_id <> ".$user_id."
+								ORDER BY b.name" );
+		$editors = array_merge( $editors, $database->loadObjectList() );
+	
+		HTML_metadata::selectAssignMetadata($option,$object_id,$metadata_id,$editors);
+	
+	}
+	
+	function validateAssignMetadata($option)
+	{
+		global  $mainframe;
+		$database 		=& JFactory::getDBO();
+		$success		= true;
+		$metadata_id 	= JRequest::getVar('metadata_id');
+		$object_id 		= JRequest::getVar('object_id');
+		$editor 		= JRequest::getVar('editor');
+		$information 	= JRequest::getVar('information');
+		$rowObject 		= new object($database);
+		$rowObject->load($object_id);
+	
+		// Enregistrer l'éditeur auxquel la métadonnée est assignée
+		$rowMetadata = new metadataByGuid($database);
+		$rowMetadata->load($metadata_id);
+		$rowMetadata->editor_id=$editor;
+	
+		if (!$rowMetadata->store()) {
+			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			$mainframe->redirect("index.php?option=$option&task=listMetadata" );
+			exit();
+		}
+	
+		// Récupérer la version de l'objet liée
+		$rowObjectVersion = new objectversionByMetadata_id($database);
+		$rowObjectVersion->load($rowMetadata->id);
+	
+		// Remplir l'historique d'assignement
+		$user 			= JFactory::getUser();
+		$rowCurrentUser = new accountByUserId($database);
+		$rowCurrentUser->load($user->get('id'));
+	
+		$rowHistory 					= new historyassign($database);
+		$rowHistory->object_id			= $object_id;
+		$rowHistory->objectversion_id	= $rowObjectVersion->id;
+		$rowHistory->account_id			= $editor;
+		$rowHistory->assigned			= date ("Y-m-d H:i:s");
+		$rowHistory->assignedby			= $rowCurrentUser->id;
+		$rowHistory->information		= $information;
+	
+		// Générer un guid
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
+		$rowHistory->guid = helper_easysdi::getUniqueId();
+	
+	
+		if (!$rowHistory->store()) {
+			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			$mainframe->redirect("index.php?option=$option&task=listMetadata" );
+			exit();
+		}
+	
+		// Envoi d'email
+		$rowUser = array();
+		$database->setQuery( "SELECT *
+				FROM #__sdi_account a
+				INNER JOIN #__users u ON a.user_id=u.id
+				WHERE a.id=".$editor );
+		$rowUser	= array_merge( $rowUser, $database->loadObjectList() );
+		$body 		= JText::sprintf("CORE_REQUEST_ASSIGNED_METADATA_MAIL_BODY",$user->username,$rowObject->name, $rowObjectVersion->title)."\n\n".JText::_("CORE_REQUEST_ASSIGNED_METADATA_MAIL_BODY_INFORMATION").":\n".$information;
+		$success 	= ADMIN_metadata::sendMailByEmail($rowUser[0]->email,JText::_("CORE_REQUEST_ASSIGNED_METADATA_MAIL_SUBJECT"),$body);
+		
+		return $success;
+	}
 }
 ?>

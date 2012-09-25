@@ -2692,21 +2692,20 @@ class ADMIN_metadata {
 		}
 	}
 	
+
 	/*
 	 * Assigner une métadonnée, et donc une version, à un utilisateur
 	 */
 	function assignMetadata($option)
 	{
 		global  $mainframe;
-		$database =& JFactory::getDBO();
-		$success= true;
-		
-		$metadata_id = $_POST['metadata_id'];
-		$object_id = $_POST['object_id'];
-		$editor = $_POST['editor_hidden'];
-		$information = $_POST['information'];
-		
-		$rowObject = new object($database);
+		$database 		=& JFactory::getDBO();
+		$success		= true;
+		$metadata_id 	= $_POST['metadata_id'];
+		$object_id 		= $_POST['object_id'];
+		$editor 		= $_POST['editor_hidden'];
+		$information 	= $_POST['information'];
+		$rowObject 		= new object($database);
 		$rowObject->load($object_id);
 		
 		// Enregistrer l'éditeur auxquel la métadonnée est assignée
@@ -2725,17 +2724,17 @@ class ADMIN_metadata {
 		$rowObjectVersion->load($rowMetadata->id);
 		
 		// Remplir l'historique d'assignement
-		$user = JFactory::getUser(); 
+		$user 			= JFactory::getUser(); 
 		$rowCurrentUser = new accountByUserId($database);
 		$rowCurrentUser->load($user->get('id'));
 		
-		$rowHistory = new historyassign($database);
-		$rowHistory->object_id=$object_id;
-		$rowHistory->objectversion_id=$rowObjectVersion->id;
-		$rowHistory->account_id=$editor;
-		$rowHistory->assigned=date ("Y-m-d H:i:s");
-		$rowHistory->assignedby=$rowCurrentUser->id;
-		$rowHistory->information=$information;
+		$rowHistory 					= new historyassign($database);
+		$rowHistory->object_id			= $object_id;
+		$rowHistory->objectversion_id	= $rowObjectVersion->id;
+		$rowHistory->account_id			= $editor;
+		$rowHistory->assigned			= date ("Y-m-d H:i:s");
+		$rowHistory->assignedby			= $rowCurrentUser->id;
+		$rowHistory->information		= $information;
 		
 		// Générer un guid
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
@@ -2754,11 +2753,9 @@ class ADMIN_metadata {
 							  FROM #__sdi_account a
 							  INNER JOIN #__users u ON a.user_id=u.id 
 							  WHERE a.id=".$editor );
-		$rowUser= array_merge( $rowUser, $database->loadObjectList() );
-		
-		$body = JText::sprintf("CORE_REQUEST_ASSIGNED_METADATA_MAIL_BODY",$user->username,$rowObject->name, $rowObjectVersion->title)."\n\n".JText::_("CORE_REQUEST_ASSIGNED_METADATA_MAIL_BODY_INFORMATION").":\n".$information;
-		
-		$success = ADMIN_metadata::sendMailByEmail($rowUser[0]->email,JText::_("CORE_REQUEST_ASSIGNED_METADATA_MAIL_SUBJECT"),$body);
+		$rowUser	= array_merge( $rowUser, $database->loadObjectList() );
+		$body 		= JText::sprintf("CORE_REQUEST_ASSIGNED_METADATA_MAIL_BODY",$user->username,$rowObject->name, $rowObjectVersion->title)."\n\n".JText::_("CORE_REQUEST_ASSIGNED_METADATA_MAIL_BODY_INFORMATION").":\n".$information;
+		$success 	= ADMIN_metadata::sendMailByEmail($rowUser[0]->email,JText::_("CORE_REQUEST_ASSIGNED_METADATA_MAIL_SUBJECT"),$body);
 		if (!$success) 
 		{
 			// Retour de la réponse au formulaire ExtJS
