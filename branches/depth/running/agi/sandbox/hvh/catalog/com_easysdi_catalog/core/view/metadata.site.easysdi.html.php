@@ -252,9 +252,7 @@ class HTML_metadata {
 							?>
 							<div class="logo assignMetadata">
 							<a href='<?php echo JRoute::_(displayManager::buildUrl('index.php?tmpl=component&task=selectAssignMetadata&option='.$option.'&object_id='.$row->id.'&metadata_id='.$row->metadata_guid)); ?>' 
-								class="modal" rel="{size: {x: 400, y: 300}, handler:'iframe'}" 
-								><img class="assignMetadata" /> 
-							</a>
+								class="modal" style="display:block;width:100%;height:100%;" rel="{size: {x: 450, y: 220}, handler:'iframe'}"></a>
 							</div>
 							<?php
 						}
@@ -327,8 +325,11 @@ class HTML_metadata {
 							?>
 							<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_EDIT_METADATA_ACTION')); ?>" id="editMetadata" 
 									onClick="window.open('<?php echo JRoute::_(displayManager::buildUrl('index.php?task=editMetadata&option='.$option.'&cid[]='.$row->version_id)); ?>', '_self'); "></div>
-							<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_ASSIGN_METADATA_ACTION')); ?>" id="assignMetadata" 
-									onClick="window.open('<?php echo JRoute::_(displayManager::buildUrl('index.php?tmpl=component&task=selectAssignMetadata&option='.$option.'&object_id='.$row->id.'&metadata_id='.$row->metadata_guid)); ?>', '_self'); "></div>
+							<div class="logo assignMetadata">
+							<a href='<?php echo JRoute::_(displayManager::buildUrl('index.php?tmpl=component&task=selectAssignMetadata&option='.$option.'&object_id='.$row->id.'&metadata_id='.$row->metadata_guid)); ?>' 
+								class="modal" style="display:block;width:100%;height:100%;" rel="{size: {x: 450, y: 220}, handler:'iframe'}"></a>
+							</div>
+							</div>
 							<?php
 						} 
 						else
@@ -6386,23 +6387,28 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 		<h1 class="contentheading"><?php echo JText::_("CATALOG_SELECTASSIGN_METADATA"); ?></h1>
 		<div class="contentin">
 			<form action="index.php" method="POST" id="selectAssignForm" name="selectAssignForm">
-			<table id="myHistoryAssign" class="box-table">
+			<table id="selectAssignMetadata" class="box-table">
 				<tbody>
 				<tr>
 					<td><?php echo JText::_("CATALOG_SELECTASSIGN_METADATA_EDITOR"); ?></td>
-					<td><?php echo JHTML::_("select.genericlist",$editors, 'editor', 'size="1" class="inputbox" ', 'value', 'text', '' ); ?></td>
+					<td><?php echo JHTML::_("select.genericlist",$editors, 'editor', 'size="1" class="inputbox" style="width:310px" ', 'value', 'text', '' ); ?></td>
 				</tr>
 				<tr>
 					<td><?php echo JText::_("CATALOG_SELECTASSIGN_METADATA_INFORMATION"); ?></td>
-					<td><textarea cols="50" rows="5" name ="information" ></textarea></td>
+					<td><textarea cols="35" rows="5" name ="information" ></textarea></td>
 				</tr>
 			</table>
-			<div class="row">
-				<input type="submit" id="assign_button" name="assign_button" class="submit" value ="<?php echo JText::_("CORE_VALIDATE"); ?>" onClick="document.getElementById('selectAssignForm').task.value='validateAssignMetadata';document.getElementById('selectAssignForm').submit();"/>
-			</div>
-			<div class="row">
-				<input type="submit" id="cancel_button" name="cancel_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="document.getElementById('selectAssignForm').task.value='listMetadata';document.getElementById('selectAssignForm').submit();"/>
-			</div>
+			<table id="selectAssignMetadataToolBar">
+				<tr>
+					<td>
+						<input type="submit" id="assign_button" name="assign_button" class="submit" value ="<?php echo JText::_("CORE_VALIDATE"); ?>" onClick="document.getElementById('selectAssignForm').task.value='validateAssignMetadata';document.getElementById('selectAssignForm').submit();window.parent.document.getElementById('sbox-window').close();"/>
+					</td>
+					<td>
+						<input type="submit" id="cancel_button" name="cancel_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="window.parent.document.getElementById('sbox-window').close();"/>
+					</td>
+				</tr>
+			</table>
+
 			<input type="hidden" name="option" value="<?php echo $option; ?>">
 			<input type="hidden" name="object_id" value="<?php echo $object_id; ?>">
 			<input type="hidden" name="metadata_id" value="<?php echo $metadata_id; ?>">
