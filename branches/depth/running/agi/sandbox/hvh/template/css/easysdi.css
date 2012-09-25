@@ -2501,41 +2501,11 @@ dl.tabs dt span {
 	background:lightgray;
 }
 
-/*
-.publish table.list tbody tr td {
-	background:#FFFFFF none repeat scroll 0 0;
-	border:1px solid #FFFFFF;
-	height:25px;
-}
-*/
 .publish legend {
 	color:#666666;
 	font-size:12px;
 	font-weight:bold;
 }
-
-/*
-.publish .buttonDisabled{
-	background:transparent url(../images/bg_bouton_dis.png) repeat-x scroll center center;
-	border:0 solid #B9B9B9;
-	color:#FFFFFF;
-	font-family:arial;
-	font-size:11px;
-	font-weight:bold;
-	padding:1px 6px;
-}
-*/
-/*
-.publish select{
-	width:160px;
-}
-*/
-/*
-.publish fieldset {
-	width:266px;
-	margin-top:10px;
-}
-*/
 
 .publish .endpointslist{
 	width:512px;
@@ -2696,11 +2666,11 @@ div#editMetadata{
 	padding-right:2px;	
 }
 
-div#assignMetadata:hover{
+.assignMetadata:hover{
 	cursor:pointer;
 }
 
-div#assignMetadata{
+.assignMetadata{
 	background-color:transparent;
 	background-image:url(../icons/silk/user_go.png);
 	background-position:0 0;
@@ -2709,6 +2679,7 @@ div#assignMetadata{
 	width:16px;	
 	padding-left:2px;
 	padding-right:2px;	
+	border:0px !important;
 }
 
 .box-table .metadataActions{
@@ -2934,4 +2905,10 @@ div#deleteProduct{
 	padding-left:20px;
 	width: 600px; 
 	height: 300px
+}
+
+#selectAssignMetadataToolBar
+{
+	padding-top:20px;
+	padding-left:250px;
 }
