@@ -688,7 +688,6 @@ class SITE_metadata {
 		$editors = array_merge( $editors, $database->loadObjectList() );
 	
 		HTML_metadata::selectAssignMetadata($option,$sourceobject,$children,$editors);
-	
 	}
 	
 	function validateAssignMetadata($option)

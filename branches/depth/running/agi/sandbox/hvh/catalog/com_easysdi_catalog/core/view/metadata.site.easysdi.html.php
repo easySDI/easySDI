@@ -238,7 +238,8 @@ class HTML_metadata {
 							or ($rowMetadata->metadatastate_id == 1 and $rowMetadata->published <= date('Y-m-d H:i:s') ))// Publie et date du jour >= date de publication
 						{
 							?>
-							<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_EDIT_METADATA_ACTION')); ?>" id="editMetadata" onClick="window.open('<?php echo JRoute::_(displayManager::buildUrl('index.php?task=editMetadata&option='.$option.'&cid[]='.$row->version_id)); ?>', '_self');"></div>
+							<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_EDIT_METADATA_ACTION')); ?>" id="editMetadata" 
+									onClick="window.open('<?php echo JRoute::_(displayManager::buildUrl('index.php?task=editMetadata&option='.$option.'&cid[]='.$row->version_id)); ?>', '_self');"></div>
 							<?php
 						}
 						else
@@ -250,10 +251,8 @@ class HTML_metadata {
 						if (   $rowMetadata->metadatastate_id == 4 ) // En travail
 						{
 							?>
-							<div class="logo assignMetadata">
-							<a href='<?php echo JRoute::_(displayManager::buildUrl('index.php?tmpl=component&task=selectAssignMetadata&option='.$option.'&object_id='.$row->id.'&metadata_id='.$row->metadata_guid)); ?>' 
-								class="modal" style="display:block;width:100%;height:100%;" rel="{size: {x: 550, y: 320}, handler:'iframe'}"></a>
-							</div>
+							<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_EDIT_METADATA_ACTION')); ?>" id="assignMetadata" 
+									onClick="window.open('<?php echo JRoute::_(displayManager::buildUrl('index.php?task=selectAssignMetadata&option='.$option.'&object_id='.$row->id.'&metadata_id='.$row->metadata_guid)); ?>', '_self');"></div>
 							<?php
 						}
 						else
@@ -325,11 +324,9 @@ class HTML_metadata {
 							?>
 							<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_EDIT_METADATA_ACTION')); ?>" id="editMetadata" 
 									onClick="window.open('<?php echo JRoute::_(displayManager::buildUrl('index.php?task=editMetadata&option='.$option.'&cid[]='.$row->version_id)); ?>', '_self'); "></div>
-							<div class="logo assignMetadata">
-							<a href='<?php echo JRoute::_(displayManager::buildUrl('index.php?tmpl=component&task=selectAssignMetadata&option='.$option.'&object_id='.$row->id.'&metadata_id='.$row->metadata_guid)); ?>' 
-								class="modal" style="display:block;width:100%;height:100%;" rel="{size: {x: 550, y: 320}, handler:'iframe'}"></a>
-							</div>
-							</div>
+							<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_EDIT_METADATA_ACTION')); ?>" id="assignMetadata" 
+									onClick="window.open('<?php echo JRoute::_(displayManager::buildUrl('index.php?task=selectAssignMetadata&option='.$option.'&object_id='.$row->id.'&metadata_id='.$row->metadata_guid)); ?>', '_self');"></div>
+							
 							<?php
 						} 
 						else
@@ -6403,6 +6400,7 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 					return;
 				}
 			}
+			
 			</script>
 			<table id="selectAssignMetadata" class="box-table">
 				<tbody>
@@ -6431,8 +6429,7 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 						onClick="javascript:submitForm();"/>
 					</td>
 					<td>
-						<input type="button" id="cancel_button" name="cancel_button"  value ="<?php echo JText::_("CORE_CANCEL"); ?>" 
-						onClick="window.parent.document.getElementById('sbox-window').close();"/>
+						<input type="submit" id="cancel_button" name="cancel_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="document.getElementById('selectAssignForm').task.value='listMetadata';document.getElementById('selectAssignForm').submit();"/>
 					</td>
 				</tr>
 			</table>
