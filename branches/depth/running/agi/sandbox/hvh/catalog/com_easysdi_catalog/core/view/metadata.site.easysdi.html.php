@@ -252,7 +252,7 @@ class HTML_metadata {
 							?>
 							<div class="logo assignMetadata">
 							<a href='<?php echo JRoute::_(displayManager::buildUrl('index.php?tmpl=component&task=selectAssignMetadata&option='.$option.'&object_id='.$row->id.'&metadata_id='.$row->metadata_guid)); ?>' 
-								class="modal" style="display:block;width:100%;height:100%;" rel="{size: {x: 550, y: 220}, handler:'iframe'}"></a>
+								class="modal" style="display:block;width:100%;height:100%;" rel="{size: {x: 550, y: 320}, handler:'iframe'}"></a>
 							</div>
 							<?php
 						}
@@ -327,7 +327,7 @@ class HTML_metadata {
 									onClick="window.open('<?php echo JRoute::_(displayManager::buildUrl('index.php?task=editMetadata&option='.$option.'&cid[]='.$row->version_id)); ?>', '_self'); "></div>
 							<div class="logo assignMetadata">
 							<a href='<?php echo JRoute::_(displayManager::buildUrl('index.php?tmpl=component&task=selectAssignMetadata&option='.$option.'&object_id='.$row->id.'&metadata_id='.$row->metadata_guid)); ?>' 
-								class="modal" style="display:block;width:100%;height:100%;" rel="{size: {x: 550, y: 220}, handler:'iframe'}"></a>
+								class="modal" style="display:block;width:100%;height:100%;" rel="{size: {x: 550, y: 320}, handler:'iframe'}"></a>
 							</div>
 							</div>
 							<?php
@@ -6381,12 +6381,29 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 		return implode(', ', $tbar);
 	} 
 	
-	function selectAssignMetadata($option,$object_id,$metadata_id,$children,$editors )
+	function selectAssignMetadata($option,$sourceobject, $children,$editors )
 	{
 		?>
 		<h1 class="contentheading"><?php echo JText::_("CATALOG_METADATA_ASSIGN_SELECTION"); ?></h1>
+		<h2><?php echo JText::_("CATALOG_METADATA_ASSIGN_SELECTION_OBJECT_NAME");?> <?php echo $sourceobject->object_name; ?>  <?php echo JText::_("CATALOG_METADATA_ASSIGN_SELECTION_VERSION_TITLE"); ?> <?php  echo $sourceobject->version_title;?> </h2>
+		
 		<div class="contentin">
 			<form action="index.php" method="POST" id="selectAssignForm" name="selectAssignForm">
+			<script>
+			function submitForm()
+			{
+				if(document.getElementById('editor').value != "")
+				{
+					document.getElementById('selectAssignForm').task.value='validateAssignMetadata';
+					document.getElementById('selectAssignForm').submit();
+				}
+				else
+				{
+					alert('Please select an editor');
+					return;
+				}
+			}
+			</script>
 			<table id="selectAssignMetadata" class="box-table">
 				<tbody>
 				<tr>
@@ -6410,22 +6427,20 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 			<table id="selectAssignMetadataToolBar">
 				<tr>
 					<td>
-						<input type="submit" id="assign_button" name="assign_button" class="submit" value ="<?php echo JText::_("CORE_VALIDATE"); ?>" 
-						onClick="document.getElementById('selectAssignForm').task.value='validateAssignMetadata';document.getElementById('selectAssignForm').submit();window.parent.document.getElementById('sbox-window').close();"/>
+					<input type="button" id="assign_button" name="assign_button"  value ="<?php echo JText::_("CORE_VALIDATE"); ?>" 
+						onClick="javascript:submitForm();"/>
 					</td>
 					<td>
-						<input type="submit" id="cancel_button" name="cancel_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" 
+						<input type="button" id="cancel_button" name="cancel_button"  value ="<?php echo JText::_("CORE_CANCEL"); ?>" 
 						onClick="window.parent.document.getElementById('sbox-window').close();"/>
 					</td>
 				</tr>
 			</table>
 
 			<input type="hidden" name="option" value="<?php echo $option; ?>">
-			<input type="hidden" name="object_id" value="<?php echo $object_id; ?>">
-			<input type="hidden" name="metadata_id" value="<?php echo $metadata_id; ?>">
-			<input type="hidden" id="task" name="task" value="selectAssignMetadata">
-			<input type="hidden" id="Itemid" name="Itemid" value="<?php echo JRequest::getVar('Itemid'); ?>">
-			<input type="hidden" id="lang" name="lang" value="<?php echo JRequest::getVar('lang'); ?>">
+			<input type="hidden" name="object_id" value="<?php echo $sourceobject->object_id; ?>">
+			<input type="hidden" name="metadata_id" value="<?php echo $sourceobject->metadata_id; ?>">
+			<input type="hidden" id="task" name="task" value="validateAssignMetadata">
 			</form>
 		</div>
 		<?php

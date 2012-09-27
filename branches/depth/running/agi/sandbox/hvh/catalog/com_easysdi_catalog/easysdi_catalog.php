@@ -328,7 +328,6 @@ switch($task){
 			require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.displayManager.class.php');
 			
 			SITE_metadata::validateAssignMetadata($option);
-			SITE_metadata::listMetadata($option);
 			break;
 		case "selectAssignMetadata":
 			require_once(JPATH_COMPONENT.DS.'core'.DS.'controller'.DS.'metadata.site.easysdi.php');
