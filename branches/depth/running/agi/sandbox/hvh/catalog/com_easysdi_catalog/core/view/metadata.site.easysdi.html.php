@@ -91,7 +91,6 @@ class HTML_metadata {
 			form.filter_order_Dir.value	= dir;
 			form.submit( view );
 		}
-					
 		</script>
 		<div id="page">
 		<h1 class="contentheading"><?php echo JText::_("CATALOG_LIST_METADATA"); ?></h1>

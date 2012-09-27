@@ -700,43 +700,7 @@ class SITE_metadata {
 		$information 	= JRequest::getVar('information');
 		$assignChildren	= JRequest::getVar('children');
 				
-		//Assign the current metadata
-		$object_parent 					= new stdClass();
-		$object_parent->metadata_id 	= $metadata_id;
-		$object_parent->object_id		= $object_id;
-		SITE_metadata::assignEachMetadata($option, $object_parent, $editor, $information);
-		
-		//Assign the current metadata children
-		$result = array();
-		if($assignChildren)
-		{
-			$database->setQuery( "	SELECT ovl.child_id 
-					FROM #__sdi_objectversionlink ovl
-					INNER JOIN  #__sdi_objectversion ov ON ov.id = ovl.parent_id
-					INNER JOIN #__sdi_metadata m ON m.id = ov.metadata_id
-					WHERE m.guid = '$metadata_id'
-					" );
-			$children = $database->loadResultArray();
-			
-			$object_child_list = array();
-			foreach ($children as $child)
-			{
-				$database->setQuery( "	SELECT m.guid as metadata_id, o.id as object_id
-						FROM #__sdi_object o 
-						INNER JOIN #__sdi_objectversion ov ON ov.object_id = o.id
-						INNER JOIN #__sdi_metadata m ON m.id = ov.metadata_id
-						WHERE ov.id = $child
-						AND m.metadatastate_id NOT IN (1,3)
-						" );
-				$object_child = $database->loadObject();
-				if($object_child)
-					$object_child_list[] = $object_child;
-			}
-			foreach ($object_child_list as $object)
-			{
-				$result[] =  SITE_metadata::assignEachMetadata($option, $object, $editor, $information);
-			}
-		}
+		$result = SITE_metadata::assignMetadata($option, $metadata_id, $object_id, $editor, $information, $assignChildren);
 		
 		// Send an information email
 		$rowUser = array();
@@ -746,6 +710,7 @@ class SITE_metadata {
 										$user->username,
 										$result[0]->rowObjectName, 
 										$result[0]->rowObjectVersionTitle)."\n\n".JText::_("CORE_REQUEST_ASSIGNED_METADATA_MAIL_BODY_INFORMATION").":\n".$information;
+		unset($result[0]);
 		if($assignChildren)
 		{
 			$body .= "\n\n".JText::_("CORE_REQUEST_ASSIGNED_METADATA_MAIL_BODY_CHILDREN_LIST").":\n";
@@ -761,6 +726,53 @@ class SITE_metadata {
 		
 		$mainframe->enqueueMessage(JText::_("CATALOG_ASSIGN_METADATA_DONE"),"notice");
 		$mainframe->redirect("index.php?option=$option&task=listMetadata" );
+	}
+	
+	function assignMetadata($option, $metadata_id, $object_id, $editor, $information, $assignChildren)
+	{
+		global  $mainframe;
+		$database 		=& JFactory::getDBO();
+		$result 		= array();
+		
+		//Assign the current metadata
+		$object_parent 					= new stdClass();
+		$object_parent->metadata_id 	= $metadata_id;
+		$object_parent->object_id		= $object_id;
+		
+		$result[] = SITE_metadata::assignEachMetadata($option, $object_parent, $editor, $information);
+		
+		//Assign the current metadata children
+		if($assignChildren)
+		{
+			$database->setQuery( "	SELECT ovl.child_id
+					FROM #__sdi_objectversionlink ovl
+					INNER JOIN  #__sdi_objectversion ov ON ov.id = ovl.parent_id
+					INNER JOIN #__sdi_metadata m ON m.id = ov.metadata_id
+					WHERE m.guid = '$metadata_id'
+					" );
+			$children = $database->loadResultArray();
+			
+			$object_child_list = array();
+			foreach ($children as $child)
+			{
+				$database->setQuery( "	SELECT m.guid as metadata_id, o.id as object_id
+					FROM #__sdi_object o
+					INNER JOIN #__sdi_objectversion ov ON ov.object_id = o.id
+					INNER JOIN #__sdi_metadata m ON m.id = ov.metadata_id
+					WHERE ov.id = $child
+					AND m.metadatastate_id NOT IN (1,3)
+					" );
+				$object_child = $database->loadObject();
+				if($object_child)
+					$object_child_list[] = $object_child;
+			}
+			foreach ($object_child_list as $object)
+			{
+				//$result[] =  SITE_metadata::assignEachMetadata($option, $object, $editor, $information);
+				$result = array_merge($result , SITE_metadata::assignMetadata($option, $object->metadata_id, $object->object_id, $editor, $information, $assignChildren));
+			}
+		}
+		return $result;
 	}
 	
 	function assignEachMetadata($option,$object, $editor, $information)
