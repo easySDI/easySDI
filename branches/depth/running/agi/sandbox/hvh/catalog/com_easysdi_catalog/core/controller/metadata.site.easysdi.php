@@ -724,7 +724,7 @@ class SITE_metadata {
 			$mainframe->enqueueMessage(JText::_("CATALOG_ASSIGN_METADATA_SEND_MAIL_ERROR"),"ERROR");
 		}
 		
-		$mainframe->enqueueMessage(JText::_("CATALOG_ASSIGN_METADATA_DONE"),"notice");
+		$mainframe->enqueueMessage(JText::_("CATALOG_ASSIGN_METADATA_DONE"));
 		$mainframe->redirect("index.php?option=$option&task=listMetadata" );
 	}
 	
