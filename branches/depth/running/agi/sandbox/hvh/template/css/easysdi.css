@@ -2666,11 +2666,11 @@ div#editMetadata{
 	padding-right:2px;	
 }
 
-.assignMetadata:hover{
+div#assignMetadata:hover{
 	cursor:pointer;
 }
 
-.assignMetadata{
+div#assignMetadata{
 	background-color:transparent;
 	background-image:url(../icons/silk/user_go.png);
 	background-position:0 0;
@@ -2910,5 +2910,5 @@ div#deleteProduct{
 #selectAssignMetadataToolBar
 {
 	padding-top:20px;
-	padding-left:250px;
+	padding-left:300px;
 }
