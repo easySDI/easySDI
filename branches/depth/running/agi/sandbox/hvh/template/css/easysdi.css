@@ -2682,6 +2682,22 @@ div#assignMetadata{
 	border:0px !important;
 }
 
+div#notifyMetadata:hover{
+	cursor:pointer;
+}
+
+div#notifyMetadata{
+	background-color:transparent;
+	background-image:url(../icons/silk/email_go.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;	
+	padding-left:2px;
+	padding-right:2px;	
+	border:0px !important;
+}
+
 .box-table .metadataActions{
 	width:120px;
 }
