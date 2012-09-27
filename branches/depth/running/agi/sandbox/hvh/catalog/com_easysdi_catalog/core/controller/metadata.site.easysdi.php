@@ -138,7 +138,8 @@ class SITE_metadata {
 							ov.title as version_title,
 							s.label as state,
 							m.guid as metadata_guid ,
-							ov.lastsynchronization as lastsynchronization
+							m.lastsynchronization as lastsynchronization,
+							m.notification as notification
 					FROM 	#__sdi_metadata m,
 							#__sdi_list_metadatastate s,
 							#__sdi_objectversion ov,
@@ -171,7 +172,6 @@ class SITE_metadata {
 		// Version filter
 		if ($filter_md_version == 0) {
 			//Return only the last published metadata for each object
-			
 			$arrVersionMd =array();
 			foreach ($rows as $object)
 			{
@@ -214,7 +214,8 @@ class SITE_metadata {
 									ov.title as version_title,
 									s.label as state,
 									m.guid as metadata_guid ,
-									ov.lastsynchronization as lastsynchronization
+									m.lastsynchronization as lastsynchronization,
+									m.notification as notification
 							FROM 	#__sdi_metadata m,
 									#__sdi_list_metadatastate s,
 									#__sdi_objectversion ov,
@@ -824,6 +825,60 @@ class SITE_metadata {
 		$result->rowObjectVersionTitle = $rowObjectVersion->title;
 
 		return $result;
+	}
+	
+	function notifyMetadata($option)
+	{
+		global  $mainframe;
+		$database 				=& JFactory::getDBO();
+		$user					=& JFactory::getUser();
+		$objectversion_id 		= JRequest::getVar('objectversion_id');
+		
+	
+		$database->setQuery( "	SELECT o.id as object_id, o.name as object_name, ov.title as version_title
+									FROM #__sdi_object o
+									INNER JOIN  #__sdi_objectversion ov ON ov.object_id = o.id
+									WHERE ov.id = $objectversion_id
+									" );
+		$sourceobject = $database->loadObject();
+
+		$database->setQuery( "	SELECT o.name as object_name, ov.title as version_title
+									FROM #__sdi_object o
+									INNER JOIN  #__sdi_objectversion ov ON ov.object_id = o.id
+									INNER JOIN #__sdi_objectversionlink ovl ON ovl.child_id = ov.id
+									WHERE ovl.parent_id = $objectversion_id
+									" );
+		$children = $database->loadObjectList();
+		
+		$database->setQuery( "	SELECT * FROM #__sdi_account a 
+									INNER JOIN #__users u ON a.user_id=u.id
+									INNER JOIN #__sdi_manager_object mo ON mo.account_id = a.id
+									WHERE mo.object_id = $sourceobject->object_id
+							 " );
+		$manager = $database->loadObjectList();
+		
+		// Send an information email
+		$body 		= JText::sprintf(	"CORE_REQUEST_ASSIGNED_METADATA_MAIL_BODY",
+										$user->username,
+										$sourceobject->object_name, 
+										$sourceobject->version_title);
+		
+		if(count($children) > 0)
+		{
+			$body .= "\n\n".JText::_("CORE_REQUEST_ASSIGNED_METADATA_MAIL_BODY_CHILDREN_LIST").":\n";
+			foreach ($children as $r)
+			{
+				$body .= "\n - ".JText::sprintf("CORE_REQUEST_ASSIGNED_METADATA_MAIL_BODY_CHILD",$r->object_name,$r->version_title);
+			}
+		}
+		
+		if(! ADMIN_metadata::sendMailByEmail($manager[0]->email,JText::_("CORE_REQUEST_ASSIGNED_METADATA_MAIL_SUBJECT"),$body))
+		{
+			$mainframe->enqueueMessage(JText::_("CATALOG_ASSIGN_METADATA_SEND_MAIL_ERROR"),"ERROR");
+		}
+		$mainframe->enqueueMessage($body,"INFO");
+		$mainframe->enqueueMessage(JText::_("CATALOG_ASSIGN_METADATA_SEND_MAIL_DONE"),"INFO");
+		$mainframe->redirect("index.php?option=$option&task=listMetadata" );
 	}
 }
 ?>

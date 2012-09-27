@@ -161,7 +161,7 @@ class HTML_metadata {
 					AND ovl.parent_id = $row->version_id
 					AND otl.inheritance = 1");
 			$row->hasInheritance = $database->loadResult();
-		
+			
 			// Est-ce que cet utilisateur est un manager?
 			$database->setQuery( "SELECT count(*) FROM #__sdi_manager_object m, #__sdi_object o, #__sdi_account a WHERE m.object_id=o.id AND m.account_id=a.id AND a.user_id=".$user->get('id')." AND o.id=".$row->id) ;
 			$total = $database->loadResult();
@@ -181,6 +181,32 @@ class HTML_metadata {
 			//Metadata 
 			$rowMetadata = new metadataByGuid($database);
 			$rowMetadata->load($row->metadata_guid);
+			
+			//Ready to notify manager?
+			$row->notifyready = 0;
+			if($rowMetadata->metadatastate_id == 3)
+			{
+				$database->setQuery ("SELECT count(ovl.id) FROM #__sdi_objectversionlink ovl
+						WHERE ovl.child_id = $row->version_id");
+				$hasParent = $database->loadResult();
+				if($hasParent == 0)
+				{
+					$database->setQuery ("SELECT m.id FROM #__sdi_metadata m
+											INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = o.id
+											INNER JOIN #__sdi_objectversionlink ovl ON ovl.child_id = ov.id
+											WHERE ovl.parent_id = $row->version_id
+											AND m.metadatastate_id <> 3");
+					$children = $database->loadResultArray();
+					if ($children)
+					{
+						//recursive?
+					}
+					else
+					{
+						$row->notifyready = 1;
+					}
+				}
+			}
 			
 			//Config datetime format
 			$datetimedisplay = config_easysdi::getValue("CATALOG_VERSION_DATETIME_DISPLAY");
@@ -250,7 +276,7 @@ class HTML_metadata {
 						if (   $rowMetadata->metadatastate_id == 4 ) // En travail
 						{
 							?>
-							<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_EDIT_METADATA_ACTION')); ?>" id="assignMetadata" 
+							<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_ASSIGN_METADATA_ACTION')); ?>" id="assignMetadata" 
 									onClick="window.open('<?php echo JRoute::_(displayManager::buildUrl('index.php?task=selectAssignMetadata&option='.$option.'&object_id='.$row->id.'&metadata_id='.$row->metadata_guid)); ?>', '_self');"></div>
 							<?php
 						}
@@ -260,6 +286,9 @@ class HTML_metadata {
 							<div class="logo" id="emptyPicto"></div>
 							<?php 
 						}
+						?>
+						<div class="logo" id="emptyPicto"></div>
+						<?php 
 						if ((	$rowMetadata->metadatastate_id == 1 
 							and date('Y-m-d H:i:s') >= $rowMetadata->published ))// Publie et date du jour >= date de publication
 						{
@@ -323,7 +352,7 @@ class HTML_metadata {
 							?>
 							<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_EDIT_METADATA_ACTION')); ?>" id="editMetadata" 
 									onClick="window.open('<?php echo JRoute::_(displayManager::buildUrl('index.php?task=editMetadata&option='.$option.'&cid[]='.$row->version_id)); ?>', '_self'); "></div>
-							<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_EDIT_METADATA_ACTION')); ?>" id="assignMetadata" 
+							<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_ASSIGN_METADATA_ACTION')); ?>" id="assignMetadata" 
 									onClick="window.open('<?php echo JRoute::_(displayManager::buildUrl('index.php?task=selectAssignMetadata&option='.$option.'&object_id='.$row->id.'&metadata_id='.$row->metadata_guid)); ?>', '_self');"></div>
 							
 							<?php
@@ -335,7 +364,19 @@ class HTML_metadata {
 							<div class="logo" id="emptyPicto"></div>
 							<?php 
 						}
-						
+						if ($row->notifyready == 1)
+						{
+							?>
+							<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_NOTIFY_METADATA_ACTION')); ?>" id="notifyMetadata" 
+									onClick="window.open('<?php echo JRoute::_(displayManager::buildUrl('index.php?task=notifyMetadata&option='.$option.'&objectversion_id='.$row->version_id)); ?>', '_self');"></div>
+							<?php
+						}
+						else
+						{
+							?>
+							<div class="logo" id="emptyPicto"></div>
+							<?php 
+						}
 						?>
 						<div class="logo" id="emptyPicto"></div>
 						<div class="logo" id="emptyPicto"></div>

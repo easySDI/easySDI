@@ -4448,8 +4448,8 @@ class ADMIN_metadata {
 			}
 		}
 		
-		$rowObjectVersion->lastsynchronization = date('Y-m-d H:i:s', time());
-		$rowObjectVersion->store();
+		$rowMetadata->lastsynchronization = date('Y-m-d H:i:s', time());
+		$rowMetadata->store();
 		
 		$rowObject->checkin();
 		$mainframe->enqueueMessage(JText::sprintf("CATALOG_METADATA_SYNCHRONIZE_MESSAGE_SUCCESS", "\"". $rowObject->name." - ".$rowObjectVersion->title."\""));

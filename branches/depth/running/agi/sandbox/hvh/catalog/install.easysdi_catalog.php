@@ -2322,8 +2322,15 @@ function com_install(){
 		
 		if($version == "2.4.2"){
 			
-			//ALTER __sdi_objectversion
-			$query="ALTER TABLE `#__sdi_objectversion` ADD lastsynchronization datetime";
+			//ALTER __sdi_metadata
+			$query="ALTER TABLE `#__sdi_metadata` ADD lastsynchronization datetime";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			//ALTER __sdi_metadata
+			$query="ALTER TABLE `#__sdi_metadata` ADD notification TINYINT(1) NOT NULL DEFAULT '0'";
 			$db->setQuery( $query);
 			if (!$db->query()) {
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");

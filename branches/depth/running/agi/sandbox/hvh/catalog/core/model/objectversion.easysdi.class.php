@@ -24,7 +24,6 @@ class objectversion extends sdiTable
 	var $metadata_id=null;
 	var $parent_id=null;
 	var $title=null;
-	var $lastsynchronization=null;
 	
 	// Class constructor
 	function __construct( &$db )
@@ -39,7 +38,6 @@ class objectversionByObject_id extends sdiTable
 	var $metadata_id=null;
 	var $parent_id=null;
 	var $title=null;
-	var $lastsynchronization=null;
 	
 	// Class constructor
 	function __construct( &$db )
@@ -54,7 +52,6 @@ class objectversionByMetadata_id extends sdiTable
 	var $metadata_id=null;
 	var $parent_id=null;
 	var $title=null;
-	var $lastsynchronization=null;
 	
 	// Class constructor
 	function __construct( &$db )
