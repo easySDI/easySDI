@@ -262,11 +262,13 @@ class SITE_metadata {
 		$database->setQuery($query);
 		$listObjectType = array_merge($listObjectType, $database->loadObjectList());
 		
-		$query = "SELECT id AS value, code as text
+		$query = "SELECT 0 as value, 'CATALOG_METADATA_SELECT_OBJECTTYPE' as text UNION 
+					SELECT id AS value, label as text
 					FROM #__sdi_list_metadatastate";
-		$listState[] = JHTML::_('select.option', '0', JText::_('CATALOG_METADATA_SELECT_OBJECTTYPE'), 'value', 'text');
 		$database->setQuery($query);
-		$listState = array_merge($listState, $database->loadObjectList());
+		$listState =  $database->loadObjectList();
+		foreach ($listState as $state)
+			$state->text = JText::_($state->text);
 		
 		// Choix radio pour les versions
 		$versions = array(
