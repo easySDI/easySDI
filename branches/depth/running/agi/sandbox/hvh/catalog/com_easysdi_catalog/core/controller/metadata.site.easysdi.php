@@ -630,6 +630,7 @@ class SITE_metadata {
 		$rowMetadata->updatedby = $account->user_id;
 		$rowMetadata->editor_id = null;
 		$rowMetadata->published = null;
+		$rowMetadata->notification = 0;
 		
 		if (!$rowMetadata->store(true)) 
 		{
