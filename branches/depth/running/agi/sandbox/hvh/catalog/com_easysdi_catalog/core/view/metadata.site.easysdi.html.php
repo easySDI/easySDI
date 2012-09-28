@@ -184,30 +184,32 @@ class HTML_metadata {
 			
 			//Ready to notify manager?
 			$row->notifyready = 0;
-			if($rowMetadata->metadatastate_id == 3)
+			if($rowMetadata->notification == 0)//Notification isn't done yet
 			{
-				$database->setQuery ("SELECT count(ovl.id) FROM #__sdi_objectversionlink ovl
-						WHERE ovl.child_id = $row->version_id");
-				$hasParent = $database->loadResult();
-				if($hasParent == 0)
+				if($rowMetadata->metadatastate_id == 3)//Metadata is in validate state
 				{
-					$database->setQuery ("SELECT m.id FROM #__sdi_metadata m
-											INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = o.id
-											INNER JOIN #__sdi_objectversionlink ovl ON ovl.child_id = ov.id
-											WHERE ovl.parent_id = $row->version_id
-											AND m.metadatastate_id <> 3");
-					$children = $database->loadResultArray();
-					if ($children)
+					$database->setQuery ("SELECT count(ovl.id) FROM #__sdi_objectversionlink ovl
+											WHERE ovl.child_id = $row->version_id");
+					$hasParent = $database->loadResult();
+					if($hasParent == 0)//Metadata doesn't have parent, she is eligible for notification
 					{
-						//recursive?
-					}
-					else
-					{
-						$row->notifyready = 1;
+						$database->setQuery ("SELECT m.id FROM #__sdi_metadata m
+												INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = o.id
+												INNER JOIN #__sdi_objectversionlink ovl ON ovl.child_id = ov.id
+												WHERE ovl.parent_id = $row->version_id
+												AND m.metadatastate_id <> 3");
+						$children = $database->loadResultArray();
+						if ($children)//Some linked metadata are not in a validated state, so notification can not be proposed to the user 
+						{
+							//recursive?
+						}
+						else //No children at all, or children are all in the good state
+						{
+							$row->notifyready = 1;
+						}
 					}
 				}
 			}
-			
 			//Config datetime format
 			$datetimedisplay = config_easysdi::getValue("CATALOG_VERSION_DATETIME_DISPLAY");
 			?>		
