@@ -4285,15 +4285,15 @@ class ADMIN_metadata {
 			else
 				$parentvaluelist[$xpath] = $nodeList->item(0);
 			
-			$subxpath = $xpath;
-			while (strlen($subxpath) > 1)
-			{
-				$pos = strrpos ($subxpath, '/', -1);
-				$subxpath =  substr ($subxpath, 0, $pos);
-				$nodeList = $metadataxpath->query($subxpath);
-				if($nodeList->length > 1)
-					$multiplenodeerror[$subxpath] = $nodeList->length;
-			}
+// 			$subxpath = $xpath;
+// 			while (strlen($subxpath) > 1)
+// 			{
+// 				$pos = strrpos ($subxpath, '/', -1);
+// 				$subxpath =  substr ($subxpath, 0, $pos);
+// 				$nodeList = $metadataxpath->query($subxpath);
+// 				if($nodeList->length > 1)
+// 					$multiplenodeerror[$subxpath] = $nodeList->length;
+// 			}
 		}
 		
 		//If multiple node were detect in the parent metadata, the synchronization is aborted
