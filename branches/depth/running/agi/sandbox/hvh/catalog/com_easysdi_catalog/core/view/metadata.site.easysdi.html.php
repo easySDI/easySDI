@@ -76,10 +76,12 @@ class HTML_metadata {
 	
 	function listMetadata($pageNav, $rows, $option, $rootAccount, $listObjectType,$listState, $filter_objecttype_id, $filter_md_state_id, $filter_md_version, $versions, $search, $lists)
 	{
-		$database 	=& JFactory::getDBO(); 
-		$user 		= JFactory::getUser();
-		$app		= &JFactory::getApplication();
-		$router 	= &$app->getRouter();
+		$database 		=& JFactory::getDBO(); 
+		$user 			= JFactory::getUser();
+		$app			= &JFactory::getApplication();
+		$previewtype 	= config_easysdi::getValue("CATALOG_METADATA_PREVIEW_TYPE");
+		$previewcontext = config_easysdi::getValue("CATALOG_METADATA_PREVIEW_CONTEXT");
+		$router 		= &$app->getRouter();
 		$router->setVars($_REQUEST);
 		
 		?>
@@ -212,13 +214,14 @@ class HTML_metadata {
 			}
 			//Config datetime format
 			$datetimedisplay = config_easysdi::getValue("CATALOG_VERSION_DATETIME_DISPLAY");
+			
 			?>		
 			<tr>
 				<td >
 					<?php echo $row->name;  ?>
 				</td>
 				<td >
-					<a class="modal" title="<?php echo addslashes(JText::_("CATALOG_VIEW_MD")); ?>" href="./index.php?tmpl=component&option=com_easysdi_catalog&toolbar=1&task=showMetadata&type=specific&id=<?php echo $row->metadata_guid;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}"> <?php $date = new DateTime($row->version_title); echo $date->format($datetimedisplay) ;?></a>
+					<a class="modal" title="<?php echo addslashes(JText::_("CATALOG_VIEW_MD")); ?>" href="./index.php?tmpl=component&option=com_easysdi_catalog&toolbar=1&task=showMetadata&type=<?php echo $previewtype;  ?>&context=<?php echo $previewcontext;  ?>&id=<?php echo $row->metadata_guid;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}"> <?php $date = new DateTime($row->version_title); echo $date->format($datetimedisplay) ;?></a>
 				</td>
 				<td >
 					<?php echo $row->objecttype;  ?>

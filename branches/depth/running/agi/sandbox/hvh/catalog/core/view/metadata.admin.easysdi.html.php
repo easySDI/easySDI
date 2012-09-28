@@ -540,9 +540,7 @@ class HTML_metadata {
 														xml = xml.split('<br>').join('\\n');
 														var html = '<pre class=\"brush: xml;gutter: false;\">' + xml + '</pre>';
 														
-														// Create an iframe to host the XML preview
 														mifWin = new Ext.Window({
-						
 														      title         : 'XML Preview',
 														      width         : 845,
 														      height        : 469,

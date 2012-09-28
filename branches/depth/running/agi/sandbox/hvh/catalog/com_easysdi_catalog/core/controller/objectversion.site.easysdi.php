@@ -25,8 +25,6 @@ class SITE_objectversion
 		$user = JFactory::getUser();
 		
 		$option=JRequest::getVar("option");
-		//$limit = JRequest::getVar('limit', 20, '', 'int');
-		//$limitstart = JRequest::getVar('limitstart', 0, '', 'int');
 		$context	= $option.'.listObjectVersion';
 		$limit		= $mainframe->getUserStateFromRequest($option.'global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
 		$limitstart	= $mainframe->getUserStateFromRequest($context.'limitstart', 'limitstart', 0, 'int');
@@ -81,7 +79,6 @@ class SITE_objectversion
 		$rows = $db->loadObjectList();
 		if ($db->getErrorNum()) {
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-			//exit();
 		}
 		
 		$rowObject = new object($db);

@@ -21,10 +21,12 @@ class HTML_objectversion {
 	
 	function listObjectVersion($pageNav, $rows, $object_id, $object_name, $option, $lists)
 	{
-		$database =& JFactory::getDBO(); 
-		$user	=& JFactory::getUser();
-		$app	= &JFactory::getApplication();
-		$router = &$app->getRouter();
+		$database 		=& JFactory::getDBO(); 
+		$user			=& JFactory::getUser();
+		$app			= &JFactory::getApplication();
+		$previewtype 	= config_easysdi::getValue("CATALOG_METADATA_PREVIEW_TYPE");
+		$previewcontext = config_easysdi::getValue("CATALOG_METADATA_PREVIEW_CONTEXT");
+		$router			 = &$app->getRouter();
 		$router->setVars($_REQUEST);
 		
 		?>	
@@ -87,7 +89,7 @@ class HTML_objectversion {
 			
 			?>		
 			<tr>
-			<td ><a class="modal" title="<?php echo addslashes(JText::_("CATALOG_VIEW_MD")); ?>" href="./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=<?php echo $row->metadata_guid;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}"> <?php echo $row->title ;?></a></td>
+			<td ><a class="modal" title="<?php echo addslashes(JText::_("CATALOG_VIEW_MD")); ?>" href="./index.php?tmpl=component&option=com_easysdi_catalog&toolbar=1&task=showMetadata&type=<?php echo $previewtype;?>&context=<?php echo $previewcontext;?>&id=<?php echo $row->metadata_guid;?>" rel="{handler:'iframe',size:{x:650,y:600}}"> <?php echo $row->title ;?></a></td>
 			<td ><?php echo $row->description; ?></td>
 			<td class="metadataActions">
 			<?php 

@@ -1820,27 +1820,26 @@ class ADMIN_metadata {
 		$object_id 		= $_POST['object_id'];
 		
 		$XMLDoc = ADMIN_metadata::getCurrentMetadataContent();
-			if ($XMLDoc)
-			{
-				if($previewType == 'XML'){
-					ADMIN_metadata::previewXMLMetadata($XMLDoc);
-				}
-				else if ($previewType == 'MD'){
-					ADMIN_metadata::previewMetadata ($XMLDoc, $database, $metadata_id);
-				}
+		if ($XMLDoc)
+		{
+			if($previewType == 'XML'){
+				ADMIN_metadata::previewXMLMetadata($XMLDoc);
 			}
-			else
-			{
-				$response = '{
-				success: false,
-				errors: {
-				xml: "A problem occurred"
+			else if ($previewType == 'MD'){
+				ADMIN_metadata::previewMetadata ($XMLDoc, $database, $metadata_id);
 			}
-			}';
-				print_r($response);
-				die();
-			}
-	
+		}
+		else
+		{
+			$response = '{
+			success: false,
+			errors: {
+			xml: "A problem occurred"
+		}
+		}';
+			print_r($response);
+			die();
+		}
 	}
 	
 	/**
