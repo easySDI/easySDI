@@ -1273,15 +1273,21 @@ class ADMIN_objectversion {
 		jimport('joomla.html.pagination');
 		$pagination = new JPagination($total, $limitstart, $limit);
 		
-		$query = "SELECT h.assigned as date, aa.username as assignedby, bb.username as assignedto, o.name as object_name, ov.name as objectversion_name 
+		$query = "SELECT h.assigned as date, 
+						 aa.username as assignedby, 
+						 bb.username as assignedto, 
+						 o.name as object_name, 
+						 ov.name as objectversion_name,
+						 h.information as information
                   FROM #__sdi_history_assign h
 					INNER JOIN #__sdi_account a ON h.assignedby=a.id
 					INNER JOIN #__users aa ON a.user_id=aa.id
-					INNER JOIN #__sdi_account b ON h.account_id=a.id
+					INNER JOIN #__sdi_account b ON h.account_id=b.id
 					INNER JOIN #__users bb ON b.user_id=bb.id
 					INNER JOIN #__sdi_objectversion ov ON h.objectversion_id=ov.id
 					INNER JOIN #__sdi_object o ON o.id=ov.object_id
 				  WHERE h.objectversion_id=".$rowObjectVersion->id." ORDER BY date DESC";
+		
 		$database->setQuery( $query, $pagination->limitstart, $pagination->limit);
 		$rowHistory = $database->loadObjectList();
 		

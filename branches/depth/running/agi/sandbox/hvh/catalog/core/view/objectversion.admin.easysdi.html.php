@@ -868,6 +868,7 @@ if ($row->updated)
 					<th class='title' width="10px"><?php echo JText::_("CATALOG_HISTORYASSIGN_ASSIGNEDBY"); ?></th>
 					<th class='title' width="10px"><?php echo JText::_("CATALOG_HISTORYASSIGN_ASSIGNEDTO"); ?></th>
 					<th class='title' width="10px"><?php echo JText::_("CATALOG_HISTORYASSIGN_DATE"); ?></th>
+					<th class='title' width="10px"><?php echo JText::_("CATALOG_HISTORYASSIGN_INFORMATION"); ?></th>
 				</tr>
 			</thead>
 			<tbody>		
@@ -881,6 +882,7 @@ if ($row->updated)
 					<td><?php echo $row->assignedby; ?></td>						
 					<td><?php echo $row->assignedto; ?></td>						
 					<td><?php echo date('d.m.Y h:i:s',strtotime($row->date)); ?></td>
+					<td><?php echo $row->information; ?></td>	
 				</tr>
 	<?php
 				$k = 1 - $k;
