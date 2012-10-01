@@ -835,6 +835,8 @@ class SITE_metadata {
 		global  $mainframe;
 		$database 				=& JFactory::getDBO();
 		$user					=& JFactory::getUser();
+		$rowCurrentUser 		= new accountByUserId($database);
+		$rowCurrentUser->load($user->get('id'));
 		$objectversion_id 		= JRequest::getVar('objectversion_id');
 		$includechildren 		= JRequest::getVar('includedesc', '0', 'get', 'int');
 		
@@ -858,7 +860,8 @@ class SITE_metadata {
 			$children = $database->loadObjectList();
 		}
 		//Get the manager list of the current objet
-		$database->setQuery( "	SELECT * FROM #__sdi_account a 
+		$database->setQuery( "	SELECT a.id as id, u.email as email
+									FROM #__sdi_account a 
 									INNER JOIN #__users u ON a.user_id=u.id
 									INNER JOIN #__sdi_manager_object mo ON mo.account_id = a.id
 									WHERE mo.object_id = $sourceobject->object_id
@@ -870,6 +873,7 @@ class SITE_metadata {
 										$user->username,
 										$sourceobject->object_name, 
 										$sourceobject->version_title);
+		
 		if($includechildren == 1 && count($children) > 0)
 		{
 			$body .= "\n\n".JText::_("CATALOG_NOTIFY_METADATA_MAIL_BODY_CHILDREN_LIST").":\n";
@@ -879,21 +883,49 @@ class SITE_metadata {
 			}
 		}
 		
-		if(! ADMIN_metadata::sendMailByEmail($manager[0]->email,JText::_("CATALOG_NOTIFY_METADATA_MAIL_SUBJECT"),$body))
-		{
-			$mainframe->enqueueMessage(JText::_("CATALOG_NOTIFY_METADATA_SEND_MAIL_ERROR"),"ERROR");
-		}
-		$mainframe->enqueueMessage(JText::_("CATALOG_NOTIFY_METADATA_SEND_MAIL_DONE"));
-		
-		//Update the notification state of the metadata
+		//Load current metadata object
 		$rowMetadata = new metadata($database);
 		$rowMetadata->load($sourceobject->metadata_id);
-		$rowMetadata->notification=1;
+		
+		//Loop on metadata managers
+		foreach ($manager as $m)
+		{
+			if(! ADMIN_metadata::sendMailByEmail($m->email,JText::_("CATALOG_NOTIFY_METADATA_MAIL_SUBJECT"),$body))
+			{
+				$mainframe->enqueueMessage(JText::sprintf("CATALOG_NOTIFY_METADATA_SEND_MAIL_ERROR", $m->email),"ERROR");
+			}
+			else
+			{
+				//Update the notification state of the metadata because at least one notification has been correctly sent
+				$rowMetadata->notification=1;
+				//Store the notification action in the history
+				$rowHistory 					= new historyassign($database);
+				$rowHistory->object_id			= $sourceobject->object_id;
+				$rowHistory->objectversion_id	= $objectversion_id;
+				$rowHistory->account_id			= $m->id;
+				$rowHistory->assigned			= date ("Y-m-d H:i:s");
+				$rowHistory->assignedby			= $rowCurrentUser->id;
+				if($includechildren == 1)
+					$rowHistory->information	= JText::_("CATALOG_NOTIFY_METADATA_HISTORY_NOTIFICATION_WITH_CHILDREN");
+				else
+					$rowHistory->information	= JText::_("CATALOG_NOTIFY_METADATA_HISTORY_NOTIFICATION");
+				$rowHistory->guid 				= helper_easysdi::getUniqueId();
+				
+				if (!$rowHistory->store()) {
+					$mainframe->enqueueMessage(JText::_("CATALOG_METADATA_UPDATE_NOTIFICATION_STATE_ERROR").$database->getErrorMsg(),"ERROR");
+				}
+			}
+		}
+		
+		if($rowMetadata->notification == 1)
+			$mainframe->enqueueMessage(JText::_("CATALOG_NOTIFY_METADATA_SEND_MAIL_DONE"));
+		else
+			$mainframe->enqueueMessage(JText::_("CATALOG_NOTIFY_METADATA_SEND_MAIL_FAIL"));
 		
 		if (!$rowMetadata->store()) {
 			$mainframe->enqueueMessage(JText::_("CATALOG_METADATA_UPDATE_NOTIFICATION_STATE_ERROR").$database->getErrorMsg(),"ERROR");
 		}
-		$mainframe->enqueueMessage($body);
+		
 		$mainframe->redirect("index.php?option=$option&task=listMetadata" );
 	}
 }

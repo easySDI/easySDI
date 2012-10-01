@@ -255,6 +255,8 @@ class HTML_metadata {
 					<div class="logo" id="emptyPicto"></div>
 					<div class="logo" id="emptyPicto"></div>
 					<div class="logo" id="emptyPicto"></div>
+					<div class="logo" id="emptyPicto"></div>
+					<div class="logo" id="emptyPicto"></div>
 					<?php 
 				} 
 				else 
@@ -348,7 +350,6 @@ class HTML_metadata {
 						// L'utilisateur courant, si c'est un editeur, doit etre editeur de la metadonnee
 						$rowCurrentUser = new accountByUserId($database);
 						$rowCurrentUser->load($user->get('id'));
-			
 						if ($rowMetadata->metadatastate_id == 4 and $rowMetadata->editor_id == $rowCurrentUser->id) // En travail et teche d'edition assignee
 						{
 							?>
