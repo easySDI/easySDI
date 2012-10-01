@@ -256,7 +256,6 @@ class HTML_metadata {
 					<div class="logo" id="emptyPicto"></div>
 					<div class="logo" id="emptyPicto"></div>
 					<?php 
-					 
 				} 
 				else 
 				{
@@ -265,7 +264,7 @@ class HTML_metadata {
 						if (   $rowMetadata->metadatastate_id == 4 // En travail
 							or $rowMetadata->metadatastate_id == 3 // Valide
 							or ($rowMetadata->metadatastate_id == 2 and $rowMetadata->archived >= date('Y-m-d H:i:s'))// Archive et date du jour <= date d'archivage
-							or ($rowMetadata->metadatastate_id == 1 and $rowMetadata->published <= date('Y-m-d H:i:s') ))// Publie et date du jour >= date de publication
+							or ($rowMetadata->metadatastate_id == 1 ))// Publie quelque soit la date de publication
 						{
 							?>
 							<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_EDIT_METADATA_ACTION')); ?>" id="editMetadata" 
@@ -294,8 +293,7 @@ class HTML_metadata {
 						?>
 						<div class="logo" id="emptyPicto"></div>
 						<?php 
-						if ((	$rowMetadata->metadatastate_id == 1 
-							and date('Y-m-d H:i:s') >= $rowMetadata->published ))// Publie et date du jour >= date de publication
+						if ((	$rowMetadata->metadatastate_id == 1 ))// Publie et quelque soit la date de publication
 						{
 							?>
 							<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_ARCHIVE_METADATA')); ?>" id="archiveMetadata" onClick="document.getElementById('metadataListForm').task.value='archiveMetadata';document.getElementById('cid[]').value=<?php echo $rowMetadata->id?>;document.getElementById('metadataListForm').submit();"></div>
@@ -309,8 +307,7 @@ class HTML_metadata {
 						}
 						if (	$rowMetadata->metadatastate_id == 3 
 							or ($rowMetadata->metadatastate_id == 2 ) 
-							or (	$rowMetadata->metadatastate_id == 1 
-								and date('Y-m-d H:i:s') >= $rowMetadata->published))// Archive, Valide ou Publie
+							or ($rowMetadata->metadatastate_id == 1 ))// Archive, Valide ou Publie quelque soit la date de publication
 						{
 							?>
 							<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_INVALIDATE_METADATA')); ?>" id="invalidateMetadata" 
@@ -373,7 +370,7 @@ class HTML_metadata {
 						{
 							?>
 							<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_NOTIFY_METADATA_ACTION')); ?>" id="notifyMetadata" 
-									onClick="window.open('<?php echo JRoute::_(displayManager::buildUrl('index.php?task=notifyMetadata&option='.$option.'&objectversion_id='.$row->version_id)); ?>', '_self');"></div>
+									onClick="if(confirm('<?php echo JText::sprintf('CATALOG_NOTIFY_METADATA_CONFIRM_INCLUDE_CHILDREN',$row->name,$row->version_title );?>')) {window.open('<?php echo JRoute::_(displayManager::buildUrl('index.php?task=notifyMetadata&option='.$option.'&includedesc=1&objectversion_id='.$row->version_id)); ?>', '_self') } else { window.open('<?php echo JRoute::_(displayManager::buildUrl('index.php?task=notifyMetadata&option='.$option.'&includedesc=0&objectversion_id='.$row->version_id)); ?>', '_self')};"></div>
 							<?php
 						}
 						else

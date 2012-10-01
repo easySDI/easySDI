@@ -836,6 +836,7 @@ class SITE_metadata {
 		$database 				=& JFactory::getDBO();
 		$user					=& JFactory::getUser();
 		$objectversion_id 		= JRequest::getVar('objectversion_id');
+		$includechildren 		= JRequest::getVar('includedesc', '0', 'get', 'int');
 		
 		//Get the current, parent, metadata informations
 		$database->setQuery( "	SELECT o.id as object_id, o.name as object_name, ov.title as version_title, ov.metadata_id as metadata_id
@@ -845,15 +846,17 @@ class SITE_metadata {
 									" );
 		$sourceobject = $database->loadObject();
 
-		//Get the children metadata informations
-		$database->setQuery( "	SELECT o.name as object_name, ov.title as version_title
-									FROM #__sdi_object o
-									INNER JOIN  #__sdi_objectversion ov ON ov.object_id = o.id
-									INNER JOIN #__sdi_objectversionlink ovl ON ovl.child_id = ov.id
-									WHERE ovl.parent_id = $objectversion_id
-									" );
-		$children = $database->loadObjectList();
-		
+		if($includechildren == 1)
+		{
+			//Get the children metadata informations
+			$database->setQuery( "	SELECT o.name as object_name, ov.title as version_title
+										FROM #__sdi_object o
+										INNER JOIN  #__sdi_objectversion ov ON ov.object_id = o.id
+										INNER JOIN #__sdi_objectversionlink ovl ON ovl.child_id = ov.id
+										WHERE ovl.parent_id = $objectversion_id
+										" );
+			$children = $database->loadObjectList();
+		}
 		//Get the manager list of the current objet
 		$database->setQuery( "	SELECT * FROM #__sdi_account a 
 									INNER JOIN #__users u ON a.user_id=u.id
@@ -867,7 +870,7 @@ class SITE_metadata {
 										$user->username,
 										$sourceobject->object_name, 
 										$sourceobject->version_title);
-		if(count($children) > 0)
+		if($includechildren == 1 && count($children) > 0)
 		{
 			$body .= "\n\n".JText::_("CATALOG_NOTIFY_METADATA_MAIL_BODY_CHILDREN_LIST").":\n";
 			foreach ($children as $r)
@@ -890,7 +893,7 @@ class SITE_metadata {
 		if (!$rowMetadata->store()) {
 			$mainframe->enqueueMessage(JText::_("CATALOG_METADATA_UPDATE_NOTIFICATION_STATE_ERROR").$database->getErrorMsg(),"ERROR");
 		}
-				
+		$mainframe->enqueueMessage($body);
 		$mainframe->redirect("index.php?option=$option&task=listMetadata" );
 	}
 }
