@@ -352,6 +352,18 @@ class HTML_metadata {
 							document.getElementById('metadataListForm').submit();}"></div>
 							<?php
 						}
+						else if ($row->lastsynchronization && $row->synchronizedby)
+						{
+							$database->setQuery ("SELECT ov.title as title, o.name as name
+													FROM #__sdi_objectversion ov
+													INNER JOIN #__sdi_object o ON o.id = ov.object_id
+													WHERE ov.metadata_id = $row->synchronizedby");
+							$synchroby = $database->loadObject();
+							$title = addslashes(JTEXT::sprintf("CATALOG_SYNCHRONIZE_METADATA_MESSAGE_LAST_BY",$synchroby->name, $synchroby->title, $row->lastsynchronization));
+							?>
+							<div class="logo" id="synchronizedbyMetadata" title="<?php echo $title; ?>"></div>
+							<?php 
+						}
 						else
 						{
 							?>

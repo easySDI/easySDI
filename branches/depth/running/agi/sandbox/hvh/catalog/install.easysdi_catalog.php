@@ -2330,6 +2330,13 @@ function com_install(){
 			}
 			
 			//ALTER __sdi_metadata
+			$query="ALTER TABLE `#__sdi_metadata` ADD synchronizedby BIGINT(20)";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
+			//ALTER __sdi_metadata
 			$query="ALTER TABLE `#__sdi_metadata` ADD notification TINYINT(1) NOT NULL DEFAULT '0'";
 			$db->setQuery( $query);
 			if (!$db->query()) {

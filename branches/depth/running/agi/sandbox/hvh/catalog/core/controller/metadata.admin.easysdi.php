@@ -4425,11 +4425,12 @@ class ADMIN_metadata {
 				}
 
 				$updated = ADMIN_metadata::CURLUpdateMetadata($childguid, $childcsw);
+				
+				$rowChildMetadata = new metadataByGuid( $db );
+				$rowChildMetadata->load( $childguid );
+				
 				if($updated == 0)
 				{
-					$rowChildMetadata = new metadataByGuid( $db );
-					$rowChildMetadata->load( $childguid );
-						
 					$rowChildObjectVersion = new objectversionByMetadata_id( $db );
 					$rowChildObjectVersion->load( $rowChildMetadata->id );
 						
@@ -4437,6 +4438,12 @@ class ADMIN_metadata {
 					$rowChildObject->load( $rowChildObjectVersion->object_id );
 					
 					$mainframe->enqueueMessage(JText::sprintf("CATALOG_METADATA_SYNCHRONIZE_MESSAGE_CHILD_ERROR","\"".$rowChildObject->name." - ".$rowChildObjectVersion->title."\""), "ERROR");
+				}
+				else
+				{
+					$rowChildMetadata->lastsynchronization 	= date('Y-m-d H:i:s', time());
+					$rowChildMetadata->synchronizedby 		= $rowMetadata->id;
+					$rowChildMetadata->store();
 				}
 				
 				$childObjectList[$childguid]->checkin();

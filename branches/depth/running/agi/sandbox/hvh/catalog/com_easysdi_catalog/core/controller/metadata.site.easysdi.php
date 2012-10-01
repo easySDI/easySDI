@@ -139,6 +139,7 @@ class SITE_metadata {
 							s.label as state,
 							m.guid as metadata_guid ,
 							m.lastsynchronization as lastsynchronization,
+							m.synchronizedby as synchronizedby,
 							m.notification as notification
 					FROM 	#__sdi_metadata m,
 							#__sdi_list_metadatastate s,
