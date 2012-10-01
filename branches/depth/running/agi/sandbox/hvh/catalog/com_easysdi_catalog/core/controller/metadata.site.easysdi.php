@@ -928,5 +928,46 @@ class SITE_metadata {
 		
 		$mainframe->redirect("index.php?option=$option&task=listMetadata" );
 	}
+	
+	function metadataPublished ($option)
+	{
+		global  $mainframe;
+		$database 				=& JFactory::getDBO();
+		$user					=& JFactory::getUser();
+		$guid	 				= JRequest::getVar('guid');
+	
+		$metadata = new metadataByGuid($database);
+		$metadata->load($guid);
+		
+		$objectversion = new objectversionByMetadata_id($database);
+		$objectversion->load($metadata->id);
+		
+		$object = new object($database);
+		$object->load($objectversion->object_id);
+		
+		$objectversion = new objectversionByMetadata_id($database);
+		$objectversion->load($metadata->id);
+		
+		HTML_metadata::metadataPublished($option,$metadata,$object,$objectversion);
+	}
+	
+	function setMetadataPublished ($option)
+	{
+		global  $mainframe;
+		$database 				=& JFactory::getDBO();
+		$user					=& JFactory::getUser();
+		$guid	 				= JRequest::getVar('guid');
+		$published	 			= JRequest::getVar('published');
+		
+		$metadata = new metadataByGuid($database);
+		$metadata->load($guid);
+		$metadata->published = $published;
+		
+		if (!$metadata->store()) {
+			$mainframe->enqueueMessage(JText::_("CATALOG_METADATA_UPDATE_NOTIFICATION_STATE_ERROR").$database->getErrorMsg(),"ERROR");
+		}
+		
+		$mainframe->redirect("index.php?option=$option&task=listMetadata" );
+	}
 }
 ?>

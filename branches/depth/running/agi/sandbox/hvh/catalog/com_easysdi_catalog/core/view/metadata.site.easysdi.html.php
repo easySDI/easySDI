@@ -230,15 +230,29 @@ class HTML_metadata {
 				if ($row->state == "CORE_PUBLISHED" and date('Y-m-d') < date('Y-m-d', strtotime($rowMetadata->published)))
 				{ 
 				?>
-				<td ><?php echo JText::_($row->state).JText::sprintf("CATALOG_FE_METADATA_PUBLISHEDSTATE_DATE", date('d.m.Y', strtotime($rowMetadata->published))); ?></td>
+				<td>
+					<?php if ($isManager){?><a href="./index.php?option=<?php echo $option; ?>&task=metadataPublished&guid=<?php echo $row->metadata_guid;?>" title="<?php echo JText::_("CATALOG_FE_METADATA_PUBLISHEDSTATE_UPDATE")?>" ><?php }?>
+					<?php echo JText::_($row->state).JText::sprintf("CATALOG_FE_METADATA_PUBLISHEDSTATE_DATE", date('d.m.Y', strtotime($rowMetadata->published))); ?>
+					<?php if ($isManager){?></a><?php }?>
+				</td>
 				<?php
 				}
 				else if ($row->state == "CORE_ARCHIVED" and date('Y-m-d') < date('Y-m-d', strtotime($rowMetadata->archived)))
 				{ 
-				?>
-				<td ><?php echo JText::_($row->state).JText::sprintf("CATALOG_FE_METADATA_PUBLISHEDSTATE_DATE", date('d.m.Y', strtotime($rowMetadata->archived))); ?></td>
-				<?php
+					?>
+					<td ><?php echo JText::_($row->state).JText::sprintf("CATALOG_FE_METADATA_PUBLISHEDSTATE_DATE", date('d.m.Y', strtotime($rowMetadata->archived))); ?></td>
+					<?php
 				}
+				else if ($row->state == "CORE_PUBLISHED")
+				{
+					?>
+					<td>
+					<?php if ($isManager){?><a href="./index.php?option=<?php echo $option; ?>&task=metadataPublished&guid=<?php echo $row->metadata_guid;?>" title="<?php echo JText::_("CATALOG_FE_METADATA_PUBLISHEDSTATE_UPDATE")?>" ><?php }?>
+					<?php echo JText::_($row->state); ?>
+					<?php if ($isManager){?></a><?php }?>
+					</td>
+					<?php
+					}
 				else
 				{ 
 				?>
@@ -6333,5 +6347,41 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 		</div>
 		<?php
 	}
+	
+	function metadataPublished($option,$metadata,$object,$objectversion)
+	{
+		$app =& JFactory::getApplication();
+		$templateDir = JURI::base() . 'templates/' . $app->getTemplate();
+		?>
+		<div class="contentin">
+			<form action="index.php" method="POST" id="metadataPublishedForm" name="metadataPublishedForm">
+			<h1 class="contentheading"><?php echo JText::_("CATALOG_METADATA_PUBLISHED_DATE_UPDATE"); ?></h1>
+			<h2><?php echo JText::sprintf("CATALOG_METADATA_PUBLISHED_OBJECT", $object->name, $objectversion->title); ?> </h2>
+			<table id="metadataPublished" class="box-table">
+				<tbody>
+				<tr>
+					<td><?php echo JText::_("CATALOG_METADATA_PUBLISHED_DATE"); ?></td>
+					<td><?php echo helper_easysdi::calendar($metadata->published, "published","published","%Y-%m-%d", 'class="metadatapublished_calendar text medium hasDatepicker"', 'class="ui-datepicker-trigger"', $templateDir.'/media/icon_agenda.gif', JText::_("CATALOG_METADATA_PUBLISHED_DATE_ALT")); ?></td>
+				</tr>
+				</tbody>
+			</table>
+			<table>
+				<tr>
+					<td>
+						<input type="submit" id="validate_button" name="validate_button" class="submit" value ="<?php echo JText::_("CORE_VALIDATE"); ?>" onClick="document.getElementById('metadataPublishedForm').task.value='setMetadataPublished';document.getElementById('metadataPublishedForm').submit();"/>
+					</td>
+					<td>
+						<input type="submit" id="cancel_button" name="cancel_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="document.getElementById('metadataPublishedForm').task.value='listMetadata';document.getElementById('listMetadata').submit();"/>
+					</td>
+				</tr>
+			</table>
+			<input type="hidden" name="option" value="<?php echo $option; ?>">
+			<input type="hidden" id="task" name="task" value="metadataPublished">
+			<input type="hidden" id="guid" name="guid" value="<?php echo $metadata->guid;?>">
+			</form>
+		</div>
+		<?php 
+	}
+		
 }
 ?>
