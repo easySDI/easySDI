@@ -1372,7 +1372,20 @@ div#synchronizeMetadata:hover{
 
 div#synchronizeMetadata{
 	background-color:transparent;
-	background-image:url(../icons/silk/arrow_switch.png);
+	background-image:url(../icons/silk/control_equalizer_blue.png);
+	background-position:0 0;
+	background-repeat:no-repeat;
+	height:16px;
+	width:16px;
+	padding-left:2px;
+	padding-right:2px;
+}
+
+
+
+div#synchronizedbyMetadata{
+	background-color:transparent;
+	background-image:url(../icons/silk/control_equalizer.png);
 	background-position:0 0;
 	background-repeat:no-repeat;
 	height:16px;
