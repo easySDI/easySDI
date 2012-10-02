@@ -1047,8 +1047,17 @@ class HTML_product{
                         <?php if($grid->extent){?>
                         maxExtent :new OpenLayers.Bounds(<?php echo $grid->extent;?>),
                         <?php }?>
-                        units: "<?php echo $grid->unit;?>"
+                        units: "<?php echo $grid->unit;?>",
+                        controls :[
+                         new OpenLayers.Control.Navigation(),
+                         new OpenLayers.Control.PanZoomBar(),
+                         new OpenLayers.Control.ScaleLine(),
+                         new OpenLayers.Control.MousePosition(),
+                         new OpenLayers.Control.OverviewMap(),
+                         new OpenLayers.Control.KeyboardDefaults()
+                     ]
                       };
+               
             	map = new OpenLayers.Map("map",options);
 
             	var baseLayer = new OpenLayers.Layer.WMS(

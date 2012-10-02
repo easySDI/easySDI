@@ -69,7 +69,7 @@ class SITE_proxy{
 		$perimeterdefid		= ($_POST['perimeterdefid']) ? $_POST['perimeterdefid'] : $_GET['perimeterdefid'];
 		$locationid 		= ($_POST['locationid']) ? $_POST['locationid'] : $_GET['locationid'];
 		$previewId 			= ($_POST['previewId']) ? $_POST['previewId'] : $_GET['previewId'];
-		$gridId 			= ($_POST['gridId']) ? $_POST['gridId'] : $_GET['gridId'];
+		$gridId 			= ($_POST['gridid']) ? $_POST['gridid'] : $_GET['gridid'];
 		$case 				= 0;
 		if($basemapscontentid)
 			$case = 1;
@@ -125,8 +125,8 @@ class SITE_proxy{
 					}
 					else
 					{
-						$user = $row->wfsuser;
-						$password = $row->wfspassword;
+						$user = $grid->wfsuser;
+						$password = $grid->wfspassword;
 					}
 				}
 				else
@@ -141,13 +141,12 @@ class SITE_proxy{
 					}
 					else
 					{
-						$user = $row->wmsuser;
-						$password = $row->wmspassword;
+						$user = $grid->wmsuser;
+						$password = $grid->wmspassword;
 					}
 				}
 				break;
 		}
-
 		
 		$session 	= curl_init($url);
 		$postData 	= file_get_contents( "php://input" );
@@ -170,7 +169,7 @@ class SITE_proxy{
 			curl_setopt($session, CURLOPT_POSTFIELDS, $postData);
 		}
 		
-		
+
 		if ($user != null && strlen($user)>0 && $password != null && strlen($password)>0) 
 		{
 			$httpHeader[]='Authorization: Basic '.base64_encode($user.':'.$password);
@@ -215,7 +214,6 @@ class SITE_proxy{
 			}
 			echo array_pop(explode("\r\n\r\n", trim($response)));
 		}
-		
 		curl_close($session);
 	}
 	
