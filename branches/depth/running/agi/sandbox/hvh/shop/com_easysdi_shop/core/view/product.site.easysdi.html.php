@@ -1079,14 +1079,24 @@ class HTML_product{
                 });
 
                 var hover = new OpenLayers.Layer.Vector("Hover");
-                
+
+                <?php if($grid->detailtooltip){?>
                 var control = new OpenLayers.Control.GetFeature({
                     protocol: protocol,
-                    box: true,
+                    box: false,
                     hover: true,
                     multipleKey: "shiftKey",
                     toggleKey: "ctrlKey"
                 });
+                <?php }else{?>
+                var control = new OpenLayers.Control.GetFeature({
+                    protocol: protocol,
+                    box: false,
+                    hover: false,
+                    multipleKey: "shiftKey",
+                    toggleKey: "ctrlKey"
+                });
+                <?php }?>
                 
                 control.events.register("featureselected", this, function(e) {
                     select.addFeatures([e.feature]);

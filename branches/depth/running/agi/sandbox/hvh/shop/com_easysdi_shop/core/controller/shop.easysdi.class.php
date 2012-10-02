@@ -1308,14 +1308,13 @@ function validateForm(toStep, fromStep){
 
 	function downloadProduct(){
 
+		global  $mainframe;
 		$database 	=& JFactory::getDBO();
 		$id 		= JRequest::getVar('product_id');
-		
-		global  $mainframe;
-		$user = JFactory::getUser();
-		$account = new accountByUserId( $database );
+		$user 		= JFactory::getUser();
+		$account 	= new accountByUserId( $database );
 		$account->load( $user->id );
-		$product = new product($database);
+		$product 	= new product($database);
 		$product->load ($id);
 		
 		if(!$product->isUserAllowedToLoad($account->id)){
@@ -1326,15 +1325,32 @@ function validateForm(toStep, fromStep){
 			$resource = JRequest::getVar('resource');
 			
 			if($resource){
-				print_r ($resource);
-				die();
+				$resource = "http://forge.easysdi.org/attachments/download/459/com_easysdi_proxy.zip";
+				
 				$handle = fopen($resource, "r");
+				if(!$handle)
+				{
+					echo "error while opening file";
+					die();
+				}
+				
+				$pos = strrpos($resource,("/"),-1);
+				if($pos === false)
+					$fileName = "grid.zip";
+				else
+					$fileName = substr ($resource, $pos+1, strlen($resource)-1);
+				
+				$pos = strrpos($resource,("."),-1);
+				if($pos === false)
+					$fileExtension = "zip";
+				else
+					$fileExtension = substr ($resource, $pos+1, strlen($resource)-1);
+				
 				$file = '';
 				while (!feof($handle)) {
-					$contents .= fread($handle, 8192);
+					$file .= fread($handle, 8192);
 				}
 				fclose($handle);
-				$fileName = 'toto.zip';
 				error_reporting(0);
 				
 				ini_set('zlib.output_compression', 0);
@@ -1342,7 +1358,7 @@ function validateForm(toStep, fromStep){
 				header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
 				header('Content-Transfer-Encoding: none');
 				header("Content-Length: ".strlen($file));
-				header('Content-Type: application/octetstream; name="zip"');
+				header('Content-Type: application/octetstream; name="'.$fileExtension.'"');
 				header('Content-Disposition: attachement; filename="'.$fileName.'"');
 			}else{
 			
