@@ -473,12 +473,19 @@ class HTML_proxyWMS {
 			
 			if($servletVersion != ""){
 				$completeurl = $urlWithPassword.$separator."REQUEST=GetCapabilities&version=".$servletVersion."&SERVICE=WMS";
-				$xmlCapa = simplexml_load_file($urlWithPassword.$separator."REQUEST=GetCapabilities&version=".$servletVersion."&SERVICE=WMS");
+				//$xmlCapa = simplexml_load_file($urlWithPassword.$separator."REQUEST=GetCapabilities&version=".$servletVersion."&SERVICE=WMS");
+				$ch = curl_init($urlWithPassword.$separator."REQUEST=GetCapabilities&version=".$servletVersion."&SERVICE=WMS");
+				
 			}else{
 				$completeurl = $urlWithPassword.$separator."REQUEST=GetCapabilities&SERVICE=WMS";
-				$xmlCapa = simplexml_load_file($urlWithPassword.$separator."REQUEST=GetCapabilities&SERVICE=WMS");
+// 				$xmlCapa = simplexml_load_file($urlWithPassword.$separator."REQUEST=GetCapabilities&SERVICE=WMS");
+				$ch = curl_init($urlWithPassword.$separator."REQUEST=GetCapabilities&SERVICE=WMS");
+				
 			}
-			
+			curl_setopt($ch, CURLOPT_HEADER, false);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			$xml_raw = curl_exec($ch);
+			$xmlCapa = simplexml_load_string($xml_raw);
 			if ($xmlCapa === false){
 					global $mainframe;		
 					$mainframe->enqueueMessage(JText::_('EASYSDI_UNABLE TO RETRIEVE THE CAPABILITIES OF THE REMOTE SERVER' )." - ".$completeurl,'error');

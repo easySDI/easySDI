@@ -39,7 +39,7 @@
 
 	<target name="sync" description="Copy from here to apache">
 		<copy
-			todir="C:\www\easysdi\administrator\components\com_easysdi_proxy">
+			todir="C:\www\agi\administrator\components\com_easysdi_proxy">
 			<fileset dir=".">
 				<include name="**/*.php" />
 				<include name="**/*.xsl" />
@@ -55,13 +55,13 @@
 		</copy>
 
 		<copy		   
-		   todir="C:\www\easysdi\administrator\language\fr-FR">
+		   todir="C:\www\agi\administrator\language\fr-FR">
 		     <fileset dir="./language/admin">
 		      <include name="**/fr-FR.com_easysdi_proxy.ini" />
 		     </fileset>
 		    </copy>
 		<copy		   
-		   todir="C:\www\easysdi\administrator\language\en-GB">
+		   todir="C:\www\agi\administrator\language\en-GB">
 		     <fileset dir="./language/admin">
 		      <include name="**/en-GB.com_easysdi_proxy.ini" />
 		     </fileset>
