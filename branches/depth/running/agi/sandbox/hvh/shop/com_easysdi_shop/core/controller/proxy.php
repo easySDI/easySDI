@@ -23,22 +23,17 @@
 class SITE_proxy{
 	
 	function proxy(){
-		global  $mainframe;
+		global  	$mainframe;
 		$db 		=& JFactory::getDBO();
 		$user		= "";
 		$password	= "";
-		
 		$url 		= ($_POST['url']) ? $_POST['url'] : $_GET['url'];
+		$found 		= false;
 		
 		if (SITE_proxy::contains("?",$url))
-		{
 			$url=$url."&"; 			
-		}else
-		{
+		else
 			$url=$url."?";
-		}
-		
-		$found = false;
 		
 		foreach($_GET AS $cle => $valeur)     
 		{     	     	
@@ -66,17 +61,16 @@ class SITE_proxy{
 			}     	            
 		}
 		
-		$url = str_replace ('\"','"',$url);
-		$url = str_replace (' ','%20',$url);
-		 
-		$type = ($_POST['type']) ? $_POST['type'] : $_GET['type'];
+		$url 		= str_replace ('\"','"',$url);
+		$url 		= str_replace (' ','%20',$url);
+		$type 		= ($_POST['type']) ? $_POST['type'] : $_GET['type'];
 				
-		$basemapscontentid = ($_POST['basemapscontentid']) ? $_POST['basemapscontentid'] : $_GET['basemapscontentid'];
-		$perimeterdefid = ($_POST['perimeterdefid']) ? $_POST['perimeterdefid'] : $_GET['perimeterdefid'];
-		$locationid = ($_POST['locationid']) ? $_POST['locationid'] : $_GET['locationid'];
-		$previewId = ($_POST['previewId']) ? $_POST['previewId'] : $_GET['previewId'];
-		$gridId = ($_POST['gridId']) ? $_POST['gridId'] : $_GET['gridId'];
-		$case = 0;
+		$basemapscontentid 	= ($_POST['basemapscontentid']) ? $_POST['basemapscontentid'] : $_GET['basemapscontentid'];
+		$perimeterdefid		= ($_POST['perimeterdefid']) ? $_POST['perimeterdefid'] : $_GET['perimeterdefid'];
+		$locationid 		= ($_POST['locationid']) ? $_POST['locationid'] : $_GET['locationid'];
+		$previewId 			= ($_POST['previewId']) ? $_POST['previewId'] : $_GET['previewId'];
+		$gridId 			= ($_POST['gridId']) ? $_POST['gridId'] : $_GET['gridId'];
+		$case 				= 0;
 		if($basemapscontentid)
 			$case = 1;
 		if($perimeterdefid)
@@ -115,16 +109,15 @@ class SITE_proxy{
 				SITE_proxy::getAuthentication ($row, $user, $password);
 				break;
 			case 5:
-				$query = $query = "SELECT * FROM #__sdi_grid WHERE id = $previewId";
+				$query = $query = "SELECT * FROM #__sdi_grid WHERE id = $gridId";
 				$db->setQuery( $query);
-				$row = $db->loadObject();
+				$grid = $db->loadObject();
 				
 				if($type == "wfs")
 				{
-					if($row->wfsaccount_id && $row->wfsaccount_id <> 0)
+					if($grid->wfsaccount_id && $grid->wfsaccount_id <> 0)
 					{
-						$db =& JFactory::getDBO();
-						$query = "SELECT username, password FROM #__users WHERE id IN (SELECT user_id FROM #__sdi_account WHERE id= $row->wfsaccount_id)";
+						$query = "SELECT username, password FROM #__users WHERE id IN (SELECT user_id FROM #__sdi_account WHERE id= $grid->wfsaccount_id)";
 						$db->setQuery( $query);
 						$row = $db->loadObject();
 						$user = $row->username;
@@ -132,16 +125,15 @@ class SITE_proxy{
 					}
 					else
 					{
-						$user = $object->wfsuser;
-						$password = $object->wfspassword;
+						$user = $row->wfsuser;
+						$password = $row->wfspassword;
 					}
 				}
 				else
 				{
-					if($row->wmsaccount_id && $row->wmsaccount_id <> 0)
+					if($grid->wmsaccount_id && $grid->wmsaccount_id <> 0)
 					{
-						$db =& JFactory::getDBO();
-						$query = "SELECT username, password FROM #__users WHERE id IN (SELECT user_id FROM #__sdi_account WHERE id= $row->wmsaccount_id)";
+						$query = "SELECT username, password FROM #__users WHERE id IN (SELECT user_id FROM #__sdi_account WHERE id= $grid->wmsaccount_id)";
 						$db->setQuery( $query);
 						$row = $db->loadObject();
 						$user = $row->username;
@@ -149,154 +141,82 @@ class SITE_proxy{
 					}
 					else
 					{
-						$user = $object->wmsuser;
-						$password = $object->wmspassword;
+						$user = $row->wmsuser;
+						$password = $row->wmspassword;
 					}
 				}
 				break;
 		}
 
 		
-// 		$session 	= curl_init($url);
-// 		$postData 	= file_get_contents( "php://input" );
-// 		$httpHeader = array();
+		$session 	= curl_init($url);
+		$postData 	= file_get_contents( "php://input" );
+		$httpHeader = array();
+
+		if (!empty($postData)) 
+		{
+			// Set the POST options.
+			curl_setopt($session, CURLOPT_POST, 1);
+			// post contains a raw XML document?
+			if (substr($postData, 0, 1)=='<') 
+			{
+				//Contrairement au problème rencontré avec les filtres en GET, les requêtes en POST ne semblent pas
+				//rencontrer de problème d'encodage. On ne rajoute donc aucune information.
+				//Attention cependant : si la requête passe par plusieurs proxy installés sur des OS différents (Linux vs Windows)
+				//son encodage semble être altéré (constatation faite avec un environnement de développement utilisant un proxy
+				//sous Linux et un proxy sous Windows, proxy en version 2.1.4)
+				$httpHeader[]='Content-Type: text/xml; ';
+			}
+			curl_setopt($session, CURLOPT_POSTFIELDS, $postData);
+		}
 		
-// 		if (!empty($postData)) 
-// 		{
-// 			// Set the POST options.
-// 			curl_setopt($session, CURLOPT_POST, 1);
-// 			// post contains a raw XML document?
-// 			if (substr($postData, 0, 1)=='<') 
-// 			{
-// 				//Contrairement au problème rencontré avec les filtres en GET, les requêtes en POST ne semblent pas
-// 				//rencontrer de problème d'encodage. On ne rajoute donc aucune information.
-// 				//Attention cependant : si la requête passe par plusieurs proxy installés sur des OS différents (Linux vs Windows)
-// 				//son encodage semble être altéré (constatation faite avec un environnement de développement utilisant un proxy
-// 				//sous Linux et un proxy sous Windows, proxy en version 2.1.4)
-// 				
-// 				$httpHeader[]='Content-Type: text/xml; ';
-// 			}
-// 			curl_setopt($session, CURLOPT_POSTFIELDS, $postData);
-// 		}
-// 		else 
-// 		{
-// 			$httpHeader[]='Content-Type: image/png; ';
-// 		}
 		
-// 		if ($user != null && strlen($user)>0 && $password != null && strlen($password)>0) 
-// 		{
-// 			$httpHeader[]='Authorization: Basic '.base64_encode($user.':'.$password);
-// 		}
-// 		if (count($httpHeader)>0) 
-// 		{
-// 			curl_setopt($session, CURLOPT_HTTPHEADER, $httpHeader);
-// 		}
+		if ($user != null && strlen($user)>0 && $password != null && strlen($password)>0) 
+		{
+			$httpHeader[]='Authorization: Basic '.base64_encode($user.':'.$password);
+		}
+		if (count($httpHeader)>0) 
+		{
+			curl_setopt($session, CURLOPT_HTTPHEADER, $httpHeader);
+		}
 	
-// 		curl_setopt($session, CURLOPT_HEADER, true);
-// 		curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($session, CURLOPT_HEADER, true);
+		curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
 		
-// 		// Do the POST and then close the session
-// 		$response = curl_exec($session);
-// 		if (curl_errno($session) || strpos($response, 'HTTP/1.1 200 OK')===false) 
-// 		{
-// 			echo 'cUrl POST request failed.';
-// 			if (curl_errno($session))
-// 				echo 'Error number: '.curl_errno($session).'';
-// 			echo "Server response ";
-// 			echo $response;
-// 		} 
-// 		else 
-// 		{
-// 			$headers 	= curl_getinfo($session);
-				
-// 			if (strpos($headers['content_type'], ';')!==false) 
-// 			{
-// 				$fileType = array_pop(explode(';',$headers['content_type']));
-// 				header("Content-Type: ".$fileType[0]);
-// 			}
-// 			header("Content-Type: image/png");
-// 			echo $response;
-// 		}
-// 		curl_close($session);
-		
-		
-		if ($type == "wms")
-			header("Content-Type: image");
+		// Do the POST and then close the session
+		$response = curl_exec($session);
+		if (curl_errno($session) || strpos($response, 'HTTP/1.1 200 OK')===false) 
+		{
+			echo 'cUrl POST request failed.';
+			if (curl_errno($session))
+				echo 'Error number: '.curl_errno($session).'';
+			echo "Server response ";
+			echo $response;
+		} 
 		else 
-			header("Content-Type: text/xml");
+		{
+			$headers 	= curl_getinfo($session);
+			$document =& JFactory::getDocument();
+			if (strpos($headers['content_type'], '/')!==false) 
+			{
+				$fileType = array_pop(explode('/',$headers['content_type']));
+				if (strpos($fileType, ';')!==false) {
+					$arr = explode(';', $fileType);
+					$fileType = $arr[0];
+				}
+				JResponse::setHeader( 'Content-Disposition', 'inline; filename=download.'.$fileType );
+			}
+			
+			$document->setMimeEncoding($headers['content_type']);
+			if (array_key_exists('charset', $headers)) {
+				$document->setCharset($headers['charset']);
+			} else {
+				$document->setCharset(null);
+			}
+			echo array_pop(explode("\r\n\r\n", trim($response)));
+		}
 		
-		if ( substr($url, 0, 7) == 'http://' ) 
-		{
-			if ($user !=null && strlen($user)>0)
-				$url = "http://$user:$password@".substr($url, 7);
-			
-			if (!$handle = fopen("$url", "rb"))				
-				exit ;
-			
-			$stringData = stream_get_contents($handle);
-			$stringUTF8 ='';
-			if ($type == "wms")
-			{
-				$stringUTF8 = $stringData;
-			}
-			else
-			{
-				$xmlEncodingHeader = SITE_proxy::getEncodingHeaderFromXmlContent($stringData);
-				fwrite($fh, "xmlEncodingHeader:".$xmlEncodingHeader );	
-				
-				//try first to read the encoding from the xml file header, if it is not utf-8
-				if(strpos(strtoupper($xmlEncodingHeader), "UTF-8") == false){
-					$stringUTF8 = utf8_encode($stringData);
-				}
-				//Check by guessing if it is utf-8
-				else if(mb_check_encoding("UTF-8") )
-				{
-					$stringUTF8 = $stringData;
-				}
-				else
-				{
-					$stringUTF8 = utf8_encode($stringData);
-				}
-			}
-			echo $stringUTF8;
-			fclose($handle);
-		}
-		else if ( substr($url, 0, 8) == 'https://' ) 
-		{
-			if ($user !=null && strlen($user)>0)
-				$url = "https://$user:$password@".substr($url, 8);				
-						
-			if (!$handle = fopen("$url", "rb"))
-				exit ;
-			
-			$stringData = stream_get_contents($handle);
-			$stringUTF8='';
-			if ($type == "wms")
-			{
-				$stringUTF8 = $stringData;
-			}
-			else
-			{
-				$xmlEncodingHeader = SITE_proxy::getEncodingHeaderFromXmlContent($stringData);
-				fwrite($fh, "xmlEncodingHeader:".$xmlEncodingHeader );	
-				
-				//try first to read the encoding from the xml file header, if it is not utf-8
-				if(strpos(strtoupper($xmlEncodingHeader), "UTF-8") == false){
-					$stringUTF8 = utf8_encode($stringData);
-				}
-				//Check by guessing if it was utf-8
-				else if(mb_check_encoding("UTF-8") )
-				{
-					$stringUTF8 = $stringData;
-				}
-				else
-				{
-					$stringUTF8 = utf8_encode($stringData);
-				}
-			}
-			echo $stringUTF8;
-			fclose($handle); 
-		}
+		curl_close($session);
 	}
 	
 	
