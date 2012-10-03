@@ -11,6 +11,8 @@
 // no direct access
 defined('_JEXEC') or die;
 
+define( 'DS', DIRECTORY_SEPARATOR );
+
 // Access check.
 if (!JFactory::getUser()->authorise('core.manage', 'com_easysdi_service')) {
 	return JError::raiseWarning(404, JText::_('JERROR_ALERTNOAUTHOR'));
