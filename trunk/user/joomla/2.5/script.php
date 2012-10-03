@@ -71,7 +71,7 @@ class com_easysdi_userInstallerScript
 			JTable::addIncludePath(JPATH_ADMINISTRATOR.DS."..".DS."libraries".DS."joomla".DS."database".DS."table");
 			
 			//Create a default EasySDI User Category
-			$row 					=& JTable::getInstance('category');
+			$row 					= JTable::getInstance('category');
 			$row->parent_id 		= 1;
 			$row->level				= 1;
 			$row->path 				= 'uncategorised';
@@ -92,7 +92,7 @@ class com_easysdi_userInstallerScript
 			//Create new EasySDI User account
 			$user	= JFactory::getUser();
 			JTable::addIncludePath(JPATH_ADMINISTRATOR.DS."components".DS."com_easysdi_user".DS."tables");
-			$newaccount =& JTable::getInstance('user', 'easysdi_userTable');
+			$newaccount = JTable::getInstance('user', 'easysdi_userTable');
 			if (!$newaccount) {
 				JError::raiseWarning(null, JText::_('COM_EASYSDI_USER_POSTFLIGHT_SCRIPT_USER_ERROR_INSTANCIATE'));
 				return false;
