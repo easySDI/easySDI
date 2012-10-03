@@ -71,7 +71,7 @@ class com_easysdi_serviceInstallerScript
 			JTable::addIncludePath(JPATH_ADMINISTRATOR.DS."..".DS."libraries".DS."joomla".DS."database".DS."table");
 				
 			//Create a default EasySDI Service Category
-			$row 					=& JTable::getInstance('category');
+			$row 					= JTable::getInstance('category');
 			$row->parent_id 		= 1;
 			$row->level				= 1;
 			$row->path 				= 'uncategorised';
