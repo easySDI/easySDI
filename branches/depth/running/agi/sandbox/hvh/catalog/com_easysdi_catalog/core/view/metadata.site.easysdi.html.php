@@ -657,13 +657,13 @@ class HTML_metadata {
 										title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_UPLOADFILE_ALERT'))."',
 										width:500,
 										height:160,
-										closeAction:'hide',
+										closeAction:'close',
 										layout:'fit',
 										border:true,
 										closable:true,
 										renderTo:Ext.getBody(),
 										frame:true,
-										backvalue:'',
+										backvalue:longStartValue,
 										items:[{
 											xtype:'form',
 											fileUpload: true,
@@ -758,8 +758,8 @@ class HTML_metadata {
 												{
 													text: '".html_Metadata::cleanText(JText::_('CATALOG_ALERT_CLOSE'))."',
 													handler: function(){
+														winupload.backvalue = longStartValue;
 														winupload.close();
-														Ext.ComponentMgr.get(caller).setValue (longStartValue);
 													}
 												}
 												
@@ -771,6 +771,7 @@ class HTML_metadata {
 										Ext.ComponentMgr.get(caller).setValue(winupload.backvalue);
 										if(Ext.ComponentMgr.get(caller.concat('_hiddenVal')))
 											Ext.ComponentMgr.get(caller.concat('_hiddenVal')).setValue(winupload.backvalue);
+										return true;
 									}, this);
 									
 									winupload.show();
@@ -796,10 +797,7 @@ class HTML_metadata {
 													success:function(result,request) {
 														if(JSON.parse (result.responseText).success){
 															Ext.MessageBox.hide();
-															Ext.ComponentMgr.get(caller).setValue('');
-															if(Ext.ComponentMgr.get(caller.concat('_hiddenVal')))
-																Ext.ComponentMgr.get(caller.concat('_hiddenVal')).setValue('');
-															//Ext.ComponentMgr.get('metadataForm').saveMetadataAfterLinkedFileUpdate();
+															winupload.backvalue = '';
 															if(winupload)
 																winupload.close();
 														}else {
@@ -824,7 +822,6 @@ class HTML_metadata {
 										waitMsg: '".html_Metadata::cleanText(JText::_('CORE_METADATA_UPLOADFILE_WAIT'))."',
 										success: function(form,action){
 											winupload.backvalue = JSON.parse (action.response.responseText).url;
-											//Ext.ComponentMgr.get('metadataForm').saveMetadataAfterLinkedFileUpdate();
 											winupload.close();
 										},
 										failure: function(form,action){
@@ -6365,10 +6362,10 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 		$app =& JFactory::getApplication();
 		$templateDir = JURI::base() . 'templates/' . $app->getTemplate();
 		?>
+		<h1 class="contentheading"><?php echo JText::_("CATALOG_METADATA_PUBLISHED_DATE_UPDATE"); ?></h1>
+		<h2><?php echo JText::sprintf("CATALOG_METADATA_PUBLISHED_OBJECT", $object->name, $objectversion->title); ?> </h2>
 		<div class="contentin">
 			<form action="index.php" method="POST" id="metadataPublishedForm" name="metadataPublishedForm">
-			<h1 class="contentheading"><?php echo JText::_("CATALOG_METADATA_PUBLISHED_DATE_UPDATE"); ?></h1>
-			<h2><?php echo JText::sprintf("CATALOG_METADATA_PUBLISHED_OBJECT", $object->name, $objectversion->title); ?> </h2>
 			<table id="metadataPublished" class="box-table">
 				<tbody>
 				<tr>
