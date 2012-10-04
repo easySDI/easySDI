@@ -29,6 +29,7 @@ class grid extends sdiTable
 	var $layername		= null;
 	var $urlwfs			= null;
 	var $featuretype	= null;
+	var $featureprefix	= null;
 	var $featureNS		= null;
 	var $fieldname		= null;
 	var $fielddetail	= null;

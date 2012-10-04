@@ -1072,6 +1072,7 @@ class HTML_product{
         		    srsName:"<?php echo $grid->projection;?>",
         		    url: "<?php echo $urlwfs;?>",
         		    featureType: "<?php echo $grid->featuretype;?>",
+        		    featurePrefix: "<?php echo $grid->featureprefix;?>",
         		    featureNS: "<?php echo $grid->featureNS;?>",
         		    geometryName: "<?php echo $grid->fieldgeom;?>"
         		});

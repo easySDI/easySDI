@@ -58,6 +58,12 @@ class HTML_grid {
 					text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_FEATURETYPE");?>";
 					index = 1;	
 				}
+				if (form.elements['featureprefix'].value == '')
+				{
+					if(index != 0)text += ", ";
+					text += "\n- <?php echo JText::_("SHOP_MESSAGE_PROVIDE_FEATUREPREFIX");?>";
+					index = 1;	
+				}
 				if (form.elements['featureNS'].value == '')
 				{
 					if(index != 0)text += ", ";
@@ -241,6 +247,10 @@ class HTML_grid {
 							<tr>							
 								<td class="key"><?php echo JText::_("SHOP_GRID_FEATURETYPE_NAME"); ?> : </td>
 								<td><input class="inputbox" type="text" size="50" maxlength="400" name="featuretype" value="<?php echo $rowGrid->featuretype; ?>" /></td>
+							</tr>
+							<tr>							
+								<td class="key"><?php echo JText::_("SHOP_GRID_FEATURE_PREFIX"); ?> : </td>
+								<td><input class="inputbox" type="text" size="50" maxlength="400" name="featureprefix" value="<?php echo $rowGrid->featureprefix; ?>" /></td>
 							</tr>
 							<tr>							
 								<td class="key"><?php echo JText::_("SHOP_FEATURE_NS"); ?> : </td>
