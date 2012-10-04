@@ -132,7 +132,7 @@ class HTML_grid {
 							<tr>
 							
 								<td class="key"><?php echo JText::_("SHOP_GRID_NAME"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="name" value="<?php echo $rowGrid->name; ?>" /></td>							
+								<td><input class="inputbox" type="text" size="50" maxlength="50" name="name" value="<?php echo $rowGrid->name; ?>" /></td>							
 							</tr>
 							<tr>
 								<td class="key"><?php echo JText::_("SHOP_GRID_DESC"); ?> : </td>
@@ -174,11 +174,11 @@ class HTML_grid {
 						<table>
 							<tr>
 								<td class="key"><?php echo JText::_("SHOP_GRID_WMS_URL"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="urlwms" value="<?php echo $rowGrid->urlwms; ?>" /></td>
+								<td><input class="inputbox" type="text" size="50" maxlength="400" name="urlwms" value="<?php echo $rowGrid->urlwms; ?>" /></td>
 							</tr>
 							<tr>
 								<td class="key"><?php echo JText::_("SHOP_GRID_LAYER_NAME"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="layername" value="<?php echo $rowGrid->layername; ?>" /></td>
+								<td><input class="inputbox" type="text" size="50" maxlength="400" name="layername" value="<?php echo $rowGrid->layername; ?>" /></td>
 							</tr>
 							<tr>
 								<td class="key"><?php echo JText::_("SHOP_GRID_IMG_FORMAT"); ?> : </td>
@@ -242,7 +242,7 @@ class HTML_grid {
 						<table>
 							<tr>
 								<td class="key"><?php echo JText::_("SHOP_GRID_WFS_URL"); ?> : </td>
-								<td><input class="inputbox" type="text" size="50" maxlength="100" name="urlwfs" value="<?php echo $rowGrid->urlwfs; ?>" /></td>
+								<td><input class="inputbox" type="text" size="50" maxlength="400" name="urlwfs" value="<?php echo $rowGrid->urlwfs; ?>" /></td>
 							</tr>
 							<tr>							
 								<td class="key"><?php echo JText::_("SHOP_GRID_FEATURETYPE_NAME"); ?> : </td>

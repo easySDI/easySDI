@@ -1060,10 +1060,18 @@ class HTML_product{
                
             	map = new OpenLayers.Map("map",options);
 
+            	<?php
+            	$n = substr_count ($grid->layername,','); 
+            	$styles = "default";
+            	for ($i = 0 ; $i <$n ; $i++)
+            	{
+            		$styles .= ",default";
+            	}
+            	?>
             	var baseLayer = new OpenLayers.Layer.WMS(
             	    "BaseMap",
             	    "<?php echo $urlwms;?>",
-            	    {layers: "<?php echo $grid->layername;?>", format:"<?php echo $grid->imgformat;?>", transparent : true},
+            	    {layers: "<?php echo $grid->layername;?>", styles:"<?php echo $styles;?>",format:"<?php echo $grid->imgformat;?>", transparent : true},
             	    {isBaseLayer: true, visibility: true}
             	);
 
@@ -1077,12 +1085,12 @@ class HTML_product{
         		    geometryName: "<?php echo $grid->fieldgeom;?>"
         		});
             	
-        		var layer = new OpenLayers.Layer.Vector("Grid", {
+            	/*	var layer = new OpenLayers.Layer.Vector("Grid", {
 					strategies : [ new OpenLayers.Strategy.BBOX() ],
 					protocol : protocol,
 	        		visibility: true,
 	        		extractAttributes: true					
-				});
+				});*/
 
         		var select = new OpenLayers.Layer.Vector("Selection", {styleMap: 
                     new OpenLayers.Style(OpenLayers.Feature.Vector.style["select"])
@@ -1090,7 +1098,27 @@ class HTML_product{
 
                 var hover = new OpenLayers.Layer.Vector("Hover");
 
-                <?php if($grid->detailtooltip){?>
+              /*  info = new OpenLayers.Control.WMSGetFeatureInfo({
+                    url: 'http://demo.opengeo.org/geoserver/wms', 
+                    title: 'Identify features by clicking',
+                    queryVisible: true,
+                    eventListeners: {
+                        getfeatureinfo: function(event) {
+                            map.addPopup(new OpenLayers.Popup.FramedCloud(
+                                "chicken", 
+                                map.getLonLatFromPixel(event.xy),
+                                null,
+                                event.text,
+                                null,
+                                true
+                            ));
+                        }
+                    }
+                });
+                map.addControl(info);
+                info.activate();*/
+
+                 <?php if($grid->detailtooltip){?>
                 var control = new OpenLayers.Control.GetFeature({
                     protocol: protocol,
                     box: false,
@@ -1150,7 +1178,7 @@ class HTML_product{
                 map.addControl(control);
                 control.activate();
                 
-            	map.addLayers([baseLayer, layer, select, hover]);
+            	map.addLayers([baseLayer, select, hover]);
             	map.zoomToMaxExtent();
             }
             
