@@ -31,7 +31,7 @@ class Easysdi_serviceViewService extends JView
 		$this->item		= $this->get('Item');
 		$this->form		= $this->get('Form');
 		
-		$db 					=& JFactory::getDBO();
+		$db 					= JFactory::getDBO();
 		$query 	= "SELECT ac.id as id, ac.value as value, al.id as level, c.id as service
 		FROM #__sdi_sys_authenticationconnector ac
 		INNER JOIN #__sdi_sys_servicecon_authenticationcon sc ON sc.authenticationconnector_id = ac.id

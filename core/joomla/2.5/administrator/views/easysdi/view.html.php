@@ -29,7 +29,7 @@ class Easysdi_coreViewEasysdi extends JView
 		$this->form		= $this->get('Form');
 		
 		//Check if others easysdi components are installed
-		$app 				=& JFactory::getApplication();
+		$app 				= JFactory::getApplication();
 		$this->buttons = array();
 		
 		//com_easysdi_user
