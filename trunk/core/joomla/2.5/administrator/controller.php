@@ -27,7 +27,7 @@ class Easysdi_coreController extends JController
 		require_once JPATH_COMPONENT.DS.'helpers'.DS.'easysdi_core.php';
 
 		//Check if others EasySDI components are installed and saved results in UserState
-		$app 				=& JFactory::getApplication();
+		$app 				= JFactory::getApplication();
 		$db 				= JFactory::getDbo();
 		$db->setQuery('SELECT COUNT(*) FROM #__extensions WHERE name = "com_easysdi_user"');
 		$app->setUserState( 'com_easysdi_user-installed' ,$db->loadResult() == 0 ? false : true);

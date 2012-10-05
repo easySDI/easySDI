@@ -9,7 +9,7 @@
 // No direct access to this file
 defined('_JEXEC') or die('Restricted access');
 
-$document = &JFactory::getDocument();
+$document = JFactory::getDocument();
 $document->addStyleSheet('components/com_easysdi_core/assets/css/easysdi_core.css');
 
 ?>

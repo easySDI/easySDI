@@ -13,7 +13,7 @@ defined('_JEXEC') or die;
 JHtml::_('behavior.tooltip');
 JHtml::_('behavior.formvalidation');
 // Import CSS
-$document = &JFactory::getDocument();
+$document = JFactory::getDocument();
 $document->addStyleSheet('components/com_easysdi_user/assets/css/easysdi_user.css');
 ?>
 <script type="text/javascript">
