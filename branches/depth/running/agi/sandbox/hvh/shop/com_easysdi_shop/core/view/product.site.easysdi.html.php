@@ -1084,39 +1084,12 @@ class HTML_product{
         		    featureNS: "<?php echo $grid->featureNS;?>",
         		    geometryName: "<?php echo $grid->fieldgeom;?>"
         		});
-            	
-            	/*	var layer = new OpenLayers.Layer.Vector("Grid", {
-					strategies : [ new OpenLayers.Strategy.BBOX() ],
-					protocol : protocol,
-	        		visibility: true,
-	        		extractAttributes: true					
-				});*/
 
         		var select = new OpenLayers.Layer.Vector("Selection", {styleMap: 
                     new OpenLayers.Style(OpenLayers.Feature.Vector.style["select"])
                 });
 
                 var hover = new OpenLayers.Layer.Vector("Hover");
-
-              /*  info = new OpenLayers.Control.WMSGetFeatureInfo({
-                    url: 'http://demo.opengeo.org/geoserver/wms', 
-                    title: 'Identify features by clicking',
-                    queryVisible: true,
-                    eventListeners: {
-                        getfeatureinfo: function(event) {
-                            map.addPopup(new OpenLayers.Popup.FramedCloud(
-                                "chicken", 
-                                map.getLonLatFromPixel(event.xy),
-                                null,
-                                event.text,
-                                null,
-                                true
-                            ));
-                        }
-                    }
-                });
-                map.addControl(info);
-                info.activate();*/
 
                  <?php if($grid->detailtooltip){?>
                 var control = new OpenLayers.Control.GetFeature({
