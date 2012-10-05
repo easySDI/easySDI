@@ -380,6 +380,16 @@ function com_install(){
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 	}
+	if($version == "2.4.0")
+	{
+		$version="2.4.1";
+		$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='PROXY'";
+		$db->setQuery( $query);
+		if (!$db->query())
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+	}
 
 	$query = "DELETE FROM #__components where `option`= 'com_easysdi_proxy' ";
 	$db->setQuery( $query);
