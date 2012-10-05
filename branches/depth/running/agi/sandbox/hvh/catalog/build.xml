@@ -1,16 +1,14 @@
 <?xml version="1.0" ?>
 <project default="sync" basedir=".">
-
 	<property name="projet.out.dir" value="out" />
+	<property name="projet.sync.dir" value="C:\www\agi250" />
 
 	<target name="package" depends="create-structure,compression"
 		description="Main target">
 	</target>
 
 	<target name="create-structure" description="Creating the working directory structure">
-		<delete>
-			<fileset dir="${projet.out.dir}" includes="*" />
-		</delete>
+		<echo>Creating the working directory structure</echo>
 		<mkdir dir="${projet.out.dir}" />
 	</target>
 
@@ -21,7 +19,7 @@
 
 	<target name="sync" description="Copy from here to apache">
 		<copy
-			todir="C:\www\agi\administrator\components\com_easysdi_catalog">
+			todir="${projet.sync.dir}\administrator\components\com_easysdi_catalog">
 			<fileset dir=".">
 				<include name="**/*.php" />
 				<include name="**/*.xsl" />
@@ -38,7 +36,7 @@
 			</fileset>
 		</copy>
 		<copy
-			todir="C:\www\agi\components\com_easysdi_catalog">
+			todir="${projet.sync.dir}\components\com_easysdi_catalog">
 			<fileset dir="./com_easysdi_catalog">
 				<include name="**/*.php" />
 				<include name="**/*.xsl" />
@@ -55,7 +53,7 @@
 			</fileset>
 		</copy>
 		<copy
-			todir="C:\www\agi\administrator\components\com_easysdi_catalog">
+			todir="${projet.sync.dir}\administrator\components\com_easysdi_catalog">
 			<fileset dir=".">
 				<include name="**/*.php" />
 				<include name="**/*.xsl" />
@@ -73,26 +71,26 @@
 		</copy>
 		
 		<copy
-			todir="C:\www\agi\components\com_easysdi_catalog\views">
+			todir="${projet.sync.dir}\components\com_easysdi_catalog\views">
 			<fileset dir="./com_easysdi_catalog/core/view">
 				<include name="**/*.php" />
 				<include name="**/*.xml" />
 			</fileset>
 		</copy>
 		<copy		   
-		   todir="C:\www\agi\administrator\language\fr-FR">
+		   todir="${projet.sync.dir}\administrator\language\fr-FR">
 		     <fileset dir="./language/admin">
 		      <include name="**/fr-FR.com_easysdi_catalog.ini" />
 		     </fileset>
 		    </copy>
 		<copy		   
-		   todir="C:\www\agi\administrator\language\de-DE">
+		   todir="${projet.sync.dir}\administrator\language\de-DE">
 		     <fileset dir="./language/admin">
 		      <include name="**/de-DE.com_easysdi_catalog.ini" />
 		     </fileset>
 		    </copy>
 		<copy		   
-		   todir="C:\www\agi\administrator\language\en-GB">
+		   todir="${projet.sync.dir}\administrator\language\en-GB">
 		     <fileset dir="./language/admin">
 		      <include name="**/en-GB.com_easysdi_catalog.ini" />
 		     </fileset>

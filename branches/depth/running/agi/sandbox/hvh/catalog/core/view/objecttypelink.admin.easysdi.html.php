@@ -85,7 +85,7 @@ function listObjectTypeLink(&$rows, $page, $option,  $filter_order_Dir, $filter_
 					<input type="text" id="or<?php echo $i;?>" name="ordering[]" size="5" <?php echo $disabled; ?> value="<?php echo $row->ordering;?>" class="text_area" style="text-align: center" />
 	            </td>
 				 <?php $link =  "index.php?option=$option&amp;task=editObjectTypeLink&cid[]=$row->id";?>
-				<td><?php echo $row->parent_name; ?></td>
+				<td><a href="<?php echo $link;?>"><?php echo $row->parent_name; ?></a></td>
 				<td><?php echo $row->child_name; ?></td>
 				<td width="100px" align="center">
 					<?php 

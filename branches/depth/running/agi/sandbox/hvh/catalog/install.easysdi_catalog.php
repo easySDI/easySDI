@@ -1175,13 +1175,6 @@ function com_install(){
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}
 
-			$query="ALTER TABLE `#__sdi_translation`
-  				ADD CONSTRAINT `#__sdi_translation_ibfk_1` FOREIGN KEY (`language_id`) REFERENCES `#__sdi_language` (`id`);";
-			$db->setQuery( $query);
-			if (!$db->query()) {
-				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-			}
-
 			$query="ALTER TABLE `#__sdi_defaultvalue`
 				ADD CONSTRAINT `#__sdi_defaultvalue_ibfk_1` FOREIGN KEY (`attribute_id`) REFERENCES `#__sdi_attribute` (`id`),
 				ADD CONSTRAINT `#__sdi_defaultvalue_ibfk_2` FOREIGN KEY (`codevalue_id`) REFERENCES `#__sdi_codevalue` (`id`);
@@ -2350,6 +2343,13 @@ function com_install(){
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}
 			
+			//ALTER __sdi_relation
+			$query="ALTER TABLE `#__sdi_relation` ADD istitle TINYINT(1) NOT NULL DEFAULT '0'";
+			$db->setQuery( $query);
+			if (!$db->query()) {
+				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+			
 			$query = "INSERT INTO #__sdi_configuration (guid, code, name, description, created, createdby, label, value, module_id) VALUES
 					('".helper_easysdi::getUniqueId()."', 'CATALOG_METADATA_PREVIEW_CONTEXT', 'CATALOG_METADATA_PREVIEW_CONTEXT', null, '".date('Y-m-d H:i:s')."', '".$user_id."', null, '', '".$id."'),
 					('".helper_easysdi::getUniqueId()."', 'CATALOG_METADATA_PREVIEW_TYPE', 'CATALOG_METADATA_PREVIEW_TYPE', null, '".date('Y-m-d H:i:s')."', '".$user_id."', null, '', '".$id."'),
@@ -2386,7 +2386,6 @@ function com_install(){
 			if (!$db->query()) {
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}
-				
 			
 			$version="2.5.0";
 			$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='CATALOG'";
