@@ -149,7 +149,9 @@ function listObjectTypeLink(&$rows, $page, $option,  $filter_order_Dir, $filter_
 		<script>
 		function addXPath()
 		{
-			var tr = document.createElement('tr');	
+			var tr = document.createElement('tr');
+			var trid = "tr_"+document.getElementById('nbxpath').value;
+			tr.setAttribute('id', trid);
 			var tdParam = document.createElement('td');	
 			var inputParam = document.createElement('input');
 			inputParam.size=250;
@@ -159,6 +161,12 @@ function listObjectTypeLink(&$rows, $page, $option,  $filter_order_Dir, $filter_
 			tr.appendChild(tdParam);
 			document.getElementById('inheritancexpathtable').appendChild(tr);
 			document.getElementById('nbxpath').value = parseInt(document.getElementById('nbxpath').value) + 1 ;
+		}
+		function removeXPath(trid)
+		{
+			var tr = document.getElementById(trid);
+			var table = tr.getParent();
+			table.removeChild(tr);
 		}
 		function enableXPath(value)
 		{
