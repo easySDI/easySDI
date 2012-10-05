@@ -36,7 +36,7 @@ class Easysdi_serviceViewServices extends JView
 			JError::raiseError(500, implode("\n", $errors));
 			return false;
 		}
-		$db 				=& JFactory::getDBO();
+		$db 				= JFactory::getDBO();
 		$query				= "SELECT id as value, value as text FROM #__sdi_sys_serviceconnector WHERE state=1" ;
 		$db->setQuery($query);
 		$this->connectorlist = $db->loadObjectList();

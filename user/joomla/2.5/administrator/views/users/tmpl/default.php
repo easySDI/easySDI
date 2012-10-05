@@ -14,7 +14,7 @@ defined('_JEXEC') or die;
 JHtml::_('behavior.tooltip');
 JHTML::_('script','system/multiselect.js',false,true);
 // Import CSS
-$document = &JFactory::getDocument();
+$document = JFactory::getDocument();
 $document->addStyleSheet('components/com_easysdi_user/assets/css/easysdi_user.css');
 
 $user	= JFactory::getUser();

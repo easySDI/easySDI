@@ -33,16 +33,16 @@ class Easysdi_userViewUser extends JView
 		$this->item		= $this->get('Item');
 		$this->form		= $this->get('Form');
 		
-		$this->contactaddressmodel 	= & JModel::getInstance('address', 'easysdi_userModel');
+		$this->contactaddressmodel 	= JModel::getInstance('address', 'easysdi_userModel');
 		$this->contactitem 			= $this->contactaddressmodel->getItemByUserID($this->item->id,1);
 
-		$this->billingaddressmodel 	= & JModel::getInstance('address', 'easysdi_userModel');
+		$this->billingaddressmodel 	= JModel::getInstance('address', 'easysdi_userModel');
 		$this->billingitem 			= $this->billingaddressmodel->getItemByUserID($this->item->id,2);
 		
-		$this->delivryaddressmodel 	= & JModel::getInstance('address', 'easysdi_userModel');
+		$this->delivryaddressmodel 	= JModel::getInstance('address', 'easysdi_userModel');
 		$this->delivryitem 			= $this->delivryaddressmodel->getItemByUserID($this->item->id,3);
 		
-		$app 				=& JFactory::getApplication();
+		$app 				= JFactory::getApplication();
 		$this->shop 		= $app->getUserState( 'com_easysdi_shop-installed');
 		
 		// Check for errors.
