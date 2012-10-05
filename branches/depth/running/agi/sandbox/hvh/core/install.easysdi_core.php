@@ -1524,9 +1524,19 @@ function com_install(){
 	}
 	if ($version == "2.3.0")
 	{
-	
 		// Update component version
 		$version="2.4.0";
+		$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='CORE'";
+		$db->setQuery( $query);
+		if (!$db->query())
+		{
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+	}
+	if ($version == "2.4.0")
+	{
+		// Update component version
+		$version="2.5.0";
 		$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='CORE'";
 		$db->setQuery( $query);
 		if (!$db->query())

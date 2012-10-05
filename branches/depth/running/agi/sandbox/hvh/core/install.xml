@@ -1,8 +1,8 @@
 <?xml version="1.0"  ?>
 <install version="1.5" type="component">
 	<name>EasySDI_core</name>
-	<version>2.4.0</version>
-	<releaseDate>2012-05-25</releaseDate>
+	<version>2.5.0</version>
+	<releaseDate>2012-10-15</releaseDate>
     <releaseType>Minor update</releaseType>
 	<creationDate>January 2011</creationDate>
 	<author>Depth.ch</author>
