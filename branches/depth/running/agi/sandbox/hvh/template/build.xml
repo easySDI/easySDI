@@ -11,9 +11,6 @@
 
 	<target name="create-structure">
 		<echo>Creating the working directory structure</echo>
-		<delete>
-			<fileset dir="${projet.out.dir}" includes="*" />
-		</delete>
 		<mkdir dir="${projet.out.dir}" />
 	</target>
 
