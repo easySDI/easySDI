@@ -1325,8 +1325,6 @@ function validateForm(toStep, fromStep){
 			$resource = JRequest::getVar('resource');
 			
 			if($resource){
-				$resource = "http://forge.easysdi.org/attachments/download/459/com_easysdi_proxy.zip";
-				
 				$handle = fopen($resource, "r");
 				if(!$handle)
 				{
