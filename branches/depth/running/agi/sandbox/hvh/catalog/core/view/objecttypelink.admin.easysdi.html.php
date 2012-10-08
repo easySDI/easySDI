@@ -151,18 +151,31 @@ function listObjectTypeLink(&$rows, $page, $option,  $filter_order_Dir, $filter_
 		{
 			var tr = document.createElement('tr');
 			var trid = "tr_"+document.getElementById('nbxpath').value;
-			tr.setAttribute('id', trid);
+			tr.id =trid;
+
+			var tdbutton = document.createElement('td');
+			var divbutton = document.createElement('div');
+			divbutton.setAttribute('class', 'fieldset-delete-icon');
+			divbutton.setAttribute('title', '<?php echo JText::_( 'CATALOG_OBJECTTYPELINK_INHERITANCE_DELETE_XPATH');?>');
+			divbutton.onclick = (function(){return function (){deleteXPath(trid);}})();
+			tdbutton.appendChild(divbutton);
+			tr.appendChild(tdbutton);
+			
 			var tdParam = document.createElement('td');	
 			var inputParam = document.createElement('input');
-			inputParam.size=250;
+			inputParam.size=200;
+			inputParam.maxlength=250;
 			inputParam.type="text";
+			inputParam.setAttribute('class', 'text_area');
 			inputParam.name="xpath_"+document.getElementById('nbxpath').value;
 			tdParam.appendChild(inputParam);
 			tr.appendChild(tdParam);
 			document.getElementById('inheritancexpathtable').appendChild(tr);
 			document.getElementById('nbxpath').value = parseInt(document.getElementById('nbxpath').value) + 1 ;
+
+			
 		}
-		function removeXPath(trid)
+		function deleteXPath(trid)
 		{
 			var tr = document.getElementById(trid);
 			var table = tr.getParent();
@@ -244,33 +257,36 @@ function listObjectTypeLink(&$rows, $page, $option,  $filter_order_Dir, $filter_
 					</td>
 				</tr>	
 			</table>
+			
 			<fieldset>
-					<legend align="top"><?php echo JText::_("CATALOG_OBJECTTYPELINK_INHERITANCE"); ?>
-						
-					</legend>
+				<legend align="top"><?php echo JText::_("CATALOG_OBJECTTYPELINK_INHERITANCE"); ?></legend>
 				<table>
 					<tr>
 						<td width=150><?php echo JText::_("CATALOG_OBJECTTYPELINK_INHERITANCE_LABEL"); ?></td>
 						<?php if ($pageReloaded) $inheritance = $_POST['inheritance']; else $inheritance = $row->inheritance; ?>
 						<td><?php echo JHTML::_('select.booleanlist', 'inheritance', 'onclick="enableXPath(this.value)"', $inheritance); ?> </td>							
 					</tr>
-					
 				</table>
 				<div id="inheritance" style="<?php if($inheritance == 0) echo 'display:none'; else echo 'display:block';?>">
-					<table  class="admintable">
+					<table >
 						<thead>
 							<tr>
 								<th>
 								<table>
-								<tr><td>
-								<b><?php echo JText::_( 'CATALOG_OBJECTTYPELINK_INHERITANCE_XPATH'); ?></b>
-								</td>								
-								<td><div title="<?php echo JText::_( 'CATALOG_OBJECTTYPELINK_INHERITANCE_ADD_XPATH');?>" class="fieldset-add-icon" onClick="addXPath();"></div>
-								</td></tr>
+									<tr>
+										<td>
+											<b><?php echo JText::_( 'CATALOG_OBJECTTYPELINK_INHERITANCE_XPATH'); ?></b>
+										</td>								
+										<td>
+											<div title="<?php echo JText::_( 'CATALOG_OBJECTTYPELINK_INHERITANCE_ADD_XPATH');?>" class="fieldset-add-icon" onClick="addXPath();"></div>
+										</td>
+									</tr>
 								</table>
 								</th>		
 							</tr>
 						</thead>
+						</table>
+						<table>
 						<tbody id="inheritancexpathtable">
 							<?php 
 								$i = 0;
@@ -278,14 +294,14 @@ function listObjectTypeLink(&$rows, $page, $option,  $filter_order_Dir, $filter_
 								foreach ($xpathlist as $xpath)
 								{			
 									?>
-									<tr>
-										<td><input name="xpath_<?php echo $i;?>" type="text" class="text_area" size="250" value='<?php echo $xpath->xpath; ?>'></td>
+									<tr id="tr_<?php echo $i;?>">
+										<td><div class="fieldset-delete-icon" title="<?php echo JText::_( 'CATALOG_OBJECTTYPELINK_INHERITANCE_DELETE_XPATH');?>"  onClick="deleteXPath('tr_<?php echo $i;?>');"></div></td>
+										<td><input name="xpath_<?php echo $i;?>" type="text" class="text_area" size="200" maxlength="250" value='<?php echo $xpath->xpath; ?>'></td>
 									</tr>
 									<?php 
 									$i  ++;
 								} 
 							?>
-							
 						</tbody>
 					</table>
 				</div>
