@@ -1,4 +1,4 @@
-/** menu icons **/
+ /** menu icons **/
 
 
 
@@ -224,7 +224,16 @@ div.header_sdi {
 
 .fieldset-add-icon {
 	background-color:transparent;
-    background-image: url("../images/add.png");
+    background-image: url("../../../../../templates/easysdi/icons/silk/add.png");
+    background-position:0 0;
+    background-repeat:no-repeat;
+    height:20px;
+    width:20px;
+}
+
+.fieldset-delete-icon {
+	background-color:transparent;
+    background-image: url("../../../../../templates/easysdi/icons/silk/delete.png");
     background-position:0 0;
     background-repeat:no-repeat;
     height:20px;
