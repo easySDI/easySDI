@@ -152,13 +152,21 @@ class HTML_shop
 				if ($db->getErrorNum()) {
 					$hasPreview = 0;
 				}
-				$query = "select count(*) from #__sdi_product p 
-										INNER JOIN #__sdi_product_file pf ON p.id=pf.product_id 
-										where  p.id = $row->id";
-				$db->setQuery( $query);
-				$hasProductFile = $db->loadResult();
-				if ($db->getErrorNum()) {
-					$hasProductFile = 0;
+				
+				if($row->pathfile || $row->grid_id)
+				{
+					$hasProductFile = 1;
+				}
+				else 
+				{
+					$query = "select count(*) from #__sdi_product p 
+											INNER JOIN #__sdi_product_file pf ON p.id=pf.product_id 
+											where  p.id = $row->id";
+					$db->setQuery( $query);
+					$hasProductFile = $db->loadResult();
+					if ($db->getErrorNum()) {
+						$hasProductFile = 0;
+					}
 				}
 				$product = new product($db);
 				$product->load($row->id);
