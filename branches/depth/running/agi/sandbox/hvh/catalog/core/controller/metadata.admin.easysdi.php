@@ -4344,9 +4344,12 @@ class ADMIN_metadata {
 				foreach ($xpathlist as $xpath)
 				{
 					$node = $parentvaluelist[$xpath];
-					$node = $childcsw->importNode($node, TRUE);
+
+					//Parent value for a Xpath can be null/empty : corresponding values in the children md have to be null as well
+					if($node)
+						$node = $childcsw->importNode($node, TRUE);
 					
- 					$nodeList = $childxpath->query($xpath);
+					$nodeList = $childxpath->query($xpath);
  					if($nodeList->length > 1)
  					{
  						//Plusieur occurence du noeud dans la métadonnée enfant
@@ -4357,7 +4360,7 @@ class ADMIN_metadata {
  						$first = true;
  						foreach ($nodeList as $nodeToRemove )
  						{
- 							if($first)
+ 							if($first && $node)
  							{
  								$first = false;
  								$parentNode->replaceChild($node, $nodeToRemove);
@@ -4369,7 +4372,8 @@ class ADMIN_metadata {
  						}
  						
  					}
- 					else if ($nodeList->length == 0)
+ 					else if ($nodeList->length == 0 && $node)//Node does exist in the parent MD 
+ 					//if node does not exist in parent MD [if ($nodeList->length == 0 && !$node)], nothing has to be created in children MD
  					{
  						//Node doesn't exist in the child metadata, it has to be created, so do its missing parents.
  						$offset = 1;
@@ -4417,13 +4421,17 @@ class ADMIN_metadata {
  								$offset = $pos + 1;
  						}
  					}
- 					else if($nodeList->length == 1)
+ 					else if($nodeList->length == 1 && $node)//Node does exist in the parent MD 
  					{
  						//Node exists just one time in the child metadata : it is replaced
  						$nodeList->item(0)->parentNode->replaceChild($node, $nodeList->item(0));
  					}
+ 					else if($nodeList->length == 1 ) //Node does not exist in the parent MD (!$node)
+ 					{
+ 						//Node exists just one time in the child metadata : it is removed
+ 						$nodeList->item(0)->parentNode->removeChild($nodeList->item(0));
+ 					}
 				}
-
 				$updated = ADMIN_metadata::CURLUpdateMetadata($childguid, $childcsw);
 				
 				$rowChildMetadata = new metadataByGuid( $db );
