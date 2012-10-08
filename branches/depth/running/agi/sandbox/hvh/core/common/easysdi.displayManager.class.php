@@ -2087,7 +2087,7 @@ class displayManager{
 		}
 		$XMLSdi->appendChild($XMLExternalApp);
 			
-		$doc->save("C:/tmp/temp1.xml");
+// 		$doc->save("C:/tmp/temp1.xml");
 		                     
 		return $doc;
 	}
