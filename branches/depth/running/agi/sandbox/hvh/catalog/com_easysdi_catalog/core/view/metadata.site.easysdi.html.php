@@ -6374,16 +6374,10 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 				</tr>
 				</tbody>
 			</table>
-			<table>
-				<tr>
-					<td>
-						<input type="submit" id="validate_button" name="validate_button" class="submit" value ="<?php echo JText::_("CORE_VALIDATE"); ?>" onClick="document.getElementById('metadataPublishedForm').task.value='setMetadataPublished';document.getElementById('metadataPublishedForm').submit();"/>
-					</td>
-					<td>
-						<input type="submit" id="cancel_button" name="cancel_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="document.getElementById('metadataPublishedForm').task.value='listMetadata';document.getElementById('listMetadata').submit();"/>
-					</td>
-				</tr>
-			</table>
+			<div>
+				<input type="submit" id="validate_button" name="validate_button" class="submit" value ="<?php echo JText::_("CORE_VALIDATE"); ?>" onClick="document.getElementById('metadataPublishedForm').task.value='setMetadataPublished';document.getElementById('metadataPublishedForm').submit();"/>
+				<input type="submit" id="cancel_button" name="cancel_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="document.getElementById('metadataPublishedForm').task.value='listMetadata';document.getElementById('listMetadata').submit();"/>
+			</div>
 			<input type="hidden" name="option" value="<?php echo $option; ?>">
 			<input type="hidden" id="task" name="task" value="metadataPublished">
 			<input type="hidden" id="guid" name="guid" value="<?php echo $metadata->guid;?>">
