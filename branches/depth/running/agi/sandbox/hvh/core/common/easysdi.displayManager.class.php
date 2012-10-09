@@ -2020,7 +2020,7 @@ class displayManager{
 				 INNER JOIN #__sdi_objectversionlink ovl ON ov.id = ovl.child_id
 				 LEFT OUTER JOIN #__sdi_translation t on t.element_guid = m.guid
 				 LEFT OUTER JOIN #__sdi_language l ON t.language_id=l.id
-				 LEFT OUTER JOIN (SELECT * FROM  #__sdi_list_codelang WHERE code='".$language->_lang."') cl ON l.codelang_id=cl.id
+				 INNER JOIN (SELECT * FROM  #__sdi_list_codelang WHERE code='".$language->_lang."') cl ON l.codelang_id=cl.id
 				 WHERE ovl.parent_id=".$rowObjectVersion->id;
 		$db->setQuery($query);
 		$childs = $db->loadObjectList();
@@ -2034,7 +2034,7 @@ class displayManager{
 				 INNER JOIN #__sdi_objectversionlink ovl ON ov.id = ovl.parent_id
 				 LEFT OUTER JOIN #__sdi_translation t on t.element_guid = m.guid
 				 LEFT OUTER JOIN #__sdi_language l ON t.language_id=l.id
-				 LEFT OUTER JOIN (SELECT * FROM  #__sdi_list_codelang WHERE code='".$language->_lang."') cl ON l.codelang_id=cl.id
+				 INNER JOIN (SELECT * FROM  #__sdi_list_codelang WHERE code='".$language->_lang."') cl ON l.codelang_id=cl.id
 				 WHERE ovl.child_id=".$rowObjectVersion->id;
 		$db->setQuery($query);
 		$parents = $db->loadObjectList();
@@ -2087,7 +2087,7 @@ class displayManager{
 		}
 		$XMLSdi->appendChild($XMLExternalApp);
 			
-// 		$doc->save("C:/tmp/temp1.xml");
+//  		$doc->save("C:/tmp/temp1.xml");
 		                     
 		return $doc;
 	}
