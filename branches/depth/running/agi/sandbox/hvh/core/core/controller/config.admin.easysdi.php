@@ -329,11 +329,19 @@ class ADMIN_config {
 			if (!$database->query()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
-			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes(trim($_POST['metadatapreviewtype']))."\" WHERE code = 'CATALOG_METADATA_PREVIEW_TYPE'");
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes(trim($_POST['metadatapreviewtypepublic']))."\" WHERE code = 'CATALOG_METADATA_PREVIEW_TYPE_PUBLIC'");
 			if (!$database->query()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
-			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes(trim($_POST['metadatapreviewcontext']))."\" WHERE code = 'CATALOG_METADATA_PREVIEW_CONTEXT'");
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes(trim($_POST['metadatapreviewcontextpublic']))."\" WHERE code = 'CATALOG_METADATA_PREVIEW_CONTEXT_PUBLIC'");
+			if (!$database->query()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes(trim($_POST['metadatapreviewtypeeditor']))."\" WHERE code = 'CATALOG_METADATA_PREVIEW_TYPE_EDITOR'");
+			if (!$database->query()) {
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			}
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes(trim($_POST['metadatapreviewcontexteditor']))."\" WHERE code = 'CATALOG_METADATA_PREVIEW_CONTEXT_EDITOR'");
 			if (!$database->query()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}

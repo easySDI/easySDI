@@ -326,6 +326,55 @@ if ($catalogItem > 0){
 									</tr>
 									<tr>
 										<td valign="top"  colspan="2">
+										
+													<fieldset class="adminform">
+														<legend>
+														<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_METADATA_PREVIEW' ); ?>
+														</legend>
+		
+														<table class="admintable" cellspacing="1">
+															<thead>
+															<tr>
+																<th class='title'></th>
+																<th class='title editlinktip hasTip' title="<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_METADATA_PREVIEW_PUBLIC_TIP' ); ?>"><?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_METADATA_PREVIEW_PUBLIC' ); ?></th>
+																<th class='title editlinktip hasTip' title="<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_METADATA_PREVIEW_EDITOR_TIP' ); ?>"><?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_METADATA_PREVIEW_EDITOR' ); ?></th>
+															</tr>
+															</thead>
+															<tbody>
+															<tr>
+																<td valign="top" class="key">
+																	<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_METADATA_PREVIEW_TYPE_TITLE' ); ?>">
+																		<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_METADATA_PREVIEW_TYPE_LABEL' ); ?>
+																	</span>
+																</td>
+																<td>
+																	<?php echo JHTML::_("select.genericlist",$metadatapreviewtypelist, 'metadatapreviewtypepublic', 'size="1" class="inputbox"', 'value', 'text',  $catalogList['CATALOG_METADATA_PREVIEW_TYPE_PUBLIC']->value ); ?>
+																</td>
+																<td>
+																	<?php echo JHTML::_("select.genericlist",$metadatapreviewtypelist, 'metadatapreviewtypeeditor', 'size="1" class="inputbox"', 'value', 'text',  $catalogList['CATALOG_METADATA_PREVIEW_TYPE_EDITOR']->value ); ?>
+																</td>
+															</tr>
+															<tr>
+																<td valign="top" class="key">
+																	<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_METADATA_PREVIEW_CONTEXT_TITLE' ); ?>">
+																		<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_METADATA_PREVIEW_CONTEXT_LABEL' ); ?>
+																	</span>
+																</td>
+																<td>
+																	<?php echo JHTML::_("select.genericlist",$metadatapreviewcontextlist, 'metadatapreviewcontextpublic', 'size="1" class="inputbox"', 'value', 'text', $catalogList['CATALOG_METADATA_PREVIEW_CONTEXT_PUBLIC']->value ); ?>
+																</td>
+																<td>
+																	<?php echo JHTML::_("select.genericlist",$metadatapreviewcontextlist, 'metadatapreviewcontexteditor', 'size="1" class="inputbox"', 'value', 'text', $catalogList['CATALOG_METADATA_PREVIEW_CONTEXT_EDITOR']->value ); ?>
+																</td>
+															</tr>
+															</tbody>
+														</table>
+													</fieldset>
+										
+										</td>
+									</tr>
+									<tr>
+										<td valign="top"  colspan="2">
 											<fieldset class="adminform">
 												<legend>
 												<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_METADATA_LINKED_FILE' ); ?>
@@ -356,38 +405,7 @@ if ($catalogItem > 0){
 											</fieldset>
 										</td>
 									</tr>
-									<tr>
-										<td valign="top"  colspan="2">
-											<fieldset class="adminform">
-												<legend>
-												<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_METADATA_PREVIEW' ); ?>
-												</legend>
-
-												<table class="admintable" cellspacing="1">
-													<tr>
-														<td valign="top" class="key">
-															<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_METADATA_PREVIEW_TYPE_TITLE' ); ?>">
-																<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_METADATA_PREVIEW_TYPE_LABEL' ); ?>
-															</span>
-														</td>
-														<td>
-															<?php echo JHTML::_("select.genericlist",$metadatapreviewtypelist, 'metadatapreviewtype', 'size="1" class="inputbox"', 'value', 'text',  $catalogList['CATALOG_METADATA_PREVIEW_TYPE']->value ); ?>
-														</td>
-													</tr>
-													<tr>
-														<td valign="top" class="key">
-															<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_METADATA_PREVIEW_CONTEXT_TITLE' ); ?>">
-																<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_METADATA_PREVIEW_CONTEXT_LABEL' ); ?>
-															</span>
-														</td>
-														<td>
-															<?php echo JHTML::_("select.genericlist",$metadatapreviewcontextlist, 'metadatapreviewcontext', 'size="1" class="inputbox"', 'value', 'text', $catalogList['CATALOG_METADATA_PREVIEW_CONTEXT']->value ); ?>
-														</td>
-													</tr>
-												</table>
-											</fieldset>
-										</td>
-									</tr>
+									
 									<tr>
 										<td valign="top"  colspan="2">
 											<fieldset class="adminform">
