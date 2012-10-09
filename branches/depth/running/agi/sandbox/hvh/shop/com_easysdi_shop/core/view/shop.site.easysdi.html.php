@@ -24,6 +24,8 @@ class HTML_shop
 	{
 		
 		$db =& JFactory::getDBO();
+		$previewtype 	= config_easysdi::getValue("CATALOG_METADATA_PREVIEW_TYPE_PUBLIC");
+		$previewcontext = config_easysdi::getValue("CATALOG_METADATA_PREVIEW_CONTEXT_PUBLIC");
 		?>
 		<div class="contentin">
 		<script>
@@ -201,7 +203,7 @@ class HTML_shop
 		     	<td class="mdActionViewFile"><span class="mdviewfile">
 			  	<a class="modal"
 						title="<?php echo JText::_("SHOP_SHOP_VIEW_MD_FILE"); ?>"
-						href="./index.php?tmpl=component&option=com_easysdi_core&task=showMetadata&id=<?php echo $row->metadata_guid;  ?>"
+						href="./index.php?tmpl=component&option=com_easysdi_core&task=showMetadata&type=<?php echo $previewtype;  ?>&context=<?php echo $previewcontext;  ?>&id=<?php echo $row->metadata_guid;  ?>"
 						rel="{handler:'iframe',size:{x:650,y:600}}"><?php echo JText::_("SHOP_SHOP_VIEW_MD_FILE"); ?>
 					</a></span>
 			  </td>
