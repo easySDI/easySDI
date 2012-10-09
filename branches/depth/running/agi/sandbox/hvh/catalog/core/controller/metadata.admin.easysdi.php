@@ -1851,8 +1851,8 @@ class ADMIN_metadata {
 		$xslFolder 	= "";
 		
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
-		$type = config_easysdi::getValue("CATALOG_METADATA_PREVIEW_TYPE");
-		$context = config_easysdi::getValue("CATALOG_METADATA_PREVIEW_CONTEXT");
+		$type = config_easysdi::getValue("CATALOG_METADATA_PREVIEW_TYPE_PUBLIC");
+		$context = config_easysdi::getValue("CATALOG_METADATA_PREVIEW_CONTEXT_PUBLIC");
 		
 		if (isset($context)){
 			$database->setQuery("SELECT xsldirectory FROM #__sdi_context WHERE code='".$context."'");

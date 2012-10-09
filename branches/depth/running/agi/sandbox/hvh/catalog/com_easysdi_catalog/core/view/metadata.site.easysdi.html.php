@@ -79,8 +79,8 @@ class HTML_metadata {
 		$database 		=& JFactory::getDBO(); 
 		$user 			= JFactory::getUser();
 		$app			= &JFactory::getApplication();
-		$previewtype 	= config_easysdi::getValue("CATALOG_METADATA_PREVIEW_TYPE");
-		$previewcontext = config_easysdi::getValue("CATALOG_METADATA_PREVIEW_CONTEXT");
+		$previewtype 	= config_easysdi::getValue("CATALOG_METADATA_PREVIEW_TYPE_EDITOR");
+		$previewcontext = config_easysdi::getValue("CATALOG_METADATA_PREVIEW_CONTEXT_EDITOR");
 		$router 		= &$app->getRouter();
 		$router->setVars($_REQUEST);
 		
@@ -527,13 +527,13 @@ class HTML_metadata {
 		$document->addStyleSheet($uri->base(true) . '/administrator/components/com_easysdi_catalog/templates/css/shThemeDefault.css');
 		$document->addStyleSheet($uri->base(true) . '/administrator/components/com_easysdi_catalog/templates/css/mapHelper.css');
 		
-		$url = 'index.php?option='.$option.'&task=saveMetadata';
-		$preview_url = 'index.php?option='.$option.'&task=previewXMLMetadata';
-		$previewMD_url = 'index.php?option='.$option.'&task=previewMetadata';
-		$invalidate_url = 'index.php?option='.$option.'&task=invalidateMetadata';
-		$validate_url = 'index.php?option='.$option.'&task=validateMetadata';
-		$update_url = 'index.php?option='.$option.'&task=updateMetadata';
-		$publish_url = 'index.php?option='.$option.'&task=validateForPublishMetadata';
+		$url 				= 'index.php?option='.$option.'&task=saveMetadata';
+		$preview_url 		= 'index.php?option='.$option.'&task=previewXMLMetadata';
+		$previewMD_url		= 'index.php?option='.$option.'&task=previewMetadata';
+		$invalidate_url 	= 'index.php?option='.$option.'&task=invalidateMetadata';
+		$validate_url 		= 'index.php?option='.$option.'&task=validateMetadata';
+		$update_url 		= 'index.php?option='.$option.'&task=updateMetadata';
+		$publish_url 		= 'index.php?option='.$option.'&task=validateForPublishMetadata';
 		
 		$user_id = $user->get('id');
 

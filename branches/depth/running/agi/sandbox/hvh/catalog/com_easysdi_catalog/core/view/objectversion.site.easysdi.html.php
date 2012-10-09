@@ -24,9 +24,9 @@ class HTML_objectversion {
 		$database 		=& JFactory::getDBO(); 
 		$user			=& JFactory::getUser();
 		$app			= &JFactory::getApplication();
-		$previewtype 	= config_easysdi::getValue("CATALOG_METADATA_PREVIEW_TYPE");
-		$previewcontext = config_easysdi::getValue("CATALOG_METADATA_PREVIEW_CONTEXT");
-		$router			 = &$app->getRouter();
+		$previewtype 	= config_easysdi::getValue("CATALOG_METADATA_PREVIEW_TYPE_EDITOR");
+		$previewcontext = config_easysdi::getValue("CATALOG_METADATA_PREVIEW_CONTEXT_EDITOR");
+		$router			= &$app->getRouter();
 		$router->setVars($_REQUEST);
 		
 		?>	
