@@ -1928,11 +1928,11 @@ function com_install(){
 			}
 			
 			//DROP #__sdi_list_attributetype CONSTRAINTS
-			$query="ALTER TABLE `#__sdi_list_attributetype` DROP FOREIGN KEY `#__sdi_list_attributetype_ibfk_1`;";
+		/*	$query="ALTER TABLE `#__sdi_list_attributetype` DROP FOREIGN KEY `#__sdi_list_attributetype_ibfk_1`;";
 			$db->setQuery( $query);
 			if (!$db->query()) {
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
-			}
+			}*/
 			
 			//DROP #__sdi_attribute CONSTRAINTS
 			$query="ALTER TABLE `#__sdi_attribute` DROP FOREIGN KEY `#__sdi_attribute_ibfk_1`;";

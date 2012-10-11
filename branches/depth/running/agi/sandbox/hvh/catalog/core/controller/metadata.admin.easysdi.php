@@ -4420,6 +4420,15 @@ class ADMIN_metadata {
  							else
  								$offset = $pos + 1;
  						}
+ 						//New nodes were created, so an update of the metadata is required before loop to the next XPath
+ 						$updated = ADMIN_metadata::CURLUpdateMetadata($childguid, $childcsw);
+ 						//And reload
+ 						$childcsw = simplexml_load_string(ADMIN_metadata::CURLRequest("GET", $catalogUrlGetRecordById));
+ 						$childcsw = $childcsw->children("http://www.isotc211.org/2005/gmd");
+ 						$childcsw = DOMDocument::loadXML('<?xml version="1.0" encoding="UTF-8"?>'.$childcsw->asXML());
+ 						$childxpath = new DOMXPath($childcsw);
+ 						foreach ($namespaces as $namespace)
+ 							$childxpath->registerNamespace($namespace->prefix, $namespace->uri);
  					}
  					else if($nodeList->length == 1 && $node)//Node does exist in the parent MD 
  					{

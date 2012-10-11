@@ -193,10 +193,10 @@ class HTML_metadata {
 					$database->setQuery ("SELECT count(ovl.id) FROM #__sdi_objectversionlink ovl
 											WHERE ovl.child_id = $row->version_id");
 					$hasParent = $database->loadResult();
-					if($hasParent == 0)//Metadata doesn't have parent, she is eligible for notification
+					if($hasParent == 0)//Metadata doesn't have parent, it is eligible for notification
 					{
 						$database->setQuery ("SELECT m.id FROM #__sdi_metadata m
-												INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = o.id
+												INNER JOIN #__sdi_objectversion ov ON ov.metadata_id = m.id
 												INNER JOIN #__sdi_objectversionlink ovl ON ovl.child_id = ov.id
 												WHERE ovl.parent_id = $row->version_id
 												AND m.metadatastate_id <> 3");
@@ -6336,17 +6336,11 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 				<?php }?>
 				</tbody>
 			</table>
-			<table id="selectAssignMetadataToolBar">
-				<tr>
-					<td>
+			<div id="selectAssignMetadataToolBar" class="row">
 					<input type="button" id="assign_button" name="assign_button"  value ="<?php echo JText::_("CORE_VALIDATE"); ?>" 
 						onClick="javascript:submitForm();"/>
-					</td>
-					<td>
-						<input type="submit" id="cancel_button" name="cancel_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="document.getElementById('selectAssignForm').task.value='listMetadata';document.getElementById('selectAssignForm').submit();"/>
-					</td>
-				</tr>
-			</table>
+					<input type="submit" id="cancel_button" name="cancel_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="document.getElementById('selectAssignForm').task.value='listMetadata';document.getElementById('selectAssignForm').submit();"/>
+			</div>
 
 			<input type="hidden" name="option" value="<?php echo $option; ?>">
 			<input type="hidden" name="object_id" value="<?php echo $sourceobject->object_id; ?>">
@@ -6374,7 +6368,7 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 				</tr>
 				</tbody>
 			</table>
-			<div>
+			<div class="row">
 				<input type="submit" id="validate_button" name="validate_button" class="submit" value ="<?php echo JText::_("CORE_VALIDATE"); ?>" onClick="document.getElementById('metadataPublishedForm').task.value='setMetadataPublished';document.getElementById('metadataPublishedForm').submit();"/>
 				<input type="submit" id="cancel_button" name="cancel_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="document.getElementById('metadataPublishedForm').task.value='listMetadata';document.getElementById('listMetadata').submit();"/>
 			</div>
