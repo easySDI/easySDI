@@ -747,8 +747,8 @@ switch($task){
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'controller'.DS.'grid.admin.easysdi.php');
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'model'.DS.'grid.easysdi.class.php');
 		
-		ADMIN_grid::saveGrid(false,$option);
-		$mainframe->redirect("index.php?option=$option&task=editGrid&cid[]=".JRequest::getVar ('id', 0)  );
+		$id = ADMIN_grid::saveGrid(false,$option);
+		$mainframe->redirect("index.php?option=$option&task=editGrid&cid[]=".$id );
 		break;
 	case "copyGrid":
 		require_once(JPATH_COMPONENT_ADMINISTRATOR.DS.'core'.DS.'toolbar'.DS.'grid.toolbar.easysdi.html.php');

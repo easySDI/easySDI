@@ -95,6 +95,7 @@ class ADMIN_grid {
 			$mainframe->redirect("index.php?option=$option&task=listGrid" );
 			exit();
 		}
+		$grid->id = null;
 		
 		$service_type = JRequest::getVar('service_type_wms');
 		if($service_type == "via_proxy")
@@ -125,9 +126,8 @@ class ADMIN_grid {
 			exit();
 		}
 		
-		if ($returnList == true) {			
-			$mainframe->redirect("index.php?option=$option&task=listGrid");
-		}
+		return $grid->id;
+		
 	}
 		
 	function deleteGrid($cid ,$option){
@@ -144,7 +144,7 @@ class ADMIN_grid {
 			$grid = new grid( $db );
 			$grid->load( $id );
 					
-			if (!$Grid->delete()) {
+			if (!$grid->delete()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 				$mainframe->redirect("index.php?option=$option&task=listGrid" );
 			}												
