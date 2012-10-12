@@ -2023,15 +2023,24 @@ class HTML_shop
 									<input
 										onClick="document.getElementById('task').value = 'shop'; try{ window.parent.document.getElementById('sbox-window').close();}catch(err){javascript:history.back();}"
 										type="button"
+										id="denyTerm-button"
 										class="button"
 										value='<?php echo JText::_("SHOP_SHOP_PRODUCT_TERMS_DENY"); ?>'> 
 								</td>
 								<td width="50%" align="left">
 									<input 
-									onClick="document.getElementById('task').value = 'downloadProduct';document.getElementById('product_id').value = '<?php echo $id; ?>';document.getElementById('dlProductForm').submit();try{ window.parent.document.getElementById('sbox-window').close();}catch(err){}"
+									onClick="document.getElementById('denyTerm-button').disabled='disabled';document.getElementById('acceptTerm-button').disabled='disabled';document.getElementById('task').value = 'downloadProduct';document.getElementById('product_id').value = '<?php echo $id; ?>';document.getElementById('dlProductForm').submit();try{ window.parent.document.getElementById('sbox-window').close();}catch(err){}"
 									type="button"
+									id="acceptTerm-button"
 									class="button"
 									value='<?php echo JText::_("SHOP_SHOP_PRODUCT_TERMS_ACCEPT"); ?>'> 
+								</td>
+								<td width="50%" align="left">
+									<input 
+									onClick="try{ window.parent.document.getElementById('sbox-window').close();}catch(err){javascript:history.go(<?php if( JRequest::getVar('resource') ) echo -2 ; else echo -1;?>);}"
+									type="button"
+									class="button"
+									value='<?php echo JText::_("SHOP_RETURN_BUTTON"); ?>'> 
 								</td>
 							</tr>
 						</table>

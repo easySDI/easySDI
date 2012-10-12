@@ -123,7 +123,7 @@ switch($task){
 		require_once(JPATH_COMPONENT.DS.'core'.DS.'view'.DS.'shop.site.easysdi.html.php');
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.displayManager.class.php');
 							
-				SITE_shop::deleteProduct();
+		SITE_shop::deleteProduct();
 
 	/*****************************************************************************************************************************
 	 * Order
