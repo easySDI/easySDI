@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<extensionset name="EasySDI" description="EasySDI">
-   <extension name="EasySDI" element="pkg_easysdi" type="package" version="3.0.0" detailsurl="http://deploy.easysdi.org/joomla25/extension.xml"/>
-</extensionset>
