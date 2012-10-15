@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--This example describes a process which accepts a WFS request to the proxy and transforms the response
+into an output report format. -->
+<ProcessDescriptions xmlns="http://www.opengeospatial.net/wps" xmlns:wps="http://www.opengeospatial.net/wps" xmlns:ows="http://www.opengeospatial.net/ows" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengeospatial.net/wps
+..\wpsDescribeProcess.xsd">
+DESCRIPTIONS
+</ProcessDescriptions>
