@@ -15,7 +15,7 @@ jimport('joomla.application.component.view');
 /**
  * View class for a list of Easysdi_service.
  */
-class Easysdi_serviceViewConfig extends JView
+class Easysdi_serviceViewVirtualService extends JView
 {
 
 	/**
@@ -32,14 +32,14 @@ class Easysdi_serviceViewConfig extends JView
 		JToolBarHelper::title(JText::_('COM_EASYSDI_SERVICE_TITLE_CONFIG')." : ".$this->id, 'module.png');
 		
 		if(JRequest::getVar('layout',null)!='CSW' &&  $canDo->get('core.edit'))
-			JToolBarHelper::addNew('config.addserver',JText::_( 'COM_EASYSDI_SERVICE_NEW_SERVER'));
+			JToolBarHelper::addNew('virtualservice.addserver',JText::_( 'COM_EASYSDI_SERVICE_NEW_SERVER'));
 		
 		
 		if ((!isset($this->id)&& $canDo->get('core.create')) || (isset($this->id)&& $canDo->get('core.edit'))){
-			JToolBarHelper::save('config.save', 'JTOOLBAR_SAVE');
+			JToolBarHelper::save('virtualservice.save', 'JTOOLBAR_SAVE');
 		}
 		
-		JToolBarHelper::cancel('config.cancel', 'JTOOLBAR_CANCEL');
+		JToolBarHelper::cancel('virtualservice.cancel', 'JTOOLBAR_CANCEL');
 	}
 	
 	/**
@@ -51,11 +51,11 @@ class Easysdi_serviceViewConfig extends JView
 		<script type="text/javascript">
 		Joomla.submitbutton = function(task)
 		{
-			if (task == 'config.addserver') 
+			if (task == 'virtualservice.addserver') 
 			{
 				addNewServer();
 			}
-			else if (task == 'config.save') 
+			else if (task == 'virtualservice.save') 
 			{
 				if(document.getElementById('service_title').value == ""  )
 				{
@@ -242,7 +242,7 @@ class Easysdi_serviceViewConfig extends JView
 		$db->setQuery("SELECT 0 AS id, '- Please select -' AS value UNION SELECT id, value FROM #__sdi_sys_serviceconnector WHERE state = 1") ;
 		$this->serviceconnectorlist = $db->loadObjectList();
 		
-		$db->setQuery("SELECT 0 AS alias, '- Please select -' AS value UNION SELECT s.alias as alias,CONCAT(s.alias, ' - ', s.resourceurl,' - [',GROUP_CONCAT(syv.value SEPARATOR '-'),']') as value FROM #__sdi_service s
+		$db->setQuery("SELECT 0 AS alias, '- Please select -' AS value UNION SELECT s.alias as alias,CONCAT(s.alias, ' - ', s.resourceurl,' - [',GROUP_CONCAT(syv.value SEPARATOR '-'),']') as value FROM #__sdi_physicalservice s
 				INNER JOIN #__sdi_service_servicecompliance sc ON sc.service_id = s.id
 				INNER JOIN #__sdi_sys_servicecompliance syc ON syc.id = sc.servicecompliance_id
 				INNER JOIN #__sdi_sys_serviceversion syv ON syv.id = syc.serviceversion_id
@@ -251,7 +251,7 @@ class Easysdi_serviceViewConfig extends JView
 				AND s.state= 1
 				GROUP BY s.id") ;
 		$this->servicelist = $db->loadObjectList();
-				
+		
 		$this->addToolbar();
 		parent::display($tpl);
 	}

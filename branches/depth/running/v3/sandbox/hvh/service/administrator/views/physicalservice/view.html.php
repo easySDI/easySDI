@@ -15,7 +15,7 @@ jimport('joomla.application.component.view');
 /**
  * View to edit
  */
-class Easysdi_serviceViewService extends JView
+class Easysdi_serviceViewPhysicalService extends JView
 {
 	protected $state;
 	protected $item;
@@ -100,7 +100,7 @@ class Easysdi_serviceViewService extends JView
         }
         
         $state	= $this->get('State');
-		$this->canDo		= Easysdi_serviceHelper::getActions($state->get('filter.category_id'), $this->item->id);
+		$this->canDo		= Easysdi_serviceHelper::getActions('physical',$state->get('filter.category_id'), $this->item->id);
 
 		JToolBarHelper::title(JText::_('COM_EASYSDI_SERVICE_TITLE_SERVICE'), 'links.png');
 		
@@ -112,11 +112,11 @@ class Easysdi_serviceViewService extends JView
 		)
 		{
 
-			JToolBarHelper::apply('service.apply', 'JTOOLBAR_APPLY');
-			JToolBarHelper::save('service.save', 'JTOOLBAR_SAVE');
+			JToolBarHelper::apply('physicalservice.apply', 'JTOOLBAR_APPLY');
+			JToolBarHelper::save('physicalservice.save', 'JTOOLBAR_SAVE');
 		}
 		if (!$checkedOut && $this->canDo->get('core.edit')&& $this->canDo->get('core.create')){
-			JToolBarHelper::custom('service.save2new', 'save-new.png', 'save-new_f2.png', 'JTOOLBAR_SAVE_AND_NEW', false);
+			JToolBarHelper::custom('physicalservice.save2new', 'save-new.png', 'save-new_f2.png', 'JTOOLBAR_SAVE_AND_NEW', false);
 		}
 		// If an existing item, can save to a copy.
 		//Alias must be change before saving (unique index) 
@@ -124,10 +124,10 @@ class Easysdi_serviceViewService extends JView
 // 			JToolBarHelper::custom('service.save2copy', 'save-copy.png', 'save-copy_f2.png', 'JTOOLBAR_SAVE_AS_COPY', false);
 // 		}
 		if (empty($this->item->id)) {
-			JToolBarHelper::cancel('service.cancel', 'JTOOLBAR_CANCEL');
+			JToolBarHelper::cancel('physicalservice.cancel', 'JTOOLBAR_CANCEL');
 		}
 		else {
-			JToolBarHelper::cancel('service.cancel', 'JTOOLBAR_CLOSE');
+			JToolBarHelper::cancel('physicalservice.cancel', 'JTOOLBAR_CLOSE');
 		}
 
 	}

@@ -15,7 +15,7 @@ jimport('joomla.application.component.modeladmin');
 /**
  * Easysdi_service model.
  */
-class Easysdi_serviceModelservice extends JModelAdmin
+class Easysdi_serviceModelphysicalservice extends JModelAdmin
 {
 	/**
 	 * @var		string	The prefix to use with controller messages.
@@ -33,7 +33,7 @@ class Easysdi_serviceModelservice extends JModelAdmin
 	 * @return	JTable	A database object
 	 * @since	1.6
 	 */
-	public function getTable($type = 'Service', $prefix = 'Easysdi_serviceTable', $config = array())
+	public function getTable($type = 'PhysicalService', $prefix = 'Easysdi_serviceTable', $config = array())
 	{
 		return JTable::getInstance($type, $prefix, $config);
 	}
@@ -55,7 +55,7 @@ class Easysdi_serviceModelservice extends JModelAdmin
 				return ;
 			}
 			if (!empty($record->catid)) {
-				return $user->authorise('core.delete', 'com_easysdi_service.category.'.(int) $record->catid);
+				return $user->authorise('core.delete', 'com_easysdi_service.physicalservice.category.'.(int) $record->catid);
 			}
 			// Default to component settings if category not known.
 			else {
@@ -78,7 +78,7 @@ class Easysdi_serviceModelservice extends JModelAdmin
 	
 		// Check against the category.
 		if (!empty($record->catid)) {
-			return $user->authorise('core.edit.state', 'com_easysdi_service.category.'.(int) $record->catid);
+			return $user->authorise('core.edit.state', 'com_easysdi_service.physicalservice.category.'.(int) $record->catid);
 		}
 		// Default to component settings if category not known.
 		else {
@@ -100,7 +100,7 @@ class Easysdi_serviceModelservice extends JModelAdmin
 		$app	= JFactory::getApplication();
 
 		// Get the form.
-		$form = $this->loadForm('com_easysdi_service.service', 'service', array('control' => 'jform', 'load_data' => $loadData));
+		$form = $this->loadForm('com_easysdi_service.physicalservice', 'physicalservice', array('control' => 'jform', 'load_data' => $loadData));
 		if (empty($form)) {
 			return false;
 		}
@@ -117,7 +117,7 @@ class Easysdi_serviceModelservice extends JModelAdmin
 	protected function loadFormData()
 	{
 		// Check the session for previously entered form data.
-		$data = JFactory::getApplication()->getUserState('com_easysdi_service.edit.service.data', array());
+		$data = JFactory::getApplication()->getUserState('com_easysdi_service.edit.physicalservice.data', array());
 
 		if (empty($data)) {
 			$data = $this->getItem();
@@ -170,7 +170,7 @@ class Easysdi_serviceModelservice extends JModelAdmin
 			// Set ordering to the last item if not set
 			if (@$table->ordering === '') {
 				$db = JFactory::getDbo();
-				$db->setQuery('SELECT MAX(ordering) FROM #__sdi_service');
+				$db->setQuery('SELECT MAX(ordering) FROM #__sdi_physicalservice');
 				$max = $db->loadResult();
 				$table->ordering = $max+1;
 			}

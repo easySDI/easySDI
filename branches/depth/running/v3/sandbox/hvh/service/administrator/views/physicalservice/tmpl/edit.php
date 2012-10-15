@@ -19,7 +19,7 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 <script type="text/javascript">
 	Joomla.submitbutton = function(task)
 	{
-		if (task == 'service.cancel' || document.formvalidator.isValid(document.id('service-form'))) {
+		if (task == 'physicalservice.cancel' || document.formvalidator.isValid(document.id('service-form'))) {
 			Joomla.submitform(task, document.getElementById('service-form'));
 		}
 		else {

@@ -71,6 +71,6 @@ class Easysdi_serviceViewPolicies extends JView
 		    JToolBarHelper::deleteList('', 'policy.delete','JTOOLBAR_DELETE');
 		} 
 		JToolBarHelper::divider();
-		JToolBarHelper::back('JTOOLBAR_BACK','index.php?option=com_easysdi_service&view=configs');
+		JToolBarHelper::back('JTOOLBAR_BACK','index.php?option=com_easysdi_service&view=virtualservices');
 	}
 }

@@ -23,7 +23,7 @@ $limitstart = JRequest::getVar('limitstart',0);
 $limit = JRequest::getVar('limit',15);
 $search = JRequest::getVar('search','');
 ?>
-<form action="<?php echo JRoute::_('index.php?option=com_easysdi_service&view=configs&'); ?>" method="post" name="adminForm" id="adminForm">
+<form action="<?php echo JRoute::_('index.php?option=com_easysdi_service&view=virtualservices&'); ?>" method="post" name="adminForm" id="adminForm">
 	<fieldset id="filter-bar">
 		<div class="filter-search fltlft">
 			<label class="filter-search-lbl" for="filter_search"><?php echo JText::_('JSEARCH_FILTER_LABEL'); ?></label>
@@ -80,7 +80,7 @@ $search = JRequest::getVar('search','');
 				<?php echo JHtml::_('grid.id', $i, $config['id']); ?>
 			</td>
 			<td>
-				<a href="<?php echo JRoute::_('index.php?option=com_easysdi_service&task=config.edit&cid[]='.$config['id']).'&layout='.$layout;?>"><?php echo $config['id'];?></a>
+				<a href="<?php echo JRoute::_('index.php?option=com_easysdi_service&task=virtualservice.edit&cid[]='.$config['id']).'&layout='.$layout;?>"><?php echo $config['id'];?></a>
 			</td>
 			<td class="center">
 				<a href="<?php echo JRoute::_('index.php?option=com_easysdi_service&view=policies&config='.$config['id'].'&connector='.$layout);?>">

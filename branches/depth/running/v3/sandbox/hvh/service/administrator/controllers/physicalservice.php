@@ -15,7 +15,7 @@ jimport('joomla.application.component.controllerform');
 /**
  * Service controller class.
  */
-class Easysdi_serviceControllerService extends JControllerForm
+class Easysdi_serviceControllerPhysicalService extends JControllerForm
 {
 
     function __construct() {
@@ -23,7 +23,7 @@ class Easysdi_serviceControllerService extends JControllerForm
     	//Need to be add here even if it is in administrator/controller.php 
     	require_once JPATH_COMPONENT.DS.'helpers'.DS.'easysdi_service.php';
     	
-        $this->view_list = 'services';
+        $this->view_list = 'physicalservices';
         parent::__construct();
     }
 
@@ -46,7 +46,7 @@ class Easysdi_serviceControllerService extends JControllerForm
     	if ($categoryId)
     	{
     		// If the category has been passed in the URL check it.
-    		$allow	= $user->authorise('core.create', $this->option . '.category.' . $categoryId);
+    		$allow	= $user->authorise('core.create', $this->option . '.physicalservice.category.' . $categoryId);
     	}
     
     	if ($allow === null)
@@ -85,7 +85,7 @@ class Easysdi_serviceControllerService extends JControllerForm
     	if ($categoryId)
     	{
     		// The category has been set. Check the category permissions.
-    		return $user->authorise('core.edit', $this->option . '.category.' . $categoryId);
+    		return $user->authorise('core.edit', $this->option . '.physicalservice.category.' . $categoryId);
     	}
     	else
     	{

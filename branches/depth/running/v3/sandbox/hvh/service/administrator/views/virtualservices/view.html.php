@@ -15,7 +15,7 @@ jimport('joomla.application.component.view');
 /**
  * View class for a list of Easysdi_service.
  */
-class Easysdi_serviceViewConfigs extends JView
+class Easysdi_serviceViewVirtualServices extends JView
 {
 
 	/**
@@ -56,13 +56,13 @@ class Easysdi_serviceViewConfigs extends JView
 		JToolBarHelper::title(JText::_('COM_EASYSDI_SERVICE_TITLE_CONFIGS'), 'module.png');
 		
         if ($canDo->get('core.create')) {
-			JToolBarHelper::addNew('config.add','JTOOLBAR_NEW');
+			JToolBarHelper::addNew('virtualservice.add','JTOOLBAR_NEW');
 		}
 	    if ($canDo->get('core.edit')) {
-		    JToolBarHelper::editList('config.edit','JTOOLBAR_EDIT');
+		    JToolBarHelper::editList('virtualservice.edit','JTOOLBAR_EDIT');
 	    }
         if( $canDo->get('core.delete')) {
-		    JToolBarHelper::deleteList('', 'config.delete','JTOOLBAR_DELETE');
+		    JToolBarHelper::deleteList('', 'virtualservice.delete','JTOOLBAR_DELETE');
 		} 
 		JToolBarHelper::divider();
 		if ($canDo->get('core.admin')) {

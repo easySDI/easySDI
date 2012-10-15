@@ -18,7 +18,7 @@ $document = JFactory::getDocument();
 $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_service.css');
 
 ?>
-<form action="<?php echo JRoute::_('index.php?option=com_easysdi_service&view=config&id='.JRequest::getVar('id',null)); ?>" method="post" name="adminForm" id="item-form" class="form-validate">
+<form action="<?php echo JRoute::_('index.php?option=com_easysdi_service&view=virtualservice&id='.JRequest::getVar('id',null)); ?>" method="post" name="adminForm" id="item-form" class="form-validate">
 	<div class="width-60 fltlft">
 		
 			 <fieldset class="adminform"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_CONNECTOR_CHOICE' );?></legend>
