@@ -25,7 +25,7 @@ $canOrder	= $user->authorise('core.edit.state', 'com_easysdi_service');
 $saveOrder	= $listOrder == 'a.ordering';
 ?>
 
-<form action="<?php echo JRoute::_('index.php?option=com_easysdi_service&view=services'); ?>" method="post" name="adminForm" id="adminForm">
+<form action="<?php echo JRoute::_('index.php?option=com_easysdi_service&view=physicalservices'); ?>" method="post" name="adminForm" id="adminForm">
 	<fieldset id="filter-bar">
 		<div class="filter-search fltlft">
 			<label class="filter-search-lbl" for="filter_search"><?php echo JText::_('JSEARCH_FILTER_LABEL'); ?></label>
@@ -95,7 +95,7 @@ $saveOrder	= $listOrder == 'a.ordering';
 		</tfoot>
 		<tbody>
 		<?php foreach ($this->items as $i => $item) :
-			$canDo			= Easysdi_serviceHelper::getActions(null,$item->id);
+			$canDo			= Easysdi_serviceHelper::getActions('physical',null,$item->id);
 			$ordering		= ($listOrder == 'a.ordering');
 			$canEdit 		= $canDo->get('core.edit');
 			$canEditOwn 	= $canDo->get('core.edit.own');
@@ -111,10 +111,10 @@ $saveOrder	= $listOrder == 'a.ordering';
 
 				<td>
 				<?php if (isset($item->checked_out) && $item->checked_out) : ?>
-					<?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'services.', $canCheckin); ?>
+					<?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'physicalservices.', $canCheckin); ?>
 				<?php endif; ?>
 				<?php if ($canEdit || $canEditOwn) : ?>
-					<a href="<?php echo JRoute::_('index.php?option=com_easysdi_service&task=service.edit&id='.(int) $item->id); ?>">
+					<a href="<?php echo JRoute::_('index.php?option=com_easysdi_service&task=physicalservice.edit&id='.(int) $item->id); ?>">
 					<?php echo $this->escape($item->alias); ?></a>
 				<?php else : ?>
 					<?php echo $this->escape($item->alias); ?>
@@ -131,7 +131,7 @@ $saveOrder	= $listOrder == 'a.ordering';
 				</td>
                 <?php if (isset($this->items[0]->state)) { ?>
 				    <td class="center">
-					    <?php echo JHtml::_('jgrid.published', $item->state, $i, 'services.', $canChange, 'cb'); ?>
+					    <?php echo JHtml::_('jgrid.published', $item->state, $i, 'physicalservices.', $canChange, 'cb'); ?>
 				    </td>
                 <?php } ?>
                 <td align="center">

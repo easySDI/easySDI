@@ -87,7 +87,7 @@ class com_easysdi_serviceInstallerScript
 				JError::raiseWarning(null, JText::_('COM_EASYSDI_SERVICE_POSTFLIGHT_SCRIPT_CATEGORY_ERROR'));
 				return false;
 			}
-			//$row->moveByReference(0, 'last-child', $row->id);
+			$row->moveByReference(0, 'last-child', $row->id);
 			
 			$db = JFactory::getDbo();
 			$db->setQuery("DELETE FROM `#__menu` WHERE title = 'com_easysdi_service'");

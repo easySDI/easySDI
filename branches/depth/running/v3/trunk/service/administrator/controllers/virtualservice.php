@@ -15,7 +15,7 @@ jimport('joomla.application.component.controllerform');
 /**
  * Service controller class.
  */
-class Easysdi_serviceControllerConfig extends JController
+class Easysdi_serviceControllerVirtualService extends JController
 {
 
     function __construct() {
@@ -25,15 +25,15 @@ class Easysdi_serviceControllerConfig extends JController
     }
     
     function cancel() {
-    	$this->setRedirect('index.php?option=com_easysdi_service&view=configs' );
+    	$this->setRedirect('index.php?option=com_easysdi_service&view=virtualservices' );
     }
     
     function add() {
     	$serviceconnector = JRequest::getVar('serviceconnector',null);
     	if(isset($serviceconnector))
-    		$this->setRedirect('index.php?option=com_easysdi_service&view=config&task=add&layout='.$serviceconnector);
+    		$this->setRedirect('index.php?option=com_easysdi_service&view=virtualservice&task=add&layout='.$serviceconnector);
     	else
-    		$this->setRedirect('index.php?option=com_easysdi_service&view=config&task=add&layout=add');
+    		$this->setRedirect('index.php?option=com_easysdi_service&view=virtualservice&task=add&layout=add');
     }
     
     function edit() {
@@ -66,7 +66,7 @@ class Easysdi_serviceControllerConfig extends JController
 	    	}
 	    }
 
-    	$this->setRedirect('index.php?option=com_easysdi_service&view=config&task=edit&id='.$cid[0].'&layout='.$layout );
+    	$this->setRedirect('index.php?option=com_easysdi_service&view=virtualservice&task=edit&id='.$cid[0].'&layout='.$layout );
     }
     
     function delete() {
@@ -88,7 +88,7 @@ class Easysdi_serviceControllerConfig extends JController
 	    		}
 	    	}
     	}
-    	$this->setRedirect('index.php?option=com_easysdi_service&view=configs');
+    	$this->setRedirect('index.php?option=com_easysdi_service&view=virtualservices');
     }
     
     /**
@@ -217,7 +217,7 @@ class Easysdi_serviceControllerConfig extends JController
     			{
 	    			$service  		= JRequest::getVar("service_".$i,"");
 	    			$db 			= JFactory::getDbo();
-	    			$db->setQuery('SELECT resourceurl, resourceusername, resourcepassword, serviceurl, serviceusername, servicepassword FROM #__sdi_service WHERE alias="'.$service.'"');
+	    			$db->setQuery('SELECT resourceurl, resourceusername, resourcepassword, serviceurl, serviceusername, servicepassword FROM #__sdi_physicalservice WHERE alias="'.$service.'"');
 	    			$sdi_service 	= $db->loadObject();
 	    			
 	    			$remoteServer 	= $config->{'remote-server-list'}->addChild("remote-server");
@@ -269,7 +269,7 @@ class Easysdi_serviceControllerConfig extends JController
     		}
     		
     	}
-    	$this->setRedirect('index.php?option=com_easysdi_service&view=configs');
+    	$this->setRedirect('index.php?option=com_easysdi_service&view=virtualservices');
     }
     
     /**

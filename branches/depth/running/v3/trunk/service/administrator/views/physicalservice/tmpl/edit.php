@@ -19,7 +19,7 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 <script type="text/javascript">
 	Joomla.submitbutton = function(task)
 	{
-		if (task == 'service.cancel' || document.formvalidator.isValid(document.id('service-form'))) {
+		if (task == 'physicalservice.cancel' || document.formvalidator.isValid(document.id('service-form'))) {
 			Joomla.submitform(task, document.getElementById('service-form'));
 		}
 		else {
@@ -137,13 +137,13 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 	}
 </script>
 
-<form action="<?php echo JRoute::_('index.php?option=com_easysdi_service&view=service&layout=edit&id='.(int) $this->item->id); ?>" method="post" name="adminForm" id="service-form" class="form-validate">
+<form action="<?php echo JRoute::_('index.php?option=com_easysdi_service&view=physicalservice&layout=edit&id='.(int) $this->item->id); ?>" method="post" name="adminForm" id="service-form" class="form-validate">
 	<div id="progress">
 		<img id="progress_image"  src="components/com_easysdi_service/assets/images/loader.gif" alt="">
 	</div>
 	<div class="width-60 fltlft">
 		<fieldset class="adminform">
-			<legend><?php echo JText::_('COM_EASYSDI_SERVICE_LEGEND_SERVICE'); ?></legend>
+			<legend><?php echo JText::_('COM_EASYSDI_SERVICE_LEGEND_PHYSICALSERVICE'); ?></legend>
 		   <ul class="adminformlist">
 				<?php foreach($this->form->getFieldset('details') as $field): ?>
 				<?php
@@ -210,7 +210,7 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 			</ul>
 			</fieldset>
 			
-			<?php echo JHtml::_('sliders.panel', JText::_('COM_EASYSDI_SERVICE_LEGEND_SERVICE_NEGOTIATION'), 'negotiation-details'); ?>
+			<?php echo JHtml::_('sliders.panel', JText::_('COM_EASYSDI_SERVICE_LEGEND_PHYSICALSERVICE_NEGOTIATION'), 'negotiation-details'); ?>
 			<fieldset class="adminform">
 				<ul class="adminformlist">
 				<?php foreach($this->form->getFieldset('negotiation') as $field): ?>

@@ -36,7 +36,7 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 		
 	</div>
 	
-		<input type="hidden" name="task" value="config.add" />
+		<input type="hidden" name="task" value="virtualservice.add" />
 	<?php echo JHtml::_('form.token'); ?>
 	<div class="clr"></div>
 
