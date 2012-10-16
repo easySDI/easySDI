@@ -62,7 +62,7 @@ class Easysdi_serviceHelper
 	 * @return	JObject
 	 * @since	1.6
 	 */
-	public static function getActions($servicetype, $categoryId = 0, $serviceId = 0)
+	public static function getActions($servicetype = null, $categoryId = 0, $serviceId = 0)
 	{
 		$user	= JFactory::getUser();
 		$result	= new JObject;

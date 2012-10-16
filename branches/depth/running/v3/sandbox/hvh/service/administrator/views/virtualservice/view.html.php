@@ -197,24 +197,26 @@ class Easysdi_serviceViewVirtualService extends JView
 		$this->id 			= JRequest::getVar('id',null);
 		
 		if(!isset($layout)){
-			foreach ($cid as $id ){
-				foreach ($xml->config as $config) {
-					if (strcmp($config['id'],$id)==0){
-						if($config->{'servlet-class'} == "org.easysdi.proxy.wms.WMSProxyServlet")
-						{
-							$layout = "wms";
-						}
-						else if($config->{'servlet-class'} == "org.easysdi.proxy.wmts.WMTSProxyServlet")
-						{
-							$layout = "wmts";
-						}
-						else if($config->{'servlet-class'} == "org.easysdi.proxy.csw.CSWProxyServlet")
-						{
-							$layout = "csw";
-						}
-						else if($config->{'servlet-class'} == "org.easysdi.proxy.wfs.WFSProxyServlet")
-						{
-							$layout = "wfs";
+			if(isset($cid)){
+				foreach ($cid as $id ){
+					foreach ($xml->config as $config) {
+						if (strcmp($config['id'],$id)==0){
+							if($config->{'servlet-class'} == "org.easysdi.proxy.wms.WMSProxyServlet")
+							{
+								$layout = "wms";
+							}
+							else if($config->{'servlet-class'} == "org.easysdi.proxy.wmts.WMTSProxyServlet")
+							{
+								$layout = "wmts";
+							}
+							else if($config->{'servlet-class'} == "org.easysdi.proxy.csw.CSWProxyServlet")
+							{
+								$layout = "csw";
+							}
+							else if($config->{'servlet-class'} == "org.easysdi.proxy.wfs.WFSProxyServlet")
+							{
+								$layout = "wfs";
+							}
 						}
 					}
 				}
@@ -229,7 +231,7 @@ class Easysdi_serviceViewVirtualService extends JView
 					{
 						array_push($keywordArray, $keyword) ;
 					}
-					$this->keywordString = explode(',',$keywordArray) ;
+					$this->keywordString = implode(',',$keywordArray) ;
 					break;
 				}
 			}
@@ -275,38 +277,42 @@ class Easysdi_serviceViewVirtualService extends JView
 					</thead>
 					<tbody id="remoteServerTable" >
 					<?php
-					$remoteServerList = $this->config->{'remote-server-list'};
 					$iServer=0;
-					foreach ($remoteServerList->{'remote-server'} as $remoteServer){
-						?><tr id="remoteServerTableRow<?php echo $iServer;?>">
-							<td>
-							<?php echo JHTML::_("select.genericlist",$this->servicelist, 'service_'.$iServer, 'size="1" onChange="serviceSelection('.$iServer.')"', 'alias', 'value', $remoteServer->alias); ?>
-							</td>
-							<?php if ($iServer > 0){?>	
-							<td><input id="removeServerButton" type="button" onClick="javascript:removeServer(<?php echo $iServer;?>);" value="<?php echo JText::_( 'COM_EASYSDI_SERVICE_SERVICE_REMOVE' ); ?>"></td>
-							<?php }?>
-						</tr>
-						<?php if ($serviceconnector == "CSW"){?>
-						<tr>						
-							<td colspan="4">
-							<div id="specificGeonetowrk" >
-								<table>	
-								<tr>									
-								<td><?php echo JText::_( 'COM_EASYSDI_SERVICE_MAX_RECORDS');?></td><td><input type="text" name="max-records_<?php echo $iServer;?>" value="<?php echo $remoteServer->{'max-records'}; ?>" size=5></td>
-								</tr>							
-								</table>
-							</div>
-							</td>
+					if(isset($this->config->{'remote-server-list'}))
+					{
+						$remoteServerList = $this->config->{'remote-server-list'};
+						
+						foreach ($remoteServerList->{'remote-server'} as $remoteServer){
+							?><tr id="remoteServerTableRow<?php echo $iServer;?>">
+								<td>
+								<?php echo JHTML::_("select.genericlist",$this->servicelist, 'service_'.$iServer, 'size="1" onChange="serviceSelection('.$iServer.')"', 'alias', 'value', $remoteServer->alias); ?>
+								</td>
+								<?php if ($iServer > 0){?>	
+								<td><input id="removeServerButton" type="button" onClick="javascript:removeServer(<?php echo $iServer;?>);" value="<?php echo JText::_( 'COM_EASYSDI_SERVICE_SERVICE_REMOVE' ); ?>"></td>
+								<?php }?>
 							</tr>
-						<?php
+							<?php if ($serviceconnector == "CSW"){?>
+							<tr>						
+								<td colspan="4">
+								<div id="specificGeonetowrk" >
+									<table>	
+									<tr>									
+									<td><?php echo JText::_( 'COM_EASYSDI_SERVICE_MAX_RECORDS');?></td><td><input type="text" name="max-records_<?php echo $iServer;?>" value="<?php echo $remoteServer->{'max-records'}; ?>" size=5></td>
+									</tr>							
+									</table>
+								</div>
+								</td>
+								</tr>
+							<?php
+							}
+						$iServer=$iServer+1;
 						}
-					$iServer=$iServer+1;
 					}
 					if($iServer == 0){
 						?>
 						<tr id="remoteServerTableRow<?php echo $iServer;?>">
 								<td>
-								<?php echo JHTML::_("select.genericlist",$this->servicelist, 'service_'.$iServer, 'size="1" onChange="serviceSelection('.$iServer.')"', 'alias', 'value', $remoteServer->alias); ?>
+								<?php echo JHTML::_("select.genericlist",$this->servicelist, 'service_'.$iServer, 'size="1" onChange="serviceSelection('.$iServer.')"', 'alias', 'value', ''); ?>
 								</td>
 								
 						</tr>
@@ -316,7 +322,7 @@ class Easysdi_serviceViewVirtualService extends JView
 							<div id="specificGeonetowrk" >
 								<table>	
 								<tr>									
-								<td><?php echo JText::_( 'COM_EASYSDI_SERVICE_MAX_RECORDS');?></td><td><input type="text" name="max-records_<?php echo $iServer;?>" value="<?php echo $remoteServer->{'max-records'}; ?>" size=5></td>
+								<td><?php echo JText::_( 'COM_EASYSDI_SERVICE_MAX_RECORDS');?></td><td><input type="text" name="max-records_<?php echo $iServer;?>" value="" size=5></td>
 								</tr>							
 								</table>
 							</div>
@@ -354,14 +360,16 @@ class Easysdi_serviceViewVirtualService extends JView
 						<table>
 						<tr>
 						<?php 
-						foreach($this->config->{"supported-versions"}->{"version"} as $versionConfig){
-							?>
-							<td class="supportedversion">
-							<?php 
-							echo $versionConfig;
-							?>
-							</td>
-							<?php 
+						if(isset($this->config->{"supported-versions"}->{"version"})){
+							foreach($this->config->{"supported-versions"}->{"version"} as $versionConfig){
+								?>
+								<td class="supportedversion">
+								<?php 
+								echo $versionConfig;
+								?>
+								</td>
+								<?php 
+							}
 						}
 						?>
 						</tr>
@@ -377,8 +385,7 @@ class Easysdi_serviceViewVirtualService extends JView
 			<fieldset class="adminform"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_VIRTUALSERVICE_HOST_TRANSLATOR'); ?></legend>
 				<table class="admintable">
 					<tr>
-						<td><input size="100" type="text" name="hostTranslator"
-							value="<?php  echo $this->config->{'host-translator'}; ?>"></td>
+						<td><input size="100" type="text" name="hostTranslator" value="<?php  if(isset($this->config->{'host-translator'})) echo $this->config->{'host-translator'}; ?>"></td>
 					</tr>
 				</table>
 			</fieldset>
@@ -412,7 +419,7 @@ class Easysdi_serviceViewVirtualService extends JView
 					<table class="admintable">
 						<tr>
 							<td><input name="policyFile" id="policyFile" type="text" size=100
-								value="<?php echo $this->config->{"authorization"}->{"policy-file"}; ?>"></td>
+								value="<?php if(isset($this->config->{"authorization"}->{"policy-file"})) echo $this->config->{"authorization"}->{"policy-file"}; ?>"></td>
 						</tr>
 					</table>
 					</fieldset>
@@ -421,7 +428,7 @@ class Easysdi_serviceViewVirtualService extends JView
 					<table class="admintable">
 						<tr>
 							<td><input name="xsltPath" type="text" size=100
-								value="<?php echo $this->config->{"xslt-path"}->{"url"}; ?>"></td>
+								value="<?php if(isset($this->config->{"xslt-path"}->{"url"})) echo $this->config->{"xslt-path"}->{"url"}; ?>"></td>
 						</tr>
 					</table>
 					</fieldset>
@@ -449,13 +456,13 @@ class Easysdi_serviceViewVirtualService extends JView
 								</tr>
 								<tr>
 									<td><input name="logPath"  id="logPath" size=70 type="text"
-										value="<?php  echo $this->config->{"log-config"}->{"file-structure"}->{"path"};?>"></td>
+										value="<?php if(isset($this->config->{"log-config"}->{"file-structure"}->{"path"})) echo $this->config->{"log-config"}->{"file-structure"}->{"path"};?>"></td>
 									<td><input name="logPrefix" id="logPrefix" type="text"
-										value="<?php  echo $this->config->{"log-config"}->{"file-structure"}->{"prefix"};?>"></td>
+										value="<?php if (isset($this->config->{"log-config"}->{"file-structure"}->{"prefix"})) echo $this->config->{"log-config"}->{"file-structure"}->{"prefix"};?>"></td>
 									<td><input name="logSuffix" id="logSuffix" type="text"
-										value="<?php  echo $this->config->{"log-config"}->{"file-structure"}->{"suffix"};?>"></td>
+										value="<?php if(isset($this->config->{"log-config"}->{"file-structure"}->{"suffix"})) echo $this->config->{"log-config"}->{"file-structure"}->{"suffix"};?>"></td>
 									<td><input name="logExt" type="text"
-										value="<?php  echo $this->config->{"log-config"}->{"file-structure"}->{"extension"};?>"></td>
+										value="<?php if(isset($this->config->{"log-config"}->{"file-structure"}->{"extension"})) echo $this->config->{"log-config"}->{"file-structure"}->{"extension"};?>"></td>
 								</tr>
 							</table>
 							</td>

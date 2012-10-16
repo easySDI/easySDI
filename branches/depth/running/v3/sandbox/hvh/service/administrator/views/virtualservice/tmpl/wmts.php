@@ -33,9 +33,12 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 			</fieldset>
 			<?php
 			$keywordString = "";
-			foreach ($this->config->{"service-metadata"}->{"ServiceIdentification"}->{'KeywordList'}->Keyword as $keyword)
+			if(isset($this->config->{"service-metadata"}->{"ServiceIdentification"}->{'KeywordList'}->Keyword))
 			{
-				$keywordString .= $keyword .",";
+				foreach ($this->config->{"service-metadata"}->{"ServiceIdentification"}->{'KeywordList'}->Keyword as $keyword)
+				{
+					$keywordString .= $keyword .",";
+				}
 			}
 			$keywordString = substr($keywordString, 0, strlen($keywordString)-1) ;
 			
@@ -47,11 +50,11 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 					<table class="admintable" >
 						<tr>
 							<td class="key"><?php echo JText::_("COM_EASYSDI_SERVICE_METADATA_TITLE"); ?> : <span class="star">*</span></td>
-							<td><input class="inputbox required" name="service_title" id="service_title" type="text" size=100 value="<?php echo $this->config{"service-metadata"}->{"ServiceIdentification"}->{"Title"}; ?>"></td>
+							<td><input class="inputbox required" name="service_title" id="service_title" type="text" size=100 value="<?php if(isset($this->config->{"service-metadata"}->{"ServiceIdentification"}->{"Title"})) echo $this->config->{"service-metadata"}->{"ServiceIdentification"}->{"Title"}; ?>"></td>
 						</tr>
 						<tr>
 							<td class="key"><?php echo JText::_("COM_EASYSDI_SERVICE_METADATA_ABSTRACT"); ?> : </td>
-							<td><input name="service_abstract" id="service_abstract" type="text" size=100 value="<?php echo $this->config{"service-metadata"}->{"ServiceIdentification"}->{"Abstract"}; ?>"></td>
+							<td><input name="service_abstract" id="service_abstract" type="text" size=100 value="<?php if(isset($this->config->{"service-metadata"}->{"ServiceIdentification"}->{"Abstract"})) echo $this->config->{"service-metadata"}->{"ServiceIdentification"}->{"Abstract"}; ?>"></td>
 						</tr>
 						<tr>
 							<td class="key"><?php echo JText::_("COM_EASYSDI_SERVICE_METADATA_KEYWORD"); ?> : </td>
@@ -59,11 +62,11 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 						</tr>
 						<tr>
 							<td class="key"><?php echo JText::_("COM_EASYSDI_SERVICE_METADATA_FEES"); ?> : </td>
-							<td><input name="service_fees" id="service_fees" type="text" size=100 value="<?php echo $this->config{"service-metadata"}->{"ServiceIdentification"}->{"Fees"}; ?>"></td>
+							<td><input name="service_fees" id="service_fees" type="text" size=100 value="<?php if(isset($this->config->{"service-metadata"}->{"ServiceIdentification"}->{"Fees"})) echo $this->config->{"service-metadata"}->{"ServiceIdentification"}->{"Fees"}; ?>"></td>
 						</tr>
 						<tr>
 							<td class="key"><?php echo JText::_("COM_EASYSDI_SERVICE_METADATA_CONSTRAINTS"); ?> : </td>
-							<td><input name="service_accessconstraints" id="service_accessconstraints" type="text" size=100 value="<?php echo $this->config{"service-metadata"}->{"ServiceIdentification"}->{"AccessConstraints"}; ?>"></td>
+							<td><input name="service_accessconstraints" id="service_accessconstraints" type="text" size=100 value="<?php if(isset( $this->config->{"service-metadata"}->{"ServiceIdentification"}->{"AccessConstraints"})) echo $this->config->{"service-metadata"}->{"ServiceIdentification"}->{"AccessConstraints"}; ?>"></td>
 						</tr>
 					</table>
 				</fieldset>
@@ -71,68 +74,68 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 					<table class="admintable" >
 						<tr>
 							<td class="key" ><?php echo JText::_("COM_EASYSDI_SERVICE_METADATA_PROVIDER_NAME"); ?> : </td>
-							<td colspan="2"><input name="service_providername" id="service_providername" type="text" size="80" value="<?php echo $this->config{"service-metadata"}->{"ServiceProvider"}->{"ProviderName"}; ?>"></td>
+							<td colspan="2"><input name="service_providername" id="service_providername" type="text" size="80" value="<?php if(isset($this->config->{"service-metadata"}->{"ServiceProvider"}->{"ProviderName"})) echo $this->config->{"service-metadata"}->{"ServiceProvider"}->{"ProviderName"}; ?>"></td>
 						</tr>
 						<tr>
 							<td class="key"><?php echo JText::_("COM_EASYSDI_SERVICE_METADATA_PROVIDER_SITE"); ?> : </td>
-							<td colspan="2"><input name="service_providersite" id="service_providersite" type="text" size="80" value="<?php echo $this->config{"service-metadata"}->{"ServiceProvider"}->{"ProviderSite"}; ?>"></td>
+							<td colspan="2"><input name="service_providersite" id="service_providersite" type="text" size="80" value="<?php if(isset($this->config->{"service-metadata"}->{"ServiceProvider"}->{"ProviderSite"})) echo $this->config->{"service-metadata"}->{"ServiceProvider"}->{"ProviderSite"}; ?>"></td>
 						</tr>
 						<tr>
 							<td class="key"><?php echo JText::_("COM_EASYSDI_SERVICE_METADATA_RESPONSIBLE_NAME"); ?> : </td>
-							<td colspan="2"><input name="service_responsiblename" id="service_responsiblename" type="text" size="80" value="<?php echo $this->config{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{"IndividualName"}; ?>"></td>
+							<td colspan="2"><input name="service_responsiblename" id="service_responsiblename" type="text" size="80" value="<?php if(isset($this->config->{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{"IndividualName"})) echo $this->config->{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{"IndividualName"}; ?>"></td>
 						</tr>
 						<tr>
 							<td class="key"><?php echo JText::_("COM_EASYSDI_SERVICE_METADATA_RESPONSIBLE_POSITION"); ?> : </td>
-							<td colspan="2"><input name="service_responsibleposition" id="service_responsibleposition" type="text" size="80" value="<?php echo $this->config{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{"PositionName"}; ?>"></td>
+							<td colspan="2"><input name="service_responsibleposition" id="service_responsibleposition" type="text" size="80" value="<?php if(isset($this->config->{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{"PositionName"})) echo $this->config->{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{"PositionName"}; ?>"></td>
 						</tr>
 						<tr>
 							<td class="key"><?php echo JText::_("COM_EASYSDI_SERVICE_METADATA_RESPONSIBLE_ROLE"); ?> : </td>
-							<td colspan="2"><input name="service_responsiblerole" id="service_responsiblerole" type="text" size="80" value="<?php echo $this->config{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{"Role"}; ?>"></td>
+							<td colspan="2"><input name="service_responsiblerole" id="service_responsiblerole" type="text" size="80" value="<?php if(isset($this->config->{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{"Role"})) echo $this->config->{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{"Role"}; ?>"></td>
 						</tr>
 						<tr>
 							<td class="key" ><?php echo JText::_("COM_EASYSDI_SERVICE_METADATA_CONTACT_ADRESSTYPE"); ?> : </td>
-							<td colspan="2"><input name="service_responsiblecontactadresstype" id="service_responsiblecontactadresstype" type="text" size="80" value="<?php echo $this->config{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'Contact'}->{'Address'}->{"AddressType"}; ?>"></td>
+							<td colspan="2"><input name="service_responsiblecontactadresstype" id="service_responsiblecontactadresstype" type="text" size="80" value="<?php if(isset($this->config->{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'Contact'}->{'Address'}->{"AddressType"})) echo $this->config->{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'Contact'}->{'Address'}->{"AddressType"}; ?>"></td>
 						</tr>
 						<tr>
 							<td class="key" ><?php echo JText::_("COM_EASYSDI_SERVICE_METADATA_CONTACT_ADRESS"); ?> : </td>
-							<td colspan="2"><input name="service_responsiblecontactadress" id="service_responsiblecontactadress" type="text" size="80" value="<?php echo $this->config{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'Contact'}->{'Address'}->{'DelivryPoint'}; ?>"></td>
+							<td colspan="2"><input name="service_responsiblecontactadress" id="service_responsiblecontactadress" type="text" size="80" value="<?php if(isset($this->config->{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'Contact'}->{'Address'}->{'DelivryPoint'})) echo $this->config->{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'Contact'}->{'Address'}->{'DelivryPoint'}; ?>"></td>
 						</tr>
 						<tr>
 							<td class="key"><?php echo JText::_("COM_EASYSDI_SERVICE_METADATA_CONTACT_CITY"); ?> : </td>
-							<td><input name="service_responsiblecontactpostcode" id="service_responsiblecontactpostcode" type="text" size="5" value="<?php echo $this->config{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'Contact'}->{'Address'}->{"PostalCode"}; ?>"></td>
-							<td><input name="service_responsiblecontactcity" id="service_responsiblecontactcity" type="text" size="68" value="<?php echo $this->config{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'Contact'}->{'Address'}->{"City"}; ?>"></td>
+							<td><input name="service_responsiblecontactpostcode" id="service_responsiblecontactpostcode" type="text" size="5" value="<?php if(isset($this->config->{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'Contact'}->{'Address'}->{"PostalCode"})) echo $this->config->{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'Contact'}->{'Address'}->{"PostalCode"}; ?>"></td>
+							<td><input name="service_responsiblecontactcity" id="service_responsiblecontactcity" type="text" size="68" value="<?php if(isset($this->config->{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'Contact'}->{'Address'}->{"City"})) echo $this->config->{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'Contact'}->{'Address'}->{"City"}; ?>"></td>
 						</tr>
 						<tr>
 							<td class="key"><?php echo JText::_("COM_EASYSDI_SERVICE_METADATA_CONTACT_AREA"); ?> : </td>
-							<td colspan="2"><input name="service_responsiblecontactarea" id="service_responsiblecontactarea" type="text" size="80" value="<?php echo $this->config{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'Contact'}->{'Address'}->{"Area"}; ?>"></td>
+							<td colspan="2"><input name="service_responsiblecontactarea" id="service_responsiblecontactarea" type="text" size="80" value="<?php if(isset($this->config->{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'Contact'}->{'Address'}->{"Area"})) echo $this->config->{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'Contact'}->{'Address'}->{"Area"}; ?>"></td>
 						</tr>
 						<tr>
 							<td class="key"><?php echo JText::_("COM_EASYSDI_SERVICE_METADATA_CONTACT_COUNTRY"); ?> : </td>
-							<td colspan="2"><input name="service_responsiblecontactcountry" id="service_responsiblecontactcountry" type="text" size="80" value="<?php echo $this->config{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'Contact'}->{'Address'}->{"Country"}; ?>"></td>
+							<td colspan="2"><input name="service_responsiblecontactcountry" id="service_responsiblecontactcountry" type="text" size="80" value="<?php if(isset($this->config->{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'Contact'}->{'Address'}->{"Country"})) echo $this->config->{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'Contact'}->{'Address'}->{"Country"}; ?>"></td>
 						</tr>
 						<tr>
 							<td class="key"><?php echo JText::_("COM_EASYSDI_SERVICE_METADATA_CONTACT_MAIL"); ?> : </td>
-							<td colspan="2"><input name="service_responsiblecontactmail" id="service_responsiblecontactmail" type="text" size="80" value="<?php echo $this->config{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'Contact'}->{'Address'}->{"ElectronicMailAddress"}; ?>"></td>
+							<td colspan="2"><input name="service_responsiblecontactmail" id="service_responsiblecontactmail" type="text" size="80" value="<?php if(isset($this->config->{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'Contact'}->{'Address'}->{"ElectronicMailAddress"})) echo $this->config->{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'Contact'}->{'Address'}->{"ElectronicMailAddress"}; ?>"></td>
 						</tr>
 						<tr>
 							<td class="key"><?php echo JText::_("COM_EASYSDI_SERVICE_METADATA_CONTACT_PHONE"); ?> : </td>
-							<td colspan="2"><input name="service_responsiblecontactphone" id="service_responsiblecontactphone" type="text" size="80" value="<?php echo $this->config{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'Contact'}->{"Telephone"}->{"VoicePhone"}; ?>"></td>
+							<td colspan="2"><input name="service_responsiblecontactphone" id="service_responsiblecontactphone" type="text" size="80" value="<?php if(isset($this->config->{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'Contact'}->{"Telephone"}->{"VoicePhone"})) echo $this->config->{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'Contact'}->{"Telephone"}->{"VoicePhone"}; ?>"></td>
 						</tr>
 						<tr>
 							<td class="key"><?php echo JText::_("COM_EASYSDI_SERVICE_METADATA_CONTACT_FAX"); ?> : </td>
-							<td colspan="2"><input name="service_responsiblecontactfax" id="service_responsiblecontactfax" type="text" size="80" value="<?php echo $this->config{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'Contact'}->{"Telephone"}->{"Facsimile"}; ?>"></td>
+							<td colspan="2"><input name="service_responsiblecontactfax" id="service_responsiblecontactfax" type="text" size="80" value="<?php if(isset($this->config->{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'Contact'}->{"Telephone"}->{"Facsimile"})) echo $this->config->{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'Contact'}->{"Telephone"}->{"Facsimile"}; ?>"></td>
 						</tr>
 						<tr>
 							<td class="key" id="service_contactlinkage_t"><?php echo JText::_("COM_EASYSDI_SERVICE_METADATA_CONTACT_LINK"); ?> : </td>
-							<td colspan="2"><input name="service_responsiblecontactonline" id="service_responsiblecontactonline" type="text" size="80" value="<?php echo $this->config{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'Contact'}->{"OnlineResource"}; ?>"></td>
+							<td colspan="2"><input name="service_responsiblecontactonline" id="service_responsiblecontactonline" type="text" size="80" value="<?php if(isset($this->config->{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'Contact'}->{"OnlineResource"})) echo $this->config->{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'Contact'}->{"OnlineResource"}; ?>"></td>
 						</tr>
 						<tr>
 							<td class="key" id="service_contacthours_t"><?php echo JText::_("COM_EASYSDI_SERVICE_METADATA_CONTACT_HOURS"); ?> : </td>
-							<td colspan="2"><input name="service_responsiblecontacthours" id="service_responsiblecontacthours" type="text" size="80" value="<?php echo $this->config{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'Contact'}->{"HoursOfService"}; ?>"></td>
+							<td colspan="2"><input name="service_responsiblecontacthours" id="service_responsiblecontacthours" type="text" size="80" value="<?php if(isset($this->config->{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'Contact'}->{"HoursOfService"})) echo $this->config->{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'Contact'}->{"HoursOfService"}; ?>"></td>
 						</tr>
 						<tr>
 							<td class="key" id="service_contactinstructions_t"><?php echo JText::_("COM_EASYSDI_SERVICE_METADATA_CONTACT_INSTRUCTIONS"); ?> : </td>
-							<td colspan="2"><textarea name="service_responsiblecontactinstructions" id="service_responsiblecontactinstructions"  cols="45" rows="5"  ><?php echo $this->config{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'Contact'}->{"Instructions"}; ?></textarea></td>
+							<td colspan="2"><textarea name="service_responsiblecontactinstructions" id="service_responsiblecontactinstructions"  cols="45" rows="5"  ><?php if(isset($this->config->{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'Contact'}->{"Instructions"})) echo $this->config->{"service-metadata"}->{"ServiceProvider"}->{"ResponsibleParty"}->{'Contact'}->{"Instructions"}; ?></textarea></td>
 						</tr>
 					</table>
 				</fieldset>

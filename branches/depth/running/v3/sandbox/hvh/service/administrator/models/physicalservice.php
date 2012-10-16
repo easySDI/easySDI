@@ -140,10 +140,14 @@ class Easysdi_serviceModelphysicalservice extends JModelAdmin
 			$compliances = $this->getServiceCompliance($item->id);
 			$compliance_ids =array();
 			$compliance_values =array();
-			foreach ($compliances as $compliance)
+			
+			if(isset($compliances))
 			{
-				$compliance_ids[] =$compliance->id;
-				$compliance_values[] =$compliance->value;
+				foreach ($compliances as $compliance)
+				{
+					$compliance_ids[] =$compliance->id;
+					$compliance_values[] =$compliance->value;
+				}
 			}
 			if(count($compliance_ids)>0)
 				$item->compliance = json_encode($compliance_ids);

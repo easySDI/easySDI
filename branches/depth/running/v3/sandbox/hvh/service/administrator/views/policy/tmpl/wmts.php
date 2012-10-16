@@ -24,9 +24,12 @@ foreach ($this->xml->config as $config) {
 		$policyFile = $config->{'authorization'}->{'policy-file'};
 		$this->servletClass =  $config->{'servlet-class'};
 		$servletVersion =  "";
-		foreach($config->{"supported-versions"}->{"version"} as $versionConfig){
-			if(strcmp($servletVersion, $versionConfig)< 0){
-				$servletVersion = $versionConfig;
+		if(isset($config->{"supported-versions"}->{"version"}))
+		{
+			foreach($config->{"supported-versions"}->{"version"} as $versionConfig){
+				if(strcmp($servletVersion, $versionConfig)< 0){
+					$servletVersion = $versionConfig;
+				}
 			}
 		}
 
@@ -276,7 +279,7 @@ foreach ($this->xml->config as $config) {
 				$xmlCapa = simplexml_load_file($urlWithPassword.$separator."REQUEST=GetCapabilities&SERVICE=WMTS");
 			}
 			
-			
+			$theServer = null;
 			if ($xmlCapa === false){
 					global $mainframe;		
 							$mainframe->enqueueMessage(JText::_('EASYSDI_UNABLE TO RETRIEVE THE CAPABILITIES OF THE REMOTE SERVER' )." - ".$urlWithPassword,'error');

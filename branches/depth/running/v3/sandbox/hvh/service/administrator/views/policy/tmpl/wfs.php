@@ -300,6 +300,7 @@ foreach ($this->xml->config as $config) {
 					$xmlCapa = simplexml_load_file($urlWithPassword.$separator."REQUEST=GetCapabilities&SERVICE=WFS");
 				}
 				
+			$theServer = null;
 			if ($xmlCapa === false){
 					global $mainframe;		
 							$mainframe->enqueueMessage(JText::_(  'EASYSDI_UNABLE TO RETRIEVE THE CAPABILITIES OF THE REMOTE SERVER' ),'error');
@@ -320,13 +321,13 @@ foreach ($this->xml->config as $config) {
 				<tr>
 					<td class="key"><?php echo JText::_( 'COM_EASYSDI_SERVICE_WFS_SERVER_PREFIXE'); ?><span class="star">*</span> </td>		
 					<td>
-					<input class="inputbox required" type="text" size ="100"   name="serverPrefixe<?php echo $iServer; ?>" id="serverPrefixe<?php echo $iServer; ?>" value="<?php echo $theServer->Prefix; ?>">
+					<input class="inputbox required" type="text" size ="100"   name="serverPrefixe<?php echo $iServer; ?>" id="serverPrefixe<?php echo $iServer; ?>" value="<?php if(isset($theServer->Prefix)) echo $theServer->Prefix; ?>">
 					</td>
 				</tr>
 				<tr>
 					<td class="key"><?php echo JText::_( 'COM_EASYSDI_SERVICE_WFS_SERVER_NAMESPACE'); ?><span class="star">*</span></td>
 					<td>
-					<input  class="inputbox required" type="text" size ="100"  name="serverNamespace<?php echo $iServer; ?>" id="serverNamespace<?php echo $iServer; ?>" value="<?php echo $theServer->Namespace; ?>">
+					<input  class="inputbox required" type="text" size ="100"  name="serverNamespace<?php echo $iServer; ?>" id="serverNamespace<?php echo $iServer; ?>" value="<?php if(isset($theServer->Namespace)) echo $theServer->Namespace; ?>">
 					</td>
 				</tr>
 			</table>
@@ -381,7 +382,7 @@ foreach ($this->xml->config as $config) {
 						}
 				
 				 foreach ($xmlDescribeFeature->children('http://www.w3.org/2001/XMLSchema') as $entry) {
-				 	$element = $entry->{'complexContent'}->{'extension'}->{'sequence'}->{'element'};
+				 	$element = isset($entry->{'complexContent'}->{'extension'}->{'sequence'}->{'element'})? $entry->{'complexContent'}->{'extension'}->{'sequence'}->{'element'} : null;
 				 	for ($i=0;$i<count($element);$i++){
 				 		$a = $element[$i]->attributes();
 				 		$type = substr($a['type'],strrpos($a['type'], ":")+1);
