@@ -57,7 +57,6 @@ class Easysdi_serviceViewPhysicalServices extends JView
 		require_once JPATH_COMPONENT.DS.'helpers'.DS.'easysdi_service.php';
 		
 		$state	= $this->get('State');
-
 		$canDo	= Easysdi_serviceHelper::getActions('physical',$state->get('filter.category_id'));
 		
 		JToolBarHelper::title(JText::_('COM_EASYSDI_SERVICE_TITLE_SERVICES'), 'links-cat.png');

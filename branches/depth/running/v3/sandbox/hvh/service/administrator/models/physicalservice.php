@@ -55,7 +55,7 @@ class Easysdi_serviceModelphysicalservice extends JModelAdmin
 				return ;
 			}
 			if (!empty($record->catid)) {
-				return $user->authorise('core.delete', 'com_easysdi_service.physicalservice.category.'.(int) $record->catid);
+				return $user->authorise('core.delete', 'com_easysdi_service.category.'.(int) $record->catid);
 			}
 			// Default to component settings if category not known.
 			else {
@@ -78,7 +78,7 @@ class Easysdi_serviceModelphysicalservice extends JModelAdmin
 	
 		// Check against the category.
 		if (!empty($record->catid)) {
-			return $user->authorise('core.edit.state', 'com_easysdi_service.physicalservice.category.'.(int) $record->catid);
+			return $user->authorise('core.edit.state', 'com_easysdi_service.category.'.(int) $record->catid);
 		}
 		// Default to component settings if category not known.
 		else {

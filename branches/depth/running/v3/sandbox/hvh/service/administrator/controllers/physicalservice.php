@@ -46,7 +46,7 @@ class Easysdi_serviceControllerPhysicalService extends JControllerForm
     	if ($categoryId)
     	{
     		// If the category has been passed in the URL check it.
-    		$allow	= $user->authorise('core.create', $this->option . '.physicalservice.category.' . $categoryId);
+    		$allow	= $user->authorise('core.create', $this->option . '.category.' . $categoryId);
     	}
     
     	if ($allow === null)
@@ -85,7 +85,7 @@ class Easysdi_serviceControllerPhysicalService extends JControllerForm
     	if ($categoryId)
     	{
     		// The category has been set. Check the category permissions.
-    		return $user->authorise('core.edit', $this->option . '.physicalservice.category.' . $categoryId);
+    		return $user->authorise('core.edit', $this->option . '.category.' . $categoryId);
     	}
     	else
     	{

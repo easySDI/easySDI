@@ -28,15 +28,14 @@ class Easysdi_serviceHelper
 		
 		JSubMenuHelper::addEntry(
 				JText::_('COM_EASYSDI_SERVICE_SUBMENU_CATEGORIES'),
-				'index.php?option=com_categories&extension=com_easysdi_service.physicalservice',
-				$vName == 'physicalservicecategories'
+				'index.php?option=com_categories&extension=com_easysdi_service',
+				$vName == 'categories'
 		);
 		
-		if ($vName=='physicalservicecategories') {
+		if ($vName=='categories') {
 			JToolBarHelper::title(
 					JText::_('COM_EASYSDI_SERVICE_TITLE_CATEGORIES'),
-					'easysdi_physicalservice-categories');
-		}
+					'easysdi_service-categories');		}
 		
 		JSubMenuHelper::addEntry(
 				JText::_('COM_EASYSDI_SERVICE_SUBMENU_TITLE_CONFIGS'),
@@ -44,17 +43,17 @@ class Easysdi_serviceHelper
 				$vName == 'virtualservices'
 		);
 		
-		JSubMenuHelper::addEntry(
-				JText::_('COM_EASYSDI_SERVICE_SUBMENU_CATEGORIES'),
-				'index.php?option=com_categories&extension=com_easysdi_service.virtualservice',
-				$vName == 'virtualservicecategories'
-		);
+// 		JSubMenuHelper::addEntry(
+// 				JText::_('COM_EASYSDI_SERVICE_SUBMENU_CATEGORIES'),
+// 				'index.php?option=com_categories&extension=com_easysdi_service.virtualservice',
+// 				$vName == 'virtualservicecategories'
+// 		);
 		
-		if ($vName=='virtualservicecategories') {
-			JToolBarHelper::title(
-					JText::_('COM_EASYSDI_SERVICE_TITLE_CATEGORIES'),
-					'easysdi_virtualservice-categories');
-		}
+// 		if ($vName=='virtualservicecategories') {
+// 			JToolBarHelper::title(
+// 					JText::_('COM_EASYSDI_SERVICE_TITLE_CATEGORIES'),
+// 					'easysdi_virtualservice-categories');
+// 		}
 	}
 
 	/**
@@ -72,12 +71,13 @@ class Easysdi_serviceHelper
 			$assetName = 'com_easysdi_core';
 		}
 		elseif (empty($serviceId) ) {
-			$assetName = 'com_easysdi_service.'.$servicetype.'service.category.'.(int) $categoryId;
+// 			$assetName = 'com_easysdi_service.'.$servicetype.'service.category.'.(int) $categoryId;
+			$assetName = 'com_easysdi_service.category.'.(int) $categoryId;
 		}
 		else{
-			$assetName = 'com_easysdi_service.'.$servicetype.'service.'.(int) $serviceId;
+// 			$assetName = 'com_easysdi_service.'.$servicetype.'service.'.(int) $serviceId;
+			$assetName = 'com_easysdi_service.physicalservice.'.(int) $serviceId;
 		}
-		
 
 		$actions = array(
 				'core.admin', 'core.manage', 'core.create', 'core.edit', 'core.edit.own', 'core.edit.state', 'core.delete'

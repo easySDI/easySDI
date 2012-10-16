@@ -137,7 +137,7 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 	}
 </script>
 
-<form action="<?php echo JRoute::_('index.php?option=com_easysdi_service&view=service&layout=edit&id='.(int) $this->item->id); ?>" method="post" name="adminForm" id="service-form" class="form-validate">
+<form action="<?php echo JRoute::_('index.php?option=com_easysdi_service&view=physicalservice&layout=edit&id='.(int) $this->item->id); ?>" method="post" name="adminForm" id="service-form" class="form-validate">
 	<div id="progress">
 		<img id="progress_image"  src="components/com_easysdi_service/assets/images/loader.gif" alt="">
 	</div>
