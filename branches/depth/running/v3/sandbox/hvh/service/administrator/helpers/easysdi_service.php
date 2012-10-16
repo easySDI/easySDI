@@ -21,7 +21,7 @@ class Easysdi_serviceHelper
 	public static function addSubmenu($vName = '')
 	{
 		JSubMenuHelper::addEntry(
-			JText::_('COM_EASYSDI_SERVICE_SUBMENU_TITLE_SERVICES'),
+			JText::_('COM_EASYSDI_SERVICE_SUBMENU_TITLE_PHYSICALSERVICES'),
 			'index.php?option=com_easysdi_service&view=physicalservices',
 			$vName == 'physicalservices'
 		);
@@ -38,7 +38,7 @@ class Easysdi_serviceHelper
 					'easysdi_service-categories');		}
 		
 		JSubMenuHelper::addEntry(
-				JText::_('COM_EASYSDI_SERVICE_SUBMENU_TITLE_CONFIGS'),
+				JText::_('COM_EASYSDI_SERVICE_SUBMENU_TITLE_VIRTUALSERVICES'),
 				'index.php?option=com_easysdi_service&view=virtualservices',
 				$vName == 'virtualservices'
 		);

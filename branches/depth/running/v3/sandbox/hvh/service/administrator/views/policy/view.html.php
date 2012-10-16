@@ -394,7 +394,7 @@ class Easysdi_serviceViewPolicy extends JView
 		<fieldset class="adminform"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_IDENTIFICATION'); ?></legend>
 			<table class="admintable">
 				<tr>
-					<td class="key"><?php echo JText::_( 'COM_EASYSDI_SERVICE_CONFIGURATION_ID'); ?></td>
+					<td class="key"><?php echo JText::_( 'COM_EASYSDI_SERVICE_VIRTUALSERVICE_ID'); ?></td>
 					<td><input type="text" size="100" value="<?php echo $this->config;  ?>" disabled="disabled"></td>
 				</tr>
 				<tr>

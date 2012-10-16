@@ -29,7 +29,7 @@ class Easysdi_serviceViewVirtualService extends JView
 	
 		$canDo	= Easysdi_serviceHelper::getActions();
 		
-		JToolBarHelper::title(JText::_('COM_EASYSDI_SERVICE_TITLE_CONFIG')." : ".$this->id, 'module.png');
+		JToolBarHelper::title(JText::_('COM_EASYSDI_SERVICE_TITLE_VIRTUALSERVICE')." : ".$this->id, 'module.png');
 		
 		if(JRequest::getVar('layout',null)!='CSW' &&  $canDo->get('core.edit'))
 			JToolBarHelper::addNew('virtualservice.addserver',JText::_( 'COM_EASYSDI_SERVICE_NEW_SERVER'));
@@ -59,23 +59,23 @@ class Easysdi_serviceViewVirtualService extends JView
 			{
 				if(document.getElementById('service_title').value == ""  )
 				{
-					alert ('<?php echo  JText::_( 'COM_EASYSDI_SERVICE_CONFIG_EDIT_VALIDATION_SERVICE_MD_ERROR');?>');	
+					alert ('<?php echo  JText::_( 'COM_EASYSDI_SERVICE_VIRTUALSERVICE_EDIT_VALIDATION_SERVICE_MD_ERROR');?>');	
 					return;
 				}
 				var t = document.getElementById('supportedVersionsByConfig').value;
 				if( !t || t == "null" || t=="undefined"){
-					alert ('<?php echo  JText::_( 'COM_EASYSDI_SERVICE_CONFIG_EDIT_VALIDATION_SUPPORTED_VERSION_ERROR');?>');
+					alert ('<?php echo  JText::_( 'COM_EASYSDI_SERVICE_VIRTUALSERVICE_EDIT_VALIDATION_SUPPORTED_VERSION_ERROR');?>');
 					return;
 				}
 				if(document.getElementById('policyFile').value == ""  )
 				{
-					alert ('<?php echo  JText::_( 'COM_EASYSDI_SERVICE_CONFIG_EDIT_VALIDATION_POLICYFILE_ERROR');?>');	
+					alert ('<?php echo  JText::_( 'COM_EASYSDI_SERVICE_VIRTUALSERVICE_EDIT_VALIDATION_POLICYFILE_ERROR');?>');	
 					return;
 				}
 				if( document.getElementById('logPath').value == "" || 
 					document.getElementById('logPrefix').value == "" || 
 					document.getElementById('logSuffix').value == "" ){
-					alert ('<?php echo  JText::_( 'COM_EASYSDI_SERVICE_CONFIG_EDIT_VALIDATION_LOGFILE_ERROR');?>');	
+					alert ('<?php echo  JText::_( 'COM_EASYSDI_SERVICE_VIRTUALSERVICE_EDIT_VALIDATION_LOGFILE_ERROR');?>');	
 					return;
 				}
 				Joomla.submitform(task,document.getElementById('item-form'));
@@ -243,7 +243,7 @@ class Easysdi_serviceViewVirtualService extends JView
 		$this->serviceconnectorlist = $db->loadObjectList();
 		
 		$db->setQuery("SELECT 0 AS alias, '- Please select -' AS value UNION SELECT s.alias as alias,CONCAT(s.alias, ' - ', s.resourceurl,' - [',GROUP_CONCAT(syv.value SEPARATOR '-'),']') as value FROM #__sdi_physicalservice s
-				INNER JOIN #__sdi_service_servicecompliance sc ON sc.service_id = s.id
+				INNER JOIN #__sdi_physicalservice_servicecompliance sc ON sc.physicalservice_id = s.id
 				INNER JOIN #__sdi_sys_servicecompliance syc ON syc.id = sc.servicecompliance_id
 				INNER JOIN #__sdi_sys_serviceversion syv ON syv.id = syc.serviceversion_id
 				INNER JOIN #__sdi_sys_serviceconnector sycc ON sycc.id = syc.serviceconnector_id
@@ -269,7 +269,7 @@ class Easysdi_serviceViewVirtualService extends JView
 	function genericServletInformationsHeader ($serviceconnector)
 	{
 		?>
-		<fieldset class="adminform"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_CONFIG_SERVICE_LIST'); ?><span class="star">*</span></legend>
+		<fieldset class="adminform"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_VIRTUALSERVICE_SERVICE_LIST'); ?><span class="star">*</span></legend>
 				<table class="admintable">
 					<thead>
 					</thead>
@@ -335,11 +335,11 @@ class Easysdi_serviceViewVirtualService extends JView
 				var nbServer = <?php echo $iServer?>;
 				var service = '<?php echo $serviceType?>';
 				</script>
-			<fieldset class="adminform"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_LEGEND_CONFIG_ID' );?></legend>
+			<fieldset class="adminform"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_LEGEND_VIRTUALSERVICE_ID' );?></legend>
 				<table class="admintable">
 					<tr>
 						<th>
-						<?php echo JText::_( 'COM_EASYSDI_SERVICE_CONFIG_ID' );?> :<span class="star">*</span> 
+						<?php echo JText::_( 'COM_EASYSDI_SERVICE_VIRTUALSERVICE_ID' );?> :<span class="star">*</span> 
 						</th>
 						<td colspan="4">
 							<input class="inputbox required" type='text' name='id' value='<?php echo $this->id;?>' <?php if(isset($this->id)){ echo "disabled='disabled'";};?>>
@@ -348,7 +348,7 @@ class Easysdi_serviceViewVirtualService extends JView
 					</tr>
 					<tr>
 						<th>
-						<?php echo JText::_( 'COM_EASYSDI_SERVICE_CONFIG_VERSION' );?> : 
+						<?php echo JText::_( 'COM_EASYSDI_SERVICE_VIRTUALSERVICE_VERSION' );?> : 
 						</th>
 						<td  id="supportedVersionsByConfigText" >
 						<table>
@@ -374,7 +374,7 @@ class Easysdi_serviceViewVirtualService extends JView
 				</table>
 			</fieldset>
 				
-			<fieldset class="adminform"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_CONFIG_HOST_TRANSLATOR'); ?></legend>
+			<fieldset class="adminform"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_VIRTUALSERVICE_HOST_TRANSLATOR'); ?></legend>
 				<table class="admintable">
 					<tr>
 						<td><input size="100" type="text" name="hostTranslator"

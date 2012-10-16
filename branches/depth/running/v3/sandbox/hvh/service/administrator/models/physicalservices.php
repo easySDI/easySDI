@@ -229,7 +229,7 @@ class Easysdi_serviceModelphysicalservices extends JModelList
         if ($orderCol && $orderDirn) {
 		    $query->order($db->getEscaped($orderCol.' '.$orderDirn));
         }
-
+      
 		return $query;
 	}
 }

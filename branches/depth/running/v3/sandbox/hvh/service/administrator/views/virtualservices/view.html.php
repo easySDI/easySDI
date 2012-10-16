@@ -29,14 +29,14 @@ class Easysdi_serviceViewVirtualServices extends JView
 		// Check if config file is set.
 		$file = $this->params->get('proxyconfigurationfile');
 		if (!isset($file) ) {
-			JError::raiseWarning(null, JText::_('COM_EASYSDI_SERVICE_CONFIG_FILE_ERROR_NOT_SET'));
+			JError::raiseWarning(null, JText::_('COM_EASYSDI_SERVICE_VIRTUALSERVICE_FILE_ERROR_NOT_SET'));
 			return ;
 		}
 		
 		$this->xml = simplexml_load_file($file);
 		// Check if config file can be loaded.
 		if (!isset($this->xml) || !$this->xml) {
-			JError::raiseWarning(null, JText::sprintf('COM_EASYSDI_SERVICE_CONFIG_FILE_ERROR_LOADING',$file));
+			JError::raiseWarning(null, JText::sprintf('COM_EASYSDI_SERVICE_VIRTUALSERVICE_FILE_ERROR_LOADING',$file));
 			return ;
 		}
 		
@@ -53,7 +53,7 @@ class Easysdi_serviceViewVirtualServices extends JView
 		require_once JPATH_COMPONENT.DS.'helpers'.DS.'easysdi_service.php';
 		
 		$canDo	= Easysdi_serviceHelper::getActions();
-		JToolBarHelper::title(JText::_('COM_EASYSDI_SERVICE_TITLE_CONFIGS'), 'module.png');
+		JToolBarHelper::title(JText::_('COM_EASYSDI_SERVICE_TITLE_VIRTUALSERVICES'), 'module.png');
 		
         if ($canDo->get('core.create')) {
 			JToolBarHelper::addNew('virtualservice.add','JTOOLBAR_NEW');

@@ -143,7 +143,7 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 	</div>
 	<div class="width-60 fltlft">
 		<fieldset class="adminform">
-			<legend><?php echo JText::_('COM_EASYSDI_SERVICE_LEGEND_SERVICE'); ?></legend>
+			<legend><?php echo JText::_('COM_EASYSDI_SERVICE_LEGEND_PHYSICALSERVICE'); ?></legend>
 		   <ul class="adminformlist">
 				<?php foreach($this->form->getFieldset('details') as $field): ?>
 				<?php
@@ -210,7 +210,7 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 			</ul>
 			</fieldset>
 			
-			<?php echo JHtml::_('sliders.panel', JText::_('COM_EASYSDI_SERVICE_LEGEND_SERVICE_NEGOTIATION'), 'negotiation-details'); ?>
+			<?php echo JHtml::_('sliders.panel', JText::_('COM_EASYSDI_SERVICE_LEGEND_PHYSICALSERVICE_NEGOTIATION'), 'negotiation-details'); ?>
 			<fieldset class="adminform">
 				<ul class="adminformlist">
 				<?php foreach($this->form->getFieldset('negotiation') as $field): ?>
