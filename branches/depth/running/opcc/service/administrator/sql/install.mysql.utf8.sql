@@ -76,7 +76,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_sys_authenticationconnector` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_service` (
+CREATE TABLE IF NOT EXISTS `#__sdi_physicalservice` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `guid` VARCHAR(36)  NOT NULL ,
 `alias` VARCHAR(20)  NOT NULL ,
@@ -106,9 +106,9 @@ PRIMARY KEY (`id`),
 UNIQUE (`name`) 
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_service_servicecompliance` (
+CREATE TABLE IF NOT EXISTS `#__sdi_physicalservice_servicecompliance` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`service_id` INT(11) UNSIGNED  NOT NULL ,
+`physicalservice_id` INT(11) UNSIGNED  NOT NULL ,
 `servicecompliance_id` INT(11) UNSIGNED  NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;

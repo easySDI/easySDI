@@ -288,11 +288,11 @@ foreach ($this->xml->config as $config) {
 					<table>
 					<tr>
 					<td><b><?php echo JText::_( 'COM_EASYSDI_SERVICE_IMAGE_SIZE_WIDTH'); ?></b></td>
-					<td><input id="minWidth" name="minWidth" type="text" size ="10" value="<?php if (strlen($thePolicy->ImageSize->Minimum->Width)>0)echo $thePolicy->ImageSize->Minimum->Width ; ?>" /></td>
+					<td><input id="minWidth" name="minWidth" type="text" size ="10" value="<?php if (isset($thePolicy->ImageSize->Minimum->Width)>0)echo $thePolicy->ImageSize->Minimum->Width ; ?>" /></td>
 					</tr>
 					<tr>
 					<td><b><?php echo JText::_( 'COM_EASYSDI_SERVICE_IMAGE_SIZE_HEIGHT'); ?></b></td>
-					<td><input type="text" id="minHeight" name="minHeight" size ="10" value="<?php if (strlen($thePolicy->ImageSize->Minimum->Height)> 0 ) echo $thePolicy->ImageSize->Minimum->Height ; ?>" /></td>
+					<td><input type="text" id="minHeight" name="minHeight" size ="10" value="<?php if (isset($thePolicy->ImageSize->Minimum->Height)> 0 ) echo $thePolicy->ImageSize->Minimum->Height ; ?>" /></td>
 					</tr>
 					</table>
 				</td>	
@@ -305,11 +305,11 @@ foreach ($this->xml->config as $config) {
 					<table>
 					<tr>
 					<td><b><?php echo JText::_( 'COM_EASYSDI_SERVICE_IMAGE_SIZE_WIDTH'); ?></b></td>
-					<td><input type="text" id="maxWidth" name="maxWidth" size ="10" value="<?php if (strlen($thePolicy->ImageSize->Maximum->Width)> 0 ) echo $thePolicy->ImageSize->Maximum->Width ; ?>" /></td>
+					<td><input type="text" id="maxWidth" name="maxWidth" size ="10" value="<?php if (isset($thePolicy->ImageSize->Maximum->Width)> 0 ) echo $thePolicy->ImageSize->Maximum->Width ; ?>" /></td>
 					</tr>
 					<tr>
 					<td><b><?php echo JText::_( 'COM_EASYSDI_SERVICE_IMAGE_SIZE_HEIGHT'); ?></b></td>
-					<td><input type="text" id="maxHeight" name="maxHeight" size ="10" value="<?php if (strlen($thePolicy->ImageSize->Maximum->Height)> 0 )  echo $thePolicy->ImageSize->Maximum->Height ; ?>" /></td>
+					<td><input type="text" id="maxHeight" name="maxHeight" size ="10" value="<?php if (isset($thePolicy->ImageSize->Maximum->Height)> 0 )  echo $thePolicy->ImageSize->Maximum->Height ; ?>" /></td>
 					</tr>
 					</table>
 				</td>
@@ -356,6 +356,7 @@ foreach ($this->xml->config as $config) {
 				$xmlCapa = simplexml_load_file($urlWithPassword.$separator."REQUEST=GetCapabilities&SERVICE=WMS");
 			}
 			
+			$theServer = null;
 			if ($xmlCapa === false){
 					global $mainframe;		
 					$mainframe->enqueueMessage(JText::_('EASYSDI_UNABLE TO RETRIEVE THE CAPABILITIES OF THE REMOTE SERVER' )." - ".$completeurl,'error');
@@ -376,13 +377,13 @@ foreach ($this->xml->config as $config) {
 			<tr>
 				<td class="key"><?php echo JText::_( 'COM_EASYSDI_SERVICE_WMS_SERVER_PREFIXE'); ?> </td>		
 				<td>
-				<input type="text" size ="100"   name="serverPrefixe<?php echo $iServer; ?>" id="serverPrefixe<?php echo $iServer; ?>" value="<?php echo $theServer->Prefix; ?>">
+				<input type="text" size ="100"   name="serverPrefixe<?php echo $iServer; ?>" id="serverPrefixe<?php echo $iServer; ?>" value="<?php if(isset($theServer->Prefix)) echo $theServer->Prefix; ?>">
 				</td>
 			</tr>
 			<tr>
 				<td class="key"><?php echo JText::_( 'COM_EASYSDI_SERVICE_WMS_SERVER_NAMESPACE'); ?></td>
 				<td>
-				<input type="text" size ="100"  name="serverNamespace<?php echo $iServer; ?>" id="serverNamespace<?php echo $iServer; ?>" value="<?php echo $theServer->Namespace; ?>">
+				<input type="text" size ="100"  name="serverNamespace<?php echo $iServer; ?>" id="serverNamespace<?php echo $iServer; ?>" value="<?php if(isset($theServer->Namespace)) echo $theServer->Namespace; ?>">
 				</td>
 			</tr>
 		</table>
@@ -408,7 +409,9 @@ foreach ($this->xml->config as $config) {
 			$namespaces = $xmlCapa->getDocNamespaces();
 			$dom_capa = dom_import_simplexml ($xmlCapa);
 			//WMS 1.3.0
-    		$layers = $dom_capa->getElementsByTagNameNS($namespaces[''],'Layer');
+			$nm = '';
+			if(isset($namespaces[''])) $nm = $namespaces[''];
+    		$layers = $dom_capa->getElementsByTagNameNS($nm,'Layer');
     		if($layers->length == 0)
     		{
     			//WMS 1.1.1 and 1.1.0
@@ -417,8 +420,8 @@ foreach ($this->xml->config as $config) {
     		
     		foreach ( $layers as $layer){
     			//WMS 1.3.0
-				$title = $layer->getElementsByTagNameNS($namespaces[''],'Title')->item(0)->nodeValue ;
-				$name = $layer->getElementsByTagNameNS($namespaces[''],'Name')->item(0)->nodeValue ;
+				$title = isset($layer->getElementsByTagNameNS($nm,'Title')->item(0)->nodeValue)? $layer->getElementsByTagNameNS($nm,'Title')->item(0)->nodeValue : null ;
+				$name = isset($layer->getElementsByTagNameNS($nm,'Name')->item(0)->nodeValue) ? $layer->getElementsByTagNameNS($nm,'Name')->item(0)->nodeValue : null;
 				if($title == null){
 					//WMS 1.1.1 and 1.1.0
 					$title = $layer->getElementsByTagName('Title')->item(0)->nodeValue ;

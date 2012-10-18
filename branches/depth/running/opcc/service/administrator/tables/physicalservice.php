@@ -15,7 +15,7 @@ require_once JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'libra
 /**
  * service Table class
  */
-class Easysdi_serviceTableservice extends sdiTable
+class Easysdi_serviceTablephysicalservice extends sdiTable
 {
 	/**
 	 * Constructor
@@ -24,7 +24,7 @@ class Easysdi_serviceTableservice extends sdiTable
 	 */
 	public function __construct(&$db)
 	{
-		parent::__construct('#__sdi_service', 'id', $db);
+		parent::__construct('#__sdi_physicalservice', 'id', $db);
 	}
 
 	/**
@@ -39,7 +39,7 @@ class Easysdi_serviceTableservice extends sdiTable
 	protected function _getAssetName()
 	{
 		$k = $this->_tbl_key;
-		return 'com_easysdi_service.service.' . (int) $this->$k;
+		return 'com_easysdi_service.physicalservice.' . (int) $this->$k;
 	}
 	
 	/**
