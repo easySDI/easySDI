@@ -1708,6 +1708,39 @@ class ADMIN_metadata {
 			}
 			
 			//Mettre à jour le titre multilingue de la métadonnées
+// 			$xpath = new DOMXpath($XMLDoc);
+			
+// 			// Recuperation des namespaces e inclure
+// 			$namespacelist = array();
+// 			$database->setQuery( "SELECT prefix, uri FROM #__sdi_namespace ORDER BY prefix" );
+// 			$namespacelist = array_merge( $namespacelist, $database->loadObjectList() );
+// 			foreach ($namespacelist as $namespace)
+// 			{
+// 				$xpath->registerNamespace($namespace->prefix,$namespace->uri);
+// 			}
+
+
+// 			 $elements = $xpath->query("//gmd:title");
+
+// if (!is_null($elements)) {
+// print_r('not null : '.$elements->length);
+
+//   foreach ($elements as $element) {
+//     echo "<br/>[". $element->nodeName. "]";
+//     $nodes = $element->childNodes;
+//     foreach ($nodes as $node) {
+//       echo $node->nodeValue. "\n";
+//     }
+//   }
+// }
+// else
+// {
+// print_r('null');
+// }
+			
+
+// die();
+		
 			$session = JFactory::getSession();
 			$MD_title = $session->get('MD_TITLE');
 			if(isset($MD_title)){
@@ -4280,20 +4313,22 @@ class ADMIN_metadata {
 				continue;
 			}
 			
-			if($nodeList->length > 1)
-				$multiplenodeerror[$xpath] = $nodeList->length;
-			else
-				$parentvaluelist[$xpath] = $nodeList->item(0);
-			
-// 			$subxpath = $xpath;
-// 			while (strlen($subxpath) > 1)
-// 			{
-// 				$pos = strrpos ($subxpath, '/', -1);
-// 				$subxpath =  substr ($subxpath, 0, $pos);
-// 				$nodeList = $metadataxpath->query($subxpath);
-// 				if($nodeList->length > 1)
-// 					$multiplenodeerror[$subxpath] = $nodeList->length;
+// 			if($nodeList->length > 1){
+// // 				$multiplenodeerror[$xpath] = $nodeList->length;
 // 			}
+// 			else
+			if($nodeList->length > 0)
+				$parentvaluelist[$xpath] = $nodeList;
+			
+			$subxpath = $xpath;
+			while (strlen($subxpath) > 1)
+			{
+				$pos = strrpos ($subxpath, '/', -1);
+				$subxpath =  substr ($subxpath, 0, $pos);
+				$nodeList = $metadataxpath->query($subxpath);
+				if($nodeList->length > 1)
+					$multiplenodeerror[$subxpath] = $nodeList->length;
+			}
 		}
 		
 		//If multiple node were detect in the parent metadata, the synchronization is aborted
@@ -4334,6 +4369,7 @@ class ADMIN_metadata {
 			try {
 				$catalogUrlGetRecordById = $catalogUrlBase."?request=GetRecordById&service=CSW&version=2.0.2&elementSetName=full&outputschema=csw:IsoRecord&content=CORE&id=".$childguid;
 				$childcsw = simplexml_load_string(ADMIN_metadata::CURLRequest("GET", $catalogUrlGetRecordById));
+				
 				// Enlever les balises CSW Response pour ne garder que les gmd, depuis gmd:MD_Metadata
 				$childcsw = $childcsw->children("http://www.isotc211.org/2005/gmd");
 				$childcsw = DOMDocument::loadXML('<?xml version="1.0" encoding="UTF-8"?>'.$childcsw->asXML());
@@ -4343,14 +4379,13 @@ class ADMIN_metadata {
 				
 				foreach ($xpathlist as $xpath)
 				{
-					$node = $parentvaluelist[$xpath];
-
+					$nodes = $parentvaluelist[$xpath];
 					//Parent value for a Xpath can be null/empty : corresponding values in the children md have to be null as well
-					if($node)
-						$node = $childcsw->importNode($node, TRUE);
+// 					if($node)
+// 						$node = $childcsw->importNode($node, TRUE);
 					
 					$nodeList = $childxpath->query($xpath);
- 					if($nodeList->length > 1)
+					if($nodeList->length >= 1)
  					{
  						//Plusieur occurence du noeud dans la métadonnée enfant
  						// opt 1 : on ajoute celui à synchroniser
@@ -4360,20 +4395,25 @@ class ADMIN_metadata {
  						$first = true;
  						foreach ($nodeList as $nodeToRemove )
  						{
- 							if($first && $node)
- 							{
- 								$first = false;
- 								$parentNode->replaceChild($node, $nodeToRemove);
- 							}
- 							else
- 							{
- 								$parentNode->removeChild($nodeToRemove);
- 							}
+ 							$parentNode->removeChild($nodeToRemove);
  						}
- 						
+ 						foreach ($nodes as $node)
+ 						{
+ 							$node = $childcsw->importNode($node, TRUE);
+ 							$parentNode->appendChild($node);
+ 						}
+ 						//New nodes were created, so an update of the metadata is required before loop to the next XPath
+ 						$updated = ADMIN_metadata::CURLUpdateMetadata($childguid, $childcsw);
+ 						//And reload
+ 						$childcsw = simplexml_load_string(ADMIN_metadata::CURLRequest("GET", $catalogUrlGetRecordById));
+ 						$childcsw = $childcsw->children("http://www.isotc211.org/2005/gmd");
+ 						$childcsw = DOMDocument::loadXML('<?xml version="1.0" encoding="UTF-8"?>'.$childcsw->asXML());
+ 						$childxpath = new DOMXPath($childcsw);
+ 						foreach ($namespaces as $namespace)
+ 							$childxpath->registerNamespace($namespace->prefix, $namespace->uri);
  					}
- 					else if ($nodeList->length == 0 && $node)//Node does exist in the parent MD 
- 					//if node does not exist in parent MD [if ($nodeList->length == 0 && !$node)], nothing has to be created in children MD
+ 					else if ($nodeList->length == 0 && $nodes->length > 0)//Node does exist in the parent MD 
+ 					//if node does not exist in parent MD [if ($nodeList->length == 0 && (!$nodes  || $nodes->length == 0))], nothing has to be created in children MD
  					{
  						//Node doesn't exist in the child metadata, it has to be created, so do its missing parents.
  						$offset = 1;
@@ -4412,7 +4452,11 @@ class ADMIN_metadata {
  								else
  								{
  									//End of the xPath : append directly the node from the parent metadata
- 									$prevNode->appendChild($node);
+ 									foreach ($nodes as $node)
+ 									{
+ 										$node = $childcsw->importNode($node, TRUE);
+ 										$prevNode->appendChild($node);
+ 									}
  								}
  							}
  							if($last)
@@ -4420,6 +4464,7 @@ class ADMIN_metadata {
  							else
  								$offset = $pos + 1;
  						}
+ 						
  						//New nodes were created, so an update of the metadata is required before loop to the next XPath
  						$updated = ADMIN_metadata::CURLUpdateMetadata($childguid, $childcsw);
  						//And reload
@@ -4430,16 +4475,21 @@ class ADMIN_metadata {
  						foreach ($namespaces as $namespace)
  							$childxpath->registerNamespace($namespace->prefix, $namespace->uri);
  					}
- 					else if($nodeList->length == 1 && $node)//Node does exist in the parent MD 
- 					{
- 						//Node exists just one time in the child metadata : it is replaced
- 						$nodeList->item(0)->parentNode->replaceChild($node, $nodeList->item(0));
- 					}
- 					else if($nodeList->length == 1 ) //Node does not exist in the parent MD (!$node)
- 					{
- 						//Node exists just one time in the child metadata : it is removed
- 						$nodeList->item(0)->parentNode->removeChild($nodeList->item(0));
- 					}
+//  					else if($nodeList->length == 1 && $nodes->lenght == 1)//Node does exist in the parent MD 
+//  					{
+//  						print_r("cas 3");
+//  						print_r("<br>");
+//  						//Node exists just one time in the child metadata : it is replaced
+//  						$nodeList->item(0)->parentNode->replaceChild($nodes->item(0), $nodeList->item(0));
+//  					}
+//  					else if($nodeList->length == 1 ) //Node does not exist in the parent MD (!$node)
+//  					{
+//  						print_r("cas 4");
+//  						print_r("<br>");
+//  						//Node exists just one time in the child metadata : it is removed
+//  						$nodeList->item(0)->parentNode->removeChild($nodeList->item(0));
+//  					}
+ 					
 				}
 				$updated = ADMIN_metadata::CURLUpdateMetadata($childguid, $childcsw);
 				

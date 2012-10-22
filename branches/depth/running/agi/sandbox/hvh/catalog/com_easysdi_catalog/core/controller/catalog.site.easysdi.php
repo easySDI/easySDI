@@ -612,7 +612,10 @@ class SITE_catalog {
 			}
 			if(count($arrSearchableMd) > 1)
 				$cswMdCond = "<ogc:Or>".$cswMdCond."</ogc:Or>";
-			$cswMdCond .= "<ogc:PropertyIsEqualTo><ogc:PropertyName>harvested</ogc:PropertyName><ogc:Literal>false</ogc:Literal></ogc:PropertyIsEqualTo>\r\n";
+			$cswMdCond .= "<ogc:Or>
+							<ogc:PropertyIsEqualTo><ogc:PropertyName>harvested</ogc:PropertyName><ogc:Literal>false</ogc:Literal></ogc:PropertyIsEqualTo>
+							<ogc:PropertyIsNull><ogc:PropertyName>harvested</ogc:PropertyName></ogc:PropertyIsNull>
+							</ogc:Or>\r\n";
 			$cswMdCond = "<ogc:And>".$cswMdCond."</ogc:And>";
 			
 			//Si aucun filtre touchant des attributs systèmes n'est utilisé dans cette recherche 
@@ -656,10 +659,10 @@ class SITE_catalog {
 										<ogc:PropertyName>$ogcfilter_fileid</ogc:PropertyName>
 										<ogc:Literal>-1</ogc:Literal>
 									</ogc:PropertyIsEqualTo>\r\n
-									<ogc:PropertyIsEqualTo>
-										<ogc:PropertyName>harvested</ogc:PropertyName>
-										<ogc:Literal>false</ogc:Literal>
-									</ogc:PropertyIsEqualTo>\r\n
+									<ogc:Or>
+										<ogc:PropertyIsEqualTo><ogc:PropertyName>harvested</ogc:PropertyName><ogc:Literal>false</ogc:Literal></ogc:PropertyIsEqualTo>
+										<ogc:PropertyIsNull><ogc:PropertyName>harvested</ogc:PropertyName></ogc:PropertyIsNull>
+									</ogc:Or>\r\n
 								</ogc:And>
 								";
 				}else{//Sinon on inclu les données harvestées

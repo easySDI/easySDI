@@ -771,7 +771,7 @@ class ADMIN_object {
 			$database->setQuery( "SELECT * FROM #__sdi_objectversion WHERE object_id=".$object->id." ORDER BY created DESC" );
 			$listVersion = array_merge( $listVersion, $database->loadObjectList() );
 			
-			//S'assurer que toutes les versions sont dans l'�tat archiv� ou en travail
+			//S'assurer que toutes les versions sont dans l'etat archive ou en travail
 			$total=0;
 			$database->setQuery( "SELECT COUNT(*) FROM #__sdi_objectversion v INNER JOIN #__sdi_metadata m ON m.id=v.metadata_id INNER JOIN #__sdi_list_metadatastate s ON s.id=m.metadatastate_id WHERE v.object_id=".$object->id." AND (s.code = 'unpublished' or s.code = 'archived') ORDER BY v.created DESC" );
 			$total = $database->loadResult();
@@ -788,6 +788,22 @@ class ADMIN_object {
 			{
 				$objectversion = new objectversion($database);
 				$objectversion->load($version->id); 
+				
+// 				$database->setQuery( "SELECT COUNT(*) FROM #__sdi_objectversion ov 
+// 										INNER JOIN #__sdi_objectversionlink ovl ON ovl.parent_id = ov.id 
+// 										WHERE ov.id=".$version->id );
+// 				$parentcount = $database->loadResult();
+// 				$database->setQuery( "SELECT COUNT(*) FROM #__sdi_objectversion ov
+// 						INNER JOIN #__sdi_objectversionlink ovl ON ovl.child_id = ov.id
+// 						WHERE ov.id=".$version->id );
+// 				$childcount = $database->loadResult();
+				
+// 				if($parentcount > 0 || $childcount > 0)
+// 				{
+// 					$mainframe->enqueueMessage('Une des versions de l objet a des parents ou des enfants.',"error");
+// 					$mainframe->redirect("index.php?option=$option&task=listObject" );
+// 					exit;
+// 				}
 				
 				$metadata = new metadata($database);
 				$metadata->load( $objectversion->metadata_id );
