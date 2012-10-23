@@ -784,25 +784,43 @@ class ADMIN_object {
 			}
 			
 			// Si la suppression de l'objet est possible, commencer par supprimer toutes les versions et leur m�tadonn�e
+			$hasChild = false;
 			foreach( $listVersion as $version )
 			{
 				$objectversion = new objectversion($database);
 				$objectversion->load($version->id); 
 				
-// 				$database->setQuery( "SELECT COUNT(*) FROM #__sdi_objectversion ov 
+// 				$database->setQuery( "SELECT ov.title, o.name FROM #__sdi_objectversion ov 
 // 										INNER JOIN #__sdi_objectversionlink ovl ON ovl.parent_id = ov.id 
+// 										INNER JOIN #__sdi_object o ON ov.object_id = o.id
 // 										WHERE ov.id=".$version->id );
-// 				$parentcount = $database->loadResult();
-// 				$database->setQuery( "SELECT COUNT(*) FROM #__sdi_objectversion ov
-// 						INNER JOIN #__sdi_objectversionlink ovl ON ovl.child_id = ov.id
-// 						WHERE ov.id=".$version->id );
-// 				$childcount = $database->loadResult();
+// 				$parentcount = $database->loadObjectList();
 				
-// 				if($parentcount > 0 || $childcount > 0)
+// 				$database->setQuery( "SELECT ov.title, o.name FROM #__sdi_objectversion ov
+// 						INNER JOIN #__sdi_objectversionlink ovl ON ovl.child_id = ov.id
+// 						INNER JOIN #__sdi_object o ON ov.object_id = o.id
+// 						WHERE ov.id=".$version->id );
+// 				$childcount = $database->loadObjectList();
+				
+// 				if(count($parentcount) > 0 || count($childcount) > 0)
 // 				{
-// 					$mainframe->enqueueMessage('Une des versions de l objet a des parents ou des enfants.',"error");
-// 					$mainframe->redirect("index.php?option=$option&task=listObject" );
-// 					exit;
+// 					if($hasChild == false)
+// 					{
+// 						$mainframe->enqueueMessage('Une des versions de l objet a des parents ou des enfants.',"error");
+// 						$hasChild = true;
+// 					}
+					
+// 					$mainframe->enqueueMessage($version->title." a comme relation : ","error");
+// 					foreach ($parentcount as $parent)
+// 					{
+// 						$mainframe->enqueueMessage("- parent : ".$parent->name." - ".$parent->title,"error");
+// 					}
+// 					foreach ($childcount as $child)
+// 					{
+// 						$mainframe->enqueueMessage("- enfant : ".$child->name." - ".$child->title,"error");
+// 					}
+					
+// 					continue;
 // 				}
 				
 				$metadata = new metadata($database);
@@ -854,7 +872,12 @@ class ADMIN_object {
 					exit;
 				}
 			}
-			
+			if($hasChild == true)
+			{
+				//At least one version has children or parent, object can not be deleted
+				$mainframe->redirect("index.php?option=$option&task=listObject" );
+				exit;
+			}
 			//Supprimer tous les liens vers des editeurs ou des managers
 			$query = "DELETE FROM #__sdi_manager_object WHERE object_id=".$object->id;
 			$database->setQuery( $query);
