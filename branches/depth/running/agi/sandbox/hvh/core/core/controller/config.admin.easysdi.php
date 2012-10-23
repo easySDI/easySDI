@@ -162,16 +162,6 @@ class ADMIN_config {
 		$db->setQuery( $query );
 		$attributetypelist = $db->loadObjectList();
 		
-		//List des relation pouvant être utilisées en tant que titre de la métadonnée
-		$relationtitlelist = array();
-		$query = "SELECT id as value, name as text FROM #__sdi_relation WHERE rendertype_id IN (1,2,3,4,5,8) AND published = 1 ORDER BY name";
-		$db->setQuery( $query );
-		$relationtitlelist = $db->loadObjectList();
-		
-		$query = "SELECT id FROM #__sdi_relation WHERE istitle = 1 LIMIT 0,1 ";
-		$db->setQuery( $query );
-		$relationtitle = $db->loadResult();
-		
 		//List of context
 		$metadatapreviewcontextlist = array();
 		$query= "SELECT '' AS value, '-' AS text UNION SELECT code as value, name as text FROM #__sdi_context ORDER BY text";
@@ -184,7 +174,7 @@ class ADMIN_config {
 											array(value => 'specific', 	text => 'specific'),
 											array(value => 'diffusion', text => 'diffusion'));
 		
-		HTML_config::showConfig($option, $coreList, $catalogItem, $catalogList, $shopItem, $shopList, $proxyItem, $proxyList,  $monitorItem, $monitorList,$publishItem, $publishList,$mapItem, $mapList, $fieldsLength, $attributetypelist, $relationtitlelist,$relationtitle, $metadatapreviewtypelist, $metadatapreviewcontextlist );
+		HTML_config::showConfig($option, $coreList, $catalogItem, $catalogList, $shopItem, $shopList, $proxyItem, $proxyList,  $monitorItem, $monitorList,$publishItem, $publishList,$mapItem, $mapList, $fieldsLength, $attributetypelist, $metadatapreviewtypelist, $metadatapreviewcontextlist );
 	}
 
 	function saveShowConfig($option) {
@@ -321,15 +311,12 @@ class ADMIN_config {
 			if (!$database->query()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
-			$database->setQuery( "UPDATE #__sdi_relation SET istitle=0 WHERE istitle = 1");
+			
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes(trim($_POST['metadata_linked_file_base_uri']))."\" WHERE code = 'CATALOG_METADATA_LINKED_FILE_BASE_URI'");
 			if (!$database->query()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
-			$database->setQuery( "UPDATE #__sdi_relation SET istitle=1 WHERE id = ".addslashes(trim($_POST['relationtitle'])));
-			if (!$database->query()) {
-				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-			}
-			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes(trim($_POST['metadatapreviewtypepublic']))."\" WHERE code = 'CATALOG_METADATA_PREVIEW_TYPE_PUBLIC'");
+			$database->setQuery( "UPDATE #__sdi_configuration SET value=\"".addslashes(trim($_POST['CATALOG_METADATA_TITLE_XPATH']))."\" WHERE code = 'CATALOG_METADATA_TITLE_XPATH'");
 			if (!$database->query()) {
 				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}

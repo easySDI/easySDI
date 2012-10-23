@@ -19,7 +19,7 @@ defined('_JEXEC') or die('Restricted access');
 
 class HTML_config {
 	
-	function showConfig($option, $coreList, $catalogItem, $catalogList, $shopItem, $shopList, $proxyItem, $proxyList, $monitorItem, $monitorList, $publishItem, $publishList,$mapItem, $mapList,$fieldsLength, $attributetypelist, $relationtitlelist,$relationtitle, $metadatapreviewtypelist, $metadatapreviewcontextlist)
+	function showConfig($option, $coreList, $catalogItem, $catalogList, $shopItem, $shopList, $proxyItem, $proxyList, $monitorItem, $monitorList, $publishItem, $publishList,$mapItem, $mapList,$fieldsLength, $attributetypelist, $metadatapreviewtypelist, $metadatapreviewcontextlist)
 	{
 		global $mainframe;
 
@@ -271,12 +271,12 @@ if ($catalogItem > 0){
 									</tr>
 									<tr>
 										<td valign="top" class="key">
-											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_RELATION_TITLE_TIP' ); ?>">
-												<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_RELATION_TITLE_LABEL' ); ?>
+											<span class="editlinktip hasTip" title="<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_METADATA_TITLE_XPATH' ); ?>">
+												<?php echo JText::_( 'CORE_CONFIGURATION_CATALOG_METADATA_TITLE_XPATH' ); ?>
 											</span>
 										</td>
 										<td>
-											<?php echo JHTML::_("select.genericlist",$relationtitlelist, 'relationtitle', 'size="1" class="inputbox"', 'value', 'text', $relationtitle ); ?>
+											<input class="text_area" type="text" size="100" name="CATALOG_METADATA_TITLE_XPATH" value="<?php echo $catalogList['CATALOG_METADATA_TITLE_XPATH']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
 										</td>
 									</tr>
 									<tr>
@@ -286,7 +286,7 @@ if ($catalogItem > 0){
 											</span>
 										</td>
 										<td>
-											<input class="text_area" type="text" size="50" name="catalog_mxqueryurl" value="<?php echo $catalogList['CATALOG_MXQUERYURL']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+											<input class="text_area" type="text" size="100" name="catalog_mxqueryurl" value="<?php echo $catalogList['CATALOG_MXQUERYURL']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
 										</td>
 									</tr>									
 									<tr>
@@ -296,7 +296,7 @@ if ($catalogItem > 0){
 											</span>
 										</td>
 										<td>
-											<input class="text_area" type="text" size="50" name="catalog_mxquerypagination" value="<?php echo $catalogList['CATALOG_MXQUERYPAGINATION']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+											<input class="text_area" type="text" size="100" name="catalog_mxquerypagination" value="<?php echo $catalogList['CATALOG_MXQUERYPAGINATION']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
 										</td>
 									</tr>
 									<tr>
@@ -306,7 +306,7 @@ if ($catalogItem > 0){
 											</span>
 										</td>
 										<td>
-											<input class="text_area" type="text" size="50" name="thesaurusUrl" value="<?php echo $catalogList['thesaurusUrl']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
+											<input class="text_area" type="text" size="100" name="thesaurusUrl" value="<?php echo $catalogList['thesaurusUrl']->value; ?>" maxlength="<?php echo $fieldsLength['value'];?>" />
 										</td>
 									</tr>
 									<tr>
