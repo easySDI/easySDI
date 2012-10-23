@@ -878,7 +878,7 @@ class HTML_product{
 		<div class="row">
 			 <div class="row">
 			 	<label for="searchObjectName"><?php echo JText::_("SHOP_PRODUCT_FILTER_PRODUCTNAME");?></label>
-			 	<input type="text" name="searchProduct" value="<?php echo $search;?>" class="inputboxSearchProduct text full" />
+			 	<input type="text" name="searchProduct" value="<?php echo htmlspecialchars($search, ENT_QUOTES);?>" class="inputboxSearchProduct text full" />
 			 </div>
 			 <div class="row2">
 				<input type="submit" id="search_product" name="search_product" class="submit" value ="<?php echo JText::_("CORE_SEARCH_BUTTON"); ?>" onClick="document.getElementById('productListForm').task.value='listProduct';document.getElementById('productListForm').submit();"/>

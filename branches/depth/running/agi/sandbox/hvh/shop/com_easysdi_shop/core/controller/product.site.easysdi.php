@@ -553,12 +553,23 @@ class SITE_product {
 		$account->load($user->id);		
 		
 		$search = $mainframe->getUserStateFromRequest( "searchProduct{$option}", 'searchProduct', '' );
-		$search = $database->getEscaped( trim( strtolower( $search ) ) );
-
 		$filter = "";
-		if ( $search ) {
-			$filter .= " AND (p.name LIKE '%$search%')";			
+		if ( $search )
+		{
+			if(strripos ($search,'"') != FALSE)
+			{
+				$searchcontent = substr($search, 1,strlen($search)-2 );
+				$searchcontent = $database->getEscaped( trim( strtolower( $searchcontent ) ) );
+				$filter .= " AND (p.name LIKE '%".$searchcontent."%')";
+			}
+			else
+			{
+				$search = $database->getEscaped( trim( strtolower( $search ) ) );
+				$filter .= " AND (p.name = '$search')";
+			}
 		}
+		
+		
 		
 		//List only the products belonging to the current user
 		$query = " SELECT p.*, v.metadata_id, y.code as visibility, m.account_id, md.guid as metadata_guid, v.title as version_title, o.name as object_name

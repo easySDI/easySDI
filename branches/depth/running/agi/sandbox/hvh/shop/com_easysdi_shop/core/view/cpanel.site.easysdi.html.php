@@ -49,7 +49,7 @@ class HTML_cpanel {
 			<tr>
 				<td align="left"><b><?php echo JText::_("SHOP_SHOP_FILTER_TITLE");?></b>&nbsp;
 				<td colspan="4" align="left">
-				   <input type="text" id="searchOrder" name="searchOrder" class="inputbox" value="<?php echo $search;?>" />			
+				   <input type="text" id="searchOrder" name="searchOrder" class="inputbox" value="<?php echo htmlspecialchars($search, ENT_QUOTES);?>" />			
 				</td>
 			</tr>
 			<tr>
@@ -549,7 +549,7 @@ class HTML_cpanel {
 					<b><?php echo JText::_("SHOP_SHOP_FILTER_TITLE");?></b>&nbsp;
 				</td>
 				<td align="left" colspan="4">
-					<input id="treatmentSearch" type="text" name="search" value="<?php echo $search;?>" class="inputbox"></input>			
+					<input id="treatmentSearch" type="text" name="search" value="<?php echo htmlspecialchars($search, ENT_QUOTES);?>" class="inputbox"></input>			
 				</td>
 			</tr>
 			<tr>
