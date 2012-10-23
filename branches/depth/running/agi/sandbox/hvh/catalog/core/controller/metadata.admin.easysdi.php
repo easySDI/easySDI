@@ -1667,159 +1667,154 @@ class ADMIN_metadata {
 		$option 		= $_POST['option'];
 		$metadata_id 	= $_POST['metadata_id'];
 		$object_id 		= $_POST['object_id'];
+		$XMLDoc 		= ADMIN_metadata::getCurrentMetadataContent();
+		$updated 		= ADMIN_metadata::CURLUpdateMetadata($metadata_id, $XMLDoc );
 		
-		$XMLDoc = ADMIN_metadata::getCurrentMetadataContent();
+		if ($updated <> 1)
+		{
+			$errorMsg = "erreur"; 
+			$response = '{
+				    		success: false,
+						    errors: {
+						        xml: "Metadata has not been inserted. '.$errorMsg.'"
+						    }
+						}';
+			print_r($response);
+			die();
+		}
+		else if ($_POST['task'] == 'saveMetadata')
+		{
+			$response = '{
+				    		success: true,
+						    errors: {
+						        xml: "Metadata saved"
+						    }
+						}';
+			print_r($response);
+// 			die();
+		}
 		
-		
-			$updated = ADMIN_metadata::CURLUpdateMetadata($metadata_id, $XMLDoc );
+		// Mettre à jour la métadonnée liée (state et revision)
+		$rowMetadata = new metadataByGuid($database);
+		$rowMetadata->load($metadata_id);
+		$rowMetadata->updated = date('Y-m-d H:i:s');
+		$rowMetadata->updatedby = $account_id;
+		if (!$rowMetadata->store()) {
+			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			exit();
+		}
 			
-			if ($updated <> 1)
+		//Mettre à jour le titre multilingue de la métadonnées
+		$XMLstring 		= $XMLDoc->saveXML();
+		$doc 			= DOMDocument::loadXML($XMLstring);
+		$xpath 			= new DOMXpath($doc);
+		// Recuperation des namespaces e inclure
+		$namespacelist 	= array();
+		$database->setQuery( "SELECT prefix, uri FROM #__sdi_namespace ORDER BY prefix" );
+		$namespacelist 	= array_merge( $namespacelist, $database->loadObjectList() );
+		foreach ($namespacelist as $namespace)
+		{
+			$xpath->registerNamespace($namespace->prefix,$namespace->uri);
+		}
+		$elements = $xpath->query("//gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title");
+		if (!is_null($elements)) {
+			$user 		= JFactory::getUser();
+			$element 	= $elements->item(0);
+			$CharacterString_EL 	= $element->getElementsByTagNameNS("http://www.isotc211.org/2005/gco","CharacterString");
+			$PT_FreeText_EL 		= $element->getElementsByTagNameNS("http://www.isotc211.org/2005/gmd","PT_FreeText");
+				
+			if($CharacterString_EL->length == 1 && $PT_FreeText_EL->length == 0)//Not a multilingual field : the unique value must be save for all the languages
 			{
-				$errorMsg = "erreur"; 
-				$response = '{
-					    		success: false,
-							    errors: {
-							        xml: "Metadata has not been inserted. '.$errorMsg.'"
-							    }
-							}';
-				print_r($response);
-				die();
-			}
-			else if ($_POST['task'] == 'saveMetadata')
-			{
-				$response = '{
-					    		success: true,
-							    errors: {
-							        xml: "Metadata saved"
-							    }
-							}';
-				print_r($response);
-				die();
-			}
-			
-			// Mettre à jour la métadonnée liée (state et revision)
-			$rowMetadata = new metadataByGuid($database);
-			$rowMetadata->load($metadata_id);
-			$rowMetadata->updated = date('Y-m-d H:i:s');
-			$rowMetadata->updatedby = $account_id;
-			if (!$rowMetadata->store()) {
-				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				exit();
-			}
-			
-			//Mettre à jour le titre multilingue de la métadonnées
-// 			$xpath = new DOMXpath($XMLDoc);
-			
-// 			// Recuperation des namespaces e inclure
-// 			$namespacelist = array();
-// 			$database->setQuery( "SELECT prefix, uri FROM #__sdi_namespace ORDER BY prefix" );
-// 			$namespacelist = array_merge( $namespacelist, $database->loadObjectList() );
-// 			foreach ($namespacelist as $namespace)
-// 			{
-// 				$xpath->registerNamespace($namespace->prefix,$namespace->uri);
-// 			}
-
-
-// 			 $elements = $xpath->query("//gmd:title");
-
-// if (!is_null($elements)) {
-// print_r('not null : '.$elements->length);
-
-//   foreach ($elements as $element) {
-//     echo "<br/>[". $element->nodeName. "]";
-//     $nodes = $element->childNodes;
-//     foreach ($nodes as $node) {
-//       echo $node->nodeValue. "\n";
-//     }
-//   }
-// }
-// else
-// {
-// print_r('null');
-// }
-			
-
-// die();
-		
-			$session = JFactory::getSession();
-			$MD_title = $session->get('MD_TITLE');
-			if(isset($MD_title)){
-				$user = JFactory::getUser();
-				foreach ($MD_title as $key => $value){
-					if($key == 'NA')
-					{
-						//Le titre n'est pas un champ multilingue
-						//On récupère toutes les langues de la solution
-						$database->setQuery ("SELECT id FROM #__sdi_language");
-						$language_list = $database->loadObjectList();
-						
-						//Pour chaque langue, on enregistre la valeur du champ titre
-						foreach ($language_list as $language)
-						{
-							$database->setQuery ("SELECT COUNT(*) FROM #__sdi_translation
-									WHERE element_guid ='".$rowMetadata->guid."'
-									AND language_id=".$language->id);
-							$count = $database->loadResult();
-							if($count > 0){
-								$query = "UPDATE #__sdi_translation SET title = '".addslashes($value)."' , updated = NOW(), updatedby = ".$user->id."
-								WHERE element_guid = '".$rowMetadata->guid."'
-								AND language_id=".$language->id;
-							}else{
-								$query = "INSERT INTO #__sdi_translation (element_guid, language_id, title, created, createdby)
-								VALUES ('".$rowMetadata->guid."',
-								".$language->id.",
-								'".addslashes($value)."',
-								NOW(),
-								".$user->id." )";
-							}
-							$database->setQuery($query);
-							if (!$database->query()){
-								$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-							}
-						}
+				$nodeValue = $CharacterString_EL->item(0)->nodeValue;
+				foreach($this->langList as $lang)
+				{
+					$database->setQuery ("SELECT COUNT(*) FROM #__sdi_translation WHERE element_guid ='".$rowMetadata->guid."' AND language_id=".$lang->id);
+					$count = $database->loadResult();
+					if($count > 0){
+						$query = "UPDATE #__sdi_translation SET title = '".addslashes($nodeValue)."' , updated = NOW(), updatedby = ".$user->id."
+						WHERE element_guid = '".$rowMetadata->guid."' AND language_id=".$lang->id;
+					}else{
+						$query = "INSERT INTO #__sdi_translation (element_guid, language_id, title, created, createdby)
+						VALUES ('".$rowMetadata->guid."', ".$lang->id.", '".addslashes($nodeValue)."', NOW(), ".$user->id." )";
 					}
-					else 
+					$database->setQuery($query);
+					if (!$database->query()){
+						$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+					}
+				}
+			}
+				
+			else if($PT_FreeText_EL->length > 0)//Multilingual field
+			{
+				$nodeValue = $CharacterString_EL->item(0)->nodeValue;
+				foreach($this->langList as $lang)
+				{
+					if($lang->defaultlang)
 					{
-						//Le titre est un champ multilingue
-						$database->setQuery ("SELECT COUNT(*) FROM #__sdi_translation 
-												WHERE element_guid ='".$rowMetadata->guid."' 
-												AND language_id=(SELECT id FROM #__sdi_language WHERE code ='".$key."' )");
+						$database->setQuery ("SELECT COUNT(*) FROM #__sdi_translation WHERE element_guid ='".$rowMetadata->guid."' AND language_id=".$lang->id);
 						$count = $database->loadResult();
 						if($count > 0){
-							$query = "UPDATE #__sdi_translation SET title = '".addslashes($value)."' , updated = NOW(), updatedby = ".$user->id." 
-										WHERE element_guid = '".$rowMetadata->guid."'
-										AND language_id=(SELECT id FROM #__sdi_language WHERE code ='".$key."' )";
+							$query = "UPDATE #__sdi_translation SET title = '".addslashes($nodeValue)."' , updated = NOW(), updatedby = ".$user->id."
+							WHERE element_guid = '".$rowMetadata->guid."' AND language_id=".$lang->id;
 						}else{
-							$query = "INSERT INTO #__sdi_translation (element_guid, language_id, title, created, createdby) 
-												VALUES ('".$rowMetadata->guid."', 
-														(SELECT id FROM #__sdi_language WHERE code ='".$key."' ), 
-														'".addslashes($value)."',
-														NOW(),
-														".$user->id." )";
+							$query = "INSERT INTO #__sdi_translation (element_guid, language_id, title, created, createdby)
+							VALUES ('".$rowMetadata->guid."', ".$lang->id.", '".addslashes($nodeValue)."', NOW(), ".$user->id." )";
 						}
-					
 						$database->setQuery($query);
-						if (!$database->query()){	
+						if (!$database->query()){
 							$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+						}
+						break;
+					}
+				}
+				foreach($PT_FreeText_EL as $node)
+				{
+					print_r("In freeText - ");
+					$LocalisedCharacterString_EL = $node->getElementByTagNameNS("http://www.isotc211.org/2005/gmd","textGroup")->item(0)->getElementByTagNameNS("http://www.isotc211.org/2005/gmd","LocalisedCharacterString");
+					if($LocalisedCharacterString_EL->length == 1)
+					{
+						$nodeString = $LocalisedCharacterString_EL->item(0);
+						$nodeValue = $nodeString->nodeValue;
+						$nodeLocale = $nodeString->attributes->getNamedItem ("locale");
+						
+						foreach($this->langList as $lang)
+						{
+							if($lang->code == "#".$nodeLocale)
+							{
+								$database->setQuery ("SELECT COUNT(*) FROM #__sdi_translation WHERE element_guid ='".$rowMetadata->guid."' AND language_id=".$lang->id);
+								$count = $database->loadResult();
+								if($count > 0){
+									$query = "UPDATE #__sdi_translation SET title = '".addslashes($nodeValue)."' , updated = NOW(), updatedby = ".$user->id."
+									WHERE element_guid = '".$rowMetadata->guid."' AND language_id=".$lang->id;
+								}else{
+									$query = "INSERT INTO #__sdi_translation (element_guid, language_id, title, created, createdby)
+									VALUES ('".$rowMetadata->guid."', ".$lang->id.", '".addslashes($nodeValue)."', NOW(), ".$user->id." )";
+								}
+								$database->setQuery($query);
+								if (!$database->query()){
+									$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+								}
+								break;
+							}
 						}
 					}
 				}
-				$session->clear('MD_TITLE');
+				
 			}
-			else
-			{
-				//Auncun titre n'est défini dans la métadonnée, effacer si présent
-				$query = "DELETE FROM  #__sdi_translation WHERE element_guid = '".$rowMetadata->guid."' ";
-				$database->setQuery($query);
-				if (!$database->query()){
-					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-				}
+		}
+		else
+		{
+			//Auncun titre n'est défini dans la métadonnée, effacer si présent
+			$query = "DELETE FROM  #__sdi_translation WHERE element_guid = '".$rowMetadata->guid."' ";
+			$database->setQuery($query);
+			if (!$database->query()){
+				$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 			}
-			// Checkin object
-			$rowObject = new object( $database );
-			$rowObject->load( $object_id );
-			$rowObject->checkin();
-		
+		}
+		// Checkin object
+		$rowObject = new object( $database );
+		$rowObject->load( $object_id );
+		$rowObject->checkin();
 	}
 	
 	/*
