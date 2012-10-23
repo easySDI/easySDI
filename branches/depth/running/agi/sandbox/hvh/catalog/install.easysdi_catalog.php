@@ -2412,6 +2412,13 @@ function com_install(){
 			
 			if($count == 0)
 			{
+				$query = "ALTER TABLE #__sdi_configuration MODIFY value varchar(500)";
+				$db->setQuery( $query);
+				if (!$db->query()){
+					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+					return false;
+				}
+				
 				$query = "INSERT INTO #__sdi_configuration (guid, code, name, description, created, createdby, label, value, module_id) VALUES
 				('".helper_easysdi::getUniqueId()."', 'CATALOG_METADATA_TITLE_XPATH', 'CATALOG_METADATA_TITLE_XPATH', null, '".date('Y-m-d H:i:s')."', '".$user_id."', null, '//gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title', '".$id."')
 				";

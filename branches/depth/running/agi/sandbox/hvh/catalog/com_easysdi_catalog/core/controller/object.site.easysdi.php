@@ -112,11 +112,18 @@ class SITE_object {
 		$account->load($user->id);
 		
 		$search = $mainframe->getUserStateFromRequest( "searchObjectName{$option}", 'searchObjectName', '' );
-		$search = $db->getEscaped( trim( strtolower( $search ) ) );
-		
 		$filter = "";
 		if ( $search ) {
-			$filter .= " AND (o.name = '$search')";			
+			if(strripos ($search,'"') != FALSE)
+			{
+				$searchcontent = substr($search, 1,strlen($search)-2 );
+				$searchcontent = $db->getEscaped( trim( strtolower( $searchcontent ) ) );
+				$filter .= " AND (o.name LIKE '%".$searchcontent."%')";
+			}else
+			{
+				$search = $db->getEscaped( trim( strtolower( $search ) ) );
+				$filter .= " AND (o.name = '$search')";
+			}
 		}
 		
 		// Objecttype filter

@@ -53,12 +53,22 @@ class SITE_metadata {
 		$filter_objecttype_id 	= $mainframe->getUserStateFromRequest( $option.'filter_md_objecttype_id',	'filter_md_objecttype_id',	-1,	'int' );
 		$filter_md_state_id 	= $mainframe->getUserStateFromRequest( $option.'filter_md_state_id',	'filter_md_state_id',	-1,	'int' );
 		$filter_md_version 		= $mainframe->getUserStateFromRequest( $option.'filter_md_version',	'filter_md_version',	-1,	'int' );
-		$search 				= $mainframe->getUserStateFromRequest( "searchObjectName{$option}", 'searchObjectName', '' );
-		$search 				= $database->getEscaped( trim( strtolower( $search ) ) );
-
+		$search 				= $mainframe->getUserStateFromRequest( "searchMetadataName{$option}", 'searchMetadataName', '' );
+		
 		$filter = "";
-		if ( $search ) {
-			$filter .= " AND (o.name = '$search')";			
+		if ( $search ) 
+		{
+			if(strripos ($search,'"') != FALSE)
+			{
+				$searchcontent = substr($search, 1,strlen($search)-2 );
+				$searchcontent = $database->getEscaped( trim( strtolower( $searchcontent ) ) );
+				$filter .= " AND (o.name LIKE '%".$searchcontent."%')";
+			}
+			else
+			{
+				$search = $database->getEscaped( trim( strtolower( $search ) ) );
+				$filter .= " AND (o.name = '$search')";
+			}
 		}
 		
 		// Test si le filtre est valide

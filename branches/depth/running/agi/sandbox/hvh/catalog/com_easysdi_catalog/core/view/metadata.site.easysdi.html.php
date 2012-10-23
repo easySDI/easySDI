@@ -103,7 +103,7 @@ class HTML_metadata {
 		<div class="row">
 			 <div class="row">
 			 	<label for="searchObjectName"><?php echo JText::_("CATALOG_METADATA_FILTER_OBJECTNAME");?></label>
-			 	<input type="text" name="searchObjectName" value="<?php echo $search;?>" class="inputboxSearchProduct text large" />
+			 	<input type="text" name="searchMetadataName" value="<?php echo htmlspecialchars($search, ENT_QUOTES);?>" class="inputboxSearchProduct text large" />
 			 </div>
 			 <div class="row">
 			 	<label for="searchObjectType"><?php echo JText::_("CATALOG_METADATA_FILTER_OBJECTTYPE");?></label>

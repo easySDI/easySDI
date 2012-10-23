@@ -325,6 +325,7 @@ if ($rowObject->updated)
 		$app		= &JFactory::getApplication();
 		$router 	= &$app->getRouter();
 		$router->setVars($_REQUEST);
+		
 		?>
 		<script>
 		function tableOrdering( order, dir, view )
@@ -343,7 +344,7 @@ if ($rowObject->updated)
 		<div class="row">
 			 <div class="row">
 			 	<label for="searchObjectName"><?php echo JText::_("CATALOG_OBJECT_FILTER_OBJECTNAME");?></label>
-			 	<input type="text" name="searchObjectName" value="<?php echo $search;?>" class="inputboxSearchProduct text full" />
+			 	<input type="text" name="searchObjectName" value="<?php echo  htmlspecialchars($search, ENT_QUOTES);?>" class="inputboxSearchProduct text full" />
 			 </div>
 			 <div class="row">
 			 	<label for="searchObjectType"><?php echo JText::_("CATALOG_OBJECT_FILTER_OBJECTTYPE");?></label>
