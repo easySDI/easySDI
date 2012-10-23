@@ -421,7 +421,6 @@ class ADMIN_metadata {
 						 rel.classchild_id as child_id, 
 						 rel.objecttypechild_id as objecttype_id, 
 						 rel.editable as editable,
-						 rel.istitle as istitle,
 						 CONCAT(relation_namespace.prefix,':',rel.isocode) as rel_isocode, 
 						 rel.relationtype_id as reltype_id, 
 						 rel.classassociation_id as association_id,
@@ -535,9 +534,6 @@ class ADMIN_metadata {
 						{
 							$nodeValue = $usefullVals[$pos-1];
 
-							if($pos == 1 && $child->istitle == 1)
-								$titles ['NA'] = $nodeValue;
-							
 							$XMLNode = $XMLDoc->createElement($child->attribute_isocode);
 							$xmlAttributeParent->appendChild($XMLNode);
 							
@@ -545,8 +541,7 @@ class ADMIN_metadata {
 							$XMLNode->appendChild($XMLValueNode);
 							$xmlParent = $XMLValueNode;
 						}
-						if($child->istitle == 1)
-							$session->set ('MD_TITLE',$titles);
+						
 						break;
 					// Text
 					case 2:
@@ -575,9 +570,6 @@ class ADMIN_metadata {
 						{
 							$nodeValue = $usefullVals[$pos-1];
 							$nodeValue = htmlspecialchars($nodeValue);
-							
-							if($pos == 1 && $child->istitle == 1)
-								$titles ['NA'] = $nodeValue;
 																	
 							$XMLNode = $XMLDoc->createElement($child->attribute_isocode);
 							$xmlAttributeParent->appendChild($XMLNode);
@@ -586,9 +578,7 @@ class ADMIN_metadata {
 							$XMLNode->appendChild($XMLValueNode);
 							$xmlParent = $XMLValueNode;
 						}
-
-						if($child->istitle == 1)
-							$session->set ('MD_TITLE',$titles);
+						
 						break;
 					// Local
 					case 3:
@@ -653,9 +643,6 @@ class ADMIN_metadata {
 									$nodeValue = htmlspecialchars($nodeValue);
 									$nodeValue = preg_replace("/\r\n|\r|\n/","&#xD;",$nodeValue);
 									
-									if($child->istitle == 1)
-										$titles [$lang->code] = $nodeValue;
-									
 									// Ajout des balises inhérantes aux locales
 									if ($lang->defaultlang == true) // La langue par défaut
 									{
@@ -680,8 +667,6 @@ class ADMIN_metadata {
 								}
 							}
 						}
-						if($child->istitle == 1)
-							$session->set ('MD_TITLE',$titles);
 						break;
 					// Number
 					case 4:
@@ -710,17 +695,12 @@ class ADMIN_metadata {
 						{
 							$nodeValue = $usefullVals[$pos-1];
 							
-							if($pos == 1 && $child->istitle == 1)
-								$titles ['NA'] = $nodeValue;
-							
 							$XMLNode = $XMLDoc->createElement($child->attribute_isocode);
 							$xmlAttributeParent->appendChild($XMLNode);
 							$XMLValueNode = $XMLDoc->createElement($childType, $nodeValue);
 							$XMLNode->appendChild($XMLValueNode);
 							$xmlParent = $XMLValueNode;
 						}
-						if($child->istitle == 1)
-							$session->set ('MD_TITLE',$titles);
 						break;
 					// Date
 					case 5:
@@ -746,9 +726,6 @@ class ADMIN_metadata {
 						{
 							$nodeValue = $usefullVals[$pos-1];
 							
-							if($pos == 1 && $child->istitle == 1)
-								$titles ['NA'] = $nodeValue;
-							
 							if ($nodeValue <> "")
 								$nodeValue = date('Y-m-d', strtotime($nodeValue));
 							
@@ -759,8 +736,6 @@ class ADMIN_metadata {
 							$XMLNode->appendChild($XMLValueNode);
 							$xmlParent = $XMLValueNode;
 						}
-						if($child->istitle == 1)
-							$session->set ('MD_TITLE',$titles);
 						break;
 					// List
 					case 6:
@@ -1058,9 +1033,6 @@ class ADMIN_metadata {
 						{
 							$nodeValue = $usefullVals[$pos-1];
 							
-							if($pos == 1 && $child->istitle == 1)
-								$titles ['NA'] = $nodeValue;
-							
 							if ($nodeValue <> "")
 								$nodeValue = date('Y-m-d', strtotime($nodeValue))."T00:00:00";
 							
@@ -1071,8 +1043,6 @@ class ADMIN_metadata {
 							$XMLNode->appendChild($XMLValueNode);
 							$xmlParent = $XMLValueNode;
 						}
-						if($child->istitle == 1)
-							$session->set ('MD_TITLE',$titles);
 						break;
 					// ChoiceText
 					case 9:
@@ -1682,18 +1652,8 @@ class ADMIN_metadata {
 			print_r($response);
 			die();
 		}
-		else if ($_POST['task'] == 'saveMetadata')
-		{
-			$response = '{
-				    		success: true,
-						    errors: {
-						        xml: "Metadata saved"
-						    }
-						}';
-			print_r($response);
-// 			die();
-		}
 		
+			
 		// Mettre à jour la métadonnée liée (state et revision)
 		$rowMetadata = new metadataByGuid($database);
 		$rowMetadata->load($metadata_id);
@@ -1704,7 +1664,7 @@ class ADMIN_metadata {
 			exit();
 		}
 			
-		//Mettre à jour le titre multilingue de la métadonnées
+		//Update metadata titles (multilingual)
 		$XMLstring 		= $XMLDoc->saveXML();
 		$doc 			= DOMDocument::loadXML($XMLstring);
 		$xpath 			= new DOMXpath($doc);
@@ -1712,16 +1672,24 @@ class ADMIN_metadata {
 		$namespacelist 	= array();
 		$database->setQuery( "SELECT prefix, uri FROM #__sdi_namespace ORDER BY prefix" );
 		$namespacelist 	= array_merge( $namespacelist, $database->loadObjectList() );
+		$gmdURI = "";
+		$gcoURI = "";
 		foreach ($namespacelist as $namespace)
 		{
 			$xpath->registerNamespace($namespace->prefix,$namespace->uri);
+			if($namespace->prefix == "gmd") $gmdURI = $namespace->uri;
+			if($namespace->prefix == "gco") $gcoURI = $namespace->uri;
 		}
-		$elements = $xpath->query("//gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title");
+		
+		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
+		$queryXPath = config_easysdi::getValue("CATALOG_METADATA_TITLE_XPATH");
+		$elements = $xpath->query($queryXPath);
+		
 		if (!is_null($elements)) {
-			$user 		= JFactory::getUser();
-			$element 	= $elements->item(0);
-			$CharacterString_EL 	= $element->getElementsByTagNameNS("http://www.isotc211.org/2005/gco","CharacterString");
-			$PT_FreeText_EL 		= $element->getElementsByTagNameNS("http://www.isotc211.org/2005/gmd","PT_FreeText");
+			$user 					= JFactory::getUser();
+			$element 				= $elements->item(0);
+			$CharacterString_EL 	= $element->getElementsByTagNameNS($gcoURI,"CharacterString");
+			$PT_FreeText_EL 		= $element->getElementsByTagNameNS($gmdURI,"PT_FreeText");
 				
 			if($CharacterString_EL->length == 1 && $PT_FreeText_EL->length == 0)//Not a multilingual field : the unique value must be save for all the languages
 			{
@@ -1767,39 +1735,39 @@ class ADMIN_metadata {
 						break;
 					}
 				}
-				foreach($PT_FreeText_EL as $node)
-				{
-					print_r("In freeText - ");
-					$LocalisedCharacterString_EL = $node->getElementByTagNameNS("http://www.isotc211.org/2005/gmd","textGroup")->item(0)->getElementByTagNameNS("http://www.isotc211.org/2005/gmd","LocalisedCharacterString");
-					if($LocalisedCharacterString_EL->length == 1)
-					{
-						$nodeString = $LocalisedCharacterString_EL->item(0);
-						$nodeValue = $nodeString->nodeValue;
-						$nodeLocale = $nodeString->attributes->getNamedItem ("locale");
-						
-						foreach($this->langList as $lang)
-						{
-							if($lang->code == "#".$nodeLocale)
-							{
-								$database->setQuery ("SELECT COUNT(*) FROM #__sdi_translation WHERE element_guid ='".$rowMetadata->guid."' AND language_id=".$lang->id);
-								$count = $database->loadResult();
-								if($count > 0){
-									$query = "UPDATE #__sdi_translation SET title = '".addslashes($nodeValue)."' , updated = NOW(), updatedby = ".$user->id."
-									WHERE element_guid = '".$rowMetadata->guid."' AND language_id=".$lang->id;
-								}else{
-									$query = "INSERT INTO #__sdi_translation (element_guid, language_id, title, created, createdby)
-									VALUES ('".$rowMetadata->guid."', ".$lang->id.", '".addslashes($nodeValue)."', NOW(), ".$user->id." )";
-								}
-								$database->setQuery($query);
-								if (!$database->query()){
-									$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
-								}
-								break;
-							}
-						}
-					}
-				}
 				
+				for ($i = 0 ; $i < $PT_FreeText_EL->length ; $i++ )
+				{
+					$freeTextNode = $PT_FreeText_EL->item($i);
+ 					$textGroupNodes = $freeTextNode->getElementsByTagNameNS($gmdURI,"textGroup");
+ 					$textGroupNode = $textGroupNodes->item(0);
+ 					$LocalisedCharacterStringNodes = $textGroupNode->getElementsByTagNameNS($gmdURI,"LocalisedCharacterString");
+ 					$LocalisedCharacterStringNode = $LocalisedCharacterStringNodes->item(0);
+ 					$attributes = $LocalisedCharacterStringNode->attributes;
+ 					$locale = $attributes->getNamedItem("locale");
+ 					$nodeValue = $LocalisedCharacterStringNode->nodeValue;
+ 					foreach($this->langList as $lang)
+ 					{
+ 						if("#".$lang->code == $locale->nodeValue)
+ 						{
+ 							$database->setQuery ("SELECT COUNT(*) FROM #__sdi_translation WHERE element_guid ='".$rowMetadata->guid."' AND language_id=".$lang->id);
+ 							$count = $database->loadResult();
+ 							if($count > 0){
+ 								$query = "UPDATE #__sdi_translation SET title = '".addslashes($nodeValue)."' , updated = NOW(), updatedby = ".$user->id."
+ 											WHERE element_guid = '".$rowMetadata->guid."' AND language_id=".$lang->id;
+ 							}else{
+ 								$query = "INSERT INTO #__sdi_translation (element_guid, language_id, title, created, createdby)
+ 											VALUES ('".$rowMetadata->guid."', ".$lang->id.", '".addslashes($nodeValue)."', NOW(), ".$user->id." )";
+ 							}
+ 							$database->setQuery($query);
+ 							if (!$database->query()){
+								$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+ 							}
+ 							break;
+ 						}
+ 					}
+ 					
+				}
 			}
 		}
 		else
@@ -1815,6 +1783,19 @@ class ADMIN_metadata {
 		$rowObject = new object( $database );
 		$rowObject->load( $object_id );
 		$rowObject->checkin();
+			
+		if ($_POST['task'] == 'saveMetadata')
+		{
+			$response =
+			'{
+				success: true,
+				errors: {
+					xml: "Metadata saved"
+				}
+			}';
+			print_r($response);
+			die();
+		}
 	}
 	
 	/*

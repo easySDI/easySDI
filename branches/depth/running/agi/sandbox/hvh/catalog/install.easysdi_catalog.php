@@ -2350,6 +2350,10 @@ function com_install(){
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			}
 			
+			$query = "SELECT id FROM `#__sdi_list_module` where code = 'CATALOG'";
+			$db->setQuery( $query);
+			$id = $db->loadResult();
+			
 			$query = "INSERT INTO #__sdi_configuration (guid, code, name, description, created, createdby, label, value, module_id) VALUES
 					('".helper_easysdi::getUniqueId()."', 'CATALOG_METADATA_PREVIEW_CONTEXT_PUBLIC', 'CATALOG_METADATA_PREVIEW_CONTEXT_PUBLIC', null, '".date('Y-m-d H:i:s')."', '".$user_id."', null, '', '".$id."'),
 					('".helper_easysdi::getUniqueId()."', 'CATALOG_METADATA_PREVIEW_TYPE_PUBLIC', 'CATALOG_METADATA_PREVIEW_TYPE_PUBLIC', null, '".date('Y-m-d H:i:s')."', '".$user_id."', null, '', '".$id."'),
@@ -2394,6 +2398,28 @@ function com_install(){
 			$db->setQuery( $query);
 			if (!$db->query()){
 				$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+			}
+		}
+		if($version == "2.5.0")
+		{
+			$query = "SELECT id FROM `#__sdi_list_module` where code = 'CATALOG'";
+			$db->setQuery( $query);
+			$id = $db->loadResult();
+			
+			$query = "SELECT COUNT(*) FROM #__sdi_configuration WHERE code ='CATALOG_METADATA_TITLE_XPATH'";
+			$db->setQuery( $query);
+			$count = $db->loadResult();
+			
+			if($count == 0)
+			{
+				$query = "INSERT INTO #__sdi_configuration (guid, code, name, description, created, createdby, label, value, module_id) VALUES
+				('".helper_easysdi::getUniqueId()."', 'CATALOG_METADATA_TITLE_XPATH', 'CATALOG_METADATA_TITLE_XPATH', null, '".date('Y-m-d H:i:s')."', '".$user_id."', null, '//gmd:MD_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:title', '".$id."')
+				";
+				$db->setQuery( $query);
+				if (!$db->query()){
+					$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+					return false;
+				}
 			}
 		}
         
