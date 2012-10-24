@@ -25,7 +25,11 @@ defined('_JEXEC') or die('Restricted access');
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 ?>
-<?php if((JRequest::getVar('task') =="editMetadata")||(JRequest::getVar('task') =="askForEditMetadata")||(JRequest::getVar('task') =="replicateMetadata")){?>
+<?php 
+if((JRequest::getVar('task') =="editMetadata")||
+(JRequest::getVar('task') =="askForEditMetadata")|| 
+(JRequest::getVar('task') =="importXMLMetadata")|| 
+(JRequest::getVar('task') =="importCSWMetadata") ||(JRequest::getVar('task') =="replicateMetadata")){?>
 <script>
 var thesaurusConfig = '<?php echo config_easysdi::getValue("thesaurusUrl");?>'
 </script>
