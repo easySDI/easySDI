@@ -790,38 +790,39 @@ class ADMIN_object {
 				$objectversion = new objectversion($database);
 				$objectversion->load($version->id); 
 				
-// 				$database->setQuery( "SELECT ov.title, o.name FROM #__sdi_objectversion ov 
-// 										INNER JOIN #__sdi_objectversionlink ovl ON ovl.parent_id = ov.id 
-// 										INNER JOIN #__sdi_object o ON ov.object_id = o.id
-// 										WHERE ov.id=".$version->id );
-// 				$parentcount = $database->loadObjectList();
-				
-// 				$database->setQuery( "SELECT ov.title, o.name FROM #__sdi_objectversion ov
-// 						INNER JOIN #__sdi_objectversionlink ovl ON ovl.child_id = ov.id
-// 						INNER JOIN #__sdi_object o ON ov.object_id = o.id
-// 						WHERE ov.id=".$version->id );
-// 				$childcount = $database->loadObjectList();
-				
-// 				if(count($parentcount) > 0 || count($childcount) > 0)
-// 				{
-// 					if($hasChild == false)
-// 					{
-// 						$mainframe->enqueueMessage('Une des versions de l objet a des parents ou des enfants.',"error");
-// 						$hasChild = true;
-// 					}
+				$database->setQuery( "SELECT ovlinked.title as title, o.name as name FROM #__sdi_objectversion ov 
+										INNER JOIN #__sdi_objectversionlink ovl ON ovl.parent_id = ov.id 
+										INNER JOIN #__sdi_objectversion ovlinked ON ovlinked.id = ovl.child_id
+										INNER JOIN #__sdi_object o ON ovlinked.object_id = o.id
+										WHERE ov.id=".$version->id );
+				$parents = $database->loadObjectList();
+				$database->setQuery( "SELECT ovlinked.title as title, o.name as name FROM #__sdi_objectversion ov
+						INNER JOIN #__sdi_objectversionlink ovl ON ovl.child_id = ov.id
+						INNER JOIN #__sdi_objectversion ovlinked ON ovlinked.id = ovl.parent_id
+						INNER JOIN #__sdi_object o ON ovlinked.object_id = o.id
+						WHERE ov.id=".$version->id );
+				$children = $database->loadObjectList();
+				if(count($parents) > 0 || count($children) > 0)
+				{
+					if($hasChild == false)
+					{
+						$mainframe->enqueueMessage(JText::sprintf('CATALOG_OBJECT_DELETE_RELATION_PARENT_CHILD_MSG',$object->name),"error");
+						$hasChild = true;
+					}
 					
-// 					$mainframe->enqueueMessage($version->title." a comme relation : ","error");
-// 					foreach ($parentcount as $parent)
-// 					{
-// 						$mainframe->enqueueMessage("- parent : ".$parent->name." - ".$parent->title,"error");
-// 					}
-// 					foreach ($childcount as $child)
-// 					{
-// 						$mainframe->enqueueMessage("- enfant : ".$child->name." - ".$child->title,"error");
-// 					}
+					foreach ($parents as $parent)
+					{
+						$mainframe->enqueueMessage(JText::sprintf("CATALOG_OBJECT_DELETE_RELATION_PARENT_MSG",$object->name,$version->title, $parent->name,$parent->title),"error");
+					}
+					foreach ($children as $child)
+					{
+						$mainframe->enqueueMessage(JText::sprintf("CATALOG_OBJECT_DELETE_RELATION_CHILD_MSG",$object->name,$version->title, $child->name,$child->title),"error");
+					}
 					
-// 					continue;
-// 				}
+					continue;
+				}
+				if($hasChild == true)
+					continue;
 				
 				$metadata = new metadata($database);
 				$metadata->load( $objectversion->metadata_id );
@@ -844,28 +845,13 @@ class ADMIN_object {
 				
 				require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
 				$catalogUrlBase = config_easysdi::getValue("catalog_url");
-				//$result = ADMIN_metadata::PostXMLRequest($catalogUrlBase, $xmlstr);
 				$result = ADMIN_metadata::CURLRequest("POST", $catalogUrlBase, $xmlstr);
-				/*
-				$deleteResults = DOMDocument::loadXML($result);
-				
-				$xpathDelete = new DOMXPath($deleteResults);
-				$xpathDelete->registerNamespace('csw','http://www.opengis.net/cat/csw/2.0.2');
-				$deleted = $xpathDelete->query("//csw:totalDeleted")->item(0)->nodeValue;
-				
-				if ($deleted <> 1)
-				{
-					$mainframe->enqueueMessage('Error on metadata delete',"ERROR");
-					$mainframe->redirect("index.php?option=$option&task=listObject" );
-					exit();
-				}*/
 				
 				if (!$objectversion->delete()) {
 					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 					$mainframe->redirect("index.php?option=$option&task=listObject" );
 					exit;
 				}
-				
 				if (!$metadata->delete()) {
 					$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
 					$mainframe->redirect("index.php?option=$option&task=listObject" );
@@ -878,6 +864,7 @@ class ADMIN_object {
 				$mainframe->redirect("index.php?option=$option&task=listObject" );
 				exit;
 			}
+			
 			//Supprimer tous les liens vers des editeurs ou des managers
 			$query = "DELETE FROM #__sdi_manager_object WHERE object_id=".$object->id;
 			$database->setQuery( $query);
