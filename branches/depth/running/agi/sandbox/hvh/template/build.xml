@@ -22,7 +22,7 @@
 
 	<target name="sync" description="Copy from here to apache">
 		<copy
-			todir="C:\www\agi\templates\easysdi">
+			todir="C:\www\agi250\templates\easysdi">
 			<fileset dir=".">
 				<include name="**/*.*" />
 				
