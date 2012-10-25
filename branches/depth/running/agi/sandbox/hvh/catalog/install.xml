@@ -27,6 +27,7 @@
 			<folder>js</folder>
 			<folder>xsl</folder>
 			<folder>robot</folder>
+			<folder>libraries</folder>
 		</files>	
 
 		<languages folder="./language/admin">

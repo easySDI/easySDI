@@ -61,7 +61,8 @@ JHTML::script('BoundaryItemSelector.js', 'administrator/components/com_easysdi_c
 JHTML::script('MultiSelect.js', 'administrator/components/com_easysdi_catalog/js/');
 
 JHTML::_('behavior.modal');
-JHTML::_('stylesheet', 'MultiSelect.css', 'administrator/components/com_easysdi_catalog/tenplate/css/');
+JHTML::_('stylesheet', 'MultiSelect.css', 'administrator/components/com_easysdi_catalog/templates/css/');
+
 
 class HTML_metadata {
 	var $javascript = "";
@@ -88,8 +89,11 @@ class HTML_metadata {
 		$router 		= &$app->getRouter();
 		$router->setVars($_REQUEST);
 		
+		JHTML::script('jquery.js', 'administrator/components/com_easysdi_catalog/libraries/jquery/js/');
+		JHTML::script('bootstrap-modal.js', 'administrator/components/com_easysdi_catalog/libraries/twitterbootstrap/js/');
 		?>
 		<script>
+		 jQuery.noConflict();
 		function tableOrdering( order, dir, view )
 		{
 			var form = document.getElementById("metadataListForm");
@@ -98,6 +102,7 @@ class HTML_metadata {
 			form.submit( view );
 		}
 		</script>
+
 		<div id="page">
 		<h1 class="contentheading"><?php echo JText::_("CATALOG_LIST_METADATA"); ?></h1>
 		<div class="contentin">
@@ -128,6 +133,7 @@ class HTML_metadata {
 			</div>	 
 		 </div>
 	<div class="ticker">
+		
 	<h2><?php echo JText::_("CORE_SEARCH_RESULTS_TITLE"); ?></h2>
 	<?php
 	if(count($rows) == 0){
@@ -148,7 +154,9 @@ class HTML_metadata {
 	<?php 
 	} 
 	?>
+
 	<tbody>
+
 	<?php
 		$i=0;
 		$param = array('size'=>array('x'=>800,'y'=>800) );
@@ -225,7 +233,7 @@ class HTML_metadata {
 					<?php echo $row->name;  ?>
 				</td>
 				<td >
-					<a class="modal" title="<?php echo addslashes(JText::_("CATALOG_VIEW_MD")); ?>" href="./index.php?tmpl=component&option=com_easysdi_catalog&toolbar=1&task=showMetadata&type=<?php echo $previewtype;  ?>&context=<?php echo $previewcontext;  ?>&id=<?php echo $row->metadata_guid;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}"> <?php $date = new DateTime($row->version_title); echo $date->format($datetimedisplay) ;?></a>
+					<a class="" title="<?php echo addslashes(JText::_("CATALOG_VIEW_MD")); ?>" href="./index.php?tmpl=component&option=com_easysdi_catalog&toolbar=1&task=showMetadata&type=<?php echo $previewtype;  ?>&context=<?php echo $previewcontext;  ?>&id=<?php echo $row->metadata_guid;  ?>" rel="{handler:'iframe',size:{x:650,y:600}}"> <?php $date = new DateTime($row->version_title); echo $date->format($datetimedisplay) ;?></a>
 				</td>
 				<td >
 					<?php echo $row->objecttype;  ?>
@@ -400,8 +408,21 @@ class HTML_metadata {
 						if ($row->notifyready == 1)
 						{
 							?>
-							<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_NOTIFY_METADATA_ACTION')); ?>" id="notifyMetadata" 
-									onClick="if(confirm('<?php echo JText::sprintf('CATALOG_NOTIFY_METADATA_CONFIRM_INCLUDE_CHILDREN',$row->name,$row->version_title );?>')) {window.open('<?php echo JRoute::_(displayManager::buildUrl('index.php?task=notifyMetadata&option='.$option.'&includedesc=1&objectversion_id='.$row->version_id)); ?>', '_self') } else { window.open('<?php echo JRoute::_(displayManager::buildUrl('index.php?task=notifyMetadata&option='.$option.'&includedesc=0&objectversion_id='.$row->version_id)); ?>', '_self')};"></div>
+							<div id="confirmnotification" class="sdimodal hide fade in" style="display: none; ">
+								<div class="sdimodal-header">
+									<div class="title"><?php echo JText::_('CATALOG_NOTIFY_METADATA_CONFIRM_TITLE'); ?></div>
+								</div>
+					            <div class="sdimodal-body">
+					              <p><?php echo JText::sprintf('CATALOG_NOTIFY_METADATA_CONFIRM_INCLUDE_CHILDREN',$row->name,$row->version_title );?></p>		        
+					            </div>
+					            <div class="sdimodal-footer">
+					              <a href='<?php echo JRoute::_(displayManager::buildUrl('index.php?task=notifyMetadata&option='.$option.'&includedesc=1&objectversion_id='.$row->version_id)); ?>' class="sdibtn"><?php echo JText::_('CORE_YES');?></a>
+					              <a href='<?php echo JRoute::_(displayManager::buildUrl('index.php?task=notifyMetadata&option='.$option.'&includedesc=0&objectversion_id='.$row->version_id)); ?>' class="sdibtn"><?php echo JText::_('CORE_NO');?></a>
+					              <a href="#" class="sdibtn" data-dismiss="modal"><?php echo JText::_('CORE_CANCEL');?></a>
+					            </div>
+					          </div>
+          
+          						<div class="logo" title="<?php echo addslashes(JText::_('CATALOG_NOTIFY_METADATA_ACTION')); ?>" id="notifyMetadata"  data-toggle="modal"  data-target="#confirmnotification" ></div>
 							<?php
 						}
 						else
@@ -6373,8 +6394,8 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 				</tbody>
 			</table>
 			<div class="row">
-				<input type="submit" id="validate_button" name="validate_button" class="submit" value ="<?php echo JText::_("CORE_VALIDATE"); ?>" onClick="document.getElementById('metadataPublishedForm').task.value='setMetadataPublished';document.getElementById('metadataPublishedForm').submit();"/>
-				<input type="submit" id="cancel_button" name="cancel_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="document.getElementById('metadataPublishedForm').task.value='listMetadata';document.getElementById('listMetadata').submit();"/>
+				<input type="submit" id="validate_button" name="validate_button" class="submit" value ="<?php echo JText::_("CORE_OK"); ?>" onClick="document.getElementById('metadataPublishedForm').task.value='setMetadataPublished';document.getElementById('metadataPublishedForm').submit();"/>
+				<input type="submit" id="cancel_button" name="cancel_button" class="submit" value ="<?php echo JText::_("CORE_BACK"); ?>" onClick="document.getElementById('metadataPublishedForm').task.value='listMetadata';document.getElementById('listMetadata').submit();"/>
 			</div>
 			<input type="hidden" name="option" value="<?php echo $option; ?>">
 			<input type="hidden" id="task" name="task" value="metadataPublished">
