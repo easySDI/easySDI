@@ -90,7 +90,8 @@ class HTML_metadata {
 		$router->setVars($_REQUEST);
 		
 		JHTML::script('jquery.js', 'administrator/components/com_easysdi_catalog/libraries/jquery/js/');
-		JHTML::script('bootstrap-modal.js', 'administrator/components/com_easysdi_catalog/libraries/twitterbootstrap/js/');
+		JHTML::script('bootstrap-modal.js', 'administrator/components/com_easysdi_catalog/libraries/bootstrap/source/js/');
+// 		JHTML::script('bootstrap.min.js', 'administrator/components/com_easysdi_catalog/libraries/bootstrap/js/');
 		?>
 		<script>
 		 jQuery.noConflict();
