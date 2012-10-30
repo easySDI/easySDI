@@ -26,11 +26,17 @@ require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'commo
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'core'.DS.'common.easysdi.php');
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.jsLoaderUtil.php');
 
+if((JRequest::getVar('task') =="editMetadata")||
+(JRequest::getVar('task') =="askForEditMetadata")|| 
+(JRequest::getVar('task') =="importXMLMetadata")|| 
+(JRequest::getVar('task') =="importCSWMetadata") ||
+(JRequest::getVar('task') =="resetMetadata") ||
+(JRequest::getVar('task') =="replicateMetadata")){
 ?>
 <script>
 var thesaurusConfig = '<?php echo config_easysdi::getValue("thesaurusUrl");?>';
 </script>
-<?php 
+<?php }
 			
 JHTML::script('ext-base.js', 'administrator/components/com_easysdi_catalog/ext/adapter/ext/');
 JHTML::script('ext-all.js', 'administrator/components/com_easysdi_catalog/ext/');
