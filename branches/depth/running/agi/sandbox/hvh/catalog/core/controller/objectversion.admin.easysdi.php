@@ -1110,9 +1110,15 @@ class ADMIN_objectversion {
 		// Récupérer tous les objets du type d'objet sélectionné,
 		// qui ne sont ni l'objet courant, ni dans la liste des objets sélectionnés,
 		// et pour lesquels il existe une relation parent/enfant entre les types d'objets
-		
 		$query =
-		"SELECT ov.id as value, o.objecttype_id as objecttype_id, o.name as object_name, CONCAT(o.name, ' ', ov.title) as name, otl.parentbound_upper, link.* , t.label as objecttype, ms.label as status
+		"SELECT ov.id as value, 
+				o.objecttype_id as objecttype_id, 
+				o.name as object_name, 
+				CONCAT(o.name, ' ', ov.title) as name, 
+				otl.parentbound_upper, 
+				link.* , 
+				t.label as objecttype, 
+				ms.label as status
 			FROM #__sdi_objectversion ov
 			INNER JOIN #__sdi_object o ON ov.object_id=o.id
 			INNER JOIN #__sdi_objecttype ot ON o.objecttype_id=ot.id ";
