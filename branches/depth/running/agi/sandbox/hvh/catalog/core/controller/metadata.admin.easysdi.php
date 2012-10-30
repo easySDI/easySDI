@@ -1685,7 +1685,7 @@ class ADMIN_metadata {
 		$queryXPath = config_easysdi::getValue("CATALOG_METADATA_TITLE_XPATH");
 		$elements = $xpath->query($queryXPath);
 		
-		if (!is_null($elements)) {
+		if (!is_null($elements) && $elements->length > 0 ) {
 			$user 					= JFactory::getUser();
 			$element 				= $elements->item(0);
 			$CharacterString_EL 	= $element->getElementsByTagNameNS($gcoURI,"CharacterString");
