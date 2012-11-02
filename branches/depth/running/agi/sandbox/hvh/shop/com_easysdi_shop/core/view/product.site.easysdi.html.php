@@ -1175,7 +1175,7 @@ class HTML_product{
 			        <div>
 			        	<input onClick="document.getElementById('task').value = '<?php echo $task; ?>'; try{ window.parent.document.getElementById('sbox-window').close();}catch(err){javascript:history.back();}"
 										type="button" class="button" value='<?php echo JText::_("SHOP_CANCEL_BUTTON"); ?>'> 
-						<input type="submit" id="validateSelectGrid" name="validateSelectGrid" class="submit" disabled value ="<?php echo JText::_("SHOP_VALIDATE_BUTTON"); ?>" 
+						<input type="submit" id="validateSelectGrid" name="validateSelectGrid" class="submit" disabled value="<?php echo JText::_("SHOP_VALIDATE_BUTTON"); ?>" 
 							onClick="javascript:validate();"/>	
 			        </div>
 			        
@@ -1186,7 +1186,7 @@ class HTML_product{
 				<input type='hidden' id="view" name='view' value='<?php echo $view; ?>'> 
 				<input type='hidden' id="fromStep" name='fromStep' value='1'> 
 				<input type='hidden' id="step" name='step' value='<?php echo $step; ?>'>
-				<input type='hidden' name='tmpl' value='<?php echo JRequest::getVar('tmpl');; ?>'> 
+				<input type='hidden' name='tmpl' value='<?php echo JRequest::getVar('tmpl'); ?>'> 
 				<input type='hidden' name='resource' id='resource' value=''> 
 				<input type='hidden' name='cid[]' value='<?php echo $product->id;?>'>
 			</form>
