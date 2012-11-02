@@ -1128,21 +1128,17 @@ class ADMIN_objectversion {
 			$query .= "
 			INNER JOIN
 			(
-				SELECT ssm.id, ssm.metadatastate_id,ssm.guid,ssm.published,ssm.archived,max( ssm.published ), ssov.object_id
-					FROM jos_sdi_metadata ssm
-					INNER JOIN jos_sdi_list_metadatastate ssms ON ssms.id = ssm.metadatastate_id
-					INNER JOIN jos_sdi_objectversion ssov ON ssov.metadata_id = ssm.id
-					WHERE
-					(
-						(ssms.code='published' AND ssm.published <=NOW())
-						OR
-						(ssms.code='archived' AND ssm.archived >NOW())
-					)
-					GROUP BY ssov.object_id
-					ORDER BY ssov.object_id
+				SELECT ssm.id, ssm.metadatastate_id,ssm.guid,ssm.published,ssm.archived,ssov.created, ssov.object_id
+						FROM #__sdi_metadata ssm
+						INNER JOIN #__sdi_objectversion ssov ON ssov.metadata_id = ssm.id
+						INNER JOIN 
+							(SELECT v.id,v.object_id, max(v.created) as maxcreated from  #__sdi_objectversion v group by v.object_id) vv
+							ON vv.object_id = ssov.object_id AND vv.maxcreated = ssov.created
+						GROUP BY ssov.object_id
+						ORDER BY ssov.object_id
 			)
-			m ON ov.metadata_id=m.id ";
-			
+			m ON ov.metadata_id=m.id
+			";
 		}
 		else 
 		{

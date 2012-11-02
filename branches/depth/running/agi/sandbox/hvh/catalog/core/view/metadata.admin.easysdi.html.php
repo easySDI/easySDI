@@ -1029,7 +1029,7 @@ class HTML_metadata {
 						 	 ON a.attributetype_id = t.id 
 					     LEFT OUTER JOIN #__sdi_class as c
 					  		 ON rel.classchild_id=c.id
-					  	 LEFT OUTER JOIN jos_sdi_sys_stereotype as tc
+					  	 LEFT OUTER JOIN #__sdi_sys_stereotype as tc
 			 				ON c.stereotype_id = tc.id 
 					     LEFT OUTER JOIN #__sdi_list_relationtype as reltype
 					  		 ON rel.relationtype_id=reltype.id	 

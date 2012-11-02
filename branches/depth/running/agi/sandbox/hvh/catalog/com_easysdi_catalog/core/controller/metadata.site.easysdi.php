@@ -182,7 +182,7 @@ class SITE_metadata {
 		}
 		// Version filter
 		if ($filter_md_version == 0) {
-			//Return only the last published metadata for each object
+			//Return only the last metadata for each object
 			$arrVersionMd =array();
 			foreach ($rows as $object)
 			{
@@ -192,13 +192,9 @@ class SITE_metadata {
 				INNER JOIN #__sdi_list_metadatastate ms ON m.metadatastate_id=ms.id
 				INNER JOIN #__sdi_object o ON ov.object_id=o.id
 				INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
-				WHERE o.id=".$object->id.
-				"		AND ((ms.code='published'
-				AND m.published <='".date('Y-m-d')."')
-				OR
-				(ms.code='archived'
-				AND m.archived >'".date('Y-m-d')."')
-				)
+				INNER JOIN (SELECT v.id,v.object_id, max(v.created) as maxcreated from #__sdi_objectversion v group by v.object_id) vv ON vv.object_id = ov.object_id AND vv.maxcreated = ov.created
+				WHERE o.id=".$object->id."
+				GROUP BY ov.object_id
 				ORDER BY m.published DESC
 				LIMIT 0, 1";
 				$database->setQuery( $query);

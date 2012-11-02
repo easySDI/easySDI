@@ -451,7 +451,7 @@ class ADMIN_metadata {
 					  		 ON a.attributetype_id = t.id 
 					     LEFT OUTER JOIN #__sdi_class as c
 					  		 ON rel.classchild_id=c.id
-					  	LEFT OUTER JOIN jos_sdi_sys_stereotype as tc
+					  	LEFT OUTER JOIN #__sdi_sys_stereotype as tc
 			 				ON c.stereotype_id = tc.id 
 					     LEFT OUTER JOIN #__sdi_objecttype as ot
 					  		 ON rel.objecttypechild_id=ot.id
@@ -2308,8 +2308,8 @@ class ADMIN_metadata {
 				$query = "SELECT ot.*, t.label as ot_label
 						  FROM #__sdi_objecttype ot
 						  INNER JOIN #__sdi_translation t ON t.element_guid=ot.guid
-						  INNER JOIN jos_sdi_language l ON t.language_id=l.id
-						  INNER JOIN jos_sdi_list_codelang cl ON l.codelang_id=cl.id
+						  INNER JOIN #__sdi_language l ON t.language_id=l.id
+						  INNER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id
 						  WHERE ot.id = ".$mc->child_id."
 							    AND cl.code = '".$language->_lang."'";
 				$database->setQuery($query);
@@ -2328,8 +2328,8 @@ class ADMIN_metadata {
 				$query = "SELECT ot.*, t.label as ot_label
 						  FROM #__sdi_objecttype ot
 						  INNER JOIN #__sdi_translation t ON t.element_guid=ot.guid
-						  INNER JOIN jos_sdi_language l ON t.language_id=l.id
-						  INNER JOIN jos_sdi_list_codelang cl ON l.codelang_id=cl.id
+						  INNER JOIN #__sdi_language l ON t.language_id=l.id
+						  INNER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id
 						  WHERE ot.id = ".$oc->child_id."
 							    AND cl.code = '".$language->_lang."'";
 				$database->setQuery($query);
@@ -2348,8 +2348,8 @@ class ADMIN_metadata {
 				$query = "SELECT ot.*, t.label as ot_label
 						  FROM #__sdi_objecttype ot
 						  INNER JOIN #__sdi_translation t ON t.element_guid=ot.guid
-						  INNER JOIN jos_sdi_language l ON t.language_id=l.id
-						  INNER JOIN jos_sdi_list_codelang cl ON l.codelang_id=cl.id
+						  INNER JOIN #__sdi_language l ON t.language_id=l.id
+						  INNER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id
 						  WHERE ot.id = ".$mp->child_id."
 							    AND cl.code = '".$language->_lang."'";
 				$database->setQuery($query);
@@ -2368,8 +2368,8 @@ class ADMIN_metadata {
 				$query = "SELECT ot.*, t.label as ot_label
 						  FROM #__sdi_objecttype ot
 						  INNER JOIN #__sdi_translation t ON t.element_guid=ot.guid
-						  INNER JOIN jos_sdi_language l ON t.language_id=l.id
-						  INNER JOIN jos_sdi_list_codelang cl ON l.codelang_id=cl.id
+						  INNER JOIN #__sdi_language l ON t.language_id=l.id
+						  INNER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id
 						  WHERE ot.id = ".$op->child_id."
 							    AND cl.code = '".$language->_lang."'";
 				$database->setQuery($query);
@@ -3878,16 +3878,12 @@ class ADMIN_metadata {
 								#__sdi_objectversion ov,
 								#__sdi_objecttype ot,
 								(
-									SELECT ssm.id, ssm.metadatastate_id,ssm.guid,ssm.published,ssm.archived,max( ssm.published ), ssov.object_id
-									FROM jos_sdi_metadata ssm
-									INNER JOIN jos_sdi_list_metadatastate ssms ON ssms.id = ssm.metadatastate_id
-									INNER JOIN jos_sdi_objectversion ssov ON ssov.metadata_id = ssm.id
-									WHERE
-									(
-										(ssms.code='published' AND ssm.published <=NOW())
-										OR
-										(ssms.code='archived' AND ssm.archived >NOW())
-									)
+									SELECT ssm.id, ssm.metadatastate_id,ssm.guid,ssm.published,ssm.archived,ssov.created, ssov.object_id
+									FROM #__sdi_metadata ssm
+									INNER JOIN #__sdi_objectversion ssov ON ssov.metadata_id = ssm.id
+									INNER JOIN 
+										(SELECT v.id,v.object_id, max(v.created) as maxcreated from #__sdi_objectversion v group by v.object_id) vv
+										ON vv.object_id = ssov.object_id AND vv.maxcreated = ssov.created
 									GROUP BY ssov.object_id
 									ORDER BY ssov.object_id
 								)m

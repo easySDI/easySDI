@@ -162,7 +162,7 @@ class SITE_catalog {
 							   			  LEFT OUTER JOIN #__sdi_relation r ON r.id=sc.relation_id
 										  LEFT OUTER JOIN #__sdi_relation_context rc ON r.id=rc.relation_id 
 										  LEFT OUTER JOIN #__sdi_context c ON c.id=rc.context_id
-										  LEFT OUTER JOIN  (SELECT cc.*  FROM jos_sdi_context_criteria cc INNER JOIN jos_sdi_searchcriteria ccs  ON  cc.criteria_id = ccs.id WHERE cc.context_id = (SELECT id FROM jos_sdi_context WHERE code='".$context."')) ccc ON ccc.criteria_id=sc.id
+										  LEFT OUTER JOIN  (SELECT cc.*  FROM #__sdi_context_criteria cc INNER JOIN #__sdi_searchcriteria ccs  ON  cc.criteria_id = ccs.id WHERE cc.context_id = (SELECT id FROM #__sdi_context WHERE code='".$context."')) ccc ON ccc.criteria_id=sc.id
 										  LEFT OUTER JOIN #__sdi_attribute a ON r.attributechild_id=a.id
 										  LEFT OUTER JOIN #__sdi_sys_stereotype at ON at.id=a.attributetype_id
 										  LEFT OUTER JOIN #__sdi_searchcriteria_tab sc_tab ON sc_tab.searchcriteria_id=sc.id
