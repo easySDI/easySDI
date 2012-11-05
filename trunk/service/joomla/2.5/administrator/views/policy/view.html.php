@@ -129,7 +129,7 @@ class Easysdi_serviceViewPolicy extends JView
 	}
 	
 	function getWMSLayerLocalFilter($theServer,$layer){
-	
+		if(!isset($theServer)) return "";
 		if (count($theServer->Layers->Layer)==0) return "";
 	
 	
@@ -144,6 +144,7 @@ class Easysdi_serviceViewPolicy extends JView
 	}
 	
 	function getLayerMinScale($theServer,$layer){
+		if(!isset($theServer)) return "";
 		if (count($theServer->Layers->Layer)==0) return "";
 		foreach ($theServer->Layers->Layer as $theLayer )
 		{
@@ -156,6 +157,7 @@ class Easysdi_serviceViewPolicy extends JView
 	}
 	
 	function getLayerMaxScale($theServer,$layer){
+		if(!isset($theServer)) return "";
 		if (count($theServer->Layers->Layer)==0) return "";
 		foreach ($theServer->Layers->Layer as $theLayer )
 		{
@@ -168,6 +170,7 @@ class Easysdi_serviceViewPolicy extends JView
 	}
 	
 	function getWMSLayerMinScale($theServer,$layer){
+		if(!isset($theServer)) return "";
 		if (count($theServer->Layers->Layer)==0) return "";
 		foreach ($theServer->Layers->Layer as $theLayer )
 		{
@@ -180,6 +183,7 @@ class Easysdi_serviceViewPolicy extends JView
 	}
 	
 	function getWMSLayerMaxScale($theServer,$layer){
+		if(!isset($theServer)) return "";
 		if (count($theServer->Layers->Layer)==0) return "";
 		foreach ($theServer->Layers->Layer as $theLayer )
 		{
@@ -192,7 +196,7 @@ class Easysdi_serviceViewPolicy extends JView
 	}
 	
 	function isLayerChecked($theServer,$layer){
-	
+		if(!isset($theServer)) return "";
 		if (strcasecmp($theServer->{"Layers"}['All'],"true")==0) return true;
 	
 		if (count($theServer->Layers->Layer)==0) return false;
@@ -208,7 +212,7 @@ class Easysdi_serviceViewPolicy extends JView
 	}
 	
 	function isWMSLayerChecked($theServer,$layer){
-	
+		if(!isset($theServer)) return false;
 		if (strcasecmp($theServer->{"Layers"}['All'],"true")==0) return true;
 	
 		if (count($theServer->Layers->Layer)==0) return false;
@@ -224,7 +228,7 @@ class Easysdi_serviceViewPolicy extends JView
 	}
 	
 	function getFeatureTypeAttributesList($theServer,$featureType){
-	
+		if(!isset($theServer)) return "";
 		if (count($theServer->FeatureTypes->FeatureType )==0) return "";
 	
 		foreach ($theServer->FeatureTypes->FeatureType as $ft )
@@ -251,6 +255,7 @@ class Easysdi_serviceViewPolicy extends JView
 		
 	function getFeatureTypeRemoteFilter($theServer,$featureType)
 	{
+		if(!isset($theServer)) return "";
 		if (count($theServer->FeatureTypes->FeatureType )==0) return "";
 	
 		foreach ($theServer->FeatureTypes->FeatureType as $ft ){
@@ -266,6 +271,7 @@ class Easysdi_serviceViewPolicy extends JView
 	
 	function getFeatureTypeLocalFilter($theServer,$featureType){
 	
+		if(!isset($theServer)) return "";
 		if (count($theServer->FeatureTypes->FeatureType )==0) return "";
 		foreach ($theServer->FeatureTypes->FeatureType as $ft ){
 	
@@ -279,6 +285,7 @@ class Easysdi_serviceViewPolicy extends JView
 	
 	function getLayerLocalFilter($theServer,$layer){
 	
+		if(!isset($theServer)) return "";
 		if (count($theServer->Layers->Layer)==0) return "";
 	
 	
@@ -294,6 +301,7 @@ class Easysdi_serviceViewPolicy extends JView
 	
 	function isChecked($theServer,$featureType){
 	
+		if(!isset($theServer)) return false;
 		if (strcasecmp($theServer->{"FeatureTypes"}['All'],"true")==0) return true;
 	
 		if (count($theServer->FeatureTypes->FeatureType )==0) return false;
@@ -313,7 +321,7 @@ class Easysdi_serviceViewPolicy extends JView
 	 * @return string
 	 */
 	function getWMTSLayerLocalFilter($theServer,$layer){
-	
+		if(!isset($theServer)) return "";
 		if (count($theServer->Layers->Layer)==0) return "";
 	
 	
@@ -334,6 +342,7 @@ class Easysdi_serviceViewPolicy extends JView
 	 * @return boolean
 	 */
 	function isWMTSLayerChecked($theServer,$layer){
+		if(!isset($theServer)) return "";
 		if (strcasecmp($theServer->{"Layers"}['All'],"true")==0) return true;
 		if (count($theServer->Layers->Layer)==0) return false;
 		foreach ($theServer->Layers->Layer as $theLayer )
@@ -353,6 +362,7 @@ class Easysdi_serviceViewPolicy extends JView
 	 * @return Ambiguous
 	 */
 	function getWMTSLayerBBOX($theServer, $layer){
+		if(!isset($theServer)) return null;
 		foreach ($theServer->Layers->Layer as $theLayer )
 		{
 			if (strcmp($theLayer->{'Name'},$layer)==0)
@@ -375,6 +385,7 @@ class Easysdi_serviceViewPolicy extends JView
 	 * @param unknown_type $TileMatrixSet
 	 */
 	function getWMTSTileMatrixSetMinScaleDenominator($theServer, $layer, $TileMatrixSet){
+		if(!isset($theServer)) return null;
 		foreach ($theServer->Layers->Layer as $theLayer )
 		{
 			if (strcmp($theLayer->{'Name'},$layer)==0)
@@ -394,7 +405,7 @@ class Easysdi_serviceViewPolicy extends JView
 		<fieldset class="adminform"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_IDENTIFICATION'); ?></legend>
 			<table class="admintable">
 				<tr>
-					<td class="key"><?php echo JText::_( 'COM_EASYSDI_SERVICE_CONFIGURATION_ID'); ?></td>
+					<td class="key"><?php echo JText::_( 'COM_EASYSDI_SERVICE_VIRTUALSERVICE_ID'); ?></td>
 					<td><input type="text" size="100" value="<?php echo $this->config;  ?>" disabled="disabled"></td>
 				</tr>
 				<tr>

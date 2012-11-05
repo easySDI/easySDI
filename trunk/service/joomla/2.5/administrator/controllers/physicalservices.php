@@ -15,13 +15,13 @@ jimport('joomla.application.component.controlleradmin');
 /**
  * Services list controller class.
  */
-class Easysdi_serviceControllerServices extends JControllerAdmin
+class Easysdi_serviceControllerPhysicalServices extends JControllerAdmin
 {
 	/**
 	 * Proxy for getModel.
 	 * @since	1.6
 	 */
-	public function &getModel($name = 'service', $prefix = 'Easysdi_serviceModel')
+	public function &getModel($name = 'physicalservice', $prefix = 'Easysdi_serviceModel')
 	{
 		$model = parent::getModel($name, $prefix, array('ignore_request' => true));
 		return $model;

@@ -288,25 +288,28 @@ foreach ($this->xml->config as $config) {
 							   <?php echo JText::_( 'COM_EASYSDI_SERVICE_AUTHORIZED_OBJECTTYPE_ALL'); ?>
 					</td>
 					<?php 
-					foreach ($rowsObjectTypes as $objectType)
+					if(isset($rowsObjectTypes))
 					{
-						?>
-						<td>
-						<input type="checkBox" 
-							   name="objectType[]" 
-							   id="<?php echo $objectType->value;?>" 
-							   value="<?php echo $objectType->value;?>" 
-							   <?php if (strcasecmp($checkedC,'checked')==0){echo 'disabled checked';} ?>
-							   <?php foreach ($thePolicy->ObjectTypes->ObjectType as $policyObjectType)
-							   {
-							   		if(strcasecmp($objectType->value,$policyObjectType)==0) echo 'checked';			
-							   }?>
-						><?php echo JText::_($objectType->text); ?>
-						</td>
-						</tr>
-						<tr>
-						<td></td>
-						<?php 
+						foreach ($rowsObjectTypes as $objectType)
+						{
+							?>
+							<td>
+							<input type="checkBox" 
+								   name="objectType[]" 
+								   id="<?php echo $objectType->value;?>" 
+								   value="<?php echo $objectType->value;?>" 
+								   <?php if (strcasecmp($checkedC,'checked')==0){echo 'disabled checked';} ?>
+								   <?php foreach ($thePolicy->ObjectTypes->ObjectType as $policyObjectType)
+								   {
+								   		if(strcasecmp($objectType->value,$policyObjectType)==0) echo 'checked';			
+								   }?>
+							><?php echo JText::_($objectType->text); ?>
+							</td>
+							</tr>
+							<tr>
+							<td></td>
+							<?php 
+						}
 					}
 					?>
 				</tr>
@@ -327,25 +330,28 @@ foreach ($this->xml->config as $config) {
 							   <?php echo JText::_( 'COM_EASYSDI_SERVICE_AUTHORIZED_VISIBILITY_ALL'); ?>
 					</td>
 					<?php 
-					foreach ($rowsVisibility as $visibility)
+					if(isset($rowsVisibility))
 					{
-						?>
-						<td>
-						<input type="checkBox" 
-							   name="visibility[]" 
-							   id="<?php echo $visibility->value;?>" 
-							   value="<?php echo $visibility->value;?>" 
-							   <?php if (strcasecmp($checkedV,'checked')==0){echo 'disabled checked';} ?>
-							   <?php foreach ($thePolicy->ObjectVisibilities->Visibility as $policyVisibility)
-							   {
-							   		if(strcasecmp($visibility->value,$policyVisibility)==0) echo 'checked';			
-							   }?>
-						><?php echo $visibility->text; ?>
-						</td>
-						</tr>
-						<tr>
-						<td></td>
-						<?php 
+						foreach ($rowsVisibility as $visibility)
+						{
+							?>
+							<td>
+							<input type="checkBox" 
+								   name="visibility[]" 
+								   id="<?php echo $visibility->value;?>" 
+								   value="<?php echo $visibility->value;?>" 
+								   <?php if (strcasecmp($checkedV,'checked')==0){echo 'disabled checked';} ?>
+								   <?php foreach ($thePolicy->ObjectVisibilities->Visibility as $policyVisibility)
+								   {
+								   		if(strcasecmp($visibility->value,$policyVisibility)==0) echo 'checked';			
+								   }?>
+							><?php echo $visibility->text; ?>
+							</td>
+							</tr>
+							<tr>
+							<td></td>
+							<?php 
+						}
 					}
 					?>
 				</tr>
@@ -366,61 +372,64 @@ foreach ($this->xml->config as $config) {
 							   <?php echo JText::_( 'COM_EASYSDI_SERVICE_AUTHORIZED_STATUS_ALL'); ?>
 					</td>
 					<?php 
-					foreach ($rowsStatus as $status)
+					if(isset($rowsStatus))
 					{
-						if (strcasecmp($status->value, 'published')==0)
+						foreach ($rowsStatus as $status)
 						{
-							$versionMode = "all";
+							if (strcasecmp($status->value, 'published')==0)
+							{
+								$versionMode = "all";
+								?>
+								<td>
+								<input type="checkBox" 
+									   name="status[]" 
+									   id="<?php echo $status->value;?>" 
+									   value="<?php echo $status->value;?>" 
+									   onclick="disableVersionModeRadio();"
+									   <?php if (strcasecmp($checkedS,'checked')==0){echo 'disabled checked';} ?>
+									   <?php foreach ($thePolicy->ObjectStatus->Status as $policyStatus)
+									   {
+									   		if(strcasecmp($status->value,$policyStatus)==0) {
+									   			echo 'checked';
+									   			$versionMode =  $policyStatus['version'];
+									   		}			
+									   }?>
+								><?php echo JText::_($status->text); ?>
+								</td>
+								<td><i><?php echo JText::_( 'COM_EASYSDI_SERVICE_AUTHORIZED_STATUS_VERSION_MODE'); ?></i></td>
+								<td><input type="radio" name="objectversion_mode" value="last" <?php if (strcmp($versionMode,"last")==0 ){echo "checked";} ?>  <?php if (strcasecmp($checkedS,'checked')==0){echo 'disabled';} ?>> <?php echo JText::_( 'COM_EASYSDI_SERVICE_VERSION_MANAGEMENT_MODE_LAST'); ?><br></td>
+								<td><input type="radio" name="objectversion_mode" value="all" <?php if (strcmp($versionMode,"all")==0){echo "checked";} ?>  <?php if (strcasecmp($checkedS,'checked')==0){echo 'disabled';} ?> > <?php echo JText::_( 'COM_EASYSDI_SERVICE_VERSION_MANAGEMENT_MODE_ALL'); ?><br></td>
+								<?php 
+							}
+							else
+							{
+								?>
+								<td>
+								<input type="checkBox" 
+									   name="status[]" 
+									   id="<?php echo $status->value;?>" 
+									   value="<?php echo $status->value;?>" 
+									   <?php if (strcasecmp($checkedS,'checked')==0){echo 'disabled checked';} ?>
+									   <?php foreach ($thePolicy->ObjectStatus->Status as $policyStatus)
+									   {
+									   		if(strcasecmp($status->value,$policyStatus)==0) {
+									   			echo 'checked';
+									   			$versionMode =  $policyStatus['version'];
+									   		}			
+									   }?>
+								><?php echo JText::_($status->text); ?>
+								</td>
+								<td></td>
+								<td></td>
+								<td></td>
+								<?php
+							}
 							?>
-							<td>
-							<input type="checkBox" 
-								   name="status[]" 
-								   id="<?php echo $status->value;?>" 
-								   value="<?php echo $status->value;?>" 
-								   onclick="disableVersionModeRadio();"
-								   <?php if (strcasecmp($checkedS,'checked')==0){echo 'disabled checked';} ?>
-								   <?php foreach ($thePolicy->ObjectStatus->Status as $policyStatus)
-								   {
-								   		if(strcasecmp($status->value,$policyStatus)==0) {
-								   			echo 'checked';
-								   			$versionMode =  $policyStatus['version'];
-								   		}			
-								   }?>
-							><?php echo JText::_($status->text); ?>
-							</td>
-							<td><i><?php echo JText::_( 'COM_EASYSDI_SERVICE_AUTHORIZED_STATUS_VERSION_MODE'); ?></i></td>
-							<td><input type="radio" name="objectversion_mode" value="last" <?php if (strcmp($versionMode,"last")==0 ){echo "checked";} ?>  <?php if (strcasecmp($checkedS,'checked')==0){echo 'disabled';} ?>> <?php echo JText::_( 'COM_EASYSDI_SERVICE_VERSION_MANAGEMENT_MODE_LAST'); ?><br></td>
-							<td><input type="radio" name="objectversion_mode" value="all" <?php if (strcmp($versionMode,"all")==0){echo "checked";} ?>  <?php if (strcasecmp($checkedS,'checked')==0){echo 'disabled';} ?> > <?php echo JText::_( 'COM_EASYSDI_SERVICE_VERSION_MANAGEMENT_MODE_ALL'); ?><br></td>
+							</tr>
+							<tr>
+							<td></td>
 							<?php 
 						}
-						else
-						{
-							?>
-							<td>
-							<input type="checkBox" 
-								   name="status[]" 
-								   id="<?php echo $status->value;?>" 
-								   value="<?php echo $status->value;?>" 
-								   <?php if (strcasecmp($checkedS,'checked')==0){echo 'disabled checked';} ?>
-								   <?php foreach ($thePolicy->ObjectStatus->Status as $policyStatus)
-								   {
-								   		if(strcasecmp($status->value,$policyStatus)==0) {
-								   			echo 'checked';
-								   			$versionMode =  $policyStatus['version'];
-								   		}			
-								   }?>
-							><?php echo JText::_($status->text); ?>
-							</td>
-							<td></td>
-							<td></td>
-							<td></td>
-							<?php
-						}
-						?>
-						</tr>
-						<tr>
-						<td></td>
-						<?php 
 					}
 					?>
 				</tr>
@@ -527,6 +536,7 @@ foreach ($this->xml->config as $config) {
 					</thead>
 					<tbody id="metadataParamTable">
 					<?php 
+						$theServer = null;
 						foreach ($thePolicy->Servers->Server as $policyServer)
 						{			
 							if (strcmp($policyServer->url,$remoteServer->url)==0)
