@@ -51,6 +51,16 @@ class Easysdi_coreViewEasysdi extends JView
 											'access' 	=> array(	'core.manage'		 , 'com_easysdi_service')
 			));
 		}
+		
+		//com_easysdi_map
+		if($app->getUserState( 'com_easysdi_map-installed')){
+			array_push($this->buttons,array(
+					'link' 		=> JRoute::_('index.php?option=com_easysdi_map'),
+					'image' 	=> '../../../templates/bluestork/images/header/icon-48-links.png',
+					'text' 		=> JText::_('COM_EASYSDI_CORE_ICON_SDI_MAP'),
+					'access' 	=> array(	'core.manage'		 , 'com_easysdi_map')
+			));
+		}
 					
 		// Display the view
 		$this->addToolbar();
