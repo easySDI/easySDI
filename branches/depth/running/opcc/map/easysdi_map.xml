@@ -58,9 +58,9 @@
             <folder>views</folder>
         </files>
         <languages folder="administrator">
-            <language tag="en-GB">language/en-GB.com_easysdi_map.ini
+            <language tag="en-GB">language/en-GB/en-GB.com_easysdi_map.ini
             </language>
-            <language tag="en-GB">language/en-GB.com_easysdi_map.sys.ini
+            <language tag="en-GB">language/en-GB/en-GB.com_easysdi_map.sys.ini
             </language>
         </languages>
     </administration>

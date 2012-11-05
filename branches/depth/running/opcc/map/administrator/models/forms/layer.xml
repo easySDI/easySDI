@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+	<fieldset>
+	    <field 	name="id" 
+	    		type="text" 
+	    		default="0" 
+	    		label="COM_EASYSDI_MAP_FORM_LBL_LAYER_ID"
+                readonly="true" 
+                class="readonly"
+                description="JGLOBAL_FIELD_ID_DESC" /> 
+
+       <field 	name="guid" 
+       			type="text" 
+       			size="40" 
+       			class="inputbox"
+	            label="COM_EASYSDI_MAP_FORM_LBL_LAYER_GUID"
+    	        description="COM_EASYSDI_MAP_FORM_DESC_LAYER_GUID" 
+                filter="safehtml" /> 
+
+       <field 	name="alias" 
+       			type="text" 
+       			size="40" class="inputbox"
+	            label="COM_EASYSDI_MAP_FORM_LBL_LAYER_ALIAS"
+    	        description="COM_EASYSDI_MAP_FORM_DESC_LAYER_ALIAS" 
+                filter="safehtml" /> 
+
+       <field 	name="created_by" 
+       			type="createdby" 
+       			default="" 
+            	label="COM_EASYSDI_MAP_FORM_LBL_LAYER_CREATED_BY"
+            	description="COM_EASYSDI_MAP_FORM_DESC_LAYER_CREATED_BY"  /> 
+
+       <field 	name="created" 
+       			type="timecreated" 
+       			default="" 
+            	label="COM_EASYSDI_MAP_FORM_LBL_LAYER_CREATED"
+            	description="COM_EASYSDI_MAP_FORM_DESC_LAYER_CREATED"  /> 
+
+       <field 	name="modified_by" 
+       			type="text" 
+       			size="40" 
+       			class="inputbox"
+	            label="COM_EASYSDI_MAP_FORM_LBL_LAYER_MODIFIED_BY"
+            	description="COM_EASYSDI_MAP_FORM_DESC_LAYER_MODIFIED_BY" 
+                filter="safehtml" /> 
+
+       <field 	name="modified" 
+       			type="timeupdated" 
+       			default="" 
+            	label="COM_EASYSDI_MAP_FORM_LBL_LAYER_MODIFIED"
+            	description="COM_EASYSDI_MAP_FORM_DESC_LAYER_MODIFIED"  /> 
+
+       <field 	name="name" 
+       			type="text" 
+       			size="40" 
+       			class="inputbox"
+	            label="COM_EASYSDI_MAP_FORM_LBL_LAYER_NAME"
+            	description="COM_EASYSDI_MAP_FORM_DESC_LAYER_NAME" 
+                required="true" 
+                filter="safehtml" /> 
+
+       <field 	name="group_id" 
+       			type="text" 
+       			size="40" 
+       			class="inputbox"
+	            label="COM_EASYSDI_MAP_FORM_LBL_LAYER_GROUP_ID"
+    	        description="COM_EASYSDI_MAP_FORM_DESC_LAYER_GROUP_ID" 
+                required="true" 
+                filter="safehtml" /> 
+
+       <field 	name="physicalservice_id" 
+       			type="text" 
+       			size="40" 
+       			class="inputbox"
+	            label="COM_EASYSDI_MAP_FORM_LBL_LAYER_PHYSICALSERVICE_ID"
+    	        description="COM_EASYSDI_MAP_FORM_DESC_LAYER_PHYSICALSERVICE_ID" 
+                filter="safehtml" /> 
+
+       <field 	name="virtualservice_id" 
+       			type="text" 
+       			size="40" 
+       			class="inputbox"
+	            label="COM_EASYSDI_MAP_FORM_LBL_LAYER_VIRTUALSERVICE_ID"
+    	        description="COM_EASYSDI_MAP_FORM_DESC_LAYER_VIRTUALSERVICE_ID" 
+                filter="safehtml" /> 
+
+       <field 	name="layername" 
+       			type="text" 
+       			size="40" 
+       			class="inputbox"
+	            label="COM_EASYSDI_MAP_FORM_LBL_LAYER_LAYERNAME"
+    	        description="COM_EASYSDI_MAP_FORM_DESC_LAYER_LAYERNAME" 
+                required="true" 
+                filter="safehtml" /> 
+
+       <field 	name="istiled" 
+       			type="text" 
+       			size="40" 
+       			class="inputbox"
+	            label="COM_EASYSDI_MAP_FORM_LBL_LAYER_ISTILED"
+    	        description="COM_EASYSDI_MAP_FORM_DESC_LAYER_ISTILED" 
+                filter="safehtml" /> 
+
+       <field 	name="isdefaultvisible" 
+       			type="text" 
+       			size="40" 
+       			class="inputbox"
+	            label="COM_EASYSDI_MAP_FORM_LBL_LAYER_ISDEFAULTVISIBLE"
+    	        description="COM_EASYSDI_MAP_FORM_DESC_LAYER_ISDEFAULTVISIBLE" 
+                filter="safehtml" /> 
+
+       <field 	name="opacity" 
+       			type="text" 
+       			size="40" 
+       			class="inputbox"
+	            label="COM_EASYSDI_MAP_FORM_LBL_LAYER_OPACITY"
+    	        description="COM_EASYSDI_MAP_FORM_DESC_LAYER_OPACITY" 
+                default="1" 
+                filter="safehtml" /> 
+
+       <field 	name="metadatalink" 
+       			type="editor" 
+       			buttons="true"
+                class="inputbox"
+                filter="safehtml"
+                label="COM_EASYSDI_MAP_FORM_LBL_LAYER_METADATALINK"
+            	description="COM_EASYSDI_MAP_FORM_DESC_LAYER_METADATALINK"  /> 
+
+         <field name="state"
+                type="list"
+                label="JSTATUS"
+                description="JFIELD_PUBLISHED_DESC"
+                class="inputbox"
+                size="1"
+                default="1">
+                <option value="1">JPUBLISHED</option>
+                <option value="0">JUNPUBLISHED</option>
+            </field> 
+
+		<field name="checked_out" type="hidden" filter="unset" />
+        <field name="checked_out_time" type="hidden" filter="unset" />
+        <field name="asset_id" type="hidden" filter="SAFEHTML" />
+	</fieldset>
+
+	<fieldset name="rulesdefinition">
+		<field 	name="rules" 
+				type="rules" 
+				label="JFIELD_RULES_LABEL"
+				translate_label="true" 
+				class="inputbox" 
+				filter="rules"
+				component="com_easysdi_map" 
+				section="layer" 
+				validate="rules"
+		/>
+	</fieldset>
+</form>

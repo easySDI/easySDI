@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project default="sync" basedir=".">
+	<property name="projet.out.dir" value="out" />
+	<property name="projet.install.admin.dir" value="C:\www\opcc\administrator\components\com_easysdi_map" />
+	<property name="projet.install.site.dir" value="C:\www\opcc\components\com_easysdi_map" />
+	<property name="projet.install.langEN.dir" value="C:\www\opcc\administrator\language\en-GB" />
+
+	<target name="package" depends="create-structure,compression"
+		description="Main target">
+	</target>
+
+	<target name="create-structure" description="Creating the working directory structure">
+		<mkdir dir="${projet.out.dir}" />
+	</target>
+
+	
+    <target name="compression" description="Compression" depends="create-structure">
+		<jar compress="true" 
+		    jarfile="${projet.out.dir}/com_easysdi_map.zip"
+			basedir="." 
+			excludes=" 
+			        build.xml ; 
+					site/** ;
+			        out/** ; 
+					.cache/** ; 
+					.svn/** ; 
+					.settings/** ; 
+					.project; 
+			 		.prefs; 
+					.buildpath" />
+	</target>
+
+	<target name="sync" description="Copy from here to apache">
+		<copy todir="${projet.install.admin.dir}">
+			<fileset dir="./administrator">
+				<include name="**/*.*" />
+			</fileset>
+		</copy>
+		<copy todir="${projet.install.site.dir}">
+			<fileset dir="./site">
+				<include name="**/*.*" />
+			</fileset>
+		</copy>
+		<copy todir="${projet.install.langEN.dir}">
+		     <fileset dir="./administrator/language/en-GB">
+		      <include name="**/en-GB.com_easysdi_map.ini" />
+		       <include name="**/en-GB.com_easysdi_map.sys.ini" />
+		     </fileset>
+		    </copy>
+	</target>
+</project>

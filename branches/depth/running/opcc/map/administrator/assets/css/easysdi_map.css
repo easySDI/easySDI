@@ -1,30 +1,30 @@
-.icon-48-layergroups {
-      background-image: url(../images/l_layergroups.png);
+.icon-48-groups {
+      background-image: url(../images/l_groups.png);
       padding-left:60px!important;
 }
 
-.icon-48-layergroup {
-      background-image: url(../images/l_layergroups.png);
+.icon-48-group {
+      background-image: url(../images/l_groups.png);
       padding-left:60px!important;
 }
 
-.icon-48-maplayers {
-      background-image: url(../images/l_maplayers.png);
+.icon-48-layers {
+      background-image: url(../images/l_layers.png);
       padding-left:60px!important;
 }
 
-.icon-48-maplayer {
-      background-image: url(../images/l_maplayers.png);
+.icon-48-layer {
+      background-image: url(../images/l_layers.png);
       padding-left:60px!important;
 }
 
-.icon-48-mapcontexts {
-      background-image: url(../images/l_mapcontexts.png);
+.icon-48-contexts {
+      background-image: url(../images/l_contexts.png);
       padding-left:60px!important;
 }
 
-.icon-48-mapcontext {
-      background-image: url(../images/l_mapcontexts.png);
+.icon-48-context {
+      background-image: url(../images/l_contexts.png);
       padding-left:60px!important;
 }
 

@@ -21,21 +21,20 @@ class Easysdi_mapHelper
 	public static function addSubmenu($vName = '')
 	{
 		JSubMenuHelper::addEntry(
-			JText::_('COM_EASYSDI_MAP_TITLE_LAYERGROUPS'),
-			'index.php?option=com_easysdi_map&view=layergroups',
-			$vName == 'layergroups'
+				JText::_('COM_EASYSDI_MAP_TITLE_CONTEXTS'),
+				'index.php?option=com_easysdi_map&view=contexts',
+				$vName == 'contexts'
 		);
 		JSubMenuHelper::addEntry(
-			JText::_('COM_EASYSDI_MAP_TITLE_MAPLAYERS'),
-			'index.php?option=com_easysdi_map&view=maplayers',
-			$vName == 'maplayers'
+				JText::_('COM_EASYSDI_MAP_TITLE_LAYERS'),
+				'index.php?option=com_easysdi_map&view=layers',
+				$vName == 'layers'
 		);
 		JSubMenuHelper::addEntry(
-			JText::_('COM_EASYSDI_MAP_TITLE_MAPCONTEXTS'),
-			'index.php?option=com_easysdi_map&view=mapcontexts',
-			$vName == 'mapcontexts'
+			JText::_('COM_EASYSDI_MAP_TITLE_GROUPS'),
+			'index.php?option=com_easysdi_map&view=groups',
+			$vName == 'groups'
 		);
-
 	}
 
 	/**
@@ -44,21 +43,26 @@ class Easysdi_mapHelper
 	 * @return	JObject
 	 * @since	1.6
 	 */
-	public static function getActions()
+	public static function getActions($dataType = null, $Id = null)
 	{
 		$user	= JFactory::getUser();
 		$result	= new JObject;
-
-		$assetName = 'com_easysdi_map';
-
-		$actions = array(
-			'core.admin', 'core.manage', 'core.create', 'core.edit', 'core.edit.own', 'core.edit.state', 'core.delete'
-		);
-
-		foreach ($actions as $action) {
-			$result->set($action, $user->authorise($action, $assetName));
+		
+		if (!empty($dataType) && !empty($Id)) {
+			$assetName = 'com_easysdi_map.'.$dataType.'.'.(int) $Id;
 		}
-
+		else{
+			$assetName = 'com_easysdi_map';
+		}
+		
+		$actions = array(
+				'core.admin', 'core.manage', 'core.create', 'core.edit', 'core.edit.own', 'core.edit.state', 'core.delete'
+		);
+		
+		foreach ($actions as $action) {
+			$result->set($action,	$user->authorise($action, $assetName));
+		}
+		
 		return $result;
 	}
 }

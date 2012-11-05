@@ -1,4 +1,4 @@
-INSERT INTO `#__sdi_sys_maptool` (alias,ordering,state,checked_out,created_by,name) 
+INSERT INTO `#__sdi_sys_map_tool` (alias,ordering,state,checked_out,created_by,name) 
 VALUES 
 ('print',1,1,0,62,'Print'),
 ('navigation',2,1,0,62,'Navigation'),
