@@ -9,16 +9,16 @@
              default="http://localhost:8080/proxy/ogc/"
              size="40"
              required="true"
-             label="COM_EASYSDI_SERVICE_CONFIG_LBL_PROXY_URL"
-             description="COM_EASYSDI_SERVICE_CONFIG_DESC_PROXY_URL" />
+             label="COM_EASYSDI_SERVICE_VIRTUALSERVICE_LBL_PROXY_URL"
+             description="COM_EASYSDI_SERVICE_VIRTUALSERVICE_DESC_PROXY_URL" />
              
          <field name="proxyconfigurationfile"
              type="text"
              default=""
              size="40"
              required="true"
-             label="COM_EASYSDI_SERVICE_CONFIG_LBL_CONFIGURATION_FILE"
-             description="COM_EASYSDI_SERVICE_CONFIG_DESC_CONFIGURATION_FILE" />
+             label="COM_EASYSDI_SERVICE_VIRTUALSERVICE_LBL_CONFIGURATION_FILE"
+             description="COM_EASYSDI_SERVICE_VIRTUALSERVICE_DESC_CONFIGURATION_FILE" />
          
 	</fieldset>
 	
