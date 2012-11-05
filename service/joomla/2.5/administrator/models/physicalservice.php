@@ -15,7 +15,7 @@ jimport('joomla.application.component.modeladmin');
 /**
  * Easysdi_service model.
  */
-class Easysdi_serviceModelservice extends JModelAdmin
+class Easysdi_serviceModelphysicalservice extends JModelAdmin
 {
 	/**
 	 * @var		string	The prefix to use with controller messages.
@@ -33,7 +33,7 @@ class Easysdi_serviceModelservice extends JModelAdmin
 	 * @return	JTable	A database object
 	 * @since	1.6
 	 */
-	public function getTable($type = 'Service', $prefix = 'Easysdi_serviceTable', $config = array())
+	public function getTable($type = 'PhysicalService', $prefix = 'Easysdi_serviceTable', $config = array())
 	{
 		return JTable::getInstance($type, $prefix, $config);
 	}
@@ -100,7 +100,7 @@ class Easysdi_serviceModelservice extends JModelAdmin
 		$app	= JFactory::getApplication();
 
 		// Get the form.
-		$form = $this->loadForm('com_easysdi_service.service', 'service', array('control' => 'jform', 'load_data' => $loadData));
+		$form = $this->loadForm('com_easysdi_service.physicalservice', 'physicalservice', array('control' => 'jform', 'load_data' => $loadData));
 		if (empty($form)) {
 			return false;
 		}
@@ -117,7 +117,7 @@ class Easysdi_serviceModelservice extends JModelAdmin
 	protected function loadFormData()
 	{
 		// Check the session for previously entered form data.
-		$data = JFactory::getApplication()->getUserState('com_easysdi_service.edit.service.data', array());
+		$data = JFactory::getApplication()->getUserState('com_easysdi_service.edit.physicalservice.data', array());
 
 		if (empty($data)) {
 			$data = $this->getItem();
@@ -140,10 +140,14 @@ class Easysdi_serviceModelservice extends JModelAdmin
 			$compliances = $this->getServiceCompliance($item->id);
 			$compliance_ids =array();
 			$compliance_values =array();
-			foreach ($compliances as $compliance)
+			
+			if(isset($compliances))
 			{
-				$compliance_ids[] =$compliance->id;
-				$compliance_values[] =$compliance->value;
+				foreach ($compliances as $compliance)
+				{
+					$compliance_ids[] =$compliance->id;
+					$compliance_values[] =$compliance->value;
+				}
 			}
 			if(count($compliance_ids)>0)
 				$item->compliance = json_encode($compliance_ids);
@@ -170,7 +174,7 @@ class Easysdi_serviceModelservice extends JModelAdmin
 			// Set ordering to the last item if not set
 			if (@$table->ordering === '') {
 				$db = JFactory::getDbo();
-				$db->setQuery('SELECT MAX(ordering) FROM #__sdi_service');
+				$db->setQuery('SELECT MAX(ordering) FROM #__sdi_physicalservice');
 				$max = $db->loadResult();
 				$table->ordering = $max+1;
 			}
@@ -218,7 +222,7 @@ class Easysdi_serviceModelservice extends JModelAdmin
 		//Delete previously saved compliance
 		$db = $this->getDbo();
 		$db->setQuery(
-				'DELETE FROM #__sdi_service_servicecompliance WHERE service_id = '.$id
+				'DELETE FROM #__sdi_physicalservice_servicecompliance WHERE physicalservice_id = '.$id
 		);
 		$db->query();
 		
@@ -227,7 +231,7 @@ class Easysdi_serviceModelservice extends JModelAdmin
 		{
 			try {
 				$db->setQuery(
-						'INSERT INTO #__sdi_service_servicecompliance (service_id, servicecompliance_id) ' .
+						'INSERT INTO #__sdi_physicalservice_servicecompliance (physicalservice_id, servicecompliance_id) ' .
 						' VALUES ('.$id.','.$pk.')'
 				);
 				if (!$db->query()) {
@@ -258,10 +262,10 @@ class Easysdi_serviceModelservice extends JModelAdmin
 		try {
 			$db = $this->getDbo();
 			$db->setQuery(
-					'SELECT sv.value as value, sc.id as id FROM #__sdi_service_servicecompliance ssc ' .
+					'SELECT sv.value as value, sc.id as id FROM #__sdi_physicalservice_servicecompliance ssc ' .
 					' INNER JOIN #__sdi_sys_servicecompliance sc ON sc.id = ssc.servicecompliance_id '.
 					' INNER JOIN #__sdi_sys_serviceversion sv ON sv.id = sc.serviceversion_id'.
-					' WHERE ssc.service_id ='.$id
+					' WHERE ssc.physicalservice_id ='.$id
 	
 			);
 			$compliance = $db->loadObjectList();

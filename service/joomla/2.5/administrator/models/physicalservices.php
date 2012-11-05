@@ -14,7 +14,7 @@ jimport('joomla.application.component.modellist');
 /**
  * Methods supporting a list of Easysdi_service records.
  */
-class Easysdi_serviceModelservices extends JModelList
+class Easysdi_serviceModelphysicalservices extends JModelList
 {
 
     /**
@@ -139,7 +139,7 @@ class Easysdi_serviceModelservices extends JModelList
 				'a.*'
 			)
 		);
-		$query->from('`#__sdi_service` AS a');
+		$query->from('`#__sdi_physicalservice` AS a');
 
 
         // Join over the users for the checked out user.
@@ -229,7 +229,7 @@ class Easysdi_serviceModelservices extends JModelList
         if ($orderCol && $orderDirn) {
 		    $query->order($db->getEscaped($orderCol.' '.$orderDirn));
         }
-
+      
 		return $query;
 	}
 }

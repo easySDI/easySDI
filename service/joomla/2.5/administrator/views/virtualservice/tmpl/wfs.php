@@ -18,7 +18,7 @@ $document = JFactory::getDocument();
 $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_service.css');
 
 ?>
-<form action="<?php echo JRoute::_('index.php?option=com_easysdi_service&view=config&id='.JRequest::getVar('id',null)); ?>" method="post" name="adminForm" id="item-form" class="form-validate">
+<form action="<?php echo JRoute::_('index.php?option=com_easysdi_service&view=virtualservice&id='.JRequest::getVar('id',null)); ?>" method="post" name="adminForm" id="item-form" class="form-validate">
 	<div class="width-60 fltlft">
 		
 			 <fieldset class="adminform"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_CONNECTOR_CHOICE' );?></legend>
@@ -33,9 +33,12 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 			</fieldset>
 			<?php
 			$keywordString = "";
-			foreach ($this->config->{"service-metadata"}->{'KeywordList'}->Keyword as $keyword)
+			if(isset($this->config->{"service-metadata"}->{'KeywordList'}->Keyword))
 			{
-				$keywordString .= $keyword .",";
+				foreach ($this->config->{"service-metadata"}->{'KeywordList'}->Keyword as $keyword)
+				{
+					$keywordString .= $keyword .",";
+				}
 			}
 			$keywordString = substr($keywordString, 0, strlen($keywordString)-1) ;
 			
@@ -45,11 +48,11 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 				<table class="admintable" >
 					<tr>
 						<td class="key"><?php echo JText::_("COM_EASYSDI_SERVICE_METADATA_TITLE"); ?> : <span class="star">*</span></td>
-						<td><input class="inputbox required" name="service_title" id="service_title" type="text" size=100 value="<?php echo $this->config->{"service-metadata"}->{"Title"}; ?>"></td>
+						<td><input class="inputbox required" name="service_title" id="service_title" type="text" size=100 value="<?php if(isset($this->config->{"service-metadata"}->{"Title"})) echo $this->config->{"service-metadata"}->{"Title"}; ?>"></td>
 					</tr>
 					<tr>
 						<td class="key"><?php echo JText::_("COM_EASYSDI_SERVICE_METADATA_ABSTRACT"); ?> : </td>
-						<td><input name="service_abstract" id="service_abstract" type="text" size=100 value="<?php echo $this->config->{"service-metadata"}->{"Abstract"}; ?>"></td>
+						<td><input name="service_abstract" id="service_abstract" type="text" size=100 value="<?php if(isset($this->config->{"service-metadata"}->{"Abstract"})) echo $this->config->{"service-metadata"}->{"Abstract"}; ?>"></td>
 					</tr>
 					<tr>
 						<td class="key"><?php echo JText::_("COM_EASYSDI_SERVICE_METADATA_KEYWORD"); ?> : </td>
@@ -57,11 +60,11 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 					</tr>
 					<tr>
 						<td class="key"><?php echo JText::_("COM_EASYSDI_SERVICE_METADATA_FEES"); ?> : </td>
-						<td><input name="service_fees" id="service_fees" type="text" size=100 value="<?php echo $this->config->{"service-metadata"}->{"Fees"}; ?>"></td>
+						<td><input name="service_fees" id="service_fees" type="text" size=100 value="<?php if(isset($this->config->{"service-metadata"}->{"Fees"})) echo $this->config->{"service-metadata"}->{"Fees"}; ?>"></td>
 					</tr>
 					<tr>
 						<td class="key"><?php echo JText::_("COM_EASYSDI_SERVICE_METADATA_CONSTRAINTS"); ?> : </td>
-						<td><input name="service_accessconstraints" id="service_accessconstraints" type="text" size=100 value="<?php echo $this->config->{"service-metadata"}->{"AccessConstraints"}; ?>"></td>
+						<td><input name="service_accessconstraints" id="service_accessconstraints" type="text" size=100 value="<?php if(isset($this->config->{"service-metadata"}->{"AccessConstraints"})) echo $this->config->{"service-metadata"}->{"AccessConstraints"}; ?>"></td>
 					</tr>
 				</table>
 			</fieldset>

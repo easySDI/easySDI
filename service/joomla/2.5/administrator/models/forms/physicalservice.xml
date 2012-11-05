@@ -21,8 +21,8 @@
 				type="text" 
 				size="70" 
 				class="inputbox"
-				label="COM_EASYSDI_SERVICE_FORM_LBL_SERVICE_ALIAS"
-				description="COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_ALIAS"
+				label="COM_EASYSDI_SERVICE_FORM_LBL_PHYSICALSERVICE_ALIAS"
+				description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_ALIAS"
 				required="true"  
                 filter="safehtml" /> 
 
@@ -30,16 +30,16 @@
 				type="text" 
 				size="70" 
 				class="inputbox"
-				label="COM_EASYSDI_SERVICE_FORM_LBL_SERVICE_NAME"
-				description="COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_NAME"
+				label="COM_EASYSDI_SERVICE_FORM_LBL_PHYSICALSERVICE_NAME"
+				description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_NAME"
 				required="true"  
 				filter="safehtml" /> 
 
 		<field 	name="serviceconnector_id" 
 				type="sql" 
 				class="inputbox"
-				label="COM_EASYSDI_SERVICE_FORM_LBL_SERVICE_SERVICECONNECTOR_ID"
-				description="COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_SERVICECONNECTOR_ID" 
+				label="COM_EASYSDI_SERVICE_FORM_LBL_PHYSICALSERVICE_SERVICECONNECTOR_ID"
+				description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_SERVICECONNECTOR_ID" 
                 required="true" 
                 onchange="javascript:getAuthenticationConnector();"
                 query="SELECT 0 AS id, '- Please select -' AS value UNION SELECT id, value FROM #__sdi_sys_serviceconnector WHERE state=1" key_field="id" value_field="value"
@@ -50,8 +50,8 @@
 				size="70" 
 				class="inputbox"
 				required="true" 
-				label="COM_EASYSDI_SERVICE_FORM_LBL_SERVICE_RESOURCEURL"
-				description="COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_RESOURCEURL" 
+				label="COM_EASYSDI_SERVICE_FORM_LBL_PHYSICALSERVICE_RESOURCEURL"
+				description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_RESOURCEURL" 
                 validate="url" 
                 filter="safehtml" /> 
                 
@@ -86,8 +86,8 @@
 		<field 	name="resourceauthentication_id" 
 				type="sql" 
 				class="inputbox"
-				label="COM_EASYSDI_SERVICE_FORM_LBL_SERVICE_RESOURCEAUTHENTICATION_ID"
-				description="COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_RESOURCEAUTHENTICATION_ID" 
+				label="COM_EASYSDI_SERVICE_FORM_LBL_PHYSICALSERVICE_RESOURCEAUTHENTICATION_ID"
+				description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_RESOURCEAUTHENTICATION_ID" 
                 query="SELECT 0 AS id, '- None -' AS value UNION SELECT id, value FROM #__sdi_sys_authenticationconnector" 
                 key_field="id" 
                 value_field="value"
@@ -97,8 +97,8 @@
 				type="text" 
 				size="40" 
 				class="inputbox"
-				label="COM_EASYSDI_SERVICE_FORM_LBL_SERVICE_RESOURCEUSERNAME"
-				description="COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_RESOURCEUSERNAME" 
+				label="COM_EASYSDI_SERVICE_FORM_LBL_PHYSICALSERVICE_RESOURCEUSERNAME"
+				description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_RESOURCEUSERNAME" 
                 filter="safehtml" /> 
 
 		<field 	name="resourcepassword" 
@@ -106,8 +106,8 @@
 				autocomplete="off"
 				size="40" 
 				class="inputbox"
-				label="COM_EASYSDI_SERVICE_FORM_LBL_SERVICE_RESOURCEPASSWORD"
-				description="COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_RESOURCEPASSWORD" 
+				label="COM_EASYSDI_SERVICE_FORM_LBL_PHYSICALSERVICE_RESOURCEPASSWORD"
+				description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_RESOURCEPASSWORD" 
                 filter="safehtml" /> 
 	</fieldset>
 
@@ -115,8 +115,8 @@
 		<field 	name="serviceauthentication_id" 
 				type="sql" 
 				class="inputbox"
-				label="COM_EASYSDI_SERVICE_FORM_LBL_SERVICE_SERVICEAUTHENTICATION_ID"
-				description="COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_SERVICEAUTHENTICATION_ID" 
+				label="COM_EASYSDI_SERVICE_FORM_LBL_PHYSICALSERVICE_SERVICEAUTHENTICATION_ID"
+				description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_SERVICEAUTHENTICATION_ID" 
                 query="SELECT 0 AS id, '- None -' AS value UNION SELECT id, value FROM #__sdi_sys_authenticationconnector" 
                 key_field="id" 
                 value_field="value"
@@ -126,8 +126,8 @@
 				type="text" 
 				size="40" 
 				class="inputbox"
-				label="COM_EASYSDI_SERVICE_FORM_LBL_SERVICE_SERVICEURL"
-				description="COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_SERVICEURL" 
+				label="COM_EASYSDI_SERVICE_FORM_LBL_PHYSICALSERVICE_SERVICEURL"
+				description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_SERVICEURL" 
                 validate="url" 
                 filter="safehtml" /> 
 
@@ -135,8 +135,8 @@
 				type="text" 
 				size="40" 
 				class="inputbox"
-				label="COM_EASYSDI_SERVICE_FORM_LBL_SERVICE_SERVICEUSERNAME"
-				description="COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_SERVICEUSERNAME" 
+				label="COM_EASYSDI_SERVICE_FORM_LBL_PHYSICALSERVICE_SERVICEUSERNAME"
+				description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_SERVICEUSERNAME" 
                 filter="safehtml" /> 
 
 		<field 	name="servicepassword" 
@@ -144,23 +144,23 @@
 				autocomplete="off"
 				size="40" 
 				class="inputbox"
-				label="COM_EASYSDI_SERVICE_FORM_LBL_SERVICE_SERVICEPASSWORD"
-				description="COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_SERVICEPASSWORD" 
+				label="COM_EASYSDI_SERVICE_FORM_LBL_PHYSICALSERVICE_SERVICEPASSWORD"
+				description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_SERVICEPASSWORD" 
                 filter="safehtml" /> 
 	</fieldset>
 
-	<fieldset name="negotiation" text="COM_EASYSDI_SERVICE_LEGEND_SERVICE_NEGOTIATION">
+	<fieldset name="negotiation" text="COM_EASYSDI_SERVICE_LEGEND_PHYSICALSERVICE_NEGOTIATION">
  		<field 	name="negotiation" 
 				type="negotiationaction" 
-				label="COM_EASYSDI_SERVICE_FORM_LBL_SERVICE_NEGOTIATION"
-				description="COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_NEGOTIATION" 
+				label="COM_EASYSDI_SERVICE_FORM_LBL_PHYSICALSERVICE_NEGOTIATION"
+				description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_NEGOTIATION" 
 				filter="safehtml" />
 				 
 		<field 	name="supportedversions" 
 				type="supportedversions" 
 				class="readonly"
-				label="COM_EASYSDI_SERVICE_FORM_LBL_SERVICE_SUPPORTEDVERSIONS"
-				description="COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_SUPPORTEDVERSIONS"
+				label="COM_EASYSDI_SERVICE_FORM_LBL_PHYSICALSERVICE_SUPPORTEDVERSIONS"
+				description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_SUPPORTEDVERSIONS"
 				filter="unset" /> 
 	</fieldset>
 
@@ -169,32 +169,32 @@
 				type="user" 
 				class="readonly"
 				readonly="true" 
-				label="COM_EASYSDI_SERVICE_FORM_LBL_SERVICE_CREATED_BY"
-				description="COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_CREATED_BY" 
+				label="COM_EASYSDI_SERVICE_FORM_LBL_PHYSICALSERVICE_CREATED_BY"
+				description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_CREATED_BY" 
                 filter="unset" /> 
 
 		<field 	name="created" 
 				type="calendar" 
 				class="readonly"
        			readonly="true"
-				label="COM_EASYSDI_SERVICE_FORM_LBL_SERVICE_CREATED"
-				description="COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_CREATED" 
+				label="COM_EASYSDI_SERVICE_FORM_LBL_PHYSICALSERVICE_CREATED"
+				description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_CREATED" 
                 filter="safehtml" /> 
 
 		<field 	name="modified_by" 
 				type="user" 
 				class="readonly"
 				readonly="true" 
-				label="COM_EASYSDI_SERVICE_FORM_LBL_SERVICE_MODIFIED_BY"
-				description="COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_MODIFIED_BY" 
+				label="COM_EASYSDI_SERVICE_FORM_LBL_PHYSICALSERVICE_MODIFIED_BY"
+				description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_MODIFIED_BY" 
                 filter="unset" /> 
 
 		<field 	name="modified" 
 				type="calendar" 
 				class="readonly"
        			readonly="true"
-				label="COM_EASYSDI_SERVICE_FORM_LBL_SERVICE_MODIFIED"
-				description="COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_MODIFIED" 
+				label="COM_EASYSDI_SERVICE_FORM_LBL_PHYSICALSERVICE_MODIFIED"
+				description="COM_EASYSDI_SERVICE_FORM_DESC_PHYSICALSERVICE_MODIFIED" 
                 filter="safehtml" /> 
      </fieldset>
 	

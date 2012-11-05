@@ -15,7 +15,7 @@ jimport('joomla.application.component.view');
 /**
  * View class for a list of Easysdi_service.
  */
-class Easysdi_serviceViewServices extends JView
+class Easysdi_serviceViewPhysicalServices extends JView
 {
 	protected $items;
 	protected $pagination;
@@ -26,11 +26,12 @@ class Easysdi_serviceViewServices extends JView
 	 */
 	public function display($tpl = null)
 	{
+		
 		$this->categories	= $this->get('CategoryOrders');
 		$this->state		= $this->get('State');
 		$this->items		= $this->get('Items');
 		$this->pagination	= $this->get('Pagination');
-
+		
 		// Check for errors.
 		if (count($errors = $this->get('Errors'))) {
 			JError::raiseError(500, implode("\n", $errors));
@@ -42,6 +43,7 @@ class Easysdi_serviceViewServices extends JView
 		$this->connectorlist = $db->loadObjectList();
 		
 		$this->addToolbar();
+		
 		parent::display($tpl);
 	}
 
@@ -53,22 +55,23 @@ class Easysdi_serviceViewServices extends JView
 	protected function addToolbar()
 	{
 		require_once JPATH_COMPONENT.DS.'helpers'.DS.'easysdi_service.php';
-
+		
 		$state	= $this->get('State');
-		$canDo	= Easysdi_serviceHelper::getActions($state->get('filter.category_id'));
-
-		JToolBarHelper::title(JText::_('COM_EASYSDI_SERVICE_TITLE_SERVICES'), 'links-cat.png');
+		$canDo	= Easysdi_serviceHelper::getActions('physical',$state->get('filter.category_id'));
+		
+		JToolBarHelper::title(JText::_('COM_EASYSDI_SERVICE_TITLE_PHYSICALSERVICES'), 'links-cat.png');
 
         //Check if the form exists before showing the add/edit buttons
-        $formPath = JPATH_COMPONENT_ADMINISTRATOR.DS.'views'.DS.'service';
+		$formPath = JPATH_COMPONENT_ADMINISTRATOR.DS.'views'.DS.'physicalservice';
+       
         if (file_exists($formPath)) {
 
             if ($canDo->get('core.create')) {
-			    JToolBarHelper::addNew('service.add','JTOOLBAR_NEW');
+			    JToolBarHelper::addNew('physicalservice.add','JTOOLBAR_NEW');
 		    }
 
 		    if ($canDo->get('core.edit')) {
-			    JToolBarHelper::editList('service.edit','JTOOLBAR_EDIT');
+			    JToolBarHelper::editList('physicalservice.edit','JTOOLBAR_EDIT');
 		    }
 
         }
@@ -77,28 +80,28 @@ class Easysdi_serviceViewServices extends JView
 
             if (isset($this->items[0]->state)) {
 			    JToolBarHelper::divider();
-			    JToolBarHelper::custom('services.publish', 'publish.png', 'publish_f2.png','JTOOLBAR_PUBLISH', true);
-			    JToolBarHelper::custom('services.unpublish', 'unpublish.png', 'unpublish_f2.png', 'JTOOLBAR_UNPUBLISH', true);
+			    JToolBarHelper::custom('physicalservices.publish', 'publish.png', 'publish_f2.png','JTOOLBAR_PUBLISH', true);
+			    JToolBarHelper::custom('physicalservices.unpublish', 'unpublish.png', 'unpublish_f2.png', 'JTOOLBAR_UNPUBLISH', true);
             } else {
                 //If this component does not use state then show a direct delete button as we can not trash
-                JToolBarHelper::deleteList('', 'services.delete','JTOOLBAR_DELETE');
+                JToolBarHelper::deleteList('', 'physicalservices.delete','JTOOLBAR_DELETE');
             }
 
             if (isset($this->items[0]->state)) {
 			    JToolBarHelper::divider();
-			    JToolBarHelper::archiveList('services.archive','JTOOLBAR_ARCHIVE');
+			    JToolBarHelper::archiveList('physicalservice.archive','JTOOLBAR_ARCHIVE');
             }
             if (isset($this->items[0]->checked_out)) {
-            	JToolBarHelper::custom('services.checkin', 'checkin.png', 'checkin_f2.png', 'JTOOLBAR_CHECKIN', true);
+            	JToolBarHelper::custom('physicalservices.checkin', 'checkin.png', 'checkin_f2.png', 'JTOOLBAR_CHECKIN', true);
             }
 		}
         
         //Show trash and delete for components that uses the state field
         if (isset($this->items[0]->state)) {
 		    if ($state->get('filter.state') == -2 && $canDo->get('core.delete')) {
-			    JToolBarHelper::deleteList('', 'services.delete','JTOOLBAR_EMPTY_TRASH');
+			    JToolBarHelper::deleteList('', 'physicalservices.delete','JTOOLBAR_EMPTY_TRASH');
 		    } else if ($canDo->get('core.edit.state')) {
-			    JToolBarHelper::trash('services.trash','JTOOLBAR_TRASH');
+			    JToolBarHelper::trash('physicalservices.trash','JTOOLBAR_TRASH');
 		    }
         }
 
