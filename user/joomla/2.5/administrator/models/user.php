@@ -180,17 +180,17 @@ class Easysdi_userModeluser extends JModelAdmin
 
 			//Call the overloaded save function to store the input data
 			$data['id'] = $this->getItem()->get('id');
-			if(!$addresstable->save($data, 'contact' ))
+			if(!$addresstable->saveByType($data, 'contact' ))
 			{	
 				return false;
 			}
 			 
-			if(!$addresstable->save($data, 'billing'))
+			if(!$addresstable->saveByType($data, 'billing'))
 			{
 				return false;
 			}
 			 
-			if(!$addresstable->save($data, 'delivry'))
+			if(!$addresstable->saveByType($data, 'delivry'))
 			{
 				return false;
 			}

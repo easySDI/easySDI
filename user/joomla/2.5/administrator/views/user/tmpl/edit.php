@@ -88,12 +88,15 @@ $document->addStyleSheet('components/com_easysdi_user/assets/css/easysdi_user.cs
 				<ul class="adminformlist">
 				<?php foreach($this->form->getFieldset('contactaddress') as $field): ?>
 					<?php $property = substr($field->id, 14);
+					$defaultvalue = null;
 					if($property == 'addresstype_id')
 						$defaultvalue = '1';
 					else if($property == 'user_id')
 						$defaultvalue = $this->item->id;
-					else
-						$defaultvalue = $this->contactitem->$property;
+					else{
+						if (isset($this->contactitem))
+							$defaultvalue = $this->contactitem->$property;
+					}
 					?>
 					<li><?php echo $field->label; ?>
 					<?php echo $this->form->getInput(substr($field->id, 6), null,$defaultvalue); ?></li>
@@ -106,12 +109,15 @@ $document->addStyleSheet('components/com_easysdi_user/assets/css/easysdi_user.cs
 				<ul class="adminformlist">
 				<?php foreach($this->form->getFieldset('billingaddress') as $field): ?>
 					<?php $property = substr($field->id, 14);
+					$defaultvalue = null;
 					if($property == 'addresstype_id')
 						$defaultvalue = '2';
 					else if($property == 'user_id')
 						$defaultvalue = $this->item->id;
-					else
-						$defaultvalue = $this->billingitem->$property;
+					else{
+						if (isset($this->billingitem))
+							$defaultvalue = $this->billingitem->$property;
+					}
 					?>
 					<li><?php echo $field->label; ?>
 					<?php echo $this->form->getInput(substr($field->id, 6), null,$defaultvalue); ?></li>
@@ -124,12 +130,15 @@ $document->addStyleSheet('components/com_easysdi_user/assets/css/easysdi_user.cs
 				<ul class="adminformlist">
 				<?php foreach($this->form->getFieldset('delivryaddress') as $field): ?>
 					<?php $property = substr($field->id, 14);
+					$defaultvalue = null;
 					if($property == 'addresstype_id')
 						$defaultvalue = '3';
 					else if($property == 'user_id')
 						$defaultvalue = $this->item->id;
-					else
-						$defaultvalue = $this->delivryitem->$property;
+					else{
+						if (isset($this->delivryitem))
+							$defaultvalue = $this->delivryitem->$property;
+					}	
 					?>
 					<li><?php echo $field->label; ?>
 					<?php echo $this->form->getInput(substr($field->id, 6), null,$defaultvalue); ?></li>
