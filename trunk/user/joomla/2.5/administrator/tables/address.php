@@ -102,7 +102,7 @@ class Easysdi_userTableaddress extends sdiTable
      * @link    http://docs.joomla.org/JTable/save
      * @since   EasySDI 3.0.0
      */
-    public function save($src,$type, $orderingFilter = '', $ignore = '')
+    public function saveByType($src,$type, $orderingFilter = '', $ignore = '')
     {
     	$data =array();
     	$data['id'] =$src[$type.'_id'];
