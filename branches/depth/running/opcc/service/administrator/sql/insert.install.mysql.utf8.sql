@@ -94,3 +94,11 @@ INSERT INTO `#__sdi_sys_operationcompliance` (ordering,state,checked_out,service
 VALUES 
 (1,1,0,1,1,1)
 ;
+
+INSERT INTO `#__sdi_sys_serviceconnector` (ordering,state,checked_out,value) 
+VALUES 
+(11,1,0,'WMSCSource'),
+(12,1,0,'BingSource'),
+(13,1,0,'GoogleSource'),
+(14,1,0,'OSMSource')
+;

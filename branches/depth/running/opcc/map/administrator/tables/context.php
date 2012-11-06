@@ -69,8 +69,9 @@ class Easysdi_mapTablecontext extends sdiTable {
 	 */
 	protected function _getAssetParentId($table = null, $id = null)
 	{
-		$this->_db->setQuery('SELECT id FROM #__assets WHERE name = "com_easysdi_map"');
-		return $this->_db->loadResult();
+		$asset = JTable::getInstance('Asset');
+		$asset->loadByName('com_easysdi_map');
+		return $asset->id;
 	}
 
 }
