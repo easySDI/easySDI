@@ -28,43 +28,20 @@
                  />
 
 	   <field 	name="service_id" 
-				type="sql" 
+				type="serviceselector" 
 				class="inputbox"
 				label="COM_EASYSDI_MAP_FORM_LBL_LAYER_PHYSICALSERVICE_ID"
 				description="COM_EASYSDI_MAP_FORM_DESC_LAYER_PHYSICALSERVICE_ID" 
-                translate="true" 
                 required="true"
-                query="SELECT 0 AS id, '- Please select -' AS name UNION SELECT id, name FROM #__sdi_physicalservice WHERE state=1" key_field="id" value_field="name"
                  />
-                 
-       <field 	name="physicalservice_id" 
-				type="sql" 
-				class="inputbox"
-				label="COM_EASYSDI_MAP_FORM_LBL_LAYER_PHYSICALSERVICE_ID"
-				description="COM_EASYSDI_MAP_FORM_DESC_LAYER_PHYSICALSERVICE_ID" 
-                translate="true" 
-                required="true"
-                query="SELECT 0 AS id, '- Please select -' AS name UNION SELECT id, name FROM #__sdi_physicalservice WHERE state=1" key_field="id" value_field="name"
-                 />
-      
-
-       <field 	name="virtualservice_id" 
-       			type="sql" 
-				class="inputbox"
-	            label="COM_EASYSDI_MAP_FORM_LBL_LAYER_VIRTUALSERVICE_ID"
-    	        description="COM_EASYSDI_MAP_FORM_DESC_LAYER_VIRTUALSERVICE_ID" 
-                 translate="true" 
-                required="true"
-                query="SELECT 0 AS id, '- Please select -' AS name UNION SELECT id, name FROM #__sdi_virtualservice WHERE state=1" key_field="id" value_field="name"
-                 /> 
 
        <field 	name="layername" 
-       			type="text" 
-       			size="40" 
+       			type="list" 
        			class="inputbox"
 	            label="COM_EASYSDI_MAP_FORM_LBL_LAYER_LAYERNAME"
     	        description="COM_EASYSDI_MAP_FORM_DESC_LAYER_LAYERNAME" 
                 required="true" 
+                value=''
                 filter="safehtml" /> 
 
        <field 	name="istiled" 
