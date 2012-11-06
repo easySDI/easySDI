@@ -1,80 +1,146 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
 	<fieldset name="details">
-		<field name="name" type="text" size="40" class="inputbox"
-			label="COM_EASYSDI_MAP_FORM_LBL_CONTEXT_NAME" description="COM_EASYSDI_MAP_FORM_DESC_CONTEXT_NAME"
-			required="true" filter="safehtml" />
+		<field 	name="name" 
+       			type="text" 
+       			size="40" 
+       			class="inputbox"
+	            label="COM_EASYSDI_MAP_FORM_LBL_CONTEXT_NAME"
+    	        description="COM_EASYSDI_MAP_FORM_DESC_CONTEXT_NAME" 
+                required="true" 
+                filter="safehtml" /> 
+                
+		<field 	name="alias" 
+       			type="text" 
+       			size="40" 
+       			class="inputbox"
+	            label="COM_EASYSDI_MAP_FORM_LBL_CONTEXT_ALIAS"
+       		    description="COM_EASYSDI_MAP_FORM_DESC_CONTEXT_ALIAS" 
+                filter="safehtml" />
+                 
+       <field 	name="access"
+				type="accesslevel"
+				label="JFIELD_ACCESS_LABEL"
+				description="JFIELD_ACCESS_DESC"
+				class="inputbox"
+				size="1" /> 
 
-		<field name="alias" type="text" size="40" class="inputbox"
-			label="COM_EASYSDI_MAP_FORM_LBL_CONTEXT_ALIAS" description="COM_EASYSDI_MAP_FORM_DESC_CONTEXT_ALIAS"
-			filter="safehtml" />
+ 		<field name="state"
+                type="list"
+                label="JSTATUS"
+                description="JFIELD_PUBLISHED_DESC"
+                class="inputbox"
+                size="1"
+                default="1">
+                <option value="1">JPUBLISHED</option>
+                <option value="0">JUNPUBLISHED</option>
+            </field> 
+            
+       <field 	name="srs" 
+       			type="text" 
+       			size="40" 
+       			class="inputbox"
+	            label="COM_EASYSDI_MAP_FORM_LBL_CONTEXT_SRS"
+    	        description="COM_EASYSDI_MAP_FORM_DESC_CONTEXT_SRS" 
+                required="true" 
+                filter="safehtml" /> 
+                
+       <field 	name="unit" 
+				type="sql" 
+				class="inputbox"
+				label="COM_EASYSDI_MAP_FORM_LBL_CONTEXT_UNIT"
+				description="COM_EASYSDI_MAP_FORM_DESC_CONTEXT_UNIT" 
+                translate="true" 
+                required="true"
+                query="SELECT 0 AS id, '- Please select -' AS name UNION SELECT id, name FROM #__sdi_sys_unit" key_field="id" value_field="name"
+                 /> 
 
-		<field name="access" type="accesslevel" label="JFIELD_ACCESS_LABEL"
-			description="JFIELD_ACCESS_DESC" class="inputbox" size="1" />
+       <field 	name="centercoordinates" 
+       			type="text" 
+       			size="40" 
+       			class="inputbox"
+	            label="COM_EASYSDI_MAP_FORM_LBL_CONTEXT_CENTERCOORDINATES"
+    	        description="COM_EASYSDI_MAP_FORM_DESC_CONTEXT_CENTERCOORDINATES" 
+                filter="safehtml" /> 
 
-		<field name="state" type="list" label="JSTATUS" description="JFIELD_PUBLISHED_DESC"
-			class="inputbox" size="1" default="1">
-			<option value="1">JPUBLISHED</option>
-			<option value="0">JUNPUBLISHED</option>
-		</field>
+       <field 	name="maxresolution" 
+       			type="text" 
+       			size="40" class="inputbox"
+	            label="COM_EASYSDI_MAP_FORM_LBL_CONTEXT_MAXRESOLUTION"
+    	        description="COM_EASYSDI_MAP_FORM_DESC_CONTEXT_MAXRESOLUTION" 
+                filter="safehtml" /> 
 
-		<field name="srs" type="text" size="40" class="inputbox"
-			label="COM_EASYSDI_MAP_FORM_LBL_CONTEXT_SRS" description="COM_EASYSDI_MAP_FORM_DESC_CONTEXT_SRS"
-			required="true" filter="safehtml" />
+       <field 	name="maxextent" 
+       			type="text" 
+       			size="40" 
+       			class="inputbox"
+	            label="COM_EASYSDI_MAP_FORM_LBL_CONTEXT_MAXEXTENT"
+    	        description="COM_EASYSDI_MAP_FORM_DESC_CONTEXT_MAXEXTENT" 
+                filter="safehtml" /> 
 
-		<field name="unit" type="sql" class="inputbox"
-			label="COM_EASYSDI_MAP_FORM_LBL_CONTEXT_UNIT" description="COM_EASYSDI_MAP_FORM_DESC_CONTEXT_UNIT"
-			translate="true" required="true"
-			query="SELECT 0 AS id, '- Please select -' AS name UNION SELECT id, name FROM #__sdi_sys_unit"
-			key_field="id" value_field="name" />
+       <field 	name="abstract" 
+       			type="editor" 
+       			buttons="true"
+                class="inputbox"
+                filter="safehtml"
+	            label="COM_EASYSDI_MAP_FORM_LBL_CONTEXT_ABSTRACT"
+    	        description="COM_EASYSDI_MAP_FORM_DESC_CONTEXT_ABSTRACT"  /> 
 
-		<field name="centercoordinates" type="text" size="40" class="inputbox"
-			label="COM_EASYSDI_MAP_FORM_LBL_CONTEXT_CENTERCOORDINATES"
-			description="COM_EASYSDI_MAP_FORM_DESC_CONTEXT_CENTERCOORDINATES"
-			filter="safehtml" />
-
-		<field name="maxresolution" type="text" size="40" class="inputbox"
-			label="COM_EASYSDI_MAP_FORM_LBL_CONTEXT_MAXRESOLUTION" description="COM_EASYSDI_MAP_FORM_DESC_CONTEXT_MAXRESOLUTION"
-			filter="safehtml" />
-
-		<field name="maxextent" type="text" size="40" class="inputbox"
-			label="COM_EASYSDI_MAP_FORM_LBL_CONTEXT_MAXEXTENT" description="COM_EASYSDI_MAP_FORM_DESC_CONTEXT_MAXEXTENT"
-			filter="safehtml" />
-
-		<field name="abstract" type="editor" buttons="true" class="inputbox"
-			filter="safehtml" label="COM_EASYSDI_MAP_FORM_LBL_CONTEXT_ABSTRACT"
-			description="COM_EASYSDI_MAP_FORM_DESC_CONTEXT_ABSTRACT" />
-
-
+        
 
 		<field name="checked_out" type="hidden" filter="unset" />
-		<field name="checked_out_time" type="hidden" filter="unset" />
-		<field name="asset_id" type="hidden" filter="SAFEHTML" />
+        <field name="checked_out_time" type="hidden" filter="unset" />
+        <field name="asset_id" type="hidden" filter="SAFEHTML" />
 	</fieldset>
 
 	<fieldset name="publishing">
-		<field name="created_by" type="user" class="readonly" readonly="true"
-			label="COM_EASYSDI_MAP_FORM_LBL_CONTEXT_CREATED_BY" description="COM_EASYSDI_MAP_FORM_DESC_CONTEXT_CREATED_BY"
-			filter="unset" />
+		 <field name="created_by" 
+       			type="user" 
+				class="readonly"
+       			readonly="true"
+            	label="COM_EASYSDI_MAP_FORM_LBL_CONTEXT_CREATED_BY"
+            	description="COM_EASYSDI_MAP_FORM_DESC_CONTEXT_CREATED_BY"  
+            	filter="unset" /> 
+            	
+		<field 	name="created" 
+       			type="calendar" 
+       			class="readonly"
+       			readonly="true"
+                default="0000-00-00 00:00:00" 
+            	label="COM_EASYSDI_MAP_FORM_LBL_CONTEXT_CREATED"
+            	description="COM_EASYSDI_MAP_FORM_DESC_CONTEXT_CREATED"  
+            	filter="safehtml" /> 
 
-		<field name="created" type="calendar" class="readonly" readonly="true"
-			default="0000-00-00 00:00:00" label="COM_EASYSDI_MAP_FORM_LBL_CONTEXT_CREATED"
-			description="COM_EASYSDI_MAP_FORM_DESC_CONTEXT_CREATED" filter="safehtml" />
+      
 
+       <field 	name="modified_by" 
+       			type="user" 
+				class="readonly"
+       			readonly="true"
+       			label="COM_EASYSDI_MAP_FORM_LBL_CONTEXT_MODIFIED_BY"
+    	        description="COM_EASYSDI_MAP_FORM_DESC_CONTEXT_MODIFIED_BY" 
+                filter="unset" /> 
 
-
-		<field name="modified_by" type="user" class="readonly" readonly="true"
-			label="COM_EASYSDI_MAP_FORM_LBL_CONTEXT_MODIFIED_BY" description="COM_EASYSDI_MAP_FORM_DESC_CONTEXT_MODIFIED_BY"
-			filter="unset" />
-
-		<field name="modified" type="calendar" class="readonly"
-			readonly="true" default="0000-00-00 00:00:00" label="COM_EASYSDI_MAP_FORM_LBL_CONTEXT_MODIFIED"
-			description="COM_EASYSDI_MAP_FORM_DESC_CONTEXT_MODIFIED" filter="safehtml" />
+       <field 	name="modified" 
+       			type="calendar" 
+       			class="readonly"
+       			readonly="true"
+                default="0000-00-00 00:00:00"  
+            	label="COM_EASYSDI_MAP_FORM_LBL_CONTEXT_MODIFIED"
+            	description="COM_EASYSDI_MAP_FORM_DESC_CONTEXT_MODIFIED"  
+            	filter="safehtml" />
 	</fieldset>
-
+	
 	<fieldset name="rulesdefinition">
-		<field name="rules" type="rules" label="JFIELD_RULES_LABEL"
-			translate_label="true" class="inputbox" filter="rules" component="com_easysdi_map"
-			section="context" validate="rules" />
+		<field 	name="rules" 
+				type="rules" 
+				label="JFIELD_RULES_LABEL"
+				translate_label="true" 
+				class="inputbox" 
+				filter="rules"
+				component="com_easysdi_map" 
+				section="context" 
+				validate="rules"
+		/>
 	</fieldset>
 </form>

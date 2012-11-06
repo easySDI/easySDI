@@ -1,58 +1,104 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
 	<fieldset name="details">
-		<field name="alias" type="text" size="40" class="inputbox"
-			label="COM_EASYSDI_MAP_FORM_LBL_GROUP_ALIAS" description="COM_EASYSDI_MAP_FORM_DESC_GROUP_ALIAS"
-			filter="safehtml" />
+       <field 	name="alias" 
+       			type="text" 
+       			size="40" 
+       			class="inputbox"
+            	label="COM_EASYSDI_MAP_FORM_LBL_GROUP_ALIAS"
+            	description="COM_EASYSDI_MAP_FORM_DESC_GROUP_ALIAS" 
+                filter="safehtml" />
+                
+       <field 	name="access"
+				type="accesslevel"
+				label="JFIELD_ACCESS_LABEL"
+				description="JFIELD_ACCESS_DESC"
+				class="inputbox"
+				size="1" /> 
 
-		<field name="access" type="accesslevel" label="JFIELD_ACCESS_LABEL"
-			description="JFIELD_ACCESS_DESC" class="inputbox" size="1" />
+       <field 	name="name" 
+       			type="text" 
+       			size="40" 
+       			class="inputbox"
+            	label="COM_EASYSDI_MAP_FORM_LBL_GROUP_NAME"
+            	description="COM_EASYSDI_MAP_FORM_DESC_GROUP_NAME" 
+                required="true" 
+                filter="safehtml" /> 
 
-		<field name="name" type="text" size="40" class="inputbox"
-			label="COM_EASYSDI_MAP_FORM_LBL_GROUP_NAME" description="COM_EASYSDI_MAP_FORM_DESC_GROUP_NAME"
-			required="true" filter="safehtml" />
+       <field 	name="isdefaultopen" 
+       			type="checkbox" 
+       			label="COM_EASYSDI_MAP_FORM_LBL_GROUP_ISDEFAULTOPEN"
+            	description="COM_EASYSDI_MAP_FORM_DESC_GROUP_ISDEFAULTOPEN" 
+            	value="1"
+                filter="intval" /> 
 
-		<field name="isdefaultopen" type="checkbox"
-			label="COM_EASYSDI_MAP_FORM_LBL_GROUP_ISDEFAULTOPEN" description="COM_EASYSDI_MAP_FORM_DESC_GROUP_ISDEFAULTOPEN"
-			value="1" filter="intval" />
-
-		<field name="state" type="list" label="JSTATUS" description="JFIELD_PUBLISHED_DESC"
-			class="inputbox" size="1" default="1">
-			<option value="1">JPUBLISHED</option>
-			<option value="0">JUNPUBLISHED</option>
-		</field>
+        <field  name="state"
+                type="list"
+                label="JSTATUS"
+                description="JFIELD_PUBLISHED_DESC"
+                class="inputbox"
+                size="1"
+                default="1">
+                <option value="1">JPUBLISHED</option>
+                <option value="0">JUNPUBLISHED</option>
+		</field> 
 
 		<field name="id" type="hidden" filter="SAFEHTML" />
 		<field name="guid" type="hidden" filter="SAFEHTML" />
 		<field name="checked_out" type="hidden" filter="unset" />
-		<field name="checked_out_time" type="hidden" filter="unset" />
-		<field name="asset_id" type="hidden" filter="SAFEHTML" />
+        <field name="checked_out_time" type="hidden" filter="unset" />
+        <field name="asset_id" type="hidden" filter="SAFEHTML" />
 	</fieldset>
-
+	
 	<fieldset name="publishing">
-		<field name="created_by" type="user" class="readonly" readonly="true"
-			label="COM_EASYSDI_MAP_FORM_LBL_CONTEXT_CREATED_BY" description="COM_EASYSDI_MAP_FORM_DESC_CONTEXT_CREATED_BY"
-			filter="unset" />
+		 <field name="created_by" 
+       			type="user" 
+				class="readonly"
+       			readonly="true"
+            	label="COM_EASYSDI_MAP_FORM_LBL_CONTEXT_CREATED_BY"
+            	description="COM_EASYSDI_MAP_FORM_DESC_CONTEXT_CREATED_BY"  
+            	filter="unset" /> 
+            	
+		<field 	name="created" 
+       			type="calendar" 
+       			class="readonly"
+       			readonly="true"
+                default="0000-00-00 00:00:00" 
+            	label="COM_EASYSDI_MAP_FORM_LBL_CONTEXT_CREATED"
+            	description="COM_EASYSDI_MAP_FORM_DESC_CONTEXT_CREATED"  
+            	filter="safehtml" /> 
 
-		<field name="created" type="calendar" class="readonly" readonly="true"
-			default="0000-00-00 00:00:00" label="COM_EASYSDI_MAP_FORM_LBL_CONTEXT_CREATED"
-			description="COM_EASYSDI_MAP_FORM_DESC_CONTEXT_CREATED" filter="safehtml" />
+      
 
+       <field 	name="modified_by" 
+       			type="user" 
+				class="readonly"
+       			readonly="true"
+       			label="COM_EASYSDI_MAP_FORM_LBL_CONTEXT_MODIFIED_BY"
+    	        description="COM_EASYSDI_MAP_FORM_DESC_CONTEXT_MODIFIED_BY" 
+                filter="unset" /> 
 
-
-		<field name="modified_by" type="user" class="readonly" readonly="true"
-			label="COM_EASYSDI_MAP_FORM_LBL_CONTEXT_MODIFIED_BY" description="COM_EASYSDI_MAP_FORM_DESC_CONTEXT_MODIFIED_BY"
-			filter="unset" />
-
-		<field name="modified" type="calendar" class="readonly"
-			readonly="true" default="0000-00-00 00:00:00" label="COM_EASYSDI_MAP_FORM_LBL_CONTEXT_MODIFIED"
-			description="COM_EASYSDI_MAP_FORM_DESC_CONTEXT_MODIFIED" filter="safehtml" />
+       <field 	name="modified" 
+       			type="calendar" 
+       			class="readonly"
+       			readonly="true"
+                default="0000-00-00 00:00:00"  
+            	label="COM_EASYSDI_MAP_FORM_LBL_CONTEXT_MODIFIED"
+            	description="COM_EASYSDI_MAP_FORM_DESC_CONTEXT_MODIFIED"  
+            	filter="safehtml" />
 	</fieldset>
-
+	
 	<fieldset name="rulesdefinition">
-		<field name="rules" type="rules" label="JFIELD_RULES_LABEL"
-			translate_label="true" class="inputbox" filter="rules" component="com_easysdi_map"
-			section="group" validate="rules" />
+		<field 	name="rules" 
+				type="rules" 
+				label="JFIELD_RULES_LABEL"
+				translate_label="true" 
+				class="inputbox" 
+				filter="rules"
+				component="com_easysdi_map" 
+				section="group" 
+				validate="rules"
+		/>
 	</fieldset>
 
 </form>
