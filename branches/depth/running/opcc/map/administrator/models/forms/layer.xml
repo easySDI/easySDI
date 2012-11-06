@@ -30,9 +30,10 @@
 	   <field 	name="service_id" 
 				type="serviceselector" 
 				class="inputbox"
-				label="COM_EASYSDI_MAP_FORM_LBL_LAYER_PHYSICALSERVICE_ID"
-				description="COM_EASYSDI_MAP_FORM_DESC_LAYER_PHYSICALSERVICE_ID" 
+				label="COM_EASYSDI_MAP_FORM_LBL_LAYER_SERVICE_ID"
+				description="COM_EASYSDI_MAP_FORM_DESC_LAYER_SERVICE_ID" 
                 required="true"
+                filter="intval"
                  />
 
        <field 	name="layername" 
@@ -41,7 +42,7 @@
 	            label="COM_EASYSDI_MAP_FORM_LBL_LAYER_LAYERNAME"
     	        description="COM_EASYSDI_MAP_FORM_DESC_LAYER_LAYERNAME" 
                 required="true" 
-                value=''
+                value=""
                 filter="safehtml" /> 
 
        <field 	name="istiled" 

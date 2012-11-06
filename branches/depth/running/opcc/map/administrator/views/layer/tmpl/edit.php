@@ -26,6 +26,29 @@ $document->addStyleSheet('components/com_easysdi_map/assets/css/easysdi_map.css'
 			alert('<?php echo $this->escape(JText::_('JGLOBAL_VALIDATION_FORM_FAILED'));?>');
 		}
 	}
+
+	function getLayers (selectObj)
+	{
+		var layername_select = document.getElementById('jform_layername');
+		while ( layername_select.options.length > 0 ) layername_select.options[0] = null;
+		
+		var idx = selectObj.selectedIndex; 
+		var which = selectObj.options[idx].value;
+		if (document.getElementById(which))
+		{
+			var jsonalllayers = document.getElementById(which).value; 
+			var allayers = JSON.parse(jsonalllayers);
+			for(var i=0; i < allayers.length ; i++){
+				var option = new Option( allayers[i], allayers[i]);
+				layername_select.options[layername_select.length] = option;
+			}
+		} 
+		else
+		{
+			
+		}
+		
+	}
 </script>
 
 <form
