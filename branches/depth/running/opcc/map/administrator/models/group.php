@@ -73,7 +73,7 @@ class Easysdi_mapModelgroup extends JModelAdmin
 
 		if (empty($data)) {
 			$data = $this->getItem();
-            
+
 		}
 
 		return $data;
@@ -111,7 +111,7 @@ class Easysdi_mapModelgroup extends JModelAdmin
 		if (!isset($jform['isdefaultopen'])) { // see if the checkbox has been submitted
 			$table->isdefaultopen = 0; // if it has not been submitted, mark the field unchecked
 		}
-		
+
 		if (empty($table->id)) {
 
 			// Set ordering to the last item if not set

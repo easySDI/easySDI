@@ -73,7 +73,7 @@ class Easysdi_mapModellayer extends JModelAdmin
 
 		if (empty($data)) {
 			$data = $this->getItem();
-            
+
 		}
 
 		return $data;

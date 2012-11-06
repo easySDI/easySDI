@@ -6,7 +6,7 @@
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
- 
+
 // No direct access
 defined('_JEXEC') or die;
 

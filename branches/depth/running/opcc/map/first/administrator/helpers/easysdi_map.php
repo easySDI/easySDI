@@ -21,19 +21,19 @@ class Easysdi_mapHelper
 	public static function addSubmenu($vName = '')
 	{
 		JSubMenuHelper::addEntry(
-			JText::_('COM_EASYSDI_MAP_TITLE_LAYERGROUPS'),
-			'index.php?option=com_easysdi_map&view=layergroups',
-			$vName == 'layergroups'
+				JText::_('COM_EASYSDI_MAP_TITLE_LAYERGROUPS'),
+				'index.php?option=com_easysdi_map&view=layergroups',
+				$vName == 'layergroups'
 		);
 		JSubMenuHelper::addEntry(
-			JText::_('COM_EASYSDI_MAP_TITLE_MAPLAYERS'),
-			'index.php?option=com_easysdi_map&view=maplayers',
-			$vName == 'maplayers'
+				JText::_('COM_EASYSDI_MAP_TITLE_MAPLAYERS'),
+				'index.php?option=com_easysdi_map&view=maplayers',
+				$vName == 'maplayers'
 		);
 		JSubMenuHelper::addEntry(
-			JText::_('COM_EASYSDI_MAP_TITLE_MAPCONTEXTS'),
-			'index.php?option=com_easysdi_map&view=mapcontexts',
-			$vName == 'mapcontexts'
+				JText::_('COM_EASYSDI_MAP_TITLE_MAPCONTEXTS'),
+				'index.php?option=com_easysdi_map&view=mapcontexts',
+				$vName == 'mapcontexts'
 		);
 
 	}
@@ -52,7 +52,7 @@ class Easysdi_mapHelper
 		$assetName = 'com_easysdi_map';
 
 		$actions = array(
-			'core.admin', 'core.manage', 'core.create', 'core.edit', 'core.edit.own', 'core.edit.state', 'core.delete'
+				'core.admin', 'core.manage', 'core.create', 'core.edit', 'core.edit.own', 'core.edit.state', 'core.delete'
 		);
 
 		foreach ($actions as $action) {

@@ -34,7 +34,7 @@ class JFormFieldTimecreated extends JFormField
 	{
 		// Initialize variables.
 		$html = array();
-        
+
 		$time_created = $this->value;
 		if (!$time_created) {
 			$time_created = date("Y-m-d H:i:s");
@@ -43,7 +43,7 @@ class JFormFieldTimecreated extends JFormField
 		$jdate = new JDate($time_created);
 		$pretty_date = $jdate->format(JText::_('DATE_FORMAT_LC2'));
 		$html[] = "<div>".$pretty_date."</div>";
-        
+
 		return implode($html);
 	}
 }

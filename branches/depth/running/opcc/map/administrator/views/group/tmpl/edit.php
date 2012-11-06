@@ -28,21 +28,27 @@ $document->addStyleSheet('components/com_easysdi_map/assets/css/easysdi_map.css'
 	}
 </script>
 
-<form action="<?php echo JRoute::_('index.php?option=com_easysdi_map&layout=edit&id='.(int) $this->item->id); ?>" method="post" name="adminForm" id="group-form" class="form-validate">
+<form
+	action="<?php echo JRoute::_('index.php?option=com_easysdi_map&layout=edit&id='.(int) $this->item->id); ?>"
+	method="post" name="adminForm" id="group-form" class="form-validate">
 	<div class="width-60 fltlft">
 		<fieldset class="adminform">
-			<legend><?php echo JText::_('COM_EASYSDI_MAP_LEGEND_GROUP'); ?></legend>
+			<legend>
+				<?php echo JText::_('COM_EASYSDI_MAP_LEGEND_GROUP'); ?>
+			</legend>
 			<ul class="adminformlist">
 				<?php foreach($this->form->getFieldset('details') as $field): ?>
-					<?php
-					if($field->name=="jform[state]"){
-						if($this->canDo->get('core.edit.state'))
-						{
-							?><li><?php echo $field->label;echo $field->input;?></li><?php 
-						}
-						continue;
+				<?php
+				if($field->name=="jform[state]"){
+					if($this->canDo->get('core.edit.state'))
+					{
+						?>
+				<li><?php echo $field->label;echo $field->input;?></li>
+				<?php
+					}
+					continue;
 					} ?>
-					<li><?php echo $field->label;echo $field->input;?></li>
+				<li><?php echo $field->label;echo $field->input;?></li>
 				<?php endforeach; ?>
 			</ul>
 		</fieldset>
@@ -51,46 +57,46 @@ $document->addStyleSheet('components/com_easysdi_map/assets/css/easysdi_map.css'
 	<div class="width-40 fltrt">
 		<?php echo JHtml::_('sliders.start', 'user-sliders-'.$this->item->id, array('useCookie'=>1)); ?>
 		<?php echo JHtml::_('sliders.panel', JText::_('JGLOBAL_FIELDSET_PUBLISHING'), 'publishing-details'); ?>
-			<fieldset class="adminform">
-				<ul class="adminformlist">
-					<li><?php echo $this->form->getLabel('created_by'); ?>
-					<?php echo $this->form->getInput('created_by'); ?></li>
-		            
-					<li><?php echo $this->form->getLabel('created'); ?>
-					<?php echo $this->form->getInput('created'); ?></li>
-		
-		            <?php if ($this->item->modified_by) : ?>
-						<li><?php echo $this->form->getLabel('modified_by'); ?>
-						<?php echo $this->form->getInput('modified_by'); ?></li>
-			            
-						<li><?php echo $this->form->getLabel('modified'); ?>
-						<?php echo $this->form->getInput('modified'); ?></li>
-					<?php endif; ?>
-				</ul>
-			</fieldset>
+		<fieldset class="adminform">
+			<ul class="adminformlist">
+				<li><?php echo $this->form->getLabel('created_by'); ?> <?php echo $this->form->getInput('created_by'); ?>
+				</li>
+
+				<li><?php echo $this->form->getLabel('created'); ?> <?php echo $this->form->getInput('created'); ?>
+				</li>
+
+				<?php if ($this->item->modified_by) : ?>
+				<li><?php echo $this->form->getLabel('modified_by'); ?> <?php echo $this->form->getInput('modified_by'); ?>
+				</li>
+
+				<li><?php echo $this->form->getLabel('modified'); ?> <?php echo $this->form->getInput('modified'); ?>
+				</li>
+				<?php endif; ?>
+			</ul>
+		</fieldset>
 		<?php echo JHtml::_('sliders.end'); ?>
 	</div>
-	
+
 	<div class="width-100 fltlft">
 		<?php echo JHtml::_('sliders.start', 'permissions-sliders-'.$this->item->id, array('useCookie'=>1)); ?>
 
-			<?php echo JHtml::_('sliders.panel', JText::_('COM_EASYSDI_MAP_FIELDSET_RULES'), 'access-rules'); ?>
-			<fieldset class="panelform">
-				<?php echo $this->form->getLabel('rules'); ?>
-				<?php echo $this->form->getInput('rules'); ?>
-			</fieldset>
+		<?php echo JHtml::_('sliders.panel', JText::_('COM_EASYSDI_MAP_FIELDSET_RULES'), 'access-rules'); ?>
+		<fieldset class="panelform">
+			<?php echo $this->form->getLabel('rules'); ?>
+			<?php echo $this->form->getInput('rules'); ?>
+		</fieldset>
 
 		<?php echo JHtml::_('sliders.end'); ?>
 	</div>
-	
+
 	<input type="hidden" name="task" value="" />
 	<?php echo JHtml::_('form.token'); ?>
 	<div class="clr"></div>
 
-    <style type="text/css">
-        /* Temporary fix for drifting editor fields */
-        .adminformlist li {
-            clear: both;
-        }
-    </style>
+	<style type="text/css">
+/* Temporary fix for drifting editor fields */
+.adminformlist li {
+	clear: both;
+}
+</style>
 </form>

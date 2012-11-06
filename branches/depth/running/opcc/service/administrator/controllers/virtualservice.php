@@ -133,6 +133,8 @@ class Easysdi_serviceControllerVirtualService extends JController
     	$configId 		= JRequest::getVar("id","New Config");
     	$previoustask 	= JRequest::getVar("previoustask", 'edit');
     	$new			= ($previoustask == 'add')? true : false;
+    	$virtualservice = JModel::getInstance('virtualservice', 'easysdi_serviceModel');
+    	$virtualservicedata = array();
     	
     	if ($new){
     		$found = false;
@@ -163,22 +165,50 @@ class Easysdi_serviceControllerVirtualService extends JController
     	
     		$config->addChild("authorization")->addChild("policy-file");	
     	}
+    	else
+    	{
+    		$service = $virtualservice->getItemByServiceAlias($configId);
+    		$service_id = $service->id;
+    	}
     	
     	foreach ($xml->config as $config) {
     		if (strcmp($config['id'],$configId)==0){
     			//Id
     			$config['id']=$configId;
-    	
+    			
+    			//Virtualservice
+    			if(isset($service))
+    			{
+    				$virtualservicedata['id'] = $service->id;
+    				$virtualservicedata['guid'] = $service->guid;
+    				$virtualservicedata['created'] = $service->created;
+    				$virtualservicedata['created_by'] = $service->created_by;
+    			}
+    			$virtualservicedata['name'] = $configId;
+    			$virtualservicedata['alias'] = $configId;
+    			$virtualservicedata['state'] = 1;
     			//Servlet class
     			$servletName = JRequest::getVar("serviceconnector");
     			if($servletName == "WMS")
+    			{
     				$servletClass = "org.easysdi.proxy.wms.WMSProxyServlet";
+    				$virtualservicedata['serviceconnector_id'] = 2; 
+    			}
     			else if($servletName == "WMTS")
+    			{
     				$servletClass = "org.easysdi.proxy.wmts.WMTSProxyServlet";
+    				$virtualservicedata['serviceconnector_id'] = 3;
+    			}
     			else if($servletName == "CSW")
+    			{	
     				$servletClass = "org.easysdi.proxy.csw.CSWProxyServlet";
+    				$virtualservicedata['serviceconnector_id'] = 1;
+    			}
     			else if($servletName== "WFS")
+    			{
     				$servletClass = "org.easysdi.proxy.wfs.WFSProxyServlet";
+    				$virtualservicedata['serviceconnector_id'] = 4;
+    			}
     			$config->{'servlet-class'}=$servletClass;
     			
     			//Supported version
@@ -266,6 +296,8 @@ class Easysdi_serviceControllerVirtualService extends JController
     			else
     				$config = $this->serviceMetadataWFS($config);
     			$xml->asXML($params->get('proxyconfigurationfile'));
+    			
+    			$virtualservice->save($virtualservicedata);
     		}
     		
     	}

@@ -17,40 +17,40 @@ jimport('joomla.application.component.modellist');
 class Easysdi_mapModelmapcontexts extends JModelList
 {
 
-    /**
-     * Constructor.
-     *
-     * @param    array    An optional associative array of configuration settings.
-     * @see        JController
-     * @since    1.6
-     */
-    public function __construct($config = array())
-    {
-        if (empty($config['filter_fields'])) {
-            $config['filter_fields'] = array(
-                                'id', 'a.id',
-                'guid', 'a.guid',
-                'alias', 'a.alias',
-                'created', 'a.created',
-                'created_by', 'a.created_by',
-                'modified_by', 'a.modified_by',
-                'modified', 'a.modified',
-                'ordering', 'a.ordering',
-                'state', 'a.state',
-                'name', 'a.name',
-                'srs', 'a.srs',
-                'unit', 'a.unit',
-                'centercoordinates', 'a.centercoordinates',
-                'maxresolution', 'a.maxresolution',
-                'maxextent', 'a.maxextent',
-                'abstract', 'a.abstract',
-            	'access', 'a.access', 'access_level',
-            	'asset_id', 'a.asset_id',
-            );
-        }
+	/**
+	 * Constructor.
+	 *
+	 * @param    array    An optional associative array of configuration settings.
+	 * @see        JController
+	 * @since    1.6
+	 */
+	public function __construct($config = array())
+	{
+		if (empty($config['filter_fields'])) {
+			$config['filter_fields'] = array(
+					'id', 'a.id',
+					'guid', 'a.guid',
+					'alias', 'a.alias',
+					'created', 'a.created',
+					'created_by', 'a.created_by',
+					'modified_by', 'a.modified_by',
+					'modified', 'a.modified',
+					'ordering', 'a.ordering',
+					'state', 'a.state',
+					'name', 'a.name',
+					'srs', 'a.srs',
+					'unit', 'a.unit',
+					'centercoordinates', 'a.centercoordinates',
+					'maxresolution', 'a.maxresolution',
+					'maxextent', 'a.maxextent',
+					'abstract', 'a.abstract',
+					'access', 'a.access', 'access_level',
+					'asset_id', 'a.asset_id',
+			);
+		}
 
-        parent::__construct($config);
-    }
+		parent::__construct($config);
+	}
 
 
 	/**
@@ -66,7 +66,7 @@ class Easysdi_mapModelmapcontexts extends JModelList
 		// Load the filter state.
 		$search = $app->getUserStateFromRequest($this->context.'.filter.search', 'filter_search');
 		$this->setState('filter.search', $search);
-		
+
 		$access = $this->getUserStateFromRequest($this->context.'.filter.access', 'filter_access', 0, 'int');
 		$this->setState('filter.access', $access);
 
@@ -116,18 +116,18 @@ class Easysdi_mapModelmapcontexts extends JModelList
 
 		// Select the required fields from the table.
 		$query->select(
-			$this->getState(
-				'list.select',
-				'a.*'
-			)
+				$this->getState(
+						'list.select',
+						'a.*'
+				)
 		);
 		$query->from('`#__sdi_mapcontext` AS a');
 
 
-        // Join over the users for the checked out user.
-        $query->select('uc.name AS editor');
-        $query->join('LEFT', '#__users AS uc ON uc.id=a.checked_out');
-            
+		// Join over the users for the checked out user.
+		$query->select('uc.name AS editor');
+		$query->join('LEFT', '#__users AS uc ON uc.id=a.checked_out');
+
 		// Join over the created by field 'created_by'
 		$query->select('created_by.name AS created_by');
 		$query->join('LEFT', '#__users AS created_by ON created_by.id = a.created_by');
@@ -135,22 +135,22 @@ class Easysdi_mapModelmapcontexts extends JModelList
 		// Join over the access level.
 		$query->select('ag.title AS access_level');
 		$query->join('LEFT', '#__viewlevels AS ag ON ag.id = a.access');
-		
+
 		// Implement View Level Access
 		if (!$user->authorise('core.admin'))
 		{
 			$groups	= implode(',', $user->getAuthorisedViewLevels());
 			$query->where('a.access IN ('.$groups.')');
 		}
-		
-        // Filter by published state
-        $published = $this->getState('filter.state');
-        if (is_numeric($published)) {
-        	$query->where('a.state = '.(int) $published);
-        } else if ($published === '') {
-        	$query->where('(a.state IN (0, 1))');
-        }
-            
+
+		// Filter by published state
+		$published = $this->getState('filter.state');
+		if (is_numeric($published)) {
+			$query->where('a.state = '.(int) $published);
+		} else if ($published === '') {
+			$query->where('(a.state IN (0, 1))');
+		}
+
 		// Filter by search in title
 		$search = $this->getState('filter.search');
 		if (!empty($search)) {
@@ -158,16 +158,16 @@ class Easysdi_mapModelmapcontexts extends JModelList
 				$query->where('a.id = '.(int) substr($search, 3));
 			} else {
 				$search = $db->Quote('%'.$db->getEscaped($search, true).'%');
-                $query->where('( a.name LIKE '.$search.' )');
+				$query->where('( a.name LIKE '.$search.' )');
 			}
 		}
-        
-        // Add the list ordering clause.
-        $orderCol	= $this->state->get('list.ordering');
-        $orderDirn	= $this->state->get('list.direction');
-        if ($orderCol && $orderDirn) {
-            $query->order($db->getEscaped($orderCol.' '.$orderDirn));
-        }
+
+		// Add the list ordering clause.
+		$orderCol	= $this->state->get('list.ordering');
+		$orderDirn	= $this->state->get('list.direction');
+		if ($orderCol && $orderDirn) {
+			$query->order($db->getEscaped($orderCol.' '.$orderDirn));
+		}
 
 		return $query;
 	}

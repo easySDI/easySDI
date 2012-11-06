@@ -28,48 +28,55 @@ $document->addStyleSheet('components/com_easysdi_map/assets/css/easysdi_map.css'
 	}
 </script>
 
-<form action="<?php echo JRoute::_('index.php?option=com_easysdi_map&layout=edit&id='.(int) $this->item->id); ?>" method="post" name="adminForm" id="layergroup-form" class="form-validate">
+<form
+	action="<?php echo JRoute::_('index.php?option=com_easysdi_map&layout=edit&id='.(int) $this->item->id); ?>"
+	method="post" name="adminForm" id="layergroup-form"
+	class="form-validate">
 	<div class="width-60 fltlft">
 		<fieldset class="adminform">
-			<legend><?php echo JText::_('COM_EASYSDI_MAP_LEGEND_LAYERGROUP'); ?></legend>
+			<legend>
+				<?php echo JText::_('COM_EASYSDI_MAP_LEGEND_LAYERGROUP'); ?>
+			</legend>
 			<ul class="adminformlist">
 
-            
-			<li><?php echo $this->form->getLabel('id'); ?>
-			<?php echo $this->form->getInput('id'); ?></li>
 
-            
-			<li><?php echo $this->form->getLabel('created_by'); ?>
-			<?php echo $this->form->getInput('created_by'); ?></li>
+				<li><?php echo $this->form->getLabel('id'); ?> <?php echo $this->form->getInput('id'); ?>
+				</li>
 
-            
-			<li><?php echo $this->form->getLabel('created'); ?>
-			<?php echo $this->form->getInput('created'); ?></li>
 
-            
-			<li><?php echo $this->form->getLabel('modified_by'); ?>
-			<?php echo $this->form->getInput('modified_by'); ?></li>
+				<li><?php echo $this->form->getLabel('created_by'); ?> <?php echo $this->form->getInput('created_by'); ?>
+				</li>
 
-            
-			<li><?php echo $this->form->getLabel('modified'); ?>
-			<?php echo $this->form->getInput('modified'); ?></li>
 
-            
-			<li><?php echo $this->form->getLabel('name'); ?>
-			<?php echo $this->form->getInput('name'); ?></li>
+				<li><?php echo $this->form->getLabel('created'); ?> <?php echo $this->form->getInput('created'); ?>
+				</li>
 
-            
-			<li><?php echo $this->form->getLabel('isdefaultopen'); ?>
-			<?php echo $this->form->getInput('isdefaultopen'); ?></li>
 
-            
+				<li><?php echo $this->form->getLabel('modified_by'); ?> <?php echo $this->form->getInput('modified_by'); ?>
+				</li>
 
-            <li><?php echo $this->form->getLabel('state'); ?>
-                    <?php echo $this->form->getInput('state'); ?></li><li><?php echo $this->form->getLabel('checked_out'); ?>
-                    <?php echo $this->form->getInput('checked_out'); ?></li><li><?php echo $this->form->getLabel('checked_out_time'); ?>
-                    <?php echo $this->form->getInput('checked_out_time'); ?></li>
 
-            </ul>
+				<li><?php echo $this->form->getLabel('modified'); ?> <?php echo $this->form->getInput('modified'); ?>
+				</li>
+
+
+				<li><?php echo $this->form->getLabel('name'); ?> <?php echo $this->form->getInput('name'); ?>
+				</li>
+
+
+				<li><?php echo $this->form->getLabel('isdefaultopen'); ?> <?php echo $this->form->getInput('isdefaultopen'); ?>
+				</li>
+
+
+
+				<li><?php echo $this->form->getLabel('state'); ?> <?php echo $this->form->getInput('state'); ?>
+				</li>
+				<li><?php echo $this->form->getLabel('checked_out'); ?> <?php echo $this->form->getInput('checked_out'); ?>
+				</li>
+				<li><?php echo $this->form->getLabel('checked_out_time'); ?> <?php echo $this->form->getInput('checked_out_time'); ?>
+				</li>
+
+			</ul>
 		</fieldset>
 	</div>
 
@@ -78,10 +85,10 @@ $document->addStyleSheet('components/com_easysdi_map/assets/css/easysdi_map.css'
 	<?php echo JHtml::_('form.token'); ?>
 	<div class="clr"></div>
 
-    <style type="text/css">
-        /* Temporary fix for drifting editor fields */
-        .adminformlist li {
-            clear: both;
-        }
-    </style>
+	<style type="text/css">
+/* Temporary fix for drifting editor fields */
+.adminformlist li {
+	clear: both;
+}
+</style>
 </form>

@@ -18,9 +18,9 @@ jimport('joomla.application.component.controllerform');
 class Easysdi_mapControllerMapcontext extends JControllerForm
 {
 
-    function __construct() {
-        $this->view_list = 'mapcontexts';
-        parent::__construct();
-    }
+	function __construct() {
+		$this->view_list = 'mapcontexts';
+		parent::__construct();
+	}
 
 }

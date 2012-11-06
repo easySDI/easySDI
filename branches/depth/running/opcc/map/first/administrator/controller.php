@@ -30,17 +30,17 @@ class Easysdi_mapController extends JController
 		Easysdi_mapHelper::addSubmenu(JRequest::getCmd('view', 'mapcontexts'));
 
 		$view		= JRequest::getCmd('view', 'mapcontexts');
-        JRequest::setVar('view', $view);
+		JRequest::setVar('view', $view);
 
-        // Check for edit form.
-        if ($view == 'mapcontext' && $layout == 'edit' && !$this->checkEditId('com_easysdi_map.edit.mapcontext', $id)) {
-        	// Somehow the person just went to the form - we don't allow that.
-        	$this->setError(JText::sprintf('JLIB_APPLICATION_ERROR_UNHELD_ID', $id));
-        	$this->setMessage($this->getError(), 'error');
-        	$this->setRedirect(JRoute::_('index.php?option=com_easysdi_service&view=physicalservices', false));
-        	return false;
-        }
-        
+		// Check for edit form.
+		if ($view == 'mapcontext' && $layout == 'edit' && !$this->checkEditId('com_easysdi_map.edit.mapcontext', $id)) {
+			// Somehow the person just went to the form - we don't allow that.
+			$this->setError(JText::sprintf('JLIB_APPLICATION_ERROR_UNHELD_ID', $id));
+			$this->setMessage($this->getError(), 'error');
+			$this->setRedirect(JRoute::_('index.php?option=com_easysdi_service&view=physicalservices', false));
+			return false;
+		}
+
 		parent::display();
 
 		return $this;

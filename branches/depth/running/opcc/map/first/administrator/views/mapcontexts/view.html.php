@@ -54,50 +54,50 @@ class Easysdi_mapViewMapcontexts extends JView
 
 		JToolBarHelper::title(JText::_('COM_EASYSDI_MAP_TITLE_MAPCONTEXTS'), 'mapcontexts.png');
 
-        //Check if the form exists before showing the add/edit buttons
-        $formPath = JPATH_COMPONENT_ADMINISTRATOR.DS.'views'.DS.'mapcontext';
-        if (file_exists($formPath)) {
+		//Check if the form exists before showing the add/edit buttons
+		$formPath = JPATH_COMPONENT_ADMINISTRATOR.DS.'views'.DS.'mapcontext';
+		if (file_exists($formPath)) {
 
-            if ($canDo->get('core.create')) {
-			    JToolBarHelper::addNew('mapcontext.add','JTOOLBAR_NEW');
-		    }
+			if ($canDo->get('core.create')) {
+				JToolBarHelper::addNew('mapcontext.add','JTOOLBAR_NEW');
+			}
 
-		    if ($canDo->get('core.edit')) {
-			    JToolBarHelper::editList('mapcontext.edit','JTOOLBAR_EDIT');
-		    }
+			if ($canDo->get('core.edit')) {
+				JToolBarHelper::editList('mapcontext.edit','JTOOLBAR_EDIT');
+			}
 
-        }
+		}
 
 		if ($canDo->get('core.edit.state')) {
 
-            if (isset($this->items[0]->state)) {
-			    JToolBarHelper::divider();
-			    JToolBarHelper::custom('mapcontexts.publish', 'publish.png', 'publish_f2.png','JTOOLBAR_PUBLISH', true);
-			    JToolBarHelper::custom('mapcontexts.unpublish', 'unpublish.png', 'unpublish_f2.png', 'JTOOLBAR_UNPUBLISH', true);
-            } else {
-                //If this component does not use state then show a direct delete button as we can not trash
-                JToolBarHelper::deleteList('', 'mapcontexts.delete','JTOOLBAR_DELETE');
-            }
+			if (isset($this->items[0]->state)) {
+				JToolBarHelper::divider();
+				JToolBarHelper::custom('mapcontexts.publish', 'publish.png', 'publish_f2.png','JTOOLBAR_PUBLISH', true);
+				JToolBarHelper::custom('mapcontexts.unpublish', 'unpublish.png', 'unpublish_f2.png', 'JTOOLBAR_UNPUBLISH', true);
+			} else {
+				//If this component does not use state then show a direct delete button as we can not trash
+				JToolBarHelper::deleteList('', 'mapcontexts.delete','JTOOLBAR_DELETE');
+			}
 
-            if (isset($this->items[0]->state)) {
-			    JToolBarHelper::divider();
-			    JToolBarHelper::archiveList('mapcontexts.archive','JTOOLBAR_ARCHIVE');
-            }
-            if (isset($this->items[0]->checked_out)) {
-            	JToolBarHelper::custom('mapcontexts.checkin', 'checkin.png', 'checkin_f2.png', 'JTOOLBAR_CHECKIN', true);
-            }
+			if (isset($this->items[0]->state)) {
+				JToolBarHelper::divider();
+				JToolBarHelper::archiveList('mapcontexts.archive','JTOOLBAR_ARCHIVE');
+			}
+			if (isset($this->items[0]->checked_out)) {
+				JToolBarHelper::custom('mapcontexts.checkin', 'checkin.png', 'checkin_f2.png', 'JTOOLBAR_CHECKIN', true);
+			}
 		}
-        
-        //Show trash and delete for components that uses the state field
-        if (isset($this->items[0]->state)) {
-		    if ($state->get('filter.state') == -2 && $canDo->get('core.delete')) {
-			    JToolBarHelper::deleteList('', 'mapcontexts.delete','JTOOLBAR_EMPTY_TRASH');
-			    JToolBarHelper::divider();
-		    } else if ($canDo->get('core.edit.state')) {
-			    JToolBarHelper::trash('mapcontexts.trash','JTOOLBAR_TRASH');
-			    JToolBarHelper::divider();
-		    }
-        }
+
+		//Show trash and delete for components that uses the state field
+		if (isset($this->items[0]->state)) {
+			if ($state->get('filter.state') == -2 && $canDo->get('core.delete')) {
+				JToolBarHelper::deleteList('', 'mapcontexts.delete','JTOOLBAR_EMPTY_TRASH');
+				JToolBarHelper::divider();
+			} else if ($canDo->get('core.edit.state')) {
+				JToolBarHelper::trash('mapcontexts.trash','JTOOLBAR_TRASH');
+				JToolBarHelper::divider();
+			}
+		}
 
 		if ($canDo->get('core.admin')) {
 			JToolBarHelper::preferences('com_easysdi_map');

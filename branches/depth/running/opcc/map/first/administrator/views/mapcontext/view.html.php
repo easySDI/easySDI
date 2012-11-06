@@ -49,11 +49,11 @@ class Easysdi_mapViewMapcontext extends JView
 
 		$user		= JFactory::getUser();
 		$isNew		= ($this->item->id == 0);
-        if (isset($this->item->checked_out)) {
-		    $checkedOut	= !($this->item->checked_out == 0 || $this->item->checked_out == $user->get('id'));
-        } else {
-            $checkedOut = false;
-        }
+		if (isset($this->item->checked_out)) {
+			$checkedOut	= !($this->item->checked_out == 0 || $this->item->checked_out == $user->get('id'));
+		} else {
+			$checkedOut = false;
+		}
 		$canDo		= Easysdi_mapHelper::getActions();
 
 		JToolBarHelper::title(JText::_('COM_EASYSDI_MAP_TITLE_MAPCONTEXT'), 'mapcontext.png');

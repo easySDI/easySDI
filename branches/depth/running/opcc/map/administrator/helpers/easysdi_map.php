@@ -31,9 +31,9 @@ class Easysdi_mapHelper
 				$vName == 'layers'
 		);
 		JSubMenuHelper::addEntry(
-			JText::_('COM_EASYSDI_MAP_TITLE_GROUPS'),
-			'index.php?option=com_easysdi_map&view=groups',
-			$vName == 'groups'
+				JText::_('COM_EASYSDI_MAP_TITLE_GROUPS'),
+				'index.php?option=com_easysdi_map&view=groups',
+				$vName == 'groups'
 		);
 	}
 
@@ -47,22 +47,22 @@ class Easysdi_mapHelper
 	{
 		$user	= JFactory::getUser();
 		$result	= new JObject;
-		
+
 		if (!empty($dataType) && !empty($Id)) {
 			$assetName = 'com_easysdi_map.'.$dataType.'.'.(int) $Id;
 		}
 		else{
 			$assetName = 'com_easysdi_map';
 		}
-		
+
 		$actions = array(
 				'core.admin', 'core.manage', 'core.create', 'core.edit', 'core.edit.own', 'core.edit.state', 'core.delete'
 		);
-		
+
 		foreach ($actions as $action) {
 			$result->set($action,	$user->authorise($action, $assetName));
 		}
-		
+
 		return $result;
 	}
 }

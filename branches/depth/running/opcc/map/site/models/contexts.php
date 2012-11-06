@@ -16,76 +16,76 @@ jimport('joomla.application.component.modellist');
  */
 class Easysdi_mapModelContexts extends JModelList {
 
-    /**
-     * Constructor.
-     *
-     * @param    array    An optional associative array of configuration settings.
-     * @see        JController
-     * @since    1.6
-     */
-    public function __construct($config = array()) {
-        parent::__construct($config);
-    }
+	/**
+	 * Constructor.
+	 *
+	 * @param    array    An optional associative array of configuration settings.
+	 * @see        JController
+	 * @since    1.6
+	 */
+	public function __construct($config = array()) {
+		parent::__construct($config);
+	}
 
-    /**
-     * Method to auto-populate the model state.
-     *
-     * Note. Calling getState in this method will result in recursion.
-     *
-     * @since	1.6
-     */
-    protected function populateState($ordering = null, $direction = null) {
-        
-        // Initialise variables.
-        $app = JFactory::getApplication();
+	/**
+	 * Method to auto-populate the model state.
+	 *
+	 * Note. Calling getState in this method will result in recursion.
+	 *
+	 * @since	1.6
+	 */
+	protected function populateState($ordering = null, $direction = null) {
 
-        // List state information
-        $limit = $app->getUserStateFromRequest('global.list.limit', 'limit', $app->getCfg('list_limit'));
-        $this->setState('list.limit', $limit);
+		// Initialise variables.
+		$app = JFactory::getApplication();
 
-        $limitstart = JRequest::getVar('limitstart', 0, '', 'int');
-        $this->setState('list.start', $limitstart);
+		// List state information
+		$limit = $app->getUserStateFromRequest('global.list.limit', 'limit', $app->getCfg('list_limit'));
+		$this->setState('list.limit', $limit);
 
-        // List state information.
-        parent::populateState();
-    }
+		$limitstart = JRequest::getVar('limitstart', 0, '', 'int');
+		$this->setState('list.start', $limitstart);
 
-    /**
-     * Build an SQL query to load the list data.
-     *
-     * @return	JDatabaseQuery
-     * @since	1.6
-     */
-    protected function getListQuery() {
-        // Create a new query object.
-        $db = $this->getDbo();
-        $query = $db->getQuery(true);
+		// List state information.
+		parent::populateState();
+	}
 
-        // Select the required fields from the table.
-        $query->select(
-                $this->getState(
-                        'list.select', 'a.*'
-                )
-        );
-        $query->from('`#__sdi_map_context` AS a');
+	/**
+	 * Build an SQL query to load the list data.
+	 *
+	 * @return	JDatabaseQuery
+	 * @since	1.6
+	 */
+	protected function getListQuery() {
+		// Create a new query object.
+		$db = $this->getDbo();
+		$query = $db->getQuery(true);
 
-        
-            //Filter by access level
-            $user	 = JFactory::getUser();
-            $groups = implode(',', $user->getAuthorisedViewLevels());
-            $query->where('a.`access` IN ('.$groups.')');
-            
-        
-            // Filter by published state
-            $published = $this->getState('filter.state');
-            if (is_numeric($published)) {
-                $query->where('a.state = '.(int) $published);
-            } else if ($published === '') {
-                $query->where('(a.state IN (0, 1))');
-            }
-            
-        
-        return $query;
-    }
+		// Select the required fields from the table.
+		$query->select(
+				$this->getState(
+						'list.select', 'a.*'
+				)
+		);
+		$query->from('`#__sdi_map_context` AS a');
+
+
+		//Filter by access level
+		$user	 = JFactory::getUser();
+		$groups = implode(',', $user->getAuthorisedViewLevels());
+		$query->where('a.`access` IN ('.$groups.')');
+
+
+		// Filter by published state
+		$published = $this->getState('filter.state');
+		if (is_numeric($published)) {
+			$query->where('a.state = '.(int) $published);
+		} else if ($published === '') {
+			$query->where('(a.state IN (0, 1))');
+		}
+
+
+		return $query;
+	}
 
 }

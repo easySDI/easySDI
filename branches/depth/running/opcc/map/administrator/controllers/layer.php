@@ -18,9 +18,9 @@ jimport('joomla.application.component.controllerform');
 class Easysdi_mapControllerLayer extends JControllerForm
 {
 
-    function __construct() {
-        $this->view_list = 'layers';
-        parent::__construct();
-    }
+	function __construct() {
+		$this->view_list = 'layers';
+		parent::__construct();
+	}
 
 }

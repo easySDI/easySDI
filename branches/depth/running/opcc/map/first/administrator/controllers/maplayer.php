@@ -18,9 +18,9 @@ jimport('joomla.application.component.controllerform');
 class Easysdi_mapControllerMaplayer extends JControllerForm
 {
 
-    function __construct() {
-        $this->view_list = 'maplayers';
-        parent::__construct();
-    }
+	function __construct() {
+		$this->view_list = 'maplayers';
+		parent::__construct();
+	}
 
 }

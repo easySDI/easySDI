@@ -18,9 +18,9 @@ jimport('joomla.application.component.controllerform');
 class Easysdi_mapControllerGroup extends JControllerForm
 {
 
-    function __construct() {
-        $this->view_list = 'groups';
-        parent::__construct();
-    }
+	function __construct() {
+		$this->view_list = 'groups';
+		parent::__construct();
+	}
 
 }

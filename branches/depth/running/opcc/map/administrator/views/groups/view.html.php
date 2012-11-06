@@ -54,56 +54,56 @@ class Easysdi_mapViewGroups extends JView
 
 		JToolBarHelper::title(JText::_('COM_EASYSDI_MAP_TITLE_GROUPS'), 'groups.png');
 
-        //Check if the form exists before showing the add/edit buttons
-        $formPath = JPATH_COMPONENT_ADMINISTRATOR.DS.'views'.DS.'group';
-        if (file_exists($formPath)) {
+		//Check if the form exists before showing the add/edit buttons
+		$formPath = JPATH_COMPONENT_ADMINISTRATOR.DS.'views'.DS.'group';
+		if (file_exists($formPath)) {
 
-            if ($canDo->get('core.create')) {
-			    JToolBarHelper::addNew('group.add','JTOOLBAR_NEW');
-		    }
+			if ($canDo->get('core.create')) {
+				JToolBarHelper::addNew('group.add','JTOOLBAR_NEW');
+			}
 
-		    if ($canDo->get('core.edit')) {
-			    JToolBarHelper::editList('group.edit','JTOOLBAR_EDIT');
-		    }
+			if ($canDo->get('core.edit')) {
+				JToolBarHelper::editList('group.edit','JTOOLBAR_EDIT');
+			}
 
-        }
+		}
 
 		if ($canDo->get('core.edit.state')) {
 
-            if (isset($this->items[0]->state)) {
-			    JToolBarHelper::divider();
-			    JToolBarHelper::custom('groups.publish', 'publish.png', 'publish_f2.png','JTOOLBAR_PUBLISH', true);
-			    JToolBarHelper::custom('groups.unpublish', 'unpublish.png', 'unpublish_f2.png', 'JTOOLBAR_UNPUBLISH', true);
-            } else {
-                //If this component does not use state then show a direct delete button as we can not trash
-                JToolBarHelper::deleteList('', 'groups.delete','JTOOLBAR_DELETE');
-            }
+			if (isset($this->items[0]->state)) {
+				JToolBarHelper::divider();
+				JToolBarHelper::custom('groups.publish', 'publish.png', 'publish_f2.png','JTOOLBAR_PUBLISH', true);
+				JToolBarHelper::custom('groups.unpublish', 'unpublish.png', 'unpublish_f2.png', 'JTOOLBAR_UNPUBLISH', true);
+			} else {
+				//If this component does not use state then show a direct delete button as we can not trash
+				JToolBarHelper::deleteList('', 'groups.delete','JTOOLBAR_DELETE');
+			}
 
-            if (isset($this->items[0]->state)) {
-			    JToolBarHelper::divider();
-			    JToolBarHelper::archiveList('groups.archive','JTOOLBAR_ARCHIVE');
-            }
-            if (isset($this->items[0]->checked_out)) {
-            	JToolBarHelper::custom('groups.checkin', 'checkin.png', 'checkin_f2.png', 'JTOOLBAR_CHECKIN', true);
-            }
+			if (isset($this->items[0]->state)) {
+				JToolBarHelper::divider();
+				JToolBarHelper::archiveList('groups.archive','JTOOLBAR_ARCHIVE');
+			}
+			if (isset($this->items[0]->checked_out)) {
+				JToolBarHelper::custom('groups.checkin', 'checkin.png', 'checkin_f2.png', 'JTOOLBAR_CHECKIN', true);
+			}
 		}
-        
-        //Show trash and delete for components that uses the state field
-        if (isset($this->items[0]->state)) {
-		    if ($state->get('filter.state') == -2 && $canDo->get('core.delete')) {
-			    JToolBarHelper::deleteList('', 'groups.delete','JTOOLBAR_EMPTY_TRASH');
-			    JToolBarHelper::divider();
-		    } else if ($canDo->get('core.edit.state')) {
-			    JToolBarHelper::trash('groups.trash','JTOOLBAR_TRASH');
-			    JToolBarHelper::divider();
-		    }
-        }
+
+		//Show trash and delete for components that uses the state field
+		if (isset($this->items[0]->state)) {
+			if ($state->get('filter.state') == -2 && $canDo->get('core.delete')) {
+				JToolBarHelper::deleteList('', 'groups.delete','JTOOLBAR_EMPTY_TRASH');
+				JToolBarHelper::divider();
+			} else if ($canDo->get('core.edit.state')) {
+				JToolBarHelper::trash('groups.trash','JTOOLBAR_TRASH');
+				JToolBarHelper::divider();
+			}
+		}
 
 		JToolBarHelper::divider();
-        if ($canDo->get('core.admin')) {
-        	JToolBarHelper::preferences('com_easysdi_map');
-        }
-        
+		if ($canDo->get('core.admin')) {
+			JToolBarHelper::preferences('com_easysdi_map');
+		}
+
 		JToolBarHelper::divider();
 		JToolBarHelper::back('JTOOLBAR_BACK','index.php?option=com_easysdi_core');
 
