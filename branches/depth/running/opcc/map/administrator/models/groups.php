@@ -41,7 +41,6 @@ class Easysdi_mapModelgroups extends JModelList
                 'isdefaultopen', 'a.isdefaultopen',
                 'access', 'a.access',
                 'asset_id', 'a.asset_id',
-
             );
         }
 
@@ -121,9 +120,9 @@ class Easysdi_mapModelgroups extends JModelList
 		$query->from('`#__sdi_map_group` AS a');
 
 
-            // Join over the users for the checked out user.
-            $query->select('uc.name AS editor');
-            $query->join('LEFT', '#__users AS uc ON uc.id=a.checked_out');
+        // Join over the users for the checked out user.
+        $query->select('uc.name AS editor');
+        $query->join('LEFT', '#__users AS uc ON uc.id=a.checked_out');
             
 		// Join over the created by field 'created_by'
 		$query->select('created_by.name AS created_by');
@@ -140,15 +139,14 @@ class Easysdi_mapModelgroups extends JModelList
 			$query->where('a.access IN ('.$groups.')');
 		}
 
-            // Filter by published state
-            $published = $this->getState('filter.state');
-            if (is_numeric($published)) {
+        // Filter by published state
+        $published = $this->getState('filter.state');
+        if (is_numeric($published)) {
                 $query->where('a.state = '.(int) $published);
-            } else if ($published === '') {
+        } else if ($published === '') {
                 $query->where('(a.state IN (0, 1))');
-            }
+        }
             
-
 		// Filter by search in title
 		$search = $this->getState('filter.search');
 		if (!empty($search)) {
@@ -159,9 +157,6 @@ class Easysdi_mapModelgroups extends JModelList
                 $query->where('( a.name LIKE '.$search.' )');
 			}
 		}
-        
-        
-        
         
 		// Add the list ordering clause.
         $orderCol	= $this->state->get('list.ordering');

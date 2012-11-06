@@ -33,51 +33,56 @@ $document->addStyleSheet('components/com_easysdi_map/assets/css/easysdi_map.css'
 		<fieldset class="adminform">
 			<legend><?php echo JText::_('COM_EASYSDI_MAP_LEGEND_GROUP'); ?></legend>
 			<ul class="adminformlist">
-
-            
-			<li><?php echo $this->form->getLabel('id'); ?>
-			<?php echo $this->form->getInput('id'); ?></li>
-
-            
-			<li><?php echo $this->form->getLabel('created_by'); ?>
-			<?php echo $this->form->getInput('created_by'); ?></li>
-
-            
-			<li><?php echo $this->form->getLabel('created'); ?>
-			<?php echo $this->form->getInput('created'); ?></li>
-
-            
-			<li><?php echo $this->form->getLabel('modified_by'); ?>
-			<?php echo $this->form->getInput('modified_by'); ?></li>
-
-            
-			<li><?php echo $this->form->getLabel('modified'); ?>
-			<?php echo $this->form->getInput('modified'); ?></li>
-
-            
-			<li><?php echo $this->form->getLabel('name'); ?>
-			<?php echo $this->form->getInput('name'); ?></li>
-
-            
-			<li><?php echo $this->form->getLabel('isdefaultopen'); ?>
-			<?php echo $this->form->getInput('isdefaultopen'); ?></li>
-
-            
-			<li><?php echo $this->form->getLabel('access'); ?>
-			<?php echo $this->form->getInput('access'); ?></li>
-
-            
-
-            <li><?php echo $this->form->getLabel('state'); ?>
-                    <?php echo $this->form->getInput('state'); ?></li><li><?php echo $this->form->getLabel('checked_out'); ?>
-                    <?php echo $this->form->getInput('checked_out'); ?></li><li><?php echo $this->form->getLabel('checked_out_time'); ?>
-                    <?php echo $this->form->getInput('checked_out_time'); ?></li>
-
-            </ul>
+				<?php foreach($this->form->getFieldset('details') as $field): ?>
+					<?php
+					if($field->name=="jform[state]"){
+						if($this->canDo->get('core.edit.state'))
+						{
+							?><li><?php echo $field->label;echo $field->input;?></li><?php 
+						}
+						continue;
+					} ?>
+					<li><?php echo $field->label;echo $field->input;?></li>
+				<?php endforeach; ?>
+			</ul>
 		</fieldset>
 	</div>
 
+	<div class="width-40 fltrt">
+		<?php echo JHtml::_('sliders.start', 'user-sliders-'.$this->item->id, array('useCookie'=>1)); ?>
+		<?php echo JHtml::_('sliders.panel', JText::_('JGLOBAL_FIELDSET_PUBLISHING'), 'publishing-details'); ?>
+			<fieldset class="adminform">
+				<ul class="adminformlist">
+					<li><?php echo $this->form->getLabel('created_by'); ?>
+					<?php echo $this->form->getInput('created_by'); ?></li>
+		            
+					<li><?php echo $this->form->getLabel('created'); ?>
+					<?php echo $this->form->getInput('created'); ?></li>
+		
+		            <?php if ($this->item->modified_by) : ?>
+						<li><?php echo $this->form->getLabel('modified_by'); ?>
+						<?php echo $this->form->getInput('modified_by'); ?></li>
+			            
+						<li><?php echo $this->form->getLabel('modified'); ?>
+						<?php echo $this->form->getInput('modified'); ?></li>
+					<?php endif; ?>
+				</ul>
+			</fieldset>
+		<?php echo JHtml::_('sliders.end'); ?>
+	</div>
+	
+	<div class="width-100 fltlft">
+		<?php echo JHtml::_('sliders.start', 'permissions-sliders-'.$this->item->id, array('useCookie'=>1)); ?>
 
+			<?php echo JHtml::_('sliders.panel', JText::_('COM_EASYSDI_MAP_FIELDSET_RULES'), 'access-rules'); ?>
+			<fieldset class="panelform">
+				<?php echo $this->form->getLabel('rules'); ?>
+				<?php echo $this->form->getInput('rules'); ?>
+			</fieldset>
+
+		<?php echo JHtml::_('sliders.end'); ?>
+	</div>
+	
 	<input type="hidden" name="task" value="" />
 	<?php echo JHtml::_('form.token'); ?>
 	<div class="clr"></div>

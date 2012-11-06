@@ -50,7 +50,7 @@ class Easysdi_mapViewGroups extends JView
 		require_once JPATH_COMPONENT.DS.'helpers'.DS.'easysdi_map.php';
 
 		$state	= $this->get('State');
-		$canDo	= Easysdi_mapHelper::getActions($state->get('filter.category_id'));
+		$canDo	= Easysdi_mapHelper::getActions();
 
 		JToolBarHelper::title(JText::_('COM_EASYSDI_MAP_TITLE_GROUPS'), 'groups.png');
 

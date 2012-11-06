@@ -36,10 +36,10 @@ $document->addStyleSheet('components/com_easysdi_map/assets/css/easysdi_map.css'
 				<?php foreach($this->form->getFieldset('details') as $field): ?>
 					<?php
 					if($field->name=="jform[state]"){
-// 						if($this->canDo->get('core.edit.state'))
-// 						{
+						if($this->canDo->get('core.edit.state'))
+						{
 							?><li><?php echo $field->label;echo $field->input;?></li><?php 
-// 						}
+						}
 						continue;
 					} ?>
 					<li><?php echo $field->label;echo $field->input;?></li>
@@ -71,10 +71,6 @@ $document->addStyleSheet('components/com_easysdi_map/assets/css/easysdi_map.css'
 		<?php echo JHtml::_('sliders.end'); ?>
 	</div>
 		
-	<input type="hidden" name="task" value="" />
-	<?php echo JHtml::_('form.token'); ?>
-	<div class="clr"></div>
-
 	<div class="width-100 fltlft">
 		<?php echo JHtml::_('sliders.start', 'permissions-sliders-'.$this->item->id, array('useCookie'=>1)); ?>
 
@@ -86,8 +82,12 @@ $document->addStyleSheet('components/com_easysdi_map/assets/css/easysdi_map.css'
 
 		<?php echo JHtml::_('sliders.end'); ?>
 	</div>
+	
+	<input type="hidden" name="task" value="" />
+	<?php echo JHtml::_('form.token'); ?>
+	<div class="clr"></div>
 
-    <style type="text/css">
+	<style type="text/css">
         /* Temporary fix for drifting editor fields */
         .adminformlist li {
             clear: both;

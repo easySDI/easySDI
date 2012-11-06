@@ -54,22 +54,21 @@ class Easysdi_mapViewContext extends JView
         } else {
             $checkedOut = false;
         }
-		$canDo		= Easysdi_mapHelper::getActions('context',$this->item->id);
+		$this->canDo		= Easysdi_mapHelper::getActions('context',$this->item->id);
 
 		JToolBarHelper::title(JText::_('COM_EASYSDI_MAP_TITLE_CONTEXT'), 'context.png');
 
 		// If not checked out, can save the item.
-		if (!$checkedOut && ($canDo->get('core.edit')||($canDo->get('core.create'))))
+		if (!$checkedOut && ($this->canDo->get('core.edit')||($this->canDo->get('core.create'))))
 		{
-
 			JToolBarHelper::apply('context.apply', 'JTOOLBAR_APPLY');
 			JToolBarHelper::save('context.save', 'JTOOLBAR_SAVE');
 		}
-		if (!$checkedOut && ($canDo->get('core.create'))){
+		if (!$checkedOut && ($this->canDo->get('core.create'))){
 			JToolBarHelper::custom('context.save2new', 'save-new.png', 'save-new_f2.png', 'JTOOLBAR_SAVE_AND_NEW', false);
 		}
 		// If an existing item, can save to a copy.
-		if (!$isNew && $canDo->get('core.create')) {
+		if (!$isNew && $this->canDo->get('core.create')) {
 			JToolBarHelper::custom('context.save2copy', 'save-copy.png', 'save-copy_f2.png', 'JTOOLBAR_SAVE_AS_COPY', false);
 		}
 		if (empty($this->item->id)) {
