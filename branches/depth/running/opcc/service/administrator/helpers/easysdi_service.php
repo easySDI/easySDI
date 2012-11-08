@@ -103,10 +103,9 @@ class Easysdi_serviceHelper
 		$url 					= $params['resurl'];
 		$user 					= $params['resuser'];
 		$password 				= $params['respassword'];
-	
 		$supported_versions 	= array();
 		$urlWithPassword 		= $url;
-		 
+
 		if(isset($params['serurl']))
 		{
 			//Authentication needed
@@ -167,7 +166,7 @@ class Easysdi_serviceHelper
 		$completeurl = "";
 		foreach ($implemented_versions as $version){
 			$completeurl = $urlWithPassword.$separator."REQUEST=GetCapabilities&SERVICE=".$service."&VERSION=".$version->value;
-
+;
 			$xmlCapa = simplexml_load_file($completeurl);
 			if ($xmlCapa === false)
 			{

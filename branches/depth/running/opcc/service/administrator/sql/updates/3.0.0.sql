@@ -11,7 +11,6 @@ CREATE TABLE IF NOT EXISTS `#__sdi_virtualservice` (
 `modified` DATETIME  ,
 `name` VARCHAR(255)  NOT NULL ,
 `alias` VARCHAR(255)  NOT NULL ,
-`url` VARCHAR(500)   ,
 `serviceconnector_id` INT(11) UNSIGNED NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
@@ -34,15 +33,8 @@ PRIMARY KEY (`id`)
 
 INSERT INTO `#__sdi_sys_serviceconnector` (ordering,state,checked_out,value) 
 VALUES 
-(11,1,0,'WMSC'),
-(12,0,0,'BingSource'),
-(13,0,0,'GoogleSource'),
-(14,0,0,'OSMSource')
-;
-
-INSERT INTO `#__sdi_sys_servicecompliance` (ordering,state,checked_out,serviceconnector_id,serviceversion_id,implemented,relayable,aggregatable,harvestable) 
-VALUES 
-(8,1,0,11,2,1,1,1,0),
-(9,1,0,11,3,1,1,1,0),
-(10,1,0,11,4,1,1,1,0)
+(11,1,0,'WMSCSource'),
+(12,1,0,'BingSource'),
+(13,1,0,'GoogleSource'),
+(14,1,0,'OSMSource')
 ;

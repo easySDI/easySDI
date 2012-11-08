@@ -97,8 +97,15 @@ VALUES
 
 INSERT INTO `#__sdi_sys_serviceconnector` (ordering,state,checked_out,value) 
 VALUES 
-(11,1,0,'WMSCSource'),
+(11,1,0,'WMSC'),
 (12,0,0,'BingSource'),
 (13,0,0,'GoogleSource'),
 (14,0,0,'OSMSource')
+;
+
+INSERT INTO `#__sdi_sys_servicecompliance` (ordering,state,checked_out,serviceconnector_id,serviceversion_id,implemented,relayable,aggregatable,harvestable) 
+VALUES 
+(8,1,0,11,2,1,1,1,0),
+(9,1,0,11,3,1,1,1,0),
+(10,1,0,11,4,1,1,1,0)
 ;
