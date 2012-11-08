@@ -27,33 +27,111 @@ $document->addStyleSheet('components/com_easysdi_map/assets/css/easysdi_map.css'
 		}
 	}
 
+	var request;
+	var selectedservice;
+	var layername_select; 
 	function getLayers (selectObj)
 	{
-		var layername_select = document.getElementById('jform_layername');
+		layername_select = document.getElementById('jform_layername');
 		while ( layername_select.options.length > 0 ) layername_select.options[0] = null;
 		
 		var idx = selectObj.selectedIndex; 
-		var which = selectObj.options[idx].value;
-		if (document.getElementById(which))
+		selectedservice = selectObj.options[idx].value;
+		if (document.getElementById(selectedservice))
 		{
-			var jsonalllayers = document.getElementById(which).value; 
+			var jsonalllayers = document.getElementById(selectedservice).value; 
 			var allayers = JSON.parse(jsonalllayers);
 			for(var i=0; i < allayers.length ; i++){
-				var option = new Option( allayers[i], allayers[i]);
-				layername_select.options[layername_select.length] = option;
+				addLayerOption(allayers[i], allayers[i]);
 			}
 		} 
 		else
 		{
+			request = false;
+		    if (window.XMLHttpRequest){
+		    	request = new XMLHttpRequest();
+		    } else if (window.ActiveXObject) {
+		        try{
+		        	request = new ActiveXObject("Msxml2.XMLHTTP");
+		        }catch(e){
+		            try{
+		            	request = new ActiveXObject("Microsoft.XMLHTTP");
+		            }catch(e){
+		            	request = false;
+		            }
+		        }
+		    }
+		    if(!request)
+			    return;
+
+		    var query 			= "index.php?option=com_easysdi_map&task=getLayers&service="+selectedservice;
 			
-		}
-		
+		    document.getElementById("progress").style.visibility = "visible";
+		    request.onreadystatechange = setLayers;
+		    request.open("GET", query, true);
+		    request.send(null);
+		}		
 	}
+
+	function setLayers()
+	{
+	    if(request.readyState == 4){
+	    	layername_select = document.getElementById('jform_layername');
+			while ( layername_select.options.length > 0 ) layername_select.options[0] = null;
+			
+	    	document.getElementById("progress").style.visibility = "hidden";
+			var JSONtext = request.responseText;
+			
+			if(JSONtext == "[]"){
+				
+				return;
+			}
+
+			var input = document.createElement("input");
+			input.setAttribute("type", "hidden");
+			input.setAttribute("name", selectedservice);
+			input.setAttribute("id", selectedservice);
+			input.setAttribute("value", JSONtext);
+			document.getElementById("layer-form").appendChild(input);
+			
+			var JSONobject = JSON.parse(JSONtext, function (key, value) {
+				if(key && typeof key === 'string' && key == 'ERROR'){
+					alert(value);   	
+					return;
+			    }
+			    if (value && typeof value === 'string') {
+			    	addLayerOption(value, value);
+			    }
+			});
+	    }
+	}
+
+	function addLayerOption (id, value)
+	{
+		var onloadlayername = document.getElementById('jform_onloadlayername').value;
+		
+		var option = new Option( id,value);
+    	var i = layername_select.length;
+		layername_select.options[layername_select.length] = option;
+		if(onloadlayername && onloadlayername == value)
+			layername_select.options[i].selected = "1";
+	}
+	
+	function init()
+	{
+		var service_select = document.getElementById('jform_service_id');
+		getLayers(service_select);
+	}
+	
+	window.addEvent('domready', init);
 </script>
 
 <form
 	action="<?php echo JRoute::_('index.php?option=com_easysdi_map&layout=edit&id='.(int) $this->item->id); ?>"
 	method="post" name="adminForm" id="layer-form" class="form-validate">
+	<div id="progress">
+		<img id="progress_image"  src="components/com_easysdi_service/assets/images/loader.gif" alt="">
+	</div>
 	<div class="width-60 fltlft">
 		<fieldset class="adminform">
 			<legend>

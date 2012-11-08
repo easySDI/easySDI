@@ -15,7 +15,7 @@ require_once JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'libra
 /**
  * layer Table class
  */
-class Easysdi_mapTablelayer extends JTable {
+class Easysdi_mapTablelayer extends sdiTable {
 
 	/**
 	 * Constructor

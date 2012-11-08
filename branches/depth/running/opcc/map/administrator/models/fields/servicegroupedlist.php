@@ -43,20 +43,20 @@ class JFormFieldServicegroupedList extends JFormField
 		$label = 0;
 		
 		$db = JFactory::getDbo();
-		$db->setQuery('SELECT id, alias,serviceconnector_id FROM #__sdi_physicalservice WHERE state=1');
+		$db->setQuery('SELECT id, alias,serviceconnector_id FROM #__sdi_physicalservice WHERE state=1 AND serviceconnector_id IN (2,3,11,12,13,14)');
 		$physicals = $db->loadObjectList();
-		$db->setQuery('SELECT id, alias FROM #__sdi_virtualservice WHERE state=1');
+		$db->setQuery('SELECT id, alias,serviceconnector_id FROM #__sdi_virtualservice WHERE state=1 AND serviceconnector_id IN (2,3,11,12,13,14)');
 		$virtuals = $db->loadObjectList();
 		
 		$groups['Physical'] = array();
 		foreach ($physicals as $physical)
 		{
-			$tmp = JHtml::_('select.option', $physical->id,	$physical->alias, 'value', 'text');
-// 			// Set some option attributes.
+			$tmp = JHtml::_('select.option', "physical_".$physical->id,	$physical->alias, 'value', 'text');
+			// Set some option attributes.
 // 			$tmp->class = (string) $option['class'];
 			
 // 			// Set some JavaScript option attributes.
-// 			$tmp->onclick = (string) $option['onclick'];
+// 			$tmp->onclick = 'getLayers(this)';
 			
 			// Add the option.
 			$groups['Physical'][] = $tmp;
@@ -65,7 +65,7 @@ class JFormFieldServicegroupedList extends JFormField
 		$groups['Virtual'] = array();
 		foreach ($virtuals as $virtual)
 		{
-			$tmp = JHtml::_('select.option', $virtual->id,	$virtual->alias, 'value', 'text');
+			$tmp = JHtml::_('select.option', "virtual_".$virtual->id,	$virtual->alias, 'value', 'text');
 			// 			// Set some option attributes.
 			// 			$tmp->class = (string) $option['class'];
 				
@@ -78,6 +78,25 @@ class JFormFieldServicegroupedList extends JFormField
 		reset($groups);
 
 		return $groups;
+	}
+	
+	protected function getHiddenLayersNames ()
+	{
+		$text = '';
+		$db = JFactory::getDbo();
+		$db->setQuery('SELECT id, alias,serviceconnector_id FROM #__sdi_physicalservice WHERE state=1 AND serviceconnector_id IN (2,3,11,12,13,14)');
+		$physicals = $db->loadObjectList();
+		foreach ($physicals as $physical)
+		{
+			if($physical->serviceconnector_id == 12 || $physical->serviceconnector_id == 13 || $physical->serviceconnector_id == 14)
+			{
+				$db->setQuery('SELECT name FROM #__sdi_layer WHERE physicalservice_id='.$physical->id);
+				$layers = $db->loadResultArray();
+				$text .= '<input type="hidden" name="physical_'.$physical->id.'" id="physical_'.$physical->id.'" value="'.htmlentities(json_encode($layers)).'" />';
+			}
+		}
+		
+		return $text;
 	}
 
 	/**
@@ -101,7 +120,7 @@ class JFormFieldServicegroupedList extends JFormField
 		$attr .= $this->multiple ? ' multiple="multiple"' : '';
 
 		// Initialize JavaScript field attributes.
-		$attr .= $this->element['onchange'] ? ' onchange="' . (string) $this->element['onchange'] . '"' : '';
+		$attr .=  ' onchange="javascript:getLayers(this)"' ;
 
 		// Get the field groups.
 		$groups = (array) $this->getGroups();
@@ -130,6 +149,7 @@ class JFormFieldServicegroupedList extends JFormField
 			);
 		}
 
+		$html[] = $this->getHiddenLayersNames();
 		return implode($html);
 	}
 }

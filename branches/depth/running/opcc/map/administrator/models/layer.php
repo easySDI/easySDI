@@ -90,9 +90,12 @@ class Easysdi_mapModellayer extends JModelAdmin
 	public function getItem($pk = null)
 	{
 		if ($item = parent::getItem($pk)) {
-
-			//Do any procesing on fields here if needed
-
+			if(isset($item->physicalservice_id))
+				$item->service_id = 'physical_'.$item->physicalservice_id;
+			if(isset($item->virtualservice_id))
+				$item->service_id = 'virtual_'.$item->virtualservice_id;
+			if(isset($item->layername))
+				$item->onloadlayername = $item->layername;
 		}
 
 		return $item;
@@ -119,5 +122,33 @@ class Easysdi_mapModellayer extends JModelAdmin
 
 		}
 	}
+	
+	/**
+	 * Method to save the form data.
+	 *
+	 * @param   array  $data  The form data.
+	 *
+	 * @return  boolean  True on success, False on error.
+	 *
+	 * @since   11.1
+	 */
+	public function save($data)
+	{
+		if ($data['service_id']) 
+		{
+			$service_id 	= $data['service_id'];
+			$pos 			= strstr ($service_id, 'physical_');
+			if($pos){
+				$data['physicalservice_id'] 	= substr ($service_id, strrpos ($service_id, '_')+1);
+				$data['virtualservice_id'] 		= null;
+			}
+			else {
+				$data['virtualservice_id'] 		= substr ($service_id, strrpos ($service_id, '_')+1);
+				$data['physicalservice_id']		= null;
+			}
+		}
+		return parent::save($data);
+	}
+	
 
 }

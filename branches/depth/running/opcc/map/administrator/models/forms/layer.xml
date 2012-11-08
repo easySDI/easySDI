@@ -24,7 +24,7 @@
 				description="COM_EASYSDI_MAP_FORM_DESC_LAYER_GROUP_ID" 
                 translate="true" 
                 required="true"
-                query="SELECT 0 AS id, '- Please select -' AS name UNION SELECT id, name FROM #__sdi_map_group WHERE state=1" key_field="id" value_field="name"
+                query="SELECT null AS id, '- Please select -' AS name UNION SELECT id, name FROM #__sdi_map_group WHERE state=1" key_field="id" value_field="name"
                  />
 
 	   <field 	name="service_id" 
@@ -33,7 +33,6 @@
 				label="COM_EASYSDI_MAP_FORM_LBL_LAYER_SERVICE_ID"
 				description="COM_EASYSDI_MAP_FORM_DESC_LAYER_SERVICE_ID" 
                 required="true"
-                
                  />
 
        <field 	name="layername" 
@@ -89,6 +88,9 @@
             </field> 
 
 		<field name="id" type="hidden" filter="SAFEHTML" />
+		<field name="physicalservice_id" type="hidden" filter="SAFEHTML" />
+		<field name="virtualservice_id" type="hidden" filter="SAFEHTML" />
+		<field name="onloadlayername" type="hidden" filter="SAFEHTML" />
 		<field name="guid" type="hidden" filter="SAFEHTML" />
 		<field name="checked_out" type="hidden" filter="unset" />
         <field name="checked_out_time" type="hidden" filter="unset" />

@@ -45,4 +45,10 @@ class Easysdi_mapController extends JController
 
 		return $this;
 	}
+	
+	public function getLayers ()
+	{
+		require_once JPATH_COMPONENT.'/helpers/easysdi_map.php';
+		Easysdi_mapHelper::getLayers(JRequest::get( 'get' ));
+	}
 }

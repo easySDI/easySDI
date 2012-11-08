@@ -30,3 +30,6 @@ ADD CONSTRAINT `#__sdi_map_layer_fk1` FOREIGN KEY (`physicalservice_id`) REFEREN
 
 ALTER TABLE `#__sdi_map_layer`
 ADD CONSTRAINT `#__sdi_map_layer_fk2` FOREIGN KEY (`virtualservice_id`) REFERENCES `#__sdi_virtualservice` (`id`);
+
+ALTER TABLE `#__sdi_map_layer`
+ADD CONSTRAINT `#__sdi_map_layer_fk3` FOREIGN KEY (`group_id`) REFERENCES `#__sdi_map_group` (`id`);

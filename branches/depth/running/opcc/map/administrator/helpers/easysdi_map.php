@@ -65,4 +65,106 @@ class Easysdi_mapHelper
 
 		return $result;
 	}
+	
+	/**
+	 * Execute a GetCapabilities to return queriable layers.
+	 * @param string $service : prefixed id of the service
+	 */
+	public static function getLayers ($params){
+		$service 				= $params['service'];
+		$user 					= $params['user'];
+		$password 				= $params['password'];
+
+		$db = JFactory::getDbo();
+		$pos 					= strstr ($service, 'physical_');
+		if($pos){
+			$query = 'SELECT s.resourceurl as url, sc.value as connector FROM #__sdi_physicalservice s 
+								INNER JOIN #__sdi_sys_serviceconnector sc  ON sc.id = s.serviceconnector_id
+								WHERE s.id='.substr ($service, strrpos ($service, '_')+1) ;
+		}
+		else{
+			
+			$query = 'SELECT s.url as url,  sc.value as connector FROM #__sdi_virtualservice s
+								INNER JOIN #__sdi_sys_serviceconnector sc  ON sc.id = s.serviceconnector_id
+								WHERE s.id='.substr ($service, strrpos ($service, '_')+1);
+		}
+		$db->setQuery($query);
+		$resource 			= $db->loadObject();
+		$urlWithPassword 	= $resource->url;
+		
+		if (strlen($user)!=null && strlen($password)!=null){
+			if (strlen($user)>0 && strlen($password)>0){
+				if (strpos($url,"http:")===False){
+					$urlWithPassword =  "https://".$user.":".$password."@".substr($url,8);
+				}else{
+					$urlWithPassword =  "http://".$user.":".$password."@".substr($url,7);
+				}
+			}
+		}
+		
+	
+		$pos1 		= stripos($urlWithPassword, "?");
+		$separator 	= "&";
+		if ($pos1 === false) {
+			$separator = "?";
+		}
+
+	
+		$completeurl = $urlWithPassword.$separator."REQUEST=GetCapabilities&SERVICE=".$resource->connector;
+		
+		$xmlCapa = simplexml_load_file($completeurl);
+		$result = array();
+		if ($xmlCapa === false)
+		{
+			$result['ERROR']=JText::_('COM_EASYSDI_MAP_GET_CAPABILITIES_ERROR');
+			echo json_encode($result);
+			die();
+		}
+		
+		$namespaces = $xmlCapa->getNamespaces(true);
+		foreach ($namespaces as $key => $value)
+		{
+			if($key == '')
+				$xmlCapa->registerXPathNamespace ("dflt",$value);
+			else
+				$xmlCapa->registerXPathNamespace ($key,$value);
+		}
+		$version = $xmlCapa->xpath ('@version');
+		$version = (string)$version[0];
+		
+		switch ($resource->connector)
+		{
+			case "WMS" :
+			case "WMSC" :
+				switch	($version)	
+				{
+					case "1.3.0":
+						$layers_array = $xmlCapa->xpath('//dflt:Layer/dflt:Name');
+						break;
+					default:
+						$layers_array = $xmlCapa->xpath('//Layer/Name');
+						break;
+				}	
+				break;
+			case "WMTS" : 
+				$layers_array = $xmlCapa->xpath('//dflt:Layer/ows:Identifier');
+				break;
+		}
+		
+		
+		if(!$layers_array)
+		{
+			$result['ERROR']=JText::_('COM_EASYSDI_MAP_GET_CAPABILITIES_LAYERS_ERROR');
+			echo json_encode($result);
+			die();
+		}
+		
+		foreach ($layers_array as $layer) {
+			$result[] = (string)$layer;
+		}
+		
+		$encoded = json_encode($result);
+		echo $encoded;
+		die();
+	}
 }
