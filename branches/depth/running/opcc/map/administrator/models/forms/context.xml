@@ -18,6 +18,28 @@
        		    description="COM_EASYSDI_MAP_FORM_DESC_CONTEXT_ALIAS" 
                 filter="safehtml" />
                  
+        <field 	name="groups" 
+				type="sql" 
+				class="inputbox"
+				size="10"
+				label="COM_EASYSDI_MAP_FORM_LBL_LAYER_GROUP_ID"
+				description="COM_EASYSDI_MAP_FORM_DESC_LAYER_GROUP_ID" 
+				multiple ="true"
+                translate="true" 
+                required="true"
+                query="SELECT null AS id, '- Please select -' AS name UNION SELECT id, name FROM #__sdi_map_group WHERE state=1" key_field="id" value_field="name"
+                 />
+
+	   <field 	name="services" 
+				type="ServicegroupedList" 
+				multiple ="true"
+				class="inputbox"
+				size="10"
+				label="COM_EASYSDI_MAP_FORM_LBL_LAYER_SERVICE_ID"
+				description="COM_EASYSDI_MAP_FORM_DESC_LAYER_SERVICE_ID" 
+                required="true"
+                 />
+                 
        <field 	name="access"
 				type="accesslevel"
 				label="JFIELD_ACCESS_LABEL"
@@ -76,23 +98,34 @@
        			class="inputbox"
 	            label="COM_EASYSDI_MAP_FORM_LBL_CONTEXT_MAXEXTENT"
     	        description="COM_EASYSDI_MAP_FORM_DESC_CONTEXT_MAXEXTENT" 
-                filter="safehtml" /> 
-
+                filter="safehtml" />
+                 
+   				
        <field 	name="abstract" 
        			type="editor" 
        			buttons="true"
                 class="inputbox"
                 filter="safehtml"
+                width="100"
 	            label="COM_EASYSDI_MAP_FORM_LBL_CONTEXT_ABSTRACT"
     	        description="COM_EASYSDI_MAP_FORM_DESC_CONTEXT_ABSTRACT"  /> 
 
         
 
+
 		<field name="checked_out" type="hidden" filter="unset" />
         <field name="checked_out_time" type="hidden" filter="unset" />
         <field name="asset_id" type="hidden" filter="SAFEHTML" />
 	</fieldset>
-
+	
+	<fieldset name="toolsstate">
+		<field 	name="tools"
+   				type="Toolscheckboxes"
+   				class="inputbox"
+   				label="COM_EASYSDI_MAP_FORM_LBL_CONTEXT_TOOLS"
+   				description="COM_EASYSDI_MAP_FORM_DESC_CONTEXT_TOOLS" />
+	</fieldset>
+	
 	<fieldset name="publishing">
 		 <field name="created_by" 
        			type="user" 

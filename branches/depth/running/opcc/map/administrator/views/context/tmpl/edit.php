@@ -56,6 +56,19 @@ $document->addStyleSheet('components/com_easysdi_map/assets/css/easysdi_map.css'
 
 	<div class="width-40 fltrt">
 		<?php echo JHtml::_('sliders.start', 'user-sliders-'.$this->item->id, array('useCookie'=>1)); ?>
+		<?php echo JHtml::_('sliders.panel', JText::_('COM_EASYSDI_MAP_FORM_FIELDSET_CONTEXT_TOOLS'), 'publishing-details'); ?>
+		<fieldset class="adminform">
+			<ul class="adminformlist">
+				<?php foreach($this->form->getFieldset('toolsstate') as $field): ?>
+				<li><?php echo $field->label;echo $field->input;?></li>
+				<?php endforeach; ?>
+			</ul>
+		</fieldset>
+		<?php echo JHtml::_('sliders.end'); ?>
+	</div>
+	
+	<div class="width-40 fltrt">
+		<?php echo JHtml::_('sliders.start', 'user-sliders-'.$this->item->id, array('useCookie'=>1)); ?>
 		<?php echo JHtml::_('sliders.panel', JText::_('JGLOBAL_FIELDSET_PUBLISHING'), 'publishing-details'); ?>
 		<fieldset class="adminform">
 			<ul class="adminformlist">

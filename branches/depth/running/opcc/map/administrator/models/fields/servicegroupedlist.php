@@ -6,18 +6,19 @@
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
+
 defined('JPATH_BASE') or die;
 
 jimport('joomla.html.html');
 jimport('joomla.form.formfield');
 
 /**
- * Form Field class for the Joomla Platform.
- * Provides a grouped list select field.
+ * Form Field class for the EasySDI solution.
+ * Provides a grouped list select field for services.
  *
- * @package     Joomla.Platform
- * @subpackage  Form
- * @since       11.1
+ * @package     EasySDI
+ * @subpackage  EasySDI Map
+ * @since       3.0.0
  */
 class JFormFieldServicegroupedList extends JFormField
 {
