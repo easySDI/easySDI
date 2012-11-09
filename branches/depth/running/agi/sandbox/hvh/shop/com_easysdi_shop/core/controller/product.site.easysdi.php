@@ -560,12 +560,12 @@ class SITE_product {
 			{
 				$searchcontent = substr($search, 1,strlen($search)-2 );
 				$searchcontent = $database->getEscaped( trim( strtolower( $searchcontent ) ) );
-				$filter .= " AND (p.name LIKE '%".$searchcontent."%')";
+				$filter .= " AND (o.name = '$searchcontent')";
 			}
 			else
 			{
-				$search = $database->getEscaped( trim( strtolower( $search ) ) );
-				$filter .= " AND (p.name = '$search')";
+				$searchcontent = $database->getEscaped( trim( strtolower( $search ) ) );
+				$filter .= " AND (o.name LIKE '%".$searchcontent."%')";
 			}
 		}
 		
