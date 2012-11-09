@@ -98,8 +98,10 @@ class Easysdi_mapModellayers extends JModelList
 	protected function getStoreId($id = '')
 	{
 		// Compile the store id.
-		$id.= ':' . $this->getState('filter.search');
-		$id.= ':' . $this->getState('filter.state');
+		$id .= ':' . $this->getState('filter.search');
+		$id .= ':' . $this->getState('filter.state');
+		$id	.= ':'. $this->getState('filter.access');
+		$id	.= ':'. $this->getState('filter.published');
 
 		return parent::getStoreId($id);
 	}
@@ -139,11 +141,24 @@ class Easysdi_mapModellayers extends JModelList
 		// Join over the foreign key 'group_id'
 		$query->select('#__sdi_map_group_277305.name AS groups_name_277305');
 		$query->join('LEFT', '#__sdi_map_group AS #__sdi_map_group_277305 ON #__sdi_map_group_277305.id = a.group_id');
+		
+		// Join over the foreign key 'physicalservice_id'
+		$query->select('#__sdi_physicalservice22.name AS physicalservice_name');
+		$query->join('LEFT', '#__sdi_physicalservice AS #__sdi_physicalservice22 ON #__sdi_physicalservice22.id = a.physicalservice_id');
+		
+		// Join over the foreign key 'virtualservice_id'
+		$query->select('#__sdi_virtualservice22.name AS virtualservice_name');
+		$query->join('LEFT', '#__sdi_virtualservice AS #__sdi_virtualservice22 ON #__sdi_virtualservice22.id = a.virtualservice_id');
 
 		// Join over the access level.
 		$query->select('ag.title AS access_level');
 		$query->join('LEFT', '#__viewlevels AS ag ON ag.id = a.access');
 
+		// Filter by access level.
+		if ($access = $this->getState('filter.access')) {
+			$query->where('a.access = ' . (int) $access);
+		}
+		
 		// Implement View Level Access
 		if (!$user->authorise('core.admin'))
 		{

@@ -73,16 +73,15 @@ $saveOrder	= $listOrder == 'a.ordering';
 
 				<th class='left'><?php echo JHtml::_('grid.sort',  'COM_EASYSDI_MAP_LAYERS_NAME', 'a.name', $listDirn, $listOrder); ?>
 				</th>
-				<th class='left'><?php echo JHtml::_('grid.sort',  'COM_EASYSDI_MAP_LAYERS_GROUP_ID', 'a.group_id', $listDirn, $listOrder); ?>
-				</th>
-				<th class='left'><?php echo JHtml::_('grid.sort',  'COM_EASYSDI_MAP_LAYERS_PHYSICALSERVICE_ID', 'a.physicalservice_id', $listDirn, $listOrder); ?>
-				</th>
-				<th class='left'><?php echo JHtml::_('grid.sort',  'COM_EASYSDI_MAP_LAYERS_VIRTUALSERVICE_ID', 'a.virtualservice_id', $listDirn, $listOrder); ?>
+				<th class='left'><?php echo JHtml::_('grid.sort',  'COM_EASYSDI_MAP_LAYERS_SERVICE_NAME', 'a.physicalservice_id', $listDirn, $listOrder); ?>
 				</th>
 				<th class='left'><?php echo JHtml::_('grid.sort',  'COM_EASYSDI_MAP_LAYERS_LAYERNAME', 'a.layername', $listDirn, $listOrder); ?>
 				</th>
-
-
+				<th class='left'><?php echo JHtml::_('grid.sort',  'COM_EASYSDI_MAP_LAYERS_GROUP_ID', 'a.group_id', $listDirn, $listOrder); ?>
+				</th>
+				<th width="10%">
+					<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_ACCESS', 'access_level', $listDirn, $listOrder); ?>
+				</th>
 				<?php if (isset($this->items[0]->state)) { ?>
 				<th width="5%"><?php echo JHtml::_('grid.sort',  'JPUBLISHED', 'a.state', $listDirn, $listOrder); ?>
 				</th>
@@ -117,18 +116,30 @@ $saveOrder	= $listOrder == 'a.ordering';
 				<td class="center"><?php echo JHtml::_('grid.id', $i, $item->id); ?>
 				</td>
 
-				<td><?php echo $item->name; ?>
+				<td>
+					<?php if ($item->checked_out) : ?>
+						<?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'group.', $canCheckin); ?>
+					<?php endif; ?>
+					<?php if ($canEdit) : ?>
+						<a href="<?php echo JRoute::_('index.php?option=com_easysdi_map&task=layer.edit&id='.(int) $item->id); ?>">
+							<?php echo $this->escape($item->name); ?></a>
+					<?php else : ?>
+							<?php echo $this->escape($item->name); ?>
+					<?php endif; ?>
+					<p class="smallsub">
+						<?php echo JText::sprintf('JGLOBAL_LIST_ALIAS', $this->escape($item->alias));?></p>
 				</td>
-				<td><?php echo $item->groups_name_277305; ?>
-				</td>
-				<td><?php echo $item->physicalservice_id; ?>
-				</td>
-				<td><?php echo $item->virtualservice_id; ?>
+
+				
+				<td><?php if( $item->physicalservice_name ) echo $item->physicalservice_name; else echo $item->virtualservice_name; ?>
 				</td>
 				<td><?php echo $item->layername; ?>
 				</td>
-
-
+				<td><?php echo $item->groups_name_277305; ?>
+				</td>
+				<td class="center">
+					<?php echo $this->escape($item->access_level); ?>
+				</td>
 				<?php if (isset($this->items[0]->state)) { ?>
 				<td class="center"><?php echo JHtml::_('jgrid.published', $item->state, $i, 'layers.', $canChange, 'cb'); ?>
 				</td>

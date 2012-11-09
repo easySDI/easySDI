@@ -64,7 +64,7 @@ class Easysdi_mapModelgroups extends JModelList
 
 		$access = $this->getUserStateFromRequest($this->context.'.filter.access', 'filter_access', 0, 'int');
 		$this->setState('filter.access', $access);
-
+		
 		$published = $app->getUserStateFromRequest($this->context.'.filter.state', 'filter_published', '', 'string');
 		$this->setState('filter.state', $published);
 
@@ -93,6 +93,7 @@ class Easysdi_mapModelgroups extends JModelList
 		$id.= ':' . $this->getState('filter.search');
 		$id.= ':' . $this->getState('filter.state');
 		$id.= ':' . $this->getState('filter.access');
+		$id	.= ':'. $this->getState('filter.published');
 
 		return parent::getStoreId($id);
 	}
@@ -139,6 +140,11 @@ class Easysdi_mapModelgroups extends JModelList
 			$query->where('a.access IN ('.$groups.')');
 		}
 
+		// Filter by access level.
+		if ($access = $this->getState('filter.access')) {
+			$query->where('a.access = ' . (int) $access);
+		}
+		
 		// Filter by published state
 		$published = $this->getState('filter.state');
 		if (is_numeric($published)) {

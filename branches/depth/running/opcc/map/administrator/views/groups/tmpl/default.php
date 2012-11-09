@@ -71,14 +71,15 @@ $saveOrder	= $listOrder == 'a.ordering';
 					value="" onclick="checkAll(this)" />
 				</th>
 
-				<th class='left'><?php echo JHtml::_('grid.sort',  'COM_EASYSDI_MAP_GROUPS_CREATED_BY', 'a.created_by', $listDirn, $listOrder); ?>
-				</th>
+				
 				<th class='left'><?php echo JHtml::_('grid.sort',  'COM_EASYSDI_MAP_GROUPS_NAME', 'a.name', $listDirn, $listOrder); ?>
 				</th>
 				<th class='left'><?php echo JHtml::_('grid.sort',  'COM_EASYSDI_MAP_GROUPS_ISDEFAULTOPEN', 'a.isdefaultopen', $listDirn, $listOrder); ?>
 				</th>
 
-
+				<th width="10%">
+					<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_ACCESS', 'access_level', $listDirn, $listOrder); ?>
+				</th>
 				<?php if (isset($this->items[0]->state)) { ?>
 				<th width="5%"><?php echo JHtml::_('grid.sort',  'JPUBLISHED', 'a.state', $listDirn, $listOrder); ?>
 				</th>
@@ -113,14 +114,25 @@ $saveOrder	= $listOrder == 'a.ordering';
 				<td class="center"><?php echo JHtml::_('grid.id', $i, $item->id); ?>
 				</td>
 
-				<td><?php echo $item->created_by; ?>
-				</td>
-				<td><?php echo $item->name; ?>
-				</td>
-				<td><?php echo $item->isdefaultopen; ?>
+				<td>
+					<?php if ($item->checked_out) : ?>
+						<?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'group.', $canCheckin); ?>
+					<?php endif; ?>
+					<?php if ($canEdit) : ?>
+						<a href="<?php echo JRoute::_('index.php?option=com_easysdi_map&task=group.edit&id='.(int) $item->id); ?>">
+							<?php echo $this->escape($item->name); ?></a>
+					<?php else : ?>
+							<?php echo $this->escape($item->name); ?>
+					<?php endif; ?>
+					<p class="smallsub">
+						<?php echo JText::sprintf('JGLOBAL_LIST_ALIAS', $this->escape($item->alias));?></p>
 				</td>
 
-
+				<td class="center"><?php echo $item->isdefaultopen; ?>
+				</td>
+				<td class="center">
+					<?php echo $this->escape($item->access_level); ?>
+				</td>
 				<?php if (isset($this->items[0]->state)) { ?>
 				<td class="center"><?php echo JHtml::_('jgrid.published', $item->state, $i, 'groups.', $canChange, 'cb'); ?>
 				</td>

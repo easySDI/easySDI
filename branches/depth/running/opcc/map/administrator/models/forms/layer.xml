@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
 	<fieldset name="details">
-	    <field 	name="alias" 
-       			type="text" 
-       			size="40" class="inputbox"
-	            label="COM_EASYSDI_MAP_FORM_LBL_LAYER_ALIAS"
-    	        description="COM_EASYSDI_MAP_FORM_DESC_LAYER_ALIAS" 
-                filter="safehtml" /> 
-
+	   
        <field 	name="name" 
        			type="text" 
        			size="40" 
@@ -15,6 +9,14 @@
 	            label="COM_EASYSDI_MAP_FORM_LBL_LAYER_NAME"
             	description="COM_EASYSDI_MAP_FORM_DESC_LAYER_NAME" 
                 required="true" 
+                filter="safehtml" /> 
+
+ 	<field 	name="alias" 
+       			type="text" 
+       			size="40" class="inputbox"
+       			required="true" 
+	            label="COM_EASYSDI_MAP_FORM_LBL_LAYER_ALIAS"
+    	        description="COM_EASYSDI_MAP_FORM_DESC_LAYER_ALIAS" 
                 filter="safehtml" /> 
 
 	   <field 	name="group_id" 
@@ -76,6 +78,13 @@
                 label="COM_EASYSDI_MAP_FORM_LBL_LAYER_METADATALINK"
             	description="COM_EASYSDI_MAP_FORM_DESC_LAYER_METADATALINK"  /> 
 
+		<field 	name="access"
+				type="accesslevel"
+				label="JFIELD_ACCESS_LABEL"
+				description="JFIELD_ACCESS_DESC"
+				class="inputbox"
+				size="1" />
+				
          <field name="state"
                 type="list"
                 label="JSTATUS"
