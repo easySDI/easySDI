@@ -103,22 +103,34 @@ class SITE_metadata {
 		
 		$orderby 	= ' order by '. $filter_order .' '. $filter_order_Dir;
 			
-		$queryCount = "	SELECT DISTINCT o.id 
-						FROM 	#__sdi_metadata m, 
-								#__sdi_list_metadatastate s, 
-								#__sdi_objecttype ot,
-								#__sdi_objectversion ov,
-								#__sdi_object o
+		$queryCount = "	SELECT DISTINCT o.*,
+							t.label as objecttype,
+							ov.id as version_id,
+							ov.title as version_title,
+							s.label as state,
+							m.guid as metadata_guid ,
+							m.lastsynchronization as lastsynchronization,
+							m.synchronizedby as synchronizedby,
+							m.notification as notification
+						FROM 	#__sdi_metadata m,
+							#__sdi_list_metadatastate s,
+							#__sdi_objectversion ov,
+							#__sdi_object o
 						LEFT OUTER JOIN #__sdi_manager_object ma ON ma.object_id=o.id
 						LEFT OUTER JOIN #__sdi_editor_object e ON e.object_id=o.id
+						INNER JOIN #__sdi_objecttype ot ON ot.id = o.objecttype_id
+						INNER JOIN #__sdi_translation t ON t.element_guid=ot.guid
+						INNER JOIN #__sdi_language l ON t.language_id=l.id
+						INNER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id
 						WHERE ov.object_id=o.id
-							AND ov.metadata_id=m.id
-							AND m.metadatastate_id=s.id
-							AND ot.id=o.objecttype_id
-							AND ot.predefined=0
-							AND (e.account_id = ".$account->id."
-								OR (ma.account_id=".$account->id.")
-								)";
+						AND ov.metadata_id=m.id
+						AND m.metadatastate_id=s.id
+						AND ot.id=o.objecttype_id
+						AND ot.predefined=0
+						AND cl.code='".$language->_lang."'
+						AND (e.account_id = ".$account->id."
+						OR (ma.account_id=".$account->id.")
+						)";
 		$queryCount .= $filter;
 		
 		$database->setQuery($queryCount);

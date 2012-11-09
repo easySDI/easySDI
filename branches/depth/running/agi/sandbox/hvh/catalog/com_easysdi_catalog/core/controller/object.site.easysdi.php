@@ -184,9 +184,7 @@ class SITE_object {
 						AND e.account_id = ".$account->id;
 		$query .= $filter;
 		$query .= $orderby;
-		
 		$db->setQuery($query, $pagination->limitstart, $pagination->limit);
-		
 		$rows = $db->loadObjectList();
 		
 		if ($db->getErrorNum()) {
