@@ -422,10 +422,7 @@ class HTML_metadata {
 													success:function(result,request) {
 														if(JSON.parse (result.responseText).success){
 															Ext.MessageBox.hide();
-															Ext.ComponentMgr.get(caller).setValue('');
-															if(Ext.ComponentMgr.get(caller.concat('_hiddenVal')))
-																Ext.ComponentMgr.get(caller.concat('_hiddenVal')).setValue('');
-															//Ext.ComponentMgr.get('metadataForm').saveMetadataAfterLinkedFileUpdate();
+															winupload.backvalue = '';
 															if(winupload)
 																winupload.close();
 														}else {
