@@ -37,6 +37,26 @@ class Easysdi_mapModelcontext extends JModelAdmin
 	{
 		return JTable::getInstance($type, $prefix, $config);
 	}
+	
+	/**
+	 * Method to test whether a record can be deleted.
+	 *
+	 * @param	object	$record	A record object.
+	 *
+	 * @return	boolean	True if allowed to delete the record. Defaults to the permission set in the component.
+	 * @since	1.6
+	 */
+	protected function canDelete($record)
+	{
+		$user = JFactory::getUser();
+	
+		if (!empty($record->id)) {
+			if ($record->state != -2) {
+				return ;
+			}
+			return parent::canDelete($record);
+		}
+	}
 
 	/**
 	 * Method to get the record form.
@@ -91,8 +111,16 @@ class Easysdi_mapModelcontext extends JModelAdmin
 	{
 		if ($item = parent::getItem($pk)) {
 
-			//Do any procesing on fields here if needed
-
+			$db = JFactory::getDbo();
+			$db->setQuery('SELECT group_id FROM #__sdi_map_context_group WHERE context_id = '.$item->id);
+			$item->groups = $db->loadResultArray();
+			
+			$db->setQuery('SELECT tool_id FROM #__sdi_map_context_tool WHERE context_id = '.$item->id);
+			$item->tools = $db->loadResultArray();
+			
+			$db->setQuery('SELECT CONCAT ("physical_",physicalservice_id) FROM #__sdi_map_context_physicalservice WHERE context_id = '.$item->id.' 
+							UNION SELECT CONCAT ("virtual_",virtualservice_id) FROM #__sdi_map_context_virtualservice WHERE context_id = '.$item->id);
+			$item->services = $db->loadResultArray();
 		}
 
 		return $item;
@@ -118,6 +146,123 @@ class Easysdi_mapModelcontext extends JModelAdmin
 			}
 
 		}
+	}
+	
+	/**
+	 * Method to save the form data.
+	 *
+	 * @param   array  $data  The form data.
+	 *
+	 * @return  boolean  True on success, False on error.
+	 *
+	 * @since   11.1
+	 */
+	public function save($data)
+	{
+		if(parent::save($data))
+		{
+			$db = JFactory::getDbo();
+			$db->setQuery('DELETE FROM #__sdi_map_context_tool WHERE context_id = '.$this->getItem()->get('id'));
+			$db->query();
+			$db->setQuery('DELETE FROM #__sdi_map_context_group WHERE context_id = '.$this->getItem()->get('id'));
+			$db->query();
+			$db->setQuery('DELETE FROM #__sdi_map_context_physicalservice WHERE context_id = '.$this->getItem()->get('id'));
+			$db->query();
+			$db->setQuery('DELETE FROM #__sdi_map_context_virtualservice WHERE context_id = '.$this->getItem()->get('id'));
+			$db->query();
+			//Tools
+			$tools = $data['tools'];
+			foreach ($tools as $tool)
+			{
+				$db->setQuery('INSERT INTO #__sdi_map_context_tool (context_id, tool_id) VALUES ('.$this->getItem()->get('id').', '.$tool.')');
+				if(!$db->query())
+				{
+					$this->setError( JText::_( "COM_EASYSDI_MAP_FORM_CONTEXT_SAVE_FAIL_TOOL_ERROR" ) );
+					return false;
+				}
+					
+			}
+			//Service
+			$services = $data['services'];
+			foreach ($services as $service)
+			{
+				$pos 			= strstr ($service, 'physical_');
+				if($pos){
+					$service_id 	= substr ($service, strrpos ($service, '_')+1);
+					$db->setQuery('INSERT INTO #__sdi_map_context_physicalservice (context_id, physicalservice_id) VALUES ('.$this->getItem()->get('id').', '.$service_id.')');
+				}
+				else {
+					$service_id 		= substr ($service, strrpos ($service, '_')+1);
+					$db->setQuery('INSERT INTO #__sdi_map_context_virtualservice (context_id, virtualservice_id) VALUES ('.$this->getItem()->get('id').', '.$service_id.')');
+					
+				}
+				if(!$db->query())
+				{
+					$this->setError( JText::_( "COM_EASYSDI_MAP_FORM_CONTEXT_SAVE_FAIL_SERVICE_ERROR" ) );
+					return false;
+				}
+					
+			}
+			//Groups
+			$groups = $data['groups'];
+			foreach ($groups as $group)
+			{
+				$db->setQuery('INSERT INTO #__sdi_map_context_group (context_id, group_id) VALUES ('.$this->getItem()->get('id').', '.$group.')');
+				if(!$db->query())
+				{
+					$this->setError( JText::_( "COM_EASYSDI_MAP_FORM_CONTEXT_SAVE_FAIL_GROUP_ERROR" ) );
+					return false;
+				}
+					
+			}
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * Method to delete one or more records.
+	 *
+	 * @param   array  &$pks  An array of record primary keys.
+	 *
+	 * @return  boolean  True if successful, false if an error occurs.
+	 *
+	 * @since   11.1
+	 */
+	public function delete(&$pks)
+	{
+		// Iterate the items to delete each one.
+		foreach ($pks as $i => $pk)
+		{
+	
+			$db = JFactory::getDbo();
+			$db->setQuery('DELETE FROM #__sdi_map_context_tool WHERE context_id = '.$pk);
+			if(!$db->query())
+			{
+				$this->setError( JText::_( "COM_EASYSDI_MAP_FORM_CONTEXT_DELETE_FAIL_TOOL_ERROR" ) );
+				return false;
+			}
+			$db->setQuery('DELETE FROM #__sdi_map_context_group WHERE context_id = '.$pk);
+			if(!$db->query())
+			{
+				$this->setError( JText::_( "COM_EASYSDI_MAP_FORM_CONTEXT_DELETE_FAIL_GROUP_ERROR" ) );
+				return false;
+			}
+			$db->setQuery('DELETE FROM #__sdi_map_context_physicalservice WHERE context_id = '.$pk);
+			if(!$db->query())
+			{
+				$this->setError( JText::_( "COM_EASYSDI_MAP_FORM_CONTEXT_DELETE_FAIL_SERVICE_ERROR" ) );
+				return false;
+			}
+			$db->setQuery('DELETE FROM #__sdi_map_context_virtualservice WHERE context_id = '.$pk);
+			if(!$db->query())
+			{
+				$this->setError( JText::_( "COM_EASYSDI_MAP_FORM_CONTEXT_DELETE_FAIL_SERVICE_ERROR" ) );
+				return false;
+			}
+		}
+		
+		return parent::delete($pks);
 	}
 
 }

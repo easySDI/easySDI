@@ -22,7 +22,6 @@ require_once JPATH_COMPONENT.DS.'helpers'.DS.'easysdi_map.php';
 
 // Include dependancies
 jimport('joomla.application.component.controller');
-
 $controller	= JController::getInstance('Easysdi_map');
 $controller->execute(JRequest::getCmd('task'));
 $controller->redirect();
