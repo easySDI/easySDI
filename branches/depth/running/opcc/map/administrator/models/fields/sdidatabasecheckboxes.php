@@ -22,7 +22,7 @@ jimport('joomla.form.formfield');
  * @since       3.0.0
  */
 
-class JFormFieldToolscheckboxes extends JFormField
+class JFormFieldSdidatabasecheckboxes extends JFormField
 {
 	/**
 	 * The form field type.
@@ -30,7 +30,7 @@ class JFormFieldToolscheckboxes extends JFormField
 	 * @var    string
 	 * @since  11.1
 	 */
-	protected $type = 'Toolscheckboxes';
+	protected $type = 'Sdidatabasecheckboxes';
 	/**
 	 * Flag to tell the field to always be in multiple values mode.
 	 *
@@ -104,14 +104,14 @@ class JFormFieldToolscheckboxes extends JFormField
 		$options = array();
 
 		$db = JFactory::getDbo();
-		$db->setQuery('SELECT id, name FROM #__sdi_sys_map_tool');
+		$db->setQuery('SELECT '.$this->element['valuefield'].' as value, '.$this->element['textfield'].' as text FROM '.$this->element['sourcetable']);
 		$tools = $db->loadObjectList();
 		
 		foreach ($tools as $tool)
 		{
 
 			// Create a new option object based on the <option /> element.
-			$tmp = JHtml::_('select.option',$tool->id, $tool->name, 'value', 'text','false');
+			$tmp = JHtml::_('select.option',$tool->value, $tool->text, 'value', 'text','false');
 
 			// Set some option attributes.
 			//$tmp->class = (string) $option['class'];

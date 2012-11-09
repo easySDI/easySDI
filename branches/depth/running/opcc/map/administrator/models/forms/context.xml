@@ -120,8 +120,11 @@
 	
 	<fieldset name="toolsstate">
 		<field 	name="tools"
-   				type="Toolscheckboxes"
+   				type="sdidatabasecheckboxes"
    				class="inputbox"
+   				valuefield="id"
+   				textfield="name"
+   				sourcetable="#__sdi_sys_map_tool"
    				label="COM_EASYSDI_MAP_FORM_LBL_CONTEXT_TOOLS"
    				description="COM_EASYSDI_MAP_FORM_DESC_CONTEXT_TOOLS" />
 	</fieldset>
