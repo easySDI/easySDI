@@ -117,12 +117,13 @@ class SITE_object {
 			if(strripos ($search,'"') != FALSE)
 			{
 				$searchcontent = substr($search, 1,strlen($search)-2 );
-				$searchcontent = $db->getEscaped( trim( strtolower( $searchcontent ) ) );
-				$filter .= " AND (o.name LIKE '%".$searchcontent."%')";
-			}else
+				$searchcontent = $database->getEscaped( trim( strtolower( $searchcontent ) ) );
+				$filter .= " AND (o.name = '$searchcontent')";
+			}
+			else
 			{
-				$search = $db->getEscaped( trim( strtolower( $search ) ) );
-				$filter .= " AND (o.name = '$search')";
+				$searchcontent = $database->getEscaped( trim( strtolower( $search ) ) );
+				$filter .= " AND (o.name LIKE '%".$searchcontent."%')";
 			}
 		}
 		

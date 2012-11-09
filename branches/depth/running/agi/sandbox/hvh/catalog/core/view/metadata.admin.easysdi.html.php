@@ -4739,7 +4739,7 @@ class HTML_metadata {
 							winrct = new Ext.Window({
 							                title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_REPLICATE_ALERT'))."',
 							                width:600,
-							                height:430,
+							                height:500,
 							                closeAction:'hide',
 							                layout:'fit', 
 										    border:true, 

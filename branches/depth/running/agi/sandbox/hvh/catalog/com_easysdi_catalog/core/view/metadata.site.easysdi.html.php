@@ -6006,7 +6006,7 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 								winrct = new Ext.Window({
 								                title:'".html_Metadata::cleanText(JText::_('CATALOG_METADATA_REPLICATE_ALERT'))."',
 								                width:600,
-								                height:430,
+								                height:500,
 								                closeAction:'hide',
 								                layout:'fit', 
 											    border:true, 
@@ -6365,7 +6365,7 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 				</tbody>
 			</table>
 			<div id="selectAssignMetadataToolBar" class="row">
-					<input type="button" id="assign_button" name="assign_button"  value ="<?php echo JText::_("CORE_VALIDATE"); ?>" 
+					<input type="button" id="assign_button" name="assign_button"  value ="<?php echo JText::_("CATALOG_ASSIGN_METADATA"); ?>" 
 						onClick="javascript:submitForm();"/>
 					<input type="submit" id="cancel_button" name="cancel_button" class="submit" value ="<?php echo JText::_("CORE_CANCEL"); ?>" onClick="document.getElementById('selectAssignForm').task.value='listMetadata';document.getElementById('selectAssignForm').submit();"/>
 			</div>

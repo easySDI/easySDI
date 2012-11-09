@@ -969,11 +969,6 @@ class ADMIN_objectversion {
 		$unselected_objectlinks=array();
 		$temp_objectlinks=array();
 		$objectlinks=array();
-// 		$query = 'SELECT ov.id as value, o.objecttype_id as objecttype_id, CONCAT(o.name, " ", ov.title) as name' .
-// 				' FROM #__sdi_objectversion ov
-// 				INNER JOIN #__sdi_object o ON o.id=ov.object_id' .
-// 				' WHERE ov.id<>' . $objectversion_id.
-// 				' ORDER BY name';
 		$query = "SELECT ov.id as value, o.objecttype_id as objecttype_id, CONCAT(o.name, ' ' , ov.title) as name, t.label as objecttype, ms.label as status 
 				  FROM #__sdi_objectversion ov
 				  INNER JOIN #__sdi_object o ON o.id=ov.object_id
@@ -1175,9 +1170,33 @@ class ADMIN_objectversion {
 		if ($objecttype_id)
 			$query .= " AND ot.id=".$objecttype_id;
 		if ($id)
-			$query .= " AND m.guid LIKE '%".$id."%'";
+		{
+			if(strripos ($id,'"') != FALSE)
+			{
+				$id = substr($search, 1,strlen($id)-2 );
+				$id = $database->getEscaped( trim( strtolower( $id ) ) );
+				$query .= " AND m.guid = '".$id."'";
+			}
+			else
+			{
+				$id = $database->getEscaped( trim( strtolower( $id ) ) );
+				$query .= " AND m.guid LIKE '%".$id."%'";
+			}
+		}
 		if ($name)
-			$query .= " AND (o.name LIKE '%".$name."%' OR ov.name LIKE '%".$name."%')";
+		{
+			if(strripos ($name,'"') != FALSE)
+			{
+				$name = substr($name, 1,strlen($name)-2 );
+				$name = $database->getEscaped( trim( strtolower( $name ) ) );
+				$query .= " AND (o.name ='".$name."' OR ov.title ='".$name."')";
+			}
+			else
+			{
+				$name = $database->getEscaped( trim( strtolower( $name ) ) );
+				$query .= " AND (o.name LIKE '%".$name."%' OR ov.title LIKE '%".$name."%')";
+			}
+		}
 		if ($status)
 			$query .= " AND m.metadatastate_id=".$status;
 		if ($editor)
@@ -1189,12 +1208,13 @@ class ADMIN_objectversion {
 		if ($toDate)
 			$query .= " AND ov.updated <= '".$toDate."'";
 
-		
+				
 		// Suppression des entrées déjà sélectionnées
 		if (strlen($selectedObjects) > 0)
 			$query .= " AND ov.id NOT IN (".$selectedObjects.")";
 			
 		$query .= "	ORDER BY $sort $dir";
+		
 		$database->setQuery($query);
 		$results= $database->loadObjectList();
 		foreach ($results as $result)

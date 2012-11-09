@@ -3910,7 +3910,19 @@ class ADMIN_metadata {
 		if ($objecttype_id)
 			$query .= " AND ot.id=".$objecttype_id;
 		if ($objectname)
-			$query .= " AND (o.name LIKE '%".$objectname."%' OR ov.name LIKE '%".$objectname."%')";
+		{
+			if(strripos ($objectname,'"') != FALSE)
+			{
+				$objectname = substr($objectname, 1,strlen($objectname)-2 );
+				$objectname = $database->getEscaped( trim( strtolower( $objectname ) ) );
+				$query .= " AND (o.name ='".$objectname."' OR ov.title ='".$objectname."')";
+			}
+			else
+			{
+				$objectname = $database->getEscaped( trim( strtolower( $objectname ) ) );
+				$query .= " AND (o.name LIKE '%".$objectname."%' OR ov.title LIKE '%".$objectname."%')";
+			}
+		}
 		if ($objectstatus)
 			$query .= " AND m.metadatastate_id=".$objectstatus;
 		
