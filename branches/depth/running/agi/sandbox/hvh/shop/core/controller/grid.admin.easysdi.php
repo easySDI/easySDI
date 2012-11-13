@@ -95,7 +95,8 @@ class ADMIN_grid {
 			$mainframe->redirect("index.php?option=$option&task=listGrid" );
 			exit();
 		}
-		$grid->id = null;
+		
+		//$grid->id = null;
 		
 		$service_type = JRequest::getVar('service_type_wms');
 		if($service_type == "via_proxy")
@@ -121,7 +122,7 @@ class ADMIN_grid {
 		$grid->checkin();
 		
 		if (!$grid->store()) {
-			$mainframe->enqueueMessage($database->getErrorMsg(),"ERROR");
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 			$mainframe->redirect("index.php?option=$option&task=listGrid" );
 			exit();
 		}

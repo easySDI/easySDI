@@ -1028,6 +1028,7 @@ class HTML_product{
 		$proxyhost 	= config_easysdi::getValue("SHOP_CONFIGURATION_PROXYHOST");
 		$urlwfs 	= $proxyhost."&gridid=$grid->id&type=wfs&url=".urlencode  (trim($grid->urlwfs));
 		$urlwms 	= $proxyhost."&gridid=$grid->id&type=wms&url=".urlencode  (trim($grid->urlwms));
+		
 		?>
 			<script type="text/javascript" src="./administrator/components/com_easysdi_shop/lib/openlayers2.11/lib/OpenLayers.js"></script>
 			<script type="text/javascript" src="./administrator/components/com_easysdi_shop/lib/proj4js/lib/proj4js.js"></script>
@@ -1084,7 +1085,8 @@ class HTML_product{
         		    featureType: "<?php echo $grid->featuretype;?>",
         		    featurePrefix: "<?php echo $grid->featureprefix;?>",
         		    featureNS: "<?php echo $grid->featureNS;?>",
-        		    geometryName: "<?php echo $grid->fieldgeom;?>"
+        		    geometryName: "<?php echo $grid->fieldgeom;?>",
+        		    maxFeatures: 1
         		});
 
         		var select = new OpenLayers.Layer.Vector("Selection", {styleMap: 
@@ -1112,7 +1114,7 @@ class HTML_product{
                 <?php }?>
                 
                 control.events.register("featureselected", this, function(e) {
-                    select.addFeatures([e.feature]);
+                	select.addFeatures([e.feature]);
                     document.getElementById('selected-grid-name').innerHTML = e.feature.attributes.<?php echo $grid->fieldname;?>;
 					<?php if ($grid->fielddetail){?>
                     document.getElementById('selected-grid-detail').innerHTML = e.feature.attributes.<?php echo $grid->fielddetail;?>;
@@ -1122,7 +1124,7 @@ class HTML_product{
                 });
                 
                 control.events.register("featureunselected", this, function(e) {
-                    select.removeFeatures([e.feature]);
+                	select.removeFeatures([e.feature]);
                     document.getElementById('selected-grid-detail').innerHTML = "";
                     document.getElementById('validateSelectGrid').disabled = true;
                 });

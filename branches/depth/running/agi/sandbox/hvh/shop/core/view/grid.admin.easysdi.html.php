@@ -127,7 +127,6 @@ class HTML_grid {
 							<tr>
 								<td class="key"><?php echo JText::_("CORE_ID"); ?> : </td>
 								<td><?php echo $rowGrid->id; ?></td>
-								<input type="hidden" name="id" value="<?php echo $id;?>">								
 							</tr>			
 							<tr>
 							
@@ -334,6 +333,7 @@ class HTML_grid {
 		</table>
 		<input type="hidden" name="option" value="<?php echo $option; ?>" />
 		<input type="hidden" name="task" value="" />
+		<input type="hidden" name="id" value="<?php echo $rowGrid->id;?>">		
 		<input type="hidden" name="guid" value="<?php echo $rowGrid->guid; ?>" />
 		<input type="hidden" name="created" value="<?php echo $rowGrid->created; ?>" />
 		<input type="hidden" name="createdby" value="<?php echo $rowGrid->createdby; ?>" />

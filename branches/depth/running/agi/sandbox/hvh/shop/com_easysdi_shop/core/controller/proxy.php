@@ -30,10 +30,16 @@ class SITE_proxy{
 		$url 		= ($_POST['url']) ? $_POST['url'] : $_GET['url'];
 		$found 		= false;
 		
+		$url = urldecode($url);
+				
 		if (SITE_proxy::contains("?",$url))
 			$url=$url."&"; 			
 		else
 			$url=$url."?";
+		
+// 		$myFile = "C://proxy.txt";
+// 		$fh = fopen($myFile, 'w') or die("can't open file");
+		
 		
 		foreach($_GET AS $cle => $valeur)     
 		{     	     	
@@ -53,6 +59,7 @@ class SITE_proxy{
 						$valeur = urlencode("<?xml version='1.0' encoding='windows-1252'?>") . $valeur;
 					}			
 					$url=$url."$cle=$valeur&";								
+					// fwrite($fh, $cle." ====> ".$valeur."\n");
 				}		     		
 			}
 			if ($cle == "url")
@@ -60,9 +67,10 @@ class SITE_proxy{
 				$found =true;     		
 			}     	            
 		}
-		
-		$url 		= str_replace ('\"','"',$url);
-		$url 		= str_replace (' ','%20',$url);
+// 		fwrite($fh,$url."\n");
+// 		fclose($fh);
+// 		$url 		= str_replace ('\"','"',$url);
+// 		$url 		= str_replace (' ','%20',$url);
 		$type 		= ($_POST['type']) ? $_POST['type'] : $_GET['type'];
 				
 		$basemapscontentid 	= ($_POST['basemapscontentid']) ? $_POST['basemapscontentid'] : $_GET['basemapscontentid'];
@@ -150,6 +158,8 @@ class SITE_proxy{
 		
 		$session 	= curl_init($url);
 		$postData 	= file_get_contents( "php://input" );
+// 		fwrite($fh,$postData."\n");
+		
 		$httpHeader = array();
 
 		if (!empty($postData)) 
@@ -184,6 +194,8 @@ class SITE_proxy{
 		
 		// Do the POST and then close the session
 		$response = curl_exec($session);
+		
+		
 		if (curl_errno($session) || strpos($response, 'HTTP/1.1 200 OK')===false) 
 		{
 			echo 'cUrl POST request failed.';
@@ -194,24 +206,26 @@ class SITE_proxy{
 		} 
 		else 
 		{
-			$headers 	= curl_getinfo($session);
-			$document =& JFactory::getDocument();
-			if (strpos($headers['content_type'], '/')!==false) 
-			{
-				$fileType = array_pop(explode('/',$headers['content_type']));
-				if (strpos($fileType, ';')!==false) {
-					$arr = explode(';', $fileType);
-					$fileType = $arr[0];
-				}
-				JResponse::setHeader( 'Content-Disposition', 'inline; filename=download.'.$fileType );
-			}
+// 			$headers 	= curl_getinfo($session);
+// 			$document =& JFactory::getDocument();
+// 			if (strpos($headers['content_type'], '/')!==false) 
+// 			{
+// 				$fileType = array_pop(explode('/',$headers['content_type']));
+// 				if (strpos($fileType, ';')!==false) {
+// 					$arr = explode(';', $fileType);
+// 					$fileType = $arr[0];
+// 				}
+// 				JResponse::setHeader( 'Content-Disposition', 'inline; filename=download.'.$fileType );
+// 			}
 			
-			$document->setMimeEncoding($headers['content_type']);
-			if (array_key_exists('charset', $headers)) {
-				$document->setCharset($headers['charset']);
-			} else {
-				$document->setCharset(null);
-			}
+// 			$document->setMimeEncoding($headers['content_type']);
+// 			if (array_key_exists('charset', $headers)) {
+// 				$document->setCharset($headers['charset']);
+// 			} else {
+// 				$document->setCharset(null);
+// 			}
+// 			fwrite($fh,$response);
+// 			fclose($fh);
 			echo array_pop(explode("\r\n\r\n", trim($response)));
 		}
 		curl_close($session);
