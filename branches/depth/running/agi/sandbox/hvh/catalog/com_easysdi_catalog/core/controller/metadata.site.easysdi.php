@@ -23,8 +23,9 @@ class SITE_metadata {
 	function listMetadata($option)
 	{
 		global  $mainframe;
+		jimport('joomla.html.pagination');
 		$database =& JFactory::getDBO(); 
-		$user = JFactory::getUser();
+		$user	  = JFactory::getUser();
 		$language =& JFactory::getLanguage();
 		
 		//Check user's rights
@@ -39,7 +40,7 @@ class SITE_metadata {
 		if(!$allow)
 			return;
 		
-		$option=JRequest::getVar("option");
+		$option		= JRequest::getVar("option");
 		$context	= $option.'.listMetadata';
 		$limit		= $mainframe->getUserStateFromRequest('global.list.limit', 'limit', $mainframe->getCfg('list_limit'), 'int');
 		$limitstart	= $mainframe->getUserStateFromRequest($context.'limitstart', 'limitstart', 0, 'int');
@@ -101,114 +102,64 @@ class SITE_metadata {
 			$filter .= ' AND m.metadatastate_id = ' . (int) $filter_md_state_id;
 		}
 		
+		//Order
 		$orderby 	= ' order by '. $filter_order .' '. $filter_order_Dir;
-			
-		$queryCount = "	SELECT DISTINCT o.*,
-							t.label as objecttype,
-							ov.id as version_id,
-							ov.title as version_title,
-							s.label as state,
-							m.guid as metadata_guid ,
-							m.lastsynchronization as lastsynchronization,
-							m.synchronizedby as synchronizedby,
-							m.notification as notification
+		
+		// Version filter
+		if ($filter_md_version == 0) 
+		{
+			//Return only the last metadata for each object
+			//Get all MD :
+			$query = "	SELECT DISTINCT o.*,
+										t.label as objecttype,
+										ov.id as version_id,
+										ov.title as version_title,
+										s.label as state,
+										m.guid as metadata_guid ,
+										m.lastsynchronization as lastsynchronization,
+										m.synchronizedby as synchronizedby,
+										m.notification as notification
 						FROM 	#__sdi_metadata m,
-							#__sdi_list_metadatastate s,
-							#__sdi_objectversion ov,
-							#__sdi_object o
+								#__sdi_list_metadatastate s,
+								#__sdi_objectversion ov,
+								#__sdi_object o
 						LEFT OUTER JOIN #__sdi_manager_object ma ON ma.object_id=o.id
 						LEFT OUTER JOIN #__sdi_editor_object e ON e.object_id=o.id
 						INNER JOIN #__sdi_objecttype ot ON ot.id = o.objecttype_id
 						INNER JOIN #__sdi_translation t ON t.element_guid=ot.guid
 						INNER JOIN #__sdi_language l ON t.language_id=l.id
 						INNER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id
-						WHERE ov.object_id=o.id
-						AND ov.metadata_id=m.id
-						AND m.metadatastate_id=s.id
-						AND ot.id=o.objecttype_id
-						AND ot.predefined=0
-						AND cl.code='".$language->_lang."'
-						AND (e.account_id = ".$account->id."
-						OR (ma.account_id=".$account->id.")
-						)";
-		$queryCount .= $filter;
-		
-		$database->setQuery($queryCount);
-		$total = count($database->loadObjectList());
-		if ($database->getErrorNum()) {
-			echo "<div class='alert'>";			
-			echo 			$database->getErrorMsg();
-			echo "</div>";
-		}	
-		
-		// Si le nombre de resultats retournes a change, adapter la page affichee
-		if ($limitstart >= $total)
-		{
-			$limitstart = ( $limit != 0 ? ((floor($total / $limit) * $limit)-1) : 0 );
-			$mainframe->setUserState('limitstart', $limitstart);
-		}	
-		
-		if ($limitstart < 0)
-			$limitstart = 0;
-		
-		jimport('joomla.html.pagination');
-		$pageNav = new JPagination($total,$limitstart,$limit);
-		
-		$query = "	SELECT DISTINCT o.*,
-							t.label as objecttype,
-							ov.id as version_id,
-							ov.title as version_title,
-							s.label as state,
-							m.guid as metadata_guid ,
-							m.lastsynchronization as lastsynchronization,
-							m.synchronizedby as synchronizedby,
-							m.notification as notification
-					FROM 	#__sdi_metadata m,
-							#__sdi_list_metadatastate s,
-							#__sdi_objectversion ov,
-							#__sdi_object o
-					LEFT OUTER JOIN #__sdi_manager_object ma ON ma.object_id=o.id
-					LEFT OUTER JOIN #__sdi_editor_object e ON e.object_id=o.id
-					INNER JOIN #__sdi_objecttype ot ON ot.id = o.objecttype_id
-					INNER JOIN #__sdi_translation t ON t.element_guid=ot.guid
-					INNER JOIN #__sdi_language l ON t.language_id=l.id
-					INNER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id
-						WHERE ov.object_id=o.id
-							AND ov.metadata_id=m.id
-							AND m.metadatastate_id=s.id
-							AND ot.id=o.objecttype_id
-							AND ot.predefined=0
-							AND cl.code='".$language->_lang."'
-							AND (e.account_id = ".$account->id."
-							OR (ma.account_id=".$account->id.")
-							)";
-		$query .= $filter;
-		$query .= $orderby;
+								WHERE ov.object_id=o.id
+								AND ov.metadata_id=m.id
+								AND m.metadatastate_id=s.id
+								AND ot.id=o.objecttype_id
+								AND ot.predefined=0
+								AND cl.code='".$language->_lang."'
+								AND (e.account_id = ".$account->id."
+								OR (ma.account_id=".$account->id."))";
+			$query .= $filter;
+			$database->setQuery($query);
+			$rows = $database->loadObjectList() ;
+			if ($database->getErrorNum()) {
+				echo "<div class='alert'>";
+				echo 			$database->getErrorMsg();
+				echo "</div>";
+			}
 			
-		$database->setQuery($query,$limitstart,$limit);
-		$rows = $database->loadObjectList() ;
-		if ($database->getErrorNum()) {
-			echo "<div class='alert'>";
-			echo 			$database->getErrorMsg();
-			echo "</div>";
-		}
-		// Version filter
-		if ($filter_md_version == 0) {
-			//Return only the last metadata for each object
 			$arrVersionMd =array();
 			foreach ($rows as $object)
 			{
 				$query = "SELECT m.id as metadata_id, ms.code, m.published
-				FROM #__sdi_objectversion ov
-				INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
-				INNER JOIN #__sdi_list_metadatastate ms ON m.metadatastate_id=ms.id
-				INNER JOIN #__sdi_object o ON ov.object_id=o.id
-				INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
-				INNER JOIN (SELECT v.id,v.object_id, max(v.created) as maxcreated from #__sdi_objectversion v group by v.object_id) vv ON vv.object_id = ov.object_id AND vv.maxcreated = ov.created
-				WHERE o.id=".$object->id."
-				GROUP BY ov.object_id
-				ORDER BY m.published DESC
-				LIMIT 0, 1";
+							FROM #__sdi_objectversion ov
+							INNER JOIN #__sdi_metadata m ON ov.metadata_id=m.id
+							INNER JOIN #__sdi_list_metadatastate ms ON m.metadatastate_id=ms.id
+							INNER JOIN #__sdi_object o ON ov.object_id=o.id
+							INNER JOIN #__sdi_list_visibility v ON o.visibility_id=v.id
+							INNER JOIN (SELECT v.id,v.object_id, max(v.created) as maxcreated from #__sdi_objectversion v group by v.object_id) vv ON vv.object_id = ov.object_id AND vv.maxcreated = ov.created
+							WHERE o.id=".$object->id."
+							GROUP BY ov.object_id
+							ORDER BY m.published DESC
+							LIMIT 0, 1";
 				$database->setQuery( $query);
 				$versionlist = $database->loadObjectList() ;
 		
@@ -226,6 +177,56 @@ class SITE_metadata {
 			else
 			{
 				$str_version = implode(",",$arrVersionMd);
+				
+				$queryCount = "	SELECT DISTINCT o.*,
+									t.label as objecttype,
+									ov.id as version_id,
+									ov.title as version_title,
+									s.label as state,
+									m.guid as metadata_guid ,
+									m.lastsynchronization as lastsynchronization,
+									m.notification as notification
+							FROM 	#__sdi_metadata m,
+									#__sdi_list_metadatastate s,
+									#__sdi_objectversion ov,
+									#__sdi_object o
+							LEFT OUTER JOIN #__sdi_manager_object ma ON ma.object_id=o.id
+							LEFT OUTER JOIN #__sdi_editor_object e ON e.object_id=o.id
+							INNER JOIN #__sdi_objecttype ot ON ot.id = o.objecttype_id
+							INNER JOIN #__sdi_translation t ON t.element_guid=ot.guid
+							INNER JOIN #__sdi_language l ON t.language_id=l.id
+							INNER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id
+								WHERE ov.object_id=o.id
+									AND ov.metadata_id=m.id
+									AND m.id IN ($str_version)
+									AND m.metadatastate_id=s.id
+									AND ot.id=o.objecttype_id
+									AND ot.predefined=0
+									AND cl.code='".$language->_lang."'
+									AND (e.account_id = ".$account->id."
+									OR (ma.account_id=".$account->id.")
+									)";
+				$queryCount .= $filter;
+				
+				$database->setQuery($queryCount);
+				$total = count($database->loadObjectList());
+				if ($database->getErrorNum()) {
+					echo "<div class='alert'>";
+					echo 			$database->getErrorMsg();
+					echo "</div>";
+				}
+				
+				// Si le nombre de resultats retournes a change, adapter la page affichee
+				if ($limitstart >= $total)
+				{
+					$limitstart = ( $limit != 0 ? ((floor($total / $limit) * $limit)-1) : 0 );
+					$mainframe->setUserState('limitstart', $limitstart);
+				}
+				
+				if ($limitstart < 0)
+					$limitstart = 0;
+				
+				$pageNav = new JPagination($total,$limitstart,$limit);
 				
 				$query = "	SELECT DISTINCT o.*,
 									t.label as objecttype,
@@ -255,6 +256,7 @@ class SITE_metadata {
 									AND (e.account_id = ".$account->id."
 									OR (ma.account_id=".$account->id.")
 									)";
+
 				$query .= $filter;
 				$query .= $orderby;
 					
@@ -266,6 +268,97 @@ class SITE_metadata {
 					echo "</div>";
 				}
 			}
+		}
+		else 
+		{
+			//No current Md filter : return all
+			$queryCount = "	SELECT DISTINCT o.*,
+											t.label as objecttype,
+											ov.id as version_id,
+											ov.title as version_title,
+											s.label as state,
+											m.guid as metadata_guid ,
+											m.lastsynchronization as lastsynchronization,
+											m.synchronizedby as synchronizedby,
+											m.notification as notification
+							FROM 	#__sdi_metadata m,
+									#__sdi_list_metadatastate s,
+									#__sdi_objectversion ov,
+									#__sdi_object o
+							LEFT OUTER JOIN #__sdi_manager_object ma ON ma.object_id=o.id
+							LEFT OUTER JOIN #__sdi_editor_object e ON e.object_id=o.id
+							INNER JOIN #__sdi_objecttype ot ON ot.id = o.objecttype_id
+							INNER JOIN #__sdi_translation t ON t.element_guid=ot.guid
+							INNER JOIN #__sdi_language l ON t.language_id=l.id
+							INNER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id
+									WHERE ov.object_id=o.id
+									AND ov.metadata_id=m.id
+									AND m.metadatastate_id=s.id
+									AND ot.id=o.objecttype_id
+									AND ot.predefined=0
+									AND cl.code='".$language->_lang."'
+									AND (e.account_id = ".$account->id."
+									OR (ma.account_id=".$account->id."))";
+			$queryCount .= $filter;
+				
+			$database->setQuery($queryCount);
+			$total = count($database->loadObjectList());
+			if ($database->getErrorNum()) {
+				echo "<div class='alert'>";
+				echo 			$database->getErrorMsg();
+				echo "</div>";
+			}
+				
+			// Si le nombre de resultats retournes a change, adapter la page affichee
+			if ($limitstart >= $total)
+			{
+				$limitstart = ( $limit != 0 ? ((floor($total / $limit) * $limit)-1) : 0 );
+				$mainframe->setUserState('limitstart', $limitstart);
+			}
+				
+			if ($limitstart < 0)
+				$limitstart = 0;
+				
+			$pageNav = new JPagination($total,$limitstart,$limit);
+				
+			$query = "	SELECT DISTINCT o.*,
+										t.label as objecttype,
+										ov.id as version_id,
+										ov.title as version_title,
+										s.label as state,
+										m.guid as metadata_guid ,
+										m.lastsynchronization as lastsynchronization,
+										m.synchronizedby as synchronizedby,
+										m.notification as notification
+						FROM 	#__sdi_metadata m,
+								#__sdi_list_metadatastate s,
+								#__sdi_objectversion ov,
+								#__sdi_object o
+						LEFT OUTER JOIN #__sdi_manager_object ma ON ma.object_id=o.id
+						LEFT OUTER JOIN #__sdi_editor_object e ON e.object_id=o.id
+						INNER JOIN #__sdi_objecttype ot ON ot.id = o.objecttype_id
+						INNER JOIN #__sdi_translation t ON t.element_guid=ot.guid
+						INNER JOIN #__sdi_language l ON t.language_id=l.id
+						INNER JOIN #__sdi_list_codelang cl ON l.codelang_id=cl.id
+							WHERE ov.object_id=o.id
+							AND ov.metadata_id=m.id
+							AND m.metadatastate_id=s.id
+							AND ot.id=o.objecttype_id
+							AND ot.predefined=0
+							AND cl.code='".$language->_lang."'
+							AND (e.account_id = ".$account->id."
+							OR (ma.account_id=".$account->id."))";
+			$query .= $filter;
+			$query .= $orderby;
+			
+			$database->setQuery($query,$limitstart,$limit);
+			$rows = $database->loadObjectList() ;
+			if ($database->getErrorNum()) {
+				echo "<div class='alert'>";
+				echo 			$database->getErrorMsg();
+				echo "</div>";
+			}
+			
 		}
 		
 		$query = "SELECT ot.id AS value, t.label as text 
