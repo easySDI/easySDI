@@ -113,4 +113,60 @@ class Easysdi_serviceTablevirtualservice extends sdiTable
 		// Bind the object with the row and return.
 		return $this->bind($row);
 	}
+	
+	/**
+	 * Method to return ids from the database by context id
+	 *
+	 * @param   integer    	$context_id   			A context identifier
+	 *
+	 * @return  boolean  True if successful. False if row not found or on error (internal error state set in that case).
+	 *
+	 * @link    http://docs.joomla.org/JTable/load
+	 * @since   EasySDI 3.0.0
+	 */
+	public function GetIdsByContextId($context_id = null, $reset = true)
+	{
+		if ($reset)
+		{
+			$this->reset();
+		}
+	
+		// Initialise the query.
+		$query = $this->_db->getQuery(true);
+		$query->select('vs.id');
+		$query->from($this->_tbl.'  AS vs ');
+		$query->join('LEFT', '#__sdi_map_context_virtualservice AS cvs ON cvs.virtualservice_id=vs.id');
+		$query->where('cvs.context_id = ' . (int) $context_id);
+		$query->where('vs.state = 1' );
+		$this->_db->setQuery($query);
+	
+		try
+		{
+			$rows = $this->_db->loadResultArray();
+	
+		}
+		catch (JDatabaseException $e)
+		{
+			$je = new JException($e->getMessage());
+			$this->setError($je);
+			return false;
+		}
+	
+		// Legacy error handling switch based on the JError::$legacy switch.
+		// @deprecated  12.1
+		if (JError::$legacy && $this->_db->getErrorNum())
+		{
+			$e = new JException($this->_db->getErrorMsg());
+			$this->setError($e);
+			return false;
+		}
+	
+		// Check that we have a result.
+		if (empty($rows))
+		{
+			return false;
+		}
+	
+		return $rows;
+	}
 }
