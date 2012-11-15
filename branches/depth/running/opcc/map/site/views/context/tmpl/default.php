@@ -60,10 +60,15 @@ if( $this->item ) : ?>
                     items: [{
                         id: "centerpanel",
                         xtype: "panel",
-                        layout: "fit",
+                        layout: "card",
                         region: "center",
                         border: false,
-                        items: ["mymap"]
+                        activeItem: 0, 
+                        items: ["sdimap",
+                                {
+                            xtype: 'gxp_googleearthpanel',
+                            mapPanel: "sdimap"
+                        }]
                     }, {
                         id: "westpanel",
                         xtype: "container",
@@ -71,7 +76,7 @@ if( $this->item ) : ?>
                         region: "west",
                         width: 200
                     }],
-                    bbar: {id: "mybbar"}
+                    bbar: {id: "sdibbar"}
                 },
                 
                 // configuration of all tool plugins for this application
@@ -92,10 +97,23 @@ if( $this->item ) : ?>
                 	switch ($tool->alias)
                 	{
                 		case 'print':
+                			
                 			break;
                 		case 'navigation':
+                			?>
+                			{
+                				ptype: "gxp_navigation", 
+                				toggleGroup: "navigation"
+                			},
+                			<?php 
                 			break;
                 		case 'googlegeocoder':
+                			?>
+							{
+								ptype: "gxp_googlegeocoder",
+					            outputTarget: "map.tbar"
+                			},
+                			<?php
                 			break;
                 		case 'navigationhistory':
                 			?>
@@ -109,7 +127,8 @@ if( $this->item ) : ?>
                 			?>
                 			 {
                                  ptype: "gxp_zoom",
-                                 actionTarget: "map.tbar"
+                                 actionTarget: "map.tbar",
+                                 toggleGroup: "navigation"
                              },
                 			<?php 
                 			break;
@@ -117,7 +136,7 @@ if( $this->item ) : ?>
                 			?>
                 			{
                                 ptype: "gxp_zoomtoextent",
-                                actionTarget: "tree.tbar"
+                                actionTarget: "map.tbar"
                             },
                 			<?php 
                 			break;
@@ -142,14 +161,40 @@ if( $this->item ) : ?>
                             {
                                ptype: "gxp_removelayer",
                                actionTarget: ["tree.tbar", "tree.contextMenu"]
-                            }
+                            },
                 			<?php 
                 			break;
                 		case 'styler':
+                			?>
+                			{
+                				ptype: "gxp_styler",
+                				outputConfig: {
+                					autoScroll: true, width: 320},
+                				actionTarget: ["tree.tbar", "tree.contextMenu"]
+                				
+                			},
+                			<?php 
                 			break;
                 		case 'layerproperties':
+                			?>
+                			{
+                				ptype: "gxp_layerproperties",
+                				id: "layerproperties",
+                				outputConfig: {
+                					defaults: {
+                						autoScroll: true}, width: 320},
+                						actionTarget: ["tree.tbar", "tree.contextMenu"],
+                						outputTarget: "tree"
+                			},
+                			<?php 
                 			break;
                 		case 'googleearth':
+                			?>
+                			{
+                				ptype: "gxp_googleearth",
+                				actionTarget: ["centerpanel.tbar", "map.tbar"]
+                			},
+                			<?php
                 			break;
                 		case 'getfeatureinfo':
                 			break;
@@ -172,7 +217,7 @@ if( $this->item ) : ?>
                 
                 // map and layers
                 map: {
-                    id: "mymap", // id needed to reference map in portalConfig above
+                    id: "sdimap", // id needed to reference map in portalConfig above
                     title: "Map",
                     projection: "EPSG:900913",
                     center: [-10764594.758211, 4523072.3184791],
