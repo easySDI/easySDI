@@ -34,6 +34,14 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 				</tr>
 			</table>
 		</fieldset>
+		<fieldset class="adminform"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_VIRTUALSERVICE_SERVICE_LIST' );?><span style="color:red;"> *</span></legend>
+			<ul class="adminformlist">
+				<?php foreach($this->form->getFieldset('physical_service') as $field): ?>
+					
+					<li><?php echo $field->input;?></li>
+				<?php endforeach; ?>
+			</ul>
+		</fieldset>
 		<fieldset class="adminform"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_INFOS' );?></legend>
 			<ul class="adminformlist">
 				<?php foreach($this->form->getFieldset('wms') as $field): ?>
@@ -42,7 +50,43 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 				<?php endforeach; ?>
 			</ul>
 		</fieldset>
-		<fieldset class="adminform"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_LOG_CONFIG' );?></legend>
+		<fieldset class="adminform"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_LEGEND_METADATA' );?></legend>
+			<ul class="adminformlist">
+				<?php foreach($this->form->getFieldset('metadata_wms') as $field): ?>
+					
+					<li><?php echo $field->label;echo $field->input;?></li>
+				<?php endforeach; ?>
+			</ul>
+			<br /><br />
+			<fieldset class="adminform"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_LEGEND_METADATA_CONTACT' );?></legend>
+				<ul class="adminformlist">
+					<?php foreach($this->form->getFieldset('contact') as $field): ?>
+						<li><?php
+							if ('jform[city]' != $field->name)
+								echo $field->label;
+							echo $field->input;
+						?></li>
+					<?php endforeach; ?>
+				</ul>
+			</fieldset>
+		</fieldset>
+		<fieldset class="adminform"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_LEGEND_EXCEPTION_MANAGEMENT' );?><span style="color:red;"> *</span></legend>
+			<ul class="adminformlist">
+				<?php foreach($this->form->getFieldset('exceptionlevel_id') as $field): ?>
+					
+					<li><?php echo $field->input;?></li>
+				<?php endforeach; ?>
+			</ul>
+		</fieldset>
+		<fieldset class="adminform"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_XSLTFILENAME' );?></legend>
+			<ul class="adminformlist">
+				<?php foreach($this->form->getFieldset('xsltfilename') as $field): ?>
+					
+					<li><?php echo $field->input;?></li>
+				<?php endforeach; ?>
+			</ul>
+		</fieldset>
+		<fieldset class="adminform"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_LEGEND_LOG_CONFIGURATION' );?></legend>
 			<ul class="adminformlist">
 				<?php foreach($this->form->getFieldset('log_config') as $field): ?>
 					

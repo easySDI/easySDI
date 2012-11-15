@@ -119,5 +119,29 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
 
 		}
 	}
+	
+	/**
+	 * Method to save the form data.
+	 *
+	 * @param   array  $data  The form data.
+	 *
+	 * @return  boolean  True on success, False on error.
+	 *
+	 * @since   11.1
+	 */
+	public function save($data) {
+		if(parent::save($data)){
+			//Instantiate an address JTable
+			$metadata =& JTable::getInstance('metadata', 'Easysdi_serviceTablevirtualmetadata');
+
+			//Call the overloaded save function to store the input data
+			$data['id'] = $this->getItem()->get('id');
+			if( !$metadata->save($data) ){	
+				return false;
+			}
+			return true;
+		}
+		return false;
+	}
 
 }
