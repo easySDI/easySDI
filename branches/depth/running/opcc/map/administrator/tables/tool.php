@@ -15,7 +15,7 @@ require_once JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'libra
 /**
  * group Table class
  */
-class Easysdi_mapTablegroup extends sdiTable {
+class Easysdi_mapTabletool extends sdiTable {
 
 	/**
 	 * Constructor
@@ -23,7 +23,7 @@ class Easysdi_mapTablegroup extends sdiTable {
 	 * @param JDatabase A database connector object
 	 */
 	public function __construct(&$db) {
-		parent::__construct('#__sdi_map_group', 'id', $db);
+		parent::__construct('#__sdi_sys_map_tool', 'id', $db);
 	}
 
 	/**
@@ -38,7 +38,7 @@ class Easysdi_mapTablegroup extends sdiTable {
 	protected function _getAssetName()
 	{
 		$k = $this->_tbl_key;
-		return 'com_easysdi_map.group.' . (int) $this->$k;
+		return 'com_easysdi_map.tool.' . (int) $this->$k;
 	}
 
 	/**
@@ -92,11 +92,11 @@ class Easysdi_mapTablegroup extends sdiTable {
 		
 		// Initialise the query.
 		$query = $this->_db->getQuery(true);
-		$query->select('g.id');
-		$query->from($this->_tbl.'  AS g ');
-		$query->join('LEFT', '#__sdi_map_context_group AS cg ON cg.group_id=g.id');
-		$query->where('cg.context_id = ' . (int) $context_id);
-		$query->where('g.state = 1' );
+		$query->select('t.id');
+		$query->from($this->_tbl.'  AS t ');
+		$query->join('LEFT', '#__sdi_map_context_tool AS ct ON ct.tool_id=t.id');
+		$query->where('ct.context_id = ' . (int) $context_id);
+		$query->where('t.state = 1' );
 		$this->_db->setQuery($query);
 	
 		try

@@ -6,13 +6,13 @@
  * @license     GNU General Public License version 3 or later; see LICENSE.txt
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
-
+ 
 // No direct access
 defined('_JEXEC') or die;
 
 jimport('joomla.application.component.controller');
 
-class Easysdi_mapController extends JController
+class Easysdi_mapController extends JControllerLegacy
 {
 
 }

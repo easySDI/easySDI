@@ -13,6 +13,6 @@ defined('_JEXEC') or die;
 jimport('joomla.application.component.controller');
 
 // Execute the task.
-$controller	= JController::getInstance('Easysdi_map');
-$controller->execute(JRequest::getVar('task',''));
+$controller	= JControllerLegacy::getInstance('Easysdi_map');
+$controller->execute(JFactory::getApplication()->input->get('task'));
 $controller->redirect();

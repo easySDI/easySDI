@@ -34,8 +34,8 @@ class JFormFieldCreatedby extends JFormField
 	{
 		// Initialize variables.
 		$html = array();
-
-
+        
+        
 		//Load user
 		$user_id = $this->value;
 		if ($user_id) {
@@ -45,7 +45,7 @@ class JFormFieldCreatedby extends JFormField
 			$html[] = '<input type="hidden" name="'.$this->name.'" value="'.$user->id.'" />';
 		}
 		$html[] = "<div>".$user->name." (".$user->username.")</div>";
-
+        
 		return implode($html);
 	}
 }
