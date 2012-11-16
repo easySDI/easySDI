@@ -227,6 +227,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_virtualservice` (
 `checked_out` INT(11)  NOT NULL ,
 `checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `created_by` INT(11)  NOT NULL ,
+`created` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `name` VARCHAR(255)  NOT NULL ,
 `alias` VARCHAR(255)  NOT NULL ,
 `connector` VARCHAR(255)  NOT NULL ,

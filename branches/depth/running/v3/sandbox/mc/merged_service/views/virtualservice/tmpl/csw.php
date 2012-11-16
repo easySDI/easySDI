@@ -24,15 +24,12 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 <form action="<?php echo JRoute::_('index.php?option=com_easysdi_service&view=virtualservice&id='.JRequest::getVar('id',null)); ?>" method="post" name="adminForm" id="item-form" class="form-validate">
 	<div class="width-60 fltlft">
 		<fieldset class="adminform"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_CONNECTOR_CHOICE' );?></legend>
-			<table class="admintable">
-				<tr>
-					<td>
-					<?php 
-						echo JHTML::_("select.genericlist",$this->serviceconnectorlist, 'serviceconnector', 'size="1" onChange="document.getElementById(\'layout\').value=document.getElementById(\'serviceconnector\').value;submit()"', 'value', 'value', 'WMS');
-					?>
-					</td>
-				</tr>
-			</table>
+			<ul class="adminformlist">
+				<?php foreach($this->form->getFieldset('connector_type') as $field): ?>
+					
+					<li><?php echo $field->input;?></li>
+				<?php endforeach; ?>
+			</ul>
 		</fieldset>
 		<fieldset class="adminform"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_VIRTUALSERVICE_SERVICE_LIST' );?><span style="color:red;"> *</span></legend>
 			<ul class="adminformlist">
