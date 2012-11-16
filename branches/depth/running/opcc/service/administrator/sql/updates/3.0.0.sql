@@ -33,8 +33,8 @@ PRIMARY KEY (`id`)
 
 INSERT INTO `#__sdi_sys_serviceconnector` (ordering,state,checked_out,value) 
 VALUES 
-(11,1,0,'WMSCSource'),
-(12,1,0,'BingSource'),
-(13,1,0,'GoogleSource'),
-(14,1,0,'OSMSource')
+(11,1,0,'WMSC'),
+(12,1,0,'Bing'),
+(13,1,0,'Google'),
+(14,1,0,'OSM')
 ;

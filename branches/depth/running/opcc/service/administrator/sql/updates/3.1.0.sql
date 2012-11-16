@@ -35,9 +35,9 @@ PRIMARY KEY (`id`)
 INSERT INTO `#__sdi_sys_serviceconnector` (ordering,state,checked_out,value) 
 VALUES 
 (11,1,0,'WMSC'),
-(12,0,0,'BingSource'),
-(13,0,0,'GoogleSource'),
-(14,0,0,'OSMSource')
+(12,0,0,'Bing'),
+(13,0,0,'Google'),
+(14,0,0,'OSM')
 ;
 
 INSERT INTO `#__sdi_sys_servicecompliance` (ordering,state,checked_out,serviceconnector_id,serviceversion_id,implemented,relayable,aggregatable,harvestable) 
