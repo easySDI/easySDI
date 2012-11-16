@@ -235,18 +235,9 @@ if( $this->item ) : ?>
                 			?>
                 			{
                 				ptype: "gxp_print",
-                			    customParams: 
-                    			{
-                			    	outputFilename: 'GeoExplorer-print'
-                    			},
-                			    printService: 'http://suite.opengeo.org/geoserver/pdf/',
+                				customParams: {outputFilename: 'GeoExplorer-print'},
+                			    printService: 'http://localhost/opengeoroot/pdf/',
                 			    actionTarget: "map.tbar",
-                			    alignToGrid: true, 
-                			    about: { 
-                			    title: "Your Map", 
-                			    "abstract": "Please add details about your map.", 
-                			    contact: "For more information, contact GRandD unit, IWMI." 
-                			    }, 
                 			    showButtonText: true
                 			},
                 			<?php
