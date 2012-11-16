@@ -50,37 +50,56 @@ if( $this->item ) : ?>
 			Ext.BLANK_IMAGE_URL = "http://localhost/opcc//components/com_easysdi_map/views/context/tmpl/theme/app/img/blank.gif";
             OpenLayers.ImgPath = "http://localhost/opcc/administrator/components/com_easysdi_core/libraries/openlayers/img/";
 
-            app = new gxp.Viewer({
-                portalConfig: {
-                	layout: "border",
+            app = new gxp.Viewer(
+            {
+            	portalConfig: 
+                {
+                    layout: "border",
                     region: "center",
+                   
                     
-                    // by configuring items here, we don't need to configure portalItems
-                    // and save a wrapping container
-                    items: [{
-                        id: "centerpanel",
-                        xtype: "panel",
-                        layout: "card",
-                        region: "center",
-                        border: false,
-                        activeItem: 0, 
-                        items: ["sdimap",
-                                {
-                            xtype: 'gxp_googleearthpanel',
-                            mapPanel: "sdimap"
-                        }]
-                    }, {
-                        id: "westpanel",
-                        xtype: "container",
-                        layout: "fit",
-                        region: "west",
-                        width: 200
-                    }],
-                    bbar: {id: "sdibbar"}
+                    items: 
+                    [
+                     	{
+                     		id:"portaltbar",
+						    xtype:"toolbar",
+						    border: false,
+						    height:35,
+						    region:"north",
+						    items:[]
+						    
+						},
+                        {
+	                        id: "centerpanel",
+	                        xtype: "panel",
+	                        layout: "card",
+	                        region: "center",
+	                        border: false,
+	                        activeItem: 0, 
+	                        items: [
+			    	                    "sdimap",
+			                            {
+				                            xtype: 'gxp_googleearthpanel',
+				                            id: "globe",
+				                            tbar: [],
+				                            mapPanel: "sdimap"
+		                        		}
+	                  				]
+                    	}, 
+                    	{
+	                    	id: "westpanel",
+	                        xtype: "container",
+	                        layout: "fit",
+	                        region: "west",
+	                        width: 200
+                    	}
+                    ],
+                    
                 },
                 
                 // configuration of all tool plugins for this application
-                tools: [
+                tools: 
+                [
 					{
 					    ptype: "gxp_layertree",
 					    outputConfig: {
@@ -91,13 +110,21 @@ if( $this->item ) : ?>
 					    outputTarget: "westpanel"
 					}, 
                 <?php 
-                
                 foreach ($this->item->tools as $tool)
                 {
                 	switch ($tool->alias)
                 	{
                 		case 'print':
-                			
+                			?>
+                			{
+                				ptype: "gxp_print",
+                				customParams: {
+                					outputFilename: 'GeoExplorer-print'},
+                					printService: 'http://suite.opengeo.org/geoserver/pdf/create.json',
+                					actionTarget: "map.tbar",
+                					showButtonText: true
+                			},
+                			<?php
                 			break;
                 		case 'navigation':
                 			?>
@@ -144,7 +171,8 @@ if( $this->item ) : ?>
                 			?>
                 			{
                 				ptype: "gxp_measure",
-                                actionTarget: "map.tbar"
+                                actionTarget: "map.tbar",
+                                toggleGroup: "interaction"
                 			},
                 			<?php 
                 			break;
@@ -180,11 +208,16 @@ if( $this->item ) : ?>
                 			{
                 				ptype: "gxp_layerproperties",
                 				id: "layerproperties",
-                				outputConfig: {
-                					defaults: {
-                						autoScroll: true}, width: 320},
-                						actionTarget: ["tree.tbar", "tree.contextMenu"],
-                						outputTarget: "tree"
+                				outputConfig: 
+                    			{
+                					defaults: 
+                    				{
+                						autoScroll: true
+                					}, 
+                				width: 320
+                				},
+                				actionTarget: ["tree.tbar", "tree.contextMenu"],
+                				outputTarget: "tree"
                 			},
                 			<?php 
                 			break;
@@ -192,50 +225,71 @@ if( $this->item ) : ?>
                 			?>
                 			{
                 				ptype: "gxp_googleearth",
-                				actionTarget: ["centerpanel.tbar", "map.tbar"]
+                				actionTarget: ["map.tbar", "globe.tbar"]
                 			},
                 			<?php
                 			break;
                 		case 'getfeatureinfo':
+                			?>
+                			{
+                				ptype: "gxp_wmsgetfeatureinfo", 
+                				format: 'grid',
+                				toggleGroup: "interaction",
+                				showButtonText: true,
+                				actionTarget: "map.tbar"
+                			},
+                			<?php 
                 			break;
                 	}
                 }
                 ?>
-                  ],
+               ],
                 
                 // layer sources
-                sources: {
-                    local: {
+                sources: 
+                {
+                    local: 
+                    {
                         ptype: "gxp_wmssource",
                         url: "http://localhost/geoserverwms",
                         version: "1.3.0"
                     },
-                    osm: {
+                    osm: 
+                    {
                         ptype: "gxp_osmsource"
                     }
                 },
                 
                 // map and layers
-                map: {
+                map: 
+                {
                     id: "sdimap", // id needed to reference map in portalConfig above
                     title: "Map",
+                    header:false,
                     projection: "EPSG:900913",
                     center: [-10764594.758211, 4523072.3184791],
                     zoom: 3,
-                    layers: [{
-                        source: "osm",
-                        name: "mapnik",
-                        group: "background"
-                    }, {
-                        source: "local",
-                        name: "topp:states",
-                        selected: true
-                    }],
-                    items: [{
-                        xtype: "gx_zoomslider",
-                        vertical: true,
-                        height: 100
-                    }]
+                    layers: 
+                    [
+                     	{
+	                        source: "osm",
+	                        name: "mapnik",
+	                        group: "background"
+                    	}, 
+                    	{
+	                        source: "local",
+	                        name: "topp:states",
+	                        selected: true
+                    	}
+                    ],
+                    items: 
+                    [
+                     	{
+	                        xtype: "gx_zoomslider",
+	                        vertical: true,
+	                        height: 100
+                    	}
+                    ]
                 }
 
             });
