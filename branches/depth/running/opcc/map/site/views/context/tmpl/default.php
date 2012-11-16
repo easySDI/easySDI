@@ -21,7 +21,7 @@ if( $this->item ) : ?>
         <link rel="stylesheet" type="text/css" href="http://localhost/opcc/administrator/components/com_easysdi_core/libraries/ext/resources/css/xtheme-gray.css">
         <script type="text/javascript" src="http://localhost/opcc/administrator/components/com_easysdi_core/libraries/ext/adapter/ext/ext-base.js"></script>
         <script type="text/javascript" src="http://localhost/opcc/administrator/components/com_easysdi_core/libraries/ext/ext-all.js"></script> 
-        <script type="text/javascript" src="http://localhost/opcc/administrator/components/com_easysdi_core/libraries/ux/RowExpander.js"></script> 
+        <script type="text/javascript" src="http://localhost/opcc/administrator/components/com_easysdi_core/libraries/ux/ext/RowExpander.js"></script> 
 
         <!-- OpenLayers resources -->
         <link rel="stylesheet" type="text/css" href="http://localhost/opcc/administrator/components/com_easysdi_core/libraries/openlayers/theme/default/style.css">
@@ -31,7 +31,9 @@ if( $this->item ) : ?>
         <link rel="stylesheet" type="text/css" href="http://localhost/opcc/administrator/components/com_easysdi_core/libraries/geoext/resources/css/popup.css">
         <link rel="stylesheet" type="text/css" href="http://localhost/opcc/administrator/components/com_easysdi_core/libraries/geoext/resources/css/layerlegend.css">
         <link rel="stylesheet" type="text/css" href="http://localhost/opcc/administrator/components/com_easysdi_core/libraries/geoext/resources/css/gxtheme-gray.css">
+         <link rel="stylesheet" type="text/css" href="http://localhost/opcc/administrator/components/com_easysdi_core/libraries/ux/geoext/resources/css/printpreview.css">
         <script type="text/javascript" src="http://localhost/opcc/administrator/components/com_easysdi_core/libraries/geoext/lib/GeoExt.js"></script>
+        <script type="text/javascript" src="http://localhost/opcc/administrator/components/com_easysdi_core/libraries/ux/GeoExt/PrintPreview.js"></script>
 
         <!-- gxp resources -->
         <link rel="stylesheet" type="text/css" href="http://localhost/opcc/administrator/components/com_easysdi_core/libraries/gxp/theme/all.css">
@@ -39,7 +41,7 @@ if( $this->item ) : ?>
         
         <!-- app resources -->
         <link rel="stylesheet" type="text/css" href="components/com_easysdi_map/views/context/tmpl/theme/app/style.css">
-        <script src="http://maps.google.com/maps/api/js?v=3.6&sensor=false"></script>
+        <!--  <script src="http://maps.google.com/maps/api/js?v=3.6&sensor=false"></script> -->
         
 		
         <script>
@@ -135,34 +137,14 @@ if( $this->item ) : ?>
                 {
                 	switch ($tool->alias)
                 	{
-                		case 'print':
+                		case 'googleearth':
                 			?>
-                			{
-                				ptype: "gxp_print",
-                				customParams: {
-                					outputFilename: 'GeoExplorer-print'},
-                					printService: 'http://suite.opengeo.org/geoserver/pdf/create.json',
-                					actionTarget: "map.tbar",
-                					showButtonText: true
-                			},
-                			<?php
-                			break;
-                		case 'navigation':
-                			?>
-                			{
-                				ptype: "gxp_navigation", 
-                				toggleGroup: "navigation"
-                			},
-                			<?php 
-                			break;
-                		case 'googlegeocoder':
-                			?>
-							{
-								ptype: "gxp_googlegeocoder",
-					            outputTarget: "map.tbar"
-                			},
-                			<?php
-                			break;
+                		    {
+                		    	ptype: "gxp_googleearth",
+                		        actionTarget: ["map.tbar", "globe.tbar"]
+                		    },
+                		    <?php
+                		    break;
                 		case 'navigationhistory':
                 			?>
                 			{
@@ -171,6 +153,14 @@ if( $this->item ) : ?>
                             },
                 			<?php 
                 			break;
+                		case 'navigation':
+                			?>
+                				{
+                			    	ptype: "gxp_navigation", 
+                			        toggleGroup: "navigation"
+                			    },
+                			    <?php 
+                			    break;
                 		case 'zoom':
                 			?>
                 			 {
@@ -213,53 +203,53 @@ if( $this->item ) : ?>
                             },
                 			<?php 
                 			break;
-                		case 'styler':
-                			?>
-                			{
-                				ptype: "gxp_styler",
-                				outputConfig: {
-                					autoScroll: true, width: 320},
-                				actionTarget: ["tree.tbar", "tree.contextMenu"]
-                				
-                			},
-                			<?php 
-                			break;
+                		
                 		case 'layerproperties':
                 			?>
                 			{
                 				ptype: "gxp_layerproperties",
                 				id: "layerproperties",
-                				outputConfig: 
-                    			{
-                					defaults: 
-                    				{
-                						autoScroll: true
-                					}, 
-                				width: 320
-                				},
-                				actionTarget: ["tree.tbar", "tree.contextMenu"],
-                				outputTarget: "tree"
+                				actionTarget: ["tree.tbar", "tree.contextMenu"]
                 			},
                 			<?php 
                 			break;
-                		case 'googleearth':
-                			?>
-                			{
-                				ptype: "gxp_googleearth",
-                				actionTarget: ["map.tbar", "globe.tbar"]
-                			},
-                			<?php
-                			break;
+                		
                 		case 'getfeatureinfo':
                 			?>
                 			{
                 				ptype: "gxp_wmsgetfeatureinfo", 
                 				format: 'grid',
-                				toggleGroup: "interaction",
-                				showButtonText: true,
                 				actionTarget: "map.tbar"
                 			},
                 			<?php 
+                			break;
+                		case 'googlegeocoder':
+                			?>
+                			{
+                				ptype: "gxp_googlegeocoder",
+                				outputTarget: "map.tbar"
+                			},
+                			<?php
+                			break;
+                		case 'print':
+                			?>
+                			{
+                				ptype: "gxp_print",
+                			    customParams: 
+                    			{
+                			    	outputFilename: 'GeoExplorer-print'
+                    			},
+                			    printService: 'http://suite.opengeo.org/geoserver/pdf/',
+                			    actionTarget: "map.tbar",
+                			    alignToGrid: true, 
+                			    about: { 
+                			    title: "Your Map", 
+                			    "abstract": "Please add details about your map.", 
+                			    contact: "For more information, contact GRandD unit, IWMI." 
+                			    }, 
+                			    showButtonText: true
+                			},
+                			<?php
                 			break;
                 	}
                 }
@@ -269,24 +259,80 @@ if( $this->item ) : ?>
                 // layer sources
                 sources: 
                 {
-                    local: 
-                    {
-                        ptype: "gxp_wmssource",
-                        url: "http://localhost/geoserverwms",
-                        version: "1.3.0"
-                    },
-                    osm: 
-                    {
-                        ptype: "gxp_osmsource"
-                    },
-                    bing: 
-                    {
- 						ptype: "gxp_bingsource"
-	                },
-	                google: 
-                    {
- 						ptype: "gxp_googlesource"
-	                },
+                	<?php
+                    foreach ($this->item->physicalservices as $service)
+                	{
+                		?>
+                		"<?php echo $service->alias ?>":
+                		{
+                    		<?php
+                    		switch ($service->serviceconnector_id)
+                    		{
+                    			case 2 :
+                    				?>
+                    				ptype: "gxp_wmssource",
+                    				url: "<?php echo $service->resourceurl;?>"
+                        			<?php
+                    				break;
+                    			case 3 :
+                    				?>
+                    				ptype: "gxp_wmstsource",
+                    				url: "<?php echo $service->resourceurl;?>"
+                    				<?php
+                    				break;
+                    			case 11 :
+                    				?>
+                    				ptype: "gxp_wmscsource",
+                    				url: "<?php echo $service->resourceurl;?>"
+                        			<?php
+                    				break;
+                    			case 12 :
+                    				?>
+                    				ptype: "gxp_bingsource"
+                    				<?php
+                    				break;
+                    			case 13 : 
+                    				?>
+                    				ptype: "gxp_googlesource"
+                    				<?php
+                    				break;
+                    			case 14 :
+                    				?>
+                    				ptype: "gxp_osmsource"
+                    				<?php
+                    				break;
+                    		}
+                    		?>
+                		},
+                		<?php
+                	}
+                	foreach ($this->item->virtualservices as $service)
+                	{
+                		?>
+                		 "<?php echo $service->alias ?>":
+                		 {
+                		 	<?php
+                		    switch ($service->serviceconnector_id)
+                		    {
+                		    	case 2 :
+                		        	?>
+                		            ptype: "gxp_wmssource",
+                		            url: "<?php echo $service->url;?>"
+                		            <?php
+                		            break;
+                		        case 3 :
+                		        	?>
+                		            ptype: "gxp_wmstsource",
+                		            url: "<?php echo $service->url;?>"
+                		            <?php
+                		            break;
+                		        }
+                		        ?>
+                		   },
+                		   <?php
+                	}
+                	?>
+                   
                 },
                 
                 // map and layers
@@ -312,12 +358,7 @@ if( $this->item ) : ?>
                      				case 'WMS':
                      					?>
                      					{
-	                     					source: 
-	                	                    {
-	            	                        	ptype: "gxp_wmssource",
-	            	                            url: "<?php echo $layer->serviceurl;?>",
-	            	                            version: "1.3.0"
-	                    	                },
+	                     					source: "<?php echo $layer->servicealias ; ?>",
 	            	                        name: "<?php echo $layer->layername;?>",
 	            	                        group: "<?php echo $group->alias;?>"
                      					},
@@ -326,12 +367,7 @@ if( $this->item ) : ?>
                      				case 'WMTS':
                      					?>
                      					{
-	                     					source: 
-	                	                    {
-	            	                        	ptype: "gxp_wmtssource",
-	            	                            url: "<?php echo $layer->serviceurl;?>",
-	            	                            version: "1.0.0"
-	                    	                },
+                     						source: "<?php echo $layer->servicealias ; ?>",
 	            	                        name: "<?php echo $layer->layername;?>",
 	            	                        group: "<?php echo $group->alias;?>"
                      					},
@@ -340,12 +376,7 @@ if( $this->item ) : ?>
                      				case 'WMSC':
                      					?>
                      					{
-	                     					source: 
-	                	                    {
-	                     						ptype: "gxp_wmscsource",
-	            	                            url: "<?php echo $layer->serviceurl;?>",
-	            	                            version: "1.3.0"
-	                    	                },
+                     						source: "<?php echo $layer->servicealias ; ?>",
 	            	                        name: "<?php echo $layer->layername;?>",
 	            	                        group: "<?php echo $group->alias;?>"
                      					},
@@ -354,7 +385,7 @@ if( $this->item ) : ?>
                      				case 'Bing':
                      					?>
                      					{
-	                     					source: "bing",
+                     						source: "<?php echo $layer->servicealias ; ?>",
 	            	                        name: "<?php echo $layer->layername;?>",
 	            	                        group: "<?php echo $group->alias;?>"
                      					},
@@ -363,7 +394,7 @@ if( $this->item ) : ?>
                      				case 'Google':
                      					?>
                      					{
-	                     					source: "google",
+                     						source: "<?php echo $layer->servicealias ; ?>",
 	            	                        name: "<?php echo $layer->layername;?>",
 	            	                        group: "<?php echo $group->alias;?>"
                      					},
@@ -372,7 +403,7 @@ if( $this->item ) : ?>
                      				case 'OSM':
                      					?>
                      					{
-	                     					source: "osm",
+                     						source: "<?php echo $layer->servicealias ; ?>",
 	            	                        name: "<?php echo $layer->layername;?>",
 	            	                        group: "<?php echo $group->alias;?>"
                      					},

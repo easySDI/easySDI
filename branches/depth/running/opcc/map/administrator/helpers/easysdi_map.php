@@ -90,29 +90,30 @@ class Easysdi_mapHelper
 		}
 		$db->setQuery($query);
 		$resource 			= $db->loadObject();
-		$urlWithPassword 	= $resource->url;
+		$url	= $resource->url;
 		
-		if (strlen($user)!=null && strlen($password)!=null){
-			if (strlen($user)>0 && strlen($password)>0){
-				if (strpos($url,"http:")===False){
-					$urlWithPassword =  "https://".$user.":".$password."@".substr($url,8);
-				}else{
-					$urlWithPassword =  "http://".$user.":".$password."@".substr($url,7);
-				}
-			}
-		}
-		
-	
-		$pos1 		= stripos($urlWithPassword, "?");
+		$pos1 		= stripos($url, "?");
 		$separator 	= "&";
 		if ($pos1 === false) {
 			$separator = "?";
 		}
-
 	
-		$completeurl = $urlWithPassword.$separator."REQUEST=GetCapabilities&SERVICE=".$resource->connector;
+		$completeurl = $url.$separator."REQUEST=GetCapabilities&SERVICE=".$resource->connector;
+		$session 	= curl_init($completeurl);
+		if (!empty($user)  && !empty($password))
+		{
+			$httpHeader[]='Authorization: Basic '.base64_encode($user.':'.$password);
+		}
+		if (count($httpHeader)>0)
+		{
+			curl_setopt($session, CURLOPT_HTTPHEADER, $httpHeader);
+		}
+		curl_setopt($session, CURLOPT_HEADER, false);
+		curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
+		$response = curl_exec($session);
+		curl_close($session);
 		
-		$xmlCapa = simplexml_load_file($completeurl);
+		$xmlCapa = simplexml_load_string($response);
 		$result = array();
 		if ($xmlCapa === false)
 		{

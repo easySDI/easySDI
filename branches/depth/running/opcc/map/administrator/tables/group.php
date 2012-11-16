@@ -92,7 +92,7 @@ class Easysdi_mapTablegroup extends sdiTable {
 			return false;
 		
 		$query = $this->_db->getQuery(true);
-		$query->select('l.*, v.url as serviceurl, p.resourceurl as serviceurl, cv.value as connector, cp.value as connector');
+		$query->select('l.*, v.url as serviceurl, p.resourceurl as serviceurl, cv.value as connector, cp.value as connector, v.alias as servicealias, p.alias as servicealias');
 		$query->from('#__sdi_map_layer AS l');
 		$query->join('LEFT', '#__sdi_virtualservice AS v ON l.virtualservice_id=v.id');
 		$query->join('LEFT', '#__sdi_physicalservice AS p ON l.physicalservice_id=p.id');
@@ -100,6 +100,7 @@ class Easysdi_mapTablegroup extends sdiTable {
 		$query->join('LEFT', '#__sdi_sys_serviceconnector AS cp ON p.serviceconnector_id=cp.id');
 		$query->where('l.group_id = ' . (int) $this->id);
 		$query->where('l.state = 1' );
+		$query->order('l.ordering ASC' );
 		$this->_db->setQuery($query);
 		
 		try

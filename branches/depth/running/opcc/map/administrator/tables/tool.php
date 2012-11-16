@@ -97,6 +97,7 @@ class Easysdi_mapTabletool extends sdiTable {
 		$query->join('LEFT', '#__sdi_map_context_tool AS ct ON ct.tool_id=t.id');
 		$query->where('ct.context_id = ' . (int) $context_id);
 		$query->where('t.state = 1' );
+		$query->order('t.ordering ASC' );
 		$this->_db->setQuery($query);
 	
 		try
