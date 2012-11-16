@@ -96,6 +96,7 @@ class Easysdi_mapModelContext extends JModelForm
 					$groupTable->load($group, true);
 					$this->_item->groups[] =$groupTable;
 				}
+				
 				//Load the services
 				$physicalserviceTable 	= JTable::getInstance('physicalservice', 'easysdi_serviceTable');
 				$services 		= $physicalserviceTable->GetIdsByContextId($id);

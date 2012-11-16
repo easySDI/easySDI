@@ -74,6 +74,52 @@ class Easysdi_mapTablegroup extends sdiTable {
 	}
 	
 	/**
+	 * Method to load a row from the database by primary key and bind the fields
+	 * to the JTable instance properties.
+	 *
+	 * @param   mixed    $keys   An optional primary key value to load the row by, or an array of fields to match.  If not
+	 * set the instance property value is used.
+	 * @param   boolean  $reset  True to reset the default values before loading the new row.
+	 *
+	 * @return  boolean  True if successful. False if row not found or on error (internal error state set in that case).
+	 *
+	 * @link    http://docs.joomla.org/JTable/load
+	 * @since   11.1
+	 */
+	public function load($keys = null, $reset = true)
+	{
+		if(!parent::load($keys,$reset))
+			return false;
+		
+		$query = $this->_db->getQuery(true);
+		$query->select('l.*, v.url as serviceurl, p.resourceurl as serviceurl, cv.value as connector, cp.value as connector');
+		$query->from('#__sdi_map_layer AS l');
+		$query->join('LEFT', '#__sdi_virtualservice AS v ON l.virtualservice_id=v.id');
+		$query->join('LEFT', '#__sdi_physicalservice AS p ON l.physicalservice_id=p.id');
+		$query->join('LEFT', '#__sdi_sys_serviceconnector AS cv ON v.serviceconnector_id=cv.id');
+		$query->join('LEFT', '#__sdi_sys_serviceconnector AS cp ON p.serviceconnector_id=cp.id');
+		$query->where('l.group_id = ' . (int) $this->id);
+		$query->where('l.state = 1' );
+		$this->_db->setQuery($query);
+		
+		try
+		{
+			$rows = $this->_db->loadObjectList();
+		
+		}
+		
+		catch (JDatabaseException $e)
+		{
+			$je = new JException($e->getMessage());
+			$this->setError($je);
+			return false;
+		}
+		
+		$this->layers = $rows;
+		return true;
+	}
+	
+	/**
 	 * Method to return ids from the database by context id
 	 *
 	 * @param   integer    	$context_id   			A context identifier
@@ -97,6 +143,7 @@ class Easysdi_mapTablegroup extends sdiTable {
 		$query->join('LEFT', '#__sdi_map_context_group AS cg ON cg.group_id=g.id');
 		$query->where('cg.context_id = ' . (int) $context_id);
 		$query->where('g.state = 1' );
+		$query->order('g.ordering ASC' );
 		$this->_db->setQuery($query);
 	
 		try

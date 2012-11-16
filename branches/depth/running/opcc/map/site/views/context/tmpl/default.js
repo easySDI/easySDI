@@ -86,7 +86,8 @@ app = new gxp.Viewer({
         projection: "EPSG:900913",
         center: [-10764594.758211, 4523072.3184791],
         zoom: 3,
-        layers: [{
+        layers: [
+                 {
             source: "osm",
             name: "mapnik",
             group: "background"

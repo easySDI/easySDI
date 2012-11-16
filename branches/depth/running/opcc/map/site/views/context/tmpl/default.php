@@ -43,7 +43,6 @@ if( $this->item ) : ?>
         
 		
         <script>
-       
         var app;
 
 		Ext.onReady(function(){
@@ -97,7 +96,7 @@ if( $this->item ) : ?>
                     
                 },
                 
-                // configuration of all tool plugins for this application
+                // Tools
                 tools: 
                 [
 					{
@@ -105,7 +104,29 @@ if( $this->item ) : ?>
 					    outputConfig: {
 					        id: "tree",
 					        border: true,
-					        tbar: [] // we will add buttons to "tree.tbar" later
+					        tbar: [] 
+					    },
+					    groups: {
+						    <?php
+						    foreach ($this->item->groups as $group)
+						    {
+						    	if($group->alias == 'background')
+						    	{
+						    		?>
+						    		"background": {
+							            title: "<?php echo $group->name; ?>", 
+							            exclusive: true
+							        },
+						    		<?php
+						    	}
+						    	else
+						    	{
+							    	?>
+							    	"<?php echo $group->alias; ?>" : "<?php echo $group->name; ?>" ,
+							    	<?php
+								}
+						    } 
+						    ?>        
 					    },
 					    outputTarget: "westpanel"
 					}, 
@@ -243,7 +264,7 @@ if( $this->item ) : ?>
                 	}
                 }
                 ?>
-               ],
+                ],
                 
                 // layer sources
                 sources: 
@@ -257,7 +278,15 @@ if( $this->item ) : ?>
                     osm: 
                     {
                         ptype: "gxp_osmsource"
-                    }
+                    },
+                    bing: 
+                    {
+ 						ptype: "gxp_bingsource"
+	                },
+	                google: 
+                    {
+ 						ptype: "gxp_googlesource"
+	                },
                 },
                 
                 // map and layers
@@ -271,16 +300,89 @@ if( $this->item ) : ?>
                     zoom: 3,
                     layers: 
                     [
+                     <?php
+                     foreach ($this->item->groups as $group)
+                     {
+                     	if(!empty ($group->layers) )
                      	{
-	                        source: "osm",
-	                        name: "mapnik",
-	                        group: "background"
-                    	}, 
-                    	{
-	                        source: "local",
-	                        name: "topp:states",
-	                        selected: true
-                    	}
+                     		foreach ($group->layers as $layer)
+                     		{
+                     			switch ($layer->connector)
+                     			{
+                     				case 'WMS':
+                     					?>
+                     					{
+	                     					source: 
+	                	                    {
+	            	                        	ptype: "gxp_wmssource",
+	            	                            url: "<?php echo $layer->serviceurl;?>",
+	            	                            version: "1.3.0"
+	                    	                },
+	            	                        name: "<?php echo $layer->layername;?>",
+	            	                        group: "<?php echo $group->alias;?>"
+                     					},
+                     					<?php 
+                     					break;
+                     				case 'WMTS':
+                     					?>
+                     					{
+	                     					source: 
+	                	                    {
+	            	                        	ptype: "gxp_wmtssource",
+	            	                            url: "<?php echo $layer->serviceurl;?>",
+	            	                            version: "1.0.0"
+	                    	                },
+	            	                        name: "<?php echo $layer->layername;?>",
+	            	                        group: "<?php echo $group->alias;?>"
+                     					},
+                     					<?php 
+                     					break;
+                     				case 'WMSC':
+                     					?>
+                     					{
+	                     					source: 
+	                	                    {
+	                     						ptype: "gxp_wmscsource",
+	            	                            url: "<?php echo $layer->serviceurl;?>",
+	            	                            version: "1.3.0"
+	                    	                },
+	            	                        name: "<?php echo $layer->layername;?>",
+	            	                        group: "<?php echo $group->alias;?>"
+                     					},
+                     					<?php 
+                     					break;
+                     				case 'Bing':
+                     					?>
+                     					{
+	                     					source: "bing",
+	            	                        name: "<?php echo $layer->layername;?>",
+	            	                        group: "<?php echo $group->alias;?>"
+                     					},
+                     					<?php 
+                     					break;
+                     				case 'Google':
+                     					?>
+                     					{
+	                     					source: "google",
+	            	                        name: "<?php echo $layer->layername;?>",
+	            	                        group: "<?php echo $group->alias;?>"
+                     					},
+                     					<?php 
+                     					break;
+                     				case 'OSM':
+                     					?>
+                     					{
+	                     					source: "osm",
+	            	                        name: "<?php echo $layer->layername;?>",
+	            	                        group: "<?php echo $group->alias;?>"
+                     					},
+                     					<?php 
+                     					break;
+                     			}
+                     		}
+                     	}
+                     } 
+                     ?>
                     ],
                     items: 
                     [
