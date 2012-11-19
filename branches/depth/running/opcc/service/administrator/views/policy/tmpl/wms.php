@@ -328,33 +328,61 @@ foreach ($this->xml->config as $config) {
 		$iServer=0;
 		foreach ($remoteServerList->{'remote-server'} as $remoteServer){
 
-			$urlWithPassword = $remoteServer->url;
-			
-			if (strlen($remoteServer->user)!=null && strlen($remoteServer->password)!=null){
-				if (strlen($remoteServer->user)>0 && strlen($remoteServer->password)>0){
-
-					if (strpos($remoteServer->url,"http:")===False){
-						$urlWithPassword =  "https://".$remoteServer->user.":".$remoteServer->password."@".substr($remoteServer->url,8);
-					}else{
-						$urlWithPassword =  "http://".$remoteServer->user.":".$remoteServer->password."@".substr($remoteServer->url,7);
-					}
-				}
-			}
-						
-			$pos1 = stripos($urlWithPassword, "?");
+			$pos1 = stripos($remoteServer->url, "?");
 			$separator = "&";
 			if ($pos1 === false) {
-	    		//"?" Not found then use ? instead of &
-	    		$separator = "?";  
+				//"?" Not found then use ? instead of &
+				$separator = "?";
 			}
 			
 			if($servletVersion != ""){
-				$completeurl = $urlWithPassword.$separator."REQUEST=GetCapabilities&version=".$servletVersion."&SERVICE=WMS";
-				$xmlCapa = simplexml_load_file($urlWithPassword.$separator."REQUEST=GetCapabilities&version=".$servletVersion."&SERVICE=WMS");
+				$url = $remoteServer->url.$separator."REQUEST=GetCapabilities&version=".$servletVersion."&SERVICE=WMS";
 			}else{
-				$completeurl = $urlWithPassword.$separator."REQUEST=GetCapabilities&SERVICE=WMS";
-				$xmlCapa = simplexml_load_file($urlWithPassword.$separator."REQUEST=GetCapabilities&SERVICE=WMS");
+				$url = $remoteServer->url.$separator."REQUEST=GetCapabilities&SERVICE=WMS";
 			}
+			
+			$session 	= curl_init($url);
+			if (!empty($remoteServer->user)  && !empty($remoteServer->password))
+			{
+				$httpHeader[]='Authorization: Basic '.base64_encode($remoteServer->user.':'.$remoteServer->password);
+			}
+			if (count($httpHeader)>0)
+			{
+				curl_setopt($session, CURLOPT_HTTPHEADER, $httpHeader);
+			}
+			curl_setopt($session, CURLOPT_HEADER, false);
+			curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
+			$response = curl_exec($session);
+			curl_close($session);
+			
+			$xmlCapa = simplexml_load_string($response);
+			
+// 			$urlWithPassword = $remoteServer->url;
+// 			if (strlen($remoteServer->user)!=null && strlen($remoteServer->password)!=null){
+// 				if (strlen($remoteServer->user)>0 && strlen($remoteServer->password)>0){
+
+// 					if (strpos($remoteServer->url,"http:")===False){
+// 						$urlWithPassword =  "https://".$remoteServer->user.":".$remoteServer->password."@".substr($remoteServer->url,8);
+// 					}else{
+// 						$urlWithPassword =  "http://".$remoteServer->user.":".$remoteServer->password."@".substr($remoteServer->url,7);
+// 					}
+// 				}
+// 			}
+						
+// 			$pos1 = stripos($urlWithPassword, "?");
+// 			$separator = "&";
+// 			if ($pos1 === false) {
+// 	    		//"?" Not found then use ? instead of &
+// 	    		$separator = "?";  
+// 			}
+			
+// 			if($servletVersion != ""){
+// 				$completeurl = $urlWithPassword.$separator."REQUEST=GetCapabilities&version=".$servletVersion."&SERVICE=WMS";
+// 				$xmlCapa = simplexml_load_file($urlWithPassword.$separator."REQUEST=GetCapabilities&version=".$servletVersion."&SERVICE=WMS");
+// 			}else{
+// 				$completeurl = $urlWithPassword.$separator."REQUEST=GetCapabilities&SERVICE=WMS";
+// 				$xmlCapa = simplexml_load_file($urlWithPassword.$separator."REQUEST=GetCapabilities&SERVICE=WMS");
+// 			}
 			
 			$theServer = null;
 			if ($xmlCapa === false){

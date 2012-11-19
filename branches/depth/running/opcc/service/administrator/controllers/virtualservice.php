@@ -231,6 +231,7 @@ class Easysdi_serviceControllerVirtualService extends JController
     			//Host translator
     			$hostTranslator 				= JRequest::getVar("hostTranslator");
     			$config->{'host-translator'}	= $hostTranslator;
+    			
     	
     			//Remote server
     			$config->{'remote-server-list'} = "";
@@ -289,7 +290,11 @@ class Easysdi_serviceControllerVirtualService extends JController
     				$config = $this->serviceMetadataWFS($config);
     			$xml->asXML($params->get('proxyconfigurationfile'));
     			
-    			$virtualservice->url = $params->get('proxyurl').$virtualservice->alias.'?';
+    			if($hostTranslator)
+    				$url = $hostTranslator.'?';
+    			else
+    				$url = $params->get('proxyurl').$virtualservice->alias.'?';
+    			$virtualservice->url = $url;
     			$result = $virtualservice->store();
     			if (!(isset($result)) || !$result) {
     				JError::raiseError(42, JText::_('COM_EASYSDI_SERVICE_SAVING_VIRTUAL_SERVICE_ERROR'). $virtualservice->getError());
