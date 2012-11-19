@@ -15,45 +15,41 @@ $lang = JFactory::getLanguage();
 $lang->load('com_easysdi_map', JPATH_ADMINISTRATOR);
 $user = JFactory::getUser();
 
-if( $this->item ) : ?>
+if( $this->item ) : 
 
-		<!-- Ext resources -->
-        <link rel="stylesheet" type="text/css" href="http://localhost/opcc/administrator/components/com_easysdi_core/libraries/ext/resources/css/ext-all.css">
-        <link rel="stylesheet" type="text/css" href="http://localhost/opcc/administrator/components/com_easysdi_core/libraries/ext/resources/css/xtheme-gray.css">
-        <script type="text/javascript" src="http://localhost/opcc/administrator/components/com_easysdi_core/libraries/ext/adapter/ext/ext-base.js"></script>
-        <script type="text/javascript" src="http://localhost/opcc/administrator/components/com_easysdi_core/libraries/ext/ext-all.js"></script> 
-        <script type="text/javascript" src="http://localhost/opcc/administrator/components/com_easysdi_core/libraries/ux/ext/RowExpander.js"></script> 
+JHTML::script('ext-base.js', 'administrator/components/com_easysdi_core/libraries/ext/adapter/ext/');
+JHTML::script('ext-all.js', 'administrator/components/com_easysdi_core/libraries/ext/');
+JHTML::script('RowExpander.js', 'administrator/components/com_easysdi_core/libraries/ux/ext/');
+JHTML::script('OpenLayers.js', 'administrator/components/com_easysdi_core/libraries/openlayers/lib/');
+JHTML::script('GeoExt.js', 'administrator/components/com_easysdi_core/libraries/geoext/lib/');
+JHTML::script('PrintPreview.js', 'administrator/components/com_easysdi_core/libraries/ux/GeoExt/');
+JHTML::script('loader.js', 'administrator/components/com_easysdi_core/libraries/gxp/script/');
 
-        <!-- OpenLayers resources -->
-        <link rel="stylesheet" type="text/css" href="http://localhost/opcc/administrator/components/com_easysdi_core/libraries/openlayers/theme/default/style.css">
-        <script type="text/javascript" src="http://localhost/opcc/administrator/components/com_easysdi_core/libraries/openlayers/lib/OpenLayers.js"></script>
-
-        <!-- GeoExt resources -->
-        <link rel="stylesheet" type="text/css" href="http://localhost/opcc/administrator/components/com_easysdi_core/libraries/geoext/resources/css/popup.css">
-        <link rel="stylesheet" type="text/css" href="http://localhost/opcc/administrator/components/com_easysdi_core/libraries/geoext/resources/css/layerlegend.css">
-        <link rel="stylesheet" type="text/css" href="http://localhost/opcc/administrator/components/com_easysdi_core/libraries/geoext/resources/css/gxtheme-gray.css">
-         <link rel="stylesheet" type="text/css" href="http://localhost/opcc/administrator/components/com_easysdi_core/libraries/ux/geoext/resources/css/printpreview.css">
-        <script type="text/javascript" src="http://localhost/opcc/administrator/components/com_easysdi_core/libraries/geoext/lib/GeoExt.js"></script>
-        <script type="text/javascript" src="http://localhost/opcc/administrator/components/com_easysdi_core/libraries/ux/GeoExt/PrintPreview.js"></script>
-
-        <!-- gxp resources -->
-        <link rel="stylesheet" type="text/css" href="http://localhost/opcc/administrator/components/com_easysdi_core/libraries/gxp/theme/all.css">
-        <script type="text/javascript" src="http://localhost/opcc/administrator/components/com_easysdi_core/libraries/gxp/script/loader.js"></script>
-        
-        <!-- app resources -->
-        <link rel="stylesheet" type="text/css" href="components/com_easysdi_map/views/context/tmpl/theme/app/style.css">
-        <!--  <script src="http://maps.google.com/maps/api/js?v=3.6&sensor=false"></script> -->
-        
-		
-        <script>
+JHTML::_('stylesheet', 'ext-all.css', 'administrator/components/com_easysdi_core/libraries/ext/resources/css/');
+JHTML::_('stylesheet', 'xtheme-gray.css', 'administrator/components/com_easysdi_core/libraries/ext/resources/css/');
+JHTML::_('stylesheet', 'style.css', 'administrator/components/com_easysdi_core/libraries/openlayers/theme/default/');
+JHTML::_('stylesheet', 'popup.css', 'administrator/components/com_easysdi_core/libraries/geoext/resources/css/');
+JHTML::_('stylesheet', 'layerlegend.css', 'administrator/components/com_easysdi_core/libraries/geoext/resources/css/');
+JHTML::_('stylesheet', 'gxtheme-gray.css', 'administrator/components/com_easysdi_core/libraries/geoext/resources/css/');
+JHTML::_('stylesheet', 'printpreview.css', 'administrator/components/com_easysdi_core/libraries/ux/geoext/resources/css/');
+JHTML::_('stylesheet', 'all.css', 'administrator/components/com_easysdi_core/libraries/gxp/theme/');
+JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tmpl/theme/app/');
+?>
+      <script>
         var app;
 
 		Ext.onReady(function(){
-			Ext.BLANK_IMAGE_URL = "http://localhost/opcc//components/com_easysdi_map/views/context/tmpl/theme/app/img/blank.gif";
-            OpenLayers.ImgPath = "http://localhost/opcc/administrator/components/com_easysdi_core/libraries/openlayers/img/";
+			OpenLayers.ImgPath = "administrator/components/com_easysdi_core/libraries/openlayers/img/";
 
+			GeoExt.Lang.set("<?php echo $lang->getTag(); ?>");
+			
             app = new gxp.Viewer(
             {
+            	 
+            	about: { 
+			    	title: "<?php echo $this->item->title;?>", 
+			    	"abstract": "<?php echo $this->item->abstract;?>" 
+			    	}, 
             	portalConfig: 
                 {
                     layout: "border",
@@ -254,6 +250,8 @@ if( $this->item ) : ?>
                 			<?php
                 			break;
                 		case 'print':
+//                 			if(empty ($this->params->get('printserviceurl')))
+//                 				break;
                 			?>
                 			{
                                 actions: ["-"],
@@ -262,8 +260,10 @@ if( $this->item ) : ?>
                 			{
                 				ptype: "gxp_print",
                 				customParams: {outputFilename: 'GeoExplorer-print'},
-                			    printService: 'http://localhost/opengeoroot/pdf/',
+                			    printService: "<?php echo $this->params->get('printserviceurl');?>",
+                			    includeLegend: true, 
                 			    actionTarget: "map.tbar",
+                			    
                 			    showButtonText: true
                 			},
                 			<?php
@@ -361,9 +361,10 @@ if( $this->item ) : ?>
                     id: "sdimap", // id needed to reference map in portalConfig above
                     title: "Map",
                     header:false,
-                    projection: "EPSG:900913",
-                    center: [-10764594.758211, 4523072.3184791],
-                    zoom: 3,
+                    projection: "<?php echo $this->item->srs;?>",
+                    center: [<?php echo $this->item->centercoordinates;?>],
+                    maxExtent : [<?php echo $this->item->maxextent;?>],
+                    restrictedExtent: [<?php echo $this->item->maxextent;?>],
                     layers: 
                     [
                      <?php
@@ -449,7 +450,10 @@ if( $this->item ) : ?>
 	                        xtype: "gx_zoomslider",
 	                        vertical: true,
 	                        height: 100
-                    	}
+                    	},
+                    	{
+                    	 	xtype: "gxp_scaleoverlay"
+                        }
                     ]
                 }
 

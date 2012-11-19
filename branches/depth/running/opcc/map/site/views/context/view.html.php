@@ -76,7 +76,9 @@ class Easysdi_mapViewContext extends JViewLegacy {
 		} else {
 			$this->params->def('page_heading', JText::_('com_easysdi_map_DEFAULT_PAGE_TITLE'));
 		}
-		$title = $this->params->get('page_title', '');
+		
+		//$title = $this->params->get('page_title', '');
+		$title = $this->item->name;
 		if (empty($title)) {
 			$title = $app->getCfg('sitename');
 		}
