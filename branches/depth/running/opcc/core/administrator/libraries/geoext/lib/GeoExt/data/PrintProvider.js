@@ -553,6 +553,8 @@ GeoExt.data.PrintProvider = Ext.extend(Ext.util.Observable, {
             disableCaching: false,
             success: function(response) {
                 this.capabilities = Ext.decode(response.responseText);
+                this.capabilities.createURL = this.url + "create.json";
+                this.capabilities.printURL = this.url + "print.pdf";
                 this.loadStores();
             },
             params: this.initialConfig.baseParams,

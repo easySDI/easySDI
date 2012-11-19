@@ -29,6 +29,7 @@
         "widgets/LineSymbolizer.js",
         "widgets/PolygonSymbolizer.js",
         "widgets/RulePanel.js",
+        "widgets/ScaleOverlay.js",
         "widgets/ScaleLimitPanel.js",
         "widgets/TextSymbolizer.js",
         "widgets/Viewer.js",
@@ -107,7 +108,8 @@
         "plugins/LoadingIndicator.js",
         "plugins/Playback.js",
         "locale/es.js",
-        "locale/ca.js"
+        "locale/ca.js",
+        "locale/fr.js"
     );
     
     var scripts = document.getElementsByTagName("script");
