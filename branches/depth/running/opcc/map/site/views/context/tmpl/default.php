@@ -148,6 +148,10 @@ if( $this->item ) : ?>
                 		    	ptype: "gxp_googleearth",
                 		        actionTarget: ["map.tbar", "globe.tbar"]
                 		    },
+                		    {
+                                actions: ["-"],
+                                actionTarget: "map.tbar"
+                            },
                 		    <?php
                 		    break;
                 		case 'navigationhistory':
@@ -161,7 +165,8 @@ if( $this->item ) : ?>
                 		case 'navigation':
                 			?>
                 				{
-                			    	ptype: "gxp_navigation", 
+                    				ptype: "gxp_navigation",
+                			    	actionTarget: "map.tbar", 
                 			        toggleGroup: "navigation"
                 			    },
                 			    <?php 
@@ -171,7 +176,9 @@ if( $this->item ) : ?>
                 			 {
                                  ptype: "gxp_zoom",
                                  actionTarget: "map.tbar",
-                                 toggleGroup: "navigation"
+                                 toggleGroup: "navigation",
+                                 showZoomBoxAction: true,
+                                 controlOptions: {zoomOnClick: false}
                              },
                 			<?php 
                 			break;
@@ -222,14 +229,24 @@ if( $this->item ) : ?>
                 		case 'getfeatureinfo':
                 			?>
                 			{
-                				ptype: "gxp_wmsgetfeatureinfo", 
-                				format: 'grid',
-                				actionTarget: "map.tbar"
+                                actions: ["-"],
+                                actionTarget: "map.tbar"
+                            },
+                			{
+                				ptype: "gxp_wmsgetfeatureinfo",
+                				toggleGroup: "interaction", 
+                				format: "grid", 
+                				outputTarget: "map.tbar",
+                				defaultAction: 0
                 			},
                 			<?php 
                 			break;
                 		case 'googlegeocoder':
                 			?>
+                			{
+                                actions: ["-"],
+                                actionTarget: "map.tbar"
+                            },
                 			{
                 				ptype: "gxp_googlegeocoder",
                 				outputTarget: "map.tbar"
@@ -238,6 +255,10 @@ if( $this->item ) : ?>
                 			break;
                 		case 'print':
                 			?>
+                			{
+                                actions: ["-"],
+                                actionTarget: "map.tbar"
+                            },
                 			{
                 				ptype: "gxp_print",
                 				customParams: {outputFilename: 'GeoExplorer-print'},
@@ -307,9 +328,6 @@ if( $this->item ) : ?>
                 	}
                 	foreach ($this->item->virtualservices as $service)
                 	{
-                		//Acces not allowed
-                		if(!in_array($service->access, $user->getAuthorisedViewLevels()))
-                			continue;
                 		?>
                 		 "<?php echo $service->alias ?>":
                 		 {
