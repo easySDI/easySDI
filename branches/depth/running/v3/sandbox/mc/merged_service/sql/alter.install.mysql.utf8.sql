@@ -45,6 +45,9 @@ ALTER TABLE `#__sdi_virtualservice`
 ADD CONSTRAINT `#__sdi_virtualservice_fk_proxytype` FOREIGN KEY (`proxytype_id`) REFERENCES `#__sdi_sys_proxytype` (`id`);
 
 ALTER TABLE `#__sdi_virtualservice`
+ADD CONSTRAINT `#__sdi_virtualservice_fk_sys_serviceconnector` FOREIGN KEY (`serviceconnector_id`) REFERENCES `#__sdi_sys_serviceconnector` (`id`);
+
+ALTER TABLE `#__sdi_virtualservice`
 ADD CONSTRAINT `#__sdi_virtualservice_fk_exceptionlevel` FOREIGN KEY (`exceptionlevel_id`) REFERENCES `#__sdi_sys_exceptionlevel` (`id`);
 
 ALTER TABLE `#__sdi_virtualservice`

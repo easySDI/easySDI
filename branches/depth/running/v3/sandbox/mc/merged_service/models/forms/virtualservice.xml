@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
 	<fieldset name="connector_type">
-		<field name="connector_type" type="sql" class="inputbox" label="COM_EASYSDI_SERVICE_CONNECTOR_CHOICE" description=""
+		<field name="sys_serviceconnector_id" type="sql" class="inputbox" label="COM_EASYSDI_SERVICE_CONNECTOR_CHOICE" description=""
 		query="SELECT 0 AS `id`, '- Please select -' AS `value` UNION SELECT `id`, `value` FROM `#__sdi_sys_serviceconnector` WHERE `state` = 1 ORDER BY `value`"
 		key_field="id" value_field="value"/>
+		<field name="proxytype_id" type="hidden" default="1"/>
 	</fieldset>
 	<fieldset name="physical_service">
 		<field name="physical_service" type="sql" class="inputbox" label="COM_EASYSDI_SERVICE_VIRTUALSERVICE_SERVICE_LIST" description=""
@@ -56,8 +57,7 @@
 		<field name="id" type="hidden" filter="unset"/>
 		<field name="guid" type="hidden" filter="unset"/>
 		<field name="asset_id" type="hidden" filter="SAFEHTML"/>
-		<field name="harvester" type="hidden" value="false"/>
-		<field name="proxytype_id" type="hidden" value="1"/>
+		<field name="harvester" type="hidden" default="false"/>
 	</fieldset>
 	<fieldset name="metadata_wms">
 		<field name="title" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_METADATA_TITLE" description="" filter="safehtml" required="true"/>
@@ -83,8 +83,7 @@
 		<field name="id" type="hidden" filter="unset"/>
 		<field name="guid" type="hidden" filter="unset"/>
 		<field name="asset_id" type="hidden" filter="SAFEHTML"/>
-		<field name="harvester" type="hidden" value="false"/>
-		<field name="proxytype_id" type="hidden" value="1"/>
+		<field name="harvester" type="hidden" default="false"/>
 	</fieldset>
 	<fieldset name="metadata_wfs">
 		<field name="title" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_METADATA_TITLE" description="" filter="safehtml" required="true"/>
@@ -112,7 +111,6 @@
 		<field name="id" type="hidden" filter="unset"/>
 		<field name="guid" type="hidden" filter="unset"/>
 		<field name="asset_id" type="hidden" filter="SAFEHTML"/>
-		<field name="proxytype_id" type="hidden" value="1"/>
 	</fieldset>
 	<fieldset name="metadata_csw">
 		<field name="title" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_METADATA_TITLE" description="" filter="safehtml" required="true"/>
@@ -143,8 +141,7 @@
 		<field name="id" type="hidden" filter="unset"/>
 		<field name="guid" type="hidden" filter="unset"/>
 		<field name="asset_id" type="hidden" filter="SAFEHTML"/>
-		<field name="harvester" type="hidden" value="false"/>
-		<field name="proxytype_id" type="hidden" value="1"/>
+		<field name="harvester" type="hidden" default="false"/>
 	</fieldset>
 	<fieldset name="metadata_wmts">
 		<field name="title" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_METADATA_TITLE" description="" filter="safehtml" required="true"/>

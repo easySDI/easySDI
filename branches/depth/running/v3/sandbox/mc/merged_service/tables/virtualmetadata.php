@@ -28,7 +28,8 @@ class Easysdi_serviceTablevirtualmetadata extends sdiTable {
 		$data = array();
 		$data['id'] = $src['id'];
 		$data['guid'] = $src['guid'];
-		$data['summary'] = $src['summary'];
+		$data['title'] = $src['title'];
+		$data['summary'] = $src['abstract'];
 		$data['keyword'] = $src['keyword'];
 		$data['contactOrganization'] = $src['contactOrganization'];
 		$data['contactName'] = $src['contactName'];

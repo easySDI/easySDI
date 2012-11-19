@@ -246,6 +246,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_virtualservice` (
 `maximumrecords` INT(10)  NOT NULL ,
 `identifiersearchattribute` VARCHAR(255)  NOT NULL ,
 `proxytype_id` INT(11) UNSIGNED NOT NULL ,
+`sys_serviceconnector_id` INT(11) UNSIGNED NOT NULL ,
 `exceptionlevel_id` INT(11) UNSIGNED NOT NULL ,
 `loglevel_id` INT(11) UNSIGNED NOT NULL ,
 `logroll_id` INT(11) UNSIGNED NOT NULL ,

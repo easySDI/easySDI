@@ -116,7 +116,6 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
 				$max = $db->loadResult();
 				$table->ordering = $max+1;
 			}
-
 		}
 	}
 	
@@ -132,11 +131,10 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
 	public function save($data) {
 		if(parent::save($data)){
 			//Instantiate an address JTable
-			$metadata =& JTable::getInstance('metadata', 'Easysdi_serviceTablevirtualmetadata');
-
+			$virtualmetadata =& JTable::getInstance('virtualmetadata', 'Easysdi_serviceTable');
 			//Call the overloaded save function to store the input data
 			$data['id'] = $this->getItem()->get('id');
-			if( !$metadata->save($data) ){	
+			if( !$virtualmetadata->save($data) ){	
 				return false;
 			}
 			return true;
