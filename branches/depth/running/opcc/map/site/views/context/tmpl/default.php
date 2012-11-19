@@ -13,6 +13,7 @@ defined('_JEXEC') or die;
 //Load admin language file
 $lang = JFactory::getLanguage();
 $lang->load('com_easysdi_map', JPATH_ADMINISTRATOR);
+$user = JFactory::getUser();
 
 if( $this->item ) : ?>
 
@@ -112,6 +113,10 @@ if( $this->item ) : ?>
 						    <?php
 						    foreach ($this->item->groups as $group)
 						    {
+						    	//Acces not allowed
+						    	if(!in_array($group->access, $user->getAuthorisedViewLevels()))
+						    		continue;
+						    
 						    	if($group->alias == 'background')
 						    	{
 						    		?>
@@ -253,6 +258,9 @@ if( $this->item ) : ?>
                 	<?php
                     foreach ($this->item->physicalservices as $service)
                 	{
+                		//Acces not allowed
+                		if(!in_array($service->access, $user->getAuthorisedViewLevels()))
+                			continue;
                 		?>
                 		"<?php echo $service->alias ?>":
                 		{
@@ -299,6 +307,9 @@ if( $this->item ) : ?>
                 	}
                 	foreach ($this->item->virtualservices as $service)
                 	{
+                		//Acces not allowed
+                		if(!in_array($service->access, $user->getAuthorisedViewLevels()))
+                			continue;
                 		?>
                 		 "<?php echo $service->alias ?>":
                 		 {
@@ -340,10 +351,18 @@ if( $this->item ) : ?>
                      <?php
                      foreach ($this->item->groups as $group)
                      {
+                     	//Acces not allowed
+                     	if(!in_array($group->access, $user->getAuthorisedViewLevels()))
+                     		continue;
+                     
                      	if(!empty ($group->layers) )
                      	{
                      		foreach ($group->layers as $layer)
                      		{
+                     			//Acces not allowed
+                     			if(!in_array($layer->access, $user->getAuthorisedViewLevels()))
+                     				continue;
+                     		
                      			switch ($layer->connector)
                      			{
                      				case 'WMS':

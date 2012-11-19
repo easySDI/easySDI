@@ -121,7 +121,7 @@ class Easysdi_mapTablegroup extends sdiTable {
 	}
 	
 	/**
-	 * Method to return ids from the database by context id
+	 * Method to return the list of group ids used by the specified context id
 	 *
 	 * @param   integer    	$context_id   			A context identifier
 	 *
