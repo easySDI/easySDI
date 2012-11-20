@@ -118,14 +118,18 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
 						    		?>
 						    		"background": {
 							            title: "<?php echo $group->name; ?>", 
-							            exclusive: true
+							            exclusive: true,
+							            expanded: <?php if ($group->isdefaultopen) echo "true"; else echo "false";?>
 							        },
 						    		<?php
 						    	}
 						    	else
 						    	{
 							    	?>
-							    	"<?php echo $group->alias; ?>" : "<?php echo $group->name; ?>" ,
+							    	"<?php echo $group->alias; ?>" : {
+								    	title : "<?php echo $group->name; ?>",
+								    	expanded: <?php if ($group->isdefaultopen) echo "true"; else echo "false";?> 
+							    	},
 							    	<?php
 								}
 						    } 
@@ -385,8 +389,10 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
 								{
                      				source: "<?php  if (!empty($layer->physicalservicealias)) echo $layer->physicalservicealias; else echo $layer->virtualservicealias; ?>",
                      				name: "<?php echo $layer->layername;?>",
-                     				group: "<?php echo $group->alias;?>"
-                     				
+                     				group: "<?php echo $group->alias;?>",
+                     				<?php if ($group->alias == "background") echo "fixed: true,";?>
+                     				visibility: <?php  if ($layer->isdefaultvisible) echo "true"; else echo "false"; ?>,
+                     				opacity: <?php echo $layer->opacity;?>
                      			},
                      			<?php
                      		}

@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_map_layer` (
 `layername` VARCHAR(255)  NOT NULL ,
 `istiled` BOOLEAN NOT NULL DEFAULT '0',
 `isdefaultvisible` BOOLEAN NOT NULL DEFAULT '1' ,
-`opacity` DECIMAL NOT NULL DEFAULT '1',
+`opacity` DECIMAL (10,5) NOT NULL DEFAULT '1',
 `metadatalink` TEXT  ,
 `access` INT(11)  NOT NULL DEFAULT '1',
 `asset_id` INT(10),
