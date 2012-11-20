@@ -24,9 +24,14 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 		<fieldset class="adminform"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_CONNECTOR_CHOICE' );?></legend>
 			<ul class="adminformlist">
 				<?php foreach($this->form->getFieldset('connector_type') as $field): ?>
-
 				<li><?php echo $field->input;?></li>
 				<?php endforeach; ?>
+				<script>
+					var obj = document.getElementById('jform_sys_serviceconnector_id');
+					obj.onchange = function () {
+						window.location = "<?php echo html_entity_decode(JRoute::_('index.php?option=com_easysdi_service&view=virtualservice&layout=')); ?>" + obj.options[obj.selectedIndex].text;
+					};
+				</script>
 			</ul>
 		</fieldset>
 	</div>

@@ -29,6 +29,12 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 					
 					<li><?php echo $field->input;?></li>
 				<?php endforeach; ?>
+				<script>
+					var obj = document.getElementById('jform_sys_serviceconnector_id');
+					obj.onchange = function () {
+						//window.location = "<?php echo html_entity_decode(JRoute::_('index.php?option=com_easysdi_service&view=virtualservice&id='.JRequest::getVar('id',null).'&layout=')); ?>" + obj.options[obj.selectedIndex].text;
+					};
+				</script>
 			</ul>
 		</fieldset>
 		<fieldset class="adminform"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_VIRTUALSERVICE_SERVICE_LIST' );?><span style="color:red;"> *</span></legend>

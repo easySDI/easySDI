@@ -7,7 +7,7 @@
 		<field name="proxytype_id" type="hidden" default="1"/>
 	</fieldset>
 	<fieldset name="physical_service">
-		<field name="physical_service" type="sql" class="inputbox" label="COM_EASYSDI_SERVICE_VIRTUALSERVICE_SERVICE_LIST" description=""
+		<field name="physicalservice_id" type="sql" class="inputbox" label="COM_EASYSDI_SERVICE_VIRTUALSERVICE_SERVICE_LIST" description=""
 		query="SELECT 0 AS `id`, '- Please select -' AS `name` UNION SELECT `id`, `name` FROM `#__sdi_physicalservice`"
 		key_field="id" value_field="name" required="true"/>
 	</fieldset>

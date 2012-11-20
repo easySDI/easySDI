@@ -56,9 +56,8 @@ ADD CONSTRAINT `#__sdi_virtualservice_fk_loglevel` FOREIGN KEY (`loglevel_id`) R
 ALTER TABLE `#__sdi_virtualservice`
 ADD CONSTRAINT `#__sdi_virtualservice_fk_logroll` FOREIGN KEY (`logroll_id`) REFERENCES `#__sdi_sys_logroll` (`id`);
 
-
-ALTER TABLE `#__sdi_physicalservice`
-ADD CONSTRAINT `#__sdi_physicalservice_fk_virtualservice` FOREIGN KEY (`virtualservice_id`) REFERENCES `#__sdi_virtualservice` (`id`);
+ALTER TABLE `#__sdi_virtualservice`
+ADD CONSTRAINT `#__sdi_virtualservice_fk_physicalservice` FOREIGN KEY (`physicalservice_id`) REFERENCES `#__sdi_physicalservice` (`id`);
 
 
 ALTER TABLE `#__sdi_policy`

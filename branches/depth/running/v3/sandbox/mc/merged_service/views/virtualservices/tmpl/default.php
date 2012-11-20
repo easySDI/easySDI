@@ -111,8 +111,19 @@ $saveOrder	= $listOrder == 'a.ordering';
 				<?php if (isset($item->checked_out) && $item->checked_out) : ?>
 					<?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'virtualservices.', $canCheckin); ?>
 				<?php endif; ?>
+				<?php 
+					$db = JFactory::getDbo();
+					$db->setQuery('
+						SELECT sc.value
+						FROM #__sdi_sys_serviceconnector sc
+						JOIN #__sdi_virtualservice vs
+						ON sc.id = vs.sys_serviceconnector_id
+						WHERE vs.id = '.$item->id.'
+					');
+					$layout = $db->loadResult();
+				?>
 				<?php if ($canEdit) : ?>
-					<a href="<?php echo JRoute::_('index.php?option=com_easysdi_service&task=virtualservice.edit&id='.(int) $item->id); ?>">
+					<a href="<?php echo JRoute::_('index.php?option=com_easysdi_service&view=virtualservice&id='.(int) $item->id).'&layout='.$layout; ?>">
 					<?php echo $this->escape($item->name); ?></a>
 				<?php else : ?>
 					<?php echo $this->escape($item->name); ?>
