@@ -254,10 +254,9 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
                 			<?php
                 			break;
                 		case 'print':
-                			if(!isset ($this->params->get('printserviceurl')))
-                			{
-                				break;
-                			}
+                			if(!$this->params->get('printserviceurl'))
+                				continue;
+                			else 
                 			?>
                 			{
                                 actions: ["-"],
@@ -269,7 +268,6 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
                 			    printService: "<?php echo $this->params->get('printserviceurl');?>",
                 			    includeLegend: true, 
                 			    actionTarget: "map.tbar",
-                			    
                 			    showButtonText: true
                 			},
                 			<?php
@@ -297,7 +295,8 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
                     			case 2 :
                     				?>
                     				ptype: "gxp_wmssource",
-                    				url: "<?php echo $service->resourceurl;?>"
+                    				url: "<?php echo $service->resourceurl;?>",
+                    				version : "1.3.0"
                         			<?php
                     				break;
                     			case 3 :
@@ -371,7 +370,7 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
                     center: [<?php echo $this->item->centercoordinates;?>],
                     maxExtent : [<?php echo $this->item->maxextent;?>],
                     restrictedExtent: [<?php echo $this->item->maxextent;?>],
-                    numZoomLevels: [<?php echo "7";?>],
+                    numZoomLevels: <?php echo "7";?>,
                     layers: 
                     [
                      <?php
