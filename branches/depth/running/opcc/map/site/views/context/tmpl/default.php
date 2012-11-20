@@ -381,64 +381,14 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
                      			//Acces not allowed
                      			if(!in_array($layer->access, $user->getAuthorisedViewLevels()))
                      				continue;
-                     		
-                     			switch ($layer->connector)
-                     			{
-                     				case 'WMS':
-                     					?>
-                     					{
-	                     					source: "<?php echo $layer->servicealias ; ?>",
-	            	                        name: "<?php echo $layer->layername;?>",
-	            	                        group: "<?php echo $group->alias;?>"
-                     					},
-                     					<?php 
-                     					break;
-                     				case 'WMTS':
-                     					?>
-                     					{
-                     						source: "<?php echo $layer->servicealias ; ?>",
-	            	                        name: "<?php echo $layer->layername;?>",
-	            	                        group: "<?php echo $group->alias;?>"
-                     					},
-                     					<?php 
-                     					break;
-                     				case 'WMSC':
-                     					?>
-                     					{
-                     						source: "<?php echo $layer->servicealias ; ?>",
-	            	                        name: "<?php echo $layer->layername;?>",
-	            	                        group: "<?php echo $group->alias;?>"
-                     					},
-                     					<?php 
-                     					break;
-                     				case 'Bing':
-                     					?>
-                     					{
-                     						source: "<?php echo $layer->servicealias ; ?>",
-	            	                        name: "<?php echo $layer->layername;?>",
-	            	                        group: "<?php echo $group->alias;?>"
-                     					},
-                     					<?php 
-                     					break;
-                     				case 'Google':
-                     					?>
-                     					{
-                     						source: "<?php echo $layer->servicealias ; ?>",
-	            	                        name: "<?php echo $layer->layername;?>",
-	            	                        group: "<?php echo $group->alias;?>"
-                     					},
-                     					<?php 
-                     					break;
-                     				case 'OSM':
-                     					?>
-                     					{
-                     						source: "<?php echo $layer->servicealias ; ?>",
-	            	                        name: "<?php echo $layer->layername;?>",
-	            	                        group: "<?php echo $group->alias;?>"
-                     					},
-                     					<?php 
-                     					break;
-                     			}
+                     			?>
+								{
+                     				source: "<?php  if (!empty($layer->physicalservicealias)) echo $layer->physicalservicealias; else echo $layer->virtualservicealias; ?>",
+                     				name: "<?php echo $layer->layername;?>",
+                     				group: "<?php echo $group->alias;?>"
+                     				
+                     			},
+                     			<?php
                      		}
                      	}
                      } 
