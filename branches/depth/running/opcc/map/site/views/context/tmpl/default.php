@@ -254,8 +254,10 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
                 			<?php
                 			break;
                 		case 'print':
-//                 			if(empty ($this->params->get('printserviceurl')))
-//                 				break;
+                			if(!isset ($this->params->get('printserviceurl')))
+                			{
+                				break;
+                			}
                 			?>
                 			{
                                 actions: ["-"],
@@ -369,6 +371,7 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
                     center: [<?php echo $this->item->centercoordinates;?>],
                     maxExtent : [<?php echo $this->item->maxextent;?>],
                     restrictedExtent: [<?php echo $this->item->maxextent;?>],
+                    numZoomLevels: [<?php echo "7";?>],
                     layers: 
                     [
                      <?php
