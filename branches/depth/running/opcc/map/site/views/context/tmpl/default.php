@@ -280,6 +280,8 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
                 // layer sources
                 sources: 
                 {
+                	"ol": { ptype: "gxp_olsource" }, 
+                
                 	<?php
                     foreach ($this->item->physicalservices as $service)
                 	{
@@ -298,12 +300,6 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
                     				url: "<?php echo $service->resourceurl;?>",
                     				version : "1.3.0"
                         			<?php
-                    				break;
-                    			case 3 :
-                    				?>
-                    				ptype: "gxp_wmstsource",
-                    				url: "<?php echo $service->resourceurl;?>"
-                    				<?php
                     				break;
                     			case 11 :
                     				?>
@@ -333,28 +329,20 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
                 	}
                 	foreach ($this->item->virtualservices as $service)
                 	{
-                		?>
-                		 "<?php echo $service->alias ?>":
-                		 {
-                		 	<?php
-                		    switch ($service->serviceconnector_id)
-                		    {
-                		    	case 2 :
-                		        	?>
-                		            ptype: "gxp_wmssource",
-                		            url: "<?php echo $service->url;?>"
-                		            <?php
-                		            break;
-                		        case 3 :
-                		        	?>
-                		            ptype: "gxp_wmstsource",
-                		            url: "<?php echo $service->url;?>"
-                		            <?php
-                		            break;
-                		        }
-                		        ?>
-                		   },
-                		   <?php
+                		switch ($service->serviceconnector_id)
+                		{
+                		  	case 2 :
+                		   	?>
+                		       	"<?php echo $service->alias ?>":
+                        	 	{
+	                	            ptype: "gxp_wmssource",
+	                	            version : "1.1.0",
+	                	            url: "<?php echo $service->url;?>"
+                        	 	},
+                		    <?php
+                		    break;
+                		}
+                		        
                 	}
                 	?>
                    
@@ -373,6 +361,8 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
                     numZoomLevels: <?php echo "7";?>,
                     layers: 
                     [
+{ source: "ol", type: "OpenLayers.Layer.WMTS", args: [{name:"IGN", url : "http://osm.geobretagne.fr/gwc01/service/wmts", layer: 'osm:map', matrixSet: "EPSG:4326", style:"_null"}], group: "default" } ,
+                    
                      <?php
                      foreach ($this->item->groups as $group)
                      {
@@ -387,17 +377,40 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
                      			//Acces not allowed
                      			if(!in_array($layer->access, $user->getAuthorisedViewLevels()))
                      				continue;
-                     			?>
-								{
-                     				source: "<?php  if (!empty($layer->physicalservicealias)) echo $layer->physicalservicealias; else echo $layer->virtualservicealias; ?>",
-                     				name: "<?php echo $layer->layername;?>",
-                     				group: "<?php echo $group->alias;?>",
-                     				<?php if ($group->alias == "background") echo "fixed: true,";?>
-                     				visibility: <?php  if ($layer->isdefaultvisible) echo "true"; else echo "false"; ?>,
-                     				opacity: <?php echo $layer->opacity;?>
-                     			},
-                     			<?php
-                     		}
+                     			
+                     			switch ($layer->connector)
+                     			{
+                     				
+                     				case 'WMTS':
+                     					?>
+                     			         {
+                     				     	source: "ol",
+                     				     	type: "OpenLayers.Layer.WMTS",
+                     				     	args: [
+                            				     	"<?php echo $layer->layername;?>", 
+                            				     	"http://localhost/proxy/ogc/ign", 
+                            				     	{
+                                				     	layers: '<?php echo $layer->layername;?>'
+                                    				}
+                                    			],
+                     				        group: "<?php echo $group->alias;?>"
+                     			         },
+                     			         <?php 
+                     			         break;
+									default :
+                     			    	?>
+										{
+		                     				source: "<?php  if (!empty($layer->physicalservicealias)) echo $layer->physicalservicealias; else echo $layer->virtualservicealias; ?>",
+		                     				name: "<?php echo $layer->layername;?>",
+		                     				group: "<?php echo $group->alias;?>",
+		                     				<?php if ($group->alias == "background") echo "fixed: true,";?>
+		                     				visibility: <?php  if ($layer->isdefaultvisible) echo "true"; else echo "false"; ?>,
+		                     				opacity: <?php echo $layer->opacity;?>
+		                     			},
+		                     			<?php
+		                     			break;
+								}	
+							}
                      	}
                      } 
                      ?>
@@ -416,6 +429,7 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
                 }
 
             });
+
     	});
         </script>
 <?php else: ?>

@@ -91,7 +91,6 @@ class Easysdi_mapHelper
 		$db->setQuery($query);
 		$resource 			= $db->loadObject();
 		$url	= $resource->url;
-		
 		$pos1 		= stripos($url, "?");
 		$separator 	= "&";
 		if ($pos1 === false) {
@@ -99,6 +98,7 @@ class Easysdi_mapHelper
 		}
 	
 		$completeurl = $url.$separator."REQUEST=GetCapabilities&SERVICE=".$resource->connector;
+		
 		$session 	= curl_init($completeurl);
 		if (!empty($user)  && !empty($password))
 		{
