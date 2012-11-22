@@ -281,9 +281,9 @@ foreach ($this->xml->config as $config) {
 			}
 				
 			if($servletVersion != ""){
-				$url = $remoteServer->url.$separator."REQUEST=GetCapabilities&version=".$servletVersion."&SERVICE=WMS";
+				$url = $remoteServer->url.$separator."REQUEST=GetCapabilities&version=".$servletVersion."&SERVICE=WFS";
 			}else{
-				$url = $remoteServer->url.$separator."REQUEST=GetCapabilities&SERVICE=WMS";
+				$url = $remoteServer->url.$separator."REQUEST=GetCapabilities&SERVICE=WFS";
 			}
 				
 			$session 	= curl_init($url);
