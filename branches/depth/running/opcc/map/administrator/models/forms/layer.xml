@@ -49,7 +49,7 @@
        <field 	name="istiled" 
        			type="checkbox" 
        			value="1"
-	            label="COM_EASYSDI_MAP_FORM_LBL_LAYER_ISTILED"
+       			label="COM_EASYSDI_MAP_FORM_LBL_LAYER_ISTILED"
     	        description="COM_EASYSDI_MAP_FORM_DESC_LAYER_ISTILED" 
                 filter="intval" /> 
 
@@ -58,7 +58,7 @@
        			label="COM_EASYSDI_MAP_FORM_LBL_LAYER_ISDEFAULTVISIBLE"
             	description="COM_EASYSDI_MAP_FORM_DESC_LAYER_ISDEFAULTVISIBLE" 
             	value="1"
-                filter="intval" />
+            	filter="intval" />
  
        <field 	name="opacity" 
        			type="text" 
@@ -68,7 +68,7 @@
     	        description="COM_EASYSDI_MAP_FORM_DESC_LAYER_OPACITY" 
                 default="1" 
                 filter="safehtml" /> 
-
+            	
        <field 	name="metadatalink" 
        			type="textarea" 
        			class="inputbox"
@@ -106,6 +106,26 @@
         <field name="asset_id" type="hidden" filter="SAFEHTML" />
 	</fieldset>
 
+	<fieldset name="openlayers">
+		 <field 	name="asOL" 
+       			type="checkbox" 
+       			label="COM_EASYSDI_MAP_FORM_LBL_LAYER_ASOL"
+            	description="COM_EASYSDI_MAP_FORM_DESC_LAYER_ASOL" 
+            	value="1"
+            	onclick="javascript:enableOlparams();"
+                filter="intval" />
+                
+       <field 	name="asOLparams" 
+       			type="textarea" 
+       			class="inputbox"
+       			rows="10"
+       			cols="10"
+       			disabled = "true"
+                filter="safehtml"
+                label="COM_EASYSDI_MAP_FORM_LBL_LAYER_ASOLPARAMS"
+            	description="COM_EASYSDI_MAP_FORM_DESC_LAYER_ASOLPARAMS"  />
+	</fieldset>
+	
 	<fieldset name="publishing">
 		 <field name="created_by" 
        			type="user" 

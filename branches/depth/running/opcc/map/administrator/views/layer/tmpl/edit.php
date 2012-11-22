@@ -119,8 +119,19 @@ $document->addStyleSheet('components/com_easysdi_map/assets/css/easysdi_map.css'
 	
 	function init()
 	{
+		if(document.getElementById ('jform_asOL').checked == true)
+			document.getElementById ('jform_asOLparams').disabled = false;
+		
 		var service_select = document.getElementById('jform_service_id');
 		getLayers(service_select);
+	}
+	
+	function enableOlparams()
+	{
+		if(document.getElementById ('jform_asOL').checked == true)
+			document.getElementById ('jform_asOLparams').disabled = false;
+		else
+			document.getElementById ('jform_asOLparams').disabled = true;
 	}
 	
 	window.addEvent('domready', init);
@@ -155,6 +166,21 @@ $document->addStyleSheet('components/com_easysdi_map/assets/css/easysdi_map.css'
 		</fieldset>
 	</div>
 
+	<div class="width-40 fltrt">
+		<?php echo JHtml::_('sliders.start', 'user-sliders-'.$this->item->id, array('useCookie'=>1)); ?>
+		<?php echo JHtml::_('sliders.panel', JText::_('COM_EASYSDI_MAP_LAYER_FIELDSET_OPENLAYERS'), 'openlayers-options'); ?>
+		<fieldset class="adminform">
+			<ul class="adminformlist">
+				<li><?php echo $this->form->getLabel('asOL'); ?> <?php echo $this->form->getInput('asOL'); ?>
+				</li>
+
+				<li><?php echo $this->form->getLabel('asOLparams'); ?> <?php echo $this->form->getInput('asOLparams'); ?>
+				</li>
+			</ul>
+		</fieldset>
+		<?php echo JHtml::_('sliders.end'); ?>
+	</div>
+	
 	<div class="width-40 fltrt">
 		<?php echo JHtml::_('sliders.start', 'user-sliders-'.$this->item->id, array('useCookie'=>1)); ?>
 		<?php echo JHtml::_('sliders.panel', JText::_('JGLOBAL_FIELDSET_PUBLISHING'), 'publishing-details'); ?>

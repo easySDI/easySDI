@@ -361,8 +361,6 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
                     numZoomLevels: <?php echo "7";?>,
                     layers: 
                     [
-{ source: "ol", type: "OpenLayers.Layer.WMTS", args: [{name:"IGN", url : "http://osm.geobretagne.fr/gwc01/service/wmts", layer: 'osm:map', matrixSet: "EPSG:4326", style:"_null"}], group: "default" } ,
-                    
                      <?php
                      foreach ($this->item->groups as $group)
                      {
@@ -377,30 +375,40 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
                      			//Acces not allowed
                      			if(!in_array($layer->access, $user->getAuthorisedViewLevels()))
                      				continue;
-                     			
-                     			switch ($layer->connector)
+                     			if($layer->asOL || $layer->serviceconnector == 'WMTS')
                      			{
-                     				
+                     				?>
+                     				{
+                     					source: "ol",
+                     				    type: "OpenLayers.Layer.WMTS",
+                     				    args: [
+                     							{
+                     								name:"<?php echo $layer->name;?>", 
+                     								url : "<?php echo $layer->serviceurl;?>", 
+                     								layer: "<?php echo $layer->layername;?>", 
+                     								visibility: <?php  if ($layer->isdefaultvisible) echo "true"; else echo "false"; ?>,
+                		                     		opacity: <?php echo $layer->opacity;?>,
+                        		                     		selected : true,
+                     								<?php
+                     								if(!empty($layer->asOLparams))
+                     								{
+                     									echo  $layer->asOLparams;
+                     								}
+                     								?>
+                     							}
+                     				           ],
+                     				     group: "<?php echo $group->alias;?>"
+                     				 },
+                     				 <?php 
+                     			}
+                     			switch ($layer->serviceconnector)
+                     			{
                      				case 'WMTS':
-                     					?>
-                     			         {
-                     				     	source: "ol",
-                     				     	type: "OpenLayers.Layer.WMTS",
-                     				     	args: [
-                            				     	"<?php echo $layer->layername;?>", 
-                            				     	"http://localhost/proxy/ogc/ign", 
-                            				     	{
-                                				     	layers: '<?php echo $layer->layername;?>'
-                                    				}
-                                    			],
-                     				        group: "<?php echo $group->alias;?>"
-                     			         },
-                     			         <?php 
-                     			         break;
+                     					 break;
 									default :
                      			    	?>
 										{
-		                     				source: "<?php  if (!empty($layer->physicalservicealias)) echo $layer->physicalservicealias; else echo $layer->virtualservicealias; ?>",
+		                     				source: "<?php echo $layer->servicealias;  ?>",
 		                     				name: "<?php echo $layer->layername;?>",
 		                     				group: "<?php echo $group->alias;?>",
 		                     				<?php if ($group->alias == "background") echo "fixed: true,";?>
@@ -414,20 +422,20 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
                      	}
                      } 
                      ?>
-                    ],
-                    items: 
-                    [
-                     	{
-	                        xtype: "gx_zoomslider",
-	                        vertical: true,
-	                        height: 100
-                    	},
-                    	{
-                    	 	xtype: "gxp_scaleoverlay"
-                        }
                     ]
                 }
-
+                ,
+                mapItems: 
+                [
+                 	{
+                        xtype: "gx_zoomslider",
+                        vertical: true,
+                        height: 100
+                	},
+                	{
+                	 	xtype: "gxp_scaleoverlay"
+                    }
+                ]
             });
 
     	});

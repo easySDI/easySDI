@@ -20,3 +20,16 @@ body {
 #main{
 	min-height: 0 !important;
 }
+
+body.contentpane {
+    margin: 0px !important;
+}
+
+tr, td {
+    border: 0px solid #DDDDDD !important;
+}
+
+div.map-overlay {
+    left: 10px !important;
+    right :auto !important
+}

@@ -92,7 +92,7 @@ class Easysdi_mapTablegroup extends sdiTable {
 			return false;
 		
 		$query = $this->_db->getQuery(true);
-		$query->select('l.*, v.url as serviceurl, p.resourceurl as serviceurl, cv.value as virtualconnector, cp.value as physicalconnector, v.alias as virtualservicealias, p.alias as physicalservicealias');
+		$query->select('l.*, v.url as virtualserviceurl, p.resourceurl as physicalserviceurl, cv.value as virtualconnector, cp.value as physicalconnector, v.alias as virtualservicealias, p.alias as physicalservicealias');
 		$query->from('#__sdi_map_layer AS l');
 		$query->join('LEFT', '#__sdi_virtualservice AS v ON l.virtualservice_id=v.id');
 		$query->join('LEFT', '#__sdi_physicalservice AS p ON l.physicalservice_id=p.id');
@@ -106,14 +106,28 @@ class Easysdi_mapTablegroup extends sdiTable {
 		try
 		{
 			$rows = $this->_db->loadObjectList();
-		
 		}
-		
 		catch (JDatabaseException $e)
 		{
 			$je = new JException($e->getMessage());
 			$this->setError($je);
 			return false;
+		}
+		
+		foreach ($rows as $row)
+		{
+			if(!empty($row->virtualserviceurl))
+				$row->serviceurl = $row->virtualserviceurl;
+			if(!empty($row->physicalserviceurl))
+				$row->serviceurl = $row->physicalserviceurl;
+			if(!empty($row->virtualconnector))
+				$row->serviceconnector = $row->virtualconnector;
+			if(!empty($row->physicalconnector))
+				$row->serviceconnector = $row->physicalconnector;
+			if(!empty($row->virtualservicealias))
+				$row->servicealias = $row->virtualservicealias;
+			if(!empty($row->physicalservicealias))
+				$row->servicealias = $row->physicalservicealias;
 		}
 		
 		$this->layers = $rows;

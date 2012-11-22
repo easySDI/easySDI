@@ -110,6 +110,17 @@ class Easysdi_mapModellayer extends JModelAdmin
 	{
 		jimport('joomla.filter.output');
 
+		$jform = JRequest::getVar('jform');
+		if (!isset($jform['isdefaultvisible'])) { // see if the checkbox has been submitted
+			$table->isdefaultvisible = 0; // if it has not been submitted, mark the field unchecked
+		}
+		if (!isset($jform['istiled'])) { // see if the checkbox has been submitted
+			$table->istiled = 0; // if it has not been submitted, mark the field unchecked
+		}
+		if (!isset($jform['asOL'])) { // see if the checkbox has been submitted
+			$table->asOL = 0; // if it has not been submitted, mark the field unchecked
+		}
+		
 		if (empty($table->id)) {
 
 			// Set ordering to the last item if not set
