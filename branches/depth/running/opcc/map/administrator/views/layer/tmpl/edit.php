@@ -129,9 +129,14 @@ $document->addStyleSheet('components/com_easysdi_map/assets/css/easysdi_map.css'
 	function enableOlparams()
 	{
 		if(document.getElementById ('jform_asOL').checked == true)
+		{
 			document.getElementById ('jform_asOLparams').disabled = false;
+		}
 		else
+		{
 			document.getElementById ('jform_asOLparams').disabled = true;
+			document.getElementById ('jform_asOLparams').value = "";
+		}
 	}
 	
 	window.addEvent('domready', init);

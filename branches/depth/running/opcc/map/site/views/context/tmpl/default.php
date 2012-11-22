@@ -297,8 +297,7 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
                     			case 2 :
                     				?>
                     				ptype: "gxp_wmssource",
-                    				url: "<?php echo $service->resourceurl;?>",
-                    				version : "1.3.0"
+                    				url: "<?php echo $service->resourceurl;?>"
                         			<?php
                     				break;
                     			case 11 :
@@ -375,48 +374,81 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
                      			//Acces not allowed
                      			if(!in_array($layer->access, $user->getAuthorisedViewLevels()))
                      				continue;
+                     		
                      			if($layer->asOL || $layer->serviceconnector == 'WMTS')
                      			{
-                     				?>
+                     				switch ($layer->serviceconnector)
                      				{
-                     					source: "ol",
-                     				    type: "OpenLayers.Layer.WMTS",
-                     				    args: [
-                     							{
-                     								name:"<?php echo $layer->name;?>", 
-                     								url : "<?php echo $layer->serviceurl;?>", 
-                     								layer: "<?php echo $layer->layername;?>", 
-                     								visibility: <?php  if ($layer->isdefaultvisible) echo "true"; else echo "false"; ?>,
-                		                     		opacity: <?php echo $layer->opacity;?>,
-                        		                     		selected : true,
-                     								<?php
-                     								if(!empty($layer->asOLparams))
-                     								{
-                     									echo  $layer->asOLparams;
-                     								}
-                     								?>
-                     							}
-                     				           ],
-                     				     group: "<?php echo $group->alias;?>"
-                     				 },
-                     				 <?php 
+                     					case 'WMTS' :
+                     						?>
+                     						{
+                     							source: "ol",
+                     						    type: "OpenLayers.Layer.WMTS",
+                     						    args: [
+                     						    	{
+                     						        	name:"<?php echo $layer->name;?>", 
+                     						            url : "<?php echo $layer->serviceurl;?>", 
+                     						            layer: "<?php echo $layer->layername;?>", 
+                     						            visibility: <?php  if ($layer->isdefaultvisible) echo "true"; else echo "false"; ?>,
+                     						            opacity: <?php echo $layer->opacity;?>,
+                     						            <?php
+                     						            if(!empty($layer->asOLparams))
+                     						            {
+                     						            	echo  $layer->asOLparams;
+                     						            }
+                     						            ?>
+                     						         }
+                     						     ],
+                     						     group: "<?php echo $group->alias;?>"
+                     						 },
+                     						 <?php
+                     						break;
+                     					case 'WMS' : 
+                     						?>
+                     						{
+                         						source : "ol",
+                         						type : "OpenLayers.Layer.WMS",
+                         						args: 
+                             					[
+													"<?php echo $layer->name;?>",
+													"<?php echo $layer->serviceurl;?>",
+													{
+														layers: "<?php echo $layer->layername;?>", 
+                     						            visibility: <?php  if ($layer->isdefaultvisible) echo "true"; else echo "false"; ?>,
+                     						            opacity: <?php echo $layer->opacity;?>,
+                     						            <?php
+                     						            if(!empty($layer->asOLparams))
+                     						            {
+                     						            	echo  $layer->asOLparams;
+                     						            }
+                     						            ?>
+													}
+                                				],
+                    						    group: "<?php echo $group->alias;?>"
+                     						},
+                     						<?php 
+                     						break;
+                     				}
                      			}
-                     			switch ($layer->serviceconnector)
+                     			else 
                      			{
-                     				case 'WMTS':
-                     					 break;
-									default :
-                     			    	?>
-										{
-		                     				source: "<?php echo $layer->servicealias;  ?>",
-		                     				name: "<?php echo $layer->layername;?>",
-		                     				group: "<?php echo $group->alias;?>",
-		                     				<?php if ($group->alias == "background") echo "fixed: true,";?>
-		                     				visibility: <?php  if ($layer->isdefaultvisible) echo "true"; else echo "false"; ?>,
-		                     				opacity: <?php echo $layer->opacity;?>
-		                     			},
-		                     			<?php
-		                     			break;
+	                     			switch ($layer->serviceconnector)
+	                     			{
+	                     				case 'WMTS':
+	                     					 break;
+										default :
+	                     			    	?>
+											{
+			                     				source: "<?php echo $layer->servicealias;  ?>",
+			                     				name: "<?php echo $layer->layername;?>",
+			                     				group: "<?php echo $group->alias;?>",
+			                     				<?php if ($group->alias == "background") echo "fixed: true,";?>
+			                     				visibility: <?php  if ($layer->isdefaultvisible) echo "true"; else echo "false"; ?>,
+			                     				opacity: <?php echo $layer->opacity;?>
+			                     			},
+			                     			<?php
+			                     			break;
+									}
 								}	
 							}
                      	}

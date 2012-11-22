@@ -121,6 +121,17 @@ class Easysdi_mapModellayer extends JModelAdmin
 			$table->asOL = 0; // if it has not been submitted, mark the field unchecked
 		}
 		
+		$service_id 	= $jform['service_id'];
+		$pos 			= strstr ($service_id, 'physical_');
+		if($pos){
+			$table->physicalservice_id 	= substr ($service_id, strrpos ($service_id, '_')+1);
+			$table->virtualservice_id 		= null;
+		}
+		else {
+			$table->virtualservice_id		= substr ($service_id, strrpos ($service_id, '_')+1);
+			$table->physicalservice_id		= null;
+		}
+		
 		if (empty($table->id)) {
 
 			// Set ordering to the last item if not set
@@ -133,33 +144,5 @@ class Easysdi_mapModellayer extends JModelAdmin
 
 		}
 	}
-	
-	/**
-	 * Method to save the form data.
-	 *
-	 * @param   array  $data  The form data.
-	 *
-	 * @return  boolean  True on success, False on error.
-	 *
-	 * @since   11.1
-	 */
-	public function save($data)
-	{
-		if ($data['service_id']) 
-		{
-			$service_id 	= $data['service_id'];
-			$pos 			= strstr ($service_id, 'physical_');
-			if($pos){
-				$data['physicalservice_id'] 	= substr ($service_id, strrpos ($service_id, '_')+1);
-				$data['virtualservice_id'] 		= null;
-			}
-			else {
-				$data['virtualservice_id'] 		= substr ($service_id, strrpos ($service_id, '_')+1);
-				$data['physicalservice_id']		= null;
-			}
-		}
-		return parent::save($data);
-	}
-	
 
 }

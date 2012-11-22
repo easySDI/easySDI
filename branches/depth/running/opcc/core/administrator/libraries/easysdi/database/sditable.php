@@ -191,7 +191,6 @@ abstract class sdiTable extends JTable
 		// This is a article under a category.
 		if ($this->catid)
 		{
-			
 			// Build the query to get the asset id for the parent category.
 			$query = $this->_db->getQuery(true);
 			$query->select($this->_db->quoteName('asset_id'));
