@@ -111,6 +111,7 @@ $saveOrder	= $listOrder == 'a.ordering';
 			$canEdit	= $user->authorise('core.edit',			'com_easysdi_map');
 			$canCheckin	= $user->authorise('core.manage',		'com_easysdi_map');
 			$canChange	= $user->authorise('core.edit.state',	'com_easysdi_map');
+			
 			?>
 			<tr class="row<?php echo $i % 2; ?>">
 				<td class="center"><?php echo JHtml::_('grid.id', $i, $item->id); ?>
@@ -120,7 +121,7 @@ $saveOrder	= $listOrder == 'a.ordering';
 					<?php if ($item->checked_out) : ?>
 						<?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'group.', $canCheckin); ?>
 					<?php endif; ?>
-					<?php if ($canEdit) : ?>
+					<?php if ($canEdit ) : ?>
 						<a href="<?php echo JRoute::_('index.php?option=com_easysdi_map&task=layer.edit&id='.(int) $item->id); ?>">
 							<?php echo $this->escape($item->name); ?></a>
 					<?php else : ?>

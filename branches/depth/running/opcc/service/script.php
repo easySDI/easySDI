@@ -104,6 +104,7 @@ class com_easysdi_serviceInstallerScript
 			//Create a Bing service
 			$row 						= JTable::getInstance('physicalservice','easysdi_serviceTable');
 			$row->alias					= 'Bing';
+			$row->ordering				= 1;
 			$row->state					= 1;
 			$row->name					= 'Bing';
 			$row->serviceconnector_id	= 12;
@@ -149,6 +150,7 @@ class com_easysdi_serviceInstallerScript
 			$row 						= JTable::getInstance('physicalservice','easysdi_serviceTable');
 			$row->alias					= 'Google';
 			$row->state					= 1;
+			$row->ordering				= 2;
 			$row->name					= 'Google';
 			$row->serviceconnector_id	= 13;
 			$row->resourceurl			= 'https://maps.google.com/maps';
@@ -201,6 +203,7 @@ class com_easysdi_serviceInstallerScript
 			$row 						= JTable::getInstance('physicalservice','easysdi_serviceTable');
 			$row->alias					= 'OSM';
 			$row->state					= 1;
+			$row->ordering				= 3;
 			$row->name					= 'OSM';
 			$row->serviceconnector_id	= 14;
 			$row->resourceurl			= 'http://openstreetmap.org/';
