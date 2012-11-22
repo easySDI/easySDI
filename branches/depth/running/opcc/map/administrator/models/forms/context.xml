@@ -85,11 +85,11 @@
     	        description="COM_EASYSDI_MAP_FORM_DESC_CONTEXT_CENTERCOORDINATES" 
                 filter="safehtml" /> 
 
-       <field 	name="maxresolution" 
+       <field 	name="numzoomlevel" 
        			type="text" 
        			size="40" class="inputbox"
-	            label="COM_EASYSDI_MAP_FORM_LBL_CONTEXT_MAXRESOLUTION"
-    	        description="COM_EASYSDI_MAP_FORM_DESC_CONTEXT_MAXRESOLUTION" 
+	            label="COM_EASYSDI_MAP_FORM_LBL_CONTEXT_NUMZOOMLEVEL"
+    	        description="COM_EASYSDI_MAP_FORM_DESC_CONTEXT_NUMZOOMLEVEL" 
                 filter="safehtml" /> 
 
        <field 	name="maxextent" 

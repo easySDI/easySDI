@@ -335,7 +335,6 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
                 		       	"<?php echo $service->alias ?>":
                         	 	{
 	                	            ptype: "gxp_wmssource",
-	                	            version : "1.1.0",
 	                	            url: "<?php echo $service->url;?>"
                         	 	},
                 		    <?php
@@ -357,7 +356,7 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
                     center: [<?php echo $this->item->centercoordinates;?>],
                     maxExtent : [<?php echo $this->item->maxextent;?>],
                     restrictedExtent: [<?php echo $this->item->maxextent;?>],
-                    numZoomLevels: <?php echo "7";?>,
+                    numZoomLevels: <?php echo $this->item->numzoomlevel;;?>,
                     layers: 
                     [
                      <?php
