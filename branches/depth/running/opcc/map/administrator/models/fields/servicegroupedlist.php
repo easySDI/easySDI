@@ -121,7 +121,7 @@ class JFormFieldServicegroupedList extends JFormField
 		$attr .= $this->multiple ? ' multiple="multiple"' : '';
 
 		// Initialize JavaScript field attributes.
-		$attr .=  ' onchange="javascript:getLayers(this)"' ;
+// 		$attr .=  ' onchange="javascript:getLayers(this)"' ;
 
 		// Get the field groups.
 		$groups = (array) $this->getGroups();

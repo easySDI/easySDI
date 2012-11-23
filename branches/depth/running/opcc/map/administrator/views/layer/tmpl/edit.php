@@ -36,7 +36,10 @@ $document->addStyleSheet('components/com_easysdi_map/assets/css/easysdi_map.css'
 		while ( layername_select.options.length > 0 ) layername_select.options[0] = null;
 		
 		var idx = selectObj.selectedIndex; 
+		
 		selectedservice = selectObj.options[idx].value;
+		user = document.getElementById('jform_user').value;
+		password = document.getElementById('jform_password').value;
 		if (document.getElementById(selectedservice))
 		{
 			var jsonalllayers = document.getElementById(selectedservice).value; 
@@ -64,7 +67,7 @@ $document->addStyleSheet('components/com_easysdi_map/assets/css/easysdi_map.css'
 		    if(!request)
 			    return;
 
-		    var query 			= "index.php?option=com_easysdi_map&task=getLayers&service="+selectedservice;
+		    var query 			= "index.php?option=com_easysdi_map&task=getLayers&service="+selectedservice+"&user="+user+"&password="+password;
 			
 		    document.getElementById("progress").style.visibility = "visible";
 		    request.onreadystatechange = setLayers;
@@ -83,26 +86,32 @@ $document->addStyleSheet('components/com_easysdi_map/assets/css/easysdi_map.css'
 			var JSONtext = request.responseText;
 			
 			if(JSONtext == "[]"){
-				
 				return;
 			}
 
-			var input = document.createElement("input");
-			input.setAttribute("type", "hidden");
-			input.setAttribute("name", selectedservice);
-			input.setAttribute("id", selectedservice);
-			input.setAttribute("value", JSONtext);
-			document.getElementById("layer-form").appendChild(input);
+			
+			var ok = true;
 			
 			var JSONobject = JSON.parse(JSONtext, function (key, value) {
 				if(key && typeof key === 'string' && key == 'ERROR'){
-					alert(value);   	
+					alert(value);   
+					ok = false;	
 					return;
 			    }
 			    if (value && typeof value === 'string') {
 			    	addLayerOption(value, value);
 			    }
 			});
+
+			if(ok)
+			{
+				var input = document.createElement("input");
+				input.setAttribute("type", "hidden");
+				input.setAttribute("name", selectedservice);
+				input.setAttribute("id", selectedservice);
+				input.setAttribute("value", JSONtext);
+				document.getElementById("layer-form").appendChild(input);
+			}
 	    }
 	}
 
@@ -165,8 +174,19 @@ $document->addStyleSheet('components/com_easysdi_map/assets/css/easysdi_map.css'
 					}
 					continue;
 					} ?>
+				<?php
+				if($field->name=="jform[service_id]"){
+					?>
+					<li><?php echo $field->label;echo $field->input;  echo $this->form->getField('getlayers')->input;?></li>
+					 
+					<?php 
+					continue;
+				}
+				?>
 				<li><?php echo $field->label;echo $field->input;?></li>
 				<?php endforeach; ?>
+				
+				
 			</ul>
 		</fieldset>
 	</div>

@@ -34,6 +34,8 @@ CREATE TABLE IF NOT EXISTS `#__sdi_map_layer` (
 `physicalservice_id` INT(11) UNSIGNED   ,
 `virtualservice_id` INT(11) UNSIGNED   ,
 `layername` VARCHAR(255)  NOT NULL ,
+`user` VARCHAR(255)   ,
+`password` VARCHAR(255)  ,
 `istiled` BOOLEAN NOT NULL DEFAULT '0',
 `isdefaultvisible` BOOLEAN NOT NULL DEFAULT '0' ,
 `opacity` DECIMAL (10,5) NOT NULL DEFAULT '1',

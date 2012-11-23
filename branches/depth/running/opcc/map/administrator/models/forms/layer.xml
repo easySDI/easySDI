@@ -36,6 +36,27 @@
 				description="COM_EASYSDI_MAP_FORM_DESC_LAYER_SERVICE_ID" 
                 required="true"
                  />
+                 
+       
+       <fieldset name="service_authentication">
+		 <field 	
+		 		name="user" 
+       			type="text" 
+       			size="40" class="inputbox"
+       			required="false" 
+	            label="COM_EASYSDI_MAP_FORM_LBL_LAYER_USER"
+    	        description="COM_EASYSDI_MAP_FORM_DESC_LAYER_USER" 
+                filter="safehtml" />
+                
+       <field 	name="password" 
+       			type="text" 
+       			size="40" class="inputbox"
+       			required="false" 
+	            label="COM_EASYSDI_MAP_FORM_LBL_LAYER_PASSWORD"
+    	        description="COM_EASYSDI_MAP_FORM_DESC_LAYER_PASSWORD" 
+                filter="safehtml"  />
+	</fieldset>      
+       
 
        <field 	name="layername" 
        			type="list" 
@@ -106,6 +127,13 @@
         <field name="asset_id" type="hidden" filter="SAFEHTML" />
 	</fieldset>
 
+ 	<field 	name="getlayers" 
+				type="getlayersbutton" 
+				label="COM_EASYSDI_MAP_FORM_LBL_GETLAYERS"
+				description="COM_EASYSDI_MAP_FORM_DESC_GETLAYERS" 
+				filter="safehtml" />
+	
+	
 	<fieldset name="openlayers">
 		 <field 	name="asOL" 
        			type="checkbox" 
