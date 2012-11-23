@@ -6359,7 +6359,7 @@ function array2extjs($arr, $simple, $multi = false, $textlist = false) {
 				?>
 				<tr>
 					<td><?php echo JText::_("CATALOG_METADATA_ASSIGN_SELECTION_CHILDREN"); ?></td>
-					<td><?php echo JHTML::_('select.booleanlist', 'children', '', '');?></td>
+					<td><?php echo JHTML::_('select.booleanlist', 'children', '', '', JText::_("CORE_YES"), JText::_("CORE_NO"));?></td>
 				</tr>
 				<?php }?>
 				</tbody>
