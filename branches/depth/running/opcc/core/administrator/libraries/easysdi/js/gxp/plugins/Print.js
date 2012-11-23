@@ -20,7 +20,7 @@
 /** api: (extends)
  *  plugins/Tool.js
  */
-Ext.namespace("sdi.plugins");
+Ext.namespace("sdi.gxp.plugins");
 
 /** api: constructor
  *  .. class:: Print(config)
@@ -28,9 +28,10 @@ Ext.namespace("sdi.plugins");
  *    Provides an action to print the map. Requires GeoExt.ux.PrintPreview,
  *    which is currently mirrored at git://github.com/GeoNode/PrintPreview.git.
  */
-sdi.plugins.Print = Ext.extend(gxp.plugins.Print, {
+sdi.gxp.plugins.Print = Ext.extend(gxp.plugins.Print, {
     
-   
+	/** api: ptype = gxp_print */
+    ptype: "sdi_gxp_print",
 
     /** api: method[addActions]
      */
@@ -38,9 +39,11 @@ sdi.plugins.Print = Ext.extend(gxp.plugins.Print, {
         // don't add any action if there is no print service configured
         if (this.printService !== null || this.printCapabilities != null) {
 
-            var printProvider = new GeoExt.data.PrintProvider({
+            var printProvider = new sdi.geoext.data.PrintProvider({
                 capabilities: this.printCapabilities,
                 url: this.printService,
+                printurl: this.printURL,
+                createurl: this.createURL,
                 customParams: this.customParams,
                 autoLoad: false,
                 listeners: {
@@ -272,4 +275,4 @@ sdi.plugins.Print = Ext.extend(gxp.plugins.Print, {
 
 });
 
-Ext.preg(sdi.plugins.Print.prototype.ptype, sdi.plugins.Print);
+Ext.preg(sdi.gxp.plugins.Print.prototype.ptype, sdi.gxp.plugins.Print);

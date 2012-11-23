@@ -44,3 +44,17 @@ div.map-overlay {
 	border-width: 0px !important;
 	
 }
+
+.sdiMDlink a {
+    font-weight: bold !important;
+    color :  #FF0000;
+}
+.sdiMDlink a:visited {
+    color :  #00FF00;
+}
+.sdiMDlink a:hover {
+    color :  #FF00FF;
+}
+.sdiMDlink a:active {
+    color :  #0000FF;
+}

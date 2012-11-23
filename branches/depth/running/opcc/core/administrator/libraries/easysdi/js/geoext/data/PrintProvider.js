@@ -18,7 +18,7 @@
  *  class = PrintProvider
  *  base_link = `Ext.util.Observable <http://dev.sencha.com/deploy/dev/docs/?class=Ext.util.Observable>`_
  */
-Ext.namespace("sdi.data");
+Ext.namespace("sdi.geoext.data");
 
 /** api: example
  *  Minimal code to print as much of the current map extent as possible as
@@ -56,7 +56,7 @@ Ext.namespace("sdi.data");
  *  to tell the PrintProvider about the scale and extent (and optionally
  *  rotation) of the page(s) we want to print. 
  */
-sdi.data.PrintProvider = Ext.extend(GeoExt.data.PrintProvide, {
+sdi.geoext.data.PrintProvider = Ext.extend(GeoExt.data.PrintProvider, {
    
     
     /** api: method[loadCapabilities]
@@ -77,8 +77,8 @@ sdi.data.PrintProvider = Ext.extend(GeoExt.data.PrintProvide, {
             disableCaching: false,
             success: function(response) {
                 this.capabilities = Ext.decode(response.responseText);
-                this.capabilities.createURL = this.url + "create.json";
-                this.capabilities.printURL = this.url + "print.pdf";
+                this.capabilities.createURL = this.createurl ;
+                this.capabilities.printURL = this.printurl ;
                 this.loadStores();
             },
             params: this.initialConfig.baseParams,

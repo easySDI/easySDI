@@ -114,6 +114,7 @@ class Easysdi_mapHelper
 		curl_close($session);
 		
 		$xmlCapa = simplexml_load_string($response);
+		
 		$result = array();
 		if ($xmlCapa === false)
 		{

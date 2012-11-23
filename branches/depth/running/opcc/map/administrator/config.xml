@@ -4,14 +4,44 @@
 		label="COM_EASYSDI_MAP_COMPONENT_LABEL"
 		description="COM_EASYSDI_MAP_COMPONENT_DESC"
 	>
+	
+	<field name="proxyhost"
+             type="text"
+             default="/cgi-bin/proxy.cgi?url="
+             size="100"
+             required="true"
+             label="COM_EASYSDI_MAP_LBL_PROXY_HOST"
+             description="COM_EASYSDI_MAP_DESC_PROXY_HOST" />
+	</fieldset>
+	
+	
 	<field name="printserviceurl"
              type="text"
-             default="http://localhost:8080/print/"
+             default="http://localhost/geoserver/pdf/"
              size="100"
              required="true"
              label="COM_EASYSDI_MAP_LBL_PRINT_SERVICE_URL"
              description="COM_EASYSDI_MAP_DESC_PRINT_SERVICE_URL" />
 	</fieldset>
+	
+	<field name="printserviceprinturl"
+             type="text"
+             default="http://localhost/geoserver/pdf/print.pdf"
+             size="100"
+             required="true"
+             label="COM_EASYSDI_MAP_LBL_PRINT_SERVICE_PRINT_URL"
+             description="COM_EASYSDI_MAP_DESC_PRINT_SERVICE_PRINT_URL" />
+	</fieldset>
+	
+	<field name="printservicecreateurl"
+             type="text"
+             default="http://localhost/geoserver/pdf/create.json"
+             size="100"
+             required="true"
+             label="COM_EASYSDI_MAP_LBL_PRINT_SERVICE_CREATE_URL"
+             description="COM_EASYSDI_MAP_DESC_PRINT_SERVICE_CREATE_URL" />
+	</fieldset>
+	
 	
 	<fieldset name="permissions"
 		description="JCONFIG_PERMISSIONS_DESC"

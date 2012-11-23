@@ -216,6 +216,7 @@ gxp.plugins.LayerTree = Ext.extend(gxp.plugins.Tool, {
                 if (record.get("fixed")) {
                     attr.allowDrag = false;
                 }
+               
                 attr.listeners = {
                     rendernode: function(node) {
                         if (record === this.target.selectedLayer) {

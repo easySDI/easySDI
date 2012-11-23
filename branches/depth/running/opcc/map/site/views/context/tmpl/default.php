@@ -17,13 +17,16 @@ $user = JFactory::getUser();
 
 if( $this->item ) : 
 
-JHTML::script('ext-base.js', 'administrator/components/com_easysdi_core/libraries/ext/adapter/ext/');
-JHTML::script('ext-all.js', 'administrator/components/com_easysdi_core/libraries/ext/');
+JHTML::script('ext-base-debug.js', 'administrator/components/com_easysdi_core/libraries/ext/adapter/ext/');
+JHTML::script('ext-all-debug.js', 'administrator/components/com_easysdi_core/libraries/ext/');
 JHTML::script('RowExpander.js', 'administrator/components/com_easysdi_core/libraries/ux/ext/');
 JHTML::script('OpenLayers.js', 'administrator/components/com_easysdi_core/libraries/openlayers/lib/');
 JHTML::script('GeoExt.js', 'administrator/components/com_easysdi_core/libraries/geoext/lib/');
 JHTML::script('PrintPreview.js', 'administrator/components/com_easysdi_core/libraries/ux/GeoExt/');
 JHTML::script('loader.js', 'administrator/components/com_easysdi_core/libraries/gxp/script/');
+JHTML::script('LayerTree.js', 'administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/plugins/');
+JHTML::script('Print.js', 'administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/plugins/');
+JHTML::script('PrintProvider.js', 'administrator/components/com_easysdi_core/libraries/easysdi/js/geoext/data/');
 
 JHTML::_('stylesheet', 'ext-all.css', 'administrator/components/com_easysdi_core/libraries/ext/resources/css/');
 JHTML::_('stylesheet', 'xtheme-gray.css', 'administrator/components/com_easysdi_core/libraries/ext/resources/css/');
@@ -45,7 +48,9 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
 			
             app = new gxp.Viewer(
             {
-            	proxy:"/cgi-bin/proxy.cgi?url=",
+            	<?php
+            	if 
+            	?> proxy:"/cgi-bin/proxy.cgi?url=",
             	about: { 
 			    	title: "<?php echo $this->item->title;?>", 
 			    	"abstract": "<?php echo $this->item->abstract;?>" 
@@ -108,7 +113,7 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
                 tools: 
                 [
 					{
-					    ptype: "gxp_layertree",
+					    ptype: "sdi_gxp_layertree",
 					    outputConfig: {
 					        id: "tree",
 					        border: true,
@@ -273,9 +278,11 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
                                 actionTarget: "map.tbar"
                             },
                 			{
-                				ptype: "gxp_print",
+                				ptype: "sdi_gxp_print",
                 				customParams: {outputFilename: 'GeoExplorer-print'},
                 			    printService: "<?php echo $this->params->get('printserviceurl');?>",
+                			    printURL: "<?php echo $this->params->get('printserviceprinturl');?>",
+                			    createURL: "<?php echo $this->params->get('printservicecreateurl');?>",
                 			    includeLegend: true, 
                 			    actionTarget: "map.tbar",
                 			    showButtonText: true
@@ -423,7 +430,7 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
 													"<?php echo $layer->serviceurl;?>",
 													{
 														layers: "<?php echo $layer->layername;?>", 
-                     						            visibility: <?php  if ($layer->isdefaultvisible) echo "true"; else echo "false"; ?>,
+														visibility: <?php  if ($layer->isdefaultvisible) echo "true"; else echo "false"; ?>,
                      						            opacity: <?php echo $layer->opacity;?>,
                      						            <?php
                      						            if(!empty($layer->asOLparams))
@@ -449,6 +456,9 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
 	                     			    	?>
 											{
 			                     				source: "<?php echo $layer->servicealias;  ?>",
+			                     				<?php if (!empty($layer->metadatalink)){?>
+			                     				metadataURL: "<?php echo $layer->metadatalink;  ?>",
+			                     				<?php }?>
 			                     				name: "<?php echo $layer->layername;?>",
 			                     				group: "<?php echo $group->alias;?>",
 			                     				<?php if ($group->alias == "background") echo "fixed: true,";?>
