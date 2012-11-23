@@ -36,7 +36,7 @@ JHTML::_('stylesheet', 'all.css', 'administrator/components/com_easysdi_core/lib
 JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tmpl/theme/app/');
 ?>
       <script>
-        var app;
+      	  var app;
 
 		Ext.onReady(function(){
 			OpenLayers.ImgPath = "administrator/components/com_easysdi_core/libraries/openlayers/img/";
@@ -45,7 +45,7 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
 			
             app = new gxp.Viewer(
             {
-            	 
+            	proxy:"/cgi-bin/proxy.cgi?url=",
             	about: { 
 			    	title: "<?php echo $this->item->title;?>", 
 			    	"abstract": "<?php echo $this->item->abstract;?>" 

@@ -75,6 +75,9 @@ class Easysdi_mapModellayers extends JModelList
 
 		$published = $app->getUserStateFromRequest($this->context.'.filter.state', 'filter_published', '', 'string');
 		$this->setState('filter.state', $published);
+		
+		$group = $app->getUserStateFromRequest($this->context.'.filter.group', 'filter_group', '');
+		$this->setState('filter.group', $group);
 
 		// Load the parameters.
 		$params = JComponentHelper::getParams('com_easysdi_map');
@@ -102,9 +105,22 @@ class Easysdi_mapModellayers extends JModelList
 		$id .= ':' . $this->getState('filter.state');
 		$id	.= ':'. $this->getState('filter.access');
 		$id	.= ':'. $this->getState('filter.published');
+		$id .= ':' . $this->getState('filter.group');
 
 		return parent::getStoreId($id);
 	}
+	
+	
+	
+	public function getGroups()
+	{
+		$db 				= JFactory::getDBO();
+		$query				= "SELECT id as value, name as text FROM #__sdi_map_group WHERE state=1" ;
+		$db->setQuery($query);
+		
+		return $db->loadObjectList();
+	}
+	
 
 	/**
 	 * Build an SQL query to load the list data.
@@ -174,7 +190,11 @@ class Easysdi_mapModellayers extends JModelList
 			$query->where('(a.state IN (0, 1))');
 		}
 
-
+		// Filter by group.
+		if ($group = $this->getState('filter.group')) {
+			$query->where('#__sdi_map_group_277305.id = ' . (int) $group);
+		}
+		
 		// Filter by search in title
 		$search = $this->getState('filter.search');
 		if (!empty($search)) {

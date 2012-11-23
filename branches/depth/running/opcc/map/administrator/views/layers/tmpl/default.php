@@ -58,6 +58,13 @@ $saveOrder	= $listOrder == 'a.ordering';
 				</option>
 				<?php echo JHtml::_('select.options', JHtml::_('access.assetgroups'), 'value', 'text', $this->state->get('filter.access'));?>
 			</select>
+			</select> <select name="filter_group" class="inputbox"
+				onchange="this.form.submit()">
+				<option value="">
+					<?php echo JText::_('COM_EASYSDI_MAP_SELECT_GROUP');?>
+				</option>
+				<?php echo JHtml::_('select.options', $this->groups, 'value', 'text', $this->state->get('filter.group'));?>
+			</select>
 		</div>
 
 

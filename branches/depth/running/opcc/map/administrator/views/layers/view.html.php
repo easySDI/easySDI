@@ -28,6 +28,7 @@ class Easysdi_mapViewLayers extends JView
 	{
 		$this->state		= $this->get('State');
 		$this->items		= $this->get('Items');
+		$this->groups		= $this->get('Groups');
 		$this->pagination	= $this->get('Pagination');
 
 		// Check for errors.
@@ -35,7 +36,7 @@ class Easysdi_mapViewLayers extends JView
 			JError::raiseError(500, implode("\n", $errors));
 			return false;
 		}
-
+		
 		$this->addToolbar();
 		parent::display($tpl);
 	}
