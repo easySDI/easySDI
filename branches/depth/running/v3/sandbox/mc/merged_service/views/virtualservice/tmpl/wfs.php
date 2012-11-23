@@ -17,8 +17,6 @@ JHTML::_('script','system/multiselect.js',false,true);
 $document = JFactory::getDocument();
 $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_service.css');
 
-//var_dump($this);
-//var_dump($this->getModel('virtualservice'));
 
 ?>
 <form action="<?php echo JRoute::_('index.php?option=com_easysdi_service&view=virtualservice&id='.JRequest::getVar('id',null)); ?>" method="post" name="adminForm" id="item-form" class="form-validate">
@@ -31,6 +29,13 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 				<?php endforeach; ?>
 				<script>
 					var obj = document.getElementById('jform_sys_serviceconnector_id');
+					var servicetype = '<?php echo JRequest::getVar('layout', null); ?>';
+					for (var i = 0; i < obj.options.length; i++) {
+						if (servicetype == obj.options[i].text) {
+							obj.selectedIndex = i;
+							break;
+						}
+					}
 					obj.onchange = function () {
 						window.location = "<?php echo html_entity_decode(JRoute::_('index.php?option=com_easysdi_service&view=virtualservice&id='.JRequest::getVar('id',null).'&layout=')); ?>" + obj.options[obj.selectedIndex].text;
 					};
@@ -55,7 +60,7 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 		</fieldset>
 		<fieldset class="adminform"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_LEGEND_METADATA' );?></legend>
 			<ul class="adminformlist">
-				<?php foreach($this->form->getFieldset('metadata_wfs') as $field): ?>
+				<?php foreach($this->form->getFieldset('metadata') as $field): ?>
 					
 					<li><?php echo $field->label;echo $field->input;?></li>
 				<?php endforeach; ?>
@@ -85,6 +90,17 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 				<?php endforeach; ?>
 			</ul>
 		</fieldset>
+	</div>
+	<div class="width-100 fltlft">
+		<?php echo JHtml::_('sliders.start', 'permissions-sliders-'.$this->item->id, array('useCookie'=>1)); ?>
+
+			<?php echo JHtml::_('sliders.panel', JText::_('COM_EASYSDI_SERVICE_FIELDSET_RULES'), 'access-rules'); ?>
+			<fieldset class="panelform">
+				<?php echo $this->form->getLabel('rules'); ?>
+				<?php echo $this->form->getInput('rules'); ?>
+			</fieldset>
+
+		<?php echo JHtml::_('sliders.end'); ?>
 	</div>
 
 	<input type="hidden" name="layout" id="layout" value="wms" />

@@ -39,6 +39,25 @@
 		<field name="contactFax" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_METADATA_CONTACT_FAX" description="" filter="safehtml"/>
 		<field name="contactEmail" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_METADATA_CONTACT_MAIL" description="" filter="safehtml"/>
 	</fieldset>
+	<fieldset name="metadata">
+		<field name="title" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_METADATA_TITLE" description="" filter="safehtml" required="true"/>
+		<field name="summary" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_METADATA_ABSTRACT" description="" filter="safehtml"/>
+		<field name="keyword" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_METADATA_KEYWORD" description="" filter="safehtml"/>
+		<field name="fee" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_METADATA_FEES" description="" filter="safehtml"/>
+		<field name="accessconstraint" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_METADATA_CONSTRAINTS" description="" filter="safehtml"/>
+	</fieldset>
+	<fieldset name="rulesdefinition">
+		<field 	name="rules" 
+				type="rules" 
+				label="JFIELD_RULES_LABEL"
+				translate_label="true" 
+				class="inputbox" 
+				filter="rules"
+				component="com_easysdi_core" 
+				section="user" 
+				validate="rules"
+		/>
+	</fieldset>
 	<fieldset name="wms">
 		<field name="name" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_NAME" description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_NAME" filter="safehtml" required="true"/>
 		<field name="alias" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_ALIAS" description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_ALIAS" filter="safehtml"/>
@@ -57,14 +76,7 @@
 		<field name="id" type="hidden" filter="unset"/>
 		<field name="guid" type="hidden" filter="unset"/>
 		<field name="asset_id" type="hidden" filter="SAFEHTML"/>
-		<field name="harvester" type="hidden" default="false"/>
-	</fieldset>
-	<fieldset name="metadata_wms">
-		<field name="title" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_METADATA_TITLE" description="" filter="safehtml" required="true"/>
-		<field name="abstract" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_METADATA_ABSTRACT" description="" filter="safehtml"/>
-		<field name="keyword" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_METADATA_KEYWORD" description="" filter="safehtml"/>
-		<field name="fee" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_METADATA_FEES" description="" filter="safehtml"/>
-		<field name="constraints" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_METADATA_CONSTRAINTS" description="" filter="safehtml"/>
+		<field name="harvester" type="hidden" default="0"/>
 	</fieldset>
 	<fieldset name="wfs">
 		<field name="name" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_NAME" description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_NAME" filter="safehtml" required="true"/>
@@ -83,14 +95,7 @@
 		<field name="id" type="hidden" filter="unset"/>
 		<field name="guid" type="hidden" filter="unset"/>
 		<field name="asset_id" type="hidden" filter="SAFEHTML"/>
-		<field name="harvester" type="hidden" default="false"/>
-	</fieldset>
-	<fieldset name="metadata_wfs">
-		<field name="title" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_METADATA_TITLE" description="" filter="safehtml" required="true"/>
-		<field name="abstract" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_METADATA_ABSTRACT" description="" filter="safehtml"/>
-		<field name="keyword" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_METADATA_KEYWORD" description="" filter="safehtml"/>
-		<field name="fee" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_METADATA_FEES" description="" filter="safehtml"/>
-		<field name="constraints" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_METADATA_CONSTRAINTS" description="" filter="safehtml"/>
+		<field name="harvester" type="hidden" default="0"/>
 	</fieldset>
 	<fieldset name="csw">
 		<field name="name" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_FORM_LBL_VIRTUALSERVICE_NAME" description="COM_EASYSDI_SERVICE_FORM_DESC_VIRTUALSERVICE_NAME" filter="safehtml" required="true"/>
@@ -111,13 +116,6 @@
 		<field name="id" type="hidden" filter="unset"/>
 		<field name="guid" type="hidden" filter="unset"/>
 		<field name="asset_id" type="hidden" filter="SAFEHTML"/>
-	</fieldset>
-	<fieldset name="metadata_csw">
-		<field name="title" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_METADATA_TITLE" description="" filter="safehtml" required="true"/>
-		<field name="abstract" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_METADATA_ABSTRACT" description="" filter="safehtml"/>
-		<field name="keyword" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_METADATA_KEYWORD" description="" filter="safehtml"/>
-		<field name="fee" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_METADATA_FEES" description="" filter="safehtml"/>
-		<field name="constraints" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_METADATA_CONSTRAINTS" description="" filter="safehtml"/>
 	</fieldset>
 	<fieldset name="contact_csw">
 		<field name="contactURL" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_METADATA_CONTACT_LINKAGE" description="" filter="safehtml"/>
@@ -141,14 +139,7 @@
 		<field name="id" type="hidden" filter="unset"/>
 		<field name="guid" type="hidden" filter="unset"/>
 		<field name="asset_id" type="hidden" filter="SAFEHTML"/>
-		<field name="harvester" type="hidden" default="false"/>
-	</fieldset>
-	<fieldset name="metadata_wmts">
-		<field name="title" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_METADATA_TITLE" description="" filter="safehtml" required="true"/>
-		<field name="abstract" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_METADATA_ABSTRACT" description="" filter="safehtml"/>
-		<field name="keyword" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_METADATA_KEYWORD" description="" filter="safehtml"/>
-		<field name="fee" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_METADATA_FEES" description="" filter="safehtml"/>
-		<field name="constraints" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_METADATA_CONSTRAINTS" description="" filter="safehtml"/>
+		<field name="harvester" type="hidden" default="0"/>
 	</fieldset>
 	<fieldset name="contact_wmts">
 		<field name="contactURL" type="text" size="40" class="inputbox" label="COM_EASYSDI_SERVICE_METADATA_CONTACT_LINKAGE" description="" filter="safehtml"/>

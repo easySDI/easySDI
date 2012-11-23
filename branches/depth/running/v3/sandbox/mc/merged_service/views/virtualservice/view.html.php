@@ -180,6 +180,7 @@ class Easysdi_serviceViewVirtualservice extends JViewLegacy
 		</script>
 		
 		<?php
+		
 		$params 			= JComponentHelper::getParams('com_easysdi_service');
 		$this->id 			= JRequest::getVar('id',null);
 		

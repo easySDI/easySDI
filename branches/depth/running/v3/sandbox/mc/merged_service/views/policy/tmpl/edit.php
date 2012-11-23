@@ -45,6 +45,17 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
             </ul>
 		</fieldset>
 	</div>
+	<div class="width-100 fltlft">
+		<?php echo JHtml::_('sliders.start', 'permissions-sliders-'.$this->item->id, array('useCookie'=>1)); ?>
+
+			<?php echo JHtml::_('sliders.panel', JText::_('COM_EASYSDI_SERVICE_FIELDSET_RULES'), 'access-rules'); ?>
+			<fieldset class="panelform">
+				<?php echo $this->form->getLabel('rules'); ?>
+				<?php echo $this->form->getInput('rules'); ?>
+			</fieldset>
+
+		<?php echo JHtml::_('sliders.end'); ?>
+	</div>
 
 
 	<input type="hidden" name="task" value="" />

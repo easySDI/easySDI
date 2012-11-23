@@ -56,6 +56,9 @@ $saveOrder	= $listOrder == 'a.ordering';
 				<th class='left'>
 				<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SERVICE_VIRTUALSERVICES_NAME', 'a.name', $listDirn, $listOrder); ?>
 				</th>
+				<th width="5%" class='center'>
+				<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SERVICE_VIRTUALSERVICE_POLICIES_LIST', 'a.name', $listDirn, $listOrder); ?>
+				</th>
 				<th class='left'>
 				<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SERVICE_VIRTUALSERVICES_ALIAS', 'a.alias', $listDirn, $listOrder); ?>
 				</th>
@@ -128,6 +131,11 @@ $saveOrder	= $listOrder == 'a.ordering';
 				<?php else : ?>
 					<?php echo $this->escape($item->name); ?>
 				<?php endif; ?>
+				</td>
+				<td class="center">
+					<a href="<?php echo JRoute::_('index.php?option=com_easysdi_service&view=policies&virtualservice_id='.(int) $item->id); ?>">
+						<img src="<?php echo JURI::root(true); ?>/administrator/components/com_easysdi_service/assets/images/s_policieslist.png" border="0">
+					</a>
 				</td>
 				<td>
 					<?php echo $item->alias; ?>

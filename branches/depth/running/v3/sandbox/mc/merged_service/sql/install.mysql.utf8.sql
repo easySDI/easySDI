@@ -250,6 +250,8 @@ CREATE TABLE IF NOT EXISTS `#__sdi_virtualservice` (
 `loglevel_id` INT(11) UNSIGNED NOT NULL ,
 `logroll_id` INT(11) UNSIGNED NOT NULL ,
 `physicalservice_id` INT(11) UNSIGNED NOT NULL ,
+`access` INT(10)  NOT NULL DEFAULT '1',
+`asset_id` INT(10)  ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
@@ -314,6 +316,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_policy` (
 `checked_out` INT(11)  NOT NULL ,
 `checked_out_time` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `created_by` INT(11)  NOT NULL ,
+`created` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
 `anonymousaccess` BOOLEAN NOT NULL DEFAULT '1',
 `anygroup` BOOLEAN NOT NULL DEFAULT '1',
 `anyoperation` BOOLEAN NOT NULL DEFAULT '1',
@@ -334,6 +337,8 @@ CREATE TABLE IF NOT EXISTS `#__sdi_policy` (
 `wms_minimumheight` INT(11)  NOT NULL ,
 `wms_maximumwidth` INT(11)  NOT NULL ,
 `wms_maximumheight` INT(11)  NOT NULL ,
+`access` INT(10)  NOT NULL DEFAULT '1',
+`asset_id` INT(10)  ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 

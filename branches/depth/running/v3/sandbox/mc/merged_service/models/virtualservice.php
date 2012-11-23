@@ -92,7 +92,19 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
 		if ($item = parent::getItem($pk)) {
 
 			//Do any procesing on fields here if needed
-
+			//inserting virtualmetadata content in virtualservice for display of edit form
+			JTable::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'tables');
+			$metadata =& JTable::getInstance('virtualmetadata', 'Easysdi_serviceTable');
+			$metadata->loadByVirtualServiceID(JRequest::getVar('id',null));
+			$item_fields = Array();
+			foreach ($item as $key => $value) {
+				$item_fields[] = $key;
+			}
+			foreach ($metadata->getFields() as $field) {
+				if (!in_array($field->Field, $item_fields)) {
+					$item->{$field->Field} = $metadata->{$field->Field};
+				}
+			}
 		}
 
 		return $item;

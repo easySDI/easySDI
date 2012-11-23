@@ -23,6 +23,8 @@ $listOrder	= $this->state->get('list.ordering');
 $listDirn	= $this->state->get('list.direction');
 $canOrder	= $user->authorise('core.edit.state', 'com_easysdi_service');
 $saveOrder	= $listOrder == 'a.ordering';
+
+
 ?>
 
 <form action="<?php echo JRoute::_('index.php?option=com_easysdi_service&view=policies'); ?>" method="post" name="adminForm" id="adminForm">
