@@ -435,15 +435,22 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
 													"<?php echo $layer->serviceurl;?>",
 													{
 														layers: "<?php echo $layer->layername;?>", 
+														version:"1.3.0",
 														visibility: <?php  if ($layer->isdefaultvisible) echo "true"; else echo "false"; ?>,
-                     						            opacity: <?php echo $layer->opacity;?>,
-                     						            <?php
+                     						            opacity: <?php echo $layer->opacity;?>
+													}
+													<?php
                      						            if(!empty($layer->asOLparams))
                      						            {
-                     						            	echo  $layer->asOLparams;
-                     						            }
-                     						            ?>
-													}
+                     						            	?>
+                     						            	,{
+                         						           	<?php 
+	                     						            	echo  $layer->asOLparams;
+	                     						            ?>
+                     						            	}
+	                     						        	<?php
+	                     						        }
+	                     						        ?>
                                 				],
                     						    group: "<?php echo $group->alias;?>"
                      						},

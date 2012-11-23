@@ -140,6 +140,7 @@ $document->addStyleSheet('components/com_easysdi_map/assets/css/easysdi_map.css'
 		if(document.getElementById ('jform_asOL').checked == true)
 		{
 			document.getElementById ('jform_asOLparams').disabled = false;
+			document.getElementById ('jform_asOLparams').value = "";
 		}
 		else
 		{
