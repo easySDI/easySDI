@@ -49,8 +49,14 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
             app = new gxp.Viewer(
             {
             	<?php
-            	if 
-            	?> proxy:"/cgi-bin/proxy.cgi?url=",
+            	$proxyhost = $this->params->get('proxyhost');
+            	if (!empty($proxyhost))
+            	{
+            	?> 
+            	proxy:"/cgi-bin/proxy.cgi?url=",
+                <?php
+				}
+                ?>
             	about: { 
 			    	title: "<?php echo $this->item->title;?>", 
 			    	"abstract": "<?php echo $this->item->abstract;?>" 

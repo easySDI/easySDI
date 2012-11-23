@@ -12,8 +12,6 @@
              required="true"
              label="COM_EASYSDI_MAP_LBL_PROXY_HOST"
              description="COM_EASYSDI_MAP_DESC_PROXY_HOST" />
-	</fieldset>
-	
 	
 	<field name="printserviceurl"
              type="text"
@@ -22,7 +20,6 @@
              required="true"
              label="COM_EASYSDI_MAP_LBL_PRINT_SERVICE_URL"
              description="COM_EASYSDI_MAP_DESC_PRINT_SERVICE_URL" />
-	</fieldset>
 	
 	<field name="printserviceprinturl"
              type="text"
@@ -31,7 +28,6 @@
              required="true"
              label="COM_EASYSDI_MAP_LBL_PRINT_SERVICE_PRINT_URL"
              description="COM_EASYSDI_MAP_DESC_PRINT_SERVICE_PRINT_URL" />
-	</fieldset>
 	
 	<field name="printservicecreateurl"
              type="text"
