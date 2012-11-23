@@ -33,3 +33,14 @@ div.map-overlay {
     left: 10px !important;
     right :auto !important
 }
+
+.gxp-icon-getfeatureinfo{
+	height: 0px !important;
+	width: 0px !important;
+}
+
+#hiddentbar{
+	padding: 0px !important;
+	border-width: 0px !important;
+	
+}

@@ -90,7 +90,16 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
 	                        layout: "fit",
 	                        region: "west",
 	                        width: 200
-                    	}
+                    	},
+                    	{
+                     		id:"hiddentbar",
+						    xtype:"toolbar",
+						    border: false,
+						    height:0,
+						    region:"south",
+						    items:[]
+						    
+						}
                     ],
                     
                 },
@@ -193,6 +202,10 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
                 		case 'measure':
                 			?>
                 			{
+                                actions: ["-"],
+                                actionTarget: "map.tbar"
+                            },
+                			{
                 				ptype: "gxp_measure",
                                 actionTarget: "map.tbar",
                                 toggleGroup: "interaction"
@@ -228,15 +241,12 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
                 		
                 		case 'getfeatureinfo':
                 			?>
-                			{
-                                actions: ["-"],
-                                actionTarget: "map.tbar"
-                            },
+                			
                 			{
                 				ptype: "gxp_wmsgetfeatureinfo",
                 				toggleGroup: "interaction", 
                 				format: "grid", 
-                				outputTarget: "map.tbar",
+                				actionTarget: "hiddentbar",
                 				defaultAction: 0
                 			},
                 			<?php 
