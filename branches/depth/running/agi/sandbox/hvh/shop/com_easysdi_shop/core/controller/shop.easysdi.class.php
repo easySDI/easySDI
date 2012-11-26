@@ -1323,41 +1323,29 @@ function validateForm(toStep, fromStep){
 		}else{
 			
 			$resource = JRequest::getVar('resource');
-			
 			if($resource){
-				$handle = fopen($resource, "r");
-				if(!$handle)
-				{
-					echo "error while opening file";
-					die();
-				}
-				
 				$pos = strrpos($resource,("/"),-1);
 				if($pos === false)
 					$fileName = "grid.zip";
 				else
 					$fileName = substr ($resource, $pos+1, strlen($resource)-1);
 				
-				$pos = strrpos($resource,("."),-1);
-				if($pos === false)
-					$fileExtension = "zip";
-				else
-					$fileExtension = substr ($resource, $pos+1, strlen($resource)-1);
-				
-				$file = '';
-				while (!feof($handle)) {
-					$file .= fread($handle, 8192);
+				header("Content-Disposition: attachment; filename=" .$fileName ); 
+				header("Content-Type: application/force-download");
+				header("Content-Type: application/octet-stream");
+				header("Content-Type: application/download");
+				header("Content-Description: File Transfer");
+				ob_flush();
+				flush();
+				$fp = fopen($resource, "r");
+				while (!feof($fp)) {
+					echo fread($fp, 65536);
+					ob_flush();
+					flush();
 				}
-				fclose($handle);
-				error_reporting(0);
+				fclose($fp);
+				die();
 				
-				ini_set('zlib.output_compression', 0);
-				header('Pragma: public');
-				header('Cache-Control: must-revalidate, pre-checked=0, post-check=0, max-age=0');
-				header('Content-Transfer-Encoding: none');
-				header("Content-Length: ".strlen($file));
-				header('Content-Type: application/octetstream; name="'.$fileExtension.'"');
-				header('Content-Disposition: attachement; filename="'.$fileName.'"');
 			}else{
 			
 				$file = $product->getFile();
@@ -1371,9 +1359,10 @@ function validateForm(toStep, fromStep){
 				header("Content-Length: ".strlen($file));
 				header('Content-Type: application/octetstream; name="'.$product->getFileExtension().'"');
 				header('Content-Disposition: attachement; filename="'.$fileName.'"');
+				echo $file;
+				die();
 			}
-			echo $file;
-			die();
+			
 		}
 	}
 }

@@ -179,7 +179,6 @@ class SITE_proxy{
 			curl_setopt($session, CURLOPT_POSTFIELDS, $postData);
 		}
 		
-
 		if ($user != null && strlen($user)>0 && $password != null && strlen($password)>0) 
 		{
 			$httpHeader[]='Authorization: Basic '.base64_encode($user.':'.$password);
@@ -188,46 +187,19 @@ class SITE_proxy{
 		{
 			curl_setopt($session, CURLOPT_HTTPHEADER, $httpHeader);
 		}
-	
-		curl_setopt($session, CURLOPT_HEADER, true);
+
+		curl_setopt($session, CURLOPT_HEADER, false);
 		curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
 		
 		// Do the POST and then close the session
-		$response = curl_exec($session);
-		
-		
-		if (curl_errno($session) || strpos($response, 'HTTP/1.1 200 OK')===false) 
+		echo curl_exec($session);
+		if (curl_errno($session) ) 
 		{
 			echo 'cUrl POST request failed.';
 			if (curl_errno($session))
 				echo 'Error number: '.curl_errno($session).'';
 			echo "Server response ";
-			echo $response;
 		} 
-		else 
-		{
-// 			$headers 	= curl_getinfo($session);
-// 			$document =& JFactory::getDocument();
-// 			if (strpos($headers['content_type'], '/')!==false) 
-// 			{
-// 				$fileType = array_pop(explode('/',$headers['content_type']));
-// 				if (strpos($fileType, ';')!==false) {
-// 					$arr = explode(';', $fileType);
-// 					$fileType = $arr[0];
-// 				}
-// 				JResponse::setHeader( 'Content-Disposition', 'inline; filename=download.'.$fileType );
-// 			}
-			
-// 			$document->setMimeEncoding($headers['content_type']);
-// 			if (array_key_exists('charset', $headers)) {
-// 				$document->setCharset($headers['charset']);
-// 			} else {
-// 				$document->setCharset(null);
-// 			}
-// 			fwrite($fh,$response);
-// 			fclose($fh);
-			echo array_pop(explode("\r\n\r\n", trim($response)));
-		}
 		curl_close($session);
 	}
 	
