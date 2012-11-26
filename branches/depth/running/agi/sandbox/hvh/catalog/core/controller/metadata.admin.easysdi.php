@@ -1840,14 +1840,19 @@ class ADMIN_metadata {
 		}
 		else
 		{
-			$response = '{
-			success: false,
-			errors: {
-			xml: "A problem occurred"
-		}
-		}';
-			print_r($response);
-			die();
+			if($previewType == 'XML'){
+				$response = '{
+					success: false,
+					errors: {
+					xml: "A problem occurred"
+				}
+				}';
+					print_r($response);
+					die();
+			}
+			else if ($previewType == 'MD'){
+				$mainframe->enqueueMessage(JText::_("CATALOG_METADATA_PREVIEW_GET_CONTENT_ERROR_MESSAGE"),"ERROR");
+			}
 		}
 	}
 	
@@ -1860,6 +1865,7 @@ class ADMIN_metadata {
 		$xslFolder 	= "";
 		
 		require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'common'.DS.'easysdi.config.php');
+		
 		$type = config_easysdi::getValue("CATALOG_METADATA_PREVIEW_TYPE_PUBLIC");
 		$context = config_easysdi::getValue("CATALOG_METADATA_PREVIEW_CONTEXT_PUBLIC");
 		
@@ -1878,6 +1884,19 @@ class ADMIN_metadata {
 				INNER JOIN #__sdi_objecttype ot ON ot.id=o.objecttype_id
 				WHERE m.guid='".$metadata_id."'");
 		$objecttype = $database->loadResult();
+		
+		$query = "	SELECT count(*) FROM #__sdi_list_module WHERE code='SHOP'";
+		$database->setQuery($query);
+		$shopExist = $database->loadResult();
+		if($shopExist)
+		{
+			$query = " SELECT count(*) FROM #__sdi_product p
+			INNER JOIN #__sdi_objectversion ov on ov.id = p.objectversion_id
+			INNER JOIN #__sdi_metadata m ON m.id = ov.metadata_id
+			WHERE m.guid = '$id'";
+			$database->setQuery($query);
+			$shopExist = $database->loadResult();
+		}
 		
 		$XMLDoc->loadXML($XMLDoc->saveXML());
 		$xmlcomplete = displayManager::constructXML($XMLDoc, $database, $language, $metadata_id, 'false', $type, $context);
@@ -1899,20 +1918,99 @@ class ADMIN_metadata {
 		{
 			$style->load(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'xsl'.DS.$xslFolder.'XML2XHTML_'.$type.'.xsl');
 		}
+	
 		$processor = new xsltProcessor();
 		$processor->importStylesheet($style);
 		$xml = new DomDocument();
-		$xml = $processor->transformToXml($xmlcomplete);
-		$xmlToReturn = addslashes($xml);
+		$xmlToHtml = $processor->transformToXml($xmlcomplete);
 		
-		$response = '{
-						success: true,
-						file: {
-							xml: "'.str_replace(chr(10), "<br>", $xmlToReturn).'"
-						}
-					}';
-		print_r($response);
-		die();
+		$myHtml = "<script type=\"text/javascript\" src=\"/administrator/components/com_easysdi_core/common/date.js\"></script>";
+
+// 		//Affichage des onglets
+// 		$index = JRequest::getVar('tabIndex', 0);
+// 		$tabs =& JPANE::getInstance('Tabs', array('startOffset'=>$index));
+// 		$menuLinkHtml .= $tabs->startPane("catalogPane");
+// 		$menuLinkHtml .= $tabs->startPanel(JText::_("CORE_ABSTRACT_TAB"),"catalogPanel1");
+// 		$menuLinkHtml .= $tabs->endPanel();
+// 		$menuLinkHtml .= $tabs->startPanel(JText::_("CORE_COMPLETE_TAB"),"catalogPanel2");
+// 		$menuLinkHtml .= $tabs->endPanel();
+// 		if ($shopExist)
+// 		{
+// 			$menuLinkHtml .= $tabs->startPanel(JText::_("CORE_DIFFUSION_TAB"),"catalogPanel3");
+// 			$menuLinkHtml .= $tabs->endPanel();
+// 		}
+// 		$menuLinkHtml .= $tabs->endPane();
+			
+// 		//Define links for onclick event
+// 		$myHtml .= "<script>\n";
+// 		//Manage display class
+// 		/* Onglets abstract et complete*/
+// 		$myHtml .= "window.addEvent('domready', function() {
+// 				if(document.getElementById('catalogPanel1')!= undefined){
+// 						document.getElementById('catalogPanel1').addEvent( 'click' , function() {
+// 						window.open('./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=$id&type=abstract', '_self');
+// 		});
+// 		}
+// 						if(document.getElementById('catalogPanel2')!= undefined){
+// 						document.getElementById('catalogPanel2').addEvent( 'click' , function() {
+// 						window.open('./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=$id&type=complete', '_self');
+// 		});
+// 		}
+// 		task = '$task';
+// 		type = '$type';
+// 		";
+// 		/* Onglet diffusion, si et seulement si le shop est installé et que l'objet est diffusable*/
+// 		if ($shopExist)
+// 		{
+// 			$myHtml .= "
+// 					if(document.getElementById('catalogPanel3')!= undefined){
+// 							document.getElementById('catalogPanel3').addEvent( 'click' , function() {
+// 							window.open('./index.php?tmpl=component&option=com_easysdi_catalog&task=showMetadata&id=$id&type=diffusion', '_self');
+// 						});
+// 						document.getElementById('catalogPanel3').className = 'closed';
+			
+// 						if(task == 'showMetadata' & type == 'diffusion'){
+// 							document.getElementById('catalogPanel3').className = 'open';
+// 						}
+// 					}";
+// 		}
+			
+// 		/* Boutons */
+// 		$myHtml .= "
+// 		if(document.getElementById('catalogPanel1')!= undefined){
+// 		document.getElementById('catalogPanel1').className = 'closed';
+// 		if(task == 'showMetadata' & type == 'abstract'){
+// 						document.getElementById('catalogPanel1').className = 'open';
+// 		}
+// 		}
+// 		if(document.getElementById('catalogPanel2')!= undefined){
+// 		document.getElementById('catalogPanel2').className = 'closed';
+// 		if(task == 'showMetadata' & type == 'complete'){
+// 		document.getElementById('catalogPanel2').className = 'open';
+// 		}
+// 		}
+			
+			
+			
+// 		});\n";
+		
+// 		$myHtml .= "</script>";
+		
+		
+		
+		//Workaround to avoid printf problem with text with a "%", must
+		//be changed to "%%".
+		$xmlToHtml = str_replace("%", "%%", $xmlToHtml);
+		$xmlToHtml = str_replace("__ref_", "%", $xmlToHtml);
+		
+		$myHtml .= $xmlToHtml;
+		
+		// Construction  of creation date, update date and account logo [from EasySDIV1]
+		$logoWidth = config_easysdi::getValue("logo_width");
+		$logoHeight = config_easysdi::getValue("logo_height");
+					
+		$img='<img width="$'.$logoWidth.'" height="'.$logoHeight.'" src="'.$account_logo.'">';
+		printf($myHtml, $img, $supplier, $product_creation_date, $product_update_date, $buttonsHtml, $menuLinkHtml, $notJoomlaCall);
 	}
 	
 	/**
