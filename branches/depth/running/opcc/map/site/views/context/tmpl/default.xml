@@ -2,4 +2,11 @@
 <metadata>
 	<layout title="Context details view" option="View">
 	</layout>
+	<state>
+        <fields name="request">
+            <fieldset name="request">
+                <field name="id" title="Context Id" type="text" default=""/>
+            </fieldset>
+        </fields>
+    </state>
 </metadata>

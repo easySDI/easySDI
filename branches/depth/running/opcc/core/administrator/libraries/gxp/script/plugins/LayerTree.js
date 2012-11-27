@@ -127,10 +127,19 @@ gxp.plugins.LayerTree = Ext.extend(gxp.plugins.Tool, {
      */
     createOutputConfig: function() {
         var treeRoot = new Ext.tree.TreeNode({
-            text: this.rootNodeText,
+            text: "Context 1",
             expanded: true,
+            checked:false,
             isTarget: false,
-            allowDrop: false
+            allowDrop: false,
+            listeners: {
+                checkchange : function (node, checked ){
+                	node.eachChild(function(n) {
+                	    n.getUI().toggleCheck(checked);
+                	});
+                }
+        
+            }
         });
         
         var defaultGroup = this.defaultGroup,
@@ -145,6 +154,7 @@ gxp.plugins.LayerTree = Ext.extend(gxp.plugins.Tool, {
                 text: groupConfig.title,
                 iconCls: "gxp-folder",
                 expanded: true,
+                checked:false,
                 group: group == this.defaultGroup ? undefined : group,
                 loader: new GeoExt.tree.LayerLoader({
                     baseAttrs: exclusive ?
@@ -167,7 +177,13 @@ gxp.plugins.LayerTree = Ext.extend(gxp.plugins.Tool, {
                 listeners: {
                     append: function(tree, node) {
                         node.expand();
+                    },
+                    checkchange : function (node, checked ){
+                    	node.eachChild(function(n) {
+                    	    n.getUI().toggleCheck(checked);
+                    	});
                     }
+            
                 }
             }, groupConfig)));
         }
@@ -175,7 +191,7 @@ gxp.plugins.LayerTree = Ext.extend(gxp.plugins.Tool, {
         return {
             xtype: "treepanel",
             root: treeRoot,
-            rootVisible: false,
+            rootVisible: true,
             shortTitle: this.shortTitle,
             border: false,
             enableDD: true,
