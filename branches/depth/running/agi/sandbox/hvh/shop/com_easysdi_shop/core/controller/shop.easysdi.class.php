@@ -1321,7 +1321,6 @@ function validateForm(toStep, fromStep){
 			//User is not allowed to download this product
 			JError::raiseWarning( 100, JText::_("SHOP_MSG_NOT_ALLOWED_TO_DOWNLOAD_THIS_PRODUCT") );
 		}else{
-			
 			$resource = JRequest::getVar('resource');
 			if($resource){
 				$pos = strrpos($resource,("/"),-1);
@@ -1362,7 +1361,6 @@ function validateForm(toStep, fromStep){
 				echo $file;
 				die();
 			}
-			
 		}
 	}
 }

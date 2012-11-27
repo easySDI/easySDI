@@ -2000,6 +2000,27 @@ class HTML_shop
 	function termsOfUse($id, $option, $task,$view,$step,$row)
 	{
 		?>
+		<script>
+		function acceptTerms ()
+		{
+			document.getElementById('denyTerm-button').disabled='disabled';
+			document.getElementById('acceptTerm-button').disabled='disabled';
+			document.getElementById('product_id').value = '<?php echo $id; ?>';
+			document.getElementById('task').value = 'downloadProduct';
+			<?php if( JRequest::getVar('resource')){
+			?>
+			location.href='<?php echo JRequest::getVar('resource');?>'
+			<?php 
+			}
+			else {
+			?>
+			document.getElementById('dlProductForm').submit();
+			<?php 
+			}
+			?>
+			try{ window.parent.document.getElementById('sbox-window').close();}catch(err){};
+		}
+		</script>
 		<form name="dlProductForm" id="dlProductForm" 	 action='index.php' method='GET'>
 			<table>
 				<tr>
@@ -2029,7 +2050,7 @@ class HTML_shop
 								</td>
 								<td width="50%" align="left">
 									<input 
-									onClick="document.getElementById('denyTerm-button').disabled='disabled';document.getElementById('acceptTerm-button').disabled='disabled';document.getElementById('task').value = 'downloadProduct';document.getElementById('product_id').value = '<?php echo $id; ?>';document.getElementById('dlProductForm').submit();try{ window.parent.document.getElementById('sbox-window').close();}catch(err){}"
+									onClick="acceptTerms();"
 									type="button"
 									id="acceptTerm-button"
 									class="button"

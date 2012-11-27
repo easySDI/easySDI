@@ -26,6 +26,7 @@ class grid extends sdiTable
 	var $minscale		= 0;
   	var $maxscale		= -1;
 	var $imgformat		= null;
+	var $singletile		= 0;
 	var $layername		= null;
 	var $urlwfs			= null;
 	var $featuretype	= null;

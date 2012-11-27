@@ -1128,7 +1128,22 @@ function com_install(){
 			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
 		}
 	}
+	if($version == "2.2.0")
+	{
+		$query="ALTER TABLE `#__sdi_grid` ADD `singletile` tinyint (1) NOT NULL default 0";
+		$db->setQuery( $query);
+		if (!$db->query()) {
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
 	
+		// Update component version
+		$version="2.2.0.1";
+		$query="UPDATE #__sdi_list_module SET currentversion ='".$version."' WHERE code='SHOP'";
+		$db->setQuery( $query);
+		if (!$db->query()){
+			$mainframe->enqueueMessage($db->getErrorMsg(),"ERROR");
+		}
+	}
 	 
 	$query = "DELETE FROM #__components where `option`= 'com_easysdi_shop' ";
 	$db->setQuery( $query);

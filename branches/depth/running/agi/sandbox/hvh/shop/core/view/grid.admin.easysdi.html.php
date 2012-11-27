@@ -184,6 +184,10 @@ class HTML_grid {
 								<td><input class="inputbox" type="text" size="50" maxlength="100" name="imgformat" value="<?php echo $rowGrid->imgformat; ?>" /></td>
 							</tr>
 							<tr>
+								<td class="key"><?php echo JText::_("SHOP_GRID_SINGLE_TILE"); ?> : </td>
+								<td><input type="checkbox"  name="singletile" value="1" <?php if( $rowGrid->singletile ) echo "checked" ?> /></td>
+							</tr>
+							<tr>
 								<td colspan="2">
 									<?php 
 									$pane = &JPane::getInstance('sliders', array('startOffset'=>-1, 'allowAllClose'=>true, 'opacityTransition'=>true, 'duration'=>600));

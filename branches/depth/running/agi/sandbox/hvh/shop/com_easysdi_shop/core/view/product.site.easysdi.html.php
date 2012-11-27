@@ -1073,7 +1073,7 @@ class HTML_product{
             	    "BaseMap",
             	    "<?php echo $urlwms;?>",
             	    {layers: "<?php echo $grid->layername;?>", styles:"<?php echo $styles;?>",format:"<?php echo $grid->imgformat;?>", transparent : true},
-            	    {isBaseLayer: true, visibility: true}
+            	    {isBaseLayer: true, visibility: true <?php if ($grid->singletile) echo ", singleTile : true, ratio: 1.5"; ?>}
             	);
 
             	protocol = new OpenLayers.Protocol.WFS({
