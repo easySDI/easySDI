@@ -340,7 +340,7 @@ class Easysdi_serviceViewVirtualService extends JView
 				<input type='hidden' name="nbServer" id="nbServer" value="<?php echo $iServer ; ?>" />
 				<script>
 				var nbServer = <?php echo $iServer?>;
-				var service = '<?php echo $serviceType?>';
+				
 				</script>
 			<fieldset class="adminform"><legend><?php echo JText::_( 'COM_EASYSDI_SERVICE_LEGEND_VIRTUALSERVICE_ID' );?></legend>
 				<table class="admintable">
@@ -349,8 +349,8 @@ class Easysdi_serviceViewVirtualService extends JView
 						<?php echo JText::_( 'COM_EASYSDI_SERVICE_VIRTUALSERVICE_ID' );?> :<span class="star">*</span> 
 						</th>
 						<td colspan="4">
-							<input class="inputbox required" type='text' name='id' value='<?php echo $this->id;?>' <?php if(isset($this->id)){ echo "disabled='disabled'";};?>>
-							<?php if(isset($this->id)){ ?> <input type='hidden' name="id" id="id" value="<?php echo $this->id; ?>" /> <?php };?>
+							<input class="inputbox required" type='text' name='id' value='<?php echo $this->id;?>' <?php if(!empty($this->id)){ echo "disabled='disabled'";};?>>
+							<?php if(!empty($this->id)){ ?> <input type='hidden' name="id" id="id" value="<?php echo $this->id; ?>" /> <?php };?>
 						</td>
 					</tr>
 					<tr>

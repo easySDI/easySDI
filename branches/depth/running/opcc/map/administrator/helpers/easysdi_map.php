@@ -100,6 +100,7 @@ class Easysdi_mapHelper
 		$completeurl = $url.$separator."REQUEST=GetCapabilities&SERVICE=".$resource->connector;
 		
 		$session 	= curl_init($completeurl);
+		$httpHeader = array();
 		if (!empty($user)  && !empty($password))
 		{
 			$httpHeader[]='Authorization: Basic '.base64_encode($user.':'.$password);

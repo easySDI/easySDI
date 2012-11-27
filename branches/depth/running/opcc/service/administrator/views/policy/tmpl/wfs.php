@@ -287,6 +287,7 @@ foreach ($this->xml->config as $config) {
 			}
 				
 			$session 	= curl_init($url);
+			$httpHeader = array();
 			if (!empty($remoteServer->user)  && !empty($remoteServer->password))
 			{
 				$httpHeader[]='Authorization: Basic '.base64_encode($remoteServer->user.':'.$remoteServer->password);
