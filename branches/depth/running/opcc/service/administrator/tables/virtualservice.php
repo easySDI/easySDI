@@ -169,4 +169,61 @@ class Easysdi_serviceTablevirtualservice extends sdiTable
 	
 		return $rows;
 	}
+	
+	/**
+	 * Method to save the service compliance deducted from the aggregation process
+	 *
+	 * @param array 	$pks	array of the #__sdi_sys_servicecompliance ids to link with the current service
+	 * @param int		$id		primary key of the current service to save.
+	 *
+	 * @return boolean 	True on success, False on error
+	 *
+	 * @since EasySDI 3.0.0
+	 */
+	public function saveServiceCompliance ($pks)
+	{
+		
+		//Delete previously saved compliance
+		$query = $this->_db->getQuery(true);
+		$query->delete(' #__sdi_service_servicecompliance');
+		$query->where('servicetype= "virtual"');
+		$query->where('service_id = '.(int) $this->id);
+		$this->_db->setQuery($query);
+		$this->_db->query();
+	
+		$arr_pks = json_decode ($pks);
+		foreach ($arr_pks as $pk)
+		{
+			try 
+			{
+				//Get servicecompliance
+				$query = $this->_db->getQuery(true);
+				$query->select('sc.id');
+				$query->from('#__sdi_sys_servicecompliance  AS sc ');
+				$query->join('INNER', '#__sdi_sys_serviceversion AS sv ON sv.id = sc.serviceversion_id');
+				$query->where('sc.serviceconnector_id = ' . (int) $this->serviceconnector_id);
+				$query->where('sv.value = "'.$pk.'"');
+				$this->_db->setQuery($query);
+				$servicecompliance = $this->_db->loadResult();
+
+				if(empty ($servicecompliance))
+					continue;
+				
+				$query = $this->_db->getQuery(true);
+				$query->insert('#__sdi_service_servicecompliance');
+				$query->set('service_id='.(int) $this->id);
+				$query->set('servicecompliance_id='.(int) $servicecompliance);
+				$query->set('servicetype="virtual"');
+				$this->_db->setQuery($query);
+				if (!$this->_db->query()) {
+					throw new Exception($this->_db->getErrorMsg());
+				}
+				
+			} catch (Exception $e) {
+				$this->setError($e->getMessage());
+				return false;
+			}
+		}
+		return true;
+	}
 }

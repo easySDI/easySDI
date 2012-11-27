@@ -435,7 +435,7 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
 													"<?php echo $layer->serviceurl;?>",
 													{
 														layers: "<?php echo $layer->layername;?>", 
-														version:"1.3.0",
+														version: "<?php echo $layer->version;  ?>",
 														visibility: <?php  if ($layer->isdefaultvisible) echo "true"; else echo "false"; ?>,
                      						            opacity: <?php echo $layer->opacity;?>
 													}
@@ -468,6 +468,7 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
 	                     			    	?>
 											{
 			                     				source: "<?php echo $layer->servicealias;  ?>",
+			                     				version: "<?php echo $layer->version;  ?>",
 			                     				<?php if (!empty($layer->metadatalink)){?>
 			                     				metadataURL: "<?php echo $layer->metadatalink;  ?>",
 			                     				<?php }?>

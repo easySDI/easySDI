@@ -245,11 +245,12 @@ class Easysdi_serviceViewVirtualService extends JView
 		$this->serviceconnectorlist = $db->loadObjectList();
 		
 		$db->setQuery("SELECT 0 AS alias, '- Please select -' AS value UNION SELECT s.alias as alias,CONCAT(s.alias, ' - ', s.resourceurl,' - [',GROUP_CONCAT(syv.value SEPARATOR '-'),']') as value FROM #__sdi_physicalservice s
-				INNER JOIN #__sdi_physicalservice_servicecompliance sc ON sc.physicalservice_id = s.id
+				INNER JOIN #__sdi_service_servicecompliance sc ON sc.service_id = s.id
 				INNER JOIN #__sdi_sys_servicecompliance syc ON syc.id = sc.servicecompliance_id
 				INNER JOIN #__sdi_sys_serviceversion syv ON syv.id = syc.serviceversion_id
 				INNER JOIN #__sdi_sys_serviceconnector sycc ON sycc.id = syc.serviceconnector_id
-				WHERE sycc.value = '".JRequest::getVar('layout',null)."'
+				WHERE sc.servicetype = 'physical'
+				AND sycc.value = '".JRequest::getVar('layout',null)."'
 				AND s.state= 1
 				GROUP BY s.id") ;
 		$this->servicelist = $db->loadObjectList();

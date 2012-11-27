@@ -294,12 +294,15 @@ class Easysdi_serviceControllerVirtualService extends JController
     				$url = $hostTranslator.'?';
     			else
     				$url = $params->get('proxyurl').$virtualservice->alias.'?';
+    			
+    			
     			$virtualservice->url = $url;
     			$result = $virtualservice->store();
     			if (!(isset($result)) || !$result) {
     				JError::raiseError(42, JText::_('COM_EASYSDI_SERVICE_SAVING_VIRTUAL_SERVICE_ERROR'). $virtualservice->getError());
     				return ;
     			}
+    			$virtualservice->saveServiceCompliance (JRequest::getVar("supportedVersionsByConfig"));
     		}
     		
     	}

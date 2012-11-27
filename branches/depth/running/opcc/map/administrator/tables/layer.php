@@ -73,4 +73,93 @@ class Easysdi_mapTablelayer extends sdiTable {
 		$asset->loadByName('com_easysdi_map');
 		return $asset->id;
 	}
+	
+	/**
+	 * Method to load Items from the database by group key 
+	 *
+	 * @param   int    $key   Group Id to load layer from
+	 *
+	 * @return  list list of layer object
+	 *
+	 * @since   EasySDI v3
+	 */
+	public function getItemsByGroup($key = null)
+	{
+		try
+		{
+			$query = $this->_db->getQuery(true);
+			$query->select('l.*,
+					v.url as virtualserviceurl,
+					p.resourceurl as physicalserviceurl,
+					cv.value as virtualconnector,
+					cp.value as physicalconnector,
+					v.alias as virtualservicealias,
+					p.alias as physicalservicealias,
+					v.id as virtualserviceid,
+					p.id as physicalserviceid'
+			);
+			$query->from($this->_tbl.' AS l');
+			$query->join('LEFT', '#__sdi_virtualservice AS v ON l.virtualservice_id=v.id');
+			$query->join('LEFT', '#__sdi_physicalservice AS p ON l.physicalservice_id=p.id');
+			$query->join('LEFT', '#__sdi_sys_serviceconnector AS cv ON v.serviceconnector_id=cv.id');
+			$query->join('LEFT', '#__sdi_sys_serviceconnector AS cp ON p.serviceconnector_id=cp.id');
+			$query->where('l.group_id = ' . (int) $key);
+			$query->where('l.state = 1' );
+			$query->order('l.ordering ASC' );
+			$this->_db->setQuery($query);
+			$rows = $this->_db->loadObjectList();
+			
+			foreach ($rows as $row)
+			{
+				if(!empty($row->virtualserviceurl))
+					$row->serviceurl = $row->virtualserviceurl;
+				if(!empty($row->physicalserviceurl))
+					$row->serviceurl = $row->physicalserviceurl;
+				if(!empty($row->virtualconnector))
+					$row->serviceconnector = $row->virtualconnector;
+				if(!empty($row->physicalconnector))
+					$row->serviceconnector = $row->physicalconnector;
+				if(!empty($row->virtualservicealias))
+					$row->servicealias = $row->virtualservicealias;
+				if(!empty($row->physicalservicealias))
+					$row->servicealias = $row->physicalservicealias;
+			
+				//Get the max supported version of the service
+				if(!empty($row->physicalserviceid))
+				{
+					$query = $this->_db->getQuery(true);
+					$query->select('max(sv.value)');
+					$query->from('#__sdi_physicalservice AS ps');
+					$query->join('LEFT', '#__sdi_service_servicecompliance ssc ON ssc.service_id = ps.id');
+					$query->join('LEFT', '#__sdi_sys_servicecompliance sc ON sc.id = ssc.servicecompliance_id');
+					$query->join('LEFT', '#__sdi_sys_serviceversion sv ON sv.id = sc.serviceversion_id');
+					$query->where('ps.id = '.(int) $row->physicalserviceid);
+					$query->where('ssc.servicetype = "physical"');
+					$this->_db->setQuery($query);
+				}
+				if(!empty($row->virtualserviceid))
+				{
+					$query = $this->_db->getQuery(true);
+					$query->select('max(sv.value)');
+					$query->from('#__sdi_virtualservice AS vs');
+					$query->join('LEFT', '#__sdi_service_servicecompliance ssc ON ssc.service_id = vs.id');
+					$query->join('LEFT', '#__sdi_sys_servicecompliance sc ON sc.id = ssc.servicecompliance_id');
+					$query->join('LEFT', '#__sdi_sys_serviceversion sv ON sv.id = sc.serviceversion_id');
+					$query->where('vs.id = '.(int) $row->virtualserviceid);
+					$query->where('ssc.servicetype = "virtual"');
+					$this->_db->setQuery($query);
+				}
+				
+				$version = $this->_db->loadResult();
+				$row->version = $version;
+			}
+		}
+		catch (JDatabaseException $e)
+		{
+			$je = new JException($e->getMessage());
+			$this->setError($je);
+			return false;
+		}
+		return $rows;
+	}
 }

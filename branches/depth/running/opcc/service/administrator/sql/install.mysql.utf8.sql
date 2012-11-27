@@ -106,9 +106,10 @@ PRIMARY KEY (`id`),
 UNIQUE (`name`) 
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 
-CREATE TABLE IF NOT EXISTS `#__sdi_physicalservice_servicecompliance` (
+CREATE TABLE IF NOT EXISTS `#__sdi_service_servicecompliance` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`physicalservice_id` INT(11) UNSIGNED  NOT NULL ,
+`service_id` INT(11) UNSIGNED  NOT NULL ,
+`servicetype` VARCHAR(10) NOT NULL,
 `servicecompliance_id` INT(11) UNSIGNED  NOT NULL ,
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
@@ -122,7 +123,7 @@ PRIMARY KEY (`id`)
 
 CREATE TABLE IF NOT EXISTS `#__sdi_virtualservice` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`guid` INT(36)  NOT NULL ,
+`guid` VARCHAR(36)  NOT NULL ,
 `created_by` INT(11)  NOT NULL ,
 `created` DATETIME NOT NULL ,
 `modified_by` INT(11)   ,
@@ -140,7 +141,7 @@ PRIMARY KEY (`id`)
 
 CREATE TABLE IF NOT EXISTS `#__sdi_layer` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-`guid` INT(36)  NOT NULL ,
+`guid` VARCHAR(36)  NOT NULL ,
 `created_by` INT(11)  NOT NULL ,
 `created` DATETIME NOT NULL ,
 `modified_by` INT(11)  ,

@@ -131,5 +131,39 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
 
 		}
 	}
+	
+	/**
+	 * Method to get the service compliance deducted from the agregation process and saved into database
+	 *
+	 * @param int		$id		primary key of the current service to get.
+	 *
+	 * @return boolean 	Object list on success, False on error
+	 *
+	 * @since EasySDI 3.0.0
+	 */
+	public function getServiceCompliance ( $id=null)
+	{
+		if(!isset($id))
+			return null;
+	
+		try {
+			$db = $this->getDbo();
+			$db->setQuery(
+					'SELECT sv.value as value, sc.id as id FROM #__sdi_service_servicecompliance ssc ' .
+					' INNER JOIN #__sdi_sys_servicecompliance sc ON sc.id = ssc.servicecompliance_id '.
+					' INNER JOIN #__sdi_sys_serviceversion sv ON sv.id = sc.serviceversion_id'.
+					' WHERE ssc.service_id ='.$id.
+					' AND ssc.servicetype = "virtual"'
+	
+			);
+			$compliance = $db->loadObjectList();
+			return $compliance;
+	
+		} catch (Exception $e) {
+			$this->setError($e->getMessage());
+			return false;
+		}
+	
+	}
 
 }

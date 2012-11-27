@@ -11,6 +11,7 @@
 defined('_JEXEC') or die;
 
 require_once JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'libraries'.DS.'easysdi'.DS.'database'.DS.'sditable.php';
+require_once JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_map'.DS.'tables'.DS.'layer.php';
 
 /**
  * group Table class
@@ -91,46 +92,9 @@ class Easysdi_mapTablegroup extends sdiTable {
 		if(!parent::load($keys,$reset))
 			return false;
 		
-		$query = $this->_db->getQuery(true);
-		$query->select('l.*, v.url as virtualserviceurl, p.resourceurl as physicalserviceurl, cv.value as virtualconnector, cp.value as physicalconnector, v.alias as virtualservicealias, p.alias as physicalservicealias');
-		$query->from('#__sdi_map_layer AS l');
-		$query->join('LEFT', '#__sdi_virtualservice AS v ON l.virtualservice_id=v.id');
-		$query->join('LEFT', '#__sdi_physicalservice AS p ON l.physicalservice_id=p.id');
-		$query->join('LEFT', '#__sdi_sys_serviceconnector AS cv ON v.serviceconnector_id=cv.id');
-		$query->join('LEFT', '#__sdi_sys_serviceconnector AS cp ON p.serviceconnector_id=cp.id');
-		$query->where('l.group_id = ' . (int) $this->id);
-		$query->where('l.state = 1' );
-		$query->order('l.ordering ASC' );
-		$this->_db->setQuery($query);
-		
-		try
-		{
-			$rows = $this->_db->loadObjectList();
-		}
-		catch (JDatabaseException $e)
-		{
-			$je = new JException($e->getMessage());
-			$this->setError($je);
-			return false;
-		}
-		
-		foreach ($rows as $row)
-		{
-			if(!empty($row->virtualserviceurl))
-				$row->serviceurl = $row->virtualserviceurl;
-			if(!empty($row->physicalserviceurl))
-				$row->serviceurl = $row->physicalserviceurl;
-			if(!empty($row->virtualconnector))
-				$row->serviceconnector = $row->virtualconnector;
-			if(!empty($row->physicalconnector))
-				$row->serviceconnector = $row->physicalconnector;
-			if(!empty($row->virtualservicealias))
-				$row->servicealias = $row->virtualservicealias;
-			if(!empty($row->physicalservicealias))
-				$row->servicealias = $row->physicalservicealias;
-		}
-		
-		$this->layers = $rows;
+		$layertable 	= JTable::getInstance('layer', 'easysdi_mapTable');
+		$layers 		= $layertable->getItemsByGroup($this->id);
+		$this->layers = $layers;
 		return true;
 	}
 	
