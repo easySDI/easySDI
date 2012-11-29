@@ -1302,7 +1302,7 @@ function validateForm(toStep, fromStep){
 			if($product->grid_id && !JRequest::getVar('resource'))
 				HTML_product::gridSelection($product, $option, $task,$view,$step,$row);
 			else
-				HTML_shop::termsOfUse($id, $option, $task,$view,$step,$row);
+				HTML_shop::termsOfUse($product, $option, $task,$view,$step,$row);
 		}
 	}
 

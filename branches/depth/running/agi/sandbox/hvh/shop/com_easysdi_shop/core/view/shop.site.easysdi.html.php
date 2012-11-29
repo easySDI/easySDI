@@ -1997,7 +1997,7 @@ class HTML_shop
 		<?php 
 	}
 	
-	function termsOfUse($id, $option, $task,$view,$step,$row)
+	function termsOfUse($product, $option, $task,$view,$step,$row)
 	{
 		?>
 		<script>
@@ -2005,17 +2005,23 @@ class HTML_shop
 		{
 			document.getElementById('denyTerm-button').disabled='disabled';
 			document.getElementById('acceptTerm-button').disabled='disabled';
-			document.getElementById('product_id').value = '<?php echo $id; ?>';
+			document.getElementById('product_id').value = '<?php echo $product->id; ?>';
 			document.getElementById('task').value = 'downloadProduct';
-			<?php if( JRequest::getVar('resource')){
-			?>
-			location.href='<?php echo JRequest::getVar('resource');?>'
 			<?php 
+			if( JRequest::getVar('resource')){
+				?>
+				location.href='<?php echo JRequest::getVar('resource');?>'
+				<?php 
+			}
+			else if ($product->pathfile != null){
+				?>
+				location.href='<?php echo $product->pathfile;?>'
+				<?php 
 			}
 			else {
-			?>
-			document.getElementById('dlProductForm').submit();
-			<?php 
+				?>
+				document.getElementById('dlProductForm').submit();
+				<?php 
 			}
 			?>
 			try{ window.parent.document.getElementById('sbox-window').close();}catch(err){};

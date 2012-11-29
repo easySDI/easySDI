@@ -198,8 +198,8 @@ class product extends sdiTable
 		return true;
 	}
 	
-	function getFile(){
-		
+	function getFile()
+	{
 		if ($this->pathfile != null){
 			$handle = fopen($this->pathfile, "r");
 			$contents = '';

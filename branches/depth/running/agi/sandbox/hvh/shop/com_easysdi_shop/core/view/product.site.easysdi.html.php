@@ -1027,7 +1027,11 @@ class HTML_product{
 		$grid 		= $product->getGrid();
 		$proxyhost 	= config_easysdi::getValue("SHOP_CONFIGURATION_PROXYHOST");
 		$urlwfs 	= $proxyhost."&gridid=$grid->id&type=wfs&url=".urlencode  (trim($grid->urlwfs));
-		$urlwms 	= $proxyhost."&gridid=$grid->id&type=wms&url=".urlencode  (trim($grid->urlwms));
+		if(!empty($grid->wmsuser) || !empty($grid->wmsaccount_id)){
+			$urlwms 	= $proxyhost."&gridid=$grid->id&type=wms&url=".urlencode  (trim($grid->urlwms));
+		}else{
+			$urlwms 	= $grid->urlwms;
+		}
 		
 		?>
 			<script type="text/javascript" src="./administrator/components/com_easysdi_shop/lib/openlayers2.11/OpenLayers.js"></script>
@@ -1097,17 +1101,13 @@ class HTML_product{
                 var control = new OpenLayers.Control.GetFeature({
                     protocol: protocol,
                     box: false,
-                    hover: true,
-                    multipleKey: "shiftKey",
-                    toggleKey: "ctrlKey"
+                    hover: true
                 });
                 <?php }else{?>
                 var control = new OpenLayers.Control.GetFeature({
                     protocol: protocol,
                     box: false,
-                    hover: false,
-                    multipleKey: "shiftKey",
-                    toggleKey: "ctrlKey"
+                    hover: false
                 });
                 <?php }?>
                 
