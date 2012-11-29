@@ -71,8 +71,8 @@ $saveOrder	= $listOrder == 'a.ordering';
 					value="" onclick="checkAll(this)" />
 				</th>
 
-				<th class='left'><?php echo JHtml::_('grid.sort',  'COM_EASYSDI_MAP_CONTEXTS_NAME', 'a.name', $listDirn, $listOrder); ?>
-				</th>
+				<th class='left'><?php echo JHtml::_('grid.sort',  'COM_EASYSDI_MAP_CONTEXTS_NAME', 'a.name', $listDirn, $listOrder); ?></th>
+				<th class='left'><?php echo JText::_('COM_EASYSDI_MAP_CONTEXTS_URL');?></th>
 				<th width="10%">
 					<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_ACCESS', 'access_level', $listDirn, $listOrder); ?>
 				</th>
@@ -124,7 +124,10 @@ $saveOrder	= $listOrder == 'a.ordering';
 					<p class="smallsub">
 						<?php echo JText::sprintf('JGLOBAL_LIST_ALIAS', $this->escape($item->alias));?></p>
 				</td>
-
+					
+				<td>
+					<?php echo JURI::root().'index.php?option=com_easysdi_map&view=context&id='.$item->id;?></p>
+				</td>
 				<td class="center">
 					<?php echo $this->escape($item->access_level); ?>
 				</td>

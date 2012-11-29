@@ -17,6 +17,13 @@
 	            label="COM_EASYSDI_MAP_FORM_LBL_CONTEXT_ALIAS"
        		    description="COM_EASYSDI_MAP_FORM_DESC_CONTEXT_ALIAS" 
                 filter="safehtml" />
+        
+        <field 	name="url" 
+       			readonly="true"
+       			size="100" 
+       			label="COM_EASYSDI_MAP_FORM_LBL_CONTEXT_URL"
+       		    description="COM_EASYSDI_MAP_FORM_DESC_CONTEXT_URL" 
+                filter="safehtml" />
                  
         <field 	name="groups" 
 				type="sql" 
@@ -130,6 +137,7 @@
    				class="inputbox"
    				valuefield="id"
    				textfield="name"
+   				disable = "false"
    				sourcetable="#__sdi_sys_map_tool"
    				label="COM_EASYSDI_MAP_FORM_LBL_CONTEXT_TOOLS"
    				description="COM_EASYSDI_MAP_FORM_DESC_CONTEXT_TOOLS" />
