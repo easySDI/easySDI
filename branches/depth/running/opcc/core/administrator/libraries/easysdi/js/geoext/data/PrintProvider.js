@@ -56,6 +56,10 @@ Ext.namespace("sdi.geoext.data");
  *  to tell the PrintProvider about the scale and extent (and optionally
  *  rotation) of the page(s) we want to print. 
  */
+
+/** sdi extension
+ * 
+ */
 sdi.geoext.data.PrintProvider = Ext.extend(GeoExt.data.PrintProvider, {
    
     

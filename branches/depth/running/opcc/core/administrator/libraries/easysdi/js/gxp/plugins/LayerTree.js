@@ -36,6 +36,97 @@ sdi.gxp.plugins.LayerTree = Ext.extend(gxp.plugins.LayerTree, {
 	/** api: ptype = gxp_layertree */
     ptype: "sdi_gxp_layertree",
     
+    /** private: method[createOutputConfig]
+     *  :returns: ``Object`` Configuration object for an Ext.tree.TreePanel
+     */
+    createOutputConfig: function() {
+        var treeRoot = new Ext.tree.TreeNode({
+            text: "Context 1",
+            expanded: true,
+            checked:false,
+            isTarget: false,
+            allowDrop: false,
+            iconCls: "sdi-gxp-tree-node-root",
+            listeners: {
+                checkchange : function (node, checked ){
+                	node.eachChild(function(n) {
+                	    n.getUI().toggleCheck(checked);
+                	});
+                }
+        
+            }
+        });
+        
+        var defaultGroup = this.defaultGroup,
+            plugin = this,
+            groupConfig,
+            exclusive;
+        for (var group in this.groups) {
+            groupConfig = typeof this.groups[group] == "string" ?
+                {title: this.groups[group]} : this.groups[group];
+            exclusive = groupConfig.exclusive;
+            treeRoot.appendChild(new GeoExt.tree.LayerContainer(Ext.apply({
+                text: groupConfig.title,
+                iconCls: "gxp-folder",
+                expanded: true,
+                checked:false,
+                group: group == this.defaultGroup ? undefined : group,
+                loader: new GeoExt.tree.LayerLoader({
+                    baseAttrs: exclusive ?
+                        {checkedGroup: Ext.isString(exclusive) ? exclusive : group} :
+                        undefined,
+                    store: this.target.mapPanel.layers,
+                    filter: (function(group) {
+                        return function(record) {
+                            return (record.get("group") || defaultGroup) == group &&
+                                record.getLayer().displayInLayerSwitcher == true;
+                        };
+                    })(group),
+                    createNode: function(attr) {
+                        plugin.configureLayerNode(this, attr);
+                        return GeoExt.tree.LayerLoader.prototype.createNode.apply(this, arguments);
+                    }
+                }),
+                singleClickExpand: true,
+                allowDrag: false,
+                listeners: {
+                    append: function(tree, node) {
+                        node.expand();
+                    },
+                    checkchange : function (node, checked ){
+                    	node.eachChild(function(n) {
+                    	    n.getUI().toggleCheck(checked);
+                    	});
+                    }
+            
+                }
+            }, groupConfig)));
+        }
+        
+        return {
+            xtype: "treepanel",
+            root: treeRoot,
+            rootVisible: true,
+            shortTitle: this.shortTitle,
+            border: false,
+            enableDD: true,
+            selModel: new Ext.tree.DefaultSelectionModel({
+                listeners: {
+                    beforeselect: this.handleBeforeSelect,
+                    scope: this
+                }
+            }),
+            listeners: {
+                contextmenu: this.handleTreeContextMenu,
+                beforemovenode: this.handleBeforeMoveNode,                
+                scope: this
+            },
+            contextMenu: new Ext.menu.Menu({
+                items: []
+            })
+        };
+    },
+    
     /** private: method[configureLayerNode]
      *  :arg loader: ``GeoExt.tree.LayerLoader``
      *  :arg node: ``Object`` The node

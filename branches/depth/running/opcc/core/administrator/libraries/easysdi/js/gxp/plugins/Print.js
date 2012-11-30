@@ -28,6 +28,10 @@ Ext.namespace("sdi.gxp.plugins");
  *    Provides an action to print the map. Requires GeoExt.ux.PrintPreview,
  *    which is currently mirrored at git://github.com/GeoNode/PrintPreview.git.
  */
+
+/** sdi extension
+ * 
+ */
 sdi.gxp.plugins.Print = Ext.extend(gxp.plugins.Print, {
     
 	/** api: ptype = gxp_print */

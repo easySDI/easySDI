@@ -443,6 +443,7 @@ class Easysdi_serviceViewPolicy extends JView
 				$userSelected = array();
 				foreach ($thePolicy->Subjects->User as $user)
 				{
+					$ou = new StdClass();
 					$ou->value = $user;
 					$userSelected[] =$ou;
 					$ou = null;				
@@ -451,6 +452,7 @@ class Easysdi_serviceViewPolicy extends JView
 				$groupSelected = array();
 				foreach ($thePolicy->Subjects->Group as $group)
 				{
+					$or = new StdClass();
 					$or->value = $group;
 					$groupSelected[] = $or;
 					$or = null;

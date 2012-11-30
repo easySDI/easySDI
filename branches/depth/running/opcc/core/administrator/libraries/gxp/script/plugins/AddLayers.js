@@ -622,7 +622,17 @@ gxp.plugins.AddLayers = Ext.extend(gxp.plugins.Tool, {
                     // at position 1.
                     layerStore.insert(1, [record]);
                 } else {
-                    layerStore.add([record]);
+//                	var selectedLayer = this.target.selectedLayer;
+//                	if(selectedLayer)
+//                	{
+//                		var i = layerStore.indexOf(selectedLayer);
+//                		layerStore.insert(i, [record]);
+//                	}
+//                	else
+//                	{
+//                		layerStore.add([record]);
+//                	}
+                	layerStore.add([record]);
                 }
             }
         }

@@ -39,8 +39,8 @@ JHTML::_('stylesheet', 'all.css', 'administrator/components/com_easysdi_core/lib
 JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tmpl/theme/app/');
 ?>
       <script>
-      	  var app;
-
+      	var app;
+      	Ext.Container.prototype.bufferResize = false;
 		Ext.onReady(function(){
 			OpenLayers.ImgPath = "administrator/components/com_easysdi_core/libraries/openlayers/img/";
 
@@ -96,11 +96,29 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
 	                  				]
                     	}, 
                     	{
-	                    	id: "westpanel",
-	                        xtype: "container",
-	                        layout: "fit",
+	                    	id: "westcontainer",
+	                        xtype: "panel",
+	                        header: false,
+	                        split: true,
+	                        collapsible: true,
+	                        collapseMode: "mini",
+	                        hideCollapseTool: true,
+	                        layout: "vbox",
 	                        region: "west",
-	                        width: 200
+	                        width: 200,
+	                        defaults: {
+	                            width: "100%",
+	                            layout: "fit"
+	                        },
+	                        items: [{
+	                            title: "Layers",
+	                            id: "westpanel",
+	                            border: false,
+	                            flex: 1
+	                        }, {
+	                            id: "legendpanel",
+	                            height: 250
+	                        }]
                     	},
                     	{
                      		id:"hiddentbar",
@@ -118,7 +136,7 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
                 // Tools
                 tools: 
                 [
-					{
+                 {
 					    ptype: "sdi_gxp_layertree",
 					    outputConfig: {
 					        id: "tree",
@@ -156,7 +174,11 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
 						    ?>        
 					    },
 					    outputTarget: "westpanel"
-					}, 
+					},
+					{
+					    ptype: "gxp_legend",
+					    outputTarget: "legendpanel"
+					},
                 <?php 
                 foreach ($this->item->tools as $tool)
                 {
@@ -286,8 +308,8 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
                 				ptype: "sdi_gxp_print",
                 				customParams: {outputFilename: 'GeoExplorer-print'},
                 			    printService: "<?php echo $this->params->get('printserviceurl');?>",
-                			    printURL: "<?php echo $this->params->get('printserviceprinturl');?>",
-                			    createURL: "<?php echo $this->params->get('printservicecreateurl');?>",
+                			    printURL: "<?php if($this->params->get('printserviceprinturl')=='') echo $this->params->get('printserviceurl').'print.pdf'; else  echo $this->params->get('printserviceprinturl');?>",
+                			    createURL: "<?php if($this->params->get('printservicecreateurl') == '') echo  $this->params->get('printserviceurl').'create.json'; else  echo $this->params->get('printservicecreateurl');?>",
                 			    includeLegend: true, 
                 			    actionTarget: "map.tbar",
                 			    showButtonText: true

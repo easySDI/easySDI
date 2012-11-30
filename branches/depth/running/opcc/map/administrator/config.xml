@@ -23,17 +23,17 @@
 	
 	<field name="printserviceprinturl"
              type="text"
-             default="http://localhost/geoserver/pdf/print.pdf"
+             default=""
              size="100"
-             required="true"
+             required="false"
              label="COM_EASYSDI_MAP_LBL_PRINT_SERVICE_PRINT_URL"
              description="COM_EASYSDI_MAP_DESC_PRINT_SERVICE_PRINT_URL" />
 	
 	<field name="printservicecreateurl"
              type="text"
-             default="http://localhost/geoserver/pdf/create.json"
+             default=""
              size="100"
-             required="true"
+             required="false"
              label="COM_EASYSDI_MAP_LBL_PRINT_SERVICE_CREATE_URL"
              description="COM_EASYSDI_MAP_DESC_PRINT_SERVICE_CREATE_URL" />
 	</fieldset>
