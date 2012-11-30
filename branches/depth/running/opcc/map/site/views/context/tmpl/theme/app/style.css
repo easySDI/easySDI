@@ -1,7 +1,12 @@
 /* setting font fixes combobox rendering issues in IE. See
  * http://extjs.com/forum/showthread.php?t=72505 */
+ 
 body {
     font-family:helvetica,tahoma,verdana,sans-serif;
+}
+
+body.contentpane {
+    background-color: #F0F0F0 !important;
 }
 
 /* don't wrap lines on any tooltips */
