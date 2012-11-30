@@ -157,6 +157,12 @@ sdi.gxp.plugins.LayerTree = Ext.extend(gxp.plugins.LayerTree, {
                         attr.cls="sdiMDlink";
                 	}	
                 }
+                if(layer.metadataURL)
+                {
+                	attr.href = layer.metadataURL;
+                    attr.hrefTarget = "_blank";
+                    attr.cls="sdiMDlink";
+                }
                 
                 attr.listeners = {
                     rendernode: function(node) {

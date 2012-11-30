@@ -67,3 +67,6 @@ div.map-overlay {
     height:0px !important;
     width:0px !important;
 }
+.gxp-layermanager-tree .legend img, .gxp-layermanager-tree .legend .x-panel {
+    padding-left: 60px !important;
+}

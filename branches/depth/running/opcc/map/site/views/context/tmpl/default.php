@@ -421,13 +421,16 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
                      						            url : "<?php echo $layer->serviceurl;?>", 
                      						            layer: "<?php echo $layer->layername;?>", 
                      						            visibility: <?php  if ($layer->isdefaultvisible) echo "true"; else echo "false"; ?>,
-                     						            opacity: <?php echo $layer->opacity;?>,
-                     						            <?php
-                     						            if(!empty($layer->asOLparams))
-                     						            {
-                     						            	echo  $layer->asOLparams;
-                     						            }
-                     						            ?>
+                     						            opacity: <?php echo $layer->opacity;?>
+                     						            <?php if(!empty($layer->asOLparams) || !empty($layer->metadatalink)){?>
+                    									,
+                    									<?php if (!empty($layer->metadatalink)){?>
+                    				   			        metadataURL: "<?php echo $layer->metadatalink;  ?>"
+                    					   			    <?php if(!empty($layer->asOLparams)) echo ',';?>
+                    				   			        <?php }?>
+                    				   			        <?php 
+                    			                     		echo  $layer->asOLparams;
+                    			                     	}?>
                      						         }
                      						     ],
                      						     group: "<?php echo $group->alias;?>"
@@ -439,28 +442,36 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
                      						{
                          						source : "ol",
                          						type : "OpenLayers.Layer.WMS",
+                         						
                          						args: 
                              					[
 													"<?php echo $layer->name;?>",
 													"<?php echo $layer->serviceurl;?>",
 													{
+														
 														layers: "<?php echo $layer->layername;?>", 
 														version: "<?php echo $layer->version;  ?>",
 														visibility: <?php  if ($layer->isdefaultvisible) echo "true"; else echo "false"; ?>,
                      						            opacity: <?php echo $layer->opacity;?>
 													}
 													<?php
-                     						            if(!empty($layer->asOLparams))
-                     						            {
-                     						            	?>
-                     						            	,{
-                         						           	<?php 
-	                     						            	echo  $layer->asOLparams;
-	                     						            ?>
-                     						            	}
-	                     						        	<?php
-	                     						        }
-	                     						        ?>
+													if(!empty($layer->asOLparams) || !empty($layer->metadatalink))
+													{
+														?>
+														 ,{
+															 <?php 
+															 if (!empty($layer->metadatalink)){
+															 ?>
+				   			                     				metadataURL: "<?php echo $layer->metadatalink;  ?>"
+					   			                     		 <?php if(!empty($layer->asOLparams)) echo ',';?>
+				   			                     			 <?php }?>
+				   			                     			 <?php 
+			                     						           echo  $layer->asOLparams;
+			                     						     ?>
+														 }
+														 <?php 
+													}
+                     						        ?>
                                 				],
                     						    group: "<?php echo $group->alias;?>"
                      						},
