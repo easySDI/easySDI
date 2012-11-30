@@ -1,65 +1,48 @@
 <?php
+
 /**
  * @version     3.0.0
  * @package     com_easysdi_service
- * @copyright   Copyright (C) 2012. All rights reserved.
- * @license     GNU General Public License version 3 or later; see LICENSE.txt
+ * @copyright   Copyright (C) 2005 - 2012 Open Source Matters, Inc. All rights reserved.
+ * @license     Copyright (C) 2005 - 2012 Open Source Matters, Inc. All rights reserved.
  * @author      EasySDI Community <contact@easysdi.org> - http://www.easysdi.org
  */
-
 // No direct access
 defined('_JEXEC') or die;
-
 require_once JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'libraries'.DS.'easysdi'.DS.'database'.DS.'sditable.php';
-
 /**
- * service Table class
+ * virtualmetadata Table class
  */
-class Easysdi_serviceTablephysicalservice extends sdiTable
-{
-	/**
-	 * Constructor
-	 *
-	 * @param JDatabase A database connector object
-	 */
-	public function __construct(&$db)
-	{
-		parent::__construct('#__sdi_physicalservice', 'id', $db);
-	}
+class Easysdi_serviceTableservicepolicy extends sdiTable {
 
 	/**
-	 * Method to compute the default name of the asset.
-	 * The default name is in the form table_name.id
-	 * where id is the value of the primary key of the table.
-	 *
-	 * @return  string
-	 *
-	 * @since   11.1
-	 */
-	protected function _getAssetName()
-	{
-		$k = $this->_tbl_key;
-		return 'com_easysdi_service.physicalservice.' . (int) $this->$k;
+	* Constructor
+	*
+	* @param JDatabase A database connector object
+	*/
+	public function __construct(&$db) {
+		parent::__construct('#__sdi_servicepolicy', 'id', $db);
+	}
+	
+	public function save($src, $orderingFilter = '', $ignore = '') {
+		$data = array();
+		$data['guid'] 								= $src['guid'];
+		$data['prefix'] 							= $src['prefix'];
+		$data['namespace'] 					= $src['namespace'];
+		$data['anyitem'] 						= $src['anyitem'];
+		$data['physicalservice_id']	= $src['physicalservice_id'];
+		$data['policy_id'] 					= $src['id'];
+		
+		return parent::save($data, $orderingFilter , $ignore );
 	}
 	
 	/**
-	 * Method to return the title to use for the asset table.
+	 * Return a servicepolicy
 	 *
-	 * @return  string
-	 *
-	 * @since   11.1
+	 * @param Int A physicalService ID
+	 * @param Int A policy ID
 	 */
-	protected function _getAssetTitle()
-	{
-		return $this->alias;
-	}
-	
-	/**
-	 * Return a list of physical service according to the connector type
-	 *
-	 * @param String A name of connector type
-	 */
-	public function getListByConnectorType ($connectorType) {
+	public function getByIDs ($physicalservice_id, $policy_id) {
 		$db = JFactory::getDbo();
 		$db->setQuery('
 			SELECT ps.*
@@ -95,13 +78,4 @@ class Easysdi_serviceTablephysicalservice extends sdiTable
 		
 		return $resultSet;
 	}
-	
 }
-
-
-
-
-
-
-
-

@@ -95,7 +95,6 @@ class Easysdi_serviceViewVirtualservices extends JView
 			    JToolBarHelper::divider();
 		    } else if ($canDo->get('core.edit.state')) {
 			    JToolBarHelper::trash('virtualservices.trash','JTOOLBAR_TRASH');
-			    JToolBarHelper::divider();
 		    }
         }
 

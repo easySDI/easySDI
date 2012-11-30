@@ -60,7 +60,4 @@ class Easysdi_serviceControllerPolicies extends JControllerAdmin
 		// Close the application
 		JFactory::getApplication()->close();
 	}
-    
-    
-    
 }

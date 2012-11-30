@@ -56,43 +56,8 @@ $saveOrder	= $listOrder == 'a.ordering';
 				</th>
 
 				<th class='left'>
-				<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SERVICE_POLICIES_CREATED_BY', 'a.created_by', $listDirn, $listOrder); ?>
+				<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SERVICE_POLICY_ID', 'a.identifier', $listDirn, $listOrder); ?>
 				</th>
-				<th class='left'>
-				<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SERVICE_POLICIES_ANONYMOUSACCESS', 'a.anonymousaccess', $listDirn, $listOrder); ?>
-				</th>
-				<th class='left'>
-				<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SERVICE_POLICIES_ANYGROUP', 'a.anygroup', $listDirn, $listOrder); ?>
-				</th>
-				<th class='left'>
-				<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SERVICE_POLICIES_ANYOPERATION', 'a.anyoperation', $listDirn, $listOrder); ?>
-				</th>
-				<th class='left'>
-				<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SERVICE_POLICIES_ANYSERVICE', 'a.anyservice', $listDirn, $listOrder); ?>
-				</th>
-				<th class='left'>
-				<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SERVICE_POLICIES_ALLOWFROM', 'a.allowfrom', $listDirn, $listOrder); ?>
-				</th>
-				<th class='left'>
-				<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SERVICE_POLICIES_ALLOWTO', 'a.allowto', $listDirn, $listOrder); ?>
-				</th>
-				<th class='left'>
-				<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SERVICE_POLICIES_PRIORITY', 'a.priority', $listDirn, $listOrder); ?>
-				</th>
-				<th class='left'>
-				<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SERVICE_POLICIES_GUID', 'a.guid', $listDirn, $listOrder); ?>
-				</th>
-				<th class='left'>
-				<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SERVICE_POLICIES_MODIFIED_BY', 'a.modified_by', $listDirn, $listOrder); ?>
-				</th>
-				<th class='left'>
-				<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SERVICE_POLICIES_MODIFIED', 'a.modified', $listDirn, $listOrder); ?>
-				</th>
-				<th class='left'>
-				<?php echo JHtml::_('grid.sort',  'COM_EASYSDI_SERVICE_POLICIES_VIRTUALSERVICE_ID', 'a.virtualservice_id', $listDirn, $listOrder); ?>
-				</th>
-
-
                 <?php if (isset($this->items[0]->state)) { ?>
 				<th width="5%">
 					<?php echo JHtml::_('grid.sort',  'JPUBLISHED', 'a.state', $listDirn, $listOrder); ?>
@@ -134,40 +99,12 @@ $saveOrder	= $listOrder == 'a.ordering';
 				</td>
 
 				<td>
-					<?php echo $item->created_by; ?>
-				</td>
-				<td>
-					<?php echo $item->anonymousaccess; ?>
-				</td>
-				<td>
-					<?php echo $item->anygroup; ?>
-				</td>
-				<td>
-					<?php echo $item->anyoperation; ?>
-				</td>
-				<td>
-					<?php echo $item->anyservice; ?>
-				</td>
-				<td>
-					<?php echo $item->allowfrom; ?>
-				</td>
-				<td>
-					<?php echo $item->allowto; ?>
-				</td>
-				<td>
-					<?php echo $item->priority; ?>
-				</td>
-				<td>
-					<?php echo $item->guid; ?>
-				</td>
-				<td>
-					<?php echo $item->modified_by; ?>
-				</td>
-				<td>
-					<?php echo $item->modified; ?>
-				</td>
-				<td>
-					<?php echo $item->virtualservices_name_261251; ?>
+					<?php if ($canEdit) : ?>
+						<a href="<?php echo JRoute::_('index.php?option=com_easysdi_service&view=virtualservice&id='.(int) $item->id).'&layout='.$layout; ?>">
+						<?php echo $this->escape($item->identifier); ?></a>
+					<?php else : ?>
+						<?php echo $this->escape($item->identifier); ?>
+					<?php endif; ?>
 				</td>
 
 

@@ -92,7 +92,29 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 		if ($item = parent::getItem($pk)) {
 
 			//Do any procesing on fields here if needed
-
+			JTable::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'tables');
+			
+			$layout = JRequest::getVar('layout',null);
+			$virtualservice_id = JRequest::getVar('virtualservice_id',null);
+			
+			@$physicalService =& JTable::getInstance('physicalservice', 'Easysdi_serviceTable');
+			@$servicePolicy =& JTable::getInstance('servicepolicy', 'Easysdi_serviceTable');
+			@$wmsLayer =& JTable::getInstance('wmslayer', 'Easysdi_serviceTable');
+			@$wmsLayerPolicy =& JTable::getInstance('wmslayerpolicy', 'Easysdi_serviceTable');
+			
+			$ps_list = $physicalService->getListByConnectorType($layout);
+			foreach ($ps_list as $ps) {
+				$servicePolicy->getByIDs($ps->id, $pk);
+				//TODO : add prefix and namespace to item
+				
+				$wmsLayerList = $wmsLayer->getListByPhysicalService($ps->id);
+				//TODO : add layers to item->ps
+				foreach ($wmsLayerList as $layer) {
+					$wmsLayerPolicy->getByIDs($layer->id, $pk);
+					//TODO : add infos to item->ps->layer
+				}
+			}
+			
 		}
 
 		return $item;

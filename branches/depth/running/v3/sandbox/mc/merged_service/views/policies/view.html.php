@@ -30,7 +30,8 @@ class Easysdi_serviceViewPolicies extends JView
 		$this->items		= $this->get('Items');
 		$this->pagination	= $this->get('Pagination');
 		
-		$this->virtualservice_id = JRequest::getVar('virtualservice_id',null);
+		$session = JFactory::getSession();
+		$session->set('id', JRequest::getVar('virtualservice_id',''), 'sdi_virtualservice');
 		
 		// Check for errors.
 		if (count($errors = $this->get('Errors'))) {
@@ -61,7 +62,7 @@ class Easysdi_serviceViewPolicies extends JView
         if (file_exists($formPath)) {
 
             if ($canDo->get('core.create')) {
-			    JToolBarHelper::addNew('policy.add','JTOOLBAR_NEW');
+			    JToolBarHelper::addNew('policy.add', 'JTOOLBAR_NEW');
 		    }
 
 		    if ($canDo->get('core.edit')) {
@@ -104,6 +105,8 @@ class Easysdi_serviceViewPolicies extends JView
 		if ($canDo->get('core.admin')) {
 			JToolBarHelper::preferences('com_easysdi_service');
 		}
+		JToolBarHelper::divider();
+		JToolBarHelper::back('JTOOLBAR_BACK','index.php?option=com_easysdi_service&view=virtualservices');
 
 
 	}
