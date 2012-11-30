@@ -26,6 +26,7 @@ JHTML::script('PrintPreview.js', 'administrator/components/com_easysdi_core/libr
 JHTML::script('loader.js', 'administrator/components/com_easysdi_core/libraries/gxp/script/');
 JHTML::script('LayerTree.js', 'administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/plugins/');
 JHTML::script('Print.js', 'administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/plugins/');
+JHTML::script('LayerManager.js', 'administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/plugins/');
 JHTML::script('PrintProvider.js', 'administrator/components/com_easysdi_core/libraries/easysdi/js/geoext/data/');
 
 JHTML::_('stylesheet', 'ext-all.css', 'administrator/components/com_easysdi_core/libraries/ext/resources/css/');
@@ -96,29 +97,16 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
 	                  				]
                     	}, 
                     	{
-	                    	id: "westcontainer",
+	                    	id: "westpanel",
 	                        xtype: "panel",
 	                        header: false,
 	                        split: true,
 	                        collapsible: true,
 	                        collapseMode: "mini",
 	                        hideCollapseTool: true,
-	                        layout: "vbox",
+	                        layout: "fit",
 	                        region: "west",
-	                        width: 200,
-	                        defaults: {
-	                            width: "100%",
-	                            layout: "fit"
-	                        },
-	                        items: [{
-	                            title: "Layers",
-	                            id: "westpanel",
-	                            border: false,
-	                            flex: 1
-	                        }, {
-	                            id: "legendpanel",
-	                            height: 250
-	                        }]
+	                        width: 200
                     	},
                     	{
                      		id:"hiddentbar",
@@ -137,7 +125,7 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
                 tools: 
                 [
                  {
-					    ptype: "sdi_gxp_layertree",
+					    ptype: "sdi_gxp_layermanager",
 					    outputConfig: {
 					        id: "tree",
 					        border: true,
@@ -174,10 +162,6 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
 						    ?>        
 					    },
 					    outputTarget: "westpanel"
-					},
-					{
-					    ptype: "gxp_legend",
-					    outputTarget: "legendpanel"
 					},
                 <?php 
                 foreach ($this->item->tools as $tool)
@@ -229,6 +213,10 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
                 			{
                                 ptype: "gxp_zoomtoextent",
                                 actionTarget: "map.tbar"
+                            },
+                            {
+                                ptype: "gxp_zoomtolayerextent",
+                                actionTarget: {target: "tree.contextMenu", index: 0}
                             },
                 			<?php 
                 			break;
