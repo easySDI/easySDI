@@ -459,6 +459,7 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
 														
 														layers: "<?php echo $layer->layername;?>", 
 														version: "<?php echo $layer->version;  ?>",
+														tiled: <?php if ($layer->istiled) echo "true"; else echo "false"; ?>,
 														visibility: <?php  if ($layer->isdefaultvisible) echo "true"; else echo "false"; ?>,
                      						            opacity: <?php echo $layer->opacity;?>
 													}
@@ -502,6 +503,7 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
 			                     				metadataURL: "<?php echo $layer->metadatalink;  ?>",
 			                     				<?php }?>
 			                     				name: "<?php echo $layer->layername;?>",
+			                     				tiled: <?php if ($layer->istiled) echo "true"; else echo "false"; ?>,
 			                     				group: "<?php echo $group->alias;?>",
 			                     				<?php if ($group->alias == "background") echo "fixed: true,";?>
 			                     				visibility: <?php  if ($layer->isdefaultvisible) echo "true"; else echo "false"; ?>,

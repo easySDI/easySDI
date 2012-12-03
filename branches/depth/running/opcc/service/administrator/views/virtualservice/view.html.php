@@ -241,7 +241,7 @@ class Easysdi_serviceViewVirtualService extends JView
 			$this->config = new stdClass();
 		
 		$db 			= JFactory::getDBO();
-		$db->setQuery("SELECT 0 AS id, '- Please select -' AS value UNION SELECT id, value FROM #__sdi_sys_serviceconnector WHERE state = 1") ;
+		$db->setQuery("SELECT 0 AS id, '- Please select -' AS value UNION SELECT id, value FROM #__sdi_sys_serviceconnector WHERE state = 1 AND value NOT IN ('WMSC')") ;
 		$this->serviceconnectorlist = $db->loadObjectList();
 		
 		$db->setQuery("SELECT 0 AS alias, '- Please select -' AS value UNION SELECT s.alias as alias,CONCAT(s.alias, ' - ', s.resourceurl,' - [',GROUP_CONCAT(syv.value SEPARATOR '-'),']') as value FROM #__sdi_physicalservice s
