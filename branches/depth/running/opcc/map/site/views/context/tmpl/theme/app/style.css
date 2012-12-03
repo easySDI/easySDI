@@ -70,3 +70,14 @@ div.map-overlay {
 .gxp-layermanager-tree .legend img, .gxp-layermanager-tree .legend .x-panel {
     padding-left: 60px !important;
 }
+.olControlLoadingPanel {
+            background-image:url(../theme/default/img/loading.gif);
+            margin-left: 30%;
+            margin-top: 50%;
+            position: relative;
+            width: 195px;
+            height: 11px;
+            background-position:center;
+            background-repeat:no-repeat;
+            display: none;
+        }

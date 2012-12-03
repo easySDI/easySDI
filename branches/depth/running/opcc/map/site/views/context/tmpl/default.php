@@ -17,13 +17,14 @@ $user = JFactory::getUser();
 
 if( $this->item ) : 
 
-JHTML::script('ext-base-debug.js', 'administrator/components/com_easysdi_core/libraries/ext/adapter/ext/');
-JHTML::script('ext-all-debug.js', 'administrator/components/com_easysdi_core/libraries/ext/');
+JHTML::script('ext-base.js', 'administrator/components/com_easysdi_core/libraries/ext/adapter/ext/');
+JHTML::script('ext-all.js', 'administrator/components/com_easysdi_core/libraries/ext/');
 JHTML::script('RowExpander.js', 'administrator/components/com_easysdi_core/libraries/ux/ext/');
-JHTML::script('OpenLayers.js', 'administrator/components/com_easysdi_core/libraries/openlayers/lib/');
+JHTML::script('OpenLayers.js', 'administrator/components/com_easysdi_core/libraries/openlayers/');
 JHTML::script('GeoExt.js', 'administrator/components/com_easysdi_core/libraries/geoext/lib/');
 JHTML::script('PrintPreview.js', 'administrator/components/com_easysdi_core/libraries/ux/GeoExt/');
 JHTML::script('loader.js', 'administrator/components/com_easysdi_core/libraries/gxp/script/');
+
 JHTML::script('LayerTree.js', 'administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/plugins/');
 JHTML::script('Print.js', 'administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/plugins/');
 JHTML::script('LayerManager.js', 'administrator/components/com_easysdi_core/libraries/easysdi/js/gxp/plugins/');
@@ -41,8 +42,17 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
 ?>
       <script>
       	var app;
+      	var loadingMask;
+      	
       	Ext.Container.prototype.bufferResize = false;
 		Ext.onReady(function(){
+
+			 loadingMask = new Ext.LoadMask(Ext.getBody(), {
+	                msg: "Loading..."
+	            });
+
+	            loadingMask.show();
+	            
 			OpenLayers.ImgPath = "administrator/components/com_easysdi_core/libraries/openlayers/img/";
 
 			GeoExt.Lang.set("<?php echo $lang->getTag(); ?>");
@@ -66,8 +76,6 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
                 {
                     layout: "border",
                     region: "center",
-                   
-                    
                     items: 
                     [
                      	{
@@ -520,7 +528,18 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
                 	{
                 	 	xtype: "gxp_scaleoverlay"
                     }
+                ],
+                mapPlugins:
+                [
+					{
+					    ptype: 'gxp_loadingindicator',
+					    loadingMapMessage: 'loading...'
+					}
                 ]
+            });
+            
+            app.on("ready", function (){
+            	loadingMask.hide();
             });
 
     	});
