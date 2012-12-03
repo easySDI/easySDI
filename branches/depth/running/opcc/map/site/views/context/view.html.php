@@ -34,15 +34,21 @@ class Easysdi_mapViewContext extends JViewLegacy {
         $this->item 	= $this->get('Data');
         $this->params 	= $app->getParams('com_easysdi_map');
    		$this->form		= $this->get('Form');
-
+   	
         // Check for errors.
         if (count($errors = $this->get('Errors'))) {
             throw new Exception(implode("\n", $errors));
         }
         
+        if(! $this->item ){
+        	JFactory::getApplication()->enqueueMessage( JText::_('COM_EASYSDI_MAP_RESOURCE_NOT_FOUND'), 'error' );
+        	return;
+        }
+        
         if(!in_array($this->item->access, $user->getAuthorisedViewLevels())){
-                return JError::raiseError(403, JText::_('JERROR_ALERTNOAUTHOR'));
-            }
+        	JFactory::getApplication()->enqueueMessage( JText::_('JERROR_ALERTNOAUTHOR'), 'error' );
+        	return;
+        }
         
         
 //         if($this->_layout == 'edit') {

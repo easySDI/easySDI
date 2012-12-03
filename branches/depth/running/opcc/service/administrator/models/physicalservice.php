@@ -160,6 +160,7 @@ class Easysdi_serviceModelphysicalservice extends JModelAdmin
 		return $item;
 	}
 
+	
 	/**
 	 * Prepare and sanitise the table prior to saving.
 	 *

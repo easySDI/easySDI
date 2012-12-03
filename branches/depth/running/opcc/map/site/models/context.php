@@ -74,14 +74,9 @@ class Easysdi_mapModelContext extends JModelForm
 			// Attempt to load the row.
 			if ($table->load($id))
 			{
-				// Check published state.
-				if ($published = $this->getState('filter.published'))
-				{
-					if ($table->state != $published) {
-						return $this->_item;
-					}
-				}
-
+				if ($table->state != 1) 
+					return $this->_item;
+				
 				// Convert the JTable to a clean JObject.
 				$properties = $table->getProperties(1);
 				$this->_item = JArrayHelper::toObject($properties, 'JObject');
@@ -104,7 +99,9 @@ class Easysdi_mapModelContext extends JModelForm
 				foreach($services as $service )
 				{
 					$physicalserviceTable 	= JTable::getInstance('physicalservice', 'easysdi_serviceTable');
-					$physicalserviceTable->load($service, true);
+					$physicalserviceTable->loadWithAccessInheritance($service, true);
+					if($physicalserviceTable->state == 0)
+						continue;
 					$this->_item->physicalservices[] =$physicalserviceTable;
 				}
 				$virtualserviceTable 	= JTable::getInstance('virtualservice', 'easysdi_serviceTable');
@@ -137,6 +134,9 @@ class Easysdi_mapModelContext extends JModelForm
 		return $this->_item;
 	}
     
+	
+	
+	
 	public function getTable($type = 'Context', $prefix = 'Easysdi_mapTable', $config = array())
 	{   
         $this->addTablePath(JPATH_COMPONENT_ADMINISTRATOR.'/tables');

@@ -41,7 +41,7 @@ sdi.gxp.plugins.LayerTree = Ext.extend(gxp.plugins.LayerTree, {
      */
     createOutputConfig: function() {
         var treeRoot = new Ext.tree.TreeNode({
-            text: "Context 1",
+            text: this.rootNodeText,
             expanded: true,
             checked:false,
             isTarget: false,

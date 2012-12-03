@@ -156,6 +156,10 @@ abstract class sdiTable extends JTable
 		if(empty ($this->guid)){
 			$this->guid = Easysdi_coreHelper::uuid();
 		}
+		if(!empty ($this->alias))
+		{
+			$this->alias = preg_replace('/\s+/', '-', $this->alias);
+		}
 
 		return parent::store($updateNulls);
 	}

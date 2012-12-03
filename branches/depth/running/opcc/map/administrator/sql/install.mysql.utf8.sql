@@ -65,6 +65,7 @@ CREATE TABLE IF NOT EXISTS `#__sdi_map_context` (
 `unit_id` INT(11) UNSIGNED NOT NULL ,
 `centercoordinates` VARCHAR(255)  ,
 `maxresolution` DECIMAL  ,
+`numzoomlevel` INT(10)  ,
 `maxextent` VARCHAR(255)  NOT NULL ,
 `abstract` TEXT  ,
 `access` INT(11)  NOT NULL DEFAULT '1',
