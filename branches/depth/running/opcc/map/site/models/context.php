@@ -81,6 +81,12 @@ class Easysdi_mapModelContext extends JModelForm
 				$properties = $table->getProperties(1);
 				$this->_item = JArrayHelper::toObject($properties, 'JObject');
 				
+				//Get the unit value
+				$db = JFactory::getDbo();
+				$db->setQuery('SELECT alias FROM #__sdi_sys_unit WHERE id='.$this->_item->unit_id);
+				$unit = $db->loadResult();
+				$this->_item->unit = $unit;
+				
 				//Load the groups
 				$groupTable 	= JTable::getInstance('group', 'easysdi_mapTable');
 				$groups 		= $groupTable->GetIdsByContextId($id);

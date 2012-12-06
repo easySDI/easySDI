@@ -396,7 +396,8 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
                     center: [<?php echo $this->item->centercoordinates;?>],
                     maxExtent : [<?php echo $this->item->maxextent;?>],
                     restrictedExtent: [<?php echo $this->item->maxextent;?>],
-                    numZoomLevels: <?php echo $this->item->numzoomlevel;;?>,
+                	maxResolution: <?php echo $this->item->maxresolution;?>,
+                	units: "<?php echo $this->item->unit;?>",
                     layers: 
                     [
                      <?php
@@ -498,7 +499,9 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
 	                     			    	?>
 											{
 			                     				source: "<?php echo $layer->servicealias;  ?>",
+			                     				<?php if (!empty($layer->version)){?>
 			                     				version: "<?php echo $layer->version;  ?>",
+												<?php }?>
 			                     				<?php if (!empty($layer->metadatalink)){?>
 			                     				metadataURL: "<?php echo $layer->metadatalink;  ?>",
 			                     				<?php }?>

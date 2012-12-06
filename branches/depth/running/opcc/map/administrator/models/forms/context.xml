@@ -90,13 +90,15 @@
        			class="inputbox"
 	            label="COM_EASYSDI_MAP_FORM_LBL_CONTEXT_CENTERCOORDINATES"
     	        description="COM_EASYSDI_MAP_FORM_DESC_CONTEXT_CENTERCOORDINATES" 
+    	        required="true"
                 filter="safehtml" /> 
 
-       <field 	name="numzoomlevel" 
+       <field 	name="maxresolution" 
        			type="text" 
        			size="40" class="inputbox"
-	            label="COM_EASYSDI_MAP_FORM_LBL_CONTEXT_NUMZOOMLEVEL"
-    	        description="COM_EASYSDI_MAP_FORM_DESC_CONTEXT_NUMZOOMLEVEL" 
+	            label="COM_EASYSDI_MAP_FORM_LBL_CONTEXT_MAXRESOLUTION"
+    	        description="COM_EASYSDI_MAP_FORM_DESC_CONTEXT_MAXRESOLUTION" 
+    	         required="true"
                 filter="safehtml" /> 
 
        <field 	name="maxextent" 
@@ -105,6 +107,7 @@
        			class="inputbox"
 	            label="COM_EASYSDI_MAP_FORM_LBL_CONTEXT_MAXEXTENT"
     	        description="COM_EASYSDI_MAP_FORM_DESC_CONTEXT_MAXEXTENT" 
+    	        required="true"
                 filter="safehtml" />
                  
        <field 	name="title" 
