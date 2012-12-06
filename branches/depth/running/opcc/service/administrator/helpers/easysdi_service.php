@@ -171,7 +171,7 @@ class Easysdi_serviceHelper
 			curl_close($session);
 				
 			$xmlCapa = simplexml_load_string($response);
-			if ($xmlCapa === false)
+			if ($xmlCapa === false )
 			{
 				$supported_versions['ERROR']=JText::_('COM_EASYSDI_SERVICE_FORM_DESC_SERVICE_NEGOTIATION_ERROR');
 				echo json_encode($supported_versions);
@@ -179,6 +179,10 @@ class Easysdi_serviceHelper
 			}
 			else
 			{
+				if($xmlCapa->getName() == "ServiceExceptionReport")
+				{
+					continue;
+				}
 				foreach ($xmlCapa->attributes() as $key => $value){
 					if($key == 'version'){
 						if($value == $version->value)
