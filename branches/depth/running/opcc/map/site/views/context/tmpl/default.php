@@ -319,10 +319,25 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
                 ],
                 
                 // layer sources
+                <?php
+				switch ($this->item->defaultserviceconnector_id)
+                {
+                	case 2 :
+                    	?>
+                    	defaultSourceType: "gxp_wmssource",
+                        <?php
+                    	break;
+                    case 11 :
+                    	?>
+                    	defaultSourceType: "gxp_wmscsource",
+                        <?php
+                    	break;
+                }
+                ?>
+                
                 sources: 
                 {
                 	"ol": { ptype: "gxp_olsource" }, 
-                
                 	<?php
                     foreach ($this->item->physicalservices as $service)
                 	{

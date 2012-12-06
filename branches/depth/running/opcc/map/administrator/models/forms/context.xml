@@ -46,7 +46,19 @@
 				description="COM_EASYSDI_MAP_FORM_DESC_LAYER_SERVICE_ID" 
                 required="true"
                  />
-            
+                 
+       <field 	name="defaultserviceconnector_id" 
+				type="sql" 
+				class="inputbox"
+				size="10"
+				label="COM_EASYSDI_MAP_FORM_LBL_LAYER_SERVICECONNECTOR_ID"
+				description="COM_EASYSDI_MAP_FORM_DESC_LAYER_SERVICECONNECTOR_ID" 
+				multiple ="false"
+                translate="true" 
+                required="true"
+                query="SELECT null AS id, '- Please select -' AS value UNION SELECT id, value FROM #__sdi_sys_serviceconnector WHERE state=1" key_field="id" value_field="value"
+                 />
+                 
        <field 	name="srs" 
        			type="text" 
        			size="40" 
