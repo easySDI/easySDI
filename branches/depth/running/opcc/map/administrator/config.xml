@@ -7,9 +7,9 @@
 	
 	<field name="proxyhost"
              type="text"
-             default="/cgi-bin/proxy.cgi?url="
+             default=""
              size="100"
-             required="true"
+             required="false"
              label="COM_EASYSDI_MAP_LBL_PROXY_HOST"
              description="COM_EASYSDI_MAP_DESC_PROXY_HOST" />
 	
