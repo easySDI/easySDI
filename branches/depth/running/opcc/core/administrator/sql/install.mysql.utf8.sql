@@ -15,5 +15,5 @@ INDEX `alias` USING BTREE (`alias`)
 INSERT INTO `#__sdi_sys_unit` (ordering,state,checked_out,created_by,created,alias,name) 
 VALUES 
 (1,1,0,62,NOW(),'m','meter'),
-(2,1,0,62,NOW(),'d','degree')
+(2,1,0,62,NOW(),'dd','degree')
 ;
