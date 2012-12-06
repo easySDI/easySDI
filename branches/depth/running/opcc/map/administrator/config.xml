@@ -38,6 +38,82 @@
              description="COM_EASYSDI_MAP_DESC_PRINT_SERVICE_CREATE_URL" />
 	</fieldset>
 	
+	<fieldset name="tools" 
+	    	  label="COM_EASYSDI_MAP_TOOLS_LABEL"
+			  description="COM_EASYSDI_MAP_TOOLS_DESC"	>
+	
+		<field name="print" 
+			type="radio" 
+			default="3" 
+			label="COM_EASYSDI_MAP_TOOLS_PRINT_LABEL" 
+			description="COM_EASYSDI_MAP_TOOLS_PRINT_DESC" ></field>
+			
+		<field name="navigation" 
+			type="radio" 
+			default="3" 
+			label="COM_EASYSDI_MAP_TOOLS_NAVIGATION_LABEL" 
+			description="COM_EASYSDI_MAP_TOOLS_NAVIGATION_DESC" ></field>
+		
+		<field name="Ggoglegeocoder" 
+			type="radio" 
+			default="3" 
+			label="COM_EASYSDI_MAP_TOOLS_GEOCODER_LABEL" 
+			description="COM_EASYSDI_MAP_TOOLS_GEOCODER_DESC" ></field>
+			
+		<field name="navigationhistory" 
+			type="radio" 
+			default="3" 
+			label="COM_EASYSDI_MAP_TOOLS_NAVIGATION_HISTORY_LABEL" 
+			description="COM_EASYSDI_MAP_TOOLS_NAVIGATION_HISTORY_DESC" ></field>
+		
+		<field name="zoom" 
+			type="radio" 
+			default="3" 
+			label="COM_EASYSDI_MAP_TOOLS_ZOOM_LABEL" 
+			description="COM_EASYSDI_MAP_TOOLS_ZOOM_DESC" ></field>
+		
+		<field name="zoomtoextent" 
+			type="radio" 
+			default="3" 
+			label="COM_EASYSDI_MAP_TOOLS_ZOOMTOEXTENT_LABEL" 
+			description="COM_EASYSDI_MAP_TOOLS_ZOOMTOEXTENT_DESC" ></field>
+		
+		<field name="measure" 
+			type="radio" 
+			default="3" 
+			label="COM_EASYSDI_MAP_TOOLS_MEASURE_LABEL" 
+			description="COM_EASYSDI_MAP_TOOLS_MEASURE_DESC" ></field>
+		
+		<field name="googlearth" 
+			type="radio" 
+			default="3" 
+			label="COM_EASYSDI_MAP_TOOLS_GOOGLEEARTH_LABEL" 
+			description="COM_EASYSDI_MAP_TOOLS_GOOGLEEARTH_DESC" ></field>
+		
+		<field name="getfeatureinfo" 
+			type="radio" 
+			default="3" 
+			label="COM_EASYSDI_MAP_TOOLS_GETFEATUREINFO_LABEL" 
+			description="COM_EASYSDI_MAP_TOOLS_GETFEATUREINFO_DESC" ></field>
+		
+		<field name="addlayer" 
+			type="radio" 
+			default="3" 
+			label="COM_EASYSDI_MAP_TOOLS_ADDLAYER_LABEL" 
+			description="COM_EASYSDI_MAP_TOOLS_ADDLAYER_DESC" ></field>
+		
+		<field name="removelayer" 
+			type="radio" 
+			default="3" 
+			label="COM_EASYSDI_MAP_TOOLS_REMOVELAYER_LABEL" 
+			description="COM_EASYSDI_MAP_TOOLS_REMOVELAYER_DESC" ></field>
+			
+		<field name="layerproperties" 
+			type="radio" 
+			default="3" 
+			label="COM_EASYSDI_MAP_TOOLS_LAYERPROPERTIES_LABEL" 
+			description="COM_EASYSDI_MAP_TOOLS_LAYERPROPERTIES_DESC" ></field>
+	</fieldset>
 	
 	<fieldset name="permissions"
 		description="JCONFIG_PERMISSIONS_DESC"

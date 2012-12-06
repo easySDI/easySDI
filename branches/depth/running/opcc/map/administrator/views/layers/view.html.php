@@ -93,10 +93,10 @@ class Easysdi_mapViewLayers extends JView
 		if (isset($this->items[0]->state)) {
 			if ($state->get('filter.state') == -2 && $canDo->get('core.delete')) {
 				JToolBarHelper::deleteList('', 'layers.delete','JTOOLBAR_EMPTY_TRASH');
-				JToolBarHelper::divider();
+				
 			} else if ($canDo->get('core.edit.state')) {
 				JToolBarHelper::trash('layers.trash','JTOOLBAR_TRASH');
-				JToolBarHelper::divider();
+				
 			}
 		}
 
