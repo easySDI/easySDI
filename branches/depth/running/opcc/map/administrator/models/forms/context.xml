@@ -46,24 +46,6 @@
 				description="COM_EASYSDI_MAP_FORM_DESC_LAYER_SERVICE_ID" 
                 required="true"
                  />
-                 
-       <field 	name="access"
-				type="accesslevel"
-				label="JFIELD_ACCESS_LABEL"
-				description="JFIELD_ACCESS_DESC"
-				class="inputbox"
-				size="1" /> 
-
- 		<field name="state"
-                type="list"
-                label="JSTATUS"
-                description="JFIELD_PUBLISHED_DESC"
-                class="inputbox"
-                size="1"
-                default="1">
-                <option value="1">JPUBLISHED</option>
-                <option value="0">JUNPUBLISHED</option>
-            </field> 
             
        <field 	name="srs" 
        			type="text" 
@@ -110,6 +92,14 @@
     	        required="true"
                 filter="safehtml" />
                  
+       <field 	name="rootnodetext" 
+       			type="text" 
+       			size="40" 
+       			class="inputbox"
+	            label="COM_EASYSDI_MAP_FORM_LBL_CONTEXT_ROOTNODETEXT"
+       		    description="COM_EASYSDI_MAP_FORM_DESC_CONTEXT_ROOTNODETEXT" 
+                filter="safehtml" />
+                
        <field 	name="title" 
        			type="text" 
        			size="40" 
@@ -126,6 +116,23 @@
 	            label="COM_EASYSDI_MAP_FORM_LBL_CONTEXT_ABSTRACT"
     	        description="COM_EASYSDI_MAP_FORM_DESC_CONTEXT_ABSTRACT"  /> 
 
+		<field 	name="access"
+				type="accesslevel"
+				label="JFIELD_ACCESS_LABEL"
+				description="JFIELD_ACCESS_DESC"
+				class="inputbox"
+				size="1" /> 
+
+ 		<field name="state"
+                type="list"
+                label="JSTATUS"
+                description="JFIELD_PUBLISHED_DESC"
+                class="inputbox"
+                size="1"
+                default="1">
+                <option value="1">JPUBLISHED</option>
+                <option value="0">JUNPUBLISHED</option>
+            </field> 
 		<field name="id" type="hidden" filter="SAFEHTML" />
 		<field name="guid" type="hidden" filter="SAFEHTML" />
 		<field name="checked_out" type="hidden" filter="unset" />
