@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project default="sync" basedir=".">
 	<property name="projet.out.dir" value="out" />
-	<property name="projet.install.admin.dir"
-		value="C:\www\opcc\administrator\components\com_easysdi_map" />
+	<property name="projet.install.admin.dir" value="C:\www\opcc\administrator\components\com_easysdi_map" />
 	<property name="projet.install.site.dir" value="C:\www\opcc\components\com_easysdi_map" />
 	<property name="projet.install.langEN.dir" value="C:\www\opcc\administrator\language\en-GB" />
 
@@ -20,8 +19,7 @@
 			basedir="."
 			excludes=" 
 			        build.xml ; 
-					site/** ;
-			        out/** ; 
+					out/** ; 
 					.cache/** ; 
 					.svn/** ; 
 					.settings/** ; 

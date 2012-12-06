@@ -78,27 +78,53 @@ class Easysdi_mapHelper
 		$db = JFactory::getDbo();
 		$pos 					= strstr ($service, 'physical_');
 		if($pos){
+			$id = substr ($service, strrpos ($service, '_')+1);
 			$query = 'SELECT s.resourceurl as url, sc.value as connector FROM #__sdi_physicalservice s 
 								INNER JOIN #__sdi_sys_serviceconnector sc  ON sc.id = s.serviceconnector_id
 								WHERE s.id='.substr ($service, strrpos ($service, '_')+1) ;
+			$db->setQuery($query);
+			$resource 			= $db->loadObject();
+			$db->setQuery(
+								'SELECT sv.value as value, sc.id as id FROM #__sdi_service_servicecompliance ssc ' .
+								' INNER JOIN #__sdi_sys_servicecompliance sc ON sc.id = ssc.servicecompliance_id '.
+								' INNER JOIN #__sdi_sys_serviceversion sv ON sv.id = sc.serviceversion_id'.
+								' WHERE ssc.service_id ='.$id.
+								' AND ssc.servicetype = "physical"'.
+								' LIMIT 1'
+			);
+			$compliance = $db->loadObject();
 		}
 		else{
-			
+			$id = substr ($service, strrpos ($service, '_')+1);
 			$query = 'SELECT s.url as url,  sc.value as connector FROM #__sdi_virtualservice s
 								INNER JOIN #__sdi_sys_serviceconnector sc  ON sc.id = s.serviceconnector_id
 								WHERE s.id='.substr ($service, strrpos ($service, '_')+1);
+			$db->setQuery($query);
+			$resource 			= $db->loadObject();
+			$db->setQuery(
+								'SELECT sv.value as value, sc.id as id FROM #__sdi_service_servicecompliance ssc ' .
+								' INNER JOIN #__sdi_sys_servicecompliance sc ON sc.id = ssc.servicecompliance_id '.
+								' INNER JOIN #__sdi_sys_serviceversion sv ON sv.id = sc.serviceversion_id'.
+								' WHERE ssc.service_id ='.$id.
+								' AND ssc.servicetype = "virtual"'.
+								' LIMIT 1'
+				
+			);
+			$compliance = $db->loadObject();
+
 		}
-		$db->setQuery($query);
-		$resource 			= $db->loadObject();
+		
 		$url	= $resource->url;
 		$pos1 		= stripos($url, "?");
 		$separator 	= "&";
 		if ($pos1 === false) {
 			$separator = "?";
 		}
-	
-		$completeurl = $url.$separator."REQUEST=GetCapabilities&SERVICE=".$resource->connector;
 		
+		$completeurl = $url.$separator."REQUEST=GetCapabilities&SERVICE=".$resource->connector;
+		if($compliance ->value){
+			$completeurl .= "&version=".$compliance ->value;
+		}
 		$session 	= curl_init($completeurl);
 		$httpHeader = array();
 		if (!empty($user)  && !empty($password))
