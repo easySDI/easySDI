@@ -30,6 +30,13 @@ $document->addStyleSheet('components/com_easysdi_map/assets/css/easysdi_map.css'
 	var request;
 	var selectedservice;
 	var layername_select; 
+
+	function clearLayers (selectObj)
+	{
+		layername_select = document.getElementById('jform_layername');
+		while ( layername_select.options.length > 0 ) layername_select.options[0] = null;
+	}
+	
 	function getLayers (selectObj)
 	{
 		layername_select = document.getElementById('jform_layername');
@@ -178,8 +185,23 @@ $document->addStyleSheet('components/com_easysdi_map/assets/css/easysdi_map.css'
 				<?php
 				if($field->name=="jform[service_id]"){
 					?>
-					<li><?php echo $field->label;echo $field->input;  echo $this->form->getField('getlayers')->input;?></li>
-					 
+					<li><?php echo $field->label;echo $field->input;  echo $this->form->getField('getlayers')->input;?>
+					<div class="width-50 fltrt" style="margin: -18px 0 0;">					
+					<?php echo JHtml::_('sliders.start', 'au-sliders-'.$this->item->id,array('useCookie'=>1)); ?>
+							<?php echo JHtml::_('sliders.panel', JText::_('COM_EASYSDI_MAP_LAYER_FIELDSET_AUTHENTICATION'), 'authentication'); ?>
+							<fieldset class="adminform">
+								<ul class="adminformlist">
+									<li><?php echo $this->form->getLabel('user'); ?> <?php echo $this->form->getInput('user'); ?>
+									</li>
+					
+									<li><?php echo $this->form->getLabel('password'); ?> <?php echo $this->form->getInput('password'); ?>
+									</li>
+								</ul>
+							</fieldset>
+							<?php echo JHtml::_('sliders.end'); ?>
+					</div>
+					</li>
+					
 					<?php 
 					continue;
 				}

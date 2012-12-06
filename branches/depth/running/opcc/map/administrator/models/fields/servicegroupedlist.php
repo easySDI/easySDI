@@ -57,7 +57,7 @@ class JFormFieldServicegroupedList extends JFormField
 // 			$tmp->class = (string) $option['class'];
 			
 // 			// Set some JavaScript option attributes.
-// 			$tmp->onclick = 'getLayers(this)';
+//  			$tmp->onclick = 'clearLayers(this)';
 			
 			// Add the option.
 			$groups['Physical'][] = $tmp;
@@ -121,7 +121,7 @@ class JFormFieldServicegroupedList extends JFormField
 		$attr .= $this->multiple ? ' multiple="multiple"' : '';
 
 		// Initialize JavaScript field attributes.
-// 		$attr .=  ' onchange="javascript:getLayers(this)"' ;
+		$attr .=  ' onchange="javascript:clearLayers(this)"' ;
 
 		// Get the field groups.
 		$groups = (array) $this->getGroups();

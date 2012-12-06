@@ -38,24 +38,7 @@
                  />
                  
        
-       <fieldset name="service_authentication">
-		 <field 	
-		 		name="user" 
-       			type="text" 
-       			size="40" class="inputbox"
-       			required="false" 
-	            label="COM_EASYSDI_MAP_FORM_LBL_LAYER_USER"
-    	        description="COM_EASYSDI_MAP_FORM_DESC_LAYER_USER" 
-                filter="safehtml" />
-                
-       <field 	name="password" 
-       			type="text" 
-       			size="40" class="inputbox"
-       			required="false" 
-	            label="COM_EASYSDI_MAP_FORM_LBL_LAYER_PASSWORD"
-    	        description="COM_EASYSDI_MAP_FORM_DESC_LAYER_PASSWORD" 
-                filter="safehtml"  />
-	</fieldset>      
+       
        
 
        <field 	name="layername" 
@@ -133,6 +116,24 @@
 				description="COM_EASYSDI_MAP_FORM_DESC_GETLAYERS" 
 				filter="safehtml" />
 	
+	<fieldset name="service_authentication">
+		 <field 	
+		 		name="user" 
+       			type="text" 
+       			size="40" class="inputbox"
+       			required="false" 
+	            label="COM_EASYSDI_MAP_FORM_LBL_LAYER_USER"
+    	        description="COM_EASYSDI_MAP_FORM_DESC_LAYER_USER" 
+                filter="safehtml" />
+                
+       <field 	name="password" 
+       			type="text" 
+       			size="40" class="inputbox"
+       			required="false" 
+	            label="COM_EASYSDI_MAP_FORM_LBL_LAYER_PASSWORD"
+    	        description="COM_EASYSDI_MAP_FORM_DESC_LAYER_PASSWORD" 
+                filter="safehtml"  />
+	</fieldset>      
 	
 	<fieldset name="openlayers">
 		 <field 	name="asOL" 
