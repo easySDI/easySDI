@@ -147,7 +147,7 @@ class Easysdi_serviceModelvirtualservice extends JModelAdmin
 			return null;
 	
 		try {
-			$db = $this->getDbo();
+			$db = JFactory::getDbo();
 			$db->setQuery(
 					'SELECT sv.value as value, sc.id as id FROM #__sdi_service_servicecompliance ssc ' .
 					' INNER JOIN #__sdi_sys_servicecompliance sc ON sc.id = ssc.servicecompliance_id '.

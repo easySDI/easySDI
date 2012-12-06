@@ -341,6 +341,8 @@ foreach ($this->xml->config as $config) {
 				$url = $remoteServer->url.$separator."REQUEST=GetCapabilities&SERVICE=WMS";
 			}
 			
+// 			$url = $remoteServer->url.$separator."REQUEST=GetCapabilities&SERVICE=WMS";
+			
 			$session 	= curl_init($url);
 			$httpHeader = array();
 			if (!empty($remoteServer->user)  && !empty($remoteServer->password))

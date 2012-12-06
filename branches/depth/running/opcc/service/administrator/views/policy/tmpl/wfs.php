@@ -280,12 +280,12 @@ foreach ($this->xml->config as $config) {
 				$separator = "?";
 			}
 				
-			if($servletVersion != ""){
-				$url = $remoteServer->url.$separator."REQUEST=GetCapabilities&version=".$servletVersion."&SERVICE=WFS";
-			}else{
-				$url = $remoteServer->url.$separator."REQUEST=GetCapabilities&SERVICE=WFS";
-			}
-				
+// 			if($servletVersion != ""){
+// 				$url = $remoteServer->url.$separator."REQUEST=GetCapabilities&version=".$servletVersion."&SERVICE=WFS";
+// 			}else{
+// 				$url = $remoteServer->url.$separator."REQUEST=GetCapabilities&SERVICE=WFS";
+// 			}
+			$url = $remoteServer->url.$separator."REQUEST=GetCapabilities&SERVICE=WFS";
 			$session 	= curl_init($url);
 			$httpHeader = array();
 			if (!empty($remoteServer->user)  && !empty($remoteServer->password))
