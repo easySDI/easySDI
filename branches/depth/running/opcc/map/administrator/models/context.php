@@ -111,11 +111,17 @@ class Easysdi_mapModelcontext extends JModelAdmin
 	{
 		if ($item = parent::getItem($pk)) {
 
-			$item->url = JURI::root().'index.php?option=com_easysdi_map&view=context&id='.$item->id;
+			$item->url = JURI::root().'index.php?option=com_easysdi_map&tmpl=component&view=context&id='.$item->id;
 			
 			$db = JFactory::getDbo();
-			$db->setQuery('SELECT group_id FROM #__sdi_map_context_group WHERE context_id = '.$item->id);
+			$db->setQuery('SELECT group_id FROM #__sdi_map_context_group WHERE isbackground = 0  AND context_id = '.$item->id);
 			$item->groups = $db->loadResultArray();
+			
+			$db->setQuery('SELECT group_id FROM #__sdi_map_context_group WHERE isbackground = 1 AND context_id = '.$item->id);
+			$item->background = $db->loadResult();
+			
+			$db->setQuery('SELECT group_id FROM #__sdi_map_context_group WHERE isdefault = 1 AND context_id = '.$item->id);
+			$item->default = $db->loadResult();
 			
 			$db->setQuery('SELECT tool_id FROM #__sdi_map_context_tool WHERE context_id = '.$item->id);
 			$item->tools = $db->loadResultArray();
@@ -206,10 +212,29 @@ class Easysdi_mapModelcontext extends JModelAdmin
 					
 			}
 			//Groups
+			
+			$background = $data['background'];
+			if(!empty($background))
+			{
+				$db->setQuery('INSERT INTO #__sdi_map_context_group (context_id, group_id, isbackground, isdefault) VALUES ('.$this->getItem()->get('id').', '.$background.',1 ,0)');
+				if(!$db->query())
+				{
+					$this->setError( JText::_( "COM_EASYSDI_MAP_FORM_CONTEXT_SAVE_FAIL_GROUP_ERROR" ) );
+					return false;
+				}
+			}
+			
+			$default = $data['default'];
 			$groups = $data['groups'];
 			foreach ($groups as $group)
 			{
-				$db->setQuery('INSERT INTO #__sdi_map_context_group (context_id, group_id) VALUES ('.$this->getItem()->get('id').', '.$group.')');
+				if($group == $background)
+					continue;
+				
+				$isdefault = 0;
+				if($group == $default)
+					$isdefault = 1;
+				$db->setQuery('INSERT INTO #__sdi_map_context_group (context_id, group_id, isbackground, isdefault) VALUES ('.$this->getItem()->get('id').', '.$group.',0 ,'.$isdefault.')');
 				if(!$db->query())
 				{
 					$this->setError( JText::_( "COM_EASYSDI_MAP_FORM_CONTEXT_SAVE_FAIL_GROUP_ERROR" ) );
@@ -217,6 +242,7 @@ class Easysdi_mapModelcontext extends JModelAdmin
 				}
 					
 			}
+			
 			return true;
 		}
 		return false;

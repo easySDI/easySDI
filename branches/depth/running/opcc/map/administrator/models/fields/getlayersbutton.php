@@ -20,7 +20,7 @@ class JFormFieldGetlayersbutton extends JFormField {
 		$html = array();
 		
 		// Start the action field output.
-		$html[] = '<a href="#" onclick="javascript:getLayers(document.getElementById(\'jform_service_id\'));" >
+		$html[] = '<a title="'.JText::_($this->description).'" href="#" onclick="javascript:getLayers(document.getElementById(\'jform_service_id\'));" >
 						<img class="helpTemplate" src="templates/bluestork/images/menu/icon-16-maintenance.png" alt=""/>
 					</a>';
 		

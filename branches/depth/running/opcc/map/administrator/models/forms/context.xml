@@ -25,6 +25,18 @@
        		    description="COM_EASYSDI_MAP_FORM_DESC_CONTEXT_URL" 
                 filter="safehtml" />
                  
+        <field 	name="background" 
+				type="sql" 
+				class="inputbox"
+				size="1"
+				label="COM_EASYSDI_MAP_FORM_LBL_LAYER_BACKGROUND_ID"
+				description="COM_EASYSDI_MAP_FORM_DESC_LAYER_BACKGROUND_ID" 
+				multiple ="false"
+                translate="true" 
+                required="false"
+                query="SELECT null AS id, '- Please select -' AS name UNION SELECT id, name FROM #__sdi_map_group WHERE state=1" key_field="id" value_field="name"
+                 />
+                 
         <field 	name="groups" 
 				type="sql" 
 				class="inputbox"
@@ -34,9 +46,21 @@
 				multiple ="true"
                 translate="true" 
                 required="true"
-                query="SELECT null AS id, '- Please select -' AS name UNION SELECT id, name FROM #__sdi_map_group WHERE state=1" key_field="id" value_field="name"
+                query="SELECT id, name FROM #__sdi_map_group WHERE state=1" key_field="id" value_field="name"
                  />
 
+		<field 	name="default" 
+				type="sql" 
+				class="inputbox"
+				size="1"
+				label="COM_EASYSDI_MAP_FORM_LBL_LAYER_DEFAULT_ID"
+				description="COM_EASYSDI_MAP_FORM_DESC_LAYER_DEFAULT_ID" 
+				multiple ="false"
+                translate="true" 
+                required="false"
+                query="SELECT null AS id, '- Please select -' AS name UNION SELECT id, name FROM #__sdi_map_group WHERE state=1" key_field="id" value_field="name"
+                 />
+                 
 	   <field 	name="services" 
 				type="ServicegroupedList" 
 				multiple ="true"
@@ -50,7 +74,7 @@
        <field 	name="defaultserviceconnector_id" 
 				type="sql" 
 				class="inputbox"
-				size="10"
+				size="1"
 				label="COM_EASYSDI_MAP_FORM_LBL_LAYER_SERVICECONNECTOR_ID"
 				description="COM_EASYSDI_MAP_FORM_DESC_LAYER_SERVICECONNECTOR_ID" 
 				multiple ="false"

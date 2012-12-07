@@ -126,7 +126,7 @@ $saveOrder	= $listOrder == 'a.ordering';
 				</td>
 					
 				<td>
-					<?php echo JURI::root().'index.php?option=com_easysdi_map&view=context&id='.$item->id;?></p>
+					<?php echo JURI::root().'index.php?option=com_easysdi_map&tmpl=component&view=context&id='.$item->id;?></p>
 				</td>
 				<td class="center">
 					<?php echo $this->escape($item->access_level); ?>

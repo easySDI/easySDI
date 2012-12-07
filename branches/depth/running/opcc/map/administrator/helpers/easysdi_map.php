@@ -122,8 +122,8 @@ class Easysdi_mapHelper
 		}
 		
 		$completeurl = $url.$separator."REQUEST=GetCapabilities&SERVICE=".$resource->connector;
-		if($compliance ->value){
-			$completeurl .= "&version=".$compliance ->value;
+		if($compliance->value){
+			$completeurl .= "&version=".$compliance->value;
 		}
 		$session 	= curl_init($completeurl);
 		$httpHeader = array();
@@ -138,11 +138,21 @@ class Easysdi_mapHelper
 		curl_setopt($session, CURLOPT_HEADER, false);
 		curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
 		$response = curl_exec($session);
+		$http_status = curl_getinfo($session, CURLINFO_HTTP_CODE);
 		curl_close($session);
 		
-		$xmlCapa = simplexml_load_string($response);
+		//HTTP status error
+		if($http_status != '200')
+		{
+			$result['ERROR']=JText::_('COM_EASYSDI_MAP_GET_CAPABILITIES_HTTP_ERROR').$http_status;
+			echo json_encode($result);
+			die();
+		}
 		
+		$xmlCapa = simplexml_load_string($response);
 		$result = array();
+		
+		//Response empty
 		if ($xmlCapa === false)
 		{
 			$result['ERROR']=JText::_('COM_EASYSDI_MAP_GET_CAPABILITIES_ERROR');
@@ -150,6 +160,19 @@ class Easysdi_mapHelper
 			die();
 		}
 		
+		//OGC exception returned
+		if($xmlCapa->getName() == "ServiceExceptionReport")
+		{
+			foreach ($xmlCapa->children() as $exception) {
+				$ogccode = $exception['code'];
+				break;
+			}
+			$result['ERROR']=JText::_('COM_EASYSDI_MAP_GET_CAPABILITIES_OGC_ERROR').$ogccode;
+			echo json_encode($result);
+			die();
+		}
+		
+		//Parse capabilities to get layers
 		$namespaces = $xmlCapa->getNamespaces(true);
 		foreach ($namespaces as $key => $value)
 		{

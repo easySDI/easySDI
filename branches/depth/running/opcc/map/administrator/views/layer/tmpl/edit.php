@@ -185,9 +185,9 @@ $document->addStyleSheet('components/com_easysdi_map/assets/css/easysdi_map.css'
 				<?php
 				if($field->name=="jform[service_id]"){
 					?>
-					<li><?php echo $field->label;echo $field->input;  echo $this->form->getField('getlayers')->input;?>
+					<li><?php echo $field->label;echo $field->input;  ?>
 					<div class="width-50 fltrt" style="margin: -18px 0 0;">					
-					<?php echo JHtml::_('sliders.start', 'au-sliders-'.$this->item->id,array('useCookie'=>1)); ?>
+					<?php echo JHtml::_('sliders.start', 'au-sliders-'.$this->item->id,array('useCookie'=>0, 'startOffset'=>-1, 'startTransition'=>1)); ?>
 							<?php echo JHtml::_('sliders.panel', JText::_('COM_EASYSDI_MAP_LAYER_FIELDSET_AUTHENTICATION'), 'authentication'); ?>
 							<fieldset class="adminform">
 								<ul class="adminformlist">
@@ -202,6 +202,13 @@ $document->addStyleSheet('components/com_easysdi_map/assets/css/easysdi_map.css'
 					</div>
 					</li>
 					
+					<?php 
+					continue;
+				}
+				if($field->name=="jform[layername]"){
+					?>
+					<li><?php echo $field->label;echo $field->input;  echo $this->form->getField('getlayers')->input;?>
+					</li>
 					<?php 
 					continue;
 				}

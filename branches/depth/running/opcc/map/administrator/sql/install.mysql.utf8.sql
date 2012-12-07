@@ -98,6 +98,8 @@ CREATE TABLE IF NOT EXISTS `#__sdi_map_context_group` (
 `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 `context_id` INT(11) UNSIGNED NOT NULL ,
 `group_id` INT(11) UNSIGNED  NOT NULL ,
+`isbackground` TINYINT(1)  NOT NULL DEFAULT '0',
+`isdefault` TINYINT(1)  NOT NULL DEFAULT '0',
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT COLLATE=utf8_general_ci;
 

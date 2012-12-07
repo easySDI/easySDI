@@ -135,6 +135,7 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
                  {
 					    ptype: "sdi_gxp_layermanager",
 					    rootNodeText: "<?php echo $this->item->rootnodetext;?>",
+					    defaultGroup: "default",
 					    outputConfig: {
 					        id: "tree",
 					        border: true,
