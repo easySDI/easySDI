@@ -46,6 +46,59 @@ $document->addStyleSheet('components/com_easysdi_service/assets/css/easysdi_serv
 				<?php endforeach; ?>
 			</ul>
 		</fieldset>
+		
+		<?php
+			foreach ($this->item->physicalservice as $ps) {
+				echo '<fieldset class="adminform"><legend>' . JText::_( 'COM_EASYSDI_SERVICE_WMS_SERVER' ) . $ps['name'] . ' (' . $ps['resourceurl'] . ')</legend>
+					<ul class="adminformlist">
+							<li>
+								<label id="jform_wms_prefix-lbl" for="jform_wms_prefix" title aria-invalid="false">' . JText::_('COM_EASYSDI_SERVICE_WMS_SERVER_PREFIXE') . '</label>
+								<input type="text" name="jform[wms_prefix]" id="jform_wms_prefix" value="' . $ps['prefix'] . '" class="inputbox" size="40" aria-invalid="false" />
+							</li>
+							<li>
+								<label id="jform_wms_namespace-lbl" for="jform_wms_namespace" title aria-invalid="false">' . JText::_('COM_EASYSDI_SERVICE_WMS_SERVER_NAMESPACE') . '</label>
+								<input type="text" name="jform[wms_namespace]" id="jform_wms_namespace" value="' . $ps['namespace'] . '" class="inputbox" size="40" aria-invalid="false" />
+							</li>
+							<li>
+								<table class="admintalbe"  id="wms_layers">
+									<tbody>
+										<tr>
+											<th><span style="font-weight: bold;">Name</span></th>
+											<th><span style="font-weight: bold;">Min scale</span></th>
+											<th><span style="font-weight: bold;">Max scale</span></th>
+											<th><span style="font-weight: bold;">Geographic filter</span></th>
+										</tr>
+										<tr>
+											<td colspan="4">
+												<input type="checkbox" name="wms_anyItem" id="wms_anyItem_' . $ps['id'] . '"/>All
+											</td>
+										</tr>';
+										foreach ($ps['layers'] as $layer) {
+											echo '
+												<tr>
+													<td>
+														<input type="checkbox" name="wms_layer_' . $ps['id'] . '_' . $layer['id'] . '" id="wms_layer_' . $ps['id'] . '_' . $layer['id'] . '"/>
+														' . $layer['name'] . '<br />"' . $layer['description'] . '"
+													</td>
+													<td>
+														<input type="text" size="10" id="wms_minimumscale_' . $ps['id'] . '_' . $layer['id'] . '" name="wms_minimumscale_' . $ps['id'] . '_' . $layer['id'] . '" value="' . $layer['minimumscale'] . '"/>
+													</td>
+													<td>
+														<input type="text" size="10" id="wms_maximumscale_' . $ps['id'] . '_' . $layer['id'] . '" name="wms_maximumscale_' . $ps['id'] . '_' . $layer['id'] . '" value="' . $layer['maximumscale'] . '"/>
+													</td>
+													<td>
+														<input type="textarea" rows="3"  cols="30" size="40" id="wms_geographicfilter_' . $ps['id'] . '_' . $layer['id'] . '" name="wms_geographicfilter_' . $ps['id'] . '_' . $layer['id'] . '" value="' . $layer['geographicfilter'] . '"/>
+													</td>
+												</tr>
+											';
+										}
+						echo '</tbody>
+								</table>
+						</li>
+					</ul>
+				</fieldset>';
+			}
+		?>
 	</div>
 	<div class="width-100 fltlft">
 		<?php echo JHtml::_('sliders.start', 'permissions-sliders-'.$this->item->id, array('useCookie'=>1)); ?>

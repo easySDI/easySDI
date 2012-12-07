@@ -94,6 +94,7 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 			//Do any procesing on fields here if needed
 			JTable::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'tables');
 			
+			$pk = (null == $pk) ? 0 : $pk;
 			$layout = JRequest::getVar('layout',null);
 			$virtualservice_id = JRequest::getVar('virtualservice_id',null);
 			
@@ -102,17 +103,32 @@ class Easysdi_serviceModelpolicy extends JModelAdmin
 			@$wmsLayer =& JTable::getInstance('wmslayer', 'Easysdi_serviceTable');
 			@$wmsLayerPolicy =& JTable::getInstance('wmslayerpolicy', 'Easysdi_serviceTable');
 			
+			$item->physicalservice = Array();
 			$ps_list = $physicalService->getListByConnectorType($layout);
 			foreach ($ps_list as $ps) {
-				$servicePolicy->getByIDs($ps->id, $pk);
-				//TODO : add prefix and namespace to item
+				$ps_arr = Array();
+				$ps_arr['id'] = $ps->id;
+				$ps_arr['name'] = $ps->name;
+				$ps_arr['resourceurl'] = $ps->resourceurl;
+				
+				$sp = $servicePolicy->getByIDs($ps->id, $pk);
+				@$ps_arr['prefix'] = $sp->prefix;
+				@$ps_arr['namespace'] = $sp->namespace;
 				
 				$wmsLayerList = $wmsLayer->getListByPhysicalService($ps->id);
-				//TODO : add layers to item->ps
+				$ps_arr['layers'] = Array();
 				foreach ($wmsLayerList as $layer) {
 					$wmsLayerPolicy->getByIDs($layer->id, $pk);
-					//TODO : add infos to item->ps->layer
+					@$ps_arr['layers'][] = Array(
+						'id' => $layer->id,
+						'name' => $layer->name,
+						'description' => $layer->description,
+						'minimumscale' => $layer->minimumscale,
+						'maximumscale' => $layer->maximumscale,
+						'geographicfilter' => $layer->geographicfilter
+					);
 				}
+				$item->physicalservice[] = $ps_arr;
 			}
 			
 		}

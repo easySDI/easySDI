@@ -85,13 +85,6 @@ class Easysdi_serviceTablephysicalservice extends sdiTable
 			$this->setError($e);
 			return false;
 		}
-
-		// Check that we have a result.
-		if (empty($row)) {
-			$e = new JException(JText::_('JLIB_DATABASE_ERROR_EMPTY_ROW_RETURNED'));
-			$this->setError($e);
-			return false;
-		}
 		
 		return $resultSet;
 	}

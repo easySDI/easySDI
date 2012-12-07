@@ -13,7 +13,7 @@ require_once JPATH_ADMINISTRATOR.DS.'components'.DS.'com_easysdi_core'.DS.'libra
 /**
  * virtualmetadata Table class
  */
-class Easysdi_serviceTablewmslayer extends sdiTable {
+class Easysdi_serviceTablewmslayerpolicy extends sdiTable {
 
 	/**
 	* Constructor
@@ -21,25 +21,34 @@ class Easysdi_serviceTablewmslayer extends sdiTable {
 	* @param JDatabase A database connector object
 	*/
 	public function __construct(&$db) {
-		parent::__construct('#__sdi_wmslayer', 'id', $db);
+		parent::__construct('#__sdi_wmslayerpolicy', 'id', $db);
 	}
 	
 	public function save($src, $orderingFilter = '', $ignore = '') {
 		$data = array();
 		$data['guid'] 								= $src['guid'];
-		$data['name'] 								= $src['name'];
-		$data['description'] 				= $src['description'];
-		$data['physicalservice_id']	= $src['physicalservice_id'];
+		$data['minimumscale']				= $src['minimumscale'];
+		$data['maximumscale'] 			= $src['maximumscale'];
+		$data['geographicfilter']		= $src['geographicfilter'];
+		$data['policy_id'] 					= $src['id'];
+		$data['wmslayer_id']					= $src['wmslayer_id'];
 		
 		return parent::save($data, $orderingFilter , $ignore );
 	}
 	
-	public function getListByPhysicalService($physicalservice_id) {
+	/**
+	 * Return a servicepolicy
+	 *
+	 * @param Int A physicalService ID
+	 * @param Int A policy ID
+	 */
+	public function getByIDs ($wmslayer_id, $policy_id) {
 		$db = JFactory::getDbo();
 		$db->setQuery('
 			SELECT *
-			FROM #__sdi_wmslayer
-			WHERE physicalservice_id = ' . $physicalservice_id . ';
+			FROM #__sdi_wmslayerpolicy
+			WHERE wmslayer_id = ' . $wmslayer_id . '
+			AND policy_id = ' . $policy_id . ';
 		');
 		
 		try {

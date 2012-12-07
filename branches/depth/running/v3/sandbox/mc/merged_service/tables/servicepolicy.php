@@ -45,15 +45,14 @@ class Easysdi_serviceTableservicepolicy extends sdiTable {
 	public function getByIDs ($physicalservice_id, $policy_id) {
 		$db = JFactory::getDbo();
 		$db->setQuery('
-			SELECT ps.*
-			FROM #__sdi_physicalservice ps
-			JOIN #__sdi_sys_serviceconnector sc
-			ON sc.id = ps.serviceconnector_id
-			WHERE sc.value = "' . $connectorType . '";
+			SELECT *
+			FROM #__sdi_servicepolicy
+			WHERE physicalservice_id = ' . $physicalservice_id . '
+			AND policy_id = ' . $policy_id . ';
 		');
 		
 		try {
-			$resultSet = $db->loadObjectList();
+			$resultSet = $db->loadObject();
 		}
 		catch (JDatabaseException $e) {
 			$je = new JException($e->getMessage());
@@ -66,13 +65,7 @@ class Easysdi_serviceTableservicepolicy extends sdiTable {
 		if (JError::$legacy && $this->_db->getErrorNum())	{
 			$e = new JException($this->_db->getErrorMsg());
 			$this->setError($e);
-			return false;
-		}
-
-		// Check that we have a result.
-		if (empty($row)) {
-			$e = new JException(JText::_('JLIB_DATABASE_ERROR_EMPTY_ROW_RETURNED'));
-			$this->setError($e);
+			var_dump($e);
 			return false;
 		}
 		
