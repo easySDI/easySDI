@@ -14,8 +14,7 @@
  	<field 	name="alias" 
        			type="text" 
        			size="40" class="inputbox"
-       			required="true" 
-	            label="COM_EASYSDI_MAP_FORM_LBL_LAYER_ALIAS"
+       			label="COM_EASYSDI_MAP_FORM_LBL_LAYER_ALIAS"
     	        description="COM_EASYSDI_MAP_FORM_DESC_LAYER_ALIAS" 
                 filter="safehtml" /> 
 

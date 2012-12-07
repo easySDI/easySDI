@@ -16,8 +16,7 @@
        			class="inputbox"
             	label="COM_EASYSDI_MAP_FORM_LBL_GROUP_ALIAS"
             	description="COM_EASYSDI_MAP_FORM_DESC_GROUP_ALIAS" 
-            	required="true"
-                filter="safehtml" /> 
+            	filter="safehtml" /> 
 
        <field 	name="isdefaultopen" 
        			type="checkbox" 

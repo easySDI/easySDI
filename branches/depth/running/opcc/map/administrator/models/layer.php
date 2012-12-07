@@ -141,7 +141,10 @@ class Easysdi_mapModellayer extends JModelAdmin
 				$max = $db->loadResult();
 				$table->ordering = $max+1;
 			}
-
+		}
+		
+		if (empty($table->alias)){
+			$table->alias = $table->name;
 		}
 	}
 

@@ -135,7 +135,22 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
                  {
 					    ptype: "sdi_gxp_layermanager",
 					    rootNodeText: "<?php echo $this->item->rootnodetext;?>",
-					    defaultGroup: "default",
+					    <?php
+					    foreach ($this->item->groups as $group)
+					    {
+					    	if($group->isdefault)
+					    	{
+					    		//Acces not allowed
+					    		if(!in_array($group->access, $user->getAuthorisedViewLevels()))
+					    			break;
+					    		?>
+					    		defaultGroup: "<?php echo $group->alias; ?>",
+					    		<?php
+					    		break;
+					    	}
+					    	
+					    } 
+					    ?>        
 					    outputConfig: {
 					        id: "tree",
 					        border: true,
@@ -149,7 +164,7 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
 						    	if(!in_array($group->access, $user->getAuthorisedViewLevels()))
 						    		continue;
 						    
-						    	if($group->alias == 'background')
+						    	if($group->isbackground)
 						    	{
 						    		?>
 						    		"background": {

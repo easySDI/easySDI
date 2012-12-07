@@ -94,7 +94,9 @@ class Easysdi_mapModelContext extends JModelForm
 				foreach($groups as $group )
 				{
 					$groupTable 	= JTable::getInstance('group', 'easysdi_mapTable');
-					$groupTable->load($group, true);
+					$groupTable->load($group->id, true);
+					$groupTable->isbackground = $group->isbackground;
+					$groupTable->isdefault = $group->isdefault;
 					$this->_item->groups[] =$groupTable;
 				}
 				

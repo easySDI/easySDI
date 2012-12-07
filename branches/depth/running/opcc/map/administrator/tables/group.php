@@ -117,7 +117,7 @@ class Easysdi_mapTablegroup extends sdiTable {
 		
 		// Initialise the query.
 		$query = $this->_db->getQuery(true);
-		$query->select('g.id');
+		$query->select('g.id, cg.isbackground, cg.isdefault');
 		$query->from($this->_tbl.'  AS g ');
 		$query->join('LEFT', '#__sdi_map_context_group AS cg ON cg.group_id=g.id');
 		$query->where('cg.context_id = ' . (int) $context_id);
@@ -127,7 +127,7 @@ class Easysdi_mapTablegroup extends sdiTable {
 	
 		try
 		{
-			$rows = $this->_db->loadResultArray();
+			$rows = $this->_db->loadObjectList();
 	
 		}
 		catch (JDatabaseException $e)
