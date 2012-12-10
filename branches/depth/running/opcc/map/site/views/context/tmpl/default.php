@@ -490,7 +490,6 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
                      						{
                          						source : "ol",
                          						type : "OpenLayers.Layer.WMS",
-                         						
                          						args: 
                              					[
 													"<?php echo $layer->name;?>",
@@ -502,7 +501,7 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
 													},
 													{
 														 visibility: <?php  if ($layer->isdefaultvisible) echo "true"; else echo "false"; ?>,
-														 singleTile: <?php if ($layer->istiled) echo "false"; else echo "true"; ?>,
+														 singleTile: <?php if ($layer->serviceconnector == "WMSC") echo "false"; else echo "true"; ?>,
 														 opacity: <?php echo $layer->opacity;?>,
 														 transitionEffect: 'resize',
 														 <?php 
@@ -518,6 +517,37 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
                      						},
                      						<?php 
                      						break;
+                     					case 'WMSC' :
+                     						?>
+                     						{
+                     							source : "ol",
+                     						    type : "OpenLayers.Layer.WMS",
+                     						    args: 
+                     						    [
+                     								"<?php echo $layer->name;?>",
+                     								"<?php echo $layer->serviceurl;?>",
+                     								{
+                     									layers: "<?php echo $layer->layername;?>", 
+                     									version: "<?php echo $layer->version;  ?>",
+                     									tiled: true
+                     								},
+                     								{
+                     									visibility: <?php  if ($layer->isdefaultvisible) echo "true"; else echo "false"; ?>,
+                     									opacity: <?php echo $layer->opacity;?>,
+                     									transitionEffect: 'resize',
+                     									<?php 
+                     									if (!empty($layer->metadatalink)){
+                     									?>
+                     									metadataURL: "<?php echo $layer->metadatalink;  ?>"
+                     									<?php if(!empty($layer->asOLparams)) echo ',';?>
+                     									<?php }?>
+                     									<?php echo  $layer->asOLparams; ?>
+                     									}
+                     						     ],
+                     						     group: "<?php echo $group->alias;?>"
+                     						},
+                     						<?php 
+                     						break;
                      				}
                      			}
                      			else 
@@ -530,6 +560,8 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
 											?>
 											{
 			                     				source: "<?php echo $layer->servicealias;  ?>",
+			                     				//tiled value gives the transitionEffect value see WMSSource.js l.524
+			                     				tiled: <?php if ($layer->serviceconnector == "WMSC") echo "true"; else echo "false"; ?>,
 			                     				<?php if (!empty($layer->version)){?>
 			                     				version: "<?php echo $layer->version;  ?>",
 												<?php }?>
@@ -537,7 +569,6 @@ JHTML::_('stylesheet', 'style.css', 'components/com_easysdi_map/views/context/tm
 			                     				metadataURL: "<?php echo $layer->metadatalink;  ?>",
 			                     				<?php }?>
 			                     				name: "<?php echo $layer->layername;?>",
-			                     				tiled: <?php if ($layer->istiled) echo "true"; else echo "false"; ?>,
 			                     				group: "<?php echo $group->alias;?>",
 			                     				<?php if ($group->alias == "background") echo "fixed: true,";?>
 			                     				visibility: <?php  if ($layer->isdefaultvisible) echo "true"; else echo "false"; ?>,
